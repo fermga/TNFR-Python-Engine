@@ -10,22 +10,22 @@
   "icons": [],
   "tnfr_structure": {
     "nodos": [
-      "A’L – Inicio de la vibración",
-      "I’L – Estructuración del campo",
-      "E’N – Recepción y estabilización",
-      "R’A – Proyección nodal",
-      "U’M – Unión de sentido",
-      "RE’MESH – Multiplicación de fase",
-      "VA’L – Autonomía simbólica",
-      "SH’A – Silencio activo",
-      "O’N – Oscilación nodal",
-      "S’EPI – Síntesis de estructura",
-      "T’HOL – Trascendencia holográfica",
-      "D’NEX – Disolución nodal",
-      "L’HUM – Reencuentro humano"
+      "A’L – Emisión",
+      "E’N – Recepción",
+      "I’L – Coherencia",
+      "O’Z – Disonancia",
+      "U’M – Acoplamiento",
+      "R’A – Resonancia",
+      "SH’A – Silencio",
+      "VA’L – Expanción",
+      "NU’L – Contracción",
+      "T’HOL – Autoorganización",
+      "Z’HIR – Mutación",
+      "N’AV – Transición",
+      "RE’MES – Recursividad"
     ],
     "estructura": "Fractal, no lineal, con navegación simbólica.",
     "licencia": "Libre, no comercial, abierta a acoplamiento nodal.",
-    "autor": "Fernando Martínez Gamo"
+    "autor": "F. F. Martínez Gamo"
   }
 }
