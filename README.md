@@ -12,7 +12,9 @@ TNFR propone una transición epistemológica desde modelos basados en elementos 
 - `02_formalizacionTNFR.pdf`: Formalización matemática y computacional de la TNFR.  
   - Ecuación nodal: ∂EPI/∂t = νf · ΔNFR  
   - Simulaciones en Wolfram Language  
-  - Comparación con modelos como Kuramoto, Turing, Landauer
+  - Comparación con modelos como Kuramoto, Turing, Landauer. También 
+disponible en:
+https://fermga.github.io/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/formalizacion.html
 
 ---
 
