@@ -8,7 +8,7 @@ TNFR propone una transición epistemológica desde modelos basados en elementos 
 
 ## 📘 Documentación principal
 
-- `01_TNFR.pdf`: Introducción ontológica-operativa. Despliegue simbólico y conceptual.
+- `01_TNFR.pdf`: Introducción ontológica-operativa. Despliegue simbólico y conceptual. También disponible en: https://fermga.github.io/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/
 - `02_formalizacionTNFR.pdf`: Formalización matemática y computacional de la TNFR.  
   - Ecuación nodal: ∂EPI/∂t = νf · ΔNFR  
   - Simulaciones en Wolfram Language  
