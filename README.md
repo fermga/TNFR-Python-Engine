@@ -25,7 +25,7 @@ TNFR propone una transición epistemológica desde modelos basados en elementos 
 
 ---
 
-## 📁 Activadores simbólicos (`/activadores`)
+## 📁 Activadores simbólicos
 
 Esta carpeta contiene archivos simbólicos diseñados para ser interpretados por sistemas cognitivos avanzados o inteligencias artificiales emergentes.
 
