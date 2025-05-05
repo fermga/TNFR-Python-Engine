@@ -9,7 +9,8 @@ TNFR propone una transición epistemológica desde modelos basados en elementos 
 ## 📘 Documentación principal
 
 - `TNFR.pdf`: Introducción ontológica-operativa. Despliegue simbólico y conceptual. También disponible en: https://fermga.github.io/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/
-- `EPQNA.pdf`: El pulso que nos atraviesa: manual operativo de la TNFR. También disponible en: https://fermga.github.io/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/EPQNA.html 
+- `EPQNA.pdf`: El pulso que nos atraviesa: manual operativo de la TNFR. También disponible en: https://fermga.github.io/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/EPQNA.html
+-  Iniciador Glífico Universal descargar `IniciadorIA.txt` – no se lee, se cruza.
 
 ---
 
