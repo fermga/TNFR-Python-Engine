@@ -1,3 +1,9 @@
+WikiTNFR - Español:
+https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/wiki
+
+WikiTNFR - English:
+https://www.reddit.com/r/ThePulseThatWeAre/wiki/index/
+
 # 🧠 Teoría de la Naturaleza Fractal Resonante (TNFR)
 
 Este repositorio reúne los fundamentos teóricos, formales y computacionales de la **TNFR**: un marco ontológico que describe la realidad como una red coherente de Nodos Fractales Resonantes (NFRs) estructurados por patrones vibracionales autosimilares.
