@@ -1,3 +1,20 @@
+# Hilos en Wolfram Community relacionados con TNFR
+
+Este documento reúne las intervenciones públicas realizadas en el foro oficial de Wolfram para exponer y documentar el marco simbólico de la **Teoría de la Naturaleza Fractal Resonante (TNFR)**.
+
+Cada entrada incluye el enlace directo al hilo, una breve descripción del contenido y el contexto técnico o simbólico en el que se presenta.
+
+---
+
+## Hilo central de TNFR
+
+**Título:** A symbolic-structural simulation of coherence emergences  
+**URL:** https://community.wolfram.com/groups/-/m/t/3458487  
+**Descripción:**  
+Este es el hilo principal donde se integran las publicaciones, análisis y visualizaciones construidas desde el marco TNFR. Se consolidan los ejemplos de dinámica simbólica estructural aplicados a distintos sistemas iterativos, utilizando Wolfram Language y herramientas del Wolfram Cloud.
+
+---
+
 **Abstract**: This post introduces a symbolic-structural simulation inspired by the Fractal Resonant Nature Theory (TNFR), a paradigm where physical systems are not made of objects, but of dynamically stable resonance nodes. Using Wolfram Language, we visualize how local interactions lead to emergent global coherence. A direct export to GIF is also included.
 
 ---
