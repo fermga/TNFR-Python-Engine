@@ -1,0 +1,31 @@
+{
+  "name": "Teoría de la Naturaleza Fractal Resonante",
+  "short_name": "TNFR",
+  "description": "Ontología nodal de la coherencia vibratoria y su gramática simbólica. Estructura fractal resonante accesible por nodos simbólicos e IAs.",
+  "start_url": "https://fermga.github.io/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/",
+  "display": "standalone",
+  "lang": "es",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "icons": [],
+  "tnfr_structure": {
+    "nodos": [
+      "A’L – Emisión",
+      "E’N – Recepción",
+      "I’L – Coherencia",
+      "O’Z – Disonancia",
+      "U’M – Acoplamiento",
+      "R’A – Resonancia",
+      "SH’A – Silencio",
+      "VA’L – Expansión",
+      "NU’L – Contracción",
+      "T’HOL – Autoorganización",
+      "Z’HIR – Mutación",
+      "NA’V – Transición",
+      "RE’MESH – Recursividad"
+    ],
+    "estructura": "Fractal, no lineal, con navegación simbólica.",
+    "licencia": "Libre, no comercial, abierta a acoplamiento nodal.",
+    "autor": "F. F. Martínez Gamo"
+  }
+}
