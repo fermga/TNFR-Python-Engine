@@ -122,3 +122,17 @@ footer {
   line-height: 1.6;
 }
 
+#app h2 {
+  margin-top: 2rem;
+  font-size: 1.8rem;
+}
+
+#app p {
+  margin-bottom: 1rem;
+}
+
+#app ul {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
