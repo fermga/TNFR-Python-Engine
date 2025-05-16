@@ -1,0 +1,17 @@
+{
+  "name": "tnfr-site",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "homepage": "https://fermga.github.io/Teoria-de-la-naturaleza-fractal-resonante-TNFR/",
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "vite": "^6.3.5"
+  }
+}
