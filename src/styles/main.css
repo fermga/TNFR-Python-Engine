@@ -136,3 +136,17 @@ footer {
   margin-bottom: 1rem;
 }
 
+.fundamentos {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  line-height: 1.7;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.fundamentos * {
+  box-sizing: border-box;
+  max-width: 100%;
+}
