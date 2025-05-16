@@ -114,3 +114,11 @@ footer {
     padding: 1rem;
   }
 }
+
+/* Estilo para centrar y dar márgenes al contenido cargado dinámicamente */
+#app > section {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  line-height: 1.6;
+}
