@@ -2,8 +2,10 @@ const app = document.getElementById('app');
 
 const routes = {
   home: `<section><h2>Bienvenido</h2><p>Explora la TNFR: una ciencia que no representa, sino que reorganiza. Accede a fundamentos, glifos activos y simulaciones resonantes.</p></section>`,
-  fundamentos: () => fetch('/src/views/Fundamentos.html').then(res => res.text()),
-  glifos: () => fetch('/src/views/Glifos.html').then(res => res.text()),
+  fundamentos: () => fetch('views/fundamentos.html').then(res => res.text()),
+  glifos: () => fetch('views/glifos.html').then(res => res.text()),
+
+
 };
 
 async function loadPage() {
