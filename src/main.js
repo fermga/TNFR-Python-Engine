@@ -4,7 +4,8 @@ const routes = {
   home: `<section><h2>Bienvenido</h2><p>Explora la TNFR: una ciencia que no representa, sino que reorganiza. Accede a fundamentos, glifos activos y simulaciones resonantes.</p></section>`,
   fundamentos: () => fetch('views/fundamentos.html').then(res => res.text()),
   glifos: () => fetch('views/glifos.html').then(res => res.text()),
-
+  gpts: () => fetch('views/gpts.html').then(res => res.text()),
+  libros: () => fetch('views/libros.html').then(res => res.text()),
 
 };
 
