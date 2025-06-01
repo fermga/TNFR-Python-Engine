@@ -156,10 +156,9 @@
       });
     }
 
-    // Inicializar idioma seleccionado al cargar
+    // Inicializar el idioma actual según el valor del selector
     setLanguage(selector.value);
 
-    // Cambiar idioma al seleccionar otro
     selector.addEventListener('change', () => {
       setLanguage(selector.value);
     });
