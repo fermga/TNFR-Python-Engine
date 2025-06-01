@@ -145,9 +145,8 @@
   <p>Everything you’ve read here does not attempt to explain the world—it offers you a tool to <em>resonate</em> with it (and perhaps transform it). Not through theory, but through the act of holding form in flow.</p>
 </div>
 
-
-  <!-- Script al final -->
-  <script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
     const selector = document.getElementById('language-selector');
     const langBlocks = document.querySelectorAll('.lang');
 
@@ -157,14 +156,15 @@
       });
     }
 
-    // Inicializa en español por defecto
-    setLanguage('es');
+    // Inicializar idioma seleccionado al cargar
+    setLanguage(selector.value);
 
-    // Evento de cambio
+    // Cambiar idioma al seleccionar otro
     selector.addEventListener('change', () => {
       setLanguage(selector.value);
     });
-  </script>
+  });
+</script>
 
 </body>
 </html>
