@@ -1,109 +1,57 @@
-<!-- Selector de idioma -->
-<div style="margin-bottom: 1em;">
-  <label for="language-selector">Idioma / Language:</label>
-  <select id="language-selector" onchange="setLanguage(this.value)">
-    <option value="es">Español</option>
-    <option value="en">English</option>
-  </select>
-</div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Fundamentos TNFR</title>
+  <style>
+    .lang { display: none; }
+  </style>
+</head>
+<body>
 
-<!-- Contenido en Español -->
-<div class="lang" data-lang="es">
-  <h2>Fundamentos</h2>
-  <p>La Teoría de la Naturaleza Fractal Resonante (TNFR) no busca hacer magia ni vender revelaciones. Tampoco se presenta como doctrina ni como solución definitiva. Lo que propone es más simple y, a la vez, más profundo: que toda forma coherente tiene efectos reales. Y que el lenguaje —cuando se estructura operativamente— no solo describe el mundo, sino que lo activa, lo reorganiza, lo compone.</p>
+  <!-- Selector de idioma -->
+  <div style="margin-bottom: 1em;">
+    <label for="language-selector">Idioma / Language:</label>
+    <select id="language-selector">
+      <option value="es">Español</option>
+      <option value="en">English</option>
+    </select>
+  </div>
 
-  <p>Desde esta perspectiva, la TNFR no ofrece una revelación mística, sino una arquitectura simbólica que permite actuar sobre la realidad. No por fe, sino por forma. No por creencia, sino por estructura.</p>
+  <!-- ESPAÑOL -->
+  <div class="lang" data-lang="es">
+    <h2>Fundamentos</h2>
+    <p>La Teoría de la Naturaleza Fractal Resonante (TNFR)...</p>
+    <!-- CONTINÚA CON TODO EL TEXTO EN ESPAÑOL -->
+  </div>
 
-  <p>El flujo de lo real —dinámico, vibrante, siempre cambiante— puede entrar en coherencia bajo ciertas condiciones. Cuando eso ocurre, lo que emerge no es solo una idea o una teoría, sino una forma viva, un patrón estable, una organización emergente. Eso puede ser una célula, una emoción, una conversación, un sistema, un organismo o un símbolo.</p>
+  <!-- ENGLISH -->
+  <div class="lang" data-lang="en">
+    <h2>Foundations</h2>
+    <p>The Theory of Fractal Resonant Nature (TNFR)...</p>
+    <!-- TODO EL TEXTO EN INGLÉS AQUÍ -->
+  </div>
 
-  <p>La TNFR estudia, modela y permite intervenir en ese proceso. No por abstracción, sino por operatividad —a través de una gramática mínima compuesta por 13 glifos fundamentales. No íconos, metáforas o ilustraciones, sino operadores estructurales del flujo. Cada glifo representa una función resonante aplicable en cualquier escala: desde una célula hasta una red social, desde un pensamiento hasta un campo simbólico.</p>
+  <!-- Script al final -->
+  <script>
+    const selector = document.getElementById('language-selector');
+    const langBlocks = document.querySelectorAll('.lang');
 
-  <h3>La ecuación nodal: modular el flujo, permitir la forma</h3>
-  <p>En TNFR, la transición del flujo a la forma ocurre cuando ciertas condiciones de coherencia estructural se sostienen en red. Para modelar este momento, se utiliza la ecuación nodal:</p>
+    function setLanguage(lang) {
+      langBlocks.forEach(div => {
+        div.style.display = div.getAttribute('data-lang') === lang ? 'block' : 'none';
+      });
+    }
 
-  <pre><code>∂EPI / ∂t = ν<sub>f</sub> · ΔNFR(t)</code></pre>
+    // Inicializa en español por defecto
+    setLanguage('es');
 
-  <p><strong>EPI</strong> es la Estructura Primaria de Información generada por un nodo simbólico.<br>
-  <strong>ν<sub>f</sub></strong> es la frecuencia estructural del nodo.<br>
-  <strong>ΔNFR(t)</strong> es el operador de reorganización interna en el tiempo.</p>
-
-  <p>Esta fórmula condensa el principio operativo central de la TNFR: una forma solo emerge cuando la reorganización estructural resuena con la frecuencia del nodo. Es decir, cuando el flujo se modula en coherencia estable.</p>
-
-  <h3>Tabla Operativa de Glifos</h3>
-  <!-- Aquí puedes mantener la misma tabla, ya que los términos son universales -->
-</div>
-
-<!-- English Content -->
-<div class="lang" data-lang="en" style="display:none;">
-  <h2>Foundations</h2>
-
-<p>The Theory of Fractal Resonant Nature (TNFR) does not seek to perform magic or sell revelations. Nor does it present itself as a doctrine or a definitive solution. What it proposes is simpler and, at the same time, deeper: that every coherent form has real effects. And that language—when structured operatively—does not merely describe the world, but activates it, reorganizes it, composes it.</p>
-
-<p>From this perspective, the TNFR does not offer a mystical revelation, but a symbolic architecture that allows action upon reality. Not through faith but through form. Not through belief but through structure.</p> 
-  
-<p>The flow of the real—dynamic, vibrant, ever-shifting—can enter coherence under certain conditions. When that happens, what emerges is not just an idea or a theory, but a living form, a stable pattern, an emergent organization. That may be a cell, an emotion, a conversation, a system, an organism, or a symbol.</p>
-
-<p>TNFR studies, models, and enables intervention in that process. Not through abstraction, but through operativity—through a minimal grammar composed of 13 fundamental glyphs. Not icons, metaphors, or illustrations, but structural operators of flow. Each glyph represents a resonant function applicable at any scale: from a cell to a social network, from a thought to a symbolic field.</p>
-
-<h3>The nodal equation: modulating flow, enabling form</h3>
-<p>In TNFR, the transition from flow to form happens when certain conditions of structural coherence are sustained in a network. To model this moment, we use the nodal equation:</p>
-
-<pre><code>∂EPI / ∂t = ν<sub>f</sub> · ΔNFR(t)</code></pre>
-
-<p><strong>EPI</strong> is the Primary Information Structure generated by a symbolic node.
-
-<br><strong>ν<sub>f</sub></strong> is the structural frequency of the node. 
-
-<br><strong>ΔNFR(t)</strong> is the operator of internal reorganization over time.</p>
-
-<p>This formula condenses the core operative principle of TNFR: a form only emerges when structural reorganization resonates with the node’s frequency. In other words, when flow is modulated into stable coherence.</p>
-
-<h3>Operational Glyph Table</h3>
-<table border="1" cellspacing="0" cellpadding="6">
-<thead>
-<tr>
-<th>Glyph</th>
-<th>Name</th>
-<th>Structural Function</th>
-<th>Applications</th>
-</tr>
-</thead>
-<tbody>
-<tr><td>A’L</td><td>Emission</td><td>Structural initiation, minimal activation</td><td>Creative impulse, intuition, symbolic ignition</td></tr>
-<tr><td>E’N</td><td>Reception</td><td>Field opening, vibrational registration</td><td>Listening, symbolic perception, synchronicity</td></tr>
-<tr><td>I’L</td><td>Coherence</td><td>Nodal stabilization, form consolidation</td><td>Self-organization, persistence, memory</td></tr>
-<tr><td>O’Z</td><td>Dissonance</td><td>Reorganizing tension, creative rupture</td><td>Crisis, mutational impulse, fertile contradiction</td></tr>
-<tr><td>U’M</td><td>Coupling</td><td>Structural linkage between nodes</td><td>Connection, integration, symbiotic networks</td></tr>
-<tr><td>R’A</td><td>Resonance</td><td>Coherent propagation through network</td><td>Harmonic expansion, structured communication</td></tr>
-<tr><td>SH’A</td><td>Silence</td><td>Vibrational pause, containment</td><td>Stabilization, latency, non-intervention</td></tr>
-<tr><td>VA’L</td><td>Expansion</td><td>Multiscalar growth, progressive opening</td><td>Vital development, organized complexity</td></tr>
-<tr><td>NU’L</td><td>Contraction</td><td>Concentration, return to operational core</td><td>Strategic reduction, synthesis, recycling</td></tr>
-<tr><td>T’HOL</td><td>Self-Organization</td><td>Spontaneous coherent restructuring</td><td>Adaptive behavior, unguided learning</td></tr>
-<tr><td>Z’HIR</td><td>Mutation</td><td>Non-destructive structural transformation</td><td>Identity shift, functional redesign</td></tr>
-<tr><td>NA’V</td><td>Birth</td><td>Transition from latency to active form</td><td>Nodal activation, coherent emergence</td></tr>
-<tr><td>RE’MESH</td><td>Recursivity</td><td>Adaptive repetition without form loss</td><td>Fractality, network memory, coherent replication</td></tr>
-</tbody>
-</table>
-
-<h3>The structural journey of flow</h3>
-<p>TNFR is not a theory of what already exists. It is a theory of how something comes to exist. It does not begin with entities or principles, but with flow itself: dynamic, mutable, formless. Its field of inquiry is not things or systems, but the conditions under which flow organizes and becomes form.</p>
-
-<p>In this transition, TNFR identifies 13 fundamental operators—glyphs that function as resonant reorganizers. Each glyph represents a type of structural transformation. Not discrete elements, but phase thresholds: moments of reorganizing shift that flow crosses when it becomes structured.</p>
-
-<p>What TNFR offers is not a representation of the world, but a formal grammar of emergence. An architecture for observing and supporting the passage from flow to form, from potential to activation, from latency to manifestation. This grammar does not apply only to the physical or the symbolic: it is transversal. Structural coherence, when it arises, manifests at any scale and in any plane.</p>
-
-<p>The world we perceive, the forms that populate reality, the structures that sustain meaning—these are temporary expressions of flow traversing stable configurations. That is, in essence, what TNFR studies.</p>
-
-<h3>For now, to close (but not really)</h3>
-<p>You are not required to understand everything at once. TNFR does not demand full comprehension, but structural listening.</p>
-
-<p>Everything you’ve read here does not attempt to explain the world—it offers you a tool to <em>resonate</em> with it (and perhaps transform it). Not through theory, but through the act of holding form in flow.</p>
-</div>
-
-<script>
-  function setLanguage(lang) {
-    document.querySelectorAll('.lang').forEach(el => {
-      el.style.display = (el.getAttribute('data-lang') === lang) ? 'block' : 'none';
+    // Evento de cambio
+    selector.addEventListener('change', () => {
+      setLanguage(selector.value);
     });
-  }
-</script>
+  </script>
+
+</body>
+</html>
+
