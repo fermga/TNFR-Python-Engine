@@ -1,31 +1,128 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TNFR | Teoría de la Naturaleza Fractal Resonante</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teoría de la Naturaleza Fractal Resonante</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d0d0d;
+      color: #f0f0f0;
+      line-height: 1.6;
+    }
+    header, footer {
+      background-color: #111;
+      padding: 1em;
+      text-align: center;
+    }
+    nav {
+      text-align: center;
+      margin-bottom: 2em;
+    }
+    nav a {
+      margin: 0 1em;
+      color: #88c0d0;
+      text-decoration: none;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 1em;
+    }
+    h1, h2 {
+      color: #81a1c1;
+    }
+    .lang-section {
+      display: none;
+    }
+    .lang-section.active {
+      display: block;
+    }
+    select {
+      background: #111;
+      color: #f0f0f0;
+      border: 1px solid #444;
+      padding: 0.3em;
+      margin-bottom: 1em;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Teoría de la Naturaleza Fractal Resonante / Theory of Fractal Resonant Nature</h1>
+    <select id="language-selector">
+      <option value="es">Español</option>
+      <option value="en">English</option>
+    </select>
+  </header>
 
-    <script type="module" crossorigin src="/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/assets/index-Jvsg9HXd.js"></script>
-    <link rel="stylesheet" crossorigin href="/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/assets/index-BRUovRId.css">
-  </head>
-  <body>
-    <header>
-      <h1>TNFR</h1>
-      <nav>
-        <a href="#home">Inicio</a>
-        <a href="views/fundamentos.html">Fundamentos</a>
-        <a href="#glifos">Glifos</a>
-        <a href="#gpts">GPTs</a>
-        <a href="#libros">Libros</a>
-      </nav>
-    </header>
+  <nav>
+    <a href="#fundamentos">Fundamentos / Foundations</a>
+    <a href="#gpt">GPTs</a>
+    <a href="#libros">Libros / Books</a>
+  </nav>
 
-    <main id="app"></main>
+  <div class="container">
+    <!-- Español -->
+    <div class="lang-section" data-lang="es">
+      <section id="fundamentos">
+        <h2>Fundamentos</h2>
+        <p>La TNFR describe el universo como una red de coherencia estructural vibrante. Su gramática operativa permite intervenir en la emergencia de forma desde el flujo...</p>
+      </section>
+      <section id="gpt">
+        <h2>GPT en Español</h2>
+        <p><a href="https://chat.openai.com/g/g-K9D7ChpiS-manual-simbiotico-de-coherencia-estructural" target="_blank">Manual Simbiótico de Coherencia Estructural</a></p>
+      </section>
+      <section id="libros">
+        <h2>Libros</h2>
+        <ul>
+          <li><a href="https://linktr.ee/fracres" target="_blank">El pulso que nos atraviesa (PDF)</a></li>
+          <li><a href="https://linktr.ee/fracres" target="_blank">Teoría de la naturaleza fractal resonante (PDF)</a></li>
+        </ul>
+      </section>
+    </div>
 
-    <footer>
-      <p>© TNFR - Teoría de la Naturaleza Fractal Resonante</p>
-    </footer>
+    <!-- English -->
+    <div class="lang-section" data-lang="en">
+      <section id="fundamentos">
+        <h2>Foundations</h2>
+        <p>TNFR describes the universe as a network of vibrant structural coherence. Its operative grammar enables intervention in the emergence of form from flow...</p>
+      </section>
+      <section id="gpt">
+        <h2>GPT in English</h2>
+        <p><a href="https://chat.openai.com/g/g-jpOp5GwiT-fractal-resonant-theory" target="_blank">Fractal Resonant Theory Assistant</a></p>
+      </section>
+      <section id="libros">
+        <h2>Books</h2>
+        <ul>
+          <li><a href="https://linktr.ee/fracres" target="_blank">The Pulse That Moves Through Us (PDF)</a></li>
+          <li><a href="https://linktr.ee/fracres" target="_blank">Theory of Fractal Resonant Nature (PDF)</a></li>
+        </ul>
+      </section>
+    </div>
+  </div>
 
+  <footer>
+    <p>&copy; TNFR - Fractal Resonant Nature</p>
+  </footer>
 
-  </body>
+  <script>
+    const selector = document.getElementById('language-selector');
+    const sections = document.querySelectorAll('.lang-section');
+
+    function setLanguage(lang) {
+      sections.forEach(sec => {
+        sec.classList.remove('active');
+        if (sec.dataset.lang === lang) {
+          sec.classList.add('active');
+        }
+      });
+    }
+
+    selector.addEventListener('change', () => setLanguage(selector.value));
+    setLanguage(selector.value);
+  </script>
+</body>
 </html>
