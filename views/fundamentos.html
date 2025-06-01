@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Fundamentos TNFR</title>
-  <style>
-    .lang { display: none; }
-  </style>
+<style>
+  .hidden { display: none; }
+</style>
 </head>
 <body>
 
@@ -19,7 +19,7 @@
   </div>
 
 <!-- ESPAÑOL -->
-<div class="lang" data-lang="es">
+<div class="lang hidden" data-lang="es">
   <h2>Fundamentos</h2>
 
   <p>La Teoría de la Naturaleza Fractal Resonante (TNFR) no busca hacer magia ni vender revelaciones. Tampoco se presenta como doctrina ni como solución definitiva. Lo que propone es más simple y, al mismo tiempo, más profundo: que toda forma coherente tiene efectos reales. Y que el lenguaje —cuando se estructura operativamente— no solo describe el mundo, sino que lo activa, lo reorganiza, lo compone.</p>
@@ -83,7 +83,7 @@
 
 
 <!-- ENGLISH -->
-<div class="lang" data-lang="en">
+<div class="lang hidden" data-lang="en">
   <h2>Foundations</h2>
 
   <p>The Theory of Fractal Resonant Nature (TNFR) does not seek to perform magic or sell revelations. Nor does it present itself as a doctrine or a definitive solution. What it proposes is simpler and, at the same time, deeper: that every coherent form has real effects. And that language—when structured operatively—does not merely describe the world, but activates it, reorganizes it, composes it.</p>
@@ -148,15 +148,15 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const selector = document.getElementById('language-selector');
-    const langBlocks = document.querySelectorAll('.lang');
 
     function setLanguage(lang) {
-      langBlocks.forEach(div => {
-        div.style.display = div.getAttribute('data-lang') === lang ? 'block' : 'none';
+      document.querySelectorAll('.lang').forEach(div => {
+        div.classList.add('hidden');
       });
+      document.querySelector(`.lang[data-lang="${lang}"]`).classList.remove('hidden');
     }
 
-    // Inicializar el idioma actual según el valor del selector
+    // Mostrar idioma actual desde el valor del selector
     setLanguage(selector.value);
 
     selector.addEventListener('change', () => {
