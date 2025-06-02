@@ -1,38 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Teoría de la Naturaleza Fractal Resonante</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TNFR | Fundamentos</title>
   <style>
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0d0d0d;
+      background-color: #121212;
       color: #f0f0f0;
-      line-height: 1.6;
+      font-family: Arial, sans-serif;
+      padding: 2em;
     }
-    header, footer {
-      background-color: #111;
-      padding: 1em;
-      text-align: center;
+    h2 {
+      color: #ffffff;
     }
-    nav {
-      text-align: center;
-      margin-bottom: 2em;
-    }
-    nav a {
-      margin: 0 1em;
-      color: #88c0d0;
-      text-decoration: none;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 1em;
-    }
-    h1, h2 {
-      color: #81a1c1;
+    a {
+      color: #64b5f6;
     }
     .lang-section {
       display: none;
@@ -40,23 +23,58 @@
     .lang-section.active {
       display: block;
     }
-    select {
-      background: #111;
-      color: #f0f0f0;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+    }
+    th, td {
       border: 1px solid #444;
-      padding: 0.3em;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #1e1e1e;
+    }
+    .book-links li {
       margin-bottom: 1em;
+    }
+    .nav-es {
+      background-color: #1f1f1f;
+      padding: 1em;
+      margin-bottom: 2em;
+      border-radius: 8px;
+    }
+    .nav-es a {
+      margin-right: 1em;
+      color: #81d4fa;
+      text-decoration: none;
+    }
+    .nav-es a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Teoría de la Naturaleza Fractal Resonante (TNFR)</h1>
+
+  <div style="margin-bottom: 1em;">
+    <label for="language-selector">Idioma / Language:</label>
     <select id="language-selector">
       <option value="es">Español</option>
       <option value="en">English</option>
     </select>
-  </header>
+  </div>
+
+  <div class="container">
+    <!-- Español -->
+    <div class="lang-section" data-lang="es">
+
+      <nav class="nav-es">
+        <a href="#fundamentos">Fundamentos</a>
+        <a href="#gpt">GPT</a>
+        <a href="#libros">Libros</a>
+        <a href="#wiki">Wiki</a>
+      </nav>
 
   <div class="container">
     <!-- Español -->
