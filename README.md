@@ -8,7 +8,7 @@ https://www.reddit.com/r/ThePulseThatWeAre/wiki/index/
 
 Este repositorio reúne los fundamentos teóricos, formales y computacionales de la **TNFR**: un marco ontológico que describe la realidad como una red coherente de Nodos Fractales Resonantes (NFRs) estructurados por patrones vibracionales autosimilares.
 
-TNFR propone una transición epistemológica desde modelos basados en elementos y causalidad lineal, hacia una **dinámica de coherencia estructural emergente**.
+La TNFR propone una transición epistemológica, desde modelos basados en elementos y causalidad lineal hacia una **dinámica de coherencia estructural emergente**.
 
 ---
 
