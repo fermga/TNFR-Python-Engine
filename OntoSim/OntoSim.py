@@ -1,6 +1,6 @@
 """
 
-OntoSim – Symbolic Coherence Engine (TNFR)
+OntoSim – Symbolic Coherence Engine (TNFR) - v. 0.1
 ------------------------------------------
 
 OntoSim is a symbolic operational simulator based on the TNFR.
@@ -23,6 +23,8 @@ Next Steps:
 - Structural alignment diagnostics
 
 Let structure speak. 
+
+09/06/2025 -  v. 0.1 launched
 
 """
 
