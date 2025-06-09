@@ -1,4 +1,4 @@
-#Teoría de la Naturaleza Fractal Resonante (TNFR)
+# Teoría de la Naturaleza Fractal Resonante (TNFR)
 
 Este repositorio reúne los fundamentos teóricos, formales y computacionales de la **TNFR**: un marco ontológico que describe la realidad como una red coherente de Nodos Fractales Resonantes (NFRs) estructurados por patrones vibracionales autosimilares.
 
@@ -6,7 +6,7 @@ La TNFR propone una transición epistemológica, desde modelos basados en elemen
 
 ---
 
-# OntoSim – Symbolic Coherence Engine (TNFR)
+## OntoSim – Symbolic Coherence Engine (TNFR)
 
 OntoSim is a symbolic operational simulator based on the TNFR (Theory of Non-Formal Resonance), created by F. F. Martinez Gamo.
 
