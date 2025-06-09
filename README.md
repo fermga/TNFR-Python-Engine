@@ -21,11 +21,6 @@ It translates gliphal grammar into resonant structure and simulates the emergenc
 
 ## 🖼 Visual Output (see `/ontosim/visuals/`)
 
-- Nodal emission patterns
-- Structural coherence indices
-- Symbolic phase gradients
-- Network topologies
-
 ---
 
 ## 📘 Documentación principal
