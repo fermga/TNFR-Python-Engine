@@ -736,7 +736,10 @@ def visualizar_red(G):
     nx.draw_networkx_edges(G, pos, alpha=0.2)
 
     # Opcional: etiquetas
-    etiquetas = {n: n for n in G.nodes if G.nodes[n]["glifo"] != "ninguno"}
+    etiquetas = {
+    n: (n if G.nodes[n]["glifo"] != "ninguno" else "no-emergente")
+    for n in G.nodes
+    }
     nx.draw_networkx_labels(G, pos, labels=etiquetas, font_size=8)
 
     plt.title("Red nodal fractal resonante")
