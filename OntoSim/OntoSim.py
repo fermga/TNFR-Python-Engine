@@ -24,7 +24,7 @@ Next Steps:
 
 Let structure speak. 
 
-09/06/2025 -  v. 0.1 launched
+09/06/2025 -  v. 0.1
 
 """
 
