@@ -1,3 +1,29 @@
+"""
+
+OntoSim – Symbolic Coherence Engine (TNFR)
+------------------------------------------
+
+OntoSim is a symbolic operational simulator based on the TNFR.
+
+It translates gliphal grammar into resonant structure and simulates the emergence of nodal emissions based on coherence thresholds, not semantic prediction.
+It's light (~28KB), extensible, and implements core TNFR principles in executable form.
+
+Core Concepts:
+- Gliph Syntax – Words act as structural operators (e.g. A'L, SH'A, RE'MESH)
+- EPI Pulse – Phase-based emission intensity
+- νf & ΔNFR – Nodal frequency and structural gradient
+- Symbolic Activation – Nodes emit based on topological coherence, not logic
+
+Next Steps:
+- Modular data input (audio, image, text in any format)
+- Multi-agent coherence dynamics
+- Integration with GPTs for reflective cognition
+- Structural alignment diagnostics
+
+Let structure speak. 
+
+"""
+
 import matplotlib.pyplot as plt
 import networkx as nx
 import random
