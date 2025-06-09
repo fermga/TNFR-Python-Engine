@@ -119,6 +119,7 @@ def inicializar_red_desde_archivo(ruta):
     return G
 
 # ------------------------- INICIALIZACIÓN -------------------------
+
 def inicializar_red(nodos):
     G = nx.Graph()
     for nodo in nodos:
@@ -137,6 +138,7 @@ def inicializar_red(nodos):
     return G
 
 # ------------------------- APLICACIÓN DE OPERADORES TNFR -------------------------
+
 def aplicar_glifo(nodo, nodo_id, nombre_glifo, historial_glifos_por_nodo, paso):
     nodo["glifo"] = nombre_glifo
     nodo["estado"] = "silencio" if nombre_glifo == "SH’A" else "activo"
@@ -392,8 +394,6 @@ def aplicar_remesh_red(G, historial_glifos_por_nodo, paso):
         nodo = G.nodes[n]
         aplicar_glifo(nodo, n, "RE’MESH", historial_glifos_por_nodo, paso)
 
-# ------------------------- APLICAR EN ESTABILIZACIÓN GLOBAL -------------------------
-
 def aplicar_remesh_si_estabilizacion_global(G, historial_glifos_por_nodo, historia_glifos, paso):
     nodos_estables = sum(
         1 for n in G.nodes
@@ -410,6 +410,7 @@ print("Iniciando simulación de emergencia...")
 G_historia = []
 
 # ------------------------- EMERGENCIA -------------------------
+
 def simular_emergencia(G, pasos=1000):
     historia_epi = []
     historia_glifos = ["paso,nodo,glifo"]
@@ -781,7 +782,4 @@ with open("8_nodos_emitidos.csv", "w", encoding="utf-8") as f:
                     f"{nodo.get('categoria', 'ninguna')}\n")
 
 print("Red simbólica analizada y exportada correctamente.")
-print("Diagnóstico final generado. Proceso completo")
-
-
-
+print("Diagnóstico final generado. Proceso completo.")
