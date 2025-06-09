@@ -5,6 +5,8 @@ OntoSim – Symbolic Coherence Engine (TNFR)
 
 OntoSim is a symbolic operational simulator based on the TNFR.
 
+https://linktr.ee/fracres
+
 It translates gliphal grammar into resonant structure and simulates the emergence of nodal emissions based on coherence thresholds, not semantic prediction.
 It's light (~28KB), extensible, and implements core TNFR principles in executable form.
 
