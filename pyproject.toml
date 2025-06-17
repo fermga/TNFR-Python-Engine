@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tnfr"
+version = "1.0"
+description = "TNFR"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+
+authors = [
+    {name = "F.F. Martinez Gamo", email = "fmartinezgamo@gmail.com"}
+]
+
+keywords = ["tnfr", "fractal", "resonance", "symbolic", "emergence", "coherence"]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering"
+]
+
+dependencies = [
+    "networkx>=2.8",
+    "numpy>=1.21.0",
+    "pandas>=1.3.0",
+    "matplotlib>=3.5.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+    "black",
+    "flake8",
+    "mypy"
+]
+docs = [
+    "sphinx>=4.0",
+    "sphinx-rtd-theme"
+]
+
+[project.urls]
+Homepage = "https://fermga.github.io/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/"
+Repository = "https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-"
+
+[project.scripts]
+tnfr-simulate = "tnfr.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+tnfr = ["*.json", "*.yaml"]

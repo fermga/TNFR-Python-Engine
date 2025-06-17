@@ -1,0 +1,759 @@
+## Core Module: `tnfr.core.ontosim`
+
+### Main Initialization Functions
+
+#### `inicializar_nfr_emergente(forma_base, campo_coherencia=None)`
+
+```python
+def inicializar_nfr_emergente(forma_base, campo_coherencia=None):
+    """Initializes NFR following canonical TNFR nodal emergence conditions.
+    
+    Replaces ad-hoc heuristics with canonical structural evaluation.
+    Creates a resonant fractal node (NFR) from a base form,
+    evaluating its structural coherence, resonant frequency and
+    internal coherence matrix.
+    
+    Args:
+        forma_base (str): Text string that defines the node's base structure.
+            Can be a word, verse, or any character sequence
+            representing the node's structural identity.
+        campo_coherencia (dict, optional): Dictionary with current state
+            of the network's coherence field. Contains information from other
+            existing nodes to evaluate compatibility. Default None.
+    
+    Returns:
+        dict or None: Dictionary with initialized NFR parameters:
+            - EPI (float): Evaluated structural coherence [0.5, 2.5]
+            - νf (float): Resonant frequency [0.1, 3.0]  
+            - Wi_t (numpy.ndarray): Internal coherence matrix
+            - Si (float): Sense index based on EPI and νf
+            - θ (float): Structural threshold [0.0, 1.0]
+            - ΔNFR (float): Nodal gradient [-0.1, 0.4]
+            - fase (float): Synchronization phase with field [0.0, 1.0]
+            - estado (str): Initial state "active"
+            - glifo (str): Initial glyph "none"
+            - categoria (str): Initial category "none"
+        Returns None if emergence conditions are not met.
+    
+    Raises:
+        ValueError: If forma_base is empty or None.
+        TypeError: If forma_base is not a text string.
+    
+    Examples:
+        >>> nfr = inicializar_nfr_emergente("word")
+        >>> print(nfr['EPI'])
+        1.36
+        
+        >>> campo = {'node1': {'EPI': 1.2, 'νf': 1.1}}
+        >>> nfr = inicializar_nfr_emergente("verse", campo)
+        >>> print(nfr['fase'])
+        0.25
+    """
+```
+
+#### `crear_red_desde_datos(datos: List[dict]) -> nx.Graph`
+
+```python
+def crear_red_desde_datos(datos: List[dict]) -> nx.Graph:
+    """Creates TNFR network from structured data.
+    
+    Main function to generate TNFR coherence networks from
+    input data. Each data element becomes an NFR node
+    with its own structurally calculated canonical parameters.
+    
+    Args:
+        datos (List[dict]): List of dictionaries, where each dictionary
+            represents a node. Must contain:
+            - id (str, optional): Unique node identifier
+            - forma_base (str): Base structural form for NFR initialization
+            May contain additional pre-processed parameters.
+    
+    Returns:
+        networkx.Graph: NetworkX graph with initialized NFR nodes.
+            Each node contains all TNFR attributes:
+            EPI, νf, Si, θ, ΔNFR, Wi_t, fase, estado, glifo, categoria.
+            Connections are established according to canonical connectivity.
+    
+    Raises:
+        TypeError: If datos is not a list.
+        ValueError: If any element doesn't contain 'forma_base'.
+    
+    Examples:
+        >>> datos = [
+        ...     {'id': 'verse_0', 'forma_base': 'In the silence'},
+        ...     {'id': 'verse_1', 'forma_base': 'the stars shine'}
+        ... ]
+        >>> red = crear_red_desde_datos(datos)
+        >>> print(len(red.nodes))
+        2
+        >>> print(red.nodes['verse_0']['EPI'])
+        1.36
+    """
+```
+
+### Structural Evaluation Functions
+
+#### `evaluar_coherencia_estructural(forma_base)`
+
+```python
+def evaluar_coherencia_estructural(forma_base):
+    """Calculates EPI based on real internal structure according to TNFR.
+    
+    Evaluates structural coherence of a base form through analysis
+    of functional symmetry, internal topological stability and resistance
+    to mutations. This function implements the TNFR paradigm core
+    to quantify inherent coherence of structures.
+    
+    Args:
+        forma_base (str): Text string to evaluate. Must have at least
+            2 characters to allow structural analysis.
+    
+    Returns:
+        float: EPI (Internal Pattern Evaluation) value normalized
+            in range [0.5, 2.5]. Higher values indicate greater
+            structural coherence:
+            - 0.5-1.0: Low coherence
+            - 1.0-1.5: Medium coherence  
+            - 1.5-2.5: High coherence
+    
+    Raises:
+        TypeError: If forma_base is not string.
+        ValueError: If forma_base is empty or has less than 2 characters.
+    
+    Examples:
+        >>> epi = evaluar_coherencia_estructural("resonance")
+        >>> print(f"EPI: {epi}")
+        EPI: 1.45
+        
+        >>> epi_high = evaluar_coherencia_estructural("symmetry")
+        >>> epi_low = evaluar_coherencia_estructural("aa")
+        >>> print(f"High: {epi_high}, Low: {epi_low}")
+        High: 1.78, Low: 0.67
+    
+    Note:
+        Evaluation considers:
+        - Functional symmetry (30%): Internal mirror patterns
+        - Structural diversity (25%): Element variety
+        - Mutational stability (25%): Resistance to changes
+        - Phonic coherence (20%): Vowel/consonant balance
+    """
+```
+
+#### `calcular_frecuencia_resonante(forma_base)`
+
+```python
+def calcular_frecuencia_resonante(forma_base):
+    """Determines νf through structural vibratory patterns.
+    
+    Calculates resonant frequency of a base form by analyzing:
+    structural alternation (consonant/vowel), energetic density
+    (occlusive vs continuous consonants), and topological fluidity
+    (smooth transitions between phonemes).
+    
+    Args:
+        forma_base (str): Structural form to analyze. Must be a
+            non-empty string. Normalized to lowercase internally.
+    
+    Returns:
+        float: Resonant frequency νf in range [0.1, 3.0]:
+            - 0.1-0.8: Low frequency (dense/occlusive structures)
+            - 0.8-1.5: Medium frequency (balanced structures)
+            - 1.5-3.0: High frequency (fluid/continuous structures)
+    
+    Examples:
+        >>> freq = calcular_frecuencia_resonante("water")
+        >>> print(f"Frequency of 'water': {freq}")
+        Frequency of 'water': 1.45
+        
+        >>> freq_low = calcular_frecuencia_resonante("tractor")
+        >>> freq_high = calcular_frecuencia_resonante("area")
+        >>> print(f"Low: {freq_low}, High: {freq_high}")
+        Low: 0.85, High: 2.15
+    
+    Note:
+        TNFR phonetic classification:
+        - Vowels: "aeiouáéíóúü" (generate alternation)
+        - Occlusives: "pbtdkgqc" (reduce frequency)
+        - Continuous: "fvszjlmnr" (increase frequency)
+        - Fluid: "wyh" (maximize frequency)
+    """
+```
+
+### Main Simulation Function
+
+#### `simular_emergencia(G, pasos=100)`
+
+```python
+def simular_emergencia(G, pasos=100):
+    """Simulates emergent evolution of a TNFR network during multiple steps.
+    
+    Central function of the TNFR paradigm that executes complete
+    structural emergence simulation. Processes nodal dynamics, glyph
+    application, canonical bifurcations, topological temporal management and
+    complex emergent pattern detection.
+    
+    Args:
+        G (networkx.Graph): Initialized TNFR network with NFR nodes.
+            Each node must have attributes: EPI, νf, Si, θ, ΔNFR, estado.
+        pasos (int, optional): Number of simulation steps to execute.
+            Default 100. Each step represents a temporal unit
+            of network evolution.
+    
+    Returns:
+        tuple: Tuple of 8 elements with complete results:
+            - historia_epi (List[List[dict]]): EPI evolution per step
+            - G_final (networkx.Graph): Final network state
+            - epi_compuestas (List[dict]): Detected composite EPIs  
+            - lecturas (dict): Syntactic interpretation of glyphs
+            - G_historia (List[networkx.Graph]): Snapshots of each step
+            - historial_glifos_por_nodo (dict): Complete glyph history
+            - historial_temporal (List[dict]): Temporal statistics
+            - bifurcation_stats (dict): Bifurcation statistics
+    
+    Raises:
+        TypeError: If G is not a NetworkX graph.
+        ValueError: If pasos is not a positive integer.
+        RuntimeError: If simulation encounters undefined states.
+    
+    Examples:
+        >>> # Create simple network
+        >>> datos = [{'id': 'n1', 'forma_base': 'word'}]
+        >>> G = crear_red_desde_datos(datos)
+        >>> 
+        >>> # Simulate evolution
+        >>> resultado = simular_emergencia(G, pasos=50)
+        >>> historia, G_final, epis, lecturas, snapshots, glifos, temporal, bif_stats = resultado
+        >>> 
+        >>> print(f"Steps simulated: {len(historia)}")
+        >>> print(f"Final nodes: {len(G_final.nodes)}")
+        >>> print(f"Composite EPIs: {len(epis)}")
+        
+    Note:
+        Simulation includes:
+        - Basal dynamics with νf and Si modulation
+        - Automatic glyph application according to thresholds
+        - Multiple structural bifurcations  
+        - Variable topological temporal management
+        - Macronode and composite EPI detection
+        - Resonant expansion/contraction control
+    """
+```
+
+## Matrix Module: `tnfr.matrix.operators`
+
+### Main Glyph Application Function
+
+#### `aplicar_glifo(G, nodo, nodo_id, nombre_glifo, historial_glifos_por_nodo, paso)`
+
+```python
+def aplicar_glifo(G, nodo, nodo_id, nombre_glifo, historial_glifos_por_nodo, paso):
+    """Applies specific structural transformations according to TNFR glyph.
+    
+    Central function for applying glyphs (transformation symbols) to specific
+    network nodes. Each glyph represents a canonical transformation
+    that modifies the node's structural parameters according to TNFR paradigm.
+    
+    Args:
+        G (networkx.Graph): Complete TNFR network graph.
+        nodo (dict): Dictionary with node attributes to transform.
+            Must contain: EPI, Si, νf, θ, ΔNFR, estado.
+        nodo_id (str): Unique identifier of the node in the graph.
+        nombre_glifo (str): Glyph to apply. Valid values:
+            'AL', 'EN', 'IL', 'OZ', 'UM', 'RA', 'SHA', 'VAL', 'NUL',
+            'THOL', 'ZHIR', 'NAV', 'REMESH'.
+        historial_glifos_por_nodo (dict): Glyph history per node.
+            Format: {nodo_id: [(step, glyph), ...]}.
+        paso (int): Current simulation step number.
+    
+    Returns:
+        None: Function modifies the node in-place.
+    
+    Raises:
+        KeyError: If node doesn't contain required attributes.
+        ValueError: If nombre_glifo is not a valid glyph.
+        TypeError: If parameters don't have correct types.
+    
+    Examples:
+        >>> G = nx.Graph()
+        >>> G.add_node('test', EPI=1.0, Si=0.5, νf=1.0, θ=0.3, ΔNFR=0.0, estado='activo')
+        >>> historial = {}
+        >>> aplicar_glifo(G, G.nodes['test'], 'test', 'AL', historial, 1)
+        >>> print(G.nodes['test']['EPI'])  # Increased by AL
+        1.2
+        >>> print(historial['test'])
+        [(1, 'AL')]
+    
+    Note:
+        Transformations per glyph:
+        - AL (Emission): +EPI, +Si, *νf↑
+        - EN (Reception): +Si, *νf↓, -θ  
+        - IL (Coherence): +Si, *EPI↑
+        - OZ (Dissonance): *EPI↓, *ΔNFR↑
+        - UM (Coupling): Synchronizes νf with neighbors
+        - RA (Resonance): +Si, *EPI↑, *νf↑
+        - SHA (Silence): State→silence, *νf↓↓
+        - VAL (Expansion): *EPI↑, *Si↑ (can create nodes)
+        - NUL (Contraction): *EPI↓, *Si↓
+        - THOL (Self-organization): *νf↑, +θ
+        - ZHIR (Mutation): +EPI, *νf↑, +θ
+        - NAV (Birth): Reactivates silent nodes
+        - REMESH (Recursivity): Averages previous values
+    """
+```
+
+### Pattern Analysis Functions
+
+#### `evaluar_patron_glifico(glifos)`
+
+```python
+def evaluar_patron_glifico(glifos):
+    """Analyzes patterns in glyph sequences for nodal classification.
+    
+    Evaluates glyph sequences applied to a node to identify
+    emergent patterns, cycles, and characteristic behaviors
+    according to TNFR semantics.
+    
+    Args:
+        glifos (List[str]): Ordered list of applied glyphs.
+            Each element must be a valid TNFR glyph.
+    
+    Returns:
+        dict: Complete pattern analysis:
+            - ciclos_REMESH (int): Number of REMESH applications
+            - uso_THOL (int): Number of self-organizations
+            - uso_ZHIR (int): Number of mutations
+            - latencia_prolongada (bool): SHA→SHA sequences detected
+            - inicio_creativo (bool): Starts with AL (emission)
+            - coherencia_expansiva (bool): Contains IL+VAL
+            - disonancia_sostenida (bool): OZ→OZ sequences detected
+            - patron_glifico (str): Textual pattern representation
+            - tipo_nodal (str): Classification: 'creator', 'mutant', 
+                'collapsing', 'expansive', 'latent'
+    
+    Examples:
+        >>> patron = evaluar_patron_glifico(['AL', 'IL', 'VAL', 'RA'])
+        >>> print(patron['tipo_nodal'])
+        'expansive'
+        >>> print(patron['coherencia_expansiva'])
+        True
+        
+        >>> patron_mut = evaluar_patron_glifico(['ZHIR', 'THOL', 'RA'])
+        >>> print(patron_mut['tipo_nodal'])
+        'mutant'
+    """
+```
+
+#### `interpretar_sintaxis_glifica(historial)`
+
+```python
+def interpretar_sintaxis_glifica(historial):
+    """Interprets complete syntax of glyphic evolution per node.
+    
+    Analyzes complete glyph history of all nodes to
+    extract syntactic patterns, characteristic transitions and
+    emergent behavior classifications.
+    
+    Args:
+        historial (dict): Glyph history per node.
+            Format: {nodo_id: [(step, glyph), ...]}.
+    
+    Returns:
+        dict: Syntactic interpretation per node:
+            {nodo_id: {
+                'trayectoria': List[str] - Glyph sequence
+                'transiciones': List[tuple] - Transition pairs
+                'mutaciones': int - Number of ZHIR
+                'colapsos': int - Number of SHA
+                'ciclos_val_nul': int - VAL→NUL→VAL cycles
+                'diversidad_glifica': int - Unique glyphs used
+                'tipo_nodal': str - Final classification
+            }}
+    
+    Examples:
+        >>> historial = {
+        ...     'node1': [(1, 'VAL'), (2, 'NUL'), (3, 'VAL'), (4, 'NUL')]
+        ... }
+        >>> sintaxis = interpretar_sintaxis_glifica(historial)
+        >>> print(sintaxis['node1']['tipo_nodal'])
+        'pulsating'
+        >>> print(sintaxis['node1']['ciclos_val_nul'])
+        1
+    """
+```
+
+## Resonance Module: `tnfr.resonance.dynamics`
+
+### Main Temporal Coordination Class
+
+#### `TemporalCoordinatorTNFR`
+
+```python
+class TemporalCoordinatorTNFR:
+    """Canonical temporal coordinator that manages variable topological time.
+    
+    Manages variable topological time according to structural frequencies
+    νf of each NFR and entrainment (synchronization) principles. Allows
+    different nodes to evolve at different rates according to their
+    structural coherence.
+    
+    Attributes:
+        sincronizacion_global (bool): Enables global synchronization.
+        frecuencia_pulsos (int): Reorganization pulse frequency.
+        tiempo_topologico (float): Current global topological time.
+        cronometros_nodales (dict): Local time of each node.
+        fases_sincronizacion (dict): Temporal phase of each node.
+        ultimas_activaciones (dict): Last activation of each node.
+        historial_entrainment (list): Synchronization history.
+        historial_coherencia_temporal (list): Temporal coherence evolution.
+    
+    Examples:
+        >>> coord = TemporalCoordinatorTNFR()
+        >>> print(coord.sincronizacion_global)
+        True
+        >>> print(coord.frecuencia_pulsos)
+        75
+    """
+    
+    def calcular_paso_temporal_nodal(self, nodo, paso_global):
+        """Calculates specific temporal step for a node.
+        
+        Determines how much topological time a specific node should advance
+        based on its resonant frequency νf, coherence Si, current state
+        and proximity to bifurcation thresholds.
+        
+        Args:
+            nodo (dict): Node data with TNFR attributes.
+            paso_global (int): Current global simulation step.
+        
+        Returns:
+            float: Nodal temporal step in range [0.1, 5.0].
+                Lower values indicate faster evolution.
+        
+        Examples:
+            >>> nodo = {'νf': 1.5, 'Si': 0.8, 'θ': 0.2, 'estado': 'activo'}
+            >>> paso = coord.calcular_paso_temporal_nodal(nodo, 10)
+            >>> print(f"Temporal step: {paso}")
+            Temporal step: 0.42
+        """
+```
+
+### Bifurcation Management Class
+
+#### `BifurcationManagerTNFR`
+
+```python
+class BifurcationManagerTNFR:
+    """Canonical manager of multiple structural bifurcations according to TNFR.
+    
+    Manages detection, exploration and convergence of structural
+    bifurcations in the network. Allows simultaneous exploration of multiple
+    bifurcation trajectories for each node, with automatic convergence
+    towards stable configurations.
+    
+    Attributes:
+        bifurcaciones_activas (dict): Active bifurcation spaces.
+        trayectorias_exploradas (list): Explored trajectory history.
+        convergencias_detectadas (list): Successful convergences.
+        estadisticas_bifurcacion (dict): Bifurcation metrics.
+    
+    Examples:
+        >>> manager = BifurcationManagerTNFR()
+        >>> print(manager.estadisticas_bifurcacion['total_bifurcaciones'])
+        0
+    """
+    
+    def detectar_bifurcacion_canonica(self, nodo, nodo_id, umbral_aceleracion=0.15):
+        """Detects if a node is in canonical TNFR bifurcation conditions.
+        
+        Evaluates multiple structural metrics to determine if a node
+        has reached bifurcation conditions according to TNFR paradigm.
+        
+        Args:
+            nodo (dict): Node data to evaluate.
+            nodo_id (str): Node identifier.
+            umbral_aceleracion (float, optional): Structural acceleration
+                threshold for bifurcation. Default 0.15.
+        
+        Returns:
+            tuple: (es_bifurcacion, tipo_bifurcacion)
+                - es_bifurcacion (bool): True if bifurcation detected
+                - tipo_bifurcacion (str): 'symmetric', 'dissonant', 
+                    'fractal_expansive', or 'detection_error'
+        
+        Examples:
+            >>> nodo = {'d2EPI_dt2': 0.2, 'ΔNFR': 0.9, 'Si': 0.6, 'EPI': 1.5}
+            >>> es_bif, tipo = manager.detectar_bifurcacion_canonica(nodo, 'test')
+            >>> print(f"Bifurcation: {es_bif}, Type: {tipo}")
+            Bifurcation: True, Type: symmetric
+        """
+```
+
+### Threshold Calculation Functions
+
+#### `calcular_umbrales_dinamicos(C_t, densidad_nodal, fase_simulacion="emergencia")`
+
+```python
+def calcular_umbrales_dinamicos(C_t, densidad_nodal, fase_simulacion="emergencia"):
+    """Calculates adaptive dynamic thresholds for TNFR simulation.
+    
+    Determines connection, mutation and bifurcation thresholds that adapt
+    automatically according to current network state (total coherence,
+    connection density and simulation phase).
+    
+    Args:
+        C_t (float): Current total network coherence.
+            Average EPI of all nodes.
+        densidad_nodal (float): Average connection density per node.
+        fase_simulacion (str, optional): Current simulation phase.
+            Options: 'emergencia', 'estabilizacion', 'bifurcacion'.
+            Default 'emergencia'.
+    
+    Returns:
+        dict: Calculated dynamic thresholds:
+            - θ_conexion (float): Threshold for creating/eliminating connections
+            - EPI_conexion (float): Coherence threshold for connections
+            - νf_conexion (float): Frequency threshold for connections
+            - Si_conexion (float): Sense threshold for connections
+            - θ_mutacion (float): Threshold for activating ZHIR
+            - θ_colapso (float): Threshold for activating SHA
+            - θ_autoorganizacion (float): Threshold for activating THOL
+            - EPI_max_dinamico (float): Adaptive upper limit
+            - EPI_min_coherencia (float): Lower limit for coherence
+            - bifurcacion_aceleracion (float): Bifurcation threshold
+            - bifurcacion_gradiente (float): Gradient threshold
+            - sensibilidad_calculada (float): Final sensitivity factor
+            - factor_densidad (float): Applied density factor
+            - fase (str): Used simulation phase
+    
+    Examples:
+        >>> umbrales = calcular_umbrales_dinamicos(1.2, 3.5, 'estabilizacion')
+        >>> print(f"Connection threshold: {umbrales['θ_conexion']}")
+        >>> print(f"Maximum EPI: {umbrales['EPI_max_dinamico']}")
+        Connection threshold: 0.096
+        Maximum EPI: 3.36
+    """
+```
+
+## Utils Module: `tnfr.utils.helpers`
+
+### Emergence Detection Functions
+
+#### `emergencia_nodal(nodo, media_vf, std_dNFR)`
+
+```python
+def emergencia_nodal(nodo, media_vf, std_dNFR):
+    """Evaluates if a node meets nodal emergence conditions.
+    
+    Determines if a node is in emergence conditions based on
+    its relative resonant frequency and gradient stability
+    compared to network averages.
+    
+    Args:
+        nodo (dict): Node data with νf and ΔNFR attributes.
+        media_vf (float): Average resonant frequency of the network.
+        std_dNFR (float): Standard deviation of ΔNFR in the network.
+    
+    Returns:
+        bool: True if node meets emergence conditions.
+    
+    Examples:
+        >>> nodo = {'νf': 1.8, 'ΔNFR': 0.02}
+        >>> emergente = emergencia_nodal(nodo, 1.5, 0.1)
+        >>> print(emergente)
+        True
+    """
+```
+
+#### `detectar_nodos_pulsantes(historial_glifos_por_nodo, min_ciclos=3)`
+
+```python
+def detectar_nodos_pulsantes(historial_glifos_por_nodo, min_ciclos=3):
+    """Detects nodes with pulsating VAL→NUL behavior.
+    
+    Identifies nodes that exhibit cyclical expansion-contraction
+    patterns through repeated sequences of VAL glyphs followed by NUL.
+    
+    Args:
+        historial_glifos_por_nodo (dict): Glyph history per node.
+            Format: {nodo_id: [(step, glyph), ...]}.
+        min_ciclos (int, optional): Minimum number of VAL→NUL cycles
+            to consider a node as pulsating. Default 3.
+    
+    Returns:
+        list: List of detected pulsating node IDs.
+    
+    Examples:
+        >>> historial = {
+        ...     'node1': [(1, 'VAL'), (2, 'NUL'), (3, 'VAL'), (4, 'NUL'), (5, 'VAL'), (6, 'NUL')]
+        ... }
+        >>> pulsantes = detectar_nodos_pulsantes(historial)
+        >>> print(pulsantes)
+        ['node1']
+    """
+```
+
+### Structural Analysis Functions
+
+#### `evaluar_si_nodal(nodo, paso=None)`
+
+```python
+def evaluar_si_nodal(nodo, paso=None):
+    """Calculates a node's sense index (Si) according to TNFR parameters.
+    
+    Evaluates local structural coherence of a node by combining
+    its resonant frequency, nodal gradient, structural threshold
+    and symbolic weight of current glyph.
+    
+    Args:
+        nodo (dict): Node data with νf, ΔNFR, θ, glifo attributes.
+        paso (int, optional): Current step for history recording.
+            If provided, records value in node's historial_Si.
+    
+    Returns:
+        float: Calculated Si sense index, rounded to 3 decimals.
+    
+    Examples:
+        >>> nodo = {'νf': 1.2, 'ΔNFR': 0.1, 'θ': 0.5, 'glifo': 'RA'}
+        >>> si = evaluar_si_nodal(nodo)
+        >>> print(f"Sense index: {si}")
+        Sense index: 0.818
+    
+    Note:
+        Formula: Si = (νf / (1 + |ΔNFR|)) * k_glifo * θ
+        Where k_glifo is the symbolic weight of current glyph:
+        - ZHIR: 1.7 (maximum weight)
+        - THOL: 1.6
+        - RA: 1.5  
+        - VAL: 1.4
+        - IL/REMESH: 1.3
+        - UM: 1.2
+        - EN: 1.1
+        - AL/NAV: 1.0
+        - NUL: 0.8
+        - OZ: 0.6
+        - SHA: 0.4 (minimum weight)
+    """
+```
+
+### Export Functions
+
+#### `obtener_nodos_emitidos(G)`
+
+```python
+def obtener_nodos_emitidos(G):
+    """Extracts emitted nodes from network according to coherence criteria.
+    
+    Identifies nodes that have been "emitted" by the network, i.e.,
+    nodes that have reached significant structural coherence
+    states and have active glyphs.
+    
+    Args:
+        G (networkx.Graph): TNFR network with processed nodes.
+    
+    Returns:
+        tuple: (emitidos_final, resultado_detallado)
+            - emitidos_final (list): IDs of emitted nodes
+            - resultado_detallado (list): List of dictionaries with
+                complete information of each emitted node
+    
+    Examples:
+        >>> G = crear_red_desde_datos([{'id': 'test', 'forma_base': 'word'}])
+        >>> # Simulate some steps...
+        >>> emitidos, detalles = obtener_nodos_emitidos(G)
+        >>> print(f"Emitted nodes: {emitidos}")
+        >>> print(f"First node detail: {detalles[0]}")
+    """
+```
+
+#### `exportar_nodos_emitidos(G, emitidos_final=None, archivo='nodos_emitidos.json')`
+
+```python
+def exportar_nodos_emitidos(G, emitidos_final=None, archivo='nodos_emitidos.json'):
+    """Exports emitted nodes to JSON format.
+    
+    Saves network's emitted nodes to a JSON file with
+    complete information of each node for later analysis.
+    
+    Args:
+        G (networkx.Graph): TNFR network with processed nodes.
+        emitidos_final (list, optional): Specific list of nodes
+            to export. If None, automatically gets emitted ones.
+        archivo (str, optional): Output file name.
+            Default 'nodos_emitidos.json'.
+    
+    Returns:
+        dict: Export result:
+            - exitosa (bool): True if export was successful
+            - archivo (str): Generated file name
+            - nodos_exportados (int): Number of exported nodes
+            - razon (str): Failure reason if exitosa=False
+    
+    Examples:
+        >>> resultado = exportar_nodos_emitidos(G, archivo='my_result.json')
+        >>> print(f"Successful export: {resultado['exitosa']}")
+        >>> print(f"Exported nodes: {resultado['nodos_exportados']}")
+    """
+```
+
+## Complete Usage Example
+
+```python
+import tnfr.core.ontosim as ontosim
+
+# 1. Create input data
+poem_data = [
+    {'id': 'verse_0', 'forma_base': 'In the silence of the night'},
+    {'id': 'verse_1', 'forma_base': 'the stars shine'},
+    {'id': 'verse_2', 'forma_base': 'like distant dreams'},
+    {'id': 'verse_3', 'forma_base': 'that are never forgotten'}
+]
+
+# 2. Create TNFR network
+network = ontosim.crear_red_desde_datos(poem_data)
+
+# 3. Simulate evolution
+result = ontosim.simular_emergencia(network, pasos=100)
+historia, G_final, epis, lecturas, snapshots, glifos, temporal, bif_stats = result
+
+# 4. Analyze results
+print(f"Initial network: {len(network.nodes)} nodes")
+print(f"Final network: {len(G_final.nodes)} nodes")
+print(f"Detected composite EPIs: {len(epis)}")
+print(f"Total bifurcations: {bif_stats['total_bifurcaciones']}")
+
+# 5. Export emitted nodes
+from tnfr.utils.helpers import obtener_nodos_emitidos, exportar_nodos_emitidos
+emitidos, detalles = obtener_nodos_emitidos(G_final)
+resultado_export = exportar_nodos_emitidos(G_final, archivo='poem_evolution.json')
+```
+
+## TNFR Fundamental Concepts
+
+### Structural Parameters
+
+- **EPI (Internal Pattern Evaluation)**: Intrinsic structural coherence [0.5-2.5]
+- **νf (Resonant Frequency)**: Structural vibratory frequency [0.1-3.0]  
+- **Si (Sense Index)**: Local contextual coherence [0.0-1.0]
+- **θ (Structural Threshold)**: Activation/bifurcation threshold [0.0-1.0]
+- **ΔNFR (Nodal Gradient)**: Structural change velocity [-0.5-1.5]
+- **Wi_t (Coherence Matrix)**: Internal coupling matrix
+
+### TNFR Glyphs
+
+Glyphs are transformation symbols that modify structural parameters:
+
+- **AL (Emission)**: Increases EPI and Si, increments νf
+- **EN (Reception)**: Increases Si, reduces νf and θ
+- **IL (Coherence)**: Stabilizes Si and EPI
+- **OZ (Dissonance)**: Reduces EPI, increases ΔNFR
+- **UM (Coupling)**: Synchronizes with neighbor nodes
+- **RA (Resonance)**: Amplifies Si and EPI
+- **SHA (Silence)**: Drastically reduces νf and Si
+- **VAL (Expansion)**: Can create new nodes
+- **NUL (Contraction)**: Reduces general parameters
+- **THOL (Self-organization)**: Reorganizes structure
+- **ZHIR (Mutation)**: Deep structural change
+- **NAV (Birth)**: Reactivates silent nodes
+- **REMESH (Recursivity)**: Averages previous states
+
+This complete documentation provides a solid foundation for understanding and using the TNFR package in research, simulation and analysis of complex emergent systems.
