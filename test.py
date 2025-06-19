@@ -29,7 +29,7 @@ for i in range(1, 21):
         ΔNFR=random.uniform(0.05, 0.2),
         Si=random.uniform(0.4, 0.6),
         θ=random.uniform(0.1, 0.9),
-        glifo="A’L",
+        glifo="AL",
         estado="activo"
     )
 
