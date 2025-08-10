@@ -11,6 +11,7 @@ from tnfr.resonance.dynamics import BifurcationManagerTNFR
 from tnfr.resonance.dynamics import integrar_bifurcaciones_canonicas_en_simulacion
 from tnfr.resonance.dynamics import integrar_tiempo_topologico_en_simulacion
 from tnfr.resonance.dynamics import evaluar_activacion_glifica_dinamica
+from tnfr.resonance.dynamics import limpiar_bifurcaciones_obsoletas
 from tnfr.matrix.operators import acoplar_nodos
 from tnfr.matrix.operators import aplicar_remesh_si_estabilizacion_global
 from tnfr.matrix.operators import detectar_EPIs_compuestas
@@ -74,7 +75,6 @@ def inicializar_nfr_emergente(forma_base, campo_coherencia=None):
     return nfr
 
 def crear_red_desde_datos(datos: List[dict]) -> nx.Graph:
-    """Crea red TNFR desde datos estructurados - NUEVA FUNCIÓN"""
     G = nx.Graph()
     campo_coherencia = {}
     
@@ -565,8 +565,8 @@ def simular_emergencia(G, pasos=100):
         else:
             glifo = "THOL"
 
-    if nodo_id in G:
-        promover_emergente(nodo_id, G, paso, historial_glifos_por_nodo, historia_glifos)
+        if nodo_id in G:
+            promover_emergente(nodo_id, G, paso, historial_glifos_por_nodo, historia_glifos)
 
     bifurcation_stats = bifurcation_manager.obtener_estadisticas_bifurcacion()
     return historia_epi, G, epi_compuestas, lecturas, G_historia, historial_glifos_por_nodo, historial_temporal, bifurcation_stats
