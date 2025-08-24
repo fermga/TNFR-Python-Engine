@@ -1,250 +1,198 @@
 """
 helpers.py — TNFR canónica
 
-Mejora 1: incorpora el cálculo del Índice de sentido Si por nodo y su escritura
-estándar en el grafo (G.nodes[n]["Si"]).
-
-Definición operacional (TNFR):
-    Si_i(t) = α·\hat{νf}_i + β·(1 - mean d_φ(i, vec(i))) + γ·(1 - |ΔNFR_i|/max |ΔNFR|)
-
-Donde:
-- \hat{νf}_i ∈ [0,1] es la frecuencia estructural normalizada del nodo i.
-- d_φ es la distancia de fase envuelta en [0,1] (0 = misma fase, 1 = opuesta).
-- ΔNFR_i es el gradiente nodal (magnitud de necesidad de reorganización).
-- α, β, γ ≥ 0 y α+β+γ = 1 (si no, se re-normalizan internamente).
-
-Compatibilidad:
-- Soporta múltiples alias de atributos para evitar romper proyectos existentes:
-  νf:  ["νf", "nu_f", "nu-f", "nu", "freq", "frequency"]
-  θ:   ["θ", "theta", "fase", "phi", "phase"]
-  ΔNFR:["ΔNFR", "delta_nfr", "dnfr", "gradiente", "grad"]
-- El resultado se guarda en "Si" y también puede acumularse en "Si_hist" (lista).
-
-Notas de implementación:
-- No se asume una librería de estilos ni unidades específicas; el rango resultante
-  es [0,1].
-- Si faltan datos, se degradan con defaults prudentes (p. ej., sin vecinos → 0.5
-  de sincronía; ΔNFR no disponible → 0 para el término correspondiente).
-- Puede leer pesos desde G.graph["Si_weights"] = {"alpha":…, "beta":…, "gamma":…}.
-- Si se define G.graph["compute_delta_nfr"], se invoca para rellenar ΔNFR ausentes.
-
-Autor: TNFR | Teoría de la naturaleza fractal resonante
+Utilidades transversales + cálculo de Índice de sentido (Si).
 """
 from __future__ import annotations
-
-from typing import Dict, Iterable, Tuple, Any, Optional
+from typing import Iterable, Dict, Any, Tuple, List
 import math
+from collections import deque
 
-try:  # opcional, pero recomendado en el proyecto TNFR
-    import networkx as nx  # type: ignore
+try:
+    import networkx as nx  # solo para tipos
 except Exception:  # pragma: no cover
-    nx = None  # permitirá importar el módulo aunque no esté networkx
+    nx = None  # type: ignore
 
-# ----------------------------
-# Utilidades de normalización
-# ----------------------------
+from constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI
 
-def _min_max_norm(values: Iterable[float], *, eps: float = 1e-12) -> Tuple[float, float]:
-    vals = list(values)
-    if not vals:
-        return 0.0, 1.0
-    vmin, vmax = min(vals), max(vals)
-    if math.isclose(vmin, vmax, rel_tol=0.0, abs_tol=eps):
-        # Evitamos división por cero; devolvemos un rango mínimo estable
-        return float(vmin), float(vmin + 1.0)
-    return float(vmin), float(vmax)
+# -------------------------
+# Utilidades numéricas
+# -------------------------
+
+def clamp(x: float, a: float, b: float) -> float:
+    return a if x < a else b if x > b else x
 
 
-def _safe_div(num: float, den: float, *, eps: float = 1e-12) -> float:
-    if abs(den) <= eps:
-        return 0.0
-    return num / den
+def clamp_abs(x: float, m: float) -> float:
+    m = abs(m)
+    return clamp(x, -m, m)
 
 
-def _clamp01(x: float) -> float:
-    return 0.0 if x < 0.0 else 1.0 if x > 1.0 else x
+def clamp01(x: float) -> float:
+    return clamp(x, 0.0, 1.0)
 
 
-# ----------------------------
-# Mapas de alias canónicos
-# ----------------------------
-
-ALIAS_NU_F = ("νf", "nu_f", "nu-f", "nu", "freq", "frequency")
-ALIAS_THETA = ("θ", "theta", "fase", "phi", "phase")
-ALIAS_DNFR = ("ΔNFR", "delta_nfr", "dnfr", "gradiente", "grad")
+def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
+    xs = list(xs)
+    return sum(xs) / len(xs) if xs else default
 
 
-def _get_attr(node_dict: Dict[str, Any], aliases: Tuple[str, ...], default: float = 0.0) -> float:
+def _wrap_angle(a: float) -> float:
+    """Envuelve ángulo a (-π, π]."""
+    pi = math.pi
+    a = (a + pi) % (2 * pi) - pi
+    return a
+
+
+def phase_distance(a: float, b: float) -> float:
+    """Distancia de fase normalizada en [0,1]. 0 = misma fase, 1 = opuesta."""
+    return abs(_wrap_angle(a - b)) / math.pi
+
+
+# -------------------------
+# Acceso a atributos con alias
+# -------------------------
+
+def _get_attr(d: Dict[str, Any], aliases: Iterable[str], default: float = 0.0) -> float:
     for k in aliases:
-        if k in node_dict:
-            v = node_dict[k]
+        if k in d:
             try:
-                return float(v)
+                return float(d[k])
             except Exception:
-                pass
+                continue
     return float(default)
 
+def _set_attr(d, aliases, value: float) -> None:
+    for k in aliases:
+        if k in d:
+            d[k] = float(value)
+            return
+    d[next(iter(aliases))] = float(value)
 
-def _wrap_angle(x: float) -> float:
-    """Envuelve ángulo a [0, 2π). Acepta grados o radianes; si |x| > 2π*3, intenta
-    detectar grados (heurística) y convertir a radianes.
-    """
-    two_pi = 2.0 * math.pi
-    ax = float(x)
-    if abs(ax) > two_pi * 3.0:  # heurística simple → probablemente en grados
-        ax = math.radians(ax)
-    ax = ax % two_pi
-    return ax
+# -------------------------
+# Estadísticos vecinales
+# -------------------------
 
-
-def _phase_distance01(phi_i: float, phi_j: float) -> float:
-    """Distancia de fase envuelta y normalizada a [0,1].
-    0 = misma fase; 1 = oposición (π rad). Se define como min(|Δ|, 2π-|Δ|)/π.
-    """
-    pi = math.pi
-    i = _wrap_angle(phi_i)
-    j = _wrap_angle(phi_j)
-    d = abs(i - j)
-    two_pi = 2.0 * pi
-    d = min(d, two_pi - d)
-    return _clamp01(d / pi)
+def media_vecinal(G, n, aliases: Iterable[str], default: float = 0.0) -> float:
+    vals: List[float] = []
+    for v in G.neighbors(n):
+        vals.append(_get_attr(G.nodes[v], aliases, default))
+    return list_mean(vals, default)
 
 
-# ---------------------------------
-# Cálculo de Si (Índice de sentido)
-# ---------------------------------
+def fase_media(G, n) -> float:
+    """Promedio circular de las fases de los vecinos."""
+    import math
+    x = 0.0
+    y = 0.0
+    count = 0
+    for v in G.neighbors(n):
+        th = _get_attr(G.nodes[v], ALIAS_THETA, 0.0)
+        x += math.cos(th)
+        y += math.sin(th)
+        count += 1
+    if count == 0:
+        return _get_attr(G.nodes[n], ALIAS_THETA, 0.0)
+    return math.atan2(y / max(1, count), x / max(1, count))
 
-def ensure_Si_config(G) -> None:
-    """Garantiza que existan pesos canónicos en G.graph["Si_weights"].
-    Si no existen o no son válidos, define α=0.4, β=0.4, γ=0.2.
-    """
-    if not hasattr(G, "graph"):
-        return
-    weights = G.graph.get("Si_weights")
-    if not isinstance(weights, dict):
-        G.graph["Si_weights"] = {"alpha": 0.4, "beta": 0.4, "gamma": 0.2}
-        return
-    a = float(weights.get("alpha", 0.4))
-    b = float(weights.get("beta", 0.4))
-    c = float(weights.get("gamma", 0.2))
-    s = a + b + c
-    if s <= 0.0:
-        a, b, c = 0.4, 0.4, 0.2
-        s = 1.0
-    # Re-normalizamos a suma 1 por canonicidad
-    G.graph["Si_weights"] = {"alpha": a / s, "beta": b / s, "gamma": c / s}
 
+# -------------------------
+# Historial de glifos por nodo
+# -------------------------
+
+def push_glifo(nd: Dict[str, Any], glifo: str, window: int) -> None:
+    hist = nd.setdefault("hist_glifos", deque(maxlen=window))
+    hist.append(str(glifo))
+
+
+def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
+    hist = nd.get("hist_glifos")
+    if not hist:
+        return False
+    last = list(hist)[-ventana:]
+    return str(glifo) in last
+
+# -------------------------
+# Callbacks Γ(R)
+# -------------------------
+
+def _ensure_callbacks(G):
+    """Garantiza la estructura de callbacks en G.graph."""
+    cbs = G.graph.setdefault("callbacks", {
+        "before_step": [],
+        "after_step": [],
+        "on_remesh": [],
+    })
+    # normaliza claves por si vienen incompletas
+    for k in ("before_step", "after_step", "on_remesh"):
+        cbs.setdefault(k, [])
+    return cbs
+
+def register_callback(G, event: str, func):
+    """Registra un callback en G.graph['callbacks'][event]. Firma: func(G, ctx) -> None"""
+    if event not in ("before_step", "after_step", "on_remesh"):
+        raise ValueError(f"Evento desconocido: {event}")
+    cbs = _ensure_callbacks(G)
+    cbs[event].append(func)
+    return func
+
+def invoke_callbacks(G, event: str, ctx: dict | None = None):
+    """Invoca todos los callbacks registrados para `event` con el contexto `ctx`."""
+    cbs = _ensure_callbacks(G).get(event, [])
+    strict = bool(G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"]))
+    ctx = ctx or {}
+    for fn in list(cbs):
+        try:
+            fn(G, ctx)
+        except Exception as e:
+            if strict:
+                raise
+            G.graph.setdefault("_callback_errors", []).append({
+                "event": event, "step": ctx.get("step"), "error": repr(e), "fn": repr(fn)
+            })
+
+# -------------------------
+# Índice de sentido (Si)
+# -------------------------
 
 def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
-    """Calcula el Índice de sentido Si para cada nodo del grafo G según la TNFR.
+    """Calcula Si por nodo y lo escribe en G.nodes[n]["Si"].
 
-    Parámetros:
-        G: grafo (idealmente networkx.Graph/DiGraph).
-        inplace: si True, escribe Si en G.nodes[n]["Si"] y acumula en "Si_hist".
-
-    Retorna:
-        dict: {nodo: Si ∈ [0,1]}.
-
-    Requisitos mínimos por nodo (con alias):
-        - νf (frecuencia estructural):   ALIAS_NU_F
-        - θ  (fase estructural):         ALIAS_THETA
-        - ΔNFR (gradiente nodal):        ALIAS_DNFR  (si falta, intenta G.graph["compute_delta_nfr"]) 
+    Si = α·νf_norm + β·(1 - disp_fase_local) + γ·(1 - |ΔNFR|/max|ΔNFR|)
     """
-    if nx is None:
-        raise RuntimeError("compute_Si requiere networkx instalado")
+    alpha = float(G.graph.get("SI_WEIGHTS", DEFAULTS["SI_WEIGHTS"]).get("alpha", 0.34))
+    beta = float(G.graph.get("SI_WEIGHTS", DEFAULTS["SI_WEIGHTS"]).get("beta", 0.33))
+    gamma = float(G.graph.get("SI_WEIGHTS", DEFAULTS["SI_WEIGHTS"]).get("gamma", 0.33))
+    s = alpha + beta + gamma
+    if s <= 0:
+        alpha = beta = gamma = 1/3
+    else:
+        alpha, beta, gamma = alpha/s, beta/s, gamma/s
 
-    ensure_Si_config(G)
-    w = G.graph.get("Si_weights", {"alpha": 0.4, "beta": 0.4, "gamma": 0.2})
-    alpha = float(w.get("alpha", 0.4))
-    beta = float(w.get("beta", 0.4))
-    gamma = float(w.get("gamma", 0.2))
+    # Normalización de νf en red
+    vfs = [abs(_get_attr(G.nodes[n], ALIAS_VF, 0.0)) for n in G.nodes()]
+    vfmax = max(vfs) if vfs else 1.0
+    # Normalización de ΔNFR
+    dnfrs = [abs(_get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()]
+    dnfrmax = max(dnfrs) if dnfrs else 1.0
 
-    # 1) Recopilamos νf y ΔNFR para normalización global
-    nu_vals = []
-    dnfr_vals = []
-    for n, d in G.nodes(data=True):
-        nu_vals.append(_get_attr(d, ALIAS_NU_F, default=0.0))
-        dnfr_vals.append(abs(_get_attr(d, ALIAS_DNFR, default=0.0)))
-
-    # Si ΔNFR no está poblado y existe un callback, lo ejecutamos una vez
-    if all(v == 0.0 for v in dnfr_vals):
-        cb = G.graph.get("compute_delta_nfr")
-        if callable(cb):
-            cb(G)  # se espera que llene G.nodes[n][alias ΔNFR]
-            dnfr_vals = [abs(_get_attr(d, ALIAS_DNFR, default=0.0)) for _, d in G.nodes(data=True)]
-
-    nu_min, nu_max = _min_max_norm(nu_vals)
-    dnfr_max = max(dnfr_vals) if dnfr_vals else 0.0
-
-    # 2) Cálculo por nodo
     out: Dict[Any, float] = {}
-    for n, d in G.nodes(data=True):
-        # (a) νf normalizada
-        nu = _get_attr(d, ALIAS_NU_F, default=0.0)
-        nu_hat = _safe_div(nu - nu_min, (nu_max - nu_min)) if nu_max > nu_min else 0.0
-        nu_hat = _clamp01(nu_hat)
+    for n in G.nodes():
+        nd = G.nodes[n]
+        vf = _get_attr(nd, ALIAS_VF, 0.0)
+        vf_norm = 0.0 if vfmax == 0 else clamp01(abs(vf)/vfmax)
 
-        # (b) sincronía de fase con vecinos: 1 - media distancia
-        if G.is_directed():
-            neighs = list(G.predecessors(n)) + list(G.successors(n))
-        else:
-            neighs = list(G.neighbors(n))
-        theta_i = _get_attr(d, ALIAS_THETA, default=0.0)
-        if neighs:
-            dists = []
-            for m in neighs:
-                dm = G.nodes[m]
-                theta_j = _get_attr(dm, ALIAS_THETA, default=0.0)
-                d01 = _phase_distance01(theta_i, theta_j)
-                dists.append(d01)
-            mean_d = sum(dists) / max(len(dists), 1)
-            sync = 1.0 - mean_d
-        else:
-            sync = 0.5  # sin información vecinal, prior neutro
-        sync = _clamp01(sync)
+        # dispersión de fase local
+        th_i = _get_attr(nd, ALIAS_THETA, 0.0)
+        th_bar = fase_media(G, n)
+        disp_fase = phase_distance(th_i, th_bar)  # [0,1]
 
-        # (c) término de ΔNFR (queremos 1 cuando el gradiente es bajo)
-        dnfr = abs(_get_attr(d, ALIAS_DNFR, default=0.0))
-        dnfr_term = 1.0 - _clamp01(_safe_div(dnfr, dnfr_max)) if dnfr_max > 0.0 else 1.0
+        dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
+        dnfr_norm = 0.0 if dnfrmax == 0 else clamp01(abs(dnfr)/dnfrmax)
 
-        # (d) combinación convexa
-        Si = alpha * nu_hat + beta * sync + gamma * dnfr_term
-        Si = _clamp01(Si)
-
+        Si = alpha*vf_norm + beta*(1.0 - disp_fase) + gamma*(1.0 - dnfr_norm)
+        Si = clamp01(Si)
         out[n] = Si
-
         if inplace:
-            d["Si"] = Si
-            # histórico opcional
-            try:
-                hist = d.get("Si_hist")
-                if not isinstance(hist, list):
-                    d["Si_hist"] = [Si]
-                else:
-                    hist.append(Si)
-            except Exception:
-                d["Si_hist"] = [Si]
-
-    # 3) Exponemos resumen global útil para diagnósticos
-    if inplace:
-        try:
-            vals = list(out.values())
-            G.graph.setdefault("Si_stats", {})
-            G.graph["Si_stats"].update({
-                "mean": float(sum(vals) / max(len(vals), 1)),
-                "min": float(min(vals) if vals else 0.0),
-                "max": float(max(vals) if vals else 0.0),
-            })
-        except Exception:
-            pass
-
+            _set_attr(nd, ALIAS_SI, Si)
     return out
-
-
-# ---------------------------------
-# Integración sugerida (dinámica)
-# ---------------------------------
-# En el bucle de dinámica (antes de seleccionar glifo por nodo):
-#     from helpers import compute_Si
-#     compute_Si(G, inplace=True)
-# …y luego el selector puede priorizar/condicionar por G.nodes[n]["Si"].
