@@ -21,7 +21,8 @@ from .metrics import (
 )
 from .trace import register_trace
 from .program import play, seq, block, wait, target
-from .dynamics import step, _update_history
+from .dynamics import step, _update_history, default_glyph_selector, parametric_glyph_selector
+from .gamma import GAMMA_REGISTRY
 from .scenarios import build_graph
 from .presets import get_preset
 
@@ -72,6 +73,9 @@ def _attach_callbacks(G: nx.Graph) -> None:
 def cmd_run(args: argparse.Namespace) -> int:
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
     _attach_callbacks(G)
+    G.graph.setdefault("GRAMMAR_CANON", DEFAULTS["GRAMMAR_CANON"]).update({"enabled": bool(args.grammar_canon)})
+    G.graph["glyph_selector"] = default_glyph_selector if args.selector == "basic" else parametric_glyph_selector
+    G.graph["GAMMA"] = {"type": args.gamma}
 
     if args.preset:
         program = get_preset(args.preset)
@@ -96,6 +100,9 @@ def cmd_run(args: argparse.Namespace) -> int:
 def cmd_sequence(args: argparse.Namespace) -> int:
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
     _attach_callbacks(G)
+    G.graph.setdefault("GRAMMAR_CANON", DEFAULTS["GRAMMAR_CANON"]).update({"enabled": bool(args.grammar_canon)})
+    G.graph["glyph_selector"] = default_glyph_selector if args.selector == "basic" else parametric_glyph_selector
+    G.graph["GAMMA"] = {"type": args.gamma}
 
     if args.preset:
         program = get_preset(args.preset)
@@ -114,6 +121,9 @@ def cmd_sequence(args: argparse.Namespace) -> int:
 def cmd_metrics(args: argparse.Namespace) -> int:
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
     _attach_callbacks(G)
+    G.graph.setdefault("GRAMMAR_CANON", DEFAULTS["GRAMMAR_CANON"]).update({"enabled": bool(args.grammar_canon)})
+    G.graph["glyph_selector"] = default_glyph_selector if args.selector == "basic" else parametric_glyph_selector
+    G.graph["GAMMA"] = {"type": args.gamma}
     for _ in range(int(args.steps or 200)):
         step(G)
 
@@ -147,6 +157,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_run.add_argument("--preset", type=str, default=None)
     p_run.add_argument("--save-history", dest="save_history", type=str, default=None)
     p_run.add_argument("--summary", action="store_true")
+    p_run.add_argument("--no-canon", dest="grammar_canon", action="store_false", default=True, help="Desactiva gramática canónica")
+    p_run.add_argument("--selector", choices=["basic", "param"], default="basic")
+    p_run.add_argument("--gamma", choices=list(GAMMA_REGISTRY.keys()), default="none")
     p_run.set_defaults(func=cmd_run)
 
     p_seq = sub.add_parser("sequence", help="Ejecutar una secuencia (preset o YAML/JSON)")
@@ -163,6 +176,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_met.add_argument("--topology", choices=["ring", "complete", "erdos"], default="ring")
     p_met.add_argument("--steps", type=int, default=300)
     p_met.add_argument("--seed", type=int, default=1)
+    p_met.add_argument("--no-canon", dest="grammar_canon", action="store_false", default=True, help="Desactiva gramática canónica")
+    p_met.add_argument("--selector", choices=["basic", "param"], default="basic")
+    p_met.add_argument("--gamma", choices=list(GAMMA_REGISTRY.keys()), default="none")
     p_met.add_argument("--save", type=str, default=None)
     p_met.set_defaults(func=cmd_metrics)
 

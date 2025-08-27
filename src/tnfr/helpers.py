@@ -186,7 +186,10 @@ def invoke_callbacks(G, event: str, ctx: dict | None = None):
 def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     """Calcula Si por nodo y lo escribe en G.nodes[n]["Si"].
 
-    Si = α·νf_norm + β·(1 - disp_fase_local) + γ·(1 - |ΔNFR|/max|ΔNFR|)
+    Fórmula:
+        Si = α·νf_norm + β·(1 - disp_fase_local) + γ·(1 - |ΔNFR|/max|ΔNFR|)
+    También guarda en ``G.graph`` los pesos normalizados y la
+    sensibilidad parcial (∂Si/∂componente).
     """
     alpha = float(G.graph.get("SI_WEIGHTS", DEFAULTS["SI_WEIGHTS"]).get("alpha", 0.34))
     beta = float(G.graph.get("SI_WEIGHTS", DEFAULTS["SI_WEIGHTS"]).get("beta", 0.33))
@@ -196,6 +199,8 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
         alpha = beta = gamma = 1/3
     else:
         alpha, beta, gamma = alpha/s, beta/s, gamma/s
+    G.graph["_Si_weights"] = {"alpha": alpha, "beta": beta, "gamma": gamma}
+    G.graph["_Si_sensitivity"] = {"dSi_dvf_norm": alpha, "dSi_ddisp_fase": -beta, "dSi_ddnfr_norm": -gamma}
 
     # Normalización de νf en red
     vfs = [abs(_get_attr(G.nodes[n], ALIAS_VF, 0.0)) for n in G.nodes()]

@@ -142,6 +142,12 @@ def on_applied_glifo(G, n, applied: str) -> None:
 # -------------------------
 
 def select_and_apply_with_grammar(G, n, selector, window: int) -> None:
+    """Aplica gramática canónica sobre la propuesta del selector.
+
+    El selector puede incluir una gramática **suave** (pre–filtro) como
+    `parametric_glyph_selector`; la presente función garantiza que la
+    gramática canónica tenga precedencia final.
+    """
     from .operators import aplicar_glifo
     cand = selector(G, n)
     cand = enforce_canonical_grammar(G, n, cand)

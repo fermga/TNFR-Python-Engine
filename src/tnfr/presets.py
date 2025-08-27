@@ -1,5 +1,5 @@
 from __future__ import annotations
-from .program import seq, block, wait
+from .program import seq, block, wait, ejemplo_canonico_basico
 
 
 _PRESETS = {
@@ -15,6 +15,7 @@ _PRESETS = {
         "R’A",
         "SH’A",
     ),
+    "ejemplo_canonico": ejemplo_canonico_basico(),
 }
 
 
