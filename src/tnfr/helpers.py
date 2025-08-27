@@ -137,10 +137,26 @@ def _ensure_callbacks(G):
         cbs.setdefault(k, [])
     return cbs
 
-def register_callback(G, event: str, func):
-    """Registra un callback en G.graph['callbacks'][event]. Firma: func(G, ctx) -> None"""
+def register_callback(
+    G,
+    event: str | None = None,
+    func=None,
+    *,
+    when: str | None = None,
+    name: str | None = None,
+):
+    """Registra ``func`` como callback del ``event`` indicado.
+
+    Permite tanto la forma posicional ``register_callback(G, "after_step", fn)``
+    como la forma con palabras clave ``register_callback(G, when="after_step", func=fn)``.
+    El parámetro ``name`` se acepta por compatibilidad pero actualmente no se
+    utiliza.
+    """
+    event = event or when
     if event not in ("before_step", "after_step", "on_remesh"):
         raise ValueError(f"Evento desconocido: {event}")
+    if func is None:
+        raise TypeError("func es obligatorio")
     cbs = _ensure_callbacks(G)
     cbs[event].append(func)
     return func

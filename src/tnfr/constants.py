@@ -181,6 +181,20 @@ def attach_defaults(G, override: bool = False) -> None:
     G.graph["_tnfr_defaults_attached"] = True
 
 
+def inject_defaults(G, defaults: Dict[str, Any] = DEFAULTS, override: bool = False) -> None:
+    """Alias de conveniencia para inyectar ``DEFAULTS`` en ``G.graph``.
+
+    Permite pasar un diccionario de *defaults* alternativo y mantiene la
+    semántica de ``attach_defaults`` existente. Si ``override`` es ``True`` se
+    sobreescriben valores ya presentes.
+    """
+    G.graph.setdefault("_tnfr_defaults_attached", False)
+    for k, v in defaults.items():
+        if override or k not in G.graph:
+            G.graph[k] = v
+    G.graph["_tnfr_defaults_attached"] = True
+
+
 def merge_overrides(G, **overrides) -> None:
     """Aplica cambios puntuales a G.graph.
     Útil para ajustar pesos sin tocar DEFAULTS globales.

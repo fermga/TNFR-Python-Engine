@@ -28,7 +28,7 @@ classifiers = [
 dependencies = ["networkx>=2.6"]
 
 [project.scripts]
-tnfr = "tnfr.main:main"
+tnfr = "tnfr.cli:main"
 
 [project.urls]
 Homepage = "https://pypi.org/project/tnfr/"

@@ -30,6 +30,10 @@ from .metrics import (
 )
 from .trace import register_trace
 from .program import play, seq, block, target, wait, THOL, TARGET, WAIT
+from .cli import main as cli_main
+from .scenarios import build_graph
+from .presets import get_preset
+from .types import NodeState
 
 __all__ = [
     "preparar_red",
@@ -49,3 +53,5 @@ __all__ = [
     "play", "seq", "block", "target", "wait", "THOL", "TARGET", "WAIT",
     "__version__",
 ]
+
+__all__ += ["cli_main", "build_graph", "get_preset", "NodeState"]
