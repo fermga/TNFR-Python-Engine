@@ -1,48 +1,55 @@
-Estructura general del proyecto
+# General Project Structure
 
-Entrada del paquete. __init__.py registra módulos con nombres cortos para evitar importaciones circulares y expone la API pública preparar_red, step, run y utilidades de observación
+* **Package entry point.** `__init__.py` registers modules under short names to avoid circular imports and exposes the public API: `preparar_red`, `step`, `run`, and observation utilities.
 
-Configuración y constantes. constants.py centraliza parámetros por defecto (discretización, rangos de EPI y νf, pesos de mezclas, límites de re‑mesh, etc.) y provee utilidades para inyectarlos en la red (attach_defaults, merge_overrides) junto con alias estandarizados para atributos nodales
+* **Configuration & constants.** `constants.py` centralizes default parameters (discretization, EPI and νf ranges, mixing weights, re-mesh limits, etc.) and provides utilities to inject them into the network (`attach_defaults`, `merge_overrides`), along with standardized aliases for node attributes.
 
-Utilidades transversales. helpers.py ofrece funciones numéricas básicas, acceso a atributos con alias, estadísticas vecinales, historial de glifos, sistema de callbacks y cálculo del índice de sentido Si para cada nodo
+* **Cross-cutting utilities.** `helpers.py` offers core numeric helpers, alias-based attribute accessors, neighborhood statistics, glyph history, a callback system, and computation of the sense index `Si` for each node.
 
-Motor dinámico. dynamics.py implementa el ciclo de simulación: cálculo del campo ΔNFR, integración de la ecuación nodal, selección/aplicación de glifos, clamps, coordinación de fase, actualización de historia y re‑mesh condicional (step y run)
+* **Dynamics engine.** `dynamics.py` implements the simulation loop: ΔNFR field computation, nodal equation integration, glyph selection/application, clamps, phase coordination, history updates, and conditional re-mesh (`step` and `run`).
 
-Operadores glíficos. operators.py define los 13 glifos como transformaciones locales, un dispatcher aplicar_glifo, y utilidades de re‑mesh tanto directas como condicionadas a la estabilidad global
+* **Glyph operators.** `operators.py` defines the 13 glyphs as local transformations, a dispatcher `aplicar_glifo`, and both direct and stability-conditioned re-mesh utilities.
 
-Observadores y métricas. observers.py registra callbacks estándar y calcula coherencia global, sincronía de fase, orden de Kuramoto, distribución de glifos y vector de sentido Σ⃗, entre otros
+* **Observers & metrics.** `observers.py` registers standard callbacks and computes global coherence, phase synchrony, Kuramoto order, glyph distribution, and the sense vector `Σ⃗`, among others.
 
-Orquestación de simulaciones. ontosim.py prepara una red de networkx, adjunta configuraciones e inicializa atributos (EPI, fases, frecuencias) antes de delegar la dinámica a dynamics.step/run
+* **Simulation orchestration.** `ontosim.py` prepares a NetworkX graph, attaches configuration, and initializes attributes (EPI, phases, frequencies) before delegating dynamics to `dynamics.step`/`run`.
 
-CLI de demostración. main.py genera una red Erdős–Rényi, permite configurar parámetros básicos y ejecuta la simulación mostrando métricas finales
+* **Demo CLI.** `main.py` generates an Erdős–Rényi network, lets you tweak basic parameters, and runs the simulation while displaying final metrics.
 
-Conceptos clave a comprender
+---
 
-Árbol de dependencias con alias. Los módulos se importan mutuamente mediante alias globales para simplificar el acceso y evitar ciclos, lo cual es esencial para navegar el código sin ambigüedades
+## Key Concepts to Grasp
 
-Atributos nodales normalizados. Todos los datos (EPI, fase θ, frecuencia νf, ΔNFR, etc.) se almacenan en G.nodes[n] bajo nombres alias compatibles, facilitando extensiones y hooks personalizados
+* **Aliased dependency tree.** Modules import each other via global aliases to simplify access and prevent cycles—essential for navigating the code unambiguously.
 
-Índice de sentido (Si). Combina frecuencia normalizada, dispersión de fase y magnitud del campo para evaluar el “sentido” de cada nodo, influyendo en la selección de glifos
+* **Normalized node attributes.** All data (EPI, phase `θ`, frequency `νf`, `ΔNFR`, etc.) live in `G.nodes[n]` under compatible alias names, making extensions and custom hooks straightforward.
 
-Motor paso a paso. dynamics.step orquesta la dinámica en ocho fases: cálculo de campo, Si, selección y aplicación de glifos, integración, clamps, coordinación de fase, actualización de historia y re‑mesh condicionado
+* **Sense Index (`Si`).** Combines normalized frequency, phase dispersion, and field magnitude to evaluate each node’s “sense,” influencing glyph selection.
 
-Glifos como operadores. Cada glifo es una transformación suave sobre atributos nodales (emisión, difusión, acoplamiento, disonancia, etc.), aplicada mediante un dispatcher configurable por nombre tipográfico
+* **Step-wise engine.** `dynamics.step` orchestrates eight phases: field computation, `Si`, glyph selection & application, integration, clamps, phase coordination, history update, and conditioned re-mesh.
 
-Re‑mesh de red. Permite mezclar el estado actual con uno anterior (memoria τ) para estabilizar la red, con precedencia clara para α y condiciones basadas en la historia reciente de estabilidad y sincronía
+* **Glyphs as operators.** Each glyph applies a smooth transformation to node attributes (emission, diffusion, coupling, dissonance, etc.), dispatched by a configurable, typographic name.
 
-Callbacks y observadores. El sistema Γ(R) permite enganchar funciones antes/después de cada paso y tras el re‑mesh, facilitando monitoreo o intervención externa
+* **Network re-mesh.** Mixes the current state with a past one (memory `τ`) to stabilize the network, with clear precedence for `α` and conditions based on recent stability and synchrony history.
 
-Recomendaciones para profundizar
+* **Callbacks & observers.** The `Γ(R)` system lets you hook functions before/after each step and after re-mesh, enabling monitoring or external intervention.
 
-NetworkX y Graph API. Familiarízate con cómo networkx maneja atributos y topologías, ya que toda la dinámica opera sobre Graph y sus propiedades.
+---
 
-Extensión del campo ΔNFR. Explora set_delta_nfr_hook para implementar versiones alternativas del campo nodal y entender cómo se registran metadatos y pesos de mezcla
+## Recommendations for Going Deeper
 
-Diseño de nuevos glifos. Revisa la estructura de operators.py para añadir operadores o ajustar factores en DEFAULTS['GLYPH_FACTORS']
+* **NetworkX & the Graph API.** Get comfortable with how NetworkX handles attributes and topology; all dynamics operate on `Graph` objects and their properties.
 
-Observadores personalizados. Implementa métricas propias usando register_callback o ampliando observers.py para medir fenómenos específicos de tu estudio.
+* **Extending the ΔNFR field.** Explore `set_delta_nfr_hook` to implement alternative nodal fields and learn how metadata and mixing weights are recorded.
 
-Lectura teórica. Para comprender el trasfondo conceptual, consulta los documentos PDF incluidos (TNFR.pdf, “El Pulso que nos Atraviesa”), que profundizan en la teoría fractal-resonante.
+* **Designing new glyphs.** Review `operators.py` to add operators or adjust factors in `DEFAULTS['GLYPH_FACTORS']`.
 
-Parámetros avanzados. Experimenta con la configuración adaptativa de coordinación de fase, criterios de estabilidad y gramática glífica para observar cómo impactan en la autoorganización de la red
-Dominar estos aspectos te permitirá extender la simulación, crear pipelines de análisis y conectar la teoría con aplicaciones computacionales.
+* **Custom observers.** Implement your own metrics via `register_callback` or by extending `observers.py` to measure phenomena specific to your study.
+
+* **Theoretical reading.** For conceptual background, see the included PDFs (`TNFR.pdf`, *El Pulso que nos Atraviesa*), which deepen the fractal-resonant framework.
+
+* **Advanced parameters.** Experiment with adaptive phase coordination, stability criteria, and the glyph grammar to observe their impact on network self-organization.
+
+---
+
+**Mastering these pieces will let you extend the simulation, build analysis pipelines and connect the theory with computational applications.**
