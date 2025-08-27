@@ -32,6 +32,8 @@
 
 * **Network re-mesh.** Mixes the current state with a past one (memory `τ`) to stabilize the network, with clear precedence for `α` and conditions based on recent stability and synchrony history.
 
+* **Γ(R) coupling.** Optional network term added to the nodal equation, parameterized by global phase order `R` with gain `β` and threshold `R0` (see `DEFAULTS["GAMMA"]`).
+
 * **Callbacks & observers.** The `Γ(R)` system lets you hook functions before/after each step and after re-mesh, enabling monitoring or external intervention.
 
 ---

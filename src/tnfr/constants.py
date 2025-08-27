@@ -74,6 +74,7 @@ DEFAULTS: Dict[str, Any] = {
     "EPS_DEPI_STABLE": 1e-3,
     "FRACTION_STABLE_REMESH": 0.80,   # fracción de nodos estables requerida
     "REMESH_COOLDOWN_VENTANA": 20,    # pasos mínimos entre RE’MESH
+    "REMESH_COOLDOWN_TS": 0.0,        # cooldown adicional por tiempo simulado
     # Gating adicional basado en observadores (conmutador + ventana)
     "REMESH_REQUIRE_STABILITY": False, # si True, exige ventana de estabilidad multi-métrica
     "REMESH_STABILITY_WINDOW": 25,     # tamaño de ventana para evaluar estabilidad
@@ -84,6 +85,7 @@ DEFAULTS: Dict[str, Any] = {
     # RE’MESH: memoria τ y mezcla α
     "REMESH_TAU": 8,                  # pasos hacia atrás
     "REMESH_ALPHA": 0.5,              # mezcla con pasado
+    "REMESH_ALPHA_HARD": False,       # si True ignora GLYPH_FACTORS['REMESH_alpha']
 
     # Histéresis glífica
     "GLYPH_HYSTERESIS_WINDOW": 7,
@@ -154,6 +156,7 @@ DEFAULTS: Dict[str, Any] = {
         "R0": 0.0,
     },
     "CALLBACKS_STRICT": False,  # si True, un error en callback detiene; si False, se loguea y continúa
+    "VALIDATORS_STRICT": False, # si True, alerta si se clampa fuera de rango
 }
 
 # Gramática glífica canónica

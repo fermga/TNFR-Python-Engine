@@ -22,7 +22,7 @@ except Exception:  # pragma: no cover
 # -------------------------
 DEFAULTS.setdefault("TRACE", {
     "enabled": True,
-    "capture": ["gamma", "grammar", "selector", "dnfr_mix", "callbacks", "thol_state", "sigma", "kuramoto", "glifo_counts"],
+    "capture": ["gamma", "grammar", "selector", "dnfr_weights", "si_weights", "callbacks", "thol_state", "sigma", "kuramoto", "glifo_counts"],
     "history_key": "trace_meta",
 })
 
@@ -70,10 +70,14 @@ def _trace_before(G, *args, **kwargs):
         sel = G.graph.get("glyph_selector")
         meta["selector"] = getattr(sel, "__name__", str(sel)) if sel else None
 
-    if "dnfr_mix" in capture:
-        # tratar de capturar varias convenciones posibles
-        mix = G.graph.get("DNFR_MIX") or G.graph.get("DELTA_NFR_MIX") or G.graph.get("NFR_MIX")
-        meta["dnfr_mix"] = mix if isinstance(mix, dict) else {"value": mix}
+    if "dnfr_weights" in capture:
+        mix = G.graph.get("DNFR_WEIGHTS")
+        if isinstance(mix, dict):
+            meta["dnfr_weights"] = dict(mix)
+
+    if "si_weights" in capture:
+        meta["si_weights"] = dict(G.graph.get("_Si_weights", {}))
+        meta["si_sensitivity"] = dict(G.graph.get("_Si_sensitivity", {}))
 
     if "callbacks" in capture:
         # si el motor guarda los callbacks, exponer nombres por fase
@@ -134,7 +138,8 @@ def register_trace(G) -> None:
       - gamma: especificación activa de Γi(R)
       - grammar: configuración de gramática canónica
       - selector: nombre del selector glífico
-      - dnfr_mix: mezcla (si el motor la expone en G.graph)
+      - dnfr_weights: mezcla ΔNFR declarada en el motor
+      - si_weights: pesos α/β/γ y sensibilidad de Si
       - callbacks: callbacks registrados por fase (si están en G.graph['_callbacks'])
       - thol_open_nodes: cuántos nodos tienen bloque T’HOL abierto
       - kuramoto: (R, ψ) de la red

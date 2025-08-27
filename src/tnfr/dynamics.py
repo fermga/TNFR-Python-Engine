@@ -187,7 +187,7 @@ def integrar_epi_euler(G, dt: float | None = None) -> None:
     update_epi_via_nodal_equation(G, dt=dt)
 
 
-def aplicar_clamps_canonicos(nd: Dict[str, Any], G=None) -> None:
+def aplicar_clamps_canonicos(nd: Dict[str, Any], G=None, node=None) -> None:
     eps_min = float((G.graph.get("EPI_MIN") if G is not None else DEFAULTS["EPI_MIN"]))
     eps_max = float((G.graph.get("EPI_MAX") if G is not None else DEFAULTS["EPI_MAX"]))
     vf_min = float((G.graph.get("VF_MIN") if G is not None else DEFAULTS["VF_MIN"]))
@@ -196,6 +196,14 @@ def aplicar_clamps_canonicos(nd: Dict[str, Any], G=None) -> None:
     epi = _get_attr(nd, ALIAS_EPI, 0.0)
     vf = _get_attr(nd, ALIAS_VF, 0.0)
     th = _get_attr(nd, ALIAS_THETA, 0.0)
+
+    strict = bool((G.graph.get("VALIDATORS_STRICT") if G is not None else DEFAULTS.get("VALIDATORS_STRICT", False)))
+    if strict and G is not None:
+        hist = G.graph.setdefault("history", {}).setdefault("clamp_alerts", [])
+        if epi < eps_min or epi > eps_max:
+            hist.append({"node": node, "attr": "EPI", "value": float(epi)})
+        if vf < vf_min or vf > vf_max:
+            hist.append({"node": node, "attr": "VF", "value": float(vf)})
 
     _set_attr(nd, ALIAS_EPI, clamp(epi, eps_min, eps_max))
     _set_attr(nd, ALIAS_VF, clamp(vf, vf_min, vf_max))
@@ -212,6 +220,10 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
     """
     g = G.graph
     defaults = DEFAULTS
+    hist = g.setdefault("history", {})
+    hist_state = hist.setdefault("phase_state", [])
+    hist_R = hist.setdefault("phase_R", [])
+    hist_disr = hist.setdefault("phase_disr", [])
     # 0) Si hay fuerzas explícitas, usar y salir del modo adaptativo
     if (fuerza_global is not None) or (fuerza_vecinal is not None):
         kG = float(
@@ -273,19 +285,14 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
             kL = _step(kL, kL_t, kL_min, kL_max)
 
             # 5) Persistir en G.graph y log de serie
-            g["PHASE_K_GLOBAL"] = kG
-            g["PHASE_K_LOCAL"] = kL
-            hist = g.setdefault("history", {})
-            hist_kG = hist.setdefault("phase_kG", [])
-            hist_kL = hist.setdefault("phase_kL", [])
-            hist_state = hist.setdefault("phase_state", [])
-            hist_R = hist.setdefault("phase_R", [])
-            hist_disr = hist.setdefault("phase_disr", [])
-            hist_kG.append(float(kG))
-            hist_kL.append(float(kL))
             hist_state.append(state)
             hist_R.append(float(R))
             hist_disr.append(float(disr))
+
+    g["PHASE_K_GLOBAL"] = kG
+    g["PHASE_K_LOCAL"] = kL
+    hist.setdefault("phase_kG", []).append(float(kG))
+    hist.setdefault("phase_kL", []).append(float(kL))
 
     # 6) Fase GLOBAL (centroide) para empuje
     X = list(math.cos(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes())
@@ -344,6 +351,21 @@ def _norms_para_selector(G) -> dict:
     norms = {"dnfr_max": float(dnfr_max), "accel_max": float(accel_max)}
     G.graph["_sel_norms"] = norms
     return norms
+
+
+def _soft_grammar_prefilter(G, n, cand, dnfr, accel):
+    """Gramática suave: evita repeticiones antes de la canónica."""
+    gram = G.graph.get("GRAMMAR", DEFAULTS.get("GRAMMAR", {}))
+    gwin = int(gram.get("window", 3))
+    avoid = set(gram.get("avoid_repeats", []))
+    force_dn = float(gram.get("force_dnfr", 0.60))
+    force_ac = float(gram.get("force_accel", 0.60))
+    fallbacks = gram.get("fallbacks", {})
+    nd = G.nodes[n]
+    if cand in avoid and reciente_glifo(nd, cand, gwin):
+        if not (dnfr >= force_dn or accel >= force_ac):
+            cand = fallbacks.get(cand, cand)
+    return cand
 
 def parametric_glyph_selector(G, n) -> str:
     """Multiobjetivo: combina Si, |ΔNFR|_norm y |accel|_norm + histéresis.
@@ -412,22 +434,9 @@ def parametric_glyph_selector(G, n) -> str:
         elif score <= 0.33 and cand in ("NA’V","R’A","I’L"):
             cand = "O’Z" if dnfr >= dnfr_lo else "Z’HIR"
     except NameError:
-        # por si 'score' no se definió (robustez), no forzamos nada
         pass
 
-    # --- Gramática glífica suave: evita repeticiones cercanas salvo que el campo lo pida ---
-    gram = G.graph.get("GRAMMAR", DEFAULTS.get("GRAMMAR", {}))
-    gwin = int(gram.get("window", 3))
-    avoid = set(gram.get("avoid_repeats", []))
-    force_dn = float(gram.get("force_dnfr", 0.60))
-    force_ac = float(gram.get("force_accel", 0.60))
-    fallbacks = gram.get("fallbacks", {})
-
-    if cand in avoid and reciente_glifo(nd, cand, gwin):
-        # Solo permitimos repetir si el campo "insiste": dnfr o accel altos (ya normalizados)
-        if not (dnfr >= force_dn or accel >= force_ac):
-            cand = fallbacks.get(cand, "R’A")
-
+    cand = _soft_grammar_prefilter(G, n, cand, dnfr, accel)
     return cand
 
 # -------------------------
@@ -470,7 +479,7 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
 
     # 5) Clamps
     for n in G.nodes():
-        aplicar_clamps_canonicos(G.nodes[n], G)
+        aplicar_clamps_canonicos(G.nodes[n], G, n)
 
     # 6) Coordinación de fase
     coordinar_fase_global_vecinal(G, None, None)

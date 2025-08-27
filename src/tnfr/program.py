@@ -166,3 +166,11 @@ def target(nodes: Optional[Iterable[Node]] = None) -> TARGET:
 
 def wait(steps: int = 1) -> WAIT:
     return WAIT(steps=max(1, int(steps)))
+
+
+def ejemplo_canonico_basico() -> List[Token]:
+    """Secuencia canónica de referencia.
+
+    SH’A → A’L → R’A → Z’HIR → NU’L → T’HOL
+    """
+    return seq("SH’A", "A’L", "R’A", "Z’HIR", "NU’L", "T’HOL")

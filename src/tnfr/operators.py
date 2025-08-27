@@ -21,6 +21,15 @@ Nota sobre α (alpha) de RE’MESH: se toma por prioridad de
 3) DEFAULTS["REMESH_ALPHA"]
 """
 
+
+def _node_offset(G, n) -> int:
+    """Deterministic node index used for jitter seeds."""
+    mapping = G.graph.get("_node_offset_map")
+    if mapping is None or len(mapping) != G.number_of_nodes():
+        mapping = {node: idx for idx, node in enumerate(sorted(G.nodes(), key=lambda x: str(x)))}
+        G.graph["_node_offset_map"] = mapping
+    return int(mapping.get(n, 0))
+
 # -------------------------
 # Glifos (operadores locales)
 # -------------------------
@@ -55,7 +64,7 @@ def op_OZ(G, n):  # O’Z — Disonancia (aumenta ΔNFR o añade ruido)
     if bool(G.graph.get("OZ_NOISE_MODE", False)):
         base_seed = int(G.graph.get("RANDOM_SEED", 0))
         step_idx = len(G.graph.get("history", {}).get("C_steps", []))
-        rnd = random.Random(base_seed + step_idx*1000003 + hash(("OZ", n)) % 1009)
+        rnd = random.Random(base_seed + step_idx*1000003 + _node_offset(G, n) % 1009)
         sigma = float(G.graph.get("OZ_SIGMA", 0.1))
         noise = sigma * (2.0 * rnd.random() - 1.0)
         _set_attr(nd, ALIAS_DNFR, dnfr + noise)
@@ -124,7 +133,7 @@ def op_NAV(G, n):  # NA’V — Transición (jitter suave de ΔNFR)
         base_seed = int(G.graph.get("RANDOM_SEED", 0))
         # opcional: pequeño offset para evitar misma secuencia en todos los nodos/pasos
         step_idx = len(G.graph.get("history", {}).get("C_steps", []))
-        rnd = random.Random(base_seed + step_idx*1000003 + hash(n) % 1009)
+        rnd = random.Random(base_seed + step_idx*1000003 + _node_offset(G, n) % 1009)
         jitter = j * (2.0 * rnd.random() - 1.0)
     else:
         # comportamiento determinista (compatibilidad previa)
@@ -181,13 +190,15 @@ def aplicar_glifo(G, n, glifo: str, *, window: Optional[int] = None) -> None:
 # -------------------------
 
 def _remesh_alpha_info(G):
-    """Devuelve (alpha, source) con precedencia explícita:
-    1) GLYPH_FACTORS["REMESH_alpha"]  2) G.graph["REMESH_ALPHA"]  3) DEFAULTS["REMESH_ALPHA"]"""
+    """Devuelve (alpha, source) con precedencia explícita."""
+    hard = bool(G.graph.get("REMESH_ALPHA_HARD", DEFAULTS.get("REMESH_ALPHA_HARD", False)))
     gf = G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
-    if "REMESH_alpha" in gf:
+    if not hard and "REMESH_alpha" in gf:
         return float(gf["REMESH_alpha"]), "GLYPH_FACTORS"
     if "REMESH_ALPHA" in G.graph:
         return float(G.graph["REMESH_ALPHA"]), "G.graph"
+    if "REMESH_alpha" in gf:
+        return float(gf["REMESH_alpha"]), "GLYPH_FACTORS"
     return float(DEFAULTS["REMESH_ALPHA"]), "DEFAULTS"
 
 
@@ -308,6 +319,12 @@ def aplicar_remesh_si_estabilizacion_global(G, pasos_estables_consecutivos: Opti
     cooldown = int(G.graph.get("REMESH_COOLDOWN_VENTANA", DEFAULTS["REMESH_COOLDOWN_VENTANA"]))
     if step_idx - last < cooldown:
         return
+    t_now = float(G.graph.get("_t", 0.0))
+    last_ts = float(G.graph.get("_last_remesh_ts", -1e12))
+    cooldown_ts = float(G.graph.get("REMESH_COOLDOWN_TS", DEFAULTS.get("REMESH_COOLDOWN_TS", 0.0)))
+    if cooldown_ts > 0 and (t_now - last_ts) < cooldown_ts:
+        return
     # 4) Aplicar y registrar
     aplicar_remesh_red(G)
     G.graph["_last_remesh_step"] = step_idx
+    G.graph["_last_remesh_ts"] = t_now
