@@ -19,6 +19,7 @@ import networkx as nx
 from .observers import sincronía_fase, carga_glifica, orden_kuramoto, sigma_vector
 from .operators import aplicar_remesh_si_estabilizacion_global
 from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_dEPI, ALIAS_D2EPI
+from .gamma import eval_gamma
 from .helpers import (
      clamp, clamp01, list_mean, phase_distance,
      _get_attr, _set_attr, media_vecinal, fase_media,
@@ -122,7 +123,7 @@ def dnfr_epi_vf_mixed(G) -> None:
 # Ecuación nodal
 # -------------------------
 
-def update_epi_via_nodal_equation(G, *, dt: float = None) -> None:
+def update_epi_via_nodal_equation(G, *, dt: float = None, t: float | None = None) -> None:
     if not isinstance(G, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)):
         raise TypeError("G must be a networkx graph instance")
     if dt is None:
@@ -133,16 +134,22 @@ def update_epi_via_nodal_equation(G, *, dt: float = None) -> None:
         if dt < 0:
             raise ValueError("dt must be non-negative")
         dt = float(dt)
+    if t is None:
+        t = float(G.graph.get("_t", 0.0))
+    else:
+        t = float(t)
     for n in G.nodes():
         nd = G.nodes[n]
         vf = _get_attr(nd, ALIAS_VF, 0.0)
         dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
         dEPI_dt_prev = _get_attr(nd, ALIAS_dEPI, 0.0)
         dEPI_dt = vf * dnfr
+        dEPI_dt += eval_gamma(G, n, t)
         epi = _get_attr(nd, ALIAS_EPI, 0.0) + dt * dEPI_dt
         _set_attr(nd, ALIAS_EPI, epi)
         _set_attr(nd, ALIAS_dEPI, dEPI_dt)
         _set_attr(nd, ALIAS_D2EPI, (dEPI_dt - dEPI_dt_prev) / dt if dt != 0 else 0.0)
+    G.graph["_t"] = t + dt
 
 
 # -------------------------

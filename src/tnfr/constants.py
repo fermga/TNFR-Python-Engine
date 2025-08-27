@@ -148,6 +148,11 @@ DEFAULTS: Dict[str, Any] = {
         "accel_hi": 0.50, "accel_lo": 0.10
     },
     # Callbacks Γ(R)
+    "GAMMA": {
+        "type": "none",  # 'none' | 'kuramoto_linear' | 'kuramoto_bandpass'
+        "beta": 0.0,
+        "R0": 0.0,
+    },
     "CALLBACKS_STRICT": False,  # si True, un error en callback detiene; si False, se loguea y continúa
 }
 
