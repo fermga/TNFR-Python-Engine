@@ -16,6 +16,12 @@ from .ontosim import preparar_red
 from .observers import attach_standard_observer, coherencia_global, orden_kuramoto
 from .gamma import GAMMA_REGISTRY, eval_gamma, kuramoto_R_psi
 from .grammar import enforce_canonical_grammar, on_applied_glifo
+from .sense import (
+    GLYPHS_CANONICAL, glyph_angle, glyph_unit,
+    sigma_vector_node, sigma_vector_global,
+    push_sigma_snapshot, sigma_series, sigma_rose,
+    register_sigma_callback,
+)
 
 __all__ = [
     "preparar_red",
@@ -23,5 +29,9 @@ __all__ = [
     "attach_standard_observer", "coherencia_global", "orden_kuramoto",
     "GAMMA_REGISTRY", "eval_gamma", "kuramoto_R_psi",
     "enforce_canonical_grammar", "on_applied_glifo",
+    "GLYPHS_CANONICAL", "glyph_angle", "glyph_unit",
+    "sigma_vector_node", "sigma_vector_global",
+    "push_sigma_snapshot", "sigma_series", "sigma_rose",
+    "register_sigma_callback",
     "__version__",
 ]
