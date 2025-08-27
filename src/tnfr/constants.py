@@ -156,6 +156,17 @@ DEFAULTS: Dict[str, Any] = {
     "CALLBACKS_STRICT": False,  # si True, un error en callback detiene; si False, se loguea y continúa
 }
 
+# Gramática glífica canónica
+DEFAULTS.setdefault("GRAMMAR_CANON", {
+    "enabled": True,                # activar la gramática canónica
+    "zhir_requires_oz_window": 3,   # cuántos pasos atrás buscamos O’Z
+    "zhir_dnfr_min": 0.05,          # si |ΔNFR|_norm < este valor, no permitimos Z’HIR sin O’Z
+    "thol_min_len": 2,
+    "thol_max_len": 6,
+    "thol_close_dnfr": 0.15,        # si el campo calma, cerramos con SH’A/NU’L
+    "si_high": 0.66,                # umbral para elegir NU’L vs SH’A al cerrar
+})
+
 
 # -------------------------
 # Utilidades

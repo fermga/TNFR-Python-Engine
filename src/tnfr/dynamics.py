@@ -18,6 +18,7 @@ import networkx as nx
 
 from .observers import sincronía_fase, carga_glifica, orden_kuramoto, sigma_vector
 from .operators import aplicar_remesh_si_estabilizacion_global
+from .grammar import select_and_apply_with_grammar
 from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_dEPI, ALIAS_D2EPI
 from .gamma import eval_gamma
 from .helpers import (
@@ -440,9 +441,13 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
         selector = G.graph.get("glyph_selector", default_glyph_selector)
         from .operators import aplicar_glifo
         window = int(G.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS["GLYPH_HYSTERESIS_WINDOW"]))
+        use_canon = bool(G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})).get("enabled", False))
         for n in G.nodes():
-            g = selector(G, n)
-            aplicar_glifo(G, n, g, window=window)
+            if use_canon:
+                select_and_apply_with_grammar(G, n, selector, window)
+            else:
+                g = selector(G, n)
+                aplicar_glifo(G, n, g, window=window)
 
     # 4) Ecuación nodal
     update_epi_via_nodal_equation(G, dt=dt)
