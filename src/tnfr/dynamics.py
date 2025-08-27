@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import Dict, Any, Iterable
 import math
 from collections import deque
+import networkx as nx
 
 from .observers import sincronía_fase, carga_glifica, orden_kuramoto, sigma_vector
 from .operators import aplicar_remesh_si_estabilizacion_global
@@ -121,8 +122,16 @@ def dnfr_epi_vf_mixed(G) -> None:
 # -------------------------
 
 def update_epi_via_nodal_equation(G, *, dt: float = None) -> None:
+    if not isinstance(G, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)):
+        raise TypeError("G must be a networkx graph instance")
     if dt is None:
         dt = float(G.graph.get("DT", DEFAULTS["DT"]))
+    else:
+        if not isinstance(dt, (int, float)):
+            raise TypeError("dt must be a number")
+        if dt < 0:
+            raise ValueError("dt must be non-negative")
+        dt = float(dt)
     for n in G.nodes():
         nd = G.nodes[n]
         vf = _get_attr(nd, ALIAS_VF, 0.0)

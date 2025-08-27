@@ -56,9 +56,10 @@
 
 ## Testing
 
-Install the project in editable mode and run the test suite with `pytest`:
+Install the dependencies and project in editable mode before running the test suite with `pytest`:
 
 ```
+pip install networkx
 pip install -e .
 pytest
 ```
