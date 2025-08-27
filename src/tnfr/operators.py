@@ -7,6 +7,7 @@ import hashlib
 
 from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_D2EPI
 from .helpers import _get_attr, _set_attr, clamp, clamp01, list_mean, fase_media, push_glifo, invoke_callbacks
+from collections import deque
 
 """
 Este módulo implementa:
@@ -186,7 +187,7 @@ def aplicar_remesh_red(G) -> None:
     """
     tau = int(G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU"]))
     alpha, alpha_src = _remesh_alpha_info(G)
-    hist = G.graph.get("_epi_hist", [])
+    hist = G.graph.get("_epi_hist", deque())
     if len(hist) < tau + 1:
         return
 

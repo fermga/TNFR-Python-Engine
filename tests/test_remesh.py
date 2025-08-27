@@ -1,4 +1,5 @@
 import networkx as nx
+from collections import deque
 
 from tnfr.constants import attach_defaults
 from tnfr.operators import aplicar_remesh_si_estabilizacion_global
@@ -15,7 +16,8 @@ def test_aplicar_remesh_usa_parametro_personalizado():
 
     # Historial de EPI necesario para aplicar_remesh_red
     tau = G.graph["REMESH_TAU"]
-    G.graph["_epi_hist"] = [{0: 0.0} for _ in range(tau + 1)]
+    maxlen = max(2 * tau + 5, 64)
+    G.graph["_epi_hist"] = deque([{0: 0.0} for _ in range(tau + 1)], maxlen=maxlen)
 
     # Sin parámetro personalizado no se debería activar
     aplicar_remesh_si_estabilizacion_global(G)

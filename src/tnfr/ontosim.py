@@ -8,6 +8,7 @@ from __future__ import annotations
 import networkx as nx
 import math
 import random
+from collections import deque
 
 from .constants import DEFAULTS, attach_defaults
 from .dynamics import step as _step, run as _run
@@ -43,7 +44,9 @@ def preparar_red(G: nx.Graph, *, override_defaults: bool = False, **overrides) -
         "phase_R": [], 
         "phase_disr": [],
     })
-    G.graph.setdefault("_epi_hist", [])
+    tau = int(G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU"]))
+    maxlen = max(2 * tau + 5, 64)
+    G.graph.setdefault("_epi_hist", deque(maxlen=maxlen))
     # Auto-attach del observador estándar si se pide
     if G.graph.get("ATTACH_STD_OBSERVER", False):
         try:
