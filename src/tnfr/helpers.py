@@ -4,7 +4,7 @@ helpers.py — TNFR canónica
 Utilidades transversales + cálculo de Índice de sentido (Si).
 """
 from __future__ import annotations
-from typing import Iterable, Dict, Any, Tuple, List
+from typing import Iterable, Dict, Any
 import math
 from collections import deque
 from statistics import fmean, StatisticsError
@@ -82,16 +82,13 @@ def _set_attr(d, aliases, value: float) -> None:
 
 def media_vecinal(G, n, aliases: Iterable[str], default: float = 0.0) -> float:
     """Media del atributo indicado por ``aliases`` en los vecinos de ``n``."""
-    vals: List[float] = []
-    for v in G.neighbors(n):
-        vals.append(_get_attr(G.nodes[v], aliases, default))
+    vals = (_get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
     return list_mean(vals, default)
 
 
 def fase_media(G, n) -> float:
     """Promedio circular de las fases de los vecinos."""
-    x = 0.0
-    y = 0.0
+    x = y = 0.0
     count = 0
     for v in G.neighbors(n):
         th = _get_attr(G.nodes[v], ALIAS_THETA, 0.0)
@@ -100,7 +97,7 @@ def fase_media(G, n) -> float:
         count += 1
     if count == 0:
         return _get_attr(G.nodes[n], ALIAS_THETA, 0.0)
-    return math.atan2(y / max(1, count), x / max(1, count))
+    return math.atan2(y / count, x / count)
 
 
 # -------------------------
@@ -118,8 +115,14 @@ def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
     hist = nd.get("hist_glifos")
     if not hist:
         return False
-    last = list(hist)[-ventana:]
-    return str(glifo) in last
+    gl = str(glifo)
+    for g in reversed(hist):
+        if g == gl:
+            return True
+        ventana -= 1
+        if ventana <= 0:
+            break
+    return False
 
 # -------------------------
 # Callbacks Γ(R)
