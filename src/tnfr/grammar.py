@@ -73,6 +73,16 @@ def _si(G, nd) -> float:
 # -------------------------
 
 def enforce_canonical_grammar(G, n, cand: str) -> str:
+    """Valida/ajusta el glifo candidato según la gramática canónica.
+
+    Reglas clave:
+      - Compatibilidades de transición glífica (recorrido TNFR).
+      - O’Z→Z’HIR: la mutación requiere disonancia reciente o |ΔNFR| alto.
+      - T’HOL[...]: obliga cierre con SH’A o NU’L cuando el campo se estabiliza
+        o se alcanza el largo del bloque; mantiene estado por nodo.
+
+    Devuelve el glifo efectivo a aplicar.
+    """
     nd = G.nodes[n]
     st = _gram_state(nd)
     cfg = G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {}))

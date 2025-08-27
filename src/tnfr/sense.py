@@ -88,6 +88,16 @@ def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] 
 
 
 def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
+    """Vector global del plano del sentido σ.
+
+    Mapea el último glifo de cada nodo a un vector unitario en S¹, ponderado
+    por `Si` (o `EPI`/1), y promedia para obtener:
+      - componentes (x, y), magnitud |σ| y ángulo arg(σ).
+
+    Interpretación TNFR: |σ| mide cuán alineada está la red en su
+    **recorrido glífico**; arg(σ) indica la **dirección funcional** dominante
+    (p. ej., torno a I’L/RA para consolidación/distribución, O’Z/Z’HIR para cambio).
+    """
     cfg = G.graph.get("SIGMA", DEFAULTS["SIGMA"])
     weight_mode = weight_mode or cfg.get("weight", "Si")
     acc = complex(0.0, 0.0)

@@ -154,6 +154,18 @@ _NAME_TO_OP = {
 
 
 def aplicar_glifo(G, n, glifo: str, *, window: Optional[int] = None) -> None:
+    """Aplica un glifo TNFR al nodo `n` con histéresis `window`.
+
+    Los 13 glifos implementan reorganizadores canónicos:
+      A’L (emisión), E’N (recepción), I’L (coherencia), O’Z (disonancia),
+      U’M (acoplamiento), R’A (resonancia), SH’A (silencio), VA’L (expansión),
+      NU’L (contracción), T’HOL (autoorganización), Z’HIR (mutación),
+      NA’V (transición), RE’MESH (recursividad).
+
+    Relación con la gramática: la selección previa debe pasar por
+    `enforce_canonical_grammar` (grammar.py) para respetar compatibilidades,
+    precondición O’Z→Z’HIR y cierres T’HOL[...].
+    """
     glifo = str(glifo)
     op = _NAME_TO_OP.get(glifo)
     if not op:

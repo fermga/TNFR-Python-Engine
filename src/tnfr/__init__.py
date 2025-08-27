@@ -28,6 +28,7 @@ from .metrics import (
     latency_series, glifogram_series,
     glyph_top, glyph_dwell_stats,
 )
+from .trace import register_trace
 from .program import play, seq, block, target, wait, THOL, TARGET, WAIT
 
 __all__ = [
@@ -41,6 +42,7 @@ __all__ = [
     "push_sigma_snapshot", "sigma_series", "sigma_rose",
     "register_sigma_callback",
     "register_metrics_callbacks",
+    "register_trace",
     "Tg_global", "Tg_by_node",
     "latency_series", "glifogram_series",
     "glyph_top", "glyph_dwell_stats",

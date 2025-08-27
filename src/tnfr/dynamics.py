@@ -125,6 +125,22 @@ def dnfr_epi_vf_mixed(G) -> None:
 # -------------------------
 
 def update_epi_via_nodal_equation(G, *, dt: float = None, t: float | None = None) -> None:
+    """Ecuación nodal TNFR.
+
+    Implementa la forma extendida de la ecuación nodal:
+        ∂EPI/∂t = νf · ΔNFR(t) + Γi(R)
+
+    Donde:
+      - EPI es la Estructura Primaria de Información del nodo.
+      - νf es la frecuencia estructural del nodo (Hz_str).
+      - ΔNFR(t) es el gradiente nodal (necesidad de reorganización),
+        típicamente una mezcla de componentes (p. ej. fase θ, EPI, νf).
+      - Γi(R) es el acoplamiento de red opcional en función del orden de Kuramoto R
+        (ver gamma.py), usado para modular la integración en red.
+
+    Referencias TNFR: ecuación nodal (manual), glosario νf/ΔNFR/EPI, operador Γ.
+    Efectos secundarios: cachea dEPI y actualiza EPI por integración explícita.
+    """
     if not isinstance(G, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)):
         raise TypeError("G must be a networkx graph instance")
     if dt is None:

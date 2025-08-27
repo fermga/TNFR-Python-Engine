@@ -49,7 +49,15 @@ def gamma_none(G, node, t, cfg: Dict[str, Any]) -> float:
 
 
 def gamma_kuramoto_linear(G, node, t, cfg: Dict[str, Any]) -> float:
-    """Γ = β · (R - R0) · cos(θ_i - ψ)"""
+    """Acoplamiento lineal de Kuramoto para Γi(R).
+
+    Fórmula: Γ = β · (R - R0) · cos(θ_i - ψ)
+      - R ∈ [0,1] es el orden global de fase.
+      - ψ es la fase media (dirección de coordinación).
+      - β, R0 son parámetros (ganancia/umbral).
+
+    Uso: refuerza integración cuando la red ya exhibe coherencia de fase (R>R0).
+    """
     beta = float(cfg.get("beta", 0.0))
     R0 = float(cfg.get("R0", 0.0))
     R, psi = kuramoto_R_psi(G)
