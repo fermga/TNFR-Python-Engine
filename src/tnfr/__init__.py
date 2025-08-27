@@ -8,7 +8,7 @@ Ecuación nodal:
     ∂EPI/∂t = νf · ΔNFR(t)
 """
 
-__version__ = "4.0.0"
+__version__ = "4.5.0"
 
 # Re-exports de la API pública
 from .dynamics import step, run, set_delta_nfr_hook
@@ -34,6 +34,7 @@ from .cli import main as cli_main
 from .scenarios import build_graph
 from .presets import get_preset
 from .types import NodeState
+
 
 __all__ = [
     "preparar_red",
