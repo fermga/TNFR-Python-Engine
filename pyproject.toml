@@ -1,6 +1,6 @@
 [project]
 name = "tnfr"
-version = "3.5.0"
+version = "4.0.0"
 description = "TNFR canónica: dinámica glífica modular sobre redes."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -37,3 +37,4 @@ Repository = "https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonant
 [build-system]
 requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
+
