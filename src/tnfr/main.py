@@ -4,6 +4,7 @@ import networkx as nx
 from . import preparar_red, run, __version__
 from .constants import merge_overrides, attach_defaults
 from .sense import register_sigma_callback
+from .metrics import register_metrics_callbacks
 
 def main(argv: list[str] | None = None) -> None:
     p = argparse.ArgumentParser(
@@ -25,6 +26,7 @@ def main(argv: list[str] | None = None) -> None:
     preparar_red(G, ATTACH_STD_OBSERVER=bool(args.observer))
     attach_defaults(G)
     register_sigma_callback(G)
+    register_metrics_callbacks(G)
     # Ejemplo: activar Γi(R) lineal con β=0.2 y R0=0.5
     merge_overrides(G, GAMMA={"type": "kuramoto_linear", "beta": 0.2, "R0": 0.5})
     run(G, args.steps)

@@ -22,6 +22,12 @@ from .sense import (
     push_sigma_snapshot, sigma_series, sigma_rose,
     register_sigma_callback,
 )
+from .metrics import (
+    register_metrics_callbacks,
+    Tg_global, Tg_by_node,
+    latency_series, glifogram_series,
+    glyph_top, glyph_dwell_stats,
+)
 
 __all__ = [
     "preparar_red",
@@ -33,5 +39,9 @@ __all__ = [
     "sigma_vector_node", "sigma_vector_global",
     "push_sigma_snapshot", "sigma_series", "sigma_rose",
     "register_sigma_callback",
+    "register_metrics_callbacks",
+    "Tg_global", "Tg_by_node",
+    "latency_series", "glifogram_series",
+    "glyph_top", "glyph_dwell_stats",
     "__version__",
 ]
