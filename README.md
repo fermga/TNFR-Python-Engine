@@ -1,6 +1,6 @@
 Estructura general del proyecto
 
-    Entrada del paquete. __init__.py registra módulos con nombres cortos para evitar importaciones circulares y expone la API pública preparar_red, step, run y utilidades de observación
+Entrada del paquete. __init__.py registra módulos con nombres cortos para evitar importaciones circulares y expone la API pública preparar_red, step, run y utilidades de observación
 
 Configuración y constantes. constants.py centraliza parámetros por defecto (discretización, rangos de EPI y νf, pesos de mezclas, límites de re‑mesh, etc.) y provee utilidades para inyectarlos en la red (attach_defaults, merge_overrides) junto con alias estandarizados para atributos nodales
 
@@ -15,9 +15,10 @@ Observadores y métricas. observers.py registra callbacks estándar y calcula co
 Orquestación de simulaciones. ontosim.py prepara una red de networkx, adjunta configuraciones e inicializa atributos (EPI, fases, frecuencias) antes de delegar la dinámica a dynamics.step/run
 
 CLI de demostración. main.py genera una red Erdős–Rényi, permite configurar parámetros básicos y ejecuta la simulación mostrando métricas finales
+
 Conceptos clave a comprender
 
-    Árbol de dependencias con alias. Los módulos se importan mutuamente mediante alias globales para simplificar el acceso y evitar ciclos, lo cual es esencial para navegar el código sin ambigüedades
+Árbol de dependencias con alias. Los módulos se importan mutuamente mediante alias globales para simplificar el acceso y evitar ciclos, lo cual es esencial para navegar el código sin ambigüedades
 
 Atributos nodales normalizados. Todos los datos (EPI, fase θ, frecuencia νf, ΔNFR, etc.) se almacenan en G.nodes[n] bajo nombres alias compatibles, facilitando extensiones y hooks personalizados
 
@@ -30,11 +31,12 @@ Glifos como operadores. Cada glifo es una transformación suave sobre atributos 
 Re‑mesh de red. Permite mezclar el estado actual con uno anterior (memoria τ) para estabilizar la red, con precedencia clara para α y condiciones basadas en la historia reciente de estabilidad y sincronía
 
 Callbacks y observadores. El sistema Γ(R) permite enganchar funciones antes/después de cada paso y tras el re‑mesh, facilitando monitoreo o intervención externa
+
 Recomendaciones para profundizar
 
-    NetworkX y Graph API. Familiarízate con cómo networkx maneja atributos y topologías, ya que toda la dinámica opera sobre Graph y sus propiedades.
+NetworkX y Graph API. Familiarízate con cómo networkx maneja atributos y topologías, ya que toda la dinámica opera sobre Graph y sus propiedades.
 
-    Extensión del campo ΔNFR. Explora set_delta_nfr_hook para implementar versiones alternativas del campo nodal y entender cómo se registran metadatos y pesos de mezcla
+Extensión del campo ΔNFR. Explora set_delta_nfr_hook para implementar versiones alternativas del campo nodal y entender cómo se registran metadatos y pesos de mezcla
 
 Diseño de nuevos glifos. Revisa la estructura de operators.py para añadir operadores o ajustar factores en DEFAULTS['GLYPH_FACTORS']
 
