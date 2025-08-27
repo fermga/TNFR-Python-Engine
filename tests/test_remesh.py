@@ -1,5 +1,6 @@
 import networkx as nx
 from collections import deque
+import networkx as nx
 
 from tnfr.constants import attach_defaults
 from tnfr.operators import aplicar_remesh_si_estabilizacion_global
