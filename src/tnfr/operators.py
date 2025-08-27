@@ -203,18 +203,17 @@ def _remesh_alpha_info(G):
 
 
 def aplicar_remesh_red(G) -> None:
-    """
-    RE’MESH a escala de red usando _epi_hist capturado en dynamics.step.
-    Loguea meta con alpha/tau/step + topo_hash y checksums/medias de EPI antes/después.
-    Precedencia de alpha: GLYPH_FACTORS → G.graph → DEFAULTS.
-    """
-    tau = int(G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU"]))
+    """RE’MESH a escala de red usando _epi_hist con memoria multi-escala."""
+    tau_g = int(G.graph.get("REMESH_TAU_GLOBAL", G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_GLOBAL"])) )
+    tau_l = int(G.graph.get("REMESH_TAU_LOCAL", G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_LOCAL"])) )
+    tau_req = max(tau_g, tau_l)
     alpha, alpha_src = _remesh_alpha_info(G)
     hist = G.graph.get("_epi_hist", deque())
-    if len(hist) < tau + 1:
+    if len(hist) < tau_req + 1:
         return
 
-    past = hist[-(tau + 1)]
+    past_g = hist[-(tau_g + 1)]
+    past_l = hist[-(tau_l + 1)]
 
     # --- Topología + snapshot EPI (ANTES) ---
     try:
@@ -239,8 +238,11 @@ def aplicar_remesh_red(G) -> None:
     for n in G.nodes():
         nd = G.nodes[n]
         epi_now = _get_attr(nd, ALIAS_EPI, 0.0)
-        epi_old = float(past.get(n, epi_now))
-        _set_attr(nd, ALIAS_EPI, (1 - alpha) * epi_now + alpha * epi_old)
+        epi_old_l = float(past_l.get(n, epi_now))
+        epi_old_g = float(past_g.get(n, epi_now))
+        mixed = (1 - alpha) * epi_now + alpha * epi_old_l
+        mixed = (1 - alpha) * mixed + alpha * epi_old_g
+        _set_attr(nd, ALIAS_EPI, mixed)
 
     # --- Snapshot EPI (DESPUÉS) ---
     epi_mean_after = list_mean(_get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes())
@@ -253,7 +255,8 @@ def aplicar_remesh_red(G) -> None:
     meta = {
         "alpha": alpha,
         "alpha_source": alpha_src,
-        "tau": tau,
+        "tau_global": tau_g,
+        "tau_local": tau_l,
         "step": step_idx,
         # firmas
         "topo_hash": topo_hash,
@@ -289,6 +292,9 @@ def aplicar_remesh_si_estabilizacion_global(G, pasos_estables_consecutivos: Opti
     req_extra = bool(G.graph.get("REMESH_REQUIRE_STABILITY", DEFAULTS["REMESH_REQUIRE_STABILITY"]))
     min_sync = float(G.graph.get("REMESH_MIN_PHASE_SYNC", DEFAULTS["REMESH_MIN_PHASE_SYNC"]))
     max_disr = float(G.graph.get("REMESH_MAX_GLYPH_DISR", DEFAULTS["REMESH_MAX_GLYPH_DISR"]))
+    min_sigma = float(G.graph.get("REMESH_MIN_SIGMA_MAG", DEFAULTS["REMESH_MIN_SIGMA_MAG"]))
+    min_R = float(G.graph.get("REMESH_MIN_KURAMOTO_R", DEFAULTS["REMESH_MIN_KURAMOTO_R"]))
+    min_sihi = float(G.graph.get("REMESH_MIN_SI_HI_FRAC", DEFAULTS["REMESH_MIN_SI_HI_FRAC"]))
 
     hist = G.graph.setdefault("history", {"stable_frac": []})
     sf = hist.get("stable_frac", [])
@@ -311,7 +317,22 @@ def aplicar_remesh_si_estabilizacion_global(G, pasos_estables_consecutivos: Opti
         if "glyph_load_disr" in hist and len(hist["glyph_load_disr"]) >= w_estab:
             win_disr = hist["glyph_load_disr"][-w_estab:]
             disr_ok = (sum(win_disr)/len(win_disr)) <= max_disr
-        if not (ps_ok and disr_ok):
+        # magnitud de sigma (mayor mejor)
+        sig_ok = True
+        if "sense_sigma_mag" in hist and len(hist["sense_sigma_mag"]) >= w_estab:
+            win_sig = hist["sense_sigma_mag"][-w_estab:]
+            sig_ok = (sum(win_sig)/len(win_sig)) >= min_sigma
+        # orden de Kuramoto R (mayor mejor)
+        R_ok = True
+        if "kuramoto_R" in hist and len(hist["kuramoto_R"]) >= w_estab:
+            win_R = hist["kuramoto_R"][-w_estab:]
+            R_ok = (sum(win_R)/len(win_R)) >= min_R
+        # fracción de nodos con Si alto (mayor mejor)
+        sihi_ok = True
+        if "Si_hi_frac" in hist and len(hist["Si_hi_frac"]) >= w_estab:
+            win_sihi = hist["Si_hi_frac"][-w_estab:]
+            sihi_ok = (sum(win_sihi)/len(win_sihi)) >= min_sihi
+        if not (ps_ok and disr_ok and sig_ok and R_ok and sihi_ok):
             return
     # 3) Cooldown
     last = G.graph.get("_last_remesh_step", -10**9)

@@ -83,10 +83,27 @@ def gamma_kuramoto_bandpass(G, node, t, cfg: Dict[str, Any]) -> float:
     return beta * R * (1.0 - R) * sgn
 
 
+def gamma_kuramoto_tanh(G, node, t, cfg: Dict[str, Any]) -> float:
+    """Acoplamiento saturante tipo tanh para Γi(R).
+
+    Fórmula: Γ = β · tanh(k·(R - R0)) · cos(θ_i - ψ)
+      - β: ganancia del acoplamiento
+      - k: pendiente de la tanh (cuán rápido satura)
+      - R0: umbral de activación
+    """
+    beta = float(cfg.get("beta", 0.0))
+    k = float(cfg.get("k", 1.0))
+    R0 = float(cfg.get("R0", 0.0))
+    R, psi = kuramoto_R_psi(G)
+    th_i = _get_attr(G.nodes[node], ALIAS_THETA, 0.0)
+    return beta * math.tanh(k * (R - R0)) * math.cos(th_i - psi)
+
+
 GAMMA_REGISTRY = {
     "none": gamma_none,
     "kuramoto_linear": gamma_kuramoto_linear,
     "kuramoto_bandpass": gamma_kuramoto_bandpass,
+    "kuramoto_tanh": gamma_kuramoto_tanh,
 }
 
 

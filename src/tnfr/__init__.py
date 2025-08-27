@@ -26,7 +26,7 @@ from .metrics import (
     register_metrics_callbacks,
     Tg_global, Tg_by_node,
     latency_series, glifogram_series,
-    glyph_top, glyph_dwell_stats,
+    glyph_top, glyph_dwell_stats, export_history,
 )
 from .trace import register_trace
 from .program import play, seq, block, target, wait, THOL, TARGET, WAIT, ejemplo_canonico_basico
@@ -52,6 +52,7 @@ __all__ = [
     "Tg_global", "Tg_by_node",
     "latency_series", "glifogram_series",
     "glyph_top", "glyph_dwell_stats",
+    "export_history",
     "play", "seq", "block", "target", "wait", "THOL", "TARGET", "WAIT",
     "cli_main", "build_graph", "get_preset", "NodeState",
     "ejemplo_canonico_basico",

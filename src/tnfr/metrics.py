@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import Dict, Any, List, Tuple
 from collections import defaultdict, Counter
 import statistics
+import csv
+import json
 
 from .constants import DEFAULTS
 from .helpers import _get_attr, clamp01, register_callback
@@ -209,3 +211,38 @@ def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
                 "count": int(len(runs)),
             }
     return out
+
+
+# -----------------------------
+# Export history to CSV/JSON
+# -----------------------------
+
+def export_history(G, base_path: str, fmt: str = "csv") -> None:
+    """Vuelca glifograma y traza σ(t) a archivos CSV o JSON compactos."""
+    hist = _ensure_history(G)
+    glifo = glifogram_series(G)
+    sigma = {
+        "t": list(range(len(hist.get("sense_sigma_mag", [])))),
+        "sigma_x": hist.get("sense_sigma_x", []),
+        "sigma_y": hist.get("sense_sigma_y", []),
+        "mag": hist.get("sense_sigma_mag", []),
+        "angle": hist.get("sense_sigma_angle", []),
+    }
+    fmt = fmt.lower()
+    if fmt == "csv":
+        with open(base_path + "_glifogram.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["t", *GLYPHS_CANONICAL])
+            ts = glifo.get("t", [])
+            for i, t in enumerate(ts):
+                row = [t] + [glifo.get(g, [0]*len(ts))[i] for g in GLYPHS_CANONICAL]
+                writer.writerow(row)
+        with open(base_path + "_sigma.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["t", "x", "y", "mag", "angle"])
+            for i, t in enumerate(sigma["t"]):
+                writer.writerow([t, sigma["sigma_x"][i], sigma["sigma_y"][i], sigma["mag"][i], sigma["angle"][i]])
+    else:
+        data = {"glifogram": glifo, "sigma": sigma}
+        with open(base_path + ".json", "w") as f:
+            json.dump(data, f)
