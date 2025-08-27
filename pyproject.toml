@@ -26,6 +26,13 @@ classifiers = [
 ]
 dependencies = ["networkx>=2.6"]
 
+[project.scripts]
+tnfr = "tnfr.main:main"
+
 [project.urls]
 Homepage = "https://pypi.org/project/tnfr/"
 Repository = "https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-"
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
