@@ -1,4 +1,4 @@
-# TNFR — Canonical Glyph-Based Dynamics
+# TNFR — Coherent dynamics
 
 Reference implementation of the Resonant Fractal Nature Theory (TNFR).
 It models glyph-driven dynamics on NetworkX graphs, providing a modular
