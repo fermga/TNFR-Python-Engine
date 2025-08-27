@@ -23,14 +23,7 @@ import math
 import cmath
 
 from .constants import ALIAS_THETA
-
-
-def _get_attr(nd: Dict[str, Any], aliases, default: float = 0.0) -> float:
-    """Obtiene el primer atributo presente en nd según aliases."""
-    for k in aliases:
-        if k in nd:
-            return nd[k]
-    return default
+from .helpers import _get_attr
 
 
 def kuramoto_R_psi(G) -> Tuple[float, float]:

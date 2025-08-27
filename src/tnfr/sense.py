@@ -4,7 +4,7 @@ import math
 from collections import Counter
 
 from .constants import DEFAULTS, ALIAS_SI, ALIAS_EPI
-from .helpers import _get_attr, clamp01, register_callback
+from .helpers import _get_attr, clamp01, register_callback, ensure_history, last_glifo
 
 # -------------------------
 # Canon: orden circular de glifos y ángulos
@@ -60,23 +60,14 @@ def _weight(G, n, mode: str) -> float:
     return 1.0
 
 
-def _last_glifo(nd: Dict[str, Any]) -> str | None:
-    hist = nd.get("hist_glifos")
-    if not hist:
-        return None
-    try:
-        return list(hist)[-1]
-    except Exception:
-        return None
-
-
+    
 # -------------------------
 # σ por nodo y σ global
 # -------------------------
 
 def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] | None:
     nd = G.nodes[n]
-    g = _last_glifo(nd)
+    g = last_glifo(nd)
     if g is None:
         return None
     w = _weight(G, n, weight_mode or G.graph.get("SIGMA", DEFAULTS["SIGMA"]).get("weight", "Si"))
@@ -120,17 +111,11 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
 # Historia / series
 # -------------------------
 
-def _ensure_history(G):
-    if "history" not in G.graph:
-        G.graph["history"] = {}
-    return G.graph["history"]
-
-
 def push_sigma_snapshot(G, t: float | None = None) -> None:
     cfg = G.graph.get("SIGMA", DEFAULTS["SIGMA"])
     if not cfg.get("enabled", True):
         return
-    hist = _ensure_history(G)
+    hist = ensure_history(G)
     key = cfg.get("history_key", "sigma_global")
 
     # Global
@@ -153,7 +138,7 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
     # Conteo de glifos por paso (útil para rosa glífica)
     counts = Counter()
     for n in G.nodes():
-        g = _last_glifo(G.nodes[n])
+        g = last_glifo(G.nodes[n])
         if g:
             counts[g] += 1
     hist.setdefault("sigma_counts", []).append({"t": sv["t"], **counts})
@@ -163,7 +148,7 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
         per = hist.setdefault("sigma_per_node", {})
         for n in G.nodes():
             nd = G.nodes[n]
-            g = _last_glifo(nd)
+            g = last_glifo(nd)
             if not g:
                 continue
             a = glyph_angle(g)

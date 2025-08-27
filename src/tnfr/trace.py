@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 from collections import Counter
 
 from .constants import DEFAULTS
-from .helpers import register_callback
+from .helpers import register_callback, ensure_history, last_glifo
 
 try:
     from .gamma import kuramoto_R_psi
@@ -30,22 +30,6 @@ DEFAULTS.setdefault("TRACE", {
 # Helpers
 # -------------------------
 
-def _ensure_history(G):
-    if "history" not in G.graph:
-        G.graph["history"] = {}
-    return G.graph["history"]
-
-
-def _last_glifo(nd: Dict[str, Any]) -> str | None:
-    h = nd.get("hist_glifos")
-    if not h:
-        return None
-    try:
-        return list(h)[-1]
-    except Exception:
-        return None
-
-
 # -------------------------
 # Snapshots
 # -------------------------
@@ -55,7 +39,7 @@ def _trace_before(G, *args, **kwargs):
         return
     cfg = G.graph.get("TRACE", DEFAULTS["TRACE"])
     capture: List[str] = list(cfg.get("capture", []))
-    hist = _ensure_history(G)
+    hist = ensure_history(G)
     key = cfg.get("history_key", "trace_meta")
 
     meta: Dict[str, Any] = {"t": float(G.graph.get("_t", 0.0)), "phase": "before"}
@@ -103,7 +87,7 @@ def _trace_after(G, *args, **kwargs):
         return
     cfg = G.graph.get("TRACE", DEFAULTS["TRACE"])
     capture: List[str] = list(cfg.get("capture", []))
-    hist = _ensure_history(G)
+    hist = ensure_history(G)
     key = cfg.get("history_key", "trace_meta")
 
     meta: Dict[str, Any] = {"t": float(G.graph.get("_t", 0.0)), "phase": "after"}
@@ -119,7 +103,7 @@ def _trace_after(G, *args, **kwargs):
     if "glifo_counts" in capture:
         cnt = Counter()
         for n in G.nodes():
-            g = _last_glifo(G.nodes[n])
+            g = last_glifo(G.nodes[n])
             if g:
                 cnt[g] += 1
         meta["glifos"] = dict(cnt)

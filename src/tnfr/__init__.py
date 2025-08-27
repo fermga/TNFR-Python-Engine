@@ -8,7 +8,7 @@ Ecuación nodal:
     ∂EPI/∂t = νf · ΔNFR(t)
 """
 
-__version__ = "4.2.0"
+__version__ = "4.3.0"
 
 # Re-exports de la API pública
 from .dynamics import step, run, set_delta_nfr_hook, validate_canon
