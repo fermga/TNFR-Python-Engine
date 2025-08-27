@@ -8,8 +8,8 @@ from collections import Counter
 from typing import Dict, Any
 import math
 
-from constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
-from helpers import _get_attr, list_mean, register_callback
+from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
+from .helpers import _get_attr, list_mean, register_callback
 
 # -------------------------
 # Observador estándar Γ(R)

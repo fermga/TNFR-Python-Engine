@@ -14,10 +14,10 @@ from __future__ import annotations
 from typing import Dict, Any, Iterable
 import math
 
-from observers import sincronía_fase, carga_glifica, orden_kuramoto, sigma_vector
-from operators import aplicar_remesh_si_estabilizacion_global
-from constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_dEPI, ALIAS_D2EPI
-from helpers import (
+from .observers import sincronía_fase, carga_glifica, orden_kuramoto, sigma_vector
+from .operators import aplicar_remesh_si_estabilizacion_global
+from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_dEPI, ALIAS_D2EPI
+from .helpers import (
      clamp, clamp01, list_mean, phase_distance,
      _get_attr, _set_attr, media_vecinal, fase_media,
      invoke_callbacks, reciente_glifo
@@ -175,20 +175,30 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
     Si no se pasan fuerzas explícitas, adapta kG/kL según estado (disonante / transición / estable).
     Estado se decide por R (Kuramoto) y carga glífica disruptiva reciente.
     """
+    g = G.graph
+    defaults = DEFAULTS
     # 0) Si hay fuerzas explícitas, usar y salir del modo adaptativo
     if (fuerza_global is not None) or (fuerza_vecinal is not None):
-        kG = float(fuerza_global if fuerza_global is not None else G.graph.get("PHASE_K_GLOBAL", DEFAULTS["PHASE_K_GLOBAL"]))
-        kL = float(fuerza_vecinal if fuerza_vecinal is not None else G.graph.get("PHASE_K_LOCAL",  DEFAULTS["PHASE_K_LOCAL"]))
+        kG = float(
+            fuerza_global
+            if fuerza_global is not None
+            else g.get("PHASE_K_GLOBAL", defaults["PHASE_K_GLOBAL"])
+        )
+        kL = float(
+            fuerza_vecinal
+            if fuerza_vecinal is not None
+            else g.get("PHASE_K_LOCAL", defaults["PHASE_K_LOCAL"])
+        )
     else:
         # 1) Lectura de configuración
-        cfg = G.graph.get("PHASE_ADAPT", DEFAULTS.get("PHASE_ADAPT", {}))
-        kG = float(G.graph.get("PHASE_K_GLOBAL", DEFAULTS["PHASE_K_GLOBAL"]))
-        kL = float(G.graph.get("PHASE_K_LOCAL",  DEFAULTS["PHASE_K_LOCAL"]))
+        cfg = g.get("PHASE_ADAPT", defaults.get("PHASE_ADAPT", {}))
+        kG = float(g.get("PHASE_K_GLOBAL", defaults["PHASE_K_GLOBAL"]))
+        kL = float(g.get("PHASE_K_LOCAL", defaults["PHASE_K_LOCAL"]))
 
         if bool(cfg.get("enabled", False)):
             # 2) Métricas actuales (no dependemos de history)
             R = orden_kuramoto(G)
-            win = int(G.graph.get("GLYPH_LOAD_WINDOW", DEFAULTS["GLYPH_LOAD_WINDOW"]))
+            win = int(g.get("GLYPH_LOAD_WINDOW", defaults["GLYPH_LOAD_WINDOW"]))
             dist = carga_glifica(G, window=win)
             disr = float(dist.get("_disruptivos", 0.0)) if dist else 0.0
 
@@ -216,7 +226,9 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
                 kG_t = 0.5 * (kG_min + kG_max)
                 kL_t = 0.5 * (kL_min + kL_max)
 
-            up = float(cfg.get("up", 0.10)); down = float(cfg.get("down", 0.07))
+            up = float(cfg.get("up", 0.10))
+            down = float(cfg.get("down", 0.07))
+
             def _step(curr, target, mn, mx):
                 gain = up if target > curr else down
                 nxt = curr + gain * (target - curr)
@@ -226,14 +238,19 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
             kL = _step(kL, kL_t, kL_min, kL_max)
 
             # 5) Persistir en G.graph y log de serie
-            G.graph["PHASE_K_GLOBAL"] = kG
-            G.graph["PHASE_K_LOCAL"]  = kL
-            hist = G.graph.setdefault("history", {})
-            hist.setdefault("phase_kG", []).append(float(kG))
-            hist.setdefault("phase_kL", []).append(float(kL))
-            hist.setdefault("phase_state", []).append(state)
-            hist.setdefault("phase_R", []).append(float(R))
-            hist.setdefault("phase_disr", []).append(float(disr))
+            g["PHASE_K_GLOBAL"] = kG
+            g["PHASE_K_LOCAL"] = kL
+            hist = g.setdefault("history", {})
+            hist_kG = hist.setdefault("phase_kG", [])
+            hist_kL = hist.setdefault("phase_kL", [])
+            hist_state = hist.setdefault("phase_state", [])
+            hist_R = hist.setdefault("phase_R", [])
+            hist_disr = hist.setdefault("phase_disr", [])
+            hist_kG.append(float(kG))
+            hist_kL.append(float(kL))
+            hist_state.append(state)
+            hist_R.append(float(R))
+            hist_disr.append(float(disr))
 
     # 6) Fase GLOBAL (centroide) para empuje
     X = list(math.cos(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes())
@@ -394,7 +411,7 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
 
     # 2) (opcional) Si
     if use_Si:
-        from helpers import compute_Si
+        from .helpers import compute_Si
         compute_Si(G, inplace=True)
 
     # 2b) Normalizadores para selector paramétrico (por paso)
@@ -403,7 +420,7 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     # 3) Selección glífica + aplicación
     if apply_glyphs:
         selector = G.graph.get("glyph_selector", default_glyph_selector)
-        from operators import aplicar_glifo
+        from .operators import aplicar_glifo
         window = int(G.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS["GLYPH_HYSTERESIS_WINDOW"]))
         for n in G.nodes():
             g = selector(G, n)
