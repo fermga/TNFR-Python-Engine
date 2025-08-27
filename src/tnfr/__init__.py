@@ -28,6 +28,7 @@ from .metrics import (
     latency_series, glifogram_series,
     glyph_top, glyph_dwell_stats,
 )
+from .program import play, seq, block, target, wait, THOL, TARGET, WAIT
 
 __all__ = [
     "preparar_red",
@@ -43,5 +44,6 @@ __all__ = [
     "Tg_global", "Tg_by_node",
     "latency_series", "glifogram_series",
     "glyph_top", "glyph_dwell_stats",
+    "play", "seq", "block", "target", "wait", "THOL", "TARGET", "WAIT",
     "__version__",
 ]
