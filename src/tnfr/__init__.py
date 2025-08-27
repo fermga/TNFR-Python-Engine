@@ -8,10 +8,10 @@ Ecuación nodal:
     ∂EPI/∂t = νf · ΔNFR(t)
 """
 
-__version__ = "4.1.0"
+__version__ = "4.2.0"
 
 # Re-exports de la API pública
-from .dynamics import step, run, set_delta_nfr_hook
+from .dynamics import step, run, set_delta_nfr_hook, validate_canon
 from .ontosim import preparar_red
 from .observers import attach_standard_observer, coherencia_global, orden_kuramoto
 from .gamma import GAMMA_REGISTRY, eval_gamma, kuramoto_R_psi
@@ -38,7 +38,7 @@ from .types import NodeState
 
 __all__ = [
     "preparar_red",
-    "step", "run", "set_delta_nfr_hook",
+    "step", "run", "set_delta_nfr_hook", "validate_canon",
 
     "attach_standard_observer", "coherencia_global", "orden_kuramoto",
     "GAMMA_REGISTRY", "eval_gamma", "kuramoto_R_psi",

@@ -212,6 +212,17 @@ def aplicar_clamps_canonicos(nd: Dict[str, Any], G=None, node=None) -> None:
         _set_attr(nd, ALIAS_THETA, ((th + math.pi) % (2*math.pi) - math.pi))
 
 
+def validate_canon(G) -> None:
+    """Aplica clamps canónicos a todos los nodos de ``G``.
+
+    Envuelve fase y restringe ``EPI`` y ``νf`` a los rangos en ``G.graph``.
+    Si ``VALIDATORS_STRICT`` está activo, registra alertas en ``history``.
+    """
+    for n in G.nodes():
+        aplicar_clamps_canonicos(G.nodes[n], G, n)
+    return G
+
+
 def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_vecinal: float | None = None) -> None:
     """
     Ajusta fase con mezcla GLOBAL+VECINAL.
