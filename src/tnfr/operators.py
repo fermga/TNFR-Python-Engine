@@ -5,8 +5,8 @@ import math
 import random
 import hashlib
 
-from constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_D2EPI
-from helpers import _get_attr, _set_attr, clamp, clamp01, list_mean, fase_media, push_glifo, invoke_callbacks
+from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_D2EPI
+from .helpers import _get_attr, _set_attr, clamp, clamp01, list_mean, fase_media, push_glifo, invoke_callbacks
 
 """
 Este módulo implementa:
