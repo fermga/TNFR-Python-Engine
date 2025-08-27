@@ -1,6 +1,7 @@
 {
   "name": "teoria-de-la-naturaleza-fractal-resonante-tnfr",
   "version": "3.0.3",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "build": "remix vite:build",
