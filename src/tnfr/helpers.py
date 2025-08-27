@@ -13,7 +13,7 @@ try:
 except Exception:  # pragma: no cover
     nx = None  # type: ignore
 
-from constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI
+from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI
 
 # -------------------------
 # Utilidades numéricas

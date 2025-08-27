@@ -14,10 +14,10 @@ from __future__ import annotations
 from typing import Dict, Any, Iterable
 import math
 
-from observers import sincronía_fase, carga_glifica, orden_kuramoto, sigma_vector
-from operators import aplicar_remesh_si_estabilizacion_global
-from constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_dEPI, ALIAS_D2EPI
-from helpers import (
+from .observers import sincronía_fase, carga_glifica, orden_kuramoto, sigma_vector
+from .operators import aplicar_remesh_si_estabilizacion_global
+from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_dEPI, ALIAS_D2EPI
+from .helpers import (
      clamp, clamp01, list_mean, phase_distance,
      _get_attr, _set_attr, media_vecinal, fase_media,
      invoke_callbacks, reciente_glifo
@@ -394,7 +394,7 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
 
     # 2) (opcional) Si
     if use_Si:
-        from helpers import compute_Si
+        from .helpers import compute_Si
         compute_Si(G, inplace=True)
 
     # 2b) Normalizadores para selector paramétrico (por paso)
@@ -403,7 +403,7 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     # 3) Selección glífica + aplicación
     if apply_glyphs:
         selector = G.graph.get("glyph_selector", default_glyph_selector)
-        from operators import aplicar_glifo
+        from .operators import aplicar_glifo
         window = int(G.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS["GLYPH_HYSTERESIS_WINDOW"]))
         for n in G.nodes():
             g = selector(G, n)
