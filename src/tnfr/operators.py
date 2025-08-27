@@ -190,24 +190,25 @@ def aplicar_glifo(G, n, glifo: str, *, window: Optional[int] = None) -> None:
 # -------------------------
 
 def _remesh_alpha_info(G):
-    """Devuelve (alpha, source) con precedencia explícita."""
-    hard = bool(G.graph.get("REMESH_ALPHA_HARD", DEFAULTS.get("REMESH_ALPHA_HARD", False)))
-    gf = G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
-    if not hard and "REMESH_alpha" in gf:
-        return float(gf["REMESH_alpha"]), "GLYPH_FACTORS"
-    if "REMESH_ALPHA" in G.graph:
-        return float(G.graph["REMESH_ALPHA"]), "G.graph"
+    """Devuelve `(alpha, source)` con precedencia explícita."""
+    if bool(G.graph.get("REMESH_ALPHA_HARD", DEFAULTS.get("REMESH_ALPHA_HARD", False))):
+        val = float(G.graph.get("REMESH_ALPHA", DEFAULTS["REMESH_ALPHA"]))
+        return val, "REMESH_ALPHA"
+    gf = G.graph.get("GLYPH_FACTORS", DEFAULTS.get("GLYPH_FACTORS", {}))
     if "REMESH_alpha" in gf:
-        return float(gf["REMESH_alpha"]), "GLYPH_FACTORS"
-    return float(DEFAULTS["REMESH_ALPHA"]), "DEFAULTS"
+        return float(gf["REMESH_alpha"]), "GLYPH_FACTORS.REMESH_alpha"
+    if "REMESH_ALPHA" in G.graph:
+        return float(G.graph["REMESH_ALPHA"]), "REMESH_ALPHA"
+    return float(DEFAULTS["REMESH_ALPHA"]), "DEFAULTS.REMESH_ALPHA"
 
 
 def aplicar_remesh_red(G) -> None:
     """RE’MESH a escala de red usando _epi_hist con memoria multi-escala."""
-    tau_g = int(G.graph.get("REMESH_TAU_GLOBAL", G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_GLOBAL"])) )
-    tau_l = int(G.graph.get("REMESH_TAU_LOCAL", G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_LOCAL"])) )
+    tau_g = int(G.graph.get("REMESH_TAU_GLOBAL", G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_GLOBAL"])))
+    tau_l = int(G.graph.get("REMESH_TAU_LOCAL", G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_LOCAL"])))
     tau_req = max(tau_g, tau_l)
     alpha, alpha_src = _remesh_alpha_info(G)
+    G.graph["_REMESH_ALPHA_SRC"] = alpha_src
     hist = G.graph.get("_epi_hist", deque())
     if len(hist) < tau_req + 1:
         return
