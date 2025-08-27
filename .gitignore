@@ -1,0 +1,17 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.cache/
+
+# Node artifacts
+node_modules/
+*.tsbuildinfo
+
+# Misc
+*.log
+.env

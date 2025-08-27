@@ -52,6 +52,7 @@ def _write_dnfr_metadata(G, *, weights: dict, hook_name: str, note: str | None =
 
 
 def default_compute_delta_nfr(G) -> None:
+    """Calcula ΔNFR mezclando gradientes de fase, EPI y νf según pesos."""
     w = G.graph.get("DNFR_WEIGHTS", DEFAULTS["DNFR_WEIGHTS"])  # dict
     w_phase = float(w.get("phase", 0.34))
     w_epi = float(w.get("epi", 0.33))

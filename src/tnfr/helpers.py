@@ -21,19 +21,23 @@ from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, A
 # -------------------------
 
 def clamp(x: float, a: float, b: float) -> float:
+    """Constriñe ``x`` al intervalo cerrado [a, b]."""
     return a if x < a else b if x > b else x
 
 
 def clamp_abs(x: float, m: float) -> float:
+    """Limita ``x`` al rango simétrico [-m, m] usando ``abs(m)``."""
     m = abs(m)
     return clamp(x, -m, m)
 
 
 def clamp01(x: float) -> float:
+    """Ataja ``x`` a la banda [0, 1]."""
     return clamp(x, 0.0, 1.0)
 
 
 def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
+    """Promedio aritmético o ``default`` si ``xs`` está vacío."""
     try:
         return fmean(xs)
     except StatisticsError:
@@ -77,6 +81,7 @@ def _set_attr(d, aliases, value: float) -> None:
 # -------------------------
 
 def media_vecinal(G, n, aliases: Iterable[str], default: float = 0.0) -> float:
+    """Media del atributo indicado por ``aliases`` en los vecinos de ``n``."""
     vals: List[float] = []
     for v in G.neighbors(n):
         vals.append(_get_attr(G.nodes[v], aliases, default))
@@ -103,11 +108,13 @@ def fase_media(G, n) -> float:
 # -------------------------
 
 def push_glifo(nd: Dict[str, Any], glifo: str, window: int) -> None:
+    """Añade ``glifo`` al historial del nodo con tamaño máximo ``window``."""
     hist = nd.setdefault("hist_glifos", deque(maxlen=window))
     hist.append(str(glifo))
 
 
 def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
+    """Indica si ``glifo`` apareció en las últimas ``ventana`` emisiones."""
     hist = nd.get("hist_glifos")
     if not hist:
         return False

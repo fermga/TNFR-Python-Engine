@@ -54,6 +54,9 @@
 
 **Mastering these pieces will let you extend the simulation, build analysis pipelines and connect the theory with computational applications.**
 
+## Optional Node environment
+The repository includes a minimal `package.json` and `netlify.toml` used for an experimental Remix web demo. They are not required for the core Python package; feel free to ignore them unless you plan to build the demo via `npm run build`.
+
 ## Testing
 
 Install the dependencies and project in editable mode before running the test suite with `pytest`:
