@@ -44,15 +44,27 @@ def coherencia_global(G) -> float:
 
 
 def sincronía_fase(G) -> float:
-    X = list(math.cos(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes())
-    Y = list(math.sin(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes())
+    X = [math.cos(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes()]
+    Y = [math.sin(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes()]
     if not X:
         return 1.0
-    import math
-    th = math.atan2(sum(Y)/len(Y), sum(X)/len(X))
+    th = math.atan2(sum(Y) / len(Y), sum(X) / len(X))
     # varianza angular aproximada (0 = muy sincronizado)
     import statistics as st
-    var = st.pvariance([((_get_attr(G.nodes[n], ALIAS_THETA, 0.0) - th + math.pi) % (2*math.pi) - math.pi) for n in G.nodes()]) if len(X) > 1 else 0.0
+    var = (
+        st.pvariance(
+            [
+                (
+                    (_get_attr(G.nodes[n], ALIAS_THETA, 0.0) - th + math.pi)
+                    % (2 * math.pi)
+                    - math.pi
+                )
+                for n in G.nodes()
+            ]
+        )
+        if len(X) > 1
+        else 0.0
+    )
     return 1.0 / (1.0 + var)
 
 def orden_kuramoto(G) -> float:
