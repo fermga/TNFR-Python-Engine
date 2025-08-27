@@ -16,6 +16,9 @@ _PRESETS = {
         "SH’A",
     ),
     "ejemplo_canonico": ejemplo_canonico_basico(),
+    # Topologías fractales: expansión/contracción modular
+    "fractal_expand": seq(block("T’HOL", "VA’L", "U’M", repeat=2, close="NU’L"), "R’A"),
+    "fractal_contract": seq(block("T’HOL", "NU’L", "U’M", repeat=2, close="SH’A"), "R’A"),
 }
 
 

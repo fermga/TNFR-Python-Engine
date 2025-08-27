@@ -80,10 +80,15 @@ DEFAULTS: Dict[str, Any] = {
     "REMESH_STABILITY_WINDOW": 25,     # tamaño de ventana para evaluar estabilidad
     "REMESH_MIN_PHASE_SYNC": 0.85,     # media mínima de sincronía de fase en ventana
     "REMESH_MAX_GLYPH_DISR": 0.35,     # media máxima de carga glífica disruptiva en ventana
+    "REMESH_MIN_SIGMA_MAG": 0.50,      # magnitud mínima de σ en ventana
+    "REMESH_MIN_KURAMOTO_R": 0.80,    # R de Kuramoto mínimo en ventana
+    "REMESH_MIN_SI_HI_FRAC": 0.50,    # fracción mínima de nodos con Si alto
     "REMESH_LOG_EVENTS": True,         # guarda eventos y metadatos del RE’MESH
 
-    # RE’MESH: memoria τ y mezcla α
-    "REMESH_TAU": 8,                  # pasos hacia atrás
+    # RE’MESH: memoria τ y mezcla α (global/local)
+    "REMESH_TAU": 8,                  # compatibilidad: tau global por defecto
+    "REMESH_TAU_GLOBAL": 8,           # pasos hacia atrás (escala global)
+    "REMESH_TAU_LOCAL": 4,            # pasos hacia atrás (escala local)
     "REMESH_ALPHA": 0.5,              # mezcla con pasado
     "REMESH_ALPHA_HARD": False,       # si True ignora GLYPH_FACTORS['REMESH_alpha']
 
@@ -214,3 +219,6 @@ ALIAS_EPI    = ("EPI", "psi", "PSI", "value")
 ALIAS_SI     = ("Si", "sense_index", "S_i", "sense", "meaning_index")
 ALIAS_dEPI   = ("dEPI_dt", "dpsi_dt", "dEPI", "velocity")
 ALIAS_D2EPI  = ("d2EPI_dt2", "d2psi_dt2", "d2EPI", "accel")
+ALIAS_dVF    = ("dνf_dt", "dvf_dt", "dnu_dt", "dvf")
+ALIAS_D2VF   = ("d2νf_dt2", "d2vf_dt2", "d2nu_dt2", "B")
+ALIAS_dSI    = ("δSi", "delta_Si", "dSi")

@@ -19,7 +19,11 @@ import networkx as nx
 from .observers import sincronía_fase, carga_glifica, orden_kuramoto, sigma_vector
 from .operators import aplicar_remesh_si_estabilizacion_global
 from .grammar import select_and_apply_with_grammar
-from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_dEPI, ALIAS_D2EPI
+from .constants import (
+    DEFAULTS,
+    ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI,
+    ALIAS_dEPI, ALIAS_D2EPI, ALIAS_dVF, ALIAS_D2VF, ALIAS_dSI,
+)
 from .gamma import eval_gamma
 from .helpers import (
      clamp, clamp01, list_mean, phase_distance,
@@ -436,6 +440,19 @@ def parametric_glyph_selector(G, n) -> str:
             prev = list(hist)[-1]
             if isinstance(prev, str) and prev in ("I’L","O’Z","Z’HIR","T’HOL","NA’V","R’A"):
                 return prev
+
+    # Penalización por falta de avance en σ/Si si se repite glifo
+    prev = None
+    hist_prev = nd.get("hist_glifos")
+    if hist_prev:
+        prev = list(hist_prev)[-1]
+    if prev == cand:
+        delta_si = _get_attr(nd, ALIAS_dSI, 0.0)
+        h = G.graph.get("history", {})
+        sig = h.get("sense_sigma_mag", [])
+        delta_sigma = sig[-1] - sig[-2] if len(sig) >= 2 else 0.0
+        if delta_si <= 0.0 and delta_sigma <= 0.0:
+            score -= 0.05
             
     # Override suave guiado por score (solo si NO cayó la histéresis arriba)
     # Regla: score>=0.66 inclina a I’L; score<=0.33 inclina a O’Z/Z’HIR
@@ -498,7 +515,9 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     # 7) Observadores ligeros
     _update_history(G)
     # dynamics.py — dentro de step(), justo antes del punto 8)
-    tau = int(G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU"]))
+    tau_g = int(G.graph.get("REMESH_TAU_GLOBAL", DEFAULTS["REMESH_TAU_GLOBAL"]))
+    tau_l = int(G.graph.get("REMESH_TAU_LOCAL", DEFAULTS["REMESH_TAU_LOCAL"]))
+    tau = max(tau_g, tau_l)
     maxlen = max(2 * tau + 5, 64)
     epi_hist = G.graph.get("_epi_hist")
     if not isinstance(epi_hist, deque) or epi_hist.maxlen != maxlen:
@@ -539,11 +558,12 @@ def run(G, steps: int, *, dt: float | None = None, use_Si: bool = True, apply_gl
 # -------------------------
 
 def _update_history(G) -> None:
-    hist = G.graph.setdefault("history", {
-        "C_steps": [], "stable_frac": [],
-        "phase_sync": [], "glyph_load_estab": [], "glyph_load_disr": [],
-        "Si_mean": [], "Si_hi_frac": [], "Si_lo_frac": []
-    })
+    hist = G.graph.setdefault("history", {})
+    for k in (
+        "C_steps", "stable_frac", "phase_sync", "glyph_load_estab", "glyph_load_disr",
+        "Si_mean", "Si_hi_frac", "Si_lo_frac", "delta_Si", "B"
+    ):
+        hist.setdefault(k, [])
 
     # Proxy de coherencia C(t)
     dnfr_mean = list_mean(abs(_get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes())
@@ -563,11 +583,37 @@ def _update_history(G) -> None:
     eps_depi = float(G.graph.get("EPS_DEPI_STABLE", DEFAULTS["EPS_DEPI_STABLE"]))
     stables = 0
     total = max(1, G.number_of_nodes())
+    dt = float(G.graph.get("DT", DEFAULTS.get("DT", 1.0))) or 1.0
+    delta_si_acc = []
+    B_acc = []
     for n in G.nodes():
         nd = G.nodes[n]
         if abs(_get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr and abs(_get_attr(nd, ALIAS_dEPI, 0.0)) <= eps_depi:
             stables += 1
+
+        # δSi por nodo
+        Si_curr = _get_attr(nd, ALIAS_SI, 0.0)
+        Si_prev = nd.get("_prev_Si", Si_curr)
+        dSi = Si_curr - Si_prev
+        nd["_prev_Si"] = Si_curr
+        _set_attr(nd, ALIAS_dSI, dSi)
+        delta_si_acc.append(dSi)
+
+        # Bifurcación B = ∂²νf/∂t²
+        vf_curr = _get_attr(nd, ALIAS_VF, 0.0)
+        vf_prev = nd.get("_prev_vf", vf_curr)
+        dvf_dt = (vf_curr - vf_prev) / dt
+        dvf_prev = nd.get("_prev_dvf", dvf_dt)
+        B = (dvf_dt - dvf_prev) / dt
+        nd["_prev_vf"] = vf_curr
+        nd["_prev_dvf"] = dvf_dt
+        _set_attr(nd, ALIAS_dVF, dvf_dt)
+        _set_attr(nd, ALIAS_D2VF, B)
+        B_acc.append(B)
+
     hist["stable_frac"].append(stables/total)
+    hist["delta_Si"].append(list_mean(delta_si_acc, 0.0))
+    hist["B"].append(list_mean(B_acc, 0.0))
     # --- nuevas series: sincronía de fase y carga glífica ---
     try:
         ps = sincronía_fase(G)                 # [0,1], más alto = más en fase
