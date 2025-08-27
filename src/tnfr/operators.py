@@ -256,10 +256,7 @@ def aplicar_remesh_red(G) -> None:
 
 def aplicar_remesh_si_estabilizacion_global(G, pasos_estables_consecutivos: Optional[int] = None) -> None:
     # Ventanas y umbrales
-    if pasos_estables_consecutivos is not None:
-        w_estab = int(pasos_estables_consecutivos)
-    else:
-        w_estab = int(G.graph.get("REMESH_STABILITY_WINDOW", DEFAULTS["REMESH_STABILITY_WINDOW"]))
+    w_estab = int(G.graph.get("REMESH_STABILITY_WINDOW", DEFAULTS["REMESH_STABILITY_WINDOW"]))
     frac_req = float(G.graph.get("FRACTION_STABLE_REMESH", DEFAULTS["FRACTION_STABLE_REMESH"]))
     req_extra = bool(G.graph.get("REMESH_REQUIRE_STABILITY", DEFAULTS["REMESH_REQUIRE_STABILITY"]))
     min_sync = float(G.graph.get("REMESH_MIN_PHASE_SYNC", DEFAULTS["REMESH_MIN_PHASE_SYNC"]))
