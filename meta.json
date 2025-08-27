@@ -10,6 +10,10 @@
   },
   "keywords": [
     "TNFR",
+    "fractal",
+    "resonancia",
+    "fractal resonante",
+    "glifos",
     "teoría glífica",
     "estructura simbólica",
     "nodo resonante",
@@ -22,15 +26,8 @@
   ],
   "license": "https://www.gnu.org/licenses/gpl-3.0.html",
   "url": "https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-",
-  "hasPart": [
-    "README.md",
-    "activador-nodal-v1.txt",
-    "activador-nodal-v1.json",
-    "EPQNA.pdf",
-    "TNFR.pdf"
-  ],
-  "includedInDataCatalog": "Red simbólica TNFR",
   "datePublished": "2025-05-05",
   "version": "1.0",
   "isAccessibleForFree": true
 }
+
