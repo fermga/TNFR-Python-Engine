@@ -1,14 +1,14 @@
 [project]
 name = "tnfr"
-version = "4.2.0"
-description = "TNFR canónica: dinámica glífica modular sobre redes."
+version = "4.3.0"
+description = "Canonical TNFR: modular glyph-based dynamics on networks."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [{ name = "fmg" }]
 keywords = [
-  "TNFR", "fractal resonante", "resonancia", "glifos",
-  "networkx", "dinámica", "coherencia", "EPI", "Kuramoto"
+  "TNFR", "resonant fractal", "resonance", "glyphs",
+  "networkx", "dynamics", "coherence", "EPI", "Kuramoto"
 ]
 classifiers = [
   "Programming Language :: Python :: 3",

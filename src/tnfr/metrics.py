@@ -6,7 +6,7 @@ import csv
 import json
 
 from .constants import DEFAULTS
-from .helpers import _get_attr, clamp01, register_callback
+from .helpers import register_callback, ensure_history, last_glifo
 from .sense import GLYPHS_CANONICAL
 
 # -------------
@@ -18,24 +18,11 @@ DEFAULTS.setdefault("METRICS", {
     "normalize_series": False # glifograma normalizado a fracción por paso
 })
 
+    
+    
 # -------------
 # Utilidades internas
 # -------------
-
-def _ensure_history(G):
-    if "history" not in G.graph:
-        G.graph["history"] = {}
-    return G.graph["history"]
-
-
-def _last_glifo(nd: Dict[str, Any]) -> str | None:
-    hist = nd.get("hist_glifos")
-    if not hist:
-        return None
-    try:
-        return list(hist)[-1]
-    except Exception:
-        return None
 
 
 # -------------
@@ -46,10 +33,7 @@ def _tg_state(nd: Dict[str, Any]) -> Dict[str, Any]:
     """Estructura interna por nodo para acumular tiempos de corrida por glifo.
     Campos: curr (glifo actual), run (tiempo acumulado en el glifo actual)
     """
-    st = nd.setdefault("_Tg", {"curr": None, "run": 0.0})
-    st.setdefault("curr", None)
-    st.setdefault("run", 0.0)
-    return st
+    return nd.setdefault("_Tg", {"curr": None, "run": 0.0})
 
 
 # -------------
@@ -68,7 +52,7 @@ def _metrics_step(G, *args, **kwargs):
     if not G.graph.get("METRICS", DEFAULTS.get("METRICS", {})).get("enabled", True):
         return
 
-    hist = _ensure_history(G)
+    hist = ensure_history(G)
     dt = float(G.graph.get("DT", 1.0))
     t = float(G.graph.get("_t", 0.0))
 
@@ -86,7 +70,7 @@ def _metrics_step(G, *args, **kwargs):
 
     for n in G.nodes():
         nd = G.nodes[n]
-        g = _last_glifo(nd)
+        g = last_glifo(nd)
         if not g:
             continue
 
@@ -145,7 +129,7 @@ def register_metrics_callbacks(G) -> None:
 
 def Tg_global(G, normalize: bool = True) -> Dict[str, float]:
     """Tiempo glífico total por clase. Si normalize=True, devuelve fracciones del total."""
-    hist = _ensure_history(G)
+    hist = ensure_history(G)
     tg_total: Dict[str, float] = hist.get("Tg_total", {})
     total = sum(tg_total.values()) or 1.0
     if normalize:
@@ -155,7 +139,7 @@ def Tg_global(G, normalize: bool = True) -> Dict[str, float]:
 
 def Tg_by_node(G, n, normalize: bool = False) -> Dict[str, float | List[float]]:
     """Resumen por nodo: si normalize, devuelve medias por glifo; si no, lista de corridas."""
-    hist = _ensure_history(G)
+    hist = ensure_history(G)
     rec = hist.get("Tg_by_node", {}).get(n, {})
     if not normalize:
         # convertir default dict → list para serializar
@@ -169,7 +153,7 @@ def Tg_by_node(G, n, normalize: bool = False) -> Dict[str, float | List[float]]:
 
 
 def latency_series(G) -> Dict[str, List[float]]:
-    hist = _ensure_history(G)
+    hist = ensure_history(G)
     xs = hist.get("latency_index", [])
     return {
         "t": [float(x.get("t", i)) for i, x in enumerate(xs)],
@@ -178,7 +162,7 @@ def latency_series(G) -> Dict[str, List[float]]:
 
 
 def glifogram_series(G) -> Dict[str, List[float]]:
-    hist = _ensure_history(G)
+    hist = ensure_history(G)
     xs = hist.get("glifogram", [])
     if not xs:
         return {"t": []}
@@ -196,7 +180,7 @@ def glyph_top(G, k: int = 3) -> List[Tuple[str, float]]:
 
 def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
     """Estadísticos por nodo: mean/median/max de corridas por glifo."""
-    hist = _ensure_history(G)
+    hist = ensure_history(G)
     rec = hist.get("Tg_by_node", {}).get(n, {})
     out = {}
     for g in GLYPHS_CANONICAL:
@@ -219,7 +203,7 @@ def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
 
 def export_history(G, base_path: str, fmt: str = "csv") -> None:
     """Vuelca glifograma y traza σ(t) a archivos CSV o JSON compactos."""
-    hist = _ensure_history(G)
+    hist = ensure_history(G)
     glifo = glifogram_series(G)
     sigma_mag = hist.get("sense_sigma_mag", [])
     sigma = {

@@ -1,4 +1,10 @@
-# General Project Structure
+# TNFR — Canonical Glyph-Based Dynamics
+
+Reference implementation of the Resonant Fractal Nature Theory (TNFR).
+It models glyph-driven dynamics on NetworkX graphs, providing a modular
+engine to simulate coherent reorganization processes.
+
+## General Project Structure
 
 * **Package entry point.** `__init__.py` registers modules under short names to avoid circular imports and exposes the public API: `preparar_red`, `step`, `run`, and observation utilities.
 

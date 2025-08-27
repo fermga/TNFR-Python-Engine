@@ -125,6 +125,27 @@ def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
     return False
 
 # -------------------------
+# Utilidades de historial global
+# -------------------------
+
+def ensure_history(G) -> Dict[str, Any]:
+    """Garantiza G.graph['history'] y la devuelve."""
+    if "history" not in G.graph:
+        G.graph["history"] = {}
+    return G.graph["history"]
+
+
+def last_glifo(nd: Dict[str, Any]) -> str | None:
+    """Retorna el glifo más reciente del nodo o ``None``."""
+    hist = nd.get("hist_glifos")
+    if not hist:
+        return None
+    try:
+        return list(hist)[-1]
+    except Exception:
+        return None
+
+# -------------------------
 # Callbacks Γ(R)
 # -------------------------
 
