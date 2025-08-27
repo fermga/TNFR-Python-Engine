@@ -55,6 +55,14 @@ def _tg_state(nd: Dict[str, Any]) -> Dict[str, Any]:
 # -------------
 
 def _metrics_step(G, *args, **kwargs):
+    """Actualiza métricas operativas TNFR por paso.
+
+    - Tg (tiempo glífico): sumatoria de corridas por glifo (global y por nodo).
+    - Índice de latencia: fracción de nodos en SH’A.
+    - Glifograma: conteo o fracción por glifo en el paso.
+
+    Todos los resultados se guardan en G.graph['history'].
+    """
     if not G.graph.get("METRICS", DEFAULTS.get("METRICS", {})).get("enabled", True):
         return
 
