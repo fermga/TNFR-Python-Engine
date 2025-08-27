@@ -12,7 +12,7 @@ from helpers import _get_attr, _set_attr, clamp, clamp01, list_mean, fase_media,
 Este módulo implementa:
 - Los 13 glifos como operadores locales suaves.
 - Un dispatcher `aplicar_glifo` que mapea el nombre del glifo (con apóstrofo tipográfico) a su función.
-- RE’MESH de red: `aplicar_remesh_red` y `aplicar_remesh_si_estabilizacion_global`.
+- RE’MESH de red: `aplicar_remesh_red` y `aplicar_remesh_si_estabilización_global`.
 
 Nota sobre α (alpha) de RE’MESH: se toma por prioridad de
 1) G.graph["GLYPH_FACTORS"]["REMESH_alpha"]
