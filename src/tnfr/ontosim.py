@@ -9,16 +9,16 @@ import networkx as nx
 import math
 import random
 
-from constants import DEFAULTS, attach_defaults
-from dynamics import step as _step, run as _run
-from dynamics import default_compute_delta_nfr
+from .constants import DEFAULTS, attach_defaults
+from .dynamics import step as _step, run as _run
+from .dynamics import default_compute_delta_nfr
 
 # API de alto nivel
 
 def preparar_red(G: nx.Graph, *, override_defaults: bool = False, **overrides) -> nx.Graph:
     attach_defaults(G, override=override_defaults)
     if overrides:
-        from constants import merge_overrides
+        from .constants import merge_overrides
         merge_overrides(G, **overrides)
     # Inicializaciones blandas
     G.graph.setdefault("history", {
@@ -47,7 +47,7 @@ def preparar_red(G: nx.Graph, *, override_defaults: bool = False, **overrides) -
     # Auto-attach del observador estándar si se pide
     if G.graph.get("ATTACH_STD_OBSERVER", False):
         try:
-            from observers import attach_standard_observer
+            from .observers import attach_standard_observer
             attach_standard_observer(G)
         except Exception as e:
             G.graph.setdefault("_callback_errors", []).append(
