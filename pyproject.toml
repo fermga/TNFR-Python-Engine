@@ -1,11 +1,11 @@
 [project]
 name = "tnfr"
-version = "3.0.3"
+version = "3.5.0"
 description = "TNFR canónica: dinámica glífica modular sobre redes."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [{ name = "Fer" }]
+authors = [{ name = "fmg" }]
 keywords = [
   "TNFR", "fractal resonante", "resonancia", "glifos",
   "networkx", "dinámica", "coherencia", "EPI", "Kuramoto"
@@ -24,6 +24,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
   "Topic :: Scientific/Engineering :: Information Analysis"
 ]
+
 dependencies = ["networkx>=2.6"]
 
 [project.scripts]
