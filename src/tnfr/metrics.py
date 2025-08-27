@@ -221,11 +221,12 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
     """Vuelca glifograma y traza σ(t) a archivos CSV o JSON compactos."""
     hist = _ensure_history(G)
     glifo = glifogram_series(G)
+    sigma_mag = hist.get("sense_sigma_mag", [])
     sigma = {
-        "t": list(range(len(hist.get("sense_sigma_mag", [])))),
+        "t": list(range(len(sigma_mag))),
         "sigma_x": hist.get("sense_sigma_x", []),
         "sigma_y": hist.get("sense_sigma_y", []),
-        "mag": hist.get("sense_sigma_mag", []),
+        "mag": sigma_mag,
         "angle": hist.get("sense_sigma_angle", []),
     }
     fmt = fmt.lower()
@@ -234,8 +235,9 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
             writer = csv.writer(f)
             writer.writerow(["t", *GLYPHS_CANONICAL])
             ts = glifo.get("t", [])
+            default_col = [0] * len(ts)
             for i, t in enumerate(ts):
-                row = [t] + [glifo.get(g, [0]*len(ts))[i] for g in GLYPHS_CANONICAL]
+                row = [t] + [glifo.get(g, default_col)[i] for g in GLYPHS_CANONICAL]
                 writer.writerow(row)
         with open(base_path + "_sigma.csv", "w", newline="") as f:
             writer = csv.writer(f)

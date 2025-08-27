@@ -182,11 +182,7 @@ DEFAULTS.setdefault("GRAMMAR_CANON", {
 
 def attach_defaults(G, override: bool = False) -> None:
     """Escribe DEFAULTS en G.graph (sin sobreescribir si override=False)."""
-    G.graph.setdefault("_tnfr_defaults_attached", False)
-    for k, v in DEFAULTS.items():
-        if override or k not in G.graph:
-            G.graph[k] = v
-    G.graph["_tnfr_defaults_attached"] = True
+    inject_defaults(G, DEFAULTS, override=override)
 
 
 def inject_defaults(G, defaults: Dict[str, Any] = DEFAULTS, override: bool = False) -> None:
