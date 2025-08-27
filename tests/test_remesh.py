@@ -1,11 +1,4 @@
-import sys
-from pathlib import Path
-
 import networkx as nx
-
-# Asegurar que src esté en el path para importar tnfr
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
 
 from tnfr.constants import attach_defaults
 from tnfr.operators import aplicar_remesh_si_estabilizacion_global

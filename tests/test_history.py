@@ -1,9 +1,6 @@
 import networkx as nx
 import pytest
-import pathlib
-import sys
 
-sys.path.append(str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 from tnfr.dynamics import _update_history
 
 
