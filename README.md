@@ -63,5 +63,9 @@ pip install networkx
 pip install -e .
 pytest
 
+```
+
+## Installation
+```
 pip install tnfr
 ```
