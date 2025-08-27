@@ -62,4 +62,6 @@ Install the dependencies and project in editable mode before running the test su
 pip install networkx
 pip install -e .
 pytest
+
+pip install tnfr
 ```
