@@ -53,3 +53,12 @@
 ---
 
 **Mastering these pieces will let you extend the simulation, build analysis pipelines and connect the theory with computational applications.**
+
+## Testing
+
+Install the project in editable mode and run the test suite with `pytest`:
+
+```
+pip install -e .
+pytest
+```

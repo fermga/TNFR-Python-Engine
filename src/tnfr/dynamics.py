@@ -13,6 +13,7 @@ Incluye:
 from __future__ import annotations
 from typing import Dict, Any, Iterable
 import math
+from collections import deque
 
 from .observers import sincronía_fase, carga_glifica, orden_kuramoto, sigma_vector
 from .operators import aplicar_remesh_si_estabilizacion_global
@@ -439,13 +440,13 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     # 7) Observadores ligeros
     _update_history(G)
     # dynamics.py — dentro de step(), justo antes del punto 8)
-    epi_hist = G.graph.setdefault("_epi_hist", [])
-    epi_hist.append({n: _get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes()})
-    # recorta el buffer para que no crezca sin límite
     tau = int(G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU"]))
-    maxlen = max(2*tau + 5, 64)
-    if len(epi_hist) > maxlen:
-        del epi_hist[:-maxlen]
+    maxlen = max(2 * tau + 5, 64)
+    epi_hist = G.graph.get("_epi_hist")
+    if not isinstance(epi_hist, deque) or epi_hist.maxlen != maxlen:
+        epi_hist = deque(list(epi_hist or [])[-maxlen:], maxlen=maxlen)
+        G.graph["_epi_hist"] = epi_hist
+    epi_hist.append({n: _get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes()})
 
     # 8) RE’MESH condicionado
     aplicar_remesh_si_estabilizacion_global(G)

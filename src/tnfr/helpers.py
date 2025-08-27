@@ -85,7 +85,6 @@ def media_vecinal(G, n, aliases: Iterable[str], default: float = 0.0) -> float:
 
 def fase_media(G, n) -> float:
     """Promedio circular de las fases de los vecinos."""
-    import math
     x = 0.0
     y = 0.0
     count = 0
