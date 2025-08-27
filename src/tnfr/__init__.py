@@ -14,10 +14,12 @@ __version__ = "3.0.3"
 from .dynamics import step, run, set_delta_nfr_hook
 from .ontosim import preparar_red
 from .observers import attach_standard_observer, coherencia_global, orden_kuramoto
+from .gamma import GAMMA_REGISTRY, eval_gamma, kuramoto_R_psi
 
 __all__ = [
     "preparar_red",
     "step", "run", "set_delta_nfr_hook",
     "attach_standard_observer", "coherencia_global", "orden_kuramoto",
+    "GAMMA_REGISTRY", "eval_gamma", "kuramoto_R_psi",
     "__version__",
 ]
