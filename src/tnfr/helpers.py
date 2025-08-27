@@ -7,13 +7,14 @@ from __future__ import annotations
 from typing import Iterable, Dict, Any, Tuple, List
 import math
 from collections import deque
+from statistics import fmean, StatisticsError
 
 try:
     import networkx as nx  # solo para tipos
 except Exception:  # pragma: no cover
     nx = None  # type: ignore
 
-from constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI
+from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI
 
 # -------------------------
 # Utilidades numéricas
@@ -33,8 +34,10 @@ def clamp01(x: float) -> float:
 
 
 def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
-    xs = list(xs)
-    return sum(xs) / len(xs) if xs else default
+    try:
+        return fmean(xs)
+    except StatisticsError:
+        return default
 
 
 def _wrap_angle(a: float) -> float:
