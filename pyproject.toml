@@ -1,0 +1,31 @@
+[project]
+name = "tnfr"
+version = "3.0.3"
+description = "TNFR canónica: dinámica glífica modular sobre redes."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Fer" }]
+keywords = [
+  "TNFR", "fractal resonante", "resonancia", "glifos",
+  "networkx", "dinámica", "coherencia", "EPI", "Kuramoto"
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Information Analysis"
+]
+dependencies = ["networkx>=2.6"]
+
+[project.urls]
+Homepage = "https://pypi.org/project/tnfr/"
+Repository = "https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-"
