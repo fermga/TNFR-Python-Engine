@@ -421,10 +421,10 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
 
     # 7) Observadores ligeros
     _update_history(G)
-    # dynamics.py — dentro de step(), justo antes del punto 8)
+    # Registra el EPI actual de todos los nodos en _epi_hist para mantener un historial temporal
     epi_hist = G.graph.setdefault("_epi_hist", [])
     epi_hist.append({n: _get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes()})
-    # recorta el buffer para que no crezca sin límite
+    # Recorta el buffer para que no crezca sin límite
     tau = int(G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU"]))
     maxlen = max(2*tau + 5, 64)
     if len(epi_hist) > maxlen:
