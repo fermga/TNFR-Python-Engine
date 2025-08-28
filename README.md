@@ -1,4 +1,4 @@
-# TNFR Python project
+# TNFR Python Project
 
 Reference implementation of the Resonant Fractal Nature Theory (TNFR).
 It models glyph-driven dynamics on NetworkX graphs, providing a modular
