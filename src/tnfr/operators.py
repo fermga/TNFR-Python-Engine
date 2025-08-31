@@ -164,7 +164,7 @@ def _op_THOL(node: NodoProtocol) -> None:  # T’HOL — Autoorganización
 
 
 def _op_ZHIR(node: NodoProtocol) -> None:  # Z’HIR — Mutación
-    shift = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("ZHIR_theta_shift", 1.57079632679))
+    shift = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("ZHIR_theta_shift", math.pi / 2))
     node.theta = node.theta + shift
 
 
