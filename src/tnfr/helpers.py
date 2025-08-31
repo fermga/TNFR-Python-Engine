@@ -71,6 +71,12 @@ def phase_distance(a: float, b: float) -> float:
 
 _sentinel = object()
 
+# Caché pequeña para resolver alias -> clave real.
+# Usa tuplas de alias como clave y almacena la clave encontrada.
+# Se limita el tamaño para evitar crecimiento sin control.
+_alias_cache: Dict[tuple[str, ...], str] = {}
+_ALIAS_CACHE_MAX = 16
+
 
 def alias_lookup(
     d: Dict[str, Any],
@@ -87,9 +93,26 @@ def alias_lookup(
     devolviendo ``default`` convertido si ninguna alias coincide o la conversión
     falla.
     """
-    alist = list(aliases)
+    alist = tuple(aliases)
+
+    # Intento de búsqueda rápida en la caché global
+    k = _alias_cache.get(alist)
+    if k is not None and k in d:
+        if value is not _sentinel:
+            d[k] = conv(value)
+            return d[k]
+        try:
+            return conv(d[k])
+        except Exception:
+            # Si la conversión falla, forzamos búsqueda normal
+            pass
+
+    # Búsqueda exhaustiva sobre las aliases
     for k in alist:
         if k in d:
+            if len(_alias_cache) >= _ALIAS_CACHE_MAX:
+                _alias_cache.pop(next(iter(_alias_cache)))
+            _alias_cache[alist] = k
             if value is not _sentinel:
                 d[k] = conv(value)
                 return d[k]
@@ -97,9 +120,15 @@ def alias_lookup(
                 return conv(d[k])
             except Exception:
                 continue
+
     if value is not _sentinel:
-        d[alist[0]] = conv(value)
-        return d[alist[0]]
+        k = alist[0]
+        d[k] = conv(value)
+        if len(_alias_cache) >= _ALIAS_CACHE_MAX:
+            _alias_cache.pop(next(iter(_alias_cache)))
+        _alias_cache[alist] = k
+        return d[k]
+
     if default is not _sentinel:
         return conv(default)
     return None
