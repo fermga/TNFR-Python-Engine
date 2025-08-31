@@ -1,5 +1,7 @@
 [project]
 name = "tnfr"
+# Versioning follows PEP 440 / Semantic Versioning and should stay
+# in sync with package.json.
 version = "4.5.2"
 description = "Modular structural-based dynamics on networks."
 readme = "README.md"
