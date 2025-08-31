@@ -6,7 +6,7 @@ from contextlib import contextmanager
 
 from .constants import get_param
 from .grammar import apply_glyph_with_grammar
-from .sense import GLYPHS_CANONICAL
+from .sense import GLYPHS_CANONICAL_SET
 from .types import Glyph
 
 # Tipos básicos
@@ -99,7 +99,7 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
         else:
             # item debería ser un glifo
             g = item.value if isinstance(item, Glyph) else str(item)
-            if g not in GLYPHS_CANONICAL:
+            if g not in GLYPHS_CANONICAL_SET:
                 raise ValueError(f"Glifo no canónico: {g}")
             ops.append(("GLYPH", g))
     return ops
