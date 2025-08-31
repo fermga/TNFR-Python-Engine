@@ -859,7 +859,6 @@ def _update_history(G) -> None:
   
     # --- nuevas series: Si agregado (media y colas) ---
     try:
-        import math
         sis = []
         for n in G.nodes():
             sis.append(_get_attr(G.nodes[n], ALIAS_SI, float("nan")))
