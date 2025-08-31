@@ -139,7 +139,7 @@ class Recursividad(Operador):
 
 
 OPERADORES = {
-    op().name: op
+    op.name: op
     for op in [
         Emision,
         Recepcion,
