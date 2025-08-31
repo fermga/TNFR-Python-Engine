@@ -9,7 +9,7 @@ from tnfr.constants import ALIAS_THETA
 from tnfr.observers import sincronía_fase, orden_kuramoto, carga_glifica
 from tnfr.sense import sigma_vector_global, sigma_vector
 from tnfr.constants_glifos import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
-from tnfr.helpers import angle_diff, _set_attr
+from tnfr.helpers import angle_diff, set_attr
 
 
 def test_random_jitter_cache_cleared_on_node_removal(graph_canon):
@@ -34,7 +34,7 @@ def test_phase_observers_match_manual_calculation(graph_canon):
     angles = [0.0, math.pi / 2, math.pi]
     for idx, th in enumerate(angles):
         G.add_node(idx)
-        _set_attr(G.nodes[idx], ALIAS_THETA, th)
+        set_attr(G.nodes[idx], ALIAS_THETA, th)
 
     X = [math.cos(th) for th in angles]
     Y = [math.sin(th) for th in angles]

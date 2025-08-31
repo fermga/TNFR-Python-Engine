@@ -15,10 +15,10 @@ from .helpers import (
     list_mean,
     invoke_callbacks,
     angle_diff,
-    _get_attr,
-    _set_attr,
-    _get_attr_str,
-    _set_attr_str,
+    get_attr,
+    set_attr,
+    get_attr_str,
+    set_attr_str,
     fase_media,
 )
 from .node import NodoProtocol, NodoNX
@@ -365,7 +365,7 @@ def aplicar_remesh_red(G) -> None:
 
     def _epi_items():
         for node in G.nodes():
-            yield node, _get_attr(G.nodes[node], ALIAS_EPI, 0.0)
+            yield node, get_attr(G.nodes[node], ALIAS_EPI, 0.0)
 
     epi_items = list(_epi_items())
     epi_mean_before = list_mean(v for _, v in epi_items)
@@ -375,16 +375,16 @@ def aplicar_remesh_red(G) -> None:
 
     # --- Mezcla (1-α)·now + α·old ---
     for n, nd in G.nodes(data=True):
-        epi_now = _get_attr(nd, ALIAS_EPI, 0.0)
+        epi_now = get_attr(nd, ALIAS_EPI, 0.0)
         epi_old_l = float(past_l.get(n, epi_now))
         epi_old_g = float(past_g.get(n, epi_now))
         mixed = (1 - alpha) * epi_now + alpha * epi_old_l
         mixed = (1 - alpha) * mixed + alpha * epi_old_g
-        _set_attr(nd, ALIAS_EPI, mixed)
+        set_attr(nd, ALIAS_EPI, mixed)
 
     # --- Snapshot EPI (DESPUÉS) ---
     epi_items_after = [
-        (n, _get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in G.nodes()
+        (n, get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in G.nodes()
     ]
     epi_mean_after = list_mean(v for _, v in epi_items_after)
     epi_checksum_after = hashlib.sha1(
@@ -452,7 +452,7 @@ def aplicar_remesh_red_topologico(
     mode = str(mode)
 
     # Similaridad basada en EPI (distancia absoluta)
-    epi = {n: _get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes}
+    epi = {n: get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes}
     H = nx.Graph()
     H.add_nodes_from(nodes)
     for i, u in enumerate(nodes):
@@ -478,22 +478,22 @@ def aplicar_remesh_red_topologico(
                 members = list(comm)
                 epi_mean = list_mean(epi[n] for n in members)
                 C.add_node(idx)
-                _set_attr(C.nodes[idx], ALIAS_EPI, epi_mean)
+                set_attr(C.nodes[idx], ALIAS_EPI, epi_mean)
                 C.nodes[idx]["members"] = members
             for i in C.nodes():
                 for j in C.nodes():
                     if i < j:
                         w = abs(
-                            _get_attr(C.nodes[i], ALIAS_EPI, 0.0)
-                            - _get_attr(C.nodes[j], ALIAS_EPI, 0.0)
+                            get_attr(C.nodes[i], ALIAS_EPI, 0.0)
+                            - get_attr(C.nodes[j], ALIAS_EPI, 0.0)
                         )
                         C.add_edge(i, j, weight=w)
             mst_c = nx.minimum_spanning_tree(C, weight="weight")
             new_edges = set(mst_c.edges())
             for u in C.nodes():
-                epi_u = _get_attr(C.nodes[u], ALIAS_EPI, 0.0)
+                epi_u = get_attr(C.nodes[u], ALIAS_EPI, 0.0)
                 others = [v for v in C.nodes() if v != u]
-                others.sort(key=lambda v: abs(epi_u - _get_attr(C.nodes[v], ALIAS_EPI, 0.0)))
+                others.sort(key=lambda v: abs(epi_u - get_attr(C.nodes[v], ALIAS_EPI, 0.0)))
                 for v in others[:k_val]:
                     if rnd.random() < p_rewire:
                         new_edges.add(tuple(sorted((u, v))))

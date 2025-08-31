@@ -24,7 +24,7 @@ from .helpers import (
     register_callback,
     ensure_history,
     last_glifo,
-    _get_attr,
+    get_attr,
     clamp01,
     list_mean,
 )
@@ -115,9 +115,9 @@ def _update_latency_index(G, hist, n_total, n_latent, t):
 def _update_epi_support(G, hist, t):
     """Calcula soporte y norma de la EPI."""
     thr = float(G.graph.get("EPI_SUPPORT_THR", DEFAULTS.get("EPI_SUPPORT_THR", 0.0)))
-    supp_nodes = [n for n in G.nodes() if abs(_get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= thr]
+    supp_nodes = [n for n in G.nodes() if abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= thr]
     epi_norm = (
-        sum(abs(_get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in supp_nodes) / len(supp_nodes)
+        sum(abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in supp_nodes) / len(supp_nodes)
         if supp_nodes
         else 0.0
     )
@@ -329,17 +329,17 @@ def _similarity_abs(a, b, lo, hi):
 def _coherence_components(G, ni, nj, epi_min, epi_max, vf_min, vf_max):
     ndi = G.nodes[ni]
     ndj = G.nodes[nj]
-    th_i = _get_attr(ndi, ALIAS_THETA, 0.0)
-    th_j = _get_attr(ndj, ALIAS_THETA, 0.0)
+    th_i = get_attr(ndi, ALIAS_THETA, 0.0)
+    th_j = get_attr(ndj, ALIAS_THETA, 0.0)
     s_phase = 0.5 * (1.0 + cos(th_i - th_j))
-    epi_i = _get_attr(ndi, ALIAS_EPI, 0.0)
-    epi_j = _get_attr(ndj, ALIAS_EPI, 0.0)
+    epi_i = get_attr(ndi, ALIAS_EPI, 0.0)
+    epi_j = get_attr(ndj, ALIAS_EPI, 0.0)
     s_epi = _similarity_abs(epi_i, epi_j, epi_min, epi_max)
-    vf_i = _get_attr(ndi, ALIAS_VF, 0.0)
-    vf_j = _get_attr(ndj, ALIAS_VF, 0.0)
+    vf_i = get_attr(ndi, ALIAS_VF, 0.0)
+    vf_j = get_attr(ndj, ALIAS_VF, 0.0)
     s_vf = _similarity_abs(vf_i, vf_j, vf_min, vf_max)
-    si_i = clamp01(_get_attr(ndi, ALIAS_SI, 0.0))
-    si_j = clamp01(_get_attr(ndj, ALIAS_SI, 0.0))
+    si_i = clamp01(get_attr(ndi, ALIAS_SI, 0.0))
+    si_j = clamp01(get_attr(ndj, ALIAS_SI, 0.0))
     s_si = 1.0 - abs(si_i - si_j)
     return s_phase, s_epi, s_vf, s_si
 
@@ -357,8 +357,8 @@ def coherence_matrix(G):
     # Precompute indices to avoid repeated list.index calls within loops
     node_to_index = {node: idx for idx, node in enumerate(nodes)}
 
-    epi_vals = [float(_get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in nodes]
-    vf_vals = [_get_attr(G.nodes[v], ALIAS_VF, 0.0) for v in nodes]
+    epi_vals = [float(get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in nodes]
+    vf_vals = [get_attr(G.nodes[v], ALIAS_VF, 0.0) for v in nodes]
     epi_min, epi_max = min(epi_vals), max(epi_vals)
     vf_min, vf_max = min(vf_vals), max(vf_vals)
 
@@ -457,7 +457,7 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=
     # --- Caso sin pesos ---
     if W_row is None or nodes_order is None:
         vec = [
-            cmath.exp(1j * float(_get_attr(G.nodes[v], ALIAS_THETA, 0.0)))
+            cmath.exp(1j * float(get_attr(G.nodes[v], ALIAS_THETA, 0.0)))
             for v in (G.neighbors(n) if neighbors_only else (set(G.nodes()) - {n}))
         ]
         if not vec:
@@ -495,7 +495,7 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=
             continue
         w = weights[j]
         den += w
-        th_j = float(_get_attr(G.nodes[nj], ALIAS_THETA, 0.0))
+        th_j = float(get_attr(G.nodes[nj], ALIAS_THETA, 0.0))
         num += w * cmath.exp(1j * th_j)
     return abs(num / den) if den else 0.0
 
@@ -516,7 +516,7 @@ def register_coherence_callbacks(G) -> None:
 
 
 def _dnfr_norm(nd, dnfr_max):
-    val = abs(float(_get_attr(nd, ALIAS_DNFR, 0.0)))
+    val = abs(float(get_attr(nd, ALIAS_DNFR, 0.0)))
     if dnfr_max <= 0:
         return 0.0
     x = val / dnfr_max
@@ -525,13 +525,13 @@ def _dnfr_norm(nd, dnfr_max):
 
 def _symmetry_index(G, n, k=3, epi_min=None, epi_max=None):
     nd = G.nodes[n]
-    epi_i = float(_get_attr(nd, ALIAS_EPI, 0.0))
+    epi_i = float(get_attr(nd, ALIAS_EPI, 0.0))
     vec = list(G.neighbors(n))
     if not vec:
         return 1.0
-    epi_bar = fmean(float(_get_attr(G.nodes[v], ALIAS_EPI, epi_i)) for v in vec)
+    epi_bar = fmean(float(get_attr(G.nodes[v], ALIAS_EPI, epi_i)) for v in vec)
     if epi_min is None or epi_max is None:
-        epis = [float(_get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in G.nodes()]
+        epis = [float(get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in G.nodes()]
         epi_min, epi_max = min(epis), max(epis)
     return _similarity_abs(epi_i, epi_bar, epi_min, epi_max)
 
@@ -560,9 +560,9 @@ def _diagnosis_step(G, ctx=None):
     hist = ensure_history(G)
     key = dcfg.get("history_key", "nodal_diag")
 
-    dnfr_vals = [abs(float(_get_attr(G.nodes[v], ALIAS_DNFR, 0.0))) for v in G.nodes()]
+    dnfr_vals = [abs(float(get_attr(G.nodes[v], ALIAS_DNFR, 0.0))) for v in G.nodes()]
     dnfr_max = max(dnfr_vals) if dnfr_vals else 1.0
-    epi_vals = [float(_get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in G.nodes()]
+    epi_vals = [float(get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in G.nodes()]
     epi_min, epi_max = (min(epi_vals) if epi_vals else 0.0), (max(epi_vals) if epi_vals else 1.0)
 
     CfgW = G.graph.get("COHERENCE", COHERENCE)
@@ -578,9 +578,9 @@ def _diagnosis_step(G, ctx=None):
     diag = {}
     for i, n in enumerate(nodes):
         nd = G.nodes[n]
-        Si = clamp01(_get_attr(nd, ALIAS_SI, 0.0))
-        EPI = float(_get_attr(nd, ALIAS_EPI, 0.0))
-        vf = _get_attr(nd, ALIAS_VF, 0.0)
+        Si = clamp01(get_attr(nd, ALIAS_SI, 0.0))
+        EPI = float(get_attr(nd, ALIAS_EPI, 0.0))
+        vf = get_attr(nd, ALIAS_VF, 0.0)
         dnfr_n = _dnfr_norm(nd, dnfr_max)
 
         Rloc = 0.0
@@ -635,7 +635,7 @@ def dissonance_events(G, ctx=None):
     node_to_index = {v: i for i, v in enumerate(nodes)}
     for n in nodes:
         nd = G.nodes[n]
-        dn = abs(_get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
+        dn = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
         Rloc = local_phase_sync_weighted(
             G, n, nodes_order=nodes, node_to_index=node_to_index
         )

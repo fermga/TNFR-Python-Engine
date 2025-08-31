@@ -6,7 +6,7 @@ from .constants import (
     ALIAS_SI, ALIAS_DNFR, ALIAS_EPI,
     get_param,
 )
-from .helpers import _get_attr, clamp01, reciente_glifo
+from .helpers import get_attr, clamp01, reciente_glifo
 from .types import Glyph
 
 # Glifos nominales (para evitar typos)
@@ -63,11 +63,11 @@ def _dnfr_norm(G, nd) -> float:
     # Normalizador robusto: usa historial de |ΔNFR| máx guardado por dynamics (si existe)
     norms = G.graph.get("_sel_norms") or {}
     dmax = float(norms.get("dnfr_max", 1.0)) or 1.0
-    return clamp01(abs(_get_attr(nd, ALIAS_DNFR, 0.0)) / dmax)
+    return clamp01(abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dmax)
 
 
 def _si(G, nd) -> float:
-    return clamp01(_get_attr(nd, ALIAS_SI, 0.5))
+    return clamp01(get_attr(nd, ALIAS_SI, 0.5))
 
 # -------------------------
 # Núcleo: forzar gramática sobre un candidato

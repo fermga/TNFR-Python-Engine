@@ -35,7 +35,7 @@ from .constants import (
 from .gamma import eval_gamma
 from .helpers import (
      clamp, clamp01, list_mean, phase_distance, angle_diff,
-     _get_attr, _set_attr, _get_attr_str, _set_attr_str, media_vecinal, fase_media,
+     get_attr, set_attr, get_attr_str, set_attr_str, media_vecinal, fase_media,
      invoke_callbacks, reciente_glifo, set_vf, set_dnfr
 )
 
@@ -112,9 +112,9 @@ def default_compute_delta_nfr(G) -> None:
     degs = dict(G.degree()) if w_topo != 0 else None
 
     for n, nd in G.nodes(data=True):
-        th_i = _get_attr(nd, ALIAS_THETA, 0.0)
-        epi_i = _get_attr(nd, ALIAS_EPI, 0.0)
-        vf_i = _get_attr(nd, ALIAS_VF, 0.0)
+        th_i = get_attr(nd, ALIAS_THETA, 0.0)
+        epi_i = get_attr(nd, ALIAS_EPI, 0.0)
+        vf_i = get_attr(nd, ALIAS_VF, 0.0)
 
         x = y = epi_sum = vf_sum = 0.0
         count = 0
@@ -125,11 +125,11 @@ def default_compute_delta_nfr(G) -> None:
 
         for v in G.neighbors(n):
             nd_v = G.nodes[v]
-            th_v = _get_attr(nd_v, ALIAS_THETA, 0.0)
+            th_v = get_attr(nd_v, ALIAS_THETA, 0.0)
             x += math.cos(th_v)
             y += math.sin(th_v)
-            epi_sum += _get_attr(nd_v, ALIAS_EPI, epi_i)
-            vf_sum += _get_attr(nd_v, ALIAS_VF, vf_i)
+            epi_sum += get_attr(nd_v, ALIAS_EPI, epi_i)
+            vf_sum += get_attr(nd_v, ALIAS_VF, vf_i)
             if w_topo != 0 and degs is not None:
                 deg_sum += degs.get(v, deg_i)
             count += 1
@@ -175,7 +175,7 @@ def set_delta_nfr_hook(G, func, *, name: str | None = None, note: str | None = N
 def dnfr_phase_only(G) -> None:
     """Ejemplo: ΔNFR solo desde fase (tipo Kuramoto-like)."""
     for n, nd in G.nodes(data=True):
-        th_i = _get_attr(nd, ALIAS_THETA, 0.0)
+        th_i = get_attr(nd, ALIAS_THETA, 0.0)
         th_bar = fase_media(G, n)
         g_phase = -angle_diff(th_i, th_bar) / math.pi
         set_dnfr(G, n, g_phase)
@@ -184,10 +184,10 @@ def dnfr_phase_only(G) -> None:
 def dnfr_epi_vf_mixed(G) -> None:
     """Ejemplo: ΔNFR sin fase, mezclando EPI y νf."""
     for n, nd in G.nodes(data=True):
-        epi_i = _get_attr(nd, ALIAS_EPI, 0.0)
+        epi_i = get_attr(nd, ALIAS_EPI, 0.0)
         epi_bar = media_vecinal(G, n, ALIAS_EPI, default=epi_i)
         g_epi = (epi_bar - epi_i)
-        vf_i = _get_attr(nd, ALIAS_VF, 0.0)
+        vf_i = get_attr(nd, ALIAS_VF, 0.0)
         vf_bar = media_vecinal(G, n, ALIAS_VF, default=vf_i)
         g_vf = (vf_bar - vf_i)
         set_dnfr(G, n, 0.5*g_epi + 0.5*g_vf)
@@ -199,12 +199,12 @@ def dnfr_laplacian(G) -> None:
     wE = float(G.graph.get("DNFR_WEIGHTS", {}).get("epi", 0.33))
     wV = float(G.graph.get("DNFR_WEIGHTS", {}).get("vf", 0.33))
     for n, nd in G.nodes(data=True):
-        epi = _get_attr(nd, ALIAS_EPI, 0.0)
-        vf = _get_attr(nd, ALIAS_VF, 0.0)
+        epi = get_attr(nd, ALIAS_EPI, 0.0)
+        vf = get_attr(nd, ALIAS_VF, 0.0)
         neigh = list(G.neighbors(n))
         deg = len(neigh) or 1
-        epi_bar = sum(_get_attr(G.nodes[v], ALIAS_EPI, epi) for v in neigh) / deg
-        vf_bar = sum(_get_attr(G.nodes[v], ALIAS_VF, vf) for v in neigh) / deg
+        epi_bar = sum(get_attr(G.nodes[v], ALIAS_EPI, epi) for v in neigh) / deg
+        vf_bar = sum(get_attr(G.nodes[v], ALIAS_VF, vf) for v in neigh) / deg
         g_epi = epi_bar - epi
         g_vf = vf_bar - vf
         set_dnfr(G, n, wE * g_epi + wV * g_vf)
@@ -271,10 +271,10 @@ def update_epi_via_nodal_equation(
     t_local = t
     for _ in range(steps):
         for n, nd in G.nodes(data=True):
-            vf = _get_attr(nd, ALIAS_VF, 0.0)
-            dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
-            dEPI_dt_prev = _get_attr(nd, ALIAS_dEPI, 0.0)
-            epi_i = _get_attr(nd, ALIAS_EPI, 0.0)
+            vf = get_attr(nd, ALIAS_VF, 0.0)
+            dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
+            dEPI_dt_prev = get_attr(nd, ALIAS_dEPI, 0.0)
+            epi_i = get_attr(nd, ALIAS_EPI, 0.0)
 
             base = vf * dnfr
 
@@ -293,12 +293,12 @@ def update_epi_via_nodal_equation(
                 dEPI_dt = base + gamma_local
                 epi = epi_i + dt_step * dEPI_dt
 
-            epi_kind = _get_attr_str(nd, ALIAS_EPI_KIND, "")
-            _set_attr(nd, ALIAS_EPI, epi)
+            epi_kind = get_attr_str(nd, ALIAS_EPI_KIND, "")
+            set_attr(nd, ALIAS_EPI, epi)
             if epi_kind:
-                _set_attr_str(nd, ALIAS_EPI_KIND, epi_kind)
-            _set_attr(nd, ALIAS_dEPI, dEPI_dt)
-            _set_attr(nd, ALIAS_D2EPI, (dEPI_dt - dEPI_dt_prev) / dt_step if dt_step != 0 else 0.0)
+                set_attr_str(nd, ALIAS_EPI_KIND, epi_kind)
+            set_attr(nd, ALIAS_dEPI, dEPI_dt)
+            set_attr(nd, ALIAS_D2EPI, (dEPI_dt - dEPI_dt_prev) / dt_step if dt_step != 0 else 0.0)
 
         t_local += dt_step
 
@@ -329,9 +329,9 @@ def aplicar_clamps_canonicos(nd: Dict[str, Any], G=None, node=None) -> None:
     vf_min = float((G.graph.get("VF_MIN") if G is not None else DEFAULTS["VF_MIN"]))
     vf_max = float((G.graph.get("VF_MAX") if G is not None else DEFAULTS["VF_MAX"]))
 
-    epi = _get_attr(nd, ALIAS_EPI, 0.0)
-    vf = _get_attr(nd, ALIAS_VF, 0.0)
-    th = _get_attr(nd, ALIAS_THETA, 0.0)
+    epi = get_attr(nd, ALIAS_EPI, 0.0)
+    vf = get_attr(nd, ALIAS_VF, 0.0)
+    th = get_attr(nd, ALIAS_THETA, 0.0)
 
     strict = bool((G.graph.get("VALIDATORS_STRICT") if G is not None else DEFAULTS.get("VALIDATORS_STRICT", False)))
     if strict and G is not None:
@@ -341,14 +341,14 @@ def aplicar_clamps_canonicos(nd: Dict[str, Any], G=None, node=None) -> None:
         if vf < vf_min or vf > vf_max:
             hist.append({"node": node, "attr": "VF", "value": float(vf)})
 
-    _set_attr(nd, ALIAS_EPI, clamp(epi, eps_min, eps_max))
+    set_attr(nd, ALIAS_EPI, clamp(epi, eps_min, eps_max))
     if G is not None and node is not None:
         set_vf(G, node, clamp(vf, vf_min, vf_max))
     else:
-        _set_attr(nd, ALIAS_VF, clamp(vf, vf_min, vf_max))
+        set_attr(nd, ALIAS_VF, clamp(vf, vf_min, vf_max))
     if (G.graph.get("THETA_WRAP") if G is not None else DEFAULTS["THETA_WRAP"]):
         # envolver fase
-        _set_attr(nd, ALIAS_THETA, ((th + math.pi) % (2*math.pi) - math.pi))
+        set_attr(nd, ALIAS_THETA, ((th + math.pi) % (2*math.pi) - math.pi))
 
 
 def validate_canon(G) -> None:
@@ -457,7 +457,7 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
     # 6) Fase GLOBAL (centroide) para empuje
     x_sum = y_sum = 0.0
     for n in G.nodes():
-        th = _get_attr(G.nodes[n], ALIAS_THETA, 0.0)
+        th = get_attr(G.nodes[n], ALIAS_THETA, 0.0)
         x_sum += math.cos(th)
         y_sum += math.sin(th)
     num_nodes = G.number_of_nodes()
@@ -468,11 +468,11 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
 
     # 7) Aplicar corrección global+vecinal
     for n, nd in G.nodes(data=True):
-        th = _get_attr(nd, ALIAS_THETA, 0.0)
+        th = get_attr(nd, ALIAS_THETA, 0.0)
         thL = fase_media(G, n)
         dG = angle_diff(thG, th)
         dL = angle_diff(thL, th)
-        _set_attr(nd, ALIAS_THETA, th + kG*dG + kL*dL)
+        set_attr(nd, ALIAS_THETA, th + kG*dG + kL*dL)
 
 # -------------------------
 # Adaptación de νf por coherencia
@@ -491,8 +491,8 @@ def adaptar_vf_por_coherencia(G) -> None:
 
     updates = {}
     for n, nd in G.nodes(data=True):
-        Si = _get_attr(nd, ALIAS_SI, 0.0)
-        dnfr = abs(_get_attr(nd, ALIAS_DNFR, 0.0))
+        Si = get_attr(nd, ALIAS_SI, 0.0)
+        dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0))
         if Si >= si_hi and dnfr <= eps_dnfr:
             nd["stable_count"] = nd.get("stable_count", 0) + 1
         else:
@@ -500,7 +500,7 @@ def adaptar_vf_por_coherencia(G) -> None:
             continue
 
         if nd["stable_count"] >= tau:
-            vf = _get_attr(nd, ALIAS_VF, 0.0)
+            vf = get_attr(nd, ALIAS_VF, 0.0)
             vf_bar = media_vecinal(G, n, ALIAS_VF, default=vf)
             updates[n] = vf + mu * (vf_bar - vf)
 
@@ -552,12 +552,12 @@ def default_glyph_selector(G, n) -> str:
     else:
         dnfr_max = 0.0
         for _, nd2 in G.nodes(data=True):
-            dnfr_max = max(dnfr_max, abs(_get_attr(nd2, ALIAS_DNFR, 0.0)))
+            dnfr_max = max(dnfr_max, abs(get_attr(nd2, ALIAS_DNFR, 0.0)))
         if dnfr_max <= 0:
             dnfr_max = 1.0
 
-    Si = clamp01(_get_attr(nd, ALIAS_SI, 0.5))
-    dnfr = abs(_get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
+    Si = clamp01(get_attr(nd, ALIAS_SI, 0.5))
+    dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
 
     if Si >= hi:
         return "IL"
@@ -574,8 +574,8 @@ def _norms_para_selector(G) -> dict:
     dnfr_max = 0.0
     accel_max = 0.0
     for n, nd in G.nodes(data=True):
-        dnfr_max = max(dnfr_max, abs(_get_attr(nd, ALIAS_DNFR, 0.0)))
-        accel_max = max(accel_max, abs(_get_attr(nd, ALIAS_D2EPI, 0.0)))
+        dnfr_max = max(dnfr_max, abs(get_attr(nd, ALIAS_DNFR, 0.0)))
+        accel_max = max(accel_max, abs(get_attr(nd, ALIAS_D2EPI, 0.0)))
     if dnfr_max <= 0: dnfr_max = 1.0
     if accel_max <= 0: accel_max = 1.0
     norms = {"dnfr_max": float(dnfr_max), "accel_max": float(accel_max)}
@@ -617,9 +617,9 @@ def parametric_glyph_selector(G, n) -> str:
     acc_max  = float(norms.get("accel_max", 1.0))
 
     # Lecturas nodales
-    Si = clamp01(_get_attr(nd, ALIAS_SI, 0.5))
-    dnfr = abs(_get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
-    accel = abs(_get_attr(nd, ALIAS_D2EPI, 0.0)) / acc_max
+    Si = clamp01(get_attr(nd, ALIAS_SI, 0.5))
+    dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
+    accel = abs(get_attr(nd, ALIAS_D2EPI, 0.0)) / acc_max
 
     W = G.graph.get("SELECTOR_WEIGHTS", DEFAULTS["SELECTOR_WEIGHTS"])
     w_si = float(W.get("w_si", 0.5)); w_dn = float(W.get("w_dnfr", 0.3)); w_ac = float(W.get("w_accel", 0.2))
@@ -662,7 +662,7 @@ def parametric_glyph_selector(G, n) -> str:
     if hist_prev:
         prev = hist_prev[-1]
     if prev == cand:
-        delta_si = _get_attr(nd, ALIAS_dSI, 0.0)
+        delta_si = get_attr(nd, ALIAS_dSI, 0.0)
         h = G.graph.get("history", {})
         sig = h.get("sense_sigma_mag", [])
         delta_sigma = sig[-1] - sig[-2] if len(sig) >= 2 else 0.0
@@ -767,7 +767,7 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     if not isinstance(epi_hist, deque) or epi_hist.maxlen != maxlen:
         epi_hist = deque(list(epi_hist or [])[-maxlen:], maxlen=maxlen)
         G.graph["_epi_hist"] = epi_hist
-    epi_hist.append({n: _get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes()})
+    epi_hist.append({n: get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes()})
 
     # 8) REMESH condicionado
     aplicar_remesh_si_estabilizacion_global(G)
@@ -808,8 +808,8 @@ def run(G, steps: int, *, dt: float | None = None, use_Si: bool = True, apply_gl
 
 def _update_coherence(G, hist) -> None:
     """Actualizar la coherencia global y su media móvil."""
-    dnfr_mean = list_mean(abs(_get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes())
-    dEPI_mean = list_mean(abs(_get_attr(G.nodes[n], ALIAS_dEPI, 0.0)) for n in G.nodes())
+    dnfr_mean = list_mean(abs(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes())
+    dEPI_mean = list_mean(abs(get_attr(G.nodes[n], ALIAS_dEPI, 0.0)) for n in G.nodes())
     C = 1.0 / (1.0 + dnfr_mean + dEPI_mean)
     hist["C_steps"].append(C)
 
@@ -863,28 +863,28 @@ def _update_history(G) -> None:
     B_sum = 0.0
     B_count = 0
     for n, nd in G.nodes(data=True):
-        if abs(_get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr and abs(_get_attr(nd, ALIAS_dEPI, 0.0)) <= eps_depi:
+        if abs(get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr and abs(get_attr(nd, ALIAS_dEPI, 0.0)) <= eps_depi:
             stables += 1
 
         # δSi por nodo
-        Si_curr = _get_attr(nd, ALIAS_SI, 0.0)
+        Si_curr = get_attr(nd, ALIAS_SI, 0.0)
         Si_prev = nd.get("_prev_Si", Si_curr)
         dSi = Si_curr - Si_prev
         nd["_prev_Si"] = Si_curr
-        _set_attr(nd, ALIAS_dSI, dSi)
+        set_attr(nd, ALIAS_dSI, dSi)
         delta_si_sum += dSi
         delta_si_count += 1
 
         # Bifurcación B = ∂²νf/∂t²
-        vf_curr = _get_attr(nd, ALIAS_VF, 0.0)
+        vf_curr = get_attr(nd, ALIAS_VF, 0.0)
         vf_prev = nd.get("_prev_vf", vf_curr)
         dvf_dt = (vf_curr - vf_prev) / dt
         dvf_prev = nd.get("_prev_dvf", dvf_dt)
         B = (dvf_dt - dvf_prev) / dt
         nd["_prev_vf"] = vf_curr
         nd["_prev_dvf"] = dvf_dt
-        _set_attr(nd, ALIAS_dVF, dvf_dt)
-        _set_attr(nd, ALIAS_D2VF, B)
+        set_attr(nd, ALIAS_dVF, dvf_dt)
+        set_attr(nd, ALIAS_D2VF, B)
         B_sum += B
         B_count += 1
 
@@ -906,7 +906,7 @@ def _update_history(G) -> None:
     try:
         sis = []
         for n in G.nodes():
-            sis.append(_get_attr(G.nodes[n], ALIAS_SI, float("nan")))
+            sis.append(get_attr(G.nodes[n], ALIAS_SI, float("nan")))
         sis = [s for s in sis if not math.isnan(s)]
         if sis:
             si_mean = list_mean(sis, 0.0)

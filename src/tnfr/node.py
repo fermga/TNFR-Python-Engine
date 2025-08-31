@@ -15,10 +15,10 @@ from .constants import (
 )
 from .helpers import (
     push_glifo,
-    _get_attr,
-    _get_attr_str,
-    _set_attr,
-    _set_attr_str,
+    get_attr,
+    get_attr_str,
+    set_attr,
+    set_attr_str,
     set_vf,
     set_dnfr,
 )
@@ -28,8 +28,8 @@ def _nx_attr_property(
     aliases,
     *,
     default=0.0,
-    getter=_get_attr,
-    setter=_set_attr,
+    getter=get_attr,
+    setter=set_attr,
     to_python=float,
     to_storage=float,
     use_graph_setter=False,
@@ -181,8 +181,8 @@ class NodoNX(NodoProtocol):
     epi_kind = _nx_attr_property(
         ALIAS_EPI_KIND,
         default="",
-        getter=_get_attr_str,
-        setter=_set_attr_str,
+        getter=get_attr_str,
+        setter=set_attr_str,
         to_python=str,
         to_storage=str,
     )

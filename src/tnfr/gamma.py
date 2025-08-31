@@ -23,7 +23,7 @@ import math
 import cmath
 
 from .constants import ALIAS_THETA
-from .helpers import _get_attr
+from .helpers import get_attr
 
 
 
@@ -54,7 +54,7 @@ def kuramoto_R_psi(G) -> Tuple[float, float]:
     n = 0
     for node in G.nodes():
         nd = G.nodes[node]
-        th = _get_attr(nd, ALIAS_THETA, 0.0)
+        th = get_attr(nd, ALIAS_THETA, 0.0)
         acc += cmath.exp(1j * th)
         n += 1
     if n == 0:
@@ -73,7 +73,7 @@ def _kuramoto_common(G, node, cfg):
     cache = G.graph.get("_kuramoto_cache", {})
     R = float(cache.get("R", 0.0))
     psi = float(cache.get("psi", 0.0))
-    th_i = float(_get_attr(G.nodes[node], ALIAS_THETA, 0.0))
+    th_i = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
     return th_i, R, psi
 
 

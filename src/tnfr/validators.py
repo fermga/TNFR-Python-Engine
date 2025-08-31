@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from .constants import ALIAS_EPI, ALIAS_VF, DEFAULTS
-from .helpers import _get_attr
+from .helpers import get_attr
 from .sense import sigma_vector_global, GLYPHS_CANONICAL
 from .helpers import last_glifo
 
@@ -14,10 +14,10 @@ def _validate_epi_vf(G) -> None:
     vmin = float(G.graph.get("VF_MIN", DEFAULTS.get("VF_MIN", 0.0)))
     vmax = float(G.graph.get("VF_MAX", DEFAULTS.get("VF_MAX", 1.0)))
     for n, data in G.nodes(data=True):
-        epi = float(_get_attr(data, ALIAS_EPI, 0.0))
+        epi = float(get_attr(data, ALIAS_EPI, 0.0))
         if not (emin - 1e-9 <= epi <= emax + 1e-9):
             raise ValueError(f"EPI fuera de rango en nodo {n}: {epi}")
-        vf = float(_get_attr(data, ALIAS_VF, 0.0))
+        vf = float(get_attr(data, ALIAS_VF, 0.0))
         if not (vmin - 1e-9 <= vf <= vmax + 1e-9):
             raise ValueError(f"VF fuera de rango en nodo {n}: {vf}")
 
