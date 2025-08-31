@@ -6,6 +6,7 @@ Provee utilidades para inyectarlos en G.graph.
 """
 from __future__ import annotations
 from typing import Dict, Any
+from types import MappingProxyType
 
 # -------------------------
 # Parámetros canónicos
@@ -187,8 +188,29 @@ DEFAULTS: Dict[str, Any] = {
 # Retrocompatibilidad: alias deprecado
 DEFAULTS["REMESH_TAU"] = DEFAULTS["REMESH_TAU_GLOBAL"]
 
+# --- Configuraciones por defecto exportadas ---
+SIGMA = MappingProxyType(DEFAULTS.setdefault("SIGMA", {
+    "enabled": True,
+    "weight": "Si",      # "Si" | "EPI" | "1"
+    "smooth": 0.0,        # EMA sobre el vector global (0=off)
+    "history_key": "sigma_global",   # dónde guardar en G.graph['history']
+    "per_node": False,    # si True, guarda trayectoria σ por nodo (más pesado)
+}))
+
+TRACE = MappingProxyType(DEFAULTS.setdefault("TRACE", {
+    "enabled": True,
+    "capture": ["gamma", "grammar", "selector", "dnfr_weights", "si_weights", "callbacks", "thol_state", "sigma", "kuramoto", "glifo_counts"],
+    "history_key": "trace_meta",
+}))
+
+METRICS = MappingProxyType(DEFAULTS.setdefault("METRICS", {
+    "enabled": True,
+    "save_by_node": True,     # guarda Tg por nodo (más pesado)
+    "normalize_series": False # glifograma normalizado a fracción por paso
+}))
+
 # Gramática glífica canónica
-DEFAULTS.setdefault("GRAMMAR_CANON", {
+GRAMMAR_CANON = MappingProxyType(DEFAULTS.setdefault("GRAMMAR_CANON", {
     "enabled": True,                # activar la gramática canónica
     "zhir_requires_oz_window": 3,   # cuántos pasos atrás buscamos O’Z
     "zhir_dnfr_min": 0.05,          # si |ΔNFR|_norm < este valor, no permitimos Z’HIR sin O’Z
@@ -196,10 +218,10 @@ DEFAULTS.setdefault("GRAMMAR_CANON", {
     "thol_max_len": 6,
     "thol_close_dnfr": 0.15,        # si el campo calma, cerramos con SH’A/NU’L
     "si_high": 0.66,                # umbral para elegir NU’L vs SH’A al cerrar
-})
+}))
 
 # --- Coherencia (W) ---
-DEFAULTS.setdefault("COHERENCE", {
+COHERENCE = MappingProxyType(DEFAULTS.setdefault("COHERENCE", {
     "enabled": True,
     "scope": "neighbors",      # "neighbors" | "all"
     "weights": {
@@ -214,10 +236,10 @@ DEFAULTS.setdefault("COHERENCE", {
     "history_key": "W_sparse",
     "Wi_history_key": "W_i",
     "stats_history_key": "W_stats",
-})
+}))
 
 # --- Diagnóstico nodal ---
-DEFAULTS.setdefault("DIAGNOSIS", {
+DIAGNOSIS = MappingProxyType(DEFAULTS.setdefault("DIAGNOSIS", {
     "enabled": True,
     "window": 16,
     "history_key": "nodal_diag",
@@ -231,7 +253,7 @@ DEFAULTS.setdefault("DIAGNOSIS", {
         "transition": ["Transición", "Resonancia", "Autoorganización"],
         "dissonant":  ["Silencio", "Contracción", "Mutación"],
     },
-})
+}))
 
 
 # -------------------------

@@ -6,7 +6,17 @@ import csv
 import json
 from math import cos
 
-from .constants import DEFAULTS, ALIAS_EPI, ALIAS_THETA, ALIAS_DNFR, ALIAS_VF, ALIAS_SI
+from .constants import (
+    DEFAULTS,
+    ALIAS_EPI,
+    ALIAS_THETA,
+    ALIAS_DNFR,
+    ALIAS_VF,
+    ALIAS_SI,
+    METRICS,
+    COHERENCE,
+    DIAGNOSIS,
+)
 from .helpers import (
     register_callback,
     ensure_history,
@@ -18,17 +28,6 @@ from .helpers import (
 )
 from .sense import GLYPHS_CANONICAL
 
-# -------------
-# DEFAULTS
-# -------------
-DEFAULTS.setdefault("METRICS", {
-    "enabled": True,
-    "save_by_node": True,     # guarda Tg por nodo (más pesado)
-    "normalize_series": False # glifograma normalizado a fracción por paso
-})
-
-    
-    
 # -------------
 # Utilidades internas
 # -------------
@@ -58,7 +57,7 @@ def _metrics_step(G, *args, **kwargs):
 
     Todos los resultados se guardan en G.graph['history'].
     """
-    if not G.graph.get("METRICS", DEFAULTS.get("METRICS", {})).get("enabled", True):
+    if not G.graph.get("METRICS", METRICS).get("enabled", True):
         return
 
     hist = ensure_history(G)
@@ -73,7 +72,7 @@ def _metrics_step(G, *args, **kwargs):
     n_latent = 0
 
     # --- Tg: acumular corridas por nodo ---
-    save_by_node = bool(G.graph.get("METRICS", DEFAULTS["METRICS"]).get("save_by_node", True))
+    save_by_node = bool(G.graph.get("METRICS", METRICS).get("save_by_node", True))
     tg_total = hist.setdefault("Tg_total", defaultdict(float))  # tiempo total por glifo (global)
     tg_by_node = hist.setdefault("Tg_by_node", {})             # nodo → {glifo: [runs,...]}
 
@@ -112,7 +111,7 @@ def _metrics_step(G, *args, **kwargs):
 
     # Guardar glifograma (conteos crudos y normalizados)
     normalize_series = bool(
-        G.graph.get("METRICS", DEFAULTS["METRICS"]).get("normalize_series", False)
+        G.graph.get("METRICS", METRICS).get("normalize_series", False)
     )
     row = {"t": t}
     total = max(1, sum(counts.values()))
@@ -317,7 +316,7 @@ def _coherence_components(G, ni, nj, epi_min, epi_max, vf_min, vf_max):
 
 
 def coherence_matrix(G):
-    cfg = G.graph.get("COHERENCE", DEFAULTS["COHERENCE"])
+    cfg = G.graph.get("COHERENCE", COHERENCE)
     if not cfg.get("enabled", True):
         return None, None
 
@@ -422,7 +421,7 @@ def coherence_matrix(G):
 def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=None):
     import cmath
 
-    cfg = G.graph.get("COHERENCE", DEFAULTS["COHERENCE"])
+    cfg = G.graph.get("COHERENCE", COHERENCE)
     scope = str(cfg.get("scope", "neighbors")).lower()
     neighbors_only = scope != "all"
 
@@ -473,7 +472,7 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=
 
 
 def _coherence_step(G, ctx=None):
-    if not G.graph.get("COHERENCE", DEFAULTS["COHERENCE"]).get("enabled", True):
+    if not G.graph.get("COHERENCE", COHERENCE).get("enabled", True):
         return
     coherence_matrix(G)
 
@@ -525,7 +524,7 @@ def _recommendation(state, cfg):
 
 
 def _diagnosis_step(G, ctx=None):
-    dcfg = G.graph.get("DIAGNOSIS", DEFAULTS["DIAGNOSIS"])
+    dcfg = G.graph.get("DIAGNOSIS", DIAGNOSIS)
     if not dcfg.get("enabled", True):
         return
 
@@ -537,7 +536,7 @@ def _diagnosis_step(G, ctx=None):
     epi_vals = [float(_get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in G.nodes()]
     epi_min, epi_max = (min(epi_vals) if epi_vals else 0.0), (max(epi_vals) if epi_vals else 1.0)
 
-    CfgW = G.graph.get("COHERENCE", DEFAULTS["COHERENCE"])
+    CfgW = G.graph.get("COHERENCE", COHERENCE)
     Wkey = CfgW.get("Wi_history_key", "W_i")
     Wm_key = CfgW.get("history_key", "W_sparse")
     Wi_series = hist.get(Wkey, [])

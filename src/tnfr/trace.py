@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 from collections import Counter
 
-from .constants import DEFAULTS
+from .constants import TRACE
 from .helpers import register_callback, ensure_history, last_glifo
 
 try:
@@ -18,15 +18,6 @@ except Exception:  # pragma: no cover
         return {"x": 1.0, "y": 0.0, "mag": 1.0, "angle": 0.0, "n": 0}
 
 # -------------------------
-# Defaults
-# -------------------------
-DEFAULTS.setdefault("TRACE", {
-    "enabled": True,
-    "capture": ["gamma", "grammar", "selector", "dnfr_weights", "si_weights", "callbacks", "thol_state", "sigma", "kuramoto", "glifo_counts"],
-    "history_key": "trace_meta",
-})
-
-# -------------------------
 # Helpers
 # -------------------------
 
@@ -38,7 +29,7 @@ def _trace_setup(G) -> tuple[Optional[Dict[str, Any]], List[str], Optional[Dict[
     retorna ``(None, [], None, None)``.
     """
 
-    cfg = G.graph.get("TRACE", DEFAULTS["TRACE"])
+    cfg = G.graph.get("TRACE", TRACE)
     if not cfg.get("enabled", True):
         return None, [], None, None
 
