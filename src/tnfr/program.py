@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from contextlib import contextmanager
 
 from .constants import DEFAULTS
-from .helpers import register_callback
 from .grammar import apply_glyph_with_grammar
 from .sense import GLYPHS_CANONICAL
 from .types import Glyph
