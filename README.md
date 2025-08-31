@@ -28,16 +28,6 @@ pip install tnfr
 * https://pypi.org/project/tnfr/
 * Requires **Python ≥ 3.9**.
 
-## Command-line interface
-
-`tnfr` provides a CLI via `tnfr.cli`. The legacy demo script `src/tnfr/main.py`
-has been removed; use the `tnfr` command instead:
-
-```bash
-tnfr --version
-tnfr run --nodes 10 --steps 50
-```
-
 ---
 
 ## Why TNFR (in 60 seconds)
