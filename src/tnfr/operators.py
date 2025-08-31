@@ -183,16 +183,22 @@ def _op_SHA(node: NodoProtocol) -> None:  # SHA — Silencio
     node.vf = factor * node.vf
 
 
+def _scale_epi(node: NodoProtocol, factor: float, glyph: Glyph) -> None:
+    """Escala ``EPI`` del nodo y actualiza ``epi_kind``."""
+    node.EPI = factor * node.EPI
+    node.epi_kind = glyph.value if isinstance(glyph, Glyph) else str(glyph)
+
+
 def _op_VAL(node: NodoProtocol) -> None:  # VAL — Expansión
     gf = get_glyph_factors(node)
     s = float(gf.get("VAL_scale", 1.15))
-    node.EPI = s * node.EPI
+    _scale_epi(node, s, Glyph.VAL)
 
 
 def _op_NUL(node: NodoProtocol) -> None:  # NUL — Contracción
     gf = get_glyph_factors(node)
     s = float(gf.get("NUL_scale", 0.85))
-    node.EPI = s * node.EPI
+    _scale_epi(node, s, Glyph.NUL)
 
 
 def _op_THOL(node: NodoProtocol) -> None:  # THOL — Autoorganización
