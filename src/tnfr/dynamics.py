@@ -111,10 +111,20 @@ def default_compute_delta_nfr(G) -> None:
 
     degs = dict(G.degree()) if w_topo != 0 else None
 
-    for n, nd in G.nodes(data=True):
-        th_i = get_attr(nd, ALIAS_THETA, 0.0)
-        epi_i = get_attr(nd, ALIAS_EPI, 0.0)
-        vf_i = get_attr(nd, ALIAS_VF, 0.0)
+    # Precompute local arrays to avoid repeated G.nodes access inside loops
+    nodes = list(G.nodes)
+    idx = {n: i for i, n in enumerate(nodes)}
+    theta = [get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in nodes]
+    epi = [get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes]
+    vf = [get_attr(G.nodes[n], ALIAS_VF, 0.0) for n in nodes]
+    cos_th = [math.cos(t) for t in theta]
+    sin_th = [math.sin(t) for t in theta]
+
+    for n in nodes:
+        i = idx[n]
+        th_i = theta[i]
+        epi_i = epi[i]
+        vf_i = vf[i]
 
         x = y = epi_sum = vf_sum = 0.0
         count = 0
@@ -124,12 +134,11 @@ def default_compute_delta_nfr(G) -> None:
             deg_sum = 0.0
 
         for v in G.neighbors(n):
-            nd_v = G.nodes[v]
-            th_v = get_attr(nd_v, ALIAS_THETA, 0.0)
-            x += math.cos(th_v)
-            y += math.sin(th_v)
-            epi_sum += get_attr(nd_v, ALIAS_EPI, epi_i)
-            vf_sum += get_attr(nd_v, ALIAS_VF, vf_i)
+            j = idx[v]
+            x += cos_th[j]
+            y += sin_th[j]
+            epi_sum += epi[j]
+            vf_sum += vf[j]
             if w_topo != 0 and degs is not None:
                 deg_sum += degs.get(v, deg_i)
             count += 1
