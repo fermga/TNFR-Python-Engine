@@ -133,7 +133,7 @@ def _update_morph_metrics(G, hist, counts, t):
     cm_val = (counts.get("ZHIR", 0) + counts.get("NAV", 0)) / total
     ne_val = (counts.get("IL", 0) + counts.get("THOL", 0)) / total
     remesh = counts.get("REMESH", 0)
-    pp_val = 0.0 if remesh == 0 else counts["SHA"] / remesh
+    pp_val = 0.0 if remesh == 0 else counts.get("SHA", 0) / remesh
     hist.setdefault("morph", []).append({"t": t, "ID": id_val, "CM": cm_val, "NE": ne_val, "PP": pp_val})
 
 

@@ -17,6 +17,19 @@ def test_pp_val_zero_when_no_remesh(graph_canon):
     assert morph["PP"] == 0.0
 
 
+def test_pp_val_handles_missing_sha(graph_canon):
+    """PP metric handles absence of SHA counts gracefully."""
+    G = graph_canon()
+    # Nodo en estado REMESH pero sin nodos SHA
+    G.add_node(0, EPI_kind="REMESH")
+    attach_defaults(G)
+
+    _metrics_step(G)
+
+    morph = G.graph["history"]["morph"][0]
+    assert morph["PP"] == 0.0
+
+
 def test_save_by_node_flag_keeps_metrics_equal(graph_canon):
     """Disabling per-node storage should not alter global metrics."""
     G_true = graph_canon()
