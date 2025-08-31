@@ -64,6 +64,15 @@ def _weight(G, n, mode: str) -> float:
     return 1.0
 
 
+def _node_weight(G, n, weight_mode: str) -> tuple[str, float, complex] | None:
+    nd = G.nodes[n]
+    g = last_glifo(nd)
+    if not g:
+        return None
+    w = _weight(G, n, weight_mode)
+    return g, w, glyph_unit(g) * w
+
+
 def _sigma_cfg(G):
     return G.graph.get("SIGMA", SIGMA)
 
@@ -74,13 +83,11 @@ def _sigma_cfg(G):
 # -------------------------
 
 def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] | None:
-    nd = G.nodes[n]
-    g = last_glifo(nd)
-    if g is None:
-        return None
     cfg = _sigma_cfg(G)
-    w = _weight(G, n, weight_mode or cfg.get("weight", "Si"))
-    z = glyph_unit(g) * w
+    nw = _node_weight(G, n, weight_mode or cfg.get("weight", "Si"))
+    if not nw:
+        return None
+    g, w, z = nw
     x, y = z.real, z.imag
     mag = math.hypot(x, y)
     ang = math.atan2(y, x) if mag > 0 else glyph_angle(g)
@@ -131,12 +138,11 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
     acc = complex(0.0, 0.0)
     cnt = 0
     for n in G.nodes():
-        nd = G.nodes[n]
-        g = last_glifo(nd)
-        if not g:
+        nw = _node_weight(G, n, weight_mode)
+        if not nw:
             continue
-        w = _weight(G, n, weight_mode)
-        acc += glyph_unit(g) * w
+        _, _, z = nw
+        acc += z
         cnt += 1
     if cnt == 0:
         return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
