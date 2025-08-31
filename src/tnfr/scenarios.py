@@ -5,13 +5,24 @@ from .constants import inject_defaults, DEFAULTS
 from .initialization import init_node_attrs
 
 
-def build_graph(n: int = 24, topology: str = "ring", seed: int | None = 1):
+def build_graph(
+    n: int = 24,
+    topology: str = "ring",
+    seed: int | None = 1,
+    p: float | None = None,
+):
+    """Build a graph with canonical initialization.
+
+    For ``topology="erdos"`` the probability of edge creation can be adjusted
+    via ``p``. If omitted, a default of ``3.0 / n`` is used.
+    """
     if topology == "ring":
         G = nx.cycle_graph(n)
     elif topology == "complete":
         G = nx.complete_graph(n)
     elif topology == "erdos":
-        G = nx.gnp_random_graph(n, 3.0 / n, seed=seed)
+        prob = p if p is not None else 3.0 / n
+        G = nx.gnp_random_graph(n, prob, seed=seed)
     else:
         valid = ["ring", "complete", "erdos"]
         raise ValueError(f"Invalid topology '{topology}'. Valid options are: {', '.join(valid)}")
