@@ -59,6 +59,14 @@ def _fase_media_node(node: NodoProtocol) -> float:
     return math.atan2(y / count, x / count)
 
 
+def _select_dominant_glifo(node: NodoProtocol, neigh: Iterable[NodoProtocol]) -> Optional[str]:
+    """Return the epi_kind with the highest |EPI| among node and its neighbors."""
+    candidatos = [(abs(node.EPI), node.epi_kind)]
+    for v in neigh:
+        candidatos.append((abs(v.EPI), v.epi_kind))
+    return max(candidatos, key=lambda x: x[0])[1]
+
+
 def _op_AL(node: NodoProtocol) -> None:  # A’L — Emisión
     f = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("AL_boost", 0.05))
     node.EPI = node.EPI + f
@@ -73,11 +81,7 @@ def _op_EN(node: NodoProtocol) -> None:  # E’N — Recepción
         return
     epi_bar = list_mean(v.EPI for v in neigh)
     node.EPI = (1 - mix) * epi + mix * epi_bar
-
-    candidatos = [(abs(node.EPI), node.epi_kind)]
-    for v in neigh:
-        candidatos.append((abs(v.EPI), v.epi_kind))
-    node.epi_kind = max(candidatos, key=lambda x: x[0])[1] or "E’N"
+    node.epi_kind = _select_dominant_glifo(node, neigh) or "E’N"
 
 
 def _op_IL(node: NodoProtocol) -> None:  # I’L — Coherencia
@@ -132,11 +136,7 @@ def _op_RA(node: NodoProtocol) -> None:  # R’A — Resonancia
         return
     epi_bar = list_mean(v.EPI for v in neigh)
     node.EPI = epi + diff * (epi_bar - epi)
-
-    candidatos = [(abs(node.EPI), node.epi_kind)]
-    for v in neigh:
-        candidatos.append((abs(v.EPI), v.epi_kind))
-    node.epi_kind = max(candidatos, key=lambda x: x[0])[1] or "R’A"
+    node.epi_kind = _select_dominant_glifo(node, neigh) or "R’A"
 
 
 def _op_SHA(node: NodoProtocol) -> None:  # SH’A — Silencio
