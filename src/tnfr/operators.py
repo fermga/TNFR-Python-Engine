@@ -18,6 +18,7 @@ from .helpers import (
     _set_attr,
     _get_attr_str,
     _set_attr_str,
+    fase_media,
 )
 from .node import NodoProtocol, NodoNX
 from collections import deque
@@ -54,18 +55,6 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
 # -------------------------
 # Glifos (operadores locales)
 # -------------------------
-
-def _fase_media_node(node: NodoProtocol) -> float:
-    x = y = 0.0
-    count = 0
-    for v in node.neighbors():
-        th = getattr(v, "theta", 0.0)
-        x += math.cos(th)
-        y += math.sin(th)
-        count += 1
-    if count == 0:
-        return getattr(node, "theta", 0.0)
-    return math.atan2(y / count, x / count)
 
 
 def _select_dominant_glifo(node: NodoProtocol, neigh: Iterable[NodoProtocol]) -> Optional[str]:
@@ -118,7 +107,7 @@ def _op_UM(node: NodoProtocol) -> None:  # U’M — Acoplamiento
     gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
     k = float(gf.get("UM_theta_push", 0.25))
     th = node.theta
-    thL = _fase_media_node(node)
+    thL = fase_media(node)
     d = angle_diff(thL, th)
     node.theta = th + k * d
 
