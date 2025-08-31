@@ -145,6 +145,8 @@ def alias_lookup(
         return d[key]
 
     if default is not _sentinel:
+        if default is None:
+            return None
         return conv(default)
     return None
 
