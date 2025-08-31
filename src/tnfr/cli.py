@@ -90,31 +90,46 @@ def _attach_callbacks(G: nx.Graph) -> None:
     _update_history(G)
 
 
-def cmd_run(args: argparse.Namespace) -> int:
+def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
+    """Construye y configura un grafo a partir de los argumentos del CLI."""
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
     if getattr(args, "config", None):
         apply_config(G, args.config)
     _attach_callbacks(G)
     validate_canon(G)
-    if args.dt is not None:
+    if getattr(args, "dt", None) is not None:
         G.graph["DT"] = float(args.dt)
-    if args.integrator is not None:
+    if getattr(args, "integrator", None) is not None:
         G.graph["INTEGRATOR_METHOD"] = str(args.integrator)
     if getattr(args, "remesh_mode", None):
         G.graph["REMESH_MODE"] = str(args.remesh_mode)
+
     gcanon = dict(DEFAULTS["GRAMMAR_CANON"])
     gcanon.update(_args_to_dict(args, prefix="grammar."))
     if hasattr(args, "grammar_canon") and args.grammar_canon is not None:
         gcanon["enabled"] = bool(args.grammar_canon)
     G.graph.setdefault("GRAMMAR_CANON", {}).update(gcanon)
-    if args.glyph_hysteresis_window is not None:
+
+    if getattr(args, "glyph_hysteresis_window", None) is not None:
         G.graph["GLYPH_HYSTERESIS_WINDOW"] = int(args.glyph_hysteresis_window)
-    G.graph["glyph_selector"] = default_glyph_selector if args.selector == "basic" else parametric_glyph_selector
-    G.graph["GAMMA"] = {
-        "type": args.gamma_type,
-        "beta": args.gamma_beta,
-        "R0": args.gamma_R0,
-    }
+
+    if hasattr(args, "selector"):
+        G.graph["glyph_selector"] = (
+            default_glyph_selector if args.selector == "basic" else parametric_glyph_selector
+        )
+
+    if hasattr(args, "gamma_type"):
+        G.graph["GAMMA"] = {
+            "type": args.gamma_type,
+            "beta": args.gamma_beta,
+            "R0": args.gamma_R0,
+        }
+
+    return G
+
+
+def cmd_run(args: argparse.Namespace) -> int:
+    G = _build_graph_from_args(args)
 
     if args.preset:
         program = get_preset(args.preset)
@@ -154,30 +169,7 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 
 def cmd_sequence(args: argparse.Namespace) -> int:
-    G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
-    if getattr(args, "config", None):
-        apply_config(G, args.config)
-    _attach_callbacks(G)
-    validate_canon(G)
-    if args.dt is not None:
-        G.graph["DT"] = float(args.dt)
-    if args.integrator is not None:
-        G.graph["INTEGRATOR_METHOD"] = str(args.integrator)
-    if getattr(args, "remesh_mode", None):
-        G.graph["REMESH_MODE"] = str(args.remesh_mode)
-    gcanon = dict(DEFAULTS["GRAMMAR_CANON"])
-    gcanon.update(_args_to_dict(args, prefix="grammar."))
-    if hasattr(args, "grammar_canon") and args.grammar_canon is not None:
-        gcanon["enabled"] = bool(args.grammar_canon)
-    G.graph.setdefault("GRAMMAR_CANON", {}).update(gcanon)
-    if args.glyph_hysteresis_window is not None:
-        G.graph["GLYPH_HYSTERESIS_WINDOW"] = int(args.glyph_hysteresis_window)
-    G.graph["glyph_selector"] = default_glyph_selector if args.selector == "basic" else parametric_glyph_selector
-    G.graph["GAMMA"] = {
-        "type": args.gamma_type,
-        "beta": args.gamma_beta,
-        "R0": args.gamma_R0,
-    }
+    G = _build_graph_from_args(args)
 
     if args.preset:
         program = get_preset(args.preset)
@@ -196,24 +188,7 @@ def cmd_sequence(args: argparse.Namespace) -> int:
 
 
 def cmd_metrics(args: argparse.Namespace) -> int:
-    G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
-    if getattr(args, "config", None):
-        apply_config(G, args.config)
-    _attach_callbacks(G)
-    validate_canon(G)
-    if args.dt is not None:
-        G.graph["DT"] = float(args.dt)
-    if args.integrator is not None:
-        G.graph["INTEGRATOR_METHOD"] = str(args.integrator)
-    if getattr(args, "remesh_mode", None):
-        G.graph["REMESH_MODE"] = str(args.remesh_mode)
-    G.graph.setdefault("GRAMMAR_CANON", DEFAULTS["GRAMMAR_CANON"]).update({"enabled": bool(args.grammar_canon)})
-    G.graph["glyph_selector"] = default_glyph_selector if args.selector == "basic" else parametric_glyph_selector
-    G.graph["GAMMA"] = {
-        "type": args.gamma_type,
-        "beta": args.gamma_beta,
-        "R0": args.gamma_R0,
-    }
+    G = _build_graph_from_args(args)
     for _ in range(int(args.steps or 200)):
         step(G)
 
