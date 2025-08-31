@@ -5,6 +5,7 @@ from tnfr.constants import attach_defaults
 from tnfr.grammar import (
     enforce_canonical_grammar,
     on_applied_glifo,
+    apply_glyph_with_grammar,
     AL, EN, IL, OZ, ZHIR, THOL, SHA, NUL, NAV,
 )
 
@@ -67,3 +68,33 @@ def test_lag_counters_enforced():
         hist = G.graph['history']
         assert all(v <= 2 for v in hist['since_AL'].values())
         assert all(v <= 2 for v in hist['since_EN'].values())
+
+
+def test_apply_glyph_with_grammar_equivalence():
+    G_manual = make_graph()
+    G_func = make_graph()
+
+    # Aplicación manual
+    g_eff = enforce_canonical_grammar(G_manual, 0, ZHIR)
+    from tnfr.operators import aplicar_glifo
+    aplicar_glifo(G_manual, 0, g_eff, window=1)
+    on_applied_glifo(G_manual, 0, g_eff)
+
+    # Aplicación mediante helper
+    apply_glyph_with_grammar(G_func, [0], ZHIR, 1)
+
+    assert G_manual.nodes[0] == G_func.nodes[0]
+
+
+def test_apply_glyph_with_grammar_multiple_nodes():
+    G = nx.Graph()
+    G.add_node(0, theta=0.0)
+    G.add_node(1)
+    attach_defaults(G)
+    from collections import deque
+    G.nodes[0]['hist_glifos'] = deque([OZ])
+
+    apply_glyph_with_grammar(G, [0, 1], ZHIR, 1)
+
+    assert G.nodes[0]['hist_glifos'][-1] == ZHIR
+    assert G.nodes[1]['hist_glifos'][-1] == OZ

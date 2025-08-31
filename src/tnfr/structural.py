@@ -16,7 +16,7 @@ from .dynamics import (
     update_epi_via_nodal_equation,
     dnfr_epi_vf_mixed,
 )
-from .operators import aplicar_glifo
+from .grammar import apply_glyph_with_grammar
 from .types import Glyph
 from .constants import ALIAS_EPI, ALIAS_VF, ALIAS_THETA
 
@@ -69,7 +69,7 @@ class Operador:
     def __call__(self, G: nx.Graph, node, **kw) -> None:
         if self.glyph is None:
             raise NotImplementedError("Operador sin glifo asignado")
-        aplicar_glifo(G, node, self.glyph, **kw)
+        apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
 
 
 # Derivados concretos -------------------------------------------------------
