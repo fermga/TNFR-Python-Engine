@@ -310,7 +310,7 @@ def aplicar_glifo_obj(node: NodoProtocol, glifo: Glyph | str, *, window: Optiona
 
     op = _NAME_TO_OP.get(g)
     if window is None:
-        window = int(node.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS["GLYPH_HYSTERESIS_WINDOW"]))
+        window = int(get_param(node, "GLYPH_HYSTERESIS_WINDOW"))
     node.push_glifo(g.value, window)
     op(node)
 
