@@ -6,8 +6,7 @@ from contextlib import contextmanager
 
 from .constants import DEFAULTS
 from .helpers import register_callback
-from .grammar import enforce_canonical_grammar, on_applied_glifo
-from .operators import aplicar_glifo
+from .grammar import apply_glyph_with_grammar
 from .sense import GLYPHS_CANONICAL
 from .types import Glyph
 
@@ -69,12 +68,7 @@ def _all_nodes(G):
 def _apply_glyph_to_targets(G, g: Glyph | str, nodes: Optional[Iterable[Node]] = None):
     nodes = list(nodes) if nodes is not None else _all_nodes(G)
     w = _window(G)
-    g_str = g.value if isinstance(g, Glyph) else str(g)
-    # Pasamos por la gramática antes de aplicar
-    for n in nodes:
-        g_eff = enforce_canonical_grammar(G, n, g_str)
-        aplicar_glifo(G, n, g_eff, window=w)
-        on_applied_glifo(G, n, g_eff)
+    apply_glyph_with_grammar(G, nodes, g, w)
 
 def _advance(G, step_fn: Optional[AdvanceFn] = None):
     if step_fn is None:

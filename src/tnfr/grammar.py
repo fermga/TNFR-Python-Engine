@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Any, Set
+from typing import Dict, Any, Set, Iterable, Optional
 
 from .constants import (
     DEFAULTS,
@@ -133,6 +133,24 @@ def on_applied_glifo(G, n, applied: str) -> None:
         pass
 
 # -------------------------
+# Aplicación directa con gramática canónica
+# -------------------------
+
+def apply_glyph_with_grammar(G, nodes: Optional[Iterable[Any]], glyph: Glyph | str, window: Optional[int] = None) -> None:
+    """Aplica ``glyph`` a ``nodes`` pasando por la gramática canónica."""
+
+    from .operators import aplicar_glifo
+
+    if window is None:
+        window = int(G.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 1)))
+
+    g_str = glyph.value if isinstance(glyph, Glyph) else str(glyph)
+    for n in list(G.nodes() if nodes is None else nodes):
+        g_eff = enforce_canonical_grammar(G, n, g_str)
+        aplicar_glifo(G, n, g_eff, window=window)
+        on_applied_glifo(G, n, g_eff)
+
+# -------------------------
 # Integración con dynamics.step: helper de selección+aplicación
 # -------------------------
 
@@ -143,8 +161,5 @@ def select_and_apply_with_grammar(G, n, selector, window: int) -> None:
     `parametric_glyph_selector`; la presente función garantiza que la
     gramática canónica tenga precedencia final.
     """
-    from .operators import aplicar_glifo
     cand = selector(G, n)
-    cand = enforce_canonical_grammar(G, n, cand)
-    aplicar_glifo(G, n, cand, window=window)
-    on_applied_glifo(G, n, cand)
+    apply_glyph_with_grammar(G, [n], cand, window)
