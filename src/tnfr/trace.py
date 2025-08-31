@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Optional
 from collections import Counter
+from typing import Any, Dict, List, Optional
 
 from .constants import TRACE
 from .helpers import register_callback, ensure_history, last_glifo
