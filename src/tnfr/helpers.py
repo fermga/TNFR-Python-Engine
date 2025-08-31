@@ -102,40 +102,26 @@ def phase_distance(a: float, b: float) -> float:
 _sentinel = object()
 
 
-def alias_lookup(
+def alias_get(
     d: Dict[str, Any],
     aliases: Iterable[str],
     conv,
     *,
     default=_sentinel,
-    value=_sentinel,
 ):
-    """Busca en ``d`` la primera clave de ``aliases``.
+    """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor convertido.
 
-    Si ``value`` se proporciona, actúa como asignación usando ``conv`` para
-    convertir el valor. Si no, intenta obtener y convertir el valor existente,
-    devolviendo ``default`` convertido si ninguna alias coincide o la conversión
-    falla.
+    Si ninguna de las claves está presente o la conversión falla, devuelve
+    ``default`` convertido (o ``None`` si ``default`` es ``None``).
     """
     if not isinstance(aliases, tuple):
         aliases = tuple(aliases)
-    alist = aliases
-
-    for key in alist:
+    for key in aliases:
         if key in d:
-            if value is not _sentinel:
-                d[key] = conv(value)
-                return d[key]
             try:
                 return conv(d[key])
             except (ValueError, TypeError):
                 continue
-
-    if value is not _sentinel:
-        key = alist[0]
-        d[key] = conv(value)
-        return d[key]
-
     if default is not _sentinel:
         if default is None:
             return None
@@ -143,20 +129,38 @@ def alias_lookup(
     return None
 
 
+def alias_set(
+    d: Dict[str, Any],
+    aliases: Iterable[str],
+    conv,
+    value,
+):
+    """Asigna ``value`` convertido a la primera clave disponible de ``aliases``."""
+    if not isinstance(aliases, tuple):
+        aliases = tuple(aliases)
+    for key in aliases:
+        if key in d:
+            d[key] = conv(value)
+            return d[key]
+    key = aliases[0]
+    d[key] = conv(value)
+    return d[key]
+
+
 def _get_attr(d: Dict[str, Any], aliases: Iterable[str], default: float = 0.0) -> float:
-    return alias_lookup(d, aliases, float, default=default)
+    return alias_get(d, aliases, float, default=default)
 
 
 def _set_attr(d, aliases, value: float) -> None:
-    alias_lookup(d, aliases, float, value=value)
+    alias_set(d, aliases, float, value)
 
 
 def _get_attr_str(d: Dict[str, Any], aliases: Iterable[str], default: str = "") -> str:
-    return alias_lookup(d, aliases, str, default=default)
+    return alias_get(d, aliases, str, default=default)
 
 
 def _set_attr_str(d, aliases, value: str) -> None:
-    alias_lookup(d, aliases, str, value=value)
+    alias_set(d, aliases, str, value)
 
 
 # -------------------------
