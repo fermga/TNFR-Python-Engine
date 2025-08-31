@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Deque, Dict, Iterable, List, Optional, Protocol
+from typing import Deque, Dict, Iterable, Optional, Protocol
 from collections import deque
 
 from .constants import (
@@ -55,9 +55,14 @@ class NodoProtocol(Protocol):
         ...
 
 
-@dataclass
+@dataclass(eq=False)
 class NodoTNFR:
-    """Representa un nodo TNFR autónomo."""
+    """Representa un nodo TNFR autónomo.
+
+    Para cada vecino se almacena el peso de la conexión. Aunque las
+    operaciones actuales no usan los pesos, se preservan para posibles
+    cálculos futuros.
+    """
 
     EPI: float = 0.0
     vf: float = 0.0
@@ -67,19 +72,22 @@ class NodoTNFR:
     dnfr: float = 0.0
     d2EPI: float = 0.0
     graph: Dict[str, object] = field(default_factory=dict)
-    _neighbors: List["NodoTNFR"] = field(default_factory=list)
+    _neighbors: Dict["NodoTNFR", float] = field(default_factory=dict)
     _hist_glifos: Deque[str] = field(default_factory=lambda: deque(maxlen=DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 7)))
 
     def neighbors(self) -> Iterable["NodoTNFR"]:
-        return list(self._neighbors)
+        return list(self._neighbors.keys())
 
     def has_edge(self, other: "NodoTNFR") -> bool:
         return other in self._neighbors
 
+    def edge_weight(self, other: "NodoTNFR") -> float:
+        """Devuelve el peso de la arista hacia ``other`` o ``0.0`` si no existe."""
+        return self._neighbors.get(other, 0.0)
+
     def add_edge(self, other: "NodoTNFR", weight: float = 1.0) -> None:
-        if other not in self._neighbors:
-            self._neighbors.append(other)
-            other._neighbors.append(self)
+        self._neighbors[other] = weight
+        other._neighbors[self] = weight
 
     def push_glifo(self, glifo: str, window: int) -> None:
         if self._hist_glifos.maxlen != window:
