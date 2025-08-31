@@ -37,5 +37,5 @@ def test_load_sequence_json_yaml(tmp_path):
     ypath.write_text(yaml.safe_dump(data))
 
     expected = seq("AL", block("OZ", "EN", "RA"), wait(1))
-    assert _load_sequence(str(jpath)) == expected
-    assert _load_sequence(str(ypath)) == expected
+    assert _load_sequence(jpath) == expected
+    assert _load_sequence(ypath) == expected
