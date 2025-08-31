@@ -4,6 +4,7 @@ from collections import defaultdict, Counter
 import statistics
 import csv
 import json
+import os
 from math import cos
 
 from .constants import (
@@ -237,6 +238,7 @@ def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
 def export_history(G, base_path: str, fmt: str = "csv") -> None:
     """Vuelca glifograma y traza σ(t) a archivos CSV o JSON compactos."""
     hist = ensure_history(G)
+    os.makedirs(os.path.dirname(base_path) or ".", exist_ok=True)
     glifo = glifogram_series(G)
     sigma_mag = hist.get("sense_sigma_mag", [])
     sigma = {
