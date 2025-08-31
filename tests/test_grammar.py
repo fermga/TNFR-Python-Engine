@@ -54,3 +54,16 @@ def test_thol_closure():
     nd['Si'] = 0.1
     st['thol_len'] = 2
     assert enforce_canonical_grammar(G, 0, EN) == SHA
+
+
+def test_lag_counters_enforced():
+    G = make_graph()
+    G.graph['AL_MAX_LAG'] = 2
+    G.graph['EN_MAX_LAG'] = 2
+    from tnfr.dynamics import step
+
+    for _ in range(6):
+        step(G)
+        hist = G.graph['history']
+        assert all(v <= 2 for v in hist['since_AL'].values())
+        assert all(v <= 2 for v in hist['since_EN'].values())
