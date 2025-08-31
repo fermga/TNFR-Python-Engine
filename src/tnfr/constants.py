@@ -7,6 +7,7 @@ Provee utilidades para inyectarlos en G.graph.
 from __future__ import annotations
 from typing import Dict, Any
 from types import MappingProxyType
+import math
 import warnings
 
 # -------------------------
@@ -33,8 +34,8 @@ DEFAULTS: Dict[str, Any] = {
 
     # --- Inicialización (evitar simetrías) ---
     "INIT_RANDOM_PHASE": True,        # si True, θ ~ U[-π, π]
-    "INIT_THETA_MIN": -3.141592653589793,
-    "INIT_THETA_MAX":  3.141592653589793,
+    "INIT_THETA_MIN": -math.pi,
+    "INIT_THETA_MAX":  math.pi,
 
     "INIT_VF_MODE": "uniform",        # "uniform" | "normal"
     # para uniform:
