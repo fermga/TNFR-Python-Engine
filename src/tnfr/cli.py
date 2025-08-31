@@ -55,6 +55,15 @@ def _load_sequence(path: str) -> List[Any]:
     def parse_token(tok: Any):
         if isinstance(tok, str):
             return tok
+        if isinstance(tok, list):
+            out: List[Any] = []
+            for x in tok:
+                px = parse_token(x)
+                if isinstance(px, list):
+                    out.extend(px)
+                else:
+                    out.append(px)
+            return out
         if isinstance(tok, dict):
             if "WAIT" in tok:
                 return wait(int(tok["WAIT"]))
@@ -62,14 +71,17 @@ def _load_sequence(path: str) -> List[Any]:
                 return target(tok["TARGET"])
             if "THOL" in tok:
                 spec = tok["THOL"] or {}
-                b = [_parse_inner(x) for x in spec.get("body", [])]
-                return block(*b, repeat=int(spec.get("repeat", 1)), close=spec.get("close"))
+                body_tokens: List[Any] = []
+                for x in spec.get("body", []):
+                    px = parse_token(x)
+                    if isinstance(px, list):
+                        body_tokens.extend(px)
+                    else:
+                        body_tokens.append(px)
+                return block(*body_tokens, repeat=int(spec.get("repeat", 1)), close=spec.get("close"))
         raise ValueError(f"Token inválido: {tok}")
 
-    def _parse_inner(x: Any):
-        return parse_token(x)
-
-    return [parse_token(t) for t in data]
+    return parse_token(data)
 
 
 def _attach_callbacks(G: nx.Graph) -> None:

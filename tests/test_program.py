@@ -1,7 +1,12 @@
+import json
 import networkx as nx
+import pytest
 
+from tnfr.cli import _load_sequence
 from tnfr.program import play, seq, block, wait
 from tnfr.types import Glyph
+
+yaml = pytest.importorskip("yaml")
 
 
 def _step_noop(G):
@@ -16,3 +21,21 @@ def test_play_records_program_trace_with_block_and_wait():
     trace = G.graph["history"]["program_trace"]
     assert [e["op"] for e in trace] == ["GLYPH", "WAIT", "GLYPH", "GLYPH"]
     assert trace[2]["g"] == Glyph.THOL.value
+
+
+def test_load_sequence_json_yaml(tmp_path):
+    data = [
+        "AL",
+        {"THOL": {"body": [["OZ", "EN"], "RA"], "repeat": 1}},
+        {"WAIT": 1},
+    ]
+
+    jpath = tmp_path / "prog.json"
+    jpath.write_text(json.dumps(data))
+
+    ypath = tmp_path / "prog.yaml"
+    ypath.write_text(yaml.safe_dump(data))
+
+    expected = seq("AL", block("OZ", "EN", "RA"), wait(1))
+    assert _load_sequence(str(jpath)) == expected
+    assert _load_sequence(str(ypath)) == expected
