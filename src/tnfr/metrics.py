@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Dict, Any, List, Tuple
 from collections import defaultdict, Counter
 import statistics
+from statistics import fmean
 import csv
 import json
 import os
@@ -26,7 +27,6 @@ from .helpers import (
     _get_attr,
     clamp01,
     list_mean,
-    fmean,
 )
 from .sense import GLYPHS_CANONICAL
 
