@@ -8,7 +8,7 @@ from __future__ import annotations
 import networkx as nx
 from collections import deque
 
-from .constants import DEFAULTS, attach_defaults
+from .constants import DEFAULTS, attach_defaults, get_param
 from .dynamics import step as _step, run as _run
 from .dynamics import default_compute_delta_nfr
 from .initialization import init_node_attrs
@@ -44,13 +44,8 @@ def preparar_red(G: nx.Graph, *, override_defaults: bool = False, **overrides) -
         "phase_R": deque(maxlen=ph_len),
         "phase_disr": deque(maxlen=ph_len),
     })
-    # REMESH_TAU: alias legado de REMESH_TAU_GLOBAL
-    tau = int(
-        G.graph.get(
-            "REMESH_TAU_GLOBAL",
-            G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_GLOBAL"]),
-        )
-    )
+    # REMESH_TAU: alias legado resuelto por ``get_param``
+    tau = int(get_param(G, "REMESH_TAU_GLOBAL"))
     maxlen = max(2 * tau + 5, 64)
     G.graph.setdefault("_epi_hist", deque(maxlen=maxlen))
     # Auto-attach del observador estándar si se pide

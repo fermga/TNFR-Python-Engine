@@ -7,6 +7,7 @@ Provee utilidades para inyectarlos en G.graph.
 from __future__ import annotations
 from typing import Dict, Any
 from types import MappingProxyType
+import warnings
 
 # -------------------------
 # Parámetros canónicos
@@ -186,8 +187,13 @@ DEFAULTS: Dict[str, Any] = {
     "VALIDATORS_STRICT": False, # si True, alerta si se clampa fuera de rango
 }
 
-# Retrocompatibilidad: alias deprecado
-DEFAULTS["REMESH_TAU"] = DEFAULTS["REMESH_TAU_GLOBAL"]
+# --- Retrocompatibilidad: alias deprecados ---
+# "REMESH_TAU" era el nombre original para la memoria de REMESH. Hoy se
+# desglosa en ``REMESH_TAU_GLOBAL`` y ``REMESH_TAU_LOCAL``. Conservamos el
+# alias para proyectos históricos pero se advierte su uso.
+ALIASES: Dict[str, tuple[str, ...]] = {
+    "REMESH_TAU": ("REMESH_TAU_GLOBAL", "REMESH_TAU_LOCAL"),
+}
 
 # --- Configuraciones por defecto exportadas ---
 SIGMA = MappingProxyType(DEFAULTS.setdefault("SIGMA", {
@@ -293,6 +299,26 @@ def merge_overrides(G, **overrides) -> None:
     """
     for k, v in overrides.items():
         G.graph[k] = v
+
+
+def get_param(G, key: str):
+    """Recupera parámetro desde ``G.graph`` resolviendo aliases legados.
+
+    Si el ``key`` no está presente, se busca un alias en ``ALIASES`` y se
+    emite ``DeprecationWarning`` cuando se utiliza el nombre antiguo.
+    Finalmente se recurre a ``DEFAULTS``.
+    """
+    if key in G.graph:
+        return G.graph[key]
+    for alias, targets in ALIASES.items():
+        if key in targets and alias in G.graph:
+            warnings.warn(
+                f"'{alias}' es alias legado; usa '{key}'",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return G.graph[alias]
+    return DEFAULTS[key]
 
 
 # Alias exportados por conveniencia (evita imports circulares)
