@@ -380,7 +380,7 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     for n in G.nodes():
         nd = G.nodes[n]
         vf = _get_attr(nd, ALIAS_VF, 0.0)
-        vf_norm = 0.0 if vfmax == 0 else clamp01(abs(vf)/vfmax)
+        vf_norm = clamp01(abs(vf) / vfmax)
 
         # dispersión de fase local
         th_i = _get_attr(nd, ALIAS_THETA, 0.0)
@@ -388,7 +388,7 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
         disp_fase = phase_distance(th_i, th_bar)  # [0,1]
 
         dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
-        dnfr_norm = 0.0 if dnfrmax == 0 else clamp01(abs(dnfr)/dnfrmax)
+        dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
 
         Si = alpha*vf_norm + beta*(1.0 - disp_fase) + gamma*(1.0 - dnfr_norm)
         Si = clamp01(Si)
