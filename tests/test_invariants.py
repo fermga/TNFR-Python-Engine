@@ -2,12 +2,7 @@ from __future__ import annotations
 import math
 import pytest
 
-from tnfr.constants import inject_defaults, DEFAULTS
-from tnfr.scenarios import build_graph
-import math
-import pytest
-
-from tnfr.constants import inject_defaults, DEFAULTS
+from tnfr.constants import inject_defaults
 from tnfr.scenarios import build_graph
 from tnfr.dynamics import step, _update_history
 from tnfr.operators import aplicar_glifo, aplicar_remesh_si_estabilizacion_global
@@ -17,7 +12,7 @@ from tnfr.types import Glyph
 @pytest.fixture
 def G_small():
     G = build_graph(n=8, topology="ring", seed=7)
-    inject_defaults(G, DEFAULTS)
+    inject_defaults(G)
     _update_history(G)
     return G
 

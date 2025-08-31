@@ -2,7 +2,6 @@ import pytest
 from tnfr.scenarios import build_graph
 from tnfr.constants import (
     inject_defaults,
-    DEFAULTS,
     ALIAS_EPI_KIND,
     ALIAS_EPI,
     ALIAS_VF,
@@ -14,7 +13,7 @@ from tnfr.config import load_config
 
 def _base_graph():
     G = build_graph(n=4, topology="ring", seed=1)
-    inject_defaults(G, DEFAULTS)
+    inject_defaults(G)
     return G
 
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import pytest
 
-from tnfr.constants import inject_defaults, DEFAULTS
+from tnfr.constants import inject_defaults
 from tnfr.scenarios import build_graph
 from tnfr.dynamics import step
 
@@ -9,7 +9,7 @@ from tnfr.dynamics import step
 @pytest.mark.parametrize("method", ["euler", "rk4"])
 def test_epi_limits_preserved(method):
     G = build_graph(n=6, topology="ring", seed=1)
-    inject_defaults(G, DEFAULTS)
+    inject_defaults(G)
     G.graph["INTEGRATOR_METHOD"] = method
     G.graph["DT_MIN"] = 0.1
     G.graph["GAMMA"] = {"type": "none"}

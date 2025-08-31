@@ -8,7 +8,7 @@ from __future__ import annotations
 import networkx as nx
 from collections import deque
 
-from .constants import DEFAULTS, attach_defaults, get_param
+from .constants import DEFAULTS, METRIC_DEFAULTS, attach_defaults, get_param
 from .dynamics import step as _step, run as _run
 from .dynamics import default_compute_delta_nfr
 from .initialization import init_node_attrs
@@ -21,7 +21,7 @@ def preparar_red(G: nx.Graph, *, override_defaults: bool = False, **overrides) -
         from .constants import merge_overrides
         merge_overrides(G, **overrides)
     # Inicializaciones blandas
-    ph_len = int(G.graph.get("PHASE_HISTORY_MAXLEN", DEFAULTS.get("PHASE_HISTORY_MAXLEN", 50)))
+    ph_len = int(G.graph.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]))
     G.graph.setdefault("history", {
         "C_steps": [],
         "stable_frac": [],
