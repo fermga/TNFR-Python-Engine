@@ -72,36 +72,42 @@ def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
 def _load_sequence(path: Path) -> List[Any]:
     data = read_structured_file(path)
 
-    def parse_token(tok: Any):
-        if isinstance(tok, str):
-            return tok
-        if isinstance(tok, list):
-            out: List[Any] = []
-            for x in tok:
-                px = parse_token(x)
-                if isinstance(px, list):
-                    out.extend(px)
-                else:
-                    out.append(px)
-            return out
-        if isinstance(tok, dict):
-            if "WAIT" in tok:
-                return wait(int(tok["WAIT"]))
-            if "TARGET" in tok:
-                return target(tok["TARGET"])
-            if "THOL" in tok:
-                spec = tok["THOL"] or {}
-                body_tokens: List[Any] = []
-                for x in spec.get("body", []):
-                    px = parse_token(x)
-                    if isinstance(px, list):
-                        body_tokens.extend(px)
-                    else:
-                        body_tokens.append(px)
-                return block(*body_tokens, repeat=int(spec.get("repeat", 1)), close=spec.get("close"))
-        raise ValueError(f"Token inválido: {tok}")
+    def parse_tokens(obj: Any) -> List[Any]:
+        from collections import deque
 
-    return parse_token(data)
+        out: List[Any] = []
+        queue = deque(obj if isinstance(obj, list) else [obj])
+        while queue:
+            tok = queue.popleft()
+            if isinstance(tok, list):
+                queue.extendleft(reversed(tok))
+                continue
+            if isinstance(tok, dict):
+                if len(tok) != 1:
+                    raise ValueError(f"Token inválido: {tok}")
+                key, val = next(iter(tok.items()))
+                handler = TOKEN_MAP.get(key)
+                if handler is None:
+                    raise ValueError(f"Token no reconocido: {key}")
+                out.append(handler(val))
+                continue
+            if isinstance(tok, str):
+                out.append(tok)
+                continue
+            raise ValueError(f"Token inválido: {tok}")
+        return out
+
+    TOKEN_MAP = {
+        "WAIT": lambda v: wait(int(v)),
+        "TARGET": lambda v: target(v),
+        "THOL": lambda spec: block(
+            *parse_tokens(spec.get("body", [])),
+            repeat=int(spec.get("repeat", 1)),
+            close=spec.get("close"),
+        ),
+    }
+
+    return seq(*parse_tokens(data))
 
 
 def _attach_callbacks(G: nx.Graph) -> None:
