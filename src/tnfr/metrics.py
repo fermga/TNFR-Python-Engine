@@ -11,6 +11,7 @@ from math import cos
 
 from .constants import (
     DEFAULTS,
+    METRIC_DEFAULTS,
     ALIAS_EPI,
     ALIAS_THETA,
     ALIAS_DNFR,
@@ -158,7 +159,7 @@ def _metrics_step(G, *args, **kwargs):
     hist = ensure_history(G)
     dt = float(G.graph.get("DT", 1.0))
     t = float(G.graph.get("_t", 0.0))
-    thr = float(G.graph.get("EPI_SUPPORT_THR", DEFAULTS.get("EPI_SUPPORT_THR", 0.0)))
+    thr = float(G.graph.get("EPI_SUPPORT_THR", METRIC_DEFAULTS.get("EPI_SUPPORT_THR", 0.0)))
 
     save_by_node = bool(G.graph.get("METRICS", METRICS).get("save_by_node", True))
     counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node)

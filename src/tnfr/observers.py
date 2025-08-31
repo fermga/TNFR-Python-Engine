@@ -8,7 +8,7 @@ from typing import Dict, Any
 import math
 import statistics as st
 
-from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
+from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI, METRIC_DEFAULTS
 from .helpers import get_attr, list_mean, register_callback, angle_diff, ensure_history, count_glyphs
 from .constants_glifos import ESTABILIZADORES, DISRUPTIVOS
 
@@ -116,6 +116,6 @@ def wbar(G, window: int | None = None) -> float:
         # fallback: coherencia instantánea
         return coherencia_global(G)
     if window is None:
-        window = int(G.graph.get("WBAR_WINDOW", 25))
+        window = int(G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25)))
     w = min(len(cs), max(1, int(window)))
     return float(sum(cs[-w:]) / w)

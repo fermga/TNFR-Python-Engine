@@ -7,7 +7,7 @@ import math
 import random
 import networkx as nx
 
-from .constants import DEFAULTS
+from .constants import DEFAULTS, INIT_DEFAULTS
 
 
 def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
@@ -21,25 +21,31 @@ def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
     ``EPI`` mediante ``INIT_EPI_VALUE``.
     """
     seed = int(G.graph.get("RANDOM_SEED", 0))
-    init_rand_phase = bool(G.graph.get("INIT_RANDOM_PHASE", DEFAULTS.get("INIT_RANDOM_PHASE", True)))
+    init_rand_phase = bool(
+        G.graph.get("INIT_RANDOM_PHASE", INIT_DEFAULTS["INIT_RANDOM_PHASE"])
+    )
 
-    th_min = float(G.graph.get("INIT_THETA_MIN", DEFAULTS.get("INIT_THETA_MIN", -math.pi)))
-    th_max = float(G.graph.get("INIT_THETA_MAX", DEFAULTS.get("INIT_THETA_MAX", math.pi)))
+    th_min = float(G.graph.get("INIT_THETA_MIN", INIT_DEFAULTS["INIT_THETA_MIN"]))
+    th_max = float(G.graph.get("INIT_THETA_MAX", INIT_DEFAULTS["INIT_THETA_MAX"]))
 
-    vf_mode = str(G.graph.get("INIT_VF_MODE", DEFAULTS.get("INIT_VF_MODE", "uniform"))).lower()
+    vf_mode = str(
+        G.graph.get("INIT_VF_MODE", INIT_DEFAULTS["INIT_VF_MODE"])
+    ).lower()
     vf_min_lim = float(G.graph.get("VF_MIN", DEFAULTS["VF_MIN"]))
     vf_max_lim = float(G.graph.get("VF_MAX", DEFAULTS["VF_MAX"]))
 
-    vf_uniform_min = G.graph.get("INIT_VF_MIN", DEFAULTS.get("INIT_VF_MIN", None))
-    vf_uniform_max = G.graph.get("INIT_VF_MAX", DEFAULTS.get("INIT_VF_MAX", None))
+    vf_uniform_min = G.graph.get("INIT_VF_MIN", INIT_DEFAULTS.get("INIT_VF_MIN"))
+    vf_uniform_max = G.graph.get("INIT_VF_MAX", INIT_DEFAULTS.get("INIT_VF_MAX"))
     if vf_uniform_min is None:
         vf_uniform_min = vf_min_lim
     if vf_uniform_max is None:
         vf_uniform_max = vf_max_lim
 
-    vf_mean = float(G.graph.get("INIT_VF_MEAN", DEFAULTS.get("INIT_VF_MEAN", 0.5)))
-    vf_std = float(G.graph.get("INIT_VF_STD", DEFAULTS.get("INIT_VF_STD", 0.15)))
-    clamp_to_limits = bool(G.graph.get("INIT_VF_CLAMP_TO_LIMITS", DEFAULTS.get("INIT_VF_CLAMP_TO_LIMITS", True)))
+    vf_mean = float(G.graph.get("INIT_VF_MEAN", INIT_DEFAULTS["INIT_VF_MEAN"]))
+    vf_std = float(G.graph.get("INIT_VF_STD", INIT_DEFAULTS["INIT_VF_STD"]))
+    clamp_to_limits = bool(
+        G.graph.get("INIT_VF_CLAMP_TO_LIMITS", INIT_DEFAULTS["INIT_VF_CLAMP_TO_LIMITS"])
+    )
 
     si_min = float(G.graph.get("INIT_SI_MIN", 0.4))
     si_max = float(G.graph.get("INIT_SI_MAX", 0.7))

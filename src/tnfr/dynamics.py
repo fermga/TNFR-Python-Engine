@@ -27,6 +27,8 @@ from .grammar import (
 )
 from .constants import (
     DEFAULTS,
+    REMESH_DEFAULTS,
+    METRIC_DEFAULTS,
     ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI,
     ALIAS_dEPI, ALIAS_D2EPI, ALIAS_dVF, ALIAS_D2VF, ALIAS_dSI,
     ALIAS_EPI_KIND,
@@ -380,7 +382,7 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
     g = G.graph
     defaults = DEFAULTS
     hist = g.setdefault("history", {})
-    maxlen = int(g.get("PHASE_HISTORY_MAXLEN", defaults.get("PHASE_HISTORY_MAXLEN", 50)))
+    maxlen = int(g.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]))
     hist_state = hist.setdefault("phase_state", deque(maxlen=maxlen))
     if not isinstance(hist_state, deque):
         hist_state = deque(hist_state, maxlen=maxlen)
@@ -414,7 +416,7 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
         if bool(cfg.get("enabled", False)):
             # 2) Métricas actuales (no dependemos de history)
             R = orden_kuramoto(G)
-            win = int(g.get("GLYPH_LOAD_WINDOW", defaults["GLYPH_LOAD_WINDOW"]))
+            win = int(g.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]))
             dist = carga_glifica(G, window=win)
             disr = float(dist.get("_disruptivos", 0.0)) if dist else 0.0
 
@@ -491,7 +493,7 @@ def adaptar_vf_por_coherencia(G) -> None:
     """Ajusta νf hacia la media vecinal en nodos con estabilidad sostenida."""
     tau = int(G.graph.get("VF_ADAPT_TAU", DEFAULTS.get("VF_ADAPT_TAU", 5)))
     mu = float(G.graph.get("VF_ADAPT_MU", DEFAULTS.get("VF_ADAPT_MU", 0.1)))
-    eps_dnfr = float(G.graph.get("EPS_DNFR_STABLE", DEFAULTS["EPS_DNFR_STABLE"]))
+    eps_dnfr = float(G.graph.get("EPS_DNFR_STABLE", REMESH_DEFAULTS["EPS_DNFR_STABLE"]))
     thr_sel = G.graph.get("SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {}))
     thr_def = G.graph.get("GLYPH_THRESHOLDS", DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66}))
     si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
@@ -800,7 +802,7 @@ def run(G, steps: int, *, dt: float | None = None, use_Si: bool = True, apply_gl
     for _ in range(int(steps)):
         step(G, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)
         # Early-stop opcional
-        stop_cfg = G.graph.get("STOP_EARLY", DEFAULTS.get("STOP_EARLY", {"enabled": False}))
+        stop_cfg = G.graph.get("STOP_EARLY", METRIC_DEFAULTS.get("STOP_EARLY", {"enabled": False}))
         if stop_cfg and stop_cfg.get("enabled", False):
             w = int(stop_cfg.get("window", 25))
             frac = float(stop_cfg.get("fraction", 0.90))
@@ -822,7 +824,7 @@ def _update_coherence(G, hist) -> None:
     C = 1.0 / (1.0 + dnfr_mean + dEPI_mean)
     hist["C_steps"].append(C)
 
-    wbar_w = int(G.graph.get("WBAR_WINDOW", DEFAULTS.get("WBAR_WINDOW", 25)))
+    wbar_w = int(G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25)))
     cs = hist["C_steps"]
     if cs:
         w = min(len(cs), max(1, wbar_w))
@@ -840,7 +842,7 @@ def _update_phase_sync(G, hist) -> None:
 
 def _update_sigma(G, hist) -> None:
     """Registrar carga glífica y el vector Σ⃗ asociado."""
-    win = int(G.graph.get("GLYPH_LOAD_WINDOW", DEFAULTS["GLYPH_LOAD_WINDOW"]))
+    win = int(G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]))
     gl = carga_glifica(G, window=win)
     hist["glyph_load_estab"].append(gl.get("_estabilizadores", 0.0))
     hist["glyph_load_disr"].append(gl.get("_disruptivos", 0.0))
@@ -862,8 +864,8 @@ def _update_history(G) -> None:
 
     _update_coherence(G, hist)
 
-    eps_dnfr = float(G.graph.get("EPS_DNFR_STABLE", DEFAULTS["EPS_DNFR_STABLE"]))
-    eps_depi = float(G.graph.get("EPS_DEPI_STABLE", DEFAULTS["EPS_DEPI_STABLE"]))
+    eps_dnfr = float(G.graph.get("EPS_DNFR_STABLE", REMESH_DEFAULTS["EPS_DNFR_STABLE"]))
+    eps_depi = float(G.graph.get("EPS_DEPI_STABLE", REMESH_DEFAULTS["EPS_DEPI_STABLE"]))
     stables = 0
     total = max(1, G.number_of_nodes())
     dt = float(G.graph.get("DT", DEFAULTS.get("DT", 1.0))) or 1.0

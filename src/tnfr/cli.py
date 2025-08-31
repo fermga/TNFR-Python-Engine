@@ -10,7 +10,7 @@ import networkx as nx
 
 logger = logging.getLogger(__name__)
 
-from .constants import inject_defaults, DEFAULTS
+from .constants import inject_defaults, DEFAULTS, METRIC_DEFAULTS
 from .sense import register_sigma_callback, sigma_series, sigma_rose
 from .metrics import (
     register_metrics_callbacks,
@@ -142,7 +142,7 @@ def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
     if args.remesh_mode:
         G.graph["REMESH_MODE"] = str(args.remesh_mode)
 
-    gcanon = dict(DEFAULTS["GRAMMAR_CANON"])
+    gcanon = dict(METRIC_DEFAULTS["GRAMMAR_CANON"])
     gcanon.update(_args_to_dict(args, prefix="grammar."))
     if hasattr(args, "grammar_canon") and args.grammar_canon is not None:
         gcanon["enabled"] = bool(args.grammar_canon)
@@ -203,15 +203,15 @@ def cmd_run(args: argparse.Namespace) -> int:
     _persist_history(G, args)
 
     # Resúmenes rápidos (si están activados)
-    if G.graph.get("COHERENCE", DEFAULTS["COHERENCE"]).get("enabled", True):
+    if G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get("enabled", True):
         Wstats = G.graph.get("history", {}).get(
-            G.graph.get("COHERENCE", DEFAULTS["COHERENCE"]).get("stats_history_key", "W_stats"), []
+            G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get("stats_history_key", "W_stats"), []
         )
         if Wstats:
             logger.info("[COHERENCE] último paso: %s", Wstats[-1])
-    if G.graph.get("DIAGNOSIS", DEFAULTS["DIAGNOSIS"]).get("enabled", True):
+    if G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"]).get("enabled", True):
         last_diag = G.graph.get("history", {}).get(
-            G.graph.get("DIAGNOSIS", DEFAULTS["DIAGNOSIS"]).get("history_key", "nodal_diag"), []
+            G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"]).get("history_key", "nodal_diag"), []
         )
         if last_diag:
             sample = list(last_diag[-1].values())[:3]

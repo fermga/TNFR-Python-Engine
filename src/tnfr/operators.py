@@ -8,7 +8,7 @@ import weakref
 import networkx as nx
 from networkx.algorithms import community as nx_comm
 
-from .constants import DEFAULTS, ALIAS_EPI, get_param
+from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers import (
     clamp,
     clamp01,
@@ -34,7 +34,7 @@ Este módulo implementa:
 Nota sobre α (alpha) de REMESH: se toma por prioridad de
 1) G.graph["GLYPH_FACTORS"]["REMESH_alpha"]
 2) G.graph["REMESH_ALPHA"]
-3) DEFAULTS["REMESH_ALPHA"]
+3) REMESH_DEFAULTS["REMESH_ALPHA"]
 """
 
 
@@ -326,16 +326,18 @@ def aplicar_glifo(G, n, glifo: Glyph | str, *, window: Optional[int] = None) -> 
 # -------------------------
 
 def _remesh_alpha_info(G):
-    """Devuelve `(alpha, source)` con precedencia explícita."""
-    if bool(G.graph.get("REMESH_ALPHA_HARD", DEFAULTS.get("REMESH_ALPHA_HARD", False))):
-        val = float(G.graph.get("REMESH_ALPHA", DEFAULTS["REMESH_ALPHA"]))
+    """Devuelve ``(alpha, source)`` con precedencia explícita."""
+    if bool(
+        G.graph.get("REMESH_ALPHA_HARD", REMESH_DEFAULTS["REMESH_ALPHA_HARD"])
+    ):
+        val = float(G.graph.get("REMESH_ALPHA", REMESH_DEFAULTS["REMESH_ALPHA"]))
         return val, "REMESH_ALPHA"
     gf = G.graph.get("GLYPH_FACTORS", DEFAULTS.get("GLYPH_FACTORS", {}))
     if "REMESH_alpha" in gf:
         return float(gf["REMESH_alpha"]), "GLYPH_FACTORS.REMESH_alpha"
     if "REMESH_ALPHA" in G.graph:
         return float(G.graph["REMESH_ALPHA"]), "REMESH_ALPHA"
-    return float(DEFAULTS["REMESH_ALPHA"]), "DEFAULTS.REMESH_ALPHA"
+    return float(REMESH_DEFAULTS["REMESH_ALPHA"]), "REMESH_DEFAULTS.REMESH_ALPHA"
 
 
 def aplicar_remesh_red(G) -> None:
@@ -415,7 +417,7 @@ def aplicar_remesh_red(G) -> None:
         if h.get("glyph_load_disr"): meta["glyph_disr_last"] = h["glyph_load_disr"][-1]
 
     G.graph["_REMESH_META"] = meta
-    if G.graph.get("REMESH_LOG_EVENTS", DEFAULTS["REMESH_LOG_EVENTS"]):
+    if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
         ev = G.graph.setdefault("history", {}).setdefault("remesh_events", [])
         ev.append(dict(meta))
 
@@ -448,7 +450,7 @@ def aplicar_remesh_red_topologico(
     rnd = random.Random(seed)
 
     if mode is None:
-        mode = str(G.graph.get("REMESH_MODE", DEFAULTS.get("REMESH_MODE", "knn")))
+        mode = str(G.graph.get("REMESH_MODE", REMESH_DEFAULTS.get("REMESH_MODE", "knn")))
     mode = str(mode)
 
     # Similaridad basada en EPI (distancia absoluta)
@@ -470,7 +472,7 @@ def aplicar_remesh_red_topologico(
             k_val = (
                 int(k)
                 if k is not None
-                else int(G.graph.get("REMESH_COMMUNITY_K", DEFAULTS.get("REMESH_COMMUNITY_K", 2)))
+                else int(G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2)))
             )
             # Grafo de comunidades basado en medias de EPI
             C = nx.Graph()
@@ -506,7 +508,7 @@ def aplicar_remesh_red_topologico(
                 G.add_node(idx, **data)
             G.add_edges_from(new_edges)
 
-            if G.graph.get("REMESH_LOG_EVENTS", DEFAULTS["REMESH_LOG_EVENTS"]):
+            if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
                 ev = G.graph.setdefault("history", {}).setdefault("remesh_events", [])
                 mapping = {idx: C.nodes[idx].get("members", []) for idx in C.nodes()}
                 ev.append({
@@ -520,7 +522,7 @@ def aplicar_remesh_red_topologico(
     # Default/mode knn/mst operate on nodos originales
     new_edges = set(mst.edges())
     if mode == "knn":
-        k_val = int(k) if k is not None else int(G.graph.get("REMESH_COMMUNITY_K", DEFAULTS.get("REMESH_COMMUNITY_K", 2)))
+        k_val = int(k) if k is not None else int(G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2)))
         k_val = max(1, k_val)
         for u in nodes:
             sims = sorted(nodes, key=lambda v: abs(epi[u] - epi[v]))
@@ -536,15 +538,29 @@ def aplicar_remesh_si_estabilizacion_global(G, pasos_estables_consecutivos: Opti
     w_estab = (
         pasos_estables_consecutivos
         if pasos_estables_consecutivos is not None
-        else int(G.graph.get("REMESH_STABILITY_WINDOW", DEFAULTS["REMESH_STABILITY_WINDOW"]))
+        else int(G.graph.get("REMESH_STABILITY_WINDOW", REMESH_DEFAULTS["REMESH_STABILITY_WINDOW"]))
     )
-    frac_req = float(G.graph.get("FRACTION_STABLE_REMESH", DEFAULTS["FRACTION_STABLE_REMESH"]))
-    req_extra = bool(G.graph.get("REMESH_REQUIRE_STABILITY", DEFAULTS["REMESH_REQUIRE_STABILITY"]))
-    min_sync = float(G.graph.get("REMESH_MIN_PHASE_SYNC", DEFAULTS["REMESH_MIN_PHASE_SYNC"]))
-    max_disr = float(G.graph.get("REMESH_MAX_GLYPH_DISR", DEFAULTS["REMESH_MAX_GLYPH_DISR"]))
-    min_sigma = float(G.graph.get("REMESH_MIN_SIGMA_MAG", DEFAULTS["REMESH_MIN_SIGMA_MAG"]))
-    min_R = float(G.graph.get("REMESH_MIN_KURAMOTO_R", DEFAULTS["REMESH_MIN_KURAMOTO_R"]))
-    min_sihi = float(G.graph.get("REMESH_MIN_SI_HI_FRAC", DEFAULTS["REMESH_MIN_SI_HI_FRAC"]))
+    frac_req = float(
+        G.graph.get("FRACTION_STABLE_REMESH", REMESH_DEFAULTS["FRACTION_STABLE_REMESH"])
+    )
+    req_extra = bool(
+        G.graph.get("REMESH_REQUIRE_STABILITY", REMESH_DEFAULTS["REMESH_REQUIRE_STABILITY"])
+    )
+    min_sync = float(
+        G.graph.get("REMESH_MIN_PHASE_SYNC", REMESH_DEFAULTS["REMESH_MIN_PHASE_SYNC"])
+    )
+    max_disr = float(
+        G.graph.get("REMESH_MAX_GLYPH_DISR", REMESH_DEFAULTS["REMESH_MAX_GLYPH_DISR"])
+    )
+    min_sigma = float(
+        G.graph.get("REMESH_MIN_SIGMA_MAG", REMESH_DEFAULTS["REMESH_MIN_SIGMA_MAG"])
+    )
+    min_R = float(
+        G.graph.get("REMESH_MIN_KURAMOTO_R", REMESH_DEFAULTS["REMESH_MIN_KURAMOTO_R"])
+    )
+    min_sihi = float(
+        G.graph.get("REMESH_MIN_SI_HI_FRAC", REMESH_DEFAULTS["REMESH_MIN_SI_HI_FRAC"])
+    )
 
     hist = G.graph.setdefault("history", {"stable_frac": []})
     sf = hist.get("stable_frac", [])
@@ -587,12 +603,16 @@ def aplicar_remesh_si_estabilizacion_global(G, pasos_estables_consecutivos: Opti
     # 3) Cooldown
     last = G.graph.get("_last_remesh_step", -10**9)
     step_idx = len(sf)
-    cooldown = int(G.graph.get("REMESH_COOLDOWN_VENTANA", DEFAULTS["REMESH_COOLDOWN_VENTANA"]))
+    cooldown = int(
+        G.graph.get("REMESH_COOLDOWN_VENTANA", REMESH_DEFAULTS["REMESH_COOLDOWN_VENTANA"])
+    )
     if step_idx - last < cooldown:
         return
     t_now = float(G.graph.get("_t", 0.0))
     last_ts = float(G.graph.get("_last_remesh_ts", -1e12))
-    cooldown_ts = float(G.graph.get("REMESH_COOLDOWN_TS", DEFAULTS.get("REMESH_COOLDOWN_TS", 0.0)))
+    cooldown_ts = float(
+        G.graph.get("REMESH_COOLDOWN_TS", REMESH_DEFAULTS.get("REMESH_COOLDOWN_TS", 0.0))
+    )
     if cooldown_ts > 0 and (t_now - last_ts) < cooldown_ts:
         return
     # 4) Aplicar y registrar
