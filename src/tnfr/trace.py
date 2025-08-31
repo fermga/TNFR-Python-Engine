@@ -70,14 +70,21 @@ def _trace_before(G, *args, **kwargs):
 
     if "callbacks" in capture:
         # si el motor guarda los callbacks, exponer nombres por fase
-        cb = G.graph.get("_callbacks")
+        cb = G.graph.get("callbacks")
         if isinstance(cb, dict):
             out = {}
             for phase, callbacks in cb.items():
                 if isinstance(callbacks, list):
-                    names = []
-                    for (_, func, *_rest) in callbacks:
-                        names.append(getattr(func, "__name__", "fn"))
+                    names: List[str] = []
+                    for item in callbacks:
+                        if isinstance(item, tuple):
+                            name = item[0]
+                            if not isinstance(name, str):
+                                func = item[1] if len(item) > 1 else None
+                                name = getattr(func, "__name__", "fn")
+                        else:
+                            name = getattr(item, "__name__", "fn")
+                        names.append(name)
                     out[phase] = names
                 else:
                     out[phase] = None
@@ -134,7 +141,7 @@ def register_trace(G) -> None:
       - selector: nombre del selector glífico
       - dnfr_weights: mezcla ΔNFR declarada en el motor
       - si_weights: pesos α/β/γ y sensibilidad de Si
-      - callbacks: callbacks registrados por fase (si están en G.graph['_callbacks'])
+      - callbacks: callbacks registrados por fase (si están en G.graph['callbacks'])
       - thol_open_nodes: cuántos nodos tienen bloque THOL abierto
       - kuramoto: (R, ψ) de la red
       - sigma: vector global del plano del sentido
