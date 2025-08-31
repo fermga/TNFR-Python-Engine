@@ -270,7 +270,18 @@ def aplicar_glifo_obj(node: NodoProtocol, glifo: str, *, window: Optional[int] =
     glifo = str(glifo)
     op = _NAME_TO_OP.get(glifo)
     if not op:
-        return
+        step_idx = len(node.graph.get("history", {}).get("C_steps", []))
+        node.graph.setdefault("history", {}).setdefault("events", []).append(
+            (
+                "warn",
+                {
+                    "step": step_idx,
+                    "node": getattr(node, "n", None),
+                    "msg": f"glifo desconocido: {glifo}",
+                },
+            )
+        )
+        raise ValueError(f"glifo desconocido: {glifo}")
     if window is None:
         window = int(node.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS["GLYPH_HYSTERESIS_WINDOW"]))
     node.push_glifo(glifo, window)

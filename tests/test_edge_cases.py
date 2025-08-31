@@ -47,3 +47,13 @@ def test_op_en_sets_epi_kind_on_isolated_node():
     op_EN(node)
     assert node.EPI == 1.0
     assert node.epi_kind == "E’N"
+
+
+def test_aplicar_glifo_invalid_glifo_raises_and_logs():
+    node = NodoTNFR()
+    node.graph["history"] = {}
+    with pytest.raises(ValueError):
+        node.aplicar_glifo("NO_EXISTE")
+    events = node.graph["history"].get("events")
+    assert events and events[-1][0] == "warn"
+    assert "glifo desconocido" in events[-1][1]["msg"]
