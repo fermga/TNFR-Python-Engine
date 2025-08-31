@@ -17,8 +17,7 @@ def test_sigma_vector_global_empty_graph():
     from tnfr.sense import sigma_vector_global
 
     sv = sigma_vector_global(G)
-    assert sv["mag"] == 0.0
-    assert sv["n"] == 0
+    assert sv == {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
 
 
 def test_update_epi_invalid_dt():
