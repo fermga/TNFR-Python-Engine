@@ -141,7 +141,11 @@ def _metrics_step(G, *args, **kwargs):
     id_val = counts.get("O’Z", 0) / total
     cm_val = (counts.get("Z’HIR", 0) + counts.get("NA’V", 0)) / total
     ne_val = (counts.get("I’L", 0) + counts.get("T’HOL", 0)) / total
-    pp_val = counts.get("SH’A", 0) / max(1, counts.get("RE’MESH", 0))
+    pp_val = (
+        0.0
+        if counts.get("RE’MESH", 0) == 0
+        else counts.get("SH’A", 0) / counts.get("RE’MESH", 0)
+    )
     hist.setdefault("morph", []).append({"t": t, "ID": id_val, "CM": cm_val, "NE": ne_val, "PP": pp_val})
 
 
