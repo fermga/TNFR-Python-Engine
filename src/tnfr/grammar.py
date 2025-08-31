@@ -108,13 +108,8 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
             cand = NUL if _si(G, nd) >= float(cfg.get("si_high", 0.66)) else SHA
 
     # 3) Compatibilidades: si el anterior restringe el siguiente
-    prev = None
     hist = nd.get("hist_glifos")
-    if hist:
-        try:
-            prev = hist[-1]
-        except IndexError:
-            prev = None
+    prev = hist[-1] if hist else None
     if prev in CANON_COMPAT and cand not in CANON_COMPAT[prev]:
         cand = CANON_FALLBACK.get(prev, cand)
 
