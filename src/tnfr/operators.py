@@ -64,6 +64,8 @@ def _node_offset(G, n) -> int:
 
 def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``."""
+    if amplitude == 0:
+        return 0.0
 
     base_seed = int(node.graph.get("RANDOM_SEED", 0))
     cache = node.graph.setdefault("_rnd_cache", weakref.WeakKeyDictionary())
