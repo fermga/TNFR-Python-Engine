@@ -6,26 +6,14 @@ reutilizando :func:`tnfr.constants.inject_defaults`.
 
 from __future__ import annotations
 from typing import Any, Dict
-import json
-
-try:  # pragma: no cover - dependencia opcional
-    import yaml  # type: ignore
-except ImportError:  # pragma: no cover
-    yaml = None
+from .helpers import read_structured_file
 
 from .constants import inject_defaults
 
 
 def load_config(path: str) -> Dict[str, Any]:
     """Lee un archivo JSON/YAML y devuelve un ``dict`` con los parámetros."""
-    with open(path, "r", encoding="utf-8") as f:
-        text = f.read()
-    if path.endswith((".yaml", ".yml")):
-        if not yaml:  # pragma: no cover - fallo en entorno sin pyyaml
-            raise RuntimeError("pyyaml no está instalado")
-        data = yaml.safe_load(text)
-    else:
-        data = json.loads(text)
+    data = read_structured_file(path)
     if not isinstance(data, dict):
         raise ValueError("El archivo de configuración debe contener un objeto")
     return data

@@ -10,6 +10,12 @@ import math
 from collections import deque
 from itertools import islice
 from statistics import fmean, StatisticsError
+import json
+
+try:  # pragma: no cover - dependencia opcional
+    import yaml  # type: ignore
+except ImportError:  # pragma: no cover
+    yaml = None
 
 try:
     import networkx as nx  # solo para tipos
@@ -20,6 +26,20 @@ from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, A
 
 if TYPE_CHECKING:  # pragma: no cover - sólo para tipos
     from .node import NodoProtocol
+
+# -------------------------
+# Entrada/salida estructurada
+# -------------------------
+
+def read_structured_file(path: str) -> Any:
+    """Lee un archivo JSON o YAML y devuelve los datos parseados."""
+    with open(path, "r", encoding="utf-8") as f:
+        text = f.read()
+    if path.endswith((".yaml", ".yml")):
+        if not yaml:  # pragma: no cover - dependencia opcional
+            raise RuntimeError("pyyaml no está instalado")
+        return yaml.safe_load(text)
+    return json.loads(text)
 
 # -------------------------
 # Utilidades numéricas
