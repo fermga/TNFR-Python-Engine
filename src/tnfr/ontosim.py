@@ -22,11 +22,12 @@ def preparar_red(G: nx.Graph, *, override_defaults: bool = False, **overrides) -
         from .constants import merge_overrides
         merge_overrides(G, **overrides)
     # Inicializaciones blandas
+    ph_len = int(G.graph.get("PHASE_HISTORY_MAXLEN", DEFAULTS.get("PHASE_HISTORY_MAXLEN", 50)))
     G.graph.setdefault("history", {
         "C_steps": [],
         "stable_frac": [],
         "phase_sync": [],
-        "kuramoto_R": [], 
+        "kuramoto_R": [],
         "sense_sigma_x": [],
         "sense_sigma_y": [],
         "sense_sigma_mag": [],
@@ -39,10 +40,10 @@ def preparar_red(G: nx.Graph, *, override_defaults: bool = False, **overrides) -
         "Si_lo_frac": [],
         "W_bar": [],
         "phase_kG": [],
-        "phase_kL": [], 
-        "phase_state": [],
-        "phase_R": [], 
-        "phase_disr": [],
+        "phase_kL": [],
+        "phase_state": deque(maxlen=ph_len),
+        "phase_R": deque(maxlen=ph_len),
+        "phase_disr": deque(maxlen=ph_len),
     })
     # REMESH_TAU: alias legado de REMESH_TAU_GLOBAL
     tau = int(
