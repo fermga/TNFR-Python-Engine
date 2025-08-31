@@ -30,3 +30,19 @@ def test_trace_metadata_contains_callback_names(graph_canon):
     meta = hist[0]
     assert "callbacks" in meta
     assert "custom_cb" in meta["callbacks"].get("before_step", [])
+
+
+def test_trace_sigma_no_glyphs(graph_canon):
+    G = graph_canon()
+    # add nodes without glifo history
+    G.add_nodes_from([1, 2, 3])
+    register_trace(G)
+    invoke_callbacks(G, "after_step")
+    meta = G.graph["history"]["trace_meta"][0]
+    assert meta["phase"] == "after"
+    assert meta["sigma"] == {
+        "x": 0.0,
+        "y": 0.0,
+        "mag": 0.0,
+        "angle": 0.0,
+    }
