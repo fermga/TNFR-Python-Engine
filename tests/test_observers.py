@@ -8,6 +8,7 @@ from tnfr.node import NodoNX
 from tnfr.operators import random_jitter
 from tnfr.constants import ALIAS_THETA
 from tnfr.observers import sincronía_fase, orden_kuramoto, carga_glifica, sigma_vector
+from tnfr.constants_glifos import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
 from tnfr.helpers import angle_diff, _set_attr
 
 
@@ -71,18 +72,10 @@ def test_sigma_vector_consistency(monkeypatch):
 
     res = sigma_vector(G)
 
-    # Cálculo esperado con ángulos previos
-    angles = {
-        "IL": 0.0,
-        "RA": math.pi / 4,
-        "UM": math.pi / 2,
-        "SHA": 3 * math.pi / 4,
-        "OZ": math.pi,
-        "ZHIR": 5 * math.pi / 4,
-        "NAV": 3 * math.pi / 2,
-        "THOL": 7 * math.pi / 4,
-    }
-    total = sum(dist.get(k, 0.0) for k in angles.keys())
+    # Cálculo esperado con el mapa de ángulos canónico
+    keys = ESTABILIZADORES + DISRUPTIVOS
+    angles = {k: ANGLE_MAP[k] for k in keys}
+    total = sum(dist.get(k, 0.0) for k in keys)
     x = sum(dist.get(k, 0.0) / total * math.cos(a) for k, a in angles.items())
     y = sum(dist.get(k, 0.0) / total * math.sin(a) for k, a in angles.items())
     mag = math.hypot(x, y)

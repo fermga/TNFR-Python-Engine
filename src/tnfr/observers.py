@@ -11,10 +11,7 @@ import statistics as st
 from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
 from .helpers import _get_attr, list_mean, register_callback, angle_diff, ensure_history, count_glyphs
 from .sense import glyph_unit, SIGMA_ANGLE_KEYS
-
-# Clasificaciones funcionales de glifos
-ESTABILIZADORES = ["IL", "RA", "UM", "SHA"]
-DISRUPTIVOS = ["OZ", "ZHIR", "NAV", "THOL"]
+from .constants_glifos import ESTABILIZADORES, DISRUPTIVOS
 
 # -------------------------
 # Observador estándar Γ(R)
