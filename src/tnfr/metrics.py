@@ -249,6 +249,15 @@ def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
 # Export history to CSV/JSON
 # -----------------------------
 
+
+def _write_csv(path, headers, rows):
+    with open(path, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(headers)
+        for row in rows:
+            writer.writerow(row)
+
+
 def export_history(G, base_path: str, fmt: str = "csv") -> None:
     """Vuelca glifograma y traza σ(t) a archivos CSV o JSON compactos."""
     hist = ensure_history(G)
@@ -266,31 +275,32 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
     epi_supp = hist.get("EPI_support", [])
     fmt = fmt.lower()
     if fmt == "csv":
-        with open(base_path + "_glifogram.csv", "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["t", *GLYPHS_CANONICAL])
-            ts = glifo.get("t", [])
-            default_col = [0] * len(ts)
-            for i, t in enumerate(ts):
-                row = [t] + [glifo.get(g, default_col)[i] for g in GLYPHS_CANONICAL]
-                writer.writerow(row)
-        with open(base_path + "_sigma.csv", "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["t", "x", "y", "mag", "angle"])
-            for i, t in enumerate(sigma["t"]):
-                writer.writerow([t, sigma["sigma_x"][i], sigma["sigma_y"][i], sigma["mag"][i], sigma["angle"][i]])
+        ts = glifo.get("t", [])
+        default_col = [0] * len(ts)
+        glif_rows = [
+            [t] + [glifo.get(g, default_col)[i] for g in GLYPHS_CANONICAL]
+            for i, t in enumerate(ts)
+        ]
+        _write_csv(base_path + "_glifogram.csv", ["t", *GLYPHS_CANONICAL], glif_rows)
+
+        sigma_rows = [
+            [t, sigma["sigma_x"][i], sigma["sigma_y"][i], sigma["mag"][i], sigma["angle"][i]]
+            for i, t in enumerate(sigma["t"])
+        ]
+        _write_csv(base_path + "_sigma.csv", ["t", "x", "y", "mag", "angle"], sigma_rows)
+
         if morph:
-            with open(base_path + "_morph.csv", "w", newline="") as f:
-                writer = csv.writer(f)
-                writer.writerow(["t", "ID", "CM", "NE", "PP"])
-                for row in morph:
-                    writer.writerow([row.get("t"), row.get("ID"), row.get("CM"), row.get("NE"), row.get("PP")])
+            morph_rows = [
+                [row.get("t"), row.get("ID"), row.get("CM"), row.get("NE"), row.get("PP")]
+                for row in morph
+            ]
+            _write_csv(base_path + "_morph.csv", ["t", "ID", "CM", "NE", "PP"], morph_rows)
         if epi_supp:
-            with open(base_path + "_epi_support.csv", "w", newline="") as f:
-                writer = csv.writer(f)
-                writer.writerow(["t", "size", "epi_norm"])
-                for row in epi_supp:
-                    writer.writerow([row.get("t"), row.get("size"), row.get("epi_norm")])
+            epi_rows = [
+                [row.get("t"), row.get("size"), row.get("epi_norm")]
+                for row in epi_supp
+            ]
+            _write_csv(base_path + "_epi_support.csv", ["t", "size", "epi_norm"], epi_rows)
     else:
         data = {"glifogram": glifo, "sigma": sigma, "morph": morph, "epi_support": epi_supp}
         with open(base_path + ".json", "w") as f:
