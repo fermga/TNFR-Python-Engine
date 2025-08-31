@@ -15,7 +15,8 @@ def build_graph(n: int = 24, topology: str = "ring", seed: int | None = 1):
     elif topology == "erdos":
         G = nx.gnp_random_graph(n, 3.0 / n, seed=seed)
     else:
-        G = nx.path_graph(n)
+        valid = ["ring", "complete", "erdos"]
+        raise ValueError(f"Invalid topology '{topology}'. Valid options are: {', '.join(valid)}")
 
     # Valores canónicos para inicialización
     inject_defaults(G, DEFAULTS)
