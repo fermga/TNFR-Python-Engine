@@ -16,10 +16,6 @@ In practical terms, `tnfr` lets you:
 * **Measure** global coherence C(t), nodal gradient ΔNFR, and the **Sense Index** (Si).
 * **Visualize** states and trajectories (coupling matrices, C(t) curves, graphs).
 
-> **Nodal equation (operational core)**
->
-> $\frac{\partial \mathrm{EPI}}{\partial t} = \nu_f\,\cdot\,\Delta\mathrm{NFR}(t)$
->
 > A form emerges and persists when **internal reorganization** (ΔNFR) **resonates** with the node’s **frequency** (νf).
 
 ---
@@ -39,40 +35,6 @@ Requires **Python ≥ 3.9**.
 * **From objects to coherences:** you model **processes** that hold, not fixed entities.
 * **Operators instead of rules:** you compose **structural operators** (e.g., *emission*, *coherence*, *dissonance*) to **build trajectories**.
 * **Operational fractality:** the same pattern works for **ideas, teams, tissues, narratives**; the scales change, **the logic doesn’t**.
-
----
-
-## Getting started (minimal recipe)
-
-> *The high‑level API centers on three things: nodes, operators, simulation.*
-
-```python
-# 1) Nodes and network
-import tnfr as T
-
-# A minimal set of nodes with initial frequency (νf)
-A = T.Node(label="seed", nu_f=0.8)
-B = T.Node(label="context", nu_f=0.6)
-net = T.Network([A, B], edges=[(A, B, 0.7)])  # coupling 0..1
-
-# 2) Sequence of structural operators
-ops = [
-    T.ops.Emission(strength=0.4),      # start pattern
-    T.ops.Coupling(weight=0.7),        # synchronize nodes
-    T.ops.Coherence(),                 # stabilize form
-]
-
-# 3) Simulation and metrics
-traj = T.sim.run(net, ops, steps=200, dt=0.05)
-print("C(t) =", T.metrics.coherence(traj)[-1])
-print("Si   =", T.metrics.sense_index(traj))
-
-# 4) Quick visualization
-T.viz.plot_coherence(traj)     # C(t) curve
-T.viz.plot_network(net)        # graph/couplings
-```
-
-> **Note:** Specific class/function names may vary across minor versions. Check `help(T.ops)` and `help(T.sim)` for your installed API.
 
 ---
 
@@ -98,52 +60,6 @@ T.viz.plot_network(net)        # graph/couplings
 3. **Simulate** the dynamics: number of steps, step size, tolerances.
 4. **Measure**: C(t), ΔNFR, Si; identify bifurcations and collapses.
 5. **Iterate** with controlled **dissonance** to open mutations without losing form.
-
----
-
-## High‑level API (orientation map)
-
-> The typical module layout in `tnfr` is:
-
-* `tnfr.core`: `Node`, `Network`, `EPI`, `State`
-* `tnfr.ops`: structural operators (Emission, Reception, Coherence, Dissonance, ...)
-* `tnfr.sim`: integrators (`run`, `step`, `integrate`), dt control and thresholds
-* `tnfr.metrics`: `coherence`, `gradient`, `sense_index`, `phase_sync`
-* `tnfr.viz`: plotting utilities (`plot_coherence`, `plot_network`, `plot_phase`)
-
-Usage examples:
-
-```python
-from tnfr import core, ops, sim, metrics
-
-net = core.Network.from_edges([
-    ("n1", "n2", 0.6),
-    ("n2", "n3", 0.8),
-])
-
-sequence = [ops.Emission(0.3), ops.Coupling(0.5), ops.Coherence()]
-traj = sim.run(net, sequence, steps=500)
-
-print(metrics.coherence(traj))
-```
-
----
-
-## Parametric modeling
-
-```python
-import tnfr as T
-
-net = T.Network.uniform(n=25, nu_f=0.4, coupling=0.3)
-plan = (
-    T.ops.Emission(0.2)
-  >> T.ops.Expansion(0.4)
-  >> T.ops.Coupling(0.6)
-  >> T.ops.Coherence()
-)
-traj = T.sim.run(net, plan, steps=800)
-T.viz.plot_phase(traj)
-```
 
 ---
 
@@ -188,7 +104,7 @@ MIT
 
 ## References & notes
 
-* Theoretical foundations: TNFR operational manual.
-* Operational definitions: nodal equation, dimensions (frequency, phase, form), and structural operators.
+* Theoretical foundations: https://fermga.github.io/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/
+* Trained GPT: https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-teoria-de-la-naturaleza-fractal-resonante
 
 > If you use `tnfr` in research or projects, please cite the TNFR conceptual framework and link to the PyPI package.
