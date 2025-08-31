@@ -1,7 +1,7 @@
 [project]
 name = "tnfr"
-version = "4.5.0"
-description = "Canonical TNFR: modular glyph-based dynamics on networks."
+version = "4.5.1"
+description = "Modular structural-based dynamics on networks."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
@@ -37,6 +37,7 @@ Repository = "https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonant
 [build-system]
 requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
+
 
 
 
