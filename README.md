@@ -86,6 +86,15 @@ Requires **Python ≥ 3.9**.
 
 ---
 
+## Versioning
+
+The Python package (`pyproject.toml`) and the Node package (`package.json`) share a
+unified version number. Releases follow [Semantic Versioning](https://semver.org/)
+compatible with [PEP 440](https://peps.python.org/pep-0440/). Ensure both files are
+updated together.
+
+---
+
 ## Contributing
 
 Suggestions, issues, and PRs are welcome. Guidelines:
