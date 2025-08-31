@@ -25,6 +25,8 @@ from .scenarios import build_graph
 from .presets import get_preset
 from .config import apply_config
 from .helpers import read_structured_file
+from .observers import attach_standard_observer
+from . import __version__
 
 
 def _save_json(path: str, data: Any) -> None:
@@ -95,10 +97,12 @@ def _attach_callbacks(G: nx.Graph) -> None:
 
 def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
     """Construye y configura un grafo a partir de los argumentos del CLI."""
-    G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
+    G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed, p=args.p)
     if args.config:
         apply_config(G, Path(args.config))
     _attach_callbacks(G)
+    if args.observer:
+        attach_standard_observer(G)
     validate_canon(G)
     if args.dt is not None:
         G.graph["DT"] = float(args.dt)
@@ -136,6 +140,8 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--nodes", type=int, default=24)
     parser.add_argument("--topology", choices=["ring", "complete", "erdos"], default="ring")
     parser.add_argument("--seed", type=int, default=1)
+    parser.add_argument("--p", type=float, default=None, help="Probabilidad de arista si topology=erdos")
+    parser.add_argument("--observer", action="store_true", help="Adjunta observador estándar")
     parser.add_argument("--config", type=str, default=None)
     parser.add_argument("--dt", type=float, default=None)
     parser.add_argument("--integrator", choices=["euler", "rk4"], default=None)
@@ -283,6 +289,7 @@ def cmd_metrics(args: argparse.Namespace) -> int:
 
 def main(argv: Optional[List[str]] = None) -> int:
     p = argparse.ArgumentParser(prog="tnfr")
+    p.add_argument("--version", action="store_true", help="muestra versión y sale")
     sub = p.add_subparsers(dest="cmd")
 
     p_run = sub.add_parser("run", help="Correr escenario libre o preset y opcionalmente exportar history")
@@ -318,6 +325,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_met.set_defaults(func=cmd_metrics)
 
     args = p.parse_args(argv)
+    if args.version:
+        print(__version__)
+        return 0
     if not hasattr(args, "func"):
         p.print_help()
         return 1
