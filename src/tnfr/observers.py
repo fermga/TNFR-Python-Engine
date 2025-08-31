@@ -4,14 +4,12 @@ observers.py — TNFR canónica
 Observadores y métricas auxiliares.
 """
 from __future__ import annotations
-from collections import Counter
 from typing import Dict, Any
 import math
 import statistics as st
-from itertools import islice
 
 from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
-from .helpers import _get_attr, list_mean, register_callback, angle_diff, ensure_history
+from .helpers import _get_attr, list_mean, register_callback, angle_diff, ensure_history, count_glyphs
 
 # -------------------------
 # Observador estándar Γ(R)
@@ -78,19 +76,7 @@ def carga_glifica(G, window: int | None = None) -> dict:
     - window: si se indica, cuenta solo los últimos `window` eventos por nodo; si no, usa el maxlen del deque.
     Retorna un dict con proporciones por glifo y agregados útiles.
     """
-    total = Counter()
-    for n, nd in G.nodes(data=True):
-        hist = nd.get("hist_glifos")
-        if not hist:
-            continue
-        if window is not None and window > 0:
-            start = max(len(hist) - window, 0)
-            seq_iter = islice(hist, start, None)
-        else:
-            seq_iter = hist
-        total.update(seq_iter)
-
-
+    total = count_glyphs(G, window=window)
     count = sum(total.values())
     if count == 0:
         return {"_count": 0}
