@@ -104,7 +104,11 @@ _sentinel = object()
 
 def _ensure_tuple(aliases: Iterable[str]) -> tuple[str, ...]:
     """Garantiza que ``aliases`` sea una tupla."""
-    return aliases if isinstance(aliases, tuple) else tuple(aliases)
+    if isinstance(aliases, tuple):
+        return aliases
+    if isinstance(aliases, str):
+        return (aliases,)
+    return tuple(aliases)
 
 
 def alias_get(
