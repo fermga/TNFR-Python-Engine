@@ -4,7 +4,7 @@ helpers.py — TNFR canónica
 Utilidades transversales + cálculo de Índice de sentido (Si).
 """
 from __future__ import annotations
-from typing import Iterable, Dict, Any, TYPE_CHECKING
+from typing import Iterable, Dict, Any, TYPE_CHECKING, Callable, TypeVar
 import math
 from collections import deque, Counter
 from itertools import islice
@@ -23,6 +23,8 @@ except ImportError:  # pragma: no cover
     nx = None  # type: ignore
 
 from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_EPI_KIND
+
+T = TypeVar("T")
 
 if TYPE_CHECKING:  # pragma: no cover - sólo para tipos
     from .node import NodoProtocol
@@ -114,10 +116,10 @@ def _ensure_tuple(aliases: Iterable[str]) -> tuple[str, ...]:
 def alias_get(
     d: Dict[str, Any],
     aliases: Iterable[str],
-    conv,
+    conv: Callable[[Any], T],
     *,
-    default=_sentinel,
-):
+    default: Any = _sentinel,
+) -> T | None:
     """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor convertido.
 
     Si ninguna de las claves está presente o la conversión falla, devuelve
@@ -140,9 +142,9 @@ def alias_get(
 def alias_set(
     d: Dict[str, Any],
     aliases: Iterable[str],
-    conv,
-    value,
-):
+    conv: Callable[[Any], T],
+    value: Any,
+) -> T:
     """Asigna ``value`` convertido a la primera clave disponible de ``aliases``."""
     aliases = _ensure_tuple(aliases)
     for key in aliases:
