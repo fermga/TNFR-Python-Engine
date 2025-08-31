@@ -42,6 +42,14 @@ def _node_offset(G, n) -> int:
         G.graph["_node_offset_map"] = mapping
     return int(mapping.get(n, 0))
 
+
+def random_jitter(node: NodoProtocol, amplitude: float) -> float:
+    """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``."""
+    base_seed = int(node.graph.get("RANDOM_SEED", 0))
+    step_idx = len(node.graph.get("history", {}).get("C_steps", []))
+    rnd = random.Random(base_seed + step_idx * 1000003 + node.offset() % 1009)
+    return amplitude * (2.0 * rnd.random() - 1.0)
+
 # -------------------------
 # Glifos (operadores locales)
 # -------------------------
@@ -95,12 +103,8 @@ def _op_OZ(node: NodoProtocol) -> None:  # O’Z — Disonancia
     factor = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("OZ_dnfr_factor", 1.3))
     dnfr = getattr(node, "dnfr", 0.0)
     if bool(node.graph.get("OZ_NOISE_MODE", False)):
-        base_seed = int(node.graph.get("RANDOM_SEED", 0))
-        step_idx = len(node.graph.get("history", {}).get("C_steps", []))
-        rnd = random.Random(base_seed + step_idx * 1000003 + node.offset() % 1009)
         sigma = float(node.graph.get("OZ_SIGMA", 0.1))
-        noise = sigma * (2.0 * rnd.random() - 1.0)
-        node.dnfr = dnfr + noise
+        node.dnfr = dnfr + random_jitter(node, sigma)
     else:
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
 
@@ -182,10 +186,7 @@ def _op_NAV(node: NodoProtocol) -> None:  # NA’V — Transición
         base = (1.0 - eta) * dnfr + eta * target
     j = float(gf.get("NAV_jitter", 0.05))
     if bool(node.graph.get("NAV_RANDOM", True)):
-        base_seed = int(node.graph.get("RANDOM_SEED", 0))
-        step_idx = len(node.graph.get("history", {}).get("C_steps", []))
-        rnd = random.Random(base_seed + step_idx * 1000003 + node.offset() % 1009)
-        jitter = j * (2.0 * rnd.random() - 1.0)
+        jitter = random_jitter(node, j)
     else:
         jitter = j * (1 if base >= 0 else -1)
     node.dnfr = base + jitter
