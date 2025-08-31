@@ -3,8 +3,23 @@ from dataclasses import dataclass, field
 from typing import Deque, Dict, Iterable, List, Optional, Protocol
 from collections import deque
 
-from .constants import DEFAULTS
-from .helpers import push_glifo
+from .constants import (
+    DEFAULTS,
+    ALIAS_EPI,
+    ALIAS_VF,
+    ALIAS_THETA,
+    ALIAS_SI,
+    ALIAS_EPI_KIND,
+    ALIAS_DNFR,
+    ALIAS_D2EPI,
+)
+from .helpers import (
+    push_glifo,
+    _get_attr,
+    _get_attr_str,
+    _set_attr,
+    _set_attr_str,
+)
 
 
 class NodoProtocol(Protocol):
@@ -94,86 +109,58 @@ class NodoNX(NodoProtocol):
 
     @property
     def EPI(self) -> float:
-        from .helpers import _get_attr
-        from .constants import ALIAS_EPI
         return float(_get_attr(self.G.nodes[self.n], ALIAS_EPI, 0.0))
 
     @EPI.setter
     def EPI(self, v: float) -> None:
-        from .helpers import _set_attr
-        from .constants import ALIAS_EPI
         _set_attr(self.G.nodes[self.n], ALIAS_EPI, float(v))
 
     @property
     def vf(self) -> float:
-        from .helpers import _get_attr
-        from .constants import ALIAS_VF
         return float(_get_attr(self.G.nodes[self.n], ALIAS_VF, 0.0))
 
     @vf.setter
     def vf(self, v: float) -> None:
-        from .helpers import _set_attr
-        from .constants import ALIAS_VF
         _set_attr(self.G.nodes[self.n], ALIAS_VF, float(v))
 
     @property
     def theta(self) -> float:
-        from .helpers import _get_attr
-        from .constants import ALIAS_THETA
         return float(_get_attr(self.G.nodes[self.n], ALIAS_THETA, 0.0))
 
     @theta.setter
     def theta(self, v: float) -> None:
-        from .helpers import _set_attr
-        from .constants import ALIAS_THETA
         _set_attr(self.G.nodes[self.n], ALIAS_THETA, float(v))
 
     @property
     def Si(self) -> float:
-        from .helpers import _get_attr
-        from .constants import ALIAS_SI
         return float(_get_attr(self.G.nodes[self.n], ALIAS_SI, 0.0))
 
     @Si.setter
     def Si(self, v: float) -> None:
-        from .helpers import _set_attr
-        from .constants import ALIAS_SI
         _set_attr(self.G.nodes[self.n], ALIAS_SI, float(v))
 
     @property
     def epi_kind(self) -> str:
-        from .helpers import _get_attr_str
-        from .constants import ALIAS_EPI_KIND
         return _get_attr_str(self.G.nodes[self.n], ALIAS_EPI_KIND, "")
 
     @epi_kind.setter
     def epi_kind(self, v: str) -> None:
-        from .helpers import _set_attr_str
-        from .constants import ALIAS_EPI_KIND
         _set_attr_str(self.G.nodes[self.n], ALIAS_EPI_KIND, str(v))
 
     @property
     def dnfr(self) -> float:
-        from .helpers import _get_attr
-        from .constants import ALIAS_DNFR
         return float(_get_attr(self.G.nodes[self.n], ALIAS_DNFR, 0.0))
 
     @dnfr.setter
     def dnfr(self, v: float) -> None:
-        from .helpers import _set_attr
-        from .constants import ALIAS_DNFR
         _set_attr(self.G.nodes[self.n], ALIAS_DNFR, float(v))
 
     @property
     def d2EPI(self) -> float:
-        from .helpers import _get_attr
-        from .constants import ALIAS_D2EPI
         return float(_get_attr(self.G.nodes[self.n], ALIAS_D2EPI, 0.0))
 
     @d2EPI.setter
     def d2EPI(self, v: float) -> None:
-        from .helpers import _set_attr
-        from .constants import ALIAS_D2EPI
         _set_attr(self.G.nodes[self.n], ALIAS_D2EPI, float(v))
 
     def neighbors(self) -> Iterable[NodoProtocol]:
