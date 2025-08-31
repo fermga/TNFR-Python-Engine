@@ -776,6 +776,44 @@ def run(G, steps: int, *, dt: float | None = None, use_Si: bool = True, apply_gl
 # Historial simple
 # -------------------------
 
+
+def _update_coherence(G, hist) -> None:
+    """Actualizar la coherencia global y su media móvil."""
+    dnfr_mean = list_mean(abs(_get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes())
+    dEPI_mean = list_mean(abs(_get_attr(G.nodes[n], ALIAS_dEPI, 0.0)) for n in G.nodes())
+    C = 1.0 / (1.0 + dnfr_mean + dEPI_mean)
+    hist["C_steps"].append(C)
+
+    wbar_w = int(G.graph.get("WBAR_WINDOW", DEFAULTS.get("WBAR_WINDOW", 25)))
+    cs = hist["C_steps"]
+    if cs:
+        w = min(len(cs), max(1, wbar_w))
+        wbar = sum(cs[-w:]) / w
+        hist.setdefault("W_bar", []).append(wbar)
+
+
+def _update_phase_sync(G, hist) -> None:
+    """Registrar sincronía de fase y el orden de Kuramoto."""
+    ps = sincronía_fase(G)
+    hist["phase_sync"].append(ps)
+    R = orden_kuramoto(G)
+    hist.setdefault("kuramoto_R", []).append(R)
+
+
+def _update_sigma(G, hist) -> None:
+    """Registrar carga glífica y el vector Σ⃗ asociado."""
+    win = int(G.graph.get("GLYPH_LOAD_WINDOW", DEFAULTS["GLYPH_LOAD_WINDOW"]))
+    gl = carga_glifica(G, window=win)
+    hist["glyph_load_estab"].append(gl.get("_estabilizadores", 0.0))
+    hist["glyph_load_disr"].append(gl.get("_disruptivos", 0.0))
+
+    sig = sigma_vector(G, window=win)
+    hist.setdefault("sense_sigma_x", []).append(sig.get("x", 0.0))
+    hist.setdefault("sense_sigma_y", []).append(sig.get("y", 0.0))
+    hist.setdefault("sense_sigma_mag", []).append(sig.get("mag", 0.0))
+    hist.setdefault("sense_sigma_angle", []).append(sig.get("angle", 0.0))
+
+
 def _update_history(G) -> None:
     hist = G.graph.setdefault("history", {})
     for k in (
@@ -784,19 +822,7 @@ def _update_history(G) -> None:
     ):
         hist.setdefault(k, [])
 
-    # Proxy de coherencia C(t)
-    dnfr_mean = list_mean(abs(_get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes())
-    dEPI_mean = list_mean(abs(_get_attr(G.nodes[n], ALIAS_dEPI, 0.0)) for n in G.nodes())
-    C = 1.0 / (1.0 + dnfr_mean + dEPI_mean)
-    hist["C_steps"].append(C)
-
-    # --- W̄: coherencia promedio en ventana ---
-    wbar_w = int(G.graph.get("WBAR_WINDOW", DEFAULTS.get("WBAR_WINDOW", 25)))
-    cs = hist["C_steps"]
-    if cs:
-        w = min(len(cs), max(1, wbar_w))
-        wbar = sum(cs[-w:]) / w
-        hist.setdefault("W_bar", []).append(wbar)
+    _update_coherence(G, hist)
 
     eps_dnfr = float(G.graph.get("EPS_DNFR_STABLE", DEFAULTS["EPS_DNFR_STABLE"]))
     eps_depi = float(G.graph.get("EPS_DEPI_STABLE", DEFAULTS["EPS_DEPI_STABLE"]))
@@ -833,28 +859,13 @@ def _update_history(G) -> None:
     hist["stable_frac"].append(stables/total)
     hist["delta_Si"].append(list_mean(delta_si_acc, 0.0))
     hist["B"].append(list_mean(B_acc, 0.0))
-    # --- nuevas series: sincronía de fase y carga glífica ---
     try:
-        ps = sincronía_fase(G)                 # [0,1], más alto = más en fase
-        hist["phase_sync"].append(ps)
-        R = orden_kuramoto(G)
-        hist.setdefault("kuramoto_R", []).append(R)
-        win = int(G.graph.get("GLYPH_LOAD_WINDOW", DEFAULTS["GLYPH_LOAD_WINDOW"]))
-        gl = carga_glifica(G, window=win)      # proporciones
-        hist["glyph_load_estab"].append(gl.get("_estabilizadores", 0.0))
-        hist["glyph_load_disr"].append(gl.get("_disruptivos", 0.0))
-        # --- Σ⃗(t): vector de sentido a partir de la distribución glífica ---
-        sig = sigma_vector(G, window=win)
-        hist.setdefault("sense_sigma_x", []).append(sig.get("x", 0.0))
-        hist.setdefault("sense_sigma_y", []).append(sig.get("y", 0.0))
-        hist.setdefault("sense_sigma_mag", []).append(sig.get("mag", 0.0))
-        hist.setdefault("sense_sigma_angle", []).append(sig.get("angle", 0.0))
-        # --- ι(t): intensidad de activación coherente (proxy) ---
-        # Definición operativa: iota = C(t) * stable_frac(t)
+        _update_phase_sync(G, hist)
+        _update_sigma(G, hist)
         if hist.get("C_steps") and hist.get("stable_frac"):
             hist.setdefault("iota", []).append(hist["C_steps"][-1] * hist["stable_frac"][-1])
     except Exception:
-        # observadores son opcionales; si no están, no rompemos el bucle
+        # observadores son opcionales; si fallan se ignoran
         pass
   
     # --- nuevas series: Si agregado (media y colas) ---
