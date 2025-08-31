@@ -255,6 +255,13 @@ def inject_defaults(G, defaults: Dict[str, Any] = DEFAULTS, override: bool = Fal
         if override or k not in G.graph:
             G.graph[k] = v
     G.graph["_tnfr_defaults_attached"] = True
+    # Prepare deterministic node offset mapping once defaults are attached.
+    try:  # local import to avoid circular dependency at module import time
+        from .operators import _ensure_node_offset_map
+
+        _ensure_node_offset_map(G)
+    except Exception:
+        pass
 
 
 def merge_overrides(G, **overrides) -> None:
