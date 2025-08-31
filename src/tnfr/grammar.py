@@ -143,7 +143,7 @@ def apply_glyph_with_grammar(G, nodes: Optional[Iterable[Any]], glyph: Glyph | s
     from .operators import aplicar_glifo
 
     if window is None:
-        window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
+        window = get_param(G, "GLYPH_HYSTERESIS_WINDOW")
 
     g_str = glyph.value if isinstance(glyph, Glyph) else str(glyph)
     for n in list(G.nodes() if nodes is None else nodes):
