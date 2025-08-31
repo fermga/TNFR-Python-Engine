@@ -8,6 +8,7 @@ from collections import Counter
 from typing import Dict, Any
 import math
 import statistics as st
+from itertools import islice
 
 from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
 from .helpers import _get_attr, list_mean, register_callback, angle_diff, ensure_history
@@ -83,10 +84,12 @@ def carga_glifica(G, window: int | None = None) -> dict:
         hist = nd.get("hist_glifos")
         if not hist:
             continue
-        seq = list(hist)
         if window is not None and window > 0:
-            seq = seq[-window:]
-        total.update(seq)
+            start = max(len(hist) - window, 0)
+            seq_iter = islice(hist, start, None)
+        else:
+            seq_iter = hist
+        total.update(seq_iter)
 
 
     count = sum(total.values())
