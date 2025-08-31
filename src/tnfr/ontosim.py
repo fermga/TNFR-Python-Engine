@@ -44,7 +44,13 @@ def preparar_red(G: nx.Graph, *, override_defaults: bool = False, **overrides) -
         "phase_R": [], 
         "phase_disr": [],
     })
-    tau = int(G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU"]))
+    # REMESH_TAU: alias legado de REMESH_TAU_GLOBAL
+    tau = int(
+        G.graph.get(
+            "REMESH_TAU_GLOBAL",
+            G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_GLOBAL"]),
+        )
+    )
     maxlen = max(2 * tau + 5, 64)
     G.graph.setdefault("_epi_hist", deque(maxlen=maxlen))
     # Auto-attach del observador estándar si se pide

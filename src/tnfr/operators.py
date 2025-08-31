@@ -283,8 +283,19 @@ def _remesh_alpha_info(G):
 
 def aplicar_remesh_red(G) -> None:
     """RE’MESH a escala de red usando _epi_hist con memoria multi-escala."""
-    tau_g = int(G.graph.get("REMESH_TAU_GLOBAL", G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_GLOBAL"])))
-    tau_l = int(G.graph.get("REMESH_TAU_LOCAL", G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_LOCAL"])))
+    # REMESH_TAU: alias legado de REMESH_TAU_GLOBAL
+    tau_g = int(
+        G.graph.get(
+            "REMESH_TAU_GLOBAL",
+            G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_GLOBAL"]),
+        )
+    )
+    tau_l = int(
+        G.graph.get(
+            "REMESH_TAU_LOCAL",
+            G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_LOCAL"]),
+        )
+    )
     tau_req = max(tau_g, tau_l)
     alpha, alpha_src = _remesh_alpha_info(G)
     G.graph["_REMESH_ALPHA_SRC"] = alpha_src

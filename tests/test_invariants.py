@@ -69,10 +69,10 @@ def test_remesh_cooldown_if_present(G_small):
     w_estab = int(G_small.graph.get("REMESH_STABILITY_WINDOW", 0))
     sf = G_small.graph.setdefault("history", {}).setdefault("stable_frac", [])
     sf.extend([1.0] * w_estab)
-    tau = int(G_small.graph.get("REMESH_TAU", 0))
+    tau_g = int(G_small.graph.get("REMESH_TAU_GLOBAL", 0))
     snap = {n: G_small.nodes[n].get("EPI", 0.0) for n in G_small.nodes()}
     from collections import deque
-    G_small.graph["_epi_hist"] = deque([snap.copy() for _ in range(tau + 1)], maxlen=tau + 1)
+    G_small.graph["_epi_hist"] = deque([snap.copy() for _ in range(tau_g + 1)], maxlen=tau_g + 1)
 
     aplicar_remesh_si_estabilizacion_global(G_small)
     events = list(G_small.graph.get("history", {}).get("remesh_events", []))

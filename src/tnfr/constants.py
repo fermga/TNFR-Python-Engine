@@ -91,7 +91,6 @@ DEFAULTS: Dict[str, Any] = {
     "REMESH_COMMUNITY_K": 2,          # conexiones por comunidad
 
     # RE’MESH: memoria τ y mezcla α (global/local)
-    "REMESH_TAU": 8,                  # compatibilidad: tau global por defecto
     "REMESH_TAU_GLOBAL": 8,           # pasos hacia atrás (escala global)
     "REMESH_TAU_LOCAL": 4,            # pasos hacia atrás (escala local)
     "REMESH_ALPHA": 0.5,              # mezcla con pasado
@@ -184,6 +183,9 @@ DEFAULTS: Dict[str, Any] = {
     "CALLBACKS_STRICT": False,  # si True, un error en callback detiene; si False, se loguea y continúa
     "VALIDATORS_STRICT": False, # si True, alerta si se clampa fuera de rango
 }
+
+# Retrocompatibilidad: alias deprecado
+DEFAULTS["REMESH_TAU"] = DEFAULTS["REMESH_TAU_GLOBAL"]
 
 # Gramática glífica canónica
 DEFAULTS.setdefault("GRAMMAR_CANON", {
