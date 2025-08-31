@@ -46,36 +46,19 @@ def _tg_state(nd: Dict[str, Any]) -> Dict[str, Any]:
 
 
 # -------------
-# Callback principal: actualizar métricas por paso
+# Helpers de métricas
 # -------------
 
-def _metrics_step(G, *args, **kwargs):
-    """Actualiza métricas operativas TNFR por paso.
 
-    - Tg (tiempo glífico): sumatoria de corridas por glifo (global y por nodo).
-    - Índice de latencia: fracción de nodos en SH’A.
-    - Glifograma: conteo o fracción por glifo en el paso.
-
-    Todos los resultados se guardan en G.graph['history'].
-    """
-    if not G.graph.get("METRICS", METRICS).get("enabled", True):
-        return
-
-    hist = ensure_history(G)
-    dt = float(G.graph.get("DT", 1.0))
-    t = float(G.graph.get("_t", 0.0))
-
-    # --- Glifograma (conteos por glifo este paso) ---
+def _update_tg(G, hist, dt):
+    """Acumula tiempos glíficos por nodo y devuelve conteos y latencia."""
     counts = Counter()
-
-    # --- Índice de latencia: proporción de nodos en SH’A ---
     n_total = 0
     n_latent = 0
 
-    # --- Tg: acumular corridas por nodo ---
     save_by_node = bool(G.graph.get("METRICS", METRICS).get("save_by_node", True))
-    tg_total = hist.setdefault("Tg_total", defaultdict(float))  # tiempo total por glifo (global)
-    tg_by_node = hist.setdefault("Tg_by_node", {})             # nodo → {glifo: [runs,...]}
+    tg_total = hist.setdefault("Tg_total", defaultdict(float))
+    tg_by_node = hist.setdefault("Tg_by_node", {})
 
     for n, nd in G.nodes(data=True):
         g = last_glifo(nd)
@@ -89,27 +72,26 @@ def _metrics_step(G, *args, **kwargs):
         counts[g] += 1
 
         st = _tg_state(nd)
-        # Si seguimos en el mismo glifo, acumulamos; si cambiamos, cerramos corrida
         if st["curr"] is None:
             st["curr"] = g
             st["run"] = dt
         elif g == st["curr"]:
             st["run"] += dt
         else:
-            # cerramos corrida anterior
             prev = st["curr"]
             dur = float(st["run"])
             tg_total[prev] += dur
             if save_by_node:
                 rec = tg_by_node.setdefault(n, defaultdict(list))
                 rec[prev].append(dur)
-            # reiniciamos corrida
             st["curr"] = g
             st["run"] = dt
 
-    # Al final del paso, no cerramos la corrida actual: se cerrará cuando cambie.
+    return counts, n_total, n_latent
 
-    # Guardar glifograma (conteos crudos y normalizados)
+
+def _update_glifogram(G, hist, counts, t):
+    """Registra el glifograma del paso a partir de los conteos."""
     normalize_series = bool(
         G.graph.get("METRICS", METRICS).get("normalize_series", False)
     )
@@ -120,11 +102,15 @@ def _metrics_step(G, *args, **kwargs):
         row[g] = (c / total) if normalize_series else c
     hist.setdefault("glifogram", []).append(row)
 
-    # Guardar índice de latencia
+
+def _update_latency_index(G, hist, n_total, n_latent, t):
+    """Añade el índice de latencia a la historia."""
     li = (n_latent / max(1, n_total)) if n_total else 0.0
     hist.setdefault("latency_index", []).append({"t": t, "value": li})
 
-    # --- Soporte y norma de la EPI ---
+
+def _update_epi_support(G, hist, t):
+    """Calcula soporte y norma de la EPI."""
     thr = float(G.graph.get("EPI_SUPPORT_THR", DEFAULTS.get("EPI_SUPPORT_THR", 0.0)))
     supp_nodes = [n for n in G.nodes() if abs(_get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= thr]
     epi_norm = (
@@ -136,7 +122,9 @@ def _metrics_step(G, *args, **kwargs):
         {"t": t, "size": len(supp_nodes), "epi_norm": float(epi_norm)}
     )
 
-    # --- Métricas morfosintácticas ---
+
+def _update_morph_metrics(G, hist, counts, t):
+    """Registra métricas morfosintácticas basadas en conteos glíficos."""
     total = max(1, sum(counts.values()))
     id_val = counts.get("O’Z", 0) / total
     cm_val = (counts.get("Z’HIR", 0) + counts.get("NA’V", 0)) / total
@@ -147,6 +135,31 @@ def _metrics_step(G, *args, **kwargs):
         else counts.get("SH’A", 0) / counts.get("RE’MESH", 0)
     )
     hist.setdefault("morph", []).append({"t": t, "ID": id_val, "CM": cm_val, "NE": ne_val, "PP": pp_val})
+
+
+# -------------
+# Callback principal: actualizar métricas por paso
+# -------------
+
+def _metrics_step(G, *args, **kwargs):
+    """Actualiza métricas operativas TNFR por paso.
+
+    Orquesta la actualización del glifograma, índice de latencia, Tg,
+    soporte EPI y métricas morfosintácticas. Todos los resultados se
+    guardan en ``G.graph['history']``.
+    """
+    if not G.graph.get("METRICS", METRICS).get("enabled", True):
+        return
+
+    hist = ensure_history(G)
+    dt = float(G.graph.get("DT", 1.0))
+    t = float(G.graph.get("_t", 0.0))
+
+    counts, n_total, n_latent = _update_tg(G, hist, dt)
+    _update_glifogram(G, hist, counts, t)
+    _update_latency_index(G, hist, n_total, n_latent, t)
+    _update_epi_support(G, hist, t)
+    _update_morph_metrics(G, hist, counts, t)
 
 
 # -------------
