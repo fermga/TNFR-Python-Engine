@@ -112,21 +112,45 @@ def default_compute_delta_nfr(G) -> None:
     for n in G.nodes():
         nd = G.nodes[n]
         th_i = _get_attr(nd, ALIAS_THETA, 0.0)
-        th_bar = fase_media(G, n)
-        # Gradiente de fase: empuja hacia la fase media (signo envuelto)
-        g_phase = -angle_diff(th_i, th_bar) / math.pi  # ~[-1,1]
-
         epi_i = _get_attr(nd, ALIAS_EPI, 0.0)
-        epi_bar = media_vecinal(G, n, ALIAS_EPI, default=epi_i)
-        g_epi = (epi_bar - epi_i)  # gradiente escalar
-
         vf_i = _get_attr(nd, ALIAS_VF, 0.0)
-        vf_bar = media_vecinal(G, n, ALIAS_VF, default=vf_i)
-        g_vf = (vf_bar - vf_i)
+
+        x = y = epi_sum = vf_sum = 0.0
+        count = 0
 
         if w_topo != 0 and degs is not None:
             deg_i = float(degs.get(n, 0))
-            deg_bar = list_mean(degs.get(v, deg_i) for v in G.neighbors(n)) if G.degree(n) else deg_i
+            deg_sum = 0.0
+
+        for v in G.neighbors(n):
+            nd_v = G.nodes[v]
+            th_v = _get_attr(nd_v, ALIAS_THETA, 0.0)
+            x += math.cos(th_v)
+            y += math.sin(th_v)
+            epi_sum += _get_attr(nd_v, ALIAS_EPI, epi_i)
+            vf_sum += _get_attr(nd_v, ALIAS_VF, vf_i)
+            if w_topo != 0 and degs is not None:
+                deg_sum += degs.get(v, deg_i)
+            count += 1
+
+        if count:
+            th_bar = math.atan2(y / count, x / count)
+            epi_bar = epi_sum / count
+            vf_bar = vf_sum / count
+            if w_topo != 0 and degs is not None:
+                deg_bar = deg_sum / count
+        else:
+            th_bar = th_i
+            epi_bar = epi_i
+            vf_bar = vf_i
+            if w_topo != 0 and degs is not None:
+                deg_bar = deg_i
+
+        g_phase = -angle_diff(th_i, th_bar) / math.pi  # ~[-1,1]
+        g_epi = (epi_bar - epi_i)  # gradiente escalar
+        g_vf = (vf_bar - vf_i)
+
+        if w_topo != 0 and degs is not None:
             g_topo = deg_bar - deg_i
         else:
             g_topo = 0.0
