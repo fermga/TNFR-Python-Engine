@@ -4,9 +4,18 @@ from collections import defaultdict, Counter
 import statistics
 import csv
 import json
+from math import cos
 
-from .constants import DEFAULTS, ALIAS_EPI
-from .helpers import register_callback, ensure_history, last_glifo, _get_attr
+from .constants import DEFAULTS, ALIAS_EPI, ALIAS_THETA, ALIAS_DNFR
+from .helpers import (
+    register_callback,
+    ensure_history,
+    last_glifo,
+    _get_attr,
+    clamp01,
+    list_mean,
+    fmean,
+)
 from .sense import GLYPHS_CANONICAL
 
 # -------------
@@ -138,6 +147,9 @@ def _metrics_step(G, *args, **kwargs):
 
 def register_metrics_callbacks(G) -> None:
     register_callback(G, when="after_step", func=_metrics_step, name="metrics_step")
+    # Nuevas funcionalidades canónicas
+    register_coherence_callbacks(G)
+    register_diagnosis_callbacks(G)
 
 
 # -------------
@@ -263,3 +275,297 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
         data = {"glifogram": glifo, "sigma": sigma, "morph": morph, "epi_support": epi_supp}
         with open(base_path + ".json", "w") as f:
             json.dump(data, f)
+
+
+# =========================
+# COHERENCIA W_ij^t (TNFR)
+# =========================
+
+
+def _norm01(x, lo, hi):
+    if hi <= lo:
+        return 0.0
+    v = (float(x) - float(lo)) / (float(hi) - float(lo))
+    return 0.0 if v < 0 else (1.0 if v > 1.0 else v)
+
+
+def _similarity_abs(a, b, lo, hi):
+    return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, float(hi - lo) if hi > lo else 1.0)
+
+
+def _coherence_components(G, ni, nj, epi_min, epi_max, vf_min, vf_max):
+    ndi = G.nodes[ni]
+    ndj = G.nodes[nj]
+    th_i = _get_attr(ndi, ALIAS_THETA, 0.0)
+    th_j = _get_attr(ndj, ALIAS_THETA, 0.0)
+    s_phase = 0.5 * (1.0 + cos(th_i - th_j))
+    epi_i = _get_attr(ndi, ALIAS_EPI, 0.0)
+    epi_j = _get_attr(ndj, ALIAS_EPI, 0.0)
+    s_epi = _similarity_abs(epi_i, epi_j, epi_min, epi_max)
+    vf_i = float(_get_attr(ndi, "νf", 0.0))
+    vf_j = float(_get_attr(ndj, "νf", 0.0))
+    s_vf = _similarity_abs(vf_i, vf_j, vf_min, vf_max)
+    si_i = clamp01(float(_get_attr(ndi, "Si", 0.0)))
+    si_j = clamp01(float(_get_attr(ndj, "Si", 0.0)))
+    s_si = 1.0 - abs(si_i - si_j)
+    return s_phase, s_epi, s_vf, s_si
+
+
+def coherence_matrix(G):
+    cfg = G.graph.get("COHERENCE", DEFAULTS["COHERENCE"])
+    if not cfg.get("enabled", True):
+        return None, None
+
+    nodes = list(G.nodes())
+    n = len(nodes)
+    if n == 0:
+        return nodes, []
+
+    epi_vals = [float(_get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in nodes]
+    vf_vals = [float(_get_attr(G.nodes[v], "νf", 0.0)) for v in nodes]
+    epi_min, epi_max = min(epi_vals), max(epi_vals)
+    vf_min, vf_max = min(vf_vals), max(vf_vals)
+
+    wdict = dict(cfg.get("weights", {}))
+    for k in ("phase", "epi", "vf", "si"):
+        wdict.setdefault(k, 0.0)
+    wsum = sum(float(v) for v in wdict.values()) or 1.0
+    wnorm = {k: float(v) / wsum for k, v in wdict.items()}
+
+    scope = str(cfg.get("scope", "neighbors")).lower()
+    neighbors_only = scope != "all"
+    self_diag = bool(cfg.get("self_on_diag", True))
+    mode = str(cfg.get("store_mode", "sparse")).lower()
+    thr = float(cfg.get("threshold", 0.0))
+    if mode not in ("sparse", "dense"):
+        mode = "sparse"
+
+    if mode == "dense":
+        W = [[0.0] * n for _ in range(n)]
+    else:
+        W = []
+
+    row_sum = [0.0] * n
+    row_count = [0] * n
+
+    for i, ni in enumerate(nodes):
+        if self_diag:
+            if mode == "dense":
+                W[i][i] = 1.0
+            else:
+                W.append((i, i, 1.0))
+            row_sum[i] += 1.0
+            row_count[i] += 1
+
+        neighs = set(G.neighbors(ni)) if neighbors_only else set(nodes) - {ni}
+        for nj in neighs:
+            j = nodes.index(nj)
+            s_phase, s_epi, s_vf, s_si = _coherence_components(
+                G, ni, nj, epi_min, epi_max, vf_min, vf_max
+            )
+            wij = (
+                wnorm["phase"] * s_phase
+                + wnorm["epi"] * s_epi
+                + wnorm["vf"] * s_vf
+                + wnorm["si"] * s_si
+            )
+            wij = clamp01(wij)
+            if mode == "dense":
+                W[i][j] = wij
+            else:
+                if wij >= thr:
+                    W.append((i, j, wij))
+            row_sum[i] += wij
+            row_count[i] += 1
+
+    Wi = [row_sum[i] / max(1, row_count[i]) for i in range(n)]
+    vals = []
+    if mode == "dense":
+        for i in range(n):
+            for j in range(n):
+                if i == j:
+                    continue
+                vals.append(W[i][j])
+    else:
+        for (i, j, w) in W:
+            if i == j:
+                continue
+            vals.append(w)
+
+    stats = {
+        "min": min(vals) if vals else 0.0,
+        "max": max(vals) if vals else 0.0,
+        "mean": (sum(vals) / len(vals)) if vals else 0.0,
+        "n_edges": len(vals),
+        "mode": mode,
+        "scope": scope,
+    }
+
+    hist = ensure_history(G)
+    hist.setdefault(cfg.get("history_key", "W_sparse"), []).append(W)
+    hist.setdefault(cfg.get("Wi_history_key", "W_i"), []).append(Wi)
+    hist.setdefault(cfg.get("stats_history_key", "W_stats"), []).append(stats)
+
+    return nodes, W
+
+
+def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None):
+    import cmath
+
+    cfg = G.graph.get("COHERENCE", DEFAULTS["COHERENCE"])
+    scope = str(cfg.get("scope", "neighbors")).lower()
+    neighbors_only = scope != "all"
+
+    if W_row is None or nodes_order is None:
+        vec = [
+            cmath.exp(1j * float(_get_attr(G.nodes[v], ALIAS_THETA, 0.0)))
+            for v in (G.neighbors(n) if neighbors_only else (set(G.nodes()) - {n}))
+        ]
+        if not vec:
+            return 0.0
+        mean = sum(vec) / len(vec)
+        return abs(mean)
+
+    i = nodes_order.index(n)
+    if isinstance(W_row, list) and W_row and isinstance(W_row[0], (int, float)):
+        weights = W_row
+    else:
+        weights = [0.0] * len(nodes_order)
+        for (ii, jj, w) in W_row:
+            if ii == i:
+                weights[jj] = w
+
+    num = 0 + 0j
+    den = 0.0
+    for j, nj in enumerate(nodes_order):
+        if nj == n:
+            continue
+        w = weights[j]
+        den += w
+        th_j = float(_get_attr(G.nodes[nj], ALIAS_THETA, 0.0))
+        num += w * cmath.exp(1j * th_j)
+    return abs(num / den) if den else 0.0
+
+
+def _coherence_step(G, ctx=None):
+    if not G.graph.get("COHERENCE", DEFAULTS["COHERENCE"]).get("enabled", True):
+        return
+    coherence_matrix(G)
+
+
+def register_coherence_callbacks(G) -> None:
+    register_callback(G, when="after_step", func=_coherence_step, name="coherence_step")
+
+
+# =========================
+# DIAGNÓSTICO NODAL (TNFR)
+# =========================
+
+
+def _dnfr_norm(nd, dnfr_max):
+    val = abs(float(_get_attr(nd, ALIAS_DNFR, 0.0)))
+    if dnfr_max <= 0:
+        return 0.0
+    x = val / dnfr_max
+    return 1.0 if x > 1 else x
+
+
+def _symmetry_index(G, n, k=3, epi_min=None, epi_max=None):
+    nd = G.nodes[n]
+    epi_i = float(_get_attr(nd, ALIAS_EPI, 0.0))
+    vec = list(G.neighbors(n))
+    if not vec:
+        return 1.0
+    epi_bar = fmean(float(_get_attr(G.nodes[v], ALIAS_EPI, epi_i)) for v in vec)
+    if epi_min is None or epi_max is None:
+        epis = [float(_get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in G.nodes()]
+        epi_min, epi_max = min(epis), max(epis)
+    return _similarity_abs(epi_i, epi_bar, epi_min, epi_max)
+
+
+def _state_from_thresholds(Rloc, dnfr_n, cfg):
+    stb = cfg.get("stable", {"Rloc_hi": 0.8, "dnfr_lo": 0.2, "persist": 3})
+    dsr = cfg.get("dissonance", {"Rloc_lo": 0.4, "dnfr_hi": 0.5, "persist": 3})
+    if (Rloc >= float(stb["Rloc_hi"])) and (dnfr_n <= float(stb["dnfr_lo"])):
+        return "estable"
+    if (Rloc <= float(dsr["Rloc_lo"])) and (dnfr_n >= float(dsr["dnfr_hi"])):
+        return "disonante"
+    return "transicion"
+
+
+def _recommendation(state, cfg):
+    adv = cfg.get("advice", {})
+    key = {"estable": "stable", "transicion": "transition", "disonante": "dissonant"}[state]
+    return list(adv.get(key, []))
+
+
+def _diagnosis_step(G, ctx=None):
+    dcfg = G.graph.get("DIAGNOSIS", DEFAULTS["DIAGNOSIS"])
+    if not dcfg.get("enabled", True):
+        return
+
+    hist = ensure_history(G)
+    key = dcfg.get("history_key", "nodal_diag")
+
+    dnfr_vals = [abs(float(_get_attr(G.nodes[v], ALIAS_DNFR, 0.0))) for v in G.nodes()]
+    dnfr_max = max(dnfr_vals) if dnfr_vals else 1.0
+    epi_vals = [float(_get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in G.nodes()]
+    epi_min, epi_max = (min(epi_vals) if epi_vals else 0.0), (max(epi_vals) if epi_vals else 1.0)
+
+    CfgW = G.graph.get("COHERENCE", DEFAULTS["COHERENCE"])
+    Wkey = CfgW.get("Wi_history_key", "W_i")
+    Wm_key = CfgW.get("history_key", "W_sparse")
+    Wi_series = hist.get(Wkey, [])
+    Wi_last = Wi_series[-1] if Wi_series else None
+    Wm_series = hist.get(Wm_key, [])
+    Wm_last = Wm_series[-1] if Wm_series else None
+
+    nodes = list(G.nodes())
+    diag = {}
+    for i, n in enumerate(nodes):
+        nd = G.nodes[n]
+        Si = clamp01(float(_get_attr(nd, "Si", 0.0)))
+        EPI = float(_get_attr(nd, ALIAS_EPI, 0.0))
+        vf = float(_get_attr(nd, "νf", 0.0))
+        dnfr_n = _dnfr_norm(nd, dnfr_max)
+
+        Rloc = 0.0
+        if Wm_last is not None:
+            if Wm_last and isinstance(Wm_last[0], list):
+                row = Wm_last[i]
+            else:
+                row = Wm_last
+            Rloc = local_phase_sync_weighted(G, n, nodes_order=nodes, W_row=row)
+        else:
+            Rloc = local_phase_sync_weighted(G, n)
+
+        symm = _symmetry_index(G, n, epi_min=epi_min, epi_max=epi_max) if dcfg.get("compute_symmetry", True) else None
+        state = _state_from_thresholds(Rloc, dnfr_n, dcfg)
+
+        alerts = []
+        if state == "disonante" and dnfr_n >= float(dcfg.get("dissonance", {}).get("dnfr_hi", 0.5)):
+            alerts.append("tensión estructural alta")
+
+        advice = _recommendation(state, dcfg)
+
+        rec = {
+            "node": n,
+            "Si": Si,
+            "EPI": EPI,
+            "νf": vf,
+            "dnfr_norm": dnfr_n,
+            "W_i": (Wi_last[i] if (Wi_last and i < len(Wi_last)) else None),
+            "R_local": Rloc,
+            "symmetry": symm,
+            "state": state,
+            "advice": advice,
+            "alerts": alerts,
+        }
+        diag[n] = rec
+
+    hist.setdefault(key, []).append(diag)
+
+
+def register_diagnosis_callbacks(G) -> None:
+    register_callback(G, when="after_step", func=_diagnosis_step, name="diagnosis_step")
+
