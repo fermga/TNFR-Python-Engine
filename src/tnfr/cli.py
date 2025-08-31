@@ -97,6 +97,8 @@ def cmd_run(args: argparse.Namespace) -> int:
         G.graph["DT"] = float(args.dt)
     if args.integrator is not None:
         G.graph["INTEGRATOR_METHOD"] = str(args.integrator)
+    if getattr(args, "remesh_mode", None):
+        G.graph["REMESH_MODE"] = str(args.remesh_mode)
     gcanon = dict(DEFAULTS["GRAMMAR_CANON"])
     gcanon.update(_args_to_dict(args, prefix="grammar."))
     if hasattr(args, "grammar_canon") and args.grammar_canon is not None:
@@ -156,6 +158,8 @@ def cmd_sequence(args: argparse.Namespace) -> int:
         G.graph["DT"] = float(args.dt)
     if args.integrator is not None:
         G.graph["INTEGRATOR_METHOD"] = str(args.integrator)
+    if getattr(args, "remesh_mode", None):
+        G.graph["REMESH_MODE"] = str(args.remesh_mode)
     gcanon = dict(DEFAULTS["GRAMMAR_CANON"])
     gcanon.update(_args_to_dict(args, prefix="grammar."))
     if hasattr(args, "grammar_canon") and args.grammar_canon is not None:
@@ -194,6 +198,8 @@ def cmd_metrics(args: argparse.Namespace) -> int:
         G.graph["DT"] = float(args.dt)
     if args.integrator is not None:
         G.graph["INTEGRATOR_METHOD"] = str(args.integrator)
+    if getattr(args, "remesh_mode", None):
+        G.graph["REMESH_MODE"] = str(args.remesh_mode)
     G.graph.setdefault("GRAMMAR_CANON", DEFAULTS["GRAMMAR_CANON"]).update({"enabled": bool(args.grammar_canon)})
     G.graph["glyph_selector"] = default_glyph_selector if args.selector == "basic" else parametric_glyph_selector
     G.graph["GAMMA"] = {
@@ -238,6 +244,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_run.add_argument("--export-history-base", dest="export_history_base", type=str, default=None)
     p_run.add_argument("--export-format", dest="export_format", choices=["csv", "json"], default="json")
     p_run.add_argument("--summary", action="store_true")
+    p_run.add_argument("--remesh-mode", choices=["knn", "mst", "community"], default=None)
     p_run.add_argument("--no-canon", dest="grammar_canon", action="store_false", default=True, help="Desactiva gramática canónica")
     p_run.add_argument("--grammar.enabled", dest="grammar_enabled", type=_str2bool, default=None)
     p_run.add_argument("--grammar.zhir_requires_oz_window", dest="grammar_zhir_requires_oz_window", type=int, default=None)
@@ -264,6 +271,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_seq.add_argument("--save-history", dest="save_history", type=str, default=None)
     p_seq.add_argument("--export-history-base", dest="export_history_base", type=str, default=None)
     p_seq.add_argument("--export-format", dest="export_format", choices=["csv", "json"], default="json")
+    p_seq.add_argument("--remesh-mode", choices=["knn", "mst", "community"], default=None)
     p_seq.add_argument("--gamma-type", choices=list(GAMMA_REGISTRY.keys()), default="none")
     p_seq.add_argument("--gamma-beta", type=float, default=0.0)
     p_seq.add_argument("--gamma-R0", type=float, default=0.0)
@@ -289,6 +297,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_met.add_argument("--gamma-type", choices=list(GAMMA_REGISTRY.keys()), default="none")
     p_met.add_argument("--gamma-beta", type=float, default=0.0)
     p_met.add_argument("--gamma-R0", type=float, default=0.0)
+    p_met.add_argument("--remesh-mode", choices=["knn", "mst", "community"], default=None)
     p_met.add_argument("--save", type=str, default=None)
     p_met.set_defaults(func=cmd_metrics)
 
