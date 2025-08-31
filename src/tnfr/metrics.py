@@ -51,13 +51,15 @@ def _tg_state(nd: Dict[str, Any]) -> Dict[str, Any]:
 # -------------
 
 
-def _update_tg(G, hist, dt):
-    """Acumula tiempos glíficos por nodo y devuelve conteos y latencia."""
+def _update_tg(G, hist, dt, save_by_node: bool):
+    """Acumula tiempos glíficos por nodo y devuelve conteos y latencia.
+
+    ``save_by_node`` controla si se registran las corridas por nodo.
+    """
     counts = Counter()
     n_total = 0
     n_latent = 0
 
-    save_by_node = bool(G.graph.get("METRICS", METRICS).get("save_by_node", True))
     tg_total = hist.setdefault("Tg_total", defaultdict(float))
     tg_by_node = hist.setdefault("Tg_by_node", {})
 
@@ -153,7 +155,8 @@ def _metrics_step(G, *args, **kwargs):
     dt = float(G.graph.get("DT", 1.0))
     t = float(G.graph.get("_t", 0.0))
 
-    counts, n_total, n_latent = _update_tg(G, hist, dt)
+    save_by_node = bool(G.graph.get("METRICS", METRICS).get("save_by_node", True))
+    counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node)
     _update_glifogram(G, hist, counts, t)
     _update_latency_index(G, hist, n_total, n_latent, t)
     _update_epi_support(G, hist, t)
