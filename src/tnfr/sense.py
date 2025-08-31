@@ -28,6 +28,10 @@ GLYPHS_CANONICAL: List[str] = [
 
 _SIGMA_ANGLES: Dict[str, float] = {g: (2.0*math.pi * i / len(GLYPHS_CANONICAL)) for i, g in enumerate(GLYPHS_CANONICAL)}
 
+GLYPH_UNITS: Dict[str, complex] = {
+    g: complex(math.cos(a), math.sin(a)) for g, a in _SIGMA_ANGLES.items()
+}
+
 # -------------------------
 # Utilidades básicas
 # -------------------------
@@ -37,8 +41,7 @@ def glyph_angle(g: str) -> float:
 
 
 def glyph_unit(g: str) -> complex:
-    a = glyph_angle(g)
-    return complex(math.cos(a), math.sin(a))
+    return GLYPH_UNITS.get(g, 1+0j)
 
 
 def _weight(G, n, mode: str) -> float:
