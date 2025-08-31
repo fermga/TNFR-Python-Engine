@@ -60,6 +60,13 @@ def test_read_structured_file_json(tmp_path):
     assert data == {"x": 1}
 
 
+def test_read_structured_file_invalid_extension(tmp_path):
+    path = tmp_path / "cfg.txt"
+    path.write_text("{}", encoding="utf-8")
+    with pytest.raises(ValueError):
+        read_structured_file(path)
+
+
 def test_load_config_json(tmp_path):
     path = tmp_path / "cfg.json"
     path.write_text("{\"a\": 5}", encoding="utf-8")
