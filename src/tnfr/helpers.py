@@ -116,13 +116,9 @@ def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
     if not hist:
         return False
     gl = str(glifo)
-    for g in reversed(hist):
-        if g == gl:
-            return True
-        ventana -= 1
-        if ventana <= 0:
-            break
-    return False
+    from itertools import islice
+
+    return any(g == gl for g in islice(reversed(hist), ventana))
 
 # -------------------------
 # Utilidades de historial global
@@ -130,9 +126,7 @@ def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
 
 def ensure_history(G) -> Dict[str, Any]:
     """Garantiza G.graph['history'] y la devuelve."""
-    if "history" not in G.graph:
-        G.graph["history"] = {}
-    return G.graph["history"]
+    return G.graph.setdefault("history", {})
 
 
 def last_glifo(nd: Dict[str, Any]) -> str | None:
@@ -141,7 +135,7 @@ def last_glifo(nd: Dict[str, Any]) -> str | None:
     if not hist:
         return None
     try:
-        return list(hist)[-1]
+        return hist[-1]
     except Exception:
         return None
 
@@ -223,12 +217,9 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     G.graph["_Si_weights"] = {"alpha": alpha, "beta": beta, "gamma": gamma}
     G.graph["_Si_sensitivity"] = {"dSi_dvf_norm": alpha, "dSi_ddisp_fase": -beta, "dSi_ddnfr_norm": -gamma}
 
-    # Normalización de νf en red
-    vfs = [abs(_get_attr(G.nodes[n], ALIAS_VF, 0.0)) for n in G.nodes()]
-    vfmax = max(vfs) if vfs else 1.0
-    # Normalización de ΔNFR
-    dnfrs = [abs(_get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()]
-    dnfrmax = max(dnfrs) if dnfrs else 1.0
+    # Normalización de νf y ΔNFR en red
+    vfmax = max((abs(_get_attr(G.nodes[n], ALIAS_VF, 0.0)) for n in G.nodes()), default=1.0)
+    dnfrmax = max((abs(_get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()), default=1.0)
 
     out: Dict[Any, float] = {}
     for n in G.nodes():
