@@ -10,7 +10,6 @@ from collections import deque, Counter
 from itertools import islice
 from statistics import fmean, StatisticsError
 import json
-from functools import lru_cache
 from pathlib import Path
 
 try:  # pragma: no cover - dependencia opcional
@@ -97,15 +96,6 @@ def phase_distance(a: float, b: float) -> float:
 _sentinel = object()
 
 
-@lru_cache(maxsize=16)
-def _resolve_alias(alist: tuple[str, ...], keys: frozenset[str]) -> str | None:
-    """Devuelve la primera alias presente en ``keys`` o ``None``."""
-    for k in alist:
-        if k in keys:
-            return k
-    return None
-
-
 def alias_lookup(
     d: Dict[str, Any],
     aliases: Iterable[str],
@@ -122,14 +112,8 @@ def alias_lookup(
     falla.
     """
     alist = tuple(aliases)
-    # Resolver utilizando la caché LRU
-    k = _resolve_alias(alist, frozenset(d.keys()))
-    candidates = []
-    if k is not None:
-        candidates.append(k)
-    candidates.extend(a for a in alist if a != k)
 
-    for key in candidates:
+    for key in alist:
         if key in d:
             if value is not _sentinel:
                 d[key] = conv(value)
