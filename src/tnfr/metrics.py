@@ -254,7 +254,7 @@ def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
 
 
 def _write_csv(path, headers, rows):
-    with open(path, "w", newline="") as f:
+    with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(headers)
         for row in rows:
@@ -306,7 +306,7 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
             _write_csv(base_path + "_epi_support.csv", ["t", "size", "epi_norm"], epi_rows)
     else:
         data = {"glifogram": glifo, "sigma": sigma, "morph": morph, "epi_support": epi_supp}
-        with open(base_path + ".json", "w") as f:
+        with open(base_path + ".json", "w", encoding="utf-8") as f:
             json.dump(data, f)
 
 
