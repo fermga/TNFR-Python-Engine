@@ -125,7 +125,10 @@ def fase_media(G, n) -> float:
 
 def push_glifo(nd: Dict[str, Any], glifo: str, window: int) -> None:
     """Añade ``glifo`` al historial del nodo con tamaño máximo ``window``."""
-    hist = nd.setdefault("hist_glifos", deque(maxlen=window))
+    hist = nd.get("hist_glifos")
+    if hist is None or hist.maxlen != window:
+        hist = deque(hist or [], maxlen=window)
+        nd["hist_glifos"] = hist
     hist.append(str(glifo))
 
 
