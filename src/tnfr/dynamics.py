@@ -229,20 +229,24 @@ def update_epi_via_nodal_equation(
             dEPI_dt_prev = _get_attr(nd, ALIAS_dEPI, 0.0)
             epi_i = _get_attr(nd, ALIAS_EPI, 0.0)
 
-            def _f(time: float) -> float:
-                return vf * dnfr + eval_gamma(G, n, time)
+            base = vf * dnfr
 
             if method == "rk4":
-                k1 = _f(t_local)
-                k2 = _f(t_local + dt_step / 2.0)
-                k3 = _f(t_local + dt_step / 2.0)
-                k4 = _f(t_local + dt_step)
+                g1 = eval_gamma(G, n, t_local)
+                g2 = eval_gamma(G, n, t_local + dt_step / 2.0)
+                g3 = eval_gamma(G, n, t_local + dt_step / 2.0)
+                g4 = eval_gamma(G, n, t_local + dt_step)
+                k1 = base + g1
+                k2 = base + g2
+                k3 = base + g3
+                k4 = base + g4
                 epi = epi_i + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
                 dEPI_dt = k4
             else:
                 if method != "euler":
                     raise ValueError("method must be 'euler' or 'rk4'")
-                dEPI_dt = _f(t_local)
+                gamma_local = eval_gamma(G, n, t_local)
+                dEPI_dt = base + gamma_local
                 epi = epi_i + dt_step * dEPI_dt
 
             epi_kind = _get_attr_str(nd, ALIAS_EPI_KIND, "")
