@@ -64,9 +64,13 @@ def _write_dnfr_metadata(G, *, weights: dict, hook_name: str, note: str | None =
     G.graph["_dnfr_hook_name"] = hook_name  # string friendly
 
 
-def default_compute_delta_nfr(G) -> None:
-    """Calcula ΔNFR mezclando gradientes de fase, EPI, νf y un término topológico."""
-    w = G.graph.get("DNFR_WEIGHTS", DEFAULTS["DNFR_WEIGHTS"])  # dict
+def _configure_dnfr_weights(G) -> dict:
+    """Normaliza y almacena los pesos de ΔNFR en ``G.graph['_dnfr_weights']``.
+
+    Utiliza ``G.graph['DNFR_WEIGHTS']`` o los valores por defecto. El resultado
+    es un diccionario con las componentes normalizadas para ser reutilizado en
+    cada paso de la simulación sin recalcular la mezcla."""
+    w = G.graph.get("DNFR_WEIGHTS", DEFAULTS["DNFR_WEIGHTS"])
     w_phase = float(w.get("phase", 0.34))
     w_epi = float(w.get("epi", 0.33))
     w_vf = float(w.get("vf", 0.33))
@@ -76,13 +80,30 @@ def default_compute_delta_nfr(G) -> None:
         w_phase = w_epi = w_vf = 1/3
         w_topo = 0.0
         s = 1.0
-    else:
-        w_phase, w_epi, w_vf, w_topo = (w_phase/s, w_epi/s, w_vf/s, w_topo/s)
+    weights = {
+        "phase": w_phase / s,
+        "epi": w_epi / s,
+        "vf": w_vf / s,
+        "topo": w_topo / s,
+    }
+    G.graph["_dnfr_weights"] = weights
+    return weights
+
+
+def default_compute_delta_nfr(G) -> None:
+    """Calcula ΔNFR mezclando gradientes de fase, EPI, νf y un término topológico."""
+    weights = G.graph.get("_dnfr_weights")
+    if weights is None:
+        weights = _configure_dnfr_weights(G)
+    w_phase = float(weights.get("phase", 0.0))
+    w_epi = float(weights.get("epi", 0.0))
+    w_vf = float(weights.get("vf", 0.0))
+    w_topo = float(weights.get("topo", 0.0))
 
     # Documentar mezcla y hook activo
     _write_dnfr_metadata(
         G,
-        weights={"phase": w_phase, "epi": w_epi, "vf": w_vf, "topo": w_topo},
+        weights=weights,
         hook_name="default_compute_delta_nfr",
     )
 
@@ -118,6 +139,8 @@ def set_delta_nfr_hook(G, func, *, name: str | None = None, note: str | None = N
     escribir ALIAS_DNFR en cada nodo. Actualiza metadatos básicos en G.graph."""
     G.graph["compute_delta_nfr"] = func
     G.graph["_dnfr_hook_name"] = str(name or getattr(func, "__name__", "custom_dnfr"))
+    if "_dnfr_weights" not in G.graph:
+        _configure_dnfr_weights(G)
     if note:
         meta = G.graph.get("_DNFR_META", {})
         meta["note"] = str(note)
