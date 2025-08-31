@@ -34,7 +34,7 @@ from .gamma import eval_gamma
 from .helpers import (
      clamp, clamp01, list_mean, phase_distance, angle_diff,
      _get_attr, _set_attr, _get_attr_str, _set_attr_str, media_vecinal, fase_media,
-     invoke_callbacks, reciente_glifo
+     invoke_callbacks, reciente_glifo, set_vf, set_dnfr
 )
 
 # -------------------------
@@ -132,7 +132,7 @@ def default_compute_delta_nfr(G) -> None:
             g_topo = 0.0
 
         dnfr = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
-        _set_attr(nd, ALIAS_DNFR, dnfr)
+        set_dnfr(G, n, dnfr)
 
 def set_delta_nfr_hook(G, func, *, name: str | None = None, note: str | None = None) -> None:
     """Fija un hook estable para calcular ΔNFR. Firma requerida: func(G)->None y debe
@@ -154,7 +154,7 @@ def dnfr_phase_only(G) -> None:
         th_i = _get_attr(nd, ALIAS_THETA, 0.0)
         th_bar = fase_media(G, n)
         g_phase = -angle_diff(th_i, th_bar) / math.pi
-        _set_attr(nd, ALIAS_DNFR, g_phase)
+        set_dnfr(G, n, g_phase)
     _write_dnfr_metadata(G, weights={"phase": 1.0}, hook_name="dnfr_phase_only", note="Hook de ejemplo.")
 
 def dnfr_epi_vf_mixed(G) -> None:
@@ -167,7 +167,7 @@ def dnfr_epi_vf_mixed(G) -> None:
         vf_i = _get_attr(nd, ALIAS_VF, 0.0)
         vf_bar = media_vecinal(G, n, ALIAS_VF, default=vf_i)
         g_vf = (vf_bar - vf_i)
-        _set_attr(nd, ALIAS_DNFR, 0.5*g_epi + 0.5*g_vf)
+        set_dnfr(G, n, 0.5*g_epi + 0.5*g_vf)
     _write_dnfr_metadata(G, weights={"phase":0.0, "epi":0.5, "vf":0.5}, hook_name="dnfr_epi_vf_mixed", note="Hook de ejemplo.")
 
 
@@ -185,7 +185,7 @@ def dnfr_laplacian(G) -> None:
         vf_bar = sum(_get_attr(G.nodes[v], ALIAS_VF, vf) for v in neigh) / deg
         g_epi = epi_bar - epi
         g_vf = vf_bar - vf
-        _set_attr(nd, ALIAS_DNFR, wE * g_epi + wV * g_vf)
+        set_dnfr(G, n, wE * g_epi + wV * g_vf)
     _write_dnfr_metadata(
         G,
         weights={"epi": wE, "vf": wV},
@@ -321,7 +321,10 @@ def aplicar_clamps_canonicos(nd: Dict[str, Any], G=None, node=None) -> None:
             hist.append({"node": node, "attr": "VF", "value": float(vf)})
 
     _set_attr(nd, ALIAS_EPI, clamp(epi, eps_min, eps_max))
-    _set_attr(nd, ALIAS_VF, clamp(vf, vf_min, vf_max))
+    if G is not None and node is not None:
+        set_vf(G, node, clamp(vf, vf_min, vf_max))
+    else:
+        _set_attr(nd, ALIAS_VF, clamp(vf, vf_min, vf_max))
     if (G.graph.get("THETA_WRAP") if G is not None else DEFAULTS["THETA_WRAP"]):
         # envolver fase
         _set_attr(nd, ALIAS_THETA, ((th + math.pi) % (2*math.pi) - math.pi))
@@ -473,7 +476,7 @@ def adaptar_vf_por_coherencia(G) -> None:
             updates[n] = vf + mu * (vf_bar - vf)
 
     for n, vf_new in updates.items():
-        _set_attr(G.nodes[n], ALIAS_VF, clamp(vf_new, vf_min, vf_max))
+        set_vf(G, n, clamp(vf_new, vf_min, vf_max))
 
 # -------------------------
 # Selector glífico por defecto

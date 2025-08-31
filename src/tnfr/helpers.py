@@ -149,6 +149,49 @@ def _get_attr_str(d: Dict[str, Any], aliases: Iterable[str], default: str = "") 
 def _set_attr_str(d, aliases, value: str) -> None:
     alias_lookup(d, aliases, str, value=value)
 
+
+# -------------------------
+# Máximos globales con caché
+# -------------------------
+
+def _recompute_abs_max(G, aliases):
+    """Recalcula y retorna ``(max_val, node)`` para ``aliases``."""
+    max_val = 0.0
+    max_node = None
+    for m in G.nodes():
+        v = abs(_get_attr(G.nodes[m], aliases, 0.0))
+        if v >= max_val:
+            max_val = v
+            max_node = m
+    return max_val, max_node
+
+
+def _update_cached_abs_max(G, aliases, n, value, *, key: str) -> None:
+    """Actualiza ``G.graph[key]`` y ``G.graph[f"{key}_node"]``."""
+    node_key = f"{key}_node"
+    val = abs(value)
+    cur = float(G.graph.get(key, 0.0))
+    cur_node = G.graph.get(node_key)
+    if val >= cur:
+        G.graph[key] = val
+        G.graph[node_key] = n
+    elif cur_node == n and val < cur:
+        max_val, max_node = _recompute_abs_max(G, aliases)
+        G.graph[key] = max_val
+        G.graph[node_key] = max_node
+
+
+def set_vf(G, n, value: float) -> None:
+    """Asigna ``νf`` y actualiza el máximo global."""
+    _set_attr(G.nodes[n], ALIAS_VF, float(value))
+    _update_cached_abs_max(G, ALIAS_VF, n, float(value), key="_vfmax")
+
+
+def set_dnfr(G, n, value: float) -> None:
+    """Asigna ``ΔNFR`` y actualiza el máximo global."""
+    _set_attr(G.nodes[n], ALIAS_DNFR, float(value))
+    _update_cached_abs_max(G, ALIAS_DNFR, n, float(value), key="_dnfrmax")
+
 # -------------------------
 # Estadísticos vecinales
 # -------------------------
@@ -319,9 +362,19 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     G.graph["_Si_weights"] = {"alpha": alpha, "beta": beta, "gamma": gamma}
     G.graph["_Si_sensitivity"] = {"dSi_dvf_norm": alpha, "dSi_ddisp_fase": -beta, "dSi_ddnfr_norm": -gamma}
 
-    # Normalización de νf y ΔNFR en red
-    vfmax = max((abs(_get_attr(G.nodes[n], ALIAS_VF, 0.0)) for n in G.nodes()), default=1.0)
-    dnfrmax = max((abs(_get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()), default=1.0)
+    # Normalización de νf y ΔNFR en red usando máximos cacheados
+    vfmax = G.graph.get("_vfmax")
+    if vfmax is None:
+        vfmax, vf_node = _recompute_abs_max(G, ALIAS_VF)
+        G.graph.setdefault("_vfmax", vfmax)
+        G.graph.setdefault("_vfmax_node", vf_node)
+    dnfrmax = G.graph.get("_dnfrmax")
+    if dnfrmax is None:
+        dnfrmax, dnfr_node = _recompute_abs_max(G, ALIAS_DNFR)
+        G.graph.setdefault("_dnfrmax", dnfrmax)
+        G.graph.setdefault("_dnfrmax_node", dnfr_node)
+    vfmax = 1.0 if vfmax == 0 else vfmax
+    dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
 
     out: Dict[Any, float] = {}
     for n in G.nodes():
