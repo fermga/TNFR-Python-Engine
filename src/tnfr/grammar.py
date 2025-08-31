@@ -113,8 +113,8 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
     hist = nd.get("hist_glifos")
     if hist:
         try:
-            prev = list(hist)[-1]
-        except Exception:
+            prev = hist[-1]
+        except IndexError:
             prev = None
     if prev in CANON_COMPAT and cand not in CANON_COMPAT[prev]:
         cand = CANON_FALLBACK.get(prev, cand)
