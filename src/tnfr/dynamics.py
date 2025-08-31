@@ -374,9 +374,19 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
     g = G.graph
     defaults = DEFAULTS
     hist = g.setdefault("history", {})
-    hist_state = hist.setdefault("phase_state", [])
-    hist_R = hist.setdefault("phase_R", [])
-    hist_disr = hist.setdefault("phase_disr", [])
+    maxlen = int(g.get("PHASE_HISTORY_MAXLEN", defaults.get("PHASE_HISTORY_MAXLEN", 50)))
+    hist_state = hist.setdefault("phase_state", deque(maxlen=maxlen))
+    if not isinstance(hist_state, deque):
+        hist_state = deque(hist_state, maxlen=maxlen)
+        hist["phase_state"] = hist_state
+    hist_R = hist.setdefault("phase_R", deque(maxlen=maxlen))
+    if not isinstance(hist_R, deque):
+        hist_R = deque(hist_R, maxlen=maxlen)
+        hist["phase_R"] = hist_R
+    hist_disr = hist.setdefault("phase_disr", deque(maxlen=maxlen))
+    if not isinstance(hist_disr, deque):
+        hist_disr = deque(hist_disr, maxlen=maxlen)
+        hist["phase_disr"] = hist_disr
     # 0) Si hay fuerzas explícitas, usar y salir del modo adaptativo
     if (fuerza_global is not None) or (fuerza_vecinal is not None):
         kG = float(

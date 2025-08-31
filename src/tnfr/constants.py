@@ -57,6 +57,7 @@ DEFAULTS: Dict[str, Any] = {
     # Coordinación de fase (U’M) global/vecinal por paso
     "PHASE_K_GLOBAL": 0.05,
     "PHASE_K_LOCAL": 0.15,
+    "PHASE_HISTORY_MAXLEN": 50,   # longitud máx. para series de fase
 
     # Coordinación de fase adaptativa (kG/kL dinámicos por estado)
     "PHASE_ADAPT": {
