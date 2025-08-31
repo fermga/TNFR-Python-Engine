@@ -138,7 +138,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     if args.summary:
         tg = Tg_global(G, normalize=True)
         lat = latency_series(G)
-        print("Top glifos por Tg:", glyph_top(G, k=5))
+        print("Top operadores por Tg:", glyph_top(G, k=5))
         if lat["value"]:
             print("Latencia media:", sum(lat["value"]) / max(1, len(lat["value"])) )
     return 0

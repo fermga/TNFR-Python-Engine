@@ -125,6 +125,7 @@ DEFAULTS: Dict[str, Any] = {
         "THOL_accel": 0.10,     # T’HOL — acelera (seg. deriv.) si hay umbral
         "ZHIR_theta_shift": 1.57079632679,  # Z’HIR — desplazamiento ~π/2
         "NAV_jitter": 0.05,     # NA’V — pequeña inestabilidad creativa
+        "NAV_eta": 0.5,         # NA’V — peso de convergencia hacia νf
         "REMESH_alpha": 0.5,    # RE’MESH — mezcla si no se usa REMESH_ALPHA
     },
 
@@ -133,6 +134,7 @@ DEFAULTS: Dict[str, Any] = {
 
     # Comportamiento NA’V
     "NAV_RANDOM": True,   # si True, usa jitter aleatorio en [-j, j]; si False, jitter determinista por signo
+    "NAV_STRICT": False,  # si True, fuerza ΔNFR ← νf (sin mezcla)
     "RANDOM_SEED": 0,     # semilla base para reproducibilidad del jitter
 
     # Modo ruido para O’Z
