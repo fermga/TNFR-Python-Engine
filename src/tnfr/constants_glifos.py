@@ -37,6 +37,8 @@ DISRUPTIVOS: List[str] = [
 # anteriores se distribuyen uniformemente en el círculo y se ajustan a
 # orientaciones semánticas específicas en el plano σ.
 ANGLE_MAP: Dict[str, float] = {
+    # AL no participa en el plano σ pero se incluye por completitud.
+    # Comparte el ángulo base (0 rad) con IL de forma intencionada.
     Glyph.AL.value: 0.0,
     Glyph.EN.value: 2 * math.pi / 13,
     Glyph.IL.value: 0.0,
