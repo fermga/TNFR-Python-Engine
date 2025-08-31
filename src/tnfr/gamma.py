@@ -63,6 +63,20 @@ def kuramoto_R_psi(G) -> Tuple[float, float]:
     return abs(z), math.atan2(z.imag, z.real)
 
 
+def _kuramoto_common(G, node, cfg):
+    """Return ``(θ_i, R, ψ)`` for Kuramoto-based γ functions.
+
+    Lee los valores cacheados de orden global ``R`` y fase media ``ψ`` y
+    obtiene la fase del nodo ``θ_i``. ``cfg`` se acepta solo para mantener una
+    firma homogénea con los evaluadores de ``Γ``.
+    """
+    cache = G.graph.get("_kuramoto_cache", {})
+    R = float(cache.get("R", 0.0))
+    psi = float(cache.get("psi", 0.0))
+    th_i = float(_get_attr(G.nodes[node], ALIAS_THETA, 0.0))
+    return th_i, R, psi
+
+
 # -----------------
 # Γi(R) canónicos
 # -----------------
@@ -84,20 +98,14 @@ def gamma_kuramoto_linear(G, node, t, cfg: Dict[str, Any]) -> float:
     """
     beta = float(cfg.get("beta", 0.0))
     R0 = float(cfg.get("R0", 0.0))
-    cache = G.graph.get("_kuramoto_cache", {})
-    R = cache.get("R", 0.0)
-    psi = cache.get("psi", 0.0)
-    th_i = _get_attr(G.nodes[node], ALIAS_THETA, 0.0)
+    th_i, R, psi = _kuramoto_common(G, node, cfg)
     return beta * (R - R0) * math.cos(th_i - psi)
 
 
 def gamma_kuramoto_bandpass(G, node, t, cfg: Dict[str, Any]) -> float:
     """Γ = β · R(1-R) · sign(cos(θ_i - ψ))"""
     beta = float(cfg.get("beta", 0.0))
-    cache = G.graph.get("_kuramoto_cache", {})
-    R = cache.get("R", 0.0)
-    psi = cache.get("psi", 0.0)
-    th_i = _get_attr(G.nodes[node], ALIAS_THETA, 0.0)
+    th_i, R, psi = _kuramoto_common(G, node, cfg)
     sgn = 1.0 if math.cos(th_i - psi) >= 0.0 else -1.0
     return beta * R * (1.0 - R) * sgn
 
@@ -113,10 +121,7 @@ def gamma_kuramoto_tanh(G, node, t, cfg: Dict[str, Any]) -> float:
     beta = float(cfg.get("beta", 0.0))
     k = float(cfg.get("k", 1.0))
     R0 = float(cfg.get("R0", 0.0))
-    cache = G.graph.get("_kuramoto_cache", {})
-    R = cache.get("R", 0.0)
-    psi = cache.get("psi", 0.0)
-    th_i = _get_attr(G.nodes[node], ALIAS_THETA, 0.0)
+    th_i, R, psi = _kuramoto_common(G, node, cfg)
     return beta * math.tanh(k * (R - R0)) * math.cos(th_i - psi)
 
 
@@ -131,10 +136,8 @@ def gamma_harmonic(G, node, t, cfg: Dict[str, Any]) -> float:
     beta = float(cfg.get("beta", 0.0))
     omega = float(cfg.get("omega", 1.0))
     phi = float(cfg.get("phi", 0.0))
-    cache = G.graph.get("_kuramoto_cache", {})
-    psi = cache.get("psi", 0.0)
-    th = _get_attr(G.nodes[node], ALIAS_THETA, 0.0)
-    return beta * math.sin(omega * t + phi) * math.cos(th - psi)
+    th_i, _, psi = _kuramoto_common(G, node, cfg)
+    return beta * math.sin(omega * t + phi) * math.cos(th_i - psi)
 
 
 GAMMA_REGISTRY = {
