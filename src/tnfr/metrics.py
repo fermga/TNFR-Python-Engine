@@ -112,17 +112,21 @@ def _update_latency_index(G, hist, n_total, n_latent, t):
     hist.setdefault("latency_index", []).append({"t": t, "value": li})
 
 
-def _update_epi_support(G, hist, t):
+def _update_epi_support(G, hist, t, thr):
     """Calcula soporte y norma de la EPI."""
-    thr = float(G.graph.get("EPI_SUPPORT_THR", DEFAULTS.get("EPI_SUPPORT_THR", 0.0)))
-    supp_nodes = [n for n in G.nodes() if abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= thr]
-    epi_norm = (
-        sum(abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in supp_nodes) / len(supp_nodes)
-        if supp_nodes
-        else 0.0
+    vals = (
+        abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0))
+        for n in G.nodes()
+        if abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= thr
     )
+    size = 0
+    accum = 0.0
+    for v in vals:
+        size += 1
+        accum += v
+    epi_norm = accum / size if size else 0.0
     hist.setdefault("EPI_support", []).append(
-        {"t": t, "size": len(supp_nodes), "epi_norm": float(epi_norm)}
+        {"t": t, "size": size, "epi_norm": float(epi_norm)}
     )
 
 
@@ -154,12 +158,13 @@ def _metrics_step(G, *args, **kwargs):
     hist = ensure_history(G)
     dt = float(G.graph.get("DT", 1.0))
     t = float(G.graph.get("_t", 0.0))
+    thr = float(G.graph.get("EPI_SUPPORT_THR", DEFAULTS.get("EPI_SUPPORT_THR", 0.0)))
 
     save_by_node = bool(G.graph.get("METRICS", METRICS).get("save_by_node", True))
     counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node)
     _update_glifogram(G, hist, counts, t)
     _update_latency_index(G, hist, n_total, n_latent, t)
-    _update_epi_support(G, hist, t)
+    _update_epi_support(G, hist, t, thr)
     _update_morph_metrics(G, hist, counts, t)
 
 
