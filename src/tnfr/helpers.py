@@ -117,7 +117,9 @@ def alias_lookup(
     devolviendo ``default`` convertido si ninguna alias coincide o la conversión
     falla.
     """
-    alist = tuple(aliases)
+    if not isinstance(aliases, tuple):
+        aliases = tuple(aliases)
+    alist = aliases
 
     for key in alist:
         if key in d:
