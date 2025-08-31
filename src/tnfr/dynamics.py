@@ -669,8 +669,19 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     # 7) Observadores ligeros
     _update_history(G)
     # dynamics.py — dentro de step(), justo antes del punto 8)
-    tau_g = int(G.graph.get("REMESH_TAU_GLOBAL", G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_GLOBAL"])))
-    tau_l = int(G.graph.get("REMESH_TAU_LOCAL", G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_LOCAL"])))
+    # REMESH_TAU: alias legado de REMESH_TAU_GLOBAL
+    tau_g = int(
+        G.graph.get(
+            "REMESH_TAU_GLOBAL",
+            G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_GLOBAL"]),
+        )
+    )
+    tau_l = int(
+        G.graph.get(
+            "REMESH_TAU_LOCAL",
+            G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_LOCAL"]),
+        )
+    )
     tau = max(tau_g, tau_l)
     maxlen = max(2 * tau + 5, 64)
     epi_hist = G.graph.get("_epi_hist")
