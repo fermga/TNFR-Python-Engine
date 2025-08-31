@@ -4,7 +4,7 @@ from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Uni
 from dataclasses import dataclass
 from contextlib import contextmanager
 
-from .constants import DEFAULTS
+from .constants import get_param
 from .grammar import apply_glyph_with_grammar
 from .sense import GLYPHS_CANONICAL
 from .types import Glyph
@@ -55,7 +55,7 @@ def _forced_selector(G, glyph: Glyph):
             G.graph["glyph_selector"] = prev
 
 def _window(G) -> int:
-    return int(G.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 1)))
+    return int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
 
 def _all_nodes(G):
     return list(G.nodes())

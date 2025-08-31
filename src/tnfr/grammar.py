@@ -4,6 +4,7 @@ from typing import Dict, Any, Set, Iterable, Optional
 from .constants import (
     DEFAULTS,
     ALIAS_SI, ALIAS_DNFR, ALIAS_EPI,
+    get_param,
 )
 from .helpers import _get_attr, clamp01, reciente_glifo
 from .types import Glyph
@@ -142,7 +143,7 @@ def apply_glyph_with_grammar(G, nodes: Optional[Iterable[Any]], glyph: Glyph | s
     from .operators import aplicar_glifo
 
     if window is None:
-        window = int(G.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 1)))
+        window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
 
     g_str = glyph.value if isinstance(glyph, Glyph) else str(glyph)
     for n in list(G.nodes() if nodes is None else nodes):

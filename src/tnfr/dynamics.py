@@ -708,7 +708,7 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     # 3) Selección glífica + aplicación (con lags obligatorios AL/EN)
     if apply_glyphs:
         from .operators import aplicar_glifo
-        window = int(G.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS["GLYPH_HYSTERESIS_WINDOW"]))
+        window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
         use_canon = bool(G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})).get("enabled", False))
 
         al_max = int(G.graph.get("AL_MAX_LAG", DEFAULTS["AL_MAX_LAG"]))
