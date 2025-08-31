@@ -26,6 +26,7 @@ from .dynamics import step, _update_history, default_glyph_selector, parametric_
 from .gamma import GAMMA_REGISTRY
 from .scenarios import build_graph
 from .presets import get_preset
+from .config import apply_config
 
 
 def _save_json(path: str, data: Any) -> None:
@@ -91,6 +92,8 @@ def _attach_callbacks(G: nx.Graph) -> None:
 
 def cmd_run(args: argparse.Namespace) -> int:
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
+    if getattr(args, "config", None):
+        apply_config(G, args.config)
     _attach_callbacks(G)
     validate_canon(G)
     if args.dt is not None:
@@ -152,6 +155,8 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 def cmd_sequence(args: argparse.Namespace) -> int:
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
+    if getattr(args, "config", None):
+        apply_config(G, args.config)
     _attach_callbacks(G)
     validate_canon(G)
     if args.dt is not None:
@@ -192,6 +197,8 @@ def cmd_sequence(args: argparse.Namespace) -> int:
 
 def cmd_metrics(args: argparse.Namespace) -> int:
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
+    if getattr(args, "config", None):
+        apply_config(G, args.config)
     _attach_callbacks(G)
     validate_canon(G)
     if args.dt is not None:
@@ -238,6 +245,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_run.add_argument("--steps", type=int, default=200)
     p_run.add_argument("--seed", type=int, default=1)
     p_run.add_argument("--preset", type=str, default=None)
+    p_run.add_argument("--config", type=str, default=None)
     p_run.add_argument("--dt", type=float, default=None)
     p_run.add_argument("--integrator", choices=["euler", "rk4"], default=None)
     p_run.add_argument("--save-history", dest="save_history", type=str, default=None)
@@ -266,6 +274,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_seq.add_argument("--seed", type=int, default=1)
     p_seq.add_argument("--preset", type=str, default=None)
     p_seq.add_argument("--sequence-file", type=str, default=None)
+    p_seq.add_argument("--config", type=str, default=None)
     p_seq.add_argument("--dt", type=float, default=None)
     p_seq.add_argument("--integrator", choices=["euler", "rk4"], default=None)
     p_seq.add_argument("--save-history", dest="save_history", type=str, default=None)
@@ -299,6 +308,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_met.add_argument("--gamma-R0", type=float, default=0.0)
     p_met.add_argument("--remesh-mode", choices=["knn", "mst", "community"], default=None)
     p_met.add_argument("--save", type=str, default=None)
+    p_met.add_argument("--config", type=str, default=None)
     p_met.set_defaults(func=cmd_metrics)
 
     args = p.parse_args(argv)

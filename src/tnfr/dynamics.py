@@ -673,6 +673,10 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     # 8) RE’MESH condicionado
     aplicar_remesh_si_estabilizacion_global(G)
 
+    # 8b) Validadores de invariantes
+    from .validators import run_validators
+    run_validators(G)
+
     # Contexto final (últimas métricas del paso)
     h = G.graph.get("history", {})
     ctx = {"step": step_idx}

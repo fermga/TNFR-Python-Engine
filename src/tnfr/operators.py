@@ -1,25 +1,24 @@
 # operators.py — TNFR canónica (ASCII-safe)
 from __future__ import annotations
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Iterable
 import math
 import random
 import hashlib
 import networkx as nx
 from networkx.algorithms import community as nx_comm
 
-from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_D2EPI, ALIAS_EPI_KIND
+from .constants import DEFAULTS, ALIAS_EPI
 from .helpers import (
+    clamp,
+    clamp01,
+    list_mean,
+    invoke_callbacks,
     _get_attr,
     _set_attr,
     _get_attr_str,
     _set_attr_str,
-    clamp,
-    clamp01,
-    list_mean,
-    fase_media,
-    push_glifo,
-    invoke_callbacks,
 )
+from .node import NodoProtocol, NodoNX
 from collections import deque
 
 """
@@ -47,146 +46,132 @@ def _node_offset(G, n) -> int:
 # Glifos (operadores locales)
 # -------------------------
 
-def op_AL(G, n):  # A’L — Emisión
-    f = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("AL_boost", 0.05))
-    nd = G.nodes[n]
-    epi = _get_attr(nd, ALIAS_EPI, 0.0)
-    _set_attr(nd, ALIAS_EPI, epi + f)
-    _set_attr_str(nd, ALIAS_EPI_KIND, "A’L")
+def _fase_media_node(node: NodoProtocol) -> float:
+    x = y = 0.0
+    count = 0
+    for v in node.neighbors():
+        th = getattr(v, "theta", 0.0)
+        x += math.cos(th)
+        y += math.sin(th)
+        count += 1
+    if count == 0:
+        return getattr(node, "theta", 0.0)
+    return math.atan2(y / count, x / count)
 
 
-def op_EN(G, n):  # E’N — Recepción
-    mix = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("EN_mix", 0.25))
-    nd = G.nodes[n]
-    epi = _get_attr(nd, ALIAS_EPI, 0.0)
-    if G.degree(n) == 0:
-        return  # sin vecinos no hay mezcla
-    epi_bar = list_mean(_get_attr(G.nodes[v], ALIAS_EPI, epi) for v in G.neighbors(n))
-    _set_attr(nd, ALIAS_EPI, (1 - mix) * epi + mix * epi_bar)
-
-    # Propaga el glifo dominante según |EPI|
-    candidatos = [(abs(epi), _get_attr_str(nd, ALIAS_EPI_KIND, ""))]
-    for v in G.neighbors(n):
-        nd_v = G.nodes[v]
-        epi_v = _get_attr(nd_v, ALIAS_EPI, epi)
-        kind_v = _get_attr_str(nd_v, ALIAS_EPI_KIND, "")
-        candidatos.append((abs(epi_v), kind_v))
-    dom = max(candidatos, key=lambda x: x[0])[1] or "E’N"
-    _set_attr_str(nd, ALIAS_EPI_KIND, dom)
+def _op_AL(node: NodoProtocol) -> None:  # A’L — Emisión
+    f = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("AL_boost", 0.05))
+    node.EPI = node.EPI + f
+    node.epi_kind = "A’L"
 
 
-def op_IL(G, n):  # I’L — Coherencia (reduce ΔNFR)
-    factor = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("IL_dnfr_factor", 0.7))
-    nd = G.nodes[n]
-    dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
-    _set_attr(nd, ALIAS_DNFR, factor * dnfr)
+def _op_EN(node: NodoProtocol) -> None:  # E’N — Recepción
+    mix = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("EN_mix", 0.25))
+    epi = node.EPI
+    neigh = list(node.neighbors())
+    if not neigh:
+        return
+    epi_bar = list_mean(v.EPI for v in neigh) if neigh else epi
+    node.EPI = (1 - mix) * epi + mix * epi_bar
 
-def op_OZ(G, n):  # O’Z — Disonancia (aumenta ΔNFR o añade ruido)
-    factor = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("OZ_dnfr_factor", 1.3))
-    nd = G.nodes[n]
-    dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
-    if bool(G.graph.get("OZ_NOISE_MODE", False)):
-        base_seed = int(G.graph.get("RANDOM_SEED", 0))
-        step_idx = len(G.graph.get("history", {}).get("C_steps", []))
-        rnd = random.Random(base_seed + step_idx*1000003 + _node_offset(G, n) % 1009)
-        sigma = float(G.graph.get("OZ_SIGMA", 0.1))
+    candidatos = [(abs(node.EPI), node.epi_kind)]
+    for v in neigh:
+        candidatos.append((abs(v.EPI), v.epi_kind))
+    node.epi_kind = max(candidatos, key=lambda x: x[0])[1] or "E’N"
+
+
+def _op_IL(node: NodoProtocol) -> None:  # I’L — Coherencia
+    factor = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("IL_dnfr_factor", 0.7))
+    node.dnfr = factor * getattr(node, "dnfr", 0.0)
+
+
+def _op_OZ(node: NodoProtocol) -> None:  # O’Z — Disonancia
+    factor = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("OZ_dnfr_factor", 1.3))
+    dnfr = getattr(node, "dnfr", 0.0)
+    if bool(node.graph.get("OZ_NOISE_MODE", False)):
+        base_seed = int(node.graph.get("RANDOM_SEED", 0))
+        step_idx = len(node.graph.get("history", {}).get("C_steps", []))
+        rnd = random.Random(base_seed + step_idx * 1000003 + node.offset() % 1009)
+        sigma = float(node.graph.get("OZ_SIGMA", 0.1))
         noise = sigma * (2.0 * rnd.random() - 1.0)
-        _set_attr(nd, ALIAS_DNFR, dnfr + noise)
+        node.dnfr = dnfr + noise
     else:
-        _set_attr(nd, ALIAS_DNFR, factor * dnfr if abs(dnfr) > 1e-9 else 0.1)
+        node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
 
-def op_UM(G, n):  # U’M — Acoplamiento (empuja fase a la media local)
-    k = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("UM_theta_push", 0.25))
-    nd = G.nodes[n]
-    th = _get_attr(nd, ALIAS_THETA, 0.0)
-    thL = fase_media(G, n)
+
+def _op_UM(node: NodoProtocol) -> None:  # U’M — Acoplamiento
+    k = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("UM_theta_push", 0.25))
+    th = node.theta
+    thL = _fase_media_node(node)
     d = ((thL - th + math.pi) % (2 * math.pi) - math.pi)
-    _set_attr(nd, ALIAS_THETA, th + k * d)
+    node.theta = th + k * d
 
-    # Opcional: crear/reforzar enlaces funcionales con vecinos compatibles
-    if bool(G.graph.get("UM_FUNCTIONAL_LINKS", False)):
-        thr = float(G.graph.get("UM_COMPAT_THRESHOLD", DEFAULTS.get("UM_COMPAT_THRESHOLD", 0.75)))
-        epi_i = _get_attr(nd, ALIAS_EPI, 0.0)
-        si_i = _get_attr(nd, ALIAS_SI, 0.0)
-        for j in G.nodes():
-            if j == n or G.has_edge(n, j):
+    if bool(node.graph.get("UM_FUNCTIONAL_LINKS", False)):
+        thr = float(node.graph.get("UM_COMPAT_THRESHOLD", DEFAULTS.get("UM_COMPAT_THRESHOLD", 0.75)))
+        epi_i = node.EPI
+        si_i = node.Si
+        for j in node.all_nodes():
+            if j is node or node.has_edge(j):
                 continue
-            nd_j = G.nodes[j]
-            th_j = _get_attr(nd_j, ALIAS_THETA, 0.0)
-            dphi = abs(((th_j - th + math.pi) % (2 * math.pi)) - math.pi) / math.pi  # [0,1]
-            epi_j = _get_attr(nd_j, ALIAS_EPI, 0.0)
-            si_j = _get_attr(nd_j, ALIAS_SI, 0.0)
-            # Similitudes normalizadas simple (|Δ| -> 0 => similitud 1)
+            th_j = j.theta
+            dphi = abs(((th_j - th + math.pi) % (2 * math.pi)) - math.pi) / math.pi
+            epi_j = j.EPI
+            si_j = j.Si
             epi_sim = 1.0 - abs(epi_i - epi_j) / (abs(epi_i) + abs(epi_j) + 1e-9)
             si_sim = 1.0 - abs(si_i - si_j)
             compat = (1 - dphi) * 0.5 + 0.25 * epi_sim + 0.25 * si_sim
             if compat >= thr:
-                w = compat if not G.has_edge(n, j) else max(compat, G.edges[n, j].get("weight", compat))
-                G.add_edge(n, j, weight=float(w))
+                node.add_edge(j, compat)
 
 
-def op_RA(G, n):  # R’A — Resonancia (difusión EPI)
-    diff = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("RA_epi_diff", 0.15))
-    nd = G.nodes[n]
-    epi = _get_attr(nd, ALIAS_EPI, 0.0)
-    if G.degree(n) == 0:
+def _op_RA(node: NodoProtocol) -> None:  # R’A — Resonancia
+    diff = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("RA_epi_diff", 0.15))
+    epi = node.EPI
+    neigh = list(node.neighbors())
+    if not neigh:
         return
-    epi_bar = list_mean(_get_attr(G.nodes[v], ALIAS_EPI, epi) for v in G.neighbors(n))
-    _set_attr(nd, ALIAS_EPI, epi + diff * (epi_bar - epi))
+    epi_bar = list_mean(v.EPI for v in neigh)
+    node.EPI = epi + diff * (epi_bar - epi)
 
-    candidatos = [(abs(epi), _get_attr_str(nd, ALIAS_EPI_KIND, ""))]
-    for v in G.neighbors(n):
-        nd_v = G.nodes[v]
-        epi_v = _get_attr(nd_v, ALIAS_EPI, epi)
-        kind_v = _get_attr_str(nd_v, ALIAS_EPI_KIND, "")
-        candidatos.append((abs(epi_v), kind_v))
-    dom = max(candidatos, key=lambda x: x[0])[1] or "R’A"
-    _set_attr_str(nd, ALIAS_EPI_KIND, dom)
+    candidatos = [(abs(node.EPI), node.epi_kind)]
+    for v in neigh:
+        candidatos.append((abs(v.EPI), v.epi_kind))
+    node.epi_kind = max(candidatos, key=lambda x: x[0])[1] or "R’A"
 
 
-def op_SHA(G, n):  # SH’A — Silencio (baja νf)
-    factor = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("SHA_vf_factor", 0.85))
-    nd = G.nodes[n]
-    vf = _get_attr(nd, ALIAS_VF, 0.0)
-    _set_attr(nd, ALIAS_VF, factor * vf)
+def _op_SHA(node: NodoProtocol) -> None:  # SH’A — Silencio
+    factor = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("SHA_vf_factor", 0.85))
+    node.vf = factor * node.vf
 
 
-def op_VAL(G, n):  # VA’L — Expansión (escala EPI)
-    s = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("VAL_scale", 1.15))
-    nd = G.nodes[n]
-    epi = _get_attr(nd, ALIAS_EPI, 0.0)
-    _set_attr(nd, ALIAS_EPI, s * epi)
-    _set_attr_str(nd, ALIAS_EPI_KIND, "VA’L")
+def _op_VAL(node: NodoProtocol) -> None:  # VA’L — Expansión
+    s = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("VAL_scale", 1.15))
+    node.EPI = s * node.EPI
+    node.epi_kind = "VA’L"
 
 
-def op_NUL(G, n):  # NU’L — Contracción (escala EPI)
-    s = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("NUL_scale", 0.85))
-    nd = G.nodes[n]
-    epi = _get_attr(nd, ALIAS_EPI, 0.0)
-    _set_attr(nd, ALIAS_EPI, s * epi)
-    _set_attr_str(nd, ALIAS_EPI_KIND, "NU’L")
+def _op_NUL(node: NodoProtocol) -> None:  # NU’L — Contracción
+    s = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("NUL_scale", 0.85))
+    node.EPI = s * node.EPI
+    node.epi_kind = "NU’L"
 
 
-def op_THOL(G, n):  # T’HOL — Autoorganización (inyecta aceleración)
-    a = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("THOL_accel", 0.10))
-    nd = G.nodes[n]
-    d2 = _get_attr(nd, ALIAS_D2EPI, 0.0)
-    _set_attr(nd, ALIAS_DNFR, _get_attr(nd, ALIAS_DNFR, 0.0) + a * d2)
+def _op_THOL(node: NodoProtocol) -> None:  # T’HOL — Autoorganización
+    a = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("THOL_accel", 0.10))
+    node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
-def op_ZHIR(G, n):  # Z’HIR — Mutación (desplaza fase)
-    shift = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("ZHIR_theta_shift", 1.57079632679))
-    nd = G.nodes[n]
-    th = _get_attr(nd, ALIAS_THETA, 0.0)
-    _set_attr(nd, ALIAS_THETA, th + shift)
+def _op_ZHIR(node: NodoProtocol) -> None:  # Z’HIR — Mutación
+    shift = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("ZHIR_theta_shift", 1.57079632679))
+    node.theta = node.theta + shift
 
-def op_NAV(G, n):  # NA’V — Transición (tender ΔNFR → νf con pequeño jitter)
-    nd = G.nodes[n]
-    dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
-    vf = _get_attr(nd, ALIAS_VF, 0.0)
-    gf = G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+
+def _op_NAV(node: NodoProtocol) -> None:  # NA’V — Transición
+    dnfr = node.dnfr
+    vf = node.vf
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
     eta = float(gf.get("NAV_eta", 0.5))
-    strict = bool(G.graph.get("NAV_STRICT", False))
+    strict = bool(node.graph.get("NAV_STRICT", False))
     if strict:
         base = vf
     else:
@@ -194,26 +179,23 @@ def op_NAV(G, n):  # NA’V — Transición (tender ΔNFR → νf con pequeño j
         target = sign * vf
         base = (1.0 - eta) * dnfr + eta * target
     j = float(gf.get("NAV_jitter", 0.05))
-    if bool(G.graph.get("NAV_RANDOM", True)):
-        # jitter uniforme en [-j, j] con semilla reproducible
-        base_seed = int(G.graph.get("RANDOM_SEED", 0))
-        step_idx = len(G.graph.get("history", {}).get("C_steps", []))
-        rnd = random.Random(base_seed + step_idx * 1000003 + _node_offset(G, n) % 1009)
+    if bool(node.graph.get("NAV_RANDOM", True)):
+        base_seed = int(node.graph.get("RANDOM_SEED", 0))
+        step_idx = len(node.graph.get("history", {}).get("C_steps", []))
+        rnd = random.Random(base_seed + step_idx * 1000003 + node.offset() % 1009)
         jitter = j * (2.0 * rnd.random() - 1.0)
     else:
-        # comportamiento determinista (compatibilidad previa)
         jitter = j * (1 if base >= 0 else -1)
-    _set_attr(nd, ALIAS_DNFR, base + jitter)
+    node.dnfr = base + jitter
 
-def op_REMESH(G, n):  # RE’MESH — se realiza a escala de red (no-op local con aviso)
-    # Loguea solo 1 vez por paso para no spamear
-    step_idx = len(G.graph.get("history", {}).get("C_steps", []))
-    last_warn = G.graph.get("_remesh_warn_step", None)
+
+def _op_REMESH(node: NodoProtocol) -> None:  # RE’MESH — aviso
+    step_idx = len(node.graph.get("history", {}).get("C_steps", []))
+    last_warn = node.graph.get("_remesh_warn_step", None)
     if last_warn != step_idx:
         msg = "RE’MESH es a escala de red. Usa aplicar_remesh_si_estabilizacion_global(G) o aplicar_remesh_red(G)."
-        G.graph.setdefault("history", {}).setdefault("events", []).append(("warn", {"step": step_idx, "node": n, "msg": msg}))
-        G.graph["_remesh_warn_step"] = step_idx
-    # no cambia estado local
+        node.graph.setdefault("history", {}).setdefault("events", []).append(("warn", {"step": step_idx, "node": None, "msg": msg}))
+        node.graph["_remesh_warn_step"] = step_idx
     return
 
 # -------------------------
@@ -221,33 +203,50 @@ def op_REMESH(G, n):  # RE’MESH — se realiza a escala de red (no-op local co
 # -------------------------
 
 _NAME_TO_OP = {
-    "A’L": op_AL, "E’N": op_EN, "I’L": op_IL, "O’Z": op_OZ, "U’M": op_UM,
-    "R’A": op_RA, "SH’A": op_SHA, "VA’L": op_VAL, "NU’L": op_NUL,
-    "T’HOL": op_THOL, "Z’HIR": op_ZHIR, "NA’V": op_NAV, "RE’MESH": op_REMESH,
+    "A’L": _op_AL, "E’N": _op_EN, "I’L": _op_IL, "O’Z": _op_OZ, "U’M": _op_UM,
+    "R’A": _op_RA, "SH’A": _op_SHA, "VA’L": _op_VAL, "NU’L": _op_NUL,
+    "T’HOL": _op_THOL, "Z’HIR": _op_ZHIR, "NA’V": _op_NAV, "RE’MESH": _op_REMESH,
 }
 
 
-def aplicar_glifo(G, n, glifo: str, *, window: Optional[int] = None) -> None:
-    """Aplica un glifo TNFR al nodo `n` con histéresis `window`.
+def _wrap(fn):
+    def inner(obj, n=None):
+        node = obj if n is None else NodoNX(obj, n)
+        return fn(node)
+    return inner
 
-    Los 13 glifos implementan reorganizadores canónicos:
-      A’L (emisión), E’N (recepción), I’L (coherencia), O’Z (disonancia),
-      U’M (acoplamiento), R’A (resonancia), SH’A (silencio), VA’L (expansión),
-      NU’L (contracción), T’HOL (autoorganización), Z’HIR (mutación),
-      NA’V (transición), RE’MESH (recursividad).
+op_AL = _wrap(_op_AL)
+op_EN = _wrap(_op_EN)
+op_IL = _wrap(_op_IL)
+op_OZ = _wrap(_op_OZ)
+op_UM = _wrap(_op_UM)
+op_RA = _wrap(_op_RA)
+op_SHA = _wrap(_op_SHA)
+op_VAL = _wrap(_op_VAL)
+op_NUL = _wrap(_op_NUL)
+op_THOL = _wrap(_op_THOL)
+op_ZHIR = _wrap(_op_ZHIR)
+op_NAV = _wrap(_op_NAV)
+op_REMESH = _wrap(_op_REMESH)
 
-    Relación con la gramática: la selección previa debe pasar por
-    `enforce_canonical_grammar` (grammar.py) para respetar compatibilidades,
-    precondición O’Z→Z’HIR y cierres T’HOL[...].
-    """
+
+def aplicar_glifo_obj(node: NodoProtocol, glifo: str, *, window: Optional[int] = None) -> None:
+    """Aplica ``glifo`` a un objeto que cumple :class:`NodoProtocol`."""
+
     glifo = str(glifo)
     op = _NAME_TO_OP.get(glifo)
     if not op:
         return
     if window is None:
-        window = int(G.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS["GLYPH_HYSTERESIS_WINDOW"]))
-    push_glifo(G.nodes[n], glifo, window)
-    op(G, n)
+        window = int(node.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS["GLYPH_HYSTERESIS_WINDOW"]))
+    node.push_glifo(glifo, window)
+    op(node)
+
+
+def aplicar_glifo(G, n, glifo: str, *, window: Optional[int] = None) -> None:
+    """Adaptador para operar sobre grafos ``networkx``."""
+    node = NodoNX(G, n)
+    aplicar_glifo_obj(node, glifo, window=window)
 
 
 # -------------------------
