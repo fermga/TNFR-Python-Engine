@@ -10,14 +10,14 @@ import math
 import statistics as st
 
 from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
-from .helpers import _get_attr, list_mean, register_callback, angle_diff
+from .helpers import _get_attr, list_mean, register_callback, angle_diff, ensure_history
 
 # -------------------------
 # Observador estándar Γ(R)
 # -------------------------
 def _std_log(G, kind: str, ctx: dict):
     """Guarda eventos compactos en history['events']."""
-    h = G.graph.setdefault("history", {})
+    h = ensure_history(G)
     h.setdefault("events", []).append((kind, dict(ctx)))
 
 def std_before(G, ctx):
