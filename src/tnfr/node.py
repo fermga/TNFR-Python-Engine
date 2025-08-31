@@ -143,7 +143,7 @@ class NodoTNFR:
         return 0
 
     def all_nodes(self) -> Iterable["NodoTNFR"]:
-        return list(getattr(self.graph, "_all_nodes", [self]))
+        return list(self.graph.get("_all_nodes", [self]))
 
     def aplicar_glifo(self, glifo: str, window: Optional[int] = None) -> None:
         from .operators import aplicar_glifo_obj
