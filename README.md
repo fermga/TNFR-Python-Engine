@@ -16,7 +16,7 @@ In practical terms, `tnfr` lets you:
 * **Measure** global coherence C(t), nodal gradient ΔNFR, and the **Sense Index** (Si).
 * **Visualize** states and trajectories (coupling matrices, C(t) curves, graphs).
 
-> A form emerges and persists when **internal reorganization** (ΔNFR) **resonates** with the node’s **frequency** (νf).
+A form emerges and persists when **internal reorganization** (ΔNFR) **resonates** with the node’s **frequency** (νf).
 
 ---
 
