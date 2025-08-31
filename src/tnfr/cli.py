@@ -17,6 +17,7 @@ from .metrics import (
 )
 from .trace import register_trace
 from .program import play, seq, block, wait, target
+from .types import Glyph
 from .dynamics import step, _update_history, default_glyph_selector, parametric_glyph_selector, validate_canon
 from .gamma import GAMMA_REGISTRY
 from .scenarios import build_graph
@@ -226,7 +227,14 @@ def cmd_sequence(args: argparse.Namespace) -> int:
     elif args.sequence_file:
         program = _load_sequence(args.sequence_file)
     else:
-        program = seq("A’L", "E’N", "I’L", block("O’Z", "Z’HIR", "I’L", repeat=1), "R’A", "SH’A")
+        program = seq(
+            Glyph.AL,
+            Glyph.EN,
+            Glyph.IL,
+            block(Glyph.OZ, Glyph.ZHIR, Glyph.IL, repeat=1),
+            Glyph.RA,
+            Glyph.SHA,
+        )
 
     play(G, program)
 

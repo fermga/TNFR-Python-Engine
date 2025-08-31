@@ -2,6 +2,7 @@ import pytest
 import networkx as nx
 from tnfr.node import NodoTNFR
 from tnfr.operators import op_EN
+from tnfr.types import Glyph
 
 from tnfr.dynamics import default_compute_delta_nfr, update_epi_via_nodal_equation
 
@@ -45,7 +46,7 @@ def test_op_en_sets_epi_kind_on_isolated_node():
     node = NodoTNFR(EPI=1.0)
     op_EN(node)
     assert node.EPI == 1.0
-    assert node.epi_kind == "E’N"
+    assert node.epi_kind == Glyph.EN.value
 
 
 def test_aplicar_glifo_invalid_glifo_raises_and_logs():

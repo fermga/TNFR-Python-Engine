@@ -11,6 +11,7 @@ from tnfr.constants import inject_defaults, DEFAULTS
 from tnfr.scenarios import build_graph
 from tnfr.dynamics import step, _update_history
 from tnfr.operators import aplicar_glifo, aplicar_remesh_si_estabilizacion_global
+from tnfr.types import Glyph
 
 
 @pytest.fixture
@@ -48,12 +49,12 @@ def test_conservation_under_IL_SHA(G_small):
 
     for _ in range(5):
         for n in G_small.nodes():
-            aplicar_glifo(G_small, n, "I’L", window=1)
+            aplicar_glifo(G_small, n, Glyph.IL, window=1)
     epi1 = {n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()}
 
     for _ in range(5):
         for n in G_small.nodes():
-            aplicar_glifo(G_small, n, "SH’A", window=1)
+            aplicar_glifo(G_small, n, Glyph.SHA, window=1)
     epi2 = {n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()}
 
     for n in G_small.nodes():
