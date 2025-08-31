@@ -831,8 +831,10 @@ def _update_history(G) -> None:
     stables = 0
     total = max(1, G.number_of_nodes())
     dt = float(G.graph.get("DT", DEFAULTS.get("DT", 1.0))) or 1.0
-    delta_si_acc = []
-    B_acc = []
+    delta_si_sum = 0.0
+    delta_si_count = 0
+    B_sum = 0.0
+    B_count = 0
     for n, nd in G.nodes(data=True):
         if abs(_get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr and abs(_get_attr(nd, ALIAS_dEPI, 0.0)) <= eps_depi:
             stables += 1
@@ -843,7 +845,8 @@ def _update_history(G) -> None:
         dSi = Si_curr - Si_prev
         nd["_prev_Si"] = Si_curr
         _set_attr(nd, ALIAS_dSI, dSi)
-        delta_si_acc.append(dSi)
+        delta_si_sum += dSi
+        delta_si_count += 1
 
         # Bifurcación B = ∂²νf/∂t²
         vf_curr = _get_attr(nd, ALIAS_VF, 0.0)
@@ -855,11 +858,12 @@ def _update_history(G) -> None:
         nd["_prev_dvf"] = dvf_dt
         _set_attr(nd, ALIAS_dVF, dvf_dt)
         _set_attr(nd, ALIAS_D2VF, B)
-        B_acc.append(B)
+        B_sum += B
+        B_count += 1
 
     hist["stable_frac"].append(stables/total)
-    hist["delta_Si"].append(list_mean(delta_si_acc, 0.0))
-    hist["B"].append(list_mean(B_acc, 0.0))
+    hist["delta_Si"].append(delta_si_sum / delta_si_count if delta_si_count else 0.0)
+    hist["B"].append(B_sum / B_count if B_count else 0.0)
     try:
         _update_phase_sync(G, hist)
         _update_sigma(G, hist)
