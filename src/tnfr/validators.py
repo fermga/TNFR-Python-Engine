@@ -1,7 +1,6 @@
 """Validadores de invariantes TNFR."""
 
 from __future__ import annotations
-from typing import Iterable
 
 from .constants import ALIAS_EPI, ALIAS_VF, DEFAULTS
 from .helpers import _get_attr
