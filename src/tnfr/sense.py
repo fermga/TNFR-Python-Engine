@@ -3,7 +3,7 @@ from typing import Dict, Any, List, Tuple
 import math
 from collections import Counter
 
-from .constants import DEFAULTS, ALIAS_SI, ALIAS_EPI
+from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
 from .helpers import _get_attr, clamp01, register_callback, ensure_history, last_glifo
 
 # -------------------------
@@ -26,17 +26,6 @@ GLYPHS_CANONICAL: List[str] = [
 ]
 
 _SIGMA_ANGLES: Dict[str, float] = {g: (2.0*math.pi * i / len(GLYPHS_CANONICAL)) for i, g in enumerate(GLYPHS_CANONICAL)}
-
-# -------------------------
-# Config por defecto
-# -------------------------
-DEFAULTS.setdefault("SIGMA", {
-    "enabled": True,
-    "weight": "Si",      # "Si" | "EPI" | "1"
-    "smooth": 0.0,        # EMA sobre el vector global (0=off)
-    "history_key": "sigma_global",   # dónde guardar en G.graph['history']
-    "per_node": False,    # si True, guarda trayectoria σ por nodo (más pesado)
-})
 
 # -------------------------
 # Utilidades básicas
@@ -70,7 +59,7 @@ def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] 
     g = last_glifo(nd)
     if g is None:
         return None
-    w = _weight(G, n, weight_mode or G.graph.get("SIGMA", DEFAULTS["SIGMA"]).get("weight", "Si"))
+    w = _weight(G, n, weight_mode or G.graph.get("SIGMA", SIGMA).get("weight", "Si"))
     z = glyph_unit(g) * w
     x, y = z.real, z.imag
     mag = math.hypot(x, y)
@@ -89,7 +78,7 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
     **recorrido glífico**; arg(σ) indica la **dirección funcional** dominante
     (p. ej., torno a I’L/RA para consolidación/distribución, O’Z/Z’HIR para cambio).
     """
-    cfg = G.graph.get("SIGMA", DEFAULTS["SIGMA"])
+    cfg = G.graph.get("SIGMA", SIGMA)
     weight_mode = weight_mode or cfg.get("weight", "Si")
     acc = complex(0.0, 0.0)
     cnt = 0
@@ -112,7 +101,7 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
 # -------------------------
 
 def push_sigma_snapshot(G, t: float | None = None) -> None:
-    cfg = G.graph.get("SIGMA", DEFAULTS["SIGMA"])
+    cfg = G.graph.get("SIGMA", SIGMA)
     if not cfg.get("enabled", True):
         return
     hist = ensure_history(G)
@@ -169,7 +158,7 @@ def register_sigma_callback(G) -> None:
 # -------------------------
 
 def sigma_series(G, key: str | None = None) -> Dict[str, List[float]]:
-    cfg = G.graph.get("SIGMA", DEFAULTS["SIGMA"])
+    cfg = G.graph.get("SIGMA", SIGMA)
     key = key or cfg.get("history_key", "sigma_global")
     hist = G.graph.get("history", {})
     xs = hist.get(key, [])
