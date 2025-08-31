@@ -6,7 +6,6 @@ from .constants import (
     ALIAS_SI, ALIAS_DNFR, ALIAS_EPI,
 )
 from .helpers import _get_attr, clamp01, reciente_glifo
-from collections import deque
 
 # Glifos nominales (para evitar typos)
 AL = "A’L"; EN = "E’N"; IL = "I’L"; OZ = "O’Z"; UM = "U’M"; RA = "R’A"; SHA = "SH’A"; VAL = "VA’L"; NUL = "NU’L"; THOL = "T’HOL"; ZHIR = "Z’HIR"; NAV = "NA’V"; REMESH = "RE’MESH"
