@@ -176,14 +176,13 @@ def _set_attr_str(d, aliases, value: str) -> None:
 
 def _recompute_abs_max(G, aliases):
     """Recalcula y retorna ``(max_val, node)`` para ``aliases``."""
-    max_val = 0.0
-    max_node = None
-    for m in G.nodes():
-        v = abs(_get_attr(G.nodes[m], aliases, 0.0))
-        if v >= max_val:
-            max_val = v
-            max_node = m
-    return max_val, max_node
+    node = max(
+        G.nodes(),
+        key=lambda m: abs(_get_attr(G.nodes[m], aliases, 0.0)),
+        default=None,
+    )
+    max_val = abs(_get_attr(G.nodes[node], aliases, 0.0)) if node is not None else 0.0
+    return max_val, node
 
 
 def _update_cached_abs_max(G, aliases, n, value, *, key: str) -> None:
