@@ -62,6 +62,10 @@ def _weight(G, n, mode: str) -> float:
     return 1.0
 
 
+def _sigma_cfg(G):
+    return G.graph.get("SIGMA", SIGMA)
+
+
     
 # -------------------------
 # σ por nodo y σ global
@@ -72,7 +76,8 @@ def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] 
     g = last_glifo(nd)
     if g is None:
         return None
-    w = _weight(G, n, weight_mode or G.graph.get("SIGMA", SIGMA).get("weight", "Si"))
+    cfg = _sigma_cfg(G)
+    w = _weight(G, n, weight_mode or cfg.get("weight", "Si"))
     z = glyph_unit(g) * w
     x, y = z.real, z.imag
     mag = math.hypot(x, y)
@@ -94,7 +99,7 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
     Si ningún nodo posee un glifo registrado, retorna el vector nulo
     ``{"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}``.
     """
-    cfg = G.graph.get("SIGMA", SIGMA)
+    cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
     acc = complex(0.0, 0.0)
     cnt = 0
@@ -119,7 +124,7 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
 # -------------------------
 
 def push_sigma_snapshot(G, t: float | None = None) -> None:
-    cfg = G.graph.get("SIGMA", SIGMA)
+    cfg = _sigma_cfg(G)
     if not cfg.get("enabled", True):
         return
     hist = ensure_history(G)
@@ -171,7 +176,7 @@ def register_sigma_callback(G) -> None:
 # -------------------------
 
 def sigma_series(G, key: str | None = None) -> Dict[str, List[float]]:
-    cfg = G.graph.get("SIGMA", SIGMA)
+    cfg = _sigma_cfg(G)
     key = key or cfg.get("history_key", "sigma_global")
     hist = G.graph.get("history", {})
     xs = hist.get(key, [])
