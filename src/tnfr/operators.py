@@ -4,6 +4,7 @@ from typing import Dict, Any, Optional, Iterable
 import math
 import random
 import hashlib
+import weakref
 import networkx as nx
 from networkx.algorithms import community as nx_comm
 
@@ -65,21 +66,21 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``."""
 
     base_seed = int(node.graph.get("RANDOM_SEED", 0))
-    cache = node.graph.setdefault("_rnd_cache", {})
+    cache = node.graph.setdefault("_rnd_cache", weakref.WeakKeyDictionary())
 
     if hasattr(node, "n") and hasattr(node, "G"):
-        key = _node_offset(node.G, node.n)
+        seed_key = _node_offset(node.G, node.n)
     else:
         uid = getattr(node, "_noise_uid", None)
         if uid is None:
             uid = id(node)
             setattr(node, "_noise_uid", uid)
-        key = int(uid)
+        seed_key = int(uid)
 
-    rnd = cache.get(key)
+    rnd = cache.get(node)
     if rnd is None:
-        rnd = random.Random(base_seed + key)
-        cache[key] = rnd
+        rnd = random.Random(base_seed + seed_key)
+        cache[node] = rnd
 
     return amplitude * (2.0 * rnd.random() - 1.0)
 
