@@ -17,7 +17,7 @@ from collections import deque
 import networkx as nx
 
 from .observers import sincronía_fase, carga_glifica, orden_kuramoto
-from .sense import sigma_vector_global
+from .sense import sigma_vector
 from .operators import aplicar_remesh_si_estabilizacion_global
 from .grammar import (
     enforce_canonical_grammar,
@@ -836,7 +836,7 @@ def _update_sigma(G, hist) -> None:
     hist["glyph_load_estab"].append(gl.get("_estabilizadores", 0.0))
     hist["glyph_load_disr"].append(gl.get("_disruptivos", 0.0))
 
-    sig = sigma_vector_global(gl)
+    sig = sigma_vector(gl)
     hist.setdefault("sense_sigma_x", []).append(sig.get("x", 0.0))
     hist.setdefault("sense_sigma_y", []).append(sig.get("y", 0.0))
     hist.setdefault("sense_sigma_mag", []).append(sig.get("mag", 0.0))
