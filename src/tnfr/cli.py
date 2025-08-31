@@ -124,7 +124,7 @@ def _load_sequence(path: Path) -> List[Any]:
         "THOL": lambda spec: block(
             *parse_tokens(spec.get("body", [])),
             repeat=int(spec.get("repeat", 1)),
-            close=spec.get("close"),
+            close=Glyph(spec.get("close")) if isinstance(spec.get("close"), str) else spec.get("close"),
         ),
     }
 
