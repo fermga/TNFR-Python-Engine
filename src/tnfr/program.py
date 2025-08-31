@@ -84,7 +84,7 @@ def _advance(G, step_fn: Optional[AdvanceFn] = None):
 # Compilación de secuencia → lista de operaciones atómicas
 # ---------------------
 
-def _flatten(seq: Sequence[Token], current_target: Optional[TARGET] = None) -> List[Tuple[str, Any]]:
+def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
     """Devuelve lista de operaciones (op, payload).
     op ∈ { 'GLYPH', 'WAIT', 'TARGET' }.
     """
@@ -98,7 +98,7 @@ def _flatten(seq: Sequence[Token], current_target: Optional[TARGET] = None) -> L
             # abrir bloque T’HOL
             ops.append(("GLYPH", "T’HOL"))
             for _ in range(max(1, int(item.repeat))):
-                ops.extend(_flatten(item.body, current_target))
+                ops.extend(_flatten(item.body))
             # cierre explícito si se pidió; si no, la gramática puede cerrarlo
             if item.force_close in ("SH’A", "NU’L"):
                 ops.append(("GLYPH", item.force_close))
