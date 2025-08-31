@@ -21,8 +21,11 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Intended Audience :: Science/Research",
-  "Topic :: Scientific/Engineering :: Artificial Intelligence",
-  "Topic :: Scientific/Engineering :: Information Analysis"
+  "Topic :: Scientific/Engineering :: Dynamics",
+  "Topic :: Scientific/Engineering :: Structure",
+  "Topic :: Scientific/Engineering :: Complexity",
+  "Topic :: Scientific/Engineering :: Fractals",
+  "Topic :: Scientific/Engineering :: Resonance"
 ]
 
 dependencies = ["networkx>=2.6"]
@@ -39,6 +42,7 @@ GPT = "https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-teoria-de-l
 [build-system]
 requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
+
 
 
 
