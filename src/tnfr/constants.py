@@ -54,7 +54,7 @@ DEFAULTS: Dict[str, Any] = {
     # Índice de sentido Si = α·νf_norm + β·(1 - disp_fase) + γ·(1 - |ΔNFR|/max)
     "SI_WEIGHTS": {"alpha": 0.34, "beta": 0.33, "gamma": 0.33},
 
-    # Coordinación de fase (U’M) global/vecinal por paso
+    # Coordinación de fase (UM) global/vecinal por paso
     "PHASE_K_GLOBAL": 0.05,
     "PHASE_K_LOCAL": 0.15,
     "PHASE_HISTORY_MAXLEN": 50,   # longitud máx. para series de fase
@@ -74,11 +74,11 @@ DEFAULTS: Dict[str, Any] = {
 
     "STOP_EARLY": {"enabled": False, "window": 25, "fraction": 0.90},
 
-    # Criterios de estabilidad (para activar RE’MESH de red)
+    # Criterios de estabilidad (para activar REMESH de red)
     "EPS_DNFR_STABLE": 1e-3,
     "EPS_DEPI_STABLE": 1e-3,
     "FRACTION_STABLE_REMESH": 0.80,   # fracción de nodos estables requerida
-    "REMESH_COOLDOWN_VENTANA": 20,    # pasos mínimos entre RE’MESH
+    "REMESH_COOLDOWN_VENTANA": 20,    # pasos mínimos entre REMESH
     "REMESH_COOLDOWN_TS": 0.0,        # cooldown adicional por tiempo simulado
     # Gating adicional basado en observadores (conmutador + ventana)
     "REMESH_REQUIRE_STABILITY": True,  # si True, exige ventana de estabilidad multi-métrica
@@ -88,11 +88,11 @@ DEFAULTS: Dict[str, Any] = {
     "REMESH_MIN_SIGMA_MAG": 0.50,      # magnitud mínima de σ en ventana
     "REMESH_MIN_KURAMOTO_R": 0.80,    # R de Kuramoto mínimo en ventana
     "REMESH_MIN_SI_HI_FRAC": 0.50,    # fracción mínima de nodos con Si alto
-    "REMESH_LOG_EVENTS": True,         # guarda eventos y metadatos del RE’MESH
+    "REMESH_LOG_EVENTS": True,         # guarda eventos y metadatos del REMESH
     "REMESH_MODE": "knn",            # modo de remallado topológico
     "REMESH_COMMUNITY_K": 2,          # conexiones por comunidad
 
-    # RE’MESH: memoria τ y mezcla α (global/local)
+    # REMESH: memoria τ y mezcla α (global/local)
     "REMESH_TAU_GLOBAL": 8,           # pasos hacia atrás (escala global)
     "REMESH_TAU_LOCAL": 4,            # pasos hacia atrás (escala local)
     "REMESH_ALPHA": 0.5,              # mezcla con pasado
@@ -107,7 +107,7 @@ DEFAULTS: Dict[str, Any] = {
     # Histéresis glífica
     "GLYPH_HYSTERESIS_WINDOW": 7,
 
-    # Lags máximos sin emisión (A’L) y recepción (E’N)
+    # Lags máximos sin emisión (AL) y recepción (EN)
     "AL_MAX_LAG": 5,
     "EN_MAX_LAG": 3,
 
@@ -126,44 +126,44 @@ DEFAULTS: Dict[str, Any] = {
 
     # Factores suaves por glifo (operadores)
     "GLYPH_FACTORS": {
-        "AL_boost": 0.05,   # A’L — pequeña emisión
-        "EN_mix": 0.25,     # E’N — mezcla con vecindad
-        "IL_dnfr_factor": 0.7,  # I’L — reduce ΔNFR
-        "OZ_dnfr_factor": 1.3,  # O’Z — aumenta ΔNFR
-        "UM_theta_push": 0.25,  # U’M — empuje adicional de fase local
-        "RA_epi_diff": 0.15,    # R’A — difusión EPI
-        "SHA_vf_factor": 0.85,  # SH’A — baja νf
-        "VAL_scale": 1.15,      # VA’L — expande EPI
-        "NUL_scale": 0.85,      # NU’L — contrae EPI
-        "THOL_accel": 0.10,     # T’HOL — acelera (seg. deriv.) si hay umbral
-        "ZHIR_theta_shift": 1.57079632679,  # Z’HIR — desplazamiento ~π/2
-        "NAV_jitter": 0.05,     # NA’V — pequeña inestabilidad creativa
-        "NAV_eta": 0.5,         # NA’V — peso de convergencia hacia νf
-        "REMESH_alpha": 0.5,    # RE’MESH — mezcla si no se usa REMESH_ALPHA
+        "AL_boost": 0.05,   # AL — pequeña emisión
+        "EN_mix": 0.25,     # EN — mezcla con vecindad
+        "IL_dnfr_factor": 0.7,  # IL — reduce ΔNFR
+        "OZ_dnfr_factor": 1.3,  # OZ — aumenta ΔNFR
+        "UM_theta_push": 0.25,  # UM — empuje adicional de fase local
+        "RA_epi_diff": 0.15,    # RA — difusión EPI
+        "SHA_vf_factor": 0.85,  # SHA — baja νf
+        "VAL_scale": 1.15,      # VAL — expande EPI
+        "NUL_scale": 0.85,      # NUL — contrae EPI
+        "THOL_accel": 0.10,     # THOL — acelera (seg. deriv.) si hay umbral
+        "ZHIR_theta_shift": 1.57079632679,  # ZHIR — desplazamiento ~π/2
+        "NAV_jitter": 0.05,     # NAV — pequeña inestabilidad creativa
+        "NAV_eta": 0.5,         # NAV — peso de convergencia hacia νf
+        "REMESH_alpha": 0.5,    # REMESH — mezcla si no se usa REMESH_ALPHA
     },
 
     # Umbrales para el selector glífico por defecto
     "GLYPH_THRESHOLDS": {"hi": 0.66, "lo": 0.33, "dnfr": 1e-3},
 
-    # Comportamiento NA’V
+    # Comportamiento NAV
     "NAV_RANDOM": True,   # si True, usa jitter aleatorio en [-j, j]; si False, jitter determinista por signo
     "NAV_STRICT": False,  # si True, fuerza ΔNFR ← νf (sin mezcla)
     "RANDOM_SEED": 0,     # semilla base para reproducibilidad del jitter
 
-    # Modo ruido para O’Z
+    # Modo ruido para OZ
     "OZ_NOISE_MODE": False,  # si True, añade ruido aditivo en ΔNFR
     "OZ_SIGMA": 0.1,         # amplitud del ruido uniforme [-σ, σ]
 
     # Gramática glífica (suave): evita repetir ciertos glifos salvo que el campo lo exija
     "GRAMMAR": {
         "window": 3,                       # cuántos pasos recientes miramos por nodo
-        "avoid_repeats": ["Z’HIR", "O’Z", "T’HOL"],
+        "avoid_repeats": ["ZHIR", "OZ", "THOL"],
         "force_dnfr": 0.60,                # si |ΔNFR|_norm ≥ este valor, se permite repetir
         "force_accel": 0.60,               # o si |accel|_norm ≥ este valor
         "fallbacks": {                     # a qué glifo caer si se bloquea el candidato
-            "Z’HIR": "NA’V",
-            "O’Z":   "Z’HIR",
-            "T’HOL": "NA’V"
+            "ZHIR": "NAV",
+            "OZ":   "ZHIR",
+            "THOL": "NAV"
         }
     },
 
@@ -213,12 +213,12 @@ METRICS = MappingProxyType(DEFAULTS.setdefault("METRICS", {
 # Gramática glífica canónica
 GRAMMAR_CANON = MappingProxyType(DEFAULTS.setdefault("GRAMMAR_CANON", {
     "enabled": True,                # activar la gramática canónica
-    "zhir_requires_oz_window": 3,   # cuántos pasos atrás buscamos O’Z
-    "zhir_dnfr_min": 0.05,          # si |ΔNFR|_norm < este valor, no permitimos Z’HIR sin O’Z
+    "zhir_requires_oz_window": 3,   # cuántos pasos atrás buscamos OZ
+    "zhir_dnfr_min": 0.05,          # si |ΔNFR|_norm < este valor, no permitimos ZHIR sin OZ
     "thol_min_len": 2,
     "thol_max_len": 6,
-    "thol_close_dnfr": 0.15,        # si el campo calma, cerramos con SH’A/NU’L
-    "si_high": 0.66,                # umbral para elegir NU’L vs SH’A al cerrar
+    "thol_close_dnfr": 0.15,        # si el campo calma, cerramos con SHA/NUL
+    "si_high": 0.66,                # umbral para elegir NUL vs SHA al cerrar
 }))
 
 # --- Coherencia (W) ---

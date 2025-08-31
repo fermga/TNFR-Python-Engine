@@ -11,6 +11,10 @@ import statistics as st
 from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
 from .helpers import _get_attr, list_mean, register_callback, angle_diff, ensure_history, count_glyphs
 
+# Clasificaciones funcionales de glifos
+ESTABILIZADORES = ["IL", "RA", "UM", "SHA"]
+DISRUPTIVOS = ["OZ", "ZHIR", "NAV", "THOL"]
+
 # -------------------------
 # Observador estándar Γ(R)
 # -------------------------
@@ -91,21 +95,18 @@ def carga_glifica(G, window: int | None = None) -> dict:
     dist = {k: v / count for k, v in total.items()}
 
     # Agregados conceptuales (puedes ajustar categorías)
-    # Glifos que consolidan la coherencia nodal: I’L estabiliza el flujo (cap. 6),
-    # R’A propaga la resonancia (cap. 9), U’M acopla nodos en fase (cap. 8)
-    # y SH’A ofrece silencio regenerativo (cap. 10). Véase manual TNFR,
+    # Glifos que consolidan la coherencia nodal: IL estabiliza el flujo (cap. 6),
+    # RA propaga la resonancia (cap. 9), UM acopla nodos en fase (cap. 8)
+    # y SHA ofrece silencio regenerativo (cap. 10). Véase manual TNFR,
     # sec. 18.19 "Análisis morfosintáctico" para la taxonomía funcional.
-    estabilizadores = ["I’L", "R’A", "U’M", "SH’A"]
-
-    # Glifos que perturban o reconfiguran la red: O’Z introduce disonancia
-    # evolutiva (cap. 7), Z’HIR muta la estructura (cap. 14), NA’V marca
-    # el tránsito entre estados (cap. 15) y T’HOL autoorganiza un nuevo
+    # Glifos que perturban o reconfiguran la red: OZ introduce disonancia
+    # evolutiva (cap. 7), ZHIR muta la estructura (cap. 14), NAV marca
+    # el tránsito entre estados (cap. 15) y THOL autoorganiza un nuevo
     # orden (cap. 13). Véase manual TNFR, sec. 18.19 para esta clasificación.
-    disruptivos = ["O’Z", "Z’HIR", "NA’V", "T’HOL"]
 
 
-    dist["_estabilizadores"] = sum(dist.get(k, 0.0) for k in estabilizadores)
-    dist["_disruptivos"] = sum(dist.get(k, 0.0) for k in disruptivos)
+    dist["_estabilizadores"] = sum(dist.get(k, 0.0) for k in ESTABILIZADORES)
+    dist["_disruptivos"] = sum(dist.get(k, 0.0) for k in DISRUPTIVOS)
     dist["_count"] = count
     return dist
 
@@ -120,14 +121,14 @@ def sigma_vector(G, window: int | None = None) -> dict:
     # Mapeo polar de glifos principales en el plano de sentido
     # (ordenado estabilización→expansión→acoplamiento→silencio→disonancia→mutación→transición→autoorg.)
     angles = {
-        "I’L": 0.0,
-        "R’A": math.pi/4,
-        "U’M": math.pi/2,
-        "SH’A": 3*math.pi/4,
-        "O’Z": math.pi,
-        "Z’HIR": 5*math.pi/4,
-        "NA’V": 3*math.pi/2,
-        "T’HOL": 7*math.pi/4,
+        "IL": 0.0,
+        "RA": math.pi/4,
+        "UM": math.pi/2,
+        "SHA": 3*math.pi/4,
+        "OZ": math.pi,
+        "ZHIR": 5*math.pi/4,
+        "NAV": 3*math.pi/2,
+        "THOL": 7*math.pi/4,
     }
     # Normaliza solo sobre glifos mapeados
     total = sum(dist.get(k, 0.0) for k in angles.keys())

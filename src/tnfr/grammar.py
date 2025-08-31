@@ -55,7 +55,7 @@ CANON_FALLBACK: Dict[str, str] = {
 }
 
 # -------------------------
-# Cierres T’HOL y precondiciones Z’HIR
+# Cierres THOL y precondiciones ZHIR
 # -------------------------
 
 def _dnfr_norm(G, nd) -> float:
@@ -77,8 +77,8 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
 
     Reglas clave:
       - Compatibilidades de transición glífica (recorrido TNFR).
-      - O’Z→Z’HIR: la mutación requiere disonancia reciente o |ΔNFR| alto.
-      - T’HOL[...]: obliga cierre con SH’A o NU’L cuando el campo se estabiliza
+      - OZ→ZHIR: la mutación requiere disonancia reciente o |ΔNFR| alto.
+      - THOL[...]: obliga cierre con SHA o NUL cuando el campo se estabiliza
         o se alcanza el largo del bloque; mantiene estado por nodo.
 
     Devuelve el glifo efectivo a aplicar.
@@ -91,14 +91,14 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
     if cand not in CANON_COMPAT:
         return cand
 
-    # 1) Precondición O’Z→Z’HIR: mutación requiere disonancia reciente o campo fuerte
+    # 1) Precondición OZ→ZHIR: mutación requiere disonancia reciente o campo fuerte
     if cand == ZHIR:
         win = int(cfg.get("zhir_requires_oz_window", 3))
         dn_min = float(cfg.get("zhir_dnfr_min", 0.05))
         if not reciente_glifo(nd, OZ, win) and _dnfr_norm(G, nd) < dn_min:
-            cand = OZ  # forzamos paso por O’Z
+            cand = OZ  # forzamos paso por OZ
 
-    # 2) Si estamos dentro de T’HOL, control de cierre obligado
+    # 2) Si estamos dentro de THOL, control de cierre obligado
     if st.get("thol_open", False):
         st["thol_len"] = int(st.get("thol_len", 0))
         st["thol_len"] += 1

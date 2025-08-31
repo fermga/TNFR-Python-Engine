@@ -67,7 +67,7 @@ def _update_tg(G, hist, dt):
             continue
 
         n_total += 1
-        if g == "SH’A":
+        if g == "SHA":
             n_latent += 1
 
         counts[g] += 1
@@ -127,11 +127,11 @@ def _update_epi_support(G, hist, t):
 def _update_morph_metrics(G, hist, counts, t):
     """Registra métricas morfosintácticas basadas en conteos glíficos."""
     total = max(1, sum(counts.values()))
-    id_val = counts.get("O’Z", 0) / total
-    cm_val = (counts.get("Z’HIR", 0) + counts.get("NA’V", 0)) / total
-    ne_val = (counts.get("I’L", 0) + counts.get("T’HOL", 0)) / total
-    remesh = counts.get("RE’MESH", 0)
-    pp_val = 0.0 if remesh == 0 else counts["SH’A"] / remesh
+    id_val = counts.get("OZ", 0) / total
+    cm_val = (counts.get("ZHIR", 0) + counts.get("NAV", 0)) / total
+    ne_val = (counts.get("IL", 0) + counts.get("THOL", 0)) / total
+    remesh = counts.get("REMESH", 0)
+    pp_val = 0.0 if remesh == 0 else counts["SHA"] / remesh
     hist.setdefault("morph", []).append({"t": t, "ID": id_val, "CM": cm_val, "NE": ne_val, "PP": pp_val})
 
 
