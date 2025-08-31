@@ -100,7 +100,7 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
         acc += complex(v["x"], v["y"])
         cnt += 1
     if cnt == 0:
-        return {"x": 1.0, "y": 0.0, "mag": 1.0, "angle": 0.0, "n": 0}
+        return {"x": 1.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
     x, y = acc.real / max(1, cnt), acc.imag / max(1, cnt)
     mag = math.hypot(x, y)
     ang = math.atan2(y, x)

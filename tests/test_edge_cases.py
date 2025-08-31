@@ -11,6 +11,15 @@ def test_empty_graph_handling():
     update_epi_via_nodal_equation(G)  # should not raise
 
 
+def test_sigma_vector_global_empty_graph():
+    G = nx.Graph()
+    from tnfr.sense import sigma_vector_global
+
+    sv = sigma_vector_global(G)
+    assert sv["mag"] == 0.0
+    assert sv["n"] == 0
+
+
 def test_update_epi_invalid_dt():
     G = nx.Graph()
     G.add_node(1)
