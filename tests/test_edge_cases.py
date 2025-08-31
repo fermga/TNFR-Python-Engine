@@ -1,6 +1,7 @@
 import pytest
 import networkx as nx
-import pytest
+from tnfr.node import NodoTNFR
+from tnfr.operators import op_EN
 
 from tnfr.dynamics import default_compute_delta_nfr, update_epi_via_nodal_equation
 
@@ -37,3 +38,10 @@ def test_dnfr_weights_normalization():
     assert pytest.approx(weights["phase"], rel=1e-6) == 1/3
     assert pytest.approx(weights["epi"], rel=1e-6) == 1/3
     assert pytest.approx(weights["vf"], rel=1e-6) == 1/3
+
+
+def test_op_en_sets_epi_kind_on_isolated_node():
+    node = NodoTNFR(EPI=1.0)
+    op_EN(node)
+    assert node.EPI == 1.0
+    assert node.epi_kind == "E’N"

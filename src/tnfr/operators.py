@@ -78,6 +78,8 @@ def _op_EN(node: NodoProtocol) -> None:  # E’N — Recepción
     epi = node.EPI
     neigh = list(node.neighbors())
     if not neigh:
+        # Aunque no haya vecinos, etiquetar el nodo con el glifo E’N
+        node.epi_kind = "E’N"
         return
     epi_bar = list_mean(v.EPI for v in neigh)
     node.EPI = (1 - mix) * epi + mix * epi_bar
