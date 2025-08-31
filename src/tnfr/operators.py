@@ -6,8 +6,19 @@ import random
 import hashlib
 import networkx as nx
 
-from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_D2EPI
-from .helpers import _get_attr, _set_attr, clamp, clamp01, list_mean, fase_media, push_glifo, invoke_callbacks
+from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_D2EPI, ALIAS_EPI_KIND
+from .helpers import (
+    _get_attr,
+    _set_attr,
+    _get_attr_str,
+    _set_attr_str,
+    clamp,
+    clamp01,
+    list_mean,
+    fase_media,
+    push_glifo,
+    invoke_callbacks,
+)
 from collections import deque
 
 """
@@ -40,6 +51,7 @@ def op_AL(G, n):  # A’L — Emisión
     nd = G.nodes[n]
     epi = _get_attr(nd, ALIAS_EPI, 0.0)
     _set_attr(nd, ALIAS_EPI, epi + f)
+    _set_attr_str(nd, ALIAS_EPI_KIND, "A’L")
 
 
 def op_EN(G, n):  # E’N — Recepción
@@ -50,6 +62,16 @@ def op_EN(G, n):  # E’N — Recepción
         return  # sin vecinos no hay mezcla
     epi_bar = list_mean(_get_attr(G.nodes[v], ALIAS_EPI, epi) for v in G.neighbors(n))
     _set_attr(nd, ALIAS_EPI, (1 - mix) * epi + mix * epi_bar)
+
+    # Propaga el glifo dominante según |EPI|
+    candidatos = [(abs(epi), _get_attr_str(nd, ALIAS_EPI_KIND, ""))]
+    for v in G.neighbors(n):
+        nd_v = G.nodes[v]
+        epi_v = _get_attr(nd_v, ALIAS_EPI, epi)
+        kind_v = _get_attr_str(nd_v, ALIAS_EPI_KIND, "")
+        candidatos.append((abs(epi_v), kind_v))
+    dom = max(candidatos, key=lambda x: x[0])[1] or "E’N"
+    _set_attr_str(nd, ALIAS_EPI_KIND, dom)
 
 
 def op_IL(G, n):  # I’L — Coherencia (reduce ΔNFR)
@@ -111,6 +133,15 @@ def op_RA(G, n):  # R’A — Resonancia (difusión EPI)
     epi_bar = list_mean(_get_attr(G.nodes[v], ALIAS_EPI, epi) for v in G.neighbors(n))
     _set_attr(nd, ALIAS_EPI, epi + diff * (epi_bar - epi))
 
+    candidatos = [(abs(epi), _get_attr_str(nd, ALIAS_EPI_KIND, ""))]
+    for v in G.neighbors(n):
+        nd_v = G.nodes[v]
+        epi_v = _get_attr(nd_v, ALIAS_EPI, epi)
+        kind_v = _get_attr_str(nd_v, ALIAS_EPI_KIND, "")
+        candidatos.append((abs(epi_v), kind_v))
+    dom = max(candidatos, key=lambda x: x[0])[1] or "R’A"
+    _set_attr_str(nd, ALIAS_EPI_KIND, dom)
+
 
 def op_SHA(G, n):  # SH’A — Silencio (baja νf)
     factor = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("SHA_vf_factor", 0.85))
@@ -124,6 +155,7 @@ def op_VAL(G, n):  # VA’L — Expansión (escala EPI)
     nd = G.nodes[n]
     epi = _get_attr(nd, ALIAS_EPI, 0.0)
     _set_attr(nd, ALIAS_EPI, s * epi)
+    _set_attr_str(nd, ALIAS_EPI_KIND, "VA’L")
 
 
 def op_NUL(G, n):  # NU’L — Contracción (escala EPI)
@@ -131,6 +163,7 @@ def op_NUL(G, n):  # NU’L — Contracción (escala EPI)
     nd = G.nodes[n]
     epi = _get_attr(nd, ALIAS_EPI, 0.0)
     _set_attr(nd, ALIAS_EPI, s * epi)
+    _set_attr_str(nd, ALIAS_EPI_KIND, "NU’L")
 
 
 def op_THOL(G, n):  # T’HOL — Autoorganización (inyecta aceleración)

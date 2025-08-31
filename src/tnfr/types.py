@@ -9,9 +9,10 @@ class NodeState:
     vf: float = 1.0   # νf
     theta: float = 0.0  # θ
     Si: float = 0.5
+    epi_kind: str = ""
     extra: Dict[str, Any] = field(default_factory=dict)
 
     def to_attrs(self) -> Dict[str, Any]:
-        d = {"EPI": self.EPI, "νf": self.vf, "θ": self.theta, "Si": self.Si}
+        d = {"EPI": self.EPI, "νf": self.vf, "θ": self.theta, "Si": self.Si, "EPI_kind": self.epi_kind}
         d.update(self.extra)
         return d

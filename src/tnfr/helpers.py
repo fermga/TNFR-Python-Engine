@@ -14,7 +14,7 @@ try:
 except Exception:  # pragma: no cover
     nx = None  # type: ignore
 
-from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI
+from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_EPI_KIND
 
 # -------------------------
 # Utilidades numéricas
@@ -76,6 +76,24 @@ def _set_attr(d, aliases, value: float) -> None:
             return
     d[next(iter(aliases))] = float(value)
 
+
+def _get_attr_str(d: Dict[str, Any], aliases: Iterable[str], default: str = "") -> str:
+    for k in aliases:
+        if k in d:
+            try:
+                return str(d[k])
+            except Exception:
+                continue
+    return str(default)
+
+
+def _set_attr_str(d, aliases, value: str) -> None:
+    for k in aliases:
+        if k in d:
+            d[k] = str(value)
+            return
+    d[next(iter(aliases))] = str(value)
+
 # -------------------------
 # Estadísticos vecinales
 # -------------------------
@@ -111,14 +129,14 @@ def push_glifo(nd: Dict[str, Any], glifo: str, window: int) -> None:
 
 
 def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
-    """Indica si ``glifo`` apareció en las últimas ``ventana`` emisiones."""
+    """Indica si ``glifo`` apareció en las últimas ``ventana`` emisiones"""
     hist = nd.get("hist_glifos")
-    if not hist:
-        return False
     gl = str(glifo)
     from itertools import islice
-
-    return any(g == gl for g in islice(reversed(hist), ventana))
+    if hist and any(g == gl for g in islice(reversed(hist), ventana)):
+        return True
+    # fallback al glifo dominante actual
+    return _get_attr_str(nd, ALIAS_EPI_KIND, "") == gl
 
 # -------------------------
 # Utilidades de historial global
@@ -131,6 +149,9 @@ def ensure_history(G) -> Dict[str, Any]:
 
 def last_glifo(nd: Dict[str, Any]) -> str | None:
     """Retorna el glifo más reciente del nodo o ``None``."""
+    kind = _get_attr_str(nd, ALIAS_EPI_KIND, "")
+    if kind:
+        return kind
     hist = nd.get("hist_glifos")
     if not hist:
         return None

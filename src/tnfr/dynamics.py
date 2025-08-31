@@ -23,11 +23,12 @@ from .constants import (
     DEFAULTS,
     ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI,
     ALIAS_dEPI, ALIAS_D2EPI, ALIAS_dVF, ALIAS_D2VF, ALIAS_dSI,
+    ALIAS_EPI_KIND,
 )
 from .gamma import eval_gamma
 from .helpers import (
      clamp, clamp01, list_mean, phase_distance,
-     _get_attr, _set_attr, media_vecinal, fase_media,
+     _get_attr, _set_attr, _get_attr_str, _set_attr_str, media_vecinal, fase_media,
      invoke_callbacks, reciente_glifo
 )
 
@@ -239,7 +240,10 @@ def update_epi_via_nodal_equation(
                 dEPI_dt = _f(t_local)
                 epi = epi_i + dt_step * dEPI_dt
 
+            epi_kind = _get_attr_str(nd, ALIAS_EPI_KIND, "")
             _set_attr(nd, ALIAS_EPI, epi)
+            if epi_kind:
+                _set_attr_str(nd, ALIAS_EPI_KIND, epi_kind)
             _set_attr(nd, ALIAS_dEPI, dEPI_dt)
             _set_attr(nd, ALIAS_D2EPI, (dEPI_dt - dEPI_dt_prev) / dt_step if dt_step != 0 else 0.0)
 
