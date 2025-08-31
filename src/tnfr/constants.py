@@ -13,6 +13,8 @@ from typing import Dict, Any
 DEFAULTS: Dict[str, Any] = {
     # Discretización
     "DT": 1.0,
+    "INTEGRATOR_METHOD": "euler",
+    "DT_MIN": 0.1,
 
     # Rango de EPI (estructura primaria)
     "EPI_MIN": -1.0,
