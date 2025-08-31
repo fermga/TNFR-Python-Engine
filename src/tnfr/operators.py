@@ -36,12 +36,27 @@ Nota sobre α (alpha) de RE’MESH: se toma por prioridad de
 """
 
 
+def _ensure_node_offset_map(G) -> Dict[Any, int]:
+    """Return cached deterministic node→index mapping for ``G``.
+
+    The mapping is built once and stored in ``G.graph['_node_offset_map']``.
+    It is rebuilt only if the node count changes.
+    """
+
+    node_count = G.number_of_nodes()
+    mapping = G.graph.get("_node_offset_map")
+    if mapping is None or G.graph.get("_node_offset_count") != node_count:
+        mapping = {
+            node: idx for idx, node in enumerate(sorted(G.nodes(), key=lambda x: str(x)))
+        }
+        G.graph["_node_offset_map"] = mapping
+        G.graph["_node_offset_count"] = node_count
+    return mapping
+
+
 def _node_offset(G, n) -> int:
     """Deterministic node index used for jitter seeds."""
-    mapping = G.graph.get("_node_offset_map")
-    if mapping is None or len(mapping) != G.number_of_nodes():
-        mapping = {node: idx for idx, node in enumerate(sorted(G.nodes(), key=lambda x: str(x)))}
-        G.graph["_node_offset_map"] = mapping
+    mapping = _ensure_node_offset_map(G)
     return int(mapping.get(n, 0))
 
 
@@ -49,7 +64,11 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``."""
     base_seed = int(node.graph.get("RANDOM_SEED", 0))
     step_idx = len(node.graph.get("history", {}).get("C_steps", []))
-    rnd = random.Random(base_seed + step_idx * 1000003 + node.offset() % 1009)
+    G = getattr(node, "G", None)
+    mapping = _ensure_node_offset_map(G) if G is not None else {}
+    node_id = getattr(node, "n", None)
+    offset = mapping.get(node_id, 0)
+    rnd = random.Random(base_seed + step_idx * 1000003 + offset % 1009)
     return amplitude * (2.0 * rnd.random() - 1.0)
 
 # -------------------------
