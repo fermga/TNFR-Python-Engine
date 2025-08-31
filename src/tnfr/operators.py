@@ -106,7 +106,6 @@ def _op_AL(node: NodoProtocol) -> None:  # AL — Emisión
     gf = get_glyph_factors(node)
     f = float(gf.get("AL_boost", 0.05))
     node.EPI = node.EPI + f
-    node.epi_kind = Glyph.AL.value
 
 
 def _op_EN(node: NodoProtocol) -> None:  # EN — Recepción
@@ -188,14 +187,12 @@ def _op_VAL(node: NodoProtocol) -> None:  # VAL — Expansión
     gf = get_glyph_factors(node)
     s = float(gf.get("VAL_scale", 1.15))
     node.EPI = s * node.EPI
-    node.epi_kind = Glyph.VAL.value
 
 
 def _op_NUL(node: NodoProtocol) -> None:  # NUL — Contracción
     gf = get_glyph_factors(node)
     s = float(gf.get("NUL_scale", 0.85))
     node.EPI = s * node.EPI
-    node.epi_kind = Glyph.NUL.value
 
 
 def _op_THOL(node: NodoProtocol) -> None:  # THOL — Autoorganización
