@@ -35,6 +35,26 @@ from .cli import main as cli_main
 from .scenarios import build_graph
 from .presets import get_preset
 from .types import NodeState
+from .structural import (
+    create_nfr,
+    Operador,
+    Emision,
+    Recepcion,
+    Coherencia,
+    Disonancia,
+    Acoplamiento,
+    Resonancia,
+    Silencio,
+    Expansion,
+    Contraccion,
+    Autoorganizacion,
+    Mutacion,
+    Transicion,
+    Recursividad,
+    OPERADORES,
+    validate_sequence,
+    run_sequence,
+)
 
 
 __all__ = [
@@ -58,6 +78,11 @@ __all__ = [
     "play", "seq", "block", "target", "wait", "THOL", "TARGET", "WAIT",
     "cli_main", "build_graph", "get_preset", "NodeState",
     "ejemplo_canonico_basico",
+    "create_nfr",
+    "Operador", "Emision", "Recepcion", "Coherencia", "Disonancia",
+    "Acoplamiento", "Resonancia", "Silencio", "Expansion", "Contraccion",
+    "Autoorganizacion", "Mutacion", "Transicion", "Recursividad",
+    "OPERADORES", "validate_sequence", "run_sequence",
     "__version__",
 ]
 
