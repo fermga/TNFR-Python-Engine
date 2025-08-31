@@ -3,11 +3,6 @@ import argparse
 import json
 from typing import Any, Dict, List, Optional
 
-try:  # pragma: no cover - opcional
-    import yaml  # type: ignore
-except ImportError:  # pragma: no cover - yaml es opcional
-    yaml = None
-
 import networkx as nx
 
 from .constants import inject_defaults, DEFAULTS
@@ -27,6 +22,7 @@ from .gamma import GAMMA_REGISTRY
 from .scenarios import build_graph
 from .presets import get_preset
 from .config import apply_config
+from .helpers import read_structured_file
 
 
 def _save_json(path: str, data: Any) -> None:
@@ -53,14 +49,7 @@ def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
 
 
 def _load_sequence(path: str) -> List[Any]:
-    with open(path, "r", encoding="utf-8") as f:
-        text = f.read()
-    if path.endswith(".yaml") or path.endswith(".yml"):
-        if not yaml:
-            raise RuntimeError("pyyaml no está instalado, usa JSON o instala pyyaml")
-        data = yaml.safe_load(text)
-    else:
-        data = json.loads(text)
+    data = read_structured_file(path)
 
     def parse_token(tok: Any):
         if isinstance(tok, str):

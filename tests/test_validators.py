@@ -8,7 +8,8 @@ from tnfr.constants import (
     ALIAS_VF,
 )
 from tnfr.validators import run_validators
-from tnfr.helpers import _set_attr_str, _set_attr
+from tnfr.helpers import _set_attr_str, _set_attr, read_structured_file
+from tnfr.config import load_config
 
 
 def _base_graph():
@@ -50,3 +51,17 @@ def test_validator_glifo_invalido():
     _set_attr_str(G.nodes[n0], ALIAS_EPI_KIND, "INVALID")
     with pytest.raises(ValueError):
         run_validators(G)
+
+
+def test_read_structured_file_json(tmp_path):
+    path = tmp_path / "cfg.json"
+    path.write_text("{\"x\": 1}", encoding="utf-8")
+    data = read_structured_file(str(path))
+    assert data == {"x": 1}
+
+
+def test_load_config_json(tmp_path):
+    path = tmp_path / "cfg.json"
+    path.write_text("{\"a\": 5}", encoding="utf-8")
+    data = load_config(str(path))
+    assert data["a"] == 5
