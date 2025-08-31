@@ -6,7 +6,8 @@ import pytest
 from tnfr.node import NodoNX
 from tnfr.operators import random_jitter
 from tnfr.constants import ALIAS_THETA
-from tnfr.observers import sincronía_fase, orden_kuramoto, carga_glifica, sigma_vector
+from tnfr.observers import sincronía_fase, orden_kuramoto, carga_glifica
+from tnfr.sense import sigma_vector_global
 from tnfr.constants_glifos import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
 from tnfr.helpers import angle_diff, _set_attr
 
@@ -61,15 +62,11 @@ def test_carga_glifica_uses_module_constants(monkeypatch, graph_canon):
     assert dist["_disruptivos"] == pytest.approx(0.5)
 
 
-def test_sigma_vector_consistency(monkeypatch, graph_canon):
-    import tnfr.observers as obs
-
-    G = graph_canon()
+def test_sigma_vector_consistency():
     # Distribución ficticia de glifos
     dist = {"IL": 0.4, "RA": 0.3, "ZHIR": 0.1, "AL": 0.2, "_count": 10}
-    monkeypatch.setattr(obs, "carga_glifica", lambda G, window=None: dist)
 
-    res = sigma_vector(G)
+    res = sigma_vector_global(dist)
 
     # Cálculo esperado con el mapa de ángulos canónico
     keys = ESTABILIZADORES + DISRUPTIVOS

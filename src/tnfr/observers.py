@@ -10,7 +10,6 @@ import statistics as st
 
 from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
 from .helpers import _get_attr, list_mean, register_callback, angle_diff, ensure_history, count_glyphs
-from .sense import glyph_unit, SIGMA_ANGLE_KEYS
 from .constants_glifos import ESTABILIZADORES, DISRUPTIVOS
 
 # -------------------------
@@ -108,30 +107,6 @@ def carga_glifica(G, window: int | None = None) -> dict:
     dist["_count"] = count
     return dist
 
-def sigma_vector(G, window: int | None = None) -> dict:
-    """Vector de sentido Σ⃗ a partir de la distribución glífica reciente.
-    Devuelve dict con x, y, mag (0..1) y angle (rad)."""
-    # Distribución glífica (proporciones)
-    dist = carga_glifica(G, window=window)
-    if not dist or dist.get("_count", 0) == 0:
-        return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0}
-
-    # Usa el conjunto fijo de glifos en el plano de sentido
-    total = sum(dist.get(k, 0.0) for k in SIGMA_ANGLE_KEYS)
-    if total <= 0:
-        return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0}
-
-    x = 0.0
-    y = 0.0
-    for k in SIGMA_ANGLE_KEYS:
-        p = dist.get(k, 0.0) / total
-        z = glyph_unit(k)
-        x += p * z.real
-        y += p * z.imag
-
-    mag = math.hypot(x, y)
-    ang = math.atan2(y, x)
-    return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
 
 def wbar(G, window: int | None = None) -> float:
     """Devuelve W̄ = media de C(t) en una ventana reciente."""

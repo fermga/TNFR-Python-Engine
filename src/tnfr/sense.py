@@ -88,17 +88,29 @@ def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] 
 def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
     """Vector global del plano del sentido σ.
 
-    Mapea el último glifo de cada nodo a un vector unitario en S¹, ponderado
-    por `Si` (o `EPI`/1), y promedia para obtener:
-      - componentes (x, y), magnitud |σ| y ángulo arg(σ).
+    Acepta un grafo de NetworkX o una distribución precontada de glifos. En el
+    primer caso, mapea el último glifo de cada nodo a un vector unitario en S¹,
+    ponderado por `Si` (o `EPI`/1), y promedia para obtener componentes (x, y),
+    magnitud |σ| y ángulo arg(σ). En el segundo, utiliza directamente la
+    distribución proporcionada.
 
-    Interpretación TNFR: |σ| mide cuán alineada está la red en su
-    **recorrido glífico**; arg(σ) indica la **dirección funcional** dominante
-    (p. ej., torno a IL/RA para consolidación/distribución, OZ/ZHIR para cambio).
-
-    Si ningún nodo posee un glifo registrado, retorna el vector nulo
-    ``{"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}``.
+    Si no hay datos suficientes retorna el vector nulo.
     """
+    if not hasattr(G, "nodes"):
+        dist = G  # distribución ya normalizada o en conteos
+        total = sum(float(dist.get(k, 0.0)) for k in SIGMA_ANGLE_KEYS)
+        if total <= 0:
+            return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0}
+        x = y = 0.0
+        for k in SIGMA_ANGLE_KEYS:
+            p = float(dist.get(k, 0.0)) / total
+            z = glyph_unit(k)
+            x += p * z.real
+            y += p * z.imag
+        mag = math.hypot(x, y)
+        ang = math.atan2(y, x)
+        return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
+
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
     acc = complex(0.0, 0.0)
