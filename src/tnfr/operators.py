@@ -71,7 +71,7 @@ def _op_EN(node: NodoProtocol) -> None:  # E’N — Recepción
     neigh = list(node.neighbors())
     if not neigh:
         return
-    epi_bar = list_mean(v.EPI for v in neigh) if neigh else epi
+    epi_bar = list_mean(v.EPI for v in neigh)
     node.EPI = (1 - mix) * epi + mix * epi_bar
 
     candidatos = [(abs(node.EPI), node.epi_kind)]
