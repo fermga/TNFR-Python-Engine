@@ -136,6 +136,9 @@ def _op_OZ(node: NodoProtocol) -> None:  # OZ — Disonancia
     dnfr = getattr(node, "dnfr", 0.0)
     if bool(node.graph.get("OZ_NOISE_MODE", False)):
         sigma = float(node.graph.get("OZ_SIGMA", 0.1))
+        if sigma <= 0:
+            node.dnfr = dnfr
+            return
         node.dnfr = dnfr + random_jitter(node, sigma)
     else:
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
