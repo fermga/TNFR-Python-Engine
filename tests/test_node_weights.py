@@ -17,3 +17,21 @@ def test_missing_edge_returns_zero():
     b = NodoTNFR()
     assert not a.has_edge(b)
     assert a.edge_weight(b) == 0.0
+
+
+def test_add_edge_preserves_weight_by_default():
+    a = NodoTNFR()
+    b = NodoTNFR()
+    a.add_edge(b, weight=1.0)
+    a.add_edge(b, weight=2.0)
+    assert math.isclose(a.edge_weight(b), 1.0)
+    assert math.isclose(b.edge_weight(a), 1.0)
+
+
+def test_add_edge_overwrite():
+    a = NodoTNFR()
+    b = NodoTNFR()
+    a.add_edge(b, weight=1.0)
+    a.add_edge(b, weight=2.0, overwrite=True)
+    assert math.isclose(a.edge_weight(b), 2.0)
+    assert math.isclose(b.edge_weight(a), 2.0)
