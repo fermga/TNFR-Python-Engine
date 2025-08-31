@@ -220,6 +220,9 @@ def update_epi_via_nodal_equation(
         steps = 1
     dt_step = dt / steps if steps else 0.0
 
+    if method not in ("euler", "rk4"):
+        raise ValueError("method must be 'euler' or 'rk4'")
+
     t_local = t
     for _ in range(steps):
         for n in G.nodes():
@@ -233,18 +236,15 @@ def update_epi_via_nodal_equation(
 
             if method == "rk4":
                 g1 = eval_gamma(G, n, t_local)
-                g2 = eval_gamma(G, n, t_local + dt_step / 2.0)
-                g3 = eval_gamma(G, n, t_local + dt_step / 2.0)
+                g_mid = eval_gamma(G, n, t_local + dt_step / 2.0)
                 g4 = eval_gamma(G, n, t_local + dt_step)
                 k1 = base + g1
-                k2 = base + g2
-                k3 = base + g3
+                k2 = base + g_mid
+                k3 = base + g_mid
                 k4 = base + g4
                 epi = epi_i + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
                 dEPI_dt = k4
             else:
-                if method != "euler":
-                    raise ValueError("method must be 'euler' or 'rk4'")
                 gamma_local = eval_gamma(G, n, t_local)
                 dEPI_dt = base + gamma_local
                 epi = epi_i + dt_step * dEPI_dt
