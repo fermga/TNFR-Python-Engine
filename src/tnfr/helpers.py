@@ -191,8 +191,8 @@ def register_callback(
 
     Permite tanto la forma posicional ``register_callback(G, "after_step", fn)``
     como la forma con palabras clave ``register_callback(G, when="after_step", func=fn)``.
-    El parámetro ``name`` se acepta por compatibilidad pero actualmente no se
-    utiliza.
+    El parámetro ``name`` ahora se almacena junto con la función para facilitar
+    su identificación.
     """
     event = event or when
     if event not in ("before_step", "after_step", "on_remesh"):
@@ -200,22 +200,35 @@ def register_callback(
     if func is None:
         raise TypeError("func es obligatorio")
     cbs = _ensure_callbacks(G)
-    cbs[event].append(func)
+    cb_name = name or getattr(func, "__name__", None)
+    cbs[event].append((cb_name, func))
     return func
 
 def invoke_callbacks(G, event: str, ctx: dict | None = None):
-    """Invoca todos los callbacks registrados para `event` con el contexto `ctx`."""
+    """Invoca todos los callbacks registrados para ``event`` con el contexto ``ctx``.
+
+    Los callbacks se almacenan como tuplas ``(name, func)`` y se invocan en orden
+    de registro. Se admite el formato antiguo de solo función para compatibilidad.
+    """
     cbs = _ensure_callbacks(G).get(event, [])
     strict = bool(G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"]))
     ctx = ctx or {}
-    for fn in list(cbs):
+    for cb in list(cbs):
+        if isinstance(cb, tuple):
+            name, fn = (cb + (None, None))[:2]
+        else:  # retrocompatibilidad
+            name, fn = getattr(cb, "__name__", None), cb
         try:
             fn(G, ctx)
         except Exception as e:
             if strict:
                 raise
             G.graph.setdefault("_callback_errors", []).append({
-                "event": event, "step": ctx.get("step"), "error": repr(e), "fn": repr(fn)
+                "event": event,
+                "step": ctx.get("step"),
+                "error": repr(e),
+                "fn": repr(fn),
+                "name": name,
             })
 
 # -------------------------

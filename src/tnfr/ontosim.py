@@ -66,7 +66,7 @@ def preparar_red(G: nx.Graph, *, override_defaults: bool = False, **overrides) -
         "on_remesh": [],
     })
     G.graph.setdefault("_CALLBACKS_DOC",
-        "Interfaz Γ(R): registrar funciones (G, ctx) en callbacks['before_step'|'after_step'|'on_remesh']")
+        "Interfaz Γ(R): registrar pares (name, func) con firma (G, ctx) en callbacks['before_step'|'after_step'|'on_remesh']")
     
     # --- Inicialización configurable de θ y νf ---
     seed = int(G.graph.get("RANDOM_SEED", 0))
