@@ -1,6 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 
-from tnfr.helpers import alias_lookup, _alias_cache, _ALIAS_CACHE_MAX
+from tnfr.helpers import alias_lookup, _resolve_alias
 
 
 def _worker(i):
@@ -14,4 +14,4 @@ def test_alias_lookup_thread_safety():
     with ThreadPoolExecutor(max_workers=32) as ex:
         results = list(ex.map(_worker, range(32)))
     assert results == list(range(32))
-    assert len(_alias_cache) <= _ALIAS_CACHE_MAX
+    assert _resolve_alias.cache_info().currsize <= 16
