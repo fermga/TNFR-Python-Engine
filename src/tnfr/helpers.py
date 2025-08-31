@@ -61,39 +61,56 @@ def phase_distance(a: float, b: float) -> float:
 # Acceso a atributos con alias
 # -------------------------
 
-def _get_attr(d: Dict[str, Any], aliases: Iterable[str], default: float = 0.0) -> float:
-    for k in aliases:
+_sentinel = object()
+
+
+def alias_lookup(
+    d: Dict[str, Any],
+    aliases: Iterable[str],
+    conv,
+    *,
+    default=_sentinel,
+    value=_sentinel,
+):
+    """Busca en ``d`` la primera clave de ``aliases``.
+
+    Si ``value`` se proporciona, actúa como asignación usando ``conv`` para
+    convertir el valor. Si no, intenta obtener y convertir el valor existente,
+    devolviendo ``default`` convertido si ninguna alias coincide o la conversión
+    falla.
+    """
+    alist = list(aliases)
+    for k in alist:
         if k in d:
+            if value is not _sentinel:
+                d[k] = conv(value)
+                return d[k]
             try:
-                return float(d[k])
+                return conv(d[k])
             except Exception:
                 continue
-    return float(default)
+    if value is not _sentinel:
+        d[alist[0]] = conv(value)
+        return d[alist[0]]
+    if default is not _sentinel:
+        return conv(default)
+    return None
+
+
+def _get_attr(d: Dict[str, Any], aliases: Iterable[str], default: float = 0.0) -> float:
+    return alias_lookup(d, aliases, float, default=default)
+
 
 def _set_attr(d, aliases, value: float) -> None:
-    for k in aliases:
-        if k in d:
-            d[k] = float(value)
-            return
-    d[next(iter(aliases))] = float(value)
+    alias_lookup(d, aliases, float, value=value)
 
 
 def _get_attr_str(d: Dict[str, Any], aliases: Iterable[str], default: str = "") -> str:
-    for k in aliases:
-        if k in d:
-            try:
-                return str(d[k])
-            except Exception:
-                continue
-    return str(default)
+    return alias_lookup(d, aliases, str, default=default)
 
 
 def _set_attr_str(d, aliases, value: str) -> None:
-    for k in aliases:
-        if k in d:
-            d[k] = str(value)
-            return
-    d[next(iter(aliases))] = str(value)
+    alias_lookup(d, aliases, str, value=value)
 
 # -------------------------
 # Estadísticos vecinales
