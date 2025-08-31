@@ -506,27 +506,62 @@ def adaptar_vf_por_coherencia(G) -> None:
         set_vf(G, n, clamp(vf_new, vf_min, vf_max))
 
 # -------------------------
+# Umbrales de selector
+# -------------------------
+
+def _selector_thresholds(G) -> dict:
+    """Retorna umbrales normalizados hi/lo para Si, ΔNFR y aceleración.
+
+    Combina ``SELECTOR_THRESHOLDS`` con ``GLYPH_THRESHOLDS`` (legado) para
+    los cortes de Si. Todos los valores se claman a [0,1]."""
+    thr_sel = dict(DEFAULTS.get("SELECTOR_THRESHOLDS", {}))
+    thr_sel.update(G.graph.get("SELECTOR_THRESHOLDS", {}))
+    thr_def = G.graph.get("GLYPH_THRESHOLDS", DEFAULTS.get("GLYPH_THRESHOLDS", {}))
+
+    si_hi = clamp01(float(thr_sel.get("si_hi", thr_def.get("hi", 0.66))))
+    si_lo = clamp01(float(thr_sel.get("si_lo", thr_def.get("lo", 0.33))))
+    dnfr_hi = clamp01(float(thr_sel.get("dnfr_hi", 0.5)))
+    dnfr_lo = clamp01(float(thr_sel.get("dnfr_lo", 0.1)))
+    acc_hi = clamp01(float(thr_sel.get("accel_hi", 0.5)))
+    acc_lo = clamp01(float(thr_sel.get("accel_lo", 0.1)))
+
+    return {
+        "si_hi": si_hi,
+        "si_lo": si_lo,
+        "dnfr_hi": dnfr_hi,
+        "dnfr_lo": dnfr_lo,
+        "accel_hi": acc_hi,
+        "accel_lo": acc_lo,
+    }
+
+# -------------------------
 # Selector glífico por defecto
 # -------------------------
 
 def default_glyph_selector(G, n) -> str:
     nd = G.nodes[n]
-    # Umbrales desde configuración (fallback a DEFAULTS)
-    thr = G.graph.get("GLYPH_THRESHOLDS", DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66, "lo": 0.33, "dnfr": 1e-3}))
-    hi = float(thr.get("hi", 0.66))
-    lo = float(thr.get("lo", 0.33))
-    tdnfr = float(thr.get("dnfr", 1e-3))
+    thr = _selector_thresholds(G)
+    hi, lo = thr["si_hi"], thr["si_lo"]
+    dnfr_hi = thr["dnfr_hi"]
 
+    norms = G.graph.get("_sel_norms")
+    if norms is not None:
+        dnfr_max = float(norms.get("dnfr_max", 1.0))
+    else:
+        dnfr_max = 0.0
+        for _, nd2 in G.nodes(data=True):
+            dnfr_max = max(dnfr_max, abs(_get_attr(nd2, ALIAS_DNFR, 0.0)))
+        if dnfr_max <= 0:
+            dnfr_max = 1.0
 
-    Si = _get_attr(nd, ALIAS_SI, 0.5)
-    dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
-
+    Si = clamp01(_get_attr(nd, ALIAS_SI, 0.5))
+    dnfr = abs(_get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
 
     if Si >= hi:
-        return "I’L" # estabiliza
+        return "I’L"
     if Si <= lo:
-        return "O’Z" if abs(dnfr) > tdnfr else "Z’HIR"
-    return "NA’V" if abs(dnfr) > tdnfr else "R’A"
+        return "O’Z" if dnfr > dnfr_hi else "Z’HIR"
+    return "NA’V" if dnfr > dnfr_hi else "R’A"
 
 
 # -------------------------
@@ -568,10 +603,10 @@ def parametric_glyph_selector(G, n) -> str:
       - Si medio ⇒ NA’V si |ΔNFR| alto (o accel alta), si no R’A
     """
     nd = G.nodes[n]
-    thr = G.graph.get("SELECTOR_THRESHOLDS", DEFAULTS["SELECTOR_THRESHOLDS"])
-    si_hi, si_lo = float(thr.get("si_hi", 0.66)), float(thr.get("si_lo", 0.33))
-    dnfr_hi, dnfr_lo = float(thr.get("dnfr_hi", 0.5)), float(thr.get("dnfr_lo", 0.1))
-    acc_hi, acc_lo = float(thr.get("accel_hi", 0.5)), float(thr.get("accel_lo", 0.1))
+    thr = _selector_thresholds(G)
+    si_hi, si_lo = thr["si_hi"], thr["si_lo"]
+    dnfr_hi, dnfr_lo = thr["dnfr_hi"], thr["dnfr_lo"]
+    acc_hi, acc_lo = thr["accel_hi"], thr["accel_lo"]
     margin = float(G.graph.get("GLYPH_SELECTOR_MARGIN", DEFAULTS["GLYPH_SELECTOR_MARGIN"]))
 
     # Normalizadores por paso
