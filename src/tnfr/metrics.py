@@ -414,13 +414,14 @@ def coherence_matrix(G):
     return nodes, W
 
 
-def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None):
+def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=None):
     import cmath
 
     cfg = G.graph.get("COHERENCE", DEFAULTS["COHERENCE"])
     scope = str(cfg.get("scope", "neighbors")).lower()
     neighbors_only = scope != "all"
 
+    # --- Caso sin pesos ---
     if W_row is None or nodes_order is None:
         vec = [
             cmath.exp(1j * float(_get_attr(G.nodes[v], ALIAS_THETA, 0.0)))
@@ -431,7 +432,21 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None):
         mean = sum(vec) / len(vec)
         return abs(mean)
 
-    i = nodes_order.index(n)
+    # --- Mapeo nodo → índice ---
+    if node_to_index is None:
+        cache_nodes = getattr(local_phase_sync_weighted, "_cache_nodes", None)
+        cache_map = getattr(local_phase_sync_weighted, "_cache_map", None)
+        if cache_nodes is not nodes_order:
+            node_to_index = {v: i for i, v in enumerate(nodes_order)}
+            local_phase_sync_weighted._cache_nodes = nodes_order
+            local_phase_sync_weighted._cache_map = node_to_index
+        else:
+            node_to_index = cache_map
+
+    i = node_to_index.get(n, None)
+    if i is None:
+        i = nodes_order.index(n)
+
     if isinstance(W_row, list) and W_row and isinstance(W_row[0], (int, float)):
         weights = W_row
     else:
@@ -526,6 +541,7 @@ def _diagnosis_step(G, ctx=None):
     Wm_last = Wm_series[-1] if Wm_series else None
 
     nodes = list(G.nodes())
+    node_to_index = {v: i for i, v in enumerate(nodes)}
     diag = {}
     for i, n in enumerate(nodes):
         nd = G.nodes[n]
@@ -540,9 +556,13 @@ def _diagnosis_step(G, ctx=None):
                 row = Wm_last[i]
             else:
                 row = Wm_last
-            Rloc = local_phase_sync_weighted(G, n, nodes_order=nodes, W_row=row)
+            Rloc = local_phase_sync_weighted(
+                G, n, nodes_order=nodes, W_row=row, node_to_index=node_to_index
+            )
         else:
-            Rloc = local_phase_sync_weighted(G, n)
+            Rloc = local_phase_sync_weighted(
+                G, n, nodes_order=nodes, node_to_index=node_to_index
+            )
 
         symm = _symmetry_index(G, n, epi_min=epi_min, epi_max=epi_max) if dcfg.get("compute_symmetry", True) else None
         state = _state_from_thresholds(Rloc, dnfr_n, dcfg)
@@ -578,10 +598,14 @@ def dissonance_events(G, ctx=None):
     norms = G.graph.get("_sel_norms", {})
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     step_idx = len(hist.get("C_steps", []))
-    for n in G.nodes():
+    nodes = list(G.nodes())
+    node_to_index = {v: i for i, v in enumerate(nodes)}
+    for n in nodes:
         nd = G.nodes[n]
         dn = abs(_get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
-        Rloc = local_phase_sync_weighted(G, n)
+        Rloc = local_phase_sync_weighted(
+            G, n, nodes_order=nodes, node_to_index=node_to_index
+        )
         st = bool(nd.get("_disr_state", False))
         if (not st) and dn >= 0.5 and Rloc <= 0.4:
             nd["_disr_state"] = True
