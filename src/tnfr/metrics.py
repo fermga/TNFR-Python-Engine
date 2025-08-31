@@ -5,6 +5,7 @@ import statistics
 import csv
 import json
 import os
+import heapq
 from math import cos
 
 from .constants import (
@@ -225,7 +226,7 @@ def glifogram_series(G) -> Dict[str, List[float]]:
 def glyph_top(G, k: int = 3) -> List[Tuple[str, float]]:
     """Top-k operadores estructurales por Tg_global (fracción)."""
     tg = Tg_global(G, normalize=True)
-    return sorted(tg.items(), key=lambda kv: kv[1], reverse=True)[:max(1, int(k))]
+    return heapq.nlargest(max(1, int(k)), tg.items(), key=lambda kv: kv[1])
 
 
 def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
