@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Iterable, Dict, Any, TYPE_CHECKING
 import threading
 import math
-from collections import deque, OrderedDict
+from collections import deque, OrderedDict, Counter
 from itertools import islice
 from statistics import fmean, StatisticsError
 import json
@@ -299,6 +299,32 @@ def last_glifo(nd: Dict[str, Any]) -> str | None:
         return hist[-1]
     except IndexError:
         return None
+
+
+def count_glyphs(G, window: int | None = None) -> Counter:
+    """Cuenta glifos recientes en la red.
+
+    Si ``window`` es ``1`` cuenta solo el último glifo de cada nodo. Con un
+    valor mayor o ``None`` se usa el historial ``hist_glifos`` limitado a los
+    últimos ``window`` elementos por nodo.
+    """
+    counts: Counter[str] = Counter()
+    for _, nd in G.nodes(data=True):
+        if window == 1:
+            g = last_glifo(nd)
+            if g:
+                counts[g] += 1
+            continue
+        hist = nd.get("hist_glifos")
+        if not hist:
+            continue
+        if window is not None and window > 0:
+            start = max(len(hist) - int(window), 0)
+            seq = islice(hist, start, None)
+        else:
+            seq = hist
+        counts.update(seq)
+    return counts
 
 # -------------------------
 # Callbacks Γ(R)

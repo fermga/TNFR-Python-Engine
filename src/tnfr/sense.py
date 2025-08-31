@@ -4,7 +4,7 @@ import math
 from collections import Counter
 
 from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
-from .helpers import _get_attr, clamp01, register_callback, ensure_history, last_glifo
+from .helpers import _get_attr, clamp01, register_callback, ensure_history, last_glifo, count_glyphs
 from .types import Glyph
 
 # -------------------------
@@ -131,11 +131,7 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
     hist.setdefault(key, []).append(sv)
 
     # Conteo de glifos por paso (útil para rosa glífica)
-    counts = Counter()
-    for n in G.nodes():
-        g = last_glifo(G.nodes[n])
-        if g:
-            counts[g] += 1
+    counts = count_glyphs(G, window=1)
     hist.setdefault("sigma_counts", []).append({"t": sv["t"], **counts})
 
     # Trayectoria por nodo (opcional)
