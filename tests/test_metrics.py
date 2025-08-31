@@ -1,5 +1,7 @@
+import networkx as nx
+
 from tnfr.constants import attach_defaults
-from tnfr.metrics import _metrics_step
+from tnfr.metrics import _metrics_step, _update_latency_index
 
 
 def test_pp_val_zero_when_no_remesh(graph_canon):
@@ -44,3 +46,11 @@ def test_save_by_node_flag_keeps_metrics_equal(graph_canon):
     assert hist_true["morph"] == hist_false["morph"]
     assert hist_true["Tg_by_node"] != {}
     assert hist_false.get("Tg_by_node", {}) == {}
+
+
+def test_latency_index_uses_max_denominator():
+    """Latency index uses max(1, n_total) to avoid zero division."""
+    G = nx.Graph()
+    hist = {}
+    _update_latency_index(G, hist, n_total=0, n_latent=2, t=0)
+    assert hist["latency_index"][0]["value"] == 2.0

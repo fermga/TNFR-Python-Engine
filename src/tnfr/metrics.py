@@ -108,7 +108,7 @@ def _update_glifogram(G, hist, counts, t):
 
 def _update_latency_index(G, hist, n_total, n_latent, t):
     """Añade el índice de latencia a la historia."""
-    li = (n_latent / max(1, n_total)) if n_total else 0.0
+    li = n_latent / max(1, n_total)
     hist.setdefault("latency_index", []).append({"t": t, "value": li})
 
 
