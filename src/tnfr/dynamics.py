@@ -29,6 +29,7 @@ from .constants import (
     ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI,
     ALIAS_dEPI, ALIAS_D2EPI, ALIAS_dVF, ALIAS_D2VF, ALIAS_dSI,
     ALIAS_EPI_KIND,
+    get_param,
 )
 from .gamma import eval_gamma
 from .helpers import (
@@ -756,19 +757,9 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     # 7) Observadores ligeros
     _update_history(G)
     # dynamics.py — dentro de step(), justo antes del punto 8)
-    # REMESH_TAU: alias legado de REMESH_TAU_GLOBAL
-    tau_g = int(
-        G.graph.get(
-            "REMESH_TAU_GLOBAL",
-            G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_GLOBAL"]),
-        )
-    )
-    tau_l = int(
-        G.graph.get(
-            "REMESH_TAU_LOCAL",
-            G.graph.get("REMESH_TAU", DEFAULTS["REMESH_TAU_LOCAL"]),
-        )
-    )
+    # REMESH_TAU: alias legado resuelto por ``get_param``
+    tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
+    tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
     tau = max(tau_g, tau_l)
     maxlen = max(2 * tau + 5, 64)
     epi_hist = G.graph.get("_epi_hist")
