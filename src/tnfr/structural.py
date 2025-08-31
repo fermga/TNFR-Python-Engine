@@ -38,7 +38,7 @@ def create_nfr(
 
     Devuelve la tupla ``(G, name)`` para conveniencia.
     """
-    G = graph or nx.Graph()
+    G = graph if graph is not None else nx.Graph()
     G.add_node(
         name,
         **{
