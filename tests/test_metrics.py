@@ -1,7 +1,9 @@
+import pytest
 import networkx as nx
 
-from tnfr.constants import attach_defaults
-from tnfr.metrics import _metrics_step, _update_latency_index
+from tnfr.constants import attach_defaults, ALIAS_EPI
+from tnfr.helpers import get_attr
+from tnfr.metrics import _metrics_step, _update_latency_index, _update_epi_support
 
 
 def test_pp_val_zero_when_no_remesh(graph_canon):
@@ -67,3 +69,29 @@ def test_latency_index_uses_max_denominator():
     hist = {}
     _update_latency_index(G, hist, n_total=0, n_latent=2, t=0)
     assert hist["latency_index"][0]["value"] == 2.0
+
+
+def test_update_epi_support_matches_manual(graph_canon):
+    """_update_epi_support computes size and norm as expected."""
+    G = graph_canon()
+    # valores diversos de EPI
+    G.add_node(0, EPI=0.06)
+    G.add_node(1, EPI=-0.1)
+    G.add_node(2, EPI=0.01)
+    G.add_node(3, EPI=0.05)
+    attach_defaults(G)
+    hist = {}
+    thr = float(G.graph.get("EPI_SUPPORT_THR"))
+    _update_epi_support(G, hist, t=0, thr=thr)
+
+    expected_vals = [
+        abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0))
+        for n in G.nodes()
+        if abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= thr
+    ]
+    expected_size = len(expected_vals)
+    expected_norm = sum(expected_vals) / expected_size if expected_size else 0.0
+
+    rec = hist["EPI_support"][0]
+    assert rec["size"] == expected_size
+    assert rec["epi_norm"] == pytest.approx(expected_norm)
