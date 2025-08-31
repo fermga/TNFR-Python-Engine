@@ -11,7 +11,7 @@ Incluye:
 - default_glyph_selector, step, run
 """
 from __future__ import annotations
-from typing import Dict, Any, Iterable
+from typing import Dict, Any, Iterable, Literal
 import math
 from collections import deque
 import networkx as nx
@@ -168,7 +168,13 @@ def dnfr_laplacian(G) -> None:
 # Ecuación nodal
 # -------------------------
 
-def update_epi_via_nodal_equation(G, *, dt: float = None, t: float | None = None) -> None:
+def update_epi_via_nodal_equation(
+    G,
+    *,
+    dt: float = None,
+    t: float | None = None,
+    method: Literal["euler", "rk4"] | None = None,
+) -> None:
     """Ecuación nodal TNFR.
 
     Implementa la forma extendida de la ecuación nodal:
@@ -199,18 +205,47 @@ def update_epi_via_nodal_equation(G, *, dt: float = None, t: float | None = None
         t = float(G.graph.get("_t", 0.0))
     else:
         t = float(t)
-    for n in G.nodes():
-        nd = G.nodes[n]
-        vf = _get_attr(nd, ALIAS_VF, 0.0)
-        dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
-        dEPI_dt_prev = _get_attr(nd, ALIAS_dEPI, 0.0)
-        dEPI_dt = vf * dnfr
-        dEPI_dt += eval_gamma(G, n, t)
-        epi = _get_attr(nd, ALIAS_EPI, 0.0) + dt * dEPI_dt
-        _set_attr(nd, ALIAS_EPI, epi)
-        _set_attr(nd, ALIAS_dEPI, dEPI_dt)
-        _set_attr(nd, ALIAS_D2EPI, (dEPI_dt - dEPI_dt_prev) / dt if dt != 0 else 0.0)
-    G.graph["_t"] = t + dt
+
+    method = (method or G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))).lower()
+    dt_min = float(G.graph.get("DT_MIN", DEFAULTS.get("DT_MIN", 0.0)))
+    if dt_min > 0 and dt > dt_min:
+        steps = int(math.ceil(dt / dt_min))
+    else:
+        steps = 1
+    dt_step = dt / steps if steps else 0.0
+
+    t_local = t
+    for _ in range(steps):
+        for n in G.nodes():
+            nd = G.nodes[n]
+            vf = _get_attr(nd, ALIAS_VF, 0.0)
+            dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
+            dEPI_dt_prev = _get_attr(nd, ALIAS_dEPI, 0.0)
+            epi_i = _get_attr(nd, ALIAS_EPI, 0.0)
+
+            def _f(time: float) -> float:
+                return vf * dnfr + eval_gamma(G, n, time)
+
+            if method == "rk4":
+                k1 = _f(t_local)
+                k2 = _f(t_local + dt_step / 2.0)
+                k3 = _f(t_local + dt_step / 2.0)
+                k4 = _f(t_local + dt_step)
+                epi = epi_i + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
+                dEPI_dt = k4
+            else:
+                if method != "euler":
+                    raise ValueError("method must be 'euler' or 'rk4'")
+                dEPI_dt = _f(t_local)
+                epi = epi_i + dt_step * dEPI_dt
+
+            _set_attr(nd, ALIAS_EPI, epi)
+            _set_attr(nd, ALIAS_dEPI, dEPI_dt)
+            _set_attr(nd, ALIAS_D2EPI, (dEPI_dt - dEPI_dt_prev) / dt_step if dt_step != 0 else 0.0)
+
+        t_local += dt_step
+
+    G.graph["_t"] = t_local
 
 
 # -------------------------
@@ -228,7 +263,7 @@ def aplicar_dnfr_campo(G, w_theta=None, w_epi=None, w_vf=None) -> None:
 
 
 def integrar_epi_euler(G, dt: float | None = None) -> None:
-    update_epi_via_nodal_equation(G, dt=dt)
+    update_epi_via_nodal_equation(G, dt=dt, method="euler")
 
 
 def aplicar_clamps_canonicos(nd: Dict[str, Any], G=None, node=None) -> None:
@@ -543,7 +578,9 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
                 aplicar_glifo(G, n, g, window=window)
 
     # 4) Ecuación nodal
-    update_epi_via_nodal_equation(G, dt=dt)
+    _dt = float(G.graph.get("DT", DEFAULTS["DT"])) if dt is None else float(dt)
+    method = G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))
+    update_epi_via_nodal_equation(G, dt=_dt, method=method)
 
     # 5) Clamps
     for n in G.nodes():

@@ -93,6 +93,10 @@ def cmd_run(args: argparse.Namespace) -> int:
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
     _attach_callbacks(G)
     validate_canon(G)
+    if args.dt is not None:
+        G.graph["DT"] = float(args.dt)
+    if args.integrator is not None:
+        G.graph["INTEGRATOR_METHOD"] = str(args.integrator)
     gcanon = dict(DEFAULTS["GRAMMAR_CANON"])
     gcanon.update(_args_to_dict(args, prefix="grammar."))
     if hasattr(args, "grammar_canon") and args.grammar_canon is not None:
@@ -148,6 +152,10 @@ def cmd_sequence(args: argparse.Namespace) -> int:
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
     _attach_callbacks(G)
     validate_canon(G)
+    if args.dt is not None:
+        G.graph["DT"] = float(args.dt)
+    if args.integrator is not None:
+        G.graph["INTEGRATOR_METHOD"] = str(args.integrator)
     gcanon = dict(DEFAULTS["GRAMMAR_CANON"])
     gcanon.update(_args_to_dict(args, prefix="grammar."))
     if hasattr(args, "grammar_canon") and args.grammar_canon is not None:
@@ -182,6 +190,10 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
     _attach_callbacks(G)
     validate_canon(G)
+    if args.dt is not None:
+        G.graph["DT"] = float(args.dt)
+    if args.integrator is not None:
+        G.graph["INTEGRATOR_METHOD"] = str(args.integrator)
     G.graph.setdefault("GRAMMAR_CANON", DEFAULTS["GRAMMAR_CANON"]).update({"enabled": bool(args.grammar_canon)})
     G.graph["glyph_selector"] = default_glyph_selector if args.selector == "basic" else parametric_glyph_selector
     G.graph["GAMMA"] = {
@@ -220,6 +232,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_run.add_argument("--steps", type=int, default=200)
     p_run.add_argument("--seed", type=int, default=1)
     p_run.add_argument("--preset", type=str, default=None)
+    p_run.add_argument("--dt", type=float, default=None)
+    p_run.add_argument("--integrator", choices=["euler", "rk4"], default=None)
     p_run.add_argument("--save-history", dest="save_history", type=str, default=None)
     p_run.add_argument("--export-history-base", dest="export_history_base", type=str, default=None)
     p_run.add_argument("--export-format", dest="export_format", choices=["csv", "json"], default="json")
@@ -245,6 +259,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_seq.add_argument("--seed", type=int, default=1)
     p_seq.add_argument("--preset", type=str, default=None)
     p_seq.add_argument("--sequence-file", type=str, default=None)
+    p_seq.add_argument("--dt", type=float, default=None)
+    p_seq.add_argument("--integrator", choices=["euler", "rk4"], default=None)
     p_seq.add_argument("--save-history", dest="save_history", type=str, default=None)
     p_seq.add_argument("--export-history-base", dest="export_history_base", type=str, default=None)
     p_seq.add_argument("--export-format", dest="export_format", choices=["csv", "json"], default="json")
@@ -266,6 +282,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_met.add_argument("--topology", choices=["ring", "complete", "erdos"], default="ring")
     p_met.add_argument("--steps", type=int, default=300)
     p_met.add_argument("--seed", type=int, default=1)
+    p_met.add_argument("--dt", type=float, default=None)
+    p_met.add_argument("--integrator", choices=["euler", "rk4"], default=None)
     p_met.add_argument("--no-canon", dest="grammar_canon", action="store_false", default=True, help="Desactiva gramática canónica")
     p_met.add_argument("--selector", choices=["basic", "param"], default="basic")
     p_met.add_argument("--gamma-type", choices=list(GAMMA_REGISTRY.keys()), default="none")
