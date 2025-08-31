@@ -5,12 +5,12 @@ Utilidades transversales + cálculo de Índice de sentido (Si).
 """
 from __future__ import annotations
 from typing import Iterable, Dict, Any, TYPE_CHECKING
-import threading
 import math
-from collections import deque, OrderedDict, Counter
+from collections import deque, Counter
 from itertools import islice
 from statistics import fmean, StatisticsError
 import json
+from functools import lru_cache
 
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
@@ -92,12 +92,14 @@ def phase_distance(a: float, b: float) -> float:
 
 _sentinel = object()
 
-# Caché pequeña para resolver alias -> clave real.
-# Usa tuplas de alias como clave y almacena la clave encontrada.
-# Se limita el tamaño para evitar crecimiento sin control.
-_alias_cache: OrderedDict[tuple[str, ...], str] = OrderedDict()
-_ALIAS_CACHE_MAX = 16
-_alias_cache_lock = threading.Lock()
+
+@lru_cache(maxsize=16)
+def _resolve_alias(alist: tuple[str, ...], keys: frozenset[str]) -> str | None:
+    """Devuelve la primera alias presente en ``keys`` o ``None``."""
+    for k in alist:
+        if k in keys:
+            return k
+    return None
 
 
 def alias_lookup(
@@ -116,47 +118,27 @@ def alias_lookup(
     falla.
     """
     alist = tuple(aliases)
+    # Resolver utilizando la caché LRU
+    k = _resolve_alias(alist, frozenset(d.keys()))
+    candidates = []
+    if k is not None:
+        candidates.append(k)
+    candidates.extend(a for a in alist if a != k)
 
-    # Intento de búsqueda rápida en la caché global
-    with _alias_cache_lock:
-        k = _alias_cache.get(alist)
-        if k is not None:
-            _alias_cache.move_to_end(alist)
-    if k is not None and k in d:
-        if value is not _sentinel:
-            d[k] = conv(value)
-            return d[k]
-        try:
-            return conv(d[k])
-        except (ValueError, TypeError):
-            # Si la conversión falla, forzamos búsqueda normal
-            pass
-
-    # Búsqueda exhaustiva sobre las aliases
-    for k in alist:
-        if k in d:
-            with _alias_cache_lock:
-                _alias_cache[alist] = k
-                _alias_cache.move_to_end(alist)
-                if len(_alias_cache) > _ALIAS_CACHE_MAX:
-                    _alias_cache.popitem(last=False)
+    for key in candidates:
+        if key in d:
             if value is not _sentinel:
-                d[k] = conv(value)
-                return d[k]
+                d[key] = conv(value)
+                return d[key]
             try:
-                return conv(d[k])
+                return conv(d[key])
             except (ValueError, TypeError):
                 continue
 
     if value is not _sentinel:
-        k = alist[0]
-        d[k] = conv(value)
-        with _alias_cache_lock:
-            _alias_cache[alist] = k
-            _alias_cache.move_to_end(alist)
-            if len(_alias_cache) > _ALIAS_CACHE_MAX:
-                _alias_cache.popitem(last=False)
-        return d[k]
+        key = alist[0]
+        d[key] = conv(value)
+        return d[key]
 
     if default is not _sentinel:
         return conv(default)
