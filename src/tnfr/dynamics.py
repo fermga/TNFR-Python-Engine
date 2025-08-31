@@ -406,6 +406,40 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
         _set_attr(nd, ALIAS_THETA, th + kG*dG + kL*dL)
 
 # -------------------------
+# Adaptación de νf por coherencia
+# -------------------------
+
+def adaptar_vf_por_coherencia(G) -> None:
+    """Ajusta νf hacia la media vecinal en nodos con estabilidad sostenida."""
+    tau = int(G.graph.get("VF_ADAPT_TAU", DEFAULTS.get("VF_ADAPT_TAU", 5)))
+    mu = float(G.graph.get("VF_ADAPT_MU", DEFAULTS.get("VF_ADAPT_MU", 0.1)))
+    eps_dnfr = float(G.graph.get("EPS_DNFR_STABLE", DEFAULTS["EPS_DNFR_STABLE"]))
+    thr_sel = G.graph.get("SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {}))
+    thr_def = G.graph.get("GLYPH_THRESHOLDS", DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66}))
+    si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
+    vf_min = float(G.graph.get("VF_MIN", DEFAULTS["VF_MIN"]))
+    vf_max = float(G.graph.get("VF_MAX", DEFAULTS["VF_MAX"]))
+
+    updates = {}
+    for n in G.nodes():
+        nd = G.nodes[n]
+        Si = _get_attr(nd, ALIAS_SI, 0.0)
+        dnfr = abs(_get_attr(nd, ALIAS_DNFR, 0.0))
+        if Si >= si_hi and dnfr <= eps_dnfr:
+            nd["stable_count"] = nd.get("stable_count", 0) + 1
+        else:
+            nd["stable_count"] = 0
+            continue
+
+        if nd["stable_count"] >= tau:
+            vf = _get_attr(nd, ALIAS_VF, 0.0)
+            vf_bar = media_vecinal(G, n, ALIAS_VF, default=vf)
+            updates[n] = vf + mu * (vf_bar - vf)
+
+    for n, vf_new in updates.items():
+        _set_attr(G.nodes[n], ALIAS_VF, clamp(vf_new, vf_min, vf_max))
+
+# -------------------------
 # Selector glífico por defecto
 # -------------------------
 
@@ -592,6 +626,9 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
 
     # 6) Coordinación de fase
     coordinar_fase_global_vecinal(G, None, None)
+
+    # 6b) Adaptación de νf por coherencia
+    adaptar_vf_por_coherencia(G)
 
     # 7) Observadores ligeros
     _update_history(G)

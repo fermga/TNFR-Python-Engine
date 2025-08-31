@@ -111,7 +111,11 @@ DEFAULTS: Dict[str, Any] = {
     "GLYPH_LOAD_WINDOW": 50,
 
     # Tamaño de ventana para coherencia promedio W̄
-    "WBAR_WINDOW": 25,  
+    "WBAR_WINDOW": 25,
+
+    # Adaptación de frecuencia estructural por coherencia
+    "VF_ADAPT_TAU": 5,   # pasos estables antes de ajustar νf
+    "VF_ADAPT_MU": 0.1,  # velocidad de ajuste hacia la media vecinal
 
     # Factores suaves por glifo (operadores)
     "GLYPH_FACTORS": {
