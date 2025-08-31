@@ -615,7 +615,7 @@ def parametric_glyph_selector(G, n) -> str:
     if certeza < margin:
         hist = nd.get("hist_glifos")
         if hist:
-            prev = list(hist)[-1]
+            prev = hist[-1]
             if isinstance(prev, str) and prev in ("I’L","O’Z","Z’HIR","T’HOL","NA’V","R’A"):
                 return prev
 
@@ -623,7 +623,7 @@ def parametric_glyph_selector(G, n) -> str:
     prev = None
     hist_prev = nd.get("hist_glifos")
     if hist_prev:
-        prev = list(hist_prev)[-1]
+        prev = hist_prev[-1]
     if prev == cand:
         delta_si = _get_attr(nd, ALIAS_dSI, 0.0)
         h = G.graph.get("history", {})
