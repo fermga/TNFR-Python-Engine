@@ -11,6 +11,7 @@ from itertools import islice
 from statistics import fmean, StatisticsError
 import json
 from functools import lru_cache
+from pathlib import Path
 
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
@@ -31,15 +32,15 @@ if TYPE_CHECKING:  # pragma: no cover - sólo para tipos
 # Entrada/salida estructurada
 # -------------------------
 
-def read_structured_file(path: str) -> Any:
+
+def read_structured_file(path: Path) -> Any:
     """Lee un archivo JSON o YAML y devuelve los datos parseados."""
-    with open(path, "r", encoding="utf-8") as f:
-        text = f.read()
-    if path.endswith((".yaml", ".yml")):
-        if not yaml:  # pragma: no cover - dependencia opcional
-            raise RuntimeError("pyyaml no está instalado")
-        return yaml.safe_load(text)
-    return json.loads(text)
+    with path.open("r", encoding="utf-8") as f:
+        if path.suffix in {".yaml", ".yml"}:
+            if not yaml:  # pragma: no cover - dependencia opcional
+                raise RuntimeError("pyyaml no está instalado")
+            return yaml.safe_load(f)
+        return json.load(f)
 
 # -------------------------
 # Utilidades numéricas

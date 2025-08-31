@@ -7,7 +7,7 @@ def test_cli_metrics_runs(tmp_path):
     out = tmp_path / "m.json"
     rc = main(["metrics", "--nodes", "10", "--steps", "50", "--save", str(out)])
     assert rc == 0
-    data = read_structured_file(str(out))
+    data = read_structured_file(out)
     assert "Tg_global" in data
     assert "latency_mean" in data
 

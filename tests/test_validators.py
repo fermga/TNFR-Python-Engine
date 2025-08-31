@@ -56,12 +56,12 @@ def test_validator_glifo_invalido():
 def test_read_structured_file_json(tmp_path):
     path = tmp_path / "cfg.json"
     path.write_text("{\"x\": 1}", encoding="utf-8")
-    data = read_structured_file(str(path))
+    data = read_structured_file(path)
     assert data == {"x": 1}
 
 
 def test_load_config_json(tmp_path):
     path = tmp_path / "cfg.json"
     path.write_text("{\"a\": 5}", encoding="utf-8")
-    data = load_config(str(path))
+    data = load_config(path)
     assert data["a"] == 5

@@ -2,6 +2,7 @@ from __future__ import annotations
 import argparse
 import json
 from typing import Any, Dict, List, Optional
+from pathlib import Path
 
 import networkx as nx
 
@@ -49,7 +50,7 @@ def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
     return out
 
 
-def _load_sequence(path: str) -> List[Any]:
+def _load_sequence(path: Path) -> List[Any]:
     data = read_structured_file(path)
 
     def parse_token(tok: Any):
@@ -96,7 +97,7 @@ def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
     """Construye y configura un grafo a partir de los argumentos del CLI."""
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
     if args.config:
-        apply_config(G, args.config)
+        apply_config(G, Path(args.config))
     _attach_callbacks(G)
     validate_canon(G)
     if args.dt is not None:
@@ -237,7 +238,7 @@ def cmd_sequence(args: argparse.Namespace) -> int:
     if args.preset:
         program = get_preset(args.preset)
     elif args.sequence_file:
-        program = _load_sequence(args.sequence_file)
+        program = _load_sequence(Path(args.sequence_file))
     else:
         program = seq(
             Glyph.AL,
