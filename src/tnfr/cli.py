@@ -43,6 +43,19 @@ def _str2bool(s: str) -> bool:
     raise argparse.ArgumentTypeError("expected true/false")
 
 
+# Metadatos para las opciones de gramática y del glifo
+GRAMMAR_ARG_SPECS = [
+    ("--grammar.enabled", _str2bool),
+    ("--grammar.zhir_requires_oz_window", int),
+    ("--grammar.zhir_dnfr_min", float),
+    ("--grammar.thol_min_len", int),
+    ("--grammar.thol_max_len", int),
+    ("--grammar.thol_close_dnfr", float),
+    ("--grammar.si_high", float),
+    ("--glyph.hysteresis_window", int),
+]
+
+
 def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
     out: Dict[str, Any] = {}
     pref = prefix.replace(".", "_")
@@ -153,49 +166,9 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
 
 def add_grammar_args(parser: argparse.ArgumentParser) -> None:
     """Agrega las opciones de gramática y de histéresis del glifo."""
-    parser.add_argument("--grammar.enabled", dest="grammar_enabled", type=_str2bool, default=None)
-    parser.add_argument(
-        "--grammar.zhir_requires_oz_window",
-        dest="grammar_zhir_requires_oz_window",
-        type=int,
-        default=None,
-    )
-    parser.add_argument(
-        "--grammar.zhir_dnfr_min",
-        dest="grammar_zhir_dnfr_min",
-        type=float,
-        default=None,
-    )
-    parser.add_argument(
-        "--grammar.thol_min_len",
-        dest="grammar_thol_min_len",
-        type=int,
-        default=None,
-    )
-    parser.add_argument(
-        "--grammar.thol_max_len",
-        dest="grammar_thol_max_len",
-        type=int,
-        default=None,
-    )
-    parser.add_argument(
-        "--grammar.thol_close_dnfr",
-        dest="grammar_thol_close_dnfr",
-        type=float,
-        default=None,
-    )
-    parser.add_argument(
-        "--grammar.si_high",
-        dest="grammar_si_high",
-        type=float,
-        default=None,
-    )
-    parser.add_argument(
-        "--glyph.hysteresis_window",
-        dest="glyph_hysteresis_window",
-        type=int,
-        default=None,
-    )
+    for opt, typ in GRAMMAR_ARG_SPECS:
+        dest = opt.lstrip("-").replace(".", "_")
+        parser.add_argument(opt, dest=dest, type=typ, default=None)
 
 
 def cmd_run(args: argparse.Namespace) -> int:
