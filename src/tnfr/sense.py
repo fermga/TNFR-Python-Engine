@@ -28,6 +28,30 @@ GLYPHS_CANONICAL: List[str] = [
 
 _SIGMA_ANGLES: Dict[str, float] = {g: (2.0*math.pi * i / len(GLYPHS_CANONICAL)) for i, g in enumerate(GLYPHS_CANONICAL)}
 
+# Glifos relevantes para el plano Σ de observadores de sentido
+SIGMA_ANGLE_KEYS: tuple[str, ...] = (
+    Glyph.IL.value,
+    Glyph.RA.value,
+    Glyph.UM.value,
+    Glyph.SHA.value,
+    Glyph.OZ.value,
+    Glyph.ZHIR.value,
+    Glyph.NAV.value,
+    Glyph.THOL.value,
+)
+
+# Ajustes específicos de ángulos para Σ
+_SIGMA_ANGLES.update({
+    Glyph.IL.value: 0.0,
+    Glyph.RA.value: math.pi/4,
+    Glyph.UM.value: math.pi/2,
+    Glyph.SHA.value: 3*math.pi/4,
+    Glyph.OZ.value: math.pi,
+    Glyph.ZHIR.value: 5*math.pi/4,
+    Glyph.NAV.value: 3*math.pi/2,
+    Glyph.THOL.value: 7*math.pi/4,
+})
+
 GLYPH_UNITS: Dict[str, complex] = {
     g: complex(math.cos(a), math.sin(a)) for g, a in _SIGMA_ANGLES.items()
 }
