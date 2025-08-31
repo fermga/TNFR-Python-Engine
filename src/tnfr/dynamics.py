@@ -18,7 +18,12 @@ import networkx as nx
 
 from .observers import sincronía_fase, carga_glifica, orden_kuramoto, sigma_vector
 from .operators import aplicar_remesh_si_estabilizacion_global
-from .grammar import select_and_apply_with_grammar
+from .grammar import (
+    enforce_canonical_grammar,
+    on_applied_glifo,
+    AL,
+    EN,
+)
 from .constants import (
     DEFAULTS,
     ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI,
@@ -602,18 +607,40 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     # 2b) Normalizadores para selector paramétrico (por paso)
     _norms_para_selector(G)  # no molesta si luego se usa el selector por defecto
 
-    # 3) Selección glífica + aplicación
+    # 3) Selección glífica + aplicación (con lags obligatorios A’L/E’N)
     if apply_glyphs:
         selector = G.graph.get("glyph_selector", default_glyph_selector)
         from .operators import aplicar_glifo
         window = int(G.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS["GLYPH_HYSTERESIS_WINDOW"]))
         use_canon = bool(G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})).get("enabled", False))
+
+        al_max = int(G.graph.get("AL_MAX_LAG", DEFAULTS["AL_MAX_LAG"]))
+        en_max = int(G.graph.get("EN_MAX_LAG", DEFAULTS["EN_MAX_LAG"]))
+        h_al = _hist0.setdefault("since_AL", {})
+        h_en = _hist0.setdefault("since_EN", {})
+
         for n in G.nodes():
-            if use_canon:
-                select_and_apply_with_grammar(G, n, selector, window)
+            h_al[n] = int(h_al.get(n, 0)) + 1
+            h_en[n] = int(h_en.get(n, 0)) + 1
+
+            if h_al[n] > al_max:
+                g = AL
+            elif h_en[n] > en_max:
+                g = EN
             else:
                 g = selector(G, n)
-                aplicar_glifo(G, n, g, window=window)
+                if use_canon:
+                    g = enforce_canonical_grammar(G, n, g)
+
+            aplicar_glifo(G, n, g, window=window)
+            if use_canon:
+                on_applied_glifo(G, n, g)
+
+            if g == AL:
+                h_al[n] = 0
+                h_en[n] = min(h_en[n], en_max)
+            elif g == EN:
+                h_en[n] = 0
 
     # 4) Ecuación nodal
     _dt = float(G.graph.get("DT", DEFAULTS["DT"])) if dt is None else float(dt)

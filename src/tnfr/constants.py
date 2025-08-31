@@ -104,6 +104,10 @@ DEFAULTS: Dict[str, Any] = {
     # Histéresis glífica
     "GLYPH_HYSTERESIS_WINDOW": 7,
 
+    # Lags máximos sin emisión (A’L) y recepción (E’N)
+    "AL_MAX_LAG": 5,
+    "EN_MAX_LAG": 3,
+
     # Margen de histéresis del selector (cuánto "aguanta" sin cambiar glifo si está cerca de un umbral)
     "GLYPH_SELECTOR_MARGIN": 0.05,
 
