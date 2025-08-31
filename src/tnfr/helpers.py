@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import Iterable, Dict, Any
 import math
 from collections import deque
+from itertools import islice
 from statistics import fmean, StatisticsError
 
 try:
@@ -132,7 +133,6 @@ def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
     """Indica si ``glifo`` apareció en las últimas ``ventana`` emisiones"""
     hist = nd.get("hist_glifos")
     gl = str(glifo)
-    from itertools import islice
     if hist and any(g == gl for g in islice(reversed(hist), ventana)):
         return True
     # fallback al glifo dominante actual
