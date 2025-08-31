@@ -100,8 +100,7 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
             # item debería ser un glifo
             g = item.value if isinstance(item, Glyph) else str(item)
             if g not in GLYPHS_CANONICAL:
-                # Permitimos glifos no listados (compat futuros), pero no forzamos
-                pass
+                raise ValueError(f"Glifo no canónico: {g}")
             ops.append(("GLYPH", g))
     return ops
 
