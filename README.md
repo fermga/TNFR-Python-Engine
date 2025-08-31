@@ -6,7 +6,7 @@
 
 ## What is `tnfr`?
 
-`tnfr` is a Python library to **operate with form**: build nodes, couple them into networks, and **modulate their coherence** over time using structural operators. It does not describe “things”; it **activates processes**. Its theoretical basis is the Teoria de la Naturaleza Fractal Resonante (TNFR), which understands reality as **networks of coherence** that persist because they **resonate**.
+`tnfr` is a Python library to **operate with form**: build nodes, couple them into networks, and **modulate their coherence** over time using structural operators. It does not describe “things”; it **activates processes**. Its theoretical basis is the *Teoria de la Naturaleza Fractal Resonante (TNFR)*, which understands reality as **networks of coherence** that persist because they **resonate**.
 
 In practical terms, `tnfr` lets you:
 
