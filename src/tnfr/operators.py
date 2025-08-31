@@ -21,6 +21,7 @@ from .helpers import (
     fase_media,
 )
 from .node import NodoProtocol, NodoNX
+from .types import Glyph
 from collections import deque
 
 """
@@ -99,7 +100,7 @@ def _op_AL(node: NodoProtocol) -> None:  # A’L — Emisión
     gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
     f = float(gf.get("AL_boost", 0.05))
     node.EPI = node.EPI + f
-    node.epi_kind = "A’L"
+    node.epi_kind = Glyph.AL.value
 
 
 def _op_EN(node: NodoProtocol) -> None:  # E’N — Recepción
@@ -109,11 +110,11 @@ def _op_EN(node: NodoProtocol) -> None:  # E’N — Recepción
     neigh = list(node.neighbors())
     if not neigh:
         # Aunque no haya vecinos, etiquetar el nodo con el glifo E’N
-        node.epi_kind = "E’N"
+        node.epi_kind = Glyph.EN.value
         return
     epi_bar = list_mean(v.EPI for v in neigh)
     node.EPI = (1 - mix) * epi + mix * epi_bar
-    node.epi_kind = _select_dominant_glifo(node, neigh) or "E’N"
+    node.epi_kind = _select_dominant_glifo(node, neigh) or Glyph.EN.value
 
 
 def _op_IL(node: NodoProtocol) -> None:  # I’L — Coherencia
@@ -168,7 +169,7 @@ def _op_RA(node: NodoProtocol) -> None:  # R’A — Resonancia
         return
     epi_bar = list_mean(v.EPI for v in neigh)
     node.EPI = epi + diff * (epi_bar - epi)
-    node.epi_kind = _select_dominant_glifo(node, neigh) or "R’A"
+    node.epi_kind = _select_dominant_glifo(node, neigh) or Glyph.RA.value
 
 
 def _op_SHA(node: NodoProtocol) -> None:  # SH’A — Silencio
@@ -181,14 +182,14 @@ def _op_VAL(node: NodoProtocol) -> None:  # VA’L — Expansión
     gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
     s = float(gf.get("VAL_scale", 1.15))
     node.EPI = s * node.EPI
-    node.epi_kind = "VA’L"
+    node.epi_kind = Glyph.VAL.value
 
 
 def _op_NUL(node: NodoProtocol) -> None:  # NU’L — Contracción
     gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
     s = float(gf.get("NUL_scale", 0.85))
     node.EPI = s * node.EPI
-    node.epi_kind = "NU’L"
+    node.epi_kind = Glyph.NUL.value
 
 
 def _op_THOL(node: NodoProtocol) -> None:  # T’HOL — Autoorganización
@@ -237,9 +238,19 @@ def _op_REMESH(node: NodoProtocol) -> None:  # RE’MESH — aviso
 # -------------------------
 
 _NAME_TO_OP = {
-    "A’L": _op_AL, "E’N": _op_EN, "I’L": _op_IL, "O’Z": _op_OZ, "U’M": _op_UM,
-    "R’A": _op_RA, "SH’A": _op_SHA, "VA’L": _op_VAL, "NU’L": _op_NUL,
-    "T’HOL": _op_THOL, "Z’HIR": _op_ZHIR, "NA’V": _op_NAV, "RE’MESH": _op_REMESH,
+    Glyph.AL: _op_AL,
+    Glyph.EN: _op_EN,
+    Glyph.IL: _op_IL,
+    Glyph.OZ: _op_OZ,
+    Glyph.UM: _op_UM,
+    Glyph.RA: _op_RA,
+    Glyph.SHA: _op_SHA,
+    Glyph.VAL: _op_VAL,
+    Glyph.NUL: _op_NUL,
+    Glyph.THOL: _op_THOL,
+    Glyph.ZHIR: _op_ZHIR,
+    Glyph.NAV: _op_NAV,
+    Glyph.REMESH: _op_REMESH,
 }
 
 
@@ -264,12 +275,12 @@ op_NAV = _wrap(_op_NAV)
 op_REMESH = _wrap(_op_REMESH)
 
 
-def aplicar_glifo_obj(node: NodoProtocol, glifo: str, *, window: Optional[int] = None) -> None:
+def aplicar_glifo_obj(node: NodoProtocol, glifo: Glyph | str, *, window: Optional[int] = None) -> None:
     """Aplica ``glifo`` a un objeto que cumple :class:`NodoProtocol`."""
 
-    glifo = str(glifo)
-    op = _NAME_TO_OP.get(glifo)
-    if not op:
+    try:
+        g = glifo if isinstance(glifo, Glyph) else Glyph(str(glifo))
+    except ValueError:
         step_idx = len(node.graph.get("history", {}).get("C_steps", []))
         node.graph.setdefault("history", {}).setdefault("events", []).append(
             (
@@ -282,13 +293,15 @@ def aplicar_glifo_obj(node: NodoProtocol, glifo: str, *, window: Optional[int] =
             )
         )
         raise ValueError(f"glifo desconocido: {glifo}")
+
+    op = _NAME_TO_OP.get(g)
     if window is None:
         window = int(node.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS["GLYPH_HYSTERESIS_WINDOW"]))
-    node.push_glifo(glifo, window)
+    node.push_glifo(g.value, window)
     op(node)
 
 
-def aplicar_glifo(G, n, glifo: str, *, window: Optional[int] = None) -> None:
+def aplicar_glifo(G, n, glifo: Glyph | str, *, window: Optional[int] = None) -> None:
     """Adaptador para operar sobre grafos ``networkx``."""
     node = NodoNX(G, n)
     aplicar_glifo_obj(node, glifo, window=window)

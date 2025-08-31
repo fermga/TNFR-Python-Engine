@@ -1,24 +1,25 @@
 from __future__ import annotations
 from .program import seq, block, wait, ejemplo_canonico_basico
+from .types import Glyph
 
 
 _PRESETS = {
-    "arranque_resonante": seq("A’L", "E’N", "I’L", "R’A", "VA’L", "U’M", wait(3), "SH’A"),
-    "mutacion_contenida": seq("A’L", "E’N", block("O’Z", "Z’HIR", "I’L", repeat=2), "R’A", "SH’A"),
+    "arranque_resonante": seq(Glyph.AL, Glyph.EN, Glyph.IL, Glyph.RA, Glyph.VAL, Glyph.UM, wait(3), Glyph.SHA),
+    "mutacion_contenida": seq(Glyph.AL, Glyph.EN, block(Glyph.OZ, Glyph.ZHIR, Glyph.IL, repeat=2), Glyph.RA, Glyph.SHA),
     "exploracion_acople": seq(
-        "A’L",
-        "E’N",
-        "I’L",
-        "VA’L",
-        "U’M",
-        block("O’Z", "NA’V", "I’L", repeat=1),
-        "R’A",
-        "SH’A",
+        Glyph.AL,
+        Glyph.EN,
+        Glyph.IL,
+        Glyph.VAL,
+        Glyph.UM,
+        block(Glyph.OZ, Glyph.NAV, Glyph.IL, repeat=1),
+        Glyph.RA,
+        Glyph.SHA,
     ),
     "ejemplo_canonico": ejemplo_canonico_basico(),
     # Topologías fractales: expansión/contracción modular
-    "fractal_expand": seq(block("T’HOL", "VA’L", "U’M", repeat=2, close="NU’L"), "R’A"),
-    "fractal_contract": seq(block("T’HOL", "NU’L", "U’M", repeat=2, close="SH’A"), "R’A"),
+    "fractal_expand": seq(block(Glyph.THOL, Glyph.VAL, Glyph.UM, repeat=2, close=Glyph.NUL), Glyph.RA),
+    "fractal_contract": seq(block(Glyph.THOL, Glyph.NUL, Glyph.UM, repeat=2, close=Glyph.SHA), Glyph.RA),
 }
 
 

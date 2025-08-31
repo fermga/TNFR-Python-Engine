@@ -17,6 +17,7 @@ from .dynamics import (
     dnfr_epi_vf_mixed,
 )
 from .operators import aplicar_glifo
+from .types import Glyph
 from .constants import ALIAS_EPI, ALIAS_VF, ALIAS_THETA
 
 
@@ -74,67 +75,67 @@ class Operador:
 # Derivados concretos -------------------------------------------------------
 class Emision(Operador):
     name = "emision"
-    glyph = "A’L"
+    glyph = Glyph.AL.value
 
 
 class Recepcion(Operador):
     name = "recepcion"
-    glyph = "E’N"
+    glyph = Glyph.EN.value
 
 
 class Coherencia(Operador):
     name = "coherencia"
-    glyph = "I’L"
+    glyph = Glyph.IL.value
 
 
 class Disonancia(Operador):
     name = "disonancia"
-    glyph = "O’Z"
+    glyph = Glyph.OZ.value
 
 
 class Acoplamiento(Operador):
     name = "acoplamiento"
-    glyph = "U’M"
+    glyph = Glyph.UM.value
 
 
 class Resonancia(Operador):
     name = "resonancia"
-    glyph = "R’A"
+    glyph = Glyph.RA.value
 
 
 class Silencio(Operador):
     name = "silencio"
-    glyph = "SH’A"
+    glyph = Glyph.SHA.value
 
 
 class Expansion(Operador):
     name = "expansion"
-    glyph = "VA’L"
+    glyph = Glyph.VAL.value
 
 
 class Contraccion(Operador):
     name = "contraccion"
-    glyph = "NU’L"
+    glyph = Glyph.NUL.value
 
 
 class Autoorganizacion(Operador):
     name = "autoorganizacion"
-    glyph = "T’HOL"
+    glyph = Glyph.THOL.value
 
 
 class Mutacion(Operador):
     name = "mutacion"
-    glyph = "Z’HIR"
+    glyph = Glyph.ZHIR.value
 
 
 class Transicion(Operador):
     name = "transicion"
-    glyph = "NA’V"
+    glyph = Glyph.NAV.value
 
 
 class Recursividad(Operador):
     name = "recursividad"
-    glyph = "RE’MESH"
+    glyph = Glyph.REMESH.value
 
 
 OPERADORES = {

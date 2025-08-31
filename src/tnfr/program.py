@@ -9,9 +9,9 @@ from .helpers import register_callback
 from .grammar import enforce_canonical_grammar, on_applied_glifo
 from .operators import aplicar_glifo
 from .sense import GLYPHS_CANONICAL
+from .types import Glyph
 
 # Tipos básicos
-Glyph = str
 Node = Any
 AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
 
@@ -31,7 +31,7 @@ class TARGET:
 class THOL:
     body: Sequence[Any]
     repeat: int = 1                # cuántas veces repetir el cuerpo
-    force_close: Optional[Glyph] = None  # None → cierre automático (gramática); 'SH’A' o 'NU’L' para forzar
+    force_close: Optional[Glyph] = None  # None → cierre automático (gramática); SH’A o NU’L para forzar
 
 Token = Union[Glyph, WAIT, TARGET, THOL]
 
@@ -66,12 +66,13 @@ def _all_nodes(G):
 # Núcleo de ejecución
 # ---------------------
 
-def _apply_glyph_to_targets(G, g: Glyph, nodes: Optional[Iterable[Node]] = None):
+def _apply_glyph_to_targets(G, g: Glyph | str, nodes: Optional[Iterable[Node]] = None):
     nodes = list(nodes) if nodes is not None else _all_nodes(G)
     w = _window(G)
+    g_str = g.value if isinstance(g, Glyph) else str(g)
     # Pasamos por la gramática antes de aplicar
     for n in nodes:
-        g_eff = enforce_canonical_grammar(G, n, g)
+        g_eff = enforce_canonical_grammar(G, n, g_str)
         aplicar_glifo(G, n, g_eff, window=w)
         on_applied_glifo(G, n, g_eff)
 
@@ -96,15 +97,15 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
             ops.append(("WAIT", item.steps))
         elif isinstance(item, THOL):
             # abrir bloque T’HOL
-            ops.append(("GLYPH", "T’HOL"))
+            ops.append(("GLYPH", Glyph.THOL.value))
             for _ in range(max(1, int(item.repeat))):
                 ops.extend(_flatten(item.body))
             # cierre explícito si se pidió; si no, la gramática puede cerrarlo
-            if item.force_close in ("SH’A", "NU’L"):
-                ops.append(("GLYPH", item.force_close))
+            if item.force_close in (Glyph.SHA, Glyph.NUL):
+                ops.append(("GLYPH", item.force_close.value))
         else:
             # item debería ser un glifo
-            g = str(item)
+            g = item.value if isinstance(item, Glyph) else str(item)
             if g not in GLYPHS_CANONICAL:
                 # Permitimos glifos no listados (compat futuros), pero no forzamos
                 pass
@@ -173,4 +174,4 @@ def ejemplo_canonico_basico() -> List[Token]:
 
     SH’A → A’L → R’A → Z’HIR → NU’L → T’HOL
     """
-    return seq("SH’A", "A’L", "R’A", "Z’HIR", "NU’L", "T’HOL")
+    return seq(Glyph.SHA, Glyph.AL, Glyph.RA, Glyph.ZHIR, Glyph.NUL, Glyph.THOL)

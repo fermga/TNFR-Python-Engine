@@ -5,24 +5,25 @@ from collections import Counter
 
 from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
 from .helpers import _get_attr, clamp01, register_callback, ensure_history, last_glifo
+from .types import Glyph
 
 # -------------------------
 # Canon: orden circular de glifos y ángulos
 # -------------------------
 GLYPHS_CANONICAL: List[str] = [
-    "A’L",  # 0
-    "E’N",  # 1
-    "I’L",  # 2
-    "U’M",  # 3
-    "R’A",  # 4
-    "VA’L", # 5
-    "O’Z",  # 6
-    "Z’HIR",# 7
-    "NA’V", # 8
-    "T’HOL",# 9
-    "NU’L", #10
-    "SH’A", #11
-    "RE’MESH" #12
+    Glyph.AL.value,   # 0
+    Glyph.EN.value,   # 1
+    Glyph.IL.value,   # 2
+    Glyph.UM.value,   # 3
+    Glyph.RA.value,   # 4
+    Glyph.VAL.value,  # 5
+    Glyph.OZ.value,   # 6
+    Glyph.ZHIR.value, # 7
+    Glyph.NAV.value,  # 8
+    Glyph.THOL.value, # 9
+    Glyph.NUL.value,  #10
+    Glyph.SHA.value,  #11
+    Glyph.REMESH.value #12
 ]
 
 _SIGMA_ANGLES: Dict[str, float] = {g: (2.0*math.pi * i / len(GLYPHS_CANONICAL)) for i, g in enumerate(GLYPHS_CANONICAL)}
