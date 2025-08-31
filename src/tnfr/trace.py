@@ -115,7 +115,12 @@ def _trace_after(G, *args, **kwargs):
 
     if "sigma" in capture:
         sv = sigma_vector_global(G)
-        meta["sigma"] = {"x": float(sv.get("x", 1.0)), "y": float(sv.get("y", 0.0)), "mag": float(sv.get("mag", 1.0)), "angle": float(sv.get("angle", 0.0))}
+        meta["sigma"] = {
+            "x": float(sv.get("x", 0.0)),
+            "y": float(sv.get("y", 0.0)),
+            "mag": float(sv.get("mag", 0.0)),
+            "angle": float(sv.get("angle", 0.0)),
+        }
 
     if "glifo_counts" in capture:
         cnt = Counter()
