@@ -62,13 +62,24 @@ def _node_offset(G, n) -> int:
 
 def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``."""
+
     base_seed = int(node.graph.get("RANDOM_SEED", 0))
-    step_idx = len(node.graph.get("history", {}).get("C_steps", []))
-    G = getattr(node, "G", None)
-    mapping = _ensure_node_offset_map(G) if G is not None else {}
-    node_id = getattr(node, "n", None)
-    offset = mapping.get(node_id, 0)
-    rnd = random.Random(base_seed + step_idx * 1000003 + offset % 1009)
+    cache = node.graph.setdefault("_rnd_cache", {})
+
+    if hasattr(node, "n") and hasattr(node, "G"):
+        key = _node_offset(node.G, node.n)
+    else:
+        uid = getattr(node, "_noise_uid", None)
+        if uid is None:
+            uid = id(node)
+            setattr(node, "_noise_uid", uid)
+        key = int(uid)
+
+    rnd = cache.get(key)
+    if rnd is None:
+        rnd = random.Random(base_seed + key)
+        cache[key] = rnd
+
     return amplitude * (2.0 * rnd.random() - 1.0)
 
 # -------------------------
