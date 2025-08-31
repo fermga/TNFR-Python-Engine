@@ -84,7 +84,7 @@ def _trace_before(G, *args, **kwargs):
             meta["callbacks"] = out
 
     if "thol_state" in capture:
-        # cuántos nodos tienen bloque T’HOL abierto
+        # cuántos nodos tienen bloque THOL abierto
         th_open = 0
         for n in G.nodes():
             st = G.nodes[n].get("_GRAM", {})
@@ -135,7 +135,7 @@ def register_trace(G) -> None:
       - dnfr_weights: mezcla ΔNFR declarada en el motor
       - si_weights: pesos α/β/γ y sensibilidad de Si
       - callbacks: callbacks registrados por fase (si están en G.graph['_callbacks'])
-      - thol_open_nodes: cuántos nodos tienen bloque T’HOL abierto
+      - thol_open_nodes: cuántos nodos tienen bloque THOL abierto
       - kuramoto: (R, ψ) de la red
       - sigma: vector global del plano del sentido
       - glifos: conteos por glifo tras el paso

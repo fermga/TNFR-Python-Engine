@@ -2,11 +2,12 @@ import gc
 import math
 import statistics as st
 import networkx as nx
+import pytest
 
 from tnfr.node import NodoNX
 from tnfr.operators import random_jitter
 from tnfr.constants import ALIAS_THETA
-from tnfr.observers import sincronía_fase, orden_kuramoto
+from tnfr.observers import sincronía_fase, orden_kuramoto, carga_glifica
 from tnfr.helpers import angle_diff, _set_attr
 
 
@@ -43,3 +44,18 @@ def test_phase_observers_match_manual_calculation():
 
     R = ((sum(X) ** 2 + sum(Y) ** 2) ** 0.5) / len(angles)
     assert math.isclose(orden_kuramoto(G), float(R))
+
+
+def test_carga_glifica_uses_module_constants(monkeypatch):
+    G = nx.Graph()
+    G.add_node(0, hist_glifos=["A"])
+    G.add_node(1, hist_glifos=["B"])
+
+    # Patch constants to custom categories
+    monkeypatch.setattr("tnfr.observers.ESTABILIZADORES", ["A"])  # type: ignore[attr-defined]
+    monkeypatch.setattr("tnfr.observers.DISRUPTIVOS", ["B"])  # type: ignore[attr-defined]
+
+    dist = carga_glifica(G)
+
+    assert dist["_estabilizadores"] == pytest.approx(0.5)
+    assert dist["_disruptivos"] == pytest.approx(0.5)

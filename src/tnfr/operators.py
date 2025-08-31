@@ -29,9 +29,9 @@ from collections import deque
 Este módulo implementa:
 - Los 13 glifos como operadores locales suaves.
 - Un dispatcher `aplicar_glifo` que mapea el nombre del glifo (con apóstrofo tipográfico) a su función.
-- RE’MESH de red: `aplicar_remesh_red` y `aplicar_remesh_si_estabilización_global`.
+- REMESH de red: `aplicar_remesh_red` y `aplicar_remesh_si_estabilización_global`.
 
-Nota sobre α (alpha) de RE’MESH: se toma por prioridad de
+Nota sobre α (alpha) de REMESH: se toma por prioridad de
 1) G.graph["GLYPH_FACTORS"]["REMESH_alpha"]
 2) G.graph["REMESH_ALPHA"]
 3) DEFAULTS["REMESH_ALPHA"]
@@ -102,20 +102,20 @@ def _select_dominant_glifo(node: NodoProtocol, neigh: Iterable[NodoProtocol]) ->
     return max(candidatos, key=lambda x: x[0])[1]
 
 
-def _op_AL(node: NodoProtocol) -> None:  # A’L — Emisión
+def _op_AL(node: NodoProtocol) -> None:  # AL — Emisión
     gf = get_glyph_factors(node)
     f = float(gf.get("AL_boost", 0.05))
     node.EPI = node.EPI + f
     node.epi_kind = Glyph.AL.value
 
 
-def _op_EN(node: NodoProtocol) -> None:  # E’N — Recepción
+def _op_EN(node: NodoProtocol) -> None:  # EN — Recepción
     gf = get_glyph_factors(node)
     mix = float(gf.get("EN_mix", 0.25))
     epi = node.EPI
     neigh = list(node.neighbors())
     if not neigh:
-        # Aunque no haya vecinos, etiquetar el nodo con el glifo E’N
+        # Aunque no haya vecinos, etiquetar el nodo con el glifo EN
         node.epi_kind = Glyph.EN.value
         return
     epi_bar = list_mean(v.EPI for v in neigh)
@@ -123,13 +123,13 @@ def _op_EN(node: NodoProtocol) -> None:  # E’N — Recepción
     node.epi_kind = _select_dominant_glifo(node, neigh) or Glyph.EN.value
 
 
-def _op_IL(node: NodoProtocol) -> None:  # I’L — Coherencia
+def _op_IL(node: NodoProtocol) -> None:  # IL — Coherencia
     gf = get_glyph_factors(node)
     factor = float(gf.get("IL_dnfr_factor", 0.7))
     node.dnfr = factor * getattr(node, "dnfr", 0.0)
 
 
-def _op_OZ(node: NodoProtocol) -> None:  # O’Z — Disonancia
+def _op_OZ(node: NodoProtocol) -> None:  # OZ — Disonancia
     gf = get_glyph_factors(node)
     factor = float(gf.get("OZ_dnfr_factor", 1.3))
     dnfr = getattr(node, "dnfr", 0.0)
@@ -140,7 +140,7 @@ def _op_OZ(node: NodoProtocol) -> None:  # O’Z — Disonancia
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
 
 
-def _op_UM(node: NodoProtocol) -> None:  # U’M — Acoplamiento
+def _op_UM(node: NodoProtocol) -> None:  # UM — Acoplamiento
     gf = get_glyph_factors(node)
     k = float(gf.get("UM_theta_push", 0.25))
     th = node.theta
@@ -166,7 +166,7 @@ def _op_UM(node: NodoProtocol) -> None:  # U’M — Acoplamiento
                 node.add_edge(j, compat)
 
 
-def _op_RA(node: NodoProtocol) -> None:  # R’A — Resonancia
+def _op_RA(node: NodoProtocol) -> None:  # RA — Resonancia
     gf = get_glyph_factors(node)
     diff = float(gf.get("RA_epi_diff", 0.15))
     epi = node.EPI
@@ -178,39 +178,39 @@ def _op_RA(node: NodoProtocol) -> None:  # R’A — Resonancia
     node.epi_kind = _select_dominant_glifo(node, neigh) or Glyph.RA.value
 
 
-def _op_SHA(node: NodoProtocol) -> None:  # SH’A — Silencio
+def _op_SHA(node: NodoProtocol) -> None:  # SHA — Silencio
     gf = get_glyph_factors(node)
     factor = float(gf.get("SHA_vf_factor", 0.85))
     node.vf = factor * node.vf
 
 
-def _op_VAL(node: NodoProtocol) -> None:  # VA’L — Expansión
+def _op_VAL(node: NodoProtocol) -> None:  # VAL — Expansión
     gf = get_glyph_factors(node)
     s = float(gf.get("VAL_scale", 1.15))
     node.EPI = s * node.EPI
     node.epi_kind = Glyph.VAL.value
 
 
-def _op_NUL(node: NodoProtocol) -> None:  # NU’L — Contracción
+def _op_NUL(node: NodoProtocol) -> None:  # NUL — Contracción
     gf = get_glyph_factors(node)
     s = float(gf.get("NUL_scale", 0.85))
     node.EPI = s * node.EPI
     node.epi_kind = Glyph.NUL.value
 
 
-def _op_THOL(node: NodoProtocol) -> None:  # T’HOL — Autoorganización
+def _op_THOL(node: NodoProtocol) -> None:  # THOL — Autoorganización
     gf = get_glyph_factors(node)
     a = float(gf.get("THOL_accel", 0.10))
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
-def _op_ZHIR(node: NodoProtocol) -> None:  # Z’HIR — Mutación
+def _op_ZHIR(node: NodoProtocol) -> None:  # ZHIR — Mutación
     gf = get_glyph_factors(node)
     shift = float(gf.get("ZHIR_theta_shift", math.pi / 2))
     node.theta = node.theta + shift
 
 
-def _op_NAV(node: NodoProtocol) -> None:  # NA’V — Transición
+def _op_NAV(node: NodoProtocol) -> None:  # NAV — Transición
     gf = get_glyph_factors(node)
     dnfr = node.dnfr
     vf = node.vf
@@ -230,11 +230,11 @@ def _op_NAV(node: NodoProtocol) -> None:  # NA’V — Transición
     node.dnfr = base + jitter
 
 
-def _op_REMESH(node: NodoProtocol) -> None:  # RE’MESH — aviso
+def _op_REMESH(node: NodoProtocol) -> None:  # REMESH — aviso
     step_idx = len(node.graph.get("history", {}).get("C_steps", []))
     last_warn = node.graph.get("_remesh_warn_step", None)
     if last_warn != step_idx:
-        msg = "RE’MESH es a escala de red. Usa aplicar_remesh_si_estabilizacion_global(G) o aplicar_remesh_red(G)."
+        msg = "REMESH es a escala de red. Usa aplicar_remesh_si_estabilizacion_global(G) o aplicar_remesh_red(G)."
         node.graph.setdefault("history", {}).setdefault("events", []).append(("warn", {"step": step_idx, "node": None, "msg": msg}))
         node.graph["_remesh_warn_step"] = step_idx
     return
@@ -314,7 +314,7 @@ def aplicar_glifo(G, n, glifo: Glyph | str, *, window: Optional[int] = None) -> 
 
 
 # -------------------------
-# RE’MESH de red (usa _epi_hist capturado en dynamics.step)
+# REMESH de red (usa _epi_hist capturado en dynamics.step)
 # -------------------------
 
 def _remesh_alpha_info(G):
@@ -331,7 +331,7 @@ def _remesh_alpha_info(G):
 
 
 def aplicar_remesh_red(G) -> None:
-    """RE’MESH a escala de red usando _epi_hist con memoria multi-escala."""
+    """REMESH a escala de red usando _epi_hist con memoria multi-escala."""
     # REMESH_TAU: alias legado de REMESH_TAU_GLOBAL
     tau_g = int(
         G.graph.get(

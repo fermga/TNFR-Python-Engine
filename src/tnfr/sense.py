@@ -80,7 +80,7 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
 
     Interpretación TNFR: |σ| mide cuán alineada está la red en su
     **recorrido glífico**; arg(σ) indica la **dirección funcional** dominante
-    (p. ej., torno a I’L/RA para consolidación/distribución, O’Z/Z’HIR para cambio).
+    (p. ej., torno a IL/RA para consolidación/distribución, OZ/ZHIR para cambio).
 
     Si ningún nodo posee un glifo registrado, retorna el vector nulo
     ``{"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}``.

@@ -1,5 +1,5 @@
 from __future__ import annotations
-"""program.py — API de secuencias canónicas con T’HOL como primera clase."""
+"""program.py — API de secuencias canónicas con THOL como primera clase."""
 from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union
 from dataclasses import dataclass
 from contextlib import contextmanager
@@ -29,7 +29,7 @@ class TARGET:
 class THOL:
     body: Sequence[Any]
     repeat: int = 1                # cuántas veces repetir el cuerpo
-    force_close: Optional[Glyph] = None  # None → cierre automático (gramática); SH’A o NU’L para forzar
+    force_close: Optional[Glyph] = None  # None → cierre automático (gramática); SHA o NUL para forzar
 
 Token = Union[Glyph, WAIT, TARGET, THOL]
 
@@ -89,7 +89,7 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
         elif isinstance(item, WAIT):
             ops.append(("WAIT", item.steps))
         elif isinstance(item, THOL):
-            # abrir bloque T’HOL
+            # abrir bloque THOL
             ops.append(("GLYPH", Glyph.THOL.value))
             for _ in range(max(1, int(item.repeat))):
                 ops.extend(_flatten(item.body))
@@ -116,7 +116,7 @@ def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> N
       - Usa `TARGET(nodes=...)` para cambiar el subconjunto de aplicación.
       - `WAIT(k)` avanza k pasos con el selector vigente (no fuerza glifo).
       - `THOL([...], repeat=r, force_close=…)` abre un bloque autoorganizativo,
-        repite el cuerpo y (opcional) fuerza cierre con SH’A/NU’L.
+        repite el cuerpo y (opcional) fuerza cierre con SHA/NUL.
       - Los glifos se aplican pasando por `enforce_canonical_grammar`.
     """
     ops = _flatten(sequence)
@@ -165,6 +165,6 @@ def wait(steps: int = 1) -> WAIT:
 def ejemplo_canonico_basico() -> List[Token]:
     """Secuencia canónica de referencia.
 
-    SH’A → A’L → R’A → Z’HIR → NU’L → T’HOL
+    SHA → AL → RA → ZHIR → NUL → THOL
     """
     return seq(Glyph.SHA, Glyph.AL, Glyph.RA, Glyph.ZHIR, Glyph.NUL, Glyph.THOL)

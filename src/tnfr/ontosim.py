@@ -2,7 +2,7 @@
 ontosim.py — TNFR canónica
 
 Módulo de orquestación mínima que encadena:
-ΔNFR (campo) → Si → glifos → ecuación nodal → clamps → U’M → observadores → RE’MESH
+ΔNFR (campo) → Si → glifos → ecuación nodal → clamps → UM → observadores → REMESH
 """
 from __future__ import annotations
 import networkx as nx

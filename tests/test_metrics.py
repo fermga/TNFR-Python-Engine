@@ -5,11 +5,11 @@ from tnfr.metrics import _metrics_step
 
 
 def test_pp_val_zero_when_no_remesh():
-    """PP metric should be 0.0 when no RE’MESH events occur."""
+    """PP metric should be 0.0 when no REMESH events occur."""
     G = nx.Graph()
     attach_defaults(G)
-    # Nodo en estado SH’A, pero sin eventos RE’MESH
-    G.add_node(0, EPI_kind="SH’A")
+    # Nodo en estado SHA, pero sin eventos REMESH
+    G.add_node(0, EPI_kind="SHA")
 
     _metrics_step(G)
 

@@ -558,10 +558,10 @@ def default_glyph_selector(G, n) -> str:
     dnfr = abs(_get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
 
     if Si >= hi:
-        return "I’L"
+        return "IL"
     if Si <= lo:
-        return "O’Z" if dnfr > dnfr_hi else "Z’HIR"
-    return "NA’V" if dnfr > dnfr_hi else "R’A"
+        return "OZ" if dnfr > dnfr_hi else "ZHIR"
+    return "NAV" if dnfr > dnfr_hi else "RA"
 
 
 # -------------------------
@@ -598,9 +598,9 @@ def _soft_grammar_prefilter(G, n, cand, dnfr, accel):
 def parametric_glyph_selector(G, n) -> str:
     """Multiobjetivo: combina Si, |ΔNFR|_norm y |accel|_norm + histéresis.
     Reglas base:
-      - Si alto  ⇒ I’L
-      - Si bajo  ⇒ O’Z si |ΔNFR| alto; Z’HIR si |ΔNFR| bajo; T’HOL si hay mucha aceleración
-      - Si medio ⇒ NA’V si |ΔNFR| alto (o accel alta), si no R’A
+      - Si alto  ⇒ IL
+      - Si bajo  ⇒ OZ si |ΔNFR| alto; ZHIR si |ΔNFR| bajo; THOL si hay mucha aceleración
+      - Si medio ⇒ NAV si |ΔNFR| alto (o accel alta), si no RA
     """
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
@@ -624,22 +624,22 @@ def parametric_glyph_selector(G, n) -> str:
     s = max(1e-9, w_si + w_dn + w_ac)
     w_si, w_dn, w_ac = w_si/s, w_dn/s, w_ac/s
     score = w_si*Si + w_dn*(1.0 - dnfr) + w_ac*(1.0 - accel)
-    # usar score como desempate/override suave: si score>0.66 ⇒ inclinar a I’L; <0.33 ⇒ inclinar a O’Z/Z’HIR
+    # usar score como desempate/override suave: si score>0.66 ⇒ inclinar a IL; <0.33 ⇒ inclinar a OZ/ZHIR
 
     # Decisión base
     if Si >= si_hi:
-        cand = "I’L"
+        cand = "IL"
     elif Si <= si_lo:
         if accel >= acc_hi:
-            cand = "T’HOL"
+            cand = "THOL"
         else:
-            cand = "O’Z" if dnfr >= dnfr_hi else "Z’HIR"
+            cand = "OZ" if dnfr >= dnfr_hi else "ZHIR"
     else:
         # Zona intermedia: transición si el campo "pide" reorganizar (dnfr/accel altos)
         if dnfr >= dnfr_hi or accel >= acc_hi:
-            cand = "NA’V"
+            cand = "NAV"
         else:
-            cand = "R’A"
+            cand = "RA"
 
     # --- Histéresis del selector: si está cerca de umbrales, conserva el glifo reciente ---
     # Medimos "certeza" como distancia mínima a los umbrales relevantes
@@ -651,7 +651,7 @@ def parametric_glyph_selector(G, n) -> str:
         hist = nd.get("hist_glifos")
         if hist:
             prev = hist[-1]
-            if isinstance(prev, str) and prev in ("I’L","O’Z","Z’HIR","T’HOL","NA’V","R’A"):
+            if isinstance(prev, str) and prev in ("IL","OZ","ZHIR","THOL","NAV","RA"):
                 return prev
 
     # Penalización por falta de avance en σ/Si si se repite glifo
@@ -668,12 +668,12 @@ def parametric_glyph_selector(G, n) -> str:
             score -= 0.05
             
     # Override suave guiado por score (solo si NO cayó la histéresis arriba)
-    # Regla: score>=0.66 inclina a I’L; score<=0.33 inclina a O’Z/Z’HIR
+    # Regla: score>=0.66 inclina a IL; score<=0.33 inclina a OZ/ZHIR
     try:
-        if score >= 0.66 and cand in ("NA’V","R’A","Z’HIR","O’Z"):
-            cand = "I’L"
-        elif score <= 0.33 and cand in ("NA’V","R’A","I’L"):
-            cand = "O’Z" if dnfr >= dnfr_lo else "Z’HIR"
+        if score >= 0.66 and cand in ("NAV","RA","ZHIR","OZ"):
+            cand = "IL"
+        elif score <= 0.33 and cand in ("NAV","RA","IL"):
+            cand = "OZ" if dnfr >= dnfr_lo else "ZHIR"
     except NameError:
         pass
 
@@ -704,7 +704,7 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     if selector is parametric_glyph_selector:
         _norms_para_selector(G)
 
-    # 3) Selección glífica + aplicación (con lags obligatorios A’L/E’N)
+    # 3) Selección glífica + aplicación (con lags obligatorios AL/EN)
     if apply_glyphs:
         from .operators import aplicar_glifo
         window = int(G.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS["GLYPH_HYSTERESIS_WINDOW"]))
@@ -777,7 +777,7 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
         G.graph["_epi_hist"] = epi_hist
     epi_hist.append({n: _get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes()})
 
-    # 8) RE’MESH condicionado
+    # 8) REMESH condicionado
     aplicar_remesh_si_estabilizacion_global(G)
 
     # 8b) Validadores de invariantes
