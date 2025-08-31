@@ -76,13 +76,15 @@ def _select_dominant_glifo(node: NodoProtocol, neigh: Iterable[NodoProtocol]) ->
 
 
 def _op_AL(node: NodoProtocol) -> None:  # A’L — Emisión
-    f = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("AL_boost", 0.05))
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    f = float(gf.get("AL_boost", 0.05))
     node.EPI = node.EPI + f
     node.epi_kind = "A’L"
 
 
 def _op_EN(node: NodoProtocol) -> None:  # E’N — Recepción
-    mix = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("EN_mix", 0.25))
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    mix = float(gf.get("EN_mix", 0.25))
     epi = node.EPI
     neigh = list(node.neighbors())
     if not neigh:
@@ -95,12 +97,14 @@ def _op_EN(node: NodoProtocol) -> None:  # E’N — Recepción
 
 
 def _op_IL(node: NodoProtocol) -> None:  # I’L — Coherencia
-    factor = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("IL_dnfr_factor", 0.7))
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    factor = float(gf.get("IL_dnfr_factor", 0.7))
     node.dnfr = factor * getattr(node, "dnfr", 0.0)
 
 
 def _op_OZ(node: NodoProtocol) -> None:  # O’Z — Disonancia
-    factor = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("OZ_dnfr_factor", 1.3))
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    factor = float(gf.get("OZ_dnfr_factor", 1.3))
     dnfr = getattr(node, "dnfr", 0.0)
     if bool(node.graph.get("OZ_NOISE_MODE", False)):
         sigma = float(node.graph.get("OZ_SIGMA", 0.1))
@@ -110,7 +114,8 @@ def _op_OZ(node: NodoProtocol) -> None:  # O’Z — Disonancia
 
 
 def _op_UM(node: NodoProtocol) -> None:  # U’M — Acoplamiento
-    k = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("UM_theta_push", 0.25))
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    k = float(gf.get("UM_theta_push", 0.25))
     th = node.theta
     thL = _fase_media_node(node)
     d = ((thL - th + math.pi) % (2 * math.pi) - math.pi)
@@ -135,7 +140,8 @@ def _op_UM(node: NodoProtocol) -> None:  # U’M — Acoplamiento
 
 
 def _op_RA(node: NodoProtocol) -> None:  # R’A — Resonancia
-    diff = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("RA_epi_diff", 0.15))
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    diff = float(gf.get("RA_epi_diff", 0.15))
     epi = node.EPI
     neigh = list(node.neighbors())
     if not neigh:
@@ -146,36 +152,41 @@ def _op_RA(node: NodoProtocol) -> None:  # R’A — Resonancia
 
 
 def _op_SHA(node: NodoProtocol) -> None:  # SH’A — Silencio
-    factor = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("SHA_vf_factor", 0.85))
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    factor = float(gf.get("SHA_vf_factor", 0.85))
     node.vf = factor * node.vf
 
 
 def _op_VAL(node: NodoProtocol) -> None:  # VA’L — Expansión
-    s = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("VAL_scale", 1.15))
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    s = float(gf.get("VAL_scale", 1.15))
     node.EPI = s * node.EPI
     node.epi_kind = "VA’L"
 
 
 def _op_NUL(node: NodoProtocol) -> None:  # NU’L — Contracción
-    s = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("NUL_scale", 0.85))
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    s = float(gf.get("NUL_scale", 0.85))
     node.EPI = s * node.EPI
     node.epi_kind = "NU’L"
 
 
 def _op_THOL(node: NodoProtocol) -> None:  # T’HOL — Autoorganización
-    a = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("THOL_accel", 0.10))
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    a = float(gf.get("THOL_accel", 0.10))
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
 def _op_ZHIR(node: NodoProtocol) -> None:  # Z’HIR — Mutación
-    shift = float(node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("ZHIR_theta_shift", math.pi / 2))
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    shift = float(gf.get("ZHIR_theta_shift", math.pi / 2))
     node.theta = node.theta + shift
 
 
 def _op_NAV(node: NodoProtocol) -> None:  # NA’V — Transición
+    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
     dnfr = node.dnfr
     vf = node.vf
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
     eta = float(gf.get("NAV_eta", 0.5))
     strict = bool(node.graph.get("NAV_STRICT", False))
     if strict:
