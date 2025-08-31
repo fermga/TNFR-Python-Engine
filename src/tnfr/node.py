@@ -89,7 +89,9 @@ class NodoProtocol(Protocol):
     def has_edge(self, other: "NodoProtocol") -> bool:
         ...
 
-    def add_edge(self, other: "NodoProtocol", weight: float) -> None:
+    def add_edge(
+        self, other: "NodoProtocol", weight: float, *, overwrite: bool = False
+    ) -> None:
         ...
 
     def offset(self) -> int:
@@ -129,7 +131,18 @@ class NodoTNFR:
         """Devuelve el peso de la arista hacia ``other`` o ``0.0`` si no existe."""
         return self._neighbors.get(other, 0.0)
 
-    def add_edge(self, other: "NodoTNFR", weight: float = 1.0) -> None:
+    def add_edge(
+        self, other: "NodoTNFR", weight: float = 1.0, *, overwrite: bool = False
+    ) -> None:
+        """Conecta este nodo con ``other``.
+
+        Si la arista ya existe, el peso almacenado se conserva a menos que
+        ``overwrite`` sea ``True``, en cuyo caso se actualiza al nuevo
+        ``weight``.
+        """
+
+        if other in self._neighbors and not overwrite:
+            return
         self._neighbors[other] = weight
         other._neighbors[self] = weight
 
@@ -188,8 +201,12 @@ class NodoNX(NodoProtocol):
             return self.G.has_edge(self.n, other.n)
         raise NotImplementedError
 
-    def add_edge(self, other: NodoProtocol, weight: float) -> None:
+    def add_edge(
+        self, other: NodoProtocol, weight: float, *, overwrite: bool = False
+    ) -> None:
         if isinstance(other, NodoNX):
+            if self.G.has_edge(self.n, other.n) and not overwrite:
+                return
             self.G.add_edge(self.n, other.n, weight=float(weight))
         else:
             raise NotImplementedError
