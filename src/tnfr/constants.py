@@ -44,8 +44,9 @@ DEFAULTS: Dict[str, Any] = {
 
 
     # Mezcla para ΔNFR (campo nodal)
-    # phase: dispersión de fase local; epi: gradiente de EPI; vf: desajuste de νf
-    "DNFR_WEIGHTS": {"phase": 0.34, "epi": 0.33, "vf": 0.33},
+    # phase: dispersión de fase local; epi: gradiente de EPI; vf: desajuste de νf;
+    # topo: término topológico (p. ej., centralidad). Pesos se normalizan.
+    "DNFR_WEIGHTS": {"phase": 0.34, "epi": 0.33, "vf": 0.33, "topo": 0.0},
 
     # Índice de sentido Si = α·νf_norm + β·(1 - disp_fase) + γ·(1 - |ΔNFR|/max)
     "SI_WEIGHTS": {"alpha": 0.34, "beta": 0.33, "gamma": 0.33},
@@ -76,7 +77,7 @@ DEFAULTS: Dict[str, Any] = {
     "REMESH_COOLDOWN_VENTANA": 20,    # pasos mínimos entre RE’MESH
     "REMESH_COOLDOWN_TS": 0.0,        # cooldown adicional por tiempo simulado
     # Gating adicional basado en observadores (conmutador + ventana)
-    "REMESH_REQUIRE_STABILITY": False, # si True, exige ventana de estabilidad multi-métrica
+    "REMESH_REQUIRE_STABILITY": True,  # si True, exige ventana de estabilidad multi-métrica
     "REMESH_STABILITY_WINDOW": 25,     # tamaño de ventana para evaluar estabilidad
     "REMESH_MIN_PHASE_SYNC": 0.85,     # media mínima de sincronía de fase en ventana
     "REMESH_MAX_GLYPH_DISR": 0.35,     # media máxima de carga glífica disruptiva en ventana
@@ -91,6 +92,12 @@ DEFAULTS: Dict[str, Any] = {
     "REMESH_TAU_LOCAL": 4,            # pasos hacia atrás (escala local)
     "REMESH_ALPHA": 0.5,              # mezcla con pasado
     "REMESH_ALPHA_HARD": False,       # si True ignora GLYPH_FACTORS['REMESH_alpha']
+
+    # Soporte y norma de la EPI
+    "EPI_SUPPORT_THR": 0.05,          # umbral para Supp(EPI)
+
+    # U'M — compatibilidad mínima para crear/reforzar enlaces funcionales
+    "UM_COMPAT_THRESHOLD": 0.75,
 
     # Histéresis glífica
     "GLYPH_HYSTERESIS_WINDOW": 7,

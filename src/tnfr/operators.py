@@ -4,6 +4,7 @@ from typing import Dict, Any, Optional
 import math
 import random
 import hashlib
+import networkx as nx
 
 from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_D2EPI
 from .helpers import _get_attr, _set_attr, clamp, clamp01, list_mean, fase_media, push_glifo, invoke_callbacks
@@ -78,6 +79,27 @@ def op_UM(G, n):  # U’M — Acoplamiento (empuja fase a la media local)
     thL = fase_media(G, n)
     d = ((thL - th + math.pi) % (2 * math.pi) - math.pi)
     _set_attr(nd, ALIAS_THETA, th + k * d)
+
+    # Opcional: crear/reforzar enlaces funcionales con vecinos compatibles
+    if bool(G.graph.get("UM_FUNCTIONAL_LINKS", False)):
+        thr = float(G.graph.get("UM_COMPAT_THRESHOLD", DEFAULTS.get("UM_COMPAT_THRESHOLD", 0.75)))
+        epi_i = _get_attr(nd, ALIAS_EPI, 0.0)
+        si_i = _get_attr(nd, ALIAS_SI, 0.0)
+        for j in G.nodes():
+            if j == n or G.has_edge(n, j):
+                continue
+            nd_j = G.nodes[j]
+            th_j = _get_attr(nd_j, ALIAS_THETA, 0.0)
+            dphi = abs(((th_j - th + math.pi) % (2 * math.pi)) - math.pi) / math.pi  # [0,1]
+            epi_j = _get_attr(nd_j, ALIAS_EPI, 0.0)
+            si_j = _get_attr(nd_j, ALIAS_SI, 0.0)
+            # Similitudes normalizadas simple (|Δ| -> 0 => similitud 1)
+            epi_sim = 1.0 - abs(epi_i - epi_j) / (abs(epi_i) + abs(epi_j) + 1e-9)
+            si_sim = 1.0 - abs(si_i - si_j)
+            compat = (1 - dphi) * 0.5 + 0.25 * epi_sim + 0.25 * si_sim
+            if compat >= thr:
+                w = compat if not G.has_edge(n, j) else max(compat, G.edges[n, j].get("weight", compat))
+                G.add_edge(n, j, weight=float(w))
 
 
 def op_RA(G, n):  # R’A — Resonancia (difusión EPI)
@@ -281,6 +303,43 @@ def aplicar_remesh_red(G) -> None:
 
     # Callbacks Γ(R)
     invoke_callbacks(G, "on_remesh", dict(meta))
+
+
+def aplicar_remesh_red_topologico(G, mode: str = "knn", *, k: int = 3, p_rewire: float = 0.2, seed: Optional[int] = None) -> None:
+    """Remallado topológico aproximado.
+
+    - mode="knn": conecta cada nodo con sus ``k`` vecinos más similares en EPI
+      con probabilidad ``p_rewire``.
+    - mode="mst": sólo preserva un árbol de expansión mínima según distancia EPI.
+    - mode="community": reservado para implementaciones futuras.
+
+    Siempre preserva conectividad añadiendo un MST base.
+    """
+    nodes = list(G.nodes())
+    if len(nodes) <= 1:
+        return
+    rnd = random.Random(seed)
+    # Similaridad basada en EPI (distancia absoluta)
+    epi = {n: _get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes}
+    H = nx.Graph()
+    H.add_nodes_from(nodes)
+    for i, u in enumerate(nodes):
+        for v in nodes[i + 1 :]:
+            w = abs(epi[u] - epi[v])
+            H.add_edge(u, v, weight=w)
+    mst = nx.minimum_spanning_tree(H, weight="weight")
+    new_edges = set(mst.edges())
+    if mode == "knn":
+        k = max(1, int(k))
+        for u in nodes:
+            sims = sorted(nodes, key=lambda v: abs(epi[u] - epi[v]))
+            for v in sims[1 : k + 1]:
+                if rnd.random() < p_rewire:
+                    new_edges.add(tuple(sorted((u, v))))
+    # mode="community" se deja como placeholder (no-op)
+    # Reemplazar aristas preservando conectividad del MST
+    G.remove_edges_from(list(G.edges()))
+    G.add_edges_from(new_edges)
 
 def aplicar_remesh_si_estabilizacion_global(G, pasos_estables_consecutivos: Optional[int] = None) -> None:
     # Ventanas y umbrales

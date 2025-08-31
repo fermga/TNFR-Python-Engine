@@ -28,6 +28,7 @@ from .metrics import (
     latency_series, glifogram_series,
     glyph_top, glyph_dwell_stats, export_history,
 )
+from .operators import aplicar_remesh_red_topologico
 from .trace import register_trace
 from .program import play, seq, block, target, wait, THOL, TARGET, WAIT, ejemplo_canonico_basico
 from .cli import main as cli_main
@@ -53,6 +54,7 @@ __all__ = [
     "latency_series", "glifogram_series",
     "glyph_top", "glyph_dwell_stats",
     "export_history",
+    "aplicar_remesh_red_topologico",
     "play", "seq", "block", "target", "wait", "THOL", "TARGET", "WAIT",
     "cli_main", "build_graph", "get_preset", "NodeState",
     "ejemplo_canonico_basico",

@@ -36,20 +36,21 @@ from .helpers import (
 # -------------------------
 
 def _write_dnfr_metadata(G, *, weights: dict, hook_name: str, note: str | None = None) -> None:
-    """Escribe en G.graph un bloque _DNFR_META con la mezcla y el nombre del hook."""
-    w_phase = float(weights.get("phase", 0.0))
-    w_epi   = float(weights.get("epi",   0.0))
-    w_vf    = float(weights.get("vf",    0.0))
-    s = w_phase + w_epi + w_vf
-    if s <= 0:
-        w_phase = w_epi = w_vf = 1/3
-        s = 1.0
+    """Escribe en G.graph un bloque _DNFR_META con la mezcla y el nombre del hook.
+
+    `weights` puede incluir componentes arbitrarias (phase/epi/vf/topo/etc.)."""
+    total = sum(float(v) for v in weights.values())
+    if total <= 0:
+        # si no hay pesos, normalizamos a componentes iguales
+        n = max(1, len(weights))
+        weights = {k: 1.0 / n for k in weights}
+        total = 1.0
     meta = {
         "hook": hook_name,
         "weights_raw": dict(weights),
-        "weights_norm": {"phase": w_phase/s, "epi": w_epi/s, "vf": w_vf/s},
-        "components": [k for k, v in {"phase":w_phase, "epi":w_epi, "vf":w_vf}.items() if v != 0],
-        "doc": "ΔNFR = w_phase·g_phase + w_epi·g_epi + w_vf·g_vf",
+        "weights_norm": {k: float(v) / total for k, v in weights.items()},
+        "components": [k for k, v in weights.items() if float(v) != 0.0],
+        "doc": "ΔNFR = Σ w_i·g_i",
     }
     if note:
         meta["note"] = str(note)
@@ -58,26 +59,35 @@ def _write_dnfr_metadata(G, *, weights: dict, hook_name: str, note: str | None =
 
 
 def default_compute_delta_nfr(G) -> None:
-    """Calcula ΔNFR mezclando gradientes de fase, EPI y νf según pesos."""
+    """Calcula ΔNFR mezclando gradientes de fase, EPI, νf y un término topológico."""
     w = G.graph.get("DNFR_WEIGHTS", DEFAULTS["DNFR_WEIGHTS"])  # dict
     w_phase = float(w.get("phase", 0.34))
     w_epi = float(w.get("epi", 0.33))
     w_vf = float(w.get("vf", 0.33))
-    s = w_phase + w_epi + w_vf
+    w_topo = float(w.get("topo", 0.0))
+    s = w_phase + w_epi + w_vf + w_topo
     if s <= 0:
         w_phase = w_epi = w_vf = 1/3
+        w_topo = 0.0
+        s = 1.0
     else:
-        w_phase, w_epi, w_vf = w_phase/s, w_epi/s, w_vf/s
+        w_phase, w_epi, w_vf, w_topo = (w_phase/s, w_epi/s, w_vf/s, w_topo/s)
 
     # Documentar mezcla y hook activo
-    _write_dnfr_metadata(G, weights={"phase":w_phase, "epi":w_epi, "vf":w_vf}, hook_name="default_compute_delta_nfr")
- 
+    _write_dnfr_metadata(
+        G,
+        weights={"phase": w_phase, "epi": w_epi, "vf": w_vf, "topo": w_topo},
+        hook_name="default_compute_delta_nfr",
+    )
+
+    degs = dict(G.degree()) if w_topo != 0 else None
+
     for n in G.nodes():
         nd = G.nodes[n]
         th_i = _get_attr(nd, ALIAS_THETA, 0.0)
         th_bar = fase_media(G, n)
         # Gradiente de fase: empuja hacia la fase media (signo envuelto)
-        g_phase = - ( (th_i - th_bar + math.pi) % (2*math.pi) - math.pi ) / math.pi  # ~[-1,1]
+        g_phase = -((th_i - th_bar + math.pi) % (2 * math.pi) - math.pi) / math.pi  # ~[-1,1]
 
         epi_i = _get_attr(nd, ALIAS_EPI, 0.0)
         epi_bar = media_vecinal(G, n, ALIAS_EPI, default=epi_i)
@@ -87,7 +97,14 @@ def default_compute_delta_nfr(G) -> None:
         vf_bar = media_vecinal(G, n, ALIAS_VF, default=vf_i)
         g_vf = (vf_bar - vf_i)
 
-        dnfr = w_phase*g_phase + w_epi*g_epi + w_vf*g_vf
+        if w_topo != 0 and degs is not None:
+            deg_i = float(degs.get(n, 0))
+            deg_bar = list_mean(degs.get(v, deg_i) for v in G.neighbors(n)) if G.degree(n) else deg_i
+            g_topo = deg_bar - deg_i
+        else:
+            g_topo = 0.0
+
+        dnfr = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
         _set_attr(nd, ALIAS_DNFR, dnfr)
 
 def set_delta_nfr_hook(G, func, *, name: str | None = None, note: str | None = None) -> None:
@@ -107,9 +124,9 @@ def dnfr_phase_only(G) -> None:
         nd = G.nodes[n]
         th_i = _get_attr(nd, ALIAS_THETA, 0.0)
         th_bar = fase_media(G, n)
-        g_phase = - ( (th_i - th_bar + math.pi) % (2*math.pi) - math.pi ) / math.pi
+        g_phase = -((th_i - th_bar + math.pi) % (2 * math.pi) - math.pi) / math.pi
         _set_attr(nd, ALIAS_DNFR, g_phase)
-    _write_dnfr_metadata(G, weights={"phase":1.0, "epi":0.0, "vf":0.0}, hook_name="dnfr_phase_only", note="Hook de ejemplo.")
+    _write_dnfr_metadata(G, weights={"phase": 1.0}, hook_name="dnfr_phase_only", note="Hook de ejemplo.")
 
 def dnfr_epi_vf_mixed(G) -> None:
     """Ejemplo: ΔNFR sin fase, mezclando EPI y νf."""
