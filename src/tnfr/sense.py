@@ -34,6 +34,8 @@ GLYPHS_CANONICAL: List[str] = [
     Glyph.REMESH.value #12
 ]
 
+GLYPHS_CANONICAL_SET: set[str] = set(GLYPHS_CANONICAL)
+
 # Glifos relevantes para el plano Σ de observadores de sentido
 SIGMA_ANGLE_KEYS: tuple[str, ...] = tuple(ESTABILIZADORES + DISRUPTIVOS)
 
