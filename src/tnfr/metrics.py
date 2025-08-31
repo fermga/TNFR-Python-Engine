@@ -77,8 +77,7 @@ def _metrics_step(G, *args, **kwargs):
     tg_total = hist.setdefault("Tg_total", defaultdict(float))  # tiempo total por glifo (global)
     tg_by_node = hist.setdefault("Tg_by_node", {})             # nodo → {glifo: [runs,...]}
 
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for n, nd in G.nodes(data=True):
         g = last_glifo(nd)
         if not g:
             continue
