@@ -13,6 +13,7 @@ from .helpers import (
     clamp01,
     list_mean,
     invoke_callbacks,
+    angle_diff,
     _get_attr,
     _set_attr,
     _get_attr_str,
@@ -118,7 +119,7 @@ def _op_UM(node: NodoProtocol) -> None:  # U’M — Acoplamiento
     k = float(gf.get("UM_theta_push", 0.25))
     th = node.theta
     thL = _fase_media_node(node)
-    d = ((thL - th + math.pi) % (2 * math.pi) - math.pi)
+    d = angle_diff(thL, th)
     node.theta = th + k * d
 
     if bool(node.graph.get("UM_FUNCTIONAL_LINKS", False)):
@@ -129,7 +130,7 @@ def _op_UM(node: NodoProtocol) -> None:  # U’M — Acoplamiento
             if j is node or node.has_edge(j):
                 continue
             th_j = j.theta
-            dphi = abs(((th_j - th + math.pi) % (2 * math.pi)) - math.pi) / math.pi
+            dphi = abs(angle_diff(th_j, th)) / math.pi
             epi_j = j.EPI
             si_j = j.Si
             epi_sim = 1.0 - abs(epi_i - epi_j) / (abs(epi_i) + abs(epi_j) + 1e-9)

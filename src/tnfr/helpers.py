@@ -52,6 +52,11 @@ def _wrap_angle(a: float) -> float:
     return a
 
 
+def angle_diff(a: float, b: float) -> float:
+    """Diferencia mínima entre ``a`` y ``b`` en (-π, π]."""
+    return _wrap_angle(a - b)
+
+
 def phase_distance(a: float, b: float) -> float:
     """Distancia de fase normalizada en [0,1]. 0 = misma fase, 1 = opuesta."""
     return abs(_wrap_angle(a - b)) / math.pi

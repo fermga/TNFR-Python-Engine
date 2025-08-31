@@ -32,7 +32,7 @@ from .constants import (
 )
 from .gamma import eval_gamma
 from .helpers import (
-     clamp, clamp01, list_mean, phase_distance,
+     clamp, clamp01, list_mean, phase_distance, angle_diff,
      _get_attr, _set_attr, _get_attr_str, _set_attr_str, media_vecinal, fase_media,
      invoke_callbacks, reciente_glifo
 )
@@ -93,7 +93,7 @@ def default_compute_delta_nfr(G) -> None:
         th_i = _get_attr(nd, ALIAS_THETA, 0.0)
         th_bar = fase_media(G, n)
         # Gradiente de fase: empuja hacia la fase media (signo envuelto)
-        g_phase = -((th_i - th_bar + math.pi) % (2 * math.pi) - math.pi) / math.pi  # ~[-1,1]
+        g_phase = -angle_diff(th_i, th_bar) / math.pi  # ~[-1,1]
 
         epi_i = _get_attr(nd, ALIAS_EPI, 0.0)
         epi_bar = media_vecinal(G, n, ALIAS_EPI, default=epi_i)
@@ -130,7 +130,7 @@ def dnfr_phase_only(G) -> None:
         nd = G.nodes[n]
         th_i = _get_attr(nd, ALIAS_THETA, 0.0)
         th_bar = fase_media(G, n)
-        g_phase = -((th_i - th_bar + math.pi) % (2 * math.pi) - math.pi) / math.pi
+        g_phase = -angle_diff(th_i, th_bar) / math.pi
         _set_attr(nd, ALIAS_DNFR, g_phase)
     _write_dnfr_metadata(G, weights={"phase": 1.0}, hook_name="dnfr_phase_only", note="Hook de ejemplo.")
 
@@ -414,8 +414,8 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
         nd = G.nodes[n]
         th = _get_attr(nd, ALIAS_THETA, 0.0)
         thL = fase_media(G, n)
-        dG = ((thG - th + math.pi) % (2*math.pi) - math.pi)
-        dL = ((thL - th + math.pi) % (2*math.pi) - math.pi)
+        dG = angle_diff(thG, th)
+        dL = angle_diff(thL, th)
         _set_attr(nd, ALIAS_THETA, th + kG*dG + kL*dL)
 
 # -------------------------

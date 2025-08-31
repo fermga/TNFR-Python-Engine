@@ -10,7 +10,7 @@ import math
 import statistics as st
 
 from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
-from .helpers import _get_attr, list_mean, register_callback
+from .helpers import _get_attr, list_mean, register_callback, angle_diff
 
 # -------------------------
 # Observador estándar Γ(R)
@@ -54,11 +54,7 @@ def sincronía_fase(G) -> float:
     var = (
         st.pvariance(
             [
-                (
-                    (_get_attr(G.nodes[n], ALIAS_THETA, 0.0) - th + math.pi)
-                    % (2 * math.pi)
-                    - math.pi
-                )
+                angle_diff(_get_attr(G.nodes[n], ALIAS_THETA, 0.0), th)
                 for n in G.nodes()
             ]
         )
