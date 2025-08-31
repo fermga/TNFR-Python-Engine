@@ -87,6 +87,8 @@ DEFAULTS: Dict[str, Any] = {
     "REMESH_MIN_KURAMOTO_R": 0.80,    # R de Kuramoto mínimo en ventana
     "REMESH_MIN_SI_HI_FRAC": 0.50,    # fracción mínima de nodos con Si alto
     "REMESH_LOG_EVENTS": True,         # guarda eventos y metadatos del RE’MESH
+    "REMESH_MODE": "knn",            # modo de remallado topológico
+    "REMESH_COMMUNITY_K": 2,          # conexiones por comunidad
 
     # RE’MESH: memoria τ y mezcla α (global/local)
     "REMESH_TAU": 8,                  # compatibilidad: tau global por defecto

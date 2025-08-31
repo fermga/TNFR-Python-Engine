@@ -5,6 +5,7 @@ import math
 import random
 import hashlib
 import networkx as nx
+from networkx.algorithms import community as nx_comm
 
 from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_D2EPI, ALIAS_EPI_KIND
 from .helpers import (
@@ -347,20 +348,34 @@ def aplicar_remesh_red(G) -> None:
     invoke_callbacks(G, "on_remesh", dict(meta))
 
 
-def aplicar_remesh_red_topologico(G, mode: str = "knn", *, k: int = 3, p_rewire: float = 0.2, seed: Optional[int] = None) -> None:
+def aplicar_remesh_red_topologico(
+    G,
+    mode: Optional[str] = None,
+    *,
+    k: Optional[int] = None,
+    p_rewire: float = 0.2,
+    seed: Optional[int] = None,
+) -> None:
     """Remallado topológico aproximado.
 
     - mode="knn": conecta cada nodo con sus ``k`` vecinos más similares en EPI
       con probabilidad ``p_rewire``.
     - mode="mst": sólo preserva un árbol de expansión mínima según distancia EPI.
-    - mode="community": reservado para implementaciones futuras.
+    - mode="community": agrupa por comunidades modulares y las conecta por
+      similitud intercomunidad.
 
     Siempre preserva conectividad añadiendo un MST base.
     """
     nodes = list(G.nodes())
-    if len(nodes) <= 1:
+    n_before = len(nodes)
+    if n_before <= 1:
         return
     rnd = random.Random(seed)
+
+    if mode is None:
+        mode = str(G.graph.get("REMESH_MODE", DEFAULTS.get("REMESH_MODE", "knn")))
+    mode = str(mode)
+
     # Similaridad basada en EPI (distancia absoluta)
     epi = {n: _get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes}
     H = nx.Graph()
@@ -370,16 +385,74 @@ def aplicar_remesh_red_topologico(G, mode: str = "knn", *, k: int = 3, p_rewire:
             w = abs(epi[u] - epi[v])
             H.add_edge(u, v, weight=w)
     mst = nx.minimum_spanning_tree(H, weight="weight")
+
+    if mode == "community":
+        # Detectar comunidades y reconstruir la red con metanodos
+        comms = list(nx_comm.greedy_modularity_communities(G))
+        if len(comms) <= 1:
+            new_edges = set(mst.edges())
+        else:
+            k_val = (
+                int(k)
+                if k is not None
+                else int(G.graph.get("REMESH_COMMUNITY_K", DEFAULTS.get("REMESH_COMMUNITY_K", 2)))
+            )
+            # Grafo de comunidades basado en medias de EPI
+            C = nx.Graph()
+            for idx, comm in enumerate(comms):
+                members = list(comm)
+                epi_mean = list_mean(epi[n] for n in members)
+                C.add_node(idx)
+                _set_attr(C.nodes[idx], ALIAS_EPI, epi_mean)
+                C.nodes[idx]["members"] = members
+            for i in C.nodes():
+                for j in C.nodes():
+                    if i < j:
+                        w = abs(
+                            _get_attr(C.nodes[i], ALIAS_EPI, 0.0)
+                            - _get_attr(C.nodes[j], ALIAS_EPI, 0.0)
+                        )
+                        C.add_edge(i, j, weight=w)
+            mst_c = nx.minimum_spanning_tree(C, weight="weight")
+            new_edges = set(mst_c.edges())
+            for u in C.nodes():
+                epi_u = _get_attr(C.nodes[u], ALIAS_EPI, 0.0)
+                others = [v for v in C.nodes() if v != u]
+                others.sort(key=lambda v: abs(epi_u - _get_attr(C.nodes[v], ALIAS_EPI, 0.0)))
+                for v in others[:k_val]:
+                    if rnd.random() < p_rewire:
+                        new_edges.add(tuple(sorted((u, v))))
+
+            # Reemplazar nodos y aristas del grafo original por comunidades
+            G.remove_edges_from(list(G.edges()))
+            G.remove_nodes_from(list(G.nodes()))
+            for idx in C.nodes():
+                data = dict(C.nodes[idx])
+                G.add_node(idx, **data)
+            G.add_edges_from(new_edges)
+
+            if G.graph.get("REMESH_LOG_EVENTS", DEFAULTS["REMESH_LOG_EVENTS"]):
+                ev = G.graph.setdefault("history", {}).setdefault("remesh_events", [])
+                mapping = {idx: C.nodes[idx].get("members", []) for idx in C.nodes()}
+                ev.append({
+                    "mode": "community",
+                    "n_before": n_before,
+                    "n_after": G.number_of_nodes(),
+                    "mapping": mapping,
+                })
+            return
+
+    # Default/mode knn/mst operate on nodos originales
     new_edges = set(mst.edges())
     if mode == "knn":
-        k = max(1, int(k))
+        k_val = int(k) if k is not None else int(G.graph.get("REMESH_COMMUNITY_K", DEFAULTS.get("REMESH_COMMUNITY_K", 2)))
+        k_val = max(1, k_val)
         for u in nodes:
             sims = sorted(nodes, key=lambda v: abs(epi[u] - epi[v]))
-            for v in sims[1 : k + 1]:
+            for v in sims[1 : k_val + 1]:
                 if rnd.random() < p_rewire:
                     new_edges.add(tuple(sorted((u, v))))
-    # mode="community" se deja como placeholder (no-op)
-    # Reemplazar aristas preservando conectividad del MST
+
     G.remove_edges_from(list(G.edges()))
     G.add_edges_from(new_edges)
 
