@@ -367,9 +367,10 @@ def aplicar_remesh_red(G) -> None:
         for node in G.nodes():
             yield node, _get_attr(G.nodes[node], ALIAS_EPI, 0.0)
 
-    epi_mean_before = list_mean(v for _, v in _epi_items())
+    epi_items = list(_epi_items())
+    epi_mean_before = list_mean(v for _, v in epi_items)
     epi_checksum_before = hashlib.sha1(
-        str(sorted((str(k), round(v, 6)) for k, v in _epi_items())).encode()
+        str(sorted((str(k), round(v, 6)) for k, v in epi_items)).encode()
     ).hexdigest()[:12]
 
     # --- Mezcla (1-α)·now + α·old ---
@@ -382,9 +383,12 @@ def aplicar_remesh_red(G) -> None:
         _set_attr(nd, ALIAS_EPI, mixed)
 
     # --- Snapshot EPI (DESPUÉS) ---
-    epi_mean_after = list_mean(_get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes())
+    epi_items_after = [
+        (n, _get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in G.nodes()
+    ]
+    epi_mean_after = list_mean(v for _, v in epi_items_after)
     epi_checksum_after = hashlib.sha1(
-        str(sorted((str(n), round(_get_attr(G.nodes[n], ALIAS_EPI, 0.0), 6)) for n in G.nodes())).encode()
+        str(sorted((str(n), round(v, 6)) for n, v in epi_items_after)).encode()
     ).hexdigest()[:12]
 
     # --- Metadatos y logging de evento ---
