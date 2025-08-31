@@ -87,31 +87,44 @@ def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] 
     return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang), "glifo": g, "w": float(w)}
 
 
+def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
+    """Calcula Σ⃗ a partir de una distribución de glifos.
+
+    ``dist`` puede contener conteos brutos o proporciones. Los valores se
+    normalizan respecto a los glifos relevantes para el plano σ y se obtienen
+    las componentes cartesianas, la magnitud y el ángulo resultante. Si la
+    distribución no aporta peso sobre los glifos de interés, se retorna el
+    vector nulo.
+    """
+
+    total = sum(float(dist.get(k, 0.0)) for k in SIGMA_ANGLE_KEYS)
+    if total <= 0:
+        return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0}
+
+    x = y = 0.0
+    for k in SIGMA_ANGLE_KEYS:
+        p = float(dist.get(k, 0.0)) / total
+        z = glyph_unit(k)
+        x += p * z.real
+        y += p * z.imag
+
+    mag = math.hypot(x, y)
+    ang = math.atan2(y, x)
+    return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
+
+
 def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
     """Vector global del plano del sentido σ.
 
-    Acepta un grafo de NetworkX o una distribución precontada de glifos. En el
-    primer caso, mapea el último glifo de cada nodo a un vector unitario en S¹,
-    ponderado por `Si` (o `EPI`/1), y promedia para obtener componentes (x, y),
-    magnitud |σ| y ángulo arg(σ). En el segundo, utiliza directamente la
-    distribución proporcionada.
+    Acepta un grafo de NetworkX. Para operar sobre una distribución precontada
+    utilice :func:`sigma_vector` directamente.
 
     Si no hay datos suficientes retorna el vector nulo.
     """
     if not hasattr(G, "nodes"):
-        dist = G  # distribución ya normalizada o en conteos
-        total = sum(float(dist.get(k, 0.0)) for k in SIGMA_ANGLE_KEYS)
-        if total <= 0:
-            return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0}
-        x = y = 0.0
-        for k in SIGMA_ANGLE_KEYS:
-            p = float(dist.get(k, 0.0)) / total
-            z = glyph_unit(k)
-            x += p * z.real
-            y += p * z.imag
-        mag = math.hypot(x, y)
-        ang = math.atan2(y, x)
-        return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
+        # Compatibilidad retro: si se pasa una distribución directamente,
+        # derivamos a la variante específica.
+        return sigma_vector(G)  # type: ignore[arg-type]
 
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")

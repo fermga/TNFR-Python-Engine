@@ -7,7 +7,7 @@ from tnfr.node import NodoNX
 from tnfr.operators import random_jitter
 from tnfr.constants import ALIAS_THETA
 from tnfr.observers import sincronía_fase, orden_kuramoto, carga_glifica
-from tnfr.sense import sigma_vector_global
+from tnfr.sense import sigma_vector_global, sigma_vector
 from tnfr.constants_glifos import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
 from tnfr.helpers import angle_diff, _set_attr
 
@@ -66,7 +66,8 @@ def test_sigma_vector_consistency():
     # Distribución ficticia de glifos
     dist = {"IL": 0.4, "RA": 0.3, "ZHIR": 0.1, "AL": 0.2, "_count": 10}
 
-    res = sigma_vector_global(dist)
+    res_global = sigma_vector_global(dist)
+    res = sigma_vector(dist)
 
     # Cálculo esperado con el mapa de ángulos canónico
     keys = ESTABILIZADORES + DISRUPTIVOS
@@ -77,7 +78,8 @@ def test_sigma_vector_consistency():
     mag = math.hypot(x, y)
     ang = math.atan2(y, x)
 
-    assert math.isclose(res["x"], x)
-    assert math.isclose(res["y"], y)
-    assert math.isclose(res["mag"], mag)
-    assert math.isclose(res["angle"], ang)
+    for res_ in (res_global, res):
+        assert math.isclose(res_["x"], x)
+        assert math.isclose(res_["y"], y)
+        assert math.isclose(res_["mag"], mag)
+        assert math.isclose(res_["angle"], ang)
