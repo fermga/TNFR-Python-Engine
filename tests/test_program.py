@@ -1,5 +1,4 @@
 import json
-import networkx as nx
 import pytest
 
 from tnfr.cli import _load_sequence
@@ -13,8 +12,8 @@ def _step_noop(G):
     G.graph["_t"] = G.graph.get("_t", 0.0) + 1.0
 
 
-def test_play_records_program_trace_with_block_and_wait():
-    G = nx.Graph()
+def test_play_records_program_trace_with_block_and_wait(graph_canon):
+    G = graph_canon()
     G.add_node(1)
     program = seq(Glyph.AL, wait(2), block(Glyph.OZ))
     play(G, program, step_fn=_step_noop)

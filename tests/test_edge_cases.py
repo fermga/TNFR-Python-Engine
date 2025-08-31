@@ -1,5 +1,4 @@
 import pytest
-import networkx as nx
 from tnfr.node import NodoTNFR
 from tnfr.operators import op_EN
 from tnfr.types import Glyph
@@ -7,22 +6,22 @@ from tnfr.types import Glyph
 from tnfr.dynamics import default_compute_delta_nfr, update_epi_via_nodal_equation
 
 
-def test_empty_graph_handling():
-    G = nx.Graph()
+def test_empty_graph_handling(graph_canon):
+    G = graph_canon()
     default_compute_delta_nfr(G)
     update_epi_via_nodal_equation(G)  # should not raise
 
 
-def test_sigma_vector_global_empty_graph():
-    G = nx.Graph()
+def test_sigma_vector_global_empty_graph(graph_canon):
+    G = graph_canon()
     from tnfr.sense import sigma_vector_global
 
     sv = sigma_vector_global(G)
     assert sv == {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
 
 
-def test_update_epi_invalid_dt():
-    G = nx.Graph()
+def test_update_epi_invalid_dt(graph_canon):
+    G = graph_canon()
     G.add_node(1)
     with pytest.raises(ValueError):
         update_epi_via_nodal_equation(G, dt=-0.1)
@@ -30,8 +29,8 @@ def test_update_epi_invalid_dt():
         update_epi_via_nodal_equation(G, dt="bad")
 
 
-def test_dnfr_weights_normalization():
-    G = nx.Graph()
+def test_dnfr_weights_normalization(graph_canon):
+    G = graph_canon()
     G.graph["DNFR_WEIGHTS"] = {"phase": -1, "epi": -1, "vf": -1}
     default_compute_delta_nfr(G)
     weights = G.graph["_DNFR_META"]["weights_norm"]

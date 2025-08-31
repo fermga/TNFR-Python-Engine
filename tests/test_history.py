@@ -1,11 +1,10 @@
-import networkx as nx
 import pytest
 
 from tnfr.dynamics import _update_history
 
 
-def test_phase_sync_and_kuramoto_recorded():
-    G = nx.Graph()
+def test_phase_sync_and_kuramoto_recorded(graph_canon):
+    G = graph_canon()
     G.add_node(1, theta=0.0)
     G.add_node(2, theta=0.0)
     _update_history(G)

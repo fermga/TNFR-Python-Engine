@@ -1,7 +1,6 @@
 import gc
 import math
 import statistics as st
-import networkx as nx
 import pytest
 
 from tnfr.node import NodoNX
@@ -12,8 +11,8 @@ from tnfr.constants_glifos import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
 from tnfr.helpers import angle_diff, _set_attr
 
 
-def test_random_jitter_cache_cleared_on_node_removal():
-    G = nx.Graph()
+def test_random_jitter_cache_cleared_on_node_removal(graph_canon):
+    G = graph_canon()
     G.add_node(0)
     n0 = NodoNX(G, 0)
 
@@ -29,8 +28,8 @@ def test_random_jitter_cache_cleared_on_node_removal():
     assert len(cache) == 0
 
 
-def test_phase_observers_match_manual_calculation():
-    G = nx.Graph()
+def test_phase_observers_match_manual_calculation(graph_canon):
+    G = graph_canon()
     angles = [0.0, math.pi / 2, math.pi]
     for idx, th in enumerate(angles):
         G.add_node(idx)
@@ -47,8 +46,8 @@ def test_phase_observers_match_manual_calculation():
     assert math.isclose(orden_kuramoto(G), float(R))
 
 
-def test_carga_glifica_uses_module_constants(monkeypatch):
-    G = nx.Graph()
+def test_carga_glifica_uses_module_constants(monkeypatch, graph_canon):
+    G = graph_canon()
     G.add_node(0, hist_glifos=["A"])
     G.add_node(1, hist_glifos=["B"])
 
@@ -62,10 +61,10 @@ def test_carga_glifica_uses_module_constants(monkeypatch):
     assert dist["_disruptivos"] == pytest.approx(0.5)
 
 
-def test_sigma_vector_consistency(monkeypatch):
+def test_sigma_vector_consistency(monkeypatch, graph_canon):
     import tnfr.observers as obs
 
-    G = nx.Graph()
+    G = graph_canon()
     # Distribución ficticia de glifos
     dist = {"IL": 0.4, "RA": 0.3, "ZHIR": 0.1, "AL": 0.2, "_count": 10}
     monkeypatch.setattr(obs, "carga_glifica", lambda G, window=None: dist)

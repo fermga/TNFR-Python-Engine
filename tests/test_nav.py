@@ -1,12 +1,11 @@
-import networkx as nx
 import pytest
 
 from tnfr.constants import attach_defaults
 from tnfr.operators import op_NAV
 
 
-def test_nav_converges_to_vf_without_jitter():
-    G = nx.Graph()
+def test_nav_converges_to_vf_without_jitter(graph_canon):
+    G = graph_canon()
     G.add_node(0)
     attach_defaults(G)
     nd = G.nodes[0]
@@ -19,8 +18,8 @@ def test_nav_converges_to_vf_without_jitter():
     assert nd["ΔNFR"] == pytest.approx(expected)
 
 
-def test_nav_strict_sets_dnfr_to_vf():
-    G = nx.Graph()
+def test_nav_strict_sets_dnfr_to_vf(graph_canon):
+    G = graph_canon()
     G.add_node(0)
     attach_defaults(G)
     nd = G.nodes[0]

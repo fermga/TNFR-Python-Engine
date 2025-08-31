@@ -1,13 +1,11 @@
-import networkx as nx
 from collections import deque
-import networkx as nx
 
 from tnfr.constants import attach_defaults
 from tnfr.operators import aplicar_remesh_si_estabilizacion_global
 
 
-def test_aplicar_remesh_usa_parametro_personalizado():
-    G = nx.Graph()
+def test_aplicar_remesh_usa_parametro_personalizado(graph_canon):
+    G = graph_canon()
     G.add_node(0)
     attach_defaults(G)
     G.graph["REMESH_REQUIRE_STABILITY"] = False
@@ -30,8 +28,8 @@ def test_aplicar_remesh_usa_parametro_personalizado():
     assert G.graph["_last_remesh_step"] == len(hist["stable_frac"])
 
 
-def test_remesh_alpha_hard_ignores_glyph_factor():
-    G = nx.Graph()
+def test_remesh_alpha_hard_ignores_glyph_factor(graph_canon):
+    G = graph_canon()
     G.add_node(0)
     attach_defaults(G)
     G.graph["REMESH_REQUIRE_STABILITY"] = False
