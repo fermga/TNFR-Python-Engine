@@ -1,12 +1,11 @@
-import networkx as nx
 import pytest
 
 from tnfr.constants import attach_defaults
 from tnfr.dynamics import step
 
 
-def test_vf_converge_to_neighbor_average_when_stable():
-    G = nx.Graph()
+def test_vf_converge_to_neighbor_average_when_stable(graph_canon):
+    G = graph_canon()
     G.add_edge(0, 1)
     attach_defaults(G)
     # configuraciones para estabilidad

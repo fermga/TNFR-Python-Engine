@@ -1,12 +1,10 @@
-import networkx as nx
-
 from tnfr.constants import attach_defaults
 from tnfr.dynamics import step
 from tnfr.gamma import GAMMA_REGISTRY
 
 
-def test_history_delta_si_and_B():
-    G = nx.Graph()
+def test_history_delta_si_and_B(graph_canon):
+    G = graph_canon()
     G.add_node(0, EPI=0.0, νf=0.5, θ=0.0)
     attach_defaults(G)
     step(G, apply_glyphs=False)
@@ -16,8 +14,8 @@ def test_history_delta_si_and_B():
     assert "B" in hist and len(hist["B"]) >= 2
 
 
-def test_gamma_kuramoto_tanh_registry():
-    G = nx.Graph()
+def test_gamma_kuramoto_tanh_registry(graph_canon):
+    G = graph_canon()
     G.add_nodes_from([0, 1])
     attach_defaults(G)
     G.nodes[0]["θ"] = 0.0

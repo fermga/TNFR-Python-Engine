@@ -1,12 +1,11 @@
-import networkx as nx
 import pytest
 
 from tnfr.constants import attach_defaults, merge_overrides
 from tnfr.dynamics import update_epi_via_nodal_equation
 
 
-def test_gamma_linear_integration():
-    G = nx.Graph()
+def test_gamma_linear_integration(graph_canon):
+    G = graph_canon()
     G.add_nodes_from([0, 1])
     attach_defaults(G)
     merge_overrides(G, GAMMA={"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0})
