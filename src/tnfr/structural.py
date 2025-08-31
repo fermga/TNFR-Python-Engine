@@ -192,9 +192,9 @@ def run_sequence(G: nx.Graph, node, ops: Iterable[Operador]) -> None:
     ok, msg = validate_sequence(nombres)
     if not ok:
         raise ValueError(f"Secuencia no válida: {msg}")
+    compute = G.graph.get("compute_delta_nfr")
     for op in ops_list:
         op(G, node)
-        compute = G.graph.get("compute_delta_nfr")
         if callable(compute):
             compute(G)
         update_epi_via_nodal_equation(G)
