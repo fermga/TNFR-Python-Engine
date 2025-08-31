@@ -111,9 +111,6 @@ MIT
 
 ---
 
-## References & notes
-
-* Theoretical foundations: https://fermga.github.io/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/
 * Trained GPT: https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-teoria-de-la-naturaleza-fractal-resonante
 
 > If you use `tnfr` in research or projects, please cite the TNFR conceptual framework and link to the PyPI package.
