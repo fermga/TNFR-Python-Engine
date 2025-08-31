@@ -5,6 +5,7 @@ Utilidades transversales + cálculo de Índice de sentido (Si).
 """
 from __future__ import annotations
 from typing import Iterable, Dict, Any, TYPE_CHECKING
+import threading
 import math
 from collections import deque
 from itertools import islice
@@ -76,6 +77,7 @@ _sentinel = object()
 # Se limita el tamaño para evitar crecimiento sin control.
 _alias_cache: Dict[tuple[str, ...], str] = {}
 _ALIAS_CACHE_MAX = 16
+_alias_cache_lock = threading.Lock()
 
 
 def alias_lookup(
@@ -96,7 +98,8 @@ def alias_lookup(
     alist = tuple(aliases)
 
     # Intento de búsqueda rápida en la caché global
-    k = _alias_cache.get(alist)
+    with _alias_cache_lock:
+        k = _alias_cache.get(alist)
     if k is not None and k in d:
         if value is not _sentinel:
             d[k] = conv(value)
@@ -110,9 +113,10 @@ def alias_lookup(
     # Búsqueda exhaustiva sobre las aliases
     for k in alist:
         if k in d:
-            if len(_alias_cache) >= _ALIAS_CACHE_MAX:
-                _alias_cache.pop(next(iter(_alias_cache)))
-            _alias_cache[alist] = k
+            with _alias_cache_lock:
+                if len(_alias_cache) >= _ALIAS_CACHE_MAX:
+                    _alias_cache.pop(next(iter(_alias_cache)))
+                _alias_cache[alist] = k
             if value is not _sentinel:
                 d[k] = conv(value)
                 return d[k]
@@ -124,9 +128,10 @@ def alias_lookup(
     if value is not _sentinel:
         k = alist[0]
         d[k] = conv(value)
-        if len(_alias_cache) >= _ALIAS_CACHE_MAX:
-            _alias_cache.pop(next(iter(_alias_cache)))
-        _alias_cache[alist] = k
+        with _alias_cache_lock:
+            if len(_alias_cache) >= _ALIAS_CACHE_MAX:
+                _alias_cache.pop(next(iter(_alias_cache)))
+            _alias_cache[alist] = k
         return d[k]
 
     if default is not _sentinel:
