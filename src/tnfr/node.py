@@ -19,6 +19,8 @@ from .helpers import (
     _get_attr_str,
     _set_attr,
     _set_attr_str,
+    set_vf,
+    set_dnfr,
 )
 
 
@@ -121,7 +123,7 @@ class NodoNX(NodoProtocol):
 
     @vf.setter
     def vf(self, v: float) -> None:
-        _set_attr(self.G.nodes[self.n], ALIAS_VF, float(v))
+        set_vf(self.G, self.n, float(v))
 
     @property
     def theta(self) -> float:
@@ -153,7 +155,7 @@ class NodoNX(NodoProtocol):
 
     @dnfr.setter
     def dnfr(self, v: float) -> None:
-        _set_attr(self.G.nodes[self.n], ALIAS_DNFR, float(v))
+        set_dnfr(self.G, self.n, float(v))
 
     @property
     def d2EPI(self) -> float:
