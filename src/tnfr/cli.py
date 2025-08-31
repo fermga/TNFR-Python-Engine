@@ -120,6 +120,21 @@ def cmd_run(args: argparse.Namespace) -> int:
     if args.export_history_base:
         export_history(G, args.export_history_base, fmt=args.export_format)
 
+    # Resúmenes rápidos (si están activados)
+    if G.graph.get("COHERENCE", DEFAULTS["COHERENCE"]).get("enabled", True):
+        Wstats = G.graph.get("history", {}).get(
+            G.graph.get("COHERENCE", DEFAULTS["COHERENCE"]).get("stats_history_key", "W_stats"), []
+        )
+        if Wstats:
+            print("[COHERENCE] último paso:", Wstats[-1])
+    if G.graph.get("DIAGNOSIS", DEFAULTS["DIAGNOSIS"]).get("enabled", True):
+        last_diag = G.graph.get("history", {}).get(
+            G.graph.get("DIAGNOSIS", DEFAULTS["DIAGNOSIS"]).get("history_key", "nodal_diag"), []
+        )
+        if last_diag:
+            sample = list(last_diag[-1].values())[:3]
+            print("[DIAGNOSIS] ejemplo:", sample)
+
     if args.summary:
         tg = Tg_global(G, normalize=True)
         lat = latency_series(G)

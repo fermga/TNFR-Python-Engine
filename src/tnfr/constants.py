@@ -182,6 +182,41 @@ DEFAULTS.setdefault("GRAMMAR_CANON", {
     "si_high": 0.66,                # umbral para elegir NU’L vs SH’A al cerrar
 })
 
+# --- Coherencia (W) ---
+DEFAULTS.setdefault("COHERENCE", {
+    "enabled": True,
+    "scope": "neighbors",      # "neighbors" | "all"
+    "weights": {
+        "phase": 0.34,
+        "epi": 0.33,
+        "vf": 0.20,
+        "si": 0.13,
+    },
+    "self_on_diag": True,      # W_ii = 1.0
+    "store_mode": "sparse",   # "sparse" | "dense"
+    "threshold": 0.0,
+    "history_key": "W_sparse",
+    "Wi_history_key": "W_i",
+    "stats_history_key": "W_stats",
+})
+
+# --- Diagnóstico nodal ---
+DEFAULTS.setdefault("DIAGNOSIS", {
+    "enabled": True,
+    "window": 16,
+    "history_key": "nodal_diag",
+    "stable":     {"Rloc_hi": 0.80, "dnfr_lo": 0.20, "persist": 3},
+    "dissonance": {"Rloc_lo": 0.40, "dnfr_hi": 0.50, "persist": 3},
+    "transition": {"persist": 2},
+    "compute_symmetry": True,
+    "include_typology": False,
+    "advice": {
+        "stable":     ["Coherencia", "Acoplamiento", "Resonancia"],
+        "transition": ["Transición", "Resonancia", "Autoorganización"],
+        "dissonant":  ["Silencio", "Contracción", "Mutación"],
+    },
+})
+
 
 # -------------------------
 # Utilidades
