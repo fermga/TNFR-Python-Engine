@@ -84,6 +84,11 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
 
     return amplitude * (2.0 * rnd.random() - 1.0)
 
+
+def get_glyph_factors(node: NodoProtocol) -> Dict[str, Any]:
+    """Return glyph factors for ``node`` with defaults."""
+    return node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+
 # -------------------------
 # Glifos (operadores locales)
 # -------------------------
@@ -98,14 +103,14 @@ def _select_dominant_glifo(node: NodoProtocol, neigh: Iterable[NodoProtocol]) ->
 
 
 def _op_AL(node: NodoProtocol) -> None:  # A’L — Emisión
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    gf = get_glyph_factors(node)
     f = float(gf.get("AL_boost", 0.05))
     node.EPI = node.EPI + f
     node.epi_kind = Glyph.AL.value
 
 
 def _op_EN(node: NodoProtocol) -> None:  # E’N — Recepción
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    gf = get_glyph_factors(node)
     mix = float(gf.get("EN_mix", 0.25))
     epi = node.EPI
     neigh = list(node.neighbors())
@@ -119,13 +124,13 @@ def _op_EN(node: NodoProtocol) -> None:  # E’N — Recepción
 
 
 def _op_IL(node: NodoProtocol) -> None:  # I’L — Coherencia
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    gf = get_glyph_factors(node)
     factor = float(gf.get("IL_dnfr_factor", 0.7))
     node.dnfr = factor * getattr(node, "dnfr", 0.0)
 
 
 def _op_OZ(node: NodoProtocol) -> None:  # O’Z — Disonancia
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    gf = get_glyph_factors(node)
     factor = float(gf.get("OZ_dnfr_factor", 1.3))
     dnfr = getattr(node, "dnfr", 0.0)
     if bool(node.graph.get("OZ_NOISE_MODE", False)):
@@ -136,7 +141,7 @@ def _op_OZ(node: NodoProtocol) -> None:  # O’Z — Disonancia
 
 
 def _op_UM(node: NodoProtocol) -> None:  # U’M — Acoplamiento
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    gf = get_glyph_factors(node)
     k = float(gf.get("UM_theta_push", 0.25))
     th = node.theta
     thL = fase_media(node)
@@ -162,7 +167,7 @@ def _op_UM(node: NodoProtocol) -> None:  # U’M — Acoplamiento
 
 
 def _op_RA(node: NodoProtocol) -> None:  # R’A — Resonancia
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    gf = get_glyph_factors(node)
     diff = float(gf.get("RA_epi_diff", 0.15))
     epi = node.EPI
     neigh = list(node.neighbors())
@@ -174,39 +179,39 @@ def _op_RA(node: NodoProtocol) -> None:  # R’A — Resonancia
 
 
 def _op_SHA(node: NodoProtocol) -> None:  # SH’A — Silencio
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    gf = get_glyph_factors(node)
     factor = float(gf.get("SHA_vf_factor", 0.85))
     node.vf = factor * node.vf
 
 
 def _op_VAL(node: NodoProtocol) -> None:  # VA’L — Expansión
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    gf = get_glyph_factors(node)
     s = float(gf.get("VAL_scale", 1.15))
     node.EPI = s * node.EPI
     node.epi_kind = Glyph.VAL.value
 
 
 def _op_NUL(node: NodoProtocol) -> None:  # NU’L — Contracción
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    gf = get_glyph_factors(node)
     s = float(gf.get("NUL_scale", 0.85))
     node.EPI = s * node.EPI
     node.epi_kind = Glyph.NUL.value
 
 
 def _op_THOL(node: NodoProtocol) -> None:  # T’HOL — Autoorganización
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    gf = get_glyph_factors(node)
     a = float(gf.get("THOL_accel", 0.10))
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
 def _op_ZHIR(node: NodoProtocol) -> None:  # Z’HIR — Mutación
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    gf = get_glyph_factors(node)
     shift = float(gf.get("ZHIR_theta_shift", math.pi / 2))
     node.theta = node.theta + shift
 
 
 def _op_NAV(node: NodoProtocol) -> None:  # NA’V — Transición
-    gf = node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    gf = get_glyph_factors(node)
     dnfr = node.dnfr
     vf = node.vf
     eta = float(gf.get("NAV_eta", 0.5))
