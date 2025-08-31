@@ -111,12 +111,14 @@ def _metrics_step(G, *args, **kwargs):
     # Al final del paso, no cerramos la corrida actual: se cerrará cuando cambie.
 
     # Guardar glifograma (conteos crudos y normalizados)
-    norm = bool(G.graph.get("METRICS", DEFAULTS["METRICS"]).get("normalize_series", False))
+    normalize_series = bool(
+        G.graph.get("METRICS", DEFAULTS["METRICS"]).get("normalize_series", False)
+    )
     row = {"t": t}
     total = max(1, sum(counts.values()))
     for g in GLYPHS_CANONICAL:
         c = counts.get(g, 0)
-        row[g] = (c / total) if norm else c
+        row[g] = (c / total) if normalize_series else c
     hist.setdefault("glifogram", []).append(row)
 
     # Guardar índice de latencia
@@ -126,11 +128,14 @@ def _metrics_step(G, *args, **kwargs):
     # --- Soporte y norma de la EPI ---
     thr = float(G.graph.get("EPI_SUPPORT_THR", DEFAULTS.get("EPI_SUPPORT_THR", 0.0)))
     supp_nodes = [n for n in G.nodes() if abs(_get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= thr]
-    norm = (
+    epi_norm = (
         sum(abs(_get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in supp_nodes) / len(supp_nodes)
-        if supp_nodes else 0.0
+        if supp_nodes
+        else 0.0
     )
-    hist.setdefault("EPI_support", []).append({"t": t, "size": len(supp_nodes), "norm": float(norm)})
+    hist.setdefault("EPI_support", []).append(
+        {"t": t, "size": len(supp_nodes), "epi_norm": float(epi_norm)}
+    )
 
     # --- Métricas morfosintácticas ---
     total = max(1, sum(counts.values()))
@@ -268,9 +273,9 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
         if epi_supp:
             with open(base_path + "_epi_support.csv", "w", newline="") as f:
                 writer = csv.writer(f)
-                writer.writerow(["t", "size", "norm"])
+                writer.writerow(["t", "size", "epi_norm"])
                 for row in epi_supp:
-                    writer.writerow([row.get("t"), row.get("size"), row.get("norm")])
+                    writer.writerow([row.get("t"), row.get("size"), row.get("epi_norm")])
     else:
         data = {"glifogram": glifo, "sigma": sigma, "morph": morph, "epi_support": epi_supp}
         with open(base_path + ".json", "w") as f:
