@@ -4,7 +4,6 @@ from typing import Dict, Any, Optional, Iterable
 import math
 import random
 import hashlib
-import weakref
 import networkx as nx
 from networkx.algorithms import community as nx_comm
 
@@ -62,13 +61,27 @@ def _node_offset(G, n) -> int:
     return int(mapping.get(n, 0))
 
 
-def random_jitter(node: NodoProtocol, amplitude: float) -> float:
-    """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``."""
+def _jitter_base(seed: int, key: int) -> float:
+    """Return deterministic base jitter in ``[-1, 1]`` from ``seed`` and ``key``."""
+    digest = hashlib.sha256(f"{seed}:{key}".encode()).digest()
+    val = int.from_bytes(digest[:8], "big") / 2**64
+    return 2.0 * val - 1.0
+
+
+def random_jitter(
+    node: NodoProtocol, amplitude: float, cache: Optional[Dict[int, float]] = None
+) -> float:
+    """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
+
+    The value is derived from ``(RANDOM_SEED, node.offset())`` and does not store
+    references to nodes. Optionally, provide ``cache`` mapping ``offset`` to base
+    jitter to reuse previously computed values.
+    """
+
     if amplitude == 0:
         return 0.0
 
     base_seed = int(node.graph.get("RANDOM_SEED", 0))
-    cache = node.graph.setdefault("_rnd_cache", weakref.WeakKeyDictionary())
 
     if hasattr(node, "n") and hasattr(node, "G"):
         seed_key = _node_offset(node.G, node.n)
@@ -79,12 +92,15 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
             setattr(node, "_noise_uid", uid)
         seed_key = int(uid)
 
-    rnd = cache.get(node)
-    if rnd is None:
-        rnd = random.Random(base_seed + seed_key)
-        cache[node] = rnd
+    if cache is not None:
+        base = cache.get(seed_key)
+        if base is None:
+            base = _jitter_base(base_seed, seed_key)
+            cache[seed_key] = base
+    else:
+        base = _jitter_base(base_seed, seed_key)
 
-    return amplitude * (2.0 * rnd.random() - 1.0)
+    return amplitude * base
 
 
 def get_glyph_factors(node: NodoProtocol) -> Dict[str, Any]:
@@ -139,7 +155,8 @@ def _op_OZ(node: NodoProtocol) -> None:  # OZ — Disonancia
         if sigma <= 0:
             node.dnfr = dnfr
             return
-        node.dnfr = dnfr + random_jitter(node, sigma)
+        cache = node.graph.setdefault("_rnd_cache", {})
+        node.dnfr = dnfr + random_jitter(node, sigma, cache)
     else:
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
 
@@ -232,7 +249,8 @@ def _op_NAV(node: NodoProtocol) -> None:  # NAV — Transición
         base = (1.0 - eta) * dnfr + eta * target
     j = float(gf.get("NAV_jitter", 0.05))
     if bool(node.graph.get("NAV_RANDOM", True)):
-        jitter = random_jitter(node, j)
+        cache = node.graph.setdefault("_rnd_cache", {})
+        jitter = random_jitter(node, j, cache)
     else:
         jitter = j * (1 if base >= 0 else -1)
     node.dnfr = base + jitter

@@ -1,33 +1,12 @@
-import gc
 import math
 import statistics as st
 import pytest
 
-from tnfr.node import NodoNX
-from tnfr.operators import random_jitter
 from tnfr.constants import ALIAS_THETA
 from tnfr.observers import sincronía_fase, orden_kuramoto, carga_glifica
 from tnfr.sense import sigma_vector_global, sigma_vector
 from tnfr.constants_glifos import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
 from tnfr.helpers import angle_diff, set_attr
-
-
-def test_random_jitter_cache_cleared_on_node_removal(graph_canon):
-    G = graph_canon()
-    G.add_node(0)
-    n0 = NodoNX(G, 0)
-
-    random_jitter(n0, 0.1)
-    cache = G.graph.get("_rnd_cache")
-    assert cache is not None
-    assert len(cache) == 1
-
-    del n0
-    G.remove_node(0)
-    gc.collect()
-
-    assert len(cache) == 0
-
 
 def test_phase_observers_match_manual_calculation(graph_canon):
     G = graph_canon()
