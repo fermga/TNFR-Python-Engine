@@ -24,6 +24,50 @@ from .helpers import (
 )
 
 
+def _nx_attr_property(
+    aliases,
+    *,
+    default=0.0,
+    getter=_get_attr,
+    setter=_set_attr,
+    to_python=float,
+    to_storage=float,
+    use_graph_setter=False,
+):
+    """Generate ``NodoNX`` property descriptors.
+
+    Parameters
+    ----------
+    aliases:
+        Alias or tuple of aliases used to access the attribute in the
+        underlying ``networkx`` node.
+    default:
+        Value returned when the attribute is missing.
+    getter, setter:
+        Helper functions used to retrieve or store the value. ``setter`` can
+        either accept ``(mapping, aliases, value)`` or, when
+        ``use_graph_setter`` is ``True``, ``(G, n, value)``.
+    to_python, to_storage:
+        Conversion helpers applied when getting or setting the value,
+        respectively.
+    use_graph_setter:
+        Whether ``setter`` expects ``(G, n, value)`` instead of
+        ``(mapping, aliases, value)``.
+    """
+
+    def fget(self):
+        return to_python(getter(self.G.nodes[self.n], aliases, default))
+
+    def fset(self, value):
+        value = to_storage(value)
+        if use_graph_setter:
+            setter(self.G, self.n, value)
+        else:
+            setter(self.G.nodes[self.n], aliases, value)
+
+    return property(fget, fset)
+
+
 class NodoProtocol(Protocol):
     """Protocolo mínimo para nodos TNFR."""
 
@@ -117,61 +161,20 @@ class NodoNX(NodoProtocol):
         self.n = n
         self.graph = G.graph
 
-    @property
-    def EPI(self) -> float:
-        return float(_get_attr(self.G.nodes[self.n], ALIAS_EPI, 0.0))
-
-    @EPI.setter
-    def EPI(self, v: float) -> None:
-        _set_attr(self.G.nodes[self.n], ALIAS_EPI, float(v))
-
-    @property
-    def vf(self) -> float:
-        return float(_get_attr(self.G.nodes[self.n], ALIAS_VF, 0.0))
-
-    @vf.setter
-    def vf(self, v: float) -> None:
-        set_vf(self.G, self.n, float(v))
-
-    @property
-    def theta(self) -> float:
-        return float(_get_attr(self.G.nodes[self.n], ALIAS_THETA, 0.0))
-
-    @theta.setter
-    def theta(self, v: float) -> None:
-        _set_attr(self.G.nodes[self.n], ALIAS_THETA, float(v))
-
-    @property
-    def Si(self) -> float:
-        return float(_get_attr(self.G.nodes[self.n], ALIAS_SI, 0.0))
-
-    @Si.setter
-    def Si(self, v: float) -> None:
-        _set_attr(self.G.nodes[self.n], ALIAS_SI, float(v))
-
-    @property
-    def epi_kind(self) -> str:
-        return _get_attr_str(self.G.nodes[self.n], ALIAS_EPI_KIND, "")
-
-    @epi_kind.setter
-    def epi_kind(self, v: str) -> None:
-        _set_attr_str(self.G.nodes[self.n], ALIAS_EPI_KIND, str(v))
-
-    @property
-    def dnfr(self) -> float:
-        return float(_get_attr(self.G.nodes[self.n], ALIAS_DNFR, 0.0))
-
-    @dnfr.setter
-    def dnfr(self, v: float) -> None:
-        set_dnfr(self.G, self.n, float(v))
-
-    @property
-    def d2EPI(self) -> float:
-        return float(_get_attr(self.G.nodes[self.n], ALIAS_D2EPI, 0.0))
-
-    @d2EPI.setter
-    def d2EPI(self, v: float) -> None:
-        _set_attr(self.G.nodes[self.n], ALIAS_D2EPI, float(v))
+    EPI = _nx_attr_property(ALIAS_EPI)
+    vf = _nx_attr_property(ALIAS_VF, setter=set_vf, use_graph_setter=True)
+    theta = _nx_attr_property(ALIAS_THETA)
+    Si = _nx_attr_property(ALIAS_SI)
+    epi_kind = _nx_attr_property(
+        ALIAS_EPI_KIND,
+        default="",
+        getter=_get_attr_str,
+        setter=_set_attr_str,
+        to_python=str,
+        to_storage=str,
+    )
+    dnfr = _nx_attr_property(ALIAS_DNFR, setter=set_dnfr, use_graph_setter=True)
+    d2EPI = _nx_attr_property(ALIAS_D2EPI)
 
     def neighbors(self) -> Iterable[NodoProtocol]:
         return [NodoNX(self.G, v) for v in self.G.neighbors(self.n)]
