@@ -58,9 +58,9 @@ def preparar_red(G: nx.Graph, *, override_defaults: bool = False, **overrides) -
         try:
             from .observers import attach_standard_observer
             attach_standard_observer(G)
-        except Exception as e:
+        except ImportError as e:
             G.graph.setdefault("_callback_errors", []).append(
-                {"event":"attach_std_observer","error":repr(e)}
+                {"event": "attach_std_observer", "error": repr(e)}
             )
     # Hook explícito para ΔNFR (se puede sustituir luego con dynamics.set_delta_nfr_hook)
     G.graph.setdefault("compute_delta_nfr", default_compute_delta_nfr)

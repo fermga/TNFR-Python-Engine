@@ -863,8 +863,10 @@ def _update_history(G) -> None:
         _update_phase_sync(G, hist)
         _update_sigma(G, hist)
         if hist.get("C_steps") and hist.get("stable_frac"):
-            hist.setdefault("iota", []).append(hist["C_steps"][-1] * hist["stable_frac"][-1])
-    except Exception:
+            hist.setdefault("iota", []).append(
+                hist["C_steps"][-1] * hist["stable_frac"][-1]
+            )
+    except (KeyError, ValueError, TypeError):
         # observadores son opcionales; si fallan se ignoran
         pass
   
@@ -878,8 +880,12 @@ def _update_history(G) -> None:
             si_mean = list_mean(sis, 0.0)
             hist["Si_mean"].append(si_mean)
             # umbrales preferentes del selector paramétrico; fallback a los del selector simple
-            thr_sel = G.graph.get("SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {}))
-            thr_def = G.graph.get("GLYPH_THRESHOLDS", DEFAULTS.get("GLYPH_THRESHOLDS", {"hi":0.66,"lo":0.33}))
+            thr_sel = G.graph.get(
+                "SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {})
+            )
+            thr_def = G.graph.get(
+                "GLYPH_THRESHOLDS", DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66, "lo": 0.33})
+            )
             si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
             si_lo = float(thr_sel.get("si_lo", thr_def.get("lo", 0.33)))
             n = len(sis)
@@ -889,6 +895,6 @@ def _update_history(G) -> None:
             hist["Si_mean"].append(0.0)
             hist["Si_hi_frac"].append(0.0)
             hist["Si_lo_frac"].append(0.0)
-    except Exception:
+    except (KeyError, ValueError, TypeError):
         # si aún no se calculó Si este paso, no interrumpimos
         pass

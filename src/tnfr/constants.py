@@ -282,7 +282,7 @@ def inject_defaults(G, defaults: Dict[str, Any] = DEFAULTS, override: bool = Fal
         from .operators import _ensure_node_offset_map
 
         _ensure_node_offset_map(G)
-    except Exception:
+    except ImportError:
         pass
 
 

@@ -332,7 +332,7 @@ def aplicar_remesh_red(G) -> None:
         degs = sorted(d for _, d in G.degree())
         topo_str = f"n={n_nodes};m={n_edges};deg=" + ",".join(map(str, degs))
         topo_hash = hashlib.sha1(topo_str.encode()).hexdigest()[:12]
-    except Exception:
+    except (AttributeError, TypeError, nx.NetworkXError):
         topo_hash = None
 
     def _epi_items():

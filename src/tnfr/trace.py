@@ -7,13 +7,13 @@ from .helpers import register_callback, ensure_history, last_glifo
 
 try:
     from .gamma import kuramoto_R_psi
-except Exception:  # pragma: no cover
+except ImportError:  # pragma: no cover
     def kuramoto_R_psi(G):
         return 0.0, 0.0
 
 try:
     from .sense import sigma_vector_global
-except Exception:  # pragma: no cover
+except ImportError:  # pragma: no cover
     def sigma_vector_global(G, *args, **kwargs):
         return {"x": 1.0, "y": 0.0, "mag": 1.0, "angle": 0.0, "n": 0}
 

@@ -159,5 +159,5 @@ def eval_gamma(G, node, t) -> float:
         _ensure_kuramoto_cache(G, t)
     try:
         return float(fn(G, node, t, spec))
-    except Exception:
+    except (KeyError, TypeError, ValueError):
         return 0.0

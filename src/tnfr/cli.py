@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 
 try:  # pragma: no cover - opcional
     import yaml  # type: ignore
-except Exception:  # pragma: no cover - yaml es opcional
+except ImportError:  # pragma: no cover - yaml es opcional
     yaml = None
 
 import networkx as nx
