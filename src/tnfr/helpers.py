@@ -102,6 +102,11 @@ def phase_distance(a: float, b: float) -> float:
 _sentinel = object()
 
 
+def _ensure_tuple(aliases: Iterable[str]) -> tuple[str, ...]:
+    """Garantiza que ``aliases`` sea una tupla."""
+    return aliases if isinstance(aliases, tuple) else tuple(aliases)
+
+
 def alias_get(
     d: Dict[str, Any],
     aliases: Iterable[str],
@@ -114,8 +119,7 @@ def alias_get(
     Si ninguna de las claves está presente o la conversión falla, devuelve
     ``default`` convertido (o ``None`` si ``default`` es ``None``).
     """
-    if not isinstance(aliases, tuple):
-        aliases = tuple(aliases)
+    aliases = _ensure_tuple(aliases)
     for key in aliases:
         if key in d:
             try:
@@ -136,8 +140,7 @@ def alias_set(
     value,
 ):
     """Asigna ``value`` convertido a la primera clave disponible de ``aliases``."""
-    if not isinstance(aliases, tuple):
-        aliases = tuple(aliases)
+    aliases = _ensure_tuple(aliases)
     for key in aliases:
         if key in d:
             d[key] = conv(value)
