@@ -8,7 +8,7 @@ from tnfr.constants import (
     ALIAS_VF,
 )
 from tnfr.validators import run_validators
-from tnfr.helpers import _set_attr_str, _set_attr, read_structured_file
+from tnfr.helpers import set_attr_str, set_attr, read_structured_file
 from tnfr.config import load_config
 
 
@@ -21,7 +21,7 @@ def _base_graph():
 def test_validator_epi_range():
     G = _base_graph()
     n0 = list(G.nodes())[0]
-    _set_attr(G.nodes[n0], ALIAS_EPI, 2.0)
+    set_attr(G.nodes[n0], ALIAS_EPI, 2.0)
     with pytest.raises(ValueError):
         run_validators(G)
 
@@ -29,7 +29,7 @@ def test_validator_epi_range():
 def test_validator_vf_range():
     G = _base_graph()
     n0 = list(G.nodes())[0]
-    _set_attr(G.nodes[n0], ALIAS_VF, 2.0)
+    set_attr(G.nodes[n0], ALIAS_VF, 2.0)
     with pytest.raises(ValueError):
         run_validators(G)
 
@@ -48,7 +48,7 @@ def test_validator_sigma_norm(monkeypatch):
 def test_validator_glifo_invalido():
     G = _base_graph()
     n0 = list(G.nodes())[0]
-    _set_attr_str(G.nodes[n0], ALIAS_EPI_KIND, "INVALID")
+    set_attr_str(G.nodes[n0], ALIAS_EPI_KIND, "INVALID")
     with pytest.raises(ValueError):
         run_validators(G)
 

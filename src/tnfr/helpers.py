@@ -26,6 +26,34 @@ from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, A
 
 T = TypeVar("T")
 
+__all__ = [
+    "read_structured_file",
+    "clamp",
+    "clamp_abs",
+    "clamp01",
+    "list_mean",
+    "angle_diff",
+    "phase_distance",
+    "alias_get",
+    "alias_set",
+    "get_attr",
+    "set_attr",
+    "get_attr_str",
+    "set_attr_str",
+    "set_vf",
+    "set_dnfr",
+    "media_vecinal",
+    "fase_media",
+    "push_glifo",
+    "reciente_glifo",
+    "ensure_history",
+    "last_glifo",
+    "count_glyphs",
+    "register_callback",
+    "invoke_callbacks",
+    "compute_Si",
+]
+
 if TYPE_CHECKING:  # pragma: no cover - sólo para tipos
     from .node import NodoProtocol
 
@@ -156,20 +184,26 @@ def alias_set(
     return d[key]
 
 
-def _get_attr(d: Dict[str, Any], aliases: Iterable[str], default: float = 0.0) -> float:
+def get_attr(d: Dict[str, Any], aliases: Iterable[str], default: float = 0.0) -> float:
     return alias_get(d, aliases, float, default=default)
 
 
-def _set_attr(d, aliases, value: float) -> None:
+def set_attr(d, aliases, value: float) -> None:
     alias_set(d, aliases, float, value)
 
 
-def _get_attr_str(d: Dict[str, Any], aliases: Iterable[str], default: str = "") -> str:
+def get_attr_str(d: Dict[str, Any], aliases: Iterable[str], default: str = "") -> str:
     return alias_get(d, aliases, str, default=default)
 
 
-def _set_attr_str(d, aliases, value: str) -> None:
+def set_attr_str(d, aliases, value: str) -> None:
     alias_set(d, aliases, str, value)
+
+# Retrocompatibilidad con nombres anteriores
+_get_attr = get_attr
+_set_attr = set_attr
+_get_attr_str = get_attr_str
+_set_attr_str = set_attr_str
 
 
 # -------------------------
@@ -180,10 +214,10 @@ def _recompute_abs_max(G, aliases):
     """Recalcula y retorna ``(max_val, node)`` para ``aliases``."""
     node = max(
         G.nodes(),
-        key=lambda m: abs(_get_attr(G.nodes[m], aliases, 0.0)),
+        key=lambda m: abs(get_attr(G.nodes[m], aliases, 0.0)),
         default=None,
     )
-    max_val = abs(_get_attr(G.nodes[node], aliases, 0.0)) if node is not None else 0.0
+    max_val = abs(get_attr(G.nodes[node], aliases, 0.0)) if node is not None else 0.0
     return max_val, node
 
 
@@ -204,13 +238,13 @@ def _update_cached_abs_max(G, aliases, n, value, *, key: str) -> None:
 
 def set_vf(G, n, value: float) -> None:
     """Asigna ``νf`` y actualiza el máximo global."""
-    _set_attr(G.nodes[n], ALIAS_VF, float(value))
+    set_attr(G.nodes[n], ALIAS_VF, float(value))
     _update_cached_abs_max(G, ALIAS_VF, n, float(value), key="_vfmax")
 
 
 def set_dnfr(G, n, value: float) -> None:
     """Asigna ``ΔNFR`` y actualiza el máximo global."""
-    _set_attr(G.nodes[n], ALIAS_DNFR, float(value))
+    set_attr(G.nodes[n], ALIAS_DNFR, float(value))
     _update_cached_abs_max(G, ALIAS_DNFR, n, float(value), key="_dnfrmax")
 
 # -------------------------
@@ -219,7 +253,7 @@ def set_dnfr(G, n, value: float) -> None:
 
 def media_vecinal(G, n, aliases: Iterable[str], default: float = 0.0) -> float:
     """Media del atributo indicado por ``aliases`` en los vecinos de ``n``."""
-    vals = (_get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
+    vals = (get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
     return list_mean(vals, default)
 
 
@@ -268,7 +302,7 @@ def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
     if hist and any(g == gl for g in islice(reversed(hist), ventana)):
         return True
     # fallback al glifo dominante actual
-    return _get_attr_str(nd, ALIAS_EPI_KIND, "") == gl
+    return get_attr_str(nd, ALIAS_EPI_KIND, "") == gl
 
 # -------------------------
 # Utilidades de historial global
@@ -281,7 +315,7 @@ def ensure_history(G) -> Dict[str, Any]:
 
 def last_glifo(nd: Dict[str, Any]) -> str | None:
     """Retorna el glifo más reciente del nodo o ``None``."""
-    kind = _get_attr_str(nd, ALIAS_EPI_KIND, "")
+    kind = get_attr_str(nd, ALIAS_EPI_KIND, "")
     if kind:
         return kind
     hist = nd.get("hist_glifos")
@@ -425,20 +459,20 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
 
     out: Dict[Any, float] = {}
     for n, nd in G.nodes(data=True):
-        vf = _get_attr(nd, ALIAS_VF, 0.0)
+        vf = get_attr(nd, ALIAS_VF, 0.0)
         vf_norm = clamp01(abs(vf) / vfmax)
 
         # dispersión de fase local
-        th_i = _get_attr(nd, ALIAS_THETA, 0.0)
+        th_i = get_attr(nd, ALIAS_THETA, 0.0)
         th_bar = fase_media(G, n)
         disp_fase = phase_distance(th_i, th_bar)  # [0,1]
 
-        dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
+        dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
         dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
 
         Si = alpha*vf_norm + beta*(1.0 - disp_fase) + gamma*(1.0 - dnfr_norm)
         Si = clamp01(Si)
         out[n] = Si
         if inplace:
-            _set_attr(nd, ALIAS_SI, Si)
+            set_attr(nd, ALIAS_SI, Si)
     return out

@@ -9,7 +9,7 @@ import math
 import statistics as st
 
 from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
-from .helpers import _get_attr, list_mean, register_callback, angle_diff, ensure_history, count_glyphs
+from .helpers import get_attr, list_mean, register_callback, angle_diff, ensure_history, count_glyphs
 from .constants_glifos import ESTABILIZADORES, DISRUPTIVOS
 
 # -------------------------
@@ -39,15 +39,15 @@ def attach_standard_observer(G):
 
 def coherencia_global(G) -> float:
     """Proxy de C(t): alta cuando |ΔNFR| y |dEPI_dt| son pequeños."""
-    dnfr = list_mean(abs(_get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes())
-    dEPI = list_mean(abs(_get_attr(G.nodes[n], ALIAS_dEPI, 0.0)) for n in G.nodes())
+    dnfr = list_mean(abs(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes())
+    dEPI = list_mean(abs(get_attr(G.nodes[n], ALIAS_dEPI, 0.0)) for n in G.nodes())
     return 1.0 / (1.0 + dnfr + dEPI)
 
 
 def _phase_vectors(G) -> tuple[list, list]:
     """Devuelve listas de cosenos y senos de las fases nodales."""
-    X = [math.cos(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes()]
-    Y = [math.sin(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes()]
+    X = [math.cos(get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes()]
+    Y = [math.sin(get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes()]
     return X, Y
 
 
@@ -60,7 +60,7 @@ def sincronía_fase(G) -> float:
     var = (
         st.pvariance(
             [
-                angle_diff(_get_attr(G.nodes[n], ALIAS_THETA, 0.0), th)
+                angle_diff(get_attr(G.nodes[n], ALIAS_THETA, 0.0), th)
                 for n in G.nodes()
             ]
         )

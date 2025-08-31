@@ -5,7 +5,7 @@ from collections import Counter
 
 from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
 from .helpers import (
-    _get_attr,
+    get_attr,
     clamp01,
     register_callback,
     ensure_history,
@@ -58,9 +58,9 @@ def glyph_unit(g: str) -> complex:
 def _weight(G, n, mode: str) -> float:
     nd = G.nodes[n]
     if mode == "Si":
-        return clamp01(_get_attr(nd, ALIAS_SI, 0.5))
+        return clamp01(get_attr(nd, ALIAS_SI, 0.5))
     if mode == "EPI":
-        return max(0.0, float(_get_attr(nd, ALIAS_EPI, 0.0)))
+        return max(0.0, float(get_attr(nd, ALIAS_EPI, 0.0)))
     return 1.0
 
 
