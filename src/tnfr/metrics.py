@@ -202,7 +202,7 @@ def glifogram_series(G) -> Dict[str, List[float]]:
 
 
 def glyph_top(G, k: int = 3) -> List[Tuple[str, float]]:
-    """Top-k glifos por Tg_global (fracción)."""
+    """Top-k operadores estructurales por Tg_global (fracción)."""
     tg = Tg_global(G, normalize=True)
     return sorted(tg.items(), key=lambda kv: kv[1], reverse=True)[:max(1, int(k))]
 

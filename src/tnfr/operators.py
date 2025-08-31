@@ -146,21 +146,30 @@ def op_ZHIR(G, n):  # Z’HIR — Mutación (desplaza fase)
     th = _get_attr(nd, ALIAS_THETA, 0.0)
     _set_attr(nd, ALIAS_THETA, th + shift)
 
-def op_NAV(G, n):  # NA’V — Transición (jitter suave de ΔNFR)
+def op_NAV(G, n):  # NA’V — Transición (tender ΔNFR → νf con pequeño jitter)
     nd = G.nodes[n]
     dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
-    j = float(G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"]).get("NAV_jitter", 0.05))
+    vf = _get_attr(nd, ALIAS_VF, 0.0)
+    gf = G.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    eta = float(gf.get("NAV_eta", 0.5))
+    strict = bool(G.graph.get("NAV_STRICT", False))
+    if strict:
+        base = vf
+    else:
+        sign = 1.0 if dnfr >= 0 else -1.0
+        target = sign * vf
+        base = (1.0 - eta) * dnfr + eta * target
+    j = float(gf.get("NAV_jitter", 0.05))
     if bool(G.graph.get("NAV_RANDOM", True)):
         # jitter uniforme en [-j, j] con semilla reproducible
         base_seed = int(G.graph.get("RANDOM_SEED", 0))
-        # opcional: pequeño offset para evitar misma secuencia en todos los nodos/pasos
         step_idx = len(G.graph.get("history", {}).get("C_steps", []))
-        rnd = random.Random(base_seed + step_idx*1000003 + _node_offset(G, n) % 1009)
+        rnd = random.Random(base_seed + step_idx * 1000003 + _node_offset(G, n) % 1009)
         jitter = j * (2.0 * rnd.random() - 1.0)
     else:
         # comportamiento determinista (compatibilidad previa)
-        jitter = j * (1 if dnfr >= 0 else -1)
-    _set_attr(nd, ALIAS_DNFR, dnfr + jitter)
+        jitter = j * (1 if base >= 0 else -1)
+    _set_attr(nd, ALIAS_DNFR, base + jitter)
 
 def op_REMESH(G, n):  # RE’MESH — se realiza a escala de red (no-op local con aviso)
     # Loguea solo 1 vez por paso para no spamear
