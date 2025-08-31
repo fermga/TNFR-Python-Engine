@@ -356,8 +356,7 @@ def aplicar_remesh_red(G) -> None:
     ).hexdigest()[:12]
 
     # --- Mezcla (1-α)·now + α·old ---
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for n, nd in G.nodes(data=True):
         epi_now = _get_attr(nd, ALIAS_EPI, 0.0)
         epi_old_l = float(past_l.get(n, epi_now))
         epi_old_g = float(past_g.get(n, epi_now))

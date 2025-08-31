@@ -382,8 +382,7 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
 
     out: Dict[Any, float] = {}
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for n, nd in G.nodes(data=True):
         vf = _get_attr(nd, ALIAS_VF, 0.0)
         vf_norm = clamp01(abs(vf) / vfmax)
 

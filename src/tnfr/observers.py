@@ -79,8 +79,7 @@ def carga_glifica(G, window: int | None = None) -> dict:
     Retorna un dict con proporciones por glifo y agregados útiles.
     """
     total = Counter()
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for n, nd in G.nodes(data=True):
         hist = nd.get("hist_glifos")
         if not hist:
             continue

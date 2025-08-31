@@ -109,8 +109,7 @@ def default_compute_delta_nfr(G) -> None:
 
     degs = dict(G.degree()) if w_topo != 0 else None
 
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for n, nd in G.nodes(data=True):
         th_i = _get_attr(nd, ALIAS_THETA, 0.0)
         epi_i = _get_attr(nd, ALIAS_EPI, 0.0)
         vf_i = _get_attr(nd, ALIAS_VF, 0.0)
@@ -173,8 +172,7 @@ def set_delta_nfr_hook(G, func, *, name: str | None = None, note: str | None = N
 # --- Hooks de ejemplo (opcionales) ---
 def dnfr_phase_only(G) -> None:
     """Ejemplo: ΔNFR solo desde fase (tipo Kuramoto-like)."""
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for n, nd in G.nodes(data=True):
         th_i = _get_attr(nd, ALIAS_THETA, 0.0)
         th_bar = fase_media(G, n)
         g_phase = -angle_diff(th_i, th_bar) / math.pi
@@ -183,8 +181,7 @@ def dnfr_phase_only(G) -> None:
 
 def dnfr_epi_vf_mixed(G) -> None:
     """Ejemplo: ΔNFR sin fase, mezclando EPI y νf."""
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for n, nd in G.nodes(data=True):
         epi_i = _get_attr(nd, ALIAS_EPI, 0.0)
         epi_bar = media_vecinal(G, n, ALIAS_EPI, default=epi_i)
         g_epi = (epi_bar - epi_i)
@@ -199,8 +196,7 @@ def dnfr_laplacian(G) -> None:
     """Gradiente topológico explícito usando Laplaciano sobre EPI y νf."""
     wE = float(G.graph.get("DNFR_WEIGHTS", {}).get("epi", 0.33))
     wV = float(G.graph.get("DNFR_WEIGHTS", {}).get("vf", 0.33))
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for n, nd in G.nodes(data=True):
         epi = _get_attr(nd, ALIAS_EPI, 0.0)
         vf = _get_attr(nd, ALIAS_VF, 0.0)
         neigh = list(G.neighbors(n))
@@ -272,8 +268,7 @@ def update_epi_via_nodal_equation(
 
     t_local = t
     for _ in range(steps):
-        for n in G.nodes():
-            nd = G.nodes[n]
+        for n, nd in G.nodes(data=True):
             vf = _get_attr(nd, ALIAS_VF, 0.0)
             dnfr = _get_attr(nd, ALIAS_DNFR, 0.0)
             dEPI_dt_prev = _get_attr(nd, ALIAS_dEPI, 0.0)
@@ -470,8 +465,7 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
         thG = 0.0
 
     # 7) Aplicar corrección global+vecinal
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for n, nd in G.nodes(data=True):
         th = _get_attr(nd, ALIAS_THETA, 0.0)
         thL = fase_media(G, n)
         dG = angle_diff(thG, th)
@@ -494,8 +488,7 @@ def adaptar_vf_por_coherencia(G) -> None:
     vf_max = float(G.graph.get("VF_MAX", DEFAULTS["VF_MAX"]))
 
     updates = {}
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for n, nd in G.nodes(data=True):
         Si = _get_attr(nd, ALIAS_SI, 0.0)
         dnfr = abs(_get_attr(nd, ALIAS_DNFR, 0.0))
         if Si >= si_hi and dnfr <= eps_dnfr:
@@ -543,8 +536,7 @@ def _norms_para_selector(G) -> dict:
     """Calcula y guarda en G.graph los máximos para normalizar |ΔNFR| y |d2EPI/dt2|."""
     dnfr_max = 0.0
     accel_max = 0.0
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for n, nd in G.nodes(data=True):
         dnfr_max = max(dnfr_max, abs(_get_attr(nd, ALIAS_DNFR, 0.0)))
         accel_max = max(accel_max, abs(_get_attr(nd, ALIAS_D2EPI, 0.0)))
     if dnfr_max <= 0: dnfr_max = 1.0
@@ -841,8 +833,7 @@ def _update_history(G) -> None:
     dt = float(G.graph.get("DT", DEFAULTS.get("DT", 1.0))) or 1.0
     delta_si_acc = []
     B_acc = []
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for n, nd in G.nodes(data=True):
         if abs(_get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr and abs(_get_attr(nd, ALIAS_dEPI, 0.0)) <= eps_depi:
             stables += 1
 

@@ -138,8 +138,7 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
     # Trayectoria por nodo (opcional)
     if cfg.get("per_node", False):
         per = hist.setdefault("sigma_per_node", {})
-        for n in G.nodes():
-            nd = G.nodes[n]
+        for n, nd in G.nodes(data=True):
             g = last_glifo(nd)
             if not g:
                 continue
