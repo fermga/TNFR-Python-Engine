@@ -7,6 +7,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import Dict, Any
 import math
+import statistics as st
 
 from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
 from .helpers import _get_attr, list_mean, register_callback
@@ -50,7 +51,6 @@ def sincronía_fase(G) -> float:
         return 1.0
     th = math.atan2(sum(Y) / len(Y), sum(X) / len(X))
     # varianza angular aproximada (0 = muy sincronizado)
-    import statistics as st
     var = (
         st.pvariance(
             [
