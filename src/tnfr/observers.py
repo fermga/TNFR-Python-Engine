@@ -43,9 +43,15 @@ def coherencia_global(G) -> float:
     return 1.0 / (1.0 + dnfr + dEPI)
 
 
-def sincronía_fase(G) -> float:
+def _phase_vectors(G) -> tuple[list, list]:
+    """Devuelve listas de cosenos y senos de las fases nodales."""
     X = [math.cos(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes()]
     Y = [math.sin(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes()]
+    return X, Y
+
+
+def sincronía_fase(G) -> float:
+    X, Y = _phase_vectors(G)
     if not X:
         return 1.0
     th = math.atan2(sum(Y) / len(Y), sum(X) / len(X))
@@ -64,8 +70,7 @@ def sincronía_fase(G) -> float:
 
 def orden_kuramoto(G) -> float:
     """R en [0,1], 1 = fases perfectamente alineadas."""
-    X = [math.cos(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes()]
-    Y = [math.sin(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes()]
+    X, Y = _phase_vectors(G)
     if not X:
         return 1.0
     R = ((sum(X)**2 + sum(Y)**2) ** 0.5) / max(1, len(X))
