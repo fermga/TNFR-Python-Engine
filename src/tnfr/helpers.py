@@ -35,8 +35,11 @@ if TYPE_CHECKING:  # pragma: no cover - sólo para tipos
 
 def read_structured_file(path: Path) -> Any:
     """Lee un archivo JSON o YAML y devuelve los datos parseados."""
+    suffix = path.suffix.lower()
+    if suffix not in {".json", ".yaml", ".yml"}:
+        raise ValueError(f"Extensión de archivo no soportada: {path.suffix}")
     with path.open("r", encoding="utf-8") as f:
-        if path.suffix in {".yaml", ".yml"}:
+        if suffix in {".yaml", ".yml"}:
             if not yaml:  # pragma: no cover - dependencia opcional
                 raise RuntimeError("pyyaml no está instalado")
             return yaml.safe_load(f)
