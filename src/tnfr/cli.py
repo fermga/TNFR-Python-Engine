@@ -142,6 +142,53 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--gamma-R0", type=float, default=0.0)
 
 
+def add_grammar_args(parser: argparse.ArgumentParser) -> None:
+    """Agrega las opciones de gramática y de histéresis del glifo."""
+    parser.add_argument("--grammar.enabled", dest="grammar_enabled", type=_str2bool, default=None)
+    parser.add_argument(
+        "--grammar.zhir_requires_oz_window",
+        dest="grammar_zhir_requires_oz_window",
+        type=int,
+        default=None,
+    )
+    parser.add_argument(
+        "--grammar.zhir_dnfr_min",
+        dest="grammar_zhir_dnfr_min",
+        type=float,
+        default=None,
+    )
+    parser.add_argument(
+        "--grammar.thol_min_len",
+        dest="grammar_thol_min_len",
+        type=int,
+        default=None,
+    )
+    parser.add_argument(
+        "--grammar.thol_max_len",
+        dest="grammar_thol_max_len",
+        type=int,
+        default=None,
+    )
+    parser.add_argument(
+        "--grammar.thol_close_dnfr",
+        dest="grammar_thol_close_dnfr",
+        type=float,
+        default=None,
+    )
+    parser.add_argument(
+        "--grammar.si_high",
+        dest="grammar_si_high",
+        type=float,
+        default=None,
+    )
+    parser.add_argument(
+        "--glyph.hysteresis_window",
+        dest="glyph_hysteresis_window",
+        type=int,
+        default=None,
+    )
+
+
 def cmd_run(args: argparse.Namespace) -> int:
     G = _build_graph_from_args(args)
 
@@ -237,14 +284,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_run.add_argument("--export-format", dest="export_format", choices=["csv", "json"], default="json")
     p_run.add_argument("--summary", action="store_true")
     p_run.add_argument("--no-canon", dest="grammar_canon", action="store_false", default=True, help="Desactiva gramática canónica")
-    p_run.add_argument("--grammar.enabled", dest="grammar_enabled", type=_str2bool, default=None)
-    p_run.add_argument("--grammar.zhir_requires_oz_window", dest="grammar_zhir_requires_oz_window", type=int, default=None)
-    p_run.add_argument("--grammar.zhir_dnfr_min", dest="grammar_zhir_dnfr_min", type=float, default=None)
-    p_run.add_argument("--grammar.thol_min_len", dest="grammar_thol_min_len", type=int, default=None)
-    p_run.add_argument("--grammar.thol_max_len", dest="grammar_thol_max_len", type=int, default=None)
-    p_run.add_argument("--grammar.thol_close_dnfr", dest="grammar_thol_close_dnfr", type=float, default=None)
-    p_run.add_argument("--grammar.si_high", dest="grammar_si_high", type=float, default=None)
-    p_run.add_argument("--glyph.hysteresis_window", dest="glyph_hysteresis_window", type=int, default=None)
+    add_grammar_args(p_run)
     p_run.add_argument("--selector", choices=["basic", "param"], default="basic")
     p_run.set_defaults(func=cmd_run)
 
@@ -255,20 +295,14 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_seq.add_argument("--save-history", dest="save_history", type=str, default=None)
     p_seq.add_argument("--export-history-base", dest="export_history_base", type=str, default=None)
     p_seq.add_argument("--export-format", dest="export_format", choices=["csv", "json"], default="json")
-    p_seq.add_argument("--grammar.enabled", dest="grammar_enabled", type=_str2bool, default=None)
-    p_seq.add_argument("--grammar.zhir_requires_oz_window", dest="grammar_zhir_requires_oz_window", type=int, default=None)
-    p_seq.add_argument("--grammar.zhir_dnfr_min", dest="grammar_zhir_dnfr_min", type=float, default=None)
-    p_seq.add_argument("--grammar.thol_min_len", dest="grammar_thol_min_len", type=int, default=None)
-    p_seq.add_argument("--grammar.thol_max_len", dest="grammar_thol_max_len", type=int, default=None)
-    p_seq.add_argument("--grammar.thol_close_dnfr", dest="grammar_thol_close_dnfr", type=float, default=None)
-    p_seq.add_argument("--grammar.si_high", dest="grammar_si_high", type=float, default=None)
-    p_seq.add_argument("--glyph.hysteresis_window", dest="glyph_hysteresis_window", type=int, default=None)
+    add_grammar_args(p_seq)
     p_seq.set_defaults(func=cmd_sequence)
 
     p_met = sub.add_parser("metrics", help="Correr breve y volcar métricas clave")
     add_common_args(p_met)
     p_met.add_argument("--steps", type=int, default=300)
     p_met.add_argument("--no-canon", dest="grammar_canon", action="store_false", default=True, help="Desactiva gramática canónica")
+    add_grammar_args(p_met)
     p_met.add_argument("--selector", choices=["basic", "param"], default="basic")
     p_met.add_argument("--save", type=str, default=None)
     p_met.set_defaults(func=cmd_metrics)
