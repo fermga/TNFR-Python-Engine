@@ -95,15 +95,15 @@ def _attach_callbacks(G: nx.Graph) -> None:
 def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
     """Construye y configura un grafo a partir de los argumentos del CLI."""
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed)
-    if getattr(args, "config", None):
+    if args.config:
         apply_config(G, args.config)
     _attach_callbacks(G)
     validate_canon(G)
-    if getattr(args, "dt", None) is not None:
+    if args.dt is not None:
         G.graph["DT"] = float(args.dt)
-    if getattr(args, "integrator", None) is not None:
+    if args.integrator is not None:
         G.graph["INTEGRATOR_METHOD"] = str(args.integrator)
-    if getattr(args, "remesh_mode", None):
+    if args.remesh_mode:
         G.graph["REMESH_MODE"] = str(args.remesh_mode)
 
     gcanon = dict(DEFAULTS["GRAMMAR_CANON"])
@@ -112,7 +112,7 @@ def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
         gcanon["enabled"] = bool(args.grammar_canon)
     G.graph.setdefault("GRAMMAR_CANON", {}).update(gcanon)
 
-    if getattr(args, "glyph_hysteresis_window", None) is not None:
+    if args.glyph_hysteresis_window is not None:
         G.graph["GLYPH_HYSTERESIS_WINDOW"] = int(args.glyph_hysteresis_window)
 
     if hasattr(args, "selector"):
