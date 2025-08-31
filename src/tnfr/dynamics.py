@@ -613,11 +613,12 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
         compute_Si(G, inplace=True)
 
     # 2b) Normalizadores para selector paramétrico (por paso)
-    _norms_para_selector(G)  # no molesta si luego se usa el selector por defecto
+    selector = G.graph.get("glyph_selector", default_glyph_selector)
+    if selector is parametric_glyph_selector:
+        _norms_para_selector(G)
 
     # 3) Selección glífica + aplicación (con lags obligatorios A’L/E’N)
     if apply_glyphs:
-        selector = G.graph.get("glyph_selector", default_glyph_selector)
         from .operators import aplicar_glifo
         window = int(G.graph.get("GLYPH_HYSTERESIS_WINDOW", DEFAULTS["GLYPH_HYSTERESIS_WINDOW"]))
         use_canon = bool(G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})).get("enabled", False))
