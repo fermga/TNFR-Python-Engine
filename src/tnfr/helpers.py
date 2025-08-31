@@ -4,7 +4,7 @@ helpers.py — TNFR canónica
 Utilidades transversales + cálculo de Índice de sentido (Si).
 """
 from __future__ import annotations
-from typing import Iterable, Dict, Any
+from typing import Iterable, Dict, Any, TYPE_CHECKING
 import math
 from collections import deque
 from itertools import islice
@@ -16,6 +16,9 @@ except Exception:  # pragma: no cover
     nx = None  # type: ignore
 
 from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_EPI_KIND
+
+if TYPE_CHECKING:  # pragma: no cover - sólo para tipos
+    from .node import NodoProtocol
 
 # -------------------------
 # Utilidades numéricas
@@ -127,17 +130,28 @@ def media_vecinal(G, n, aliases: Iterable[str], default: float = 0.0) -> float:
     return list_mean(vals, default)
 
 
-def fase_media(G, n) -> float:
-    """Promedio circular de las fases de los vecinos."""
+def fase_media(obj, n=None) -> float:
+    """Promedio circular de las fases vecinales.
+
+    Acepta un :class:`NodoProtocol` o un par ``(G, n)`` de ``networkx``. En el
+    segundo caso se envuelve en :class:`NodoNX` para reutilizar la misma lógica.
+    """
+
+    if n is not None:
+        from .node import NodoNX  # importación local para evitar ciclo
+        node = NodoNX(obj, n)
+    else:
+        node = obj  # se asume NodoProtocol
+
     x = y = 0.0
     count = 0
-    for v in G.neighbors(n):
-        th = _get_attr(G.nodes[v], ALIAS_THETA, 0.0)
+    for v in node.neighbors():
+        th = getattr(v, "theta", 0.0)
         x += math.cos(th)
         y += math.sin(th)
         count += 1
     if count == 0:
-        return _get_attr(G.nodes[n], ALIAS_THETA, 0.0)
+        return getattr(node, "theta", 0.0)
     return math.atan2(y / count, x / count)
 
 
