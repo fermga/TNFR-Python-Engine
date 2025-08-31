@@ -12,7 +12,7 @@ from statistics import fmean, StatisticsError
 
 try:
     import networkx as nx  # solo para tipos
-except Exception:  # pragma: no cover
+except ImportError:  # pragma: no cover
     nx = None  # type: ignore
 
 from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_EPI_KIND
@@ -103,7 +103,7 @@ def alias_lookup(
             return d[k]
         try:
             return conv(d[k])
-        except Exception:
+        except (ValueError, TypeError):
             # Si la conversión falla, forzamos búsqueda normal
             pass
 
@@ -118,7 +118,7 @@ def alias_lookup(
                 return d[k]
             try:
                 return conv(d[k])
-            except Exception:
+            except (ValueError, TypeError):
                 continue
 
     if value is not _sentinel:
@@ -268,7 +268,7 @@ def last_glifo(nd: Dict[str, Any]) -> str | None:
         return None
     try:
         return hist[-1]
-    except Exception:
+    except IndexError:
         return None
 
 # -------------------------
@@ -328,7 +328,7 @@ def invoke_callbacks(G, event: str, ctx: dict | None = None):
             name, fn = getattr(cb, "__name__", None), cb
         try:
             fn(G, ctx)
-        except Exception as e:
+        except (KeyError, ValueError, TypeError) as e:
             if strict:
                 raise
             G.graph.setdefault("_callback_errors", []).append({

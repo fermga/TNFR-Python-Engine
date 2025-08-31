@@ -10,7 +10,7 @@ import json
 
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
-except Exception:  # pragma: no cover
+except ImportError:  # pragma: no cover
     yaml = None
 
 from .constants import inject_defaults
