@@ -141,6 +141,29 @@ def dnfr_epi_vf_mixed(G) -> None:
         _set_attr(nd, ALIAS_DNFR, 0.5*g_epi + 0.5*g_vf)
     _write_dnfr_metadata(G, weights={"phase":0.0, "epi":0.5, "vf":0.5}, hook_name="dnfr_epi_vf_mixed", note="Hook de ejemplo.")
 
+
+def dnfr_laplacian(G) -> None:
+    """Gradiente topológico explícito usando Laplaciano sobre EPI y νf."""
+    wE = float(G.graph.get("DNFR_WEIGHTS", {}).get("epi", 0.33))
+    wV = float(G.graph.get("DNFR_WEIGHTS", {}).get("vf", 0.33))
+    for n in G.nodes():
+        nd = G.nodes[n]
+        epi = _get_attr(nd, ALIAS_EPI, 0.0)
+        vf = _get_attr(nd, ALIAS_VF, 0.0)
+        neigh = list(G.neighbors(n))
+        deg = len(neigh) or 1
+        epi_bar = sum(_get_attr(G.nodes[v], ALIAS_EPI, epi) for v in neigh) / deg
+        vf_bar = sum(_get_attr(G.nodes[v], ALIAS_VF, vf) for v in neigh) / deg
+        g_epi = epi_bar - epi
+        g_vf = vf_bar - vf
+        _set_attr(nd, ALIAS_DNFR, wE * g_epi + wV * g_vf)
+    _write_dnfr_metadata(
+        G,
+        weights={"epi": wE, "vf": wV},
+        hook_name="dnfr_laplacian",
+        note="Gradiente topológico",
+    )
+
 # -------------------------
 # Ecuación nodal
 # -------------------------
