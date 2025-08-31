@@ -61,12 +61,33 @@ GRAMMAR_ARG_SPECS = [
 
 
 def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
-    out: Dict[str, Any] = {}
-    pref = prefix.replace(".", "_")
-    for k, v in vars(args).items():
-        if k.startswith(pref) and v is not None:
-            out[k[len(pref):]] = v
-    return out
+    """Extract arguments matching a prefix.
+
+    Parameters
+    ----------
+    args:
+        Namespace produced by ``argparse``.
+    prefix:
+        Prefix to match against the argument names.  It must include the
+        trailing underscore, for example ``"grammar_"``.
+
+    Returns
+    -------
+    dict
+        Mapping of argument names with the prefix stripped.
+
+    Examples
+    --------
+    >>> ns = argparse.Namespace(grammar_enabled=True, grammar_thol_min=2, other=1)
+    >>> _args_to_dict(ns, "grammar_")
+    {'enabled': True, 'thol_min': 2}
+    """
+
+    return {
+        k[len(prefix):]: v
+        for k, v in vars(args).items()
+        if k.startswith(prefix) and v is not None
+    }
 
 
 def _load_sequence(path: Path) -> List[Any]:
@@ -142,11 +163,13 @@ def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
     if args.remesh_mode:
         G.graph["REMESH_MODE"] = str(args.remesh_mode)
 
-    gcanon = dict(METRIC_DEFAULTS["GRAMMAR_CANON"])
-    gcanon.update(_args_to_dict(args, prefix="grammar."))
+    gcanon = {
+        **METRIC_DEFAULTS["GRAMMAR_CANON"],
+        **_args_to_dict(args, prefix="grammar_"),
+    }
     if hasattr(args, "grammar_canon") and args.grammar_canon is not None:
         gcanon["enabled"] = bool(args.grammar_canon)
-    G.graph.setdefault("GRAMMAR_CANON", {}).update(gcanon)
+    G.graph["GRAMMAR_CANON"] = gcanon
 
     if args.glyph_hysteresis_window is not None:
         G.graph["GLYPH_HYSTERESIS_WINDOW"] = int(args.glyph_hysteresis_window)
