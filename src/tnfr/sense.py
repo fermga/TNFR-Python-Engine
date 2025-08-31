@@ -22,16 +22,16 @@ GLYPHS_CANONICAL: List[str] = [
     Glyph.AL.value,   # 0
     Glyph.EN.value,   # 1
     Glyph.IL.value,   # 2
-    Glyph.UM.value,   # 3
-    Glyph.RA.value,   # 4
-    Glyph.VAL.value,  # 5
-    Glyph.OZ.value,   # 6
-    Glyph.ZHIR.value, # 7
-    Glyph.NAV.value,  # 8
+    Glyph.OZ.value,   # 3
+    Glyph.UM.value,   # 4
+    Glyph.RA.value,   # 5
+    Glyph.SHA.value,  # 6
+    Glyph.VAL.value,  # 7
+    Glyph.NUL.value,  # 8
     Glyph.THOL.value, # 9
-    Glyph.NUL.value,  #10
-    Glyph.SHA.value,  #11
-    Glyph.REMESH.value #12
+    Glyph.ZHIR.value, # 10
+    Glyph.NAV.value,  # 11
+    Glyph.REMESH.value # 12
 ]
 
 GLYPHS_CANONICAL_SET: set[str] = set(GLYPHS_CANONICAL)
