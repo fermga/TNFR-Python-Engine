@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Iterable, Dict, Any, TYPE_CHECKING
 import threading
 import math
-from collections import deque
+from collections import deque, OrderedDict
 from itertools import islice
 from statistics import fmean, StatisticsError
 import json
@@ -95,7 +95,7 @@ _sentinel = object()
 # Caché pequeña para resolver alias -> clave real.
 # Usa tuplas de alias como clave y almacena la clave encontrada.
 # Se limita el tamaño para evitar crecimiento sin control.
-_alias_cache: Dict[tuple[str, ...], str] = {}
+_alias_cache: OrderedDict[tuple[str, ...], str] = OrderedDict()
 _ALIAS_CACHE_MAX = 16
 _alias_cache_lock = threading.Lock()
 
@@ -120,6 +120,8 @@ def alias_lookup(
     # Intento de búsqueda rápida en la caché global
     with _alias_cache_lock:
         k = _alias_cache.get(alist)
+        if k is not None:
+            _alias_cache.move_to_end(alist)
     if k is not None and k in d:
         if value is not _sentinel:
             d[k] = conv(value)
@@ -134,9 +136,10 @@ def alias_lookup(
     for k in alist:
         if k in d:
             with _alias_cache_lock:
-                if len(_alias_cache) >= _ALIAS_CACHE_MAX:
-                    _alias_cache.pop(next(iter(_alias_cache)))
                 _alias_cache[alist] = k
+                _alias_cache.move_to_end(alist)
+                if len(_alias_cache) > _ALIAS_CACHE_MAX:
+                    _alias_cache.popitem(last=False)
             if value is not _sentinel:
                 d[k] = conv(value)
                 return d[k]
@@ -149,9 +152,10 @@ def alias_lookup(
         k = alist[0]
         d[k] = conv(value)
         with _alias_cache_lock:
-            if len(_alias_cache) >= _ALIAS_CACHE_MAX:
-                _alias_cache.pop(next(iter(_alias_cache)))
             _alias_cache[alist] = k
+            _alias_cache.move_to_end(alist)
+            if len(_alias_cache) > _ALIAS_CACHE_MAX:
+                _alias_cache.popitem(last=False)
         return d[k]
 
     if default is not _sentinel:
