@@ -394,10 +394,14 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
     hist.setdefault("phase_kL", []).append(float(kL))
 
     # 6) Fase GLOBAL (centroide) para empuje
-    X = list(math.cos(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes())
-    Y = list(math.sin(_get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes())
-    if X:
-        thG = math.atan2(sum(Y)/len(Y), sum(X)/len(X))
+    x_sum = y_sum = 0.0
+    for n in G.nodes():
+        th = _get_attr(G.nodes[n], ALIAS_THETA, 0.0)
+        x_sum += math.cos(th)
+        y_sum += math.sin(th)
+    num_nodes = G.number_of_nodes()
+    if num_nodes:
+        thG = math.atan2(y_sum / num_nodes, x_sum / num_nodes)
     else:
         thG = 0.0
 
