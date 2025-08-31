@@ -41,8 +41,14 @@ def read_structured_file(path: Path) -> Any:
         if suffix in {".yaml", ".yml"}:
             if not yaml:  # pragma: no cover - dependencia opcional
                 raise RuntimeError("pyyaml no está instalado")
-            return yaml.safe_load(f)
-        return json.load(f)
+            try:
+                return yaml.safe_load(f)
+            except yaml.YAMLError as e:
+                raise ValueError(f"Error al parsear YAML en {path}: {e}") from e
+        try:
+            return json.load(f)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Error al parsear JSON en {path}: {e}") from e
 
 # -------------------------
 # Utilidades numéricas
