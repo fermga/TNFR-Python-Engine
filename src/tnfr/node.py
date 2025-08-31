@@ -65,9 +65,9 @@ class NodoTNFR:
             other._neighbors.append(self)
 
     def push_glifo(self, glifo: str, window: int) -> None:
+        if self._hist_glifos.maxlen != window:
+            self._hist_glifos = deque(self._hist_glifos, maxlen=window)
         self._hist_glifos.append(glifo)
-        while len(self._hist_glifos) > window:
-            self._hist_glifos.popleft()
         self.epi_kind = glifo
 
     def offset(self) -> int:
