@@ -101,9 +101,17 @@ def carga_glifica(G, window: int | None = None) -> dict:
     # Proporciones por glifo
     dist = {k: v / count for k, v in total.items()}
 
-
     # Agregados conceptuales (puedes ajustar categorías)
+    # Glifos que consolidan la coherencia nodal: I’L estabiliza el flujo (cap. 6),
+    # R’A propaga la resonancia (cap. 9), U’M acopla nodos en fase (cap. 8)
+    # y SH’A ofrece silencio regenerativo (cap. 10). Véase manual TNFR,
+    # sec. 18.19 "Análisis morfosintáctico" para la taxonomía funcional.
     estabilizadores = ["I’L", "R’A", "U’M", "SH’A"]
+
+    # Glifos que perturban o reconfiguran la red: O’Z introduce disonancia
+    # evolutiva (cap. 7), Z’HIR muta la estructura (cap. 14), NA’V marca
+    # el tránsito entre estados (cap. 15) y T’HOL autoorganiza un nuevo
+    # orden (cap. 13). Véase manual TNFR, sec. 18.19 para esta clasificación.
     disruptivos = ["O’Z", "Z’HIR", "NA’V", "T’HOL"]
 
 
