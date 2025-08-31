@@ -112,6 +112,14 @@ def _attach_callbacks(G: nx.Graph) -> None:
     _update_history(G)
 
 
+def _persist_history(G: nx.Graph, args: argparse.Namespace) -> None:
+    """Guardar o exportar el histórico si se solicitó."""
+    if getattr(args, "save_history", None):
+        _save_json(args.save_history, G.graph.get("history", {}))
+    if getattr(args, "export_history_base", None):
+        export_history(G, args.export_history_base, fmt=getattr(args, "export_format", "json"))
+
+
 def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
     """Construye y configura un grafo a partir de los argumentos del CLI."""
     G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed, p=args.p)
@@ -186,10 +194,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         for _ in range(steps):
             step(G)
 
-    if args.save_history:
-        _save_json(args.save_history, G.graph.get("history", {}))
-    if args.export_history_base:
-        export_history(G, args.export_history_base, fmt=args.export_format)
+    _persist_history(G, args)
 
     # Resúmenes rápidos (si están activados)
     if G.graph.get("COHERENCE", DEFAULTS["COHERENCE"]).get("enabled", True):
@@ -237,10 +242,7 @@ def cmd_sequence(args: argparse.Namespace) -> int:
 
     play(G, program)
 
-    if args.save_history:
-        _save_json(args.save_history, G.graph.get("history", {}))
-    if args.export_history_base:
-        export_history(G, args.export_history_base, fmt=args.export_format)
+    _persist_history(G, args)
     return 0
 
 
