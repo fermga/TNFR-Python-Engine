@@ -72,7 +72,15 @@ def _trace_before(G, *args, **kwargs):
         # si el motor guarda los callbacks, exponer nombres por fase
         cb = G.graph.get("_callbacks")
         if isinstance(cb, dict):
-            out = {k: [getattr(f, "__name__", "fn") for (_, f, *_rest) in v] if isinstance(v, list) else None for k, v in cb.items()}
+            out = {}
+            for phase, callbacks in cb.items():
+                if isinstance(callbacks, list):
+                    names = []
+                    for (_, func, *_rest) in callbacks:
+                        names.append(getattr(func, "__name__", "fn"))
+                    out[phase] = names
+                else:
+                    out[phase] = None
             meta["callbacks"] = out
 
     if "thol_state" in capture:
