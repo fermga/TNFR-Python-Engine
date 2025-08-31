@@ -4,8 +4,16 @@ import math
 from collections import Counter
 
 from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
-from .helpers import _get_attr, clamp01, register_callback, ensure_history, last_glifo, count_glyphs
+from .helpers import (
+    _get_attr,
+    clamp01,
+    register_callback,
+    ensure_history,
+    last_glifo,
+    count_glyphs,
+)
 from .types import Glyph
+from .constants_glifos import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
 
 # -------------------------
 # Canon: orden circular de glifos y ángulos
@@ -26,34 +34,11 @@ GLYPHS_CANONICAL: List[str] = [
     Glyph.REMESH.value #12
 ]
 
-_SIGMA_ANGLES: Dict[str, float] = {g: (2.0*math.pi * i / len(GLYPHS_CANONICAL)) for i, g in enumerate(GLYPHS_CANONICAL)}
-
 # Glifos relevantes para el plano Σ de observadores de sentido
-SIGMA_ANGLE_KEYS: tuple[str, ...] = (
-    Glyph.IL.value,
-    Glyph.RA.value,
-    Glyph.UM.value,
-    Glyph.SHA.value,
-    Glyph.OZ.value,
-    Glyph.ZHIR.value,
-    Glyph.NAV.value,
-    Glyph.THOL.value,
-)
-
-# Ajustes específicos de ángulos para Σ
-_SIGMA_ANGLES.update({
-    Glyph.IL.value: 0.0,
-    Glyph.RA.value: math.pi/4,
-    Glyph.UM.value: math.pi/2,
-    Glyph.SHA.value: 3*math.pi/4,
-    Glyph.OZ.value: math.pi,
-    Glyph.ZHIR.value: 5*math.pi/4,
-    Glyph.NAV.value: 3*math.pi/2,
-    Glyph.THOL.value: 7*math.pi/4,
-})
+SIGMA_ANGLE_KEYS: tuple[str, ...] = tuple(ESTABILIZADORES + DISRUPTIVOS)
 
 GLYPH_UNITS: Dict[str, complex] = {
-    g: complex(math.cos(a), math.sin(a)) for g, a in _SIGMA_ANGLES.items()
+    g: complex(math.cos(a), math.sin(a)) for g, a in ANGLE_MAP.items()
 }
 
 # -------------------------
@@ -61,7 +46,7 @@ GLYPH_UNITS: Dict[str, complex] = {
 # -------------------------
 
 def glyph_angle(g: str) -> float:
-    return float(_SIGMA_ANGLES.get(g, 0.0))
+    return float(ANGLE_MAP.get(g, 0.0))
 
 
 def glyph_unit(g: str) -> complex:
