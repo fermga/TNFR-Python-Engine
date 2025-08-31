@@ -25,8 +25,8 @@ A form emerges and persists when **internal reorganization** (ΔNFR) **resonates
 ```bash
 pip install tnfr
 ```
-
-Requires **Python ≥ 3.9**.
+ * https://pypi.org/project/tnfr/
+ * Requires **Python ≥ 3.9**.
 
 ---
 
