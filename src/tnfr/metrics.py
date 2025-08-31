@@ -6,7 +6,7 @@ import csv
 import json
 from math import cos
 
-from .constants import DEFAULTS, ALIAS_EPI, ALIAS_THETA, ALIAS_DNFR
+from .constants import DEFAULTS, ALIAS_EPI, ALIAS_THETA, ALIAS_DNFR, ALIAS_VF, ALIAS_SI
 from .helpers import (
     register_callback,
     ensure_history,
@@ -307,11 +307,11 @@ def _coherence_components(G, ni, nj, epi_min, epi_max, vf_min, vf_max):
     epi_i = _get_attr(ndi, ALIAS_EPI, 0.0)
     epi_j = _get_attr(ndj, ALIAS_EPI, 0.0)
     s_epi = _similarity_abs(epi_i, epi_j, epi_min, epi_max)
-    vf_i = float(_get_attr(ndi, "νf", 0.0))
-    vf_j = float(_get_attr(ndj, "νf", 0.0))
+    vf_i = _get_attr(ndi, ALIAS_VF, 0.0)
+    vf_j = _get_attr(ndj, ALIAS_VF, 0.0)
     s_vf = _similarity_abs(vf_i, vf_j, vf_min, vf_max)
-    si_i = clamp01(float(_get_attr(ndi, "Si", 0.0)))
-    si_j = clamp01(float(_get_attr(ndj, "Si", 0.0)))
+    si_i = clamp01(_get_attr(ndi, ALIAS_SI, 0.0))
+    si_j = clamp01(_get_attr(ndj, ALIAS_SI, 0.0))
     s_si = 1.0 - abs(si_i - si_j)
     return s_phase, s_epi, s_vf, s_si
 
@@ -330,7 +330,7 @@ def coherence_matrix(G):
     node_to_index = {node: idx for idx, node in enumerate(nodes)}
 
     epi_vals = [float(_get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in nodes]
-    vf_vals = [float(_get_attr(G.nodes[v], "νf", 0.0)) for v in nodes]
+    vf_vals = [_get_attr(G.nodes[v], ALIAS_VF, 0.0) for v in nodes]
     epi_min, epi_max = min(epi_vals), max(epi_vals)
     vf_min, vf_max = min(vf_vals), max(vf_vals)
 
@@ -550,9 +550,9 @@ def _diagnosis_step(G, ctx=None):
     diag = {}
     for i, n in enumerate(nodes):
         nd = G.nodes[n]
-        Si = clamp01(float(_get_attr(nd, "Si", 0.0)))
+        Si = clamp01(_get_attr(nd, ALIAS_SI, 0.0))
         EPI = float(_get_attr(nd, ALIAS_EPI, 0.0))
-        vf = float(_get_attr(nd, "νf", 0.0))
+        vf = _get_attr(nd, ALIAS_VF, 0.0)
         dnfr_n = _dnfr_norm(nd, dnfr_max)
 
         Rloc = 0.0
