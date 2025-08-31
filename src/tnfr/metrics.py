@@ -566,6 +566,27 @@ def _diagnosis_step(G, ctx=None):
     hist.setdefault(key, []).append(diag)
 
 
+def dissonance_events(G, ctx=None):
+    """Emite eventos de inicio/fin de disonancia estructural por nodo."""
+    hist = ensure_history(G)
+    evs = hist.setdefault("events", [])
+    norms = G.graph.get("_sel_norms", {})
+    dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
+    step_idx = len(hist.get("C_steps", []))
+    for n in G.nodes():
+        nd = G.nodes[n]
+        dn = abs(_get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
+        Rloc = local_phase_sync_weighted(G, n)
+        st = bool(nd.get("_disr_state", False))
+        if (not st) and dn >= 0.5 and Rloc <= 0.4:
+            nd["_disr_state"] = True
+            evs.append(("disonance_start", {"node": n, "step": step_idx}))
+        elif st and dn <= 0.2 and Rloc >= 0.7:
+            nd["_disr_state"] = False
+            evs.append(("disonance_end", {"node": n, "step": step_idx}))
+
+
 def register_diagnosis_callbacks(G) -> None:
     register_callback(G, when="after_step", func=_diagnosis_step, name="diagnosis_step")
+    register_callback(G, when="after_step", func=dissonance_events, name="dissonance_events")
 

@@ -92,11 +92,28 @@ def gamma_kuramoto_tanh(G, node, t, cfg: Dict[str, Any]) -> float:
     return beta * math.tanh(k * (R - R0)) * math.cos(th_i - psi)
 
 
+def gamma_harmonic(G, node, t, cfg: Dict[str, Any]) -> float:
+    """Forzamiento armónico coherente con el campo global de fase.
+
+    Fórmula: Γ = β · sin(ω·t + φ) · cos(θ_i - ψ)
+      - β: ganancia del acoplamiento
+      - ω: frecuencia angular del forzante
+      - φ: fase inicial del forzante
+    """
+    beta = float(cfg.get("beta", 0.0))
+    omega = float(cfg.get("omega", 1.0))
+    phi = float(cfg.get("phi", 0.0))
+    R, psi = kuramoto_R_psi(G)
+    th = _get_attr(G.nodes[node], ALIAS_THETA, 0.0)
+    return beta * math.sin(omega * t + phi) * math.cos(th - psi)
+
+
 GAMMA_REGISTRY = {
     "none": gamma_none,
     "kuramoto_linear": gamma_kuramoto_linear,
     "kuramoto_bandpass": gamma_kuramoto_bandpass,
     "kuramoto_tanh": gamma_kuramoto_tanh,
+    "harmonic": gamma_harmonic,
 }
 
 
