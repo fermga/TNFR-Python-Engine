@@ -10,6 +10,7 @@ import statistics as st
 
 from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI
 from .helpers import _get_attr, list_mean, register_callback, angle_diff, ensure_history, count_glyphs
+from .sense import glyph_unit, SIGMA_ANGLE_KEYS
 
 # Clasificaciones funcionales de glifos
 ESTABILIZADORES = ["IL", "RA", "UM", "SHA"]
@@ -118,31 +119,20 @@ def sigma_vector(G, window: int | None = None) -> dict:
     if not dist or dist.get("_count", 0) == 0:
         return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0}
 
-    # Mapeo polar de glifos principales en el plano de sentido
-    # (ordenado estabilización→expansión→acoplamiento→silencio→disonancia→mutación→transición→autoorg.)
-    angles = {
-        "IL": 0.0,
-        "RA": math.pi/4,
-        "UM": math.pi/2,
-        "SHA": 3*math.pi/4,
-        "OZ": math.pi,
-        "ZHIR": 5*math.pi/4,
-        "NAV": 3*math.pi/2,
-        "THOL": 7*math.pi/4,
-    }
-    # Normaliza solo sobre glifos mapeados
-    total = sum(dist.get(k, 0.0) for k in angles.keys())
+    # Usa el conjunto fijo de glifos en el plano de sentido
+    total = sum(dist.get(k, 0.0) for k in SIGMA_ANGLE_KEYS)
     if total <= 0:
         return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0}
 
     x = 0.0
     y = 0.0
-    for k, a in angles.items():
+    for k in SIGMA_ANGLE_KEYS:
         p = dist.get(k, 0.0) / total
-        x += p * math.cos(a)
-        y += p * math.sin(a)
+        z = glyph_unit(k)
+        x += p * z.real
+        y += p * z.imag
 
-    mag = (x*x + y*y) ** 0.5
+    mag = math.hypot(x, y)
     ang = math.atan2(y, x)
     return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
 

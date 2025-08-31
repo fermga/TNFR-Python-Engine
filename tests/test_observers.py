@@ -7,7 +7,7 @@ import pytest
 from tnfr.node import NodoNX
 from tnfr.operators import random_jitter
 from tnfr.constants import ALIAS_THETA
-from tnfr.observers import sincronía_fase, orden_kuramoto, carga_glifica
+from tnfr.observers import sincronía_fase, orden_kuramoto, carga_glifica, sigma_vector
 from tnfr.helpers import angle_diff, _set_attr
 
 
@@ -59,3 +59,36 @@ def test_carga_glifica_uses_module_constants(monkeypatch):
 
     assert dist["_estabilizadores"] == pytest.approx(0.5)
     assert dist["_disruptivos"] == pytest.approx(0.5)
+
+
+def test_sigma_vector_consistency(monkeypatch):
+    import tnfr.observers as obs
+
+    G = nx.Graph()
+    # Distribución ficticia de glifos
+    dist = {"IL": 0.4, "RA": 0.3, "ZHIR": 0.1, "AL": 0.2, "_count": 10}
+    monkeypatch.setattr(obs, "carga_glifica", lambda G, window=None: dist)
+
+    res = sigma_vector(G)
+
+    # Cálculo esperado con ángulos previos
+    angles = {
+        "IL": 0.0,
+        "RA": math.pi / 4,
+        "UM": math.pi / 2,
+        "SHA": 3 * math.pi / 4,
+        "OZ": math.pi,
+        "ZHIR": 5 * math.pi / 4,
+        "NAV": 3 * math.pi / 2,
+        "THOL": 7 * math.pi / 4,
+    }
+    total = sum(dist.get(k, 0.0) for k in angles.keys())
+    x = sum(dist.get(k, 0.0) / total * math.cos(a) for k, a in angles.items())
+    y = sum(dist.get(k, 0.0) / total * math.sin(a) for k, a in angles.items())
+    mag = math.hypot(x, y)
+    ang = math.atan2(y, x)
+
+    assert math.isclose(res["x"], x)
+    assert math.isclose(res["y"], y)
+    assert math.isclose(res["mag"], mag)
+    assert math.isclose(res["angle"], ang)
