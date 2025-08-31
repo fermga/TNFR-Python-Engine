@@ -1,10 +1,14 @@
 from __future__ import annotations
 import argparse
 import json
+import logging
+import sys
 from typing import Any, Dict, List, Optional
 from pathlib import Path
 
 import networkx as nx
+
+logger = logging.getLogger(__name__)
 
 from .constants import inject_defaults, DEFAULTS
 from .sense import register_sigma_callback, sigma_series, sigma_rose
@@ -193,21 +197,24 @@ def cmd_run(args: argparse.Namespace) -> int:
             G.graph.get("COHERENCE", DEFAULTS["COHERENCE"]).get("stats_history_key", "W_stats"), []
         )
         if Wstats:
-            print("[COHERENCE] último paso:", Wstats[-1])
+            logger.info("[COHERENCE] último paso: %s", Wstats[-1])
     if G.graph.get("DIAGNOSIS", DEFAULTS["DIAGNOSIS"]).get("enabled", True):
         last_diag = G.graph.get("history", {}).get(
             G.graph.get("DIAGNOSIS", DEFAULTS["DIAGNOSIS"]).get("history_key", "nodal_diag"), []
         )
         if last_diag:
             sample = list(last_diag[-1].values())[:3]
-            print("[DIAGNOSIS] ejemplo:", sample)
+            logger.info("[DIAGNOSIS] ejemplo: %s", sample)
 
     if args.summary:
         tg = Tg_global(G, normalize=True)
         lat = latency_series(G)
-        print("Top operadores por Tg:", glyph_top(G, k=5))
+        logger.info("Top operadores por Tg: %s", glyph_top(G, k=5))
         if lat["value"]:
-            print("Latencia media:", sum(lat["value"]) / max(1, len(lat["value"])) )
+            logger.info(
+                "Latencia media: %s",
+                sum(lat["value"]) / max(1, len(lat["value"])) ,
+            )
     return 0
 
 
@@ -256,11 +263,13 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     if args.save:
         _save_json(args.save, out)
     else:
-        print(json.dumps(out, ensure_ascii=False, indent=2))
+        logger.info("%s", json.dumps(out, ensure_ascii=False, indent=2))
     return 0
 
 
 def main(argv: Optional[List[str]] = None) -> int:
+    logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout, force=True)
+
     p = argparse.ArgumentParser(prog="tnfr")
     p.add_argument("--version", action="store_true", help="muestra versión y sale")
     sub = p.add_subparsers(dest="cmd")
@@ -299,7 +308,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     args = p.parse_args(argv)
     if args.version:
-        print(__version__)
+        logger.info("%s", __version__)
         return 0
     if not hasattr(args, "func"):
         p.print_help()
