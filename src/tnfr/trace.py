@@ -30,17 +30,31 @@ DEFAULTS.setdefault("TRACE", {
 # Helpers
 # -------------------------
 
+def _trace_setup(G) -> tuple[Optional[Dict[str, Any]], List[str], Optional[Dict[str, Any]], Optional[str]]:
+    """Configuración común para los snapshots de trazas.
+
+    Retorna la configuración activa, la lista de capturas, el history y la
+    clave bajo la que se guardará la metadata. Si el tracing está deshabilitado
+    retorna ``(None, [], None, None)``.
+    """
+
+    cfg = G.graph.get("TRACE", DEFAULTS["TRACE"])
+    if not cfg.get("enabled", True):
+        return None, [], None, None
+
+    capture: List[str] = list(cfg.get("capture", []))
+    hist = ensure_history(G)
+    key = cfg.get("history_key", "trace_meta")
+    return cfg, capture, hist, key
+
 # -------------------------
 # Snapshots
 # -------------------------
 
 def _trace_before(G, *args, **kwargs):
-    if not G.graph.get("TRACE", DEFAULTS["TRACE"]).get("enabled", True):
+    cfg, capture, hist, key = _trace_setup(G)
+    if not cfg:
         return
-    cfg = G.graph.get("TRACE", DEFAULTS["TRACE"])
-    capture: List[str] = list(cfg.get("capture", []))
-    hist = ensure_history(G)
-    key = cfg.get("history_key", "trace_meta")
 
     meta: Dict[str, Any] = {"t": float(G.graph.get("_t", 0.0)), "phase": "before"}
 
@@ -83,12 +97,9 @@ def _trace_before(G, *args, **kwargs):
 
 
 def _trace_after(G, *args, **kwargs):
-    if not G.graph.get("TRACE", DEFAULTS["TRACE"]).get("enabled", True):
+    cfg, capture, hist, key = _trace_setup(G)
+    if not cfg:
         return
-    cfg = G.graph.get("TRACE", DEFAULTS["TRACE"])
-    capture: List[str] = list(cfg.get("capture", []))
-    hist = ensure_history(G)
-    key = cfg.get("history_key", "trace_meta")
 
     meta: Dict[str, Any] = {"t": float(G.graph.get("_t", 0.0)), "phase": "after"}
 
