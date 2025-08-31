@@ -86,10 +86,12 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
     acc = complex(0.0, 0.0)
     cnt = 0
     for n in G.nodes():
-        v = sigma_vector_node(G, n, weight_mode)
-        if v is None:
+        nd = G.nodes[n]
+        g = last_glifo(nd)
+        if not g:
             continue
-        acc += complex(v["x"], v["y"])
+        w = _weight(G, n, weight_mode)
+        acc += glyph_unit(g) * w
         cnt += 1
     if cnt == 0:
         return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
