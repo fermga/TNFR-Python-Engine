@@ -321,6 +321,9 @@ def coherence_matrix(G):
     if n == 0:
         return nodes, []
 
+    # Precompute indices to avoid repeated list.index calls within loops
+    node_to_index = {node: idx for idx, node in enumerate(nodes)}
+
     epi_vals = [float(_get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in nodes]
     vf_vals = [float(_get_attr(G.nodes[v], "νf", 0.0)) for v in nodes]
     epi_min, epi_max = min(epi_vals), max(epi_vals)
@@ -357,9 +360,11 @@ def coherence_matrix(G):
             row_sum[i] += 1.0
             row_count[i] += 1
 
-        neighs = set(G.neighbors(ni)) if neighbors_only else set(nodes) - {ni}
+        neighs = G.neighbors(ni) if neighbors_only else nodes
         for nj in neighs:
-            j = nodes.index(nj)
+            if nj == ni:
+                continue
+            j = node_to_index[nj]
             s_phase, s_epi, s_vf, s_si = _coherence_components(
                 G, ni, nj, epi_min, epi_max, vf_min, vf_max
             )
