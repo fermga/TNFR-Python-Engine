@@ -78,9 +78,3 @@ def step(G: nx.Graph, *, dt: float | None = None, use_Si: bool = True, apply_gly
 def run(G: nx.Graph, steps: int, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool = True) -> None:
     _run(G, steps=steps, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)
 
-# Helper rápido para pruebas manuales
-if __name__ == "__main__":
-    G = nx.erdos_renyi_graph(30, 0.15)
-    preparar_red(G)
-    run(G, 100)
-    # print("C(t) muestras:", G.graph["history"]["C_steps"][-5:])  # usado solo para pruebas
