@@ -10,6 +10,7 @@ def test_aplicar_remesh_usa_parametro_personalizado():
     G = nx.Graph()
     G.add_node(0)
     attach_defaults(G)
+    G.graph["REMESH_REQUIRE_STABILITY"] = False
 
     # Historial suficiente para el parámetro personalizado
     hist = G.graph.setdefault("history", {})
@@ -33,6 +34,7 @@ def test_remesh_alpha_hard_ignores_glyph_factor():
     G = nx.Graph()
     G.add_node(0)
     attach_defaults(G)
+    G.graph["REMESH_REQUIRE_STABILITY"] = False
     hist = G.graph.setdefault("history", {})
     hist["stable_frac"] = [1.0, 1.0, 1.0]
     tau = G.graph["REMESH_TAU"]

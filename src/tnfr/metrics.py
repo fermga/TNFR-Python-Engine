@@ -5,8 +5,8 @@ import statistics
 import csv
 import json
 
-from .constants import DEFAULTS
-from .helpers import register_callback, ensure_history, last_glifo
+from .constants import DEFAULTS, ALIAS_EPI
+from .helpers import register_callback, ensure_history, last_glifo, _get_attr
 from .sense import GLYPHS_CANONICAL
 
 # -------------
@@ -114,6 +114,23 @@ def _metrics_step(G, *args, **kwargs):
     li = (n_latent / max(1, n_total)) if n_total else 0.0
     hist.setdefault("latency_index", []).append({"t": t, "value": li})
 
+    # --- Soporte y norma de la EPI ---
+    thr = float(G.graph.get("EPI_SUPPORT_THR", DEFAULTS.get("EPI_SUPPORT_THR", 0.0)))
+    supp_nodes = [n for n in G.nodes() if abs(_get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= thr]
+    norm = (
+        sum(abs(_get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in supp_nodes) / len(supp_nodes)
+        if supp_nodes else 0.0
+    )
+    hist.setdefault("EPI_support", []).append({"t": t, "size": len(supp_nodes), "norm": float(norm)})
+
+    # --- Métricas morfosintácticas ---
+    total = max(1, sum(counts.values()))
+    id_val = counts.get("O’Z", 0) / total
+    cm_val = (counts.get("Z’HIR", 0) + counts.get("NA’V", 0)) / total
+    ne_val = (counts.get("I’L", 0) + counts.get("T’HOL", 0)) / total
+    pp_val = counts.get("SH’A", 0) / max(1, counts.get("RE’MESH", 0))
+    hist.setdefault("morph", []).append({"t": t, "ID": id_val, "CM": cm_val, "NE": ne_val, "PP": pp_val})
+
 
 # -------------
 # Registro del callback
@@ -213,6 +230,8 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
         "mag": sigma_mag,
         "angle": hist.get("sense_sigma_angle", []),
     }
+    morph = hist.get("morph", [])
+    epi_supp = hist.get("EPI_support", [])
     fmt = fmt.lower()
     if fmt == "csv":
         with open(base_path + "_glifogram.csv", "w", newline="") as f:
@@ -228,7 +247,19 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
             writer.writerow(["t", "x", "y", "mag", "angle"])
             for i, t in enumerate(sigma["t"]):
                 writer.writerow([t, sigma["sigma_x"][i], sigma["sigma_y"][i], sigma["mag"][i], sigma["angle"][i]])
+        if morph:
+            with open(base_path + "_morph.csv", "w", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(["t", "ID", "CM", "NE", "PP"])
+                for row in morph:
+                    writer.writerow([row.get("t"), row.get("ID"), row.get("CM"), row.get("NE"), row.get("PP")])
+        if epi_supp:
+            with open(base_path + "_epi_support.csv", "w", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(["t", "size", "norm"])
+                for row in epi_supp:
+                    writer.writerow([row.get("t"), row.get("size"), row.get("norm")])
     else:
-        data = {"glifogram": glifo, "sigma": sigma}
+        data = {"glifogram": glifo, "sigma": sigma, "morph": morph, "epi_support": epi_supp}
         with open(base_path + ".json", "w") as f:
             json.dump(data, f)
