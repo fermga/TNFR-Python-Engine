@@ -66,11 +66,11 @@ def _norms_para_selector(G: nx.Graph) -> dict:
 def _calc_selector_score(Si: float, dnfr: float, accel: float, weights: Dict[str, float]) -> float:
     """Calcula un ``score`` ponderado normalizando los pesos suministrados."""
     w_si = float(weights.get("w_si", 0.5))
-    w_dn = float(weights.get("w_dnfr", 0.3))
+    w_dnfr = float(weights.get("w_dnfr", 0.3))
     w_ac = float(weights.get("w_accel", 0.2))
-    s = max(1e-9, w_si + w_dn + w_ac)
-    w_si, w_dn, w_ac = w_si / s, w_dn / s, w_ac / s
-    return w_si * Si + w_dn * (1.0 - dnfr) + w_ac * (1.0 - accel)
+    s = max(1e-9, w_si + w_dnfr + w_ac)
+    w_si, w_dnfr, w_ac = w_si / s, w_dnfr / s, w_ac / s
+    return w_si * Si + w_dnfr * (1.0 - dnfr) + w_ac * (1.0 - accel)
 
 
 def _apply_selector_hysteresis(
