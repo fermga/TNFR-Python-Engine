@@ -14,9 +14,8 @@ from __future__ import annotations
 from typing import Dict, Any, Literal
 import math
 import random
-from collections import deque
+from collections import deque, OrderedDict
 import logging
-from functools import lru_cache
 
 import networkx as nx
 
@@ -60,21 +59,39 @@ from .helpers import (
      ensure_history, compute_coherence,
 )
 
-# Cacheo centralizado de nodos y matriz de adyacencia
-@lru_cache(maxsize=1)
-def _cached_nodes_and_A(edges: frozenset):
-    """Devuelve la lista de nodos y la matriz de adyacencia para ``edges``.
+# Cacheo de nodos y matriz de adyacencia asociado a cada grafo
+def _cached_nodes_and_A(
+    G: nx.Graph, *, cache_size: int | None = 1
+) -> tuple[list[int], Any]:
+    """Devuelve la lista de nodos y la matriz de adyacencia para ``G``.
 
-    Se utiliza un ``frozenset`` de aristas como clave de caché para poder
-    reutilizar los datos mientras la estructura del grafo permanezca igual."""
-    G_tmp = nx.Graph()
-    G_tmp.add_edges_from(edges)
-    nodes = list(G_tmp.nodes)
-    if np is not None:
-        A = nx.to_numpy_array(G_tmp, nodelist=nodes, weight=None, dtype=float)
+    La información se almacena en ``G.graph`` bajo la clave ``"_dnfr_cache"`` y
+    se reutiliza mientras la estructura del grafo permanezca igual. ``cache_size``
+    limita el número de entradas por grafo (``None`` o valores <= 0 implican sin
+    límite). Cuando se supera el tamaño, se elimina explícitamente la entrada más
+    antigua."""
+
+    cache: OrderedDict = G.graph.setdefault("_dnfr_cache", OrderedDict())
+    key = frozenset(G.edges)
+    nodes_and_A = cache.get(key)
+    if nodes_and_A is None:
+        G_tmp = nx.Graph()
+        G_tmp.add_edges_from(key)
+        nodes = list(G_tmp.nodes)
+        if np is not None:
+            A = nx.to_numpy_array(G_tmp, nodelist=nodes, weight=None, dtype=float)
+        else:
+            A = None
+        nodes_and_A = (nodes, A)
+        cache[key] = nodes_and_A
+        # Purga explícita si excede el tamaño permitido
+        if cache_size is not None and cache_size > 0 and len(cache) > cache_size:
+            cache.popitem(last=False)
     else:
-        A = None
-    return nodes, A
+        # Mantener orden de uso reciente
+        cache.move_to_end(key)
+
+    return nodes_and_A
 
 
 def _update_node_sample(G, *, step: int) -> None:
@@ -135,25 +152,16 @@ def _configure_dnfr_weights(G) -> dict:
     return weights
 
 
-def _prepare_dnfr_data(G) -> dict:
+def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
     """Precalcula datos comunes para las estrategias de ΔNFR."""
     weights = G.graph.get("_dnfr_weights")
     if weights is None:
         weights = _configure_dnfr_weights(G)
 
-    # --- Cacheo de la lista de nodos y la matriz de adyacencia ---
-    num_nodes = G.number_of_nodes()
-    num_edges = G.number_of_edges()
-    cache_n = G.graph.get("_dnfr_num_nodes")
-    cache_m = G.graph.get("_dnfr_num_edges")
     use_numpy = np is not None and G.graph.get("vectorized_dnfr")
 
-    if cache_n != num_nodes or cache_m != num_edges:
-        _cached_nodes_and_A.cache_clear()
-        G.graph["_dnfr_num_nodes"] = num_nodes
-        G.graph["_dnfr_num_edges"] = num_edges
-
-    nodes, A = _cached_nodes_and_A(frozenset(G.edges))
+    # Cacheo de la lista de nodos y la matriz de adyacencia
+    nodes, A = _cached_nodes_and_A(G, cache_size=cache_size)
     if not use_numpy:
         A = None
 
@@ -179,6 +187,7 @@ def _prepare_dnfr_data(G) -> dict:
         "w_topo": w_topo,
         "degs": degs,
         "A": A,
+        "cache_size": cache_size,
     }
 
 
@@ -191,7 +200,7 @@ def _compute_dnfr_numpy(G, data) -> None:
         return
     A = data.get("A")
     if A is None:
-        _, A = _cached_nodes_and_A(frozenset(G.edges))
+        _, A = _cached_nodes_and_A(G, cache_size=data.get("cache_size"))
         data["A"] = A
     count = A.sum(axis=1)
     theta = np.array(data["theta"], dtype=float)
@@ -297,9 +306,19 @@ def _compute_dnfr_loops(G, data) -> None:
         set_dnfr(G, n, dnfr)
 
 
-def default_compute_delta_nfr(G) -> None:
-    """Calcula ΔNFR mezclando gradientes de fase, EPI, νf y un término topológico."""
-    data = _prepare_dnfr_data(G)
+def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
+    """Calcula ΔNFR mezclando gradientes de fase, EPI, νf y un término topológico.
+
+    Parameters
+    ----------
+    G : nx.Graph
+        Grafo sobre el que se realiza el cálculo.
+    cache_size : int | None, opcional
+        Número máximo de configuraciones de aristas que se cachean en
+        ``G.graph``. Valores ``None`` o <= 0 implican caché sin límite. Por
+        defecto ``1`` para mantener el comportamiento previo.
+    """
+    data = _prepare_dnfr_data(G, cache_size=cache_size)
     _write_dnfr_metadata(
         G,
         weights=data["weights"],
