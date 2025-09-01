@@ -8,7 +8,7 @@ from __future__ import annotations
 import networkx as nx
 from collections import deque
 
-from .constants import DEFAULTS, METRIC_DEFAULTS, attach_defaults, get_param
+from .constants import METRIC_DEFAULTS, attach_defaults, get_param
 from .dynamics import step as _step, run as _run
 from .dynamics import default_compute_delta_nfr
 from .initialization import init_node_attrs
