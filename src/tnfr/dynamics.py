@@ -92,11 +92,9 @@ def _cached_nodes_and_A(
     key = frozenset(G.edges)
     nodes_and_A = cache.get(key)
     if nodes_and_A is None:
-        G_tmp = nx.Graph()
-        G_tmp.add_edges_from(key)
-        nodes = list(G_tmp.nodes)
+        nodes = list(G.nodes())
         if np is not None:
-            A = nx.to_numpy_array(G_tmp, nodelist=nodes, weight=None, dtype=float)
+            A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
         else:
             A = None
         nodes_and_A = (nodes, A)
