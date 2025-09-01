@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from collections import ChainMap
 from typing import Any, Dict
+import copy
 import warnings
 
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
@@ -58,7 +59,7 @@ def inject_defaults(
     G.graph.setdefault("_tnfr_defaults_attached", False)
     for k, v in defaults.items():
         if override or k not in G.graph:
-            G.graph[k] = v
+            G.graph[k] = copy.deepcopy(v)
     G.graph["_tnfr_defaults_attached"] = True
     try:  # local import para evitar dependencia circular
         from ..operators import _ensure_node_offset_map
