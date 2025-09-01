@@ -1,4 +1,5 @@
 import math
+import logging
 import pytest
 
 from tnfr.constants import attach_defaults, merge_overrides
@@ -66,3 +67,19 @@ def test_gamma_harmonic_eval(graph_canon):
     g1 = eval_gamma(G, 1, t=math.pi / 2)
     assert pytest.approx(g0, rel=1e-6) == 1.0
     assert pytest.approx(g1, rel=1e-6) == 1.0
+
+
+def test_eval_gamma_logs_and_strict_mode(graph_canon, caplog):
+    G = graph_canon()
+    G.add_nodes_from([0])
+    attach_defaults(G)
+    merge_overrides(G, GAMMA={"type": "kuramoto_linear", "beta": "bad"})
+
+    caplog.clear()
+    with caplog.at_level(logging.ERROR):
+        g = eval_gamma(G, 0, t=0.0)
+    assert g == 0.0
+    assert any("Fallo al evaluar" in rec.message for rec in caplog.records)
+
+    with pytest.raises(ValueError):
+        eval_gamma(G, 0, t=0.0, strict=True)
