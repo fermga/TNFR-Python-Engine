@@ -272,6 +272,17 @@ def add_history_export_args(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
+    """Agrega la opción para desactivar la gramática canónica."""
+    parser.add_argument(
+        "--no-canon",
+        dest="grammar_canon",
+        action="store_false",
+        default=True,
+        help="Desactiva gramática canónica",
+    )
+
+
 def run_program(
     G: Optional[nx.Graph], program: Optional[Any], args: argparse.Namespace
 ) -> nx.Graph:
@@ -389,7 +400,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_run.add_argument("--preset", type=str, default=None)
     add_history_export_args(p_run)
     p_run.add_argument("--summary", action="store_true")
-    p_run.add_argument("--no-canon", dest="grammar_canon", action="store_false", default=True, help="Desactiva gramática canónica")
+    add_canon_toggle(p_run)
     add_grammar_args(p_run)
     p_run.add_argument("--selector", choices=["basic", "param"], default="basic")
     p_run.set_defaults(func=cmd_run)
@@ -417,7 +428,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_met = sub.add_parser("metrics", help="Correr breve y volcar métricas clave")
     add_common_args(p_met)
     p_met.add_argument("--steps", type=int, default=300)
-    p_met.add_argument("--no-canon", dest="grammar_canon", action="store_false", default=True, help="Desactiva gramática canónica")
+    add_canon_toggle(p_met)
     add_grammar_args(p_met)
     p_met.add_argument("--selector", choices=["basic", "param"], default="basic")
     p_met.add_argument("--save", type=str, default=None)
