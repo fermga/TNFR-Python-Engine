@@ -175,6 +175,18 @@ def _op_OZ(node: NodoProtocol) -> None:  # OZ — Disonancia
 
 
 def _op_UM(node: NodoProtocol) -> None:  # UM — Acoplamiento
+    """Alinea fase y opcionalmente crea enlaces funcionales.
+
+    La búsqueda de enlaces puede reducirse evaluando sólo un subconjunto de
+    candidatos. ``UM_CANDIDATE_COUNT`` establece cuántos nodos considerar y
+    ``UM_CANDIDATE_MODE`` define la estrategia:
+
+    * ``"proximity"``: selecciona los nodos más cercanos en fase.
+    * ``"sample"``: toma una muestra determinista.
+
+    Esto preserva la lógica de acoplamiento sin revisar todos los nodos.
+    """
+
     gf = get_glyph_factors(node)
     k = float(gf.get("UM_theta_push", 0.25))
     th = node.theta
@@ -186,9 +198,24 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Acoplamiento
         thr = float(node.graph.get("UM_COMPAT_THRESHOLD", DEFAULTS.get("UM_COMPAT_THRESHOLD", 0.75)))
         epi_i = node.EPI
         si_i = node.Si
+
+        candidates = []
         for j in node.all_nodes():
-            if j is node or node.has_edge(j):
+            same = (j is node) or (getattr(node, "n", None) == getattr(j, "n", None))
+            if same or node.has_edge(j):
                 continue
+            candidates.append(j)
+        limit = int(node.graph.get("UM_CANDIDATE_COUNT", 0))
+        mode = str(node.graph.get("UM_CANDIDATE_MODE", "sample")).lower()
+        if limit > 0 and len(candidates) > limit:
+            if mode == "proximity":
+                candidates.sort(key=lambda j: abs(angle_diff(j.theta, th)))
+                candidates = candidates[:limit]
+            else:
+                rng = _jitter_base(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
+                candidates = rng.sample(candidates, limit)
+
+        for j in candidates:
             th_j = j.theta
             dphi = abs(angle_diff(th_j, th)) / math.pi
             epi_j = j.EPI
