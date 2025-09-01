@@ -10,7 +10,6 @@ import heapq
 from math import cos
 
 from .constants import (
-    DEFAULTS,
     METRIC_DEFAULTS,
     ALIAS_EPI,
     ALIAS_THETA,
@@ -27,7 +26,6 @@ from .helpers import (
     last_glifo,
     get_attr,
     clamp01,
-    list_mean,
 )
 from .sense import GLYPHS_CANONICAL
 
