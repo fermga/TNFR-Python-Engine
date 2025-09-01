@@ -36,8 +36,6 @@ from . import __version__
 
 
 def _parse_tokens(obj: Any) -> List[Any]:
-    from collections import deque
-
     out: List[Any] = []
     queue = deque(obj if isinstance(obj, list) else [obj])
     pos = 0
