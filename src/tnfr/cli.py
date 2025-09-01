@@ -3,7 +3,7 @@ import argparse
 import json
 import logging
 import sys
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Callable
 from pathlib import Path
 import os
 
@@ -32,6 +32,43 @@ from .config import apply_config
 from .helpers import read_structured_file
 from .observers import attach_standard_observer
 from . import __version__
+
+
+def _parse_tokens(obj: Any) -> List[Any]:
+    from collections import deque
+
+    out: List[Any] = []
+    queue = deque(obj if isinstance(obj, list) else [obj])
+    while queue:
+        tok = queue.popleft()
+        if isinstance(tok, list):
+            queue.extendleft(reversed(tok))
+            continue
+        if isinstance(tok, dict):
+            if len(tok) != 1:
+                raise ValueError(f"Token inválido: {tok}")
+            key, val = next(iter(tok.items()))
+            handler = TOKEN_MAP.get(key)
+            if handler is None:
+                raise ValueError(f"Token no reconocido: {key}")
+            out.append(handler(val))
+            continue
+        if isinstance(tok, str):
+            out.append(tok)
+            continue
+        raise ValueError(f"Token inválido: {tok}")
+    return out
+
+
+TOKEN_MAP: Dict[str, Callable[[Any], Any]] = {
+    "WAIT": lambda v: wait(int(v)),
+    "TARGET": lambda v: target(v),
+    "THOL": lambda spec: block(
+        *_parse_tokens(spec.get("body", [])),
+        repeat=int(spec.get("repeat", 1)),
+        close=Glyph(spec.get("close")) if isinstance(spec.get("close"), str) else spec.get("close"),
+    ),
+}
 
 
 def _save_json(path: str, data: Any) -> None:
@@ -94,42 +131,7 @@ def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
 def _load_sequence(path: Path) -> List[Any]:
     data = read_structured_file(path)
 
-    def parse_tokens(obj: Any) -> List[Any]:
-        from collections import deque
-
-        out: List[Any] = []
-        queue = deque(obj if isinstance(obj, list) else [obj])
-        while queue:
-            tok = queue.popleft()
-            if isinstance(tok, list):
-                queue.extendleft(reversed(tok))
-                continue
-            if isinstance(tok, dict):
-                if len(tok) != 1:
-                    raise ValueError(f"Token inválido: {tok}")
-                key, val = next(iter(tok.items()))
-                handler = TOKEN_MAP.get(key)
-                if handler is None:
-                    raise ValueError(f"Token no reconocido: {key}")
-                out.append(handler(val))
-                continue
-            if isinstance(tok, str):
-                out.append(tok)
-                continue
-            raise ValueError(f"Token inválido: {tok}")
-        return out
-
-    TOKEN_MAP = {
-        "WAIT": lambda v: wait(int(v)),
-        "TARGET": lambda v: target(v),
-        "THOL": lambda spec: block(
-            *parse_tokens(spec.get("body", [])),
-            repeat=int(spec.get("repeat", 1)),
-            close=Glyph(spec.get("close")) if isinstance(spec.get("close"), str) else spec.get("close"),
-        ),
-    }
-
-    return seq(*parse_tokens(data))
+    return seq(*_parse_tokens(data))
 
 
 def _attach_callbacks(G: nx.Graph) -> None:
