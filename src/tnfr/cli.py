@@ -5,7 +5,6 @@ import logging
 import sys
 from typing import Any, Dict, List, Optional, Callable
 from pathlib import Path
-import os
 from collections import deque
 
 import networkx as nx
@@ -30,7 +29,7 @@ from .gamma import GAMMA_REGISTRY
 from .scenarios import build_graph
 from .presets import get_preset
 from .config import apply_config
-from .helpers import read_structured_file, list_mean
+from .helpers import read_structured_file, list_mean, ensure_parent
 from .observers import attach_standard_observer
 from . import __version__
 
@@ -82,13 +81,6 @@ def _save_json(path: str, data: Any) -> None:
 
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2, default=_default)
-
-
-def ensure_parent(path: str) -> None:
-    """Create parent directory of ``path`` if needed."""
-    dir_name = os.path.dirname(path)
-    if dir_name:
-        os.makedirs(dir_name, exist_ok=True)
 
 
 def _str2bool(s: str) -> bool:
@@ -315,9 +307,7 @@ def cmd_metrics(args: argparse.Namespace) -> int:
         "glifogram": {k: v[:10] for k, v in glifo.items()},
     }
     if args.save:
-        dir_name = os.path.dirname(args.save)
-        if dir_name:
-            os.makedirs(dir_name, exist_ok=True)
+        ensure_parent(args.save)
         _save_json(args.save, out)
     else:
         logger.info("%s", json.dumps(out, ensure_ascii=False, indent=2))
