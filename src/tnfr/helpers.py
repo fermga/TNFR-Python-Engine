@@ -464,14 +464,30 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     vfmax = 1.0 if vfmax == 0 else vfmax
     dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
 
+    # precálculo de cosenos y senos de cada nodo
+    cos_th: Dict[Any, float] = {}
+    sin_th: Dict[Any, float] = {}
+    thetas: Dict[Any, float] = {}
+    for n, nd in G.nodes(data=True):
+        th = get_attr(nd, ALIAS_THETA, 0.0)
+        thetas[n] = th
+        cos_th[n] = math.cos(th)
+        sin_th[n] = math.sin(th)
+
     out: Dict[Any, float] = {}
     for n, nd in G.nodes(data=True):
         vf = get_attr(nd, ALIAS_VF, 0.0)
         vf_norm = clamp01(abs(vf) / vfmax)
 
-        # dispersión de fase local
-        th_i = get_attr(nd, ALIAS_THETA, 0.0)
-        th_bar = fase_media(G, n)
+        # dispersión de fase local utilizando vecinos precomputados
+        th_i = thetas[n]
+        neigh = list(G.neighbors(n))
+        if neigh:
+            mean_cos = sum(cos_th[v] for v in neigh) / len(neigh)
+            mean_sin = sum(sin_th[v] for v in neigh) / len(neigh)
+            th_bar = math.atan2(mean_sin, mean_cos)
+        else:
+            th_bar = th_i
         disp_fase = phase_distance(th_i, th_bar)  # [0,1]
 
         dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
