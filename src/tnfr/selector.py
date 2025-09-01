@@ -24,16 +24,55 @@ def _selector_thresholds(G: nx.Graph) -> dict:
     Combina ``SELECTOR_THRESHOLDS`` con ``GLYPH_THRESHOLDS`` (legado) para
     los cortes de Si. Todos los valores se claman a ``[0, 1]``.
     """
-    thr_sel = dict(DEFAULTS.get("SELECTOR_THRESHOLDS", {}))
-    thr_sel.update(G.graph.get("SELECTOR_THRESHOLDS", {}))
-    thr_def = G.graph.get("GLYPH_THRESHOLDS", DEFAULTS.get("GLYPH_THRESHOLDS", {}))
+    sel_defaults = DEFAULTS.get("SELECTOR_THRESHOLDS", {})
+    thr_sel = {**sel_defaults, **G.graph.get("SELECTOR_THRESHOLDS", {})}
+    glyph_defaults = DEFAULTS.get("GLYPH_THRESHOLDS", {})
+    thr_def = {**glyph_defaults, **G.graph.get("GLYPH_THRESHOLDS", {})}
 
-    si_hi = clamp01(float(thr_sel.get("si_hi", thr_def.get("hi", 0.66))))
-    si_lo = clamp01(float(thr_sel.get("si_lo", thr_def.get("lo", 0.33))))
-    dnfr_hi = clamp01(float(thr_sel.get("dnfr_hi", 0.5)))
-    dnfr_lo = clamp01(float(thr_sel.get("dnfr_lo", 0.1)))
-    acc_hi = clamp01(float(thr_sel.get("accel_hi", 0.5)))
-    acc_lo = clamp01(float(thr_sel.get("accel_lo", 0.1)))
+    si_hi = clamp01(
+        float(
+            thr_sel.get(
+                "si_hi",
+                thr_def.get("hi", glyph_defaults.get("hi", 0.66)),
+            )
+        )
+    )
+    si_lo = clamp01(
+        float(
+            thr_sel.get(
+                "si_lo",
+                thr_def.get("lo", glyph_defaults.get("lo", 0.33)),
+            )
+        )
+    )
+    dnfr_hi = clamp01(
+        float(
+            thr_sel.get(
+                "dnfr_hi", sel_defaults.get("dnfr_hi", 0.5)
+            )
+        )
+    )
+    dnfr_lo = clamp01(
+        float(
+            thr_sel.get(
+                "dnfr_lo", sel_defaults.get("dnfr_lo", 0.1)
+            )
+        )
+    )
+    acc_hi = clamp01(
+        float(
+            thr_sel.get(
+                "accel_hi", sel_defaults.get("accel_hi", 0.5)
+            )
+        )
+    )
+    acc_lo = clamp01(
+        float(
+            thr_sel.get(
+                "accel_lo", sel_defaults.get("accel_lo", 0.1)
+            )
+        )
+    )
 
     return {
         "si_hi": si_hi,
