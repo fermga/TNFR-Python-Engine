@@ -89,7 +89,7 @@ def _cached_nodes_and_A(
     antigua."""
 
     cache: OrderedDict = G.graph.setdefault("_dnfr_cache", OrderedDict())
-    key = frozenset(G.edges)
+    key = (int(G.graph.get("_edge_version", 0)), G.number_of_nodes())
     nodes_and_A = cache.get(key)
     if nodes_and_A is None:
         nodes = list(G.nodes())

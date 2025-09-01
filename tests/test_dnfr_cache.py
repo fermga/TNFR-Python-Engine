@@ -4,7 +4,7 @@ import networkx as nx
 
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
-from tnfr.helpers import get_attr
+from tnfr.helpers import get_attr, increment_edge_version
 
 
 def _setup_graph():
@@ -29,6 +29,7 @@ def test_cache_invalidated_on_graph_change(vectorized):
     before = [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in G.nodes]
 
     G.add_edge(2, 3)  # Cambia número de nodos y aristas
+    increment_edge_version(G)
     G.graph["vectorized_dnfr"] = vectorized
     default_compute_delta_nfr(G, cache_size=2)
     assert len(G.graph.get("_dnfr_cache", {})) == 2
@@ -38,6 +39,7 @@ def test_cache_invalidated_on_graph_change(vectorized):
     assert before[2] != pytest.approx(after[2])
 
     G.add_edge(3, 4)
+    increment_edge_version(G)
     G.graph["vectorized_dnfr"] = vectorized
     default_compute_delta_nfr(G, cache_size=2)
     assert len(G.graph.get("_dnfr_cache", {})) == 2
