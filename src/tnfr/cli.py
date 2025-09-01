@@ -11,7 +11,7 @@ import networkx as nx
 logger = logging.getLogger(__name__)
 
 from .constants import inject_defaults, DEFAULTS, METRIC_DEFAULTS
-from .sense import register_sigma_callback, sigma_series, sigma_rose
+from .sense import register_sigma_callback, sigma_rose
 from .metrics import (
     register_metrics_callbacks,
     Tg_global,
@@ -243,6 +243,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     if args.summary:
         tg = Tg_global(G, normalize=True)
         lat = latency_series(G)
+        logger.info("Tg global: %s", tg)
         logger.info("Top operadores por Tg: %s", glyph_top(G, k=5))
         if lat["value"]:
             logger.info(
