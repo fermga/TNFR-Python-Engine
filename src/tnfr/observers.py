@@ -8,8 +8,16 @@ import math
 import statistics as st
 
 from .constants import ALIAS_DNFR, ALIAS_THETA, ALIAS_dEPI, METRIC_DEFAULTS
-from .helpers import get_attr, list_mean, register_callback, angle_diff, ensure_history, count_glyphs
+from .helpers import (
+    get_attr,
+    list_mean,
+    register_callback,
+    angle_diff,
+    ensure_history,
+    count_glyphs,
+)
 from .constants_glifos import ESTABILIZADORES, DISRUPTIVOS
+from .gamma import kuramoto_R_psi
 
 # -------------------------
 # Observador estándar Γ(R)
@@ -80,10 +88,9 @@ def sincronía_fase(G) -> float:
 
 def orden_kuramoto(G) -> float:
     """R en [0,1], 1 = fases perfectamente alineadas."""
-    sumX, sumY, count = _phase_sums(G)
-    if count == 0:
+    if G.number_of_nodes() == 0:
         return 1.0
-    R = ((sumX**2 + sumY**2) ** 0.5) / max(1, count)
+    R, _ = kuramoto_R_psi(G)
     return float(R)
 
 def carga_glifica(G, window: int | None = None) -> dict:
