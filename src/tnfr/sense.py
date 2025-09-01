@@ -1,6 +1,6 @@
 """Cálculos de sentido."""
 from __future__ import annotations
-from typing import Dict, List
+from typing import Dict, List, Iterable
 import math
 import warnings
 from collections import Counter
@@ -81,10 +81,22 @@ def _sigma_cfg(G):
     return G.graph.get("SIGMA", SIGMA)
 
 
-
 # -------------------------
 # σ por nodo y σ global
 # -------------------------
+
+
+def _accumulate_sigma(pairs: Iterable[tuple[str, float]]) -> tuple[float, float, int]:
+    """Acumula componentes cartesianas en el plano σ."""
+    x = y = 0.0
+    n = 0
+    for g, w in pairs:
+        z = glyph_unit(g)
+        w = float(w)
+        x += z.real * w
+        y += z.imag * w
+        n += 1
+    return x, y, n
 
 
 def _sigma_from_acc(acc: complex, cnt: int, fallback_angle: float = 0.0) -> Dict[str, float]:
@@ -104,10 +116,9 @@ def _sigma_from_pairs(pairs: List[tuple[str, float]], fallback_angle: float = 0.
     se normaliza por la cantidad de pares provistos. ``fallback_angle`` se
     utiliza cuando la magnitud resultante es nula.
     """
-    acc = complex(0.0, 0.0)
-    for g, w in pairs:
-        acc += glyph_unit(g) * float(w)
-    return _sigma_from_acc(acc, len(pairs), fallback_angle)
+    x, y, n = _accumulate_sigma(pairs)
+    acc = complex(x, y)
+    return _sigma_from_acc(acc, n, fallback_angle)
 
 def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] | None:
     cfg = _sigma_cfg(G)
@@ -134,14 +145,8 @@ def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
     if total <= 0:
         return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0}
 
-    x = y = 0.0
-    for k in SIGMA_ANGLE_KEYS:
-        val = float(dist.get(k, 0.0))
-        p = val / total
-        z = glyph_unit(k)
-        x += p * z.real
-        y += p * z.imag
-
+    pairs = ((k, float(dist.get(k, 0.0)) / total) for k in SIGMA_ANGLE_KEYS)
+    x, y, _ = _accumulate_sigma(pairs)
     mag = math.hypot(x, y)
     ang = math.atan2(y, x)
     return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
