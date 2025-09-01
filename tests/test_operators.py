@@ -1,6 +1,7 @@
 """Pruebas de operators."""
 from tnfr.node import NodoNX
-from tnfr.operators import random_jitter, clear_jitter_cache
+from tnfr.operators import random_jitter, clear_rng_cache
+import tnfr.operators as operators
 from tnfr.operators import op_UM
 from tnfr.constants import attach_defaults
 import networkx as nx
@@ -8,7 +9,7 @@ import pytest
 
 
 def test_random_jitter_deterministic_with_and_without_cache(graph_canon):
-    clear_jitter_cache()
+    clear_rng_cache()
     G = graph_canon()
     G.add_node(0)
     n0 = NodoNX(G, 0)
@@ -19,7 +20,7 @@ def test_random_jitter_deterministic_with_and_without_cache(graph_canon):
     assert j1 != j2
 
     # Clearing the LRU cache reproduces the deterministic sequence
-    clear_jitter_cache()
+    clear_rng_cache()
     j3 = random_jitter(n0, 0.5)
     j4 = random_jitter(n0, 0.5)
     assert [j3, j4] == [j1, j2]
@@ -50,6 +51,23 @@ def test_random_jitter_negative_amplitude(graph_canon):
     n0 = NodoNX(G, 0)
     with pytest.raises(ValueError):
         random_jitter(n0, -0.1)
+
+
+def test_rng_cache_expires_after_graph_gc(graph_canon):
+    import gc
+
+    clear_rng_cache()
+    G = graph_canon()
+    G.add_node(0)
+    n0 = NodoNX(G, 0)
+    random_jitter(n0, 0.5)
+    assert len(operators._rng_cache) == 1
+
+    del n0
+    del G
+    gc.collect()
+
+    assert len(operators._rng_cache) == 0
 
 
 def test_um_candidate_subset_proximity():

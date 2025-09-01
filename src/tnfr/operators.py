@@ -7,9 +7,9 @@ import random
 import hashlib
 import heapq
 import pickle
+import weakref
 import networkx as nx
 from networkx.algorithms import community as nx_comm
-from functools import lru_cache
 
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers import (
@@ -78,32 +78,29 @@ def _jitter_base(seed: int, key: int) -> random.Random:
         return random.Random(str(seed_input))
 
 
-# Global cache for deterministic jitter generators
-@lru_cache(maxsize=DEFAULTS["JITTER_CACHE_SIZE"])
-def _get_jitter_rng_pair(seed: int, key: int) -> random.Random:
-    """Return cached ``random.Random`` keyed by seed and node."""
-    return _jitter_base(seed, key)
+_rng_cache: "weakref.WeakKeyDictionary[object, Dict[tuple[int, int], random.Random]]" = (
+    weakref.WeakKeyDictionary()
+)
 
 
-def _get_jitter_rng(
-    seed: int | tuple[int, int], key: Optional[int] = None
-) -> random.Random:
-    """Return cached ``random.Random`` for ``(seed, key)``.
-
-    Supports invocation as ``_get_jitter_rng(seed, key)`` or
-    ``_get_jitter_rng((seed, key))`` while maintaining a stable LRU cache.
-    """
-    if key is None:
-        if isinstance(seed, tuple):
-            seed, key = seed
-        else:
-            key = 0
-    return _get_jitter_rng_pair(int(seed), int(key))
+def _get_rng(scope: object, seed: int, key: int) -> random.Random:
+    """Return cached ``random.Random`` for ``(seed, key)`` scoped to ``scope``."""
+    cache = _rng_cache.setdefault(scope, {})
+    pair = (int(seed), int(key))
+    rng = cache.get(pair)
+    if rng is None:
+        rng = _jitter_base(seed, key)
+        cache[pair] = rng
+    return rng
 
 
-def clear_jitter_cache() -> None:
-    """Clear the global LRU cache for jitter generators."""
-    _get_jitter_rng_pair.cache_clear()
+def clear_rng_cache() -> None:
+    """Clear all cached RNGs."""
+    _rng_cache.clear()
+
+
+# Backwards compatibility
+clear_jitter_cache = clear_rng_cache
 
 
 def random_jitter(
@@ -112,11 +109,10 @@ def random_jitter(
     f"""Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
 
     The value is derived from ``(RANDOM_SEED, node.offset())`` and does not store
-    references to nodes. By default a global LRU cache of ``seed_key → random.Random``
-    instances (``maxsize={DEFAULTS['JITTER_CACHE_SIZE']}``) advances deterministic sequences across calls.
-    When ``cache`` is provided, it is used instead and must handle its own purging
-    policy. The global cache discards least recently used generators when the limit
-    is exceeded.
+    references to nodes. By default a global cache of ``(seed, key) → random.Random``
+    instances, scoped by graph via weak references, advances deterministic
+    sequences across calls. When ``cache`` is provided, it is used instead and
+    must handle its own purging policy.
     """
 
     if amplitude <= 0:
@@ -128,15 +124,17 @@ def random_jitter(
 
     if hasattr(node, "n") and hasattr(node, "G"):
         seed_key = _node_offset(node.G, node.n)
+        scope = node.G
     else:
         uid = getattr(node, "_noise_uid", None)
         if uid is None:
             uid = id(node)
             setattr(node, "_noise_uid", uid)
         seed_key = int(uid)
+        scope = node
 
     if cache is None:
-        rng = _get_jitter_rng(base_seed, seed_key)
+        rng = _get_rng(scope, base_seed, seed_key)
     else:
         rng = cache.get(seed_key)
         if rng is None:
@@ -145,11 +143,6 @@ def random_jitter(
 
     base = rng.uniform(-1.0, 1.0)
     return amplitude * base
-
-
-def _get_rng_cache(node: NodoProtocol) -> Dict[int, random.Random]:
-    """Return per-graph cache for jitter generators."""
-    return node.graph.setdefault("_rnd_cache", {})
 
 
 def get_glyph_factors(node: NodoProtocol) -> Dict[str, Any]:
@@ -222,8 +215,7 @@ def _op_OZ(node: NodoProtocol) -> None:  # OZ — Disonancia
         if sigma <= 0:
             node.dnfr = dnfr
             return
-        cache = _get_rng_cache(node)
-        node.dnfr = dnfr + random_jitter(node, sigma, cache)
+        node.dnfr = dnfr + random_jitter(node, sigma)
     else:
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
 
@@ -349,8 +341,7 @@ def _op_NAV(node: NodoProtocol) -> None:  # NAV — Transición
         base = (1.0 - eta) * dnfr + eta * target
     j = float(gf.get("NAV_jitter", 0.05))
     if bool(node.graph.get("NAV_RANDOM", True)):
-        cache = _get_rng_cache(node)
-        jitter = random_jitter(node, j, cache)
+        jitter = random_jitter(node, j)
     else:
         jitter = j * (1 if base >= 0 else -1)
     node.dnfr = base + jitter
