@@ -8,10 +8,22 @@ from .constants import (
     get_param,
 )
 from .helpers import get_attr, clamp01, reciente_glifo
-from .types import Glyph
+from tnfr.types import Glyph
 
 # Glifos nominales (para evitar typos)
-AL = Glyph.AL.value; EN = Glyph.EN.value; IL = Glyph.IL.value; OZ = Glyph.OZ.value; UM = Glyph.UM.value; RA = Glyph.RA.value; SHA = Glyph.SHA.value; VAL = Glyph.VAL.value; NUL = Glyph.NUL.value; THOL = Glyph.THOL.value; ZHIR = Glyph.ZHIR.value; NAV = Glyph.NAV.value; REMESH = Glyph.REMESH.value
+AL = Glyph.AL
+EN = Glyph.EN
+IL = Glyph.IL
+OZ = Glyph.OZ
+UM = Glyph.UM
+RA = Glyph.RA
+SHA = Glyph.SHA
+VAL = Glyph.VAL
+NUL = Glyph.NUL
+THOL = Glyph.THOL
+ZHIR = Glyph.ZHIR
+NAV = Glyph.NAV
+REMESH = Glyph.REMESH
 
 # -------------------------
 # Estado de gramática por nodo
@@ -28,7 +40,7 @@ def _gram_state(nd: Dict[str, Any]) -> Dict[str, Any]:
 # -------------------------
 # Compatibilidades canónicas (siguiente permitido)
 # -------------------------
-CANON_COMPAT: Dict[str, Set[str]] = {
+CANON_COMPAT: Dict[Glyph, Set[Glyph]] = {
     # Inicio / apertura
     AL:   {EN, RA, NAV, VAL, UM},
     EN:   {IL, UM, RA, NAV},
@@ -49,7 +61,7 @@ CANON_COMPAT: Dict[str, Set[str]] = {
 }
 
 # Fallbacks canónicos si una transición no está permitida
-CANON_FALLBACK: Dict[str, str] = {
+CANON_FALLBACK: Dict[Glyph, Glyph] = {
     AL: EN, EN: IL, IL: RA, UM: RA, RA: IL, VAL: RA, OZ: ZHIR, ZHIR: IL, NAV: RA, SHA: AL, NUL: AL, THOL: NAV,
 }
 
