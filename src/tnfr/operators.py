@@ -36,20 +36,23 @@ Nota sobre α (alpha) de REMESH: se toma por prioridad de
 
 
 def _ensure_node_offset_map(G) -> Dict[Any, int]:
-    """Return cached deterministic node→index mapping for ``G``.
+    """Return cached node→index mapping for ``G``.
 
-    The mapping is built once and stored in ``G.graph['_node_offset_map']``.
-    It is rebuilt only if the node count changes.
+    The mapping follows the natural insertion order of ``G.nodes`` for speed.
+    When ``G.graph['SORT_NODES']`` is true a deterministic sort is applied.
+    A checksum of the node set is stored so the mapping is recomputed only
+    when the nodes change.
     """
 
-    node_count = G.number_of_nodes()
+    nodes = list(G.nodes())
+    checksum = hashlib.blake2b(",".join(map(str, nodes)).encode(), digest_size=16).hexdigest()
     mapping = G.graph.get("_node_offset_map")
-    if mapping is None or G.graph.get("_node_offset_count") != node_count:
-        mapping = {
-            node: idx for idx, node in enumerate(sorted(G.nodes(), key=lambda x: str(x)))
-        }
+    if mapping is None or G.graph.get("_node_offset_checksum") != checksum:
+        if bool(G.graph.get("SORT_NODES", False)):
+            nodes.sort(key=lambda x: str(x))
+        mapping = {node: idx for idx, node in enumerate(nodes)}
         G.graph["_node_offset_map"] = mapping
-        G.graph["_node_offset_count"] = node_count
+        G.graph["_node_offset_checksum"] = checksum
     return mapping
 
 
