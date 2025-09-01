@@ -4,11 +4,10 @@ observers.py — TNFR canónica
 Observadores y métricas auxiliares.
 """
 from __future__ import annotations
-from typing import Dict, Any
 import math
 import statistics as st
 
-from .constants import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_dEPI, METRIC_DEFAULTS
+from .constants import ALIAS_DNFR, ALIAS_THETA, ALIAS_dEPI, METRIC_DEFAULTS
 from .helpers import get_attr, list_mean, register_callback, angle_diff, ensure_history, count_glyphs
 from .constants_glifos import ESTABILIZADORES, DISRUPTIVOS
 
