@@ -390,22 +390,34 @@ def coherence_matrix(G):
     row_sum = [0.0] * n
     row_count = [0] * n
 
-    for i, ni in enumerate(nodes):
-        if self_diag:
-            if mode == "dense":
-                W[i][i] = 1.0
-            else:
-                W.append((i, i, 1.0))
-            row_sum[i] += 1.0
-            row_count[i] += 1
+    def add_entry(i: int, j: int, w: float) -> None:
+        """Añade un valor a la matriz y acumula sumas/contadores."""
+        if mode == "dense":
+            W[i][j] = w
+        else:
+            if w >= thr:
+                W.append((i, j, w))
+        row_sum[i] += w
+        row_count[i] += 1
 
-        neighs = G.neighbors(ni) if neighbors_only else nodes
-        for nj in neighs:
-            if nj == ni:
+    # Diagonal de unos si corresponde
+    if self_diag:
+        for i in range(n):
+            add_entry(i, i, 1.0)
+
+    if neighbors_only:
+        seen: set[tuple[int, int]] = set()
+        for u, v in G.edges():
+            i = node_to_index[u]
+            j = node_to_index[v]
+            if i == j:
                 continue
-            j = node_to_index[nj]
+            key = (i, j) if i < j else (j, i)
+            if key in seen:
+                continue
+            seen.add(key)
             s_phase, s_epi, s_vf, s_si = _coherence_components(
-                G, ni, nj, epi_min, epi_max, vf_min, vf_max
+                G, u, v, epi_min, epi_max, vf_min, vf_max
             )
             wij = (
                 wnorm["phase"] * s_phase
@@ -414,13 +426,25 @@ def coherence_matrix(G):
                 + wnorm["si"] * s_si
             )
             wij = clamp01(wij)
-            if mode == "dense":
-                W[i][j] = wij
-            else:
-                if wij >= thr:
-                    W.append((i, j, wij))
-            row_sum[i] += wij
-            row_count[i] += 1
+            add_entry(i, j, wij)
+            add_entry(j, i, wij)
+    else:
+        for i in range(n):
+            ni = nodes[i]
+            for j in range(i + 1, n):
+                nj = nodes[j]
+                s_phase, s_epi, s_vf, s_si = _coherence_components(
+                    G, ni, nj, epi_min, epi_max, vf_min, vf_max
+                )
+                wij = (
+                    wnorm["phase"] * s_phase
+                    + wnorm["epi"] * s_epi
+                    + wnorm["vf"] * s_vf
+                    + wnorm["si"] * s_si
+                )
+                wij = clamp01(wij)
+                add_entry(i, j, wij)
+                add_entry(j, i, wij)
 
     Wi = [row_sum[i] / max(1, row_count[i]) for i in range(n)]
     vals = []
