@@ -563,7 +563,9 @@ def register_callback(
     Permite tanto la forma posicional ``register_callback(G, "after_step", fn)``
     como la forma con palabras clave ``register_callback(G, event="after_step", func=fn)``.
     El parámetro ``name`` ahora se almacena junto con la función para facilitar
-    su identificación.
+    su identificación. Si ya existe un callback con el mismo nombre o función
+    para el evento, será reemplazado en lugar de añadirse una entrada
+    duplicada.
     """
     if event not in ("before_step", "after_step", "on_remesh"):
         raise ValueError(f"Evento desconocido: {event}")
@@ -571,7 +573,21 @@ def register_callback(
         raise TypeError("func es obligatorio")
     cbs = _ensure_callbacks(G)
     cb_name = name or getattr(func, "__name__", None)
-    cbs[event].append((cb_name, func))
+
+    # evita duplicados por nombre o función reemplazando la entrada existente
+    for i, cb in enumerate(cbs[event]):
+        if isinstance(cb, tuple):
+            existing_name, existing_fn = (cb + (None, None))[:2]
+        else:  # retrocompatibilidad con formato antiguo
+            existing_name, existing_fn = getattr(cb, "__name__", None), cb
+        if existing_fn is func or (
+            cb_name is not None and existing_name == cb_name
+        ):
+            cbs[event][i] = (cb_name, func)
+            break
+    else:
+        cbs[event].append((cb_name, func))
+
     return func
 
 def invoke_callbacks(G, event: str, ctx: dict | None = None):
