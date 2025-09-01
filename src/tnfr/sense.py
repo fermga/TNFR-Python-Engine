@@ -198,7 +198,7 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
     hist.setdefault(key, []).append(sv)
 
     # Conteo de glifos por paso (útil para rosa glífica)
-    counts = count_glyphs(G, window=1)
+    counts = count_glyphs(G, last_only=True)
     hist.setdefault("sigma_counts", []).append({"t": sv["t"], **counts})
 
     # Trayectoria por nodo (opcional)
