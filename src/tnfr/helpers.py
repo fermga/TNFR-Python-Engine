@@ -171,6 +171,8 @@ def normalize_weights(dict_like: Dict[str, Any], keys: Iterable[str], default: f
     """
     keys = list(keys)
     weights = {k: float(dict_like.get(k, default)) for k in keys}
+    if any(v < 0 for v in weights.values()):
+        logging.warning("Pesos negativos detectados: %s", weights)
     total = sum(weights.values())
     n = len(keys)
     if total <= 0:
