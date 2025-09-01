@@ -57,21 +57,19 @@ def _node_offset(G, n) -> int:
     return int(mapping.get(n, 0))
 
 
-def _jitter_base(seed: int, key: int) -> float:
-    """Return deterministic base jitter in ``[-1, 1]`` from ``seed`` and ``key``."""
-    digest = hashlib.sha256(f"{seed}:{key}".encode()).digest()
-    val = int.from_bytes(digest[:8], "big") / 2**64
-    return 2.0 * val - 1.0
+def _jitter_base(seed: int, key: int) -> random.Random:
+    """Return a ``random.Random`` instance seeded from ``seed`` and ``key``."""
+    return random.Random(f"{seed}:{key}")
 
 
 def random_jitter(
-    node: NodoProtocol, amplitude: float, cache: Optional[Dict[int, float]] = None
+    node: NodoProtocol, amplitude: float, cache: Optional[Dict[int, random.Random]] = None
 ) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
 
     The value is derived from ``(RANDOM_SEED, node.offset())`` and does not store
-    references to nodes. Optionally, provide ``cache`` mapping ``offset`` to base
-    jitter to reuse previously computed values.
+    references to nodes. Optionally, provide ``cache`` mapping ``offset`` to
+    ``random.Random`` instances to reuse and advance deterministic sequences.
     """
 
     if amplitude == 0:
@@ -89,13 +87,14 @@ def random_jitter(
         seed_key = int(uid)
 
     if cache is not None:
-        base = cache.get(seed_key)
-        if base is None:
-            base = _jitter_base(base_seed, seed_key)
-            cache[seed_key] = base
+        rng = cache.get(seed_key)
+        if rng is None:
+            rng = _jitter_base(base_seed, seed_key)
+            cache[seed_key] = rng
     else:
-        base = _jitter_base(base_seed, seed_key)
+        rng = _jitter_base(base_seed, seed_key)
 
+    base = rng.uniform(-1.0, 1.0)
     return amplitude * base
 
 
