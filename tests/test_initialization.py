@@ -1,3 +1,4 @@
+"""Pruebas de initialization."""
 import networkx as nx
 
 from tnfr.initialization import init_node_attrs

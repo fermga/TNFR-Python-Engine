@@ -1,3 +1,4 @@
+"""Pruebas de observers."""
 import math
 import statistics as st
 import pytest

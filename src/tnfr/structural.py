@@ -1,13 +1,5 @@
+"""Análisis estructural."""
 from __future__ import annotations
-"""API de operadores estructurales y secuencias TNFR.
-
-Este módulo ofrece:
-    - Factoría `create_nfr` para inicializar redes/nodos TNFR.
-    - Clases de operador (`Operador` y derivados) con interfaz común.
-    - Registro de operadores `OPERADORES`.
-    - Utilidades `validate_sequence` y `run_sequence` para ejecutar
-      secuencias canónicas de operadores.
-"""
 from typing import Iterable, Tuple, List
 import networkx as nx
 

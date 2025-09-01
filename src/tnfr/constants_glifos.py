@@ -1,9 +1,4 @@
-"""
-constants_glifos.py — categorización y ángulos de glifos.
-
-Centraliza constantes relacionadas con las familias de glifos y el plano
-angular utilizado por los observadores de sentido.
-"""
+"""Glifos predeterminados."""
 from __future__ import annotations
 
 import math

@@ -1,3 +1,4 @@
+"""Pruebas de invariants."""
 from __future__ import annotations
 import math
 import pytest

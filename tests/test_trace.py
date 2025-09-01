@@ -1,3 +1,4 @@
+"""Pruebas de trace."""
 from tnfr.trace import register_trace
 from tnfr.helpers import register_callback, invoke_callbacks
 

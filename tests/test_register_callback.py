@@ -1,3 +1,4 @@
+"""Pruebas de register callback."""
 from tnfr.helpers import register_callback
 
 

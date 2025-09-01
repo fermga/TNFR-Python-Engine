@@ -1,3 +1,4 @@
+"""Pruebas de remesh community."""
 import networkx as nx
 from tnfr.constants import attach_defaults
 from tnfr.operators import aplicar_remesh_red_topologico

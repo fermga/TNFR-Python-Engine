@@ -1,8 +1,4 @@
-"""TNFR constants package.
-
-Centraliza parámetros por defecto organizados en sub-diccionarios temáticos.
-Provee utilidades para inyectarlos en ``G.graph``.
-"""
+"""Constantes compartidas."""
 from __future__ import annotations
 
 from collections import ChainMap

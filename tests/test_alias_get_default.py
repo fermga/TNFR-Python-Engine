@@ -1,3 +1,4 @@
+"""Pruebas de alias get default."""
 from tnfr.helpers import alias_get
 
 

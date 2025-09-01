@@ -1,8 +1,4 @@
-"""
-helpers.py — TNFR canónica
-
-Utilidades transversales + cálculo de Índice de sentido (Si).
-"""
+"""Funciones auxiliares."""
 from __future__ import annotations
 from typing import Iterable, Dict, Any, Callable, TypeVar, TYPE_CHECKING
 import logging

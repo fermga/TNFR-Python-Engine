@@ -1,3 +1,4 @@
+"""Reglas de gramática."""
 from __future__ import annotations
 from typing import Dict, Any, Set, Iterable, Optional
 from collections.abc import Collection

@@ -1,3 +1,4 @@
+"""Pruebas de update tg performance."""
 import time
 from collections import Counter, defaultdict
 

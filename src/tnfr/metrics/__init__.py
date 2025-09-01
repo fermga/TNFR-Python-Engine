@@ -1,3 +1,4 @@
+"""Métricas registrables."""
 from .core import (
     register_metrics_callbacks,
     Tg_global,

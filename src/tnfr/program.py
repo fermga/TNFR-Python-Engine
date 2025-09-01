@@ -1,5 +1,5 @@
+"""Lenguaje de programación TNFR."""
 from __future__ import annotations
-"""program.py — API de secuencias canónicas con THOL como primera clase."""
 from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union
 from collections.abc import Collection
 from dataclasses import dataclass

@@ -1,13 +1,5 @@
-
+"""API pública de TNFR."""
 from __future__ import annotations
-"""
-TNFR — Teoría de la Naturaleza Fractal Resonante
-API pública del paquete.
-
-Ecuación nodal:
-    ∂EPI/∂t = νf · ΔNFR(t)
-"""
-
 try:  # pragma: no cover
     from importlib.metadata import version
 except ImportError:  # pragma: no cover

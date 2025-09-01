@@ -1,22 +1,4 @@
-"""gamma.py — TNFR canónica
-
-Γi(R): acoplamientos de red para la ecuación nodal extendida
-    ∂EPI/∂t = νf · ΔNFR(t) + Γi(R)
-
-`Γ` suma un término de acoplamiento dependiente del orden global de fase
-`R`. La especificación se toma de ``G.graph['GAMMA']`` (ver
-``DEFAULTS['GAMMA']``) con parámetros como:
-
-* ``type`` – modo de acoplamiento (``none``, ``kuramoto_linear``,
-  ``kuramoto_bandpass``)
-* ``beta`` – ganancia del acoplamiento
-* ``R0`` – umbral de activación (solo lineal)
-
-Provee:
-- kuramoto_R_psi(G): (R, ψ) orden de Kuramoto en la red
-- GAMMA_REGISTRY: registro de acoplamientos canónicos
-- eval_gamma(G, node, t): evalúa Γ para cada nodo según la config
-"""
+"""Registro de gammas."""
 from __future__ import annotations
 from typing import Dict, Any, Tuple
 import math

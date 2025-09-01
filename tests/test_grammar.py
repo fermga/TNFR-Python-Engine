@@ -1,3 +1,4 @@
+"""Pruebas de grammar."""
 from collections import deque
 
 from tnfr.constants import attach_defaults

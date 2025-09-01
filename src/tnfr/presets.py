@@ -1,3 +1,4 @@
+"""Configuraciones predefinidas."""
 from __future__ import annotations
 from .program import seq, block, wait, ejemplo_canonico_basico
 from .types import Glyph

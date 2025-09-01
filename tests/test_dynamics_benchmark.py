@@ -1,3 +1,4 @@
+"""Pruebas de dynamics benchmark."""
 import time
 import networkx as nx
 

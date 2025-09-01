@@ -1,3 +1,4 @@
+"""Pruebas de program."""
 import json
 import pytest
 

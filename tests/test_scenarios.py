@@ -1,3 +1,4 @@
+"""Pruebas de scenarios."""
 import pytest
 import networkx as nx
 

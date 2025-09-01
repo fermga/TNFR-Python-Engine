@@ -1,9 +1,4 @@
-"""
-ontosim.py — TNFR canónica
-
-Módulo de orquestación mínima que encadena:
-ΔNFR (campo) → Si → glifos → ecuación nodal → clamps → UM → observadores → REMESH
-"""
+"""Orquesta la simulación canónica."""
 from __future__ import annotations
 import networkx as nx
 from collections import deque

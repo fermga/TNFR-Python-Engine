@@ -1,3 +1,4 @@
+"""Pruebas de selector utils."""
 import networkx as nx
 
 from tnfr.selector import (
