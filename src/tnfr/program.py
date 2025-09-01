@@ -7,7 +7,6 @@ from collections import deque
 
 from .constants import get_param
 from .grammar import apply_glyph_with_grammar
-from .helpers import ensure_collection
 from .sense import GLYPHS_CANONICAL_SET
 from .types import Glyph
 
@@ -91,14 +90,14 @@ def _all_nodes(G):
 def _apply_glyph_to_targets(G, g: Glyph | str, nodes: Optional[Iterable[Node]] = None):
     """Apply ``g`` to ``nodes`` (or all nodes) respecting the grammar.
 
-    ``nodes`` may be any iterable of nodes, including a ``NodeView`` or
-    other :class:`~collections.abc.Collection`. Non-collection iterables
-    are materialised as a ``list`` only when the active selector requires
-    index-based access.
+    ``nodes`` may be any iterable of nodes, including a ``NodeView`` or other
+    iterables. Para evitar materializaciones innecesarias, se itera sobre el
+    iterable tal cual; corresponde al llamador materializarlo si necesita
+    indexación.
     """
-    nodes = ensure_collection(_all_nodes(G) if nodes is None else nodes)
+    nodes_iter = _all_nodes(G) if nodes is None else nodes
     w = _window(G)
-    apply_glyph_with_grammar(G, nodes, g, w)
+    apply_glyph_with_grammar(G, nodes_iter, g, w)
 
 def _advance(G, step_fn: Optional[AdvanceFn] = None):
     if step_fn is None:
@@ -180,7 +179,7 @@ def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> N
     for op, payload in ops:
         if op == "TARGET":
             nodes_src = _all_nodes(G) if payload.nodes is None else payload.nodes
-            curr_target = list(ensure_collection(nodes_src))
+            curr_target = tuple(nodes_src)
             trace.append({"t": float(G.graph.get("_t", 0.0)), "op": "TARGET", "n": len(curr_target)})
             continue
         if op == "WAIT":
