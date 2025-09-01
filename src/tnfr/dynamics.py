@@ -45,7 +45,7 @@ from .gamma import eval_gamma
 from .helpers import (
      clamp, clamp01, list_mean, angle_diff,
      get_attr, set_attr, get_attr_str, set_attr_str, media_vecinal, fase_media,
-     invoke_callbacks, reciente_glifo, set_vf, set_dnfr, compute_Si
+     invoke_callbacks, reciente_glifo, set_vf, set_dnfr, compute_Si, normalize_weights
 )
 
 # -------------------------
@@ -81,22 +81,8 @@ def _configure_dnfr_weights(G) -> dict:
     Utiliza ``G.graph['DNFR_WEIGHTS']`` o los valores por defecto. El resultado
     es un diccionario con las componentes normalizadas para ser reutilizado en
     cada paso de la simulación sin recalcular la mezcla."""
-    w = G.graph.get("DNFR_WEIGHTS", DEFAULTS["DNFR_WEIGHTS"])
-    w_phase = float(w.get("phase", 0.34))
-    w_epi = float(w.get("epi", 0.33))
-    w_vf = float(w.get("vf", 0.33))
-    w_topo = float(w.get("topo", 0.0))
-    s = w_phase + w_epi + w_vf + w_topo
-    if s <= 0:
-        w_phase = w_epi = w_vf = 1/3
-        w_topo = 0.0
-        s = 1.0
-    weights = {
-        "phase": w_phase / s,
-        "epi": w_epi / s,
-        "vf": w_vf / s,
-        "topo": w_topo / s,
-    }
+    w = {**DEFAULTS["DNFR_WEIGHTS"], **G.graph.get("DNFR_WEIGHTS", {})}
+    weights = normalize_weights(w, ("phase", "epi", "vf", "topo"), default=0.0)
     G.graph["_dnfr_weights"] = weights
     return weights
 
