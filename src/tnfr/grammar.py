@@ -62,7 +62,18 @@ CANON_COMPAT: Dict[Glyph, Set[Glyph]] = {
 
 # Fallbacks canónicos si una transición no está permitida
 CANON_FALLBACK: Dict[Glyph, Glyph] = {
-    AL: EN, EN: IL, IL: RA, UM: RA, RA: IL, VAL: RA, OZ: ZHIR, ZHIR: IL, NAV: RA, SHA: AL, NUL: AL, THOL: NAV,
+    AL: EN,
+    EN: IL,
+    IL: RA,
+    NAV: RA,
+    NUL: AL,
+    OZ: ZHIR,
+    RA: IL,
+    SHA: AL,
+    THOL: NAV,
+    UM: RA,
+    VAL: RA,
+    ZHIR: IL,
 }
 
 # -------------------------
