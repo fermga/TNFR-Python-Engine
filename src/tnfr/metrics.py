@@ -62,18 +62,11 @@ def _update_tg(G, hist, dt, save_by_node: bool):
     tg_total = hist.setdefault("Tg_total", defaultdict(float))
     tg_by_node = hist.setdefault("Tg_by_node", {})
 
-    lookups = {
-        "last": last_glifo,
-        "state": _tg_state,
-        "latent": "SHA",
-        "curr": "curr",
-        "run": "run",
-    }
-    last = lookups["last"]
-    tg_state = lookups["state"]
-    latent = lookups["latent"]
-    curr_key = lookups["curr"]
-    run_key = lookups["run"]
+    last = last_glifo
+    tg_state = _tg_state
+    latent = "SHA"
+    curr_key = "curr"
+    run_key = "run"
 
     for n, nd in G.nodes(data=True):
         g = last(nd)
