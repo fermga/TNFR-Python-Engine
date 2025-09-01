@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
 try:  # Optional dependency
     import numpy as np  # type: ignore
 except ImportError:  # pragma: no cover - handled gracefully
-    logger.error(
-        "Fallo al importar numpy, el modo vectorizado no estará disponible",
+    logger.warning(
+        "Fallo al importar numpy, se continuará con el modo no vectorizado",
         exc_info=True,
     )
     np = None  # type: ignore
