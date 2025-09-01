@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Dict, Any, Set, Iterable, Optional
+from collections.abc import Collection
 
 from .constants import (
     DEFAULTS,
@@ -135,7 +136,13 @@ def on_applied_glifo(G, n, applied: str) -> None:
 # -------------------------
 
 def apply_glyph_with_grammar(G, nodes: Optional[Iterable[Any]], glyph: Glyph | str, window: Optional[int] = None) -> None:
-    """Aplica ``glyph`` a ``nodes`` pasando por la gramática canónica."""
+    """Aplica ``glyph`` a ``nodes`` pasando por la gramática canónica.
+
+    ``nodes`` admite ``NodeView`` y cualquier iterable. Si no es una
+    :class:`~collections.abc.Collection` (por ejemplo, un generador), se
+    materializa en una ``list`` sólo cuando se requiere indexación del
+    selector.
+    """
 
     from .operators import aplicar_glifo
 
@@ -143,7 +150,10 @@ def apply_glyph_with_grammar(G, nodes: Optional[Iterable[Any]], glyph: Glyph | s
         window = get_param(G, "GLYPH_HYSTERESIS_WINDOW")
 
     g_str = glyph.value if isinstance(glyph, Glyph) else str(glyph)
-    for n in list(G.nodes() if nodes is None else nodes):
+    iter_nodes = G.nodes() if nodes is None else nodes
+    if not isinstance(iter_nodes, Collection):
+        iter_nodes = list(iter_nodes)
+    for n in iter_nodes:
         g_eff = enforce_canonical_grammar(G, n, g_str)
         aplicar_glifo(G, n, g_eff, window=window)
         on_applied_glifo(G, n, g_eff)
