@@ -1,5 +1,7 @@
 import math
-from tnfr.node import NodoTNFR
+import pytest
+import networkx as nx
+from tnfr.node import NodoTNFR, NodoNX
 
 
 def test_add_edge_stores_weight():
@@ -35,3 +37,23 @@ def test_add_edge_overwrite():
     a.add_edge(b, weight=2.0, overwrite=True)
     assert math.isclose(a.edge_weight(b), 2.0)
     assert math.isclose(b.edge_weight(a), 2.0)
+
+
+def test_add_edge_rejects_negative_weight():
+    a = NodoTNFR()
+    b = NodoTNFR()
+    with pytest.raises(ValueError):
+        a.add_edge(b, weight=-1.0)
+    assert not a.has_edge(b)
+    assert not b.has_edge(a)
+
+
+def test_add_edge_rejects_negative_weight_nx():
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_node(1)
+    a = NodoNX(G, 0)
+    b = NodoNX(G, 1)
+    with pytest.raises(ValueError):
+        a.add_edge(b, weight=-0.5)
+    assert not a.has_edge(b)

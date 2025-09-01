@@ -147,6 +147,9 @@ class NodoTNFR:
             return
         if other in self._neighbors and not overwrite:
             return
+        weight = float(weight)
+        if weight < 0:
+            raise ValueError("Edge weight must be non-negative")
         self._neighbors[other] = weight
         other._neighbors[self] = weight
 
@@ -212,7 +215,10 @@ class NodoNX(NodoProtocol):
         if isinstance(other, NodoNX):
             if self.G.has_edge(self.n, other.n) and not overwrite:
                 return
-            self.G.add_edge(self.n, other.n, weight=float(weight))
+            weight = float(weight)
+            if weight < 0:
+                raise ValueError("Edge weight must be non-negative")
+            self.G.add_edge(self.n, other.n, weight=weight)
         else:
             raise NotImplementedError
 
