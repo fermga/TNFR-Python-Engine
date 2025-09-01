@@ -160,15 +160,17 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
 
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
-    pairs: List[tuple[str, float]] = []
+    acc = complex(0.0, 0.0)
+    cnt = 0
     for n in G.nodes():
         nw = _node_weight(G, n, weight_mode)
         if not nw:
             continue
         g, w, _ = nw
-        pairs.append((g, w))
-    vec = _sigma_from_pairs(pairs)
-    vec["n"] = len(pairs)
+        acc += glyph_unit(g) * w
+        cnt += 1
+    vec = _sigma_from_acc(acc, cnt)
+    vec["n"] = cnt
     return vec
 
 
