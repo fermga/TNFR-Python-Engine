@@ -116,12 +116,19 @@ def _update_epi_support(G, hist, t, thr):
 
 def _update_morph_metrics(G, hist, counts, t):
     """Registra métricas morfosintácticas basadas en conteos glíficos."""
-    total = max(1, sum(counts.values()))
-    id_val = counts.get("OZ", 0) / total
-    cm_val = (counts.get("ZHIR", 0) + counts.get("NAV", 0)) / total
-    ne_val = (counts.get("IL", 0) + counts.get("THOL", 0)) / total
+    oz = counts.get("OZ", 0)
+    zhir = counts.get("ZHIR", 0)
+    nav = counts.get("NAV", 0)
+    il = counts.get("IL", 0)
+    thol = counts.get("THOL", 0)
     remesh = counts.get("REMESH", 0)
-    pp_val = 0.0 if remesh == 0 else counts.get("SHA", 0) / remesh
+    sha = counts.get("SHA", 0)
+
+    total = max(1, sum(counts.values()))
+    id_val = oz / total
+    cm_val = (zhir + nav) / total
+    ne_val = (il + thol) / total
+    pp_val = 0.0 if remesh == 0 else sha / remesh
     hist.setdefault("morph", []).append({"t": t, "ID": id_val, "CM": cm_val, "NE": ne_val, "PP": pp_val})
 
 
