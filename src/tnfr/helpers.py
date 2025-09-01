@@ -443,8 +443,8 @@ def ensure_history(G) -> Dict[str, Any]:
         G.graph["history"] = hist
 
     if maxlen > 0 and len(hist) > maxlen:
-        candidates = [k for k, v in hist.items() if isinstance(v, (list, deque))]
-        exceso = len(candidates) - maxlen
+        candidates = (k for k, v in hist.items() if isinstance(v, (list, deque)))
+        exceso = sum(1 for v in hist.values() if isinstance(v, (list, deque))) - maxlen
         if exceso > 0:
             for k in heapq.nsmallest(
                 exceso, candidates, key=lambda k: len(hist.get(k, []))
