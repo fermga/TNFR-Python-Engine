@@ -690,11 +690,8 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
         neigh = list(G.neighbors(n))
         deg = len(neigh)
         if deg:
-            sum_cos = 0.0
-            sum_sin = 0.0
-            for v in neigh:
-                sum_cos += cos_th[v]
-                sum_sin += sin_th[v]
+            sum_cos = sum(cos_th[v] for v in neigh)
+            sum_sin = sum(sin_th[v] for v in neigh)
             mean_cos = sum_cos / deg
             mean_sin = sum_sin / deg
             th_bar = math.atan2(mean_sin, mean_cos)
