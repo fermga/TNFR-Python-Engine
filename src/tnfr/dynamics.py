@@ -188,8 +188,7 @@ def _compute_dnfr_loops(G, data) -> None:
     degs = data["degs"]
     cos_th = [math.cos(t) for t in theta]
     sin_th = [math.sin(t) for t in theta]
-    for n in nodes:
-        i = idx[n]
+    for i, n in enumerate(nodes):
         th_i = theta[i]
         epi_i = epi[i]
         vf_i = vf[i]
