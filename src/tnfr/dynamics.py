@@ -56,7 +56,7 @@ from .helpers import (
      clamp, clamp01, list_mean, angle_diff,
      get_attr, set_attr, get_attr_str, set_attr_str, media_vecinal, fase_media,
      invoke_callbacks, reciente_glifo, set_vf, set_dnfr, compute_Si, normalize_weights,
-     ensure_history,
+     ensure_history, compute_coherence,
 )
 
 # Cacheo centralizado de nodos y matriz de adyacencia
@@ -945,9 +945,7 @@ def run(G, steps: int, *, dt: float | None = None, use_Si: bool = True, apply_gl
 
 def _update_coherence(G, hist) -> None:
     """Actualizar la coherencia global y su media móvil."""
-    dnfr_mean = list_mean(abs(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes())
-    dEPI_mean = list_mean(abs(get_attr(G.nodes[n], ALIAS_dEPI, 0.0)) for n in G.nodes())
-    C = 1.0 / (1.0 + dnfr_mean + dEPI_mean)
+    C = compute_coherence(G)
     hist["C_steps"].append(C)
 
     wbar_w = int(G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25)))

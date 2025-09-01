@@ -23,7 +23,7 @@ try:
 except ImportError:  # pragma: no cover
     nx = None  # type: ignore
 
-from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_SI, ALIAS_EPI_KIND
+from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_dEPI, ALIAS_SI, ALIAS_EPI_KIND
 
 T = TypeVar("T")
 
@@ -55,6 +55,7 @@ __all__ = [
     "count_glyphs",
     "register_callback",
     "invoke_callbacks",
+    "compute_coherence",
     "compute_Si",
 ]
 
@@ -325,6 +326,20 @@ def set_vf(G, n, value: float) -> None:
 def set_dnfr(G, n, value: float) -> None:
     """Asigna ``ΔNFR`` y actualiza el máximo global."""
     set_attr_with_max(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
+
+# -------------------------
+# Coherencia global
+# -------------------------
+
+def compute_coherence(G) -> float:
+    """Calcula la coherencia global C(t) a partir de ΔNFR y dEPI."""
+    dnfr_mean = list_mean(
+        abs(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()
+    )
+    depi_mean = list_mean(
+        abs(get_attr(G.nodes[n], ALIAS_dEPI, 0.0)) for n in G.nodes()
+    )
+    return 1.0 / (1.0 + dnfr_mean + depi_mean)
 
 # -------------------------
 # Estadísticos vecinales

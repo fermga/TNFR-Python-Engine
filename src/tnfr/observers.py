@@ -7,14 +7,14 @@ from __future__ import annotations
 import math
 import statistics as st
 
-from .constants import ALIAS_DNFR, ALIAS_THETA, ALIAS_dEPI, METRIC_DEFAULTS
+from .constants import ALIAS_THETA, METRIC_DEFAULTS
 from .helpers import (
     get_attr,
-    list_mean,
     register_callback,
     angle_diff,
     ensure_history,
     count_glyphs,
+    compute_coherence,
 )
 from .constants_glifos import ESTABILIZADORES, DISRUPTIVOS
 from .gamma import kuramoto_R_psi
@@ -50,9 +50,7 @@ def attach_standard_observer(G):
 
 def coherencia_global(G) -> float:
     """Proxy de C(t): alta cuando |ΔNFR| y |dEPI_dt| son pequeños."""
-    dnfr = list_mean(abs(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes())
-    dEPI = list_mean(abs(get_attr(G.nodes[n], ALIAS_dEPI, 0.0)) for n in G.nodes())
-    return 1.0 / (1.0 + dnfr + dEPI)
+    return compute_coherence(G)
 
 
 def _phase_sums(G) -> tuple[float, float, list[float]]:
