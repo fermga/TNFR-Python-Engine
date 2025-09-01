@@ -2,6 +2,7 @@
 from __future__ import annotations
 import math
 import statistics as st
+from itertools import islice
 
 from .constants import ALIAS_THETA, METRIC_DEFAULTS
 from .helpers import (
@@ -110,4 +111,9 @@ def wbar(G, window: int | None = None) -> float:
     if window is None:
         window = int(G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25)))
     w = min(len(cs), max(1, int(window)))
-    return float(sum(cs[-w:]) / w)
+    if isinstance(cs, list):
+        tail = cs[-w:]
+    else:
+        start = len(cs) - w
+        tail = islice(cs, start, None)
+    return float(sum(tail) / w)
