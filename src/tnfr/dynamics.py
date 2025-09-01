@@ -15,6 +15,10 @@ from typing import Dict, Any, Iterable, Literal
 import math
 from collections import deque
 import networkx as nx
+try:  # Optional dependency
+    import numpy as np  # type: ignore
+except Exception:  # pragma: no cover - handled gracefully
+    np = None  # type: ignore
 
 from .observers import sincronía_fase, carga_glifica, orden_kuramoto
 from .sense import sigma_vector
@@ -97,6 +101,76 @@ def _configure_dnfr_weights(G) -> dict:
     return weights
 
 
+def _default_compute_delta_nfr_numpy(
+    G,
+    *,
+    w_phase: float,
+    w_epi: float,
+    w_vf: float,
+    w_topo: float,
+) -> None:
+    """Implementación vectorizada opcional de ``default_compute_delta_nfr``.
+
+    Utiliza ``numpy`` para sumar vecinos y promediar valores. Se invoca
+    únicamente cuando ``numpy`` está disponible y ``G.graph['vectorized_dnfr']``
+    es ``True``. La firma imita la versión por defecto para facilitar la
+    comparación de resultados."""
+    if np is None:  # pragma: no cover - check at runtime
+        raise RuntimeError("numpy no disponible para la versión vectorizada")
+
+    nodes = list(G.nodes)
+    if not nodes:
+        return
+
+    A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
+    count = A.sum(axis=1)
+
+    theta = np.array([get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in nodes], dtype=float)
+    epi = np.array([get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes], dtype=float)
+    vf = np.array([get_attr(G.nodes[n], ALIAS_VF, 0.0) for n in nodes], dtype=float)
+
+    cos_th = np.cos(theta)
+    sin_th = np.sin(theta)
+    x = A @ cos_th
+    y = A @ sin_th
+    epi_sum = A @ epi
+    vf_sum = A @ vf
+    if w_topo != 0.0:
+        degs = count
+        deg_sum = A @ degs
+    else:
+        degs = deg_sum = None
+
+    mask = count > 0
+    th_bar = theta.copy()
+    epi_bar = epi.copy()
+    vf_bar = vf.copy()
+    if np.any(mask):
+        th_bar[mask] = np.arctan2(y[mask] / count[mask], x[mask] / count[mask])
+        epi_bar[mask] = epi_sum[mask] / count[mask]
+        vf_bar[mask] = vf_sum[mask] / count[mask]
+        if w_topo != 0.0 and degs is not None:
+            deg_bar = degs.copy()
+            deg_bar[mask] = deg_sum[mask] / count[mask]
+    else:
+        deg_bar = degs
+
+    g_phase = np.array(
+        [-angle_diff(theta[i], th_bar[i]) / math.pi for i in range(len(nodes))],
+        dtype=float,
+    )
+    g_epi = epi_bar - epi
+    g_vf = vf_bar - vf
+    if w_topo != 0.0 and degs is not None and deg_bar is not None:
+        g_topo = deg_bar - degs
+    else:
+        g_topo = np.zeros_like(g_phase)
+
+    dnfr = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
+    for i, n in enumerate(nodes):
+        set_dnfr(G, n, float(dnfr[i]))
+
+
 def default_compute_delta_nfr(G) -> None:
     """Calcula ΔNFR mezclando gradientes de fase, EPI, νf y un término topológico."""
     weights = G.graph.get("_dnfr_weights")
@@ -113,6 +187,16 @@ def default_compute_delta_nfr(G) -> None:
         weights=weights,
         hook_name="default_compute_delta_nfr",
     )
+
+    if np is not None and G.graph.get("vectorized_dnfr"):
+        _default_compute_delta_nfr_numpy(
+            G,
+            w_phase=w_phase,
+            w_epi=w_epi,
+            w_vf=w_vf,
+            w_topo=w_topo,
+        )
+        return
 
     degs = dict(G.degree()) if w_topo != 0 else None
 
