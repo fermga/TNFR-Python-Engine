@@ -6,6 +6,7 @@ import pytest
 from tnfr.constants import attach_defaults, merge_overrides
 from tnfr.dynamics import update_epi_via_nodal_equation
 from tnfr.gamma import eval_gamma
+from tnfr.helpers import increment_edge_version
 
 
 def test_gamma_linear_integration(graph_canon):
@@ -68,6 +69,23 @@ def test_gamma_harmonic_eval(graph_canon):
     g1 = eval_gamma(G, 1, t=math.pi / 2)
     assert pytest.approx(g0, rel=1e-6) == 1.0
     assert pytest.approx(g1, rel=1e-6) == 1.0
+
+
+def test_kuramoto_cache_invalidation_on_version(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([0, 1])
+    attach_defaults(G)
+    merge_overrides(G, GAMMA={"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0})
+    for n in G.nodes():
+        G.nodes[n]["θ"] = 0.0
+    g_before = eval_gamma(G, 0, t=0.0)
+
+    G.add_node(2)
+    G.nodes[2]["θ"] = math.pi
+    increment_edge_version(G)
+    g_after = eval_gamma(G, 0, t=0.0)
+
+    assert g_after != pytest.approx(g_before)
 
 
 def test_eval_gamma_logs_and_strict_mode(graph_canon, caplog):

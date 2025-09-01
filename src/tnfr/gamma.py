@@ -18,7 +18,7 @@ def _ensure_kuramoto_cache(G, t) -> None:
 
     El cálculo se invalida si cambia el paso o la firma de los nodos.
     """
-    nodes_sig = (len(G), hash(tuple(G)))
+    nodes_sig = (len(G), int(G.graph.get("_edge_version", 0)))
     cache = G.graph.get("_kuramoto_cache")
     if (
         cache is None
