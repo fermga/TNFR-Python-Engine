@@ -32,6 +32,7 @@ from .constants import (
     ALIAS_SI,
     ALIAS_EPI_KIND,
     ALIAS_D2EPI,
+    get_param,
 )
 
 T = TypeVar("T")
@@ -522,7 +523,7 @@ def ensure_history(G) -> Dict[str, Any]:
     del máximo permitido.
     """
 
-    maxlen = int(G.graph.get("HISTORY_MAXLEN", DEFAULTS.get("HISTORY_MAXLEN", 0)))
+    maxlen = int(G.graph.get("HISTORY_MAXLEN", get_param(G, "HISTORY_MAXLEN")))
     hist = G.graph.get("history")
     if not isinstance(hist, HistoryDict) or hist._maxlen != maxlen:
         hist = HistoryDict(hist, maxlen=maxlen)
