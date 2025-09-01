@@ -50,11 +50,8 @@ def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
     si_max = float(G.graph.get("INIT_SI_MAX", 0.7))
     epi_val = float(G.graph.get("INIT_EPI_VALUE", 0.0))
 
-    rng = random.Random(seed)
-
     for idx, n in enumerate(G.nodes()):
-        state = rng.getstate()
-        rng.seed(seed + idx)
+        rng_node = random.Random(seed + idx)
         nd = G.nodes[n]
 
         if override or "EPI" not in nd:
@@ -62,7 +59,7 @@ def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
 
         if init_rand_phase:
             if override or "θ" not in nd:
-                nd["θ"] = rng.uniform(th_min, th_max)
+                nd["θ"] = rng_node.uniform(th_min, th_max)
         else:
             if override:
                 nd["θ"] = 0.0
@@ -70,15 +67,18 @@ def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
                 nd.setdefault("θ", 0.0)
 
         if vf_mode == "uniform":
-            vf = rng.uniform(float(vf_uniform_min), float(vf_uniform_max))
+            vf = rng_node.uniform(float(vf_uniform_min), float(vf_uniform_max))
         elif vf_mode == "normal":
             for _ in range(16):
-                cand = rng.normalvariate(vf_mean, vf_std)
+                cand = rng_node.normalvariate(vf_mean, vf_std)
                 if vf_min_lim <= cand <= vf_max_lim:
                     vf = cand
                     break
             else:
-                vf = min(max(rng.normalvariate(vf_mean, vf_std), vf_min_lim), vf_max_lim)
+                vf = min(
+                    max(rng_node.normalvariate(vf_mean, vf_std), vf_min_lim),
+                    vf_max_lim,
+                )
         else:
             vf = float(nd.get("νf", 0.5))
         if clamp_to_limits:
@@ -86,10 +86,8 @@ def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
         if override or "νf" not in nd:
             nd["νf"] = float(vf)
 
-        si = rng.uniform(si_min, si_max)
+        si = rng_node.uniform(si_min, si_max)
         if override or "Si" not in nd:
             nd["Si"] = float(si)
-
-        rng.setstate(state)
 
     return G
