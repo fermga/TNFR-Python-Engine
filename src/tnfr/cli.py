@@ -30,7 +30,7 @@ from .gamma import GAMMA_REGISTRY
 from .scenarios import build_graph
 from .presets import get_preset
 from .config import apply_config
-from .helpers import read_structured_file
+from .helpers import read_structured_file, list_mean
 from .observers import attach_standard_observer
 from . import __version__
 
@@ -270,7 +270,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         if lat["value"]:
             logger.info(
                 "Latencia media: %s",
-                sum(lat["value"]) / max(1, len(lat["value"])) ,
+                list_mean(lat["value"], 0.0),
             )
     return 0
 
@@ -310,7 +310,7 @@ def cmd_metrics(args: argparse.Namespace) -> int:
 
     out = {
         "Tg_global": tg,
-        "latency_mean": (sum(lat["value"]) / max(1, len(lat["value"])) ) if lat["value"] else 0.0,
+        "latency_mean": list_mean(lat["value"], 0.0),
         "rose": rose,
         "glifogram": {k: v[:10] for k, v in glifo.items()},
     }
