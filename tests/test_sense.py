@@ -1,7 +1,7 @@
 import networkx as nx
 import pytest
 
-from tnfr.sense import sigma_vector_node, sigma_vector_global
+from tnfr.sense import sigma_vector_node, sigma_vector_from_graph
 from tnfr.types import Glyph
 
 
@@ -23,10 +23,10 @@ def test_sigma_vector_node_paths():
     assert sv_epi["mag"] == pytest.approx(2 * sv_si["mag"])
 
 
-def test_sigma_vector_global_paths():
+def test_sigma_vector_from_graph_paths():
     G = _make_graph()
-    sv_si = sigma_vector_global(G)
-    sv_epi = sigma_vector_global(G, weight_mode="EPI")
+    sv_si = sigma_vector_from_graph(G)
+    sv_epi = sigma_vector_from_graph(G, weight_mode="EPI")
     assert sv_si["n"] == 1
     assert sv_epi["n"] == 1
     assert sv_epi["mag"] == pytest.approx(2 * sv_si["mag"])
