@@ -54,15 +54,36 @@ def _callback_names(callbacks: list) -> list[str]:
     return names
 
 # -------------------------
+# Builders
+# -------------------------
+
+def _new_trace_meta(
+    G, phase: str
+) -> Optional[tuple[Dict[str, Any], List[str], Optional[Dict[str, Any]], Optional[str]]]:
+    """Inicializa la metadata de trace para una ``phase``.
+
+    Envuelve :func:`_trace_setup` y crea la estructura base con la
+    marca temporal y la fase actual. Si el tracing está deshabilitado
+    retorna ``None``.
+    """
+
+    cfg, capture, hist, key = _trace_setup(G)
+    if not cfg:
+        return None
+
+    meta: Dict[str, Any] = {"t": float(G.graph.get("_t", 0.0)), "phase": phase}
+    return meta, capture, hist, key
+
+# -------------------------
 # Snapshots
 # -------------------------
 
 def _trace_before(G, *args, **kwargs):
-    cfg, capture, hist, key = _trace_setup(G)
-    if not cfg:
+    res = _new_trace_meta(G, "before")
+    if not res:
         return
 
-    meta: Dict[str, Any] = {"t": float(G.graph.get("_t", 0.0)), "phase": "before"}
+    meta, capture, hist, key = res
 
     if "gamma" in capture:
         meta["gamma"] = dict(G.graph.get("GAMMA", {}))
@@ -106,11 +127,11 @@ def _trace_before(G, *args, **kwargs):
 
 
 def _trace_after(G, *args, **kwargs):
-    cfg, capture, hist, key = _trace_setup(G)
-    if not cfg:
+    res = _new_trace_meta(G, "after")
+    if not res:
         return
 
-    meta: Dict[str, Any] = {"t": float(G.graph.get("_t", 0.0)), "phase": "after"}
+    meta, capture, hist, key = res
 
     if "kuramoto" in capture:
         R, psi = kuramoto_R_psi(G)
