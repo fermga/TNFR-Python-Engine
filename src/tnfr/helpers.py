@@ -203,15 +203,24 @@ def _convert_value(
     *,
     strict: bool = False,
     key: str | None = None,
+    log_level: int | None = None,
 ) -> tuple[bool, T | None]:
-    """Intenta convertir ``value`` usando ``conv`` manejando errores."""
+    """Intenta convertir ``value`` usando ``conv`` manejando errores.
+
+    ``log_level`` controla el nivel de logging cuando la conversión falla en
+    modo laxo. Por defecto se usa ``logging.ERROR`` si ``strict`` es ``True`` y
+    ``logging.DEBUG`` en caso contrario.
+    """
     try:
         return True, conv(value)
     except (ValueError, TypeError) as exc:
+        level = log_level if log_level is not None else (
+            logging.ERROR if strict else logging.DEBUG
+        )
         if key is not None:
-            logging.warning("No se pudo convertir el valor para %r: %s", key, exc)
+            logging.log(level, "No se pudo convertir el valor para %r: %s", key, exc)
         else:
-            logging.warning("No se pudo convertir el valor: %s", exc)
+            logging.log(level, "No se pudo convertir el valor: %s", exc)
         if strict:
             raise
         return False, None
@@ -224,23 +233,31 @@ def alias_get(
     *,
     default: Any | None = None,
     strict: bool = False,
+    log_level: int | None = None,
 ) -> T | None:
     """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor convertido.
 
     Si ninguna de las claves está presente o la conversión falla, devuelve
     ``default`` convertido (o ``None`` si ``default`` es ``None``).
+
+    ``log_level`` permite ajustar el nivel de logging cuando la conversión
+    falla en modo laxo.
     """
     aliases = _ensure_tuple(aliases)
     if not aliases:
         raise ValueError("'aliases' must contain at least one key")
     for key in aliases:
         if key in d:
-            ok, val = _convert_value(d[key], conv, strict=strict, key=key)
+            ok, val = _convert_value(
+                d[key], conv, strict=strict, key=key, log_level=log_level
+            )
             if ok:
                 return val
     if default is None:
         return None
-    ok, val = _convert_value(default, conv, strict=strict, key="default")
+    ok, val = _convert_value(
+        default, conv, strict=strict, key="default", log_level=log_level
+    )
     return val if ok else None
 
 
@@ -270,8 +287,11 @@ def get_attr(
     default: float = 0.0,
     *,
     strict: bool = False,
+    log_level: int | None = None,
 ) -> float:
-    return alias_get(d, aliases, float, default=default, strict=strict)
+    return alias_get(
+        d, aliases, float, default=default, strict=strict, log_level=log_level
+    )
 
 
 def set_attr(d, aliases, value: float) -> float:
@@ -284,8 +304,11 @@ def get_attr_str(
     default: str = "",
     *,
     strict: bool = False,
+    log_level: int | None = None,
 ) -> str:
-    return alias_get(d, aliases, str, default=default, strict=strict)
+    return alias_get(
+        d, aliases, str, default=default, strict=strict, log_level=log_level
+    )
 
 
 def set_attr_str(d, aliases, value: str) -> str:

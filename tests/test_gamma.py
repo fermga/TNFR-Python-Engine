@@ -77,9 +77,14 @@ def test_eval_gamma_logs_and_strict_mode(graph_canon, caplog):
     merge_overrides(G, GAMMA={"type": "kuramoto_linear", "beta": "bad"})
 
     caplog.clear()
-    with caplog.at_level(logging.ERROR):
+    with caplog.at_level(logging.DEBUG):
         g = eval_gamma(G, 0, t=0.0)
     assert g == 0.0
+    assert any("Fallo al evaluar" in rec.message for rec in caplog.records)
+
+    caplog.clear()
+    with caplog.at_level(logging.WARNING):
+        eval_gamma(G, 0, t=0.0, log_level=logging.WARNING)
     assert any("Fallo al evaluar" in rec.message for rec in caplog.records)
 
     with pytest.raises(ValueError):
