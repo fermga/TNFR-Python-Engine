@@ -77,10 +77,20 @@ def _sigma_cfg(G):
     return G.graph.get("SIGMA", SIGMA)
 
 
-    
+
 # -------------------------
 # σ por nodo y σ global
 # -------------------------
+
+
+def _sigma_from_acc(acc: complex, cnt: int, fallback_angle: float = 0.0) -> Dict[str, float]:
+    """Normaliza la acumulación compleja en el plano σ."""
+    if cnt <= 0:
+        return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": float(fallback_angle)}
+    x, y = acc.real / cnt, acc.imag / cnt
+    mag = math.hypot(x, y)
+    ang = math.atan2(y, x) if mag > 0 else float(fallback_angle)
+    return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
 
 def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] | None:
     cfg = _sigma_cfg(G)
@@ -88,10 +98,9 @@ def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] 
     if not nw:
         return None
     g, w, z = nw
-    x, y = z.real, z.imag
-    mag = math.hypot(x, y)
-    ang = math.atan2(y, x) if mag > 0 else glyph_angle(g)
-    return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang), "glifo": g, "w": float(w)}
+    vec = _sigma_from_acc(z, 1, glyph_angle(g))
+    vec.update({"glifo": g, "w": float(w)})
+    return vec
 
 
 def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
@@ -144,12 +153,9 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
         _, _, z = nw
         acc += z
         cnt += 1
-    if cnt == 0:
-        return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
-    x, y = acc.real / cnt, acc.imag / cnt
-    mag = math.hypot(x, y)
-    ang = math.atan2(y, x)
-    return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang), "n": cnt}
+    vec = _sigma_from_acc(acc, cnt)
+    vec["n"] = cnt
+    return vec
 
 
 # -------------------------
