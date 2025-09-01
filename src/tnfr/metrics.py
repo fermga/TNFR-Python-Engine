@@ -1,8 +1,7 @@
 from __future__ import annotations
 from typing import Dict, Any, List, Tuple
 from collections import defaultdict, Counter
-import statistics
-from statistics import fmean
+from statistics import fmean, mean, median
 import csv
 import json
 import os
@@ -208,7 +207,7 @@ def Tg_by_node(G, n, normalize: bool = False) -> Dict[str, float | List[float]]:
     out = {}
     for g in GLYPHS_CANONICAL:
         runs = rec.get(g, [])
-        out[g] = float(statistics.mean(runs)) if runs else 0.0
+        out[g] = float(mean(runs)) if runs else 0.0
         
     return out
 
@@ -250,8 +249,8 @@ def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
             out[g] = {"mean": 0.0, "median": 0.0, "max": 0.0, "count": 0}
         else:
             out[g] = {
-                "mean": float(statistics.mean(runs)),
-                "median": float(statistics.median(runs)),
+                "mean": float(mean(runs)),
+                "median": float(median(runs)),
                 "max": float(max(runs)),
                 "count": int(len(runs)),
             }
