@@ -3,6 +3,7 @@ import pytest
 
 from tnfr.cli import _load_sequence
 from tnfr.program import play, seq, block, wait
+from tnfr.constants import get_param
 from tnfr.types import Glyph
 
 yaml = pytest.importorskip("yaml")
@@ -21,6 +22,23 @@ def test_play_records_program_trace_with_block_and_wait(graph_canon):
     assert [e["op"] for e in trace] == ["GLYPH", "WAIT", "GLYPH", "GLYPH"]
     assert trace[2]["g"] == Glyph.THOL.value
 
+
+def test_play_handles_deeply_nested_blocks(graph_canon):
+    G = graph_canon()
+    G.add_node(1)
+
+    depth = 1500
+    inner = Glyph.AL
+    for _ in range(depth):
+        inner = block(inner)
+
+    play(G, seq(inner), step_fn=_step_noop)
+    trace = G.graph["history"]["program_trace"]
+
+    maxlen = int(get_param(G, "PROGRAM_TRACE_MAXLEN"))
+    assert len(trace) == maxlen
+    assert trace[0]["g"] == Glyph.THOL.value
+    assert trace[-1]["g"] == Glyph.AL.value
 
 def test_load_sequence_json_yaml(tmp_path):
     data = [
