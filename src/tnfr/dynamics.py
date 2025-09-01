@@ -87,46 +87,60 @@ def _configure_dnfr_weights(G) -> dict:
     return weights
 
 
-def _default_compute_delta_nfr_numpy(
-    G,
-    *,
-    w_phase: float,
-    w_epi: float,
-    w_vf: float,
-    w_topo: float,
-) -> None:
-    """Implementación vectorizada opcional de ``default_compute_delta_nfr``.
+def _prepare_dnfr_data(G) -> dict:
+    """Precalcula datos comunes para las estrategias de ΔNFR."""
+    weights = G.graph.get("_dnfr_weights")
+    if weights is None:
+        weights = _configure_dnfr_weights(G)
+    nodes = list(G.nodes)
+    idx = {n: i for i, n in enumerate(nodes)}
+    theta = [get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in nodes]
+    epi = [get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes]
+    vf = [get_attr(G.nodes[n], ALIAS_VF, 0.0) for n in nodes]
+    w_phase = float(weights.get("phase", 0.0))
+    w_epi = float(weights.get("epi", 0.0))
+    w_vf = float(weights.get("vf", 0.0))
+    w_topo = float(weights.get("topo", 0.0))
+    degs = dict(G.degree()) if w_topo != 0 else None
+    return {
+        "weights": weights,
+        "nodes": nodes,
+        "idx": idx,
+        "theta": theta,
+        "epi": epi,
+        "vf": vf,
+        "w_phase": w_phase,
+        "w_epi": w_epi,
+        "w_vf": w_vf,
+        "w_topo": w_topo,
+        "degs": degs,
+    }
 
-    Utiliza ``numpy`` para sumar vecinos y promediar valores. Se invoca
-    únicamente cuando ``numpy`` está disponible y ``G.graph['vectorized_dnfr']``
-    es ``True``. La firma imita la versión por defecto para facilitar la
-    comparación de resultados."""
+
+def _compute_dnfr_numpy(G, data) -> None:
+    """Estrategia vectorizada usando ``numpy``."""
     if np is None:  # pragma: no cover - check at runtime
         raise RuntimeError("numpy no disponible para la versión vectorizada")
-
-    nodes = list(G.nodes)
+    nodes = data["nodes"]
     if not nodes:
         return
-
     A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
     count = A.sum(axis=1)
-
-    theta = np.array([get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in nodes], dtype=float)
-    epi = np.array([get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes], dtype=float)
-    vf = np.array([get_attr(G.nodes[n], ALIAS_VF, 0.0) for n in nodes], dtype=float)
-
+    theta = np.array(data["theta"], dtype=float)
+    epi = np.array(data["epi"], dtype=float)
+    vf = np.array(data["vf"], dtype=float)
     cos_th = np.cos(theta)
     sin_th = np.sin(theta)
     x = A @ cos_th
     y = A @ sin_th
     epi_sum = A @ epi
     vf_sum = A @ vf
+    w_topo = data["w_topo"]
     if w_topo != 0.0:
         degs = count
         deg_sum = A @ degs
     else:
         degs = deg_sum = None
-
     mask = count > 0
     th_bar = theta.copy()
     epi_bar = epi.copy()
@@ -140,7 +154,6 @@ def _default_compute_delta_nfr_numpy(
             deg_bar[mask] = deg_sum[mask] / count[mask]
     else:
         deg_bar = degs
-
     g_phase = np.array(
         [-angle_diff(theta[i], th_bar[i]) / math.pi for i in range(len(nodes))],
         dtype=float,
@@ -151,63 +164,40 @@ def _default_compute_delta_nfr_numpy(
         g_topo = deg_bar - degs
     else:
         g_topo = np.zeros_like(g_phase)
-
-    dnfr = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
+    dnfr = (
+        data["w_phase"] * g_phase
+        + data["w_epi"] * g_epi
+        + data["w_vf"] * g_vf
+        + w_topo * g_topo
+    )
     for i, n in enumerate(nodes):
         set_dnfr(G, n, float(dnfr[i]))
 
 
-def default_compute_delta_nfr(G) -> None:
-    """Calcula ΔNFR mezclando gradientes de fase, EPI, νf y un término topológico."""
-    weights = G.graph.get("_dnfr_weights")
-    if weights is None:
-        weights = _configure_dnfr_weights(G)
-    w_phase = float(weights.get("phase", 0.0))
-    w_epi = float(weights.get("epi", 0.0))
-    w_vf = float(weights.get("vf", 0.0))
-    w_topo = float(weights.get("topo", 0.0))
-
-    # Documentar mezcla y hook activo
-    _write_dnfr_metadata(
-        G,
-        weights=weights,
-        hook_name="default_compute_delta_nfr",
-    )
-
-    if np is not None and G.graph.get("vectorized_dnfr"):
-        _default_compute_delta_nfr_numpy(
-            G,
-            w_phase=w_phase,
-            w_epi=w_epi,
-            w_vf=w_vf,
-            w_topo=w_topo,
-        )
-        return
-
-    degs = dict(G.degree()) if w_topo != 0 else None
-
-    # Precompute local arrays to avoid repeated G.nodes access inside loops
-    nodes = list(G.nodes)
-    idx = {n: i for i, n in enumerate(nodes)}
-    theta = [get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in nodes]
-    epi = [get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes]
-    vf = [get_attr(G.nodes[n], ALIAS_VF, 0.0) for n in nodes]
+def _compute_dnfr_loops(G, data) -> None:
+    """Estrategia basada en bucles estándar."""
+    nodes = data["nodes"]
+    idx = data["idx"]
+    theta = data["theta"]
+    epi = data["epi"]
+    vf = data["vf"]
+    w_phase = data["w_phase"]
+    w_epi = data["w_epi"]
+    w_vf = data["w_vf"]
+    w_topo = data["w_topo"]
+    degs = data["degs"]
     cos_th = [math.cos(t) for t in theta]
     sin_th = [math.sin(t) for t in theta]
-
     for n in nodes:
         i = idx[n]
         th_i = theta[i]
         epi_i = epi[i]
         vf_i = vf[i]
-
         x = y = epi_sum = vf_sum = 0.0
         count = 0
-
         if w_topo != 0 and degs is not None:
             deg_i = float(degs.get(n, 0))
             deg_sum = 0.0
-
         for v in G.neighbors(n):
             j = idx[v]
             x += cos_th[j]
@@ -217,7 +207,6 @@ def default_compute_delta_nfr(G) -> None:
             if w_topo != 0 and degs is not None:
                 deg_sum += degs.get(v, deg_i)
             count += 1
-
         if count:
             th_bar = math.atan2(y / count, x / count)
             epi_bar = epi_sum / count
@@ -230,18 +219,29 @@ def default_compute_delta_nfr(G) -> None:
             vf_bar = vf_i
             if w_topo != 0 and degs is not None:
                 deg_bar = deg_i
-
-        g_phase = -angle_diff(th_i, th_bar) / math.pi  # ~[-1,1]
-        g_epi = (epi_bar - epi_i)  # gradiente escalar
-        g_vf = (vf_bar - vf_i)
-
+        g_phase = -angle_diff(th_i, th_bar) / math.pi
+        g_epi = epi_bar - epi_i
+        g_vf = vf_bar - vf_i
         if w_topo != 0 and degs is not None:
             g_topo = deg_bar - deg_i
         else:
             g_topo = 0.0
-
         dnfr = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
         set_dnfr(G, n, dnfr)
+
+
+def default_compute_delta_nfr(G) -> None:
+    """Calcula ΔNFR mezclando gradientes de fase, EPI, νf y un término topológico."""
+    data = _prepare_dnfr_data(G)
+    _write_dnfr_metadata(
+        G,
+        weights=data["weights"],
+        hook_name="default_compute_delta_nfr",
+    )
+    if np is not None and G.graph.get("vectorized_dnfr"):
+        _compute_dnfr_numpy(G, data)
+    else:
+        _compute_dnfr_loops(G, data)
 
 def set_delta_nfr_hook(G, func, *, name: str | None = None, note: str | None = None) -> None:
     """Fija un hook estable para calcular ΔNFR. Firma requerida: func(G)->None y debe
