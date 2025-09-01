@@ -6,7 +6,7 @@ from typing import Any, Dict
 import networkx as nx
 
 from .constants import DEFAULTS, ALIAS_DNFR, ALIAS_D2EPI
-from .helpers import clamp01, get_attr
+from .helpers import clamp01, get_attr, compute_dnfr_accel_max
 
 
 HYSTERESIS_GLYPHS = ("IL", "OZ", "ZHIR", "THOL", "NAV", "RA")
@@ -87,15 +87,7 @@ def _selector_thresholds(G: nx.Graph) -> dict:
 
 def _norms_para_selector(G: nx.Graph) -> dict:
     """Calcula y guarda en ``G.graph`` los máximos para normalizar |ΔNFR| y |d2EPI/dt2|."""
-    dnfr_max = max(
-        (abs(get_attr(nd, ALIAS_DNFR, 0.0)) for _, nd in G.nodes(data=True)),
-        default=0.0,
-    )
-    accel_max = max(
-        (abs(get_attr(nd, ALIAS_D2EPI, 0.0)) for _, nd in G.nodes(data=True)),
-        default=0.0,
-    )
-    norms = {"dnfr_max": float(dnfr_max), "accel_max": float(accel_max)}
+    norms = compute_dnfr_accel_max(G)
     G.graph["_sel_norms"] = norms
     return norms
 

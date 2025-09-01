@@ -18,7 +18,16 @@ except ImportError:  # pragma: no cover
 if TYPE_CHECKING:
     import networkx as nx
 
-from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_dEPI, ALIAS_SI, ALIAS_EPI_KIND
+from .constants import (
+    DEFAULTS,
+    ALIAS_VF,
+    ALIAS_THETA,
+    ALIAS_DNFR,
+    ALIAS_dEPI,
+    ALIAS_SI,
+    ALIAS_EPI_KIND,
+    ALIAS_D2EPI,
+)
 
 T = TypeVar("T")
 
@@ -50,6 +59,7 @@ __all__ = [
     "count_glyphs",
     "register_callback",
     "invoke_callbacks",
+    "compute_dnfr_accel_max",
     "compute_coherence",
     "compute_Si",
 ]
@@ -321,6 +331,25 @@ def set_vf(G, n, value: float) -> None:
 def set_dnfr(G, n, value: float) -> None:
     """Asigna ``ΔNFR`` y actualiza el máximo global."""
     set_attr_with_max(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
+
+
+# -------------------------
+# Normalizadores de ΔNFR y aceleración
+# -------------------------
+
+def compute_dnfr_accel_max(G) -> dict:
+    """Calcula los máximos absolutos de |ΔNFR| y |d²EPI/dt²|.
+
+    Devuelve un diccionario con las claves ``dnfr_max`` y ``accel_max``.
+    Si el grafo no tiene nodos, ambos valores serán ``0.0``.
+    """
+
+    dnfr_max = 0.0
+    accel_max = 0.0
+    for _, nd in G.nodes(data=True):
+        dnfr_max = max(dnfr_max, abs(get_attr(nd, ALIAS_DNFR, 0.0)))
+        accel_max = max(accel_max, abs(get_attr(nd, ALIAS_D2EPI, 0.0)))
+    return {"dnfr_max": float(dnfr_max), "accel_max": float(accel_max)}
 
 # -------------------------
 # Coherencia global

@@ -67,7 +67,7 @@ from .helpers import (
      clamp, clamp01, list_mean, angle_diff,
      get_attr, set_attr, get_attr_str, set_attr_str, media_vecinal, fase_media,
      invoke_callbacks, reciente_glifo, set_vf, set_dnfr, compute_Si, normalize_weights,
-     ensure_history, compute_coherence,
+     ensure_history, compute_coherence, compute_dnfr_accel_max,
 )
 from .selector import (
     _selector_thresholds,
@@ -758,14 +758,10 @@ def default_glyph_selector(G, n) -> str:
     dnfr_hi = thr["dnfr_hi"]
 
     norms = G.graph.get("_sel_norms")
-    if norms is not None:
-        dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
-    else:
-        dnfr_max = 0.0
-        for _, nd2 in G.nodes(data=True):
-            dnfr_max = max(dnfr_max, abs(get_attr(nd2, ALIAS_DNFR, 0.0)))
-        if dnfr_max <= 0:
-            dnfr_max = 1.0
+    if norms is None:
+        norms = compute_dnfr_accel_max(G)
+        G.graph["_sel_norms"] = norms
+    dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
 
     Si = clamp01(get_attr(nd, ALIAS_SI, 0.5))
     dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
