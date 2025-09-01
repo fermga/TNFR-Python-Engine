@@ -30,59 +30,30 @@ def _selector_thresholds(G: nx.Graph) -> dict:
     glyph_defaults = DEFAULTS.get("GLYPH_THRESHOLDS", {})
     thr_def = {**glyph_defaults, **G.graph.get("GLYPH_THRESHOLDS", {})}
 
-    si_hi = clamp01(
-        float(
-            thr_sel.get(
-                "si_hi",
-                thr_def.get("hi", glyph_defaults.get("hi", 0.66)),
-            )
-        )
-    )
-    si_lo = clamp01(
-        float(
-            thr_sel.get(
-                "si_lo",
-                thr_def.get("lo", glyph_defaults.get("lo", 0.33)),
-            )
-        )
-    )
-    dnfr_hi = clamp01(
-        float(
-            thr_sel.get(
-                "dnfr_hi", sel_defaults.get("dnfr_hi", 0.5)
-            )
-        )
-    )
-    dnfr_lo = clamp01(
-        float(
-            thr_sel.get(
-                "dnfr_lo", sel_defaults.get("dnfr_lo", 0.1)
-            )
-        )
-    )
-    acc_hi = clamp01(
-        float(
-            thr_sel.get(
-                "accel_hi", sel_defaults.get("accel_hi", 0.5)
-            )
-        )
-    )
-    acc_lo = clamp01(
-        float(
-            thr_sel.get(
-                "accel_lo", sel_defaults.get("accel_lo", 0.1)
-            )
-        )
-    )
+    def _get_threshold(key: str, default: float, legacy: str | None = None) -> float:
+        """Obtiene ``key`` de ``thr_sel`` respetando claves de legado.
 
-    return {
-        "si_hi": si_hi,
-        "si_lo": si_lo,
-        "dnfr_hi": dnfr_hi,
-        "dnfr_lo": dnfr_lo,
-        "accel_hi": acc_hi,
-        "accel_lo": acc_lo,
-    }
+        Si ``legacy`` se proporciona se usa ``thr_def`` como respaldo,
+        permitiendo compatibilidad con ``GLYPH_THRESHOLDS`` de versiones
+        anteriores.
+        """
+
+        if legacy is not None:
+            val = thr_sel.get(key, thr_def.get(legacy, default))
+        else:
+            val = thr_sel.get(key, default)
+        return clamp01(float(val))
+
+    specs = [
+        ("si_hi", thr_def.get("hi", glyph_defaults.get("hi", 0.66)), "hi"),
+        ("si_lo", thr_def.get("lo", glyph_defaults.get("lo", 0.33)), "lo"),
+        ("dnfr_hi", sel_defaults.get("dnfr_hi", 0.5), None),
+        ("dnfr_lo", sel_defaults.get("dnfr_lo", 0.1), None),
+        ("accel_hi", sel_defaults.get("accel_hi", 0.5), None),
+        ("accel_lo", sel_defaults.get("accel_lo", 0.1), None),
+    ]
+
+    return {key: _get_threshold(key, default, legacy) for key, default, legacy in specs}
 
 
 def _norms_para_selector(G: nx.Graph) -> dict:
