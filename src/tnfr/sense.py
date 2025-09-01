@@ -92,13 +92,26 @@ def _sigma_from_acc(acc: complex, cnt: int, fallback_angle: float = 0.0) -> Dict
     ang = math.atan2(y, x) if mag > 0 else float(fallback_angle)
     return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
 
+
+def _sigma_from_pairs(pairs: List[tuple[str, float]], fallback_angle: float = 0.0) -> Dict[str, float]:
+    """Vector promedio a partir de pares ``(glifo, peso)``.
+
+    Los pesos se multiplican por los vectores unitarios asociados a cada glifo y
+    se normaliza por la cantidad de pares provistos. ``fallback_angle`` se
+    utiliza cuando la magnitud resultante es nula.
+    """
+    acc = complex(0.0, 0.0)
+    for g, w in pairs:
+        acc += glyph_unit(g) * float(w)
+    return _sigma_from_acc(acc, len(pairs), fallback_angle)
+
 def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] | None:
     cfg = _sigma_cfg(G)
     nw = _node_weight(G, n, weight_mode or cfg.get("weight", "Si"))
     if not nw:
         return None
-    g, w, z = nw
-    vec = _sigma_from_acc(z, 1, glyph_angle(g))
+    g, w, _ = nw
+    vec = _sigma_from_pairs([(g, w)], glyph_angle(g))
     vec.update({"glifo": g, "w": float(w)})
     return vec
 
@@ -144,17 +157,15 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
 
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
-    acc = complex(0.0, 0.0)
-    cnt = 0
+    pairs: List[tuple[str, float]] = []
     for n in G.nodes():
         nw = _node_weight(G, n, weight_mode)
         if not nw:
             continue
-        _, _, z = nw
-        acc += z
-        cnt += 1
-    vec = _sigma_from_acc(acc, cnt)
-    vec["n"] = cnt
+        g, w, _ = nw
+        pairs.append((g, w))
+    vec = _sigma_from_pairs(pairs)
+    vec["n"] = len(pairs)
     return vec
 
 
