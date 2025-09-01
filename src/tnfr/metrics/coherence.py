@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from math import cos
 import cmath
-from typing import Dict, List, Tuple
+from typing import Dict
 
 from ..constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_SI, COHERENCE
 from ..helpers import register_callback, ensure_history, get_attr, clamp01
