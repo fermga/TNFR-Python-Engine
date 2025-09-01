@@ -9,15 +9,11 @@ from networkx.algorithms import community as nx_comm
 
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers import (
-    clamp,
-    clamp01,
     list_mean,
     invoke_callbacks,
     angle_diff,
     get_attr,
     set_attr,
-    get_attr_str,
-    set_attr_str,
     fase_media,
 )
 from .node import NodoProtocol, NodoNX
