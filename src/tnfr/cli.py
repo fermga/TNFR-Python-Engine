@@ -242,18 +242,27 @@ def add_history_export_args(parser: argparse.ArgumentParser) -> None:
     )
 
 
-def cmd_run(args: argparse.Namespace) -> int:
-    G = _build_graph_from_args(args)
+def run_program(
+    G: Optional[nx.Graph], program: Optional[Any], args: argparse.Namespace
+) -> nx.Graph:
+    """Construir el grafo si es necesario, ejecutar un programa y guardar historial."""
+    if G is None:
+        G = _build_graph_from_args(args)
 
-    if args.preset:
-        program = get_preset(args.preset)
-        play(G, program)
-    else:
-        steps = int(args.steps or 100)
+    if program is None:
+        steps = int(getattr(args, "steps", 100) or 100)
         for _ in range(steps):
             step(G)
+    else:
+        play(G, program)
 
     _persist_history(G, args)
+    return G
+
+
+def cmd_run(args: argparse.Namespace) -> int:
+    program = get_preset(args.preset) if args.preset else None
+    G = run_program(None, program, args)
 
     # Resúmenes rápidos (si están activados)
     if G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get("enabled", True):
@@ -284,8 +293,6 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 
 def cmd_sequence(args: argparse.Namespace) -> int:
-    G = _build_graph_from_args(args)
-
     if args.preset:
         program = get_preset(args.preset)
     elif args.sequence_file:
@@ -300,9 +307,7 @@ def cmd_sequence(args: argparse.Namespace) -> int:
             Glyph.SHA,
         )
 
-    play(G, program)
-
-    _persist_history(G, args)
+    run_program(None, program, args)
     return 0
 
 
