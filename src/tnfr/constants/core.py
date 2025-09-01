@@ -72,6 +72,7 @@ class CoreDefaults:
     NAV_RANDOM: bool = True
     NAV_STRICT: bool = False
     RANDOM_SEED: int = 0
+    JITTER_CACHE_SIZE: int = 256
     OZ_NOISE_MODE: bool = False
     OZ_SIGMA: float = 0.1
     GRAMMAR: Dict[str, Any] = field(

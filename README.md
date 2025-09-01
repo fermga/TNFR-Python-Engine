@@ -89,6 +89,12 @@ node ids under `G.graph['_node_sample']`. Operators may use this to avoid
 scanning the whole network. Sampling is skipped automatically when the graph
 has fewer than **50 nodes**, in which case all nodes are included.
 
+### Jitter RNG cache
+
+`random_jitter` uses an LRU cache of `random.Random` instances keyed by `(seed, node)`.
+`JITTER_CACHE_SIZE` controls the maximum number of cached generators (default: `256`).
+Increase it for large graphs or heavy jitter usage, or lower it to save memory.
+
 ---
 
 ## Trained GPT
