@@ -770,7 +770,7 @@ def default_glyph_selector(G, n) -> str:
 
     norms = G.graph.get("_sel_norms")
     if norms is not None:
-        dnfr_max = float(norms.get("dnfr_max", 1.0))
+        dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     else:
         dnfr_max = 0.0
         for _, nd2 in G.nodes(data=True):
@@ -821,8 +821,8 @@ def parametric_glyph_selector(G, n) -> str:
 
     # Normalizadores por paso
     norms = G.graph.get("_sel_norms") or _norms_para_selector(G)
-    dnfr_max = float(norms.get("dnfr_max", 1.0))
-    acc_max  = float(norms.get("accel_max", 1.0))
+    dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
+    acc_max  = float(norms.get("accel_max", 1.0)) or 1.0
 
     # Lecturas nodales
     Si = clamp01(get_attr(nd, ALIAS_SI, 0.5))

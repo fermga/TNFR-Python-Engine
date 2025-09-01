@@ -86,15 +86,14 @@ def _selector_thresholds(G: nx.Graph) -> dict:
 
 def _norms_para_selector(G: nx.Graph) -> dict:
     """Calcula y guarda en ``G.graph`` los máximos para normalizar |ΔNFR| y |d2EPI/dt2|."""
-    dnfr_max = 0.0
-    accel_max = 0.0
-    for _, nd in G.nodes(data=True):
-        dnfr_max = max(dnfr_max, abs(get_attr(nd, ALIAS_DNFR, 0.0)))
-        accel_max = max(accel_max, abs(get_attr(nd, ALIAS_D2EPI, 0.0)))
-    if dnfr_max <= 0:
-        dnfr_max = 1.0
-    if accel_max <= 0:
-        accel_max = 1.0
+    dnfr_max = max(
+        (abs(get_attr(nd, ALIAS_DNFR, 0.0)) for _, nd in G.nodes(data=True)),
+        default=0.0,
+    )
+    accel_max = max(
+        (abs(get_attr(nd, ALIAS_D2EPI, 0.0)) for _, nd in G.nodes(data=True)),
+        default=0.0,
+    )
     norms = {"dnfr_max": float(dnfr_max), "accel_max": float(accel_max)}
     G.graph["_sel_norms"] = norms
     return norms
