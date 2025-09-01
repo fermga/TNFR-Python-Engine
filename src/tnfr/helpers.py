@@ -141,20 +141,42 @@ def ensure_parent(path: str | Path) -> None:
 # Iterables y colecciones
 # -------------------------
 
-def ensure_collection(it: Iterable[T]) -> Collection[T]:
-    """Devuelve ``it`` si ya es ``Collection`` o ``list(it)`` en caso contrario.
+def ensure_collection(it: Iterable[T], *, max_materialize: int | None = None) -> Collection[T]:
+    """Devuelve ``it`` si ya es ``Collection`` o materializa en ``tuple`` en caso contrario.
 
     Cadenas de texto y objetos *bytes* se tratan como un único elemento en
-    lugar de iterarse carácter a carácter. En esos casos se devuelve una lista
-    con dicho elemento. Si ``it`` no es iterable se lanza ``TypeError``.
+    lugar de iterarse carácter a carácter. En esos casos se devuelve una
+    ``tuple`` de un solo elemento. Si ``it`` no es iterable se lanza
+    ``TypeError``.
+
+    Parameters
+    ----------
+    max_materialize:
+        Número máximo de elementos a materializar cuando ``it`` no es una
+        colección. Si el iterable produce más de ``max_materialize`` elementos
+        se lanza :class:`ValueError`. ``None`` (por defecto) implica sin
+        límite.
+
+    Notes
+    -----
+    Materializar un iterable potencialmente grande puede suponer un coste de
+    memoria elevado. El parámetro ``max_materialize`` permite acotar este
+    coste.
     """
 
     if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
         return it
     if isinstance(it, (str, bytes, bytearray)):
-        return [it]
+        return (it,)
     try:
-        return list(it)
+        if max_materialize is None:
+            return tuple(it)
+        data = tuple(islice(it, max_materialize + 1))
+        if len(data) > max_materialize:
+            raise ValueError(
+                f"Iterable materialization exceeded {max_materialize} items"
+            )
+        return data
     except TypeError as exc:  # pragma: no cover - Defensive; unlikely with type hints
         raise TypeError(f"{it!r} is not iterable") from exc
 

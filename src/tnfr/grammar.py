@@ -7,7 +7,7 @@ from .constants import (
     ALIAS_SI, ALIAS_DNFR,
     get_param,
 )
-from .helpers import get_attr, clamp01, reciente_glifo, ensure_collection
+from .helpers import get_attr, clamp01, reciente_glifo
 from tnfr.types import Glyph
 
 # Glifos nominales (para evitar typos)
@@ -161,10 +161,9 @@ def on_applied_glifo(G, n, applied: str) -> None:
 def apply_glyph_with_grammar(G, nodes: Optional[Iterable[Any]], glyph: Glyph | str, window: Optional[int] = None) -> None:
     """Aplica ``glyph`` a ``nodes`` pasando por la gramática canónica.
 
-    ``nodes`` admite ``NodeView`` y cualquier iterable. Si no es una
-    :class:`~collections.abc.Collection` (por ejemplo, un generador), se
-    materializa en una ``list`` sólo cuando se requiere indexación del
-    selector.
+    ``nodes`` admite ``NodeView`` y cualquier iterable. Se itera directamente
+    sobre ``nodes`` para evitar materializaciones innecesarias; corresponde al
+    llamador materializarlo si necesita indexación.
     """
 
     from .operators import aplicar_glifo
@@ -173,7 +172,7 @@ def apply_glyph_with_grammar(G, nodes: Optional[Iterable[Any]], glyph: Glyph | s
         window = get_param(G, "GLYPH_HYSTERESIS_WINDOW")
 
     g_str = glyph.value if isinstance(glyph, Glyph) else str(glyph)
-    iter_nodes = ensure_collection(G.nodes() if nodes is None else nodes)
+    iter_nodes = G.nodes() if nodes is None else nodes
     for n in iter_nodes:
         g_eff = enforce_canonical_grammar(G, n, g_str)
         aplicar_glifo(G, n, g_eff, window=window)
