@@ -110,6 +110,10 @@ def read_structured_file(path: Path) -> Any:
         raise ValueError(f"Error al parsear archivo JSON en {path}: {e}") from e
     except YAMLError as e:
         raise ValueError(f"Error al parsear archivo YAML en {path}: {e}") from e
+    except RuntimeError as e:
+        raise ValueError(
+            f"Dependencia faltante al parsear {path}: {e}"
+        ) from e
 
 
 def ensure_parent(path: str | Path) -> None:
