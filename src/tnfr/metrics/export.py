@@ -22,13 +22,17 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
     hist = ensure_history(G)
     ensure_parent(base_path)
     glifo = glifogram_series(G)
+    sigma_x = hist.get("sense_sigma_x", [])
+    sigma_y = hist.get("sense_sigma_y", [])
     sigma_mag = hist.get("sense_sigma_mag", [])
+    sigma_angle = hist.get("sense_sigma_angle", [])
+    min_len = min(len(sigma_x), len(sigma_y), len(sigma_mag), len(sigma_angle))
     sigma = {
-        "t": list(range(len(sigma_mag))),
-        "sigma_x": hist.get("sense_sigma_x", []),
-        "sigma_y": hist.get("sense_sigma_y", []),
-        "mag": sigma_mag,
-        "angle": hist.get("sense_sigma_angle", []),
+        "t": list(range(min_len)),
+        "sigma_x": sigma_x[:min_len],
+        "sigma_y": sigma_y[:min_len],
+        "mag": sigma_mag[:min_len],
+        "angle": sigma_angle[:min_len],
     }
     morph = hist.get("morph", [])
     epi_supp = hist.get("EPI_support", [])
@@ -43,8 +47,10 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
         _write_csv(base_path + "_glifogram.csv", ["t", *GLYPHS_CANONICAL], glif_rows)
 
         sigma_rows = [
-            [t, sigma["sigma_x"][i], sigma["sigma_y"][i], sigma["mag"][i], sigma["angle"][i]]
-            for i, t in enumerate(sigma["t"])
+            [t, x, y, m, a]
+            for t, x, y, m, a in zip(
+                sigma["t"], sigma["sigma_x"], sigma["sigma_y"], sigma["mag"], sigma["angle"]
+            )
         ]
         _write_csv(base_path + "_sigma.csv", ["t", "x", "y", "mag", "angle"], sigma_rows)
 
