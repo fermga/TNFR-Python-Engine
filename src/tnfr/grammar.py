@@ -1,14 +1,13 @@
 """Reglas de gramática."""
 from __future__ import annotations
 from typing import Dict, Any, Set, Iterable, Optional
-from collections.abc import Collection
 
 from .constants import (
     DEFAULTS,
     ALIAS_SI, ALIAS_DNFR,
     get_param,
 )
-from .helpers import get_attr, clamp01, reciente_glifo
+from .helpers import get_attr, clamp01, reciente_glifo, ensure_collection
 from tnfr.types import Glyph
 
 # Glifos nominales (para evitar typos)
@@ -174,9 +173,7 @@ def apply_glyph_with_grammar(G, nodes: Optional[Iterable[Any]], glyph: Glyph | s
         window = get_param(G, "GLYPH_HYSTERESIS_WINDOW")
 
     g_str = glyph.value if isinstance(glyph, Glyph) else str(glyph)
-    iter_nodes = G.nodes() if nodes is None else nodes
-    if not isinstance(iter_nodes, Collection):
-        iter_nodes = list(iter_nodes)
+    iter_nodes = ensure_collection(G.nodes() if nodes is None else nodes)
     for n in iter_nodes:
         g_eff = enforce_canonical_grammar(G, n, g_str)
         aplicar_glifo(G, n, g_eff, window=window)

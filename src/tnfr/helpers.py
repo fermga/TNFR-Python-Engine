@@ -1,6 +1,7 @@
 """Funciones auxiliares."""
 from __future__ import annotations
 from typing import Iterable, Dict, Any, Callable, TypeVar, TYPE_CHECKING
+from collections.abc import Collection
 import logging
 import math
 from collections import deque, Counter
@@ -34,6 +35,7 @@ T = TypeVar("T")
 __all__ = [
     "read_structured_file",
     "ensure_parent",
+    "ensure_collection",
     "clamp",
     "clamp_abs",
     "clamp01",
@@ -106,6 +108,14 @@ def read_structured_file(path: Path) -> Any:
 def ensure_parent(path: str | Path) -> None:
     """Crea el directorio padre de ``path`` si hace falta."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
+
+# -------------------------
+# Iterables y colecciones
+# -------------------------
+
+def ensure_collection(it: Iterable[T]) -> Collection[T]:
+    """Devuelve ``it`` si ya es ``Collection`` o ``list(it)`` en caso contrario."""
+    return it if isinstance(it, Collection) else list(it)
 
 # -------------------------
 # Utilidades numéricas
