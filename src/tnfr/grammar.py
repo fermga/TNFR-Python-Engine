@@ -3,7 +3,7 @@ from typing import Dict, Any, Set, Iterable, Optional
 
 from .constants import (
     DEFAULTS,
-    ALIAS_SI, ALIAS_DNFR, ALIAS_EPI,
+    ALIAS_SI, ALIAS_DNFR,
     get_param,
 )
 from .helpers import get_attr, clamp01, reciente_glifo
