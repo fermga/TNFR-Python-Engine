@@ -85,7 +85,7 @@ def read_structured_file(path: Path) -> Any:
     """Lee un archivo JSON o YAML y devuelve los datos parseados."""
     suffix = path.suffix.lower()
     if suffix not in PARSERS:
-        raise ValueError(f"Extensión de archivo no soportada: {path.suffix}")
+        raise ValueError(f"Extensión de archivo no soportada: {suffix}")
     parser = PARSERS[suffix]
     try:
         text = path.read_text(encoding="utf-8")
