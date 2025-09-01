@@ -7,7 +7,6 @@ from __future__ import annotations
 from typing import Iterable, Dict, Any, Callable, TypeVar
 import math
 from collections import deque, Counter
-from itertools import islice
 from statistics import fmean, StatisticsError
 import json
 from pathlib import Path
@@ -332,8 +331,13 @@ def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
     """Indica si ``glifo`` apareció en las últimas ``ventana`` emisiones"""
     hist = nd.get("hist_glifos")
     gl = str(glifo)
-    if hist and any(g == gl for g in islice(reversed(hist), ventana)):
-        return True
+    if ventana < 0:
+        raise ValueError("ventana debe ser >= 0")
+    if hist:
+        limite = min(len(hist), ventana)
+        for i in range(1, limite + 1):
+            if hist[-i] == gl:
+                return True
     # fallback al glifo dominante actual
     return get_attr_str(nd, ALIAS_EPI_KIND, "") == gl
 
@@ -360,6 +364,16 @@ def last_glifo(nd: Dict[str, Any]) -> str | None:
         return None
 
 
+def _count_last_glifos(G) -> Counter:
+    """Cuenta solo el último glifo de cada nodo."""
+    counts: Counter[str] = Counter()
+    for _, nd in G.nodes(data=True):
+        g = last_glifo(nd)
+        if g:
+            counts[g] += 1
+    return counts
+
+
 def count_glyphs(G, window: int | None = None) -> Counter:
     """Cuenta glifos recientes en la red.
 
@@ -367,19 +381,16 @@ def count_glyphs(G, window: int | None = None) -> Counter:
     valor mayor o ``None`` se usa el historial ``hist_glifos`` limitado a los
     últimos ``window`` elementos por nodo.
     """
+    if window == 1:
+        return _count_last_glifos(G)
     counts: Counter[str] = Counter()
     for _, nd in G.nodes(data=True):
-        if window == 1:
-            g = last_glifo(nd)
-            if g:
-                counts[g] += 1
-            continue
         hist = nd.get("hist_glifos")
         if not hist:
             continue
         if window is not None and window > 0:
-            start = max(len(hist) - int(window), 0)
-            seq = islice(hist, start, None)
+            limite = min(len(hist), int(window))
+            seq = (hist[-i] for i in range(limite, 0, -1))
         else:
             seq = hist
         counts.update(seq)
