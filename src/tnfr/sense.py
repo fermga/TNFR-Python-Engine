@@ -1,6 +1,6 @@
 """Cálculos de sentido."""
 from __future__ import annotations
-from typing import Dict, List, Iterable
+from typing import Dict, Iterable
 import math
 import warnings
 from collections import Counter
@@ -16,28 +16,16 @@ from .helpers import (
     last_glifo,
     count_glyphs,
 )
-from .types import Glyph
-from .constants_glifos import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
+from .constants_glifos import (
+    ANGLE_MAP,
+    ESTABILIZADORES,
+    DISRUPTIVOS,
+    GLYPHS_CANONICAL,
+)
 
 # -------------------------
 # Canon: orden circular de glifos y ángulos
 # -------------------------
-GLYPHS_CANONICAL: List[str] = [
-    Glyph.AL.value,   # 0
-    Glyph.EN.value,   # 1
-    Glyph.IL.value,   # 2
-    Glyph.OZ.value,   # 3
-    Glyph.UM.value,   # 4
-    Glyph.RA.value,   # 5
-    Glyph.SHA.value,  # 6
-    Glyph.VAL.value,  # 7
-    Glyph.NUL.value,  # 8
-    Glyph.THOL.value, # 9
-    Glyph.ZHIR.value, # 10
-    Glyph.NAV.value,  # 11
-    Glyph.REMESH.value # 12
-]
-
 GLYPHS_CANONICAL_SET: set[str] = set(GLYPHS_CANONICAL)
 
 # Glifos relevantes para el plano Σ de observadores de sentido

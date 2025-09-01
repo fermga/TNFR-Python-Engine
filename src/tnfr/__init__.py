@@ -15,11 +15,18 @@ from .helpers import compute_coherence
 from .gamma import GAMMA_REGISTRY, eval_gamma, kuramoto_R_psi
 from .grammar import enforce_canonical_grammar, on_applied_glifo, apply_glyph_with_grammar
 from .sense import (
-    GLYPHS_CANONICAL, glyph_angle, glyph_unit,
-    sigma_vector_node, sigma_vector_from_graph, sigma_vector, sigma_vector_global,
-    push_sigma_snapshot, sigma_series, sigma_rose,
+    glyph_angle,
+    glyph_unit,
+    sigma_vector_node,
+    sigma_vector_from_graph,
+    sigma_vector,
+    sigma_vector_global,
+    push_sigma_snapshot,
+    sigma_series,
+    sigma_rose,
     register_sigma_callback,
 )
+from .constants_glifos import GLYPHS_CANONICAL
 from .metrics import (
     register_metrics_callbacks,
     Tg_global, Tg_by_node,

@@ -6,7 +6,7 @@ import json
 from typing import Dict, List
 
 from ..helpers import ensure_history, ensure_parent
-from ..sense import GLYPHS_CANONICAL
+from ..constants_glifos import GLYPHS_CANONICAL
 from .core import glifogram_series
 
 
