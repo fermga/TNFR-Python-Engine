@@ -30,9 +30,13 @@ def std_on_remesh(G, ctx):
 
 def attach_standard_observer(G):
     """Registra callbacks estándar: before_step, after_step, on_remesh."""
-    register_callback(G, "before_step", std_before)
-    register_callback(G, "after_step",  std_after)
-    register_callback(G, "on_remesh",   std_on_remesh)
+    callbacks = [
+        ("before_step", std_before),
+        ("after_step", std_after),
+        ("on_remesh", std_on_remesh),
+    ]
+    for event, fn in callbacks:
+        register_callback(G, event, fn)
     G.graph.setdefault("_STD_OBSERVER", "attached")
     return G
 
