@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict, field
-from typing import Dict, Any
+from typing import Dict, Any, Mapping
+from types import MappingProxyType
 
 
 @dataclass(frozen=True)
@@ -129,7 +130,12 @@ class RemeshDefaults:
     REMESH_ALPHA_HARD: bool = False
 
 
-CORE_DEFAULTS = asdict(CoreDefaults())
-REMESH_DEFAULTS = asdict(RemeshDefaults())
+_core_defaults = asdict(CoreDefaults())
+_remesh_defaults = asdict(RemeshDefaults())
 
-DEFAULTS_PART: Dict[str, Any] = CORE_DEFAULTS | REMESH_DEFAULTS
+CORE_DEFAULTS = MappingProxyType(_core_defaults)
+REMESH_DEFAULTS = MappingProxyType(_remesh_defaults)
+
+DEFAULTS_PART: Mapping[str, Any] = MappingProxyType(
+    {**_core_defaults, **_remesh_defaults}
+)
