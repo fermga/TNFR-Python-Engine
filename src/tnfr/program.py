@@ -20,14 +20,31 @@ AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
 
 @dataclass
 class WAIT:
+    """Esperar cierto número de pasos sin aplicar glifos.
+
+    Attributes:
+        steps: número de pasos que avanza el sistema.
+    """
     steps: int = 1
 
 @dataclass
 class TARGET:
+    """Selecciona el subconjunto de nodos para los glifos siguientes.
+
+    Attributes:
+        nodes: iterable de nodos; ``None`` para todos los nodos.
+    """
     nodes: Optional[Iterable[Node]] = None   # None = todos los nodos
 
 @dataclass
 class THOL:
+    """Bloque THOL que abre la autoorganización.
+
+    Attributes:
+        body: secuencia de tokens a ejecutar dentro del bloque.
+        repeat: cuántas veces repetir ``body``.
+        force_close: ``Glyph.SHA`` o ``Glyph.NUL`` para forzar cierre.
+    """
     body: Sequence[Any]
     repeat: int = 1                # cuántas veces repetir el cuerpo
     force_close: Optional[Glyph] = None  # None → cierre automático (gramática); SHA o NUL para forzar
