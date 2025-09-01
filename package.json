@@ -1,0 +1,13 @@
+{
+  "name": "teoria-de-la-naturaleza-fractal-resonante-tnfr",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "remix vite:build",
+    "test": "pytest"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^2.17.0",
+    "@remix-run/vite": "npm:@remix-run/dev@^2.17.0"
+  }
+}
