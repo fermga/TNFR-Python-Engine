@@ -41,7 +41,7 @@ pip install tnfr
 ## Key concepts (operational summary)
 
 * **Node (NFR):** a unit that persists because it **resonates**. Parameterized by **νf** (frequency), **θ** (phase), and **EPI** (coherent form).
-* **Structural operators:** functions that reorganize the network:
+* **Structural operators - functions that reorganize the network:
 
   * **Emission** (start), **Reception** (open), **Coherence** (stabilize), **Dissonance** (creative tension), **Coupling** (synchrony), **Resonance** (propagate), **Silence** (latency), **Expansion**, **Contraction**, **Self‑organization**, **Mutation**, **Transition**, **Recursivity**.
 * **Magnitudes:**
