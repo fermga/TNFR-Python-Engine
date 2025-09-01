@@ -3,6 +3,8 @@ from typing import Dict, List
 import math
 from collections import Counter
 
+import networkx as nx
+
 from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
 from .helpers import (
     get_attr,
@@ -150,7 +152,7 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
 
     Si no hay datos suficientes retorna el vector nulo.
     """
-    if not hasattr(G, "nodes"):
+    if not isinstance(G, nx.Graph):
         # Compatibilidad retro: si se pasa una distribución directamente,
         # derivamos a la variante específica.
         return sigma_vector(G)  # type: ignore[arg-type]
