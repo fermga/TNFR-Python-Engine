@@ -406,24 +406,60 @@ def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
 # -------------------------
 
 class HistoryDict(dict):
-    """Dict especializado que crea deques acotados para series."""
+    """Dict especializado que crea deques acotados para series y cuenta usos."""
 
     def __init__(self, data: Dict[str, Any] | None = None, *, maxlen: int = 0):
         super().__init__(data or {})
         self._maxlen = maxlen
+        self._counts: Dict[str, int] = {}
+        self._heap: list[tuple[int, str]] = []
         if self._maxlen > 0:
             for k, v in list(self.items()):
                 if isinstance(v, list):
                     self[k] = deque(v, maxlen=self._maxlen)
+                self._counts.setdefault(k, 0)
+                heapq.heappush(self._heap, (0, k))
+
+    def _increment(self, key: str) -> None:
+        cnt = self._counts.get(key, 0) + 1
+        self._counts[key] = cnt
+        heapq.heappush(self._heap, (cnt, key))
+
+    def __getitem__(self, key):  # type: ignore[override]
+        val = super().__getitem__(key)
+        self._increment(key)
+        return val
+
+    def get(self, key, default=None):  # type: ignore[override]
+        if key in self:
+            return self[key]
+        return default
+
+    def __setitem__(self, key, value):  # type: ignore[override]
+        super().__setitem__(key, value)
+        self._counts.setdefault(key, 0)
+        heapq.heappush(self._heap, (self._counts[key], key))
 
     def setdefault(self, key, default=None):  # type: ignore[override]
         if self._maxlen > 0 and isinstance(default, list):
             default = deque(default, maxlen=self._maxlen)
-        val = super().setdefault(key, default)
-        if self._maxlen > 0 and isinstance(val, list):
-            val = deque(val, maxlen=self._maxlen)
-            super().__setitem__(key, val)
+        if key in self:
+            val = self[key]
+        else:
+            val = super().setdefault(key, default)
+            if self._maxlen > 0 and isinstance(val, list):
+                val = deque(val, maxlen=self._maxlen)
+                super().__setitem__(key, val)
+        self._increment(key)
         return val
+
+    def pop_least_used(self) -> Any:
+        while self._heap:
+            cnt, key = heapq.heappop(self._heap)
+            if self._counts.get(key) == cnt and key in self:
+                self._counts.pop(key, None)
+                return super().pop(key)
+        raise KeyError("HistoryDict is empty")
 
 
 def ensure_history(G) -> Dict[str, Any]:
@@ -439,15 +475,12 @@ def ensure_history(G) -> Dict[str, Any]:
     if not isinstance(hist, HistoryDict) or hist._maxlen != maxlen:
         hist = HistoryDict(hist, maxlen=maxlen)
         G.graph["history"] = hist
-
-    if maxlen > 0 and len(hist) > maxlen:
-        candidates = (k for k, v in hist.items() if isinstance(v, (list, deque)))
-        exceso = sum(1 for v in hist.values() if isinstance(v, (list, deque))) - maxlen
-        if exceso > 0:
-            for k in heapq.nsmallest(
-                exceso, candidates, key=lambda k: len(hist.get(k, []))
-            ):
-                hist.pop(k, None)
+    if maxlen > 0:
+        while len(hist) > maxlen:
+            try:
+                hist.pop_least_used()
+            except KeyError:
+                break
     return hist
 
 

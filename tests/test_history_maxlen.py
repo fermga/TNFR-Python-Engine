@@ -24,3 +24,23 @@ def test_history_maxlen_and_cleanup(graph_canon):
     assert isinstance(series, deque)
     assert series.maxlen == 2
     assert list(series) == [2, 3]
+
+
+def test_history_least_used_removed(graph_canon):
+    G = graph_canon()
+    G.add_node(0)
+    attach_defaults(G)
+    G.graph["HISTORY_MAXLEN"] = 2
+
+    hist = ensure_history(G)
+    hist.setdefault("a", [])  # length 0 but will be accessed
+    hist.setdefault("b", []).append(1)
+    hist.setdefault("c", []).append(1)
+    # use "a" several times
+    _ = hist["a"]
+    _ = hist["a"]
+
+    # trigger cleanup
+    ensure_history(G)
+    assert len(hist) == 2
+    assert "a" in hist
