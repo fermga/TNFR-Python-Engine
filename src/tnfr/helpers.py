@@ -162,18 +162,32 @@ def angle_diff(a: float, b: float) -> float:
     return _wrap_angle(a - b)
 
 
-def normalize_weights(dict_like: Dict[str, Any], keys: Iterable[str], default: float = 0.0) -> Dict[str, float]:
+def normalize_weights(
+    dict_like: Dict[str, Any],
+    keys: Iterable[str],
+    default: float = 0.0,
+    *,
+    error_on_negative: bool = False,
+) -> Dict[str, float]:
     """Devuelve ``dict`` de ``keys`` normalizadas a sumatorio 1.
 
     Cada clave en ``keys`` se extrae de ``dict_like`` convirtiéndola a ``float``.
     Si la suma de los valores obtenidos es <= 0, se asignan proporciones
     uniformes entre todas las claves.
+
+    Parameters
+    ----------
+    error_on_negative:
+        Si es ``True`` se lanza :class:`ValueError` ante valores negativos.
+        En caso contrario se registra una advertencia.
     """
     keys = list(keys)
     weights = {k: float(dict_like.get(k, default)) for k in keys}
     if any(v < 0 for v in weights.values()):
+        if error_on_negative:
+            raise ValueError(f"Pesos negativos detectados: {weights}")
         logging.warning("Pesos negativos detectados: %s", weights)
-    total = sum(weights.values())
+    total = math.fsum(weights.values())
     n = len(keys)
     if total <= 0:
         if n == 0:

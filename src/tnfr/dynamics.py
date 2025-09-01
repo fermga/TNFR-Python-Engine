@@ -136,7 +136,7 @@ def _write_dnfr_metadata(G, *, weights: dict, hook_name: str, note: str | None =
     """Escribe en G.graph un bloque _DNFR_META con la mezcla y el nombre del hook.
 
     `weights` puede incluir componentes arbitrarias (phase/epi/vf/topo/etc.)."""
-    total = sum(float(v) for v in weights.values())
+    total = math.fsum(float(v) for v in weights.values())
     if total <= 0:
         # si no hay pesos, normalizamos a componentes iguales
         n = max(1, len(weights))
