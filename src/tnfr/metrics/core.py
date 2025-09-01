@@ -98,11 +98,11 @@ def _update_latency_index(G, hist, n_total, n_latent, t):
 
 def _update_epi_support(G, hist, t, thr):
     """Calcula soporte y norma de la EPI."""
-    vals = [
-        abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0))
-        for n in G.nodes()
-        if abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= thr
-    ]
+    vals = []
+    for n in G.nodes():
+        epi_val = abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0))
+        if epi_val >= thr:
+            vals.append(epi_val)
     epi_norm = list_mean(vals, 0.0)
     size = len(vals)
     hist.setdefault("EPI_support", []).append(
