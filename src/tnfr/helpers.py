@@ -71,17 +71,19 @@ def _parse_yaml(text: str) -> Any:
     return yaml.safe_load(text)
 
 
+PARSERS: Dict[str, Callable[[str], Any]] = {
+    ".json": _parse_json,
+    ".yaml": _parse_yaml,
+    ".yml": _parse_yaml,
+}
+
+
 def read_structured_file(path: Path) -> Any:
     """Lee un archivo JSON o YAML y devuelve los datos parseados."""
     suffix = path.suffix.lower()
-    parsers: Dict[str, Callable[[str], Any]] = {
-        ".json": _parse_json,
-        ".yaml": _parse_yaml,
-        ".yml": _parse_yaml,
-    }
-    if suffix not in parsers:
+    if suffix not in PARSERS:
         raise ValueError(f"Extensión de archivo no soportada: {path.suffix}")
-    parser = parsers[suffix]
+    parser = PARSERS[suffix]
     try:
         text = path.read_text(encoding="utf-8")
         return parser(text)
