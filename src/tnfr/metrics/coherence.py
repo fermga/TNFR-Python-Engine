@@ -37,6 +37,29 @@ def _coherence_components(G, ni, nj, epi_min, epi_max, vf_min, vf_max):
     return s_phase, s_epi, s_vf, s_si
 
 
+def _combine_components(
+    wnorm: Dict[str, float],
+    G,
+    ni,
+    nj,
+    epi_min,
+    epi_max,
+    vf_min,
+    vf_max,
+):
+    """Calcula la coherencia combinando componentes con sus pesos."""
+    s_phase, s_epi, s_vf, s_si = _coherence_components(
+        G, ni, nj, epi_min, epi_max, vf_min, vf_max
+    )
+    wij = (
+        wnorm["phase"] * s_phase
+        + wnorm["epi"] * s_epi
+        + wnorm["vf"] * s_vf
+        + wnorm["si"] * s_si
+    )
+    return clamp01(wij)
+
+
 def coherence_matrix(G):
     cfg = G.graph.get("COHERENCE", COHERENCE)
     if not cfg.get("enabled", True):
@@ -103,16 +126,9 @@ def coherence_matrix(G):
             if key in seen:
                 continue
             seen.add(key)
-            s_phase, s_epi, s_vf, s_si = _coherence_components(
-                G, u, v, epi_min, epi_max, vf_min, vf_max
+            wij = _combine_components(
+                wnorm, G, u, v, epi_min, epi_max, vf_min, vf_max
             )
-            wij = (
-                wnorm["phase"] * s_phase
-                + wnorm["epi"] * s_epi
-                + wnorm["vf"] * s_vf
-                + wnorm["si"] * s_si
-            )
-            wij = clamp01(wij)
             add_entry(i, j, wij)
             add_entry(j, i, wij)
     else:
@@ -120,16 +136,9 @@ def coherence_matrix(G):
             ni = nodes[i]
             for j in range(i + 1, n):
                 nj = nodes[j]
-                s_phase, s_epi, s_vf, s_si = _coherence_components(
-                    G, ni, nj, epi_min, epi_max, vf_min, vf_max
+                wij = _combine_components(
+                    wnorm, G, ni, nj, epi_min, epi_max, vf_min, vf_max
                 )
-                wij = (
-                    wnorm["phase"] * s_phase
-                    + wnorm["epi"] * s_epi
-                    + wnorm["vf"] * s_vf
-                    + wnorm["si"] * s_si
-                )
-                wij = clamp01(wij)
                 add_entry(i, j, wij)
                 add_entry(j, i, wij)
 
