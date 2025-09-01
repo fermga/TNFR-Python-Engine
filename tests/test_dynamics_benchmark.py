@@ -1,10 +1,12 @@
 """Pruebas de dynamics benchmark."""
 import time
 import networkx as nx
+import pytest
 
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF
 
+@pytest.mark.slow
 def test_default_compute_delta_nfr_performance():
     """Simple benchmark to ensure the optimized computation runs quickly."""
     G = nx.gnp_random_graph(200, 0.1, seed=1)
