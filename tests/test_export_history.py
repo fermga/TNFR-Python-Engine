@@ -46,3 +46,20 @@ def test_export_history_json_contains_optional(tmp_path, graph_canon):
     data = json.loads((base.with_suffix(".json")).read_text())
     assert data["morph"]
     assert data["epi_support"]
+
+
+def test_export_history_truncates_sigma(tmp_path, graph_canon):
+    base = tmp_path / "short" / "run"
+    G = graph_canon()
+    hist = G.graph.setdefault("history", {})
+    hist["sense_sigma_x"] = [1, 2]
+    hist["sense_sigma_y"] = [3]
+    hist["sense_sigma_mag"] = [4, 5, 6]
+    hist["sense_sigma_angle"] = [7, 8]
+    export_history(G, str(base), fmt="csv")
+    sigma_path = base.parent / (base.name + "_sigma.csv")
+    import csv
+    with open(sigma_path, newline="") as f:
+        rows = list(csv.reader(f))
+    assert rows[1] == ["0", "1", "3", "4", "7"]
+    assert len(rows) == 2
