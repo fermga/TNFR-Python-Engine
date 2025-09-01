@@ -55,32 +55,28 @@ def coherencia_global(G) -> float:
     return 1.0 / (1.0 + dnfr + dEPI)
 
 
-def _phase_sums(G) -> tuple[float, float, int]:
-    """Devuelve sumX, sumY y el número de nodos."""
+def _phase_sums(G) -> tuple[float, float, list[float]]:
+    """Devuelve sumX, sumY y la lista de fases nodales."""
     sumX = 0.0
     sumY = 0.0
-    count = 0
+    fases: list[float] = []
     for n in G.nodes():
         th = get_attr(G.nodes[n], ALIAS_THETA, 0.0)
         sumX += math.cos(th)
         sumY += math.sin(th)
-        count += 1
-    return sumX, sumY, count
+        fases.append(th)
+    return sumX, sumY, fases
 
 
 def sincronía_fase(G) -> float:
-    sumX, sumY, count = _phase_sums(G)
+    sumX, sumY, fases = _phase_sums(G)
+    count = len(fases)
     if count == 0:
         return 1.0
     th = math.atan2(sumY / count, sumX / count)
     # varianza angular aproximada (0 = muy sincronizado)
     var = (
-        st.pvariance(
-            [
-                angle_diff(get_attr(G.nodes[n], ALIAS_THETA, 0.0), th)
-                for n in G.nodes()
-            ]
-        )
+        st.pvariance([angle_diff(f, th) for f in fases])
         if count > 1
         else 0.0
     )
