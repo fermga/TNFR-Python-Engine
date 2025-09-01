@@ -96,7 +96,7 @@ def _apply_glyph_to_targets(G, g: Glyph | str, nodes: Optional[Iterable[Node]] =
     """
     if nodes is None:
         nodes = _all_nodes(G)
-    else:
+    elif not isinstance(nodes, list):
         nodes = list(nodes)
     w = _window(G)
     apply_glyph_with_grammar(G, nodes, g, w)
@@ -168,7 +168,7 @@ def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> N
       - Los glifos se aplican pasando por `enforce_canonical_grammar`.
     """
     ops = _flatten(sequence)
-    curr_target: Optional[Iterable[Node]] = None
+    curr_target: Optional[List[Node]] = None
 
     # Traza de programa en history
     history = G.graph.setdefault("history", {})
@@ -180,8 +180,11 @@ def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> N
 
     for op, payload in ops:
         if op == "TARGET":
-            curr_target = list(payload.nodes) if payload.nodes is not None else None
-            trace.append({"t": float(G.graph.get("_t", 0.0)), "op": "TARGET", "n": len(curr_target or _all_nodes(G))})
+            if payload.nodes is None:
+                curr_target = list(_all_nodes(G))
+            else:
+                curr_target = list(payload.nodes)
+            trace.append({"t": float(G.graph.get("_t", 0.0)), "op": "TARGET", "n": len(curr_target)})
             continue
         if op == "WAIT":
             for _ in range(max(1, int(payload))):
