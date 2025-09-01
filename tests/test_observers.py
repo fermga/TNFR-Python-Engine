@@ -46,8 +46,7 @@ def test_carga_glifica_uses_module_constants(monkeypatch, graph_canon):
     G.add_node(1, hist_glifos=["B"])
 
     # Patch constants to custom categories
-    monkeypatch.setattr("tnfr.observers.ESTABILIZADORES", ["A"])  # type: ignore[attr-defined]
-    monkeypatch.setattr("tnfr.observers.DISRUPTIVOS", ["B"])  # type: ignore[attr-defined]
+    monkeypatch.setattr("tnfr.observers.GLYPH_GROUPS", {"estabilizadores": ["A"], "disruptivos": ["B"]})
 
     dist = carga_glifica(G)
 

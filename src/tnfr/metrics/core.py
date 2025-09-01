@@ -9,6 +9,7 @@ import heapq
 from ..constants import METRIC_DEFAULTS, ALIAS_EPI, METRICS
 from ..helpers import register_callback, ensure_history, last_glifo, get_attr
 from ..sense import GLYPHS_CANONICAL
+from ..constants_glifos import GLYPH_GROUPS
 from .coherence import register_coherence_callbacks
 from .diagnosis import register_diagnosis_callbacks
 
@@ -114,20 +115,17 @@ def _update_epi_support(G, hist, t, thr):
 
 def _update_morph_metrics(G, hist, counts, t):
     """Registra métricas morfosintácticas basadas en conteos glíficos."""
-    oz = counts.get("OZ", 0)
-    zhir = counts.get("ZHIR", 0)
-    nav = counts.get("NAV", 0)
-    il = counts.get("IL", 0)
-    thol = counts.get("THOL", 0)
-    remesh = counts.get("REMESH", 0)
-    sha = counts.get("SHA", 0)
-
+    get_count = lambda keys: sum(counts.get(k, 0) for k in keys)
     total = max(1, sum(counts.values()))
-    id_val = oz / total
-    cm_val = (zhir + nav) / total
-    ne_val = (il + thol) / total
-    pp_val = 0.0 if remesh == 0 else sha / remesh
-    hist.setdefault("morph", []).append({"t": t, "ID": id_val, "CM": cm_val, "NE": ne_val, "PP": pp_val})
+    id_val = get_count(GLYPH_GROUPS.get("ID", ())) / total
+    cm_val = get_count(GLYPH_GROUPS.get("CM", ())) / total
+    ne_val = get_count(GLYPH_GROUPS.get("NE", ())) / total
+    num = get_count(GLYPH_GROUPS.get("PP_num", ()))
+    den = get_count(GLYPH_GROUPS.get("PP_den", ()))
+    pp_val = 0.0 if den == 0 else num / den
+    hist.setdefault("morph", []).append(
+        {"t": t, "ID": id_val, "CM": cm_val, "NE": ne_val, "PP": pp_val}
+    )
 
 
 # -------------

@@ -12,7 +12,7 @@ from .helpers import (
     count_glyphs,
     compute_coherence,
 )
-from .constants_glifos import ESTABILIZADORES, DISRUPTIVOS
+from .constants_glifos import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 
 # -------------------------
@@ -93,19 +93,9 @@ def carga_glifica(G, window: int | None = None) -> dict:
     # Proporciones por glifo
     dist = {k: v / count for k, v in total.items()}
 
-    # Agregados conceptuales (puedes ajustar categorías)
-    # Glifos que consolidan la coherencia nodal: IL estabiliza el flujo (cap. 6),
-    # RA propaga la resonancia (cap. 9), UM acopla nodos en fase (cap. 8)
-    # y SHA ofrece silencio regenerativo (cap. 10). Véase manual TNFR,
-    # sec. 18.19 "Análisis morfosintáctico" para la taxonomía funcional.
-    # Glifos que perturban o reconfiguran la red: OZ introduce disonancia
-    # evolutiva (cap. 7), ZHIR muta la estructura (cap. 14), NAV marca
-    # el tránsito entre estados (cap. 15) y THOL autoorganiza un nuevo
-    # orden (cap. 13). Véase manual TNFR, sec. 18.19 para esta clasificación.
+    for label, glyphs in GLYPH_GROUPS.items():
+        dist[f"_{label}"] = sum(dist.get(k, 0.0) for k in glyphs)
 
-
-    dist["_estabilizadores"] = sum(dist.get(k, 0.0) for k in ESTABILIZADORES)
-    dist["_disruptivos"] = sum(dist.get(k, 0.0) for k in DISRUPTIVOS)
     dist["_count"] = count
     return dist
 

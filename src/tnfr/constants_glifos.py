@@ -24,6 +24,18 @@ DISRUPTIVOS = (
     Glyph.THOL.value,
 )
 
+# Mapa general de agrupaciones glíficas para referencia cruzada.
+GLYPH_GROUPS = {
+    "estabilizadores": ESTABILIZADORES,
+    "disruptivos": DISRUPTIVOS,
+    # Grupos auxiliares para métricas morfosintácticas
+    "ID": (Glyph.OZ.value,),
+    "CM": (Glyph.ZHIR.value, Glyph.NAV.value),
+    "NE": (Glyph.IL.value, Glyph.THOL.value),
+    "PP_num": (Glyph.SHA.value,),
+    "PP_den": (Glyph.REMESH.value,),
+}
+
 # -------------------------
 # Mapa de ángulos glíficos
 # -------------------------
