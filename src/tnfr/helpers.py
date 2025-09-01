@@ -125,8 +125,21 @@ def ensure_parent(path: str | Path) -> None:
 # -------------------------
 
 def ensure_collection(it: Iterable[T]) -> Collection[T]:
-    """Devuelve ``it`` si ya es ``Collection`` o ``list(it)`` en caso contrario."""
-    return it if isinstance(it, Collection) else list(it)
+    """Devuelve ``it`` si ya es ``Collection`` o ``list(it)`` en caso contrario.
+
+    Cadenas de texto y objetos *bytes* se tratan como un único elemento en
+    lugar de iterarse carácter a carácter. En esos casos se devuelve una lista
+    con dicho elemento. Si ``it`` no es iterable se lanza ``TypeError``.
+    """
+
+    if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
+        return it
+    if isinstance(it, (str, bytes, bytearray)):
+        return [it]
+    try:
+        return list(it)
+    except TypeError as exc:  # pragma: no cover - Defensive; unlikely with type hints
+        raise TypeError(f"{it!r} is not iterable") from exc
 
 # -------------------------
 # Utilidades numéricas
