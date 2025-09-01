@@ -7,6 +7,9 @@ import networkx as nx
 from .constants import DEFAULTS, ALIAS_DNFR, ALIAS_D2EPI
 from .helpers import clamp01, get_attr
 
+
+HYSTERESIS_GLYPHS = ("IL", "OZ", "ZHIR", "THOL", "NAV", "RA")
+
 __all__ = [
     "_selector_thresholds",
     "_norms_para_selector",
@@ -85,7 +88,7 @@ def _apply_selector_hysteresis(
         hist = nd.get("hist_glifos")
         if hist:
             prev = hist[-1]
-            if isinstance(prev, str) and prev in ("IL", "OZ", "ZHIR", "THOL", "NAV", "RA"):
+            if isinstance(prev, str) and prev in HYSTERESIS_GLYPHS:
                 return prev
     return None
 
