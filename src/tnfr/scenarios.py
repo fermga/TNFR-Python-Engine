@@ -1,7 +1,7 @@
 from __future__ import annotations
 import networkx as nx
 
-from .constants import inject_defaults, DEFAULTS
+from .constants import inject_defaults
 from .initialization import init_node_attrs
 
 
@@ -28,7 +28,7 @@ def build_graph(
         raise ValueError(f"Invalid topology '{topology}'. Valid options are: {', '.join(valid)}")
 
     # Valores canónicos para inicialización
-    inject_defaults(G, DEFAULTS)
+    inject_defaults(G)
     if seed is not None:
         G.graph.setdefault("RANDOM_SEED", int(seed))
     init_node_attrs(G, override=True)
