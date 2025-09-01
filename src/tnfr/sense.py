@@ -69,12 +69,14 @@ def _weight(G, n, mode: str) -> float:
 
 
 def _node_weight(G, n, weight_mode: str) -> tuple[str, float, complex] | None:
+    """Return ``(glyph, weight, weighted_unit)`` or ``None`` if no glyph."""
     nd = G.nodes[n]
     g = last_glifo(nd)
     if not g:
         return None
     w = _weight(G, n, weight_mode)
-    return g, w, glyph_unit(g) * w
+    z = glyph_unit(g) * w  # precompute weighted unit vector
+    return g, w, z
 
 
 def _sigma_cfg(G):
@@ -173,16 +175,16 @@ def sigma_vector_from_graph(G: nx.Graph, weight_mode: str | None = None) -> Dict
 
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
-    acc = complex(0.0, 0.0)
+    acc_z = complex(0.0, 0.0)
     cnt = 0
     for n in G.nodes():
         nw = _node_weight(G, n, weight_mode)
         if not nw:
             continue
-        g, w, _ = nw
-        acc += glyph_unit(g) * w
+        g, w, z = nw  # z already includes glyph_unit(g) * w
+        acc_z += z
         cnt += 1
-    vec = _sigma_from_acc(acc, cnt)
+    vec = _sigma_from_acc(acc_z, cnt)
     vec["n"] = cnt
     return vec
 
