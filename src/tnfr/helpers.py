@@ -1,6 +1,6 @@
 """Funciones auxiliares."""
 from __future__ import annotations
-from typing import Iterable, Dict, Any, Callable, TypeVar, TYPE_CHECKING
+from typing import Iterable, Sequence, Dict, Any, Callable, TypeVar, TYPE_CHECKING
 from collections.abc import Collection
 import logging
 import math
@@ -227,15 +227,6 @@ def normalize_weights(
 # -------------------------
 
 
-def _ensure_tuple(aliases: Iterable[str]) -> tuple[str, ...]:
-    """Garantiza que ``aliases`` sea una tupla."""
-    if isinstance(aliases, tuple):
-        return aliases
-    if isinstance(aliases, str):
-        return (aliases,)
-    return tuple(aliases)
-
-
 def _convert_value(
     value: Any,
     conv: Callable[[Any], T],
@@ -267,7 +258,7 @@ def _convert_value(
 
 def alias_get(
     d: Dict[str, Any],
-    aliases: Iterable[str],
+    aliases: Sequence[str],
     conv: Callable[[Any], T],
     *,
     default: Any | None = None,
@@ -276,13 +267,18 @@ def alias_get(
 ) -> T | None:
     """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor convertido.
 
+    ``aliases`` debe ser una secuencia (idealmente una tupla) de claves. No se
+    realiza ninguna conversión interna, por lo que pasar una cadena única
+    resultará en un error.
+
     Si ninguna de las claves está presente o la conversión falla, devuelve
     ``default`` convertido (o ``None`` si ``default`` es ``None``).
 
     ``log_level`` permite ajustar el nivel de logging cuando la conversión
     falla en modo laxo.
     """
-    aliases = _ensure_tuple(aliases)
+    if isinstance(aliases, str):
+        raise TypeError("'aliases' must be a sequence of strings")
     if not aliases:
         raise ValueError("'aliases' must contain at least one key")
     for key in aliases:
@@ -302,12 +298,17 @@ def alias_get(
 
 def alias_set(
     d: Dict[str, Any],
-    aliases: Iterable[str],
+    aliases: Sequence[str],
     conv: Callable[[Any], T],
     value: Any,
 ) -> T:
-    """Asigna ``value`` convertido a la primera clave disponible de ``aliases``."""
-    aliases = _ensure_tuple(aliases)
+    """Asigna ``value`` convertido a la primera clave disponible de ``aliases``.
+
+    ``aliases`` debe ser una secuencia (idealmente una tupla) de claves y no se
+    transforma internamente.
+    """
+    if isinstance(aliases, str):
+        raise TypeError("'aliases' must be a sequence of strings")
     if not aliases:
         raise ValueError("'aliases' must contain at least one key")
     _, val = _convert_value(value, conv, strict=True)
@@ -322,35 +323,51 @@ def alias_set(
 
 def get_attr(
     d: Dict[str, Any],
-    aliases: Iterable[str],
+    aliases: Sequence[str],
     default: float = 0.0,
     *,
     strict: bool = False,
     log_level: int | None = None,
 ) -> float:
+    """Obtiene un atributo numérico usando :func:`alias_get`.
+
+    ``aliases`` debe ser una secuencia de claves (idealmente una tupla).
+    """
     return alias_get(
         d, aliases, float, default=default, strict=strict, log_level=log_level
     )
 
 
-def set_attr(d, aliases, value: float) -> float:
+def set_attr(d, aliases: Sequence[str], value: float) -> float:
+    """Establece un atributo numérico usando :func:`alias_set`.
+
+    ``aliases`` debe ser una secuencia de claves (idealmente una tupla).
+    """
     return alias_set(d, aliases, float, value)
 
 
 def get_attr_str(
     d: Dict[str, Any],
-    aliases: Iterable[str],
+    aliases: Sequence[str],
     default: str = "",
     *,
     strict: bool = False,
     log_level: int | None = None,
 ) -> str:
+    """Obtiene un atributo de texto usando :func:`alias_get`.
+
+    ``aliases`` debe ser una secuencia de claves (idealmente una tupla).
+    """
     return alias_get(
         d, aliases, str, default=default, strict=strict, log_level=log_level
     )
 
 
-def set_attr_str(d, aliases, value: str) -> str:
+def set_attr_str(d, aliases: Sequence[str], value: str) -> str:
+    """Establece un atributo de texto usando :func:`alias_set`.
+
+    ``aliases`` debe ser una secuencia de claves (idealmente una tupla).
+    """
     return alias_set(d, aliases, str, value)
 
 # Retrocompatibilidad con nombres anteriores
@@ -364,7 +381,7 @@ _set_attr_str = set_attr_str
 # Máximos globales con caché
 # -------------------------
 
-def _recompute_abs_max(G, aliases):
+def _recompute_abs_max(G, aliases: Sequence[str]):
     """Recalcula y retorna ``(max_val, node)`` para ``aliases``."""
     node = max(
         G.nodes(),
@@ -375,7 +392,9 @@ def _recompute_abs_max(G, aliases):
     return max_val, node
 
 
-def _update_cached_abs_max(G, aliases, n, value, *, key: str) -> None:
+def _update_cached_abs_max(
+    G, aliases: Sequence[str], n, value, *, key: str
+) -> None:
     """Actualiza ``G.graph[key]`` y ``G.graph[f"{key}_node"]``."""
     node_key = f"{key}_node"
     val = abs(value)
@@ -390,7 +409,9 @@ def _update_cached_abs_max(G, aliases, n, value, *, key: str) -> None:
         G.graph[node_key] = max_node
 
 
-def set_attr_with_max(G, n, aliases, value: float, *, cache: str) -> None:
+def set_attr_with_max(
+    G, n, aliases: Sequence[str], value: float, *, cache: str
+) -> None:
     """Asigna ``value`` al atributo indicado y actualiza el máximo global."""
     val = float(value)
     set_attr(G.nodes[n], aliases, val)
@@ -450,7 +471,7 @@ def compute_coherence(G) -> float:
 # Estadísticos vecinales
 # -------------------------
 
-def media_vecinal(G, n, aliases: Iterable[str], default: float = 0.0) -> float:
+def media_vecinal(G, n, aliases: Sequence[str], default: float = 0.0) -> float:
     """Media del atributo indicado por ``aliases`` en los vecinos de ``n``."""
     vals = (get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
     return list_mean(vals, default)
