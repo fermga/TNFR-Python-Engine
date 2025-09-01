@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import csv
 import json
-import os
 from typing import Dict, List
 
-from ..helpers import ensure_history
+from ..helpers import ensure_history, ensure_parent
 from ..sense import GLYPHS_CANONICAL
 from .core import glifogram_series
 
@@ -21,7 +20,7 @@ def _write_csv(path, headers, rows):
 def export_history(G, base_path: str, fmt: str = "csv") -> None:
     """Vuelca glifograma y traza σ(t) a archivos CSV o JSON compactos."""
     hist = ensure_history(G)
-    os.makedirs(os.path.dirname(base_path) or ".", exist_ok=True)
+    ensure_parent(base_path)
     glifo = glifogram_series(G)
     sigma_mag = hist.get("sense_sigma_mag", [])
     sigma = {

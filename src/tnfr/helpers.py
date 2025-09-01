@@ -29,6 +29,7 @@ T = TypeVar("T")
 
 __all__ = [
     "read_structured_file",
+    "ensure_parent",
     "clamp",
     "clamp_abs",
     "clamp01",
@@ -94,6 +95,11 @@ def read_structured_file(path: Path) -> Any:
     except Exception as e:
         formato = "YAML" if parser is _parse_yaml else "JSON"
         raise ValueError(f"Error al parsear {formato} en {path}: {e}") from e
+
+
+def ensure_parent(path: str | Path) -> None:
+    """Crea el directorio padre de ``path`` si hace falta."""
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
 
 # -------------------------
 # Utilidades numéricas
