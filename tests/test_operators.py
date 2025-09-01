@@ -1,26 +1,27 @@
 from tnfr.node import NodoNX
-from tnfr.operators import random_jitter
+from tnfr.operators import random_jitter, _GLOBAL_JITTER_CACHE
 from tnfr.operators import op_UM
 from tnfr.constants import attach_defaults
 import networkx as nx
 
 
 def test_random_jitter_deterministic_with_and_without_cache(graph_canon):
+    _GLOBAL_JITTER_CACHE.clear()
     G = graph_canon()
     G.add_node(0)
     n0 = NodoNX(G, 0)
 
-    # Without cache
+    # Without explicit cache: uses global cache and advances sequence
     j1 = random_jitter(n0, 0.5)
     j2 = random_jitter(n0, 0.5)
-    assert j1 == j2
+    assert j1 != j2
 
-    # With explicit cache: sequence should be deterministic
+    # With explicit cache: reproduces deterministic sequence
     cache = {}
     j3 = random_jitter(n0, 0.5, cache)
     j4 = random_jitter(n0, 0.5, cache)
     assert j3 == j1
-    assert j4 != j3
+    assert j4 == j2
 
     # Replaying with a fresh cache reproduces the sequence
     cache2 = {}
