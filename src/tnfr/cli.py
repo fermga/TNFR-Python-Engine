@@ -227,6 +227,17 @@ def add_grammar_args(parser: argparse.ArgumentParser) -> None:
         parser.add_argument(opt, dest=dest, type=typ, default=None)
 
 
+def add_history_export_args(parser: argparse.ArgumentParser) -> None:
+    """Agrega los argumentos para guardar o exportar el histórico."""
+    parser.add_argument("--save-history", dest="save_history", type=str, default=None)
+    parser.add_argument(
+        "--export-history-base", dest="export_history_base", type=str, default=None
+    )
+    parser.add_argument(
+        "--export-format", dest="export_format", choices=["csv", "json"], default="json"
+    )
+
+
 def cmd_run(args: argparse.Namespace) -> int:
     G = _build_graph_from_args(args)
 
@@ -334,9 +345,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     add_common_args(p_run)
     p_run.add_argument("--steps", type=int, default=200)
     p_run.add_argument("--preset", type=str, default=None)
-    p_run.add_argument("--save-history", dest="save_history", type=str, default=None)
-    p_run.add_argument("--export-history-base", dest="export_history_base", type=str, default=None)
-    p_run.add_argument("--export-format", dest="export_format", choices=["csv", "json"], default="json")
+    add_history_export_args(p_run)
     p_run.add_argument("--summary", action="store_true")
     p_run.add_argument("--no-canon", dest="grammar_canon", action="store_false", default=True, help="Desactiva gramática canónica")
     add_grammar_args(p_run)
@@ -359,9 +368,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     add_common_args(p_seq)
     p_seq.add_argument("--preset", type=str, default=None)
     p_seq.add_argument("--sequence-file", type=str, default=None)
-    p_seq.add_argument("--save-history", dest="save_history", type=str, default=None)
-    p_seq.add_argument("--export-history-base", dest="export_history_base", type=str, default=None)
-    p_seq.add_argument("--export-format", dest="export_format", choices=["csv", "json"], default="json")
+    add_history_export_args(p_seq)
     add_grammar_args(p_seq)
     p_seq.set_defaults(func=cmd_sequence)
 
