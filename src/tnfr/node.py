@@ -23,6 +23,8 @@ from .helpers import (
     set_dnfr,
 )
 
+from .operators import aplicar_glifo_obj
+
 
 def _nx_attr_property(
     aliases,
@@ -161,7 +163,6 @@ class NodoTNFR:
         return list(self.graph.get("_all_nodes", [self]))
 
     def aplicar_glifo(self, glifo: str, window: Optional[int] = None) -> None:
-        from .operators import aplicar_glifo_obj
         aplicar_glifo_obj(self, glifo, window=window)
 
     def integrar(self, dt: float) -> None:

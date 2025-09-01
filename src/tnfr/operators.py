@@ -1,6 +1,6 @@
 # operators.py — TNFR canónica (ASCII-safe)
 from __future__ import annotations
-from typing import Dict, Any, Optional, Iterable
+from typing import Dict, Any, Optional, Iterable, TYPE_CHECKING
 import math
 import random
 import hashlib
@@ -19,7 +19,8 @@ from .helpers import (
     set_attr,
     fase_media,
 )
-from .node import NodoProtocol, NodoNX
+if TYPE_CHECKING:
+    from .node import NodoProtocol, NodoNX
 from .types import Glyph
 from collections import deque
 
@@ -351,8 +352,11 @@ _NAME_TO_OP = {
 
 def _wrap(fn):
     def inner(obj, n=None):
+        from .node import NodoNX
+
         node = obj if n is None else NodoNX(obj, n)
         return fn(node)
+
     return inner
 
 op_AL = _wrap(_op_AL)
@@ -400,6 +404,8 @@ def aplicar_glifo_obj(node: NodoProtocol, glifo: Glyph | str, *, window: Optiona
 
 def aplicar_glifo(G, n, glifo: Glyph | str, *, window: Optional[int] = None) -> None:
     """Adaptador para operar sobre grafos ``networkx``."""
+    from .node import NodoNX
+
     node = NodoNX(G, n)
     aplicar_glifo_obj(node, glifo, window=window)
 
