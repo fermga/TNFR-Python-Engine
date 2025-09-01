@@ -240,10 +240,10 @@ def alias_set(
     for key in aliases:
         if key in d:
             d[key] = val
-            return d[key]
+            return val
     key = aliases[0]
     d[key] = val
-    return d[key]
+    return val
 
 
 def get_attr(
@@ -256,8 +256,8 @@ def get_attr(
     return alias_get(d, aliases, float, default=default, strict=strict)
 
 
-def set_attr(d, aliases, value: float) -> None:
-    alias_set(d, aliases, float, value)
+def set_attr(d, aliases, value: float) -> float:
+    return alias_set(d, aliases, float, value)
 
 
 def get_attr_str(
@@ -270,8 +270,8 @@ def get_attr_str(
     return alias_get(d, aliases, str, default=default, strict=strict)
 
 
-def set_attr_str(d, aliases, value: str) -> None:
-    alias_set(d, aliases, str, value)
+def set_attr_str(d, aliases, value: str) -> str:
+    return alias_set(d, aliases, str, value)
 
 # Retrocompatibilidad con nombres anteriores
 _get_attr = get_attr
