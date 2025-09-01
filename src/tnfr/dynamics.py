@@ -14,10 +14,19 @@ from __future__ import annotations
 from typing import Dict, Any, Literal
 import math
 from collections import deque
+import logging
+
 import networkx as nx
+
+logger = logging.getLogger(__name__)
+
 try:  # Optional dependency
     import numpy as np  # type: ignore
-except Exception:  # pragma: no cover - handled gracefully
+except ImportError:  # pragma: no cover - handled gracefully
+    logger.error(
+        "Fallo al importar numpy, el modo vectorizado no estará disponible",
+        exc_info=True,
+    )
     np = None  # type: ignore
 
 from .observers import sincronía_fase, carga_glifica, orden_kuramoto
