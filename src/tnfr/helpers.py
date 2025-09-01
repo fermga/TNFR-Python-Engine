@@ -403,20 +403,18 @@ def _ensure_callbacks(G):
 
 def register_callback(
     G,
-    event: str | None = None,
+    event: str,
     func=None,
     *,
-    when: str | None = None,
     name: str | None = None,
 ):
     """Registra ``func`` como callback del ``event`` indicado.
 
     Permite tanto la forma posicional ``register_callback(G, "after_step", fn)``
-    como la forma con palabras clave ``register_callback(G, when="after_step", func=fn)``.
+    como la forma con palabras clave ``register_callback(G, event="after_step", func=fn)``.
     El parámetro ``name`` ahora se almacena junto con la función para facilitar
     su identificación.
     """
-    event = event or when
     if event not in ("before_step", "after_step", "on_remesh"):
         raise ValueError(f"Evento desconocido: {event}")
     if func is None:
