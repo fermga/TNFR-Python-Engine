@@ -13,7 +13,8 @@ __version__ = "4.5.2"
 # Re-exports de la API pública
 from .dynamics import step, run, set_delta_nfr_hook, validate_canon
 from .ontosim import preparar_red
-from .observers import attach_standard_observer, coherencia_global, orden_kuramoto
+from .observers import attach_standard_observer, orden_kuramoto
+from .helpers import compute_coherence
 from .gamma import GAMMA_REGISTRY, eval_gamma, kuramoto_R_psi
 from .grammar import enforce_canonical_grammar, on_applied_glifo, apply_glyph_with_grammar
 from .sense import (
@@ -61,7 +62,7 @@ __all__ = [
     "preparar_red",
     "step", "run", "set_delta_nfr_hook", "validate_canon",
 
-    "attach_standard_observer", "coherencia_global", "orden_kuramoto",
+    "attach_standard_observer", "orden_kuramoto", "compute_coherence",
     "GAMMA_REGISTRY", "eval_gamma", "kuramoto_R_psi",
     "enforce_canonical_grammar", "on_applied_glifo",
     "apply_glyph_with_grammar",
