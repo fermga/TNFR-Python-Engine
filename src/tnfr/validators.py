@@ -14,10 +14,10 @@ def _validate_epi_vf(G) -> None:
         for k in ("EPI_MIN", "EPI_MAX", "VF_MIN", "VF_MAX")
     }
     for n, data in G.nodes(data=True):
-        epi = float(get_attr(data, ALIAS_EPI, 0.0))
+        epi = float(get_attr(data, ALIAS_EPI, 0.0, strict=True))
         if not (cfg["EPI_MIN"] - 1e-9 <= epi <= cfg["EPI_MAX"] + 1e-9):
             raise ValueError(f"EPI fuera de rango en nodo {n}: {epi}")
-        vf = float(get_attr(data, ALIAS_VF, 0.0))
+        vf = float(get_attr(data, ALIAS_VF, 0.0, strict=True))
         if not (cfg["VF_MIN"] - 1e-9 <= vf <= cfg["VF_MAX"] + 1e-9):
             raise ValueError(f"VF fuera de rango en nodo {n}: {vf}")
 

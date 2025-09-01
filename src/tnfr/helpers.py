@@ -5,6 +5,7 @@ Utilidades transversales + cálculo de Índice de sentido (Si).
 """
 from __future__ import annotations
 from typing import Iterable, Dict, Any, Callable, TypeVar
+import logging
 import math
 from collections import deque, Counter
 from statistics import fmean, StatisticsError
@@ -179,6 +180,7 @@ def alias_get(
     conv: Callable[[Any], T],
     *,
     default: Any = _sentinel,
+    strict: bool = False,
 ) -> T | None:
     """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor convertido.
 
@@ -192,12 +194,21 @@ def alias_get(
         if key in d:
             try:
                 return conv(d[key])
-            except (ValueError, TypeError):
+            except (ValueError, TypeError) as exc:
+                logging.warning("No se pudo convertir el valor para %r: %s", key, exc)
+                if strict:
+                    raise
                 continue
     if default is not _sentinel:
         if default is None:
             return None
-        return conv(default)
+        try:
+            return conv(default)
+        except (ValueError, TypeError) as exc:
+            logging.warning("No se pudo convertir el valor por defecto: %s", exc)
+            if strict:
+                raise
+            return None
     return None
 
 
@@ -220,16 +231,28 @@ def alias_set(
     return d[key]
 
 
-def get_attr(d: Dict[str, Any], aliases: Iterable[str], default: float = 0.0) -> float:
-    return alias_get(d, aliases, float, default=default)
+def get_attr(
+    d: Dict[str, Any],
+    aliases: Iterable[str],
+    default: float = 0.0,
+    *,
+    strict: bool = False,
+) -> float:
+    return alias_get(d, aliases, float, default=default, strict=strict)
 
 
 def set_attr(d, aliases, value: float) -> None:
     alias_set(d, aliases, float, value)
 
 
-def get_attr_str(d: Dict[str, Any], aliases: Iterable[str], default: str = "") -> str:
-    return alias_get(d, aliases, str, default=default)
+def get_attr_str(
+    d: Dict[str, Any],
+    aliases: Iterable[str],
+    default: str = "",
+    *,
+    strict: bool = False,
+) -> str:
+    return alias_get(d, aliases, str, default=default, strict=strict)
 
 
 def set_attr_str(d, aliases, value: str) -> None:
