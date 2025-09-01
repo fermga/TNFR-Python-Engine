@@ -110,7 +110,7 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
 
             # Insertamos los cuerpos en orden para que la primera repetición
             # sea procesada antes.
-            for _ in reversed(range(repeats)):
+            for _ in range(repeats):
                 for tok in reversed(item.body):
                     stack.append(tok)
             continue
