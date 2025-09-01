@@ -42,38 +42,38 @@ def _gram_state(nd: Dict[str, Any]) -> Dict[str, Any]:
 # -------------------------
 CANON_COMPAT: Dict[Glyph, Set[Glyph]] = {
     # Inicio / apertura
-    AL:   {EN, RA, NAV, VAL, UM},
-    EN:   {IL, UM, RA, NAV},
+    Glyph.AL:   {Glyph.EN, Glyph.RA, Glyph.NAV, Glyph.VAL, Glyph.UM},
+    Glyph.EN:   {Glyph.IL, Glyph.UM, Glyph.RA, Glyph.NAV},
     # Estabilización / difusión / acople
-    IL:   {RA, VAL, UM, SHA},
-    UM:   {RA, IL, VAL, NAV},
-    RA:   {IL, VAL, UM, NAV},
-    VAL:  {UM, RA, IL, NAV},
+    Glyph.IL:   {Glyph.RA, Glyph.VAL, Glyph.UM, Glyph.SHA},
+    Glyph.UM:   {Glyph.RA, Glyph.IL, Glyph.VAL, Glyph.NAV},
+    Glyph.RA:   {Glyph.IL, Glyph.VAL, Glyph.UM, Glyph.NAV},
+    Glyph.VAL:  {Glyph.UM, Glyph.RA, Glyph.IL, Glyph.NAV},
     # Disonancia → transición → mutación
-    OZ:   {ZHIR, NAV},
-    ZHIR: {IL, NAV},
-    NAV:  {OZ, ZHIR, RA, IL, UM},
+    Glyph.OZ:   {Glyph.ZHIR, Glyph.NAV},
+    Glyph.ZHIR: {Glyph.IL, Glyph.NAV},
+    Glyph.NAV:  {Glyph.OZ, Glyph.ZHIR, Glyph.RA, Glyph.IL, Glyph.UM},
     # Cierres / latencias
-    SHA:  {AL, EN},
-    NUL:  {AL, IL},
+    Glyph.SHA:  {Glyph.AL, Glyph.EN},
+    Glyph.NUL:  {Glyph.AL, Glyph.IL},
     # Bloques autoorganizativos
-    THOL: {OZ, ZHIR, NAV, RA, IL, UM, SHA, NUL},
+    Glyph.THOL: {Glyph.OZ, Glyph.ZHIR, Glyph.NAV, Glyph.RA, Glyph.IL, Glyph.UM, Glyph.SHA, Glyph.NUL},
 }
 
 # Fallbacks canónicos si una transición no está permitida
 CANON_FALLBACK: Dict[Glyph, Glyph] = {
-    AL: EN,
-    EN: IL,
-    IL: RA,
-    NAV: RA,
-    NUL: AL,
-    OZ: ZHIR,
-    RA: IL,
-    SHA: AL,
-    THOL: NAV,
-    UM: RA,
-    VAL: RA,
-    ZHIR: IL,
+    Glyph.AL: Glyph.EN,
+    Glyph.EN: Glyph.IL,
+    Glyph.IL: Glyph.RA,
+    Glyph.NAV: Glyph.RA,
+    Glyph.NUL: Glyph.AL,
+    Glyph.OZ: Glyph.ZHIR,
+    Glyph.RA: Glyph.IL,
+    Glyph.SHA: Glyph.AL,
+    Glyph.THOL: Glyph.NAV,
+    Glyph.UM: Glyph.RA,
+    Glyph.VAL: Glyph.RA,
+    Glyph.ZHIR: Glyph.IL,
 }
 
 # -------------------------
@@ -114,11 +114,11 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
         return cand
 
     # 1) Precondición OZ→ZHIR: mutación requiere disonancia reciente o campo fuerte
-    if cand == ZHIR:
+    if cand == Glyph.ZHIR:
         win = int(cfg.get("zhir_requires_oz_window", 3))
         dn_min = float(cfg.get("zhir_dnfr_min", 0.05))
-        if not reciente_glifo(nd, OZ, win) and _dnfr_norm(G, nd) < dn_min:
-            cand = OZ  # forzamos paso por OZ
+        if not reciente_glifo(nd, Glyph.OZ, win) and _dnfr_norm(G, nd) < dn_min:
+            cand = Glyph.OZ  # forzamos paso por OZ
 
     # 2) Si estamos dentro de THOL, control de cierre obligado
     if st.get("thol_open", False):
@@ -128,7 +128,7 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
         maxlen = int(cfg.get("thol_max_len", 6))
         close_dn = float(cfg.get("thol_close_dnfr", 0.15))
         if st["thol_len"] >= maxlen or (st["thol_len"] >= minlen and _dnfr_norm(G, nd) <= close_dn):
-            cand = NUL if _si(G, nd) >= float(cfg.get("si_high", 0.66)) else SHA
+            cand = Glyph.NUL if _si(G, nd) >= float(cfg.get("si_high", 0.66)) else Glyph.SHA
 
     # 3) Compatibilidades: si el anterior restringe el siguiente
     hist = nd.get("hist_glifos")
@@ -145,10 +145,10 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
 def on_applied_glifo(G, n, applied: str) -> None:
     nd = G.nodes[n]
     st = _gram_state(nd)
-    if applied == THOL:
+    if applied == Glyph.THOL:
         st["thol_open"] = True
         st["thol_len"] = 0
-    elif applied in (SHA, NUL):
+    elif applied in (Glyph.SHA, Glyph.NUL):
         st["thol_open"] = False
         st["thol_len"] = 0
     else:
