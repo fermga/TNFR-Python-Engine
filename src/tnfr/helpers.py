@@ -1,6 +1,6 @@
 """Funciones auxiliares."""
 from __future__ import annotations
-from typing import Iterable, Sequence, Dict, Any, Callable, TypeVar, TYPE_CHECKING
+from typing import Iterable, Sequence, Dict, Any, Callable, TypeVar
 from collections.abc import Collection
 import logging
 import math
@@ -20,9 +20,6 @@ except ImportError:  # pragma: no cover
     yaml = None
     class YAMLError(Exception):  # type: ignore
         pass
-
-if TYPE_CHECKING:
-    import networkx as nx
 
 from .constants import (
     DEFAULTS,
