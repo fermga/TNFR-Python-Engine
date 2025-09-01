@@ -145,9 +145,10 @@ def normalize_weights(dict_like: Dict[str, Any], keys: Iterable[str], default: f
     Si la suma de los valores obtenidos es <= 0, se asignan proporciones
     uniformes entre todas las claves.
     """
+    keys = list(keys)
     weights = {k: float(dict_like.get(k, default)) for k in keys}
     total = sum(weights.values())
-    n = len(weights)
+    n = len(keys)
     if total <= 0:
         if n == 0:
             return {}
