@@ -138,11 +138,23 @@ GAMMA_REGISTRY = {
 }
 
 
-def eval_gamma(G, node, t, *, strict: bool = False) -> float:
-    """Evalúa Γi para `node` según la especificación en G.graph['GAMMA'].
+
+def eval_gamma(
+    G,
+    node,
+    t,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+) -> float:
+    """Evalúa Γi para ``node`` según la especificación en ``G.graph['GAMMA']``.
 
     Si ``strict`` es ``True`` las excepciones encontradas durante la
     evaluación se reelevarán en lugar de devolver ``0.0``.
+
+    ``log_level`` permite controlar el nivel de logging de los errores
+    capturados cuando ``strict`` es ``False``. Si no se especifica, se usará
+    ``logging.ERROR`` en modo estricto y ``logging.DEBUG`` en modo laxo.
     """
     spec = G.graph.get("GAMMA", {"type": "none"})
     fn, needs_kuramoto = GAMMA_REGISTRY.get(
@@ -153,7 +165,16 @@ def eval_gamma(G, node, t, *, strict: bool = False) -> float:
     try:
         return float(fn(G, node, t, spec))
     except (KeyError, TypeError, ValueError):
-        logger.exception("Fallo al evaluar Γi para nodo %s en t=%s", node, t)
+        level = log_level if log_level is not None else (
+            logging.ERROR if strict else logging.DEBUG
+        )
+        logger.log(
+            level,
+            "Fallo al evaluar Γi para nodo %s en t=%s",
+            node,
+            t,
+            exc_info=True,
+        )
         if strict:
             raise
         return 0.0
