@@ -5,8 +5,8 @@ from typing import Any, Dict
 
 import networkx as nx
 
-from .constants import DEFAULTS, ALIAS_DNFR, ALIAS_D2EPI
-from .helpers import clamp01, get_attr, compute_dnfr_accel_max
+from .constants import DEFAULTS
+from .helpers import clamp01, compute_dnfr_accel_max
 
 
 HYSTERESIS_GLYPHS = ("IL", "OZ", "ZHIR", "THOL", "NAV", "RA")
