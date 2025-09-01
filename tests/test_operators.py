@@ -1,3 +1,4 @@
+"""Pruebas de operators."""
 from tnfr.node import NodoNX
 from tnfr.operators import random_jitter, clear_jitter_cache
 from tnfr.operators import op_UM

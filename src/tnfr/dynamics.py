@@ -1,15 +1,4 @@
-"""
-dynamics.py — TNFR canónica
-
-Bucle de dinámica con la ecuación nodal y utilidades:
-    ∂EPI/∂t = νf · ΔNFR(t)
-Incluye:
-- default_compute_delta_nfr (mezcla de fase/EPI/νf)
-- update_epi_via_nodal_equation (Euler explícito)
-- aplicar_dnfr_campo, integrar_epi_euler, aplicar_clamps_canonicos
-- coordinar_fase_global_vecinal
-- default_glyph_selector, step, run
-"""
+"""Dinámica del sistema."""
 from __future__ import annotations
 from typing import Dict, Any, Literal
 import math

@@ -1,3 +1,4 @@
+"""Pruebas de read structured file errors."""
 import pytest
 from pathlib import Path
 from tnfr.helpers import read_structured_file

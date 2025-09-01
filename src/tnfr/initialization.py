@@ -1,7 +1,4 @@
-"""initialization.py — TNFR canónica
-
-Lógica compartida para inicializar atributos nodales básicos (EPI, θ, νf y Si).
-"""
+"""Inicialización de nodos."""
 from __future__ import annotations
 import random
 import networkx as nx

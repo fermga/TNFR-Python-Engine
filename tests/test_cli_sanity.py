@@ -1,3 +1,4 @@
+"""Pruebas de cli sanity."""
 from __future__ import annotations
 import argparse
 from tnfr.cli import main, add_common_args, add_grammar_args, _build_graph_from_args

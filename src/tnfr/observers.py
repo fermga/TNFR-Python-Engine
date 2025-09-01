@@ -1,8 +1,4 @@
-"""
-observers.py — TNFR canónica
-
-Observadores y métricas auxiliares.
-"""
+"""Gestión de observadores."""
 from __future__ import annotations
 import math
 import statistics as st

@@ -1,3 +1,4 @@
+"""Pruebas de cli history."""
 from tnfr.cli import main
 import json
 

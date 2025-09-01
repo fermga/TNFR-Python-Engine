@@ -1,3 +1,4 @@
+"""Utilidades de pruebas."""
 import pytest
 import networkx as nx
 

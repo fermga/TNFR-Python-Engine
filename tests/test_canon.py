@@ -1,3 +1,4 @@
+"""Pruebas de canon."""
 from tnfr.scenarios import build_graph
 from tnfr.dynamics import validate_canon
 

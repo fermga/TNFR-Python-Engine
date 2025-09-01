@@ -1,3 +1,4 @@
+"""Pruebas de structural."""
 import networkx as nx
 
 from tnfr.structural import (

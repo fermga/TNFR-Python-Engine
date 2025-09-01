@@ -1,3 +1,4 @@
+"""Pruebas de node all nodes."""
 from tnfr.node import NodoTNFR
 
 

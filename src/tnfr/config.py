@@ -1,9 +1,4 @@
-"""Carga e inyección de configuraciones externas.
-
-Permite definir parámetros en JSON o YAML y aplicarlos sobre ``G.graph``
-reutilizando :func:`tnfr.constants.inject_defaults`.
-"""
-
+"""Herramientas de configuración."""
 from __future__ import annotations
 from typing import Any, Dict
 from pathlib import Path

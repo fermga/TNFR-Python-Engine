@@ -1,3 +1,4 @@
+"""Operaciones sobre nodos."""
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Deque, Dict, Iterable, Optional, Protocol

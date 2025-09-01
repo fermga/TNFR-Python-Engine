@@ -1,3 +1,4 @@
+"""Pruebas de validators."""
 import pytest
 from tnfr.scenarios import build_graph
 from tnfr.constants import (

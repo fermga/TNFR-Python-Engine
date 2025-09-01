@@ -1,3 +1,4 @@
+"""Pruebas de sense."""
 import networkx as nx
 import pytest
 

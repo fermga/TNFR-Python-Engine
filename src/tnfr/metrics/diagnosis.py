@@ -1,3 +1,4 @@
+"""Métricas de diagnóstico."""
 from __future__ import annotations
 
 from statistics import fmean

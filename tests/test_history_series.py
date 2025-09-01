@@ -1,3 +1,4 @@
+"""Pruebas de history series."""
 from tnfr.constants import attach_defaults
 from tnfr.dynamics import step
 from tnfr.gamma import GAMMA_REGISTRY

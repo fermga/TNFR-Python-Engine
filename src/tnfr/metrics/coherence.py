@@ -1,3 +1,4 @@
+"""Métricas de coherencia."""
 from __future__ import annotations
 
 from math import cos

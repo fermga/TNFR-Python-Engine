@@ -1,3 +1,4 @@
+"""Operadores de la red."""
 # operators.py — TNFR canónica (ASCII-safe)
 from __future__ import annotations
 from typing import Dict, Any, Optional, Iterable, TYPE_CHECKING

@@ -1,3 +1,4 @@
+"""Pruebas de node sample."""
 from tnfr.dynamics import step
 from tnfr.constants import attach_defaults
 import networkx as nx

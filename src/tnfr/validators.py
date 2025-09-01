@@ -1,4 +1,4 @@
-"""Validadores de invariantes TNFR."""
+"""Funciones de validación."""
 
 from __future__ import annotations
 
