@@ -5,6 +5,7 @@ import logging
 import sys
 from typing import Any, Dict, List, Optional
 from pathlib import Path
+import os
 
 import networkx as nx
 
@@ -142,9 +143,17 @@ def _attach_callbacks(G: nx.Graph) -> None:
 def _persist_history(G: nx.Graph, args: argparse.Namespace) -> None:
     """Guardar o exportar el histórico si se solicitó."""
     if getattr(args, "save_history", None):
-        _save_json(args.save_history, G.graph.get("history", {}))
+        path = args.save_history
+        dir_name = os.path.dirname(path)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
+        _save_json(path, G.graph.get("history", {}))
     if getattr(args, "export_history_base", None):
-        export_history(G, args.export_history_base, fmt=getattr(args, "export_format", "json"))
+        base = args.export_history_base
+        dir_name = os.path.dirname(base)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
+        export_history(G, base, fmt=getattr(args, "export_format", "json"))
 
 
 def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
@@ -293,6 +302,9 @@ def cmd_metrics(args: argparse.Namespace) -> int:
         "glifogram": {k: v[:10] for k, v in glifo.items()},
     }
     if args.save:
+        dir_name = os.path.dirname(args.save)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
         _save_json(args.save, out)
     else:
         logger.info("%s", json.dumps(out, ensure_ascii=False, indent=2))
