@@ -58,6 +58,12 @@ from .helpers import (
      invoke_callbacks, reciente_glifo, set_vf, set_dnfr, compute_Si, normalize_weights,
      ensure_history, compute_coherence,
 )
+from .selector import (
+    _selector_thresholds,
+    _norms_para_selector,
+    _calc_selector_score,
+    _apply_selector_hysteresis,
+)
 
 # Cacheo de nodos y matriz de adyacencia asociado a cada grafo
 def _cached_nodes_and_A(
@@ -732,38 +738,8 @@ def adaptar_vf_por_coherencia(G) -> None:
         set_vf(G, n, clamp(vf_new, vf_min, vf_max))
 
 # -------------------------
-# Umbrales de selector
-# -------------------------
-
-def _selector_thresholds(G) -> dict:
-    """Retorna umbrales normalizados hi/lo para Si, ΔNFR y aceleración.
-
-    Combina ``SELECTOR_THRESHOLDS`` con ``GLYPH_THRESHOLDS`` (legado) para
-    los cortes de Si. Todos los valores se claman a [0,1]."""
-    thr_sel = dict(DEFAULTS.get("SELECTOR_THRESHOLDS", {}))
-    thr_sel.update(G.graph.get("SELECTOR_THRESHOLDS", {}))
-    thr_def = G.graph.get("GLYPH_THRESHOLDS", DEFAULTS.get("GLYPH_THRESHOLDS", {}))
-
-    si_hi = clamp01(float(thr_sel.get("si_hi", thr_def.get("hi", 0.66))))
-    si_lo = clamp01(float(thr_sel.get("si_lo", thr_def.get("lo", 0.33))))
-    dnfr_hi = clamp01(float(thr_sel.get("dnfr_hi", 0.5)))
-    dnfr_lo = clamp01(float(thr_sel.get("dnfr_lo", 0.1)))
-    acc_hi = clamp01(float(thr_sel.get("accel_hi", 0.5)))
-    acc_lo = clamp01(float(thr_sel.get("accel_lo", 0.1)))
-
-    return {
-        "si_hi": si_hi,
-        "si_lo": si_lo,
-        "dnfr_hi": dnfr_hi,
-        "dnfr_lo": dnfr_lo,
-        "accel_hi": acc_hi,
-        "accel_lo": acc_lo,
-    }
-
-# -------------------------
 # Selector glífico por defecto
 # -------------------------
-
 def default_glyph_selector(G, n) -> str:
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
@@ -793,20 +769,6 @@ def default_glyph_selector(G, n) -> str:
 # -------------------------
 # Selector glífico multiobjetivo (paramétrico)
 # -------------------------
-def _norms_para_selector(G) -> dict:
-    """Calcula y guarda en G.graph los máximos para normalizar |ΔNFR| y |d2EPI/dt2|."""
-    dnfr_max = 0.0
-    accel_max = 0.0
-    for n, nd in G.nodes(data=True):
-        dnfr_max = max(dnfr_max, abs(get_attr(nd, ALIAS_DNFR, 0.0)))
-        accel_max = max(accel_max, abs(get_attr(nd, ALIAS_D2EPI, 0.0)))
-    if dnfr_max <= 0: dnfr_max = 1.0
-    if accel_max <= 0: accel_max = 1.0
-    norms = {"dnfr_max": float(dnfr_max), "accel_max": float(accel_max)}
-    G.graph["_sel_norms"] = norms
-    return norms
-
-
 def _soft_grammar_prefilter(G, n, cand, dnfr, accel):
     """Gramática suave: evita repeticiones antes de la canónica."""
     gram = G.graph.get("GRAMMAR", DEFAULTS.get("GRAMMAR", {}))
@@ -846,10 +808,7 @@ def parametric_glyph_selector(G, n) -> str:
     accel = abs(get_attr(nd, ALIAS_D2EPI, 0.0)) / acc_max
 
     W = G.graph.get("SELECTOR_WEIGHTS", DEFAULTS["SELECTOR_WEIGHTS"])
-    w_si = float(W.get("w_si", 0.5)); w_dn = float(W.get("w_dnfr", 0.3)); w_ac = float(W.get("w_accel", 0.2))
-    s = max(1e-9, w_si + w_dn + w_ac)
-    w_si, w_dn, w_ac = w_si/s, w_dn/s, w_ac/s
-    score = w_si*Si + w_dn*(1.0 - dnfr) + w_ac*(1.0 - accel)
+    score = _calc_selector_score(Si, dnfr, accel, W)
     # usar score como desempate/override suave: si score>0.66 ⇒ inclinar a IL; <0.33 ⇒ inclinar a OZ/ZHIR
 
     # Decisión base
@@ -867,18 +826,9 @@ def parametric_glyph_selector(G, n) -> str:
         else:
             cand = "RA"
 
-    # --- Histéresis del selector: si está cerca de umbrales, conserva el glifo reciente ---
-    # Medimos "certeza" como distancia mínima a los umbrales relevantes
-    d_si = min(abs(Si - si_hi), abs(Si - si_lo))
-    d_dn = min(abs(dnfr - dnfr_hi), abs(dnfr - dnfr_lo))
-    d_ac = min(abs(accel - acc_hi), abs(accel - acc_lo))
-    certeza = min(d_si, d_dn, d_ac)
-    if certeza < margin:
-        hist = nd.get("hist_glifos")
-        if hist:
-            prev = hist[-1]
-            if isinstance(prev, str) and prev in ("IL","OZ","ZHIR","THOL","NAV","RA"):
-                return prev
+    hist_cand = _apply_selector_hysteresis(nd, Si, dnfr, accel, thr, margin)
+    if hist_cand is not None:
+        return hist_cand
 
     # Penalización por falta de avance en σ/Si si se repite glifo
     prev = None
