@@ -332,12 +332,19 @@ def set_dnfr(G, n, value: float) -> None:
 
 def compute_coherence(G) -> float:
     """Calcula la coherencia global C(t) a partir de ΔNFR y dEPI."""
-    dnfr_mean = list_mean(
-        abs(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()
-    )
-    depi_mean = list_mean(
-        abs(get_attr(G.nodes[n], ALIAS_dEPI, 0.0)) for n in G.nodes()
-    )
+    dnfr_sum = 0.0
+    depi_sum = 0.0
+    count = 0
+    for n in G.nodes():
+        nd = G.nodes[n]
+        dnfr_sum += abs(get_attr(nd, ALIAS_DNFR, 0.0))
+        depi_sum += abs(get_attr(nd, ALIAS_dEPI, 0.0))
+        count += 1
+    if count:
+        dnfr_mean = dnfr_sum / count
+        depi_mean = depi_sum / count
+    else:
+        dnfr_mean = depi_mean = 0.0
     return 1.0 / (1.0 + dnfr_mean + depi_mean)
 
 # -------------------------
