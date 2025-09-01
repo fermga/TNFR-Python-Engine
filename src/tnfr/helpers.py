@@ -67,18 +67,21 @@ def read_structured_file(path: Path) -> Any:
     suffix = path.suffix.lower()
     if suffix not in {".json", ".yaml", ".yml"}:
         raise ValueError(f"Extensión de archivo no soportada: {path.suffix}")
-    with path.open("r", encoding="utf-8") as f:
-        if suffix in {".yaml", ".yml"}:
-            if not yaml:  # pragma: no cover - dependencia opcional
-                raise RuntimeError("pyyaml no está instalado")
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            if suffix in {".yaml", ".yml"}:
+                if not yaml:  # pragma: no cover - dependencia opcional
+                    raise RuntimeError("pyyaml no está instalado")
+                try:
+                    return yaml.safe_load(f)
+                except yaml.YAMLError as e:
+                    raise ValueError(f"Error al parsear YAML en {path}: {e}") from e
             try:
-                return yaml.safe_load(f)
-            except yaml.YAMLError as e:
-                raise ValueError(f"Error al parsear YAML en {path}: {e}") from e
-        try:
-            return json.load(f)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Error al parsear JSON en {path}: {e}") from e
+                return json.load(f)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Error al parsear JSON en {path}: {e}") from e
+    except (FileNotFoundError, PermissionError) as e:
+        raise ValueError(f"No se pudo abrir {path}: {e}") from e
 
 # -------------------------
 # Utilidades numéricas
