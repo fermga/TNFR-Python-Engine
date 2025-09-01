@@ -2,7 +2,7 @@ import json
 import pytest
 
 from tnfr.cli import _load_sequence
-from tnfr.program import play, seq, block, wait
+from tnfr.program import play, seq, block, wait, target
 from tnfr.constants import get_param
 from tnfr.types import Glyph
 
@@ -39,6 +39,23 @@ def test_play_handles_deeply_nested_blocks(graph_canon):
     assert len(trace) == maxlen
     assert trace[0]["g"] == Glyph.THOL.value
     assert trace[-1]["g"] == Glyph.AL.value
+
+
+def test_target_persists_across_wait(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([1, 2])
+
+    def step_add_node(G):
+        G.graph["_t"] = G.graph.get("_t", 0.0) + 1.0
+        if not G.graph.get("added"):
+            G.add_node(3)
+            G.graph["added"] = True
+
+    play(G, seq(target(), wait(1), Glyph.AL), step_fn=step_add_node)
+
+    assert list(G.nodes[1]["hist_glifos"]) == [Glyph.AL.value]
+    assert list(G.nodes[2]["hist_glifos"]) == [Glyph.AL.value]
+    assert "hist_glifos" not in G.nodes[3]
 
 def test_load_sequence_json_yaml(tmp_path):
     data = [
