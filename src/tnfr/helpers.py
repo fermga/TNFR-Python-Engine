@@ -766,6 +766,7 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     También guarda en ``G.graph`` los pesos normalizados y la
     sensibilidad parcial (∂Si/∂componente).
     """
+    neighbors = {n: list(G.neighbors(n)) for n in G}
     w = {**DEFAULTS["SI_WEIGHTS"], **G.graph.get("SI_WEIGHTS", {})}
     weights = normalize_weights(w, ("alpha", "beta", "gamma"), default=0.0)
     alpha = weights["alpha"]
@@ -809,7 +810,7 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
 
         # dispersión de fase local utilizando vecinos precomputados
         th_i = thetas[n]
-        neigh = list(G.neighbors(n))
+        neigh = neighbors[n]
         deg = len(neigh)
         if deg:
             sum_cos = sum(cos_th[v] for v in neigh)
