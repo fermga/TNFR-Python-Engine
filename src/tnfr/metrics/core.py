@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Tuple
 import heapq
 
 from ..constants import METRIC_DEFAULTS, ALIAS_EPI, METRICS
-from ..helpers import register_callback, ensure_history, last_glifo, get_attr
+from ..helpers import register_callback, ensure_history, last_glifo, get_attr, list_mean
 from ..sense import GLYPHS_CANONICAL
 from .coherence import register_coherence_callbacks
 from .diagnosis import register_diagnosis_callbacks
@@ -98,17 +98,13 @@ def _update_latency_index(G, hist, n_total, n_latent, t):
 
 def _update_epi_support(G, hist, t, thr):
     """Calcula soporte y norma de la EPI."""
-    vals = (
+    vals = [
         abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0))
         for n in G.nodes()
         if abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= thr
-    )
-    size = 0
-    accum = 0.0
-    for v in vals:
-        size += 1
-        accum += v
-    epi_norm = accum / size if size else 0.0
+    ]
+    epi_norm = list_mean(vals, 0.0)
+    size = len(vals)
     hist.setdefault("EPI_support", []).append(
         {"t": t, "size": size, "epi_norm": float(epi_norm)}
     )
