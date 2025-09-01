@@ -59,14 +59,28 @@ def _window(G) -> int:
     return int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
 
 def _all_nodes(G):
-    return list(G.nodes())
+    """Return a view or generator over all nodes in ``G``.
+
+    Using ``G.nodes()`` avoids creating an intermediate list and allows
+    callers to materialise the collection only when strictly necessary.
+    """
+    return G.nodes()
 
 # ---------------------
 # Núcleo de ejecución
 # ---------------------
 
 def _apply_glyph_to_targets(G, g: Glyph | str, nodes: Optional[Iterable[Node]] = None):
-    nodes = list(nodes) if nodes is not None else _all_nodes(G)
+    """Apply ``g`` to ``nodes`` (or all nodes) respecting the grammar.
+
+    ``nodes`` is converted to a list only when explicitly provided. When
+    ``None`` the view returned by :func:`_all_nodes` is passed through so
+    any conversion to ``list`` happens as late as possible.
+    """
+    if nodes is None:
+        nodes = _all_nodes(G)
+    else:
+        nodes = list(nodes)
     w = _window(G)
     apply_glyph_with_grammar(G, nodes, g, w)
 
