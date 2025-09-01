@@ -10,8 +10,6 @@ from collections import deque
 
 import networkx as nx
 
-logger = logging.getLogger(__name__)
-
 from .constants import inject_defaults, DEFAULTS, METRIC_DEFAULTS
 from .sense import register_sigma_callback, sigma_rose
 from .metrics import (
@@ -33,6 +31,8 @@ from .config import apply_config
 from .helpers import read_structured_file, list_mean, ensure_parent
 from .observers import attach_standard_observer
 from . import __version__
+
+logger = logging.getLogger(__name__)
 
 
 def _parse_tokens(obj: Any) -> List[Any]:

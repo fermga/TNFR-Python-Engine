@@ -44,8 +44,8 @@ def _sigma_vector_from_graph_naive(G, weight_mode: str = "Si"):
     """Referencia que recalcula ``glyph_unit(g) * w`` en cada paso."""
     acc = complex(0.0, 0.0)
     cnt = 0
-    for n in G.nodes():
-        nw = _node_weight(G, n, weight_mode)
+    for _, nd in G.nodes(data=True):
+        nw = _node_weight(nd, weight_mode)
         if not nw:
             continue
         g, w, _ = nw

@@ -17,6 +17,11 @@ def build_graph(
     For ``topology="erdos"`` the probability of edge creation can be adjusted
     via ``p``. If omitted, a default of ``3.0 / n`` is used.
     """
+    if n <= 0:
+        raise ValueError("n must be a positive integer")
+    if p is not None and not 0.0 <= p <= 1.0:
+        raise ValueError("p must be between 0 and 1")
+
     if topology == "ring":
         G = nx.cycle_graph(n)
     elif topology == "complete":

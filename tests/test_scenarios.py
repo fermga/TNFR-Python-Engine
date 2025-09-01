@@ -22,3 +22,13 @@ def test_build_graph_invalid_topology():
     with pytest.raises(ValueError):
         build_graph(n=5, topology="invalid", seed=1)
 
+
+def test_build_graph_invalid_n():
+    with pytest.raises(ValueError):
+        build_graph(n=0)
+
+
+def test_build_graph_invalid_p():
+    with pytest.raises(ValueError):
+        build_graph(n=5, topology="erdos", p=1.5)
+

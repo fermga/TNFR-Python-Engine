@@ -1,45 +1,13 @@
 """Dinámica del sistema."""
 from __future__ import annotations
-from typing import Dict, Any, Literal
+
+import logging
 import math
 import random
 from collections import deque, OrderedDict
-import logging
+from typing import Dict, Any, Literal
 
 import networkx as nx
-
-logger = logging.getLogger(__name__)
-
-# ``numpy`` is an optional dependency.  It is loaded lazily to avoid emitting
-# warnings when the vectorized path is not used.
-np: Any | None = None
-
-def _ensure_numpy(*, warn: bool = False) -> bool:
-    """Load ``numpy`` on demand.
-
-    Parameters
-    ----------
-    warn:
-        If ``True`` the failure to import ``numpy`` is logged as a warning,
-        otherwise a debug message is emitted. Returns ``True`` if ``numpy``
-        was imported successfully.
-    """
-
-    global np
-    if np is not None:  # pragma: no cover - already loaded
-        return True
-    try:  # Optional dependency
-        import numpy as _np  # type: ignore
-    except ImportError:  # pragma: no cover - handled gracefully
-        log = logger.warning if warn else logger.debug
-        log(
-            "Fallo al importar numpy, se continuará con el modo no vectorizado",
-            exc_info=True,
-        )
-        np = None
-        return False
-    np = _np
-    return True
 
 from .observers import sincronía_fase, carga_glifica, orden_kuramoto
 from .sense import sigma_vector
@@ -75,6 +43,39 @@ from .selector import (
     _calc_selector_score,
     _apply_selector_hysteresis,
 )
+
+logger = logging.getLogger(__name__)
+
+# ``numpy`` is an optional dependency.  It is loaded lazily to avoid emitting
+# warnings when the vectorized path is not used.
+np: Any | None = None
+
+def _ensure_numpy(*, warn: bool = False) -> bool:
+    """Load ``numpy`` on demand.
+
+    Parameters
+    ----------
+    warn:
+        If ``True`` the failure to import ``numpy`` is logged as a warning,
+        otherwise a debug message is emitted. Returns ``True`` if ``numpy``
+        was imported successfully.
+    """
+
+    global np
+    if np is not None:  # pragma: no cover - already loaded
+        return True
+    try:  # Optional dependency
+        import numpy as _np  # type: ignore
+    except ImportError:  # pragma: no cover - handled gracefully
+        log = logger.warning if warn else logger.debug
+        log(
+            "Fallo al importar numpy, se continuará con el modo no vectorizado",
+            exc_info=True,
+        )
+        np = None
+        return False
+    np = _np
+    return True
 
 # Cacheo de nodos y matriz de adyacencia asociado a cada grafo
 def _cached_nodes_and_A(

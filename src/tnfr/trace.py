@@ -1,10 +1,9 @@
 """Registro de trazas."""
 from __future__ import annotations
-from collections import Counter
 from typing import Any, Callable, Dict, List, Optional
 
 from .constants import TRACE
-from .helpers import register_callback, ensure_history, last_glifo
+from .helpers import register_callback, ensure_history, count_glyphs
 
 try:
     from .gamma import kuramoto_R_psi
@@ -162,11 +161,7 @@ def _trace_after(G, *args, **kwargs):
         }
 
     def glifo_counts_field(G):
-        cnt = Counter()
-        for n in G.nodes():
-            g = last_glifo(G.nodes[n])
-            if g:
-                cnt[g] += 1
+        cnt = count_glyphs(G, window=1)
         return {"glifos": dict(cnt)}
 
     fields = {
