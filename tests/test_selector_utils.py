@@ -8,6 +8,68 @@ from tnfr.selector import (
     _apply_selector_hysteresis,
 )
 from tnfr.constants import DEFAULTS, ALIAS_DNFR, ALIAS_D2EPI
+from tnfr.helpers import clamp01
+
+
+def _selector_thresholds_original(G: nx.Graph) -> dict:
+    sel_defaults = DEFAULTS.get("SELECTOR_THRESHOLDS", {})
+    thr_sel = {**sel_defaults, **G.graph.get("SELECTOR_THRESHOLDS", {})}
+    glyph_defaults = DEFAULTS.get("GLYPH_THRESHOLDS", {})
+    thr_def = {**glyph_defaults, **G.graph.get("GLYPH_THRESHOLDS", {})}
+
+    si_hi = clamp01(
+        float(
+            thr_sel.get(
+                "si_hi",
+                thr_def.get("hi", glyph_defaults.get("hi", 0.66)),
+            )
+        )
+    )
+    si_lo = clamp01(
+        float(
+            thr_sel.get(
+                "si_lo",
+                thr_def.get("lo", glyph_defaults.get("lo", 0.33)),
+            )
+        )
+    )
+    dnfr_hi = clamp01(
+        float(
+            thr_sel.get(
+                "dnfr_hi", sel_defaults.get("dnfr_hi", 0.5)
+            )
+        )
+    )
+    dnfr_lo = clamp01(
+        float(
+            thr_sel.get(
+                "dnfr_lo", sel_defaults.get("dnfr_lo", 0.1)
+            )
+        )
+    )
+    acc_hi = clamp01(
+        float(
+            thr_sel.get(
+                "accel_hi", sel_defaults.get("accel_hi", 0.5)
+            )
+        )
+    )
+    acc_lo = clamp01(
+        float(
+            thr_sel.get(
+                "accel_lo", sel_defaults.get("accel_lo", 0.1)
+            )
+        )
+    )
+
+    return {
+        "si_hi": si_hi,
+        "si_lo": si_lo,
+        "dnfr_hi": dnfr_hi,
+        "dnfr_lo": dnfr_lo,
+        "accel_hi": acc_hi,
+        "accel_lo": acc_lo,
+    }
 
 
 def test_selector_thresholds_defaults():
@@ -20,6 +82,30 @@ def test_selector_thresholds_defaults():
     assert thr["dnfr_lo"] == sel_def["dnfr_lo"]
     assert thr["accel_hi"] == sel_def["accel_hi"]
     assert thr["accel_lo"] == sel_def["accel_lo"]
+
+
+def test_selector_thresholds_refactor_equivalent_defaults():
+    G = nx.Graph()
+    assert _selector_thresholds(G) == _selector_thresholds_original(G)
+
+
+def test_selector_thresholds_refactor_equivalent_legacy():
+    G = nx.Graph()
+    G.graph["GLYPH_THRESHOLDS"] = {"hi": 0.9, "lo": 0.2}
+    assert _selector_thresholds(G) == _selector_thresholds_original(G)
+
+
+def test_selector_thresholds_refactor_equivalent_overrides():
+    G = nx.Graph()
+    G.graph["SELECTOR_THRESHOLDS"] = {
+        "si_hi": 0.9,
+        "si_lo": 0.2,
+        "dnfr_hi": 0.7,
+        "dnfr_lo": 0.2,
+        "accel_hi": 0.8,
+        "accel_lo": 0.1,
+    }
+    assert _selector_thresholds(G) == _selector_thresholds_original(G)
 
 
 def test_norms_para_selector_computes_max():
