@@ -64,4 +64,4 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
     else:
         data = {"glifogram": glifo, "sigma": sigma, "morph": morph, "epi_support": epi_supp}
         with open(base_path + ".json", "w", encoding="utf-8") as f:
-            json.dump(data, f)
+            json.dump(data, f, ensure_ascii=False, indent=2)
