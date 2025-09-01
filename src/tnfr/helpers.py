@@ -373,11 +373,8 @@ def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
     gl = str(glifo)
     if ventana < 0:
         raise ValueError("ventana debe ser >= 0")
-    if hist:
-        limite = min(len(hist), ventana)
-        for i in range(1, limite + 1):
-            if hist[-i] == gl:
-                return True
+    if hist and ventana > 0 and gl in list(hist)[-ventana:]:
+        return True
     # fallback al glifo dominante actual
     return get_attr_str(nd, ALIAS_EPI_KIND, "") == gl
 
