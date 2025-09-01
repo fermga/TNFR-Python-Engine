@@ -51,6 +51,8 @@ class CoreDefaults:
         }
     )
     UM_COMPAT_THRESHOLD: float = 0.75
+    UM_CANDIDATE_MODE: str = "sample"
+    UM_CANDIDATE_COUNT: int = 0
     GLYPH_HYSTERESIS_WINDOW: int = 7
     AL_MAX_LAG: int = 5
     EN_MAX_LAG: int = 3
