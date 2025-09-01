@@ -162,8 +162,6 @@ def normalize_weights(dict_like: Dict[str, Any], keys: Iterable[str], default: f
 # Acceso a atributos con alias
 # -------------------------
 
-_sentinel = object()
-
 
 def _ensure_tuple(aliases: Iterable[str]) -> tuple[str, ...]:
     """Garantiza que ``aliases`` sea una tupla."""
@@ -174,12 +172,32 @@ def _ensure_tuple(aliases: Iterable[str]) -> tuple[str, ...]:
     return tuple(aliases)
 
 
+def _convert_value(
+    value: Any,
+    conv: Callable[[Any], T],
+    *,
+    strict: bool = False,
+    key: str | None = None,
+) -> tuple[bool, T | None]:
+    """Intenta convertir ``value`` usando ``conv`` manejando errores."""
+    try:
+        return True, conv(value)
+    except (ValueError, TypeError) as exc:
+        if key is not None:
+            logging.warning("No se pudo convertir el valor para %r: %s", key, exc)
+        else:
+            logging.warning("No se pudo convertir el valor: %s", exc)
+        if strict:
+            raise
+        return False, None
+
+
 def alias_get(
     d: Dict[str, Any],
     aliases: Iterable[str],
     conv: Callable[[Any], T],
     *,
-    default: Any = _sentinel,
+    default: Any | None = None,
     strict: bool = False,
 ) -> T | None:
     """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor convertido.
@@ -192,24 +210,13 @@ def alias_get(
         raise ValueError("'aliases' must contain at least one key")
     for key in aliases:
         if key in d:
-            try:
-                return conv(d[key])
-            except (ValueError, TypeError) as exc:
-                logging.warning("No se pudo convertir el valor para %r: %s", key, exc)
-                if strict:
-                    raise
-                continue
-    if default is not _sentinel:
-        if default is None:
-            return None
-        try:
-            return conv(default)
-        except (ValueError, TypeError) as exc:
-            logging.warning("No se pudo convertir el valor por defecto: %s", exc)
-            if strict:
-                raise
-            return None
-    return None
+            ok, val = _convert_value(d[key], conv, strict=strict, key=key)
+            if ok:
+                return val
+    if default is None:
+        return None
+    ok, val = _convert_value(default, conv, strict=strict, key="default")
+    return val if ok else None
 
 
 def alias_set(
@@ -222,12 +229,13 @@ def alias_set(
     aliases = _ensure_tuple(aliases)
     if not aliases:
         raise ValueError("'aliases' must contain at least one key")
+    _, val = _convert_value(value, conv, strict=True)
     for key in aliases:
         if key in d:
-            d[key] = conv(value)
+            d[key] = val
             return d[key]
     key = aliases[0]
-    d[key] = conv(value)
+    d[key] = val
     return d[key]
 
 
