@@ -13,6 +13,7 @@ Incluye:
 from __future__ import annotations
 from typing import Dict, Any, Literal
 import math
+import random
 from collections import deque
 import logging
 from functools import lru_cache
@@ -74,6 +75,26 @@ def _cached_nodes_and_A(edges: frozenset):
     else:
         A = None
     return nodes, A
+
+
+def _update_node_sample(G, *, step: int) -> None:
+    """Refresh ``G.graph['_node_sample']`` with a random subset of nodes.
+
+    The sample is limited by ``UM_CANDIDATE_COUNT`` and refreshed every
+    simulation step. When the network is small (``< 50`` nodes) or the limit
+    is non‑positive, the full node set is used and sampling is effectively
+    disabled.
+    """
+
+    limit = int(G.graph.get("UM_CANDIDATE_COUNT", 0))
+    nodes = list(G.nodes())
+    if limit <= 0 or len(nodes) < 50 or limit >= len(nodes):
+        G.graph["_node_sample"] = nodes
+        return
+
+    seed = int(G.graph.get("RANDOM_SEED", 0))
+    rng = random.Random(f"{seed}:{step}")
+    G.graph["_node_sample"] = rng.sample(nodes, limit)
 
 # -------------------------
 # ΔNFR por defecto (campo) + utilidades de hook/metadata
@@ -875,6 +896,9 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     _hist0 = ensure_history(G)
     step_idx = len(_hist0.setdefault("C_steps", []))
     invoke_callbacks(G, "before_step", {"step": step_idx, "dt": dt, "use_Si": use_Si, "apply_glyphs": apply_glyphs})
+
+    # 0b) Muestra aleatoria de nodos para operadores globales
+    _update_node_sample(G, step=step_idx)
 
     # 1) ΔNFR (campo)
     compute_dnfr_cb = G.graph.get("compute_delta_nfr", default_compute_delta_nfr)

@@ -214,6 +214,11 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Acoplamiento
     * ``"proximity"``: selecciona los nodos más cercanos en fase.
     * ``"sample"``: toma una muestra determinista.
 
+    Desde ``dynamics.step`` se mantiene en ``G.graph['_node_sample']`` una
+    muestra aleatoria renovada en cada paso. Cuando el grafo es pequeño
+    (``<50`` nodos) la muestra contiene todos los nodos y el muestreo se
+    desactiva.
+
     Esto preserva la lógica de acoplamiento sin revisar todos los nodos.
     """
 
@@ -229,8 +234,15 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Acoplamiento
         epi_i = node.EPI
         si_i = node.Si
 
+        sample_ids = node.graph.get("_node_sample")
+        if sample_ids is not None and hasattr(node, "G"):
+            from .node import NodoNX
+            iter_nodes = (NodoNX(node.G, j) for j in sample_ids)
+        else:
+            iter_nodes = node.all_nodes()
+
         candidates = []
-        for j in node.all_nodes():
+        for j in iter_nodes:
             same = (j is node) or (getattr(node, "n", None) == getattr(j, "n", None))
             if same or node.has_edge(j):
                 continue
