@@ -48,10 +48,6 @@ def attach_standard_observer(G):
     G.graph.setdefault("_STD_OBSERVER", "attached")
     return G
 
-def coherencia_global(G) -> float:
-    """Proxy de C(t): alta cuando |ΔNFR| y |dEPI_dt| son pequeños."""
-    return compute_coherence(G)
-
 
 def _phase_sums(G) -> tuple[float, float, list[float]]:
     """Devuelve sumX, sumY y la lista de fases nodales."""
@@ -124,7 +120,7 @@ def wbar(G, window: int | None = None) -> float:
     cs = hist.get("C_steps", [])
     if not cs:
         # fallback: coherencia instantánea
-        return coherencia_global(G)
+        return compute_coherence(G)
     if window is None:
         window = int(G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25)))
     w = min(len(cs), max(1, int(window)))
