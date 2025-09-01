@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import csv
 import json
-from typing import Dict, List
 
 from ..helpers import ensure_history, ensure_parent
 from ..constants_glifos import GLYPHS_CANONICAL
