@@ -179,10 +179,8 @@ def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> N
 
     for op, payload in ops:
         if op == "TARGET":
-            if payload.nodes is None:
-                curr_target = list(_all_nodes(G))
-            else:
-                curr_target = list(payload.nodes)
+            nodes_src = _all_nodes(G) if payload.nodes is None else payload.nodes
+            curr_target = list(ensure_collection(nodes_src))
             trace.append({"t": float(G.graph.get("_t", 0.0)), "op": "TARGET", "n": len(curr_target)})
             continue
         if op == "WAIT":
