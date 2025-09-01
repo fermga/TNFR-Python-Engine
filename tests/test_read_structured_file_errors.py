@@ -3,6 +3,28 @@ from pathlib import Path
 from tnfr.helpers import read_structured_file
 
 
+def test_read_structured_file_missing_file(tmp_path: Path):
+    path = tmp_path / "missing.json"
+    with pytest.raises(ValueError) as excinfo:
+        read_structured_file(path)
+    assert str(path) in str(excinfo.value)
+
+
+def test_read_structured_file_permission_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    path = tmp_path / "forbidden.json"
+    original_open = Path.open
+
+    def fake_open(self, *args, **kwargs):  # pragma: no cover - monkeypatch helper
+        if self == path:
+            raise PermissionError("denied")
+        return original_open(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", fake_open)
+    with pytest.raises(ValueError) as excinfo:
+        read_structured_file(path)
+    assert str(path) in str(excinfo.value)
+
+
 def test_read_structured_file_corrupt_json(tmp_path: Path):
     path = tmp_path / "bad.json"
     path.write_text("{bad json}", encoding="utf-8")
