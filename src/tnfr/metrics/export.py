@@ -23,10 +23,10 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
     hist = ensure_history(G)
     ensure_parent(base_path)
     glifo = glifogram_series(G)
-    sigma_x = hist.get("sense_sigma_x", [])
-    sigma_y = hist.get("sense_sigma_y", [])
-    sigma_mag = hist.get("sense_sigma_mag", [])
-    sigma_angle = hist.get("sense_sigma_angle", [])
+    sigma_x = hist.tracked_get("sense_sigma_x", [])
+    sigma_y = hist.tracked_get("sense_sigma_y", [])
+    sigma_mag = hist.tracked_get("sense_sigma_mag", [])
+    sigma_angle = hist.tracked_get("sense_sigma_angle", [])
     min_len = min(len(sigma_x), len(sigma_y), len(sigma_mag), len(sigma_angle))
     sigma = {
         "t": list(range(min_len)),
@@ -35,8 +35,8 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
         "mag": sigma_mag[:min_len],
         "angle": sigma_angle[:min_len],
     }
-    morph = hist.get("morph", [])
-    epi_supp = hist.get("EPI_support", [])
+    morph = hist.tracked_get("morph", [])
+    epi_supp = hist.tracked_get("EPI_support", [])
     fmt = fmt.lower()
     if fmt == "csv":
         ts = glifo.get("t", [])

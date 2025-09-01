@@ -17,3 +17,13 @@ def test_heap_compaction_many_keys():
     for i in range(1000):
         _ = hist[f"k{i % 10}"]
     assert len(hist._heap) <= len(hist) * 2
+
+
+def test_get_does_not_track_usage():
+    hist = HistoryDict()
+    hist["a"] = 1
+    counts_before = dict(hist._counts)
+    heap_before = list(hist._heap)
+    assert hist.get("a") == 1
+    assert hist._counts == counts_before
+    assert hist._heap == heap_before
