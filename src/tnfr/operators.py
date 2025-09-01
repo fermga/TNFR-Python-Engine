@@ -4,6 +4,7 @@ from typing import Dict, Any, Optional, Iterable
 import math
 import random
 import hashlib
+import heapq
 import networkx as nx
 from networkx.algorithms import community as nx_comm
 
@@ -584,11 +585,23 @@ def aplicar_remesh_red_topologico(
     # Default/mode knn/mst operate on nodos originales
     new_edges = set(mst_edges)
     if mode == "knn":
-        k_val = int(k) if k is not None else int(G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2)))
+        k_val = (
+            int(k)
+            if k is not None
+            else int(
+                G.graph.get(
+                    "REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2)
+                )
+            )
+        )
         k_val = max(1, k_val)
+
         for u in nodes:
-            sims = sorted(nodes, key=lambda v: abs(epi[u] - epi[v]))
-            for v in sims[1 : k_val + 1]:
+            epi_u = epi[u]
+            dist_pairs = [
+                (abs(epi_u - epi[v]), v) for v in nodes if v != u
+            ]
+            for _, v in heapq.nsmallest(k_val, dist_pairs):
                 if rnd.random() < p_rewire:
                     new_edges.add(tuple(sorted((u, v))))
 
