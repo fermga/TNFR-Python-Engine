@@ -55,7 +55,8 @@ from .gamma import eval_gamma
 from .helpers import (
      clamp, clamp01, list_mean, angle_diff,
      get_attr, set_attr, get_attr_str, set_attr_str, media_vecinal, fase_media,
-     invoke_callbacks, reciente_glifo, set_vf, set_dnfr, compute_Si, normalize_weights
+     invoke_callbacks, reciente_glifo, set_vf, set_dnfr, compute_Si, normalize_weights,
+     ensure_history,
 )
 
 # Cacheo centralizado de nodos y matriz de adyacencia
@@ -826,8 +827,8 @@ def parametric_glyph_selector(G, n) -> str:
 
 def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool = True) -> None:
     # Contexto inicial
-    _hist0 = G.graph.setdefault("history", {"C_steps": []})
-    step_idx = len(_hist0.get("C_steps", []))
+    _hist0 = ensure_history(G)
+    step_idx = len(_hist0.setdefault("C_steps", []))
     invoke_callbacks(G, "before_step", {"step": step_idx, "dt": dt, "use_Si": use_Si, "apply_glyphs": apply_glyphs})
 
     # 1) ΔNFR (campo)
@@ -980,7 +981,7 @@ def _update_sigma(G, hist) -> None:
 
 
 def _update_history(G) -> None:
-    hist = G.graph.setdefault("history", {})
+    hist = ensure_history(G)
     for k in (
         "C_steps", "stable_frac", "phase_sync", "glyph_load_estab", "glyph_load_disr",
         "Si_mean", "Si_hi_frac", "Si_lo_frac", "delta_Si", "B"
