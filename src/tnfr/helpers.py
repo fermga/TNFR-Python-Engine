@@ -40,6 +40,7 @@ __all__ = [
     "set_attr",
     "get_attr_str",
     "set_attr_str",
+    "set_attr_with_max",
     "set_vf",
     "set_dnfr",
     "media_vecinal",
@@ -268,16 +269,21 @@ def _update_cached_abs_max(G, aliases, n, value, *, key: str) -> None:
         G.graph[node_key] = max_node
 
 
+def set_attr_with_max(G, n, aliases, value: float, *, cache: str) -> None:
+    """Asigna ``value`` al atributo indicado y actualiza el máximo global."""
+    val = float(value)
+    set_attr(G.nodes[n], aliases, val)
+    _update_cached_abs_max(G, aliases, n, val, key=cache)
+
+
 def set_vf(G, n, value: float) -> None:
     """Asigna ``νf`` y actualiza el máximo global."""
-    set_attr(G.nodes[n], ALIAS_VF, float(value))
-    _update_cached_abs_max(G, ALIAS_VF, n, float(value), key="_vfmax")
+    set_attr_with_max(G, n, ALIAS_VF, value, cache="_vfmax")
 
 
 def set_dnfr(G, n, value: float) -> None:
     """Asigna ``ΔNFR`` y actualiza el máximo global."""
-    set_attr(G.nodes[n], ALIAS_DNFR, float(value))
-    _update_cached_abs_max(G, ALIAS_DNFR, n, float(value), key="_dnfrmax")
+    set_attr_with_max(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
 
 # -------------------------
 # Estadísticos vecinales
