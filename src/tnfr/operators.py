@@ -78,10 +78,7 @@ def _jitter_base(seed: int, key: int) -> random.Random:
 
 
 # Global cache for deterministic jitter generators
-JITTER_CACHE_SIZE = 256
-
-
-@lru_cache(maxsize=JITTER_CACHE_SIZE)
+@lru_cache(maxsize=DEFAULTS["JITTER_CACHE_SIZE"])
 def _get_jitter_rng_pair(seed: int, key: int) -> random.Random:
     """Return cached ``random.Random`` keyed by seed and node."""
     return _jitter_base(seed, key)
@@ -115,7 +112,7 @@ def random_jitter(
 
     The value is derived from ``(RANDOM_SEED, node.offset())`` and does not store
     references to nodes. By default a global LRU cache of ``seed_key → random.Random``
-    instances (``maxsize={JITTER_CACHE_SIZE}``) advances deterministic sequences across calls.
+    instances (``maxsize={DEFAULTS['JITTER_CACHE_SIZE']}``) advances deterministic sequences across calls.
     When ``cache`` is provided, it is used instead and must handle its own purging
     policy. The global cache discards least recently used generators when the limit
     is exceeded.
