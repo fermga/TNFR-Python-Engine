@@ -384,10 +384,16 @@ def aplicar_glifo_obj(node: NodoProtocol, glifo: Glyph | str, *, window: Optiona
         raise ValueError(f"glifo desconocido: {glifo}")
 
     op = _NAME_TO_OP.get(g)
+    if op is None:
+        raise ValueError(f"glifo sin operador: {g}")
     if window is None:
         window = int(get_param(node, "GLYPH_HYSTERESIS_WINDOW"))
-    node.push_glifo(g.value, window)
-    op(node)
+    try:
+        op(node)
+    except Exception:
+        raise
+    else:
+        node.push_glifo(g.value, window)
 
 
 def aplicar_glifo(G, n, glifo: Glyph | str, *, window: Optional[int] = None) -> None:
