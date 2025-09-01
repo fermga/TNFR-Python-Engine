@@ -42,11 +42,9 @@ __all__ = [
     "ensure_parent",
     "ensure_collection",
     "clamp",
-    "clamp_abs",
     "clamp01",
     "list_mean",
     "angle_diff",
-    "phase_distance",
     "normalize_weights",
     "alias_get",
     "alias_set",
@@ -135,12 +133,6 @@ def clamp(x: float, a: float, b: float) -> float:
     return a if x < a else b if x > b else x
 
 
-def clamp_abs(x: float, m: float) -> float:
-    """Limita ``x`` al rango simétrico [-m, m] usando ``abs(m)``."""
-    m = abs(m)
-    return clamp(x, -m, m)
-
-
 def clamp01(x: float) -> float:
     """Ataja ``x`` a la banda [0, 1]."""
     return clamp(x, 0.0, 1.0)
@@ -164,11 +156,6 @@ def _wrap_angle(a: float) -> float:
 def angle_diff(a: float, b: float) -> float:
     """Diferencia mínima entre ``a`` y ``b`` en (-π, π]."""
     return _wrap_angle(a - b)
-
-
-def phase_distance(a: float, b: float) -> float:
-    """Distancia de fase normalizada en [0,1]. 0 = misma fase, 1 = opuesta."""
-    return abs(angle_diff(a, b)) / math.pi
 
 
 def normalize_weights(dict_like: Dict[str, Any], keys: Iterable[str], default: float = 0.0) -> Dict[str, float]:
@@ -718,7 +705,7 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
             th_bar = math.atan2(mean_sin, mean_cos)
         else:
             th_bar = th_i
-        disp_fase = phase_distance(th_i, th_bar)  # [0,1]
+        disp_fase = abs(angle_diff(th_i, th_bar)) / math.pi  # [0,1]
 
         dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
         dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
