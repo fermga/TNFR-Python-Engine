@@ -349,6 +349,97 @@ def dnfr_laplacian(G) -> None:
 # Ecuación nodal
 # -------------------------
 
+def prepare_integration_params(
+    G,
+    dt: float | None = None,
+    t: float | None = None,
+    method: Literal["euler", "rk4"] | None = None,
+):
+    """Valida y normaliza ``dt``, ``t`` y ``method`` para la integración.
+
+    Devuelve ``(dt_step, steps, t0, method)`` donde ``dt_step`` es el paso
+    efectivo, ``steps`` la cantidad de subpasos y ``t0`` el tiempo inicial
+    preparado.
+    """
+    if dt is None:
+        dt = float(G.graph.get("DT", DEFAULTS["DT"]))
+    else:
+        if not isinstance(dt, (int, float)):
+            raise TypeError("dt must be a number")
+        if dt < 0:
+            raise ValueError("dt must be non-negative")
+        dt = float(dt)
+
+    if t is None:
+        t = float(G.graph.get("_t", 0.0))
+    else:
+        t = float(t)
+
+    method = (
+        method
+        or G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))
+    ).lower()
+    if method not in ("euler", "rk4"):
+        raise ValueError("method must be 'euler' or 'rk4'")
+
+    dt_min = float(G.graph.get("DT_MIN", DEFAULTS.get("DT_MIN", 0.0)))
+    if dt_min > 0 and dt > dt_min:
+        steps = int(math.ceil(dt / dt_min))
+    else:
+        steps = 1
+    dt_step = dt / steps if steps else 0.0
+
+    return dt_step, steps, t, method
+
+
+def _integrate_euler(G, dt_step: float, t_local: float):
+    """Un paso de integración explícita de Euler."""
+    gamma_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
+    new_states: Dict[Any, tuple[float, float, float]] = {}
+    for n, nd in G.nodes(data=True):
+        vf = get_attr(nd, ALIAS_VF, 0.0)
+        dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
+        dEPI_dt_prev = get_attr(nd, ALIAS_dEPI, 0.0)
+        epi_i = get_attr(nd, ALIAS_EPI, 0.0)
+
+        base = vf * dnfr
+        dEPI_dt = base + gamma_map.get(n, 0.0)
+        epi = epi_i + dt_step * dEPI_dt
+        d2epi = (dEPI_dt - dEPI_dt_prev) / dt_step if dt_step != 0 else 0.0
+        new_states[n] = (epi, dEPI_dt, d2epi)
+    return new_states
+
+
+def _integrate_rk4(G, dt_step: float, t_local: float):
+    """Un paso de integración con Runge-Kutta de orden 4."""
+    t_mid = t_local + dt_step / 2.0
+    t_end = t_local + dt_step
+    g1_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
+    g_mid_map = {n: eval_gamma(G, n, t_mid) for n in G.nodes}
+    g4_map = {n: eval_gamma(G, n, t_end) for n in G.nodes}
+
+    new_states: Dict[Any, tuple[float, float, float]] = {}
+    for n, nd in G.nodes(data=True):
+        vf = get_attr(nd, ALIAS_VF, 0.0)
+        dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
+        dEPI_dt_prev = get_attr(nd, ALIAS_dEPI, 0.0)
+        epi_i = get_attr(nd, ALIAS_EPI, 0.0)
+
+        base = vf * dnfr
+        g1 = g1_map.get(n, 0.0)
+        g_mid = g_mid_map.get(n, 0.0)
+        g4 = g4_map.get(n, 0.0)
+        k1 = base + g1
+        k2 = base + g_mid
+        k3 = base + g_mid
+        k4 = base + g4
+        epi = epi_i + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
+        dEPI_dt = k4
+        d2epi = (dEPI_dt - dEPI_dt_prev) / dt_step if dt_step != 0 else 0.0
+        new_states[n] = (epi, dEPI_dt, d2epi)
+    return new_states
+
+
 def update_epi_via_nodal_equation(
     G,
     *,
@@ -374,70 +465,24 @@ def update_epi_via_nodal_equation(
     """
     if not isinstance(G, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)):
         raise TypeError("G must be a networkx graph instance")
-    if dt is None:
-        dt = float(G.graph.get("DT", DEFAULTS["DT"]))
-    else:
-        if not isinstance(dt, (int, float)):
-            raise TypeError("dt must be a number")
-        if dt < 0:
-            raise ValueError("dt must be non-negative")
-        dt = float(dt)
-    if t is None:
-        t = float(G.graph.get("_t", 0.0))
-    else:
-        t = float(t)
 
-    method = (method or G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))).lower()
-    dt_min = float(G.graph.get("DT_MIN", DEFAULTS.get("DT_MIN", 0.0)))
-    if dt_min > 0 and dt > dt_min:
-        steps = int(math.ceil(dt / dt_min))
-    else:
-        steps = 1
-    dt_step = dt / steps if steps else 0.0
+    dt_step, steps, t0, method = prepare_integration_params(G, dt, t, method)
 
-    if method not in ("euler", "rk4"):
-        raise ValueError("method must be 'euler' or 'rk4'")
-
-    t_local = t
+    t_local = t0
     for _ in range(steps):
         if method == "rk4":
-            t_mid = t_local + dt_step / 2.0
-            t_end = t_local + dt_step
-            g1_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
-            g_mid_map = {n: eval_gamma(G, n, t_mid) for n in G.nodes}
-            g4_map = {n: eval_gamma(G, n, t_end) for n in G.nodes}
+            updates = _integrate_rk4(G, dt_step, t_local)
         else:
-            gamma_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
+            updates = _integrate_euler(G, dt_step, t_local)
 
-        for n, nd in G.nodes(data=True):
-            vf = get_attr(nd, ALIAS_VF, 0.0)
-            dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
-            dEPI_dt_prev = get_attr(nd, ALIAS_dEPI, 0.0)
-            epi_i = get_attr(nd, ALIAS_EPI, 0.0)
-
-            base = vf * dnfr
-
-            if method == "rk4":
-                g1 = g1_map.get(n, 0.0)
-                g_mid = g_mid_map.get(n, 0.0)
-                g4 = g4_map.get(n, 0.0)
-                k1 = base + g1
-                k2 = base + g_mid
-                k3 = base + g_mid
-                k4 = base + g4
-                epi = epi_i + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
-                dEPI_dt = k4
-            else:
-                gamma_local = gamma_map.get(n, 0.0)
-                dEPI_dt = base + gamma_local
-                epi = epi_i + dt_step * dEPI_dt
-
+        for n, (epi, dEPI_dt, d2epi) in updates.items():
+            nd = G.nodes[n]
             epi_kind = get_attr_str(nd, ALIAS_EPI_KIND, "")
             set_attr(nd, ALIAS_EPI, epi)
             if epi_kind:
                 set_attr_str(nd, ALIAS_EPI_KIND, epi_kind)
             set_attr(nd, ALIAS_dEPI, dEPI_dt)
-            set_attr(nd, ALIAS_D2EPI, (dEPI_dt - dEPI_dt_prev) / dt_step if dt_step != 0 else 0.0)
+            set_attr(nd, ALIAS_D2EPI, d2epi)
 
         t_local += dt_step
 
