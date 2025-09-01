@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from statistics import fmean
-from typing import Dict
 
 from ..constants import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_SI, DIAGNOSIS, COHERENCE
 from ..helpers import (
