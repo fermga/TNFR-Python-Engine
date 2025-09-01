@@ -11,6 +11,7 @@ from statistics import fmean, StatisticsError
 import json
 from json import JSONDecodeError
 from pathlib import Path
+from enum import Enum
 
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
@@ -68,7 +69,19 @@ __all__ = [
     "compute_coherence",
     "compute_Si",
     "increment_edge_version",
+    "CallbackEvent",
 ]
+
+
+class CallbackEvent(str, Enum):
+    """Eventos soportados para callbacks."""
+
+    BEFORE_STEP = "before_step"
+    AFTER_STEP = "after_step"
+    ON_REMESH = "on_remesh"
+
+
+_CALLBACK_EVENTS = tuple(e.value for e in CallbackEvent)
 
 # -------------------------
 # Entrada/salida estructurada
@@ -684,19 +697,17 @@ def count_glyphs(
 
 def _ensure_callbacks(G):
     """Garantiza la estructura de callbacks en G.graph."""
-    cbs = G.graph.setdefault("callbacks", {
-        "before_step": [],
-        "after_step": [],
-        "on_remesh": [],
-    })
+    cbs = G.graph.setdefault(
+        "callbacks", {k: [] for k in _CALLBACK_EVENTS}
+    )
     # normaliza claves por si vienen incompletas
-    for k in ("before_step", "after_step", "on_remesh"):
+    for k in _CALLBACK_EVENTS:
         cbs.setdefault(k, [])
     return cbs
 
 def register_callback(
     G,
-    event: str,
+    event: CallbackEvent | str,
     func=None,
     *,
     name: str | None = None,
@@ -708,7 +719,7 @@ def register_callback(
     un callback con el mismo nombre o función para el evento, será reemplazado
     en lugar de añadirse una entrada duplicada.
     """
-    if event not in ("before_step", "after_step", "on_remesh"):
+    if event not in _CALLBACK_EVENTS:
         raise ValueError(f"Evento desconocido: {event}")
     if func is None:
         raise TypeError("func es obligatorio")
@@ -731,7 +742,7 @@ def register_callback(
 
     return func
 
-def invoke_callbacks(G, event: str, ctx: dict | None = None):
+def invoke_callbacks(G, event: CallbackEvent | str, ctx: dict | None = None):
     """Invoca todos los callbacks registrados para ``event`` con el contexto ``ctx``.
 
     Los callbacks se almacenan como tuplas ``(name, func)`` y se invocan en orden
