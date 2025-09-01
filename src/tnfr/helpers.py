@@ -4,7 +4,7 @@ helpers.py — TNFR canónica
 Utilidades transversales + cálculo de Índice de sentido (Si).
 """
 from __future__ import annotations
-from typing import Iterable, Dict, Any, Callable, TypeVar
+from typing import Iterable, Dict, Any, Callable, TypeVar, TYPE_CHECKING
 import logging
 import math
 from collections import deque, Counter
@@ -19,10 +19,8 @@ try:  # pragma: no cover - dependencia opcional
 except ImportError:  # pragma: no cover
     yaml = None
 
-try:
-    import networkx as nx  # solo para tipos
-except ImportError:  # pragma: no cover
-    nx = None  # type: ignore
+if TYPE_CHECKING:
+    import networkx as nx
 
 from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_dEPI, ALIAS_SI, ALIAS_EPI_KIND
 
