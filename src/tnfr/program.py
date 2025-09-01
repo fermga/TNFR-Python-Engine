@@ -82,27 +82,44 @@ def _advance(G, step_fn: Optional[AdvanceFn] = None):
 def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
     """Devuelve lista de operaciones (op, payload).
     op ∈ { 'GLYPH', 'WAIT', 'TARGET' }.
+
+    Implementación iterativa usando una pila explícita para evitar
+    recursión profunda cuando se anidan bloques ``THOL``.
     """
     ops: List[Tuple[str, Any]] = []
-    for item in seq:
+    stack: List[Token] = list(reversed(seq))
+
+    while stack:
+        item = stack.pop()
         if isinstance(item, TARGET):
             ops.append(("TARGET", item))
-        elif isinstance(item, WAIT):
+            continue
+        if isinstance(item, WAIT):
             ops.append(("WAIT", item.steps))
-        elif isinstance(item, THOL):
-            # abrir bloque THOL
+            continue
+        if isinstance(item, THOL):
+            # Abrimos bloque THOL y apilamos su cuerpo de forma iterativa
             ops.append(("GLYPH", Glyph.THOL.value))
-            for _ in range(max(1, int(item.repeat))):
-                ops.extend(_flatten(item.body))
-            # cierre explícito si se pidió; si no, la gramática puede cerrarlo
-            if item.force_close in (Glyph.SHA, Glyph.NUL):
-                ops.append(("GLYPH", item.force_close.value))
-        else:
-            # item debería ser un glifo
-            g = item.value if isinstance(item, Glyph) else str(item)
-            if g not in GLYPHS_CANONICAL_SET:
-                raise ValueError(f"Glifo no canónico: {g}")
-            ops.append(("GLYPH", g))
+
+            repeats = max(1, int(item.repeat))
+            closing = item.force_close if item.force_close in (Glyph.SHA, Glyph.NUL) else None
+            # El cierre explícito debe ejecutarse al final, por lo que se
+            # coloca en la pila antes de expandir el cuerpo.
+            if closing is not None:
+                stack.append(closing)
+
+            # Insertamos los cuerpos en orden para que la primera repetición
+            # sea procesada antes.
+            for _ in reversed(range(repeats)):
+                for tok in reversed(item.body):
+                    stack.append(tok)
+            continue
+
+        # item debería ser un glifo
+        g = item.value if isinstance(item, Glyph) else str(item)
+        if g not in GLYPHS_CANONICAL_SET:
+            raise ValueError(f"Glifo no canónico: {g}")
+        ops.append(("GLYPH", g))
     return ops
 
 # ---------------------
