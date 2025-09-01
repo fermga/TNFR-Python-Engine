@@ -15,6 +15,7 @@ from typing import Dict, Any, Literal
 import math
 from collections import deque
 import logging
+from functools import lru_cache
 
 import networkx as nx
 
@@ -56,6 +57,22 @@ from .helpers import (
      get_attr, set_attr, get_attr_str, set_attr_str, media_vecinal, fase_media,
      invoke_callbacks, reciente_glifo, set_vf, set_dnfr, compute_Si, normalize_weights
 )
+
+# Cacheo centralizado de nodos y matriz de adyacencia
+@lru_cache(maxsize=1)
+def _cached_nodes_and_A(edges: frozenset):
+    """Devuelve la lista de nodos y la matriz de adyacencia para ``edges``.
+
+    Se utiliza un ``frozenset`` de aristas como clave de caché para poder
+    reutilizar los datos mientras la estructura del grafo permanezca igual."""
+    G_tmp = nx.Graph()
+    G_tmp.add_edges_from(edges)
+    nodes = list(G_tmp.nodes)
+    if np is not None:
+        A = nx.to_numpy_array(G_tmp, nodelist=nodes, weight=None, dtype=float)
+    else:
+        A = None
+    return nodes, A
 
 # -------------------------
 # ΔNFR por defecto (campo) + utilidades de hook/metadata
@@ -109,25 +126,14 @@ def _prepare_dnfr_data(G) -> dict:
     cache_m = G.graph.get("_dnfr_num_edges")
     use_numpy = np is not None and G.graph.get("vectorized_dnfr")
 
-    if (
-        cache_n == num_nodes
-        and cache_m == num_edges
-        and G.graph.get("_dnfr_node_list") is not None
-        and (not use_numpy or G.graph.get("_dnfr_A") is not None)
-    ):
-        nodes = G.graph["_dnfr_node_list"]
-        A = G.graph.get("_dnfr_A")
-    else:
-        nodes = list(G.nodes)
-        G.graph["_dnfr_node_list"] = nodes
-        if use_numpy:
-            A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
-            G.graph["_dnfr_A"] = A
-        else:
-            A = None
-            G.graph.pop("_dnfr_A", None)
+    if cache_n != num_nodes or cache_m != num_edges:
+        _cached_nodes_and_A.cache_clear()
         G.graph["_dnfr_num_nodes"] = num_nodes
         G.graph["_dnfr_num_edges"] = num_edges
+
+    nodes, A = _cached_nodes_and_A(frozenset(G.edges))
+    if not use_numpy:
+        A = None
 
     idx = {n: i for i, n in enumerate(nodes)}
     theta = [get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in nodes]
@@ -162,16 +168,9 @@ def _compute_dnfr_numpy(G, data) -> None:
     if not nodes:
         return
     A = data.get("A")
-    num_nodes = len(nodes)
-    num_edges = G.number_of_edges()
-    cache_n = G.graph.get("_dnfr_num_nodes")
-    cache_m = G.graph.get("_dnfr_num_edges")
-    if A is None or cache_n != num_nodes or cache_m != num_edges:
-        A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
-        G.graph["_dnfr_A"] = A
-        G.graph["_dnfr_node_list"] = nodes
-        G.graph["_dnfr_num_nodes"] = num_nodes
-        G.graph["_dnfr_num_edges"] = num_edges
+    if A is None:
+        _, A = _cached_nodes_and_A(frozenset(G.edges))
+        data["A"] = A
     count = A.sum(axis=1)
     theta = np.array(data["theta"], dtype=float)
     epi = np.array(data["epi"], dtype=float)
