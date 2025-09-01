@@ -491,9 +491,7 @@ def count_glyphs(
             continue
         if window is not None and window > 0:
             window_int = int(window)
-            seq = reversed(
-                list(islice(hist, max(0, len(hist) - window_int), len(hist)))
-            )
+            seq = islice(reversed(hist), window_int)
         else:
             seq = hist
         counts.update(seq)
