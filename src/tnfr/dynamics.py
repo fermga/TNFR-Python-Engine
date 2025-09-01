@@ -11,7 +11,7 @@ Incluye:
 - default_glyph_selector, step, run
 """
 from __future__ import annotations
-from typing import Dict, Any, Iterable, Literal
+from typing import Dict, Any, Literal
 import math
 from collections import deque
 import networkx as nx
@@ -43,7 +43,7 @@ from .constants import (
 )
 from .gamma import eval_gamma
 from .helpers import (
-     clamp, clamp01, list_mean, phase_distance, angle_diff,
+     clamp, clamp01, list_mean, angle_diff,
      get_attr, set_attr, get_attr_str, set_attr_str, media_vecinal, fase_media,
      invoke_callbacks, reciente_glifo, set_vf, set_dnfr, compute_Si
 )
