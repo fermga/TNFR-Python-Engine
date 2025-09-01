@@ -63,14 +63,43 @@ def _parse_tokens(obj: Any) -> List[Any]:
     return out
 
 
+def parse_thol(spec: Dict[str, Any]) -> Any:
+    """Parsea la especificación de un bloque ``THOL``.
+
+    Parameters
+    ----------
+    spec:
+        Diccionario con las claves ``body``, ``repeat`` y ``close``.
+
+    Returns
+    -------
+    Any
+        Resultado de :func:`block` tras parsear los tokens del cuerpo.
+
+    Raises
+    ------
+    ValueError
+        Si ``close`` es una cadena que no corresponde a un nombre válido de
+        :class:`Glyph`.
+    """
+
+    close = spec.get("close")
+    if isinstance(close, str):
+        if close not in Glyph.__members__:
+            raise ValueError(f"Glifo de cierre desconocido: {close!r}")
+        close = Glyph[close]
+
+    return block(
+        *_parse_tokens(spec.get("body", [])),
+        repeat=int(spec.get("repeat", 1)),
+        close=close,
+    )
+
+
 TOKEN_MAP: Dict[str, Callable[[Any], Any]] = {
     "WAIT": lambda v: wait(int(v)),
     "TARGET": lambda v: target(v),
-    "THOL": lambda spec: block(
-        *_parse_tokens(spec.get("body", [])),
-        repeat=int(spec.get("repeat", 1)),
-        close=Glyph(spec.get("close")) if isinstance(spec.get("close"), str) else spec.get("close"),
-    ),
+    "THOL": parse_thol,
 }
 
 

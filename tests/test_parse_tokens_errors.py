@@ -24,3 +24,11 @@ def test_parse_tokens_key_error_context(monkeypatch):
     msg = str(exc.value)
     assert "posición 1" in msg
     assert "RAISE" in msg
+
+
+def test_thol_invalid_close():
+    with pytest.raises(ValueError) as exc:
+        _parse_tokens([{ "THOL": {"close": "XYZ"} }])
+    msg = str(exc.value)
+    assert "XYZ" in msg
+    assert "Glifo" in msg
