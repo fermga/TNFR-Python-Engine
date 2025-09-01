@@ -464,10 +464,33 @@ class HistoryDict(dict):
                 self._counts.setdefault(k, 0)
                 heapq.heappush(self._heap, (0, k))
 
+    def _compact_heap(self) -> None:
+        """Elimina entradas obsoletas de ``_heap``.
+
+        Las entradas quedan obsoletas cuando la cuenta almacenada no coincide
+        con ``_counts`` o cuando la clave ya no existe en el diccionario. Para
+        evitar que la lista crezca indefinidamente se reconstruye filtrando las
+        entradas válidas y luego se re-heapifica.
+        """
+
+        self._heap = [
+            (cnt, k)
+            for cnt, k in self._heap
+            if k in self and self._counts.get(k) == cnt
+        ]
+        heapq.heapify(self._heap)
+
+    def _maybe_compact(self) -> None:
+        """Compacta ``_heap`` si supera un umbral razonable."""
+
+        if len(self._heap) > len(self) * 2:
+            self._compact_heap()
+
     def _increment(self, key: str) -> None:
         cnt = self._counts.get(key, 0) + 1
         self._counts[key] = cnt
         heapq.heappush(self._heap, (cnt, key))
+        self._maybe_compact()
 
     def __getitem__(self, key):  # type: ignore[override]
         val = super().__getitem__(key)
@@ -483,6 +506,7 @@ class HistoryDict(dict):
         super().__setitem__(key, value)
         self._counts.setdefault(key, 0)
         heapq.heappush(self._heap, (self._counts[key], key))
+        self._maybe_compact()
 
     def setdefault(self, key, default=None):  # type: ignore[override]
         if self._maxlen > 0 and isinstance(default, list):
