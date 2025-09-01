@@ -59,27 +59,37 @@ __all__ = [
 # Entrada/salida estructurada
 # -------------------------
 
+def _parse_json(text: str) -> Any:
+    """Parsea ``text`` como JSON."""
+    return json.loads(text)
+
+
+def _parse_yaml(text: str) -> Any:
+    """Parsea ``text`` como YAML."""
+    if not yaml:  # pragma: no cover - dependencia opcional
+        raise RuntimeError("pyyaml no está instalado")
+    return yaml.safe_load(text)
+
 
 def read_structured_file(path: Path) -> Any:
     """Lee un archivo JSON o YAML y devuelve los datos parseados."""
     suffix = path.suffix.lower()
-    if suffix not in {".json", ".yaml", ".yml"}:
+    parsers: Dict[str, Callable[[str], Any]] = {
+        ".json": _parse_json,
+        ".yaml": _parse_yaml,
+        ".yml": _parse_yaml,
+    }
+    if suffix not in parsers:
         raise ValueError(f"Extensión de archivo no soportada: {path.suffix}")
+    parser = parsers[suffix]
     try:
-        with path.open("r", encoding="utf-8") as f:
-            if suffix in {".yaml", ".yml"}:
-                if not yaml:  # pragma: no cover - dependencia opcional
-                    raise RuntimeError("pyyaml no está instalado")
-                try:
-                    return yaml.safe_load(f)
-                except yaml.YAMLError as e:
-                    raise ValueError(f"Error al parsear YAML en {path}: {e}") from e
-            try:
-                return json.load(f)
-            except json.JSONDecodeError as e:
-                raise ValueError(f"Error al parsear JSON en {path}: {e}") from e
+        text = path.read_text(encoding="utf-8")
+        return parser(text)
     except (FileNotFoundError, PermissionError) as e:
         raise ValueError(f"No se pudo abrir {path}: {e}") from e
+    except Exception as e:
+        formato = "YAML" if parser is _parse_yaml else "JSON"
+        raise ValueError(f"Error al parsear {formato} en {path}: {e}") from e
 
 # -------------------------
 # Utilidades numéricas
