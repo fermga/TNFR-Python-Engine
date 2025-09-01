@@ -119,6 +119,28 @@ def _select_dominant_glifo(node: NodoProtocol, neigh: Iterable[NodoProtocol]) ->
     return best_kind
 
 
+def _mix_epi_with_neighbors(
+    node: NodoProtocol, mix: float, default_glyph: Glyph | str
+) -> None:
+    """Mezcla ``EPI`` del ``node`` con la media de sus vecinos.
+
+    ``mix`` controla la fracción de influencia vecinal y ``default_glyph`` es el
+    glifo que se asignará si no hay vecinos o si no se detecta uno dominante.
+    """
+
+    default_kind = (
+        default_glyph.value if isinstance(default_glyph, Glyph) else str(default_glyph)
+    )
+    epi = node.EPI
+    neigh = list(node.neighbors())
+    if not neigh:
+        node.epi_kind = default_kind
+        return
+    epi_bar = list_mean(v.EPI for v in neigh)
+    node.EPI = (1 - mix) * epi + mix * epi_bar
+    node.epi_kind = _select_dominant_glifo(node, neigh) or default_kind
+
+
 def _op_AL(node: NodoProtocol) -> None:  # AL — Emisión
     gf = get_glyph_factors(node)
     f = float(gf.get("AL_boost", 0.05))
@@ -128,15 +150,7 @@ def _op_AL(node: NodoProtocol) -> None:  # AL — Emisión
 def _op_EN(node: NodoProtocol) -> None:  # EN — Recepción
     gf = get_glyph_factors(node)
     mix = float(gf.get("EN_mix", 0.25))
-    epi = node.EPI
-    neigh = list(node.neighbors())
-    if not neigh:
-        # Aunque no haya vecinos, etiquetar el nodo con el glifo EN
-        node.epi_kind = Glyph.EN.value
-        return
-    epi_bar = list_mean(v.EPI for v in neigh)
-    node.EPI = (1 - mix) * epi + mix * epi_bar
-    node.epi_kind = _select_dominant_glifo(node, neigh) or Glyph.EN.value
+    _mix_epi_with_neighbors(node, mix, Glyph.EN)
 
 
 def _op_IL(node: NodoProtocol) -> None:  # IL — Coherencia
@@ -189,13 +203,7 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Acoplamiento
 def _op_RA(node: NodoProtocol) -> None:  # RA — Resonancia
     gf = get_glyph_factors(node)
     diff = float(gf.get("RA_epi_diff", 0.15))
-    epi = node.EPI
-    neigh = list(node.neighbors())
-    if not neigh:
-        return
-    epi_bar = list_mean(v.EPI for v in neigh)
-    node.EPI = epi + diff * (epi_bar - epi)
-    node.epi_kind = _select_dominant_glifo(node, neigh) or Glyph.RA.value
+    _mix_epi_with_neighbors(node, diff, Glyph.RA)
 
 
 def _op_SHA(node: NodoProtocol) -> None:  # SHA — Silencio
