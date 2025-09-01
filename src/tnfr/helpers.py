@@ -154,6 +154,8 @@ def alias_get(
     ``default`` convertido (o ``None`` si ``default`` es ``None``).
     """
     aliases = _ensure_tuple(aliases)
+    if not aliases:
+        raise ValueError("'aliases' must contain at least one key")
     for key in aliases:
         if key in d:
             try:
@@ -175,6 +177,8 @@ def alias_set(
 ) -> T:
     """Asigna ``value`` convertido a la primera clave disponible de ``aliases``."""
     aliases = _ensure_tuple(aliases)
+    if not aliases:
+        raise ValueError("'aliases' must contain at least one key")
     for key in aliases:
         if key in d:
             d[key] = conv(value)
