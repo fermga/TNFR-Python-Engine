@@ -16,19 +16,19 @@ logger = logging.getLogger(__name__)
 def _ensure_kuramoto_cache(G, t) -> None:
     """Cachea (R, ψ) en ``G.graph`` para el paso ``t`` actual.
 
-    El cálculo se invalida si cambia el paso o el conjunto de nodos.
+    El cálculo se invalida si cambia el paso o la firma de los nodos.
     """
-    nodes = frozenset(G.nodes())
+    nodes_sig = (len(G), hash(tuple(G)))
     cache = G.graph.get("_kuramoto_cache")
     if (
         cache is None
         or cache.get("t") != t
-        or cache.get("nodes") != nodes
+        or cache.get("nodes_sig") != nodes_sig
     ):
         R, psi = kuramoto_R_psi(G)
         G.graph["_kuramoto_cache"] = {
             "t": t,
-            "nodes": nodes,
+            "nodes_sig": nodes_sig,
             "R": R,
             "psi": psi,
         }
