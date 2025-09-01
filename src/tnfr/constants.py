@@ -110,6 +110,7 @@ class CoreDefaults:
     )
     CALLBACKS_STRICT: bool = False
     VALIDATORS_STRICT: bool = False
+    PROGRAM_TRACE_MAXLEN: int = 50
 
 
 @dataclass(frozen=True)

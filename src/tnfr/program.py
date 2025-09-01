@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union
 from dataclasses import dataclass
 from contextlib import contextmanager
+from collections import deque
 
 from .constants import get_param
 from .grammar import apply_glyph_with_grammar
@@ -122,9 +123,12 @@ def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> N
     curr_target: Optional[Iterable[Node]] = None
 
     # Traza de programa en history
-    if "history" not in G.graph:
-        G.graph["history"] = {}
-    trace = G.graph["history"].setdefault("program_trace", [])
+    history = G.graph.setdefault("history", {})
+    maxlen = int(get_param(G, "PROGRAM_TRACE_MAXLEN"))
+    trace = history.get("program_trace")
+    if not isinstance(trace, deque) or trace.maxlen != maxlen:
+        trace = deque(trace or [], maxlen=maxlen)
+        history["program_trace"] = trace
 
     for op, payload in ops:
         if op == "TARGET":
