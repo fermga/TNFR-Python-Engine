@@ -4,7 +4,7 @@ helpers.py — TNFR canónica
 Utilidades transversales + cálculo de Índice de sentido (Si).
 """
 from __future__ import annotations
-from typing import Iterable, Dict, Any, TYPE_CHECKING, Callable, TypeVar
+from typing import Iterable, Dict, Any, Callable, TypeVar
 import math
 from collections import deque, Counter
 from itertools import islice
@@ -22,7 +22,7 @@ try:
 except ImportError:  # pragma: no cover
     nx = None  # type: ignore
 
-from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_EPI_KIND
+from .constants import DEFAULTS, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_SI, ALIAS_EPI_KIND
 
 T = TypeVar("T")
 
@@ -53,9 +53,6 @@ __all__ = [
     "invoke_callbacks",
     "compute_Si",
 ]
-
-if TYPE_CHECKING:  # pragma: no cover - sólo para tipos
-    from .node import NodoProtocol
 
 # -------------------------
 # Entrada/salida estructurada
