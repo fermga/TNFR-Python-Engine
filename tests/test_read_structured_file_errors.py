@@ -34,7 +34,7 @@ def test_read_structured_file_corrupt_json(tmp_path: Path):
 
 
 def test_read_structured_file_corrupt_yaml(tmp_path: Path):
-    yaml = pytest.importorskip("yaml")
+    pytest.importorskip("yaml")
     path = tmp_path / "bad.yaml"
     path.write_text("a: [1, 2", encoding="utf-8")
     with pytest.raises(ValueError) as excinfo:

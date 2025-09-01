@@ -1,4 +1,3 @@
-import math
 import networkx as nx
 import pytest
 
