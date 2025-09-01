@@ -21,9 +21,13 @@ from __future__ import annotations
 from typing import Dict, Any, Tuple
 import math
 import cmath
+import logging
 
 from .constants import ALIAS_THETA
 from .helpers import get_attr
+
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -149,8 +153,12 @@ GAMMA_REGISTRY = {
 }
 
 
-def eval_gamma(G, node, t) -> float:
-    """Evalúa Γi para `node` según la especificación en G.graph['GAMMA']."""
+def eval_gamma(G, node, t, *, strict: bool = False) -> float:
+    """Evalúa Γi para `node` según la especificación en G.graph['GAMMA'].
+
+    Si ``strict`` es ``True`` las excepciones encontradas durante la
+    evaluación se reelevarán en lugar de devolver ``0.0``.
+    """
     spec = G.graph.get("GAMMA", {"type": "none"})
     fn = GAMMA_REGISTRY.get(spec.get("type", "none"), gamma_none)
     if spec.get("type") in {
@@ -163,4 +171,7 @@ def eval_gamma(G, node, t) -> float:
     try:
         return float(fn(G, node, t, spec))
     except (KeyError, TypeError, ValueError):
+        logger.exception("Fallo al evaluar Γi para nodo %s en t=%s", node, t)
+        if strict:
+            raise
         return 0.0
