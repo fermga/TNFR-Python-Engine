@@ -21,7 +21,7 @@ from .helpers import (
     increment_edge_version,
 )
 if TYPE_CHECKING:
-    from .node import NodoProtocol, NodoNX
+    from .node import NodoProtocol
 from .types import Glyph
 from collections import deque
 
@@ -102,10 +102,22 @@ def clear_rng_cache() -> None:
 clear_jitter_cache = clear_rng_cache
 
 
+_NodoNX = None
+
+
+def _get_NodoNX():
+    """Lazy importer for ``NodoNX`` to avoid circular dependencies."""
+    global _NodoNX
+    if _NodoNX is None:
+        from .node import NodoNX as _NodoNX_cls
+        _NodoNX = _NodoNX_cls
+    return _NodoNX
+
+
 def random_jitter(
     node: NodoProtocol, amplitude: float, cache: Optional[Dict[int, random.Random]] = None
 ) -> float:
-    f"""Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
+    """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
 
     The value is derived from ``(RANDOM_SEED, node.offset())`` and does not store
     references to nodes. By default a global cache of ``(seed, key) → random.Random``
@@ -251,7 +263,7 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Acoplamiento
 
         sample_ids = node.graph.get("_node_sample")
         if sample_ids is not None and hasattr(node, "G"):
-            from .node import NodoNX
+            NodoNX = _get_NodoNX()
             iter_nodes = (NodoNX(node.G, j) for j in sample_ids)
         else:
             iter_nodes = node.all_nodes()
@@ -378,8 +390,7 @@ _NAME_TO_OP = {
 
 def _wrap(fn):
     def inner(obj, n=None):
-        from .node import NodoNX
-
+        NodoNX = _get_NodoNX()
         node = obj if n is None else NodoNX(obj, n)
         return fn(node)
 
@@ -430,8 +441,7 @@ def aplicar_glifo_obj(node: NodoProtocol, glifo: Glyph | str, *, window: Optiona
 
 def aplicar_glifo(G, n, glifo: Glyph | str, *, window: Optional[int] = None) -> None:
     """Adaptador para operar sobre grafos ``networkx``."""
-    from .node import NodoNX
-
+    NodoNX = _get_NodoNX()
     node = NodoNX(G, n)
     aplicar_glifo_obj(node, glifo, window=window)
 
