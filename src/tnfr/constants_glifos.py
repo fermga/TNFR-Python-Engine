@@ -7,7 +7,7 @@ angular utilizado por los observadores de sentido.
 from __future__ import annotations
 
 import math
-from typing import Dict, List
+from typing import Dict
 
 from .types import Glyph
 
@@ -15,19 +15,19 @@ from .types import Glyph
 # Clasificaciones funcionales de glifos
 # -------------------------
 
-ESTABILIZADORES: List[str] = [
+ESTABILIZADORES = (
     Glyph.IL.value,
     Glyph.RA.value,
     Glyph.UM.value,
     Glyph.SHA.value,
-]
+)
 
-DISRUPTIVOS: List[str] = [
+DISRUPTIVOS = (
     Glyph.OZ.value,
     Glyph.ZHIR.value,
     Glyph.NAV.value,
     Glyph.THOL.value,
-]
+)
 
 # -------------------------
 # Mapa de ángulos glíficos
