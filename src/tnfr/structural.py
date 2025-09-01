@@ -174,14 +174,26 @@ def validate_sequence(nombres: List[str]) -> Tuple[bool, str]:
         return False, "secuencia vacía"
     if nombres[0] not in _INICIO_VALIDOS:
         return False, "debe iniciar en emisión o recursividad"
-    try:
-        i_rec = nombres.index("recepcion")
-        i_coh = nombres.index("coherencia", i_rec + 1)
-    except ValueError:
+
+    i_rec = i_coh = -1
+    found_intermedio = False
+    cierre_ok = False
+    total = len(nombres)
+    for idx, n in enumerate(nombres):
+        if i_rec == -1 and n == "recepcion":
+            i_rec = idx
+        elif i_rec != -1 and i_coh == -1 and n == "coherencia":
+            i_coh = idx
+        elif i_coh != -1 and not found_intermedio and n in _TRAMO_INTERMEDIO:
+            found_intermedio = True
+        if idx >= total - 2 and n in _CIERRE_VALIDO:
+            cierre_ok = True
+
+    if i_rec == -1 or i_coh == -1:
         return False, "falta tramo entrada→coherencia"
-    if not any(n in _TRAMO_INTERMEDIO for n in nombres[i_coh + 1 :]):
+    if not found_intermedio:
         return False, "falta tramo de tensión/acoplamiento/resonancia"
-    if not any(n in _CIERRE_VALIDO for n in nombres[-2:]):
+    if not cierre_ok:
         return False, "falta cierre (silencio/transición/recursividad)"
     return True, "ok"
 
