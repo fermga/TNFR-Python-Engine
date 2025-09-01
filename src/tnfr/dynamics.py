@@ -18,7 +18,10 @@ import networkx as nx
 
 from .observers import sincronía_fase, carga_glifica, orden_kuramoto
 from .sense import sigma_vector
-from .operators import aplicar_remesh_si_estabilizacion_global
+# Importar compute_Si y aplicar_glifo a nivel de módulo evita el coste de
+# realizar la importación en cada paso de la dinámica. Como los módulos de
+# origen no dependen de ``dynamics``, no se introducen ciclos.
+from .operators import aplicar_remesh_si_estabilizacion_global, aplicar_glifo
 from .grammar import (
     enforce_canonical_grammar,
     on_applied_glifo,
@@ -38,7 +41,7 @@ from .gamma import eval_gamma
 from .helpers import (
      clamp, clamp01, list_mean, phase_distance, angle_diff,
      get_attr, set_attr, get_attr_str, set_attr_str, media_vecinal, fase_media,
-     invoke_callbacks, reciente_glifo, set_vf, set_dnfr
+     invoke_callbacks, reciente_glifo, set_vf, set_dnfr, compute_Si
 )
 
 # -------------------------
@@ -718,7 +721,6 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
 
     # 2) (opcional) Si
     if use_Si:
-        from .helpers import compute_Si
         compute_Si(G, inplace=True)
 
     # 2b) Normalizadores para selector paramétrico (por paso)
@@ -728,7 +730,6 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
 
     # 3) Selección glífica + aplicación (con lags obligatorios AL/EN)
     if apply_glyphs:
-        from .operators import aplicar_glifo
         window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
         use_canon = bool(G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})).get("enabled", False))
 
