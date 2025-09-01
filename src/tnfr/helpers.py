@@ -135,7 +135,7 @@ def angle_diff(a: float, b: float) -> float:
 
 def phase_distance(a: float, b: float) -> float:
     """Distancia de fase normalizada en [0,1]. 0 = misma fase, 1 = opuesta."""
-    return abs(_wrap_angle(a - b)) / math.pi
+    return abs(angle_diff(a, b)) / math.pi
 
 
 def normalize_weights(dict_like: Dict[str, Any], keys: Iterable[str], default: float = 0.0) -> Dict[str, float]:
