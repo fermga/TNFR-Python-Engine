@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 from .constants import ALIAS_EPI, ALIAS_VF, get_param
-from .helpers import get_attr
-from .sense import sigma_vector_from_graph, GLYPHS_CANONICAL
-from .helpers import last_glifo
+from .helpers import get_attr, last_glifo
+from .sense import sigma_vector_from_graph, GLYPHS_CANONICAL_SET
 
 
 def _validate_epi_vf(G) -> None:
@@ -31,7 +30,7 @@ def _validate_sigma(G) -> None:
 def _validate_glifos(G) -> None:
     for n in G.nodes():
         g = last_glifo(G.nodes[n])
-        if g and g not in GLYPHS_CANONICAL:
+        if g and g not in GLYPHS_CANONICAL_SET:
             raise ValueError(f"Glifo inválido {g} en nodo {n}")
 
 
