@@ -1,13 +1,13 @@
 """Lenguaje de programación TNFR."""
 from __future__ import annotations
 from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union
-from collections.abc import Collection
 from dataclasses import dataclass
 from contextlib import contextmanager
 from collections import deque
 
 from .constants import get_param
 from .grammar import apply_glyph_with_grammar
+from .helpers import ensure_collection
 from .sense import GLYPHS_CANONICAL_SET
 from .types import Glyph
 
@@ -96,10 +96,7 @@ def _apply_glyph_to_targets(G, g: Glyph | str, nodes: Optional[Iterable[Node]] =
     are materialised as a ``list`` only when the active selector requires
     index-based access.
     """
-    if nodes is None:
-        nodes = _all_nodes(G)
-    elif not isinstance(nodes, Collection):
-        nodes = list(nodes)
+    nodes = ensure_collection(_all_nodes(G) if nodes is None else nodes)
     w = _window(G)
     apply_glyph_with_grammar(G, nodes, g, w)
 
