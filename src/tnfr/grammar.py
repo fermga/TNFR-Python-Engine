@@ -22,10 +22,7 @@ def _gram_state(nd: Dict[str, Any]) -> Dict[str, Any]:
       - thol_open (bool)
       - thol_len (int)
     """
-    st = nd.setdefault("_GRAM", {"thol_open": False, "thol_len": 0})
-    st.setdefault("thol_open", False)
-    st.setdefault("thol_len", 0)
-    return st
+    return nd.setdefault("_GRAM", {"thol_open": False, "thol_len": 0})
 
 # -------------------------
 # Compatibilidades canónicas (siguiente permitido)
