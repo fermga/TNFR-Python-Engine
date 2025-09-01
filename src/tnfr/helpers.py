@@ -377,9 +377,47 @@ def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
 # Utilidades de historial global
 # -------------------------
 
+class HistoryDict(dict):
+    """Dict especializado que crea deques acotados para series."""
+
+    def __init__(self, data: Dict[str, Any] | None = None, *, maxlen: int = 0):
+        super().__init__(data or {})
+        self._maxlen = maxlen
+        if self._maxlen > 0:
+            for k, v in list(self.items()):
+                if isinstance(v, list):
+                    self[k] = deque(v, maxlen=self._maxlen)
+
+    def setdefault(self, key, default=None):  # type: ignore[override]
+        if self._maxlen > 0 and isinstance(default, list):
+            default = deque(default, maxlen=self._maxlen)
+        val = super().setdefault(key, default)
+        if self._maxlen > 0 and isinstance(val, list):
+            val = deque(val, maxlen=self._maxlen)
+            super().__setitem__(key, val)
+        return val
+
+
 def ensure_history(G) -> Dict[str, Any]:
-    """Garantiza G.graph['history'] y la devuelve."""
-    return G.graph.setdefault("history", {})
+    """Garantiza ``G.graph['history']`` y la devuelve.
+
+    Si ``HISTORY_MAXLEN`` > 0, cada serie se almacena en un ``deque`` con ese
+    límite y se eliminan claves poco usadas cuando el historial crece por encima
+    del máximo permitido.
+    """
+
+    maxlen = int(G.graph.get("HISTORY_MAXLEN", DEFAULTS.get("HISTORY_MAXLEN", 0)))
+    hist = G.graph.get("history")
+    if not isinstance(hist, HistoryDict) or hist._maxlen != maxlen:
+        hist = HistoryDict(hist, maxlen=maxlen)
+        G.graph["history"] = hist
+
+    if maxlen > 0 and len(hist) > maxlen:
+        candidates = [k for k, v in hist.items() if isinstance(v, (list, deque))]
+        candidates.sort(key=lambda k: len(hist.get(k, [])))
+        for k in candidates[:-maxlen]:
+            hist.pop(k, None)
+    return hist
 
 
 def last_glifo(nd: Dict[str, Any]) -> str | None:

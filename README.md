@@ -71,6 +71,15 @@ pip install tnfr
 
 ---
 
+## History configuration
+
+Recorded series are stored under `G.graph['history']`. Set `HISTORY_MAXLEN` in
+the graph (or override the default) to keep only the most recent entries. When
+the limit is positive the library uses bounded `deque` objects and removes the
+least populated series when the number of history keys grows beyond the limit.
+
+---
+
 ## Trained GPT
 
 https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-teoria-de-la-naturaleza-fractal-resonante
