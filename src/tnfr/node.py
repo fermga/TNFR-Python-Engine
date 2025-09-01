@@ -220,4 +220,4 @@ class NodoNX(NodoProtocol):
         return _node_offset(self.G, self.n)
 
     def all_nodes(self) -> Iterable[NodoProtocol]:
-        return [NodoNX(self.G, v) for v in self.G.nodes()]
+        return (NodoNX(self.G, v) for v in self.G.nodes())
