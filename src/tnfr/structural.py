@@ -73,91 +73,40 @@ class Operador:
 
 
 # Derivados concretos -------------------------------------------------------
-class Emision(Operador):
-    name = "emision"
-    glyph = Glyph.AL.value
+#
+def operador_factory(*pairs: Tuple[str, str]) -> dict[str, type[Operador]]:
+    """Construye dinámicamente clases ``Operador``.
+
+    Cada par ``(nombre, glifo)`` produce una subclase concreta con los
+    atributos correspondientes. Las clases generadas se exponen en el módulo
+    como ``CamelCase`` del nombre original y se registran en un diccionario
+    para fácil acceso por nombre.
+    """
+
+    registry: dict[str, type[Operador]] = {}
+    for nombre, glifo in pairs:
+        class_name = nombre.title().replace("_", "").replace(" ", "")
+        cls = type(class_name, (Operador,), {"name": nombre, "glyph": glifo})
+        globals()[class_name] = cls
+        registry[nombre] = cls
+    return registry
 
 
-class Recepcion(Operador):
-    name = "recepcion"
-    glyph = Glyph.EN.value
-
-
-class Coherencia(Operador):
-    name = "coherencia"
-    glyph = Glyph.IL.value
-
-
-class Disonancia(Operador):
-    name = "disonancia"
-    glyph = Glyph.OZ.value
-
-
-class Acoplamiento(Operador):
-    name = "acoplamiento"
-    glyph = Glyph.UM.value
-
-
-class Resonancia(Operador):
-    name = "resonancia"
-    glyph = Glyph.RA.value
-
-
-class Silencio(Operador):
-    name = "silencio"
-    glyph = Glyph.SHA.value
-
-
-class Expansion(Operador):
-    name = "expansion"
-    glyph = Glyph.VAL.value
-
-
-class Contraccion(Operador):
-    name = "contraccion"
-    glyph = Glyph.NUL.value
-
-
-class Autoorganizacion(Operador):
-    name = "autoorganizacion"
-    glyph = Glyph.THOL.value
-
-
-class Mutacion(Operador):
-    name = "mutacion"
-    glyph = Glyph.ZHIR.value
-
-
-class Transicion(Operador):
-    name = "transicion"
-    glyph = Glyph.NAV.value
-
-
-class Recursividad(Operador):
-    name = "recursividad"
-    glyph = Glyph.REMESH.value
-
-
-OPERADORES = {
-    op.name: op
-    for op in [
-        Emision,
-        Recepcion,
-        Coherencia,
-        Disonancia,
-        Acoplamiento,
-        Resonancia,
-        Silencio,
-        Expansion,
-        Contraccion,
-        Autoorganizacion,
-        Mutacion,
-        Transicion,
-        Recursividad,
-    ]
-}
-
-
+OPERADORES = operador_factory(
+    ("emision", Glyph.AL.value),
+    ("recepcion", Glyph.EN.value),
+    ("coherencia", Glyph.IL.value),
+    ("disonancia", Glyph.OZ.value),
+    ("acoplamiento", Glyph.UM.value),
+    ("resonancia", Glyph.RA.value),
+    ("silencio", Glyph.SHA.value),
+    ("expansion", Glyph.VAL.value),
+    ("contraccion", Glyph.NUL.value),
+    ("autoorganizacion", Glyph.THOL.value),
+    ("mutacion", Glyph.ZHIR.value),
+    ("transicion", Glyph.NAV.value),
+    ("recursividad", Glyph.REMESH.value),
+)
 # ---------------------------------------------------------------------------
 # 3) Motor de secuencias + validador sintáctico
 # ---------------------------------------------------------------------------
