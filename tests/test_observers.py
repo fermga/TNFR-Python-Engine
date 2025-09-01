@@ -9,7 +9,8 @@ from tnfr.observers import sincronía_fase, orden_kuramoto, carga_glifica, wbar
 from tnfr.gamma import kuramoto_R_psi
 from tnfr.sense import sigma_vector
 from tnfr.constants_glifos import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
-from tnfr.helpers import angle_diff, set_attr
+from tnfr.helpers import angle_diff, set_attr, CallbackEvent
+from tnfr.observers import attach_standard_observer
 
 def test_phase_observers_match_manual_calculation(graph_canon):
     G = graph_canon()
@@ -81,3 +82,10 @@ def test_wbar_accepts_deque(graph_canon):
     cs = deque([0.1, 0.5, 0.9], maxlen=10)
     G.graph["history"] = {"C_steps": cs}
     assert wbar(G, window=2) == pytest.approx((0.5 + 0.9) / 2)
+
+
+def test_attach_standard_observer_registers_callbacks(graph_canon):
+    G = graph_canon()
+    attach_standard_observer(G)
+    for ev in CallbackEvent:
+        assert ev in G.graph["callbacks"]
