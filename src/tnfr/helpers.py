@@ -191,11 +191,23 @@ def normalize_weights(
     Parameters
     ----------
     error_on_negative:
-        Si es ``True`` se lanza :class:`ValueError` ante valores negativos.
-        En caso contrario se registra una advertencia.
+        Si es ``True`` se lanza :class:`ValueError` ante valores negativos o
+        pesos no numéricos. En caso contrario se registra una advertencia y se
+        utiliza el valor ``default``.
     """
     keys = list(keys)
-    weights = {k: float(dict_like.get(k, default)) for k in keys}
+    default_float = float(default)
+    weights: Dict[str, float] = {}
+    for k in keys:
+        val = dict_like.get(k, default_float)
+        ok, converted = _convert_value(
+            val,
+            float,
+            strict=error_on_negative,
+            key=k,
+            log_level=logging.WARNING,
+        )
+        weights[k] = converted if ok and converted is not None else default_float
     if any(v < 0 for v in weights.values()):
         if error_on_negative:
             raise ValueError(f"Pesos negativos detectados: {weights}")

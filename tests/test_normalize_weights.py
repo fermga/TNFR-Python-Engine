@@ -29,6 +29,21 @@ def test_normalize_weights_raises_on_negative_default():
         normalize_weights({}, ("a", "b"), default=-0.5, error_on_negative=True)
 
 
+def test_normalize_weights_warns_on_non_numeric_value(caplog):
+    weights = {"a": "not-a-number", "b": 2.0}
+    with caplog.at_level("WARNING"):
+        norm = normalize_weights(weights, ("a", "b"), default=1.0)
+    assert any("No se pudo convertir" in m for m in caplog.messages)
+    assert math.isclose(math.fsum(norm.values()), 1.0)
+    assert norm == pytest.approx({"a": 1 / 3, "b": 2 / 3})
+
+
+def test_normalize_weights_raises_on_non_numeric_value():
+    weights = {"a": "not-a-number", "b": 2.0}
+    with pytest.raises(ValueError):
+        normalize_weights(weights, ("a", "b"), error_on_negative=True)
+
+
 def test_normalize_weights_high_precision():
     weights = {str(i): 0.1 for i in range(10)}
     norm = normalize_weights(weights, weights.keys())
