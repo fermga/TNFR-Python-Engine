@@ -8,7 +8,7 @@ from .constants import (
     get_param,
 )
 from .helpers import get_attr, clamp01, reciente_glifo
-from tnfr.types import Glyph
+from .types import Glyph
 
 # Glifos nominales (para evitar typos)
 AL = Glyph.AL
