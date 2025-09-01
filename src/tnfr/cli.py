@@ -6,6 +6,7 @@ import sys
 from typing import Any, Dict, List, Optional, Callable
 from pathlib import Path
 import os
+from collections import deque
 
 import networkx as nx
 
@@ -72,8 +73,20 @@ TOKEN_MAP: Dict[str, Callable[[Any], Any]] = {
 
 
 def _save_json(path: str, data: Any) -> None:
+    def _default(obj):
+        if isinstance(obj, deque):
+            return list(obj)
+        raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
+
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        json.dump(data, f, ensure_ascii=False, indent=2, default=_default)
+
+
+def ensure_parent(path: str) -> None:
+    """Create parent directory of ``path`` if needed."""
+    dir_name = os.path.dirname(path)
+    if dir_name:
+        os.makedirs(dir_name, exist_ok=True)
 
 
 def _str2bool(s: str) -> bool:
@@ -146,15 +159,11 @@ def _persist_history(G: nx.Graph, args: argparse.Namespace) -> None:
     """Guardar o exportar el histórico si se solicitó."""
     if getattr(args, "save_history", None):
         path = args.save_history
-        dir_name = os.path.dirname(path)
-        if dir_name:
-            os.makedirs(dir_name, exist_ok=True)
+        ensure_parent(path)
         _save_json(path, G.graph.get("history", {}))
     if getattr(args, "export_history_base", None):
         base = args.export_history_base
-        dir_name = os.path.dirname(base)
-        if dir_name:
-            os.makedirs(dir_name, exist_ok=True)
+        ensure_parent(base)
         export_history(G, base, fmt=getattr(args, "export_format", "json"))
 
 
