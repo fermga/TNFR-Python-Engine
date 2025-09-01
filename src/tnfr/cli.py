@@ -73,12 +73,15 @@ TOKEN_MAP: Dict[str, Callable[[Any], Any]] = {
 }
 
 
-def _save_json(path: str, data: Any) -> None:
-    def _default(obj):
-        if isinstance(obj, deque):
-            return list(obj)
-        raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
+def _default(obj: Any) -> Any:
+    if isinstance(obj, deque):
+        return list(obj)
+    raise TypeError(
+        f"Object of type {obj.__class__.__name__} is not JSON serializable"
+    )
 
+
+def _save_json(path: str, data: Any) -> None:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2, default=_default)
 
