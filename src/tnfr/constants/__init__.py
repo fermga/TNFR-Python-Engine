@@ -70,8 +70,7 @@ def inject_defaults(
 
 def merge_overrides(G, **overrides) -> None:
     """Aplica cambios puntuales a ``G.graph``."""
-    for k, v in overrides.items():
-        G.graph[k] = v
+    G.graph.update(overrides)
 
 
 def get_param(G, key: str):
