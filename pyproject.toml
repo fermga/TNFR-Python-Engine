@@ -33,6 +33,10 @@ dependencies = [
   "networkx>=2.6"
 ]
 
+[project.optional-dependencies]
+numpy = ["numpy>=1.24"]
+yaml = ["pyyaml>=6.0"]
+
 [project.scripts]
 tnfr = "tnfr.cli:main"
 

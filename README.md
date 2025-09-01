@@ -27,6 +27,10 @@ pip install tnfr
 ```
 * https://pypi.org/project/tnfr/
 * Requires **Python ≥ 3.9**.
+* Install extras:
+  * NumPy: `pip install tnfr[numpy]`
+  * YAML: `pip install tnfr[yaml]`
+  * Both: `pip install tnfr[numpy,yaml]`
 
 ---
 
