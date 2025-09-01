@@ -281,6 +281,15 @@ def update_epi_via_nodal_equation(
 
     t_local = t
     for _ in range(steps):
+        if method == "rk4":
+            t_mid = t_local + dt_step / 2.0
+            t_end = t_local + dt_step
+            g1_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
+            g_mid_map = {n: eval_gamma(G, n, t_mid) for n in G.nodes}
+            g4_map = {n: eval_gamma(G, n, t_end) for n in G.nodes}
+        else:
+            gamma_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
+
         for n, nd in G.nodes(data=True):
             vf = get_attr(nd, ALIAS_VF, 0.0)
             dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
@@ -290,9 +299,9 @@ def update_epi_via_nodal_equation(
             base = vf * dnfr
 
             if method == "rk4":
-                g1 = eval_gamma(G, n, t_local)
-                g_mid = eval_gamma(G, n, t_local + dt_step / 2.0)
-                g4 = eval_gamma(G, n, t_local + dt_step)
+                g1 = g1_map.get(n, 0.0)
+                g_mid = g_mid_map.get(n, 0.0)
+                g4 = g4_map.get(n, 0.0)
                 k1 = base + g1
                 k2 = base + g_mid
                 k3 = base + g_mid
@@ -300,7 +309,7 @@ def update_epi_via_nodal_equation(
                 epi = epi_i + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
                 dEPI_dt = k4
             else:
-                gamma_local = eval_gamma(G, n, t_local)
+                gamma_local = gamma_map.get(n, 0.0)
                 dEPI_dt = base + gamma_local
                 epi = epi_i + dt_step * dEPI_dt
 
