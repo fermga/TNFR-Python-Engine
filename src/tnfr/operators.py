@@ -63,14 +63,19 @@ def _jitter_base(seed: int, key: int) -> random.Random:
     return random.Random(f"{seed}:{key}")
 
 
+# Global cache for deterministic jitter generators
+_GLOBAL_JITTER_CACHE: Dict[int, random.Random] = {}
+
+
 def random_jitter(
     node: NodoProtocol, amplitude: float, cache: Optional[Dict[int, random.Random]] = None
 ) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
 
     The value is derived from ``(RANDOM_SEED, node.offset())`` and does not store
-    references to nodes. Optionally, provide ``cache`` mapping ``offset`` to
-    ``random.Random`` instances to reuse and advance deterministic sequences.
+    references to nodes. A global cache of ``seed_key → random.Random`` instances
+    is used by default to advance deterministic sequences across calls. Optionally,
+    provide ``cache`` to override the global storage.
     """
 
     if amplitude == 0:
@@ -87,13 +92,11 @@ def random_jitter(
             setattr(node, "_noise_uid", uid)
         seed_key = int(uid)
 
-    if cache is not None:
-        rng = cache.get(seed_key)
-        if rng is None:
-            rng = _jitter_base(base_seed, seed_key)
-            cache[seed_key] = rng
-    else:
+    rng_cache = _GLOBAL_JITTER_CACHE if cache is None else cache
+    rng = rng_cache.get(seed_key)
+    if rng is None:
         rng = _jitter_base(base_seed, seed_key)
+        rng_cache[seed_key] = rng
 
     base = rng.uniform(-1.0, 1.0)
     return amplitude * base
