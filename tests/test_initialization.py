@@ -20,3 +20,34 @@ def test_init_node_attrs_reproducible():
     attrs2 = {n: (d["EPI"], d["θ"], d["νf"], d["Si"]) for n, d in G2.nodes(data=True)}
 
     assert attrs1 == attrs2
+
+
+def test_init_node_attrs_reversed_uniform_bounds():
+    seed = 2024
+    G1 = nx.path_graph(3)
+    attach_defaults(G1)
+    G1.graph.update(
+        {
+            "RANDOM_SEED": seed,
+            "INIT_VF_MODE": "uniform",
+            "INIT_VF_MIN": 0.8,
+            "INIT_VF_MAX": 0.2,
+        }
+    )
+    init_node_attrs(G1)
+    vfs1 = [d["νf"] for _, d in G1.nodes(data=True)]
+
+    G2 = nx.path_graph(3)
+    attach_defaults(G2)
+    G2.graph.update(
+        {
+            "RANDOM_SEED": seed,
+            "INIT_VF_MODE": "uniform",
+            "INIT_VF_MIN": 0.2,
+            "INIT_VF_MAX": 0.8,
+        }
+    )
+    init_node_attrs(G2)
+    vfs2 = [d["νf"] for _, d in G2.nodes(data=True)]
+
+    assert vfs1 == vfs2
