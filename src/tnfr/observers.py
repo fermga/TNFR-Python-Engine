@@ -43,18 +43,24 @@ def coherencia_global(G) -> float:
     return 1.0 / (1.0 + dnfr + dEPI)
 
 
-def _phase_vectors(G) -> tuple[list, list]:
-    """Devuelve listas de cosenos y senos de las fases nodales."""
-    X = [math.cos(get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes()]
-    Y = [math.sin(get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in G.nodes()]
-    return X, Y
+def _phase_sums(G) -> tuple[float, float, int]:
+    """Devuelve sumX, sumY y el número de nodos."""
+    sumX = 0.0
+    sumY = 0.0
+    count = 0
+    for n in G.nodes():
+        th = get_attr(G.nodes[n], ALIAS_THETA, 0.0)
+        sumX += math.cos(th)
+        sumY += math.sin(th)
+        count += 1
+    return sumX, sumY, count
 
 
 def sincronía_fase(G) -> float:
-    X, Y = _phase_vectors(G)
-    if not X:
+    sumX, sumY, count = _phase_sums(G)
+    if count == 0:
         return 1.0
-    th = math.atan2(sum(Y) / len(Y), sum(X) / len(X))
+    th = math.atan2(sumY / count, sumX / count)
     # varianza angular aproximada (0 = muy sincronizado)
     var = (
         st.pvariance(
@@ -63,17 +69,17 @@ def sincronía_fase(G) -> float:
                 for n in G.nodes()
             ]
         )
-        if len(X) > 1
+        if count > 1
         else 0.0
     )
     return 1.0 / (1.0 + var)
 
 def orden_kuramoto(G) -> float:
     """R en [0,1], 1 = fases perfectamente alineadas."""
-    X, Y = _phase_vectors(G)
-    if not X:
+    sumX, sumY, count = _phase_sums(G)
+    if count == 0:
         return 1.0
-    R = ((sum(X)**2 + sum(Y)**2) ** 0.5) / max(1, len(X))
+    R = ((sumX**2 + sumY**2) ** 0.5) / max(1, count)
     return float(R)
 
 def carga_glifica(G, window: int | None = None) -> dict:
