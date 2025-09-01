@@ -101,7 +101,34 @@ def _prepare_dnfr_data(G) -> dict:
     weights = G.graph.get("_dnfr_weights")
     if weights is None:
         weights = _configure_dnfr_weights(G)
-    nodes = list(G.nodes)
+
+    # --- Cacheo de la lista de nodos y la matriz de adyacencia ---
+    num_nodes = G.number_of_nodes()
+    num_edges = G.number_of_edges()
+    cache_n = G.graph.get("_dnfr_num_nodes")
+    cache_m = G.graph.get("_dnfr_num_edges")
+    use_numpy = np is not None and G.graph.get("vectorized_dnfr")
+
+    if (
+        cache_n == num_nodes
+        and cache_m == num_edges
+        and G.graph.get("_dnfr_node_list") is not None
+        and (not use_numpy or G.graph.get("_dnfr_A") is not None)
+    ):
+        nodes = G.graph["_dnfr_node_list"]
+        A = G.graph.get("_dnfr_A")
+    else:
+        nodes = list(G.nodes)
+        G.graph["_dnfr_node_list"] = nodes
+        if use_numpy:
+            A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
+            G.graph["_dnfr_A"] = A
+        else:
+            A = None
+            G.graph.pop("_dnfr_A", None)
+        G.graph["_dnfr_num_nodes"] = num_nodes
+        G.graph["_dnfr_num_edges"] = num_edges
+
     idx = {n: i for i, n in enumerate(nodes)}
     theta = [get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in nodes]
     epi = [get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes]
@@ -123,6 +150,7 @@ def _prepare_dnfr_data(G) -> dict:
         "w_vf": w_vf,
         "w_topo": w_topo,
         "degs": degs,
+        "A": A,
     }
 
 
@@ -133,7 +161,17 @@ def _compute_dnfr_numpy(G, data) -> None:
     nodes = data["nodes"]
     if not nodes:
         return
-    A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
+    A = data.get("A")
+    num_nodes = len(nodes)
+    num_edges = G.number_of_edges()
+    cache_n = G.graph.get("_dnfr_num_nodes")
+    cache_m = G.graph.get("_dnfr_num_edges")
+    if A is None or cache_n != num_nodes or cache_m != num_edges:
+        A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
+        G.graph["_dnfr_A"] = A
+        G.graph["_dnfr_node_list"] = nodes
+        G.graph["_dnfr_num_nodes"] = num_nodes
+        G.graph["_dnfr_num_edges"] = num_edges
     count = A.sum(axis=1)
     theta = np.array(data["theta"], dtype=float)
     epi = np.array(data["epi"], dtype=float)
