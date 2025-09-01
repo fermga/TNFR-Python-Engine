@@ -109,10 +109,14 @@ def get_glyph_factors(node: NodoProtocol) -> Dict[str, Any]:
 
 def _select_dominant_glifo(node: NodoProtocol, neigh: Iterable[NodoProtocol]) -> Optional[str]:
     """Return the epi_kind with the highest |EPI| among node and its neighbors."""
-    candidatos = [(abs(node.EPI), node.epi_kind)]
+    best_mag = abs(node.EPI)
+    best_kind = node.epi_kind
     for v in neigh:
-        candidatos.append((abs(v.EPI), v.epi_kind))
-    return max(candidatos, key=lambda x: x[0])[1]
+        epi_abs = abs(v.EPI)
+        if epi_abs > best_mag:
+            best_mag = epi_abs
+            best_kind = v.epi_kind
+    return best_kind
 
 
 def _op_AL(node: NodoProtocol) -> None:  # AL — Emisión
