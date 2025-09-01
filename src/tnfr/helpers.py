@@ -8,6 +8,7 @@ from typing import Iterable, Dict, Any, Callable, TypeVar
 import logging
 import math
 from collections import deque, Counter
+import heapq
 from statistics import fmean, StatisticsError
 import json
 from pathlib import Path
@@ -419,9 +420,12 @@ def ensure_history(G) -> Dict[str, Any]:
 
     if maxlen > 0 and len(hist) > maxlen:
         candidates = [k for k, v in hist.items() if isinstance(v, (list, deque))]
-        candidates.sort(key=lambda k: len(hist.get(k, [])))
-        for k in candidates[:-maxlen]:
-            hist.pop(k, None)
+        exceso = len(candidates) - maxlen
+        if exceso > 0:
+            for k in heapq.nsmallest(
+                exceso, candidates, key=lambda k: len(hist.get(k, []))
+            ):
+                hist.pop(k, None)
     return hist
 
 
