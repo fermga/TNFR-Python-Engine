@@ -10,7 +10,25 @@ from .initialization import init_node_attrs
 
 # API de alto nivel
 
-def preparar_red(G: nx.Graph, *, override_defaults: bool = False, **overrides) -> nx.Graph:
+def preparar_red(
+    G: nx.Graph,
+    *,
+    init_attrs: bool = True,
+    override_defaults: bool = False,
+    **overrides,
+) -> nx.Graph:
+    """Prepara ``G`` para simulación.
+
+    Parameters
+    ----------
+    init_attrs:
+        Ejecuta ``init_node_attrs`` si es ``True`` (por defecto),
+        dejando los atributos de nodos intactos cuando es ``False``.
+    override_defaults:
+        Si ``True``, `attach_defaults` sobreescribe entradas existentes.
+    **overrides:
+        Parámetros para aplicar tras la fase de defaults.
+    """
     attach_defaults(G, override=override_defaults)
     if overrides:
         from .constants import merge_overrides
@@ -63,8 +81,9 @@ def preparar_red(G: nx.Graph, *, override_defaults: bool = False, **overrides) -
     })
     G.graph.setdefault("_CALLBACKS_DOC",
         "Interfaz Γ(R): registrar pares (name, func) con firma (G, ctx) en callbacks['before_step'|'after_step'|'on_remesh']")
-    
-    init_node_attrs(G, override=True)
+
+    if init_attrs:
+        init_node_attrs(G, override=True)
     return G
 
 def step(G: nx.Graph, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool = True) -> None:
