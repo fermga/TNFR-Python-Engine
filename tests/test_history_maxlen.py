@@ -45,3 +45,16 @@ def test_history_least_used_removed(graph_canon):
     ensure_history(G)
     assert len(hist) == 2
     assert "a" in hist
+
+
+def test_history_maxlen_override_respected(graph_canon):
+    G = graph_canon()
+    G.add_node(0)
+    attach_defaults(G)
+
+    hist = ensure_history(G)
+    assert hist._maxlen == 0
+
+    G.graph["HISTORY_MAXLEN"] = 3
+    hist = ensure_history(G)
+    assert hist._maxlen == 3
