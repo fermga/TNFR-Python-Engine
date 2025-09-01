@@ -121,6 +121,11 @@ def random_jitter(
     return amplitude * base
 
 
+def _get_rng_cache(node: NodoProtocol) -> Dict[int, random.Random]:
+    """Return per-graph cache for jitter generators."""
+    return node.graph.setdefault("_rnd_cache", {})
+
+
 def get_glyph_factors(node: NodoProtocol) -> Dict[str, Any]:
     """Return glyph factors for ``node`` with defaults."""
     return node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
@@ -191,7 +196,7 @@ def _op_OZ(node: NodoProtocol) -> None:  # OZ — Disonancia
         if sigma <= 0:
             node.dnfr = dnfr
             return
-        cache = node.graph.setdefault("_rnd_cache", {})
+        cache = _get_rng_cache(node)
         node.dnfr = dnfr + random_jitter(node, sigma, cache)
     else:
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
@@ -306,7 +311,7 @@ def _op_NAV(node: NodoProtocol) -> None:  # NAV — Transición
         base = (1.0 - eta) * dnfr + eta * target
     j = float(gf.get("NAV_jitter", 0.05))
     if bool(node.graph.get("NAV_RANDOM", True)):
-        cache = node.graph.setdefault("_rnd_cache", {})
+        cache = _get_rng_cache(node)
         jitter = random_jitter(node, j, cache)
     else:
         jitter = j * (1 if base >= 0 else -1)
