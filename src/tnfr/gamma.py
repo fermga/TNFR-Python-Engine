@@ -144,12 +144,15 @@ def gamma_harmonic(G, node, t, cfg: Dict[str, Any]) -> float:
     return beta * math.sin(omega * t + phi) * math.cos(th_i - psi)
 
 
+# ``GAMMA_REGISTRY`` asocia el nombre del acoplamiento con un par
+# ``(fn, needs_kuramoto)`` donde ``fn`` es la función evaluadora y
+# ``needs_kuramoto`` indica si requiere precomputar el orden global de fase.
 GAMMA_REGISTRY = {
-    "none": gamma_none,
-    "kuramoto_linear": gamma_kuramoto_linear,
-    "kuramoto_bandpass": gamma_kuramoto_bandpass,
-    "kuramoto_tanh": gamma_kuramoto_tanh,
-    "harmonic": gamma_harmonic,
+    "none": (gamma_none, False),
+    "kuramoto_linear": (gamma_kuramoto_linear, True),
+    "kuramoto_bandpass": (gamma_kuramoto_bandpass, True),
+    "kuramoto_tanh": (gamma_kuramoto_tanh, True),
+    "harmonic": (gamma_harmonic, True),
 }
 
 
@@ -160,13 +163,10 @@ def eval_gamma(G, node, t, *, strict: bool = False) -> float:
     evaluación se reelevarán en lugar de devolver ``0.0``.
     """
     spec = G.graph.get("GAMMA", {"type": "none"})
-    fn = GAMMA_REGISTRY.get(spec.get("type", "none"), gamma_none)
-    if spec.get("type") in {
-        "kuramoto_linear",
-        "kuramoto_bandpass",
-        "kuramoto_tanh",
-        "harmonic",
-    }:
+    fn, needs_kuramoto = GAMMA_REGISTRY.get(
+        spec.get("type", "none"), (gamma_none, False)
+    )
+    if needs_kuramoto:
         _ensure_kuramoto_cache(G, t)
     try:
         return float(fn(G, node, t, spec))
