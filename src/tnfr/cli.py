@@ -294,6 +294,9 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 
 def cmd_sequence(args: argparse.Namespace) -> int:
+    if args.preset and args.sequence_file:
+        logger.error("No se puede usar --preset y --sequence-file al mismo tiempo")
+        return 1
     if args.preset:
         program = get_preset(args.preset)
     elif args.sequence_file:
