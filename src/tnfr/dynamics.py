@@ -1035,27 +1035,33 @@ def _update_history(G) -> None:
 
     eps_dnfr = float(G.graph.get("EPS_DNFR_STABLE", REMESH_DEFAULTS["EPS_DNFR_STABLE"]))
     eps_depi = float(G.graph.get("EPS_DEPI_STABLE", REMESH_DEFAULTS["EPS_DEPI_STABLE"]))
-    stables = 0
+    # contadores y acumuladores
+    stables = 0  # nodos que cumplen criterios de estabilidad
     total = max(1, G.number_of_nodes())
     dt = float(G.graph.get("DT", DEFAULTS.get("DT", 1.0))) or 1.0
-    delta_si_sum = 0.0
+    delta_si_sum = 0.0  # suma de variaciones δSi
     delta_si_count = 0
-    B_sum = 0.0
+    B_sum = 0.0  # suma de bifurcaciones B
     B_count = 0
-    for n, nd in G.nodes(data=True):
-        if abs(get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr and abs(get_attr(nd, ALIAS_dEPI, 0.0)) <= eps_depi:
-            stables += 1
 
-        # δSi por nodo
+    for n, nd in G.nodes(data=True):
+        # --- estabilidad ---
+        if (
+            abs(get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr
+            and abs(get_attr(nd, ALIAS_dEPI, 0.0)) <= eps_depi
+        ):
+            stables += 1  # acumulamos nodos estables
+
+        # --- δSi: cambio de sensibilidad ---
         Si_curr = get_attr(nd, ALIAS_SI, 0.0)
         Si_prev = nd.get("_prev_Si", Si_curr)
         dSi = Si_curr - Si_prev
         nd["_prev_Si"] = Si_curr
         set_attr(nd, ALIAS_dSI, dSi)
-        delta_si_sum += dSi
+        delta_si_sum += dSi  # acumulamos δSi total
         delta_si_count += 1
 
-        # Bifurcación B = ∂²νf/∂t²
+        # --- bifurcación B = ∂²νf/∂t² ---
         vf_curr = get_attr(nd, ALIAS_VF, 0.0)
         vf_prev = nd.get("_prev_vf", vf_curr)
         dvf_dt = (vf_curr - vf_prev) / dt
@@ -1065,7 +1071,7 @@ def _update_history(G) -> None:
         nd["_prev_dvf"] = dvf_dt
         set_attr(nd, ALIAS_dVF, dvf_dt)
         set_attr(nd, ALIAS_D2VF, B)
-        B_sum += B
+        B_sum += B  # acumulamos B total
         B_count += 1
 
     hist["stable_frac"].append(stables/total)
