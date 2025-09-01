@@ -67,7 +67,14 @@ def _node_offset(G, n) -> int:
 
 def _jitter_base(seed: int, key: int) -> random.Random:
     """Return a ``random.Random`` instance seeded from ``seed`` and ``key``."""
-    return random.Random(f"{seed}:{key}")
+    seed_input = (seed, key)
+    try:
+        # Python's ``random`` module does not officially support tuples as seeds,
+        # but future versions may. Attempt to use the tuple directly first and
+        # fall back to a string representation when unsupported.
+        return random.Random(seed_input)
+    except TypeError:
+        return random.Random(str(seed_input))
 
 
 # Global cache for deterministic jitter generators
@@ -75,14 +82,30 @@ JITTER_CACHE_SIZE = 256
 
 
 @lru_cache(maxsize=JITTER_CACHE_SIZE)
-def _get_jitter_rng(seed: int, key: int) -> random.Random:
+def _get_jitter_rng_pair(seed: int, key: int) -> random.Random:
     """Return cached ``random.Random`` keyed by seed and node."""
     return _jitter_base(seed, key)
 
 
+def _get_jitter_rng(
+    seed: int | tuple[int, int], key: Optional[int] = None
+) -> random.Random:
+    """Return cached ``random.Random`` for ``(seed, key)``.
+
+    Supports invocation as ``_get_jitter_rng(seed, key)`` or
+    ``_get_jitter_rng((seed, key))`` while maintaining a stable LRU cache.
+    """
+    if key is None:
+        if isinstance(seed, tuple):
+            seed, key = seed
+        else:
+            key = 0
+    return _get_jitter_rng_pair(int(seed), int(key))
+
+
 def clear_jitter_cache() -> None:
     """Clear the global LRU cache for jitter generators."""
-    _get_jitter_rng.cache_clear()
+    _get_jitter_rng_pair.cache_clear()
 
 
 def random_jitter(
