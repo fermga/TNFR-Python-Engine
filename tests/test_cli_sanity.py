@@ -35,6 +35,15 @@ def test_cli_run_erdos_p():
     assert rc == 0
 
 
+def test_grammar_args_help_group(capsys):
+    parser = argparse.ArgumentParser()
+    add_grammar_args(parser)
+    parser.print_help()
+    out = capsys.readouterr().out
+    assert "Grammar" in out
+    assert "--grammar.enabled" in out
+
+
 def test_args_to_dict_nested_options():
     parser = argparse.ArgumentParser()
     add_common_args(parser)

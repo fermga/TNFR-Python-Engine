@@ -226,9 +226,10 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
 
 def add_grammar_args(parser: argparse.ArgumentParser) -> None:
     """Agrega las opciones de gramática y de histéresis del glifo."""
+    group = parser.add_argument_group("Grammar")
     for opt, typ in GRAMMAR_ARG_SPECS:
         dest = opt.lstrip("-").replace(".", "_")
-        parser.add_argument(opt, dest=dest, type=typ, default=None)
+        group.add_argument(opt, dest=dest, type=typ, default=None)
 
 
 def add_history_export_args(parser: argparse.ArgumentParser) -> None:
