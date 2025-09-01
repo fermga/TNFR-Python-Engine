@@ -261,6 +261,12 @@ def add_grammar_args(parser: argparse.ArgumentParser) -> None:
         group.add_argument(opt, dest=dest, type=typ, default=None)
 
 
+def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
+    """Agrega las opciones de gramática y el selector de glifo."""
+    add_grammar_args(parser)
+    parser.add_argument("--selector", choices=["basic", "param"], default="basic")
+
+
 def add_history_export_args(parser: argparse.ArgumentParser) -> None:
     """Agrega los argumentos para guardar o exportar el histórico."""
     parser.add_argument("--save-history", dest="save_history", type=str, default=None)
@@ -401,8 +407,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     add_history_export_args(p_run)
     p_run.add_argument("--summary", action="store_true")
     add_canon_toggle(p_run)
-    add_grammar_args(p_run)
-    p_run.add_argument("--selector", choices=["basic", "param"], default="basic")
+    add_grammar_selector_args(p_run)
     p_run.set_defaults(func=cmd_run)
 
     p_seq = sub.add_parser(
@@ -429,8 +434,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     add_common_args(p_met)
     p_met.add_argument("--steps", type=int, default=300)
     add_canon_toggle(p_met)
-    add_grammar_args(p_met)
-    p_met.add_argument("--selector", choices=["basic", "param"], default="basic")
+    add_grammar_selector_args(p_met)
     p_met.add_argument("--save", type=str, default=None)
     p_met.set_defaults(func=cmd_metrics)
 
