@@ -122,7 +122,7 @@ class NodoTNFR:
     _hist_glifos: Deque[str] = field(default_factory=lambda: deque(maxlen=DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 7)))
 
     def neighbors(self) -> Iterable["NodoTNFR"]:
-        return list(self._neighbors.keys())
+        return self._neighbors.keys()
 
     def has_edge(self, other: "NodoTNFR") -> bool:
         return other in self._neighbors
@@ -141,6 +141,8 @@ class NodoTNFR:
         ``weight``.
         """
 
+        if other is self:
+            return
         if other in self._neighbors and not overwrite:
             return
         self._neighbors[other] = weight
@@ -190,7 +192,7 @@ class NodoNX(NodoProtocol):
     d2EPI = _nx_attr_property(ALIAS_D2EPI)
 
     def neighbors(self) -> Iterable[NodoProtocol]:
-        return [NodoNX(self.G, v) for v in self.G.neighbors(self.n)]
+        return (NodoNX(self.G, v) for v in self.G.neighbors(self.n))
 
     def push_glifo(self, glifo: str, window: int) -> None:
         push_glifo(self.G.nodes[self.n], glifo, window)
@@ -204,6 +206,8 @@ class NodoNX(NodoProtocol):
     def add_edge(
         self, other: NodoProtocol, weight: float, *, overwrite: bool = False
     ) -> None:
+        if other is self:
+            return
         if isinstance(other, NodoNX):
             if self.G.has_edge(self.n, other.n) and not overwrite:
                 return
