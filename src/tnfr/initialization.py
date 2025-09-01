@@ -14,7 +14,9 @@ def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
     ``INIT_VF_MODE``, ``VF_MIN``, ``VF_MAX``, ``INIT_VF_MIN/MAX``,
     ``INIT_VF_MEAN``, ``INIT_VF_STD`` y ``INIT_VF_CLAMP_TO_LIMITS``.
     Se añaden rangos para ``Si`` vía ``INIT_SI_MIN`` y ``INIT_SI_MAX``, y para
-    ``EPI`` mediante ``INIT_EPI_VALUE``.
+    ``EPI`` mediante ``INIT_EPI_VALUE``. Si ``INIT_VF_MIN`` es mayor que
+    ``INIT_VF_MAX``, los valores se intercambian y se ajustan al rango
+    delimitado por ``VF_MIN``/``VF_MAX``.
     """
     seed = int(G.graph.get("RANDOM_SEED", 0))
     init_rand_phase = bool(
@@ -36,6 +38,10 @@ def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
         vf_uniform_min = vf_min_lim
     if vf_uniform_max is None:
         vf_uniform_max = vf_max_lim
+    if vf_uniform_min > vf_uniform_max:
+        vf_uniform_min, vf_uniform_max = vf_uniform_max, vf_uniform_min
+    vf_uniform_min = max(vf_uniform_min, vf_min_lim)
+    vf_uniform_max = min(vf_uniform_max, vf_max_lim)
 
     vf_mean = float(G.graph.get("INIT_VF_MEAN", INIT_DEFAULTS["INIT_VF_MEAN"]))
     vf_std = float(G.graph.get("INIT_VF_STD", INIT_DEFAULTS["INIT_VF_STD"]))
