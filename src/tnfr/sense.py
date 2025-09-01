@@ -201,7 +201,7 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
 # -------------------------
 
 def register_sigma_callback(G) -> None:
-    register_callback(G, when="after_step", func=push_sigma_snapshot, name="sigma_snapshot")
+    register_callback(G, event="after_step", func=push_sigma_snapshot, name="sigma_snapshot")
 
 
 # -------------------------

@@ -23,7 +23,7 @@ def test_trace_metadata_contains_callback_names(graph_canon):
     def foo(G, ctx):
         pass
 
-    register_callback(G, when="before_step", func=foo, name="custom_cb")
+    register_callback(G, event="before_step", func=foo, name="custom_cb")
     invoke_callbacks(G, "before_step")
 
     hist = G.graph["history"]["trace_meta"]

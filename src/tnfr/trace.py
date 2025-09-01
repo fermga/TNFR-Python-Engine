@@ -155,7 +155,7 @@ def register_trace(G) -> None:
     if G.graph.get("_trace_registered"):
         return
 
-    register_callback(G, when="before_step", func=_trace_before, name="trace_before")
-    register_callback(G, when="after_step", func=_trace_after, name="trace_after")
+    register_callback(G, event="before_step", func=_trace_before, name="trace_before")
+    register_callback(G, event="after_step", func=_trace_after, name="trace_after")
 
     G.graph["_trace_registered"] = True

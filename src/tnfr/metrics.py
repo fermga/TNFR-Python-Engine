@@ -178,7 +178,7 @@ def _metrics_step(G, *args, **kwargs):
 # -------------
 
 def register_metrics_callbacks(G) -> None:
-    register_callback(G, when="after_step", func=_metrics_step, name="metrics_step")
+    register_callback(G, event="after_step", func=_metrics_step, name="metrics_step")
     # Nuevas funcionalidades canónicas
     register_coherence_callbacks(G)
     register_diagnosis_callbacks(G)
@@ -541,7 +541,7 @@ def _coherence_step(G, ctx=None):
 
 
 def register_coherence_callbacks(G) -> None:
-    register_callback(G, when="after_step", func=_coherence_step, name="coherence_step")
+    register_callback(G, event="after_step", func=_coherence_step, name="coherence_step")
 
 
 # =========================
@@ -683,6 +683,6 @@ def dissonance_events(G, ctx=None):
 
 
 def register_diagnosis_callbacks(G) -> None:
-    register_callback(G, when="after_step", func=_diagnosis_step, name="diagnosis_step")
-    register_callback(G, when="after_step", func=dissonance_events, name="dissonance_events")
+    register_callback(G, event="after_step", func=_diagnosis_step, name="diagnosis_step")
+    register_callback(G, event="after_step", func=dissonance_events, name="dissonance_events")
 
