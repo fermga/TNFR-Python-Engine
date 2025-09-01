@@ -64,32 +64,45 @@ def _update_tg(G, hist, dt, save_by_node: bool):
     tg_total = hist.setdefault("Tg_total", defaultdict(float))
     tg_by_node = hist.setdefault("Tg_by_node", {})
 
+    lookups = {
+        "last": last_glifo,
+        "state": _tg_state,
+        "latent": "SHA",
+        "curr": "curr",
+        "run": "run",
+    }
+    last = lookups["last"]
+    tg_state = lookups["state"]
+    latent = lookups["latent"]
+    curr_key = lookups["curr"]
+    run_key = lookups["run"]
+
     for n, nd in G.nodes(data=True):
-        g = last_glifo(nd)
+        g = last(nd)
         if not g:
             continue
 
         n_total += 1
-        if g == "SHA":
+        if g == latent:
             n_latent += 1
 
         counts[g] += 1
 
-        st = _tg_state(nd)
-        if st["curr"] is None:
-            st["curr"] = g
-            st["run"] = dt
-        elif g == st["curr"]:
-            st["run"] += dt
+        st = tg_state(nd)
+        if st[curr_key] is None:
+            st[curr_key] = g
+            st[run_key] = dt
+        elif g == st[curr_key]:
+            st[run_key] += dt
         else:
-            prev = st["curr"]
-            dur = float(st["run"])
+            prev = st[curr_key]
+            dur = float(st[run_key])
             tg_total[prev] += dur
             if save_by_node:
                 rec = tg_by_node.setdefault(n, defaultdict(list))
                 rec[prev].append(dur)
-            st["curr"] = g
-            st["run"] = dt
+            st[curr_key] = g
+            st[run_key] = dt
 
     return counts, n_total, n_latent
 

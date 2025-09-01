@@ -1,0 +1,79 @@
+import time
+from collections import Counter, defaultdict
+
+from tnfr.constants import attach_defaults
+from tnfr.helpers import last_glifo
+from tnfr.metrics import _update_tg, _tg_state
+
+
+def _update_tg_naive(G, hist, dt, save_by_node):
+    """Referencia ingenua para comparar resultados con _update_tg."""
+    counts = Counter()
+    n_total = 0
+    n_latent = 0
+
+    tg_total = hist.setdefault("Tg_total", defaultdict(float))
+    tg_by_node = hist.setdefault("Tg_by_node", {})
+
+    for n in G.nodes():
+        nd = G.nodes[n]
+        g = last_glifo(nd)
+        if not g:
+            continue
+
+        n_total += 1
+        if g == "SHA":
+            n_latent += 1
+
+        counts[g] += 1
+
+        st = _tg_state(nd)
+        if st["curr"] is None:
+            st["curr"] = g
+            st["run"] = dt
+        elif g == st["curr"]:
+            st["run"] += dt
+        else:
+            prev = st["curr"]
+            dur = float(st["run"])
+            tg_total[prev] += dur
+            if save_by_node:
+                rec = tg_by_node.setdefault(n, defaultdict(list))
+                rec[prev].append(dur)
+            st["curr"] = g
+            st["run"] = dt
+
+    return counts, n_total, n_latent
+
+
+def test_update_tg_matches_naive(graph_canon):
+    """_update_tg produce los mismos resultados que la versión ingenua."""
+    G_opt = graph_canon()
+    G_ref = graph_canon()
+
+    for G in (G_opt, G_ref):
+        G.add_node(0, EPI_kind="OZ")
+        G.add_node(1, EPI_kind="SHA")
+        G.add_node(2, EPI_kind="NAV")
+        G.add_node(3, EPI_kind="OZ")
+        G.add_node(4, EPI_kind="SHA")
+        attach_defaults(G)
+
+    hist_opt = {}
+    hist_ref = {}
+    dt = 1.0
+
+    start = time.perf_counter()
+    counts_opt, n_total_opt, n_latent_opt = _update_tg(G_opt, hist_opt, dt, True)
+    t_opt = time.perf_counter() - start
+
+    start = time.perf_counter()
+    counts_ref, n_total_ref, n_latent_ref = _update_tg_naive(G_ref, hist_ref, dt, True)
+    t_ref = time.perf_counter() - start
+
+    assert counts_opt == counts_ref
+    assert n_total_opt == n_total_ref
+    assert n_latent_opt == n_latent_ref
+    assert hist_opt == hist_ref
+    assert t_opt <= t_ref * 2
+
