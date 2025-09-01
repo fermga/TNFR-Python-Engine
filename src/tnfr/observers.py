@@ -98,7 +98,7 @@ def carga_glifica(G, window: int | None = None) -> dict:
     - window: si se indica, cuenta solo los últimos `window` eventos por nodo; si no, usa el maxlen del deque.
     Retorna un dict con proporciones por glifo y agregados útiles.
     """
-    total = count_glyphs(G, window=window)
+    total = count_glyphs(G, window=window, last_only=(window == 1))
     count = sum(total.values())
     if count == 0:
         return {"_count": 0}

@@ -396,25 +396,23 @@ def last_glifo(nd: Dict[str, Any]) -> str | None:
         return None
 
 
-def _count_last_glifos(G) -> Counter:
-    """Cuenta solo el último glifo de cada nodo."""
-    counts: Counter[str] = Counter()
-    for _, nd in G.nodes(data=True):
-        g = last_glifo(nd)
-        if g:
-            counts[g] += 1
-    return counts
-
-
-def count_glyphs(G, window: int | None = None) -> Counter:
+def count_glyphs(
+    G, window: int | None = None, *, last_only: bool = False
+) -> Counter:
     """Cuenta glifos recientes en la red.
 
-    Si ``window`` es ``1`` cuenta solo el último glifo de cada nodo. Con un
-    valor mayor o ``None`` se usa el historial ``hist_glifos`` limitado a los
-    últimos ``window`` elementos por nodo.
+    Si ``last_only`` es ``True`` cuenta solo el último glifo de cada nodo. En
+    caso contrario se usa el historial ``hist_glifos`` limitado a los últimos
+    ``window`` elementos por nodo (o a todo el deque si ``window`` es ``None``).
     """
-    if window == 1:
-        return _count_last_glifos(G)
+    if last_only:
+        counts: Counter[str] = Counter()
+        for _, nd in G.nodes(data=True):
+            g = last_glifo(nd)
+            if g:
+                counts[g] += 1
+        return counts
+
     counts: Counter[str] = Counter()
     for _, nd in G.nodes(data=True):
         hist = nd.get("hist_glifos")
