@@ -7,8 +7,24 @@ from typing import Dict
 from .types import Glyph
 
 # -------------------------
-# Clasificaciones funcionales de glifos
+# Orden canónico y clasificaciones funcionales
 # -------------------------
+
+GLYPHS_CANONICAL: tuple[str, ...] = (
+    Glyph.AL.value,   # 0
+    Glyph.EN.value,   # 1
+    Glyph.IL.value,   # 2
+    Glyph.OZ.value,   # 3
+    Glyph.UM.value,   # 4
+    Glyph.RA.value,   # 5
+    Glyph.SHA.value,  # 6
+    Glyph.VAL.value,  # 7
+    Glyph.NUL.value,  # 8
+    Glyph.THOL.value, # 9
+    Glyph.ZHIR.value, # 10
+    Glyph.NAV.value,  # 11
+    Glyph.REMESH.value,  # 12
+)
 
 ESTABILIZADORES = (
     Glyph.IL.value,
@@ -60,3 +76,11 @@ ANGLE_MAP: Dict[str, float] = {
     Glyph.SHA.value: 3 * math.pi / 4,
     Glyph.REMESH.value: 24 * math.pi / 13,
 }
+
+__all__ = [
+    "GLYPHS_CANONICAL",
+    "ESTABILIZADORES",
+    "DISRUPTIVOS",
+    "GLYPH_GROUPS",
+    "ANGLE_MAP",
+]
