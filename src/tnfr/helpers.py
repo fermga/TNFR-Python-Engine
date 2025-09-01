@@ -34,6 +34,7 @@ __all__ = [
     "list_mean",
     "angle_diff",
     "phase_distance",
+    "normalize_weights",
     "alias_get",
     "alias_set",
     "get_attr",
@@ -123,6 +124,24 @@ def angle_diff(a: float, b: float) -> float:
 def phase_distance(a: float, b: float) -> float:
     """Distancia de fase normalizada en [0,1]. 0 = misma fase, 1 = opuesta."""
     return abs(_wrap_angle(a - b)) / math.pi
+
+
+def normalize_weights(dict_like: Dict[str, Any], keys: Iterable[str], default: float = 0.0) -> Dict[str, float]:
+    """Devuelve ``dict`` de ``keys`` normalizadas a sumatorio 1.
+
+    Cada clave en ``keys`` se extrae de ``dict_like`` convirtiéndola a ``float``.
+    Si la suma de los valores obtenidos es <= 0, se asignan proporciones
+    uniformes entre todas las claves.
+    """
+    weights = {k: float(dict_like.get(k, default)) for k in keys}
+    total = sum(weights.values())
+    n = len(weights)
+    if total <= 0:
+        if n == 0:
+            return {}
+        uniform = 1.0 / n
+        return {k: uniform for k in keys}
+    return {k: v / total for k, v in weights.items()}
 
 
 # -------------------------
@@ -436,16 +455,17 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     También guarda en ``G.graph`` los pesos normalizados y la
     sensibilidad parcial (∂Si/∂componente).
     """
-    alpha = float(G.graph.get("SI_WEIGHTS", DEFAULTS["SI_WEIGHTS"]).get("alpha", 0.34))
-    beta = float(G.graph.get("SI_WEIGHTS", DEFAULTS["SI_WEIGHTS"]).get("beta", 0.33))
-    gamma = float(G.graph.get("SI_WEIGHTS", DEFAULTS["SI_WEIGHTS"]).get("gamma", 0.33))
-    s = alpha + beta + gamma
-    if s <= 0:
-        alpha = beta = gamma = 1/3
-    else:
-        alpha, beta, gamma = alpha/s, beta/s, gamma/s
-    G.graph["_Si_weights"] = {"alpha": alpha, "beta": beta, "gamma": gamma}
-    G.graph["_Si_sensitivity"] = {"dSi_dvf_norm": alpha, "dSi_ddisp_fase": -beta, "dSi_ddnfr_norm": -gamma}
+    w = {**DEFAULTS["SI_WEIGHTS"], **G.graph.get("SI_WEIGHTS", {})}
+    weights = normalize_weights(w, ("alpha", "beta", "gamma"), default=0.0)
+    alpha = weights["alpha"]
+    beta = weights["beta"]
+    gamma = weights["gamma"]
+    G.graph["_Si_weights"] = weights
+    G.graph["_Si_sensitivity"] = {
+        "dSi_dvf_norm": alpha,
+        "dSi_ddisp_fase": -beta,
+        "dSi_ddnfr_norm": -gamma,
+    }
 
     # Normalización de νf y ΔNFR en red usando máximos cacheados
     vfmax = G.graph.get("_vfmax")

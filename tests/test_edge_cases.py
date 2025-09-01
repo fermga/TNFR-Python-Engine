@@ -35,9 +35,10 @@ def test_dnfr_weights_normalization(graph_canon):
     default_compute_delta_nfr(G)
     weights = G.graph["_DNFR_META"]["weights_norm"]
     cache = G.graph.get("_dnfr_weights")
-    assert pytest.approx(weights["phase"], rel=1e-6) == 1/3
-    assert pytest.approx(weights["epi"], rel=1e-6) == 1/3
-    assert pytest.approx(weights["vf"], rel=1e-6) == 1/3
+    assert pytest.approx(weights["phase"], rel=1e-6) == 0.25
+    assert pytest.approx(weights["epi"], rel=1e-6) == 0.25
+    assert pytest.approx(weights["vf"], rel=1e-6) == 0.25
+    assert pytest.approx(weights["topo"], rel=1e-6) == 0.25
     assert cache == weights
 
 
