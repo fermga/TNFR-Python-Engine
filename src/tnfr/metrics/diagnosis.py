@@ -5,7 +5,13 @@ from statistics import fmean
 from typing import Dict
 
 from ..constants import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_SI, DIAGNOSIS, COHERENCE
-from ..helpers import register_callback, ensure_history, get_attr, clamp01
+from ..helpers import (
+    register_callback,
+    ensure_history,
+    get_attr,
+    clamp01,
+    compute_dnfr_accel_max,
+)
 from .coherence import local_phase_sync_weighted, _similarity_abs
 
 
@@ -54,8 +60,9 @@ def _diagnosis_step(G, ctx=None):
     hist = ensure_history(G)
     key = dcfg.get("history_key", "nodal_diag")
 
-    dnfr_vals = [abs(float(get_attr(G.nodes[v], ALIAS_DNFR, 0.0))) for v in G.nodes()]
-    dnfr_max = max(dnfr_vals) if dnfr_vals else 1.0
+    norms = compute_dnfr_accel_max(G)
+    G.graph["_sel_norms"] = norms
+    dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     epi_vals = [float(get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in G.nodes()]
     epi_min, epi_max = (min(epi_vals) if epi_vals else 0.0), (max(epi_vals) if epi_vals else 1.0)
 

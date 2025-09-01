@@ -11,11 +11,13 @@ def _make_graph(graph_canon):
     return G
 
 
-def test_default_selector_does_not_compute_norms(graph_canon):
+def test_default_selector_computes_norms(graph_canon):
     G = _make_graph(graph_canon)
     G.graph["glyph_selector"] = default_glyph_selector
     step(G, use_Si=False, apply_glyphs=True)
-    assert "_sel_norms" not in G.graph
+    assert "_sel_norms" in G.graph
+    assert "dnfr_max" in G.graph["_sel_norms"]
+    assert "accel_max" in G.graph["_sel_norms"]
 
 
 def test_parametric_selector_computes_norms(graph_canon):
