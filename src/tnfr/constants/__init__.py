@@ -85,7 +85,10 @@ def get_param(G, key: str):
                 stacklevel=2,
             )
             return G.graph[alias]
-    return DEFAULTS[key]
+    value = DEFAULTS.get(key)
+    if value is None:
+        raise KeyError(f"Parámetro desconocido: '{key}'")
+    return value
 
 
 # Alias exportados por conveniencia (evita imports circulares)
