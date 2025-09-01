@@ -374,7 +374,7 @@ def fase_media(obj, n=None) -> float:
         count += 1
     if count == 0:
         return getattr(node, "theta", 0.0)
-    return math.atan2(y / count, x / count)
+    return math.atan2(y, x)
 
 
 # -------------------------
