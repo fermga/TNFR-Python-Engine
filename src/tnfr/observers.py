@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 import statistics as st
 from itertools import islice
+from functools import partial
 
 from .constants import ALIAS_THETA, METRIC_DEFAULTS
 from .helpers import (
@@ -19,28 +20,27 @@ from .gamma import kuramoto_R_psi
 # -------------------------
 # Observador estándar Γ(R)
 # -------------------------
-def _std_log(G, kind: str, ctx: dict):
-    """Guarda eventos compactos en history['events']."""
+def _std_log(kind: str, G, ctx: dict):
+    """Guarda eventos compactos en ``history['events']``."""
     h = ensure_history(G)
     h.setdefault("events", []).append((kind, dict(ctx)))
 
-def std_before(G, ctx):
-    _std_log(G, "before", ctx)
 
-def std_after(G, ctx):
-    _std_log(G, "after", ctx)
+_STD_CALLBACKS = {
+    "before_step": partial(_std_log, "before"),
+    "after_step": partial(_std_log, "after"),
+    "on_remesh": partial(_std_log, "remesh"),
+}
 
-def std_on_remesh(G, ctx):
-    _std_log(G, "remesh", ctx)
+# alias conservados por compatibilidad
+std_before = _STD_CALLBACKS["before_step"]
+std_after = _STD_CALLBACKS["after_step"]
+std_on_remesh = _STD_CALLBACKS["on_remesh"]
+
 
 def attach_standard_observer(G):
     """Registra callbacks estándar: before_step, after_step, on_remesh."""
-    callbacks = [
-        ("before_step", std_before),
-        ("after_step", std_after),
-        ("on_remesh", std_on_remesh),
-    ]
-    for event, fn in callbacks:
+    for event, fn in _STD_CALLBACKS.items():
         register_callback(G, event, fn)
     G.graph.setdefault("_STD_OBSERVER", "attached")
     return G
