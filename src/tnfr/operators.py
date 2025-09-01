@@ -6,7 +6,6 @@ import math
 import random
 import hashlib
 import heapq
-import pickle
 import weakref
 import networkx as nx
 from networkx.algorithms import community as nx_comm
@@ -49,7 +48,7 @@ def _ensure_node_offset_map(G) -> Dict[Any, int]:
     """
 
     nodes = list(G.nodes())
-    checksum = hashlib.blake2b(pickle.dumps(tuple(nodes)), digest_size=16).hexdigest()
+    checksum = hash(tuple(nodes))
     mapping = G.graph.get("_node_offset_map")
     if mapping is None or G.graph.get("_node_offset_checksum") != checksum:
         if bool(G.graph.get("SORT_NODES", False)):
