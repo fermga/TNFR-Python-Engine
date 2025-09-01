@@ -16,7 +16,7 @@ from .coherence import local_phase_sync_weighted, _similarity_abs
 
 
 def _dnfr_norm(nd, dnfr_max):
-    val = abs(float(get_attr(nd, ALIAS_DNFR, 0.0)))
+    val = abs(get_attr(nd, ALIAS_DNFR, 0.0))
     if dnfr_max <= 0:
         return 0.0
     x = val / dnfr_max
@@ -25,13 +25,13 @@ def _dnfr_norm(nd, dnfr_max):
 
 def _symmetry_index(G, n, k=3, epi_min=None, epi_max=None):
     nd = G.nodes[n]
-    epi_i = float(get_attr(nd, ALIAS_EPI, 0.0))
+    epi_i = get_attr(nd, ALIAS_EPI, 0.0)
     vec = list(G.neighbors(n))
     if not vec:
         return 1.0
-    epi_bar = fmean(float(get_attr(G.nodes[v], ALIAS_EPI, epi_i)) for v in vec)
+    epi_bar = fmean(get_attr(G.nodes[v], ALIAS_EPI, epi_i) for v in vec)
     if epi_min is None or epi_max is None:
-        epis = [float(get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in G.nodes()]
+        epis = [get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in G.nodes()]
         epi_min, epi_max = min(epis), max(epis)
     return _similarity_abs(epi_i, epi_bar, epi_min, epi_max)
 
@@ -63,7 +63,7 @@ def _diagnosis_step(G, ctx=None):
     norms = compute_dnfr_accel_max(G)
     G.graph["_sel_norms"] = norms
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
-    epi_vals = [float(get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in G.nodes()]
+    epi_vals = [get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in G.nodes()]
     epi_min, epi_max = (min(epi_vals) if epi_vals else 0.0), (max(epi_vals) if epi_vals else 1.0)
 
     CfgW = G.graph.get("COHERENCE", COHERENCE)
@@ -80,7 +80,7 @@ def _diagnosis_step(G, ctx=None):
     for i, n in enumerate(nodes):
         nd = G.nodes[n]
         Si = clamp01(get_attr(nd, ALIAS_SI, 0.0))
-        EPI = float(get_attr(nd, ALIAS_EPI, 0.0))
+        EPI = get_attr(nd, ALIAS_EPI, 0.0)
         vf = get_attr(nd, ALIAS_VF, 0.0)
         dnfr_n = _dnfr_norm(nd, dnfr_max)
 

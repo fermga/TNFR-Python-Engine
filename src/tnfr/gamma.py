@@ -59,7 +59,7 @@ def _kuramoto_common(G, node, cfg):
     cache = G.graph.get("_kuramoto_cache", {})
     R = float(cache.get("R", 0.0))
     psi = float(cache.get("psi", 0.0))
-    th_i = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
+    th_i = get_attr(G.nodes[node], ALIAS_THETA, 0.0)
     return th_i, R, psi
 
 

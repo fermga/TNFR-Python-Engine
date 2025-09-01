@@ -74,7 +74,7 @@ def coherence_matrix(G):
     # Precompute indices to avoid repeated list.index calls within loops
     node_to_index = {node: idx for idx, node in enumerate(nodes)}
 
-    epi_vals = [float(get_attr(G.nodes[v], ALIAS_EPI, 0.0)) for v in nodes]
+    epi_vals = [get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in nodes]
     vf_vals = [get_attr(G.nodes[v], ALIAS_VF, 0.0) for v in nodes]
     epi_min, epi_max = min(epi_vals), max(epi_vals)
     vf_min, vf_max = min(vf_vals), max(vf_vals)
@@ -182,7 +182,7 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=
     # --- Caso sin pesos ---
     if W_row is None or nodes_order is None:
         vec = [
-            cmath.exp(1j * float(get_attr(G.nodes[v], ALIAS_THETA, 0.0)))
+            cmath.exp(1j * get_attr(G.nodes[v], ALIAS_THETA, 0.0))
             for v in (G.neighbors(n) if neighbors_only else (set(G.nodes()) - {n}))
         ]
         if not vec:
@@ -220,7 +220,7 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=
             continue
         w = weights[j]
         den += w
-        th_j = float(get_attr(G.nodes[nj], ALIAS_THETA, 0.0))
+        th_j = get_attr(G.nodes[nj], ALIAS_THETA, 0.0)
         num += w * cmath.exp(1j * th_j)
     return abs(num / den) if den else 0.0
 

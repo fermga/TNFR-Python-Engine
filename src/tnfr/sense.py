@@ -64,7 +64,7 @@ def _weight(G, n, mode: str) -> float:
     if mode == "Si":
         return clamp01(get_attr(nd, ALIAS_SI, 0.5))
     if mode == "EPI":
-        return max(0.0, float(get_attr(nd, ALIAS_EPI, 0.0)))
+        return max(0.0, get_attr(nd, ALIAS_EPI, 0.0))
     return 1.0
 
 
