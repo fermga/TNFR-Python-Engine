@@ -799,7 +799,7 @@ def parametric_glyph_selector(G, n) -> str:
     thr = _selector_thresholds(G)
     si_hi, si_lo = thr["si_hi"], thr["si_lo"]
     dnfr_hi, dnfr_lo = thr["dnfr_hi"], thr["dnfr_lo"]
-    acc_hi, acc_lo = thr["accel_hi"], thr["accel_lo"]
+    acc_hi = thr["accel_hi"]
     margin = float(G.graph.get("GLYPH_SELECTOR_MARGIN", DEFAULTS["GLYPH_SELECTOR_MARGIN"]))
 
     # Normalizadores por paso
