@@ -72,6 +72,48 @@ def _nx_attr_property(
     return property(fget, fset)
 
 
+def _add_edge_common(G, n1, n2, weight, overwrite):
+    """Add an edge between ``n1`` and ``n2`` in ``G`` with ``weight``.
+
+    Parameters
+    ----------
+    G:
+        Graph-like object or graph data. For ``NodoTNFR`` instances this is the
+        ``graph`` dictionary, while for ``NodoNX`` it is the underlying
+        ``networkx`` graph.
+    n1, n2:
+        Nodes to connect. They can be ``NodoTNFR`` instances or ``networkx``
+        node identifiers.
+    weight:
+        Edge weight. Must be a non-negative number.
+    overwrite:
+        Whether to overwrite an existing edge weight.
+    """
+
+    if n1 == n2:
+        return
+
+    if hasattr(G, "has_edge"):
+        # networkx graph
+        if G.has_edge(n1, n2) and not overwrite:
+            return
+        weight = float(weight)
+        if weight < 0:
+            raise ValueError("Edge weight must be non-negative")
+        G.add_edge(n1, n2, weight=weight)
+        increment_edge_version(G)
+    else:
+        # NodoTNFR-style graph
+        if n2 in n1._neighbors and not overwrite:
+            return
+        weight = float(weight)
+        if weight < 0:
+            raise ValueError("Edge weight must be non-negative")
+        n1._neighbors[n2] = weight
+        n2._neighbors[n1] = weight
+        increment_edge_version(G)
+
+
 class NodoProtocol(Protocol):
     """Protocolo mínimo para nodos TNFR."""
 
@@ -138,23 +180,9 @@ class NodoTNFR:
     def add_edge(
         self, other: "NodoTNFR", weight: float = 1.0, *, overwrite: bool = False
     ) -> None:
-        """Conecta este nodo con ``other``.
+        """Conecta este nodo con ``other``."""
 
-        Si la arista ya existe, el peso almacenado se conserva a menos que
-        ``overwrite`` sea ``True``, en cuyo caso se actualiza al nuevo
-        ``weight``.
-        """
-
-        if other is self:
-            return
-        if other in self._neighbors and not overwrite:
-            return
-        weight = float(weight)
-        if weight < 0:
-            raise ValueError("Edge weight must be non-negative")
-        self._neighbors[other] = weight
-        other._neighbors[self] = weight
-        increment_edge_version(self.graph)
+        _add_edge_common(self.graph, self, other, weight, overwrite)
 
     def push_glifo(self, glifo: str, window: int) -> None:
         nd = {"hist_glifos": self._hist_glifos}
@@ -213,16 +241,8 @@ class NodoNX(NodoProtocol):
     def add_edge(
         self, other: NodoProtocol, weight: float, *, overwrite: bool = False
     ) -> None:
-        if other is self:
-            return
         if isinstance(other, NodoNX):
-            if self.G.has_edge(self.n, other.n) and not overwrite:
-                return
-            weight = float(weight)
-            if weight < 0:
-                raise ValueError("Edge weight must be non-negative")
-            self.G.add_edge(self.n, other.n, weight=weight)
-            increment_edge_version(self.G)
+            _add_edge_common(self.G, self.n, other.n, weight, overwrite)
         else:
             raise NotImplementedError
 
