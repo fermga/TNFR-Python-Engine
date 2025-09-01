@@ -31,7 +31,9 @@ def test_read_structured_file_corrupt_json(tmp_path: Path):
     path.write_text("{bad json}", encoding="utf-8")
     with pytest.raises(ValueError) as excinfo:
         read_structured_file(path)
-    assert str(path) in str(excinfo.value)
+    msg = str(excinfo.value)
+    assert "JSON" in msg
+    assert str(path) in msg
 
 
 def test_read_structured_file_corrupt_yaml(tmp_path: Path):
@@ -40,4 +42,6 @@ def test_read_structured_file_corrupt_yaml(tmp_path: Path):
     path.write_text("a: [1, 2", encoding="utf-8")
     with pytest.raises(ValueError) as excinfo:
         read_structured_file(path)
-    assert str(path) in str(excinfo.value)
+    msg = str(excinfo.value)
+    assert "YAML" in msg
+    assert str(path) in msg

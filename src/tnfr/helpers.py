@@ -9,12 +9,16 @@ from itertools import islice
 import heapq
 from statistics import fmean, StatisticsError
 import json
+from json import JSONDecodeError
 from pathlib import Path
 
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
+    from yaml import YAMLError  # type: ignore
 except ImportError:  # pragma: no cover
     yaml = None
+    class YAMLError(Exception):  # type: ignore
+        pass
 
 if TYPE_CHECKING:
     import networkx as nx
@@ -98,12 +102,15 @@ def read_structured_file(path: Path) -> Any:
     parser = PARSERS[suffix]
     try:
         text = path.read_text(encoding="utf-8")
-        return parser(text)
     except (FileNotFoundError, PermissionError) as e:
         raise ValueError(f"No se pudo abrir {path}: {e}") from e
-    except Exception as e:
-        formato = "YAML" if parser is _parse_yaml else "JSON"
-        raise ValueError(f"Error al parsear {formato} en {path}: {e}") from e
+
+    try:
+        return parser(text)
+    except JSONDecodeError as e:
+        raise ValueError(f"Error al parsear archivo JSON en {path}: {e}") from e
+    except YAMLError as e:
+        raise ValueError(f"Error al parsear archivo YAML en {path}: {e}") from e
 
 
 def ensure_parent(path: str | Path) -> None:
