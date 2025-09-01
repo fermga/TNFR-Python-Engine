@@ -8,6 +8,7 @@ from typing import Iterable, Dict, Any, Callable, TypeVar
 import logging
 import math
 from collections import deque, Counter
+from itertools import islice
 import heapq
 from statistics import fmean, StatisticsError
 import json
@@ -487,8 +488,10 @@ def count_glyphs(
         if not hist:
             continue
         if window is not None and window > 0:
-            limite = min(len(hist), int(window))
-            seq = (hist[-i] for i in range(limite, 0, -1))
+            window_int = int(window)
+            seq = reversed(
+                list(islice(hist, max(0, len(hist) - window_int), len(hist)))
+            )
         else:
             seq = hist
         counts.update(seq)
