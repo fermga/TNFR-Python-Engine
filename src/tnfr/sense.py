@@ -134,7 +134,8 @@ def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
 
     x = y = 0.0
     for k in SIGMA_ANGLE_KEYS:
-        p = float(dist.get(k, 0.0)) / total
+        val = float(dist.get(k, 0.0))
+        p = val / total
         z = glyph_unit(k)
         x += p * z.real
         y += p * z.imag
