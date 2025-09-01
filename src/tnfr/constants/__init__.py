@@ -1,0 +1,133 @@
+"""TNFR constants package.
+
+Centraliza parámetros por defecto organizados en sub-diccionarios temáticos.
+Provee utilidades para inyectarlos en ``G.graph``.
+"""
+from __future__ import annotations
+
+from collections import ChainMap
+from typing import Any, Dict
+import warnings
+
+from .core import CORE_DEFAULTS, REMESH_DEFAULTS
+from .init import INIT_DEFAULTS
+from .metric import (
+    METRIC_DEFAULTS,
+    SIGMA,
+    TRACE,
+    METRICS,
+    GRAMMAR_CANON,
+    COHERENCE,
+    DIAGNOSIS,
+)
+
+# Diccionario combinado exportado
+DEFAULTS: Dict[str, Any] = dict(
+    ChainMap(METRIC_DEFAULTS, REMESH_DEFAULTS, INIT_DEFAULTS, CORE_DEFAULTS)
+)
+
+# -------------------------
+# Retrocompatibilidad y aliases
+# -------------------------
+# "REMESH_TAU" era el nombre original para la memoria de REMESH. Hoy se
+# desglosa en ``REMESH_TAU_GLOBAL`` y ``REMESH_TAU_LOCAL``.
+ALIASES: Dict[str, tuple[str, ...]] = {
+    "REMESH_TAU": ("REMESH_TAU_GLOBAL", "REMESH_TAU_LOCAL"),
+}
+
+# -------------------------
+# Utilidades
+# -------------------------
+
+def attach_defaults(G, override: bool = False) -> None:
+    """Escribe ``DEFAULTS`` combinados en ``G.graph``.
+
+    Si ``override`` es ``True`` se sobreescriben valores ya presentes.
+    """
+    inject_defaults(G, DEFAULTS, override=override)
+
+
+def inject_defaults(
+    G, defaults: Dict[str, Any] = DEFAULTS, override: bool = False
+) -> None:
+    """Inyecta ``defaults`` en ``G.graph``.
+
+    ``defaults`` suele ser ``DEFAULTS``, que combina todos los sub-diccionarios.
+    Si ``override`` es ``True`` se sobreescriben valores ya presentes.
+    """
+    G.graph.setdefault("_tnfr_defaults_attached", False)
+    for k, v in defaults.items():
+        if override or k not in G.graph:
+            G.graph[k] = v
+    G.graph["_tnfr_defaults_attached"] = True
+    try:  # local import para evitar dependencia circular
+        from ..operators import _ensure_node_offset_map
+
+        _ensure_node_offset_map(G)
+    except ImportError:
+        pass
+
+
+def merge_overrides(G, **overrides) -> None:
+    """Aplica cambios puntuales a ``G.graph``."""
+    for k, v in overrides.items():
+        G.graph[k] = v
+
+
+def get_param(G, key: str):
+    """Recupera parámetro desde ``G.graph`` resolviendo aliases legados."""
+    if key in G.graph:
+        return G.graph[key]
+    for alias, targets in ALIASES.items():
+        if key in targets and alias in G.graph:
+            warnings.warn(
+                f"'{alias}' es alias legado; usa '{key}'",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return G.graph[alias]
+    return DEFAULTS[key]
+
+
+# Alias exportados por conveniencia (evita imports circulares)
+ALIAS_VF = ("νf", "nu_f", "nu-f", "nu", "freq", "frequency")
+ALIAS_THETA = ("θ", "theta", "fase", "phi", "phase")
+ALIAS_DNFR = ("ΔNFR", "delta_nfr", "dnfr")
+ALIAS_EPI = ("EPI", "psi", "PSI", "value")
+ALIAS_EPI_KIND = ("EPI_kind", "epi_kind", "source_glifo")
+ALIAS_SI = ("Si", "sense_index", "S_i", "sense", "meaning_index")
+ALIAS_dEPI = ("dEPI_dt", "dpsi_dt", "dEPI", "velocity")
+ALIAS_D2EPI = ("d2EPI_dt2", "d2psi_dt2", "d2EPI", "accel")
+ALIAS_dVF = ("dνf_dt", "dvf_dt", "dnu_dt", "dvf")
+ALIAS_D2VF = ("d2νf_dt2", "d2vf_dt2", "d2nu_dt2", "B")
+ALIAS_dSI = ("δSi", "delta_Si", "dSi")
+
+__all__ = [
+    "CORE_DEFAULTS",
+    "INIT_DEFAULTS",
+    "REMESH_DEFAULTS",
+    "METRIC_DEFAULTS",
+    "SIGMA",
+    "TRACE",
+    "METRICS",
+    "GRAMMAR_CANON",
+    "COHERENCE",
+    "DIAGNOSIS",
+    "DEFAULTS",
+    "ALIASES",
+    "attach_defaults",
+    "inject_defaults",
+    "merge_overrides",
+    "get_param",
+    "ALIAS_VF",
+    "ALIAS_THETA",
+    "ALIAS_DNFR",
+    "ALIAS_EPI",
+    "ALIAS_EPI_KIND",
+    "ALIAS_SI",
+    "ALIAS_dEPI",
+    "ALIAS_D2EPI",
+    "ALIAS_dVF",
+    "ALIAS_D2VF",
+    "ALIAS_dSI",
+]
