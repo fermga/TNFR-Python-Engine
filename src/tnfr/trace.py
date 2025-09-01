@@ -38,6 +38,20 @@ def _trace_setup(G) -> tuple[Optional[Dict[str, Any]], List[str], Optional[Dict[
     key = cfg.get("history_key", "trace_meta")
     return cfg, capture, hist, key
 
+
+def _callback_names(callbacks: list) -> list[str]:
+    names: list[str] = []
+    for item in callbacks:
+        if isinstance(item, tuple):
+            name = item[0]
+            if not isinstance(name, str):
+                func = item[1] if len(item) > 1 else None
+                name = getattr(func, "__name__", "fn")
+        else:
+            name = getattr(item, "__name__", "fn")
+        names.append(name)
+    return names
+
 # -------------------------
 # Snapshots
 # -------------------------
@@ -72,22 +86,10 @@ def _trace_before(G, *args, **kwargs):
         # si el motor guarda los callbacks, exponer nombres por fase
         cb = G.graph.get("callbacks")
         if isinstance(cb, dict):
-            out = {}
-            for phase, callbacks in cb.items():
-                if isinstance(callbacks, list):
-                    names: List[str] = []
-                    for item in callbacks:
-                        if isinstance(item, tuple):
-                            name = item[0]
-                            if not isinstance(name, str):
-                                func = item[1] if len(item) > 1 else None
-                                name = getattr(func, "__name__", "fn")
-                        else:
-                            name = getattr(item, "__name__", "fn")
-                        names.append(name)
-                    out[phase] = names
-                else:
-                    out[phase] = None
+            out = {
+                phase: _callback_names(cb_list) if isinstance(cb_list, list) else None
+                for phase, cb_list in cb.items()
+            }
             meta["callbacks"] = out
 
     if "thol_state" in capture:
