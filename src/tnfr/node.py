@@ -22,6 +22,7 @@ from .helpers import (
     set_attr_str,
     set_vf,
     set_dnfr,
+    increment_edge_version,
 )
 
 from .operators import aplicar_glifo_obj
@@ -153,6 +154,7 @@ class NodoTNFR:
             raise ValueError("Edge weight must be non-negative")
         self._neighbors[other] = weight
         other._neighbors[self] = weight
+        increment_edge_version(self.graph)
 
     def push_glifo(self, glifo: str, window: int) -> None:
         nd = {"hist_glifos": self._hist_glifos}
@@ -220,6 +222,7 @@ class NodoNX(NodoProtocol):
             if weight < 0:
                 raise ValueError("Edge weight must be non-negative")
             self.G.add_edge(self.n, other.n, weight=weight)
+            increment_edge_version(self.G)
         else:
             raise NotImplementedError
 

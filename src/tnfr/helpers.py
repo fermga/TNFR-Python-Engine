@@ -64,6 +64,7 @@ __all__ = [
     "compute_dnfr_accel_max",
     "compute_coherence",
     "compute_Si",
+    "increment_edge_version",
 ]
 
 # -------------------------
@@ -720,3 +721,14 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
         if inplace:
             set_attr(nd, ALIAS_SI, Si)
     return out
+
+
+def increment_edge_version(G: Any) -> None:
+    """Incrementa el contador de versión de aristas en ``G.graph``.
+
+    Acepta un ``nx.Graph`` o un diccionario que actúe como ``G.graph`` y
+    actualiza ``"_edge_version"`` para invalidar caches dependientes de las
+    aristas.
+    """
+    graph = G.graph if hasattr(G, "graph") else G
+    graph["_edge_version"] = int(graph.get("_edge_version", 0)) + 1

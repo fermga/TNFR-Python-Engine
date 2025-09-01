@@ -19,6 +19,7 @@ from .helpers import (
     get_attr,
     set_attr,
     fase_media,
+    increment_edge_version,
 )
 if TYPE_CHECKING:
     from .node import NodoProtocol, NodoNX
@@ -636,11 +637,14 @@ def aplicar_remesh_red_topologico(
             # clear_edges está disponible desde NetworkX 2.4 y evita materializar la lista
             # completa de aristas; tnfr requiere NetworkX>=2.6 (ver pyproject.toml)
             G.clear_edges()
+            increment_edge_version(G)
             G.remove_nodes_from(list(G.nodes()))
+            increment_edge_version(G)
             for idx in C.nodes():
                 data = dict(C.nodes[idx])
                 G.add_node(idx, **data)
             G.add_edges_from(new_edges)
+            increment_edge_version(G)
 
             if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
                 ev = G.graph.setdefault("history", {}).setdefault("remesh_events", [])
@@ -678,7 +682,9 @@ def aplicar_remesh_red_topologico(
 
     # clear_edges disponible en NetworkX >=2.4; tnfr depende de >=2.6
     G.clear_edges()
+    increment_edge_version(G)
     G.add_edges_from(new_edges)
+    increment_edge_version(G)
 
 def aplicar_remesh_si_estabilizacion_global(G, pasos_estables_consecutivos: Optional[int] = None) -> None:
     # Ventanas y umbrales
