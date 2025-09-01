@@ -114,7 +114,8 @@ def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
         Namespace produced by ``argparse``.
     prefix:
         Prefix to match against the argument names.  It must include the
-        trailing underscore, for example ``"grammar_"``.
+        trailing underscore, for example ``"grammar_"``.  Options with this
+        prefix are defined in :data:`GRAMMAR_ARG_SPECS`.
 
     Returns
     -------
@@ -123,9 +124,9 @@ def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
 
     Examples
     --------
-    >>> ns = argparse.Namespace(grammar_enabled=True, grammar_thol_min=2, other=1)
+    >>> ns = argparse.Namespace(grammar_enabled=True, grammar_thol_min_len=2, other=1)
     >>> _args_to_dict(ns, "grammar_")
-    {'enabled': True, 'thol_min': 2}
+    {'enabled': True, 'thol_min_len': 2}
     """
 
     return {
