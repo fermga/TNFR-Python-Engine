@@ -112,10 +112,14 @@ def read_structured_file(path: Path) -> Any:
     if suffix not in PARSERS:
         raise ValueError(f"Extensión de archivo no soportada: {suffix}")
     parser = PARSERS[suffix]
+    if not path.is_file():
+        raise ValueError(f"El archivo no existe: {path}")
     try:
         text = path.read_text(encoding="utf-8")
-    except (FileNotFoundError, PermissionError) as e:
-        raise ValueError(f"No se pudo abrir {path}: {e}") from e
+    except PermissionError as e:
+        raise ValueError(f"Permiso denegado al leer {path}: {e}") from e
+    except FileNotFoundError as e:  # pragma: no cover - carrera improbable
+        raise ValueError(f"El archivo no existe: {path}") from e
 
     try:
         return parser(text)
