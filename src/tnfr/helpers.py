@@ -526,9 +526,9 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
 
         # dispersión de fase local utilizando vecinos precomputados
         th_i = thetas[n]
-        deg = G.degree(n)
+        neigh = list(G.neighbors(n))
+        deg = len(neigh)
         if deg:
-            neigh = G.neighbors(n)
             sum_cos = 0.0
             sum_sin = 0.0
             for v in neigh:
