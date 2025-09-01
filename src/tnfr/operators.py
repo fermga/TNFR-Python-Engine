@@ -473,19 +473,29 @@ def aplicar_remesh_red_topologico(
 
     # Similaridad basada en EPI (distancia absoluta)
     epi = {n: get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes}
-    H = nx.Graph()
-    H.add_nodes_from(nodes)
-    for i, u in enumerate(nodes):
-        for v in nodes[i + 1 :]:
-            w = abs(epi[u] - epi[v])
-            H.add_edge(u, v, weight=w)
-    mst = nx.minimum_spanning_tree(H, weight="weight")
+
+    # Construir el MST de forma incremental (Prim) evitando grafo completo
+    start = nodes[0]
+    unvisited = set(nodes[1:])
+    closest = {}
+    for v in unvisited:
+        closest[v] = (abs(epi[start] - epi[v]), start)
+    mst_edges = set()
+    while unvisited:
+        v = min(unvisited, key=lambda x: closest[x][0])
+        w, parent = closest[v]
+        mst_edges.add(tuple(sorted((parent, v))))
+        unvisited.remove(v)
+        for u in unvisited:
+            w = abs(epi[v] - epi[u])
+            if w < closest[u][0]:
+                closest[u] = (w, v)
 
     if mode == "community":
         # Detectar comunidades y reconstruir la red con metanodos
         comms = list(nx_comm.greedy_modularity_communities(G))
         if len(comms) <= 1:
-            new_edges = set(mst.edges())
+            new_edges = set(mst_edges)
         else:
             k_val = (
                 int(k)
@@ -538,7 +548,7 @@ def aplicar_remesh_red_topologico(
             return
 
     # Default/mode knn/mst operate on nodos originales
-    new_edges = set(mst.edges())
+    new_edges = set(mst_edges)
     if mode == "knn":
         k_val = int(k) if k is not None else int(G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2)))
         k_val = max(1, k_val)
