@@ -7,6 +7,7 @@ import hashlib
 import heapq
 import networkx as nx
 from networkx.algorithms import community as nx_comm
+from functools import lru_cache
 
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers import (
@@ -64,18 +65,31 @@ def _jitter_base(seed: int, key: int) -> random.Random:
 
 
 # Global cache for deterministic jitter generators
-_GLOBAL_JITTER_CACHE: Dict[int, random.Random] = {}
+JITTER_CACHE_SIZE = 256
+
+
+@lru_cache(maxsize=JITTER_CACHE_SIZE)
+def _get_jitter_rng(seed: int, key: int) -> random.Random:
+    """Return cached ``random.Random`` keyed by seed and node."""
+    return _jitter_base(seed, key)
+
+
+def clear_jitter_cache() -> None:
+    """Clear the global LRU cache for jitter generators."""
+    _get_jitter_rng.cache_clear()
 
 
 def random_jitter(
     node: NodoProtocol, amplitude: float, cache: Optional[Dict[int, random.Random]] = None
 ) -> float:
-    """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
+    f"""Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
 
     The value is derived from ``(RANDOM_SEED, node.offset())`` and does not store
-    references to nodes. A global cache of ``seed_key → random.Random`` instances
-    is used by default to advance deterministic sequences across calls. Optionally,
-    provide ``cache`` to override the global storage.
+    references to nodes. By default a global LRU cache of ``seed_key → random.Random``
+    instances (``maxsize={JITTER_CACHE_SIZE}``) advances deterministic sequences across calls.
+    When ``cache`` is provided, it is used instead and must handle its own purging
+    policy. The global cache discards least recently used generators when the limit
+    is exceeded.
     """
 
     if amplitude == 0:
@@ -92,11 +106,13 @@ def random_jitter(
             setattr(node, "_noise_uid", uid)
         seed_key = int(uid)
 
-    rng_cache = _GLOBAL_JITTER_CACHE if cache is None else cache
-    rng = rng_cache.get(seed_key)
-    if rng is None:
-        rng = _jitter_base(base_seed, seed_key)
-        rng_cache[seed_key] = rng
+    if cache is None:
+        rng = _get_jitter_rng(base_seed, seed_key)
+    else:
+        rng = cache.get(seed_key)
+        if rng is None:
+            rng = _jitter_base(base_seed, seed_key)
+            cache[seed_key] = rng
 
     base = rng.uniform(-1.0, 1.0)
     return amplitude * base
