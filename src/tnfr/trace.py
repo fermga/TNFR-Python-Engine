@@ -1,7 +1,7 @@
 """Registro de trazas."""
 from __future__ import annotations
 from collections import Counter
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from .constants import TRACE
 from .helpers import register_callback, ensure_history, last_glifo
@@ -78,83 +78,103 @@ def _new_trace_meta(
 # Snapshots
 # -------------------------
 
-def _trace_before(G, *args, **kwargs):
-    res = _new_trace_meta(G, "before")
+def _trace_capture(
+    G, phase: str, fields: Dict[str, Callable[[Any], Dict[str, Any]]]
+) -> None:
+    """Captura ``fields`` para una ``phase`` y guarda el snapshot."""
+
+    res = _new_trace_meta(G, phase)
     if not res:
         return
 
     meta, capture, hist, key = res
+    for name, getter in fields.items():
+        if name in capture:
+            meta.update(getter(G))
+    hist.setdefault(key, []).append(meta)
 
-    if "gamma" in capture:
-        meta["gamma"] = dict(G.graph.get("GAMMA", {}))
 
-    if "grammar" in capture:
-        meta["grammar"] = dict(G.graph.get("GRAMMAR_CANON", {}))
+def _trace_before(G, *args, **kwargs):
+    def gamma_field(G):
+        return {"gamma": dict(G.graph.get("GAMMA", {}))}
 
-    if "selector" in capture:
+    def grammar_field(G):
+        return {"grammar": dict(G.graph.get("GRAMMAR_CANON", {}))}
+
+    def selector_field(G):
         sel = G.graph.get("glyph_selector")
-        meta["selector"] = getattr(sel, "__name__", str(sel)) if sel else None
+        return {"selector": getattr(sel, "__name__", str(sel)) if sel else None}
 
-    if "dnfr_weights" in capture:
+    def dnfr_weights_field(G):
         mix = G.graph.get("DNFR_WEIGHTS")
-        if isinstance(mix, dict):
-            meta["dnfr_weights"] = dict(mix)
+        return {"dnfr_weights": dict(mix)} if isinstance(mix, dict) else {}
 
-    if "si_weights" in capture:
-        meta["si_weights"] = dict(G.graph.get("_Si_weights", {}))
-        meta["si_sensitivity"] = dict(G.graph.get("_Si_sensitivity", {}))
+    def si_weights_field(G):
+        return {
+            "si_weights": dict(G.graph.get("_Si_weights", {})),
+            "si_sensitivity": dict(G.graph.get("_Si_sensitivity", {})),
+        }
 
-    if "callbacks" in capture:
-        # si el motor guarda los callbacks, exponer nombres por fase
+    def callbacks_field(G):
         cb = G.graph.get("callbacks")
-        if isinstance(cb, dict):
-            out = {
-                phase: _callback_names(cb_list) if isinstance(cb_list, list) else None
-                for phase, cb_list in cb.items()
-            }
-            meta["callbacks"] = out
+        if not isinstance(cb, dict):
+            return {}
+        out = {
+            phase: _callback_names(cb_list) if isinstance(cb_list, list) else None
+            for phase, cb_list in cb.items()
+        }
+        return {"callbacks": out}
 
-    if "thol_state" in capture:
-        # cuántos nodos tienen bloque THOL abierto
+    def thol_state_field(G):
         th_open = 0
         for n in G.nodes():
             st = G.nodes[n].get("_GRAM", {})
             if st.get("thol_open", False):
                 th_open += 1
-        meta["thol_open_nodes"] = th_open
+        return {"thol_open_nodes": th_open}
 
-    hist.setdefault(key, []).append(meta)
+    fields = {
+        "gamma": gamma_field,
+        "grammar": grammar_field,
+        "selector": selector_field,
+        "dnfr_weights": dnfr_weights_field,
+        "si_weights": si_weights_field,
+        "callbacks": callbacks_field,
+        "thol_state": thol_state_field,
+    }
+    _trace_capture(G, "before", fields)
 
 
 def _trace_after(G, *args, **kwargs):
-    res = _new_trace_meta(G, "after")
-    if not res:
-        return
-
-    meta, capture, hist, key = res
-
-    if "kuramoto" in capture:
+    def kuramoto_field(G):
         R, psi = kuramoto_R_psi(G)
-        meta["kuramoto"] = {"R": float(R), "psi": float(psi)}
+        return {"kuramoto": {"R": float(R), "psi": float(psi)}}
 
-    if "sigma" in capture:
+    def sigma_field(G):
         sv = sigma_vector_from_graph(G)
-        meta["sigma"] = {
-            "x": float(sv.get("x", 0.0)),
-            "y": float(sv.get("y", 0.0)),
-            "mag": float(sv.get("mag", 0.0)),
-            "angle": float(sv.get("angle", 0.0)),
+        return {
+            "sigma": {
+                "x": float(sv.get("x", 0.0)),
+                "y": float(sv.get("y", 0.0)),
+                "mag": float(sv.get("mag", 0.0)),
+                "angle": float(sv.get("angle", 0.0)),
+            }
         }
 
-    if "glifo_counts" in capture:
+    def glifo_counts_field(G):
         cnt = Counter()
         for n in G.nodes():
             g = last_glifo(G.nodes[n])
             if g:
                 cnt[g] += 1
-        meta["glifos"] = dict(cnt)
+        return {"glifos": dict(cnt)}
 
-    hist.setdefault(key, []).append(meta)
+    fields = {
+        "kuramoto": kuramoto_field,
+        "sigma": sigma_field,
+        "glifo_counts": glifo_counts_field,
+    }
+    _trace_capture(G, "after", fields)
 
 
 # -------------------------
