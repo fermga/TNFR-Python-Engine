@@ -119,7 +119,9 @@ def random_jitter(
     is exceeded.
     """
 
-    if amplitude == 0:
+    if amplitude <= 0:
+        if amplitude < 0:
+            raise ValueError("amplitude must be positive")
         return 0.0
 
     base_seed = int(node.graph.get("RANDOM_SEED", 0))
