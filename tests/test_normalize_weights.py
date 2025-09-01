@@ -1,5 +1,4 @@
 """Tests for normalize_weights helper."""
-import logging
 import math
 import pytest
 from tnfr.helpers import normalize_weights
