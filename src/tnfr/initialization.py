@@ -3,7 +3,6 @@
 Lógica compartida para inicializar atributos nodales básicos (EPI, θ, νf y Si).
 """
 from __future__ import annotations
-import math
 import random
 import networkx as nx
 
