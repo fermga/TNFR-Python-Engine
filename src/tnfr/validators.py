@@ -2,23 +2,23 @@
 
 from __future__ import annotations
 
-from .constants import ALIAS_EPI, ALIAS_VF, DEFAULTS
+from .constants import ALIAS_EPI, ALIAS_VF, get_param
 from .helpers import get_attr
 from .sense import sigma_vector_global, GLYPHS_CANONICAL
 from .helpers import last_glifo
 
 
 def _validate_epi_vf(G) -> None:
-    emin = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
-    emax = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
-    vmin = float(G.graph.get("VF_MIN", DEFAULTS.get("VF_MIN", 0.0)))
-    vmax = float(G.graph.get("VF_MAX", DEFAULTS.get("VF_MAX", 1.0)))
+    cfg = {
+        k: float(get_param(G, k))
+        for k in ("EPI_MIN", "EPI_MAX", "VF_MIN", "VF_MAX")
+    }
     for n, data in G.nodes(data=True):
         epi = float(get_attr(data, ALIAS_EPI, 0.0))
-        if not (emin - 1e-9 <= epi <= emax + 1e-9):
+        if not (cfg["EPI_MIN"] - 1e-9 <= epi <= cfg["EPI_MAX"] + 1e-9):
             raise ValueError(f"EPI fuera de rango en nodo {n}: {epi}")
         vf = float(get_attr(data, ALIAS_VF, 0.0))
-        if not (vmin - 1e-9 <= vf <= vmax + 1e-9):
+        if not (cfg["VF_MIN"] - 1e-9 <= vf <= cfg["VF_MAX"] + 1e-9):
             raise ValueError(f"VF fuera de rango en nodo {n}: {vf}")
 
 
