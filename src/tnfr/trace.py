@@ -12,9 +12,9 @@ except ImportError:  # pragma: no cover
         return 0.0, 0.0
 
 try:
-    from .sense import sigma_vector_global
+    from .sense import sigma_vector_from_graph
 except ImportError:  # pragma: no cover
-    def sigma_vector_global(G, *args, **kwargs):
+    def sigma_vector_from_graph(G, *args, **kwargs):
         return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
 
 # -------------------------
@@ -116,7 +116,7 @@ def _trace_after(G, *args, **kwargs):
         meta["kuramoto"] = {"R": float(R), "psi": float(psi)}
 
     if "sigma" in capture:
-        sv = sigma_vector_global(G)
+        sv = sigma_vector_from_graph(G)
         meta["sigma"] = {
             "x": float(sv.get("x", 0.0)),
             "y": float(sv.get("y", 0.0)),

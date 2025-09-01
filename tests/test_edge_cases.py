@@ -12,11 +12,11 @@ def test_empty_graph_handling(graph_canon):
     update_epi_via_nodal_equation(G)  # should not raise
 
 
-def test_sigma_vector_global_empty_graph(graph_canon):
+def test_sigma_vector_from_graph_empty_graph(graph_canon):
     G = graph_canon()
-    from tnfr.sense import sigma_vector_global
+    from tnfr.sense import sigma_vector_from_graph
 
-    sv = sigma_vector_global(G)
+    sv = sigma_vector_from_graph(G)
     assert sv == {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
 
 

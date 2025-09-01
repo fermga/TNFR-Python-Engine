@@ -39,7 +39,7 @@ def test_validator_sigma_norm(monkeypatch):
     def fake_sigma(G):
         return {"mag": 1.5}
 
-    monkeypatch.setattr("tnfr.validators.sigma_vector_global", fake_sigma)
+    monkeypatch.setattr("tnfr.validators.sigma_vector_from_graph", fake_sigma)
     with pytest.raises(ValueError):
         run_validators(G)
 

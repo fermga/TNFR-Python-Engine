@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Dict, List
 import math
+import warnings
 from collections import Counter
 
 import networkx as nx
@@ -145,18 +146,24 @@ def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
     return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
 
 
-def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
-    """Vector global del plano del sentido σ.
+def sigma_vector_from_graph(G: nx.Graph, weight_mode: str | None = None) -> Dict[str, float]:
+    """Vector global del plano del sentido σ para un grafo.
 
-    Acepta un grafo de NetworkX. Para operar sobre una distribución precontada
-    utilice :func:`sigma_vector` directamente.
+    Parameters
+    ----------
+    G:
+        Grafo de NetworkX con estados por nodo.
+    weight_mode:
+        Cómo ponderar cada nodo ("Si", "EPI" o ``None`` para peso unitario).
 
-    Si no hay datos suficientes retorna el vector nulo.
+    Returns
+    -------
+    Dict[str, float]
+        Componentes cartesianas, magnitud y ángulo del vector promedio.
     """
+
     if not isinstance(G, nx.Graph):
-        # Compatibilidad retro: si se pasa una distribución directamente,
-        # derivamos a la variante específica.
-        return sigma_vector(G)  # type: ignore[arg-type]
+        raise TypeError("sigma_vector_from_graph requiere un networkx.Graph")
 
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
@@ -174,6 +181,21 @@ def sigma_vector_global(G, weight_mode: str | None = None) -> Dict[str, float]:
     return vec
 
 
+def sigma_vector_global(G: nx.Graph, weight_mode: str | None = None) -> Dict[str, float]:
+    """Alias de :func:`sigma_vector_from_graph`.
+
+    .. deprecated:: 4.5.3
+       Use :func:`sigma_vector_from_graph` en su lugar.
+    """
+
+    warnings.warn(
+        "sigma_vector_global está deprecada; use sigma_vector_from_graph",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return sigma_vector_from_graph(G, weight_mode)
+
+
 # -------------------------
 # Historia / series
 # -------------------------
@@ -186,7 +208,7 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
     key = cfg.get("history_key", "sigma_global")
 
     # Global
-    sv = sigma_vector_global(G, cfg.get("weight", "Si"))
+    sv = sigma_vector_from_graph(G, cfg.get("weight", "Si"))
 
     # Suavizado exponencial (EMA) opcional
     alpha = float(cfg.get("smooth", 0.0))

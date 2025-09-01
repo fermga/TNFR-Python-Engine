@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from .constants import ALIAS_EPI, ALIAS_VF, get_param
 from .helpers import get_attr
-from .sense import sigma_vector_global, GLYPHS_CANONICAL
+from .sense import sigma_vector_from_graph, GLYPHS_CANONICAL
 from .helpers import last_glifo
 
 
@@ -23,7 +23,7 @@ def _validate_epi_vf(G) -> None:
 
 
 def _validate_sigma(G) -> None:
-    sv = sigma_vector_global(G)
+    sv = sigma_vector_from_graph(G)
     if sv.get("mag", 0.0) > 1.0 + 1e-9:
         raise ValueError("Norma de σ excede 1")
 

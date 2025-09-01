@@ -5,7 +5,7 @@ import pytest
 from tnfr.constants import ALIAS_THETA
 from tnfr.observers import sincronía_fase, orden_kuramoto, carga_glifica
 from tnfr.gamma import kuramoto_R_psi
-from tnfr.sense import sigma_vector_global, sigma_vector
+from tnfr.sense import sigma_vector
 from tnfr.constants_glifos import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
 from tnfr.helpers import angle_diff, set_attr
 
@@ -58,7 +58,6 @@ def test_sigma_vector_consistency():
     # Distribución ficticia de glifos
     dist = {"IL": 0.4, "RA": 0.3, "ZHIR": 0.1, "AL": 0.2, "_count": 10}
 
-    res_global = sigma_vector_global(dist)
     res = sigma_vector(dist)
 
     # Cálculo esperado con el mapa de ángulos canónico
@@ -70,8 +69,7 @@ def test_sigma_vector_consistency():
     mag = math.hypot(x, y)
     ang = math.atan2(y, x)
 
-    for res_ in (res_global, res):
-        assert math.isclose(res_["x"], x)
-        assert math.isclose(res_["y"], y)
-        assert math.isclose(res_["mag"], mag)
-        assert math.isclose(res_["angle"], ang)
+    assert math.isclose(res["x"], x)
+    assert math.isclose(res["y"], y)
+    assert math.isclose(res["mag"], mag)
+    assert math.isclose(res["angle"], ang)
