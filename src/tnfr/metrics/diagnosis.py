@@ -69,9 +69,9 @@ def _diagnosis_step(G, ctx=None):
     CfgW = G.graph.get("COHERENCE", COHERENCE)
     Wkey = CfgW.get("Wi_history_key", "W_i")
     Wm_key = CfgW.get("history_key", "W_sparse")
-    Wi_series = hist.get(Wkey, [])
+    Wi_series = hist.tracked_get(Wkey, [])
     Wi_last = Wi_series[-1] if Wi_series else None
-    Wm_series = hist.get(Wm_key, [])
+    Wm_series = hist.tracked_get(Wm_key, [])
     Wm_last = Wm_series[-1] if Wm_series else None
 
     nodes = list(G.nodes())
@@ -135,7 +135,7 @@ def dissonance_events(G, ctx=None):
     evs = hist.setdefault("events", [])
     norms = G.graph.get("_sel_norms", {})
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
-    step_idx = len(hist.get("C_steps", []))
+    step_idx = len(hist.tracked_get("C_steps", []))
     nodes = list(G.nodes())
     node_to_index = {v: i for i, v in enumerate(nodes)}
     for n in nodes:

@@ -560,6 +560,9 @@ class HistoryDict(dict):
         return val
 
     def get(self, key, default=None):  # type: ignore[override]
+        return super().get(key, default)
+
+    def tracked_get(self, key, default=None):
         if key in self:
             return self[key]
         return default

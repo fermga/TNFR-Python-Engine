@@ -176,7 +176,7 @@ def register_metrics_callbacks(G) -> None:
 def Tg_global(G, normalize: bool = True) -> Dict[str, float]:
     """Tiempo glífico total por clase. Si normalize=True, devuelve fracciones del total."""
     hist = ensure_history(G)
-    tg_total: Dict[str, float] = hist.get("Tg_total", {})
+    tg_total: Dict[str, float] = hist.tracked_get("Tg_total", {})
     total = sum(tg_total.values()) or 1.0
     if normalize:
         return {g: float(tg_total.get(g, 0.0)) / total for g in GLYPHS_CANONICAL}
@@ -186,7 +186,7 @@ def Tg_global(G, normalize: bool = True) -> Dict[str, float]:
 def Tg_by_node(G, n, normalize: bool = False) -> Dict[str, float | List[float]]:
     """Resumen por nodo: si normalize, devuelve medias por glifo; si no, lista de corridas."""
     hist = ensure_history(G)
-    rec = hist.get("Tg_by_node", {}).get(n, {})
+    rec = hist.tracked_get("Tg_by_node", {}).get(n, {})
     if not normalize:
         # convertir default dict → list para serializar
         return {g: list(rec.get(g, [])) for g in GLYPHS_CANONICAL}
@@ -200,7 +200,7 @@ def Tg_by_node(G, n, normalize: bool = False) -> Dict[str, float | List[float]]:
 
 def latency_series(G) -> Dict[str, List[float]]:
     hist = ensure_history(G)
-    xs = hist.get("latency_index", [])
+    xs = hist.tracked_get("latency_index", [])
     return {
         "t": [float(x.get("t", i)) for i, x in enumerate(xs)],
         "value": [float(x.get("value", 0.0)) for x in xs],
@@ -209,7 +209,7 @@ def latency_series(G) -> Dict[str, List[float]]:
 
 def glifogram_series(G) -> Dict[str, List[float]]:
     hist = ensure_history(G)
-    xs = hist.get("glifogram", [])
+    xs = hist.tracked_get("glifogram", [])
     if not xs:
         return {"t": []}
     out = {"t": [float(x.get("t", i)) for i, x in enumerate(xs)]}
@@ -227,7 +227,7 @@ def glyph_top(G, k: int = 3) -> List[Tuple[str, float]]:
 def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
     """Estadísticos por nodo: mean/median/max de corridas por glifo."""
     hist = ensure_history(G)
-    rec = hist.get("Tg_by_node", {}).get(n, {})
+    rec = hist.tracked_get("Tg_by_node", {}).get(n, {})
     out = {}
     for g in GLYPHS_CANONICAL:
         runs = list(rec.get(g, []))
