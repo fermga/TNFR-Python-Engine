@@ -78,6 +78,13 @@ the graph (or override the default) to keep only the most recent entries. When
 the limit is positive the library uses bounded `deque` objects and removes the
 least populated series when the number of history keys grows beyond the limit.
 
+### Random node sampling
+
+To reduce costly comparisons the engine stores a per‑step random subset of
+node ids under `G.graph['_node_sample']`. Operators may use this to avoid
+scanning the whole network. Sampling is skipped automatically when the graph
+has fewer than **50 nodes**, in which case all nodes are included.
+
 ---
 
 ## Trained GPT
