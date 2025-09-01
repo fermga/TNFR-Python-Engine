@@ -40,24 +40,28 @@ def _parse_tokens(obj: Any) -> List[Any]:
 
     out: List[Any] = []
     queue = deque(obj if isinstance(obj, list) else [obj])
+    pos = 0
     while queue:
         tok = queue.popleft()
         if isinstance(tok, list):
             queue.extendleft(reversed(tok))
             continue
-        if isinstance(tok, dict):
-            if len(tok) != 1:
+        pos += 1
+        try:
+            if isinstance(tok, dict):
+                if len(tok) != 1:
+                    raise ValueError(f"Token inválido: {tok}")
+                key, val = next(iter(tok.items()))
+                handler = TOKEN_MAP.get(key)
+                if handler is None:
+                    raise ValueError(f"Token no reconocido: {key}")
+                out.append(handler(val))
+            elif isinstance(tok, str):
+                out.append(tok)
+            else:
                 raise ValueError(f"Token inválido: {tok}")
-            key, val = next(iter(tok.items()))
-            handler = TOKEN_MAP.get(key)
-            if handler is None:
-                raise ValueError(f"Token no reconocido: {key}")
-            out.append(handler(val))
-            continue
-        if isinstance(tok, str):
-            out.append(tok)
-            continue
-        raise ValueError(f"Token inválido: {tok}")
+        except (KeyError, ValueError) as e:
+            raise type(e)(f"{e} (posición {pos}, token {tok!r})") from e
     return out
 
 
@@ -325,7 +329,15 @@ def cmd_metrics(args: argparse.Namespace) -> int:
 def main(argv: Optional[List[str]] = None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout, force=True)
 
-    p = argparse.ArgumentParser(prog="tnfr")
+    p = argparse.ArgumentParser(
+        prog="tnfr",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Ejemplo: tnfr sequence --sequence-file secuencia.json\n"
+            "secuencia.json:\n"
+            "[\n  {\"WAIT\": 1},\n  {\"TARGET\": \"A\"}\n]"
+        ),
+    )
     p.add_argument("--version", action="store_true", help="muestra versión y sale")
     sub = p.add_subparsers(dest="cmd")
 
@@ -342,7 +354,19 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_run.add_argument("--selector", choices=["basic", "param"], default="basic")
     p_run.set_defaults(func=cmd_run)
 
-    p_seq = sub.add_parser("sequence", help="Ejecutar una secuencia (preset o YAML/JSON)")
+    p_seq = sub.add_parser(
+        "sequence",
+        help="Ejecutar una secuencia (preset o YAML/JSON)",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Ejemplo de secuencia JSON:\n"
+            "[\n"
+            "  \"A\",\n"
+            "  {\"WAIT\": 1},\n"
+            "  {\"THOL\": {\"body\": [\"A\", {\"WAIT\": 2}], \"repeat\": 2}}\n"
+            "]"
+        ),
+    )
     add_common_args(p_seq)
     p_seq.add_argument("--preset", type=str, default=None)
     p_seq.add_argument("--sequence-file", type=str, default=None)
