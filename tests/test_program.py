@@ -56,3 +56,18 @@ def test_load_sequence_json_yaml(tmp_path):
     expected = seq("AL", block("OZ", "EN", "RA"), wait(1))
     assert _load_sequence(jpath) == expected
     assert _load_sequence(ypath) == expected
+
+
+def test_load_sequence_repeated_calls(tmp_path):
+    data = [
+        "AL",
+        {"THOL": {"body": [["OZ", "EN"], "RA"], "repeat": 1}},
+        {"WAIT": 1},
+    ]
+
+    path = tmp_path / "prog.json"
+    path.write_text(json.dumps(data))
+
+    expected = seq("AL", block("OZ", "EN", "RA"), wait(1))
+    for _ in range(5):
+        assert _load_sequence(path) == expected
