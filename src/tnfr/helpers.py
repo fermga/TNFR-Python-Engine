@@ -539,24 +539,20 @@ def count_glyphs(
     caso contrario se usa el historial ``hist_glifos`` limitado a los últimos
     ``window`` elementos por nodo (o a todo el deque si ``window`` es ``None``).
     """
-    if last_only:
-        counts: Counter[str] = Counter()
-        for _, nd in G.nodes(data=True):
-            g = last_glifo(nd)
-            if g:
-                counts[g] += 1
-        return counts
-
     counts: Counter[str] = Counter()
     for _, nd in G.nodes(data=True):
-        hist = nd.get("hist_glifos")
-        if not hist:
-            continue
-        if window is not None and window > 0:
-            window_int = int(window)
-            seq = islice(reversed(hist), window_int)
+        if last_only:
+            g = last_glifo(nd)
+            seq = [g] if g else []
         else:
-            seq = hist
+            hist = nd.get("hist_glifos")
+            if not hist:
+                continue
+            if window is not None and window > 0:
+                window_int = int(window)
+                seq = islice(reversed(hist), window_int)
+            else:
+                seq = hist
         counts.update(seq)
     return counts
 
