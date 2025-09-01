@@ -1,6 +1,7 @@
 from __future__ import annotations
 """program.py — API de secuencias canónicas con THOL como primera clase."""
 from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union
+from collections.abc import Collection
 from dataclasses import dataclass
 from contextlib import contextmanager
 from collections import deque
@@ -90,13 +91,14 @@ def _all_nodes(G):
 def _apply_glyph_to_targets(G, g: Glyph | str, nodes: Optional[Iterable[Node]] = None):
     """Apply ``g`` to ``nodes`` (or all nodes) respecting the grammar.
 
-    ``nodes`` is converted to a list only when explicitly provided. When
-    ``None`` the view returned by :func:`_all_nodes` is passed through so
-    any conversion to ``list`` happens as late as possible.
+    ``nodes`` may be any iterable of nodes, including a ``NodeView`` or
+    other :class:`~collections.abc.Collection`. Non-collection iterables
+    are materialised as a ``list`` only when the active selector requires
+    index-based access.
     """
     if nodes is None:
         nodes = _all_nodes(G)
-    elif not isinstance(nodes, list):
+    elif not isinstance(nodes, Collection):
         nodes = list(nodes)
     w = _window(G)
     apply_glyph_with_grammar(G, nodes, g, w)

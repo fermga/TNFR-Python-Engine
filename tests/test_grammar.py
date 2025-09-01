@@ -93,3 +93,23 @@ def test_apply_glyph_with_grammar_multiple_nodes(graph_canon):
 
     assert G.nodes[0]['hist_glifos'][-1] == ZHIR
     assert G.nodes[1]['hist_glifos'][-1] == OZ
+
+
+def test_apply_glyph_with_grammar_accepts_iterables(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([0, 1])
+    attach_defaults(G)
+    G.nodes[0]['hist_glifos'] = deque([OZ])
+    G.nodes[1]['hist_glifos'] = deque([OZ])
+    apply_glyph_with_grammar(G, G.nodes(), ZHIR, 1)
+    assert G.nodes[0]['hist_glifos'][-1] == ZHIR
+    assert G.nodes[1]['hist_glifos'][-1] == ZHIR
+
+    G2 = graph_canon()
+    G2.add_nodes_from([0, 1])
+    attach_defaults(G2)
+    G2.nodes[0]['hist_glifos'] = deque([OZ])
+    G2.nodes[1]['hist_glifos'] = deque([OZ])
+    apply_glyph_with_grammar(G2, (n for n in G2.nodes()), ZHIR, 1)
+    assert G2.nodes[0]['hist_glifos'][-1] == ZHIR
+    assert G2.nodes[1]['hist_glifos'][-1] == ZHIR
