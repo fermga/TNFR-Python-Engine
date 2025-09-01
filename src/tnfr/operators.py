@@ -564,7 +564,9 @@ def aplicar_remesh_red_topologico(
                         new_edges.add(tuple(sorted((u, v))))
 
             # Reemplazar nodos y aristas del grafo original por comunidades
-            G.remove_edges_from(list(G.edges()))
+            # clear_edges está disponible desde NetworkX 2.4 y evita materializar la lista
+            # completa de aristas; tnfr requiere NetworkX>=2.6 (ver pyproject.toml)
+            G.clear_edges()
             G.remove_nodes_from(list(G.nodes()))
             for idx in C.nodes():
                 data = dict(C.nodes[idx])
@@ -605,7 +607,8 @@ def aplicar_remesh_red_topologico(
                 if rnd.random() < p_rewire:
                     new_edges.add(tuple(sorted((u, v))))
 
-    G.remove_edges_from(list(G.edges()))
+    # clear_edges disponible en NetworkX >=2.4; tnfr depende de >=2.6
+    G.clear_edges()
     G.add_edges_from(new_edges)
 
 def aplicar_remesh_si_estabilizacion_global(G, pasos_estables_consecutivos: Optional[int] = None) -> None:
