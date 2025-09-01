@@ -118,7 +118,11 @@ def _diagnosis_step(G, ctx=None):
 
 
 def dissonance_events(G, ctx=None):
-    """Emite eventos de inicio/fin de disonancia estructural por nodo."""
+    """Emite eventos de inicio/fin de disonancia estructural por nodo.
+
+    Los eventos se registran como ``"dissonance_start"`` y
+    ``"dissonance_end"``.
+    """
     hist = ensure_history(G)
     evs = hist.setdefault("events", [])
     norms = G.graph.get("_sel_norms", {})
@@ -135,10 +139,10 @@ def dissonance_events(G, ctx=None):
         st = bool(nd.get("_disr_state", False))
         if (not st) and dn >= 0.5 and Rloc <= 0.4:
             nd["_disr_state"] = True
-            evs.append(("disonance_start", {"node": n, "step": step_idx}))
+            evs.append(("dissonance_start", {"node": n, "step": step_idx}))
         elif st and dn <= 0.2 and Rloc >= 0.7:
             nd["_disr_state"] = False
-            evs.append(("disonance_end", {"node": n, "step": step_idx}))
+            evs.append(("dissonance_end", {"node": n, "step": step_idx}))
 
 
 def register_diagnosis_callbacks(G) -> None:
