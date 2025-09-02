@@ -1,6 +1,7 @@
 """Registro de trazas."""
 from __future__ import annotations
 from typing import Any, Callable, Dict, List, Optional, Protocol
+import warnings
 
 
 class _KuramotoFn(Protocol):
@@ -125,11 +126,29 @@ def _trace_capture(
 
 
 def gamma_field(G):
-    return {"gamma": dict(G.graph.get("GAMMA", {}))}
+    gam = G.graph.get("GAMMA", {})
+    if not isinstance(gam, dict):
+        if gam is not None:
+            warnings.warn(
+                "G.graph['GAMMA'] no es un mapeo; se ignora",
+                UserWarning,
+                stacklevel=2,
+            )
+        return {}
+    return {"gamma": dict(gam)}
 
 
 def grammar_field(G):
-    return {"grammar": dict(G.graph.get("GRAMMAR_CANON", {}))}
+    gram = G.graph.get("GRAMMAR_CANON", {})
+    if not isinstance(gram, dict):
+        if gram is not None:
+            warnings.warn(
+                "G.graph['GRAMMAR_CANON'] no es un mapeo; se ignora",
+                UserWarning,
+                stacklevel=2,
+            )
+        return {}
+    return {"grammar": dict(gram)}
 
 
 def selector_field(G):
