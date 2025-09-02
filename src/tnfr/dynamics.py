@@ -879,42 +879,45 @@ def parametric_glyph_selector(G, n) -> str:
 # Step / run
 # -------------------------
 
-def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool = True) -> None:
-    # Contexto inicial
-    _hist0 = ensure_history(G)
-    step_idx = len(_hist0.setdefault("C_steps", []))
-    invoke_callbacks(G, "before_step", {"step": step_idx, "dt": dt, "use_Si": use_Si, "apply_glyphs": apply_glyphs})
+def _run_before_callbacks(G, *, step_idx: int, dt: float | None, use_Si: bool, apply_glyphs: bool) -> None:
+    invoke_callbacks(
+        G,
+        "before_step",
+        {"step": step_idx, "dt": dt, "use_Si": use_Si, "apply_glyphs": apply_glyphs},
+    )
 
-    # 0b) Muestra aleatoria de nodos para operadores globales
+
+def _update_nodes(
+    G,
+    *,
+    dt: float | None,
+    use_Si: bool,
+    apply_glyphs: bool,
+    step_idx: int,
+    hist,
+) -> None:
     _update_node_sample(G, step=step_idx)
-
-    # 1) ΔNFR (campo)
     compute_dnfr_cb = G.graph.get("compute_delta_nfr", default_compute_delta_nfr)
     compute_dnfr_cb(G)
-
-    # 2) (opcional) Si
     if use_Si:
         compute_Si(G, inplace=True)
-
-    # 2b) Normalizadores para selector paramétrico (por paso)
     selector = G.graph.get("glyph_selector", default_glyph_selector)
     if selector is parametric_glyph_selector:
         _norms_para_selector(G)
-
-    # 3) Selección glífica + aplicación (con lags obligatorios AL/EN)
     if apply_glyphs:
         window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
-        use_canon = bool(G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})).get("enabled", False))
-
+        use_canon = bool(
+            G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})).get(
+                "enabled", False
+            )
+        )
         al_max = int(G.graph.get("AL_MAX_LAG", DEFAULTS["AL_MAX_LAG"]))
         en_max = int(G.graph.get("EN_MAX_LAG", DEFAULTS["EN_MAX_LAG"]))
-        h_al = _hist0.setdefault("since_AL", {})
-        h_en = _hist0.setdefault("since_EN", {})
-
+        h_al = hist.setdefault("since_AL", {})
+        h_en = hist.setdefault("since_EN", {})
         for n in G.nodes():
             h_al[n] = int(h_al.get(n, 0)) + 1
             h_en[n] = int(h_en.get(n, 0)) + 1
-
             if h_al[n] > al_max:
                 g = AL
             elif h_en[n] > en_max:
@@ -923,36 +926,27 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
                 g = selector(G, n)
                 if use_canon:
                     g = enforce_canonical_grammar(G, n, g)
-
             aplicar_glifo(G, n, g, window=window)
             if use_canon:
                 on_applied_glifo(G, n, g)
-
             if g == AL:
                 h_al[n] = 0
                 h_en[n] = min(h_en[n], en_max)
             elif g == EN:
                 h_en[n] = 0
-
-    # 4) Ecuación nodal
     _dt = float(G.graph.get("DT", DEFAULTS["DT"])) if dt is None else float(dt)
-    method = G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))
+    method = G.graph.get(
+        "INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler")
+    )
     update_epi_via_nodal_equation(G, dt=_dt, method=method)
-
-    # 5) Clamps
     for n in G.nodes():
         aplicar_clamps_canonicos(G.nodes[n], G, n)
-
-    # 6) Coordinación de fase
     coordinar_fase_global_vecinal(G, None, None)
-
-    # 6b) Adaptación de νf por coherencia
     adaptar_vf_por_coherencia(G)
 
-    # 7) Observadores ligeros
+
+def _update_metrics(G) -> None:
     _update_history(G)
-    # dynamics.py — dentro de step(), justo antes del punto 8)
-    # REMESH_TAU: alias legado resuelto por ``get_param``
     tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
     tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
     tau = max(tau_g, tau_l)
@@ -963,14 +957,18 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
         G.graph["_epi_hist"] = epi_hist
     epi_hist.append({n: get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes()})
 
-    # 8) REMESH condicionado
+
+def _maybe_remesh(G) -> None:
     aplicar_remesh_si_estabilizacion_global(G)
 
-    # 8b) Validadores de invariantes
+
+def _run_validators(G) -> None:
     from .validators import run_validators
+
     run_validators(G)
 
-    # Contexto final (últimas métricas del paso)
+
+def _run_after_callbacks(G, *, step_idx: int) -> None:
     h = G.graph.get("history", {})
     ctx = {"step": step_idx}
     metric_pairs = [
@@ -985,6 +983,32 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
         if values:
             ctx[dst] = values[-1]
     invoke_callbacks(G, "after_step", ctx)
+
+
+def step(
+    G,
+    *,
+    dt: float | None = None,
+    use_Si: bool = True,
+    apply_glyphs: bool = True,
+) -> None:
+    hist = ensure_history(G)
+    step_idx = len(hist.setdefault("C_steps", []))
+    _run_before_callbacks(
+        G, step_idx=step_idx, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs
+    )
+    _update_nodes(
+        G,
+        dt=dt,
+        use_Si=use_Si,
+        apply_glyphs=apply_glyphs,
+        step_idx=step_idx,
+        hist=hist,
+    )
+    _update_metrics(G)
+    _maybe_remesh(G)
+    _run_validators(G)
+    _run_after_callbacks(G, step_idx=step_idx)
 
 
 def run(G, steps: int, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool = True) -> None:
