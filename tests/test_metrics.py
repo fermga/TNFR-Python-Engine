@@ -58,7 +58,7 @@ def test_save_by_node_flag_keeps_metrics_equal(graph_canon):
     hist_false = G_false.graph["history"]
 
     assert hist_true["Tg_total"] == hist_false["Tg_total"]
-    assert hist_true["glifogram"] == hist_false["glifogram"]
+    assert hist_true["glyphogram"] == hist_false["glyphogram"]
     assert hist_true["latency_index"] == hist_false["latency_index"]
     assert hist_true["morph"] == hist_false["morph"]
     assert hist_true["Tg_by_node"] != {}

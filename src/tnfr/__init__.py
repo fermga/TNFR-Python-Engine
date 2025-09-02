@@ -1,4 +1,4 @@
-"""API pública de TNFR."""
+"""TNFR public API."""
 from __future__ import annotations
 try:  # pragma: no cover
     from importlib.metadata import version, PackageNotFoundError
@@ -17,13 +17,13 @@ except PackageNotFoundError:  # pragma: no cover
     except Exception:  # pragma: no cover
         __version__ = "0+unknown"
 
-# Re-exports de la API pública
+# Public API re-exports
 from .dynamics import step, run, set_delta_nfr_hook, validate_canon
 from .ontosim import preparar_red
-from .observers import attach_standard_observer, orden_kuramoto
+from .observers import attach_standard_observer, kuramoto_order
 from .helpers import compute_coherence
 from .gamma import GAMMA_REGISTRY, eval_gamma, kuramoto_R_psi
-from .grammar import enforce_canonical_grammar, on_applied_glifo, apply_glyph_with_grammar
+from .grammar import enforce_canonical_grammar, on_applied_glyph, apply_glyph_with_grammar
 from .sense import (
     glyph_angle,
     glyph_unit,
@@ -36,16 +36,16 @@ from .sense import (
     sigma_rose,
     register_sigma_callback,
 )
-from .constants_glifos import GLYPHS_CANONICAL
+from .constants_glyphs import GLYPHS_CANONICAL
 from .metrics import (
     register_metrics_callbacks,
     Tg_global, Tg_by_node,
-    latency_series, glifogram_series,
+    latency_series, glyphogram_series,
     glyph_top, glyph_dwell_stats, export_history,
 )
-from .operators import aplicar_remesh_red_topologico
+from .operators import apply_topological_remesh
 from .trace import register_trace
-from .program import play, seq, block, target, wait, THOL, TARGET, WAIT, ejemplo_canonico_basico
+from .program import play, seq, block, target, wait, THOL, TARGET, WAIT, basic_canonical_example
 from .cli import main as cli_main
 from .scenarios import build_graph
 from .presets import get_preset
@@ -76,9 +76,9 @@ __all__ = [
     "preparar_red",
     "step", "run", "set_delta_nfr_hook", "validate_canon",
 
-    "attach_standard_observer", "orden_kuramoto", "compute_coherence",
+    "attach_standard_observer", "kuramoto_order", "compute_coherence",
     "GAMMA_REGISTRY", "eval_gamma", "kuramoto_R_psi",
-    "enforce_canonical_grammar", "on_applied_glifo",
+    "enforce_canonical_grammar", "on_applied_glyph",
     "apply_glyph_with_grammar",
     "GLYPHS_CANONICAL", "glyph_angle", "glyph_unit",
     "sigma_vector_node", "sigma_vector_from_graph", "sigma_vector", "sigma_vector_global",
@@ -87,13 +87,13 @@ __all__ = [
     "register_metrics_callbacks",
     "register_trace",
     "Tg_global", "Tg_by_node",
-    "latency_series", "glifogram_series",
+    "latency_series", "glyphogram_series",
     "glyph_top", "glyph_dwell_stats",
     "export_history",
-    "aplicar_remesh_red_topologico",
+    "apply_topological_remesh",
     "play", "seq", "block", "target", "wait", "THOL", "TARGET", "WAIT",
     "cli_main", "build_graph", "get_preset", "NodeState",
-    "ejemplo_canonico_basico",
+    "basic_canonical_example",
     "create_nfr",
     "Operador", "Emision", "Recepcion", "Coherencia", "Disonancia",
     "Acoplamiento", "Resonancia", "Silencio", "Expansion", "Contraccion",

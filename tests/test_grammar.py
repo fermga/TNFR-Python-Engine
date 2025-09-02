@@ -4,7 +4,7 @@ from collections import deque
 from tnfr.constants import attach_defaults
 from tnfr.grammar import (
     enforce_canonical_grammar,
-    on_applied_glifo,
+    on_applied_glyph,
     apply_glyph_with_grammar,
     AL, EN, IL, OZ, ZHIR, THOL, SHA, NUL, NAV,
 )
@@ -15,7 +15,7 @@ def test_compatibility_fallback(graph_canon):
     G.add_node(0)
     attach_defaults(G)
     nd = G.nodes[0]
-    nd['hist_glifos'] = deque([AL])
+    nd['glyph_history'] = deque([AL])
     assert enforce_canonical_grammar(G, 0, IL) == EN
 
 
@@ -24,10 +24,10 @@ def test_precondition_oz_to_zhir(graph_canon):
     G.add_node(0)
     attach_defaults(G)
     nd = G.nodes[0]
-    nd['hist_glifos'] = deque([NAV])
+    nd['glyph_history'] = deque([NAV])
     nd['ΔNFR'] = 0.0
     assert enforce_canonical_grammar(G, 0, ZHIR) == OZ
-    nd['hist_glifos'] = deque([OZ])
+    nd['glyph_history'] = deque([OZ])
     assert enforce_canonical_grammar(G, 0, ZHIR) == ZHIR
 
 
@@ -36,8 +36,8 @@ def test_thol_closure(graph_canon):
     G.add_node(0)
     attach_defaults(G)
     nd = G.nodes[0]
-    nd['hist_glifos'] = deque([THOL])
-    on_applied_glifo(G, 0, THOL)
+    nd['glyph_history'] = deque([THOL])
+    on_applied_glyph(G, 0, THOL)
     st = nd['_GRAM']
     st['thol_len'] = 2
     nd['ΔNFR'] = 0.0
@@ -53,7 +53,7 @@ def test_repeat_window_and_force(graph_canon):
     G.add_node(0)
     attach_defaults(G)
     nd = G.nodes[0]
-    nd['hist_glifos'] = deque([ZHIR.value, 'OZ'])
+    nd['glyph_history'] = deque([ZHIR.value, 'OZ'])
     G.graph['GRAMMAR'] = {
         'window': 3,
         'avoid_repeats': ['ZHIR'],
@@ -82,7 +82,7 @@ def test_repeat_invalid_fallback_string(graph_canon):
     G.add_node(0)
     attach_defaults(G)
     nd = G.nodes[0]
-    nd['hist_glifos'] = deque([ZHIR.value])
+    nd['glyph_history'] = deque([ZHIR.value])
     G.graph['GRAMMAR'] = {
         'window': 3,
         'avoid_repeats': ['ZHIR'],
@@ -96,7 +96,7 @@ def test_repeat_invalid_fallback_type(graph_canon):
     G.add_node(0)
     attach_defaults(G)
     nd = G.nodes[0]
-    nd['hist_glifos'] = deque([ZHIR.value])
+    nd['glyph_history'] = deque([ZHIR.value])
     obj = object()
     G.graph['GRAMMAR'] = {
         'window': 3,
@@ -130,9 +130,9 @@ def test_apply_glyph_with_grammar_equivalence(graph_canon):
 
     # Aplicación manual
     g_eff = enforce_canonical_grammar(G_manual, 0, ZHIR)
-    from tnfr.operators import aplicar_glifo
-    aplicar_glifo(G_manual, 0, g_eff, window=1)
-    on_applied_glifo(G_manual, 0, g_eff)
+    from tnfr.operators import apply_glyph
+    apply_glyph(G_manual, 0, g_eff, window=1)
+    on_applied_glyph(G_manual, 0, g_eff)
 
     # Aplicación mediante helper
     apply_glyph_with_grammar(G_func, [0], ZHIR, 1)
@@ -145,29 +145,29 @@ def test_apply_glyph_with_grammar_multiple_nodes(graph_canon):
     G.add_node(0, theta=0.0)
     G.add_node(1)
     attach_defaults(G)
-    G.nodes[0]['hist_glifos'] = deque([OZ])
+    G.nodes[0]['glyph_history'] = deque([OZ])
 
     apply_glyph_with_grammar(G, [0, 1], ZHIR, 1)
 
-    assert G.nodes[0]['hist_glifos'][-1] == ZHIR
-    assert G.nodes[1]['hist_glifos'][-1] == OZ
+    assert G.nodes[0]['glyph_history'][-1] == ZHIR
+    assert G.nodes[1]['glyph_history'][-1] == OZ
 
 
 def test_apply_glyph_with_grammar_accepts_iterables(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
     attach_defaults(G)
-    G.nodes[0]['hist_glifos'] = deque([OZ])
-    G.nodes[1]['hist_glifos'] = deque([OZ])
+    G.nodes[0]['glyph_history'] = deque([OZ])
+    G.nodes[1]['glyph_history'] = deque([OZ])
     apply_glyph_with_grammar(G, G.nodes(), ZHIR, 1)
-    assert G.nodes[0]['hist_glifos'][-1] == ZHIR
-    assert G.nodes[1]['hist_glifos'][-1] == ZHIR
+    assert G.nodes[0]['glyph_history'][-1] == ZHIR
+    assert G.nodes[1]['glyph_history'][-1] == ZHIR
 
     G2 = graph_canon()
     G2.add_nodes_from([0, 1])
     attach_defaults(G2)
-    G2.nodes[0]['hist_glifos'] = deque([OZ])
-    G2.nodes[1]['hist_glifos'] = deque([OZ])
+    G2.nodes[0]['glyph_history'] = deque([OZ])
+    G2.nodes[1]['glyph_history'] = deque([OZ])
     apply_glyph_with_grammar(G2, (n for n in G2.nodes()), ZHIR, 1)
-    assert G2.nodes[0]['hist_glifos'][-1] == ZHIR
-    assert G2.nodes[1]['hist_glifos'][-1] == ZHIR
+    assert G2.nodes[0]['glyph_history'][-1] == ZHIR
+    assert G2.nodes[1]['glyph_history'][-1] == ZHIR

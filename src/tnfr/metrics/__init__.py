@@ -1,10 +1,10 @@
-"""Métricas registrables."""
+"""Registerable metrics."""
 from .core import (
     register_metrics_callbacks,
     Tg_global,
     Tg_by_node,
     latency_series,
-    glifogram_series,
+    glyphogram_series,
     glyph_top,
     glyph_dwell_stats,
     _tg_state,
@@ -30,7 +30,7 @@ __all__ = [
     "Tg_global",
     "Tg_by_node",
     "latency_series",
-    "glifogram_series",
+    "glyphogram_series",
     "glyph_top",
     "glyph_dwell_stats",
     "_tg_state",

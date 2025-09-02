@@ -1,4 +1,4 @@
-"""Herramientas de configuración."""
+"""Configuration utilities."""
 from __future__ import annotations
 from typing import Any, Dict
 from pathlib import Path
@@ -8,18 +8,17 @@ from .constants import inject_defaults
 
 
 def load_config(path: Path) -> Dict[str, Any]:
-    """Lee un archivo JSON/YAML y devuelve un ``dict`` con los parámetros."""
+    """Read a JSON/YAML file and return a ``dict`` with parameters."""
     data = read_structured_file(path)
     if not isinstance(data, dict):
-        raise ValueError("El archivo de configuración debe contener un objeto")
+        raise ValueError("Configuration file must contain an object")
     return data
 
 
 def apply_config(G, path: Path) -> None:
-    """Inyecta parámetros desde ``path`` sobre ``G.graph``.
+    """Inject parameters from ``path`` into ``G.graph``.
 
-    Se reutiliza :func:`inject_defaults` para mantener la semántica de los
-    *defaults* canónicos.
+    Reuses :func:`inject_defaults` to keep canonical default semantics.
     """
     cfg = load_config(path)
     inject_defaults(G, cfg, override=True)

@@ -5,10 +5,10 @@ from collections import deque
 import pytest
 
 from tnfr.constants import ALIAS_THETA
-from tnfr.observers import sincronía_fase, orden_kuramoto, carga_glifica, wbar
+from tnfr.observers import phase_sync, kuramoto_order, glyph_load, wbar
 from tnfr.gamma import kuramoto_R_psi
 from tnfr.sense import sigma_vector
-from tnfr.constants_glifos import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
+from tnfr.constants_glyphs import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
 from tnfr.helpers import angle_diff, set_attr
 from tnfr.callback_utils import CallbackEvent
 from tnfr.observers import attach_standard_observer
@@ -25,40 +25,40 @@ def test_phase_observers_match_manual_calculation(graph_canon):
     th_mean = math.atan2(sum(Y) / len(Y), sum(X) / len(X))
     var = st.pvariance([angle_diff(th, th_mean) for th in angles])
     expected_sync = 1.0 / (1.0 + var)
-    assert math.isclose(sincronía_fase(G), expected_sync)
+    assert math.isclose(phase_sync(G), expected_sync)
 
     R = ((sum(X) ** 2 + sum(Y) ** 2) ** 0.5) / len(angles)
-    assert math.isclose(orden_kuramoto(G), float(R))
+    assert math.isclose(kuramoto_order(G), float(R))
 
 
-def test_orden_kuramoto_matches_kuramoto_R_psi(graph_canon):
+def test_kuramoto_order_matches_kuramoto_R_psi(graph_canon):
     G = graph_canon()
     angles = [0.1, 1.5, 2.9]
     for idx, th in enumerate(angles):
         G.add_node(idx)
         set_attr(G.nodes[idx], ALIAS_THETA, th)
 
-    R_ok = orden_kuramoto(G)
+    R_ok = kuramoto_order(G)
     R, _ = kuramoto_R_psi(G)
     assert math.isclose(R_ok, R)
 
 
-def test_carga_glifica_uses_module_constants(monkeypatch, graph_canon):
+def test_glyph_load_uses_module_constants(monkeypatch, graph_canon):
     G = graph_canon()
-    G.add_node(0, hist_glifos=["A"])
-    G.add_node(1, hist_glifos=["B"])
+    G.add_node(0, glyph_history=["A"])
+    G.add_node(1, glyph_history=["B"])
 
     # Patch constants to custom categories
     monkeypatch.setattr("tnfr.observers.GLYPH_GROUPS", {"estabilizadores": ["A"], "disruptivos": ["B"]})
 
-    dist = carga_glifica(G)
+    dist = glyph_load(G)
 
     assert dist["_estabilizadores"] == pytest.approx(0.5)
     assert dist["_disruptivos"] == pytest.approx(0.5)
 
 
 def test_sigma_vector_consistency():
-    # Distribución ficticia de glifos
+    # Distribución ficticia de glyphs
     dist = {"IL": 0.4, "RA": 0.3, "ZHIR": 0.1, "AL": 0.2, "_count": 10}
 
     res = sigma_vector(dist)

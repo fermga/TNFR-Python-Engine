@@ -1,4 +1,4 @@
-"""Análisis estructural."""
+"""Structural analysis."""
 from __future__ import annotations
 from typing import Iterable, Tuple, List
 import networkx as nx
@@ -26,9 +26,9 @@ def create_nfr(
     graph: nx.Graph | None = None,
     dnfr_hook=dnfr_epi_vf_mixed,
 ) -> Tuple[nx.Graph, str]:
-    """Crea una red (graph) con un nodo NFR inicializado.
+    """Create a graph with an initialised NFR node.
 
-    Devuelve la tupla ``(G, name)`` para conveniencia.
+    Returns the tuple ``(G, name)`` for convenience.
     """
     G = graph if graph is not None else nx.Graph()
     G.add_node(
@@ -49,10 +49,11 @@ def create_nfr(
 
 
 class Operador:
-    """Base para operadores TNFR.
+    """Base class for TNFR operators.
 
-    Cada operador define ``name`` (identificador ASCII) y ``glyph`` (glifo
-    canónico). La llamada ejecuta el glifo correspondiente sobre el nodo.
+    Each operator defines ``name`` (ASCII identifier) and ``glyph``
+    (canonical glyph). Calling an instance applies the corresponding glyph
+    to the node.
     """
 
     name = "operador"
@@ -60,25 +61,25 @@ class Operador:
 
     def __call__(self, G: nx.Graph, node, **kw) -> None:
         if self.glyph is None:
-            raise NotImplementedError("Operador sin glifo asignado")
+            raise NotImplementedError("Operador sin glyph asignado")
         apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
 
 
 # Derivados concretos -------------------------------------------------------
 #
 def operador_factory(*pairs: Tuple[str, str]) -> dict[str, type[Operador]]:
-    """Construye dinámicamente clases ``Operador``.
+    """Dynamically build ``Operador`` subclasses.
 
-    Cada par ``(nombre, glifo)`` produce una subclase concreta con los
-    atributos correspondientes. Las clases generadas se exponen en el módulo
-    como ``CamelCase`` del nombre original y se registran en un diccionario
-    para fácil acceso por nombre.
+    Each ``(name, glyph)`` pair produces a concrete subclass with the
+    corresponding attributes. Generated classes are exposed in the module as
+    ``CamelCase`` versions of the original name and registered in a dictionary
+    for easy access by name.
     """
 
     registry: dict[str, type[Operador]] = {}
-    for nombre, glifo in pairs:
+    for nombre, glyph in pairs:
         class_name = nombre.title().replace("_", "").replace(" ", "")
-        cls = type(class_name, (Operador,), {"name": nombre, "glyph": glifo})
+        cls = type(class_name, (Operador,), {"name": nombre, "glyph": glyph})
         registry[nombre] = cls
     return registry
 
@@ -145,21 +146,21 @@ _CIERRE_VALIDO = {"silencio", "transicion", "recursividad"}
 
 
 def _verify_token_format(nombres: List[str]) -> Tuple[bool, str]:
-    """Comprueba tipo y formato básicos de la lista de tokens."""
+    """Check basic type and format of the token list."""
     if not nombres:
-        return False, "secuencia vacía"
+        return False, "empty sequence"
     if any(not isinstance(n, str) for n in nombres):
-        return False, "tokens deben ser str"
+        return False, "tokens must be str"
     if nombres[0] not in _INICIO_VALIDOS:
-        return False, "debe iniciar en emisión o recursividad"
+        return False, "must start with emission or recursion"
     desconocidos = [n for n in nombres if n not in OPERADORES]
     if desconocidos:
-        return False, f"tokens desconocidos: {', '.join(desconocidos)}"
+        return False, f"unknown tokens: {', '.join(desconocidos)}"
     return True, "ok"
 
 
 def _validate_logical_coherence(nombres: List[str]) -> Tuple[bool, str]:
-    """Valida la coherencia lógica de la secuencia."""
+    """Validate logical coherence of the sequence."""
     i_rec = i_coh = -1
     found_intermedio = False
     cierre_ok = False
@@ -179,18 +180,18 @@ def _validate_logical_coherence(nombres: List[str]) -> Tuple[bool, str]:
         if idx >= total - 2 and n in _CIERRE_VALIDO:
             cierre_ok = True
     if i_rec == -1 or i_coh == -1:
-        return False, "falta tramo entrada→coherencia"
+        return False, "missing input→coherence segment"
     if not found_intermedio:
-        return False, "falta tramo de tensión/acoplamiento/resonancia"
+        return False, "missing tension/coupling/resonance segment"
     if not cierre_ok:
-        return False, "falta cierre (silencio/transición/recursividad)"
+        return False, "missing closure (silence/transition/recursion)"
     if thol_open:
-        return False, "bloque THOL sin cierre"
+        return False, "THOL block without closure"
     return True, "ok"
 
 
 def validate_sequence(nombres: List[str]) -> Tuple[bool, str]:
-    """Valida reglas mínimas de la sintaxis TNFR."""
+    """Validate minimal TNFR syntax rules."""
     ok, msg = _verify_token_format(nombres)
     if not ok:
         return False, msg
@@ -201,12 +202,12 @@ def validate_sequence(nombres: List[str]) -> Tuple[bool, str]:
 
 
 def run_sequence(G: nx.Graph, node, ops: Iterable[Operador]) -> None:
-    """Ejecuta una secuencia validada de operadores sobre el nodo dado."""
+    """Execute a validated sequence of operators on the given node."""
     ops_list = list(ops)
     nombres = [op.name for op in ops_list]
     ok, msg = validate_sequence(nombres)
     if not ok:
-        raise ValueError(f"Secuencia no válida: {msg}")
+        raise ValueError(f"Invalid sequence: {msg}")
     compute = G.graph.get("compute_delta_nfr")
     for op in ops_list:
         op(G, node)

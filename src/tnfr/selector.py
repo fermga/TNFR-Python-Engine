@@ -1,4 +1,4 @@
-"""Selección de glifos."""
+"""Selección de glyphs."""
 from __future__ import annotations
 
 from typing import Any, Dict
@@ -82,13 +82,13 @@ def _apply_selector_hysteresis(
     thr: Dict[str, float],
     margin: float,
 ) -> str | None:
-    """Aplica histéresis devolviendo el glifo previo si se está cerca de umbrales."""
+    """Aplica histéresis devolviendo el glyph previo si se está cerca de umbrales."""
     d_si = min(abs(Si - thr["si_hi"]), abs(Si - thr["si_lo"]))
     d_dn = min(abs(dnfr - thr["dnfr_hi"]), abs(dnfr - thr["dnfr_lo"]))
     d_ac = min(abs(accel - thr["accel_hi"]), abs(accel - thr["accel_lo"]))
     certeza = min(d_si, d_dn, d_ac)
     if certeza < margin:
-        hist = nd.get("hist_glifos")
+        hist = nd.get("glyph_history")
         if not isinstance(hist, Sequence) or not hist:
             return None
         prev = hist[-1]

@@ -1,4 +1,4 @@
-"""Lenguaje de programación TNFR."""
+"""TNFR programming language."""
 from __future__ import annotations
 from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union, Collection
 from dataclasses import dataclass
@@ -10,55 +10,56 @@ from .grammar import apply_glyph_with_grammar
 from .sense import GLYPHS_CANONICAL_SET
 from .types import Glyph
 
-# Tipos básicos
+# Basic types
 Node = Any
 AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
 
 # ---------------------
-# Construcciones del DSL
+# DSL constructs
 # ---------------------
 
 @dataclass
 class WAIT:
-    """Esperar cierto número de pasos sin aplicar glifos.
+    """Wait a number of steps without applying glyphs.
 
     Attributes:
-        steps: número de pasos que avanza el sistema.
+        steps: number of steps the system advances.
     """
     steps: int = 1
 
 @dataclass
 class TARGET:
-    """Selecciona el subconjunto de nodos para los glifos siguientes.
+    """Select the subset of nodes for subsequent glyphs.
 
     Attributes:
-        nodes: iterable de nodos; ``None`` para todos los nodos.
+        nodes: iterable of nodes; ``None`` for all nodes.
     """
-    nodes: Optional[Iterable[Node]] = None   # None = todos los nodos
+    nodes: Optional[Iterable[Node]] = None   # None = all nodes
 
 @dataclass
 class THOL:
-    """Bloque THOL que abre la autoorganización.
+    """THOL block that opens self-organisation.
 
     Attributes:
-        body: secuencia de tokens a ejecutar dentro del bloque.
-        repeat: cuántas veces repetir ``body``.
-        force_close: ``Glyph.SHA`` o ``Glyph.NUL`` para forzar cierre.
+        body: sequence of tokens to execute within the block.
+        repeat: how many times to repeat ``body``.
+        force_close: ``Glyph.SHA`` or ``Glyph.NUL`` to force closure.
     """
     body: Sequence[Any]
-    repeat: int = 1                # cuántas veces repetir el cuerpo
-    force_close: Optional[Glyph] = None  # None → cierre automático (gramática); SHA o NUL para forzar
+    repeat: int = 1                # number of times to repeat the body
+    force_close: Optional[Glyph] = None  # None → automatic closure; SHA or NUL to force
 
 Token = Union[Glyph, WAIT, TARGET, THOL]
 
 # ---------------------
-# Utilidades internas
+# Internal utilities
 # ---------------------
 
 @contextmanager
 def _forced_selector(G, glyph: Glyph):
-    """Sobrescribe temporalmente el selector glífico para forzar `glyph`.
-    Pasa por la gramática canónica antes de aplicar.
+    """Temporarily override the glyph selector to force ``glyph``.
+
+    The canonical grammar is enforced before applying.
     """
     prev = G.graph.get("glyph_selector")
     def selector_forced(_G, _n):
@@ -84,16 +85,15 @@ def _all_nodes(G):
     return G.nodes()
 
 # ---------------------
-# Núcleo de ejecución
+# Execution core
 # ---------------------
 
 def _apply_glyph_to_targets(G, g: Glyph | str, nodes: Optional[Iterable[Node]] = None):
     """Apply ``g`` to ``nodes`` (or all nodes) respecting the grammar.
 
     ``nodes`` may be any iterable of nodes, including a ``NodeView`` or other
-    iterables. Para evitar materializaciones innecesarias, se itera sobre el
-    iterable tal cual; corresponde al llamador materializarlo si necesita
-    indexación.
+    iterables. To avoid unnecessary materialisation, iteration happens over the
+    iterable as-is; callers must materialise it if indexing is needed.
     """
     nodes_iter = _all_nodes(G) if nodes is None else nodes
     w = _window(G)
@@ -105,15 +105,15 @@ def _advance(G, step_fn: Optional[AdvanceFn] = None):
     step_fn(G)
 
 # ---------------------
-# Compilación de secuencia → lista de operaciones atómicas
+# Sequence compilation → list of atomic operations
 # ---------------------
 
 def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
-    """Devuelve lista de operaciones (op, payload).
-    op ∈ { 'GLYPH', 'WAIT', 'TARGET', 'THOL' }.
+    """Return list of operations ``(op, payload)``.
+    ``op`` ∈ { 'GLYPH', 'WAIT', 'TARGET', 'THOL' }.
 
-    Implementación iterativa usando una pila explícita para evitar
-    recursión profunda cuando se anidan bloques ``THOL``.
+    Implemented iteratively using an explicit stack to avoid deep recursion
+    when ``THOL`` blocks are nested.
     """
     ops: List[Tuple[str, Any]] = []
     stack: List[Token] = list(reversed(seq))
@@ -127,7 +127,7 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
             ops.append(("WAIT", item.steps))
             continue
         if isinstance(item, THOL):
-            # Abrimos bloque THOL y apilamos su cuerpo de forma iterativa
+        # Open THOL block and push its body iteratively
             ops.append(("THOL", Glyph.THOL.value))
 
             repeats = max(1, int(item.repeat))
@@ -138,28 +138,26 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
                 if isinstance(item.force_close, Glyph) and item.force_close in {Glyph.SHA, Glyph.NUL}
                 else None
             )
-            # El cierre explícito debe ejecutarse al final, por lo que se
-            # coloca en la pila antes de expandir el cuerpo.
+            # Explicit closure must run at the end, so push onto stack before expanding body.
             if closing is not None:
                 stack.append(closing)
 
-            # Insertamos los cuerpos en orden para que la primera repetición
-            # sea procesada antes.
+            # Insert bodies in order so the first repetition is processed first.
             for _ in range(repeats):
                 for tok in reversed(item.body):
                     stack.append(tok)
             continue
 
-        # item debería ser un glifo
+        # item should be a glyph
         g = item.value if isinstance(item, Glyph) else str(item)
         if g not in GLYPHS_CANONICAL_SET:
-            raise ValueError(f"Glifo no canónico: {g}")
+            raise ValueError(f"Non-canonical glyph: {g}")
         ops.append(("GLYPH", g))
     return ops
 
 
 # ---------------------
-# Handlers para tokens atómicos
+# Handlers for atomic tokens
 # ---------------------
 
 def _record_trace(trace: deque, G, op: str, **data) -> None:
@@ -206,18 +204,18 @@ def _handle_thol(G, g: str, curr_target, trace: deque, step_fn: Optional[Advance
     return curr_target
 
 # ---------------------
-# API pública
+# Public API
 # ---------------------
 
 def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> None:
-    """Ejecuta una secuencia canónica sobre el grafo `G`.
+    """Execute a canonical sequence on graph ``G``.
 
-    Reglas:
-      - Usa `TARGET(nodes=...)` para cambiar el subconjunto de aplicación.
-      - `WAIT(k)` avanza k pasos con el selector vigente (no fuerza glifo).
-      - `THOL([...], repeat=r, force_close=…)` abre un bloque autoorganizativo,
-        repite el cuerpo y (opcional) fuerza cierre con SHA/NUL.
-      - Los glifos se aplican pasando por `enforce_canonical_grammar`.
+    Rules:
+      - Use ``TARGET(nodes=...)`` to change the subset of application.
+      - ``WAIT(k)`` advances ``k`` steps with the current selector (no forced glyph).
+      - ``THOL([...], repeat=r, force_close=…)`` opens a self-organising block,
+        repeats the body and optionally forces closure with SHA/NUL.
+      - Glyphs are applied via ``enforce_canonical_grammar``.
     """
     ops = _flatten(sequence)
     curr_target: Optional[List[Node]] = None
@@ -240,11 +238,11 @@ def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> N
     for op, payload in ops:
         handler = handlers.get(op)
         if handler is None:
-            raise ValueError(f"Operación desconocida: {op}")
+            raise ValueError(f"Unknown operation: {op}")
         curr_target = handler(G, payload, curr_target, trace, step_fn)
 
 # ---------------------
-# Helpers para construir secuencias de manera cómoda
+# Helpers to build sequences easily
 # ---------------------
 
 def seq(*tokens: Token) -> List[Token]:
@@ -260,8 +258,8 @@ def wait(steps: int = 1) -> WAIT:
     return WAIT(steps=max(1, int(steps)))
 
 
-def ejemplo_canonico_basico() -> List[Token]:
-    """Secuencia canónica de referencia.
+def basic_canonical_example() -> List[Token]:
+    """Reference canonical sequence.
 
     SHA → AL → RA → ZHIR → NUL → THOL
     """

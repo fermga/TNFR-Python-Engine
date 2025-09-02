@@ -1,6 +1,6 @@
 """Configuraciones predefinidas."""
 from __future__ import annotations
-from .program import seq, block, wait, ejemplo_canonico_basico
+from .program import seq, block, wait, basic_canonical_example
 from .types import Glyph
 
 # Secuencias comunes
@@ -22,7 +22,7 @@ _PRESETS = {
     + NUCLEO_VAL_UM
     + seq(block(Glyph.OZ, Glyph.NAV, Glyph.IL, repeat=1))
     + CIERRE_BASICO,
-    "ejemplo_canonico": ejemplo_canonico_basico(),
+    "ejemplo_canonico": basic_canonical_example(),
     # Topologías fractales: expansión/contracción modular
     "fractal_expand": seq(block(Glyph.THOL, Glyph.VAL, Glyph.UM, repeat=2, close=Glyph.NUL), Glyph.RA),
     "fractal_contract": seq(block(Glyph.THOL, Glyph.NUL, Glyph.UM, repeat=2, close=Glyph.SHA), Glyph.RA),

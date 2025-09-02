@@ -11,27 +11,27 @@ from .helpers import get_attr_str
 
 __all__ = [
     "HistoryDict",
-    "push_glifo",
-    "reciente_glifo",
+    "push_glyph",
+    "recent_glyph",
     "ensure_history",
-    "last_glifo",
+    "last_glyph",
     "count_glyphs",
 ]
 
 
-def push_glifo(nd: Dict[str, Any], glifo: str, window: int) -> None:
-    """Add ``glifo`` to node history with maximum size ``window``."""
-    hist = nd.get("hist_glifos")
+def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
+    """Add ``glyph`` to node history with maximum size ``window``."""
+    hist = nd.get("glyph_history")
     if hist is None or hist.maxlen != window:
         hist = deque(hist or [], maxlen=window)
-        nd["hist_glifos"] = hist
-    hist.append(str(glifo))
+        nd["glyph_history"] = hist
+    hist.append(str(glyph))
 
 
-def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
-    """Return ``True`` if ``glifo`` appeared in last ``ventana`` emissions."""
-    hist = nd.get("hist_glifos")
-    gl = str(glifo)
+def recent_glyph(nd: Dict[str, Any], glyph: str, ventana: int) -> bool:
+    """Return ``True`` if ``glyph`` appeared in last ``ventana`` emissions."""
+    hist = nd.get("glyph_history")
+    gl = str(glyph)
     if ventana < 0:
         raise ValueError("ventana debe ser >= 0")
     if hist and ventana > 0:
@@ -131,12 +131,12 @@ def ensure_history(G) -> Dict[str, Any]:
     return hist
 
 
-def last_glifo(nd: Dict[str, Any]) -> str | None:
+def last_glyph(nd: Dict[str, Any]) -> str | None:
     """Return the most recent glyph for node or ``None``."""
     kind = get_attr_str(nd, ALIAS_EPI_KIND, "")
     if kind:
         return kind
-    hist = nd.get("hist_glifos")
+    hist = nd.get("glyph_history")
     if not hist:
         return None
     try:
@@ -152,10 +152,10 @@ def count_glyphs(
     counts: Counter[str] = Counter()
     for _, nd in G.nodes(data=True):
         if last_only:
-            g = last_glifo(nd)
+            g = last_glyph(nd)
             seq: Iterable[str] = [g] if g else []
         else:
-            hist = nd.get("hist_glifos")
+            hist = nd.get("glyph_history")
             if not hist:
                 continue
             if window is not None and window > 0:

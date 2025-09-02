@@ -1,4 +1,4 @@
-"""Constantes compartidas."""
+"""Shared constants."""
 from __future__ import annotations
 
 from collections import ChainMap
@@ -55,9 +55,9 @@ ALIASES: Dict[str, tuple[str, ...]] = {
 # -------------------------
 
 def attach_defaults(G, override: bool = False) -> None:
-    """Escribe ``DEFAULTS`` combinados en ``G.graph``.
+    """Write combined ``DEFAULTS`` into ``G.graph``.
 
-    Si ``override`` es ``True`` se sobreescriben valores ya presentes.
+    If ``override`` is ``True`` existing values are overwritten.
     """
     inject_defaults(G, DEFAULTS, override=override)
 
@@ -65,12 +65,12 @@ def attach_defaults(G, override: bool = False) -> None:
 def inject_defaults(
     G, defaults: Dict[str, Any] = DEFAULTS, override: bool = False
 ) -> None:
-    """Inyecta ``defaults`` en ``G.graph``.
+    """Inject ``defaults`` into ``G.graph``.
 
-    ``defaults`` suele ser ``DEFAULTS``, que combina todos los sub-diccionarios.
-    Si ``override`` es ``True`` se sobreescriben valores ya presentes.
-    Los valores inmutables (números, cadenas, tuplas, etc.) se asignan directamente;
-    ``copy.deepcopy`` solo se usa para estructuras mutables.
+    ``defaults`` is usually ``DEFAULTS``, combining all sub-dictionaries.
+    If ``override`` is ``True`` existing values are overwritten. Immutable
+    values (numbers, strings, tuples, etc.) are assigned directly; ``copy.deepcopy``
+    is used only for mutable structures.
     """
     G.graph.setdefault("_tnfr_defaults_attached", False)
     for k, v in defaults.items():
@@ -116,7 +116,7 @@ ALIAS_VF = (VF_KEY, "nu_f", "nu-f", "nu", "freq", "frequency")
 ALIAS_THETA = (THETA_KEY, "theta", "fase", "phi", "phase")
 ALIAS_DNFR = ("ΔNFR", "delta_nfr", "dnfr")
 ALIAS_EPI = ("EPI", "psi", "PSI", "value")
-ALIAS_EPI_KIND = ("EPI_kind", "epi_kind", "source_glifo")
+ALIAS_EPI_KIND = ("EPI_kind", "epi_kind", "source_glyph")
 ALIAS_SI = ("Si", "sense_index", "S_i", "sense", "meaning_index")
 ALIAS_dEPI = ("dEPI_dt", "dpsi_dt", "dEPI", "velocity")
 ALIAS_D2EPI = ("d2EPI_dt2", "d2psi_dt2", "d2EPI", "accel")

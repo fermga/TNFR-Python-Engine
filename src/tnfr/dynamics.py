@@ -11,15 +11,15 @@ from typing import Dict, Any, Literal
 
 import networkx as nx
 
-from .observers import sincronía_fase, carga_glifica, orden_kuramoto
+from .observers import phase_sync, glyph_load, kuramoto_order
 from .sense import sigma_vector
-# Importar compute_Si y aplicar_glifo a nivel de módulo evita el coste de
+# Importar compute_Si y apply_glyph a nivel de módulo evita el coste de
 # realizar la importación en cada paso de la dinámica. Como los módulos de
 # origen no dependen de ``dynamics``, no se introducen ciclos.
-from .operators import aplicar_remesh_si_estabilizacion_global, aplicar_glifo
+from .operators import apply_remesh_if_globally_stable, apply_glyph
 from .grammar import (
     enforce_canonical_grammar,
-    on_applied_glifo,
+    on_applied_glyph,
     AL,
     EN,
 )
@@ -39,7 +39,7 @@ from .helpers import (
      set_vf, set_dnfr, compute_Si, compute_coherence, compute_dnfr_accel_max,
 )
 from .callback_utils import invoke_callbacks
-from .glyph_history import reciente_glifo, ensure_history
+from .glyph_history import recent_glyph, ensure_history
 from .collections_utils import normalize_weights
 from .selector import (
     _selector_thresholds,
@@ -598,7 +598,7 @@ def update_epi_via_nodal_equation(
 # Wrappers nombrados (compatibilidad)
 # -------------------------
 
-def aplicar_dnfr_campo(G, w_theta=None, w_epi=None, w_vf=None) -> None:
+def apply_dnfr_field(G, w_theta=None, w_epi=None, w_vf=None) -> None:
     if any(v is not None for v in (w_theta, w_epi, w_vf)):
         mix = G.graph.get("DNFR_WEIGHTS", DEFAULTS["DNFR_WEIGHTS"]).copy()
         if w_theta is not None:
@@ -615,7 +615,7 @@ def integrar_epi_euler(G, dt: float | None = None) -> None:
     update_epi_via_nodal_equation(G, dt=dt, method="euler")
 
 
-def aplicar_clamps_canonicos(nd: Dict[str, Any], G=None, node=None) -> None:
+def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
     eps_min = float((G.graph.get("EPI_MIN") if G is not None else DEFAULTS["EPI_MIN"]))
     eps_max = float((G.graph.get("EPI_MAX") if G is not None else DEFAULTS["EPI_MAX"]))
     vf_min = float((G.graph.get("VF_MIN") if G is not None else DEFAULTS["VF_MIN"]))
@@ -650,7 +650,7 @@ def validate_canon(G) -> None:
     Si ``VALIDATORS_STRICT`` está activo, registra alertas en ``history``.
     """
     for n in G.nodes():
-        aplicar_clamps_canonicos(G.nodes[n], G, n)
+        apply_canonical_clamps(G.nodes[n], G, n)
     return G
 
 
@@ -664,9 +664,9 @@ def _leer_parametros_adaptativos(g: Dict[str, Any]) -> tuple[Dict[str, Any], flo
 
 def _calcular_estado(G, cfg: Dict[str, Any]) -> tuple[str, float, float]:
     """Devuelve estado actual (estable/disonante/transicion) y métricas."""
-    R = orden_kuramoto(G)
+    R = kuramoto_order(G)
     win = int(G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]))
-    dist = carga_glifica(G, window=win)
+    dist = glyph_load(G, window=win)
     disr = float(dist.get("_disruptivos", 0.0)) if dist else 0.0
 
     R_hi = float(cfg.get("R_hi", 0.90))
@@ -850,7 +850,7 @@ def _soft_grammar_prefilter(G, n, cand, dnfr, accel):
     force_ac = float(gram.get("force_accel", 0.60))
     fallbacks = gram.get("fallbacks", {})
     nd = G.nodes[n]
-    if cand in avoid and reciente_glifo(nd, cand, gwin):
+    if cand in avoid and recent_glyph(nd, cand, gwin):
         if not (dnfr >= force_dn or accel >= force_ac):
             cand = fallbacks.get(cand, cand)
     return cand
@@ -886,7 +886,7 @@ def _compute_selector_score(G, nd, Si, dnfr, accel, cand):
     """Calcula la puntuación y aplica penalizaciones por estancamiento."""
     W = G.graph.get("SELECTOR_WEIGHTS", DEFAULTS["SELECTOR_WEIGHTS"])
     score = _calc_selector_score(Si, dnfr, accel, W)
-    hist_prev = nd.get("hist_glifos")
+    hist_prev = nd.get("glyph_history")
     if hist_prev and hist_prev[-1] == cand:
         delta_si = get_attr(nd, ALIAS_dSI, 0.0)
         h = G.graph.get("history", {})
@@ -985,9 +985,9 @@ def _update_nodes(
                 g = selector(G, n)
                 if use_canon:
                     g = enforce_canonical_grammar(G, n, g)
-            aplicar_glifo(G, n, g, window=window)
+            apply_glyph(G, n, g, window=window)
             if use_canon:
-                on_applied_glifo(G, n, g)
+                on_applied_glyph(G, n, g)
             if g == AL:
                 h_al[n] = 0
                 h_en[n] = min(h_en[n], en_max)
@@ -999,7 +999,7 @@ def _update_nodes(
     )
     update_epi_via_nodal_equation(G, dt=_dt, method=method)
     for n in G.nodes():
-        aplicar_clamps_canonicos(G.nodes[n], G, n)
+        apply_canonical_clamps(G.nodes[n], G, n)
     coordinar_fase_global_vecinal(G, None, None)
     adaptar_vf_por_coherencia(G)
 
@@ -1018,7 +1018,7 @@ def _update_metrics(G) -> None:
 
 
 def _maybe_remesh(G) -> None:
-    aplicar_remesh_si_estabilizacion_global(G)
+    apply_remesh_if_globally_stable(G)
 
 
 def _run_validators(G) -> None:
@@ -1104,16 +1104,16 @@ def _update_coherence(G, hist) -> None:
 
 def _update_phase_sync(G, hist) -> None:
     """Registrar sincronía de fase y el orden de Kuramoto."""
-    ps = sincronía_fase(G)
+    ps = phase_sync(G)
     hist["phase_sync"].append(ps)
-    R = orden_kuramoto(G)
+    R = kuramoto_order(G)
     hist.setdefault("kuramoto_R", []).append(R)
 
 
 def _update_sigma(G, hist) -> None:
     """Registrar carga glífica y el vector Σ⃗ asociado."""
     win = int(G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]))
-    gl = carga_glifica(G, window=win)
+    gl = glyph_load(G, window=win)
     hist["glyph_load_estab"].append(gl.get("_estabilizadores", 0.0))
     hist["glyph_load_disr"].append(gl.get("_disruptivos", 0.0))
 

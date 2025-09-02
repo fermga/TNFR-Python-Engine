@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 def _ensure_kuramoto_cache(G, t) -> None:
-    """Cachea (R, ψ) en ``G.graph`` para el paso ``t`` actual.
+    """Cache ``(R, ψ)`` in ``G.graph`` for the current step ``t``.
 
-    El cálculo se invalida si cambia el paso o la firma de los nodos.
+    The cache is invalidated if the step or node signature changes.
     """
     nodes_sig = (len(G), int(G.graph.get("_edge_version", 0)))
     cache = G.graph.get("_kuramoto_cache")
@@ -35,7 +35,7 @@ def _ensure_kuramoto_cache(G, t) -> None:
 
 
 def kuramoto_R_psi(G) -> Tuple[float, float]:
-    """Devuelve (R, ψ) del orden de Kuramoto usando θ de todos los nodos."""
+    """Return ``(R, ψ)`` for Kuramoto order using θ from all nodes."""
     acc = 0 + 0j
     n = 0
     for _, nd in G.nodes(data=True):
@@ -49,11 +49,11 @@ def kuramoto_R_psi(G) -> Tuple[float, float]:
 
 
 def _kuramoto_common(G, node, _cfg):
-    """Return ``(θ_i, R, ψ)`` for Kuramoto-based γ functions.
+    """Return ``(θ_i, R, ψ)`` for Kuramoto-based Γ functions.
 
-    Lee los valores cacheados de orden global ``R`` y fase media ``ψ`` y
-    obtiene la fase del nodo ``θ_i``. ``_cfg`` se acepta solo para mantener una
-    firma homogénea con los evaluadores de ``Γ``.
+    Reads cached global order ``R`` and mean phase ``ψ`` and obtains node
+    phase ``θ_i``. ``_cfg`` is accepted only to keep a homogeneous signature
+    with Γ evaluators.
     """
     cache = G.graph.get("_kuramoto_cache", {})
     R = float(cache.get("R", 0.0))
@@ -72,14 +72,14 @@ def gamma_none(G, node, t, cfg: Dict[str, Any]) -> float:
 
 
 def gamma_kuramoto_linear(G, node, t, cfg: Dict[str, Any]) -> float:
-    """Acoplamiento lineal de Kuramoto para Γi(R).
+    """Linear Kuramoto coupling for Γi(R).
 
-    Fórmula: Γ = β · (R - R0) · cos(θ_i - ψ)
-      - R ∈ [0,1] es el orden global de fase.
-      - ψ es la fase media (dirección de coordinación).
-      - β, R0 son parámetros (ganancia/umbral).
+    Formula: Γ = β · (R - R0) · cos(θ_i - ψ)
+      - R ∈ [0,1] is the global phase order.
+      - ψ is the mean phase (coordination direction).
+      - β, R0 are parameters (gain/threshold).
 
-    Uso: refuerza integración cuando la red ya exhibe coherencia de fase (R>R0).
+    Use: reinforces integration when the network already shows phase coherence (R>R0).
     """
     beta = float(cfg.get("beta", 0.0))
     R0 = float(cfg.get("R0", 0.0))
@@ -96,12 +96,12 @@ def gamma_kuramoto_bandpass(G, node, t, cfg: Dict[str, Any]) -> float:
 
 
 def gamma_kuramoto_tanh(G, node, t, cfg: Dict[str, Any]) -> float:
-    """Acoplamiento saturante tipo tanh para Γi(R).
+    """Saturating tanh coupling for Γi(R).
 
-    Fórmula: Γ = β · tanh(k·(R - R0)) · cos(θ_i - ψ)
-      - β: ganancia del acoplamiento
-      - k: pendiente de la tanh (cuán rápido satura)
-      - R0: umbral de activación
+    Formula: Γ = β · tanh(k·(R - R0)) · cos(θ_i - ψ)
+      - β: coupling gain
+      - k: tanh slope (how fast it saturates)
+      - R0: activation threshold
     """
     beta = float(cfg.get("beta", 0.0))
     k = float(cfg.get("k", 1.0))
@@ -111,12 +111,12 @@ def gamma_kuramoto_tanh(G, node, t, cfg: Dict[str, Any]) -> float:
 
 
 def gamma_harmonic(G, node, t, cfg: Dict[str, Any]) -> float:
-    """Forzamiento armónico coherente con el campo global de fase.
+    """Harmonic forcing aligned with the global phase field.
 
-    Fórmula: Γ = β · sin(ω·t + φ) · cos(θ_i - ψ)
-      - β: ganancia del acoplamiento
-      - ω: frecuencia angular del forzante
-      - φ: fase inicial del forzante
+    Formula: Γ = β · sin(ω·t + φ) · cos(θ_i - ψ)
+      - β: coupling gain
+      - ω: angular frequency of the forcing
+      - φ: initial phase of the forcing
     """
     beta = float(cfg.get("beta", 0.0))
     omega = float(cfg.get("omega", 1.0))
@@ -146,16 +146,16 @@ def eval_gamma(
     strict: bool = False,
     log_level: int | None = None,
 ) -> float:
-    """Evalúa Γi para ``node`` según la especificación en ``G.graph['GAMMA']``.
+    """Evaluate Γi for ``node`` according to ``G.graph['GAMMA']`` specification.
 
-    Si ``strict`` es ``True`` las excepciones encontradas durante la
-    evaluación se reelevarán en lugar de devolver ``0.0``. Asimismo, si el
-    tipo de ``Γ`` especificado no está registrado, se emitirá una advertencia
-    (o ``ValueError`` en modo estricto) y se usará ``gamma_none``.
+    If ``strict`` is ``True`` exceptions raised during evaluation are
+    propagated instead of returning ``0.0``. Likewise, if the specified
+    Γ type is not registered a warning is emitted (or ``ValueError`` in
+    strict mode) and ``gamma_none`` is used.
 
-    ``log_level`` permite controlar el nivel de logging de los errores
-    capturados cuando ``strict`` es ``False``. Si no se especifica, se usará
-    ``logging.ERROR`` en modo estricto y ``logging.DEBUG`` en modo laxo.
+    ``log_level`` controls the logging level for captured errors when
+    ``strict`` is ``False``. If omitted, ``logging.ERROR`` is used in
+    strict mode and ``logging.DEBUG`` otherwise.
     """
     spec = G.graph.get("GAMMA", {"type": "none"})
     spec_type = spec.get("type", "none")

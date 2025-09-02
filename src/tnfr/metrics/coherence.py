@@ -1,4 +1,4 @@
-"""Métricas de coherencia."""
+"""Coherence metrics."""
 from __future__ import annotations
 
 from math import cos
@@ -50,7 +50,7 @@ def _combine_components(
     vf_min,
     vf_max,
 ):
-    """Calcula la coherencia combinando componentes con sus pesos."""
+    """Compute coherence by combining components with their weights."""
     s_phase, s_epi, s_vf, s_si = _coherence_components(
         G, ni, nj, epi_min, epi_max, vf_min, vf_max
     )
@@ -104,7 +104,7 @@ def coherence_matrix(G):
     row_count = [0] * n
 
     def add_entry(i: int, j: int, w: float) -> None:
-        """Añade un valor a la matriz y acumula sumas/contadores."""
+        """Add a value to the matrix and accumulate sums/counters."""
         if mode == "dense":
             W[i][j] = w
         else:

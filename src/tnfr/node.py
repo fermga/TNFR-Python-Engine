@@ -15,7 +15,7 @@ from .constants import (
     ALIAS_DNFR,
     ALIAS_D2EPI,
 )
-from .glyph_history import push_glifo
+from .glyph_history import push_glyph
 from .helpers import (
     get_attr,
     get_attr_str,
@@ -26,7 +26,7 @@ from .helpers import (
     increment_edge_version,
 )
 
-from .operators import aplicar_glifo_obj
+from .operators import apply_glyph_obj
 
 
 def _nx_attr_property(
@@ -114,7 +114,7 @@ def _add_edge_common(G, n1, n2, weight, overwrite):
 
 
 class NodoProtocol(Protocol):
-    """Protocolo mínimo para nodos TNFR."""
+    """Minimal protocol for TNFR nodes."""
 
     EPI: float
     vf: float
@@ -128,7 +128,7 @@ class NodoProtocol(Protocol):
     def neighbors(self) -> Iterable[NodoProtocol | Hashable]:
         ...
 
-    def push_glifo(self, glifo: str, window: int) -> None:
+    def push_glyph(self, glyph: str, window: int) -> None:
         ...
 
     def has_edge(self, other: "NodoProtocol") -> bool:
@@ -148,11 +148,11 @@ class NodoProtocol(Protocol):
 
 @dataclass(eq=False)
 class NodoTNFR:
-    """Representa un nodo TNFR autónomo.
+    """Autonomous TNFR node representation.
 
-    Para cada vecino se almacena el peso de la conexión. Aunque las
-    operaciones actuales no usan los pesos, se preservan para posibles
-    cálculos futuros.
+    Each neighbour stores the connection weight. Although current operations
+    do not use the weights, they are preserved for potential future
+    calculations.
     """
 
     EPI: float = 0.0
@@ -164,7 +164,7 @@ class NodoTNFR:
     d2EPI: float = 0.0
     graph: Dict[str, object] = field(default_factory=dict)
     _neighbors: Dict["NodoTNFR", float] = field(default_factory=dict)
-    _hist_glifos: Deque[str] = field(default_factory=lambda: deque(maxlen=DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 7)))
+    _glyph_history: Deque[str] = field(default_factory=lambda: deque(maxlen=DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 7)))
 
     def neighbors(self) -> Iterable["NodoTNFR"]:
         return self._neighbors.keys()
@@ -173,21 +173,21 @@ class NodoTNFR:
         return other in self._neighbors
 
     def edge_weight(self, other: "NodoTNFR") -> float:
-        """Devuelve el peso de la arista hacia ``other`` o ``0.0`` si no existe."""
+        """Return the edge weight towards ``other`` or ``0.0`` if absent."""
         return self._neighbors.get(other, 0.0)
 
     def add_edge(
         self, other: "NodoTNFR", weight: float = 1.0, *, overwrite: bool = False
     ) -> None:
-        """Conecta este nodo con ``other``."""
+        """Connect this node with ``other``."""
 
         _add_edge_common(self.graph, self, other, weight, overwrite)
 
-    def push_glifo(self, glifo: str, window: int) -> None:
-        nd = {"hist_glifos": self._hist_glifos}
-        push_glifo(nd, glifo, window)
-        self._hist_glifos = nd["hist_glifos"]
-        self.epi_kind = glifo
+    def push_glyph(self, glyph: str, window: int) -> None:
+        nd = {"glyph_history": self._glyph_history}
+        push_glyph(nd, glyph, window)
+        self._glyph_history = nd["glyph_history"]
+        self.epi_kind = glyph
 
     def offset(self) -> int:
         return 0
@@ -195,8 +195,8 @@ class NodoTNFR:
     def all_nodes(self) -> Iterable["NodoTNFR"]:
         return list(self.graph.get("_all_nodes", [self]))
 
-    def aplicar_glifo(self, glifo: str, window: Optional[int] = None) -> None:
-        aplicar_glifo_obj(self, glifo, window=window)
+    def apply_glyph(self, glyph: str, window: Optional[int] = None) -> None:
+        apply_glyph_obj(self, glyph, window=window)
 
     def integrar(self, dt: float) -> None:
         self.EPI += self.dnfr * dt
@@ -242,9 +242,9 @@ class NodoNX(NodoProtocol):
         """
         return self.G.neighbors(self.n)
 
-    def push_glifo(self, glifo: str, window: int) -> None:
-        push_glifo(self.G.nodes[self.n], glifo, window)
-        self.epi_kind = glifo
+    def push_glyph(self, glyph: str, window: int) -> None:
+        push_glyph(self.G.nodes[self.n], glyph, window)
+        self.epi_kind = glyph
 
     def has_edge(self, other: NodoProtocol) -> bool:
         if isinstance(other, NodoNX):

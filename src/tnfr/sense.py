@@ -1,4 +1,4 @@
-"""Cálculos de sentido."""
+"""Sense calculations."""
 from __future__ import annotations
 from typing import Dict, Iterable
 import math
@@ -13,8 +13,8 @@ from .helpers import (
     clamp01,
 )
 from .callback_utils import register_callback
-from .glyph_history import ensure_history, last_glifo, count_glyphs
-from .constants_glifos import (
+from .glyph_history import ensure_history, last_glyph, count_glyphs
+from .constants_glyphs import (
     ANGLE_MAP,
     ESTABILIZADORES,
     DISRUPTIVOS,
@@ -22,11 +22,11 @@ from .constants_glifos import (
 )
 
 # -------------------------
-# Canon: orden circular de glifos y ángulos
+# Canon: orden circular de glyphs y ángulos
 # -------------------------
 GLYPHS_CANONICAL_SET: set[str] = set(GLYPHS_CANONICAL)
 
-# Glifos relevantes para el plano Σ de observadores de sentido
+# Glyphs relevantes para el plano Σ de observadores de sentido
 SIGMA_ANGLE_KEYS: tuple[str, ...] = tuple(ESTABILIZADORES + DISRUPTIVOS)
 
 GLYPH_UNITS: Dict[str, complex] = {
@@ -55,7 +55,7 @@ def _weight(nd, mode: str) -> float:
 
 def _node_weight(nd, weight_mode: str) -> tuple[str, float, complex] | None:
     """Return ``(glyph, weight, weighted_unit)`` or ``None`` if no glyph."""
-    g = last_glifo(nd)
+    g = last_glyph(nd)
     if not g:
         return None
     w = _weight(nd, weight_mode)
@@ -75,7 +75,7 @@ def _sigma_cfg(G):
 def _sigma_from_vectors(
     vectors: Iterable[complex], fallback_angle: float = 0.0
 ) -> tuple[Dict[str, float], int]:
-    """Normaliza una serie de vectores complejos en el plano σ."""
+    """Normalise a series of complex vectors in the σ-plane."""
 
     acc = complex(0.0, 0.0)
     cnt = 0
@@ -97,7 +97,7 @@ def _sigma_from_vectors(
 def _sigma_from_pairs(
     pairs: Iterable[tuple[str, float]], fallback_angle: float = 0.0
 ) -> tuple[Dict[str, float], int]:
-    """Conveniencia para calcular σ a partir de pares ``(glifo, peso)``."""
+    """Convenience to compute σ from ``(glyph, weight)`` pairs."""
 
     vectors = (glyph_unit(g) * float(w) for g, w in pairs)
     return _sigma_from_vectors(vectors, fallback_angle)
@@ -110,18 +110,17 @@ def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] 
         return None
     g, w, z = nw
     vec, _ = _sigma_from_vectors([z], glyph_angle(g))
-    vec.update({"glifo": g, "w": float(w)})
+    vec.update({"glyph": g, "w": float(w)})
     return vec
 
 
 def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
-    """Calcula Σ⃗ a partir de una distribución de glifos.
+    """Compute Σ⃗ from a glyph distribution.
 
-    ``dist`` puede contener conteos brutos o proporciones. Los valores se
-    normalizan respecto a los glifos relevantes para el plano σ y se obtienen
-    las componentes cartesianas, la magnitud y el ángulo resultante. Si la
-    distribución no aporta peso sobre los glifos de interés, se retorna el
-    vector nulo.
+    ``dist`` may contain raw counts or proportions. Values are normalised with
+    respect to glyphs relevant to the σ plane and the Cartesian components,
+    magnitude and resulting angle are obtained. If the distribution provides
+    no weight on the relevant glyphs the zero vector is returned.
     """
 
     total = math.fsum(float(dist.get(k, 0.0)) for k in SIGMA_ANGLE_KEYS)
@@ -211,7 +210,7 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
 
     hist.setdefault(key, []).append(sv)
 
-    # Conteo de glifos por paso (útil para rosa glífica)
+    # Conteo de glyphs por paso (útil para rosa glífica)
     counts = count_glyphs(G, last_only=True)
     hist.setdefault("sigma_counts", []).append({"t": sv["t"], **counts})
 
@@ -219,7 +218,7 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
     if cfg.get("per_node", False):
         per = hist.setdefault("sigma_per_node", {})
         for n, nd in G.nodes(data=True):
-            g = last_glifo(nd)
+            g = last_glyph(nd)
             if not g:
                 continue
             a = glyph_angle(g)
@@ -254,7 +253,7 @@ def sigma_series(G, key: str | None = None) -> Dict[str, List[float]]:
 
 
 def sigma_rose(G, steps: int | None = None) -> Dict[str, int]:
-    """Histograma de glifos en los últimos `steps` pasos (o todos)."""
+    """Histogram of glyphs in the last ``steps`` steps (or all)."""
     hist = G.graph.get("history", {})
     counts = hist.get("sigma_counts", [])
     if not counts:

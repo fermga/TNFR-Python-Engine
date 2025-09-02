@@ -31,4 +31,4 @@ def test_thol_invalid_close():
         _parse_tokens([{ "THOL": {"close": "XYZ"} }])
     msg = str(exc.value)
     assert "XYZ" in msg
-    assert "Glifo" in msg
+    assert "Glyph" in msg

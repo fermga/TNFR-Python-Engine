@@ -1,4 +1,4 @@
-"""Registro de trazas."""
+"""Trace logging."""
 from __future__ import annotations
 from typing import Any, Callable, Dict, List, Optional, Protocol
 import warnings
@@ -42,11 +42,11 @@ sigma_vector_from_graph: _SigmaVectorFn = _sigma_vector_from_graph
 # -------------------------
 
 def _trace_setup(G) -> tuple[Optional[Dict[str, Any]], List[str], Optional[Dict[str, Any]], Optional[str]]:
-    """Configuración común para los snapshots de trazas.
+    """Common configuration for trace snapshots.
 
-    Retorna la configuración activa, la lista de capturas, el history y la
-    clave bajo la que se guardará la metadata. Si el tracing está deshabilitado
-    retorna ``(None, [], None, None)``.
+    Returns the active configuration, capture list, history and key under
+    which metadata will be stored. If tracing is disabled returns
+    ``(None, [], None, None)``.
     """
 
     cfg = G.graph.get("TRACE", TRACE)
@@ -85,11 +85,10 @@ def _callback_names(callbacks: list) -> list[str]:
 def _new_trace_meta(
     G, phase: str
 ) -> Optional[tuple[Dict[str, Any], List[str], Optional[Dict[str, Any]], Optional[str]]]:
-    """Inicializa la metadata de trace para una ``phase``.
+    """Initialise trace metadata for a ``phase``.
 
-    Envuelve :func:`_trace_setup` y crea la estructura base con la
-    marca temporal y la fase actual. Si el tracing está deshabilitado
-    retorna ``None``.
+    Wraps :func:`_trace_setup` and creates the base structure with timestamp
+    and current phase. Returns ``None`` if tracing is disabled.
     """
 
     cfg, capture, hist, key = _trace_setup(G)
@@ -106,10 +105,10 @@ def _new_trace_meta(
 def _trace_capture(
     G, phase: str, fields: Dict[str, Callable[[Any], Dict[str, Any]]]
 ) -> None:
-    """Captura ``fields`` para una ``phase`` y guarda el snapshot.
+    """Capture ``fields`` for a ``phase`` and store the snapshot.
 
-    Si no existe un historial activo o una clave de almacenamiento, la
-    captura se ignora silenciosamente.
+    If there is no active history or storage key the capture is silently
+    ignored.
     """
 
     res = _new_trace_meta(G, phase)
@@ -205,9 +204,9 @@ def sigma_field(G):
     }
 
 
-def glifo_counts_field(G):
+def glyph_counts_field(G):
     cnt = count_glyphs(G, window=1)
-    return {"glifos": dict(cnt)}
+    return {"glyphs": dict(cnt)}
 
 
 def _trace_before(G, *args, **kwargs):
@@ -227,7 +226,7 @@ def _trace_after(G, *args, **kwargs):
     fields = {
         "kuramoto": kuramoto_field,
         "sigma": sigma_field,
-        "glifo_counts": glifo_counts_field,
+        "glyph_counts": glyph_counts_field,
     }
     _trace_capture(G, "after", fields)
 
@@ -237,19 +236,20 @@ def _trace_after(G, *args, **kwargs):
 # -------------------------
 
 def register_trace(G) -> None:
-    """Activa snapshots before/after step y vuelca metadatos operativos en history.
+    """Enable before/after-step snapshots and dump operational metadata to history.
 
-    Guarda en G.graph['history'][TRACE.history_key] una lista de entradas {'phase': 'before'|'after', ...} con:
-      - gamma: especificación activa de Γi(R)
-      - grammar: configuración de gramática canónica
-      - selector: nombre del selector glífico
-      - dnfr_weights: mezcla ΔNFR declarada en el motor
-      - si_weights: pesos α/β/γ y sensibilidad de Si
-      - callbacks: callbacks registrados por fase (si están en G.graph['callbacks'])
-      - thol_open_nodes: cuántos nodos tienen bloque THOL abierto
-      - kuramoto: (R, ψ) de la red
-      - sigma: vector global del plano del sentido
-      - glifos: conteos por glifo tras el paso
+    Stores in ``G.graph['history'][TRACE.history_key]`` a list of entries
+    ``{'phase': 'before'|'after', ...}`` with:
+      - gamma: active Γi(R) specification
+      - grammar: canonical grammar configuration
+      - selector: glyph selector name
+      - dnfr_weights: ΔNFR mix declared in the engine
+      - si_weights: α/β/γ weights and Si sensitivity
+      - callbacks: callbacks registered per phase (if in ``G.graph['callbacks']``)
+      - thol_open_nodes: how many nodes have an open THOL block
+      - kuramoto: network ``(R, ψ)``
+      - sigma: global sense-plane vector
+      - glyphs: glyph counts after the step
     """
     if G.graph.get("_trace_registered"):
         return
