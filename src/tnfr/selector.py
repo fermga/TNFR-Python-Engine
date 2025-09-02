@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict
+from collections.abc import Sequence
 
 import networkx as nx
 
@@ -88,9 +89,10 @@ def _apply_selector_hysteresis(
     certeza = min(d_si, d_dn, d_ac)
     if certeza < margin:
         hist = nd.get("hist_glifos")
-        if hist:
-            prev = hist[-1]
-            if isinstance(prev, str) and prev in HYSTERESIS_GLYPHS:
-                return prev
+        if not isinstance(hist, Sequence) or not hist:
+            return None
+        prev = hist[-1]
+        if isinstance(prev, str) and prev in HYSTERESIS_GLYPHS:
+            return prev
     return None
 
