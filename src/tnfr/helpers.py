@@ -266,7 +266,8 @@ def alias_set(
     """
     aliases = _validate_aliases(aliases)
     _, val = _convert_value(value, conv, strict=True)
-    assert val is not None
+    if val is None:
+        raise ValueError("conversion yielded None")
     for key in aliases:
         if key in d:
             d[key] = val
