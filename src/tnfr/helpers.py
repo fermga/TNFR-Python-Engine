@@ -176,8 +176,9 @@ def ensure_collection(
     max_materialize:
         Número máximo de elementos a materializar cuando ``it`` no es una
         colección. Si el iterable produce más de ``max_materialize`` elementos
-        se lanza :class:`ValueError`. Si se omite o se pasa ``None`` se aplica
-        el límite por defecto de ``MAX_MATERIALIZE_DEFAULT`` elementos.
+        se lanza :class:`ValueError`. Debe ser un entero no negativo o
+        ``None``. Si se omite o se pasa ``None`` se aplica el límite por
+        defecto de ``MAX_MATERIALIZE_DEFAULT`` elementos.
 
     Notes
     -----
@@ -190,6 +191,8 @@ def ensure_collection(
         return it
     if isinstance(it, (str, bytes, bytearray)):
         return cast(Collection[T], (it,))
+    if max_materialize is not None and max_materialize < 0:
+        raise ValueError("'max_materialize' must be non-negative")
     try:
         limit = (
             MAX_MATERIALIZE_DEFAULT if max_materialize is None else max_materialize
