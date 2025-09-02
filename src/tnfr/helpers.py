@@ -12,14 +12,13 @@ from typing import (
 )
 import logging
 import math
-from collections import deque, Counter, defaultdict
+from collections import deque, Counter
 from itertools import islice
 import heapq
 from statistics import fmean, StatisticsError
 import json
 from json import JSONDecodeError
 from pathlib import Path
-from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -83,25 +82,11 @@ __all__ = [
     "count_glyphs",
     "normalize_counter",
     "mix_groups",
-    "register_callback",
-    "invoke_callbacks",
     "compute_dnfr_accel_max",
     "compute_coherence",
     "compute_Si",
     "increment_edge_version",
-    "CallbackEvent",
 ]
-
-
-class CallbackEvent(str, Enum):
-    """Eventos soportados para callbacks."""
-
-    BEFORE_STEP = "before_step"
-    AFTER_STEP = "after_step"
-    ON_REMESH = "on_remesh"
-
-
-_CALLBACK_EVENTS = tuple(e.value for e in CallbackEvent)
 
 # -------------------------
 # Entrada/salida estructurada
@@ -700,78 +685,6 @@ def count_glyphs(
                 seq = hist
         counts.update(seq)
     return counts
-# -------------------------
-# Callbacks Γ(R)
-# -------------------------
-
-def _ensure_callbacks(G):
-    """Garantiza la estructura de callbacks en ``G.graph`` usando ``defaultdict``."""
-    cbs = G.graph.get("callbacks")
-    if not isinstance(cbs, defaultdict):
-        cbs = defaultdict(list, cbs or {})
-        G.graph["callbacks"] = cbs
-    return cbs
-
-def register_callback(
-    G,
-    event: CallbackEvent | str,
-    func=None,
-    *,
-    name: str | None = None,
-):
-    """Registra ``func`` como callback del ``event`` indicado.
-
-    ``func`` puede pasarse como función o como tupla ``(name, func)``. En el
-    primer caso se convertirá a dicha tupla antes de almacenarse. Si ya existe
-    un callback con el mismo nombre o función para el evento, será reemplazado
-    en lugar de añadirse una entrada duplicada.
-    """
-    if event not in _CALLBACK_EVENTS:
-        raise ValueError(f"Evento desconocido: {event}")
-    if func is None:
-        raise TypeError("func es obligatorio")
-    cbs = _ensure_callbacks(G)
-
-    if isinstance(func, tuple):
-        cb_name, func = func
-    else:
-        cb_name = name or getattr(func, "__name__", None)
-
-    new_cb = (cb_name, func)
-
-    # evita duplicados por nombre o función reemplazando la entrada existente
-    for i, (existing_name, existing_fn) in enumerate(cbs[event]):
-        if existing_fn is func or (cb_name is not None and existing_name == cb_name):
-            cbs[event][i] = new_cb
-            break
-    else:
-        cbs[event].append(new_cb)
-
-    return func
-
-def invoke_callbacks(G, event: CallbackEvent | str, ctx: dict | None = None):
-    """Invoca todos los callbacks registrados para ``event`` con el contexto ``ctx``.
-
-    Los callbacks se almacenan como tuplas ``(name, func)`` y se invocan en orden
-    de registro.
-    """
-    cbs = _ensure_callbacks(G).get(event, [])
-    strict = bool(G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"]))
-    ctx = ctx or {}
-    for name, fn in list(cbs):
-        try:
-            fn(G, ctx)
-        except (KeyError, ValueError, TypeError) as e:
-            if strict:
-                raise
-            G.graph.setdefault("_callback_errors", []).append({
-                "event": event,
-                "step": ctx.get("step"),
-                "error": repr(e),
-                "fn": repr(fn),
-                "name": name,
-            })
-
 # -------------------------
 # Índice de sentido (Si)
 # -------------------------
