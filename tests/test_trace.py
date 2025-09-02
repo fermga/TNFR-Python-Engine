@@ -1,5 +1,7 @@
 """Pruebas de trace."""
-from tnfr.trace import register_trace, _callback_names
+import pytest
+
+from tnfr.trace import register_trace, _callback_names, gamma_field, grammar_field
 from tnfr.callback_utils import register_callback, invoke_callbacks
 
 
@@ -57,3 +59,19 @@ def test_callback_names_empty_tuple():
 
     names = _callback_names([(), (foo,)])
     assert names == ["foo"]
+
+
+def test_gamma_field_non_mapping_warns(graph_canon):
+    G = graph_canon()
+    G.graph["GAMMA"] = "not a dict"
+    with pytest.warns(UserWarning):
+        out = gamma_field(G)
+    assert out == {}
+
+
+def test_grammar_field_non_mapping_warns(graph_canon):
+    G = graph_canon()
+    G.graph["GRAMMAR_CANON"] = 123
+    with pytest.warns(UserWarning):
+        out = grammar_field(G)
+    assert out == {}
