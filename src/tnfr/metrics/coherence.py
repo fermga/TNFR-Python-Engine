@@ -192,14 +192,15 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=
 
     # --- Mapeo nodo → índice ---
     if node_to_index is None:
-        cache_nodes = getattr(local_phase_sync_weighted, "_cache_nodes", None)
-        cache_map = getattr(local_phase_sync_weighted, "_cache_map", None)
-        if cache_nodes is not nodes_order:
+        cache_key = "_lpsw_cache"
+        cache = G.graph.get(cache_key, {})
+        nodes_tuple = tuple(nodes_order)
+        nodes_set = frozenset(G.nodes())
+        if cache.get("nodes") != nodes_tuple or cache.get("set") != nodes_set:
             node_to_index = {v: i for i, v in enumerate(nodes_order)}
-            local_phase_sync_weighted._cache_nodes = nodes_order
-            local_phase_sync_weighted._cache_map = node_to_index
+            G.graph[cache_key] = {"nodes": nodes_tuple, "set": nodes_set, "map": node_to_index}
         else:
-            node_to_index = cache_map
+            node_to_index = cache.get("map", {})
 
     i = node_to_index.get(n, None)
     if i is None:
