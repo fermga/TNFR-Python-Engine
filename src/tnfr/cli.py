@@ -35,15 +35,20 @@ from . import __version__
 logger = logging.getLogger(__name__)
 
 
+def _flatten_tokens(obj: Any):
+    """Generador recursivo que rinde cada token en orden."""
+
+    if isinstance(obj, list):
+        for item in obj:
+            yield from _flatten_tokens(item)
+    else:
+        yield obj
+
+
 def _parse_tokens(obj: Any) -> List[Any]:
     out: List[Any] = []
-    queue = deque(obj if isinstance(obj, list) else [obj])
     pos = 0
-    while queue:
-        tok = queue.popleft()
-        if isinstance(tok, list):
-            queue.extendleft(reversed(tok))
-            continue
+    for tok in _flatten_tokens(obj):
         pos += 1
         try:
             if isinstance(tok, dict):
