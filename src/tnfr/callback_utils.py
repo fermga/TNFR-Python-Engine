@@ -1,10 +1,12 @@
 """Callback registration and invocation helpers."""
 from __future__ import annotations
 
-from typing import Callable, Optional
+from typing import Any, Callable, DefaultDict
 from enum import Enum
 from collections import defaultdict
 import logging
+
+import networkx as nx
 
 from .constants import DEFAULTS
 
@@ -21,10 +23,15 @@ class CallbackEvent(str, Enum):
     ON_REMESH = "on_remesh"
 
 
-_CALLBACK_EVENTS = tuple(e.value for e in CallbackEvent)
+_CALLBACK_EVENTS: tuple[str, ...] = tuple(e.value for e in CallbackEvent)
 
 
-def _ensure_callbacks(G):
+Callback = Callable[[nx.Graph, dict[str, Any]], None]
+CallbackEntry = tuple[str | None, Callback]
+CallbackRegistry = DefaultDict[str, list[CallbackEntry]]
+
+
+def _ensure_callbacks(G: nx.Graph) -> CallbackRegistry:
     """Ensure the callback structure in ``G.graph``."""
     cbs = G.graph.get("callbacks")
     if not isinstance(cbs, defaultdict):
@@ -34,24 +41,51 @@ def _ensure_callbacks(G):
 
 
 def register_callback(
-    G,
+    G: nx.Graph,
     event: CallbackEvent | str,
-    func: Optional[Callable] = None,
+    func: Callback,
     *,
     name: str | None = None,
-):
-    """Register ``func`` as callback for ``event``."""
+) -> Callback:
+    """Register ``func`` as callback for ``event``.
+
+    Parameters
+    ----------
+    G:
+        Graph where the callback registry is stored.
+    event:
+        Name of the event to register ``func`` under.
+    func:
+        Callable receiving ``(G, ctx)``.
+    name:
+        Optional explicit name for the callback. Defaults to ``func.__name__``.
+
+    Returns
+    -------
+    Callable
+        The registered ``func``.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from tnfr.callback_utils import register_callback, invoke_callbacks
+    >>> G = nx.Graph()
+    >>> def cb(G, ctx):
+    ...     ctx.setdefault("called", 0)
+    ...     ctx["called"] += 1
+    >>> register_callback(G, "before_step", cb, name="counter")
+    >>> ctx = {}
+    >>> invoke_callbacks(G, "before_step", ctx)
+    >>> ctx["called"]
+    1
+    """
     if event not in _CALLBACK_EVENTS:
         raise ValueError(f"Evento desconocido: {event}")
-    if func is None:
-        raise TypeError("func es obligatorio")
+    if not callable(func):
+        raise TypeError("func debe ser callable")
     cbs = _ensure_callbacks(G)
 
-    if isinstance(func, tuple):
-        cb_name, func = func
-    else:
-        cb_name = name or getattr(func, "__name__", None)
-
+    cb_name = name or getattr(func, "__name__", None)
     new_cb = (cb_name, func)
 
     for i, (existing_name, existing_fn) in enumerate(cbs[event]):
@@ -64,7 +98,9 @@ def register_callback(
     return func
 
 
-def invoke_callbacks(G, event: CallbackEvent | str, ctx: dict | None = None):
+def invoke_callbacks(
+    G: nx.Graph, event: CallbackEvent | str, ctx: dict[str, Any] | None = None
+) -> None:
     """Invoke all callbacks registered for ``event`` with context ``ctx``."""
     cbs = _ensure_callbacks(G).get(event, [])
     strict = bool(G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"]))
@@ -76,11 +112,13 @@ def invoke_callbacks(G, event: CallbackEvent | str, ctx: dict | None = None):
             logger.warning("callback %r failed for %s: %s", name, event, e)
             if strict:
                 raise
-            G.graph.setdefault("_callback_errors", []).append({
-                "event": event,
-                "step": ctx.get("step"),
-                "error": repr(e),
-                "fn": repr(fn),
-                "name": name,
-            })
+            G.graph.setdefault("_callback_errors", []).append(
+                {
+                    "event": event,
+                    "step": ctx.get("step"),
+                    "error": repr(e),
+                    "fn": repr(fn),
+                    "name": name,
+                }
+            )
 
