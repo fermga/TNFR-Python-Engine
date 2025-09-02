@@ -324,6 +324,19 @@ def _convert_value(
         return False, None
 
 
+def _validate_aliases(aliases: Sequence[str]) -> Sequence[str]:
+    """Return ``aliases`` ensuring it's a non-empty sequence of strings."""
+
+    if isinstance(aliases, str) or not isinstance(aliases, Sequence):
+        raise TypeError("'aliases' must be a sequence of strings")
+    aliases = list(aliases)
+    if not aliases:
+        raise ValueError("'aliases' must contain at least one key")
+    if not all(isinstance(a, str) for a in aliases):
+        raise TypeError("'aliases' must be a sequence of strings")
+    return aliases
+
+
 def alias_get(
     d: Dict[str, Any],
     aliases: Sequence[str],
@@ -345,10 +358,7 @@ def alias_get(
     ``log_level`` permite ajustar el nivel de logging cuando la conversión
     falla en modo laxo.
     """
-    if isinstance(aliases, str):
-        raise TypeError("'aliases' must be a sequence of strings")
-    if not aliases:
-        raise ValueError("'aliases' must contain at least one key")
+    aliases = _validate_aliases(aliases)
     for key in aliases:
         if key in d:
             ok, val = _convert_value(
@@ -375,10 +385,7 @@ def alias_set(
     ``aliases`` debe ser una secuencia (idealmente una tupla) de claves y no se
     transforma internamente.
     """
-    if isinstance(aliases, str):
-        raise TypeError("'aliases' must be a sequence of strings")
-    if not aliases:
-        raise ValueError("'aliases' must contain at least one key")
+    aliases = _validate_aliases(aliases)
     _, val = _convert_value(value, conv, strict=True)
     for key in aliases:
         if key in d:
