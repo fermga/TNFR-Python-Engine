@@ -31,6 +31,7 @@ def test_node_sample_small_graph():
     G.graph["UM_CANDIDATE_COUNT"] = 5
     step(G, use_Si=False, apply_glyphs=False)
     sample = G.graph.get("_node_sample")
+    assert not isinstance(sample, list)
     assert len(sample) == len(G.nodes())
 
 
