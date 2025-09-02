@@ -150,13 +150,14 @@ def _update_node_sample(G, *, step: int) -> None:
     is non‑positive, the full node set is used and sampling is effectively
     disabled.
     """
-
     limit = int(G.graph.get("UM_CANDIDATE_COUNT", 0))
-    nodes = list(G.nodes())
-    if limit <= 0 or len(nodes) < 50 or limit >= len(nodes):
-        G.graph["_node_sample"] = nodes
+    n = G.number_of_nodes()
+    if limit <= 0 or n < 50 or limit >= n:
+        # Avoid materialising the node view unless strictly necessary.
+        G.graph["_node_sample"] = G.nodes()
         return
 
+    nodes = list(G.nodes())
     seed = int(G.graph.get("RANDOM_SEED", 0))
     # Ensure deterministic seeding independent of ``PYTHONHASHSEED`` by
     # combining the user seed and step via bitwise XOR instead of a string
