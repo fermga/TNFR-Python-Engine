@@ -190,9 +190,7 @@ class NodoTNFR:
         _add_edge_tnfr(self.graph, self, other, weight, overwrite)
 
     def push_glyph(self, glyph: str, window: int) -> None:
-        nd = {"glyph_history": self._glyph_history}
-        push_glyph(nd, glyph, window)
-        self._glyph_history = nd["glyph_history"]
+        push_glyph({"glyph_history": self._glyph_history}, glyph, window)
         self.epi_kind = glyph
 
     def offset(self) -> int:
