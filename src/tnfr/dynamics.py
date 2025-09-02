@@ -1231,7 +1231,6 @@ def _update_history(G) -> None:
     except (KeyError, AttributeError, TypeError) as exc:
         logger.debug("observer update failed: %s", exc)
         # observadores son opcionales; si fallan se ignoran
-        pass
   
     # --- nuevas series: Si agregado (media y colas) ---
     try:
@@ -1261,4 +1260,3 @@ def _update_history(G) -> None:
     except (KeyError, AttributeError, TypeError) as exc:
         logger.debug("Si aggregation failed: %s", exc)
         # si aún no se calculó Si este paso, no interrumpimos
-        pass
