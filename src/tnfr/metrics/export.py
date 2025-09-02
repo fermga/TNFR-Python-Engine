@@ -29,17 +29,8 @@ def _iter_glif_rows(glyph):
         yield [t] + [glyph.get(g, default_col)[i] for g in GLYPHS_CANONICAL]
 
 
-def _iter_sigma_rows(sigma):
-    return (
-        [t, x, y, m, a]
-        for t, x, y, m, a in zip(
-            sigma["t"],
-            sigma["sigma_x"],
-            sigma["sigma_y"],
-            sigma["mag"],
-            sigma["angle"],
-        )
-    )
+def _iter_sigma_rows(sigma_rows):
+    return ([t, x, y, m, a] for t, (x, y, m, a) in enumerate(sigma_rows))
 
 
 def export_history(G, base_path: str, fmt: str = "csv") -> None:
@@ -51,21 +42,21 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
     sigma_y = hist.tracked_get("sense_sigma_y", [])
     sigma_mag = hist.tracked_get("sense_sigma_mag", [])
     sigma_angle = hist.tracked_get("sense_sigma_angle", [])
-    min_len = min(len(sigma_x), len(sigma_y), len(sigma_mag), len(sigma_angle))
-    sigma = {
-        "t": list(range(min_len)),
-        "sigma_x": sigma_x[:min_len],
-        "sigma_y": sigma_y[:min_len],
-        "mag": sigma_mag[:min_len],
-        "angle": sigma_angle[:min_len],
-    }
+    sigma_rows = list(zip(sigma_x, sigma_y, sigma_mag, sigma_angle))
+    sigma = {"t": [], "sigma_x": [], "sigma_y": [], "mag": [], "angle": []}
+    for t, (x, y, m, a) in enumerate(sigma_rows):
+        sigma["t"].append(t)
+        sigma["sigma_x"].append(x)
+        sigma["sigma_y"].append(y)
+        sigma["mag"].append(m)
+        sigma["angle"].append(a)
     morph = hist.tracked_get("morph", [])
     epi_supp = hist.tracked_get("EPI_support", [])
     fmt = fmt.lower()
     if fmt == "csv":
         specs = [
             ("_glyphogram.csv", ["t", *GLYPHS_CANONICAL], _iter_glif_rows(glyph)),
-            ("_sigma.csv", ["t", "x", "y", "mag", "angle"], _iter_sigma_rows(sigma)),
+            ("_sigma.csv", ["t", "x", "y", "mag", "angle"], _iter_sigma_rows(sigma_rows)),
         ]
         if morph:
             specs.append(
