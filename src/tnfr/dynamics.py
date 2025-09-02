@@ -967,16 +967,17 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     # Contexto final (últimas métricas del paso)
     h = G.graph.get("history", {})
     ctx = {"step": step_idx}
-    if h.get("C_steps"):
-        ctx["C"] = h["C_steps"][-1]
-    if h.get("stable_frac"):
-        ctx["stable_frac"] = h["stable_frac"][-1]
-    if h.get("phase_sync"):
-        ctx["phase_sync"] = h["phase_sync"][-1]
-    if h.get("glyph_load_disr"):
-        ctx["glyph_disr"] = h["glyph_load_disr"][-1]
-    if h.get("Si_mean"):
-        ctx["Si_mean"] = h["Si_mean"][-1]
+    metric_pairs = [
+        ("C", "C_steps"),
+        ("stable_frac", "stable_frac"),
+        ("phase_sync", "phase_sync"),
+        ("glyph_disr", "glyph_load_disr"),
+        ("Si_mean", "Si_mean"),
+    ]
+    for dst, src in metric_pairs:
+        values = h.get(src)
+        if values:
+            ctx[dst] = values[-1]
     invoke_callbacks(G, "after_step", ctx)
 
 
