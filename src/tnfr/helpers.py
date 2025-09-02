@@ -7,12 +7,9 @@ from typing import (
     Any,
     Callable,
     TypeVar,
-    Mapping,
     Optional,
     overload,
-    cast,
 )
-from collections.abc import Collection
 import logging
 import math
 from collections import deque, Counter, defaultdict
@@ -28,8 +25,6 @@ logger = logging.getLogger(__name__)
 
 PI = math.pi
 TWO_PI = 2 * PI
-
-MAX_MATERIALIZE_DEFAULT = 1000  # Límite por defecto de elementos a materializar en :func:`ensure_collection`.
 
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
@@ -49,6 +44,13 @@ from .constants import (
     ALIAS_EPI_KIND,
     ALIAS_D2EPI,
     get_param,
+)
+from .collections_utils import (
+    MAX_MATERIALIZE_DEFAULT,
+    ensure_collection,
+    normalize_weights,
+    normalize_counter,
+    mix_groups,
 )
 
 T = TypeVar("T")
@@ -158,54 +160,6 @@ def ensure_parent(path: str | Path) -> None:
 # -------------------------
 # Iterables y colecciones
 # -------------------------
-
-def ensure_collection(
-    it: Iterable[T], *, max_materialize: int | None = MAX_MATERIALIZE_DEFAULT
-) -> Collection[T]:
-    """Devuelve ``it`` si ya es ``Collection`` o materializa en ``tuple`` en
-    caso contrario.
-
-    Cadenas de texto y objetos *bytes* se tratan como un único elemento en
-    lugar de iterarse carácter a carácter. En esos casos se devuelve una
-    ``tuple`` de un solo elemento. Si ``it`` no es iterable se lanza
-    ``TypeError``.
-
-    Parameters
-    ----------
-    max_materialize:
-        Número máximo de elementos a materializar cuando ``it`` no es una
-        colección. Si el iterable produce más de ``max_materialize`` elementos
-        se lanza :class:`ValueError`. Debe ser un entero no negativo o
-        ``None``. Si se omite o se pasa ``None`` se aplica el límite por
-        defecto de ``MAX_MATERIALIZE_DEFAULT`` elementos.
-
-    Notes
-    -----
-    Materializar un iterable potencialmente grande puede suponer un coste de
-    memoria elevado. El parámetro ``max_materialize`` permite acotar este
-    coste.
-    """
-
-    if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
-        return it
-    if isinstance(it, (str, bytes, bytearray)):
-        return cast(Collection[T], (it,))
-    if max_materialize is not None and max_materialize < 0:
-        raise ValueError("'max_materialize' must be non-negative")
-    try:
-        limit = (
-            MAX_MATERIALIZE_DEFAULT if max_materialize is None else max_materialize
-        )
-        data = tuple(islice(it, limit))
-        extra = next(it, None)
-        if extra is not None:
-            raise ValueError(
-                f"Iterable materialization exceeded {limit} items"
-            )
-        return data
-    except TypeError as exc:  # pragma: no cover - Defensive; unlikely with type hints
-        raise TypeError(f"{it!r} is not iterable") from exc
-
 # -------------------------
 # Utilidades numéricas
 # -------------------------
@@ -236,85 +190,6 @@ def _wrap_angle(a: float) -> float:
 def angle_diff(a: float, b: float) -> float:
     """Diferencia mínima entre ``a`` y ``b`` en (-π, π]."""
     return _wrap_angle(a - b)
-
-
-def normalize_weights(
-    dict_like: Dict[str, Any],
-    keys: Iterable[str],
-    default: float = 0.0,
-    *,
-    error_on_negative: bool = False,
-) -> Dict[str, float]:
-    """Devuelve ``dict`` de ``keys`` normalizadas a sumatorio 1.
-
-    La función se divide en tres pasos: conversión de valores, validación y
-    normalización final. Cada clave de ``keys`` se obtiene de ``dict_like`` y se
-    convierte a ``float``. Si la suma de los valores es <= 0 se asignan
-    proporciones uniformes entre todas las claves.
-
-    Parameters
-    ----------
-    error_on_negative:
-        Si es ``True`` se lanza :class:`ValueError` ante valores negativos o
-        pesos no numéricos. En caso contrario se registra una advertencia y se
-        utiliza el valor ``default``.
-    """
-    keys = list(keys)
-    default_float = float(default)
-
-    weights = _convert_weights(dict_like, keys, default_float, error_on_negative)
-    _validate_weights(weights, error_on_negative)
-    return _normalize_distribution(weights, keys)
-
-
-def _convert_weights(
-    dict_like: Mapping[str, Any],
-    keys: Iterable[str],
-    default_float: float,
-    error_on_negative: bool,
-) -> Dict[str, float]:
-    """Convierte ``dict_like`` a ``float`` usando ``_convert_value``."""
-
-    def _to_float(k: str) -> float:
-        val = dict_like.get(k, default_float)
-        ok, converted = _convert_value(
-            val,
-            float,
-            strict=error_on_negative,
-            key=k,
-            log_level=logging.WARNING,
-        )
-        return converted if ok and converted is not None else default_float
-
-    return {k: _to_float(k) for k in keys}
-
-
-def _validate_weights(weights: Mapping[str, float], error_on_negative: bool) -> None:
-    """Valida que no existan pesos negativos."""
-
-    negatives = {k: v for k, v in weights.items() if v < 0}
-    if not negatives:
-        return
-    if error_on_negative:
-        raise ValueError(f"Pesos negativos detectados: {negatives}")
-    logger.warning("Pesos negativos detectados: %s", negatives)
-
-
-def _normalize_distribution(
-    weights: Mapping[str, float], keys: Sequence[str]
-) -> Dict[str, float]:
-    """Normaliza ``weights`` para que su sumatorio sea 1."""
-
-    total = math.fsum(weights.values())
-    n = len(keys)
-    if total <= 0:
-        if n == 0:
-            return {}
-        uniform = 1.0 / n
-        return {k: uniform for k in keys}
-    return {k: v / total for k, v in weights.items()}
-
-
 # -------------------------
 # Acceso a atributos con alias
 # -------------------------
@@ -825,37 +700,6 @@ def count_glyphs(
                 seq = hist
         counts.update(seq)
     return counts
-
-
-def normalize_counter(counts: Mapping[str, int]) -> tuple[Dict[str, float], int]:
-    """Normaliza un ``Counter`` y devuelve proporciones y total.
-
-    Si la suma total es cero, retorna ``({}, 0)``.
-    """
-    total = sum(counts.values())
-    if total <= 0:
-        return {}, 0
-    dist = {k: v / total for k, v in counts.items() if v}
-    return dist, total
-
-
-def mix_groups(
-    dist: Mapping[str, float],
-    groups: Mapping[str, Iterable[str]],
-    *,
-    prefix: str = "_",
-) -> Dict[str, float]:
-    """Agrega valores de ``dist`` según agrupaciones.
-
-    ``groups`` debe mapear nombres de grupo a iterables de claves presentes en
-    ``dist``. Cada grupo se añadirá al resultado con el nombre
-    ``prefix + label``.
-    """
-    out: Dict[str, float] = dict(dist)
-    for label, keys in groups.items():
-        out[f"{prefix}{label}"] = sum(dist.get(k, 0.0) for k in keys)
-    return out
-
 # -------------------------
 # Callbacks Γ(R)
 # -------------------------
