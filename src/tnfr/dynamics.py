@@ -158,7 +158,10 @@ def _update_node_sample(G, *, step: int) -> None:
         return
 
     seed = int(G.graph.get("RANDOM_SEED", 0))
-    rng = random.Random(f"{seed}:{step}")
+    # Ensure deterministic seeding independent of ``PYTHONHASHSEED`` by
+    # combining the user seed and step via bitwise XOR instead of a string
+    # seed, which would rely on Python's randomized hashing of strings.
+    rng = random.Random(seed ^ step)
     G.graph["_node_sample"] = rng.sample(nodes, limit)
 
 # -------------------------
