@@ -197,8 +197,9 @@ def ensure_collection(
         limit = (
             MAX_MATERIALIZE_DEFAULT if max_materialize is None else max_materialize
         )
-        data = tuple(islice(it, limit + 1))
-        if len(data) > limit:
+        data = tuple(islice(it, limit))
+        extra = next(it, None)
+        if extra is not None:
             raise ValueError(
                 f"Iterable materialization exceeded {limit} items"
             )

@@ -22,6 +22,11 @@ def test_max_materialize_limit():
         ensure_collection(gen, max_materialize=3)
 
 
+def test_materialization_at_limit_allowed():
+    gen = (i for i in range(3))
+    assert ensure_collection(gen, max_materialize=3) == (0, 1, 2)
+
+
 def test_negative_max_materialize_error():
     gen = (i for i in range(5))
     with pytest.raises(ValueError):
