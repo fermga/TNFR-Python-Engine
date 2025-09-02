@@ -1,4 +1,4 @@
-# TNFR Python Project
+# TNFR Python Engine
 
 Engine for **modeling, simulation and measurement** of multiscale structural coherence through **structural operators** (emission, reception, coherence, dissonance, coupling, resonance, silence, expansion, contraction, self‑organization, mutation, transition, recursivity).
 
