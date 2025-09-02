@@ -6,6 +6,80 @@ import networkx as nx
 from .constants import DEFAULTS, INIT_DEFAULTS
 
 
+def _init_phase(
+    nd: dict,
+    rng: random.Random,
+    *,
+    override: bool,
+    random_phase: bool,
+    th_min: float,
+    th_max: float,
+) -> None:
+    """Inicializa ``θ`` en ``nd``."""
+    if random_phase:
+        if override or "θ" not in nd:
+            nd["θ"] = rng.uniform(th_min, th_max)
+    else:
+        if override:
+            nd["θ"] = 0.0
+        else:
+            nd.setdefault("θ", 0.0)
+
+
+def _init_vf(
+    nd: dict,
+    rng: random.Random,
+    *,
+    override: bool,
+    mode: str,
+    vf_uniform_min: float,
+    vf_uniform_max: float,
+    vf_mean: float,
+    vf_std: float,
+    vf_min_lim: float,
+    vf_max_lim: float,
+    clamp_to_limits: bool,
+) -> None:
+    """Inicializa ``νf`` en ``nd``."""
+    if mode == "uniform":
+        vf = rng.uniform(float(vf_uniform_min), float(vf_uniform_max))
+    elif mode == "normal":
+        for _ in range(16):
+            cand = rng.normalvariate(vf_mean, vf_std)
+            if vf_min_lim <= cand <= vf_max_lim:
+                vf = cand
+                break
+        else:
+            vf = min(
+                max(rng.normalvariate(vf_mean, vf_std), vf_min_lim),
+                vf_max_lim,
+            )
+    else:
+        vf = float(nd.get("νf", 0.5))
+    if clamp_to_limits:
+        vf = min(max(vf, vf_min_lim), vf_max_lim)
+    if override or "νf" not in nd:
+        nd["νf"] = float(vf)
+
+
+def _init_si_epi(
+    nd: dict,
+    rng: random.Random,
+    *,
+    override: bool,
+    si_min: float,
+    si_max: float,
+    epi_val: float,
+) -> None:
+    """Inicializa ``Si`` y ``EPI`` en ``nd``."""
+    if override or "EPI" not in nd:
+        nd["EPI"] = epi_val
+
+    si = rng.uniform(si_min, si_max)
+    if override or "Si" not in nd:
+        nd["Si"] = float(si)
+
+
 def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
     """Inicializa EPI, θ, νf y Si en los nodos de ``G``.
 
@@ -57,40 +131,34 @@ def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
     for n in G.nodes():
         nd = G.nodes[n]
 
-        if override or "EPI" not in nd:
-            nd["EPI"] = epi_val
-
-        if init_rand_phase:
-            if override or "θ" not in nd:
-                nd["θ"] = rng.uniform(th_min, th_max)
-        else:
-            if override:
-                nd["θ"] = 0.0
-            else:
-                nd.setdefault("θ", 0.0)
-
-        if vf_mode == "uniform":
-            vf = rng.uniform(float(vf_uniform_min), float(vf_uniform_max))
-        elif vf_mode == "normal":
-            for _ in range(16):
-                cand = rng.normalvariate(vf_mean, vf_std)
-                if vf_min_lim <= cand <= vf_max_lim:
-                    vf = cand
-                    break
-            else:
-                vf = min(
-                    max(rng.normalvariate(vf_mean, vf_std), vf_min_lim),
-                    vf_max_lim,
-                )
-        else:
-            vf = float(nd.get("νf", 0.5))
-        if clamp_to_limits:
-            vf = min(max(vf, vf_min_lim), vf_max_lim)
-        if override or "νf" not in nd:
-            nd["νf"] = float(vf)
-
-        si = rng.uniform(si_min, si_max)
-        if override or "Si" not in nd:
-            nd["Si"] = float(si)
+        _init_phase(
+            nd,
+            rng,
+            override=override,
+            random_phase=init_rand_phase,
+            th_min=th_min,
+            th_max=th_max,
+        )
+        _init_vf(
+            nd,
+            rng,
+            override=override,
+            mode=vf_mode,
+            vf_uniform_min=float(vf_uniform_min),
+            vf_uniform_max=float(vf_uniform_max),
+            vf_mean=vf_mean,
+            vf_std=vf_std,
+            vf_min_lim=vf_min_lim,
+            vf_max_lim=vf_max_lim,
+            clamp_to_limits=clamp_to_limits,
+        )
+        _init_si_epi(
+            nd,
+            rng,
+            override=override,
+            si_min=si_min,
+            si_max=si_max,
+            epi_val=epi_val,
+        )
 
     return G
