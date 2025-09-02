@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from typing import Dict, Any, Set, Iterable, Optional, Callable
+import logging
 
 from .constants import (
     DEFAULTS,
@@ -12,6 +13,8 @@ from .constants import (
 )
 from .helpers import get_attr, clamp01, reciente_glifo
 from .types import Glyph
+
+logger = logging.getLogger(__name__)
 
 # Glifos nominales (para evitar typos)
 AL = Glyph.AL
@@ -133,10 +136,12 @@ def _check_repeats(G, n, cand: str, cfg: Dict[str, Any]) -> str:
         fb = fallbacks.get(cand_key, CANON_FALLBACK.get(cand_key, cand_key))
         try:
             return Glyph(fb)
-        except Exception:
+        except (ValueError, TypeError):
             return fb
+        except Exception:
+            logger.debug("Unexpected exception constructing glyph from %r", fb, exc_info=True)
+            raise
     return cand
-
 
 def _check_force(
     G,
