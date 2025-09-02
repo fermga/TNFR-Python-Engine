@@ -11,7 +11,8 @@ from .constants import (
     ALIAS_D2EPI,
     get_param,
 )
-from .helpers import get_attr, clamp01, reciente_glifo
+from .helpers import get_attr, clamp01
+from .glyph_history import reciente_glifo
 from .types import Glyph
 
 logger = logging.getLogger(__name__)

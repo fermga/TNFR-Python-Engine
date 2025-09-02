@@ -7,7 +7,9 @@ from typing import Any, Dict, List, Tuple
 import heapq
 
 from ..constants import METRIC_DEFAULTS, ALIAS_EPI, METRICS
-from ..helpers import register_callback, ensure_history, last_glifo, get_attr
+from ..callback_utils import register_callback
+from ..glyph_history import ensure_history, last_glifo
+from ..helpers import get_attr
 from ..constants_glifos import GLYPHS_CANONICAL, GLYPH_GROUPS
 from .coherence import register_coherence_callbacks
 from .diagnosis import register_diagnosis_callbacks

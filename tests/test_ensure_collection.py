@@ -1,5 +1,5 @@
 import pytest
-from tnfr.helpers import ensure_collection
+from tnfr.collections_utils import ensure_collection
 
 
 def test_wraps_string():

@@ -2,7 +2,7 @@
 import networkx as nx
 from collections import deque, Counter
 
-from tnfr.helpers import count_glyphs
+from tnfr.glyph_history import count_glyphs
 from tnfr.constants import ALIAS_EPI_KIND
 
 def test_count_glyphs_last_only_and_window():

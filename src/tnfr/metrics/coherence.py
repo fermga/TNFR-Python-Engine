@@ -6,7 +6,9 @@ import cmath
 from typing import Dict
 
 from ..constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_SI, COHERENCE
-from ..helpers import register_callback, ensure_history, get_attr, clamp01
+from ..callback_utils import register_callback
+from ..glyph_history import ensure_history
+from ..helpers import get_attr, clamp01
 
 
 def _norm01(x, lo, hi):

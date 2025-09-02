@@ -15,8 +15,8 @@ from .constants import (
     ALIAS_DNFR,
     ALIAS_D2EPI,
 )
+from .glyph_history import push_glifo
 from .helpers import (
-    push_glifo,
     get_attr,
     get_attr_str,
     set_attr,

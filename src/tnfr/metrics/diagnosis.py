@@ -4,9 +4,9 @@ from __future__ import annotations
 from statistics import fmean
 
 from ..constants import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_SI, DIAGNOSIS, COHERENCE
+from ..callback_utils import register_callback
+from ..glyph_history import ensure_history
 from ..helpers import (
-    register_callback,
-    ensure_history,
     get_attr,
     clamp01,
     compute_dnfr_accel_max,

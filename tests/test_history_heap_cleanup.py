@@ -1,5 +1,5 @@
 """Pruebas de compactación de _heap en HistoryDict."""
-from tnfr.helpers import HistoryDict
+from tnfr.glyph_history import HistoryDict
 
 
 def test_heap_compaction_single_key():

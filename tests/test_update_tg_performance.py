@@ -3,7 +3,7 @@ import time
 from collections import Counter, defaultdict
 
 from tnfr.constants import attach_defaults
-from tnfr.helpers import last_glifo
+from tnfr.glyph_history import last_glifo
 from tnfr.metrics import _update_tg, _tg_state
 from tnfr.metrics.core import LATENT_GLYPH, TgCurr, TgRun
 

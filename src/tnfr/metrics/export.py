@@ -4,7 +4,8 @@ from __future__ import annotations
 import csv
 import json
 
-from ..helpers import ensure_history, ensure_parent
+from ..glyph_history import ensure_history
+from ..io_utils import ensure_parent
 from ..constants_glifos import GLYPHS_CANONICAL
 from .core import glifogram_series
 

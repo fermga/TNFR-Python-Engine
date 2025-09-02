@@ -1,6 +1,6 @@
 """Pruebas de trace."""
 from tnfr.trace import register_trace
-from tnfr.helpers import register_callback, invoke_callbacks
+from tnfr.callback_utils import register_callback, invoke_callbacks
 
 
 def test_register_trace_idempotent(graph_canon):

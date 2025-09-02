@@ -2,7 +2,7 @@
 from collections import deque
 
 from tnfr.constants import attach_defaults
-from tnfr.helpers import ensure_history
+from tnfr.glyph_history import ensure_history
 
 
 def test_history_maxlen_and_cleanup(graph_canon):

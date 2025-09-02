@@ -1,7 +1,7 @@
 """Tests for normalize_weights helper."""
 import math
 import pytest
-from tnfr.helpers import normalize_weights
+from tnfr.collections_utils import normalize_weights
 
 
 def test_normalize_weights_warns_on_negative_value(caplog):
