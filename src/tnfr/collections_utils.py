@@ -6,10 +6,8 @@ from typing import (
     Sequence,
     Dict,
     Any,
-    Callable,
     TypeVar,
     Mapping,
-    Optional,
     Collection,
     cast,
 )
