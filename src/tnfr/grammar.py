@@ -4,7 +4,9 @@ from typing import Dict, Any, Set, Iterable, Optional
 
 from .constants import (
     DEFAULTS,
-    ALIAS_SI, ALIAS_DNFR,
+    ALIAS_SI,
+    ALIAS_DNFR,
+    ALIAS_D2EPI,
     get_param,
 )
 from .helpers import get_attr, clamp01, reciente_glifo
@@ -90,6 +92,80 @@ def _dnfr_norm(G, nd) -> float:
 def _si(G, nd) -> float:
     return clamp01(get_attr(nd, ALIAS_SI, 0.5))
 
+
+def _accel_norm(G, nd) -> float:
+    """Normaliza la aceleración usando el máximo global."""
+    norms = G.graph.get("_sel_norms") or {}
+    amax = float(norms.get("accel_max", 1.0)) or 1.0
+    return clamp01(abs(get_attr(nd, ALIAS_D2EPI, 0.0)) / amax)
+
+
+def _check_repeats(G, n, cand: str, cfg: Dict[str, Any]) -> str:
+    """Evita repeticiones recientes según ``cfg``."""
+    nd = G.nodes[n]
+    gwin = int(cfg.get("window", 0))
+    avoid = set(cfg.get("avoid_repeats", []))
+    fallbacks = cfg.get("fallbacks", {})
+    cand_key = cand.value if isinstance(cand, Glyph) else str(cand)
+    if gwin > 0 and cand_key in avoid and reciente_glifo(nd, cand_key, gwin):
+        fb = fallbacks.get(cand_key, CANON_FALLBACK.get(cand_key, cand_key))
+        try:
+            return Glyph(fb)
+        except Exception:
+            return fb
+    return cand
+
+
+def _check_force_dnfr(G, n, cand: str, original: str, cfg: Dict[str, Any]) -> str:
+    """Si la repetición fue bloqueada pero |ΔNFR| es alta, restaura ``original``."""
+    if cand == original:
+        return cand
+    force_dn = float(cfg.get("force_dnfr", 0.60))
+    if _dnfr_norm(G, G.nodes[n]) >= force_dn:
+        return original
+    return cand
+
+
+def _check_force_accel(G, n, cand: str, original: str, cfg: Dict[str, Any]) -> str:
+    """Si la repetición fue bloqueada pero la aceleración es alta, restaura ``original``."""
+    if cand == original:
+        return cand
+    force_ac = float(cfg.get("force_accel", 0.60))
+    if _accel_norm(G, G.nodes[n]) >= force_ac:
+        return original
+    return cand
+
+
+def _check_oz_to_zhir(G, n, cand: str, cfg: Dict[str, Any]) -> str:
+    nd = G.nodes[n]
+    if cand == Glyph.ZHIR:
+        win = int(cfg.get("zhir_requires_oz_window", 3))
+        dn_min = float(cfg.get("zhir_dnfr_min", 0.05))
+        if not reciente_glifo(nd, Glyph.OZ, win) and _dnfr_norm(G, nd) < dn_min:
+            return Glyph.OZ
+    return cand
+
+
+def _check_thol_closure(G, n, cand: str, cfg: Dict[str, Any], st: Dict[str, Any]) -> str:
+    nd = G.nodes[n]
+    if st.get("thol_open", False):
+        st["thol_len"] = int(st.get("thol_len", 0)) + 1
+        minlen = int(cfg.get("thol_min_len", 2))
+        maxlen = int(cfg.get("thol_max_len", 6))
+        close_dn = float(cfg.get("thol_close_dnfr", 0.15))
+        if st["thol_len"] >= maxlen or (st["thol_len"] >= minlen and _dnfr_norm(G, nd) <= close_dn):
+            return Glyph.NUL if _si(G, nd) >= float(cfg.get("si_high", 0.66)) else Glyph.SHA
+    return cand
+
+
+def _check_compatibility(G, n, cand: str) -> str:
+    nd = G.nodes[n]
+    hist = nd.get("hist_glifos")
+    prev = hist[-1] if hist else None
+    if prev in CANON_COMPAT and cand not in CANON_COMPAT[prev]:
+        return CANON_FALLBACK.get(prev, cand)
+    return cand
+
 # -------------------------
 # Núcleo: forzar gramática sobre un candidato
 # -------------------------
@@ -98,6 +174,7 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
     """Valida/ajusta el glifo candidato según la gramática canónica.
 
     Reglas clave:
+      - Ventana de repetición con fuerzas por |ΔNFR| y aceleración.
       - Compatibilidades de transición glífica (recorrido TNFR).
       - OZ→ZHIR: la mutación requiere disonancia reciente o |ΔNFR| alto.
       - THOL[...]: obliga cierre con SHA o NUL cuando el campo se estabiliza
@@ -107,34 +184,20 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
     """
     nd = G.nodes[n]
     st = _gram_state(nd)
-    cfg = G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {}))
+    cfg_canon = G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {}))
+    cfg_soft = G.graph.get("GRAMMAR", DEFAULTS.get("GRAMMAR", {}))
 
     # 0) Si vienen glifos fuera del alfabeto, no tocamos
     if cand not in CANON_COMPAT:
         return cand
 
-    # 1) Precondición OZ→ZHIR: mutación requiere disonancia reciente o campo fuerte
-    if cand == Glyph.ZHIR:
-        win = int(cfg.get("zhir_requires_oz_window", 3))
-        dn_min = float(cfg.get("zhir_dnfr_min", 0.05))
-        if not reciente_glifo(nd, Glyph.OZ, win) and _dnfr_norm(G, nd) < dn_min:
-            cand = Glyph.OZ  # forzamos paso por OZ
-
-    # 2) Si estamos dentro de THOL, control de cierre obligado
-    if st.get("thol_open", False):
-        st["thol_len"] = int(st.get("thol_len", 0))
-        st["thol_len"] += 1
-        minlen = int(cfg.get("thol_min_len", 2))
-        maxlen = int(cfg.get("thol_max_len", 6))
-        close_dn = float(cfg.get("thol_close_dnfr", 0.15))
-        if st["thol_len"] >= maxlen or (st["thol_len"] >= minlen and _dnfr_norm(G, nd) <= close_dn):
-            cand = Glyph.NUL if _si(G, nd) >= float(cfg.get("si_high", 0.66)) else Glyph.SHA
-
-    # 3) Compatibilidades: si el anterior restringe el siguiente
-    hist = nd.get("hist_glifos")
-    prev = hist[-1] if hist else None
-    if prev in CANON_COMPAT and cand not in CANON_COMPAT[prev]:
-        cand = CANON_FALLBACK.get(prev, cand)
+    original = cand
+    cand = _check_repeats(G, n, cand, cfg_soft)
+    cand = _check_force_dnfr(G, n, cand, original, cfg_soft)
+    cand = _check_force_accel(G, n, cand, original, cfg_soft)
+    cand = _check_oz_to_zhir(G, n, cand, cfg_canon)
+    cand = _check_thol_closure(G, n, cand, cfg_canon, st)
+    cand = _check_compatibility(G, n, cand)
 
     return cand
 

@@ -48,6 +48,33 @@ def test_thol_closure(graph_canon):
     assert enforce_canonical_grammar(G, 0, EN) == SHA
 
 
+def test_repeat_window_and_force(graph_canon):
+    G = graph_canon()
+    G.add_node(0)
+    attach_defaults(G)
+    nd = G.nodes[0]
+    nd['hist_glifos'] = deque([ZHIR.value, 'OZ'])
+    G.graph['GRAMMAR'] = {
+        'window': 3,
+        'avoid_repeats': ['ZHIR'],
+        'force_dnfr': 0.5,
+        'force_accel': 0.8,
+        'fallbacks': {'ZHIR': 'NAV'},
+    }
+    G.graph['_sel_norms'] = {'dnfr_max': 1.0, 'accel_max': 1.0}
+
+    nd['ΔNFR'] = 0.0
+    nd['d2EPI_dt2'] = 0.0
+    assert enforce_canonical_grammar(G, 0, ZHIR) == NAV
+
+    nd['ΔNFR'] = 0.6
+    assert enforce_canonical_grammar(G, 0, ZHIR) == ZHIR
+
+    nd['ΔNFR'] = 0.0
+    nd['d2EPI_dt2'] = 0.9
+    assert enforce_canonical_grammar(G, 0, ZHIR) == ZHIR
+
+
 def test_lag_counters_enforced(graph_canon):
     G = graph_canon()
     G.add_node(0)
