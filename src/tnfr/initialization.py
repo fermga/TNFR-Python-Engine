@@ -4,7 +4,7 @@ import random
 import networkx as nx
 
 from .constants import DEFAULTS, INIT_DEFAULTS, VF_KEY, THETA_KEY
-from tnfr.helpers import clamp
+from .helpers import clamp
 
 
 def _init_phase(
