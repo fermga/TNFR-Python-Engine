@@ -53,6 +53,11 @@ def test_validator_glifo_invalido():
         run_validators(G)
 
 
+def test_validator_glifo_valido():
+    G = _base_graph()
+    run_validators(G)
+
+
 def test_read_structured_file_json(tmp_path):
     path = tmp_path / "cfg.json"
     path.write_text("{\"x\": 1}", encoding="utf-8")
