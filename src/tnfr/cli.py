@@ -65,9 +65,7 @@ def _flatten_tokens(obj: Any):
 
 def _parse_tokens(obj: Any) -> List[Any]:
     out: List[Any] = []
-    pos = 0
-    for tok in _flatten_tokens(obj):
-        pos += 1
+    for pos, tok in enumerate(_flatten_tokens(obj), start=1):
         try:
             if isinstance(tok, dict):
                 if len(tok) != 1:
