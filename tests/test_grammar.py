@@ -75,6 +75,36 @@ def test_repeat_window_and_force(graph_canon):
     assert enforce_canonical_grammar(G, 0, ZHIR) == ZHIR
 
 
+
+
+def test_repeat_invalid_fallback_string(graph_canon):
+    G = graph_canon()
+    G.add_node(0)
+    attach_defaults(G)
+    nd = G.nodes[0]
+    nd['hist_glifos'] = deque([ZHIR.value])
+    G.graph['GRAMMAR'] = {
+        'window': 3,
+        'avoid_repeats': ['ZHIR'],
+        'fallbacks': {'ZHIR': 'NOPE'},
+    }
+    assert enforce_canonical_grammar(G, 0, ZHIR) == IL
+
+
+def test_repeat_invalid_fallback_type(graph_canon):
+    G = graph_canon()
+    G.add_node(0)
+    attach_defaults(G)
+    nd = G.nodes[0]
+    nd['hist_glifos'] = deque([ZHIR.value])
+    obj = object()
+    G.graph['GRAMMAR'] = {
+        'window': 3,
+        'avoid_repeats': ['ZHIR'],
+        'fallbacks': {'ZHIR': obj},
+    }
+    assert enforce_canonical_grammar(G, 0, ZHIR) == IL
+
 def test_lag_counters_enforced(graph_canon):
     G = graph_canon()
     G.add_node(0)
