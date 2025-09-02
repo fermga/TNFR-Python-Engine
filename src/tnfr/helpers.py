@@ -24,6 +24,9 @@ from json import JSONDecodeError
 from pathlib import Path
 from enum import Enum
 
+PI = math.pi
+TWO_PI = 2 * PI
+
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
     from yaml import YAMLError  # type: ignore
@@ -216,9 +219,7 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
 
 def _wrap_angle(a: float) -> float:
     """Envuelve ángulo a (-π, π]."""
-    pi = math.pi
-    a = (a + pi) % (2 * pi) - pi
-    return a
+    return (a + PI) % TWO_PI - PI
 
 
 def angle_diff(a: float, b: float) -> float:
