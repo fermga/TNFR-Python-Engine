@@ -1,6 +1,6 @@
 """Cálculos de sentido."""
 from __future__ import annotations
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable
 import math
 import warnings
 from collections import Counter
@@ -74,39 +74,35 @@ def _sigma_cfg(G):
 # -------------------------
 
 
-def _accumulate_sigma(pairs: Iterable[tuple[str, float]]) -> tuple[float, float, int]:
-    """Acumula componentes cartesianas en el plano σ."""
-    x = y = 0.0
-    n = 0
-    for g, w in pairs:
-        z = glyph_unit(g)
-        w = float(w)
-        x += z.real * w
-        y += z.imag * w
-        n += 1
-    return x, y, n
+def _sigma_from_vectors(
+    vectors: Iterable[complex], fallback_angle: float = 0.0
+) -> tuple[Dict[str, float], int]:
+    """Normaliza una serie de vectores complejos en el plano σ."""
 
+    acc = complex(0.0, 0.0)
+    cnt = 0
+    for z in vectors:
+        acc += z
+        cnt += 1
 
-def _sigma_from_acc(acc: complex, cnt: int, fallback_angle: float = 0.0) -> Dict[str, float]:
-    """Normaliza la acumulación compleja en el plano σ."""
     if cnt <= 0:
-        return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": float(fallback_angle)}
+        vec = {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": float(fallback_angle)}
+        return vec, 0
+
     x, y = acc.real / cnt, acc.imag / cnt
     mag = math.hypot(x, y)
     ang = math.atan2(y, x) if mag > 0 else float(fallback_angle)
-    return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
+    vec = {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
+    return vec, cnt
 
 
-def _sigma_from_pairs(pairs: List[tuple[str, float]], fallback_angle: float = 0.0) -> Dict[str, float]:
-    """Vector promedio a partir de pares ``(glifo, peso)``.
+def _sigma_from_pairs(
+    pairs: Iterable[tuple[str, float]], fallback_angle: float = 0.0
+) -> tuple[Dict[str, float], int]:
+    """Conveniencia para calcular σ a partir de pares ``(glifo, peso)``."""
 
-    Los pesos se multiplican por los vectores unitarios asociados a cada glifo y
-    se normaliza por la cantidad de pares provistos. ``fallback_angle`` se
-    utiliza cuando la magnitud resultante es nula.
-    """
-    x, y, n = _accumulate_sigma(pairs)
-    acc = complex(x, y)
-    return _sigma_from_acc(acc, n, fallback_angle)
+    vectors = (glyph_unit(g) * float(w) for g, w in pairs)
+    return _sigma_from_vectors(vectors, fallback_angle)
 
 def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] | None:
     cfg = _sigma_cfg(G)
@@ -114,8 +110,8 @@ def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] 
     nw = _node_weight(nd, weight_mode or cfg.get("weight", "Si"))
     if not nw:
         return None
-    g, w, _ = nw
-    vec = _sigma_from_pairs([(g, w)], glyph_angle(g))
+    g, w, z = nw
+    vec, _ = _sigma_from_vectors([z], glyph_angle(g))
     vec.update({"glifo": g, "w": float(w)})
     return vec
 
@@ -134,11 +130,13 @@ def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
     if total <= 0:
         return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0}
 
-    pairs = ((k, float(dist.get(k, 0.0)) / total) for k in SIGMA_ANGLE_KEYS)
-    x, y, _ = _accumulate_sigma(pairs)
-    mag = math.hypot(x, y)
-    ang = math.atan2(y, x)
-    return {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
+    n_keys = len(SIGMA_ANGLE_KEYS)
+    z_iter = (
+        glyph_unit(k) * n_keys * float(dist.get(k, 0.0)) / total
+        for k in SIGMA_ANGLE_KEYS
+    )
+    vec, _ = _sigma_from_vectors(z_iter)
+    return vec
 
 
 def sigma_vector_from_graph(G: nx.Graph, weight_mode: str | None = None) -> Dict[str, float]:
@@ -162,17 +160,13 @@ def sigma_vector_from_graph(G: nx.Graph, weight_mode: str | None = None) -> Dict
 
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
-    acc_z = complex(0.0, 0.0)
-    cnt = 0
-    for _, nd in G.nodes(data=True):
-        nw = _node_weight(nd, weight_mode)
-        if not nw:
-            continue
-        _, _, z = nw  # z already includes glyph_unit(g) * w
-        acc_z += z
-        cnt += 1
-    vec = _sigma_from_acc(acc_z, cnt)
-    vec["n"] = cnt
+    z_iter = (
+        nw[2]
+        for _, nd in G.nodes(data=True)
+        if (nw := _node_weight(nd, weight_mode))
+    )
+    vec, n = _sigma_from_vectors(z_iter)
+    vec["n"] = n
     return vec
 
 
