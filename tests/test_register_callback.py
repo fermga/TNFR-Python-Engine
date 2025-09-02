@@ -1,4 +1,6 @@
 """Pruebas de register callback."""
+import pytest
+
 from tnfr.callback_utils import register_callback, CallbackEvent
 
 
@@ -22,3 +24,13 @@ def test_register_callback_replaces_existing(graph_canon):
     # same function with different name should also replace existing
     register_callback(G, event=CallbackEvent.BEFORE_STEP, func=cb2, name="other")
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP] == [("other", cb2)]
+
+
+def test_register_callback_rejects_tuple(graph_canon):
+    G = graph_canon()
+
+    def cb(G, ctx):
+        pass
+
+    with pytest.raises(TypeError):
+        register_callback(G, event=CallbackEvent.BEFORE_STEP, func=("cb", cb))
