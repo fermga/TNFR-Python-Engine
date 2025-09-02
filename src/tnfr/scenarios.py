@@ -36,6 +36,6 @@ def build_graph(
     # Valores canónicos para inicialización
     inject_defaults(G)
     if seed is not None:
-        G.graph.setdefault("RANDOM_SEED", int(seed))
+        G.graph["RANDOM_SEED"] = int(seed)
     init_node_attrs(G, override=True)
     return G

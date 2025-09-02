@@ -32,3 +32,9 @@ def test_build_graph_invalid_p():
     with pytest.raises(ValueError):
         build_graph(n=5, topology="erdos", p=1.5)
 
+
+def test_random_seed_reflects_value():
+    seed = 123
+    G = build_graph(n=5, seed=seed)
+    assert G.graph["RANDOM_SEED"] == seed
+
