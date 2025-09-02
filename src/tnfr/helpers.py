@@ -12,7 +12,6 @@ from typing import (
 )
 import logging
 import math
-from collections import deque
 from statistics import fmean, StatisticsError
 import json
 from json import JSONDecodeError
@@ -483,16 +482,9 @@ def fase_media(obj, n=None) -> float:
 # Historial de glyphs por nodo
 # -------------------------
 
-def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
-    """Añade ``glyph`` al historial del nodo con tamaño máximo ``window``."""
-    hist = nd.get("glyph_history")
-    if hist is None or hist.maxlen != window:
-        hist = deque(hist or [], maxlen=window)
-        nd["glyph_history"] = hist
-    hist.append(str(glyph))
-
 # Importaciones diferidas para evitar ciclos al definir ``get_attr_str`` arriba
 from .glyph_history import (
+    push_glyph,
     recent_glyph,
     HistoryDict,
     ensure_history,
