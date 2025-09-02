@@ -15,7 +15,8 @@ class _SigmaVectorFn(Protocol):
         ...
 
 from .constants import TRACE
-from .helpers import register_callback, ensure_history, count_glyphs
+from .callback_utils import register_callback
+from .glyph_history import ensure_history, count_glyphs
 
 try:
     from .gamma import kuramoto_R_psi as _kuramoto_R_psi

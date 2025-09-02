@@ -1,7 +1,7 @@
 """Pruebas para normalización y mezcla de conteos glíficos."""
 from collections import Counter
 
-from tnfr.helpers import normalize_counter, mix_groups
+from tnfr.collections_utils import normalize_counter, mix_groups
 
 
 def test_normalize_counter():

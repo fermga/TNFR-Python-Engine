@@ -14,13 +14,13 @@ from networkx.algorithms import community as nx_comm
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers import (
     list_mean,
-    invoke_callbacks,
     angle_diff,
     get_attr,
     set_attr,
     fase_media,
     increment_edge_version,
 )
+from .callback_utils import invoke_callbacks
 if TYPE_CHECKING:
     from .node import NodoProtocol
 from .types import Glyph

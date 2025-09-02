@@ -1,5 +1,5 @@
 """Pruebas de register callback."""
-from tnfr.helpers import register_callback, CallbackEvent
+from tnfr.callback_utils import register_callback, CallbackEvent
 
 
 def test_register_callback_replaces_existing(graph_canon):

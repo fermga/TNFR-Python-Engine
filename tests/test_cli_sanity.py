@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from tnfr.cli import main, add_common_args, add_grammar_args, _build_graph_from_args
 from tnfr.constants import METRIC_DEFAULTS
-from tnfr.helpers import read_structured_file
+from tnfr.io_utils import read_structured_file
 from tnfr import __version__
 
 

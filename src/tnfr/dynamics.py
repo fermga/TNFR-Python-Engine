@@ -34,9 +34,11 @@ from .gamma import eval_gamma
 from .helpers import (
      clamp, clamp01, list_mean, angle_diff,
      get_attr, set_attr, get_attr_str, set_attr_str, media_vecinal, fase_media,
-     invoke_callbacks, reciente_glifo, set_vf, set_dnfr, compute_Si, normalize_weights,
-     ensure_history, compute_coherence, compute_dnfr_accel_max,
+     set_vf, set_dnfr, compute_Si, compute_coherence, compute_dnfr_accel_max,
 )
+from .callback_utils import invoke_callbacks
+from .glyph_history import reciente_glifo, ensure_history
+from .collections_utils import normalize_weights
 from .selector import (
     _selector_thresholds,
     _norms_para_selector,

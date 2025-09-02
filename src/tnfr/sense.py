@@ -11,11 +11,9 @@ from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
 from .helpers import (
     get_attr,
     clamp01,
-    register_callback,
-    ensure_history,
-    last_glifo,
-    count_glyphs,
 )
+from .callback_utils import register_callback
+from .glyph_history import ensure_history, last_glifo, count_glyphs
 from .constants_glifos import (
     ANGLE_MAP,
     ESTABILIZADORES,

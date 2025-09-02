@@ -8,14 +8,12 @@ from functools import partial
 from .constants import ALIAS_THETA, METRIC_DEFAULTS
 from .helpers import (
     get_attr,
-    register_callback,
     angle_diff,
-    ensure_history,
-    count_glyphs,
     compute_coherence,
-    normalize_counter,
-    mix_groups,
 )
+from .callback_utils import register_callback
+from .glyph_history import ensure_history, count_glyphs
+from .collections_utils import normalize_counter, mix_groups
 from .constants_glifos import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 
