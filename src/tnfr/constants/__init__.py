@@ -20,7 +20,12 @@ from .metric import (
 
 # Diccionario combinado exportado
 DEFAULTS: Dict[str, Any] = dict(
-    ChainMap(METRIC_DEFAULTS, REMESH_DEFAULTS, INIT_DEFAULTS, CORE_DEFAULTS)
+    ChainMap(
+        dict(METRIC_DEFAULTS),
+        dict(REMESH_DEFAULTS),
+        dict(INIT_DEFAULTS),
+        dict(CORE_DEFAULTS),
+    )
 )
 
 # -------------------------
