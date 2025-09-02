@@ -110,3 +110,12 @@ def test_load_sequence_repeated_calls(tmp_path):
     expected = seq("AL", block("OZ", "EN", "RA"), wait(1))
     for _ in range(5):
         assert _load_sequence(path) == expected
+
+
+@pytest.mark.parametrize("bad", ["SHA", 123])
+def test_block_force_close_invalid_type_raises(graph_canon, bad):
+    G = graph_canon()
+    G.add_node(1)
+    program = seq(block(Glyph.AL, close=bad))
+    with pytest.raises(ValueError):
+        play(G, program, step_fn=_step_noop)
