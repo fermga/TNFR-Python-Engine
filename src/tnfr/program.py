@@ -181,9 +181,10 @@ def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
 
 
 def _handle_wait(G, steps: int, curr_target, trace: deque, step_fn: Optional[AdvanceFn]):
-    for _ in range(max(1, int(steps))):
+    steps = max(1, int(steps))
+    for _ in range(steps):
         _advance(G, step_fn)
-    _record_trace(trace, G, "WAIT", k=int(steps))
+    _record_trace(trace, G, "WAIT", k=steps)
     return curr_target
 
 

@@ -3,7 +3,7 @@ import json
 import pytest
 
 from tnfr.cli import _load_sequence
-from tnfr.program import play, seq, block, wait, target
+from tnfr.program import play, seq, block, wait, target, WAIT
 from tnfr.constants import get_param
 from tnfr.types import Glyph
 
@@ -20,8 +20,17 @@ def test_play_records_program_trace_with_block_and_wait(graph_canon):
     program = seq(Glyph.AL, wait(2), block(Glyph.OZ))
     play(G, program, step_fn=_step_noop)
     trace = G.graph["history"]["program_trace"]
-    assert [e["op"] for e in trace] == ["GLYPH", "WAIT", "GLYPH", "GLYPH"]
+    assert [e["op"] for e in trace] == ["GLYPH", "WAIT", "THOL", "GLYPH"]
     assert trace[2]["g"] == Glyph.THOL.value
+
+
+def test_wait_logs_sanitized_steps(graph_canon):
+    G = graph_canon()
+    G.add_node(1)
+    play(G, seq(WAIT(0)), step_fn=_step_noop)
+    trace = G.graph["history"]["program_trace"]
+    assert [e["op"] for e in trace] == ["WAIT"]
+    assert trace[0]["k"] == 1
 
 
 def test_play_handles_deeply_nested_blocks(graph_canon):
