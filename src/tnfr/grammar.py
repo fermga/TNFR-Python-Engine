@@ -1,4 +1,5 @@
 """Reglas de gramática."""
+
 from __future__ import annotations
 from typing import Dict, Any, Set, Iterable, Optional
 
@@ -31,6 +32,7 @@ REMESH = Glyph.REMESH
 # Estado de gramática por nodo
 # -------------------------
 
+
 def _gram_state(nd: Dict[str, Any]) -> Dict[str, Any]:
     """Crea/retorna el estado de gramática nodal.
     Campos:
@@ -39,27 +41,37 @@ def _gram_state(nd: Dict[str, Any]) -> Dict[str, Any]:
     """
     return nd.setdefault("_GRAM", {"thol_open": False, "thol_len": 0})
 
+
 # -------------------------
 # Compatibilidades canónicas (siguiente permitido)
 # -------------------------
 CANON_COMPAT: Dict[Glyph, Set[Glyph]] = {
     # Inicio / apertura
-    Glyph.AL:   {Glyph.EN, Glyph.RA, Glyph.NAV, Glyph.VAL, Glyph.UM},
-    Glyph.EN:   {Glyph.IL, Glyph.UM, Glyph.RA, Glyph.NAV},
+    Glyph.AL: {Glyph.EN, Glyph.RA, Glyph.NAV, Glyph.VAL, Glyph.UM},
+    Glyph.EN: {Glyph.IL, Glyph.UM, Glyph.RA, Glyph.NAV},
     # Estabilización / difusión / acople
-    Glyph.IL:   {Glyph.RA, Glyph.VAL, Glyph.UM, Glyph.SHA},
-    Glyph.UM:   {Glyph.RA, Glyph.IL, Glyph.VAL, Glyph.NAV},
-    Glyph.RA:   {Glyph.IL, Glyph.VAL, Glyph.UM, Glyph.NAV},
-    Glyph.VAL:  {Glyph.UM, Glyph.RA, Glyph.IL, Glyph.NAV},
+    Glyph.IL: {Glyph.RA, Glyph.VAL, Glyph.UM, Glyph.SHA},
+    Glyph.UM: {Glyph.RA, Glyph.IL, Glyph.VAL, Glyph.NAV},
+    Glyph.RA: {Glyph.IL, Glyph.VAL, Glyph.UM, Glyph.NAV},
+    Glyph.VAL: {Glyph.UM, Glyph.RA, Glyph.IL, Glyph.NAV},
     # Disonancia → transición → mutación
-    Glyph.OZ:   {Glyph.ZHIR, Glyph.NAV},
+    Glyph.OZ: {Glyph.ZHIR, Glyph.NAV},
     Glyph.ZHIR: {Glyph.IL, Glyph.NAV},
-    Glyph.NAV:  {Glyph.OZ, Glyph.ZHIR, Glyph.RA, Glyph.IL, Glyph.UM},
+    Glyph.NAV: {Glyph.OZ, Glyph.ZHIR, Glyph.RA, Glyph.IL, Glyph.UM},
     # Cierres / latencias
-    Glyph.SHA:  {Glyph.AL, Glyph.EN},
-    Glyph.NUL:  {Glyph.AL, Glyph.IL},
+    Glyph.SHA: {Glyph.AL, Glyph.EN},
+    Glyph.NUL: {Glyph.AL, Glyph.IL},
     # Bloques autoorganizativos
-    Glyph.THOL: {Glyph.OZ, Glyph.ZHIR, Glyph.NAV, Glyph.RA, Glyph.IL, Glyph.UM, Glyph.SHA, Glyph.NUL},
+    Glyph.THOL: {
+        Glyph.OZ,
+        Glyph.ZHIR,
+        Glyph.NAV,
+        Glyph.RA,
+        Glyph.IL,
+        Glyph.UM,
+        Glyph.SHA,
+        Glyph.NUL,
+    },
 }
 
 # Fallbacks canónicos si una transición no está permitida
@@ -81,6 +93,7 @@ CANON_FALLBACK: Dict[Glyph, Glyph] = {
 # -------------------------
 # Cierres THOL y precondiciones ZHIR
 # -------------------------
+
 
 def _dnfr_norm(G, nd) -> float:
     # Normalizador robusto: usa historial de |ΔNFR| máx guardado por dynamics (si existe)
@@ -146,15 +159,23 @@ def _check_oz_to_zhir(G, n, cand: str, cfg: Dict[str, Any]) -> str:
     return cand
 
 
-def _check_thol_closure(G, n, cand: str, cfg: Dict[str, Any], st: Dict[str, Any]) -> str:
+def _check_thol_closure(
+    G, n, cand: str, cfg: Dict[str, Any], st: Dict[str, Any]
+) -> str:
     nd = G.nodes[n]
     if st.get("thol_open", False):
         st["thol_len"] = int(st.get("thol_len", 0)) + 1
         minlen = int(cfg.get("thol_min_len", 2))
         maxlen = int(cfg.get("thol_max_len", 6))
         close_dn = float(cfg.get("thol_close_dnfr", 0.15))
-        if st["thol_len"] >= maxlen or (st["thol_len"] >= minlen and _dnfr_norm(G, nd) <= close_dn):
-            return Glyph.NUL if _si(G, nd) >= float(cfg.get("si_high", 0.66)) else Glyph.SHA
+        if st["thol_len"] >= maxlen or (
+            st["thol_len"] >= minlen and _dnfr_norm(G, nd) <= close_dn
+        ):
+            return (
+                Glyph.NUL
+                if _si(G, nd) >= float(cfg.get("si_high", 0.66))
+                else Glyph.SHA
+            )
     return cand
 
 
@@ -166,9 +187,11 @@ def _check_compatibility(G, n, cand: str) -> str:
         return CANON_FALLBACK.get(prev, cand)
     return cand
 
+
 # -------------------------
 # Núcleo: forzar gramática sobre un candidato
 # -------------------------
+
 
 def enforce_canonical_grammar(G, n, cand: str) -> str:
     """Valida/ajusta el glifo candidato según la gramática canónica.
@@ -201,9 +224,11 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
 
     return cand
 
+
 # -------------------------
 # Post-selección: actualizar estado de gramática
 # -------------------------
+
 
 def on_applied_glifo(G, n, applied: str) -> None:
     nd = G.nodes[n]
@@ -214,14 +239,16 @@ def on_applied_glifo(G, n, applied: str) -> None:
     elif applied in (Glyph.SHA, Glyph.NUL):
         st["thol_open"] = False
         st["thol_len"] = 0
-    else:
-        pass
+
 
 # -------------------------
 # Aplicación directa con gramática canónica
 # -------------------------
 
-def apply_glyph_with_grammar(G, nodes: Optional[Iterable[Any]], glyph: Glyph | str, window: Optional[int] = None) -> None:
+
+def apply_glyph_with_grammar(
+    G, nodes: Optional[Iterable[Any]], glyph: Glyph | str, window: Optional[int] = None
+) -> None:
     """Aplica ``glyph`` a ``nodes`` pasando por la gramática canónica.
 
     ``nodes`` admite ``NodeView`` y cualquier iterable. Se itera directamente
@@ -241,9 +268,11 @@ def apply_glyph_with_grammar(G, nodes: Optional[Iterable[Any]], glyph: Glyph | s
         aplicar_glifo(G, n, g_eff, window=window)
         on_applied_glifo(G, n, g_eff)
 
+
 # -------------------------
 # Integración con dynamics.step: helper de selección+aplicación
 # -------------------------
+
 
 def select_and_apply_with_grammar(G, n, selector, window: int) -> None:
     """Aplica gramática canónica sobre la propuesta del selector.
