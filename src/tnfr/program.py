@@ -131,7 +131,13 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
             ops.append(("THOL", Glyph.THOL.value))
 
             repeats = max(1, int(item.repeat))
-            closing = item.force_close if item.force_close in (Glyph.SHA, Glyph.NUL) else None
+            if item.force_close is not None and not isinstance(item.force_close, Glyph):
+                raise ValueError("force_close must be a Glyph")
+            closing = (
+                item.force_close
+                if isinstance(item.force_close, Glyph) and item.force_close in {Glyph.SHA, Glyph.NUL}
+                else None
+            )
             # El cierre explícito debe ejecutarse al final, por lo que se
             # coloca en la pila antes de expandir el cuerpo.
             if closing is not None:
