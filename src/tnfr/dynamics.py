@@ -605,6 +605,62 @@ def validate_canon(G) -> None:
     return G
 
 
+def _leer_parametros_adaptativos(g: Dict[str, Any]) -> tuple[Dict[str, Any], float, float]:
+    """Obtiene configuración y valores actuales para adaptación de fase."""
+    cfg = g.get("PHASE_ADAPT", DEFAULTS.get("PHASE_ADAPT", {}))
+    kG = float(g.get("PHASE_K_GLOBAL", DEFAULTS["PHASE_K_GLOBAL"]))
+    kL = float(g.get("PHASE_K_LOCAL", DEFAULTS["PHASE_K_LOCAL"]))
+    return cfg, kG, kL
+
+
+def _calcular_estado(G, cfg: Dict[str, Any]) -> tuple[str, float, float]:
+    """Devuelve estado actual (estable/disonante/transicion) y métricas."""
+    R = orden_kuramoto(G)
+    win = int(G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]))
+    dist = carga_glifica(G, window=win)
+    disr = float(dist.get("_disruptivos", 0.0)) if dist else 0.0
+
+    R_hi = float(cfg.get("R_hi", 0.90))
+    R_lo = float(cfg.get("R_lo", 0.60))
+    disr_hi = float(cfg.get("disr_hi", 0.50))
+    disr_lo = float(cfg.get("disr_lo", 0.25))
+    if (R >= R_hi) and (disr <= disr_lo):
+        state = "estable"
+    elif (R <= R_lo) or (disr >= disr_hi):
+        state = "disonante"
+    else:
+        state = "transicion"
+    return state, float(R), disr
+
+
+def _ajustar_k_suave(kG: float, kL: float, state: str, cfg: Dict[str, Any]) -> tuple[float, float]:
+    """Actualiza suavemente kG/kL hacia sus objetivos según el estado."""
+    kG_min = float(cfg.get("kG_min", 0.01))
+    kG_max = float(cfg.get("kG_max", 0.20))
+    kL_min = float(cfg.get("kL_min", 0.05))
+    kL_max = float(cfg.get("kL_max", 0.25))
+
+    if state == "disonante":
+        kG_t = kG_max
+        kL_t = 0.5 * (kL_min + kL_max)  # local medio para no perder plasticidad
+    elif state == "estable":
+        kG_t = kG_min
+        kL_t = kL_min
+    else:
+        kG_t = 0.5 * (kG_min + kG_max)
+        kL_t = 0.5 * (kL_min + kL_max)
+
+    up = float(cfg.get("up", 0.10))
+    down = float(cfg.get("down", 0.07))
+
+    def _step(curr: float, target: float, mn: float, mx: float) -> float:
+        gain = up if target > curr else down
+        nxt = curr + gain * (target - curr)
+        return max(mn, min(mx, nxt))
+
+    return _step(kG, kG_t, kG_min, kG_max), _step(kL, kL_t, kL_min, kL_max)
+
+
 def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_vecinal: float | None = None) -> None:
     """
     Ajusta fase con mezcla GLOBAL+VECINAL.
@@ -640,58 +696,12 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
             else g.get("PHASE_K_LOCAL", defaults["PHASE_K_LOCAL"])
         )
     else:
-        # 1) Lectura de configuración
-        cfg = g.get("PHASE_ADAPT", defaults.get("PHASE_ADAPT", {}))
-        kG = float(g.get("PHASE_K_GLOBAL", defaults["PHASE_K_GLOBAL"]))
-        kL = float(g.get("PHASE_K_LOCAL", defaults["PHASE_K_LOCAL"]))
+        cfg, kG, kL = _leer_parametros_adaptativos(g)
 
         if bool(cfg.get("enabled", False)):
-            # 2) Métricas actuales (no dependemos de history)
-            R = orden_kuramoto(G)
-            win = int(g.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]))
-            dist = carga_glifica(G, window=win)
-            disr = float(dist.get("_disruptivos", 0.0)) if dist else 0.0
+            state, R, disr = _calcular_estado(G, cfg)
+            kG, kL = _ajustar_k_suave(kG, kL, state, cfg)
 
-            # 3) Decidir estado
-            R_hi = float(cfg.get("R_hi", 0.90))
-            R_lo = float(cfg.get("R_lo", 0.60))
-            disr_hi = float(cfg.get("disr_hi", 0.50))
-            disr_lo = float(cfg.get("disr_lo", 0.25))
-            if (R >= R_hi) and (disr <= disr_lo):
-                state = "estable"
-            elif (R <= R_lo) or (disr >= disr_hi):
-                state = "disonante"
-            else:
-                state = "transicion"
-
-            # 4) Objetivos y actualización suave (con saturación)
-            kG_min = float(cfg.get("kG_min", 0.01))
-            kG_max = float(cfg.get("kG_max", 0.20))
-            kL_min = float(cfg.get("kL_min", 0.05))
-            kL_max = float(cfg.get("kL_max", 0.25))
-
-            if state == "disonante":
-                kG_t = kG_max
-                kL_t = 0.5 * (kL_min + kL_max)   # local medio para no perder plasticidad
-            elif state == "estable":
-                kG_t = kG_min
-                kL_t = kL_min
-            else:
-                kG_t = 0.5 * (kG_min + kG_max)
-                kL_t = 0.5 * (kL_min + kL_max)
-
-            up = float(cfg.get("up", 0.10))
-            down = float(cfg.get("down", 0.07))
-
-            def _step(curr, target, mn, mx):
-                gain = up if target > curr else down
-                nxt = curr + gain * (target - curr)
-                return max(mn, min(mx, nxt))
-
-            kG = _step(kG, kG_t, kG_min, kG_max)
-            kL = _step(kL, kL_t, kL_min, kL_max)
-
-            # 5) Persistir en G.graph y log de serie
             hist_state.append(state)
             hist_R.append(float(R))
             hist_disr.append(float(disr))
