@@ -94,22 +94,20 @@ def _add_edge_common(G, n1, n2, weight, overwrite):
     if n1 == n2:
         return
 
+    weight = float(weight)
+    if weight < 0:
+        raise ValueError("Edge weight must be non-negative")
+
     if hasattr(G, "has_edge"):
         # networkx graph
         if G.has_edge(n1, n2) and not overwrite:
             return
-        weight = float(weight)
-        if weight < 0:
-            raise ValueError("Edge weight must be non-negative")
         G.add_edge(n1, n2, weight=weight)
         increment_edge_version(G)
     else:
         # NodoTNFR-style graph
         if n2 in n1._neighbors and not overwrite:
             return
-        weight = float(weight)
-        if weight < 0:
-            raise ValueError("Edge weight must be non-negative")
         n1._neighbors[n2] = weight
         n2._neighbors[n1] = weight
         increment_edge_version(G)

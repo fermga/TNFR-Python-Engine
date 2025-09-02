@@ -58,3 +58,25 @@ def test_add_edge_rejects_negative_weight_nx():
     with pytest.raises(ValueError):
         a.add_edge(b, weight=-0.5)
     assert not a.has_edge(b)
+
+
+def test_add_edge_rejects_negative_weight_existing_edge():
+    a = NodoTNFR()
+    b = NodoTNFR()
+    a.add_edge(b, weight=1.0)
+    with pytest.raises(ValueError):
+        a.add_edge(b, weight=-2.0)
+    assert math.isclose(a.edge_weight(b), 1.0)
+    assert math.isclose(b.edge_weight(a), 1.0)
+
+
+def test_add_edge_rejects_negative_weight_existing_edge_nx():
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_node(1)
+    a = NodoNX(G, 0)
+    b = NodoNX(G, 1)
+    a.add_edge(b, weight=1.0)
+    with pytest.raises(ValueError):
+        a.add_edge(b, weight=-2.0)
+    assert math.isclose(G[0][1]["weight"], 1.0)
