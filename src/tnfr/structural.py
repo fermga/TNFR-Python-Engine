@@ -79,7 +79,6 @@ def operador_factory(*pairs: Tuple[str, str]) -> dict[str, type[Operador]]:
     for nombre, glifo in pairs:
         class_name = nombre.title().replace("_", "").replace(" ", "")
         cls = type(class_name, (Operador,), {"name": nombre, "glyph": glifo})
-        globals()[class_name] = cls
         registry[nombre] = cls
     return registry
 
@@ -99,6 +98,42 @@ OPERADORES = operador_factory(
     ("transicion", Glyph.NAV.value),
     ("recursividad", Glyph.REMESH.value),
 )
+
+# Exposición explícita de clases concretas
+Emision = OPERADORES["emision"]
+Recepcion = OPERADORES["recepcion"]
+Coherencia = OPERADORES["coherencia"]
+Disonancia = OPERADORES["disonancia"]
+Acoplamiento = OPERADORES["acoplamiento"]
+Resonancia = OPERADORES["resonancia"]
+Silencio = OPERADORES["silencio"]
+Expansion = OPERADORES["expansion"]
+Contraccion = OPERADORES["contraccion"]
+Autoorganizacion = OPERADORES["autoorganizacion"]
+Mutacion = OPERADORES["mutacion"]
+Transicion = OPERADORES["transicion"]
+Recursividad = OPERADORES["recursividad"]
+
+__all__ = [
+    "create_nfr",
+    "Operador",
+    "OPERADORES",
+    "Emision",
+    "Recepcion",
+    "Coherencia",
+    "Disonancia",
+    "Acoplamiento",
+    "Resonancia",
+    "Silencio",
+    "Expansion",
+    "Contraccion",
+    "Autoorganizacion",
+    "Mutacion",
+    "Transicion",
+    "Recursividad",
+    "validate_sequence",
+    "run_sequence",
+]
 # ---------------------------------------------------------------------------
 # 3) Motor de secuencias + validador sintáctico
 # ---------------------------------------------------------------------------
