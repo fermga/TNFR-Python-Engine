@@ -10,6 +10,7 @@ from .grammar import apply_glyph_with_grammar
 from .sense import GLYPHS_CANONICAL_SET
 from .types import Glyph
 from .collections_utils import ensure_collection
+from .glyph_history import ensure_history
 
 # Basic types
 Node = Any
@@ -219,7 +220,7 @@ def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> N
     curr_target: Optional[List[Node]] = None
 
     # Traza de programa en history
-    history = G.graph.setdefault("history", {})
+    history = ensure_history(G)
     maxlen = int(get_param(G, "PROGRAM_TRACE_MAXLEN"))
     trace = history.get("program_trace")
     if not isinstance(trace, deque) or trace.maxlen != maxlen:
