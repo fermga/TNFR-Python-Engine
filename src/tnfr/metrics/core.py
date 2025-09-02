@@ -114,7 +114,8 @@ def _update_epi_support(G, hist, t, thr):
 
 def _update_morph_metrics(G, hist, counts, t):
     """Registra métricas morfosintácticas basadas en conteos glíficos."""
-    get_count = lambda keys: sum(counts.get(k, 0) for k in keys)
+    def get_count(keys):
+        return sum(counts.get(k, 0) for k in keys)
     total = max(1, sum(counts.values()))
     id_val = get_count(GLYPH_GROUPS.get("ID", ())) / total
     cm_val = get_count(GLYPH_GROUPS.get("CM", ())) / total
