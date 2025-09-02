@@ -537,9 +537,12 @@ def aplicar_remesh_red(G) -> None:
     # Snapshot opcional de métricas recientes
     h = G.graph.get("history", {})
     if h:
-        if h.get("stable_frac"): meta["stable_frac_last"] = h["stable_frac"][-1]
-        if h.get("phase_sync"):  meta["phase_sync_last"]  = h["phase_sync"][-1]
-        if h.get("glyph_load_disr"): meta["glyph_disr_last"] = h["glyph_load_disr"][-1]
+        if h.get("stable_frac"):
+            meta["stable_frac_last"] = h["stable_frac"][-1]
+        if h.get("phase_sync"):
+            meta["phase_sync_last"] = h["phase_sync"][-1]
+        if h.get("glyph_load_disr"):
+            meta["glyph_disr_last"] = h["glyph_load_disr"][-1]
 
     G.graph["_REMESH_META"] = meta
     if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
