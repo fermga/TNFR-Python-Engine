@@ -5,13 +5,14 @@ import networkx as nx
 from tnfr.constants import attach_defaults, ALIAS_EPI
 from tnfr.helpers import get_attr
 from tnfr.metrics import _metrics_step, _update_latency_index, _update_epi_support
+from tnfr.metrics.core import LATENT_GLYPH
 
 
 def test_pp_val_zero_when_no_remesh(graph_canon):
     """PP metric should be 0.0 when no REMESH events occur."""
     G = graph_canon()
     # Nodo en estado SHA, pero sin eventos REMESH
-    G.add_node(0, EPI_kind="SHA")
+    G.add_node(0, EPI_kind=LATENT_GLYPH)
     attach_defaults(G)
 
     _metrics_step(G)
@@ -45,7 +46,7 @@ def test_save_by_node_flag_keeps_metrics_equal(graph_canon):
 
     for G in (G_true, G_false):
         G.add_node(0, EPI_kind="OZ")
-        G.add_node(1, EPI_kind="SHA")
+        G.add_node(1, EPI_kind=LATENT_GLYPH)
         attach_defaults(G)
         G.graph["_t"] = 0
         _metrics_step(G)

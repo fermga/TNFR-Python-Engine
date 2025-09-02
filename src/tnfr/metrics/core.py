@@ -13,6 +13,11 @@ from .coherence import register_coherence_callbacks
 from .diagnosis import register_diagnosis_callbacks
 
 
+LATENT_GLYPH = "SHA"
+TgCurr = "curr"
+TgRun = "run"
+
+
 # -------------
 # Utilidades internas
 # -------------
@@ -22,7 +27,7 @@ def _tg_state(nd: Dict[str, Any]) -> Dict[str, Any]:
     """Estructura interna por nodo para acumular tiempos de corrida por glifo.
     Campos: curr (glifo actual), run (tiempo acumulado en el glifo actual)
     """
-    return nd.setdefault("_Tg", {"curr": None, "run": 0.0})
+    return nd.setdefault("_Tg", {TgCurr: None, TgRun: 0.0})
 
 
 # -------------
@@ -44,9 +49,9 @@ def _update_tg(G, hist, dt, save_by_node: bool):
 
     last = last_glifo
     tg_state = _tg_state
-    latent = "SHA"
-    curr_key = "curr"
-    run_key = "run"
+    latent = LATENT_GLYPH
+    curr_key = TgCurr
+    run_key = TgRun
 
     for n, nd in G.nodes(data=True):
         g = last(nd)
