@@ -42,13 +42,8 @@ def recent_glyph(nd: Dict[str, Any], glyph: str, ventana: int) -> bool:
 
     hist = nd.get("glyph_history")
     if hist:
-        if hist and hist[-1] == last:
-            history_iter = islice(reversed(hist), 1, ventana)
-        else:
-            history_iter = islice(reversed(hist), ventana - 1)
-        for reciente in history_iter:
-            if gl == reciente:
-                return True
+        ventana -= 1
+        return any(gl == reciente for reciente in islice(reversed(hist), ventana))
     return False
 
 
