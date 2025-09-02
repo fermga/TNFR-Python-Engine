@@ -1,7 +1,7 @@
 """Reglas de gramática."""
 
 from __future__ import annotations
-from typing import Dict, Any, Set, Iterable, Optional
+from typing import Dict, Any, Set, Iterable, Optional, Callable
 
 from .constants import (
     DEFAULTS,
@@ -129,22 +129,20 @@ def _check_repeats(G, n, cand: str, cfg: Dict[str, Any]) -> str:
     return cand
 
 
-def _check_force_dnfr(G, n, cand: str, original: str, cfg: Dict[str, Any]) -> str:
-    """Si la repetición fue bloqueada pero |ΔNFR| es alta, restaura ``original``."""
+def _check_force(
+    G,
+    n,
+    cand: str,
+    original: str,
+    cfg: Dict[str, Any],
+    accessor: Callable[[Any, Dict[str, Any]], float],
+    cfg_key: str,
+) -> str:
+    """Si la repetición fue bloqueada pero ``accessor`` excede el umbral, restaura ``original``."""
     if cand == original:
         return cand
-    force_dn = float(cfg.get("force_dnfr", 0.60))
-    if _dnfr_norm(G, G.nodes[n]) >= force_dn:
-        return original
-    return cand
-
-
-def _check_force_accel(G, n, cand: str, original: str, cfg: Dict[str, Any]) -> str:
-    """Si la repetición fue bloqueada pero la aceleración es alta, restaura ``original``."""
-    if cand == original:
-        return cand
-    force_ac = float(cfg.get("force_accel", 0.60))
-    if _accel_norm(G, G.nodes[n]) >= force_ac:
+    force_th = float(cfg.get(cfg_key, 0.60))
+    if accessor(G, G.nodes[n]) >= force_th:
         return original
     return cand
 
@@ -216,8 +214,8 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
 
     original = cand
     cand = _check_repeats(G, n, cand, cfg_soft)
-    cand = _check_force_dnfr(G, n, cand, original, cfg_soft)
-    cand = _check_force_accel(G, n, cand, original, cfg_soft)
+    cand = _check_force(G, n, cand, original, cfg_soft, _dnfr_norm, "force_dnfr")
+    cand = _check_force(G, n, cand, original, cfg_soft, _accel_norm, "force_accel")
     cand = _check_oz_to_zhir(G, n, cand, cfg_canon)
     cand = _check_thol_closure(G, n, cand, cfg_canon, st)
     cand = _check_compatibility(G, n, cand)
