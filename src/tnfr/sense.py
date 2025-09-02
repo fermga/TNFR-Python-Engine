@@ -126,13 +126,13 @@ def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
     vector nulo.
     """
 
-    total = sum(float(dist.get(k, 0.0)) for k in SIGMA_ANGLE_KEYS)
+    total = math.fsum(float(dist.get(k, 0.0)) for k in SIGMA_ANGLE_KEYS)
     if total <= 0:
         return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0}
 
-    n_keys = len(SIGMA_ANGLE_KEYS)
+    factor = len(SIGMA_ANGLE_KEYS) / total
     z_iter = (
-        glyph_unit(k) * n_keys * float(dist.get(k, 0.0)) / total
+        glyph_unit(k) * float(dist.get(k, 0.0)) * factor
         for k in SIGMA_ANGLE_KEYS
     )
     vec, _ = _sigma_from_vectors(z_iter)
