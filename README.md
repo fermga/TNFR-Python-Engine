@@ -96,6 +96,12 @@ has fewer than **50 nodes**, in which case all nodes are included.
 when the limit is exceeded the least‑recently used entry is discarded. Increase it for
 large graphs or heavy jitter usage, or lower it to save memory.
 
+### Defaults injection performance
+
+`inject_defaults` evita copias profundas cuando los valores son inmutables (números,
+cadenas, tuplas). Solo se usa `copy.deepcopy` para estructuras mutables, reduciendo
+el costo de inicializar grafos con parámetros por defecto.
+
 ---
 
 ## Trained GPT
