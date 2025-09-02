@@ -437,102 +437,71 @@ def alias_set(
     return val
 
 
-@overload
-def get_attr(
-    d: Dict[str, Any],
-    aliases: Sequence[str],
-    default: float = 0.0,
+def _alias_get_set(
+    conv: Callable[[Any], T],
     *,
-    strict: bool = False,
-    log_level: int | None = None,
-) -> float:
-    ...
+    default: T,
+    desc: str,
+) -> tuple[Callable[..., Optional[T]], Callable[..., T]]:
+    """Crea funciones ``get``/``set`` para alias usando ``conv``.
 
-
-@overload
-def get_attr(
-    d: Dict[str, Any],
-    aliases: Sequence[str],
-    default: None,
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-) -> Optional[float]:
-    ...
-
-
-def get_attr(
-    d: Dict[str, Any],
-    aliases: Sequence[str],
-    default: Optional[float] = 0.0,
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-) -> Optional[float]:
-    """Obtiene un atributo numérico usando :func:`alias_get`.
-
-    ``aliases`` debe ser una secuencia de claves (idealmente una tupla).
+    Parameters
+    ----------
+    conv:
+        Función de conversión a aplicar al valor recuperado.
+    default:
+        Valor por defecto a utilizar cuando la clave no existe.
+    desc:
+        Descripción del tipo de dato para docstrings.
     """
-    return alias_get(
-        d, aliases, float, default=default, strict=strict, log_level=log_level
-    )
+
+    @overload
+    def _get(
+        d: Dict[str, Any],
+        aliases: Sequence[str],
+        default: T = ...,  # type: ignore[assignment]
+        *,
+        strict: bool = False,
+        log_level: int | None = None,
+    ) -> T:
+        ...
+
+    @overload
+    def _get(
+        d: Dict[str, Any],
+        aliases: Sequence[str],
+        default: None,
+        *,
+        strict: bool = False,
+        log_level: int | None = None,
+    ) -> Optional[T]:
+        ...
+
+    def _get(
+        d: Dict[str, Any],
+        aliases: Sequence[str],
+        default: Optional[T] = default,
+        *,
+        strict: bool = False,
+        log_level: int | None = None,
+    ) -> Optional[T]:
+        """Obtiene un atributo usando :func:`alias_get`."""
+        return alias_get(
+            d, aliases, conv, default=default, strict=strict, log_level=log_level
+        )
+
+    def _set(d: Dict[str, Any], aliases: Sequence[str], value: T) -> T:
+        """Establece un atributo usando :func:`alias_set`."""
+        return alias_set(d, aliases, conv, value)
+
+    _get.__doc__ = f"Obtiene un atributo {desc} usando :func:`alias_get`."
+    _set.__doc__ = f"Establece un atributo {desc} usando :func:`alias_set`."
+
+    return _get, _set
 
 
-def set_attr(d, aliases: Sequence[str], value: float) -> float:
-    """Establece un atributo numérico usando :func:`alias_set`.
-
-    ``aliases`` debe ser una secuencia de claves (idealmente una tupla).
-    """
-    return alias_set(d, aliases, float, value)
-
-
-@overload
-def get_attr_str(
-    d: Dict[str, Any],
-    aliases: Sequence[str],
-    default: str = "",
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-) -> str:
-    ...
-
-
-@overload
-def get_attr_str(
-    d: Dict[str, Any],
-    aliases: Sequence[str],
-    default: None,
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-) -> Optional[str]:
-    ...
-
-
-def get_attr_str(
-    d: Dict[str, Any],
-    aliases: Sequence[str],
-    default: Optional[str] = "",
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-) -> Optional[str]:
-    """Obtiene un atributo de texto usando :func:`alias_get`.
-
-    ``aliases`` debe ser una secuencia de claves (idealmente una tupla).
-    """
-    return alias_get(
-        d, aliases, str, default=default, strict=strict, log_level=log_level
-    )
-
-
-def set_attr_str(d, aliases: Sequence[str], value: str) -> str:
-    """Establece un atributo de texto usando :func:`alias_set`.
-
-    ``aliases`` debe ser una secuencia de claves (idealmente una tupla).
-    """
-    return alias_set(d, aliases, str, value)
+get_attr, set_attr = _alias_get_set(float, default=0.0, desc="numérico")
+get_attr_str, set_attr_str = _alias_get_set(str, default="", desc="de texto")
 
 # Retrocompatibilidad con nombres anteriores
 _get_attr = get_attr
