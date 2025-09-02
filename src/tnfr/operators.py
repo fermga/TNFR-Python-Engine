@@ -269,21 +269,29 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Acoplamiento
         else:
             iter_nodes = node.all_nodes()
 
+        limit = int(node.graph.get("UM_CANDIDATE_COUNT", 0))
+        mode = str(node.graph.get("UM_CANDIDATE_MODE", "sample")).lower()
+
         candidates = []
         for j in iter_nodes:
             same = (j is node) or (getattr(node, "n", None) == getattr(j, "n", None))
             if same or node.has_edge(j):
                 continue
             candidates.append(j)
-        limit = int(node.graph.get("UM_CANDIDATE_COUNT", 0))
-        mode = str(node.graph.get("UM_CANDIDATE_MODE", "sample")).lower()
+            if mode == "sample" and limit > 0 and len(candidates) >= limit:
+                break
+
         if limit > 0 and len(candidates) > limit:
             if mode == "proximity":
-                candidates.sort(key=lambda j: abs(angle_diff(j.theta, th)))
-                candidates = candidates[:limit]
+                candidates = heapq.nsmallest(
+                    limit, candidates, key=lambda j: abs(angle_diff(j.theta, th))
+                )
             else:
                 rng = _jitter_base(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
                 candidates = rng.sample(candidates, limit)
+        elif mode == "sample" and limit > 0:
+            rng = _jitter_base(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
+            rng.shuffle(candidates)
 
         for j in candidates:
             th_j = j.theta
