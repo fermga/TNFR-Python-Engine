@@ -38,8 +38,7 @@ def kuramoto_R_psi(G) -> Tuple[float, float]:
     """Devuelve (R, ψ) del orden de Kuramoto usando θ de todos los nodos."""
     acc = 0 + 0j
     n = 0
-    for node in G.nodes():
-        nd = G.nodes[node]
+    for _, nd in G.nodes(data=True):
         th = get_attr(nd, ALIAS_THETA, 0.0)
         acc += cmath.exp(1j * th)
         n += 1
