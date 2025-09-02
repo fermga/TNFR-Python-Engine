@@ -1,5 +1,5 @@
 """Pruebas de trace."""
-from tnfr.trace import register_trace
+from tnfr.trace import register_trace, _callback_names
 from tnfr.callback_utils import register_callback, invoke_callbacks
 
 
@@ -47,3 +47,13 @@ def test_trace_sigma_no_glyphs(graph_canon):
         "mag": 0.0,
         "angle": 0.0,
     }
+
+
+def test_callback_names_empty_tuple():
+    """Los tuples vacíos son ignorados y no causan errores."""
+
+    def foo():
+        pass
+
+    names = _callback_names([(), (foo,)])
+    assert names == ["foo"]

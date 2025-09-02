@@ -62,9 +62,15 @@ def _callback_names(callbacks: list) -> list[str]:
     names: list[str] = []
     for item in callbacks:
         if isinstance(item, tuple):
-            name = item[0]
-            if not isinstance(name, str):
-                func = item[1] if len(item) > 1 else None
+            if not item:
+                # skip empty tuples
+                continue
+            first = item[0]
+            if isinstance(first, str):
+                name = first
+            else:
+                # no explicit name, fall back to the function's name
+                func = first if callable(first) else (item[1] if len(item) > 1 else None)
                 name = getattr(func, "__name__", "fn")
         else:
             name = getattr(item, "__name__", "fn")
