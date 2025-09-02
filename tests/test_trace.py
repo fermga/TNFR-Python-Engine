@@ -1,7 +1,13 @@
 """Pruebas de trace."""
 import pytest
 
-from tnfr.trace import register_trace, _callback_names, gamma_field, grammar_field
+from tnfr.trace import (
+    register_trace,
+    _callback_names,
+    gamma_field,
+    grammar_field,
+    CallbackSpec,
+)
 from tnfr.callback_utils import register_callback, invoke_callbacks
 
 
@@ -51,14 +57,14 @@ def test_trace_sigma_no_glyphs(graph_canon):
     }
 
 
-def test_callback_names_empty_tuple():
-    """Los tuples vacíos son ignorados y no causan errores."""
+def test_callback_names_spec():
+    """CallbackSpec entries are handled correctly."""
 
     def foo():
         pass
 
-    names = _callback_names([(), (foo,)])
-    assert names == ["foo"]
+    names = _callback_names([CallbackSpec("bar", foo), CallbackSpec(None, foo)])
+    assert names == ["bar", "foo"]
 
 
 def test_gamma_field_non_mapping_warns(graph_canon):

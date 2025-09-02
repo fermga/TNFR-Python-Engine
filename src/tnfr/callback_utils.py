@@ -1,7 +1,7 @@
 """Callback registration and invocation helpers."""
 from __future__ import annotations
 
-from typing import Any, Callable, DefaultDict
+from typing import Any, Callable, DefaultDict, TYPE_CHECKING
 from enum import Enum
 from collections import defaultdict
 import logging
@@ -27,8 +27,10 @@ _CALLBACK_EVENTS: tuple[str, ...] = tuple(e.value for e in CallbackEvent)
 
 
 Callback = Callable[[nx.Graph, dict[str, Any]], None]
-CallbackEntry = tuple[str | None, Callback]
-CallbackRegistry = DefaultDict[str, list[CallbackEntry]]
+if TYPE_CHECKING:  # pragma: no cover
+    from .trace import CallbackSpec
+
+CallbackRegistry = DefaultDict[str, list["CallbackSpec"]]
 
 
 def _ensure_callbacks(G: nx.Graph) -> CallbackRegistry:
@@ -85,15 +87,41 @@ def register_callback(
         raise TypeError("func debe ser callable")
     cbs = _ensure_callbacks(G)
 
-    cb_name = name or getattr(func, "__name__", None)
-    new_cb = (cb_name, func)
+    from .trace import CallbackSpec
 
-    for i, (existing_name, existing_fn) in enumerate(cbs[event]):
-        if existing_fn is func or (cb_name is not None and existing_name == cb_name):
-            cbs[event][i] = new_cb
+    cb_name = name or getattr(func, "__name__", None)
+    new_cb = CallbackSpec(cb_name, func)
+
+    existing_list = cbs[event]
+    for i, existing in enumerate(existing_list):
+        if not isinstance(existing, CallbackSpec):
+            # Normalize legacy tuple/callable entries
+            if isinstance(existing, tuple):
+                if not existing:
+                    continue
+                first = existing[0]
+                if isinstance(first, str):
+                    nm = first
+                    fn = existing[1] if len(existing) > 1 else None
+                else:
+                    fn = first if callable(first) else (
+                        existing[1] if len(existing) > 1 else None
+                    )
+                    nm = getattr(fn, "__name__", None)
+            else:
+                fn = existing
+                nm = getattr(existing, "__name__", None)
+            if fn is None:
+                continue
+            existing = CallbackSpec(nm, fn)
+            existing_list[i] = existing
+        if existing.func is func or (
+            cb_name is not None and existing.name == cb_name
+        ):
+            existing_list[i] = new_cb
             break
     else:
-        cbs[event].append(new_cb)
+        existing_list.append(new_cb)
 
     return func
 
@@ -105,7 +133,8 @@ def invoke_callbacks(
     cbs = _ensure_callbacks(G).get(event, [])
     strict = bool(G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"]))
     ctx = ctx or {}
-    for name, fn in list(cbs):
+    for spec in list(cbs):
+        name, fn = spec.name, spec.func
         try:
             fn(G, ctx)
         except (KeyError, AttributeError, TypeError) as e:
