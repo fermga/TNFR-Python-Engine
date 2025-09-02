@@ -7,8 +7,7 @@ from tnfr.sense import (
     sigma_vector_node,
     sigma_vector_from_graph,
     _node_weight,
-    _sigma_from_acc,
-    glyph_unit,
+    _sigma_from_pairs,
 )
 from tnfr.types import Glyph
 
@@ -42,17 +41,15 @@ def test_sigma_vector_from_graph_paths():
 
 def _sigma_vector_from_graph_naive(G, weight_mode: str = "Si"):
     """Referencia que recalcula ``glyph_unit(g) * w`` en cada paso."""
-    acc = complex(0.0, 0.0)
-    cnt = 0
+    pairs = []
     for _, nd in G.nodes(data=True):
         nw = _node_weight(nd, weight_mode)
         if not nw:
             continue
         g, w, _ = nw
-        acc += glyph_unit(g) * w
-        cnt += 1
-    vec = _sigma_from_acc(acc, cnt)
-    vec["n"] = cnt
+        pairs.append((g, w))
+    vec, n = _sigma_from_pairs(pairs)
+    vec["n"] = n
     return vec
 
 
