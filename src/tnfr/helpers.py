@@ -17,11 +17,6 @@ import json
 from json import JSONDecodeError
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
-
-PI = math.pi
-TWO_PI = 2 * PI
-
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
     from yaml import YAMLError  # type: ignore
@@ -37,9 +32,7 @@ from .constants import (
     ALIAS_DNFR,
     ALIAS_dEPI,
     ALIAS_SI,
-    ALIAS_EPI_KIND,
     ALIAS_D2EPI,
-    get_param,
 )
 from .collections_utils import (
     MAX_MATERIALIZE_DEFAULT,
@@ -49,6 +42,11 @@ from .collections_utils import (
     mix_groups,
 )
 from .value_utils import _convert_value
+
+logger = logging.getLogger(__name__)
+
+PI = math.pi
+TWO_PI = 2 * PI
 
 T = TypeVar("T")
 
@@ -483,10 +481,9 @@ def fase_media(obj, n=None) -> float:
 # -------------------------
 
 # Importaciones diferidas para evitar ciclos al definir ``get_attr_str`` arriba
-from .glyph_history import (
+from .glyph_history import (  # noqa: E402
     push_glyph,
     recent_glyph,
-    HistoryDict,
     ensure_history,
     last_glyph,
     count_glyphs,
