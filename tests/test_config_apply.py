@@ -6,7 +6,7 @@ from tnfr.config import load_config, apply_config
 
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
-except Exception:  # pragma: no cover - skip if not installed
+except ImportError:  # pragma: no cover - skip if not installed
     yaml = None
 
 

@@ -165,7 +165,7 @@ def random_jitter(
     if cache is None:
         try:
             cache_size = get_param(node.G, "JITTER_CACHE_SIZE")  # type: ignore[attr-defined]
-        except Exception:
+        except (AttributeError, KeyError):
             cache_size = DEFAULTS["JITTER_CACHE_SIZE"]
         rng = _get_rng(scope, base_seed, seed_key, cache_size)
     else:
