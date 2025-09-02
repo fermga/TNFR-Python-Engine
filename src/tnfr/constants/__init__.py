@@ -107,9 +107,13 @@ def get_param(G, key: str):
     return DEFAULTS[key]
 
 
+# Claves canónicas con nombres ASCII
+VF_KEY = "νf"
+THETA_KEY = "θ"
+
 # Alias exportados por conveniencia (evita imports circulares)
-ALIAS_VF = ("νf", "nu_f", "nu-f", "nu", "freq", "frequency")
-ALIAS_THETA = ("θ", "theta", "fase", "phi", "phase")
+ALIAS_VF = (VF_KEY, "nu_f", "nu-f", "nu", "freq", "frequency")
+ALIAS_THETA = (THETA_KEY, "theta", "fase", "phi", "phase")
 ALIAS_DNFR = ("ΔNFR", "delta_nfr", "dnfr")
 ALIAS_EPI = ("EPI", "psi", "PSI", "value")
 ALIAS_EPI_KIND = ("EPI_kind", "epi_kind", "source_glifo")
@@ -137,6 +141,8 @@ __all__ = [
     "inject_defaults",
     "merge_overrides",
     "get_param",
+    "VF_KEY",
+    "THETA_KEY",
     "ALIAS_VF",
     "ALIAS_THETA",
     "ALIAS_DNFR",

@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, Any
 
+from .constants import VF_KEY, THETA_KEY
+
 
 @dataclass
 class NodeState:
@@ -15,7 +17,7 @@ class NodeState:
     extra: Dict[str, Any] = field(default_factory=dict)
 
     def to_attrs(self) -> Dict[str, Any]:
-        d = {"EPI": self.EPI, "νf": self.vf, "θ": self.theta, "Si": self.Si, "EPI_kind": self.epi_kind}
+        d = {"EPI": self.EPI, VF_KEY: self.vf, THETA_KEY: self.theta, "Si": self.Si, "EPI_kind": self.epi_kind}
         d.update(self.extra)
         return d
 

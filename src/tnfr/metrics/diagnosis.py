@@ -3,7 +3,15 @@ from __future__ import annotations
 
 from statistics import fmean
 
-from ..constants import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_SI, DIAGNOSIS, COHERENCE
+from ..constants import (
+    ALIAS_EPI,
+    ALIAS_VF,
+    ALIAS_DNFR,
+    ALIAS_SI,
+    DIAGNOSIS,
+    COHERENCE,
+    VF_KEY,
+)
 from ..callback_utils import register_callback
 from ..glyph_history import ensure_history
 from ..helpers import (
@@ -110,7 +118,7 @@ def _diagnosis_step(G, ctx=None):
             "node": n,
             "Si": Si,
             "EPI": EPI,
-            "νf": vf,
+            VF_KEY: vf,
             "dnfr_norm": dnfr_n,
             "W_i": (Wi_last[i] if (Wi_last and i < len(Wi_last)) else None),
             "R_local": Rloc,
