@@ -28,8 +28,8 @@ def _validate_sigma(G) -> None:
 
 
 def _validate_glifos(G) -> None:
-    for n in G.nodes():
-        g = last_glifo(G.nodes[n])
+    for n, data in G.nodes(data=True):
+        g = last_glifo(data)
         if g and g not in GLYPHS_CANONICAL_SET:
             raise ValueError(f"Glifo inválido {g} en nodo {n}")
 
