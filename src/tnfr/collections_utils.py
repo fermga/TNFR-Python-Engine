@@ -47,9 +47,10 @@ def ensure_collection(
         raise ValueError("'max_materialize' must be non-negative")
     try:
         limit = MAX_MATERIALIZE_DEFAULT if max_materialize is None else max_materialize
-        it = iter(it)
-        data = tuple(islice(it, limit))
-        extra = next(it, None)
+        # Materialize at most ``limit`` items from the iterable
+        iterator = iter(it)
+        data = tuple(islice(iterator, limit))
+        extra = next(iterator, None)
         if extra is not None:
             raise ValueError(f"Iterable materialization exceeded {limit} items")
         return data
