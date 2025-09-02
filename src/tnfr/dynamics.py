@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 import math
 import random
+import hashlib
 from collections import deque, OrderedDict
 from functools import lru_cache
 from typing import Dict, Any, Literal
@@ -105,12 +106,16 @@ def _cached_nodes_and_A(
     se reutiliza mientras la estructura del grafo permanezca igual. ``cache_size``
     limita el número de entradas por grafo (``None`` o valores <= 0 implican sin
     límite). Cuando se supera el tamaño, se elimina explícitamente la entrada más
-    antigua."""
+    antigua. El conjunto de nodos se firma de forma determinística mediante
+    ``hashlib.sha1`` sobre los identificadores ordenados, garantizando que las
+    claves de caché sean estables entre ejecuciones."""
 
     cache: OrderedDict = G.graph.setdefault("_dnfr_cache", OrderedDict())
-    # El checksum depende del conjunto de nodos, ignorando el orden.
+    # El checksum depende del conjunto de nodos, ignorando el orden y es estable.
     nodes_list = list(G.nodes())
-    checksum = hash(frozenset(nodes_list))
+    sorted_nodes = sorted(nodes_list)
+    nodes_bytes = ",".join(map(str, sorted_nodes)).encode()
+    checksum = hashlib.sha1(nodes_bytes).hexdigest()
 
     last_checksum = G.graph.get("_dnfr_nodes_checksum")
     if last_checksum != checksum:
