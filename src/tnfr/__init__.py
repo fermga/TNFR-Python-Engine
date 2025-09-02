@@ -1,11 +1,21 @@
 """API pública de TNFR."""
 from __future__ import annotations
 try:  # pragma: no cover
-    from importlib.metadata import version
+    from importlib.metadata import version, PackageNotFoundError
 except ImportError:  # pragma: no cover
-    from importlib_metadata import version
+    from importlib_metadata import version, PackageNotFoundError
 
-__version__ = version("tnfr")
+try:
+    __version__ = version("tnfr")
+except PackageNotFoundError:  # pragma: no cover
+    try:
+        import tomllib
+        from pathlib import Path
+
+        with (Path(__file__).resolve().parents[2] / "pyproject.toml").open("rb") as f:
+            __version__ = tomllib.load(f)["project"]["version"]
+    except Exception:  # pragma: no cover
+        __version__ = "0+unknown"
 
 # Re-exports de la API pública
 from .dynamics import step, run, set_delta_nfr_hook, validate_canon
