@@ -8,6 +8,7 @@ from tnfr.selector import (
     _apply_selector_hysteresis,
 )
 from tnfr.constants import DEFAULTS, ALIAS_DNFR, ALIAS_D2EPI
+from tnfr.constants.core import SELECTOR_THRESHOLD_DEFAULTS
 from tnfr.helpers import clamp01
 
 
@@ -21,7 +22,9 @@ def _selector_thresholds_original(G: nx.Graph) -> dict:
         float(
             thr_sel.get(
                 "si_hi",
-                thr_def.get("hi", glyph_defaults.get("hi", 0.66)),
+                thr_def.get(
+                    "hi", glyph_defaults.get("hi", SELECTOR_THRESHOLD_DEFAULTS["si_hi"])
+                ),
             )
         )
     )
@@ -29,35 +32,41 @@ def _selector_thresholds_original(G: nx.Graph) -> dict:
         float(
             thr_sel.get(
                 "si_lo",
-                thr_def.get("lo", glyph_defaults.get("lo", 0.33)),
+                thr_def.get(
+                    "lo", glyph_defaults.get("lo", SELECTOR_THRESHOLD_DEFAULTS["si_lo"])
+                ),
             )
         )
     )
     dnfr_hi = clamp01(
         float(
             thr_sel.get(
-                "dnfr_hi", sel_defaults.get("dnfr_hi", 0.5)
+                "dnfr_hi",
+                sel_defaults.get("dnfr_hi", SELECTOR_THRESHOLD_DEFAULTS["dnfr_hi"]),
             )
         )
     )
     dnfr_lo = clamp01(
         float(
             thr_sel.get(
-                "dnfr_lo", sel_defaults.get("dnfr_lo", 0.1)
+                "dnfr_lo",
+                sel_defaults.get("dnfr_lo", SELECTOR_THRESHOLD_DEFAULTS["dnfr_lo"]),
             )
         )
     )
     acc_hi = clamp01(
         float(
             thr_sel.get(
-                "accel_hi", sel_defaults.get("accel_hi", 0.5)
+                "accel_hi",
+                sel_defaults.get("accel_hi", SELECTOR_THRESHOLD_DEFAULTS["accel_hi"]),
             )
         )
     )
     acc_lo = clamp01(
         float(
             thr_sel.get(
-                "accel_lo", sel_defaults.get("accel_lo", 0.1)
+                "accel_lo",
+                sel_defaults.get("accel_lo", SELECTOR_THRESHOLD_DEFAULTS["accel_lo"]),
             )
         )
     )

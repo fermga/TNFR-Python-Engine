@@ -6,6 +6,16 @@ from typing import Dict, Any, Mapping
 from types import MappingProxyType
 
 
+SELECTOR_THRESHOLD_DEFAULTS = {
+    "si_hi": 0.66,
+    "si_lo": 0.33,
+    "dnfr_hi": 0.50,
+    "dnfr_lo": 0.10,
+    "accel_hi": 0.50,
+    "accel_lo": 0.10,
+}
+
+
 @dataclass(frozen=True)
 class CoreDefaults:
     DT: float = 1.0
@@ -89,14 +99,7 @@ class CoreDefaults:
         default_factory=lambda: {"w_si": 0.5, "w_dnfr": 0.3, "w_accel": 0.2}
     )
     SELECTOR_THRESHOLDS: Dict[str, float] = field(
-        default_factory=lambda: {
-            "si_hi": 0.66,
-            "si_lo": 0.33,
-            "dnfr_hi": 0.50,
-            "dnfr_lo": 0.10,
-            "accel_hi": 0.50,
-            "accel_lo": 0.10,
-        }
+        default_factory=lambda: dict(SELECTOR_THRESHOLD_DEFAULTS)
     )
     GAMMA: Dict[str, Any] = field(
         default_factory=lambda: {"type": "none", "beta": 0.0, "R0": 0.0}

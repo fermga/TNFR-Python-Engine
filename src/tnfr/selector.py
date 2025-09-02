@@ -7,6 +7,7 @@ from collections.abc import Sequence
 import networkx as nx
 
 from .constants import DEFAULTS
+from .constants.core import SELECTOR_THRESHOLD_DEFAULTS
 from .helpers import clamp01, compute_dnfr_accel_max
 from .collections_utils import normalize_weights
 
@@ -47,12 +48,40 @@ def _selector_thresholds(G: nx.Graph) -> dict:
         return clamp01(float(val))
 
     specs = [
-        ("si_hi", thr_def.get("hi", glyph_defaults.get("hi", 0.66)), "hi"),
-        ("si_lo", thr_def.get("lo", glyph_defaults.get("lo", 0.33)), "lo"),
-        ("dnfr_hi", sel_defaults.get("dnfr_hi", 0.5), None),
-        ("dnfr_lo", sel_defaults.get("dnfr_lo", 0.1), None),
-        ("accel_hi", sel_defaults.get("accel_hi", 0.5), None),
-        ("accel_lo", sel_defaults.get("accel_lo", 0.1), None),
+        (
+            "si_hi",
+            thr_def.get(
+                "hi", glyph_defaults.get("hi", SELECTOR_THRESHOLD_DEFAULTS["si_hi"])
+            ),
+            "hi",
+        ),
+        (
+            "si_lo",
+            thr_def.get(
+                "lo", glyph_defaults.get("lo", SELECTOR_THRESHOLD_DEFAULTS["si_lo"])
+            ),
+            "lo",
+        ),
+        (
+            "dnfr_hi",
+            sel_defaults.get("dnfr_hi", SELECTOR_THRESHOLD_DEFAULTS["dnfr_hi"]),
+            None,
+        ),
+        (
+            "dnfr_lo",
+            sel_defaults.get("dnfr_lo", SELECTOR_THRESHOLD_DEFAULTS["dnfr_lo"]),
+            None,
+        ),
+        (
+            "accel_hi",
+            sel_defaults.get("accel_hi", SELECTOR_THRESHOLD_DEFAULTS["accel_hi"]),
+            None,
+        ),
+        (
+            "accel_lo",
+            sel_defaults.get("accel_lo", SELECTOR_THRESHOLD_DEFAULTS["accel_lo"]),
+            None,
+        ),
     ]
 
     return {key: _get_threshold(key, default, legacy) for key, default, legacy in specs}
