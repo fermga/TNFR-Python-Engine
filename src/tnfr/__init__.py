@@ -14,7 +14,7 @@ except PackageNotFoundError:  # pragma: no cover
 
         with (Path(__file__).resolve().parents[2] / "pyproject.toml").open("rb") as f:
             __version__ = tomllib.load(f)["project"]["version"]
-    except Exception:  # pragma: no cover
+    except (OSError, KeyError, ValueError):  # pragma: no cover
         __version__ = "0+unknown"
 
 # Public API re-exports

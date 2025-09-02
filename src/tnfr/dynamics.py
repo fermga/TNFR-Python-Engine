@@ -60,7 +60,7 @@ def _numpy_with_exc() -> tuple[Any | None, BaseException | None]:
 
     try:  # Optional dependency
         import numpy as _np  # type: ignore
-    except Exception as exc:  # pragma: no cover - handled gracefully
+    except ImportError as exc:  # pragma: no cover - handled gracefully
         return None, exc
     return _np, None
 
