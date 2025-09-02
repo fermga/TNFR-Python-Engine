@@ -11,11 +11,15 @@ from .core import glyphogram_series
 
 
 def _write_csv(path, headers, rows):
-    with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(headers)
-        for row in rows:
-            writer.writerow(row)
+    ensure_parent(path)
+    try:
+        with open(path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(headers)
+            for row in rows:
+                writer.writerow(row)
+    except OSError as e:
+        raise OSError(f"Failed to write CSV file {path}: {e}") from e
 
 
 def _iter_glif_rows(glyph):
@@ -94,5 +98,10 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
             _write_csv(base_path + suffix, headers, rows)
     else:
         data = {"glyphogram": glyph, "sigma": sigma, "morph": morph, "epi_support": epi_supp}
-        with open(base_path + ".json", "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+        json_path = base_path + ".json"
+        ensure_parent(json_path)
+        try:
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+        except OSError as e:
+            raise OSError(f"Failed to write JSON file {json_path}: {e}") from e
