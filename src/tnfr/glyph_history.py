@@ -30,15 +30,26 @@ def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
 
 def recent_glyph(nd: Dict[str, Any], glyph: str, ventana: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``ventana`` emissions."""
-    hist = nd.get("glyph_history")
     gl = str(glyph)
     if ventana < 0:
         raise ValueError("ventana debe ser >= 0")
-    if hist and ventana > 0:
-        for reciente in islice(reversed(hist), ventana):
+
+    last = last_glyph(nd)
+    if ventana <= 1:
+        return last == gl
+    if last == gl:
+        return True
+
+    hist = nd.get("glyph_history")
+    if hist:
+        if hist and hist[-1] == last:
+            history_iter = islice(reversed(hist), 1, ventana)
+        else:
+            history_iter = islice(reversed(hist), ventana - 1)
+        for reciente in history_iter:
             if gl == reciente:
                 return True
-    return get_attr_str(nd, ALIAS_EPI_KIND, "") == gl
+    return False
 
 
 class HistoryDict(dict):
