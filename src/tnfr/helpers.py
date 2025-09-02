@@ -15,7 +15,7 @@ from typing import (
 from collections.abc import Collection
 import logging
 import math
-from collections import deque, Counter
+from collections import deque, Counter, defaultdict
 from itertools import islice
 import heapq
 from statistics import fmean, StatisticsError
@@ -877,13 +877,11 @@ def mix_groups(
 # -------------------------
 
 def _ensure_callbacks(G):
-    """Garantiza la estructura de callbacks en G.graph."""
-    cbs = G.graph.setdefault(
-        "callbacks", {k: [] for k in _CALLBACK_EVENTS}
-    )
-    # normaliza claves por si vienen incompletas
-    for k in _CALLBACK_EVENTS:
-        cbs.setdefault(k, [])
+    """Garantiza la estructura de callbacks en ``G.graph`` usando ``defaultdict``."""
+    cbs = G.graph.get("callbacks")
+    if not isinstance(cbs, defaultdict):
+        cbs = defaultdict(list, cbs or {})
+        G.graph["callbacks"] = cbs
     return cbs
 
 def register_callback(
