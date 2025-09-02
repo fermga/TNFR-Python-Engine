@@ -6,6 +6,7 @@ import math
 import random
 import hashlib
 import heapq
+from functools import wraps
 import weakref
 import networkx as nx
 from networkx.algorithms import community as nx_comm
@@ -389,6 +390,7 @@ _NAME_TO_OP = {
 
 
 def _wrap(fn):
+    @wraps(fn)
     def inner(obj, n=None):
         NodoNX = _get_NodoNX()
         node = obj if n is None else NodoNX(obj, n)
