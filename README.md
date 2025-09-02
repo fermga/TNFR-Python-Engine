@@ -10,7 +10,7 @@ Engine for **modeling, simulation and measurement** of multiscale structural coh
 
 In practical terms, `tnfr` lets you:
 
-* Model **Resonant Fractal Nodes (NFR)** with parameters for **frequency** (νf), **phase** (θ), and **form** (EPI).
+* Model **Resonant Fractal Nodes (NFR)** with parameters for **frequency** (νf), **phase** (θ), and **form** (EPI). Use the ASCII constants `VF_KEY` and `THETA_KEY` to reference these attributes programmatically; the Unicode names remain available as aliases.
 * Apply **structural operators** to start, stabilize, propagate, or reconfigure coherence.
 * **Simulate** nodal dynamics with discrete/continuous integrators.
 * **Measure** global coherence C(t), nodal gradient ΔNFR, and the **Sense Index** (Si).

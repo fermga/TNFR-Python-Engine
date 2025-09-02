@@ -3,7 +3,7 @@ from __future__ import annotations
 import random
 import networkx as nx
 
-from .constants import DEFAULTS, INIT_DEFAULTS
+from .constants import DEFAULTS, INIT_DEFAULTS, VF_KEY, THETA_KEY
 
 
 def _init_phase(
@@ -17,13 +17,13 @@ def _init_phase(
 ) -> None:
     """Inicializa ``θ`` en ``nd``."""
     if random_phase:
-        if override or "θ" not in nd:
-            nd["θ"] = rng.uniform(th_min, th_max)
+        if override or THETA_KEY not in nd:
+            nd[THETA_KEY] = rng.uniform(th_min, th_max)
     else:
         if override:
-            nd["θ"] = 0.0
+            nd[THETA_KEY] = 0.0
         else:
-            nd.setdefault("θ", 0.0)
+            nd.setdefault(THETA_KEY, 0.0)
 
 
 def _init_vf(
@@ -55,11 +55,11 @@ def _init_vf(
                 vf_max_lim,
             )
     else:
-        vf = float(nd.get("νf", 0.5))
+        vf = float(nd.get(VF_KEY, 0.5))
     if clamp_to_limits:
         vf = min(max(vf, vf_min_lim), vf_max_lim)
-    if override or "νf" not in nd:
-        nd["νf"] = float(vf)
+    if override or VF_KEY not in nd:
+        nd[VF_KEY] = float(vf)
 
 
 def _init_si_epi(
