@@ -209,10 +209,18 @@ def _mix_epi_with_neighbors(
         default_glyph.value if isinstance(default_glyph, Glyph) else str(default_glyph)
     )
     epi = node.EPI
-    neigh = list(node.neighbors())
-    if not neigh:
+    neigh_ids = list(node.neighbors())
+    if not neigh_ids:
         node.epi_kind = default_kind
         return
+    if hasattr(node, "G"):
+        NodoNX = _get_NodoNX()
+        neigh = [
+            v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)  # type: ignore[attr-defined]
+            for v in neigh_ids
+        ]
+    else:
+        neigh = neigh_ids  # NodoTNFR already
     epi_bar = list_mean(v.EPI for v in neigh)
     node.EPI = (1 - mix) * epi + mix * epi_bar
     node.epi_kind = _select_dominant_glifo(node, neigh) or default_kind
@@ -283,7 +291,7 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Acoplamiento
         sample_ids = node.graph.get("_node_sample")
         if sample_ids is not None and hasattr(node, "G"):
             NodoNX = _get_NodoNX()
-            iter_nodes = (NodoNX(node.G, j) for j in sample_ids)
+            iter_nodes = (NodoNX.from_graph(node.G, j) for j in sample_ids)
         else:
             iter_nodes = node.all_nodes()
 
