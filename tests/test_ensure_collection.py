@@ -16,6 +16,15 @@ def test_wraps_bytearray():
     assert ensure_collection(arr) == (arr,)
 
 
+def test_iterable_not_iterator_materialized():
+    class CustomIterable:
+        def __iter__(self):
+            return (i for i in range(3))
+
+    it = CustomIterable()
+    assert ensure_collection(it, max_materialize=3) == (0, 1, 2)
+
+
 def test_max_materialize_limit():
     gen = (i for i in range(5))
     with pytest.raises(ValueError):
