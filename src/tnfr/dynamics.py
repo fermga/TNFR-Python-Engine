@@ -92,7 +92,7 @@ def _cached_nodes_and_A(
     cache: OrderedDict = G.graph.setdefault("_dnfr_cache", OrderedDict())
     # El checksum depende del conjunto de nodos, ignorando el orden.
     nodes_list = list(G.nodes())
-    checksum = hash(tuple(sorted(hash(n) for n in nodes_list)))
+    checksum = hash(frozenset(nodes_list))
 
     last_checksum = G.graph.get("_dnfr_nodes_checksum")
     if last_checksum != checksum:
