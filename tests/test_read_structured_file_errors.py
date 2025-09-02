@@ -3,7 +3,7 @@ import pytest
 from pathlib import Path
 import tnfr.helpers as helpers
 
-from tnfr.io_utils import read_structured_file
+from tnfr.helpers import read_structured_file
 
 
 def test_read_structured_file_missing_file(tmp_path: Path):
