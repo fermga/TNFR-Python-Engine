@@ -34,6 +34,24 @@ from . import __version__
 
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    "main",
+    "add_common_args",
+    "add_grammar_args",
+    "add_grammar_selector_args",
+    "add_history_export_args",
+    "add_canon_toggle",
+    "build_basic_graph",
+    "apply_cli_config",
+    "register_callbacks_and_observer",
+    "run_program",
+    "resolve_program",
+    "_build_graph_from_args",
+    "_load_sequence",
+    "_parse_tokens",
+    "TOKEN_MAP",
+]
+
 
 def _flatten_tokens(obj: Any):
     """Generador recursivo que rinde cada token en orden."""
