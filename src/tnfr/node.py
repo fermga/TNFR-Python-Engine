@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Deque, Dict, Iterable, Optional, Protocol
 from collections import deque
+from collections.abc import Hashable
 
 from .constants import (
     DEFAULTS,
@@ -126,7 +127,7 @@ class NodoProtocol(Protocol):
     d2EPI: float
     graph: Dict[str, object]
 
-    def neighbors(self) -> Iterable["NodoProtocol"]:
+    def neighbors(self) -> Iterable[NodoProtocol | Hashable]:
         ...
 
     def push_glifo(self, glifo: str, window: int) -> None:
@@ -210,6 +211,7 @@ class NodoNX(NodoProtocol):
         self.G = G
         self.n = n
         self.graph = G.graph
+        G.graph.setdefault("_node_cache", {})[n] = self
 
     EPI = _nx_attr_property(ALIAS_EPI)
     vf = _nx_attr_property(ALIAS_VF, setter=set_vf, use_graph_setter=True)
@@ -226,8 +228,21 @@ class NodoNX(NodoProtocol):
     dnfr = _nx_attr_property(ALIAS_DNFR, setter=set_dnfr, use_graph_setter=True)
     d2EPI = _nx_attr_property(ALIAS_D2EPI)
 
-    def neighbors(self) -> Iterable[NodoProtocol]:
-        return (NodoNX(self.G, v) for v in self.G.neighbors(self.n))
+    @classmethod
+    def from_graph(cls, G, n):
+        """Return cached ``NodoNX`` for ``(G, n)``."""
+        cache = G.graph.setdefault("_node_cache", {})
+        node = cache.get(n)
+        if node is None:
+            node = cls(G, n)
+        return node
+
+    def neighbors(self) -> Iterable[Hashable]:
+        """Itera identificadores de vecinos.
+
+        Usa :meth:`from_graph` para obtener instancias ``NodoNX`` cacheadas.
+        """
+        return self.G.neighbors(self.n)
 
     def push_glifo(self, glifo: str, window: int) -> None:
         push_glifo(self.G.nodes[self.n], glifo, window)
@@ -251,4 +266,4 @@ class NodoNX(NodoProtocol):
         return _node_offset(self.G, self.n)
 
     def all_nodes(self) -> Iterable[NodoProtocol]:
-        return (NodoNX(self.G, v) for v in self.G.nodes())
+        return (NodoNX.from_graph(self.G, v) for v in self.G.nodes())

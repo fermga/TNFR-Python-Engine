@@ -619,8 +619,9 @@ def fase_media(obj, n=None) -> float:
     segundo caso se envuelve en :class:`NodoNX` para reutilizar la misma lógica.
     """
 
+    from .node import NodoNX  # importación local para evitar ciclo
+
     if n is not None:
-        from .node import NodoNX  # importación local para evitar ciclo
         node = NodoNX(obj, n)
     else:
         node = obj  # se asume NodoProtocol
@@ -628,7 +629,10 @@ def fase_media(obj, n=None) -> float:
     x = y = 0.0
     count = 0
     for v in node.neighbors():
-        th = getattr(v, "theta", 0.0)
+        if hasattr(v, "theta"):
+            th = getattr(v, "theta", 0.0)
+        else:
+            th = NodoNX.from_graph(node.G, v).theta  # type: ignore[attr-defined]
         x += math.cos(th)
         y += math.sin(th)
         count += 1
