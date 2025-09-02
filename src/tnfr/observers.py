@@ -13,6 +13,8 @@ from .helpers import (
     ensure_history,
     count_glyphs,
     compute_coherence,
+    normalize_counter,
+    mix_groups,
 )
 from .constants_glifos import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
@@ -86,17 +88,10 @@ def carga_glifica(G, window: int | None = None) -> dict:
     Retorna un dict con proporciones por glifo y agregados útiles.
     """
     total = count_glyphs(G, window=window, last_only=(window == 1))
-    count = sum(total.values())
+    dist, count = normalize_counter(total)
     if count == 0:
         return {"_count": 0}
-
-
-    # Proporciones por glifo
-    dist = {k: v / count for k, v in total.items()}
-
-    for label, glyphs in GLYPH_GROUPS.items():
-        dist[f"_{label}"] = sum(dist.get(k, 0.0) for k in glyphs)
-
+    dist = mix_groups(dist, GLYPH_GROUPS)
     dist["_count"] = count
     return dist
 
