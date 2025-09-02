@@ -126,25 +126,17 @@ def _save_json(path: str, data: Any) -> None:
         raise OSError(f"Failed to write JSON file {path}: {e}") from e
 
 
-def _str2bool(s: str) -> bool:
-    s = s.lower()
-    if s in {"true", "1", "yes", "y"}:
-        return True
-    if s in {"false", "0", "no", "n"}:
-        return False
-    raise argparse.ArgumentTypeError("expected true/false")
-
-
 # Metadatos para las opciones de gramática y del glyph
+# Utiliza acciones y tipos estándar de ``argparse`` en lugar de conversores personalizados.
 GRAMMAR_ARG_SPECS = [
-    ("--grammar.enabled", _str2bool),
-    ("--grammar.zhir_requires_oz_window", int),
-    ("--grammar.zhir_dnfr_min", float),
-    ("--grammar.thol_min_len", int),
-    ("--grammar.thol_max_len", int),
-    ("--grammar.thol_close_dnfr", float),
-    ("--grammar.si_high", float),
-    ("--glyph.hysteresis_window", int),
+    ("--grammar.enabled", {"action": argparse.BooleanOptionalAction}),
+    ("--grammar.zhir_requires_oz_window", {"type": int}),
+    ("--grammar.zhir_dnfr_min", {"type": float}),
+    ("--grammar.thol_min_len", {"type": int}),
+    ("--grammar.thol_max_len", {"type": int}),
+    ("--grammar.thol_close_dnfr", {"type": float}),
+    ("--grammar.si_high", {"type": float}),
+    ("--glyph.hysteresis_window", {"type": int}),
 ]
 
 
@@ -287,9 +279,9 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
 def add_grammar_args(parser: argparse.ArgumentParser) -> None:
     """Agrega las opciones de gramática y de histéresis del glyph."""
     group = parser.add_argument_group("Grammar")
-    for opt, typ in GRAMMAR_ARG_SPECS:
+    for opt, kwargs in GRAMMAR_ARG_SPECS:
         dest = opt.lstrip("-").replace(".", "_")
-        group.add_argument(opt, dest=dest, type=typ, default=None)
+        group.add_argument(opt, dest=dest, default=None, **kwargs)
 
 
 def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
