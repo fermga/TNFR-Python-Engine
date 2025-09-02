@@ -1,6 +1,6 @@
 """Lenguaje de programación TNFR."""
 from __future__ import annotations
-from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union, Collection
 from dataclasses import dataclass
 from contextlib import contextmanager
 from collections import deque
@@ -167,8 +167,15 @@ def _record_trace(trace: deque, G, op: str, **data) -> None:
 
 
 def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
+    """Handle a ``TARGET`` token and return the active node set.
+
+    Returns
+    -------
+    Collection[Node]
+        Collection of nodes to be used for subsequent operations.
+    """
     nodes_src = _all_nodes(G) if payload.nodes is None else payload.nodes
-    curr_target = tuple(nodes_src)
+    curr_target = nodes_src if isinstance(nodes_src, Collection) else tuple(nodes_src)
     _record_trace(trace, G, "TARGET", n=len(curr_target))
     return curr_target
 
