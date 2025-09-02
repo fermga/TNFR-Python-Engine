@@ -552,9 +552,12 @@ def update_epi_via_nodal_equation(
 def aplicar_dnfr_campo(G, w_theta=None, w_epi=None, w_vf=None) -> None:
     if any(v is not None for v in (w_theta, w_epi, w_vf)):
         mix = G.graph.get("DNFR_WEIGHTS", DEFAULTS["DNFR_WEIGHTS"]).copy()
-        if w_theta is not None: mix["phase"] = float(w_theta)
-        if w_epi is not None: mix["epi"] = float(w_epi)
-        if w_vf is not None: mix["vf"] = float(w_vf)
+        if w_theta is not None:
+            mix["phase"] = float(w_theta)
+        if w_epi is not None:
+            mix["epi"] = float(w_epi)
+        if w_vf is not None:
+            mix["vf"] = float(w_vf)
         G.graph["DNFR_WEIGHTS"] = mix
     default_compute_delta_nfr(G)
 
@@ -650,8 +653,10 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
             disr = float(dist.get("_disruptivos", 0.0)) if dist else 0.0
 
             # 3) Decidir estado
-            R_hi = float(cfg.get("R_hi", 0.90)); R_lo = float(cfg.get("R_lo", 0.60))
-            disr_hi = float(cfg.get("disr_hi", 0.50)); disr_lo = float(cfg.get("disr_lo", 0.25))
+            R_hi = float(cfg.get("R_hi", 0.90))
+            R_lo = float(cfg.get("R_lo", 0.60))
+            disr_hi = float(cfg.get("disr_hi", 0.50))
+            disr_lo = float(cfg.get("disr_lo", 0.25))
             if (R >= R_hi) and (disr <= disr_lo):
                 state = "estable"
             elif (R <= R_lo) or (disr >= disr_hi):
@@ -660,8 +665,10 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
                 state = "transicion"
 
             # 4) Objetivos y actualización suave (con saturación)
-            kG_min = float(cfg.get("kG_min", 0.01)); kG_max = float(cfg.get("kG_max", 0.20))
-            kL_min = float(cfg.get("kL_min", 0.05)); kL_max = float(cfg.get("kL_max", 0.25))
+            kG_min = float(cfg.get("kG_min", 0.01))
+            kG_max = float(cfg.get("kG_max", 0.20))
+            kL_min = float(cfg.get("kL_min", 0.05))
+            kL_max = float(cfg.get("kL_max", 0.25))
 
             if state == "disonante":
                 kG_t = kG_max
@@ -960,11 +967,16 @@ def step(G, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool 
     # Contexto final (últimas métricas del paso)
     h = G.graph.get("history", {})
     ctx = {"step": step_idx}
-    if h.get("C_steps"):         ctx["C"] = h["C_steps"][-1]
-    if h.get("stable_frac"):     ctx["stable_frac"] = h["stable_frac"][-1]
-    if h.get("phase_sync"):      ctx["phase_sync"] = h["phase_sync"][-1]
-    if h.get("glyph_load_disr"): ctx["glyph_disr"] = h["glyph_load_disr"][-1]
-    if h.get("Si_mean"):         ctx["Si_mean"] = h["Si_mean"][-1]
+    if h.get("C_steps"):
+        ctx["C"] = h["C_steps"][-1]
+    if h.get("stable_frac"):
+        ctx["stable_frac"] = h["stable_frac"][-1]
+    if h.get("phase_sync"):
+        ctx["phase_sync"] = h["phase_sync"][-1]
+    if h.get("glyph_load_disr"):
+        ctx["glyph_disr"] = h["glyph_load_disr"][-1]
+    if h.get("Si_mean"):
+        ctx["Si_mean"] = h["Si_mean"][-1]
     invoke_callbacks(G, "after_step", ctx)
 
 
