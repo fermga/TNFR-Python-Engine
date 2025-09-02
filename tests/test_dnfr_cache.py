@@ -32,7 +32,7 @@ def test_cache_invalidated_on_graph_change(vectorized):
     increment_edge_version(G)
     G.graph["vectorized_dnfr"] = vectorized
     default_compute_delta_nfr(G, cache_size=2)
-    assert len(G.graph.get("_dnfr_cache", {})) == 2
+    assert len(G.graph.get("_dnfr_cache", {})) == 1
     after = [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in G.nodes]
 
     assert len(after) == 4
@@ -42,7 +42,7 @@ def test_cache_invalidated_on_graph_change(vectorized):
     increment_edge_version(G)
     G.graph["vectorized_dnfr"] = vectorized
     default_compute_delta_nfr(G, cache_size=2)
-    assert len(G.graph.get("_dnfr_cache", {})) == 2
+    assert len(G.graph.get("_dnfr_cache", {})) == 1
 
 
 def test_cache_is_per_graph():
@@ -53,4 +53,15 @@ def test_cache_is_per_graph():
     assert G1.graph["_dnfr_cache"] is not G2.graph["_dnfr_cache"]
     assert len(G1.graph["_dnfr_cache"]) == 1
     assert len(G2.graph["_dnfr_cache"]) == 1
+
+
+def test_cache_invalidated_on_node_rename():
+    G = _setup_graph()
+    default_compute_delta_nfr(G)
+    assert set(G.nodes) == {0, 1, 2}
+
+    nx.relabel_nodes(G, {2: 9}, copy=False)
+    default_compute_delta_nfr(G)
+
+    assert set(G.nodes) == {0, 1, 9}
 
