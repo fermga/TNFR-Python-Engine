@@ -162,29 +162,37 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
 # Handlers para tokens atómicos
 # ---------------------
 
+def _record_trace(trace: deque, G, op: str, **data) -> None:
+    trace.append({"t": float(G.graph.get("_t", 0.0)), "op": op, **data})
+
+
 def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
     nodes_src = _all_nodes(G) if payload.nodes is None else payload.nodes
     curr_target = tuple(nodes_src)
-    trace.append({"t": float(G.graph.get("_t", 0.0)), "op": "TARGET", "n": len(curr_target)})
+    _record_trace(trace, G, "TARGET", n=len(curr_target))
     return curr_target
 
 
 def _handle_wait(G, steps: int, curr_target, trace: deque, step_fn: Optional[AdvanceFn]):
     for _ in range(max(1, int(steps))):
         _advance(G, step_fn)
-    trace.append({"t": float(G.graph.get("_t", 0.0)), "op": "WAIT", "k": int(steps)})
+    _record_trace(trace, G, "WAIT", k=int(steps))
     return curr_target
 
 
 def _handle_glyph(G, g: str, curr_target, trace: deque, step_fn: Optional[AdvanceFn], label: str = "GLYPH"):
     _apply_glyph_to_targets(G, g, curr_target)
     _advance(G, step_fn)
-    trace.append({"t": float(G.graph.get("_t", 0.0)), "op": label, "g": g})
+    _record_trace(trace, G, label, g=g)
     return curr_target
 
 
 def _handle_thol(G, g: str, curr_target, trace: deque, step_fn: Optional[AdvanceFn]):
-    return _handle_glyph(G, g or Glyph.THOL.value, curr_target, trace, step_fn, label="THOL")
+    g = g or Glyph.THOL.value
+    _apply_glyph_to_targets(G, g, curr_target)
+    _advance(G, step_fn)
+    _record_trace(trace, G, "THOL", g=g)
+    return curr_target
 
 # ---------------------
 # API pública
