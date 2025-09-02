@@ -118,8 +118,12 @@ def _default(obj: Any) -> Any:
 
 
 def _save_json(path: str, data: Any) -> None:
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2, default=_default)
+    ensure_parent(path)
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2, default=_default)
+    except OSError as e:
+        raise OSError(f"Failed to write JSON file {path}: {e}") from e
 
 
 def _str2bool(s: str) -> bool:
@@ -193,11 +197,9 @@ def _persist_history(G: nx.Graph, args: argparse.Namespace) -> None:
     """Guardar o exportar el histórico si se solicitó."""
     if getattr(args, "save_history", None):
         path = args.save_history
-        ensure_parent(path)
         _save_json(path, G.graph.get("history", {}))
     if getattr(args, "export_history_base", None):
         base = args.export_history_base
-        ensure_parent(base)
         export_history(G, base, fmt=getattr(args, "export_format", "json"))
 
 
@@ -407,7 +409,6 @@ def cmd_metrics(args: argparse.Namespace) -> int:
         "glyphogram": {k: v[:10] for k, v in glyph.items()},
     }
     if args.save:
-        ensure_parent(args.save)
         _save_json(args.save, out)
     else:
         logger.info("%s", json.dumps(out, ensure_ascii=False, indent=2))
