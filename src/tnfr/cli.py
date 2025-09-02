@@ -154,6 +154,23 @@ GRAMMAR_ARG_SPECS = [
     ("--glyph.hysteresis_window", {"type": int}),
 ]
 
+# Especificaciones para opciones relacionadas con el histórico
+HISTORY_ARG_SPECS = [
+    ("--save-history", {"dest": "save_history", "type": str, "default": None}),
+    (
+        "--export-history-base",
+        {"dest": "export_history_base", "type": str, "default": None},
+    ),
+    (
+        "--export-format",
+        {
+            "dest": "export_format",
+            "choices": ["csv", "json"],
+            "default": "json",
+        },
+    ),
+]
+
 
 def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
     """Extract arguments matching a prefix.
@@ -307,13 +324,8 @@ def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
 
 def add_history_export_args(parser: argparse.ArgumentParser) -> None:
     """Agrega los argumentos para guardar o exportar el histórico."""
-    parser.add_argument("--save-history", dest="save_history", type=str, default=None)
-    parser.add_argument(
-        "--export-history-base", dest="export_history_base", type=str, default=None
-    )
-    parser.add_argument(
-        "--export-format", dest="export_format", choices=["csv", "json"], default="json"
-    )
+    for opt, kwargs in HISTORY_ARG_SPECS:
+        parser.add_argument(opt, **kwargs)
 
 
 def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
