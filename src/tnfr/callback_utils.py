@@ -1,7 +1,7 @@
 """Callback registration and invocation helpers."""
 from __future__ import annotations
 
-from typing import Callable, Any, Optional
+from typing import Callable, Optional
 from enum import Enum
 from collections import defaultdict
 import logging
