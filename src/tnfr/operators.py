@@ -87,8 +87,11 @@ def _get_rng(scope: object, seed: int, key: int, size: int) -> random.Random:
     """Return cached ``random.Random`` for ``(seed, key)`` scoped to ``scope``.
 
     The cache for each ``scope`` is bounded by ``size`` and follows an LRU
-    eviction policy.
+    eviction policy.  When ``size`` is non-positive, caching is skipped and a
+    fresh generator is returned on every call.
     """
+    if int(size) <= 0:
+        return _jitter_base(seed, key)
     cache = _rng_cache.setdefault(scope, OrderedDict())
     pair = (int(seed), int(key))
     rng = cache.get(pair)
@@ -132,9 +135,10 @@ def random_jitter(
     references to nodes. By default a global cache of ``(seed, key) → random.Random``
     instances, scoped by graph via weak references, advances deterministic
     sequences across calls. The cache obeys the ``JITTER_CACHE_SIZE`` parameter
-    and evicts the least recently used generator when the limit is exceeded.
-    When ``cache`` is provided, it is used instead and must handle its own
-    purging policy.
+    and evicts the least recently used generator when the limit is exceeded.  When
+    the parameter is ``0`` or negative, the cache is bypassed and a new generator
+    is created on each call. When ``cache`` is provided, it is used instead and
+    must handle its own purging policy.
     """
 
     if amplitude <= 0:
