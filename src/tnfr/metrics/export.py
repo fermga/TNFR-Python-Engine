@@ -5,7 +5,7 @@ import csv
 import json
 
 from ..glyph_history import ensure_history
-from ..io_utils import ensure_parent
+from ..helpers import ensure_parent
 from ..constants_glyphs import GLYPHS_CANONICAL
 from .core import glyphogram_series
 

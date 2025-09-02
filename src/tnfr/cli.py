@@ -28,8 +28,7 @@ from .gamma import GAMMA_REGISTRY
 from .scenarios import build_graph
 from .presets import get_preset
 from .config import apply_config
-from .io_utils import read_structured_file, ensure_parent
-from .helpers import list_mean
+from .helpers import read_structured_file, ensure_parent, list_mean
 from .observers import attach_standard_observer
 from . import __version__
 

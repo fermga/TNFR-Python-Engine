@@ -8,8 +8,7 @@ from tnfr.constants import (
     ALIAS_VF,
 )
 from tnfr.validators import run_validators
-from tnfr.helpers import set_attr_str, set_attr
-from tnfr.io_utils import read_structured_file
+from tnfr.helpers import set_attr_str, set_attr, read_structured_file
 from tnfr.config import load_config
 
 
