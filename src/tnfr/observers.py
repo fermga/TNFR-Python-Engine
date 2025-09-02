@@ -53,8 +53,8 @@ def _phase_sums(G) -> tuple[float, float, list[float]]:
     sumX = 0.0
     sumY = 0.0
     fases: list[float] = []
-    for n in G.nodes():
-        th = get_attr(G.nodes[n], ALIAS_THETA, 0.0)
+    for _, data in G.nodes(data=True):
+        th = get_attr(data, ALIAS_THETA, 0.0)
         sumX += math.cos(th)
         sumY += math.sin(th)
         fases.append(th)
