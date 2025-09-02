@@ -9,6 +9,7 @@ from .constants import get_param
 from .grammar import apply_glyph_with_grammar
 from .sense import GLYPHS_CANONICAL_SET
 from .types import Glyph
+from .collections_utils import ensure_collection
 
 # Basic types
 Node = Any
@@ -173,10 +174,7 @@ def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
         Collection of nodes to be used for subsequent operations.
     """
     nodes_src = _all_nodes(G) if payload.nodes is None else payload.nodes
-    if isinstance(nodes_src, (str, bytes)):
-        curr_target = (nodes_src,)
-    else:
-        curr_target = tuple(nodes_src)
+    curr_target = tuple(ensure_collection(nodes_src))
     _record_trace(trace, G, "TARGET", n=len(curr_target))
     return curr_target
 
