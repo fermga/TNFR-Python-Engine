@@ -5,7 +5,7 @@ the graph whenever possible.  Callers are expected to treat returned
 structures as immutable snapshots.
 """
 from __future__ import annotations
-from typing import Any, Callable, Dict, Optional, Protocol
+from typing import Any, Callable, Dict, Optional, Protocol, NamedTuple
 import warnings
 
 
@@ -23,6 +23,13 @@ class _SigmaVectorFn(Protocol):
 from .constants import TRACE
 from .callback_utils import register_callback
 from .glyph_history import ensure_history, count_glyphs
+
+
+class CallbackSpec(NamedTuple):
+    """Specification for a registered callback."""
+
+    name: str | None
+    func: Callable[..., Any]
 
 try:
     from .gamma import kuramoto_R_psi as _kuramoto_R_psi
@@ -64,23 +71,15 @@ def _trace_setup(G) -> tuple[Optional[Dict[str, Any]], set[str], Optional[Dict[s
     return cfg, capture, hist, key
 
 
-def _callback_names(callbacks: list) -> list[str]:
+def _callback_names(callbacks: list[CallbackSpec]) -> list[str]:
+    """Return callback names from ``callbacks``."""
+
     names: list[str] = []
-    for item in callbacks:
-        if isinstance(item, tuple):
-            if not item:
-                # skip empty tuples
-                continue
-            first = item[0]
-            if isinstance(first, str):
-                name = first
-            else:
-                # no explicit name, fall back to the function's name
-                func = first if callable(first) else (item[1] if len(item) > 1 else None)
-                name = getattr(func, "__name__", "fn")
+    for cb in callbacks:
+        if cb.name is not None:
+            names.append(cb.name)
         else:
-            name = getattr(item, "__name__", "fn")
-        names.append(name)
+            names.append(getattr(cb.func, "__name__", "fn"))
     return names
 
 
