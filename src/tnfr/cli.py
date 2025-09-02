@@ -332,9 +332,7 @@ def run_program(
 ) -> nx.Graph:
     """Construir el grafo si es necesario, ejecutar un programa y guardar historial."""
     if G is None:
-        G = build_basic_graph(args)
-        apply_cli_config(G, args)
-        register_callbacks_and_observer(G, args)
+        G = _build_graph_from_args(args)
 
     if program is None:
         steps = int(getattr(args, "steps", 100) or 100)
