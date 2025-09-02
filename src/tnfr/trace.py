@@ -1,4 +1,9 @@
-"""Trace logging."""
+"""Trace logging.
+
+Field helpers avoid unnecessary copying by reusing dictionaries stored on
+the graph whenever possible.  Callers are expected to treat returned
+structures as immutable snapshots.
+"""
 from __future__ import annotations
 from typing import Any, Callable, Dict, List, Optional, Protocol
 import warnings
@@ -125,29 +130,44 @@ def _trace_capture(
 
 
 def gamma_field(G):
-    gam = G.graph.get("GAMMA", {})
-    if not isinstance(gam, dict):
-        if gam is not None:
-            warnings.warn(
-                "G.graph['GAMMA'] no es un mapeo; se ignora",
-                UserWarning,
-                stacklevel=2,
-            )
+    """Return Γ configuration.
+
+    The underlying mapping is shallow-copied from ``G.graph`` to avoid
+    accidental mutation.  Consumers should treat the returned dict as
+    immutable.
+    """
+
+    gam = G.graph.get("GAMMA")
+    if gam is None:
         return {}
-    return {"gamma": dict(gam)}
+    if not isinstance(gam, dict):
+        warnings.warn(
+            "G.graph['GAMMA'] no es un mapeo; se ignora",
+            UserWarning,
+            stacklevel=2,
+        )
+        return {}
+    return {"gamma": gam.copy()}
 
 
 def grammar_field(G):
-    gram = G.graph.get("GRAMMAR_CANON", {})
-    if not isinstance(gram, dict):
-        if gram is not None:
-            warnings.warn(
-                "G.graph['GRAMMAR_CANON'] no es un mapeo; se ignora",
-                UserWarning,
-                stacklevel=2,
-            )
+    """Return canonical grammar configuration.
+
+    A shallow copy of ``G.graph['GRAMMAR_CANON']`` is returned and must be
+    considered read-only by callers.
+    """
+
+    gram = G.graph.get("GRAMMAR_CANON")
+    if gram is None:
         return {}
-    return {"grammar": dict(gram)}
+    if not isinstance(gram, dict):
+        warnings.warn(
+            "G.graph['GRAMMAR_CANON'] no es un mapeo; se ignora",
+            UserWarning,
+            stacklevel=2,
+        )
+        return {}
+    return {"grammar": gram.copy()}
 
 
 def selector_field(G):
@@ -156,14 +176,26 @@ def selector_field(G):
 
 
 def dnfr_weights_field(G):
+    """Return ΔNFR mix declared in the engine.
+
+    The mapping is copied only when present.  Treat the returned dict as
+    immutable.
+    """
+
     mix = G.graph.get("DNFR_WEIGHTS")
-    return {"dnfr_weights": dict(mix)} if isinstance(mix, dict) else {}
+    return {"dnfr_weights": mix.copy()} if isinstance(mix, dict) else {}
 
 
 def si_weights_field(G):
+    """Return sense-plane weights and sensitivity.
+
+    Uses shallow copies of the respective graph mappings; callers must not
+    mutate the returned dictionaries.
+    """
+
     return {
-        "si_weights": dict(G.graph.get("_Si_weights", {})),
-        "si_sensitivity": dict(G.graph.get("_Si_sensitivity", {})),
+        "si_weights": G.graph.get("_Si_weights", {}).copy(),
+        "si_sensitivity": G.graph.get("_Si_sensitivity", {}).copy(),
     }
 
 
@@ -205,8 +237,14 @@ def sigma_field(G):
 
 
 def glyph_counts_field(G):
+    """Return glyph count snapshot.
+
+    ``count_glyphs`` already produces a fresh mapping so no additional copy
+    is taken.  Treat the returned mapping as read-only.
+    """
+
     cnt = count_glyphs(G, window=1)
-    return {"glyphs": dict(cnt)}
+    return {"glyphs": cnt}
 
 
 def _trace_before(G, *args, **kwargs):
@@ -250,6 +288,9 @@ def register_trace(G) -> None:
       - kuramoto: network ``(R, ψ)``
       - sigma: global sense-plane vector
       - glyphs: glyph counts after the step
+
+    Field helpers reuse graph dictionaries and expect them to be treated as
+    immutable snapshots by consumers.
     """
     if G.graph.get("_trace_registered"):
         return
