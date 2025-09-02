@@ -5,6 +5,8 @@ import logging
 import math
 import random
 import hashlib
+import importlib
+import importlib.util
 from collections import deque, OrderedDict
 from functools import lru_cache
 from typing import Dict, Any, Literal
@@ -52,49 +54,27 @@ logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=1)
-def _numpy_with_exc() -> tuple[Any | None, BaseException | None]:
-    """Intentar cargar ``numpy`` y devolver también la excepción.
+def _optional_numpy() -> Any | None:
+    """Intenta cargar ``numpy`` utilizando ``importlib``.
 
-    El módulo se importa una sola vez y se reutiliza en llamadas sucesivas.
+    Si el paquete no está disponible, devuelve ``None``. El resultado se
+    almacena en caché para evitar búsquedas repetidas.
     """
 
-    try:  # Optional dependency
-        import numpy as _np  # type: ignore
-    except ImportError as exc:  # pragma: no cover - handled gracefully
-        return None, exc
-    return _np, None
+    spec = importlib.util.find_spec("numpy")
+    if spec is None:  # pragma: no cover - dependency opcional
+        return None
+    return importlib.import_module("numpy")
 
 
-def _np() -> Any | None:
+def _np(*, warn: bool = False) -> Any | None:
     """Devuelve el módulo ``numpy`` o ``None`` si no está disponible."""
 
-    return _numpy_with_exc()[0]
-
-
-def _ensure_numpy(*, warn: bool = False) -> bool:
-    """Load ``numpy`` on demand.
-
-    Parameters
-    ----------
-    warn:
-        If ``True`` the failure to import ``numpy`` is logged as a warning,
-        otherwise a debug message is emitted. Returns ``True`` if ``numpy``
-        was imported successfully.
-    """
-
-    module, exc = _numpy_with_exc()
-    if module is not None:  # pragma: no cover - already loaded
-        return True
-
-    log = logger.warning if warn else logger.debug
-    if exc is not None:
-        log(
-            "Fallo al importar numpy, se continuará con el modo no vectorizado",
-            exc_info=(type(exc), exc, exc.__traceback__),
-        )
-    else:  # pragma: no cover - unexpected path
+    module = _optional_numpy()
+    if module is None:
+        log = logger.warning if warn else logger.debug
         log("Fallo al importar numpy, se continuará con el modo no vectorizado")
-    return False
+    return module
 
 # Cacheo de nodos y matriz de adyacencia asociado a cada grafo
 def _cached_nodes_and_A(
@@ -205,7 +185,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
     if weights is None:
         weights = _configure_dnfr_weights(G)
 
-    use_numpy = _ensure_numpy() and G.graph.get("vectorized_dnfr")
+    use_numpy = _np() is not None and G.graph.get("vectorized_dnfr")
 
     # Cacheo de la lista de nodos y la matriz de adyacencia
     nodes, A = _cached_nodes_and_A(G, cache_size=cache_size)
@@ -282,10 +262,8 @@ def _apply_dnfr_gradients(
 
 def _compute_dnfr_numpy(G, data) -> None:
     """Estrategia vectorizada usando ``numpy``."""
-    if not _ensure_numpy(warn=True):  # pragma: no cover - check at runtime
-        raise RuntimeError("numpy no disponible para la versión vectorizada")
-    np = _np()
-    if np is None:  # pragma: no cover - safety net
+    np = _np(warn=True)
+    if np is None:  # pragma: no cover - check at runtime
         raise RuntimeError("numpy no disponible para la versión vectorizada")
     nodes = data["nodes"]
     if not nodes:
