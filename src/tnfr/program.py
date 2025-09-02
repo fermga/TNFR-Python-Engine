@@ -1,6 +1,6 @@
 """TNFR programming language."""
 from __future__ import annotations
-from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union, Collection
+from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union
 from dataclasses import dataclass
 from contextlib import contextmanager
 from collections import deque
