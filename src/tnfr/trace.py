@@ -5,7 +5,7 @@ the graph whenever possible.  Callers are expected to treat returned
 structures as immutable snapshots.
 """
 from __future__ import annotations
-from typing import Any, Callable, Dict, List, Optional, Protocol
+from typing import Any, Callable, Dict, Optional, Protocol
 import warnings
 
 
@@ -46,19 +46,19 @@ sigma_vector_from_graph: _SigmaVectorFn = _sigma_vector_from_graph
 # Helpers
 # -------------------------
 
-def _trace_setup(G) -> tuple[Optional[Dict[str, Any]], List[str], Optional[Dict[str, Any]], Optional[str]]:
+def _trace_setup(G) -> tuple[Optional[Dict[str, Any]], set[str], Optional[Dict[str, Any]], Optional[str]]:
     """Common configuration for trace snapshots.
 
-    Returns the active configuration, capture list, history and key under
+    Returns the active configuration, capture set, history and key under
     which metadata will be stored. If tracing is disabled returns
-    ``(None, [], None, None)``.
+    ``(None, set(), None, None)``.
     """
 
     cfg = G.graph.get("TRACE", TRACE)
     if not cfg.get("enabled", True):
-        return None, [], None, None
+        return None, set(), None, None
 
-    capture: List[str] = list(cfg.get("capture", []))
+    capture: set[str] = set(cfg.get("capture", []))
     hist = ensure_history(G)
     key = cfg.get("history_key", "trace_meta")
     return cfg, capture, hist, key
@@ -89,7 +89,7 @@ def _callback_names(callbacks: list) -> list[str]:
 
 def _new_trace_meta(
     G, phase: str
-) -> Optional[tuple[Dict[str, Any], List[str], Optional[Dict[str, Any]], Optional[str]]]:
+) -> Optional[tuple[Dict[str, Any], set[str], Optional[Dict[str, Any]], Optional[str]]]:
     """Initialise trace metadata for a ``phase``.
 
     Wraps :func:`_trace_setup` and creates the base structure with timestamp
