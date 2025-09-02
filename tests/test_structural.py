@@ -8,6 +8,7 @@ from tnfr.structural import (
     Coherencia,
     Resonancia,
     Silencio,
+    Autoorganizacion,
     validate_sequence,
     run_sequence,
 )
@@ -45,4 +46,31 @@ def test_invalid_sequence():
         pass
     else:
         raise AssertionError("Se esperaba ValueError por secuencia no válida")
+
+
+def test_thol_requires_closure():
+    names = [
+        "emision",
+        "recepcion",
+        "coherencia",
+        "autoorganizacion",
+        "resonancia",
+        "transicion",
+    ]
+    ok, msg = validate_sequence(names)
+    assert not ok
+
+
+def test_thol_closed_by_silencio():
+    ops = [
+        Emision(),
+        Recepcion(),
+        Coherencia(),
+        Autoorganizacion(),
+        Resonancia(),
+        Silencio(),
+    ]
+    names = [op.name for op in ops]
+    ok, msg = validate_sequence(names)
+    assert ok, msg
 

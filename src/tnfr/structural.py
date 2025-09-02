@@ -109,18 +109,32 @@ _TRAMO_INTERMEDIO = {"disonancia", "acoplamiento", "resonancia"}
 _CIERRE_VALIDO = {"silencio", "transicion", "recursividad"}
 
 
-def validate_sequence(nombres: List[str]) -> Tuple[bool, str]:
-    """Valida reglas mínimas de la sintaxis TNFR."""
+def _verify_token_format(nombres: List[str]) -> Tuple[bool, str]:
+    """Comprueba tipo y formato básicos de la lista de tokens."""
     if not nombres:
         return False, "secuencia vacía"
+    if any(not isinstance(n, str) for n in nombres):
+        return False, "tokens deben ser str"
     if nombres[0] not in _INICIO_VALIDOS:
         return False, "debe iniciar en emisión o recursividad"
+    desconocidos = [n for n in nombres if n not in OPERADORES]
+    if desconocidos:
+        return False, f"tokens desconocidos: {', '.join(desconocidos)}"
+    return True, "ok"
 
+
+def _validate_logical_coherence(nombres: List[str]) -> Tuple[bool, str]:
+    """Valida la coherencia lógica de la secuencia."""
     i_rec = i_coh = -1
     found_intermedio = False
     cierre_ok = False
+    thol_open = False
     total = len(nombres)
     for idx, n in enumerate(nombres):
+        if n == "autoorganizacion":
+            thol_open = True
+        elif thol_open and n in {"silencio", "contraccion"}:
+            thol_open = False
         if i_rec == -1 and n == "recepcion":
             i_rec = idx
         elif i_rec != -1 and i_coh == -1 and n == "coherencia":
@@ -129,13 +143,25 @@ def validate_sequence(nombres: List[str]) -> Tuple[bool, str]:
             found_intermedio = True
         if idx >= total - 2 and n in _CIERRE_VALIDO:
             cierre_ok = True
-
     if i_rec == -1 or i_coh == -1:
         return False, "falta tramo entrada→coherencia"
     if not found_intermedio:
         return False, "falta tramo de tensión/acoplamiento/resonancia"
     if not cierre_ok:
         return False, "falta cierre (silencio/transición/recursividad)"
+    if thol_open:
+        return False, "bloque THOL sin cierre"
+    return True, "ok"
+
+
+def validate_sequence(nombres: List[str]) -> Tuple[bool, str]:
+    """Valida reglas mínimas de la sintaxis TNFR."""
+    ok, msg = _verify_token_format(nombres)
+    if not ok:
+        return False, msg
+    ok, msg = _validate_logical_coherence(nombres)
+    if not ok:
+        return False, msg
     return True, "ok"
 
 
