@@ -5,6 +5,7 @@ import logging
 import math
 import random
 from collections import deque, OrderedDict
+from functools import lru_cache
 from typing import Dict, Any, Literal
 
 import networkx as nx
@@ -48,9 +49,26 @@ from .selector import (
 
 logger = logging.getLogger(__name__)
 
-# ``numpy`` is an optional dependency.  It is loaded lazily to avoid emitting
-# warnings when the vectorized path is not used.
-np: Any | None = None
+
+@lru_cache(maxsize=1)
+def _numpy_with_exc() -> tuple[Any | None, BaseException | None]:
+    """Intentar cargar ``numpy`` y devolver también la excepción.
+
+    El módulo se importa una sola vez y se reutiliza en llamadas sucesivas.
+    """
+
+    try:  # Optional dependency
+        import numpy as _np  # type: ignore
+    except Exception as exc:  # pragma: no cover - handled gracefully
+        return None, exc
+    return _np, None
+
+
+def _np() -> Any | None:
+    """Devuelve el módulo ``numpy`` o ``None`` si no está disponible."""
+
+    return _numpy_with_exc()[0]
+
 
 def _ensure_numpy(*, warn: bool = False) -> bool:
     """Load ``numpy`` on demand.
@@ -63,21 +81,19 @@ def _ensure_numpy(*, warn: bool = False) -> bool:
         was imported successfully.
     """
 
-    global np
-    if np is not None:  # pragma: no cover - already loaded
+    module, exc = _numpy_with_exc()
+    if module is not None:  # pragma: no cover - already loaded
         return True
-    try:  # Optional dependency
-        import numpy as _np  # type: ignore
-    except ImportError:  # pragma: no cover - handled gracefully
-        log = logger.warning if warn else logger.debug
+
+    log = logger.warning if warn else logger.debug
+    if exc is not None:
         log(
             "Fallo al importar numpy, se continuará con el modo no vectorizado",
-            exc_info=True,
+            exc_info=(type(exc), exc, exc.__traceback__),
         )
-        np = None
-        return False
-    np = _np
-    return True
+    else:  # pragma: no cover - unexpected path
+        log("Fallo al importar numpy, se continuará con el modo no vectorizado")
+    return False
 
 # Cacheo de nodos y matriz de adyacencia asociado a cada grafo
 def _cached_nodes_and_A(
@@ -105,7 +121,7 @@ def _cached_nodes_and_A(
     nodes_and_A = cache.get(key)
     if nodes_and_A is None:
         nodes = nodes_list
-        if np is not None:
+        if _np() is not None:
             A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
         else:
             A = None
@@ -264,6 +280,9 @@ def _compute_dnfr_numpy(G, data) -> None:
     """Estrategia vectorizada usando ``numpy``."""
     if not _ensure_numpy(warn=True):  # pragma: no cover - check at runtime
         raise RuntimeError("numpy no disponible para la versión vectorizada")
+    np = _np()
+    if np is None:  # pragma: no cover - safety net
+        raise RuntimeError("numpy no disponible para la versión vectorizada")
     nodes = data["nodes"]
     if not nodes:
         return
@@ -291,6 +310,7 @@ def _compute_dnfr_numpy(G, data) -> None:
     th_bar = theta.copy()
     epi_bar = epi.copy()
     vf_bar = vf.copy()
+    deg_bar = degs
     if np.any(mask):
         th_bar[mask] = np.arctan2(y[mask] / count[mask], x[mask] / count[mask])
         epi_bar[mask] = epi_sum[mask] / count[mask]
@@ -298,8 +318,6 @@ def _compute_dnfr_numpy(G, data) -> None:
         if w_topo != 0.0 and degs is not None:
             deg_bar = degs.copy()
             deg_bar[mask] = deg_sum[mask] / count[mask]
-    else:
-        deg_bar = degs
     _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
 
 
@@ -363,7 +381,7 @@ def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
         weights=data["weights"],
         hook_name="default_compute_delta_nfr",
     )
-    if np is not None and G.graph.get("vectorized_dnfr"):
+    if _np() is not None and G.graph.get("vectorized_dnfr"):
         _compute_dnfr_numpy(G, data)
     else:
         _compute_dnfr_loops(G, data)
