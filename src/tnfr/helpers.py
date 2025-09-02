@@ -29,8 +29,7 @@ logger = logging.getLogger(__name__)
 PI = math.pi
 TWO_PI = 2 * PI
 
-MAX_MATERIALIZE_DEFAULT = 1000
-"""Límite por defecto de elementos a materializar en :func:`ensure_collection`."""
+MAX_MATERIALIZE_DEFAULT = 1000  # Límite por defecto de elementos a materializar en :func:`ensure_collection`.
 
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
