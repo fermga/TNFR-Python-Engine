@@ -1,6 +1,6 @@
 """Sense calculations."""
 from __future__ import annotations
-from typing import Dict, Iterable
+from typing import Dict, Iterable, List
 import math
 import warnings
 from collections import Counter
