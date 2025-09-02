@@ -24,6 +24,8 @@ from json import JSONDecodeError
 from pathlib import Path
 from enum import Enum
 
+logger = logging.getLogger(__name__)
+
 PI = math.pi
 TWO_PI = 2 * PI
 
@@ -286,7 +288,7 @@ def _validate_weights(weights: Mapping[str, float], error_on_negative: bool) -> 
         return
     if error_on_negative:
         raise ValueError(f"Pesos negativos detectados: {negatives}")
-    logging.warning("Pesos negativos detectados: %s", negatives)
+    logger.warning("Pesos negativos detectados: %s", negatives)
 
 
 def _normalize_distribution(
@@ -330,9 +332,9 @@ def _convert_value(
             logging.ERROR if strict else logging.DEBUG
         )
         if key is not None:
-            logging.log(level, "No se pudo convertir el valor para %r: %s", key, exc)
+            logger.log(level, "No se pudo convertir el valor para %r: %s", key, exc)
         else:
-            logging.log(level, "No se pudo convertir el valor: %s", exc)
+            logger.log(level, "No se pudo convertir el valor: %s", exc)
         if strict:
             raise
         return False, None
