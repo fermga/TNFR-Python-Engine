@@ -1185,7 +1185,8 @@ def _update_history(G) -> None:
             hist.setdefault("iota", []).append(
                 hist["C_steps"][-1] * hist["stable_frac"][-1]
             )
-    except (KeyError, ValueError, TypeError):
+    except (KeyError, AttributeError, TypeError) as exc:
+        logger.debug("observer update failed: %s", exc)
         # observadores son opcionales; si fallan se ignoran
         pass
   
@@ -1214,6 +1215,7 @@ def _update_history(G) -> None:
             hist["Si_mean"].append(0.0)
             hist["Si_hi_frac"].append(0.0)
             hist["Si_lo_frac"].append(0.0)
-    except (KeyError, ValueError, TypeError):
+    except (KeyError, AttributeError, TypeError) as exc:
+        logger.debug("Si aggregation failed: %s", exc)
         # si aún no se calculó Si este paso, no interrumpimos
         pass

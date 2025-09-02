@@ -4,10 +4,13 @@ from __future__ import annotations
 from typing import Callable, Any, Optional
 from enum import Enum
 from collections import defaultdict
+import logging
 
 from .constants import DEFAULTS
 
 __all__ = ["CallbackEvent", "register_callback", "invoke_callbacks"]
+
+logger = logging.getLogger(__name__)
 
 
 class CallbackEvent(str, Enum):
@@ -69,7 +72,8 @@ def invoke_callbacks(G, event: CallbackEvent | str, ctx: dict | None = None):
     for name, fn in list(cbs):
         try:
             fn(G, ctx)
-        except (KeyError, ValueError, TypeError) as e:
+        except (KeyError, AttributeError, TypeError) as e:
+            logger.warning("callback %r failed for %s: %s", name, event, e)
             if strict:
                 raise
             G.graph.setdefault("_callback_errors", []).append({
