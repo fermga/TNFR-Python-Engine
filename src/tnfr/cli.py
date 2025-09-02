@@ -195,15 +195,15 @@ def _persist_history(G: nx.Graph, args: argparse.Namespace) -> None:
         export_history(G, base, fmt=getattr(args, "export_format", "json"))
 
 
-def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
-    """Construye y configura un grafo a partir de los argumentos del CLI."""
-    G = build_graph(n=args.nodes, topology=args.topology, seed=args.seed, p=args.p)
+def build_basic_graph(args: argparse.Namespace) -> nx.Graph:
+    """Construye el grafo base a partir de los argumentos del CLI."""
+    return build_graph(n=args.nodes, topology=args.topology, seed=args.seed, p=args.p)
+
+
+def apply_cli_config(G: nx.Graph, args: argparse.Namespace) -> None:
+    """Aplica configuraciones provenientes del CLI o de archivos externos."""
     if args.config:
         apply_config(G, Path(args.config))
-    _attach_callbacks(G)
-    if args.observer:
-        attach_standard_observer(G)
-    validate_canon(G)
     if args.dt is not None:
         G.graph["DT"] = float(args.dt)
     if args.integrator is not None:
@@ -234,7 +234,30 @@ def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
             "R0": args.gamma_R0,
         }
 
+
+def register_callbacks_and_observer(G: nx.Graph, args: argparse.Namespace) -> None:
+    """Registra callbacks y observadores estándar."""
+    _attach_callbacks(G)
+    if args.observer:
+        attach_standard_observer(G)
+    validate_canon(G)
+
+
+def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
+    """Construye un grafo configurado a partir de los argumentos del CLI."""
+    G = build_basic_graph(args)
+    apply_cli_config(G, args)
+    register_callbacks_and_observer(G, args)
     return G
+
+
+def resolve_program(args: argparse.Namespace, default: Optional[Any] = None) -> Optional[Any]:
+    """Obtiene un programa a partir de un preset o un archivo de secuencia."""
+    if getattr(args, "preset", None):
+        return get_preset(args.preset)
+    if getattr(args, "sequence_file", None):
+        return _load_sequence(Path(args.sequence_file))
+    return default
 
 
 def add_common_args(parser: argparse.ArgumentParser) -> None:
@@ -294,7 +317,9 @@ def run_program(
 ) -> nx.Graph:
     """Construir el grafo si es necesario, ejecutar un programa y guardar historial."""
     if G is None:
-        G = _build_graph_from_args(args)
+        G = build_basic_graph(args)
+        apply_cli_config(G, args)
+        register_callbacks_and_observer(G, args)
 
     if program is None:
         steps = int(getattr(args, "steps", 100) or 100)
@@ -308,7 +333,7 @@ def run_program(
 
 
 def cmd_run(args: argparse.Namespace) -> int:
-    program = get_preset(args.preset) if args.preset else None
+    program = resolve_program(args)
     G = run_program(None, program, args)
 
     # Resúmenes rápidos (si están activados)
@@ -343,19 +368,17 @@ def cmd_sequence(args: argparse.Namespace) -> int:
     if args.preset and args.sequence_file:
         logger.error("No se puede usar --preset y --sequence-file al mismo tiempo")
         return 1
-    if args.preset:
-        program = get_preset(args.preset)
-    elif args.sequence_file:
-        program = _load_sequence(Path(args.sequence_file))
-    else:
-        program = seq(
+    program = resolve_program(
+        args,
+        default=seq(
             Glyph.AL,
             Glyph.EN,
             Glyph.IL,
             block(Glyph.OZ, Glyph.ZHIR, Glyph.IL, repeat=1),
             Glyph.RA,
             Glyph.SHA,
-        )
+        ),
+    )
 
     run_program(None, program, args)
     return 0
