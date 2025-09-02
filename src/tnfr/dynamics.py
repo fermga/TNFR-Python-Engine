@@ -944,13 +944,10 @@ def _compute_selector_score(G, nd, Si, dnfr, accel, cand):
 
 def _apply_score_override(cand, score, dnfr, dnfr_lo):
     """Ajusta el candidato final de forma suave según la puntuación."""
-    try:
-        if score >= 0.66 and cand in ("NAV", "RA", "ZHIR", "OZ"):
-            return "IL"
-        if score <= 0.33 and cand in ("NAV", "RA", "IL"):
-            return "OZ" if dnfr >= dnfr_lo else "ZHIR"
-    except NameError:
-        pass
+    if score >= 0.66 and cand in ("NAV", "RA", "ZHIR", "OZ"):
+        cand = "IL"
+    elif score <= 0.33 and cand in ("NAV", "RA", "IL"):
+        cand = "OZ" if dnfr >= dnfr_lo else "ZHIR"
     return cand
 
 def parametric_glyph_selector(G, n) -> str:
