@@ -6,8 +6,7 @@ import math
 import random
 import hashlib
 import heapq
-from functools import wraps
-import weakref
+from functools import wraps, lru_cache
 import networkx as nx
 from networkx.algorithms import community as nx_comm
 
@@ -24,7 +23,7 @@ from .callback_utils import invoke_callbacks
 if TYPE_CHECKING:
     from .node import NodoProtocol
 from .types import Glyph
-from collections import deque, OrderedDict
+from collections import deque
 
 """Network operators.
 
@@ -81,36 +80,17 @@ def _jitter_base(seed: int, key: int) -> random.Random:
         return random.Random(str(seed_input))
 
 
-_rng_cache: "weakref.WeakKeyDictionary[object, OrderedDict[tuple[int, int], random.Random]]" = (
-    weakref.WeakKeyDictionary()
-)
+@lru_cache(maxsize=DEFAULTS["JITTER_CACHE_SIZE"])
+def _cached_rng(scope_id: int, seed: int, key: int) -> random.Random:
+    """Return cached ``random.Random`` for ``(seed, key)``.
 
-
-def _get_rng(scope: object, seed: int, key: int, size: int) -> random.Random:
-    """Return cached ``random.Random`` for ``(seed, key)`` scoped to ``scope``.
-
-    The cache for each ``scope`` is bounded by ``size`` and follows an LRU
-    eviction policy.  When ``size`` is non-positive, caching is skipped and a
-    fresh generator is returned on every call.
-    """
-    if int(size) <= 0:
-        return _jitter_base(seed, key)
-    cache = _rng_cache.setdefault(scope, OrderedDict())
-    pair = (int(seed), int(key))
-    rng = cache.get(pair)
-    if rng is None:
-        rng = _jitter_base(seed, key)
-        cache[pair] = rng
-        if len(cache) > int(size):
-            cache.popitem(last=False)
-    else:
-        cache.move_to_end(pair)
-    return rng
+    ``scope_id`` identifies the caching scope (typically a graph)."""
+    return _jitter_base(seed, key)
 
 
 def clear_rng_cache() -> None:
     """Clear all cached RNGs."""
-    _rng_cache.clear()
+    _cached_rng.cache_clear()
 
 
 # Backwards compatibility
@@ -167,7 +147,13 @@ def random_jitter(
             cache_size = get_param(node.G, "JITTER_CACHE_SIZE")  # type: ignore[attr-defined]
         except (AttributeError, KeyError):
             cache_size = DEFAULTS["JITTER_CACHE_SIZE"]
-        rng = _get_rng(scope, base_seed, seed_key, cache_size)
+        if int(cache_size) <= 0:
+            rng = _jitter_base(base_seed, seed_key)
+        else:
+            global _cached_rng
+            if _cached_rng.cache_info().maxsize != int(cache_size):
+                _cached_rng = lru_cache(maxsize=int(cache_size))(_cached_rng.__wrapped__)
+            rng = _cached_rng(id(scope), base_seed, seed_key)
     else:
         rng = cache.get(seed_key)
         if rng is None:

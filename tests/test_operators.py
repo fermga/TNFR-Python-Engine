@@ -62,7 +62,7 @@ def test_rng_cache_disabled_with_size_zero(graph_canon):
     j1 = random_jitter(n0, 0.5)
     j2 = random_jitter(n0, 0.5)
     assert j1 == j2
-    assert len(operators._rng_cache) == 0
+    assert operators._cached_rng.cache_info().currsize == 0
 
 
 def test_rng_cache_lru_purge(graph_canon):
@@ -81,30 +81,26 @@ def test_rng_cache_lru_purge(graph_canon):
 
     j0b = random_jitter(n0, 0.5)
     assert j0b == j0
-
-    cache = operators._rng_cache[G]
-    seed = int(G.graph.get("RANDOM_SEED", 0))
-    p0 = (seed, operators._node_offset(G, 0))
-    p1 = (seed, operators._node_offset(G, 1))
-    p2 = (seed, operators._node_offset(G, 2))
-    assert p0 in cache and p1 in cache and p2 not in cache
+    assert operators._cached_rng.cache_info().currsize == 2
 
 
-def test_rng_cache_expires_after_graph_gc(graph_canon):
-    import gc
+def test_rng_cache_does_not_reference_graph(graph_canon):
+    import gc, weakref
 
     clear_rng_cache()
     G = graph_canon()
     G.add_node(0)
+    ref = weakref.ref(G)
     n0 = NodoNX(G, 0)
     random_jitter(n0, 0.5)
-    assert len(operators._rng_cache) == 1
+    assert operators._cached_rng.cache_info().currsize == 1
 
     del n0
     del G
     gc.collect()
 
-    assert len(operators._rng_cache) == 0
+    assert ref() is None
+    assert operators._cached_rng.cache_info().currsize == 1
 
 
 def test_um_candidate_subset_proximity():
