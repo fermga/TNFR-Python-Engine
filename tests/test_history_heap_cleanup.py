@@ -27,3 +27,13 @@ def test_get_does_not_track_usage():
     assert hist.get("a") == 1
     assert hist._counts == counts_before
     assert hist._heap == heap_before
+
+
+def test_heap_compaction_after_deletions():
+    hist = HistoryDict()
+    for i in range(10):
+        hist[f"k{i}"] = i
+        _ = hist[f"k{i}"]
+    for _ in range(5):
+        hist.pop_least_used()
+        assert len(hist._heap) <= len(hist) * 2
