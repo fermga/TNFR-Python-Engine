@@ -16,7 +16,7 @@ from .metrics import (
     register_metrics_callbacks,
     Tg_global,
     latency_series,
-    glifogram_series,
+    glyphogram_series,
     glyph_top,
     export_history,
 )
@@ -92,7 +92,7 @@ def parse_thol(spec: Dict[str, Any]) -> Any:
     close = spec.get("close")
     if isinstance(close, str):
         if close not in Glyph.__members__:
-            raise ValueError(f"Glifo de cierre desconocido: {close!r}")
+            raise ValueError(f"Glyph de cierre desconocido: {close!r}")
         close = Glyph[close]
 
     return block(
@@ -131,7 +131,7 @@ def _str2bool(s: str) -> bool:
     raise argparse.ArgumentTypeError("expected true/false")
 
 
-# Metadatos para las opciones de gramática y del glifo
+# Metadatos para las opciones de gramática y del glyph
 GRAMMAR_ARG_SPECS = [
     ("--grammar.enabled", _str2bool),
     ("--grammar.zhir_requires_oz_window", int),
@@ -283,7 +283,7 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
 
 
 def add_grammar_args(parser: argparse.ArgumentParser) -> None:
-    """Agrega las opciones de gramática y de histéresis del glifo."""
+    """Agrega las opciones de gramática y de histéresis del glyph."""
     group = parser.add_argument_group("Grammar")
     for opt, typ in GRAMMAR_ARG_SPECS:
         dest = opt.lstrip("-").replace(".", "_")
@@ -291,7 +291,7 @@ def add_grammar_args(parser: argparse.ArgumentParser) -> None:
 
 
 def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
-    """Agrega las opciones de gramática y el selector de glifo."""
+    """Agrega las opciones de gramática y el selector de glyph."""
     add_grammar_args(parser)
     parser.add_argument("--selector", choices=["basic", "param"], default="basic")
 
@@ -398,13 +398,13 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     tg = Tg_global(G, normalize=True)
     lat = latency_series(G)
     rose = sigma_rose(G)
-    glifo = glifogram_series(G)
+    glyph = glyphogram_series(G)
 
     out = {
         "Tg_global": tg,
         "latency_mean": list_mean(lat["value"], 0.0),
         "rose": rose,
-        "glifogram": {k: v[:10] for k, v in glifo.items()},
+        "glyphogram": {k: v[:10] for k, v in glyph.items()},
     }
     if args.save:
         ensure_parent(args.save)

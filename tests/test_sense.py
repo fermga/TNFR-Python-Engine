@@ -14,7 +14,7 @@ from tnfr.types import Glyph
 
 def _make_graph():
     G = nx.Graph()
-    G.add_node(0, hist_glifos=[Glyph.AL.value], Si=1.0, EPI=2.0)
+    G.add_node(0, glyph_history=[Glyph.AL.value], Si=1.0, EPI=2.0)
     G.add_node(1, Si=0.3, EPI=1.5)
     return G
 
@@ -22,7 +22,7 @@ def _make_graph():
 def test_sigma_vector_node_paths():
     G = _make_graph()
     sv_si = sigma_vector_node(G, 0)
-    assert sv_si and sv_si["glifo"] == Glyph.AL.value
+    assert sv_si and sv_si["glyph"] == Glyph.AL.value
     assert sv_si["w"] == 1.0
     assert sigma_vector_node(G, 1) is None
     sv_epi = sigma_vector_node(G, 0, weight_mode="EPI")
@@ -59,7 +59,7 @@ def test_sigma_vector_from_graph_matches_naive():
     glyphs = list(Glyph)
     for i in range(1000):
         g = glyphs[i % len(glyphs)].value
-        G_opt.add_node(i, hist_glifos=[g], Si=float(i % 10) / 10)
+        G_opt.add_node(i, glyph_history=[g], Si=float(i % 10) / 10)
     G_ref = G_opt.copy()
 
     start = time.perf_counter()

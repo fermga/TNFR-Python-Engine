@@ -1,4 +1,4 @@
-"""Métricas básicas."""
+"""Basic metrics."""
 from __future__ import annotations
 
 from collections import Counter, defaultdict
@@ -8,9 +8,9 @@ import heapq
 
 from ..constants import METRIC_DEFAULTS, ALIAS_EPI, METRICS
 from ..callback_utils import register_callback
-from ..glyph_history import ensure_history, last_glifo
+from ..glyph_history import ensure_history, last_glyph
 from ..helpers import get_attr
-from ..constants_glifos import GLYPHS_CANONICAL, GLYPH_GROUPS
+from ..constants_glyphs import GLYPHS_CANONICAL, GLYPH_GROUPS
 from .coherence import register_coherence_callbacks
 from .diagnosis import register_diagnosis_callbacks
 
@@ -26,8 +26,8 @@ TgRun = "run"
 
 
 def _tg_state(nd: Dict[str, Any]) -> Dict[str, Any]:
-    """Estructura interna por nodo para acumular tiempos de corrida por glifo.
-    Campos: curr (glifo actual), run (tiempo acumulado en el glifo actual)
+    """Internal per-node structure for accumulating run times per glyph.
+    Fields: curr (current glyph), run (accumulated time in current glyph)
     """
     return nd.setdefault("_Tg", {TgCurr: None, TgRun: 0.0})
 
@@ -38,9 +38,9 @@ def _tg_state(nd: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _update_tg(G, hist, dt, save_by_node: bool):
-    """Acumula tiempos glíficos por nodo y devuelve conteos y latencia.
+    """Accumulate glyph times per node and return counts and latency.
 
-    ``save_by_node`` controla si se registran las corridas por nodo.
+    ``save_by_node`` controls whether per-node runs are recorded.
     """
     counts = Counter()
     n_total = 0
@@ -49,7 +49,7 @@ def _update_tg(G, hist, dt, save_by_node: bool):
     tg_total = hist.setdefault("Tg_total", defaultdict(float))
     tg_by_node = hist.setdefault("Tg_by_node", {})
 
-    last = last_glifo
+    last = last_glyph
     tg_state = _tg_state
     latent = LATENT_GLYPH
     curr_key = TgCurr
@@ -85,8 +85,8 @@ def _update_tg(G, hist, dt, save_by_node: bool):
     return counts, n_total, n_latent
 
 
-def _update_glifogram(G, hist, counts, t):
-    """Registra el glifograma del paso a partir de los conteos."""
+def _update_glyphogram(G, hist, counts, t):
+    """Record the glyphogram for the step from counts."""
     normalize_series = bool(
         G.graph.get("METRICS", METRICS).get("normalize_series", False)
     )
@@ -95,17 +95,17 @@ def _update_glifogram(G, hist, counts, t):
     for g in GLYPHS_CANONICAL:
         c = counts.get(g, 0)
         row[g] = (c / total) if normalize_series else c
-    hist.setdefault("glifogram", []).append(row)
+    hist.setdefault("glyphogram", []).append(row)
 
 
 def _update_latency_index(G, hist, n_total, n_latent, t):
-    """Añade el índice de latencia a la historia."""
+    """Add latency index to history."""
     li = n_latent / max(1, n_total)
     hist.setdefault("latency_index", []).append({"t": t, "value": li})
 
 
 def _update_epi_support(G, hist, t, thr):
-    """Calcula soporte y norma de la EPI."""
+    """Compute EPI support and norm."""
     total = 0.0
     count = 0
     for n in G.nodes():
@@ -141,11 +141,10 @@ def _update_morph_metrics(G, hist, counts, t):
 
 
 def _metrics_step(G, *args, **kwargs):
-    """Actualiza métricas operativas TNFR por paso.
+    """Update operational TNFR metrics per step.
 
-    Orquesta la actualización del glifograma, índice de latencia, Tg,
-    soporte EPI y métricas morfosintácticas. Todos los resultados se
-    guardan en ``G.graph['history']``.
+    Coordinates updates of glyphogram, latency index, Tg, EPI support and
+    morphosyntactic metrics. All results are stored in ``G.graph['history']``.
     """
     if not G.graph.get("METRICS", METRICS).get("enabled", True):
         return
@@ -157,7 +156,7 @@ def _metrics_step(G, *args, **kwargs):
 
     save_by_node = bool(G.graph.get("METRICS", METRICS).get("save_by_node", True))
     counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node)
-    _update_glifogram(G, hist, counts, t)
+    _update_glyphogram(G, hist, counts, t)
     _update_latency_index(G, hist, n_total, n_latent, t)
     _update_epi_support(G, hist, t, thr)
     _update_morph_metrics(G, hist, counts, t)
@@ -181,7 +180,7 @@ def register_metrics_callbacks(G) -> None:
 
 
 def Tg_global(G, normalize: bool = True) -> Dict[str, float]:
-    """Tiempo glífico total por clase. Si normalize=True, devuelve fracciones del total."""
+    """Total glyph time per class. If ``normalize=True``, return fractions of the total."""
     hist = ensure_history(G)
     tg_total: Dict[str, float] = hist.tracked_get("Tg_total", {})
     total = sum(tg_total.values()) or 1.0
@@ -191,7 +190,7 @@ def Tg_global(G, normalize: bool = True) -> Dict[str, float]:
 
 
 def Tg_by_node(G, n, normalize: bool = False) -> Dict[str, float | List[float]]:
-    """Resumen por nodo: si normalize, devuelve medias por glifo; si no, lista de corridas."""
+    """Per-node summary: if ``normalize`` return mean run per glyph; otherwise list runs."""
     hist = ensure_history(G)
     rec = hist.tracked_get("Tg_by_node", {}).get(n, {})
     if not normalize:
@@ -214,9 +213,9 @@ def latency_series(G) -> Dict[str, List[float]]:
     }
 
 
-def glifogram_series(G) -> Dict[str, List[float]]:
+def glyphogram_series(G) -> Dict[str, List[float]]:
     hist = ensure_history(G)
-    xs = hist.tracked_get("glifogram", [])
+    xs = hist.tracked_get("glyphogram", [])
     if not xs:
         return {"t": []}
     out = {"t": [float(x.get("t", i)) for i, x in enumerate(xs)]}
@@ -226,13 +225,13 @@ def glifogram_series(G) -> Dict[str, List[float]]:
 
 
 def glyph_top(G, k: int = 3) -> List[Tuple[str, float]]:
-    """Top-k operadores estructurales por Tg_global (fracción)."""
+    """Top-k structural operators by ``Tg_global`` (fraction)."""
     tg = Tg_global(G, normalize=True)
     return heapq.nlargest(max(1, int(k)), tg.items(), key=lambda kv: kv[1])
 
 
 def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
-    """Estadísticos por nodo: mean/median/max de corridas por glifo."""
+    """Per-node statistics: mean/median/max of runs per glyph."""
     hist = ensure_history(G)
     rec = hist.tracked_get("Tg_by_node", {}).get(n, {})
     out = {}

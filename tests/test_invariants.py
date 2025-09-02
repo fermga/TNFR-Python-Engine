@@ -6,7 +6,7 @@ import pytest
 from tnfr.constants import inject_defaults
 from tnfr.scenarios import build_graph
 from tnfr.dynamics import step, _update_history
-from tnfr.operators import aplicar_glifo, aplicar_remesh_si_estabilizacion_global
+from tnfr.operators import apply_glyph, apply_remesh_if_globally_stable
 from tnfr.types import Glyph
 
 
@@ -45,12 +45,12 @@ def test_conservation_under_IL_SHA(G_small):
 
     for _ in range(5):
         for n in G_small.nodes():
-            aplicar_glifo(G_small, n, Glyph.IL, window=1)
+            apply_glyph(G_small, n, Glyph.IL, window=1)
     epi1 = {n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()}
 
     for _ in range(5):
         for n in G_small.nodes():
-            aplicar_glifo(G_small, n, Glyph.SHA, window=1)
+            apply_glyph(G_small, n, Glyph.SHA, window=1)
     epi2 = {n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()}
 
     for n in G_small.nodes():
@@ -71,16 +71,16 @@ def test_remesh_cooldown_if_present(G_small):
     from collections import deque
     G_small.graph["_epi_hist"] = deque([snap.copy() for _ in range(tau_g + 1)], maxlen=tau_g + 1)
 
-    aplicar_remesh_si_estabilizacion_global(G_small)
+    apply_remesh_if_globally_stable(G_small)
     events = list(G_small.graph.get("history", {}).get("remesh_events", []))
     assert len(events) == 1
 
     sf.append(1.0)
-    aplicar_remesh_si_estabilizacion_global(G_small)
+    apply_remesh_if_globally_stable(G_small)
     events2 = list(G_small.graph.get("history", {}).get("remesh_events", []))
     assert len(events2) == 1
 
     sf.extend([1.0] * int(cooldown))
-    aplicar_remesh_si_estabilizacion_global(G_small)
+    apply_remesh_if_globally_stable(G_small)
     events3 = list(G_small.graph.get("history", {}).get("remesh_events", []))
     assert len(events3) == 2

@@ -11,7 +11,7 @@ def test_export_history_creates_directory_csv(tmp_path, graph_canon):
     G = graph_canon()
     export_history(G, str(base), fmt="csv")
     assert dir_path.exists()
-    assert (dir_path / (base.name + "_glifogram.csv")).is_file()
+    assert (dir_path / (base.name + "_glyphogram.csv")).is_file()
     assert (dir_path / (base.name + "_sigma.csv")).is_file()
 
 

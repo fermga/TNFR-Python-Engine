@@ -1,4 +1,4 @@
-"""Gestión de observadores."""
+"""Observer management."""
 from __future__ import annotations
 import math
 import statistics as st
@@ -14,14 +14,14 @@ from .helpers import (
 from .callback_utils import register_callback
 from .glyph_history import ensure_history, count_glyphs
 from .collections_utils import normalize_counter, mix_groups
-from .constants_glifos import GLYPH_GROUPS
+from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 
 # -------------------------
 # Observador estándar Γ(R)
 # -------------------------
 def _std_log(kind: str, G, ctx: dict):
-    """Guarda eventos compactos en ``history['events']``."""
+    """Store compact events in ``history['events']``."""
     h = ensure_history(G)
     h.setdefault("events", []).append((kind, dict(ctx)))
 
@@ -39,7 +39,7 @@ std_on_remesh = _STD_CALLBACKS["on_remesh"]
 
 
 def attach_standard_observer(G):
-    """Registra callbacks estándar: before_step, after_step, on_remesh."""
+    """Register standard callbacks: before_step, after_step, on_remesh."""
     for event, fn in _STD_CALLBACKS.items():
         register_callback(G, event, fn)
     G.graph.setdefault("_STD_OBSERVER", "attached")
@@ -47,7 +47,7 @@ def attach_standard_observer(G):
 
 
 def _phase_sums(G) -> tuple[float, float, list[float]]:
-    """Devuelve sumX, sumY y la lista de fases nodales."""
+    """Return ``sumX``, ``sumY`` and the list of node phases."""
     sumX = 0.0
     sumY = 0.0
     fases: list[float] = []
@@ -59,7 +59,7 @@ def _phase_sums(G) -> tuple[float, float, list[float]]:
     return sumX, sumY, fases
 
 
-def sincronía_fase(G) -> float:
+def phase_sync(G) -> float:
     sumX, sumY, fases = _phase_sums(G)
     count = len(fases)
     if count == 0:
@@ -73,17 +73,18 @@ def sincronía_fase(G) -> float:
     )
     return 1.0 / (1.0 + var)
 
-def orden_kuramoto(G) -> float:
-    """R en [0,1], 1 = fases perfectamente alineadas."""
+def kuramoto_order(G) -> float:
+    """R in [0,1], 1 means perfectly aligned phases."""
     if G.number_of_nodes() == 0:
         return 1.0
     R, _ = kuramoto_R_psi(G)
     return float(R)
 
-def carga_glifica(G, window: int | None = None) -> dict:
-    """Devuelve distribución de glifos aplicados en la red.
-    - window: si se indica, cuenta solo los últimos `window` eventos por nodo; si no, usa el maxlen del deque.
-    Retorna un dict con proporciones por glifo y agregados útiles.
+def glyph_load(G, window: int | None = None) -> dict:
+    """Return distribution of glyphs applied in the network.
+    - ``window``: if provided, count only the last ``window`` events per node;
+      otherwise use the deque's maxlen.
+    Returns a dict with proportions per glyph and useful aggregates.
     """
     total = count_glyphs(G, window=window, last_only=(window == 1))
     dist, count = normalize_counter(total)
@@ -95,7 +96,7 @@ def carga_glifica(G, window: int | None = None) -> dict:
 
 
 def wbar(G, window: int | None = None) -> float:
-    """Devuelve W̄ = media de C(t) en una ventana reciente."""
+    """Return W̄ = mean of C(t) over a recent window."""
     hist = G.graph.get("history", {})
     cs = hist.get("C_steps", [])
     if not cs:

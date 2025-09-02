@@ -23,7 +23,7 @@ class NodeState:
 
 
 class Glyph(str, Enum):
-    """Glifos canónicos de la TNFR."""
+    """Canonical TNFR glyphs."""
 
     AL = "AL"
     EN = "EN"

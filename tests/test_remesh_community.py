@@ -1,7 +1,7 @@
 """Pruebas de remesh community."""
 import networkx as nx
 from tnfr.constants import attach_defaults
-from tnfr.operators import aplicar_remesh_red_topologico
+from tnfr.operators import apply_topological_remesh
 
 
 def test_remesh_community_reduces_nodes_and_preserves_connectivity(graph_canon):
@@ -12,7 +12,7 @@ def test_remesh_community_reduces_nodes_and_preserves_connectivity(graph_canon):
         G.nodes[n]["EPI"] = float(n)
 
     n_before = G.number_of_nodes()
-    aplicar_remesh_red_topologico(G, mode="community")
+    apply_topological_remesh(G, mode="community")
     assert nx.is_connected(G)
     assert G.number_of_nodes() < n_before
     ev = G.graph.get("history", {}).get("remesh_events", [])

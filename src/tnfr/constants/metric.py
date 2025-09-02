@@ -1,4 +1,4 @@
-"""Constantes métricas."""
+"""Metric constants."""
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict, field
@@ -34,7 +34,7 @@ class MetricDefaults:
                 "thol_state",
                 "sigma",
                 "kuramoto",
-                "glifo_counts",
+                "glyph_counts",
             ],
             "history_key": "trace_meta",
         }
@@ -81,9 +81,9 @@ class MetricDefaults:
             "compute_symmetry": True,
             "include_typology": False,
             "advice": {
-                "stable": ["Coherencia", "Acoplamiento", "Resonancia"],
-                "transition": ["Transición", "Resonancia", "Autoorganización"],
-                "dissonant": ["Silencio", "Contracción", "Mutación"],
+                "stable": ["Coherence", "Coupling", "Resonance"],
+                "transition": ["Transition", "Resonance", "Self-organisation"],
+                "dissonant": ["Silence", "Contraction", "Mutation"],
             },
         }
     )

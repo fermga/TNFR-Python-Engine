@@ -1,4 +1,4 @@
-"""Generación de escenarios."""
+"""Scenario generation."""
 from __future__ import annotations
 import networkx as nx
 

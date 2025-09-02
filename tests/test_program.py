@@ -63,9 +63,9 @@ def test_target_persists_across_wait(graph_canon):
 
     play(G, seq(target(), wait(1), Glyph.AL), step_fn=step_add_node)
 
-    assert list(G.nodes[1]["hist_glifos"]) == [Glyph.AL.value]
-    assert list(G.nodes[2]["hist_glifos"]) == [Glyph.AL.value]
-    assert "hist_glifos" not in G.nodes[3]
+    assert list(G.nodes[1]["glyph_history"]) == [Glyph.AL.value]
+    assert list(G.nodes[2]["glyph_history"]) == [Glyph.AL.value]
+    assert "glyph_history" not in G.nodes[3]
 
 
 def test_target_accepts_string(graph_canon):
@@ -73,9 +73,9 @@ def test_target_accepts_string(graph_canon):
     # Add nodes that would be mistakenly targeted if the string were iterated
     G.add_nodes_from(["node1", "n", "o", "d", "e", "1"])
     play(G, seq(target("node1"), Glyph.AL), step_fn=_step_noop)
-    assert list(G.nodes["node1"]["hist_glifos"]) == [Glyph.AL.value]
+    assert list(G.nodes["node1"]["glyph_history"]) == [Glyph.AL.value]
     for c in "node1":
-        assert "hist_glifos" not in G.nodes[c]
+        assert "glyph_history" not in G.nodes[c]
 
 
 def test_target_accepts_bytes(graph_canon):
@@ -84,9 +84,9 @@ def test_target_accepts_bytes(graph_canon):
     codes = list(bname)
     G.add_nodes_from([bname, *codes])
     play(G, seq(target(bname), Glyph.AL), step_fn=_step_noop)
-    assert list(G.nodes[bname]["hist_glifos"]) == [Glyph.AL.value]
+    assert list(G.nodes[bname]["glyph_history"]) == [Glyph.AL.value]
     for code in codes:
-        assert "hist_glifos" not in G.nodes[code]
+        assert "glyph_history" not in G.nodes[code]
 
 def test_load_sequence_json_yaml(tmp_path):
     data = [

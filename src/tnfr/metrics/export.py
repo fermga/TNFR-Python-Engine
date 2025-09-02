@@ -1,4 +1,4 @@
-"""Exportación de métricas."""
+"""Metrics export."""
 from __future__ import annotations
 
 import csv
@@ -6,8 +6,8 @@ import json
 
 from ..glyph_history import ensure_history
 from ..io_utils import ensure_parent
-from ..constants_glifos import GLYPHS_CANONICAL
-from .core import glifogram_series
+from ..constants_glyphs import GLYPHS_CANONICAL
+from .core import glyphogram_series
 
 
 def _write_csv(path, headers, rows):
@@ -18,11 +18,11 @@ def _write_csv(path, headers, rows):
             writer.writerow(row)
 
 
-def _iter_glif_rows(glifo):
-    ts = glifo.get("t", [])
+def _iter_glif_rows(glyph):
+    ts = glyph.get("t", [])
     default_col = [0] * len(ts)
     for i, t in enumerate(ts):
-        yield [t] + [glifo.get(g, default_col)[i] for g in GLYPHS_CANONICAL]
+        yield [t] + [glyph.get(g, default_col)[i] for g in GLYPHS_CANONICAL]
 
 
 def _iter_sigma_rows(sigma):
@@ -39,10 +39,10 @@ def _iter_sigma_rows(sigma):
 
 
 def export_history(G, base_path: str, fmt: str = "csv") -> None:
-    """Vuelca glifograma y traza σ(t) a archivos CSV o JSON compactos."""
+    """Dump glyphogram and σ(t) trace to compact CSV or JSON files."""
     hist = ensure_history(G)
     ensure_parent(base_path)
-    glifo = glifogram_series(G)
+    glyph = glyphogram_series(G)
     sigma_x = hist.tracked_get("sense_sigma_x", [])
     sigma_y = hist.tracked_get("sense_sigma_y", [])
     sigma_mag = hist.tracked_get("sense_sigma_mag", [])
@@ -60,7 +60,7 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
     fmt = fmt.lower()
     if fmt == "csv":
         specs = [
-            ("_glifogram.csv", ["t", *GLYPHS_CANONICAL], _iter_glif_rows(glifo)),
+            ("_glyphogram.csv", ["t", *GLYPHS_CANONICAL], _iter_glif_rows(glyph)),
             ("_sigma.csv", ["t", "x", "y", "mag", "angle"], _iter_sigma_rows(sigma)),
         ]
         if morph:
@@ -93,6 +93,6 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
         for suffix, headers, rows in specs:
             _write_csv(base_path + suffix, headers, rows)
     else:
-        data = {"glifogram": glifo, "sigma": sigma, "morph": morph, "epi_support": epi_supp}
+        data = {"glyphogram": glyph, "sigma": sigma, "morph": morph, "epi_support": epi_supp}
         with open(base_path + ".json", "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)

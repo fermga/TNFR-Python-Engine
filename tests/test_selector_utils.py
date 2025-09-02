@@ -126,7 +126,7 @@ def test_calc_selector_score_normalizes_weights():
 
 def test_apply_selector_hysteresis_returns_prev():
     thr = DEFAULTS["SELECTOR_THRESHOLDS"]
-    nd = {"hist_glifos": ["RA"]}
+    nd = {"glyph_history": ["RA"]}
     # near si_hi threshold
     prev = _apply_selector_hysteresis(nd, thr["si_hi"] - 0.01, 0.2, 0.2, thr, 0.05)
     assert prev == "RA"

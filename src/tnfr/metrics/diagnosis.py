@@ -1,4 +1,4 @@
-"""Métricas de diagnóstico."""
+"""Diagnostic metrics."""
 from __future__ import annotations
 
 from statistics import fmean
@@ -110,7 +110,7 @@ def _diagnosis_step(G, ctx=None):
 
         alerts = []
         if state == "disonante" and dnfr_n >= float(dcfg.get("dissonance", {}).get("dnfr_hi", 0.5)):
-            alerts.append("tensión estructural alta")
+            alerts.append("high structural tension")
 
         advice = _recommendation(state, dcfg)
 
@@ -133,10 +133,9 @@ def _diagnosis_step(G, ctx=None):
 
 
 def dissonance_events(G, ctx=None):
-    """Emite eventos de inicio/fin de disonancia estructural por nodo.
+    """Emit per-node structural dissonance start/end events.
 
-    Los eventos se registran como ``"dissonance_start"`` y
-    ``"dissonance_end"``.
+    Events are recorded as ``"dissonance_start"`` and ``"dissonance_end"``.
     """
     hist = ensure_history(G)
     evs = hist.setdefault("events", [])

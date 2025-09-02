@@ -46,7 +46,7 @@ def test_validator_sigma_norm(monkeypatch):
         run_validators(G)
 
 
-def test_validator_glifo_invalido():
+def test_validator_glyph_invalido():
     G = _base_graph()
     n0 = list(G.nodes())[0]
     set_attr_str(G.nodes[n0], ALIAS_EPI_KIND, "INVALID")
@@ -54,7 +54,7 @@ def test_validator_glifo_invalido():
         run_validators(G)
 
 
-def test_validator_glifo_valido():
+def test_validator_glyph_valido():
     G = _base_graph()
     run_validators(G)
 

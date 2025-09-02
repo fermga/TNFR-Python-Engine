@@ -1,4 +1,4 @@
-"""Reglas de gramática."""
+"""Grammar rules."""
 
 from __future__ import annotations
 from typing import Dict, Any, Set, Iterable, Optional, Callable
@@ -12,12 +12,12 @@ from .constants import (
     get_param,
 )
 from .helpers import get_attr, clamp01
-from .glyph_history import reciente_glifo
+from .glyph_history import recent_glyph
 from .types import Glyph
 
 logger = logging.getLogger(__name__)
 
-# Glifos nominales (para evitar typos)
+# Nominal glyphs (to avoid typos)
 AL = Glyph.AL
 EN = Glyph.EN
 IL = Glyph.IL
@@ -33,13 +33,14 @@ NAV = Glyph.NAV
 REMESH = Glyph.REMESH
 
 # -------------------------
-# Estado de gramática por nodo
+# Per-node grammar state
 # -------------------------
 
 
 def _gram_state(nd: Dict[str, Any]) -> Dict[str, Any]:
-    """Crea/retorna el estado de gramática nodal.
-    Campos:
+    """Create or return the node grammar state.
+
+    Fields:
       - thol_open (bool)
       - thol_len (int)
     """
@@ -47,7 +48,7 @@ def _gram_state(nd: Dict[str, Any]) -> Dict[str, Any]:
 
 
 # -------------------------
-# Compatibilidades canónicas (siguiente permitido)
+# Canonical compatibilities (allowed next glyphs)
 # -------------------------
 CANON_COMPAT: Dict[Glyph, Set[Glyph]] = {
     # Inicio / apertura
@@ -78,7 +79,7 @@ CANON_COMPAT: Dict[Glyph, Set[Glyph]] = {
     },
 }
 
-# Fallbacks canónicos si una transición no está permitida
+# Canonical fallbacks when a transition is not allowed
 CANON_FALLBACK: Dict[Glyph, Glyph] = {
     Glyph.AL: Glyph.EN,
     Glyph.EN: Glyph.IL,
@@ -95,16 +96,16 @@ CANON_FALLBACK: Dict[Glyph, Glyph] = {
 }
 
 # -------------------------
-# Cierres THOL y precondiciones ZHIR
+# THOL closures and ZHIR preconditions
 # -------------------------
 
 
 def _norm_attr(G, nd, attr_alias: str, norm_key: str) -> float:
-    """Normaliza ``attr_alias`` usando el máximo global ``norm_key``.
+    """Normalise ``attr_alias`` using the global maximum ``norm_key``.
 
-    ``_sel_norms`` se guarda en ``G.graph`` y contiene los máximos por
-    atributo calculados por los selectores.  Si falta ``norm_key`` el
-    valor por defecto es ``1.0`` para evitar divisiones por cero.
+    ``_sel_norms`` is stored in ``G.graph`` and contains per-attribute
+    maxima computed by selectors. If ``norm_key`` is missing the default
+    value ``1.0`` is used to avoid division by zero.
     """
 
     norms = G.graph.get("_sel_norms") or {}
@@ -113,7 +114,7 @@ def _norm_attr(G, nd, attr_alias: str, norm_key: str) -> float:
 
 
 def _dnfr_norm(G, nd) -> float:
-    """Normalizador robusto para |ΔNFR|."""
+    """Robust normaliser for |ΔNFR|."""
     return _norm_attr(G, nd, ALIAS_DNFR, "dnfr_max")
 
 
@@ -122,18 +123,18 @@ def _si(G, nd) -> float:
 
 
 def _accel_norm(G, nd) -> float:
-    """Normaliza la aceleración usando el máximo global."""
+    """Normalise acceleration using the global maximum."""
     return _norm_attr(G, nd, ALIAS_D2EPI, "accel_max")
 
 
 def _check_repeats(G, n, cand: str, cfg: Dict[str, Any]) -> str:
-    """Evita repeticiones recientes según ``cfg``."""
+    """Avoid recent repetitions according to ``cfg``."""
     nd = G.nodes[n]
     gwin = int(cfg.get("window", 0))
     avoid = set(cfg.get("avoid_repeats", []))
     fallbacks = cfg.get("fallbacks", {})
     cand_key = cand.value if isinstance(cand, Glyph) else str(cand)
-    if gwin > 0 and cand_key in avoid and reciente_glifo(nd, cand_key, gwin):
+    if gwin > 0 and cand_key in avoid and recent_glyph(nd, cand_key, gwin):
         fb = fallbacks.get(cand_key, CANON_FALLBACK.get(cand_key, cand_key))
         try:
             return Glyph(fb)
@@ -153,7 +154,7 @@ def _check_force(
     accessor: Callable[[Any, Dict[str, Any]], float],
     cfg_key: str,
 ) -> str:
-    """Si la repetición fue bloqueada pero ``accessor`` excede el umbral, restaura ``original``."""
+    """If repetition was blocked but ``accessor`` exceeds the threshold, restore ``original``."""
     if cand == original:
         return cand
     force_th = float(cfg.get(cfg_key, 0.60))
@@ -167,7 +168,7 @@ def _check_oz_to_zhir(G, n, cand: str, cfg: Dict[str, Any]) -> str:
     if cand == Glyph.ZHIR:
         win = int(cfg.get("zhir_requires_oz_window", 3))
         dn_min = float(cfg.get("zhir_dnfr_min", 0.05))
-        if not reciente_glifo(nd, Glyph.OZ, win) and _dnfr_norm(G, nd) < dn_min:
+        if not recent_glyph(nd, Glyph.OZ, win) and _dnfr_norm(G, nd) < dn_min:
             return Glyph.OZ
     return cand
 
@@ -194,7 +195,7 @@ def _check_thol_closure(
 
 def _check_compatibility(G, n, cand: str) -> str:
     nd = G.nodes[n]
-    hist = nd.get("hist_glifos")
+    hist = nd.get("glyph_history")
     prev = hist[-1] if hist else None
     if prev in CANON_COMPAT and cand not in CANON_COMPAT[prev]:
         return CANON_FALLBACK.get(prev, cand)
@@ -202,28 +203,28 @@ def _check_compatibility(G, n, cand: str) -> str:
 
 
 # -------------------------
-# Núcleo: forzar gramática sobre un candidato
+# Core: enforce grammar on a candidate
 # -------------------------
 
 
 def enforce_canonical_grammar(G, n, cand: str) -> str:
-    """Valida/ajusta el glifo candidato según la gramática canónica.
+    """Validate and adjust a candidate glyph according to canonical grammar.
 
-    Reglas clave:
-      - Ventana de repetición con fuerzas por |ΔNFR| y aceleración.
-      - Compatibilidades de transición glífica (recorrido TNFR).
-      - OZ→ZHIR: la mutación requiere disonancia reciente o |ΔNFR| alto.
-      - THOL[...]: obliga cierre con SHA o NUL cuando el campo se estabiliza
-        o se alcanza el largo del bloque; mantiene estado por nodo.
+    Key rules:
+      - Repeat window with forces based on |ΔNFR| and acceleration.
+      - Transition compatibilities (TNFR path).
+      - OZ→ZHIR: mutation requires recent dissonance or high |ΔNFR|.
+      - THOL[...]: forces closure with SHA or NUL when the field stabilises
+        or block length is reached; maintains per-node state.
 
-    Devuelve el glifo efectivo a aplicar.
+    Returns the effective glyph to apply.
     """
     nd = G.nodes[n]
     st = _gram_state(nd)
     cfg_canon = G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {}))
     cfg_soft = G.graph.get("GRAMMAR", DEFAULTS.get("GRAMMAR", {}))
 
-    # 0) Si vienen glifos fuera del alfabeto, no tocamos
+    # 0) If glyphs outside the alphabet arrive, leave untouched
     if cand not in CANON_COMPAT:
         return cand
 
@@ -239,11 +240,11 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
 
 
 # -------------------------
-# Post-selección: actualizar estado de gramática
+# Post-selection: update grammar state
 # -------------------------
 
 
-def on_applied_glifo(G, n, applied: str) -> None:
+def on_applied_glyph(G, n, applied: str) -> None:
     nd = G.nodes[n]
     st = _gram_state(nd)
     if applied == Glyph.THOL:
@@ -255,21 +256,21 @@ def on_applied_glifo(G, n, applied: str) -> None:
 
 
 # -------------------------
-# Aplicación directa con gramática canónica
+# Direct application with canonical grammar
 # -------------------------
 
 
 def apply_glyph_with_grammar(
     G, nodes: Optional[Iterable[Any]], glyph: Glyph | str, window: Optional[int] = None
 ) -> None:
-    """Aplica ``glyph`` a ``nodes`` pasando por la gramática canónica.
+    """Apply ``glyph`` to ``nodes`` enforcing the canonical grammar.
 
-    ``nodes`` admite ``NodeView`` y cualquier iterable. Se itera directamente
-    sobre ``nodes`` para evitar materializaciones innecesarias; corresponde al
-    llamador materializarlo si necesita indexación.
+    ``nodes`` may be a ``NodeView`` or any iterable. The iterable is consumed
+    directly to avoid unnecessary materialisation; callers must materialise if
+    they need indexing.
     """
 
-    from .operators import aplicar_glifo
+    from .operators import apply_glyph
 
     if window is None:
         window = get_param(G, "GLYPH_HYSTERESIS_WINDOW")
@@ -278,21 +279,21 @@ def apply_glyph_with_grammar(
     iter_nodes = G.nodes() if nodes is None else nodes
     for n in iter_nodes:
         g_eff = enforce_canonical_grammar(G, n, g_str)
-        aplicar_glifo(G, n, g_eff, window=window)
-        on_applied_glifo(G, n, g_eff)
+        apply_glyph(G, n, g_eff, window=window)
+        on_applied_glyph(G, n, g_eff)
 
 
 # -------------------------
-# Integración con dynamics.step: helper de selección+aplicación
+# Integration with ``dynamics.step``: helper for selection+application
 # -------------------------
 
 
 def select_and_apply_with_grammar(G, n, selector, window: int) -> None:
-    """Aplica gramática canónica sobre la propuesta del selector.
+    """Apply canonical grammar over the selector's proposal.
 
-    El selector puede incluir una gramática **suave** (pre–filtro) como
-    `parametric_glyph_selector`; la presente función garantiza que la
-    gramática canónica tenga precedencia final.
+    The selector may include a **soft** grammar (pre-filter) such as
+    ``parametric_glyph_selector``; this function ensures the canonical
+    grammar has final precedence.
     """
     cand = selector(G, n)
     apply_glyph_with_grammar(G, [n], cand, window)

@@ -26,16 +26,19 @@ if TYPE_CHECKING:
 from .types import Glyph
 from collections import deque, OrderedDict
 
-"""
-Este módulo implementa:
-- Los 13 glifos como operadores locales suaves.
-- Un dispatcher `aplicar_glifo` que mapea el nombre del glifo (con apóstrofo tipográfico) a su función.
-- REMESH de red: `aplicar_remesh_red` y `aplicar_remesh_si_estabilización_global`.
+"""Network operators.
 
-Nota sobre α (alpha) de REMESH: se toma por prioridad de
-1) G.graph["GLYPH_FACTORS"]["REMESH_alpha"]
-2) G.graph["REMESH_ALPHA"]
-3) REMESH_DEFAULTS["REMESH_ALPHA"]
+This module implements:
+- The 13 glyphs as smooth local operators.
+- A dispatcher ``apply_glyph`` that maps the glyph name (with typographic
+  apostrophe) to its function.
+- Network remeshing: ``apply_network_remesh`` and
+  ``apply_remesh_if_globally_stable``.
+
+Note on REMESH α (alpha) precedence:
+1) ``G.graph["GLYPH_FACTORS"]["REMESH_alpha"]``
+2) ``G.graph["REMESH_ALPHA"]``
+3) ``REMESH_DEFAULTS["REMESH_ALPHA"]``
 """
 
 
@@ -180,11 +183,11 @@ def get_glyph_factors(node: NodoProtocol) -> Dict[str, Any]:
     return node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
 
 # -------------------------
-# Glifos (operadores locales)
+# Glyphs (operadores locales)
 # -------------------------
 
 
-def _select_dominant_glifo(node: NodoProtocol, neigh: Iterable[NodoProtocol]) -> Optional[str]:
+def _select_dominant_glyph(node: NodoProtocol, neigh: Iterable[NodoProtocol]) -> Optional[str]:
     """Return the epi_kind with the highest |EPI| among node and its neighbors."""
     best_mag = abs(node.EPI)
     best_kind = node.epi_kind
@@ -199,10 +202,10 @@ def _select_dominant_glifo(node: NodoProtocol, neigh: Iterable[NodoProtocol]) ->
 def _mix_epi_with_neighbors(
     node: NodoProtocol, mix: float, default_glyph: Glyph | str
 ) -> None:
-    """Mezcla ``EPI`` del ``node`` con la media de sus vecinos.
+    """Mix ``EPI`` of ``node`` with the mean of its neighbours.
 
-    ``mix`` controla la fracción de influencia vecinal y ``default_glyph`` es el
-    glifo que se asignará si no hay vecinos o si no se detecta uno dominante.
+    ``mix`` controls the neighbour influence fraction and ``default_glyph``
+    is assigned when there are no neighbours or no dominant one.
     """
 
     default_kind = (
@@ -223,7 +226,7 @@ def _mix_epi_with_neighbors(
         neigh = neigh_ids  # NodoTNFR already
     epi_bar = list_mean(v.EPI for v in neigh)
     node.EPI = (1 - mix) * epi + mix * epi_bar
-    node.epi_kind = _select_dominant_glifo(node, neigh) or default_kind
+    node.epi_kind = _select_dominant_glyph(node, neigh) or default_kind
 
 
 def _op_AL(node: NodoProtocol) -> None:  # AL — Emisión
@@ -258,22 +261,21 @@ def _op_OZ(node: NodoProtocol) -> None:  # OZ — Disonancia
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
 
 
-def _op_UM(node: NodoProtocol) -> None:  # UM — Acoplamiento
-    """Alinea fase y opcionalmente crea enlaces funcionales.
+def _op_UM(node: NodoProtocol) -> None:  # UM — Coupling
+    """Align phase and optionally create functional links.
 
-    La búsqueda de enlaces puede reducirse evaluando sólo un subconjunto de
-    candidatos. ``UM_CANDIDATE_COUNT`` establece cuántos nodos considerar y
-    ``UM_CANDIDATE_MODE`` define la estrategia:
+    Link search can be reduced by evaluating only a subset of candidates.
+    ``UM_CANDIDATE_COUNT`` sets how many nodes to consider and
+    ``UM_CANDIDATE_MODE`` selects the strategy:
 
-    * ``"proximity"``: selecciona los nodos más cercanos en fase.
-    * ``"sample"``: toma una muestra determinista.
+    * ``"proximity"``: choose nodes closest in phase.
+    * ``"sample"``: take a deterministic sample.
 
-    Desde ``dynamics.step`` se mantiene en ``G.graph['_node_sample']`` una
-    muestra aleatoria renovada en cada paso. Cuando el grafo es pequeño
-    (``<50`` nodos) la muestra contiene todos los nodos y el muestreo se
-    desactiva.
+    ``dynamics.step`` keeps a refreshed random sample in ``G.graph['_node_sample']``.
+    When the graph is small (``<50`` nodes) the sample contains all nodes and
+    sampling is disabled.
 
-    Esto preserva la lógica de acoplamiento sin revisar todos los nodos.
+    This preserves coupling logic without scanning all nodes.
     """
 
     gf = get_glyph_factors(node)
@@ -344,7 +346,7 @@ def _op_SHA(node: NodoProtocol) -> None:  # SHA — Silencio
 
 
 def _scale_epi(node: NodoProtocol, factor: float, glyph: Glyph) -> None:
-    """Escala ``EPI`` del nodo y actualiza ``epi_kind``."""
+    """Scale node ``EPI`` and update ``epi_kind``."""
     node.EPI = factor * node.EPI
     node.epi_kind = glyph.value if isinstance(glyph, Glyph) else str(glyph)
 
@@ -397,7 +399,7 @@ def _op_REMESH(node: NodoProtocol) -> None:  # REMESH — aviso
     step_idx = len(node.graph.get("history", {}).get("C_steps", []))
     last_warn = node.graph.get("_remesh_warn_step", None)
     if last_warn != step_idx:
-        msg = "REMESH es a escala de red. Usa aplicar_remesh_si_estabilizacion_global(G) o aplicar_remesh_red(G)."
+        msg = "REMESH es a escala de red. Usa apply_remesh_if_globally_stable(G) o apply_network_remesh(G)."
         node.graph.setdefault("history", {}).setdefault("events", []).append(("warn", {"step": step_idx, "node": None, "msg": msg}))
         node.graph["_remesh_warn_step"] = step_idx
     return
@@ -447,11 +449,11 @@ op_NAV = _wrap(_op_NAV)
 op_REMESH = _wrap(_op_REMESH)
 
 
-def aplicar_glifo_obj(node: NodoProtocol, glifo: Glyph | str, *, window: Optional[int] = None) -> None:
-    """Aplica ``glifo`` a un objeto que cumple :class:`NodoProtocol`."""
+def apply_glyph_obj(node: NodoProtocol, glyph: Glyph | str, *, window: Optional[int] = None) -> None:
+    """Apply ``glyph`` to an object satisfying :class:`NodoProtocol`."""
 
     try:
-        g = glifo if isinstance(glifo, Glyph) else Glyph(str(glifo))
+        g = glyph if isinstance(glyph, Glyph) else Glyph(str(glyph))
     except ValueError:
         step_idx = len(node.graph.get("history", {}).get("C_steps", []))
         node.graph.setdefault("history", {}).setdefault("events", []).append(
@@ -460,26 +462,26 @@ def aplicar_glifo_obj(node: NodoProtocol, glifo: Glyph | str, *, window: Optiona
                 {
                     "step": step_idx,
                     "node": getattr(node, "n", None),
-                    "msg": f"glifo desconocido: {glifo}",
+                    "msg": f"glyph desconocido: {glyph}",
                 },
             )
         )
-        raise ValueError(f"glifo desconocido: {glifo}")
+        raise ValueError(f"glyph desconocido: {glyph}")
 
     op = _NAME_TO_OP.get(g)
     if op is None:
-        raise ValueError(f"glifo sin operador: {g}")
+        raise ValueError(f"glyph sin operador: {g}")
     if window is None:
         window = int(get_param(node, "GLYPH_HYSTERESIS_WINDOW"))
     op(node)
-    node.push_glifo(g.value, window)
+    node.push_glyph(g.value, window)
 
 
-def aplicar_glifo(G, n, glifo: Glyph | str, *, window: Optional[int] = None) -> None:
-    """Adaptador para operar sobre grafos ``networkx``."""
+def apply_glyph(G, n, glyph: Glyph | str, *, window: Optional[int] = None) -> None:
+    """Adapter to operate on ``networkx`` graphs."""
     NodoNX = _get_NodoNX()
     node = NodoNX(G, n)
-    aplicar_glifo_obj(node, glifo, window=window)
+    apply_glyph_obj(node, glyph, window=window)
 
 
 # -------------------------
@@ -487,7 +489,7 @@ def aplicar_glifo(G, n, glifo: Glyph | str, *, window: Optional[int] = None) -> 
 # -------------------------
 
 def _remesh_alpha_info(G):
-    """Devuelve ``(alpha, source)`` con precedencia explícita."""
+    """Return ``(alpha, source)`` with explicit precedence."""
     if bool(
         G.graph.get("REMESH_ALPHA_HARD", REMESH_DEFAULTS["REMESH_ALPHA_HARD"])
     ):
@@ -501,8 +503,8 @@ def _remesh_alpha_info(G):
     return float(REMESH_DEFAULTS["REMESH_ALPHA"]), "REMESH_DEFAULTS.REMESH_ALPHA"
 
 
-def aplicar_remesh_red(G) -> None:
-    """REMESH a escala de red usando _epi_hist con memoria multi-escala."""
+def apply_network_remesh(G) -> None:
+    """Network-scale REMESH using ``_epi_hist`` with multi-scale memory."""
     # REMESH_TAU: alias legado resuelto por ``get_param``
     tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
     tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
@@ -589,7 +591,7 @@ def aplicar_remesh_red(G) -> None:
     invoke_callbacks(G, "on_remesh", dict(meta))
 
 
-def aplicar_remesh_red_topologico(
+def apply_topological_remesh(
     G,
     mode: Optional[str] = None,
     *,
@@ -597,15 +599,15 @@ def aplicar_remesh_red_topologico(
     p_rewire: float = 0.2,
     seed: Optional[int] = None,
 ) -> None:
-    """Remallado topológico aproximado.
+    """Approximate topological remeshing.
 
-    - mode="knn": conecta cada nodo con sus ``k`` vecinos más similares en EPI
-      con probabilidad ``p_rewire``.
-    - mode="mst": sólo preserva un árbol de expansión mínima según distancia EPI.
-    - mode="community": agrupa por comunidades modulares y las conecta por
-      similitud intercomunidad.
+    - ``mode="knn"``: connect each node with its ``k`` most similar neighbours in EPI
+      with probability ``p_rewire``.
+    - ``mode="mst"``: preserve only a minimum spanning tree according to EPI distance.
+    - ``mode="community"``: group by modular communities and connect them by
+      inter-community similarity.
 
-    Siempre preserva conectividad añadiendo un MST base.
+    Connectivity is always preserved by adding a base MST.
     """
     nodes = list(G.nodes())
     n_before = len(nodes)
@@ -727,7 +729,7 @@ def aplicar_remesh_red_topologico(
     G.add_edges_from(new_edges)
     increment_edge_version(G)
 
-def aplicar_remesh_si_estabilizacion_global(G, pasos_estables_consecutivos: Optional[int] = None) -> None:
+def apply_remesh_if_globally_stable(G, pasos_estables_consecutivos: Optional[int] = None) -> None:
     # Ventanas y umbrales
     w_estab = (
         pasos_estables_consecutivos
@@ -810,6 +812,6 @@ def aplicar_remesh_si_estabilizacion_global(G, pasos_estables_consecutivos: Opti
     if cooldown_ts > 0 and (t_now - last_ts) < cooldown_ts:
         return
     # 4) Aplicar y registrar
-    aplicar_remesh_red(G)
+    apply_network_remesh(G)
     G.graph["_last_remesh_step"] = step_idx
     G.graph["_last_remesh_ts"] = t_now

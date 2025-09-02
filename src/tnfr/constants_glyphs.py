@@ -1,4 +1,4 @@
-"""Glifos predeterminados."""
+"""Glyphs predeterminados."""
 from __future__ import annotations
 
 import math
@@ -56,7 +56,7 @@ GLYPH_GROUPS = {
 # Mapa de ángulos glíficos
 # -------------------------
 
-# Ángulos canónicos para todos los glifos reconocidos. Las categorías
+# Ángulos canónicos para todos los glyphs reconocidos. Las categorías
 # anteriores se distribuyen uniformemente en el círculo y se ajustan a
 # orientaciones semánticas específicas en el plano σ.
 ANGLE_MAP: Dict[str, float] = {

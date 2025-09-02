@@ -50,11 +50,11 @@ def test_op_en_sets_epi_kind_on_isolated_node():
     assert node.epi_kind == Glyph.EN.value
 
 
-def test_aplicar_glifo_invalid_glifo_raises_and_logs():
+def test_apply_glyph_invalid_glyph_raises_and_logs():
     node = NodoTNFR()
     node.graph["history"] = {}
     with pytest.raises(ValueError):
-        node.aplicar_glifo("NO_EXISTE")
+        node.apply_glyph("NO_EXISTE")
     events = node.graph["history"].get("events")
     assert events and events[-1][0] == "warn"
-    assert "glifo desconocido" in events[-1][1]["msg"]
+    assert "glyph desconocido" in events[-1][1]["msg"]

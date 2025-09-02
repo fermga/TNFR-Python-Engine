@@ -74,10 +74,10 @@ __all__ = [
     "set_dnfr",
     "media_vecinal",
     "fase_media",
-    "push_glifo",
-    "reciente_glifo",
+    "push_glyph",
+    "recent_glyph",
     "ensure_history",
-    "last_glifo",
+    "last_glyph",
     "count_glyphs",
     "normalize_counter",
     "mix_groups",
@@ -651,29 +651,29 @@ def fase_media(obj, n=None) -> float:
 
 
 # -------------------------
-# Historial de glifos por nodo
+# Historial de glyphs por nodo
 # -------------------------
 
-def push_glifo(nd: Dict[str, Any], glifo: str, window: int) -> None:
-    """Añade ``glifo`` al historial del nodo con tamaño máximo ``window``."""
-    hist = nd.get("hist_glifos")
+def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
+    """Añade ``glyph`` al historial del nodo con tamaño máximo ``window``."""
+    hist = nd.get("glyph_history")
     if hist is None or hist.maxlen != window:
         hist = deque(hist or [], maxlen=window)
-        nd["hist_glifos"] = hist
-    hist.append(str(glifo))
+        nd["glyph_history"] = hist
+    hist.append(str(glyph))
 
 
-def reciente_glifo(nd: Dict[str, Any], glifo: str, ventana: int) -> bool:
-    """Indica si ``glifo`` apareció en las últimas ``ventana`` emisiones"""
-    hist = nd.get("hist_glifos")
-    gl = str(glifo)
+def recent_glyph(nd: Dict[str, Any], glyph: str, ventana: int) -> bool:
+    """Indica si ``glyph`` apareció en las últimas ``ventana`` emisiones"""
+    hist = nd.get("glyph_history")
+    gl = str(glyph)
     if ventana < 0:
         raise ValueError("ventana debe ser >= 0")
     if hist and ventana > 0:
         for reciente in islice(reversed(hist), ventana):
             if gl == reciente:
                 return True
-    # fallback al glifo dominante actual
+    # fallback al glyph dominante actual
     return get_attr_str(nd, ALIAS_EPI_KIND, "") == gl
 
 # -------------------------
@@ -786,12 +786,12 @@ def ensure_history(G) -> Dict[str, Any]:
     return hist
 
 
-def last_glifo(nd: Dict[str, Any]) -> str | None:
-    """Retorna el glifo más reciente del nodo o ``None``."""
+def last_glyph(nd: Dict[str, Any]) -> str | None:
+    """Retorna el glyph más reciente del nodo o ``None``."""
     kind = get_attr_str(nd, ALIAS_EPI_KIND, "")
     if kind:
         return kind
-    hist = nd.get("hist_glifos")
+    hist = nd.get("glyph_history")
     if not hist:
         return None
     try:
@@ -803,19 +803,19 @@ def last_glifo(nd: Dict[str, Any]) -> str | None:
 def count_glyphs(
     G, window: int | None = None, *, last_only: bool = False
 ) -> Counter:
-    """Cuenta glifos recientes en la red.
+    """Cuenta glyphs recientes en la red.
 
-    Si ``last_only`` es ``True`` cuenta solo el último glifo de cada nodo. En
-    caso contrario se usa el historial ``hist_glifos`` limitado a los últimos
+    Si ``last_only`` es ``True`` cuenta solo el último glyph de cada nodo. En
+    caso contrario se usa el historial ``glyph_history`` limitado a los últimos
     ``window`` elementos por nodo (o a todo el deque si ``window`` es ``None``).
     """
     counts: Counter[str] = Counter()
     for _, nd in G.nodes(data=True):
         if last_only:
-            g = last_glifo(nd)
+            g = last_glyph(nd)
             seq: Iterable[str] = [g] if g else []
         else:
-            hist = nd.get("hist_glifos")
+            hist = nd.get("glyph_history")
             if not hist:
                 continue
             if window is not None and window > 0:

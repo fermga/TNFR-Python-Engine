@@ -3,7 +3,7 @@ import time
 from collections import Counter, defaultdict
 
 from tnfr.constants import attach_defaults
-from tnfr.glyph_history import last_glifo
+from tnfr.glyph_history import last_glyph
 from tnfr.metrics import _update_tg, _tg_state
 from tnfr.metrics.core import LATENT_GLYPH, TgCurr, TgRun
 
@@ -19,7 +19,7 @@ def _update_tg_naive(G, hist, dt, save_by_node):
 
     for n in G.nodes():
         nd = G.nodes[n]
-        g = last_glifo(nd)
+        g = last_glyph(nd)
         if not g:
             continue
 
