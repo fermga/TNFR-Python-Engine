@@ -52,7 +52,10 @@ def ensure_collection(
         data = tuple(islice(iterator, limit))
         extra = next(iterator, None)
         if extra is not None:
-            raise ValueError(f"Iterable materialization exceeded {limit} items")
+            total = limit + 1 + sum(1 for _ in iterator)
+            raise ValueError(
+                f"Iterable materialization exceeded {limit} items (total {total})"
+            )
         return data
     except TypeError as exc:
         raise TypeError(f"{it!r} is not iterable") from exc
