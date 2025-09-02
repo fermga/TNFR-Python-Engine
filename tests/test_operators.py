@@ -53,6 +53,18 @@ def test_random_jitter_negative_amplitude(graph_canon):
         random_jitter(n0, -0.1)
 
 
+def test_rng_cache_disabled_with_size_zero(graph_canon):
+    clear_rng_cache()
+    G = graph_canon()
+    G.graph["JITTER_CACHE_SIZE"] = 0
+    G.add_node(0)
+    n0 = NodoNX(G, 0)
+    j1 = random_jitter(n0, 0.5)
+    j2 = random_jitter(n0, 0.5)
+    assert j1 == j2
+    assert len(operators._rng_cache) == 0
+
+
 def test_rng_cache_lru_purge(graph_canon):
     clear_rng_cache()
     G = graph_canon()
