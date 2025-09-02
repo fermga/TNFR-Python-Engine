@@ -1,6 +1,17 @@
 """Funciones auxiliares."""
 from __future__ import annotations
-from typing import Iterable, Sequence, Dict, Any, Callable, TypeVar, Mapping
+from typing import (
+    Iterable,
+    Sequence,
+    Dict,
+    Any,
+    Callable,
+    TypeVar,
+    Mapping,
+    Optional,
+    overload,
+    cast,
+)
 from collections.abc import Collection
 import logging
 import math
@@ -166,7 +177,7 @@ def ensure_collection(it: Iterable[T], *, max_materialize: int | None = None) ->
     if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
         return it
     if isinstance(it, (str, bytes, bytearray)):
-        return (it,)
+        return cast(Collection[T], (it,))
     try:
         if max_materialize is None:
             return tuple(it)
@@ -337,15 +348,41 @@ def _validate_aliases(aliases: Sequence[str]) -> Sequence[str]:
     return aliases
 
 
+@overload
 def alias_get(
     d: Dict[str, Any],
     aliases: Sequence[str],
     conv: Callable[[Any], T],
     *,
-    default: Any | None = None,
+    default: None = ..., 
     strict: bool = False,
     log_level: int | None = None,
-) -> T | None:
+) -> Optional[T]:
+    ...
+
+
+@overload
+def alias_get(
+    d: Dict[str, Any],
+    aliases: Sequence[str],
+    conv: Callable[[Any], T],
+    *,
+    default: T,
+    strict: bool = False,
+    log_level: int | None = None,
+) -> T:
+    ...
+
+
+def alias_get(
+    d: Dict[str, Any],
+    aliases: Sequence[str],
+    conv: Callable[[Any], T],
+    *,
+    default: Optional[Any] = None,
+    strict: bool = False,
+    log_level: int | None = None,
+) -> Optional[T]:
     """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor convertido.
 
     ``aliases`` debe ser una secuencia (idealmente una tupla) de claves. No se
@@ -387,6 +424,7 @@ def alias_set(
     """
     aliases = _validate_aliases(aliases)
     _, val = _convert_value(value, conv, strict=True)
+    assert val is not None
     for key in aliases:
         if key in d:
             d[key] = val
@@ -396,6 +434,7 @@ def alias_set(
     return val
 
 
+@overload
 def get_attr(
     d: Dict[str, Any],
     aliases: Sequence[str],
@@ -404,6 +443,29 @@ def get_attr(
     strict: bool = False,
     log_level: int | None = None,
 ) -> float:
+    ...
+
+
+@overload
+def get_attr(
+    d: Dict[str, Any],
+    aliases: Sequence[str],
+    default: None,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+) -> Optional[float]:
+    ...
+
+
+def get_attr(
+    d: Dict[str, Any],
+    aliases: Sequence[str],
+    default: Optional[float] = 0.0,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+) -> Optional[float]:
     """Obtiene un atributo numérico usando :func:`alias_get`.
 
     ``aliases`` debe ser una secuencia de claves (idealmente una tupla).
@@ -421,6 +483,7 @@ def set_attr(d, aliases: Sequence[str], value: float) -> float:
     return alias_set(d, aliases, float, value)
 
 
+@overload
 def get_attr_str(
     d: Dict[str, Any],
     aliases: Sequence[str],
@@ -429,6 +492,29 @@ def get_attr_str(
     strict: bool = False,
     log_level: int | None = None,
 ) -> str:
+    ...
+
+
+@overload
+def get_attr_str(
+    d: Dict[str, Any],
+    aliases: Sequence[str],
+    default: None,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+) -> Optional[str]:
+    ...
+
+
+def get_attr_str(
+    d: Dict[str, Any],
+    aliases: Sequence[str],
+    default: Optional[str] = "",
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+) -> Optional[str]:
     """Obtiene un atributo de texto usando :func:`alias_get`.
 
     ``aliases`` debe ser una secuencia de claves (idealmente una tupla).
@@ -740,7 +826,7 @@ def count_glyphs(
     for _, nd in G.nodes(data=True):
         if last_only:
             g = last_glifo(nd)
-            seq = [g] if g else []
+            seq: Iterable[str] = [g] if g else []
         else:
             hist = nd.get("hist_glifos")
             if not hist:
