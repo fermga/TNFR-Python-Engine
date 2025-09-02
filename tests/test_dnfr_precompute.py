@@ -23,6 +23,9 @@ def test_strategies_share_precomputed_data():
     data = _prepare_dnfr_data(G)
     _compute_dnfr_loops(G, data)
     dnfr_loop = [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in G.nodes]
+    expected = [0.1, -0.05, 0.0, -0.05, 0.1]
+    assert dnfr_loop == pytest.approx(expected)
     _compute_dnfr_numpy(G, data)
     dnfr_vec = [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in G.nodes]
+    assert dnfr_vec == pytest.approx(expected)
     assert dnfr_loop == pytest.approx(dnfr_vec)

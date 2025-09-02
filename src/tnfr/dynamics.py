@@ -216,6 +216,48 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
     }
 
 
+def _apply_dnfr_gradients(
+    G,
+    data,
+    th_bar,
+    epi_bar,
+    vf_bar,
+    deg_bar=None,
+    degs=None,
+):
+    """Combina gradientes precalculados y escribe ΔNFR en cada nodo."""
+    nodes = data["nodes"]
+    theta = data["theta"]
+    epi = data["epi"]
+    vf = data["vf"]
+    w_phase = data["w_phase"]
+    w_epi = data["w_epi"]
+    w_vf = data["w_vf"]
+    w_topo = data["w_topo"]
+    if degs is None:
+        degs = data.get("degs")
+
+    for i, n in enumerate(nodes):
+        g_phase = -angle_diff(theta[i], th_bar[i]) / math.pi
+        g_epi = epi_bar[i] - epi[i]
+        g_vf = vf_bar[i] - vf[i]
+        if w_topo != 0.0 and deg_bar is not None and degs is not None:
+            if isinstance(degs, dict):
+                deg_i = float(degs.get(n, 0))
+            else:
+                deg_i = float(degs[i])
+            g_topo = deg_bar[i] - deg_i
+        else:
+            g_topo = 0.0
+        dnfr = (
+            w_phase * g_phase
+            + w_epi * g_epi
+            + w_vf * g_vf
+            + w_topo * g_topo
+        )
+        set_dnfr(G, n, float(dnfr))
+
+
 def _compute_dnfr_numpy(G, data) -> None:
     """Estrategia vectorizada usando ``numpy``."""
     if not _ensure_numpy(warn=True):  # pragma: no cover - check at runtime
@@ -256,24 +298,7 @@ def _compute_dnfr_numpy(G, data) -> None:
             deg_bar[mask] = deg_sum[mask] / count[mask]
     else:
         deg_bar = degs
-    g_phase = np.array(
-        [-angle_diff(theta[i], th_bar[i]) / math.pi for i in range(len(nodes))],
-        dtype=float,
-    )
-    g_epi = epi_bar - epi
-    g_vf = vf_bar - vf
-    if w_topo != 0.0 and degs is not None and deg_bar is not None:
-        g_topo = deg_bar - degs
-    else:
-        g_topo = np.zeros_like(g_phase)
-    dnfr = (
-        data["w_phase"] * g_phase
-        + data["w_epi"] * g_epi
-        + data["w_vf"] * g_vf
-        + w_topo * g_topo
-    )
-    for i, n in enumerate(nodes):
-        set_dnfr(G, n, float(dnfr[i]))
+    _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
 
 
 def _compute_dnfr_loops(G, data) -> None:
@@ -283,21 +308,22 @@ def _compute_dnfr_loops(G, data) -> None:
     theta = data["theta"]
     epi = data["epi"]
     vf = data["vf"]
-    w_phase = data["w_phase"]
-    w_epi = data["w_epi"]
-    w_vf = data["w_vf"]
     w_topo = data["w_topo"]
     degs = data["degs"]
     cos_th = [math.cos(t) for t in theta]
     sin_th = [math.sin(t) for t in theta]
+    th_bar = theta.copy()
+    epi_bar = epi.copy()
+    vf_bar = vf.copy()
+    if w_topo != 0 and degs is not None:
+        deg_bar = [float(degs.get(n, 0)) for n in nodes]
+    else:
+        deg_bar = None
     for i, n in enumerate(nodes):
-        th_i = theta[i]
-        epi_i = epi[i]
-        vf_i = vf[i]
         x = y = epi_sum = vf_sum = 0.0
         count = 0
-        if w_topo != 0 and degs is not None:
-            deg_i = float(degs.get(n, 0))
+        if w_topo != 0 and deg_bar is not None and degs is not None:
+            deg_i = deg_bar[i]
             deg_sum = 0.0
         for v in G.neighbors(n):
             j = idx[v]
@@ -305,30 +331,16 @@ def _compute_dnfr_loops(G, data) -> None:
             y += sin_th[j]
             epi_sum += epi[j]
             vf_sum += vf[j]
-            if w_topo != 0 and degs is not None:
+            if w_topo != 0 and deg_bar is not None and degs is not None:
                 deg_sum += degs.get(v, deg_i)
             count += 1
         if count:
-            th_bar = math.atan2(y / count, x / count)
-            epi_bar = epi_sum / count
-            vf_bar = vf_sum / count
-            if w_topo != 0 and degs is not None:
-                deg_bar = deg_sum / count
-        else:
-            th_bar = th_i
-            epi_bar = epi_i
-            vf_bar = vf_i
-            if w_topo != 0 and degs is not None:
-                deg_bar = deg_i
-        g_phase = -angle_diff(th_i, th_bar) / math.pi
-        g_epi = epi_bar - epi_i
-        g_vf = vf_bar - vf_i
-        if w_topo != 0 and degs is not None:
-            g_topo = deg_bar - deg_i
-        else:
-            g_topo = 0.0
-        dnfr = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
-        set_dnfr(G, n, dnfr)
+            th_bar[i] = math.atan2(y / count, x / count)
+            epi_bar[i] = epi_sum / count
+            vf_bar[i] = vf_sum / count
+            if w_topo != 0 and deg_bar is not None and degs is not None:
+                deg_bar[i] = deg_sum / count
+    _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar)
 
 
 def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:

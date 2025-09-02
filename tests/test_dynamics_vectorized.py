@@ -17,16 +17,12 @@ def _setup_graph():
     return G
 
 
-def _run(G, vectorized):
+@pytest.mark.parametrize("vectorized", [False, True])
+def test_default_compute_delta_nfr_paths(vectorized):
+    if vectorized:
+        pytest.importorskip("numpy")
+    G = _setup_graph()
     G.graph["vectorized_dnfr"] = vectorized
     default_compute_delta_nfr(G)
-    return [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in G.nodes]
-
-
-def test_vectorized_equals_loop():
-    pytest.importorskip("numpy")
-    G1 = _setup_graph()
-    G2 = _setup_graph()
-    dnfr_loop = _run(G1, False)
-    dnfr_vec = _run(G2, True)
-    assert dnfr_loop == pytest.approx(dnfr_vec)
+    dnfr = [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in G.nodes]
+    assert dnfr == pytest.approx([0.1, -0.05, 0.0, -0.05, 0.1])
