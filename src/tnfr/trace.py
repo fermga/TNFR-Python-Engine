@@ -93,45 +93,74 @@ def _trace_capture(
     hist.setdefault(key, []).append(meta)
 
 
+def gamma_field(G):
+    return {"gamma": dict(G.graph.get("GAMMA", {}))}
+
+
+def grammar_field(G):
+    return {"grammar": dict(G.graph.get("GRAMMAR_CANON", {}))}
+
+
+def selector_field(G):
+    sel = G.graph.get("glyph_selector")
+    return {"selector": getattr(sel, "__name__", str(sel)) if sel else None}
+
+
+def dnfr_weights_field(G):
+    mix = G.graph.get("DNFR_WEIGHTS")
+    return {"dnfr_weights": dict(mix)} if isinstance(mix, dict) else {}
+
+
+def si_weights_field(G):
+    return {
+        "si_weights": dict(G.graph.get("_Si_weights", {})),
+        "si_sensitivity": dict(G.graph.get("_Si_sensitivity", {})),
+    }
+
+
+def callbacks_field(G):
+    cb = G.graph.get("callbacks")
+    if not isinstance(cb, dict):
+        return {}
+    out = {
+        phase: _callback_names(cb_list) if isinstance(cb_list, list) else None
+        for phase, cb_list in cb.items()
+    }
+    return {"callbacks": out}
+
+
+def thol_state_field(G):
+    th_open = 0
+    for n in G.nodes():
+        st = G.nodes[n].get("_GRAM", {})
+        if st.get("thol_open", False):
+            th_open += 1
+    return {"thol_open_nodes": th_open}
+
+
+def kuramoto_field(G):
+    R, psi = kuramoto_R_psi(G)
+    return {"kuramoto": {"R": float(R), "psi": float(psi)}}
+
+
+def sigma_field(G):
+    sv = sigma_vector_from_graph(G)
+    return {
+        "sigma": {
+            "x": float(sv.get("x", 0.0)),
+            "y": float(sv.get("y", 0.0)),
+            "mag": float(sv.get("mag", 0.0)),
+            "angle": float(sv.get("angle", 0.0)),
+        }
+    }
+
+
+def glifo_counts_field(G):
+    cnt = count_glyphs(G, window=1)
+    return {"glifos": dict(cnt)}
+
+
 def _trace_before(G, *args, **kwargs):
-    def gamma_field(G):
-        return {"gamma": dict(G.graph.get("GAMMA", {}))}
-
-    def grammar_field(G):
-        return {"grammar": dict(G.graph.get("GRAMMAR_CANON", {}))}
-
-    def selector_field(G):
-        sel = G.graph.get("glyph_selector")
-        return {"selector": getattr(sel, "__name__", str(sel)) if sel else None}
-
-    def dnfr_weights_field(G):
-        mix = G.graph.get("DNFR_WEIGHTS")
-        return {"dnfr_weights": dict(mix)} if isinstance(mix, dict) else {}
-
-    def si_weights_field(G):
-        return {
-            "si_weights": dict(G.graph.get("_Si_weights", {})),
-            "si_sensitivity": dict(G.graph.get("_Si_sensitivity", {})),
-        }
-
-    def callbacks_field(G):
-        cb = G.graph.get("callbacks")
-        if not isinstance(cb, dict):
-            return {}
-        out = {
-            phase: _callback_names(cb_list) if isinstance(cb_list, list) else None
-            for phase, cb_list in cb.items()
-        }
-        return {"callbacks": out}
-
-    def thol_state_field(G):
-        th_open = 0
-        for n in G.nodes():
-            st = G.nodes[n].get("_GRAM", {})
-            if st.get("thol_open", False):
-                th_open += 1
-        return {"thol_open_nodes": th_open}
-
     fields = {
         "gamma": gamma_field,
         "grammar": grammar_field,
@@ -145,25 +174,6 @@ def _trace_before(G, *args, **kwargs):
 
 
 def _trace_after(G, *args, **kwargs):
-    def kuramoto_field(G):
-        R, psi = kuramoto_R_psi(G)
-        return {"kuramoto": {"R": float(R), "psi": float(psi)}}
-
-    def sigma_field(G):
-        sv = sigma_vector_from_graph(G)
-        return {
-            "sigma": {
-                "x": float(sv.get("x", 0.0)),
-                "y": float(sv.get("y", 0.0)),
-                "mag": float(sv.get("mag", 0.0)),
-                "angle": float(sv.get("angle", 0.0)),
-            }
-        }
-
-    def glifo_counts_field(G):
-        cnt = count_glyphs(G, window=1)
-        return {"glifos": dict(cnt)}
-
     fields = {
         "kuramoto": kuramoto_field,
         "sigma": sigma_field,
