@@ -122,7 +122,9 @@ class HistoryDict(dict):
             cnt, key = heapq.heappop(self._heap)
             if self._counts.get(key) == cnt and key in self:
                 self._counts.pop(key, None)
-                return super().pop(key)
+                value = super().pop(key)
+                self._maybe_compact()
+                return value
         raise KeyError("HistoryDict is empty")
 
 
