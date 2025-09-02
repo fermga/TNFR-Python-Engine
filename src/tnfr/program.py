@@ -175,7 +175,10 @@ def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
         Collection of nodes to be used for subsequent operations.
     """
     nodes_src = _all_nodes(G) if payload.nodes is None else payload.nodes
-    curr_target = nodes_src if isinstance(nodes_src, Collection) else tuple(nodes_src)
+    if isinstance(nodes_src, (str, bytes)):
+        curr_target = (nodes_src,)
+    else:
+        curr_target = tuple(nodes_src)
     _record_trace(trace, G, "TARGET", n=len(curr_target))
     return curr_target
 
