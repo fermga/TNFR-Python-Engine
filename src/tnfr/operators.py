@@ -24,7 +24,7 @@ from .helpers import (
 if TYPE_CHECKING:
     from .node import NodoProtocol
 from .types import Glyph
-from collections import deque
+from collections import deque, OrderedDict
 
 """
 Este módulo implementa:
@@ -78,19 +78,27 @@ def _jitter_base(seed: int, key: int) -> random.Random:
         return random.Random(str(seed_input))
 
 
-_rng_cache: "weakref.WeakKeyDictionary[object, Dict[tuple[int, int], random.Random]]" = (
+_rng_cache: "weakref.WeakKeyDictionary[object, OrderedDict[tuple[int, int], random.Random]]" = (
     weakref.WeakKeyDictionary()
 )
 
 
-def _get_rng(scope: object, seed: int, key: int) -> random.Random:
-    """Return cached ``random.Random`` for ``(seed, key)`` scoped to ``scope``."""
-    cache = _rng_cache.setdefault(scope, {})
+def _get_rng(scope: object, seed: int, key: int, size: int) -> random.Random:
+    """Return cached ``random.Random`` for ``(seed, key)`` scoped to ``scope``.
+
+    The cache for each ``scope`` is bounded by ``size`` and follows an LRU
+    eviction policy.
+    """
+    cache = _rng_cache.setdefault(scope, OrderedDict())
     pair = (int(seed), int(key))
     rng = cache.get(pair)
     if rng is None:
         rng = _jitter_base(seed, key)
         cache[pair] = rng
+        if len(cache) > int(size):
+            cache.popitem(last=False)
+    else:
+        cache.move_to_end(pair)
     return rng
 
 
@@ -123,8 +131,10 @@ def random_jitter(
     The value is derived from ``(RANDOM_SEED, node.offset())`` and does not store
     references to nodes. By default a global cache of ``(seed, key) → random.Random``
     instances, scoped by graph via weak references, advances deterministic
-    sequences across calls. When ``cache`` is provided, it is used instead and
-    must handle its own purging policy.
+    sequences across calls. The cache obeys the ``JITTER_CACHE_SIZE`` parameter
+    and evicts the least recently used generator when the limit is exceeded.
+    When ``cache`` is provided, it is used instead and must handle its own
+    purging policy.
     """
 
     if amplitude <= 0:
@@ -146,7 +156,11 @@ def random_jitter(
         scope = node
 
     if cache is None:
-        rng = _get_rng(scope, base_seed, seed_key)
+        try:
+            cache_size = get_param(node.G, "JITTER_CACHE_SIZE")  # type: ignore[attr-defined]
+        except Exception:
+            cache_size = DEFAULTS["JITTER_CACHE_SIZE"]
+        rng = _get_rng(scope, base_seed, seed_key, cache_size)
     else:
         rng = cache.get(seed_key)
         if rng is None:
