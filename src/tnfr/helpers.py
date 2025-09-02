@@ -222,9 +222,10 @@ def normalize_weights(
 ) -> Dict[str, float]:
     """Devuelve ``dict`` de ``keys`` normalizadas a sumatorio 1.
 
-    Cada clave en ``keys`` se extrae de ``dict_like`` convirtiéndola a ``float``.
-    Si la suma de los valores obtenidos es <= 0, se asignan proporciones
-    uniformes entre todas las claves.
+    La función se divide en tres pasos: conversión de valores, validación y
+    normalización final. Cada clave de ``keys`` se obtiene de ``dict_like`` y se
+    convierte a ``float``. Si la suma de los valores es <= 0 se asignan
+    proporciones uniformes entre todas las claves.
 
     Parameters
     ----------
@@ -235,8 +236,21 @@ def normalize_weights(
     """
     keys = list(keys)
     default_float = float(default)
-    weights: Dict[str, float] = {}
-    for k in keys:
+
+    weights = _convert_weights(dict_like, keys, default_float, error_on_negative)
+    _validate_weights(weights, error_on_negative)
+    return _normalize_distribution(weights, keys)
+
+
+def _convert_weights(
+    dict_like: Mapping[str, Any],
+    keys: Iterable[str],
+    default_float: float,
+    error_on_negative: bool,
+) -> Dict[str, float]:
+    """Convierte ``dict_like`` a ``float`` usando ``_convert_value``."""
+
+    def _to_float(k: str) -> float:
         val = dict_like.get(k, default_float)
         ok, converted = _convert_value(
             val,
@@ -245,11 +259,27 @@ def normalize_weights(
             key=k,
             log_level=logging.WARNING,
         )
-        weights[k] = converted if ok and converted is not None else default_float
-    if any(v < 0 for v in weights.values()):
-        if error_on_negative:
-            raise ValueError(f"Pesos negativos detectados: {weights}")
-        logging.warning("Pesos negativos detectados: %s", weights)
+        return converted if ok and converted is not None else default_float
+
+    return {k: _to_float(k) for k in keys}
+
+
+def _validate_weights(weights: Mapping[str, float], error_on_negative: bool) -> None:
+    """Valida que no existan pesos negativos."""
+
+    negatives = {k: v for k, v in weights.items() if v < 0}
+    if not negatives:
+        return
+    if error_on_negative:
+        raise ValueError(f"Pesos negativos detectados: {negatives}")
+    logging.warning("Pesos negativos detectados: %s", negatives)
+
+
+def _normalize_distribution(
+    weights: Mapping[str, float], keys: Sequence[str]
+) -> Dict[str, float]:
+    """Normaliza ``weights`` para que su sumatorio sea 1."""
+
     total = math.fsum(weights.values())
     n = len(keys)
     if total <= 0:
