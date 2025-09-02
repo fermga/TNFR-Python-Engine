@@ -42,6 +42,45 @@ def _ensure_callbacks(G: nx.Graph) -> CallbackRegistry:
     return cbs
 
 
+def _normalize_callback_entry(entry: Any) -> CallbackSpec | None:
+    """Normalize legacy callback entries into ``CallbackSpec``.
+
+    Parameters
+    ----------
+    entry:
+        A previous callback entry which may be a ``CallbackSpec`` instance,
+        a tuple ``(name, func)`` or simply a callable.
+
+    Returns
+    -------
+    CallbackSpec | None
+        Normalized ``CallbackSpec`` or ``None`` if ``entry`` cannot be
+        interpreted as a callback.
+    """
+    from .trace import CallbackSpec
+
+    if isinstance(entry, CallbackSpec):
+        return entry
+    if isinstance(entry, tuple):
+        if not entry:
+            return None
+        first = entry[0]
+        if isinstance(first, str):
+            name = first
+            fn = entry[1] if len(entry) > 1 else None
+        else:
+            fn = first if callable(first) else (
+                entry[1] if len(entry) > 1 else None
+            )
+            name = getattr(fn, "__name__", None)
+    else:
+        fn = entry
+        name = getattr(entry, "__name__", None)
+    if fn is None:
+        return None
+    return CallbackSpec(name, fn)
+
+
 def register_callback(
     G: nx.Graph,
     event: CallbackEvent | str,
@@ -94,29 +133,13 @@ def register_callback(
 
     existing_list = cbs[event]
     for i, existing in enumerate(existing_list):
-        if not isinstance(existing, CallbackSpec):
-            # Normalize legacy tuple/callable entries
-            if isinstance(existing, tuple):
-                if not existing:
-                    continue
-                first = existing[0]
-                if isinstance(first, str):
-                    nm = first
-                    fn = existing[1] if len(existing) > 1 else None
-                else:
-                    fn = first if callable(first) else (
-                        existing[1] if len(existing) > 1 else None
-                    )
-                    nm = getattr(fn, "__name__", None)
-            else:
-                fn = existing
-                nm = getattr(existing, "__name__", None)
-            if fn is None:
-                continue
-            existing = CallbackSpec(nm, fn)
-            existing_list[i] = existing
-        if existing.func is func or (
-            cb_name is not None and existing.name == cb_name
+        spec = _normalize_callback_entry(existing)
+        if spec is None:
+            continue
+        if spec is not existing:
+            existing_list[i] = spec
+        if spec.func is func or (
+            cb_name is not None and spec.name == cb_name
         ):
             existing_list[i] = new_cb
             break
