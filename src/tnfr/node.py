@@ -73,23 +73,8 @@ def _nx_attr_property(
     return property(fget, fset)
 
 
-def _add_edge_common(G, n1, n2, weight, overwrite):
-    """Add an edge between ``n1`` and ``n2`` in ``G`` with ``weight``.
-
-    Parameters
-    ----------
-    G:
-        Graph-like object or graph data. For ``NodoTNFR`` instances this is the
-        ``graph`` dictionary, while for ``NodoNX`` it is the underlying
-        ``networkx`` graph.
-    n1, n2:
-        Nodes to connect. They can be ``NodoTNFR`` instances or ``networkx``
-        node identifiers.
-    weight:
-        Edge weight. Must be a non-negative number.
-    overwrite:
-        Whether to overwrite an existing edge weight.
-    """
+def _add_edge_nx(G, n1, n2, weight, overwrite):
+    """Add an edge between ``n1`` and ``n2`` in a ``networkx`` graph."""
 
     if n1 == n2:
         return
@@ -98,19 +83,27 @@ def _add_edge_common(G, n1, n2, weight, overwrite):
     if weight < 0:
         raise ValueError("Edge weight must be non-negative")
 
-    if hasattr(G, "has_edge"):
-        # networkx graph
-        if G.has_edge(n1, n2) and not overwrite:
-            return
-        G.add_edge(n1, n2, weight=weight)
-        increment_edge_version(G)
-    else:
-        # NodoTNFR-style graph
-        if n2 in n1._neighbors and not overwrite:
-            return
-        n1._neighbors[n2] = weight
-        n2._neighbors[n1] = weight
-        increment_edge_version(G)
+    if G.has_edge(n1, n2) and not overwrite:
+        return
+    G.add_edge(n1, n2, weight=weight)
+    increment_edge_version(G)
+
+
+def _add_edge_tnfr(graph, n1, n2, weight, overwrite):
+    """Add an edge between ``n1`` and ``n2`` in a TNFR-style graph."""
+
+    if n1 == n2:
+        return
+
+    weight = float(weight)
+    if weight < 0:
+        raise ValueError("Edge weight must be non-negative")
+
+    if n2 in n1._neighbors and not overwrite:
+        return
+    n1._neighbors[n2] = weight
+    n2._neighbors[n1] = weight
+    increment_edge_version(graph)
 
 
 class NodoProtocol(Protocol):
@@ -181,7 +174,7 @@ class NodoTNFR:
     ) -> None:
         """Connect this node with ``other``."""
 
-        _add_edge_common(self.graph, self, other, weight, overwrite)
+        _add_edge_tnfr(self.graph, self, other, weight, overwrite)
 
     def push_glyph(self, glyph: str, window: int) -> None:
         nd = {"glyph_history": self._glyph_history}
@@ -255,7 +248,7 @@ class NodoNX(NodoProtocol):
         self, other: NodoProtocol, weight: float, *, overwrite: bool = False
     ) -> None:
         if isinstance(other, NodoNX):
-            _add_edge_common(self.G, self.n, other.n, weight, overwrite)
+            _add_edge_nx(self.G, self.n, other.n, weight, overwrite)
         else:
             raise NotImplementedError
 
