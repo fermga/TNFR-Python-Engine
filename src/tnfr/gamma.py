@@ -149,16 +149,25 @@ def eval_gamma(
     """Evalúa Γi para ``node`` según la especificación en ``G.graph['GAMMA']``.
 
     Si ``strict`` es ``True`` las excepciones encontradas durante la
-    evaluación se reelevarán en lugar de devolver ``0.0``.
+    evaluación se reelevarán en lugar de devolver ``0.0``. Asimismo, si el
+    tipo de ``Γ`` especificado no está registrado, se emitirá una advertencia
+    (o ``ValueError`` en modo estricto) y se usará ``gamma_none``.
 
     ``log_level`` permite controlar el nivel de logging de los errores
     capturados cuando ``strict`` es ``False``. Si no se especifica, se usará
     ``logging.ERROR`` en modo estricto y ``logging.DEBUG`` en modo laxo.
     """
     spec = G.graph.get("GAMMA", {"type": "none"})
-    fn, needs_kuramoto = GAMMA_REGISTRY.get(
-        spec.get("type", "none"), (gamma_none, False)
-    )
+    spec_type = spec.get("type", "none")
+    reg_entry = GAMMA_REGISTRY.get(spec_type)
+    if reg_entry is None:
+        msg = f"Tipo GAMMA desconocido: {spec_type}"
+        if strict:
+            raise ValueError(msg)
+        logger.warning(msg)
+        fn, needs_kuramoto = gamma_none, False
+    else:
+        fn, needs_kuramoto = reg_entry
     if needs_kuramoto:
         _ensure_kuramoto_cache(G, t)
     try:
