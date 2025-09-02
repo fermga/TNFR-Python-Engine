@@ -796,6 +796,59 @@ def _soft_grammar_prefilter(G, n, cand, dnfr, accel):
             cand = fallbacks.get(cand, cand)
     return cand
 
+
+def _selector_normalized_metrics(nd, norms):
+    """Extrae y normaliza Si, ΔNFR y aceleración para el selector."""
+    dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
+    acc_max = float(norms.get("accel_max", 1.0)) or 1.0
+    Si = clamp01(get_attr(nd, ALIAS_SI, 0.5))
+    dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
+    accel = abs(get_attr(nd, ALIAS_D2EPI, 0.0)) / acc_max
+    return Si, dnfr, accel
+
+
+def _selector_base_choice(Si, dnfr, accel, thr):
+    """Decisión base según umbrales de Si, ΔNFR y aceleración."""
+    si_hi, si_lo = thr["si_hi"], thr["si_lo"]
+    dnfr_hi = thr["dnfr_hi"]
+    acc_hi = thr["accel_hi"]
+    if Si >= si_hi:
+        return "IL"
+    if Si <= si_lo:
+        if accel >= acc_hi:
+            return "THOL"
+        return "OZ" if dnfr >= dnfr_hi else "ZHIR"
+    if dnfr >= dnfr_hi or accel >= acc_hi:
+        return "NAV"
+    return "RA"
+
+
+def _compute_selector_score(G, nd, Si, dnfr, accel, cand):
+    """Calcula la puntuación y aplica penalizaciones por estancamiento."""
+    W = G.graph.get("SELECTOR_WEIGHTS", DEFAULTS["SELECTOR_WEIGHTS"])
+    score = _calc_selector_score(Si, dnfr, accel, W)
+    hist_prev = nd.get("hist_glifos")
+    if hist_prev and hist_prev[-1] == cand:
+        delta_si = get_attr(nd, ALIAS_dSI, 0.0)
+        h = G.graph.get("history", {})
+        sig = h.get("sense_sigma_mag", [])
+        delta_sigma = sig[-1] - sig[-2] if len(sig) >= 2 else 0.0
+        if delta_si <= 0.0 and delta_sigma <= 0.0:
+            score -= 0.05
+    return score
+
+
+def _apply_score_override(cand, score, dnfr, dnfr_lo):
+    """Ajusta el candidato final de forma suave según la puntuación."""
+    try:
+        if score >= 0.66 and cand in ("NAV", "RA", "ZHIR", "OZ"):
+            return "IL"
+        if score <= 0.33 and cand in ("NAV", "RA", "IL"):
+            return "OZ" if dnfr >= dnfr_lo else "ZHIR"
+    except NameError:
+        pass
+    return cand
+
 def parametric_glyph_selector(G, n) -> str:
     """Multiobjetivo: combina Si, |ΔNFR|_norm y |accel|_norm + histéresis.
     Reglas base:
@@ -805,69 +858,22 @@ def parametric_glyph_selector(G, n) -> str:
     """
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
-    si_hi, si_lo = thr["si_hi"], thr["si_lo"]
-    dnfr_hi, dnfr_lo = thr["dnfr_hi"], thr["dnfr_lo"]
-    acc_hi = thr["accel_hi"]
     margin = float(G.graph.get("GLYPH_SELECTOR_MARGIN", DEFAULTS["GLYPH_SELECTOR_MARGIN"]))
 
-    # Normalizadores por paso
     norms = G.graph.get("_sel_norms") or _norms_para_selector(G)
-    dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
-    acc_max  = float(norms.get("accel_max", 1.0)) or 1.0
+    Si, dnfr, accel = _selector_normalized_metrics(nd, norms)
 
-    # Lecturas nodales
-    Si = clamp01(get_attr(nd, ALIAS_SI, 0.5))
-    dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
-    accel = abs(get_attr(nd, ALIAS_D2EPI, 0.0)) / acc_max
-
-    W = G.graph.get("SELECTOR_WEIGHTS", DEFAULTS["SELECTOR_WEIGHTS"])
-    score = _calc_selector_score(Si, dnfr, accel, W)
-    # usar score como desempate/override suave: si score>0.66 ⇒ inclinar a IL; <0.33 ⇒ inclinar a OZ/ZHIR
-
-    # Decisión base
-    if Si >= si_hi:
-        cand = "IL"
-    elif Si <= si_lo:
-        if accel >= acc_hi:
-            cand = "THOL"
-        else:
-            cand = "OZ" if dnfr >= dnfr_hi else "ZHIR"
-    else:
-        # Zona intermedia: transición si el campo "pide" reorganizar (dnfr/accel altos)
-        if dnfr >= dnfr_hi or accel >= acc_hi:
-            cand = "NAV"
-        else:
-            cand = "RA"
+    cand = _selector_base_choice(Si, dnfr, accel, thr)
 
     hist_cand = _apply_selector_hysteresis(nd, Si, dnfr, accel, thr, margin)
     if hist_cand is not None:
         return hist_cand
 
-    # Penalización por falta de avance en σ/Si si se repite glifo
-    prev = None
-    hist_prev = nd.get("hist_glifos")
-    if hist_prev:
-        prev = hist_prev[-1]
-    if prev == cand:
-        delta_si = get_attr(nd, ALIAS_dSI, 0.0)
-        h = G.graph.get("history", {})
-        sig = h.get("sense_sigma_mag", [])
-        delta_sigma = sig[-1] - sig[-2] if len(sig) >= 2 else 0.0
-        if delta_si <= 0.0 and delta_sigma <= 0.0:
-            score -= 0.05
-            
-    # Override suave guiado por score (solo si NO cayó la histéresis arriba)
-    # Regla: score>=0.66 inclina a IL; score<=0.33 inclina a OZ/ZHIR
-    try:
-        if score >= 0.66 and cand in ("NAV","RA","ZHIR","OZ"):
-            cand = "IL"
-        elif score <= 0.33 and cand in ("NAV","RA","IL"):
-            cand = "OZ" if dnfr >= dnfr_lo else "ZHIR"
-    except NameError:
-        pass
+    score = _compute_selector_score(G, nd, Si, dnfr, accel, cand)
 
-    cand = _soft_grammar_prefilter(G, n, cand, dnfr, accel)
-    return cand
+    cand = _apply_score_override(cand, score, dnfr, thr["dnfr_lo"])
+
+    return _soft_grammar_prefilter(G, n, cand, dnfr, accel)
 
 # -------------------------
 # Step / run
