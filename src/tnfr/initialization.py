@@ -4,6 +4,7 @@ import random
 import networkx as nx
 
 from .constants import DEFAULTS, INIT_DEFAULTS, VF_KEY, THETA_KEY
+from tnfr.helpers import clamp
 
 
 def _init_phase(
@@ -57,7 +58,7 @@ def _init_vf(
     else:
         vf = float(nd.get(VF_KEY, 0.5))
     if clamp_to_limits:
-        vf = min(max(vf, vf_min_lim), vf_max_lim)
+        vf = clamp(vf, vf_min_lim, vf_max_lim)
     if override or VF_KEY not in nd:
         nd[VF_KEY] = float(vf)
 
