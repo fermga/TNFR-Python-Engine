@@ -95,11 +95,22 @@ CANON_FALLBACK: Dict[Glyph, Glyph] = {
 # -------------------------
 
 
-def _dnfr_norm(G, nd) -> float:
-    # Normalizador robusto: usa historial de |ΔNFR| máx guardado por dynamics (si existe)
+def _norm_attr(G, nd, attr_alias: str, norm_key: str) -> float:
+    """Normaliza ``attr_alias`` usando el máximo global ``norm_key``.
+
+    ``_sel_norms`` se guarda en ``G.graph`` y contiene los máximos por
+    atributo calculados por los selectores.  Si falta ``norm_key`` el
+    valor por defecto es ``1.0`` para evitar divisiones por cero.
+    """
+
     norms = G.graph.get("_sel_norms") or {}
-    dmax = float(norms.get("dnfr_max", 1.0)) or 1.0
-    return clamp01(abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dmax)
+    max_val = float(norms.get(norm_key, 1.0)) or 1.0
+    return clamp01(abs(get_attr(nd, attr_alias, 0.0)) / max_val)
+
+
+def _dnfr_norm(G, nd) -> float:
+    """Normalizador robusto para |ΔNFR|."""
+    return _norm_attr(G, nd, ALIAS_DNFR, "dnfr_max")
 
 
 def _si(G, nd) -> float:
@@ -108,9 +119,7 @@ def _si(G, nd) -> float:
 
 def _accel_norm(G, nd) -> float:
     """Normaliza la aceleración usando el máximo global."""
-    norms = G.graph.get("_sel_norms") or {}
-    amax = float(norms.get("accel_max", 1.0)) or 1.0
-    return clamp01(abs(get_attr(nd, ALIAS_D2EPI, 0.0)) / amax)
+    return _norm_attr(G, nd, ALIAS_D2EPI, "accel_max")
 
 
 def _check_repeats(G, n, cand: str, cfg: Dict[str, Any]) -> str:
