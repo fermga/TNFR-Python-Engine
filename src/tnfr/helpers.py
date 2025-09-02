@@ -29,6 +29,9 @@ logger = logging.getLogger(__name__)
 PI = math.pi
 TWO_PI = 2 * PI
 
+MAX_MATERIALIZE_DEFAULT = 1000
+"""Límite por defecto de elementos a materializar en :func:`ensure_collection`."""
+
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
     from yaml import YAMLError  # type: ignore
@@ -52,6 +55,7 @@ from .constants import (
 T = TypeVar("T")
 
 __all__ = [
+    "MAX_MATERIALIZE_DEFAULT",
     "read_structured_file",
     "ensure_parent",
     "ensure_collection",
@@ -157,7 +161,7 @@ def ensure_parent(path: str | Path) -> None:
 # -------------------------
 
 def ensure_collection(
-    it: Iterable[T], *, max_materialize: int | None = 1000
+    it: Iterable[T], *, max_materialize: int | None = MAX_MATERIALIZE_DEFAULT
 ) -> Collection[T]:
     """Devuelve ``it`` si ya es ``Collection`` o materializa en ``tuple`` en
     caso contrario.
@@ -173,7 +177,7 @@ def ensure_collection(
         Número máximo de elementos a materializar cuando ``it`` no es una
         colección. Si el iterable produce más de ``max_materialize`` elementos
         se lanza :class:`ValueError`. Si se omite o se pasa ``None`` se aplica
-        el límite por defecto de ``1000`` elementos.
+        el límite por defecto de ``MAX_MATERIALIZE_DEFAULT`` elementos.
 
     Notes
     -----
@@ -187,7 +191,9 @@ def ensure_collection(
     if isinstance(it, (str, bytes, bytearray)):
         return cast(Collection[T], (it,))
     try:
-        limit = 1000 if max_materialize is None else max_materialize
+        limit = (
+            MAX_MATERIALIZE_DEFAULT if max_materialize is None else max_materialize
+        )
         data = tuple(islice(it, limit + 1))
         if len(data) > limit:
             raise ValueError(
