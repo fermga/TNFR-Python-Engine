@@ -98,7 +98,11 @@ def _new_trace_meta(
 def _trace_capture(
     G, phase: str, fields: Dict[str, Callable[[Any], Dict[str, Any]]]
 ) -> None:
-    """Captura ``fields`` para una ``phase`` y guarda el snapshot."""
+    """Captura ``fields`` para una ``phase`` y guarda el snapshot.
+
+    Si no existe un historial activo o una clave de almacenamiento, la
+    captura se ignora silenciosamente.
+    """
 
     res = _new_trace_meta(G, phase)
     if not res:
@@ -108,7 +112,8 @@ def _trace_capture(
     for name, getter in fields.items():
         if name in capture:
             meta.update(getter(G))
-    assert hist is not None and key is not None
+    if hist is None or key is None:
+        return
     hist.setdefault(key, []).append(meta)
 
 
