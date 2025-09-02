@@ -83,6 +83,26 @@ def _callback_names(callbacks: list) -> list[str]:
         names.append(name)
     return names
 
+
+def _safe_graph_mapping(G, key: str) -> Optional[Dict[str, Any]]:
+    """Return a shallow copy of ``G.graph[key]`` if it is a mapping.
+
+    If the key is missing ``None`` is returned.  When the stored value is not
+    a mapping a :class:`UserWarning` is emitted and ``None`` is returned.
+    """
+
+    data = G.graph.get(key)
+    if data is None:
+        return None
+    if not isinstance(data, dict):
+        warnings.warn(
+            f"G.graph[{key!r}] no es un mapeo; se ignora",
+            UserWarning,
+            stacklevel=2,
+        )
+        return None
+    return data.copy()
+
 # -------------------------
 # Builders
 # -------------------------
@@ -137,17 +157,8 @@ def gamma_field(G):
     immutable.
     """
 
-    gam = G.graph.get("GAMMA")
-    if gam is None:
-        return {}
-    if not isinstance(gam, dict):
-        warnings.warn(
-            "G.graph['GAMMA'] no es un mapeo; se ignora",
-            UserWarning,
-            stacklevel=2,
-        )
-        return {}
-    return {"gamma": gam.copy()}
+    gam = _safe_graph_mapping(G, "GAMMA")
+    return {"gamma": gam} if gam is not None else {}
 
 
 def grammar_field(G):
@@ -157,17 +168,8 @@ def grammar_field(G):
     considered read-only by callers.
     """
 
-    gram = G.graph.get("GRAMMAR_CANON")
-    if gram is None:
-        return {}
-    if not isinstance(gram, dict):
-        warnings.warn(
-            "G.graph['GRAMMAR_CANON'] no es un mapeo; se ignora",
-            UserWarning,
-            stacklevel=2,
-        )
-        return {}
-    return {"grammar": gram.copy()}
+    gram = _safe_graph_mapping(G, "GRAMMAR_CANON")
+    return {"grammar": gram} if gram is not None else {}
 
 
 def selector_field(G):
@@ -182,8 +184,8 @@ def dnfr_weights_field(G):
     immutable.
     """
 
-    mix = G.graph.get("DNFR_WEIGHTS")
-    return {"dnfr_weights": mix.copy()} if isinstance(mix, dict) else {}
+    mix = _safe_graph_mapping(G, "DNFR_WEIGHTS")
+    return {"dnfr_weights": mix} if mix is not None else {}
 
 
 def si_weights_field(G):
@@ -193,9 +195,11 @@ def si_weights_field(G):
     mutate the returned dictionaries.
     """
 
+    weights = _safe_graph_mapping(G, "_Si_weights")
+    sensitivity = _safe_graph_mapping(G, "_Si_sensitivity")
     return {
-        "si_weights": G.graph.get("_Si_weights", {}).copy(),
-        "si_sensitivity": G.graph.get("_Si_sensitivity", {}).copy(),
+        "si_weights": weights if weights is not None else {},
+        "si_sensitivity": sensitivity if sensitivity is not None else {},
     }
 
 
