@@ -110,7 +110,7 @@ def _advance(G, step_fn: Optional[AdvanceFn] = None):
 
 def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
     """Devuelve lista de operaciones (op, payload).
-    op ∈ { 'GLYPH', 'WAIT', 'TARGET' }.
+    op ∈ { 'GLYPH', 'WAIT', 'TARGET', 'THOL' }.
 
     Implementación iterativa usando una pila explícita para evitar
     recursión profunda cuando se anidan bloques ``THOL``.
@@ -128,7 +128,7 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
             continue
         if isinstance(item, THOL):
             # Abrimos bloque THOL y apilamos su cuerpo de forma iterativa
-            ops.append(("GLYPH", Glyph.THOL.value))
+            ops.append(("THOL", Glyph.THOL.value))
 
             repeats = max(1, int(item.repeat))
             closing = item.force_close if item.force_close in (Glyph.SHA, Glyph.NUL) else None
@@ -150,6 +150,35 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
             raise ValueError(f"Glifo no canónico: {g}")
         ops.append(("GLYPH", g))
     return ops
+
+
+# ---------------------
+# Handlers para tokens atómicos
+# ---------------------
+
+def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
+    nodes_src = _all_nodes(G) if payload.nodes is None else payload.nodes
+    curr_target = tuple(nodes_src)
+    trace.append({"t": float(G.graph.get("_t", 0.0)), "op": "TARGET", "n": len(curr_target)})
+    return curr_target
+
+
+def _handle_wait(G, steps: int, curr_target, trace: deque, step_fn: Optional[AdvanceFn]):
+    for _ in range(max(1, int(steps))):
+        _advance(G, step_fn)
+    trace.append({"t": float(G.graph.get("_t", 0.0)), "op": "WAIT", "k": int(steps)})
+    return curr_target
+
+
+def _handle_glyph(G, g: str, curr_target, trace: deque, step_fn: Optional[AdvanceFn], label: str = "GLYPH"):
+    _apply_glyph_to_targets(G, g, curr_target)
+    _advance(G, step_fn)
+    trace.append({"t": float(G.graph.get("_t", 0.0)), "op": label, "g": g})
+    return curr_target
+
+
+def _handle_thol(G, g: str, curr_target, trace: deque, step_fn: Optional[AdvanceFn]):
+    return _handle_glyph(G, g or Glyph.THOL.value, curr_target, trace, step_fn, label="THOL")
 
 # ---------------------
 # API pública
@@ -176,24 +205,18 @@ def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> N
         trace = deque(trace or [], maxlen=maxlen)
         history["program_trace"] = trace
 
+    handlers = {
+        "TARGET": _handle_target,
+        "WAIT": _handle_wait,
+        "GLYPH": _handle_glyph,
+        "THOL": _handle_thol,
+    }
+
     for op, payload in ops:
-        if op == "TARGET":
-            nodes_src = _all_nodes(G) if payload.nodes is None else payload.nodes
-            curr_target = tuple(nodes_src)
-            trace.append({"t": float(G.graph.get("_t", 0.0)), "op": "TARGET", "n": len(curr_target)})
-            continue
-        if op == "WAIT":
-            for _ in range(max(1, int(payload))):
-                _advance(G, step_fn)
-            trace.append({"t": float(G.graph.get("_t", 0.0)), "op": "WAIT", "k": int(payload)})
-            continue
-        if op == "GLYPH":
-            g = str(payload)
-            # aplicar + avanzar 1 paso del sistema
-            _apply_glyph_to_targets(G, g, curr_target)
-            _advance(G, step_fn)
-            trace.append({"t": float(G.graph.get("_t", 0.0)), "op": "GLYPH", "g": g})
-            continue
+        handler = handlers.get(op)
+        if handler is None:
+            raise ValueError(f"Operación desconocida: {op}")
+        curr_target = handler(G, payload, curr_target, trace, step_fn)
 
 # ---------------------
 # Helpers para construir secuencias de manera cómoda
