@@ -48,11 +48,11 @@ def kuramoto_R_psi(G) -> Tuple[float, float]:
     return abs(z), math.atan2(z.imag, z.real)
 
 
-def _kuramoto_common(G, node, cfg):
+def _kuramoto_common(G, node, _cfg):
     """Return ``(θ_i, R, ψ)`` for Kuramoto-based γ functions.
 
     Lee los valores cacheados de orden global ``R`` y fase media ``ψ`` y
-    obtiene la fase del nodo ``θ_i``. ``cfg`` se acepta solo para mantener una
+    obtiene la fase del nodo ``θ_i``. ``_cfg`` se acepta solo para mantener una
     firma homogénea con los evaluadores de ``Γ``.
     """
     cache = G.graph.get("_kuramoto_cache", {})
