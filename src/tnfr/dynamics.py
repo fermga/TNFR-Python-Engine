@@ -173,17 +173,12 @@ def _write_dnfr_metadata(G, *, weights: dict, hook_name: str, note: str | None =
     """Escribe en G.graph un bloque _DNFR_META con la mezcla y el nombre del hook.
 
     `weights` puede incluir componentes arbitrarias (phase/epi/vf/topo/etc.)."""
-    total = math.fsum(float(v) for v in weights.values())
-    if total <= 0:
-        # si no hay pesos, normalizamos a componentes iguales
-        n = max(1, len(weights))
-        weights = {k: 1.0 / n for k in weights}
-        total = 1.0
+    weights_norm = normalize_weights(weights, weights.keys())
     meta = {
         "hook": hook_name,
         "weights_raw": dict(weights),
-        "weights_norm": {k: float(v) / total for k, v in weights.items()},
-        "components": [k for k, v in weights.items() if float(v) != 0.0],
+        "weights_norm": weights_norm,
+        "components": [k for k, v in weights_norm.items() if v != 0.0],
         "doc": "ΔNFR = Σ w_i·g_i",
     }
     if note:
