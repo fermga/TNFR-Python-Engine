@@ -53,7 +53,6 @@ def test_args_to_dict_nested_options():
             "--nodes",
             "5",
             "--grammar.enabled",
-            "true",
             "--grammar.thol_min_len",
             "7",
         ]
