@@ -5,6 +5,7 @@ from collections import Counter, defaultdict
 from tnfr.constants import attach_defaults
 from tnfr.helpers import last_glifo
 from tnfr.metrics import _update_tg, _tg_state
+from tnfr.metrics.core import LATENT_GLYPH, TgCurr, TgRun
 
 
 def _update_tg_naive(G, hist, dt, save_by_node):
@@ -23,26 +24,26 @@ def _update_tg_naive(G, hist, dt, save_by_node):
             continue
 
         n_total += 1
-        if g == "SHA":
+        if g == LATENT_GLYPH:
             n_latent += 1
 
         counts[g] += 1
 
         st = _tg_state(nd)
-        if st["curr"] is None:
-            st["curr"] = g
-            st["run"] = dt
-        elif g == st["curr"]:
-            st["run"] += dt
+        if st[TgCurr] is None:
+            st[TgCurr] = g
+            st[TgRun] = dt
+        elif g == st[TgCurr]:
+            st[TgRun] += dt
         else:
-            prev = st["curr"]
-            dur = float(st["run"])
+            prev = st[TgCurr]
+            dur = float(st[TgRun])
             tg_total[prev] += dur
             if save_by_node:
                 rec = tg_by_node.setdefault(n, defaultdict(list))
                 rec[prev].append(dur)
-            st["curr"] = g
-            st["run"] = dt
+            st[TgCurr] = g
+            st[TgRun] = dt
 
     return counts, n_total, n_latent
 
@@ -54,10 +55,10 @@ def test_update_tg_matches_naive(graph_canon):
 
     for G in (G_opt, G_ref):
         G.add_node(0, EPI_kind="OZ")
-        G.add_node(1, EPI_kind="SHA")
+        G.add_node(1, EPI_kind=LATENT_GLYPH)
         G.add_node(2, EPI_kind="NAV")
         G.add_node(3, EPI_kind="OZ")
-        G.add_node(4, EPI_kind="SHA")
+        G.add_node(4, EPI_kind=LATENT_GLYPH)
         attach_defaults(G)
 
     hist_opt = {}
