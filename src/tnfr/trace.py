@@ -1,21 +1,39 @@
 """Registro de trazas."""
 from __future__ import annotations
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Protocol
+
+
+class _KuramotoFn(Protocol):
+    def __call__(self, G: Any) -> tuple[float, float]:
+        ...
+
+
+class _SigmaVectorFn(Protocol):
+    def __call__(
+        self, G: Any, weight_mode: str | None = None
+    ) -> Dict[str, float]:
+        ...
 
 from .constants import TRACE
 from .helpers import register_callback, ensure_history, count_glyphs
 
 try:
-    from .gamma import kuramoto_R_psi
+    from .gamma import kuramoto_R_psi as _kuramoto_R_psi
 except ImportError:  # pragma: no cover
-    def kuramoto_R_psi(G):
+    def _kuramoto_R_psi(G: Any) -> tuple[float, float]:
         return 0.0, 0.0
 
+kuramoto_R_psi: _KuramotoFn = _kuramoto_R_psi
+
 try:
-    from .sense import sigma_vector_from_graph
+    from .sense import sigma_vector_from_graph as _sigma_vector_from_graph
 except ImportError:  # pragma: no cover
-    def sigma_vector_from_graph(G, *args, **kwargs):
-        return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
+    def _sigma_vector_from_graph(
+        G: Any, weight_mode: str | None = None
+    ) -> Dict[str, float]:
+        return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0.0}
+
+sigma_vector_from_graph: _SigmaVectorFn = _sigma_vector_from_graph
 
 # -------------------------
 # Helpers
@@ -90,6 +108,7 @@ def _trace_capture(
     for name, getter in fields.items():
         if name in capture:
             meta.update(getter(G))
+    assert hist is not None and key is not None
     hist.setdefault(key, []).append(meta)
 
 
