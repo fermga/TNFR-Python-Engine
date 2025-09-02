@@ -1,6 +1,6 @@
 """Funciones auxiliares."""
 from __future__ import annotations
-from typing import Iterable, Sequence, Dict, Any, Callable, TypeVar
+from typing import Iterable, Sequence, Dict, Any, Callable, TypeVar, Mapping
 from collections.abc import Collection
 import logging
 import math
@@ -60,6 +60,8 @@ __all__ = [
     "ensure_history",
     "last_glifo",
     "count_glyphs",
+    "normalize_counter",
+    "mix_groups",
     "register_callback",
     "invoke_callbacks",
     "compute_dnfr_accel_max",
@@ -713,6 +715,36 @@ def count_glyphs(
                 seq = hist
         counts.update(seq)
     return counts
+
+
+def normalize_counter(counts: Mapping[str, int]) -> tuple[Dict[str, float], int]:
+    """Normaliza un ``Counter`` y devuelve proporciones y total.
+
+    Si la suma total es cero, retorna ``({}, 0)``.
+    """
+    total = sum(counts.values())
+    if total <= 0:
+        return {}, 0
+    dist = {k: v / total for k, v in counts.items() if v}
+    return dist, total
+
+
+def mix_groups(
+    dist: Mapping[str, float],
+    groups: Mapping[str, Iterable[str]],
+    *,
+    prefix: str = "_",
+) -> Dict[str, float]:
+    """Agrega valores de ``dist`` según agrupaciones.
+
+    ``groups`` debe mapear nombres de grupo a iterables de claves presentes en
+    ``dist``. Cada grupo se añadirá al resultado con el nombre
+    ``prefix + label``.
+    """
+    out: Dict[str, float] = dict(dist)
+    for label, keys in groups.items():
+        out[f"{prefix}{label}"] = sum(dist.get(k, 0.0) for k in keys)
+    return out
 
 # -------------------------
 # Callbacks Γ(R)
