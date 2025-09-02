@@ -64,10 +64,10 @@ def phase_sync(G) -> float:
     count = len(fases)
     if count == 0:
         return 1.0
-    th = math.atan2(sumY / count, sumX / count)
+    th = math.atan2(sumY, sumX)
     # varianza angular aproximada (0 = muy sincronizado)
     var = (
-        st.pvariance([angle_diff(f, th) for f in fases])
+        st.pvariance(angle_diff(f, th) for f in fases)
         if count > 1
         else 0.0
     )

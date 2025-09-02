@@ -22,8 +22,8 @@ def test_phase_observers_match_manual_calculation(graph_canon):
 
     X = [math.cos(th) for th in angles]
     Y = [math.sin(th) for th in angles]
-    th_mean = math.atan2(sum(Y) / len(Y), sum(X) / len(X))
-    var = st.pvariance([angle_diff(th, th_mean) for th in angles])
+    th_mean = math.atan2(sum(Y), sum(X))
+    var = st.pvariance(angle_diff(th, th_mean) for th in angles)
     expected_sync = 1.0 / (1.0 + var)
     assert math.isclose(phase_sync(G), expected_sync)
 
