@@ -6,6 +6,19 @@ from typing import Any, Dict
 import copy
 import warnings
 
+# Valores que pueden asignarse directamente sin copiar
+IMMUTABLE_TYPES = (
+    int,
+    float,
+    complex,
+    str,
+    bool,
+    tuple,
+    frozenset,
+    bytes,
+    type(None),
+)
+
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
 from .init import INIT_DEFAULTS
 from .metric import (
@@ -56,11 +69,13 @@ def inject_defaults(
 
     ``defaults`` suele ser ``DEFAULTS``, que combina todos los sub-diccionarios.
     Si ``override`` es ``True`` se sobreescriben valores ya presentes.
+    Los valores inmutables (números, cadenas, tuplas, etc.) se asignan directamente;
+    ``copy.deepcopy`` solo se usa para estructuras mutables.
     """
     G.graph.setdefault("_tnfr_defaults_attached", False)
     for k, v in defaults.items():
         if override or k not in G.graph:
-            G.graph[k] = copy.deepcopy(v)
+            G.graph[k] = v if isinstance(v, IMMUTABLE_TYPES) else copy.deepcopy(v)
     G.graph["_tnfr_defaults_attached"] = True
     try:  # local import para evitar dependencia circular
         from ..operators import _ensure_node_offset_map
