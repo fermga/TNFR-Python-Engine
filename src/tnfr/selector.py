@@ -9,7 +9,6 @@ import networkx as nx
 from .constants import DEFAULTS
 from .constants.core import SELECTOR_THRESHOLD_DEFAULTS
 from .helpers import clamp01, compute_dnfr_accel_max
-from .collections_utils import normalize_weights
 
 
 HYSTERESIS_GLYPHS = ("IL", "OZ", "ZHIR", "THOL", "NAV", "RA")
@@ -95,12 +94,11 @@ def _norms_para_selector(G: nx.Graph) -> dict:
 
 
 def _calc_selector_score(Si: float, dnfr: float, accel: float, weights: Dict[str, float]) -> float:
-    """Calcula un ``score`` ponderado normalizando los pesos suministrados."""
-    norm = normalize_weights(weights, ("w_si", "w_dnfr", "w_accel"))
+    """Calcula un ``score`` ponderado asumiendo pesos ya normalizados."""
     return (
-        norm["w_si"] * Si
-        + norm["w_dnfr"] * (1.0 - dnfr)
-        + norm["w_accel"] * (1.0 - accel)
+        weights["w_si"] * Si
+        + weights["w_dnfr"] * (1.0 - dnfr)
+        + weights["w_accel"] * (1.0 - accel)
     )
 
 

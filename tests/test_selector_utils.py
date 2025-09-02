@@ -1,5 +1,6 @@
 """Pruebas de selector utils."""
 import networkx as nx
+import pytest
 
 from tnfr.selector import (
     _selector_thresholds,
@@ -10,6 +11,8 @@ from tnfr.selector import (
 from tnfr.constants import DEFAULTS, ALIAS_DNFR, ALIAS_D2EPI
 from tnfr.constants.core import SELECTOR_THRESHOLD_DEFAULTS
 from tnfr.helpers import clamp01
+from tnfr.collections_utils import normalize_weights
+from tnfr.dynamics import _configure_selector_weights
 
 
 def _selector_thresholds_original(G: nx.Graph) -> dict:
@@ -127,10 +130,19 @@ def test_norms_para_selector_computes_max():
     assert norms["accel_max"] == 1.0
 
 
-def test_calc_selector_score_normalizes_weights():
-    W = {"w_si": 0.5, "w_dnfr": 0.3, "w_accel": 0.2}
+def test_calc_selector_score_assumes_normalized_weights():
+    W_raw = {"w_si": 0.5, "w_dnfr": 0.3, "w_accel": 0.2}
+    W = normalize_weights(W_raw, W_raw.keys())
     assert _calc_selector_score(1.0, 0.0, 0.0, W) == 1.0
     assert _calc_selector_score(0.0, 1.0, 1.0, W) == 0.0
+
+
+def test_configure_selector_weights_normalizes():
+    G = nx.Graph()
+    G.graph["SELECTOR_WEIGHTS"] = {"w_si": 2.0, "w_dnfr": 1.0, "w_accel": 1.0}
+    weights = _configure_selector_weights(G)
+    assert weights == pytest.approx({"w_si": 0.5, "w_dnfr": 0.25, "w_accel": 0.25})
+    assert G.graph["_selector_weights"] == weights
 
 
 def test_apply_selector_hysteresis_returns_prev():

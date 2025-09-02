@@ -917,9 +917,19 @@ def _selector_base_choice(Si, dnfr, accel, thr):
     return "RA"
 
 
+def _configure_selector_weights(G) -> dict:
+    """Normaliza y almacena los pesos del selector en ``G.graph``."""
+    w = {**DEFAULTS["SELECTOR_WEIGHTS"], **G.graph.get("SELECTOR_WEIGHTS", {})}
+    weights = normalize_weights(w, ("w_si", "w_dnfr", "w_accel"))
+    G.graph["_selector_weights"] = weights
+    return weights
+
+
 def _compute_selector_score(G, nd, Si, dnfr, accel, cand):
     """Calcula la puntuación y aplica penalizaciones por estancamiento."""
-    W = G.graph.get("SELECTOR_WEIGHTS", DEFAULTS["SELECTOR_WEIGHTS"])
+    W = G.graph.get("_selector_weights")
+    if W is None:
+        W = _configure_selector_weights(G)
     score = _calc_selector_score(Si, dnfr, accel, W)
     hist_prev = nd.get("glyph_history")
     if hist_prev and hist_prev[-1] == cand:
@@ -998,6 +1008,7 @@ def _update_nodes(
     selector = G.graph.get("glyph_selector", default_glyph_selector)
     if selector is parametric_glyph_selector:
         _norms_para_selector(G)
+        _configure_selector_weights(G)
     if apply_glyphs:
         window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
         use_canon = bool(
