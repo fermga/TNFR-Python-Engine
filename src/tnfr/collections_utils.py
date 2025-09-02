@@ -48,6 +48,7 @@ def ensure_collection(
         raise ValueError("'max_materialize' must be non-negative")
     try:
         limit = MAX_MATERIALIZE_DEFAULT if max_materialize is None else max_materialize
+        it = iter(it)
         data = tuple(islice(it, limit))
         extra = next(it, None)
         if extra is not None:
