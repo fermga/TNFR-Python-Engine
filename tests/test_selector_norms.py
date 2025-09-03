@@ -1,4 +1,5 @@
 """Pruebas de selector norms."""
+
 from tnfr.dynamics import step, default_glyph_selector, parametric_glyph_selector
 from tnfr.constants.core import SELECTOR_THRESHOLD_DEFAULTS
 

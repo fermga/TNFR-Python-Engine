@@ -1,4 +1,5 @@
 """Pruebas de vf coherencia."""
+
 import pytest
 
 from tnfr.constants import attach_defaults

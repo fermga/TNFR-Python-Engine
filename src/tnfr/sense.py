@@ -1,4 +1,5 @@
 """Sense calculations."""
+
 from __future__ import annotations
 from typing import Dict, Iterable, List
 import math
@@ -35,12 +36,13 @@ GLYPH_UNITS: Dict[str, complex] = {
 # Utilidades básicas
 # -------------------------
 
+
 def glyph_angle(g: str) -> float:
     return float(ANGLE_MAP.get(g, 0.0))
 
 
 def glyph_unit(g: str) -> complex:
-    return GLYPH_UNITS.get(g, 1+0j)
+    return GLYPH_UNITS.get(g, 1 + 0j)
 
 
 def _weight(nd, mode: str) -> float:
@@ -100,6 +102,7 @@ def _sigma_from_pairs(
     vectors = (glyph_unit(g) * float(w) for g, w in pairs)
     return _sigma_from_vectors(vectors, fallback_angle)
 
+
 def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] | None:
     cfg = _sigma_cfg(G)
     nd = G.nodes[n]
@@ -127,14 +130,15 @@ def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
 
     factor = len(SIGMA_ANGLE_KEYS) / total
     z_iter = (
-        glyph_unit(k) * float(dist.get(k, 0.0)) * factor
-        for k in SIGMA_ANGLE_KEYS
+        glyph_unit(k) * float(dist.get(k, 0.0)) * factor for k in SIGMA_ANGLE_KEYS
     )
     vec, _ = _sigma_from_vectors(z_iter)
     return vec
 
 
-def sigma_vector_from_graph(G: nx.Graph, weight_mode: str | None = None) -> Dict[str, float]:
+def sigma_vector_from_graph(
+    G: nx.Graph, weight_mode: str | None = None
+) -> Dict[str, float]:
     """Vector global del plano del sentido σ para un grafo.
 
     Parameters
@@ -156,16 +160,16 @@ def sigma_vector_from_graph(G: nx.Graph, weight_mode: str | None = None) -> Dict
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
     z_iter = (
-        nw[2]
-        for _, nd in G.nodes(data=True)
-        if (nw := _node_weight(nd, weight_mode))
+        nw[2] for _, nd in G.nodes(data=True) if (nw := _node_weight(nd, weight_mode))
     )
     vec, n = _sigma_from_vectors(z_iter)
     vec["n"] = n
     return vec
 
 
-def sigma_vector_global(G: nx.Graph, weight_mode: str | None = None) -> Dict[str, float]:
+def sigma_vector_global(
+    G: nx.Graph, weight_mode: str | None = None
+) -> Dict[str, float]:
     """Alias de :func:`sigma_vector_from_graph`.
 
     .. deprecated:: 4.5.3
@@ -184,6 +188,7 @@ def sigma_vector_global(G: nx.Graph, weight_mode: str | None = None) -> Dict[str
 # Historia / series
 # -------------------------
 
+
 def push_sigma_snapshot(G, t: float | None = None) -> None:
     cfg = _sigma_cfg(G)
     if not cfg.get("enabled", True):
@@ -198,8 +203,8 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
     alpha = float(cfg.get("smooth", 0.0))
     if alpha > 0 and hist.get(key):
         prev = hist[key][-1]
-        x = (1-alpha)*prev["x"] + alpha*sv["x"]
-        y = (1-alpha)*prev["y"] + alpha*sv["y"]
+        x = (1 - alpha) * prev["x"] + alpha * sv["x"]
+        y = (1 - alpha) * prev["y"] + alpha * sv["y"]
         mag = math.hypot(x, y)
         ang = math.atan2(y, x)
         sv = {"x": x, "y": y, "mag": mag, "angle": ang, "n": sv.get("n", 0)}
@@ -228,13 +233,17 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
 # Registro como callback automático (after_step)
 # -------------------------
 
+
 def register_sigma_callback(G) -> None:
-    register_callback(G, event="after_step", func=push_sigma_snapshot, name="sigma_snapshot")
+    register_callback(
+        G, event="after_step", func=push_sigma_snapshot, name="sigma_snapshot"
+    )
 
 
 # -------------------------
 # Series de utilidad
 # -------------------------
+
 
 def sigma_series(G, key: str | None = None) -> Dict[str, List[float]]:
     cfg = _sigma_cfg(G)
@@ -264,7 +273,8 @@ def sigma_rose(G, steps: int | None = None) -> Dict[str, int]:
                     agg[k] = int(agg.get(k, 0)) + int(v)
         return {g: int(agg.get(g, 0)) for g in GLYPHS_CANONICAL}
     agg: Dict[str, int] = {}
-    for row in counts[-int(steps):]:
+    start = -int(steps)
+    for row in counts[start:]:
         for k, v in row.items():
             if k != "t":
                 agg[k] = int(agg.get(k, 0)) + int(v)

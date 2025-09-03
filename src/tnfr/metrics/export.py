@@ -1,4 +1,5 @@
 """Metrics export."""
+
 from __future__ import annotations
 
 import csv
@@ -56,7 +57,11 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
     if fmt == "csv":
         specs = [
             ("_glyphogram.csv", ["t", *GLYPHS_CANONICAL], _iter_glif_rows(glyph)),
-            ("_sigma.csv", ["t", "x", "y", "mag", "angle"], _iter_sigma_rows(sigma_rows)),
+            (
+                "_sigma.csv",
+                ["t", "x", "y", "mag", "angle"],
+                _iter_sigma_rows(sigma_rows),
+            ),
         ]
         if morph:
             specs.append(
@@ -81,14 +86,20 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
                     "_epi_support.csv",
                     ["t", "size", "epi_norm"],
                     (
-                        [row.get("t"), row.get("size"), row.get("epi_norm")] for row in epi_supp
+                        [row.get("t"), row.get("size"), row.get("epi_norm")]
+                        for row in epi_supp
                     ),
                 )
             )
         for suffix, headers, rows in specs:
             _write_csv(base_path + suffix, headers, rows)
     else:
-        data = {"glyphogram": glyph, "sigma": sigma, "morph": morph, "epi_support": epi_supp}
+        data = {
+            "glyphogram": glyph,
+            "sigma": sigma,
+            "morph": morph,
+            "epi_support": epi_supp,
+        }
         json_path = base_path + ".json"
         ensure_parent(json_path)
         try:

@@ -1,4 +1,5 @@
 """Pruebas de remesh."""
+
 from collections import deque
 
 from tnfr.constants import attach_defaults
@@ -46,4 +47,3 @@ def test_remesh_alpha_hard_ignores_glyph_factor(graph_canon):
     meta = G.graph.get("_REMESH_META", {})
     assert meta.get("alpha") == 0.7
     assert G.graph.get("_REMESH_ALPHA_SRC") == "REMESH_ALPHA"
-

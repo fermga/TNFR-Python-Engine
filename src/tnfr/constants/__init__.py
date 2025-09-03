@@ -1,4 +1,5 @@
 """Shared constants."""
+
 from __future__ import annotations
 
 from collections import ChainMap
@@ -76,9 +77,7 @@ def inject_defaults(
     G.graph.setdefault("_tnfr_defaults_attached", False)
     for k, v in defaults.items():
         if override or k not in G.graph:
-            G.graph[k] = (
-                v if isinstance(v, IMMUTABLE_TYPES) else copy.deepcopy(v)
-            )
+            G.graph[k] = v if isinstance(v, IMMUTABLE_TYPES) else copy.deepcopy(v)
     G.graph["_tnfr_defaults_attached"] = True
     try:  # local import para evitar dependencia circular
         from ..operators import _ensure_node_offset_map

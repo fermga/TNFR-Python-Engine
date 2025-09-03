@@ -1,4 +1,5 @@
 """Pruebas de compactación de _heap en HistoryDict."""
+
 from tnfr.glyph_history import HistoryDict
 
 

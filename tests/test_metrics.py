@@ -1,4 +1,5 @@
 """Pruebas de metrics."""
+
 import pytest
 import networkx as nx
 

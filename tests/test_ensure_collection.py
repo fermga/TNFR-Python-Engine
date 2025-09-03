@@ -57,4 +57,3 @@ def test_none_uses_default_limit():
 def test_non_iterable_error():
     with pytest.raises(TypeError):
         ensure_collection(42)  # type: ignore[arg-type]
-

@@ -1,4 +1,5 @@
 """Pruebas de dnfr precompute."""
+
 import pytest
 import networkx as nx
 

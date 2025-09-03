@@ -1,4 +1,5 @@
 """Pruebas de export history."""
+
 import json
 
 from tnfr.metrics import export_history
@@ -60,6 +61,7 @@ def test_export_history_truncates_sigma(tmp_path, graph_canon):
     export_history(G, str(base), fmt="csv")
     sigma_path = base.parent / (base.name + "_sigma.csv")
     import csv
+
     with open(sigma_path, newline="") as f:
         rows = list(csv.reader(f))
     assert rows[1] == ["0", "1", "3", "4", "7"]

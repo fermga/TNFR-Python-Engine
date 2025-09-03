@@ -1,4 +1,5 @@
 """Pruebas de recent_glyph."""
+
 from tnfr.glyph_history import push_glyph, recent_glyph
 from tnfr.constants import ALIAS_EPI_KIND
 

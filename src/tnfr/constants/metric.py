@@ -1,4 +1,5 @@
 """Metric constants."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict, field
@@ -16,7 +17,7 @@ class MetricDefaults:
         default_factory=lambda: {
             "enabled": True,
             "weight": "Si",  # "Si" | "EPI" | "1"
-            "smooth": 0.0,    # EMA sobre el vector global (0=off)
+            "smooth": 0.0,  # EMA sobre el vector global (0=off)
             "history_key": "sigma_global",
             "per_node": False,
         }

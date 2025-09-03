@@ -1,4 +1,5 @@
 """Pruebas de alias helpers threadsafe."""
+
 from concurrent.futures import ThreadPoolExecutor
 
 from tnfr.helpers import alias_get, alias_set

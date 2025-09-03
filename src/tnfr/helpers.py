@@ -1,4 +1,5 @@
 """Funciones auxiliares."""
+
 from __future__ import annotations
 from typing import (
     Iterable,
@@ -22,8 +23,10 @@ try:  # pragma: no cover - dependencia opcional
     from yaml import YAMLError  # type: ignore
 except ImportError:  # pragma: no cover
     yaml = None
+
     class YAMLError(Exception):  # type: ignore
         pass
+
 
 from .constants import (
     DEFAULTS,
@@ -88,6 +91,7 @@ __all__ = [
 # Entrada/salida estructurada
 # -------------------------
 
+
 def _parse_json(text: str) -> Any:
     """Parsea ``text`` como JSON."""
     return json.loads(text)
@@ -123,14 +127,13 @@ def read_structured_file(path: Path) -> Any:
     except YAMLError as e:
         raise ValueError(f"Error al parsear archivo YAML en {path}: {e}") from e
     except RuntimeError as e:
-        raise ValueError(
-            f"Dependencia faltante al parsear {path}: {e}"
-        ) from e
+        raise ValueError(f"Dependencia faltante al parsear {path}: {e}") from e
 
 
 def ensure_parent(path: str | Path) -> None:
     """Crea el directorio padre de ``path`` si hace falta."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
+
 
 # -------------------------
 # Iterables y colecciones
@@ -138,6 +141,7 @@ def ensure_parent(path: str | Path) -> None:
 # -------------------------
 # Utilidades numéricas
 # -------------------------
+
 
 def clamp(x: float, a: float, b: float) -> float:
     """Constriñe ``x`` al intervalo cerrado [a, b]."""
@@ -165,6 +169,8 @@ def _wrap_angle(a: float) -> float:
 def angle_diff(a: float, b: float) -> float:
     """Diferencia mínima entre ``a`` y ``b`` en (-π, π]."""
     return _wrap_angle(a - b)
+
+
 # -------------------------
 # Acceso a atributos con alias
 # -------------------------
@@ -187,11 +193,10 @@ def alias_get(
     aliases: Sequence[str],
     conv: Callable[[Any], T],
     *,
-    default: None = ..., 
+    default: None = ...,
     strict: bool = False,
     log_level: int | None = None,
-) -> Optional[T]:
-    ...
+) -> Optional[T]: ...
 
 
 @overload
@@ -203,8 +208,7 @@ def alias_get(
     default: T,
     strict: bool = False,
     log_level: int | None = None,
-) -> T:
-    ...
+) -> T: ...
 
 
 def alias_get(
@@ -294,8 +298,7 @@ def _alias_get_set(
         *,
         strict: bool = False,
         log_level: int | None = None,
-    ) -> T:
-        ...
+    ) -> T: ...
 
     @overload
     def _get(
@@ -305,8 +308,7 @@ def _alias_get_set(
         *,
         strict: bool = False,
         log_level: int | None = None,
-    ) -> Optional[T]:
-        ...
+    ) -> Optional[T]: ...
 
     def _get(
         d: Dict[str, Any],
@@ -345,6 +347,7 @@ _set_attr_str = set_attr_str
 # Máximos globales con caché
 # -------------------------
 
+
 def _recompute_abs_max(G, aliases: Sequence[str]):
     """Recalcula y retorna ``(max_val, node)`` para ``aliases``."""
     node = max(
@@ -356,9 +359,7 @@ def _recompute_abs_max(G, aliases: Sequence[str]):
     return max_val, node
 
 
-def _update_cached_abs_max(
-    G, aliases: Sequence[str], n, value, *, key: str
-) -> None:
+def _update_cached_abs_max(G, aliases: Sequence[str], n, value, *, key: str) -> None:
     """Actualiza ``G.graph[key]`` y ``G.graph[f"{key}_node"]``."""
     node_key = f"{key}_node"
     val = abs(value)
@@ -396,6 +397,7 @@ def set_dnfr(G, n, value: float) -> None:
 # Normalizadores de ΔNFR y aceleración
 # -------------------------
 
+
 def compute_dnfr_accel_max(G) -> dict:
     """Calcula los máximos absolutos de |ΔNFR| y |d²EPI/dt²|.
 
@@ -410,9 +412,11 @@ def compute_dnfr_accel_max(G) -> dict:
         accel_max = max(accel_max, abs(get_attr(nd, ALIAS_D2EPI, 0.0)))
     return {"dnfr_max": float(dnfr_max), "accel_max": float(accel_max)}
 
+
 # -------------------------
 # Coherencia global
 # -------------------------
+
 
 def compute_coherence(G) -> float:
     """Calcula la coherencia global C(t) a partir de ΔNFR y dEPI."""
@@ -431,9 +435,11 @@ def compute_coherence(G) -> float:
         dnfr_mean = depi_mean = 0.0
     return 1.0 / (1.0 + dnfr_mean + depi_mean)
 
+
 # -------------------------
 # Estadísticos vecinales
 # -------------------------
+
 
 def media_vecinal(G, n, aliases: Sequence[str], default: float = 0.0) -> float:
     """Media del atributo indicado por ``aliases`` en los vecinos de ``n``."""
@@ -482,9 +488,11 @@ from .glyph_history import (  # noqa: E402
     last_glyph,
     count_glyphs,
 )
+
 # -------------------------
 # Índice de sentido (Si)
 # -------------------------
+
 
 def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     """Calcula Si por nodo y lo escribe en G.nodes[n]["Si"].
@@ -553,7 +561,7 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
         dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
         dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
 
-        Si = alpha*vf_norm + beta*(1.0 - disp_fase) + gamma*(1.0 - dnfr_norm)
+        Si = alpha * vf_norm + beta * (1.0 - disp_fase) + gamma * (1.0 - dnfr_norm)
         Si = clamp01(Si)
         out[n] = Si
         if inplace:

@@ -1,4 +1,5 @@
 """Pruebas de operators."""
+
 from tnfr.node import NodoNX
 from tnfr.operators import random_jitter, clear_rng_cache
 import tnfr.operators as operators
@@ -74,7 +75,7 @@ def test_rng_cache_lru_purge(graph_canon):
 
     j0 = random_jitter(n0, 0.5)
     j1 = random_jitter(n1, 0.5)
-    j2 = random_jitter(n2, 0.5)
+    random_jitter(n2, 0.5)
 
     j1b = random_jitter(n1, 0.5)
     assert j1b != j1
@@ -85,7 +86,8 @@ def test_rng_cache_lru_purge(graph_canon):
 
 
 def test_rng_cache_does_not_reference_graph(graph_canon):
-    import gc, weakref
+    import gc
+    import weakref
 
     clear_rng_cache()
     G = graph_canon()

@@ -1,4 +1,5 @@
 """Pruebas de selector utils."""
+
 import networkx as nx
 import pytest
 

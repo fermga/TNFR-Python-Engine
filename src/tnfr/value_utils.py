@@ -1,4 +1,5 @@
 """Utilities for value conversion."""
+
 from __future__ import annotations
 
 from typing import Any, Callable, TypeVar
@@ -28,8 +29,10 @@ def _convert_value(
     try:
         return True, conv(value)
     except (ValueError, TypeError) as exc:
-        level = log_level if log_level is not None else (
-            logging.ERROR if strict else logging.DEBUG
+        level = (
+            log_level
+            if log_level is not None
+            else (logging.ERROR if strict else logging.DEBUG)
         )
         if key is not None:
             logger.log(level, "No se pudo convertir el valor para %r: %s", key, exc)

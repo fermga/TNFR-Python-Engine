@@ -1,4 +1,5 @@
 """Basic metrics."""
+
 from __future__ import annotations
 
 from collections import Counter, defaultdict
@@ -121,8 +122,10 @@ def _update_epi_support(G, hist, t, thr):
 
 def _update_morph_metrics(G, hist, counts, t):
     """Registra métricas morfosintácticas basadas en conteos glíficos."""
+
     def get_count(keys):
         return sum(counts.get(k, 0) for k in keys)
+
     total = max(1, sum(counts.values()))
     id_val = get_count(GLYPH_GROUPS.get("ID", ())) / total
     cm_val = get_count(GLYPH_GROUPS.get("CM", ())) / total
@@ -152,7 +155,9 @@ def _metrics_step(G, *args, **kwargs):
     hist = ensure_history(G)
     dt = float(G.graph.get("DT", 1.0))
     t = float(G.graph.get("_t", 0.0))
-    thr = float(G.graph.get("EPI_SUPPORT_THR", METRIC_DEFAULTS.get("EPI_SUPPORT_THR", 0.0)))
+    thr = float(
+        G.graph.get("EPI_SUPPORT_THR", METRIC_DEFAULTS.get("EPI_SUPPORT_THR", 0.0))
+    )
 
     save_by_node = bool(G.graph.get("METRICS", METRICS).get("save_by_node", True))
     counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node)
@@ -180,7 +185,8 @@ def register_metrics_callbacks(G) -> None:
 
 
 def Tg_global(G, normalize: bool = True) -> Dict[str, float]:
-    """Total glyph time per class. If ``normalize=True``, return fractions of the total."""
+    """Total glyph time per class. If ``normalize=True``, return fractions
+    of the total."""
     hist = ensure_history(G)
     tg_total: Dict[str, float] = hist.tracked_get("Tg_total", {})
     total = sum(tg_total.values()) or 1.0
@@ -190,7 +196,8 @@ def Tg_global(G, normalize: bool = True) -> Dict[str, float]:
 
 
 def Tg_by_node(G, n, normalize: bool = False) -> Dict[str, float | List[float]]:
-    """Per-node summary: if ``normalize`` return mean run per glyph; otherwise list runs."""
+    """Per-node summary: if ``normalize`` return mean run per glyph;
+    otherwise list runs."""
     hist = ensure_history(G)
     rec = hist.tracked_get("Tg_by_node", {}).get(n, {})
     if not normalize:

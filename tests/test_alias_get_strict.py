@@ -1,4 +1,5 @@
 """Pruebas de alias get strict."""
+
 import logging
 import pytest
 from tnfr.helpers import alias_get

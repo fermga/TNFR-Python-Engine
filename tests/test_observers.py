@@ -1,4 +1,5 @@
 """Pruebas de observers."""
+
 import math
 import statistics as st
 from collections import deque
@@ -12,6 +13,7 @@ from tnfr.constants_glyphs import ANGLE_MAP, ESTABILIZADORES, DISRUPTIVOS
 from tnfr.helpers import angle_diff, set_attr
 from tnfr.callback_utils import CallbackEvent
 from tnfr.observers import attach_standard_observer
+
 
 def test_phase_observers_match_manual_calculation(graph_canon):
     G = graph_canon()
@@ -49,7 +51,9 @@ def test_glyph_load_uses_module_constants(monkeypatch, graph_canon):
     G.add_node(1, glyph_history=["B"])
 
     # Patch constants to custom categories
-    monkeypatch.setattr("tnfr.observers.GLYPH_GROUPS", {"estabilizadores": ["A"], "disruptivos": ["B"]})
+    monkeypatch.setattr(
+        "tnfr.observers.GLYPH_GROUPS", {"estabilizadores": ["A"], "disruptivos": ["B"]}
+    )
 
     dist = glyph_load(G)
 

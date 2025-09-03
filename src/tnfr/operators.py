@@ -1,4 +1,5 @@
 """Operadores de la red."""
+
 # operators.py — TNFR canónica (ASCII-safe)
 from __future__ import annotations
 from typing import Dict, Any, Optional, Iterable, TYPE_CHECKING
@@ -20,6 +21,7 @@ from .helpers import (
     increment_edge_version,
 )
 from .callback_utils import invoke_callbacks
+
 if TYPE_CHECKING:
     from .node import NodoProtocol
 from .types import Glyph
@@ -106,12 +108,15 @@ def _get_NodoNX():
     global _NodoNX
     if _NodoNX is None:
         from .node import NodoNX as _NodoNX_cls
+
         _NodoNX = _NodoNX_cls
     return _NodoNX
 
 
 def random_jitter(
-    node: NodoProtocol, amplitude: float, cache: Optional[Dict[int, random.Random]] = None
+    node: NodoProtocol,
+    amplitude: float,
+    cache: Optional[Dict[int, random.Random]] = None,
 ) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
 
@@ -145,7 +150,9 @@ def random_jitter(
 
     if cache is None:
         try:
-            cache_size = get_param(node.G, "JITTER_CACHE_SIZE")  # type: ignore[attr-defined]
+            cache_size = get_param(
+                node.G, "JITTER_CACHE_SIZE"
+            )  # type: ignore[attr-defined]
         except (AttributeError, KeyError):
             cache_size = DEFAULTS["JITTER_CACHE_SIZE"]
         if int(cache_size) <= 0:
@@ -153,7 +160,9 @@ def random_jitter(
         else:
             global _cached_rng
             if _cached_rng.cache_info().maxsize != int(cache_size):
-                _cached_rng = lru_cache(maxsize=int(cache_size))(_cached_rng.__wrapped__)
+                _cached_rng = lru_cache(maxsize=int(cache_size))(
+                    _cached_rng.__wrapped__
+                )
             rng = _cached_rng(id(scope), base_seed, seed_key)
     else:
         rng = cache.get(seed_key)
@@ -169,12 +178,15 @@ def get_glyph_factors(node: NodoProtocol) -> Dict[str, Any]:
     """Return glyph factors for ``node`` with defaults."""
     return node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
 
+
 # -------------------------
 # Glyphs (operadores locales)
 # -------------------------
 
 
-def _select_dominant_glyph(node: NodoProtocol, neigh: Iterable[NodoProtocol]) -> Optional[str]:
+def _select_dominant_glyph(
+    node: NodoProtocol, neigh: Iterable[NodoProtocol]
+) -> Optional[str]:
     """Return the epi_kind with the highest |EPI| among node and its neighbors."""
     best_mag = abs(node.EPI)
     best_kind = node.epi_kind
@@ -206,9 +218,8 @@ def _mix_epi_with_neighbors(
     if hasattr(node, "G"):
         NodoNX = _get_NodoNX()
         neigh = [
-            v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)  # type: ignore[attr-defined]
-            for v in neigh_ids
-        ]
+            v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v) for v in neigh_ids
+        ]  # type: ignore[attr-defined]
     else:
         neigh = neigh_ids  # NodoTNFR already
     epi_bar = list_mean(v.EPI for v in neigh)
@@ -273,7 +284,11 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Coupling
     node.theta = th + k * d
 
     if bool(node.graph.get("UM_FUNCTIONAL_LINKS", False)):
-        thr = float(node.graph.get("UM_COMPAT_THRESHOLD", DEFAULTS.get("UM_COMPAT_THRESHOLD", 0.75)))
+        thr = float(
+            node.graph.get(
+                "UM_COMPAT_THRESHOLD", DEFAULTS.get("UM_COMPAT_THRESHOLD", 0.75)
+            )
+        )
         epi_i = node.EPI
         si_i = node.Si
 
@@ -386,10 +401,16 @@ def _op_REMESH(node: NodoProtocol) -> None:  # REMESH — aviso
     step_idx = len(node.graph.get("history", {}).get("C_steps", []))
     last_warn = node.graph.get("_remesh_warn_step", None)
     if last_warn != step_idx:
-        msg = "REMESH es a escala de red. Usa apply_remesh_if_globally_stable(G) o apply_network_remesh(G)."
-        node.graph.setdefault("history", {}).setdefault("events", []).append(("warn", {"step": step_idx, "node": None, "msg": msg}))
+        msg = (
+            "REMESH es a escala de red. Usa apply_remesh_if_globally_"
+            "stable(G) o apply_network_remesh(G)."
+        )
+        node.graph.setdefault("history", {}).setdefault("events", []).append(
+            ("warn", {"step": step_idx, "node": None, "msg": msg})
+        )
         node.graph["_remesh_warn_step"] = step_idx
     return
+
 
 # -------------------------
 # Dispatcher
@@ -421,6 +442,7 @@ def _wrap(fn):
 
     return inner
 
+
 op_AL = _wrap(_op_AL)
 op_EN = _wrap(_op_EN)
 op_IL = _wrap(_op_IL)
@@ -436,7 +458,9 @@ op_NAV = _wrap(_op_NAV)
 op_REMESH = _wrap(_op_REMESH)
 
 
-def apply_glyph_obj(node: NodoProtocol, glyph: Glyph | str, *, window: Optional[int] = None) -> None:
+def apply_glyph_obj(
+    node: NodoProtocol, glyph: Glyph | str, *, window: Optional[int] = None
+) -> None:
     """Apply ``glyph`` to an object satisfying :class:`NodoProtocol`."""
 
     try:
@@ -475,11 +499,10 @@ def apply_glyph(G, n, glyph: Glyph | str, *, window: Optional[int] = None) -> No
 # REMESH de red (usa _epi_hist capturado en dynamics.step)
 # -------------------------
 
+
 def _remesh_alpha_info(G):
     """Return ``(alpha, source)`` with explicit precedence."""
-    if bool(
-        G.graph.get("REMESH_ALPHA_HARD", REMESH_DEFAULTS["REMESH_ALPHA_HARD"])
-    ):
+    if bool(G.graph.get("REMESH_ALPHA_HARD", REMESH_DEFAULTS["REMESH_ALPHA_HARD"])):
         val = float(G.graph.get("REMESH_ALPHA", REMESH_DEFAULTS["REMESH_ALPHA"]))
         return val, "REMESH_ALPHA"
     gf = G.graph.get("GLYPH_FACTORS", DEFAULTS.get("GLYPH_FACTORS", {}))
@@ -535,9 +558,7 @@ def apply_network_remesh(G) -> None:
         set_attr(nd, ALIAS_EPI, mixed)
 
     # --- Snapshot EPI (DESPUÉS) ---
-    epi_items_after = [
-        (n, get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in G.nodes()
-    ]
+    epi_items_after = [(n, get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in G.nodes()]
     epi_mean_after = list_mean(v for _, v in epi_items_after)
     epi_checksum_after = hashlib.sha1(
         str(sorted((str(n), round(v, 6)) for n, v in epi_items_after)).encode()
@@ -603,7 +624,9 @@ def apply_topological_remesh(
     rnd = random.Random(seed)
 
     if mode is None:
-        mode = str(G.graph.get("REMESH_MODE", REMESH_DEFAULTS.get("REMESH_MODE", "knn")))
+        mode = str(
+            G.graph.get("REMESH_MODE", REMESH_DEFAULTS.get("REMESH_MODE", "knn"))
+        )
     mode = str(mode)
 
     # Similaridad basada en EPI (distancia absoluta)
@@ -635,7 +658,12 @@ def apply_topological_remesh(
             k_val = (
                 int(k)
                 if k is not None
-                else int(G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2)))
+                else int(
+                    G.graph.get(
+                        "REMESH_COMMUNITY_K",
+                        REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2),
+                    )
+                )
             )
             # Grafo de comunidades basado en medias de EPI
             C = nx.Graph()
@@ -658,14 +686,17 @@ def apply_topological_remesh(
             for u in C.nodes():
                 epi_u = get_attr(C.nodes[u], ALIAS_EPI, 0.0)
                 others = [v for v in C.nodes() if v != u]
-                others.sort(key=lambda v: abs(epi_u - get_attr(C.nodes[v], ALIAS_EPI, 0.0)))
+                others.sort(
+                    key=lambda v: abs(epi_u - get_attr(C.nodes[v], ALIAS_EPI, 0.0))
+                )
                 for v in others[:k_val]:
                     if rnd.random() < p_rewire:
                         new_edges.add(tuple(sorted((u, v))))
 
             # Reemplazar nodos y aristas del grafo original por comunidades
-            # clear_edges está disponible desde NetworkX 2.4 y evita materializar la lista
-            # completa de aristas; tnfr requiere NetworkX>=2.6 (ver pyproject.toml)
+            # clear_edges está disponible desde NetworkX 2.4 y evita
+            # materializar la lista completa de aristas; tnfr requiere
+            # NetworkX>=2.6 (ver pyproject.toml)
             G.clear_edges()
             increment_edge_version(G)
             G.remove_nodes_from(list(G.nodes()))
@@ -679,12 +710,14 @@ def apply_topological_remesh(
             if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
                 ev = G.graph.setdefault("history", {}).setdefault("remesh_events", [])
                 mapping = {idx: C.nodes[idx].get("members", []) for idx in C.nodes()}
-                ev.append({
-                    "mode": "community",
-                    "n_before": n_before,
-                    "n_after": G.number_of_nodes(),
-                    "mapping": mapping,
-                })
+                ev.append(
+                    {
+                        "mode": "community",
+                        "n_before": n_before,
+                        "n_after": G.number_of_nodes(),
+                        "mapping": mapping,
+                    }
+                )
             return
 
     # Default/mode knn/mst operate on nodos originales
@@ -703,9 +736,7 @@ def apply_topological_remesh(
 
         for u in nodes:
             epi_u = epi[u]
-            dist_pairs = [
-                (abs(epi_u - epi[v]), v) for v in nodes if v != u
-            ]
+            dist_pairs = [(abs(epi_u - epi[v]), v) for v in nodes if v != u]
             for _, v in heapq.nsmallest(k_val, dist_pairs):
                 if rnd.random() < p_rewire:
                     new_edges.add(tuple(sorted((u, v))))
@@ -716,18 +747,27 @@ def apply_topological_remesh(
     G.add_edges_from(new_edges)
     increment_edge_version(G)
 
-def apply_remesh_if_globally_stable(G, pasos_estables_consecutivos: Optional[int] = None) -> None:
+
+def apply_remesh_if_globally_stable(
+    G, pasos_estables_consecutivos: Optional[int] = None
+) -> None:
     # Ventanas y umbrales
     w_estab = (
         pasos_estables_consecutivos
         if pasos_estables_consecutivos is not None
-        else int(G.graph.get("REMESH_STABILITY_WINDOW", REMESH_DEFAULTS["REMESH_STABILITY_WINDOW"]))
+        else int(
+            G.graph.get(
+                "REMESH_STABILITY_WINDOW", REMESH_DEFAULTS["REMESH_STABILITY_WINDOW"]
+            )
+        )
     )
     frac_req = float(
         G.graph.get("FRACTION_STABLE_REMESH", REMESH_DEFAULTS["FRACTION_STABLE_REMESH"])
     )
     req_extra = bool(
-        G.graph.get("REMESH_REQUIRE_STABILITY", REMESH_DEFAULTS["REMESH_REQUIRE_STABILITY"])
+        G.graph.get(
+            "REMESH_REQUIRE_STABILITY", REMESH_DEFAULTS["REMESH_REQUIRE_STABILITY"]
+        )
     )
     min_sync = float(
         G.graph.get("REMESH_MIN_PHASE_SYNC", REMESH_DEFAULTS["REMESH_MIN_PHASE_SYNC"])
@@ -760,41 +800,45 @@ def apply_remesh_if_globally_stable(G, pasos_estables_consecutivos: Optional[int
         ps_ok = True
         if "phase_sync" in hist and len(hist["phase_sync"]) >= w_estab:
             win_ps = hist["phase_sync"][-w_estab:]
-            ps_ok = (sum(win_ps)/len(win_ps)) >= min_sync
+            ps_ok = (sum(win_ps) / len(win_ps)) >= min_sync
         # carga glífica disruptiva (menor mejor)
         disr_ok = True
         if "glyph_load_disr" in hist and len(hist["glyph_load_disr"]) >= w_estab:
             win_disr = hist["glyph_load_disr"][-w_estab:]
-            disr_ok = (sum(win_disr)/len(win_disr)) <= max_disr
+            disr_ok = (sum(win_disr) / len(win_disr)) <= max_disr
         # magnitud de sigma (mayor mejor)
         sig_ok = True
         if "sense_sigma_mag" in hist and len(hist["sense_sigma_mag"]) >= w_estab:
             win_sig = hist["sense_sigma_mag"][-w_estab:]
-            sig_ok = (sum(win_sig)/len(win_sig)) >= min_sigma
+            sig_ok = (sum(win_sig) / len(win_sig)) >= min_sigma
         # orden de Kuramoto R (mayor mejor)
         R_ok = True
         if "kuramoto_R" in hist and len(hist["kuramoto_R"]) >= w_estab:
             win_R = hist["kuramoto_R"][-w_estab:]
-            R_ok = (sum(win_R)/len(win_R)) >= min_R
+            R_ok = (sum(win_R) / len(win_R)) >= min_R
         # fracción de nodos con Si alto (mayor mejor)
         sihi_ok = True
         if "Si_hi_frac" in hist and len(hist["Si_hi_frac"]) >= w_estab:
             win_sihi = hist["Si_hi_frac"][-w_estab:]
-            sihi_ok = (sum(win_sihi)/len(win_sihi)) >= min_sihi
+            sihi_ok = (sum(win_sihi) / len(win_sihi)) >= min_sihi
         if not (ps_ok and disr_ok and sig_ok and R_ok and sihi_ok):
             return
     # 3) Cooldown
-    last = G.graph.get("_last_remesh_step", -10**9)
+    last = G.graph.get("_last_remesh_step", -(10**9))
     step_idx = len(sf)
     cooldown = int(
-        G.graph.get("REMESH_COOLDOWN_VENTANA", REMESH_DEFAULTS["REMESH_COOLDOWN_VENTANA"])
+        G.graph.get(
+            "REMESH_COOLDOWN_VENTANA", REMESH_DEFAULTS["REMESH_COOLDOWN_VENTANA"]
+        )
     )
     if step_idx - last < cooldown:
         return
     t_now = float(G.graph.get("_t", 0.0))
     last_ts = float(G.graph.get("_last_remesh_ts", -1e12))
     cooldown_ts = float(
-        G.graph.get("REMESH_COOLDOWN_TS", REMESH_DEFAULTS.get("REMESH_COOLDOWN_TS", 0.0))
+        G.graph.get(
+            "REMESH_COOLDOWN_TS", REMESH_DEFAULTS.get("REMESH_COOLDOWN_TS", 0.0)
+        )
     )
     if cooldown_ts > 0 and (t_now - last_ts) < cooldown_ts:
         return

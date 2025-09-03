@@ -1,4 +1,5 @@
 """Pruebas de dnfr cache."""
+
 import pytest
 import networkx as nx
 
@@ -64,4 +65,3 @@ def test_cache_invalidated_on_node_rename():
     default_compute_delta_nfr(G)
 
     assert set(G.nodes) == {0, 1, 9}
-

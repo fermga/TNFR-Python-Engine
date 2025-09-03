@@ -1,4 +1,5 @@
 """Glyphs predeterminados."""
+
 from __future__ import annotations
 
 import math
@@ -11,12 +12,12 @@ from .types import Glyph
 # -------------------------
 
 GLYPHS_CANONICAL: tuple[str, ...] = (
-    Glyph.AL.value,   # 0
-    Glyph.EN.value,   # 1
-    Glyph.IL.value,   # 2
-    Glyph.OZ.value,   # 3
-    Glyph.UM.value,   # 4
-    Glyph.RA.value,   # 5
+    Glyph.AL.value,  # 0
+    Glyph.EN.value,  # 1
+    Glyph.IL.value,  # 2
+    Glyph.OZ.value,  # 3
+    Glyph.UM.value,  # 4
+    Glyph.RA.value,  # 5
     Glyph.SHA.value,  # 6
     Glyph.VAL.value,  # 7
     Glyph.NUL.value,  # 8

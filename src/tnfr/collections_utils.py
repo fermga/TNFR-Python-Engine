@@ -1,4 +1,5 @@
 """Utilities for working with collections and weights."""
+
 from __future__ import annotations
 
 from typing import (
@@ -16,6 +17,7 @@ import math
 from itertools import islice
 
 from .value_utils import _convert_value
+
 T = TypeVar("T")
 
 logger = logging.getLogger(__name__)
@@ -139,4 +141,3 @@ def mix_groups(
     for label, keys in groups.items():
         out[f"{prefix}{label}"] = sum(dist.get(k, 0.0) for k in keys)
     return out
-

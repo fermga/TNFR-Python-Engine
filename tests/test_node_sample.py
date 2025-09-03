@@ -1,4 +1,5 @@
 """Pruebas de node sample."""
+
 from tnfr.dynamics import step
 from tnfr.constants import attach_defaults
 import networkx as nx
@@ -57,7 +58,11 @@ print(json.dumps(G.graph["_node_sample"]))
 """
     env = dict(os.environ, PYTHONHASHSEED=str(hashseed))
     result = subprocess.run(
-        [sys.executable, "-c", code], capture_output=True, text=True, check=True, env=env
+        [sys.executable, "-c", code],
+        capture_output=True,
+        text=True,
+        check=True,
+        env=env,
     )
     return json.loads(result.stdout)
 

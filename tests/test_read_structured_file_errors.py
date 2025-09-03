@@ -1,4 +1,5 @@
 """Pruebas de read structured file errors."""
+
 import pytest
 from pathlib import Path
 import tnfr.helpers as helpers
@@ -13,7 +14,9 @@ def test_read_structured_file_missing_file(tmp_path: Path):
     assert str(path) in str(excinfo.value)
 
 
-def test_read_structured_file_permission_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def test_read_structured_file_permission_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
     path = tmp_path / "forbidden.json"
     original_open = Path.open
 
@@ -49,7 +52,9 @@ def test_read_structured_file_corrupt_yaml(tmp_path: Path):
     assert str(path) in msg
 
 
-def test_read_structured_file_missing_dependency(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def test_read_structured_file_missing_dependency(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
     path = tmp_path / "data.yaml"
     path.write_text("a: 1", encoding="utf-8")
 

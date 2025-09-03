@@ -1,4 +1,5 @@
 """Structural analysis."""
+
 from __future__ import annotations
 from typing import Iterable, Tuple, List
 import networkx as nx
@@ -15,6 +16,7 @@ from .constants import ALIAS_EPI, ALIAS_VF, ALIAS_THETA
 # ---------------------------------------------------------------------------
 # 1) Factoría NFR
 # ---------------------------------------------------------------------------
+
 
 def create_nfr(
     name: str,
@@ -36,7 +38,7 @@ def create_nfr(
             ALIAS_EPI[0]: float(epi),
             ALIAS_VF[0]: float(vf),
             ALIAS_THETA[0]: float(theta),
-        }
+        },
     )
     set_delta_nfr_hook(G, dnfr_hook)
     return G, name
@@ -216,4 +218,3 @@ def run_sequence(G: nx.Graph, node, ops: Iterable[Operador]) -> None:
         # recalculate the EPI value after each operator. The responsibility for
         # updating EPI now lies with the dynamics hook configured in
         # ``compute_delta_nfr`` or with external callers.
-

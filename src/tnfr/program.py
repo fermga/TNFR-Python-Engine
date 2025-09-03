@@ -1,4 +1,5 @@
 """TNFR programming language."""
+
 from __future__ import annotations
 from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union
 from dataclasses import dataclass
@@ -20,6 +21,7 @@ AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
 # DSL constructs
 # ---------------------
 
+
 @dataclass
 class WAIT:
     """Wait a number of steps without applying glyphs.
@@ -27,7 +29,9 @@ class WAIT:
     Attributes:
         steps: number of steps the system advances.
     """
+
     steps: int = 1
+
 
 @dataclass
 class TARGET:
@@ -36,7 +40,9 @@ class TARGET:
     Attributes:
         nodes: iterable of nodes; ``None`` for all nodes.
     """
-    nodes: Optional[Iterable[Node]] = None   # None = all nodes
+
+    nodes: Optional[Iterable[Node]] = None  # None = all nodes
+
 
 @dataclass
 class THOL:
@@ -47,15 +53,18 @@ class THOL:
         repeat: how many times to repeat ``body``.
         force_close: ``Glyph.SHA`` or ``Glyph.NUL`` to force closure.
     """
+
     body: Sequence[Any]
-    repeat: int = 1                # number of times to repeat the body
+    repeat: int = 1  # number of times to repeat the body
     force_close: Optional[Glyph] = None  # None → automatic closure; SHA or NUL to force
+
 
 Token = Union[Glyph, WAIT, TARGET, THOL]
 
 # ---------------------
 # Internal utilities
 # ---------------------
+
 
 @contextmanager
 def _forced_selector(G, glyph: Glyph):
@@ -64,8 +73,10 @@ def _forced_selector(G, glyph: Glyph):
     The canonical grammar is enforced before applying.
     """
     prev = G.graph.get("glyph_selector")
+
     def selector_forced(_G, _n):
         return glyph
+
     G.graph["glyph_selector"] = selector_forced
     try:
         yield
@@ -75,8 +86,10 @@ def _forced_selector(G, glyph: Glyph):
         else:
             G.graph["glyph_selector"] = prev
 
+
 def _window(G) -> int:
     return int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
+
 
 def _all_nodes(G):
     """Return a view or generator over all nodes in ``G``.
@@ -86,9 +99,11 @@ def _all_nodes(G):
     """
     return G.nodes()
 
+
 # ---------------------
 # Execution core
 # ---------------------
+
 
 def _apply_glyph_to_targets(G, g: Glyph | str, nodes: Optional[Iterable[Node]] = None):
     """Apply ``g`` to ``nodes`` (or all nodes) respecting the grammar.
@@ -101,14 +116,17 @@ def _apply_glyph_to_targets(G, g: Glyph | str, nodes: Optional[Iterable[Node]] =
     w = _window(G)
     apply_glyph_with_grammar(G, nodes_iter, g, w)
 
+
 def _advance(G, step_fn: Optional[AdvanceFn] = None):
     if step_fn is None:
         from .dynamics import step as step_fn
     step_fn(G)
 
+
 # ---------------------
 # Sequence compilation → list of atomic operations
 # ---------------------
+
 
 def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
     """Return list of operations ``(op, payload)``.
@@ -129,7 +147,7 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
             ops.append(("WAIT", item.steps))
             continue
         if isinstance(item, THOL):
-        # Open THOL block and push its body iteratively
+            # Open THOL block and push its body iteratively
             ops.append(("THOL", Glyph.THOL.value))
 
             repeats = max(1, int(item.repeat))
@@ -137,10 +155,12 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
                 raise ValueError("force_close must be a Glyph")
             closing = (
                 item.force_close
-                if isinstance(item.force_close, Glyph) and item.force_close in {Glyph.SHA, Glyph.NUL}
+                if isinstance(item.force_close, Glyph)
+                and item.force_close in {Glyph.SHA, Glyph.NUL}
                 else None
             )
-            # Explicit closure must run at the end, so push onto stack before expanding body.
+            # Explicit closure must run at the end, so push onto stack before
+            # expanding body.
             if closing is not None:
                 stack.append(closing)
 
@@ -162,6 +182,7 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
 # Handlers for atomic tokens
 # ---------------------
 
+
 def _record_trace(trace: deque, G, op: str, **data) -> None:
     trace.append({"t": float(G.graph.get("_t", 0.0)), "op": op, **data})
 
@@ -180,7 +201,9 @@ def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
     return curr_target
 
 
-def _handle_wait(G, steps: int, curr_target, trace: deque, step_fn: Optional[AdvanceFn]):
+def _handle_wait(
+    G, steps: int, curr_target, trace: deque, step_fn: Optional[AdvanceFn]
+):
     steps = max(1, int(steps))
     for _ in range(steps):
         _advance(G, step_fn)
@@ -188,15 +211,24 @@ def _handle_wait(G, steps: int, curr_target, trace: deque, step_fn: Optional[Adv
     return curr_target
 
 
-def _handle_glyph(G, g: str, curr_target, trace: deque, step_fn: Optional[AdvanceFn], label: str = "GLYPH"):
+def _handle_glyph(
+    G,
+    g: str,
+    curr_target,
+    trace: deque,
+    step_fn: Optional[AdvanceFn],
+    label: str = "GLYPH",
+):
     _apply_glyph_to_targets(G, g, curr_target)
     _advance(G, step_fn)
     _record_trace(trace, G, label, g=g)
     return curr_target
 
+
 # ---------------------
 # Public API
 # ---------------------
+
 
 def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> None:
     """Execute a canonical sequence on graph ``G``.
@@ -234,18 +266,23 @@ def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> N
             raise ValueError(f"Unknown operation: {op}")
         curr_target = handler(G, payload, curr_target, trace, step_fn)
 
+
 # ---------------------
 # Helpers to build sequences easily
 # ---------------------
 
+
 def seq(*tokens: Token) -> List[Token]:
     return list(tokens)
+
 
 def block(*tokens: Token, repeat: int = 1, close: Optional[Glyph] = None) -> THOL:
     return THOL(body=list(tokens), repeat=repeat, force_close=close)
 
+
 def target(nodes: Optional[Iterable[Node]] = None) -> TARGET:
     return TARGET(nodes=nodes)
+
 
 def wait(steps: int = 1) -> WAIT:
     return WAIT(steps=max(1, int(steps)))

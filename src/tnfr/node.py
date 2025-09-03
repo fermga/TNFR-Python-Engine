@@ -1,4 +1,5 @@
 """Operaciones sobre nodos."""
+
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Deque, Dict, Iterable, Optional, Protocol, TypeVar
@@ -133,25 +134,19 @@ class NodoProtocol(Protocol):
     d2EPI: float
     graph: Dict[str, object]
 
-    def neighbors(self) -> Iterable[NodoProtocol | Hashable]:
-        ...
+    def neighbors(self) -> Iterable[NodoProtocol | Hashable]: ...
 
-    def push_glyph(self, glyph: str, window: int) -> None:
-        ...
+    def push_glyph(self, glyph: str, window: int) -> None: ...
 
-    def has_edge(self, other: "NodoProtocol") -> bool:
-        ...
+    def has_edge(self, other: "NodoProtocol") -> bool: ...
 
     def add_edge(
         self, other: "NodoProtocol", weight: float, *, overwrite: bool = False
-    ) -> None:
-        ...
+    ) -> None: ...
 
-    def offset(self) -> int:
-        ...
+    def offset(self) -> int: ...
 
-    def all_nodes(self) -> Iterable["NodoProtocol"]:
-        ...
+    def all_nodes(self) -> Iterable["NodoProtocol"]: ...
 
 
 @dataclass(eq=False)
@@ -172,7 +167,9 @@ class NodoTNFR:
     d2EPI: float = 0.0
     graph: Dict[str, object] = field(default_factory=dict)
     _neighbors: Dict["NodoTNFR", float] = field(default_factory=dict)
-    _glyph_history: Deque[str] = field(default_factory=lambda: deque(maxlen=DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 7)))
+    _glyph_history: Deque[str] = field(
+        default_factory=lambda: deque(maxlen=DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 7))
+    )
 
     def neighbors(self) -> Iterable["NodoTNFR"]:
         return self._neighbors.keys()
@@ -267,6 +264,7 @@ class NodoNX(NodoProtocol):
 
     def offset(self) -> int:
         from .operators import _node_offset
+
         return _node_offset(self.G, self.n)
 
     def all_nodes(self) -> Iterable[NodoProtocol]:

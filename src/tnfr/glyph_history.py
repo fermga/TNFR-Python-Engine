@@ -1,4 +1,5 @@
 """Helpers for glyph history management."""
+
 from __future__ import annotations
 
 from typing import Dict, Any, Iterable
@@ -155,9 +156,7 @@ def last_glyph(nd: Dict[str, Any]) -> str | None:
         return None
 
 
-def count_glyphs(
-    G, window: int | None = None, *, last_only: bool = False
-) -> Counter:
+def count_glyphs(G, window: int | None = None, *, last_only: bool = False) -> Counter:
     """Count recent glyphs in the network."""
     counts: Counter[str] = Counter()
     for _, nd in G.nodes(data=True):
@@ -175,4 +174,3 @@ def count_glyphs(
                 seq = hist
         counts.update(seq)
     return counts
-

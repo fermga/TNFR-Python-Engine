@@ -1,4 +1,5 @@
 """Scenario generation."""
+
 from __future__ import annotations
 import networkx as nx
 
@@ -31,7 +32,9 @@ def build_graph(
         G = nx.gnp_random_graph(n, prob, seed=seed)
     else:
         valid = ["ring", "complete", "erdos"]
-        raise ValueError(f"Invalid topology '{topology}'. Valid options are: {', '.join(valid)}")
+        raise ValueError(
+            f"Invalid topology '{topology}'. Valid options are: {', '.join(valid)}"
+        )
 
     # Valores canónicos para inicialización
     inject_defaults(G)

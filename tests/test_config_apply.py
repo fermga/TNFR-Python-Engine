@@ -1,4 +1,5 @@
 """Pruebas de load_config y apply_config."""
+
 import json
 import networkx as nx
 import pytest

@@ -1,8 +1,8 @@
 """Observer management."""
+
 from __future__ import annotations
 import math
 import statistics as st
-from statistics import fmean as _fmean
 from itertools import islice
 from functools import partial
 
@@ -17,6 +17,7 @@ from .glyph_history import ensure_history, count_glyphs
 from .collections_utils import normalize_counter, mix_groups
 from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
+
 
 # -------------------------
 # Observador estándar Γ(R)
@@ -67,12 +68,9 @@ def phase_sync(G) -> float:
         return 1.0
     th = math.atan2(sumY, sumX)
     # varianza angular aproximada (0 = muy sincronizado)
-    var = (
-        st.pvariance(angle_diff(f, th) for f in fases)
-        if count > 1
-        else 0.0
-    )
+    var = st.pvariance(angle_diff(f, th) for f in fases) if count > 1 else 0.0
     return 1.0 / (1.0 + var)
+
 
 def kuramoto_order(G) -> float:
     """R in [0,1], 1 means perfectly aligned phases."""
@@ -80,6 +78,7 @@ def kuramoto_order(G) -> float:
         return 1.0
     R, _ = kuramoto_R_psi(G)
     return float(R)
+
 
 def glyph_load(G, window: int | None = None) -> dict:
     """Return distribution of glyphs applied in the network.

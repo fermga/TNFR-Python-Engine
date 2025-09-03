@@ -1,4 +1,5 @@
 """Pruebas de parse tokens errors."""
+
 from __future__ import annotations
 
 import pytest
@@ -28,7 +29,7 @@ def test_parse_tokens_key_error_context(monkeypatch):
 
 def test_thol_invalid_close():
     with pytest.raises(ValueError) as exc:
-        _parse_tokens([{ "THOL": {"close": "XYZ"} }])
+        _parse_tokens([{"THOL": {"close": "XYZ"}}])
     msg = str(exc.value)
     assert "XYZ" in msg
     assert "Glyph" in msg

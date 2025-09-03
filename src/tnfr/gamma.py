@@ -1,4 +1,5 @@
 """Registro de gammas."""
+
 from __future__ import annotations
 from typing import Dict, Any, Tuple
 import math
@@ -12,7 +13,6 @@ from .helpers import get_attr
 logger = logging.getLogger(__name__)
 
 
-
 def _ensure_kuramoto_cache(G, t) -> None:
     """Cache ``(R, ψ)`` in ``G.graph`` for the current step ``t``.
 
@@ -20,11 +20,7 @@ def _ensure_kuramoto_cache(G, t) -> None:
     """
     nodes_sig = (len(G), int(G.graph.get("_edge_version", 0)))
     cache = G.graph.get("_kuramoto_cache")
-    if (
-        cache is None
-        or cache.get("t") != t
-        or cache.get("nodes_sig") != nodes_sig
-    ):
+    if cache is None or cache.get("t") != t or cache.get("nodes_sig") != nodes_sig:
         R, psi = kuramoto_R_psi(G)
         G.graph["_kuramoto_cache"] = {
             "t": t,
@@ -137,7 +133,6 @@ GAMMA_REGISTRY = {
 }
 
 
-
 def eval_gamma(
     G,
     node,
@@ -173,8 +168,10 @@ def eval_gamma(
     try:
         return float(fn(G, node, t, spec))
     except (KeyError, TypeError, ValueError):
-        level = log_level if log_level is not None else (
-            logging.ERROR if strict else logging.DEBUG
+        level = (
+            log_level
+            if log_level is not None
+            else (logging.ERROR if strict else logging.DEBUG)
         )
         logger.log(
             level,

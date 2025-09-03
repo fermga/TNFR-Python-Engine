@@ -1,4 +1,5 @@
 """Dinámica del sistema."""
+
 from __future__ import annotations
 
 import logging
@@ -15,6 +16,7 @@ import networkx as nx
 
 from .observers import phase_sync, glyph_load, kuramoto_order
 from .sense import sigma_vector
+
 # Importar compute_Si y apply_glyph a nivel de módulo evita el coste de
 # realizar la importación en cada paso de la dinámica. Como los módulos de
 # origen no dependen de ``dynamics``, no se introducen ciclos.
@@ -29,16 +31,36 @@ from .constants import (
     DEFAULTS,
     REMESH_DEFAULTS,
     METRIC_DEFAULTS,
-    ALIAS_VF, ALIAS_THETA, ALIAS_DNFR, ALIAS_EPI, ALIAS_SI,
-    ALIAS_dEPI, ALIAS_D2EPI, ALIAS_dVF, ALIAS_D2VF, ALIAS_dSI,
+    ALIAS_VF,
+    ALIAS_THETA,
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_SI,
+    ALIAS_dEPI,
+    ALIAS_D2EPI,
+    ALIAS_dVF,
+    ALIAS_D2VF,
+    ALIAS_dSI,
     ALIAS_EPI_KIND,
     get_param,
 )
 from .gamma import eval_gamma
 from .helpers import (
-     clamp, clamp01, list_mean, angle_diff,
-     get_attr, set_attr, get_attr_str, set_attr_str, media_vecinal, fase_media,
-     set_vf, set_dnfr, compute_Si, compute_coherence, compute_dnfr_accel_max,
+    clamp,
+    clamp01,
+    list_mean,
+    angle_diff,
+    get_attr,
+    set_attr,
+    get_attr_str,
+    set_attr_str,
+    media_vecinal,
+    fase_media,
+    set_vf,
+    set_dnfr,
+    compute_Si,
+    compute_coherence,
+    compute_dnfr_accel_max,
 )
 from .callback_utils import invoke_callbacks
 from .glyph_history import recent_glyph, ensure_history
@@ -75,6 +97,7 @@ def _np(*, warn: bool = False) -> Any | None:
         log = logger.warning if warn else logger.debug
         log("Fallo al importar numpy, se continuará con el modo no vectorizado")
     return module
+
 
 # Cacheo de nodos y matriz de adyacencia asociado a cada grafo
 def _cached_nodes_and_A(
@@ -145,11 +168,15 @@ def _update_node_sample(G, *, step: int) -> None:
     rng = random.Random(seed ^ step)
     G.graph["_node_sample"] = rng.sample(nodes, limit)
 
+
 # -------------------------
 # ΔNFR por defecto (campo) + utilidades de hook/metadata
 # -------------------------
 
-def _write_dnfr_metadata(G, *, weights: dict, hook_name: str, note: str | None = None) -> None:
+
+def _write_dnfr_metadata(
+    G, *, weights: dict, hook_name: str, note: str | None = None
+) -> None:
     """Escribe en G.graph un bloque _DNFR_META con la mezcla y el nombre del hook.
 
     `weights` puede incluir componentes arbitrarias (phase/epi/vf/topo/etc.)."""
@@ -251,12 +278,7 @@ def _apply_dnfr_gradients(
             g_topo = deg_bar[i] - deg_i
         else:
             g_topo = 0.0
-        dnfr = (
-            w_phase * g_phase
-            + w_epi * g_epi
-            + w_vf * g_vf
-            + w_topo * g_topo
-        )
+        dnfr = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
         set_dnfr(G, n, float(dnfr))
 
 
@@ -428,7 +450,10 @@ def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
     else:
         _compute_dnfr_loops(G, data)
 
-def set_delta_nfr_hook(G, func, *, name: str | None = None, note: str | None = None) -> None:
+
+def set_delta_nfr_hook(
+    G, func, *, name: str | None = None, note: str | None = None
+) -> None:
     """Fija un hook estable para calcular ΔNFR. Firma requerida: func(G)->None y debe
     escribir ALIAS_DNFR en cada nodo. Actualiza metadatos básicos en G.graph."""
     G.graph["compute_delta_nfr"] = func
@@ -440,6 +465,7 @@ def set_delta_nfr_hook(G, func, *, name: str | None = None, note: str | None = N
         meta["note"] = str(note)
         G.graph["_DNFR_META"] = meta
 
+
 # --- Hooks de ejemplo (opcionales) ---
 def dnfr_phase_only(G) -> None:
     """Ejemplo: ΔNFR solo desde fase (tipo Kuramoto-like)."""
@@ -448,19 +474,27 @@ def dnfr_phase_only(G) -> None:
         th_bar = fase_media(G, n)
         g_phase = -angle_diff(th_i, th_bar) / math.pi
         set_dnfr(G, n, g_phase)
-    _write_dnfr_metadata(G, weights={"phase": 1.0}, hook_name="dnfr_phase_only", note="Hook de ejemplo.")
+    _write_dnfr_metadata(
+        G, weights={"phase": 1.0}, hook_name="dnfr_phase_only", note="Hook de ejemplo."
+    )
+
 
 def dnfr_epi_vf_mixed(G) -> None:
     """Ejemplo: ΔNFR sin fase, mezclando EPI y νf."""
     for n, nd in G.nodes(data=True):
         epi_i = get_attr(nd, ALIAS_EPI, 0.0)
         epi_bar = media_vecinal(G, n, ALIAS_EPI, default=epi_i)
-        g_epi = (epi_bar - epi_i)
+        g_epi = epi_bar - epi_i
         vf_i = get_attr(nd, ALIAS_VF, 0.0)
         vf_bar = media_vecinal(G, n, ALIAS_VF, default=vf_i)
-        g_vf = (vf_bar - vf_i)
-        set_dnfr(G, n, 0.5*g_epi + 0.5*g_vf)
-    _write_dnfr_metadata(G, weights={"phase":0.0, "epi":0.5, "vf":0.5}, hook_name="dnfr_epi_vf_mixed", note="Hook de ejemplo.")
+        g_vf = vf_bar - vf_i
+        set_dnfr(G, n, 0.5 * g_epi + 0.5 * g_vf)
+    _write_dnfr_metadata(
+        G,
+        weights={"phase": 0.0, "epi": 0.5, "vf": 0.5},
+        hook_name="dnfr_epi_vf_mixed",
+        note="Hook de ejemplo.",
+    )
 
 
 def dnfr_laplacian(G) -> None:
@@ -484,9 +518,11 @@ def dnfr_laplacian(G) -> None:
         note="Gradiente topológico",
     )
 
+
 # -------------------------
 # Ecuación nodal
 # -------------------------
+
 
 def prepare_integration_params(
     G,
@@ -632,6 +668,7 @@ def update_epi_via_nodal_equation(
 # Wrappers nombrados (compatibilidad)
 # -------------------------
 
+
 def apply_dnfr_field(G, w_theta=None, w_epi=None, w_vf=None) -> None:
     if any(v is not None for v in (w_theta, w_epi, w_vf)):
         mix = G.graph.get("DNFR_WEIGHTS", DEFAULTS["DNFR_WEIGHTS"]).copy()
@@ -659,7 +696,13 @@ def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
     vf = get_attr(nd, ALIAS_VF, 0.0)
     th = get_attr(nd, ALIAS_THETA, 0.0)
 
-    strict = bool((G.graph.get("VALIDATORS_STRICT") if G is not None else DEFAULTS.get("VALIDATORS_STRICT", False)))
+    strict = bool(
+        (
+            G.graph.get("VALIDATORS_STRICT")
+            if G is not None
+            else DEFAULTS.get("VALIDATORS_STRICT", False)
+        )
+    )
     if strict and G is not None:
         hist = G.graph.setdefault("history", {}).setdefault("clamp_alerts", [])
         if epi < eps_min or epi > eps_max:
@@ -672,9 +715,9 @@ def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
         set_vf(G, node, clamp(vf, vf_min, vf_max))
     else:
         set_attr(nd, ALIAS_VF, clamp(vf, vf_min, vf_max))
-    if (G.graph.get("THETA_WRAP") if G is not None else DEFAULTS["THETA_WRAP"]):
+    if G.graph.get("THETA_WRAP") if G is not None else DEFAULTS["THETA_WRAP"]:
         # envolver fase
-        set_attr(nd, ALIAS_THETA, ((th + math.pi) % (2*math.pi) - math.pi))
+        set_attr(nd, ALIAS_THETA, ((th + math.pi) % (2 * math.pi) - math.pi))
 
 
 def validate_canon(G) -> None:
@@ -688,7 +731,9 @@ def validate_canon(G) -> None:
     return G
 
 
-def _leer_parametros_adaptativos(g: Dict[str, Any]) -> tuple[Dict[str, Any], float, float]:
+def _leer_parametros_adaptativos(
+    g: Dict[str, Any],
+) -> tuple[Dict[str, Any], float, float]:
     """Obtiene configuración y valores actuales para adaptación de fase."""
     cfg = g.get("PHASE_ADAPT", DEFAULTS.get("PHASE_ADAPT", {}))
     kG = float(g.get("PHASE_K_GLOBAL", DEFAULTS["PHASE_K_GLOBAL"]))
@@ -716,7 +761,9 @@ def _calcular_estado(G, cfg: Dict[str, Any]) -> tuple[str, float, float]:
     return state, float(R), disr
 
 
-def _ajustar_k_suave(kG: float, kL: float, state: str, cfg: Dict[str, Any]) -> tuple[float, float]:
+def _ajustar_k_suave(
+    kG: float, kL: float, state: str, cfg: Dict[str, Any]
+) -> tuple[float, float]:
     """Actualiza suavemente kG/kL hacia sus objetivos según el estado."""
     kG_min = float(cfg.get("kG_min", 0.01))
     kG_max = float(cfg.get("kG_max", 0.20))
@@ -744,10 +791,13 @@ def _ajustar_k_suave(kG: float, kL: float, state: str, cfg: Dict[str, Any]) -> t
     return _step(kG, kG_t, kG_min, kG_max), _step(kL, kL_t, kL_min, kL_max)
 
 
-def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_vecinal: float | None = None) -> None:
+def coordinar_fase_global_vecinal(
+    G, fuerza_global: float | None = None, fuerza_vecinal: float | None = None
+) -> None:
     """
     Ajusta fase con mezcla GLOBAL+VECINAL.
-    Si no se pasan fuerzas explícitas, adapta kG/kL según estado (disonante / transición / estable).
+    Si no se pasan fuerzas explícitas, adapta kG/kL según estado
+    (disonante / transición / estable).
     Estado se decide por R (Kuramoto) y carga glífica disruptiva reciente.
     """
     g = G.graph
@@ -812,19 +862,25 @@ def coordinar_fase_global_vecinal(G, fuerza_global: float | None = None, fuerza_
         thL = fase_media(G, n)
         dG = angle_diff(thG, th)
         dL = angle_diff(thL, th)
-        set_attr(nd, ALIAS_THETA, th + kG*dG + kL*dL)
+        set_attr(nd, ALIAS_THETA, th + kG * dG + kL * dL)
+
 
 # -------------------------
 # Adaptación de νf por coherencia
 # -------------------------
+
 
 def adaptar_vf_por_coherencia(G) -> None:
     """Ajusta νf hacia la media vecinal en nodos con estabilidad sostenida."""
     tau = int(G.graph.get("VF_ADAPT_TAU", DEFAULTS.get("VF_ADAPT_TAU", 5)))
     mu = float(G.graph.get("VF_ADAPT_MU", DEFAULTS.get("VF_ADAPT_MU", 0.1)))
     eps_dnfr = float(G.graph.get("EPS_DNFR_STABLE", REMESH_DEFAULTS["EPS_DNFR_STABLE"]))
-    thr_sel = G.graph.get("SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {}))
-    thr_def = G.graph.get("GLYPH_THRESHOLDS", DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66}))
+    thr_sel = G.graph.get(
+        "SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {})
+    )
+    thr_def = G.graph.get(
+        "GLYPH_THRESHOLDS", DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66})
+    )
     si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
     vf_min = float(G.graph.get("VF_MIN", DEFAULTS["VF_MIN"]))
     vf_max = float(G.graph.get("VF_MAX", DEFAULTS["VF_MAX"]))
@@ -846,6 +902,7 @@ def adaptar_vf_por_coherencia(G) -> None:
 
     for n, vf_new in updates.items():
         set_vf(G, n, clamp(vf_new, vf_min, vf_max))
+
 
 # -------------------------
 # Selector glífico por defecto
@@ -949,6 +1006,7 @@ def _apply_score_override(cand, score, dnfr, dnfr_lo):
         cand = "OZ" if dnfr >= dnfr_lo else "ZHIR"
     return cand
 
+
 def parametric_glyph_selector(G, n) -> str:
     """Multiobjetivo: combina Si, |ΔNFR|_norm y |accel|_norm + histéresis.
     Reglas base:
@@ -958,7 +1016,9 @@ def parametric_glyph_selector(G, n) -> str:
     """
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
-    margin = float(G.graph.get("GLYPH_SELECTOR_MARGIN", DEFAULTS["GLYPH_SELECTOR_MARGIN"]))
+    margin = float(
+        G.graph.get("GLYPH_SELECTOR_MARGIN", DEFAULTS["GLYPH_SELECTOR_MARGIN"])
+    )
 
     norms = G.graph.get("_sel_norms") or _norms_para_selector(G)
     Si, dnfr, accel = _selector_normalized_metrics(nd, norms)
@@ -975,11 +1035,15 @@ def parametric_glyph_selector(G, n) -> str:
 
     return _soft_grammar_prefilter(G, n, cand, dnfr, accel)
 
+
 # -------------------------
 # Step / run
 # -------------------------
 
-def _run_before_callbacks(G, *, step_idx: int, dt: float | None, use_Si: bool, apply_glyphs: bool) -> None:
+
+def _run_before_callbacks(
+    G, *, step_idx: int, dt: float | None, use_Si: bool, apply_glyphs: bool
+) -> None:
     invoke_callbacks(
         G,
         "before_step",
@@ -1112,11 +1176,20 @@ def step(
     _run_after_callbacks(G, step_idx=step_idx)
 
 
-def run(G, steps: int, *, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool = True) -> None:
+def run(
+    G,
+    steps: int,
+    *,
+    dt: float | None = None,
+    use_Si: bool = True,
+    apply_glyphs: bool = True,
+) -> None:
     for _ in range(int(steps)):
         step(G, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)
         # Early-stop opcional
-        stop_cfg = G.graph.get("STOP_EARLY", METRIC_DEFAULTS.get("STOP_EARLY", {"enabled": False}))
+        stop_cfg = G.graph.get(
+            "STOP_EARLY", METRIC_DEFAULTS.get("STOP_EARLY", {"enabled": False})
+        )
         if stop_cfg and stop_cfg.get("enabled", False):
             w = int(stop_cfg.get("window", 25))
             frac = float(stop_cfg.get("fraction", 0.90))
@@ -1169,8 +1242,16 @@ def _update_sigma(G, hist) -> None:
 def _update_history(G) -> None:
     hist = ensure_history(G)
     for k in (
-        "C_steps", "stable_frac", "phase_sync", "glyph_load_estab", "glyph_load_disr",
-        "Si_mean", "Si_hi_frac", "Si_lo_frac", "delta_Si", "B"
+        "C_steps",
+        "stable_frac",
+        "phase_sync",
+        "glyph_load_estab",
+        "glyph_load_disr",
+        "Si_mean",
+        "Si_hi_frac",
+        "Si_lo_frac",
+        "delta_Si",
+        "B",
     ):
         hist.setdefault(k, [])
 
@@ -1217,7 +1298,7 @@ def _update_history(G) -> None:
         B_sum += B  # acumulamos B total
         B_count += 1
 
-    hist["stable_frac"].append(stables/total)
+    hist["stable_frac"].append(stables / total)
     hist["delta_Si"].append(delta_si_sum / delta_si_count if delta_si_count else 0.0)
     hist["B"].append(B_sum / B_count if B_count else 0.0)
     try:
@@ -1230,7 +1311,7 @@ def _update_history(G) -> None:
     except (KeyError, AttributeError, TypeError) as exc:
         logger.debug("observer update failed: %s", exc)
         # observadores son opcionales; si fallan se ignoran
-  
+
     # --- nuevas series: Si agregado (media y colas) ---
     try:
         sis = []
@@ -1240,12 +1321,14 @@ def _update_history(G) -> None:
         if sis:
             si_mean = list_mean(sis, 0.0)
             hist["Si_mean"].append(si_mean)
-            # umbrales preferentes del selector paramétrico; fallback a los del selector simple
+            # umbrales preferentes del selector paramétrico; fallback a los
+            # del selector simple
             thr_sel = G.graph.get(
                 "SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {})
             )
             thr_def = G.graph.get(
-                "GLYPH_THRESHOLDS", DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66, "lo": 0.33})
+                "GLYPH_THRESHOLDS",
+                DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66, "lo": 0.33}),
             )
             si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
             si_lo = float(thr_sel.get("si_lo", thr_def.get("lo", 0.33)))

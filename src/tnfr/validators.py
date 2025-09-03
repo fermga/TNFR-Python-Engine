@@ -13,8 +13,7 @@ EPS = 1e-9
 
 def _validate_epi_vf(G) -> None:
     cfg = {
-        k: float(get_param(G, k))
-        for k in ("EPI_MIN", "EPI_MAX", "VF_MIN", "VF_MAX")
+        k: float(get_param(G, k)) for k in ("EPI_MIN", "EPI_MAX", "VF_MIN", "VF_MAX")
     }
     for n, data in G.nodes(data=True):
         epi = get_attr(data, ALIAS_EPI, 0.0, strict=True)

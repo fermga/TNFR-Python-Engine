@@ -1,4 +1,5 @@
 """Pruebas de cli history."""
+
 from tnfr.cli import main
 import json
 
@@ -15,7 +16,9 @@ def test_cli_run_save_history(tmp_path):
 def test_cli_run_export_history(tmp_path):
     base = tmp_path / "other" / "history"
     assert not base.parent.exists()
-    rc = main(["run", "--nodes", "5", "--steps", "0", "--export-history-base", str(base)])
+    rc = main(
+        ["run", "--nodes", "5", "--steps", "0", "--export-history-base", str(base)]
+    )
     assert rc == 0
     data = json.loads((base.with_suffix(".json")).read_text())
     assert isinstance(data, dict)

@@ -1,4 +1,5 @@
 """Pruebas de scenarios."""
+
 import pytest
 import networkx as nx
 
@@ -37,4 +38,3 @@ def test_random_seed_reflects_value():
     seed = 123
     G = build_graph(n=5, seed=seed)
     assert G.graph["RANDOM_SEED"] == seed
-

@@ -1,4 +1,5 @@
 """Utilidades de pruebas."""
+
 import pytest
 import networkx as nx
 
@@ -15,4 +16,3 @@ def graph_canon():
         return G
 
     return _factory
-
