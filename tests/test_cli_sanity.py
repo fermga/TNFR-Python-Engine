@@ -38,6 +38,13 @@ def test_cli_run_erdos_p():
     assert rc == 0
 
 
+def test_cli_run_summary(capsys):
+    rc = main(["run", "--nodes", "5", "--steps", "1", "--summary"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "Tg global" in out
+
+
 def test_grammar_args_help_group(capsys):
     parser = argparse.ArgumentParser()
     add_grammar_args(parser)

@@ -359,6 +359,55 @@ def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_run_parser(sub: argparse._SubParsersAction) -> None:
+    """Configura el subcomando ``run``."""
+    p_run = sub.add_parser(
+        "run", help="Correr escenario libre o preset y opcionalmente exportar history"
+    )
+    add_common_args(p_run)
+    p_run.add_argument("--steps", type=int, default=200)
+    p_run.add_argument("--preset", type=str, default=None)
+    add_history_export_args(p_run)
+    p_run.add_argument("--summary", action="store_true")
+    add_canon_toggle(p_run)
+    add_grammar_selector_args(p_run)
+    p_run.set_defaults(func=cmd_run)
+
+
+def _add_sequence_parser(sub: argparse._SubParsersAction) -> None:
+    """Configura el subcomando ``sequence``."""
+    p_seq = sub.add_parser(
+        "sequence",
+        help="Ejecutar una secuencia (preset o YAML/JSON)",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Ejemplo de secuencia JSON:\n"
+            "[\n"
+            '  "A",\n'
+            '  {"WAIT": 1},\n'
+            '  {"THOL": {"body": ["A", {"WAIT": 2}], "repeat": 2}}\n'
+            "]"
+        ),
+    )
+    add_common_args(p_seq)
+    p_seq.add_argument("--preset", type=str, default=None)
+    p_seq.add_argument("--sequence-file", type=str, default=None)
+    add_history_export_args(p_seq)
+    add_grammar_args(p_seq)
+    p_seq.set_defaults(func=cmd_sequence)
+
+
+def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
+    """Configura el subcomando ``metrics``."""
+    p_met = sub.add_parser("metrics", help="Correr breve y volcar métricas clave")
+    add_common_args(p_met)
+    p_met.add_argument("--steps", type=int, default=300)
+    add_canon_toggle(p_met)
+    add_grammar_selector_args(p_met)
+    p_met.add_argument("--save", type=str, default=None)
+    p_met.set_defaults(func=cmd_metrics)
+
+
 def run_program(
     G: Optional[nx.Graph], program: Optional[Any], args: argparse.Namespace
 ) -> nx.Graph:
@@ -377,11 +426,9 @@ def run_program(
     return G
 
 
-def cmd_run(args: argparse.Namespace) -> int:
-    program = resolve_program(args)
-    G = run_program(None, program, args)
+def _log_run_summaries(G: nx.Graph, args: argparse.Namespace) -> None:
+    """Registrar resúmenes rápidos y métricas opcionales."""
 
-    # Resúmenes rápidos (si están activados)
     if G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get("enabled", True):
         Wstats = G.graph.get("history", {}).get(
             G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get(
@@ -391,6 +438,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         )
         if Wstats:
             logger.info("[COHERENCE] último paso: %s", Wstats[-1])
+
     if G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"]).get("enabled", True):
         last_diag = G.graph.get("history", {}).get(
             G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"]).get(
@@ -412,6 +460,12 @@ def cmd_run(args: argparse.Namespace) -> int:
                 "Latencia media: %s",
                 list_mean(lat["value"], 0.0),
             )
+
+
+def cmd_run(args: argparse.Namespace) -> int:
+    program = resolve_program(args)
+    G = run_program(None, program, args)
+    _log_run_summaries(G, args)
     return 0
 
 
@@ -475,45 +529,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     p.add_argument("--version", action="store_true", help="muestra versión y sale")
     sub = p.add_subparsers(dest="cmd")
 
-    p_run = sub.add_parser(
-        "run", help="Correr escenario libre o preset y opcionalmente exportar history"
-    )
-    add_common_args(p_run)
-    p_run.add_argument("--steps", type=int, default=200)
-    p_run.add_argument("--preset", type=str, default=None)
-    add_history_export_args(p_run)
-    p_run.add_argument("--summary", action="store_true")
-    add_canon_toggle(p_run)
-    add_grammar_selector_args(p_run)
-    p_run.set_defaults(func=cmd_run)
-
-    p_seq = sub.add_parser(
-        "sequence",
-        help="Ejecutar una secuencia (preset o YAML/JSON)",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=(
-            "Ejemplo de secuencia JSON:\n"
-            "[\n"
-            '  "A",\n'
-            '  {"WAIT": 1},\n'
-            '  {"THOL": {"body": ["A", {"WAIT": 2}], "repeat": 2}}\n'
-            "]"
-        ),
-    )
-    add_common_args(p_seq)
-    p_seq.add_argument("--preset", type=str, default=None)
-    p_seq.add_argument("--sequence-file", type=str, default=None)
-    add_history_export_args(p_seq)
-    add_grammar_args(p_seq)
-    p_seq.set_defaults(func=cmd_sequence)
-
-    p_met = sub.add_parser("metrics", help="Correr breve y volcar métricas clave")
-    add_common_args(p_met)
-    p_met.add_argument("--steps", type=int, default=300)
-    add_canon_toggle(p_met)
-    add_grammar_selector_args(p_met)
-    p_met.add_argument("--save", type=str, default=None)
-    p_met.set_defaults(func=cmd_metrics)
+    _add_run_parser(sub)
+    _add_sequence_parser(sub)
+    _add_metrics_parser(sub)
 
     args = p.parse_args(argv)
     if args.version:
