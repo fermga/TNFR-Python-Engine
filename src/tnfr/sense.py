@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Dict, Iterable, List
 import math
 import warnings
-from collections import Counter
 
 import networkx as nx
 
@@ -19,7 +18,6 @@ from .constants_glyphs import (
     ESTABILIZADORES,
     DISRUPTIVOS,
     GLYPHS_CANONICAL,
-    GLYPHS_CANONICAL_SET,
 )
 
 # -------------------------
@@ -259,12 +257,15 @@ def sigma_rose(G, steps: int | None = None) -> Dict[str, int]:
     if not counts:
         return {g: 0 for g in GLYPHS_CANONICAL}
     if steps is None or steps >= len(counts):
-        agg = Counter()
+        agg: Dict[str, int] = {}
         for row in counts:
-            agg.update({k: v for k, v in row.items() if k != "t"})
-        out = {g: int(agg.get(g, 0)) for g in GLYPHS_CANONICAL}
-        return out
-    agg = Counter()
+            for k, v in row.items():
+                if k != "t":
+                    agg[k] = int(agg.get(k, 0)) + int(v)
+        return {g: int(agg.get(g, 0)) for g in GLYPHS_CANONICAL}
+    agg: Dict[str, int] = {}
     for row in counts[-int(steps):]:
-        agg.update({k: v for k, v in row.items() if k != "t"})
+        for k, v in row.items():
+            if k != "t":
+                agg[k] = int(agg.get(k, 0)) + int(v)
     return {g: int(agg.get(g, 0)) for g in GLYPHS_CANONICAL}
