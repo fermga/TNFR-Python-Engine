@@ -26,6 +26,8 @@ GLYPHS_CANONICAL: tuple[str, ...] = (
     Glyph.REMESH.value,  # 12
 )
 
+GLYPHS_CANONICAL_SET: set[str] = set(GLYPHS_CANONICAL)
+
 ESTABILIZADORES = (
     Glyph.IL.value,
     Glyph.RA.value,
@@ -79,6 +81,7 @@ ANGLE_MAP: Dict[str, float] = {
 
 __all__ = [
     "GLYPHS_CANONICAL",
+    "GLYPHS_CANONICAL_SET",
     "ESTABILIZADORES",
     "DISRUPTIVOS",
     "GLYPH_GROUPS",
