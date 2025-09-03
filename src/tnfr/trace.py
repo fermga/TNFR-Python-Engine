@@ -5,7 +5,7 @@ the graph whenever possible.  Callers are expected to treat returned
 structures as immutable snapshots.
 """
 from __future__ import annotations
-from typing import Any, Callable, Dict, Optional, Protocol, NamedTuple, TYPE_CHECKING
+from typing import Any, Callable, Dict, Optional, Protocol, NamedTuple
 import warnings
 
 
@@ -22,9 +22,6 @@ class _SigmaVectorFn(Protocol):
 
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs
-
-if TYPE_CHECKING:  # pragma: no cover
-    from .callback_utils import register_callback
 
 
 class CallbackSpec(NamedTuple):
