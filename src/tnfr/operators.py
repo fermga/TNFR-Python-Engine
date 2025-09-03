@@ -51,7 +51,8 @@ def _ensure_node_offset_map(G) -> Dict[Any, int]:
     """
 
     nodes = list(G.nodes())
-    checksum = hash(tuple(nodes))
+    # Use order-independent checksum based on node set to detect changes
+    checksum = (len(nodes), sum(hash(n) for n in nodes))
     mapping = G.graph.get("_node_offset_map")
     if mapping is None or G.graph.get("_node_offset_checksum") != checksum:
         if bool(G.graph.get("SORT_NODES", False)):
