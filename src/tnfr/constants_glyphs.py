@@ -20,8 +20,8 @@ GLYPHS_CANONICAL: tuple[str, ...] = (
     Glyph.SHA.value,  # 6
     Glyph.VAL.value,  # 7
     Glyph.NUL.value,  # 8
-    Glyph.THOL.value, # 9
-    Glyph.ZHIR.value, # 10
+    Glyph.THOL.value,  # 9
+    Glyph.ZHIR.value,  # 10
     Glyph.NAV.value,  # 11
     Glyph.REMESH.value,  # 12
 )
