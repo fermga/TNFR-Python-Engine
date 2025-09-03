@@ -58,3 +58,32 @@ def test_history_maxlen_override_respected(graph_canon):
     G.graph["HISTORY_MAXLEN"] = 3
     hist = ensure_history(G)
     assert hist._maxlen == 3
+
+
+def test_history_not_trimmed_when_equal_maxlen(graph_canon):
+    G = graph_canon()
+    G.add_node(0)
+    attach_defaults(G)
+    G.graph["HISTORY_MAXLEN"] = 2
+
+    hist = ensure_history(G)
+    hist.setdefault("a", []).append(1)
+    hist.setdefault("b", []).append(2)
+
+    ensure_history(G)
+    assert len(hist) == 2
+    assert set(hist.keys()) == {"a", "b"}
+
+
+def test_history_not_trimmed_when_below_maxlen(graph_canon):
+    G = graph_canon()
+    G.add_node(0)
+    attach_defaults(G)
+    G.graph["HISTORY_MAXLEN"] = 2
+
+    hist = ensure_history(G)
+    hist.setdefault("a", []).append(1)
+
+    ensure_history(G)
+    assert len(hist) == 1
+    assert "a" in hist

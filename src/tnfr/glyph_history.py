@@ -131,11 +131,13 @@ def ensure_history(G) -> Dict[str, Any]:
         hist = HistoryDict(hist, maxlen=maxlen)
         G.graph["history"] = hist
     if maxlen > 0:
-        while len(hist) > maxlen:
-            try:
-                hist.pop_least_used()
-            except KeyError:
-                break
+        excess = len(hist) - maxlen
+        if excess > 0:
+            for _ in range(excess):
+                try:
+                    hist.pop_least_used()
+                except KeyError:
+                    break
     return hist
 
 
