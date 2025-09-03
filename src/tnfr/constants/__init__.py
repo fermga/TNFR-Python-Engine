@@ -6,6 +6,18 @@ from typing import Any, Dict
 import copy
 import warnings
 
+from .core import CORE_DEFAULTS, REMESH_DEFAULTS
+from .init import INIT_DEFAULTS
+from .metric import (
+    METRIC_DEFAULTS,
+    SIGMA,
+    TRACE,
+    METRICS,
+    GRAMMAR_CANON,
+    COHERENCE,
+    DIAGNOSIS,
+)
+
 # Valores que pueden asignarse directamente sin copiar
 IMMUTABLE_TYPES = (
     int,
@@ -17,18 +29,6 @@ IMMUTABLE_TYPES = (
     frozenset,
     bytes,
     type(None),
-)
-
-from .core import CORE_DEFAULTS, REMESH_DEFAULTS
-from .init import INIT_DEFAULTS
-from .metric import (
-    METRIC_DEFAULTS,
-    SIGMA,
-    TRACE,
-    METRICS,
-    GRAMMAR_CANON,
-    COHERENCE,
-    DIAGNOSIS,
 )
 
 # Diccionario combinado exportado
@@ -54,6 +54,7 @@ ALIASES: Dict[str, tuple[str, ...]] = {
 # Utilidades
 # -------------------------
 
+
 def attach_defaults(G, override: bool = False) -> None:
     """Write combined ``DEFAULTS`` into ``G.graph``.
 
@@ -69,13 +70,15 @@ def inject_defaults(
 
     ``defaults`` is usually ``DEFAULTS``, combining all sub-dictionaries.
     If ``override`` is ``True`` existing values are overwritten. Immutable
-    values (numbers, strings, tuples, etc.) are assigned directly; ``copy.deepcopy``
-    is used only for mutable structures.
+    values (numbers, strings, tuples, etc.) are assigned directly;
+    ``copy.deepcopy`` is used only for mutable structures.
     """
     G.graph.setdefault("_tnfr_defaults_attached", False)
     for k, v in defaults.items():
         if override or k not in G.graph:
-            G.graph[k] = v if isinstance(v, IMMUTABLE_TYPES) else copy.deepcopy(v)
+            G.graph[k] = (
+                v if isinstance(v, IMMUTABLE_TYPES) else copy.deepcopy(v)
+            )
     G.graph["_tnfr_defaults_attached"] = True
     try:  # local import para evitar dependencia circular
         from ..operators import _ensure_node_offset_map
