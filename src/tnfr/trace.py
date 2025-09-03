@@ -4,9 +4,15 @@ Field helpers avoid unnecessary copying by reusing dictionaries stored on
 the graph whenever possible.  Callers are expected to treat returned
 structures as immutable snapshots.
 """
+
 from __future__ import annotations
-from typing import Any, Callable, Dict, Optional, Protocol, NamedTuple
+
 import warnings
+from typing import Any, Callable, Dict, Optional, Protocol, NamedTuple
+
+from .callback_utils import register_callback
+from .constants import TRACE
+from .glyph_history import ensure_history, count_glyphs
 
 
 class _KuramotoFn(Protocol):
@@ -20,15 +26,13 @@ class _SigmaVectorFn(Protocol):
     ) -> Dict[str, float]:
         ...
 
-from .constants import TRACE
-from .glyph_history import ensure_history, count_glyphs
-
 
 class CallbackSpec(NamedTuple):
     """Specification for a registered callback."""
 
     name: str | None
     func: Callable[..., Any]
+
 
 try:
     from .gamma import kuramoto_R_psi as _kuramoto_R_psi
@@ -60,6 +64,7 @@ __all__ = [
 # -------------------------
 # Helpers
 # -------------------------
+
 
 def _trace_setup(G) -> tuple[Optional[Dict[str, Any]], set[str], Optional[Dict[str, Any]], Optional[str]]:
     """Common configuration for trace snapshots.
@@ -114,6 +119,7 @@ def _safe_graph_mapping(G, key: str) -> Optional[Dict[str, Any]]:
 # Builders
 # -------------------------
 
+
 def _new_trace_meta(
     G, phase: str
 ) -> Optional[tuple[Dict[str, Any], set[str], Optional[Dict[str, Any]], Optional[str]]]:
@@ -133,6 +139,7 @@ def _new_trace_meta(
 # -------------------------
 # Snapshots
 # -------------------------
+
 
 def _trace_capture(
     G, phase: str, fields: Dict[str, Callable[[Any], Dict[str, Any]]]
@@ -284,6 +291,7 @@ def _trace_after(G, *args, **kwargs):
 # API
 # -------------------------
 
+
 def register_trace(G) -> None:
     """Enable before/after-step snapshots and dump operational metadata to history.
 
@@ -305,8 +313,6 @@ def register_trace(G) -> None:
     """
     if G.graph.get("_trace_registered"):
         return
-
-    from .callback_utils import register_callback
 
     register_callback(G, event="before_step", func=_trace_before, name="trace_before")
     register_callback(G, event="after_step", func=_trace_after, name="trace_after")
