@@ -1,7 +1,7 @@
 """Operaciones sobre nodos."""
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Deque, Dict, Iterable, Optional, Protocol
+from typing import Deque, Dict, Iterable, Optional, Protocol, TypeVar
 from collections import deque
 from collections.abc import Hashable
 
@@ -27,6 +27,8 @@ from .helpers import (
 )
 
 from .operators import apply_glyph_obj
+
+T = TypeVar("T")
 
 __all__ = ["NodoTNFR", "NodoNX", "NodoProtocol"]
 
@@ -62,10 +64,10 @@ def _nx_attr_property(
         ``(mapping, aliases, value)``.
     """
 
-    def fget(self):
+    def fget(self) -> T:
         return to_python(getter(self.G.nodes[self.n], aliases, default))
 
-    def fset(self, value):
+    def fset(self, value: T) -> None:
         value = to_storage(value)
         if use_graph_setter:
             setter(self.G, self.n, value)
