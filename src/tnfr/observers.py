@@ -2,6 +2,7 @@
 from __future__ import annotations
 import math
 import statistics as st
+from statistics import fmean as _fmean
 from itertools import islice
 from functools import partial
 
@@ -110,4 +111,4 @@ def wbar(G, window: int | None = None) -> float:
     else:
         start = len(cs) - w
         tail = islice(cs, start, None)
-    return float(sum(tail) / w)
+    return float(st.fmean(tail))
