@@ -5,7 +5,6 @@ import networkx as nx
 
 from .dynamics import (
     set_delta_nfr_hook,
-    update_epi_via_nodal_equation,
     dnfr_epi_vf_mixed,
 )
 from .grammar import apply_glyph_with_grammar
@@ -213,5 +212,8 @@ def run_sequence(G: nx.Graph, node, ops: Iterable[Operador]) -> None:
         op(G, node)
         if callable(compute):
             compute(G)
-        update_epi_via_nodal_equation(G)
+        # ``update_epi_via_nodal_equation`` was previously invoked here to
+        # recalculate the EPI value after each operator. The responsibility for
+        # updating EPI now lies with the dynamics hook configured in
+        # ``compute_delta_nfr`` or with external callers.
 
