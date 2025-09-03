@@ -120,6 +120,8 @@ def register_callback(
     >>> ctx["called"]
     1
     """
+    if isinstance(event, CallbackEvent):
+        event = event.value
     if event not in _CALLBACK_EVENTS:
         raise ValueError(f"Evento desconocido: {event}")
     if not callable(func):
@@ -153,6 +155,8 @@ def invoke_callbacks(
     G: nx.Graph, event: CallbackEvent | str, ctx: dict[str, Any] | None = None
 ) -> None:
     """Invoke all callbacks registered for ``event`` with context ``ctx``."""
+    if isinstance(event, CallbackEvent):
+        event = event.value
     cbs = _ensure_callbacks(G).get(event, [])
     strict = bool(G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"]))
     ctx = ctx or {}
