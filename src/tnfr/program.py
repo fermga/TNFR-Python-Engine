@@ -7,7 +7,7 @@ from collections import deque
 
 from .constants import get_param
 from .grammar import apply_glyph_with_grammar
-from .sense import GLYPHS_CANONICAL_SET
+from .constants_glyphs import GLYPHS_CANONICAL_SET
 from .types import Glyph
 from .collections_utils import ensure_collection
 from .glyph_history import ensure_history

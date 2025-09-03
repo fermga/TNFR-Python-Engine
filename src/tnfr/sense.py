@@ -19,12 +19,12 @@ from .constants_glyphs import (
     ESTABILIZADORES,
     DISRUPTIVOS,
     GLYPHS_CANONICAL,
+    GLYPHS_CANONICAL_SET,
 )
 
 # -------------------------
 # Canon: orden circular de glyphs y ángulos
 # -------------------------
-GLYPHS_CANONICAL_SET: set[str] = set(GLYPHS_CANONICAL)
 
 # Glyphs relevantes para el plano Σ de observadores de sentido
 SIGMA_ANGLE_KEYS: tuple[str, ...] = tuple(ESTABILIZADORES + DISRUPTIVOS)

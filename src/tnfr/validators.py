@@ -5,7 +5,8 @@ from __future__ import annotations
 from .constants import ALIAS_EPI, ALIAS_VF, get_param
 from .helpers import get_attr
 from .glyph_history import last_glyph
-from .sense import sigma_vector_from_graph, GLYPHS_CANONICAL_SET
+from .sense import sigma_vector_from_graph
+from .constants_glyphs import GLYPHS_CANONICAL_SET
 
 
 def _validate_epi_vf(G) -> None:
