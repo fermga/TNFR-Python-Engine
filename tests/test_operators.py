@@ -75,7 +75,7 @@ def test_rng_cache_lru_purge(graph_canon):
 
     j0 = random_jitter(n0, 0.5)
     j1 = random_jitter(n1, 0.5)
-    random_jitter(n2, 0.5)
+    random_jitter(n2, 0.5)  # Populate cache for n2 without keeping the value
 
     j1b = random_jitter(n1, 0.5)
     assert j1b != j1
