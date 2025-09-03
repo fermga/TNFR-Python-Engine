@@ -194,14 +194,6 @@ def _handle_glyph(G, g: str, curr_target, trace: deque, step_fn: Optional[Advanc
     _record_trace(trace, G, label, g=g)
     return curr_target
 
-
-def _handle_thol(G, g: str, curr_target, trace: deque, step_fn: Optional[AdvanceFn]):
-    g = g or Glyph.THOL.value
-    _apply_glyph_to_targets(G, g, curr_target)
-    _advance(G, step_fn)
-    _record_trace(trace, G, "THOL", g=g)
-    return curr_target
-
 # ---------------------
 # Public API
 # ---------------------
@@ -231,7 +223,9 @@ def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> N
         "TARGET": _handle_target,
         "WAIT": _handle_wait,
         "GLYPH": _handle_glyph,
-        "THOL": _handle_thol,
+        "THOL": lambda G, g, curr_target, trace, step_fn: _handle_glyph(
+            G, g or Glyph.THOL.value, curr_target, trace, step_fn, label="THOL"
+        ),
     }
 
     for op, payload in ops:
