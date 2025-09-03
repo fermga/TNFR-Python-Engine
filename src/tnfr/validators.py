@@ -8,6 +8,8 @@ from .glyph_history import last_glyph
 from .sense import sigma_vector_from_graph
 from .constants_glyphs import GLYPHS_CANONICAL_SET
 
+EPS = 1e-9
+
 
 def _validate_epi_vf(G) -> None:
     cfg = {
@@ -16,16 +18,16 @@ def _validate_epi_vf(G) -> None:
     }
     for n, data in G.nodes(data=True):
         epi = get_attr(data, ALIAS_EPI, 0.0, strict=True)
-        if not (cfg["EPI_MIN"] - 1e-9 <= epi <= cfg["EPI_MAX"] + 1e-9):
+        if not (cfg["EPI_MIN"] - EPS <= epi <= cfg["EPI_MAX"] + EPS):
             raise ValueError(f"EPI out of range in node {n}: {epi}")
         vf = get_attr(data, ALIAS_VF, 0.0, strict=True)
-        if not (cfg["VF_MIN"] - 1e-9 <= vf <= cfg["VF_MAX"] + 1e-9):
+        if not (cfg["VF_MIN"] - EPS <= vf <= cfg["VF_MAX"] + EPS):
             raise ValueError(f"VF out of range in node {n}: {vf}")
 
 
 def _validate_sigma(G) -> None:
     sv = sigma_vector_from_graph(G)
-    if sv.get("mag", 0.0) > 1.0 + 1e-9:
+    if sv.get("mag", 0.0) > 1.0 + EPS:
         raise ValueError("σ norm exceeds 1")
 
 
