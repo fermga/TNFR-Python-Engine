@@ -197,7 +197,7 @@ def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
     """
 
     return {
-        k[len(prefix):]: v
+        k.removeprefix(prefix): v
         for k, v in vars(args).items()
         if k.startswith(prefix) and v is not None
     }
