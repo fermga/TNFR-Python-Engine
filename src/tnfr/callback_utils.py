@@ -1,7 +1,7 @@
 """Callback registration and invocation helpers."""
 from __future__ import annotations
 
-from typing import Any, Callable, DefaultDict
+from typing import Any, Callable, DefaultDict, TYPE_CHECKING
 from enum import Enum
 from collections import defaultdict
 import logging
@@ -9,7 +9,9 @@ import logging
 import networkx as nx
 
 from .constants import DEFAULTS
-from .trace import CallbackSpec
+
+if TYPE_CHECKING:  # pragma: no cover
+    from . import CallbackSpec
 
 __all__ = ["CallbackEvent", "register_callback", "invoke_callbacks"]
 
@@ -28,7 +30,7 @@ _CALLBACK_EVENTS: tuple[str, ...] = tuple(e.value for e in CallbackEvent)
 
 
 Callback = Callable[[nx.Graph, dict[str, Any]], None]
-CallbackRegistry = DefaultDict[str, list[CallbackSpec]]
+CallbackRegistry = DefaultDict[str, list['CallbackSpec']]
 
 
 def _ensure_callbacks(G: nx.Graph) -> CallbackRegistry:
@@ -40,7 +42,7 @@ def _ensure_callbacks(G: nx.Graph) -> CallbackRegistry:
     return cbs
 
 
-def _normalize_callback_entry(entry: Any) -> CallbackSpec | None:
+def _normalize_callback_entry(entry: Any) -> 'CallbackSpec | None':
     """Normalize legacy callback entries into ``CallbackSpec``.
 
     Parameters
@@ -55,6 +57,8 @@ def _normalize_callback_entry(entry: Any) -> CallbackSpec | None:
         Normalized ``CallbackSpec`` or ``None`` if ``entry`` cannot be
         interpreted as a callback.
     """
+    from . import CallbackSpec
+
     if isinstance(entry, CallbackSpec):
         return entry
     if isinstance(entry, tuple):
@@ -121,6 +125,8 @@ def register_callback(
     if not callable(func):
         raise TypeError("func debe ser callable")
     cbs = _ensure_callbacks(G)
+
+    from . import CallbackSpec
 
     cb_name = name or getattr(func, "__name__", None)
     new_cb = CallbackSpec(cb_name, func)

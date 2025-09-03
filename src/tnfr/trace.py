@@ -51,6 +51,15 @@ except ImportError:  # pragma: no cover
 
 sigma_vector_from_graph: _SigmaVectorFn = _sigma_vector_from_graph
 
+# Public exports for this module
+__all__ = [
+    "CallbackSpec",
+    "register_trace",
+    "_callback_names",
+    "gamma_field",
+    "grammar_field",
+]
+
 # -------------------------
 # Helpers
 # -------------------------

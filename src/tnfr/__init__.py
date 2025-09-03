@@ -44,7 +44,7 @@ from .metrics import (
     glyph_top, glyph_dwell_stats, export_history,
 )
 from .operators import apply_topological_remesh
-from .trace import register_trace
+from .trace import register_trace, CallbackSpec
 from .program import play, seq, block, target, wait, THOL, TARGET, WAIT, basic_canonical_example
 from .cli import main as cli_main
 from .scenarios import build_graph
@@ -85,7 +85,7 @@ __all__ = [
     "push_sigma_snapshot", "sigma_series", "sigma_rose",
     "register_sigma_callback",
     "register_metrics_callbacks",
-    "register_trace",
+    "register_trace", "CallbackSpec",
     "Tg_global", "Tg_by_node",
     "latency_series", "glyphogram_series",
     "glyph_top", "glyph_dwell_stats",
