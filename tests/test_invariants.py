@@ -1,4 +1,5 @@
 """Pruebas de invariants."""
+
 from __future__ import annotations
 import math
 import pytest
@@ -59,7 +60,9 @@ def test_conservation_under_IL_SHA(G_small):
 
 
 def test_remesh_cooldown_if_present(G_small):
-    cooldown = G_small.graph.get("REMESH_COOLDOWN", G_small.graph.get("REMESH_COOLDOWN_VENTANA", None))
+    cooldown = G_small.graph.get(
+        "REMESH_COOLDOWN", G_small.graph.get("REMESH_COOLDOWN_VENTANA", None)
+    )
     if cooldown is None:
         pytest.skip("No hay REMESH_COOLDOWN definido en el motor")
 
@@ -69,7 +72,10 @@ def test_remesh_cooldown_if_present(G_small):
     tau_g = int(G_small.graph.get("REMESH_TAU_GLOBAL", 0))
     snap = {n: G_small.nodes[n].get("EPI", 0.0) for n in G_small.nodes()}
     from collections import deque
-    G_small.graph["_epi_hist"] = deque([snap.copy() for _ in range(tau_g + 1)], maxlen=tau_g + 1)
+
+    G_small.graph["_epi_hist"] = deque(
+        [snap.copy() for _ in range(tau_g + 1)], maxlen=tau_g + 1
+    )
 
     apply_remesh_if_globally_stable(G_small)
     events = list(G_small.graph.get("history", {}).get("remesh_events", []))

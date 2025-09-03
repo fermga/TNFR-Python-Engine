@@ -16,15 +16,11 @@ from .glyph_history import ensure_history, count_glyphs
 
 
 class _KuramotoFn(Protocol):
-    def __call__(self, G: Any) -> tuple[float, float]:
-        ...
+    def __call__(self, G: Any) -> tuple[float, float]: ...
 
 
 class _SigmaVectorFn(Protocol):
-    def __call__(
-        self, G: Any, weight_mode: str | None = None
-    ) -> Dict[str, float]:
-        ...
+    def __call__(self, G: Any, weight_mode: str | None = None) -> Dict[str, float]: ...
 
 
 class CallbackSpec(NamedTuple):
@@ -37,18 +33,22 @@ class CallbackSpec(NamedTuple):
 try:
     from .gamma import kuramoto_R_psi as _kuramoto_R_psi
 except ImportError:  # pragma: no cover
+
     def _kuramoto_R_psi(G: Any) -> tuple[float, float]:
         return 0.0, 0.0
+
 
 kuramoto_R_psi: _KuramotoFn = _kuramoto_R_psi
 
 try:
     from .sense import sigma_vector_from_graph as _sigma_vector_from_graph
 except ImportError:  # pragma: no cover
+
     def _sigma_vector_from_graph(
         G: Any, weight_mode: str | None = None
     ) -> Dict[str, float]:
         return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0.0}
+
 
 sigma_vector_from_graph: _SigmaVectorFn = _sigma_vector_from_graph
 
@@ -66,7 +66,9 @@ __all__ = [
 # -------------------------
 
 
-def _trace_setup(G) -> tuple[Optional[Dict[str, Any]], set[str], Optional[Dict[str, Any]], Optional[str]]:
+def _trace_setup(
+    G,
+) -> tuple[Optional[Dict[str, Any]], set[str], Optional[Dict[str, Any]], Optional[str]]:
     """Common configuration for trace snapshots.
 
     Returns the active configuration, capture set, history and key under
@@ -115,6 +117,7 @@ def _safe_graph_mapping(G, key: str) -> Optional[Dict[str, Any]]:
         return None
     return data.copy()
 
+
 # -------------------------
 # Builders
 # -------------------------
@@ -135,6 +138,7 @@ def _new_trace_meta(
 
     meta: Dict[str, Any] = {"t": float(G.graph.get("_t", 0.0)), "phase": phase}
     return meta, capture, hist, key
+
 
 # -------------------------
 # Snapshots

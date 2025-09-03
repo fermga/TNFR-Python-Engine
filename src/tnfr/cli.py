@@ -1,4 +1,5 @@
 """Interfaz de línea de comandos."""
+
 from __future__ import annotations
 import argparse
 import json
@@ -23,7 +24,13 @@ from .metrics import (
 from .trace import register_trace
 from .program import play, seq, block, wait, target
 from .types import Glyph
-from .dynamics import step, _update_history, default_glyph_selector, parametric_glyph_selector, validate_canon
+from .dynamics import (
+    step,
+    _update_history,
+    default_glyph_selector,
+    parametric_glyph_selector,
+    validate_canon,
+)
 from .gamma import GAMMA_REGISTRY
 from .scenarios import build_graph
 from .presets import get_preset
@@ -127,9 +134,7 @@ TOKEN_MAP: Dict[str, Callable[[Any], Any]] = {
 def _default(obj: Any) -> Any:
     if isinstance(obj, deque):
         return list(obj)
-    raise TypeError(
-        f"Object of type {obj.__class__.__name__} is not JSON serializable"
-    )
+    raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
 
 
 def _save_json(path: str, data: Any) -> None:
@@ -142,7 +147,8 @@ def _save_json(path: str, data: Any) -> None:
 
 
 # Metadatos para las opciones de gramática y del glyph
-# Utiliza acciones y tipos estándar de ``argparse`` en lugar de conversores personalizados.
+# Utiliza acciones y tipos estándar de ``argparse`` en lugar de
+# conversores personalizados.
 GRAMMAR_ARG_SPECS = [
     ("--grammar.enabled", {"action": argparse.BooleanOptionalAction}),
     ("--grammar.zhir_requires_oz_window", {"type": int}),
@@ -256,7 +262,9 @@ def apply_cli_config(G: nx.Graph, args: argparse.Namespace) -> None:
 
     if hasattr(args, "selector"):
         G.graph["glyph_selector"] = (
-            default_glyph_selector if args.selector == "basic" else parametric_glyph_selector
+            default_glyph_selector
+            if args.selector == "basic"
+            else parametric_glyph_selector
         )
 
     if hasattr(args, "gamma_type"):
@@ -283,7 +291,9 @@ def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
     return G
 
 
-def resolve_program(args: argparse.Namespace, default: Optional[Any] = None) -> Optional[Any]:
+def resolve_program(
+    args: argparse.Namespace, default: Optional[Any] = None
+) -> Optional[Any]:
     """Obtiene un programa a partir de un preset o un archivo de secuencia."""
     if getattr(args, "preset", None):
         return get_preset(args.preset)
@@ -295,15 +305,25 @@ def resolve_program(args: argparse.Namespace, default: Optional[Any] = None) -> 
 def add_common_args(parser: argparse.ArgumentParser) -> None:
     """Agrega los argumentos compartidos entre los subcomandos."""
     parser.add_argument("--nodes", type=int, default=24)
-    parser.add_argument("--topology", choices=["ring", "complete", "erdos"], default="ring")
+    parser.add_argument(
+        "--topology", choices=["ring", "complete", "erdos"], default="ring"
+    )
     parser.add_argument("--seed", type=int, default=1)
-    parser.add_argument("--p", type=float, default=None, help="Probabilidad de arista si topology=erdos")
-    parser.add_argument("--observer", action="store_true", help="Adjunta observador estándar")
+    parser.add_argument(
+        "--p", type=float, default=None, help="Probabilidad de arista si topology=erdos"
+    )
+    parser.add_argument(
+        "--observer", action="store_true", help="Adjunta observador estándar"
+    )
     parser.add_argument("--config", type=str, default=None)
     parser.add_argument("--dt", type=float, default=None)
     parser.add_argument("--integrator", choices=["euler", "rk4"], default=None)
-    parser.add_argument("--remesh-mode", choices=["knn", "mst", "community"], default=None)
-    parser.add_argument("--gamma-type", choices=list(GAMMA_REGISTRY.keys()), default="none")
+    parser.add_argument(
+        "--remesh-mode", choices=["knn", "mst", "community"], default=None
+    )
+    parser.add_argument(
+        "--gamma-type", choices=list(GAMMA_REGISTRY.keys()), default="none"
+    )
     parser.add_argument("--gamma-beta", type=float, default=0.0)
     parser.add_argument("--gamma-R0", type=float, default=0.0)
 
@@ -364,13 +384,19 @@ def cmd_run(args: argparse.Namespace) -> int:
     # Resúmenes rápidos (si están activados)
     if G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get("enabled", True):
         Wstats = G.graph.get("history", {}).get(
-            G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get("stats_history_key", "W_stats"), []
+            G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get(
+                "stats_history_key", "W_stats"
+            ),
+            [],
         )
         if Wstats:
             logger.info("[COHERENCE] último paso: %s", Wstats[-1])
     if G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"]).get("enabled", True):
         last_diag = G.graph.get("history", {}).get(
-            G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"]).get("history_key", "nodal_diag"), []
+            G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"]).get(
+                "history_key", "nodal_diag"
+            ),
+            [],
         )
         if last_diag:
             sample = list(last_diag[-1].values())[:3]
@@ -433,7 +459,9 @@ def cmd_metrics(args: argparse.Namespace) -> int:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout, force=True)
+    logging.basicConfig(
+        level=logging.INFO, format="%(message)s", stream=sys.stdout, force=True
+    )
 
     p = argparse.ArgumentParser(
         prog="tnfr",
@@ -441,13 +469,15 @@ def main(argv: Optional[List[str]] = None) -> int:
         epilog=(
             "Ejemplo: tnfr sequence --sequence-file secuencia.json\n"
             "secuencia.json:\n"
-            "[\n  {\"WAIT\": 1},\n  {\"TARGET\": \"A\"}\n]"
+            '[\n  {"WAIT": 1},\n  {"TARGET": "A"}\n]'
         ),
     )
     p.add_argument("--version", action="store_true", help="muestra versión y sale")
     sub = p.add_subparsers(dest="cmd")
 
-    p_run = sub.add_parser("run", help="Correr escenario libre o preset y opcionalmente exportar history")
+    p_run = sub.add_parser(
+        "run", help="Correr escenario libre o preset y opcionalmente exportar history"
+    )
     add_common_args(p_run)
     p_run.add_argument("--steps", type=int, default=200)
     p_run.add_argument("--preset", type=str, default=None)
@@ -464,9 +494,9 @@ def main(argv: Optional[List[str]] = None) -> int:
         epilog=(
             "Ejemplo de secuencia JSON:\n"
             "[\n"
-            "  \"A\",\n"
-            "  {\"WAIT\": 1},\n"
-            "  {\"THOL\": {\"body\": [\"A\", {\"WAIT\": 2}], \"repeat\": 2}}\n"
+            '  "A",\n'
+            '  {"WAIT": 1},\n'
+            '  {"THOL": {"body": ["A", {"WAIT": 2}], "repeat": 2}}\n'
             "]"
         ),
     )

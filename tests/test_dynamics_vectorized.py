@@ -1,4 +1,5 @@
 """Pruebas de dynamics vectorized."""
+
 import pytest
 import networkx as nx
 

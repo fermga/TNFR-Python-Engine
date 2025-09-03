@@ -1,4 +1,5 @@
 """Pruebas de trace."""
+
 import pytest
 
 from tnfr.trace import (

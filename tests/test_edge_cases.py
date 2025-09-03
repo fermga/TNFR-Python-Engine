@@ -1,4 +1,5 @@
 """Pruebas de edge cases."""
+
 import pytest
 from tnfr.node import NodoTNFR
 from tnfr.operators import op_EN

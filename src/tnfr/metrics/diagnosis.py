@@ -1,4 +1,5 @@
 """Diagnostic metrics."""
+
 from __future__ import annotations
 
 from statistics import fmean
@@ -56,7 +57,9 @@ def _state_from_thresholds(Rloc, dnfr_n, cfg):
 
 def _recommendation(state, cfg):
     adv = cfg.get("advice", {})
-    key = {"estable": "stable", "transicion": "transition", "disonante": "dissonant"}[state]
+    key = {"estable": "stable", "transicion": "transition", "disonante": "dissonant"}[
+        state
+    ]
     return list(adv.get(key, []))
 
 
@@ -72,7 +75,9 @@ def _diagnosis_step(G, ctx=None):
     G.graph["_sel_norms"] = norms
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     epi_vals = [get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in G.nodes()]
-    epi_min, epi_max = (min(epi_vals) if epi_vals else 0.0), (max(epi_vals) if epi_vals else 1.0)
+    epi_min, epi_max = (min(epi_vals) if epi_vals else 0.0), (
+        max(epi_vals) if epi_vals else 1.0
+    )
 
     CfgW = G.graph.get("COHERENCE", COHERENCE)
     Wkey = CfgW.get("Wi_history_key", "W_i")
@@ -106,11 +111,17 @@ def _diagnosis_step(G, ctx=None):
                 G, n, nodes_order=nodes, node_to_index=node_to_index
             )
 
-        symm = _symmetry_index(G, n, epi_min=epi_min, epi_max=epi_max) if dcfg.get("compute_symmetry", True) else None
+        symm = (
+            _symmetry_index(G, n, epi_min=epi_min, epi_max=epi_max)
+            if dcfg.get("compute_symmetry", True)
+            else None
+        )
         state = _state_from_thresholds(Rloc, dnfr_n, dcfg)
 
         alerts = []
-        if state == "disonante" and dnfr_n >= float(dcfg.get("dissonance", {}).get("dnfr_hi", 0.5)):
+        if state == "disonante" and dnfr_n >= float(
+            dcfg.get("dissonance", {}).get("dnfr_hi", 0.5)
+        ):
             alerts.append("high structural tension")
 
         advice = _recommendation(state, dcfg)
@@ -161,5 +172,9 @@ def dissonance_events(G, ctx=None):
 
 
 def register_diagnosis_callbacks(G) -> None:
-    register_callback(G, event="after_step", func=_diagnosis_step, name="diagnosis_step")
-    register_callback(G, event="after_step", func=dissonance_events, name="dissonance_events")
+    register_callback(
+        G, event="after_step", func=_diagnosis_step, name="diagnosis_step"
+    )
+    register_callback(
+        G, event="after_step", func=dissonance_events, name="dissonance_events"
+    )

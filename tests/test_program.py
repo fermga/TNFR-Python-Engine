@@ -1,4 +1,5 @@
 """Pruebas de program."""
+
 import json
 import pytest
 
@@ -87,6 +88,7 @@ def test_target_accepts_bytes(graph_canon):
     assert list(G.nodes[bname]["glyph_history"]) == [Glyph.AL.value]
     for code in codes:
         assert "glyph_history" not in G.nodes[code]
+
 
 def test_load_sequence_json_yaml(tmp_path):
     data = [

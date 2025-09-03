@@ -1,4 +1,5 @@
 """Pruebas de gamma."""
+
 import math
 import logging
 import pytest

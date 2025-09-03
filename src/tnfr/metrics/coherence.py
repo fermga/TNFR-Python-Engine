@@ -1,4 +1,5 @@
 """Coherence metrics."""
+
 from __future__ import annotations
 
 from math import cos
@@ -19,7 +20,9 @@ def _norm01(x, lo, hi):
 
 
 def _similarity_abs(a, b, lo, hi):
-    return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, float(hi - lo) if hi > lo else 1.0)
+    return 1.0 - _norm01(
+        abs(float(a) - float(b)), 0.0, float(hi - lo) if hi > lo else 1.0
+    )
 
 
 def _coherence_components(G, ni, nj, epi_min, epi_max, vf_min, vf_max):
@@ -129,9 +132,7 @@ def coherence_matrix(G):
             if key in seen:
                 continue
             seen.add(key)
-            wij = _combine_components(
-                wnorm, G, u, v, epi_min, epi_max, vf_min, vf_max
-            )
+            wij = _combine_components(wnorm, G, u, v, epi_min, epi_max, vf_min, vf_max)
             add_entry(i, j, wij)
             add_entry(j, i, wij)
     else:
@@ -154,7 +155,7 @@ def coherence_matrix(G):
                     continue
                 vals.append(W[i][j])
     else:
-        for (i, j, w) in W:
+        for i, j, w in W:
             if i == j:
                 continue
             vals.append(w)
@@ -200,7 +201,11 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=
         nodes_set = frozenset(G.nodes())
         if cache.get("nodes") != nodes_tuple or cache.get("set") != nodes_set:
             node_to_index = {v: i for i, v in enumerate(nodes_order)}
-            G.graph[cache_key] = {"nodes": nodes_tuple, "set": nodes_set, "map": node_to_index}
+            G.graph[cache_key] = {
+                "nodes": nodes_tuple,
+                "set": nodes_set,
+                "map": node_to_index,
+            }
         else:
             node_to_index = cache.get("map", {})
 
@@ -212,7 +217,7 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=
         weights = W_row
     else:
         weights = [0.0] * len(nodes_order)
-        for (ii, jj, w) in W_row:
+        for ii, jj, w in W_row:
             if ii == i:
                 weights[jj] = w
 
@@ -235,4 +240,6 @@ def _coherence_step(G, ctx=None):
 
 
 def register_coherence_callbacks(G) -> None:
-    register_callback(G, event="after_step", func=_coherence_step, name="coherence_step")
+    register_callback(
+        G, event="after_step", func=_coherence_step, name="coherence_step"
+    )

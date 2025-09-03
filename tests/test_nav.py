@@ -1,4 +1,5 @@
 """Pruebas de nav."""
+
 import pytest
 
 from tnfr.constants import attach_defaults

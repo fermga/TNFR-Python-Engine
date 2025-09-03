@@ -1,4 +1,5 @@
 """Pruebas de structural."""
+
 import networkx as nx
 
 from tnfr.structural import (
@@ -73,4 +74,3 @@ def test_thol_closed_by_silencio():
     names = [op.name for op in ops]
     ok, msg = validate_sequence(names)
     assert ok, msg
-

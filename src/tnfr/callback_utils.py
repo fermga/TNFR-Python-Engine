@@ -1,4 +1,5 @@
 """Callback registration and invocation helpers."""
+
 from __future__ import annotations
 
 from typing import Any, Callable, DefaultDict, TYPE_CHECKING
@@ -30,7 +31,7 @@ _CALLBACK_EVENTS: tuple[str, ...] = tuple(e.value for e in CallbackEvent)
 
 
 Callback = Callable[[nx.Graph, dict[str, Any]], None]
-CallbackRegistry = DefaultDict[str, list['CallbackSpec']]
+CallbackRegistry = DefaultDict[str, list["CallbackSpec"]]
 
 
 def _ensure_callbacks(G: nx.Graph) -> CallbackRegistry:
@@ -42,7 +43,7 @@ def _ensure_callbacks(G: nx.Graph) -> CallbackRegistry:
     return cbs
 
 
-def _normalize_callback_entry(entry: Any) -> 'CallbackSpec | None':
+def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
     """Normalize legacy callback entries into ``CallbackSpec``.
 
     Parameters
@@ -69,9 +70,7 @@ def _normalize_callback_entry(entry: Any) -> 'CallbackSpec | None':
             name = first
             fn = entry[1] if len(entry) > 1 else None
         else:
-            fn = first if callable(first) else (
-                entry[1] if len(entry) > 1 else None
-            )
+            fn = first if callable(first) else (entry[1] if len(entry) > 1 else None)
             name = getattr(fn, "__name__", None)
     else:
         fn = entry
@@ -140,9 +139,7 @@ def register_callback(
             continue
         if spec is not existing:
             existing_list[i] = spec
-        if spec.func is func or (
-            cb_name is not None and spec.name == cb_name
-        ):
+        if spec.func is func or (cb_name is not None and spec.name == cb_name):
             existing_list[i] = new_cb
             break
     else:
@@ -177,4 +174,3 @@ def invoke_callbacks(
                     "name": name,
                 }
             )
-

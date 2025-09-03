@@ -1,4 +1,5 @@
 """Node initialization."""
+
 from __future__ import annotations
 import random
 import networkx as nx
@@ -101,9 +102,7 @@ def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
     th_min = float(G.graph.get("INIT_THETA_MIN", INIT_DEFAULTS["INIT_THETA_MIN"]))
     th_max = float(G.graph.get("INIT_THETA_MAX", INIT_DEFAULTS["INIT_THETA_MAX"]))
 
-    vf_mode = str(
-        G.graph.get("INIT_VF_MODE", INIT_DEFAULTS["INIT_VF_MODE"])
-    ).lower()
+    vf_mode = str(G.graph.get("INIT_VF_MODE", INIT_DEFAULTS["INIT_VF_MODE"])).lower()
     vf_min_lim = float(G.graph.get("VF_MIN", DEFAULTS["VF_MIN"]))
     vf_max_lim = float(G.graph.get("VF_MAX", DEFAULTS["VF_MAX"]))
 

@@ -1,4 +1,5 @@
 """Pruebas de history."""
+
 import pytest
 
 from tnfr.dynamics import _update_history

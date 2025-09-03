@@ -139,6 +139,7 @@ def _check_repeats(G, n, cand: str, cfg: Dict[str, Any]) -> str:
             return fb
     return cand
 
+
 def _check_force(
     G,
     n,
@@ -148,7 +149,8 @@ def _check_force(
     accessor: Callable[[Any, Dict[str, Any]], float],
     cfg_key: str,
 ) -> str:
-    """If repetition was blocked but ``accessor`` exceeds the threshold, restore ``original``."""
+    """If repetition was blocked but ``accessor`` exceeds the threshold,
+    restore ``original``."""
     if cand == original:
         return cand
     force_th = float(cfg.get(cfg_key, 0.60))

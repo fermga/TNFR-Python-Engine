@@ -1,4 +1,5 @@
 """Pruebas de defaults integrity."""
+
 from collections import ChainMap
 
 from tnfr.constants import (

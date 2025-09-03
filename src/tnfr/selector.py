@@ -1,4 +1,5 @@
 """Selección de glyphs."""
+
 from __future__ import annotations
 
 from typing import Any, Dict
@@ -87,13 +88,16 @@ def _selector_thresholds(G: nx.Graph) -> dict:
 
 
 def _norms_para_selector(G: nx.Graph) -> dict:
-    """Calcula y guarda en ``G.graph`` los máximos para normalizar |ΔNFR| y |d2EPI/dt2|."""
+    """Calcula y guarda en ``G.graph`` los máximos para normalizar
+    |ΔNFR| y |d2EPI/dt2|."""
     norms = compute_dnfr_accel_max(G)
     G.graph["_sel_norms"] = norms
     return norms
 
 
-def _calc_selector_score(Si: float, dnfr: float, accel: float, weights: Dict[str, float]) -> float:
+def _calc_selector_score(
+    Si: float, dnfr: float, accel: float, weights: Dict[str, float]
+) -> float:
     """Calcula un ``score`` ponderado asumiendo pesos ya normalizados."""
     return (
         weights["w_si"] * Si
@@ -123,4 +127,3 @@ def _apply_selector_hysteresis(
         if isinstance(prev, str) and prev in HYSTERESIS_GLYPHS:
             return prev
     return None
-

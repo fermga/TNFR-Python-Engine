@@ -1,4 +1,5 @@
 """Pruebas de register callback."""
+
 import pytest
 
 from tnfr.callback_utils import register_callback, invoke_callbacks, CallbackEvent

@@ -1,4 +1,5 @@
 """Pruebas de update tg performance."""
+
 import time
 from collections import Counter, defaultdict
 
@@ -78,4 +79,3 @@ def test_update_tg_matches_naive(graph_canon):
     assert n_latent_opt == n_latent_ref
     assert hist_opt == hist_ref
     assert t_opt <= t_ref * 2
-
