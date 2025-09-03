@@ -382,8 +382,7 @@ def _compute_dnfr_loops(G, data) -> None:
         deg_sum = None
         degs_list = None
     for i, node in enumerate(nodes):
-        if w_topo != 0 and deg_sum is not None:
-            deg_i = degs_list[i]
+        deg_i = degs_list[i] if degs_list is not None else 0.0
         for v in G.neighbors(node):
             j = idx[v]
             x[i] += cos_th[j]
