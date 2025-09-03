@@ -30,7 +30,8 @@ def _dnfr_norm(nd, dnfr_max):
     return 1.0 if x > 1 else x
 
 
-def _symmetry_index(G, n, k=3, epi_min=None, epi_max=None):
+def _symmetry_index(G, n, epi_min: float | None = None, epi_max: float | None = None):
+    """Compute the symmetry index for node ``n`` based on EPI values."""
     nd = G.nodes[n]
     epi_i = get_attr(nd, ALIAS_EPI, 0.0)
     vec = list(G.neighbors(n))
