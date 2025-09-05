@@ -33,6 +33,15 @@ def _tg_state(nd: Dict[str, Any]) -> Dict[str, Any]:
     return nd.setdefault("_Tg", {TgCurr: None, TgRun: 0.0})
 
 
+def for_each_glyph(fn) -> None:
+    """Execute ``fn`` for each canonical glyph.
+
+    ``fn`` is called with a single argument: the glyph identifier.
+    """
+    for g in GLYPHS_CANONICAL:
+        fn(g)
+
+
 # -------------
 # Helpers de métricas
 # -------------
@@ -93,9 +102,10 @@ def _update_glyphogram(G, hist, counts, t, n_total):
     )
     row = {"t": t}
     total = max(1, n_total)
-    for g in GLYPHS_CANONICAL:
+    def add_row(g):
         c = counts.get(g, 0)
         row[g] = (c / total) if normalize_series else c
+    for_each_glyph(add_row)
     hist.setdefault("glyphogram", []).append(row)
 
 
@@ -191,9 +201,12 @@ def Tg_global(G, normalize: bool = True) -> Dict[str, float]:
     hist = ensure_history(G)
     tg_total: Dict[str, float] = hist.tracked_get("Tg_total", {})
     total = sum(tg_total.values()) or 1.0
-    if normalize:
-        return {g: float(tg_total.get(g, 0.0)) / total for g in GLYPHS_CANONICAL}
-    return {g: float(tg_total.get(g, 0.0)) for g in GLYPHS_CANONICAL}
+    out: Dict[str, float] = {}
+    def add(g):
+        val = float(tg_total.get(g, 0.0))
+        out[g] = val / total if normalize else val
+    for_each_glyph(add)
+    return out
 
 
 def Tg_by_node(G, n, normalize: bool = False) -> Dict[str, float | List[float]]:
@@ -203,12 +216,16 @@ def Tg_by_node(G, n, normalize: bool = False) -> Dict[str, float | List[float]]:
     rec = hist.tracked_get("Tg_by_node", {}).get(n, {})
     if not normalize:
         # convertir default dict → list para serializar
-        return {g: list(rec.get(g, [])) for g in GLYPHS_CANONICAL}
-    out = {}
-    for g in GLYPHS_CANONICAL:
+        out: Dict[str, List[float]] = {}
+        def copy_runs(g):
+            out[g] = list(rec.get(g, []))
+        for_each_glyph(copy_runs)
+        return out
+    out: Dict[str, float] = {}
+    def add(g):
         runs = rec.get(g, [])
         out[g] = float(mean(runs)) if runs else 0.0
-
+    for_each_glyph(add)
     return out
 
 
@@ -227,8 +244,9 @@ def glyphogram_series(G) -> Dict[str, List[float]]:
     if not xs:
         return {"t": []}
     out = {"t": [float(x.get("t", i)) for i, x in enumerate(xs)]}
-    for g in GLYPHS_CANONICAL:
+    def add(g):
         out[g] = [float(x.get(g, 0.0)) for x in xs]
+    for_each_glyph(add)
     return out
 
 
@@ -242,8 +260,8 @@ def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
     """Per-node statistics: mean/median/max of runs per glyph."""
     hist = ensure_history(G)
     rec = hist.tracked_get("Tg_by_node", {}).get(n, {})
-    out = {}
-    for g in GLYPHS_CANONICAL:
+    out: Dict[str, Dict[str, float]] = {}
+    def add(g):
         runs = list(rec.get(g, []))
         if not runs:
             out[g] = {"mean": 0.0, "median": 0.0, "max": 0.0, "count": 0}
@@ -254,4 +272,5 @@ def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
                 "max": float(max(runs)),
                 "count": int(len(runs)),
             }
+    for_each_glyph(add)
     return out
