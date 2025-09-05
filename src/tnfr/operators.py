@@ -198,7 +198,7 @@ def random_jitter(
         if int(cache_size) <= 0:
             rng = _jitter_base(base_seed, seed_key)
         else:
-            if _cached_rng.cache_info().maxsize != int(cache_size):
+            if _cached_rng.maxsize != int(cache_size):
                 _cached_rng.resize(int(cache_size))
             rng = _cached_rng.get(id(scope), base_seed, seed_key)
     else:
