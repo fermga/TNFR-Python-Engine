@@ -16,6 +16,7 @@ import logging
 import math
 import json
 import hashlib
+from statistics import fmean, StatisticsError
 import networkx as nx
 from json import JSONDecodeError
 from pathlib import Path
@@ -174,12 +175,10 @@ def clamp01(x: float) -> float:
 
 def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
     """Promedio aritmético o ``default`` si ``xs`` está vacío."""
-    total = 0.0
-    count = 0
-    for x in xs:
-        total += x
-        count += 1
-    return total / count if count else default
+    try:
+        return fmean(xs)
+    except StatisticsError:
+        return default
 
 
 def _wrap_angle(a: float) -> float:
