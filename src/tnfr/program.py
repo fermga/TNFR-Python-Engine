@@ -1,7 +1,7 @@
 """TNFR programming language."""
 
 from __future__ import annotations
-from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Deque, Iterable, List, Optional, Sequence, Tuple, Union
 from dataclasses import dataclass
 from contextlib import contextmanager
 from collections import deque
@@ -136,10 +136,14 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
     when ``THOL`` blocks are nested.
     """
     ops: List[Tuple[str, Any]] = []
-    stack: List[Token] = list(reversed(seq))
+    stack: Deque[Any] = deque(seq)
+    _THOL_SENTINEL = object()
 
     while stack:
         item = stack.pop()
+        if item is _THOL_SENTINEL:
+            ops.append(("THOL", Glyph.THOL.value))
+            continue
         if isinstance(item, TARGET):
             ops.append(("TARGET", item))
             continue
@@ -147,9 +151,6 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
             ops.append(("WAIT", item.steps))
             continue
         if isinstance(item, THOL):
-            # Open THOL block and push its body iteratively
-            ops.append(("THOL", Glyph.THOL.value))
-
             repeats = max(1, int(item.repeat))
             if item.force_close is not None and not isinstance(item.force_close, Glyph):
                 raise ValueError("force_close must be a Glyph")
@@ -159,15 +160,12 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
                 and item.force_close in {Glyph.SHA, Glyph.NUL}
                 else None
             )
-            # Explicit closure must run at the end, so push onto stack before
-            # expanding body.
+            stack.append(_THOL_SENTINEL)
+            for _ in range(repeats):
+                for tok in item.body:
+                    stack.append(tok)
             if closing is not None:
                 stack.append(closing)
-
-            # Insert bodies in order so the first repetition is processed first.
-            for _ in range(repeats):
-                for tok in reversed(item.body):
-                    stack.append(tok)
             continue
 
         # item should be a glyph
@@ -175,6 +173,7 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
         if g not in GLYPHS_CANONICAL_SET:
             raise ValueError(f"Non-canonical glyph: {g}")
         ops.append(("GLYPH", g))
+    ops.reverse()
     return ops
 
 
