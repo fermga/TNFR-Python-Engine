@@ -100,7 +100,7 @@ def _parse_json(text: str) -> Any:
 def _parse_yaml(text: str) -> Any:
     """Parsea ``text`` como YAML."""
     if not yaml:  # pragma: no cover - dependencia opcional
-        raise RuntimeError("pyyaml no está instalado")
+        raise ImportError("pyyaml no está instalado")
     return yaml.safe_load(text)
 
 
@@ -126,7 +126,7 @@ def read_structured_file(path: Path) -> Any:
         raise ValueError(f"Error al parsear archivo JSON en {path}: {e}") from e
     except YAMLError as e:
         raise ValueError(f"Error al parsear archivo YAML en {path}: {e}") from e
-    except RuntimeError as e:
+    except ImportError as e:
         raise ValueError(f"Dependencia faltante al parsear {path}: {e}") from e
 
 
