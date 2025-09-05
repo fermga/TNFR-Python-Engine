@@ -106,13 +106,34 @@ def coherence_matrix(G):
     row_sum = [0.0] * n
     row_count = [0] * n
 
+    # Accumulators for statistics over non-diagonal stored entries
+    min_val = float("inf")
+    max_val = float("-inf")
+    sum_val = 0.0
+    count_val = 0
+
     def add_entry(i: int, j: int, w: float) -> None:
         """Add a value to the matrix and accumulate sums/counters."""
+        nonlocal min_val, max_val, sum_val, count_val
         if mode == "dense":
             W[i][j] = w
+            if i != j:
+                if w < min_val:
+                    min_val = w
+                if w > max_val:
+                    max_val = w
+                sum_val += w
+                count_val += 1
         else:
             if w >= thr:
                 W.append((i, j, w))
+                if i != j:
+                    if w < min_val:
+                        min_val = w
+                    if w > max_val:
+                        max_val = w
+                    sum_val += w
+                    count_val += 1
         row_sum[i] += w
         row_count[i] += 1
 
@@ -145,26 +166,13 @@ def coherence_matrix(G):
                 )
                 add_entry(i, j, wij)
                 add_entry(j, i, wij)
-
     Wi = [row_sum[i] / max(1, row_count[i]) for i in range(n)]
-    vals = []
-    if mode == "dense":
-        for i in range(n):
-            for j in range(n):
-                if i == j:
-                    continue
-                vals.append(W[i][j])
-    else:
-        for i, j, w in W:
-            if i == j:
-                continue
-            vals.append(w)
 
     stats = {
-        "min": min(vals) if vals else 0.0,
-        "max": max(vals) if vals else 0.0,
-        "mean": (sum(vals) / len(vals)) if vals else 0.0,
-        "n_edges": len(vals),
+        "min": min_val if count_val else 0.0,
+        "max": max_val if count_val else 0.0,
+        "mean": (sum_val / count_val) if count_val else 0.0,
+        "n_edges": count_val,
         "mode": mode,
         "scope": scope,
     }
