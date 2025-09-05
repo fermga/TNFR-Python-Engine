@@ -15,12 +15,25 @@ def _validate_epi_vf(G) -> None:
     cfg = {
         k: float(get_param(G, k)) for k in ("EPI_MIN", "EPI_MAX", "VF_MIN", "VF_MAX")
     }
+    get = get_attr
+    epi_min, epi_max = cfg["EPI_MIN"], cfg["EPI_MAX"]
+    vf_min, vf_max = cfg["VF_MIN"], cfg["VF_MAX"]
     for n, data in G.nodes(data=True):
-        epi = get_attr(data, ALIAS_EPI, 0.0, strict=True)
-        if not (cfg["EPI_MIN"] - EPS <= epi <= cfg["EPI_MAX"] + EPS):
+        try:
+            epi = get(data, ALIAS_EPI, None)
+            if epi is None:
+                raise KeyError
+        except KeyError:
+            raise ValueError(f"Missing EPI attribute in node {n}")
+        if not (epi_min - EPS <= epi <= epi_max + EPS):
             raise ValueError(f"EPI out of range in node {n}: {epi}")
-        vf = get_attr(data, ALIAS_VF, 0.0, strict=True)
-        if not (cfg["VF_MIN"] - EPS <= vf <= cfg["VF_MAX"] + EPS):
+        try:
+            vf = get(data, ALIAS_VF, None)
+            if vf is None:
+                raise KeyError
+        except KeyError:
+            raise ValueError(f"Missing VF attribute in node {n}")
+        if not (vf_min - EPS <= vf <= vf_max + EPS):
             raise ValueError(f"VF out of range in node {n}: {vf}")
 
 
