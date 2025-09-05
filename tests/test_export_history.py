@@ -50,7 +50,7 @@ def test_export_history_json_contains_optional(tmp_path, graph_canon):
     assert data["epi_support"]
 
 
-def test_export_history_truncates_sigma(tmp_path, graph_canon):
+def test_export_history_extends_sigma(tmp_path, graph_canon):
     base = tmp_path / "short" / "run"
     G = graph_canon()
     hist = G.graph.setdefault("history", {})
@@ -65,4 +65,6 @@ def test_export_history_truncates_sigma(tmp_path, graph_canon):
     with open(sigma_path, newline="") as f:
         rows = list(csv.reader(f))
     assert rows[1] == ["0", "1", "3", "4", "7"]
-    assert len(rows) == 2
+    assert rows[2] == ["1", "2", "0", "5", "8"]
+    assert rows[3] == ["2", "0", "0", "6", "0"]
+    assert len(rows) == 4
