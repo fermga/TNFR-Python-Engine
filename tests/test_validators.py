@@ -12,6 +12,14 @@ from tnfr.validators import run_validators
 from tnfr.helpers import set_attr_str, set_attr, read_structured_file
 from tnfr.config import load_config
 
+try:  # pragma: no cover - compatibilidad Python
+    import tomllib  # type: ignore[attr-defined]
+except ModuleNotFoundError:  # pragma: no cover
+    try:
+        import tomli as tomllib  # type: ignore
+    except ModuleNotFoundError:  # pragma: no cover
+        tomllib = None  # type: ignore
+
 
 def _base_graph():
     G = build_graph(n=4, topology="ring", seed=1)
@@ -62,6 +70,14 @@ def test_validator_glyph_valido():
 def test_read_structured_file_json(tmp_path):
     path = tmp_path / "cfg.json"
     path.write_text('{"x": 1}', encoding="utf-8")
+    data = read_structured_file(path)
+    assert data == {"x": 1}
+
+
+@pytest.mark.skipif(tomllib is None, reason="tomllib/tomli no está instalado")
+def test_read_structured_file_toml(tmp_path):
+    path = tmp_path / "cfg.toml"
+    path.write_text("x = 1", encoding="utf-8")
     data = read_structured_file(path)
     assert data == {"x": 1}
 
