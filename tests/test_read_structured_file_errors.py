@@ -59,7 +59,7 @@ def test_read_structured_file_missing_dependency(
     path.write_text("a: 1", encoding="utf-8")
 
     def fake_parser(_: str) -> None:
-        raise RuntimeError("pyyaml no está instalado")
+        raise ImportError("pyyaml no está instalado")
 
     monkeypatch.setitem(helpers.PARSERS, ".yaml", fake_parser)
 
