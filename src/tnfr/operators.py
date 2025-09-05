@@ -242,17 +242,15 @@ def _mix_epi_with_neighbors(
         default_glyph.value if isinstance(default_glyph, Glyph) else str(default_glyph)
     )
     epi = node.EPI
-    neigh_ids = list(node.neighbors())
-    if not neigh_ids:
+    neigh = list(node.neighbors())
+    if not neigh:
         node.epi_kind = default_kind
         return
     if hasattr(node, "G"):
         NodoNX = _get_NodoNX()
         neigh = [
-            v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v) for v in neigh_ids
+            v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v) for v in neigh
         ]  # type: ignore[attr-defined]
-    else:
-        neigh = neigh_ids  # NodoTNFR already
     epi_bar = list_mean(v.EPI for v in neigh)
     node.EPI = (1 - mix) * epi + mix * epi_bar
     node.epi_kind = _select_dominant_glyph(node, neigh) or default_kind
