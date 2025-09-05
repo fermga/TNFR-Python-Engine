@@ -3,6 +3,7 @@
 from __future__ import annotations
 import math
 import statistics as st
+from statistics import pvariance
 from itertools import islice
 from functools import partial
 
@@ -79,16 +80,11 @@ def phase_sync(G) -> float:
         return 1.0
     th = math.atan2(sumY, sumX)
     # varianza angular aproximada (0 = muy sincronizado)
-    mean = 0.0
-    m2 = 0.0
-    n = 0
-    for _, data in G.nodes(data=True):
-        diff = angle_diff(get_attr(data, ALIAS_THETA, 0.0), th)
-        n += 1
-        delta = diff - mean
-        mean += delta / n
-        m2 += delta * (diff - mean)
-    var = m2 / n if n > 1 else 0.0
+    diffs = (
+        angle_diff(get_attr(data, ALIAS_THETA, 0.0), th)
+        for _, data in G.nodes(data=True)
+    )
+    var = pvariance(diffs)
     return 1.0 / (1.0 + var)
 
 
