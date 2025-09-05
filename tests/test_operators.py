@@ -1,7 +1,8 @@
 """Pruebas de operators."""
 
 from tnfr.node import NodoNX
-from tnfr.operators import random_jitter, clear_rng_cache, apply_glyph
+from tnfr.operators import random_jitter, clear_rng_cache, apply_glyph, _select_dominant_glyph
+from types import SimpleNamespace
 import tnfr.operators as operators
 from tnfr.constants import attach_defaults
 import networkx as nx
@@ -120,3 +121,23 @@ def test_um_candidate_subset_proximity():
     assert G.has_edge(0, 1)
     assert G.has_edge(0, 2)
     assert not G.has_edge(0, 3)
+
+
+def test_select_dominant_glyph_prefers_higher_epi():
+    node = SimpleNamespace(EPI=1.0, epi_kind="self")
+    neigh = [
+        SimpleNamespace(EPI=-3.0, epi_kind="n1"),
+        SimpleNamespace(EPI=2.0, epi_kind="n2"),
+    ]
+    assert _select_dominant_glyph(node, neigh) == "n1"
+
+
+def test_select_dominant_glyph_returns_node_kind_on_tie():
+    node = SimpleNamespace(EPI=1.0, epi_kind="self")
+    neigh = [SimpleNamespace(EPI=-1.0, epi_kind="n1")]
+    assert _select_dominant_glyph(node, neigh) == "self"
+
+
+def test_select_dominant_glyph_no_neighbors():
+    node = SimpleNamespace(EPI=1.0, epi_kind="self")
+    assert _select_dominant_glyph(node, []) == "self"
