@@ -193,7 +193,8 @@ def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
     Returns
     -------
     dict
-        Mapping of argument names with the prefix stripped.
+        Mapping of argument names with the prefix stripped. Only entries
+        whose values are not ``None`` are included.
 
     Examples
     --------

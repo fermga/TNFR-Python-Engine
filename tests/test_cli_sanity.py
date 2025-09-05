@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 import argparse
-from tnfr.cli import main, add_common_args, add_grammar_args, _build_graph_from_args
+from tnfr.cli import (
+    main,
+    add_common_args,
+    add_grammar_args,
+    _build_graph_from_args,
+    _args_to_dict,
+)
 from tnfr.constants import METRIC_DEFAULTS
 from tnfr.helpers import read_structured_file
 from tnfr import __version__
@@ -72,3 +78,11 @@ def test_args_to_dict_nested_options():
     assert canon["enabled"] is True
     assert canon["thol_min_len"] == 7
     assert METRIC_DEFAULTS["GRAMMAR_CANON"]["thol_min_len"] == 2
+
+
+def test_args_to_dict_filters_none_values():
+    parser = argparse.ArgumentParser()
+    add_grammar_args(parser)
+    args = parser.parse_args(["--grammar.enabled"])
+    result = _args_to_dict(args, "grammar_")
+    assert result == {"enabled": True}
