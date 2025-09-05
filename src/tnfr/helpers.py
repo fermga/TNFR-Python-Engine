@@ -355,9 +355,6 @@ def _alias_get_set(
         """Establece un atributo usando :func:`alias_set`."""
         return alias_set(d, aliases, conv, value)
 
-    _get.__doc__ = f"Obtiene un atributo {desc} usando :func:`alias_get`."
-    _set.__doc__ = f"Establece un atributo {desc} usando :func:`alias_set`."
-
     return _get, _set
 
 
