@@ -15,6 +15,8 @@ from typing import (
 import logging
 import math
 import json
+import hashlib
+import networkx as nx
 from json import JSONDecodeError
 from pathlib import Path
 
@@ -85,6 +87,7 @@ __all__ = [
     "compute_coherence",
     "compute_Si",
     "increment_edge_version",
+    "node_set_checksum",
 ]
 
 # -------------------------
@@ -133,6 +136,22 @@ def read_structured_file(path: Path) -> Any:
 def ensure_parent(path: str | Path) -> None:
     """Crea el directorio padre de ``path`` si hace falta."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
+
+
+# -------------------------
+# Grafos
+# -------------------------
+
+
+def node_set_checksum(G: nx.Graph) -> str:
+    """Devuelve el SHA1 del conjunto de nodos de ``G`` ordenado."""
+
+    sha1 = hashlib.sha1()
+    for i, node_repr in enumerate(sorted(repr(n) for n in G.nodes())):
+        if i:
+            sha1.update(b"|")
+        sha1.update(node_repr.encode("utf-8"))
+    return sha1.hexdigest()
 
 
 # -------------------------

@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 import math
 import random
-import hashlib
 import importlib
 import importlib.util
 from collections import deque, OrderedDict
@@ -61,6 +60,7 @@ from .helpers import (
     compute_Si,
     compute_coherence,
     compute_dnfr_accel_max,
+    node_set_checksum,
 )
 from .callback_utils import invoke_callbacks
 from .glyph_history import recent_glyph, ensure_history
@@ -109,25 +109,13 @@ def _cached_nodes_and_A(
     se reutiliza mientras la estructura del grafo permanezca igual. ``cache_size``
     limita el número de entradas por grafo (``None`` o valores <= 0 implican sin
     límite). Cuando se supera el tamaño, se elimina explícitamente la entrada más
-    antigua. El conjunto de nodos se firma de forma determinística mediante
-    ``hashlib.sha1`` sobre los identificadores ordenados, garantizando que las
-    claves de caché sean estables entre ejecuciones."""
+    antigua. El conjunto de nodos se firma de forma determinística a partir de
+    los identificadores ordenados, garantizando que las claves de caché sean
+    estables entre ejecuciones."""
 
     cache: OrderedDict = G.graph.setdefault("_dnfr_cache", OrderedDict())
-    # El checksum depende del conjunto de nodos, ignorando el orden y es estable.
     nodes_list = list(G.nodes())
-    sorted_nodes = sorted(nodes_list)
-
-    # Construye el hash de forma incremental para evitar la creación de
-    # grandes strings intermedias. Se mantiene exactamente la misma
-    # representación que ``",".join(map(str, sorted_nodes))`` al actualizar
-    # el separador manualmente.
-    sha1 = hashlib.sha1()
-    for i, node in enumerate(sorted_nodes):
-        if i:
-            sha1.update(b",")
-        sha1.update(str(node).encode())
-    checksum = sha1.hexdigest()
+    checksum = node_set_checksum(G)
 
     last_checksum = G.graph.get("_dnfr_nodes_checksum")
     if last_checksum != checksum:

@@ -19,6 +19,7 @@ from .helpers import (
     set_attr,
     fase_media,
     increment_edge_version,
+    node_set_checksum,
 )
 from .callback_utils import invoke_callbacks
 
@@ -54,8 +55,7 @@ def _ensure_node_offset_map(G) -> Dict[Any, int]:
 
     nodes = list(G.nodes())
     # Use order-independent deterministic checksum based on node set
-    node_reprs = sorted(repr(n) for n in nodes)
-    checksum = hashlib.sha1("|".join(node_reprs).encode("utf-8")).hexdigest()
+    checksum = node_set_checksum(G)
     mapping = G.graph.get("_node_offset_map")
     if mapping is None or G.graph.get("_node_offset_checksum") != checksum:
         if bool(G.graph.get("SORT_NODES", False)):
