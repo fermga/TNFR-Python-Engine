@@ -15,8 +15,7 @@ from ..helpers import get_attr, clamp01
 def _norm01(x, lo, hi):
     if hi <= lo:
         return 0.0
-    v = (float(x) - float(lo)) / (float(hi) - float(lo))
-    return 0.0 if v < 0 else (1.0 if v > 1.0 else v)
+    return clamp01((float(x) - float(lo)) / (float(hi) - float(lo)))
 
 
 def _similarity_abs(a, b, lo, hi):
