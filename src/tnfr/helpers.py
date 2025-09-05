@@ -247,8 +247,9 @@ def alias_get(
 ) -> Optional[T]:
     """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor convertido.
 
-    ``aliases`` debe ser una **tupla inmutable** de claves previamente validada.
-    Pasar una cadena única provocará un error.
+    ``aliases`` debe ser una **tupla inmutable** de claves previamente
+    validada. Si se proporciona otra secuencia, será validada mediante
+    :func:`_validate_aliases`. Pasar una cadena única provocará un error.
 
     Si ninguna de las claves está presente o la conversión falla, devuelve
     ``default`` convertido (o ``None`` si ``default`` es ``None``).
@@ -256,7 +257,8 @@ def alias_get(
     ``log_level`` permite ajustar el nivel de logging cuando la conversión
     falla en modo laxo.
     """
-    aliases = _validate_aliases(aliases)
+    if not isinstance(aliases, tuple):
+        aliases = _validate_aliases(aliases)
     for key in aliases:
         if key in d:
             ok, val = _convert_value(
@@ -281,9 +283,11 @@ def alias_set(
     """Asigna ``value`` convertido a la primera clave disponible de ``aliases``.
 
     ``aliases`` debe ser una **tupla inmutable** de claves previamente
-    validada; no se realizan copias ni transformaciones.
+    validada; no se realizan copias ni transformaciones. Las secuencias que
+    no sean tuplas se validan con :func:`_validate_aliases`.
     """
-    aliases = _validate_aliases(aliases)
+    if not isinstance(aliases, tuple):
+        aliases = _validate_aliases(aliases)
     _, val = _convert_value(value, conv, strict=True)
     if val is None:
         raise ValueError("conversion yielded None")
