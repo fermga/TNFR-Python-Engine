@@ -7,7 +7,7 @@ import math
 import random
 import hashlib
 import heapq
-from functools import wraps
+from functools import lru_cache
 import networkx as nx
 from networkx.algorithms import community as nx_comm
 
@@ -26,7 +26,7 @@ from .callback_utils import invoke_callbacks
 if TYPE_CHECKING:
     from .node import NodoProtocol
 from .types import Glyph
-from collections import deque, OrderedDict, namedtuple
+from collections import deque
 
 """Network operators.
 
@@ -84,53 +84,29 @@ def _jitter_base(seed: int, key: int) -> random.Random:
         return random.Random(str(seed_input))
 
 
-CacheInfo = namedtuple("CacheInfo", "hits misses maxsize currsize")
+def _make_rng_cache(maxsize: int):
+    """Return an ``lru_cache``-wrapped RNG factory."""
 
+    @lru_cache(maxsize=maxsize)
+    def _cached(scope_id: int, seed: int, key: int) -> random.Random:
+        return _jitter_base(seed, key)
 
-class _RNGCache:
-    """LRU cache for ``random.Random`` instances."""
-
-    def __init__(self, maxsize: int) -> None:
-        self.maxsize = int(maxsize)
-        self._data: "OrderedDict[tuple[int, int, int], random.Random]" = OrderedDict()
-        self.hits = 0
-        self.misses = 0
-
-    def get(self, scope_id: int, seed: int, key: int) -> random.Random:
-        cache_key = (scope_id, seed, key)
-        rng = self._data.get(cache_key)
-        if rng is not None:
-            self._data.move_to_end(cache_key)
-            self.hits += 1
-            return rng
-        self.misses += 1
-        rng = _jitter_base(seed, key)
-        self._data[cache_key] = rng
-        if len(self._data) > self.maxsize:
-            self._data.popitem(last=False)
-        return rng
-
-    def resize(self, maxsize: int) -> None:
-        self.maxsize = int(maxsize)
-        while len(self._data) > self.maxsize:
-            self._data.popitem(last=False)
-
-    def clear(self) -> None:
-        self._data.clear()
-        self.hits = 0
-        self.misses = 0
-
-    def cache_info(self) -> CacheInfo:
-        return CacheInfo(self.hits, self.misses, self.maxsize, len(self._data))
+    return _cached
 
 
 # Global cache instance for jitter RNGs
-_cached_rng = _RNGCache(DEFAULTS["JITTER_CACHE_SIZE"])
+_cached_rng = _make_rng_cache(DEFAULTS["JITTER_CACHE_SIZE"])
+
+
+def _resize_rng_cache(maxsize: int) -> None:
+    """Resize the global RNG cache."""
+    global _cached_rng
+    _cached_rng = _make_rng_cache(maxsize)
 
 
 def clear_rng_cache() -> None:
     """Clear all cached RNGs."""
-    _cached_rng.clear()
+    _cached_rng.cache_clear()
 
 
 _NodoNX = None
@@ -198,9 +174,9 @@ def random_jitter(
         if int(cache_size) <= 0:
             rng = _jitter_base(base_seed, seed_key)
         else:
-            if _cached_rng.maxsize != int(cache_size):
-                _cached_rng.resize(int(cache_size))
-            rng = _cached_rng.get(id(scope), base_seed, seed_key)
+            if _cached_rng.cache_info().maxsize != int(cache_size):
+                _resize_rng_cache(int(cache_size))
+            rng = _cached_rng(id(scope), base_seed, seed_key)
     else:
         rng = cache.get(seed_key)
         if rng is None:
