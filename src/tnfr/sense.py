@@ -73,13 +73,22 @@ def _sigma_cfg(G):
 
 
 def _sigma_from_vectors(
-    vectors: Iterable[complex], fallback_angle: float = 0.0
+    vectors: Iterable[complex] | complex, fallback_angle: float = 0.0
 ) -> tuple[Dict[str, float], int]:
-    """Normalise a series of complex vectors in the σ-plane."""
+    """Normalise complex vectors in the σ-plane.
+
+    ``vectors`` may be a single complex number or an iterable of them.
+    """
 
     acc = complex(0.0, 0.0)
     cnt = 0
-    for z in vectors:
+
+    if isinstance(vectors, complex):
+        vectors_iter = [vectors]
+    else:
+        vectors_iter = vectors
+
+    for z in vectors_iter:
         acc += z
         cnt += 1
 
@@ -110,7 +119,7 @@ def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] 
     if not nw:
         return None
     g, w, z = nw
-    vec, _ = _sigma_from_vectors([z], glyph_angle(g))
+    vec, _ = _sigma_from_vectors(z, glyph_angle(g))
     vec.update({"glyph": g, "w": float(w)})
     return vec
 
