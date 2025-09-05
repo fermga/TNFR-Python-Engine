@@ -101,41 +101,12 @@ OPERADORES = operador_factory(
     ("recursividad", Glyph.REMESH.value),
 )
 
-# Exposición explícita de clases concretas
-Emision = OPERADORES["emision"]
-Recepcion = OPERADORES["recepcion"]
-Coherencia = OPERADORES["coherencia"]
-Disonancia = OPERADORES["disonancia"]
-Acoplamiento = OPERADORES["acoplamiento"]
-Resonancia = OPERADORES["resonancia"]
-Silencio = OPERADORES["silencio"]
-Expansion = OPERADORES["expansion"]
-Contraccion = OPERADORES["contraccion"]
-Autoorganizacion = OPERADORES["autoorganizacion"]
-Mutacion = OPERADORES["mutacion"]
-Transicion = OPERADORES["transicion"]
-Recursividad = OPERADORES["recursividad"]
-
-__all__ = [
-    "create_nfr",
-    "Operador",
-    "OPERADORES",
-    "Emision",
-    "Recepcion",
-    "Coherencia",
-    "Disonancia",
-    "Acoplamiento",
-    "Resonancia",
-    "Silencio",
-    "Expansion",
-    "Contraccion",
-    "Autoorganizacion",
-    "Mutacion",
-    "Transicion",
-    "Recursividad",
-    "validate_sequence",
-    "run_sequence",
-]
+# Exposición dinámica de clases concretas en el espacio global
+__all__ = ["create_nfr", "Operador", "OPERADORES"]
+for _cls in OPERADORES.values():
+    globals()[_cls.__name__] = _cls
+    __all__.append(_cls.__name__)
+__all__ += ["validate_sequence", "run_sequence"]
 # ---------------------------------------------------------------------------
 # 3) Motor de secuencias + validador sintáctico
 # ---------------------------------------------------------------------------
