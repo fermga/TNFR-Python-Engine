@@ -10,6 +10,7 @@ from tnfr.program import (
     WAIT,
     TARGET,
     _handle_target,
+    _flatten,
     block,
     play,
     seq,
@@ -159,3 +160,25 @@ def test_block_force_close_invalid_type_raises(graph_canon, bad):
     program = seq(block(Glyph.AL, close=bad))
     with pytest.raises(ValueError):
         play(G, program, step_fn=_step_noop)
+
+
+def test_flatten_nested_blocks_preserves_order():
+    program = seq(
+        block(
+            block(Glyph.AL, Glyph.RA, repeat=2, close=Glyph.NUL),
+            Glyph.ZHIR,
+        )
+    )
+    ops = _flatten(program)
+    expected = [
+        ("THOL", Glyph.THOL.value),
+        ("THOL", Glyph.THOL.value),
+        ("GLYPH", Glyph.AL.value),
+        ("GLYPH", Glyph.RA.value),
+        ("GLYPH", Glyph.NUL.value),
+        ("GLYPH", Glyph.AL.value),
+        ("GLYPH", Glyph.RA.value),
+        ("GLYPH", Glyph.NUL.value),
+        ("GLYPH", Glyph.ZHIR.value),
+    ]
+    assert ops == expected
