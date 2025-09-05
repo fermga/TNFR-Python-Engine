@@ -196,10 +196,13 @@ def angle_diff(a: float, b: float) -> float:
 # Acceso a atributos con alias
 # -------------------------
 def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
-    """Return ``aliases`` as a tuple of strings.
+    """Validate ``aliases`` and return them as a tuple of strings.
 
-    A pre-existing tuple is returned unchanged; other sequences are converted to
-    tuples. The result is guaranteed to be a non-empty tuple of strings.
+    This helper is intended to be used when building alias collections for
+    :func:`alias_get`, :func:`alias_set` and demás utilidades públicas que
+    **exigen** una tupla inmutable. A pre-existing tuple is returned unchanged;
+    other sequences are converted to tuples. The result is guaranteed to be a
+    non-empty tuple of strings.
     """
 
     if isinstance(aliases, str) or not isinstance(aliases, Sequence):
@@ -215,7 +218,7 @@ def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
 @overload
 def alias_get(
     d: Dict[str, Any],
-    aliases: Sequence[str],
+    aliases: tuple[str, ...],
     conv: Callable[[Any], T],
     *,
     default: None = ...,
@@ -227,7 +230,7 @@ def alias_get(
 @overload
 def alias_get(
     d: Dict[str, Any],
-    aliases: Sequence[str],
+    aliases: tuple[str, ...],
     conv: Callable[[Any], T],
     *,
     default: T,
@@ -238,7 +241,7 @@ def alias_get(
 
 def alias_get(
     d: Dict[str, Any],
-    aliases: Sequence[str],
+    aliases: tuple[str, ...],
     conv: Callable[[Any], T],
     *,
     default: Optional[Any] = None,
@@ -248,8 +251,8 @@ def alias_get(
     """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor convertido.
 
     ``aliases`` debe ser una **tupla inmutable** de claves previamente
-    validada. Si se proporciona otra secuencia, será validada mediante
-    :func:`_validate_aliases`. Pasar una cadena única provocará un error.
+    validada con :func:`_validate_aliases`. No se aceptan otros tipos de
+    secuencia y se lanzará :class:`TypeError` en caso contrario.
 
     Si ninguna de las claves está presente o la conversión falla, devuelve
     ``default`` convertido (o ``None`` si ``default`` es ``None``).
@@ -258,7 +261,7 @@ def alias_get(
     falla en modo laxo.
     """
     if not isinstance(aliases, tuple):
-        aliases = _validate_aliases(aliases)
+        raise TypeError("'aliases' must be a tuple of strings")
     for key in aliases:
         if key in d:
             ok, val = _convert_value(
@@ -276,18 +279,19 @@ def alias_get(
 
 def alias_set(
     d: Dict[str, Any],
-    aliases: Sequence[str],
+    aliases: tuple[str, ...],
     conv: Callable[[Any], T],
     value: Any,
 ) -> T:
     """Asigna ``value`` convertido a la primera clave disponible de ``aliases``.
 
     ``aliases`` debe ser una **tupla inmutable** de claves previamente
-    validada; no se realizan copias ni transformaciones. Las secuencias que
-    no sean tuplas se validan con :func:`_validate_aliases`.
+    validada con :func:`_validate_aliases`; no se realizan copias ni
+    transformaciones. Se lanzará :class:`TypeError` si ``aliases`` no es una
+    tupla.
     """
     if not isinstance(aliases, tuple):
-        aliases = _validate_aliases(aliases)
+        raise TypeError("'aliases' must be a tuple of strings")
     _, val = _convert_value(value, conv, strict=True)
     if val is None:
         raise ValueError("conversion yielded None")
@@ -305,7 +309,7 @@ class _Getter(Protocol[T]):
     def __call__(
         self,
         d: Dict[str, Any],
-        aliases: Sequence[str],
+        aliases: tuple[str, ...],
         default: T = ...,  # noqa: D401 - documented in alias_get
         *,
         strict: bool = False,
@@ -317,7 +321,7 @@ class _Getter(Protocol[T]):
     def __call__(
         self,
         d: Dict[str, Any],
-        aliases: Sequence[str],
+        aliases: tuple[str, ...],
         default: None,
         *,
         strict: bool = False,
@@ -344,7 +348,7 @@ def _alias_get_set(
     @overload
     def _get(
         d: Dict[str, Any],
-        aliases: Sequence[str],
+        aliases: tuple[str, ...],
         default: T = default,
         *,
         strict: bool = False,
@@ -354,7 +358,7 @@ def _alias_get_set(
     @overload
     def _get(
         d: Dict[str, Any],
-        aliases: Sequence[str],
+        aliases: tuple[str, ...],
         default: None,
         *,
         strict: bool = False,
@@ -363,7 +367,7 @@ def _alias_get_set(
 
     def _get(
         d: Dict[str, Any],
-        aliases: Sequence[str],
+        aliases: tuple[str, ...],
         default: Optional[T] = default,
         *,
         strict: bool = False,
@@ -374,7 +378,7 @@ def _alias_get_set(
             d, aliases, conv, default=default, strict=strict, log_level=log_level
         )
 
-    def _set(d: Dict[str, Any], aliases: Sequence[str], value: T) -> T:
+    def _set(d: Dict[str, Any], aliases: tuple[str, ...], value: T) -> T:
         """Establece un atributo usando :func:`alias_set`."""
         return alias_set(d, aliases, conv, value)
 
@@ -396,7 +400,7 @@ _set_attr_str = set_attr_str
 # -------------------------
 
 
-def _recompute_abs_max(G, aliases: Sequence[str]):
+def _recompute_abs_max(G, aliases: tuple[str, ...]):
     """Recalcula y retorna ``(max_val, node)`` para ``aliases``."""
     node = max(
         G.nodes(),
@@ -407,7 +411,7 @@ def _recompute_abs_max(G, aliases: Sequence[str]):
     return max_val, node
 
 
-def _update_cached_abs_max(G, aliases: Sequence[str], n, value, *, key: str) -> None:
+def _update_cached_abs_max(G, aliases: tuple[str, ...], n, value, *, key: str) -> None:
     """Actualiza ``G.graph[key]`` y ``G.graph[f"{key}_node"]``."""
     node_key = f"{key}_node"
     val = abs(value)
@@ -423,9 +427,12 @@ def _update_cached_abs_max(G, aliases: Sequence[str], n, value, *, key: str) -> 
 
 
 def set_attr_with_max(
-    G, n, aliases: Sequence[str], value: float, *, cache: str
+    G, n, aliases: tuple[str, ...], value: float, *, cache: str
 ) -> None:
-    """Asigna ``value`` al atributo indicado y actualiza el máximo global."""
+    """Asigna ``value`` al atributo indicado y actualiza el máximo global.
+
+    ``aliases`` debe ser una tupla inmutable de claves válidas.
+    """
     val = float(value)
     set_attr(G.nodes[n], aliases, val)
     _update_cached_abs_max(G, aliases, n, val, key=cache)
@@ -488,7 +495,7 @@ def compute_coherence(G) -> float:
 # -------------------------
 
 
-def media_vecinal(G, n, aliases: Sequence[str], default: float = 0.0) -> float:
+def media_vecinal(G, n, aliases: tuple[str, ...], default: float = 0.0) -> float:
     """Media del atributo indicado por ``aliases`` en los vecinos de ``n``."""
     vals = (get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
     return list_mean(vals, default)
