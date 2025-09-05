@@ -2,7 +2,6 @@
 
 import pytest
 from tnfr.node import NodoTNFR
-from tnfr.operators import op_EN
 from tnfr.types import Glyph
 
 from tnfr.dynamics import default_compute_delta_nfr, update_epi_via_nodal_equation
@@ -46,7 +45,7 @@ def test_dnfr_weights_normalization(graph_canon):
 
 def test_op_en_sets_epi_kind_on_isolated_node():
     node = NodoTNFR(EPI=1.0)
-    op_EN(node)
+    node.apply_glyph("EN")
     assert node.EPI == 1.0
     assert node.epi_kind == Glyph.EN.value
 

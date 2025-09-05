@@ -462,31 +462,6 @@ _NAME_TO_OP = {
 }
 
 
-def _wrap(fn):
-    @wraps(fn)
-    def inner(obj, n=None):
-        NodoNX = _get_NodoNX()
-        node = obj if n is None else NodoNX(obj, n)
-        return fn(node)
-
-    return inner
-
-
-op_AL = _wrap(_op_AL)
-op_EN = _wrap(_op_EN)
-op_IL = _wrap(_op_IL)
-op_OZ = _wrap(_op_OZ)
-op_UM = _wrap(_op_UM)
-op_RA = _wrap(_op_RA)
-op_SHA = _wrap(_op_SHA)
-op_VAL = _wrap(_op_VAL)
-op_NUL = _wrap(_op_NUL)
-op_THOL = _wrap(_op_THOL)
-op_ZHIR = _wrap(_op_ZHIR)
-op_NAV = _wrap(_op_NAV)
-op_REMESH = _wrap(_op_REMESH)
-
-
 def apply_glyph_obj(
     node: NodoProtocol, glyph: Glyph | str, *, window: Optional[int] = None
 ) -> None:
