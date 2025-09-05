@@ -1,9 +1,8 @@
 """Pruebas de operators."""
 
 from tnfr.node import NodoNX
-from tnfr.operators import random_jitter, clear_rng_cache
+from tnfr.operators import random_jitter, clear_rng_cache, apply_glyph
 import tnfr.operators as operators
-from tnfr.operators import op_UM
 from tnfr.constants import attach_defaults
 import networkx as nx
 import pytest
@@ -116,7 +115,7 @@ def test_um_candidate_subset_proximity():
     G.graph["UM_CANDIDATE_COUNT"] = 2
     G.graph["UM_CANDIDATE_MODE"] = "proximity"
 
-    op_UM(G, 0)
+    apply_glyph(G, 0, "UM")
 
     assert G.has_edge(0, 1)
     assert G.has_edge(0, 2)
