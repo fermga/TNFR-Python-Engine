@@ -225,14 +225,8 @@ def _select_dominant_glyph(
     node: NodoProtocol, neigh: Iterable[NodoProtocol]
 ) -> Optional[str]:
     """Return the epi_kind with the highest |EPI| among node and its neighbors."""
-    best_mag = abs(node.EPI)
-    best_kind = node.epi_kind
-    for v in neigh:
-        epi_abs = abs(v.EPI)
-        if epi_abs > best_mag:
-            best_mag = epi_abs
-            best_kind = v.epi_kind
-    return best_kind
+    best = max(neigh, key=lambda v: abs(v.EPI), default=None)
+    return best.epi_kind if best and abs(best.EPI) > abs(node.EPI) else node.epi_kind
 
 
 def _mix_epi_with_neighbors(
