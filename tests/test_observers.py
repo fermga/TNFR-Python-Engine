@@ -76,19 +76,19 @@ def test_glyph_load_uses_module_constants(monkeypatch, graph_canon):
 
 def test_sigma_vector_consistency():
     # Distribución ficticia de glyphs
-    dist = {"IL": 0.4, "RA": 0.3, "ZHIR": 0.1, "AL": 0.2, "_count": 10}
+    dist = {"IL": 0.4, "RA": 0.3, "ZHIR": 0.1, "AL": 0.2}
 
-    res = sigma_vector(dist)
+    res, n = sigma_vector(dist)
 
     # Cálculo esperado con el mapa de ángulos canónico
-    keys = ESTABILIZADORES + DISRUPTIVOS
+    keys = list(dist.keys())
     angles = {k: ANGLE_MAP[k] for k in keys}
-    total = sum(dist.get(k, 0.0) for k in keys)
-    x = sum(dist.get(k, 0.0) / total * math.cos(a) for k, a in angles.items())
-    y = sum(dist.get(k, 0.0) / total * math.sin(a) for k, a in angles.items())
+    x = sum(dist[k] * math.cos(angles[k]) for k in keys) / len(keys)
+    y = sum(dist[k] * math.sin(angles[k]) for k in keys) / len(keys)
     mag = math.hypot(x, y)
     ang = math.atan2(y, x)
 
+    assert n == len(keys)
     assert math.isclose(res["x"], x)
     assert math.isclose(res["y"], y)
     assert math.isclose(res["mag"], mag)

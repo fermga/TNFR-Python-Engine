@@ -124,25 +124,15 @@ def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] 
     return vec
 
 
-def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
+def sigma_vector(dist: Dict[str, float]) -> tuple[Dict[str, float], int]:
     """Compute Σ⃗ from a glyph distribution.
 
-    ``dist`` may contain raw counts or proportions. Values are normalised with
-    respect to glyphs relevant to the σ plane and the Cartesian components,
-    magnitude and resulting angle are obtained. If the distribution provides
-    no weight on the relevant glyphs the zero vector is returned.
+    ``dist`` may contain raw counts or proportions. All ``(glyph, weight)``
+    pairs are forwarded to :func:`_sigma_from_pairs` and the resulting vector
+    together with the number of processed pairs are returned.
     """
 
-    total = math.fsum(float(dist.get(k, 0.0)) for k in SIGMA_ANGLE_KEYS)
-    if total <= 0:
-        return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0}
-
-    factor = len(SIGMA_ANGLE_KEYS) / total
-    z_iter = (
-        glyph_unit(k) * float(dist.get(k, 0.0)) * factor for k in SIGMA_ANGLE_KEYS
-    )
-    vec, _ = _sigma_from_vectors(z_iter)
-    return vec
+    return _sigma_from_pairs(dist.items())
 
 
 def sigma_vector_from_graph(

@@ -1229,7 +1229,10 @@ def _update_sigma(G, hist) -> None:
     hist["glyph_load_estab"].append(gl.get("_estabilizadores", 0.0))
     hist["glyph_load_disr"].append(gl.get("_disruptivos", 0.0))
 
-    sig = sigma_vector(gl)
+    # ``glyph_load`` incluye agregados con prefijo ``_`` que no representan
+    # glyphs individuales; se descartan antes de calcular Σ⃗.
+    dist = {k: v for k, v in gl.items() if not k.startswith("_")}
+    sig, _ = sigma_vector(dist)
     hist.setdefault("sense_sigma_x", []).append(sig.get("x", 0.0))
     hist.setdefault("sense_sigma_y", []).append(sig.get("y", 0.0))
     hist.setdefault("sense_sigma_mag", []).append(sig.get("mag", 0.0))
