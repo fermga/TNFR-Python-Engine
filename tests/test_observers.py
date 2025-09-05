@@ -27,10 +27,23 @@ def test_phase_observers_match_manual_calculation(graph_canon):
     th_mean = math.atan2(sum(Y), sum(X))
     var = st.pvariance(angle_diff(th, th_mean) for th in angles)
     expected_sync = 1.0 / (1.0 + var)
-    assert math.isclose(phase_sync(G), expected_sync)
+    ps = phase_sync(G)
+    assert 0.0 <= ps <= 1.0
+    assert math.isclose(ps, expected_sync)
 
     R = ((sum(X) ** 2 + sum(Y) ** 2) ** 0.5) / len(angles)
     assert math.isclose(kuramoto_order(G), float(R))
+
+
+def test_phase_sync_bounds(graph_canon):
+    G = graph_canon()
+    angles = [0.1, 1.2, -2.5, 3.6]
+    for idx, th in enumerate(angles):
+        G.add_node(idx)
+        set_attr(G.nodes[idx], ALIAS_THETA, th)
+
+    ps = phase_sync(G)
+    assert 0.0 <= ps <= 1.0
 
 
 def test_kuramoto_order_matches_kuramoto_R_psi(graph_canon):
