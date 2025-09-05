@@ -236,9 +236,10 @@ class NodoNX(NodoProtocol):
         return node
 
     def neighbors(self) -> Iterable[Hashable]:
-        """Itera identificadores de vecinos.
+        """Itera identificadores (IDs) de vecinos.
 
-        Usa :meth:`from_graph` para obtener instancias ``NodoNX`` cacheadas.
+        Si se necesitan objetos ``NodoNX``, envolver cada ID resultante con
+        :meth:`from_graph` para obtener la instancia cacheada correspondiente.
         """
         return self.G.neighbors(self.n)
 
