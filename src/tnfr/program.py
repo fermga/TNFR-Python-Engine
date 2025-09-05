@@ -66,26 +66,6 @@ Token = Union[Glyph, WAIT, TARGET, THOL]
 # ---------------------
 
 
-@contextmanager
-def _forced_selector(G, glyph: Glyph):
-    """Temporarily override the glyph selector to force ``glyph``.
-
-    The canonical grammar is enforced before applying.
-    """
-    prev = G.graph.get("glyph_selector")
-
-    def selector_forced(_G, _n):
-        return glyph
-
-    G.graph["glyph_selector"] = selector_forced
-    try:
-        yield
-    finally:
-        if prev is None:
-            G.graph.pop("glyph_selector", None)
-        else:
-            G.graph["glyph_selector"] = prev
-
 
 def _window(G) -> int:
     return int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
