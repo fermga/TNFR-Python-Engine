@@ -61,6 +61,9 @@ class THOL:
 
 Token = Union[Glyph, WAIT, TARGET, THOL]
 
+# Sentinel used internally by ``_flatten`` to mark the end of a ``THOL`` block
+THOL_SENTINEL = object()
+
 # ---------------------
 # Internal utilities
 # ---------------------
@@ -117,11 +120,10 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
     """
     ops: List[Tuple[str, Any]] = []
     stack: Deque[Any] = deque(seq)
-    _THOL_SENTINEL = object()
 
     while stack:
         item = stack.pop()
-        if item is _THOL_SENTINEL:
+        if item is THOL_SENTINEL:
             ops.append(("THOL", Glyph.THOL.value))
             continue
         if isinstance(item, TARGET):
@@ -140,7 +142,7 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
                 and item.force_close in {Glyph.SHA, Glyph.NUL}
                 else None
             )
-            stack.append(_THOL_SENTINEL)
+            stack.append(THOL_SENTINEL)
             for _ in range(repeats):
                 for tok in item.body:
                     stack.append(tok)
