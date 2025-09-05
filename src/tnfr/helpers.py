@@ -10,6 +10,7 @@ from typing import (
     TypeVar,
     Optional,
     overload,
+    Protocol,
 )
 import logging
 import math
@@ -273,12 +274,38 @@ def alias_set(
     return val
 
 
+class _Getter(Protocol[T]):
+    @overload
+    def __call__(
+        self,
+        d: Dict[str, Any],
+        aliases: Sequence[str],
+        default: T = ...,  # noqa: D401 - documented in alias_get
+        *,
+        strict: bool = False,
+        log_level: int | None = None,
+    ) -> T:
+        ...
+
+    @overload
+    def __call__(
+        self,
+        d: Dict[str, Any],
+        aliases: Sequence[str],
+        default: None,
+        *,
+        strict: bool = False,
+        log_level: int | None = None,
+    ) -> Optional[T]:
+        ...
+
+
 def _alias_get_set(
     conv: Callable[[Any], T],
     *,
     default: T,
     desc: str,
-) -> tuple[Callable[..., Optional[T]], Callable[..., T]]:
+) -> tuple[_Getter[T], Callable[..., T]]:
     """Crea funciones ``get``/``set`` para alias usando ``conv``.
 
     Parameters
@@ -295,7 +322,7 @@ def _alias_get_set(
     def _get(
         d: Dict[str, Any],
         aliases: Sequence[str],
-        default: T = ...,  # type: ignore[assignment]
+        default: T = default,
         *,
         strict: bool = False,
         log_level: int | None = None,
