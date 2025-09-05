@@ -128,8 +128,7 @@ def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
     epi_val = float(G.graph.get("INIT_EPI_VALUE", 0.0))
 
     rng = random.Random(seed)
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for _, nd in G.nodes(data=True):
 
         _init_phase(
             nd,

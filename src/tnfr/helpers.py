@@ -470,8 +470,7 @@ def compute_coherence(G) -> float:
     dnfr_sum = 0.0
     depi_sum = 0.0
     count = 0
-    for n in G.nodes():
-        nd = G.nodes[n]
+    for _, nd in G.nodes(data=True):
         dnfr_sum += abs(get_attr(nd, ALIAS_DNFR, 0.0))
         depi_sum += abs(get_attr(nd, ALIAS_dEPI, 0.0))
         count += 1

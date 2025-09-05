@@ -234,8 +234,8 @@ def callbacks_field(G):
 
 def thol_state_field(G):
     th_open = 0
-    for n in G.nodes():
-        st = G.nodes[n].get("_GRAM", {})
+    for _, nd in G.nodes(data=True):
+        st = nd.get("_GRAM", {})
         if st.get("thol_open", False):
             th_open += 1
     return {"thol_open_nodes": th_open}
