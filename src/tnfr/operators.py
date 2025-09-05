@@ -75,13 +75,8 @@ def _node_offset(G, n) -> int:
 def _jitter_base(seed: int, key: int) -> random.Random:
     """Return a ``random.Random`` instance seeded from ``seed`` and ``key``."""
     seed_input = (seed, key)
-    try:
-        # Python's ``random`` module does not officially support tuples as seeds,
-        # but future versions may. Attempt to use the tuple directly first and
-        # fall back to a string representation when unsupported.
-        return random.Random(seed_input)
-    except TypeError:
-        return random.Random(str(seed_input))
+    seed_int = hash(seed_input)
+    return random.Random(seed_int)
 
 
 def _make_rng_cache(maxsize: int):
