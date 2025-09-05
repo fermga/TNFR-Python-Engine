@@ -304,7 +304,6 @@ def _alias_get_set(
     conv: Callable[[Any], T],
     *,
     default: T,
-    desc: str,
 ) -> tuple[_Getter[T], Callable[..., T]]:
     """Crea funciones ``get``/``set`` para alias usando ``conv``.
 
@@ -314,8 +313,6 @@ def _alias_get_set(
         Función de conversión a aplicar al valor recuperado.
     default:
         Valor por defecto a utilizar cuando la clave no existe.
-    desc:
-        Descripción del tipo de dato para docstrings.
     """
 
     @overload
@@ -358,8 +355,8 @@ def _alias_get_set(
     return _get, _set
 
 
-get_attr, set_attr = _alias_get_set(float, default=0.0, desc="numérico")
-get_attr_str, set_attr_str = _alias_get_set(str, default="", desc="de texto")
+get_attr, set_attr = _alias_get_set(float, default=0.0)
+get_attr_str, set_attr_str = _alias_get_set(str, default="")
 
 # Retrocompatibilidad con nombres anteriores
 _get_attr = get_attr
