@@ -165,11 +165,40 @@ def ensure_parent(path: str | Path) -> None:
 # -------------------------
 
 
+def _stable_json(obj: Any) -> Any:
+    """Helper to obtain a JSON-serialisable structure for ``obj``.
+
+    The default :func:`json.dumps` behaviour falls back to ``obj.__dict__`` when
+    available and otherwise uses ``repr(obj)`` which may include memory
+    addresses.  This function walks basic containers and objects to build a
+    representation that avoids such non-deterministic data.
+    """
+
+    if isinstance(obj, (str, int, float, bool)) or obj is None:
+        return obj
+    if isinstance(obj, (list, tuple, set)):
+        return [_stable_json(o) for o in obj]
+    if isinstance(obj, dict):
+        return {str(k): _stable_json(v) for k, v in obj.items()}
+    if hasattr(obj, "__dict__"):
+        return {k: _stable_json(v) for k, v in vars(obj).items()}
+    return obj.__class__.__qualname__
+
+
 def node_set_checksum(G: nx.Graph) -> str:
-    """Devuelve el SHA1 del conjunto de nodos de ``G`` ordenado."""
+    """Devuelve el SHA1 del conjunto de nodos de ``G`` ordenado.
+
+    Cada nodo se serializa a JSON con claves ordenadas y evitando incluir
+    direcciones de memoria, asegurando así una representación estable del
+    conjunto.
+    """
 
     sha1 = hashlib.sha1()
-    for i, node_repr in enumerate(sorted(repr(n) for n in G.nodes())):
+
+    def serialise(n: Any) -> str:
+        return json.dumps(_stable_json(n), sort_keys=True, ensure_ascii=False)
+
+    for i, node_repr in enumerate(sorted(serialise(n) for n in G.nodes())):
         if i:
             sha1.update(b"|")
         sha1.update(node_repr.encode("utf-8"))
