@@ -1,11 +1,10 @@
 """Pruebas de alias get default."""
 
-from tnfr.helpers import alias_get, _validate_aliases
+from tnfr.helpers import alias_get
 
 
 def test_alias_get_default_none_returns_none():
     d = {}
-    aliases = _validate_aliases(("x",))
-    result = alias_get(d, aliases, int, default=None)
+    result = alias_get(d, ["x"], int, default=None)
     assert result is None
     assert d == {}

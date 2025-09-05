@@ -198,10 +198,9 @@ def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
     """Validate ``aliases`` and return them as a tuple of strings.
 
     This helper is intended to be used when building alias collections for
-    :func:`alias_get`, :func:`alias_set` and demás utilidades públicas que
-    **exigen** una tupla inmutable. A pre-existing tuple is returned unchanged;
-    other sequences are converted to tuples. The result is guaranteed to be a
-    non-empty tuple of strings.
+    :func:`alias_get`, :func:`alias_set` and demás utilidades públicas. A
+    pre-existing tuple is returned unchanged; other sequences are converted to
+    tuples. The result is guaranteed to be a non-empty tuple of strings.
     """
 
     if isinstance(aliases, str) or not isinstance(aliases, Sequence):
@@ -217,7 +216,7 @@ def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
 @overload
 def alias_get(
     d: Dict[str, Any],
-    aliases: tuple[str, ...],
+    aliases: Sequence[str],
     conv: Callable[[Any], T],
     *,
     default: None = ...,
@@ -229,7 +228,7 @@ def alias_get(
 @overload
 def alias_get(
     d: Dict[str, Any],
-    aliases: tuple[str, ...],
+    aliases: Sequence[str],
     conv: Callable[[Any], T],
     *,
     default: T,
@@ -240,7 +239,7 @@ def alias_get(
 
 def alias_get(
     d: Dict[str, Any],
-    aliases: tuple[str, ...],
+    aliases: Sequence[str],
     conv: Callable[[Any], T],
     *,
     default: Optional[Any] = None,
@@ -249,9 +248,10 @@ def alias_get(
 ) -> Optional[T]:
     """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor convertido.
 
-    ``aliases`` debe ser una **tupla inmutable** de claves previamente
-    validada con :func:`_validate_aliases`. No se aceptan otros tipos de
-    secuencia y se lanzará :class:`TypeError` en caso contrario.
+    ``aliases`` puede ser cualquier secuencia de strings. Si no es una tupla
+    inmutable, se validará internamente mediante :func:`_validate_aliases`.
+    ``_validate_aliases`` garantiza que la secuencia no esté vacía y que todos
+    sus elementos sean strings.
 
     Si ninguna de las claves está presente o la conversión falla, devuelve
     ``default`` convertido (o ``None`` si ``default`` es ``None``).
@@ -260,7 +260,7 @@ def alias_get(
     falla en modo laxo.
     """
     if not isinstance(aliases, tuple):
-        raise TypeError("'aliases' must be a tuple of strings")
+        aliases = _validate_aliases(aliases)
     for key in aliases:
         if key in d:
             ok, val = _convert_value(
@@ -278,19 +278,17 @@ def alias_get(
 
 def alias_set(
     d: Dict[str, Any],
-    aliases: tuple[str, ...],
+    aliases: Sequence[str],
     conv: Callable[[Any], T],
     value: Any,
 ) -> T:
     """Asigna ``value`` convertido a la primera clave disponible de ``aliases``.
 
-    ``aliases`` debe ser una **tupla inmutable** de claves previamente
-    validada con :func:`_validate_aliases`; no se realizan copias ni
-    transformaciones. Se lanzará :class:`TypeError` si ``aliases`` no es una
-    tupla.
+    ``aliases`` puede ser cualquier secuencia de strings. Si no es una tupla,
+    se validará internamente mediante :func:`_validate_aliases`.
     """
     if not isinstance(aliases, tuple):
-        raise TypeError("'aliases' must be a tuple of strings")
+        aliases = _validate_aliases(aliases)
     _, val = _convert_value(value, conv, strict=True)
     if val is None:
         raise ValueError("conversion yielded None")
@@ -308,7 +306,7 @@ class _Getter(Protocol[T]):
     def __call__(
         self,
         d: Dict[str, Any],
-        aliases: tuple[str, ...],
+        aliases: Sequence[str],
         default: T = ...,  # noqa: D401 - documented in alias_get
         *,
         strict: bool = False,
@@ -320,7 +318,7 @@ class _Getter(Protocol[T]):
     def __call__(
         self,
         d: Dict[str, Any],
-        aliases: tuple[str, ...],
+        aliases: Sequence[str],
         default: None,
         *,
         strict: bool = False,
@@ -347,7 +345,7 @@ def _alias_get_set(
     @overload
     def _get(
         d: Dict[str, Any],
-        aliases: tuple[str, ...],
+        aliases: Sequence[str],
         default: T = default,
         *,
         strict: bool = False,
@@ -357,7 +355,7 @@ def _alias_get_set(
     @overload
     def _get(
         d: Dict[str, Any],
-        aliases: tuple[str, ...],
+        aliases: Sequence[str],
         default: None,
         *,
         strict: bool = False,
@@ -366,7 +364,7 @@ def _alias_get_set(
 
     def _get(
         d: Dict[str, Any],
-        aliases: tuple[str, ...],
+        aliases: Sequence[str],
         default: Optional[T] = default,
         *,
         strict: bool = False,
@@ -377,7 +375,7 @@ def _alias_get_set(
             d, aliases, conv, default=default, strict=strict, log_level=log_level
         )
 
-    def _set(d: Dict[str, Any], aliases: tuple[str, ...], value: T) -> T:
+    def _set(d: Dict[str, Any], aliases: Sequence[str], value: T) -> T:
         """Establece un atributo usando :func:`alias_set`."""
         return alias_set(d, aliases, conv, value)
 
