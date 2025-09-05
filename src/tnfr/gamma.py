@@ -61,6 +61,26 @@ def _kuramoto_common(G, node, _cfg):
 
 
 # -----------------
+# Helpers
+# -----------------
+
+
+def _gamma_params(cfg: Mapping[str, Any], **defaults: float) -> tuple[float, ...]:
+    """Return normalized Γ parameters from ``cfg``.
+
+    Parameters are retrieved from ``cfg`` using the keys in ``defaults`` and
+    converted to ``float``. If a key is missing, its value from ``defaults`` is
+    used. Values convertible to ``float`` (e.g. strings) are accepted.
+
+    Example
+    -------
+    >>> beta, R0 = _gamma_params(cfg, beta=0.0, R0=0.0)
+    """
+
+    return tuple(float(cfg.get(name, default)) for name, default in defaults.items())
+
+
+# -----------------
 # Γi(R) canónicos
 # -----------------
 
@@ -79,15 +99,14 @@ def gamma_kuramoto_linear(G, node, t, cfg: Dict[str, Any]) -> float:
 
     Use: reinforces integration when the network already shows phase coherence (R>R0).
     """
-    beta = float(cfg.get("beta", 0.0))
-    R0 = float(cfg.get("R0", 0.0))
+    beta, R0 = _gamma_params(cfg, beta=0.0, R0=0.0)
     th_i, R, psi = _kuramoto_common(G, node, cfg)
     return beta * (R - R0) * math.cos(th_i - psi)
 
 
 def gamma_kuramoto_bandpass(G, node, t, cfg: Dict[str, Any]) -> float:
     """Γ = β · R(1-R) · sign(cos(θ_i - ψ))"""
-    beta = float(cfg.get("beta", 0.0))
+    (beta,) = _gamma_params(cfg, beta=0.0)
     th_i, R, psi = _kuramoto_common(G, node, cfg)
     sgn = 1.0 if math.cos(th_i - psi) >= 0.0 else -1.0
     return beta * R * (1.0 - R) * sgn
@@ -101,9 +120,7 @@ def gamma_kuramoto_tanh(G, node, t, cfg: Dict[str, Any]) -> float:
       - k: tanh slope (how fast it saturates)
       - R0: activation threshold
     """
-    beta = float(cfg.get("beta", 0.0))
-    k = float(cfg.get("k", 1.0))
-    R0 = float(cfg.get("R0", 0.0))
+    beta, k, R0 = _gamma_params(cfg, beta=0.0, k=1.0, R0=0.0)
     th_i, R, psi = _kuramoto_common(G, node, cfg)
     return beta * math.tanh(k * (R - R0)) * math.cos(th_i - psi)
 
@@ -116,9 +133,7 @@ def gamma_harmonic(G, node, t, cfg: Dict[str, Any]) -> float:
       - ω: angular frequency of the forcing
       - φ: initial phase of the forcing
     """
-    beta = float(cfg.get("beta", 0.0))
-    omega = float(cfg.get("omega", 1.0))
-    phi = float(cfg.get("phi", 0.0))
+    beta, omega, phi = _gamma_params(cfg, beta=0.0, omega=1.0, phi=0.0)
     th_i, _, psi = _kuramoto_common(G, node, cfg)
     return beta * math.sin(omega * t + phi) * math.cos(th_i - psi)
 
