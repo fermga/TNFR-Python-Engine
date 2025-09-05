@@ -9,7 +9,7 @@ import warnings
 from collections.abc import Mapping
 
 from .constants import ALIAS_THETA
-from .helpers import get_attr
+from .helpers import get_attr, node_set_checksum
 
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,9 @@ def _ensure_kuramoto_cache(G, t) -> None:
 
     The cache is invalidated if the step or node signature changes.
     """
-    nodes_sig = (len(G), int(G.graph.get("_edge_version", 0)))
+    checksum = node_set_checksum(G)
+    edge_version = int(G.graph.get("_edge_version", 0))
+    nodes_sig = (len(G), checksum, edge_version)
     cache = G.graph.get("_kuramoto_cache")
     if cache is None or cache.get("t") != t or cache.get("nodes_sig") != nodes_sig:
         R, psi = kuramoto_R_psi(G)
