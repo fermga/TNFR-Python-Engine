@@ -60,27 +60,35 @@ def attach_standard_observer(G):
     return G
 
 
-def _phase_sums(G) -> tuple[float, float, list[float]]:
-    """Return ``sumX``, ``sumY`` and the list of node phases."""
+def _phase_sums(G) -> tuple[float, float, int]:
+    """Return ``sumX``, ``sumY`` and the number of nodes."""
     sumX = 0.0
     sumY = 0.0
-    fases: list[float] = []
+    count = 0
     for _, data in G.nodes(data=True):
         th = get_attr(data, ALIAS_THETA, 0.0)
         sumX += math.cos(th)
         sumY += math.sin(th)
-        fases.append(th)
-    return sumX, sumY, fases
+        count += 1
+    return sumX, sumY, count
 
 
 def phase_sync(G) -> float:
-    sumX, sumY, fases = _phase_sums(G)
-    count = len(fases)
+    sumX, sumY, count = _phase_sums(G)
     if count == 0:
         return 1.0
     th = math.atan2(sumY, sumX)
     # varianza angular aproximada (0 = muy sincronizado)
-    var = st.pvariance(angle_diff(f, th) for f in fases) if count > 1 else 0.0
+    mean = 0.0
+    m2 = 0.0
+    n = 0
+    for _, data in G.nodes(data=True):
+        diff = angle_diff(get_attr(data, ALIAS_THETA, 0.0), th)
+        n += 1
+        delta = diff - mean
+        mean += delta / n
+        m2 += delta * (diff - mean)
+    var = m2 / n if n > 1 else 0.0
     return 1.0 / (1.0 + var)
 
 
