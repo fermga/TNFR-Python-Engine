@@ -110,6 +110,16 @@ def test_eval_gamma_logs_and_strict_mode(graph_canon, caplog):
         eval_gamma(G, 0, t=0.0, strict=True)
 
 
+def test_eval_gamma_non_mapping_warns(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([0])
+    attach_defaults(G)
+    G.graph["GAMMA"] = "not a dict"
+    with pytest.warns(UserWarning):
+        g = eval_gamma(G, 0, t=0.0)
+    assert g == 0.0
+
+
 def test_eval_gamma_unknown_type_warning_and_strict(graph_canon, caplog):
     G = graph_canon()
     G.add_nodes_from([0])
