@@ -52,6 +52,20 @@ def test_read_structured_file_corrupt_yaml(tmp_path: Path):
     assert str(path) in msg
 
 
+def test_read_structured_file_corrupt_toml(tmp_path: Path):
+    try:
+        import tomllib  # type: ignore[attr-defined]
+    except ModuleNotFoundError:
+        pytest.importorskip("tomli")
+    path = tmp_path / "bad.toml"
+    path.write_text("a = [1, 2", encoding="utf-8")
+    with pytest.raises(ValueError) as excinfo:
+        read_structured_file(path)
+    msg = str(excinfo.value)
+    assert "TOML" in msg
+    assert str(path) in msg
+
+
 def test_read_structured_file_missing_dependency(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
@@ -67,3 +81,20 @@ def test_read_structured_file_missing_dependency(
         read_structured_file(path)
     msg = str(excinfo.value)
     assert "pyyaml" in msg
+
+
+def test_read_structured_file_missing_dependency_toml(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    path = tmp_path / "data.toml"
+    path.write_text("a = 1", encoding="utf-8")
+
+    def fake_parser(_: str) -> None:
+        raise ImportError("toml no está instalado")
+
+    monkeypatch.setitem(helpers.PARSERS, ".toml", fake_parser)
+
+    with pytest.raises(ValueError) as excinfo:
+        read_structured_file(path)
+    msg = str(excinfo.value)
+    assert "toml" in msg.lower()

@@ -22,6 +22,17 @@ from json import JSONDecodeError
 from pathlib import Path
 
 try:  # pragma: no cover - dependencia opcional
+    import tomllib  # type: ignore[attr-defined]
+    from tomllib import TOMLDecodeError  # type: ignore[attr-defined]
+except ModuleNotFoundError:  # pragma: no cover
+    try:
+        import tomli as tomllib  # type: ignore
+        from tomli import TOMLDecodeError  # type: ignore
+    except ModuleNotFoundError:  # pragma: no cover
+        tomllib = None  # type: ignore
+
+
+try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
     from yaml import YAMLError  # type: ignore
 except ImportError:  # pragma: no cover
@@ -108,15 +119,23 @@ def _parse_yaml(text: str) -> Any:
     return yaml.safe_load(text)
 
 
+def _parse_toml(text: str) -> Any:
+    """Parsea ``text`` como TOML."""
+    if not tomllib:  # pragma: no cover - dependencia opcional
+        raise ImportError("tomllib/tomli no está instalado")
+    return tomllib.loads(text)
+
+
 PARSERS: Dict[str, Callable[[str], Any]] = {
     ".json": _parse_json,
     ".yaml": _parse_yaml,
     ".yml": _parse_yaml,
+    ".toml": _parse_toml,
 }
 
 
 def read_structured_file(path: Path) -> Any:
-    """Lee un archivo JSON o YAML y devuelve los datos parseados."""
+    """Lee un archivo JSON, YAML o TOML y devuelve los datos parseados."""
     suffix = path.suffix.lower()
     if suffix not in PARSERS:
         raise ValueError(f"Extensión de archivo no soportada: {suffix}")
@@ -130,6 +149,8 @@ def read_structured_file(path: Path) -> Any:
         raise ValueError(f"Error al parsear archivo JSON en {path}: {e}") from e
     except YAMLError as e:
         raise ValueError(f"Error al parsear archivo YAML en {path}: {e}") from e
+    except TOMLDecodeError as e:
+        raise ValueError(f"Error al parsear archivo TOML en {path}: {e}") from e
     except ImportError as e:
         raise ValueError(f"Dependencia faltante al parsear {path}: {e}") from e
 
