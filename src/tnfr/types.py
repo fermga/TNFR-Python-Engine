@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Dict, Any
 
 
-@dataclass
+@dataclass(slots=True)
 class NodeState:
     EPI: float = 0.0
     vf: float = 1.0  # νf
