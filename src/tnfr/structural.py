@@ -125,7 +125,8 @@ def _verify_token_format(nombres: List[str]) -> Tuple[bool, str]:
         return False, "tokens must be str"
     if nombres[0] not in _INICIO_VALIDOS:
         return False, "must start with emission or recursion"
-    desconocidos = [n for n in nombres if n not in OPERADORES]
+    nombres_set = set(nombres)
+    desconocidos = nombres_set - OPERADORES.keys()
     if desconocidos:
         return False, f"unknown tokens: {', '.join(desconocidos)}"
     return True, "ok"
