@@ -159,10 +159,12 @@ def sigma_vector_from_graph(
 
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
-    z_iter = (
-        nw[2] for _, nd in G.nodes(data=True) if (nw := _node_weight(nd, weight_mode))
-    )
-    vec, n = _sigma_from_vectors(z_iter)
+    vectors = []
+    for _, nd in G.nodes(data=True):
+        nw = _node_weight(nd, weight_mode)
+        if nw:
+            vectors.append(nw[2])
+    vec, n = _sigma_from_vectors(vectors)
     vec["n"] = n
     return vec
 
