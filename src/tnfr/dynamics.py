@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 import math
 import random
-import importlib
 from collections import deque, OrderedDict
 from functools import lru_cache
 from typing import Dict, Any, Literal
@@ -76,22 +75,18 @@ logger = logging.getLogger(__name__)
 
 @lru_cache(maxsize=1)
 def _optional_numpy() -> Any | None:
-    """Intenta cargar ``numpy`` utilizando ``importlib``.
+    """Intenta importar ``numpy`` de forma perezosa.
 
     Si el paquete no está disponible, devuelve ``None``. El resultado se
     almacena en caché para evitar búsquedas repetidas.
     """
 
-    spec = importlib.util.find_spec("numpy")
-    if spec is None:  # pragma: no cover - dependency opcional
+    try:  # pragma: no cover - dependency opcional
+        import numpy  # type: ignore
+    except ImportError:  # pragma: no cover - dependency opcional
         return None
-
-    module = importlib.util.module_from_spec(spec)
-    loader = spec.loader
-    if loader is None:  # pragma: no cover - dependency opcional
-        return None
-    loader.exec_module(module)
-    return module
+    else:
+        return numpy
 
 
 def _np(*, warn: bool = False) -> Any | None:
