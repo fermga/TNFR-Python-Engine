@@ -117,8 +117,17 @@ def _cached_nodes_and_A(
     # El checksum depende del conjunto de nodos, ignorando el orden y es estable.
     nodes_list = list(G.nodes())
     sorted_nodes = sorted(nodes_list)
-    nodes_bytes = ",".join(map(str, sorted_nodes)).encode()
-    checksum = hashlib.sha1(nodes_bytes).hexdigest()
+
+    # Construye el hash de forma incremental para evitar la creación de
+    # grandes strings intermedias. Se mantiene exactamente la misma
+    # representación que ``",".join(map(str, sorted_nodes))`` al actualizar
+    # el separador manualmente.
+    sha1 = hashlib.sha1()
+    for i, node in enumerate(sorted_nodes):
+        if i:
+            sha1.update(b",")
+        sha1.update(str(node).encode())
+    checksum = sha1.hexdigest()
 
     last_checksum = G.graph.get("_dnfr_nodes_checksum")
     if last_checksum != checksum:
