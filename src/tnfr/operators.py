@@ -132,10 +132,6 @@ def clear_rng_cache() -> None:
     _cached_rng.clear()
 
 
-# Backwards compatibility
-clear_jitter_cache = clear_rng_cache
-
-
 _NodoNX = None
 
 
