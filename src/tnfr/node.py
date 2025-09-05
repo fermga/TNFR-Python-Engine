@@ -201,9 +201,6 @@ class NodoTNFR:
     def apply_glyph(self, glyph: str, window: Optional[int] = None) -> None:
         apply_glyph_obj(self, glyph, window=window)
 
-    def integrar(self, dt: float) -> None:
-        self.EPI += self.dnfr * dt
-
 
 class NodoNX(NodoProtocol):
     """Adaptador para nodos ``networkx``."""
