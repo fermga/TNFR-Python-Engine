@@ -6,7 +6,6 @@ import logging
 import math
 import random
 import importlib
-import importlib.util
 from collections import deque, OrderedDict
 from functools import lru_cache
 from typing import Dict, Any, Literal
@@ -86,7 +85,13 @@ def _optional_numpy() -> Any | None:
     spec = importlib.util.find_spec("numpy")
     if spec is None:  # pragma: no cover - dependency opcional
         return None
-    return importlib.import_module("numpy")
+
+    module = importlib.util.module_from_spec(spec)
+    loader = spec.loader
+    if loader is None:  # pragma: no cover - dependency opcional
+        return None
+    loader.exec_module(module)
+    return module
 
 
 def _np(*, warn: bool = False) -> Any | None:
