@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+from itertools import zip_longest
 
 from ..glyph_history import ensure_history
 from ..helpers import ensure_parent
@@ -43,14 +44,16 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
     sigma_y = hist.tracked_get("sense_sigma_y", [])
     sigma_mag = hist.tracked_get("sense_sigma_mag", [])
     sigma_angle = hist.tracked_get("sense_sigma_angle", [])
-    sigma_rows = list(zip(sigma_x, sigma_y, sigma_mag, sigma_angle))
-    sigma = {"t": [], "sigma_x": [], "sigma_y": [], "mag": [], "angle": []}
-    for t, (x, y, m, a) in enumerate(sigma_rows):
-        sigma["t"].append(t)
-        sigma["sigma_x"].append(x)
-        sigma["sigma_y"].append(y)
-        sigma["mag"].append(m)
-        sigma["angle"].append(a)
+    sigma_rows = list(
+        zip_longest(sigma_x, sigma_y, sigma_mag, sigma_angle, fillvalue=0)
+    )
+    sigma = {
+        "t": list(range(len(sigma_rows))),
+        "sigma_x": [x for x, _, _, _ in sigma_rows],
+        "sigma_y": [y for _, y, _, _ in sigma_rows],
+        "mag": [m for _, _, m, _ in sigma_rows],
+        "angle": [a for _, _, _, a in sigma_rows],
+    }
     morph = hist.tracked_get("morph", [])
     epi_supp = hist.tracked_get("EPI_support", [])
     fmt = fmt.lower()
