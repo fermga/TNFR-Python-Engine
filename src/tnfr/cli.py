@@ -225,12 +225,12 @@ def _attach_callbacks(G: nx.Graph) -> None:
 
 def _persist_history(G: nx.Graph, args: argparse.Namespace) -> None:
     """Guardar o exportar el histórico si se solicitó."""
-    if getattr(args, "save_history", None):
-        path = args.save_history
-        _save_json(path, G.graph.get("history", {}))
-    if getattr(args, "export_history_base", None):
-        base = args.export_history_base
-        export_history(G, base, fmt=getattr(args, "export_format", "json"))
+    if args.save_history or args.export_history_base:
+        history = G.graph.get("history", {})
+        if args.save_history:
+            _save_json(args.save_history, history)
+        if args.export_history_base:
+            export_history(G, args.export_history_base, fmt=args.export_format)
 
 
 def build_basic_graph(args: argparse.Namespace) -> nx.Graph:
