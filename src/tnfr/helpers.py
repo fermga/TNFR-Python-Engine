@@ -172,17 +172,21 @@ def angle_diff(a: float, b: float) -> float:
 # -------------------------
 # Acceso a atributos con alias
 # -------------------------
-def _validate_aliases(aliases: Sequence[str]) -> Sequence[str]:
-    """Return ``aliases`` ensuring it's a non-empty sequence of strings."""
+def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
+    """Return ``aliases`` as a tuple of strings.
+
+    A pre-existing tuple is returned unchanged; other sequences are converted to
+    tuples. The result is guaranteed to be a non-empty tuple of strings.
+    """
 
     if isinstance(aliases, str) or not isinstance(aliases, Sequence):
         raise TypeError("'aliases' must be a sequence of strings")
-    aliases = list(aliases)
-    if not aliases:
+    seq = aliases if isinstance(aliases, tuple) else tuple(aliases)
+    if not seq:
         raise ValueError("'aliases' must contain at least one key")
-    if not all(isinstance(a, str) for a in aliases):
+    if not all(isinstance(a, str) for a in seq):
         raise TypeError("'aliases' must be a sequence of strings")
-    return aliases
+    return seq
 
 
 @overload
@@ -220,9 +224,8 @@ def alias_get(
 ) -> Optional[T]:
     """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor convertido.
 
-    ``aliases`` debe ser una secuencia (idealmente una tupla) de claves. No se
-    realiza ninguna conversión interna, por lo que pasar una cadena única
-    resultará en un error.
+    ``aliases`` debe ser una **tupla inmutable** de claves previamente validada.
+    Pasar una cadena única provocará un error.
 
     Si ninguna de las claves está presente o la conversión falla, devuelve
     ``default`` convertido (o ``None`` si ``default`` es ``None``).
@@ -254,8 +257,8 @@ def alias_set(
 ) -> T:
     """Asigna ``value`` convertido a la primera clave disponible de ``aliases``.
 
-    ``aliases`` debe ser una secuencia (idealmente una tupla) de claves y no se
-    transforma internamente.
+    ``aliases`` debe ser una **tupla inmutable** de claves previamente
+    validada; no se realizan copias ni transformaciones.
     """
     aliases = _validate_aliases(aliases)
     _, val = _convert_value(value, conv, strict=True)

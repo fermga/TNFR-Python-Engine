@@ -49,8 +49,8 @@ def _nx_attr_property(
     Parameters
     ----------
     aliases:
-        Alias or tuple of aliases used to access the attribute in the
-        underlying ``networkx`` node.
+        Tupla inmutable de aliases usados para acceder al atributo en el nodo
+        ``networkx`` subyacente.
     default:
         Value returned when the attribute is missing.
     getter, setter:
