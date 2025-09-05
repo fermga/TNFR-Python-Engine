@@ -13,7 +13,7 @@ from typing import (
 )
 import logging
 import math
-from statistics import fmean, StatisticsError
+from statistics import fmean
 import json
 from json import JSONDecodeError
 from pathlib import Path
@@ -155,10 +155,8 @@ def clamp01(x: float) -> float:
 
 def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
     """Promedio aritmético o ``default`` si ``xs`` está vacío."""
-    try:
-        return fmean(xs)
-    except StatisticsError:
-        return default
+    seq = tuple(xs)
+    return fmean(seq) if seq else default
 
 
 def _wrap_angle(a: float) -> float:
