@@ -278,18 +278,3 @@ def apply_glyph_with_grammar(
         apply_glyph(G, n, g_eff, window=window)
         on_applied_glyph(G, n, g_eff)
 
-
-# -------------------------
-# Integration with ``dynamics.step``: helper for selection+application
-# -------------------------
-
-
-def select_and_apply_with_grammar(G, n, selector, window: int) -> None:
-    """Apply canonical grammar over the selector's proposal.
-
-    The selector may include a **soft** grammar (pre-filter) such as
-    ``parametric_glyph_selector``; this function ensures the canonical
-    grammar has final precedence.
-    """
-    cand = selector(G, n)
-    apply_glyph_with_grammar(G, [n], cand, window)
