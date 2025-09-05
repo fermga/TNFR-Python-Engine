@@ -125,8 +125,14 @@ class HistoryDict(dict):
 
 
 def ensure_history(G) -> Dict[str, Any]:
-    """Ensure ``G.graph['history']`` exists and return it."""
+    """Ensure ``G.graph['history']`` exists and return it.
+
+    ``HISTORY_MAXLEN`` must be a non-negative integer; otherwise a
+    :class:`ValueError` is raised.
+    """
     maxlen = int(G.graph.get("HISTORY_MAXLEN", get_param(G, "HISTORY_MAXLEN")))
+    if maxlen < 0:
+        raise ValueError("HISTORY_MAXLEN must be >= 0")
     hist = G.graph.get("history")
     if not isinstance(hist, HistoryDict) or hist._maxlen != maxlen:
         hist = HistoryDict(hist, maxlen=maxlen)

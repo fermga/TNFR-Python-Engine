@@ -2,6 +2,8 @@
 
 from collections import deque
 
+import pytest
+
 from tnfr.constants import attach_defaults
 from tnfr.glyph_history import ensure_history
 
@@ -88,3 +90,12 @@ def test_history_not_trimmed_when_below_maxlen(graph_canon):
     ensure_history(G)
     assert len(hist) == 1
     assert "a" in hist
+
+
+def test_history_negative_maxlen_raises(graph_canon):
+    G = graph_canon()
+    G.add_node(0)
+    attach_defaults(G)
+    G.graph["HISTORY_MAXLEN"] = -1
+    with pytest.raises(ValueError):
+        ensure_history(G)

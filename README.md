@@ -78,8 +78,9 @@ pip install tnfr
 ## History configuration
 
 Recorded series are stored under `G.graph['history']`. Set `HISTORY_MAXLEN` in
-the graph (or override the default) to keep only the most recent entries. When
-the limit is positive the library uses bounded `deque` objects and removes the
+the graph (or override the default) to keep only the most recent entries. The
+value must be non‑negative; negative values raise ``ValueError``. When the
+limit is positive the library uses bounded `deque` objects and removes the
 least populated series when the number of history keys grows beyond the limit.
 
 ### Random node sampling
