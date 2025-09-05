@@ -86,13 +86,13 @@ def _update_tg(G, hist, dt, save_by_node: bool):
     return counts, n_total, n_latent
 
 
-def _update_glyphogram(G, hist, counts, t):
+def _update_glyphogram(G, hist, counts, t, n_total):
     """Record the glyphogram for the step from counts."""
     normalize_series = bool(
         G.graph.get("METRICS", METRICS).get("normalize_series", False)
     )
     row = {"t": t}
-    total = max(1, sum(counts.values()))
+    total = max(1, n_total)
     for g in GLYPHS_CANONICAL:
         c = counts.get(g, 0)
         row[g] = (c / total) if normalize_series else c
@@ -161,7 +161,7 @@ def _metrics_step(G, *args, **kwargs):
 
     save_by_node = bool(G.graph.get("METRICS", METRICS).get("save_by_node", True))
     counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node)
-    _update_glyphogram(G, hist, counts, t)
+    _update_glyphogram(G, hist, counts, t, n_total)
     _update_latency_index(G, hist, n_total, n_latent, t)
     _update_epi_support(G, hist, t, thr)
     _update_morph_metrics(G, hist, counts, t)
