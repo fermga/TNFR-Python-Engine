@@ -146,6 +146,18 @@ def _get_NodoNX():
     return _NodoNX
 
 
+def _get_jitter_cache_size(node: NodoProtocol) -> int:
+    """Return cached JITTER_CACHE_SIZE for ``node``'s graph."""
+    cache_size = node.graph.get("_jitter_cache_size")
+    if cache_size is None:
+        try:
+            cache_size = get_param(node.G, "JITTER_CACHE_SIZE")  # type: ignore[attr-defined]
+        except (AttributeError, KeyError):
+            cache_size = DEFAULTS["JITTER_CACHE_SIZE"]
+        node.graph["_jitter_cache_size"] = cache_size
+    return cache_size
+
+
 def random_jitter(
     node: NodoProtocol,
     amplitude: float,
@@ -170,7 +182,7 @@ def random_jitter(
 
     base_seed = int(node.graph.get("RANDOM_SEED", 0))
 
-    if hasattr(node, "n") and hasattr(node, "G"):
+    if isinstance(node, _get_NodoNX()):
         seed_key = _node_offset(node.G, node.n)
         scope = node.G
     else:
@@ -182,15 +194,7 @@ def random_jitter(
         scope = node
 
     if cache is None:
-        cache_size = node.graph.get("_jitter_cache_size")
-        if cache_size is None:
-            try:
-                cache_size = get_param(
-                    node.G, "JITTER_CACHE_SIZE"
-                )  # type: ignore[attr-defined]
-            except (AttributeError, KeyError):
-                cache_size = DEFAULTS["JITTER_CACHE_SIZE"]
-            node.graph["_jitter_cache_size"] = cache_size
+        cache_size = _get_jitter_cache_size(node)
         if int(cache_size) <= 0:
             rng = _jitter_base(base_seed, seed_key)
         else:
