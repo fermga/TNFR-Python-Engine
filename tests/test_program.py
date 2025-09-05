@@ -1,10 +1,21 @@
 """Pruebas de program."""
 
 import json
+from collections import deque
+
 import pytest
 
 from tnfr.cli import _load_sequence
-from tnfr.program import play, seq, block, wait, target, WAIT
+from tnfr.program import (
+    WAIT,
+    TARGET,
+    _handle_target,
+    block,
+    play,
+    seq,
+    target,
+    wait,
+)
 from tnfr.constants import get_param
 from tnfr.types import Glyph
 
@@ -88,6 +99,24 @@ def test_target_accepts_bytes(graph_canon):
     assert list(G.nodes[bname]["glyph_history"]) == [Glyph.AL.value]
     for code in codes:
         assert "glyph_history" not in G.nodes[code]
+
+
+def test_handle_target_reuses_sequence(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([1, 2])
+    nodes = [1]
+    trace = deque()
+    curr = _handle_target(G, TARGET(nodes), None, trace, None)
+    assert curr is nodes
+
+
+def test_handle_target_materializes_non_sequence(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([1, 2])
+    trace = deque()
+    nodes_view = G.nodes()
+    curr = _handle_target(G, TARGET(nodes_view), None, trace, None)
+    assert isinstance(curr, tuple)
 
 
 def test_load_sequence_json_yaml(tmp_path):
