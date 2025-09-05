@@ -57,7 +57,11 @@ def _update_tg(G, hist, dt, save_by_node: bool):
     n_latent = 0
 
     tg_total = hist.setdefault("Tg_total", defaultdict(float))
-    tg_by_node = hist.setdefault("Tg_by_node", {})
+    tg_by_node = (
+        hist.setdefault("Tg_by_node", defaultdict(lambda: defaultdict(list)))
+        if save_by_node
+        else None
+    )
 
     last = last_glyph
     tg_state = _tg_state
@@ -87,8 +91,7 @@ def _update_tg(G, hist, dt, save_by_node: bool):
             dur = float(st[run_key])
             tg_total[prev] += dur
             if save_by_node:
-                rec = tg_by_node.setdefault(n, defaultdict(list))
-                rec[prev].append(dur)
+                tg_by_node[n][prev].append(dur)
             st[curr_key] = g
             st[run_key] = dt
 
