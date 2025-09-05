@@ -5,6 +5,8 @@ from typing import Dict, Any, Tuple
 import math
 import cmath
 import logging
+import warnings
+from collections.abc import Mapping
 
 from .constants import ALIAS_THETA
 from .helpers import get_attr
@@ -152,7 +154,17 @@ def eval_gamma(
     ``strict`` is ``False``. If omitted, ``logging.ERROR`` is used in
     strict mode and ``logging.DEBUG`` otherwise.
     """
-    spec = G.graph.get("GAMMA", {"type": "none"})
+    spec = G.graph.get("GAMMA")
+    if spec is None:
+        spec = {"type": "none"}
+    elif not isinstance(spec, Mapping):
+        warnings.warn(
+            "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}",
+            UserWarning,
+            stacklevel=2,
+        )
+        spec = {"type": "none"}
+
     spec_type = spec.get("type", "none")
     reg_entry = GAMMA_REGISTRY.get(spec_type)
     if reg_entry is None:
