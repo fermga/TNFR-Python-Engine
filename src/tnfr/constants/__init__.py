@@ -33,13 +33,13 @@ IMMUTABLE_TYPES = (
 )
 
 # Diccionario combinado exportado
-DEFAULTS: Dict[str, Any] = dict(
-    ChainMap(
-        dict(METRIC_DEFAULTS),
-        dict(REMESH_DEFAULTS),
-        dict(INIT_DEFAULTS),
-        dict(CORE_DEFAULTS),
-    )
+# Unimos los diccionarios en orden de menor a mayor prioridad para que los
+# valores de ``METRIC_DEFAULTS`` sobrescriban al resto, como hacía ``ChainMap``.
+DEFAULTS: Dict[str, Any] = (
+    CORE_DEFAULTS
+    | INIT_DEFAULTS
+    | REMESH_DEFAULTS
+    | METRIC_DEFAULTS
 )
 
 # -------------------------
