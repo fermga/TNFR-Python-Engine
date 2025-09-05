@@ -78,7 +78,7 @@ def _nx_attr_property(
     return property(fget, fset)
 
 
-def _add_edge_common(n1, n2, weight):
+def _add_edge_common(n1, n2, weight) -> Optional[float]:
     """Validate basic edge constraints.
 
     Returns the parsed weight if the edge can be added. ``None`` is returned
