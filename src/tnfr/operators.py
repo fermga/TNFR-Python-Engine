@@ -182,12 +182,15 @@ def random_jitter(
         scope = node
 
     if cache is None:
-        try:
-            cache_size = get_param(
-                node.G, "JITTER_CACHE_SIZE"
-            )  # type: ignore[attr-defined]
-        except (AttributeError, KeyError):
-            cache_size = DEFAULTS["JITTER_CACHE_SIZE"]
+        cache_size = node.graph.get("_jitter_cache_size")
+        if cache_size is None:
+            try:
+                cache_size = get_param(
+                    node.G, "JITTER_CACHE_SIZE"
+                )  # type: ignore[attr-defined]
+            except (AttributeError, KeyError):
+                cache_size = DEFAULTS["JITTER_CACHE_SIZE"]
+            node.graph["_jitter_cache_size"] = cache_size
         if int(cache_size) <= 0:
             rng = _jitter_base(base_seed, seed_key)
         else:
