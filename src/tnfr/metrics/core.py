@@ -109,8 +109,8 @@ def _update_epi_support(G, hist, t, thr):
     """Compute EPI support and norm."""
     total = 0.0
     count = 0
-    for n in G.nodes():
-        epi_val = abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0))
+    for _, nd in G.nodes(data=True):
+        epi_val = abs(get_attr(nd, ALIAS_EPI, 0.0))
         if epi_val >= thr:
             total += epi_val
             count += 1

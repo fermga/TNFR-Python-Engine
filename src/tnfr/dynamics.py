@@ -723,8 +723,8 @@ def validate_canon(G) -> None:
     Envuelve fase y restringe ``EPI`` y ``νf`` a los rangos en ``G.graph``.
     Si ``VALIDATORS_STRICT`` está activo, registra alertas en ``history``.
     """
-    for n in G.nodes():
-        apply_canonical_clamps(G.nodes[n], G, n)
+    for n, nd in G.nodes(data=True):
+        apply_canonical_clamps(nd, G, n)
     return G
 
 
@@ -843,8 +843,8 @@ def coordinar_fase_global_vecinal(
 
     # 6) Fase GLOBAL (centroide) para empuje
     x_sum = y_sum = 0.0
-    for n in G.nodes():
-        th = get_attr(G.nodes[n], ALIAS_THETA, 0.0)
+    for _, nd in G.nodes(data=True):
+        th = get_attr(nd, ALIAS_THETA, 0.0)
         x_sum += math.cos(th)
         y_sum += math.sin(th)
     num_nodes = G.number_of_nodes()
@@ -1077,7 +1077,7 @@ def _update_nodes(
         en_max = int(G.graph.get("EN_MAX_LAG", DEFAULTS["EN_MAX_LAG"]))
         h_al = hist.setdefault("since_AL", {})
         h_en = hist.setdefault("since_EN", {})
-        for n in G.nodes():
+        for n, _ in G.nodes(data=True):
             h_al[n] = int(h_al.get(n, 0)) + 1
             h_en[n] = int(h_en.get(n, 0)) + 1
             if h_al[n] > al_max:
@@ -1101,8 +1101,8 @@ def _update_nodes(
         "INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler")
     )
     update_epi_via_nodal_equation(G, dt=_dt, method=method)
-    for n in G.nodes():
-        apply_canonical_clamps(G.nodes[n], G, n)
+    for n, nd in G.nodes(data=True):
+        apply_canonical_clamps(nd, G, n)
     coordinar_fase_global_vecinal(G, None, None)
     adaptar_vf_por_coherencia(G)
 
@@ -1117,7 +1117,7 @@ def _update_metrics(G) -> None:
     if not isinstance(epi_hist, deque) or epi_hist.maxlen != maxlen:
         epi_hist = deque(list(epi_hist or [])[-maxlen:], maxlen=maxlen)
         G.graph["_epi_hist"] = epi_hist
-    epi_hist.append({n: get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes()})
+    epi_hist.append({n: get_attr(nd, ALIAS_EPI, 0.0) for n, nd in G.nodes(data=True)})
 
 
 def _maybe_remesh(G) -> None:
@@ -1312,8 +1312,8 @@ def _update_history(G) -> None:
     # --- nuevas series: Si agregado (media y colas) ---
     try:
         sis = []
-        for n in G.nodes():
-            sis.append(get_attr(G.nodes[n], ALIAS_SI, float("nan")))
+        for _, nd in G.nodes(data=True):
+            sis.append(get_attr(nd, ALIAS_SI, float("nan")))
         sis = [s for s in sis if not math.isnan(s)]
         if sis:
             si_mean = list_mean(sis, 0.0)
