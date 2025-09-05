@@ -78,7 +78,7 @@ def _nx_attr_property(
     return property(fget, fset)
 
 
-def _add_edge_common(n1, n2, weight, overwrite):
+def _add_edge_common(n1, n2, weight):
     """Validate basic edge constraints.
 
     Returns the parsed weight if the edge can be added. ``None`` is returned
@@ -98,7 +98,7 @@ def _add_edge_common(n1, n2, weight, overwrite):
 def _add_edge_nx(G, n1, n2, weight, overwrite):
     """Add an edge between ``n1`` and ``n2`` in a ``networkx`` graph."""
 
-    weight = _add_edge_common(n1, n2, weight, overwrite)
+    weight = _add_edge_common(n1, n2, weight)
     if weight is None:
         return
 
@@ -111,7 +111,7 @@ def _add_edge_nx(G, n1, n2, weight, overwrite):
 def _add_edge_tnfr(graph, n1, n2, weight, overwrite):
     """Add an edge between ``n1`` and ``n2`` in a TNFR-style graph."""
 
-    weight = _add_edge_common(n1, n2, weight, overwrite)
+    weight = _add_edge_common(n1, n2, weight)
     if weight is None:
         return
 
