@@ -377,6 +377,42 @@ class _Getter(Protocol[T]):
         ...
 
 
+@overload
+def _alias_get(
+    d: Dict[str, Any],
+    aliases: Sequence[str],
+    *,
+    conv: Callable[[Any], T],
+    default: T,
+    strict: bool = False,
+    log_level: int | None = None,
+) -> T: ...
+
+
+@overload
+def _alias_get(
+    d: Dict[str, Any],
+    aliases: Sequence[str],
+    *,
+    conv: Callable[[Any], T],
+    default: None = ...,  # noqa: D401 - documented in alias_get
+    strict: bool = False,
+    log_level: int | None = None,
+) -> Optional[T]: ...
+
+
+def _alias_get(
+    d: Dict[str, Any],
+    aliases: Sequence[str],
+    *,
+    conv: Callable[[Any], T],
+    default: Optional[T] = None,
+    strict: bool = False,
+    log_level: int | None = None,
+) -> Optional[T]:
+    return alias_get(d, aliases, conv, default=default, strict=strict, log_level=log_level)
+
+
 def _alias_get_set(
     conv: Callable[[Any], T],
     *,
@@ -392,26 +428,6 @@ def _alias_get_set(
         Valor por defecto a utilizar cuando la clave no existe.
     """
 
-    @overload
-    def _get(
-        d: Dict[str, Any],
-        aliases: Sequence[str],
-        default: T = default,
-        *,
-        strict: bool = False,
-        log_level: int | None = None,
-    ) -> T: ...
-
-    @overload
-    def _get(
-        d: Dict[str, Any],
-        aliases: Sequence[str],
-        default: None,
-        *,
-        strict: bool = False,
-        log_level: int | None = None,
-    ) -> Optional[T]: ...
-
     def _get(
         d: Dict[str, Any],
         aliases: Sequence[str],
@@ -421,8 +437,13 @@ def _alias_get_set(
         log_level: int | None = None,
     ) -> Optional[T]:
         """Obtiene un atributo usando :func:`alias_get`."""
-        return alias_get(
-            d, aliases, conv, default=default, strict=strict, log_level=log_level
+        return _alias_get(
+            d,
+            aliases,
+            conv=conv,
+            default=default,
+            strict=strict,
+            log_level=log_level,
         )
 
     def _set(d: Dict[str, Any], aliases: Sequence[str], value: T) -> T:
@@ -434,12 +455,6 @@ def _alias_get_set(
 
 get_attr, set_attr = _alias_get_set(float, default=0.0)
 get_attr_str, set_attr_str = _alias_get_set(str, default="")
-
-# Retrocompatibilidad con nombres anteriores
-_get_attr = get_attr
-_set_attr = set_attr
-_get_attr_str = get_attr_str
-_set_attr_str = set_attr_str
 
 
 # -------------------------
