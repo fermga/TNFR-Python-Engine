@@ -2,12 +2,12 @@
 
 from concurrent.futures import ThreadPoolExecutor
 
-from tnfr.helpers import alias_get, alias_set
+from tnfr.helpers import alias_get, alias_set, _validate_aliases
 
 
 def _worker(i):
     d = {}
-    aliases = [f"k{i}", f"a{i}"]
+    aliases = _validate_aliases((f"k{i}", f"a{i}"))
     alias_set(d, aliases, int, i)
     return alias_get(d, aliases, int)
 
