@@ -149,7 +149,8 @@ def _metrics_step(G, *args, **kwargs):
     Coordinates updates of glyphogram, latency index, Tg, EPI support and
     morphosyntactic metrics. All results are stored in ``G.graph['history']``.
     """
-    if not G.graph.get("METRICS", METRICS).get("enabled", True):
+    cfg = G.graph.get("METRICS", METRICS)
+    if not cfg.get("enabled", True):
         return
 
     hist = ensure_history(G)
@@ -159,7 +160,7 @@ def _metrics_step(G, *args, **kwargs):
         G.graph.get("EPI_SUPPORT_THR", METRIC_DEFAULTS.get("EPI_SUPPORT_THR", 0.0))
     )
 
-    save_by_node = bool(G.graph.get("METRICS", METRICS).get("save_by_node", True))
+    save_by_node = bool(cfg.get("save_by_node", True))
     counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node)
     _update_glyphogram(G, hist, counts, t, n_total)
     _update_latency_index(G, hist, n_total, n_latent, t)
