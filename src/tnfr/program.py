@@ -119,7 +119,7 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
     when ``THOL`` blocks are nested.
     """
     ops: List[Tuple[str, Any]] = []
-    stack: Deque[Any] = deque(seq)
+    stack: Deque[Any] = deque(reversed(seq))
 
     while stack:
         item = stack.pop()
@@ -142,12 +142,11 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
                 and item.force_close in {Glyph.SHA, Glyph.NUL}
                 else None
             )
-            stack.append(THOL_SENTINEL)
             for _ in range(repeats):
-                for tok in item.body:
-                    stack.append(tok)
-            if closing is not None:
-                stack.append(closing)
+                if closing is not None:
+                    stack.append(closing)
+                stack.extend(reversed(item.body))
+            stack.append(THOL_SENTINEL)
             continue
 
         # item should be a glyph
@@ -155,7 +154,6 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
         if g not in GLYPHS_CANONICAL_SET:
             raise ValueError(f"Non-canonical glyph: {g}")
         ops.append(("GLYPH", g))
-    ops.reverse()
     return ops
 
 
