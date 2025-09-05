@@ -44,40 +44,33 @@ def _ensure_callbacks(G: nx.Graph) -> CallbackRegistry:
 
 
 def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
-    """Normalize legacy callback entries into ``CallbackSpec``.
+    """Normalize a callback specification.
 
-    Parameters
-    ----------
-    entry:
-        A previous callback entry which may be a ``CallbackSpec`` instance,
-        a tuple ``(name, func)`` or simply a callable.
+    Supported formats
+    -----------------
+    * :class:`CallbackSpec` instances (returned unchanged).
+    * Tuples ``(name: str, func: Callable)``.
+    * Bare callables ``func`` whose name is taken from ``func.__name__``.
 
-    Returns
-    -------
-    CallbackSpec | None
-        Normalized ``CallbackSpec`` or ``None`` if ``entry`` cannot be
-        interpreted as a callback.
+    ``None`` is returned when ``entry`` does not match any of the accepted
+    formats.  The original ``entry`` is never mutated.
     """
     from . import CallbackSpec
 
     if isinstance(entry, CallbackSpec):
         return entry
-    if isinstance(entry, tuple):
-        if not entry:
+    elif isinstance(entry, tuple):
+        if len(entry) != 2:
             return None
-        first = entry[0]
-        if isinstance(first, str):
-            name = first
-            fn = entry[1] if len(entry) > 1 else None
-        else:
-            fn = first if callable(first) else (entry[1] if len(entry) > 1 else None)
-            name = getattr(fn, "__name__", None)
-    else:
-        fn = entry
+        name, fn = entry
+        if not isinstance(name, str) or not callable(fn):
+            return None
+        return CallbackSpec(name, fn)
+    elif callable(entry):
         name = getattr(entry, "__name__", None)
-    if fn is None:
+        return CallbackSpec(name, entry)
+    else:
         return None
-    return CallbackSpec(name, fn)
 
 
 def register_callback(
