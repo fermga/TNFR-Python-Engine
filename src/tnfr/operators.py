@@ -53,8 +53,9 @@ def _ensure_node_offset_map(G) -> Dict[Any, int]:
     """
 
     nodes = list(G.nodes())
-    # Use order-independent checksum based on node set to detect changes
-    checksum = hash(frozenset(nodes))
+    # Use order-independent deterministic checksum based on node set
+    node_reprs = sorted(repr(n) for n in nodes)
+    checksum = hashlib.sha1("|".join(node_reprs).encode("utf-8")).hexdigest()
     mapping = G.graph.get("_node_offset_map")
     if mapping is None or G.graph.get("_node_offset_checksum") != checksum:
         if bool(G.graph.get("SORT_NODES", False)):
