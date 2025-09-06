@@ -15,7 +15,7 @@ def test_cli_run_save_history(tmp_path):
     assert isinstance(data, dict)
 
 
-def test_cli_run_export_history(tmp_path):
+def test_cli_run_export_metrics(tmp_path):
     base = tmp_path / "other" / "history"
     assert not base.parent.exists()
     rc = main(
@@ -34,7 +34,7 @@ def test_cli_run_export_history(tmp_path):
     assert isinstance(data, dict)
 
 
-def test_cli_run_save_and_export_history(tmp_path):
+def test_cli_run_save_and_export_metrics(tmp_path):
     save_path = tmp_path / "hist.json"
     export_base = tmp_path / "history"
     rc = main(
@@ -66,7 +66,7 @@ def test_cli_sequence_save_history(tmp_path):
     assert isinstance(data, dict)
 
 
-def test_cli_sequence_export_history(tmp_path):
+def test_cli_sequence_export_metrics(tmp_path):
     base = tmp_path / "other" / "history"
     assert not base.parent.exists()
     rc = main(["sequence", "--nodes", "5", "--export-history-base", str(base)])

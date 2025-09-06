@@ -33,7 +33,7 @@ def _iter_sigma_rows(sigma_rows):
     return ([t, x, y, m, a] for t, x, y, m, a in sigma_rows)
 
 
-def export_history(G, base_path: str, fmt: str = "csv") -> None:
+def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
     """Dump glyphogram and σ(t) trace to compact CSV or JSON files."""
     hist = ensure_history(G)
     glyph = glyphogram_series(G)

@@ -21,7 +21,7 @@ from .metrics import (
     latency_series,
     glyphogram_series,
     glyph_top,
-    export_history,
+    export_metrics,
     _metrics_step,
 )
 from .trace import register_trace
@@ -240,7 +240,7 @@ def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
         if args.save_history:
             _save_json(args.save_history, history)
         if args.export_history_base:
-            export_history(G, args.export_history_base, fmt=args.export_format)
+            export_metrics(G, args.export_history_base, fmt=args.export_format)
 
 
 def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
