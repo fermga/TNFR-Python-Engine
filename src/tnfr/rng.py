@@ -12,6 +12,7 @@ from .constants import DEFAULTS
 
 _RNG_CACHE: OrderedDict[Tuple[int, int], random.Random] = OrderedDict()
 _RNG_LOCK = threading.Lock()
+_CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
 
 
 def make_rng(seed: int, key: int) -> random.Random:
@@ -36,7 +37,7 @@ def get_rng(seed: int, key: int) -> random.Random:
         except KeyError:
             rng = make_rng(seed, key)
         cache[k] = rng
-        maxsize = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
+        maxsize = _CACHE_MAXSIZE
         while maxsize > 0 and len(cache) > maxsize:
             cache.popitem(last=False)
     return rng
@@ -49,4 +50,11 @@ def _cache_clear() -> None:
 
 get_rng.cache_clear = _cache_clear  # type: ignore[attr-defined]
 
-__all__ = ["get_rng", "make_rng"]
+
+def set_cache_maxsize(size: int) -> None:
+    """Update RNG cache maximum size."""
+
+    global _CACHE_MAXSIZE
+    _CACHE_MAXSIZE = int(size)
+
+__all__ = ["get_rng", "make_rng", "set_cache_maxsize"]

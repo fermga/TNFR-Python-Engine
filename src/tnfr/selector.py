@@ -14,7 +14,7 @@ from .helpers import clamp01
 from .metrics_utils import compute_dnfr_accel_max
 
 
-HYSTERESIS_GLYPHS = ("IL", "OZ", "ZHIR", "THOL", "NAV", "RA")
+HYSTERESIS_GLYPHS: set[str] = {"IL", "OZ", "ZHIR", "THOL", "NAV", "RA"}
 
 __all__ = [
     "_selector_thresholds",

@@ -27,12 +27,15 @@ def _validate_epi_vf(G) -> None:
     epi_min, epi_max = cfg["EPI_MIN"], cfg["EPI_MAX"]
     vf_min, vf_max = cfg["VF_MIN"], cfg["VF_MAX"]
     for n, data in G.nodes(data=True):
-        epi = _require_attr(data, ALIAS_EPI, n, "EPI")
-        if not (epi_min - EPS <= epi <= epi_max + EPS):
-            raise ValueError(f"EPI out of range in node {n}: {epi}")
-        vf = _require_attr(data, ALIAS_VF, n, "VF")
-        if not (vf_min - EPS <= vf <= vf_max + EPS):
-            raise ValueError(f"VF out of range in node {n}: {vf}")
+        _check_epi_vf(
+            _require_attr(data, ALIAS_EPI, n, "EPI"),
+            _require_attr(data, ALIAS_VF, n, "VF"),
+            epi_min,
+            epi_max,
+            vf_min,
+            vf_max,
+            n,
+        )
 
 
 def _validate_sigma(G) -> None:
@@ -43,13 +46,32 @@ def _validate_sigma(G) -> None:
 
 def _validate_glyphs(G) -> None:
     for n, data in G.nodes(data=True):
-        g = last_glyph(data)
-        if g and g not in GLYPHS_CANONICAL_SET:
-            raise ValueError(f"Invalid glyph {g} in node {n}")
+        _check_glyph(last_glyph(data), n)
+
+
+def _check_epi_vf(epi, vf, epi_min, epi_max, vf_min, vf_max, n):
+    if not (epi_min - EPS <= epi <= epi_max + EPS):
+        raise ValueError(f"EPI out of range in node {n}: {epi}")
+    if not (vf_min - EPS <= vf <= vf_max + EPS):
+        raise ValueError(f"VF out of range in node {n}: {vf}")
+
+
+def _check_glyph(g, n):
+    if g and g not in GLYPHS_CANONICAL_SET:
+        raise KeyError(f"Invalid glyph {g} in node {n}")
 
 
 def run_validators(G) -> None:
     """Run all invariant validators on ``G``."""
-    _validate_epi_vf(G)
+    cfg = {
+        k: float(get_param(G, k))
+        for k in ("EPI_MIN", "EPI_MAX", "VF_MIN", "VF_MAX")
+    }
+    epi_min, epi_max = cfg["EPI_MIN"], cfg["EPI_MAX"]
+    vf_min, vf_max = cfg["VF_MIN"], cfg["VF_MAX"]
+    for n, data in G.nodes(data=True):
+        epi = _require_attr(data, ALIAS_EPI, n, "EPI")
+        vf = _require_attr(data, ALIAS_VF, n, "VF")
+        _check_epi_vf(epi, vf, epi_min, epi_max, vf_min, vf_max, n)
+        _check_glyph(last_glyph(data), n)
     _validate_sigma(G)
-    _validate_glyphs(G)

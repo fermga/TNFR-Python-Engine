@@ -24,7 +24,7 @@ def _similarity_abs(a, b, lo, hi):
     return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, hi - lo)
 
 
-def _coherence_components(
+def compute_components(
     th_vals,
     epi_vals,
     vf_vals,
@@ -35,49 +35,19 @@ def _coherence_components(
     epi_max,
     vf_min,
     vf_max,
-):
+) -> Dict[str, float]:
     th_i = th_vals[ni]
     th_j = th_vals[nj]
     s_phase = 0.5 * (1.0 + math.cos(th_i - th_j))
     s_epi = _similarity_abs(epi_vals[ni], epi_vals[nj], epi_min, epi_max)
     s_vf = _similarity_abs(vf_vals[ni], vf_vals[nj], vf_min, vf_max)
     s_si = 1.0 - abs(si_vals[ni] - si_vals[nj])
-    return s_phase, s_epi, s_vf, s_si
-
-
-def _combine_components(
-    wnorm: Dict[str, float],
-    th_vals,
-    epi_vals,
-    vf_vals,
-    si_vals,
-    ni,
-    nj,
-    epi_min,
-    epi_max,
-    vf_min,
-    vf_max,
-):
-    """Compute coherence by combining components with their weights."""
-    s_phase, s_epi, s_vf, s_si = _coherence_components(
-        th_vals,
-        epi_vals,
-        vf_vals,
-        si_vals,
-        ni,
-        nj,
-        epi_min,
-        epi_max,
-        vf_min,
-        vf_max,
-    )
-    wij = (
-        wnorm["phase"] * s_phase
-        + wnorm["epi"] * s_epi
-        + wnorm["vf"] * s_vf
-        + wnorm["si"] * s_si
-    )
-    return clamp01(wij)
+    return {
+        "s_phase": s_phase,
+        "s_epi": s_epi,
+        "s_vf": s_vf,
+        "s_si": s_si,
+    }
 
 
 def coherence_matrix(G):
@@ -227,8 +197,7 @@ def coherence_matrix(G):
             if key in seen:
                 continue
             seen.add(key)
-            wij = _combine_components(
-                wnorm,
+            comps = compute_components(
                 th_vals,
                 epi_vals,
                 vf_vals,
@@ -240,13 +209,18 @@ def coherence_matrix(G):
                 vf_min,
                 vf_max,
             )
+            wij = clamp01(
+                wnorm["phase"] * comps["s_phase"]
+                + wnorm["epi"] * comps["s_epi"]
+                + wnorm["vf"] * comps["s_vf"]
+                + wnorm["si"] * comps["s_si"]
+            )
             add_entry(i, j, wij)
             add_entry(j, i, wij)
     else:
         for i in range(n):
             for j in range(i + 1, n):
-                wij = _combine_components(
-                    wnorm,
+                comps = compute_components(
                     th_vals,
                     epi_vals,
                     vf_vals,
@@ -257,6 +231,12 @@ def coherence_matrix(G):
                     epi_max,
                     vf_min,
                     vf_max,
+                )
+                wij = clamp01(
+                    wnorm["phase"] * comps["s_phase"]
+                    + wnorm["epi"] * comps["s_epi"]
+                    + wnorm["vf"] * comps["s_vf"]
+                    + wnorm["si"] * comps["s_si"]
                 )
                 add_entry(i, j, wij)
                 add_entry(j, i, wij)

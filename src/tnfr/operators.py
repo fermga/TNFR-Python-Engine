@@ -80,9 +80,9 @@ def random_jitter(
     used instead and must handle its own purging policy.
     """
 
-    if amplitude <= 0:
-        if amplitude < 0:
-            raise ValueError("amplitude must be positive")
+    if amplitude < 0:
+        raise ValueError("amplitude must be positive")
+    if amplitude == 0:
         return 0.0
 
     base_seed = int(node.graph.get("RANDOM_SEED", 0))

@@ -145,16 +145,14 @@ def add_edge(
         if strategy is None:
             strategy = "nx" if hasattr(graph, "add_edge") else "tnfr"
         try:
-            exists_fn, set_fn = _STRATEGY_CBS[strategy]
+            exists_cb, set_cb = _STRATEGY_CBS[strategy]
         except KeyError:
             raise ValueError("Unknown edge strategy")
-        exists_cb = partial(exists_fn, graph, n1, n2)
-        set_cb = partial(set_fn, graph, n1, n2)
 
-    if exists_cb() and not overwrite:
+    if exists_cb(graph, n1, n2) and not overwrite:
         return
 
-    set_cb(weight)
+    set_cb(graph, n1, n2, weight)
     increment_edge_version(graph)
 
 

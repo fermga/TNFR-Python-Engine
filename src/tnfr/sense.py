@@ -1,7 +1,7 @@
 """Sense calculations."""
 
 from __future__ import annotations
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, TypeVar
 import math
 from collections import Counter
 
@@ -30,26 +30,28 @@ GLYPH_UNITS: Dict[str, complex] = {
 # -------------------------
 
 
-def glyph_angle(g: str) -> float:
-    """Return angle for glyph ``g``.
+T = TypeVar("T")
 
-    Raises ``KeyError`` if ``g`` is not registered in :data:`ANGLE_MAP`.
-    """
+
+def _resolve_glyph(g: str, mapping: Dict[str, T]) -> T:
+    """Return ``mapping[g]`` or raise ``KeyError`` with a standard message."""
+
     try:
-        return float(ANGLE_MAP[g])
-    except KeyError as e:
+        return mapping[g]
+    except KeyError as e:  # pragma: no cover - small helper
         raise KeyError(f"Glyph desconocido: {g}") from e
+
+
+def glyph_angle(g: str) -> float:
+    """Return angle for glyph ``g``."""
+
+    return float(_resolve_glyph(g, ANGLE_MAP))
 
 
 def glyph_unit(g: str) -> complex:
-    """Return unit vector for glyph ``g``.
+    """Return unit vector for glyph ``g``."""
 
-    Raises ``KeyError`` if ``g`` is not registered in :data:`ANGLE_MAP`.
-    """
-    try:
-        return GLYPH_UNITS[g]
-    except KeyError as e:
-        raise KeyError(f"Glyph desconocido: {g}") from e
+    return _resolve_glyph(g, GLYPH_UNITS)
 
 
 def _weight(nd, mode: str) -> float:
@@ -92,19 +94,26 @@ def _sigma_from_iterable(
     except TypeError:
         iterator = iter([values])
 
-    cnt = 0
-    acc = complex(0.0, 0.0)
+    try:
+        first = next(iterator)
+    except StopIteration:
+        vec = {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": float(fallback_angle)}
+        return vec, 0
+    if not isinstance(first, complex):
+        raise TypeError("values must be an iterable of complex numbers")
+
+    xs = [first.real]
+    ys = [first.imag]
+    cnt = 1
     for z in iterator:
         if not isinstance(z, complex):
             raise TypeError("values must be an iterable of complex numbers")
+        xs.append(z.real)
+        ys.append(z.imag)
         cnt += 1
-        acc += z
 
-    if cnt <= 0:
-        vec = {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": float(fallback_angle)}
-        return vec, 0
-
-    x, y = acc.real / cnt, acc.imag / cnt
+    x = math.fsum(xs) / cnt
+    y = math.fsum(ys) / cnt
     mag = math.hypot(x, y)
     ang = math.atan2(y, x) if mag > 0 else float(fallback_angle)
     vec = {
@@ -276,5 +285,7 @@ def sigma_rose(G, steps: int | None = None) -> Dict[str, int]:
     rows = counts if steps is None or steps >= len(counts) else counts[-int(steps):]
     counter = Counter()
     for row in rows:
-        counter.update({k: int(v) for k, v in row.items() if k != "t"})
+        for k, v in row.items():
+            if k != "t":
+                counter[k] += int(v)
     return {g: int(counter.get(g, 0)) for g in GLYPHS_CANONICAL}
