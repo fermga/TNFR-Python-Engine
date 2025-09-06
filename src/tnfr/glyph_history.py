@@ -7,8 +7,7 @@ from collections import deque, Counter
 import heapq
 from itertools import islice
 
-from .constants import ALIAS_EPI_KIND, get_param
-from .helpers import get_attr_str
+from .constants import get_param
 
 __all__ = [
     "HistoryDict",
@@ -181,16 +180,8 @@ def ensure_history(G) -> Dict[str, Any]:
 
 def last_glyph(nd: Dict[str, Any]) -> str | None:
     """Return the most recent glyph for node or ``None``."""
-    kind = get_attr_str(nd, ALIAS_EPI_KIND, "")
-    if kind:
-        return kind
     hist = nd.get("glyph_history")
-    if not hist:
-        return None
-    try:
-        return hist[-1]
-    except IndexError:
-        return None
+    return hist[-1] if hist else None
 
 
 def count_glyphs(G, window: int | None = None, *, last_only: bool = False) -> Counter:
