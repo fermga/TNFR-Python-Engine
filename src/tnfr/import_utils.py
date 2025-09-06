@@ -7,6 +7,7 @@ import warnings
 import logging
 from functools import lru_cache
 from typing import Any
+import threading
 
 __all__ = ["optional_import", "get_numpy", "import_nodonx"]
 
@@ -15,10 +16,14 @@ logger = logging.getLogger(__name__)
 
 
 _FAILED_IMPORTS: set[str] = set()
+_FAILED_IMPORTS_LOCK = threading.Lock()
 
 
 def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     """Import ``name`` returning ``fallback`` if it fails.
+
+    This function is thread-safe: concurrent failures are recorded in a shared
+    set protected by a lock to avoid race conditions.
 
     ``name`` may refer to a module, submodule or attribute. If the import or
     attribute access fails a warning is emitted and ``fallback`` is returned.
@@ -42,8 +47,9 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     """
 
     module_name, attr = (name.rsplit(".", 1) + [None])[:2]
-    if name in _FAILED_IMPORTS or module_name in _FAILED_IMPORTS:
-        return fallback
+    with _FAILED_IMPORTS_LOCK:
+        if name in _FAILED_IMPORTS or module_name in _FAILED_IMPORTS:
+            return fallback
     try:
         module = importlib.import_module(module_name)
         return getattr(module, attr) if attr else module
@@ -53,14 +59,16 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
             RuntimeWarning,
             stacklevel=2,
         )
-        _FAILED_IMPORTS.update({name, module_name})
+        with _FAILED_IMPORTS_LOCK:
+            _FAILED_IMPORTS.update({name, module_name})
     except AttributeError as e:
         warnings.warn(
             f"Module '{module_name}' has no attribute '{attr}': {e}",
             RuntimeWarning,
             stacklevel=2,
         )
-        _FAILED_IMPORTS.add(name)
+        with _FAILED_IMPORTS_LOCK:
+            _FAILED_IMPORTS.add(name)
     return fallback
 
 

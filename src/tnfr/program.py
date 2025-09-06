@@ -114,6 +114,25 @@ def _advance(G, step_fn: Optional[AdvanceFn] = None):
 # ---------------------
 
 
+def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
+    """Expand a ``THOL`` block onto ``stack`` for processing."""
+    repeats = max(1, int(item.repeat))
+    if item.force_close is not None and not isinstance(item.force_close, Glyph):
+        raise ValueError("force_close must be a Glyph")
+    closing = (
+        item.force_close
+        if isinstance(item.force_close, Glyph)
+        and item.force_close in {Glyph.SHA, Glyph.NUL}
+        else None
+    )
+    seq = item.body if isinstance(item.body, Sequence) else tuple(item.body)
+    for _ in range(repeats):
+        if closing is not None:
+            stack.append(closing)
+        stack.extend(reversed(seq))
+    stack.append(THOL_SENTINEL)
+
+
 def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
     """Return list of operations ``(op, payload)``.
     ``op`` ∈ { 'GLYPH', 'WAIT', 'TARGET', 'THOL' }.
@@ -128,39 +147,20 @@ def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
         item = stack.pop()
         if item is THOL_SENTINEL:
             ops.append(("THOL", Glyph.THOL.value))
-            continue
-        if isinstance(item, TARGET):
+        elif isinstance(item, TARGET):
             ops.append(("TARGET", item))
-            continue
-        if isinstance(item, WAIT):
+        elif isinstance(item, WAIT):
             steps = max(1, int(getattr(item, "steps", 1)))
             ops.append(("WAIT", steps))
-            continue
-        if isinstance(item, THOL):
-            repeats = max(1, int(item.repeat))
-            if item.force_close is not None and not isinstance(
-                item.force_close, Glyph
-            ):
-                raise ValueError("force_close must be a Glyph")
-            closing = (
-                item.force_close
-                if isinstance(item.force_close, Glyph)
-                and item.force_close in {Glyph.SHA, Glyph.NUL}
-                else None
-            )
-            seq = item.body if isinstance(item.body, Sequence) else tuple(item.body)
-            for _ in range(repeats):
-                if closing is not None:
-                    stack.append(closing)
-                stack.extend(reversed(seq))
-            stack.append(THOL_SENTINEL)
-            continue
-
-        # item should be a glyph
-        g = item.value if isinstance(item, Glyph) else str(item)
-        if g not in GLYPHS_CANONICAL_SET:
-            raise ValueError(f"Non-canonical glyph: {g}")
-        ops.append(("GLYPH", g))
+        elif isinstance(item, THOL):
+            _flatten_thol(item, stack)
+        elif isinstance(item, Glyph) or isinstance(item, str):
+            g = item.value if isinstance(item, Glyph) else str(item)
+            if g not in GLYPHS_CANONICAL_SET:
+                raise ValueError(f"Non-canonical glyph: {g}")
+            ops.append(("GLYPH", g))
+        else:
+            raise TypeError(f"Unsupported token: {item!r}")
     return ops
 
 

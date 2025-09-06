@@ -12,7 +12,6 @@ from typing import (
 )
 import logging
 import math
-import itertools
 
 from .value_utils import _convert_value
 
@@ -59,12 +58,14 @@ def ensure_collection(
         limit = max_materialize
         if limit == 0:
             return ()
-        out = tuple(itertools.islice(it, limit + 1))
-        if len(out) > limit:
-            raise ValueError(
-                f"Iterable produced {len(out)} items, exceeds limit {limit}"
-            )
-        return out[:limit]
+        out: list[T] = []
+        for idx, item in enumerate(it):
+            if idx >= limit:
+                raise ValueError(
+                    f"Iterable produced {idx + 1} items, exceeds limit {limit}"
+                )
+            out.append(item)
+        return tuple(out)
     except TypeError as exc:
         raise TypeError(f"{it!r} is not iterable") from exc
 

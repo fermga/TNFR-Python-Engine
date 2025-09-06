@@ -201,8 +201,9 @@ def test_kuramoto_cache_step_limit(graph_canon):
     gamma_mod._ensure_kuramoto_cache(G, t=0)
     gamma_mod._ensure_kuramoto_cache(G, t=1)
     gamma_mod._ensure_kuramoto_cache(G, t=2)
-    cache_dict = G.graph["_edge_version_cache"]["_kuramoto"][1]
-    assert len(cache_dict) == 2
+    cache = G.graph["_edge_version_cache"]
+    entries = [k for k in cache if isinstance(k, tuple)]
+    assert len(entries) == 2
 
 
 def test_kuramoto_cache_invalidation_on_version(graph_canon):

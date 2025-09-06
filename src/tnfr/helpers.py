@@ -28,6 +28,8 @@ from .alias import get_attr
 from .constants import ALIAS_THETA
 
 _EDGE_CACHE_LOCK = threading.Lock()
+_EDGE_CACHE_COND = threading.Condition(_EDGE_CACHE_LOCK)
+_EDGE_CACHE_PENDING = object()
 
 if TYPE_CHECKING:  # pragma: no cover - solo para type checkers
     import networkx as nx
@@ -130,25 +132,22 @@ def _neighbor_phase_mean(
     count = 0
     if trig is not None:
         cos_th, sin_th = trig.cos, trig.sin
-        for v in node.neighbors():
-            x += cos_th[v]
-            y += sin_th[v]
-            count += 1
-        if count == 0:
-            return get_attr(node.G.nodes[node.n], ALIAS_THETA, 0.0)
+        it = ((cos_th[v], sin_th[v]) for v in node.neighbors())
+        fallback = get_attr(node.G.nodes[node.n], ALIAS_THETA, 0.0)
     else:
         if cache is None:
             cache = weakref.WeakKeyDictionary()
-        for v in node.neighbors():
-            cs = get_cached_trig(v, cache)
-            if cs is None:
-                continue
-            cx, sy = cs
-            x += cx
-            y += sy
-            count += 1
-        if count == 0:
-            return get_attr(getattr(node, "__dict__", {}), ALIAS_THETA, 0.0)
+        it = (get_cached_trig(v, cache) for v in node.neighbors())
+        fallback = get_attr(getattr(node, "__dict__", {}), ALIAS_THETA, 0.0)
+    for cs in it:
+        if cs is None:
+            continue
+        cx, sy = cs
+        x += cx
+        y += sy
+        count += 1
+    if count == 0:
+        return fallback
     return math.atan2(y, x)
 
 
@@ -227,12 +226,31 @@ def _node_repr(n: Any) -> str:
 
 
 def node_set_checksum(
-    G: "nx.Graph", nodes: Iterable[Any] | None = None, *, presorted: bool = False
+    G: "nx.Graph",
+    nodes: Iterable[Any] | None = None,
+    *,
+    presorted: bool = False,
+    store: bool = True,
 ) -> str:
-    """Return a BLAKE2b checksum of ``G``'s node set using a stable ``repr``."""
-    hasher = hashlib.blake2b(digest_size=16)
+    """Return a BLAKE2b checksum of ``G``'s node set using a stable ``repr``.
 
-    node_iter = nodes if nodes is not None else G.nodes()
+    When ``store`` is ``True`` (default) the result is cached in ``G.graph``
+    under ``"_node_set_checksum_cache"`` along with the ordered node snapshot to
+    avoid recomputation when the node set remains unchanged.
+    """
+
+    graph = G.graph if hasattr(G, "graph") else G
+    if nodes is None:
+        node_iter = list(G.nodes())
+    else:
+        node_iter = list(nodes)
+
+    marker = tuple(node_iter)
+    cached = graph.get("_node_set_checksum_cache")
+    if cached and cached[0] == len(marker) and cached[1] == marker:
+        return cached[2]
+
+    hasher = hashlib.blake2b(digest_size=16)
     serialised = (
         (_node_repr(n) for n in node_iter)
         if presorted
@@ -242,7 +260,10 @@ def node_set_checksum(
         if idx:
             hasher.update(b"|")
         hasher.update(node_repr.encode("utf-8"))
-    return hasher.hexdigest()
+    checksum = hasher.hexdigest()
+    if store:
+        graph["_node_set_checksum_cache"] = (len(marker), marker, checksum)
+    return checksum
 
 
 def _ensure_node_map(G, *, key: str, sort: bool = False) -> Dict[Any, int]:
@@ -255,7 +276,7 @@ def _ensure_node_map(G, *, key: str, sort: bool = False) -> Dict[Any, int]:
     nodes = list(G.nodes())
     if sort:
         nodes.sort(key=_node_repr)
-    checksum = node_set_checksum(G, nodes, presorted=sort)
+    checksum = node_set_checksum(G, nodes, presorted=sort, store=False)
     mapping = G.graph.get(key)
     checksum_key = f"{key}_checksum"
     if mapping is None or G.graph.get(checksum_key) != checksum:
@@ -290,22 +311,29 @@ def edge_version_cache(
     """
     graph = G.graph if hasattr(G, "graph") else G
     edge_version = int(graph.get("_edge_version", 0))
-    with _EDGE_CACHE_LOCK:
+    with _EDGE_CACHE_COND:
         cache_dict: OrderedDict = graph.setdefault("_edge_version_cache", OrderedDict())
         entry = cache_dict.get(key)
+        # Wait for concurrent builders to finish (double-checked locking)
+        while entry is not None and entry[0] == edge_version and entry[1] is _EDGE_CACHE_PENDING:
+            _EDGE_CACHE_COND.wait()
+            entry = cache_dict.get(key)
         if entry is not None and entry[0] == edge_version:
             if max_entries is not None and max_entries > 0:
                 cache_dict.move_to_end(key)
             return entry[1]
+        # Reserve placeholder so other threads skip building
+        cache_dict[key] = (edge_version, _EDGE_CACHE_PENDING)
 
     value = builder()
-    with _EDGE_CACHE_LOCK:
+    with _EDGE_CACHE_COND:
         cache_dict = graph.setdefault("_edge_version_cache", OrderedDict())
         cache_dict[key] = (edge_version, value)
         if max_entries is not None and max_entries > 0:
             cache_dict.move_to_end(key)
             while len(cache_dict) > max_entries:
                 cache_dict.popitem(last=False)
+        _EDGE_CACHE_COND.notify_all()
     return value
 
 
@@ -314,7 +342,7 @@ def cached_nodes_and_A(
 ) -> tuple[list[int], Any]:
     """Return list of nodes and adjacency matrix for ``G`` with caching."""
     nodes_list = list(G.nodes())
-    checksum = node_set_checksum(G, nodes_list)
+    checksum = node_set_checksum(G, nodes_list, store=False)
     key = f"_dnfr_{len(nodes_list)}_{checksum}"
     G.graph["_dnfr_nodes_checksum"] = checksum
 
