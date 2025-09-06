@@ -184,21 +184,9 @@ def ensure_history(G) -> Dict[str, Any]:
         hist = HistoryDict(hist, maxlen=maxlen, compact_every=compact_every)
         G.graph["history"] = hist
     if maxlen > 0:
-        excess = len(hist) - maxlen
-        if excess > 0:
-            # Remove least used keys in bulk using heapq.nsmallest
-            candidates = []
-            for cnt, key in heapq.nsmallest(excess * 2, hist._heap):
-                if key in hist and hist._counts.get(key) == cnt and key not in candidates:
-                    candidates.append(key)
-                if len(candidates) >= excess:
-                    break
-            for key in candidates:
-                hist._counts.pop(key, None)
-                dict.__delitem__(hist, key)
-            hist._dirty += len(candidates)
-            hist._maybe_compact()
-        # Note: trimming is O(n) only when history exceeds ``maxlen``
+        while len(hist) > maxlen:
+            hist.pop_least_used()
+        # Note: trimming is O(n log n) when history exceeds ``maxlen``
     return hist
 
 

@@ -133,7 +133,8 @@ def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
             ops.append(("TARGET", item))
             continue
         if isinstance(item, WAIT):
-            ops.append(("WAIT", item.steps))
+            steps = max(1, int(getattr(item, "steps", 1)))
+            ops.append(("WAIT", steps))
             continue
         if isinstance(item, THOL):
             repeats = max(1, int(item.repeat))
@@ -190,7 +191,6 @@ def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
 def _handle_wait(
     G, steps: int, curr_target, trace: deque, step_fn: Optional[AdvanceFn]
 ):
-    steps = max(1, int(steps))
     for _ in range(steps):
         _advance(G, step_fn)
     _record_trace(trace, G, "WAIT", k=steps)

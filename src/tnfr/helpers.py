@@ -143,17 +143,17 @@ def neighbor_phase_mean(obj, n=None) -> float:
             count += 1
     else:
         for v in node.neighbors():
-            if hasattr(v, "theta"):
-                th = getattr(v, "theta", 0.0)
-            elif G is not None:
-                th = NodoNX.from_graph(G, v).theta
-            else:
+            data = getattr(v, "__dict__", v if isinstance(v, dict) else {})
+            th = get_attr(data, ALIAS_THETA, None)
+            if th is None:
                 continue
             x += math.cos(th)
             y += math.sin(th)
             count += 1
     if count == 0:
-        return getattr(node, "theta", 0.0)
+        if G is not None and isinstance(node, NodoNX):
+            return get_attr(G.nodes[node.n], ALIAS_THETA, 0.0)
+        return get_attr(getattr(node, "__dict__", {}), ALIAS_THETA, 0.0)
     return math.atan2(y, x)
 
 
@@ -209,7 +209,7 @@ def _stable_json(obj: Any, visited: set[int] | None = None) -> Any:
 def node_set_checksum(
     G: "nx.Graph", nodes: Iterable[Any] | None = None
 ) -> str:
-    """Return the SHA1 of ``G``'s node set using a stable ``repr``."""
+    """Return a BLAKE2b checksum of ``G``'s node set using a stable ``repr``."""
     hasher = hashlib.blake2b(digest_size=16)
 
     def serialise(n: Any) -> str:

@@ -46,6 +46,12 @@ def test_wait_logs_sanitized_steps(graph_canon):
     assert trace[0]["k"] == 1
 
 
+def test_flatten_wait_sanitizes_steps():
+    program = seq(WAIT(-2.5), WAIT(2.4))
+    ops = _flatten(program)
+    assert ops == [("WAIT", 1), ("WAIT", 2)]
+
+
 def test_play_handles_deeply_nested_blocks(graph_canon):
     G = graph_canon()
     G.add_node(1)

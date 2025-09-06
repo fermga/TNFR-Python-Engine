@@ -160,6 +160,36 @@ def test_kuramoto_cache_reuses_checksum(graph_canon, monkeypatch):
     assert calls == [1]
 
 
+def test_kuramoto_cache_updates_on_time_change(graph_canon):
+    from tnfr import gamma as gamma_mod
+
+    G = graph_canon()
+    G.add_nodes_from([0])
+    attach_defaults(G)
+    G.nodes[0]["θ"] = 0.0
+    gamma_mod._ensure_kuramoto_cache(G, t=0)
+    cache0 = G.graph["_kuramoto_cache"]
+    gamma_mod._ensure_kuramoto_cache(G, t=1)
+    cache1 = G.graph["_kuramoto_cache"]
+    assert cache0 is not cache1
+
+
+def test_kuramoto_cache_updates_on_nodes_change(graph_canon):
+    from tnfr import gamma as gamma_mod
+
+    G = graph_canon()
+    G.add_nodes_from([0])
+    attach_defaults(G)
+    G.nodes[0]["θ"] = 0.0
+    gamma_mod._ensure_kuramoto_cache(G, t=0)
+    cache0 = G.graph["_kuramoto_cache"]
+    G.add_node(1)
+    G.nodes[1]["θ"] = 0.0
+    gamma_mod._ensure_kuramoto_cache(G, t=0)
+    cache1 = G.graph["_kuramoto_cache"]
+    assert cache0 is not cache1
+
+
 def test_kuramoto_cache_invalidation_on_version(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
