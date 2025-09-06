@@ -28,12 +28,26 @@ def test_local_phase_sync_independent_graphs():
     assert r1 == pytest.approx(1.0)
     assert r2 == pytest.approx(1.0)
 
-    key = "_lpsw_cache"
-    assert G1.graph[key]["nodes"] == tuple(nodes1)
-    assert G2.graph[key]["nodes"] == tuple(nodes2)
-    assert G1.graph[key] is not G2.graph[key]
+    key = "_node_index_map"
+    map1 = G1.graph[key]
+    map2 = G2.graph[key]
+    assert map1 is not map2
+    assert set(map1.keys()) == set(nodes1)
+    assert set(map2.keys()) == set(nodes2)
 
-    r1_again = local_phase_sync_weighted(
-        G1, nodes1[0], nodes_order=nodes1, W_row=W1
-    )
+    r1_again = local_phase_sync_weighted(G1, nodes1[0], nodes_order=nodes1, W_row=W1)
     assert r1_again == pytest.approx(r1)
+    assert G1.graph[key] is map1
+
+
+def test_node_index_map_invalidation():
+    G = make_graph(0)
+    coherence_matrix(G)
+    mapping1 = G.graph["_node_index_map"]
+
+    G.add_node(2)
+    coherence_matrix(G)
+    mapping2 = G.graph["_node_index_map"]
+
+    assert mapping1 is not mapping2
+    assert set(mapping2.keys()) == set(G.nodes())
