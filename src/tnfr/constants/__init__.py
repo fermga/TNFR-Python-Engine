@@ -21,28 +21,27 @@ from .metric import (
 from ..import_utils import optional_import
 
 # Valores que pueden asignarse directamente sin copiar
-IMMUTABLE_TYPES = (
+IMMUTABLE_SIMPLE = (
     int,
     float,
     complex,
     str,
     bool,
-    tuple,
-    frozenset,
     bytes,
     type(None),
 )
 
 
 def _is_immutable(value: Any) -> bool:
-    """Check recursively if ``value`` is immutable.
-
-    Tuples are traversed to ensure they don't contain mutable elements.
-    """
-    if isinstance(value, IMMUTABLE_TYPES):
-        if isinstance(value, tuple):
-            return all(_is_immutable(item) for item in value)
+    """Check recursively if ``value`` is immutable."""
+    if isinstance(value, IMMUTABLE_SIMPLE):
         return True
+    if isinstance(value, tuple):
+        return all(_is_immutable(item) for item in value)
+    if isinstance(value, frozenset):
+        return all(_is_immutable(item) for item in value)
+    if isinstance(value, MappingProxyType):
+        return all(_is_immutable(v) for v in value.values())
     return False
 
 # Diccionario combinado exportado

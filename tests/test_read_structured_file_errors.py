@@ -111,6 +111,16 @@ def test_read_structured_file_missing_dependency_toml(
     assert "toml" in msg.lower()
 
 
+def test_read_structured_file_unicode_error(tmp_path: Path):
+    path = tmp_path / "bad.json"
+    path.write_bytes(b"\xff\xfe\xfa")
+    with pytest.raises(ValueError) as excinfo:
+        read_structured_file(path)
+    msg = str(excinfo.value)
+    assert msg.startswith("Error de codificación al leer")
+    assert str(path) in msg
+
+
 def test_json_error_not_reported_as_toml(monkeypatch: pytest.MonkeyPatch) -> None:
     class DummyTOMLDecodeError(Exception):
         pass

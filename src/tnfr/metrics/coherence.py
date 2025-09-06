@@ -111,28 +111,26 @@ def coherence_matrix(G):
     sum_val = 0.0
     count_val = 0
 
+    def _accumulate(i: int, j: int, w: float) -> None:
+        nonlocal min_val, max_val, sum_val, count_val
+        if i == j:
+            return
+        if w < min_val:
+            min_val = w
+        if w > max_val:
+            max_val = w
+        sum_val += w
+        count_val += 1
+
     def add_entry(i: int, j: int, w: float) -> None:
         """Add a value to the matrix and accumulate sums/counters."""
-        nonlocal min_val, max_val, sum_val, count_val
         if mode == "dense":
             W[i][j] = w
-            if i != j:
-                if w < min_val:
-                    min_val = w
-                if w > max_val:
-                    max_val = w
-                sum_val += w
-                count_val += 1
+            _accumulate(i, j, w)
         else:
             if w >= thr:
                 W.append((i, j, w))
-                if i != j:
-                    if w < min_val:
-                        min_val = w
-                    if w > max_val:
-                        max_val = w
-                    sum_val += w
-                    count_val += 1
+                _accumulate(i, j, w)
         row_sum[i] += w
         row_count[i] += 1
 
