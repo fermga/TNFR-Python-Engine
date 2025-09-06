@@ -17,7 +17,6 @@ Note on REMESH α (alpha) precedence:
 from __future__ import annotations
 from typing import Dict, Any, Optional, Iterable, TYPE_CHECKING
 import math
-import random
 import hashlib
 import heapq
 from functools import cache
@@ -37,6 +36,7 @@ from .glyph_history import append_metric
 
 if TYPE_CHECKING:
     from .node import NodoProtocol
+    import random  # noqa: F401
 from .types import Glyph
 from collections import deque
 def _node_offset(G, n) -> int:
@@ -280,12 +280,12 @@ def _op_UM(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # UM — Coupling
                     key=lambda j: abs(angle_diff(j.theta, th)),
                 )
             else:
-                rng = _jitter_base(
+                rng = get_rng(
                     int(node.graph.get("RANDOM_SEED", 0)), node.offset()
                 )
                 candidates = rng.sample(candidates, limit)
         elif mode == "sample" and limit > 0:
-            rng = _jitter_base(
+            rng = get_rng(
                 int(node.graph.get("RANDOM_SEED", 0)), node.offset()
             )
             rng.shuffle(candidates)

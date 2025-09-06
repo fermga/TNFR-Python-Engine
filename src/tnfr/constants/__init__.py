@@ -6,6 +6,7 @@ from typing import Any, Dict, Mapping
 import copy
 import warnings
 from types import MappingProxyType
+from weakref import ref
 
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
 from .init import INIT_DEFAULTS
@@ -34,8 +35,6 @@ IMMUTABLE_SIMPLE = (
     bytes,
     type(None),
 )
-
-from weakref import ref
 
 _IMMUTABLE_CACHE: dict[int, tuple[ref, bool]] = {}
 

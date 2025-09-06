@@ -1,7 +1,5 @@
 """Tests for push_glyph window handling."""
 
-import pytest
-
 from tnfr.glyph_history import push_glyph
 
 

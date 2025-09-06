@@ -8,7 +8,6 @@ from tnfr.operators import (
     _select_dominant_glyph,
 )
 from types import SimpleNamespace
-import tnfr.operators as operators
 from tnfr.constants import attach_defaults
 import networkx as nx
 import pytest
