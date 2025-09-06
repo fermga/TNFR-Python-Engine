@@ -41,6 +41,7 @@ __all__ = [
     "count_glyphs",
     "normalize_counter",
     "mix_groups",
+    "ensure_node_index_map",
     "ensure_node_offset_map",
     "cached_nodes_and_A",
     "increment_edge_version",
@@ -189,6 +190,24 @@ def node_set_checksum(
             hasher.update(b"|")
         hasher.update(node_repr.encode("utf-8"))
     return hasher.hexdigest()
+
+
+def ensure_node_index_map(G) -> Dict[Any, int]:
+    """Return cached node→index mapping for ``G``.
+
+    The mapping is stored in ``G.graph['_node_index_map']`` and reused on
+    subsequent calls. It is recalculated whenever the set of nodes in ``G``
+    changes.
+    """
+
+    nodes = list(G.nodes())
+    checksum = node_set_checksum(G, nodes)
+    mapping = G.graph.get("_node_index_map")
+    if mapping is None or G.graph.get("_node_index_checksum") != checksum:
+        mapping = {node: idx for idx, node in enumerate(nodes)}
+        G.graph["_node_index_map"] = mapping
+        G.graph["_node_index_checksum"] = checksum
+    return mapping
 
 
 def ensure_node_offset_map(G) -> Dict[Any, int]:

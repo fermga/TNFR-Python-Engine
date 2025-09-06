@@ -11,7 +11,7 @@ from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
 from ..collections_utils import normalize_weights
-from ..helpers import clamp01
+from ..helpers import clamp01, ensure_node_index_map
 
 
 def _norm01(x, lo, hi):
@@ -78,7 +78,7 @@ def coherence_matrix(G):
         return nodes, []
 
     # Precompute indices to avoid repeated list.index calls within loops
-    node_to_index = {node: idx for idx, node in enumerate(nodes)}
+    node_to_index = ensure_node_index_map(G)
 
     epi_vals = [get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in nodes]
     vf_vals = [get_attr(G.nodes[v], ALIAS_VF, 0.0) for v in nodes]
@@ -207,19 +207,7 @@ def local_phase_sync_weighted(
 
     # --- Mapeo nodo → índice ---
     if node_to_index is None:
-        cache_key = "_lpsw_cache"
-        cache = G.graph.get(cache_key, {})
-        nodes_tuple = tuple(nodes_order)
-        nodes_set = frozenset(G.nodes())
-        if cache.get("nodes") != nodes_tuple or cache.get("set") != nodes_set:
-            node_to_index = {v: i for i, v in enumerate(nodes_order)}
-            G.graph[cache_key] = {
-                "nodes": nodes_tuple,
-                "set": nodes_set,
-                "map": node_to_index,
-            }
-        else:
-            node_to_index = cache.get("map", {})
+        node_to_index = ensure_node_index_map(G)
 
     i = node_to_index.get(n, None)
     if i is None:
