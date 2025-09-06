@@ -3,7 +3,6 @@
 from __future__ import annotations
 from typing import Iterable, Sequence, Dict, Any, Optional, TYPE_CHECKING
 import math
-import json
 import hashlib
 from statistics import fmean, StatisticsError
 from collections import OrderedDict
@@ -144,7 +143,7 @@ from .glyph_history import (  # noqa: E402
 
 
 def _stable_json(obj: Any, visited: set[int] | None = None) -> Any:
-    """Helper to obtain a JSON-serialisable structure for ``obj``."""
+    """Return a structure with deterministic ordering suitable for ``repr``."""
     if isinstance(obj, (str, int, float, bool)) or obj is None:
         return obj
 
@@ -156,35 +155,39 @@ def _stable_json(obj: Any, visited: set[int] | None = None) -> Any:
         return "<recursion>"
     visited.add(obj_id)
 
-    if isinstance(obj, (list, tuple, set)):
+    if isinstance(obj, (list, tuple)):
         return [_stable_json(o, visited) for o in obj]
+    if isinstance(obj, set):
+        return [_stable_json(o, visited) for o in sorted(obj, key=lambda x: repr(x))]
     if isinstance(obj, dict):
-        return {str(k): _stable_json(v, visited) for k, v in obj.items()}
+        return {
+            str(k): _stable_json(v, visited)
+            for k, v in sorted(obj.items(), key=lambda kv: str(kv[0]))
+        }
     if hasattr(obj, "__dict__"):
-        return {k: _stable_json(v, visited) for k, v in vars(obj).items()}
+        return {
+            k: _stable_json(v, visited)
+            for k, v in sorted(vars(obj).items(), key=lambda kv: kv[0])
+        }
     return f"{obj.__module__}.{obj.__class__.__qualname__}"
 
 
 def node_set_checksum(
     G: "nx.Graph", nodes: Iterable[Any] | None = None
 ) -> str:
-    """Return the SHA1 of ``G``'s node set in sorted order."""
+    """Return the SHA1 of ``G``'s node set using a stable ``repr``."""
     hasher = hashlib.blake2b(digest_size=16)
 
     def serialise(n: Any) -> str:
-        return json.dumps(
-            _stable_json(n),
-            sort_keys=True,
-            ensure_ascii=False,
-            separators=(",", ":"),
-        )
+        return repr(_stable_json(n))
 
     node_iter = nodes if nodes is not None else G.nodes()
-    sorted_nodes = sorted(node_iter, key=lambda n: serialise(n))
-    for idx, n in enumerate(sorted_nodes):
+    serialised_nodes = [serialise(n) for n in node_iter]
+    serialised_nodes.sort()
+    for idx, node_repr in enumerate(serialised_nodes):
         if idx:
             hasher.update(b"|")
-        hasher.update(serialise(n).encode("utf-8"))
+        hasher.update(node_repr.encode("utf-8"))
     return hasher.hexdigest()
 
 

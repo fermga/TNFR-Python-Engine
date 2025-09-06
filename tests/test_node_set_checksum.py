@@ -1,5 +1,4 @@
 import networkx as nx
-import json
 import hashlib
 
 from tnfr.helpers import node_set_checksum, _stable_json
@@ -26,9 +25,11 @@ def _reference_checksum(G):
     hasher = hashlib.blake2b(digest_size=16)
 
     def serialise(n):
-        return json.dumps(_stable_json(n), sort_keys=True, ensure_ascii=False)
+        return repr(_stable_json(n))
 
-    for i, node_repr in enumerate(sorted(serialise(n) for n in G.nodes())):
+    serialised = [serialise(n) for n in G.nodes()]
+    serialised.sort()
+    for i, node_repr in enumerate(serialised):
         if i:
             hasher.update(b"|")
         hasher.update(node_repr.encode("utf-8"))
