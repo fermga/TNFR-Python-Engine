@@ -71,20 +71,13 @@ logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=1)
-def _optional_numpy() -> Any | None:
-    """Intenta importar ``numpy`` de forma perezosa.
-
-    Si el paquete no está disponible, devuelve ``None``. El resultado se
-    almacena en caché para evitar búsquedas repetidas.
-    """
-
-    return optional_import("numpy")
-
-
 def _np(*, warn: bool = False) -> Any | None:
-    """Devuelve el módulo ``numpy`` o ``None`` si no está disponible."""
+    """Devuelve el módulo ``numpy`` o ``None`` si no está disponible.
 
-    module = _optional_numpy()
+    Realiza la importación de forma perezosa y cachea el resultado para
+    evitar búsquedas repetidas."""
+
+    module = optional_import("numpy")
     if module is None:
         log = logger.warning if warn else logger.debug
         log(
