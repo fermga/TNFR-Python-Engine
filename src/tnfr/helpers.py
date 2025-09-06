@@ -66,8 +66,6 @@ from .collections_utils import (
 )
 from .value_utils import _convert_value
 
-logger = logging.getLogger(__name__)
-
 PI = math.pi
 TWO_PI = 2 * PI
 
