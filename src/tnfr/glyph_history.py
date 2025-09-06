@@ -145,14 +145,16 @@ class HistoryDict(dict):
         return self._get_and_increment(key, default, missing=True)
 
     def pop_least_used(self) -> Any:
-        while self._heap:
-            cnt, key = heapq.heappop(self._heap)
+        while True:
+            try:
+                cnt, key = heapq.heappop(self._heap)
+            except IndexError as exc:
+                raise KeyError("HistoryDict is empty; cannot pop least used") from exc
             if self._counts.get(key) == cnt and key in self:
                 self._counts.pop(key, None)
                 value = super().pop(key)
                 self._maybe_compact()
                 return value
-        raise KeyError("HistoryDict is empty; cannot pop least used")
 
 
 def ensure_history(G) -> Dict[str, Any]:
