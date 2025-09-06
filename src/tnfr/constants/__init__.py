@@ -21,7 +21,7 @@ from .metric import (
 
 try:  # pragma: no cover - optional dependency
     from ..helpers import ensure_node_offset_map
-except Exception:  # noqa: BLE001 - allow any import error
+except ImportError:  # noqa: BLE001 - allow any import error
     ensure_node_offset_map = None
 
 # Valores que pueden asignarse directamente sin copiar

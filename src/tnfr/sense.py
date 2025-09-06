@@ -82,11 +82,10 @@ def _sigma_from_iterable(
     cnt = 0
     acc = complex(0.0, 0.0)
     for z in iterator:
+        if not isinstance(z, complex):
+            raise TypeError("values must be an iterable of complex numbers")
         cnt += 1
-        try:
-            acc += z
-        except TypeError:
-            raise TypeError("values must be an iterable of complex numbers") from None
+        acc += z
 
     if cnt <= 0:
         vec = {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": float(fallback_angle)}

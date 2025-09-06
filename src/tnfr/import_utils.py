@@ -38,22 +38,23 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     attribute does not exist. In both cases a warning is emitted.
     """
 
+    module_name, attr = (name.rsplit(".", 1) + [None])[:2]
     try:
-        return importlib.import_module(name)
-    except ImportError:
-        if "." in name:
-            module_name, attr = name.rsplit(".", 1)
-            try:
-                module = importlib.import_module(module_name)
-                return getattr(module, attr)
-            except (ImportError, AttributeError):
-                pass
+        module = importlib.import_module(module_name)
+        return getattr(module, attr) if attr else module
+    except ImportError as e:
         warnings.warn(
-            f"No se pudo importar '{name}'; usando valor de fallback.",
+            f"Failed to import module '{module_name}': {e}",
             RuntimeWarning,
             stacklevel=2,
         )
-        return fallback
+    except AttributeError as e:
+        warnings.warn(
+            f"Module '{module_name}' has no attribute '{attr}': {e}",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+    return fallback
 
 
 @lru_cache(maxsize=1)

@@ -45,7 +45,7 @@ kuramoto_R_psi: _KuramotoFn = optional_import(
 def _sigma_fallback(
     G: Any, weight_mode: str | None = None
 ) -> Dict[str, float]:
-    return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0.0}
+    return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
 
 
 sigma_vector_from_graph: _SigmaVectorFn = optional_import(

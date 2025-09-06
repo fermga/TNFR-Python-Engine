@@ -20,8 +20,6 @@ def build_graph(
     """
     if n <= 0:
         raise ValueError("n must be a positive integer")
-    if p is not None and not 0.0 <= p <= 1.0:
-        raise ValueError("p must be between 0 and 1")
 
     if topology == "ring":
         G = nx.cycle_graph(n)
@@ -29,6 +27,8 @@ def build_graph(
         G = nx.complete_graph(n)
     elif topology == "erdos":
         prob = p if p is not None else 3.0 / n
+        if not 0.0 <= prob <= 1.0:
+            raise ValueError("p must be between 0 and 1")
         G = nx.gnp_random_graph(n, prob, seed=seed)
     else:
         valid = ["ring", "complete", "erdos"]

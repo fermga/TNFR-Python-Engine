@@ -142,6 +142,8 @@ def add_edge(
         return
 
     if exists_cb is None or set_cb is None:
+        if strategy is None:
+            strategy = "nx" if hasattr(graph, "add_edge") else "tnfr"
         try:
             exists_fn, set_fn = _STRATEGY_CBS[strategy]
         except KeyError:

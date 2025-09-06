@@ -15,6 +15,10 @@ import math
 import hashlib
 from statistics import fmean, StatisticsError
 from collections import OrderedDict
+from functools import lru_cache
+import threading
+
+_EDGE_CACHE_LOCK = threading.Lock()
 
 from .import_utils import get_numpy
 from .collections_utils import (
@@ -26,6 +30,12 @@ from .collections_utils import (
 )
 from .alias import get_attr
 from .constants import ALIAS_THETA
+
+
+@lru_cache(maxsize=1)
+def _get_nodonx():
+    from .node import NodoNX
+    return NodoNX
 
 if TYPE_CHECKING:  # pragma: no cover - solo para type checkers
     import networkx as nx
@@ -111,7 +121,7 @@ def neighbor_phase_mean(obj, n=None) -> float:
     :func:`math.cos` and :func:`math.sin` for each neighbour. Objects without
     access to ``G`` fall back to computing these values individually.
     """
-    from .node import NodoNX  # importación local para evitar ciclo
+    NodoNX = _get_nodonx()
 
     if n is not None:
         node = NodoNX(obj, n)
@@ -255,9 +265,13 @@ def edge_version_cache(G: Any, key: str, builder: Callable[[], T]) -> T:
     cached_version = graph.get(version_key)
     value = graph.get(cache_key)
     if cached_version != edge_version or value is None:
-        value = builder()
-        graph[cache_key] = value
-        graph[version_key] = edge_version
+        with _EDGE_CACHE_LOCK:
+            cached_version = graph.get(version_key)
+            value = graph.get(cache_key)
+            if cached_version != edge_version or value is None:
+                value = builder()
+                graph[cache_key] = value
+                graph[version_key] = edge_version
     return value
 
 

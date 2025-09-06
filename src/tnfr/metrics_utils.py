@@ -39,11 +39,14 @@ class TrigCache:
 
 def compute_dnfr_accel_max(G) -> dict:
     """Compute absolute maxima of |ΔNFR| and |d²EPI/dt²|."""
-    dnfr_max = 0.0
-    accel_max = 0.0
-    for _, nd in G.nodes(data=True):
-        dnfr_max = max(dnfr_max, abs(get_attr(nd, ALIAS_DNFR, 0.0)))
-        accel_max = max(accel_max, abs(get_attr(nd, ALIAS_D2EPI, 0.0)))
+    dnfr_max = max(
+        (abs(get_attr(nd, ALIAS_DNFR, 0.0)) for _, nd in G.nodes(data=True)),
+        default=0.0,
+    )
+    accel_max = max(
+        (abs(get_attr(nd, ALIAS_D2EPI, 0.0)) for _, nd in G.nodes(data=True)),
+        default=0.0,
+    )
     return {"dnfr_max": float(dnfr_max), "accel_max": float(accel_max)}
 
 
@@ -121,8 +124,8 @@ def compute_Si_node(
     neigh = neighbors[n]
     deg = len(neigh)
     if deg:
-        sum_cos = sum(cos_th[v] for v in neigh)
-        sum_sin = sum(sin_th[v] for v in neigh)
+        sum_cos = math.fsum(cos_th[v] for v in neigh)
+        sum_sin = math.fsum(sin_th[v] for v in neigh)
         mean_cos = sum_cos / deg
         mean_sin = sum_sin / deg
         th_bar = math.atan2(mean_sin, mean_cos)
