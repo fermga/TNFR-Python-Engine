@@ -43,6 +43,9 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
         cbs = defaultdict(list, cbs or {})
         G.graph["callbacks"] = cbs
     for event in list(cbs):
+        if event not in _CALLBACK_EVENTS:
+            del cbs[event]
+            continue
         lst = cbs[event]
         cbs[event] = [
             spec
