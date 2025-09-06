@@ -24,7 +24,7 @@ from ..constants import (
     ALIAS_D2VF,
 )
 from ..callback_utils import register_callback
-from ..glyph_history import ensure_history, last_glyph
+from ..glyph_history import ensure_history, last_glyph, append_metric
 from ..helpers import get_attr, set_attr, list_mean, compute_coherence
 from ..constants_glyphs import GLYPHS_CANONICAL, GLYPH_GROUPS
 from ..types import Glyph
@@ -72,7 +72,7 @@ def _update_coherence(G, hist) -> None:
     """Actualizar coherencia global y su media móvil."""
 
     C = compute_coherence(G)
-    hist.setdefault("C_steps", []).append(C)
+    append_metric(hist, "C_steps", C)
 
     wbar_w = int(
         G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25))
@@ -81,16 +81,16 @@ def _update_coherence(G, hist) -> None:
     if cs:
         w = min(len(cs), max(1, wbar_w))
         wbar = sum(cs[-w:]) / w
-        hist.setdefault("W_bar", []).append(wbar)
+        append_metric(hist, "W_bar", wbar)
 
 
 def _update_phase_sync(G, hist) -> None:
     """Registrar sincronía de fase y orden de Kuramoto."""
 
     ps = phase_sync(G)
-    hist.setdefault("phase_sync", []).append(ps)
+    append_metric(hist, "phase_sync", ps)
     R = kuramoto_order(G)
-    hist.setdefault("kuramoto_R", []).append(R)
+    append_metric(hist, "kuramoto_R", R)
 
 
 def _update_sigma(G, hist) -> None:
@@ -100,17 +100,19 @@ def _update_sigma(G, hist) -> None:
         G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"])
     )
     gl = glyph_load(G, window=win)
-    hist.setdefault("glyph_load_estab", []).append(
-        gl.get("_estabilizadores", 0.0)
+    append_metric(
+        hist,
+        "glyph_load_estab",
+        gl.get("_estabilizadores", 0.0),
     )
-    hist.setdefault("glyph_load_disr", []).append(gl.get("_disruptivos", 0.0))
+    append_metric(hist, "glyph_load_disr", gl.get("_disruptivos", 0.0))
 
     dist = {k: v for k, v in gl.items() if not k.startswith("_")}
     sig, _ = sigma_vector(dist)
-    hist.setdefault("sense_sigma_x", []).append(sig.get("x", 0.0))
-    hist.setdefault("sense_sigma_y", []).append(sig.get("y", 0.0))
-    hist.setdefault("sense_sigma_mag", []).append(sig.get("mag", 0.0))
-    hist.setdefault("sense_sigma_angle", []).append(sig.get("angle", 0.0))
+    append_metric(hist, "sense_sigma_x", sig.get("x", 0.0))
+    append_metric(hist, "sense_sigma_y", sig.get("y", 0.0))
+    append_metric(hist, "sense_sigma_mag", sig.get("mag", 0.0))
+    append_metric(hist, "sense_sigma_angle", sig.get("angle", 0.0))
 
 
 # -------------
@@ -182,13 +184,13 @@ def _update_glyphogram(G, hist, counts, t, n_total):
         row[g] = (c / total) if normalize_series else c
 
     for_each_glyph(add_row)
-    hist.setdefault("glyphogram", []).append(row)
+    append_metric(hist, "glyphogram", row)
 
 
 def _update_latency_index(G, hist, n_total, n_latent, t):
     """Add latency index to history."""
     li = n_latent / max(1, n_total)
-    hist.setdefault("latency_index", []).append({"t": t, "value": li})
+    append_metric(hist, "latency_index", {"t": t, "value": li})
 
 
 def _update_epi_support(G, hist, t, thr):
@@ -201,8 +203,10 @@ def _update_epi_support(G, hist, t, thr):
             total += epi_val
             count += 1
     epi_norm = (total / count) if count else 0.0
-    hist.setdefault("EPI_support", []).append(
-        {"t": t, "size": count, "epi_norm": float(epi_norm)}
+    append_metric(
+        hist,
+        "EPI_support",
+        {"t": t, "size": count, "epi_norm": float(epi_norm)},
     )
 
 
@@ -219,8 +223,10 @@ def _update_morph_metrics(G, hist, counts, t):
     num = get_count(GLYPH_GROUPS.get("PP_num", ()))
     den = get_count(GLYPH_GROUPS.get("PP_den", ()))
     pp_val = 0.0 if den == 0 else num / den
-    hist.setdefault("morph", []).append(
-        {"t": t, "ID": id_val, "CM": cm_val, "NE": ne_val, "PP": pp_val}
+    append_metric(
+        hist,
+        "morph",
+        {"t": t, "ID": id_val, "CM": cm_val, "NE": ne_val, "PP": pp_val},
     )
 
 
@@ -313,8 +319,10 @@ def _metrics_step(G, *args, **kwargs):
         _update_phase_sync(G, hist)
         _update_sigma(G, hist)
         if hist.get("C_steps") and hist.get("stable_frac"):
-            hist.setdefault("iota", []).append(
-                hist["C_steps"][-1] * hist["stable_frac"][-1]
+            append_metric(
+                hist,
+                "iota",
+                hist["C_steps"][-1] * hist["stable_frac"][-1],
             )
     except (KeyError, AttributeError, TypeError) as exc:
         logger.debug("observer update failed: %s", exc)

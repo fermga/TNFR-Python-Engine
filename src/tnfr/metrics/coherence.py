@@ -8,7 +8,7 @@ from typing import Dict
 
 from ..constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_SI, COHERENCE
 from ..callback_utils import register_callback
-from ..glyph_history import ensure_history
+from ..glyph_history import ensure_history, append_metric
 from ..helpers import get_attr, clamp01
 
 
@@ -179,9 +179,9 @@ def coherence_matrix(G):
     }
 
     hist = ensure_history(G)
-    hist.setdefault(cfg.get("history_key", "W_sparse"), []).append(W)
-    hist.setdefault(cfg.get("Wi_history_key", "W_i"), []).append(Wi)
-    hist.setdefault(cfg.get("stats_history_key", "W_stats"), []).append(stats)
+    append_metric(hist, cfg.get("history_key", "W_sparse"), W)
+    append_metric(hist, cfg.get("Wi_history_key", "W_i"), Wi)
+    append_metric(hist, cfg.get("stats_history_key", "W_stats"), stats)
 
     return nodes, W
 

@@ -12,7 +12,7 @@ from .helpers import (
     clamp01,
 )
 from .callback_utils import register_callback
-from .glyph_history import ensure_history, last_glyph, count_glyphs
+from .glyph_history import ensure_history, last_glyph, count_glyphs, append_metric
 from .constants_glyphs import (
     ANGLE_MAP,
     ESTABILIZADORES,
@@ -199,11 +199,11 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
 
     sv["t"] = float(G.graph.get("_t", 0.0) if t is None else t)
 
-    hist.setdefault(key, []).append(sv)
+    append_metric(hist, key, sv)
 
     # Conteo de glyphs por paso (útil para rosa glífica)
     counts = count_glyphs(G, last_only=True)
-    hist.setdefault("sigma_counts", []).append({"t": sv["t"], **counts})
+    append_metric(hist, "sigma_counts", {"t": sv["t"], **counts})
 
     # Trayectoria por nodo (opcional)
     if cfg.get("per_node", False):
