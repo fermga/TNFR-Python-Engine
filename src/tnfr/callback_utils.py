@@ -8,10 +8,10 @@ from collections import defaultdict
 import logging
 
 from .constants import DEFAULTS
+from .trace import CallbackSpec
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
-    from . import CallbackSpec
 
 __all__ = ["CallbackEvent", "register_callback", "invoke_callbacks"]
 
@@ -54,7 +54,6 @@ def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
     ``None`` is returned when ``entry`` does not match any of the accepted
     formats.  The original ``entry`` is never mutated.
     """
-    from . import CallbackSpec
 
     if isinstance(entry, CallbackSpec):
         return entry
@@ -114,12 +113,10 @@ def register_callback(
     if isinstance(event, CallbackEvent):
         event = event.value
     if event not in _CALLBACK_EVENTS:
-        raise ValueError(f"Evento desconocido: {event}")
+        raise ValueError(f"Unknown event: {event}")
     if not callable(func):
-        raise TypeError("func debe ser callable")
+        raise TypeError("func must be callable")
     cbs = _ensure_callbacks(G)
-
-    from . import CallbackSpec
 
     cb_name = name or getattr(func, "__name__", None)
     new_cb = CallbackSpec(cb_name, func)

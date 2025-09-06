@@ -28,22 +28,22 @@ def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
     hist.append(str(glyph))
 
 
-def recent_glyph(nd: Dict[str, Any], glyph: str, ventana: int) -> bool:
-    """Return ``True`` if ``glyph`` appeared in last ``ventana`` emissions."""
+def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
+    """Return ``True`` if ``glyph`` appeared in last ``window`` emissions."""
     gl = str(glyph)
-    if ventana < 0:
-        raise ValueError("ventana debe ser >= 0")
+    if window < 0:
+        raise ValueError("window must be >= 0")
 
     last = last_glyph(nd)
-    if ventana <= 1:
+    if window <= 1:
         return last == gl
     if last == gl:
         return True
 
     hist = nd.get("glyph_history")
     if hist:
-        ventana -= 1
-        return any(gl == reciente for reciente in islice(reversed(hist), ventana))
+        window -= 1
+        return any(gl == reciente for reciente in islice(reversed(hist), window))
     return False
 
 
@@ -101,18 +101,25 @@ class HistoryDict(dict):
         heapq.heappush(self._heap, (cnt, key))
         self._maybe_compact()
 
-    def __getitem__(self, key):  # type: ignore[override]
-        val = super().__getitem__(key)
+    def _get_and_increment(self, key: str, default: Any = None, *, missing: bool = False):
+        if not missing:
+            val = super().__getitem__(key)
+        else:
+            val = super().setdefault(key, default)
+            if self._maxlen > 0 and isinstance(val, list):
+                val = deque(val, maxlen=self._maxlen)
+                super().__setitem__(key, val)
         self._increment(key)
         return val
 
+    def __getitem__(self, key):  # type: ignore[override]
+        return self._get_and_increment(key)
+
     def get(self, key, default=None):  # type: ignore[override]
         try:
-            val = super().__getitem__(key)
+            return self._get_and_increment(key)
         except KeyError:
             return default
-        self._increment(key)
-        return val
 
     def tracked_get(self, key, default=None):
         if key in self:
@@ -129,14 +136,8 @@ class HistoryDict(dict):
         if self._maxlen > 0 and isinstance(default, list):
             default = deque(default, maxlen=self._maxlen)
         if key in self:
-            val = self[key]
-        else:
-            val = super().setdefault(key, default)
-            if self._maxlen > 0 and isinstance(val, list):
-                val = deque(val, maxlen=self._maxlen)
-                super().__setitem__(key, val)
-        self._increment(key)
-        return val
+            return self._get_and_increment(key)
+        return self._get_and_increment(key, default, missing=True)
 
     def pop_least_used(self) -> Any:
         while self._heap:
@@ -146,7 +147,7 @@ class HistoryDict(dict):
                 value = super().pop(key)
                 self._maybe_compact()
                 return value
-        raise KeyError("HistoryDict is empty")
+        raise KeyError("HistoryDict is empty; cannot pop least used")
 
 
 def ensure_history(G) -> Dict[str, Any]:
@@ -174,8 +175,10 @@ def ensure_history(G) -> Dict[str, Any]:
         hist = HistoryDict(hist, maxlen=maxlen, compact_every=compact_every)
         G.graph["history"] = hist
     if maxlen > 0:
-        while len(hist) > maxlen:
+        excess = len(hist) - maxlen
+        for _ in range(excess):
             hist.pop_least_used()
+        # Note: trimming is O(n) only when history exceeds ``maxlen``
     return hist
 
 

@@ -1,6 +1,7 @@
 """Pruebas de compactación de _heap en HistoryDict."""
 
 from tnfr.glyph_history import HistoryDict
+import pytest
 
 
 def test_heap_compaction_single_key():
@@ -47,3 +48,9 @@ def test_heap_compaction_after_deletions():
     for _ in range(5):
         hist.pop_least_used()
         assert len(hist._heap) <= len(hist) * 2
+
+
+def test_pop_least_used_empty_message():
+    hist = HistoryDict()
+    with pytest.raises(KeyError, match="HistoryDict is empty; cannot pop least used"):
+        hist.pop_least_used()

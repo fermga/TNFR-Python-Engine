@@ -17,6 +17,7 @@ import logging
 import math
 import json
 import hashlib
+from functools import partial
 from statistics import fmean, StatisticsError
 from json import JSONDecodeError
 from pathlib import Path
@@ -270,6 +271,34 @@ def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
     return seq
 
 
+def _alias_lookup(
+    d: Dict[str, Any],
+    aliases: tuple[str, ...],
+    conv: Callable[[Any], T],
+    *,
+    default: Optional[Any] = None,
+    strict: bool = False,
+    log_level: int | None = None,
+) -> Optional[T]:
+    for key in aliases:
+        if key in d:
+            ok, val = _convert_value(
+                d[key], conv, strict=strict, key=key, log_level=log_level
+            )
+            if ok:
+                return val
+    if default is None:
+        return None
+    ok, val = _convert_value(
+        default,
+        conv,
+        strict=strict,
+        key="default",
+        log_level=logging.WARNING if not strict else log_level,
+    )
+    return val if ok else None
+
+
 @overload
 def alias_get(
     d: Dict[str, Any],
@@ -318,19 +347,14 @@ def alias_get(
     """
     if not isinstance(aliases, tuple):
         aliases = _validate_aliases(aliases)
-    for key in aliases:
-        if key in d:
-            ok, val = _convert_value(
-                d[key], conv, strict=strict, key=key, log_level=log_level
-            )
-            if ok:
-                return val
-    if default is None:
-        return None
-    ok, val = _convert_value(
-        default, conv, strict=strict, key="default", log_level=log_level
+    return _alias_lookup(
+        d,
+        aliases,
+        conv,
+        default=default,
+        strict=strict,
+        log_level=log_level,
     )
-    return val if ok else None
 
 
 def alias_set(
@@ -349,11 +373,7 @@ def alias_set(
     _, val = _convert_value(value, conv, strict=True)
     if val is None:
         raise ValueError("conversion yielded None")
-    for key in aliases:
-        if key in d:
-            d[key] = val
-            return val
-    key = aliases[0]
+    key = next((k for k in aliases if k in d), aliases[0])
     d[key] = val
     return val
 
@@ -417,7 +437,16 @@ def _alias_get(
     strict: bool = False,
     log_level: int | None = None,
 ) -> Optional[T]:
-    return alias_get(d, aliases, conv, default=default, strict=strict, log_level=log_level)
+    if not isinstance(aliases, tuple):
+        aliases = _validate_aliases(aliases)
+    return _alias_lookup(
+        d,
+        aliases,
+        conv,
+        default=default,
+        strict=strict,
+        log_level=log_level,
+    )
 
 
 def _alias_get_set(
@@ -435,6 +464,8 @@ def _alias_get_set(
         Valor por defecto a utilizar cuando la clave no existe.
     """
 
+    _base_get = partial(_alias_get, conv=conv)
+
     def _get(
         d: Dict[str, Any],
         aliases: Sequence[str],
@@ -444,10 +475,9 @@ def _alias_get_set(
         log_level: int | None = None,
     ) -> Optional[T]:
         """Obtiene un atributo usando :func:`alias_get`."""
-        return _alias_get(
+        return _base_get(
             d,
             aliases,
-            conv=conv,
             default=default,
             strict=strict,
             log_level=log_level,
