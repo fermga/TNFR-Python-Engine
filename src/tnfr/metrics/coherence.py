@@ -10,6 +10,7 @@ from ..constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_SI, COHERENCE
 from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
+from ..collections_utils import normalize_weights
 from ..helpers import clamp01
 
 
@@ -87,8 +88,7 @@ def coherence_matrix(G):
     wdict = dict(cfg.get("weights", {}))
     for k in ("phase", "epi", "vf", "si"):
         wdict.setdefault(k, 0.0)
-    wsum = sum(float(v) for v in wdict.values()) or 1.0
-    wnorm = {k: float(v) / wsum for k, v in wdict.items()}
+    wnorm = normalize_weights(wdict, ("phase", "epi", "vf", "si"), default=0.0)
 
     scope = str(cfg.get("scope", "neighbors")).lower()
     neighbors_only = scope != "all"
