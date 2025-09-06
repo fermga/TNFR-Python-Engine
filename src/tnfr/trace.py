@@ -13,6 +13,7 @@ from collections.abc import Mapping
 
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs, append_metric
+from .import_utils import optional_import
 
 
 class _KuramotoFn(Protocol):
@@ -32,27 +33,24 @@ class CallbackSpec(NamedTuple):
     func: Callable[..., Any]
 
 
-try:
-    from .gamma import kuramoto_R_psi as _kuramoto_R_psi
-except ImportError:  # pragma: no cover
-
-    def _kuramoto_R_psi(G: Any) -> tuple[float, float]:
-        return 0.0, 0.0
+def _kuramoto_fallback(G: Any) -> tuple[float, float]:
+    return 0.0, 0.0
 
 
-kuramoto_R_psi: _KuramotoFn = _kuramoto_R_psi
-
-try:
-    from .sense import sigma_vector_from_graph as _sigma_vector_from_graph
-except ImportError:  # pragma: no cover
-
-    def _sigma_vector_from_graph(
-        G: Any, weight_mode: str | None = None
-    ) -> Dict[str, float]:
-        return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0.0}
+kuramoto_R_psi: _KuramotoFn = optional_import(
+    "tnfr.gamma.kuramoto_R_psi", fallback=_kuramoto_fallback
+)
 
 
-sigma_vector_from_graph: _SigmaVectorFn = _sigma_vector_from_graph
+def _sigma_fallback(
+    G: Any, weight_mode: str | None = None
+) -> Dict[str, float]:
+    return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0.0}
+
+
+sigma_vector_from_graph: _SigmaVectorFn = optional_import(
+    "tnfr.sense.sigma_vector_from_graph", fallback=_sigma_fallback
+)
 
 # Public exports for this module
 __all__ = [

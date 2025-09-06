@@ -9,6 +9,7 @@ from .dynamics import step as _step, run as _run
 from .dynamics import default_compute_delta_nfr
 from .initialization import init_node_attrs
 from .glyph_history import append_metric
+from .import_utils import optional_import
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
@@ -77,15 +78,16 @@ def preparar_red(
     G.graph.setdefault("_epi_hist", deque(maxlen=maxlen))
     # Auto-attach del observador estándar si se pide
     if G.graph.get("ATTACH_STD_OBSERVER", False):
-        try:
-            from .observers import attach_standard_observer
-
+        attach_standard_observer = optional_import(
+            "tnfr.observers.attach_standard_observer"
+        )
+        if attach_standard_observer is not None:
             attach_standard_observer(G)
-        except ImportError as e:
+        else:
             append_metric(
                 G.graph,
                 "_callback_errors",
-                {"event": "attach_std_observer", "error": repr(e)},
+                {"event": "attach_std_observer", "error": "ImportError"},
             )
     # Hook explícito para ΔNFR (se puede sustituir luego con
     # dynamics.set_delta_nfr_hook)

@@ -18,6 +18,7 @@ from .metric import (
     COHERENCE,
     DIAGNOSIS,
 )
+from ..import_utils import optional_import
 
 # Valores que pueden asignarse directamente sin copiar
 IMMUTABLE_TYPES = (
@@ -95,12 +96,9 @@ def inject_defaults(
         if override or k not in G.graph:
             G.graph[k] = v if _is_immutable(v) else copy.deepcopy(v)
     G.graph["_tnfr_defaults_attached"] = True
-    try:  # local import para evitar dependencia circular
-        from ..helpers import ensure_node_offset_map
-
+    ensure_node_offset_map = optional_import("tnfr.helpers.ensure_node_offset_map")
+    if ensure_node_offset_map is not None:
         ensure_node_offset_map(G)
-    except ImportError:
-        pass
 
 
 def merge_overrides(G, **overrides) -> None:

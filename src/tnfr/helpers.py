@@ -25,29 +25,19 @@ from collections import OrderedDict
 
 import networkx as nx
 
-try:  # pragma: no cover - dependencia opcional
-    import numpy as np  # type: ignore
-except ImportError:  # pragma: no cover
-    np = None  # type: ignore
+from .import_utils import optional_import
+np = optional_import("numpy")  # type: ignore
 
-try:  # pragma: no cover - dependencia opcional
-    import tomllib  # type: ignore[attr-defined]
-    from tomllib import TOMLDecodeError  # type: ignore[attr-defined]
-except ModuleNotFoundError:  # pragma: no cover
-    try:
-        import tomli as tomllib  # type: ignore
-        from tomli import TOMLDecodeError  # type: ignore
-    except ModuleNotFoundError:  # pragma: no cover
-        tomllib = None  # type: ignore
-        TOMLDecodeError = Exception  # type: ignore[assignment]
+tomllib = optional_import("tomllib") or optional_import("tomli")  # type: ignore
+if tomllib is not None:
+    TOMLDecodeError = getattr(tomllib, "TOMLDecodeError", Exception)  # type: ignore[attr-defined]
+else:
+    TOMLDecodeError = Exception  # type: ignore[assignment]
 
-
-try:  # pragma: no cover - dependencia opcional
-    import yaml  # type: ignore
-    from yaml import YAMLError  # type: ignore
-except ImportError:  # pragma: no cover
-    yaml = None
-
+yaml = optional_import("yaml")  # type: ignore
+if yaml is not None:
+    YAMLError = getattr(yaml, "YAMLError", Exception)  # type: ignore[attr-defined]
+else:
     class YAMLError(Exception):  # type: ignore
         pass
 

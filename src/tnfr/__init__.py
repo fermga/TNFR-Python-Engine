@@ -13,23 +13,30 @@ example :mod:`tnfr.metrics`, :mod:`tnfr.observers` or
 
 from __future__ import annotations
 
-try:  # pragma: no cover
-    from importlib.metadata import version, PackageNotFoundError
-except ImportError:  # pragma: no cover
-    from importlib_metadata import version, PackageNotFoundError
+from .import_utils import optional_import
+
+_metadata = optional_import("importlib.metadata")
+if _metadata is None:  # pragma: no cover
+    _metadata = optional_import("importlib_metadata")
+
+version = _metadata.version  # type: ignore[attr-defined]
+PackageNotFoundError = _metadata.PackageNotFoundError  # type: ignore[attr-defined]
 
 try:
     __version__ = version("tnfr")
 except PackageNotFoundError:  # pragma: no cover
-    try:
-        import tomllib
+    tomllib = optional_import("tomllib")
+    if tomllib is not None:
         from pathlib import Path
 
-        with (Path(__file__).resolve().parents[2] / "pyproject.toml").open(
-            "rb"
-        ) as f:
-            __version__ = tomllib.load(f)["project"]["version"]
-    except (OSError, KeyError, ValueError):  # pragma: no cover
+        try:
+            with (Path(__file__).resolve().parents[2] / "pyproject.toml").open(
+                "rb"
+            ) as f:
+                __version__ = tomllib.load(f)["project"]["version"]
+        except (OSError, KeyError, ValueError):  # pragma: no cover
+            __version__ = "0+unknown"
+    else:  # pragma: no cover
         __version__ = "0+unknown"
 
 # Minimal public API re-exports

@@ -59,6 +59,7 @@ from .helpers import (
 from .callback_utils import invoke_callbacks
 from .glyph_history import recent_glyph, ensure_history, append_metric
 from .collections_utils import normalize_weights
+from .import_utils import optional_import
 from .selector import (
     _selector_thresholds,
     _norms_para_selector,
@@ -77,12 +78,7 @@ def _optional_numpy() -> Any | None:
     almacena en caché para evitar búsquedas repetidas.
     """
 
-    try:  # pragma: no cover - dependency opcional
-        import numpy  # type: ignore
-    except ImportError:  # pragma: no cover - dependency opcional
-        return None
-    else:
-        return numpy
+    return optional_import("numpy")
 
 
 def _np(*, warn: bool = False) -> Any | None:
