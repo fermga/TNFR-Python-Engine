@@ -20,7 +20,7 @@ def _init_phase(
     th_min: float,
     th_max: float,
 ) -> None:
-    """Inicializa ``θ`` en ``nd``."""
+    """Initialise ``θ`` in ``nd``."""
     if random_phase:
         if override or THETA_KEY not in nd:
             nd[THETA_KEY] = rng.uniform(th_min, th_max)
@@ -45,7 +45,7 @@ def _init_vf(
     vf_max_lim: float,
     clamp_to_limits: bool,
 ) -> None:
-    """Inicializa ``νf`` en ``nd``."""
+    """Initialise ``νf`` in ``nd``."""
     if mode == "uniform":
         vf = rng.uniform(float(vf_uniform_min), float(vf_uniform_max))
     elif mode == "normal":
@@ -76,7 +76,7 @@ def _init_si_epi(
     si_max: float,
     epi_val: float,
 ) -> None:
-    """Inicializa ``Si`` y ``EPI`` en ``nd``."""
+    """Initialise ``Si`` and ``EPI`` in ``nd``."""
     if override or "EPI" not in nd:
         nd["EPI"] = epi_val
 
@@ -86,16 +86,15 @@ def _init_si_epi(
 
 
 def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
-    """Inicializa EPI, θ, νf y Si en los nodos de ``G``.
+    """Initialise EPI, θ, νf and Si on the nodes of ``G``.
 
-    Los parámetros pueden personalizarse mediante entradas en ``G.graph``:
+    Parameters can be customised via ``G.graph`` entries:
     ``RANDOM_SEED``, ``INIT_RANDOM_PHASE``, ``INIT_THETA_MIN/MAX``,
     ``INIT_VF_MODE``, ``VF_MIN``, ``VF_MAX``, ``INIT_VF_MIN/MAX``,
-    ``INIT_VF_MEAN``, ``INIT_VF_STD`` y ``INIT_VF_CLAMP_TO_LIMITS``.
-    Se añaden rangos para ``Si`` vía ``INIT_SI_MIN`` y ``INIT_SI_MAX``, y para
-    ``EPI`` mediante ``INIT_EPI_VALUE``. Si ``INIT_VF_MIN`` es mayor que
-    ``INIT_VF_MAX``, los valores se intercambian y se ajustan al rango
-    delimitado por ``VF_MIN``/``VF_MAX``.
+    ``INIT_VF_MEAN``, ``INIT_VF_STD`` and ``INIT_VF_CLAMP_TO_LIMITS``.
+    Ranges for ``Si`` are added via ``INIT_SI_MIN`` and ``INIT_SI_MAX``, and
+    for ``EPI`` via ``INIT_EPI_VALUE``. If ``INIT_VF_MIN`` is greater than
+    ``INIT_VF_MAX``, values are swapped and clamped to ``VF_MIN``/``VF_MAX``.
     """
     seed = int(G.graph.get("RANDOM_SEED", 0))
     init_rand_phase = bool(

@@ -1,4 +1,4 @@
-"""Interfaz de línea de comandos."""
+"""Command-line interface."""
 
 from __future__ import annotations
 import argparse
@@ -63,7 +63,7 @@ __all__ = [
 
 
 def _flatten_tokens(obj: Any):
-    """Generador recursivo que rinde cada token en orden."""
+    """Recursive generator yielding each token in order."""
 
     if isinstance(obj, Sequence) and not isinstance(obj, str):
         for item in obj:
@@ -99,23 +99,23 @@ def _parse_tokens(obj: Any) -> list[Any]:
 
 
 def parse_thol(spec: dict[str, Any]) -> Any:
-    """Parsea la especificación de un bloque ``THOL``.
+    """Parse the specification of a ``THOL`` block.
 
     Parameters
     ----------
     spec:
-        Diccionario con las claves ``body``, ``repeat`` y ``close``.
+        Dictionary with keys ``body``, ``repeat`` and ``close``.
 
     Returns
     -------
     Any
-        Resultado de :func:`block` tras parsear los tokens del cuerpo.
+        Result of :func:`block` after parsing body tokens.
 
     Raises
     ------
     ValueError
-        Si ``close`` es una cadena que no corresponde a un nombre válido de
-        :class:`Glyph`.
+        If ``close`` is a string that does not correspond to a valid
+        :class:`Glyph` name.
     """
 
     close = spec.get("close")
@@ -234,7 +234,7 @@ def _attach_callbacks(G: "nx.Graph") -> None:
 
 
 def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
-    """Guardar o exportar el histórico si se solicitó."""
+    """Save or export history if requested."""
     if args.save_history or args.export_history_base:
         history = G.graph.get("history", {})
         if args.save_history:
@@ -244,14 +244,14 @@ def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
 
 
 def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
-    """Construye el grafo base a partir de los argumentos del CLI."""
+    """Build base graph from CLI arguments."""
     return build_graph(
         n=args.nodes, topology=args.topology, seed=args.seed, p=args.p
     )
 
 
 def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
-    """Aplica configuraciones provenientes del CLI o de archivos externos."""
+    """Apply settings from the CLI or external files."""
     if args.config:
         apply_config(G, Path(args.config))
     if args.dt is not None:
@@ -290,7 +290,7 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
 def register_callbacks_and_observer(
     G: "nx.Graph", args: argparse.Namespace
 ) -> None:
-    """Registra callbacks y observadores estándar."""
+    """Register standard callbacks and observers."""
     _attach_callbacks(G)
     if args.observer:
         attach_standard_observer(G)
@@ -298,7 +298,7 @@ def register_callbacks_and_observer(
 
 
 def _build_graph_from_args(args: argparse.Namespace) -> "nx.Graph":
-    """Construye un grafo configurado a partir de los argumentos del CLI."""
+    """Build a configured graph from CLI arguments."""
     G = build_basic_graph(args)
     apply_cli_config(G, args)
     register_callbacks_and_observer(G, args)
@@ -308,7 +308,7 @@ def _build_graph_from_args(args: argparse.Namespace) -> "nx.Graph":
 def resolve_program(
     args: argparse.Namespace, default: Optional[Any] = None
 ) -> Optional[Any]:
-    """Obtiene un programa a partir de un preset o un archivo de secuencia."""
+    """Obtain a program from a preset or sequence file."""
     if getattr(args, "preset", None):
         return get_preset(args.preset)
     if getattr(args, "sequence_file", None):
@@ -317,7 +317,7 @@ def resolve_program(
 
 
 def add_common_args(parser: argparse.ArgumentParser) -> None:
-    """Agrega los argumentos compartidos entre los subcomandos."""
+    """Add arguments shared across subcommands."""
     parser.add_argument("--nodes", type=int, default=24)
     parser.add_argument(
         "--topology", choices=["ring", "complete", "erdos"], default="ring"
@@ -346,7 +346,7 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
 
 
 def add_grammar_args(parser: argparse.ArgumentParser) -> None:
-    """Agrega las opciones de gramática y de histéresis del glyph."""
+    """Add grammar and glyph hysteresis options."""
     group = parser.add_argument_group("Grammar")
     for opt, kwargs in GRAMMAR_ARG_SPECS:
         dest = opt.lstrip("-").replace(".", "_")
@@ -354,7 +354,7 @@ def add_grammar_args(parser: argparse.ArgumentParser) -> None:
 
 
 def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
-    """Agrega las opciones de gramática y el selector de glyph."""
+    """Add grammar options and glyph selector."""
     add_grammar_args(parser)
     parser.add_argument(
         "--selector", choices=["basic", "param"], default="basic"
@@ -362,13 +362,13 @@ def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
 
 
 def add_history_export_args(parser: argparse.ArgumentParser) -> None:
-    """Agrega los argumentos para guardar o exportar el histórico."""
+    """Add arguments to save or export history."""
     for opt, kwargs in HISTORY_ARG_SPECS:
         parser.add_argument(opt, **kwargs)
 
 
 def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
-    """Agrega la opción para desactivar la gramática canónica."""
+    """Add option to disable canonical grammar."""
     parser.add_argument(
         "--no-canon",
         dest="grammar_canon",
@@ -379,7 +379,7 @@ def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
 
 
 def _add_run_parser(sub: argparse._SubParsersAction) -> None:
-    """Configura el subcomando ``run``."""
+    """Configure the ``run`` subcommand."""
     p_run = sub.add_parser(
         "run",
         help=(
@@ -397,7 +397,7 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
 
 
 def _add_sequence_parser(sub: argparse._SubParsersAction) -> None:
-    """Configura el subcomando ``sequence``."""
+    """Configure the ``sequence`` subcommand."""
     p_seq = sub.add_parser(
         "sequence",
         help="Ejecutar una secuencia (preset o YAML/JSON)",
@@ -420,7 +420,7 @@ def _add_sequence_parser(sub: argparse._SubParsersAction) -> None:
 
 
 def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
-    """Configura el subcomando ``metrics``."""
+    """Configure the ``metrics`` subcommand."""
     p_met = sub.add_parser(
         "metrics", help="Correr breve y volcar métricas clave"
     )
@@ -435,8 +435,7 @@ def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
 def run_program(
     G: Optional["nx.Graph"], program: Optional[Any], args: argparse.Namespace
 ) -> "nx.Graph":
-    """Construir el grafo si es necesario, ejecutar un programa y
-    guardar historial."""
+    """Build graph if needed, execute a program and save history."""
     if G is None:
         G = _build_graph_from_args(args)
 
@@ -452,7 +451,7 @@ def run_program(
 
 
 def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
-    """Registrar resúmenes rápidos y métricas opcionales."""
+    """Record quick summaries and optional metrics."""
     cfg_coh = G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"])
     cfg_diag = G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"])
     hist = G.graph.get("history", {})

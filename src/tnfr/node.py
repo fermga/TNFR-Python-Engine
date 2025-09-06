@@ -1,4 +1,4 @@
-"""Operaciones sobre nodos."""
+"""Node operations."""
 
 from __future__ import annotations
 from dataclasses import dataclass, field
@@ -50,8 +50,8 @@ def _nx_attr_property(
     Parameters
     ----------
     aliases:
-        Tupla inmutable de aliases usados para acceder al atributo en el nodo
-        ``networkx`` subyacente.
+        Immutable tuple of aliases used to access the attribute in the
+        underlying ``networkx`` node.
     default:
         Value returned when the attribute is missing.
     getter, setter:
@@ -250,7 +250,7 @@ class NodoTNFR:
 
 
 class NodoNX(NodoProtocol):
-    """Adaptador para nodos ``networkx``."""
+    """Adapter for ``networkx`` nodes."""
 
     def __init__(self, G, n):
         self.G = G
@@ -285,10 +285,10 @@ class NodoNX(NodoProtocol):
         return node
 
     def neighbors(self) -> Iterable[Hashable]:
-        """Itera identificadores (IDs) de vecinos.
+        """Iterate neighbour identifiers (IDs).
 
-        Si se necesitan objetos ``NodoNX``, envolver cada ID resultante con
-        :meth:`from_graph` para obtener la instancia cacheada correspondiente.
+        Wrap each resulting ID with :meth:`from_graph` to obtain the cached
+        ``NodoNX`` instance when actual node objects are required.
         """
         return self.G.neighbors(self.n)
 

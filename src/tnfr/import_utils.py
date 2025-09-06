@@ -15,28 +15,27 @@ logger = logging.getLogger(__name__)
 
 
 def optional_import(name: str, fallback: Any | None = None) -> Any | None:
-    """Importa ``name`` devolviendo ``fallback`` si falla.
+    """Import ``name`` returning ``fallback`` if it fails.
 
-    ``name`` puede apuntar a un módulo, submódulo o atributo. Si la
-    importación o el acceso al atributo fallan se emite una advertencia y se
-    devuelve ``fallback``.
+    ``name`` may refer to a module, submodule or attribute. If the import or
+    attribute access fails a warning is emitted and ``fallback`` is returned.
 
     Parameters
     ----------
     name:
-        Ruta completa del módulo, submódulo o atributo a importar.
+        Fully qualified module, submodule or attribute path.
     fallback:
-        Valor a devolver cuando la importación falla. Por defecto ``None``.
+        Value to return when import fails. Defaults to ``None``.
 
     Returns
     -------
     Any | None
-        Objeto importado o ``fallback`` si ocurre un error.
+        Imported object or ``fallback`` if an error occurs.
 
     Notes
     -----
-    Se devuelve ``fallback`` cuando el módulo no está disponible o el
-    atributo solicitado no existe. En ambos casos se emite una advertencia.
+    ``fallback`` is returned when the module is unavailable or the requested
+    attribute does not exist. In both cases a warning is emitted.
     """
 
     try:
@@ -59,19 +58,19 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
 
 @lru_cache(maxsize=1)
 def get_numpy(*, warn: bool = False) -> Any | None:
-    """Devuelve el módulo :mod:`numpy` o ``None`` si no está disponible.
+    """Return :mod:`numpy` or ``None`` if unavailable.
 
     Parameters
     ----------
     warn:
-        Si es ``True`` se registra una advertencia cuando la importación
-        falla. En caso contrario se registra a nivel ``DEBUG``.
+        When ``True`` a warning is logged if import fails; otherwise a ``DEBUG``
+        message is recorded.
     """
 
     module = optional_import("numpy")
     if module is None:
         log = logger.warning if warn else logger.debug
         log(
-            "Fallo al importar numpy, se continuará con el modo no vectorizado"
+            "Failed to import numpy; continuing in non-vectorised mode"
         )
     return module

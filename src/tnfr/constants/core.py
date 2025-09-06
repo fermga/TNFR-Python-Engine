@@ -1,4 +1,4 @@
-"""Constantes fundamentales."""
+"""Core constants."""
 
 from __future__ import annotations
 

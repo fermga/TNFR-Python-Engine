@@ -20,11 +20,11 @@ def _convert_value(
     key: str | None = None,
     log_level: int | None = None,
 ) -> tuple[bool, T | None]:
-    """Intenta convertir ``value`` usando ``conv`` manejando errores.
+    """Attempt to convert ``value`` using ``conv`` with error handling.
 
-    ``log_level`` controla el nivel de logging cuando la conversión falla en
-    modo laxo. Por defecto se usa ``logging.ERROR`` si ``strict`` es ``True`` y
-    ``logging.DEBUG`` en caso contrario.
+    ``log_level`` controls the logging level when conversion fails in lax
+    mode. Defaults to ``logging.ERROR`` if ``strict`` is ``True`` and
+    ``logging.DEBUG`` otherwise.
     """
     try:
         return True, conv(value)

@@ -1,4 +1,4 @@
-"""Funciones auxiliares."""
+"""Helper functions."""
 
 from __future__ import annotations
 from typing import (
@@ -122,11 +122,10 @@ __all__ = [
 
 @lru_cache(maxsize=DEFAULTS["JITTER_CACHE_SIZE"])
 def get_rng(seed: int, key: int) -> random.Random:
-    """Devuelve un ``random.Random`` cacheado por ``(seed, key)``.
+    """Return a cached ``random.Random`` for ``(seed, key)``.
 
-    Se utiliza un hash estable para combinar ambos valores, garantizando
-    reproducibilidad entre ejecuciones y evitando colisiones con
-    ``PYTHONHASHSEED``.
+    A stable hash combines both values to guarantee reproducibility across
+    runs and avoid ``PYTHONHASHSEED`` collisions.
     """
 
     seed_bytes = struct.pack(
@@ -169,10 +168,10 @@ def _get_parser(suffix: str) -> Callable[[str], Any]:
 
 
 def _format_structured_file_error(path: Path, e: Exception) -> str:
-    """Devuelve un mensaje de error formateado para ``path``.
+    """Return a formatted error message for ``path``.
 
-    Esta función centraliza la lógica de generación de mensajes al manejar
-    distintas excepciones ocurridas al leer o parsear archivos estructurados.
+    Centralises message generation when handling different exceptions raised
+    while reading or parsing structured files.
     """
 
     if isinstance(e, OSError):
@@ -191,9 +190,9 @@ def _format_structured_file_error(path: Path, e: Exception) -> str:
 
 
 class StructuredFileError(Exception):
-    """Error al leer o parsear un archivo estructurado.
+    """Error while reading or parsing a structured file.
 
-    La excepción original está disponible en ``__cause__``.
+    The original exception is available via ``__cause__``.
     """
 
     def __init__(self, path: Path, original: Exception):
@@ -202,15 +201,15 @@ class StructuredFileError(Exception):
 
 
 def read_structured_file(path: Path) -> Any:
-    """Lee un archivo JSON, YAML o TOML y devuelve los datos parseados.
+    """Read a JSON, YAML or TOML file and return parsed data.
 
     Raises
     ------
     StructuredFileError
-        Si ocurre un error de lectura o parseo. La excepción original se
-        expone como ``__cause__``.
+        If a read or parse error occurs. The original exception is exposed as
+        ``__cause__``.
     ValueError
-        Si la extensión de archivo no está soportada.
+        If the file extension is not supported.
     """
 
     suffix = path.suffix.lower()
@@ -233,10 +232,10 @@ def safe_write(
     encoding: str | None = "utf-8",
     **open_kwargs: Any,
 ) -> None:
-    """Escribe en ``path`` asegurando el directorio padre y manejando errores.
+    """Write to ``path`` ensuring parent directory exists and handle errors.
 
-    ``write`` recibe un objeto archivo abierto en ``path``. Cualquier
-    :class:`OSError` se reenvuelve con un mensaje descriptivo.
+    ``write`` receives a file object opened at ``path``. Any :class:`OSError`
+    is re-raised with a descriptive message.
     """
 
     Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -287,14 +286,13 @@ def _stable_json(obj: Any, visited: set[int] | None = None) -> Any:
 def node_set_checksum(
     G: "nx.Graph", nodes: Iterable[Any] | None = None
 ) -> str:
-    """Devuelve el SHA1 del conjunto de nodos de ``G`` ordenado.
+    """Return the SHA1 of ``G``'s node set in sorted order.
 
-    ``nodes`` permite reutilizar una colección ya obtenida para evitar recorrer
-    los nodos de ``G`` dos veces cuando el llamador ya los materializó.
+    ``nodes`` allows reusing a previously materialised collection to avoid
+    iterating over ``G`` twice.
 
-    Cada nodo se serializa a JSON con claves ordenadas y evitando incluir
-    direcciones de memoria, asegurando así una representación estable del
-    conjunto.
+    Each node is serialised to JSON with sorted keys and without memory
+    addresses, ensuring a stable representation of the set.
     """
 
     hasher = hashlib.blake2b(digest_size=16)
@@ -387,17 +385,17 @@ def cached_nodes_and_A(
 
 
 def clamp(x: float, a: float, b: float) -> float:
-    """Constriñe ``x`` al intervalo cerrado [a, b]."""
+    """Clamp ``x`` to the closed interval [a, b]."""
     return min(max(x, a), b)
 
 
 def clamp01(x: float) -> float:
-    """Ataja ``x`` a la banda [0, 1]."""
+    """Clamp ``x`` to the [0, 1] range."""
     return clamp(x, 0.0, 1.0)
 
 
 def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
-    """Promedio aritmético o ``default`` si ``xs`` está vacío."""
+    """Arithmetic mean or ``default`` if ``xs`` is empty."""
     try:
         return fmean(xs)
     except StatisticsError:
@@ -405,12 +403,12 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
 
 
 def _wrap_angle(a: float) -> float:
-    """Envuelve ángulo a (-π, π]."""
+    """Wrap angle to (-π, π]."""
     return (a + PI) % TWO_PI - PI
 
 
 def angle_diff(a: float, b: float) -> float:
-    """Diferencia mínima entre ``a`` y ``b`` en (-π, π]."""
+    """Minimum difference between ``a`` and ``b`` in (-π, π]."""
     return _wrap_angle(a - b)
 
 
@@ -498,20 +496,17 @@ def alias_get(
     strict: bool = False,
     log_level: int | None = None,
 ) -> Optional[T]:
-    """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor
-    convertido.
+    """Return the value for the first existing key in ``aliases``.
 
-    ``aliases`` puede ser cualquier secuencia de strings. Si no es una
-    tupla inmutable, se validará internamente mediante
-    :func:`_validate_aliases`. ``_validate_aliases`` garantiza que la
-    secuencia no esté vacía y que todos sus elementos sean strings.
+    ``aliases`` may be any sequence of strings. Non-tuple sequences are
+    validated internally via :func:`_validate_aliases`, which guarantees a
+    non-empty sequence of strings.
 
-    Si ninguna de las claves está presente o la conversión falla,
-    devuelve ``default`` convertido (o ``None`` si ``default`` es
-    ``None``).
+    If none of the keys are present or conversion fails, ``default`` is
+    returned (converted or ``None`` if ``default`` is ``None``).
 
-    ``log_level`` permite ajustar el nivel de logging cuando la conversión
-    falla en modo laxo.
+    ``log_level`` controls the logging level when conversion fails in lax
+    mode.
     """
     return _alias_get(
         d,
@@ -529,11 +524,10 @@ def alias_set(
     conv: Callable[[Any], T],
     value: Any,
 ) -> T:
-    """Asigna ``value`` convertido a la primera clave disponible de
-    ``aliases``.
+    """Assign ``value`` converted to the first available key in ``aliases``.
 
-    ``aliases`` puede ser cualquier secuencia de strings. Si no es una
-    tupla, se validará internamente mediante :func:`_validate_aliases`.
+    ``aliases`` may be any sequence of strings. Non-tuples are validated via
+    :func:`_validate_aliases`.
     """
     if not isinstance(aliases, tuple):
         aliases = _validate_aliases(aliases)
@@ -619,14 +613,14 @@ def _alias_get_set(
     *,
     default: T,
 ) -> tuple[_Getter[T], Callable[..., T]]:
-    """Crea funciones ``get``/``set`` para alias usando ``conv``.
+    """Create alias ``get``/``set`` functions using ``conv``.
 
     Parameters
     ----------
     conv:
-        Función de conversión a aplicar al valor recuperado.
+        Conversion function applied to retrieved values.
     default:
-        Valor por defecto a utilizar cuando la clave no existe.
+        Default value used when the key is missing.
     """
 
     _base_get = partial(_alias_get, conv=conv)
@@ -639,7 +633,7 @@ def _alias_get_set(
         strict: bool = False,
         log_level: int | None = None,
     ) -> Optional[T]:
-        """Obtiene un atributo usando :func:`alias_get`."""
+        """Obtain an attribute using :func:`alias_get`."""
         return _base_get(
             d,
             aliases,
@@ -649,7 +643,7 @@ def _alias_get_set(
         )
 
     def _set(d: Dict[str, Any], aliases: Sequence[str], value: T) -> T:
-        """Establece un atributo usando :func:`alias_set`."""
+        """Set an attribute using :func:`alias_set`."""
         return alias_set(d, aliases, conv, value)
 
     return _get, _set
@@ -680,7 +674,7 @@ def _recompute_abs_max(G, aliases: tuple[str, ...]):
 def _update_cached_abs_max(
     G, aliases: tuple[str, ...], n, value, *, key: str
 ) -> None:
-    """Actualiza ``G.graph[key]`` y ``G.graph[f"{key}_node"]``."""
+    """Update ``G.graph[key]`` and ``G.graph[f"{key}_node"]``."""
     node_key = f"{key}_node"
     val = abs(value)
     cur = float(G.graph.get(key, 0.0))
@@ -697,9 +691,9 @@ def _update_cached_abs_max(
 def set_attr_with_max(
     G, n, aliases: tuple[str, ...], value: float, *, cache: str
 ) -> None:
-    """Asigna ``value`` al atributo indicado y actualiza el máximo global.
+    """Assign ``value`` to the given attribute and update the global maximum.
 
-    ``aliases`` debe ser una tupla inmutable de claves válidas.
+    ``aliases`` must be an immutable tuple of valid keys.
     """
     val = float(value)
     set_attr(G.nodes[n], aliases, val)
@@ -707,12 +701,12 @@ def set_attr_with_max(
 
 
 def set_vf(G, n, value: float) -> None:
-    """Asigna ``νf`` y actualiza el máximo global."""
+    """Set ``νf`` and update the global maximum."""
     set_attr_with_max(G, n, ALIAS_VF, value, cache="_vfmax")
 
 
 def set_dnfr(G, n, value: float) -> None:
-    """Asigna ``ΔNFR`` y actualiza el máximo global."""
+    """Set ``ΔNFR`` and update the global maximum."""
     set_attr_with_max(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
 
 
@@ -722,10 +716,10 @@ def set_dnfr(G, n, value: float) -> None:
 
 
 def compute_dnfr_accel_max(G) -> dict:
-    """Calcula los máximos absolutos de |ΔNFR| y |d²EPI/dt²|.
+    """Compute absolute maxima of |ΔNFR| and |d²EPI/dt²|.
 
-    Devuelve un diccionario con las claves ``dnfr_max`` y ``accel_max``.
-    Si el grafo no tiene nodos, ambos valores serán ``0.0``.
+    Returns a dictionary with keys ``dnfr_max`` and ``accel_max``. If the graph
+    has no nodes both values are ``0.0``.
     """
 
     dnfr_max = 0.0
@@ -742,7 +736,7 @@ def compute_dnfr_accel_max(G) -> dict:
 
 
 def compute_coherence(G) -> float:
-    """Calcula la coherencia global C(t) a partir de ΔNFR y dEPI."""
+    """Compute global coherence C(t) from ΔNFR and dEPI."""
     dnfr_sum = 0.0
     depi_sum = 0.0
     count = 0
@@ -772,11 +766,10 @@ def neighbor_mean(
 
 
 def neighbor_phase_mean(obj, n=None) -> float:
-    """Promedio circular de las fases vecinales.
+    """Circular mean of neighbour phases.
 
-    Acepta un :class:`NodoProtocol` o un par ``(G, n)`` de ``networkx``. En el
-    segundo caso se envuelve en :class:`NodoNX` para reutilizar la misma
-    lógica.
+    Accepts a :class:`NodoProtocol` or a ``(G, n)`` pair from ``networkx``. The
+    latter is wrapped in :class:`NodoNX` to reuse the same logic.
     """
 
     from .node import NodoNX  # importación local para evitar ciclo
@@ -822,7 +815,7 @@ from .glyph_history import (  # noqa: E402
 
 
 def get_Si_weights(G: Any) -> tuple[float, float, float]:
-    """Obtiene y normaliza los pesos del índice de sentido."""
+    """Obtain and normalise weights for the sense index."""
     w = {**DEFAULTS["SI_WEIGHTS"], **G.graph.get("SI_WEIGHTS", {})}
     weights = normalize_weights(w, ("alpha", "beta", "gamma"), default=0.0)
     alpha = weights["alpha"]
@@ -840,10 +833,10 @@ def get_Si_weights(G: Any) -> tuple[float, float, float]:
 def precompute_trigonometry(
     G: Any,
 ) -> tuple[Dict[Any, float], Dict[Any, float], Dict[Any, float]]:
-    """Precálculo de cosenos y senos de ``θ`` por nodo.
+    """Precompute cosines and sines of ``θ`` per node.
 
-    Los valores se almacenan en ``G.graph`` y se reutilizan mientras la
-    estructura del grafo (versionada con ``"_edge_version"``) no cambie.
+    Values are stored in ``G.graph`` and reused while the graph structure
+    (versioned via ``"_edge_version"``) remains unchanged.
     """
 
     graph = G.graph
@@ -893,7 +886,7 @@ def compute_Si_node(
     neighbors: Dict[Any, Sequence[Any]],
     inplace: bool,
 ) -> float:
-    """Calcula ``Si`` para un solo nodo."""
+    """Compute ``Si`` for a single node."""
     vf = get_attr(nd, ALIAS_VF, 0.0)
     vf_norm = clamp01(abs(vf) / vfmax)
 
@@ -921,12 +914,12 @@ def compute_Si_node(
 
 
 def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
-    """Calcula Si por nodo y lo escribe en G.nodes[n]["Si"].
+    """Compute ``Si`` per node and write it to ``G.nodes[n]["Si"]``.
 
-    Fórmula:
+    Formula:
         Si = α·νf_norm + β·(1 - disp_fase_local) + γ·(1 - |ΔNFR|/max|ΔNFR|)
-    También guarda en ``G.graph`` los pesos normalizados y la
-    sensibilidad parcial (∂Si/∂componente).
+    Also stores normalised weights and partial sensitivity (∂Si/∂component)
+    in ``G.graph``.
     """
     graph = G.graph
     edge_version = int(graph.get("_edge_version", 0))
@@ -976,11 +969,10 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
 
 
 def increment_edge_version(G: Any) -> None:
-    """Incrementa el contador de versión de aristas en ``G.graph``.
+    """Increment the edge version counter in ``G.graph``.
 
-    Acepta un ``nx.Graph`` o un diccionario que actúe como ``G.graph`` y
-    actualiza ``"_edge_version"`` para invalidar caches dependientes de las
-    aristas.
+    Accepts an ``nx.Graph`` or a dictionary acting as ``G.graph`` and updates
+    ``"_edge_version"`` to invalidate edge-dependent caches.
     """
     graph = G.graph if hasattr(G, "graph") else G
     graph["_edge_version"] = int(graph.get("_edge_version", 0)) + 1
