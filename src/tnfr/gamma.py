@@ -10,7 +10,7 @@ from collections.abc import Mapping
 
 from .constants import ALIAS_THETA
 from .alias import get_attr
-from .helpers import node_set_checksum
+from .helpers import node_set_checksum, edge_version_cache
 
 
 logger = logging.getLogger(__name__)
@@ -24,21 +24,18 @@ def _ensure_kuramoto_cache(G, t) -> None:
     checksum = G.graph.get("_dnfr_nodes_checksum")
     if checksum is None:
         checksum = node_set_checksum(G)
-    edge_version = int(G.graph.get("_edge_version", 0))
-    nodes_sig = (len(G), checksum, edge_version)
-    cache = G.graph.get("_kuramoto_cache")
-    if (
-        cache is None
-        or cache.get("t") != t
-        or cache.get("nodes_sig") != nodes_sig
-    ):
+    nodes_sig = (len(G), checksum)
+
+    def builder() -> Dict[str, Any]:
         R, psi = kuramoto_R_psi(G)
-        G.graph["_kuramoto_cache"] = {
-            "t": t,
-            "nodes_sig": nodes_sig,
-            "R": R,
-            "psi": psi,
-        }
+        return {"t": t, "nodes_sig": nodes_sig, "R": R, "psi": psi}
+
+    cache = edge_version_cache(G, "_kuramoto", builder)
+    if cache.get("t") != t or cache.get("nodes_sig") != nodes_sig:
+        cache = builder()
+        graph = G.graph
+        graph["_kuramoto_cache"] = cache
+        graph["_kuramoto_version"] = int(graph.get("_edge_version", 0))
 
 
 def kuramoto_R_psi(G) -> Tuple[float, float]:
