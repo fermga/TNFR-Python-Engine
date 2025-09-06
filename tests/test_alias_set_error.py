@@ -1,7 +1,7 @@
 """Pruebas de alias_set para conversiones nulas."""
 
 import pytest
-from tnfr.helpers import alias_set
+from tnfr.alias import alias_set
 
 
 def test_alias_set_raises_value_error_on_none():

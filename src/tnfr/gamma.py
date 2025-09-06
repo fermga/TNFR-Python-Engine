@@ -9,7 +9,8 @@ import warnings
 from collections.abc import Mapping
 
 from .constants import ALIAS_THETA
-from .helpers import get_attr, node_set_checksum
+from .alias import get_attr
+from .helpers import node_set_checksum
 
 
 logger = logging.getLogger(__name__)

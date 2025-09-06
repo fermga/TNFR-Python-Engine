@@ -5,7 +5,8 @@ import networkx as nx
 
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
-from tnfr.helpers import get_attr, increment_edge_version
+from tnfr.alias import get_attr
+from tnfr.helpers import increment_edge_version
 
 
 def _setup_graph():

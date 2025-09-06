@@ -4,13 +4,12 @@ import networkx as nx
 import pytest
 
 from tnfr.constants import ALIAS_DNFR, ALIAS_SI, ALIAS_THETA, ALIAS_VF
-from tnfr.helpers import (
+from tnfr.metrics_utils import (
     compute_Si_node,
-    get_attr,
     get_Si_weights,
     precompute_trigonometry,
-    set_attr,
 )
+from tnfr.alias import get_attr, set_attr
 
 
 def test_get_si_weights_normalization():

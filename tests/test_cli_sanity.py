@@ -10,7 +10,7 @@ from tnfr.cli import (
     _args_to_dict,
 )
 from tnfr.constants import METRIC_DEFAULTS
-from tnfr.helpers import read_structured_file
+from tnfr.io import read_structured_file
 from tnfr import __version__
 
 
