@@ -27,13 +27,18 @@ def _validate_window(window: int) -> int:
     return window
 
 
-def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
-    """Add ``glyph`` to node history with maximum size ``window``."""
+def _ensure_glyph_history(nd: Dict[str, Any], window: int) -> deque:
     window = _validate_window(window)
     hist = nd.get("glyph_history")
     if not isinstance(hist, deque) or hist.maxlen != window:
         hist = deque(hist or [], maxlen=window)
         nd["glyph_history"] = hist
+    return hist
+
+
+def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
+    """Add ``glyph`` to node history with maximum size ``window``."""
+    hist = _ensure_glyph_history(nd, window)
     hist.append(str(glyph))
 
 
@@ -44,9 +49,7 @@ def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
     if window == 0:
         return False
 
-    hist = nd.get("glyph_history")
-    if not hist:
-        return False
+    hist = _ensure_glyph_history(nd, window)
     return gl in islice(reversed(hist), window)
 
 
@@ -121,14 +124,23 @@ class HistoryDict(dict):
         self._increment(key)
         return val
 
-    def __getitem__(self, key):  # type: ignore[override]
-        return self._get_and_increment(key)
-
-    def get(self, key, default=None):  # type: ignore[override]
+    def _get_maybe_default(
+        self, key: str, default: Any = None, *, missing: bool = False, soft: bool = False
+    ) -> Any:
         try:
             return self._get_and_increment(key)
         except KeyError:
-            return default
+            if missing:
+                return self._get_and_increment(key, default, missing=True)
+            if soft:
+                return default
+            raise
+
+    def __getitem__(self, key):  # type: ignore[override]
+        return self._get_maybe_default(key)
+
+    def get(self, key, default=None):  # type: ignore[override]
+        return self._get_maybe_default(key, default, soft=True)
 
     def __setitem__(self, key, value):  # type: ignore[override]
         super().__setitem__(key, value)
@@ -138,10 +150,7 @@ class HistoryDict(dict):
             self._prune_heap()
 
     def setdefault(self, key, default=None):  # type: ignore[override]
-        try:
-            return self._get_and_increment(key)
-        except KeyError:
-            return self._get_and_increment(key, default, missing=True)
+        return self._get_maybe_default(key, default, missing=True)
 
     def pop_least_used(self) -> Any:
         while self._heap:

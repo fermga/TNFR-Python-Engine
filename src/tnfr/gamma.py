@@ -21,6 +21,7 @@ def _ensure_kuramoto_cache(G, t) -> None:
     """Cache ``(R, ψ)`` for the current step ``t`` using ``edge_version_cache``."""
     checksum = G.graph.get("_dnfr_nodes_checksum")
     if checksum is None:
+        # reuse checksum from cached_nodes_and_A when available
         checksum = node_set_checksum(G)
     nodes_sig = (len(G), checksum)
     max_steps = int(G.graph.get("KURAMOTO_CACHE_STEPS", 1))

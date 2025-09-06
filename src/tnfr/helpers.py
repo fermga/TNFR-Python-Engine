@@ -128,17 +128,28 @@ def _neighbor_phase_mean(
     trig=None,
     cache: weakref.WeakKeyDictionary[Any, tuple[float, float] | None] | None = None,
 ) -> float:
-    x = y = 0.0
-    count = 0
     if trig is not None:
         cos_th, sin_th = trig.cos, trig.sin
         it = ((cos_th[v], sin_th[v]) for v in node.neighbors())
-        fallback = get_attr(node.G.nodes[node.n], ALIAS_THETA, 0.0)
     else:
         if cache is None:
             cache = weakref.WeakKeyDictionary()
         it = (get_cached_trig(v, cache) for v in node.neighbors())
-        fallback = get_attr(getattr(node, "__dict__", {}), ALIAS_THETA, 0.0)
+    fallback = _neighbor_theta_fallback(node, trig)
+    return _phase_mean_from_iter(it, fallback)
+
+
+def _neighbor_theta_fallback(node, trig) -> float:
+    if trig is not None:
+        return get_attr(node.G.nodes[node.n], ALIAS_THETA, 0.0)
+    return get_attr(getattr(node, "__dict__", {}), ALIAS_THETA, 0.0)
+
+
+def _phase_mean_from_iter(
+    it: Iterable[tuple[float, float] | None], fallback: float
+) -> float:
+    x = y = 0.0
+    count = 0
     for cs in it:
         if cs is None:
             continue

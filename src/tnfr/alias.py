@@ -45,11 +45,11 @@ def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
     return seq
 
 
-def _alias_lookup(
+def _alias_resolve(
     d: Dict[str, Any],
     aliases: Sequence[str],
-    conv: Callable[[Any], T],
     *,
+    conv: Callable[[Any], T],
     default: Optional[Any] = None,
     strict: bool = False,
     log_level: int | None = None,
@@ -111,7 +111,7 @@ def alias_get(
     log_level: int | None = None,
 ) -> Optional[T]:
     """Return the value for the first existing key in ``aliases``."""
-    return _alias_get(
+    return _alias_resolve(
         d,
         aliases,
         conv=conv,
@@ -168,32 +168,13 @@ class _Setter(Protocol[T]):
         ...
 
 
-def _alias_get(
-    d: Dict[str, Any],
-    aliases: Sequence[str],
-    *,
-    conv: Callable[[Any], T],
-    default: Optional[Any] = None,
-    strict: bool = False,
-    log_level: int | None = None,
-) -> Optional[T]:
-    return _alias_lookup(
-        d,
-        aliases,
-        conv=conv,
-        default=default,
-        strict=strict,
-        log_level=log_level,
-    )
-
-
 def _alias_get_set(
     conv: Callable[[Any], T],
     *,
     default: T | None = None,
 ) -> tuple[_Getter[T], _Setter[T]]:
     """Create alias ``get``/``set`` functions using ``conv``."""
-    _base_get = partial(_alias_get, conv=conv)
+    _base_get = partial(_alias_resolve, conv=conv)
 
     def _get(
         d: Dict[str, Any],

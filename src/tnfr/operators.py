@@ -61,6 +61,34 @@ def _get_networkx_modules():
     return nx, nx_comm
 
 
+def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
+    if isinstance(node, import_nodonx()):
+        return _node_offset(node.G, node.n), id(node.G)
+    uid = getattr(node, "_noise_uid", None)
+    if uid is None:
+        uid = id(node)
+        setattr(node, "_noise_uid", uid)
+    return int(uid), id(node)
+
+
+def _get_jitter_rng(
+    node: NodoProtocol,
+    seed: int,
+    seed_key: int,
+    cache: Optional[Dict[int, random.Random]],
+    cache_size: int,
+) -> random.Random:
+    if cache is None:
+        if cache_size <= 0:
+            return make_rng(seed, seed_key)
+        return get_rng(seed, seed_key)
+    rng = cache.get(seed_key)
+    if rng is None:
+        rng = make_rng(seed, seed_key)
+        cache[seed_key] = rng
+    return rng
+
+
 def random_jitter(
     node: NodoProtocol,
     amplitude: float,
@@ -86,33 +114,12 @@ def random_jitter(
         return 0.0
 
     base_seed = int(node.graph.get("RANDOM_SEED", 0))
-
-    if isinstance(node, import_nodonx()):
-        seed_key = _node_offset(node.G, node.n)
-        scope_id = id(node.G)
-    else:
-        uid = getattr(node, "_noise_uid", None)
-        if uid is None:
-            uid = id(node)
-            setattr(node, "_noise_uid", uid)
-        seed_key = int(uid)
-        scope_id = id(node)
-
+    seed_key, scope_id = _resolve_jitter_seed(node)
     seed = base_seed ^ scope_id
     cache_size = int(
         node.graph.get("JITTER_CACHE_SIZE", DEFAULTS["JITTER_CACHE_SIZE"])
     )
-    if cache is None:
-        if cache_size <= 0:
-            rng = make_rng(seed, seed_key)  # fresh each call
-        else:
-            rng = get_rng(seed, seed_key)
-    else:
-        rng = cache.get(seed_key)
-        if rng is None:
-            rng = make_rng(seed, seed_key)
-            cache[seed_key] = rng
-
+    rng = _get_jitter_rng(node, seed, seed_key, cache, cache_size)
     return rng.uniform(-amplitude, amplitude)
 
 
