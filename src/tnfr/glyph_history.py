@@ -185,7 +185,12 @@ def last_glyph(nd: Dict[str, Any]) -> str | None:
 
 
 def count_glyphs(G, window: int | None = None, *, last_only: bool = False) -> Counter:
-    """Count recent glyphs in the network."""
+    """Count recent glyphs in the network.
+
+    If ``window`` is ``None``, the full history for each node is used. When
+    ``window`` is less than or equal to zero, no glyphs are counted for any
+    node.
+    """
     counts: Counter[str] = Counter()
     for _, nd in G.nodes(data=True):
         if last_only:
@@ -195,9 +200,12 @@ def count_glyphs(G, window: int | None = None, *, last_only: bool = False) -> Co
             hist = nd.get("glyph_history")
             if not hist:
                 continue
-            if window is not None and window > 0:
+            if window is not None:
                 window_int = int(window)
-                seq = islice(reversed(hist), window_int)
+                if window_int > 0:
+                    seq = islice(reversed(hist), window_int)
+                else:
+                    seq = []
             else:
                 seq = hist
         counts.update(seq)

@@ -7,8 +7,8 @@ from tnfr.trace import (
     _callback_names,
     gamma_field,
     grammar_field,
+    CallbackSpec,
 )
-from tnfr import CallbackSpec
 from tnfr.callback_utils import register_callback, invoke_callbacks
 
 
