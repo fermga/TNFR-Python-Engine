@@ -73,9 +73,15 @@ def _node_offset(G, n) -> int:
 
 
 def _jitter_base(seed: int, key: int) -> random.Random:
-    """Return a ``random.Random`` instance seeded from ``seed`` and ``key``."""
+    """Return a ``random.Random`` instance seeded from ``seed`` and ``key``.
+
+    A stable ``blake2b`` hash is used so the derived seed is reproducible
+    across Python processes.
+    """
     seed_input = (seed, key)
-    seed_int = hash(seed_input)
+    seed_int = int.from_bytes(
+        hashlib.blake2b(repr(seed_input).encode()).digest()[:8], "big"
+    )
     return random.Random(seed_int)
 
 
