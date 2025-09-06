@@ -16,6 +16,16 @@ def test_add_edge_stores_weight():
     assert math.isclose(b.edge_weight(a), 2.5)
 
 
+def test_add_edge_stores_weight_nx():
+    G = nx.Graph()
+    G.add_nodes_from([0, 1])
+    a = NodoNX(G, 0)
+    b = NodoNX(G, 1)
+    a.add_edge(b, weight=2.5)
+    assert a.has_edge(b)
+    assert math.isclose(G[0][1]["weight"], 2.5)
+
+
 def test_missing_edge_returns_zero():
     a = NodoTNFR()
     b = NodoTNFR()
@@ -32,6 +42,16 @@ def test_add_edge_preserves_weight_by_default():
     assert math.isclose(b.edge_weight(a), 1.0)
 
 
+def test_add_edge_preserves_weight_by_default_nx():
+    G = nx.Graph()
+    G.add_nodes_from([0, 1])
+    a = NodoNX(G, 0)
+    b = NodoNX(G, 1)
+    a.add_edge(b, weight=1.0)
+    a.add_edge(b, weight=2.0)
+    assert math.isclose(G[0][1]["weight"], 1.0)
+
+
 def test_add_edge_overwrite():
     a = NodoTNFR()
     b = NodoTNFR()
@@ -39,6 +59,16 @@ def test_add_edge_overwrite():
     a.add_edge(b, weight=2.0, overwrite=True)
     assert math.isclose(a.edge_weight(b), 2.0)
     assert math.isclose(b.edge_weight(a), 2.0)
+
+
+def test_add_edge_overwrite_nx():
+    G = nx.Graph()
+    G.add_nodes_from([0, 1])
+    a = NodoNX(G, 0)
+    b = NodoNX(G, 1)
+    a.add_edge(b, weight=1.0)
+    a.add_edge(b, weight=2.0, overwrite=True)
+    assert math.isclose(G[0][1]["weight"], 2.0)
 
 
 def test_add_edge_rejects_negative_weight():
