@@ -103,11 +103,19 @@ def neighbor_phase_mean(obj, n=None) -> float:
 
     x = y = 0.0
     count = 0
+    G = getattr(node, "G", None)
+    nodes = G.nodes if G is not None else None
+    theta_cache: Dict[Any, float] = {}
     for v in node.neighbors():
-        if hasattr(v, "theta"):
-            th = getattr(v, "theta", 0.0)
-        else:
-            th = NodoNX.from_graph(node.G, v).theta  # type: ignore[attr-defined]
+        th = theta_cache.get(v)
+        if th is None:
+            if hasattr(v, "theta"):
+                th = getattr(v, "theta", 0.0)
+            elif nodes is not None:
+                th = get_attr(nodes[v], ALIAS_THETA, 0.0)
+            else:
+                th = NodoNX.from_graph(node.G, v).theta  # type: ignore[attr-defined]
+            theta_cache[v] = th
         x += math.cos(th)
         y += math.sin(th)
         count += 1
