@@ -6,7 +6,6 @@ import logging
 import math
 import random
 from collections import deque
-from functools import lru_cache
 from typing import Dict, Any, Literal
 
 import networkx as nx
@@ -59,7 +58,7 @@ from .helpers import (
 from .callback_utils import invoke_callbacks
 from .glyph_history import recent_glyph, ensure_history, append_metric
 from .collections_utils import normalize_weights
-from .import_utils import optional_import
+from .import_utils import get_numpy
 from .selector import (
     _selector_thresholds,
     _norms_para_selector,
@@ -68,22 +67,6 @@ from .selector import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-@lru_cache(maxsize=1)
-def _np(*, warn: bool = False) -> Any | None:
-    """Devuelve el módulo ``numpy`` o ``None`` si no está disponible.
-
-    Realiza la importación de forma perezosa y cachea el resultado para
-    evitar búsquedas repetidas."""
-
-    module = optional_import("numpy")
-    if module is None:
-        log = logger.warning if warn else logger.debug
-        log(
-            "Fallo al importar numpy, se continuará con el modo no vectorizado"
-        )
-    return module
 
 
 
@@ -163,7 +146,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
     if weights is None:
         weights = _configure_dnfr_weights(G)
 
-    use_numpy = _np() is not None and G.graph.get("vectorized_dnfr")
+    use_numpy = get_numpy() is not None and G.graph.get("vectorized_dnfr")
 
     # Cacheo de la lista de nodos y la matriz de adyacencia
     nodes, A = cached_nodes_and_A(G, cache_size=cache_size)
@@ -253,7 +236,7 @@ def _compute_dnfr_common(
     theta = data["theta"]
     epi = data["epi"]
     vf = data["vf"]
-    np = _np()
+    np = get_numpy()
 
     if np is not None and isinstance(count, np.ndarray):
         mask = count > 0
@@ -296,7 +279,7 @@ def _compute_dnfr_common(
 
 def _compute_dnfr_numpy(G, data) -> None:
     """Estrategia vectorizada usando ``numpy``."""
-    np = _np(warn=True)
+    np = get_numpy(warn=True)
     if np is None:  # pragma: no cover - check at runtime
         raise RuntimeError("numpy no disponible para la versión vectorizada")
     nodes = data["nodes"]
@@ -401,7 +384,7 @@ def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
         weights=data["weights"],
         hook_name="default_compute_delta_nfr",
     )
-    if _np() is not None and G.graph.get("vectorized_dnfr"):
+    if get_numpy() is not None and G.graph.get("vectorized_dnfr"):
         _compute_dnfr_numpy(G, data)
     else:
         _compute_dnfr_loops(G, data)

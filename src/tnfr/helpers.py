@@ -11,6 +11,7 @@ from typing import (
     Optional,
     overload,
     Protocol,
+    TYPE_CHECKING,
 )
 import logging
 import math
@@ -24,31 +25,29 @@ from json import JSONDecodeError
 from pathlib import Path
 from collections import OrderedDict
 
-import networkx as nx
+from .import_utils import optional_import, get_numpy
 
-from .import_utils import optional_import
-np = optional_import("numpy")  # type: ignore
+if TYPE_CHECKING:  # pragma: no cover - solo para type checkers
+    import networkx as nx
 
 
-def _load_optional_module(
-    names: Sequence[str], err_attr: str
-) -> tuple[Any | None, type[Exception]]:
-    for name in names:
-        mod = optional_import(name)
-        if mod is not None:
-            return mod, getattr(mod, err_attr, Exception)
+tomllib = optional_import("tomllib") or optional_import("tomli")
+if tomllib is not None:
+    TOMLDecodeError = getattr(tomllib, "TOMLDecodeError", Exception)
+    has_toml = True
+else:  # pragma: no cover - depende de tomllib/tomli
+    has_toml = False
 
-    class MissingError(Exception):
+    class TOMLDecodeError(Exception):
         pass
 
-    return None, MissingError
+yaml = optional_import("yaml")
+if yaml is not None:
+    YAMLError = getattr(yaml, "YAMLError", Exception)
+else:  # pragma: no cover - depende de pyyaml
 
-
-tomllib, TOMLDecodeError = _load_optional_module(
-    ["tomllib", "tomli"], "TOMLDecodeError"
-)
-has_toml = tomllib is not None
-yaml, YAMLError = _load_optional_module(["yaml"], "YAMLError")
+    class YAMLError(Exception):
+        pass
 
 
 from .constants import (
@@ -77,7 +76,8 @@ T = TypeVar("T")
 __all__ = [
     "MAX_MATERIALIZE_DEFAULT",
     "read_structured_file",
-    "ensure_parent",
+    "safe_write",
+    "StructuredFileError",
     "ensure_collection",
     "clamp",
     "clamp01",
@@ -190,8 +190,29 @@ def _format_structured_file_error(path: Path, e: Exception) -> str:
     return f"Error al parsear {path}: {e}"
 
 
+class StructuredFileError(Exception):
+    """Error al leer o parsear un archivo estructurado.
+
+    La excepción original está disponible en ``__cause__``.
+    """
+
+    def __init__(self, path: Path, original: Exception):
+        super().__init__(_format_structured_file_error(path, original))
+        self.path = path
+
+
 def read_structured_file(path: Path) -> Any:
-    """Lee un archivo JSON, YAML o TOML y devuelve los datos parseados."""
+    """Lee un archivo JSON, YAML o TOML y devuelve los datos parseados.
+
+    Raises
+    ------
+    StructuredFileError
+        Si ocurre un error de lectura o parseo. La excepción original se
+        expone como ``__cause__``.
+    ValueError
+        Si la extensión de archivo no está soportada.
+    """
+
     suffix = path.suffix.lower()
     try:
         parser = _get_parser(suffix)
@@ -201,12 +222,32 @@ def read_structured_file(path: Path) -> Any:
         text = path.read_text(encoding="utf-8")
         return parser(text)
     except Exception as e:
-        raise ValueError(_format_structured_file_error(path, e)) from e
+        raise StructuredFileError(path, e) from e
 
 
-def ensure_parent(path: str | Path) -> None:
-    """Crea el directorio padre de ``path`` si hace falta."""
+def safe_write(
+    path: str | Path,
+    write: Callable[[Any], Any],
+    *,
+    mode: str = "w",
+    encoding: str | None = "utf-8",
+    **open_kwargs: Any,
+) -> None:
+    """Escribe en ``path`` asegurando el directorio padre y manejando errores.
+
+    ``write`` recibe un objeto archivo abierto en ``path``. Cualquier
+    :class:`OSError` se reenvuelve con un mensaje descriptivo.
+    """
+
     Path(path).parent.mkdir(parents=True, exist_ok=True)
+    open_params = dict(mode=mode, **open_kwargs)
+    if encoding is not None:
+        open_params["encoding"] = encoding
+    try:
+        with open(path, **open_params) as f:
+            write(f)
+    except OSError as e:
+        raise OSError(f"Failed to write file {path}: {e}") from e
 
 
 # -------------------------
@@ -256,7 +297,7 @@ def node_set_checksum(
     conjunto.
     """
 
-    sha1 = hashlib.sha1()
+    hasher = hashlib.blake2b(digest_size=16)
 
     def serialise(n: Any) -> str:
         return json.dumps(
@@ -270,9 +311,9 @@ def node_set_checksum(
     sorted_nodes = sorted(node_iter, key=lambda n: serialise(n))
     for idx, n in enumerate(sorted_nodes):
         if idx:
-            sha1.update(b"|")
-        sha1.update(serialise(n).encode("utf-8"))
-    return sha1.hexdigest()
+            hasher.update(b"|")
+        hasher.update(serialise(n).encode("utf-8"))
+    return hasher.hexdigest()
 
 
 def ensure_node_offset_map(G) -> Dict[Any, int]:
@@ -297,7 +338,7 @@ def ensure_node_offset_map(G) -> Dict[Any, int]:
 
 
 def cached_nodes_and_A(
-    G: nx.Graph, *, cache_size: int | None = 1
+    G: "nx.Graph", *, cache_size: int | None = 1
 ) -> tuple[list[int], Any]:
     """Return list of nodes and adjacency matrix for ``G`` with caching.
 
@@ -320,7 +361,10 @@ def cached_nodes_and_A(
     nodes_and_A = cache.get(key)
     if nodes_and_A is None:
         nodes = nodes_list
+        np = get_numpy()
         if np is not None:
+            import networkx as nx  # importación tardía
+
             A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
         else:  # pragma: no cover - dependiente de numpy
             A = None
