@@ -90,14 +90,7 @@ def _trace_setup(
 
 def _callback_names(callbacks: list[CallbackSpec]) -> list[str]:
     """Return callback names from ``callbacks``."""
-
-    names: list[str] = []
-    for cb in callbacks:
-        if cb.name is not None:
-            names.append(cb.name)
-        else:
-            names.append(getattr(cb.func, "__name__", "fn"))
-    return names
+    return [cb.name or getattr(cb.func, "__name__", "fn") for cb in callbacks]
 
 
 def _safe_graph_mapping(G, key: str) -> Optional[Dict[str, Any]]:

@@ -73,6 +73,7 @@ class HistoryDict(dict):
         self._maxlen = maxlen
         self._compact_every = max(1, int(compact_every))
         self._ops = 0
+        self._dirty = 0
         self._counts: Dict[str, int] = {}
         self._heap: list[tuple[int, str]] = []
         if self._maxlen > 0:
@@ -83,19 +84,17 @@ class HistoryDict(dict):
                 heapq.heappush(self._heap, (0, k))
 
     def _compact_heap(self) -> None:
-        self._heap = [
-            (cnt, k)
-            for cnt, k in self._heap
-            if k in self and self._counts.get(k) == cnt
-        ]
-        heapq.heapify(self._heap)
+        clean: list[tuple[int, str]] = []
+        for cnt, k in self._heap:
+            if k in self and self._counts.get(k) == cnt:
+                clean.append((cnt, k))
+        heapq.heapify(clean)
+        self._heap = clean
+        self._dirty = 0
 
     def _maybe_compact(self) -> None:
         self._ops += 1
-        if (
-            self._ops >= self._compact_every
-            and len(self._heap) > len(self) * 2
-        ):
+        if self._ops >= self._compact_every and self._dirty > len(self):
             self._compact_heap()
             self._ops = 0
 
@@ -103,6 +102,7 @@ class HistoryDict(dict):
         cnt = self._counts.get(key, 0) + 1
         self._counts[key] = cnt
         heapq.heappush(self._heap, (cnt, key))
+        self._dirty += 1
         self._maybe_compact()
 
     def _get_and_increment(
@@ -136,6 +136,7 @@ class HistoryDict(dict):
         super().__setitem__(key, value)
         self._counts.setdefault(key, 0)
         heapq.heappush(self._heap, (self._counts[key], key))
+        self._dirty += 1
         self._maybe_compact()
 
     def setdefault(self, key, default=None):  # type: ignore[override]
@@ -205,24 +206,23 @@ def count_glyphs(
 
     If ``window`` is ``None``, the full history for each node is used. When
     ``window`` is less than or equal to zero, no glyphs are counted for any
-    node.
-    """
-    counts: Counter[str] = Counter()
-    for _, nd in G.nodes(data=True):
+    node."""
+
+    def _iter_seq(nd: Dict[str, Any]) -> Iterable[str]:
         if last_only:
             g = last_glyph(nd)
-            seq: Iterable[str] = [g] if g else []
-        else:
-            hist = nd.get("glyph_history")
-            if not hist:
-                continue
-            if window is not None:
-                window_int = int(window)
-                if window_int > 0:
-                    seq = islice(reversed(hist), window_int)
-                else:
-                    seq = []
-            else:
-                seq = hist
-        counts.update(seq)
+            return [g] if g else []
+        hist = nd.get("glyph_history")
+        if not hist:
+            return []
+        if window is None:
+            return hist
+        window_int = int(window)
+        if window_int <= 0:
+            return []
+        return islice(reversed(hist), window_int)
+
+    counts: Counter[str] = Counter()
+    for _, nd in G.nodes(data=True):
+        counts.update(_iter_seq(nd))
     return counts

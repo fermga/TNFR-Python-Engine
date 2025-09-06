@@ -86,6 +86,11 @@ def test_sigma_from_vectors_accepts_single_complex():
     assert vec["y"] == pytest.approx(1.0)
 
 
+def test_sigma_from_vectors_rejects_invalid_iterable():
+    with pytest.raises(TypeError, match="iterable of complex"):
+        _sigma_from_vectors("abc")
+
+
 def test_unknown_glyph_does_not_shift_average():
     base, _ = _sigma_from_vectors([glyph_unit(Glyph.AL.value)])
     with_unknown, _ = _sigma_from_vectors(

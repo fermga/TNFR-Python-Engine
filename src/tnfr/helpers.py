@@ -18,7 +18,7 @@ import json
 import hashlib
 import random
 import struct
-from functools import partial, lru_cache
+from functools import lru_cache, partial
 from statistics import fmean, StatisticsError
 from json import JSONDecodeError
 from pathlib import Path
@@ -29,21 +29,26 @@ import networkx as nx
 from .import_utils import optional_import
 np = optional_import("numpy")  # type: ignore
 
-tomllib = optional_import("tomllib") or optional_import("tomli")  # type: ignore
-if tomllib is not None:
-    TOMLDecodeError = getattr(tomllib, "TOMLDecodeError", Exception)  # type: ignore[attr-defined]
-    has_toml = True
-else:
-    class TOMLDecodeError(Exception):  # type: ignore
-        pass
-    has_toml = False
 
-yaml = optional_import("yaml")  # type: ignore
-if yaml is not None:
-    YAMLError = getattr(yaml, "YAMLError", Exception)  # type: ignore[attr-defined]
-else:
-    class YAMLError(Exception):  # type: ignore
+def _load_optional_module(
+    names: Sequence[str], err_attr: str
+) -> tuple[Any | None, type[Exception]]:
+    for name in names:
+        mod = optional_import(name)
+        if mod is not None:
+            return mod, getattr(mod, err_attr, Exception)
+
+    class MissingError(Exception):
         pass
+
+    return None, MissingError
+
+
+tomllib, TOMLDecodeError = _load_optional_module(
+    ["tomllib", "tomli"], "TOMLDecodeError"
+)
+has_toml = tomllib is not None
+yaml, YAMLError = _load_optional_module(["yaml"], "YAMLError")
 
 
 from .constants import (
@@ -139,30 +144,18 @@ def get_rng(seed: int, key: int) -> random.Random:
 # -------------------------
 
 
-def _parse_json(text: str) -> Any:
-    """Parsea ``text`` como JSON."""
-    return json.loads(text)
+def _missing_dependency(name: str) -> Callable[[str], Any]:
+    def _raise(_: str) -> Any:
+        raise ImportError(f"{name} no está instalado")
 
-
-def _parse_yaml(text: str) -> Any:
-    """Parsea ``text`` como YAML."""
-    if not yaml:  # pragma: no cover - dependencia opcional
-        raise ImportError("pyyaml no está instalado")
-    return yaml.safe_load(text)
-
-
-def _parse_toml(text: str) -> Any:
-    """Parsea ``text`` como TOML."""
-    if not tomllib:  # pragma: no cover - dependencia opcional
-        raise ImportError("tomllib/tomli no está instalado")
-    return tomllib.loads(text)
+    return _raise
 
 
 PARSERS: Dict[str, Callable[[str], Any]] = {
-    ".json": _parse_json,
-    ".yaml": _parse_yaml,
-    ".yml": _parse_yaml,
-    ".toml": _parse_toml,
+    ".json": json.loads,
+    ".yaml": getattr(yaml, "safe_load", _missing_dependency("pyyaml")),
+    ".yml": getattr(yaml, "safe_load", _missing_dependency("pyyaml")),
+    ".toml": getattr(tomllib, "loads", _missing_dependency("tomllib/tomli")),
 }
 
 
@@ -175,6 +168,8 @@ def _format_structured_file_error(path: Path, e: Exception) -> str:
 
     if isinstance(e, OSError):
         return f"No se pudo leer {path}: {e}"
+    if isinstance(e, UnicodeDecodeError):
+        return f"Error de codificación al leer {path}: {e}"
     if isinstance(e, JSONDecodeError):
         return f"Error al parsear archivo JSON en {path}: {e}"
     if isinstance(e, YAMLError):

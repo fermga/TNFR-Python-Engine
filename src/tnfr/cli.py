@@ -72,25 +72,30 @@ def _flatten_tokens(obj: Any):
         yield obj
 
 
-def _parse_tokens(obj: Any) -> list[Any]:
-    out: list[Any] = []
-    for pos, tok in enumerate(_flatten_tokens(obj), start=1):
+def validate_token(tok: Any, pos: int) -> Any:
+    if isinstance(tok, dict):
+        if len(tok) != 1:
+            raise ValueError(f"Token inválido: {tok} (posición {pos}, token {tok!r})")
+        key, val = next(iter(tok.items()))
+        handler = TOKEN_MAP.get(key)
+        if handler is None:
+            raise ValueError(
+                f"Token no reconocido: {key} (posición {pos}, token {tok!r})"
+            )
         try:
-            if isinstance(tok, dict):
-                if len(tok) != 1:
-                    raise ValueError(f"Token inválido: {tok}")
-                key, val = next(iter(tok.items()))
-                handler = TOKEN_MAP.get(key)
-                if handler is None:
-                    raise ValueError(f"Token no reconocido: {key}")
-                out.append(handler(val))
-            elif isinstance(tok, str):
-                out.append(tok)
-            else:
-                raise ValueError(f"Token inválido: {tok}")
+            return handler(val)
         except (KeyError, ValueError) as e:
             raise type(e)(f"{e} (posición {pos}, token {tok!r})") from e
-    return out
+    if isinstance(tok, str):
+        return tok
+    raise ValueError(f"Token inválido: {tok} (posición {pos}, token {tok!r})")
+
+
+def _parse_tokens(obj: Any) -> list[Any]:
+    return [
+        validate_token(tok, pos)
+        for pos, tok in enumerate(_flatten_tokens(obj), start=1)
+    ]
 
 
 def parse_thol(spec: dict[str, Any]) -> Any:
