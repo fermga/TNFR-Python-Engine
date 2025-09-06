@@ -34,17 +34,18 @@ def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
     if window < 0:
         raise ValueError("window must be >= 0")
 
-    last = last_glyph(nd)
+    hist = nd.get("glyph_history")
+    if not hist:
+        return False
+
+    last = hist[-1]
     if window <= 1:
         return last == gl
     if last == gl:
         return True
 
-    hist = nd.get("glyph_history")
-    if hist:
-        window -= 1
-        return any(gl == reciente for reciente in islice(reversed(hist), window))
-    return False
+    window -= 1
+    return any(gl == reciente for reciente in islice(reversed(hist), window))
 
 
 class HistoryDict(dict):

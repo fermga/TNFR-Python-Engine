@@ -90,10 +90,14 @@ def _cached_rng(scope_id: int, seed: int, key: int) -> random.Random:
     return _jitter_base(seed, key)
 
 
+_rng_cache_maxsize = DEFAULTS["JITTER_CACHE_SIZE"]
+
+
 def _resize_rng_cache(maxsize: int) -> None:
     """Resize the global RNG cache."""
-    global _cached_rng
+    global _cached_rng, _rng_cache_maxsize
     _cached_rng = lru_cache(maxsize=maxsize)(_cached_rng.__wrapped__)
+    _rng_cache_maxsize = maxsize
 
 
 def clear_rng_cache() -> None:
@@ -157,12 +161,12 @@ def random_jitter(
         scope = node
 
     if cache is None:
-        cache_size = _get_jitter_cache_size(node)
-        if int(cache_size) <= 0:
+        cache_size = int(_get_jitter_cache_size(node))
+        if cache_size <= 0:
             rng = _jitter_base(base_seed, seed_key)
         else:
-            if _cached_rng.cache_info().maxsize != int(cache_size):
-                _resize_rng_cache(int(cache_size))
+            if _rng_cache_maxsize != cache_size:
+                _resize_rng_cache(cache_size)
             rng = _cached_rng(id(scope), base_seed, seed_key)
     else:
         rng = cache.get(seed_key)

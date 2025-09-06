@@ -1,5 +1,7 @@
 """Registerable metrics."""
 
+from __future__ import annotations
+
 from .core import (
     register_metrics_callbacks,
     Tg_global,
