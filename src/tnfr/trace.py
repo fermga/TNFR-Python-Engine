@@ -20,7 +20,9 @@ class _KuramotoFn(Protocol):
 
 
 class _SigmaVectorFn(Protocol):
-    def __call__(self, G: Any, weight_mode: str | None = None) -> Dict[str, float]: ...
+    def __call__(
+        self, G: Any, weight_mode: str | None = None
+    ) -> Dict[str, float]: ...
 
 
 class CallbackSpec(NamedTuple):
@@ -68,7 +70,9 @@ __all__ = [
 
 def _trace_setup(
     G,
-) -> tuple[Optional[Dict[str, Any]], set[str], Optional[Dict[str, Any]], Optional[str]]:
+) -> tuple[
+    Optional[Dict[str, Any]], set[str], Optional[Dict[str, Any]], Optional[str]
+]:
     """Common configuration for trace snapshots.
 
     Returns the active configuration, capture set, history and key under
@@ -131,7 +135,9 @@ def mapping_field(G, graph_key: str, out_key: str) -> Dict[str, Any]:
 
 def _new_trace_meta(
     G, phase: str
-) -> Optional[tuple[Dict[str, Any], set[str], Optional[Dict[str, Any]], Optional[str]]]:
+) -> Optional[
+    tuple[Dict[str, Any], set[str], Optional[Dict[str, Any]], Optional[str]]
+]:
     """Initialise trace metadata for a ``phase``.
 
     Wraps :func:`_trace_setup` and creates the base structure with timestamp
@@ -200,7 +206,9 @@ def si_weights_field(G):
     """Return sense-plane weights and sensitivity."""
 
     return {
-        **(mapping_field(G, "_Si_weights", "si_weights") or {"si_weights": {}}),
+        **(
+            mapping_field(G, "_Si_weights", "si_weights") or {"si_weights": {}}
+        ),
         **(
             mapping_field(G, "_Si_sensitivity", "si_sensitivity")
             or {"si_sensitivity": {}}
@@ -284,16 +292,18 @@ def _trace_after(G, *args, **kwargs):
 
 
 def register_trace(G) -> None:
-    """Enable before/after-step snapshots and dump operational metadata to history.
+    """Enable before/after-step snapshots and dump operational metadata
+    to history.
 
-    Stores in ``G.graph['history'][TRACE.history_key]`` a list of entries
-    ``{'phase': 'before'|'after', ...}`` with:
+    Stores in ``G.graph['history'][TRACE.history_key]`` a list of
+    entries ``{'phase': 'before'|'after', ...}`` with:
       - gamma: active Γi(R) specification
       - grammar: canonical grammar configuration
       - selector: glyph selector name
       - dnfr_weights: ΔNFR mix declared in the engine
       - si_weights: α/β/γ weights and Si sensitivity
-      - callbacks: callbacks registered per phase (if in ``G.graph['callbacks']``)
+      - callbacks: callbacks registered per phase (if in
+        ``G.graph['callbacks']``)
       - thol_open_nodes: how many nodes have an open THOL block
       - kuramoto: network ``(R, ψ)``
       - sigma: global sense-plane vector
@@ -307,7 +317,11 @@ def register_trace(G) -> None:
 
     from .callback_utils import register_callback
 
-    register_callback(G, event="before_step", func=_trace_before, name="trace_before")
-    register_callback(G, event="after_step", func=_trace_after, name="trace_after")
+    register_callback(
+        G, event="before_step", func=_trace_before, name="trace_before"
+    )
+    register_callback(
+        G, event="after_step", func=_trace_after, name="trace_after"
+    )
 
     G.graph["_trace_registered"] = True

@@ -3,7 +3,11 @@
 import pytest
 import networkx as nx
 
-from tnfr.dynamics import _prepare_dnfr_data, _compute_dnfr_numpy, _compute_dnfr_loops
+from tnfr.dynamics import (
+    _prepare_dnfr_data,
+    _compute_dnfr_numpy,
+    _compute_dnfr_loops,
+)
 from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
 from tnfr.helpers import get_attr
 
@@ -14,7 +18,12 @@ def _setup_graph():
         G.nodes[n][ALIAS_THETA] = 0.1 * (n + 1)
         G.nodes[n][ALIAS_EPI] = 0.2 * (n + 1)
         G.nodes[n][ALIAS_VF] = 0.3 * (n + 1)
-    G.graph["DNFR_WEIGHTS"] = {"phase": 0.4, "epi": 0.3, "vf": 0.2, "topo": 0.1}
+    G.graph["DNFR_WEIGHTS"] = {
+        "phase": 0.4,
+        "epi": 0.3,
+        "vf": 0.2,
+        "topo": 0.1,
+    }
     return G
 
 

@@ -67,7 +67,9 @@ def test_callback_names_spec():
     def foo():
         pass
 
-    names = _callback_names([CallbackSpec("bar", foo), CallbackSpec(None, foo)])
+    names = _callback_names(
+        [CallbackSpec("bar", foo), CallbackSpec(None, foo)]
+    )
     assert names == ["bar", "foo"]
 
 

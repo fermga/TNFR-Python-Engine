@@ -4,7 +4,10 @@ import pytest
 from tnfr.node import NodoTNFR
 from tnfr.types import Glyph
 
-from tnfr.dynamics import default_compute_delta_nfr, update_epi_via_nodal_equation
+from tnfr.dynamics import (
+    default_compute_delta_nfr,
+    update_epi_via_nodal_equation,
+)
 
 
 def test_empty_graph_handling(graph_canon):

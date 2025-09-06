@@ -9,6 +9,7 @@ def build_graph():
     class Foo:
         def __init__(self, value):
             self.value = value
+
     G = nx.Graph()
     G.add_node(Foo(1))
     G.add_node(Foo(2))

@@ -31,7 +31,9 @@ def _dnfr_norm(nd, dnfr_max):
     return 1.0 if x > 1 else x
 
 
-def _symmetry_index(G, n, epi_min: float | None = None, epi_max: float | None = None):
+def _symmetry_index(
+    G, n, epi_min: float | None = None, epi_max: float | None = None
+):
     """Compute the symmetry index for node ``n`` based on EPI values."""
     nd = G.nodes[n]
     epi_i = get_attr(nd, ALIAS_EPI, 0.0)
@@ -57,9 +59,11 @@ def _state_from_thresholds(Rloc, dnfr_n, cfg):
 
 def _recommendation(state, cfg):
     adv = cfg.get("advice", {})
-    key = {"estable": "stable", "transicion": "transition", "disonante": "dissonant"}[
-        state
-    ]
+    key = {
+        "estable": "stable",
+        "transicion": "transition",
+        "disonante": "dissonant",
+    }[state]
     return list(adv.get(key, []))
 
 

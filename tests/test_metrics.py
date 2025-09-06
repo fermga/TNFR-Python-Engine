@@ -5,7 +5,11 @@ import networkx as nx
 
 from tnfr.constants import attach_defaults, ALIAS_EPI
 from tnfr.helpers import get_attr
-from tnfr.metrics import _metrics_step, _update_latency_index, _update_epi_support
+from tnfr.metrics import (
+    _metrics_step,
+    _update_latency_index,
+    _update_epi_support,
+)
 from tnfr.metrics.core import LATENT_GLYPH
 
 
@@ -97,7 +101,9 @@ def test_update_epi_support_matches_manual(graph_canon):
         if abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= thr
     ]
     expected_size = len(expected_vals)
-    expected_norm = sum(expected_vals) / expected_size if expected_size else 0.0
+    expected_norm = (
+        sum(expected_vals) / expected_size if expected_size else 0.0
+    )
 
     rec = hist["EPI_support"][0]
     assert rec["size"] == expected_size

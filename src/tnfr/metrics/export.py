@@ -72,7 +72,11 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
         raise ValueError(f"Formato de exportación no soportado: {fmt}")
     if fmt == "csv":
         specs = [
-            ("_glyphogram.csv", ["t", *GLYPHS_CANONICAL], _iter_glif_rows(glyph)),
+            (
+                "_glyphogram.csv",
+                ["t", *GLYPHS_CANONICAL],
+                _iter_glif_rows(glyph),
+            ),
             (
                 "_sigma.csv",
                 ["t", "x", "y", "mag", "angle"],

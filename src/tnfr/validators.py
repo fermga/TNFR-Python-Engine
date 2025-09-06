@@ -13,7 +13,8 @@ EPS = 1e-9
 
 def _validate_epi_vf(G) -> None:
     cfg = {
-        k: float(get_param(G, k)) for k in ("EPI_MIN", "EPI_MAX", "VF_MIN", "VF_MAX")
+        k: float(get_param(G, k))
+        for k in ("EPI_MIN", "EPI_MAX", "VF_MIN", "VF_MAX")
     }
     get = get_attr
     epi_min, epi_max = cfg["EPI_MIN"], cfg["EPI_MAX"]

@@ -52,5 +52,7 @@ def test_heap_compaction_after_deletions():
 
 def test_pop_least_used_empty_message():
     hist = HistoryDict()
-    with pytest.raises(KeyError, match="HistoryDict is empty; cannot pop least used"):
+    with pytest.raises(
+        KeyError, match="HistoryDict is empty; cannot pop least used"
+    ):
         hist.pop_least_used()

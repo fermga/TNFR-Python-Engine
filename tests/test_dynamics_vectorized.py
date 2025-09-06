@@ -14,7 +14,12 @@ def _setup_graph():
         G.nodes[n][ALIAS_THETA] = 0.1 * (n + 1)
         G.nodes[n][ALIAS_EPI] = 0.2 * (n + 1)
         G.nodes[n][ALIAS_VF] = 0.3 * (n + 1)
-    G.graph["DNFR_WEIGHTS"] = {"phase": 0.4, "epi": 0.3, "vf": 0.2, "topo": 0.1}
+    G.graph["DNFR_WEIGHTS"] = {
+        "phase": 0.4,
+        "epi": 0.3,
+        "vf": 0.2,
+        "topo": 0.1,
+    }
     return G
 
 

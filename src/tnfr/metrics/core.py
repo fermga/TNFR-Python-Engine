@@ -74,7 +74,9 @@ def _update_coherence(G, hist) -> None:
     C = compute_coherence(G)
     hist.setdefault("C_steps", []).append(C)
 
-    wbar_w = int(G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25)))
+    wbar_w = int(
+        G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25))
+    )
     cs = hist["C_steps"]
     if cs:
         w = min(len(cs), max(1, wbar_w))
@@ -94,9 +96,13 @@ def _update_phase_sync(G, hist) -> None:
 def _update_sigma(G, hist) -> None:
     """Registrar carga glífica y vector Σ⃗ asociado."""
 
-    win = int(G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]))
+    win = int(
+        G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"])
+    )
     gl = glyph_load(G, window=win)
-    hist.setdefault("glyph_load_estab", []).append(gl.get("_estabilizadores", 0.0))
+    hist.setdefault("glyph_load_estab", []).append(
+        gl.get("_estabilizadores", 0.0)
+    )
     hist.setdefault("glyph_load_disr", []).append(gl.get("_disruptivos", 0.0))
 
     dist = {k: v for k, v in gl.items() if not k.startswith("_")}
@@ -170,9 +176,11 @@ def _update_glyphogram(G, hist, counts, t, n_total):
     )
     row = {"t": t}
     total = max(1, n_total)
+
     def add_row(g):
         c = counts.get(g, 0)
         row[g] = (c / total) if normalize_series else c
+
     for_each_glyph(add_row)
     hist.setdefault("glyphogram", []).append(row)
 
@@ -235,7 +243,9 @@ def _metrics_step(G, *args, **kwargs):
     dt = float(G.graph.get("DT", 1.0))
     t = float(G.graph.get("_t", 0.0))
     thr = float(
-        G.graph.get("EPI_SUPPORT_THR", METRIC_DEFAULTS.get("EPI_SUPPORT_THR", 0.0))
+        G.graph.get(
+            "EPI_SUPPORT_THR", METRIC_DEFAULTS.get("EPI_SUPPORT_THR", 0.0)
+        )
     )
 
     # -- Métricas básicas heredadas de ``dynamics`` --
@@ -311,7 +321,8 @@ def _metrics_step(G, *args, **kwargs):
 
     try:
         sis = [
-            get_attr(nd, ALIAS_SI, float("nan")) for _, nd in G.nodes(data=True)
+            get_attr(nd, ALIAS_SI, float("nan"))
+            for _, nd in G.nodes(data=True)
         ]
         sis = [s for s in sis if not math.isnan(s)]
         if sis:
@@ -351,7 +362,9 @@ def _metrics_step(G, *args, **kwargs):
 
 
 def register_metrics_callbacks(G) -> None:
-    register_callback(G, event="after_step", func=_metrics_step, name="metrics_step")
+    register_callback(
+        G, event="after_step", func=_metrics_step, name="metrics_step"
+    )
     # Nuevas funcionalidades canónicas
     register_coherence_callbacks(G)
     register_diagnosis_callbacks(G)
@@ -369,14 +382,18 @@ def Tg_global(G, normalize: bool = True) -> Dict[str, float]:
     tg_total: Dict[str, float] = hist.tracked_get("Tg_total", {})
     total = sum(tg_total.values()) or 1.0
     out: Dict[str, float] = {}
+
     def add(g):
         val = float(tg_total.get(g, 0.0))
         out[g] = val / total if normalize else val
+
     for_each_glyph(add)
     return out
 
 
-def Tg_by_node(G, n, normalize: bool = False) -> Dict[str, float | List[float]]:
+def Tg_by_node(
+    G, n, normalize: bool = False
+) -> Dict[str, float | List[float]]:
     """Per-node summary: if ``normalize`` return mean run per glyph;
     otherwise list runs."""
     hist = ensure_history(G)
@@ -384,14 +401,18 @@ def Tg_by_node(G, n, normalize: bool = False) -> Dict[str, float | List[float]]:
     if not normalize:
         # convertir default dict → list para serializar
         out: Dict[str, List[float]] = {}
+
         def copy_runs(g):
             out[g] = list(rec.get(g, []))
+
         for_each_glyph(copy_runs)
         return out
     out: Dict[str, float] = {}
+
     def add(g):
         runs = rec.get(g, [])
         out[g] = float(mean(runs)) if runs else 0.0
+
     for_each_glyph(add)
     return out
 
@@ -411,8 +432,10 @@ def glyphogram_series(G) -> Dict[str, List[float]]:
     if not xs:
         return {"t": []}
     out = {"t": [float(x.get("t", i)) for i, x in enumerate(xs)]}
+
     def add(g):
         out[g] = [float(x.get(g, 0.0)) for x in xs]
+
     for_each_glyph(add)
     return out
 
@@ -428,6 +451,7 @@ def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
     hist = ensure_history(G)
     rec = hist.tracked_get("Tg_by_node", {}).get(n, {})
     out: Dict[str, Dict[str, float]] = {}
+
     def add(g):
         runs = list(rec.get(g, []))
         if not runs:
@@ -439,5 +463,6 @@ def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
                 "max": float(max(runs)),
                 "count": int(len(runs)),
             }
+
     for_each_glyph(add)
     return out

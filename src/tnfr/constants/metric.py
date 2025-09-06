@@ -11,7 +11,11 @@ from types import MappingProxyType
 class MetricDefaults:
     PHASE_HISTORY_MAXLEN: int = 50
     STOP_EARLY: Dict[str, Any] = field(
-        default_factory=lambda: {"enabled": False, "window": 25, "fraction": 0.90}
+        default_factory=lambda: {
+            "enabled": False,
+            "window": 25,
+            "fraction": 0.90,
+        }
     )
     SIGMA: Dict[str, Any] = field(
         default_factory=lambda: {

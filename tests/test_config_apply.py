@@ -18,7 +18,9 @@ except ImportError:  # pragma: no cover - skip if not installed
         pytest.param(
             ".yaml",
             lambda data: yaml.safe_dump(data),
-            marks=pytest.mark.skipif(yaml is None, reason="pyyaml no está instalado"),
+            marks=pytest.mark.skipif(
+                yaml is None, reason="pyyaml no está instalado"
+            ),
         ),
     ],
 )

@@ -152,7 +152,9 @@ def coherence_matrix(G):
             if key in seen:
                 continue
             seen.add(key)
-            wij = _combine_components(wnorm, G, u, v, epi_min, epi_max, vf_min, vf_max)
+            wij = _combine_components(
+                wnorm, G, u, v, epi_min, epi_max, vf_min, vf_max
+            )
             add_entry(i, j, wij)
             add_entry(j, i, wij)
     else:
@@ -184,7 +186,9 @@ def coherence_matrix(G):
     return nodes, W
 
 
-def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=None):
+def local_phase_sync_weighted(
+    G, n, nodes_order=None, W_row=None, node_to_index=None
+):
     cfg = G.graph.get("COHERENCE", COHERENCE)
     scope = str(cfg.get("scope", "neighbors")).lower()
     neighbors_only = scope != "all"
@@ -193,7 +197,9 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=
     if W_row is None or nodes_order is None:
         vec = [
             cmath.exp(1j * get_attr(G.nodes[v], ALIAS_THETA, 0.0))
-            for v in (G.neighbors(n) if neighbors_only else (set(G.nodes()) - {n}))
+            for v in (
+                G.neighbors(n) if neighbors_only else (set(G.nodes()) - {n})
+            )
         ]
         if not vec:
             return 0.0
@@ -220,7 +226,11 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=
     if i is None:
         i = nodes_order.index(n)
 
-    if isinstance(W_row, list) and W_row and isinstance(W_row[0], (int, float)):
+    if (
+        isinstance(W_row, list)
+        and W_row
+        and isinstance(W_row[0], (int, float))
+    ):
         weights = W_row
     else:
         weights = [0.0] * len(nodes_order)

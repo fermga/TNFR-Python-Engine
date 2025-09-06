@@ -136,7 +136,9 @@ TOKEN_MAP: Dict[str, Callable[[Any], Any]] = {
 def _default(obj: Any) -> Any:
     if isinstance(obj, deque):
         return list(obj)
-    raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
+    raise TypeError(
+        f"Object of type {obj.__class__.__name__} is not JSON serializable"
+    )
 
 
 def _save_json(path: str, data: Any) -> None:
@@ -200,7 +202,9 @@ def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
 
     Examples
     --------
-    >>> ns = argparse.Namespace(grammar_enabled=True, grammar_thol_min_len=2, other=1)
+    >>> ns = argparse.Namespace(
+    ...     grammar_enabled=True, grammar_thol_min_len=2, other=1
+    ... )
     >>> _args_to_dict(ns, "grammar_")
     {'enabled': True, 'thol_min_len': 2}
     """
@@ -238,7 +242,9 @@ def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
 
 def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
     """Construye el grafo base a partir de los argumentos del CLI."""
-    return build_graph(n=args.nodes, topology=args.topology, seed=args.seed, p=args.p)
+    return build_graph(
+        n=args.nodes, topology=args.topology, seed=args.seed, p=args.p
+    )
 
 
 def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
@@ -278,7 +284,9 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
         }
 
 
-def register_callbacks_and_observer(G: "nx.Graph", args: argparse.Namespace) -> None:
+def register_callbacks_and_observer(
+    G: "nx.Graph", args: argparse.Namespace
+) -> None:
     """Registra callbacks y observadores estándar."""
     _attach_callbacks(G)
     if args.observer:
@@ -313,7 +321,10 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument(
-        "--p", type=float, default=None, help="Probabilidad de arista si topology=erdos"
+        "--p",
+        type=float,
+        default=None,
+        help="Probabilidad de arista si topology=erdos",
     )
     parser.add_argument(
         "--observer", action="store_true", help="Adjunta observador estándar"
@@ -342,7 +353,9 @@ def add_grammar_args(parser: argparse.ArgumentParser) -> None:
 def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
     """Agrega las opciones de gramática y el selector de glyph."""
     add_grammar_args(parser)
-    parser.add_argument("--selector", choices=["basic", "param"], default="basic")
+    parser.add_argument(
+        "--selector", choices=["basic", "param"], default="basic"
+    )
 
 
 def add_history_export_args(parser: argparse.ArgumentParser) -> None:
@@ -365,7 +378,10 @@ def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
 def _add_run_parser(sub: argparse._SubParsersAction) -> None:
     """Configura el subcomando ``run``."""
     p_run = sub.add_parser(
-        "run", help="Correr escenario libre o preset y opcionalmente exportar history"
+        "run",
+        help=(
+            "Correr escenario libre o preset y opcionalmente exportar history"
+        ),
     )
     add_common_args(p_run)
     p_run.add_argument("--steps", type=int, default=200)
@@ -402,7 +418,9 @@ def _add_sequence_parser(sub: argparse._SubParsersAction) -> None:
 
 def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
     """Configura el subcomando ``metrics``."""
-    p_met = sub.add_parser("metrics", help="Correr breve y volcar métricas clave")
+    p_met = sub.add_parser(
+        "metrics", help="Correr breve y volcar métricas clave"
+    )
     add_common_args(p_met)
     p_met.add_argument("--steps", type=int, default=300)
     add_canon_toggle(p_met)
@@ -414,7 +432,8 @@ def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
 def run_program(
     G: Optional["nx.Graph"], program: Optional[Any], args: argparse.Namespace
 ) -> "nx.Graph":
-    """Construir el grafo si es necesario, ejecutar un programa y guardar historial."""
+    """Construir el grafo si es necesario, ejecutar un programa y
+    guardar historial."""
     if G is None:
         G = _build_graph_from_args(args)
 
@@ -432,7 +451,9 @@ def run_program(
 def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
     """Registrar resúmenes rápidos y métricas opcionales."""
 
-    if G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get("enabled", True):
+    if G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get(
+        "enabled", True
+    ):
         Wstats = G.graph.get("history", {}).get(
             G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get(
                 "stats_history_key", "W_stats"
@@ -442,7 +463,9 @@ def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
         if Wstats:
             logger.info("[COHERENCE] último paso: %s", Wstats[-1])
 
-    if G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"]).get("enabled", True):
+    if G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"]).get(
+        "enabled", True
+    ):
         last_diag = G.graph.get("history", {}).get(
             G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"]).get(
                 "history_key", "nodal_diag"
@@ -474,7 +497,9 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 def cmd_sequence(args: argparse.Namespace) -> int:
     if args.preset and args.sequence_file:
-        logger.error("No se puede usar --preset y --sequence-file al mismo tiempo")
+        logger.error(
+            "No se puede usar --preset y --sequence-file al mismo tiempo"
+        )
         return 1
     program = resolve_program(
         args,
@@ -529,7 +554,9 @@ def main(argv: Optional[List[str]] = None) -> int:
             '[\n  {"WAIT": 1},\n  {"TARGET": "A"}\n]'
         ),
     )
-    p.add_argument("--version", action="store_true", help="muestra versión y sale")
+    p.add_argument(
+        "--version", action="store_true", help="muestra versión y sale"
+    )
     sub = p.add_subparsers(dest="cmd")
 
     _add_run_parser(sub)

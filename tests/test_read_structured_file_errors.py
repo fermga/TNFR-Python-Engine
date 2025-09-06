@@ -20,7 +20,9 @@ def test_read_structured_file_permission_error(
     path = tmp_path / "forbidden.json"
     original_open = Path.open
 
-    def fake_open(self, *args, **kwargs):  # pragma: no cover - monkeypatch helper
+    def fake_open(
+        self, *args, **kwargs
+    ):  # pragma: no cover - monkeypatch helper
         if self == path:
             raise PermissionError("denied")
         return original_open(self, *args, **kwargs)

@@ -57,7 +57,8 @@ def _sigma_vector_from_graph_naive(G, weight_mode: str = "Si"):
 
 
 def test_sigma_vector_from_graph_matches_naive():
-    """La versión optimizada coincide con el cálculo ingenuo y no es más lenta."""
+    """La versión optimizada coincide con el cálculo ingenuo y no es
+    más lenta."""
     G_opt = nx.Graph()
     glyphs = list(Glyph)
     for i in range(1000):
@@ -87,9 +88,11 @@ def test_sigma_from_vectors_accepts_single_complex():
 
 def test_unknown_glyph_does_not_shift_average():
     base, _ = _sigma_from_vectors([glyph_unit(Glyph.AL.value)])
-    with_unknown, _ = _sigma_from_vectors([
-        glyph_unit(Glyph.AL.value),
-        glyph_unit("ZZ"),
-    ])
+    with_unknown, _ = _sigma_from_vectors(
+        [
+            glyph_unit(Glyph.AL.value),
+            glyph_unit("ZZ"),
+        ]
+    )
     assert glyph_unit("ZZ") == 0 + 0j
     assert with_unknown["angle"] == pytest.approx(base["angle"])

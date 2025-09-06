@@ -91,4 +91,3 @@ def test_export_history_invalid_format(tmp_path, graph_canon):
     G = graph_canon()
     with pytest.raises(ValueError):
         export_history(G, str(tmp_path / "base"), fmt="xml")
-

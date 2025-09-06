@@ -19,7 +19,9 @@ def test_aplicar_remesh_usa_parametro_personalizado(graph_canon):
     # Historial de EPI necesario para apply_network_remesh
     tau = G.graph["REMESH_TAU_GLOBAL"]
     maxlen = max(2 * tau + 5, 64)
-    G.graph["_epi_hist"] = deque([{0: 0.0} for _ in range(tau + 1)], maxlen=maxlen)
+    G.graph["_epi_hist"] = deque(
+        [{0: 0.0} for _ in range(tau + 1)], maxlen=maxlen
+    )
 
     # Sin parámetro personalizado no se debería activar
     apply_remesh_if_globally_stable(G)
@@ -39,7 +41,9 @@ def test_remesh_alpha_hard_ignores_glyph_factor(graph_canon):
     hist["stable_frac"] = [1.0, 1.0, 1.0]
     tau = G.graph["REMESH_TAU_GLOBAL"]
     maxlen = max(2 * tau + 5, 64)
-    G.graph["_epi_hist"] = deque([{0: 0.0} for _ in range(tau + 1)], maxlen=maxlen)
+    G.graph["_epi_hist"] = deque(
+        [{0: 0.0} for _ in range(tau + 1)], maxlen=maxlen
+    )
     G.graph["REMESH_ALPHA"] = 0.7
     G.graph["REMESH_ALPHA_HARD"] = True
     G.graph["GLYPH_FACTORS"]["REMESH_alpha"] = 0.1

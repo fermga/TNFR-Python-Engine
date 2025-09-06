@@ -18,7 +18,11 @@ def test_get_si_weights_normalization():
     G.graph["SI_WEIGHTS"] = {"alpha": 2, "beta": 1, "gamma": 1}
     alpha, beta, gamma = get_Si_weights(G)
     assert (alpha, beta, gamma) == pytest.approx((0.5, 0.25, 0.25))
-    assert G.graph["_Si_weights"] == {"alpha": alpha, "beta": beta, "gamma": gamma}
+    assert G.graph["_Si_weights"] == {
+        "alpha": alpha,
+        "beta": beta,
+        "gamma": gamma,
+    }
     assert G.graph["_Si_sensitivity"] == {
         "dSi_dvf_norm": alpha,
         "dSi_ddisp_fase": -beta,
@@ -64,4 +68,3 @@ def test_compute_Si_node():
     )
     assert Si == pytest.approx(0.7)
     assert get_attr(G.nodes[1], ALIAS_SI, 0.0) == pytest.approx(0.7)
-

@@ -86,7 +86,10 @@ class HistoryDict(dict):
 
     def _maybe_compact(self) -> None:
         self._ops += 1
-        if self._ops >= self._compact_every and len(self._heap) > len(self) * 2:
+        if (
+            self._ops >= self._compact_every
+            and len(self._heap) > len(self) * 2
+        ):
             self._compact_heap()
             self._ops = 0
 
@@ -96,7 +99,9 @@ class HistoryDict(dict):
         heapq.heappush(self._heap, (cnt, key))
         self._maybe_compact()
 
-    def _get_and_increment(self, key: str, default: Any = None, *, missing: bool = False):
+    def _get_and_increment(
+        self, key: str, default: Any = None, *, missing: bool = False
+    ):
         if not missing:
             val = super().__getitem__(key)
         else:
@@ -185,7 +190,9 @@ def last_glyph(nd: Dict[str, Any]) -> str | None:
     return hist[-1] if hist else None
 
 
-def count_glyphs(G, window: int | None = None, *, last_only: bool = False) -> Counter:
+def count_glyphs(
+    G, window: int | None = None, *, last_only: bool = False
+) -> Counter:
     """Count recent glyphs in the network.
 
     If ``window`` is ``None``, the full history for each node is used. When

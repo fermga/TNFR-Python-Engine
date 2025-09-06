@@ -179,10 +179,10 @@ def ensure_parent(path: str | Path) -> None:
 def _stable_json(obj: Any) -> Any:
     """Helper to obtain a JSON-serialisable structure for ``obj``.
 
-    The default :func:`json.dumps` behaviour falls back to ``obj.__dict__`` when
-    available and otherwise uses ``repr(obj)`` which may include memory
-    addresses.  This function walks basic containers and objects to build a
-    representation that avoids such non-deterministic data.
+    The default :func:`json.dumps` behaviour falls back to ``obj.__dict__``
+    when available and otherwise uses ``repr(obj)`` which may include
+    memory addresses. This function walks basic containers and objects to
+    build a representation that avoids such non-deterministic data.
     """
 
     if isinstance(obj, (str, int, float, bool)) or obj is None:
@@ -196,7 +196,9 @@ def _stable_json(obj: Any) -> Any:
     return f"{obj.__module__}.{obj.__class__.__qualname__}"
 
 
-def node_set_checksum(G: "nx.Graph", nodes: Iterable[Any] | None = None) -> str:
+def node_set_checksum(
+    G: "nx.Graph", nodes: Iterable[Any] | None = None
+) -> str:
     """Devuelve el SHA1 del conjunto de nodos de ``G`` ordenado.
 
     ``nodes`` permite reutilizar una colección ya obtenida para evitar recorrer
@@ -211,7 +213,10 @@ def node_set_checksum(G: "nx.Graph", nodes: Iterable[Any] | None = None) -> str:
 
     def serialise(n: Any) -> str:
         return json.dumps(
-            _stable_json(n), sort_keys=True, ensure_ascii=False, separators=(",", ":")
+            _stable_json(n),
+            sort_keys=True,
+            ensure_ascii=False,
+            separators=(",", ":"),
         )
 
     node_iter = nodes if nodes is not None else G.nodes()
@@ -342,15 +347,17 @@ def alias_get(
     strict: bool = False,
     log_level: int | None = None,
 ) -> Optional[T]:
-    """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor convertido.
+    """Busca en ``d`` la primera clave de ``aliases`` y retorna el valor
+    convertido.
 
-    ``aliases`` puede ser cualquier secuencia de strings. Si no es una tupla
-    inmutable, se validará internamente mediante :func:`_validate_aliases`.
-    ``_validate_aliases`` garantiza que la secuencia no esté vacía y que todos
-    sus elementos sean strings.
+    ``aliases`` puede ser cualquier secuencia de strings. Si no es una
+    tupla inmutable, se validará internamente mediante
+    :func:`_validate_aliases`. ``_validate_aliases`` garantiza que la
+    secuencia no esté vacía y que todos sus elementos sean strings.
 
-    Si ninguna de las claves está presente o la conversión falla, devuelve
-    ``default`` convertido (o ``None`` si ``default`` es ``None``).
+    Si ninguna de las claves está presente o la conversión falla,
+    devuelve ``default`` convertido (o ``None`` si ``default`` es
+    ``None``).
 
     ``log_level`` permite ajustar el nivel de logging cuando la conversión
     falla en modo laxo.
@@ -373,10 +380,11 @@ def alias_set(
     conv: Callable[[Any], T],
     value: Any,
 ) -> T:
-    """Asigna ``value`` convertido a la primera clave disponible de ``aliases``.
+    """Asigna ``value`` convertido a la primera clave disponible de
+    ``aliases``.
 
-    ``aliases`` puede ser cualquier secuencia de strings. Si no es una tupla,
-    se validará internamente mediante :func:`_validate_aliases`.
+    ``aliases`` puede ser cualquier secuencia de strings. Si no es una
+    tupla, se validará internamente mediante :func:`_validate_aliases`.
     """
     if not isinstance(aliases, tuple):
         aliases = _validate_aliases(aliases)
@@ -398,8 +406,7 @@ class _Getter(Protocol[T]):
         *,
         strict: bool = False,
         log_level: int | None = None,
-    ) -> T:
-        ...
+    ) -> T: ...
 
     @overload
     def __call__(
@@ -410,8 +417,7 @@ class _Getter(Protocol[T]):
         *,
         strict: bool = False,
         log_level: int | None = None,
-    ) -> Optional[T]:
-        ...
+    ) -> Optional[T]: ...
 
 
 @overload
@@ -516,11 +522,15 @@ def _recompute_abs_max(G, aliases: tuple[str, ...]):
         key=lambda m: abs(get_attr(G.nodes[m], aliases, 0.0)),
         default=None,
     )
-    max_val = abs(get_attr(G.nodes[node], aliases, 0.0)) if node is not None else 0.0
+    max_val = (
+        abs(get_attr(G.nodes[node], aliases, 0.0)) if node is not None else 0.0
+    )
     return max_val, node
 
 
-def _update_cached_abs_max(G, aliases: tuple[str, ...], n, value, *, key: str) -> None:
+def _update_cached_abs_max(
+    G, aliases: tuple[str, ...], n, value, *, key: str
+) -> None:
     """Actualiza ``G.graph[key]`` y ``G.graph[f"{key}_node"]``."""
     node_key = f"{key}_node"
     val = abs(value)
@@ -604,7 +614,9 @@ def compute_coherence(G) -> float:
 # -------------------------
 
 
-def neighbor_mean(G, n, aliases: tuple[str, ...], default: float = 0.0) -> float:
+def neighbor_mean(
+    G, n, aliases: tuple[str, ...], default: float = 0.0
+) -> float:
     """Mean of ``aliases`` attribute among neighbours of ``n``."""
     vals = (get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
     return list_mean(vals, default)
@@ -614,7 +626,8 @@ def neighbor_phase_mean(obj, n=None) -> float:
     """Promedio circular de las fases vecinales.
 
     Acepta un :class:`NodoProtocol` o un par ``(G, n)`` de ``networkx``. En el
-    segundo caso se envuelve en :class:`NodoNX` para reutilizar la misma lógica.
+    segundo caso se envuelve en :class:`NodoNX` para reutilizar la misma
+    lógica.
     """
 
     from .node import NodoNX  # importación local para evitar ciclo
@@ -630,7 +643,9 @@ def neighbor_phase_mean(obj, n=None) -> float:
         if hasattr(v, "theta"):
             th = getattr(v, "theta", 0.0)
         else:
-            th = NodoNX.from_graph(node.G, v).theta  # type: ignore[attr-defined]
+            th = NodoNX.from_graph(
+                node.G, v
+            ).theta  # type: ignore[attr-defined]
         x += math.cos(th)
         y += math.sin(th)
         count += 1

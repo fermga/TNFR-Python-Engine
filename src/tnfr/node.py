@@ -196,7 +196,9 @@ class NodoTNFR:
     graph: Dict[str, object] = field(default_factory=dict)
     _neighbors: Dict["NodoTNFR", float] = field(default_factory=dict)
     _glyph_history: Deque[str] = field(
-        default_factory=lambda: deque(maxlen=DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 7))
+        default_factory=lambda: deque(
+            maxlen=DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 7)
+        )
     )
 
     def neighbors(self) -> Iterable["NodoTNFR"]:
@@ -210,7 +212,11 @@ class NodoTNFR:
         return self._neighbors.get(other, 0.0)
 
     def add_edge(
-        self, other: "NodoTNFR", weight: float = 1.0, *, overwrite: bool = False
+        self,
+        other: "NodoTNFR",
+        weight: float = 1.0,
+        *,
+        overwrite: bool = False,
     ) -> None:
         """Connect this node with ``other``."""
 
@@ -251,7 +257,9 @@ class NodoNX(NodoProtocol):
         to_python=str,
         to_storage=str,
     )
-    dnfr = _nx_attr_property(ALIAS_DNFR, setter=set_dnfr, use_graph_setter=True)
+    dnfr = _nx_attr_property(
+        ALIAS_DNFR, setter=set_dnfr, use_graph_setter=True
+    )
     d2EPI = _nx_attr_property(ALIAS_D2EPI)
 
     @classmethod

@@ -15,7 +15,9 @@ from tnfr.constants import core, init, metric
 
 def test_defaults_is_union_of_parts():
     expected = dict(
-        ChainMap(METRIC_DEFAULTS, REMESH_DEFAULTS, INIT_DEFAULTS, CORE_DEFAULTS)
+        ChainMap(
+            METRIC_DEFAULTS, REMESH_DEFAULTS, INIT_DEFAULTS, CORE_DEFAULTS
+        )
     )
     assert DEFAULTS == expected
 

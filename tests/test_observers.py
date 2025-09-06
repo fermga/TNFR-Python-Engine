@@ -65,7 +65,8 @@ def test_glyph_load_uses_module_constants(monkeypatch, graph_canon):
 
     # Patch constants to custom categories
     monkeypatch.setattr(
-        "tnfr.observers.GLYPH_GROUPS", {"estabilizadores": ["A"], "disruptivos": ["B"]}
+        "tnfr.observers.GLYPH_GROUPS",
+        {"estabilizadores": ["A"], "disruptivos": ["B"]},
     )
 
     dist = glyph_load(G)

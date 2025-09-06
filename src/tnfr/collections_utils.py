@@ -30,7 +30,9 @@ __all__ = [
     "mix_groups",
 ]
 
-MAX_MATERIALIZE_DEFAULT = 1000  # default materialization limit in ensure_collection
+MAX_MATERIALIZE_DEFAULT = (
+    1000  # default materialization limit in ensure_collection
+)
 
 
 def ensure_collection(
@@ -42,7 +44,9 @@ def ensure_collection(
     ``max_materialize`` es ``None``, se materializa el iterable completo sin
     límite. Si ``it`` no es iterable, se lanza :class:`TypeError`.
     """
-    if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
+    if isinstance(it, Collection) and not isinstance(
+        it, (str, bytes, bytearray)
+    ):
         return it
     if isinstance(it, (str, bytes, bytearray)):
         return cast(Collection[T], (it,))
@@ -72,7 +76,9 @@ def normalize_weights(
     keys = list(keys)
     default_float = float(default)
 
-    weights = _convert_weights(dict_like, keys, default_float, error_on_negative)
+    weights = _convert_weights(
+        dict_like, keys, default_float, error_on_negative
+    )
     _validate_weights(weights, error_on_negative)
     return _normalize_distribution(weights, keys)
 
@@ -97,7 +103,9 @@ def _convert_weights(
     return {k: _to_float(k) for k in keys}
 
 
-def _validate_weights(weights: Mapping[str, float], error_on_negative: bool) -> None:
+def _validate_weights(
+    weights: Mapping[str, float], error_on_negative: bool
+) -> None:
     negatives = {k: v for k, v in weights.items() if v < 0}
     if not negatives:
         return
@@ -119,7 +127,9 @@ def _normalize_distribution(
     return {k: v / total for k, v in weights.items()}
 
 
-def normalize_counter(counts: Mapping[str, int]) -> tuple[Dict[str, float], int]:
+def normalize_counter(
+    counts: Mapping[str, int],
+) -> tuple[Dict[str, float], int]:
     """Normalize a ``Counter`` returning proportions and total."""
     total = sum(counts.values())
     if total <= 0:
