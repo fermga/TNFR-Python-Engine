@@ -3,7 +3,6 @@
 import pytest
 from pathlib import Path
 from json import JSONDecodeError
-import json
 import tnfr.io as io_mod
 
 from tnfr.io import read_structured_file, StructuredFileError
@@ -80,10 +79,11 @@ def test_read_structured_file_missing_dependency(
     path = tmp_path / "data.yaml"
     path.write_text("a: 1", encoding="utf-8")
 
-    def fake_parser(_: str) -> None:
+    def fake_safe_load(_: str) -> None:
         raise ImportError("pyyaml no está instalado")
 
-    monkeypatch.setitem(io_mod.PARSERS, ".yaml", fake_parser)
+    monkeypatch.setattr(io_mod, "yaml", type("Y", (), {"safe_load": fake_safe_load}))
+    io_mod._get_parser.cache_clear()
 
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
@@ -99,10 +99,11 @@ def test_read_structured_file_missing_dependency_toml(
     path = tmp_path / "data.toml"
     path.write_text("a = 1", encoding="utf-8")
 
-    def fake_parser(_: str) -> None:
+    def fake_loads(_: str) -> None:
         raise ImportError("toml no está instalado")
 
-    monkeypatch.setitem(io_mod.PARSERS, ".toml", fake_parser)
+    monkeypatch.setattr(io_mod, "tomllib", type("T", (), {"loads": fake_loads}))
+    io_mod._get_parser.cache_clear()
 
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
@@ -155,5 +156,20 @@ def test_read_structured_file_ignores_missing_yaml_when_parsing_json(
     path.write_text("{\"a\": 1}", encoding="utf-8")
     monkeypatch.setattr(io_mod, "yaml", None)
     monkeypatch.setattr(io_mod, "tomllib", None)
-    monkeypatch.setattr(io_mod, "PARSERS", {".json": json.loads})
+    io_mod._get_parser.cache_clear()
     assert read_structured_file(path) == {"a": 1}
+
+
+def test_read_structured_file_unhandled_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    path = tmp_path / "data.json"
+    path.write_text("{}", encoding="utf-8")
+
+    def bad_parser(_: str) -> None:
+        raise ValueError("boom")
+
+    monkeypatch.setattr(io_mod, "_get_parser", lambda suffix: bad_parser)
+
+    with pytest.raises(ValueError):
+        read_structured_file(path)

@@ -1,5 +1,5 @@
-import networkx as nx
 import hashlib
+import networkx as nx
 
 from tnfr.helpers import node_set_checksum, _stable_json
 
@@ -40,3 +40,10 @@ def test_node_set_checksum_compatibility():
     G = nx.Graph()
     G.add_nodes_from([1, 2, 3])
     assert node_set_checksum(G) == _reference_checksum(G)
+
+
+def test_node_set_checksum_iterable_equivalence():
+    G = nx.Graph()
+    G.add_nodes_from([3, 1, 2])
+    gen = (n for n in G.nodes())
+    assert node_set_checksum(G, gen) == node_set_checksum(G)

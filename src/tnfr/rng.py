@@ -6,10 +6,12 @@ import random
 import struct
 from collections import OrderedDict
 from typing import Tuple
+import threading
 
 from .constants import DEFAULTS
 
 _RNG_CACHE: OrderedDict[Tuple[int, int], random.Random] = OrderedDict()
+_RNG_LOCK = threading.Lock()
 
 
 def _make_rng(seed: int, key: int) -> random.Random:
@@ -28,14 +30,15 @@ def get_rng(seed: int, key: int) -> random.Random:
     """Return a cached ``random.Random`` for ``(seed, key)`` respecting current cache size."""
     k = (int(seed), int(key))
     cache = _RNG_CACHE
-    try:
-        rng = cache.pop(k)
-    except KeyError:
-        rng = _make_rng(seed, key)
-    cache[k] = rng
-    maxsize = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
-    while maxsize > 0 and len(cache) > maxsize:
-        cache.popitem(last=False)
+    with _RNG_LOCK:
+        try:
+            rng = cache.pop(k)
+        except KeyError:
+            rng = _make_rng(seed, key)
+        cache[k] = rng
+        maxsize = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
+        while maxsize > 0 and len(cache) > maxsize:
+            cache.popitem(last=False)
     return rng
 
 
