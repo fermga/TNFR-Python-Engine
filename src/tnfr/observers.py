@@ -72,10 +72,8 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
     if G.number_of_nodes() == 0:
         return 1.0
     _, psi = _get_R_psi(G, R, psi)
-    var = statistics.pvariance(
-        angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
-        for _, data in G.nodes(data=True)
-    )
+    thetas = [angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi) for _, data in G.nodes(data=True)]
+    var = statistics.pvariance(thetas)
     return 1.0 / (1.0 + var)
 
 

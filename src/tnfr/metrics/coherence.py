@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-from math import cos
-import cmath
+import math
 from typing import Dict
 
 from ..constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_SI, COHERENCE
@@ -22,32 +21,36 @@ def _norm01(x, lo, hi):
 
 
 def _similarity_abs(a, b, lo, hi):
-    return 1.0 - _norm01(
-        abs(float(a) - float(b)), 0.0, float(hi - lo) if hi > lo else 1.0
-    )
+    return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, hi - lo)
 
 
-def _coherence_components(G, ni, nj, epi_min, epi_max, vf_min, vf_max):
-    ndi = G.nodes[ni]
-    ndj = G.nodes[nj]
-    th_i = get_attr(ndi, ALIAS_THETA, 0.0)
-    th_j = get_attr(ndj, ALIAS_THETA, 0.0)
-    s_phase = 0.5 * (1.0 + cos(th_i - th_j))
-    epi_i = get_attr(ndi, ALIAS_EPI, 0.0)
-    epi_j = get_attr(ndj, ALIAS_EPI, 0.0)
-    s_epi = _similarity_abs(epi_i, epi_j, epi_min, epi_max)
-    vf_i = get_attr(ndi, ALIAS_VF, 0.0)
-    vf_j = get_attr(ndj, ALIAS_VF, 0.0)
-    s_vf = _similarity_abs(vf_i, vf_j, vf_min, vf_max)
-    si_i = clamp01(get_attr(ndi, ALIAS_SI, 0.0))
-    si_j = clamp01(get_attr(ndj, ALIAS_SI, 0.0))
-    s_si = 1.0 - abs(si_i - si_j)
+def _coherence_components(
+    th_vals,
+    epi_vals,
+    vf_vals,
+    si_vals,
+    ni,
+    nj,
+    epi_min,
+    epi_max,
+    vf_min,
+    vf_max,
+):
+    th_i = th_vals[ni]
+    th_j = th_vals[nj]
+    s_phase = 0.5 * (1.0 + math.cos(th_i - th_j))
+    s_epi = _similarity_abs(epi_vals[ni], epi_vals[nj], epi_min, epi_max)
+    s_vf = _similarity_abs(vf_vals[ni], vf_vals[nj], vf_min, vf_max)
+    s_si = 1.0 - abs(si_vals[ni] - si_vals[nj])
     return s_phase, s_epi, s_vf, s_si
 
 
 def _combine_components(
     wnorm: Dict[str, float],
-    G,
+    th_vals,
+    epi_vals,
+    vf_vals,
+    si_vals,
     ni,
     nj,
     epi_min,
@@ -57,7 +60,16 @@ def _combine_components(
 ):
     """Compute coherence by combining components with their weights."""
     s_phase, s_epi, s_vf, s_si = _coherence_components(
-        G, ni, nj, epi_min, epi_max, vf_min, vf_max
+        th_vals,
+        epi_vals,
+        vf_vals,
+        si_vals,
+        ni,
+        nj,
+        epi_min,
+        epi_max,
+        vf_min,
+        vf_max,
     )
     wij = (
         wnorm["phase"] * s_phase
@@ -216,17 +228,35 @@ def coherence_matrix(G):
                 continue
             seen.add(key)
             wij = _combine_components(
-                wnorm, G, u, v, epi_min, epi_max, vf_min, vf_max
+                wnorm,
+                th_vals,
+                epi_vals,
+                vf_vals,
+                si_vals,
+                i,
+                j,
+                epi_min,
+                epi_max,
+                vf_min,
+                vf_max,
             )
             add_entry(i, j, wij)
             add_entry(j, i, wij)
     else:
         for i in range(n):
-            ni = nodes[i]
             for j in range(i + 1, n):
-                nj = nodes[j]
                 wij = _combine_components(
-                    wnorm, G, ni, nj, epi_min, epi_max, vf_min, vf_max
+                    wnorm,
+                    th_vals,
+                    epi_vals,
+                    vf_vals,
+                    si_vals,
+                    i,
+                    j,
+                    epi_min,
+                    epi_max,
+                    vf_min,
+                    vf_max,
                 )
                 add_entry(i, j, wij)
                 add_entry(j, i, wij)
@@ -259,7 +289,10 @@ def local_phase_sync_weighted(
     # --- Caso sin pesos ---
     if W_row is None or nodes_order is None:
         vec = [
-            cmath.exp(1j * get_attr(G.nodes[v], ALIAS_THETA, 0.0))
+            complex(
+                math.cos(get_attr(G.nodes[v], ALIAS_THETA, 0.0)),
+                math.sin(get_attr(G.nodes[v], ALIAS_THETA, 0.0)),
+            )
             for v in (
                 G.neighbors(n) if neighbors_only else (set(G.nodes()) - {n})
             )
@@ -297,7 +330,7 @@ def local_phase_sync_weighted(
         w = weights[j]
         den += w
         th_j = get_attr(G.nodes[nj], ALIAS_THETA, 0.0)
-        num += w * cmath.exp(1j * th_j)
+        num += w * complex(math.cos(th_j), math.sin(th_j))
     return abs(num / den) if den else 0.0
 
 

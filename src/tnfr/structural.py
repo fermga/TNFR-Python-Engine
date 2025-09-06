@@ -80,7 +80,11 @@ def operador_factory(*pairs: Tuple[str, str]) -> dict[str, type[Operador]]:
     registry: dict[str, type[Operador]] = {}
     for nombre, glyph in pairs:
         class_name = nombre.title().replace("_", "").replace(" ", "")
-        cls = type(class_name, (Operador,), {"name": nombre, "glyph": glyph})
+        cls = type(
+            class_name,
+            (Operador,),
+            {"name": nombre, "glyph": glyph, "__module__": __name__},
+        )
         registry[nombre] = cls
     return registry
 

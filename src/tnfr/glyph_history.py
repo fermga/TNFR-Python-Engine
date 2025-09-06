@@ -212,6 +212,10 @@ def count_glyphs(
     ``window`` is less than or equal to zero, no glyphs are counted for any
     node."""
 
+    window_int = int(window) if window is not None else None
+    if window_int is not None and window_int <= 0:
+        return Counter()
+
     def _iter_seq(nd: Dict[str, Any]) -> Iterable[str]:
         if last_only:
             g = last_glyph(nd)
@@ -219,11 +223,8 @@ def count_glyphs(
         hist = nd.get("glyph_history")
         if not hist:
             return []
-        if window is None:
+        if window_int is None:
             return hist
-        window_int = int(window)
-        if window_int <= 0:
-            return []
         return islice(reversed(hist), window_int)
 
     counts: Counter[str] = Counter()

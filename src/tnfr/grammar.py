@@ -133,7 +133,11 @@ def _check_repeats(G, n, cand: str, cfg: Dict[str, Any]) -> str:
     fallbacks = cfg.get("fallbacks", {})
     cand_key = cand.value if isinstance(cand, Glyph) else str(cand)
     if gwin > 0 and cand_key in avoid and recent_glyph(nd, cand_key, gwin):
-        fb = fallbacks.get(cand_key, CANON_FALLBACK.get(cand_key, cand_key))
+        try:
+            glyph_key = Glyph(cand_key)
+        except ValueError:
+            glyph_key = cand_key
+        fb = fallbacks.get(cand_key, CANON_FALLBACK.get(glyph_key, cand_key))
         try:
             return Glyph(fb)
         except (ValueError, TypeError):

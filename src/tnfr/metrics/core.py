@@ -128,9 +128,6 @@ def _update_tg(G, hist, dt, save_by_node: bool):
     ``save_by_node`` controls whether per-node runs are recorded.
     """
     counts = Counter()
-    n_total = 0
-    n_latent = 0
-
     tg_total = hist.setdefault("Tg_total", defaultdict(float))
     tg_by_node = (
         hist.setdefault("Tg_by_node", defaultdict(lambda: defaultdict(list)))
@@ -144,34 +141,30 @@ def _update_tg(G, hist, dt, save_by_node: bool):
     curr_key = TgCurr
     run_key = TgRun
 
-    nodes = G.nodes
-    for n in nodes():
-        nd = nodes[n]
+    n_total = 0
+    n_latent = 0
+    for n, nd in G._node.items():
         g = last(nd)
         if not g:
             continue
-
         n_total += 1
         if g == latent:
             n_latent += 1
-
         counts[g] += 1
-
         st = tg_state(nd)
-        if st[curr_key] is None:
+        curr = st[curr_key]
+        if curr is None:
             st[curr_key] = g
             st[run_key] = dt
-        elif g == st[curr_key]:
+        elif g == curr:
             st[run_key] += dt
         else:
-            prev = st[curr_key]
             dur = float(st[run_key])
-            tg_total[prev] += dur
-            if save_by_node:
-                tg_by_node[n][prev].append(dur)
+            tg_total[curr] += dur
+            if tg_by_node is not None:
+                tg_by_node[n][curr].append(dur)
             st[curr_key] = g
             st[run_key] = dt
-
     return counts, n_total, n_latent
 
 

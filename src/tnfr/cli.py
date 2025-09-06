@@ -140,8 +140,6 @@ TOKEN_MAP: dict[str, Callable[[Any], Any]] = {
 
 
 def _default(obj: Any) -> Any:
-    if isinstance(obj, (deque, set, tuple)):
-        return list(obj)
     if isinstance(obj, Iterable) and not isinstance(obj, (str, bytes)):
         return list(obj)
     raise TypeError(
