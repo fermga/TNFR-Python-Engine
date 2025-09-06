@@ -144,18 +144,6 @@ def add_edge(
     increment_edge_version(graph)
 
 
-def _add_edge_nx(G, n1, n2, weight, overwrite):
-    """Add an edge between ``n1`` and ``n2`` in a ``networkx`` graph."""
-
-    add_edge(G, n1, n2, weight, overwrite, strategy="nx")
-
-
-def _add_edge_tnfr(graph, n1, n2, weight, overwrite):
-    """Add an edge between ``n1`` and ``n2`` in a TNFR-style graph."""
-
-    add_edge(graph, n1, n2, weight, overwrite, strategy="tnfr")
-
-
 class NodoProtocol(Protocol):
     """Minimal protocol for TNFR nodes."""
 
@@ -226,7 +214,14 @@ class NodoTNFR:
     ) -> None:
         """Connect this node with ``other``."""
 
-        _add_edge_tnfr(self.graph, self, other, weight, overwrite)
+        add_edge(
+            self.graph,
+            self,
+            other,
+            weight,
+            overwrite,
+            strategy="tnfr",
+        )
 
     def push_glyph(self, glyph: str, window: int) -> None:
         push_glyph({"glyph_history": self._glyph_history}, glyph, window)
@@ -298,7 +293,14 @@ class NodoNX(NodoProtocol):
         self, other: NodoProtocol, weight: float, *, overwrite: bool = False
     ) -> None:
         if isinstance(other, NodoNX):
-            _add_edge_nx(self.G, self.n, other.n, weight, overwrite)
+            add_edge(
+                self.G,
+                self.n,
+                other.n,
+                weight,
+                overwrite,
+                strategy="nx",
+            )
         else:
             raise NotImplementedError
 
