@@ -64,14 +64,10 @@ def phase_sync(G) -> float:
     if G.number_of_nodes() == 0:
         return 1.0
     _, psi = kuramoto_R_psi(G)
-    # varianza angular aproximada (0 = muy sincronizado)
-    diffs = [
+    var = pvariance(
         angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
         for _, data in G.nodes(data=True)
-    ]
-    # ``pvariance`` consumes the sequence twice; materialise to avoid repeated
-    # iteration over ``G.nodes`` when a generator is passed.
-    var = pvariance(diffs)
+    )
     return 1.0 / (1.0 + var)
 
 

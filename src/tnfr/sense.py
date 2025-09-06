@@ -79,6 +79,9 @@ def _sigma_from_vectors(
     ``vectors`` may be a single complex number or an iterable of them.
     """
 
+    if isinstance(vectors, (str, bytes, bytearray)):
+        raise TypeError("vectors must be an iterable of complex numbers")
+
     iterator = (
         iter(vectors) if isinstance(vectors, Iterable) else iter([vectors])
     )

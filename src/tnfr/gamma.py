@@ -206,7 +206,7 @@ def eval_gamma(
         _ensure_kuramoto_cache(G, t)
     try:
         return float(fn(G, node, t, spec))
-    except Exception:
+    except Exception as exc:
         level = (
             log_level
             if log_level is not None
@@ -217,7 +217,7 @@ def eval_gamma(
             "Fallo al evaluar Γi para nodo %s en t=%s",
             node,
             t,
-            exc_info=True,
+            exc_info=exc,
         )
         if strict:
             raise

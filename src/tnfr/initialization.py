@@ -142,8 +142,9 @@ def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
     si_max = float(G.graph.get("INIT_SI_MAX", 0.7))
     epi_val = float(G.graph.get("INIT_EPI_VALUE", 0.0))
 
-    rng = get_rng(seed, -1)
-    rng.seed(seed)
+    rng_template = get_rng(seed, -1)
+    rng = random.Random()
+    rng.setstate(rng_template.getstate())
     for _, nd in G.nodes(data=True):
 
         _init_phase(

@@ -450,28 +450,17 @@ def run_program(
 
 def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
     """Registrar resúmenes rápidos y métricas opcionales."""
+    cfg_coh = G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"])
+    cfg_diag = G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"])
+    hist = G.graph.get("history", {})
 
-    if G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get(
-        "enabled", True
-    ):
-        Wstats = G.graph.get("history", {}).get(
-            G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get(
-                "stats_history_key", "W_stats"
-            ),
-            [],
-        )
+    if cfg_coh.get("enabled", True):
+        Wstats = hist.get(cfg_coh.get("stats_history_key", "W_stats"), [])
         if Wstats:
             logger.info("[COHERENCE] último paso: %s", Wstats[-1])
 
-    if G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"]).get(
-        "enabled", True
-    ):
-        last_diag = G.graph.get("history", {}).get(
-            G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"]).get(
-                "history_key", "nodal_diag"
-            ),
-            [],
-        )
+    if cfg_diag.get("enabled", True):
+        last_diag = hist.get(cfg_diag.get("history_key", "nodal_diag"), [])
         if last_diag:
             sample = list(last_diag[-1].values())[:3]
             logger.info("[DIAGNOSIS] ejemplo: %s", sample)

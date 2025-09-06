@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Callable, DefaultDict, TYPE_CHECKING
 from enum import Enum
-from collections import defaultdict
+from collections import defaultdict, deque
 from collections.abc import Sequence
 import logging
 
@@ -27,7 +27,9 @@ class CallbackEvent(str, Enum):
     ON_REMESH = "on_remesh"
 
 
-_CALLBACK_EVENTS: set[str] = set(e.value for e in CallbackEvent)
+_CALLBACK_EVENTS: set[str] = {e.value for e in CallbackEvent}
+
+_CALLBACK_ERROR_LIMIT = 100  # keep only this many recent callback errors
 
 
 Callback = Callable[["nx.Graph", dict[str, Any]], None]
@@ -153,7 +155,10 @@ def invoke_callbacks(
         G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
     )
     ctx = ctx or {}
-    err_list = G.graph.setdefault("_callback_errors", [])
+    err_list = G.graph.get("_callback_errors")
+    if not isinstance(err_list, deque):
+        err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
+        G.graph["_callback_errors"] = err_list
     for spec in list(cbs):
         name, fn = spec.name, spec.func
         try:
