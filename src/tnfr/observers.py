@@ -59,10 +59,21 @@ def attach_standard_observer(G):
     return G
 
 
-def phase_sync(G) -> float:
+def _get_R_psi(G, R: float | None = None, psi: float | None = None) -> tuple[float, float]:
+    """Return ``(R, ψ)`` using cached values if provided."""
+    if R is None or psi is None:
+        R_calc, psi_calc = kuramoto_R_psi(G)
+        if R is None:
+            R = R_calc
+        if psi is None:
+            psi = psi_calc
+    return R, psi
+
+
+def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
     if G.number_of_nodes() == 0:
         return 1.0
-    _, psi = kuramoto_R_psi(G)
+    _, psi = _get_R_psi(G, R, psi)
     var = statistics.pvariance(
         angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
         for _, data in G.nodes(data=True)
@@ -70,11 +81,11 @@ def phase_sync(G) -> float:
     return 1.0 / (1.0 + var)
 
 
-def kuramoto_order(G) -> float:
+def kuramoto_order(G, R: float | None = None, psi: float | None = None) -> float:
     """R in [0,1], 1 means perfectly aligned phases."""
     if G.number_of_nodes() == 0:
         return 1.0
-    R, _ = kuramoto_R_psi(G)
+    R, _ = _get_R_psi(G, R, psi)
     return float(R)
 
 

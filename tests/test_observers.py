@@ -34,6 +34,12 @@ def test_phase_observers_match_manual_calculation(graph_canon):
     R = ((sum(X) ** 2 + sum(Y) ** 2) ** 0.5) / len(angles)
     assert math.isclose(kuramoto_order(G), float(R))
 
+    R_calc, psi_calc = kuramoto_R_psi(G)
+    ps_again = phase_sync(G, R_calc, psi_calc)
+    R_again = kuramoto_order(G, R_calc, psi_calc)
+    assert math.isclose(ps_again, ps)
+    assert math.isclose(R_again, R)
+
 
 def test_phase_sync_bounds(graph_canon):
     G = graph_canon()
@@ -54,8 +60,10 @@ def test_kuramoto_order_matches_kuramoto_R_psi(graph_canon):
         set_attr(G.nodes[idx], ALIAS_THETA, th)
 
     R_ok = kuramoto_order(G)
-    R, _ = kuramoto_R_psi(G)
+    R, psi = kuramoto_R_psi(G)
     assert math.isclose(R_ok, R)
+    assert math.isclose(kuramoto_order(G, R, psi), R)
+    assert math.isclose(phase_sync(G, R, psi), phase_sync(G))
 
 
 def test_glyph_load_uses_module_constants(monkeypatch, graph_canon):
