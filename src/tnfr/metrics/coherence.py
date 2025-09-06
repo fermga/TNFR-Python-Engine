@@ -11,6 +11,7 @@ from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
 from ..collections_utils import normalize_weights
 from ..helpers import clamp01, ensure_node_index_map
+from ..metrics_utils import min_max_range
 from ..import_utils import get_numpy
 
 
@@ -67,8 +68,8 @@ def coherence_matrix(G):
     epi_vals = [get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in nodes]
     vf_vals = [get_attr(G.nodes[v], ALIAS_VF, 0.0) for v in nodes]
     si_vals = [clamp01(get_attr(G.nodes[v], ALIAS_SI, 0.0)) for v in nodes]
-    epi_min, epi_max = min(epi_vals), max(epi_vals)
-    vf_min, vf_max = min(vf_vals), max(vf_vals)
+    epi_min, epi_max = min_max_range(epi_vals)
+    vf_min, vf_max = min_max_range(vf_vals)
 
     wdict = dict(cfg.get("weights", {}))
     for k in ("phase", "epi", "vf", "si"):

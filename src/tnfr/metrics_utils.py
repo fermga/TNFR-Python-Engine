@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, Sequence, Iterable
 import math
 
 from .constants import (
@@ -27,6 +27,7 @@ __all__ = [
     "precompute_trigonometry",
     "compute_Si_node",
     "compute_Si",
+    "min_max_range",
 ]
 
 
@@ -185,3 +186,20 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
             inplace=inplace,
         )
     return out
+
+
+def min_max_range(
+    values: Iterable[float], *, default: tuple[float, float] = (0.0, 0.0)
+) -> tuple[float, float]:
+    iterator = iter(values)
+    try:
+        first = next(iterator)
+    except StopIteration:
+        return default
+    vmin = vmax = first
+    for val in iterator:
+        if val < vmin:
+            vmin = val
+        elif val > vmax:
+            vmax = val
+    return vmin, vmax

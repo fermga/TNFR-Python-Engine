@@ -99,8 +99,10 @@ def random_jitter(
         scope_id = id(node)
 
     seed = base_seed ^ scope_id
+    cache_size = int(
+        node.graph.get("JITTER_CACHE_SIZE", DEFAULTS["JITTER_CACHE_SIZE"])
+    )
     if cache is None:
-        cache_size = int(node.graph.get("JITTER_CACHE_SIZE", DEFAULTS["JITTER_CACHE_SIZE"]))
         if cache_size <= 0:
             rng = make_rng(seed, seed_key)  # fresh each call
         else:

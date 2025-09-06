@@ -10,6 +10,7 @@ def test_public_exports():
         "preparar_red",
         "create_nfr",
         "NodeState",
+        "CallbackSpec",
     }
     assert set(tnfr.__all__) == expected
 

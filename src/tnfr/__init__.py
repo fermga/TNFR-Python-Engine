@@ -56,4 +56,5 @@ __all__ = [
     "preparar_red",
     "create_nfr",
     "NodeState",
+    "CallbackSpec",
 ]

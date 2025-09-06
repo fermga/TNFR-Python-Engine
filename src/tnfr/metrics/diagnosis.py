@@ -17,7 +17,7 @@ from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
 from ..helpers import clamp01
-from ..metrics_utils import compute_dnfr_accel_max
+from ..metrics_utils import compute_dnfr_accel_max, min_max_range
 from .coherence import local_phase_sync_weighted, _similarity_abs
 
 
@@ -88,17 +88,7 @@ def _diagnosis_step(G, ctx=None):
     G.graph["_sel_norms"] = norms
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     epi_iter = (get_attr(nd, ALIAS_EPI, 0.0) for _, nd in G.nodes(data=True))
-    try:
-        first_epi = next(epi_iter)
-    except StopIteration:
-        epi_min, epi_max = 0.0, 1.0
-    else:
-        epi_min = epi_max = first_epi
-        for val in epi_iter:
-            if val < epi_min:
-                epi_min = val
-            elif val > epi_max:
-                epi_max = val
+    epi_min, epi_max = min_max_range(epi_iter, default=(0.0, 1.0))
 
     CfgW = G.graph.get("COHERENCE", COHERENCE)
     Wkey = CfgW.get("Wi_history_key", "W_i")

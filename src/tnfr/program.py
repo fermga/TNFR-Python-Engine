@@ -122,7 +122,7 @@ def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
     when ``THOL`` blocks are nested.
     """
     ops: list[tuple[str, Any]] = []
-    stack: deque[Any] = deque(reversed(list(seq)))
+    stack: deque[Any] = deque(reversed(ensure_collection(seq)))
 
     while stack:
         item = stack.pop()
@@ -173,6 +173,14 @@ def _record_trace(trace: deque, G, op: str, **data) -> None:
     trace.append({"t": float(G.graph.get("_t", 0.0)), "op": op, **data})
 
 
+def _advance_and_record(
+    G, trace: deque, label: str, step_fn: Optional[AdvanceFn], *, times: int = 1, **data
+) -> None:
+    for _ in range(times):
+        _advance(G, step_fn)
+    _record_trace(trace, G, label, **data)
+
+
 def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
     """Handle a ``TARGET`` token and return the active node set.
 
@@ -191,9 +199,7 @@ def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
 def _handle_wait(
     G, steps: int, curr_target, trace: deque, step_fn: Optional[AdvanceFn]
 ):
-    for _ in range(steps):
-        _advance(G, step_fn)
-    _record_trace(trace, G, "WAIT", k=steps)
+    _advance_and_record(G, trace, "WAIT", step_fn, times=steps, k=steps)
     return curr_target
 
 
@@ -206,9 +212,18 @@ def _handle_glyph(
     label: str = "GLYPH",
 ):
     _apply_glyph_to_targets(G, g, curr_target)
-    _advance(G, step_fn)
-    _record_trace(trace, G, label, g=g)
+    _advance_and_record(G, trace, label, step_fn, g=g)
     return curr_target
+
+
+HANDLERS = {
+    "TARGET": _handle_target,
+    "WAIT": _handle_wait,
+    "GLYPH": _handle_glyph,
+    "THOL": lambda G, g, curr_target, trace, step_fn: _handle_glyph(
+        G, g or Glyph.THOL.value, curr_target, trace, step_fn, label="THOL"
+    ),
+}
 
 
 # ---------------------
@@ -245,17 +260,8 @@ def play(
         trace = deque(trace or [], maxlen=maxlen)
         history["program_trace"] = trace
 
-    handlers = {
-        "TARGET": _handle_target,
-        "WAIT": _handle_wait,
-        "GLYPH": _handle_glyph,
-        "THOL": lambda G, g, curr_target, trace, step_fn: _handle_glyph(
-            G, g or Glyph.THOL.value, curr_target, trace, step_fn, label="THOL"
-        ),
-    }
-
     for op, payload in ops:
-        handler = handlers.get(op)
+        handler = HANDLERS.get(op)
         if handler is None:
             raise ValueError(f"Unknown operation: {op}")
         curr_target = handler(G, payload, curr_target, trace, step_fn)
