@@ -103,6 +103,13 @@ def test_wbar_accepts_deque(graph_canon):
     assert wbar(G, window=2) == pytest.approx((0.5 + 0.9) / 2)
 
 
+def test_wbar_rejects_non_positive_window(graph_canon):
+    G = graph_canon()
+    G.graph["history"] = {"C_steps": [0.1, 0.2]}
+    with pytest.raises(ValueError):
+        wbar(G, window=0)
+
+
 def test_attach_standard_observer_registers_callbacks(graph_canon):
     G = graph_canon()
     attach_standard_observer(G)

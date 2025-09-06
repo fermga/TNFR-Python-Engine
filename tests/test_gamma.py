@@ -126,6 +126,40 @@ def test_gamma_tanh_string_params(graph_canon):
     assert pytest.approx(g3, rel=1e-6) == -expected
 
 
+def test_gamma_spec_normalized_once(graph_canon, monkeypatch):
+    G = graph_canon()
+    G.add_node(0, θ=0.0)
+    G.graph["GAMMA"] = []  # invalid spec
+    calls = []
+
+    def fake_warn(*args, **kwargs):
+        calls.append(1)
+
+    monkeypatch.setattr("tnfr.gamma.warnings.warn", fake_warn)
+    eval_gamma(G, 0, t=0.0)
+    eval_gamma(G, 0, t=0.0)
+    assert len(calls) == 1
+
+
+def test_kuramoto_cache_reuses_checksum(graph_canon, monkeypatch):
+    from tnfr import gamma as gamma_mod
+
+    G = graph_canon()
+    G.add_node(0, θ=0.0)
+    calls = []
+
+    def fake_checksum(G):
+        calls.append(1)
+        return "sum"
+
+    monkeypatch.setattr(gamma_mod, "node_set_checksum", fake_checksum)
+    gamma_mod._ensure_kuramoto_cache(G, t=0)
+    assert calls == [1]
+    G.graph["_dnfr_nodes_checksum"] = "sum"
+    gamma_mod._ensure_kuramoto_cache(G, t=1)
+    assert calls == [1]
+
+
 def test_kuramoto_cache_invalidation_on_version(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
