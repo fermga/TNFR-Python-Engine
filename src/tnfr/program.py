@@ -31,7 +31,7 @@ AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
 # ---------------------
 
 
-@dataclass
+@dataclass(slots=True)
 class WAIT:
     """Wait a number of steps without applying glyphs.
 
@@ -42,7 +42,7 @@ class WAIT:
     steps: int = 1
 
 
-@dataclass
+@dataclass(slots=True)
 class TARGET:
     """Select the subset of nodes for subsequent glyphs.
 
@@ -53,7 +53,7 @@ class TARGET:
     nodes: Optional[Iterable[Node]] = None  # None = all nodes
 
 
-@dataclass
+@dataclass(slots=True)
 class THOL:
     """THOL block that opens self-organisation.
 
