@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections import ChainMap
 from typing import Any, Dict
 import copy
 import warnings
