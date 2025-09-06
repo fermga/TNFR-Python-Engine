@@ -11,7 +11,9 @@ def test_read_structured_file_missing_file(tmp_path: Path):
     path = tmp_path / "missing.json"
     with pytest.raises(ValueError) as excinfo:
         read_structured_file(path)
-    assert str(path) in str(excinfo.value)
+    msg = str(excinfo.value)
+    assert msg.startswith("No se pudo leer")
+    assert str(path) in msg
 
 
 def test_read_structured_file_permission_error(
@@ -30,7 +32,9 @@ def test_read_structured_file_permission_error(
     monkeypatch.setattr(Path, "open", fake_open)
     with pytest.raises(ValueError) as excinfo:
         read_structured_file(path)
-    assert str(path) in str(excinfo.value)
+    msg = str(excinfo.value)
+    assert msg.startswith("No se pudo leer")
+    assert str(path) in msg
 
 
 def test_read_structured_file_corrupt_json(tmp_path: Path):
@@ -39,7 +43,7 @@ def test_read_structured_file_corrupt_json(tmp_path: Path):
     with pytest.raises(ValueError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
-    assert "JSON" in msg
+    assert msg.startswith("Error al parsear archivo JSON en")
     assert str(path) in msg
 
 
@@ -50,7 +54,7 @@ def test_read_structured_file_corrupt_yaml(tmp_path: Path):
     with pytest.raises(ValueError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
-    assert "YAML" in msg
+    assert msg.startswith("Error al parsear archivo YAML en")
     assert str(path) in msg
 
 
@@ -64,7 +68,7 @@ def test_read_structured_file_corrupt_toml(tmp_path: Path):
     with pytest.raises(ValueError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
-    assert "TOML" in msg
+    assert msg.startswith("Error al parsear archivo TOML en")
     assert str(path) in msg
 
 
@@ -82,6 +86,8 @@ def test_read_structured_file_missing_dependency(
     with pytest.raises(ValueError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
+    assert msg.startswith("Dependencia faltante al parsear")
+    assert str(path) in msg
     assert "pyyaml" in msg
 
 
@@ -99,4 +105,6 @@ def test_read_structured_file_missing_dependency_toml(
     with pytest.raises(ValueError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
+    assert msg.startswith("Dependencia faltante al parsear")
+    assert str(path) in msg
     assert "toml" in msg.lower()
