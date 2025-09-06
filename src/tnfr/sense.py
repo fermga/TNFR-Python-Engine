@@ -3,6 +3,7 @@
 from __future__ import annotations
 from typing import Dict, Iterable, List
 import math
+from collections import Counter
 
 import networkx as nx
 
@@ -128,6 +129,15 @@ def _sigma_from_pairs(
 _sigma_from_vectors = _sigma_from_iterable
 
 
+def _ema_update(prev: Dict[str, float], current: Dict[str, float], alpha: float) -> Dict[str, float]:
+    """Exponential moving average update for σ vectors."""
+    x = (1 - alpha) * prev["x"] + alpha * current["x"]
+    y = (1 - alpha) * prev["y"] + alpha * current["y"]
+    mag = math.hypot(x, y)
+    ang = math.atan2(y, x)
+    return {"x": x, "y": y, "mag": mag, "angle": ang, "n": current.get("n", 0)}
+
+
 def sigma_vector_node(
     G, n, weight_mode: str | None = None
 ) -> Dict[str, float] | None:
@@ -205,12 +215,7 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
     # Suavizado exponencial (EMA) opcional
     alpha = float(cfg.get("smooth", 0.0))
     if alpha > 0 and hist.get(key):
-        prev = hist[key][-1]
-        x = (1 - alpha) * prev["x"] + alpha * sv["x"]
-        y = (1 - alpha) * prev["y"] + alpha * sv["y"]
-        mag = math.hypot(x, y)
-        ang = math.atan2(y, x)
-        sv = {"x": x, "y": y, "mag": mag, "angle": ang, "n": sv.get("n", 0)}
+        sv = _ema_update(hist[key][-1], sv, alpha)
 
     sv["t"] = float(G.graph.get("_t", 0.0) if t is None else t)
 
@@ -268,17 +273,8 @@ def sigma_rose(G, steps: int | None = None) -> Dict[str, int]:
     counts = hist.get("sigma_counts", [])
     if not counts:
         return {g: 0 for g in GLYPHS_CANONICAL}
-    if steps is None or steps >= len(counts):
-        agg: Dict[str, int] = {}
-        for row in counts:
-            for k, v in row.items():
-                if k != "t":
-                    agg[k] = int(agg.get(k, 0)) + int(v)
-        return {g: int(agg.get(g, 0)) for g in GLYPHS_CANONICAL}
-    agg: Dict[str, int] = {}
-    start = -int(steps)
-    for row in counts[start:]:
-        for k, v in row.items():
-            if k != "t":
-                agg[k] = int(agg.get(k, 0)) + int(v)
-    return {g: int(agg.get(g, 0)) for g in GLYPHS_CANONICAL}
+    rows = counts if steps is None or steps >= len(counts) else counts[-int(steps):]
+    counter = Counter()
+    for row in rows:
+        counter.update({k: int(v) for k, v in row.items() if k != "t"})
+    return {g: int(counter.get(g, 0)) for g in GLYPHS_CANONICAL}

@@ -14,6 +14,7 @@ from .alias import get_attr
 from .helpers import clamp01
 from .glyph_history import recent_glyph
 from .types import Glyph
+from .operators import apply_glyph  # avoid repeated import inside functions
 
 # Nominal glyphs (to avoid typos)
 AL = Glyph.AL
@@ -277,9 +278,6 @@ def apply_glyph_with_grammar(
     directly to avoid unnecessary materialisation; callers must materialise if
     they need indexing.
     """
-
-    from .operators import apply_glyph
-
     if window is None:
         window = get_param(G, "GLYPH_HYSTERESIS_WINDOW")
 

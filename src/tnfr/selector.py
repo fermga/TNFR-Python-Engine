@@ -35,73 +35,23 @@ def _selector_thresholds(G: "nx.Graph") -> dict:
     glyph_defaults = DEFAULTS.get("GLYPH_THRESHOLDS", {})
     thr_def = {**glyph_defaults, **G.graph.get("GLYPH_THRESHOLDS", {})}
 
-    def _get_threshold(
-        key: str, default: float, legacy: str | None = None
-    ) -> float:
-        """Obtain ``key`` from ``thr_sel`` honouring legacy keys.
+    specs = {
+        "si_hi": ("hi", SELECTOR_THRESHOLD_DEFAULTS["si_hi"]),
+        "si_lo": ("lo", SELECTOR_THRESHOLD_DEFAULTS["si_lo"]),
+        "dnfr_hi": (None, SELECTOR_THRESHOLD_DEFAULTS["dnfr_hi"]),
+        "dnfr_lo": (None, SELECTOR_THRESHOLD_DEFAULTS["dnfr_lo"]),
+        "accel_hi": (None, SELECTOR_THRESHOLD_DEFAULTS["accel_hi"]),
+        "accel_lo": (None, SELECTOR_THRESHOLD_DEFAULTS["accel_lo"]),
+    }
 
-        When ``legacy`` is provided ``thr_def`` is used as fallback,
-        allowing compatibility with ``GLYPH_THRESHOLDS`` from older
-        versions.
-        """
-
+    out: Dict[str, float] = {}
+    for key, (legacy, default) in specs.items():
         if legacy is not None:
             val = thr_sel.get(key, thr_def.get(legacy, default))
         else:
             val = thr_sel.get(key, default)
-        return clamp01(float(val))
-
-    specs = [
-        (
-            "si_hi",
-            thr_def.get(
-                "hi",
-                glyph_defaults.get("hi", SELECTOR_THRESHOLD_DEFAULTS["si_hi"]),
-            ),
-            "hi",
-        ),
-        (
-            "si_lo",
-            thr_def.get(
-                "lo",
-                glyph_defaults.get("lo", SELECTOR_THRESHOLD_DEFAULTS["si_lo"]),
-            ),
-            "lo",
-        ),
-        (
-            "dnfr_hi",
-            sel_defaults.get(
-                "dnfr_hi", SELECTOR_THRESHOLD_DEFAULTS["dnfr_hi"]
-            ),
-            None,
-        ),
-        (
-            "dnfr_lo",
-            sel_defaults.get(
-                "dnfr_lo", SELECTOR_THRESHOLD_DEFAULTS["dnfr_lo"]
-            ),
-            None,
-        ),
-        (
-            "accel_hi",
-            sel_defaults.get(
-                "accel_hi", SELECTOR_THRESHOLD_DEFAULTS["accel_hi"]
-            ),
-            None,
-        ),
-        (
-            "accel_lo",
-            sel_defaults.get(
-                "accel_lo", SELECTOR_THRESHOLD_DEFAULTS["accel_lo"]
-            ),
-            None,
-        ),
-    ]
-
-    return {
-        key: _get_threshold(key, default, legacy)
-        for key, default, legacy in specs
-    }
+        out[key] = clamp01(float(val))
+    return out
 
 
 def _norms_para_selector(G: "nx.Graph") -> dict:

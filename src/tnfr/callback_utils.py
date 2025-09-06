@@ -168,7 +168,7 @@ def invoke_callbacks(
         name, fn = spec.name, spec.func
         try:
             fn(G, ctx)
-        except (KeyError, AttributeError, TypeError) as e:
+        except Exception as e:  # catch all callback errors
             logger.warning("callback %r failed for %s: %s", name, event, e)
             if strict:
                 raise
