@@ -257,12 +257,13 @@ def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
     """
 
     if isinstance(aliases, str) or not isinstance(aliases, Sequence):
-        raise TypeError("'aliases' must be a sequence of strings")
+        raise TypeError("'aliases' must be a non-string sequence")
+
     seq = aliases if isinstance(aliases, tuple) else tuple(aliases)
-    if not seq:
-        raise ValueError("'aliases' must contain at least one key")
-    if not all(isinstance(a, str) for a in seq):
-        raise TypeError("'aliases' must be a sequence of strings")
+    if not seq or any(not isinstance(a, str) for a in seq):
+        if not seq:
+            raise ValueError("'aliases' must contain at least one key")
+        raise TypeError("'aliases' elements must be strings")
     return seq
 
 
