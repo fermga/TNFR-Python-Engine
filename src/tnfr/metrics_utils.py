@@ -1,6 +1,7 @@
 """Miscellaneous metrics helpers."""
 
 from __future__ import annotations
+from dataclasses import dataclass
 from typing import Any, Dict, Sequence
 import math
 
@@ -19,6 +20,7 @@ from .helpers import clamp01, angle_diff
 
 
 __all__ = [
+    "TrigCache",
     "compute_dnfr_accel_max",
     "compute_coherence",
     "get_Si_weights",
@@ -26,6 +28,13 @@ __all__ = [
     "compute_Si_node",
     "compute_Si",
 ]
+
+
+@dataclass
+class TrigCache:
+    cos: Dict[Any, float]
+    sin: Dict[Any, float]
+    theta: Dict[Any, float]
 
 
 def compute_dnfr_accel_max(G) -> dict:
@@ -72,38 +81,30 @@ def get_Si_weights(G: Any) -> tuple[float, float, float]:
 
 def precompute_trigonometry(
     G: Any,
-) -> tuple[Dict[Any, float], Dict[Any, float], Dict[Any, float]]:
+) -> TrigCache:
     """Precompute cosines and sines of ``θ`` per node."""
     graph = G.graph
     edge_version = int(graph.get("_edge_version", 0))
     cached_version = graph.get("_trig_version")
 
-    cos_th = graph.get("_cos_th")
-    sin_th = graph.get("_sin_th")
-    thetas = graph.get("_thetas")
+    trig_cache: TrigCache | None = graph.get("_trig_cache")
 
-    if (
-        cached_version == edge_version
-        and cos_th is not None
-        and sin_th is not None
-        and thetas is not None
-    ):
-        return cos_th, sin_th, thetas
+    if cached_version == edge_version and trig_cache is not None:
+        return trig_cache
 
-    cos_th = {}
-    sin_th = {}
-    thetas = {}
+    cos_th: Dict[Any, float] = {}
+    sin_th: Dict[Any, float] = {}
+    thetas: Dict[Any, float] = {}
     for n, nd in G.nodes(data=True):
         th = get_attr(nd, ALIAS_THETA, 0.0)
         thetas[n] = th
         cos_th[n] = math.cos(th)
         sin_th[n] = math.sin(th)
 
-    graph["_cos_th"] = cos_th
-    graph["_sin_th"] = sin_th
-    graph["_thetas"] = thetas
+    trig_cache = TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
+    graph["_trig_cache"] = trig_cache
     graph["_trig_version"] = edge_version
-    return cos_th, sin_th, thetas
+    return trig_cache
 
 
 def compute_Si_node(
@@ -174,7 +175,8 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     vfmax = 1.0 if vfmax == 0 else vfmax
     dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
 
-    cos_th, sin_th, thetas = precompute_trigonometry(G)
+    trig = precompute_trigonometry(G)
+    cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
 
     out: Dict[Any, float] = {}
     for n, nd in G.nodes(data=True):

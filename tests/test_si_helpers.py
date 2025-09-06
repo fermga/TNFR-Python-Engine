@@ -1,5 +1,6 @@
 import math
 
+import math
 import networkx as nx
 import pytest
 
@@ -34,7 +35,8 @@ def test_precompute_trigonometry():
     G.add_nodes_from([1, 2])
     set_attr(G.nodes[1], ALIAS_THETA, 0.0)
     set_attr(G.nodes[2], ALIAS_THETA, math.pi / 2)
-    cos_th, sin_th, thetas = precompute_trigonometry(G)
+    trig = precompute_trigonometry(G)
+    cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
     assert cos_th[1] == pytest.approx(1.0)
     assert sin_th[1] == pytest.approx(0.0)
     assert cos_th[2] == pytest.approx(0.0, abs=1e-8)
@@ -49,7 +51,8 @@ def test_compute_Si_node():
     set_attr(G.nodes[1], ALIAS_DNFR, 0.2)
     set_attr(G.nodes[1], ALIAS_THETA, 0.0)
     set_attr(G.nodes[2], ALIAS_THETA, 0.0)
-    cos_th, sin_th, thetas = precompute_trigonometry(G)
+    trig = precompute_trigonometry(G)
+    cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
     neighbors = {n: list(G.neighbors(n)) for n in G}
     Si = compute_Si_node(
         1,
