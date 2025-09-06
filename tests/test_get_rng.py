@@ -1,11 +1,16 @@
 import random
 import hashlib
+import struct
 from tnfr.helpers import get_rng
 
 def _derive_seed(seed: int, key: int) -> int:
-    seed_input = (int(seed), int(key))
+    seed_bytes = struct.pack(
+        ">QQ",
+        int(seed) & 0xFFFFFFFFFFFFFFFF,
+        int(key) & 0xFFFFFFFFFFFFFFFF,
+    )
     return int.from_bytes(
-        hashlib.blake2b(repr(seed_input).encode()).digest()[:8], "big"
+        hashlib.blake2b(seed_bytes, digest_size=8).digest(), "big"
     )
 
 def test_get_rng_reproducible_sequence():
