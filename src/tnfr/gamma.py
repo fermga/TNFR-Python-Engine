@@ -6,6 +6,7 @@ import math
 import cmath
 import logging
 import warnings
+import json
 from collections import OrderedDict
 from collections.abc import Mapping
 
@@ -72,7 +73,11 @@ def _kuramoto_common(G, node, _cfg):
 def _get_gamma_spec(G) -> Mapping[str, Any]:
     raw = G.graph.get("GAMMA")
     cached = G.graph.get("_gamma_spec")
-    if cached is not None and G.graph.get("_gamma_spec_raw") is raw:
+    prev_hash = G.graph.get("_gamma_spec_hash")
+    # ``json.dumps(..., default=str)`` provides a stable representation for
+    # hash calculation even when values are not natively serialisable.
+    cur_hash = hash(json.dumps(raw, sort_keys=True, default=str))
+    if cached is not None and prev_hash == cur_hash:
         return cached
     if raw is None:
         spec = {"type": "none"}
@@ -86,7 +91,7 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
     else:
         spec = raw
     G.graph["_gamma_spec"] = spec
-    G.graph["_gamma_spec_raw"] = raw
+    G.graph["_gamma_spec_hash"] = cur_hash
     return spec
 
 

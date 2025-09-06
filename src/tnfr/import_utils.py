@@ -14,6 +14,9 @@ __all__ = ["optional_import", "get_numpy", "import_nodonx"]
 logger = logging.getLogger(__name__)
 
 
+_FAILED_IMPORTS: set[str] = set()
+
+
 def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     """Import ``name`` returning ``fallback`` if it fails.
 
@@ -39,6 +42,8 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     """
 
     module_name, attr = (name.rsplit(".", 1) + [None])[:2]
+    if name in _FAILED_IMPORTS or module_name in _FAILED_IMPORTS:
+        return fallback
     try:
         module = importlib.import_module(module_name)
         return getattr(module, attr) if attr else module
@@ -48,12 +53,14 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
             RuntimeWarning,
             stacklevel=2,
         )
+        _FAILED_IMPORTS.update({name, module_name})
     except AttributeError as e:
         warnings.warn(
             f"Module '{module_name}' has no attribute '{attr}': {e}",
             RuntimeWarning,
             stacklevel=2,
         )
+        _FAILED_IMPORTS.add(name)
     return fallback
 
 
