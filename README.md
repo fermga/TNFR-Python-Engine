@@ -114,6 +114,12 @@ https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-teoria-de-la-natur
 
 ---
 
+## Changelog
+
+* Removed deprecated alias `sigma_vector_global`; use `sigma_vector_from_graph` instead.
+
+---
+
 ## MIT License
 
 Copyright (c) 2025 TNFR - Teoría de la naturaleza fractral resonante
