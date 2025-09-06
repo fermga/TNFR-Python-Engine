@@ -86,8 +86,8 @@ __all__ = [
     "set_attr_with_max",
     "set_vf",
     "set_dnfr",
-    "media_vecinal",
-    "fase_media",
+    "neighbor_mean",
+    "neighbor_phase_mean",
     "push_glyph",
     "recent_glyph",
     "ensure_history",
@@ -97,9 +97,9 @@ __all__ = [
     "mix_groups",
     "compute_dnfr_accel_max",
     "compute_coherence",
-    "obtener_pesos_si",
-    "precalcular_trigonometría",
-    "calcular_Si_nodo",
+    "get_Si_weights",
+    "precompute_trigonometry",
+    "compute_Si_node",
     "compute_Si",
     "increment_edge_version",
     "node_set_checksum",
@@ -561,13 +561,13 @@ def compute_coherence(G) -> float:
 # -------------------------
 
 
-def media_vecinal(G, n, aliases: tuple[str, ...], default: float = 0.0) -> float:
-    """Media del atributo indicado por ``aliases`` en los vecinos de ``n``."""
+def neighbor_mean(G, n, aliases: tuple[str, ...], default: float = 0.0) -> float:
+    """Mean of ``aliases`` attribute among neighbours of ``n``."""
     vals = (get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
     return list_mean(vals, default)
 
 
-def fase_media(obj, n=None) -> float:
+def neighbor_phase_mean(obj, n=None) -> float:
     """Promedio circular de las fases vecinales.
 
     Acepta un :class:`NodoProtocol` o un par ``(G, n)`` de ``networkx``. En el
@@ -614,7 +614,7 @@ from .glyph_history import (  # noqa: E402
 # -------------------------
 
 
-def obtener_pesos_si(G: Any) -> tuple[float, float, float]:
+def get_Si_weights(G: Any) -> tuple[float, float, float]:
     """Obtiene y normaliza los pesos del índice de sentido."""
     w = {**DEFAULTS["SI_WEIGHTS"], **G.graph.get("SI_WEIGHTS", {})}
     weights = normalize_weights(w, ("alpha", "beta", "gamma"), default=0.0)
@@ -630,7 +630,7 @@ def obtener_pesos_si(G: Any) -> tuple[float, float, float]:
     return alpha, beta, gamma
 
 
-def precalcular_trigonometría(
+def precompute_trigonometry(
     G: Any,
 ) -> tuple[Dict[Any, float], Dict[Any, float], Dict[Any, float]]:
     """Precálculo de cosenos y senos de ``θ`` por nodo."""
@@ -645,7 +645,7 @@ def precalcular_trigonometría(
     return cos_th, sin_th, thetas
 
 
-def calcular_Si_nodo(
+def compute_Si_node(
     n: Any,
     nd: Dict[str, Any],
     *,
@@ -696,7 +696,7 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     sensibilidad parcial (∂Si/∂componente).
     """
     neighbors = {n: list(G.neighbors(n)) for n in G}
-    alpha, beta, gamma = obtener_pesos_si(G)
+    alpha, beta, gamma = get_Si_weights(G)
 
     # Normalización de νf y ΔNFR en red usando máximos cacheados
     vfmax = G.graph.get("_vfmax")
@@ -713,11 +713,11 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
 
     # precálculo de cosenos y senos de cada nodo
-    cos_th, sin_th, thetas = precalcular_trigonometría(G)
+    cos_th, sin_th, thetas = precompute_trigonometry(G)
 
     out: Dict[Any, float] = {}
     for n, nd in G.nodes(data=True):
-        out[n] = calcular_Si_nodo(
+        out[n] = compute_Si_node(
             n,
             nd,
             alpha=alpha,
