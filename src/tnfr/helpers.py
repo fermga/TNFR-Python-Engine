@@ -17,6 +17,7 @@ import math
 import json
 import hashlib
 import random
+import struct
 from functools import partial, lru_cache
 from statistics import fmean, StatisticsError
 from json import JSONDecodeError
@@ -123,9 +124,13 @@ def get_rng(seed: int, key: int) -> random.Random:
     ``PYTHONHASHSEED``.
     """
 
-    seed_input = (int(seed), int(key))
+    seed_bytes = struct.pack(
+        ">QQ",
+        int(seed) & 0xFFFFFFFFFFFFFFFF,
+        int(key) & 0xFFFFFFFFFFFFFFFF,
+    )
     seed_int = int.from_bytes(
-        hashlib.blake2b(repr(seed_input).encode()).digest()[:8], "big"
+        hashlib.blake2b(seed_bytes, digest_size=8).digest(), "big"
     )
     return random.Random(seed_int)
 
