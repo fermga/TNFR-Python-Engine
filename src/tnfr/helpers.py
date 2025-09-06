@@ -31,8 +31,11 @@ np = optional_import("numpy")  # type: ignore
 tomllib = optional_import("tomllib") or optional_import("tomli")  # type: ignore
 if tomllib is not None:
     TOMLDecodeError = getattr(tomllib, "TOMLDecodeError", Exception)  # type: ignore[attr-defined]
+    has_toml = True
 else:
-    TOMLDecodeError = Exception  # type: ignore[assignment]
+    class TOMLDecodeError(Exception):  # type: ignore
+        pass
+    has_toml = False
 
 yaml = optional_import("yaml")  # type: ignore
 if yaml is not None:
@@ -171,7 +174,7 @@ def _format_structured_file_error(path: Path, e: Exception) -> str:
         return f"Error al parsear archivo JSON en {path}: {e}"
     if isinstance(e, YAMLError):
         return f"Error al parsear archivo YAML en {path}: {e}"
-    if isinstance(e, TOMLDecodeError):
+    if has_toml and isinstance(e, TOMLDecodeError):
         return f"Error al parsear archivo TOML en {path}: {e}"
     if isinstance(e, ImportError):
         return f"Dependencia faltante al parsear {path}: {e}"
