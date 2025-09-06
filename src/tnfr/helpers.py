@@ -258,10 +258,8 @@ def node_set_checksum(
         )
 
     node_iter = nodes if nodes is not None else G.nodes()
-    for i, node_repr in enumerate(sorted(serialise(n) for n in node_iter)):
-        if i:
-            sha1.update(b"|")
-        sha1.update(node_repr.encode("utf-8"))
+    serialised = sorted(serialise(n) for n in node_iter)
+    sha1.update("|".join(serialised).encode("utf-8"))
     return sha1.hexdigest()
 
 
