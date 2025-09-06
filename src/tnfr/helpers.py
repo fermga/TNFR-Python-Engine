@@ -636,15 +636,41 @@ def get_Si_weights(G: Any) -> tuple[float, float, float]:
 def precompute_trigonometry(
     G: Any,
 ) -> tuple[Dict[Any, float], Dict[Any, float], Dict[Any, float]]:
-    """Precálculo de cosenos y senos de ``θ`` por nodo."""
-    cos_th: Dict[Any, float] = {}
-    sin_th: Dict[Any, float] = {}
-    thetas: Dict[Any, float] = {}
+    """Precálculo de cosenos y senos de ``θ`` por nodo.
+
+    Los valores se almacenan en ``G.graph`` y se reutilizan mientras la
+    estructura del grafo (versionada con ``"_edge_version"``) no cambie.
+    """
+
+    graph = G.graph
+    edge_version = int(graph.get("_edge_version", 0))
+    cached_version = graph.get("_trig_version")
+
+    cos_th = graph.get("_cos_th")
+    sin_th = graph.get("_sin_th")
+    thetas = graph.get("_thetas")
+
+    if (
+        cached_version == edge_version
+        and cos_th is not None
+        and sin_th is not None
+        and thetas is not None
+    ):
+        return cos_th, sin_th, thetas
+
+    cos_th = {}
+    sin_th = {}
+    thetas = {}
     for n, nd in G.nodes(data=True):
         th = get_attr(nd, ALIAS_THETA, 0.0)
         thetas[n] = th
         cos_th[n] = math.cos(th)
         sin_th[n] = math.sin(th)
+
+    graph["_cos_th"] = cos_th
+    graph["_sin_th"] = sin_th
+    graph["_thetas"] = thetas
+    graph["_trig_version"] = edge_version
     return cos_th, sin_th, thetas
 
 
@@ -698,7 +724,15 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     También guarda en ``G.graph`` los pesos normalizados y la
     sensibilidad parcial (∂Si/∂componente).
     """
-    neighbors = {n: list(G.neighbors(n)) for n in G}
+    graph = G.graph
+    edge_version = int(graph.get("_edge_version", 0))
+
+    neighbors = graph.get("_neighbors")
+    if graph.get("_neighbors_version") != edge_version or neighbors is None:
+        neighbors = {n: list(G.neighbors(n)) for n in G}
+        graph["_neighbors"] = neighbors
+        graph["_neighbors_version"] = edge_version
+
     alpha, beta, gamma = get_Si_weights(G)
 
     # Normalización de νf y ΔNFR en red usando máximos cacheados
@@ -746,3 +780,13 @@ def increment_edge_version(G: Any) -> None:
     """
     graph = G.graph if hasattr(G, "graph") else G
     graph["_edge_version"] = int(graph.get("_edge_version", 0)) + 1
+    # eliminar caches dependientes de la estructura
+    for key in (
+        "_neighbors",
+        "_neighbors_version",
+        "_cos_th",
+        "_sin_th",
+        "_thetas",
+        "_trig_version",
+    ):
+        graph.pop(key, None)
