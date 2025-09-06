@@ -26,7 +26,7 @@ class CallbackEvent(str, Enum):
     ON_REMESH = "on_remesh"
 
 
-_CALLBACK_EVENTS: tuple[str, ...] = tuple(e.value for e in CallbackEvent)
+_CALLBACK_EVENTS: set[str] = set(e.value for e in CallbackEvent)
 
 
 Callback = Callable[["nx.Graph", dict[str, Any]], None]
