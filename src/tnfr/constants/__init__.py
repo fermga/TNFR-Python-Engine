@@ -32,6 +32,18 @@ IMMUTABLE_TYPES = (
     type(None),
 )
 
+
+def _is_immutable(value: Any) -> bool:
+    """Check recursively if ``value`` is immutable.
+
+    Tuples are traversed to ensure they don't contain mutable elements.
+    """
+    if isinstance(value, IMMUTABLE_TYPES):
+        if isinstance(value, tuple):
+            return all(_is_immutable(item) for item in value)
+        return True
+    return False
+
 # Diccionario combinado exportado
 # Unimos los diccionarios en orden de menor a mayor prioridad para que los
 # valores de ``METRIC_DEFAULTS`` sobrescriban al resto,
@@ -74,15 +86,14 @@ def inject_defaults(
 
     ``defaults`` is usually ``DEFAULTS``, combining all sub-dictionaries.
     If ``override`` is ``True`` existing values are overwritten. Immutable
-    values (numbers, strings, tuples, etc.) are assigned directly;
-    ``copy.deepcopy`` is used only for mutable structures.
+    values (numbers, strings, tuples, etc.) are assigned directly. Tuples are
+    inspected recursively; if any element is mutable, a ``deepcopy`` is made
+    to avoid shared state.
     """
     G.graph.setdefault("_tnfr_defaults_attached", False)
     for k, v in defaults.items():
         if override or k not in G.graph:
-            G.graph[k] = (
-                v if isinstance(v, IMMUTABLE_TYPES) else copy.deepcopy(v)
-            )
+            G.graph[k] = v if _is_immutable(v) else copy.deepcopy(v)
     G.graph["_tnfr_defaults_attached"] = True
     try:  # local import para evitar dependencia circular
         from ..operators import _ensure_node_offset_map
