@@ -80,17 +80,13 @@ def _sigma_from_vectors(
     ``vectors`` may be a single complex number or an iterable of them.
     """
 
-    acc = complex(0.0, 0.0)
-    cnt = 0
-
-    if isinstance(vectors, complex):
+    try:
+        vectors_iter = list(iter(vectors))
+    except TypeError:
         vectors_iter = [vectors]
-    else:
-        vectors_iter = vectors
 
-    for z in vectors_iter:
-        acc += z
-        cnt += 1
+    cnt = len(vectors_iter)
+    acc = sum(vectors_iter, complex(0.0, 0.0))
 
     if cnt <= 0:
         vec = {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": float(fallback_angle)}
