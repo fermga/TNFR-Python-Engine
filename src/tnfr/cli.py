@@ -37,7 +37,8 @@ from .gamma import GAMMA_REGISTRY
 from .scenarios import build_graph
 from .presets import get_preset
 from .config import apply_config
-from .helpers import read_structured_file, list_mean, safe_write
+from .io import read_structured_file, safe_write
+from .helpers import list_mean
 from .observers import attach_standard_observer
 from . import __version__
 

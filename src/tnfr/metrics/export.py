@@ -7,7 +7,7 @@ import json
 from itertools import zip_longest
 
 from ..glyph_history import ensure_history
-from ..helpers import safe_write
+from ..io import safe_write
 from ..constants_glyphs import GLYPHS_CANONICAL
 from .core import glyphogram_series
 

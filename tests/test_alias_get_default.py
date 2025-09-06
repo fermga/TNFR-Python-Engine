@@ -1,6 +1,6 @@
 """Pruebas de alias get default."""
 
-from tnfr.helpers import alias_get
+from tnfr.alias import alias_get
 
 
 def test_alias_get_default_none_returns_none():

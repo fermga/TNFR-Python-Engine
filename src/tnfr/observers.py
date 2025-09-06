@@ -6,11 +6,9 @@ from itertools import islice
 from functools import partial
 
 from .constants import ALIAS_THETA, METRIC_DEFAULTS
-from .helpers import (
-    get_attr,
-    angle_diff,
-    compute_coherence,
-)
+from .alias import get_attr
+from .helpers import angle_diff
+from .metrics_utils import compute_coherence
 from .callback_utils import register_callback
 from .glyph_history import ensure_history, count_glyphs, append_metric
 from .collections_utils import normalize_counter, mix_groups

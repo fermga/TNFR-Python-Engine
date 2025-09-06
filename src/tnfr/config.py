@@ -3,7 +3,7 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 from pathlib import Path
-from .helpers import read_structured_file
+from .io import read_structured_file
 
 from .constants import inject_defaults
 

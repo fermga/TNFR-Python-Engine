@@ -10,7 +10,7 @@ from tnfr.constants import (
     ALIAS_VF,
     ALIAS_THETA,
 )
-from tnfr.helpers import get_attr
+from tnfr.alias import get_attr
 
 
 def test_init_node_attrs_reproducible():

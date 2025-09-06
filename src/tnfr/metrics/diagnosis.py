@@ -15,11 +15,9 @@ from ..constants import (
 )
 from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, append_metric
-from ..helpers import (
-    get_attr,
-    clamp01,
-    compute_dnfr_accel_max,
-)
+from ..alias import get_attr
+from ..helpers import clamp01
+from ..metrics_utils import compute_dnfr_accel_max
 from .coherence import local_phase_sync_weighted, _similarity_abs
 
 

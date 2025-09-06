@@ -2,7 +2,7 @@
 
 import logging
 import pytest
-from tnfr.helpers import alias_get
+from tnfr.alias import alias_get
 
 
 def test_alias_get_logs_on_error(caplog):

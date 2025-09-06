@@ -4,9 +4,9 @@ import pytest
 from pathlib import Path
 from json import JSONDecodeError
 import json
-import tnfr.helpers as helpers
+import tnfr.io as io_mod
 
-from tnfr.helpers import read_structured_file, StructuredFileError
+from tnfr.io import read_structured_file, StructuredFileError
 
 
 def test_read_structured_file_missing_file(tmp_path: Path):
@@ -83,7 +83,7 @@ def test_read_structured_file_missing_dependency(
     def fake_parser(_: str) -> None:
         raise ImportError("pyyaml no está instalado")
 
-    monkeypatch.setitem(helpers.PARSERS, ".yaml", fake_parser)
+    monkeypatch.setitem(io_mod.PARSERS, ".yaml", fake_parser)
 
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
@@ -102,7 +102,7 @@ def test_read_structured_file_missing_dependency_toml(
     def fake_parser(_: str) -> None:
         raise ImportError("toml no está instalado")
 
-    monkeypatch.setitem(helpers.PARSERS, ".toml", fake_parser)
+    monkeypatch.setitem(io_mod.PARSERS, ".toml", fake_parser)
 
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
@@ -126,11 +126,11 @@ def test_json_error_not_reported_as_toml(monkeypatch: pytest.MonkeyPatch) -> Non
     class DummyTOMLDecodeError(Exception):
         pass
 
-    monkeypatch.setattr(helpers, "has_toml", False)
-    monkeypatch.setattr(helpers, "TOMLDecodeError", DummyTOMLDecodeError)
+    monkeypatch.setattr(io_mod, "has_toml", False)
+    monkeypatch.setattr(io_mod, "TOMLDecodeError", DummyTOMLDecodeError)
 
     err = JSONDecodeError("msg", "", 0)
-    msg = helpers._format_structured_file_error(Path("data.json"), err)
+    msg = io_mod._format_structured_file_error(Path("data.json"), err)
     assert msg.startswith("Error al parsear archivo JSON en")
     assert not msg.startswith("Error al parsear archivo TOML")
 
@@ -139,11 +139,11 @@ def test_import_error_not_reported_as_toml(monkeypatch: pytest.MonkeyPatch) -> N
     class DummyTOMLDecodeError(Exception):
         pass
 
-    monkeypatch.setattr(helpers, "has_toml", False)
-    monkeypatch.setattr(helpers, "TOMLDecodeError", DummyTOMLDecodeError)
+    monkeypatch.setattr(io_mod, "has_toml", False)
+    monkeypatch.setattr(io_mod, "TOMLDecodeError", DummyTOMLDecodeError)
 
     err = ImportError("dep missing")
-    msg = helpers._format_structured_file_error(Path("data.toml"), err)
+    msg = io_mod._format_structured_file_error(Path("data.toml"), err)
     assert msg.startswith("Dependencia faltante al parsear")
     assert not msg.startswith("Error al parsear archivo TOML")
 
@@ -153,7 +153,7 @@ def test_read_structured_file_ignores_missing_yaml_when_parsing_json(
 ):
     path = tmp_path / "data.json"
     path.write_text("{\"a\": 1}", encoding="utf-8")
-    monkeypatch.setattr(helpers, "yaml", None)
-    monkeypatch.setattr(helpers, "tomllib", None)
-    monkeypatch.setattr(helpers, "PARSERS", {".json": json.loads})
+    monkeypatch.setattr(io_mod, "yaml", None)
+    monkeypatch.setattr(io_mod, "tomllib", None)
+    monkeypatch.setattr(io_mod, "PARSERS", {".json": json.loads})
     assert read_structured_file(path) == {"a": 1}

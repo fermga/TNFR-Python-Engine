@@ -5,7 +5,8 @@ import random
 from typing import TYPE_CHECKING
 
 from .constants import DEFAULTS, INIT_DEFAULTS, VF_KEY, THETA_KEY
-from .helpers import clamp, get_rng
+from .helpers import clamp
+from .rng import get_rng
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx

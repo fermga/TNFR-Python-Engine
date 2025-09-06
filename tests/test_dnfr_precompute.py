@@ -9,7 +9,7 @@ from tnfr.dynamics import (
     _compute_dnfr_loops,
 )
 from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
-from tnfr.helpers import get_attr
+from tnfr.alias import get_attr
 
 
 def _setup_graph():

@@ -1,6 +1,6 @@
 import pytest
 
-from tnfr.helpers import _validate_aliases
+from tnfr.alias import _validate_aliases
 
 
 def test_rejects_string():

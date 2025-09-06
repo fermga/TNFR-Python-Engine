@@ -1,7 +1,7 @@
 import random
 import hashlib
 import struct
-from tnfr.helpers import get_rng
+from tnfr.rng import get_rng
 
 def _derive_seed(seed: int, key: int) -> int:
     seed_bytes = struct.pack(

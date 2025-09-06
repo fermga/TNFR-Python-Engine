@@ -10,7 +10,8 @@ from .constants import (
     ALIAS_D2EPI,
     get_param,
 )
-from .helpers import get_attr, clamp01
+from .alias import get_attr
+from .helpers import clamp01
 from .glyph_history import recent_glyph
 from .types import Glyph
 

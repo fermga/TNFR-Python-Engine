@@ -18,15 +18,15 @@ from .constants import (
     ALIAS_D2EPI,
 )
 from .glyph_history import push_glyph
-from .helpers import (
+from .alias import (
     get_attr,
     get_attr_str,
     set_attr,
     set_attr_str,
     set_vf,
     set_dnfr,
-    increment_edge_version,
 )
+from .helpers import increment_edge_version
 
 from .operators import apply_glyph_obj
 

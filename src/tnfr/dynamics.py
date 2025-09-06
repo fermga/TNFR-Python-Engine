@@ -42,19 +42,20 @@ from .helpers import (
     clamp,
     clamp01,
     angle_diff,
+    neighbor_mean,
+    neighbor_phase_mean,
+    cached_nodes_and_A,
+)
+from .alias import (
     get_attr,
     set_attr,
     get_attr_str,
     set_attr_str,
-    neighbor_mean,
-    neighbor_phase_mean,
     set_vf,
     set_dnfr,
-    compute_Si,
-    compute_dnfr_accel_max,
-    cached_nodes_and_A,
-    get_rng,
 )
+from .metrics_utils import compute_Si, compute_dnfr_accel_max
+from .rng import get_rng
 from .callback_utils import invoke_callbacks
 from .glyph_history import recent_glyph, ensure_history, append_metric
 from .collections_utils import normalize_weights

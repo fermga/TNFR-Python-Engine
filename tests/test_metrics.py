@@ -4,7 +4,7 @@ import pytest
 import networkx as nx
 
 from tnfr.constants import attach_defaults, ALIAS_EPI
-from tnfr.helpers import get_attr
+from tnfr.alias import get_attr
 from tnfr.metrics import (
     _metrics_step,
     _update_latency_index,

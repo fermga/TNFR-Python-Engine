@@ -2,7 +2,7 @@
 
 from concurrent.futures import ThreadPoolExecutor
 
-from tnfr.helpers import alias_get, alias_set, _validate_aliases
+from tnfr.alias import alias_get, alias_set, _validate_aliases
 
 
 def _worker(i):

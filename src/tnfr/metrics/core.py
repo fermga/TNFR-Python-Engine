@@ -25,7 +25,9 @@ from ..constants import (
 )
 from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, last_glyph, append_metric
-from ..helpers import get_attr, set_attr, list_mean, compute_coherence
+from ..alias import get_attr, set_attr
+from ..helpers import list_mean
+from ..metrics_utils import compute_coherence
 from ..constants_glyphs import GLYPHS_CANONICAL, GLYPH_GROUPS
 from ..types import Glyph
 from .coherence import register_coherence_callbacks
@@ -142,7 +144,9 @@ def _update_tg(G, hist, dt, save_by_node: bool):
     curr_key = TgCurr
     run_key = TgRun
 
-    for n, nd in G.nodes(data=True):
+    nodes = G.nodes
+    for n in nodes():
+        nd = nodes[n]
         g = last(nd)
         if not g:
             continue

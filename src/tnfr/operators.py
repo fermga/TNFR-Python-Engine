@@ -28,13 +28,12 @@ from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers import (
     list_mean,
     angle_diff,
-    get_attr,
-    set_attr,
     neighbor_phase_mean,
     increment_edge_version,
     ensure_node_offset_map,
-    get_rng,
 )
+from .alias import get_attr, set_attr
+from .rng import get_rng
 from .callback_utils import invoke_callbacks
 from .glyph_history import append_metric
 
