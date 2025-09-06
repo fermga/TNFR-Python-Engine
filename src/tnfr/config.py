@@ -1,7 +1,7 @@
 """Configuration utilities."""
 
 from __future__ import annotations
-from typing import Any, Dict, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 from pathlib import Path
 from .helpers import read_structured_file
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover - only for type checkers
     import networkx as nx
 
 
-def load_config(path: str | Path) -> Dict[str, Any]:
+def load_config(path: str | Path) -> dict[str, Any]:
     """Read a JSON/YAML file and return a ``dict`` with parameters."""
     data = read_structured_file(Path(path))
     if not isinstance(data, dict):

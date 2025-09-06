@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import (
     Iterable,
     Sequence,
-    Dict,
     Any,
     TypeVar,
     Mapping,
@@ -66,12 +65,12 @@ def ensure_collection(
 
 
 def normalize_weights(
-    dict_like: Dict[str, Any],
+    dict_like: dict[str, Any],
     keys: Iterable[str],
     default: float = 0.0,
     *,
     error_on_negative: bool = False,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Normalize ``keys`` in ``dict_like`` so their sum is 1."""
     keys = list(keys)
     default_float = float(default)
@@ -88,7 +87,7 @@ def _convert_weights(
     keys: Iterable[str],
     default_float: float,
     error_on_negative: bool,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     def _to_float(k: str) -> float:
         val = dict_like.get(k, default_float)
         ok, converted = _convert_value(
@@ -116,7 +115,7 @@ def _validate_weights(
 
 def _normalize_distribution(
     weights: Mapping[str, float], keys: Sequence[str]
-) -> Dict[str, float]:
+) -> dict[str, float]:
     total = math.fsum(weights.values())
     n = len(keys)
     if total <= 0:
@@ -129,7 +128,7 @@ def _normalize_distribution(
 
 def normalize_counter(
     counts: Mapping[str, int],
-) -> tuple[Dict[str, float], int]:
+) -> tuple[dict[str, float], int]:
     """Normalize a ``Counter`` returning proportions and total."""
     total = sum(counts.values())
     if total <= 0:
@@ -143,9 +142,9 @@ def mix_groups(
     groups: Mapping[str, Iterable[str]],
     *,
     prefix: str = "_",
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Aggregate values of ``dist`` according to ``groups``."""
-    out: Dict[str, float] = dict(dist)
+    out: dict[str, float] = dict(dist)
     for label, keys in groups.items():
         out[f"{prefix}{label}"] = sum(dist.get(k, 0.0) for k in keys)
     return out
