@@ -83,10 +83,12 @@ def _update_node_sample(G, *, step: int) -> None:
     limit = int(G.graph.get("UM_CANDIDATE_COUNT", 0))
     nodes = G.graph.get("_node_list")
     checksum = G.graph.get("_node_list_checksum")
-    current_checksum = node_set_checksum(G, nodes) if nodes is not None else None
+    current_checksum = (
+        node_set_checksum(G, nodes, store=False) if nodes is not None else None
+    )
     if nodes is None or checksum != current_checksum:
         nodes = tuple(G.nodes())
-        checksum = node_set_checksum(G, nodes)
+        checksum = node_set_checksum(G, nodes, store=False)
         G.graph["_node_list"] = nodes
         G.graph["_node_list_checksum"] = checksum
     n = len(nodes)
@@ -174,9 +176,11 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
 
     for i, n in enumerate(nodes):
         nd = G.nodes[n]
-        theta[i] = get_attr(nd, ALIAS_THETA, 0.0)
-        epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
-        vf[i] = get_attr(nd, ALIAS_VF, 0.0)
+        theta[i], epi[i], vf[i] = (
+            get_attr(nd, ALIAS_THETA, 0.0),
+            get_attr(nd, ALIAS_EPI, 0.0),
+            get_attr(nd, ALIAS_VF, 0.0),
+        )
 
     w_phase = float(weights.get("phase", 0.0))
     w_epi = float(weights.get("epi", 0.0))
