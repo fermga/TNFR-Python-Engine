@@ -176,7 +176,7 @@ def ensure_parent(path: str | Path) -> None:
 # -------------------------
 
 
-def _stable_json(obj: Any) -> Any:
+def _stable_json(obj: Any, visited: set[int] | None = None) -> Any:
     """Helper to obtain a JSON-serialisable structure for ``obj``.
 
     The default :func:`json.dumps` behaviour falls back to ``obj.__dict__``
@@ -187,12 +187,21 @@ def _stable_json(obj: Any) -> Any:
 
     if isinstance(obj, (str, int, float, bool)) or obj is None:
         return obj
+
+    if visited is None:
+        visited = set()
+
+    obj_id = id(obj)
+    if obj_id in visited:
+        return "<recursion>"
+    visited.add(obj_id)
+
     if isinstance(obj, (list, tuple, set)):
-        return [_stable_json(o) for o in obj]
+        return [_stable_json(o, visited) for o in obj]
     if isinstance(obj, dict):
-        return {str(k): _stable_json(v) for k, v in obj.items()}
+        return {str(k): _stable_json(v, visited) for k, v in obj.items()}
     if hasattr(obj, "__dict__"):
-        return {k: _stable_json(v) for k, v in vars(obj).items()}
+        return {k: _stable_json(v, visited) for k, v in vars(obj).items()}
     return f"{obj.__module__}.{obj.__class__.__qualname__}"
 
 
