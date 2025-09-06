@@ -17,7 +17,7 @@ from .helpers import (
     angle_diff,
     get_attr,
     set_attr,
-    fase_media,
+    neighbor_phase_mean,
     increment_edge_version,
     node_set_checksum,
 )
@@ -279,7 +279,7 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Coupling
     gf = get_glyph_factors(node)
     k = float(gf.get("UM_theta_push", 0.25))
     th = node.theta
-    thL = fase_media(node)
+    thL = neighbor_phase_mean(node)
     d = angle_diff(thL, th)
     node.theta = th + k * d
 

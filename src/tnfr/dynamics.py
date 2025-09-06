@@ -51,8 +51,8 @@ from .helpers import (
     set_attr,
     get_attr_str,
     set_attr_str,
-    media_vecinal,
-    fase_media,
+    neighbor_mean,
+    neighbor_phase_mean,
     set_vf,
     set_dnfr,
     compute_Si,
@@ -468,7 +468,7 @@ def dnfr_phase_only(G) -> None:
     """Ejemplo: ΔNFR solo desde fase (tipo Kuramoto-like)."""
     for n, nd in G.nodes(data=True):
         th_i = get_attr(nd, ALIAS_THETA, 0.0)
-        th_bar = fase_media(G, n)
+        th_bar = neighbor_phase_mean(G, n)
         g_phase = -angle_diff(th_i, th_bar) / math.pi
         set_dnfr(G, n, g_phase)
     _write_dnfr_metadata(
@@ -480,10 +480,10 @@ def dnfr_epi_vf_mixed(G) -> None:
     """Ejemplo: ΔNFR sin fase, mezclando EPI y νf."""
     for n, nd in G.nodes(data=True):
         epi_i = get_attr(nd, ALIAS_EPI, 0.0)
-        epi_bar = media_vecinal(G, n, ALIAS_EPI, default=epi_i)
+        epi_bar = neighbor_mean(G, n, ALIAS_EPI, default=epi_i)
         g_epi = epi_bar - epi_i
         vf_i = get_attr(nd, ALIAS_VF, 0.0)
-        vf_bar = media_vecinal(G, n, ALIAS_VF, default=vf_i)
+        vf_bar = neighbor_mean(G, n, ALIAS_VF, default=vf_i)
         g_vf = vf_bar - vf_i
         set_dnfr(G, n, 0.5 * g_epi + 0.5 * g_vf)
     _write_dnfr_metadata(
@@ -728,7 +728,7 @@ def validate_canon(G) -> None:
     return G
 
 
-def _leer_parametros_adaptativos(
+def _read_adaptive_params(
     g: Dict[str, Any],
 ) -> tuple[Dict[str, Any], float, float]:
     """Obtiene configuración y valores actuales para adaptación de fase."""
@@ -738,7 +738,7 @@ def _leer_parametros_adaptativos(
     return cfg, kG, kL
 
 
-def _calcular_estado(G, cfg: Dict[str, Any]) -> tuple[str, float, float]:
+def _compute_state(G, cfg: Dict[str, Any]) -> tuple[str, float, float]:
     """Devuelve estado actual (estable/disonante/transicion) y métricas."""
     R = kuramoto_order(G)
     win = int(G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]))
@@ -758,7 +758,7 @@ def _calcular_estado(G, cfg: Dict[str, Any]) -> tuple[str, float, float]:
     return state, float(R), disr
 
 
-def _ajustar_k_suave(
+def _smooth_adjust_k(
     kG: float, kL: float, state: str, cfg: Dict[str, Any]
 ) -> tuple[float, float]:
     """Actualiza suavemente kG/kL hacia sus objetivos según el estado."""
@@ -788,8 +788,8 @@ def _ajustar_k_suave(
     return _step(kG, kG_t, kG_min, kG_max), _step(kL, kL_t, kL_min, kL_max)
 
 
-def coordinar_fase_global_vecinal(
-    G, fuerza_global: float | None = None, fuerza_vecinal: float | None = None
+def coordinate_global_local_phase(
+    G, global_force: float | None = None, local_force: float | None = None
 ) -> None:
     """
     Ajusta fase con mezcla GLOBAL+VECINAL.
@@ -814,23 +814,23 @@ def coordinar_fase_global_vecinal(
         hist_disr = deque(hist_disr, maxlen=maxlen)
         hist["phase_disr"] = hist_disr
     # 0) Si hay fuerzas explícitas, usar y salir del modo adaptativo
-    if (fuerza_global is not None) or (fuerza_vecinal is not None):
+    if (global_force is not None) or (local_force is not None):
         kG = float(
-            fuerza_global
-            if fuerza_global is not None
+            global_force
+            if global_force is not None
             else g.get("PHASE_K_GLOBAL", defaults["PHASE_K_GLOBAL"])
         )
         kL = float(
-            fuerza_vecinal
-            if fuerza_vecinal is not None
+            local_force
+            if local_force is not None
             else g.get("PHASE_K_LOCAL", defaults["PHASE_K_LOCAL"])
         )
     else:
-        cfg, kG, kL = _leer_parametros_adaptativos(g)
+        cfg, kG, kL = _read_adaptive_params(g)
 
         if bool(cfg.get("enabled", False)):
-            state, R, disr = _calcular_estado(G, cfg)
-            kG, kL = _ajustar_k_suave(kG, kL, state, cfg)
+            state, R, disr = _compute_state(G, cfg)
+            kG, kL = _smooth_adjust_k(kG, kL, state, cfg)
 
             hist_state.append(state)
             hist_R.append(float(R))
@@ -856,7 +856,7 @@ def coordinar_fase_global_vecinal(
     # 7) Aplicar corrección global+vecinal
     for n, nd in G.nodes(data=True):
         th = get_attr(nd, ALIAS_THETA, 0.0)
-        thL = fase_media(G, n)
+        thL = neighbor_phase_mean(G, n)
         dG = angle_diff(thG, th)
         dL = angle_diff(thL, th)
         set_attr(nd, ALIAS_THETA, th + kG * dG + kL * dL)
@@ -867,7 +867,7 @@ def coordinar_fase_global_vecinal(
 # -------------------------
 
 
-def adaptar_vf_por_coherencia(G) -> None:
+def adapt_vf_by_coherence(G) -> None:
     """Ajusta νf hacia la media vecinal en nodos con estabilidad sostenida."""
     tau = int(G.graph.get("VF_ADAPT_TAU", DEFAULTS.get("VF_ADAPT_TAU", 5)))
     mu = float(G.graph.get("VF_ADAPT_MU", DEFAULTS.get("VF_ADAPT_MU", 0.1)))
@@ -894,7 +894,7 @@ def adaptar_vf_por_coherencia(G) -> None:
 
         if nd["stable_count"] >= tau:
             vf = get_attr(nd, ALIAS_VF, 0.0)
-            vf_bar = media_vecinal(G, n, ALIAS_VF, default=vf)
+            vf_bar = neighbor_mean(G, n, ALIAS_VF, default=vf)
             updates[n] = vf + mu * (vf_bar - vf)
 
     for n, vf_new in updates.items():
@@ -1103,8 +1103,8 @@ def _update_nodes(
     update_epi_via_nodal_equation(G, dt=_dt, method=method)
     for n, nd in G.nodes(data=True):
         apply_canonical_clamps(nd, G, n)
-    coordinar_fase_global_vecinal(G, None, None)
-    adaptar_vf_por_coherencia(G)
+    coordinate_global_local_phase(G, None, None)
+    adapt_vf_by_coherence(G)
 
 
 def _update_metrics(G) -> None:
