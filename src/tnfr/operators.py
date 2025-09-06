@@ -20,6 +20,7 @@ from .helpers import (
     neighbor_phase_mean,
     increment_edge_version,
     node_set_checksum,
+    get_rng,
 )
 from .callback_utils import invoke_callbacks
 
@@ -73,16 +74,15 @@ def _node_offset(G, n) -> int:
 
 
 def _jitter_base(seed: int, key: int) -> random.Random:
-    """Return a ``random.Random`` instance seeded from ``seed`` and ``key``.
+    """Return a ``random.Random`` seeded from ``seed`` and ``key``.
 
-    A stable ``blake2b`` hash is used so the derived seed is reproducible
-    across Python processes.
+    The base generator is retrieved via :func:`get_rng` and cloned so each
+    call returns an independent instance starting from the same state.
     """
-    seed_input = (seed, key)
-    seed_int = int.from_bytes(
-        hashlib.blake2b(repr(seed_input).encode()).digest()[:8], "big"
-    )
-    return random.Random(seed_int)
+    base = get_rng(seed, key)
+    rng = random.Random()
+    rng.setstate(base.getstate())
+    return rng
 
 
 @lru_cache(maxsize=DEFAULTS["JITTER_CACHE_SIZE"])
@@ -104,6 +104,7 @@ def _resize_rng_cache(maxsize: int) -> None:
 def clear_rng_cache() -> None:
     """Clear all cached RNGs."""
     _cached_rng.cache_clear()
+    get_rng.cache_clear()
 
 
 @cache
@@ -628,7 +629,9 @@ def apply_topological_remesh(
     n_before = len(nodes)
     if n_before <= 1:
         return
-    rnd = random.Random(seed)
+    base_seed = 0 if seed is None else int(seed)
+    rnd = get_rng(base_seed, -2)
+    rnd.seed(base_seed)
 
     if mode is None:
         mode = str(
