@@ -44,6 +44,11 @@ def test_negative_max_materialize_error():
         ensure_collection(gen, max_materialize=-1)
 
 
+def test_zero_limit_returns_empty():
+    gen = (i for i in range(5))
+    assert ensure_collection(gen, max_materialize=0) == ()
+
+
 def test_default_limit_enforced():
     gen = (i for i in range(1001))
     with pytest.raises(ValueError):

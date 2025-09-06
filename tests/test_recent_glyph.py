@@ -28,7 +28,8 @@ def test_recent_glyph_window_zero():
 
 def test_recent_glyph_window_negative():
     nd = _make_node(["A", "B"], current="B")
-    assert not recent_glyph(nd, "B", window=-1)
+    with pytest.raises(ValueError):
+        recent_glyph(nd, "B", window=-1)
 
 
 def test_recent_glyph_history_lookup():

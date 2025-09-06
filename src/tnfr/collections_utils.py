@@ -56,6 +56,8 @@ def ensure_collection(
         if max_materialize is None:
             return tuple(it)
         limit = max_materialize
+        if limit == 0:
+            return ()
         out = tuple(itertools.islice(it, limit + 1))
         if len(out) > limit:
             raise ValueError(

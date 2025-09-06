@@ -1,12 +1,14 @@
 """Tests for push_glyph window handling."""
 
+import pytest
+
 from tnfr.glyph_history import push_glyph
 
 
 def test_push_glyph_negative_window():
     nd = {}
-    push_glyph(nd, "A", window=-1)
-    assert list(nd["glyph_history"]) == []
+    with pytest.raises(ValueError):
+        push_glyph(nd, "A", window=-1)
 
 
 def test_push_glyph_zero_window():

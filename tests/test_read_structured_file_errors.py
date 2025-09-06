@@ -18,6 +18,14 @@ def test_read_structured_file_missing_file(tmp_path: Path):
     assert str(path) in msg
 
 
+def test_read_structured_file_unsupported_suffix(tmp_path: Path):
+    path = tmp_path / "data.txt"
+    path.write_text("a", encoding="utf-8")
+    with pytest.raises(ValueError) as exc:
+        read_structured_file(path)
+    assert str(exc.value) == "Unsupported suffix: .txt"
+
+
 def test_read_structured_file_permission_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):

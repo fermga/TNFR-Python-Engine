@@ -7,6 +7,7 @@ from pathlib import Path
 from functools import lru_cache
 
 from .import_utils import optional_import
+import tempfile
 
 
 tomllib = optional_import("tomllib") or optional_import("tomli")
@@ -43,7 +44,7 @@ def _get_parser(suffix: str) -> Callable[[str], Any]:
         return getattr(yaml, "safe_load", _missing_dependency("pyyaml"))
     if suffix == ".toml":
         return getattr(tomllib, "loads", _missing_dependency("tomllib/tomli"))
-    raise KeyError(suffix)
+    raise ValueError(f"Unsupported suffix: {suffix}")
 
 
 def _format_structured_file_error(path: Path, e: Exception) -> str:
@@ -73,10 +74,7 @@ class StructuredFileError(Exception):
 def read_structured_file(path: Path) -> Any:
     """Read a JSON, YAML or TOML file and return parsed data."""
     suffix = path.suffix.lower()
-    try:
-        parser = _get_parser(suffix)
-    except KeyError as e:
-        raise ValueError(f"Extensión de archivo no soportada: {suffix}") from e
+    parser = _get_parser(suffix)
     try:
         text = path.read_text(encoding="utf-8")
         return parser(text)
@@ -100,14 +98,21 @@ def safe_write(
     **open_kwargs: Any,
 ) -> None:
     """Write to ``path`` ensuring parent directory exists and handle errors."""
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
     open_params = dict(mode=mode, **open_kwargs)
     if encoding is not None:
         open_params["encoding"] = encoding
+    tmp_path: Path | None = None
     try:
-        with open(path, **open_params) as f:
+        with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as tmp:
+            tmp_path = Path(tmp.name)
+        with open(tmp_path, **open_params) as f:
             write(f)
+        tmp_path.replace(path)
     except OSError as e:
+        if tmp_path is not None and tmp_path.exists():
+            tmp_path.unlink()
         raise OSError(f"Failed to write file {path}: {e}") from e
 
 

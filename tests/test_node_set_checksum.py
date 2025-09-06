@@ -1,6 +1,9 @@
 import hashlib
 import networkx as nx
 
+import timeit
+
+from tnfr import helpers as h
 from tnfr.helpers import node_set_checksum, _stable_json
 
 
@@ -47,3 +50,15 @@ def test_node_set_checksum_iterable_equivalence():
     G.add_nodes_from([3, 1, 2])
     gen = (n for n in G.nodes())
     assert node_set_checksum(G, gen) == node_set_checksum(G)
+
+
+def test_node_set_checksum_presorted_performance():
+    G = nx.Graph()
+    G.add_nodes_from(range(1000))
+    nodes = list(G.nodes())
+    nodes.sort(key=h._node_repr)
+    t_unsorted = timeit.timeit(lambda: node_set_checksum(G, nodes), number=1)
+    t_presorted = timeit.timeit(
+        lambda: node_set_checksum(G, nodes, presorted=True), number=1
+    )
+    assert t_presorted <= t_unsorted

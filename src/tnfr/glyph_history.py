@@ -23,7 +23,7 @@ __all__ = [
 def _validate_window(window: int) -> int:
     window = int(window)
     if window < 0:
-        return 0
+        raise ValueError("'window' must be non-negative")
     return window
 
 

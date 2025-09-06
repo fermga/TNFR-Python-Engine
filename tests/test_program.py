@@ -2,6 +2,7 @@
 
 import json
 from collections import deque
+from collections.abc import Sequence
 
 import pytest
 
@@ -188,3 +189,20 @@ def test_flatten_nested_blocks_preserves_order():
         ("GLYPH", Glyph.ZHIR.value),
     ]
     assert ops == expected
+
+
+class NoReverseSeq(Sequence):
+    def __init__(self, data):
+        self._data = data
+
+    def __len__(self):
+        return len(self._data)
+
+    def __getitem__(self, idx):
+        return self._data[idx]
+
+
+def test_flatten_accepts_sequence_without_reversed():
+    program = NoReverseSeq([Glyph.AL, Glyph.OZ])
+    ops = _flatten(program)
+    assert ops == [("GLYPH", Glyph.AL.value), ("GLYPH", Glyph.OZ.value)]
