@@ -398,12 +398,10 @@ def alias_get(
     ``log_level`` permite ajustar el nivel de logging cuando la conversión
     falla en modo laxo.
     """
-    if not isinstance(aliases, tuple):
-        aliases = _validate_aliases(aliases)
-    return _alias_lookup(
+    return _alias_get(
         d,
         aliases,
-        conv,
+        conv=conv,
         default=default,
         strict=strict,
         log_level=log_level,
