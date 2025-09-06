@@ -97,6 +97,9 @@ __all__ = [
     "mix_groups",
     "compute_dnfr_accel_max",
     "compute_coherence",
+    "obtener_pesos_si",
+    "precalcular_trigonometría",
+    "calcular_Si_nodo",
     "compute_Si",
     "increment_edge_version",
     "node_set_checksum",
@@ -610,15 +613,8 @@ from .glyph_history import (  # noqa: E402
 # -------------------------
 
 
-def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
-    """Calcula Si por nodo y lo escribe en G.nodes[n]["Si"].
-
-    Fórmula:
-        Si = α·νf_norm + β·(1 - disp_fase_local) + γ·(1 - |ΔNFR|/max|ΔNFR|)
-    También guarda en ``G.graph`` los pesos normalizados y la
-    sensibilidad parcial (∂Si/∂componente).
-    """
-    neighbors = {n: list(G.neighbors(n)) for n in G}
+def obtener_pesos_si(G: Any) -> tuple[float, float, float]:
+    """Obtiene y normaliza los pesos del índice de sentido."""
     w = {**DEFAULTS["SI_WEIGHTS"], **G.graph.get("SI_WEIGHTS", {})}
     weights = normalize_weights(w, ("alpha", "beta", "gamma"), default=0.0)
     alpha = weights["alpha"]
@@ -630,6 +626,76 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
         "dSi_ddisp_fase": -beta,
         "dSi_ddnfr_norm": -gamma,
     }
+    return alpha, beta, gamma
+
+
+def precalcular_trigonometría(
+    G: Any,
+) -> tuple[Dict[Any, float], Dict[Any, float], Dict[Any, float]]:
+    """Precálculo de cosenos y senos de ``θ`` por nodo."""
+    cos_th: Dict[Any, float] = {}
+    sin_th: Dict[Any, float] = {}
+    thetas: Dict[Any, float] = {}
+    for n, nd in G.nodes(data=True):
+        th = get_attr(nd, ALIAS_THETA, 0.0)
+        thetas[n] = th
+        cos_th[n] = math.cos(th)
+        sin_th[n] = math.sin(th)
+    return cos_th, sin_th, thetas
+
+
+def calcular_Si_nodo(
+    n: Any,
+    nd: Dict[str, Any],
+    *,
+    alpha: float,
+    beta: float,
+    gamma: float,
+    vfmax: float,
+    dnfrmax: float,
+    cos_th: Dict[Any, float],
+    sin_th: Dict[Any, float],
+    thetas: Dict[Any, float],
+    neighbors: Dict[Any, Sequence[Any]],
+    inplace: bool,
+) -> float:
+    """Calcula ``Si`` para un solo nodo."""
+    vf = get_attr(nd, ALIAS_VF, 0.0)
+    vf_norm = clamp01(abs(vf) / vfmax)
+
+    th_i = thetas[n]
+    neigh = neighbors[n]
+    deg = len(neigh)
+    if deg:
+        sum_cos = sum(cos_th[v] for v in neigh)
+        sum_sin = sum(sin_th[v] for v in neigh)
+        mean_cos = sum_cos / deg
+        mean_sin = sum_sin / deg
+        th_bar = math.atan2(mean_sin, mean_cos)
+    else:
+        th_bar = th_i
+    disp_fase = abs(angle_diff(th_i, th_bar)) / math.pi
+
+    dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
+    dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
+
+    Si = alpha * vf_norm + beta * (1.0 - disp_fase) + gamma * (1.0 - dnfr_norm)
+    Si = clamp01(Si)
+    if inplace:
+        set_attr(nd, ALIAS_SI, Si)
+    return Si
+
+
+def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
+    """Calcula Si por nodo y lo escribe en G.nodes[n]["Si"].
+
+    Fórmula:
+        Si = α·νf_norm + β·(1 - disp_fase_local) + γ·(1 - |ΔNFR|/max|ΔNFR|)
+    También guarda en ``G.graph`` los pesos normalizados y la
+    sensibilidad parcial (∂Si/∂componente).
+    """
+    neighbors = {n: list(G.neighbors(n)) for n in G}
+    alpha, beta, gamma = obtener_pesos_si(G)
 
     # Normalización de νf y ΔNFR en red usando máximos cacheados
     vfmax = G.graph.get("_vfmax")
@@ -646,42 +712,24 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
 
     # precálculo de cosenos y senos de cada nodo
-    cos_th: Dict[Any, float] = {}
-    sin_th: Dict[Any, float] = {}
-    thetas: Dict[Any, float] = {}
-    for n, nd in G.nodes(data=True):
-        th = get_attr(nd, ALIAS_THETA, 0.0)
-        thetas[n] = th
-        cos_th[n] = math.cos(th)
-        sin_th[n] = math.sin(th)
+    cos_th, sin_th, thetas = precalcular_trigonometría(G)
 
     out: Dict[Any, float] = {}
     for n, nd in G.nodes(data=True):
-        vf = get_attr(nd, ALIAS_VF, 0.0)
-        vf_norm = clamp01(abs(vf) / vfmax)
-
-        # dispersión de fase local utilizando vecinos precomputados
-        th_i = thetas[n]
-        neigh = neighbors[n]
-        deg = len(neigh)
-        if deg:
-            sum_cos = sum(cos_th[v] for v in neigh)
-            sum_sin = sum(sin_th[v] for v in neigh)
-            mean_cos = sum_cos / deg
-            mean_sin = sum_sin / deg
-            th_bar = math.atan2(mean_sin, mean_cos)
-        else:
-            th_bar = th_i
-        disp_fase = abs(angle_diff(th_i, th_bar)) / math.pi  # [0,1]
-
-        dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
-        dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
-
-        Si = alpha * vf_norm + beta * (1.0 - disp_fase) + gamma * (1.0 - dnfr_norm)
-        Si = clamp01(Si)
-        out[n] = Si
-        if inplace:
-            set_attr(nd, ALIAS_SI, Si)
+        out[n] = calcular_Si_nodo(
+            n,
+            nd,
+            alpha=alpha,
+            beta=beta,
+            gamma=gamma,
+            vfmax=vfmax,
+            dnfrmax=dnfrmax,
+            cos_th=cos_th,
+            sin_th=sin_th,
+            thetas=thetas,
+            neighbors=neighbors,
+            inplace=inplace,
+        )
     return out
 
 
