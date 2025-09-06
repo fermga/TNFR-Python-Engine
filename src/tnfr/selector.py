@@ -1,4 +1,4 @@
-"""Selección de glyphs."""
+"""Glyph selection."""
 
 from __future__ import annotations
 
@@ -24,10 +24,10 @@ __all__ = [
 
 
 def _selector_thresholds(G: "nx.Graph") -> dict:
-    """Retorna umbrales normalizados hi/lo para Si, ΔNFR y aceleración.
+    """Return normalised hi/lo thresholds for Si, ΔNFR and acceleration.
 
-    Combina ``SELECTOR_THRESHOLDS`` con ``GLYPH_THRESHOLDS`` (legado) para
-    los cortes de Si. Todos los valores se claman a ``[0, 1]``.
+    Combines ``SELECTOR_THRESHOLDS`` with legacy ``GLYPH_THRESHOLDS`` for Si
+    cutoffs. All values are clamped to ``[0, 1]``.
     """
     sel_defaults = DEFAULTS.get("SELECTOR_THRESHOLDS", {})
     thr_sel = {**sel_defaults, **G.graph.get("SELECTOR_THRESHOLDS", {})}
@@ -37,11 +37,11 @@ def _selector_thresholds(G: "nx.Graph") -> dict:
     def _get_threshold(
         key: str, default: float, legacy: str | None = None
     ) -> float:
-        """Obtiene ``key`` de ``thr_sel`` respetando claves de legado.
+        """Obtain ``key`` from ``thr_sel`` honouring legacy keys.
 
-        Si ``legacy`` se proporciona se usa ``thr_def`` como respaldo,
-        permitiendo compatibilidad con ``GLYPH_THRESHOLDS`` de versiones
-        anteriores.
+        When ``legacy`` is provided ``thr_def`` is used as fallback,
+        allowing compatibility with ``GLYPH_THRESHOLDS`` from older
+        versions.
         """
 
         if legacy is not None:
@@ -104,8 +104,7 @@ def _selector_thresholds(G: "nx.Graph") -> dict:
 
 
 def _norms_para_selector(G: "nx.Graph") -> dict:
-    """Calcula y guarda en ``G.graph`` los máximos para normalizar
-    |ΔNFR| y |d2EPI/dt2|."""
+    """Compute and store maxima in ``G.graph`` to normalise |ΔNFR| and |d²EPI/dt²|."""
     norms = compute_dnfr_accel_max(G)
     G.graph["_sel_norms"] = norms
     return norms
@@ -114,7 +113,7 @@ def _norms_para_selector(G: "nx.Graph") -> dict:
 def _calc_selector_score(
     Si: float, dnfr: float, accel: float, weights: Dict[str, float]
 ) -> float:
-    """Calcula un ``score`` ponderado asumiendo pesos ya normalizados."""
+    """Compute a weighted score assuming normalised weights."""
     return (
         weights["w_si"] * Si
         + weights["w_dnfr"] * (1.0 - dnfr)
@@ -130,8 +129,7 @@ def _apply_selector_hysteresis(
     thr: Dict[str, float],
     margin: float,
 ) -> str | None:
-    """Aplica histéresis devolviendo el glyph previo si se está cerca de
-    umbrales."""
+    """Apply hysteresis, returning the previous glyph when close to thresholds."""
     d_si = min(abs(Si - thr["si_hi"]), abs(Si - thr["si_lo"]))
     d_dn = min(abs(dnfr - thr["dnfr_hi"]), abs(dnfr - thr["dnfr_lo"]))
     d_ac = min(abs(accel - thr["accel_hi"]), abs(accel - thr["accel_lo"]))

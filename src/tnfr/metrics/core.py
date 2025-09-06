@@ -69,7 +69,7 @@ def for_each_glyph(fn) -> None:
 
 
 def _update_coherence(G, hist) -> None:
-    """Actualizar coherencia global y su media móvil."""
+    """Update global coherence and its moving average."""
 
     C = compute_coherence(G)
     append_metric(hist, "C_steps", C)
@@ -85,7 +85,7 @@ def _update_coherence(G, hist) -> None:
 
 
 def _update_phase_sync(G, hist) -> None:
-    """Registrar sincronía de fase y orden de Kuramoto."""
+    """Record phase synchrony and Kuramoto order."""
 
     ps = phase_sync(G)
     append_metric(hist, "phase_sync", ps)
@@ -94,7 +94,7 @@ def _update_phase_sync(G, hist) -> None:
 
 
 def _update_sigma(G, hist) -> None:
-    """Registrar carga glífica y vector Σ⃗ asociado."""
+    """Record glyph load and associated Σ⃗ vector."""
 
     win = int(
         G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"])
@@ -211,7 +211,7 @@ def _update_epi_support(G, hist, t, thr):
 
 
 def _update_morph_metrics(G, hist, counts, t):
-    """Registra métricas morfosintácticas basadas en conteos glíficos."""
+    """Record morphosyntactic metrics based on glyph counts."""
 
     def get_count(keys):
         return sum(counts.get(k, 0) for k in keys)

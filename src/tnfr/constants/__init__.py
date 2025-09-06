@@ -104,12 +104,12 @@ def inject_defaults(
 
 
 def merge_overrides(G, **overrides) -> None:
-    """Aplica cambios puntuales a ``G.graph``."""
+    """Apply specific changes to ``G.graph``."""
     G.graph.update(overrides)
 
 
 def get_param(G, key: str):
-    """Recupera parámetro desde ``G.graph`` resolviendo aliases legados."""
+    """Retrieve a parameter from ``G.graph`` resolving legacy aliases."""
     if key in G.graph:
         return G.graph[key]
     alias = _ALIAS_TARGET_TO_KEY.get(key)

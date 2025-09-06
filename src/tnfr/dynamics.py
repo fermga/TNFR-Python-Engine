@@ -1,4 +1,4 @@
-"""Dinámica del sistema."""
+"""System dynamics."""
 
 from __future__ import annotations
 
@@ -108,11 +108,9 @@ def _update_node_sample(G, *, step: int) -> None:
 def _write_dnfr_metadata(
     G, *, weights: dict, hook_name: str, note: str | None = None
 ) -> None:
-    """Escribe en G.graph un bloque _DNFR_META con la mezcla y el nombre
-    del hook.
+    """Write a ``_DNFR_META`` block in ``G.graph`` with the mix and hook name.
 
-    `weights` puede incluir componentes arbitrarias
-    (phase/epi/vf/topo/etc.).
+    ``weights`` may include arbitrary components (phase/epi/vf/topo/etc.).
     """
     weights_norm = normalize_weights(weights, weights.keys())
     meta = {
@@ -129,11 +127,12 @@ def _write_dnfr_metadata(
 
 
 def _configure_dnfr_weights(G) -> dict:
-    """Normaliza y almacena los pesos de ΔNFR en ``G.graph['_dnfr_weights']``.
+    """Normalise and store ΔNFR weights in ``G.graph['_dnfr_weights']``.
 
-    Utiliza ``G.graph['DNFR_WEIGHTS']`` o los valores por defecto. El resultado
-    es un diccionario con las componentes normalizadas para ser reutilizado en
-    cada paso de la simulación sin recalcular la mezcla."""
+    Uses ``G.graph['DNFR_WEIGHTS']`` or default values. The result is a
+    dictionary of normalised components reused at each simulation step
+    without recomputing the mix.
+    """
     w = {**DEFAULTS["DNFR_WEIGHTS"], **G.graph.get("DNFR_WEIGHTS", {})}
     weights = normalize_weights(w, ("phase", "epi", "vf", "topo"), default=0.0)
     G.graph["_dnfr_weights"] = weights
@@ -141,7 +140,7 @@ def _configure_dnfr_weights(G) -> dict:
 
 
 def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
-    """Precalcula datos comunes para las estrategias de ΔNFR."""
+    """Precompute common data for ΔNFR strategies."""
     weights = G.graph.get("_dnfr_weights")
     if weights is None:
         weights = _configure_dnfr_weights(G)
@@ -188,7 +187,7 @@ def _apply_dnfr_gradients(
     deg_bar=None,
     degs=None,
 ):
-    """Combina gradientes precalculados y escribe ΔNFR en cada nodo."""
+    """Combine precomputed gradients and write ΔNFR to each node."""
     nodes = data["nodes"]
     theta = data["theta"]
     epi = data["epi"]
@@ -230,7 +229,7 @@ def _compute_dnfr_common(
     deg_sum=None,
     degs=None,
 ):
-    """Calcula medias vecinales y aplica gradientes ΔNFR."""
+    """Compute neighbour means and apply ΔNFR gradients."""
 
     w_topo = data["w_topo"]
     theta = data["theta"]
@@ -278,7 +277,7 @@ def _compute_dnfr_common(
 
 
 def _compute_dnfr_numpy(G, data) -> None:
-    """Estrategia vectorizada usando ``numpy``."""
+    """Vectorised strategy using ``numpy``."""
     np = get_numpy(warn=True)
     if np is None:  # pragma: no cover - check at runtime
         raise RuntimeError("numpy no disponible para la versión vectorizada")
@@ -319,7 +318,7 @@ def _compute_dnfr_numpy(G, data) -> None:
 
 
 def _compute_dnfr_loops(G, data) -> None:
-    """Estrategia basada en bucles estándar."""
+    """Loop-based strategy."""
     nodes = data["nodes"]
     idx = data["idx"]
     theta = data["theta"]
@@ -366,17 +365,16 @@ def _compute_dnfr_loops(G, data) -> None:
 
 
 def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
-    """Calcula ΔNFR mezclando gradientes de fase, EPI, νf y un
-    término topológico.
+    """Compute ΔNFR by mixing phase, EPI, νf and a topological term.
 
     Parameters
     ----------
     G : nx.Graph
-        Grafo sobre el que se realiza el cálculo.
-    cache_size : int | None, opcional
-        Número máximo de configuraciones de aristas que se cachean en
-        ``G.graph``. Valores ``None`` o <= 0 implican caché sin límite. Por
-        defecto ``1`` para mantener el comportamiento previo.
+        Graph on which the computation is performed.
+    cache_size : int | None, optional
+        Maximum number of edge configurations cached in ``G.graph``. Values
+        ``None`` or <= 0 imply unlimited cache. Defaults to ``1`` to keep the
+        previous behaviour.
     """
     data = _prepare_dnfr_data(G, cache_size=cache_size)
     _write_dnfr_metadata(
@@ -393,9 +391,9 @@ def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
 def set_delta_nfr_hook(
     G, func, *, name: str | None = None, note: str | None = None
 ) -> None:
-    """Fija un hook estable para calcular ΔNFR.
-    Firma requerida: ``func(G)->None`` y debe escribir ``ALIAS_DNFR`` en
-    cada nodo. Actualiza metadatos básicos en ``G.graph``.
+    """Set a stable hook to compute ΔNFR.
+    Required signature: ``func(G) -> None`` and it must write ``ALIAS_DNFR``
+    in each node. Basic metadata in ``G.graph`` is updated accordingly.
     """
     G.graph["compute_delta_nfr"] = func
     G.graph["_dnfr_hook_name"] = str(
@@ -411,7 +409,7 @@ def set_delta_nfr_hook(
 
 # --- Hooks de ejemplo (opcionales) ---
 def dnfr_phase_only(G) -> None:
-    """Ejemplo: ΔNFR solo desde fase (tipo Kuramoto-like)."""
+    """Example: ΔNFR from phase only (Kuramoto-like)."""
     for n, nd in G.nodes(data=True):
         th_i = get_attr(nd, ALIAS_THETA, 0.0)
         th_bar = neighbor_phase_mean(G, n)
@@ -426,7 +424,7 @@ def dnfr_phase_only(G) -> None:
 
 
 def dnfr_epi_vf_mixed(G) -> None:
-    """Ejemplo: ΔNFR sin fase, mezclando EPI y νf."""
+    """Example: ΔNFR without phase, mixing EPI and νf."""
     for n, nd in G.nodes(data=True):
         epi_i = get_attr(nd, ALIAS_EPI, 0.0)
         epi_bar = neighbor_mean(G, n, ALIAS_EPI, default=epi_i)
@@ -444,7 +442,7 @@ def dnfr_epi_vf_mixed(G) -> None:
 
 
 def dnfr_laplacian(G) -> None:
-    """Gradiente topológico explícito usando Laplaciano sobre EPI y νf."""
+    """Explicit topological gradient using Laplacian over EPI and νf."""
     wE = float(G.graph.get("DNFR_WEIGHTS", {}).get("epi", 0.33))
     wV = float(G.graph.get("DNFR_WEIGHTS", {}).get("vf", 0.33))
     for n, nd in G.nodes(data=True):
@@ -478,11 +476,11 @@ def prepare_integration_params(
     t: float | None = None,
     method: Literal["euler", "rk4"] | None = None,
 ):
-    """Valida y normaliza ``dt``, ``t`` y ``method`` para la integración.
+    """Validate and normalise ``dt``, ``t`` and ``method`` for integration.
 
-    Devuelve ``(dt_step, steps, t0, method)`` donde ``dt_step`` es el paso
-    efectivo, ``steps`` la cantidad de subpasos y ``t0`` el tiempo inicial
-    preparado.
+    Returns ``(dt_step, steps, t0, method)`` where ``dt_step`` is the
+    effective step, ``steps`` the number of substeps and ``t0`` the prepared
+    initial time.
     """
     if dt is None:
         dt = float(G.graph.get("DT", DEFAULTS["DT"]))
@@ -518,7 +516,7 @@ def prepare_integration_params(
 
 
 def _integrate_euler(G, dt_step: float, t_local: float):
-    """Un paso de integración explícita de Euler."""
+    """One explicit Euler integration step."""
     gamma_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
     new_states: Dict[Any, tuple[float, float, float]] = {}
     for n, nd in G.nodes(data=True):
@@ -536,7 +534,7 @@ def _integrate_euler(G, dt_step: float, t_local: float):
 
 
 def _integrate_rk4(G, dt_step: float, t_local: float):
-    """Un paso de integración con Runge-Kutta de orden 4."""
+    """One Runge–Kutta order-4 integration step."""
     t_mid = t_local + dt_step / 2.0
     t_end = t_local + dt_step
     g1_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
@@ -572,24 +570,21 @@ def update_epi_via_nodal_equation(
     t: float | None = None,
     method: Literal["euler", "rk4"] | None = None,
 ) -> None:
-    """Ecuación nodal TNFR.
+    """TNFR nodal equation.
 
-    Implementa la forma extendida de la ecuación nodal:
+    Implements the extended nodal equation:
         ∂EPI/∂t = νf · ΔNFR(t) + Γi(R)
 
-    Donde:
-      - EPI es la Estructura Primaria de Información del nodo.
-      - νf es la frecuencia estructural del nodo (Hz_str).
-        - ΔNFR(t) es el gradiente nodal (necesidad de reorganización),
-          típicamente una mezcla de componentes (p. ej. fase θ, EPI, νf).
-        - Γi(R) es el acoplamiento de red opcional en función del
-          orden de Kuramoto R (ver gamma.py), usado para modular la
-          integración en red.
+    Where:
+      - EPI is the node's Primary Information Structure.
+      - νf is the node's structural frequency (Hz_str).
+      - ΔNFR(t) is the nodal gradient (reorganisation need), typically a mix
+        of components (e.g. phase θ, EPI, νf).
+      - Γi(R) is the optional network coupling as a function of Kuramoto order
+        ``R`` (see :mod:`gamma`), used to modulate network integration.
 
-    Referencias TNFR: ecuación nodal (manual), glosario νf/ΔNFR/EPI,
-    operador Γ.
-    Efectos secundarios: cachea dEPI y actualiza EPI por integración
-    explícita.
+    TNFR references: nodal equation (manual), νf/ΔNFR/EPI glossary, Γ operator.
+    Side effects: caches dEPI and updates EPI via explicit integration.
     """
     if not isinstance(
         G, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
@@ -684,10 +679,10 @@ def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
 
 
 def validate_canon(G) -> None:
-    """Aplica clamps canónicos a todos los nodos de ``G``.
+    """Apply canonical clamps to all nodes of ``G``.
 
-    Envuelve fase y restringe ``EPI`` y ``νf`` a los rangos en ``G.graph``.
-    Si ``VALIDATORS_STRICT`` está activo, registra alertas en ``history``.
+    Wrap phase and constrain ``EPI`` and ``νf`` to the ranges in ``G.graph``.
+    If ``VALIDATORS_STRICT`` is active, alerts are logged in ``history``.
     """
     for n, nd in G.nodes(data=True):
         apply_canonical_clamps(nd, G, n)
@@ -697,7 +692,7 @@ def validate_canon(G) -> None:
 def _read_adaptive_params(
     g: Dict[str, Any],
 ) -> tuple[Dict[str, Any], float, float]:
-    """Obtiene configuración y valores actuales para adaptación de fase."""
+    """Obtain configuration and current values for phase adaptation."""
     cfg = g.get("PHASE_ADAPT", DEFAULTS.get("PHASE_ADAPT", {}))
     kG = float(g.get("PHASE_K_GLOBAL", DEFAULTS["PHASE_K_GLOBAL"]))
     kL = float(g.get("PHASE_K_LOCAL", DEFAULTS["PHASE_K_LOCAL"]))
@@ -705,7 +700,7 @@ def _read_adaptive_params(
 
 
 def _compute_state(G, cfg: Dict[str, Any]) -> tuple[str, float, float]:
-    """Devuelve estado actual (estable/disonante/transicion) y métricas."""
+    """Return current state (stable/dissonant/transition) and metrics."""
     R = kuramoto_order(G)
     win = int(
         G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"])
@@ -729,7 +724,7 @@ def _compute_state(G, cfg: Dict[str, Any]) -> tuple[str, float, float]:
 def _smooth_adjust_k(
     kG: float, kL: float, state: str, cfg: Dict[str, Any]
 ) -> tuple[float, float]:
-    """Actualiza suavemente kG/kL hacia sus objetivos según el estado."""
+    """Smoothly update kG/kL toward targets according to state."""
     kG_min = float(cfg.get("kG_min", 0.01))
     kG_max = float(cfg.get("kG_max", 0.20))
     kL_min = float(cfg.get("kL_min", 0.05))
@@ -840,7 +835,7 @@ def coordinate_global_local_phase(
 
 
 def adapt_vf_by_coherence(G) -> None:
-    """Ajusta νf hacia la media vecinal en nodos con estabilidad sostenida."""
+    """Adjust νf toward neighbour mean in nodes with sustained stability."""
     tau = int(G.graph.get("VF_ADAPT_TAU", DEFAULTS.get("VF_ADAPT_TAU", 5)))
     mu = float(G.graph.get("VF_ADAPT_MU", DEFAULTS.get("VF_ADAPT_MU", 0.1)))
     eps_dnfr = float(
@@ -904,7 +899,7 @@ def default_glyph_selector(G, n) -> str:
 # Selector glífico multiobjetivo (paramétrico)
 # -------------------------
 def _soft_grammar_prefilter(G, n, cand, dnfr, accel):
-    """Gramática suave: evita repeticiones antes de la canónica."""
+    """Soft grammar: avoid repetitions before the canonical one."""
     gram = G.graph.get("GRAMMAR", DEFAULTS.get("GRAMMAR", {}))
     gwin = int(gram.get("window", 3))
     avoid = set(gram.get("avoid_repeats", []))
@@ -919,7 +914,7 @@ def _soft_grammar_prefilter(G, n, cand, dnfr, accel):
 
 
 def _selector_normalized_metrics(nd, norms):
-    """Extrae y normaliza Si, ΔNFR y aceleración para el selector."""
+    """Extract and normalise Si, ΔNFR and acceleration for the selector."""
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     acc_max = float(norms.get("accel_max", 1.0)) or 1.0
     Si = clamp01(get_attr(nd, ALIAS_SI, 0.5))
@@ -929,7 +924,7 @@ def _selector_normalized_metrics(nd, norms):
 
 
 def _selector_base_choice(Si, dnfr, accel, thr):
-    """Decisión base según umbrales de Si, ΔNFR y aceleración."""
+    """Base decision according to thresholds of Si, ΔNFR and acceleration."""
     si_hi, si_lo = thr["si_hi"], thr["si_lo"]
     dnfr_hi = thr["dnfr_hi"]
     acc_hi = thr["accel_hi"]
@@ -945,7 +940,7 @@ def _selector_base_choice(Si, dnfr, accel, thr):
 
 
 def _configure_selector_weights(G) -> dict:
-    """Normaliza y almacena los pesos del selector en ``G.graph``."""
+    """Normalise and store selector weights in ``G.graph``."""
     w = {**DEFAULTS["SELECTOR_WEIGHTS"], **G.graph.get("SELECTOR_WEIGHTS", {})}
     weights = normalize_weights(w, ("w_si", "w_dnfr", "w_accel"))
     G.graph["_selector_weights"] = weights
@@ -953,7 +948,7 @@ def _configure_selector_weights(G) -> dict:
 
 
 def _compute_selector_score(G, nd, Si, dnfr, accel, cand):
-    """Calcula la puntuación y aplica penalizaciones por estancamiento."""
+    """Compute score and apply stagnation penalties."""
     W = G.graph.get("_selector_weights")
     if W is None:
         W = _configure_selector_weights(G)
@@ -970,7 +965,7 @@ def _compute_selector_score(G, nd, Si, dnfr, accel, cand):
 
 
 def _apply_score_override(cand, score, dnfr, dnfr_lo):
-    """Ajusta el candidato final de forma suave según la puntuación."""
+    """Adjust final candidate smoothly according to the score."""
     if score >= 0.66 and cand in ("NAV", "RA", "ZHIR", "OZ"):
         cand = "IL"
     elif score <= 0.33 and cand in ("NAV", "RA", "IL"):
@@ -979,12 +974,11 @@ def _apply_score_override(cand, score, dnfr, dnfr_lo):
 
 
 def parametric_glyph_selector(G, n) -> str:
-    """Multiobjetivo: combina Si, |ΔNFR|_norm y |accel|_norm + histéresis.
-    Reglas base:
-      - Si alto  ⇒ IL
-      - Si bajo  ⇒ OZ si |ΔNFR| alto; ZHIR si |ΔNFR| bajo;
-        THOL si hay mucha aceleración
-      - Si medio ⇒ NAV si |ΔNFR| alto (o accel alta), si no RA
+    """Multiobjective: combine Si, |ΔNFR|_norm and |accel|_norm with hysteresis.
+    Base rules:
+      - High Si  ⇒ IL
+      - Low Si   ⇒ OZ if |ΔNFR| high; ZHIR if |ΔNFR| low; THOL if acceleration is high
+      - Medium Si ⇒ NAV if |ΔNFR| high (or acceleration high), otherwise RA
     """
     nd = G.nodes[n]
     thr = _selector_thresholds(G)

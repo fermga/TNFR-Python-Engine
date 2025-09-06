@@ -1,4 +1,17 @@
-"""Operadores de la red."""
+"""Network operators.
+
+This module implements:
+- The 13 glyphs as smooth local operators.
+- A dispatcher ``apply_glyph`` that maps the glyph name (with typographic
+  apostrophe) to its function.
+- Network remeshing: ``apply_network_remesh`` and
+  ``apply_remesh_if_globally_stable``.
+
+Note on REMESH α (alpha) precedence:
+1) ``G.graph["GLYPH_FACTORS"]["REMESH_alpha"]``
+2) ``G.graph["REMESH_ALPHA"]``
+3) ``REMESH_DEFAULTS["REMESH_ALPHA"]``
+"""
 
 # operators.py — TNFR canónica (ASCII-safe)
 from __future__ import annotations
@@ -29,21 +42,6 @@ if TYPE_CHECKING:
     from .node import NodoProtocol
 from .types import Glyph
 from collections import deque
-
-"""Network operators.
-
-This module implements:
-- The 13 glyphs as smooth local operators.
-- A dispatcher ``apply_glyph`` that maps the glyph name (with typographic
-  apostrophe) to its function.
-- Network remeshing: ``apply_network_remesh`` and
-  ``apply_remesh_if_globally_stable``.
-
-Note on REMESH α (alpha) precedence:
-1) ``G.graph["GLYPH_FACTORS"]["REMESH_alpha"]``
-2) ``G.graph["REMESH_ALPHA"]``
-3) ``REMESH_DEFAULTS["REMESH_ALPHA"]``
-"""
 def _node_offset(G, n) -> int:
     """Deterministic node index used for jitter seeds."""
     mapping = ensure_node_offset_map(G)

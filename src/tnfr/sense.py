@@ -146,19 +146,19 @@ def sigma_vector(dist: Dict[str, float]) -> tuple[Dict[str, float], int]:
 def sigma_vector_from_graph(
     G: nx.Graph, weight_mode: str | None = None
 ) -> Dict[str, float]:
-    """Vector global del plano del sentido σ para un grafo.
+    """Global vector in the σ sense plane for a graph.
 
     Parameters
     ----------
     G:
-        Grafo de NetworkX con estados por nodo.
+        NetworkX graph with per-node states.
     weight_mode:
-        Cómo ponderar cada nodo ("Si", "EPI" o ``None`` para peso unitario).
+        How to weight each node ("Si", "EPI" or ``None`` for unit weight).
 
     Returns
     -------
     Dict[str, float]
-        Componentes cartesianas, magnitud y ángulo del vector promedio.
+        Cartesian components, magnitude and angle of the average vector.
     """
 
     if not isinstance(G, nx.Graph):

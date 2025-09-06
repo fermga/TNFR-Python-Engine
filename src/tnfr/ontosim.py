@@ -1,4 +1,4 @@
-"""Orquesta la simulación canónica."""
+"""Orchestrate the canonical simulation."""
 
 from __future__ import annotations
 from collections import deque
@@ -24,17 +24,17 @@ def preparar_red(
     override_defaults: bool = False,
     **overrides,
 ) -> "nx.Graph":
-    """Prepara ``G`` para simulación.
+    """Prepare ``G`` for simulation.
 
     Parameters
     ----------
     init_attrs:
-        Ejecuta ``init_node_attrs`` si es ``True`` (por defecto),
-        dejando los atributos de nodos intactos cuando es ``False``.
+        Run ``init_node_attrs`` when ``True`` (default), leaving node
+        attributes untouched when ``False``.
     override_defaults:
-        Si ``True``, `attach_defaults` sobreescribe entradas existentes.
+        If ``True``, :func:`attach_defaults` overwrites existing entries.
     **overrides:
-        Parámetros para aplicar tras la fase de defaults.
+        Parameters applied after the defaults phase.
     """
     attach_defaults(G, override=override_defaults)
     if overrides:

@@ -1,4 +1,4 @@
-"""Glyphs predeterminados."""
+"""Default glyphs."""
 
 from __future__ import annotations
 
