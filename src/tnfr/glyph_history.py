@@ -48,6 +48,13 @@ def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
 class HistoryDict(dict):
     """Dict specialized for bounded history series and usage counts.
 
+    Each access to a key increases its usage counter and stores the pair
+    ``(count, key)`` on an internal heap. To prevent the heap from growing
+    without bound, outdated entries are periodically removed. After
+    ``compact_every`` operations, and only when the heap has accumulated more
+    stale entries than live keys, the structure is rebuilt leaving only the
+    current counters.
+
     Parameters
     ----------
     data:
@@ -102,16 +109,21 @@ class HistoryDict(dict):
         self._dirty += 1
         self._maybe_compact()
 
+    def _resolve_value(self, key: str, default: Any, *, missing: bool) -> Any:
+        if missing:
+            val = super().setdefault(key, default)
+        else:
+            val = super().__getitem__(key)
+        if self._maxlen > 0 and isinstance(val, list):
+            val = deque(val, maxlen=self._maxlen)
+            super().__setitem__(key, val)
+        self._counts.setdefault(key, 0)
+        return val
+
     def _get_and_increment(
         self, key: str, default: Any = None, *, missing: bool = False
     ):
-        if not missing:
-            val = super().__getitem__(key)
-        else:
-            val = super().setdefault(key, default)
-            if self._maxlen > 0 and isinstance(val, list):
-                val = deque(val, maxlen=self._maxlen)
-                super().__setitem__(key, val)
+        val = self._resolve_value(key, default, missing=missing)
         self._increment(key)
         return val
 
@@ -132,11 +144,10 @@ class HistoryDict(dict):
         self._maybe_compact()
 
     def setdefault(self, key, default=None):  # type: ignore[override]
-        if self._maxlen > 0 and isinstance(default, list):
-            default = deque(default, maxlen=self._maxlen)
-        if key in self:
+        try:
             return self._get_and_increment(key)
-        return self._get_and_increment(key, default, missing=True)
+        except KeyError:
+            return self._get_and_increment(key, default, missing=True)
 
     def pop_least_used(self) -> Any:
         while True:
