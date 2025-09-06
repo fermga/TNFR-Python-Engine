@@ -19,7 +19,7 @@ from .helpers import (
     set_attr,
     neighbor_phase_mean,
     increment_edge_version,
-    node_set_checksum,
+    ensure_node_offset_map,
     get_rng,
 )
 from .callback_utils import invoke_callbacks
@@ -43,33 +43,9 @@ Note on REMESH α (alpha) precedence:
 2) ``G.graph["REMESH_ALPHA"]``
 3) ``REMESH_DEFAULTS["REMESH_ALPHA"]``
 """
-
-
-def _ensure_node_offset_map(G) -> Dict[Any, int]:
-    """Return cached node→index mapping for ``G``.
-
-    The mapping follows the natural insertion order of ``G.nodes`` for speed.
-    When ``G.graph['SORT_NODES']`` is true a deterministic sort is applied.
-    A checksum of the node set is stored so the mapping is recomputed only
-    when the nodes change.
-    """
-
-    nodes = list(G.nodes())
-    # Use order-independent deterministic checksum based on node set
-    checksum = node_set_checksum(G, nodes)
-    mapping = G.graph.get("_node_offset_map")
-    if mapping is None or G.graph.get("_node_offset_checksum") != checksum:
-        if bool(G.graph.get("SORT_NODES", False)):
-            nodes.sort(key=lambda x: str(x))
-        mapping = {node: idx for idx, node in enumerate(nodes)}
-        G.graph["_node_offset_map"] = mapping
-        G.graph["_node_offset_checksum"] = checksum
-    return mapping
-
-
 def _node_offset(G, n) -> int:
     """Deterministic node index used for jitter seeds."""
-    mapping = _ensure_node_offset_map(G)
+    mapping = ensure_node_offset_map(G)
     return int(mapping.get(n, 0))
 
 

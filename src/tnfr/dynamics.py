@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import math
 import random
-from collections import deque, OrderedDict
+from collections import deque
 from functools import lru_cache
 from typing import Dict, Any, Literal
 
@@ -53,7 +53,7 @@ from .helpers import (
     set_dnfr,
     compute_Si,
     compute_dnfr_accel_max,
-    node_set_checksum,
+    cached_nodes_and_A,
     get_rng,
 )
 from .callback_utils import invoke_callbacks
@@ -96,53 +96,6 @@ def _np(*, warn: bool = False) -> Any | None:
         )
     return module
 
-
-# Cacheo de nodos y matriz de adyacencia asociado a cada grafo
-def _cached_nodes_and_A(
-    G: nx.Graph, *, cache_size: int | None = 1
-) -> tuple[list[int], Any]:
-    """Devuelve la lista de nodos y la matriz de adyacencia para ``G``.
-
-    La información se almacena en ``G.graph`` bajo la clave
-    ``"_dnfr_cache"`` y se reutiliza mientras la estructura del grafo
-    permanezca igual. ``cache_size`` limita el número de entradas por
-    grafo (``None`` o valores <= 0 implican sin límite). Cuando se
-    supera el tamaño, se elimina explícitamente la entrada más antigua.
-    El conjunto de nodos se firma de forma determinística a partir de los
-    identificadores ordenados, garantizando que las claves de caché sean
-    estables entre ejecuciones."""
-
-    cache: OrderedDict = G.graph.setdefault("_dnfr_cache", OrderedDict())
-    nodes_list = list(G.nodes())
-    checksum = node_set_checksum(G, nodes_list)
-
-    last_checksum = G.graph.get("_dnfr_nodes_checksum")
-    if last_checksum != checksum:
-        cache.clear()
-        G.graph["_dnfr_nodes_checksum"] = checksum
-
-    key = (int(G.graph.get("_edge_version", 0)), len(nodes_list), checksum)
-    nodes_and_A = cache.get(key)
-    if nodes_and_A is None:
-        nodes = nodes_list
-        if _np() is not None:
-            A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
-        else:
-            A = None
-        nodes_and_A = (nodes, A)
-        cache[key] = nodes_and_A
-        # Purga explícita si excede el tamaño permitido
-        if (
-            cache_size is not None
-            and cache_size > 0
-            and len(cache) > cache_size
-        ):
-            cache.popitem(last=False)
-    else:
-        # Mantener orden de uso reciente
-        cache.move_to_end(key)
-
-    return nodes_and_A
 
 
 def _update_node_sample(G, *, step: int) -> None:
@@ -218,7 +171,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
     use_numpy = _np() is not None and G.graph.get("vectorized_dnfr")
 
     # Cacheo de la lista de nodos y la matriz de adyacencia
-    nodes, A = _cached_nodes_and_A(G, cache_size=cache_size)
+    nodes, A = cached_nodes_and_A(G, cache_size=cache_size)
     if not use_numpy:
         A = None
 
@@ -356,7 +309,7 @@ def _compute_dnfr_numpy(G, data) -> None:
         return
     A = data.get("A")
     if A is None:
-        _, A = _cached_nodes_and_A(G, cache_size=data.get("cache_size"))
+        _, A = cached_nodes_and_A(G, cache_size=data.get("cache_size"))
         data["A"] = A
     count = A.sum(axis=1)
     theta = np.array(data["theta"], dtype=float)

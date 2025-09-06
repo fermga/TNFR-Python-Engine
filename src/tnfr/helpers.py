@@ -11,7 +11,6 @@ from typing import (
     Optional,
     overload,
     Protocol,
-    TYPE_CHECKING,
 )
 import logging
 import math
@@ -22,9 +21,14 @@ from functools import partial, lru_cache
 from statistics import fmean, StatisticsError
 from json import JSONDecodeError
 from pathlib import Path
+from collections import OrderedDict
 
-if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx
+import networkx as nx
+
+try:  # pragma: no cover - dependencia opcional
+    import numpy as np  # type: ignore
+except ImportError:  # pragma: no cover
+    np = None  # type: ignore
 
 try:  # pragma: no cover - dependencia opcional
     import tomllib  # type: ignore[attr-defined]
@@ -105,6 +109,8 @@ __all__ = [
     "precompute_trigonometry",
     "compute_Si_node",
     "compute_Si",
+    "ensure_node_offset_map",
+    "cached_nodes_and_A",
     "increment_edge_version",
     "node_set_checksum",
     "get_rng",
@@ -261,6 +267,65 @@ def node_set_checksum(
     serialised = sorted(serialise(n) for n in node_iter)
     sha1.update("|".join(serialised).encode("utf-8"))
     return sha1.hexdigest()
+
+
+def ensure_node_offset_map(G) -> Dict[Any, int]:
+    """Return cached node→index mapping for ``G``.
+
+    The mapping follows the natural insertion order of ``G.nodes`` for speed.
+    When ``G.graph['SORT_NODES']`` is true a deterministic sort is applied.
+    A checksum of the node set is stored so the mapping is recomputed only
+    when the nodes change.
+    """
+
+    nodes = list(G.nodes())
+    checksum = node_set_checksum(G, nodes)
+    mapping = G.graph.get("_node_offset_map")
+    if mapping is None or G.graph.get("_node_offset_checksum") != checksum:
+        if bool(G.graph.get("SORT_NODES", False)):
+            nodes.sort(key=lambda x: str(x))
+        mapping = {node: idx for idx, node in enumerate(nodes)}
+        G.graph["_node_offset_map"] = mapping
+        G.graph["_node_offset_checksum"] = checksum
+    return mapping
+
+
+def cached_nodes_and_A(
+    G: nx.Graph, *, cache_size: int | None = 1
+) -> tuple[list[int], Any]:
+    """Return list of nodes and adjacency matrix for ``G`` with caching.
+
+    Information is stored in ``G.graph['_dnfr_cache']`` and reused while the
+    graph structure remains unchanged. ``cache_size`` limits the number of
+    entries per graph (``None`` or values <= 0 imply no limit). The node set
+    is signed deterministically to ensure stable cache keys across runs.
+    """
+
+    cache: OrderedDict = G.graph.setdefault("_dnfr_cache", OrderedDict())
+    nodes_list = list(G.nodes())
+    checksum = node_set_checksum(G, nodes_list)
+
+    last_checksum = G.graph.get("_dnfr_nodes_checksum")
+    if last_checksum != checksum:
+        cache.clear()
+        G.graph["_dnfr_nodes_checksum"] = checksum
+
+    key = (int(G.graph.get("_edge_version", 0)), len(nodes_list), checksum)
+    nodes_and_A = cache.get(key)
+    if nodes_and_A is None:
+        nodes = nodes_list
+        if np is not None:
+            A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
+        else:  # pragma: no cover - dependiente de numpy
+            A = None
+        nodes_and_A = (nodes, A)
+        cache[key] = nodes_and_A
+        if cache_size is not None and cache_size > 0 and len(cache) > cache_size:
+            cache.popitem(last=False)
+    else:
+        cache.move_to_end(key)
+
+    return nodes_and_A
 
 
 # -------------------------

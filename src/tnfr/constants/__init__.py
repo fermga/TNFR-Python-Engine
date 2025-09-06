@@ -96,9 +96,9 @@ def inject_defaults(
             G.graph[k] = v if _is_immutable(v) else copy.deepcopy(v)
     G.graph["_tnfr_defaults_attached"] = True
     try:  # local import para evitar dependencia circular
-        from ..operators import _ensure_node_offset_map
+        from ..helpers import ensure_node_offset_map
 
-        _ensure_node_offset_map(G)
+        ensure_node_offset_map(G)
     except ImportError:
         pass
 
