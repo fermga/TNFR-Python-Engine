@@ -13,11 +13,10 @@ import math
 import hashlib
 from statistics import fmean, StatisticsError
 from collections import OrderedDict
-from functools import lru_cache
 import threading
 import weakref
 
-from .import_utils import get_numpy
+from .import_utils import get_numpy, import_nodonx
 from .collections_utils import (
     MAX_MATERIALIZE_DEFAULT,
     ensure_collection,
@@ -29,12 +28,6 @@ from .alias import get_attr
 from .constants import ALIAS_THETA
 
 _EDGE_CACHE_LOCK = threading.Lock()
-
-
-@lru_cache(maxsize=1)
-def _get_nodonx():
-    from .node import NodoNX
-    return NodoNX
 
 if TYPE_CHECKING:  # pragma: no cover - solo para type checkers
     import networkx as nx
@@ -51,8 +44,8 @@ __all__ = [
     "angle_diff",
     "normalize_weights",
     "neighbor_mean",
-"neighbor_phase_mean",
-"get_cached_trig",
+    "neighbor_phase_mean",
+    "get_cached_trig",
     "push_glyph",
     "recent_glyph",
     "ensure_history",
@@ -164,7 +157,7 @@ def _neighbor_phase_mean_generic(
 
 def neighbor_phase_mean(obj, n=None) -> float:
     """Circular mean of neighbour phases."""
-    NodoNX = _get_nodonx()
+    NodoNX = import_nodonx()
 
     if n is not None:
         node = NodoNX(obj, n)
@@ -293,18 +286,23 @@ def edge_version_cache(
 
     All cache access is serialized via ``_EDGE_CACHE_LOCK`` to ensure
     thread-safety. When ``max_entries`` is a positive integer, only the most
-    recent ``max_entries`` cache entries are kept.
+    recent ``max_entries`` cache entries are kept. The potentially expensive
+    ``builder`` is executed outside the lock when the cache is cold.
     """
     graph = G.graph if hasattr(G, "graph") else G
     edge_version = int(graph.get("_edge_version", 0))
     with _EDGE_CACHE_LOCK:
         cache_dict: OrderedDict = graph.setdefault("_edge_version_cache", OrderedDict())
         entry = cache_dict.get(key)
-        if entry is None or entry[0] != edge_version:
-            value = builder()
-            cache_dict[key] = (edge_version, value)
-        else:
-            value = entry[1]
+        if entry is not None and entry[0] == edge_version:
+            if max_entries is not None and max_entries > 0:
+                cache_dict.move_to_end(key)
+            return entry[1]
+
+    value = builder()
+    with _EDGE_CACHE_LOCK:
+        cache_dict = graph.setdefault("_edge_version_cache", OrderedDict())
+        cache_dict[key] = (edge_version, value)
         if max_entries is not None and max_entries > 0:
             cache_dict.move_to_end(key)
             while len(cache_dict) > max_entries:
@@ -316,18 +314,12 @@ def cached_nodes_and_A(
     G: "nx.Graph", *, cache_size: int | None = 1
 ) -> tuple[list[int], Any]:
     """Return list of nodes and adjacency matrix for ``G`` with caching."""
-    cache: OrderedDict = edge_version_cache(G, "_dnfr", OrderedDict)
     nodes_list = list(G.nodes())
     checksum = node_set_checksum(G, nodes_list)
+    key = f"_dnfr_{len(nodes_list)}_{checksum}"
+    G.graph["_dnfr_nodes_checksum"] = checksum
 
-    last_checksum = G.graph.get("_dnfr_nodes_checksum")
-    if last_checksum != checksum:
-        cache.clear()
-        G.graph["_dnfr_nodes_checksum"] = checksum
-
-    key = (len(nodes_list), checksum)
-    nodes_and_A = cache.get(key)
-    if nodes_and_A is None:
+    def builder() -> tuple[list[int], Any]:
         nodes = nodes_list
         np = get_numpy()
         if np is not None:
@@ -336,14 +328,9 @@ def cached_nodes_and_A(
             A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
         else:  # pragma: no cover - dependiente de numpy
             A = None
-        nodes_and_A = (nodes, A)
-        cache[key] = nodes_and_A
-        if cache_size is not None and cache_size > 0 and len(cache) > cache_size:
-            cache.popitem(last=False)
-    else:
-        cache.move_to_end(key)
+        return nodes, A
 
-    return nodes_and_A
+    return edge_version_cache(G, key, builder, max_entries=cache_size)
 
 
 def increment_edge_version(G: Any) -> None:
@@ -360,4 +347,3 @@ def increment_edge_version(G: Any) -> None:
         "_trig_version",
     ):
         graph.pop(key, None)
-

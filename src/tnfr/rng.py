@@ -43,7 +43,8 @@ def get_rng(seed: int, key: int) -> random.Random:
 
 
 def _cache_clear() -> None:
-    _RNG_CACHE.clear()
+    with _RNG_LOCK:
+        _RNG_CACHE.clear()
 
 
 get_rng.cache_clear = _cache_clear  # type: ignore[attr-defined]

@@ -1,7 +1,16 @@
 """Attribute helpers supporting alias keys."""
 
 from __future__ import annotations
-from typing import Sequence, Dict, Any, Callable, TypeVar, Optional, overload, Protocol
+from typing import (
+    Sequence,
+    Dict,
+    Any,
+    Callable,
+    TypeVar,
+    Optional,
+    overload,
+    Protocol,
+)
 import logging
 from functools import partial
 
@@ -150,7 +159,9 @@ class _Getter(Protocol[T]):
 
 
 class _Setter(Protocol[T]):
-    def __call__(self, d: Dict[str, Any], aliases: Sequence[str], value: T) -> T:
+    def __call__(
+        self, d: Dict[str, Any], aliases: Sequence[str], value: T
+    ) -> T:
         ...
 
 
@@ -281,4 +292,3 @@ def set_vf(G, n, value: float) -> None:
 def set_dnfr(G, n, value: float) -> None:
     """Set ``ΔNFR`` and update the global maximum."""
     set_attr_with_max(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
-

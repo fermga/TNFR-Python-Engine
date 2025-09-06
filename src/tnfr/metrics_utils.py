@@ -49,12 +49,13 @@ def compute_coherence(G) -> float:
     """Compute global coherence C(t) from ΔNFR and dEPI."""
     count = G.number_of_nodes()
     if count:
-        dnfr_mean = math.fsum(
-            abs(get_attr(nd, ALIAS_DNFR, 0.0)) for _, nd in G.nodes(data=True)
-        ) / count
-        depi_mean = math.fsum(
-            abs(get_attr(nd, ALIAS_dEPI, 0.0)) for _, nd in G.nodes(data=True)
-        ) / count
+        dnfr_vals: list[float] = []
+        depi_vals: list[float] = []
+        for _, nd in G.nodes(data=True):
+            dnfr_vals.append(abs(get_attr(nd, ALIAS_DNFR, 0.0)))
+            depi_vals.append(abs(get_attr(nd, ALIAS_dEPI, 0.0)))
+        dnfr_mean = math.fsum(dnfr_vals) / count
+        depi_mean = math.fsum(depi_vals) / count
     else:
         dnfr_mean = depi_mean = 0.0
     return 1.0 / (1.0 + dnfr_mean + depi_mean)
@@ -183,4 +184,3 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
             inplace=inplace,
         )
     return out
-

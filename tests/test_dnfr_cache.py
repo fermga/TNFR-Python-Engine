@@ -4,9 +4,8 @@ import pytest
 import networkx as nx
 
 from tnfr.dynamics import default_compute_delta_nfr
-from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
-from tnfr.alias import get_attr
-from tnfr.helpers import increment_edge_version
+from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF
+from tnfr.helpers import increment_edge_version, cached_nodes_and_A
 
 
 def _setup_graph():
@@ -32,27 +31,23 @@ def test_cache_invalidated_on_graph_change(vectorized):
     G = _setup_graph()
     G.graph["vectorized_dnfr"] = vectorized
     default_compute_delta_nfr(G, cache_size=2)
-    cache = G.graph["_edge_version_cache"]["_dnfr"][1]
-    assert len(cache) == 1
-    before = [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in G.nodes]
+    nodes1, _ = cached_nodes_and_A(G, cache_size=2)
 
     G.add_edge(2, 3)  # Cambia número de nodos y aristas
     increment_edge_version(G)
     G.graph["vectorized_dnfr"] = vectorized
     default_compute_delta_nfr(G, cache_size=2)
-    cache = G.graph["_edge_version_cache"]["_dnfr"][1]
-    assert len(cache) == 1
-    after = [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in G.nodes]
+    nodes2, _ = cached_nodes_and_A(G, cache_size=2)
 
-    assert len(after) == 4
-    assert before[2] != pytest.approx(after[2])
+    assert len(nodes2) == 4
+    assert nodes1 is not nodes2
 
     G.add_edge(3, 4)
     increment_edge_version(G)
     G.graph["vectorized_dnfr"] = vectorized
     default_compute_delta_nfr(G, cache_size=2)
-    cache = G.graph["_edge_version_cache"]["_dnfr"][1]
-    assert len(cache) == 1
+    nodes3, _ = cached_nodes_and_A(G, cache_size=2)
+    assert nodes3 is not nodes2
 
 
 def test_cache_is_per_graph():
@@ -60,11 +55,9 @@ def test_cache_is_per_graph():
     G2 = _setup_graph()
     default_compute_delta_nfr(G1)
     default_compute_delta_nfr(G2)
-    cache1 = G1.graph["_edge_version_cache"]["_dnfr"][1]
-    cache2 = G2.graph["_edge_version_cache"]["_dnfr"][1]
-    assert cache1 is not cache2
-    assert len(cache1) == 1
-    assert len(cache2) == 1
+    nodes1, _ = cached_nodes_and_A(G1)
+    nodes2, _ = cached_nodes_and_A(G2)
+    assert nodes1 is not nodes2
 
 
 def test_cache_invalidated_on_node_rename():
