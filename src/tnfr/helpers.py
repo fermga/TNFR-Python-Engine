@@ -146,8 +146,9 @@ def _neighbor_phase_mean_graph(node) -> float:
     return math.atan2(y, x)
 
 
-def _neighbor_phase_mean_generic(node) -> float:
-    cache: Dict[int, tuple[float, float] | None] = {}
+def _neighbor_phase_mean_generic(
+    node, cache: Dict[int, tuple[float, float] | None]
+) -> float:
     x = y = 0.0
     count = 0
     for v in node.neighbors():
@@ -174,7 +175,11 @@ def neighbor_phase_mean(obj, n=None) -> float:
 
     if getattr(node, "G", None) is not None:
         return _neighbor_phase_mean_graph(node)
-    return _neighbor_phase_mean_generic(node)
+    cache = getattr(node, "_trig_cache", None)
+    if cache is None:
+        cache = {}
+        setattr(node, "_trig_cache", cache)
+    return _neighbor_phase_mean_generic(node, cache)
 
 
 # -------------------------
