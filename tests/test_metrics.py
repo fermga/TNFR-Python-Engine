@@ -2,15 +2,108 @@
 
 import pytest
 import networkx as nx
+from typing import Any
 
-from tnfr.constants import attach_defaults, ALIAS_EPI
-from tnfr.alias import get_attr
+from tnfr.constants import (
+    attach_defaults,
+    ALIAS_EPI,
+    ALIAS_DNFR,
+    ALIAS_dEPI,
+    ALIAS_SI,
+    ALIAS_VF,
+)
+from tnfr.alias import get_attr, set_attr
 from tnfr.metrics import (
     _metrics_step,
     _update_latency_index,
     _update_epi_support,
+    _track_stability,
+    _aggregate_si,
+    _compute_advanced_metrics,
 )
 from tnfr.metrics.core import LATENT_GLYPH
+
+
+def test_track_stability_updates_hist():
+    """_track_stability aggregates stability and derivatives."""
+
+    G = nx.Graph()
+    hist = {"stable_frac": [], "delta_Si": [], "B": []}
+
+    G.add_node(0)
+    G.add_node(1)
+
+    # Node 0: stable
+    set_attr(G.nodes[0], ALIAS_DNFR, 0.0)
+    set_attr(G.nodes[0], ALIAS_dEPI, 0.0)
+    set_attr(G.nodes[0], ALIAS_SI, 2.0)
+    G.nodes[0]["_prev_Si"] = 1.0
+    set_attr(G.nodes[0], ALIAS_VF, 1.0)
+    G.nodes[0]["_prev_vf"] = 0.5
+    G.nodes[0]["_prev_dvf"] = 0.2
+
+    # Node 1: unstable
+    set_attr(G.nodes[1], ALIAS_DNFR, 10.0)
+    set_attr(G.nodes[1], ALIAS_dEPI, 10.0)
+    set_attr(G.nodes[1], ALIAS_SI, 3.0)
+    G.nodes[1]["_prev_Si"] = 1.0
+    set_attr(G.nodes[1], ALIAS_VF, 1.0)
+    G.nodes[1]["_prev_vf"] = 1.0
+    G.nodes[1]["_prev_dvf"] = 0.0
+
+    _track_stability(G, hist, dt=1.0, eps_dnfr=1.0, eps_depi=1.0)
+
+    assert hist["stable_frac"] == [0.5]
+    assert hist["delta_Si"] == [pytest.approx(1.5)]
+    assert hist["B"] == [pytest.approx(0.15)]
+
+
+def test_aggregate_si_computes_stats():
+    """_aggregate_si computes mean and fractions."""
+
+    G = nx.Graph()
+    attach_defaults(G)
+    hist = {"Si_mean": [], "Si_hi_frac": [], "Si_lo_frac": []}
+    G.add_node(0)
+    G.add_node(1)
+    G.add_node(2)
+    set_attr(G.nodes[0], ALIAS_SI, 0.2)
+    set_attr(G.nodes[1], ALIAS_SI, 0.5)
+    set_attr(G.nodes[2], ALIAS_SI, 0.8)
+
+    _aggregate_si(G, hist)
+
+    assert hist["Si_mean"][0] == pytest.approx(0.5)
+    assert hist["Si_hi_frac"][0] == pytest.approx(1 / 3)
+    assert hist["Si_lo_frac"][0] == pytest.approx(1 / 3)
+
+
+def test_compute_advanced_metrics_populates_history():
+    """_compute_advanced_metrics records glyph-based metrics."""
+
+    G = nx.Graph()
+    attach_defaults(G)
+    hist: dict[str, Any] = {}
+    cfg = G.graph["METRICS"]
+    thr = float(G.graph.get("EPI_SUPPORT_THR"))
+
+    G.add_node(0)
+    set_attr(G.nodes[0], ALIAS_EPI, 0.1)
+    G.nodes[0]["glyph_history"] = ["OZ"]
+
+    G.add_node(1)
+    set_attr(G.nodes[1], ALIAS_EPI, 0.2)
+    G.nodes[1]["glyph_history"] = [LATENT_GLYPH]
+
+    _compute_advanced_metrics(G, hist, t=0, dt=1.0, cfg=cfg, thr=thr)
+
+    assert hist["glyphogram"][0]["OZ"] == 1
+    assert hist["latency_index"][0]["value"] == pytest.approx(0.5)
+    rec = hist["EPI_support"][0]
+    assert rec["size"] == 2
+    assert rec["epi_norm"] == pytest.approx(0.15)
+    morph = hist["morph"][0]
+    assert morph["ID"] == pytest.approx(0.5)
 
 
 def test_pp_val_zero_when_no_remesh(graph_canon):

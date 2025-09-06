@@ -234,6 +234,92 @@ def _update_morph_metrics(G, hist, counts, t):
     )
 
 
+def _track_stability(G, hist, dt, eps_dnfr, eps_depi):
+    """Track per-node stability and derivative metrics."""
+
+    stables = 0
+    total = max(1, G.number_of_nodes())
+    delta_si_sum = 0.0
+    delta_si_count = 0
+    B_sum = 0.0
+    B_count = 0
+
+    for _, nd in G.nodes(data=True):
+        if (
+            abs(get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr
+            and abs(get_attr(nd, ALIAS_dEPI, 0.0)) <= eps_depi
+        ):
+            stables += 1
+
+        Si_curr = get_attr(nd, ALIAS_SI, 0.0)
+        Si_prev = nd.get("_prev_Si", Si_curr)
+        dSi = Si_curr - Si_prev
+        nd["_prev_Si"] = Si_curr
+        set_attr(nd, ALIAS_dSI, dSi)
+        delta_si_sum += dSi
+        delta_si_count += 1
+
+        vf_curr = get_attr(nd, ALIAS_VF, 0.0)
+        vf_prev = nd.get("_prev_vf", vf_curr)
+        dvf_dt = (vf_curr - vf_prev) / dt
+        dvf_prev = nd.get("_prev_dvf", dvf_dt)
+        B = (dvf_dt - dvf_prev) / dt
+        nd["_prev_vf"] = vf_curr
+        nd["_prev_dvf"] = dvf_dt
+        set_attr(nd, ALIAS_dVF, dvf_dt)
+        set_attr(nd, ALIAS_D2VF, B)
+        B_sum += B
+        B_count += 1
+
+    hist["stable_frac"].append(stables / total)
+    hist["delta_Si"].append(
+        delta_si_sum / delta_si_count if delta_si_count else 0.0
+    )
+    hist["B"].append(B_sum / B_count if B_count else 0.0)
+
+
+def _aggregate_si(G, hist):
+    """Aggregate Si statistics for all nodes."""
+
+    try:
+        sis = [
+            get_attr(nd, ALIAS_SI, float("nan")) for _, nd in G.nodes(data=True)
+        ]
+        sis = [s for s in sis if not math.isnan(s)]
+        if sis:
+            si_mean = list_mean(sis, 0.0)
+            hist["Si_mean"].append(si_mean)
+            thr_sel = G.graph.get(
+                "SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {})
+            )
+            thr_def = G.graph.get(
+                "GLYPH_THRESHOLDS",
+                DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66, "lo": 0.33}),
+            )
+            si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
+            si_lo = float(thr_sel.get("si_lo", thr_def.get("lo", 0.33)))
+            n = len(sis)
+            hist["Si_hi_frac"].append(sum(1 for s in sis if s >= si_hi) / n)
+            hist["Si_lo_frac"].append(sum(1 for s in sis if s <= si_lo) / n)
+        else:
+            hist["Si_mean"].append(0.0)
+            hist["Si_hi_frac"].append(0.0)
+            hist["Si_lo_frac"].append(0.0)
+    except (KeyError, AttributeError, TypeError) as exc:
+        logger.debug("Si aggregation failed: %s", exc)
+
+
+def _compute_advanced_metrics(G, hist, t, dt, cfg, thr):
+    """Compute advanced glyph-based metrics."""
+
+    save_by_node = bool(cfg.get("save_by_node", True))
+    counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node)
+    _update_glyphogram(G, hist, counts, t, n_total)
+    _update_latency_index(G, hist, n_total, n_latent, t)
+    _update_epi_support(G, hist, t, thr)
+    _update_morph_metrics(G, hist, counts, t)
+
+
 # -------------
 # Callback principal: actualizar métricas por paso
 # -------------
@@ -281,44 +367,7 @@ def _metrics_step(G, *args, **kwargs):
     eps_depi = float(
         G.graph.get("EPS_DEPI_STABLE", REMESH_DEFAULTS["EPS_DEPI_STABLE"])
     )
-    stables = 0
-    total = max(1, G.number_of_nodes())
-    delta_si_sum = 0.0
-    delta_si_count = 0
-    B_sum = 0.0
-    B_count = 0
-    for n, nd in G.nodes(data=True):
-        if (
-            abs(get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr
-            and abs(get_attr(nd, ALIAS_dEPI, 0.0)) <= eps_depi
-        ):
-            stables += 1
-
-        Si_curr = get_attr(nd, ALIAS_SI, 0.0)
-        Si_prev = nd.get("_prev_Si", Si_curr)
-        dSi = Si_curr - Si_prev
-        nd["_prev_Si"] = Si_curr
-        set_attr(nd, ALIAS_dSI, dSi)
-        delta_si_sum += dSi
-        delta_si_count += 1
-
-        vf_curr = get_attr(nd, ALIAS_VF, 0.0)
-        vf_prev = nd.get("_prev_vf", vf_curr)
-        dvf_dt = (vf_curr - vf_prev) / dt
-        dvf_prev = nd.get("_prev_dvf", dvf_dt)
-        B = (dvf_dt - dvf_prev) / dt
-        nd["_prev_vf"] = vf_curr
-        nd["_prev_dvf"] = dvf_dt
-        set_attr(nd, ALIAS_dVF, dvf_dt)
-        set_attr(nd, ALIAS_D2VF, B)
-        B_sum += B
-        B_count += 1
-
-    hist["stable_frac"].append(stables / total)
-    hist["delta_Si"].append(
-        delta_si_sum / delta_si_count if delta_si_count else 0.0
-    )
-    hist["B"].append(B_sum / B_count if B_count else 0.0)
+    _track_stability(G, hist, dt, eps_dnfr, eps_depi)
     try:
         _update_phase_sync(G, hist)
         _update_sigma(G, hist)
@@ -331,41 +380,8 @@ def _metrics_step(G, *args, **kwargs):
     except (KeyError, AttributeError, TypeError) as exc:
         logger.debug("observer update failed: %s", exc)
 
-    try:
-        sis = [
-            get_attr(nd, ALIAS_SI, float("nan"))
-            for _, nd in G.nodes(data=True)
-        ]
-        sis = [s for s in sis if not math.isnan(s)]
-        if sis:
-            si_mean = list_mean(sis, 0.0)
-            hist["Si_mean"].append(si_mean)
-            thr_sel = G.graph.get(
-                "SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {})
-            )
-            thr_def = G.graph.get(
-                "GLYPH_THRESHOLDS",
-                DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66, "lo": 0.33}),
-            )
-            si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
-            si_lo = float(thr_sel.get("si_lo", thr_def.get("lo", 0.33)))
-            n = len(sis)
-            hist["Si_hi_frac"].append(sum(1 for s in sis if s >= si_hi) / n)
-            hist["Si_lo_frac"].append(sum(1 for s in sis if s <= si_lo) / n)
-        else:
-            hist["Si_mean"].append(0.0)
-            hist["Si_hi_frac"].append(0.0)
-            hist["Si_lo_frac"].append(0.0)
-    except (KeyError, AttributeError, TypeError) as exc:
-        logger.debug("Si aggregation failed: %s", exc)
-
-    # -- Métricas avanzadas --
-    save_by_node = bool(cfg.get("save_by_node", True))
-    counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node)
-    _update_glyphogram(G, hist, counts, t, n_total)
-    _update_latency_index(G, hist, n_total, n_latent, t)
-    _update_epi_support(G, hist, t, thr)
-    _update_morph_metrics(G, hist, counts, t)
+    _aggregate_si(G, hist)
+    _compute_advanced_metrics(G, hist, t, dt, cfg, thr)
 
 
 # -------------
