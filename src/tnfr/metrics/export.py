@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
-from itertools import zip_longest
+from itertools import zip_longest, tee
 
 from ..glyph_history import ensure_history
 from ..io import safe_write
@@ -29,10 +29,6 @@ def _iter_glif_rows(glyph):
         yield [t] + [glyph.get(g, default_col)[i] for g in GLYPHS_CANONICAL]
 
 
-def _iter_sigma_rows(sigma_rows):
-    return ([t, x, y, m, a] for t, x, y, m, a in sigma_rows)
-
-
 def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
     """Dump glyphogram and σ(t) trace to compact CSV or JSON files."""
     hist = ensure_history(G)
@@ -45,23 +41,26 @@ def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
     rows_raw = zip_longest(
         t_series, sigma_x, sigma_y, sigma_mag, sigma_angle, fillvalue=None
     )
-    sigma_rows = [
-        (
-            i if t is None else t,
-            x or 0,
-            y or 0,
-            m or 0,
-            a or 0,
-        )
-        for i, (t, x, y, m, a) in enumerate(rows_raw)
-    ]
-    sigma = {
-        "t": [t for t, _, _, _, _ in sigma_rows],
-        "sigma_x": [x for _, x, _, _, _ in sigma_rows],
-        "sigma_y": [y for _, _, y, _, _ in sigma_rows],
-        "mag": [m for _, _, _, m, _ in sigma_rows],
-        "angle": [a for _, _, _, _, a in sigma_rows],
-    }
+
+    def _gen_rows():
+        for i, (t, x, y, m, a) in enumerate(rows_raw):
+            yield (
+                i if t is None else t,
+                x or 0,
+                y or 0,
+                m or 0,
+                a or 0,
+            )
+
+    rows_csv, rows_sigma = tee(_gen_rows())
+
+    sigma = {"t": [], "sigma_x": [], "sigma_y": [], "mag": [], "angle": []}
+    for t, x, y, m, a in rows_sigma:
+        sigma["t"].append(t)
+        sigma["sigma_x"].append(x)
+        sigma["sigma_y"].append(y)
+        sigma["mag"].append(m)
+        sigma["angle"].append(a)
     morph = hist.get("morph", [])
     epi_supp = hist.get("EPI_support", [])
     fmt = fmt.lower()
@@ -77,7 +76,7 @@ def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
             (
                 "_sigma.csv",
                 ["t", "x", "y", "mag", "angle"],
-                _iter_sigma_rows(sigma_rows),
+                ([t, x, y, m, a] for t, x, y, m, a in rows_csv),
             ),
         ]
         if morph:

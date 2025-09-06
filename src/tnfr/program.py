@@ -148,11 +148,11 @@ def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
                 and item.force_close in {Glyph.SHA, Glyph.NUL}
                 else None
             )
-            body_rev = tuple(reversed(item.body))
+            seq = item.body if isinstance(item.body, Sequence) else tuple(item.body)
             for _ in range(repeats):
                 if closing is not None:
                     stack.append(closing)
-                stack.extend(body_rev)
+                stack.extend(reversed(seq))
             stack.append(THOL_SENTINEL)
             continue
 

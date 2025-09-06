@@ -162,6 +162,8 @@ def _trace_capture(
         return
 
     meta, capture, hist, key = res
+    if not capture:
+        return
     for name, getter in fields.items():
         if name in capture:
             meta.update(getter(G))

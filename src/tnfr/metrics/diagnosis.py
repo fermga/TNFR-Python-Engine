@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from statistics import fmean
+from statistics import fmean, StatisticsError
 
 from ..constants import (
     ALIAS_EPI,
@@ -35,13 +35,24 @@ def _symmetry_index(
     """Compute the symmetry index for node ``n`` based on EPI values."""
     nd = G.nodes[n]
     epi_i = get_attr(nd, ALIAS_EPI, 0.0)
-    vec = list(G.neighbors(n))
-    if not vec:
+    vec = G.neighbors(n)
+    try:
+        epi_bar = fmean(get_attr(G.nodes[v], ALIAS_EPI, epi_i) for v in vec)
+    except StatisticsError:
         return 1.0
-    epi_bar = fmean(get_attr(G.nodes[v], ALIAS_EPI, epi_i) for v in vec)
     if epi_min is None or epi_max is None:
-        epis = [get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in G.nodes()]
-        epi_min, epi_max = min(epis), max(epis)
+        epis = (get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in G.nodes())
+        try:
+            first = next(epis)
+        except StopIteration:
+            epi_min, epi_max = 0.0, 1.0
+        else:
+            epi_min = epi_max = first
+            for val in epis:
+                if val < epi_min:
+                    epi_min = val
+                elif val > epi_max:
+                    epi_max = val
     return _similarity_abs(epi_i, epi_bar, epi_min, epi_max)
 
 
@@ -76,10 +87,18 @@ def _diagnosis_step(G, ctx=None):
     norms = compute_dnfr_accel_max(G)
     G.graph["_sel_norms"] = norms
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
-    epi_vals = [get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in G.nodes()]
-    epi_min, epi_max = (min(epi_vals) if epi_vals else 0.0), (
-        max(epi_vals) if epi_vals else 1.0
-    )
+    epi_iter = (get_attr(nd, ALIAS_EPI, 0.0) for _, nd in G.nodes(data=True))
+    try:
+        first_epi = next(epi_iter)
+    except StopIteration:
+        epi_min, epi_max = 0.0, 1.0
+    else:
+        epi_min = epi_max = first_epi
+        for val in epi_iter:
+            if val < epi_min:
+                epi_min = val
+            elif val > epi_max:
+                epi_max = val
 
     CfgW = G.graph.get("COHERENCE", COHERENCE)
     Wkey = CfgW.get("Wi_history_key", "W_i")

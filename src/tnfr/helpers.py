@@ -120,38 +120,35 @@ def get_cached_trig(
     return val
 
 
-def _neighbor_phase_mean_graph(node) -> float:
-    from .metrics_utils import precompute_trigonometry
-
-    G = node.G
-    trig = precompute_trigonometry(G)
-    cos_th, sin_th = trig.cos, trig.sin
-    x = y = 0.0
-    count = 0
-    for v in node.neighbors():
-        x += cos_th[v]
-        y += sin_th[v]
-        count += 1
-    if count == 0:
-        return get_attr(G.nodes[node.n], ALIAS_THETA, 0.0)
-    return math.atan2(y, x)
-
-
-def _neighbor_phase_mean_generic(
-    node, cache: weakref.WeakKeyDictionary[Any, tuple[float, float] | None]
+def _neighbor_phase_mean(
+    node,
+    *,
+    trig=None,
+    cache: weakref.WeakKeyDictionary[Any, tuple[float, float] | None] | None = None,
 ) -> float:
     x = y = 0.0
     count = 0
-    for v in node.neighbors():
-        cs = get_cached_trig(v, cache)
-        if cs is None:
-            continue
-        cx, sy = cs
-        x += cx
-        y += sy
-        count += 1
-    if count == 0:
-        return get_attr(getattr(node, "__dict__", {}), ALIAS_THETA, 0.0)
+    if trig is not None:
+        cos_th, sin_th = trig.cos, trig.sin
+        for v in node.neighbors():
+            x += cos_th[v]
+            y += sin_th[v]
+            count += 1
+        if count == 0:
+            return get_attr(node.G.nodes[node.n], ALIAS_THETA, 0.0)
+    else:
+        if cache is None:
+            cache = weakref.WeakKeyDictionary()
+        for v in node.neighbors():
+            cs = get_cached_trig(v, cache)
+            if cs is None:
+                continue
+            cx, sy = cs
+            x += cx
+            y += sy
+            count += 1
+        if count == 0:
+            return get_attr(getattr(node, "__dict__", {}), ALIAS_THETA, 0.0)
     return math.atan2(y, x)
 
 
@@ -159,18 +156,20 @@ def neighbor_phase_mean(obj, n=None) -> float:
     """Circular mean of neighbour phases."""
     NodoNX = import_nodonx()
 
-    if n is not None:
-        node = NodoNX(obj, n)
-    else:
-        node = obj  # se asume NodoProtocol
+    node = NodoNX(obj, n) if n is not None else obj
 
+    trig = None
     if getattr(node, "G", None) is not None:
-        return _neighbor_phase_mean_graph(node)
+        from .metrics_utils import precompute_trigonometry
+
+        trig = precompute_trigonometry(node.G)
+        return _neighbor_phase_mean(node, trig=trig)
+
     cache = getattr(node, "_trig_cache", None)
     if cache is None:
         cache = weakref.WeakKeyDictionary()
         setattr(node, "_trig_cache", cache)
-    return _neighbor_phase_mean_generic(node, cache)
+    return _neighbor_phase_mean(node, cache=cache)
 
 
 # -------------------------
