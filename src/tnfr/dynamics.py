@@ -32,8 +32,6 @@ from .constants import (
     ALIAS_SI,
     ALIAS_dEPI,
     ALIAS_D2EPI,
-    ALIAS_dVF,
-    ALIAS_D2VF,
     ALIAS_dSI,
     ALIAS_EPI_KIND,
     get_param,
