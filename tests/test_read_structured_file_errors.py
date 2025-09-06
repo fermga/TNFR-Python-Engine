@@ -2,6 +2,7 @@
 
 import pytest
 from pathlib import Path
+from json import JSONDecodeError
 import tnfr.helpers as helpers
 
 from tnfr.helpers import read_structured_file
@@ -108,3 +109,29 @@ def test_read_structured_file_missing_dependency_toml(
     assert msg.startswith("Dependencia faltante al parsear")
     assert str(path) in msg
     assert "toml" in msg.lower()
+
+
+def test_json_error_not_reported_as_toml(monkeypatch: pytest.MonkeyPatch) -> None:
+    class DummyTOMLDecodeError(Exception):
+        pass
+
+    monkeypatch.setattr(helpers, "has_toml", False)
+    monkeypatch.setattr(helpers, "TOMLDecodeError", DummyTOMLDecodeError)
+
+    err = JSONDecodeError("msg", "", 0)
+    msg = helpers._format_structured_file_error(Path("data.json"), err)
+    assert msg.startswith("Error al parsear archivo JSON en")
+    assert not msg.startswith("Error al parsear archivo TOML")
+
+
+def test_import_error_not_reported_as_toml(monkeypatch: pytest.MonkeyPatch) -> None:
+    class DummyTOMLDecodeError(Exception):
+        pass
+
+    monkeypatch.setattr(helpers, "has_toml", False)
+    monkeypatch.setattr(helpers, "TOMLDecodeError", DummyTOMLDecodeError)
+
+    err = ImportError("dep missing")
+    msg = helpers._format_structured_file_error(Path("data.toml"), err)
+    assert msg.startswith("Dependencia faltante al parsear")
+    assert not msg.startswith("Error al parsear archivo TOML")
