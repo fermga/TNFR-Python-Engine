@@ -26,7 +26,7 @@ from .diagnosis import (
     register_diagnosis_callbacks,
     dissonance_events,
 )
-from .export import export_history
+from .export import export_metrics
 
 __all__ = [
     "register_metrics_callbacks",
@@ -46,5 +46,5 @@ __all__ = [
     "register_coherence_callbacks",
     "register_diagnosis_callbacks",
     "dissonance_events",
-    "export_history",
+    "export_metrics",
 ]
