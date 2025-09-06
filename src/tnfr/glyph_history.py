@@ -180,8 +180,9 @@ def ensure_history(G) -> Dict[str, Any]:
         G.graph["history"] = hist
     if maxlen > 0:
         excess = len(hist) - maxlen
-        for _ in range(excess):
-            hist.pop_least_used()
+        if excess > 0:
+            for _ in range(excess):
+                hist.pop_least_used()
         # Note: trimming is O(n) only when history exceeds ``maxlen``
     return hist
 

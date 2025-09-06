@@ -29,7 +29,7 @@ def test_max_materialize_limit():
     gen = (i for i in range(5))
     with pytest.raises(ValueError) as exc:
         ensure_collection(gen, max_materialize=3)
-    assert str(exc.value) == "Iterable con más de 3 elementos"
+    assert str(exc.value) == "Iterable produced 4 items, exceeds limit 3"
     assert list(gen) == [4]
 
 

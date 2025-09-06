@@ -4,6 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Deque, Dict, Iterable, Optional, Protocol, TypeVar
 from collections import deque
+from functools import partial
 from collections.abc import Hashable
 
 from .constants import (
@@ -95,6 +96,29 @@ def _add_edge_common(n1, n2, weight) -> Optional[float]:
     return weight
 
 
+def _exists_nx(graph, n1, n2):
+    return graph.has_edge(n1, n2)
+
+
+def _set_nx(graph, n1, n2, w: float) -> None:
+    graph.add_edge(n1, n2, weight=w)
+
+
+def _exists_tnfr(graph, n1, n2):
+    return n2 in n1._neighbors
+
+
+def _set_tnfr(graph, n1, n2, w: float) -> None:
+    n1._neighbors[n2] = w
+    n2._neighbors[n1] = w
+
+
+_STRATEGY_CBS = {
+    "nx": (_exists_nx, _set_nx),
+    "tnfr": (_exists_tnfr, _set_tnfr),
+}
+
+
 def add_edge(
     graph,
     n1,
@@ -118,24 +142,12 @@ def add_edge(
         return
 
     if exists_cb is None or set_cb is None:
-        if strategy == "nx":
-
-            def exists_cb() -> bool:
-                return graph.has_edge(n1, n2)
-
-            def set_cb(w: float) -> None:
-                graph.add_edge(n1, n2, weight=w)
-        elif strategy == "tnfr":
-
-            def exists_cb() -> bool:
-                return n2 in n1._neighbors
-
-            def set_cb(w: float) -> None:
-                n1._neighbors[n2] = w
-                n2._neighbors[n1] = w
-
-        else:
+        try:
+            exists_fn, set_fn = _STRATEGY_CBS[strategy]
+        except KeyError:
             raise ValueError("Unknown edge strategy")
+        exists_cb = partial(exists_fn, graph, n1, n2)
+        set_cb = partial(set_fn, graph, n1, n2)
 
     if exists_cb() and not overwrite:
         return

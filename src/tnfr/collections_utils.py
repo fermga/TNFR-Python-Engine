@@ -59,8 +59,11 @@ def ensure_collection(
         limit = max_materialize
         iterator = iter(it)
         data = tuple(islice(iterator, limit + 1))
-        if len(data) > limit:
-            raise ValueError(f"Iterable con más de {limit} elementos")
+        actual = len(data)
+        if actual > limit:
+            raise ValueError(
+                f"Iterable produced {actual} items, exceeds limit {limit}"
+            )
         return data
     except TypeError as exc:
         raise TypeError(f"{it!r} is not iterable") from exc
