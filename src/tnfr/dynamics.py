@@ -154,25 +154,44 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
 
     use_numpy = get_numpy() is not None and G.graph.get("vectorized_dnfr")
 
-    # Cacheo de la lista de nodos y la matriz de adyacencia
     nodes, A = cached_nodes_and_A(G, cache_size=cache_size)
-    if not use_numpy:
-        A = None
+    cache = G.graph.get("_dnfr_prep_cache")
+    checksum = G.graph.get("_dnfr_nodes_checksum")
+    if cache and cache.get("checksum") == checksum:
+        idx = cache["idx"]
+        theta = cache["theta"]
+        epi = cache["epi"]
+        vf = cache["vf"]
+    else:
+        idx = {n: i for i, n in enumerate(nodes)}
+        theta = [0.0] * len(nodes)
+        epi = [0.0] * len(nodes)
+        vf = [0.0] * len(nodes)
+        cache = {
+            "checksum": checksum,
+            "idx": idx,
+            "theta": theta,
+            "epi": epi,
+            "vf": vf,
+        }
+        G.graph["_dnfr_prep_cache"] = cache
 
-    idx = {n: i for i, n in enumerate(nodes)}
-    theta = []
-    epi = []
-    vf = []
-    for n in nodes:
+    for i, n in enumerate(nodes):
         nd = G.nodes[n]
-        theta.append(get_attr(nd, ALIAS_THETA, 0.0))
-        epi.append(get_attr(nd, ALIAS_EPI, 0.0))
-        vf.append(get_attr(nd, ALIAS_VF, 0.0))
+        theta[i] = get_attr(nd, ALIAS_THETA, 0.0)
+        epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
+        vf[i] = get_attr(nd, ALIAS_VF, 0.0)
+
     w_phase = float(weights.get("phase", 0.0))
     w_epi = float(weights.get("epi", 0.0))
     w_vf = float(weights.get("vf", 0.0))
     w_topo = float(weights.get("topo", 0.0))
     degs = dict(G.degree()) if w_topo != 0 else None
+    cache["degs"] = degs
+
+    if not use_numpy:
+        A = None
+
     return {
         "weights": weights,
         "nodes": nodes,
@@ -288,19 +307,17 @@ def _compute_dnfr_common(
     _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
 
 
-def _compute_dnfr_numpy(G, data) -> None:
-    """Vectorised strategy using ``numpy``."""
+def _build_neighbor_sums_numpy(G, data):
     np = get_numpy(warn=True)
-    if np is None:  # pragma: no cover - check at runtime
+    if np is None:  # pragma: no cover - runtime check
         raise RuntimeError("numpy no disponible para la versión vectorizada")
     nodes = data["nodes"]
     if not nodes:
-        return
+        return None
     A = data.get("A")
     if A is None:
         _, A = cached_nodes_and_A(G, cache_size=data.get("cache_size"))
         data["A"] = A
-    count = A.sum(axis=1)
     theta = np.array(data["theta"], dtype=float)
     epi = np.array(data["epi"], dtype=float)
     vf = np.array(data["vf"], dtype=float)
@@ -310,27 +327,17 @@ def _compute_dnfr_numpy(G, data) -> None:
     y = A @ sin_th
     epi_sum = A @ epi
     vf_sum = A @ vf
+    count = A.sum(axis=1)
     w_topo = data["w_topo"]
     if w_topo != 0.0:
         degs = count
         deg_sum = A @ degs
     else:
         degs = deg_sum = None
-    _compute_dnfr_common(
-        G,
-        data,
-        x=x,
-        y=y,
-        epi_sum=epi_sum,
-        vf_sum=vf_sum,
-        count=count,
-        deg_sum=deg_sum,
-        degs=degs,
-    )
+    return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
 
-def _compute_dnfr_loops(G, data) -> None:
-    """Loop-based strategy."""
+def _build_neighbor_sums_loops(G, data):
     nodes = data["nodes"]
     idx = data["idx"]
     theta = data["theta"]
@@ -363,6 +370,15 @@ def _compute_dnfr_loops(G, data) -> None:
             count[i] += 1
             if deg_sum is not None:
                 deg_sum[i] += degs.get(v, deg_i)
+    return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
+
+
+def _compute_dnfr_numpy(G, data) -> None:
+    """Vectorised strategy using ``numpy``."""
+    res = _build_neighbor_sums_numpy(G, data)
+    if res is None:
+        return
+    x, y, epi_sum, vf_sum, count, deg_sum, degs = res
     _compute_dnfr_common(
         G,
         data,
@@ -372,7 +388,24 @@ def _compute_dnfr_loops(G, data) -> None:
         vf_sum=vf_sum,
         count=count,
         deg_sum=deg_sum,
-        degs=degs_list,
+        degs=degs,
+    )
+
+
+def _compute_dnfr_loops(G, data) -> None:
+    """Loop-based strategy."""
+    res = _build_neighbor_sums_loops(G, data)
+    x, y, epi_sum, vf_sum, count, deg_sum, degs = res
+    _compute_dnfr_common(
+        G,
+        data,
+        x=x,
+        y=y,
+        epi_sum=epi_sum,
+        vf_sum=vf_sum,
+        count=count,
+        deg_sum=deg_sum,
+        degs=degs,
     )
 
 
