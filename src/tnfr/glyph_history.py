@@ -122,11 +122,6 @@ class HistoryDict(dict):
         except KeyError:
             return default
 
-    def tracked_get(self, key, default=None):
-        if key in self:
-            return self[key]
-        return default
-
     def __setitem__(self, key, value):  # type: ignore[override]
         super().__setitem__(key, value)
         self._counts.setdefault(key, 0)

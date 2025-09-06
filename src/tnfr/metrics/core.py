@@ -387,7 +387,7 @@ def Tg_global(G, normalize: bool = True) -> dict[str, float]:
     """Total glyph time per class. If ``normalize=True``, return fractions
     of the total."""
     hist = ensure_history(G)
-    tg_total: dict[str, float] = hist.tracked_get("Tg_total", {})
+    tg_total: dict[str, float] = hist.get("Tg_total", {})
     total = sum(tg_total.values()) or 1.0
     out: dict[str, float] = {}
 
@@ -405,7 +405,7 @@ def Tg_by_node(
     """Per-node summary: if ``normalize`` return mean run per glyph;
     otherwise list runs."""
     hist = ensure_history(G)
-    rec = hist.tracked_get("Tg_by_node", {}).get(n, {})
+    rec = hist.get("Tg_by_node", {}).get(n, {})
     if not normalize:
         # convertir default dict → list para serializar
         out: dict[str, list[float]] = {}
@@ -427,7 +427,7 @@ def Tg_by_node(
 
 def latency_series(G) -> dict[str, list[float]]:
     hist = ensure_history(G)
-    xs = hist.tracked_get("latency_index", [])
+    xs = hist.get("latency_index", [])
     return {
         "t": [float(x.get("t", i)) for i, x in enumerate(xs)],
         "value": [float(x.get("value", 0.0)) for x in xs],
@@ -436,7 +436,7 @@ def latency_series(G) -> dict[str, list[float]]:
 
 def glyphogram_series(G) -> dict[str, list[float]]:
     hist = ensure_history(G)
-    xs = hist.tracked_get("glyphogram", [])
+    xs = hist.get("glyphogram", [])
     if not xs:
         return {"t": []}
     out = {"t": [float(x.get("t", i)) for i, x in enumerate(xs)]}
@@ -457,7 +457,7 @@ def glyph_top(G, k: int = 3) -> list[tuple[str, float]]:
 def glyph_dwell_stats(G, n) -> dict[str, dict[str, float]]:
     """Per-node statistics: mean/median/max of runs per glyph."""
     hist = ensure_history(G)
-    rec = hist.tracked_get("Tg_by_node", {}).get(n, {})
+    rec = hist.get("Tg_by_node", {}).get(n, {})
     out: dict[str, dict[str, float]] = {}
 
     def add(g):

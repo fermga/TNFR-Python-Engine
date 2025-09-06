@@ -37,11 +37,11 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
     """Dump glyphogram and σ(t) trace to compact CSV or JSON files."""
     hist = ensure_history(G)
     glyph = glyphogram_series(G)
-    sigma_x = hist.tracked_get("sense_sigma_x", [])
-    sigma_y = hist.tracked_get("sense_sigma_y", [])
-    sigma_mag = hist.tracked_get("sense_sigma_mag", [])
-    sigma_angle = hist.tracked_get("sense_sigma_angle", [])
-    t_series = hist.tracked_get("sense_sigma_t", []) or glyph.get("t", [])
+    sigma_x = hist.get("sense_sigma_x", [])
+    sigma_y = hist.get("sense_sigma_y", [])
+    sigma_mag = hist.get("sense_sigma_mag", [])
+    sigma_angle = hist.get("sense_sigma_angle", [])
+    t_series = hist.get("sense_sigma_t", []) or glyph.get("t", [])
     rows_raw = zip_longest(
         t_series, sigma_x, sigma_y, sigma_mag, sigma_angle, fillvalue=None
     )
@@ -62,8 +62,8 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
         "mag": [m for _, _, _, m, _ in sigma_rows],
         "angle": [a for _, _, _, _, a in sigma_rows],
     }
-    morph = hist.tracked_get("morph", [])
-    epi_supp = hist.tracked_get("EPI_support", [])
+    morph = hist.get("morph", [])
+    epi_supp = hist.get("EPI_support", [])
     fmt = fmt.lower()
     if fmt not in {"csv", "json"}:
         raise ValueError(f"Formato de exportación no soportado: {fmt}")
