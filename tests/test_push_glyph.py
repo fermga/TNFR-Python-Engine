@@ -26,3 +26,9 @@ def test_push_glyph_positive_window():
     assert list(nd["glyph_history"]) == ["A", "B"]
     push_glyph(nd, "C", window=2)
     assert list(nd["glyph_history"]) == ["B", "C"]
+
+
+def test_push_glyph_accepts_list_history():
+    nd = {"glyph_history": ["A"]}
+    push_glyph(nd, "B", window=2)
+    assert list(nd["glyph_history"]) == ["A", "B"]

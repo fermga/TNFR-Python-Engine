@@ -119,6 +119,14 @@ def test_wbar_rejects_non_positive_window(graph_canon):
         wbar(G, window=0)
 
 
+def test_wbar_uses_default_window(graph_canon):
+    G = graph_canon()
+    hist = G.graph.setdefault("history", {})
+    hist["C_steps"] = [0.5, 1.0]
+    G.graph.pop("WBAR_WINDOW", None)
+    assert wbar(G) == pytest.approx(0.75)
+
+
 def test_attach_standard_observer_registers_callbacks(graph_canon):
     G = graph_canon()
     attach_standard_observer(G)

@@ -22,6 +22,8 @@ from tnfr.metrics import (
     _compute_advanced_metrics,
 )
 from tnfr.metrics.core import LATENT_GLYPH
+from tnfr.metrics.core import _update_sigma
+from tnfr.constants import METRIC_DEFAULTS
 
 
 def test_track_stability_updates_hist():
@@ -56,6 +58,19 @@ def test_track_stability_updates_hist():
     assert hist["stable_frac"] == [0.5]
     assert hist["delta_Si"] == [pytest.approx(1.5)]
     assert hist["B"] == [pytest.approx(0.15)]
+
+
+def test_update_sigma_uses_default_window(graph_canon):
+    G = graph_canon()
+    for n in range(2):
+        G.add_node(n, glyph_history=["A", "B"])
+    hist = {}
+    G.graph.pop("GLYPH_LOAD_WINDOW", None)
+    _update_sigma(G, hist)
+    expected = {}
+    G.graph["GLYPH_LOAD_WINDOW"] = METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]
+    _update_sigma(G, expected)
+    assert hist == expected
 
 
 def test_aggregate_si_computes_stats():

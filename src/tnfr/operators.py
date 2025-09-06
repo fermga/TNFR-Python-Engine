@@ -21,8 +21,6 @@ import random
 import hashlib
 import heapq
 from functools import cache
-import networkx as nx
-from networkx.algorithms import community as nx_comm
 
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers import (
@@ -58,6 +56,14 @@ def _get_NodoNX():
     from .node import NodoNX
 
     return NodoNX
+
+
+@cache
+def _get_networkx_modules():
+    import networkx as nx
+    from networkx.algorithms import community as nx_comm
+
+    return nx, nx_comm
 
 
 def random_jitter(
@@ -456,6 +462,7 @@ def _remesh_alpha_info(G):
 def apply_network_remesh(G) -> None:
     """Network-scale REMESH using ``_epi_hist`` with multi-scale memory."""
     # REMESH_TAU: alias legado resuelto por ``get_param``
+    nx, nx_comm = _get_networkx_modules()
     tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
     tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
     tau_req = max(tau_g, tau_l)
@@ -575,6 +582,7 @@ def apply_topological_remesh(
             )
         )
     mode = str(mode)
+    nx, nx_comm = _get_networkx_modules()
 
     # Similaridad basada en EPI (distancia absoluta)
     epi = {n: get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes}

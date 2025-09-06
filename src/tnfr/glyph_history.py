@@ -31,7 +31,7 @@ def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
     """Add ``glyph`` to node history with maximum size ``window``."""
     window = _validate_window(window)
     hist = nd.get("glyph_history")
-    if hist is None or hist.maxlen != window:
+    if not isinstance(hist, deque) or hist.maxlen != window:
         hist = deque(hist or [], maxlen=window)
         nd["glyph_history"] = hist
     hist.append(str(glyph))
@@ -186,8 +186,18 @@ def ensure_history(G) -> Dict[str, Any]:
     if maxlen > 0:
         excess = len(hist) - maxlen
         if excess > 0:
-            for _ in range(excess):
-                hist.pop_least_used()
+            # Remove least used keys in bulk using heapq.nsmallest
+            candidates = []
+            for cnt, key in heapq.nsmallest(excess * 2, hist._heap):
+                if key in hist and hist._counts.get(key) == cnt and key not in candidates:
+                    candidates.append(key)
+                if len(candidates) >= excess:
+                    break
+            for key in candidates:
+                hist._counts.pop(key, None)
+                dict.__delitem__(hist, key)
+            hist._dirty += len(candidates)
+            hist._maybe_compact()
         # Note: trimming is O(n) only when history exceeds ``maxlen``
     return hist
 

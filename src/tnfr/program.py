@@ -1,19 +1,10 @@
 """TNFR programming language."""
 
 from __future__ import annotations
-from typing import (
-    Any,
-    Callable,
-    Deque,
-    Iterable,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-)
+from typing import Any, Optional, Union
 from dataclasses import dataclass
 from collections import deque
+from collections.abc import Callable, Iterable, Sequence
 
 from .constants import get_param
 from .grammar import apply_glyph_with_grammar
@@ -123,15 +114,15 @@ def _advance(G, step_fn: Optional[AdvanceFn] = None):
 # ---------------------
 
 
-def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
+def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
     """Return list of operations ``(op, payload)``.
     ``op`` ∈ { 'GLYPH', 'WAIT', 'TARGET', 'THOL' }.
 
     Implemented iteratively using an explicit stack to avoid deep recursion
     when ``THOL`` blocks are nested.
     """
-    ops: List[Tuple[str, Any]] = []
-    stack: Deque[Any] = deque(reversed(seq))
+    ops: list[tuple[str, Any]] = []
+    stack: deque[Any] = deque(reversed(seq))
 
     while stack:
         item = stack.pop()
@@ -244,7 +235,7 @@ def play(
         step_fn = dynamics.step
 
     ops = _flatten(sequence)
-    curr_target: Optional[List[Node]] = None
+    curr_target: Optional[list[Node]] = None
 
     # Traza de programa en history
     history = ensure_history(G)
@@ -275,7 +266,7 @@ def play(
 # ---------------------
 
 
-def seq(*tokens: Token) -> List[Token]:
+def seq(*tokens: Token) -> list[Token]:
     return list(tokens)
 
 
@@ -293,7 +284,7 @@ def wait(steps: int = 1) -> WAIT:
     return WAIT(steps=max(1, int(steps)))
 
 
-def basic_canonical_example() -> List[Token]:
+def basic_canonical_example() -> list[Token]:
     """Reference canonical sequence.
 
     SHA → AL → RA → ZHIR → NUL → THOL
