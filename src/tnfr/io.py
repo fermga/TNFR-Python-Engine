@@ -1,10 +1,10 @@
 """Structured file I/O utilities."""
 
 from __future__ import annotations
-from typing import Any, Callable, Dict
+from typing import Any, Callable
 import json
 from pathlib import Path
-import threading
+from functools import lru_cache
 
 from .import_utils import optional_import
 
@@ -27,9 +27,6 @@ else:  # pragma: no cover - depende de pyyaml
     class YAMLError(Exception):
         pass
 
-PARSERS: Dict[str, Callable[[str], Any]] = {".json": json.loads}
-_PARSERS_LOCK = threading.Lock()
-
 
 def _missing_dependency(name: str) -> Callable[[str], Any]:
     def _raise(_: str) -> Any:
@@ -38,19 +35,15 @@ def _missing_dependency(name: str) -> Callable[[str], Any]:
     return _raise
 
 
+@lru_cache(maxsize=None)
 def _get_parser(suffix: str) -> Callable[[str], Any]:
-    with _PARSERS_LOCK:
-        parser = PARSERS.get(suffix)
-        if parser is not None:
-            return parser
-        if suffix in (".yaml", ".yml"):
-            parser = getattr(yaml, "safe_load", _missing_dependency("pyyaml"))
-        elif suffix == ".toml":
-            parser = getattr(tomllib, "loads", _missing_dependency("tomllib/tomli"))
-        else:
-            raise KeyError(suffix)
-        PARSERS[suffix] = parser
-        return parser
+    if suffix == ".json":
+        return json.loads
+    if suffix in (".yaml", ".yml"):
+        return getattr(yaml, "safe_load", _missing_dependency("pyyaml"))
+    if suffix == ".toml":
+        return getattr(tomllib, "loads", _missing_dependency("tomllib/tomli"))
+    raise KeyError(suffix)
 
 
 def _format_structured_file_error(path: Path, e: Exception) -> str:
@@ -87,7 +80,14 @@ def read_structured_file(path: Path) -> Any:
     try:
         text = path.read_text(encoding="utf-8")
         return parser(text)
-    except Exception as e:
+    except (
+        OSError,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+        YAMLError,
+        TOMLDecodeError,
+        ImportError,
+    ) as e:
         raise StructuredFileError(path, e) from e
 
 

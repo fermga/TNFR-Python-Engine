@@ -11,6 +11,7 @@ from tnfr.sense import (
     _sigma_from_pairs,
     _sigma_from_vectors,
     glyph_unit,
+    glyph_angle,
 )
 from tnfr.types import Glyph
 
@@ -91,13 +92,8 @@ def test_sigma_from_vectors_rejects_invalid_iterable():
         _sigma_from_vectors("abc")
 
 
-def test_unknown_glyph_does_not_shift_average():
-    base, _ = _sigma_from_vectors([glyph_unit(Glyph.AL.value)])
-    with_unknown, _ = _sigma_from_vectors(
-        [
-            glyph_unit(Glyph.AL.value),
-            glyph_unit("ZZ"),
-        ]
-    )
-    assert glyph_unit("ZZ") == 0 + 0j
-    assert with_unknown["angle"] == pytest.approx(base["angle"])
+def test_unknown_glyph_raises():
+    with pytest.raises(KeyError):
+        glyph_angle("ZZ")
+    with pytest.raises(KeyError):
+        glyph_unit("ZZ")

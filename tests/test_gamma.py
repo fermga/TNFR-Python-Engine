@@ -279,7 +279,7 @@ def test_eval_gamma_unknown_type_warning_and_strict(graph_canon, caplog):
         eval_gamma(G, 0, t=0.0, strict=True)
 
 
-def test_eval_gamma_handles_unexpected_exception(graph_canon, caplog):
+def test_eval_gamma_unhandled_exception_propagates(graph_canon):
     G = graph_canon()
     G.add_node(0)
     attach_defaults(G)
@@ -290,10 +290,8 @@ def test_eval_gamma_handles_unexpected_exception(graph_canon, caplog):
 
     GAMMA_REGISTRY["bad"] = (bad_gamma, False)
     try:
-        caplog.clear()
-        with caplog.at_level(logging.DEBUG, logger="tnfr.gamma"):
-            assert eval_gamma(G, 0, t=0.0, strict=False) == 0.0
-        assert any("Fallo al evaluar" in r.message for r in caplog.records)
+        with pytest.raises(RuntimeError):
+            eval_gamma(G, 0, t=0.0, strict=False)
         with pytest.raises(RuntimeError):
             eval_gamma(G, 0, t=0.0, strict=True)
     finally:

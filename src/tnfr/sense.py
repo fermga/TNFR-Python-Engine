@@ -32,11 +32,25 @@ GLYPH_UNITS: Dict[str, complex] = {
 
 
 def glyph_angle(g: str) -> float:
-    return float(ANGLE_MAP.get(g, 0.0))
+    """Return angle for glyph ``g``.
+
+    Raises ``KeyError`` if ``g`` is not registered in :data:`ANGLE_MAP`.
+    """
+    try:
+        return float(ANGLE_MAP[g])
+    except KeyError as e:
+        raise KeyError(f"Glyph desconocido: {g}") from e
 
 
 def glyph_unit(g: str) -> complex:
-    return GLYPH_UNITS.get(g, 0 + 0j)
+    """Return unit vector for glyph ``g``.
+
+    Raises ``KeyError`` if ``g`` is not registered in :data:`ANGLE_MAP`.
+    """
+    try:
+        return GLYPH_UNITS[g]
+    except KeyError as e:
+        raise KeyError(f"Glyph desconocido: {g}") from e
 
 
 def _weight(nd, mode: str) -> float:

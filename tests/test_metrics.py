@@ -24,6 +24,7 @@ from tnfr.metrics import (
 from tnfr.metrics.core import LATENT_GLYPH
 from tnfr.metrics.core import _update_sigma
 from tnfr.constants import METRIC_DEFAULTS
+from tnfr.types import Glyph
 
 
 def test_track_stability_updates_hist():
@@ -63,7 +64,7 @@ def test_track_stability_updates_hist():
 def test_update_sigma_uses_default_window(graph_canon):
     G = graph_canon()
     for n in range(2):
-        G.add_node(n, glyph_history=["A", "B"])
+        G.add_node(n, glyph_history=[Glyph.AL.value, Glyph.EN.value])
     hist = {}
     G.graph.pop("GLYPH_LOAD_WINDOW", None)
     _update_sigma(G, hist)

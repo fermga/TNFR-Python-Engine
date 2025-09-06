@@ -160,9 +160,14 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
         A = None
 
     idx = {n: i for i, n in enumerate(nodes)}
-    theta = [get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in nodes]
-    epi = [get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes]
-    vf = [get_attr(G.nodes[n], ALIAS_VF, 0.0) for n in nodes]
+    theta = []
+    epi = []
+    vf = []
+    for n in nodes:
+        nd = G.nodes[n]
+        theta.append(get_attr(nd, ALIAS_THETA, 0.0))
+        epi.append(get_attr(nd, ALIAS_EPI, 0.0))
+        vf.append(get_attr(nd, ALIAS_VF, 0.0))
     w_phase = float(weights.get("phase", 0.0))
     w_epi = float(weights.get("epi", 0.0))
     w_vf = float(weights.get("vf", 0.0))

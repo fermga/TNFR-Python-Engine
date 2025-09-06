@@ -142,13 +142,29 @@ def neighbor_phase_mean(obj, n=None) -> float:
             y += sin_th[v]
             count += 1
     else:
-        for v in node.neighbors():
+        cache: Dict[int, tuple[float, float] | None] = {}
+
+        def trig(v) -> tuple[float, float] | None:
+            key = id(v)
+            val = cache.get(key)
+            if val is not None:
+                return val
             data = getattr(v, "__dict__", v if isinstance(v, dict) else {})
             th = get_attr(data, ALIAS_THETA, None)
             if th is None:
+                cache[key] = None
+                return None
+            val = (math.cos(th), math.sin(th))
+            cache[key] = val
+            return val
+
+        for v in node.neighbors():
+            cs = trig(v)
+            if cs is None:
                 continue
-            x += math.cos(th)
-            y += math.sin(th)
+            cx, sy = cs
+            x += cx
+            y += sy
             count += 1
     if count == 0:
         if G is not None and isinstance(node, NodoNX):
@@ -216,9 +232,7 @@ def node_set_checksum(
         return repr(_stable_json(n))
 
     node_iter = nodes if nodes is not None else G.nodes()
-    serialised_nodes = [serialise(n) for n in node_iter]
-    serialised_nodes.sort()
-    for idx, node_repr in enumerate(serialised_nodes):
+    for idx, node_repr in enumerate(sorted(serialise(n) for n in node_iter)):
         if idx:
             hasher.update(b"|")
         hasher.update(node_repr.encode("utf-8"))
@@ -268,27 +282,25 @@ def edge_version_cache(
     """
     graph = G.graph if hasattr(G, "graph") else G
     edge_version = int(graph.get("_edge_version", 0))
-    version_key = f"{key}_version"
-    cache_key = f"{key}_cache"
-    cached_version = graph.get(version_key)
-    value = graph.get(cache_key)
-    if cached_version != edge_version or value is None:
+    cache_dict: OrderedDict = graph.setdefault("_edge_version_cache", OrderedDict())
+    entry = cache_dict.get(key)
+    if entry is None or entry[0] != edge_version:
         with _EDGE_CACHE_LOCK:
-            cached_version = graph.get(version_key)
-            value = graph.get(cache_key)
-            if cached_version != edge_version or value is None:
+            entry = cache_dict.get(key)
+            if entry is None or entry[0] != edge_version:
                 value = builder()
-                graph[cache_key] = value
-                graph[version_key] = edge_version
-                if max_entries is not None and max_entries > 0:
-                    order = graph.setdefault("_edge_cache_order", [])
-                    if key in order:
-                        order.remove(key)
-                    order.append(key)
-                    while len(order) > max_entries:
-                        old = order.pop(0)
-                        graph.pop(f"{old}_cache", None)
-                        graph.pop(f"{old}_version", None)
+                cache_dict[key] = (edge_version, value)
+            else:
+                value = entry[1]
+            if max_entries is not None and max_entries > 0:
+                cache_dict.move_to_end(key)
+                while len(cache_dict) > max_entries:
+                    cache_dict.popitem(last=False)
+    else:
+        value = entry[1]
+        if max_entries is not None and max_entries > 0:
+            with _EDGE_CACHE_LOCK:
+                cache_dict.move_to_end(key)
     return value
 
 

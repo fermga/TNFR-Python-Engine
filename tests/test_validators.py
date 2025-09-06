@@ -60,7 +60,7 @@ def test_validator_glyph_invalido():
     n0 = list(G.nodes())[0]
     set_attr_str(G.nodes[n0], ALIAS_EPI_KIND, "INVALID")
     G.nodes[n0]["glyph_history"] = ["INVALID"]
-    with pytest.raises(ValueError):
+    with pytest.raises(KeyError):
         run_validators(G)
 
 
