@@ -1,8 +1,7 @@
 """Observer management."""
 
 from __future__ import annotations
-import statistics as st
-from statistics import pvariance
+import statistics
 from itertools import islice
 from functools import partial
 
@@ -64,7 +63,7 @@ def phase_sync(G) -> float:
     if G.number_of_nodes() == 0:
         return 1.0
     _, psi = kuramoto_R_psi(G)
-    var = pvariance(
+    var = statistics.pvariance(
         angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
         for _, data in G.nodes(data=True)
     )
@@ -114,4 +113,4 @@ def wbar(G, window: int | None = None) -> float:
     else:
         start = len(cs) - w
         tail = islice(cs, start, None)
-    return float(st.fmean(tail))
+    return float(statistics.fmean(tail))
