@@ -26,10 +26,12 @@ _PRESETS = {
     "ejemplo_canonico": basic_canonical_example(),
     # Topologías fractales: expansión/contracción modular
     "fractal_expand": seq(
-        block(Glyph.THOL, Glyph.VAL, Glyph.UM, repeat=2, close=Glyph.NUL), Glyph.RA
+        block(Glyph.THOL, Glyph.VAL, Glyph.UM, repeat=2, close=Glyph.NUL),
+        Glyph.RA,
     ),
     "fractal_contract": seq(
-        block(Glyph.THOL, Glyph.NUL, Glyph.UM, repeat=2, close=Glyph.SHA), Glyph.RA
+        block(Glyph.THOL, Glyph.NUL, Glyph.UM, repeat=2, close=Glyph.SHA),
+        Glyph.RA,
     ),
 }
 

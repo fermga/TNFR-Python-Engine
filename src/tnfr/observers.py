@@ -106,7 +106,9 @@ def wbar(G, window: int | None = None) -> float:
         # fallback: coherencia instantánea
         return compute_coherence(G)
     if window is None:
-        window = int(G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25)))
+        window = int(
+            G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25))
+        )
     w = min(len(cs), max(1, int(window)))
     if isinstance(cs, list):
         tail = cs[-w:]

@@ -24,7 +24,11 @@ def _ensure_kuramoto_cache(G, t) -> None:
     edge_version = int(G.graph.get("_edge_version", 0))
     nodes_sig = (len(G), checksum, edge_version)
     cache = G.graph.get("_kuramoto_cache")
-    if cache is None or cache.get("t") != t or cache.get("nodes_sig") != nodes_sig:
+    if (
+        cache is None
+        or cache.get("t") != t
+        or cache.get("nodes_sig") != nodes_sig
+    ):
         R, psi = kuramoto_R_psi(G)
         G.graph["_kuramoto_cache"] = {
             "t": t,
@@ -67,7 +71,9 @@ def _kuramoto_common(G, node, _cfg):
 # -----------------
 
 
-def _gamma_params(cfg: Mapping[str, Any], **defaults: float) -> tuple[float, ...]:
+def _gamma_params(
+    cfg: Mapping[str, Any], **defaults: float
+) -> tuple[float, ...]:
     """Return normalized Γ parameters from ``cfg``.
 
     Parameters are retrieved from ``cfg`` using the keys in ``defaults`` and
@@ -79,7 +85,9 @@ def _gamma_params(cfg: Mapping[str, Any], **defaults: float) -> tuple[float, ...
     >>> beta, R0 = _gamma_params(cfg, beta=0.0, R0=0.0)
     """
 
-    return tuple(float(cfg.get(name, default)) for name, default in defaults.items())
+    return tuple(
+        float(cfg.get(name, default)) for name, default in defaults.items()
+    )
 
 
 # -----------------
@@ -99,7 +107,8 @@ def gamma_kuramoto_linear(G, node, t, cfg: Dict[str, Any]) -> float:
       - ψ is the mean phase (coordination direction).
       - β, R0 are parameters (gain/threshold).
 
-    Use: reinforces integration when the network already shows phase coherence (R>R0).
+    Use: reinforces integration when the network already shows phase
+    coherence (R>R0).
     """
     beta, R0 = _gamma_params(cfg, beta=0.0, R0=0.0)
     th_i, R, psi = _kuramoto_common(G, node, cfg)
@@ -160,12 +169,13 @@ def eval_gamma(
     strict: bool = False,
     log_level: int | None = None,
 ) -> float:
-    """Evaluate Γi for ``node`` according to ``G.graph['GAMMA']`` specification.
+    """Evaluate Γi for ``node`` according to ``G.graph['GAMMA']``
+    specification.
 
     If ``strict`` is ``True`` exceptions raised during evaluation are
     propagated instead of returning ``0.0``. Likewise, if the specified
-    Γ type is not registered a warning is emitted (or ``ValueError`` in
-    strict mode) and ``gamma_none`` is used.
+    Γ type is not registered a warning is emitted (o ``ValueError`` en
+    modo estricto) y se usa ``gamma_none``.
 
     ``log_level`` controls the logging level for captured errors when
     ``strict`` is ``False``. If omitted, ``logging.ERROR`` is used in

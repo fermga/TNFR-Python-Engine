@@ -79,7 +79,9 @@ def _sigma_from_vectors(
     ``vectors`` may be a single complex number or an iterable of them.
     """
 
-    iterator = iter(vectors) if isinstance(vectors, Iterable) else iter([vectors])
+    iterator = (
+        iter(vectors) if isinstance(vectors, Iterable) else iter([vectors])
+    )
 
     cnt = 0
     acc = complex(0.0, 0.0)
@@ -94,7 +96,12 @@ def _sigma_from_vectors(
     x, y = acc.real / cnt, acc.imag / cnt
     mag = math.hypot(x, y)
     ang = math.atan2(y, x) if mag > 0 else float(fallback_angle)
-    vec = {"x": float(x), "y": float(y), "mag": float(mag), "angle": float(ang)}
+    vec = {
+        "x": float(x),
+        "y": float(y),
+        "mag": float(mag),
+        "angle": float(ang),
+    }
     return vec, cnt
 
 
@@ -107,7 +114,9 @@ def _sigma_from_pairs(
     return _sigma_from_vectors(vectors, fallback_angle)
 
 
-def sigma_vector_node(G, n, weight_mode: str | None = None) -> Dict[str, float] | None:
+def sigma_vector_node(
+    G, n, weight_mode: str | None = None
+) -> Dict[str, float] | None:
     cfg = _sigma_cfg(G)
     nd = G.nodes[n]
     nw = _node_weight(nd, weight_mode or cfg.get("weight", "Si"))

@@ -34,7 +34,9 @@ def _selector_thresholds(G: "nx.Graph") -> dict:
     glyph_defaults = DEFAULTS.get("GLYPH_THRESHOLDS", {})
     thr_def = {**glyph_defaults, **G.graph.get("GLYPH_THRESHOLDS", {})}
 
-    def _get_threshold(key: str, default: float, legacy: str | None = None) -> float:
+    def _get_threshold(
+        key: str, default: float, legacy: str | None = None
+    ) -> float:
         """Obtiene ``key`` de ``thr_sel`` respetando claves de legado.
 
         Si ``legacy`` se proporciona se usa ``thr_def`` como respaldo,
@@ -52,40 +54,53 @@ def _selector_thresholds(G: "nx.Graph") -> dict:
         (
             "si_hi",
             thr_def.get(
-                "hi", glyph_defaults.get("hi", SELECTOR_THRESHOLD_DEFAULTS["si_hi"])
+                "hi",
+                glyph_defaults.get("hi", SELECTOR_THRESHOLD_DEFAULTS["si_hi"]),
             ),
             "hi",
         ),
         (
             "si_lo",
             thr_def.get(
-                "lo", glyph_defaults.get("lo", SELECTOR_THRESHOLD_DEFAULTS["si_lo"])
+                "lo",
+                glyph_defaults.get("lo", SELECTOR_THRESHOLD_DEFAULTS["si_lo"]),
             ),
             "lo",
         ),
         (
             "dnfr_hi",
-            sel_defaults.get("dnfr_hi", SELECTOR_THRESHOLD_DEFAULTS["dnfr_hi"]),
+            sel_defaults.get(
+                "dnfr_hi", SELECTOR_THRESHOLD_DEFAULTS["dnfr_hi"]
+            ),
             None,
         ),
         (
             "dnfr_lo",
-            sel_defaults.get("dnfr_lo", SELECTOR_THRESHOLD_DEFAULTS["dnfr_lo"]),
+            sel_defaults.get(
+                "dnfr_lo", SELECTOR_THRESHOLD_DEFAULTS["dnfr_lo"]
+            ),
             None,
         ),
         (
             "accel_hi",
-            sel_defaults.get("accel_hi", SELECTOR_THRESHOLD_DEFAULTS["accel_hi"]),
+            sel_defaults.get(
+                "accel_hi", SELECTOR_THRESHOLD_DEFAULTS["accel_hi"]
+            ),
             None,
         ),
         (
             "accel_lo",
-            sel_defaults.get("accel_lo", SELECTOR_THRESHOLD_DEFAULTS["accel_lo"]),
+            sel_defaults.get(
+                "accel_lo", SELECTOR_THRESHOLD_DEFAULTS["accel_lo"]
+            ),
             None,
         ),
     ]
 
-    return {key: _get_threshold(key, default, legacy) for key, default, legacy in specs}
+    return {
+        key: _get_threshold(key, default, legacy)
+        for key, default, legacy in specs
+    }
 
 
 def _norms_para_selector(G: "nx.Graph") -> dict:
@@ -115,7 +130,8 @@ def _apply_selector_hysteresis(
     thr: Dict[str, float],
     margin: float,
 ) -> str | None:
-    """Aplica histéresis devolviendo el glyph previo si se está cerca de umbrales."""
+    """Aplica histéresis devolviendo el glyph previo si se está cerca de
+    umbrales."""
     d_si = min(abs(Si - thr["si_hi"]), abs(Si - thr["si_lo"]))
     d_dn = min(abs(dnfr - thr["dnfr_hi"]), abs(dnfr - thr["dnfr_lo"]))
     d_ac = min(abs(accel - thr["accel_hi"]), abs(accel - thr["accel_lo"]))

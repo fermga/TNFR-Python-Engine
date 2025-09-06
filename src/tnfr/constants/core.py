@@ -29,7 +29,12 @@ class CoreDefaults:
     VF_MAX: float = 1.0
     THETA_WRAP: bool = True
     DNFR_WEIGHTS: Dict[str, float] = field(
-        default_factory=lambda: {"phase": 0.34, "epi": 0.33, "vf": 0.33, "topo": 0.0}
+        default_factory=lambda: {
+            "phase": 0.34,
+            "epi": 0.33,
+            "vf": 0.33,
+            "topo": 0.0,
+        }
     )
     SI_WEIGHTS: Dict[str, float] = field(
         default_factory=lambda: {"alpha": 0.34, "beta": 0.33, "gamma": 0.33}

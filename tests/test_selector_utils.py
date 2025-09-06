@@ -27,7 +27,10 @@ def _selector_thresholds_original(G: nx.Graph) -> dict:
             thr_sel.get(
                 "si_hi",
                 thr_def.get(
-                    "hi", glyph_defaults.get("hi", SELECTOR_THRESHOLD_DEFAULTS["si_hi"])
+                    "hi",
+                    glyph_defaults.get(
+                        "hi", SELECTOR_THRESHOLD_DEFAULTS["si_hi"]
+                    ),
                 ),
             )
         )
@@ -37,7 +40,10 @@ def _selector_thresholds_original(G: nx.Graph) -> dict:
             thr_sel.get(
                 "si_lo",
                 thr_def.get(
-                    "lo", glyph_defaults.get("lo", SELECTOR_THRESHOLD_DEFAULTS["si_lo"])
+                    "lo",
+                    glyph_defaults.get(
+                        "lo", SELECTOR_THRESHOLD_DEFAULTS["si_lo"]
+                    ),
                 ),
             )
         )
@@ -46,7 +52,9 @@ def _selector_thresholds_original(G: nx.Graph) -> dict:
         float(
             thr_sel.get(
                 "dnfr_hi",
-                sel_defaults.get("dnfr_hi", SELECTOR_THRESHOLD_DEFAULTS["dnfr_hi"]),
+                sel_defaults.get(
+                    "dnfr_hi", SELECTOR_THRESHOLD_DEFAULTS["dnfr_hi"]
+                ),
             )
         )
     )
@@ -54,7 +62,9 @@ def _selector_thresholds_original(G: nx.Graph) -> dict:
         float(
             thr_sel.get(
                 "dnfr_lo",
-                sel_defaults.get("dnfr_lo", SELECTOR_THRESHOLD_DEFAULTS["dnfr_lo"]),
+                sel_defaults.get(
+                    "dnfr_lo", SELECTOR_THRESHOLD_DEFAULTS["dnfr_lo"]
+                ),
             )
         )
     )
@@ -62,7 +72,9 @@ def _selector_thresholds_original(G: nx.Graph) -> dict:
         float(
             thr_sel.get(
                 "accel_hi",
-                sel_defaults.get("accel_hi", SELECTOR_THRESHOLD_DEFAULTS["accel_hi"]),
+                sel_defaults.get(
+                    "accel_hi", SELECTOR_THRESHOLD_DEFAULTS["accel_hi"]
+                ),
             )
         )
     )
@@ -70,7 +82,9 @@ def _selector_thresholds_original(G: nx.Graph) -> dict:
         float(
             thr_sel.get(
                 "accel_lo",
-                sel_defaults.get("accel_lo", SELECTOR_THRESHOLD_DEFAULTS["accel_lo"]),
+                sel_defaults.get(
+                    "accel_lo", SELECTOR_THRESHOLD_DEFAULTS["accel_lo"]
+                ),
             )
         )
     )
@@ -142,7 +156,9 @@ def test_configure_selector_weights_normalizes():
     G = nx.Graph()
     G.graph["SELECTOR_WEIGHTS"] = {"w_si": 2.0, "w_dnfr": 1.0, "w_accel": 1.0}
     weights = _configure_selector_weights(G)
-    assert weights == pytest.approx({"w_si": 0.5, "w_dnfr": 0.25, "w_accel": 0.25})
+    assert weights == pytest.approx(
+        {"w_si": 0.5, "w_dnfr": 0.25, "w_accel": 0.25}
+    )
     assert G.graph["_selector_weights"] == weights
 
 
@@ -150,7 +166,9 @@ def test_apply_selector_hysteresis_returns_prev():
     thr = DEFAULTS["SELECTOR_THRESHOLDS"]
     nd = {"glyph_history": ["RA"]}
     # near si_hi threshold
-    prev = _apply_selector_hysteresis(nd, thr["si_hi"] - 0.01, 0.2, 0.2, thr, 0.05)
+    prev = _apply_selector_hysteresis(
+        nd, thr["si_hi"] - 0.01, 0.2, 0.2, thr, 0.05
+    )
     assert prev == "RA"
     # far from thresholds
     none = _apply_selector_hysteresis(nd, 0.5, 0.2, 0.2, thr, 0.05)

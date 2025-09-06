@@ -33,7 +33,8 @@ def build_graph(
     else:
         valid = ["ring", "complete", "erdos"]
         raise ValueError(
-            f"Invalid topology '{topology}'. Valid options are: {', '.join(valid)}"
+            f"Invalid topology '{topology}'. "
+            f"Valid options are: {', '.join(valid)}"
         )
 
     # Valores canónicos para inicialización

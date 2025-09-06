@@ -1,7 +1,17 @@
 """TNFR programming language."""
 
 from __future__ import annotations
-from typing import Any, Callable, Deque, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import (
+    Any,
+    Callable,
+    Deque,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 from dataclasses import dataclass
 from contextlib import contextmanager
 from collections import deque
@@ -56,7 +66,9 @@ class THOL:
 
     body: Sequence[Any]
     repeat: int = 1  # number of times to repeat the body
-    force_close: Optional[Glyph] = None  # None → automatic closure; SHA or NUL to force
+    force_close: Optional[Glyph] = (
+        None  # None → automatic closure; SHA or NUL to force
+    )
 
 
 Token = Union[Glyph, WAIT, TARGET, THOL]
@@ -67,7 +79,6 @@ THOL_SENTINEL = object()
 # ---------------------
 # Internal utilities
 # ---------------------
-
 
 
 def _window(G) -> int:
@@ -88,7 +99,9 @@ def _all_nodes(G):
 # ---------------------
 
 
-def _apply_glyph_to_targets(G, g: Glyph | str, nodes: Optional[Iterable[Node]] = None):
+def _apply_glyph_to_targets(
+    G, g: Glyph | str, nodes: Optional[Iterable[Node]] = None
+):
     """Apply ``g`` to ``nodes`` (or all nodes) respecting the grammar.
 
     ``nodes`` may be any iterable of nodes, including a ``NodeView`` or other
@@ -134,7 +147,9 @@ def _flatten(seq: Sequence[Token]) -> List[Tuple[str, Any]]:
             continue
         if isinstance(item, THOL):
             repeats = max(1, int(item.repeat))
-            if item.force_close is not None and not isinstance(item.force_close, Glyph):
+            if item.force_close is not None and not isinstance(
+                item.force_close, Glyph
+            ):
                 raise ValueError("force_close must be a Glyph")
             closing = (
                 item.force_close
@@ -211,12 +226,15 @@ def _handle_glyph(
 # ---------------------
 
 
-def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> None:
+def play(
+    G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None
+) -> None:
     """Execute a canonical sequence on graph ``G``.
 
     Rules:
       - Use ``TARGET(nodes=...)`` to change the subset of application.
-      - ``WAIT(k)`` advances ``k`` steps with the current selector (no forced glyph).
+      - ``WAIT(k)`` advances ``k`` steps with the current selector
+        (no forced glyph).
       - ``THOL([...], repeat=r, force_close=…)`` opens a self-organising block,
         repeats the body and optionally forces closure with SHA/NUL.
       - Glyphs are applied via ``enforce_canonical_grammar``.
@@ -262,7 +280,9 @@ def seq(*tokens: Token) -> List[Token]:
     return list(tokens)
 
 
-def block(*tokens: Token, repeat: int = 1, close: Optional[Glyph] = None) -> THOL:
+def block(
+    *tokens: Token, repeat: int = 1, close: Optional[Glyph] = None
+) -> THOL:
     return THOL(body=list(tokens), repeat=repeat, force_close=close)
 
 
@@ -279,4 +299,6 @@ def basic_canonical_example() -> List[Token]:
 
     SHA → AL → RA → ZHIR → NUL → THOL
     """
-    return seq(Glyph.SHA, Glyph.AL, Glyph.RA, Glyph.ZHIR, Glyph.NUL, Glyph.THOL)
+    return seq(
+        Glyph.SHA, Glyph.AL, Glyph.RA, Glyph.ZHIR, Glyph.NUL, Glyph.THOL
+    )

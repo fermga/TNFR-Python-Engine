@@ -14,7 +14,9 @@ def test_gamma_linear_integration(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
     attach_defaults(G)
-    merge_overrides(G, GAMMA={"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0})
+    merge_overrides(
+        G, GAMMA={"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0}
+    )
     for n in G.nodes():
         G.nodes[n]["νf"] = 1.0
         G.nodes[n]["ΔNFR"] = 0.0
@@ -43,7 +45,9 @@ def test_gamma_linear_string_params(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
     attach_defaults(G)
-    merge_overrides(G, GAMMA={"type": "kuramoto_linear", "beta": "1.0", "R0": "0.0"})
+    merge_overrides(
+        G, GAMMA={"type": "kuramoto_linear", "beta": "1.0", "R0": "0.0"}
+    )
     for n in G.nodes():
         G.nodes[n]["θ"] = 0.0
     g0 = eval_gamma(G, 0, t=0.0)
@@ -105,7 +109,12 @@ def test_gamma_tanh_string_params(graph_canon):
     attach_defaults(G)
     merge_overrides(
         G,
-        GAMMA={"type": "kuramoto_tanh", "beta": "1.0", "k": "1.0", "R0": "0.0"},
+        GAMMA={
+            "type": "kuramoto_tanh",
+            "beta": "1.0",
+            "k": "1.0",
+            "R0": "0.0",
+        },
     )
     for n in [0, 1, 2]:
         G.nodes[n]["θ"] = 0.0
@@ -121,7 +130,9 @@ def test_kuramoto_cache_invalidation_on_version(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
     attach_defaults(G)
-    merge_overrides(G, GAMMA={"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0})
+    merge_overrides(
+        G, GAMMA={"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0}
+    )
     for n in G.nodes():
         G.nodes[n]["θ"] = 0.0
     g_before = eval_gamma(G, 0, t=0.0)
@@ -140,7 +151,12 @@ def test_gamma_harmonic_string_params(graph_canon):
     attach_defaults(G)
     merge_overrides(
         G,
-        GAMMA={"type": "harmonic", "beta": "1.0", "omega": "1.0", "phi": "0.0"},
+        GAMMA={
+            "type": "harmonic",
+            "beta": "1.0",
+            "omega": "1.0",
+            "phi": "0.0",
+        },
     )
     for n in G.nodes():
         G.nodes[n]["θ"] = 0.0
@@ -191,7 +207,9 @@ def test_eval_gamma_unknown_type_warning_and_strict(graph_canon, caplog):
     with caplog.at_level(logging.WARNING):
         g = eval_gamma(G, 0, t=0.0)
     assert g == 0.0
-    assert any("Tipo GAMMA desconocido" in rec.message for rec in caplog.records)
+    assert any(
+        "Tipo GAMMA desconocido" in rec.message for rec in caplog.records
+    )
 
     with pytest.raises(ValueError):
         eval_gamma(G, 0, t=0.0, strict=True)

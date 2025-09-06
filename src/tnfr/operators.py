@@ -119,7 +119,9 @@ def _get_jitter_cache_size(node: NodoProtocol) -> int:
     cache_size = node.graph.get("_jitter_cache_size")
     if cache_size is None:
         try:
-            cache_size = get_param(node.G, "JITTER_CACHE_SIZE")  # type: ignore[attr-defined]
+            cache_size = get_param(
+                node.G, "JITTER_CACHE_SIZE"
+            )  # type: ignore[attr-defined]
         except (AttributeError, KeyError):
             cache_size = DEFAULTS["JITTER_CACHE_SIZE"]
         node.graph["_jitter_cache_size"] = cache_size
@@ -131,16 +133,18 @@ def random_jitter(
     amplitude: float,
     cache: Optional[Dict[int, random.Random]] = None,
 ) -> float:
-    """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
+    """Return deterministic noise in ``[-amplitude, amplitude]`` for
+    ``node``.
 
-    The value is derived from ``(RANDOM_SEED, node.offset())`` and does not store
-    references to nodes. By default a global cache of ``(seed, key) → random.Random``
-    instances, scoped by graph via weak references, advances deterministic
-    sequences across calls. The cache obeys the ``JITTER_CACHE_SIZE`` parameter
-    and evicts the least recently used generator when the limit is exceeded.  When
-    the parameter is ``0`` or negative, the cache is bypassed and a new generator
-    is created on each call. When ``cache`` is provided, it is used instead and
-    must handle its own purging policy.
+    The value is derived from ``(RANDOM_SEED, node.offset())`` and does
+    not store references to nodes. By default a global cache of
+    ``(seed, key) → random.Random`` instances, scoped by graph via weak
+    references, advances deterministic sequences across calls. The
+    cache obeys the ``JITTER_CACHE_SIZE`` parameter and evicts the least
+    recently used generator when the limit is exceeded. When the
+    parameter is ``0`` o negativo, the cache is bypassed and a new
+    generator is created on each call. When ``cache`` is provided, it is
+    used instead and must handle its own purging policy.
     """
 
     if amplitude <= 0:
@@ -192,9 +196,14 @@ def get_glyph_factors(node: NodoProtocol) -> Dict[str, Any]:
 def _select_dominant_glyph(
     node: NodoProtocol, neigh: Iterable[NodoProtocol]
 ) -> Optional[str]:
-    """Return the epi_kind with the highest |EPI| among node and its neighbors."""
+    """Return the ``epi_kind`` with the highest |EPI| among
+    node and its neighbors."""
     best = max(neigh, key=lambda v: abs(v.EPI), default=None)
-    return best.epi_kind if best and abs(best.EPI) > abs(node.EPI) else node.epi_kind
+    return (
+        best.epi_kind
+        if best and abs(best.EPI) > abs(node.EPI)
+        else node.epi_kind
+    )
 
 
 def _mix_epi_with_neighbors(
@@ -207,7 +216,9 @@ def _mix_epi_with_neighbors(
     """
 
     default_kind = (
-        default_glyph.value if isinstance(default_glyph, Glyph) else str(default_glyph)
+        default_glyph.value
+        if isinstance(default_glyph, Glyph)
+        else str(default_glyph)
     )
     epi = node.EPI
     neigh = list(node.neighbors())
@@ -217,7 +228,8 @@ def _mix_epi_with_neighbors(
     if hasattr(node, "G"):
         NodoNX = _get_NodoNX()
         neigh = [
-            v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v) for v in neigh
+            v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)
+            for v in neigh
         ]  # type: ignore[attr-defined]
     epi_bar = list_mean(v.EPI for v in neigh)
     node.EPI = (1 - mix) * epi + mix * epi_bar
@@ -266,9 +278,9 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Coupling
     * ``"proximity"``: choose nodes closest in phase.
     * ``"sample"``: take a deterministic sample.
 
-    ``dynamics.step`` keeps a refreshed random sample in ``G.graph['_node_sample']``.
-    When the graph is small (``<50`` nodes) the sample contains all nodes and
-    sampling is disabled.
+    ``dynamics.step`` keeps a refreshed random sample in
+    ``G.graph['_node_sample']``. When el grafo es pequeño (``<50``
+    nodes) the sample contains all nodes and sampling is disabled.
 
     This preserves coupling logic without scanning all nodes.
     """
@@ -283,7 +295,8 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Coupling
     if bool(node.graph.get("UM_FUNCTIONAL_LINKS", False)):
         thr = float(
             node.graph.get(
-                "UM_COMPAT_THRESHOLD", DEFAULTS.get("UM_COMPAT_THRESHOLD", 0.75)
+                "UM_COMPAT_THRESHOLD",
+                DEFAULTS.get("UM_COMPAT_THRESHOLD", 0.75),
             )
         )
         epi_i = node.EPI
@@ -301,7 +314,9 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Coupling
 
         candidates = []
         for j in iter_nodes:
-            same = (j is node) or (getattr(node, "n", None) == getattr(j, "n", None))
+            same = (j is node) or (
+                getattr(node, "n", None) == getattr(j, "n", None)
+            )
             if same or node.has_edge(j):
                 continue
             candidates.append(j)
@@ -311,13 +326,19 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Coupling
         if limit > 0 and len(candidates) > limit:
             if mode == "proximity":
                 candidates = heapq.nsmallest(
-                    limit, candidates, key=lambda j: abs(angle_diff(j.theta, th))
+                    limit,
+                    candidates,
+                    key=lambda j: abs(angle_diff(j.theta, th)),
                 )
             else:
-                rng = _jitter_base(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
+                rng = _jitter_base(
+                    int(node.graph.get("RANDOM_SEED", 0)), node.offset()
+                )
                 candidates = rng.sample(candidates, limit)
         elif mode == "sample" and limit > 0:
-            rng = _jitter_base(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
+            rng = _jitter_base(
+                int(node.graph.get("RANDOM_SEED", 0)), node.offset()
+            )
             rng.shuffle(candidates)
 
         for j in candidates:
@@ -325,7 +346,9 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Coupling
             dphi = abs(angle_diff(th_j, th)) / math.pi
             epi_j = j.EPI
             si_j = j.Si
-            epi_sim = 1.0 - abs(epi_i - epi_j) / (abs(epi_i) + abs(epi_j) + 1e-9)
+            epi_sim = 1.0 - abs(epi_i - epi_j) / (
+                abs(epi_i) + abs(epi_j) + 1e-9
+            )
             si_sim = 1.0 - abs(si_i - si_j)
             compat = (1 - dphi) * 0.5 + 0.25 * epi_sim + 0.25 * si_sim
             if compat >= thr:
@@ -460,7 +483,9 @@ def apply_glyph_obj(
     node.push_glyph(g.value, window)
 
 
-def apply_glyph(G, n, glyph: Glyph | str, *, window: Optional[int] = None) -> None:
+def apply_glyph(
+    G, n, glyph: Glyph | str, *, window: Optional[int] = None
+) -> None:
     """Adapter to operate on ``networkx`` graphs."""
     NodoNX = _get_NodoNX()
     node = NodoNX(G, n)
@@ -474,15 +499,22 @@ def apply_glyph(G, n, glyph: Glyph | str, *, window: Optional[int] = None) -> No
 
 def _remesh_alpha_info(G):
     """Return ``(alpha, source)`` with explicit precedence."""
-    if bool(G.graph.get("REMESH_ALPHA_HARD", REMESH_DEFAULTS["REMESH_ALPHA_HARD"])):
-        val = float(G.graph.get("REMESH_ALPHA", REMESH_DEFAULTS["REMESH_ALPHA"]))
+    if bool(
+        G.graph.get("REMESH_ALPHA_HARD", REMESH_DEFAULTS["REMESH_ALPHA_HARD"])
+    ):
+        val = float(
+            G.graph.get("REMESH_ALPHA", REMESH_DEFAULTS["REMESH_ALPHA"])
+        )
         return val, "REMESH_ALPHA"
     gf = G.graph.get("GLYPH_FACTORS", DEFAULTS.get("GLYPH_FACTORS", {}))
     if "REMESH_alpha" in gf:
         return float(gf["REMESH_alpha"]), "GLYPH_FACTORS.REMESH_alpha"
     if "REMESH_ALPHA" in G.graph:
         return float(G.graph["REMESH_ALPHA"]), "REMESH_ALPHA"
-    return float(REMESH_DEFAULTS["REMESH_ALPHA"]), "REMESH_DEFAULTS.REMESH_ALPHA"
+    return (
+        float(REMESH_DEFAULTS["REMESH_ALPHA"]),
+        "REMESH_DEFAULTS.REMESH_ALPHA",
+    )
 
 
 def apply_network_remesh(G) -> None:
@@ -530,7 +562,9 @@ def apply_network_remesh(G) -> None:
         set_attr(nd, ALIAS_EPI, mixed)
 
     # --- Snapshot EPI (DESPUÉS) ---
-    epi_items_after = [(n, get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in G.nodes()]
+    epi_items_after = [
+        (n, get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in G.nodes()
+    ]
     epi_mean_after = list_mean(v for _, v in epi_items_after)
     epi_checksum_after = hashlib.sha1(
         str(sorted((str(n), round(v, 6)) for n, v in epi_items_after)).encode()
@@ -581,11 +615,12 @@ def apply_topological_remesh(
 ) -> None:
     """Approximate topological remeshing.
 
-    - ``mode="knn"``: connect each node with its ``k`` most similar neighbours in EPI
-      with probability ``p_rewire``.
-    - ``mode="mst"``: preserve only a minimum spanning tree according to EPI distance.
-    - ``mode="community"``: group by modular communities and connect them by
-      inter-community similarity.
+    - ``mode="knn"``: connect each node with its ``k`` most similar
+      neighbours in EPI with probability ``p_rewire``.
+    - ``mode="mst"``: preserve only a minimum spanning tree according to
+      EPI distance.
+    - ``mode="community"``: group by modular communities and connect
+      them by inter-community similarity.
 
     Connectivity is always preserved by adding a base MST.
     """
@@ -597,7 +632,9 @@ def apply_topological_remesh(
 
     if mode is None:
         mode = str(
-            G.graph.get("REMESH_MODE", REMESH_DEFAULTS.get("REMESH_MODE", "knn"))
+            G.graph.get(
+                "REMESH_MODE", REMESH_DEFAULTS.get("REMESH_MODE", "knn")
+            )
         )
     mode = str(mode)
 
@@ -659,7 +696,9 @@ def apply_topological_remesh(
                 epi_u = get_attr(C.nodes[u], ALIAS_EPI, 0.0)
                 others = [v for v in C.nodes() if v != u]
                 others.sort(
-                    key=lambda v: abs(epi_u - get_attr(C.nodes[v], ALIAS_EPI, 0.0))
+                    key=lambda v: abs(
+                        epi_u - get_attr(C.nodes[v], ALIAS_EPI, 0.0)
+                    )
                 )
                 for v in others[:k_val]:
                     if rnd.random() < p_rewire:
@@ -679,9 +718,15 @@ def apply_topological_remesh(
             G.add_edges_from(new_edges)
             increment_edge_version(G)
 
-            if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
-                ev = G.graph.setdefault("history", {}).setdefault("remesh_events", [])
-                mapping = {idx: C.nodes[idx].get("members", []) for idx in C.nodes()}
+            if G.graph.get(
+                "REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]
+            ):
+                ev = G.graph.setdefault("history", {}).setdefault(
+                    "remesh_events", []
+                )
+                mapping = {
+                    idx: C.nodes[idx].get("members", []) for idx in C.nodes()
+                }
                 ev.append(
                     {
                         "mode": "community",
@@ -700,7 +745,8 @@ def apply_topological_remesh(
             if k is not None
             else int(
                 G.graph.get(
-                    "REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2)
+                    "REMESH_COMMUNITY_K",
+                    REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2),
                 )
             )
         )
@@ -729,32 +775,46 @@ def apply_remesh_if_globally_stable(
         if pasos_estables_consecutivos is not None
         else int(
             G.graph.get(
-                "REMESH_STABILITY_WINDOW", REMESH_DEFAULTS["REMESH_STABILITY_WINDOW"]
+                "REMESH_STABILITY_WINDOW",
+                REMESH_DEFAULTS["REMESH_STABILITY_WINDOW"],
             )
         )
     )
     frac_req = float(
-        G.graph.get("FRACTION_STABLE_REMESH", REMESH_DEFAULTS["FRACTION_STABLE_REMESH"])
+        G.graph.get(
+            "FRACTION_STABLE_REMESH", REMESH_DEFAULTS["FRACTION_STABLE_REMESH"]
+        )
     )
     req_extra = bool(
         G.graph.get(
-            "REMESH_REQUIRE_STABILITY", REMESH_DEFAULTS["REMESH_REQUIRE_STABILITY"]
+            "REMESH_REQUIRE_STABILITY",
+            REMESH_DEFAULTS["REMESH_REQUIRE_STABILITY"],
         )
     )
     min_sync = float(
-        G.graph.get("REMESH_MIN_PHASE_SYNC", REMESH_DEFAULTS["REMESH_MIN_PHASE_SYNC"])
+        G.graph.get(
+            "REMESH_MIN_PHASE_SYNC", REMESH_DEFAULTS["REMESH_MIN_PHASE_SYNC"]
+        )
     )
     max_disr = float(
-        G.graph.get("REMESH_MAX_GLYPH_DISR", REMESH_DEFAULTS["REMESH_MAX_GLYPH_DISR"])
+        G.graph.get(
+            "REMESH_MAX_GLYPH_DISR", REMESH_DEFAULTS["REMESH_MAX_GLYPH_DISR"]
+        )
     )
     min_sigma = float(
-        G.graph.get("REMESH_MIN_SIGMA_MAG", REMESH_DEFAULTS["REMESH_MIN_SIGMA_MAG"])
+        G.graph.get(
+            "REMESH_MIN_SIGMA_MAG", REMESH_DEFAULTS["REMESH_MIN_SIGMA_MAG"]
+        )
     )
     min_R = float(
-        G.graph.get("REMESH_MIN_KURAMOTO_R", REMESH_DEFAULTS["REMESH_MIN_KURAMOTO_R"])
+        G.graph.get(
+            "REMESH_MIN_KURAMOTO_R", REMESH_DEFAULTS["REMESH_MIN_KURAMOTO_R"]
+        )
     )
     min_sihi = float(
-        G.graph.get("REMESH_MIN_SI_HI_FRAC", REMESH_DEFAULTS["REMESH_MIN_SI_HI_FRAC"])
+        G.graph.get(
+            "REMESH_MIN_SI_HI_FRAC", REMESH_DEFAULTS["REMESH_MIN_SI_HI_FRAC"]
+        )
     )
 
     hist = G.graph.setdefault("history", {"stable_frac": []})
@@ -775,12 +835,18 @@ def apply_remesh_if_globally_stable(
             ps_ok = (sum(win_ps) / len(win_ps)) >= min_sync
         # carga glífica disruptiva (menor mejor)
         disr_ok = True
-        if "glyph_load_disr" in hist and len(hist["glyph_load_disr"]) >= w_estab:
+        if (
+            "glyph_load_disr" in hist
+            and len(hist["glyph_load_disr"]) >= w_estab
+        ):
             win_disr = hist["glyph_load_disr"][-w_estab:]
             disr_ok = (sum(win_disr) / len(win_disr)) <= max_disr
         # magnitud de sigma (mayor mejor)
         sig_ok = True
-        if "sense_sigma_mag" in hist and len(hist["sense_sigma_mag"]) >= w_estab:
+        if (
+            "sense_sigma_mag" in hist
+            and len(hist["sense_sigma_mag"]) >= w_estab
+        ):
             win_sig = hist["sense_sigma_mag"][-w_estab:]
             sig_ok = (sum(win_sig) / len(win_sig)) >= min_sigma
         # orden de Kuramoto R (mayor mejor)
@@ -800,7 +866,8 @@ def apply_remesh_if_globally_stable(
     step_idx = len(sf)
     cooldown = int(
         G.graph.get(
-            "REMESH_COOLDOWN_VENTANA", REMESH_DEFAULTS["REMESH_COOLDOWN_VENTANA"]
+            "REMESH_COOLDOWN_VENTANA",
+            REMESH_DEFAULTS["REMESH_COOLDOWN_VENTANA"],
         )
     )
     if step_idx - last < cooldown:
@@ -809,7 +876,8 @@ def apply_remesh_if_globally_stable(
     last_ts = float(G.graph.get("_last_remesh_ts", -1e12))
     cooldown_ts = float(
         G.graph.get(
-            "REMESH_COOLDOWN_TS", REMESH_DEFAULTS.get("REMESH_COOLDOWN_TS", 0.0)
+            "REMESH_COOLDOWN_TS",
+            REMESH_DEFAULTS.get("REMESH_COOLDOWN_TS", 0.0),
         )
     )
     if cooldown_ts > 0 and (t_now - last_ts) < cooldown_ts:

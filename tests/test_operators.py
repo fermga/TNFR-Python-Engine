@@ -1,7 +1,12 @@
 """Pruebas de operators."""
 
 from tnfr.node import NodoNX
-from tnfr.operators import random_jitter, clear_rng_cache, apply_glyph, _select_dominant_glyph
+from tnfr.operators import (
+    random_jitter,
+    clear_rng_cache,
+    apply_glyph,
+    _select_dominant_glyph,
+)
 from types import SimpleNamespace
 import tnfr.operators as operators
 from tnfr.constants import attach_defaults

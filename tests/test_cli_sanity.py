@@ -16,7 +16,9 @@ from tnfr import __version__
 
 def test_cli_metrics_runs(tmp_path):
     out = tmp_path / "m.json"
-    rc = main(["metrics", "--nodes", "10", "--steps", "50", "--save", str(out)])
+    rc = main(
+        ["metrics", "--nodes", "10", "--steps", "50", "--save", str(out)]
+    )
     assert rc == 0
     data = read_structured_file(out)
     assert "Tg_global" in data
@@ -39,7 +41,17 @@ def test_cli_version(capsys):
 
 def test_cli_run_erdos_p():
     rc = main(
-        ["run", "--topology", "erdos", "--p", "0.9", "--nodes", "5", "--steps", "1"]
+        [
+            "run",
+            "--topology",
+            "erdos",
+            "--p",
+            "0.9",
+            "--nodes",
+            "5",
+            "--steps",
+            "1",
+        ]
     )
     assert rc == 0
 

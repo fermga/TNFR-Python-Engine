@@ -25,7 +25,9 @@ except PackageNotFoundError:  # pragma: no cover
         import tomllib
         from pathlib import Path
 
-        with (Path(__file__).resolve().parents[2] / "pyproject.toml").open("rb") as f:
+        with (Path(__file__).resolve().parents[2] / "pyproject.toml").open(
+            "rb"
+        ) as f:
             __version__ = tomllib.load(f)["project"]["version"]
     except (OSError, KeyError, ValueError):  # pragma: no cover
         __version__ = "0+unknown"
@@ -45,4 +47,3 @@ __all__ = [
     "create_nfr",
     "NodeState",
 ]
-

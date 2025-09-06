@@ -33,5 +33,7 @@ def test_local_phase_sync_independent_graphs():
     assert G2.graph[key]["nodes"] == tuple(nodes2)
     assert G1.graph[key] is not G2.graph[key]
 
-    r1_again = local_phase_sync_weighted(G1, nodes1[0], nodes_order=nodes1, W_row=W1)
+    r1_again = local_phase_sync_weighted(
+        G1, nodes1[0], nodes_order=nodes1, W_row=W1
+    )
     assert r1_again == pytest.approx(r1)

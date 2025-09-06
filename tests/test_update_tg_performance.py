@@ -70,11 +70,15 @@ def test_update_tg_matches_naive(graph_canon):
     dt = 1.0
 
     start = time.perf_counter()
-    counts_opt, n_total_opt, n_latent_opt = _update_tg(G_opt, hist_opt, dt, True)
+    counts_opt, n_total_opt, n_latent_opt = _update_tg(
+        G_opt, hist_opt, dt, True
+    )
     t_opt = time.perf_counter() - start
 
     start = time.perf_counter()
-    counts_ref, n_total_ref, n_latent_ref = _update_tg_naive(G_ref, hist_ref, dt, True)
+    counts_ref, n_total_ref, n_latent_ref = _update_tg_naive(
+        G_ref, hist_ref, dt, True
+    )
     t_ref = time.perf_counter() - start
 
     assert counts_opt == counts_ref

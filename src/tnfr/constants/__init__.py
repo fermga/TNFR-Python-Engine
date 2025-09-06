@@ -34,7 +34,8 @@ IMMUTABLE_TYPES = (
 
 # Diccionario combinado exportado
 # Unimos los diccionarios en orden de menor a mayor prioridad para que los
-# valores de ``METRIC_DEFAULTS`` sobrescriban al resto, como hacía ``ChainMap``.
+# valores de ``METRIC_DEFAULTS`` sobrescriban al resto,
+# como hacía ``ChainMap``.
 _DEFAULTS_COMBINED: Dict[str, Any] = (
     CORE_DEFAULTS | INIT_DEFAULTS | REMESH_DEFAULTS | METRIC_DEFAULTS
 )
@@ -79,7 +80,9 @@ def inject_defaults(
     G.graph.setdefault("_tnfr_defaults_attached", False)
     for k, v in defaults.items():
         if override or k not in G.graph:
-            G.graph[k] = v if isinstance(v, IMMUTABLE_TYPES) else copy.deepcopy(v)
+            G.graph[k] = (
+                v if isinstance(v, IMMUTABLE_TYPES) else copy.deepcopy(v)
+            )
     G.graph["_tnfr_defaults_attached"] = True
     try:  # local import para evitar dependencia circular
         from ..operators import _ensure_node_offset_map

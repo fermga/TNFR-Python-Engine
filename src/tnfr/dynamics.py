@@ -90,7 +90,9 @@ def _np(*, warn: bool = False) -> Any | None:
     module = _optional_numpy()
     if module is None:
         log = logger.warning if warn else logger.debug
-        log("Fallo al importar numpy, se continuará con el modo no vectorizado")
+        log(
+            "Fallo al importar numpy, se continuará con el modo no vectorizado"
+        )
     return module
 
 
@@ -100,12 +102,13 @@ def _cached_nodes_and_A(
 ) -> tuple[list[int], Any]:
     """Devuelve la lista de nodos y la matriz de adyacencia para ``G``.
 
-    La información se almacena en ``G.graph`` bajo la clave ``"_dnfr_cache"`` y
-    se reutiliza mientras la estructura del grafo permanezca igual. ``cache_size``
-    limita el número de entradas por grafo (``None`` o valores <= 0 implican sin
-    límite). Cuando se supera el tamaño, se elimina explícitamente la entrada más
-    antigua. El conjunto de nodos se firma de forma determinística a partir de
-    los identificadores ordenados, garantizando que las claves de caché sean
+    La información se almacena en ``G.graph`` bajo la clave
+    ``"_dnfr_cache"`` y se reutiliza mientras la estructura del grafo
+    permanezca igual. ``cache_size`` limita el número de entradas por
+    grafo (``None`` o valores <= 0 implican sin límite). Cuando se
+    supera el tamaño, se elimina explícitamente la entrada más antigua.
+    El conjunto de nodos se firma de forma determinística a partir de los
+    identificadores ordenados, garantizando que las claves de caché sean
     estables entre ejecuciones."""
 
     cache: OrderedDict = G.graph.setdefault("_dnfr_cache", OrderedDict())
@@ -128,7 +131,11 @@ def _cached_nodes_and_A(
         nodes_and_A = (nodes, A)
         cache[key] = nodes_and_A
         # Purga explícita si excede el tamaño permitido
-        if cache_size is not None and cache_size > 0 and len(cache) > cache_size:
+        if (
+            cache_size is not None
+            and cache_size > 0
+            and len(cache) > cache_size
+        ):
             cache.popitem(last=False)
     else:
         # Mantener orden de uso reciente
@@ -169,9 +176,12 @@ def _update_node_sample(G, *, step: int) -> None:
 def _write_dnfr_metadata(
     G, *, weights: dict, hook_name: str, note: str | None = None
 ) -> None:
-    """Escribe en G.graph un bloque _DNFR_META con la mezcla y el nombre del hook.
+    """Escribe en G.graph un bloque _DNFR_META con la mezcla y el nombre
+    del hook.
 
-    `weights` puede incluir componentes arbitrarias (phase/epi/vf/topo/etc.)."""
+    `weights` puede incluir componentes arbitrarias
+    (phase/epi/vf/topo/etc.).
+    """
     weights_norm = normalize_weights(weights, weights.keys())
     meta = {
         "hook": hook_name,
@@ -270,7 +280,9 @@ def _apply_dnfr_gradients(
             g_topo = deg_bar[i] - deg_i
         else:
             g_topo = 0.0
-        dnfr = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
+        dnfr = (
+            w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
+        )
         set_dnfr(G, n, float(dnfr))
 
 
@@ -303,7 +315,9 @@ def _compute_dnfr_common(
         if w_topo != 0.0 and degs is not None:
             deg_bar = np.array(degs, dtype=float)
         if np.any(mask):
-            th_bar[mask] = np.arctan2(y[mask] / count[mask], x[mask] / count[mask])
+            th_bar[mask] = np.arctan2(
+                y[mask] / count[mask], x[mask] / count[mask]
+            )
             epi_bar[mask] = epi_sum[mask] / count[mask]
             vf_bar[mask] = vf_sum[mask] / count[mask]
             if w_topo != 0.0 and deg_bar is not None and deg_sum is not None:
@@ -420,7 +434,8 @@ def _compute_dnfr_loops(G, data) -> None:
 
 
 def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
-    """Calcula ΔNFR mezclando gradientes de fase, EPI, νf y un término topológico.
+    """Calcula ΔNFR mezclando gradientes de fase, EPI, νf y un
+    término topológico.
 
     Parameters
     ----------
@@ -446,10 +461,14 @@ def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
 def set_delta_nfr_hook(
     G, func, *, name: str | None = None, note: str | None = None
 ) -> None:
-    """Fija un hook estable para calcular ΔNFR. Firma requerida: func(G)->None y debe
-    escribir ALIAS_DNFR en cada nodo. Actualiza metadatos básicos en G.graph."""
+    """Fija un hook estable para calcular ΔNFR.
+    Firma requerida: ``func(G)->None`` y debe escribir ``ALIAS_DNFR`` en
+    cada nodo. Actualiza metadatos básicos en ``G.graph``.
+    """
     G.graph["compute_delta_nfr"] = func
-    G.graph["_dnfr_hook_name"] = str(name or getattr(func, "__name__", "custom_dnfr"))
+    G.graph["_dnfr_hook_name"] = str(
+        name or getattr(func, "__name__", "custom_dnfr")
+    )
     if "_dnfr_weights" not in G.graph:
         _configure_dnfr_weights(G)
     if note:
@@ -467,7 +486,10 @@ def dnfr_phase_only(G) -> None:
         g_phase = -angle_diff(th_i, th_bar) / math.pi
         set_dnfr(G, n, g_phase)
     _write_dnfr_metadata(
-        G, weights={"phase": 1.0}, hook_name="dnfr_phase_only", note="Hook de ejemplo."
+        G,
+        weights={"phase": 1.0},
+        hook_name="dnfr_phase_only",
+        note="Hook de ejemplo.",
     )
 
 
@@ -498,7 +520,9 @@ def dnfr_laplacian(G) -> None:
         vf = get_attr(nd, ALIAS_VF, 0.0)
         neigh = list(G.neighbors(n))
         deg = len(neigh) or 1
-        epi_bar = sum(get_attr(G.nodes[v], ALIAS_EPI, epi) for v in neigh) / deg
+        epi_bar = (
+            sum(get_attr(G.nodes[v], ALIAS_EPI, epi) for v in neigh) / deg
+        )
         vf_bar = sum(get_attr(G.nodes[v], ALIAS_VF, vf) for v in neigh) / deg
         g_epi = epi_bar - epi
         g_vf = vf_bar - vf
@@ -544,7 +568,9 @@ def prepare_integration_params(
 
     method = (
         method
-        or G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))
+        or G.graph.get(
+            "INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler")
+        )
     ).lower()
     if method not in ("euler", "rk4"):
         raise ValueError("method must be 'euler' or 'rk4'")
@@ -622,15 +648,20 @@ def update_epi_via_nodal_equation(
     Donde:
       - EPI es la Estructura Primaria de Información del nodo.
       - νf es la frecuencia estructural del nodo (Hz_str).
-      - ΔNFR(t) es el gradiente nodal (necesidad de reorganización),
-        típicamente una mezcla de componentes (p. ej. fase θ, EPI, νf).
-      - Γi(R) es el acoplamiento de red opcional en función del orden de Kuramoto R
-        (ver gamma.py), usado para modular la integración en red.
+        - ΔNFR(t) es el gradiente nodal (necesidad de reorganización),
+          típicamente una mezcla de componentes (p. ej. fase θ, EPI, νf).
+        - Γi(R) es el acoplamiento de red opcional en función del
+          orden de Kuramoto R (ver gamma.py), usado para modular la
+          integración en red.
 
-    Referencias TNFR: ecuación nodal (manual), glosario νf/ΔNFR/EPI, operador Γ.
-    Efectos secundarios: cachea dEPI y actualiza EPI por integración explícita.
+    Referencias TNFR: ecuación nodal (manual), glosario νf/ΔNFR/EPI,
+    operador Γ.
+    Efectos secundarios: cachea dEPI y actualiza EPI por integración
+    explícita.
     """
-    if not isinstance(G, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)):
+    if not isinstance(
+        G, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+    ):
         raise TypeError("G must be a networkx graph instance")
 
     dt_step, steps, t0, method = prepare_integration_params(G, dt, t, method)
@@ -679,10 +710,18 @@ def integrar_epi_euler(G, dt: float | None = None) -> None:
 
 
 def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
-    eps_min = float((G.graph.get("EPI_MIN") if G is not None else DEFAULTS["EPI_MIN"]))
-    eps_max = float((G.graph.get("EPI_MAX") if G is not None else DEFAULTS["EPI_MAX"]))
-    vf_min = float((G.graph.get("VF_MIN") if G is not None else DEFAULTS["VF_MIN"]))
-    vf_max = float((G.graph.get("VF_MAX") if G is not None else DEFAULTS["VF_MAX"]))
+    eps_min = float(
+        (G.graph.get("EPI_MIN") if G is not None else DEFAULTS["EPI_MIN"])
+    )
+    eps_max = float(
+        (G.graph.get("EPI_MAX") if G is not None else DEFAULTS["EPI_MAX"])
+    )
+    vf_min = float(
+        (G.graph.get("VF_MIN") if G is not None else DEFAULTS["VF_MIN"])
+    )
+    vf_max = float(
+        (G.graph.get("VF_MAX") if G is not None else DEFAULTS["VF_MAX"])
+    )
 
     epi = get_attr(nd, ALIAS_EPI, 0.0)
     vf = get_attr(nd, ALIAS_VF, 0.0)
@@ -736,7 +775,9 @@ def _read_adaptive_params(
 def _compute_state(G, cfg: Dict[str, Any]) -> tuple[str, float, float]:
     """Devuelve estado actual (estable/disonante/transicion) y métricas."""
     R = kuramoto_order(G)
-    win = int(G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]))
+    win = int(
+        G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"])
+    )
     dist = glyph_load(G, window=win)
     disr = float(dist.get("_disruptivos", 0.0)) if dist else 0.0
 
@@ -764,7 +805,9 @@ def _smooth_adjust_k(
 
     if state == "disonante":
         kG_t = kG_max
-        kL_t = 0.5 * (kL_min + kL_max)  # local medio para no perder plasticidad
+        kL_t = 0.5 * (
+            kL_min + kL_max
+        )  # local medio para no perder plasticidad
     elif state == "estable":
         kG_t = kG_min
         kL_t = kL_min
@@ -795,7 +838,9 @@ def coordinate_global_local_phase(
     g = G.graph
     defaults = DEFAULTS
     hist = g.setdefault("history", {})
-    maxlen = int(g.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]))
+    maxlen = int(
+        g.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"])
+    )
     hist_state = hist.setdefault("phase_state", deque(maxlen=maxlen))
     if not isinstance(hist_state, deque):
         hist_state = deque(hist_state, maxlen=maxlen)
@@ -866,7 +911,9 @@ def adapt_vf_by_coherence(G) -> None:
     """Ajusta νf hacia la media vecinal en nodos con estabilidad sostenida."""
     tau = int(G.graph.get("VF_ADAPT_TAU", DEFAULTS.get("VF_ADAPT_TAU", 5)))
     mu = float(G.graph.get("VF_ADAPT_MU", DEFAULTS.get("VF_ADAPT_MU", 0.1)))
-    eps_dnfr = float(G.graph.get("EPS_DNFR_STABLE", REMESH_DEFAULTS["EPS_DNFR_STABLE"]))
+    eps_dnfr = float(
+        G.graph.get("EPS_DNFR_STABLE", REMESH_DEFAULTS["EPS_DNFR_STABLE"])
+    )
     thr_sel = G.graph.get(
         "SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {})
     )
@@ -1003,7 +1050,8 @@ def parametric_glyph_selector(G, n) -> str:
     """Multiobjetivo: combina Si, |ΔNFR|_norm y |accel|_norm + histéresis.
     Reglas base:
       - Si alto  ⇒ IL
-      - Si bajo  ⇒ OZ si |ΔNFR| alto; ZHIR si |ΔNFR| bajo; THOL si hay mucha aceleración
+      - Si bajo  ⇒ OZ si |ΔNFR| alto; ZHIR si |ΔNFR| bajo;
+        THOL si hay mucha aceleración
       - Si medio ⇒ NAV si |ΔNFR| alto (o accel alta), si no RA
     """
     nd = G.nodes[n]
@@ -1039,7 +1087,12 @@ def _run_before_callbacks(
     invoke_callbacks(
         G,
         "before_step",
-        {"step": step_idx, "dt": dt, "use_Si": use_Si, "apply_glyphs": apply_glyphs},
+        {
+            "step": step_idx,
+            "dt": dt,
+            "use_Si": use_Si,
+            "apply_glyphs": apply_glyphs,
+        },
     )
 
 
@@ -1053,7 +1106,9 @@ def _update_nodes(
     hist,
 ) -> None:
     _update_node_sample(G, step=step_idx)
-    compute_dnfr_cb = G.graph.get("compute_delta_nfr", default_compute_delta_nfr)
+    compute_dnfr_cb = G.graph.get(
+        "compute_delta_nfr", default_compute_delta_nfr
+    )
     compute_dnfr_cb(G)
     if use_Si:
         compute_Si(G, inplace=True)
@@ -1064,9 +1119,9 @@ def _update_nodes(
     if apply_glyphs:
         window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
         use_canon = bool(
-            G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})).get(
-                "enabled", False
-            )
+            G.graph.get(
+                "GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})
+            ).get("enabled", False)
         )
         al_max = int(G.graph.get("AL_MAX_LAG", DEFAULTS["AL_MAX_LAG"]))
         en_max = int(G.graph.get("EN_MAX_LAG", DEFAULTS["EN_MAX_LAG"]))
@@ -1111,7 +1166,9 @@ def _update_epi_hist(G) -> None:
     if not isinstance(epi_hist, deque) or epi_hist.maxlen != maxlen:
         epi_hist = deque(list(epi_hist or [])[-maxlen:], maxlen=maxlen)
         G.graph["_epi_hist"] = epi_hist
-    epi_hist.append({n: get_attr(nd, ALIAS_EPI, 0.0) for n, nd in G.nodes(data=True)})
+    epi_hist.append(
+        {n: get_attr(nd, ALIAS_EPI, 0.0) for n, nd in G.nodes(data=True)}
+    )
 
 
 def _maybe_remesh(G) -> None:
@@ -1188,4 +1245,3 @@ def run(
             series = hist.get("stable_frac", [])
             if len(series) >= w and all(v >= frac for v in series[-w:]):
                 break
-

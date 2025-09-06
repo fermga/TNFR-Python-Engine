@@ -41,7 +41,9 @@ def preparar_red(
         merge_overrides(G, **overrides)
     # Inicializaciones blandas
     ph_len = int(
-        G.graph.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"])
+        G.graph.get(
+            "PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]
+        )
     )
     G.graph.setdefault(
         "history",

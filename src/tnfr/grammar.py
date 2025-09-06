@@ -226,8 +226,12 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
 
     original = cand
     cand = _check_repeats(G, n, cand, cfg_soft)
-    cand = _check_force(G, n, cand, original, cfg_soft, _dnfr_norm, "force_dnfr")
-    cand = _check_force(G, n, cand, original, cfg_soft, _accel_norm, "force_accel")
+    cand = _check_force(
+        G, n, cand, original, cfg_soft, _dnfr_norm, "force_dnfr"
+    )
+    cand = _check_force(
+        G, n, cand, original, cfg_soft, _accel_norm, "force_accel"
+    )
     cand = _check_oz_to_zhir(G, n, cand, cfg_canon)
     cand = _check_thol_closure(G, n, cand, cfg_canon, st)
     cand = _check_compatibility(G, n, cand)
@@ -257,7 +261,10 @@ def on_applied_glyph(G, n, applied: str) -> None:
 
 
 def apply_glyph_with_grammar(
-    G, nodes: Optional[Iterable[Any]], glyph: Glyph | str, window: Optional[int] = None
+    G,
+    nodes: Optional[Iterable[Any]],
+    glyph: Glyph | str,
+    window: Optional[int] = None,
 ) -> None:
     """Apply ``glyph`` to ``nodes`` enforcing the canonical grammar.
 
@@ -277,4 +284,3 @@ def apply_glyph_with_grammar(
         g_eff = enforce_canonical_grammar(G, n, g_str)
         apply_glyph(G, n, g_eff, window=window)
         on_applied_glyph(G, n, g_eff)
-

@@ -44,17 +44,23 @@ def test_conservation_under_IL_SHA(G_small):
         nd["νf"] = 1.0
     G_small.graph["GAMMA"] = {"type": "none"}
 
-    epi0 = {n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()}
+    epi0 = {
+        n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()
+    }
 
     for _ in range(5):
         for n in G_small.nodes():
             apply_glyph(G_small, n, Glyph.IL, window=1)
-    epi1 = {n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()}
+    epi1 = {
+        n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()
+    }
 
     for _ in range(5):
         for n in G_small.nodes():
             apply_glyph(G_small, n, Glyph.SHA, window=1)
-    epi2 = {n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()}
+    epi2 = {
+        n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()
+    }
 
     for n in G_small.nodes():
         assert abs(epi1[n] - epi0[n]) < 5e-3

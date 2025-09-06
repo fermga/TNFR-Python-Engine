@@ -3,7 +3,13 @@
 import networkx as nx
 
 from tnfr.initialization import init_node_attrs
-from tnfr.constants import attach_defaults, VF_KEY, THETA_KEY, ALIAS_VF, ALIAS_THETA
+from tnfr.constants import (
+    attach_defaults,
+    VF_KEY,
+    THETA_KEY,
+    ALIAS_VF,
+    ALIAS_THETA,
+)
 from tnfr.helpers import get_attr
 
 
@@ -14,7 +20,8 @@ def test_init_node_attrs_reproducible():
     G1.graph["RANDOM_SEED"] = seed
     init_node_attrs(G1)
     attrs1 = {
-        n: (d["EPI"], d[THETA_KEY], d[VF_KEY], d["Si"]) for n, d in G1.nodes(data=True)
+        n: (d["EPI"], d[THETA_KEY], d[VF_KEY], d["Si"])
+        for n, d in G1.nodes(data=True)
     }
 
     G2 = nx.path_graph(5)
@@ -22,7 +29,8 @@ def test_init_node_attrs_reproducible():
     G2.graph["RANDOM_SEED"] = seed
     init_node_attrs(G2)
     attrs2 = {
-        n: (d["EPI"], d[THETA_KEY], d[VF_KEY], d["Si"]) for n, d in G2.nodes(data=True)
+        n: (d["EPI"], d[THETA_KEY], d[VF_KEY], d["Si"])
+        for n, d in G2.nodes(data=True)
     }
 
     assert attrs1 == attrs2

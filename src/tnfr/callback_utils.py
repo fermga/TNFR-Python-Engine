@@ -140,13 +140,17 @@ def register_callback(
 
 
 def invoke_callbacks(
-    G: "nx.Graph", event: CallbackEvent | str, ctx: dict[str, Any] | None = None
+    G: "nx.Graph",
+    event: CallbackEvent | str,
+    ctx: dict[str, Any] | None = None,
 ) -> None:
     """Invoke all callbacks registered for ``event`` with context ``ctx``."""
     if isinstance(event, CallbackEvent):
         event = event.value
     cbs = _ensure_callbacks(G).get(event, [])
-    strict = bool(G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"]))
+    strict = bool(
+        G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
+    )
     ctx = ctx or {}
     for spec in list(cbs):
         name, fn = spec.name, spec.func

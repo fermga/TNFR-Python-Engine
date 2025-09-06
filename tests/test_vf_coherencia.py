@@ -11,7 +11,12 @@ def test_vf_converge_to_neighbor_average_when_stable(graph_canon):
     G.add_edge(0, 1)
     attach_defaults(G)
     # configuraciones para estabilidad
-    G.graph["DNFR_WEIGHTS"] = {"phase": 1.0, "epi": 0.0, "vf": 0.0, "topo": 0.0}
+    G.graph["DNFR_WEIGHTS"] = {
+        "phase": 1.0,
+        "epi": 0.0,
+        "vf": 0.0,
+        "topo": 0.0,
+    }
     G.graph["VF_ADAPT_TAU"] = 2
     G.graph["VF_ADAPT_MU"] = 0.5
     for n in G.nodes():
