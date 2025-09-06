@@ -113,7 +113,8 @@ def neighbor_phase_mean(obj, n=None) -> float:
     if G is not None:
         from .metrics_utils import precompute_trigonometry
 
-        cos_th, sin_th, thetas = precompute_trigonometry(G)
+        trig = precompute_trigonometry(G)
+        cos_th, sin_th = trig.cos, trig.sin
         for v in node.neighbors():
             x += cos_th[v]
             y += sin_th[v]
@@ -280,6 +281,7 @@ def increment_edge_version(G: Any) -> None:
         "_cos_th",
         "_sin_th",
         "_thetas",
+        "_trig_cache",
         "_trig_version",
     ):
         graph.pop(key, None)
