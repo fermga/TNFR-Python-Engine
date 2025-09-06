@@ -35,6 +35,7 @@ from .dynamics import step, run
 from .ontosim import preparar_red
 from .structural import create_nfr
 from .types import NodeState
+from .trace import CallbackSpec  # re-exported for tests
 
 __all__ = [
     "__version__",
