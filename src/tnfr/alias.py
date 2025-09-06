@@ -24,7 +24,7 @@ __all__ = [
 
 
 def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
-    """Validate ``aliases`` and return them as a tuple of strings."""
+    """Return ``aliases`` as a validated tuple of strings."""
     if isinstance(aliases, str) or not isinstance(aliases, Sequence):
         raise TypeError("'aliases' must be a non-string sequence")
     seq = aliases if isinstance(aliases, tuple) else tuple(aliases)
@@ -37,13 +37,14 @@ def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
 
 def _alias_lookup(
     d: Dict[str, Any],
-    aliases: tuple[str, ...],
+    aliases: Sequence[str],
     conv: Callable[[Any], T],
     *,
     default: Optional[Any] = None,
     strict: bool = False,
     log_level: int | None = None,
 ) -> Optional[T]:
+    aliases = _validate_aliases(aliases)
     for key in aliases:
         if key in d:
             ok, val = _convert_value(
@@ -114,8 +115,7 @@ def alias_set(
     value: Any,
 ) -> T:
     """Assign ``value`` converted to the first available key in ``aliases``."""
-    if not isinstance(aliases, tuple):
-        aliases = _validate_aliases(aliases)
+    aliases = _validate_aliases(aliases)
     _, val = _convert_value(value, conv, strict=True)
     if val is None:
         raise ValueError("conversion yielded None")
@@ -162,8 +162,6 @@ def _alias_get(
     strict: bool = False,
     log_level: int | None = None,
 ) -> Optional[T]:
-    if not isinstance(aliases, tuple):
-        aliases = _validate_aliases(aliases)
     return _alias_lookup(
         d,
         aliases,

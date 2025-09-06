@@ -35,18 +35,34 @@ IMMUTABLE_SIMPLE = (
     type(None),
 )
 
+from weakref import ref
+
+_IMMUTABLE_CACHE: dict[int, tuple[ref, bool]] = {}
+
 
 def _is_immutable(value: Any) -> bool:
-    """Check recursively if ``value`` is immutable."""
+    """Check recursively if ``value`` is immutable with caching."""
+    oid = id(value)
+    entry = _IMMUTABLE_CACHE.get(oid)
+    if entry is not None:
+        obj_ref, cached = entry
+        if obj_ref() is value:
+            return cached
     if isinstance(value, IMMUTABLE_SIMPLE):
-        return True
-    if isinstance(value, tuple):
-        return all(_is_immutable(item) for item in value)
-    if isinstance(value, frozenset):
-        return all(_is_immutable(item) for item in value)
-    if isinstance(value, MappingProxyType):
-        return all(_is_immutable(v) for v in value.values())
-    return False
+        res = True
+    elif isinstance(value, tuple):
+        res = all(_is_immutable(item) for item in value)
+    elif isinstance(value, frozenset):
+        res = all(_is_immutable(item) for item in value)
+    elif isinstance(value, MappingProxyType):
+        res = all(_is_immutable(v) for v in value.values())
+    else:
+        res = False
+    try:
+        _IMMUTABLE_CACHE[oid] = (ref(value), res)
+    except TypeError:
+        pass
+    return res
 
 # Diccionario combinado exportado
 # Unimos los diccionarios en orden de menor a mayor prioridad para que los

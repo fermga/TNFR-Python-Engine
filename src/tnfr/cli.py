@@ -169,6 +169,7 @@ GRAMMAR_ARG_SPECS = [
 ]
 
 # Especificaciones para opciones relacionadas con el histórico
+# Especificaciones para opciones relacionadas con el histórico
 HISTORY_ARG_SPECS = [
     ("--save-history", {"dest": "save_history", "type": str, "default": None}),
     (
@@ -183,6 +184,44 @@ HISTORY_ARG_SPECS = [
             "default": "json",
         },
     ),
+]
+
+# Argumentos comunes a los subcomandos
+COMMON_ARG_SPECS = [
+    ("--nodes", {"type": int, "default": 24}),
+    (
+        "--topology",
+        {"choices": ["ring", "complete", "erdos"], "default": "ring"},
+    ),
+    ("--seed", {"type": int, "default": 1}),
+    (
+        "--p",
+        {
+            "type": float,
+            "default": None,
+            "help": "Probabilidad de arista si topology=erdos",
+        },
+    ),
+    (
+        "--observer",
+        {"action": "store_true", "help": "Adjunta observador estándar"},
+    ),
+    ("--config", {"type": str, "default": None}),
+    ("--dt", {"type": float, "default": None}),
+    (
+        "--integrator",
+        {"choices": ["euler", "rk4"], "default": None},
+    ),
+    (
+        "--remesh-mode",
+        {"choices": ["knn", "mst", "community"], "default": None},
+    ),
+    (
+        "--gamma-type",
+        {"choices": list(GAMMA_REGISTRY.keys()), "default": "none"},
+    ),
+    ("--gamma-beta", {"type": float, "default": 0.0}),
+    ("--gamma-R0", {"type": float, "default": 0.0}),
 ]
 
 
@@ -255,30 +294,32 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
     """Apply settings from the CLI or external files."""
     if args.config:
         apply_config(G, Path(args.config))
-    if args.dt is not None:
-        G.graph["DT"] = float(args.dt)
-    if args.integrator is not None:
-        G.graph["INTEGRATOR_METHOD"] = str(args.integrator)
-    if args.remesh_mode:
-        G.graph["REMESH_MODE"] = str(args.remesh_mode)
+    arg_map = {
+        "dt": ("DT", float),
+        "integrator": ("INTEGRATOR_METHOD", str),
+        "remesh_mode": ("REMESH_MODE", str),
+        "glyph_hysteresis_window": ("GLYPH_HYSTERESIS_WINDOW", int),
+    }
+    for attr, (key, conv) in arg_map.items():
+        val = getattr(args, attr, None)
+        if val is not None:
+            G.graph[key] = conv(val)
 
     gcanon = {
         **METRIC_DEFAULTS["GRAMMAR_CANON"],
         **_args_to_dict(args, prefix="grammar_"),
     }
-    if hasattr(args, "grammar_canon") and args.grammar_canon is not None:
+    if getattr(args, "grammar_canon", None) is not None:
         gcanon["enabled"] = bool(args.grammar_canon)
     G.graph["GRAMMAR_CANON"] = gcanon
 
-    if args.glyph_hysteresis_window is not None:
-        G.graph["GLYPH_HYSTERESIS_WINDOW"] = int(args.glyph_hysteresis_window)
-
-    if hasattr(args, "selector"):
-        G.graph["glyph_selector"] = (
-            default_glyph_selector
-            if args.selector == "basic"
-            else parametric_glyph_selector
-        )
+    selector = getattr(args, "selector", None)
+    if selector is not None:
+        sel_map = {
+            "basic": default_glyph_selector,
+            "param": parametric_glyph_selector,
+        }
+        G.graph["glyph_selector"] = sel_map.get(selector, default_glyph_selector)
 
     if hasattr(args, "gamma_type"):
         G.graph["GAMMA"] = {
@@ -319,31 +360,8 @@ def resolve_program(
 
 def add_common_args(parser: argparse.ArgumentParser) -> None:
     """Add arguments shared across subcommands."""
-    parser.add_argument("--nodes", type=int, default=24)
-    parser.add_argument(
-        "--topology", choices=["ring", "complete", "erdos"], default="ring"
-    )
-    parser.add_argument("--seed", type=int, default=1)
-    parser.add_argument(
-        "--p",
-        type=float,
-        default=None,
-        help="Probabilidad de arista si topology=erdos",
-    )
-    parser.add_argument(
-        "--observer", action="store_true", help="Adjunta observador estándar"
-    )
-    parser.add_argument("--config", type=str, default=None)
-    parser.add_argument("--dt", type=float, default=None)
-    parser.add_argument("--integrator", choices=["euler", "rk4"], default=None)
-    parser.add_argument(
-        "--remesh-mode", choices=["knn", "mst", "community"], default=None
-    )
-    parser.add_argument(
-        "--gamma-type", choices=list(GAMMA_REGISTRY.keys()), default="none"
-    )
-    parser.add_argument("--gamma-beta", type=float, default=0.0)
-    parser.add_argument("--gamma-R0", type=float, default=0.0)
+    for opt, kwargs in COMMON_ARG_SPECS:
+        parser.add_argument(opt, **kwargs)
 
 
 def add_grammar_args(parser: argparse.ArgumentParser) -> None:

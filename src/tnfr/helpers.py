@@ -52,7 +52,8 @@ __all__ = [
     "angle_diff",
     "normalize_weights",
     "neighbor_mean",
-    "neighbor_phase_mean",
+"neighbor_phase_mean",
+"get_cached_trig",
     "push_glyph",
     "recent_glyph",
     "ensure_history",
@@ -110,17 +111,60 @@ def neighbor_mean(G, n, aliases: tuple[str, ...], default: float = 0.0) -> float
     return list_mean(vals, default)
 
 
+def get_cached_trig(
+    v, cache: Dict[int, tuple[float, float] | None]
+) -> tuple[float, float] | None:
+    """Return ``(cos, sin)`` for ``v`` caching by object id."""
+    key = id(v)
+    val = cache.get(key)
+    if val is not None:
+        return val
+    data = getattr(v, "__dict__", v if isinstance(v, dict) else {})
+    th = get_attr(data, ALIAS_THETA, None)
+    if th is None:
+        cache[key] = None
+        return None
+    val = (math.cos(th), math.sin(th))
+    cache[key] = val
+    return val
+
+
+def _neighbor_phase_mean_graph(node) -> float:
+    from .metrics_utils import precompute_trigonometry
+
+    G = node.G
+    trig = precompute_trigonometry(G)
+    cos_th, sin_th = trig.cos, trig.sin
+    x = y = 0.0
+    count = 0
+    for v in node.neighbors():
+        x += cos_th[v]
+        y += sin_th[v]
+        count += 1
+    if count == 0:
+        return get_attr(G.nodes[node.n], ALIAS_THETA, 0.0)
+    return math.atan2(y, x)
+
+
+def _neighbor_phase_mean_generic(node) -> float:
+    cache: Dict[int, tuple[float, float] | None] = {}
+    x = y = 0.0
+    count = 0
+    for v in node.neighbors():
+        cs = get_cached_trig(v, cache)
+        if cs is None:
+            continue
+        cx, sy = cs
+        x += cx
+        y += sy
+        count += 1
+    if count == 0:
+        return get_attr(getattr(node, "__dict__", {}), ALIAS_THETA, 0.0)
+    return math.atan2(y, x)
+
+
 def neighbor_phase_mean(obj, n=None) -> float:
-    """Circular mean of neighbour phases.
-
-    Accepts a :class:`NodoProtocol` or a ``(G, n)`` pair from ``networkx``. The
-    latter is wrapped in :class:`NodoNX` to reuse the same logic.
-
-    When the underlying graph ``G`` is available, trigonometric values are
-    obtained via :func:`precompute_trigonometry` to avoid recalculating
-    :func:`math.cos` and :func:`math.sin` for each neighbour. Objects without
-    access to ``G`` fall back to computing these values individually.
-    """
+    """Circular mean of neighbour phases."""
     NodoNX = _get_nodonx()
 
     if n is not None:
@@ -128,49 +172,9 @@ def neighbor_phase_mean(obj, n=None) -> float:
     else:
         node = obj  # se asume NodoProtocol
 
-    x = y = 0.0
-    count = 0
-    G = getattr(node, "G", None)
-
-    if G is not None:
-        from .metrics_utils import precompute_trigonometry
-
-        trig = precompute_trigonometry(G)
-        cos_th, sin_th = trig.cos, trig.sin
-        for v in node.neighbors():
-            x += cos_th[v]
-            y += sin_th[v]
-            count += 1
-    else:
-        cache: Dict[int, tuple[float, float] | None] = {}
-
-        def trig(v) -> tuple[float, float] | None:
-            key = id(v)
-            val = cache.get(key)
-            if val is not None:
-                return val
-            data = getattr(v, "__dict__", v if isinstance(v, dict) else {})
-            th = get_attr(data, ALIAS_THETA, None)
-            if th is None:
-                cache[key] = None
-                return None
-            val = (math.cos(th), math.sin(th))
-            cache[key] = val
-            return val
-
-        for v in node.neighbors():
-            cs = trig(v)
-            if cs is None:
-                continue
-            cx, sy = cs
-            x += cx
-            y += sy
-            count += 1
-    if count == 0:
-        if G is not None and isinstance(node, NodoNX):
-            return get_attr(G.nodes[node.n], ALIAS_THETA, 0.0)
-        return get_attr(getattr(node, "__dict__", {}), ALIAS_THETA, 0.0)
-    return math.atan2(y, x)
+    if getattr(node, "G", None) is not None:
+        return _neighbor_phase_mean_graph(node)
+    return _neighbor_phase_mean_generic(node)
 
 
 # -------------------------

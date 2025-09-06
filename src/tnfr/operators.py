@@ -172,26 +172,22 @@ def _mix_epi_with_neighbors(
     node.epi_kind = _select_dominant_glyph(node, neigh) or default_kind
 
 
-def _op_AL(node: NodoProtocol) -> None:  # AL — Emisión
-    gf = get_glyph_factors(node)
+def _op_AL(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # AL — Emisión
     f = float(gf.get("AL_boost", 0.05))
     node.EPI = node.EPI + f
 
 
-def _op_EN(node: NodoProtocol) -> None:  # EN — Recepción
-    gf = get_glyph_factors(node)
+def _op_EN(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # EN — Recepción
     mix = float(gf.get("EN_mix", 0.25))
     _mix_epi_with_neighbors(node, mix, Glyph.EN)
 
 
-def _op_IL(node: NodoProtocol) -> None:  # IL — Coherencia
-    gf = get_glyph_factors(node)
+def _op_IL(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # IL — Coherencia
     factor = float(gf.get("IL_dnfr_factor", 0.7))
     node.dnfr = factor * getattr(node, "dnfr", 0.0)
 
 
-def _op_OZ(node: NodoProtocol) -> None:  # OZ — Disonancia
-    gf = get_glyph_factors(node)
+def _op_OZ(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # OZ — Disonancia
     factor = float(gf.get("OZ_dnfr_factor", 1.3))
     dnfr = getattr(node, "dnfr", 0.0)
     if bool(node.graph.get("OZ_NOISE_MODE", False)):
@@ -204,7 +200,7 @@ def _op_OZ(node: NodoProtocol) -> None:  # OZ — Disonancia
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
 
 
-def _op_UM(node: NodoProtocol) -> None:  # UM — Coupling
+def _op_UM(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # UM — Coupling
     """Align phase and optionally create functional links.
 
     Link search can be reduced by evaluating only a subset of candidates.
@@ -221,7 +217,6 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Coupling
     This preserves coupling logic without scanning all nodes.
     """
 
-    gf = get_glyph_factors(node)
     k = float(gf.get("UM_theta_push", 0.25))
     th = node.theta
     thL = neighbor_phase_mean(node)
@@ -291,14 +286,12 @@ def _op_UM(node: NodoProtocol) -> None:  # UM — Coupling
                 node.add_edge(j, compat)
 
 
-def _op_RA(node: NodoProtocol) -> None:  # RA — Resonancia
-    gf = get_glyph_factors(node)
+def _op_RA(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # RA — Resonancia
     diff = float(gf.get("RA_epi_diff", 0.15))
     _mix_epi_with_neighbors(node, diff, Glyph.RA)
 
 
-def _op_SHA(node: NodoProtocol) -> None:  # SHA — Silencio
-    gf = get_glyph_factors(node)
+def _op_SHA(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # SHA — Silencio
     factor = float(gf.get("SHA_vf_factor", 0.85))
     node.vf = factor * node.vf
 
@@ -309,32 +302,27 @@ def _scale_epi(node: NodoProtocol, factor: float, glyph: Glyph) -> None:
     node.epi_kind = glyph.value if isinstance(glyph, Glyph) else str(glyph)
 
 
-def _op_VAL(node: NodoProtocol) -> None:  # VAL — Expansión
-    gf = get_glyph_factors(node)
+def _op_VAL(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # VAL — Expansión
     s = float(gf.get("VAL_scale", 1.15))
     _scale_epi(node, s, Glyph.VAL)
 
 
-def _op_NUL(node: NodoProtocol) -> None:  # NUL — Contracción
-    gf = get_glyph_factors(node)
+def _op_NUL(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # NUL — Contracción
     s = float(gf.get("NUL_scale", 0.85))
     _scale_epi(node, s, Glyph.NUL)
 
 
-def _op_THOL(node: NodoProtocol) -> None:  # THOL — Autoorganización
-    gf = get_glyph_factors(node)
+def _op_THOL(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # THOL — Autoorganización
     a = float(gf.get("THOL_accel", 0.10))
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
-def _op_ZHIR(node: NodoProtocol) -> None:  # ZHIR — Mutación
-    gf = get_glyph_factors(node)
+def _op_ZHIR(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # ZHIR — Mutación
     shift = float(gf.get("ZHIR_theta_shift", math.pi / 2))
     node.theta = node.theta + shift
 
 
-def _op_NAV(node: NodoProtocol) -> None:  # NAV — Transición
-    gf = get_glyph_factors(node)
+def _op_NAV(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # NAV — Transición
     dnfr = node.dnfr
     vf = node.vf
     eta = float(gf.get("NAV_eta", 0.5))
@@ -353,7 +341,7 @@ def _op_NAV(node: NodoProtocol) -> None:  # NAV — Transición
     node.dnfr = base + jitter
 
 
-def _op_REMESH(node: NodoProtocol) -> None:  # REMESH — aviso
+def _op_REMESH(node: NodoProtocol, gf: Dict[str, Any] | None = None) -> None:  # REMESH — aviso
     step_idx = len(node.graph.get("history", {}).get("C_steps", []))
     last_warn = node.graph.get("_remesh_warn_step", None)
     if last_warn != step_idx:
@@ -421,7 +409,8 @@ def apply_glyph_obj(
         raise ValueError(f"glyph sin operador: {g}")
     if window is None:
         window = int(get_param(node, "GLYPH_HYSTERESIS_WINDOW"))
-    op(node)
+    gf = get_glyph_factors(node)
+    op(node, gf)
     node.push_glyph(g.value, window)
 
 

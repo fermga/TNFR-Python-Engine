@@ -162,7 +162,9 @@ def invoke_callbacks(
     if not isinstance(err_list, deque):
         err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
         G.graph["_callback_errors"] = err_list
-    for spec in list(cbs):
+    # ``cbs`` is a list and callbacks are not modified during iteration,
+    # so iterating directly avoids an unnecessary copy.
+    for spec in cbs:
         name, fn = spec.name, spec.func
         try:
             fn(G, ctx)
