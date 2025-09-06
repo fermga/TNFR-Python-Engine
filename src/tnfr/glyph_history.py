@@ -157,14 +157,16 @@ def ensure_history(G) -> Dict[str, Any]:
     ``HISTORY_MAXLEN`` must be non-negative and ``HISTORY_COMPACT_EVERY``
     must be a positive integer; otherwise a :class:`ValueError` is raised.
     """
-    maxlen = int(G.graph.get("HISTORY_MAXLEN", get_param(G, "HISTORY_MAXLEN")))
+    if "HISTORY_MAXLEN" in G.graph:
+        maxlen = int(G.graph["HISTORY_MAXLEN"])
+    else:
+        maxlen = int(get_param(G, "HISTORY_MAXLEN"))
     if maxlen < 0:
         raise ValueError("HISTORY_MAXLEN must be >= 0")
-    compact_every = int(
-        G.graph.get(
-            "HISTORY_COMPACT_EVERY", get_param(G, "HISTORY_COMPACT_EVERY")
-        )
-    )
+    if "HISTORY_COMPACT_EVERY" in G.graph:
+        compact_every = int(G.graph["HISTORY_COMPACT_EVERY"])
+    else:
+        compact_every = int(get_param(G, "HISTORY_COMPACT_EVERY"))
     if compact_every <= 0:
         raise ValueError("HISTORY_COMPACT_EVERY must be > 0")
     hist = G.graph.get("history")

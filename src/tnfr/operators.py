@@ -7,7 +7,7 @@ import math
 import random
 import hashlib
 import heapq
-from functools import lru_cache
+from functools import lru_cache, cache
 import networkx as nx
 from networkx.algorithms import community as nx_comm
 
@@ -55,7 +55,7 @@ def _ensure_node_offset_map(G) -> Dict[Any, int]:
 
     nodes = list(G.nodes())
     # Use order-independent deterministic checksum based on node set
-    checksum = node_set_checksum(G)
+    checksum = node_set_checksum(G, nodes)
     mapping = G.graph.get("_node_offset_map")
     if mapping is None or G.graph.get("_node_offset_checksum") != checksum:
         if bool(G.graph.get("SORT_NODES", False)):
@@ -105,7 +105,7 @@ def clear_rng_cache() -> None:
     _cached_rng.cache_clear()
 
 
-@lru_cache()
+@cache
 def _get_NodoNX():
     """Lazy importer for ``NodoNX`` to avoid circular dependencies."""
     from .node import NodoNX
