@@ -54,6 +54,7 @@ from .helpers import (
     compute_Si,
     compute_dnfr_accel_max,
     node_set_checksum,
+    get_rng,
 )
 from .callback_utils import invoke_callbacks
 from .glyph_history import recent_glyph, ensure_history
@@ -164,7 +165,7 @@ def _update_node_sample(G, *, step: int) -> None:
     # Ensure deterministic seeding independent of ``PYTHONHASHSEED`` by
     # combining the user seed and step via bitwise XOR instead of a string
     # seed, which would rely on Python's randomized hashing of strings.
-    rng = random.Random(seed ^ step)
+    rng = get_rng(seed, step)
     G.graph["_node_sample"] = rng.sample(nodes, limit)
 
 

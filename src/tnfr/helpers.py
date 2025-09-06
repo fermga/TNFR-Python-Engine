@@ -17,7 +17,8 @@ import logging
 import math
 import json
 import hashlib
-from functools import partial
+import random
+from functools import partial, lru_cache
 from statistics import fmean, StatisticsError
 from json import JSONDecodeError
 from pathlib import Path
@@ -108,7 +109,28 @@ __all__ = [
     "compute_Si",
     "increment_edge_version",
     "node_set_checksum",
+    "get_rng",
 ]
+
+# -------------------------
+# Generadores pseudoaleatorios
+# -------------------------
+
+
+@lru_cache(maxsize=None)
+def get_rng(seed: int, key: int) -> random.Random:
+    """Devuelve un ``random.Random`` cacheado por ``(seed, key)``.
+
+    Se utiliza un hash estable para combinar ambos valores, garantizando
+    reproducibilidad entre ejecuciones y evitando colisiones con
+    ``PYTHONHASHSEED``.
+    """
+
+    seed_input = (int(seed), int(key))
+    seed_int = int.from_bytes(
+        hashlib.blake2b(repr(seed_input).encode()).digest()[:8], "big"
+    )
+    return random.Random(seed_int)
 
 # -------------------------
 # Entrada/salida estructurada
