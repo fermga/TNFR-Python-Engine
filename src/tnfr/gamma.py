@@ -6,6 +6,7 @@ import math
 import cmath
 import logging
 import warnings
+from collections import OrderedDict
 from collections.abc import Mapping
 
 from .constants import ALIAS_THETA
@@ -23,16 +24,20 @@ def _ensure_kuramoto_cache(G, t) -> None:
         checksum = node_set_checksum(G)
     nodes_sig = (len(G), checksum)
 
-    def builder() -> Dict[Tuple[int, Tuple[int, str]], Dict[str, float]]:
-        return {}
+    def builder() -> "OrderedDict[Tuple[int, Tuple[int, str]], Dict[str, float]]":
+        return OrderedDict()
 
-    cache_dict = edge_version_cache(G, "_kuramoto", builder)
+    cache_dict: "OrderedDict[Tuple[int, Tuple[int, str]], Dict[str, float]]" = edge_version_cache(G, "_kuramoto", builder)
     key = (t, nodes_sig)
     entry = cache_dict.get(key)
     if entry is None:
         R, psi = kuramoto_R_psi(G)
         entry = {"R": R, "psi": psi}
         cache_dict[key] = entry
+        cache_dict.move_to_end(key)
+        max_steps = int(G.graph.get("KURAMOTO_CACHE_STEPS", 1))
+        while len(cache_dict) > max_steps:
+            cache_dict.popitem(last=False)
     G.graph["_kuramoto_cache"] = entry
 
 

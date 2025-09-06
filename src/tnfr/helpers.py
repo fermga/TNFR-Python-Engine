@@ -15,6 +15,7 @@ from statistics import fmean, StatisticsError
 from collections import OrderedDict
 from functools import lru_cache
 import threading
+import weakref
 
 from .import_utils import get_numpy
 from .collections_utils import (
@@ -110,20 +111,19 @@ def neighbor_mean(G, n, aliases: tuple[str, ...], default: float = 0.0) -> float
 
 
 def get_cached_trig(
-    v, cache: Dict[int, tuple[float, float] | None]
+    v: Any, cache: weakref.WeakKeyDictionary[Any, tuple[float, float] | None]
 ) -> tuple[float, float] | None:
-    """Return ``(cos, sin)`` for ``v`` caching by object id."""
-    key = id(v)
-    val = cache.get(key)
+    """Return ``(cos, sin)`` for ``v`` caching by weak reference."""
+    val = cache.get(v)
     if val is not None:
         return val
     data = getattr(v, "__dict__", v if isinstance(v, dict) else {})
     th = get_attr(data, ALIAS_THETA, None)
     if th is None:
-        cache[key] = None
+        cache[v] = None
         return None
     val = (math.cos(th), math.sin(th))
-    cache[key] = val
+    cache[v] = val
     return val
 
 
@@ -145,7 +145,7 @@ def _neighbor_phase_mean_graph(node) -> float:
 
 
 def _neighbor_phase_mean_generic(
-    node, cache: Dict[int, tuple[float, float] | None]
+    node, cache: weakref.WeakKeyDictionary[Any, tuple[float, float] | None]
 ) -> float:
     x = y = 0.0
     count = 0
@@ -175,7 +175,7 @@ def neighbor_phase_mean(obj, n=None) -> float:
         return _neighbor_phase_mean_graph(node)
     cache = getattr(node, "_trig_cache", None)
     if cache is None:
-        cache = {}
+        cache = weakref.WeakKeyDictionary()
         setattr(node, "_trig_cache", cache)
     return _neighbor_phase_mean_generic(node, cache)
 
@@ -229,17 +229,24 @@ def _stable_json(obj: Any, visited: set[int] | None = None) -> Any:
     return f"{obj.__module__}.{obj.__class__.__qualname__}"
 
 
+def _node_repr(n: Any) -> str:
+    """Stable representation for node hashing and sorting."""
+    return repr(_stable_json(n))
+
+
 def node_set_checksum(
-    G: "nx.Graph", nodes: Iterable[Any] | None = None
+    G: "nx.Graph", nodes: Iterable[Any] | None = None, *, presorted: bool = False
 ) -> str:
     """Return a BLAKE2b checksum of ``G``'s node set using a stable ``repr``."""
     hasher = hashlib.blake2b(digest_size=16)
 
-    def serialise(n: Any) -> str:
-        return repr(_stable_json(n))
-
     node_iter = nodes if nodes is not None else G.nodes()
-    for idx, node_repr in enumerate(sorted(serialise(n) for n in node_iter)):
+    serialised = (
+        (_node_repr(n) for n in node_iter)
+        if presorted
+        else sorted(_node_repr(n) for n in node_iter)
+    )
+    for idx, node_repr in enumerate(serialised):
         if idx:
             hasher.update(b"|")
         hasher.update(node_repr.encode("utf-8"))
@@ -254,12 +261,12 @@ def _ensure_node_map(G, *, key: str, sort: bool = False) -> Dict[Any, int]:
     """
 
     nodes = list(G.nodes())
-    checksum = node_set_checksum(G, nodes)
+    if sort:
+        nodes.sort(key=_node_repr)
+    checksum = node_set_checksum(G, nodes, presorted=sort)
     mapping = G.graph.get(key)
     checksum_key = f"{key}_checksum"
     if mapping is None or G.graph.get(checksum_key) != checksum:
-        if sort:
-            nodes.sort(key=lambda x: str(x))
         mapping = {node: idx for idx, node in enumerate(nodes)}
         G.graph[key] = mapping
         G.graph[checksum_key] = checksum
@@ -284,30 +291,24 @@ def edge_version_cache(
 ) -> T:
     """Return cached ``builder`` output tied to the edge version of ``G``.
 
-    When ``max_entries`` is set to a positive integer, only the most recent
-    ``max_entries`` caches are kept; older entries are purged.
+    All cache access is serialized via ``_EDGE_CACHE_LOCK`` to ensure
+    thread-safety. When ``max_entries`` is a positive integer, only the most
+    recent ``max_entries`` cache entries are kept.
     """
     graph = G.graph if hasattr(G, "graph") else G
     edge_version = int(graph.get("_edge_version", 0))
-    cache_dict: OrderedDict = graph.setdefault("_edge_version_cache", OrderedDict())
-    entry = cache_dict.get(key)
-    if entry is None or entry[0] != edge_version:
-        with _EDGE_CACHE_LOCK:
-            entry = cache_dict.get(key)
-            if entry is None or entry[0] != edge_version:
-                value = builder()
-                cache_dict[key] = (edge_version, value)
-            else:
-                value = entry[1]
-            if max_entries is not None and max_entries > 0:
-                cache_dict.move_to_end(key)
-                while len(cache_dict) > max_entries:
-                    cache_dict.popitem(last=False)
-    else:
-        value = entry[1]
+    with _EDGE_CACHE_LOCK:
+        cache_dict: OrderedDict = graph.setdefault("_edge_version_cache", OrderedDict())
+        entry = cache_dict.get(key)
+        if entry is None or entry[0] != edge_version:
+            value = builder()
+            cache_dict[key] = (edge_version, value)
+        else:
+            value = entry[1]
         if max_entries is not None and max_entries > 0:
-            with _EDGE_CACHE_LOCK:
-                cache_dict.move_to_end(key)
+            cache_dict.move_to_end(key)
+            while len(cache_dict) > max_entries:
+                cache_dict.popitem(last=False)
     return value
 
 

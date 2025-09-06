@@ -122,7 +122,7 @@ def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
     when ``THOL`` blocks are nested.
     """
     ops: list[tuple[str, Any]] = []
-    stack: deque[Any] = deque(reversed(seq))
+    stack: deque[Any] = deque(reversed(list(seq)))
 
     while stack:
         item = stack.pop()

@@ -190,6 +190,21 @@ def test_kuramoto_cache_updates_on_nodes_change(graph_canon):
     assert cache0 is not cache1
 
 
+def test_kuramoto_cache_step_limit(graph_canon):
+    from tnfr import gamma as gamma_mod
+
+    G = graph_canon()
+    G.add_nodes_from([0])
+    attach_defaults(G)
+    G.graph["KURAMOTO_CACHE_STEPS"] = 2
+    G.nodes[0]["θ"] = 0.0
+    gamma_mod._ensure_kuramoto_cache(G, t=0)
+    gamma_mod._ensure_kuramoto_cache(G, t=1)
+    gamma_mod._ensure_kuramoto_cache(G, t=2)
+    cache_dict = G.graph["_edge_version_cache"]["_kuramoto"][1]
+    assert len(cache_dict) == 2
+
+
 def test_kuramoto_cache_invalidation_on_version(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
