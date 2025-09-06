@@ -39,7 +39,8 @@ def ensure_collection(
     """Return ``it`` if it's a ``Collection`` else materialize into ``tuple``.
 
     Strings and bytes are treated as single elements rather than iterables. If
-    ``it`` is not iterable, :class:`TypeError` is raised.
+    ``max_materialize`` es ``None``, se materializa el iterable completo sin
+    límite. Si ``it`` no es iterable, se lanza :class:`TypeError`.
     """
     if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
         return it
@@ -48,8 +49,9 @@ def ensure_collection(
     if max_materialize is not None and max_materialize < 0:
         raise ValueError("'max_materialize' must be non-negative")
     try:
-        limit = MAX_MATERIALIZE_DEFAULT if max_materialize is None else max_materialize
-        # Materialize at most ``limit`` items from the iterable
+        if max_materialize is None:
+            return tuple(it)
+        limit = max_materialize
         iterator = iter(it)
         data = tuple(islice(iterator, limit))
         extra = next(iterator, None)

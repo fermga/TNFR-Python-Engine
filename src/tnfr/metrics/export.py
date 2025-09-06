@@ -32,7 +32,7 @@ def _iter_glif_rows(glyph):
 
 
 def _iter_sigma_rows(sigma_rows):
-    return ([t, x, y, m, a] for t, (x, y, m, a) in enumerate(sigma_rows))
+    return ([t, x, y, m, a] for t, x, y, m, a in sigma_rows)
 
 
 def export_history(G, base_path: str, fmt: str = "csv") -> None:
@@ -44,19 +44,32 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
     sigma_y = hist.tracked_get("sense_sigma_y", [])
     sigma_mag = hist.tracked_get("sense_sigma_mag", [])
     sigma_angle = hist.tracked_get("sense_sigma_angle", [])
-    sigma_rows = list(
-        zip_longest(sigma_x, sigma_y, sigma_mag, sigma_angle, fillvalue=0)
+    t_series = hist.tracked_get("sense_sigma_t", []) or glyph.get("t", [])
+    rows_raw = zip_longest(
+        t_series, sigma_x, sigma_y, sigma_mag, sigma_angle, fillvalue=None
     )
+    sigma_rows = [
+        (
+            i if t is None else t,
+            x or 0,
+            y or 0,
+            m or 0,
+            a or 0,
+        )
+        for i, (t, x, y, m, a) in enumerate(rows_raw)
+    ]
     sigma = {
-        "t": list(range(len(sigma_rows))),
-        "sigma_x": [x for x, _, _, _ in sigma_rows],
-        "sigma_y": [y for _, y, _, _ in sigma_rows],
-        "mag": [m for _, _, m, _ in sigma_rows],
-        "angle": [a for _, _, _, a in sigma_rows],
+        "t": [t for t, _, _, _, _ in sigma_rows],
+        "sigma_x": [x for _, x, _, _, _ in sigma_rows],
+        "sigma_y": [y for _, _, y, _, _ in sigma_rows],
+        "mag": [m for _, _, _, m, _ in sigma_rows],
+        "angle": [a for _, _, _, _, a in sigma_rows],
     }
     morph = hist.tracked_get("morph", [])
     epi_supp = hist.tracked_get("EPI_support", [])
     fmt = fmt.lower()
+    if fmt not in {"csv", "json"}:
+        raise ValueError(f"Formato de exportación no soportado: {fmt}")
     if fmt == "csv":
         specs = [
             ("_glyphogram.csv", ["t", *GLYPHS_CANONICAL], _iter_glif_rows(glyph)),

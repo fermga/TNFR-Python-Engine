@@ -1,6 +1,8 @@
 """Pruebas de export history."""
 
 import json
+import csv
+import pytest
 
 from tnfr.metrics import export_history
 
@@ -60,11 +62,33 @@ def test_export_history_extends_sigma(tmp_path, graph_canon):
     hist["sense_sigma_angle"] = [7, 8]
     export_history(G, str(base), fmt="csv")
     sigma_path = base.parent / (base.name + "_sigma.csv")
-    import csv
-
     with open(sigma_path, newline="") as f:
         rows = list(csv.reader(f))
     assert rows[1] == ["0", "1", "3", "4", "7"]
     assert rows[2] == ["1", "2", "0", "5", "8"]
     assert rows[3] == ["2", "0", "0", "6", "0"]
     assert len(rows) == 4
+
+
+def test_export_history_preserves_timestamps(tmp_path, graph_canon):
+    base = tmp_path / "ts" / "run"
+    G = graph_canon()
+    hist = G.graph.setdefault("history", {})
+    hist["sense_sigma_t"] = [10, 20]
+    hist["sense_sigma_x"] = [1, 2]
+    hist["sense_sigma_y"] = []
+    hist["sense_sigma_mag"] = []
+    hist["sense_sigma_angle"] = []
+    export_history(G, str(base), fmt="csv")
+    sigma_path = base.parent / (base.name + "_sigma.csv")
+    with open(sigma_path, newline="") as f:
+        rows = list(csv.reader(f))
+    assert rows[1][0] == "10"
+    assert rows[2][0] == "20"
+
+
+def test_export_history_invalid_format(tmp_path, graph_canon):
+    G = graph_canon()
+    with pytest.raises(ValueError):
+        export_history(G, str(tmp_path / "base"), fmt="xml")
+

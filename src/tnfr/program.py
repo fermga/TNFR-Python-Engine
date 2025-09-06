@@ -221,6 +221,11 @@ def play(G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None) -> N
         repeats the body and optionally forces closure with SHA/NUL.
       - Glyphs are applied via ``enforce_canonical_grammar``.
     """
+    if step_fn is None:
+        from . import dynamics
+
+        step_fn = dynamics.step
+
     ops = _flatten(sequence)
     curr_target: Optional[List[Node]] = None
 

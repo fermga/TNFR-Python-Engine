@@ -50,10 +50,10 @@ def test_default_limit_enforced():
         ensure_collection(gen)
 
 
-def test_none_uses_default_limit():
+def test_none_disables_limit():
     gen = (i for i in range(1001))
-    with pytest.raises(ValueError):
-        ensure_collection(gen, max_materialize=None)
+    data = ensure_collection(gen, max_materialize=None)
+    assert len(data) == 1001
 
 
 def test_non_iterable_error():
