@@ -12,11 +12,12 @@ from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, last_glyph
 from ..helpers import get_attr
 from ..constants_glyphs import GLYPHS_CANONICAL, GLYPH_GROUPS
+from ..types import Glyph
 from .coherence import register_coherence_callbacks
 from .diagnosis import register_diagnosis_callbacks
 
 
-LATENT_GLYPH = "SHA"
+LATENT_GLYPH = Glyph.SHA.value
 TgCurr = "curr"
 TgRun = "run"
 
