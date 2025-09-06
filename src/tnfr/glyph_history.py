@@ -107,11 +107,12 @@ class HistoryDict(dict):
         return val
 
     def get(self, key, default=None):  # type: ignore[override]
-        if key in self:
-            val = super().get(key, default)
-            self._increment(key)
-            return val
-        return default
+        try:
+            val = super().__getitem__(key)
+        except KeyError:
+            return default
+        self._increment(key)
+        return val
 
     def tracked_get(self, key, default=None):
         if key in self:
