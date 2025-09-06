@@ -10,7 +10,6 @@ from __future__ import annotations
 import warnings
 from typing import Any, Callable, Dict, Optional, Protocol, NamedTuple
 
-from .callback_utils import register_callback
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs
 
@@ -317,6 +316,8 @@ def register_trace(G) -> None:
     """
     if G.graph.get("_trace_registered"):
         return
+
+    from .callback_utils import register_callback
 
     register_callback(G, event="before_step", func=_trace_before, name="trace_before")
     register_callback(G, event="after_step", func=_trace_after, name="trace_after")

@@ -85,24 +85,15 @@ def _jitter_base(seed: int, key: int) -> random.Random:
     return random.Random(seed_int)
 
 
-def _make_rng_cache(maxsize: int):
-    """Return an ``lru_cache``-wrapped RNG factory."""
-
-    @lru_cache(maxsize=maxsize)
-    def _cached(scope_id: int, seed: int, key: int) -> random.Random:
-        return _jitter_base(seed, key)
-
-    return _cached
-
-
-# Global cache instance for jitter RNGs
-_cached_rng = _make_rng_cache(DEFAULTS["JITTER_CACHE_SIZE"])
+@lru_cache(maxsize=DEFAULTS["JITTER_CACHE_SIZE"])
+def _cached_rng(scope_id: int, seed: int, key: int) -> random.Random:
+    return _jitter_base(seed, key)
 
 
 def _resize_rng_cache(maxsize: int) -> None:
     """Resize the global RNG cache."""
     global _cached_rng
-    _cached_rng = _make_rng_cache(maxsize)
+    _cached_rng = lru_cache(maxsize=maxsize)(_cached_rng.__wrapped__)
 
 
 def clear_rng_cache() -> None:
@@ -110,17 +101,12 @@ def clear_rng_cache() -> None:
     _cached_rng.cache_clear()
 
 
-_NodoNX = None
-
-
+@lru_cache()
 def _get_NodoNX():
     """Lazy importer for ``NodoNX`` to avoid circular dependencies."""
-    global _NodoNX
-    if _NodoNX is None:
-        from .node import NodoNX as _NodoNX_cls
+    from .node import NodoNX
 
-        _NodoNX = _NodoNX_cls
-    return _NodoNX
+    return NodoNX
 
 
 def _get_jitter_cache_size(node: NodoProtocol) -> int:

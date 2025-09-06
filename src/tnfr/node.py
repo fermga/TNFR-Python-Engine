@@ -95,24 +95,41 @@ def _add_edge_common(n1, n2, weight) -> Optional[float]:
     return weight
 
 
-def _add_edge_generic(
+def add_edge(
     graph,
     n1,
     n2,
     weight,
     overwrite,
-    exists_cb,
-    set_cb,
+    *,
+    strategy: str | None = None,
+    exists_cb=None,
+    set_cb=None,
 ):
-    """Añade una arista entre ``n1`` y ``n2`` usando callbacks.
+    """Add an edge between ``n1`` and ``n2`` using the given strategy.
 
-    ``exists_cb`` debe devolver ``True`` si la arista ya está presente.
-    ``set_cb`` recibe el peso final para almacenar la conexión.
+    ``strategy`` can be ``"nx"`` for :mod:`networkx` graphs or ``"tnfr"`` for
+    TNFR nodes. Custom callbacks may be supplied via ``exists_cb`` and
+    ``set_cb``.
     """
 
     weight = _add_edge_common(n1, n2, weight)
     if weight is None:
         return
+
+    if exists_cb is None or set_cb is None:
+        if strategy == "nx":
+            exists_cb = lambda: graph.has_edge(n1, n2)
+            set_cb = lambda w: graph.add_edge(n1, n2, weight=w)
+        elif strategy == "tnfr":
+            exists_cb = lambda: n2 in n1._neighbors
+
+            def set_cb(w):
+                n1._neighbors[n2] = w
+                n2._neighbors[n1] = w
+
+        else:
+            raise ValueError("Unknown edge strategy")
 
     if exists_cb() and not overwrite:
         return
@@ -124,36 +141,13 @@ def _add_edge_generic(
 def _add_edge_nx(G, n1, n2, weight, overwrite):
     """Add an edge between ``n1`` and ``n2`` in a ``networkx`` graph."""
 
-    _add_edge_generic(
-        G,
-        n1,
-        n2,
-        weight,
-        overwrite,
-        exists_cb=lambda: G.has_edge(n1, n2),
-        set_cb=lambda w: G.add_edge(n1, n2, weight=w),
-    )
+    add_edge(G, n1, n2, weight, overwrite, strategy="nx")
 
 
 def _add_edge_tnfr(graph, n1, n2, weight, overwrite):
     """Add an edge between ``n1`` and ``n2`` in a TNFR-style graph."""
 
-    def exists():
-        return n2 in n1._neighbors
-
-    def set_weight(w):
-        n1._neighbors[n2] = w
-        n2._neighbors[n1] = w
-
-    _add_edge_generic(
-        graph,
-        n1,
-        n2,
-        weight,
-        overwrite,
-        exists_cb=exists,
-        set_cb=set_weight,
-    )
+    add_edge(graph, n1, n2, weight, overwrite, strategy="tnfr")
 
 
 class NodoProtocol(Protocol):

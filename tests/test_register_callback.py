@@ -33,7 +33,7 @@ def test_register_callback_rejects_tuple(graph_canon):
     def cb(G, ctx):
         pass
 
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="must be callable"):
         register_callback(G, event=CallbackEvent.BEFORE_STEP, func=("cb", cb))
 
 
@@ -47,3 +47,13 @@ def test_enum_registration_and_invocation(graph_canon):
     ctx = {"called": 0}
     invoke_callbacks(G, CallbackEvent.AFTER_STEP, ctx)
     assert ctx["called"] == 1
+
+
+def test_register_callback_unknown_event(graph_canon):
+    G = graph_canon()
+
+    def cb(G, ctx):
+        pass
+
+    with pytest.raises(ValueError, match="Unknown event"):
+        register_callback(G, event="nope", func=cb)
