@@ -1,7 +1,8 @@
 """Pruebas de cli history."""
 
-from tnfr.cli import main
+from tnfr.cli import main, _save_json
 import json
+from collections import deque
 
 
 def test_cli_run_save_history(tmp_path):
@@ -87,3 +88,13 @@ def test_cli_sequence_no_history_args(tmp_path, monkeypatch):
     rc = main(["sequence", "--nodes", "5"])
     assert rc == 0
     assert not any(tmp_path.iterdir())
+
+
+def test_save_json_serializes_iterables(tmp_path):
+    path = tmp_path / "data.json"
+    data = {"set": {1, 2}, "tuple": (1, 2), "deque": deque([1, 2])}
+    _save_json(str(path), data)
+    loaded = json.loads(path.read_text())
+    assert sorted(loaded["set"]) == [1, 2]
+    assert loaded["tuple"] == [1, 2]
+    assert loaded["deque"] == [1, 2]
