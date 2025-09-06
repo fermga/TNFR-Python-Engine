@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 import random
-import networkx as nx
+from typing import TYPE_CHECKING
 
 from .constants import DEFAULTS, INIT_DEFAULTS, VF_KEY, THETA_KEY
 from .helpers import clamp
+
+if TYPE_CHECKING:  # pragma: no cover
+    import networkx as nx
 
 
 def _init_phase(
@@ -82,7 +85,7 @@ def _init_si_epi(
         nd["Si"] = float(si)
 
 
-def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph:
+def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
     """Inicializa EPI, θ, νf y Si en los nodos de ``G``.
 
     Los parámetros pueden personalizarse mediante entradas en ``G.graph``:

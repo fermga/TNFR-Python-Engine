@@ -7,11 +7,10 @@ from enum import Enum
 from collections import defaultdict
 import logging
 
-import networkx as nx
-
 from .constants import DEFAULTS
 
 if TYPE_CHECKING:  # pragma: no cover
+    import networkx as nx
     from . import CallbackSpec
 
 __all__ = ["CallbackEvent", "register_callback", "invoke_callbacks"]
@@ -30,11 +29,11 @@ class CallbackEvent(str, Enum):
 _CALLBACK_EVENTS: tuple[str, ...] = tuple(e.value for e in CallbackEvent)
 
 
-Callback = Callable[[nx.Graph, dict[str, Any]], None]
+Callback = Callable[["nx.Graph", dict[str, Any]], None]
 CallbackRegistry = DefaultDict[str, list["CallbackSpec"]]
 
 
-def _ensure_callbacks(G: nx.Graph) -> CallbackRegistry:
+def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
     """Ensure the callback structure in ``G.graph``."""
     cbs = G.graph.get("callbacks")
     if not isinstance(cbs, defaultdict):
@@ -74,7 +73,7 @@ def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
 
 
 def register_callback(
-    G: nx.Graph,
+    G: "nx.Graph",
     event: CallbackEvent | str,
     func: Callback,
     *,
@@ -142,7 +141,7 @@ def register_callback(
 
 
 def invoke_callbacks(
-    G: nx.Graph, event: CallbackEvent | str, ctx: dict[str, Any] | None = None
+    G: "nx.Graph", event: CallbackEvent | str, ctx: dict[str, Any] | None = None
 ) -> None:
     """Invoke all callbacks registered for ``event`` with context ``ctx``."""
     if isinstance(event, CallbackEvent):

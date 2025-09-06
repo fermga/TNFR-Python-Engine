@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, TYPE_CHECKING
 from collections.abc import Sequence
 
-import networkx as nx
+if TYPE_CHECKING:  # pragma: no cover
+    import networkx as nx
 
 from .constants import DEFAULTS
 from .constants.core import SELECTOR_THRESHOLD_DEFAULTS
@@ -22,7 +23,7 @@ __all__ = [
 ]
 
 
-def _selector_thresholds(G: nx.Graph) -> dict:
+def _selector_thresholds(G: "nx.Graph") -> dict:
     """Retorna umbrales normalizados hi/lo para Si, ΔNFR y aceleración.
 
     Combina ``SELECTOR_THRESHOLDS`` con ``GLYPH_THRESHOLDS`` (legado) para
@@ -87,7 +88,7 @@ def _selector_thresholds(G: nx.Graph) -> dict:
     return {key: _get_threshold(key, default, legacy) for key, default, legacy in specs}
 
 
-def _norms_para_selector(G: nx.Graph) -> dict:
+def _norms_para_selector(G: "nx.Graph") -> dict:
     """Calcula y guarda en ``G.graph`` los máximos para normalizar
     |ΔNFR| y |d2EPI/dt2|."""
     norms = compute_dnfr_accel_max(G)
