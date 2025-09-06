@@ -22,6 +22,8 @@ __all__ = [
 
 def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
     """Add ``glyph`` to node history with maximum size ``window``."""
+    if window < 0:
+        raise ValueError("window must be >= 0")
     hist = nd.get("glyph_history")
     if hist is None or hist.maxlen != window:
         hist = deque(hist or [], maxlen=window)
