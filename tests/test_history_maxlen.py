@@ -50,6 +50,23 @@ def test_history_least_used_removed(graph_canon):
     assert "a" in hist
 
 
+def test_history_trim_uses_pop_least_used(graph_canon):
+    G = graph_canon()
+    G.add_node(0)
+    attach_defaults(G)
+    G.graph["HISTORY_MAXLEN"] = 2
+
+    hist = ensure_history(G)
+    for key in ["a", "b", "c", "d"]:
+        hist.setdefault(key, []).append(1)
+    _ = hist["a"]
+    _ = hist["a"]
+    _ = hist["b"]
+
+    ensure_history(G)
+    assert set(hist.keys()) == {"a", "b"}
+
+
 def test_history_maxlen_override_respected(graph_canon):
     G = graph_canon()
     G.add_node(0)

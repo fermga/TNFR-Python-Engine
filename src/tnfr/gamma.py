@@ -17,25 +17,23 @@ logger = logging.getLogger(__name__)
 
 
 def _ensure_kuramoto_cache(G, t) -> None:
-    """Cache ``(R, ψ)`` in ``G.graph`` for the current step ``t``.
-
-    The cache is invalidated if the step or node signature changes.
-    """
+    """Cache ``(R, ψ)`` for the current step ``t`` using ``edge_version_cache``."""
     checksum = G.graph.get("_dnfr_nodes_checksum")
     if checksum is None:
         checksum = node_set_checksum(G)
     nodes_sig = (len(G), checksum)
 
-    def builder() -> Dict[str, Any]:
-        R, psi = kuramoto_R_psi(G)
-        return {"t": t, "nodes_sig": nodes_sig, "R": R, "psi": psi}
+    def builder() -> Dict[Tuple[int, Tuple[int, str]], Dict[str, float]]:
+        return {}
 
-    cache = edge_version_cache(G, "_kuramoto", builder)
-    if cache.get("t") != t or cache.get("nodes_sig") != nodes_sig:
-        cache = builder()
-        graph = G.graph
-        graph["_kuramoto_cache"] = cache
-        graph["_kuramoto_version"] = int(graph.get("_edge_version", 0))
+    cache_dict = edge_version_cache(G, "_kuramoto", builder)
+    key = (t, nodes_sig)
+    entry = cache_dict.get(key)
+    if entry is None:
+        R, psi = kuramoto_R_psi(G)
+        entry = {"R": R, "psi": psi}
+        cache_dict[key] = entry
+    G.graph["_kuramoto_cache"] = entry
 
 
 def kuramoto_R_psi(G) -> Tuple[float, float]:
