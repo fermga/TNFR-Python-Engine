@@ -20,11 +20,6 @@ __all__ = [
 ]
 
 
-def _param_with_default(G, key):
-    """Return ``G.graph[key]`` if present, else get default parameter."""
-    return G.graph[key] if key in G.graph else get_param(G, key)
-
-
 def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
     """Add ``glyph`` to node history with maximum size ``window``."""
     hist = nd.get("glyph_history")
@@ -165,10 +160,10 @@ def ensure_history(G) -> Dict[str, Any]:
     ``HISTORY_MAXLEN`` must be non-negative and ``HISTORY_COMPACT_EVERY``
     must be a positive integer; otherwise a :class:`ValueError` is raised.
     """
-    maxlen = int(_param_with_default(G, "HISTORY_MAXLEN"))
+    maxlen = int(get_param(G, "HISTORY_MAXLEN"))
     if maxlen < 0:
         raise ValueError("HISTORY_MAXLEN must be >= 0")
-    compact_every = int(_param_with_default(G, "HISTORY_COMPACT_EVERY"))
+    compact_every = int(get_param(G, "HISTORY_COMPACT_EVERY"))
     if compact_every <= 0:
         raise ValueError("HISTORY_COMPACT_EVERY must be > 0")
     hist = G.graph.get("history")
