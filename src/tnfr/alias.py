@@ -55,6 +55,16 @@ def _alias_lookup(
     log_level: int | None = None,
 ) -> Optional[T]:
     aliases = _validate_aliases(aliases)
+    ok_def = False
+    def_val = None
+    if default is not None:
+        ok_def, def_val = _convert_value(
+            default,
+            conv,
+            strict=strict,
+            key="default",
+            log_level=logging.WARNING if not strict else log_level,
+        )
     for key in aliases:
         if key in d:
             ok, val = _convert_value(
@@ -64,14 +74,7 @@ def _alias_lookup(
                 return val
     if default is None:
         return None
-    ok, val = _convert_value(
-        default,
-        conv,
-        strict=strict,
-        key="default",
-        log_level=logging.WARNING if not strict else log_level,
-    )
-    return val if ok else None
+    return def_val if ok_def else None
 
 
 @overload

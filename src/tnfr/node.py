@@ -4,7 +4,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Deque, Dict, Iterable, Optional, Protocol, TypeVar
 from collections import deque
-from functools import partial
 from collections.abc import Hashable
 
 from .constants import (

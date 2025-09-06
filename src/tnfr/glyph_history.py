@@ -208,13 +208,16 @@ def count_glyphs(
     def _iter_seq(nd: Dict[str, Any]) -> Iterable[str]:
         if last_only:
             g = last_glyph(nd)
-            return [g] if g else []
+            if g:
+                yield g
+            return
         hist = nd.get("glyph_history")
         if not hist:
-            return []
+            return
         if window_int is None:
-            return hist
-        return islice(reversed(hist), window_int)
+            yield from hist
+        else:
+            yield from islice(reversed(hist), window_int)
 
     counts: Counter[str] = Counter()
     for _, nd in G.nodes(data=True):

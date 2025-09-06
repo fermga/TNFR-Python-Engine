@@ -68,8 +68,12 @@ def _get_R_psi(G, R: float | None = None, psi: float | None = None) -> tuple[flo
     return R, psi
 
 
+def _has_nodes(G) -> bool:
+    return G.number_of_nodes() != 0
+
+
 def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
-    if G.number_of_nodes() == 0:
+    if not _has_nodes(G):
         return 1.0
     _, psi = _get_R_psi(G, R, psi)
     thetas = [angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi) for _, data in G.nodes(data=True)]
@@ -79,7 +83,7 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
 
 def kuramoto_order(G, R: float | None = None, psi: float | None = None) -> float:
     """R in [0,1], 1 means perfectly aligned phases."""
-    if G.number_of_nodes() == 0:
+    if not _has_nodes(G):
         return 1.0
     R, _ = _get_R_psi(G, R, psi)
     return float(R)
@@ -113,9 +117,6 @@ def wbar(G, window: int | None = None) -> float:
     if w <= 0:
         raise ValueError("window must be positive")
     w = min(len(cs), w)
-    if isinstance(cs, list):
-        tail = cs[-w:]
-    else:
-        start = len(cs) - w
-        tail = islice(cs, start, None)
+    start = len(cs) - w
+    tail = islice(cs, start, None)
     return float(statistics.fmean(tail))
