@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 from statistics import mean, median
-from typing import Any, Dict, List, Tuple
+from typing import Any
 import heapq
 import logging
 import math
@@ -47,7 +47,7 @@ TgRun = "run"
 # -------------
 
 
-def _tg_state(nd: Dict[str, Any]) -> Dict[str, Any]:
+def _tg_state(nd: dict[str, Any]) -> dict[str, Any]:
     """Internal per-node structure for accumulating run times per glyph.
     Fields: curr (current glyph), run (accumulated time in current glyph)
     """
@@ -375,13 +375,13 @@ def register_metrics_callbacks(G) -> None:
 # -------------
 
 
-def Tg_global(G, normalize: bool = True) -> Dict[str, float]:
+def Tg_global(G, normalize: bool = True) -> dict[str, float]:
     """Total glyph time per class. If ``normalize=True``, return fractions
     of the total."""
     hist = ensure_history(G)
-    tg_total: Dict[str, float] = hist.tracked_get("Tg_total", {})
+    tg_total: dict[str, float] = hist.tracked_get("Tg_total", {})
     total = sum(tg_total.values()) or 1.0
-    out: Dict[str, float] = {}
+    out: dict[str, float] = {}
 
     def add(g):
         val = float(tg_total.get(g, 0.0))
@@ -393,21 +393,21 @@ def Tg_global(G, normalize: bool = True) -> Dict[str, float]:
 
 def Tg_by_node(
     G, n, normalize: bool = False
-) -> Dict[str, float | List[float]]:
+) -> dict[str, float | list[float]]:
     """Per-node summary: if ``normalize`` return mean run per glyph;
     otherwise list runs."""
     hist = ensure_history(G)
     rec = hist.tracked_get("Tg_by_node", {}).get(n, {})
     if not normalize:
         # convertir default dict → list para serializar
-        out: Dict[str, List[float]] = {}
+        out: dict[str, list[float]] = {}
 
         def copy_runs(g):
             out[g] = list(rec.get(g, []))
 
         for_each_glyph(copy_runs)
         return out
-    out: Dict[str, float] = {}
+    out: dict[str, float] = {}
 
     def add(g):
         runs = rec.get(g, [])
@@ -417,7 +417,7 @@ def Tg_by_node(
     return out
 
 
-def latency_series(G) -> Dict[str, List[float]]:
+def latency_series(G) -> dict[str, list[float]]:
     hist = ensure_history(G)
     xs = hist.tracked_get("latency_index", [])
     return {
@@ -426,7 +426,7 @@ def latency_series(G) -> Dict[str, List[float]]:
     }
 
 
-def glyphogram_series(G) -> Dict[str, List[float]]:
+def glyphogram_series(G) -> dict[str, list[float]]:
     hist = ensure_history(G)
     xs = hist.tracked_get("glyphogram", [])
     if not xs:
@@ -440,17 +440,17 @@ def glyphogram_series(G) -> Dict[str, List[float]]:
     return out
 
 
-def glyph_top(G, k: int = 3) -> List[Tuple[str, float]]:
+def glyph_top(G, k: int = 3) -> list[tuple[str, float]]:
     """Top-k structural operators by ``Tg_global`` (fraction)."""
     tg = Tg_global(G, normalize=True)
     return heapq.nlargest(max(1, int(k)), tg.items(), key=lambda kv: kv[1])
 
 
-def glyph_dwell_stats(G, n) -> Dict[str, Dict[str, float]]:
+def glyph_dwell_stats(G, n) -> dict[str, dict[str, float]]:
     """Per-node statistics: mean/median/max of runs per glyph."""
     hist = ensure_history(G)
     rec = hist.tracked_get("Tg_by_node", {}).get(n, {})
-    out: Dict[str, Dict[str, float]] = {}
+    out: dict[str, dict[str, float]] = {}
 
     def add(g):
         runs = list(rec.get(g, []))

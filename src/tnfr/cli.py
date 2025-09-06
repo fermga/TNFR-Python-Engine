@@ -5,7 +5,7 @@ import argparse
 import json
 import logging
 import sys
-from typing import Any, Dict, List, Optional, Callable, TYPE_CHECKING
+from typing import Any, Optional, Callable, TYPE_CHECKING
 from collections.abc import Sequence
 from pathlib import Path
 from collections import deque
@@ -72,8 +72,8 @@ def _flatten_tokens(obj: Any):
         yield obj
 
 
-def _parse_tokens(obj: Any) -> List[Any]:
-    out: List[Any] = []
+def _parse_tokens(obj: Any) -> list[Any]:
+    out: list[Any] = []
     for pos, tok in enumerate(_flatten_tokens(obj), start=1):
         try:
             if isinstance(tok, dict):
@@ -93,7 +93,7 @@ def _parse_tokens(obj: Any) -> List[Any]:
     return out
 
 
-def parse_thol(spec: Dict[str, Any]) -> Any:
+def parse_thol(spec: dict[str, Any]) -> Any:
     """Parsea la especificación de un bloque ``THOL``.
 
     Parameters
@@ -126,7 +126,7 @@ def parse_thol(spec: Dict[str, Any]) -> Any:
     )
 
 
-TOKEN_MAP: Dict[str, Callable[[Any], Any]] = {
+TOKEN_MAP: dict[str, Callable[[Any], Any]] = {
     "WAIT": lambda v: wait(int(v)),
     "TARGET": lambda v: target(v),
     "THOL": parse_thol,
@@ -182,7 +182,7 @@ HISTORY_ARG_SPECS = [
 ]
 
 
-def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
+def _args_to_dict(args: argparse.Namespace, prefix: str) -> dict[str, Any]:
     """Extract arguments matching a prefix.
 
     Parameters
@@ -216,7 +216,7 @@ def _args_to_dict(args: argparse.Namespace, prefix: str) -> Dict[str, Any]:
     }
 
 
-def _load_sequence(path: Path) -> List[Any]:
+def _load_sequence(path: Path) -> list[Any]:
     data = read_structured_file(path)
 
     return seq(*_parse_tokens(data))
@@ -540,7 +540,7 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     return 0
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main(argv: Optional[list[str]] = None) -> int:
     logging.basicConfig(
         level=logging.INFO, format="%(message)s", stream=sys.stdout, force=True
     )
