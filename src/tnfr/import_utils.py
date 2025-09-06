@@ -19,6 +19,15 @@ _FAILED_IMPORTS: set[str] = set()
 _FAILED_IMPORTS_LOCK = threading.Lock()
 
 
+def _warn_failure(module: str, attr: str | None, err: Exception) -> None:
+    msg = (
+        f"Failed to import module '{module}': {err}" if isinstance(err, ImportError)
+        else f"Module '{module}' has no attribute '{attr}': {err}"
+    )
+    warnings.warn(msg, RuntimeWarning, stacklevel=2)
+
+
+@lru_cache(maxsize=None)
 def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     """Import ``name`` returning ``fallback`` if it fails.
 
@@ -53,22 +62,13 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     try:
         module = importlib.import_module(module_name)
         return getattr(module, attr) if attr else module
-    except ImportError as e:
-        warnings.warn(
-            f"Failed to import module '{module_name}': {e}",
-            RuntimeWarning,
-            stacklevel=2,
-        )
+    except (ImportError, AttributeError) as e:
+        _warn_failure(module_name, attr, e)
         with _FAILED_IMPORTS_LOCK:
-            _FAILED_IMPORTS.update({name, module_name})
-    except AttributeError as e:
-        warnings.warn(
-            f"Module '{module_name}' has no attribute '{attr}': {e}",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-        with _FAILED_IMPORTS_LOCK:
-            _FAILED_IMPORTS.add(name)
+            if isinstance(e, ImportError):
+                _FAILED_IMPORTS.update({name, module_name})
+            else:
+                _FAILED_IMPORTS.add(name)
     return fallback
 
 

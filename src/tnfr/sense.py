@@ -102,18 +102,18 @@ def _sigma_from_iterable(
     if not isinstance(first, complex):
         raise TypeError("values must be an iterable of complex numbers")
 
-    xs = [first.real]
-    ys = [first.imag]
+    sum_x = first.real
+    sum_y = first.imag
     cnt = 1
     for z in iterator:
         if not isinstance(z, complex):
             raise TypeError("values must be an iterable of complex numbers")
-        xs.append(z.real)
-        ys.append(z.imag)
+        sum_x += z.real
+        sum_y += z.imag
         cnt += 1
 
-    x = math.fsum(xs) / cnt
-    y = math.fsum(ys) / cnt
+    x = sum_x / cnt
+    y = sum_y / cnt
     mag = math.hypot(x, y)
     ang = math.atan2(y, x) if mag > 0 else float(fallback_angle)
     vec = {

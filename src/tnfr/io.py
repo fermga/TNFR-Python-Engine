@@ -78,14 +78,7 @@ def read_structured_file(path: Path) -> Any:
     try:
         text = path.read_text(encoding="utf-8")
         return parser(text)
-    except (
-        OSError,
-        UnicodeDecodeError,
-        json.JSONDecodeError,
-        YAMLError,
-        TOMLDecodeError,
-        ImportError,
-    ) as e:
+    except Exception as e:
         raise StructuredFileError(path, e) from e
 
 

@@ -23,6 +23,7 @@ __all__ = [
     "TrigCache",
     "compute_dnfr_accel_max",
     "compute_coherence",
+    "ensure_neighbors_map",
     "get_Si_weights",
     "precompute_trigonometry",
     "compute_Si_node",
@@ -61,6 +62,18 @@ def compute_coherence(G) -> float:
     else:
         dnfr_mean = depi_mean = 0.0
     return 1.0 / (1.0 + dnfr_mean + depi_mean)
+
+
+def ensure_neighbors_map(G) -> Dict[Any, Sequence[Any]]:
+    """Return cached neighbors list keyed by node."""
+    graph = G.graph
+    edge_version = int(graph.get("_edge_version", 0))
+    neighbors = graph.get("_neighbors")
+    if graph.get("_neighbors_version") != edge_version or neighbors is None:
+        neighbors = {n: list(G.neighbors(n)) for n in G}
+        graph["_neighbors"] = neighbors
+        graph["_neighbors_version"] = edge_version
+    return neighbors
 
 
 def get_Si_weights(G: Any) -> tuple[float, float, float]:
@@ -143,14 +156,8 @@ def compute_Si_node(
 def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     """Compute ``Si`` per node and write it to ``G.nodes[n]['Si']``."""
     graph = G.graph
-    edge_version = int(graph.get("_edge_version", 0))
 
-    neighbors = graph.get("_neighbors")
-    if graph.get("_neighbors_version") != edge_version or neighbors is None:
-        neighbors = {n: list(G.neighbors(n)) for n in G}
-        graph["_neighbors"] = neighbors
-        graph["_neighbors_version"] = edge_version
-
+    neighbors = ensure_neighbors_map(G)
     alpha, beta, gamma = get_Si_weights(G)
 
     vfmax = G.graph.get("_vfmax")
