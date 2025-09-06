@@ -1,4 +1,5 @@
 import tnfr
+from tnfr.metrics import register_metrics_callbacks
 
 
 def test_public_exports():
@@ -9,6 +10,7 @@ def test_public_exports():
 def test_basic_flow():
     G, n = tnfr.create_nfr('n1')
     tnfr.preparar_red(G)
+    register_metrics_callbacks(G)
     tnfr.step(G)
     tnfr.run(G, steps=2)
     assert len(G.graph['history']['C_steps']) == 3

@@ -2,6 +2,7 @@
 
 from tnfr.constants import attach_defaults
 from tnfr.dynamics import step
+from tnfr.metrics import register_metrics_callbacks
 from tnfr.gamma import GAMMA_REGISTRY
 
 
@@ -9,6 +10,7 @@ def test_history_delta_si_and_B(graph_canon):
     G = graph_canon()
     G.add_node(0, EPI=0.0, νf=0.5, θ=0.0)
     attach_defaults(G)
+    register_metrics_callbacks(G)
     step(G, apply_glyphs=False)
     step(G, apply_glyphs=False)
     hist = G.graph.get("history", {})

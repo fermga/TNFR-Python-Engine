@@ -6,15 +6,35 @@ from collections import Counter, defaultdict
 from statistics import mean, median
 from typing import Any, Dict, List, Tuple
 import heapq
+import logging
+import math
 
-from ..constants import METRIC_DEFAULTS, ALIAS_EPI, METRICS
+from ..constants import (
+    METRIC_DEFAULTS,
+    ALIAS_EPI,
+    METRICS,
+    REMESH_DEFAULTS,
+    DEFAULTS,
+    ALIAS_DNFR,
+    ALIAS_dEPI,
+    ALIAS_SI,
+    ALIAS_dSI,
+    ALIAS_VF,
+    ALIAS_dVF,
+    ALIAS_D2VF,
+)
 from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, last_glyph
-from ..helpers import get_attr
+from ..helpers import get_attr, set_attr, list_mean, compute_coherence
 from ..constants_glyphs import GLYPHS_CANONICAL, GLYPH_GROUPS
 from ..types import Glyph
 from .coherence import register_coherence_callbacks
 from .diagnosis import register_diagnosis_callbacks
+from ..observers import phase_sync, glyph_load, kuramoto_order
+from ..sense import sigma_vector
+
+
+logger = logging.getLogger(__name__)
 
 
 LATENT_GLYPH = Glyph.SHA.value
@@ -41,6 +61,50 @@ def for_each_glyph(fn) -> None:
     """
     for g in GLYPHS_CANONICAL:
         fn(g)
+
+
+# -------------
+# Métricas legadas trasladadas desde ``dynamics``
+# -------------
+
+
+def _update_coherence(G, hist) -> None:
+    """Actualizar coherencia global y su media móvil."""
+
+    C = compute_coherence(G)
+    hist.setdefault("C_steps", []).append(C)
+
+    wbar_w = int(G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25)))
+    cs = hist["C_steps"]
+    if cs:
+        w = min(len(cs), max(1, wbar_w))
+        wbar = sum(cs[-w:]) / w
+        hist.setdefault("W_bar", []).append(wbar)
+
+
+def _update_phase_sync(G, hist) -> None:
+    """Registrar sincronía de fase y orden de Kuramoto."""
+
+    ps = phase_sync(G)
+    hist.setdefault("phase_sync", []).append(ps)
+    R = kuramoto_order(G)
+    hist.setdefault("kuramoto_R", []).append(R)
+
+
+def _update_sigma(G, hist) -> None:
+    """Registrar carga glífica y vector Σ⃗ asociado."""
+
+    win = int(G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]))
+    gl = glyph_load(G, window=win)
+    hist.setdefault("glyph_load_estab", []).append(gl.get("_estabilizadores", 0.0))
+    hist.setdefault("glyph_load_disr", []).append(gl.get("_disruptivos", 0.0))
+
+    dist = {k: v for k, v in gl.items() if not k.startswith("_")}
+    sig, _ = sigma_vector(dist)
+    hist.setdefault("sense_sigma_x", []).append(sig.get("x", 0.0))
+    hist.setdefault("sense_sigma_y", []).append(sig.get("y", 0.0))
+    hist.setdefault("sense_sigma_mag", []).append(sig.get("mag", 0.0))
+    hist.setdefault("sense_sigma_angle", []).append(sig.get("angle", 0.0))
 
 
 # -------------
@@ -174,6 +238,105 @@ def _metrics_step(G, *args, **kwargs):
         G.graph.get("EPI_SUPPORT_THR", METRIC_DEFAULTS.get("EPI_SUPPORT_THR", 0.0))
     )
 
+    # -- Métricas básicas heredadas de ``dynamics`` --
+    for k in (
+        "C_steps",
+        "stable_frac",
+        "phase_sync",
+        "glyph_load_estab",
+        "glyph_load_disr",
+        "Si_mean",
+        "Si_hi_frac",
+        "Si_lo_frac",
+        "delta_Si",
+        "B",
+    ):
+        hist.setdefault(k, [])
+
+    _update_coherence(G, hist)
+
+    eps_dnfr = float(
+        G.graph.get("EPS_DNFR_STABLE", REMESH_DEFAULTS["EPS_DNFR_STABLE"])
+    )
+    eps_depi = float(
+        G.graph.get("EPS_DEPI_STABLE", REMESH_DEFAULTS["EPS_DEPI_STABLE"])
+    )
+    stables = 0
+    total = max(1, G.number_of_nodes())
+    delta_si_sum = 0.0
+    delta_si_count = 0
+    B_sum = 0.0
+    B_count = 0
+    for n, nd in G.nodes(data=True):
+        if (
+            abs(get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr
+            and abs(get_attr(nd, ALIAS_dEPI, 0.0)) <= eps_depi
+        ):
+            stables += 1
+
+        Si_curr = get_attr(nd, ALIAS_SI, 0.0)
+        Si_prev = nd.get("_prev_Si", Si_curr)
+        dSi = Si_curr - Si_prev
+        nd["_prev_Si"] = Si_curr
+        set_attr(nd, ALIAS_dSI, dSi)
+        delta_si_sum += dSi
+        delta_si_count += 1
+
+        vf_curr = get_attr(nd, ALIAS_VF, 0.0)
+        vf_prev = nd.get("_prev_vf", vf_curr)
+        dvf_dt = (vf_curr - vf_prev) / dt
+        dvf_prev = nd.get("_prev_dvf", dvf_dt)
+        B = (dvf_dt - dvf_prev) / dt
+        nd["_prev_vf"] = vf_curr
+        nd["_prev_dvf"] = dvf_dt
+        set_attr(nd, ALIAS_dVF, dvf_dt)
+        set_attr(nd, ALIAS_D2VF, B)
+        B_sum += B
+        B_count += 1
+
+    hist["stable_frac"].append(stables / total)
+    hist["delta_Si"].append(
+        delta_si_sum / delta_si_count if delta_si_count else 0.0
+    )
+    hist["B"].append(B_sum / B_count if B_count else 0.0)
+    try:
+        _update_phase_sync(G, hist)
+        _update_sigma(G, hist)
+        if hist.get("C_steps") and hist.get("stable_frac"):
+            hist.setdefault("iota", []).append(
+                hist["C_steps"][-1] * hist["stable_frac"][-1]
+            )
+    except (KeyError, AttributeError, TypeError) as exc:
+        logger.debug("observer update failed: %s", exc)
+
+    try:
+        sis = [
+            get_attr(nd, ALIAS_SI, float("nan")) for _, nd in G.nodes(data=True)
+        ]
+        sis = [s for s in sis if not math.isnan(s)]
+        if sis:
+            si_mean = list_mean(sis, 0.0)
+            hist["Si_mean"].append(si_mean)
+            thr_sel = G.graph.get(
+                "SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {})
+            )
+            thr_def = G.graph.get(
+                "GLYPH_THRESHOLDS",
+                DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66, "lo": 0.33}),
+            )
+            si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
+            si_lo = float(thr_sel.get("si_lo", thr_def.get("lo", 0.33)))
+            n = len(sis)
+            hist["Si_hi_frac"].append(sum(1 for s in sis if s >= si_hi) / n)
+            hist["Si_lo_frac"].append(sum(1 for s in sis if s <= si_lo) / n)
+        else:
+            hist["Si_mean"].append(0.0)
+            hist["Si_hi_frac"].append(0.0)
+            hist["Si_lo_frac"].append(0.0)
+    except (KeyError, AttributeError, TypeError) as exc:
+        logger.debug("Si aggregation failed: %s", exc)
+
+    # -- Métricas avanzadas --
     save_by_node = bool(cfg.get("save_by_node", True))
     counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node)
     _update_glyphogram(G, hist, counts, t, n_total)
