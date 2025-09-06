@@ -1,0 +1,52 @@
+"""Utilidades para importaciones opcionales."""
+
+from __future__ import annotations
+
+import importlib
+import warnings
+from typing import Any
+
+__all__ = ["optional_import"]
+
+
+def optional_import(name: str, fallback: Any | None = None) -> Any | None:
+    """Importa ``name`` devolviendo ``fallback`` si falla.
+
+    ``name`` puede apuntar a un módulo, submódulo o atributo. Si la
+    importación o el acceso al atributo fallan se emite una advertencia y se
+    devuelve ``fallback``.
+
+    Parameters
+    ----------
+    name:
+        Ruta completa del módulo, submódulo o atributo a importar.
+    fallback:
+        Valor a devolver cuando la importación falla. Por defecto ``None``.
+
+    Returns
+    -------
+    Any | None
+        Objeto importado o ``fallback`` si ocurre un error.
+
+    Notes
+    -----
+    Se devuelve ``fallback`` cuando el módulo no está disponible o el
+    atributo solicitado no existe. En ambos casos se emite una advertencia.
+    """
+
+    try:
+        return importlib.import_module(name)
+    except ImportError:
+        if "." in name:
+            module_name, attr = name.rsplit(".", 1)
+            try:
+                module = importlib.import_module(module_name)
+                return getattr(module, attr)
+            except (ImportError, AttributeError):
+                pass
+        warnings.warn(
+            f"No se pudo importar '{name}'; usando valor de fallback.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        return fallback
