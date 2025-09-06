@@ -20,7 +20,7 @@ import math
 import random
 import hashlib
 import heapq
-from functools import lru_cache, cache
+from functools import cache
 import networkx as nx
 from networkx.algorithms import community as nx_comm
 
@@ -47,37 +47,8 @@ def _node_offset(G, n) -> int:
     return int(mapping.get(n, 0))
 
 
-def _jitter_base(seed: int, key: int) -> random.Random:
-    """Return a ``random.Random`` seeded from ``seed`` and ``key``.
-
-    The base generator is retrieved via :func:`get_rng` and cloned so each
-    call returns an independent instance starting from the same state.
-    """
-    base = get_rng(seed, key)
-    rng = random.Random()
-    rng.setstate(base.getstate())
-    return rng
-
-
-@lru_cache(maxsize=DEFAULTS["JITTER_CACHE_SIZE"])
-def _cached_rng(scope_id: int, seed: int, key: int) -> random.Random:
-    return _jitter_base(seed, key)
-
-
-_rng_cache_maxsize = DEFAULTS["JITTER_CACHE_SIZE"]
-
-
-def _resize_rng_cache(maxsize: int) -> None:
-    """Resize the global RNG cache."""
-    global _cached_rng, _rng_cache_maxsize
-    _cached_rng.cache_clear()
-    _cached_rng = lru_cache(maxsize=maxsize)(_cached_rng.__wrapped__)
-    _rng_cache_maxsize = maxsize
-
-
 def clear_rng_cache() -> None:
-    """Clear all cached RNGs."""
-    _cached_rng.cache_clear()
+    """Clear cached RNGs."""
     get_rng.cache_clear()
 
 
@@ -87,20 +58,6 @@ def _get_NodoNX():
     from .node import NodoNX
 
     return NodoNX
-
-
-def _get_jitter_cache_size(node: NodoProtocol) -> int:
-    """Return cached JITTER_CACHE_SIZE for ``node``'s graph."""
-    cache_size = node.graph.get("_jitter_cache_size")
-    if cache_size is None:
-        try:
-            cache_size = get_param(
-                node.G, "JITTER_CACHE_SIZE"
-            )  # type: ignore[attr-defined]
-        except (AttributeError, KeyError):
-            cache_size = DEFAULTS["JITTER_CACHE_SIZE"]
-        node.graph["_jitter_cache_size"] = cache_size
-    return cache_size
 
 
 def random_jitter(
@@ -131,27 +88,26 @@ def random_jitter(
 
     if isinstance(node, _get_NodoNX()):
         seed_key = _node_offset(node.G, node.n)
-        scope = node.G
+        scope_id = id(node.G)
     else:
         uid = getattr(node, "_noise_uid", None)
         if uid is None:
             uid = id(node)
             setattr(node, "_noise_uid", uid)
         seed_key = int(uid)
-        scope = node
+        scope_id = id(node)
 
+    seed = base_seed ^ scope_id
     if cache is None:
-        cache_size = int(_get_jitter_cache_size(node))
+        cache_size = int(node.graph.get("JITTER_CACHE_SIZE", DEFAULTS["JITTER_CACHE_SIZE"]))
         if cache_size <= 0:
-            rng = _jitter_base(base_seed, seed_key)
+            rng = get_rng.__wrapped__(seed, seed_key)  # fresh each call
         else:
-            if _rng_cache_maxsize != cache_size:
-                _resize_rng_cache(cache_size)
-            rng = _cached_rng(id(scope), base_seed, seed_key)
+            rng = get_rng(seed, seed_key)
     else:
         rng = cache.get(seed_key)
         if rng is None:
-            rng = _jitter_base(base_seed, seed_key)
+            rng = get_rng.__wrapped__(seed, seed_key)
             cache[seed_key] = rng
 
     return rng.uniform(-amplitude, amplitude)

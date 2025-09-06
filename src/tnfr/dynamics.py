@@ -45,6 +45,7 @@ from .helpers import (
     neighbor_mean,
     neighbor_phase_mean,
     cached_nodes_and_A,
+    node_set_checksum,
 )
 from .alias import (
     get_attr,
@@ -83,11 +84,15 @@ def _update_node_sample(G, *, step: int) -> None:
     tuple.
     """
     limit = int(G.graph.get("UM_CANDIDATE_COUNT", 0))
-    n = G.number_of_nodes()
     nodes = G.graph.get("_node_list")
-    if nodes is None or len(nodes) != n:
+    checksum = G.graph.get("_node_list_checksum")
+    current_checksum = node_set_checksum(G, nodes) if nodes is not None else None
+    if nodes is None or checksum != current_checksum:
         nodes = tuple(G.nodes())
+        checksum = node_set_checksum(G, nodes)
         G.graph["_node_list"] = nodes
+        G.graph["_node_list_checksum"] = checksum
+    n = len(nodes)
     if limit <= 0 or n < 50 or limit >= n:
         # Avoid exposing a mutable NodeView that may change later.
         G.graph["_node_sample"] = nodes

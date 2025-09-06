@@ -132,15 +132,11 @@ def neighbor_phase_mean(obj, n=None) -> float:
             y += sin_th[v]
             count += 1
     else:
-        theta_cache: Dict[Any, float] = {}
         for v in node.neighbors():
-            th = theta_cache.get(v)
-            if th is None:
-                if hasattr(v, "theta"):
-                    th = getattr(v, "theta", 0.0)
-                else:
-                    th = NodoNX.from_graph(node.G, v).theta  # type: ignore[attr-defined]
-                theta_cache[v] = th
+            if hasattr(v, "theta"):
+                th = getattr(v, "theta", 0.0)
+            else:
+                th = NodoNX.from_graph(node.G, v).theta  # type: ignore[attr-defined]
             x += math.cos(th)
             y += math.sin(th)
             count += 1
@@ -217,36 +213,37 @@ def node_set_checksum(
     return hasher.hexdigest()
 
 
-def ensure_node_index_map(G) -> Dict[Any, int]:
-    """Return cached node→index mapping for ``G``.
+def _ensure_node_map(G, *, key: str, sort: bool = False) -> Dict[Any, int]:
+    """Return cached node→index mapping for ``G`` under ``key``.
 
-    The mapping is stored in ``G.graph['_node_index_map']`` and reused on
-    subsequent calls. It is recalculated whenever the set of nodes in ``G``
-    changes.
+    ``sort`` controls whether nodes are ordered by their string representation
+    before assigning indices.
     """
 
     nodes = list(G.nodes())
     checksum = node_set_checksum(G, nodes)
-    mapping = G.graph.get("_node_index_map")
-    if mapping is None or G.graph.get("_node_index_checksum") != checksum:
+    mapping = G.graph.get(key)
+    checksum_key = f"{key}_checksum"
+    if mapping is None or G.graph.get(checksum_key) != checksum:
+        if sort:
+            nodes.sort(key=lambda x: str(x))
         mapping = {node: idx for idx, node in enumerate(nodes)}
-        G.graph["_node_index_map"] = mapping
-        G.graph["_node_index_checksum"] = checksum
+        G.graph[key] = mapping
+        G.graph[checksum_key] = checksum
     return mapping
+
+
+def ensure_node_index_map(G) -> Dict[Any, int]:
+    """Return cached node→index mapping for ``G``."""
+
+    return _ensure_node_map(G, key="_node_index_map", sort=False)
 
 
 def ensure_node_offset_map(G) -> Dict[Any, int]:
-    """Return cached node→index mapping for ``G``."""
-    nodes = list(G.nodes())
-    checksum = node_set_checksum(G, nodes)
-    mapping = G.graph.get("_node_offset_map")
-    if mapping is None or G.graph.get("_node_offset_checksum") != checksum:
-        if bool(G.graph.get("SORT_NODES", False)):
-            nodes.sort(key=lambda x: str(x))
-        mapping = {node: idx for idx, node in enumerate(nodes)}
-        G.graph["_node_offset_map"] = mapping
-        G.graph["_node_offset_checksum"] = checksum
-    return mapping
+    """Return cached node→offset mapping for ``G``."""
+
+    sort = bool(G.graph.get("SORT_NODES", False))
+    return _ensure_node_map(G, key="_node_offset_map", sort=sort)
 
 
 def edge_version_cache(G: Any, key: str, builder: Callable[[], T]) -> T:

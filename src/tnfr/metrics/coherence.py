@@ -12,6 +12,7 @@ from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
 from ..collections_utils import normalize_weights
 from ..helpers import clamp01, ensure_node_index_map
+from ..import_utils import get_numpy
 
 
 def _norm01(x, lo, hi):
@@ -80,8 +81,10 @@ def coherence_matrix(G):
     # Precompute indices to avoid repeated list.index calls within loops
     node_to_index = ensure_node_index_map(G)
 
+    th_vals = [get_attr(G.nodes[v], ALIAS_THETA, 0.0) for v in nodes]
     epi_vals = [get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in nodes]
     vf_vals = [get_attr(G.nodes[v], ALIAS_VF, 0.0) for v in nodes]
+    si_vals = [clamp01(get_attr(G.nodes[v], ALIAS_SI, 0.0)) for v in nodes]
     epi_min, epi_max = min(epi_vals), max(epi_vals)
     vf_min, vf_max = min(vf_vals), max(vf_vals)
 
@@ -97,6 +100,67 @@ def coherence_matrix(G):
     thr = float(cfg.get("threshold", 0.0))
     if mode not in ("sparse", "dense"):
         mode = "sparse"
+
+    np = get_numpy()
+    if np is not None and not neighbors_only:
+        th = np.array(th_vals)
+        epi = np.array(epi_vals)
+        vf = np.array(vf_vals)
+        si = np.array(si_vals)
+        th_diff = th[:, None] - th[None, :]
+        s_phase = 0.5 * (1.0 + np.cos(th_diff))
+        epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
+        vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
+        s_epi = 1.0 - np.abs(epi[:, None] - epi[None, :]) / epi_range
+        s_vf = 1.0 - np.abs(vf[:, None] - vf[None, :]) / vf_range
+        s_si = 1.0 - np.abs(si[:, None] - si[None, :])
+        wij = (
+            wnorm["phase"] * s_phase
+            + wnorm["epi"] * s_epi
+            + wnorm["vf"] * s_vf
+            + wnorm["si"] * s_si
+        )
+        wij = np.clip(wij, 0.0, 1.0)
+        if self_diag:
+            np.fill_diagonal(wij, 1.0)
+        else:
+            np.fill_diagonal(wij, 0.0)
+
+        row_sum = wij.sum(axis=1)
+        row_count = np.full(n, n if self_diag else n - 1)
+
+        if mode == "dense":
+            W = wij.tolist()
+            mask = ~np.eye(n, dtype=bool)
+        else:
+            mask = (wij >= thr) & (~np.eye(n, dtype=bool))
+            idx = np.where(wij >= thr)
+            W = [
+                (int(i), int(j), float(wij[i, j]))
+                for i, j in zip(idx[0], idx[1])
+            ]
+
+        values = wij[mask]
+        min_val = float(values.min()) if values.size else 0.0
+        max_val = float(values.max()) if values.size else 0.0
+        sum_val = float(values.sum())
+        count_val = int(values.size)
+
+        Wi = [float(row_sum[i] / max(1, row_count[i])) for i in range(n)]
+        stats = {
+            "min": min_val,
+            "max": max_val,
+            "mean": (sum_val / count_val) if count_val else 0.0,
+            "n_edges": count_val,
+            "mode": mode,
+            "scope": scope,
+        }
+
+        hist = ensure_history(G)
+        append_metric(hist, cfg.get("history_key", "W_sparse"), W)
+        append_metric(hist, cfg.get("Wi_history_key", "W_i"), Wi)
+        append_metric(hist, cfg.get("stats_history_key", "W_stats"), stats)
+        return nodes, W
 
     if mode == "dense":
         W = [[0.0] * n for _ in range(n)]
