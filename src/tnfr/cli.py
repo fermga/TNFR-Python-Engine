@@ -8,7 +8,6 @@ import sys
 from typing import Any, Optional, Callable, TYPE_CHECKING
 from collections.abc import Sequence, Iterable
 from pathlib import Path
-from collections import deque
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx

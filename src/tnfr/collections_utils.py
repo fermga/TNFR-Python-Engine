@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import (
     Iterable,
-    Sequence,
     Any,
     TypeVar,
     Mapping,
@@ -13,7 +12,7 @@ from typing import (
 )
 import logging
 import math
-from itertools import islice
+import itertools
 
 from .value_utils import _convert_value
 
@@ -57,14 +56,12 @@ def ensure_collection(
         if max_materialize is None:
             return tuple(it)
         limit = max_materialize
-        out = []
-        for i, item in enumerate(it):
-            if i >= limit:
-                raise ValueError(
-                    f"Iterable produced {i + 1} items, exceeds limit {limit}"
-                )
-            out.append(item)
-        return tuple(out)
+        out = tuple(itertools.islice(it, limit + 1))
+        if len(out) > limit:
+            raise ValueError(
+                f"Iterable produced {len(out)} items, exceeds limit {limit}"
+            )
+        return out[:limit]
     except TypeError as exc:
         raise TypeError(f"{it!r} is not iterable") from exc
 

@@ -13,8 +13,6 @@ from .callback_utils import register_callback
 from .glyph_history import ensure_history, last_glyph, count_glyphs, append_metric
 from .constants_glyphs import (
     ANGLE_MAP,
-    ESTABILIZADORES,
-    DISRUPTIVOS,
     GLYPHS_CANONICAL,
 )
 

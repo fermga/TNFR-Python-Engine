@@ -11,7 +11,6 @@ from tnfr.trace import (
     CallbackSpec,
 )
 from tnfr.callback_utils import register_callback, invoke_callbacks
-import pytest
 from types import MappingProxyType
 
 

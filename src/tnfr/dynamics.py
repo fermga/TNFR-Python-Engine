@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 import math
-import random
 from collections import deque
 from typing import Dict, Any, Literal, TYPE_CHECKING
 
@@ -61,7 +60,7 @@ from .collections_utils import normalize_weights
 from .import_utils import get_numpy
 
 if TYPE_CHECKING:  # pragma: no cover - for type hints only
-    import networkx as nx
+    import networkx as nx  # noqa: F401
 from .selector import (
     _selector_thresholds,
     _norms_para_selector,

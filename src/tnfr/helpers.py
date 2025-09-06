@@ -3,10 +3,8 @@
 from __future__ import annotations
 from typing import (
     Iterable,
-    Sequence,
     Dict,
     Any,
-    Optional,
     TYPE_CHECKING,
     Callable,
     TypeVar,
@@ -18,8 +16,6 @@ from collections import OrderedDict
 from functools import lru_cache
 import threading
 
-_EDGE_CACHE_LOCK = threading.Lock()
-
 from .import_utils import get_numpy
 from .collections_utils import (
     MAX_MATERIALIZE_DEFAULT,
@@ -30,6 +26,8 @@ from .collections_utils import (
 )
 from .alias import get_attr
 from .constants import ALIAS_THETA
+
+_EDGE_CACHE_LOCK = threading.Lock()
 
 
 @lru_cache(maxsize=1)

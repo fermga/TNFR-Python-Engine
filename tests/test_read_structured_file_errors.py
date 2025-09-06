@@ -1,6 +1,7 @@
 """Pruebas de read structured file errors."""
 
 import pytest
+import importlib.util
 from pathlib import Path
 from json import JSONDecodeError
 import tnfr.io as io_mod
@@ -60,9 +61,7 @@ def test_read_structured_file_corrupt_yaml(tmp_path: Path):
 
 
 def test_read_structured_file_corrupt_toml(tmp_path: Path):
-    try:
-        import tomllib  # type: ignore[attr-defined]
-    except ModuleNotFoundError:
+    if importlib.util.find_spec("tomllib") is None:
         pytest.importorskip("tomli")
     path = tmp_path / "bad.toml"
     path.write_text("a = [1, 2", encoding="utf-8")
