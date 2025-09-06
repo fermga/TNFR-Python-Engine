@@ -9,6 +9,8 @@ from tnfr.sense import (
     sigma_vector_from_graph,
     _node_weight,
     _sigma_from_pairs,
+    _sigma_from_vectors,
+    glyph_unit,
 )
 from tnfr.types import Glyph
 
@@ -74,3 +76,20 @@ def test_sigma_vector_from_graph_matches_naive():
     for key in ("x", "y", "mag", "angle", "n"):
         assert vec_opt[key] == pytest.approx(vec_ref[key])
     assert t_opt <= t_ref * 2
+
+
+def test_sigma_from_vectors_accepts_single_complex():
+    vec, n = _sigma_from_vectors(1 + 1j)
+    assert n == 1
+    assert vec["x"] == pytest.approx(1.0)
+    assert vec["y"] == pytest.approx(1.0)
+
+
+def test_unknown_glyph_does_not_shift_average():
+    base, _ = _sigma_from_vectors([glyph_unit(Glyph.AL.value)])
+    with_unknown, _ = _sigma_from_vectors([
+        glyph_unit(Glyph.AL.value),
+        glyph_unit("ZZ"),
+    ])
+    assert glyph_unit("ZZ") == 0 + 0j
+    assert with_unknown["angle"] == pytest.approx(base["angle"])

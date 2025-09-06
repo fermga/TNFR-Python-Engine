@@ -2,6 +2,8 @@
 
 from tnfr.glyph_history import push_glyph, recent_glyph
 from tnfr.constants import ALIAS_EPI_KIND
+import time
+import pytest
 
 
 def _make_node(history, current=None, window=10):
@@ -27,5 +29,15 @@ def test_recent_glyph_window_zero():
 def test_recent_glyph_history_lookup():
     nd = _make_node(["A", "B"], current="C")
     assert recent_glyph(nd, "B", window=2)
-    assert not recent_glyph(nd, "A", window=2)
+    assert recent_glyph(nd, "A", window=2)
     assert recent_glyph(nd, "A", window=3)
+
+
+@pytest.mark.slow
+def test_recent_glyph_benchmark():
+    nd = _make_node([str(i) for i in range(1000)], window=1000)
+    start = time.perf_counter()
+    for _ in range(1000):
+        recent_glyph(nd, "999", window=1000)
+    duration = time.perf_counter() - start
+    assert duration < 0.1

@@ -150,8 +150,8 @@ def _update_node_sample(G, *, step: int) -> None:
     limit = int(G.graph.get("UM_CANDIDATE_COUNT", 0))
     n = G.number_of_nodes()
     if limit <= 0 or n < 50 or limit >= n:
-        # Avoid materialising the node view unless strictly necessary.
-        G.graph["_node_sample"] = G.nodes()
+        # Avoid exposing a mutable NodeView that may change later.
+        G.graph["_node_sample"] = tuple(G.nodes())
         return
 
     nodes = list(G.nodes())

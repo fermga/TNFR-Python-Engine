@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, Mapping
 import copy
 import warnings
+from types import MappingProxyType
 
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
 from .init import INIT_DEFAULTS
@@ -34,12 +35,10 @@ IMMUTABLE_TYPES = (
 # Diccionario combinado exportado
 # Unimos los diccionarios en orden de menor a mayor prioridad para que los
 # valores de ``METRIC_DEFAULTS`` sobrescriban al resto, como hacía ``ChainMap``.
-DEFAULTS: Dict[str, Any] = (
-    CORE_DEFAULTS
-    | INIT_DEFAULTS
-    | REMESH_DEFAULTS
-    | METRIC_DEFAULTS
+_DEFAULTS_COMBINED: Dict[str, Any] = (
+    CORE_DEFAULTS | INIT_DEFAULTS | REMESH_DEFAULTS | METRIC_DEFAULTS
 )
+DEFAULTS: Mapping[str, Any] = MappingProxyType(_DEFAULTS_COMBINED)
 
 # -------------------------
 # Retrocompatibilidad y aliases
@@ -68,7 +67,7 @@ def attach_defaults(G, override: bool = False) -> None:
 
 
 def inject_defaults(
-    G, defaults: Dict[str, Any] = DEFAULTS, override: bool = False
+    G, defaults: Mapping[str, Any] = DEFAULTS, override: bool = False
 ) -> None:
     """Inject ``defaults`` into ``G.graph``.
 

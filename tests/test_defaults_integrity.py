@@ -1,6 +1,7 @@
 """Pruebas de defaults integrity."""
 
 from collections import ChainMap
+import pytest
 
 from tnfr.constants import (
     DEFAULTS,
@@ -23,3 +24,8 @@ def test_defaults_contains_submodule_parts():
     for part in (core.DEFAULTS_PART, init.DEFAULTS_PART, metric.DEFAULTS_PART):
         for k, v in part.items():
             assert DEFAULTS[k] == v
+
+
+def test_defaults_is_immutable():
+    with pytest.raises(TypeError):
+        DEFAULTS["foo"] = 1  # type: ignore[misc]

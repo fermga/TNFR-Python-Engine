@@ -193,7 +193,7 @@ def _stable_json(obj: Any) -> Any:
         return {str(k): _stable_json(v) for k, v in obj.items()}
     if hasattr(obj, "__dict__"):
         return {k: _stable_json(v) for k, v in vars(obj).items()}
-    return obj.__class__.__qualname__
+    return f"{obj.__module__}.{obj.__class__.__qualname__}"
 
 
 def node_set_checksum(G: "nx.Graph", nodes: Iterable[Any] | None = None) -> str:
@@ -210,7 +210,9 @@ def node_set_checksum(G: "nx.Graph", nodes: Iterable[Any] | None = None) -> str:
     sha1 = hashlib.sha1()
 
     def serialise(n: Any) -> str:
-        return json.dumps(_stable_json(n), sort_keys=True, ensure_ascii=False)
+        return json.dumps(
+            _stable_json(n), sort_keys=True, ensure_ascii=False, separators=(",", ":")
+        )
 
     node_iter = nodes if nodes is not None else G.nodes()
     for i, node_repr in enumerate(sorted(serialise(n) for n in node_iter)):

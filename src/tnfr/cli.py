@@ -6,6 +6,7 @@ import json
 import logging
 import sys
 from typing import Any, Dict, List, Optional, Callable, TYPE_CHECKING
+from collections.abc import Sequence
 from pathlib import Path
 from collections import deque
 
@@ -64,7 +65,7 @@ __all__ = [
 def _flatten_tokens(obj: Any):
     """Generador recursivo que rinde cada token en orden."""
 
-    if isinstance(obj, list):
+    if isinstance(obj, Sequence) and not isinstance(obj, str):
         for item in obj:
             yield from _flatten_tokens(item)
     else:

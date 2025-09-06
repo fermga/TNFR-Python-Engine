@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import warnings
 from typing import Any, Callable, Dict, Optional, Protocol, NamedTuple
+from collections.abc import Mapping
 
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs
@@ -107,14 +108,14 @@ def _safe_graph_mapping(G, key: str) -> Optional[Dict[str, Any]]:
     data = G.graph.get(key)
     if data is None:
         return None
-    if not isinstance(data, dict):
+    if not isinstance(data, Mapping):
         warnings.warn(
             f"G.graph[{key!r}] no es un mapeo; se ignora",
             UserWarning,
             stacklevel=2,
         )
         return None
-    return data.copy()
+    return dict(data)
 
 
 def mapping_field(G, graph_key: str, out_key: str) -> Dict[str, Any]:

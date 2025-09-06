@@ -7,9 +7,12 @@ from tnfr.trace import (
     _callback_names,
     gamma_field,
     grammar_field,
+    _safe_graph_mapping,
     CallbackSpec,
 )
 from tnfr.callback_utils import register_callback, invoke_callbacks
+import pytest
+from types import MappingProxyType
 
 
 def test_register_trace_idempotent(graph_canon):
@@ -82,3 +85,13 @@ def test_grammar_field_non_mapping_warns(graph_canon):
     with pytest.warns(UserWarning):
         out = grammar_field(G)
     assert out == {}
+
+
+def test_safe_graph_mapping_accepts_mapping_proxy(graph_canon):
+    G = graph_canon()
+    data = MappingProxyType({"a": 1})
+    G.graph["foo"] = data
+    out = _safe_graph_mapping(G, "foo")
+    assert out == {"a": 1}
+    out["b"] = 2
+    assert "b" not in data
