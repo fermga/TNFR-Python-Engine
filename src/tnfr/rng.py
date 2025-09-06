@@ -14,7 +14,7 @@ _RNG_CACHE: OrderedDict[Tuple[int, int], random.Random] = OrderedDict()
 _RNG_LOCK = threading.Lock()
 
 
-def _make_rng(seed: int, key: int) -> random.Random:
+def make_rng(seed: int, key: int) -> random.Random:
     seed_bytes = struct.pack(
         ">QQ",
         int(seed) & 0xFFFFFFFFFFFFFFFF,
@@ -34,7 +34,7 @@ def get_rng(seed: int, key: int) -> random.Random:
         try:
             rng = cache.pop(k)
         except KeyError:
-            rng = _make_rng(seed, key)
+            rng = make_rng(seed, key)
         cache[k] = rng
         maxsize = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
         while maxsize > 0 and len(cache) > maxsize:
@@ -47,6 +47,5 @@ def _cache_clear() -> None:
 
 
 get_rng.cache_clear = _cache_clear  # type: ignore[attr-defined]
-get_rng.__wrapped__ = _make_rng  # type: ignore[attr-defined]
 
-__all__ = ["get_rng"]
+__all__ = ["get_rng", "make_rng"]

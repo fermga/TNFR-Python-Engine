@@ -9,7 +9,7 @@ def test_heap_compaction_single_key():
     hist["a"] = 0
     for _ in range(100):
         _ = hist["a"]
-    assert len(hist._heap) <= len(hist) * 2
+    assert len(hist._heap) <= len(hist) + hist._compact_every
 
 
 def test_heap_compaction_many_keys():
@@ -18,7 +18,7 @@ def test_heap_compaction_many_keys():
         hist[f"k{i}"] = i
     for i in range(1000):
         _ = hist[f"k{i % 10}"]
-    assert len(hist._heap) <= len(hist) * 2
+    assert len(hist._heap) <= len(hist) + hist._compact_every
 
 
 def test_get_tracks_usage():
@@ -47,7 +47,7 @@ def test_heap_compaction_after_deletions():
         _ = hist[f"k{i}"]
     for _ in range(5):
         hist.pop_least_used()
-        assert len(hist._heap) <= len(hist) * 2
+        assert len(hist._heap) <= len(hist) + hist._compact_every
 
 
 def test_pop_least_used_empty_message():

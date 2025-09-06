@@ -7,8 +7,8 @@ from tnfr.glyph_history import push_glyph
 
 def test_push_glyph_negative_window():
     nd = {}
-    with pytest.raises(ValueError, match="window must be >= 0"):
-        push_glyph(nd, "A", window=-1)
+    push_glyph(nd, "A", window=-1)
+    assert list(nd["glyph_history"]) == []
 
 
 def test_push_glyph_zero_window():

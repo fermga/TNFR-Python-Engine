@@ -31,7 +31,7 @@ from .helpers import (
     ensure_node_offset_map,
 )
 from .alias import get_attr, set_attr
-from .rng import get_rng
+from .rng import get_rng, make_rng
 from .callback_utils import invoke_callbacks
 from .glyph_history import append_metric
 
@@ -107,13 +107,13 @@ def random_jitter(
     if cache is None:
         cache_size = int(node.graph.get("JITTER_CACHE_SIZE", DEFAULTS["JITTER_CACHE_SIZE"]))
         if cache_size <= 0:
-            rng = get_rng.__wrapped__(seed, seed_key)  # fresh each call
+            rng = make_rng(seed, seed_key)  # fresh each call
         else:
             rng = get_rng(seed, seed_key)
     else:
         rng = cache.get(seed_key)
         if rng is None:
-            rng = get_rng.__wrapped__(seed, seed_key)
+            rng = make_rng(seed, seed_key)
             cache[seed_key] = rng
 
     return rng.uniform(-amplitude, amplitude)
@@ -157,19 +157,37 @@ def _mix_epi_with_neighbors(
         else str(default_glyph)
     )
     epi = node.EPI
-    neigh = list(node.neighbors())
-    if not neigh:
-        node.epi_kind = default_kind
-        return
+    neigh_iter = node.neighbors()
     if hasattr(node, "G"):
         NodoNX = _get_NodoNX()
-        neigh = [
-            v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)
-            for v in neigh
-        ]  # type: ignore[attr-defined]
-    epi_bar = list_mean(v.EPI for v in neigh)
+        original_iter = neigh_iter
+
+        def _gen():
+            for v in original_iter:
+                yield v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)
+
+        neigh_iter = _gen()  # type: ignore[attr-defined]
+
+    total = 0.0
+    count = 0
+    best = None
+    for v in neigh_iter:
+        epi_v = v.EPI
+        total += epi_v
+        count += 1
+        if best is None or abs(epi_v) > abs(best.EPI):
+            best = v
+
+    if count == 0:
+        node.epi_kind = default_kind
+        return
+
+    epi_bar = total / count
     node.EPI = (1 - mix) * epi + mix * epi_bar
-    node.epi_kind = _select_dominant_glyph(node, neigh) or default_kind
+    dominant = best.epi_kind if best and abs(best.EPI) > abs(node.EPI) else node.epi_kind
+    if not dominant:
+        dominant = default_kind
+    node.epi_kind = dominant
 
 
 def _op_AL(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # AL — Emisión

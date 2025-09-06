@@ -14,7 +14,7 @@ from .constants import (
     ALIAS_THETA,
     ALIAS_SI,
 )
-from .alias import get_attr, set_attr, _recompute_abs_max
+from .alias import get_attr, set_attr, _recompute_abs_max, multi_recompute_abs_max
 from .collections_utils import normalize_weights
 from .helpers import clamp01, angle_diff, edge_version_cache
 
@@ -39,15 +39,10 @@ class TrigCache:
 
 def compute_dnfr_accel_max(G) -> dict:
     """Compute absolute maxima of |ΔNFR| and |d²EPI/dt²|."""
-    dnfr_max = max(
-        (abs(get_attr(nd, ALIAS_DNFR, 0.0)) for _, nd in G.nodes(data=True)),
-        default=0.0,
+    maxes = multi_recompute_abs_max(
+        G, {"dnfr_max": ALIAS_DNFR, "accel_max": ALIAS_D2EPI}
     )
-    accel_max = max(
-        (abs(get_attr(nd, ALIAS_D2EPI, 0.0)) for _, nd in G.nodes(data=True)),
-        default=0.0,
-    )
-    return {"dnfr_max": float(dnfr_max), "accel_max": float(accel_max)}
+    return maxes
 
 
 def compute_coherence(G) -> float:

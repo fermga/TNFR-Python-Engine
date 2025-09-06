@@ -169,7 +169,6 @@ GRAMMAR_ARG_SPECS = [
 ]
 
 # Especificaciones para opciones relacionadas con el histórico
-# Especificaciones para opciones relacionadas con el histórico
 HISTORY_ARG_SPECS = [
     ("--save-history", {"dest": "save_history", "type": str, "default": None}),
     (
@@ -223,6 +222,12 @@ COMMON_ARG_SPECS = [
     ("--gamma-beta", {"type": float, "default": 0.0}),
     ("--gamma-R0", {"type": float, "default": 0.0}),
 ]
+
+
+def add_arg_specs(parser: argparse.ArgumentParser, specs) -> None:
+    """Register arguments from ``specs`` on ``parser``."""
+    for opt, kwargs in specs:
+        parser.add_argument(opt, **kwargs)
 
 
 def _args_to_dict(args: argparse.Namespace, prefix: str) -> dict[str, Any]:
@@ -360,16 +365,17 @@ def resolve_program(
 
 def add_common_args(parser: argparse.ArgumentParser) -> None:
     """Add arguments shared across subcommands."""
-    for opt, kwargs in COMMON_ARG_SPECS:
-        parser.add_argument(opt, **kwargs)
+    add_arg_specs(parser, COMMON_ARG_SPECS)
 
 
 def add_grammar_args(parser: argparse.ArgumentParser) -> None:
     """Add grammar and glyph hysteresis options."""
     group = parser.add_argument_group("Grammar")
-    for opt, kwargs in GRAMMAR_ARG_SPECS:
-        dest = opt.lstrip("-").replace(".", "_")
-        group.add_argument(opt, dest=dest, default=None, **kwargs)
+    specs = [
+        (opt, {**kwargs, "dest": opt.lstrip("-").replace(".", "_"), "default": None})
+        for opt, kwargs in GRAMMAR_ARG_SPECS
+    ]
+    add_arg_specs(group, specs)
 
 
 def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
@@ -382,8 +388,7 @@ def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
 
 def add_history_export_args(parser: argparse.ArgumentParser) -> None:
     """Add arguments to save or export history."""
-    for opt, kwargs in HISTORY_ARG_SPECS:
-        parser.add_argument(opt, **kwargs)
+    add_arg_specs(parser, HISTORY_ARG_SPECS)
 
 
 def add_canon_toggle(parser: argparse.ArgumentParser) -> None:

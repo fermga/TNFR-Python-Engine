@@ -20,6 +20,7 @@ __all__ = [
     "set_attr_with_max",
     "set_vf",
     "set_dnfr",
+    "multi_recompute_abs_max",
 ]
 
 
@@ -224,6 +225,26 @@ def _recompute_abs_max(G, aliases: tuple[str, ...]):
         abs(get_attr(G.nodes[node], aliases, 0.0)) if node is not None else 0.0
     )
     return max_val, node
+
+
+def multi_recompute_abs_max(
+    G, alias_map: Dict[str, tuple[str, ...]]
+) -> Dict[str, float]:
+    """Return absolute maxima for each entry in ``alias_map``.
+
+    ``alias_map`` maps result keys to alias tuples. The graph is
+    traversed once and the absolute maximum for each alias tuple is
+    recorded. The returned dictionary uses the same keys as
+    ``alias_map``.
+    """
+
+    maxima = {k: 0.0 for k in alias_map}
+    for _, nd in G.nodes(data=True):
+        for key, aliases in alias_map.items():
+            val = abs(get_attr(nd, aliases, 0.0))
+            if val > maxima[key]:
+                maxima[key] = val
+    return {k: float(v) for k, v in maxima.items()}
 
 
 def _update_cached_abs_max(
