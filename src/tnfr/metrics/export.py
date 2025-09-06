@@ -7,21 +7,19 @@ import json
 from itertools import zip_longest
 
 from ..glyph_history import ensure_history
-from ..helpers import ensure_parent
+from ..helpers import safe_write
 from ..constants_glyphs import GLYPHS_CANONICAL
 from .core import glyphogram_series
 
 
 def _write_csv(path, headers, rows):
-    ensure_parent(path)
-    try:
-        with open(path, "w", newline="", encoding="utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow(headers)
-            for row in rows:
-                writer.writerow(row)
-    except OSError as e:
-        raise OSError(f"Failed to write CSV file {path}: {e}") from e
+    def _write(f):
+        writer = csv.writer(f)
+        writer.writerow(headers)
+        for row in rows:
+            writer.writerow(row)
+
+    safe_write(path, _write, newline="")
 
 
 def _iter_glif_rows(glyph):
@@ -38,7 +36,6 @@ def _iter_sigma_rows(sigma_rows):
 def export_history(G, base_path: str, fmt: str = "csv") -> None:
     """Dump glyphogram and σ(t) trace to compact CSV or JSON files."""
     hist = ensure_history(G)
-    ensure_parent(base_path)
     glyph = glyphogram_series(G)
     sigma_x = hist.tracked_get("sense_sigma_x", [])
     sigma_y = hist.tracked_get("sense_sigma_y", [])
@@ -121,9 +118,4 @@ def export_history(G, base_path: str, fmt: str = "csv") -> None:
             "epi_support": epi_supp,
         }
         json_path = base_path + ".json"
-        ensure_parent(json_path)
-        try:
-            with open(json_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-        except OSError as e:
-            raise OSError(f"Failed to write JSON file {json_path}: {e}") from e
+        safe_write(json_path, lambda f: json.dump(data, f, ensure_ascii=False, indent=2))

@@ -4,9 +4,14 @@ from __future__ import annotations
 
 import importlib
 import warnings
+import logging
+from functools import lru_cache
 from typing import Any
 
-__all__ = ["optional_import"]
+__all__ = ["optional_import", "get_numpy"]
+
+
+logger = logging.getLogger(__name__)
 
 
 def optional_import(name: str, fallback: Any | None = None) -> Any | None:
@@ -50,3 +55,23 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
             stacklevel=2,
         )
         return fallback
+
+
+@lru_cache(maxsize=1)
+def get_numpy(*, warn: bool = False) -> Any | None:
+    """Devuelve el módulo :mod:`numpy` o ``None`` si no está disponible.
+
+    Parameters
+    ----------
+    warn:
+        Si es ``True`` se registra una advertencia cuando la importación
+        falla. En caso contrario se registra a nivel ``DEBUG``.
+    """
+
+    module = optional_import("numpy")
+    if module is None:
+        log = logger.warning if warn else logger.debug
+        log(
+            "Fallo al importar numpy, se continuará con el modo no vectorizado"
+        )
+    return module

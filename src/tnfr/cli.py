@@ -37,7 +37,7 @@ from .gamma import GAMMA_REGISTRY
 from .scenarios import build_graph
 from .presets import get_preset
 from .config import apply_config
-from .helpers import read_structured_file, ensure_parent, list_mean
+from .helpers import read_structured_file, list_mean, safe_write
 from .observers import attach_standard_observer
 from . import __version__
 
@@ -147,12 +147,10 @@ def _default(obj: Any) -> Any:
 
 
 def _save_json(path: str, data: Any) -> None:
-    ensure_parent(path)
-    try:
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2, default=_default)
-    except OSError as e:
-        raise OSError(f"Failed to write JSON file {path}: {e}") from e
+    def _write(f):
+        json.dump(data, f, ensure_ascii=False, indent=2, default=_default)
+
+    safe_write(path, _write)
 
 
 # Metadatos para las opciones de gramática y del glyph

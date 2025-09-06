@@ -6,12 +6,12 @@ from json import JSONDecodeError
 import json
 import tnfr.helpers as helpers
 
-from tnfr.helpers import read_structured_file
+from tnfr.helpers import read_structured_file, StructuredFileError
 
 
 def test_read_structured_file_missing_file(tmp_path: Path):
     path = tmp_path / "missing.json"
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
     assert msg.startswith("No se pudo leer")
@@ -32,7 +32,7 @@ def test_read_structured_file_permission_error(
         return original_open(self, *args, **kwargs)
 
     monkeypatch.setattr(Path, "open", fake_open)
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
     assert msg.startswith("No se pudo leer")
@@ -42,7 +42,7 @@ def test_read_structured_file_permission_error(
 def test_read_structured_file_corrupt_json(tmp_path: Path):
     path = tmp_path / "bad.json"
     path.write_text("{bad json}", encoding="utf-8")
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
     assert msg.startswith("Error al parsear archivo JSON en")
@@ -53,7 +53,7 @@ def test_read_structured_file_corrupt_yaml(tmp_path: Path):
     pytest.importorskip("yaml")
     path = tmp_path / "bad.yaml"
     path.write_text("a: [1, 2", encoding="utf-8")
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
     assert msg.startswith("Error al parsear archivo YAML en")
@@ -67,7 +67,7 @@ def test_read_structured_file_corrupt_toml(tmp_path: Path):
         pytest.importorskip("tomli")
     path = tmp_path / "bad.toml"
     path.write_text("a = [1, 2", encoding="utf-8")
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
     assert msg.startswith("Error al parsear archivo TOML en")
@@ -85,7 +85,7 @@ def test_read_structured_file_missing_dependency(
 
     monkeypatch.setitem(helpers.PARSERS, ".yaml", fake_parser)
 
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
     assert msg.startswith("Dependencia faltante al parsear")
@@ -104,7 +104,7 @@ def test_read_structured_file_missing_dependency_toml(
 
     monkeypatch.setitem(helpers.PARSERS, ".toml", fake_parser)
 
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
     assert msg.startswith("Dependencia faltante al parsear")
@@ -115,7 +115,7 @@ def test_read_structured_file_missing_dependency_toml(
 def test_read_structured_file_unicode_error(tmp_path: Path):
     path = tmp_path / "bad.json"
     path.write_bytes(b"\xff\xfe\xfa")
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
     assert msg.startswith("Error de codificación al leer")
