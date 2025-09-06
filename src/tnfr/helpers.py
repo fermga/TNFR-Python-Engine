@@ -158,7 +158,10 @@ def read_structured_file(path: Path) -> Any:
         text = path.read_text(encoding="utf-8")
         return parser(text)
     except tuple(error_map) as e:
-        msg = error_map.get(type(e), "Error al parsear {path}: {e}")
+        msg = next(
+            (m for exc, m in error_map.items() if isinstance(e, exc)),
+            "Error al parsear {path}: {e}",
+        )
         raise ValueError(msg.format(path=path, e=e)) from e
 
 
@@ -192,8 +195,11 @@ def _stable_json(obj: Any) -> Any:
     return obj.__class__.__qualname__
 
 
-def node_set_checksum(G: "nx.Graph") -> str:
+def node_set_checksum(G: "nx.Graph", nodes: Iterable[Any] | None = None) -> str:
     """Devuelve el SHA1 del conjunto de nodos de ``G`` ordenado.
+
+    ``nodes`` permite reutilizar una colección ya obtenida para evitar recorrer
+    los nodos de ``G`` dos veces cuando el llamador ya los materializó.
 
     Cada nodo se serializa a JSON con claves ordenadas y evitando incluir
     direcciones de memoria, asegurando así una representación estable del
@@ -205,7 +211,8 @@ def node_set_checksum(G: "nx.Graph") -> str:
     def serialise(n: Any) -> str:
         return json.dumps(_stable_json(n), sort_keys=True, ensure_ascii=False)
 
-    for i, node_repr in enumerate(sorted(serialise(n) for n in G.nodes())):
+    node_iter = nodes if nodes is not None else G.nodes()
+    for i, node_repr in enumerate(sorted(serialise(n) for n in node_iter)):
         if i:
             sha1.update(b"|")
         sha1.update(node_repr.encode("utf-8"))

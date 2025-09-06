@@ -117,6 +117,12 @@ def _safe_graph_mapping(G, key: str) -> Optional[Dict[str, Any]]:
     return data.copy()
 
 
+def mapping_field(G, graph_key: str, out_key: str) -> Dict[str, Any]:
+    """Helper to copy mappings from ``G.graph`` into trace output."""
+    mapping = _safe_graph_mapping(G, graph_key)
+    return {out_key: mapping} if mapping is not None else {}
+
+
 # -------------------------
 # Builders
 # -------------------------
@@ -167,26 +173,15 @@ def _trace_capture(
 
 
 def gamma_field(G):
-    """Return Γ configuration.
+    """Return Γ configuration."""
 
-    The underlying mapping is shallow-copied from ``G.graph`` to avoid
-    accidental mutation.  Consumers should treat the returned dict as
-    immutable.
-    """
-
-    gam = _safe_graph_mapping(G, "GAMMA")
-    return {"gamma": gam} if gam is not None else {}
+    return mapping_field(G, "GAMMA", "gamma")
 
 
 def grammar_field(G):
-    """Return canonical grammar configuration.
+    """Return canonical grammar configuration."""
 
-    A shallow copy of ``G.graph['GRAMMAR_CANON']`` is returned and must be
-    considered read-only by callers.
-    """
-
-    gram = _safe_graph_mapping(G, "GRAMMAR_CANON")
-    return {"grammar": gram} if gram is not None else {}
+    return mapping_field(G, "GRAMMAR_CANON", "grammar")
 
 
 def selector_field(G):
@@ -195,28 +190,20 @@ def selector_field(G):
 
 
 def dnfr_weights_field(G):
-    """Return ΔNFR mix declared in the engine.
+    """Return ΔNFR mix declared in the engine."""
 
-    The mapping is copied only when present.  Treat the returned dict as
-    immutable.
-    """
-
-    mix = _safe_graph_mapping(G, "DNFR_WEIGHTS")
-    return {"dnfr_weights": mix} if mix is not None else {}
+    return mapping_field(G, "DNFR_WEIGHTS", "dnfr_weights")
 
 
 def si_weights_field(G):
-    """Return sense-plane weights and sensitivity.
+    """Return sense-plane weights and sensitivity."""
 
-    Uses shallow copies of the respective graph mappings; callers must not
-    mutate the returned dictionaries.
-    """
-
-    weights = _safe_graph_mapping(G, "_Si_weights")
-    sensitivity = _safe_graph_mapping(G, "_Si_sensitivity")
     return {
-        "si_weights": weights if weights is not None else {},
-        "si_sensitivity": sensitivity if sensitivity is not None else {},
+        **(mapping_field(G, "_Si_weights", "si_weights") or {"si_weights": {}}),
+        **(
+            mapping_field(G, "_Si_sensitivity", "si_sensitivity")
+            or {"si_sensitivity": {}}
+        ),
     }
 
 
