@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Callable, DefaultDict, TYPE_CHECKING
 from enum import Enum
 from collections import defaultdict
+from collections.abc import Sequence
 import logging
 
 from .constants import DEFAULTS
@@ -55,7 +56,7 @@ def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
     Supported formats
     -----------------
     * :class:`CallbackSpec` instances (returned unchanged).
-    * Tuples ``(name: str, func: Callable)``.
+    * Sequences ``(name: str, func: Callable)`` such as lists or tuples.
     * Bare callables ``func`` whose name is taken from ``func.__name__``.
 
     ``None`` is returned when ``entry`` does not match any of the accepted
@@ -64,7 +65,7 @@ def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
 
     if isinstance(entry, CallbackSpec):
         return entry
-    elif isinstance(entry, tuple):
+    elif isinstance(entry, Sequence) and not isinstance(entry, str):
         if len(entry) != 2:
             return None
         name, fn = entry
