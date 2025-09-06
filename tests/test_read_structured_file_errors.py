@@ -3,6 +3,7 @@
 import pytest
 from pathlib import Path
 from json import JSONDecodeError
+import json
 import tnfr.helpers as helpers
 
 from tnfr.helpers import read_structured_file
@@ -145,3 +146,14 @@ def test_import_error_not_reported_as_toml(monkeypatch: pytest.MonkeyPatch) -> N
     msg = helpers._format_structured_file_error(Path("data.toml"), err)
     assert msg.startswith("Dependencia faltante al parsear")
     assert not msg.startswith("Error al parsear archivo TOML")
+
+
+def test_read_structured_file_ignores_missing_yaml_when_parsing_json(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    path = tmp_path / "data.json"
+    path.write_text("{\"a\": 1}", encoding="utf-8")
+    monkeypatch.setattr(helpers, "yaml", None)
+    monkeypatch.setattr(helpers, "tomllib", None)
+    monkeypatch.setattr(helpers, "PARSERS", {".json": json.loads})
+    assert read_structured_file(path) == {"a": 1}

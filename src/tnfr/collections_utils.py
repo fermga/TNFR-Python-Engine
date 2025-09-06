@@ -57,8 +57,7 @@ def ensure_collection(
         if max_materialize is None:
             return tuple(it)
         limit = max_materialize
-        iterator = iter(it)
-        data = tuple(islice(iterator, limit + 1))
+        data = tuple(islice(iter(it), limit + 1))
         actual = len(data)
         if actual > limit:
             raise ValueError(
@@ -79,21 +78,9 @@ def normalize_weights(
     """Normalize ``keys`` in ``dict_like`` so their sum is 1."""
     keys = list(keys)
     default_float = float(default)
-
-    weights = _convert_weights(
-        dict_like, keys, default_float, error_on_negative
-    )
-    _validate_weights(weights, error_on_negative)
-    return _normalize_distribution(weights, keys)
-
-
-def _convert_weights(
-    dict_like: Mapping[str, Any],
-    keys: Iterable[str],
-    default_float: float,
-    error_on_negative: bool,
-) -> dict[str, float]:
-    def _to_float(k: str) -> float:
+    weights: dict[str, float] = {}
+    negatives: dict[str, float] = {}
+    for k in keys:
         val = dict_like.get(k, default_float)
         ok, converted = _convert_value(
             val,
@@ -102,25 +89,14 @@ def _convert_weights(
             key=k,
             log_level=logging.WARNING,
         )
-        return converted if ok and converted is not None else default_float
-
-    return {k: _to_float(k) for k in keys}
-
-
-def _validate_weights(
-    weights: Mapping[str, float], error_on_negative: bool
-) -> None:
-    negatives = {k: v for k, v in weights.items() if v < 0}
-    if not negatives:
-        return
-    if error_on_negative:
-        raise ValueError(f"Pesos negativos detectados: {negatives}")
-    logger.warning("Pesos negativos detectados: %s", negatives)
-
-
-def _normalize_distribution(
-    weights: Mapping[str, float], keys: Sequence[str]
-) -> dict[str, float]:
+        w = converted if ok and converted is not None else default_float
+        weights[k] = w
+        if w < 0:
+            negatives[k] = w
+    if negatives:
+        if error_on_negative:
+            raise ValueError(f"Pesos negativos detectados: {negatives}")
+        logger.warning("Pesos negativos detectados: %s", negatives)
     total = math.fsum(weights.values())
     n = len(keys)
     if total <= 0:
@@ -128,7 +104,7 @@ def _normalize_distribution(
             return {}
         uniform = 1.0 / n
         return {k: uniform for k in keys}
-    return {k: v / total for k, v in weights.items()}
+    return {k: weights[k] / total for k in keys}
 
 
 def normalize_counter(

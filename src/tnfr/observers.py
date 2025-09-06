@@ -105,7 +105,10 @@ def wbar(G, window: int | None = None) -> float:
         window = int(
             G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25))
         )
-    w = min(len(cs), max(1, int(window)))
+    w = int(window)
+    if w <= 0:
+        raise ValueError("window must be positive")
+    w = min(len(cs), w)
     if isinstance(cs, list):
         tail = cs[-w:]
     else:

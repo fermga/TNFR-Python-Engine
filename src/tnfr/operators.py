@@ -157,8 +157,7 @@ def random_jitter(
             rng = _jitter_base(base_seed, seed_key)
             cache[seed_key] = rng
 
-    base = rng.uniform(-1.0, 1.0)
-    return amplitude * base
+    return rng.uniform(-amplitude, amplitude)
 
 
 def get_glyph_factors(node: NodoProtocol) -> Dict[str, Any]:

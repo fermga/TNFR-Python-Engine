@@ -151,12 +151,21 @@ def _missing_dependency(name: str) -> Callable[[str], Any]:
     return _raise
 
 
-PARSERS: Dict[str, Callable[[str], Any]] = {
-    ".json": json.loads,
-    ".yaml": getattr(yaml, "safe_load", _missing_dependency("pyyaml")),
-    ".yml": getattr(yaml, "safe_load", _missing_dependency("pyyaml")),
-    ".toml": getattr(tomllib, "loads", _missing_dependency("tomllib/tomli")),
-}
+PARSERS: Dict[str, Callable[[str], Any]] = {".json": json.loads}
+
+
+def _get_parser(suffix: str) -> Callable[[str], Any]:
+    parser = PARSERS.get(suffix)
+    if parser is not None:
+        return parser
+    if suffix in (".yaml", ".yml"):
+        parser = getattr(yaml, "safe_load", _missing_dependency("pyyaml"))
+    elif suffix == ".toml":
+        parser = getattr(tomllib, "loads", _missing_dependency("tomllib/tomli"))
+    else:
+        raise KeyError(suffix)
+    PARSERS[suffix] = parser
+    return parser
 
 
 def _format_structured_file_error(path: Path, e: Exception) -> str:
@@ -184,9 +193,10 @@ def _format_structured_file_error(path: Path, e: Exception) -> str:
 def read_structured_file(path: Path) -> Any:
     """Lee un archivo JSON, YAML o TOML y devuelve los datos parseados."""
     suffix = path.suffix.lower()
-    if suffix not in PARSERS:
-        raise ValueError(f"Extensión de archivo no soportada: {suffix}")
-    parser = PARSERS[suffix]
+    try:
+        parser = _get_parser(suffix)
+    except KeyError as e:
+        raise ValueError(f"Extensión de archivo no soportada: {suffix}") from e
     try:
         text = path.read_text(encoding="utf-8")
         return parser(text)
@@ -257,8 +267,11 @@ def node_set_checksum(
         )
 
     node_iter = nodes if nodes is not None else G.nodes()
-    serialised = sorted(serialise(n) for n in node_iter)
-    sha1.update("|".join(serialised).encode("utf-8"))
+    sorted_nodes = sorted(node_iter, key=lambda n: serialise(n))
+    for idx, n in enumerate(sorted_nodes):
+        if idx:
+            sha1.update(b"|")
+        sha1.update(serialise(n).encode("utf-8"))
     return sha1.hexdigest()
 
 
@@ -331,7 +344,7 @@ def cached_nodes_and_A(
 
 def clamp(x: float, a: float, b: float) -> float:
     """Constriñe ``x`` al intervalo cerrado [a, b]."""
-    return a if x < a else b if x > b else x
+    return min(max(x, a), b)
 
 
 def clamp01(x: float) -> float:

@@ -20,7 +20,9 @@ def _ensure_kuramoto_cache(G, t) -> None:
 
     The cache is invalidated if the step or node signature changes.
     """
-    checksum = node_set_checksum(G)
+    checksum = G.graph.get("_dnfr_nodes_checksum")
+    if checksum is None:
+        checksum = node_set_checksum(G)
     edge_version = int(G.graph.get("_edge_version", 0))
     nodes_sig = (len(G), checksum, edge_version)
     cache = G.graph.get("_kuramoto_cache")
@@ -64,6 +66,27 @@ def _kuramoto_common(G, node, _cfg):
     psi = float(cache.get("psi", 0.0))
     th_i = get_attr(G.nodes[node], ALIAS_THETA, 0.0)
     return th_i, R, psi
+
+
+def _get_gamma_spec(G) -> Mapping[str, Any]:
+    raw = G.graph.get("GAMMA")
+    cached = G.graph.get("_gamma_spec")
+    if cached is not None and G.graph.get("_gamma_spec_raw") is raw:
+        return cached
+    if raw is None:
+        spec = {"type": "none"}
+    elif not isinstance(raw, Mapping):
+        warnings.warn(
+            "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}",
+            UserWarning,
+            stacklevel=2,
+        )
+        spec = {"type": "none"}
+    else:
+        spec = raw
+    G.graph["_gamma_spec"] = spec
+    G.graph["_gamma_spec_raw"] = raw
+    return spec
 
 
 # -----------------
@@ -181,17 +204,7 @@ def eval_gamma(
     ``strict`` is ``False``. If omitted, ``logging.ERROR`` is used in
     strict mode and ``logging.DEBUG`` otherwise.
     """
-    spec = G.graph.get("GAMMA")
-    if spec is None:
-        spec = {"type": "none"}
-    elif not isinstance(spec, Mapping):
-        warnings.warn(
-            "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}",
-            UserWarning,
-            stacklevel=2,
-        )
-        spec = {"type": "none"}
-
+    spec = _get_gamma_spec(G)
     spec_type = spec.get("type", "none")
     reg_entry = GAMMA_REGISTRY.get(spec_type)
     if reg_entry is None:
