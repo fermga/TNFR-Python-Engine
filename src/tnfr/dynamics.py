@@ -93,16 +93,22 @@ def _update_node_sample(G, *, step: int) -> None:
     The sample is limited by ``UM_CANDIDATE_COUNT`` and refreshed every
     simulation step. When the network is small (``< 50`` nodes) or the limit
     is non‑positive, the full node set is used and sampling is effectively
-    disabled.
+    disabled. A tuple snapshot of nodes is cached in
+    ``G.graph['_node_list']`` and reused across steps; it is only refreshed
+    when the graph size changes. Sampling operates directly on this cached
+    tuple.
     """
     limit = int(G.graph.get("UM_CANDIDATE_COUNT", 0))
     n = G.number_of_nodes()
+    nodes = G.graph.get("_node_list")
+    if nodes is None or len(nodes) != n:
+        nodes = tuple(G.nodes())
+        G.graph["_node_list"] = nodes
     if limit <= 0 or n < 50 or limit >= n:
         # Avoid exposing a mutable NodeView that may change later.
-        G.graph["_node_sample"] = tuple(G.nodes())
+        G.graph["_node_sample"] = nodes
         return
 
-    nodes = list(G.nodes())
     seed = int(G.graph.get("RANDOM_SEED", 0))
     # Ensure deterministic seeding independent of ``PYTHONHASHSEED`` by
     # combining the user seed and step via bitwise XOR instead of a string
