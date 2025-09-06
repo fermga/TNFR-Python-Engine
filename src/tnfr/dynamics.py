@@ -112,7 +112,7 @@ def _cached_nodes_and_A(
 
     cache: OrderedDict = G.graph.setdefault("_dnfr_cache", OrderedDict())
     nodes_list = list(G.nodes())
-    checksum = node_set_checksum(G)
+    checksum = node_set_checksum(G, nodes_list)
 
     last_checksum = G.graph.get("_dnfr_nodes_checksum")
     if last_checksum != checksum:

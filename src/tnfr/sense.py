@@ -80,12 +80,15 @@ def _sigma_from_vectors(
     """
 
     try:
-        vectors_iter = list(iter(vectors))
+        iterator = iter(vectors)
     except TypeError:
-        vectors_iter = [vectors]
+        iterator = iter([vectors])
 
-    cnt = len(vectors_iter)
-    acc = sum(vectors_iter, complex(0.0, 0.0))
+    cnt = 0
+    acc = complex(0.0, 0.0)
+    for z in iterator:
+        cnt += 1
+        acc += z
 
     if cnt <= 0:
         vec = {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": float(fallback_angle)}

@@ -50,6 +50,10 @@ ALIASES: Dict[str, tuple[str, ...]] = {
     "REMESH_TAU": ("REMESH_TAU_GLOBAL", "REMESH_TAU_LOCAL"),
 }
 
+_ALIAS_TARGET_TO_KEY: Dict[str, str] = {
+    target: alias for alias, targets in ALIASES.items() for target in targets
+}
+
 # -------------------------
 # Utilidades
 # -------------------------
@@ -95,14 +99,14 @@ def get_param(G, key: str):
     """Recupera parámetro desde ``G.graph`` resolviendo aliases legados."""
     if key in G.graph:
         return G.graph[key]
-    for alias, targets in ALIASES.items():
-        if key in targets and alias in G.graph:
-            warnings.warn(
-                f"'{alias}' es alias legado; usa '{key}'",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            return G.graph[alias]
+    alias = _ALIAS_TARGET_TO_KEY.get(key)
+    if alias and alias in G.graph:
+        warnings.warn(
+            f"'{alias}' es alias legado; usa '{key}'",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return G.graph[alias]
     if key not in DEFAULTS:
         raise KeyError(f"Parámetro desconocido: '{key}'")
     return DEFAULTS[key]

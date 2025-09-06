@@ -19,6 +19,11 @@ def test_recent_glyph_window_one():
     assert recent_glyph(nd, "Y", window=1)
 
 
+def test_recent_glyph_window_zero():
+    nd = _make_node(["A", "B"], current="B")
+    assert not recent_glyph(nd, "B", window=0)
+
+
 def test_recent_glyph_history_lookup():
     nd = _make_node(["A", "B"], current="C")
     assert recent_glyph(nd, "B", window=2)

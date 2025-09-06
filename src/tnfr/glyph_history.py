@@ -33,6 +33,8 @@ def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
     gl = str(glyph)
     if window < 0:
         raise ValueError("window must be >= 0")
+    if window == 0:
+        return False
 
     hist = nd.get("glyph_history")
     if not hist:

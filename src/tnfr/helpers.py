@@ -34,6 +34,7 @@ except ModuleNotFoundError:  # pragma: no cover
         from tomli import TOMLDecodeError  # type: ignore
     except ModuleNotFoundError:  # pragma: no cover
         tomllib = None  # type: ignore
+        TOMLDecodeError = Exception  # type: ignore[assignment]
 
 
 try:  # pragma: no cover - dependencia opcional
