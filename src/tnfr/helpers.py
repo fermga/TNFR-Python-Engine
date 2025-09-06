@@ -164,28 +164,37 @@ PARSERS: Dict[str, Callable[[str], Any]] = {
 }
 
 
+def _format_structured_file_error(path: Path, e: Exception) -> str:
+    """Devuelve un mensaje de error formateado para ``path``.
+
+    Esta función centraliza la lógica de generación de mensajes al manejar
+    distintas excepciones ocurridas al leer o parsear archivos estructurados.
+    """
+
+    if isinstance(e, OSError):
+        return f"No se pudo leer {path}: {e}"
+    if isinstance(e, JSONDecodeError):
+        return f"Error al parsear archivo JSON en {path}: {e}"
+    if isinstance(e, YAMLError):
+        return f"Error al parsear archivo YAML en {path}: {e}"
+    if isinstance(e, TOMLDecodeError):
+        return f"Error al parsear archivo TOML en {path}: {e}"
+    if isinstance(e, ImportError):
+        return f"Dependencia faltante al parsear {path}: {e}"
+    return f"Error al parsear {path}: {e}"
+
+
 def read_structured_file(path: Path) -> Any:
     """Lee un archivo JSON, YAML o TOML y devuelve los datos parseados."""
     suffix = path.suffix.lower()
     if suffix not in PARSERS:
         raise ValueError(f"Extensión de archivo no soportada: {suffix}")
     parser = PARSERS[suffix]
-    error_map = {
-        OSError: "No se pudo leer {path}: {e}",
-        JSONDecodeError: "Error al parsear archivo JSON en {path}: {e}",
-        YAMLError: "Error al parsear archivo YAML en {path}: {e}",
-        TOMLDecodeError: "Error al parsear archivo TOML en {path}: {e}",
-        ImportError: "Dependencia faltante al parsear {path}: {e}",
-    }
     try:
         text = path.read_text(encoding="utf-8")
         return parser(text)
-    except tuple(error_map) as e:
-        msg = next(
-            (m for exc, m in error_map.items() if isinstance(e, exc)),
-            "Error al parsear {path}: {e}",
-        )
-        raise ValueError(msg.format(path=path, e=e)) from e
+    except Exception as e:
+        raise ValueError(_format_structured_file_error(path, e)) from e
 
 
 def ensure_parent(path: str | Path) -> None:
