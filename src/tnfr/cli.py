@@ -5,11 +5,12 @@ import argparse
 import json
 import logging
 import sys
-from typing import Any, Dict, List, Optional, Callable
+from typing import Any, Dict, List, Optional, Callable, TYPE_CHECKING
 from pathlib import Path
 from collections import deque
 
-import networkx as nx
+if TYPE_CHECKING:  # pragma: no cover
+    import networkx as nx
 
 from .constants import inject_defaults, DEFAULTS, METRIC_DEFAULTS
 from .sense import register_sigma_callback, sigma_rose
@@ -216,7 +217,7 @@ def _load_sequence(path: Path) -> List[Any]:
     return seq(*_parse_tokens(data))
 
 
-def _attach_callbacks(G: nx.Graph) -> None:
+def _attach_callbacks(G: "nx.Graph") -> None:
     inject_defaults(G, DEFAULTS)
     register_sigma_callback(G)
     register_metrics_callbacks(G)
@@ -224,7 +225,7 @@ def _attach_callbacks(G: nx.Graph) -> None:
     _update_history(G)
 
 
-def _persist_history(G: nx.Graph, args: argparse.Namespace) -> None:
+def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
     """Guardar o exportar el histórico si se solicitó."""
     if args.save_history or args.export_history_base:
         history = G.graph.get("history", {})
@@ -234,12 +235,12 @@ def _persist_history(G: nx.Graph, args: argparse.Namespace) -> None:
             export_history(G, args.export_history_base, fmt=args.export_format)
 
 
-def build_basic_graph(args: argparse.Namespace) -> nx.Graph:
+def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
     """Construye el grafo base a partir de los argumentos del CLI."""
     return build_graph(n=args.nodes, topology=args.topology, seed=args.seed, p=args.p)
 
 
-def apply_cli_config(G: nx.Graph, args: argparse.Namespace) -> None:
+def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
     """Aplica configuraciones provenientes del CLI o de archivos externos."""
     if args.config:
         apply_config(G, Path(args.config))
@@ -276,7 +277,7 @@ def apply_cli_config(G: nx.Graph, args: argparse.Namespace) -> None:
         }
 
 
-def register_callbacks_and_observer(G: nx.Graph, args: argparse.Namespace) -> None:
+def register_callbacks_and_observer(G: "nx.Graph", args: argparse.Namespace) -> None:
     """Registra callbacks y observadores estándar."""
     _attach_callbacks(G)
     if args.observer:
@@ -284,7 +285,7 @@ def register_callbacks_and_observer(G: nx.Graph, args: argparse.Namespace) -> No
     validate_canon(G)
 
 
-def _build_graph_from_args(args: argparse.Namespace) -> nx.Graph:
+def _build_graph_from_args(args: argparse.Namespace) -> "nx.Graph":
     """Construye un grafo configurado a partir de los argumentos del CLI."""
     G = build_basic_graph(args)
     apply_cli_config(G, args)
@@ -410,8 +411,8 @@ def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
 
 
 def run_program(
-    G: Optional[nx.Graph], program: Optional[Any], args: argparse.Namespace
-) -> nx.Graph:
+    G: Optional["nx.Graph"], program: Optional[Any], args: argparse.Namespace
+) -> "nx.Graph":
     """Construir el grafo si es necesario, ejecutar un programa y guardar historial."""
     if G is None:
         G = _build_graph_from_args(args)
@@ -427,7 +428,7 @@ def run_program(
     return G
 
 
-def _log_run_summaries(G: nx.Graph, args: argparse.Namespace) -> None:
+def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
     """Registrar resúmenes rápidos y métricas opcionales."""
 
     if G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"]).get("enabled", True):

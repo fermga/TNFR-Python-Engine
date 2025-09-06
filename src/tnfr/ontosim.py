@@ -1,24 +1,27 @@
 """Orquesta la simulación canónica."""
 
 from __future__ import annotations
-import networkx as nx
 from collections import deque
+from typing import TYPE_CHECKING
 
 from .constants import METRIC_DEFAULTS, attach_defaults, get_param
 from .dynamics import step as _step, run as _run
 from .dynamics import default_compute_delta_nfr
 from .initialization import init_node_attrs
 
+if TYPE_CHECKING:  # pragma: no cover
+    import networkx as nx
+
 # API de alto nivel
 
 
 def preparar_red(
-    G: nx.Graph,
+    G: "nx.Graph",
     *,
     init_attrs: bool = True,
     override_defaults: bool = False,
     **overrides,
-) -> nx.Graph:
+) -> "nx.Graph":
     """Prepara ``G`` para simulación.
 
     Parameters
@@ -104,7 +107,7 @@ def preparar_red(
 
 
 def step(
-    G: nx.Graph,
+    G: "nx.Graph",
     *,
     dt: float | None = None,
     use_Si: bool = True,
@@ -114,7 +117,7 @@ def step(
 
 
 def run(
-    G: nx.Graph,
+    G: "nx.Graph",
     steps: int,
     *,
     dt: float | None = None,

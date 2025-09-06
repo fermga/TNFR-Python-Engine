@@ -11,15 +11,18 @@ from typing import (
     Optional,
     overload,
     Protocol,
+    TYPE_CHECKING,
 )
 import logging
 import math
 import json
 import hashlib
 from statistics import fmean, StatisticsError
-import networkx as nx
 from json import JSONDecodeError
 from pathlib import Path
+
+if TYPE_CHECKING:  # pragma: no cover
+    import networkx as nx
 
 try:  # pragma: no cover - dependencia opcional
     import tomllib  # type: ignore[attr-defined]
@@ -188,7 +191,7 @@ def _stable_json(obj: Any) -> Any:
     return obj.__class__.__qualname__
 
 
-def node_set_checksum(G: nx.Graph) -> str:
+def node_set_checksum(G: "nx.Graph") -> str:
     """Devuelve el SHA1 del conjunto de nodos de ``G`` ordenado.
 
     Cada nodo se serializa a JSON con claves ordenadas y evitando incluir
