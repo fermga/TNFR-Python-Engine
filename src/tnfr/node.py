@@ -119,12 +119,18 @@ def add_edge(
 
     if exists_cb is None or set_cb is None:
         if strategy == "nx":
-            exists_cb = lambda: graph.has_edge(n1, n2)
-            set_cb = lambda w: graph.add_edge(n1, n2, weight=w)
-        elif strategy == "tnfr":
-            exists_cb = lambda: n2 in n1._neighbors
 
-            def set_cb(w):
+            def exists_cb() -> bool:
+                return graph.has_edge(n1, n2)
+
+            def set_cb(w: float) -> None:
+                graph.add_edge(n1, n2, weight=w)
+        elif strategy == "tnfr":
+
+            def exists_cb() -> bool:
+                return n2 in n1._neighbors
+
+            def set_cb(w: float) -> None:
                 n1._neighbors[n2] = w
                 n2._neighbors[n1] = w
 
