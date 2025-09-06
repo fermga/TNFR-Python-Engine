@@ -147,19 +147,19 @@ def read_structured_file(path: Path) -> Any:
     if suffix not in PARSERS:
         raise ValueError(f"Extensión de archivo no soportada: {suffix}")
     parser = PARSERS[suffix]
+    error_map = {
+        OSError: "No se pudo leer {path}: {e}",
+        JSONDecodeError: "Error al parsear archivo JSON en {path}: {e}",
+        YAMLError: "Error al parsear archivo YAML en {path}: {e}",
+        TOMLDecodeError: "Error al parsear archivo TOML en {path}: {e}",
+        ImportError: "Dependencia faltante al parsear {path}: {e}",
+    }
     try:
         text = path.read_text(encoding="utf-8")
         return parser(text)
-    except OSError as e:
-        raise ValueError(f"No se pudo leer {path}: {e}") from e
-    except JSONDecodeError as e:
-        raise ValueError(f"Error al parsear archivo JSON en {path}: {e}") from e
-    except YAMLError as e:
-        raise ValueError(f"Error al parsear archivo YAML en {path}: {e}") from e
-    except TOMLDecodeError as e:
-        raise ValueError(f"Error al parsear archivo TOML en {path}: {e}") from e
-    except ImportError as e:
-        raise ValueError(f"Dependencia faltante al parsear {path}: {e}") from e
+    except tuple(error_map) as e:
+        msg = error_map.get(type(e), "Error al parsear {path}: {e}")
+        raise ValueError(msg.format(path=path, e=e)) from e
 
 
 def ensure_parent(path: str | Path) -> None:

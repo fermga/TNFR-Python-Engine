@@ -1,7 +1,6 @@
 """Observer management."""
 
 from __future__ import annotations
-import math
 import statistics as st
 from statistics import pvariance
 from itertools import islice
@@ -61,27 +60,13 @@ def attach_standard_observer(G):
     return G
 
 
-def _phase_sums(G) -> tuple[float, float, int]:
-    """Return ``sumX``, ``sumY`` and the number of nodes."""
-    sumX = 0.0
-    sumY = 0.0
-    count = 0
-    for _, data in G.nodes(data=True):
-        th = get_attr(data, ALIAS_THETA, 0.0)
-        sumX += math.cos(th)
-        sumY += math.sin(th)
-        count += 1
-    return sumX, sumY, count
-
-
 def phase_sync(G) -> float:
-    sumX, sumY, count = _phase_sums(G)
-    if count == 0:
+    if G.number_of_nodes() == 0:
         return 1.0
-    th = math.atan2(sumY, sumX)
+    _, psi = kuramoto_R_psi(G)
     # varianza angular aproximada (0 = muy sincronizado)
     diffs = (
-        angle_diff(get_attr(data, ALIAS_THETA, 0.0), th)
+        angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
         for _, data in G.nodes(data=True)
     )
     var = pvariance(diffs)
