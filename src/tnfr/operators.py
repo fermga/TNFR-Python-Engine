@@ -33,12 +33,15 @@ from .alias import get_attr, set_attr
 from .rng import get_rng, make_rng
 from .callback_utils import invoke_callbacks
 from .glyph_history import append_metric
+from .import_utils import import_nodonx
 
 if TYPE_CHECKING:
     from .node import NodoProtocol
     import random  # noqa: F401
 from .types import Glyph
 from collections import deque
+
+
 def _node_offset(G, n) -> int:
     """Deterministic node index used for jitter seeds."""
     mapping = ensure_node_offset_map(G)
@@ -48,14 +51,6 @@ def _node_offset(G, n) -> int:
 def clear_rng_cache() -> None:
     """Clear cached RNGs."""
     get_rng.cache_clear()
-
-
-@cache
-def _get_NodoNX():
-    """Lazy importer for ``NodoNX`` to avoid circular dependencies."""
-    from .node import NodoNX
-
-    return NodoNX
 
 
 @cache
@@ -92,7 +87,7 @@ def random_jitter(
 
     base_seed = int(node.graph.get("RANDOM_SEED", 0))
 
-    if isinstance(node, _get_NodoNX()):
+    if isinstance(node, import_nodonx()):
         seed_key = _node_offset(node.G, node.n)
         scope_id = id(node.G)
     else:
@@ -159,7 +154,7 @@ def _mix_epi_with_neighbors(
     epi = node.EPI
     neigh_iter = node.neighbors()
     if hasattr(node, "G"):
-        NodoNX = _get_NodoNX()
+        NodoNX = import_nodonx()
         original_iter = neigh_iter
 
         def _gen():
@@ -253,7 +248,7 @@ def _op_UM(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # UM — Coupling
 
         sample_ids = node.graph.get("_node_sample")
         if sample_ids is not None and hasattr(node, "G"):
-            NodoNX = _get_NodoNX()
+            NodoNX = import_nodonx()
             iter_nodes = (NodoNX.from_graph(node.G, j) for j in sample_ids)
         else:
             iter_nodes = node.all_nodes()
@@ -436,7 +431,7 @@ def apply_glyph(
     G, n, glyph: Glyph | str, *, window: Optional[int] = None
 ) -> None:
     """Adapter to operate on ``networkx`` graphs."""
-    NodoNX = _get_NodoNX()
+    NodoNX = import_nodonx()
     node = NodoNX(G, n)
     apply_glyph_obj(node, glyph, window=window)
 

@@ -8,7 +8,7 @@ import logging
 from functools import lru_cache
 from typing import Any
 
-__all__ = ["optional_import", "get_numpy"]
+__all__ = ["optional_import", "get_numpy", "import_nodonx"]
 
 
 logger = logging.getLogger(__name__)
@@ -64,8 +64,8 @@ def get_numpy(*, warn: bool = False) -> Any | None:
     Parameters
     ----------
     warn:
-        When ``True`` a warning is logged if import fails; otherwise a ``DEBUG``
-        message is recorded.
+        When ``True`` a warning is logged if import fails; otherwise a
+        ``DEBUG`` message is recorded.
     """
 
     module = optional_import("numpy")
@@ -75,3 +75,11 @@ def get_numpy(*, warn: bool = False) -> Any | None:
             "Failed to import numpy; continuing in non-vectorised mode"
         )
     return module
+
+
+@lru_cache(maxsize=1)
+def import_nodonx():
+    """Lazily import :class:`NodoNX` to avoid circular dependencies."""
+    from .node import NodoNX
+
+    return NodoNX

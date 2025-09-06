@@ -17,15 +17,20 @@ from .dynamics import step, run
 from .ontosim import preparar_red
 from .structural import create_nfr
 from .types import NodeState
-from .trace import CallbackSpec  # re-exported for tests  # noqa: F401
+# re-exported for tests
+from .trace import CallbackSpec  # noqa: F401
 from .import_utils import optional_import
 
 _metadata = optional_import("importlib.metadata")
 if _metadata is None:  # pragma: no cover
     _metadata = optional_import("importlib_metadata")
 
-version = _metadata.version  # type: ignore[attr-defined]
-PackageNotFoundError = _metadata.PackageNotFoundError  # type: ignore[attr-defined]
+version = (
+    _metadata.version  # type: ignore[attr-defined]
+)
+PackageNotFoundError = (
+    _metadata.PackageNotFoundError  # type: ignore[attr-defined]
+)
 
 try:
     __version__ = version("tnfr")
@@ -52,4 +57,3 @@ __all__ = [
     "create_nfr",
     "NodeState",
 ]
-

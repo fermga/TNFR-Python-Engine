@@ -5,7 +5,8 @@ from __future__ import annotations
 import logging
 import math
 from collections import deque
-from typing import Dict, Any, Literal, TYPE_CHECKING
+from typing import Dict, Any, Literal
+import networkx as nx
 
 # Importar compute_Si y apply_glyph a nivel de módulo evita el coste de
 # realizar la importación en cada paso de la dinámica. Como los módulos de
@@ -58,9 +59,6 @@ from .callback_utils import invoke_callbacks
 from .glyph_history import recent_glyph, ensure_history, append_metric
 from .collections_utils import normalize_weights
 from .import_utils import get_numpy
-
-if TYPE_CHECKING:  # pragma: no cover - for type hints only
-    import networkx as nx  # noqa: F401
 from .selector import (
     _selector_thresholds,
     _norms_para_selector,
@@ -69,7 +67,6 @@ from .selector import (
 )
 
 logger = logging.getLogger(__name__)
-
 
 
 def _update_node_sample(G, *, step: int) -> None:
@@ -630,8 +627,6 @@ def update_epi_via_nodal_equation(
     TNFR references: nodal equation (manual), νf/ΔNFR/EPI glossary, Γ operator.
     Side effects: caches dEPI and updates EPI via explicit integration.
     """
-    import networkx as nx
-
     if not isinstance(
         G, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
     ):

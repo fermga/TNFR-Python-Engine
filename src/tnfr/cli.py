@@ -75,7 +75,9 @@ def _flatten_tokens(obj: Any):
 def validate_token(tok: Any, pos: int) -> Any:
     if isinstance(tok, dict):
         if len(tok) != 1:
-            raise ValueError(f"Token inválido: {tok} (posición {pos}, token {tok!r})")
+            raise ValueError(
+                f"Token inválido: {tok} (posición {pos}, token {tok!r})"
+            )
         key, val = next(iter(tok.items()))
         handler = TOKEN_MAP.get(key)
         if handler is None:
@@ -323,7 +325,9 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
             "basic": default_glyph_selector,
             "param": parametric_glyph_selector,
         }
-        G.graph["glyph_selector"] = sel_map.get(selector, default_glyph_selector)
+        G.graph["glyph_selector"] = sel_map.get(
+            selector, default_glyph_selector
+        )
 
     if hasattr(args, "gamma_type"):
         G.graph["GAMMA"] = {
@@ -371,7 +375,14 @@ def add_grammar_args(parser: argparse.ArgumentParser) -> None:
     """Add grammar and glyph hysteresis options."""
     group = parser.add_argument_group("Grammar")
     specs = [
-        (opt, {**kwargs, "dest": opt.lstrip("-").replace(".", "_"), "default": None})
+        (
+            opt,
+            {
+                **kwargs,
+                "dest": opt.lstrip("-").replace(".", "_"),
+                "default": None,
+            },
+        )
         for opt, kwargs in GRAMMAR_ARG_SPECS
     ]
     add_arg_specs(group, specs)
