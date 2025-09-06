@@ -18,7 +18,11 @@ from .metric import (
     COHERENCE,
     DIAGNOSIS,
 )
-from ..import_utils import optional_import
+
+try:  # pragma: no cover - optional dependency
+    from ..helpers import ensure_node_offset_map
+except Exception:  # noqa: BLE001 - allow any import error
+    ensure_node_offset_map = None
 
 # Valores que pueden asignarse directamente sin copiar
 IMMUTABLE_SIMPLE = (
@@ -95,7 +99,6 @@ def inject_defaults(
         if override or k not in G.graph:
             G.graph[k] = v if _is_immutable(v) else copy.deepcopy(v)
     G.graph["_tnfr_defaults_attached"] = True
-    ensure_node_offset_map = optional_import("tnfr.helpers.ensure_node_offset_map")
     if ensure_node_offset_map is not None:
         ensure_node_offset_map(G)
 
