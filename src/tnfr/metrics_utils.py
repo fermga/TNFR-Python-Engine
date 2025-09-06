@@ -40,16 +40,15 @@ def compute_dnfr_accel_max(G) -> dict:
 
 def compute_coherence(G) -> float:
     """Compute global coherence C(t) from ΔNFR and dEPI."""
-    dnfr_sum = 0.0
-    depi_sum = 0.0
-    count = 0
-    for _, nd in G.nodes(data=True):
-        dnfr_sum += abs(get_attr(nd, ALIAS_DNFR, 0.0))
-        depi_sum += abs(get_attr(nd, ALIAS_dEPI, 0.0))
-        count += 1
+    nodes = list(G.nodes(data=True))
+    count = len(nodes)
     if count:
-        dnfr_mean = dnfr_sum / count
-        depi_mean = depi_sum / count
+        dnfr_mean = math.fsum(
+            abs(get_attr(nd, ALIAS_DNFR, 0.0)) for _, nd in nodes
+        ) / count
+        depi_mean = math.fsum(
+            abs(get_attr(nd, ALIAS_dEPI, 0.0)) for _, nd in nodes
+        ) / count
     else:
         dnfr_mean = depi_mean = 0.0
     return 1.0 / (1.0 + dnfr_mean + depi_mean)
