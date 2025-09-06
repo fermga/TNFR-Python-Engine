@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any, Callable, Dict
 import json
 from pathlib import Path
+import threading
 
 from .import_utils import optional_import
 
@@ -27,6 +28,7 @@ else:  # pragma: no cover - depende de pyyaml
         pass
 
 PARSERS: Dict[str, Callable[[str], Any]] = {".json": json.loads}
+_PARSERS_LOCK = threading.Lock()
 
 
 def _missing_dependency(name: str) -> Callable[[str], Any]:
@@ -37,17 +39,18 @@ def _missing_dependency(name: str) -> Callable[[str], Any]:
 
 
 def _get_parser(suffix: str) -> Callable[[str], Any]:
-    parser = PARSERS.get(suffix)
-    if parser is not None:
+    with _PARSERS_LOCK:
+        parser = PARSERS.get(suffix)
+        if parser is not None:
+            return parser
+        if suffix in (".yaml", ".yml"):
+            parser = getattr(yaml, "safe_load", _missing_dependency("pyyaml"))
+        elif suffix == ".toml":
+            parser = getattr(tomllib, "loads", _missing_dependency("tomllib/tomli"))
+        else:
+            raise KeyError(suffix)
+        PARSERS[suffix] = parser
         return parser
-    if suffix in (".yaml", ".yml"):
-        parser = getattr(yaml, "safe_load", _missing_dependency("pyyaml"))
-    elif suffix == ".toml":
-        parser = getattr(tomllib, "loads", _missing_dependency("tomllib/tomli"))
-    else:
-        raise KeyError(suffix)
-    PARSERS[suffix] = parser
-    return parser
 
 
 def _format_structured_file_error(path: Path, e: Exception) -> str:

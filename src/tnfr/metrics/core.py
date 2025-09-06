@@ -10,11 +10,7 @@ import logging
 import math
 
 from ..constants import (
-    METRIC_DEFAULTS,
     ALIAS_EPI,
-    METRICS,
-    REMESH_DEFAULTS,
-    DEFAULTS,
     ALIAS_DNFR,
     ALIAS_dEPI,
     ALIAS_SI,
@@ -22,6 +18,7 @@ from ..constants import (
     ALIAS_VF,
     ALIAS_dVF,
     ALIAS_D2VF,
+    get_param,
 )
 from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, last_glyph, append_metric
@@ -76,9 +73,7 @@ def _update_coherence(G, hist) -> None:
     C = compute_coherence(G)
     append_metric(hist, "C_steps", C)
 
-    wbar_w = int(
-        G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25))
-    )
+    wbar_w = int(get_param(G, "WBAR_WINDOW"))
     cs = hist["C_steps"]
     if cs:
         w = min(len(cs), max(1, wbar_w))
@@ -98,9 +93,7 @@ def _update_phase_sync(G, hist) -> None:
 def _update_sigma(G, hist) -> None:
     """Record glyph load and associated Σ⃗ vector."""
 
-    win = int(
-        G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"])
-    )
+    win = int(get_param(G, "GLYPH_LOAD_WINDOW"))
     gl = glyph_load(G, window=win)
     append_metric(
         hist,
@@ -171,7 +164,7 @@ def _update_tg(G, hist, dt, save_by_node: bool):
 def _update_glyphogram(G, hist, counts, t, n_total):
     """Record the glyphogram for the step from counts."""
     normalize_series = bool(
-        G.graph.get("METRICS", METRICS).get("normalize_series", False)
+        get_param(G, "METRICS").get("normalize_series", False)
     )
     row = {"t": t}
     total = max(1, n_total)
@@ -282,13 +275,8 @@ def _aggregate_si(G, hist):
         if sis:
             si_mean = list_mean(sis, 0.0)
             hist["Si_mean"].append(si_mean)
-            thr_sel = G.graph.get(
-                "SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {})
-            )
-            thr_def = G.graph.get(
-                "GLYPH_THRESHOLDS",
-                DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66, "lo": 0.33}),
-            )
+            thr_sel = get_param(G, "SELECTOR_THRESHOLDS")
+            thr_def = get_param(G, "GLYPH_THRESHOLDS")
             si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
             si_lo = float(thr_sel.get("si_lo", thr_def.get("lo", 0.33)))
             n = len(sis)
@@ -324,18 +312,14 @@ def _metrics_step(G, *args, **kwargs):
     Coordinates updates of glyphogram, latency index, Tg, EPI support and
     morphosyntactic metrics. All results are stored in ``G.graph['history']``.
     """
-    cfg = G.graph.get("METRICS", METRICS)
+    cfg = get_param(G, "METRICS")
     if not cfg.get("enabled", True):
         return
 
     hist = ensure_history(G)
-    dt = float(G.graph.get("DT", 1.0))
+    dt = float(get_param(G, "DT"))
     t = float(G.graph.get("_t", 0.0))
-    thr = float(
-        G.graph.get(
-            "EPI_SUPPORT_THR", METRIC_DEFAULTS.get("EPI_SUPPORT_THR", 0.0)
-        )
-    )
+    thr = float(get_param(G, "EPI_SUPPORT_THR"))
 
     # -- Métricas básicas heredadas de ``dynamics`` --
     for k in (
@@ -354,12 +338,8 @@ def _metrics_step(G, *args, **kwargs):
 
     _update_coherence(G, hist)
 
-    eps_dnfr = float(
-        G.graph.get("EPS_DNFR_STABLE", REMESH_DEFAULTS["EPS_DNFR_STABLE"])
-    )
-    eps_depi = float(
-        G.graph.get("EPS_DEPI_STABLE", REMESH_DEFAULTS["EPS_DEPI_STABLE"])
-    )
+    eps_dnfr = float(get_param(G, "EPS_DNFR_STABLE"))
+    eps_depi = float(get_param(G, "EPS_DEPI_STABLE"))
     _track_stability(G, hist, dt, eps_dnfr, eps_depi)
     try:
         _update_phase_sync(G, hist)

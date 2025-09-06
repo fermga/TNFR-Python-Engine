@@ -32,6 +32,12 @@ pip install tnfr
   * YAML: `pip install tnfr[yaml]`
   * Both: `pip install tnfr[numpy,yaml]`
 
+For optional JavaScript tooling, install the Node.js dependencies:
+
+```bash
+npm install
+```
+
 ---
 
 ## Why TNFR (in 60 seconds)

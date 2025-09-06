@@ -145,8 +145,10 @@ def neighbor_phase_mean(obj, n=None) -> float:
         for v in node.neighbors():
             if hasattr(v, "theta"):
                 th = getattr(v, "theta", 0.0)
+            elif G is not None:
+                th = NodoNX.from_graph(G, v).theta
             else:
-                th = NodoNX.from_graph(node.G, v).theta  # type: ignore[attr-defined]
+                continue
             x += math.cos(th)
             y += math.sin(th)
             count += 1
@@ -256,8 +258,14 @@ def ensure_node_offset_map(G) -> Dict[Any, int]:
     return _ensure_node_map(G, key="_node_offset_map", sort=sort)
 
 
-def edge_version_cache(G: Any, key: str, builder: Callable[[], T]) -> T:
-    """Return cached ``builder`` output tied to the edge version of ``G``."""
+def edge_version_cache(
+    G: Any, key: str, builder: Callable[[], T], *, max_entries: int | None = None
+) -> T:
+    """Return cached ``builder`` output tied to the edge version of ``G``.
+
+    When ``max_entries`` is set to a positive integer, only the most recent
+    ``max_entries`` caches are kept; older entries are purged.
+    """
     graph = G.graph if hasattr(G, "graph") else G
     edge_version = int(graph.get("_edge_version", 0))
     version_key = f"{key}_version"
@@ -272,6 +280,15 @@ def edge_version_cache(G: Any, key: str, builder: Callable[[], T]) -> T:
                 value = builder()
                 graph[cache_key] = value
                 graph[version_key] = edge_version
+                if max_entries is not None and max_entries > 0:
+                    order = graph.setdefault("_edge_cache_order", [])
+                    if key in order:
+                        order.remove(key)
+                    order.append(key)
+                    while len(order) > max_entries:
+                        old = order.pop(0)
+                        graph.pop(f"{old}_cache", None)
+                        graph.pop(f"{old}_version", None)
     return value
 
 

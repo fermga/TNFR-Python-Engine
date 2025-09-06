@@ -5,7 +5,7 @@ import statistics
 from itertools import islice
 from functools import partial
 
-from .constants import ALIAS_THETA, METRIC_DEFAULTS
+from .constants import ALIAS_THETA, get_param
 from .alias import get_attr
 from .helpers import angle_diff
 from .metrics_utils import compute_coherence
@@ -108,9 +108,7 @@ def wbar(G, window: int | None = None) -> float:
         # fallback: coherencia instantánea
         return compute_coherence(G)
     if window is None:
-        window = int(
-            G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25))
-        )
+        window = int(get_param(G, "WBAR_WINDOW"))
     w = int(window)
     if w <= 0:
         raise ValueError("window must be positive")
