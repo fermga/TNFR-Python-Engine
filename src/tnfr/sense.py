@@ -3,7 +3,6 @@
 from __future__ import annotations
 from typing import Dict, Iterable, List
 import math
-import warnings
 
 import networkx as nx
 
@@ -162,23 +161,6 @@ def sigma_vector_from_graph(
     vec, n = _sigma_from_vectors(vectors)
     vec["n"] = n
     return vec
-
-
-def sigma_vector_global(
-    G: nx.Graph, weight_mode: str | None = None
-) -> Dict[str, float]:
-    """Alias de :func:`sigma_vector_from_graph`.
-
-    .. deprecated:: 4.5.3
-       Use :func:`sigma_vector_from_graph` en su lugar.
-    """
-
-    warnings.warn(
-        "sigma_vector_global está deprecada; use sigma_vector_from_graph",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return sigma_vector_from_graph(G, weight_mode)
 
 
 # -------------------------
