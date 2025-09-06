@@ -37,11 +37,13 @@ MAX_MATERIALIZE_DEFAULT = (
 def ensure_collection(
     it: Iterable[T], *, max_materialize: int | None = MAX_MATERIALIZE_DEFAULT
 ) -> Collection[T]:
-    """Return ``it`` if it's a ``Collection`` else materialize into ``tuple``.
+    """Return ``it`` if it is a ``Collection``; otherwise materialize into a tuple.
 
-    Strings and bytes are treated as single elements rather than iterables. If
-    ``max_materialize`` es ``None``, se materializa el iterable completo sin
-    límite. Si ``it`` no es iterable, se lanza :class:`TypeError`.
+    Strings and bytes are treated as single elements rather than iterables. When
+    ``max_materialize`` is ``None``, the entire iterable is materialized without a
+    limit. A :class:`ValueError` is raised if ``max_materialize`` is negative or if
+    the iterable yields more than ``max_materialize`` items. A :class:`TypeError`
+    is raised when ``it`` is not iterable.
     """
     if isinstance(it, Collection) and not isinstance(
         it, (str, bytes, bytearray)
