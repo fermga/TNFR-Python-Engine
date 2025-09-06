@@ -66,6 +66,17 @@ def test_rng_cache_disabled_with_size_zero(graph_canon):
     assert operators._cached_rng.cache_info().currsize == 0
 
 
+def test_resize_rng_cache_clears_previous_instances(graph_canon):
+    clear_rng_cache()
+    operators._resize_rng_cache(2)
+    operators._cached_rng(1, 2, 3)
+    assert operators._cached_rng.cache_info().currsize == 1
+    operators._resize_rng_cache(4)
+    info = operators._cached_rng.cache_info()
+    assert info.maxsize == 4
+    assert info.currsize == 0
+
+
 def test_rng_cache_lru_purge(graph_canon):
     clear_rng_cache()
     G = graph_canon()

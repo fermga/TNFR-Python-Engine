@@ -1,6 +1,7 @@
 """Pruebas de node sample."""
 
 from tnfr.dynamics import step
+from tnfr.dynamics import _update_node_sample
 from tnfr.constants import attach_defaults
 import networkx as nx
 import json
@@ -34,6 +35,15 @@ def test_node_sample_small_graph():
     sample = G.graph.get("_node_sample")
     assert not isinstance(sample, list)
     assert len(sample) == len(G.nodes())
+
+
+def test_node_sample_immutable_after_graph_change():
+    G = _build_graph(20)
+    _update_node_sample(G, step=0)
+    sample = G.graph["_node_sample"]
+    G.add_node(99)
+    assert len(sample) == 20
+    assert 99 not in sample
 
 
 def _run_sample_with_hashseed(hashseed):

@@ -6,7 +6,7 @@ import pytest
 
 from tnfr.constants import attach_defaults, merge_overrides
 from tnfr.dynamics import update_epi_via_nodal_equation
-from tnfr.gamma import eval_gamma
+from tnfr.gamma import eval_gamma, GAMMA_REGISTRY
 from tnfr.helpers import increment_edge_version
 
 
@@ -195,3 +195,24 @@ def test_eval_gamma_unknown_type_warning_and_strict(graph_canon, caplog):
 
     with pytest.raises(ValueError):
         eval_gamma(G, 0, t=0.0, strict=True)
+
+
+def test_eval_gamma_handles_unexpected_exception(graph_canon, caplog):
+    G = graph_canon()
+    G.add_node(0)
+    attach_defaults(G)
+    merge_overrides(G, GAMMA={"type": "bad"})
+
+    def bad_gamma(G, node, t, cfg):
+        raise RuntimeError("boom")
+
+    GAMMA_REGISTRY["bad"] = (bad_gamma, False)
+    try:
+        caplog.clear()
+        with caplog.at_level(logging.DEBUG, logger="tnfr.gamma"):
+            assert eval_gamma(G, 0, t=0.0, strict=False) == 0.0
+        assert any("Fallo al evaluar" in r.message for r in caplog.records)
+        with pytest.raises(RuntimeError):
+            eval_gamma(G, 0, t=0.0, strict=True)
+    finally:
+        GAMMA_REGISTRY.pop("bad", None)

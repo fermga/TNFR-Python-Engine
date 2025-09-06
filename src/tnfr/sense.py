@@ -41,7 +41,7 @@ def glyph_angle(g: str) -> float:
 
 
 def glyph_unit(g: str) -> complex:
-    return GLYPH_UNITS.get(g, 1 + 0j)
+    return GLYPH_UNITS.get(g, 0 + 0j)
 
 
 def _weight(nd, mode: str) -> float:
@@ -79,10 +79,7 @@ def _sigma_from_vectors(
     ``vectors`` may be a single complex number or an iterable of them.
     """
 
-    try:
-        iterator = iter(vectors)
-    except TypeError:
-        iterator = iter([vectors])
+    iterator = iter(vectors) if isinstance(vectors, Iterable) else iter([vectors])
 
     cnt = 0
     acc = complex(0.0, 0.0)

@@ -96,6 +96,7 @@ _rng_cache_maxsize = DEFAULTS["JITTER_CACHE_SIZE"]
 def _resize_rng_cache(maxsize: int) -> None:
     """Resize the global RNG cache."""
     global _cached_rng, _rng_cache_maxsize
+    _cached_rng.cache_clear()
     _cached_rng = lru_cache(maxsize=maxsize)(_cached_rng.__wrapped__)
     _rng_cache_maxsize = maxsize
 

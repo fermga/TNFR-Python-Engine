@@ -196,7 +196,7 @@ def eval_gamma(
         _ensure_kuramoto_cache(G, t)
     try:
         return float(fn(G, node, t, spec))
-    except (KeyError, TypeError, ValueError):
+    except Exception:
         level = (
             log_level
             if log_level is not None
