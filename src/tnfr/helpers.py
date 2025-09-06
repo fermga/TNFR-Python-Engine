@@ -93,6 +93,11 @@ def neighbor_phase_mean(obj, n=None) -> float:
 
     Accepts a :class:`NodoProtocol` or a ``(G, n)`` pair from ``networkx``. The
     latter is wrapped in :class:`NodoNX` to reuse the same logic.
+
+    When the underlying graph ``G`` is available, trigonometric values are
+    obtained via :func:`precompute_trigonometry` to avoid recalculating
+    :func:`math.cos` and :func:`math.sin` for each neighbour. Objects without
+    access to ``G`` fall back to computing these values individually.
     """
     from .node import NodoNX  # importación local para evitar ciclo
 
@@ -104,21 +109,28 @@ def neighbor_phase_mean(obj, n=None) -> float:
     x = y = 0.0
     count = 0
     G = getattr(node, "G", None)
-    nodes = G.nodes if G is not None else None
-    theta_cache: Dict[Any, float] = {}
-    for v in node.neighbors():
-        th = theta_cache.get(v)
-        if th is None:
-            if hasattr(v, "theta"):
-                th = getattr(v, "theta", 0.0)
-            elif nodes is not None:
-                th = get_attr(nodes[v], ALIAS_THETA, 0.0)
-            else:
-                th = NodoNX.from_graph(node.G, v).theta  # type: ignore[attr-defined]
-            theta_cache[v] = th
-        x += math.cos(th)
-        y += math.sin(th)
-        count += 1
+
+    if G is not None:
+        from .metrics_utils import precompute_trigonometry
+
+        cos_th, sin_th, thetas = precompute_trigonometry(G)
+        for v in node.neighbors():
+            x += cos_th[v]
+            y += sin_th[v]
+            count += 1
+    else:
+        theta_cache: Dict[Any, float] = {}
+        for v in node.neighbors():
+            th = theta_cache.get(v)
+            if th is None:
+                if hasattr(v, "theta"):
+                    th = getattr(v, "theta", 0.0)
+                else:
+                    th = NodoNX.from_graph(node.G, v).theta  # type: ignore[attr-defined]
+                theta_cache[v] = th
+            x += math.cos(th)
+            y += math.sin(th)
+            count += 1
     if count == 0:
         return getattr(node, "theta", 0.0)
     return math.atan2(y, x)
