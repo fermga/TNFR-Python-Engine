@@ -16,7 +16,7 @@ from .constants import (
 )
 from .alias import get_attr, set_attr, _recompute_abs_max
 from .collections_utils import normalize_weights
-from .helpers import clamp01, angle_diff
+from .helpers import clamp01, angle_diff, edge_version_cache
 
 
 __all__ = [
@@ -83,28 +83,19 @@ def precompute_trigonometry(
     G: Any,
 ) -> TrigCache:
     """Precompute cosines and sines of ``θ`` per node."""
-    graph = G.graph
-    edge_version = int(graph.get("_edge_version", 0))
-    cached_version = graph.get("_trig_version")
 
-    trig_cache: TrigCache | None = graph.get("_trig_cache")
+    def builder() -> TrigCache:
+        cos_th: Dict[Any, float] = {}
+        sin_th: Dict[Any, float] = {}
+        thetas: Dict[Any, float] = {}
+        for n, nd in G.nodes(data=True):
+            th = get_attr(nd, ALIAS_THETA, 0.0)
+            thetas[n] = th
+            cos_th[n] = math.cos(th)
+            sin_th[n] = math.sin(th)
+        return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
 
-    if cached_version == edge_version and trig_cache is not None:
-        return trig_cache
-
-    cos_th: Dict[Any, float] = {}
-    sin_th: Dict[Any, float] = {}
-    thetas: Dict[Any, float] = {}
-    for n, nd in G.nodes(data=True):
-        th = get_attr(nd, ALIAS_THETA, 0.0)
-        thetas[n] = th
-        cos_th[n] = math.cos(th)
-        sin_th[n] = math.sin(th)
-
-    trig_cache = TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
-    graph["_trig_cache"] = trig_cache
-    graph["_trig_version"] = edge_version
-    return trig_cache
+    return edge_version_cache(G, "_trig", builder)
 
 
 def compute_Si_node(

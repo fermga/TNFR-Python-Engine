@@ -1,7 +1,16 @@
 """Helper functions."""
 
 from __future__ import annotations
-from typing import Iterable, Sequence, Dict, Any, Optional, TYPE_CHECKING
+from typing import (
+    Iterable,
+    Sequence,
+    Dict,
+    Any,
+    Optional,
+    TYPE_CHECKING,
+    Callable,
+    TypeVar,
+)
 import math
 import hashlib
 from statistics import fmean, StatisticsError
@@ -43,11 +52,14 @@ __all__ = [
     "mix_groups",
     "ensure_node_index_map",
     "ensure_node_offset_map",
+    "edge_version_cache",
     "cached_nodes_and_A",
     "increment_edge_version",
     "node_set_checksum",
 ]
 
+
+T = TypeVar("T")
 
 # -------------------------
 # Utilidades numéricas básicas
@@ -237,11 +249,26 @@ def ensure_node_offset_map(G) -> Dict[Any, int]:
     return mapping
 
 
+def edge_version_cache(G: Any, key: str, builder: Callable[[], T]) -> T:
+    """Return cached ``builder`` output tied to the edge version of ``G``."""
+    graph = G.graph if hasattr(G, "graph") else G
+    edge_version = int(graph.get("_edge_version", 0))
+    version_key = f"{key}_version"
+    cache_key = f"{key}_cache"
+    cached_version = graph.get(version_key)
+    value = graph.get(cache_key)
+    if cached_version != edge_version or value is None:
+        value = builder()
+        graph[cache_key] = value
+        graph[version_key] = edge_version
+    return value
+
+
 def cached_nodes_and_A(
     G: "nx.Graph", *, cache_size: int | None = 1
 ) -> tuple[list[int], Any]:
     """Return list of nodes and adjacency matrix for ``G`` with caching."""
-    cache: OrderedDict = G.graph.setdefault("_dnfr_cache", OrderedDict())
+    cache: OrderedDict = edge_version_cache(G, "_dnfr", OrderedDict)
     nodes_list = list(G.nodes())
     checksum = node_set_checksum(G, nodes_list)
 
@@ -250,7 +277,7 @@ def cached_nodes_and_A(
         cache.clear()
         G.graph["_dnfr_nodes_checksum"] = checksum
 
-    key = (int(G.graph.get("_edge_version", 0)), len(nodes_list), checksum)
+    key = (len(nodes_list), checksum)
     nodes_and_A = cache.get(key)
     if nodes_and_A is None:
         nodes = nodes_list

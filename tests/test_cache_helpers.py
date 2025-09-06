@@ -17,6 +17,17 @@ def test_cached_nodes_and_A_reuse_and_invalidate():
     assert data3["nodes"] is not nodes1
 
 
+def test_cached_nodes_and_A_invalidate_on_node_addition():
+    G = nx.Graph()
+    G.add_edge(0, 1)
+    data1 = dynamics._prepare_dnfr_data(G)
+    nodes1 = data1["nodes"]
+    G.add_node(2)
+    increment_edge_version(G)
+    data2 = dynamics._prepare_dnfr_data(G)
+    assert data2["nodes"] is not nodes1
+
+
 def test_node_offset_map_updates_on_node_addition():
     G = nx.Graph()
     G.add_nodes_from([0, 1])

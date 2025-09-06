@@ -11,6 +11,7 @@ from tnfr.metrics_utils import (
     precompute_trigonometry,
 )
 from tnfr.alias import get_attr, set_attr
+from tnfr.helpers import increment_edge_version
 
 
 def test_get_si_weights_normalization():
@@ -42,6 +43,21 @@ def test_precompute_trigonometry():
     assert cos_th[2] == pytest.approx(0.0, abs=1e-8)
     assert sin_th[2] == pytest.approx(1.0)
     assert thetas[2] == pytest.approx(math.pi / 2)
+
+
+def test_precompute_trigonometry_invalidation_on_version():
+    G = nx.Graph()
+    G.add_node(0)
+    set_attr(G.nodes[0], ALIAS_THETA, 0.0)
+    trig1 = precompute_trigonometry(G)
+    trig2 = precompute_trigonometry(G)
+    assert trig1 is trig2
+    G.add_node(1)
+    set_attr(G.nodes[1], ALIAS_THETA, math.pi / 2)
+    increment_edge_version(G)
+    trig3 = precompute_trigonometry(G)
+    assert trig3 is not trig1
+    assert 1 in trig3.cos and 1 not in trig1.cos
 
 
 def test_compute_Si_node():
