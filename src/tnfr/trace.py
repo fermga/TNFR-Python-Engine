@@ -12,7 +12,7 @@ from typing import Any, Callable, Dict, Optional, Protocol, NamedTuple
 from collections.abc import Mapping
 
 from .constants import TRACE
-from .glyph_history import ensure_history, count_glyphs
+from .glyph_history import ensure_history, count_glyphs, append_metric
 
 
 class _KuramotoFn(Protocol):
@@ -176,7 +176,7 @@ def _trace_capture(
             meta.update(getter(G))
     if hist is None or key is None:
         return
-    hist.setdefault(key, []).append(meta)
+    append_metric(hist, key, meta)
 
 
 def gamma_field(G):

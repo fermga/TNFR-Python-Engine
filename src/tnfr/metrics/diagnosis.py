@@ -14,7 +14,7 @@ from ..constants import (
     VF_KEY,
 )
 from ..callback_utils import register_callback
-from ..glyph_history import ensure_history
+from ..glyph_history import ensure_history, append_metric
 from ..helpers import (
     get_attr,
     clamp01,
@@ -145,7 +145,7 @@ def _diagnosis_step(G, ctx=None):
         }
         diag[n] = rec
 
-    hist.setdefault(key, []).append(diag)
+    append_metric(hist, key, diag)
 
 
 def dissonance_events(G, ctx=None):
@@ -154,7 +154,7 @@ def dissonance_events(G, ctx=None):
     Events are recorded as ``"dissonance_start"`` and ``"dissonance_end"``.
     """
     hist = ensure_history(G)
-    evs = hist.setdefault("events", [])
+    # eventos de disonancia se registran en ``history['events']``
     norms = G.graph.get("_sel_norms", {})
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     step_idx = len(hist.tracked_get("C_steps", []))
@@ -169,10 +169,14 @@ def dissonance_events(G, ctx=None):
         st = bool(nd.get("_disr_state", False))
         if (not st) and dn >= 0.5 and Rloc <= 0.4:
             nd["_disr_state"] = True
-            evs.append(("dissonance_start", {"node": n, "step": step_idx}))
+            append_metric(
+                hist, "events", ("dissonance_start", {"node": n, "step": step_idx})
+            )
         elif st and dn <= 0.2 and Rloc >= 0.7:
             nd["_disr_state"] = False
-            evs.append(("dissonance_end", {"node": n, "step": step_idx}))
+            append_metric(
+                hist, "events", ("dissonance_end", {"node": n, "step": step_idx})
+            )
 
 
 def register_diagnosis_callbacks(G) -> None:

@@ -14,6 +14,7 @@ __all__ = [
     "push_glyph",
     "recent_glyph",
     "ensure_history",
+    "append_metric",
     "last_glyph",
     "count_glyphs",
 ]
@@ -183,6 +184,11 @@ def ensure_history(G) -> Dict[str, Any]:
             hist.pop_least_used()
         # Note: trimming is O(n) only when history exceeds ``maxlen``
     return hist
+
+
+def append_metric(hist: Dict[str, Any], key: str, value: Any) -> None:
+    """Append ``value`` to ``hist[key]`` list, creating it if missing."""
+    hist.setdefault(key, []).append(value)
 
 
 def last_glyph(nd: Dict[str, Any]) -> str | None:

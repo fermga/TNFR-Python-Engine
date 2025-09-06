@@ -57,7 +57,7 @@ from .helpers import (
     get_rng,
 )
 from .callback_utils import invoke_callbacks
-from .glyph_history import recent_glyph, ensure_history
+from .glyph_history import recent_glyph, ensure_history, append_metric
 from .collections_utils import normalize_weights
 from .selector import (
     _selector_thresholds,
@@ -832,8 +832,8 @@ def coordinate_global_local_phase(
 
     g["PHASE_K_GLOBAL"] = kG
     g["PHASE_K_LOCAL"] = kL
-    hist.setdefault("phase_kG", []).append(float(kG))
-    hist.setdefault("phase_kL", []).append(float(kL))
+    append_metric(hist, "phase_kG", float(kG))
+    append_metric(hist, "phase_kL", float(kL))
 
     # 6) Fase GLOBAL (centroide) para empuje
     x_sum = y_sum = 0.0

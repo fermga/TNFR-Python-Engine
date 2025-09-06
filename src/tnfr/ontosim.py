@@ -8,6 +8,7 @@ from .constants import METRIC_DEFAULTS, attach_defaults, get_param
 from .dynamics import step as _step, run as _run
 from .dynamics import default_compute_delta_nfr
 from .initialization import init_node_attrs
+from .glyph_history import append_metric
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
@@ -81,8 +82,10 @@ def preparar_red(
 
             attach_standard_observer(G)
         except ImportError as e:
-            G.graph.setdefault("_callback_errors", []).append(
-                {"event": "attach_std_observer", "error": repr(e)}
+            append_metric(
+                G.graph,
+                "_callback_errors",
+                {"event": "attach_std_observer", "error": repr(e)},
             )
     # Hook explícito para ΔNFR (se puede sustituir luego con
     # dynamics.set_delta_nfr_hook)

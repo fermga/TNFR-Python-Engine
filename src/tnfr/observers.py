@@ -13,7 +13,7 @@ from .helpers import (
     compute_coherence,
 )
 from .callback_utils import register_callback
-from .glyph_history import ensure_history, count_glyphs
+from .glyph_history import ensure_history, count_glyphs, append_metric
 from .collections_utils import normalize_counter, mix_groups
 from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
@@ -37,7 +37,7 @@ __all__ = [
 def _std_log(kind: str, G, ctx: dict):
     """Store compact events in ``history['events']``."""
     h = ensure_history(G)
-    h.setdefault("events", []).append((kind, dict(ctx)))
+    append_metric(h, "events", (kind, dict(ctx)))
 
 
 _STD_CALLBACKS = {

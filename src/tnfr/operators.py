@@ -23,6 +23,7 @@ from .helpers import (
     get_rng,
 )
 from .callback_utils import invoke_callbacks
+from .glyph_history import append_metric
 
 if TYPE_CHECKING:
     from .node import NodoProtocol
@@ -402,8 +403,11 @@ def _op_REMESH(node: NodoProtocol) -> None:  # REMESH — aviso
             "REMESH es a escala de red. Usa apply_remesh_if_globally_"
             "stable(G) o apply_network_remesh(G)."
         )
-        node.graph.setdefault("history", {}).setdefault("events", []).append(
-            ("warn", {"step": step_idx, "node": None, "msg": msg})
+        hist = node.graph.setdefault("history", {})
+        append_metric(
+            hist,
+            "events",
+            ("warn", {"step": step_idx, "node": None, "msg": msg}),
         )
         node.graph["_remesh_warn_step"] = step_idx
     return
@@ -439,7 +443,10 @@ def apply_glyph_obj(
         g = glyph if isinstance(glyph, Glyph) else Glyph(str(glyph))
     except ValueError:
         step_idx = len(node.graph.get("history", {}).get("C_steps", []))
-        node.graph.setdefault("history", {}).setdefault("events", []).append(
+        hist = node.graph.setdefault("history", {})
+        append_metric(
+            hist,
+            "events",
             (
                 "warn",
                 {
@@ -447,7 +454,7 @@ def apply_glyph_obj(
                     "node": getattr(node, "n", None),
                     "msg": f"glyph desconocido: {glyph}",
                 },
-            )
+            ),
         )
         raise ValueError(f"glyph desconocido: {glyph}")
 
@@ -575,8 +582,8 @@ def apply_network_remesh(G) -> None:
 
     G.graph["_REMESH_META"] = meta
     if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
-        ev = G.graph.setdefault("history", {}).setdefault("remesh_events", [])
-        ev.append(dict(meta))
+        hist = G.graph.setdefault("history", {})
+        append_metric(hist, "remesh_events", dict(meta))
 
     # Callbacks Γ(R)
     invoke_callbacks(G, "on_remesh", dict(meta))
@@ -700,19 +707,19 @@ def apply_topological_remesh(
             if G.graph.get(
                 "REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]
             ):
-                ev = G.graph.setdefault("history", {}).setdefault(
-                    "remesh_events", []
-                )
+                hist = G.graph.setdefault("history", {})
                 mapping = {
                     idx: C.nodes[idx].get("members", []) for idx in C.nodes()
                 }
-                ev.append(
+                append_metric(
+                    hist,
+                    "remesh_events",
                     {
                         "mode": "community",
                         "n_before": n_before,
                         "n_after": G.number_of_nodes(),
                         "mapping": mapping,
-                    }
+                    },
                 )
             return
 
