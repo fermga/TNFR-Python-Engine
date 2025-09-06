@@ -14,6 +14,9 @@ from .core import (
     _update_tg,
     _update_latency_index,
     _update_epi_support,
+    _track_stability,
+    _aggregate_si,
+    _compute_advanced_metrics,
     _metrics_step,
 )
 
@@ -40,6 +43,9 @@ __all__ = [
     "_update_tg",
     "_update_latency_index",
     "_update_epi_support",
+    "_track_stability",
+    "_aggregate_si",
+    "_compute_advanced_metrics",
     "_metrics_step",
     "coherence_matrix",
     "local_phase_sync_weighted",
