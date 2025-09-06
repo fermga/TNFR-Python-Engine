@@ -120,7 +120,7 @@ __all__ = [
 # -------------------------
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=DEFAULTS["JITTER_CACHE_SIZE"])
 def get_rng(seed: int, key: int) -> random.Random:
     """Devuelve un ``random.Random`` cacheado por ``(seed, key)``.
 
