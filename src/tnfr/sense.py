@@ -22,9 +22,6 @@ from .constants_glyphs import (
 # Canon: orden circular de glyphs y ángulos
 # -------------------------
 
-# Glyphs relevantes para el plano Σ de observadores de sentido
-SIGMA_ANGLE_KEYS: tuple[str, ...] = tuple(ESTABILIZADORES + DISRUPTIVOS)
-
 GLYPH_UNITS: Dict[str, complex] = {
     g: complex(math.cos(a), math.sin(a)) for g, a in ANGLE_MAP.items()
 }
@@ -69,18 +66,18 @@ def _sigma_cfg(G):
 # -------------------------
 
 
-def _sigma_from_vectors(
-    vectors: Iterable[complex] | complex, fallback_angle: float = 0.0
+def _sigma_from_iterable(
+    values: Iterable[complex] | complex, fallback_angle: float = 0.0
 ) -> tuple[Dict[str, float], int]:
-    """Normalise complex vectors in the σ-plane.
+    """Normalise complex vectors in el plano σ.
 
-    ``vectors`` may be a single complex number or an iterable of them.
+    ``values`` puede ser un complejo individual o un iterable de ellos.
     """
 
     try:
-        iterator = iter(vectors)
+        iterator = iter(values)
     except TypeError:
-        iterator = iter([vectors])
+        iterator = iter([values])
 
     cnt = 0
     acc = complex(0.0, 0.0)
@@ -89,7 +86,7 @@ def _sigma_from_vectors(
         try:
             acc += z
         except TypeError:
-            raise TypeError("vectors must be an iterable of complex numbers") from None
+            raise TypeError("values must be an iterable of complex numbers") from None
 
     if cnt <= 0:
         vec = {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": float(fallback_angle)}
@@ -110,10 +107,14 @@ def _sigma_from_vectors(
 def _sigma_from_pairs(
     pairs: Iterable[tuple[str, float]], fallback_angle: float = 0.0
 ) -> tuple[Dict[str, float], int]:
-    """Convenience to compute σ from ``(glyph, weight)`` pairs."""
+    """Backward-compatible wrapper to compute σ from ``(glyph, weight)`` pairs."""
 
     vectors = (glyph_unit(g) * float(w) for g, w in pairs)
-    return _sigma_from_vectors(vectors, fallback_angle)
+    return _sigma_from_iterable(vectors, fallback_angle)
+
+
+# Retro-compatibilidad
+_sigma_from_vectors = _sigma_from_iterable
 
 
 def sigma_vector_node(
@@ -125,7 +126,7 @@ def sigma_vector_node(
     if not nw:
         return None
     g, w, z = nw
-    vec, _ = _sigma_from_vectors(z, glyph_angle(g))
+    vec, _ = _sigma_from_iterable(z, glyph_angle(g))
     vec.update({"glyph": g, "w": float(w)})
     return vec
 
@@ -138,7 +139,8 @@ def sigma_vector(dist: Dict[str, float]) -> tuple[Dict[str, float], int]:
     together with the number of processed pairs are returned.
     """
 
-    return _sigma_from_pairs(dist.items())
+    vectors = (glyph_unit(g) * float(w) for g, w in dist.items())
+    return _sigma_from_iterable(vectors)
 
 
 def sigma_vector_from_graph(
@@ -169,7 +171,7 @@ def sigma_vector_from_graph(
         for _, nd in G.nodes(data=True)
         if (nw := _node_weight(nd, weight_mode))
     )
-    vec, n = _sigma_from_vectors(vectors)
+    vec, n = _sigma_from_iterable(vectors)
     vec["n"] = n
     return vec
 

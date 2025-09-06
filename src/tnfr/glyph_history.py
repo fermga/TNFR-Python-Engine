@@ -20,10 +20,16 @@ __all__ = [
 ]
 
 
-def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
-    """Add ``glyph`` to node history with maximum size ``window``."""
+def _validate_window(window: int) -> int:
+    window = int(window)
     if window < 0:
         raise ValueError("window must be >= 0")
+    return window
+
+
+def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
+    """Add ``glyph`` to node history with maximum size ``window``."""
+    window = _validate_window(window)
     hist = nd.get("glyph_history")
     if hist is None or hist.maxlen != window:
         hist = deque(hist or [], maxlen=window)
@@ -34,8 +40,7 @@ def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
 def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions."""
     gl = str(glyph)
-    if window < 0:
-        raise ValueError("window must be >= 0")
+    window = _validate_window(window)
     if window == 0:
         return False
 
@@ -88,12 +93,10 @@ class HistoryDict(dict):
                 heapq.heappush(self._heap, (0, k))
 
     def _compact_heap(self) -> None:
-        clean: list[tuple[int, str]] = []
-        for cnt, k in self._heap:
-            if k in self and self._counts.get(k) == cnt:
-                clean.append((cnt, k))
-        heapq.heapify(clean)
-        self._heap = clean
+        self._heap = [
+            (cnt, k) for k, cnt in self._counts.items() if k in self
+        ]
+        heapq.heapify(self._heap)
         self._dirty = 0
 
     def _maybe_compact(self) -> None:
@@ -150,16 +153,14 @@ class HistoryDict(dict):
             return self._get_and_increment(key, default, missing=True)
 
     def pop_least_used(self) -> Any:
-        while True:
-            try:
-                cnt, key = heapq.heappop(self._heap)
-            except IndexError as exc:
-                raise KeyError("HistoryDict is empty; cannot pop least used") from exc
+        while self._heap:
+            cnt, key = heapq.heappop(self._heap)
             if self._counts.get(key) == cnt and key in self:
                 self._counts.pop(key, None)
                 value = super().pop(key)
                 self._maybe_compact()
                 return value
+        raise KeyError("HistoryDict is empty; cannot pop least used")
 
 
 def ensure_history(G) -> Dict[str, Any]:
