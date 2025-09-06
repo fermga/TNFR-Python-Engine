@@ -419,10 +419,10 @@ def alias_get(
     aliases: Sequence[str],
     conv: Callable[[Any], T],
     *,
-    default: None = ...,
+    default: T,
     strict: bool = False,
     log_level: int | None = None,
-) -> Optional[T]: ...
+) -> T: ...
 
 
 @overload
@@ -431,10 +431,10 @@ def alias_get(
     aliases: Sequence[str],
     conv: Callable[[Any], T],
     *,
-    default: T,
+    default: None = ...,
     strict: bool = False,
     log_level: int | None = None,
-) -> T: ...
+) -> Optional[T]: ...
 
 
 def alias_get(
