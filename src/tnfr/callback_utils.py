@@ -153,6 +153,7 @@ def invoke_callbacks(
         G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
     )
     ctx = ctx or {}
+    err_list = G.graph.setdefault("_callback_errors", [])
     for spec in list(cbs):
         name, fn = spec.name, spec.func
         try:
@@ -161,7 +162,7 @@ def invoke_callbacks(
             logger.warning("callback %r failed for %s: %s", name, event, e)
             if strict:
                 raise
-            G.graph.setdefault("_callback_errors", []).append(
+            err_list.append(
                 {
                     "event": event,
                     "step": ctx.get("step"),
