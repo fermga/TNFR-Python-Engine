@@ -95,31 +95,65 @@ def _add_edge_common(n1, n2, weight) -> Optional[float]:
     return weight
 
 
-def _add_edge_nx(G, n1, n2, weight, overwrite):
-    """Add an edge between ``n1`` and ``n2`` in a ``networkx`` graph."""
+def _add_edge_generic(
+    graph,
+    n1,
+    n2,
+    weight,
+    overwrite,
+    exists_cb,
+    set_cb,
+):
+    """Añade una arista entre ``n1`` y ``n2`` usando callbacks.
+
+    ``exists_cb`` debe devolver ``True`` si la arista ya está presente.
+    ``set_cb`` recibe el peso final para almacenar la conexión.
+    """
 
     weight = _add_edge_common(n1, n2, weight)
     if weight is None:
         return
 
-    if G.has_edge(n1, n2) and not overwrite:
+    if exists_cb() and not overwrite:
         return
-    G.add_edge(n1, n2, weight=weight)
-    increment_edge_version(G)
+
+    set_cb(weight)
+    increment_edge_version(graph)
+
+
+def _add_edge_nx(G, n1, n2, weight, overwrite):
+    """Add an edge between ``n1`` and ``n2`` in a ``networkx`` graph."""
+
+    _add_edge_generic(
+        G,
+        n1,
+        n2,
+        weight,
+        overwrite,
+        exists_cb=lambda: G.has_edge(n1, n2),
+        set_cb=lambda w: G.add_edge(n1, n2, weight=w),
+    )
 
 
 def _add_edge_tnfr(graph, n1, n2, weight, overwrite):
     """Add an edge between ``n1`` and ``n2`` in a TNFR-style graph."""
 
-    weight = _add_edge_common(n1, n2, weight)
-    if weight is None:
-        return
+    def exists():
+        return n2 in n1._neighbors
 
-    if n2 in n1._neighbors and not overwrite:
-        return
-    n1._neighbors[n2] = weight
-    n2._neighbors[n1] = weight
-    increment_edge_version(graph)
+    def set_weight(w):
+        n1._neighbors[n2] = w
+        n2._neighbors[n1] = w
+
+    _add_edge_generic(
+        graph,
+        n1,
+        n2,
+        weight,
+        overwrite,
+        exists_cb=exists,
+        set_cb=set_weight,
+    )
 
 
 class NodoProtocol(Protocol):
