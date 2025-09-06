@@ -11,9 +11,6 @@ from typing import Dict, Any, Literal
 
 import networkx as nx
 
-from .observers import phase_sync, glyph_load, kuramoto_order
-from .sense import sigma_vector
-
 # Importar compute_Si y apply_glyph a nivel de módulo evita el coste de
 # realizar la importación en cada paso de la dinámica. Como los módulos de
 # origen no dependen de ``dynamics``, no se introducen ciclos.
@@ -42,10 +39,11 @@ from .constants import (
     get_param,
 )
 from .gamma import eval_gamma
+from .observers import glyph_load, kuramoto_order
+
 from .helpers import (
     clamp,
     clamp01,
-    list_mean,
     angle_diff,
     get_attr,
     set_attr,
@@ -56,7 +54,6 @@ from .helpers import (
     set_vf,
     set_dnfr,
     compute_Si,
-    compute_coherence,
     compute_dnfr_accel_max,
     node_set_checksum,
 )
@@ -1107,8 +1104,7 @@ def _update_nodes(
     adapt_vf_by_coherence(G)
 
 
-def _update_metrics(G) -> None:
-    _update_history(G)
+def _update_epi_hist(G) -> None:
     tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
     tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
     tau = max(tau_g, tau_l)
@@ -1167,7 +1163,7 @@ def step(
         step_idx=step_idx,
         hist=hist,
     )
-    _update_metrics(G)
+    _update_epi_hist(G)
     _maybe_remesh(G)
     _run_validators(G)
     _run_after_callbacks(G, step_idx=step_idx)
@@ -1195,150 +1191,3 @@ def run(
             if len(series) >= w and all(v >= frac for v in series[-w:]):
                 break
 
-
-# -------------------------
-# Historial simple
-# -------------------------
-
-
-def _update_coherence(G, hist) -> None:
-    """Actualizar la coherencia global y su media móvil."""
-    C = compute_coherence(G)
-    hist["C_steps"].append(C)
-
-    wbar_w = int(G.graph.get("WBAR_WINDOW", METRIC_DEFAULTS.get("WBAR_WINDOW", 25)))
-    cs = hist["C_steps"]
-    if cs:
-        w = min(len(cs), max(1, wbar_w))
-        wbar = sum(cs[-w:]) / w
-        hist.setdefault("W_bar", []).append(wbar)
-
-
-def _update_phase_sync(G, hist) -> None:
-    """Registrar sincronía de fase y el orden de Kuramoto."""
-    ps = phase_sync(G)
-    hist["phase_sync"].append(ps)
-    R = kuramoto_order(G)
-    hist.setdefault("kuramoto_R", []).append(R)
-
-
-def _update_sigma(G, hist) -> None:
-    """Registrar carga glífica y el vector Σ⃗ asociado."""
-    win = int(G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]))
-    gl = glyph_load(G, window=win)
-    hist["glyph_load_estab"].append(gl.get("_estabilizadores", 0.0))
-    hist["glyph_load_disr"].append(gl.get("_disruptivos", 0.0))
-
-    # ``glyph_load`` incluye agregados con prefijo ``_`` que no representan
-    # glyphs individuales; se descartan antes de calcular Σ⃗.
-    dist = {k: v for k, v in gl.items() if not k.startswith("_")}
-    sig, _ = sigma_vector(dist)
-    hist.setdefault("sense_sigma_x", []).append(sig.get("x", 0.0))
-    hist.setdefault("sense_sigma_y", []).append(sig.get("y", 0.0))
-    hist.setdefault("sense_sigma_mag", []).append(sig.get("mag", 0.0))
-    hist.setdefault("sense_sigma_angle", []).append(sig.get("angle", 0.0))
-
-
-def _update_history(G) -> None:
-    hist = ensure_history(G)
-    for k in (
-        "C_steps",
-        "stable_frac",
-        "phase_sync",
-        "glyph_load_estab",
-        "glyph_load_disr",
-        "Si_mean",
-        "Si_hi_frac",
-        "Si_lo_frac",
-        "delta_Si",
-        "B",
-    ):
-        hist.setdefault(k, [])
-
-    _update_coherence(G, hist)
-
-    eps_dnfr = float(G.graph.get("EPS_DNFR_STABLE", REMESH_DEFAULTS["EPS_DNFR_STABLE"]))
-    eps_depi = float(G.graph.get("EPS_DEPI_STABLE", REMESH_DEFAULTS["EPS_DEPI_STABLE"]))
-    # contadores y acumuladores
-    stables = 0  # nodos que cumplen criterios de estabilidad
-    total = max(1, G.number_of_nodes())
-    dt = float(G.graph.get("DT", DEFAULTS.get("DT", 1.0))) or 1.0
-    delta_si_sum = 0.0  # suma de variaciones δSi
-    delta_si_count = 0
-    B_sum = 0.0  # suma de bifurcaciones B
-    B_count = 0
-
-    for n, nd in G.nodes(data=True):
-        # --- estabilidad ---
-        if (
-            abs(get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr
-            and abs(get_attr(nd, ALIAS_dEPI, 0.0)) <= eps_depi
-        ):
-            stables += 1  # acumulamos nodos estables
-
-        # --- δSi: cambio de sensibilidad ---
-        Si_curr = get_attr(nd, ALIAS_SI, 0.0)
-        Si_prev = nd.get("_prev_Si", Si_curr)
-        dSi = Si_curr - Si_prev
-        nd["_prev_Si"] = Si_curr
-        set_attr(nd, ALIAS_dSI, dSi)
-        delta_si_sum += dSi  # acumulamos δSi total
-        delta_si_count += 1
-
-        # --- bifurcación B = ∂²νf/∂t² ---
-        vf_curr = get_attr(nd, ALIAS_VF, 0.0)
-        vf_prev = nd.get("_prev_vf", vf_curr)
-        dvf_dt = (vf_curr - vf_prev) / dt
-        dvf_prev = nd.get("_prev_dvf", dvf_dt)
-        B = (dvf_dt - dvf_prev) / dt
-        nd["_prev_vf"] = vf_curr
-        nd["_prev_dvf"] = dvf_dt
-        set_attr(nd, ALIAS_dVF, dvf_dt)
-        set_attr(nd, ALIAS_D2VF, B)
-        B_sum += B  # acumulamos B total
-        B_count += 1
-
-    hist["stable_frac"].append(stables / total)
-    hist["delta_Si"].append(delta_si_sum / delta_si_count if delta_si_count else 0.0)
-    hist["B"].append(B_sum / B_count if B_count else 0.0)
-    try:
-        _update_phase_sync(G, hist)
-        _update_sigma(G, hist)
-        if hist.get("C_steps") and hist.get("stable_frac"):
-            hist.setdefault("iota", []).append(
-                hist["C_steps"][-1] * hist["stable_frac"][-1]
-            )
-    except (KeyError, AttributeError, TypeError) as exc:
-        logger.debug("observer update failed: %s", exc)
-        # observadores son opcionales; si fallan se ignoran
-
-    # --- nuevas series: Si agregado (media y colas) ---
-    try:
-        sis = []
-        for _, nd in G.nodes(data=True):
-            sis.append(get_attr(nd, ALIAS_SI, float("nan")))
-        sis = [s for s in sis if not math.isnan(s)]
-        if sis:
-            si_mean = list_mean(sis, 0.0)
-            hist["Si_mean"].append(si_mean)
-            # umbrales preferentes del selector paramétrico; fallback a los
-            # del selector simple
-            thr_sel = G.graph.get(
-                "SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {})
-            )
-            thr_def = G.graph.get(
-                "GLYPH_THRESHOLDS",
-                DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66, "lo": 0.33}),
-            )
-            si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
-            si_lo = float(thr_sel.get("si_lo", thr_def.get("lo", 0.33)))
-            n = len(sis)
-            hist["Si_hi_frac"].append(sum(1 for s in sis if s >= si_hi) / n)
-            hist["Si_lo_frac"].append(sum(1 for s in sis if s <= si_lo) / n)
-        else:
-            hist["Si_mean"].append(0.0)
-            hist["Si_hi_frac"].append(0.0)
-            hist["Si_lo_frac"].append(0.0)
-    except (KeyError, AttributeError, TypeError) as exc:
-        logger.debug("Si aggregation failed: %s", exc)
-        # si aún no se calculó Si este paso, no interrumpimos

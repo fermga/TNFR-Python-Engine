@@ -49,9 +49,13 @@ def test_save_by_node_flag_keeps_metrics_equal(graph_canon):
         G.add_node(0, EPI_kind="OZ")
         G.add_node(1, EPI_kind=LATENT_GLYPH)
         attach_defaults(G)
+        for n in G.nodes():
+            nd = G.nodes[n]
+            nd["glyph_history"] = [nd.get("EPI_kind")]
         G.graph["_t"] = 0
         _metrics_step(G)
         G.nodes[0]["EPI_kind"] = "NAV"
+        G.nodes[0].setdefault("glyph_history", []).append("NAV")
         G.graph["_t"] = 1
         _metrics_step(G)
 

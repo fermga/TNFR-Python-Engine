@@ -6,7 +6,8 @@ import pytest
 
 from tnfr.constants import inject_defaults
 from tnfr.scenarios import build_graph
-from tnfr.dynamics import step, _update_history
+from tnfr.dynamics import step
+from tnfr.metrics import register_metrics_callbacks, _metrics_step
 from tnfr.operators import apply_glyph, apply_remesh_if_globally_stable
 from tnfr.types import Glyph
 
@@ -15,7 +16,8 @@ from tnfr.types import Glyph
 def G_small():
     G = build_graph(n=8, topology="ring", seed=7)
     inject_defaults(G)
-    _update_history(G)
+    register_metrics_callbacks(G)
+    _metrics_step(G)
     return G
 
 

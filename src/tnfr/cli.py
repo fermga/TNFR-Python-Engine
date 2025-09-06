@@ -21,13 +21,13 @@ from .metrics import (
     glyphogram_series,
     glyph_top,
     export_history,
+    _metrics_step,
 )
 from .trace import register_trace
 from .program import play, seq, block, wait, target
 from .types import Glyph
 from .dynamics import (
     step,
-    _update_history,
     default_glyph_selector,
     parametric_glyph_selector,
     validate_canon,
@@ -222,7 +222,7 @@ def _attach_callbacks(G: "nx.Graph") -> None:
     register_sigma_callback(G)
     register_metrics_callbacks(G)
     register_trace(G)
-    _update_history(G)
+    _metrics_step(G)
 
 
 def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
