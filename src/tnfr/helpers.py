@@ -79,7 +79,7 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
     """Return the arithmetic mean of ``xs`` or ``default`` if empty."""
     try:
         return float(fmean(xs))
-    except (StatisticsError, ValueError):
+    except (StatisticsError, ValueError, TypeError):
         return float(default)
 
 
@@ -209,11 +209,11 @@ def node_set_checksum(
 
     graph = G.graph if hasattr(G, "graph") else G
     if nodes is None:
-        node_iter = list(G.nodes())
+        node_iter = tuple(G.nodes())
     else:
-        node_iter = list(nodes)
+        node_iter = tuple(nodes)
 
-    marker = tuple(node_iter)
+    marker = node_iter
     cached = graph.get("_node_set_checksum_cache")
     if cached and cached[0] == len(marker) and cached[1] == marker:
         return cached[2]
@@ -278,6 +278,8 @@ def edge_version_cache(
     The potentially expensive ``builder`` is executed outside the lock when
     the cache is cold.
     """
+    if max_entries is not None and max_entries < 0:
+        raise ValueError("max_entries must be non-negative or None")
     graph = G.graph if hasattr(G, "graph") else G
     edge_version = int(graph.get("_edge_version", 0))
     with _EDGE_CACHE_COND:
@@ -323,17 +325,16 @@ def cached_nodes_and_A(
     checksum = node_set_checksum(G, nodes_list, store=False)
     key = f"_dnfr_{len(nodes_list)}_{checksum}"
     G.graph["_dnfr_nodes_checksum"] = checksum
+    np = get_numpy()
 
     def builder() -> tuple[list[int], Any]:
-        nodes = nodes_list
-        np = get_numpy()
         if np is not None:
             import networkx as nx  # importación tardía
 
-            A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
+            A = nx.to_numpy_array(G, nodelist=nodes_list, weight=None, dtype=float)
         else:  # pragma: no cover - dependiente de numpy
             A = None
-        return nodes, A
+        return nodes_list, A
 
     return edge_version_cache(G, key, builder, max_entries=cache_size)
 

@@ -29,17 +29,11 @@ def _convert_value(
     try:
         return True, conv(value)
     except (ValueError, TypeError) as exc:
-        level = (
-            log_level
-            if log_level is not None
-            else (logging.ERROR if strict else logging.DEBUG)
-        )
-        if key is not None:
-            logger.log(
-                level, "No se pudo convertir el valor para %r: %s", key, exc
-            )
-        else:
-            logger.log(level, "No se pudo convertir el valor: %s", exc)
         if strict:
             raise
+        level = log_level if log_level is not None else logging.DEBUG
+        if key is not None:
+            logger.log(level, "No se pudo convertir el valor para %r: %s", key, exc)
+        else:
+            logger.log(level, "No se pudo convertir el valor: %s", exc)
         return False, None
