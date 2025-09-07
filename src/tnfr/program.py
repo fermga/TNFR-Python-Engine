@@ -128,11 +128,14 @@ def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
         else None
     )
     seq = ensure_collection(item.body)
-    rev_seq = tuple(reversed(seq))
-    for _ in range(repeats):
-        if closing is not None:
-            stack.append(closing)
-        stack.extend(rev_seq)
+
+    def _iter_reversed_body():
+        for _ in range(repeats):
+            if closing is not None:
+                yield closing
+            yield from reversed(seq)
+
+    stack.extend(_iter_reversed_body())
     stack.append(THOL_SENTINEL)
 
 
