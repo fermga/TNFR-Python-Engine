@@ -22,6 +22,7 @@ from .core import (
 
 from .coherence import (
     coherence_matrix,
+    local_phase_sync,
     local_phase_sync_weighted,
     register_coherence_callbacks,
 )
@@ -48,6 +49,7 @@ __all__ = [
     "_compute_advanced_metrics",
     "_metrics_step",
     "coherence_matrix",
+    "local_phase_sync",
     "local_phase_sync_weighted",
     "register_coherence_callbacks",
     "register_diagnosis_callbacks",

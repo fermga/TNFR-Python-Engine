@@ -202,9 +202,7 @@ def dissonance_events(G, ctx=None):
     for n in nodes:
         nd = G.nodes[n]
         dn = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
-        Rloc = local_phase_sync_weighted(
-            G, n, nodes_order=nodes, node_to_index=node_to_index
-        )
+        Rloc = local_phase_sync(G, n)
         st = bool(nd.get("_disr_state", False))
         if (not st) and dn >= 0.5 and Rloc <= 0.4:
             nd["_disr_state"] = True
