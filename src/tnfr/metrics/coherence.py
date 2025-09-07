@@ -339,38 +339,44 @@ def local_phase_sync(G, n):
     return abs(mean)
 
 def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=None):
-    if W_row is None or nodes_order is None:
-        raise ValueError("nodes_order and W_row are required for weighted phase synchrony")
+    """Compute local phase synchrony using explicit weights.
 
-    # --- Mapeo nodo → índice ---
+    ``nodes_order`` is the node ordering used to build the coherence matrix and
+    ``W_row`` contains either the dense row corresponding to ``n`` or the sparse
+    list of ``(i, j, w)`` tuples for the whole matrix.
+    """
+    if W_row is None or nodes_order is None:
+        raise ValueError(
+            "nodes_order and W_row are required for weighted phase synchrony"
+        )
+
     if node_to_index is None:
         node_to_index = ensure_node_index_map(G)
-
-    i = node_to_index.get(n, None)
+    i = node_to_index.get(n)
     if i is None:
         i = nodes_order.index(n)
 
-    if (
-        isinstance(W_row, list)
-        and W_row
-        and isinstance(W_row[0], (int, float))
-    ):
-        weights = W_row
-    else:
-        weights = [0.0] * len(nodes_order)
-        for ii, jj, w in W_row:
-            if ii == i:
-                weights[jj] = w
-
     num = 0 + 0j
     den = 0.0
-    for j, nj in enumerate(nodes_order):
-        if nj == n:
-            continue
-        w = weights[j]
-        den += w
-        th_j = get_attr(G.nodes[nj], ALIAS_THETA, 0.0)
-        num += w * complex(math.cos(th_j), math.sin(th_j))
+
+    if isinstance(W_row, list) and W_row and isinstance(W_row[0], (int, float)):
+        for w, nj in zip(W_row, nodes_order):
+            if nj == n:
+                continue
+            den += w
+            th_j = get_attr(G.nodes[nj], ALIAS_THETA, 0.0)
+            num += w * complex(math.cos(th_j), math.sin(th_j))
+    else:
+        for ii, jj, w in W_row:
+            if ii != i:
+                continue
+            nj = nodes_order[jj]
+            if nj == n:
+                continue
+            den += w
+            th_j = get_attr(G.nodes[nj], ALIAS_THETA, 0.0)
+            num += w * complex(math.cos(th_j), math.sin(th_j))
+
     return abs(num / den) if den else 0.0
 
 
