@@ -5,7 +5,7 @@ from tnfr.operators import (
     random_jitter,
     clear_rng_cache,
     apply_glyph,
-    _select_dominant_glyph,
+    _mix_epi_with_neighbors,
     _resolve_jitter_seed,
 )
 from types import SimpleNamespace
@@ -115,21 +115,33 @@ def test_um_candidate_subset_proximity():
     assert not G.has_edge(0, 3)
 
 
-def test_select_dominant_glyph_prefers_higher_epi():
-    node = SimpleNamespace(EPI=1.0, epi_kind="self")
+def test_mix_epi_with_neighbors_prefers_higher_epi():
     neigh = [
         SimpleNamespace(EPI=-3.0, epi_kind="n1"),
         SimpleNamespace(EPI=2.0, epi_kind="n2"),
     ]
-    assert _select_dominant_glyph(node, neigh) == "n1"
+    node = SimpleNamespace(EPI=1.0, epi_kind="self", neighbors=lambda: neigh)
+    epi_bar, dominant = _mix_epi_with_neighbors(node, 0.25, "EN")
+    assert epi_bar == pytest.approx(-0.5)
+    assert node.EPI == pytest.approx(0.625)
+    assert dominant == "n1"
+    assert node.epi_kind == "n1"
 
 
-def test_select_dominant_glyph_returns_node_kind_on_tie():
-    node = SimpleNamespace(EPI=1.0, epi_kind="self")
-    neigh = [SimpleNamespace(EPI=-1.0, epi_kind="n1")]
-    assert _select_dominant_glyph(node, neigh) == "self"
+def test_mix_epi_with_neighbors_returns_node_kind_on_tie():
+    neigh = [SimpleNamespace(EPI=1.0, epi_kind="n1")]
+    node = SimpleNamespace(EPI=1.0, epi_kind="self", neighbors=lambda: neigh)
+    epi_bar, dominant = _mix_epi_with_neighbors(node, 0.25, "EN")
+    assert epi_bar == pytest.approx(1.0)
+    assert node.EPI == pytest.approx(1.0)
+    assert dominant == "self"
+    assert node.epi_kind == "self"
 
 
-def test_select_dominant_glyph_no_neighbors():
-    node = SimpleNamespace(EPI=1.0, epi_kind="self")
-    assert _select_dominant_glyph(node, []) == "self"
+def test_mix_epi_with_neighbors_no_neighbors():
+    node = SimpleNamespace(EPI=1.0, epi_kind="self", neighbors=lambda: [])
+    epi_bar, dominant = _mix_epi_with_neighbors(node, 0.25, "EN")
+    assert epi_bar == pytest.approx(1.0)
+    assert node.EPI == pytest.approx(1.0)
+    assert dominant == "EN"
+    assert node.epi_kind == "EN"
