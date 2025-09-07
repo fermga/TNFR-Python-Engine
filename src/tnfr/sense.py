@@ -25,6 +25,19 @@ GLYPH_UNITS: Dict[str, complex] = {
     g: complex(math.cos(a), math.sin(a)) for g, a in ANGLE_MAP.items()
 }
 
+__all__ = [
+    "GLYPH_UNITS",
+    "glyph_angle",
+    "glyph_unit",
+    "sigma_vector_node",
+    "sigma_vector",
+    "sigma_vector_from_graph",
+    "push_sigma_snapshot",
+    "register_sigma_callback",
+    "sigma_series",
+    "sigma_rose",
+]
+
 # -------------------------
 # Utilidades básicas
 # -------------------------

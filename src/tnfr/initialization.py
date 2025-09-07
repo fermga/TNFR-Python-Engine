@@ -11,6 +11,8 @@ from .rng import get_rng
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
 
+__all__ = ["init_node_attrs"]
+
 
 def _init_phase(
     nd: dict,

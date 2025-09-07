@@ -71,6 +71,26 @@ from .logging_utils import get_logger
 
 logger = get_logger(__name__)
 
+__all__ = [
+    "default_compute_delta_nfr",
+    "set_delta_nfr_hook",
+    "dnfr_phase_only",
+    "dnfr_epi_vf_mixed",
+    "dnfr_laplacian",
+    "prepare_integration_params",
+    "update_epi_via_nodal_equation",
+    "apply_dnfr_field",
+    "integrar_epi_euler",
+    "apply_canonical_clamps",
+    "validate_canon",
+    "coordinate_global_local_phase",
+    "adapt_vf_by_coherence",
+    "default_glyph_selector",
+    "parametric_glyph_selector",
+    "step",
+    "run",
+]
+
 
 def _update_node_sample(G, *, step: int) -> None:
     """Refresh ``G.graph['_node_sample']`` with a random subset of nodes.

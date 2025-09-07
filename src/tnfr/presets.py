@@ -9,6 +9,13 @@ ARRANQUE_BASICO = seq(Glyph.AL, Glyph.EN)
 CIERRE_BASICO = seq(Glyph.RA, Glyph.SHA)
 NUCLEO_VAL_UM = seq(Glyph.VAL, Glyph.UM)
 
+__all__ = [
+    "ARRANQUE_BASICO",
+    "CIERRE_BASICO",
+    "NUCLEO_VAL_UM",
+    "get_preset",
+]
+
 
 _PRESETS = {
     "arranque_resonante": ARRANQUE_BASICO
