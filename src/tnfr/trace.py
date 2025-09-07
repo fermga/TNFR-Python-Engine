@@ -257,26 +257,30 @@ def glyph_counts_field(G):
     return {"glyphs": cnt}
 
 
+TRACE_FIELDS_BEFORE = {
+    "gamma": gamma_field,
+    "grammar": grammar_field,
+    "selector": selector_field,
+    "dnfr_weights": dnfr_weights_field,
+    "si_weights": si_weights_field,
+    "callbacks": callbacks_field,
+    "thol_state": thol_state_field,
+}
+
+
+TRACE_FIELDS_AFTER = {
+    "kuramoto": kuramoto_field,
+    "sigma": sigma_field,
+    "glyph_counts": glyph_counts_field,
+}
+
+
 def _trace_before(G, *args, **kwargs):
-    fields = {
-        "gamma": gamma_field,
-        "grammar": grammar_field,
-        "selector": selector_field,
-        "dnfr_weights": dnfr_weights_field,
-        "si_weights": si_weights_field,
-        "callbacks": callbacks_field,
-        "thol_state": thol_state_field,
-    }
-    _trace_capture(G, "before", fields)
+    _trace_capture(G, "before", TRACE_FIELDS_BEFORE)
 
 
 def _trace_after(G, *args, **kwargs):
-    fields = {
-        "kuramoto": kuramoto_field,
-        "sigma": sigma_field,
-        "glyph_counts": glyph_counts_field,
-    }
-    _trace_capture(G, "after", fields)
+    _trace_capture(G, "after", TRACE_FIELDS_AFTER)
 
 
 # -------------------------

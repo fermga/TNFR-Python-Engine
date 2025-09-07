@@ -89,8 +89,15 @@ def test_sigma_from_vectors_accepts_single_complex():
 
 
 def test_sigma_from_vectors_rejects_invalid_iterable():
-    with pytest.raises(TypeError, match="iterable of complex"):
+    with pytest.raises(TypeError, match="real or complex"):
         _sigma_from_vectors("abc")
+
+
+def test_sigma_from_iterable_accepts_reals():
+    vec, n = _sigma_from_iterable([1.0, 3.0])
+    assert n == 2
+    assert vec["x"] == pytest.approx(2.0)
+    assert vec["y"] == pytest.approx(0.0)
 
 
 def test_unknown_glyph_raises():

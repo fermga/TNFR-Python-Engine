@@ -82,11 +82,13 @@ def _sigma_cfg(G):
 
 
 def _sigma_from_iterable(
-    values: Iterable[complex] | complex, fallback_angle: float = 0.0
+    values: Iterable[complex | float | int] | complex | float | int,
+    fallback_angle: float = 0.0,
 ) -> tuple[Dict[str, float], int]:
-    """Normalise complex vectors in el plano σ.
+    """Normalise vectors in the σ-plane.
 
-    ``values`` puede ser un complejo individual o un iterable de ellos.
+    ``values`` may contain complex or real numbers; real inputs are promoted to
+    complex with zero imaginary part.
     """
 
     try:
@@ -94,22 +96,26 @@ def _sigma_from_iterable(
     except TypeError:
         iterator = iter([values])
 
+    def _to_complex(val: complex | float | int) -> complex:
+        if isinstance(val, complex):
+            return val
+        if isinstance(val, (int, float)):
+            return complex(val, 0.0)
+        raise TypeError("values must be an iterable of real or complex numbers")
+
     try:
-        first = next(iterator)
+        first = _to_complex(next(iterator))
     except StopIteration:
         vec = {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": float(fallback_angle)}
         return vec, 0
-    if not isinstance(first, complex):
-        raise TypeError("values must be an iterable of complex numbers")
 
     sum_x = first.real
     sum_y = first.imag
     cnt = 1
     for z in iterator:
-        if not isinstance(z, complex):
-            raise TypeError("values must be an iterable of complex numbers")
-        sum_x += z.real
-        sum_y += z.imag
+        zc = _to_complex(z)
+        sum_x += zc.real
+        sum_y += zc.imag
         cnt += 1
 
     x = sum_x / cnt
