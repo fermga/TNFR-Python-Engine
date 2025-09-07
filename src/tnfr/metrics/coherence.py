@@ -359,7 +359,10 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=
 
 def local_phase_sync(G, n):
     """Compute unweighted local phase synchronization for node ``n``."""
-    return local_phase_sync_weighted(G, n)
+    nodes, W = coherence_matrix(G)
+    if nodes is None:
+        return 0.0
+    return local_phase_sync_weighted(G, n, nodes_order=nodes, W_row=W)
 
 
 def _coherence_step(G, ctx=None):
