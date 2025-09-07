@@ -17,12 +17,17 @@ from typing import (
     overload,
     Protocol,
     Generic,
+    Hashable,
+    TYPE_CHECKING,
 )
 import logging
 from functools import lru_cache
 from .logging_utils import get_logger
 
 from .constants import ALIAS_VF, ALIAS_DNFR
+
+if TYPE_CHECKING:  # pragma: no cover
+    import networkx as nx
 
 logger = get_logger(__name__)
 
@@ -79,55 +84,34 @@ def _alias_resolve(
     ``aliases`` must already be validated with :func:`_validate_aliases`.
     """
 
-    encountered_error = False
+    errors: list[tuple[str, Exception]] = []
     for key in aliases:
-        if key in d:
-            try:
-                return conv(d[key])
-            except (ValueError, TypeError) as exc:
-                encountered_error = True
-                if not strict:
-                    lvl = log_level if log_level is not None else logging.DEBUG
-                    logger.log(
-                        lvl, "No se pudo convertir el valor para %r: %s", key, exc
-                    )
+        if key not in d:
+            continue
+        try:
+            return conv(d[key])
+        except (ValueError, TypeError) as exc:
+            errors.append((key, exc))
+            if not strict:
+                lvl = log_level if log_level is not None else logging.DEBUG
+                logger.log(
+                    lvl, "No se pudo convertir el valor para %r: %s", key, exc
+                )
     if default is not None:
         try:
             return conv(default)
         except (ValueError, TypeError) as exc:
-            encountered_error = True
+            errors.append(("default", exc))
             if not strict:
-                lvl = (
-                    logging.WARNING if log_level is None else log_level
-                )
+                lvl = logging.WARNING if log_level is None else log_level
                 logger.log(
                     lvl, "No se pudo convertir el valor para 'default': %s", exc
                 )
 
-    if not encountered_error:
-        return None
-
-    # At this point no conversion succeeded and at least one error occurred.
-    # Build the error list only if we need to raise or log a final summary.
-    errors: list[tuple[str, Exception]] = []
-    for key in aliases:
-        if key in d:
-            try:
-                conv(d[key])
-            except (ValueError, TypeError) as exc:
-                errors.append((key, exc))
-    if default is not None:
-        try:
-            conv(default)
-        except (ValueError, TypeError) as exc:
-            errors.append(("default", exc))
-
-    if errors and strict:
-        err_msg = "; ".join(f"{k!r}: {e}" for k, e in errors)
-        raise ValueError(f"No se pudieron convertir valores para {err_msg}")
-
-    if errors and not strict:
-        # In lax mode errors have already been logged individually; emit a summary
+    if errors:
+        if strict:
+            err_msg = "; ".join(f"{k!r}: {e}" for k, e in errors)
+            raise ValueError(f"No se pudieron convertir valores para {err_msg}")
         lvl = log_level if log_level is not None else logging.DEBUG
         summary = "; ".join(f"{k!r}: {e}" for k, e in errors)
         logger.log(lvl, "No se pudieron convertir valores para %s", summary)
@@ -307,9 +291,9 @@ get_attr_str, set_attr_str = _str_accessor.get, _str_accessor.set
 # -------------------------
 
 
-def recompute_abs_max(G, aliases: tuple[str, ...]):
-    """Recalculate and return ``(max_val, node)`` for ``aliases``."""
-    node = max(
+def recompute_abs_max(G: "nx.Graph", aliases: tuple[str, ...]) -> tuple[float, Hashable | None]:
+    """Recalculate and return ``(max_val, node)`` for ``aliases`` in ``G``."""
+    node: Hashable | None = max(
         G.nodes(),
         key=lambda m: abs(get_attr(G.nodes[m], aliases, 0.0)),
         default=None,
@@ -321,14 +305,14 @@ def recompute_abs_max(G, aliases: tuple[str, ...]):
 
 
 def multi_recompute_abs_max(
-    G, alias_map: Dict[str, tuple[str, ...]]
+    G: "nx.Graph", alias_map: Dict[str, tuple[str, ...]]
 ) -> Dict[str, float]:
     """Return absolute maxima for each entry in ``alias_map``.
 
-    ``alias_map`` maps result keys to alias tuples. The graph is
-    traversed once and the absolute maximum for each alias tuple is
-    recorded. The returned dictionary uses the same keys as
-    ``alias_map``.
+    ``G`` is a :class:`networkx.Graph`. ``alias_map`` maps result keys to
+    alias tuples. The graph is traversed once and the absolute maximum for
+    each alias tuple is recorded. The returned dictionary uses the same
+    keys as ``alias_map``.
     """
 
     maxima = {k: 0.0 for k in alias_map}
@@ -341,7 +325,7 @@ def multi_recompute_abs_max(
 
 
 def _update_cached_abs_max(
-    G, aliases: tuple[str, ...], n, value, *, key: str
+    G: "nx.Graph", aliases: tuple[str, ...], n: Hashable, value: float, *, key: str
 ) -> None:
     """Update ``G.graph[key]`` and ``G.graph[f"{key}_node"]``."""
     node_key = f"{key}_node"
@@ -358,22 +342,22 @@ def _update_cached_abs_max(
 
 
 def set_attr_with_max(
-    G, n, aliases: tuple[str, ...], value: float, *, cache: str
+    G: "nx.Graph", n: Hashable, aliases: tuple[str, ...], value: float, *, cache: str
 ) -> None:
-    """Assign ``value`` and update the global maximum."""
+    """Assign ``value`` to node ``n`` and update the global maximum."""
     val = float(value)
     set_attr(G.nodes[n], aliases, val)
     _update_cached_abs_max(G, aliases, n, val, key=cache)
 
 
-def set_vf(G, n, value: float, *, update_max: bool = True) -> None:
-    """Set ``νf`` and optionally update the global maximum."""
+def set_vf(G: "nx.Graph", n: Hashable, value: float, *, update_max: bool = True) -> None:
+    """Set ``νf`` for node ``n`` and optionally update the global maximum."""
     val = float(value)
     set_attr(G.nodes[n], ALIAS_VF, val)
     if update_max:
         _update_cached_abs_max(G, ALIAS_VF, n, val, key="_vfmax")
 
 
-def set_dnfr(G, n, value: float) -> None:
-    """Set ``ΔNFR`` and update the global maximum."""
+def set_dnfr(G: "nx.Graph", n: Hashable, value: float) -> None:
+    """Set ``ΔNFR`` for node ``n`` and update the global maximum."""
     set_attr_with_max(G, n, ALIAS_DNFR, value, cache="_dnfrmax")

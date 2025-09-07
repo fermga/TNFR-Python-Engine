@@ -13,7 +13,7 @@ from typing import (
 )
 import logging
 import math
-from itertools import islice
+from collections import deque
 from .logging_utils import get_logger
 
 from .value_utils import _convert_value
@@ -30,9 +30,7 @@ __all__ = [
     "mix_groups",
 ]
 
-MAX_MATERIALIZE_DEFAULT = (
-    1000  # default materialization limit in ensure_collection
-)
+MAX_MATERIALIZE_DEFAULT: int = 1000  # default materialization limit in ensure_collection
 
 
 def ensure_collection(
@@ -62,12 +60,18 @@ def ensure_collection(
         limit = max_materialize
         if limit == 0:
             return ()
-        items = tuple(islice(iterable, limit + 1))
-        if len(items) > limit:
+        dq: deque[T] = deque()
+        it = iter(iterable)
+        for _ in range(limit + 1):
+            try:
+                dq.append(next(it))
+            except StopIteration:
+                break
+        if len(dq) > limit:
             raise ValueError(
-                f"Iterable produced {len(items)} items, exceeds limit {limit}"
+                f"Iterable produced {len(dq)} items, exceeds limit {limit}"
             )
-        return items
+        return tuple(dq)
 
     try:
         return _materialise(it)

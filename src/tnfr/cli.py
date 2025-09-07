@@ -159,7 +159,12 @@ def _save_json(path: str, data: Any) -> None:
 # Metadatos para las opciones de gramática y del glyph
 # Utiliza acciones y tipos estándar de ``argparse`` en lugar de
 # conversores personalizados.
-GRAMMAR_ARG_SPECS = [
+# Helper to build reusable argument specification lists
+def specs(*pairs: tuple[str, dict[str, Any]]) -> list[tuple[str, dict[str, Any]]]:
+    return list(pairs)
+
+
+GRAMMAR_ARG_SPECS = specs(
     ("--grammar.enabled", {"action": argparse.BooleanOptionalAction}),
     ("--grammar.zhir_requires_oz_window", {"type": int}),
     ("--grammar.zhir_dnfr_min", {"type": float}),
@@ -168,10 +173,10 @@ GRAMMAR_ARG_SPECS = [
     ("--grammar.thol_close_dnfr", {"type": float}),
     ("--grammar.si_high", {"type": float}),
     ("--glyph.hysteresis_window", {"type": int}),
-]
+)
 
 # Especificaciones para opciones relacionadas con el histórico
-HISTORY_ARG_SPECS = [
+HISTORY_ARG_SPECS = specs(
     ("--save-history", {"dest": "save_history", "type": str, "default": None}),
     (
         "--export-history-base",
@@ -185,10 +190,10 @@ HISTORY_ARG_SPECS = [
             "default": "json",
         },
     ),
-]
+)
 
 # Argumentos comunes a los subcomandos
-COMMON_ARG_SPECS = [
+COMMON_ARG_SPECS = specs(
     ("--nodes", {"type": int, "default": 24}),
     (
         "--topology",
@@ -223,7 +228,7 @@ COMMON_ARG_SPECS = [
     ),
     ("--gamma-beta", {"type": float, "default": 0.0}),
     ("--gamma-R0", {"type": float, "default": 0.0}),
-]
+)
 
 
 def add_arg_specs(parser: argparse.ArgumentParser, specs) -> None:

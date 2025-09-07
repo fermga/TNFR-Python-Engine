@@ -6,8 +6,8 @@ import math
 import cmath
 import logging
 import warnings
-import pickle
 import hashlib
+import json
 from collections.abc import Mapping
 
 from .constants import ALIAS_THETA
@@ -70,34 +70,27 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
     cached = G.graph.get("_gamma_spec")
     prev_hash = G.graph.get("_gamma_spec_hash")
 
-    # ``pickle.dumps`` preserves both structure and types, ensuring the hash
-    # reflects any change in the specification regardless of how values are
-    # represented. Avoid re-serialising if we already hold the bytes for the same
-    # raw object.
-    dumped = None
-    if G.graph.get("_gamma_spec_raw") is raw:
-        dumped = G.graph.get("_gamma_spec_serialized")
-    if dumped is None:
-        dumped = pickle.dumps(raw)
+    invalid = False
+    if raw is None:
+        spec: Mapping[str, Any] = {"type": "none"}
+    elif not isinstance(raw, Mapping):
+        spec = {"type": "none"}
+        invalid = True
+    else:
+        spec = raw
 
+    dumped = json.dumps(spec, sort_keys=True).encode("utf-8")
     cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
     if cached is not None and prev_hash == cur_hash:
         return cached
-    if raw is None:
-        spec = {"type": "none"}
-    elif not isinstance(raw, Mapping):
+    if invalid:
         warnings.warn(
             "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}",
             UserWarning,
             stacklevel=2,
         )
-        spec = {"type": "none"}
-    else:
-        spec = raw
     G.graph["_gamma_spec"] = spec
     G.graph["_gamma_spec_hash"] = cur_hash
-    G.graph["_gamma_spec_serialized"] = dumped
-    G.graph["_gamma_spec_raw"] = raw
     return spec
 
 

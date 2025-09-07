@@ -176,16 +176,8 @@ def get_graph(obj: Any) -> Any:
     return obj.graph if hasattr(obj, "graph") else obj
 
 
-def _stable_json(
-    obj: Any, visited: set[int] | None = None, max_depth: int = 10
-) -> str:
-    """Return a JSON string with deterministic ordering.
-
-    Raises
-    ------
-    ValueError
-        If ``max_depth`` is greater than or equal to Python's recursion limit.
-    """
+def _stable_json(obj: Any, max_depth: int = 10) -> str:
+    """Return a JSON string with deterministic ordering."""
 
     recursion_limit = sys.getrecursionlimit()
     if max_depth >= recursion_limit:
@@ -193,20 +185,22 @@ def _stable_json(
             f"max_depth={max_depth} exceeds recursion limit ({recursion_limit})"
         )
 
+    seen: set[int] = set()
+
     def _to_basic(o: Any, depth: int) -> Any:
         if isinstance(o, (str, int, float, bool)) or o is None:
             return o
         if depth <= 0:
             return "<max-depth>"
         oid = id(o)
-        if oid in visited:
+        if oid in seen:
             return "<recursion>"
-        visited.add(oid)
+        seen.add(oid)
         try:
             if isinstance(o, dict):
                 return {
                     json.dumps(
-                        (type(k).__name__, _to_basic(k, depth - 1))
+                        (type(k).__name__, _to_basic(k, depth - 1)), sort_keys=True
                     ): _to_basic(v, depth - 1)
                     for k, v in o.items()
                 }
@@ -219,10 +213,8 @@ def _stable_json(
                 return _to_basic(vars(o), depth - 1)
             return repr(o)
         finally:
-            visited.discard(oid)
+            seen.discard(oid)
 
-    if visited is None:
-        visited = set()
     basic = _to_basic(obj, max_depth)
     return json.dumps(basic, sort_keys=True)
 
