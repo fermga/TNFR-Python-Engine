@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from statistics import fmean, StatisticsError
+from operator import ge, le
 
 from ..constants import (
     ALIAS_EPI,
@@ -49,10 +50,21 @@ def _symmetry_index(
 def _state_from_thresholds(Rloc, dnfr_n, cfg):
     stb = cfg.get("stable", {"Rloc_hi": 0.8, "dnfr_lo": 0.2, "persist": 3})
     dsr = cfg.get("dissonance", {"Rloc_lo": 0.4, "dnfr_hi": 0.5, "persist": 3})
-    if (Rloc >= float(stb["Rloc_hi"])) and (dnfr_n <= float(stb["dnfr_lo"])):
+
+    stable_checks = {
+        "Rloc": (Rloc, float(stb["Rloc_hi"]), ge),
+        "dnfr": (dnfr_n, float(stb["dnfr_lo"]), le),
+    }
+    if all(comp(val, thr) for val, thr, comp in stable_checks.values()):
         return "estable"
-    if (Rloc <= float(dsr["Rloc_lo"])) and (dnfr_n >= float(dsr["dnfr_hi"])):
+
+    dissonant_checks = {
+        "Rloc": (Rloc, float(dsr["Rloc_lo"]), le),
+        "dnfr": (dnfr_n, float(dsr["dnfr_hi"]), ge),
+    }
+    if all(comp(val, thr) for val, thr, comp in dissonant_checks.values()):
         return "disonante"
+
     return "transicion"
 
 
