@@ -51,3 +51,13 @@ def test_node_index_map_invalidation():
 
     assert mapping1 is not mapping2
     assert set(mapping2.keys()) == set(G.nodes())
+
+
+def test_use_numpy_parameter_matches_loops():
+    G = nx.cycle_graph(3)
+    for n in G.nodes:
+        G.nodes[n][THETA_PRIMARY] = 0.0
+    nodes_l, W_l = coherence_matrix(G, use_numpy=False)
+    nodes_v, W_v = coherence_matrix(G, use_numpy=True)
+    assert nodes_l == nodes_v
+    assert W_l == W_v
