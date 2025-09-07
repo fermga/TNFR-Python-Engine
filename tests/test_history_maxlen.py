@@ -4,14 +4,14 @@ from collections import deque
 
 import pytest
 
-from tnfr.constants import attach_defaults
+from tnfr.constants import inject_defaults
 from tnfr.glyph_history import ensure_history, HistoryDict
 
 
 def test_history_maxlen_and_cleanup(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     G.graph["HISTORY_MAXLEN"] = 2
 
     hist = ensure_history(G)
@@ -33,7 +33,7 @@ def test_history_maxlen_and_cleanup(graph_canon):
 def test_history_least_used_removed(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     G.graph["HISTORY_MAXLEN"] = 2
 
     hist = ensure_history(G)
@@ -53,7 +53,7 @@ def test_history_least_used_removed(graph_canon):
 def test_history_trim_uses_pop_least_used(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     G.graph["HISTORY_MAXLEN"] = 2
 
     hist = ensure_history(G)
@@ -70,7 +70,7 @@ def test_history_trim_uses_pop_least_used(graph_canon):
 def test_history_maxlen_override_respected(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
 
     hist = ensure_history(G)
     assert not isinstance(hist, HistoryDict)
@@ -84,7 +84,7 @@ def test_history_maxlen_override_respected(graph_canon):
 def test_history_not_trimmed_when_equal_maxlen(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     G.graph["HISTORY_MAXLEN"] = 2
 
     hist = ensure_history(G)
@@ -99,7 +99,7 @@ def test_history_not_trimmed_when_equal_maxlen(graph_canon):
 def test_history_not_trimmed_when_below_maxlen(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     G.graph["HISTORY_MAXLEN"] = 2
 
     hist = ensure_history(G)
@@ -113,7 +113,7 @@ def test_history_not_trimmed_when_below_maxlen(graph_canon):
 def test_history_negative_maxlen_raises(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     G.graph["HISTORY_MAXLEN"] = -1
     with pytest.raises(ValueError):
         ensure_history(G)

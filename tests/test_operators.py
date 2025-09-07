@@ -8,7 +8,7 @@ from tnfr.operators import (
     _select_dominant_glyph,
 )
 from types import SimpleNamespace
-from tnfr.constants import attach_defaults
+from tnfr.constants import inject_defaults
 import networkx as nx
 import pytest
 
@@ -71,7 +71,7 @@ def test_rng_cache_disabled_with_size_zero(graph_canon):
 
 def test_um_candidate_subset_proximity():
     G = nx.Graph()
-    attach_defaults(G)
+    inject_defaults(G)
     for i, th in enumerate([0.0, 0.1, 0.2, 1.0]):
         G.add_node(i, **{"θ": th, "EPI": 0.5, "Si": 0.5})
 

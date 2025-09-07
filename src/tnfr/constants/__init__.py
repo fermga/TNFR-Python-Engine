@@ -119,9 +119,17 @@ _ALIAS_TARGET_TO_KEY: Dict[str, str] = {
 def attach_defaults(G, override: bool = False) -> None:
     """Write combined ``DEFAULTS`` into ``G.graph``.
 
+    .. deprecated:: 0.0.0
+       Use :func:`inject_defaults` instead.
+
     If ``override`` is ``True`` existing values are overwritten.
     """
-    inject_defaults(G, DEFAULTS, override=override)
+    warnings.warn(
+        "attach_defaults is deprecated; use inject_defaults instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    inject_defaults(G, override=override)
 
 
 def inject_defaults(

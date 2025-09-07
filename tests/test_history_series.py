@@ -1,6 +1,6 @@
 """Pruebas de history series."""
 
-from tnfr.constants import attach_defaults
+from tnfr.constants import inject_defaults
 from tnfr.dynamics import step
 from tnfr.metrics import register_metrics_callbacks
 from tnfr.gamma import GAMMA_REGISTRY
@@ -10,7 +10,7 @@ from tnfr.glyph_history import HistoryDict
 def test_history_delta_si_and_B(graph_canon):
     G = graph_canon()
     G.add_node(0, EPI=0.0, νf=0.5, θ=0.0)
-    attach_defaults(G)
+    inject_defaults(G)
     register_metrics_callbacks(G)
     step(G, apply_glyphs=False)
     step(G, apply_glyphs=False)
@@ -22,7 +22,7 @@ def test_history_delta_si_and_B(graph_canon):
 def test_gamma_kuramoto_tanh_registry(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
-    attach_defaults(G)
+    inject_defaults(G)
     G.nodes[0]["θ"] = 0.0
     G.nodes[1]["θ"] = 0.0
     cfg = {"type": "kuramoto_tanh", "beta": 0.5, "k": 2.0, "R0": 0.0}

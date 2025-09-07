@@ -2,7 +2,7 @@
 
 from collections import deque
 
-from tnfr.constants import attach_defaults
+from tnfr.constants import inject_defaults
 from tnfr.grammar import (
     enforce_canonical_grammar,
     on_applied_glyph,
@@ -22,7 +22,7 @@ from tnfr.grammar import (
 def test_compatibility_fallback(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     nd = G.nodes[0]
     nd["glyph_history"] = deque([AL])
     assert enforce_canonical_grammar(G, 0, IL) == EN
@@ -31,7 +31,7 @@ def test_compatibility_fallback(graph_canon):
 def test_precondition_oz_to_zhir(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     nd = G.nodes[0]
     nd["glyph_history"] = deque([NAV])
     nd["ΔNFR"] = 0.0
@@ -43,7 +43,7 @@ def test_precondition_oz_to_zhir(graph_canon):
 def test_thol_closure(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     nd = G.nodes[0]
     nd["glyph_history"] = deque([THOL])
     on_applied_glyph(G, 0, THOL)
@@ -60,7 +60,7 @@ def test_thol_closure(graph_canon):
 def test_repeat_window_and_force(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     nd = G.nodes[0]
     nd["glyph_history"] = deque([ZHIR.value, "OZ"])
     G.graph["GRAMMAR"] = {
@@ -87,7 +87,7 @@ def test_repeat_window_and_force(graph_canon):
 def test_repeat_invalid_fallback_string(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     nd = G.nodes[0]
     nd["glyph_history"] = deque([ZHIR.value])
     G.graph["GRAMMAR"] = {
@@ -101,7 +101,7 @@ def test_repeat_invalid_fallback_string(graph_canon):
 def test_repeat_invalid_fallback_type(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     nd = G.nodes[0]
     nd["glyph_history"] = deque([ZHIR.value])
     obj = object()
@@ -116,7 +116,7 @@ def test_repeat_invalid_fallback_type(graph_canon):
 def test_lag_counters_enforced(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     G.graph["AL_MAX_LAG"] = 2
     G.graph["EN_MAX_LAG"] = 2
     from tnfr.dynamics import step
@@ -131,10 +131,10 @@ def test_lag_counters_enforced(graph_canon):
 def test_apply_glyph_with_grammar_equivalence(graph_canon):
     G_manual = graph_canon()
     G_manual.add_node(0)
-    attach_defaults(G_manual)
+    inject_defaults(G_manual)
     G_func = graph_canon()
     G_func.add_node(0)
-    attach_defaults(G_func)
+    inject_defaults(G_func)
 
     # Aplicación manual
     g_eff = enforce_canonical_grammar(G_manual, 0, ZHIR)
@@ -153,7 +153,7 @@ def test_apply_glyph_with_grammar_multiple_nodes(graph_canon):
     G = graph_canon()
     G.add_node(0, theta=0.0)
     G.add_node(1)
-    attach_defaults(G)
+    inject_defaults(G)
     G.nodes[0]["glyph_history"] = deque([OZ])
 
     apply_glyph_with_grammar(G, [0, 1], ZHIR, 1)
@@ -165,7 +165,7 @@ def test_apply_glyph_with_grammar_multiple_nodes(graph_canon):
 def test_apply_glyph_with_grammar_accepts_iterables(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
-    attach_defaults(G)
+    inject_defaults(G)
     G.nodes[0]["glyph_history"] = deque([OZ])
     G.nodes[1]["glyph_history"] = deque([OZ])
     apply_glyph_with_grammar(G, G.nodes(), ZHIR, 1)
@@ -174,7 +174,7 @@ def test_apply_glyph_with_grammar_accepts_iterables(graph_canon):
 
     G2 = graph_canon()
     G2.add_nodes_from([0, 1])
-    attach_defaults(G2)
+    inject_defaults(G2)
     G2.nodes[0]["glyph_history"] = deque([OZ])
     G2.nodes[1]["glyph_history"] = deque([OZ])
     apply_glyph_with_grammar(G2, (n for n in G2.nodes()), ZHIR, 1)

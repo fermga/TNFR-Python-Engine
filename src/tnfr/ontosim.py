@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections import deque
 from typing import TYPE_CHECKING
 
-from .constants import METRIC_DEFAULTS, attach_defaults, get_param
+from .constants import METRIC_DEFAULTS, inject_defaults, get_param
 from .dynamics import step as _step, run as _run
 from .dynamics import default_compute_delta_nfr
 from .initialization import init_node_attrs
@@ -32,11 +32,11 @@ def preparar_red(
         Run ``init_node_attrs`` when ``True`` (default), leaving node
         attributes untouched when ``False``.
     override_defaults:
-        If ``True``, :func:`attach_defaults` overwrites existing entries.
+        If ``True``, :func:`inject_defaults` overwrites existing entries.
     **overrides:
         Parameters applied after the defaults phase.
     """
-    attach_defaults(G, override=override_defaults)
+    inject_defaults(G, override=override_defaults)
     if overrides:
         from .constants import merge_overrides
 

@@ -2,14 +2,14 @@
 
 import pytest
 
-from tnfr.constants import attach_defaults
+from tnfr.constants import inject_defaults
 from tnfr.operators import apply_glyph
 
 
 def test_nav_converges_to_vf_without_jitter(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     nd = G.nodes[0]
     nd["ΔNFR"] = 0.2
     nd["νf"] = 1.0
@@ -23,7 +23,7 @@ def test_nav_converges_to_vf_without_jitter(graph_canon):
 def test_nav_strict_sets_dnfr_to_vf(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     nd = G.nodes[0]
     nd["ΔNFR"] = -0.5
     nd["νf"] = 0.8
