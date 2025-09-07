@@ -129,9 +129,9 @@ def neighbor_phase_mean(obj, n=None) -> float:
     node = NodoNX(obj, n) if n is not None else obj
     if getattr(node, "G", None) is None:
         raise TypeError("neighbor_phase_mean requires nodes bound to a graph")
-    from .metrics_utils import precompute_trigonometry
+    from .metrics_utils import get_trig_cache
 
-    trig = precompute_trigonometry(node.G)
+    trig = get_trig_cache(node.G)
     return _neighbor_phase_mean(node, trig)
 
 

@@ -25,6 +25,7 @@ __all__ = [
     "compute_coherence",
     "ensure_neighbors_map",
     "get_Si_weights",
+    "get_trig_cache",
     "precompute_trigonometry",
     "compute_Si_node",
     "compute_Si",
@@ -105,11 +106,17 @@ def _build_trig_cache(G: Any) -> TrigCache:
     return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
 
 
-def precompute_trigonometry(
-    G: Any,
-) -> TrigCache:
-    """Precompute cosines and sines of ``θ`` per node."""
+def get_trig_cache(G: Any) -> TrigCache:
+    """Return cached cosines and sines of ``θ`` per node."""
     return edge_version_cache(G, "_trig", lambda: _build_trig_cache(G))
+
+
+def precompute_trigonometry(G: Any) -> TrigCache:
+    """Precompute cosines and sines of ``θ`` per node.
+
+    Alias for :func:`get_trig_cache` for backward compatibility.
+    """
+    return get_trig_cache(G)
 
 
 def compute_Si_node(
