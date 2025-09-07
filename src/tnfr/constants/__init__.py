@@ -49,9 +49,7 @@ def _is_immutable(value: Any) -> bool:
             return cached
     if isinstance(value, IMMUTABLE_SIMPLE):
         res = True
-    elif isinstance(value, tuple):
-        res = all(_is_immutable(item) for item in value)
-    elif isinstance(value, frozenset):
+    elif isinstance(value, (tuple, frozenset)):
         res = all(_is_immutable(item) for item in value)
     elif isinstance(value, MappingProxyType):
         res = all(_is_immutable(v) for v in value.values())

@@ -45,12 +45,12 @@ def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
 def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions."""
     gl = str(glyph)
-    window = _validate_window(window)
-    if window == 0:
+    if window <= 0:
+        if window < 0:
+            _ensure_glyph_history(nd, window)
         return False
-
     hist = _ensure_glyph_history(nd, window)
-    return gl in islice(reversed(hist), window)
+    return gl in hist
 
 
 class HistoryDict(dict):

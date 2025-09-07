@@ -53,10 +53,10 @@ PARSERS = {
 
 @lru_cache(maxsize=None)
 def _get_parser(suffix: str) -> Callable[[str], Any]:
-    try:
-        return PARSERS[suffix]
-    except KeyError:
+    parser = PARSERS.get(suffix)
+    if parser is None:
         raise ValueError(f"Unsupported suffix: {suffix}")
+    return parser
 
 
 def _format_structured_file_error(path: Path, e: Exception) -> str:
@@ -122,10 +122,14 @@ def safe_write(
         except OSError as e:
             logger.error("Atomic replace failed for %s -> %s: %s", tmp_path, path, e)
             raise
-    except OSError as e:
-        if tmp_path is not None and tmp_path.exists():
-            tmp_path.unlink()
+    except Exception as e:  # noqa: BLE001 - rewrap after cleanup
         raise OSError(f"Failed to write file {path}: {e}") from e
+    finally:
+        if tmp_path is not None and tmp_path.exists():
+            try:
+                tmp_path.unlink()
+            except OSError:
+                pass
 
 
 __all__ = ["read_structured_file", "safe_write", "StructuredFileError"]

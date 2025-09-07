@@ -14,7 +14,7 @@ from .constants import (
     ALIAS_THETA,
     ALIAS_SI,
 )
-from .alias import get_attr, set_attr, _recompute_abs_max, multi_recompute_abs_max
+from .alias import get_attr, set_attr, multi_recompute_abs_max
 from .collections_utils import normalize_weights
 from .helpers import clamp01, angle_diff, edge_version_cache
 
@@ -161,15 +161,15 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     alpha, beta, gamma = get_Si_weights(G)
 
     vfmax = G.graph.get("_vfmax")
-    if vfmax is None:
-        vfmax, vf_node = _recompute_abs_max(G, ALIAS_VF)
-        G.graph.setdefault("_vfmax", vfmax)
-        G.graph.setdefault("_vfmax_node", vf_node)
     dnfrmax = G.graph.get("_dnfrmax")
-    if dnfrmax is None:
-        dnfrmax, dnfr_node = _recompute_abs_max(G, ALIAS_DNFR)
-        G.graph.setdefault("_dnfrmax", dnfrmax)
-        G.graph.setdefault("_dnfrmax_node", dnfr_node)
+    if vfmax is None or dnfrmax is None:
+        maxes = multi_recompute_abs_max(G, {"_vfmax": ALIAS_VF, "_dnfrmax": ALIAS_DNFR})
+        if vfmax is None:
+            vfmax = maxes["_vfmax"]
+            G.graph.setdefault("_vfmax", vfmax)
+        if dnfrmax is None:
+            dnfrmax = maxes["_dnfrmax"]
+            G.graph.setdefault("_dnfrmax", dnfrmax)
     vfmax = 1.0 if vfmax == 0 else vfmax
     dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
 
@@ -198,15 +198,9 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
 def min_max_range(
     values: Iterable[float], *, default: tuple[float, float] = (0.0, 0.0)
 ) -> tuple[float, float]:
-    iterator = iter(values)
     try:
-        first = next(iterator)
-    except StopIteration:
+        vmin = min(values)
+        vmax = max(values)
+    except ValueError:
         return default
-    vmin = vmax = first
-    for val in iterator:
-        if val < vmin:
-            vmin = val
-        elif val > vmax:
-            vmax = val
     return vmin, vmax
