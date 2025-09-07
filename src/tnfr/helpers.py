@@ -208,23 +208,16 @@ def node_set_checksum(
 ) -> str:
     """Return a BLAKE2b checksum of ``G``'s node set.
 
-    Hashable nodes are hashed directly. Nodes lacking a ``__hash__`` fall back
-    to a stable ``repr``-based scheme. To benefit from caching and avoid sorting
-    the same collection repeatedly, the serialised values are stored as a
-    ``frozenset`` under ``"_node_set_checksum_cache"`` when ``store`` is ``True``.
-    Note that objects whose hash changes between runs will yield different
-    checksums each time.
+    Nodes are serialised using :func:`_node_repr` for determinism. To benefit
+    from caching and avoid sorting the same collection repeatedly, the
+    serialised values are stored as a ``frozenset`` under
+    ``"_node_set_checksum_cache"`` when ``store`` is ``True``.
     """
 
     graph = G.graph if hasattr(G, "graph") else G
     node_iterable = G.nodes() if nodes is None else nodes
 
-    serialised_list = []
-    for n in node_iterable:
-        try:
-            serialised_list.append(str(hash(n)))
-        except TypeError:
-            serialised_list.append(_node_repr(n))
+    serialised_list = [_node_repr(n) for n in node_iterable]
 
     marker = frozenset(serialised_list)
     if store:

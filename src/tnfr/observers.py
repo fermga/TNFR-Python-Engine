@@ -51,9 +51,11 @@ std_on_remesh = _STD_CALLBACKS["on_remesh"]
 
 def attach_standard_observer(G):
     """Register standard callbacks: before_step, after_step, on_remesh."""
+    if G.graph.get("_STD_OBSERVER"):
+        return G
     for event, fn in _STD_CALLBACKS.items():
         register_callback(G, event, fn)
-    G.graph.setdefault("_STD_OBSERVER", "attached")
+    G.graph["_STD_OBSERVER"] = "attached"
     return G
 
 

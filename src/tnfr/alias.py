@@ -56,7 +56,11 @@ def _alias_resolve(
     strict: bool = False,
     log_level: int | None = None,
 ) -> Optional[T]:
-    aliases = _validate_aliases(aliases)
+    """Resolve the first matching key in ``aliases`` from ``d``.
+
+    ``aliases`` must already be validated with :func:`_validate_aliases`.
+    """
+
     ok_def = False
     def_val = None
     if default is not None:
@@ -113,12 +117,7 @@ def alias_get(
     log_level: int | None = None,
 ) -> Optional[T]:
     """Return the value for the first existing key in ``aliases``."""
-    if isinstance(aliases, str) or not isinstance(aliases, Sequence):
-        raise TypeError("'aliases' must be a non-string sequence")
-    try:
-        hash(aliases)
-    except TypeError as exc:  # pragma: no cover - defensive programming
-        raise TypeError("'aliases' must be a hashable sequence") from exc
+    aliases = _validate_aliases(aliases)
     return _alias_resolve(
         d,
         aliases,
@@ -136,12 +135,6 @@ def alias_set(
     value: Any,
 ) -> T:
     """Assign ``value`` converted to the first available key in ``aliases``."""
-    if isinstance(aliases, str) or not isinstance(aliases, Sequence):
-        raise TypeError("'aliases' must be a non-string sequence")
-    try:
-        hash(aliases)
-    except TypeError as exc:  # pragma: no cover - defensive programming
-        raise TypeError("'aliases' must be a hashable sequence") from exc
     aliases = _validate_aliases(aliases)
     _, val = _convert_value(value, conv, strict=True)
     key = next((k for k in aliases if k in d), aliases[0])
@@ -197,6 +190,7 @@ def _alias_get_set(
         log_level: int | None = None,
     ) -> Optional[T]:
         """Obtain an attribute using :func:`alias_get`."""
+        aliases = _validate_aliases(aliases)
         return _base_get(
             d,
             aliases,
