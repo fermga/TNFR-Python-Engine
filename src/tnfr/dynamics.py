@@ -438,17 +438,9 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
         return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
 
 
-def _build_neighbor_sums_numpy(G, data):
-    return _build_neighbor_sums_common(G, data, use_numpy=True)
-
-
-def _build_neighbor_sums_loops(G, data):
-    return _build_neighbor_sums_common(G, data, use_numpy=False)
-
-
-def _compute_dnfr_numpy(G, data) -> None:
-    """Vectorised strategy using ``numpy``."""
-    res = _build_neighbor_sums_numpy(G, data)
+def _compute_dnfr(G, data, *, use_numpy: bool) -> None:
+    """Helper for ΔNFR computation using neighbour sums."""
+    res = _build_neighbor_sums_common(G, data, use_numpy=use_numpy)
     if res is None:
         return
     x, y, epi_sum, vf_sum, count, deg_sum, degs = res
@@ -465,21 +457,14 @@ def _compute_dnfr_numpy(G, data) -> None:
     )
 
 
+def _compute_dnfr_numpy(G, data) -> None:
+    """Vectorised strategy using ``numpy``."""
+    _compute_dnfr(G, data, use_numpy=True)
+
+
 def _compute_dnfr_loops(G, data) -> None:
     """Loop-based strategy."""
-    res = _build_neighbor_sums_loops(G, data)
-    x, y, epi_sum, vf_sum, count, deg_sum, degs = res
-    _compute_dnfr_common(
-        G,
-        data,
-        x=x,
-        y=y,
-        epi_sum=epi_sum,
-        vf_sum=vf_sum,
-        count=count,
-        deg_sum=deg_sum,
-        degs=degs,
-    )
+    _compute_dnfr(G, data, use_numpy=False)
 
 
 def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
