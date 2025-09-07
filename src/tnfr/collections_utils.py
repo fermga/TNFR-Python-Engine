@@ -36,35 +36,37 @@ MAX_MATERIALIZE_DEFAULT = (
 def ensure_collection(
     it: Iterable[T], *, max_materialize: int | None = MAX_MATERIALIZE_DEFAULT
 ) -> Collection[T]:
-    """Return ``it`` if it is a ``Collection``;
-    otherwise materialize into a tuple.
+    """Return ``it`` as a ``Collection`` materializing if necessary.
 
-    Strings and bytes are treated as single elements rather than iterables.
-    When ``max_materialize`` is ``None``, the entire iterable is materialized
-    without a limit. A :class:`ValueError` is raised if ``max_materialize`` is
-    negative or if the iterable yields more than ``max_materialize`` items.
-    A :class:`TypeError`` is raised when ``it`` is not iterable.
+    Strings and bytes are treated as single elements. ``max_materialize``
+    controls the maximum number of items to materialize when ``it`` is not
+    already a collection; ``None`` means no limit. A :class:`ValueError`` is
+    raised for negative ``max_materialize`` or when the iterable yields more
+    items than allowed. ``TypeError`` is raised when ``it`` is not iterable.
     """
-    if isinstance(it, Collection) and not isinstance(
-        it, (str, bytes, bytearray)
-    ):
+
+    if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
         return it
     if isinstance(it, (str, bytes, bytearray)):
         return cast(Collection[T], (it,))
     if max_materialize is not None and max_materialize < 0:
         raise ValueError("'max_materialize' must be non-negative")
-    try:
+
+    def _materialise(iterable: Iterable[T]) -> Collection[T]:
         if max_materialize is None:
-            return tuple(it)
+            return tuple(iterable)
         limit = max_materialize
         if limit == 0:
             return ()
-        items = list(islice(it, limit + 1))
+        items = list(islice(iterable, limit + 1))
         if len(items) > limit:
             raise ValueError(
                 f"Iterable produced {len(items)} items, exceeds limit {limit}"
             )
         return tuple(items)
+
+    try:
+        return _materialise(it)
     except TypeError as exc:
         raise TypeError(f"{it!r} is not iterable") from exc
 
@@ -80,7 +82,7 @@ def normalize_weights(
     keys = list(keys)
     default_float = float(default)
     weights: dict[str, float] = {}
-    negatives: dict[str, float] = {}
+    negatives: list[str] = []
     for k in keys:
         val = dict_like.get(k, default_float)
         ok, converted = _convert_value(
@@ -93,11 +95,12 @@ def normalize_weights(
         w = converted if ok and converted is not None else default_float
         weights[k] = w
         if w < 0:
-            negatives[k] = w
+            negatives.append(k)
     if negatives:
+        neg_vals = {k: weights[k] for k in negatives}
         if error_on_negative:
-            raise ValueError(f"Pesos negativos detectados: {negatives}")
-        logger.warning("Pesos negativos detectados: %s", negatives)
+            raise ValueError(f"Pesos negativos detectados: {neg_vals}")
+        logger.warning("Pesos negativos detectados: %s", neg_vals)
     total = math.fsum(weights.values())
     n = len(keys)
     if total <= 0:

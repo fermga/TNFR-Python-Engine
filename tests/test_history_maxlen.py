@@ -5,7 +5,7 @@ from collections import deque
 import pytest
 
 from tnfr.constants import attach_defaults
-from tnfr.glyph_history import ensure_history
+from tnfr.glyph_history import ensure_history, HistoryDict
 
 
 def test_history_maxlen_and_cleanup(graph_canon):
@@ -41,8 +41,8 @@ def test_history_least_used_removed(graph_canon):
     hist.setdefault("b", []).append(1)
     hist.setdefault("c", []).append(1)
     # use "a" several times
-    _ = hist["a"]
-    _ = hist["a"]
+    _ = hist.get_increment("a")
+    _ = hist.get_increment("a")
 
     # trigger cleanup
     ensure_history(G)
@@ -59,9 +59,9 @@ def test_history_trim_uses_pop_least_used(graph_canon):
     hist = ensure_history(G)
     for key in ["a", "b", "c", "d"]:
         hist.setdefault(key, []).append(1)
-    _ = hist["a"]
-    _ = hist["a"]
-    _ = hist["b"]
+    _ = hist.get_increment("a")
+    _ = hist.get_increment("a")
+    _ = hist.get_increment("b")
 
     ensure_history(G)
     assert set(hist.keys()) == {"a", "b"}
@@ -73,10 +73,11 @@ def test_history_maxlen_override_respected(graph_canon):
     attach_defaults(G)
 
     hist = ensure_history(G)
-    assert hist._maxlen == 0
+    assert not isinstance(hist, HistoryDict)
 
     G.graph["HISTORY_MAXLEN"] = 3
     hist = ensure_history(G)
+    assert isinstance(hist, HistoryDict)
     assert hist._maxlen == 3
 
 

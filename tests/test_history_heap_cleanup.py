@@ -8,7 +8,7 @@ def test_heap_compaction_single_key():
     hist = HistoryDict()
     hist["a"] = 0
     for _ in range(100):
-        _ = hist["a"]
+        _ = hist.get_increment("a")
     assert len(hist._heap) <= len(hist) + hist._compact_every
 
 
@@ -17,16 +17,16 @@ def test_heap_compaction_many_keys():
     for i in range(10):
         hist[f"k{i}"] = i
     for i in range(1000):
-        _ = hist[f"k{i % 10}"]
+        _ = hist.get_increment(f"k{i % 10}")
     assert len(hist._heap) <= len(hist) + hist._compact_every
 
 
-def test_get_tracks_usage():
+def test_get_increment_tracks_usage():
     hist = HistoryDict()
     hist["a"] = 1
     counts_before = dict(hist._counts)
     heap_before = list(hist._heap)
-    assert hist.get("a") == 1
+    assert hist.get_increment("a") == 1
     assert hist._counts["a"] == counts_before["a"] + 1
     assert hist._heap != heap_before
 
@@ -44,7 +44,7 @@ def test_heap_compaction_after_deletions():
     hist = HistoryDict()
     for i in range(10):
         hist[f"k{i}"] = i
-        _ = hist[f"k{i}"]
+        _ = hist.get_increment(f"k{i}")
     for _ in range(5):
         hist.pop_least_used()
         assert len(hist._heap) <= len(hist) + hist._compact_every

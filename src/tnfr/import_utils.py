@@ -57,13 +57,17 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
 
     module_name, attr = (name.rsplit(".", 1) + [None])[:2]
     with _FAILED_IMPORTS_LOCK:
-        if name in _FAILED_IMPORTS or module_name in _FAILED_IMPORTS:
-            return fallback
+        previously_failed = name in _FAILED_IMPORTS or module_name in _FAILED_IMPORTS
     try:
         module = importlib.import_module(module_name)
-        return getattr(module, attr) if attr else module
+        obj = getattr(module, attr) if attr else module
+        with _FAILED_IMPORTS_LOCK:
+            _FAILED_IMPORTS.discard(name)
+            _FAILED_IMPORTS.discard(module_name)
+        return obj
     except (ImportError, AttributeError) as e:
-        _warn_failure(module_name, attr, e)
+        if not previously_failed:
+            _warn_failure(module_name, attr, e)
         with _FAILED_IMPORTS_LOCK:
             if isinstance(e, ImportError):
                 _FAILED_IMPORTS.update({name, module_name})

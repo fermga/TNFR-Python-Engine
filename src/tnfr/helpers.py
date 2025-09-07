@@ -14,7 +14,6 @@ import hashlib
 from statistics import fmean, StatisticsError
 from collections import OrderedDict
 import threading
-import weakref
 
 from .import_utils import get_numpy, import_nodonx
 from .collections_utils import (
@@ -34,9 +33,6 @@ _EDGE_CACHE_PENDING = object()
 if TYPE_CHECKING:  # pragma: no cover - solo para type checkers
     import networkx as nx
 
-PI = math.pi
-TWO_PI = 2 * PI
-
 __all__ = [
     "MAX_MATERIALIZE_DEFAULT",
     "ensure_collection",
@@ -47,7 +43,6 @@ __all__ = [
     "normalize_weights",
     "neighbor_mean",
     "neighbor_phase_mean",
-    "get_cached_trig",
     "push_glyph",
     "recent_glyph",
     "ensure_history",
@@ -91,7 +86,7 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
 
 def angle_diff(a: float, b: float) -> float:
     """Return the minimal difference between two angles in radians."""
-    return (float(a) - float(b) + PI) % TWO_PI - PI
+    return (float(a) - float(b) + math.pi) % math.tau - math.pi
 
 
 # -------------------------
@@ -105,44 +100,11 @@ def neighbor_mean(G, n, aliases: tuple[str, ...], default: float = 0.0) -> float
     return list_mean(vals, default)
 
 
-def get_cached_trig(
-    v: Any, cache: weakref.WeakKeyDictionary[Any, tuple[float, float] | None]
-) -> tuple[float, float] | None:
-    """Return ``(cos, sin)`` for ``v`` caching by weak reference."""
-    val = cache.get(v)
-    if val is not None:
-        return val
-    data = getattr(v, "__dict__", v if isinstance(v, dict) else {})
-    th = get_attr(data, ALIAS_THETA, None)
-    if th is None:
-        cache[v] = None
-        return None
-    val = (math.cos(th), math.sin(th))
-    cache[v] = val
-    return val
-
-
-def _neighbor_phase_mean(
-    node,
-    *,
-    trig=None,
-    cache: weakref.WeakKeyDictionary[Any, tuple[float, float] | None] | None = None,
-) -> float:
-    if trig is not None:
-        cos_th, sin_th = trig.cos, trig.sin
-        it = ((cos_th[v], sin_th[v]) for v in node.neighbors())
-    else:
-        if cache is None:
-            cache = weakref.WeakKeyDictionary()
-        it = (get_cached_trig(v, cache) for v in node.neighbors())
-    fallback = _neighbor_theta_fallback(node, trig)
+def _neighbor_phase_mean(node, trig) -> float:
+    cos_th, sin_th = trig.cos, trig.sin
+    it = ((cos_th.get(v), sin_th.get(v)) for v in node.neighbors())
+    fallback = trig.theta.get(node.n, 0.0)
     return _phase_mean_from_iter(it, fallback)
-
-
-def _neighbor_theta_fallback(node, trig) -> float:
-    if trig is not None:
-        return get_attr(node.G.nodes[node.n], ALIAS_THETA, 0.0)
-    return get_attr(getattr(node, "__dict__", {}), ALIAS_THETA, 0.0)
 
 
 def _phase_mean_from_iter(
@@ -167,19 +129,12 @@ def neighbor_phase_mean(obj, n=None) -> float:
     NodoNX = import_nodonx()
 
     node = NodoNX(obj, n) if n is not None else obj
+    if getattr(node, "G", None) is None:
+        raise TypeError("neighbor_phase_mean requires nodes bound to a graph")
+    from .metrics_utils import precompute_trigonometry
 
-    trig = None
-    if getattr(node, "G", None) is not None:
-        from .metrics_utils import precompute_trigonometry
-
-        trig = precompute_trigonometry(node.G)
-        return _neighbor_phase_mean(node, trig=trig)
-
-    cache = getattr(node, "_trig_cache", None)
-    if cache is None:
-        cache = weakref.WeakKeyDictionary()
-        setattr(node, "_trig_cache", cache)
-    return _neighbor_phase_mean(node, cache=cache)
+    trig = precompute_trigonometry(node.G)
+    return _neighbor_phase_mean(node, trig)
 
 
 # -------------------------
@@ -218,7 +173,7 @@ def _stable_json(obj: Any, visited: set[int] | None = None) -> Any:
         return [_stable_json(o, visited) for o in obj]
     if isinstance(obj, set):
         stable_items = [_stable_json(o, visited) for o in obj]
-        return sorted(stable_items, key=lambda x: repr(x))
+        return sorted(stable_items, key=str)
     if isinstance(obj, dict):
         return {
             str(k): _stable_json(v, visited)

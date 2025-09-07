@@ -42,6 +42,9 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
     if not isinstance(cbs, defaultdict):
         cbs = defaultdict(list, cbs or {})
         G.graph["callbacks"] = cbs
+        G.graph["_callbacks_dirty"] = True
+    if not G.graph.pop("_callbacks_dirty", False):
+        return cbs
     for event in list(cbs):
         if event not in _CALLBACK_EVENTS:
             del cbs[event]
@@ -52,6 +55,7 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
             for entry in lst
             if (spec := _normalize_callback_entry(entry)) is not None
         ]
+    G.graph["_callbacks_dirty"] = False
     return cbs
 
 
@@ -141,7 +145,7 @@ def register_callback(
             break
     else:
         existing_list.append(new_cb)
-
+    G.graph["_callbacks_dirty"] = True
     return func
 
 
