@@ -105,11 +105,10 @@ class HistoryDict(dict):
         """Remove stale heap entries incrementally."""
         target = len(self._counts) + self._compact_every
         while len(self._heap) > target:
-            cnt, key = heapq.heappushpop(self._heap, self._heap[0])
-            if self._counts.get(key) != cnt:
-                continue
-            heapq.heappush(self._heap, (cnt, key))
-            break
+            cnt, key = self._heap[0]
+            if self._counts.get(key) == cnt:
+                break
+            heapq.heappop(self._heap)
 
     def _pop_heap_key(self) -> str:
         """Pop and return the key with the smallest count from the heap."""
