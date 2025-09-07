@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Dict, Any, Iterable
 from collections import deque, Counter
-import heapq
 from itertools import islice
 
 from .constants import get_param
@@ -84,28 +83,15 @@ class HistoryDict(dict):
         super().__init__(data or {})
         self._maxlen = maxlen
         self._compact_every = max(1, int(compact_every))
-        self._counts: Dict[str, int] = {}
-        self._heap: list[tuple[int, str]] = []
+        self._counts: Counter[str] = Counter()
         if self._maxlen > 0:
             for k, v in list(self.items()):
                 if isinstance(v, list):
                     super().__setitem__(k, deque(v, maxlen=self._maxlen))
                 self._counts[k] = 0
-                heapq.heappush(self._heap, (0, k))
-
-    def _prune_heap(self) -> None:
-        while self._heap and (
-            self._heap[0][1] not in self
-            or self._counts.get(self._heap[0][1]) != self._heap[0][0]
-        ):
-            heapq.heappop(self._heap)
 
     def _increment(self, key: str) -> None:
-        cnt = self._counts.get(key, 0) + 1
-        self._counts[key] = cnt
-        heapq.heappush(self._heap, (cnt, key))
-        if len(self._heap) > len(self) + self._compact_every:
-            self._prune_heap()
+        self._counts[key] += 1
 
     def _resolve_value(self, key: str, default: Any, *, insert: bool) -> Any:
         if insert:
@@ -135,39 +121,32 @@ class HistoryDict(dict):
     def __setitem__(self, key, value):  # type: ignore[override]
         super().__setitem__(key, value)
         self._counts.setdefault(key, 0)
-        heapq.heappush(self._heap, (self._counts[key], key))
-        if len(self._heap) > len(self) + self._compact_every:
-            self._prune_heap()
 
     def setdefault(self, key, default=None):  # type: ignore[override]
         insert = key not in self
         val = self._resolve_value(key, default, insert=insert)
         if insert:
             self._counts[key] = 0
-            heapq.heappush(self._heap, (0, key))
         return val
 
     def pop_least_used(self) -> Any:
-        while self._heap:
-            cnt, key = heapq.heappop(self._heap)
-            if self._counts.get(key) == cnt and key in self:
+        for key, _ in reversed(self._counts.most_common()):
+            if key in self:
                 self._counts.pop(key, None)
-                value = super().pop(key)
-                self._prune_heap()
-                return value
+                return super().pop(key)
+            self._counts.pop(key, None)
         raise KeyError("HistoryDict is empty; cannot pop least used")
 
     def pop_least_used_batch(self, k: int) -> None:
         if k > 0:
-            self._prune_heap()
             removed = 0
-            while self._heap and removed < k:
-                cnt, key = heapq.heappop(self._heap)
-                if self._counts.get(key) == cnt and key in self:
-                    self._counts.pop(key, None)
+            for key, _ in reversed(self._counts.most_common()):
+                if removed >= k:
+                    break
+                self._counts.pop(key, None)
+                if key in self:
                     super().pop(key, None)
                     removed += 1
-            self._prune_heap()
 
 
 def ensure_history(G) -> Dict[str, Any]:
