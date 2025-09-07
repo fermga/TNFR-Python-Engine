@@ -350,10 +350,9 @@ def edge_version_cache(
         if entry is not None and entry[0] == edge_version:
             return entry[1]
 
-        lock = locks.get(key)
-        if lock is None:
-            lock = threading.Lock()
-            locks[key] = lock
+        lock = locks.setdefault(key, threading.Lock())
+        # Double locking: _EDGE_CACHE_LOCK guards cache structures while each
+        # per-key lock prevents duplicate work for a given key.
 
     with lock:
         with _EDGE_CACHE_LOCK:
@@ -364,9 +363,6 @@ def edge_version_cache(
         value = builder()
 
         with _EDGE_CACHE_LOCK:
-            entry = cache.get(key)
-            if entry is not None and entry[0] == edge_version:
-                return entry[1]
             cache[key] = (edge_version, value)
             return value
 
