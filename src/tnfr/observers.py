@@ -120,9 +120,7 @@ def wbar(G, window: int | None = None) -> float:
         return compute_coherence(G)
     if not isinstance(cs, list):
         cs = list(cs)
-    if window is None:
-        window = int(get_param(G, "WBAR_WINDOW"))
-    w = int(window)
+    w = int(get_param(G, "WBAR_WINDOW") if window is None else window)
     if w <= 0:
         raise ValueError("window must be positive")
     w = min(len(cs), w)
