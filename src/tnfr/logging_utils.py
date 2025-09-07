@@ -18,12 +18,9 @@ def get_logger(name: str) -> logging.Logger:
     with _LOCK:
         root = logging.getLogger()
         if not root.handlers:
-            handler = logging.StreamHandler()
-            handler.setFormatter(
-                logging.Formatter(
-                    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-                )
+            level = root.level if root.level != logging.WARNING else logging.INFO
+            logging.basicConfig(
+                level=level,
+                format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
             )
-            root.addHandler(handler)
-            root.setLevel(logging.INFO)
     return logging.getLogger(name)
