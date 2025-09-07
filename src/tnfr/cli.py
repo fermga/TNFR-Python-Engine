@@ -25,6 +25,11 @@ from .metrics import (
 )
 from .trace import register_trace
 from .program import play, seq, block, wait, target
+from .token_parser import (
+    _flatten_tokens,
+    validate_token as _tp_validate_token,
+    _parse_tokens as _tp_parse_tokens,
+)
 from .types import Glyph
 from .dynamics import (
     step,
@@ -62,48 +67,12 @@ __all__ = [
     "TOKEN_MAP",
 ]
 
-
-from collections import deque
-
-
-def _flatten_tokens(obj: Any):
-    """Yield each token in order using a deque for clarity."""
-
-    stack = deque([obj])
-    while stack:
-        item = stack.pop()
-        if isinstance(item, Sequence) and not isinstance(item, (str, bytes)):
-            stack.extend(reversed(item))
-        else:
-            yield item
-
-
 def validate_token(tok: Any, pos: int) -> Any:
-    if isinstance(tok, dict):
-        if len(tok) != 1:
-            raise ValueError(
-                f"Token inválido: {tok} (posición {pos}, token {tok!r})"
-            )
-        key, val = next(iter(tok.items()))
-        handler = TOKEN_MAP.get(key)
-        if handler is None:
-            raise ValueError(
-                f"Token no reconocido: {key} (posición {pos}, token {tok!r})"
-            )
-        try:
-            return handler(val)
-        except (KeyError, ValueError) as e:
-            raise type(e)(f"{e} (posición {pos}, token {tok!r})") from e
-    if isinstance(tok, str):
-        return tok
-    raise ValueError(f"Token inválido: {tok} (posición {pos}, token {tok!r})")
+    return _tp_validate_token(tok, pos, TOKEN_MAP)
 
 
 def _parse_tokens(obj: Any) -> list[Any]:
-    return [
-        validate_token(tok, pos)
-        for pos, tok in enumerate(_flatten_tokens(obj), start=1)
-    ]
+    return _tp_parse_tokens(obj, TOKEN_MAP)
 
 
 def parse_thol(spec: dict[str, Any]) -> Any:

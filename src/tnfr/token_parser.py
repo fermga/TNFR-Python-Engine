@@ -1,0 +1,51 @@
+"""Shared helper for parsing tokens."""
+
+from __future__ import annotations
+
+from typing import Any, Callable
+from collections import deque
+from collections.abc import Sequence
+
+__all__ = ["_flatten_tokens", "validate_token", "_parse_tokens"]
+
+
+def _flatten_tokens(obj: Any):
+    """Yield each token in order using a deque for clarity."""
+
+    stack = deque([obj])
+    while stack:
+        item = stack.pop()
+        if isinstance(item, Sequence) and not isinstance(item, (str, bytes)):
+            stack.extend(reversed(item))
+        else:
+            yield item
+
+
+def validate_token(
+    tok: Any, pos: int, token_map: dict[str, Callable[[Any], Any]]
+) -> Any:
+    if isinstance(tok, dict):
+        if len(tok) != 1:
+            raise ValueError(
+                f"Token inválido: {tok} (posición {pos}, token {tok!r})"
+            )
+        key, val = next(iter(tok.items()))
+        handler = token_map.get(key)
+        if handler is None:
+            raise ValueError(
+                f"Token no reconocido: {key} (posición {pos}, token {tok!r})"
+            )
+        try:
+            return handler(val)
+        except (KeyError, ValueError) as e:
+            raise type(e)(f"{e} (posición {pos}, token {tok!r})") from e
+    if isinstance(tok, str):
+        return tok
+    raise ValueError(f"Token inválido: {tok} (posición {pos}, token {tok!r})")
+
+
+def _parse_tokens(obj: Any, token_map: dict[str, Callable[[Any], Any]]) -> list[Any]:
+    return [
+        validate_token(tok, pos, token_map)
+        for pos, tok in enumerate(_flatten_tokens(obj), start=1)
+    ]
