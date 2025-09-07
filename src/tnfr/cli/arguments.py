@@ -1,0 +1,199 @@
+import argparse
+from typing import Any
+
+from ..gamma import GAMMA_REGISTRY
+
+
+# Helper to build reusable argument specification lists
+
+def specs(*pairs: tuple[str, dict[str, Any]]) -> list[tuple[str, dict[str, Any]]]:
+    return list(pairs)
+
+
+GRAMMAR_ARG_SPECS = specs(
+    ("--grammar.enabled", {"action": argparse.BooleanOptionalAction}),
+    ("--grammar.zhir_requires_oz_window", {"type": int}),
+    ("--grammar.zhir_dnfr_min", {"type": float}),
+    ("--grammar.thol_min_len", {"type": int}),
+    ("--grammar.thol_max_len", {"type": int}),
+    ("--grammar.thol_close_dnfr", {"type": float}),
+    ("--grammar.si_high", {"type": float}),
+    ("--glyph.hysteresis_window", {"type": int}),
+)
+
+
+GRAMMAR_ARG_SPECS_WITH_DEST = [
+    (
+        opt,
+        {**kwargs, "dest": opt.lstrip("-").replace(".", "_"), "default": None},
+    )
+    for opt, kwargs in GRAMMAR_ARG_SPECS
+]
+
+
+# Especificaciones para opciones relacionadas con el histórico
+HISTORY_ARG_SPECS = specs(
+    ("--save-history", {"dest": "save_history", "type": str, "default": None}),
+    (
+        "--export-history-base",
+        {"dest": "export_history_base", "type": str, "default": None},
+    ),
+    (
+        "--export-format",
+        {
+            "dest": "export_format",
+            "choices": ["csv", "json"],
+            "default": "json",
+        },
+    ),
+)
+
+
+# Argumentos comunes a los subcomandos
+COMMON_ARG_SPECS = specs(
+    ("--nodes", {"type": int, "default": 24}),
+    (
+        "--topology",
+        {"choices": ["ring", "complete", "erdos"], "default": "ring"},
+    ),
+    ("--seed", {"type": int, "default": 1}),
+    (
+        "--p",
+        {
+            "type": float,
+            "default": None,
+            "help": "Probabilidad de arista si topology=erdos",
+        },
+    ),
+    (
+        "--observer",
+        {"action": "store_true", "help": "Adjunta observador estándar"},
+    ),
+    ("--config", {"type": str, "default": None}),
+    ("--dt", {"type": float, "default": None}),
+    (
+        "--integrator",
+        {"choices": ["euler", "rk4"], "default": None},
+    ),
+    (
+        "--remesh-mode",
+        {"choices": ["knn", "mst", "community"], "default": None},
+    ),
+    (
+        "--gamma-type",
+        {"choices": list(GAMMA_REGISTRY.keys()), "default": "none"},
+    ),
+    ("--gamma-beta", {"type": float, "default": 0.0}),
+    ("--gamma-R0", {"type": float, "default": 0.0}),
+)
+
+
+def add_arg_specs(parser: argparse.ArgumentParser, specs) -> None:
+    """Register arguments from ``specs`` on ``parser``."""
+    for opt, kwargs in specs:
+        parser.add_argument(opt, **kwargs)
+
+
+def _args_to_dict(args: argparse.Namespace, prefix: str) -> dict[str, Any]:
+    """Extract arguments matching a prefix."""
+    return {
+        k.removeprefix(prefix): v
+        for k, v in vars(args).items()
+        if k.startswith(prefix) and v is not None
+    }
+
+
+def add_common_args(parser: argparse.ArgumentParser) -> None:
+    """Add arguments shared across subcommands."""
+    add_arg_specs(parser, COMMON_ARG_SPECS)
+
+
+def add_grammar_args(parser: argparse.ArgumentParser) -> None:
+    """Add grammar and glyph hysteresis options."""
+    group = parser.add_argument_group("Grammar")
+    add_arg_specs(group, GRAMMAR_ARG_SPECS_WITH_DEST)
+
+
+def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
+    """Add grammar options and glyph selector."""
+    add_grammar_args(parser)
+    parser.add_argument(
+        "--selector", choices=["basic", "param"], default="basic"
+    )
+
+
+def add_history_export_args(parser: argparse.ArgumentParser) -> None:
+    """Add arguments to save or export history."""
+    add_arg_specs(parser, HISTORY_ARG_SPECS)
+
+
+def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
+    """Add option to disable canonical grammar."""
+    parser.add_argument(
+        "--no-canon",
+        dest="grammar_canon",
+        action="store_false",
+        default=True,
+        help="Desactiva gramática canónica",
+    )
+
+
+def _add_run_parser(sub: argparse._SubParsersAction) -> None:
+    """Configure the ``run`` subcommand."""
+    from .execution import cmd_run
+
+    p_run = sub.add_parser(
+        "run",
+        help=(
+            "Correr escenario libre o preset y opcionalmente exportar history"
+        ),
+    )
+    add_common_args(p_run)
+    p_run.add_argument("--steps", type=int, default=100)
+    add_canon_toggle(p_run)
+    add_grammar_selector_args(p_run)
+    add_history_export_args(p_run)
+    p_run.add_argument("--preset", type=str, default=None)
+    p_run.add_argument("--sequence-file", type=str, default=None)
+    p_run.add_argument("--summary", action="store_true")
+    p_run.set_defaults(func=cmd_run)
+
+
+def _add_sequence_parser(sub: argparse._SubParsersAction) -> None:
+    """Configure the ``sequence`` subcommand."""
+    from .execution import cmd_sequence
+
+    p_seq = sub.add_parser(
+        "sequence",
+        help="Ejecutar una secuencia (preset o YAML/JSON)",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Ejemplo de secuencia JSON:\n"
+            "[\n"
+            '  "A",\n'
+            '  {"WAIT": 1},\n'
+            '  {"THOL": {"body": ["A", {"WAIT": 2}], "repeat": 2}}\n'
+            "]"
+        ),
+    )
+    add_common_args(p_seq)
+    p_seq.add_argument("--preset", type=str, default=None)
+    p_seq.add_argument("--sequence-file", type=str, default=None)
+    add_history_export_args(p_seq)
+    add_grammar_args(p_seq)
+    p_seq.set_defaults(func=cmd_sequence)
+
+
+def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
+    """Configure the ``metrics`` subcommand."""
+    from .execution import cmd_metrics
+
+    p_met = sub.add_parser(
+        "metrics", help="Correr breve y volcar métricas clave"
+    )
+    add_common_args(p_met)
+    p_met.add_argument("--steps", type=int, default=300)
+    add_canon_toggle(p_met)
+    add_grammar_selector_args(p_met)
+    p_met.add_argument("--save", type=str, default=None)
+    p_met.set_defaults(func=cmd_metrics)
