@@ -78,19 +78,11 @@ def compute_coherence(G) -> float:
 
 def ensure_neighbors_map(G) -> Mapping[Any, Sequence[Any]]:
     """Return cached neighbors list keyed by node as a read-only mapping."""
-    graph = G.graph
-    edge_version = int(graph.get("_edge_version", 0))
-    neighbors = graph.get("_neighbors")
-    if graph.get("_neighbors_version") != edge_version or neighbors is None:
-        neighbors = {n: list(G.neighbors(n)) for n in G}
-        graph["_neighbors"] = neighbors
-        graph["_neighbors_version"] = edge_version
-        graph["_neighbors_proxy"] = MappingProxyType(neighbors)
-    proxy = graph.get("_neighbors_proxy")
-    if proxy is None:
-        proxy = MappingProxyType(neighbors)
-        graph["_neighbors_proxy"] = proxy
-    return proxy
+
+    def builder() -> Mapping[Any, Sequence[Any]]:
+        return MappingProxyType({n: list(G.neighbors(n)) for n in G})
+
+    return edge_version_cache(G, "_neighbors", builder)
 
 
 def get_Si_weights(G: Any) -> tuple[float, float, float]:
