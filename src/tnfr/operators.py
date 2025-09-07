@@ -44,6 +44,16 @@ if TYPE_CHECKING:
 from .types import Glyph
 from collections import deque
 
+__all__ = [
+    "clear_rng_cache",
+    "random_jitter",
+    "get_glyph_factors",
+    "apply_glyph_obj",
+    "apply_glyph",
+    "apply_network_remesh",
+    "apply_remesh_if_globally_stable",
+]
+
 
 def _node_offset(G, n) -> int:
     """Deterministic node index used for jitter seeds."""

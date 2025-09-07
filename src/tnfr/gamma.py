@@ -18,6 +18,17 @@ from .logging_utils import get_logger
 
 logger = get_logger(__name__)
 
+__all__ = [
+    "kuramoto_R_psi",
+    "gamma_none",
+    "gamma_kuramoto_linear",
+    "gamma_kuramoto_bandpass",
+    "gamma_kuramoto_tanh",
+    "gamma_harmonic",
+    "GAMMA_REGISTRY",
+    "eval_gamma",
+]
+
 
 def _ensure_kuramoto_cache(G, t) -> None:
     """Cache ``(R, ψ)`` for the current step ``t`` using ``edge_version_cache``."""

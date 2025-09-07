@@ -10,6 +10,8 @@ from .constants_glyphs import GLYPHS_CANONICAL_SET
 
 EPS = 1e-9
 
+__all__ = ["run_validators"]
+
 
 def _require_attr(data, alias, node, name):
     """Return attribute value or raise if missing."""

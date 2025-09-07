@@ -11,6 +11,8 @@ from .constants import inject_defaults
 if TYPE_CHECKING:  # pragma: no cover - only for type checkers
     import networkx as nx
 
+__all__ = ["load_config", "apply_config"]
+
 
 def load_config(path: str | Path) -> Mapping[str, Any]:
     """Read a JSON/YAML file and return a mapping with parameters."""

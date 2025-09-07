@@ -15,6 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
 
 # API de alto nivel
+__all__ = ["preparar_red", "step", "run"]
 
 
 def preparar_red(

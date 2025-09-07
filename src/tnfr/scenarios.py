@@ -6,6 +6,8 @@ import networkx as nx
 from .constants import inject_defaults
 from .initialization import init_node_attrs
 
+__all__ = ["build_graph"]
+
 
 def build_graph(
     n: int = 24,

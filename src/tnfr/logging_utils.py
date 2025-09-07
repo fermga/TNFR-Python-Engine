@@ -11,6 +11,8 @@ import threading
 
 _LOCK = threading.Lock()
 
+__all__ = ["get_logger"]
+
 
 def get_logger(name: str) -> logging.Logger:
     """Return a logger with a standard configuration."""

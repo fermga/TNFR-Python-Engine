@@ -31,6 +31,27 @@ ZHIR = Glyph.ZHIR
 NAV = Glyph.NAV
 REMESH = Glyph.REMESH
 
+__all__ = [
+    "AL",
+    "EN",
+    "IL",
+    "OZ",
+    "UM",
+    "RA",
+    "SHA",
+    "VAL",
+    "NUL",
+    "THOL",
+    "ZHIR",
+    "NAV",
+    "REMESH",
+    "CANON_COMPAT",
+    "CANON_FALLBACK",
+    "enforce_canonical_grammar",
+    "on_applied_glyph",
+    "apply_glyph_with_grammar",
+]
+
 # -------------------------
 # Per-node grammar state
 # -------------------------
