@@ -76,6 +76,16 @@ def _sigma_cfg(G):
     return G.graph.get("SIGMA", SIGMA)
 
 
+def _to_complex(val: complex | float | int) -> complex:
+    """Return ``val`` as complex, promoting real numbers."""
+
+    if isinstance(val, complex):
+        return val
+    if isinstance(val, (int, float)):
+        return complex(val, 0.0)
+    raise TypeError("values must be an iterable of real or complex numbers")
+
+
 # -------------------------
 # σ por nodo y σ global
 # -------------------------
@@ -97,13 +107,6 @@ def _sigma_from_iterable(
     except TypeError:
         iterator = iter([values])
 
-    def _to_complex(val: complex | float | int) -> complex:
-        if isinstance(val, complex):
-            return val
-        if isinstance(val, (int, float)):
-            return complex(val, 0.0)
-        raise TypeError("values must be an iterable of real or complex numbers")
-
     try:
         first = _to_complex(next(iterator))
     except StopIteration:
@@ -115,15 +118,17 @@ def _sigma_from_iterable(
             "n": 0,
         }
 
-    sum_x = first.real
-    sum_y = first.imag
+    xs = [first.real]
+    ys = [first.imag]
     cnt = 1
     for z in iterator:
         zc = _to_complex(z)
-        sum_x += zc.real
-        sum_y += zc.imag
+        xs.append(zc.real)
+        ys.append(zc.imag)
         cnt += 1
 
+    sum_x = math.fsum(xs)
+    sum_y = math.fsum(ys)
     x = sum_x / cnt
     y = sum_y / cnt
     mag = math.hypot(x, y)
