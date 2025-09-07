@@ -199,36 +199,38 @@ def node_set_checksum(
     presorted: bool = False,
     store: bool = True,
 ) -> str:
-    """Return a BLAKE2b checksum of ``G``'s node set using a stable ``repr``.
+    """Return a BLAKE2b checksum of ``G``'s node set.
 
-    When ``store`` is ``True`` (default) the result is cached in ``G.graph``
-    under ``"_node_set_checksum_cache"`` along with the ordered node snapshot to
-    avoid recomputation when the node set remains unchanged.
+    Hashable nodes are hashed directly. Nodes lacking a ``__hash__`` fall back
+    to a stable ``repr``-based scheme. To benefit from caching and avoid sorting
+    the same collection repeatedly, the serialised values are stored as a
+    ``frozenset`` under ``"_node_set_checksum_cache"`` when ``store`` is ``True``.
+    Note that objects whose hash changes between runs will yield different
+    checksums each time.
     """
 
     graph = G.graph if hasattr(G, "graph") else G
     node_iterable = G.nodes() if nodes is None else nodes
 
-    if store:
-        marker = tuple(node_iterable)
-        cached = graph.get("_node_set_checksum_cache")
-        if cached and cached[0] == len(marker) and cached[1] == marker:
-            return cached[2]
-        iterable = marker
-    else:
-        marker = None
-        iterable = node_iterable
+    serialised_list = []
+    for n in node_iterable:
+        try:
+            serialised_list.append(str(hash(n)))
+        except TypeError:
+            serialised_list.append(_node_repr(n))
 
-    serialised = (
-        (_node_repr(n) for n in iterable)
-        if presorted
-        else sorted(_node_repr(n) for n in iterable)
-    )
+    marker = frozenset(serialised_list)
+    if store:
+        cached = graph.get("_node_set_checksum_cache")
+        if cached and cached[0] == marker:
+            return cached[1]
+
+    ordered = serialised_list if presorted else sorted(serialised_list)
     hasher = hashlib.blake2b(digest_size=16)
-    hasher.update("|".join(serialised).encode("utf-8"))
+    hasher.update("|".join(ordered).encode("utf-8"))
     checksum = hasher.hexdigest()
     if store:
-        graph["_node_set_checksum_cache"] = (len(marker), marker, checksum)
+        graph["_node_set_checksum_cache"] = (marker, checksum)
     return checksum
 
 
