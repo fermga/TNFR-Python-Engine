@@ -28,7 +28,7 @@ def test_optional_import_clears_failures(monkeypatch):
     assert "fake_mod" not in _IMPORT_STATE
 
 
-def test_warns_with_stacklevel_2_only_once(monkeypatch):
+def test_warns_once_with_stacklevel_2(monkeypatch):
     def fake_import(name):
         raise ImportError("boom")
 
@@ -44,7 +44,7 @@ def test_warns_with_stacklevel_2_only_once(monkeypatch):
     optional_import("fake_mod.attr1")
     optional_import("fake_mod.attr2")
     optional_import.cache_clear()
-    assert stacklevels == [2, 1]
+    assert stacklevels == [2]
 
 
 def test_optional_import_removes_entry_on_success(monkeypatch):

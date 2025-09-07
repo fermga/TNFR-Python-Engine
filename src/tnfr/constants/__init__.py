@@ -39,29 +39,38 @@ IMMUTABLE_SIMPLE = (
 )
 
 
-def _freeze(value: Any):
-    if is_dataclass(value) and not isinstance(value, type):
-        params = getattr(type(value), "__dataclass_params__", None)
-        frozen = bool(params and params.frozen)
-        value = asdict(value)
-        tag = "mapping" if frozen else "dict"
-        return (tag, tuple((k, _freeze(v)) for k, v in value.items()))
-    if isinstance(value, IMMUTABLE_SIMPLE):
-        return value
-    if isinstance(value, tuple):
-        return tuple(_freeze(v) for v in value)
-    if isinstance(value, list):
-        return ("list", tuple(_freeze(v) for v in value))
-    if isinstance(value, set):
-        return ("set", tuple(_freeze(v) for v in value))
-    if isinstance(value, frozenset):
-        return frozenset(_freeze(v) for v in value)
-    if isinstance(value, bytearray):
-        return ("bytearray", bytes(value))
-    if isinstance(value, Mapping):
-        tag = "dict" if hasattr(value, "__setitem__") else "mapping"
-        return (tag, tuple((k, _freeze(v)) for k, v in value.items()))
-    raise TypeError
+def _freeze(value: Any, seen: set[int] | None = None):
+    if seen is None:
+        seen = set()
+    obj_id = id(value)
+    if obj_id in seen:
+        raise ValueError("cycle detected")
+    seen.add(obj_id)
+    try:
+        if is_dataclass(value) and not isinstance(value, type):
+            params = getattr(type(value), "__dataclass_params__", None)
+            frozen = bool(params and params.frozen)
+            value = asdict(value)
+            tag = "mapping" if frozen else "dict"
+            return (tag, tuple((k, _freeze(v, seen)) for k, v in value.items()))
+        if isinstance(value, IMMUTABLE_SIMPLE):
+            return value
+        if isinstance(value, tuple):
+            return tuple(_freeze(v, seen) for v in value)
+        if isinstance(value, list):
+            return ("list", tuple(_freeze(v, seen) for v in value))
+        if isinstance(value, set):
+            return ("set", tuple(_freeze(v, seen) for v in value))
+        if isinstance(value, frozenset):
+            return frozenset(_freeze(v, seen) for v in value)
+        if isinstance(value, bytearray):
+            return ("bytearray", bytes(value))
+        if isinstance(value, Mapping):
+            tag = "dict" if hasattr(value, "__setitem__") else "mapping"
+            return (tag, tuple((k, _freeze(v, seen)) for k, v in value.items()))
+        raise TypeError
+    finally:
+        seen.remove(obj_id)
 
 
 @lru_cache(maxsize=1024)
@@ -85,7 +94,7 @@ def _is_immutable(value: Any) -> bool:
     """Check recursively if ``value`` is immutable with caching."""
     try:
         frozen = _freeze(value)
-    except TypeError:
+    except (TypeError, ValueError):
         return False
     return _is_immutable_inner(frozen)
 

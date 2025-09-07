@@ -64,13 +64,17 @@ __all__ = [
 
 
 def _flatten_tokens(obj: Any):
-    """Recursive generator yielding each token in order."""
+    """Iteratively yield each token in order."""
 
-    if isinstance(obj, Sequence) and not isinstance(obj, str):
-        for item in obj:
-            yield from _flatten_tokens(item)
-    else:
-        yield obj
+    stack = [iter([obj])]
+    while stack:
+        for item in stack[-1]:
+            if isinstance(item, Sequence) and not isinstance(item, str):
+                stack.append(iter(item))
+                break
+            yield item
+        else:
+            stack.pop()
 
 
 def validate_token(tok: Any, pos: int) -> Any:

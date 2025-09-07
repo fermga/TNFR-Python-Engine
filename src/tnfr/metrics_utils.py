@@ -54,14 +54,13 @@ def compute_coherence(G) -> float:
     """Compute global coherence C(t) from ΔNFR and dEPI."""
     count = G.number_of_nodes()
     if count:
-        dnfr_mean = math.fsum(
-            abs(get_attr(nd, ALIAS_DNFR, 0.0))
-            for _, nd in G.nodes(data=True)
-        ) / count
-        depi_mean = math.fsum(
-            abs(get_attr(nd, ALIAS_dEPI, 0.0))
-            for _, nd in G.nodes(data=True)
-        ) / count
+        dnfr_vals = []
+        depi_vals = []
+        for _, nd in G.nodes(data=True):
+            dnfr_vals.append(abs(get_attr(nd, ALIAS_DNFR, 0.0)))
+            depi_vals.append(abs(get_attr(nd, ALIAS_dEPI, 0.0)))
+        dnfr_mean = math.fsum(dnfr_vals) / count
+        depi_mean = math.fsum(depi_vals) / count
     else:
         dnfr_mean = depi_mean = 0.0
     return 1.0 / (1.0 + dnfr_mean + depi_mean)
@@ -76,7 +75,12 @@ def ensure_neighbors_map(G) -> Mapping[Any, Sequence[Any]]:
         neighbors = {n: list(G.neighbors(n)) for n in G}
         graph["_neighbors"] = neighbors
         graph["_neighbors_version"] = edge_version
-    return MappingProxyType(neighbors)
+        graph["_neighbors_proxy"] = MappingProxyType(neighbors)
+    proxy = graph.get("_neighbors_proxy")
+    if proxy is None:
+        proxy = MappingProxyType(neighbors)
+        graph["_neighbors_proxy"] = proxy
+    return proxy
 
 
 def get_Si_weights(G: Any) -> tuple[float, float, float]:

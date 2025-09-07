@@ -118,17 +118,22 @@ def _sigma_from_iterable(
             "n": 0,
         }
 
-    xs = [first.real]
-    ys = [first.imag]
+    sum_x = first.real
+    sum_y = first.imag
+    c_x = 0.0
+    c_y = 0.0
     cnt = 1
     for z in iterator:
         zc = _to_complex(z)
-        xs.append(zc.real)
-        ys.append(zc.imag)
+        x_val = zc.real - c_x
+        t_x = sum_x + x_val
+        c_x = (t_x - sum_x) - x_val
+        sum_x = t_x
+        y_val = zc.imag - c_y
+        t_y = sum_y + y_val
+        c_y = (t_y - sum_y) - y_val
+        sum_y = t_y
         cnt += 1
-
-    sum_x = math.fsum(xs)
-    sum_y = math.fsum(ys)
     x = sum_x / cnt
     y = sum_y / cnt
     mag = math.hypot(x, y)

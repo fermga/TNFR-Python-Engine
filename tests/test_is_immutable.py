@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from types import MappingProxyType
+from typing import Any
 
 from tnfr.constants import _is_immutable, _is_immutable_inner
 
@@ -69,3 +70,12 @@ class MutableDC:
 
 def test_is_immutable_mutable_dataclass():
     assert not _is_immutable(MutableDC([1, 2]))
+
+
+def test_is_immutable_detects_cycles():
+    lst: list[Any] = []
+    lst.append(lst)
+    assert not _is_immutable(lst)
+    d: dict[str, Any] = {}
+    d["self"] = d
+    assert not _is_immutable(d)
