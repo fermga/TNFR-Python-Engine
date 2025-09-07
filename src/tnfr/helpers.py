@@ -260,19 +260,19 @@ def node_set_checksum(
     hasher = hashlib.blake2b(digest_size=16)
 
     if store:
-        digests: list[bytes] = []
-        for n in node_iterable:
-            d = hashlib.blake2b(
+        digest_tuple = tuple(
+            hashlib.blake2b(
                 _node_repr(n).encode("utf-8"), digest_size=16
             ).digest()
-            hasher.update(d)
-            digests.append(d)
-
-        digest_tuple = tuple(digests)
+            for n in node_iterable
+        )
 
         cached = graph.get("_node_set_checksum_cache")
         if cached and cached[0] == digest_tuple:
             return cached[1]
+
+        for d in digest_tuple:
+            hasher.update(d)
 
         checksum = hasher.hexdigest()
         graph["_node_set_checksum_cache"] = (digest_tuple, checksum)
