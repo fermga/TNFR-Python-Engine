@@ -102,15 +102,16 @@ class HistoryDict(dict):
         self._prune_heap()
 
     def _prune_heap(self) -> None:
-        """Pop entries until ``self._heap`` shrinks to ``target``."""
+        """Ensure heap size stays within ``target`` keeping valid entries."""
         target = len(self._counts) + self._compact_every
-        valid: list[tuple[int, str]] = []
-        while len(self._heap) + len(valid) > target:
-            cnt, key = heapq.heappop(self._heap)
-            if self._counts.get(key) == cnt:
-                valid.append((cnt, key))
-        for item in valid:
-            heapq.heappush(self._heap, item)
+        if len(self._heap) <= target:
+            return
+        self._heap = [
+            (cnt, key) for cnt, key in self._heap if self._counts.get(key) == cnt
+        ]
+        heapq.heapify(self._heap)
+        while len(self._heap) > target:
+            heapq.heappop(self._heap)
 
     def _pop_heap_key(self) -> str:
         """Pop and return the key with the smallest count from the heap."""
@@ -283,7 +284,8 @@ def count_glyphs(
         if window_int is None:
             yield from hist
         else:
-            yield from islice(reversed(hist), window_int)
+            start = max(len(hist) - window_int, 0)
+            yield from islice(hist, start, None)
 
     return Counter(
         g for _, nd in G.nodes(data=True) for g in _iter_seq(nd)
