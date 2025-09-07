@@ -107,6 +107,10 @@ def _wij_loops(
 ):
     n = len(nodes)
     wij = [[1.0 if (self_diag and i == j) else 0.0 for j in range(n)] for i in range(n)]
+    phase_w = wnorm["phase"]
+    epi_w = wnorm["epi"]
+    vf_w = wnorm["vf"]
+    si_w = wnorm["si"]
     if neighbors_only:
         seen: set[tuple[int, int]] = set()
         for u, v in G.edges():
@@ -130,11 +134,12 @@ def _wij_loops(
                 vf_min,
                 vf_max,
             )
+            s_phase = comps["s_phase"]
+            s_epi = comps["s_epi"]
+            s_vf = comps["s_vf"]
+            s_si = comps["s_si"]
             wij_ij = clamp01(
-                wnorm["phase"] * comps["s_phase"]
-                + wnorm["epi"] * comps["s_epi"]
-                + wnorm["vf"] * comps["s_vf"]
-                + wnorm["si"] * comps["s_si"]
+                phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
             )
             wij[i][j] = wij[j][i] = wij_ij
     else:
@@ -152,11 +157,12 @@ def _wij_loops(
                     vf_min,
                     vf_max,
                 )
+                s_phase = comps["s_phase"]
+                s_epi = comps["s_epi"]
+                s_vf = comps["s_vf"]
+                s_si = comps["s_si"]
                 wij_ij = clamp01(
-                    wnorm["phase"] * comps["s_phase"]
-                    + wnorm["epi"] * comps["s_epi"]
-                    + wnorm["vf"] * comps["s_vf"]
-                    + wnorm["si"] * comps["s_si"]
+                    phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
                 )
                 wij[i][j] = wij[j][i] = wij_ij
     return wij

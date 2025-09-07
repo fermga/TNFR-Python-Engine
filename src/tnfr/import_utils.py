@@ -27,7 +27,7 @@ def _warn_failure(module: str, attr: str | None, err: Exception) -> None:
     warnings.warn(msg, RuntimeWarning, stacklevel=2)
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=128)
 def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     """Import ``name`` returning ``fallback`` if it fails.
 
@@ -53,6 +53,8 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     -----
     ``fallback`` is returned when the module is unavailable or the requested
     attribute does not exist. In both cases a warning is emitted.
+    Use ``optional_import.cache_clear()`` to reset the internal cache and
+    failure registry after installing new optional dependencies.
     """
 
     module_name, attr = (name.rsplit(".", 1) + [None])[:2]
@@ -74,6 +76,19 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
             else:
                 _FAILED_IMPORTS.add(name)
     return fallback
+
+
+_optional_import_cache_clear = optional_import.cache_clear
+
+
+def _cache_clear() -> None:
+    """Clear ``optional_import`` cache and failure records."""
+    _optional_import_cache_clear()
+    with _FAILED_IMPORTS_LOCK:
+        _FAILED_IMPORTS.clear()
+
+
+optional_import.cache_clear = _cache_clear  # type: ignore[attr-defined]
 
 
 @lru_cache(maxsize=1)

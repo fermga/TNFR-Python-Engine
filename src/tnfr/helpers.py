@@ -220,13 +220,15 @@ def node_set_checksum(
         return cached[2]
 
     hasher = hashlib.blake2b(digest_size=16)
-    serialised = (
-        [_node_repr(n) for n in node_iter]
+    serialised_iter = (
+        (_node_repr(n) for n in node_iter)
         if presorted
-        else sorted(_node_repr(n) for n in node_iter)
+        else iter(sorted(_node_repr(n) for n in node_iter))
     )
-    payload = "|".join(serialised)
-    hasher.update(payload.encode("utf-8"))
+    for idx, repr_node in enumerate(serialised_iter):
+        if idx:
+            hasher.update(b"|")
+        hasher.update(repr_node.encode("utf-8"))
     checksum = hasher.hexdigest()
     if store:
         graph["_node_set_checksum_cache"] = (len(marker), marker, checksum)
@@ -267,14 +269,15 @@ def ensure_node_offset_map(G) -> Dict[Any, int]:
 
 
 def edge_version_cache(
-    G: Any, key: str, builder: Callable[[], T], *, max_entries: int | None = None
+    G: Any, key: str, builder: Callable[[], T], *, max_entries: int | None = 128
 ) -> T:
     """Return cached ``builder`` output tied to the edge version of ``G``.
 
     All cache access is serialized via ``_EDGE_CACHE_LOCK`` to ensure
     thread-safety. When ``max_entries`` is a positive integer, only the most
-    recent ``max_entries`` cache entries are kept. The potentially expensive
-    ``builder`` is executed outside the lock when the cache is cold.
+    recent ``max_entries`` cache entries are kept (defaults to ``128``).
+    The potentially expensive ``builder`` is executed outside the lock when
+    the cache is cold.
     """
     graph = G.graph if hasattr(G, "graph") else G
     edge_version = int(graph.get("_edge_version", 0))
