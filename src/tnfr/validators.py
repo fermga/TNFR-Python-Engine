@@ -20,12 +20,10 @@ def _require_attr(data, alias, node, name):
 
 
 def _validate_epi_vf(G) -> None:
-    cfg = {
-        k: float(get_param(G, k))
-        for k in ("EPI_MIN", "EPI_MAX", "VF_MIN", "VF_MAX")
-    }
-    epi_min, epi_max = cfg["EPI_MIN"], cfg["EPI_MAX"]
-    vf_min, vf_max = cfg["VF_MIN"], cfg["VF_MAX"]
+    epi_min = float(get_param(G, "EPI_MIN"))
+    epi_max = float(get_param(G, "EPI_MAX"))
+    vf_min = float(get_param(G, "VF_MIN"))
+    vf_max = float(get_param(G, "VF_MAX"))
     for n, data in G.nodes(data=True):
         _check_epi_vf(
             _require_attr(data, ALIAS_EPI, n, "EPI"),
