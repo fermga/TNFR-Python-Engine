@@ -50,27 +50,28 @@ def ensure_collection(
     """
 
     if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
+        # Already a collection; no materialization needed
         return it
     if isinstance(it, (str, bytes, bytearray)):
+        # Treat raw bytes/strings as single elements
         return cast(Collection[T], (it,))
     if max_materialize is not None and max_materialize < 0:
         raise ValueError("'max_materialize' must be non-negative")
 
-    def _materialise(iterable: Iterable[T]) -> Collection[T]:
+    try:
         if max_materialize is None:
-            return tuple(iterable)
-        limit = max_materialize
+            # No limit: consume iterable fully
+            return tuple(it)
+        limit = max_materialize  # materialization cap
         if limit == 0:
+            # Explicitly allow empty result without consumption
             return ()
-        materialized = list(islice(iterable, limit + 1))
+        materialized = list(islice(it, limit + 1))
         if len(materialized) > limit:
             raise ValueError(
                 f"Iterable produced {len(materialized)} items, exceeds limit {limit}"
             )
         return tuple(materialized)
-
-    try:
-        return _materialise(it)
     except TypeError as exc:
         raise TypeError(f"{it!r} is not iterable") from exc
 
