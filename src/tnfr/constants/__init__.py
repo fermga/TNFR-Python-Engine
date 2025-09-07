@@ -42,10 +42,14 @@ def _freeze(value: Any):
         return value
     if isinstance(value, tuple):
         return tuple(_freeze(v) for v in value)
+    if isinstance(value, list):
+        return ("list", tuple(_freeze(v) for v in value))
     if isinstance(value, frozenset):
         return frozenset(_freeze(v) for v in value)
     if isinstance(value, MappingProxyType):
-        return tuple((k, _freeze(v)) for k, v in value.items())
+        return ("mappingproxy", tuple((k, _freeze(v)) for k, v in value.items()))
+    if isinstance(value, Mapping):
+        return ("dict", tuple((k, _freeze(v)) for k, v in value.items()))
     raise TypeError
 
 
@@ -54,14 +58,16 @@ def _is_immutable_inner(value: Any) -> bool:
     if isinstance(value, IMMUTABLE_SIMPLE):
         return True
     if isinstance(value, tuple):
+        if value and isinstance(value[0], str):
+            tag = value[0]
+            if tag in {"list", "dict"}:
+                return False
+            if tag == "mappingproxy":
+                return all(_is_immutable_inner(v) for v in value[1])
         return all(_is_immutable_inner(v) for v in value)
     if isinstance(value, frozenset):
         return all(_is_immutable_inner(v) for v in value)
     return False
-
-
-def _prune_cache() -> None:
-    _is_immutable_inner.cache_clear()
 
 
 def _is_immutable(value: Any) -> bool:
