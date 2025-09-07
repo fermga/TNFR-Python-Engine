@@ -3,6 +3,7 @@ import networkx as nx
 
 from tnfr.constants import THETA_PRIMARY
 from tnfr.metrics import coherence_matrix, local_phase_sync_weighted
+from tnfr.helpers import ensure_node_index_map
 
 
 def make_graph(offset=0):
@@ -28,26 +29,25 @@ def test_local_phase_sync_independent_graphs():
     assert r1 == pytest.approx(1.0)
     assert r2 == pytest.approx(1.0)
 
-    key = "_node_index_map"
-    map1 = G1.graph[key]
-    map2 = G2.graph[key]
+    map1 = ensure_node_index_map(G1)
+    map2 = ensure_node_index_map(G2)
     assert map1 is not map2
     assert set(map1.keys()) == set(nodes1)
     assert set(map2.keys()) == set(nodes2)
 
     r1_again = local_phase_sync_weighted(G1, nodes1[0], nodes_order=nodes1, W_row=W1)
     assert r1_again == pytest.approx(r1)
-    assert G1.graph[key] is map1
+    assert ensure_node_index_map(G1) is map1
 
 
 def test_node_index_map_invalidation():
     G = make_graph(0)
     coherence_matrix(G)
-    mapping1 = G.graph["_node_index_map"]
+    mapping1 = ensure_node_index_map(G)
 
     G.add_node(2)
     coherence_matrix(G)
-    mapping2 = G.graph["_node_index_map"]
+    mapping2 = ensure_node_index_map(G)
 
     assert mapping1 is not mapping2
     assert set(mapping2.keys()) == set(G.nodes())

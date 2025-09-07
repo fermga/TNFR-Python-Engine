@@ -1,7 +1,7 @@
 import networkx as nx
 
-from tnfr import dynamics, operators
-from tnfr.helpers import increment_edge_version
+from tnfr import dynamics
+from tnfr.helpers import increment_edge_version, ensure_node_offset_map
 
 
 def test_cached_nodes_and_A_reuse_and_invalidate():
@@ -31,14 +31,11 @@ def test_cached_nodes_and_A_invalidate_on_node_addition():
 def test_node_offset_map_updates_on_node_addition():
     G = nx.Graph()
     G.add_nodes_from([0, 1])
-    offset0 = operators._node_offset(G, 0)
-    mapping1 = G.graph["_node_offset_map"]
-    assert offset0 == 0
-    offset0_again = operators._node_offset(G, 0)
-    assert offset0_again == 0
-    assert mapping1 is G.graph["_node_offset_map"]
+    mapping1 = ensure_node_offset_map(G)
+    assert mapping1[0] == 0
+    mapping1_again = ensure_node_offset_map(G)
+    assert mapping1 is mapping1_again
     G.add_node(2)
-    offset2 = operators._node_offset(G, 2)
-    mapping2 = G.graph["_node_offset_map"]
+    mapping2 = ensure_node_offset_map(G)
     assert mapping2 is not mapping1
-    assert offset2 == 2
+    assert mapping2[2] == 2
