@@ -6,7 +6,7 @@ import math
 import cmath
 import logging
 import warnings
-import json
+import pickle
 import hashlib
 from collections.abc import Mapping
 
@@ -68,9 +68,10 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
     raw = G.graph.get("GAMMA")
     cached = G.graph.get("_gamma_spec")
     prev_hash = G.graph.get("_gamma_spec_hash")
-    # ``json.dumps(..., default=str)`` provides a stable representation for
-    # hash calculation even when values are not natively serialisable.
-    dumped = json.dumps(raw, sort_keys=True, default=str).encode("utf-8")
+    # ``pickle.dumps`` preserves both structure and types, ensuring the hash
+    # reflects any change in the specification regardless of how values are
+    # represented.
+    dumped = pickle.dumps(raw)
     cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
     if cached is not None and prev_hash == cur_hash:
         return cached
@@ -87,6 +88,7 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
         spec = raw
     G.graph["_gamma_spec"] = spec
     G.graph["_gamma_spec_hash"] = cur_hash
+    G.graph["_gamma_spec_serialized"] = dumped
     return spec
 
 
