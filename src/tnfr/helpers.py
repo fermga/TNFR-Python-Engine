@@ -242,13 +242,15 @@ def node_set_checksum(
     graph = get_graph(G)
     node_iterable = G.nodes() if nodes is None else nodes
 
-    digests = [
-        hashlib.blake2b(_node_repr(n).encode("utf-8"), digest_size=16).digest()
-        for n in node_iterable
-    ]
-
     if not presorted:
-        digests.sort()
+        node_iterable = sorted(node_iterable, key=_node_repr)
+
+    hasher = hashlib.blake2b(digest_size=16)
+    digests: list[bytes] = []
+    for n in node_iterable:
+        d = hashlib.blake2b(_node_repr(n).encode("utf-8"), digest_size=16).digest()
+        hasher.update(d)
+        digests.append(d)
 
     digest_tuple = tuple(digests)
 
@@ -257,9 +259,6 @@ def node_set_checksum(
         if cached and cached[0] == digest_tuple:
             return cached[1]
 
-    hasher = hashlib.blake2b(digest_size=16)
-    for d in digest_tuple:
-        hasher.update(d)
     checksum = hasher.hexdigest()
 
     if store:

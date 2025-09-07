@@ -30,15 +30,12 @@ def test_node_set_checksum_object_stable():
 
 
 def _reference_checksum(G):
-    digests = [
-        hashlib.blake2b(
+    nodes = sorted(G.nodes(), key=h._node_repr)
+    hasher = hashlib.blake2b(digest_size=16)
+    for n in nodes:
+        d = hashlib.blake2b(
             _stable_json(n).encode("utf-8"), digest_size=16
         ).digest()
-        for n in G.nodes()
-    ]
-    digests.sort()
-    hasher = hashlib.blake2b(digest_size=16)
-    for d in digests:
         hasher.update(d)
     return hasher.hexdigest()
 
