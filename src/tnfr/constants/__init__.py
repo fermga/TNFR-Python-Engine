@@ -135,7 +135,10 @@ def inject_defaults(
 
 def merge_overrides(G, **overrides) -> None:
     """Apply specific changes to ``G.graph``."""
-    G.graph.update(overrides)
+    for key, value in overrides.items():
+        if key not in DEFAULTS:
+            raise KeyError(f"Parámetro desconocido: '{key}'")
+        G.graph[key] = value
 
 
 def get_param(G, key: str):

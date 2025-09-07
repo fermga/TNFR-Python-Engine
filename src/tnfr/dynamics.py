@@ -1141,6 +1141,51 @@ def _run_before_callbacks(
     )
 
 
+def _prepare_dnfr(G, *, use_Si: bool) -> None:
+    """Compute ΔNFR and optionally Si for the current graph state."""
+    compute_dnfr_cb = G.graph.get(
+        "compute_delta_nfr", default_compute_delta_nfr
+    )
+    compute_dnfr_cb(G)
+    if use_Si:
+        compute_Si(G, inplace=True)
+
+
+def _apply_selector(G):
+    """Configure and return the glyph selector for this step."""
+    selector = G.graph.get("glyph_selector", default_glyph_selector)
+    if selector is parametric_glyph_selector:
+        _norms_para_selector(G)
+        _configure_selector_weights(G)
+    return selector
+
+
+def _apply_glyphs(G, selector, hist) -> None:
+    """Apply glyphs to nodes using ``selector`` and update history."""
+    window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
+    use_canon = bool(
+        G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})).get(
+            "enabled", False
+        )
+    )
+    al_max = int(G.graph.get("AL_MAX_LAG", DEFAULTS["AL_MAX_LAG"]))
+    en_max = int(G.graph.get("EN_MAX_LAG", DEFAULTS["EN_MAX_LAG"]))
+    h_al = hist.setdefault("since_AL", {})
+    h_en = hist.setdefault("since_EN", {})
+    for n, _ in G.nodes(data=True):
+        h_al[n] = int(h_al.get(n, 0)) + 1
+        h_en[n] = int(h_en.get(n, 0)) + 1
+        g = _choose_glyph(G, n, selector, use_canon, h_al, h_en, al_max, en_max)
+        apply_glyph(G, n, g, window=window)
+        if use_canon:
+            on_applied_glyph(G, n, g)
+        if g == AL:
+            h_al[n] = 0
+            h_en[n] = min(h_en[n], en_max)
+        elif g == EN:
+            h_en[n] = 0
+
+
 def _update_nodes(
     G,
     *,
@@ -1151,39 +1196,10 @@ def _update_nodes(
     hist,
 ) -> None:
     _update_node_sample(G, step=step_idx)
-    compute_dnfr_cb = G.graph.get(
-        "compute_delta_nfr", default_compute_delta_nfr
-    )
-    compute_dnfr_cb(G)
-    if use_Si:
-        compute_Si(G, inplace=True)
-    selector = G.graph.get("glyph_selector", default_glyph_selector)
-    if selector is parametric_glyph_selector:
-        _norms_para_selector(G)
-        _configure_selector_weights(G)
+    _prepare_dnfr(G, use_Si=use_Si)
+    selector = _apply_selector(G)
     if apply_glyphs:
-        window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
-        use_canon = bool(
-            G.graph.get(
-                "GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})
-            ).get("enabled", False)
-        )
-        al_max = int(G.graph.get("AL_MAX_LAG", DEFAULTS["AL_MAX_LAG"]))
-        en_max = int(G.graph.get("EN_MAX_LAG", DEFAULTS["EN_MAX_LAG"]))
-        h_al = hist.setdefault("since_AL", {})
-        h_en = hist.setdefault("since_EN", {})
-        for n, _ in G.nodes(data=True):
-            h_al[n] = int(h_al.get(n, 0)) + 1
-            h_en[n] = int(h_en.get(n, 0)) + 1
-            g = _choose_glyph(G, n, selector, use_canon, h_al, h_en, al_max, en_max)
-            apply_glyph(G, n, g, window=window)
-            if use_canon:
-                on_applied_glyph(G, n, g)
-            if g == AL:
-                h_al[n] = 0
-                h_en[n] = min(h_en[n], en_max)
-            elif g == EN:
-                h_en[n] = 0
+        _apply_glyphs(G, selector, hist)
     _dt = float(G.graph.get("DT", DEFAULTS["DT"])) if dt is None else float(dt)
     method = G.graph.get(
         "INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler")

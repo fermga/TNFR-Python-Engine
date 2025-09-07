@@ -12,6 +12,7 @@ from typing import (
 )
 import logging
 import math
+from itertools import islice
 
 from .value_utils import _convert_value
 
@@ -59,14 +60,12 @@ def ensure_collection(
         limit = max_materialize
         if limit == 0:
             return ()
-        items: list[T] = []
-        for idx, item in enumerate(iterable):
-            if idx >= limit:
-                raise ValueError(
-                    f"Iterable produced {idx + 1} items, exceeds limit {limit}"
-                )
-            items.append(item)
-        return tuple(items)
+        items = tuple(islice(iterable, limit + 1))
+        if len(items) > limit:
+            raise ValueError(
+                f"Iterable produced {len(items)} items, exceeds limit {limit}"
+            )
+        return items
 
     try:
         return _materialise(it)

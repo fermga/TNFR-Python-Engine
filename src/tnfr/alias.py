@@ -35,16 +35,17 @@ __all__ = [
 ]
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=128)
 def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
     """Return ``aliases`` as a validated tuple of strings."""
     if isinstance(aliases, str) or not isinstance(aliases, Sequence):
         raise TypeError("'aliases' must be a non-string sequence")
     seq = tuple(aliases)
-    if not seq or any(not isinstance(a, str) for a in seq):
-        if not seq:
-            raise ValueError("'aliases' must contain at least one key")
-        raise TypeError("'aliases' elements must be strings")
+    if not seq:
+        raise ValueError("'aliases' must contain at least one key")
+    for a in seq:
+        if not isinstance(a, str):
+            raise TypeError("'aliases' elements must be strings")
     return seq
 
 
@@ -134,7 +135,7 @@ def alias_set(
 ) -> T:
     """Assign ``value`` converted to the first available key in ``aliases``."""
     aliases = _validate_aliases(aliases)
-    _, val = _convert_value(value, conv, strict=True)
+    val = conv(value)
     key = next((k for k in aliases if k in d), aliases[0])
     d[key] = val
     return val

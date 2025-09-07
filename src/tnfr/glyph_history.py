@@ -139,12 +139,16 @@ class HistoryDict(dict):
 
     def pop_least_used_batch(self, k: int) -> None:
         if k > 0 and self._counts:
-            existing = [key for key in self._counts if key in self]
-            for key in heapq.nsmallest(k, existing, key=self._counts.get):
+            removed = 0
+            for key, _ in heapq.nsmallest(
+                len(self._counts), self._counts.items(), key=lambda item: item[1]
+            ):
                 self._counts.pop(key, None)
-                super().pop(key, None)
-            for key in [key for key in self._counts if key not in self]:
-                self._counts.pop(key, None)
+                if key in self:
+                    super().pop(key, None)
+                    removed += 1
+                    if removed >= k:
+                        break
 
 
 def ensure_history(G) -> Dict[str, Any]:
