@@ -5,7 +5,6 @@ from typing import (
     Iterable,
     Dict,
     Any,
-    TYPE_CHECKING,
     Callable,
     TypeVar,
 )
@@ -16,6 +15,7 @@ import threading
 import json
 from functools import lru_cache
 from cachetools import LRUCache
+import networkx as nx
 
 from .import_utils import get_numpy, import_nodonx
 from .collections_utils import (
@@ -29,9 +29,6 @@ from .alias import get_attr
 from .graph_utils import mark_dnfr_prep_dirty
 
 _EDGE_CACHE_LOCK = threading.RLock()
-
-if TYPE_CHECKING:  # pragma: no cover - solo para type checkers
-    import networkx as nx
 
 __all__ = [
     "MAX_MATERIALIZE_DEFAULT",
@@ -211,7 +208,7 @@ def _node_repr(n: Any) -> str:
 
 
 def node_set_checksum(
-    G: "nx.Graph",
+    G: nx.Graph,
     nodes: Iterable[Any] | None = None,
     *,
     presorted: bool = False,
@@ -344,7 +341,7 @@ def invalidate_edge_version_cache(G: Any) -> None:
 
 
 def cached_nodes_and_A(
-    G: "nx.Graph", *, cache_size: int | None = 1
+    G: nx.Graph, *, cache_size: int | None = 1
 ) -> tuple[list[int], Any]:
     """Return list of nodes and adjacency matrix for ``G`` with caching."""
     nodes_list = list(G.nodes())
@@ -355,8 +352,6 @@ def cached_nodes_and_A(
 
     def builder() -> tuple[list[int], Any]:
         if np is not None:
-            import networkx as nx  # importación tardía
-
             A = nx.to_numpy_array(G, nodelist=nodes_list, weight=None, dtype=float)
         else:  # pragma: no cover - dependiente de numpy
             A = None
