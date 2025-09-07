@@ -88,7 +88,8 @@ def test_sigma_vector_consistency():
     # Distribución ficticia de glyphs
     dist = {"IL": 0.4, "RA": 0.3, "ZHIR": 0.1, "AL": 0.2}
 
-    res, n = sigma_vector(dist)
+    res = sigma_vector(dist)
+    n = res["n"]
 
     # Cálculo esperado con el mapa de ángulos canónico
     keys = list(dist.keys())

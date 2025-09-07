@@ -103,7 +103,7 @@ def _update_sigma(G, hist) -> None:
     append_metric(hist, "glyph_load_disr", gl.get("_disruptivos", 0.0))
 
     dist = {k: v for k, v in gl.items() if not k.startswith("_")}
-    sig, _ = sigma_vector(dist)
+    sig = sigma_vector(dist)
     append_metric(hist, "sense_sigma_x", sig.get("x", 0.0))
     append_metric(hist, "sense_sigma_y", sig.get("y", 0.0))
     append_metric(hist, "sense_sigma_mag", sig.get("mag", 0.0))
