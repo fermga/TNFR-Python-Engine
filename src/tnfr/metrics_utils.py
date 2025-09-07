@@ -54,15 +54,25 @@ def compute_coherence(G) -> float:
     """Compute global coherence C(t) from ΔNFR and dEPI."""
     count = G.number_of_nodes()
     if count:
-        dnfr_vals = []
-        depi_vals = []
+        dnfr_sum = dnfr_c = 0.0
+        depi_sum = depi_c = 0.0
         for _, nd in G.nodes(data=True):
-            dnfr_vals.append(abs(get_attr(nd, ALIAS_DNFR, 0.0)))
-            depi_vals.append(abs(get_attr(nd, ALIAS_dEPI, 0.0)))
-        dnfr_mean = math.fsum(dnfr_vals) / count
-        depi_mean = math.fsum(depi_vals) / count
+            dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0))
+            y = dnfr - dnfr_c
+            t = dnfr_sum + y
+            dnfr_c = (t - dnfr_sum) - y
+            dnfr_sum = t
+
+            depi = abs(get_attr(nd, ALIAS_dEPI, 0.0))
+            y = depi - depi_c
+            t = depi_sum + y
+            depi_c = (t - depi_sum) - y
+            depi_sum = t
+        dnfr_mean = dnfr_sum / count
+        depi_mean = depi_sum / count
     else:
         dnfr_mean = depi_mean = 0.0
+    # Using running sums avoids storing per-node values and saves memory.
     return 1.0 / (1.0 + dnfr_mean + depi_mean)
 
 
