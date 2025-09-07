@@ -451,8 +451,11 @@ def glyphogram_series(G) -> dict[str, list[float]]:
 
 def glyph_top(G, k: int = 3) -> list[tuple[str, float]]:
     """Top-k structural operators by ``Tg_global`` (fraction)."""
+    k = int(k)
+    if k <= 0:
+        raise ValueError("k must be a positive integer")
     tg = Tg_global(G, normalize=True)
-    return heapq.nlargest(max(1, int(k)), tg.items(), key=lambda kv: kv[1])
+    return heapq.nlargest(k, tg.items(), key=lambda kv: kv[1])
 
 
 def glyph_dwell_stats(G, n) -> dict[str, dict[str, float]]:
