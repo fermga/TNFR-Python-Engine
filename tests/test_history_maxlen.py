@@ -27,7 +27,7 @@ def test_history_maxlen_and_cleanup(graph_canon):
     series.extend([1, 2, 3])
     assert isinstance(series, deque)
     assert series.maxlen == 2
-    assert list(series) == [2, 3]
+    assert series == deque([2, 3], maxlen=2)
 
 
 def test_history_least_used_removed(graph_canon):
