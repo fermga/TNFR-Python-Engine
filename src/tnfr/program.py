@@ -8,6 +8,7 @@ from typing import Any, Optional, Union
 from dataclasses import dataclass
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
+from threading import Lock
 
 from .token_parser import _flatten_tokens, validate_token, _parse_tokens
 
@@ -22,6 +23,7 @@ from .glyph_history import ensure_history
 Node = Any
 AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
 _STEP_FN: Optional[AdvanceFn] = None
+_STEP_LOCK = Lock()
 
 __all__ = [
     "WAIT",
@@ -135,7 +137,9 @@ def _advance(G, step_fn: Optional[AdvanceFn] = None):
     global _STEP_FN
     if step_fn is None:
         if _STEP_FN is None:
-            from .dynamics import step as _STEP_FN
+            with _STEP_LOCK:
+                if _STEP_FN is None:
+                    from .dynamics import step as _STEP_FN
         step_fn = _STEP_FN
     step_fn(G)
 
