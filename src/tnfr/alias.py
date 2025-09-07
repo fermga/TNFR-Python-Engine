@@ -9,7 +9,7 @@ wrappers are deprecated in favour of :func:`get_attr` and
 """
 
 from __future__ import annotations
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import (
     Dict,
     Any,
@@ -51,11 +51,16 @@ __all__ = [
 ]
 
 
-def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
-    """Return ``aliases`` as a validated tuple of strings."""
-    if isinstance(aliases, str) or not isinstance(aliases, Sequence):
-        raise TypeError("'aliases' must be a non-string sequence")
-    return _cached_validate_aliases(tuple(aliases))
+def _validate_aliases(aliases: Iterable[str]) -> tuple[str, ...]:
+    """Return ``aliases`` as a validated tuple of strings.
+
+    ``aliases`` may be any non-string iterable of strings. The iterable is
+    converted to a tuple before validation and caching.
+    """
+    if isinstance(aliases, str) or not isinstance(aliases, Iterable):
+        raise TypeError("'aliases' must be a non-string iterable")
+    aliases = tuple(aliases)
+    return _cached_validate_aliases(aliases)
 
 
 @lru_cache(maxsize=128)
@@ -133,7 +138,7 @@ class AliasAccessor(Generic[T]):
     def get(
         self,
         d: Dict[str, Any],
-        aliases: Sequence[str],
+        aliases: Iterable[str],
         default: Optional[T] = None,
         *,
         strict: bool = False,
@@ -159,7 +164,7 @@ class AliasAccessor(Generic[T]):
     def set(
         self,
         d: Dict[str, Any],
-        aliases: Sequence[str],
+        aliases: Iterable[str],
         value: Any,
         conv: Callable[[Any], T] | None = None,
     ) -> T:
@@ -181,7 +186,7 @@ _alias_accessor: AliasAccessor[Any] = AliasAccessor()
 @overload
 def alias_get(
     d: Dict[str, Any],
-    aliases: Sequence[str],
+    aliases: Iterable[str],
     conv: Callable[[Any], T],
     *,
     default: T,
@@ -193,7 +198,7 @@ def alias_get(
 @overload
 def alias_get(
     d: Dict[str, Any],
-    aliases: Sequence[str],
+    aliases: Iterable[str],
     conv: Callable[[Any], T],
     *,
     default: None = ...,
@@ -204,7 +209,7 @@ def alias_get(
 
 def alias_get(
     d: Dict[str, Any],
-    aliases: Sequence[str],
+    aliases: Iterable[str],
     conv: Callable[[Any], T],
     *,
     default: Optional[Any] = None,
@@ -217,7 +222,7 @@ def alias_get(
        Use :func:`get_attr` instead.
 
     This is a convenience wrapper over a shared :class:`AliasAccessor`
-    instance.
+    instance. ``aliases`` can be any iterable of candidate keys.
     """
     warnings.warn(
         "alias_get is deprecated; use get_attr instead",
@@ -236,7 +241,7 @@ def alias_get(
 
 def alias_set(
     d: Dict[str, Any],
-    aliases: Sequence[str],
+    aliases: Iterable[str],
     conv: Callable[[Any], T],
     value: Any,
 ) -> T:
@@ -246,7 +251,7 @@ def alias_set(
        Use :func:`set_attr` instead.
 
     This is a convenience wrapper over a shared :class:`AliasAccessor`
-    instance.
+    instance. ``aliases`` can be any iterable of candidate keys.
     """
     warnings.warn(
         "alias_set is deprecated; use set_attr instead",
@@ -261,7 +266,7 @@ class _Getter(Protocol[T]):
     def __call__(
         self,
         d: Dict[str, Any],
-        aliases: Sequence[str],
+        aliases: Iterable[str],
         default: T = ...,  # noqa: D401 - documented in alias_get
         *,
         strict: bool = False,
@@ -273,7 +278,7 @@ class _Getter(Protocol[T]):
     def __call__(
         self,
         d: Dict[str, Any],
-        aliases: Sequence[str],
+        aliases: Iterable[str],
         default: None = ...,  # noqa: D401 - documented in alias_get
         *,
         strict: bool = False,
@@ -286,7 +291,7 @@ class _Setter(Protocol[T]):
     def __call__(
         self,
         d: Dict[str, Any],
-        aliases: Sequence[str],
+        aliases: Iterable[str],
         value: Any,
         conv: Callable[[Any], T] | None = ...,
     ) -> T: ...
