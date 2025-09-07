@@ -59,6 +59,7 @@ def set_cache_maxsize(size: int) -> None:
     new_size = int(size)
     with _RNG_LOCK:
         _CACHE_MAXSIZE = new_size
+        _RNG_CACHE.clear()
         if new_size > 0:
             _RNG_CACHE = LRUCache(maxsize=new_size)
         else:
