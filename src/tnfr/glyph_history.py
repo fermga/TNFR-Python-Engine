@@ -44,6 +44,8 @@ def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
 
 def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions."""
+    if window == 0:
+        return False
     window = _validate_window(window)
     if window == 0:
         return False
