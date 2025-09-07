@@ -55,6 +55,13 @@ def set_cache_maxsize(size: int) -> None:
     """Update RNG cache maximum size."""
 
     global _CACHE_MAXSIZE
-    _CACHE_MAXSIZE = int(size)
+    new_size = int(size)
+    with _RNG_LOCK:
+        _CACHE_MAXSIZE = new_size
+        if new_size <= 0:
+            _RNG_CACHE.clear()
+        else:
+            while len(_RNG_CACHE) > new_size:
+                _RNG_CACHE.popitem(last=False)
 
 __all__ = ["get_rng", "make_rng", "set_cache_maxsize"]

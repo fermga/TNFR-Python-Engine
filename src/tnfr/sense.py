@@ -125,15 +125,6 @@ def _sigma_from_iterable(
     return vec, cnt
 
 
-def _sigma_from_pairs(
-    pairs: Iterable[tuple[str, float]], fallback_angle: float = 0.0
-) -> tuple[Dict[str, float], int]:
-    """Backward-compatible wrapper to compute σ from ``(glyph, weight)`` pairs."""
-
-    vectors = (glyph_unit(g) * float(w) for g, w in pairs)
-    return _sigma_from_iterable(vectors, fallback_angle)
-
-
 # Retro-compatibilidad
 _sigma_from_vectors = _sigma_from_iterable
 
@@ -165,8 +156,9 @@ def sigma_vector(dist: Dict[str, float]) -> tuple[Dict[str, float], int]:
     """Compute Σ⃗ from a glyph distribution.
 
     ``dist`` may contain raw counts or proportions. All ``(glyph, weight)``
-    pairs are forwarded to :func:`_sigma_from_pairs` and the resulting vector
-    together with the number of processed pairs are returned.
+    pairs are converted to vectors and passed to :func:`_sigma_from_iterable`.
+    The resulting vector together with the number of processed pairs are
+    returned.
     """
 
     vectors = (glyph_unit(g) * float(w) for g, w in dist.items())

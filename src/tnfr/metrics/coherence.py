@@ -51,6 +51,178 @@ def compute_components(
     }
 
 
+def _wij_vectorized(
+    th_vals,
+    epi_vals,
+    vf_vals,
+    si_vals,
+    wnorm,
+    epi_min,
+    epi_max,
+    vf_min,
+    vf_max,
+    self_diag,
+    np,
+):
+    th = np.array(th_vals)
+    epi = np.array(epi_vals)
+    vf = np.array(vf_vals)
+    si = np.array(si_vals)
+    th_diff = th[:, None] - th[None, :]
+    s_phase = 0.5 * (1.0 + np.cos(th_diff))
+    epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
+    vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
+    s_epi = 1.0 - np.abs(epi[:, None] - epi[None, :]) / epi_range
+    s_vf = 1.0 - np.abs(vf[:, None] - vf[None, :]) / vf_range
+    s_si = 1.0 - np.abs(si[:, None] - si[None, :])
+    wij = (
+        wnorm["phase"] * s_phase
+        + wnorm["epi"] * s_epi
+        + wnorm["vf"] * s_vf
+        + wnorm["si"] * s_si
+    )
+    wij = np.clip(wij, 0.0, 1.0)
+    if self_diag:
+        np.fill_diagonal(wij, 1.0)
+    else:
+        np.fill_diagonal(wij, 0.0)
+    return wij
+
+
+def _wij_loops(
+    G,
+    nodes,
+    node_to_index,
+    th_vals,
+    epi_vals,
+    vf_vals,
+    si_vals,
+    wnorm,
+    epi_min,
+    epi_max,
+    vf_min,
+    vf_max,
+    neighbors_only,
+    self_diag,
+):
+    n = len(nodes)
+    wij = [[1.0 if (self_diag and i == j) else 0.0 for j in range(n)] for i in range(n)]
+    if neighbors_only:
+        seen: set[tuple[int, int]] = set()
+        for u, v in G.edges():
+            i = node_to_index[u]
+            j = node_to_index[v]
+            if i == j:
+                continue
+            key = (i, j) if i < j else (j, i)
+            if key in seen:
+                continue
+            seen.add(key)
+            comps = compute_components(
+                th_vals,
+                epi_vals,
+                vf_vals,
+                si_vals,
+                i,
+                j,
+                epi_min,
+                epi_max,
+                vf_min,
+                vf_max,
+            )
+            wij_ij = clamp01(
+                wnorm["phase"] * comps["s_phase"]
+                + wnorm["epi"] * comps["s_epi"]
+                + wnorm["vf"] * comps["s_vf"]
+                + wnorm["si"] * comps["s_si"]
+            )
+            wij[i][j] = wij[j][i] = wij_ij
+    else:
+        for i in range(n):
+            for j in range(i + 1, n):
+                comps = compute_components(
+                    th_vals,
+                    epi_vals,
+                    vf_vals,
+                    si_vals,
+                    i,
+                    j,
+                    epi_min,
+                    epi_max,
+                    vf_min,
+                    vf_max,
+                )
+                wij_ij = clamp01(
+                    wnorm["phase"] * comps["s_phase"]
+                    + wnorm["epi"] * comps["s_epi"]
+                    + wnorm["vf"] * comps["s_vf"]
+                    + wnorm["si"] * comps["s_si"]
+                )
+                wij[i][j] = wij[j][i] = wij_ij
+    return wij
+
+
+def _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np):
+    n = len(nodes)
+    if np is not None and isinstance(wij, np.ndarray):
+        mask = ~np.eye(n, dtype=bool)
+        if mode == "dense":
+            W = wij.tolist()
+        else:
+            idx = np.where((wij >= thr) & mask)
+            W = [
+                (int(i), int(j), float(wij[i, j]))
+                for i, j in zip(idx[0], idx[1])
+            ]
+        values = wij[mask]
+        min_val = float(values.min()) if values.size else 0.0
+        max_val = float(values.max()) if values.size else 0.0
+        sum_val = float(values.sum())
+        count_val = int(values.size)
+        row_sum = wij.sum(axis=1)
+        row_count = np.full(n, n if self_diag else n - 1)
+        Wi = [float(row_sum[i] / max(1, row_count[i])) for i in range(n)]
+    else:
+        if mode == "dense":
+            W = [row[:] for row in wij]
+        else:
+            W = []
+        values = []
+        row_sum = [0.0] * n
+        row_count = [n if self_diag else n - 1] * n
+        for i in range(n):
+            for j in range(n):
+                w = wij[i][j]
+                if i != j:
+                    values.append(w)
+                if mode == "dense":
+                    W[i][j] = w
+                elif i != j and w >= thr:
+                    W.append((i, j, w))
+                row_sum[i] += w
+        min_val = min(values) if values else 0.0
+        max_val = max(values) if values else 0.0
+        sum_val = sum(values)
+        count_val = len(values)
+        Wi = [row_sum[i] / max(1, row_count[i]) for i in range(n)]
+
+    stats = {
+        "min": min_val,
+        "max": max_val,
+        "mean": (sum_val / count_val) if count_val else 0.0,
+        "n_edges": count_val,
+        "mode": mode,
+        "scope": scope,
+    }
+
+    hist = ensure_history(G)
+    cfg = G.graph.get("COHERENCE", COHERENCE)
+    append_metric(hist, cfg.get("history_key", "W_sparse"), W)
+    append_metric(hist, cfg.get("Wi_history_key", "W_i"), Wi)
+    append_metric(hist, cfg.get("stats_history_key", "W_stats"), stats)
+    return nodes, W
+
+
 def coherence_matrix(G):
     cfg = G.graph.get("COHERENCE", COHERENCE)
     if not cfg.get("enabled", True):
@@ -83,181 +255,40 @@ def coherence_matrix(G):
     thr = float(cfg.get("threshold", 0.0))
     if mode not in ("sparse", "dense"):
         mode = "sparse"
-
     np = get_numpy()
     if np is not None and not neighbors_only:
-        th = np.array(th_vals)
-        epi = np.array(epi_vals)
-        vf = np.array(vf_vals)
-        si = np.array(si_vals)
-        th_diff = th[:, None] - th[None, :]
-        s_phase = 0.5 * (1.0 + np.cos(th_diff))
-        epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
-        vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
-        s_epi = 1.0 - np.abs(epi[:, None] - epi[None, :]) / epi_range
-        s_vf = 1.0 - np.abs(vf[:, None] - vf[None, :]) / vf_range
-        s_si = 1.0 - np.abs(si[:, None] - si[None, :])
-        wij = (
-            wnorm["phase"] * s_phase
-            + wnorm["epi"] * s_epi
-            + wnorm["vf"] * s_vf
-            + wnorm["si"] * s_si
+        wij = _wij_vectorized(
+            th_vals,
+            epi_vals,
+            vf_vals,
+            si_vals,
+            wnorm,
+            epi_min,
+            epi_max,
+            vf_min,
+            vf_max,
+            self_diag,
+            np,
         )
-        wij = np.clip(wij, 0.0, 1.0)
-        if self_diag:
-            np.fill_diagonal(wij, 1.0)
-        else:
-            np.fill_diagonal(wij, 0.0)
-
-        row_sum = wij.sum(axis=1)
-        row_count = np.full(n, n if self_diag else n - 1)
-
-        if mode == "dense":
-            W = wij.tolist()
-            mask = ~np.eye(n, dtype=bool)
-        else:
-            mask = (wij >= thr) & (~np.eye(n, dtype=bool))
-            idx = np.where(wij >= thr)
-            W = [
-                (int(i), int(j), float(wij[i, j]))
-                for i, j in zip(idx[0], idx[1])
-            ]
-
-        values = wij[mask]
-        min_val = float(values.min()) if values.size else 0.0
-        max_val = float(values.max()) if values.size else 0.0
-        sum_val = float(values.sum())
-        count_val = int(values.size)
-
-        Wi = [float(row_sum[i] / max(1, row_count[i])) for i in range(n)]
-        stats = {
-            "min": min_val,
-            "max": max_val,
-            "mean": (sum_val / count_val) if count_val else 0.0,
-            "n_edges": count_val,
-            "mode": mode,
-            "scope": scope,
-        }
-
-        hist = ensure_history(G)
-        append_metric(hist, cfg.get("history_key", "W_sparse"), W)
-        append_metric(hist, cfg.get("Wi_history_key", "W_i"), Wi)
-        append_metric(hist, cfg.get("stats_history_key", "W_stats"), stats)
-        return nodes, W
-
-    if mode == "dense":
-        W = [[0.0] * n for _ in range(n)]
     else:
-        W = []
+        wij = _wij_loops(
+            G,
+            nodes,
+            node_to_index,
+            th_vals,
+            epi_vals,
+            vf_vals,
+            si_vals,
+            wnorm,
+            epi_min,
+            epi_max,
+            vf_min,
+            vf_max,
+            neighbors_only,
+            self_diag,
+        )
 
-    row_sum = [0.0] * n
-    row_count = [0] * n
-
-    # Accumulators for statistics over non-diagonal stored entries
-    min_val = float("inf")
-    max_val = float("-inf")
-    sum_val = 0.0
-    count_val = 0
-
-    def _accumulate(i: int, j: int, w: float) -> None:
-        nonlocal min_val, max_val, sum_val, count_val
-        if i == j:
-            return
-        if w < min_val:
-            min_val = w
-        if w > max_val:
-            max_val = w
-        sum_val += w
-        count_val += 1
-
-    def add_entry(i: int, j: int, w: float) -> None:
-        """Add a value to the matrix and accumulate sums/counters."""
-        if mode == "dense":
-            W[i][j] = w
-            _accumulate(i, j, w)
-        else:
-            if w >= thr:
-                W.append((i, j, w))
-                _accumulate(i, j, w)
-        row_sum[i] += w
-        row_count[i] += 1
-
-    # Diagonal de unos si corresponde
-    if self_diag:
-        for i in range(n):
-            add_entry(i, i, 1.0)
-
-    if neighbors_only:
-        seen: set[tuple[int, int]] = set()
-        for u, v in G.edges():
-            i = node_to_index[u]
-            j = node_to_index[v]
-            if i == j:
-                continue
-            key = (i, j) if i < j else (j, i)
-            if key in seen:
-                continue
-            seen.add(key)
-            comps = compute_components(
-                th_vals,
-                epi_vals,
-                vf_vals,
-                si_vals,
-                i,
-                j,
-                epi_min,
-                epi_max,
-                vf_min,
-                vf_max,
-            )
-            wij = clamp01(
-                wnorm["phase"] * comps["s_phase"]
-                + wnorm["epi"] * comps["s_epi"]
-                + wnorm["vf"] * comps["s_vf"]
-                + wnorm["si"] * comps["s_si"]
-            )
-            add_entry(i, j, wij)
-            add_entry(j, i, wij)
-    else:
-        for i in range(n):
-            for j in range(i + 1, n):
-                comps = compute_components(
-                    th_vals,
-                    epi_vals,
-                    vf_vals,
-                    si_vals,
-                    i,
-                    j,
-                    epi_min,
-                    epi_max,
-                    vf_min,
-                    vf_max,
-                )
-                wij = clamp01(
-                    wnorm["phase"] * comps["s_phase"]
-                    + wnorm["epi"] * comps["s_epi"]
-                    + wnorm["vf"] * comps["s_vf"]
-                    + wnorm["si"] * comps["s_si"]
-                )
-                add_entry(i, j, wij)
-                add_entry(j, i, wij)
-    Wi = [row_sum[i] / max(1, row_count[i]) for i in range(n)]
-
-    stats = {
-        "min": min_val if count_val else 0.0,
-        "max": max_val if count_val else 0.0,
-        "mean": (sum_val / count_val) if count_val else 0.0,
-        "n_edges": count_val,
-        "mode": mode,
-        "scope": scope,
-    }
-
-    hist = ensure_history(G)
-    append_metric(hist, cfg.get("history_key", "W_sparse"), W)
-    append_metric(hist, cfg.get("Wi_history_key", "W_i"), Wi)
-    append_metric(hist, cfg.get("stats_history_key", "W_stats"), stats)
-
-    return nodes, W
+    return _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np)
 
 
 def local_phase_sync_weighted(

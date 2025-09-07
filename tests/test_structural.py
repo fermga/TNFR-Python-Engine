@@ -13,7 +13,7 @@ from tnfr.structural import (
     validate_sequence,
     run_sequence,
 )
-from tnfr.constants import ALIAS_EPI
+from tnfr.constants import EPI_PRIMARY
 
 
 def test_create_nfr_basic():
@@ -21,7 +21,7 @@ def test_create_nfr_basic():
     assert isinstance(G, nx.Graph)
     assert n in G
     nd = G.nodes[n]
-    assert nd[ALIAS_EPI[0]] == 0.1
+    assert nd[EPI_PRIMARY] == 0.1
 
 
 def test_sequence_validation_and_run():
@@ -32,7 +32,7 @@ def test_sequence_validation_and_run():
     assert ok, msg
     run_sequence(G, n, ops)
     # después de la secuencia la EPI se actualiza (no necesariamente cero)
-    assert ALIAS_EPI[0] in G.nodes[n]
+    assert EPI_PRIMARY in G.nodes[n]
 
 
 def test_invalid_sequence():

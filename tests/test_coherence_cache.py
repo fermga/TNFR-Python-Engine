@@ -1,7 +1,7 @@
 import pytest
 import networkx as nx
 
-from tnfr.constants import ALIAS_THETA
+from tnfr.constants import THETA_PRIMARY
 from tnfr.metrics import coherence_matrix, local_phase_sync_weighted
 
 
@@ -10,8 +10,8 @@ def make_graph(offset=0):
     G.add_node(offset)
     G.add_node(offset + 1)
     G.add_edge(offset, offset + 1)
-    G.nodes[offset][ALIAS_THETA[0]] = 0.0
-    G.nodes[offset + 1][ALIAS_THETA[0]] = 0.0
+    G.nodes[offset][THETA_PRIMARY] = 0.0
+    G.nodes[offset + 1][THETA_PRIMARY] = 0.0
     return G
 
 

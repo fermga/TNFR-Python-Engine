@@ -4,16 +4,16 @@ import pytest
 import networkx as nx
 
 from tnfr.dynamics import default_compute_delta_nfr
-from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF
+from tnfr.constants import THETA_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 from tnfr.helpers import increment_edge_version, cached_nodes_and_A
 
 
 def _setup_graph():
     G = nx.path_graph(3)
     for n in G.nodes:
-        G.nodes[n][ALIAS_THETA[0]] = 0.1 * (n + 1)
-        G.nodes[n][ALIAS_EPI[0]] = 0.2 * (n + 1)
-        G.nodes[n][ALIAS_VF[0]] = 0.3 * (n + 1)
+        G.nodes[n][THETA_PRIMARY] = 0.1 * (n + 1)
+        G.nodes[n][EPI_PRIMARY] = 0.2 * (n + 1)
+        G.nodes[n][VF_PRIMARY] = 0.3 * (n + 1)
     G.graph["DNFR_WEIGHTS"] = {
         "phase": 1.0,
         "epi": 0.0,

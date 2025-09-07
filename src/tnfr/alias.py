@@ -269,9 +269,12 @@ def set_attr_with_max(
     _update_cached_abs_max(G, aliases, n, val, key=cache)
 
 
-def set_vf(G, n, value: float) -> None:
-    """Set ``νf`` and update the global maximum."""
-    set_attr_with_max(G, n, ALIAS_VF, value, cache="_vfmax")
+def set_vf(G, n, value: float, *, update_max: bool = True) -> None:
+    """Set ``νf`` and optionally update the global maximum."""
+    val = float(value)
+    set_attr(G.nodes[n], ALIAS_VF, val)
+    if update_max:
+        _update_cached_abs_max(G, ALIAS_VF, n, val, key="_vfmax")
 
 
 def set_dnfr(G, n, value: float) -> None:

@@ -8,8 +8,8 @@ from tnfr.sense import (
     sigma_vector_node,
     sigma_vector_from_graph,
     _node_weight,
-    _sigma_from_pairs,
     _sigma_from_vectors,
+    _sigma_from_iterable,
     glyph_unit,
     glyph_angle,
 )
@@ -52,7 +52,8 @@ def _sigma_vector_from_graph_naive(G, weight_mode: str = "Si"):
             continue
         g, w, _ = nw
         pairs.append((g, w))
-    vec, n = _sigma_from_pairs(pairs)
+    vectors = (glyph_unit(g) * float(w) for g, w in pairs)
+    vec, n = _sigma_from_iterable(vectors)
     vec["n"] = n
     return vec
 
