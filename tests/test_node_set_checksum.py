@@ -80,6 +80,14 @@ def test_node_repr_cache_cleared_on_increment():
     assert h._node_repr.cache_info().currsize == 0
 
 
+def test_hash_node_cache_cleared_on_increment():
+    nxG = nx.Graph()
+    h._hash_node(("foo", 1))
+    assert h._hash_node.cache_info().currsize > 0
+    increment_edge_version(nxG)
+    assert h._hash_node.cache_info().currsize == 0
+
+
 def test_hash_node_matches_manual():
     obj = ("a", 1)
     manual = hashlib.blake2b(

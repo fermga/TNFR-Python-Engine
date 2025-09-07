@@ -265,6 +265,7 @@ def _node_repr(n: Any) -> str:
     return _stable_json(n)
 
 
+@lru_cache(maxsize=1024)
 def _hash_node(obj: Any) -> bytes:
     """Return a stable digest for ``obj`` used in node checksums."""
     return hashlib.blake2b(
@@ -500,5 +501,6 @@ def increment_edge_version(G: Any) -> None:
     invalidate_edge_version_cache(G)
     mark_dnfr_prep_dirty(G)
     _node_repr.cache_clear()
+    _hash_node.cache_clear()
     for key in EDGE_VERSION_CACHE_KEYS:
         graph.pop(key, None)
