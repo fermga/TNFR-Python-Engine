@@ -31,12 +31,24 @@ def test_gamma_kuramoto_tanh_registry(graph_canon):
     assert abs(val) <= cfg["beta"]
 
 
-def test_pop_least_used_batch_skips_stale_entries():
+def test_pop_least_used_batch_stops_after_k_even_with_stale():
     hist = HistoryDict({"a": 1, "b": 2})
     hist.get_increment("a")
     hist.get_increment("b")
     hist.get_increment("b")
     hist._counts["stale"] = 0
     hist.pop_least_used_batch(2)
+    assert set(hist) == {"b"}
+    assert set(hist._counts) == {"b"}
+
+
+def test_pop_least_used_batch_removes_k_elements():
+    hist = HistoryDict({f"k{i}": i for i in range(3)})
+    for key in list(hist):
+        hist._counts[key] = 0
+    for i in range(3):
+        for _ in range(i):
+            hist.get_increment(f"k{i}")
+    hist.pop_least_used_batch(3)
     assert not hist
     assert not hist._counts
