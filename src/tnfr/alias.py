@@ -12,7 +12,7 @@ from typing import (
     Protocol,
 )
 import logging
-from functools import partial
+from functools import lru_cache, partial
 
 from .value_utils import _convert_value
 from .constants import ALIAS_VF, ALIAS_DNFR
@@ -34,11 +34,12 @@ __all__ = [
 ]
 
 
+@lru_cache(maxsize=None)
 def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
     """Return ``aliases`` as a validated tuple of strings."""
     if isinstance(aliases, str) or not isinstance(aliases, Sequence):
         raise TypeError("'aliases' must be a non-string sequence")
-    seq = aliases if isinstance(aliases, tuple) else tuple(aliases)
+    seq = tuple(aliases)
     if not seq or any(not isinstance(a, str) for a in seq):
         if not seq:
             raise ValueError("'aliases' must contain at least one key")
@@ -112,6 +113,12 @@ def alias_get(
     log_level: int | None = None,
 ) -> Optional[T]:
     """Return the value for the first existing key in ``aliases``."""
+    if isinstance(aliases, str) or not isinstance(aliases, Sequence):
+        raise TypeError("'aliases' must be a non-string sequence")
+    try:
+        hash(aliases)
+    except TypeError as exc:  # pragma: no cover - defensive programming
+        raise TypeError("'aliases' must be a hashable sequence") from exc
     return _alias_resolve(
         d,
         aliases,
@@ -129,6 +136,12 @@ def alias_set(
     value: Any,
 ) -> T:
     """Assign ``value`` converted to the first available key in ``aliases``."""
+    if isinstance(aliases, str) or not isinstance(aliases, Sequence):
+        raise TypeError("'aliases' must be a non-string sequence")
+    try:
+        hash(aliases)
+    except TypeError as exc:  # pragma: no cover - defensive programming
+        raise TypeError("'aliases' must be a hashable sequence") from exc
     aliases = _validate_aliases(aliases)
     _, val = _convert_value(value, conv, strict=True)
     key = next((k for k in aliases if k in d), aliases[0])
