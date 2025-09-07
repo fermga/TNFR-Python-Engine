@@ -246,18 +246,16 @@ def _um_select_candidates(
     th: float,
 ):
     cand_list = list(candidates)
+    rng = get_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
     if limit > 0 and len(cand_list) > limit:
         if mode == "proximity":
             cand_list = heapq.nsmallest(
                 limit, cand_list, key=lambda j: abs(angle_diff(j.theta, th))
             )
         else:
-            rng = get_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
             cand_list = rng.sample(cand_list, limit)
     elif mode == "sample" and limit > 0:
-        rng = get_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
-        rng.shuffle(cand_list)
-        cand_list = cand_list[:limit]
+        cand_list = rng.sample(cand_list, min(limit, len(cand_list)))
     return cand_list
 
 
