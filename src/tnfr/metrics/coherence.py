@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from typing import Dict
+
 
 from ..constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_SI, COHERENCE
 from ..callback_utils import register_callback
@@ -23,32 +23,6 @@ def _norm01(x, lo, hi):
 
 def _similarity_abs(a, b, lo, hi):
     return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, hi - lo)
-
-
-def compute_components(
-    th_vals,
-    epi_vals,
-    vf_vals,
-    si_vals,
-    ni,
-    nj,
-    epi_min,
-    epi_max,
-    vf_min,
-    vf_max,
-) -> Dict[str, float]:
-    th_i = th_vals[ni]
-    th_j = th_vals[nj]
-    s_phase = 0.5 * (1.0 + math.cos(th_i - th_j))
-    s_epi = _similarity_abs(epi_vals[ni], epi_vals[nj], epi_min, epi_max)
-    s_vf = _similarity_abs(vf_vals[ni], vf_vals[nj], vf_min, vf_max)
-    s_si = 1.0 - abs(si_vals[ni] - si_vals[nj])
-    return {
-        "s_phase": s_phase,
-        "s_epi": s_epi,
-        "s_vf": s_vf,
-        "s_si": s_si,
-    }
 
 
 def _wij_vectorized(
@@ -111,23 +85,17 @@ def _wij_loops(
     epi_w = wnorm["epi"]
     vf_w = wnorm["vf"]
     si_w = wnorm["si"]
+
+    cos_th = [math.cos(t) for t in th_vals]
+    sin_th = [math.sin(t) for t in th_vals]
+    epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
+    vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
+
     def assign_wij(i: int, j: int) -> None:
-        comps = compute_components(
-            th_vals,
-            epi_vals,
-            vf_vals,
-            si_vals,
-            i,
-            j,
-            epi_min,
-            epi_max,
-            vf_min,
-            vf_max,
-        )
-        s_phase = comps["s_phase"]
-        s_epi = comps["s_epi"]
-        s_vf = comps["s_vf"]
-        s_si = comps["s_si"]
+        s_phase = 0.5 * (1.0 + (cos_th[i] * cos_th[j] + sin_th[i] * sin_th[j]))
+        s_epi = 1.0 - abs(epi_vals[i] - epi_vals[j]) / epi_range
+        s_vf = 1.0 - abs(vf_vals[i] - vf_vals[j]) / vf_range
+        s_si = 1.0 - abs(si_vals[i] - si_vals[j])
         wij_ij = clamp01(
             phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
         )
@@ -249,7 +217,7 @@ def _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np):
     return nodes, W
 
 
-def coherence_matrix(G):
+def coherence_matrix(G, use_numpy: bool | None = None):
     cfg = G.graph.get("COHERENCE", COHERENCE)
     if not cfg.get("enabled", True):
         return None, None
@@ -282,7 +250,8 @@ def coherence_matrix(G):
     if mode not in ("sparse", "dense"):
         mode = "sparse"
     np = get_numpy()
-    if np is not None and not neighbors_only:
+    use_np = np is not None if use_numpy is None else (use_numpy and np is not None)
+    if use_np:
         wij = _wij_vectorized(
             th_vals,
             epi_vals,
@@ -296,6 +265,14 @@ def coherence_matrix(G):
             self_diag,
             np,
         )
+        if neighbors_only:
+            adj = np.eye(n, dtype=bool)
+            for u, v in G.edges():
+                i = node_to_index[u]
+                j = node_to_index[v]
+                adj[i, j] = True
+                adj[j, i] = True
+            wij = np.where(adj, wij, 0.0)
     else:
         wij = _wij_loops(
             G,
