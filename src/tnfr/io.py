@@ -37,14 +37,15 @@ def _missing_dependency(name: str) -> Callable[[str], Any]:
 
     return _raise
 
+
+def _parse_yaml(text: str) -> Any:
+    """Parse YAML ``text`` using ``safe_load`` if available."""
+    return getattr(yaml, "safe_load", _missing_dependency("pyyaml"))(text)
+
 PARSERS = {
     ".json": json.loads,
-    ".yaml": lambda text: getattr(
-        yaml, "safe_load", _missing_dependency("pyyaml")
-    )(text),
-    ".yml": lambda text: getattr(
-        yaml, "safe_load", _missing_dependency("pyyaml")
-    )(text),
+    ".yaml": _parse_yaml,
+    ".yml": _parse_yaml,
     ".toml": lambda text: getattr(
         tomllib, "loads", _missing_dependency("tomllib/tomli")
     )(text),

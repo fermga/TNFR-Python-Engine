@@ -1,10 +1,10 @@
 """Pruebas de alias_set para conversiones nulas."""
 
-import pytest
 from tnfr.alias import alias_set
 
 
-def test_alias_set_raises_value_error_on_none():
-    """alias_set debe lanzar ValueError si la conversión produce None."""
-    with pytest.raises(ValueError):
-        alias_set({}, ["x"], lambda v: None, 123)
+def test_alias_set_allows_none_conversion():
+    """alias_set debe permitir valores ``None``."""
+    d = {}
+    alias_set(d, ["x"], lambda v: None, 123)
+    assert "x" in d and d["x"] is None

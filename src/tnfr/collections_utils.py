@@ -82,7 +82,7 @@ def normalize_weights(
     keys = list(keys)
     default_float = float(default)
     weights: dict[str, float] = {}
-    negatives: list[str] = []
+    negatives: dict[str, float] = {}
     for k in keys:
         val = dict_like.get(k, default_float)
         ok, converted = _convert_value(
@@ -93,14 +93,15 @@ def normalize_weights(
             log_level=logging.WARNING,
         )
         w = converted if ok and converted is not None else default_float
-        weights[k] = w
         if w < 0:
-            negatives.append(k)
+            negatives[k] = w
+            w = 0.0
+        weights[k] = w
     if negatives:
-        neg_vals = {k: weights[k] for k in negatives}
         if error_on_negative:
-            raise ValueError(f"Pesos negativos detectados: {neg_vals}")
-        logger.warning("Pesos negativos detectados: %s", neg_vals)
+            raise ValueError(f"Pesos negativos detectados: {negatives}")
+    if negatives and not error_on_negative:
+        logger.warning("Pesos negativos detectados: %s", negatives)
     total = math.fsum(weights.values())
     n = len(keys)
     if total <= 0:

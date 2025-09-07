@@ -143,7 +143,10 @@ def add_edge(
     if weight is None:
         return
 
-    if exists_cb is None or set_cb is None:
+    if (exists_cb is None) ^ (set_cb is None):
+        raise ValueError("exists_cb and set_cb must be provided together")
+
+    if exists_cb is None and set_cb is None:
         if strategy is None:
             strategy = "nx" if hasattr(graph, "add_edge") else "tnfr"
         try:
