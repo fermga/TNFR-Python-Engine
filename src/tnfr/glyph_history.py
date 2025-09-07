@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Dict, Any, Iterable
+from typing import Dict, Any, Iterable, Protocol
 from collections import deque, Counter
 from itertools import islice
 import heapq
@@ -192,8 +192,9 @@ def ensure_history(G) -> Dict[str, Any]:
 
     ``HISTORY_MAXLEN`` must be non-negative and ``HISTORY_COMPACT_EVERY``
     must be a positive integer; otherwise a :class:`ValueError` is raised.
-    When ``HISTORY_MAXLEN`` is zero, a plain dictionary is returned to avoid
-    the overhead of :class:`HistoryDict`.
+    When ``HISTORY_MAXLEN`` is zero, a lightweight dictionary subclass is
+    returned to avoid the overhead of :class:`HistoryDict` while still
+    exposing :meth:`get_increment`.
     """
     maxlen = int(get_param(G, "HISTORY_MAXLEN"))
     if maxlen < 0:
@@ -203,8 +204,8 @@ def ensure_history(G) -> Dict[str, Any]:
         raise ValueError("HISTORY_COMPACT_EVERY must be > 0")
     hist = G.graph.get("history")
     if maxlen == 0:
-        if not isinstance(hist, dict) or isinstance(hist, HistoryDict):
-            hist = dict(hist or {})
+        if not isinstance(hist, _IncrementDict):
+            hist = _IncrementDict(hist or {})
             G.graph["history"] = hist
         return hist
     if (
@@ -220,13 +221,35 @@ def ensure_history(G) -> Dict[str, Any]:
     return hist
 
 
-def append_metric(hist: Dict[str, Any], key: str, value: Any) -> None:
+class _IncrementDict(dict):
+    """Dict with ``get_increment`` for metric history."""
+
+    def get_increment(self, key: str, default: Any = None) -> Any:  # noqa: D401
+        return self.setdefault(key, default)
+
+
+class SupportsGetIncrement(Protocol):
+    def get_increment(self, key: str, default: Any | None = None) -> Any:
+        """Return value for *key*, inserting *default* if missing."""
+
+
+class _IncrementProxy:
+    """Adapter to provide :meth:`get_increment` for plain dictionaries."""
+
+    def __init__(self, data: Dict[str, Any]) -> None:
+        self._data = data
+
+    def get_increment(self, key: str, default: Any | None = None) -> Any:
+        return self._data.setdefault(key, default)
+
+
+def _ensure_increment(hist: Dict[str, Any] | SupportsGetIncrement) -> SupportsGetIncrement:
+    return hist if hasattr(hist, "get_increment") else _IncrementProxy(hist)  # type: ignore[return-value]
+
+
+def append_metric(hist: Dict[str, Any] | SupportsGetIncrement, key: str, value: Any) -> None:
     """Append ``value`` to ``hist[key]`` list, creating it if missing."""
-    if hasattr(hist, "get_increment"):
-        lst = hist.get_increment(key, [])
-    else:
-        lst = hist.setdefault(key, [])
-    lst.append(value)
+    _ensure_increment(hist).get_increment(key, []).append(value)
 
 
 def last_glyph(nd: Dict[str, Any]) -> str | None:
