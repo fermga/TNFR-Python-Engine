@@ -61,16 +61,6 @@ def _alias_resolve(
     ``aliases`` must already be validated with :func:`_validate_aliases`.
     """
 
-    ok_def = False
-    def_val = None
-    if default is not None:
-        ok_def, def_val = _convert_value(
-            default,
-            conv,
-            strict=strict,
-            key="default",
-            log_level=logging.WARNING if not strict else log_level,
-        )
     for key in aliases:
         if key in d:
             ok, val = _convert_value(
@@ -80,6 +70,13 @@ def _alias_resolve(
                 return val
     if default is None:
         return None
+    ok_def, def_val = _convert_value(
+        default,
+        conv,
+        strict=strict,
+        key="default",
+        log_level=logging.WARNING if not strict else log_level,
+    )
     return def_val if ok_def else None
 
 
