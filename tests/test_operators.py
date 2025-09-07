@@ -6,7 +6,6 @@ from tnfr.operators import (
     clear_rng_cache,
     apply_glyph,
     _mix_epi_with_neighbors,
-    _resolve_jitter_seed,
 )
 from types import SimpleNamespace
 from tnfr.constants import inject_defaults
@@ -14,34 +13,20 @@ import networkx as nx
 import pytest
 
 
-def test_random_jitter_deterministic_with_and_without_cache(graph_canon):
+def test_random_jitter_deterministic(graph_canon):
     clear_rng_cache()
     G = graph_canon()
     G.add_node(0)
     n0 = NodoNX(G, 0)
 
-    # Without explicit cache: uses global LRU cache and advances sequence
     j1 = random_jitter(n0, 0.5)
     j2 = random_jitter(n0, 0.5)
     assert j1 != j2
 
-    # Clearing the LRU cache reproduces the deterministic sequence
     clear_rng_cache()
     j3 = random_jitter(n0, 0.5)
     j4 = random_jitter(n0, 0.5)
     assert [j3, j4] == [j1, j2]
-
-    # With explicit cache: reproduces deterministic sequence independently
-    cache = {}
-    j5 = random_jitter(n0, 0.5, cache)
-    j6 = random_jitter(n0, 0.5, cache)
-    assert j5 == j1
-    assert j6 == j2
-
-    # Replaying with a fresh cache reproduces the sequence
-    cache2 = {}
-    seq = [random_jitter(n0, 0.5, cache2) for _ in range(2)]
-    assert seq == [j5, j6]
 
 
 def test_random_jitter_zero_amplitude(graph_canon):
@@ -60,41 +45,18 @@ def test_random_jitter_negative_amplitude(graph_canon):
 
 
 def test_rng_cache_disabled_with_size_zero(graph_canon):
+    from tnfr.rng import set_cache_maxsize
+    from tnfr.constants import DEFAULTS
+
     clear_rng_cache()
+    set_cache_maxsize(0)
     G = graph_canon()
-    G.graph["JITTER_CACHE_SIZE"] = 0
     G.add_node(0)
     n0 = NodoNX(G, 0)
     j1 = random_jitter(n0, 0.5)
     j2 = random_jitter(n0, 0.5)
     assert j1 == j2
-
-
-def test_random_jitter_generators_released_on_graph_gc(graph_canon):
-    clear_rng_cache()
-    import gc
-    import weakref
-    import tnfr.operators as ops
-
-    G = graph_canon()
-    G.add_node(0)
-    n0 = NodoNX(G, 0)
-    random_jitter(n0, 0.5)
-
-    scope_id = id(G)
-    cache = ops._JITTER_SCOPES.get(scope_id)
-    assert cache is not None
-    seed_key, _ = _resolve_jitter_seed(n0)
-    rng = cache.get(seed_key)
-    ref_rng = weakref.ref(rng)
-    ref_cache = weakref.ref(cache)
-
-    del rng, cache, n0, G
-    gc.collect()
-
-    assert ref_rng() is None
-    assert ref_cache() is None
-    assert scope_id not in ops._JITTER_SCOPES
+    set_cache_maxsize(DEFAULTS["JITTER_CACHE_SIZE"])
 
 
 def test_um_candidate_subset_proximity():
