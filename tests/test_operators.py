@@ -6,6 +6,7 @@ from tnfr.operators import (
     clear_rng_cache,
     apply_glyph,
     _select_dominant_glyph,
+    _resolve_jitter_seed,
 )
 from types import SimpleNamespace
 from tnfr.constants import inject_defaults
@@ -67,6 +68,33 @@ def test_rng_cache_disabled_with_size_zero(graph_canon):
     j1 = random_jitter(n0, 0.5)
     j2 = random_jitter(n0, 0.5)
     assert j1 == j2
+
+
+def test_random_jitter_generators_released_on_graph_gc(graph_canon):
+    clear_rng_cache()
+    import gc
+    import weakref
+    import tnfr.operators as ops
+
+    G = graph_canon()
+    G.add_node(0)
+    n0 = NodoNX(G, 0)
+    random_jitter(n0, 0.5)
+
+    scope_id = id(G)
+    cache = ops._JITTER_SCOPES.get(scope_id)
+    assert cache is not None
+    seed_key, _ = _resolve_jitter_seed(n0)
+    rng = cache.get(seed_key)
+    ref_rng = weakref.ref(rng)
+    ref_cache = weakref.ref(cache)
+
+    del rng, cache, n0, G
+    gc.collect()
+
+    assert ref_rng() is None
+    assert ref_cache() is None
+    assert scope_id not in ops._JITTER_SCOPES
 
 
 def test_um_candidate_subset_proximity():

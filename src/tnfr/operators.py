@@ -15,14 +15,16 @@ Note on REMESH α (alpha) precedence:
 
 # operators.py — TNFR canónica (ASCII-safe)
 from __future__ import annotations
-from typing import Dict, Any, Optional, Iterable, TYPE_CHECKING
+from typing import Dict, Any, Optional, Iterable, TYPE_CHECKING, MutableMapping
 import math
 import hashlib
 import heapq
+import weakref
 from operator import ge, le
 from functools import cache
 from itertools import combinations
 from io import StringIO
+from cachetools import LRUCache
 
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers import (
@@ -45,6 +47,9 @@ from .types import Glyph
 from collections import deque
 
 
+_JITTER_SCOPES: "weakref.WeakValueDictionary[int, MutableMapping[int, random.Random]]" = weakref.WeakValueDictionary()
+
+
 def _node_offset(G, n) -> int:
     """Deterministic node index used for jitter seeds."""
     mapping = ensure_node_offset_map(G)
@@ -54,6 +59,7 @@ def _node_offset(G, n) -> int:
 def clear_rng_cache() -> None:
     """Clear cached RNGs."""
     get_rng.cache_clear()
+    _JITTER_SCOPES.clear()
 
 
 @cache
@@ -78,13 +84,26 @@ def _get_jitter_rng(
     node: NodoProtocol,
     seed: int,
     seed_key: int,
-    cache: Optional[Dict[int, random.Random]],
+    cache: Optional[MutableMapping[int, random.Random]],
     cache_size: int,
+    scope_id: int,
 ) -> random.Random:
     if cache is None:
         if cache_size <= 0:
             return make_rng(seed, seed_key)
-        return get_rng(seed, seed_key)
+        scope_cache = _JITTER_SCOPES.get(scope_id)
+        if (
+            scope_cache is None
+            or not isinstance(scope_cache, LRUCache)
+            or scope_cache.maxsize != cache_size
+        ):
+            scope_cache = LRUCache(maxsize=cache_size)
+            _JITTER_SCOPES[scope_id] = scope_cache
+            try:
+                node.graph["_jitter_rng_cache"] = scope_cache
+            except Exception:
+                pass
+        cache = scope_cache
     rng = cache.get(seed_key)
     if rng is None:
         rng = make_rng(seed, seed_key)
@@ -95,7 +114,7 @@ def _get_jitter_rng(
 def random_jitter(
     node: NodoProtocol,
     amplitude: float,
-    cache: Optional[Dict[int, random.Random]] = None,
+    cache: Optional[MutableMapping[int, random.Random]] = None,
 ) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for
     ``node``.
@@ -122,7 +141,7 @@ def random_jitter(
     cache_size = int(
         node.graph.get("JITTER_CACHE_SIZE", DEFAULTS["JITTER_CACHE_SIZE"])
     )
-    rng = _get_jitter_rng(node, seed, seed_key, cache, cache_size)
+    rng = _get_jitter_rng(node, seed, seed_key, cache, cache_size, scope_id)
     return rng.uniform(-amplitude, amplitude)
 
 
