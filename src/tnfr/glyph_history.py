@@ -139,16 +139,20 @@ class HistoryDict(dict):
         raise KeyError("HistoryDict is empty; cannot pop least used")
 
     def pop_least_used_batch(self, k: int) -> None:
-        if k > 0:
+        if k > 0 and self._counts:
             removed = 0
-            while removed < k and self._counts:
-                for key in heapq.nsmallest(k - removed, self._counts, key=self._counts.get):
+            keys = heapq.nsmallest(k, self._counts, key=self._counts.get)
+            for key in keys:
+                self._counts.pop(key, None)
+                if key in self:
+                    super().pop(key, None)
+                    removed += 1
+            if removed < k and self._counts:
+                extra = heapq.nsmallest(k - removed, self._counts, key=self._counts.get)
+                for key in extra:
                     self._counts.pop(key, None)
                     if key in self:
                         super().pop(key, None)
-                        removed += 1
-                        if removed >= k:
-                            break
 
 
 def ensure_history(G) -> Dict[str, Any]:

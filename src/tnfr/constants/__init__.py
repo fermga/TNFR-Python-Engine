@@ -6,7 +6,7 @@ from typing import Any, Dict, Mapping
 import copy
 import warnings
 from types import MappingProxyType
-from weakref import ref
+from functools import lru_cache
 
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
 from .init import INIT_DEFAULTS
@@ -36,37 +36,41 @@ IMMUTABLE_SIMPLE = (
     type(None),
 )
 
-_IMMUTABLE_CACHE: dict[int, tuple[ref, bool]] = {}
+
+def _freeze(value: Any):
+    if isinstance(value, IMMUTABLE_SIMPLE):
+        return value
+    if isinstance(value, tuple):
+        return tuple(_freeze(v) for v in value)
+    if isinstance(value, frozenset):
+        return frozenset(_freeze(v) for v in value)
+    if isinstance(value, MappingProxyType):
+        return tuple((k, _freeze(v)) for k, v in value.items())
+    raise TypeError
+
+
+@lru_cache(maxsize=1024)
+def _is_immutable_inner(value: Any) -> bool:
+    if isinstance(value, IMMUTABLE_SIMPLE):
+        return True
+    if isinstance(value, tuple):
+        return all(_is_immutable_inner(v) for v in value)
+    if isinstance(value, frozenset):
+        return all(_is_immutable_inner(v) for v in value)
+    return False
+
+
+def _prune_cache() -> None:
+    _is_immutable_inner.cache_clear()
 
 
 def _is_immutable(value: Any) -> bool:
     """Check recursively if ``value`` is immutable with caching."""
-    oid = id(value)
-    entry = _IMMUTABLE_CACHE.get(oid)
-    if entry is not None:
-        obj_ref, cached = entry
-        obj = obj_ref()
-        if obj is value:
-            return cached
-        if obj is None:
-            del _IMMUTABLE_CACHE[oid]
-    if isinstance(value, IMMUTABLE_SIMPLE):
-        res = True
-    elif isinstance(value, (tuple, frozenset)):
-        res = all(_is_immutable(item) for item in value)
-    elif isinstance(value, MappingProxyType):
-        res = all(_is_immutable(v) for v in value.values())
-    else:
-        res = False
     try:
-        _IMMUTABLE_CACHE[oid] = (ref(value), res)
-        if len(_IMMUTABLE_CACHE) > 1024:
-            dead = [k for k, (r, _) in _IMMUTABLE_CACHE.items() if r() is None]
-            for k in dead:
-                _IMMUTABLE_CACHE.pop(k, None)
+        frozen = _freeze(value)
     except TypeError:
-        pass
-    return res
+        return False
+    return _is_immutable_inner(frozen)
 
 # Diccionario combinado exportado
 # Unimos los diccionarios en orden de menor a mayor prioridad para que los

@@ -7,7 +7,8 @@ import warnings
 import logging
 from functools import lru_cache
 from typing import Any
-from collections import deque
+from collections import OrderedDict
+from dataclasses import dataclass, field
 import threading
 
 __all__ = ["optional_import", "get_numpy", "import_nodonx"]
@@ -17,9 +18,32 @@ logger = logging.getLogger(__name__)
 
 
 _FAILED_IMPORT_LIMIT = 128  # keep only this many recent failures
-_FAILED_IMPORTS: deque[str] = deque(maxlen=_FAILED_IMPORT_LIMIT)
-_FAILED_IMPORTS_SET: set[str] = set()
-_FAILED_IMPORTS_LOCK = threading.Lock()
+
+
+@dataclass
+class _ImportState:
+    failed: OrderedDict[str, None] = field(default_factory=OrderedDict)
+    lock: threading.Lock = field(default_factory=threading.Lock)
+    limit: int = _FAILED_IMPORT_LIMIT
+
+    def record(self, item: str) -> None:
+        if item in self.failed:
+            return
+        self.failed[item] = None
+        if len(self.failed) > self.limit:
+            self.failed.popitem(last=False)
+
+    def discard(self, item: str) -> None:
+        self.failed.pop(item, None)
+
+    def __contains__(self, item: str) -> bool:  # pragma: no cover - trivial
+        return item in self.failed
+
+    def clear(self) -> None:
+        self.failed.clear()
+
+
+_IMPORT_STATE = _ImportState()
 
 
 def _warn_failure(module: str, attr: str | None, err: Exception) -> None:
@@ -61,36 +85,24 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     """
 
     module_name, attr = (name.rsplit(".", 1) + [None])[:2]
-    with _FAILED_IMPORTS_LOCK:
-        previously_failed = (
-            name in _FAILED_IMPORTS_SET or module_name in _FAILED_IMPORTS_SET
-        )
+    with _IMPORT_STATE.lock:
+        previously_failed = name in _IMPORT_STATE or module_name in _IMPORT_STATE
     try:
         module = importlib.import_module(module_name)
         obj = getattr(module, attr) if attr else module
-        with _FAILED_IMPORTS_LOCK:
+        with _IMPORT_STATE.lock:
             for item in (name, module_name):
-                if item in _FAILED_IMPORTS_SET:
-                    _FAILED_IMPORTS_SET.discard(item)
-                    try:
-                        _FAILED_IMPORTS.remove(item)
-                    except ValueError:
-                        pass
+                _IMPORT_STATE.discard(item)
         return obj
     except (ImportError, AttributeError) as e:
         if not previously_failed:
             _warn_failure(module_name, attr, e)
-        with _FAILED_IMPORTS_LOCK:
-            def _record(item: str) -> None:
-                if item not in _FAILED_IMPORTS_SET:
-                    _FAILED_IMPORTS_SET.add(item)
-                    _FAILED_IMPORTS.append(item)
-
+        with _IMPORT_STATE.lock:
             if isinstance(e, ImportError):
-                _record(module_name)
-                _record(name)
+                _IMPORT_STATE.record(module_name)
+                _IMPORT_STATE.record(name)
             else:
-                _record(name)
+                _IMPORT_STATE.record(name)
     return fallback
 
 
@@ -100,9 +112,8 @@ _optional_import_cache_clear = optional_import.cache_clear
 def _cache_clear() -> None:
     """Clear ``optional_import`` cache and failure records."""
     _optional_import_cache_clear()
-    with _FAILED_IMPORTS_LOCK:
-        _FAILED_IMPORTS.clear()
-        _FAILED_IMPORTS_SET.clear()
+    with _IMPORT_STATE.lock:
+        _IMPORT_STATE.clear()
 
 
 optional_import.cache_clear = _cache_clear  # type: ignore[attr-defined]

@@ -60,19 +60,21 @@ def _get_parser(suffix: str) -> Callable[[str], Any]:
     return parser
 
 
+ERROR_MESSAGES = {
+    OSError: "No se pudo leer {path}: {e}",
+    UnicodeDecodeError: "Error de codificación al leer {path}: {e}",
+    json.JSONDecodeError: "Error al parsear archivo JSON en {path}: {e}",
+    YAMLError: "Error al parsear archivo YAML en {path}: {e}",
+    ImportError: "Dependencia faltante al parsear {path}: {e}",
+}
+if has_toml:
+    ERROR_MESSAGES[TOMLDecodeError] = "Error al parsear archivo TOML en {path}: {e}"
+
+
 def _format_structured_file_error(path: Path, e: Exception) -> str:
-    if isinstance(e, OSError):
-        return f"No se pudo leer {path}: {e}"
-    if isinstance(e, UnicodeDecodeError):
-        return f"Error de codificación al leer {path}: {e}"
-    if isinstance(e, json.JSONDecodeError):
-        return f"Error al parsear archivo JSON en {path}: {e}"
-    if isinstance(e, YAMLError):
-        return f"Error al parsear archivo YAML en {path}: {e}"
-    if has_toml and isinstance(e, TOMLDecodeError):
-        return f"Error al parsear archivo TOML en {path}: {e}"
-    if isinstance(e, ImportError):
-        return f"Dependencia faltante al parsear {path}: {e}"
+    for exc, msg in ERROR_MESSAGES.items():
+        if isinstance(e, exc):
+            return msg.format(path=path, e=e)
     return f"Error al parsear {path}: {e}"
 
 

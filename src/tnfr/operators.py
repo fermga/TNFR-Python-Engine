@@ -563,6 +563,100 @@ def apply_network_remesh(G) -> None:
     invoke_callbacks(G, "on_remesh", dict(meta))
 
 
+def _mst_edges_from_epi(nx, nodes, epi):
+    """Return MST edges based on absolute EPI distance."""
+    H = nx.Graph()
+    H.add_nodes_from(nodes)
+    for i, u in enumerate(nodes):
+        for v in nodes[i + 1 :]:
+            w = abs(epi[u] - epi[v])
+            H.add_edge(u, v, weight=w)
+    return {tuple(sorted((u, v))) for u, v in nx.minimum_spanning_edges(H, data=False)}
+
+
+def _knn_edges(nodes, epi, k_val, p_rewire, rnd):
+    """Edges linking each node to its k nearest neighbours in EPI."""
+    new_edges = set()
+    for u in nodes:
+        epi_u = epi[u]
+        dist_pairs = [(abs(epi_u - epi[v]), v) for v in nodes if v != u]
+        for _, v in heapq.nsmallest(k_val, dist_pairs):
+            if rnd.random() < p_rewire:
+                new_edges.add(tuple(sorted((u, v))))
+    return new_edges
+
+
+def _community_remesh(
+    G,
+    epi,
+    k_val,
+    p_rewire,
+    rnd,
+    nx,
+    nx_comm,
+    mst_edges,
+    n_before,
+):
+    """Remesh ``G`` replacing nodes by modular communities."""
+    comms = list(nx_comm.greedy_modularity_communities(G))
+    if len(comms) <= 1:
+        G.clear_edges()
+        increment_edge_version(G)
+        G.add_edges_from(mst_edges)
+        increment_edge_version(G)
+        return
+
+    C = nx.Graph()
+    for idx, comm in enumerate(comms):
+        members = list(comm)
+        epi_mean = list_mean(epi[n] for n in members)
+        C.add_node(idx)
+        set_attr(C.nodes[idx], ALIAS_EPI, epi_mean)
+        C.nodes[idx]["members"] = members
+    for i in C.nodes():
+        for j in C.nodes():
+            if i < j:
+                w = abs(
+                    get_attr(C.nodes[i], ALIAS_EPI, 0.0)
+                    - get_attr(C.nodes[j], ALIAS_EPI, 0.0)
+                )
+                C.add_edge(i, j, weight=w)
+    mst_c = nx.minimum_spanning_tree(C, weight="weight")
+    new_edges = set(mst_c.edges())
+    for u in C.nodes():
+        epi_u = get_attr(C.nodes[u], ALIAS_EPI, 0.0)
+        others = [v for v in C.nodes() if v != u]
+        others.sort(
+            key=lambda v: abs(epi_u - get_attr(C.nodes[v], ALIAS_EPI, 0.0))
+        )
+        for v in others[:k_val]:
+            if rnd.random() < p_rewire:
+                new_edges.add(tuple(sorted((u, v))))
+
+    G.clear_edges()
+    increment_edge_version(G)
+    G.remove_nodes_from(list(G.nodes()))
+    increment_edge_version(G)
+    for idx in C.nodes():
+        data = dict(C.nodes[idx])
+        G.add_node(idx, **data)
+    G.add_edges_from(new_edges)
+    increment_edge_version(G)
+
+    if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
+        hist = G.graph.setdefault("history", {})
+        mapping = {idx: C.nodes[idx].get("members", []) for idx in C.nodes()}
+        append_metric(
+            hist,
+            "remesh_events",
+            {
+                "mode": "community",
+                "n_before": n_before,
+                "n_after": G.number_of_nodes(),
+                "mapping": mapping,
+            },
+        )
+
 def apply_topological_remesh(
     G,
     mode: Optional[str] = None,
@@ -598,107 +692,35 @@ def apply_topological_remesh(
         )
     mode = str(mode)
     nx, nx_comm = _get_networkx_modules()
-
     # Similaridad basada en EPI (distancia absoluta)
     epi = {n: get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes}
 
-    # Construir el MST de forma incremental (Prim) evitando grafo completo
-    start = nodes[0]
-    unvisited = set(nodes[1:])
-    closest = {}
-    for v in unvisited:
-        closest[v] = (abs(epi[start] - epi[v]), start)
-    mst_edges = set()
-    while unvisited:
-        v = min(unvisited, key=lambda x: closest[x][0])
-        w, parent = closest[v]
-        mst_edges.add(tuple(sorted((parent, v))))
-        unvisited.remove(v)
-        for u in unvisited:
-            w = abs(epi[v] - epi[u])
-            if w < closest[u][0]:
-                closest[u] = (w, v)
+    mst_edges = _mst_edges_from_epi(nx, nodes, epi)
 
     if mode == "community":
-        # Detectar comunidades y reconstruir la red con metanodos
-        comms = list(nx_comm.greedy_modularity_communities(G))
-        if len(comms) <= 1:
-            new_edges = set(mst_edges)
-        else:
-            k_val = (
-                int(k)
-                if k is not None
-                else int(
-                    G.graph.get(
-                        "REMESH_COMMUNITY_K",
-                        REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2),
-                    )
+        k_val = (
+            int(k)
+            if k is not None
+            else int(
+                G.graph.get(
+                    "REMESH_COMMUNITY_K",
+                    REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2),
                 )
             )
-            # Grafo de comunidades basado en medias de EPI
-            C = nx.Graph()
-            for idx, comm in enumerate(comms):
-                members = list(comm)
-                epi_mean = list_mean(epi[n] for n in members)
-                C.add_node(idx)
-                set_attr(C.nodes[idx], ALIAS_EPI, epi_mean)
-                C.nodes[idx]["members"] = members
-            for i in C.nodes():
-                for j in C.nodes():
-                    if i < j:
-                        w = abs(
-                            get_attr(C.nodes[i], ALIAS_EPI, 0.0)
-                            - get_attr(C.nodes[j], ALIAS_EPI, 0.0)
-                        )
-                        C.add_edge(i, j, weight=w)
-            mst_c = nx.minimum_spanning_tree(C, weight="weight")
-            new_edges = set(mst_c.edges())
-            for u in C.nodes():
-                epi_u = get_attr(C.nodes[u], ALIAS_EPI, 0.0)
-                others = [v for v in C.nodes() if v != u]
-                others.sort(
-                    key=lambda v: abs(
-                        epi_u - get_attr(C.nodes[v], ALIAS_EPI, 0.0)
-                    )
-                )
-                for v in others[:k_val]:
-                    if rnd.random() < p_rewire:
-                        new_edges.add(tuple(sorted((u, v))))
+        )
+        _community_remesh(
+            G,
+            epi,
+            max(1, k_val),
+            p_rewire,
+            rnd,
+            nx,
+            nx_comm,
+            mst_edges,
+            n_before,
+        )
+        return
 
-            # Reemplazar nodos y aristas del grafo original por comunidades
-            # clear_edges está disponible desde NetworkX 2.4 y evita
-            # materializar la lista completa de aristas; tnfr requiere
-            # NetworkX>=2.6 (ver pyproject.toml)
-            G.clear_edges()
-            increment_edge_version(G)
-            G.remove_nodes_from(list(G.nodes()))
-            increment_edge_version(G)
-            for idx in C.nodes():
-                data = dict(C.nodes[idx])
-                G.add_node(idx, **data)
-            G.add_edges_from(new_edges)
-            increment_edge_version(G)
-
-            if G.graph.get(
-                "REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]
-            ):
-                hist = G.graph.setdefault("history", {})
-                mapping = {
-                    idx: C.nodes[idx].get("members", []) for idx in C.nodes()
-                }
-                append_metric(
-                    hist,
-                    "remesh_events",
-                    {
-                        "mode": "community",
-                        "n_before": n_before,
-                        "n_after": G.number_of_nodes(),
-                        "mapping": mapping,
-                    },
-                )
-            return
-
-    # Default/mode knn/mst operate on nodos originales
     new_edges = set(mst_edges)
     if mode == "knn":
         k_val = (
@@ -711,139 +733,137 @@ def apply_topological_remesh(
                 )
             )
         )
-        k_val = max(1, k_val)
+        new_edges |= _knn_edges(nodes, epi, max(1, k_val), p_rewire, rnd)
 
-        for u in nodes:
-            epi_u = epi[u]
-            dist_pairs = [(abs(epi_u - epi[v]), v) for v in nodes if v != u]
-            for _, v in heapq.nsmallest(k_val, dist_pairs):
-                if rnd.random() < p_rewire:
-                    new_edges.add(tuple(sorted((u, v))))
-
-    # clear_edges disponible en NetworkX >=2.4; tnfr depende de >=2.6
     G.clear_edges()
     increment_edge_version(G)
     G.add_edges_from(new_edges)
     increment_edge_version(G)
 
 
+def _extra_gating_ok(hist, cfg, w_estab):
+    """Check additional stability gating conditions."""
+    ps_ok = True
+    if "phase_sync" in hist and len(hist["phase_sync"]) >= w_estab:
+        win = hist["phase_sync"][-w_estab:]
+        ps_ok = (sum(win) / len(win)) >= cfg["REMESH_MIN_PHASE_SYNC"]
+
+    disr_ok = True
+    if "glyph_load_disr" in hist and len(hist["glyph_load_disr"]) >= w_estab:
+        win = hist["glyph_load_disr"][-w_estab:]
+        disr_ok = (sum(win) / len(win)) <= cfg["REMESH_MAX_GLYPH_DISR"]
+
+    sig_ok = True
+    if "sense_sigma_mag" in hist and len(hist["sense_sigma_mag"]) >= w_estab:
+        win = hist["sense_sigma_mag"][-w_estab:]
+        sig_ok = (sum(win) / len(win)) >= cfg["REMESH_MIN_SIGMA_MAG"]
+
+    R_ok = True
+    if "kuramoto_R" in hist and len(hist["kuramoto_R"]) >= w_estab:
+        win = hist["kuramoto_R"][-w_estab:]
+        R_ok = (sum(win) / len(win)) >= cfg["REMESH_MIN_KURAMOTO_R"]
+
+    sihi_ok = True
+    if "Si_hi_frac" in hist and len(hist["Si_hi_frac"]) >= w_estab:
+        win = hist["Si_hi_frac"][-w_estab:]
+        sihi_ok = (sum(win) / len(win)) >= cfg["REMESH_MIN_SI_HI_FRAC"]
+
+    return ps_ok and disr_ok and sig_ok and R_ok and sihi_ok
+
+
 def apply_remesh_if_globally_stable(
     G, pasos_estables_consecutivos: Optional[int] = None
 ) -> None:
-    # Ventanas y umbrales
-    w_estab = (
-        pasos_estables_consecutivos
-        if pasos_estables_consecutivos is not None
-        else int(
+    cfg = {
+        "REMESH_STABILITY_WINDOW": int(
             G.graph.get(
                 "REMESH_STABILITY_WINDOW",
                 REMESH_DEFAULTS["REMESH_STABILITY_WINDOW"],
             )
-        )
-    )
+        ),
+        "REMESH_REQUIRE_STABILITY": bool(
+            G.graph.get(
+                "REMESH_REQUIRE_STABILITY",
+                REMESH_DEFAULTS["REMESH_REQUIRE_STABILITY"],
+            )
+        ),
+        "REMESH_MIN_PHASE_SYNC": float(
+            G.graph.get(
+                "REMESH_MIN_PHASE_SYNC",
+                REMESH_DEFAULTS["REMESH_MIN_PHASE_SYNC"],
+            )
+        ),
+        "REMESH_MAX_GLYPH_DISR": float(
+            G.graph.get(
+                "REMESH_MAX_GLYPH_DISR",
+                REMESH_DEFAULTS["REMESH_MAX_GLYPH_DISR"],
+            )
+        ),
+        "REMESH_MIN_SIGMA_MAG": float(
+            G.graph.get(
+                "REMESH_MIN_SIGMA_MAG",
+                REMESH_DEFAULTS["REMESH_MIN_SIGMA_MAG"],
+            )
+        ),
+        "REMESH_MIN_KURAMOTO_R": float(
+            G.graph.get(
+                "REMESH_MIN_KURAMOTO_R",
+                REMESH_DEFAULTS["REMESH_MIN_KURAMOTO_R"],
+            )
+        ),
+        "REMESH_MIN_SI_HI_FRAC": float(
+            G.graph.get(
+                "REMESH_MIN_SI_HI_FRAC",
+                REMESH_DEFAULTS["REMESH_MIN_SI_HI_FRAC"],
+            )
+        ),
+        "REMESH_COOLDOWN_VENTANA": int(
+            G.graph.get(
+                "REMESH_COOLDOWN_VENTANA",
+                REMESH_DEFAULTS["REMESH_COOLDOWN_VENTANA"],
+            )
+        ),
+        "REMESH_COOLDOWN_TS": float(
+            G.graph.get(
+                "REMESH_COOLDOWN_TS",
+                REMESH_DEFAULTS.get("REMESH_COOLDOWN_TS", 0.0),
+            )
+        ),
+    }
     frac_req = float(
         G.graph.get(
             "FRACTION_STABLE_REMESH", REMESH_DEFAULTS["FRACTION_STABLE_REMESH"]
         )
     )
-    req_extra = bool(
-        G.graph.get(
-            "REMESH_REQUIRE_STABILITY",
-            REMESH_DEFAULTS["REMESH_REQUIRE_STABILITY"],
-        )
-    )
-    min_sync = float(
-        G.graph.get(
-            "REMESH_MIN_PHASE_SYNC", REMESH_DEFAULTS["REMESH_MIN_PHASE_SYNC"]
-        )
-    )
-    max_disr = float(
-        G.graph.get(
-            "REMESH_MAX_GLYPH_DISR", REMESH_DEFAULTS["REMESH_MAX_GLYPH_DISR"]
-        )
-    )
-    min_sigma = float(
-        G.graph.get(
-            "REMESH_MIN_SIGMA_MAG", REMESH_DEFAULTS["REMESH_MIN_SIGMA_MAG"]
-        )
-    )
-    min_R = float(
-        G.graph.get(
-            "REMESH_MIN_KURAMOTO_R", REMESH_DEFAULTS["REMESH_MIN_KURAMOTO_R"]
-        )
-    )
-    min_sihi = float(
-        G.graph.get(
-            "REMESH_MIN_SI_HI_FRAC", REMESH_DEFAULTS["REMESH_MIN_SI_HI_FRAC"]
-        )
+    w_estab = (
+        pasos_estables_consecutivos
+        if pasos_estables_consecutivos is not None
+        else cfg["REMESH_STABILITY_WINDOW"]
     )
 
     hist = G.graph.setdefault("history", {"stable_frac": []})
     sf = hist.get("stable_frac", [])
     if len(sf) < w_estab:
         return
-    # 1) Estabilidad por fracción de nodos estables
     win_sf = sf[-w_estab:]
-    cond_sf = all(v >= frac_req for v in win_sf)
-    if not cond_sf:
+    if not all(v >= frac_req for v in win_sf):
         return
-    # 2) Gating adicional (si está activado)
-    if req_extra:
-        # sincronía de fase (mayor mejor)
-        ps_ok = True
-        if "phase_sync" in hist and len(hist["phase_sync"]) >= w_estab:
-            win_ps = hist["phase_sync"][-w_estab:]
-            ps_ok = (sum(win_ps) / len(win_ps)) >= min_sync
-        # carga glífica disruptiva (menor mejor)
-        disr_ok = True
-        if (
-            "glyph_load_disr" in hist
-            and len(hist["glyph_load_disr"]) >= w_estab
-        ):
-            win_disr = hist["glyph_load_disr"][-w_estab:]
-            disr_ok = (sum(win_disr) / len(win_disr)) <= max_disr
-        # magnitud de sigma (mayor mejor)
-        sig_ok = True
-        if (
-            "sense_sigma_mag" in hist
-            and len(hist["sense_sigma_mag"]) >= w_estab
-        ):
-            win_sig = hist["sense_sigma_mag"][-w_estab:]
-            sig_ok = (sum(win_sig) / len(win_sig)) >= min_sigma
-        # orden de Kuramoto R (mayor mejor)
-        R_ok = True
-        if "kuramoto_R" in hist and len(hist["kuramoto_R"]) >= w_estab:
-            win_R = hist["kuramoto_R"][-w_estab:]
-            R_ok = (sum(win_R) / len(win_R)) >= min_R
-        # fracción de nodos con Si alto (mayor mejor)
-        sihi_ok = True
-        if "Si_hi_frac" in hist and len(hist["Si_hi_frac"]) >= w_estab:
-            win_sihi = hist["Si_hi_frac"][-w_estab:]
-            sihi_ok = (sum(win_sihi) / len(win_sihi)) >= min_sihi
-        if not (ps_ok and disr_ok and sig_ok and R_ok and sihi_ok):
-            return
-    # 3) Cooldown
+    if cfg["REMESH_REQUIRE_STABILITY"] and not _extra_gating_ok(
+        hist, cfg, w_estab
+    ):
+        return
+
     last = G.graph.get("_last_remesh_step", -(10**9))
     step_idx = len(sf)
-    cooldown = int(
-        G.graph.get(
-            "REMESH_COOLDOWN_VENTANA",
-            REMESH_DEFAULTS["REMESH_COOLDOWN_VENTANA"],
-        )
-    )
-    if step_idx - last < cooldown:
+    if step_idx - last < cfg["REMESH_COOLDOWN_VENTANA"]:
         return
     t_now = float(G.graph.get("_t", 0.0))
     last_ts = float(G.graph.get("_last_remesh_ts", -1e12))
-    cooldown_ts = float(
-        G.graph.get(
-            "REMESH_COOLDOWN_TS",
-            REMESH_DEFAULTS.get("REMESH_COOLDOWN_TS", 0.0),
-        )
-    )
-    if cooldown_ts > 0 and (t_now - last_ts) < cooldown_ts:
+    if cfg["REMESH_COOLDOWN_TS"] > 0 and (
+        t_now - last_ts
+    ) < cfg["REMESH_COOLDOWN_TS"]:
         return
-    # 4) Aplicar y registrar
+
     apply_network_remesh(G)
     G.graph["_last_remesh_step"] = step_idx
     G.graph["_last_remesh_ts"] = t_now

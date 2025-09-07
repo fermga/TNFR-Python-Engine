@@ -148,6 +148,49 @@ def _configure_dnfr_weights(G) -> dict:
     return weights
 
 
+def _init_dnfr_cache(G, nodes, cache, checksum, dirty):
+    """Initialise or reuse cached ΔNFR arrays."""
+    if cache and cache.get("checksum") == checksum and not dirty:
+        idx = cache["idx"]
+        theta = cache["theta"]
+        epi = cache["epi"]
+        vf = cache["vf"]
+        cos_theta = cache["cos_theta"]
+        sin_theta = cache["sin_theta"]
+        return cache, idx, theta, epi, vf, cos_theta, sin_theta, False
+
+    idx = {n: i for i, n in enumerate(nodes)}
+    theta = [0.0] * len(nodes)
+    epi = [0.0] * len(nodes)
+    vf = [0.0] * len(nodes)
+    cos_theta = [0.0] * len(nodes)
+    sin_theta = [0.0] * len(nodes)
+    cache = {
+        "checksum": checksum,
+        "idx": idx,
+        "theta": theta,
+        "epi": epi,
+        "vf": vf,
+        "cos_theta": cos_theta,
+        "sin_theta": sin_theta,
+        "degs": cache.get("degs") if cache else None,
+    }
+    G.graph["_dnfr_prep_cache"] = cache
+    return cache, idx, theta, epi, vf, cos_theta, sin_theta, True
+
+
+def _refresh_dnfr_vectors(G, nodes, theta, epi, vf, cos_theta, sin_theta):
+    """Update cached angle and state vectors for ΔNFR."""
+    for i, n in enumerate(nodes):
+        nd = G.nodes[n]
+        th = get_attr(nd, ALIAS_THETA, 0.0)
+        theta[i] = th
+        epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
+        vf[i] = get_attr(nd, ALIAS_VF, 0.0)
+        cos_theta[i] = math.cos(th)
+        sin_theta[i] = math.sin(th)
+
+
 def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
     """Precompute common data for ΔNFR strategies."""
     weights = G.graph.get("_dnfr_weights")
@@ -160,42 +203,11 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
     cache = G.graph.get("_dnfr_prep_cache")
     checksum = G.graph.get("_dnfr_nodes_checksum")
     dirty = bool(G.graph.pop("_dnfr_prep_dirty", False))
-    if cache and cache.get("checksum") == checksum and not dirty:
-        idx = cache["idx"]
-        theta = cache["theta"]
-        epi = cache["epi"]
-        vf = cache["vf"]
-        cos_theta = cache["cos_theta"]
-        sin_theta = cache["sin_theta"]
-    else:
-        idx = {n: i for i, n in enumerate(nodes)}
-        theta = [0.0] * len(nodes)
-        epi = [0.0] * len(nodes)
-        vf = [0.0] * len(nodes)
-        cos_theta = [0.0] * len(nodes)
-        sin_theta = [0.0] * len(nodes)
-        cache = {
-            "checksum": checksum,
-            "idx": idx,
-            "theta": theta,
-            "epi": epi,
-            "vf": vf,
-            "cos_theta": cos_theta,
-            "sin_theta": sin_theta,
-            "degs": cache.get("degs") if cache else None,
-        }
-        G.graph["_dnfr_prep_cache"] = cache
-        dirty = True
-
-    if dirty:
-        for i, n in enumerate(nodes):
-            nd = G.nodes[n]
-            th = get_attr(nd, ALIAS_THETA, 0.0)
-            theta[i] = th
-            epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
-            vf[i] = get_attr(nd, ALIAS_VF, 0.0)
-            cos_theta[i] = math.cos(th)
-            sin_theta[i] = math.sin(th)
+    cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = _init_dnfr_cache(
+        G, nodes, cache, checksum, dirty
+    )
+    if refreshed:
+        _refresh_dnfr_vectors(G, nodes, theta, epi, vf, cos_theta, sin_theta)
 
     w_phase = float(weights.get("phase", 0.0))
     w_epi = float(weights.get("epi", 0.0))
@@ -273,8 +285,7 @@ def _apply_dnfr_gradients(
         set_dnfr(G, n, float(dnfr))
 
 
-def _compute_dnfr_common(
-    G,
+def _compute_neighbor_means(
     data,
     *,
     x,
@@ -285,8 +296,7 @@ def _compute_dnfr_common(
     deg_sum=None,
     degs=None,
 ):
-    """Compute neighbour means and apply ΔNFR gradients."""
-
+    """Return neighbour mean arrays for ΔNFR."""
     w_topo = data["w_topo"]
     theta = data["theta"]
     epi = data["epi"]
@@ -309,18 +319,13 @@ def _compute_dnfr_common(
             vf_bar[mask] = vf_sum[mask] / count[mask]
             if w_topo != 0.0 and deg_bar is not None and deg_sum is not None:
                 deg_bar[mask] = deg_sum[mask] / count[mask]
-        _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
-        return
+        return th_bar, epi_bar, vf_bar, deg_bar
 
-    # Fallback para listas estándar
     n = len(theta)
     th_bar = list(theta)
     epi_bar = list(epi)
     vf_bar = list(vf)
-    if w_topo != 0.0 and degs is not None:
-        deg_bar = list(degs)
-    else:
-        deg_bar = None
+    deg_bar = list(degs) if w_topo != 0.0 and degs is not None else None
     for i in range(n):
         c = count[i]
         if c:
@@ -329,6 +334,33 @@ def _compute_dnfr_common(
             vf_bar[i] = vf_sum[i] / c
             if w_topo != 0.0 and deg_bar is not None and deg_sum is not None:
                 deg_bar[i] = deg_sum[i] / c
+    return th_bar, epi_bar, vf_bar, deg_bar
+
+
+def _compute_dnfr_common(
+    G,
+    data,
+    *,
+    x,
+    y,
+    epi_sum,
+    vf_sum,
+    count,
+    deg_sum=None,
+    degs=None,
+):
+    """Compute neighbour means and apply ΔNFR gradients."""
+
+    th_bar, epi_bar, vf_bar, deg_bar = _compute_neighbor_means(
+        data,
+        x=x,
+        y=y,
+        epi_sum=epi_sum,
+        vf_sum=vf_sum,
+        count=count,
+        deg_sum=deg_sum,
+        degs=degs,
+    )
     _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
 
 
@@ -709,19 +741,20 @@ def integrar_epi_euler(G, dt: float | None = None) -> None:
     update_epi_via_nodal_equation(G, dt=dt, method="euler")
 
 
+def _param(G, name):
+    return float(G.graph.get(name) if G is not None else DEFAULTS[name])
+
+
+def _log_clamp(hist, node, attr, value, lo, hi):
+    if value < lo or value > hi:
+        hist.append({"node": node, "attr": attr, "value": float(value)})
+
+
 def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
-    eps_min = float(
-        (G.graph.get("EPI_MIN") if G is not None else DEFAULTS["EPI_MIN"])
-    )
-    eps_max = float(
-        (G.graph.get("EPI_MAX") if G is not None else DEFAULTS["EPI_MAX"])
-    )
-    vf_min = float(
-        (G.graph.get("VF_MIN") if G is not None else DEFAULTS["VF_MIN"])
-    )
-    vf_max = float(
-        (G.graph.get("VF_MAX") if G is not None else DEFAULTS["VF_MAX"])
-    )
+    eps_min = _param(G, "EPI_MIN")
+    eps_max = _param(G, "EPI_MAX")
+    vf_min = _param(G, "VF_MIN")
+    vf_max = _param(G, "VF_MAX")
 
     epi = get_attr(nd, ALIAS_EPI, 0.0)
     vf = get_attr(nd, ALIAS_VF, 0.0)
@@ -736,10 +769,8 @@ def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
     )
     if strict and G is not None:
         hist = G.graph.setdefault("history", {}).setdefault("clamp_alerts", [])
-        if epi < eps_min or epi > eps_max:
-            hist.append({"node": node, "attr": "EPI", "value": float(epi)})
-        if vf < vf_min or vf > vf_max:
-            hist.append({"node": node, "attr": "VF", "value": float(vf)})
+        _log_clamp(hist, node, "EPI", epi, eps_min, eps_max)
+        _log_clamp(hist, node, "VF", vf, vf_min, vf_max)
 
     set_attr(nd, ALIAS_EPI, clamp(epi, eps_min, eps_max))
     if G is not None and node is not None:
@@ -747,7 +778,6 @@ def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
     else:
         set_attr(nd, ALIAS_VF, clamp(vf, vf_min, vf_max))
     if G.graph.get("THETA_WRAP") if G is not None else DEFAULTS["THETA_WRAP"]:
-        # envolver fase
         set_attr(nd, ALIAS_THETA, ((th + math.pi) % (2 * math.pi) - math.pi))
 
 
@@ -1077,6 +1107,18 @@ def parametric_glyph_selector(G, n) -> str:
     return _soft_grammar_prefilter(G, n, cand, dnfr, accel)
 
 
+def _choose_glyph(G, n, selector, use_canon, h_al, h_en, al_max, en_max):
+    """Select the glyph to apply on node ``n``."""
+    if h_al[n] > al_max:
+        return AL
+    if h_en[n] > en_max:
+        return EN
+    g = selector(G, n)
+    if use_canon:
+        g = enforce_canonical_grammar(G, n, g)
+    return g
+
+
 # -------------------------
 # Step / run
 # -------------------------
@@ -1131,14 +1173,7 @@ def _update_nodes(
         for n, _ in G.nodes(data=True):
             h_al[n] = int(h_al.get(n, 0)) + 1
             h_en[n] = int(h_en.get(n, 0)) + 1
-            if h_al[n] > al_max:
-                g = AL
-            elif h_en[n] > en_max:
-                g = EN
-            else:
-                g = selector(G, n)
-                if use_canon:
-                    g = enforce_canonical_grammar(G, n, g)
+            g = _choose_glyph(G, n, selector, use_canon, h_al, h_en, al_max, en_max)
             apply_glyph(G, n, g, window=window)
             if use_canon:
                 on_applied_glyph(G, n, g)
