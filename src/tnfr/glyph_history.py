@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Dict, Any, Iterable
 from collections import deque, Counter
 from itertools import islice
+import heapq
 
 from .constants import get_param
 
@@ -130,23 +131,24 @@ class HistoryDict(dict):
         return val
 
     def pop_least_used(self) -> Any:
-        for key, _ in reversed(self._counts.most_common()):
-            if key in self:
-                self._counts.pop(key, None)
-                return super().pop(key)
+        while self._counts:
+            key = min(self._counts, key=self._counts.get)
             self._counts.pop(key, None)
+            if key in self:
+                return super().pop(key)
         raise KeyError("HistoryDict is empty; cannot pop least used")
 
     def pop_least_used_batch(self, k: int) -> None:
         if k > 0:
             removed = 0
-            for key, _ in reversed(self._counts.most_common()):
-                if removed >= k:
-                    break
-                self._counts.pop(key, None)
-                if key in self:
-                    super().pop(key, None)
-                    removed += 1
+            while removed < k and self._counts:
+                for key in heapq.nsmallest(k - removed, self._counts, key=self._counts.get):
+                    self._counts.pop(key, None)
+                    if key in self:
+                        super().pop(key, None)
+                        removed += 1
+                        if removed >= k:
+                            break
 
 
 def ensure_history(G) -> Dict[str, Any]:
