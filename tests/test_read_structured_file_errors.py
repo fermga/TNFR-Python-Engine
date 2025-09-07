@@ -1,4 +1,4 @@
-"""Pruebas de read structured file errors."""
+"""Tests for ``read_structured_file`` error handling."""
 
 import pytest
 import importlib.util
@@ -14,7 +14,7 @@ def test_read_structured_file_missing_file(tmp_path: Path):
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
-    assert msg.startswith("No se pudo leer")
+    assert msg.startswith("Could not read")
     assert str(path) in msg
 
 
@@ -43,7 +43,7 @@ def test_read_structured_file_permission_error(
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
-    assert msg.startswith("No se pudo leer")
+    assert msg.startswith("Could not read")
     assert str(path) in msg
 
 
@@ -53,7 +53,7 @@ def test_read_structured_file_corrupt_json(tmp_path: Path):
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
-    assert msg.startswith("Error al parsear archivo JSON en")
+    assert msg.startswith("Error parsing JSON file at")
     assert str(path) in msg
 
 
@@ -64,7 +64,7 @@ def test_read_structured_file_corrupt_yaml(tmp_path: Path):
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
-    assert msg.startswith("Error al parsear archivo YAML en")
+    assert msg.startswith("Error parsing YAML file at")
     assert str(path) in msg
 
 
@@ -76,7 +76,7 @@ def test_read_structured_file_corrupt_toml(tmp_path: Path):
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
-    assert msg.startswith("Error al parsear archivo TOML en")
+    assert msg.startswith("Error parsing TOML file at")
     assert str(path) in msg
 
 
@@ -87,7 +87,7 @@ def test_read_structured_file_missing_dependency(
     path.write_text("a: 1", encoding="utf-8")
 
     def fake_safe_load(_: str) -> None:
-        raise ImportError("pyyaml no está instalado")
+        raise ImportError("pyyaml is not installed")
 
     monkeypatch.setattr(io_mod, "yaml", type("Y", (), {"safe_load": fake_safe_load}))
     io_mod._get_parser.cache_clear()
@@ -95,7 +95,7 @@ def test_read_structured_file_missing_dependency(
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
-    assert msg.startswith("Dependencia faltante al parsear")
+    assert msg.startswith("Missing dependency parsing")
     assert str(path) in msg
     assert "pyyaml" in msg
 
@@ -107,7 +107,7 @@ def test_read_structured_file_missing_dependency_toml(
     path.write_text("a = 1", encoding="utf-8")
 
     def fake_loads(_: str) -> None:
-        raise ImportError("toml no está instalado")
+        raise ImportError("toml is not installed")
 
     monkeypatch.setattr(io_mod, "tomllib", type("T", (), {"loads": fake_loads}))
     io_mod._get_parser.cache_clear()
@@ -115,7 +115,7 @@ def test_read_structured_file_missing_dependency_toml(
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
-    assert msg.startswith("Dependencia faltante al parsear")
+    assert msg.startswith("Missing dependency parsing")
     assert str(path) in msg
     assert "toml" in msg.lower()
 
@@ -126,7 +126,7 @@ def test_read_structured_file_unicode_error(tmp_path: Path):
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
-    assert msg.startswith("Error de codificación al leer")
+    assert msg.startswith("Encoding error while reading")
     assert str(path) in msg
 
 
@@ -139,8 +139,8 @@ def test_json_error_not_reported_as_toml(monkeypatch: pytest.MonkeyPatch) -> Non
 
     err = JSONDecodeError("msg", "", 0)
     msg = io_mod._format_structured_file_error(Path("data.json"), err)
-    assert msg.startswith("Error al parsear archivo JSON en")
-    assert not msg.startswith("Error al parsear archivo TOML")
+    assert msg.startswith("Error parsing JSON file at")
+    assert not msg.startswith("Error parsing TOML file")
 
 
 def test_import_error_not_reported_as_toml(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -152,8 +152,8 @@ def test_import_error_not_reported_as_toml(monkeypatch: pytest.MonkeyPatch) -> N
 
     err = ImportError("dep missing")
     msg = io_mod._format_structured_file_error(Path("data.toml"), err)
-    assert msg.startswith("Dependencia faltante al parsear")
-    assert not msg.startswith("Error al parsear archivo TOML")
+    assert msg.startswith("Missing dependency parsing")
+    assert not msg.startswith("Error parsing TOML file")
 
 
 def test_read_structured_file_ignores_missing_yaml_when_parsing_json(
@@ -181,5 +181,5 @@ def test_read_structured_file_unhandled_error(
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
     msg = str(excinfo.value)
-    assert msg.startswith("Error al parsear")
+    assert msg.startswith("Error parsing")
     assert str(path) in msg

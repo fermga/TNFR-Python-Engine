@@ -95,7 +95,7 @@ def _alias_resolve(
             if not strict:
                 lvl = log_level if log_level is not None else logging.DEBUG
                 logger.log(
-                    lvl, "No se pudo convertir el valor para %r: %s", key, exc
+                    lvl, "Could not convert value for %r: %s", key, exc
                 )
     if default is not None:
         try:
@@ -105,16 +105,16 @@ def _alias_resolve(
             if not strict:
                 lvl = logging.WARNING if log_level is None else log_level
                 logger.log(
-                    lvl, "No se pudo convertir el valor para 'default': %s", exc
+                    lvl, "Could not convert value for 'default': %s", exc
                 )
 
     if errors:
         if strict:
             err_msg = "; ".join(f"{k!r}: {e}" for k, e in errors)
-            raise ValueError(f"No se pudieron convertir valores para {err_msg}")
+            raise ValueError(f"Could not convert values for {err_msg}")
         lvl = log_level if log_level is not None else logging.DEBUG
         summary = "; ".join(f"{k!r}: {e}" for k, e in errors)
-        logger.log(lvl, "No se pudieron convertir valores para %s", summary)
+        logger.log(lvl, "Could not convert values for %s", summary)
 
     return None
 

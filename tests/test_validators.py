@@ -1,4 +1,4 @@
-"""Pruebas de validators."""
+"""Tests for validators."""
 
 import pytest
 from tnfr.scenarios import build_graph
@@ -55,7 +55,7 @@ def test_validator_sigma_norm(monkeypatch):
         run_validators(G)
 
 
-def test_validator_glyph_invalido():
+def test_validator_invalid_glyph():
     G = _base_graph()
     n0 = list(G.nodes())[0]
     set_attr_str(G.nodes[n0], ALIAS_EPI_KIND, "INVALID")
@@ -64,7 +64,7 @@ def test_validator_glyph_invalido():
         run_validators(G)
 
 
-def test_validator_glyph_valido():
+def test_validator_valid_glyph():
     G = _base_graph()
     run_validators(G)
 
@@ -76,7 +76,7 @@ def test_read_structured_file_json(tmp_path):
     assert data == {"x": 1}
 
 
-@pytest.mark.skipif(tomllib is None, reason="tomllib/tomli no está instalado")
+@pytest.mark.skipif(tomllib is None, reason="tomllib/tomli not installed")
 def test_read_structured_file_toml(tmp_path):
     path = tmp_path / "cfg.toml"
     path.write_text("x = 1", encoding="utf-8")

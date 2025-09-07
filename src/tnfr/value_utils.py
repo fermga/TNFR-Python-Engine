@@ -34,7 +34,7 @@ def _convert_value(
             raise
         level = log_level if log_level is not None else logging.DEBUG
         if key is not None:
-            logger.log(level, "No se pudo convertir el valor para %r: %s", key, exc)
+            logger.log(level, "Could not convert value for %r: %s", key, exc)
         else:
-            logger.log(level, "No se pudo convertir el valor: %s", exc)
+            logger.log(level, "Could not convert value: %s", exc)
         return False, None

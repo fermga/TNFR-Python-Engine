@@ -33,7 +33,7 @@ else:  # pragma: no cover - depende de pyyaml
 
 def _missing_dependency(name: str) -> Callable[[str], Any]:
     def _raise(_: str) -> Any:
-        raise ImportError(f"{name} no está instalado")
+        raise ImportError(f"{name} is not installed")
 
     return _raise
 
@@ -61,21 +61,21 @@ def _get_parser(suffix: str) -> Callable[[str], Any]:
 
 
 ERROR_MESSAGES = {
-    OSError: "No se pudo leer {path}: {e}",
-    UnicodeDecodeError: "Error de codificación al leer {path}: {e}",
-    json.JSONDecodeError: "Error al parsear archivo JSON en {path}: {e}",
-    YAMLError: "Error al parsear archivo YAML en {path}: {e}",
-    ImportError: "Dependencia faltante al parsear {path}: {e}",
+    OSError: "Could not read {path}: {e}",
+    UnicodeDecodeError: "Encoding error while reading {path}: {e}",
+    json.JSONDecodeError: "Error parsing JSON file at {path}: {e}",
+    YAMLError: "Error parsing YAML file at {path}: {e}",
+    ImportError: "Missing dependency parsing {path}: {e}",
 }
 if has_toml:
-    ERROR_MESSAGES[TOMLDecodeError] = "Error al parsear archivo TOML en {path}: {e}"
+    ERROR_MESSAGES[TOMLDecodeError] = "Error parsing TOML file at {path}: {e}"
 
 
 def _format_structured_file_error(path: Path, e: Exception) -> str:
     for exc, msg in ERROR_MESSAGES.items():
         if isinstance(e, exc):
             return msg.format(path=path, e=e)
-    return f"Error al parsear {path}: {e}"
+    return f"Error parsing {path}: {e}"
 
 
 class StructuredFileError(Exception):
