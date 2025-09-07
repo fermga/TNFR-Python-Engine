@@ -155,26 +155,21 @@ def get_glyph_factors(node: NodoProtocol) -> Dict[str, Any]:
 # -------------------------
 
 
-def _select_dominant_glyph(
-    node: NodoProtocol, neigh: Iterable[NodoProtocol]
-) -> Optional[str]:
-    """Return the ``epi_kind`` with the highest |EPI| among
-    node and its neighbors."""
-    best = max(neigh, key=lambda v: abs(v.EPI), default=None)
-    return (
-        best.epi_kind
-        if best and abs(best.EPI) > abs(node.EPI)
-        else node.epi_kind
-    )
-
-
 def _mix_epi_with_neighbors(
     node: NodoProtocol, mix: float, default_glyph: Glyph | str
-) -> None:
+) -> tuple[float, str]:
     """Mix ``EPI`` of ``node`` with the mean of its neighbours.
 
     ``mix`` controls the neighbour influence fraction and ``default_glyph``
     is assigned when there are no neighbours or no dominant one.
+
+    Returns
+    -------
+    epi_bar: float
+        Mean ``EPI`` of the neighbours (``node.EPI`` if there are none).
+    dominant: str
+        ``epi_kind`` with the highest absolute ``EPI`` between ``node`` and
+        its neighbours. Falls back to ``default_glyph`` when undefined.
     """
 
     default_kind = (
@@ -196,24 +191,33 @@ def _mix_epi_with_neighbors(
 
     total = 0.0
     count = 0
-    best = None
+    best_kind: Optional[str] = None
+    best_abs = 0.0
     for v in neigh_iter:
         epi_v = v.EPI
         total += epi_v
         count += 1
-        if best is None or abs(epi_v) > abs(best.EPI):
-            best = v
+        abs_v = abs(epi_v)
+        if abs_v > best_abs:
+            best_abs = abs_v
+            best_kind = v.epi_kind
 
     if count == 0:
         node.epi_kind = default_kind
-        return
+        return epi, default_kind
 
     epi_bar = total / count
-    node.EPI = (1 - mix) * epi + mix * epi_bar
-    dominant = best.epi_kind if best and abs(best.EPI) > abs(node.EPI) else node.epi_kind
+    new_epi = (1 - mix) * epi + mix * epi_bar
+    node.EPI = new_epi
+    dominant = (
+        best_kind
+        if best_kind and best_abs > abs(new_epi)
+        else node.epi_kind
+    )
     if not dominant:
         dominant = default_kind
     node.epi_kind = dominant
+    return epi_bar, dominant
 
 
 def _op_AL(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # AL — Emisión
