@@ -219,41 +219,44 @@ def get_graph_mapping(G: Any, key: str, warn_msg: str) -> Dict[str, Any] | None:
     return dict(data)
 
 
+class _Encoder(json.JSONEncoder):
+    def __init__(self, *args, max_depth: int = 10, **kwargs):
+        self._max_depth = max_depth
+        super().__init__(*args, **kwargs)
+
+    def default(self, o):
+        if isinstance(o, set):
+            return sorted(o, key=lambda x: repr(x))
+        if hasattr(o, "__dict__"):
+            return o.__dict__
+        return repr(o)
+
+    def encode(self, o):
+        try:
+            self._check_depth(o, 0)
+        except RecursionError as exc:
+            raise ValueError("circular reference detected") from exc
+        return super().encode(o)
+
+    def _check_depth(self, o, depth):
+        if depth > self._max_depth:
+            raise ValueError(f"max depth {self._max_depth} exceeded")
+        if isinstance(o, dict):
+            for v in o.values():
+                self._check_depth(v, depth + 1)
+        elif isinstance(o, (list, tuple, set)):
+            for item in o:
+                self._check_depth(item, depth + 1)
+        elif hasattr(o, "__dict__"):
+            self._check_depth(o.__dict__, depth + 1)
+
+
 def _stable_json(obj: Any, max_depth: int = 10) -> str:
     """Return a JSON string with deterministic ordering."""
 
-    class _Encoder(json.JSONEncoder):
-        def __init__(self, *args, **kwargs):
-            self._max_depth = max_depth
-            super().__init__(*args, **kwargs)
-
-        def default(self, o):
-            if isinstance(o, set):
-                return sorted(o, key=lambda x: repr(x))
-            if hasattr(o, "__dict__"):
-                return o.__dict__
-            return repr(o)
-
-        def encode(self, o):
-            try:
-                self._check_depth(o, 0)
-            except RecursionError as exc:
-                raise ValueError("circular reference detected") from exc
-            return super().encode(o)
-
-        def _check_depth(self, o, depth):
-            if depth > self._max_depth:
-                raise ValueError(f"max depth {self._max_depth} exceeded")
-            if isinstance(o, dict):
-                for v in o.values():
-                    self._check_depth(v, depth + 1)
-            elif isinstance(o, (list, tuple, set)):
-                for item in o:
-                    self._check_depth(item, depth + 1)
-            elif hasattr(o, "__dict__"):
-                self._check_depth(o.__dict__, depth + 1)
-
-    return json.dumps(obj, sort_keys=True, ensure_ascii=False, cls=_Encoder)
+    return json.dumps(
+        obj, sort_keys=True, ensure_ascii=False, cls=_Encoder, max_depth=max_depth
+    )
 
 
 @lru_cache(maxsize=1024)
