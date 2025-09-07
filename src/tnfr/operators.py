@@ -21,6 +21,7 @@ import hashlib
 import heapq
 from operator import ge, le
 from functools import cache
+from itertools import combinations
 
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers import (
@@ -571,10 +572,9 @@ def _mst_edges_from_epi(nx, nodes, epi):
     """Return MST edges based on absolute EPI distance."""
     H = nx.Graph()
     H.add_nodes_from(nodes)
-    for i, u in enumerate(nodes):
-        for v in nodes[i + 1 :]:
-            w = abs(epi[u] - epi[v])
-            H.add_edge(u, v, weight=w)
+    H.add_weighted_edges_from(
+        (u, v, abs(epi[u] - epi[v])) for u, v in combinations(nodes, 2)
+    )
     return {tuple(sorted((u, v))) for u, v in nx.minimum_spanning_edges(H, data=False)}
 
 
@@ -617,25 +617,38 @@ def _community_remesh(
         C.add_node(idx)
         set_attr(C.nodes[idx], ALIAS_EPI, epi_mean)
         C.nodes[idx]["members"] = members
-    for i in C.nodes():
-        for j in C.nodes():
-            if i < j:
-                w = abs(
-                    get_attr(C.nodes[i], ALIAS_EPI, 0.0)
-                    - get_attr(C.nodes[j], ALIAS_EPI, 0.0)
-                )
-                C.add_edge(i, j, weight=w)
+    for i, j in combinations(C.nodes(), 2):
+        w = abs(
+            get_attr(C.nodes[i], ALIAS_EPI, 0.0)
+            - get_attr(C.nodes[j], ALIAS_EPI, 0.0)
+        )
+        C.add_edge(i, j, weight=w)
     mst_c = nx.minimum_spanning_tree(C, weight="weight")
     new_edges = set(mst_c.edges())
-    for u in C.nodes():
-        epi_u = get_attr(C.nodes[u], ALIAS_EPI, 0.0)
-        others = [v for v in C.nodes() if v != u]
-        others.sort(
-            key=lambda v: abs(epi_u - get_attr(C.nodes[v], ALIAS_EPI, 0.0))
-        )
-        for v in others[:k_val]:
+    epi_vals = {n: get_attr(C.nodes[n], ALIAS_EPI, 0.0) for n in C.nodes()}
+    ordered = sorted(C.nodes(), key=lambda v: epi_vals[v])
+    for idx, u in enumerate(ordered):
+        epi_u = epi_vals[u]
+        left = idx - 1
+        right = idx + 1
+        added = 0
+        while added < k_val and (left >= 0 or right < len(ordered)):
+            if left < 0:
+                v = ordered[right]
+                right += 1
+            elif right >= len(ordered):
+                v = ordered[left]
+                left -= 1
+            else:
+                if abs(epi_u - epi_vals[ordered[left]]) <= abs(epi_vals[ordered[right]] - epi_u):
+                    v = ordered[left]
+                    left -= 1
+                else:
+                    v = ordered[right]
+                    right += 1
             if rnd.random() < p_rewire:
                 new_edges.add(tuple(sorted((u, v))))
+            added += 1
 
     G.clear_edges()
     increment_edge_version(G)
