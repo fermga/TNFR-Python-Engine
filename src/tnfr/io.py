@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from functools import lru_cache
 import os
-import logging
+from .logging_utils import get_logger
 
 from .import_utils import optional_import
 import tempfile
@@ -97,7 +97,7 @@ def read_structured_file(path: Path) -> Any:
         raise StructuredFileError(path, e) from e
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def safe_write(

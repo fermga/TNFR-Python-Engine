@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 import math
 from collections import deque
 from typing import Dict, Any, Literal
@@ -68,7 +67,9 @@ from .selector import (
     _apply_selector_hysteresis,
 )
 
-logger = logging.getLogger(__name__)
+from .logging_utils import get_logger
+
+logger = get_logger(__name__)
 
 
 def _update_node_sample(G, *, step: int) -> None:

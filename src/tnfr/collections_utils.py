@@ -14,12 +14,13 @@ from typing import (
 import logging
 import math
 from itertools import islice
+from .logging_utils import get_logger
 
 from .value_utils import _convert_value
 
 T = TypeVar("T")
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 __all__ = [
     "MAX_MATERIALIZE_DEFAULT",

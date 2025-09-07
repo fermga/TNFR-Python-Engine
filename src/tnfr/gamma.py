@@ -13,9 +13,10 @@ from collections.abc import Mapping
 from .constants import ALIAS_THETA
 from .alias import get_attr
 from .helpers import node_set_checksum, edge_version_cache
+from .logging_utils import get_logger
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def _ensure_kuramoto_cache(G, t) -> None:

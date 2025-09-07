@@ -6,7 +6,6 @@ from collections import Counter, defaultdict
 from statistics import mean, median
 from typing import Any
 import heapq
-import logging
 import math
 
 from ..constants import (
@@ -30,9 +29,10 @@ from .coherence import register_coherence_callbacks
 from .diagnosis import register_diagnosis_callbacks
 from ..observers import phase_sync, glyph_load, kuramoto_order
 from ..sense import sigma_vector
+from ..logging_utils import get_logger
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 LATENT_GLYPH = Glyph.SHA.value

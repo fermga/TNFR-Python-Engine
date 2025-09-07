@@ -6,7 +6,7 @@ from typing import Any, Callable, DefaultDict, TYPE_CHECKING
 from enum import Enum
 from collections import defaultdict, deque
 from collections.abc import Sequence
-import logging
+from .logging_utils import get_logger
 
 from .constants import DEFAULTS
 from .trace import CallbackSpec
@@ -16,7 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 __all__ = ["CallbackEvent", "register_callback", "invoke_callbacks"]
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class CallbackEvent(str, Enum):

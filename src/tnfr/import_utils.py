@@ -4,17 +4,17 @@ from __future__ import annotations
 
 import importlib
 import warnings
-import logging
 from functools import lru_cache
 from typing import Any
 from collections import OrderedDict
 from dataclasses import dataclass, field
 import threading
+from .logging_utils import get_logger
 
 __all__ = ["optional_import", "get_numpy", "import_nodonx"]
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 _FAILED_IMPORT_LIMIT = 128  # keep only this many recent failures
