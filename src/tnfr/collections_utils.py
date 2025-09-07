@@ -8,6 +8,7 @@ from typing import (
     TypeVar,
     Mapping,
     Collection,
+    Sequence,
     cast,
 )
 import logging
@@ -75,13 +76,18 @@ def ensure_collection(
 
 def normalize_weights(
     dict_like: dict[str, Any],
-    keys: Iterable[str],
+    keys: Iterable[str] | Sequence[str],
     default: float = 0.0,
     *,
     error_on_negative: bool = False,
 ) -> dict[str, float]:
-    """Normalize ``keys`` in ``dict_like`` so their sum is 1."""
-    keys = list(keys)
+    """Normalize ``keys`` in ``dict_like`` so their sum is 1.
+
+    ``keys`` may be any iterable of strings. Sequences and other collections
+    are used directly while non-collection iterables are materialized.
+    """
+    if not isinstance(keys, Collection):
+        keys = list(keys)
     default_float = float(default)
     if not keys:
         return {}
