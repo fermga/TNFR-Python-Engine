@@ -160,20 +160,19 @@ def _check_repeats(
     return cand
 
 
-def _check_force(
+def _maybe_force(
     G,
     n,
     cand: str,
     original: str,
     cfg: Dict[str, Any],
     accessor: Callable[[Any, Dict[str, Any]], float],
-    cfg_key: str,
+    key: str,
 ) -> str:
-    """If repetition was blocked but ``accessor`` exceeds the threshold,
-    restore ``original``."""
+    """Restore ``original`` if ``accessor`` exceeds ``key`` threshold."""
     if cand == original:
         return cand
-    force_th = float(cfg.get(cfg_key, 0.60))
+    force_th = float(cfg.get(key, 0.60))
     if accessor(G, G.nodes[n]) >= force_th:
         return original
     return cand
@@ -246,10 +245,10 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
 
     original = cand
     cand = _check_repeats(G, n, cand, cfg_soft)
-    cand = _check_force(
+    cand = _maybe_force(
         G, n, cand, original, cfg_soft, _dnfr_norm, "force_dnfr"
     )
-    cand = _check_force(
+    cand = _maybe_force(
         G, n, cand, original, cfg_soft, _accel_norm, "force_accel"
     )
     cand = _check_oz_to_zhir(G, n, cand, cfg_canon)
