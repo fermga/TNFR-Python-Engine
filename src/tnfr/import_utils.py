@@ -59,7 +59,12 @@ def _warn_failure(module: str, attr: str | None, err: Exception) -> None:
         first = module not in _WARNED_MODULES
         if first:
             _WARNED_MODULES.add(module)
-            warnings.warn(msg, RuntimeWarning, stacklevel=2)
+
+    if not first:
+        logger.debug(msg)
+        return
+
+    warnings.warn(msg, RuntimeWarning, stacklevel=2)
     logger.warning(msg)
 
 
