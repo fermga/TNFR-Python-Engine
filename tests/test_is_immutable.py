@@ -20,6 +20,11 @@ def test_is_immutable_detects_mutable():
     assert not _is_immutable(data)
 
 
+def test_is_immutable_detects_set_and_bytearray():
+    assert not _is_immutable({1, 2})
+    assert not _is_immutable(bytearray(b"abc"))
+
+
 def test_is_immutable_lists_dicts_nested():
     data = (1, [2, {"a": (3, 4)}])
     assert not _is_immutable(data)
@@ -34,6 +39,16 @@ def test_is_immutable_inner_handles_mapping_tag():
 
 def test_is_immutable_inner_handles_dict_tag():
     frozen = ("dict", (("a", 1),))
+    assert not _is_immutable_inner(frozen)
+
+
+def test_is_immutable_inner_handles_set_tag():
+    frozen = ("set", (1, 2))
+    assert not _is_immutable_inner(frozen)
+
+
+def test_is_immutable_inner_handles_bytearray_tag():
+    frozen = ("bytearray", b"abc")
     assert not _is_immutable_inner(frozen)
 
 

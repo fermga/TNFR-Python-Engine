@@ -52,8 +52,12 @@ def _freeze(value: Any):
         return tuple(_freeze(v) for v in value)
     if isinstance(value, list):
         return ("list", tuple(_freeze(v) for v in value))
+    if isinstance(value, set):
+        return ("set", tuple(_freeze(v) for v in value))
     if isinstance(value, frozenset):
         return frozenset(_freeze(v) for v in value)
+    if isinstance(value, bytearray):
+        return ("bytearray", bytes(value))
     if isinstance(value, Mapping):
         tag = "dict" if hasattr(value, "__setitem__") else "mapping"
         return (tag, tuple((k, _freeze(v)) for k, v in value.items()))
@@ -67,7 +71,7 @@ def _is_immutable_inner(value: Any) -> bool:
     if isinstance(value, tuple):
         if value and isinstance(value[0], str):
             tag = value[0]
-            if tag in {"list", "dict"}:
+            if tag in {"list", "dict", "set", "bytearray"}:
                 return False
             if tag == "mapping":
                 return all(_is_immutable_inner(v) for v in value[1])
