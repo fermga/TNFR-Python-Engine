@@ -8,6 +8,27 @@ from tnfr.constants import THETA_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 from tnfr.helpers import increment_edge_version, cached_nodes_and_A
 
 
+def _counting_trig(monkeypatch):
+    import math
+
+    cos_calls = {"n": 0}
+    sin_calls = {"n": 0}
+    orig_cos = math.cos
+    orig_sin = math.sin
+
+    def cos_wrapper(x):
+        cos_calls["n"] += 1
+        return orig_cos(x)
+
+    def sin_wrapper(x):
+        sin_calls["n"] += 1
+        return orig_sin(x)
+
+    monkeypatch.setattr(math, "cos", cos_wrapper)
+    monkeypatch.setattr(math, "sin", sin_wrapper)
+    return cos_calls, sin_calls
+
+
 def _setup_graph():
     G = nx.path_graph(3)
     for n in G.nodes:
@@ -69,3 +90,17 @@ def test_cache_invalidated_on_node_rename():
     default_compute_delta_nfr(G)
 
     assert set(G.nodes) == {0, 1, 9}
+
+
+def test_prepare_dnfr_data_reuses_cache(monkeypatch):
+    cos_calls, sin_calls = _counting_trig(monkeypatch)
+    G = _setup_graph()
+    default_compute_delta_nfr(G)
+
+    cos_first = cos_calls["n"]
+    sin_first = sin_calls["n"]
+
+    # Subsequent call without modifications should reuse cached trig values
+    default_compute_delta_nfr(G)
+    assert cos_calls["n"] == cos_first
+    assert sin_calls["n"] == sin_first

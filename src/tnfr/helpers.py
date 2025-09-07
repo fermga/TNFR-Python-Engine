@@ -24,6 +24,7 @@ from .collections_utils import (
     mix_groups,
 )
 from .alias import get_attr
+from .graph_utils import mark_dnfr_prep_dirty
 
 _EDGE_CACHE_LOCK = threading.RLock()
 
@@ -54,6 +55,7 @@ __all__ = [
     "invalidate_edge_version_cache",
     "increment_edge_version",
     "node_set_checksum",
+    "mark_dnfr_prep_dirty",
 ]
 
 
@@ -340,6 +342,7 @@ def increment_edge_version(G: Any) -> None:
     graph = G.graph if hasattr(G, "graph") else G
     graph["_edge_version"] = int(graph.get("_edge_version", 0)) + 1
     invalidate_edge_version_cache(G)
+    mark_dnfr_prep_dirty(G)
     for key in (
         "_neighbors",
         "_neighbors_version",

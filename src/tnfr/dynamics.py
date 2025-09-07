@@ -159,7 +159,8 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
     nodes, A = cached_nodes_and_A(G, cache_size=cache_size)
     cache = G.graph.get("_dnfr_prep_cache")
     checksum = G.graph.get("_dnfr_nodes_checksum")
-    if cache and cache.get("checksum") == checksum:
+    dirty = bool(G.graph.pop("_dnfr_prep_dirty", False))
+    if cache and cache.get("checksum") == checksum and not dirty:
         idx = cache["idx"]
         theta = cache["theta"]
         epi = cache["epi"]
@@ -181,27 +182,38 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
             "vf": vf,
             "cos_theta": cos_theta,
             "sin_theta": sin_theta,
+            "degs": cache.get("degs") if cache else None,
         }
         G.graph["_dnfr_prep_cache"] = cache
+        dirty = True
 
-    for i, n in enumerate(nodes):
-        nd = G.nodes[n]
-        th = get_attr(nd, ALIAS_THETA, 0.0)
-        theta[i] = th
-        epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
-        vf[i] = get_attr(nd, ALIAS_VF, 0.0)
-        cos_theta[i] = math.cos(th)
-        sin_theta[i] = math.sin(th)
+    if dirty:
+        for i, n in enumerate(nodes):
+            nd = G.nodes[n]
+            th = get_attr(nd, ALIAS_THETA, 0.0)
+            theta[i] = th
+            epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
+            vf[i] = get_attr(nd, ALIAS_VF, 0.0)
+            cos_theta[i] = math.cos(th)
+            sin_theta[i] = math.sin(th)
 
     w_phase = float(weights.get("phase", 0.0))
     w_epi = float(weights.get("epi", 0.0))
     w_vf = float(weights.get("vf", 0.0))
     w_topo = float(weights.get("topo", 0.0))
-    degs = dict(G.degree()) if w_topo != 0 else None
-    cache["degs"] = degs
+    degs = cache.get("degs") if cache else None
+    if w_topo != 0 and (dirty or degs is None):
+        degs = dict(G.degree())
+        cache["degs"] = degs
+    elif w_topo == 0:
+        degs = None
+        if cache is not None:
+            cache["degs"] = None
 
     if not use_numpy:
         A = None
+
+    G.graph["_dnfr_prep_dirty"] = False
 
     return {
         "weights": weights,
