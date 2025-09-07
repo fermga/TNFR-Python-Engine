@@ -53,8 +53,7 @@ def _sigma_vector_from_graph_naive(G, weight_mode: str = "Si"):
         g, w, _ = nw
         pairs.append((g, w))
     vectors = (glyph_unit(g) * float(w) for g, w in pairs)
-    vec, n = _sigma_from_iterable(vectors)
-    vec["n"] = n
+    vec = _sigma_from_iterable(vectors)
     return vec
 
 
@@ -82,8 +81,8 @@ def test_sigma_vector_from_graph_matches_naive():
 
 
 def test_sigma_from_vectors_accepts_single_complex():
-    vec, n = _sigma_from_vectors(1 + 1j)
-    assert n == 1
+    vec = _sigma_from_vectors(1 + 1j)
+    assert vec["n"] == 1
     assert vec["x"] == pytest.approx(1.0)
     assert vec["y"] == pytest.approx(1.0)
 
@@ -94,8 +93,8 @@ def test_sigma_from_vectors_rejects_invalid_iterable():
 
 
 def test_sigma_from_iterable_accepts_reals():
-    vec, n = _sigma_from_iterable([1.0, 3.0])
-    assert n == 2
+    vec = _sigma_from_iterable([1.0, 3.0])
+    assert vec["n"] == 2
     assert vec["x"] == pytest.approx(2.0)
     assert vec["y"] == pytest.approx(0.0)
 

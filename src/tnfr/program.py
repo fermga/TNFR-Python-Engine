@@ -116,7 +116,9 @@ def _advance(G, step_fn: Optional[AdvanceFn] = None):
 
 def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
     """Expand a ``THOL`` block onto ``stack`` for processing."""
-    repeats = max(1, int(item.repeat))
+    repeats = int(item.repeat)
+    if repeats < 1:
+        raise ValueError("repeat must be ≥1")
     if item.force_close is not None and not isinstance(item.force_close, Glyph):
         raise ValueError("force_close must be a Glyph")
     closing = (

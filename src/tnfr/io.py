@@ -129,11 +129,8 @@ def safe_write(
     except Exception as e:  # noqa: BLE001 - rewrap after cleanup
         raise OSError(f"Failed to write file {path}: {e}") from e
     finally:
-        if tmp_path is not None and tmp_path.exists():
-            try:
-                tmp_path.unlink()
-            except OSError:
-                pass
+        if tmp_path is not None:
+            tmp_path.unlink(missing_ok=True)
 
 
 __all__ = ["read_structured_file", "safe_write", "StructuredFileError"]
