@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Mapping
+from typing import Any, Dict
+from collections.abc import Mapping
 import copy
 import warnings
 from types import MappingProxyType
 from functools import lru_cache
+from dataclasses import asdict, is_dataclass
 
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
 from .init import INIT_DEFAULTS
@@ -38,6 +40,12 @@ IMMUTABLE_SIMPLE = (
 
 
 def _freeze(value: Any):
+    if is_dataclass(value) and not isinstance(value, type):
+        params = getattr(type(value), "__dataclass_params__", None)
+        frozen = bool(params and params.frozen)
+        value = asdict(value)
+        tag = "mapping" if frozen else "dict"
+        return (tag, tuple((k, _freeze(v)) for k, v in value.items()))
     if isinstance(value, IMMUTABLE_SIMPLE):
         return value
     if isinstance(value, tuple):
@@ -46,10 +54,9 @@ def _freeze(value: Any):
         return ("list", tuple(_freeze(v) for v in value))
     if isinstance(value, frozenset):
         return frozenset(_freeze(v) for v in value)
-    if isinstance(value, MappingProxyType):
-        return ("mappingproxy", tuple((k, _freeze(v)) for k, v in value.items()))
     if isinstance(value, Mapping):
-        return ("dict", tuple((k, _freeze(v)) for k, v in value.items()))
+        tag = "dict" if hasattr(value, "__setitem__") else "mapping"
+        return (tag, tuple((k, _freeze(v)) for k, v in value.items()))
     raise TypeError
 
 
@@ -62,7 +69,7 @@ def _is_immutable_inner(value: Any) -> bool:
             tag = value[0]
             if tag in {"list", "dict"}:
                 return False
-            if tag == "mappingproxy":
+            if tag == "mapping":
                 return all(_is_immutable_inner(v) for v in value[1])
         return all(_is_immutable_inner(v) for v in value)
     if isinstance(value, frozenset):
