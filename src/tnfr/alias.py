@@ -41,18 +41,26 @@ __all__ = [
 ]
 
 
-@lru_cache(maxsize=128)
 def _validate_aliases(aliases: Sequence[str]) -> tuple[str, ...]:
     """Return ``aliases`` as a validated tuple of strings."""
     if isinstance(aliases, str) or not isinstance(aliases, Sequence):
         raise TypeError("'aliases' must be a non-string sequence")
-    seq = tuple(aliases)
-    if not seq:
+    return _cached_validate_aliases(tuple(aliases))
+
+
+@lru_cache(maxsize=128)
+def _cached_validate_aliases(aliases: tuple[str, ...]) -> tuple[str, ...]:
+    if not aliases:
         raise ValueError("'aliases' must contain at least one key")
-    for a in seq:
+    for a in aliases:
         if not isinstance(a, str):
             raise TypeError("'aliases' elements must be strings")
-    return seq
+    return aliases
+
+
+# expose cache management helpers on the public function
+_validate_aliases.cache_clear = _cached_validate_aliases.cache_clear  # type: ignore[attr-defined]
+_validate_aliases.cache_info = _cached_validate_aliases.cache_info  # type: ignore[attr-defined]
 
 
 def _alias_resolve(

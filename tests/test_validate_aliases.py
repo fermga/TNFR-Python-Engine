@@ -18,6 +18,5 @@ def test_rejects_non_string_elements():
         _validate_aliases(("a", 1))
 
 
-def test_rejects_unhashable_sequence():
-    with pytest.raises(TypeError):
-        _validate_aliases(["a"])
+def test_accepts_list_sequence():
+    assert _validate_aliases(["a"]) == ("a",)
