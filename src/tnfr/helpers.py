@@ -326,9 +326,9 @@ def edge_version_cache(
     Cache lookups and updates are serialized via ``_EDGE_CACHE_LOCK``.  A
     dedicated ``threading.Lock`` is maintained for each cache key so that
     different keys can be computed concurrently while still preventing
-    duplicate work for the same key.  Locks are kept in a
-    :class:`weakref.WeakValueDictionary` and are therefore cleaned up
-    automatically when their corresponding cache entries are evicted.
+    duplicate work for the same key.  Locks are stored in a
+    :class:`weakref.WeakValueDictionary` and thus cleaned up automatically
+    when no longer in use.
 
     When ``max_entries`` is a positive integer, only the most recent
     ``max_entries`` cache entries are kept (defaults to ``128``).  The
@@ -384,7 +384,7 @@ def edge_version_cache(
             entry = cache.get(key)
             if entry is not None and entry[0] == edge_version:
                 return entry[1]
-            cache[key] = (edge_version, value, lock)
+            cache[key] = (edge_version, value)
             return value
 
 
