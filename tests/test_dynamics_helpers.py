@@ -1,6 +1,7 @@
 """Tests for dynamics helpers."""
 
 import pytest
+import networkx as nx
 
 from tnfr.dynamics import (
     _init_dnfr_cache,
@@ -26,14 +27,25 @@ def test_init_and_refresh_dnfr_cache(graph_canon):
 
 
 def test_compute_neighbor_means_list():
-    data = {"w_topo": 0.0, "theta": [0.0, 0.0], "epi": [0.0, 0.0], "vf": [0.0, 0.0]}
+    G = nx.Graph()
+    G.add_edge(0, 1)
+    data = {
+        "w_topo": 0.0,
+        "theta": [0.0, 0.0],
+        "epi": [0.0, 0.0],
+        "vf": [0.0, 0.0],
+        "cos_theta": [1.0, 1.0],
+        "sin_theta": [0.0, 0.0],
+        "idx": {0: 0, 1: 1},
+        "nodes": [0, 1],
+    }
     x = [1.0, 0.0]
     y = [0.0, 0.0]
     epi_sum = [2.0, 0.0]
     vf_sum = [0.0, 0.0]
     count = [1, 0]
     th_bar, epi_bar, vf_bar, deg_bar = _compute_neighbor_means(
-        data, x=x, y=y, epi_sum=epi_sum, vf_sum=vf_sum, count=count
+        G, data, x=x, y=y, epi_sum=epi_sum, vf_sum=vf_sum, count=count
     )
     assert th_bar[0] == pytest.approx(0.0)
     assert epi_bar[0] == pytest.approx(2.0)

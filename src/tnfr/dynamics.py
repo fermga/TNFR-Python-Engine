@@ -44,6 +44,7 @@ from .helpers import (
     neighbor_phase_mean,
     cached_nodes_and_A,
     node_set_checksum,
+    _phase_mean_from_iter,
 )
 from .alias import (
     get_attr,
@@ -288,6 +289,7 @@ def _apply_dnfr_gradients(
 
 
 def _compute_neighbor_means(
+    G,
     data,
     *,
     x,
@@ -328,10 +330,18 @@ def _compute_neighbor_means(
     epi_bar = list(epi)
     vf_bar = list(vf)
     deg_bar = list(degs) if w_topo != 0.0 and degs is not None else None
+    cos_th = data["cos_theta"]
+    sin_th = data["sin_theta"]
+    idx = data["idx"]
+    nodes = data["nodes"]
     for i in range(n):
         c = count[i]
         if c:
-            th_bar[i] = math.atan2(y[i] / c, x[i] / c)
+            node = nodes[i]
+            th_bar[i] = _phase_mean_from_iter(
+                ((cos_th[idx[v]], sin_th[idx[v]]) for v in G.neighbors(node)),
+                theta[i],
+            )
             epi_bar[i] = epi_sum[i] / c
             vf_bar[i] = vf_sum[i] / c
             if w_topo != 0.0 and deg_bar is not None and deg_sum is not None:
@@ -354,6 +364,7 @@ def _compute_dnfr_common(
     """Compute neighbour means and apply ΔNFR gradients."""
 
     th_bar, epi_bar, vf_bar, deg_bar = _compute_neighbor_means(
+        G,
         data,
         x=x,
         y=y,
