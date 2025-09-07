@@ -104,11 +104,13 @@ class HistoryDict(dict):
     def _prune_heap(self) -> None:
         """Remove stale heap entries incrementally."""
         target = len(self._counts) + self._compact_every
-        while len(self._heap) > target:
-            cnt, key = self._heap[0]
+        buffer: list[tuple[int, str]] = []
+        while len(self._heap) + len(buffer) > target:
+            cnt, key = heapq.heappop(self._heap)
             if self._counts.get(key) == cnt:
-                break
-            heapq.heappop(self._heap)
+                buffer.append((cnt, key))
+        for item in buffer:
+            heapq.heappush(self._heap, item)
 
     def _pop_heap_key(self) -> str:
         """Pop and return the key with the smallest count from the heap."""
