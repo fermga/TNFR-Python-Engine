@@ -219,31 +219,41 @@ def node_set_checksum(
 ) -> str:
     """Return a BLAKE2b checksum of ``G``'s node set.
 
-    Nodes are serialised using :func:`_node_repr`. The checksum is computed
-    incrementally by hashing each node and combining the intermediate digests
-    in an order-independent manner. When ``store`` is ``True`` the accumulated
-    hash value is cached under ``"_node_set_checksum_cache"`` to avoid
-    recalculating it for unchanged graphs.
+    Nodes are serialised using :func:`_node_repr`. Each node's digest is
+    computed individually and the collection of digests is sorted to make the
+    resulting checksum independent of node ordering. The sorted digests are then
+    fed into a new :class:`hashlib.blake2b` instance. When ``store`` is ``True``
+    the tuple of digests along with the final checksum is cached under
+    ``"_node_set_checksum_cache"`` to avoid recalculating it for unchanged
+    graphs.
     """
 
     graph = get_graph(G)
     node_iterable = G.nodes() if nodes is None else nodes
 
-    acc = 0
-    for n in node_iterable:
-        digest = hashlib.blake2b(
-            _node_repr(n).encode("utf-8"), digest_size=16
-        ).digest()
-        acc ^= int.from_bytes(digest, "big")
+    digests = [
+        hashlib.blake2b(_node_repr(n).encode("utf-8"), digest_size=16).digest()
+        for n in node_iterable
+    ]
+
+    if not presorted:
+        digests.sort()
+
+    digest_tuple = tuple(digests)
 
     if store:
         cached = graph.get("_node_set_checksum_cache")
-        if cached and cached[0] == acc:
+        if cached and cached[0] == digest_tuple:
             return cached[1]
 
-    checksum = hashlib.blake2b(acc.to_bytes(16, "big"), digest_size=16).hexdigest()
+    hasher = hashlib.blake2b(digest_size=16)
+    for d in digest_tuple:
+        hasher.update(d)
+    checksum = hasher.hexdigest()
+
     if store:
-        graph["_node_set_checksum_cache"] = (acc, checksum)
+        graph["_node_set_checksum_cache"] = (digest_tuple, checksum)
+
     return checksum
 
 
