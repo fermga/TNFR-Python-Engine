@@ -7,6 +7,7 @@ import warnings
 import logging
 from functools import lru_cache
 from typing import Any
+from collections import deque
 import threading
 
 __all__ = ["optional_import", "get_numpy", "import_nodonx"]
@@ -15,7 +16,8 @@ __all__ = ["optional_import", "get_numpy", "import_nodonx"]
 logger = logging.getLogger(__name__)
 
 
-_FAILED_IMPORTS: set[str] = set()
+_FAILED_IMPORT_LIMIT = 128  # keep only this many recent failures
+_FAILED_IMPORTS: deque[str] = deque(maxlen=_FAILED_IMPORT_LIMIT)
 _FAILED_IMPORTS_LOCK = threading.Lock()
 
 
@@ -31,8 +33,8 @@ def _warn_failure(module: str, attr: str | None, err: Exception) -> None:
 def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     """Import ``name`` returning ``fallback`` if it fails.
 
-    This function is thread-safe: concurrent failures are recorded in a shared
-    set protected by a lock to avoid race conditions.
+    This function is thread-safe: concurrent failures are recorded in a bounded
+    deque protected by a lock to avoid race conditions.
 
     ``name`` may refer to a module, submodule or attribute. If the import or
     attribute access fails a warning is emitted and ``fallback`` is returned.
@@ -64,17 +66,23 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
         module = importlib.import_module(module_name)
         obj = getattr(module, attr) if attr else module
         with _FAILED_IMPORTS_LOCK:
-            _FAILED_IMPORTS.discard(name)
-            _FAILED_IMPORTS.discard(module_name)
+            for item in (name, module_name):
+                try:
+                    _FAILED_IMPORTS.remove(item)
+                except ValueError:
+                    pass
         return obj
     except (ImportError, AttributeError) as e:
         if not previously_failed:
             _warn_failure(module_name, attr, e)
         with _FAILED_IMPORTS_LOCK:
             if isinstance(e, ImportError):
-                _FAILED_IMPORTS.update({name, module_name})
-            else:
-                _FAILED_IMPORTS.add(name)
+                if module_name not in _FAILED_IMPORTS:
+                    _FAILED_IMPORTS.append(module_name)
+                if name not in _FAILED_IMPORTS:
+                    _FAILED_IMPORTS.append(name)
+            elif name not in _FAILED_IMPORTS:
+                _FAILED_IMPORTS.append(name)
     return fallback
 
 
