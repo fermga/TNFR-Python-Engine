@@ -3,6 +3,7 @@
 from __future__ import annotations
 from typing import (
     Iterable,
+    Sequence,
     Dict,
     Any,
     Callable,
@@ -50,6 +51,7 @@ __all__ = [
     "normalize_weights",
     "neighbor_mean",
     "neighbor_phase_mean",
+    "neighbor_phase_mean_list",
     "push_glyph",
     "recent_glyph",
     "ensure_history",
@@ -137,10 +139,22 @@ def _phase_mean_from_iter(
     return math.atan2(y, x)
 
 
-@lru_cache(maxsize=1)
-def _get_nodonx():
-    """Return :class:`NodoNX` caching the deferred import."""
-    return import_nodonx()
+def neighbor_phase_mean_list(
+    neigh: Sequence[Any],
+    cos_th: Dict[Any, float],
+    sin_th: Dict[Any, float],
+    np=None,
+    fallback: float = 0.0,
+) -> float:
+    """Return circular mean of neighbour phases from cosine/sine mappings."""
+    deg = len(neigh)
+    if deg == 0:
+        return fallback
+    if np is not None:
+        vals = np.array([(cos_th[v], sin_th[v]) for v in neigh], dtype=float)
+        mean_cos, mean_sin = vals.mean(axis=0)
+        return float(np.arctan2(float(mean_sin), float(mean_cos)))
+    return _phase_mean_from_iter(((cos_th[v], sin_th[v]) for v in neigh), fallback)
 
 
 def neighbor_phase_mean(obj, n=None) -> float:
@@ -148,8 +162,7 @@ def neighbor_phase_mean(obj, n=None) -> float:
 
     The :class:`NodoNX` import is cached after the first call.
     """
-    NodoNX = _get_nodonx()
-
+    NodoNX = import_nodonx()
     node = NodoNX(obj, n) if n is not None else obj
     if getattr(node, "G", None) is None:
         raise TypeError("neighbor_phase_mean requires nodes bound to a graph")

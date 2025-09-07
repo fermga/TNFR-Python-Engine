@@ -228,7 +228,6 @@ __all__ = [
     "DIAGNOSIS",
     "DEFAULTS",
     "ALIASES",
-    "attach_defaults",
     "inject_defaults",
     "merge_overrides",
     "get_param",

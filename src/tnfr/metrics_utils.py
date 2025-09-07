@@ -17,7 +17,12 @@ from .constants import (
 )
 from .alias import get_attr, set_attr, multi_recompute_abs_max
 from .collections_utils import normalize_weights
-from .helpers import clamp01, angle_diff, edge_version_cache, _phase_mean_from_iter
+from .helpers import (
+    clamp01,
+    angle_diff,
+    edge_version_cache,
+    neighbor_phase_mean_list,
+)
 from .import_utils import get_numpy
 
 
@@ -28,7 +33,6 @@ __all__ = [
     "ensure_neighbors_map",
     "get_Si_weights",
     "get_trig_cache",
-    "precompute_trigonometry",
     "compute_Si_node",
     "compute_Si",
     "min_max_range",
@@ -119,14 +123,6 @@ def get_trig_cache(G: Any) -> TrigCache:
     return edge_version_cache(G, "_trig", lambda: _build_trig_cache(G))
 
 
-def precompute_trigonometry(G: Any) -> TrigCache:
-    """Precompute cosines and sines of ``θ`` per node.
-
-    Alias for :func:`get_trig_cache` for backward compatibility.
-    """
-    return get_trig_cache(G)
-
-
 def _mean_phase(
     neigh: Sequence[Any],
     cos_th: Dict[Any, float],
@@ -134,30 +130,8 @@ def _mean_phase(
     np,
     th_i: float,
 ) -> float:
-    """Return mean phase for neighbours of a node.
-
-    Parameters
-    ----------
-    neigh:
-        Sequence of neighbour identifiers.
-    cos_th, sin_th:
-        Mappings from node to ``cos(θ)`` and ``sin(θ)`` respectively.
-    np:
-        Optional :mod:`numpy`-like module. When ``None`` a pure Python
-        implementation is used.
-    th_i:
-        Fallback phase used when ``neigh`` is empty.
-    """
-    deg = len(neigh)
-    if deg:
-        if np is not None:
-            cos_vals = np.fromiter((cos_th[v] for v in neigh), float, count=deg)
-            sin_vals = np.fromiter((sin_th[v] for v in neigh), float, count=deg)
-            return float(
-                np.arctan2(float(sin_vals.mean()), float(cos_vals.mean()))
-            )
-        return _phase_mean_from_iter(((cos_th[v], sin_th[v]) for v in neigh), th_i)
-    return th_i
+    """Return mean phase for neighbours of a node."""
+    return neighbor_phase_mean_list(neigh, cos_th, sin_th, np, th_i)
 
 
 def compute_Si_node(
@@ -182,7 +156,7 @@ def compute_Si_node(
 
     th_i = thetas[n]
     neigh = neighbors[n]
-    th_bar = _mean_phase(neigh, cos_th, sin_th, np, th_i)
+    th_bar = neighbor_phase_mean_list(neigh, cos_th, sin_th, np, th_i)
     disp_fase = abs(angle_diff(th_i, th_bar)) / math.pi
 
     dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
@@ -219,7 +193,7 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
 
     vfmax, dnfrmax = _get_vf_dnfr_max(G)
 
-    trig = precompute_trigonometry(G)
+    trig = get_trig_cache(G)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
     np = get_numpy()
 

@@ -54,8 +54,8 @@ from .alias import (
     set_dnfr,
     multi_recompute_abs_max,
 )
-from .metrics_utils import compute_Si, compute_dnfr_accel_max
-from .rng import _rng_for_step
+from .metrics_utils import compute_Si, compute_dnfr_accel_max, get_trig_cache
+from .rng import _rng_for_step, base_seed
 from .callback_utils import invoke_callbacks
 from .glyph_history import recent_glyph, ensure_history, append_metric
 from .collections_utils import normalize_weights
@@ -91,7 +91,7 @@ def _update_node_sample(G, *, step: int) -> None:
         graph["_node_sample"] = nodes
         return
 
-    seed = int(graph.get("RANDOM_SEED", 0))
+    seed = base_seed(G)
     rng = _rng_for_step(seed, step)
     graph["_node_sample"] = rng.sample(nodes, limit)
 
@@ -135,18 +135,6 @@ def _configure_dnfr_weights(G) -> dict:
     return weights
 
 
-def _compute_cos_sin(theta_list):
-    """Return ``(cos(theta), sin(theta))`` for ``theta_list``.
-
-    When :mod:`numpy` is available the computation is vectorised.
-    """
-    np = get_numpy()
-    if np is not None:
-        arr = np.array(theta_list, dtype=float)
-        return list(np.cos(arr)), list(np.sin(arr))
-    return [math.cos(t) for t in theta_list], [math.sin(t) for t in theta_list]
-
-
 def _init_dnfr_cache(G, nodes, prev_cache, checksum, dirty):
     """Initialise or reuse cached ΔNFR arrays."""
     if prev_cache and prev_cache.get("checksum") == checksum and not dirty:
@@ -162,7 +150,8 @@ def _init_dnfr_cache(G, nodes, prev_cache, checksum, dirty):
     theta = [0.0] * len(nodes)
     epi = [0.0] * len(nodes)
     vf = [0.0] * len(nodes)
-    cos_theta, sin_theta = _compute_cos_sin(theta)
+    cos_theta = [1.0] * len(nodes)
+    sin_theta = [0.0] * len(nodes)
     cache = {
         "checksum": checksum,
         "idx": idx,
@@ -179,18 +168,18 @@ def _init_dnfr_cache(G, nodes, prev_cache, checksum, dirty):
 
 def _refresh_dnfr_vectors(G, nodes, theta, epi, vf, cos_theta, sin_theta):
     """Update cached angle and state vectors for ΔNFR."""
+    trig = get_trig_cache(G)
     for i, n in enumerate(nodes):
         nd = G.nodes[n]
         th = get_attr(nd, ALIAS_THETA, 0.0)
         theta[i] = th
         epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
         vf[i] = get_attr(nd, ALIAS_VF, 0.0)
-    cos_vals, sin_vals = _compute_cos_sin(theta)
-    cos_theta[:] = cos_vals
-    sin_theta[:] = sin_vals
+        cos_theta[i] = trig.cos.get(n, math.cos(th))
+        sin_theta[i] = trig.sin.get(n, math.sin(th))
 
 
-def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
+def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     """Precompute common data for ΔNFR strategies."""
     weights = G.graph.get("_dnfr_weights")
     if weights is None:

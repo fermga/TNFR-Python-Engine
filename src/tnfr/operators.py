@@ -28,12 +28,13 @@ from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers import (
     list_mean,
     angle_diff,
+    neighbor_mean,
     neighbor_phase_mean,
     increment_edge_version,
     ensure_node_offset_map,
 )
 from .alias import get_attr, set_attr
-from .rng import get_rng
+from .rng import get_rng, base_seed
 from .callback_utils import invoke_callbacks
 from .glyph_history import append_metric
 from .import_utils import import_nodonx, optional_import
@@ -95,9 +96,9 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     if amplitude == 0:
         return 0.0
 
-    base_seed = int(node.graph.get("RANDOM_SEED", 0))
+    seed_root = base_seed(node.G)
     seed_key, scope_id = _resolve_jitter_seed(node)
-    seed = base_seed ^ scope_id
+    seed = seed_root ^ scope_id
     rng = get_rng(seed, seed_key)
     return rng.uniform(-amplitude, amplitude)
 
@@ -135,26 +136,23 @@ def _mix_epi_with_neighbors(
         else str(default_glyph)
     )
     epi = node.EPI
-    neigh_iter = node.neighbors()
+    neigh = list(node.neighbors())
     if hasattr(node, "G"):
+        epi_bar = neighbor_mean(node.G, node.n, ALIAS_EPI, default=epi)
         NodoNX = import_nodonx()
-        original_iter = neigh_iter
+        neigh = [v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v) for v in neigh]
+    else:
+        if not neigh:
+            node.epi_kind = default_kind
+            return epi, default_kind
+        epi_bar = list_mean((v.EPI for v in neigh), default=epi)
 
-        def _gen():
-            for v in original_iter:
-                yield v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)
-
-        neigh_iter = _gen()  # type: ignore[attr-defined]
-
-    total = 0.0
     count = 0
     best_kind: Optional[str] = None
     best_abs = 0.0
-    for v in neigh_iter:
-        epi_v = v.EPI
-        total += epi_v
+    for v in neigh:
         count += 1
-        abs_v = abs(epi_v)
+        abs_v = abs(v.EPI)
         if abs_v > best_abs:
             best_abs = abs_v
             best_kind = v.epi_kind
@@ -163,7 +161,6 @@ def _mix_epi_with_neighbors(
         node.epi_kind = default_kind
         return epi, default_kind
 
-    epi_bar = total / count
     new_epi = (1 - mix) * epi + mix * epi_bar
     node.EPI = new_epi
     dominant = (

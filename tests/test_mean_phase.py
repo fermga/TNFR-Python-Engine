@@ -20,12 +20,14 @@ def test_mean_phase_with_numpy_stub():
     th_i = 0.0
 
     class DummyNP:
-        def fromiter(self, iterable, dtype, count):
-            vals = list(iterable)
+        def array(self, iterable, dtype=float):
             class Arr(list):
-                def mean(self):
+                def mean(self, axis=None):
+                    if axis == 0:
+                        cols = len(self[0])
+                        return [sum(row[i] for row in self) / len(self) for i in range(cols)]
                     return sum(self) / len(self)
-            return Arr(vals)
+            return Arr(list(iterable))
 
         def arctan2(self, y, x):
             return math.atan2(y, x)
