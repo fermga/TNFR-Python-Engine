@@ -94,6 +94,26 @@ CANON_FALLBACK: Dict[Glyph, Glyph] = {
     Glyph.ZHIR: Glyph.IL,
 }
 
+
+def _coerce_glyph(val: Any) -> Glyph | Any:
+    """Return ``val`` as ``Glyph`` when possible."""
+    try:
+        return Glyph(val)
+    except (ValueError, TypeError):
+        return val
+
+
+def _glyph_fallback(cand_key: str, fallbacks: Dict[str, Any]) -> Glyph | str:
+    """Determine fallback glyph for ``cand_key`` and return converted value."""
+    glyph_key = _coerce_glyph(cand_key)
+    canon_fb = (
+        CANON_FALLBACK.get(glyph_key, cand_key)
+        if isinstance(glyph_key, Glyph)
+        else cand_key
+    )
+    fb = fallbacks.get(cand_key, canon_fb)
+    return _coerce_glyph(fb)
+
 # -------------------------
 # THOL closures and ZHIR preconditions
 # -------------------------
@@ -126,7 +146,9 @@ def _accel_norm(G, nd) -> float:
     return _norm_attr(G, nd, ALIAS_D2EPI, "accel_max")
 
 
-def _check_repeats(G, n, cand: str, cfg: Dict[str, Any]) -> str:
+def _check_repeats(
+    G, n, cand: Glyph | str, cfg: Dict[str, Any]
+) -> Glyph | str:
     """Avoid recent repetitions according to ``cfg``."""
     nd = G.nodes[n]
     gwin = int(cfg.get("window", 0))
@@ -134,15 +156,7 @@ def _check_repeats(G, n, cand: str, cfg: Dict[str, Any]) -> str:
     fallbacks = cfg.get("fallbacks", {})
     cand_key = cand.value if isinstance(cand, Glyph) else str(cand)
     if gwin > 0 and cand_key in avoid and recent_glyph(nd, cand_key, gwin):
-        try:
-            glyph_key = Glyph(cand_key)
-        except ValueError:
-            glyph_key = cand_key
-        fb = fallbacks.get(cand_key, CANON_FALLBACK.get(glyph_key, cand_key))
-        try:
-            return Glyph(fb)
-        except (ValueError, TypeError):
-            return fb
+        return _glyph_fallback(cand_key, fallbacks)
     return cand
 
 

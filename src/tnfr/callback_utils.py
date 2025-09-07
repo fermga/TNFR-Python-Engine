@@ -176,7 +176,7 @@ def invoke_callbacks(
         try:
             fn(G, ctx)
         except Exception as e:  # catch all callback errors
-            logger.warning("callback %r failed for %s: %s", name, event, e)
+            logger.exception("callback %r failed for %s: %s", name, event, e)
             if strict:
                 raise
             err_list.append(
