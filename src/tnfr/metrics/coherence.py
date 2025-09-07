@@ -56,13 +56,13 @@ def coherence_matrix(G):
     if not cfg.get("enabled", True):
         return None, None
 
-    nodes = list(G.nodes())
+    node_to_index = ensure_node_index_map(G)
+    nodes = list(node_to_index.keys())
     n = len(nodes)
     if n == 0:
         return nodes, []
 
     # Precompute indices to avoid repeated list.index calls within loops
-    node_to_index = ensure_node_index_map(G)
 
     th_vals = [get_attr(G.nodes[v], ALIAS_THETA, 0.0) for v in nodes]
     epi_vals = [get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in nodes]

@@ -35,16 +35,26 @@ def _missing_dependency(name: str) -> Callable[[str], Any]:
 
     return _raise
 
+PARSERS = {
+    ".json": json.loads,
+    ".yaml": lambda text: getattr(
+        yaml, "safe_load", _missing_dependency("pyyaml")
+    )(text),
+    ".yml": lambda text: getattr(
+        yaml, "safe_load", _missing_dependency("pyyaml")
+    )(text),
+    ".toml": lambda text: getattr(
+        tomllib, "loads", _missing_dependency("tomllib/tomli")
+    )(text),
+}
+
 
 @lru_cache(maxsize=None)
 def _get_parser(suffix: str) -> Callable[[str], Any]:
-    if suffix == ".json":
-        return json.loads
-    if suffix in (".yaml", ".yml"):
-        return getattr(yaml, "safe_load", _missing_dependency("pyyaml"))
-    if suffix == ".toml":
-        return getattr(tomllib, "loads", _missing_dependency("tomllib/tomli"))
-    raise ValueError(f"Unsupported suffix: {suffix}")
+    try:
+        return PARSERS[suffix]
+    except KeyError:
+        raise ValueError(f"Unsupported suffix: {suffix}")
 
 
 def _format_structured_file_error(path: Path, e: Exception) -> str:

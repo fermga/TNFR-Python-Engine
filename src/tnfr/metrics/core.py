@@ -136,7 +136,7 @@ def _update_tg(G, hist, dt, save_by_node: bool):
 
     n_total = 0
     n_latent = 0
-    for n, nd in G._node.items():
+    for n, nd in G.nodes(data=True):
         g = last(nd)
         if not g:
             continue
