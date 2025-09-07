@@ -93,7 +93,7 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
     try:
         result = float(fmean(xs))
     except (StatisticsError, ValueError, TypeError):
-        result = result  # default already converted
+        pass
     return result
 
 
