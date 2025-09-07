@@ -12,8 +12,8 @@ from typing import (
 import math
 import hashlib
 from statistics import fmean, StatisticsError
-from collections import OrderedDict
 import threading
+from cachetools import LRUCache
 
 from .import_utils import get_numpy, import_nodonx
 from .collections_utils import (
@@ -25,9 +25,7 @@ from .collections_utils import (
 )
 from .alias import get_attr
 
-_EDGE_CACHE_LOCK = threading.Lock()
-_EDGE_CACHE_COND = threading.Condition(_EDGE_CACHE_LOCK)
-_EDGE_CACHE_PENDING = object()
+_EDGE_CACHE_LOCK = threading.RLock()
 
 if TYPE_CHECKING:  # pragma: no cover - solo para type checkers
     import networkx as nx
@@ -53,6 +51,7 @@ __all__ = [
     "ensure_node_offset_map",
     "edge_version_cache",
     "cached_nodes_and_A",
+    "invalidate_edge_version_cache",
     "increment_edge_version",
     "node_set_checksum",
 ]
@@ -274,46 +273,37 @@ def edge_version_cache(
     All cache access is serialized via ``_EDGE_CACHE_LOCK`` to ensure
     thread-safety. When ``max_entries`` is a positive integer, only the most
     recent ``max_entries`` cache entries are kept (defaults to ``128``).
-    The potentially expensive ``builder`` is executed outside the lock when
-    the cache is cold.
     """
     if max_entries is not None and max_entries < 0:
         raise ValueError("max_entries must be non-negative or None")
     graph = G.graph if hasattr(G, "graph") else G
+    cache = graph.get("_edge_version_cache")
+    if cache is None or (
+        isinstance(cache, LRUCache)
+        and max_entries not in (None, 0)
+        and cache.maxsize != max_entries
+    ):
+        cache = LRUCache(max_entries) if max_entries not in (None, 0) else {}
+        graph["_edge_version_cache"] = cache
     edge_version = int(graph.get("_edge_version", 0))
-    with _EDGE_CACHE_COND:
-        cache_dict: OrderedDict = graph.setdefault("_edge_version_cache", OrderedDict())
-        entry = cache_dict.get(key)
-        # Wait for concurrent builders to finish (double-checked locking)
-        while entry is not None and entry[0] == edge_version and entry[1] is _EDGE_CACHE_PENDING:
-            _EDGE_CACHE_COND.wait()
-            entry = cache_dict.get(key)
+    with _EDGE_CACHE_LOCK:
+        try:
+            entry = cache[key]
+        except KeyError:
+            entry = None
         if entry is not None and entry[0] == edge_version:
-            if max_entries is not None and max_entries > 0:
-                cache_dict.move_to_end(key)
             return entry[1]
-        # Reserve placeholder so other threads skip building
-        cache_dict[key] = (edge_version, _EDGE_CACHE_PENDING)
-
-    exc: Exception | None = None
-    try:
         value = builder()
-    except Exception as e:  # noqa: BLE001 - reraised after cleanup
-        exc = e
-    finally:
-        with _EDGE_CACHE_COND:
-            if exc is None:
-                cache_dict[key] = (edge_version, value)
-                if max_entries is not None and max_entries > 0:
-                    cache_dict.move_to_end(key)
-                    while len(cache_dict) > max_entries:
-                        cache_dict.popitem(last=False)
-            else:
-                cache_dict.pop(key, None)
-            _EDGE_CACHE_COND.notify_all()
-    if exc is not None:
-        raise exc
-    return value
+        cache[key] = (edge_version, value)
+        return value
+
+
+def invalidate_edge_version_cache(G: Any) -> None:
+    """Clear cached entries associated with ``G``."""
+    graph = G.graph if hasattr(G, "graph") else G
+    cache = graph.get("_edge_version_cache")
+    if cache is not None:
+        cache.clear()
 
 
 def cached_nodes_and_A(
@@ -342,6 +332,7 @@ def increment_edge_version(G: Any) -> None:
     """Increment the edge version counter in ``G.graph``."""
     graph = G.graph if hasattr(G, "graph") else G
     graph["_edge_version"] = int(graph.get("_edge_version", 0)) + 1
+    invalidate_edge_version_cache(G)
     for key in (
         "_neighbors",
         "_neighbors_version",

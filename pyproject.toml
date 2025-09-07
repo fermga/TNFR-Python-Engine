@@ -30,7 +30,8 @@ classifiers = [
   "Topic :: Scientific/Engineering :: TNFR"
 ]
 dependencies = [
-  "networkx>=2.6"
+  "networkx>=2.6",
+  "cachetools>=5"
 ]
 
 [project.optional-dependencies]
