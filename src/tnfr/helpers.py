@@ -32,6 +32,18 @@ from .graph_utils import mark_dnfr_prep_dirty
 
 _EDGE_CACHE_LOCK = threading.RLock()
 
+# Keys of cache entries dependent on the edge version.  Any change to the edge
+# set requires these to be dropped to avoid stale data.
+EDGE_VERSION_CACHE_KEYS = (
+    "_neighbors",
+    "_neighbors_version",
+    "_cos_th",
+    "_sin_th",
+    "_thetas",
+    "_trig_cache",
+    "_trig_version",
+)
+
 __all__ = [
     "MAX_MATERIALIZE_DEFAULT",
     "ensure_collection",
@@ -246,25 +258,31 @@ def node_set_checksum(
         node_iterable = sorted(node_iterable, key=_node_repr)
 
     hasher = hashlib.blake2b(digest_size=16)
-    digests: list[bytes] = []
-    for n in node_iterable:
-        d = hashlib.blake2b(_node_repr(n).encode("utf-8"), digest_size=16).digest()
-        hasher.update(d)
-        digests.append(d)
-
-    digest_tuple = tuple(digests)
 
     if store:
+        digests: list[bytes] = []
+        for n in node_iterable:
+            d = hashlib.blake2b(
+                _node_repr(n).encode("utf-8"), digest_size=16
+            ).digest()
+            hasher.update(d)
+            digests.append(d)
+
+        digest_tuple = tuple(digests)
+
         cached = graph.get("_node_set_checksum_cache")
         if cached and cached[0] == digest_tuple:
             return cached[1]
 
-    checksum = hasher.hexdigest()
-
-    if store:
+        checksum = hasher.hexdigest()
         graph["_node_set_checksum_cache"] = (digest_tuple, checksum)
+        return checksum
 
-    return checksum
+    for n in node_iterable:
+        d = hashlib.blake2b(_node_repr(n).encode("utf-8"), digest_size=16).digest()
+        hasher.update(d)
+
+    return hasher.hexdigest()
 
 
 def _ensure_node_map(G, *, key: str, sort: bool = False) -> Dict[Any, int]:
@@ -408,13 +426,5 @@ def increment_edge_version(G: Any) -> None:
     invalidate_edge_version_cache(G)
     mark_dnfr_prep_dirty(G)
     _node_repr.cache_clear()
-    for key in (
-        "_neighbors",
-        "_neighbors_version",
-        "_cos_th",
-        "_sin_th",
-        "_thetas",
-        "_trig_cache",
-        "_trig_version",
-    ):
+    for key in EDGE_VERSION_CACHE_KEYS:
         graph.pop(key, None)

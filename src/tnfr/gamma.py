@@ -69,10 +69,17 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
     raw = G.graph.get("GAMMA")
     cached = G.graph.get("_gamma_spec")
     prev_hash = G.graph.get("_gamma_spec_hash")
+
     # ``pickle.dumps`` preserves both structure and types, ensuring the hash
     # reflects any change in the specification regardless of how values are
-    # represented.
-    dumped = pickle.dumps(raw)
+    # represented. Avoid re-serialising if we already hold the bytes for the same
+    # raw object.
+    dumped = None
+    if G.graph.get("_gamma_spec_raw") is raw:
+        dumped = G.graph.get("_gamma_spec_serialized")
+    if dumped is None:
+        dumped = pickle.dumps(raw)
+
     cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
     if cached is not None and prev_hash == cur_hash:
         return cached
@@ -90,6 +97,7 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
     G.graph["_gamma_spec"] = spec
     G.graph["_gamma_spec_hash"] = cur_hash
     G.graph["_gamma_spec_serialized"] = dumped
+    G.graph["_gamma_spec_raw"] = raw
     return spec
 
 

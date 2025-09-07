@@ -108,11 +108,27 @@ def safe_write(
     encoding: str | None = "utf-8",
     **open_kwargs: Any,
 ) -> None:
-    """Write to ``path`` ensuring parent directory exists and handle errors."""
+    """Write to ``path`` ensuring parent directory exists and handle errors.
+
+    Parameters
+    ----------
+    path:
+        Destination file path.
+    write:
+        Callback receiving the opened file object and performing the actual
+        write.
+    mode:
+        File mode passed to :func:`open`. Text modes (default) use UTF-8
+        encoding unless ``encoding`` is ``None``. When a binary mode is used
+        (``'b'`` in ``mode``) no encoding parameter is supplied so ``write`` may
+        write bytes.
+    encoding:
+        Encoding for text modes. Ignored for binary modes.
+    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     open_params = dict(mode=mode, **open_kwargs)
-    if encoding is not None:
+    if "b" not in mode and encoding is not None:
         open_params["encoding"] = encoding
     tmp_path: Path | None = None
     try:

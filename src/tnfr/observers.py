@@ -3,6 +3,7 @@
 from __future__ import annotations
 from functools import partial
 import statistics
+from collections.abc import Mapping
 
 from .constants import ALIAS_THETA, get_param
 from .alias import get_attr
@@ -13,6 +14,7 @@ from .glyph_history import ensure_history, count_glyphs, append_metric
 from .collections_utils import normalize_counter, mix_groups
 from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
+from .logging_utils import get_logger
 
 
 __all__ = [
@@ -26,6 +28,8 @@ __all__ = [
     "wbar",
 ]
 
+
+logger = get_logger(__name__)
 
 # -------------------------
 # Observador estándar Γ(R)
@@ -114,10 +118,18 @@ def glyph_load(G, window: int | None = None) -> dict:
 
 
 def wbar(G, window: int | None = None) -> float:
-    """Return W̄ = mean of C(t) over a recent window."""
+    """Return W̄ = mean of ``C(t)`` over a recent window.
+
+    The function expects ``G.graph['history']`` to be a mapping containing the
+    ``"C_steps"`` sequence. If the history is missing or malformed, the
+    instantaneous coherence is computed instead.
+    """
     if window is not None and window <= 0:
         raise ValueError("window must be positive")
-    hist = G.graph.get("history", {})
+    hist = G.graph.get("history")
+    if not isinstance(hist, Mapping):
+        logger.warning("history is not a mapping; using instantaneous coherence")
+        return compute_coherence(G)
     cs = hist.get("C_steps", [])
     if not cs:
         # fallback: coherencia instantánea
