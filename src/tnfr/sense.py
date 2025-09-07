@@ -231,24 +231,27 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
     cfg = _sigma_cfg(G)
     if not cfg.get("enabled", True):
         return
+
+    # Cache local de la historia para evitar llamadas repetidas
     hist = ensure_history(G)
     key = cfg.get("history_key", "sigma_global")
 
-    # Global
-    sv = sigma_vector_from_graph(G, cfg.get("weight", "Si"))
+    weight_mode = cfg.get("weight", "Si")
+    sv = sigma_vector_from_graph(G, weight_mode)
 
     # Suavizado exponencial (EMA) opcional
     alpha = float(cfg.get("smooth", 0.0))
     if alpha > 0 and hist.get(key):
         sv = _ema_update(hist[key][-1], sv, alpha)
 
-    sv["t"] = float(G.graph.get("_t", 0.0) if t is None else t)
+    current_t = float(G.graph.get("_t", 0.0) if t is None else t)
+    sv["t"] = current_t
 
     append_metric(hist, key, sv)
 
     # Conteo de glyphs por paso (útil para rosa glífica)
     counts = count_glyphs(G, last_only=True)
-    append_metric(hist, "sigma_counts", {"t": sv["t"], **counts})
+    append_metric(hist, "sigma_counts", {"t": current_t, **counts})
 
     # Trayectoria por nodo (opcional)
     if cfg.get("per_node", False):
@@ -257,9 +260,8 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
             g = last_glyph(nd)
             if not g:
                 continue
-            a = glyph_angle(g)
             d = per.setdefault(n, [])
-            d.append({"t": sv["t"], "g": g, "angle": a})
+            d.append({"t": current_t, "g": g, "angle": glyph_angle(g)})
 
 
 # -------------------------
