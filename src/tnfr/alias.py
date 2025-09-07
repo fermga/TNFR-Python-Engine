@@ -131,8 +131,6 @@ def alias_set(
     """Assign ``value`` converted to the first available key in ``aliases``."""
     aliases = _validate_aliases(aliases)
     _, val = _convert_value(value, conv, strict=True)
-    if val is None:
-        raise ValueError("conversion yielded None")
     key = next((k for k in aliases if k in d), aliases[0])
     d[key] = val
     return val

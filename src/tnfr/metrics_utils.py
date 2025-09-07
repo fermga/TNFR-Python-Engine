@@ -92,23 +92,24 @@ def get_Si_weights(G: Any) -> tuple[float, float, float]:
     return alpha, beta, gamma
 
 
+def _build_trig_cache(G: Any) -> TrigCache:
+    """Construct trigonometric cache for ``G``."""
+    cos_th: Dict[Any, float] = {}
+    sin_th: Dict[Any, float] = {}
+    thetas: Dict[Any, float] = {}
+    for n, nd in G.nodes(data=True):
+        th = get_attr(nd, ALIAS_THETA, 0.0)
+        thetas[n] = th
+        cos_th[n] = math.cos(th)
+        sin_th[n] = math.sin(th)
+    return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
+
+
 def precompute_trigonometry(
     G: Any,
 ) -> TrigCache:
     """Precompute cosines and sines of ``θ`` per node."""
-
-    def builder() -> TrigCache:
-        cos_th: Dict[Any, float] = {}
-        sin_th: Dict[Any, float] = {}
-        thetas: Dict[Any, float] = {}
-        for n, nd in G.nodes(data=True):
-            th = get_attr(nd, ALIAS_THETA, 0.0)
-            thetas[n] = th
-            cos_th[n] = math.cos(th)
-            sin_th[n] = math.sin(th)
-        return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
-
-    return edge_version_cache(G, "_trig", builder)
+    return edge_version_cache(G, "_trig", lambda: _build_trig_cache(G))
 
 
 def compute_Si_node(

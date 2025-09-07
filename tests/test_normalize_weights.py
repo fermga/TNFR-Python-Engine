@@ -8,8 +8,10 @@ from tnfr.collections_utils import normalize_weights
 def test_normalize_weights_warns_on_negative_value(caplog):
     weights = {"a": -1.0, "b": 2.0}
     with caplog.at_level("WARNING"):
-        normalize_weights(weights, ("a", "b"))
+        norm = normalize_weights(weights, ("a", "b"))
     assert any("Pesos negativos" in m for m in caplog.messages)
+    assert norm["a"] == 0.0
+    assert math.isclose(norm["b"], 1.0)
 
 
 def test_normalize_weights_raises_on_negative_value():
