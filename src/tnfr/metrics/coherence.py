@@ -142,74 +142,63 @@ def _compute_stats(values, row_sum, n, self_diag, np=None):
     Wi = [float(row_sum[i]) / denom for i in range(n)]
     return min_val, max_val, mean_val, Wi, count_val
 
+def _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np=None):
+    """Finalize the coherence matrix ``wij`` and store results in history.
 
-def _finalize_wij_numpy(wij, mode, thr, self_diag, np):
-    n = wij.shape[0]
-    mask = ~np.eye(n, dtype=bool)
-    values = wij[mask]
-    row_sum = wij.sum(axis=1)
-    min_val, max_val, mean_val, Wi, count_val = _compute_stats(
-        values, row_sum, n, self_diag, np
-    )
-    if mode == "dense":
-        W = wij.tolist()
+    When ``np`` is provided and ``wij`` is a NumPy array, the computation is
+    performed using vectorized operations. Otherwise a pure Python loop-based
+    approach is used.
+    """
+
+    use_np = np is not None and isinstance(wij, np.ndarray)
+    if use_np:
+        n = wij.shape[0]
+        mask = ~np.eye(n, dtype=bool)
+        values = wij[mask]
+        row_sum = wij.sum(axis=1)
+        if mode == "dense":
+            W = wij.tolist()
+        else:
+            idx = np.where((wij >= thr) & mask)
+            W = [
+                (int(i), int(j), float(wij[i, j]))
+                for i, j in zip(idx[0], idx[1])
+            ]
     else:
-        idx = np.where((wij >= thr) & mask)
-        W = [
-            (int(i), int(j), float(wij[i, j]))
-            for i, j in zip(idx[0], idx[1])
-        ]
-    stats = {
-        "min": min_val,
-        "max": max_val,
-        "mean": mean_val,
-        "n_edges": count_val,
-    }
-    return W, Wi, stats
+        n = len(wij)
+        values: list[float] = []
+        row_sum = [0.0] * n
+        if mode == "dense":
+            W = [row[:] for row in wij]
+            for i in range(n):
+                for j in range(n):
+                    w = W[i][j]
+                    if i != j:
+                        values.append(w)
+                    row_sum[i] += w
+        else:
+            W = []
+            for i in range(n):
+                row_i = wij[i]
+                for j in range(n):
+                    w = row_i[j]
+                    if i != j:
+                        values.append(w)
+                        if w >= thr:
+                            W.append((i, j, w))
+                    row_sum[i] += w
 
-
-def _finalize_wij_python(wij, mode, thr, self_diag):
-    n = len(wij)
-    values: list[float] = []
-    row_sum = [0.0] * n
-    if mode == "dense":
-        W = [row[:] for row in wij]
-        for i in range(n):
-            for j in range(n):
-                w = W[i][j]
-                if i != j:
-                    values.append(w)
-                row_sum[i] += w
-    else:
-        W = []
-        for i in range(n):
-            row_i = wij[i]
-            for j in range(n):
-                w = row_i[j]
-                if i != j:
-                    values.append(w)
-                    if w >= thr:
-                        W.append((i, j, w))
-                row_sum[i] += w
     min_val, max_val, mean_val, Wi, count_val = _compute_stats(
-        values, row_sum, n, self_diag
+        values, row_sum, n, self_diag, np if use_np else None
     )
     stats = {
         "min": min_val,
         "max": max_val,
         "mean": mean_val,
         "n_edges": count_val,
+        "mode": mode,
+        "scope": scope,
     }
-    return W, Wi, stats
-
-
-def _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np):
-    if np is not None and isinstance(wij, np.ndarray):
-        W, Wi, stats = _finalize_wij_numpy(wij, mode, thr, self_diag, np)
-    else:
-        W, Wi, stats = _finalize_wij_python(wij, mode, thr, self_diag)
-    stats["mode"] = mode
-    stats["scope"] = scope
 
     hist = ensure_history(G)
     cfg = G.graph.get("COHERENCE", COHERENCE)
