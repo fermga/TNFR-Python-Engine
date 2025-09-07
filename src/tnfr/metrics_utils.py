@@ -155,8 +155,6 @@ def compute_Si_node(
 
 def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     """Compute ``Si`` per node and write it to ``G.nodes[n]['Si']``."""
-    graph = G.graph
-
     neighbors = ensure_neighbors_map(G)
     alpha, beta, gamma = get_Si_weights(G)
 

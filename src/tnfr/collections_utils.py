@@ -130,6 +130,10 @@ def mix_groups(
 ) -> dict[str, float]:
     """Aggregate values of ``dist`` according to ``groups``."""
     out: dict[str, float] = dict(dist)
-    for label, keys in groups.items():
-        out[f"{prefix}{label}"] = sum(dist.get(k, 0.0) for k in keys)
+    out.update(
+        {
+            f"{prefix}{label}": sum(dist.get(k, 0.0) for k in keys)
+            for label, keys in groups.items()
+        }
+    )
     return out
