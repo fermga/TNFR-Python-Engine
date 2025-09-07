@@ -16,7 +16,7 @@ from .constants import (
 )
 from .alias import get_attr, set_attr, multi_recompute_abs_max
 from .collections_utils import normalize_weights
-from .helpers import clamp01, angle_diff, edge_version_cache
+from .helpers import clamp01, angle_diff, edge_version_cache, _phase_mean_from_iter
 from .import_utils import get_numpy
 
 
@@ -134,6 +134,7 @@ def compute_Si_node(
     thetas: Dict[Any, float],
     neighbors: Dict[Any, Sequence[Any]],
     inplace: bool,
+    np=None,
 ) -> float:
     """Compute ``Si`` for a single node."""
     vf = get_attr(nd, ALIAS_VF, 0.0)
@@ -143,19 +144,12 @@ def compute_Si_node(
     neigh = neighbors[n]
     deg = len(neigh)
     if deg:
-        np = get_numpy()
         if np is not None:
             cos_vals = np.fromiter((cos_th[v] for v in neigh), float, count=deg)
             sin_vals = np.fromiter((sin_th[v] for v in neigh), float, count=deg)
-            mean_cos = float(cos_vals.mean())
-            mean_sin = float(sin_vals.mean())
-            th_bar = float(np.arctan2(mean_sin, mean_cos))
+            th_bar = float(np.arctan2(float(sin_vals.mean()), float(cos_vals.mean())))
         else:
-            sum_cos = math.fsum(cos_th[v] for v in neigh)
-            sum_sin = math.fsum(sin_th[v] for v in neigh)
-            mean_cos = sum_cos / deg
-            mean_sin = sum_sin / deg
-            th_bar = math.atan2(mean_sin, mean_cos)
+            th_bar = _phase_mean_from_iter(((cos_th[v], sin_th[v]) for v in neigh), th_i)
     else:
         th_bar = th_i
     disp_fase = abs(angle_diff(th_i, th_bar)) / math.pi
@@ -190,6 +184,7 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
 
     trig = precompute_trigonometry(G)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
+    np = get_numpy()
 
     out: Dict[Any, float] = {}
     for n, nd in G.nodes(data=True):
@@ -206,6 +201,7 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
             thetas=thetas,
             neighbors=neighbors,
             inplace=inplace,
+            np=np,
         )
     return out
 
