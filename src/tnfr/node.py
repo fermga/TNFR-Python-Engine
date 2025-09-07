@@ -3,6 +3,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Deque, Dict, Iterable, Optional, Protocol, TypeVar
+from enum import Enum
 from collections import deque
 from collections.abc import Hashable
 import math
@@ -32,7 +33,7 @@ from .operators import apply_glyph_obj
 
 T = TypeVar("T")
 
-__all__ = ["NodoTNFR", "NodoNX", "NodoProtocol"]
+__all__ = ["NodoTNFR", "NodoNX", "NodoProtocol", "EdgeStrategy"]
 
 
 def _nx_attr_property(
@@ -115,9 +116,14 @@ def _set_tnfr(graph, n1, n2, w: float) -> None:
     n2._neighbors[n1] = w
 
 
+class EdgeStrategy(Enum):
+    NX = "nx"
+    TNFR = "tnfr"
+
+
 _STRATEGY_CBS = {
-    "nx": (_exists_nx, _set_nx),
-    "tnfr": (_exists_tnfr, _set_tnfr),
+    EdgeStrategy.NX: (_exists_nx, _set_nx),
+    EdgeStrategy.TNFR: (_exists_tnfr, _set_tnfr),
 }
 
 
@@ -128,7 +134,7 @@ def add_edge(
     weight,
     overwrite,
     *,
-    strategy: str | None = None,
+    strategy: EdgeStrategy | None = None,
     exists_cb=None,
     set_cb=None,
 ):
@@ -148,11 +154,11 @@ def add_edge(
 
     if exists_cb is None and set_cb is None:
         if strategy is None:
-            strategy = "nx" if hasattr(graph, "add_edge") else "tnfr"
+            strategy = EdgeStrategy.NX if hasattr(graph, "add_edge") else EdgeStrategy.TNFR
         try:
             exists_cb, set_cb = _STRATEGY_CBS[strategy]
-        except KeyError:
-            raise ValueError("Unknown edge strategy")
+        except KeyError as e:
+            raise ValueError("Unknown edge strategy") from e
 
     if exists_cb(graph, n1, n2) and not overwrite:
         return
@@ -188,7 +194,7 @@ class NodoProtocol(Protocol):
     def all_nodes(self) -> Iterable["NodoProtocol"]: ...
 
 
-@dataclass(eq=False)
+@dataclass(eq=False, slots=True)
 class NodoTNFR:
     """Autonomous TNFR node representation.
 
@@ -237,7 +243,7 @@ class NodoTNFR:
             other,
             weight,
             overwrite,
-            strategy="tnfr",
+            strategy=EdgeStrategy.TNFR,
         )
 
     def push_glyph(self, glyph: str, window: int) -> None:
@@ -316,7 +322,7 @@ class NodoNX(NodoProtocol):
                 other.n,
                 weight,
                 overwrite,
-                strategy="nx",
+                strategy=EdgeStrategy.NX,
             )
         else:
             raise NotImplementedError

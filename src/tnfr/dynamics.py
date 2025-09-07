@@ -83,9 +83,16 @@ def _update_node_sample(G, *, step: int) -> None:
     """
     graph = G.graph
     limit = int(graph.get("UM_CANDIDATE_COUNT", 0))
+    current_n = G.number_of_nodes()
+    if limit <= 0 or current_n < 50 or limit >= current_n:
+        nodes = tuple(G.nodes())
+        graph["_node_sample"] = nodes
+        graph["_node_list"] = nodes
+        graph["_node_list_len"] = current_n
+        graph.pop("_node_list_checksum", None)
+        return
     nodes = graph.get("_node_list")
     stored_len = graph.get("_node_list_len")
-    current_n = G.number_of_nodes()
     dirty = bool(graph.pop("_node_list_dirty", False))
     if nodes is None or stored_len != current_n or dirty:
         nodes = tuple(G.nodes())
@@ -95,11 +102,6 @@ def _update_node_sample(G, *, step: int) -> None:
         graph["_node_list_len"] = current_n
     else:
         checksum = graph.get("_node_list_checksum")
-    n = len(nodes)
-    if limit <= 0 or n < 50 or limit >= n:
-        # Avoid exposing a mutable NodeView that may change later.
-        graph["_node_sample"] = nodes
-        return
 
     seed = int(graph.get("RANDOM_SEED", 0))
     # Ensure deterministic seeding independent of ``PYTHONHASHSEED`` by

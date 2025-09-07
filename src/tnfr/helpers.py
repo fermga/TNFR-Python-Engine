@@ -174,7 +174,9 @@ def _stable_json(
         try:
             if isinstance(o, dict):
                 return {
-                    str(k): _to_basic(v, depth - 1)
+                    json.dumps(
+                        (type(k).__name__, _to_basic(k, depth - 1))
+                    ): _to_basic(v, depth - 1)
                     for k, v in o.items()
                 }
             if isinstance(o, set):
