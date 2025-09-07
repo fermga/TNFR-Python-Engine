@@ -33,8 +33,6 @@ _EDGE_CACHE_LOCK = threading.RLock()
 # Keys of cache entries dependent on the edge version.  Any change to the edge
 # set requires these to be dropped to avoid stale data.
 EDGE_VERSION_CACHE_KEYS = (
-    "_neighbors",
-    "_neighbors_version",
     "_cos_th",
     "_sin_th",
     "_thetas",
