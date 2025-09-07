@@ -4,6 +4,7 @@ from tnfr.constants import attach_defaults
 from tnfr.dynamics import step
 from tnfr.metrics import register_metrics_callbacks
 from tnfr.gamma import GAMMA_REGISTRY
+from tnfr.glyph_history import HistoryDict
 
 
 def test_history_delta_si_and_B(graph_canon):
@@ -28,3 +29,14 @@ def test_gamma_kuramoto_tanh_registry(graph_canon):
     gamma_fn, _ = GAMMA_REGISTRY["kuramoto_tanh"]
     val = gamma_fn(G, 0, 0.0, cfg)
     assert abs(val) <= cfg["beta"]
+
+
+def test_pop_least_used_batch_skips_stale_entries():
+    hist = HistoryDict({"a": 1, "b": 2})
+    hist.get_increment("a")
+    hist.get_increment("b")
+    hist.get_increment("b")
+    hist._counts["stale"] = 0
+    hist.pop_least_used_batch(2)
+    assert not hist
+    assert not hist._counts

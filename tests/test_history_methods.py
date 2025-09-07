@@ -29,3 +29,25 @@ def test_setdefault_inserts_and_converts_without_usage():
     val2 = hist.setdefault("a", [2])
     assert val2 is val
     assert hist._counts.get("a", 0) == 0
+
+
+def test_pop_least_used_removes_least_frequent_key():
+    hist = HistoryDict({"a": 1, "b": 2})
+    hist.get_increment("a")
+    hist.get_increment("b")
+    hist.get_increment("b")
+    val = hist.pop_least_used()
+    assert val == 1
+    assert "a" not in hist
+    assert "a" not in hist._counts
+
+
+def test_pop_least_used_batch_removes_k_keys():
+    hist = HistoryDict()
+    for i in range(5):
+        hist[f"k{i}"] = i
+        for _ in range(i):
+            hist.get_increment(f"k{i}")
+    hist.pop_least_used_batch(2)
+    assert set(hist) == {"k2", "k3", "k4"}
+    assert set(hist._counts) == {"k2", "k3", "k4"}
