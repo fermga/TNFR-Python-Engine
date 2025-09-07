@@ -19,6 +19,7 @@ from typing import Dict, Any, Optional, Iterable, TYPE_CHECKING
 import math
 import hashlib
 import heapq
+from operator import ge, le
 from functools import cache
 
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
@@ -697,17 +698,13 @@ def apply_topological_remesh(
 
     mst_edges = _mst_edges_from_epi(nx, nodes, epi)
 
+    # Valor por defecto para ``k`` usado en los modos "community" y "knn"
+    default_k = int(
+        G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2))
+    )
+    k_val = int(k) if k is not None else default_k
+
     if mode == "community":
-        k_val = (
-            int(k)
-            if k is not None
-            else int(
-                G.graph.get(
-                    "REMESH_COMMUNITY_K",
-                    REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2),
-                )
-            )
-        )
         _community_remesh(
             G,
             epi,
@@ -723,16 +720,6 @@ def apply_topological_remesh(
 
     new_edges = set(mst_edges)
     if mode == "knn":
-        k_val = (
-            int(k)
-            if k is not None
-            else int(
-                G.graph.get(
-                    "REMESH_COMMUNITY_K",
-                    REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2),
-                )
-            )
-        )
         new_edges |= _knn_edges(nodes, epi, max(1, k_val), p_rewire, rnd)
 
     G.clear_edges()
@@ -743,98 +730,41 @@ def apply_topological_remesh(
 
 def _extra_gating_ok(hist, cfg, w_estab):
     """Check additional stability gating conditions."""
-    ps_ok = True
-    if "phase_sync" in hist and len(hist["phase_sync"]) >= w_estab:
-        win = hist["phase_sync"][-w_estab:]
-        ps_ok = (sum(win) / len(win)) >= cfg["REMESH_MIN_PHASE_SYNC"]
-
-    disr_ok = True
-    if "glyph_load_disr" in hist and len(hist["glyph_load_disr"]) >= w_estab:
-        win = hist["glyph_load_disr"][-w_estab:]
-        disr_ok = (sum(win) / len(win)) <= cfg["REMESH_MAX_GLYPH_DISR"]
-
-    sig_ok = True
-    if "sense_sigma_mag" in hist and len(hist["sense_sigma_mag"]) >= w_estab:
-        win = hist["sense_sigma_mag"][-w_estab:]
-        sig_ok = (sum(win) / len(win)) >= cfg["REMESH_MIN_SIGMA_MAG"]
-
-    R_ok = True
-    if "kuramoto_R" in hist and len(hist["kuramoto_R"]) >= w_estab:
-        win = hist["kuramoto_R"][-w_estab:]
-        R_ok = (sum(win) / len(win)) >= cfg["REMESH_MIN_KURAMOTO_R"]
-
-    sihi_ok = True
-    if "Si_hi_frac" in hist and len(hist["Si_hi_frac"]) >= w_estab:
-        win = hist["Si_hi_frac"][-w_estab:]
-        sihi_ok = (sum(win) / len(win)) >= cfg["REMESH_MIN_SI_HI_FRAC"]
-
-    return ps_ok and disr_ok and sig_ok and R_ok and sihi_ok
+    checks = [
+        ("phase_sync", "REMESH_MIN_PHASE_SYNC", ge),
+        ("glyph_load_disr", "REMESH_MAX_GLYPH_DISR", le),
+        ("sense_sigma_mag", "REMESH_MIN_SIGMA_MAG", ge),
+        ("kuramoto_R", "REMESH_MIN_KURAMOTO_R", ge),
+        ("Si_hi_frac", "REMESH_MIN_SI_HI_FRAC", ge),
+    ]
+    for hist_key, cfg_key, op in checks:
+        series = hist.get(hist_key)
+        if series is not None and len(series) >= w_estab:
+            win = series[-w_estab:]
+            avg = sum(win) / len(win)
+            if not op(avg, cfg[cfg_key]):
+                return False
+    return True
 
 
 def apply_remesh_if_globally_stable(
     G, pasos_estables_consecutivos: Optional[int] = None
 ) -> None:
+    params = [
+        ("REMESH_STABILITY_WINDOW", int),
+        ("REMESH_REQUIRE_STABILITY", bool),
+        ("REMESH_MIN_PHASE_SYNC", float),
+        ("REMESH_MAX_GLYPH_DISR", float),
+        ("REMESH_MIN_SIGMA_MAG", float),
+        ("REMESH_MIN_KURAMOTO_R", float),
+        ("REMESH_MIN_SI_HI_FRAC", float),
+        ("REMESH_COOLDOWN_VENTANA", int),
+        ("REMESH_COOLDOWN_TS", float),
+    ]
     cfg = {
-        "REMESH_STABILITY_WINDOW": int(
-            G.graph.get(
-                "REMESH_STABILITY_WINDOW",
-                REMESH_DEFAULTS["REMESH_STABILITY_WINDOW"],
-            )
-        ),
-        "REMESH_REQUIRE_STABILITY": bool(
-            G.graph.get(
-                "REMESH_REQUIRE_STABILITY",
-                REMESH_DEFAULTS["REMESH_REQUIRE_STABILITY"],
-            )
-        ),
-        "REMESH_MIN_PHASE_SYNC": float(
-            G.graph.get(
-                "REMESH_MIN_PHASE_SYNC",
-                REMESH_DEFAULTS["REMESH_MIN_PHASE_SYNC"],
-            )
-        ),
-        "REMESH_MAX_GLYPH_DISR": float(
-            G.graph.get(
-                "REMESH_MAX_GLYPH_DISR",
-                REMESH_DEFAULTS["REMESH_MAX_GLYPH_DISR"],
-            )
-        ),
-        "REMESH_MIN_SIGMA_MAG": float(
-            G.graph.get(
-                "REMESH_MIN_SIGMA_MAG",
-                REMESH_DEFAULTS["REMESH_MIN_SIGMA_MAG"],
-            )
-        ),
-        "REMESH_MIN_KURAMOTO_R": float(
-            G.graph.get(
-                "REMESH_MIN_KURAMOTO_R",
-                REMESH_DEFAULTS["REMESH_MIN_KURAMOTO_R"],
-            )
-        ),
-        "REMESH_MIN_SI_HI_FRAC": float(
-            G.graph.get(
-                "REMESH_MIN_SI_HI_FRAC",
-                REMESH_DEFAULTS["REMESH_MIN_SI_HI_FRAC"],
-            )
-        ),
-        "REMESH_COOLDOWN_VENTANA": int(
-            G.graph.get(
-                "REMESH_COOLDOWN_VENTANA",
-                REMESH_DEFAULTS["REMESH_COOLDOWN_VENTANA"],
-            )
-        ),
-        "REMESH_COOLDOWN_TS": float(
-            G.graph.get(
-                "REMESH_COOLDOWN_TS",
-                REMESH_DEFAULTS.get("REMESH_COOLDOWN_TS", 0.0),
-            )
-        ),
+        key: conv(G.graph.get(key, REMESH_DEFAULTS.get(key))) for key, conv in params
     }
-    frac_req = float(
-        G.graph.get(
-            "FRACTION_STABLE_REMESH", REMESH_DEFAULTS["FRACTION_STABLE_REMESH"]
-        )
-    )
+    frac_req = float(get_param(G, "FRACTION_STABLE_REMESH"))
     w_estab = (
         pasos_estables_consecutivos
         if pasos_estables_consecutivos is not None
