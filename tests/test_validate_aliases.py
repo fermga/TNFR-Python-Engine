@@ -18,8 +18,12 @@ def test_rejects_non_string_elements():
         _validate_aliases(("a", 1))
 
 
-def test_accepts_list_sequence():
+def test_accepts_list_iterable():
     assert _validate_aliases(["a"]) == ("a",)
+
+
+def test_accepts_generator_iterable():
+    assert _validate_aliases((x for x in ["a", "b"])) == ("a", "b")
 
 
 def test_alias_get_reports_all_failures():
