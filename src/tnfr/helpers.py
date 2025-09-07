@@ -286,6 +286,9 @@ def edge_version_cache(
     All cache access is serialized via ``_EDGE_CACHE_LOCK`` to ensure
     thread-safety. When ``max_entries`` is a positive integer, only the most
     recent ``max_entries`` cache entries are kept (defaults to ``128``).
+    The ``builder`` is executed outside the lock when a cache miss occurs,
+    so it **must** be pure and yield identical results across concurrent
+    invocations.
     """
     if max_entries is not None and max_entries < 0:
         raise ValueError("max_entries must be non-negative or None")
@@ -299,14 +302,23 @@ def edge_version_cache(
         cache = LRUCache(max_entries) if max_entries not in (None, 0) else {}
         graph["_edge_version_cache"] = cache
     edge_version = int(graph.get("_edge_version", 0))
+
+    # Obtain cache entry while holding the lock to avoid races when checking
+    # the edge version. If it's missing or stale we release the lock to run
+    # ``builder`` and reacquire it only for storing the result.
     with _EDGE_CACHE_LOCK:
-        try:
-            entry = cache[key]
-        except KeyError:
-            entry = None
+        entry = cache.get(key)
         if entry is not None and entry[0] == edge_version:
             return entry[1]
-        value = builder()
+
+    value = builder()
+
+    with _EDGE_CACHE_LOCK:
+        # Another thread may have populated the cache while ``builder`` ran,
+        # so we check again before storing our result.
+        entry = cache.get(key)
+        if entry is not None and entry[0] == edge_version:
+            return entry[1]
         cache[key] = (edge_version, value)
         return value
 
