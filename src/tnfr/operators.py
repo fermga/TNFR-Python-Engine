@@ -323,20 +323,25 @@ def _op_SHA(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # SHA — Silencio
     node.vf = factor * node.vf
 
 
-def _scale_epi(node: NodoProtocol, factor: float, glyph: Glyph) -> None:
+factor_val = 1.15
+factor_nul = 0.85
+_SCALE_FACTORS = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
+
+
+def _op_scale(node: NodoProtocol, glyph: Glyph, factor: float) -> None:
     """Scale node ``EPI`` and update ``epi_kind``."""
     node.EPI = factor * node.EPI
     node.epi_kind = glyph.value if isinstance(glyph, Glyph) else str(glyph)
 
 
-def _op_VAL(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # VAL — Expansión
-    s = float(gf.get("VAL_scale", 1.15))
-    _scale_epi(node, s, Glyph.VAL)
+def _make_scale_op(glyph: Glyph):
+    def _op(node: NodoProtocol, gf: Dict[str, Any]) -> None:
+        factor_val = float(gf.get("VAL_scale", _SCALE_FACTORS[Glyph.VAL]))
+        factor_nul = float(gf.get("NUL_scale", _SCALE_FACTORS[Glyph.NUL]))
+        factors = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
+        _op_scale(node, glyph, factors[glyph])
 
-
-def _op_NUL(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # NUL — Contracción
-    s = float(gf.get("NUL_scale", 0.85))
-    _scale_epi(node, s, Glyph.NUL)
+    return _op
 
 
 def _op_THOL(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # THOL — Autoorganización
@@ -398,8 +403,8 @@ _NAME_TO_OP = {
     Glyph.UM: _op_UM,
     Glyph.RA: _op_RA,
     Glyph.SHA: _op_SHA,
-    Glyph.VAL: _op_VAL,
-    Glyph.NUL: _op_NUL,
+    Glyph.VAL: _make_scale_op(Glyph.VAL),
+    Glyph.NUL: _make_scale_op(Glyph.NUL),
     Glyph.THOL: _op_THOL,
     Glyph.ZHIR: _op_ZHIR,
     Glyph.NAV: _op_NAV,
