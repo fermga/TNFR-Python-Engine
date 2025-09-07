@@ -17,6 +17,7 @@ from .constants import (
 from .alias import get_attr, set_attr, multi_recompute_abs_max
 from .collections_utils import normalize_weights
 from .helpers import clamp01, angle_diff, edge_version_cache
+from .import_utils import get_numpy
 
 
 __all__ = [
@@ -142,11 +143,19 @@ def compute_Si_node(
     neigh = neighbors[n]
     deg = len(neigh)
     if deg:
-        sum_cos = math.fsum(cos_th[v] for v in neigh)
-        sum_sin = math.fsum(sin_th[v] for v in neigh)
-        mean_cos = sum_cos / deg
-        mean_sin = sum_sin / deg
-        th_bar = math.atan2(mean_sin, mean_cos)
+        np = get_numpy()
+        if np is not None:
+            cos_vals = np.fromiter((cos_th[v] for v in neigh), float, count=deg)
+            sin_vals = np.fromiter((sin_th[v] for v in neigh), float, count=deg)
+            mean_cos = float(cos_vals.mean())
+            mean_sin = float(sin_vals.mean())
+            th_bar = float(np.arctan2(mean_sin, mean_cos))
+        else:
+            sum_cos = math.fsum(cos_th[v] for v in neigh)
+            sum_sin = math.fsum(sin_th[v] for v in neigh)
+            mean_cos = sum_cos / deg
+            mean_sin = sum_sin / deg
+            th_bar = math.atan2(mean_sin, mean_cos)
     else:
         th_bar = th_i
     disp_fase = abs(angle_diff(th_i, th_bar)) / math.pi

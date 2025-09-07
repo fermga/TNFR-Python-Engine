@@ -10,6 +10,7 @@ from typing import (
     Optional,
     overload,
     Protocol,
+    Generic,
 )
 import logging
 from functools import lru_cache, partial
@@ -170,25 +171,27 @@ class _Setter(Protocol[T]):
         ...
 
 
-def _alias_get_set(
-    conv: Callable[[Any], T],
-    *,
-    default: T | None = None,
-) -> tuple[_Getter[T], _Setter[T]]:
-    """Create alias ``get``/``set`` functions using ``conv``."""
-    _base_get = partial(_alias_resolve, conv=conv)
+class AliasAccessor(Generic[T]):
+    """Helper providing ``get`` and ``set`` for alias-based attributes."""
 
-    def _get(
+    def __init__(self, conv: Callable[[Any], T], default: T | None = None) -> None:
+        self._conv = conv
+        self._default = default
+        self._base_get = partial(_alias_resolve, conv=conv)
+
+    def get(
+        self,
         d: Dict[str, Any],
         aliases: Sequence[str],
-        default: Optional[T] = default,
+        default: Optional[T] = None,
         *,
         strict: bool = False,
         log_level: int | None = None,
     ) -> Optional[T]:
-        """Obtain an attribute using :func:`alias_get`."""
         aliases = _validate_aliases(aliases)
-        return _base_get(
+        if default is None:
+            default = self._default
+        return self._base_get(
             d,
             aliases,
             default=default,
@@ -196,15 +199,14 @@ def _alias_get_set(
             log_level=log_level,
         )
 
-    def _set(d: Dict[str, Any], aliases: Sequence[str], value: T) -> T:
-        """Set an attribute using :func:`alias_set`."""
-        return alias_set(d, aliases, conv, value)
-
-    return _get, _set
+    def set(self, d: Dict[str, Any], aliases: Sequence[str], value: T) -> T:
+        return alias_set(d, aliases, self._conv, value)
 
 
-get_attr, set_attr = _alias_get_set(float, default=0.0)
-get_attr_str, set_attr_str = _alias_get_set(str, default="")
+_float_accessor = AliasAccessor(float, default=0.0)
+get_attr, set_attr = _float_accessor.get, _float_accessor.set
+_str_accessor = AliasAccessor(str, default="")
+get_attr_str, set_attr_str = _str_accessor.get, _str_accessor.set
 
 
 # -------------------------

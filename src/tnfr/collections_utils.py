@@ -14,8 +14,6 @@ import logging
 import math
 
 from .value_utils import _convert_value
-from collections import deque
-from itertools import islice
 
 T = TypeVar("T")
 
@@ -44,6 +42,8 @@ def ensure_collection(
     already a collection; ``None`` means no limit. A :class:`ValueError`` is
     raised for negative ``max_materialize`` or when the iterable yields more
     items than allowed. ``TypeError`` is raised when ``it`` is not iterable.
+    The input is consumed at most once and no extra items beyond the limit
+    are stored in memory.
     """
 
     if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
@@ -59,11 +59,13 @@ def ensure_collection(
         limit = max_materialize
         if limit == 0:
             return ()
-        items = deque(islice(iterable, limit + 1), maxlen=limit + 1)
-        if len(items) > limit:
-            raise ValueError(
-                f"Iterable produced {len(items)} items, exceeds limit {limit}"
-            )
+        items: list[T] = []
+        for idx, item in enumerate(iterable):
+            if idx >= limit:
+                raise ValueError(
+                    f"Iterable produced {idx + 1} items, exceeds limit {limit}"
+                )
+            items.append(item)
         return tuple(items)
 
     try:

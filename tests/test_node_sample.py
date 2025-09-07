@@ -38,7 +38,7 @@ def test_node_sample_immutable_after_graph_change():
 
 def _run_sample_with_hashseed(hashseed):
     code = r"""
-import json
+import json, sys
 from tnfr.dynamics import _update_node_sample
 from tests.utils import build_graph
 
@@ -46,7 +46,7 @@ G = build_graph(80)
 G.graph["UM_CANDIDATE_COUNT"] = 10
 G.graph["RANDOM_SEED"] = 123
 _update_node_sample(G, step=5)
-print(json.dumps(G.graph["_node_sample"]))
+json.dump(G.graph["_node_sample"], sys.stdout)
 """
     env = dict(
         os.environ,

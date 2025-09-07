@@ -4,15 +4,17 @@ from __future__ import annotations
 import hashlib
 import random
 import struct
-from collections import OrderedDict
 from typing import Tuple
 import threading
 
 from .constants import DEFAULTS
+from cachetools import LRUCache
 
-_RNG_CACHE: OrderedDict[Tuple[int, int], random.Random] = OrderedDict()
 _RNG_LOCK = threading.Lock()
 _CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
+_RNG_CACHE: LRUCache[Tuple[int, int], random.Random] = LRUCache(
+    maxsize=max(1, _CACHE_MAXSIZE)
+)
 
 
 def make_rng(seed: int, key: int) -> random.Random:
@@ -28,19 +30,17 @@ def make_rng(seed: int, key: int) -> random.Random:
 
 
 def get_rng(seed: int, key: int) -> random.Random:
-    """Return a cached ``random.Random`` for ``(seed, key)`` respecting current cache size."""
+    """Return a cached ``random.Random`` for ``(seed, key)``."""
     k = (int(seed), int(key))
-    cache = _RNG_CACHE
     with _RNG_LOCK:
+        if _CACHE_MAXSIZE <= 0:
+            return make_rng(seed, key)
         try:
-            rng = cache.pop(k)
+            return _RNG_CACHE[k]
         except KeyError:
             rng = make_rng(seed, key)
-        cache[k] = rng
-        maxsize = _CACHE_MAXSIZE
-        if maxsize > 0 and len(cache) > maxsize:
-            cache.popitem(last=False)
-    return rng
+            _RNG_CACHE[k] = rng
+            return rng
 
 
 def _cache_clear() -> None:
@@ -54,14 +54,13 @@ get_rng.cache_clear = _cache_clear  # type: ignore[attr-defined]
 def set_cache_maxsize(size: int) -> None:
     """Update RNG cache maximum size."""
 
-    global _CACHE_MAXSIZE
+    global _CACHE_MAXSIZE, _RNG_CACHE
     new_size = int(size)
     with _RNG_LOCK:
         _CACHE_MAXSIZE = new_size
-        if new_size <= 0:
-            _RNG_CACHE.clear()
+        if new_size > 0:
+            _RNG_CACHE = LRUCache(maxsize=new_size)
         else:
-            while len(_RNG_CACHE) > new_size:
-                _RNG_CACHE.popitem(last=False)
+            _RNG_CACHE.clear()
 
 __all__ = ["get_rng", "make_rng", "set_cache_maxsize"]

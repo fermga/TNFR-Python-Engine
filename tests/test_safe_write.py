@@ -25,3 +25,13 @@ def test_safe_write_cleans_temp_on_error(tmp_path: Path, monkeypatch: pytest.Mon
     # Only the temporary directory itself should remain
     assert list(tmp_path.iterdir()) == []
 
+
+def test_safe_write_preserves_exception(tmp_path: Path):
+    dest = tmp_path / "out.txt"
+
+    def writer(_f):  # pragma: no cover - executed in safe_write
+        raise ValueError("bad value")
+
+    with pytest.raises(ValueError):
+        safe_write(dest, writer)
+

@@ -17,7 +17,10 @@ def test_stable_json_set_order_deterministic():
 
 def test_stable_json_respects_max_depth_dict():
     obj = {"a": {"b": {"c": 1}}}
-    assert json.loads(_stable_json(obj, max_depth=1)) == {"a": "<max-depth>"}
+    parsed = json.loads(_stable_json(obj, max_depth=1))
+    key = next(iter(parsed))
+    assert json.loads(key) == ["str", "a"]
+    assert parsed[key] == "<max-depth>"
 
 
 def test_stable_json_respects_max_depth_list():

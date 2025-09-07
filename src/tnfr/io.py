@@ -128,6 +128,8 @@ def safe_write(
         except OSError as e:
             logger.error("Atomic replace failed for %s -> %s: %s", tmp_path, path, e)
             raise
+    except (OSError, ValueError, TypeError) as e:
+        raise type(e)(f"Failed to write file {path}: {e}") from e
     except Exception as e:  # noqa: BLE001 - rewrap after cleanup
         raise OSError(f"Failed to write file {path}: {e}") from e
     finally:
