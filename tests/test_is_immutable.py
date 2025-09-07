@@ -1,8 +1,9 @@
 """Tests for _is_immutable helper."""
 
+from dataclasses import dataclass
 from types import MappingProxyType
 
-from tnfr.constants import _is_immutable
+from tnfr.constants import _is_immutable, _is_immutable_inner
 
 
 def test_is_immutable_nested_structures():
@@ -24,3 +25,32 @@ def test_is_immutable_lists_dicts_nested():
     assert not _is_immutable(data)
     # call twice to exercise cache behaviour
     assert not _is_immutable(data)
+
+
+def test_is_immutable_inner_handles_mapping_tag():
+    frozen = ("mapping", (("a", 1), ("b", 2)))
+    assert _is_immutable_inner(frozen)
+
+
+def test_is_immutable_inner_handles_dict_tag():
+    frozen = ("dict", (("a", 1),))
+    assert not _is_immutable_inner(frozen)
+
+
+@dataclass(frozen=True)
+class FrozenDC:
+    x: int
+    y: int
+
+
+def test_is_immutable_frozen_dataclass():
+    assert _is_immutable(FrozenDC(1, 2))
+
+
+@dataclass
+class MutableDC:
+    items: list[int]
+
+
+def test_is_immutable_mutable_dataclass():
+    assert not _is_immutable(MutableDC([1, 2]))
