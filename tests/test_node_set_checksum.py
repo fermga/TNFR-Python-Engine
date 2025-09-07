@@ -30,18 +30,15 @@ def test_node_set_checksum_object_stable():
 
 
 def _reference_checksum(G):
-    hasher = hashlib.blake2b(digest_size=16)
+    acc = 0
 
-    def serialise(n):
-        return _stable_json(n)
+    for n in G.nodes():
+        digest = hashlib.blake2b(
+            _stable_json(n).encode("utf-8"), digest_size=16
+        ).digest()
+        acc ^= int.from_bytes(digest, "big")
 
-    serialised = [serialise(n) for n in G.nodes()]
-    serialised.sort()
-    for i, node_repr in enumerate(serialised):
-        if i:
-            hasher.update(b"|")
-        hasher.update(node_repr.encode("utf-8"))
-    return hasher.hexdigest()
+    return hashlib.blake2b(acc.to_bytes(16, "big"), digest_size=16).hexdigest()
 
 
 def test_node_set_checksum_compatibility():

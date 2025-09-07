@@ -219,29 +219,31 @@ def node_set_checksum(
 ) -> str:
     """Return a BLAKE2b checksum of ``G``'s node set.
 
-    Nodes are serialised using :func:`_node_repr` for determinism. To benefit
-    from caching and avoid sorting the same collection repeatedly, the
-    serialised values are stored as a ``frozenset`` under
-    ``"_node_set_checksum_cache"`` when ``store`` is ``True``.
+    Nodes are serialised using :func:`_node_repr`. The checksum is computed
+    incrementally by hashing each node and combining the intermediate digests
+    in an order-independent manner. When ``store`` is ``True`` the accumulated
+    hash value is cached under ``"_node_set_checksum_cache"`` to avoid
+    recalculating it for unchanged graphs.
     """
 
     graph = get_graph(G)
     node_iterable = G.nodes() if nodes is None else nodes
 
-    serialised_list = [_node_repr(n) for n in node_iterable]
+    acc = 0
+    for n in node_iterable:
+        digest = hashlib.blake2b(
+            _node_repr(n).encode("utf-8"), digest_size=16
+        ).digest()
+        acc ^= int.from_bytes(digest, "big")
 
     if store:
-        marker = frozenset(serialised_list)
         cached = graph.get("_node_set_checksum_cache")
-        if cached and cached[0] == marker:
+        if cached and cached[0] == acc:
             return cached[1]
 
-    ordered = serialised_list if presorted else sorted(serialised_list)
-    hasher = hashlib.blake2b(digest_size=16)
-    hasher.update("|".join(ordered).encode("utf-8"))
-    checksum = hasher.hexdigest()
+    checksum = hashlib.blake2b(acc.to_bytes(16, "big"), digest_size=16).hexdigest()
     if store:
-        graph["_node_set_checksum_cache"] = (marker, checksum)
+        graph["_node_set_checksum_cache"] = (acc, checksum)
     return checksum
 
 
