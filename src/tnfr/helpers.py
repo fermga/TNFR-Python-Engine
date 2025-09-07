@@ -134,9 +134,18 @@ def _phase_mean_from_iter(
     return math.atan2(y, x)
 
 
+@lru_cache(maxsize=1)
+def _get_nodonx():
+    """Return :class:`NodoNX` caching the deferred import."""
+    return import_nodonx()
+
+
 def neighbor_phase_mean(obj, n=None) -> float:
-    """Circular mean of neighbour phases."""
-    NodoNX = import_nodonx()
+    """Circular mean of neighbour phases.
+
+    The :class:`NodoNX` import is cached after the first call.
+    """
+    NodoNX = _get_nodonx()
 
     node = NodoNX(obj, n) if n is not None else obj
     if getattr(node, "G", None) is None:

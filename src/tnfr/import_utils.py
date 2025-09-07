@@ -156,7 +156,10 @@ def get_numpy(*, warn: bool = False) -> Any | None:
 
 @lru_cache(maxsize=1)
 def import_nodonx():
-    """Lazily import :class:`NodoNX` to avoid circular dependencies."""
+    """Lazily import :class:`NodoNX` to avoid circular dependencies.
+
+    The import is cached after the first successful call.
+    """
     from .node import NodoNX
 
     return NodoNX
