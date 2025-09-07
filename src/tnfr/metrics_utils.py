@@ -123,17 +123,6 @@ def get_trig_cache(G: Any) -> TrigCache:
     return edge_version_cache(G, "_trig", lambda: _build_trig_cache(G))
 
 
-def _mean_phase(
-    neigh: Sequence[Any],
-    cos_th: Dict[Any, float],
-    sin_th: Dict[Any, float],
-    np,
-    th_i: float,
-) -> float:
-    """Return mean phase for neighbours of a node."""
-    return neighbor_phase_mean_list(neigh, cos_th, sin_th, np, th_i)
-
-
 def compute_Si_node(
     n: Any,
     nd: Dict[str, Any],

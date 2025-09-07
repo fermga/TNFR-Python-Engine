@@ -2,15 +2,8 @@
 
 from __future__ import annotations
 
-from typing import (
-    Iterable,
-    Any,
-    TypeVar,
-    Mapping,
-    Collection,
-    Sequence,
-    cast,
-)
+from collections.abc import Iterable, Mapping, Collection, Sequence
+from typing import Any, TypeVar, cast
 import logging
 import math
 from itertools import islice

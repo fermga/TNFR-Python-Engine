@@ -4,6 +4,7 @@ import json
 import networkx as nx
 import pytest
 from tnfr.config import load_config, apply_config
+from collections import UserDict
 
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
@@ -40,3 +41,16 @@ def test_apply_config_injects_graph_params(tmp_path, suffix, dump):
     apply_config(G, path)
     assert G.graph["RANDOM_SEED"] == 123
     assert G.graph["INIT_THETA_MIN"] == -1.23
+
+
+def test_load_config_accepts_mapping(monkeypatch, tmp_path):
+    data = UserDict({"RANDOM_SEED": 1})
+
+    def fake_reader(path):
+        return data
+
+    monkeypatch.setattr("tnfr.config.read_structured_file", fake_reader)
+    path = tmp_path / "dummy.json"
+    path.write_text("{}", encoding="utf-8")
+    loaded = load_config(path)
+    assert loaded == data

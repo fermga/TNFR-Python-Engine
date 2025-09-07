@@ -15,7 +15,7 @@ Note on REMESH α (alpha) precedence:
 
 # operators.py — TNFR canónica (ASCII-safe)
 from __future__ import annotations
-from typing import Dict, Any, Iterable, TYPE_CHECKING, Optional
+from typing import Dict, Any, TYPE_CHECKING, Optional
 import math
 import hashlib
 import heapq

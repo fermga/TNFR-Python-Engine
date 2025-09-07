@@ -198,7 +198,6 @@ def dissonance_events(G, ctx=None):
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     step_idx = len(hist.get("C_steps", []))
     nodes = list(G.nodes())
-    node_to_index = {v: i for i, v in enumerate(nodes)}
     for n in nodes:
         nd = G.nodes[n]
         dn = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max

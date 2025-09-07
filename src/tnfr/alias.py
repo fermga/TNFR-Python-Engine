@@ -7,8 +7,8 @@ alias-based attribute access.  The module-level :func:`alias_get` and
 """
 
 from __future__ import annotations
+from collections.abc import Sequence
 from typing import (
-    Sequence,
     Dict,
     Any,
     Callable,
