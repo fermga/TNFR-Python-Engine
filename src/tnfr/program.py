@@ -125,11 +125,11 @@ def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
         and item.force_close in {Glyph.SHA, Glyph.NUL}
         else None
     )
-    seq = item.body if isinstance(item.body, Sequence) else tuple(item.body)
+    seq = ensure_collection(item.body)
     for _ in range(repeats):
         if closing is not None:
             stack.append(closing)
-        stack.extend(reversed(seq))
+        stack.extend(reversed(tuple(seq)))
     stack.append(THOL_SENTINEL)
 
 
@@ -154,7 +154,7 @@ def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
             ops.append(("WAIT", steps))
         elif isinstance(item, THOL):
             _flatten_thol(item, stack)
-        elif isinstance(item, Glyph) or isinstance(item, str):
+        elif isinstance(item, (Glyph, str)):
             g = item.value if isinstance(item, Glyph) else str(item)
             if g not in GLYPHS_CANONICAL_SET:
                 raise ValueError(f"Non-canonical glyph: {g}")

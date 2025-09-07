@@ -41,18 +41,8 @@ def _symmetry_index(
     except StatisticsError:
         return 1.0
     if epi_min is None or epi_max is None:
-        epis = (get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in G.nodes())
-        try:
-            first = next(epis)
-        except StopIteration:
-            epi_min, epi_max = 0.0, 1.0
-        else:
-            epi_min = epi_max = first
-            for val in epis:
-                if val < epi_min:
-                    epi_min = val
-                elif val > epi_max:
-                    epi_max = val
+        epi_iter = (get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in G.nodes())
+        epi_min, epi_max = min_max_range(epi_iter, default=(0.0, 1.0))
     return _similarity_abs(epi_i, epi_bar, epi_min, epi_max)
 
 

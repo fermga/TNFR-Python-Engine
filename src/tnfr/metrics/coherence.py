@@ -111,6 +111,28 @@ def _wij_loops(
     epi_w = wnorm["epi"]
     vf_w = wnorm["vf"]
     si_w = wnorm["si"]
+    def assign_wij(i: int, j: int) -> None:
+        comps = compute_components(
+            th_vals,
+            epi_vals,
+            vf_vals,
+            si_vals,
+            i,
+            j,
+            epi_min,
+            epi_max,
+            vf_min,
+            vf_max,
+        )
+        s_phase = comps["s_phase"]
+        s_epi = comps["s_epi"]
+        s_vf = comps["s_vf"]
+        s_si = comps["s_si"]
+        wij_ij = clamp01(
+            phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
+        )
+        wij[i][j] = wij[j][i] = wij_ij
+
     if neighbors_only:
         seen: set[tuple[int, int]] = set()
         for u, v in G.edges():
@@ -122,49 +144,11 @@ def _wij_loops(
             if key in seen:
                 continue
             seen.add(key)
-            comps = compute_components(
-                th_vals,
-                epi_vals,
-                vf_vals,
-                si_vals,
-                i,
-                j,
-                epi_min,
-                epi_max,
-                vf_min,
-                vf_max,
-            )
-            s_phase = comps["s_phase"]
-            s_epi = comps["s_epi"]
-            s_vf = comps["s_vf"]
-            s_si = comps["s_si"]
-            wij_ij = clamp01(
-                phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
-            )
-            wij[i][j] = wij[j][i] = wij_ij
+            assign_wij(i, j)
     else:
         for i in range(n):
             for j in range(i + 1, n):
-                comps = compute_components(
-                    th_vals,
-                    epi_vals,
-                    vf_vals,
-                    si_vals,
-                    i,
-                    j,
-                    epi_min,
-                    epi_max,
-                    vf_min,
-                    vf_max,
-                )
-                s_phase = comps["s_phase"]
-                s_epi = comps["s_epi"]
-                s_vf = comps["s_vf"]
-                s_si = comps["s_si"]
-                wij_ij = clamp01(
-                    phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
-                )
-                wij[i][j] = wij[j][i] = wij_ij
+                assign_wij(i, j)
     return wij
 
 
