@@ -12,6 +12,7 @@ import math
 import hashlib
 from statistics import fmean, StatisticsError
 import threading
+import weakref
 import json
 import sys
 from functools import lru_cache
@@ -305,59 +306,80 @@ def edge_version_cache(
 ) -> T:
     """Return cached ``builder`` output tied to the edge version of ``G``.
 
-    All cache access is serialized via ``_EDGE_CACHE_LOCK`` to ensure
-    thread-safety. When ``max_entries`` is a positive integer, only the most
-    recent ``max_entries`` cache entries are kept (defaults to ``128``).
-    The ``builder`` is executed outside the lock when a cache miss occurs,
+    Cache lookups and updates are serialized via ``_EDGE_CACHE_LOCK``.  A
+    dedicated ``threading.Lock`` is maintained for each cache key so that
+    different keys can be computed concurrently while still preventing
+    duplicate work for the same key.  Locks are kept in a
+    :class:`weakref.WeakValueDictionary` and are therefore cleaned up
+    automatically when their corresponding cache entries are evicted.
+
+    When ``max_entries`` is a positive integer, only the most recent
+    ``max_entries`` cache entries are kept (defaults to ``128``).  The
+    ``builder`` is executed outside the global lock when a cache miss occurs,
     so it **must** be pure and yield identical results across concurrent
     invocations.
     """
     if max_entries is not None and max_entries < 0:
         raise ValueError("max_entries must be non-negative or None")
     graph = get_graph(G)
-    cache = graph.get("_edge_version_cache")
     use_lru = bool(max_entries)
-    if (
-        cache is None
-        or (
-            use_lru
-            and (
-                not isinstance(cache, LRUCache)
-                or cache.maxsize != max_entries
+
+    with _EDGE_CACHE_LOCK:
+        cache = graph.get("_edge_version_cache")
+        if (
+            cache is None
+            or (
+                use_lru
+                and (
+                    not isinstance(cache, LRUCache)
+                    or cache.maxsize != max_entries
+                )
             )
-        )
-        or (not use_lru and isinstance(cache, LRUCache))
-    ):
-        cache = LRUCache(max_entries) if use_lru else {}
-        graph["_edge_version_cache"] = cache
-    edge_version = int(graph.get("_edge_version", 0))
+            or (not use_lru and isinstance(cache, LRUCache))
+        ):
+            cache = LRUCache(max_entries) if use_lru else {}
+            graph["_edge_version_cache"] = cache
 
-    # Obtain cache entry while holding the lock to avoid races when checking
-    # the edge version. If it's missing or stale we release the lock to run
-    # ``builder`` and reacquire it only for storing the result.
-    with _EDGE_CACHE_LOCK:
+        locks = graph.get("_edge_version_cache_locks")
+        if locks is None or not isinstance(locks, weakref.WeakValueDictionary):
+            locks = weakref.WeakValueDictionary()
+            graph["_edge_version_cache_locks"] = locks
+
+        edge_version = int(graph.get("_edge_version", 0))
         entry = cache.get(key)
         if entry is not None and entry[0] == edge_version:
             return entry[1]
 
-    value = builder()
+        lock = locks.get(key)
+        if lock is None:
+            lock = threading.Lock()
+            locks[key] = lock
 
-    with _EDGE_CACHE_LOCK:
-        # Another thread may have populated the cache while ``builder`` ran,
-        # so we check again before storing our result.
-        entry = cache.get(key)
-        if entry is not None and entry[0] == edge_version:
-            return entry[1]
-        cache[key] = (edge_version, value)
-        return value
+    with lock:
+        with _EDGE_CACHE_LOCK:
+            entry = cache.get(key)
+            if entry is not None and entry[0] == edge_version:
+                return entry[1]
+
+        value = builder()
+
+        with _EDGE_CACHE_LOCK:
+            entry = cache.get(key)
+            if entry is not None and entry[0] == edge_version:
+                return entry[1]
+            cache[key] = (edge_version, value, lock)
+            return value
 
 
 def invalidate_edge_version_cache(G: Any) -> None:
     """Clear cached entries associated with ``G``."""
     graph = get_graph(G)
     cache = graph.get("_edge_version_cache")
+    locks = graph.get("_edge_version_cache_locks")
     if isinstance(cache, (dict, LRUCache)):
         cache.clear()
+    if isinstance(locks, weakref.WeakValueDictionary):
+        locks.clear()
 
 
 def cached_nodes_and_A(
