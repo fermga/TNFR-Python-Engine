@@ -349,6 +349,11 @@ def local_phase_sync_weighted(
     return abs(num / den) if den else 0.0
 
 
+def local_phase_sync(G, n):
+    """Compute unweighted local phase synchronization for node ``n``."""
+    return local_phase_sync_weighted(G, n)
+
+
 def _coherence_step(G, ctx=None):
     if not G.graph.get("COHERENCE", COHERENCE).get("enabled", True):
         return

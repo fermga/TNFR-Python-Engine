@@ -19,7 +19,7 @@ from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
 from ..helpers import clamp01
 from ..metrics_utils import compute_dnfr_accel_max, min_max_range
-from .coherence import local_phase_sync_weighted, _similarity_abs
+from .coherence import local_phase_sync, local_phase_sync_weighted, _similarity_abs
 
 
 def _dnfr_norm(nd, dnfr_max):
@@ -118,9 +118,7 @@ def _node_diagnostics(
             G, n, nodes_order=nodes, W_row=row, node_to_index=node_to_index
         )
     else:
-        Rloc = local_phase_sync_weighted(
-            G, n, nodes_order=nodes, node_to_index=node_to_index
-        )
+        Rloc = local_phase_sync(G, n)
 
     symm = (
         _symmetry_index(G, n, epi_min=epi_min, epi_max=epi_max)
