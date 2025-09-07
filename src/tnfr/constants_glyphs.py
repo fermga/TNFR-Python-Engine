@@ -27,7 +27,7 @@ GLYPHS_CANONICAL: tuple[str, ...] = (
     Glyph.REMESH.value,  # 12
 )
 
-GLYPHS_CANONICAL_SET: set[str] = set(GLYPHS_CANONICAL)
+GLYPHS_CANONICAL_SET: frozenset[str] = frozenset(GLYPHS_CANONICAL)
 
 ESTABILIZADORES = (
     Glyph.IL.value,
