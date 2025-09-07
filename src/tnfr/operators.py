@@ -698,17 +698,18 @@ def apply_topological_remesh(
 
     mst_edges = _mst_edges_from_epi(nx, nodes, epi)
 
-    # Valor por defecto para ``k`` usado en los modos "community" y "knn"
+    # Valor por defecto para ``k`` en los modos "community" y "knn" (2 si no se especifica)
     default_k = int(
         G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2))
     )
-    k_val = int(k) if k is not None else default_k
+    # ``k_val`` se calcula una sola vez, asegurando un mínimo de 1
+    k_val = max(1, int(k) if k is not None else default_k)
 
     if mode == "community":
         _community_remesh(
             G,
             epi,
-            max(1, k_val),
+            k_val,
             p_rewire,
             rnd,
             nx,
@@ -720,7 +721,7 @@ def apply_topological_remesh(
 
     new_edges = set(mst_edges)
     if mode == "knn":
-        new_edges |= _knn_edges(nodes, epi, max(1, k_val), p_rewire, rnd)
+        new_edges |= _knn_edges(nodes, epi, k_val, p_rewire, rnd)
 
     G.clear_edges()
     increment_edge_version(G)
