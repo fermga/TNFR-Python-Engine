@@ -2,14 +2,14 @@
 
 import pytest
 
-from tnfr.constants import attach_defaults
+from tnfr.constants import inject_defaults
 from tnfr.dynamics import step
 
 
 def test_vf_converge_to_neighbor_average_when_stable(graph_canon):
     G = graph_canon()
     G.add_edge(0, 1)
-    attach_defaults(G)
+    inject_defaults(G)
     # configuraciones para estabilidad
     G.graph["DNFR_WEIGHTS"] = {
         "phase": 1.0,

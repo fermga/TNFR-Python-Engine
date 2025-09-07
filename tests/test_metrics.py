@@ -5,7 +5,7 @@ import networkx as nx
 from typing import Any
 
 from tnfr.constants import (
-    attach_defaults,
+    inject_defaults,
     ALIAS_EPI,
     ALIAS_DNFR,
     ALIAS_dEPI,
@@ -78,7 +78,7 @@ def test_aggregate_si_computes_stats():
     """_aggregate_si computes mean and fractions."""
 
     G = nx.Graph()
-    attach_defaults(G)
+    inject_defaults(G)
     hist = {"Si_mean": [], "Si_hi_frac": [], "Si_lo_frac": []}
     G.add_node(0)
     G.add_node(1)
@@ -98,7 +98,7 @@ def test_compute_advanced_metrics_populates_history():
     """_compute_advanced_metrics records glyph-based metrics."""
 
     G = nx.Graph()
-    attach_defaults(G)
+    inject_defaults(G)
     hist: dict[str, Any] = {}
     cfg = G.graph["METRICS"]
     thr = float(G.graph.get("EPI_SUPPORT_THR"))
@@ -127,7 +127,7 @@ def test_pp_val_zero_when_no_remesh(graph_canon):
     G = graph_canon()
     # Nodo en estado SHA, pero sin eventos REMESH
     G.add_node(0, EPI_kind=LATENT_GLYPH)
-    attach_defaults(G)
+    inject_defaults(G)
 
     _metrics_step(G)
 
@@ -140,7 +140,7 @@ def test_pp_val_handles_missing_sha(graph_canon):
     G = graph_canon()
     # Nodo en estado REMESH pero sin nodos SHA
     G.add_node(0, EPI_kind="REMESH")
-    attach_defaults(G)
+    inject_defaults(G)
 
     _metrics_step(G)
 
@@ -161,7 +161,7 @@ def test_save_by_node_flag_keeps_metrics_equal(graph_canon):
     for G in (G_true, G_false):
         G.add_node(0, EPI_kind="OZ")
         G.add_node(1, EPI_kind=LATENT_GLYPH)
-        attach_defaults(G)
+        inject_defaults(G)
         for n in G.nodes():
             nd = G.nodes[n]
             nd["glyph_history"] = [nd.get("EPI_kind")]
@@ -199,7 +199,7 @@ def test_update_epi_support_matches_manual(graph_canon):
     G.add_node(1, EPI=-0.1)
     G.add_node(2, EPI=0.01)
     G.add_node(3, EPI=0.05)
-    attach_defaults(G)
+    inject_defaults(G)
     hist = {}
     thr = float(G.graph.get("EPI_SUPPORT_THR"))
     _update_epi_support(G, hist, t=0, thr=thr)

@@ -2,14 +2,14 @@
 
 from collections import deque
 
-from tnfr.constants import attach_defaults
+from tnfr.constants import inject_defaults
 from tnfr.operators import apply_remesh_if_globally_stable
 
 
 def test_aplicar_remesh_usa_parametro_personalizado(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     G.graph["REMESH_REQUIRE_STABILITY"] = False
 
     # Historial suficiente para el parámetro personalizado
@@ -35,7 +35,7 @@ def test_aplicar_remesh_usa_parametro_personalizado(graph_canon):
 def test_remesh_alpha_hard_ignores_glyph_factor(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     G.graph["REMESH_REQUIRE_STABILITY"] = False
     hist = G.graph.setdefault("history", {})
     hist["stable_frac"] = [1.0, 1.0, 1.0]

@@ -3,7 +3,7 @@
 import pytest
 import networkx as nx
 
-from tnfr.constants import attach_defaults
+from tnfr.constants import inject_defaults
 
 
 @pytest.fixture
@@ -12,7 +12,7 @@ def graph_canon():
 
     def _factory():
         G = nx.Graph()
-        attach_defaults(G)
+        inject_defaults(G)
         return G
 
     return _factory

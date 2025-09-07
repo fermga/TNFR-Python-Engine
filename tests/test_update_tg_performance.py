@@ -3,7 +3,7 @@
 import time
 from collections import Counter, defaultdict
 
-from tnfr.constants import attach_defaults
+from tnfr.constants import inject_defaults
 from tnfr.glyph_history import last_glyph
 from tnfr.metrics import _update_tg, _tg_state
 from tnfr.metrics.core import LATENT_GLYPH, TgCurr, TgRun
@@ -63,7 +63,7 @@ def test_update_tg_matches_naive(graph_canon):
         G.add_node(2, EPI_kind="NAV")
         G.add_node(3, EPI_kind="OZ")
         G.add_node(4, EPI_kind=LATENT_GLYPH)
-        attach_defaults(G)
+        inject_defaults(G)
 
     hist_opt = {}
     hist_ref = {}

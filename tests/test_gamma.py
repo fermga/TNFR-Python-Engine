@@ -4,7 +4,7 @@ import math
 import logging
 import pytest
 
-from tnfr.constants import attach_defaults, merge_overrides
+from tnfr.constants import inject_defaults, merge_overrides
 from tnfr.dynamics import update_epi_via_nodal_equation
 from tnfr.gamma import eval_gamma, GAMMA_REGISTRY
 from tnfr.helpers import increment_edge_version
@@ -13,7 +13,7 @@ from tnfr.helpers import increment_edge_version
 def test_gamma_linear_integration(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
-    attach_defaults(G)
+    inject_defaults(G)
     merge_overrides(
         G, GAMMA={"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0}
     )
@@ -30,7 +30,7 @@ def test_gamma_linear_integration(graph_canon):
 def test_gamma_bandpass_eval(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1, 2, 3])
-    attach_defaults(G)
+    inject_defaults(G)
     merge_overrides(G, GAMMA={"type": "kuramoto_bandpass", "beta": 1.0})
     for n in [0, 1, 2]:
         G.nodes[n]["θ"] = 0.0
@@ -44,7 +44,7 @@ def test_gamma_bandpass_eval(graph_canon):
 def test_gamma_linear_string_params(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
-    attach_defaults(G)
+    inject_defaults(G)
     merge_overrides(
         G, GAMMA={"type": "kuramoto_linear", "beta": "1.0", "R0": "0.0"}
     )
@@ -59,7 +59,7 @@ def test_gamma_linear_string_params(graph_canon):
 def test_gamma_tanh_eval(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1, 2, 3])
-    attach_defaults(G)
+    inject_defaults(G)
     merge_overrides(
         G,
         GAMMA={"type": "kuramoto_tanh", "beta": 1.0, "k": 1.0, "R0": 0.0},
@@ -77,7 +77,7 @@ def test_gamma_tanh_eval(graph_canon):
 def test_gamma_bandpass_string_params(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1, 2, 3])
-    attach_defaults(G)
+    inject_defaults(G)
     merge_overrides(G, GAMMA={"type": "kuramoto_bandpass", "beta": "1.0"})
     for n in [0, 1, 2]:
         G.nodes[n]["θ"] = 0.0
@@ -91,7 +91,7 @@ def test_gamma_bandpass_string_params(graph_canon):
 def test_gamma_harmonic_eval(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
-    attach_defaults(G)
+    inject_defaults(G)
     merge_overrides(
         G, GAMMA={"type": "harmonic", "beta": 1.0, "omega": 1.0, "phi": 0.0}
     )
@@ -106,7 +106,7 @@ def test_gamma_harmonic_eval(graph_canon):
 def test_gamma_tanh_string_params(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1, 2, 3])
-    attach_defaults(G)
+    inject_defaults(G)
     merge_overrides(
         G,
         GAMMA={
@@ -165,7 +165,7 @@ def test_kuramoto_cache_updates_on_time_change(graph_canon):
 
     G = graph_canon()
     G.add_nodes_from([0])
-    attach_defaults(G)
+    inject_defaults(G)
     G.nodes[0]["θ"] = 0.0
     gamma_mod._ensure_kuramoto_cache(G, t=0)
     cache0 = G.graph["_kuramoto_cache"]
@@ -179,7 +179,7 @@ def test_kuramoto_cache_updates_on_nodes_change(graph_canon):
 
     G = graph_canon()
     G.add_nodes_from([0])
-    attach_defaults(G)
+    inject_defaults(G)
     G.nodes[0]["θ"] = 0.0
     gamma_mod._ensure_kuramoto_cache(G, t=0)
     cache0 = G.graph["_kuramoto_cache"]
@@ -195,7 +195,7 @@ def test_kuramoto_cache_step_limit(graph_canon):
 
     G = graph_canon()
     G.add_nodes_from([0])
-    attach_defaults(G)
+    inject_defaults(G)
     G.graph["KURAMOTO_CACHE_STEPS"] = 2
     G.nodes[0]["θ"] = 0.0
     gamma_mod._ensure_kuramoto_cache(G, t=0)
@@ -209,7 +209,7 @@ def test_kuramoto_cache_step_limit(graph_canon):
 def test_kuramoto_cache_invalidation_on_version(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
-    attach_defaults(G)
+    inject_defaults(G)
     merge_overrides(
         G, GAMMA={"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0}
     )
@@ -228,7 +228,7 @@ def test_kuramoto_cache_invalidation_on_version(graph_canon):
 def test_gamma_harmonic_string_params(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
-    attach_defaults(G)
+    inject_defaults(G)
     merge_overrides(
         G,
         GAMMA={
@@ -249,7 +249,7 @@ def test_gamma_harmonic_string_params(graph_canon):
 def test_eval_gamma_logs_and_strict_mode(graph_canon, caplog):
     G = graph_canon()
     G.add_nodes_from([0])
-    attach_defaults(G)
+    inject_defaults(G)
     merge_overrides(G, GAMMA={"type": "kuramoto_linear", "beta": "bad"})
 
     caplog.clear()
@@ -270,7 +270,7 @@ def test_eval_gamma_logs_and_strict_mode(graph_canon, caplog):
 def test_eval_gamma_non_mapping_warns(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0])
-    attach_defaults(G)
+    inject_defaults(G)
     G.graph["GAMMA"] = "not a dict"
     with pytest.warns(UserWarning):
         g = eval_gamma(G, 0, t=0.0)
@@ -280,7 +280,7 @@ def test_eval_gamma_non_mapping_warns(graph_canon):
 def test_eval_gamma_unknown_type_warning_and_strict(graph_canon, caplog):
     G = graph_canon()
     G.add_nodes_from([0])
-    attach_defaults(G)
+    inject_defaults(G)
     merge_overrides(G, GAMMA={"type": "unknown_type"})
 
     caplog.clear()
@@ -298,7 +298,7 @@ def test_eval_gamma_unknown_type_warning_and_strict(graph_canon, caplog):
 def test_eval_gamma_unhandled_exception_propagates(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    attach_defaults(G)
+    inject_defaults(G)
     merge_overrides(G, GAMMA={"type": "bad"})
 
     def bad_gamma(G, node, t, cfg):
