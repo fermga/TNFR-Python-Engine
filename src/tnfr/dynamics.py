@@ -495,16 +495,46 @@ def set_delta_nfr_hook(
         G.graph["_DNFR_META"] = meta
 
 
+def _apply_dnfr_hook(
+    G,
+    grads: Dict[str, Callable[[Any, Any], float]],
+    *,
+    weights: Dict[str, float],
+    hook_name: str,
+    note: str | None = None,
+) -> None:
+    """Generic helper to compute and store ΔNFR using ``grads``.
+
+    ``grads`` maps component names to functions ``(G, n, nd) -> float``.
+    Each gradient is multiplied by its corresponding weight from ``weights``.
+    Metadata is recorded through :func:`_write_dnfr_metadata`.
+    """
+
+    for n, nd in G.nodes(data=True):
+        total = 0.0
+        for name, func in grads.items():
+            w = weights.get(name, 0.0)
+            if w:
+                total += w * func(G, n, nd)
+        set_dnfr(G, n, total)
+
+    _write_dnfr_metadata(
+        G, weights=weights, hook_name=hook_name, note=note
+    )
+
+
 # --- Hooks de ejemplo (opcionales) ---
 def dnfr_phase_only(G) -> None:
     """Example: ΔNFR from phase only (Kuramoto-like)."""
-    for n, nd in G.nodes(data=True):
+
+    def g_phase(G, n, nd):
         th_i = get_attr(nd, ALIAS_THETA, 0.0)
         th_bar = neighbor_phase_mean(G, n)
-        g_phase = -angle_diff(th_i, th_bar) / math.pi
-        set_dnfr(G, n, g_phase)
-    _write_dnfr_metadata(
+        return -angle_diff(th_i, th_bar) / math.pi
+
+    _apply_dnfr_hook(
         G,
+        {"phase": g_phase},
         weights={"phase": 1.0},
         hook_name="dnfr_phase_only",
         note="Hook de ejemplo.",
@@ -513,16 +543,20 @@ def dnfr_phase_only(G) -> None:
 
 def dnfr_epi_vf_mixed(G) -> None:
     """Example: ΔNFR without phase, mixing EPI and νf."""
-    for n, nd in G.nodes(data=True):
+
+    def g_epi(G, n, nd):
         epi_i = get_attr(nd, ALIAS_EPI, 0.0)
         epi_bar = neighbor_mean(G, n, ALIAS_EPI, default=epi_i)
-        g_epi = epi_bar - epi_i
+        return epi_bar - epi_i
+
+    def g_vf(G, n, nd):
         vf_i = get_attr(nd, ALIAS_VF, 0.0)
         vf_bar = neighbor_mean(G, n, ALIAS_VF, default=vf_i)
-        g_vf = vf_bar - vf_i
-        set_dnfr(G, n, 0.5 * g_epi + 0.5 * g_vf)
-    _write_dnfr_metadata(
+        return vf_bar - vf_i
+
+    _apply_dnfr_hook(
         G,
+        {"epi": g_epi, "vf": g_vf},
         weights={"phase": 0.0, "epi": 0.5, "vf": 0.5},
         hook_name="dnfr_epi_vf_mixed",
         note="Hook de ejemplo.",
@@ -533,20 +567,24 @@ def dnfr_laplacian(G) -> None:
     """Explicit topological gradient using Laplacian over EPI and νf."""
     wE = float(G.graph.get("DNFR_WEIGHTS", {}).get("epi", 0.33))
     wV = float(G.graph.get("DNFR_WEIGHTS", {}).get("vf", 0.33))
-    for n, nd in G.nodes(data=True):
+
+    def g_epi(G, n, nd):
         epi = get_attr(nd, ALIAS_EPI, 0.0)
+        neigh = list(G.neighbors(n))
+        deg = len(neigh) or 1
+        epi_bar = sum(get_attr(G.nodes[v], ALIAS_EPI, epi) for v in neigh) / deg
+        return epi_bar - epi
+
+    def g_vf(G, n, nd):
         vf = get_attr(nd, ALIAS_VF, 0.0)
         neigh = list(G.neighbors(n))
         deg = len(neigh) or 1
-        epi_bar = (
-            sum(get_attr(G.nodes[v], ALIAS_EPI, epi) for v in neigh) / deg
-        )
         vf_bar = sum(get_attr(G.nodes[v], ALIAS_VF, vf) for v in neigh) / deg
-        g_epi = epi_bar - epi
-        g_vf = vf_bar - vf
-        set_dnfr(G, n, wE * g_epi + wV * g_vf)
-    _write_dnfr_metadata(
+        return vf_bar - vf
+
+    _apply_dnfr_hook(
         G,
+        {"epi": g_epi, "vf": g_vf},
         weights={"epi": wE, "vf": wV},
         hook_name="dnfr_laplacian",
         note="Gradiente topológico",

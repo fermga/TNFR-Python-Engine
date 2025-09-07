@@ -1,4 +1,5 @@
 from tnfr.glyph_history import HistoryDict
+import timeit
 
 
 def test_heap_size_stays_bounded_under_churn():
@@ -14,3 +15,12 @@ def test_heap_size_skewed_churn():
         key = "k0" if i % 2 == 0 else f"k{(i % 9) + 1}"
         _ = hist.get_increment(key)
     assert len(hist._heap) <= len(hist._counts) + hist._compact_every
+
+
+def test_prune_heap_performance():
+    hist = HistoryDict({f"k{i}": [] for i in range(100)}, compact_every=5)
+    def churn():
+        for i in range(5_000):
+            hist.get_increment(f"k{i % 100}")
+    t = timeit.timeit(churn, number=1)
+    assert t < 1.0

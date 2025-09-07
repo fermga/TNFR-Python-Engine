@@ -78,3 +78,11 @@ def test_node_repr_cache_cleared_on_increment():
     assert h._node_repr.cache_info().currsize > 0
     increment_edge_version(nxG)
     assert h._node_repr.cache_info().currsize == 0
+
+
+def test_hash_node_matches_manual():
+    obj = ("a", 1)
+    manual = hashlib.blake2b(
+        h._node_repr(obj).encode("utf-8"), digest_size=16
+    ).digest()
+    assert h._hash_node(obj) == manual

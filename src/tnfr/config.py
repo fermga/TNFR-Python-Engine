@@ -14,7 +14,8 @@ if TYPE_CHECKING:  # pragma: no cover - only for type checkers
 
 def load_config(path: str | Path) -> Mapping[str, Any]:
     """Read a JSON/YAML file and return a mapping with parameters."""
-    data = read_structured_file(Path(path))
+    path_obj = path if isinstance(path, Path) else Path(path)
+    data = read_structured_file(path_obj)
     if not isinstance(data, Mapping):
         raise ValueError("Configuration file must contain an object")
     return data
@@ -25,6 +26,5 @@ def apply_config(G: nx.Graph, path: str | Path) -> None:
 
     Reuses :func:`inject_defaults` to keep canonical default semantics.
     """
-    path = Path(path)
     cfg = load_config(path)
     inject_defaults(G, cfg, override=True)

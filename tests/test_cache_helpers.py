@@ -1,7 +1,11 @@
 import networkx as nx
 
 from tnfr import dynamics
-from tnfr.helpers import increment_edge_version, ensure_node_offset_map
+from tnfr.helpers import (
+    increment_edge_version,
+    ensure_node_offset_map,
+    _cache_node_list,
+)
 
 
 def test_cached_nodes_and_A_reuse_and_invalidate():
@@ -39,3 +43,14 @@ def test_node_offset_map_updates_on_node_addition():
     mapping2 = ensure_node_offset_map(G)
     assert mapping2 is not mapping1
     assert mapping2[2] == 2
+
+
+def test_cache_node_list_updates_on_dirty():
+    G = nx.Graph()
+    G.add_nodes_from([0, 1])
+    nodes1 = _cache_node_list(G)
+    nodes2 = _cache_node_list(G)
+    assert nodes1 is nodes2
+    G.graph["_node_list_dirty"] = True
+    nodes3 = _cache_node_list(G)
+    assert nodes3 is not nodes1

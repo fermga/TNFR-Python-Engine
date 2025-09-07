@@ -7,13 +7,12 @@ structures as immutable snapshots.
 
 from __future__ import annotations
 
-import warnings
 from typing import Any, Callable, Dict, Optional, Protocol, NamedTuple
-from collections.abc import Mapping
 
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs, append_metric
 from .import_utils import optional_import
+from .helpers import get_graph_mapping
 
 
 class _KuramotoFn(Protocol):
@@ -93,29 +92,11 @@ def _callback_names(callbacks: list[CallbackSpec]) -> list[str]:
     return [cb.name or getattr(cb.func, "__name__", "fn") for cb in callbacks]
 
 
-def _safe_graph_mapping(G, key: str) -> Optional[Dict[str, Any]]:
-    """Return a shallow copy of ``G.graph[key]`` if it is a mapping.
-
-    If the key is missing ``None`` is returned.  When the stored value is not
-    a mapping a :class:`UserWarning` is emitted and ``None`` is returned.
-    """
-
-    data = G.graph.get(key)
-    if data is None:
-        return None
-    if not isinstance(data, Mapping):
-        warnings.warn(
-            f"G.graph[{key!r}] no es un mapeo; se ignora",
-            UserWarning,
-            stacklevel=2,
-        )
-        return None
-    return dict(data)
-
-
 def mapping_field(G, graph_key: str, out_key: str) -> Dict[str, Any]:
     """Helper to copy mappings from ``G.graph`` into trace output."""
-    mapping = _safe_graph_mapping(G, graph_key)
+    mapping = get_graph_mapping(
+        G, graph_key, f"G.graph[{graph_key!r}] no es un mapeo; se ignora"
+    )
     return {out_key: mapping} if mapping is not None else {}
 
 
