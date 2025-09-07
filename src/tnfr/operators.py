@@ -475,10 +475,41 @@ def _remesh_alpha_info(G):
     )
 
 
+def _snapshot_topology(G, nx):
+    """Return a hash representing the current graph topology."""
+    try:
+        n_nodes = G.number_of_nodes()
+        n_edges = G.number_of_edges()
+        degs = sorted(d for _, d in G.degree())
+        topo_str = f"n={n_nodes};m={n_edges};deg=" + ",".join(map(str, degs))
+        return hashlib.sha1(topo_str.encode()).hexdigest()[:12]
+    except (AttributeError, TypeError, nx.NetworkXError):
+        return None
+
+
+def _snapshot_epi(G):
+    """Return ``(mean, checksum)`` of the node EPI values."""
+    items = [(n, get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in G.nodes()]
+    mean_val = list_mean(v for _, v in items)
+    checksum = hashlib.sha1(
+        str(sorted((str(n), round(v, 6)) for n, v in items)).encode()
+    ).hexdigest()[:12]
+    return float(mean_val), checksum
+
+
+def _log_remesh_event(G, meta):
+    """Store remesh metadata and optionally log and trigger callbacks."""
+    G.graph["_REMESH_META"] = meta
+    if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
+        hist = G.graph.setdefault("history", {})
+        append_metric(hist, "remesh_events", dict(meta))
+    invoke_callbacks(G, "on_remesh", dict(meta))
+
+
 def apply_network_remesh(G) -> None:
     """Network-scale REMESH using ``_epi_hist`` with multi-scale memory."""
     # REMESH_TAU: alias legado resuelto por ``get_param``
-    nx, nx_comm = _get_networkx_modules()
+    nx, _ = _get_networkx_modules()
     tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
     tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
     tau_req = max(tau_g, tau_l)
@@ -492,24 +523,8 @@ def apply_network_remesh(G) -> None:
     past_l = hist[-(tau_l + 1)]
 
     # --- Topología + snapshot EPI (ANTES) ---
-    try:
-        n_nodes = G.number_of_nodes()
-        n_edges = G.number_of_edges()
-        degs = sorted(d for _, d in G.degree())
-        topo_str = f"n={n_nodes};m={n_edges};deg=" + ",".join(map(str, degs))
-        topo_hash = hashlib.sha1(topo_str.encode()).hexdigest()[:12]
-    except (AttributeError, TypeError, nx.NetworkXError):
-        topo_hash = None
-
-    def _epi_items():
-        for node in G.nodes():
-            yield node, get_attr(G.nodes[node], ALIAS_EPI, 0.0)
-
-    epi_items = list(_epi_items())
-    epi_mean_before = list_mean(v for _, v in epi_items)
-    epi_checksum_before = hashlib.sha1(
-        str(sorted((str(k), round(v, 6)) for k, v in epi_items)).encode()
-    ).hexdigest()[:12]
+    topo_hash = _snapshot_topology(G, nx)
+    epi_mean_before, epi_checksum_before = _snapshot_epi(G)
 
     # --- Mezcla (1-α)·now + α·old ---
     for n, nd in G.nodes(data=True):
@@ -521,13 +536,7 @@ def apply_network_remesh(G) -> None:
         set_attr(nd, ALIAS_EPI, mixed)
 
     # --- Snapshot EPI (DESPUÉS) ---
-    epi_items_after = [
-        (n, get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in G.nodes()
-    ]
-    epi_mean_after = list_mean(v for _, v in epi_items_after)
-    epi_checksum_after = hashlib.sha1(
-        str(sorted((str(n), round(v, 6)) for n, v in epi_items_after)).encode()
-    ).hexdigest()[:12]
+    epi_mean_after, epi_checksum_after = _snapshot_epi(G)
 
     # --- Metadatos y logging de evento ---
     step_idx = len(G.graph.get("history", {}).get("C_steps", []))
@@ -555,13 +564,7 @@ def apply_network_remesh(G) -> None:
         if h.get("glyph_load_disr"):
             meta["glyph_disr_last"] = h["glyph_load_disr"][-1]
 
-    G.graph["_REMESH_META"] = meta
-    if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
-        hist = G.graph.setdefault("history", {})
-        append_metric(hist, "remesh_events", dict(meta))
-
-    # Callbacks Γ(R)
-    invoke_callbacks(G, "on_remesh", dict(meta))
+    _log_remesh_event(G, meta)
 
 
 def _mst_edges_from_epi(nx, nodes, epi):
