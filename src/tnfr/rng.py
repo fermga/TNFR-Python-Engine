@@ -4,15 +4,15 @@ from __future__ import annotations
 import hashlib
 import random
 import struct
-from typing import Tuple
 import threading
+from typing import MutableMapping, Tuple
 
 from .constants import DEFAULTS
 from cachetools import LRUCache
 
 _RNG_LOCK = threading.Lock()
 _CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
-_RNG_CACHE: LRUCache[Tuple[int, int], random.Random] = LRUCache(
+_RNG_CACHE: MutableMapping[Tuple[int, int], random.Random] = LRUCache(
     maxsize=max(1, _CACHE_MAXSIZE)
 )
 
@@ -33,7 +33,7 @@ def get_rng(seed: int, key: int) -> random.Random:
     """Return a cached ``random.Random`` for ``(seed, key)``."""
     k = (int(seed), int(key))
     with _RNG_LOCK:
-        if _CACHE_MAXSIZE <= 0:
+        if _CACHE_MAXSIZE <= 0 and not isinstance(_RNG_CACHE, dict):
             return make_rng(seed, key)
         try:
             return _RNG_CACHE[k]
@@ -61,6 +61,6 @@ def set_cache_maxsize(size: int) -> None:
         if new_size > 0:
             _RNG_CACHE = LRUCache(maxsize=new_size)
         else:
-            _RNG_CACHE.clear()
+            _RNG_CACHE = {}
 
 __all__ = ["get_rng", "make_rng", "set_cache_maxsize"]
