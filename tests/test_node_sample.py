@@ -1,6 +1,7 @@
 """Pruebas de node sample."""
 
 from tnfr.dynamics import step, _update_node_sample
+from tnfr.rng import get_rng
 from tests.utils import build_graph
 import json
 import os
@@ -34,6 +35,24 @@ def test_node_sample_immutable_after_graph_change():
     G.add_node(99)
     assert len(sample) == 20
     assert 99 not in sample
+
+
+def test_node_sample_deterministic_with_seed():
+    get_rng.cache_clear()
+    G1 = build_graph(80)
+    G1.graph["UM_CANDIDATE_COUNT"] = 10
+    G1.graph["RANDOM_SEED"] = 123
+    _update_node_sample(G1, step=5)
+    sample1 = G1.graph["_node_sample"]
+
+    get_rng.cache_clear()
+    G2 = build_graph(80)
+    G2.graph["UM_CANDIDATE_COUNT"] = 10
+    G2.graph["RANDOM_SEED"] = 123
+    _update_node_sample(G2, step=5)
+    sample2 = G2.graph["_node_sample"]
+
+    assert sample1 == sample2
 
 
 def _run_sample_with_hashseed(hashseed):

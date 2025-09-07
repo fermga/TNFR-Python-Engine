@@ -52,6 +52,12 @@ def _cache_clear() -> None:
 get_rng.cache_clear = _cache_clear  # type: ignore[attr-defined]
 
 
+def _rng_for_step(seed: int, step: int) -> random.Random:
+    """Return deterministic RNG for a simulation ``step``."""
+
+    return get_rng(seed, step)
+
+
 def set_cache_maxsize(size: int) -> None:
     """Update RNG cache maximum size."""
 

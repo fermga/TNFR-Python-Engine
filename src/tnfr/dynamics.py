@@ -42,7 +42,7 @@ from .helpers import (
     neighbor_mean,
     neighbor_phase_mean,
     cached_nodes_and_A,
-    node_set_checksum,
+    _cache_node_list,
     _phase_mean_from_iter,
 )
 from .alias import (
@@ -55,7 +55,7 @@ from .alias import (
     multi_recompute_abs_max,
 )
 from .metrics_utils import compute_Si, compute_dnfr_accel_max
-from .rng import get_rng
+from .rng import _rng_for_step
 from .callback_utils import invoke_callbacks
 from .glyph_history import recent_glyph, ensure_history, append_metric
 from .collections_utils import normalize_weights
@@ -85,32 +85,14 @@ def _update_node_sample(G, *, step: int) -> None:
     """
     graph = G.graph
     limit = int(graph.get("UM_CANDIDATE_COUNT", 0))
-    current_n = G.number_of_nodes()
-    nodes = graph.get("_node_list")
-    stored_len = graph.get("_node_list_len")
+    nodes = _cache_node_list(G)
+    current_n = len(nodes)
     if limit <= 0 or current_n < 50 or limit >= current_n:
-        if nodes is None or stored_len != current_n:
-            nodes = tuple(G.nodes())
-            graph["_node_list"] = nodes
-            graph["_node_list_len"] = current_n
         graph["_node_sample"] = nodes
-        graph.pop("_node_list_checksum", None)
         return
-    dirty = bool(graph.pop("_node_list_dirty", False))
-    if nodes is None or stored_len != current_n or dirty:
-        nodes = tuple(G.nodes())
-        checksum = node_set_checksum(G, nodes, store=False)
-        graph["_node_list"] = nodes
-        graph["_node_list_checksum"] = checksum
-        graph["_node_list_len"] = current_n
-    else:
-        checksum = graph.get("_node_list_checksum")
 
     seed = int(graph.get("RANDOM_SEED", 0))
-    # Ensure deterministic seeding independent of ``PYTHONHASHSEED`` by
-    # combining the user seed and step via bitwise XOR instead of a string
-    # seed, which would rely on Python's randomized hashing of strings.
-    rng = get_rng(seed, step)
+    rng = _rng_for_step(seed, step)
     graph["_node_sample"] = rng.sample(nodes, limit)
 
 
