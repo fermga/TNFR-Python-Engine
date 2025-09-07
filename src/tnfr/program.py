@@ -129,7 +129,7 @@ def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
     for _ in range(repeats):
         if closing is not None:
             stack.append(closing)
-        stack.extend(reversed(tuple(seq)))
+        stack.extend(reversed(seq))
     stack.append(THOL_SENTINEL)
 
 

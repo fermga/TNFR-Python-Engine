@@ -164,27 +164,34 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
         theta = cache["theta"]
         epi = cache["epi"]
         vf = cache["vf"]
+        cos_theta = cache["cos_theta"]
+        sin_theta = cache["sin_theta"]
     else:
         idx = {n: i for i, n in enumerate(nodes)}
         theta = [0.0] * len(nodes)
         epi = [0.0] * len(nodes)
         vf = [0.0] * len(nodes)
+        cos_theta = [0.0] * len(nodes)
+        sin_theta = [0.0] * len(nodes)
         cache = {
             "checksum": checksum,
             "idx": idx,
             "theta": theta,
             "epi": epi,
             "vf": vf,
+            "cos_theta": cos_theta,
+            "sin_theta": sin_theta,
         }
         G.graph["_dnfr_prep_cache"] = cache
 
     for i, n in enumerate(nodes):
         nd = G.nodes[n]
-        theta[i], epi[i], vf[i] = (
-            get_attr(nd, ALIAS_THETA, 0.0),
-            get_attr(nd, ALIAS_EPI, 0.0),
-            get_attr(nd, ALIAS_VF, 0.0),
-        )
+        th = get_attr(nd, ALIAS_THETA, 0.0)
+        theta[i] = th
+        epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
+        vf[i] = get_attr(nd, ALIAS_VF, 0.0)
+        cos_theta[i] = math.cos(th)
+        sin_theta[i] = math.sin(th)
 
     w_phase = float(weights.get("phase", 0.0))
     w_epi = float(weights.get("epi", 0.0))
@@ -203,6 +210,8 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 1) -> dict:
         "theta": theta,
         "epi": epi,
         "vf": vf,
+        "cos_theta": cos_theta,
+        "sin_theta": sin_theta,
         "w_phase": w_phase,
         "w_epi": w_epi,
         "w_vf": w_vf,
@@ -324,11 +333,10 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
         if A is None:
             _, A = cached_nodes_and_A(G, cache_size=data.get("cache_size"))
             data["A"] = A
-        theta = np.array(data["theta"], dtype=float)
         epi = np.array(data["epi"], dtype=float)
         vf = np.array(data["vf"], dtype=float)
-        cos_th = np.cos(theta)
-        sin_th = np.sin(theta)
+        cos_th = np.array(data["cos_theta"], dtype=float)
+        sin_th = np.array(data["sin_theta"], dtype=float)
         x = A @ cos_th
         y = A @ sin_th
         epi_sum = A @ epi
@@ -342,12 +350,11 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
         return x, y, epi_sum, vf_sum, count, deg_sum, degs
     else:
         idx = data["idx"]
-        theta = data["theta"]
         epi = data["epi"]
         vf = data["vf"]
         degs = data["degs"]
-        cos_th = [math.cos(t) for t in theta]
-        sin_th = [math.sin(t) for t in theta]
+        cos_th = data["cos_theta"]
+        sin_th = data["sin_theta"]
         n = len(nodes)
         x = [0.0] * n
         y = [0.0] * n

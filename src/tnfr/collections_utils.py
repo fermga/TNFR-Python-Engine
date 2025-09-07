@@ -14,6 +14,7 @@ import logging
 import math
 
 from .value_utils import _convert_value
+from collections import deque
 from itertools import islice
 
 T = TypeVar("T")
@@ -58,7 +59,7 @@ def ensure_collection(
         limit = max_materialize
         if limit == 0:
             return ()
-        items = list(islice(iterable, limit + 1))
+        items = deque(islice(iterable, limit + 1), maxlen=limit + 1)
         if len(items) > limit:
             raise ValueError(
                 f"Iterable produced {len(items)} items, exceeds limit {limit}"
