@@ -79,13 +79,13 @@ def _alias_resolve(
     ``aliases`` must already be validated with :func:`_validate_aliases`.
     """
 
-    errors: list[tuple[str, Exception]] = []
+    encountered_error = False
     for key in aliases:
         if key in d:
             try:
                 return conv(d[key])
             except (ValueError, TypeError) as exc:
-                errors.append((key, exc))
+                encountered_error = True
                 if not strict:
                     lvl = log_level if log_level is not None else logging.DEBUG
                     logger.log(
@@ -95,16 +95,32 @@ def _alias_resolve(
         try:
             return conv(default)
         except (ValueError, TypeError) as exc:
-            errors.append(("default", exc))
+            encountered_error = True
             if not strict:
                 lvl = (
-                    logging.WARNING
-                    if log_level is None
-                    else log_level
+                    logging.WARNING if log_level is None else log_level
                 )
                 logger.log(
                     lvl, "No se pudo convertir el valor para 'default': %s", exc
                 )
+
+    if not encountered_error:
+        return None
+
+    # At this point no conversion succeeded and at least one error occurred.
+    # Build the error list only if we need to raise or log a final summary.
+    errors: list[tuple[str, Exception]] = []
+    for key in aliases:
+        if key in d:
+            try:
+                conv(d[key])
+            except (ValueError, TypeError) as exc:
+                errors.append((key, exc))
+    if default is not None:
+        try:
+            conv(default)
+        except (ValueError, TypeError) as exc:
+            errors.append(("default", exc))
 
     if errors and strict:
         err_msg = "; ".join(f"{k!r}: {e}" for k, e in errors)
