@@ -215,7 +215,15 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
 def min_max_range(
     values: Iterable[float], *, default: tuple[float, float] = (0.0, 0.0)
 ) -> tuple[float, float]:
-    vals = list(values)
-    if not vals:
+    it = iter(values)
+    try:
+        first = next(it)
+    except StopIteration:
         return default
-    return min(vals), max(vals)
+    min_val = max_val = first
+    for val in it:
+        if val < min_val:
+            min_val = val
+        elif val > max_val:
+            max_val = val
+    return min_val, max_val
