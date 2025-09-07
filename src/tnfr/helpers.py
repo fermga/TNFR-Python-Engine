@@ -269,6 +269,34 @@ def node_set_checksum(
     return hasher.hexdigest()
 
 
+def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
+    """Cache and return the tuple of nodes for ``G``.
+
+    The cached values are stored in ``G.graph`` under ``"_node_list"``,
+    ``"_node_list_len"`` and ``"_node_list_checksum"``.  The cache is
+    refreshed when the number of nodes changes or when the optional
+    ``"_node_list_dirty"`` flag is set to ``True``.
+    """
+
+    graph = get_graph(G)
+    nodes = graph.get("_node_list")
+    stored_len = graph.get("_node_list_len")
+    current_n = G.number_of_nodes()
+    dirty = bool(graph.pop("_node_list_dirty", False))
+    if nodes is None or stored_len != current_n or dirty:
+        nodes = tuple(G.nodes())
+        checksum = node_set_checksum(G, nodes, store=False)
+        graph["_node_list"] = nodes
+        graph["_node_list_len"] = current_n
+        graph["_node_list_checksum"] = checksum
+    else:
+        if "_node_list_checksum" not in graph:
+            graph["_node_list_checksum"] = node_set_checksum(
+                G, nodes, store=False
+            )
+    return nodes
+
+
 def _ensure_node_map(G, *, key: str, sort: bool = False) -> Dict[Any, int]:
     """Return cached node→index mapping for ``G`` under ``key``.
 
