@@ -17,25 +17,31 @@ _RNG_CACHE: MutableMapping[Tuple[int, int], random.Random] = LRUCache(
 )
 
 
-def make_rng(seed: int, key: int) -> random.Random:
+def make_rng(seed_int: int, key_int: int) -> random.Random:
     seed_bytes = struct.pack(
         ">QQ",
-        int(seed) & 0xFFFFFFFFFFFFFFFF,
-        int(key) & 0xFFFFFFFFFFFFFFFF,
+        seed_int & 0xFFFFFFFFFFFFFFFF,
+        key_int & 0xFFFFFFFFFFFFFFFF,
     )
-    seed_int = int.from_bytes(
+    seed_hash = int.from_bytes(
         hashlib.blake2b(seed_bytes, digest_size=8).digest(), "big"
     )
-    return random.Random(seed_int)
+    return random.Random(seed_hash)
 
 
 def get_rng(seed: int, key: int) -> random.Random:
     """Return a cached ``random.Random`` for ``(seed, key)``."""
-    k = (int(seed), int(key))
+    seed_int = int(seed)
+    key_int = int(key)
+    k = (seed_int, key_int)
     with _RNG_LOCK:
         if _CACHE_MAXSIZE <= 0:
-            return make_rng(seed, key)
-        return _RNG_CACHE.setdefault(k, make_rng(seed, key))
+            return make_rng(seed_int, key_int)
+        rng = _RNG_CACHE.get(k)
+        if rng is None:
+            rng = make_rng(seed_int, key_int)
+            _RNG_CACHE[k] = rng
+        return rng
 
 
 def _cache_clear() -> None:
