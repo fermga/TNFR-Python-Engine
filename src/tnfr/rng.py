@@ -33,14 +33,9 @@ def get_rng(seed: int, key: int) -> random.Random:
     """Return a cached ``random.Random`` for ``(seed, key)``."""
     k = (int(seed), int(key))
     with _RNG_LOCK:
-        if _CACHE_MAXSIZE <= 0 and not isinstance(_RNG_CACHE, dict):
+        if _CACHE_MAXSIZE <= 0:
             return make_rng(seed, key)
-        try:
-            return _RNG_CACHE[k]
-        except KeyError:
-            rng = make_rng(seed, key)
-            _RNG_CACHE[k] = rng
-            return rng
+        return _RNG_CACHE.setdefault(k, make_rng(seed, key))
 
 
 def _cache_clear() -> None:
