@@ -1,9 +1,9 @@
 """Observer management."""
 
 from __future__ import annotations
-import statistics
 from itertools import islice
 from functools import partial
+import statistics
 
 from .constants import ALIAS_THETA, get_param
 from .alias import get_attr
@@ -76,16 +76,14 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
     if not _has_nodes(G):
         return 1.0
     _, psi = _get_R_psi(G, R, psi)
-    mean = 0.0
-    m2 = 0.0
-    n = 0
-    for _, data in G.nodes(data=True):
-        th = angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
-        n += 1
-        delta = th - mean
-        mean += delta / n
-        m2 += delta * (th - mean)
-    var = m2 / n if n else 0.0
+    diffs = (
+        angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
+        for _, data in G.nodes(data=True)
+    )
+    try:
+        var = statistics.pvariance(diffs)
+    except statistics.StatisticsError:
+        var = 0.0
     return 1.0 / (1.0 + var)
 
 

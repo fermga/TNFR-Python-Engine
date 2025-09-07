@@ -29,6 +29,7 @@ __all__ = [
     "set_attr_with_max",
     "set_vf",
     "set_dnfr",
+    "recompute_abs_max",
     "multi_recompute_abs_max",
 ]
 
@@ -209,7 +210,7 @@ get_attr_str, set_attr_str = _alias_get_set(str, default="")
 # -------------------------
 
 
-def _recompute_abs_max(G, aliases: tuple[str, ...]):
+def recompute_abs_max(G, aliases: tuple[str, ...]):
     """Recalculate and return ``(max_val, node)`` for ``aliases``."""
     node = max(
         G.nodes(),
@@ -254,7 +255,7 @@ def _update_cached_abs_max(
         G.graph[key] = val
         G.graph[node_key] = n
     elif cur_node == n and val < cur:
-        max_val, max_node = _recompute_abs_max(G, aliases)
+        max_val, max_node = recompute_abs_max(G, aliases)
         G.graph[key] = max_val
         G.graph[node_key] = max_node
 

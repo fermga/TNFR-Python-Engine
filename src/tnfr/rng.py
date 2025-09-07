@@ -38,7 +38,7 @@ def get_rng(seed: int, key: int) -> random.Random:
             rng = make_rng(seed, key)
         cache[k] = rng
         maxsize = _CACHE_MAXSIZE
-        while maxsize > 0 and len(cache) > maxsize:
+        if maxsize > 0 and len(cache) > maxsize:
             cache.popitem(last=False)
     return rng
 

@@ -168,23 +168,25 @@ def _stable_json(obj: Any, visited: set[int] | None = None) -> Any:
     if obj_id in visited:
         return "<recursion>"
     visited.add(obj_id)
-
-    if isinstance(obj, (list, tuple)):
-        return [_stable_json(o, visited) for o in obj]
-    if isinstance(obj, set):
-        stable_items = [_stable_json(o, visited) for o in obj]
-        return sorted(stable_items, key=str)
-    if isinstance(obj, dict):
-        return {
-            str(k): _stable_json(v, visited)
-            for k, v in sorted(obj.items(), key=lambda kv: str(kv[0]))
-        }
-    if hasattr(obj, "__dict__"):
-        return {
-            k: _stable_json(v, visited)
-            for k, v in sorted(vars(obj).items(), key=lambda kv: kv[0])
-        }
-    return f"{obj.__module__}.{obj.__class__.__qualname__}"
+    try:
+        if isinstance(obj, (list, tuple)):
+            return [_stable_json(o, visited) for o in obj]
+        if isinstance(obj, set):
+            stable_items = [_stable_json(o, visited) for o in obj]
+            return sorted(stable_items, key=str)
+        if isinstance(obj, dict):
+            return {
+                str(k): _stable_json(v, visited)
+                for k, v in sorted(obj.items(), key=lambda kv: str(kv[0]))
+            }
+        if hasattr(obj, "__dict__"):
+            return {
+                k: _stable_json(v, visited)
+                for k, v in sorted(vars(obj).items(), key=lambda kv: kv[0])
+            }
+        return f"{obj.__module__}.{obj.__class__.__qualname__}"
+    finally:
+        visited.remove(obj_id)
 
 
 def _node_repr(n: Any) -> str:
@@ -290,22 +292,24 @@ def edge_version_cache(
         # Reserve placeholder so other threads skip building
         cache_dict[key] = (edge_version, _EDGE_CACHE_PENDING)
 
+    exc: Exception | None = None
     try:
         value = builder()
-    except Exception:
+    except Exception as e:  # noqa: BLE001 - reraised after cleanup
+        exc = e
+    finally:
         with _EDGE_CACHE_COND:
-            cache_dict = graph.setdefault("_edge_version_cache", OrderedDict())
-            cache_dict.pop(key, None)
+            if exc is None:
+                cache_dict[key] = (edge_version, value)
+                if max_entries is not None and max_entries > 0:
+                    cache_dict.move_to_end(key)
+                    while len(cache_dict) > max_entries:
+                        cache_dict.popitem(last=False)
+            else:
+                cache_dict.pop(key, None)
             _EDGE_CACHE_COND.notify_all()
-        raise
-    with _EDGE_CACHE_COND:
-        cache_dict = graph.setdefault("_edge_version_cache", OrderedDict())
-        cache_dict[key] = (edge_version, value)
-        if max_entries is not None and max_entries > 0:
-            cache_dict.move_to_end(key)
-            while len(cache_dict) > max_entries:
-                cache_dict.popitem(last=False)
-        _EDGE_CACHE_COND.notify_all()
+    if exc is not None:
+        raise exc
     return value
 
 
