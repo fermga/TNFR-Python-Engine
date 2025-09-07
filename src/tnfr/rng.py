@@ -1,14 +1,14 @@
 """Deterministic RNG helpers."""
 from __future__ import annotations
 
-import hashlib
 import random
+import hashlib
 import struct
 import threading
 from typing import MutableMapping, Tuple
 
-from .constants import DEFAULTS
 from cachetools import LRUCache
+from .constants import DEFAULTS
 
 _RNG_LOCK = threading.Lock()
 _CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
