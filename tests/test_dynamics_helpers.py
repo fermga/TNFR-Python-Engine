@@ -8,7 +8,6 @@ from tnfr.dynamics import (
     _refresh_dnfr_vectors,
     _compute_neighbor_means,
     _choose_glyph,
-    _compute_cos_sin,
 )
 from tnfr.grammar import AL, EN
 
@@ -25,28 +24,6 @@ def test_init_and_refresh_dnfr_cache(graph_canon):
     cache2, *_rest, refreshed2 = _init_dnfr_cache(G, nodes, cache, 1, False)
     assert not refreshed2
     assert cache2 is cache
-
-
-def test_compute_cos_sin_uses_numpy(monkeypatch):
-    calls = []
-
-    class FakeNP:
-        def array(self, arr, dtype=float):
-            return arr
-
-        def cos(self, arr):
-            calls.append("cos")
-            return [1.0] * len(arr)
-
-        def sin(self, arr):
-            calls.append("sin")
-            return [0.0] * len(arr)
-
-    monkeypatch.setattr("tnfr.dynamics.get_numpy", lambda: FakeNP())
-    cos, sin = _compute_cos_sin([0.0, 1.0])
-    assert calls == ["cos", "sin"]
-    assert cos == [1.0, 1.0]
-    assert sin == [0.0, 0.0]
 
 
 def test_compute_neighbor_means_list():

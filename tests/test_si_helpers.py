@@ -6,7 +6,7 @@ from tnfr.constants import ALIAS_DNFR, ALIAS_SI, ALIAS_THETA, ALIAS_VF
 from tnfr.metrics_utils import (
     compute_Si_node,
     get_Si_weights,
-    precompute_trigonometry,
+    get_trig_cache,
 )
 from tnfr.alias import get_attr, set_attr
 from tnfr.helpers import increment_edge_version
@@ -29,12 +29,12 @@ def test_get_si_weights_normalization():
     }
 
 
-def test_precompute_trigonometry():
+def test_get_trig_cache():
     G = nx.Graph()
     G.add_nodes_from([1, 2])
     set_attr(G.nodes[1], ALIAS_THETA, 0.0)
     set_attr(G.nodes[2], ALIAS_THETA, math.pi / 2)
-    trig = precompute_trigonometry(G)
+    trig = get_trig_cache(G)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
     assert cos_th[1] == pytest.approx(1.0)
     assert sin_th[1] == pytest.approx(0.0)
@@ -43,17 +43,17 @@ def test_precompute_trigonometry():
     assert thetas[2] == pytest.approx(math.pi / 2)
 
 
-def test_precompute_trigonometry_invalidation_on_version():
+def test_get_trig_cache_invalidation_on_version():
     G = nx.Graph()
     G.add_node(0)
     set_attr(G.nodes[0], ALIAS_THETA, 0.0)
-    trig1 = precompute_trigonometry(G)
-    trig2 = precompute_trigonometry(G)
+    trig1 = get_trig_cache(G)
+    trig2 = get_trig_cache(G)
     assert trig1 is trig2
     G.add_node(1)
     set_attr(G.nodes[1], ALIAS_THETA, math.pi / 2)
     increment_edge_version(G)
-    trig3 = precompute_trigonometry(G)
+    trig3 = get_trig_cache(G)
     assert trig3 is not trig1
     assert 1 in trig3.cos and 1 not in trig1.cos
 
@@ -65,7 +65,7 @@ def test_compute_Si_node():
     set_attr(G.nodes[1], ALIAS_DNFR, 0.2)
     set_attr(G.nodes[1], ALIAS_THETA, 0.0)
     set_attr(G.nodes[2], ALIAS_THETA, 0.0)
-    trig = precompute_trigonometry(G)
+    trig = get_trig_cache(G)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
     neighbors = {n: list(G.neighbors(n)) for n in G}
     Si = compute_Si_node(
@@ -86,12 +86,14 @@ def test_compute_Si_node():
     assert get_attr(G.nodes[1], ALIAS_SI, 0.0) == pytest.approx(0.7)
 
     class DummyNP:
-        def fromiter(self, iterable, dtype, count):
-            vals = list(iterable)
+        def array(self, iterable, dtype=float):
             class Arr(list):
-                def mean(self):
+                def mean(self, axis=None):
+                    if axis == 0:
+                        cols = len(self[0])
+                        return [sum(row[i] for row in self) / len(self) for i in range(cols)]
                     return sum(self) / len(self)
-            return Arr(vals)
+            return Arr(list(iterable))
 
         def arctan2(self, y, x):
             return math.atan2(y, x)

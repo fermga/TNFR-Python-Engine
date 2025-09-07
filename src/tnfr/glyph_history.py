@@ -28,7 +28,6 @@ def _validate_window(window: int) -> int:
 
 
 def _ensure_glyph_history(nd: Dict[str, Any], window: int) -> deque:
-    window = _validate_window(window)
     hist = nd.get("glyph_history")
     if not isinstance(hist, deque) or hist.maxlen != window:
         hist = deque(hist or [], maxlen=window)
@@ -38,6 +37,7 @@ def _ensure_glyph_history(nd: Dict[str, Any], window: int) -> deque:
 
 def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
     """Add ``glyph`` to node history with maximum size ``window``."""
+    window = _validate_window(window)
     hist = _ensure_glyph_history(nd, window)
     hist.append(str(glyph))
 
@@ -179,14 +179,11 @@ class HistoryDict(dict):
         raise KeyError("HistoryDict is empty; cannot pop least used")
 
     def pop_least_used_batch(self, k: int) -> None:
-        if k > 0 and self._counts:
-            removed = 0
-            while removed < k and self._counts:
-                key = self._pop_heap_key()
-                self._counts.pop(key, None)
-                if key in self:
-                    super().pop(key, None)
-                removed += 1
+        for _ in range(max(0, int(k))):
+            try:
+                self.pop_least_used()
+            except KeyError:
+                break
 
 
 def ensure_history(G) -> Dict[str, Any]:

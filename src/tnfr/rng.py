@@ -5,10 +5,11 @@ import random
 import hashlib
 import struct
 import threading
-from typing import MutableMapping, Tuple
+from typing import MutableMapping, Tuple, Any
 
 from cachetools import LRUCache
 from .constants import DEFAULTS
+from .helpers import get_graph
 
 _RNG_LOCK = threading.Lock()
 _CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
@@ -52,6 +53,12 @@ def _cache_clear() -> None:
 get_rng.cache_clear = _cache_clear  # type: ignore[attr-defined]
 
 
+def base_seed(G: Any) -> int:
+    """Return base RNG seed stored in ``G.graph``."""
+    graph = get_graph(G)
+    return int(graph.get("RANDOM_SEED", 0))
+
+
 def _rng_for_step(seed: int, step: int) -> random.Random:
     """Return deterministic RNG for a simulation ``step``."""
 
@@ -71,4 +78,4 @@ def set_cache_maxsize(size: int) -> None:
         else:
             _RNG_CACHE = {}
 
-__all__ = ["get_rng", "make_rng", "set_cache_maxsize"]
+__all__ = ["get_rng", "make_rng", "set_cache_maxsize", "base_seed"]
