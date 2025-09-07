@@ -102,6 +102,8 @@ def glyph_load(G, window: int | None = None) -> dict:
       otherwise use the deque's maxlen.
     Returns a dict with proportions per glyph and useful aggregates.
     """
+    if window is not None and window <= 0:
+        raise ValueError("window must be positive")
     total = count_glyphs(G, window=window, last_only=(window == 1))
     dist, count = normalize_counter(total)
     if count == 0:
@@ -113,6 +115,8 @@ def glyph_load(G, window: int | None = None) -> dict:
 
 def wbar(G, window: int | None = None) -> float:
     """Return W̄ = mean of C(t) over a recent window."""
+    if window is not None and window <= 0:
+        raise ValueError("window must be positive")
     hist = G.graph.get("history", {})
     cs = hist.get("C_steps", [])
     if not cs:
