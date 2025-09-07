@@ -24,7 +24,7 @@ def test_setdefault_inserts_and_converts_without_usage():
     hist = HistoryDict(maxlen=2)
     val = hist.setdefault("a", [1])
     assert isinstance(val, deque)
-    assert list(val) == [1]
+    assert val == deque([1])
     assert hist._counts.get("a", 0) == 0
     val2 = hist.setdefault("a", [2])
     assert val2 is val
