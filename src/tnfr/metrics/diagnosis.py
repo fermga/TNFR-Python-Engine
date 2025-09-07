@@ -66,6 +66,80 @@ def _recommendation(state, cfg):
     return list(adv.get(key, []))
 
 
+def _get_last_weights(G, hist):
+    """Return last Wi and Wm matrices from history."""
+    CfgW = G.graph.get("COHERENCE", COHERENCE)
+    Wkey = CfgW.get("Wi_history_key", "W_i")
+    Wm_key = CfgW.get("history_key", "W_sparse")
+    Wi_series = hist.get(Wkey, [])
+    Wm_series = hist.get(Wm_key, [])
+    Wi_last = Wi_series[-1] if Wi_series else None
+    Wm_last = Wm_series[-1] if Wm_series else None
+    return Wi_last, Wm_last
+
+
+def _node_diagnostics(
+    G,
+    n,
+    i,
+    nodes,
+    node_to_index,
+    Wi_last,
+    Wm_last,
+    epi_min,
+    epi_max,
+    dnfr_max,
+    dcfg,
+):
+    nd = G.nodes[n]
+    Si = clamp01(get_attr(nd, ALIAS_SI, 0.0))
+    EPI = get_attr(nd, ALIAS_EPI, 0.0)
+    vf = get_attr(nd, ALIAS_VF, 0.0)
+    dnfr_n = _dnfr_norm(nd, dnfr_max)
+
+    if Wm_last is not None:
+        if Wm_last and isinstance(Wm_last[0], list):
+            row = Wm_last[i]
+        else:
+            row = Wm_last
+        Rloc = local_phase_sync_weighted(
+            G, n, nodes_order=nodes, W_row=row, node_to_index=node_to_index
+        )
+    else:
+        Rloc = local_phase_sync_weighted(
+            G, n, nodes_order=nodes, node_to_index=node_to_index
+        )
+
+    symm = (
+        _symmetry_index(G, n, epi_min=epi_min, epi_max=epi_max)
+        if dcfg.get("compute_symmetry", True)
+        else None
+    )
+    state = _state_from_thresholds(Rloc, dnfr_n, dcfg)
+
+    alerts = []
+    if state == "disonante" and dnfr_n >= float(
+        dcfg.get("dissonance", {}).get("dnfr_hi", 0.5)
+    ):
+        alerts.append("high structural tension")
+
+    advice = _recommendation(state, dcfg)
+
+    return {
+        "node": n,
+        "Si": Si,
+        "EPI": EPI,
+        VF_KEY: vf,
+        "dnfr_norm": dnfr_n,
+        "W_i": (Wi_last[i] if (Wi_last and i < len(Wi_last)) else None),
+        "R_local": Rloc,
+        "symmetry": symm,
+        "state": state,
+        "advice": advice,
+        "alerts": alerts,
+    }
+
+
 def _diagnosis_step(G, ctx=None):
     dcfg = G.graph.get("DIAGNOSIS", DIAGNOSIS)
     if not dcfg.get("enabled", True):
@@ -80,67 +154,25 @@ def _diagnosis_step(G, ctx=None):
     epi_iter = (get_attr(nd, ALIAS_EPI, 0.0) for _, nd in G.nodes(data=True))
     epi_min, epi_max = min_max_range(epi_iter, default=(0.0, 1.0))
 
-    CfgW = G.graph.get("COHERENCE", COHERENCE)
-    Wkey = CfgW.get("Wi_history_key", "W_i")
-    Wm_key = CfgW.get("history_key", "W_sparse")
-    Wi_series = hist.get(Wkey, [])
-    Wi_last = Wi_series[-1] if Wi_series else None
-    Wm_series = hist.get(Wm_key, [])
-    Wm_last = Wm_series[-1] if Wm_series else None
+    Wi_last, Wm_last = _get_last_weights(G, hist)
 
     nodes = list(G.nodes())
     node_to_index = {v: i for i, v in enumerate(nodes)}
     diag = {}
     for i, n in enumerate(nodes):
-        nd = G.nodes[n]
-        Si = clamp01(get_attr(nd, ALIAS_SI, 0.0))
-        EPI = get_attr(nd, ALIAS_EPI, 0.0)
-        vf = get_attr(nd, ALIAS_VF, 0.0)
-        dnfr_n = _dnfr_norm(nd, dnfr_max)
-
-        Rloc = 0.0
-        if Wm_last is not None:
-            if Wm_last and isinstance(Wm_last[0], list):
-                row = Wm_last[i]
-            else:
-                row = Wm_last
-            Rloc = local_phase_sync_weighted(
-                G, n, nodes_order=nodes, W_row=row, node_to_index=node_to_index
-            )
-        else:
-            Rloc = local_phase_sync_weighted(
-                G, n, nodes_order=nodes, node_to_index=node_to_index
-            )
-
-        symm = (
-            _symmetry_index(G, n, epi_min=epi_min, epi_max=epi_max)
-            if dcfg.get("compute_symmetry", True)
-            else None
+        diag[n] = _node_diagnostics(
+            G,
+            n,
+            i,
+            nodes,
+            node_to_index,
+            Wi_last,
+            Wm_last,
+            epi_min,
+            epi_max,
+            dnfr_max,
+            dcfg,
         )
-        state = _state_from_thresholds(Rloc, dnfr_n, dcfg)
-
-        alerts = []
-        if state == "disonante" and dnfr_n >= float(
-            dcfg.get("dissonance", {}).get("dnfr_hi", 0.5)
-        ):
-            alerts.append("high structural tension")
-
-        advice = _recommendation(state, dcfg)
-
-        rec = {
-            "node": n,
-            "Si": Si,
-            "EPI": EPI,
-            VF_KEY: vf,
-            "dnfr_norm": dnfr_n,
-            "W_i": (Wi_last[i] if (Wi_last and i < len(Wi_last)) else None),
-            "R_local": Rloc,
-            "symmetry": symm,
-            "state": state,
-            "advice": advice,
-            "alerts": alerts,
-        }
-        diag[n] = rec
 
     append_metric(hist, key, diag)
 
