@@ -22,6 +22,7 @@ import heapq
 from operator import ge, le
 from functools import cache
 from itertools import combinations
+from io import StringIO
 
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers import (
@@ -488,11 +489,16 @@ def _snapshot_topology(G, nx):
 
 def _snapshot_epi(G):
     """Return ``(mean, checksum)`` of the node EPI values."""
-    items = [(n, get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in G.nodes()]
-    mean_val = list_mean(v for _, v in items)
-    checksum = hashlib.sha1(
-        str(sorted((str(n), round(v, 6)) for n, v in items)).encode()
-    ).hexdigest()[:12]
+    total = 0.0
+    count = 0
+    buf = StringIO()
+    for n, data in G.nodes(data=True):
+        v = float(get_attr(data, ALIAS_EPI, 0.0))
+        total += v
+        count += 1
+        buf.write(f"{str(n)}:{round(v, 6)};")
+    mean_val = total / count if count else 0.0
+    checksum = hashlib.sha1(buf.getvalue().encode()).hexdigest()[:12]
     return float(mean_val), checksum
 
 
