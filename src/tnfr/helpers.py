@@ -352,13 +352,18 @@ def edge_version_cache(
     and cleared when the cache is invalidated.
 
     When ``max_entries`` is a positive integer, only the most recent
-    ``max_entries`` cache entries are kept (defaults to ``128``).  The
-    ``builder`` is executed outside the global lock when a cache miss occurs,
-    so it **must** be pure and yield identical results across concurrent
-    invocations.
+    ``max_entries`` cache entries are kept (defaults to ``128``).  If
+    ``max_entries`` is ``None`` the cache may grow without bound.  A
+    ``max_entries`` value of ``0`` disables caching entirely and ``builder``
+    is executed on each invocation.  The ``builder`` is executed outside the
+    global lock when a cache miss occurs, so it **must** be pure and yield
+    identical results across concurrent invocations.
     """
     if max_entries is not None and max_entries < 0:
         raise ValueError("max_entries must be non-negative or None")
+    if max_entries == 0:
+        return builder()
+
     graph = get_graph(G)
     use_lru = bool(max_entries)
 
