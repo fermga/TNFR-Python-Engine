@@ -153,9 +153,9 @@ def _phase_mean_from_iter(
     for cs in it:
         if cs is None:
             continue
-        cx, sy = cs
-        x += cx
-        y += sy
+        cos_val, sin_val = cs
+        x += cos_val
+        y += sin_val
         count += 1
     if count == 0:
         return fallback
@@ -217,7 +217,8 @@ def _stable_json(obj: Any, visited: set[int] | None = None) -> Any:
     if isinstance(obj, (list, tuple)):
         return [_stable_json(o, visited) for o in obj]
     if isinstance(obj, set):
-        return [_stable_json(o, visited) for o in sorted(obj, key=lambda x: repr(x))]
+        stable_items = [_stable_json(o, visited) for o in obj]
+        return sorted(stable_items, key=lambda x: repr(x))
     if isinstance(obj, dict):
         return {
             str(k): _stable_json(v, visited)
@@ -263,14 +264,12 @@ def node_set_checksum(
 
     hasher = hashlib.blake2b(digest_size=16)
     serialised = (
-        (_node_repr(n) for n in node_iter)
+        [_node_repr(n) for n in node_iter]
         if presorted
         else sorted(_node_repr(n) for n in node_iter)
     )
-    for idx, node_repr in enumerate(serialised):
-        if idx:
-            hasher.update(b"|")
-        hasher.update(node_repr.encode("utf-8"))
+    payload = "|".join(serialised)
+    hasher.update(payload.encode("utf-8"))
     checksum = hasher.hexdigest()
     if store:
         graph["_node_set_checksum_cache"] = (len(marker), marker, checksum)
@@ -336,7 +335,14 @@ def edge_version_cache(
         # Reserve placeholder so other threads skip building
         cache_dict[key] = (edge_version, _EDGE_CACHE_PENDING)
 
-    value = builder()
+    try:
+        value = builder()
+    except Exception:
+        with _EDGE_CACHE_COND:
+            cache_dict = graph.setdefault("_edge_version_cache", OrderedDict())
+            cache_dict.pop(key, None)
+            _EDGE_CACHE_COND.notify_all()
+        raise
     with _EDGE_CACHE_COND:
         cache_dict = graph.setdefault("_edge_version_cache", OrderedDict())
         cache_dict[key] = (edge_version, value)
