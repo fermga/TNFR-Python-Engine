@@ -26,6 +26,12 @@ def test_recent_glyph_window_zero():
     assert not recent_glyph(nd, "B", window=0)
 
 
+def test_recent_glyph_window_zero_does_not_modify_node():
+    nd = {}
+    assert not recent_glyph(nd, "B", window=0)
+    assert nd == {}
+
+
 def test_recent_glyph_window_negative():
     nd = _make_node(["A", "B"], current="B")
     with pytest.raises(ValueError):
