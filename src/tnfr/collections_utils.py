@@ -114,8 +114,8 @@ def normalize_weights(
         weights[k] = w
     if negatives:
         if error_on_negative:
-            raise ValueError(f"Pesos negativos detectados: {negatives}")
-        logger.warning("Pesos negativos detectados: %s", negatives)
+            raise ValueError(f"Negative weights detected: {negatives}")
+        logger.warning("Negative weights detected: %s", negatives)
     total = math.fsum(weights.values())
     if total <= 0:
         uniform = 1.0 / len(keys)

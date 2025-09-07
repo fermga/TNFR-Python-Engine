@@ -1,4 +1,4 @@
-"""Pruebas de load_config y apply_config."""
+"""Tests for ``load_config`` and ``apply_config``."""
 
 import json
 import networkx as nx
@@ -19,7 +19,7 @@ except ImportError:  # pragma: no cover - skip if not installed
             ".yaml",
             lambda data: yaml.safe_dump(data),
             marks=pytest.mark.skipif(
-                yaml is None, reason="pyyaml no está instalado"
+                yaml is None, reason="pyyaml not installed"
             ),
         ),
     ],

@@ -9,7 +9,7 @@ def test_normalize_weights_warns_on_negative_value(caplog):
     weights = {"a": -1.0, "b": 2.0}
     with caplog.at_level("WARNING"):
         norm = normalize_weights(weights, ("a", "b"))
-    assert any("Pesos negativos" in m for m in caplog.messages)
+    assert any("Negative weights" in m for m in caplog.messages)
     assert norm["a"] == 0.0
     assert math.isclose(norm["b"], 1.0)
 
@@ -23,7 +23,7 @@ def test_normalize_weights_raises_on_negative_value():
 def test_normalize_weights_warns_on_negative_default(caplog):
     with caplog.at_level("WARNING"):
         normalize_weights({}, ("a", "b"), default=-0.5)
-    assert any("Pesos negativos" in m for m in caplog.messages)
+    assert any("Negative weights" in m for m in caplog.messages)
 
 
 def test_normalize_weights_raises_on_negative_default():
@@ -35,7 +35,7 @@ def test_normalize_weights_warns_on_non_numeric_value(caplog):
     weights = {"a": "not-a-number", "b": 2.0}
     with caplog.at_level("WARNING"):
         norm = normalize_weights(weights, ("a", "b"), default=1.0)
-    assert any("No se pudo convertir" in m for m in caplog.messages)
+    assert any("Could not convert" in m for m in caplog.messages)
     assert math.isclose(math.fsum(norm.values()), 1.0)
     assert norm == pytest.approx({"a": 1 / 3, "b": 2 / 3})
 
