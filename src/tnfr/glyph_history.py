@@ -56,10 +56,11 @@ def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
 class HistoryDict(dict):
     """Dict specialized for bounded history series and usage counts.
 
-    Each access to a key increases its usage counter and stores the pair
-    ``(count, key)`` on an internal heap. Stale entries are periodically
-    discarded to keep the heap size under control without maintaining
-    explicit dirtiness counters.
+    Usage counts are tracked explicitly via :meth:`get_increment`. Accessing
+    keys through ``__getitem__`` or :meth:`get` does not affect the internal
+    counters, avoiding surprising evictions on mere reads. Stale entries are
+    periodically discarded to keep the heap size under control without
+    maintaining explicit dirtiness counters.
 
     Parameters
     ----------
@@ -88,8 +89,8 @@ class HistoryDict(dict):
         if self._maxlen > 0:
             for k, v in list(self.items()):
                 if isinstance(v, list):
-                    self[k] = deque(v, maxlen=self._maxlen)
-                self._counts.setdefault(k, 0)
+                    super().__setitem__(k, deque(v, maxlen=self._maxlen))
+                self._counts[k] = 0
                 heapq.heappush(self._heap, (0, k))
 
     def _prune_heap(self) -> None:
@@ -106,41 +107,30 @@ class HistoryDict(dict):
         if len(self._heap) > len(self) + self._compact_every:
             self._prune_heap()
 
-    def _resolve_value(self, key: str, default: Any, *, missing: bool) -> Any:
-        if missing:
+    def _resolve_value(self, key: str, default: Any, *, insert: bool) -> Any:
+        if insert:
             val = super().setdefault(key, default)
         else:
             val = super().__getitem__(key)
         if self._maxlen > 0 and isinstance(val, list):
             val = deque(val, maxlen=self._maxlen)
             super().__setitem__(key, val)
-        self._counts.setdefault(key, 0)
         return val
 
-    def _get_and_increment(
-        self, key: str, default: Any = None, *, missing: bool = False
-    ):
-        val = self._resolve_value(key, default, missing=missing)
+    def get_increment(self, key: str, default: Any = None) -> Any:
+        insert = key not in self
+        val = self._resolve_value(key, default, insert=insert)
         self._increment(key)
         return val
 
-    def _get_maybe_default(
-        self, key: str, default: Any = None, *, missing: bool = False, soft: bool = False
-    ) -> Any:
-        try:
-            return self._get_and_increment(key)
-        except KeyError:
-            if missing:
-                return self._get_and_increment(key, default, missing=True)
-            if soft:
-                return default
-            raise
-
     def __getitem__(self, key):  # type: ignore[override]
-        return self._get_maybe_default(key)
+        return self._resolve_value(key, None, insert=False)
 
     def get(self, key, default=None):  # type: ignore[override]
-        return self._get_maybe_default(key, default, soft=True)
+        try:
+            return self._resolve_value(key, None, insert=False)
+        except KeyError:
+            return default
 
     def __setitem__(self, key, value):  # type: ignore[override]
         super().__setitem__(key, value)
@@ -150,7 +140,12 @@ class HistoryDict(dict):
             self._prune_heap()
 
     def setdefault(self, key, default=None):  # type: ignore[override]
-        return self._get_maybe_default(key, default, missing=True)
+        insert = key not in self
+        val = self._resolve_value(key, default, insert=insert)
+        if insert:
+            self._counts[key] = 0
+            heapq.heappush(self._heap, (0, key))
+        return val
 
     def pop_least_used(self) -> Any:
         while self._heap:
@@ -162,12 +157,27 @@ class HistoryDict(dict):
                 return value
         raise KeyError("HistoryDict is empty; cannot pop least used")
 
+    def pop_least_used_batch(self, k: int) -> None:
+        if k <= 0:
+            return
+        self._prune_heap()
+        removed = 0
+        while self._heap and removed < k:
+            cnt, key = heapq.heappop(self._heap)
+            if self._counts.get(key) == cnt and key in self:
+                self._counts.pop(key, None)
+                super().pop(key, None)
+                removed += 1
+        self._prune_heap()
+
 
 def ensure_history(G) -> Dict[str, Any]:
     """Ensure ``G.graph['history']`` exists and return it.
 
     ``HISTORY_MAXLEN`` must be non-negative and ``HISTORY_COMPACT_EVERY``
     must be a positive integer; otherwise a :class:`ValueError` is raised.
+    When ``HISTORY_MAXLEN`` is zero, a plain dictionary is returned to avoid
+    the overhead of :class:`HistoryDict`.
     """
     maxlen = int(get_param(G, "HISTORY_MAXLEN"))
     if maxlen < 0:
@@ -176,6 +186,11 @@ def ensure_history(G) -> Dict[str, Any]:
     if compact_every <= 0:
         raise ValueError("HISTORY_COMPACT_EVERY must be > 0")
     hist = G.graph.get("history")
+    if maxlen == 0:
+        if not isinstance(hist, dict) or isinstance(hist, HistoryDict):
+            hist = dict(hist or {})
+            G.graph["history"] = hist
+        return hist
     if (
         not isinstance(hist, HistoryDict)
         or hist._maxlen != maxlen
@@ -183,16 +198,19 @@ def ensure_history(G) -> Dict[str, Any]:
     ):
         hist = HistoryDict(hist, maxlen=maxlen, compact_every=compact_every)
         G.graph["history"] = hist
-    if maxlen > 0:
-        while len(hist) > maxlen:
-            hist.pop_least_used()
-        # Note: trimming is O(n log n) when history exceeds ``maxlen``
+    excess = len(hist) - maxlen
+    if excess > 0:
+        hist.pop_least_used_batch(excess)
     return hist
 
 
 def append_metric(hist: Dict[str, Any], key: str, value: Any) -> None:
     """Append ``value`` to ``hist[key]`` list, creating it if missing."""
-    hist.setdefault(key, []).append(value)
+    if hasattr(hist, "get_increment"):
+        lst = hist.get_increment(key, [])
+    else:
+        lst = hist.setdefault(key, [])
+    lst.append(value)
 
 
 def last_glyph(nd: Dict[str, Any]) -> str | None:

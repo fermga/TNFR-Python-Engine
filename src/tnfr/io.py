@@ -5,6 +5,8 @@ from typing import Any, Callable
 import json
 from pathlib import Path
 from functools import lru_cache
+import os
+import logging
 
 from .import_utils import optional_import
 import tempfile
@@ -92,6 +94,9 @@ def read_structured_file(path: Path) -> Any:
         raise StructuredFileError(path, e) from e
 
 
+logger = logging.getLogger(__name__)
+
+
 def safe_write(
     path: str | Path,
     write: Callable[[Any], Any],
@@ -112,7 +117,11 @@ def safe_write(
             tmp_path = Path(tmp.name)
         with open(tmp_path, **open_params) as f:
             write(f)
-        tmp_path.replace(path)
+        try:
+            os.replace(tmp_path, path)
+        except OSError as e:
+            logger.error("Atomic replace failed for %s -> %s: %s", tmp_path, path, e)
+            raise
     except OSError as e:
         if tmp_path is not None and tmp_path.exists():
             tmp_path.unlink()

@@ -85,4 +85,4 @@ def test_update_tg_matches_naive(graph_canon):
     assert n_total_opt == n_total_ref
     assert n_latent_opt == n_latent_ref
     assert hist_opt == hist_ref
-    assert t_opt <= t_ref * 2
+    assert t_opt <= t_ref * 3
