@@ -20,10 +20,11 @@ from typing import (
 )
 import logging
 from functools import lru_cache
+from .logging_utils import get_logger
 
 from .constants import ALIAS_VF, ALIAS_DNFR
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 T = TypeVar("T")
 

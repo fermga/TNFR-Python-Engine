@@ -40,8 +40,9 @@ from .io import read_structured_file, safe_write
 from .helpers import list_mean
 from .observers import attach_standard_observer
 from . import __version__
+from .logging_utils import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 __all__ = [
     "main",

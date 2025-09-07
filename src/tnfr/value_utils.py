@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from typing import Any, Callable, TypeVar
 import logging
+from .logging_utils import get_logger
 
 T = TypeVar("T")
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 __all__ = ["_convert_value"]
 
