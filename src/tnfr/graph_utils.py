@@ -5,6 +5,7 @@ from typing import Any
 
 __all__ = ["mark_dnfr_prep_dirty"]
 
+
 def mark_dnfr_prep_dirty(G: Any) -> None:
     """Mark cached ΔNFR preparation data as stale for ``G``.
 
@@ -12,5 +13,8 @@ def mark_dnfr_prep_dirty(G: Any) -> None:
     :func:`_prepare_dnfr_data` know that node attributes or topology have
     changed and cached arrays need to be refreshed.
     """
-    graph = G.graph if hasattr(G, "graph") else G
+
+    from .helpers import get_graph
+
+    graph = get_graph(G)
     graph["_dnfr_prep_dirty"] = True

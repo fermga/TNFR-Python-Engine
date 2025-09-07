@@ -2,7 +2,7 @@
 
 from types import MappingProxyType
 
-from tnfr.constants import _is_immutable, _prune_cache
+from tnfr.constants import _is_immutable
 
 
 def test_is_immutable_nested_structures():
@@ -19,11 +19,8 @@ def test_is_immutable_detects_mutable():
     assert not _is_immutable(data)
 
 
-def test_prune_cache_allows_gc():
-    class Dummy:
-        pass
-
-    d = Dummy()
-    assert not _is_immutable(d)
-    _prune_cache()
-    assert not _is_immutable(d)
+def test_is_immutable_lists_dicts_nested():
+    data = (1, [2, {"a": (3, 4)}])
+    assert not _is_immutable(data)
+    # call twice to exercise cache behaviour
+    assert not _is_immutable(data)

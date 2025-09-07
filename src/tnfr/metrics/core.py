@@ -168,12 +168,9 @@ def _update_glyphogram(G, hist, counts, t, n_total):
     )
     row = {"t": t}
     total = max(1, n_total)
-
-    def add_row(g):
+    for g in GLYPHS_CANONICAL:
         c = counts.get(g, 0)
         row[g] = (c / total) if normalize_series else c
-
-    for_each_glyph(add_row)
     append_metric(hist, "glyphogram", row)
 
 

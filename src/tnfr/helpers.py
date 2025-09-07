@@ -14,6 +14,7 @@ import hashlib
 from statistics import fmean, StatisticsError
 import threading
 import json
+from functools import lru_cache
 from cachetools import LRUCache
 
 from .import_utils import get_numpy, import_nodonx
@@ -56,6 +57,7 @@ __all__ = [
     "invalidate_edge_version_cache",
     "increment_edge_version",
     "node_set_checksum",
+    "get_graph",
     "mark_dnfr_prep_dirty",
 ]
 
@@ -157,6 +159,12 @@ from .glyph_history import (  # noqa: E402
 # -------------------------
 
 
+def get_graph(obj: Any) -> Any:
+    """Return ``obj.graph`` if available or ``obj`` otherwise."""
+
+    return obj.graph if hasattr(obj, "graph") else obj
+
+
 def _stable_json(
     obj: Any, visited: set[int] | None = None, max_depth: int = 10
 ) -> str:
@@ -196,6 +204,7 @@ def _stable_json(
     return json.dumps(basic, sort_keys=True)
 
 
+@lru_cache(maxsize=1024)
 def _node_repr(n: Any) -> str:
     """Stable representation for node hashing and sorting."""
     return _stable_json(n)
@@ -216,13 +225,13 @@ def node_set_checksum(
     ``"_node_set_checksum_cache"`` when ``store`` is ``True``.
     """
 
-    graph = G.graph if hasattr(G, "graph") else G
+    graph = get_graph(G)
     node_iterable = G.nodes() if nodes is None else nodes
 
     serialised_list = [_node_repr(n) for n in node_iterable]
 
-    marker = frozenset(serialised_list)
     if store:
+        marker = frozenset(serialised_list)
         cached = graph.get("_node_set_checksum_cache")
         if cached and cached[0] == marker:
             return cached[1]
@@ -280,7 +289,7 @@ def edge_version_cache(
     """
     if max_entries is not None and max_entries < 0:
         raise ValueError("max_entries must be non-negative or None")
-    graph = G.graph if hasattr(G, "graph") else G
+    graph = get_graph(G)
     cache = graph.get("_edge_version_cache")
     if cache is None or (
         isinstance(cache, LRUCache)
@@ -304,7 +313,7 @@ def edge_version_cache(
 
 def invalidate_edge_version_cache(G: Any) -> None:
     """Clear cached entries associated with ``G``."""
-    graph = G.graph if hasattr(G, "graph") else G
+    graph = get_graph(G)
     cache = graph.get("_edge_version_cache")
     if cache is not None:
         cache.clear()
@@ -334,10 +343,11 @@ def cached_nodes_and_A(
 
 def increment_edge_version(G: Any) -> None:
     """Increment the edge version counter in ``G.graph``."""
-    graph = G.graph if hasattr(G, "graph") else G
+    graph = get_graph(G)
     graph["_edge_version"] = int(graph.get("_edge_version", 0)) + 1
     invalidate_edge_version_cache(G)
     mark_dnfr_prep_dirty(G)
+    _node_repr.cache_clear()
     for key in (
         "_neighbors",
         "_neighbors_version",

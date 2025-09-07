@@ -1,10 +1,9 @@
 import hashlib
 import networkx as nx
-
 import timeit
 
 from tnfr import helpers as h
-from tnfr.helpers import node_set_checksum, _stable_json
+from tnfr.helpers import node_set_checksum, _stable_json, increment_edge_version
 
 
 def build_graph():
@@ -68,3 +67,18 @@ def test_node_set_checksum_presorted_performance():
         lambda: node_set_checksum(G, nodes, presorted=True), number=1
     )
     assert t_presorted <= t_unsorted * 3.0
+
+
+def test_node_set_checksum_no_store_does_not_cache():
+    G = nx.Graph()
+    G.add_nodes_from([1, 2])
+    node_set_checksum(G, store=False)
+    assert "_node_set_checksum_cache" not in G.graph
+
+
+def test_node_repr_cache_cleared_on_increment():
+    nxG = nx.Graph()
+    h._node_repr("foo")
+    assert h._node_repr.cache_info().currsize > 0
+    increment_edge_version(nxG)
+    assert h._node_repr.cache_info().currsize == 0
