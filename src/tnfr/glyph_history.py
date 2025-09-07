@@ -246,7 +246,6 @@ def count_glyphs(
         else:
             yield from islice(reversed(hist), window_int)
 
-    counts: Counter[str] = Counter()
-    for _, nd in G.nodes(data=True):
-        counts.update(_iter_seq(nd))
-    return counts
+    return Counter(
+        g for _, nd in G.nodes(data=True) for g in _iter_seq(nd)
+    )

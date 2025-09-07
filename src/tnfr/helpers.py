@@ -24,7 +24,6 @@ from .collections_utils import (
     mix_groups,
 )
 from .alias import get_attr
-from .constants import ALIAS_THETA
 
 _EDGE_CACHE_LOCK = threading.Lock()
 _EDGE_CACHE_COND = threading.Condition(_EDGE_CACHE_LOCK)

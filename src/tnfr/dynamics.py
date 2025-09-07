@@ -81,31 +81,32 @@ def _update_node_sample(G, *, step: int) -> None:
     when the graph size changes. Sampling operates directly on this cached
     tuple.
     """
-    limit = int(G.graph.get("UM_CANDIDATE_COUNT", 0))
-    nodes = G.graph.get("_node_list")
-    stored_len = G.graph.get("_node_list_len")
+    graph = G.graph
+    limit = int(graph.get("UM_CANDIDATE_COUNT", 0))
+    nodes = graph.get("_node_list")
+    stored_len = graph.get("_node_list_len")
     current_n = G.number_of_nodes()
-    dirty = bool(G.graph.pop("_node_list_dirty", False))
+    dirty = bool(graph.pop("_node_list_dirty", False))
     if nodes is None or stored_len != current_n or dirty:
         nodes = tuple(G.nodes())
         checksum = node_set_checksum(G, nodes, store=False)
-        G.graph["_node_list"] = nodes
-        G.graph["_node_list_checksum"] = checksum
-        G.graph["_node_list_len"] = current_n
+        graph["_node_list"] = nodes
+        graph["_node_list_checksum"] = checksum
+        graph["_node_list_len"] = current_n
     else:
-        checksum = G.graph.get("_node_list_checksum")
+        checksum = graph.get("_node_list_checksum")
     n = len(nodes)
     if limit <= 0 or n < 50 or limit >= n:
         # Avoid exposing a mutable NodeView that may change later.
-        G.graph["_node_sample"] = nodes
+        graph["_node_sample"] = nodes
         return
 
-    seed = int(G.graph.get("RANDOM_SEED", 0))
+    seed = int(graph.get("RANDOM_SEED", 0))
     # Ensure deterministic seeding independent of ``PYTHONHASHSEED`` by
     # combining the user seed and step via bitwise XOR instead of a string
     # seed, which would rely on Python's randomized hashing of strings.
     rng = get_rng(seed, step)
-    G.graph["_node_sample"] = rng.sample(nodes, limit)
+    graph["_node_sample"] = rng.sample(nodes, limit)
 
 
 # -------------------------
