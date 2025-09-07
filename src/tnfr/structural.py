@@ -184,39 +184,17 @@ def validate_sequence(nombres: List[str]) -> Tuple[bool, str]:
 
 
 def run_sequence(G: nx.Graph, node, ops: Iterable[Operador]) -> None:
-    """Execute a sequence of operators on ``node`` after validation.
+    """Execute a sequence of operators on ``node`` after validation."""
 
-    ``ops`` is iterated only once: each operator name is checked as it is
-    received and the whole sequence is validated before execution.
-    """
-
-    nombres: List[str] = []
-    acumulados: List[Operador] = []
     compute = G.graph.get("compute_delta_nfr")
-    first = True
-    for op in ops:
-        nombre = op.name
-        if not isinstance(nombre, str):
-            raise ValueError("Invalid sequence: tokens must be str")
-        if first:
-            if nombre not in _INICIO_VALIDOS:
-                raise ValueError(
-                    "Invalid sequence: must start with emission or recursion"
-                )
-            first = False
-        if nombre not in OPERADORES:
-            raise ValueError(f"Invalid sequence: unknown token: {nombre}")
-        nombres.append(nombre)
-        acumulados.append(op)
+    ops_list = list(ops)
+    nombres = [op.name for op in ops_list]
 
-    if not nombres:
-        raise ValueError("Invalid sequence: empty sequence")
-
-    ok, msg = _validate_logical_coherence(nombres)
+    ok, msg = validate_sequence(nombres)
     if not ok:
         raise ValueError(f"Invalid sequence: {msg}")
 
-    for op in acumulados:
+    for op in ops_list:
         op(G, node)
         if callable(compute):
             compute(G)
