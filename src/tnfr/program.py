@@ -1,4 +1,7 @@
-"""TNFR programming language."""
+"""TNFR programming language.
+
+Public exports are declared in ``__all__`` for explicit star imports.
+"""
 
 from __future__ import annotations
 from typing import Any, Optional, Union
@@ -16,6 +19,26 @@ from .glyph_history import ensure_history
 # Basic types
 Node = Any
 AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
+_STEP_FN: Optional[AdvanceFn] = None
+
+__all__ = [
+    "WAIT",
+    "TARGET",
+    "THOL",
+    "Token",
+    "THOL_SENTINEL",
+    "_flatten_thol",
+    "_flatten",
+    "_handle_target",
+    "_handle_wait",
+    "_handle_glyph",
+    "seq",
+    "block",
+    "target",
+    "wait",
+    "play",
+    "basic_canonical_example",
+]
 
 # ---------------------
 # DSL constructs
@@ -104,8 +127,11 @@ def _apply_glyph_to_targets(
 
 
 def _advance(G, step_fn: Optional[AdvanceFn] = None):
+    global _STEP_FN
     if step_fn is None:
-        from .dynamics import step as step_fn
+        if _STEP_FN is None:
+            from .dynamics import step as _STEP_FN
+        step_fn = _STEP_FN
     step_fn(G)
 
 

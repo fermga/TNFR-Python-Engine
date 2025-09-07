@@ -54,3 +54,26 @@ def test_load_config_accepts_mapping(monkeypatch, tmp_path):
     path.write_text("{}", encoding="utf-8")
     loaded = load_config(path)
     assert loaded == data
+
+
+def test_load_config_accepts_str(tmp_path):
+    cfg = {"RANDOM_SEED": 7}
+    path = tmp_path / "cfg.json"
+    path.write_text(json.dumps(cfg), encoding="utf-8")
+    loaded = load_config(str(path))
+    assert loaded == cfg
+
+
+def test_apply_config_passes_path_object(monkeypatch, tmp_path):
+    path = tmp_path / "cfg.json"
+    path.write_text("{}", encoding="utf-8")
+    received = {}
+
+    def fake_load(p):
+        received["path"] = p
+        return {}
+
+    monkeypatch.setattr("tnfr.config.load_config", fake_load)
+    G = nx.Graph()
+    apply_config(G, path)
+    assert received["path"] is path

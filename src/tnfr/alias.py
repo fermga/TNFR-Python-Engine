@@ -3,7 +3,9 @@
 ``AliasAccessor`` provides the main implementation for dealing with
 alias-based attribute access.  The module-level :func:`alias_get` and
 ``alias_set`` functions are thin wrappers over a shared
-``AliasAccessor`` instance kept for backward compatibility.
+``AliasAccessor`` instance kept for backward compatibility.  These
+wrappers are deprecated in favour of :func:`get_attr` and
+:func:`set_attr`.
 """
 
 from __future__ import annotations
@@ -22,6 +24,7 @@ from typing import (
 )
 import logging
 from functools import lru_cache
+import warnings
 from .logging_utils import get_logger
 
 from .constants import ALIAS_VF, ALIAS_DNFR
@@ -210,9 +213,17 @@ def alias_get(
 ) -> Optional[T]:
     """Return the value for the first existing key in ``aliases``.
 
+    .. deprecated:: 4.5
+       Use :func:`get_attr` instead.
+
     This is a convenience wrapper over a shared :class:`AliasAccessor`
     instance.
     """
+    warnings.warn(
+        "alias_get is deprecated; use get_attr instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return _alias_accessor.get(
         d,
         aliases,
@@ -231,9 +242,17 @@ def alias_set(
 ) -> T:
     """Assign ``value`` converted to the first available key in ``aliases``.
 
+    .. deprecated:: 4.5
+       Use :func:`set_attr` instead.
+
     This is a convenience wrapper over a shared :class:`AliasAccessor`
     instance.
     """
+    warnings.warn(
+        "alias_set is deprecated; use set_attr instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return _alias_accessor.set(d, aliases, value, conv=conv)
 
 

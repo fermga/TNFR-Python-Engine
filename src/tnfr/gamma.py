@@ -5,14 +5,14 @@ from typing import Dict, Any, Tuple
 import math
 import cmath
 import logging
-import warnings
 import hashlib
 import json
+import warnings
 from collections.abc import Mapping
 
 from .constants import ALIAS_THETA
 from .alias import get_attr
-from .helpers import node_set_checksum, edge_version_cache
+from .helpers import node_set_checksum, edge_version_cache, get_graph_mapping
 from .logging_utils import get_logger
 
 
@@ -70,25 +70,25 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
     cached = G.graph.get("_gamma_spec")
     prev_hash = G.graph.get("_gamma_spec_hash")
 
-    invalid = False
-    if raw is None:
-        spec: Mapping[str, Any] = {"type": "none"}
-    elif not isinstance(raw, Mapping):
-        spec = {"type": "none"}
-        invalid = True
-    else:
-        spec = raw
+    if raw is None or isinstance(raw, Mapping):
+        spec = raw if isinstance(raw, Mapping) else {"type": "none"}
+        dumped = json.dumps(spec, sort_keys=True).encode("utf-8")
+        cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
+        if cached is not None and prev_hash == cur_hash:
+            return cached
+        G.graph["_gamma_spec"] = spec
+        G.graph["_gamma_spec_hash"] = cur_hash
+        return spec
 
-    dumped = json.dumps(spec, sort_keys=True).encode("utf-8")
+    dumped = json.dumps({"type": "none"}, sort_keys=True).encode("utf-8")
     cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
     if cached is not None and prev_hash == cur_hash:
         return cached
-    if invalid:
-        warnings.warn(
-            "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}",
-            UserWarning,
-            stacklevel=2,
-        )
+    spec = get_graph_mapping(
+        G,
+        "GAMMA",
+        "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}",
+    ) or {"type": "none"}
     G.graph["_gamma_spec"] = spec
     G.graph["_gamma_spec_hash"] = cur_hash
     return spec

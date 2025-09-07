@@ -16,6 +16,8 @@ import threading
 import json
 from functools import lru_cache
 from cachetools import LRUCache
+import warnings
+from collections.abc import Mapping
 import networkx as nx
 
 from .import_utils import get_numpy, import_nodonx
@@ -67,6 +69,7 @@ __all__ = [
     "increment_edge_version",
     "node_set_checksum",
     "get_graph",
+    "get_graph_mapping",
     "mark_dnfr_prep_dirty",
 ]
 
@@ -194,6 +197,22 @@ def get_graph(obj: Any) -> Any:
     return obj.graph if hasattr(obj, "graph") else obj
 
 
+def get_graph_mapping(G: Any, key: str, warn_msg: str) -> Dict[str, Any] | None:
+    """Return a shallow copy of ``G.graph[key]`` if it is a mapping.
+
+    ``warn_msg`` is emitted via :func:`warnings.warn` when the stored value is
+    not a mapping. ``None`` is returned when the key is absent or invalid.
+    """
+
+    data = G.graph.get(key)
+    if data is None:
+        return None
+    if not isinstance(data, Mapping):
+        warnings.warn(warn_msg, UserWarning, stacklevel=2)
+        return None
+    return dict(data)
+
+
 def _stable_json(obj: Any, max_depth: int = 10) -> str:
     """Return a JSON string with deterministic ordering."""
 
@@ -237,6 +256,35 @@ def _node_repr(n: Any) -> str:
     return _stable_json(n)
 
 
+def _hash_node(obj: Any) -> bytes:
+    """Return a stable digest for ``obj`` used in node checksums."""
+    return hashlib.blake2b(
+        _node_repr(obj).encode("utf-8"), digest_size=16
+    ).digest()
+
+
+def _update_node_cache(
+    G: nx.Graph,
+    nodes: Iterable[Any],
+    key_prefix: str,
+    value: Any | None = None,
+    *,
+    checksum: str | None = None,
+) -> str:
+    """Store ``value`` and its node checksum in ``G.graph``.
+
+    ``nodes`` is the iterable used to compute the checksum. When ``value`` is
+    ``None`` it defaults to ``nodes``. The computed checksum is returned.
+    """
+
+    if checksum is None:
+        checksum = node_set_checksum(G, nodes, store=False)
+    graph = get_graph(G)
+    graph[key_prefix] = nodes if value is None else value
+    graph[f"{key_prefix}_checksum"] = checksum
+    return checksum
+
+
 def node_set_checksum(
     G: nx.Graph,
     nodes: Iterable[Any] | None = None,
@@ -264,12 +312,7 @@ def node_set_checksum(
     hasher = hashlib.blake2b(digest_size=16)
 
     if store:
-        digest_tuple = tuple(
-            hashlib.blake2b(
-                _node_repr(n).encode("utf-8"), digest_size=16
-            ).digest()
-            for n in node_iterable
-        )
+        digest_tuple = tuple(_hash_node(n) for n in node_iterable)
 
         cached = graph.get("_node_set_checksum_cache")
         if cached and cached[0] == digest_tuple:
@@ -283,8 +326,7 @@ def node_set_checksum(
         return checksum
 
     for n in node_iterable:
-        d = hashlib.blake2b(_node_repr(n).encode("utf-8"), digest_size=16).digest()
-        hasher.update(d)
+        hasher.update(_hash_node(n))
 
     return hasher.hexdigest()
 
@@ -305,15 +347,11 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     dirty = bool(graph.pop("_node_list_dirty", False))
     if nodes is None or stored_len != current_n or dirty:
         nodes = tuple(G.nodes())
-        checksum = node_set_checksum(G, nodes, store=False)
-        graph["_node_list"] = nodes
+        _update_node_cache(G, nodes, "_node_list")
         graph["_node_list_len"] = current_n
-        graph["_node_list_checksum"] = checksum
     else:
         if "_node_list_checksum" not in graph:
-            graph["_node_list_checksum"] = node_set_checksum(
-                G, nodes, store=False
-            )
+            _update_node_cache(G, nodes, "_node_list")
     return nodes
 
 
@@ -332,8 +370,9 @@ def _ensure_node_map(G, *, key: str, sort: bool = False) -> Dict[Any, int]:
     checksum_key = f"{key}_checksum"
     if mapping is None or G.graph.get(checksum_key) != checksum:
         mapping = {node: idx for idx, node in enumerate(nodes)}
-        G.graph[key] = mapping
-        G.graph[checksum_key] = checksum
+        _update_node_cache(
+            G, nodes, key, mapping, checksum=checksum
+        )
     return mapping
 
 
@@ -403,7 +442,7 @@ def edge_version_cache(
         if entry is not None and entry[0] == edge_version:
             return entry[1]
 
-        lock = locks.setdefault(key, threading.Lock())
+        lock = locks.setdefault(key, threading.RLock())
         # Double locking: _EDGE_CACHE_LOCK guards cache structures while each
         # per-key lock prevents duplicate work for a given key.
 

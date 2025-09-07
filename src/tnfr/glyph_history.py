@@ -106,9 +106,11 @@ class HistoryDict(dict):
         target = len(self._counts) + self._compact_every
         if len(self._heap) <= target:
             return
-        new_heap = [
-            h for h in heapq.nsmallest(target, self._heap) if self._counts.get(h[1]) == h[0]
-        ]
+        new_heap: list[tuple[int, str]] = []
+        while self._heap and len(new_heap) < target:
+            cnt, key = heapq.heappop(self._heap)
+            if self._counts.get(key) == cnt:
+                new_heap.append((cnt, key))
         heapq.heapify(new_heap)
         self._heap = new_heap
 
