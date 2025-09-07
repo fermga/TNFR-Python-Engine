@@ -132,6 +132,12 @@ def test_wbar_rejects_non_positive_window(graph_canon):
         wbar(G, window=0)
 
 
+def test_glyph_load_rejects_non_positive_window(graph_canon):
+    G = graph_canon()
+    with pytest.raises(ValueError):
+        glyph_load(G, window=0)
+
+
 def test_wbar_uses_default_window(graph_canon):
     G = graph_canon()
     hist = G.graph.setdefault("history", {})
