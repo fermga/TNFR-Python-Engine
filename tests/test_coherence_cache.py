@@ -2,7 +2,7 @@ import pytest
 import networkx as nx
 
 from tnfr.constants import THETA_PRIMARY
-from tnfr.metrics import coherence_matrix, local_phase_sync
+from tnfr.metrics import coherence_matrix, local_phase_sync_weighted
 
 
 def make_graph(offset=0):
@@ -22,8 +22,8 @@ def test_local_phase_sync_independent_graphs():
     nodes1, W1 = coherence_matrix(G1)
     nodes2, W2 = coherence_matrix(G2)
 
-    r1 = local_phase_sync(G1, nodes1[0], nodes_order=nodes1, W_row=W1)
-    r2 = local_phase_sync(G2, nodes2[0], nodes_order=nodes2, W_row=W2)
+    r1 = local_phase_sync_weighted(G1, nodes1[0], nodes_order=nodes1, W_row=W1)
+    r2 = local_phase_sync_weighted(G2, nodes2[0], nodes_order=nodes2, W_row=W2)
 
     assert r1 == pytest.approx(1.0)
     assert r2 == pytest.approx(1.0)
@@ -35,7 +35,7 @@ def test_local_phase_sync_independent_graphs():
     assert set(map1.keys()) == set(nodes1)
     assert set(map2.keys()) == set(nodes2)
 
-    r1_again = local_phase_sync(G1, nodes1[0], nodes_order=nodes1, W_row=W1)
+    r1_again = local_phase_sync_weighted(G1, nodes1[0], nodes_order=nodes1, W_row=W1)
     assert r1_again == pytest.approx(r1)
     assert G1.graph[key] is map1
 

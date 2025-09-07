@@ -317,7 +317,7 @@ def coherence_matrix(G):
     return _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np)
 
 
-def local_phase_sync_unweighted(G, n):
+def local_phase_sync(G, n):
     cfg = G.graph.get("COHERENCE", COHERENCE)
     scope = str(cfg.get("scope", "neighbors")).lower()
     neighbors_only = scope != "all"
@@ -338,10 +338,9 @@ def local_phase_sync_unweighted(G, n):
     mean = sum(vec) / len(vec)
     return abs(mean)
 
-
-def local_phase_sync(G, n, nodes_order=None, W_row=None, node_to_index=None):
+def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=None):
     if W_row is None or nodes_order is None:
-        return local_phase_sync_unweighted(G, n)
+        raise ValueError("nodes_order and W_row are required for weighted phase synchrony")
 
     # --- Mapeo nodo → índice ---
     if node_to_index is None:
