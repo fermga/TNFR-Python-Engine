@@ -185,7 +185,7 @@ def _stable_json(obj: Any, visited: set[int] | None = None) -> Any:
             }
         return f"{obj.__module__}.{obj.__class__.__qualname__}"
     finally:
-        visited.remove(obj_id)
+        visited.discard(obj_id)
 
 
 def _node_repr(n: Any) -> str:
@@ -208,26 +208,25 @@ def node_set_checksum(
     """
 
     graph = G.graph if hasattr(G, "graph") else G
-    if nodes is None:
-        node_iter = tuple(G.nodes())
+    node_iterable = G.nodes() if nodes is None else nodes
+
+    if store:
+        marker = tuple(node_iterable)
+        cached = graph.get("_node_set_checksum_cache")
+        if cached and cached[0] == len(marker) and cached[1] == marker:
+            return cached[2]
+        iterable = marker
     else:
-        node_iter = tuple(nodes)
+        marker = None
+        iterable = node_iterable
 
-    marker = node_iter
-    cached = graph.get("_node_set_checksum_cache")
-    if cached and cached[0] == len(marker) and cached[1] == marker:
-        return cached[2]
-
-    hasher = hashlib.blake2b(digest_size=16)
-    serialised_iter = (
-        (_node_repr(n) for n in node_iter)
+    serialised = (
+        (_node_repr(n) for n in iterable)
         if presorted
-        else iter(sorted(_node_repr(n) for n in node_iter))
+        else sorted(_node_repr(n) for n in iterable)
     )
-    for idx, repr_node in enumerate(serialised_iter):
-        if idx:
-            hasher.update(b"|")
-        hasher.update(repr_node.encode("utf-8"))
+    hasher = hashlib.blake2b(digest_size=16)
+    hasher.update("|".join(serialised).encode("utf-8"))
     checksum = hasher.hexdigest()
     if store:
         graph["_node_set_checksum_cache"] = (len(marker), marker, checksum)

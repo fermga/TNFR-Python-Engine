@@ -114,10 +114,13 @@ def safe_write(
         open_params["encoding"] = encoding
     tmp_path: Path | None = None
     try:
-        with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(
+            dir=path.parent, delete=False, **open_params
+        ) as tmp:
             tmp_path = Path(tmp.name)
-        with open(tmp_path, **open_params) as f:
-            write(f)
+            write(tmp)
+            tmp.flush()
+            os.fsync(tmp.fileno())
         try:
             os.replace(tmp_path, path)
         except OSError as e:

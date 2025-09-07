@@ -47,7 +47,7 @@ def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
     gl = str(glyph)
     if window <= 0:
         if window < 0:
-            _ensure_glyph_history(nd, window)
+            _validate_window(window)
         return False
     hist = _ensure_glyph_history(nd, window)
     return gl in hist
@@ -158,17 +158,16 @@ class HistoryDict(dict):
         raise KeyError("HistoryDict is empty; cannot pop least used")
 
     def pop_least_used_batch(self, k: int) -> None:
-        if k <= 0:
-            return
-        self._prune_heap()
-        removed = 0
-        while self._heap and removed < k:
-            cnt, key = heapq.heappop(self._heap)
-            if self._counts.get(key) == cnt and key in self:
-                self._counts.pop(key, None)
-                super().pop(key, None)
-                removed += 1
-        self._prune_heap()
+        if k > 0:
+            self._prune_heap()
+            removed = 0
+            while self._heap and removed < k:
+                cnt, key = heapq.heappop(self._heap)
+                if self._counts.get(key) == cnt and key in self:
+                    self._counts.pop(key, None)
+                    super().pop(key, None)
+                    removed += 1
+            self._prune_heap()
 
 
 def ensure_history(G) -> Dict[str, Any]:
