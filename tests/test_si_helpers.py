@@ -84,3 +84,31 @@ def test_compute_Si_node():
     )
     assert Si == pytest.approx(0.7)
     assert get_attr(G.nodes[1], ALIAS_SI, 0.0) == pytest.approx(0.7)
+
+    class DummyNP:
+        def fromiter(self, iterable, dtype, count):
+            vals = list(iterable)
+            class Arr(list):
+                def mean(self):
+                    return sum(self) / len(self)
+            return Arr(vals)
+
+        def arctan2(self, y, x):
+            return math.atan2(y, x)
+
+    Si_np = compute_Si_node(
+        1,
+        G.nodes[1],
+        alpha=0.5,
+        beta=0.25,
+        gamma=0.25,
+        vfmax=1.0,
+        dnfrmax=1.0,
+        cos_th=cos_th,
+        sin_th=sin_th,
+        thetas=thetas,
+        neighbors=neighbors,
+        inplace=False,
+        np=DummyNP(),
+    )
+    assert Si_np == pytest.approx(0.7)
