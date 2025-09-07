@@ -13,6 +13,7 @@ import math
 import hashlib
 from statistics import fmean, StatisticsError
 import threading
+import json
 from cachetools import LRUCache
 
 from .import_utils import get_numpy, import_nodonx
@@ -158,45 +159,44 @@ from .glyph_history import (  # noqa: E402
 
 def _stable_json(
     obj: Any, visited: set[int] | None = None, max_depth: int = 10
-) -> Any:
-    """Return a structure with deterministic ordering suitable for ``repr``."""
-    if isinstance(obj, (str, int, float, bool)) or obj is None:
-        return obj
+) -> str:
+    """Return a JSON string with deterministic ordering."""
 
-    if max_depth <= 0:
-        return "<max-depth>"
+    def _to_basic(o: Any, depth: int) -> Any:
+        if isinstance(o, (str, int, float, bool)) or o is None:
+            return o
+        if depth <= 0:
+            return "<max-depth>"
+        oid = id(o)
+        if oid in visited:
+            return "<recursion>"
+        visited.add(oid)
+        try:
+            if isinstance(o, dict):
+                return {
+                    str(k): _to_basic(v, depth - 1)
+                    for k, v in o.items()
+                }
+            if isinstance(o, set):
+                items = [_to_basic(v, depth - 1) for v in o]
+                return sorted(items, key=str)
+            if isinstance(o, (list, tuple)):
+                return [_to_basic(v, depth - 1) for v in o]
+            if hasattr(o, "__dict__"):
+                return _to_basic(vars(o), depth - 1)
+            return repr(o)
+        finally:
+            visited.discard(oid)
 
     if visited is None:
         visited = set()
-
-    obj_id = id(obj)
-    if obj_id in visited:
-        return "<recursion>"
-    visited.add(obj_id)
-    try:
-        if isinstance(obj, (list, tuple)):
-            return [_stable_json(o, visited, max_depth - 1) for o in obj]
-        if isinstance(obj, set):
-            stable_items = [_stable_json(o, visited, max_depth - 1) for o in obj]
-            return sorted(stable_items, key=str)
-        if isinstance(obj, dict):
-            return {
-                str(k): _stable_json(v, visited, max_depth - 1)
-                for k, v in sorted(obj.items(), key=lambda kv: str(kv[0]))
-            }
-        if hasattr(obj, "__dict__"):
-            return {
-                k: _stable_json(v, visited, max_depth - 1)
-                for k, v in sorted(vars(obj).items(), key=lambda kv: kv[0])
-            }
-        return f"{obj.__module__}.{obj.__class__.__qualname__}"
-    finally:
-        visited.discard(obj_id)
+    basic = _to_basic(obj, max_depth)
+    return json.dumps(basic, sort_keys=True)
 
 
 def _node_repr(n: Any) -> str:
     """Stable representation for node hashing and sorting."""
-    return repr(_stable_json(n))
+    return _stable_json(n)
 
 
 def node_set_checksum(

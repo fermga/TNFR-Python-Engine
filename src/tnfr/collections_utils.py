@@ -82,6 +82,8 @@ def normalize_weights(
     """Normalize ``keys`` in ``dict_like`` so their sum is 1."""
     keys = list(keys)
     default_float = float(default)
+    if not keys:
+        return {}
     weights: dict[str, float] = {}
     negatives: dict[str, float] = {}
     for k in keys:
@@ -101,16 +103,12 @@ def normalize_weights(
     if negatives:
         if error_on_negative:
             raise ValueError(f"Pesos negativos detectados: {negatives}")
-    if negatives and not error_on_negative:
         logger.warning("Pesos negativos detectados: %s", negatives)
     total = math.fsum(weights.values())
-    n = len(keys)
     if total <= 0:
-        if n == 0:
-            return {}
-        uniform = 1.0 / n
+        uniform = 1.0 / len(keys)
         return {k: uniform for k in keys}
-    return {k: weights[k] / total for k in keys}
+    return {k: w / total for k, w in weights.items()}
 
 
 def normalize_counter(

@@ -59,6 +59,11 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
     return cbs
 
 
+def _normalize_event(event: CallbackEvent | str) -> str:
+    """Return ``event`` as a string."""
+    return event.value if isinstance(event, CallbackEvent) else str(event)
+
+
 def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
     """Normalize a callback specification.
 
@@ -127,8 +132,7 @@ def register_callback(
     >>> ctx["called"]
     1
     """
-    if isinstance(event, CallbackEvent):
-        event = event.value
+    event = _normalize_event(event)
     if event not in _CALLBACK_EVENTS:
         raise ValueError(f"Unknown event: {event}")
     if not callable(func):
@@ -155,8 +159,7 @@ def invoke_callbacks(
     ctx: dict[str, Any] | None = None,
 ) -> None:
     """Invoke all callbacks registered for ``event`` with context ``ctx``."""
-    if isinstance(event, CallbackEvent):
-        event = event.value
+    event = _normalize_event(event)
     cbs = _ensure_callbacks(G).get(event, [])
     strict = bool(
         G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])

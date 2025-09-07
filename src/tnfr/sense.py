@@ -84,11 +84,12 @@ def _sigma_cfg(G):
 def _sigma_from_iterable(
     values: Iterable[complex | float | int] | complex | float | int,
     fallback_angle: float = 0.0,
-) -> tuple[Dict[str, float], int]:
+) -> Dict[str, float]:
     """Normalise vectors in the σ-plane.
 
     ``values`` may contain complex or real numbers; real inputs are promoted to
-    complex with zero imaginary part.
+    complex with zero imaginary part. The returned dictionary includes the
+    number of processed values under the ``"n"`` key.
     """
 
     try:
@@ -106,8 +107,13 @@ def _sigma_from_iterable(
     try:
         first = _to_complex(next(iterator))
     except StopIteration:
-        vec = {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": float(fallback_angle)}
-        return vec, 0
+        return {
+            "x": 0.0,
+            "y": 0.0,
+            "mag": 0.0,
+            "angle": float(fallback_angle),
+            "n": 0,
+        }
 
     sum_x = first.real
     sum_y = first.imag
@@ -122,13 +128,13 @@ def _sigma_from_iterable(
     y = sum_y / cnt
     mag = math.hypot(x, y)
     ang = math.atan2(y, x) if mag > 0 else float(fallback_angle)
-    vec = {
+    return {
         "x": float(x),
         "y": float(y),
         "mag": float(mag),
         "angle": float(ang),
+        "n": cnt,
     }
-    return vec, cnt
 
 
 # Retro-compatibilidad
@@ -153,18 +159,27 @@ def sigma_vector_node(
     if not nw:
         return None
     g, w, z = nw
-    vec, _ = _sigma_from_iterable(z, glyph_angle(g))
-    vec.update({"glyph": g, "w": float(w)})
-    return vec
+    x = z.real
+    y = z.imag
+    mag = math.hypot(x, y)
+    ang = math.atan2(y, x) if mag > 0 else glyph_angle(g)
+    return {
+        "x": float(x),
+        "y": float(y),
+        "mag": float(mag),
+        "angle": float(ang),
+        "glyph": g,
+        "w": float(w),
+        "n": 1,
+    }
 
 
-def sigma_vector(dist: Dict[str, float]) -> tuple[Dict[str, float], int]:
+def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
     """Compute Σ⃗ from a glyph distribution.
 
     ``dist`` may contain raw counts or proportions. All ``(glyph, weight)``
     pairs are converted to vectors and passed to :func:`_sigma_from_iterable`.
-    The resulting vector together with the number of processed pairs are
-    returned.
+    The resulting vector includes the number of processed pairs under ``n``.
     """
 
     vectors = (glyph_unit(g) * float(w) for g, w in dist.items())
@@ -199,9 +214,7 @@ def sigma_vector_from_graph(
         for _, nd in G.nodes(data=True)
         if (nw := _node_weight(nd, weight_mode))
     )
-    vec, n = _sigma_from_iterable(vectors)
-    vec["n"] = n
-    return vec
+    return _sigma_from_iterable(vectors)
 
 
 # -------------------------

@@ -34,7 +34,7 @@ def _reference_checksum(G):
     hasher = hashlib.blake2b(digest_size=16)
 
     def serialise(n):
-        return repr(_stable_json(n))
+        return _stable_json(n)
 
     serialised = [serialise(n) for n in G.nodes()]
     serialised.sort()

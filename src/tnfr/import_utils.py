@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 _FAILED_IMPORT_LIMIT = 128  # keep only this many recent failures
 _FAILED_IMPORTS: deque[str] = deque(maxlen=_FAILED_IMPORT_LIMIT)
+_FAILED_IMPORTS_SET: set[str] = set()
 _FAILED_IMPORTS_LOCK = threading.Lock()
 
 
@@ -61,28 +62,35 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
 
     module_name, attr = (name.rsplit(".", 1) + [None])[:2]
     with _FAILED_IMPORTS_LOCK:
-        previously_failed = name in _FAILED_IMPORTS or module_name in _FAILED_IMPORTS
+        previously_failed = (
+            name in _FAILED_IMPORTS_SET or module_name in _FAILED_IMPORTS_SET
+        )
     try:
         module = importlib.import_module(module_name)
         obj = getattr(module, attr) if attr else module
         with _FAILED_IMPORTS_LOCK:
             for item in (name, module_name):
-                try:
-                    _FAILED_IMPORTS.remove(item)
-                except ValueError:
-                    pass
+                if item in _FAILED_IMPORTS_SET:
+                    _FAILED_IMPORTS_SET.discard(item)
+                    try:
+                        _FAILED_IMPORTS.remove(item)
+                    except ValueError:
+                        pass
         return obj
     except (ImportError, AttributeError) as e:
         if not previously_failed:
             _warn_failure(module_name, attr, e)
         with _FAILED_IMPORTS_LOCK:
+            def _record(item: str) -> None:
+                if item not in _FAILED_IMPORTS_SET:
+                    _FAILED_IMPORTS_SET.add(item)
+                    _FAILED_IMPORTS.append(item)
+
             if isinstance(e, ImportError):
-                if module_name not in _FAILED_IMPORTS:
-                    _FAILED_IMPORTS.append(module_name)
-                if name not in _FAILED_IMPORTS:
-                    _FAILED_IMPORTS.append(name)
-            elif name not in _FAILED_IMPORTS:
-                _FAILED_IMPORTS.append(name)
+                _record(module_name)
+                _record(name)
+            else:
+                _record(name)
     return fallback
 
 
@@ -94,6 +102,7 @@ def _cache_clear() -> None:
     _optional_import_cache_clear()
     with _FAILED_IMPORTS_LOCK:
         _FAILED_IMPORTS.clear()
+        _FAILED_IMPORTS_SET.clear()
 
 
 optional_import.cache_clear = _cache_clear  # type: ignore[attr-defined]
