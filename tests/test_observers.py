@@ -113,6 +113,18 @@ def test_wbar_accepts_deque(graph_canon):
     assert wbar(G, window=2) == pytest.approx((0.5 + 0.9) / 2)
 
 
+def test_wbar_list_and_deque_same_result(graph_canon):
+    G = graph_canon()
+    data = [0.1, 0.5, 0.9]
+    expected = (0.5 + 0.9) / 2
+
+    G.graph["history"] = {"C_steps": data}
+    assert wbar(G, window=2) == pytest.approx(expected)
+
+    G.graph["history"] = {"C_steps": deque(data, maxlen=10)}
+    assert wbar(G, window=2) == pytest.approx(expected)
+
+
 def test_wbar_rejects_non_positive_window(graph_canon):
     G = graph_canon()
     G.graph["history"] = {"C_steps": [0.1, 0.2]}

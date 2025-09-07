@@ -1,7 +1,6 @@
 """Observer management."""
 
 from __future__ import annotations
-from itertools import islice
 from functools import partial
 import statistics
 
@@ -119,12 +118,12 @@ def wbar(G, window: int | None = None) -> float:
     if not cs:
         # fallback: coherencia instantánea
         return compute_coherence(G)
+    if not isinstance(cs, list):
+        cs = list(cs)
     if window is None:
         window = int(get_param(G, "WBAR_WINDOW"))
     w = int(window)
     if w <= 0:
         raise ValueError("window must be positive")
     w = min(len(cs), w)
-    start = len(cs) - w
-    tail = islice(cs, start, None)
-    return float(statistics.fmean(tail))
+    return float(statistics.fmean(cs[-w:]))
