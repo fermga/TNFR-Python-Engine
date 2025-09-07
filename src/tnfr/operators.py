@@ -98,7 +98,8 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
 
     seed_root = base_seed(node.G)
     seed_key, scope_id = _resolve_jitter_seed(node)
-    seed = seed_root ^ scope_id
+    seed_bytes = f"{seed_root}:{scope_id}".encode()
+    seed = int.from_bytes(hashlib.blake2b(seed_bytes, digest_size=8).digest(), "little")
     rng = get_rng(seed, seed_key)
     return rng.uniform(-amplitude, amplitude)
 
@@ -315,8 +316,8 @@ def _make_scale_op(glyph: Glyph):
     def _op(node: NodoProtocol, gf: Dict[str, Any]) -> None:
         factor_val = float(gf.get("VAL_scale", _SCALE_FACTORS[Glyph.VAL]))
         factor_nul = float(gf.get("NUL_scale", _SCALE_FACTORS[Glyph.NUL]))
-        factors = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
-        _op_scale(node, glyph, factors[glyph])
+        factor = factor_val if glyph is Glyph.VAL else factor_nul
+        _op_scale(node, glyph, factor)
 
     return _op
 

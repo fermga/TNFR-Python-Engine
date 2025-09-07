@@ -151,9 +151,15 @@ def neighbor_phase_mean_list(
     if deg == 0:
         return fallback
     if np is not None:
-        vals = np.array([(cos_th[v], sin_th[v]) for v in neigh], dtype=float)
-        mean_cos, mean_sin = vals.mean(axis=0)
-        return float(np.arctan2(float(mean_sin), float(mean_cos)))
+        if hasattr(np, "fromiter"):
+            cos_vals = np.fromiter((cos_th[v] for v in neigh), dtype=float, count=deg)
+            sin_vals = np.fromiter((sin_th[v] for v in neigh), dtype=float, count=deg)
+            mean_cos = float(cos_vals.mean())
+            mean_sin = float(sin_vals.mean())
+        else:
+            vals = np.array([(cos_th[v], sin_th[v]) for v in neigh], dtype=float)
+            mean_cos, mean_sin = vals.mean(axis=0)
+        return float(np.arctan2(mean_sin, mean_cos))
     return _phase_mean_from_iter(((cos_th[v], sin_th[v]) for v in neigh), fallback)
 
 
@@ -310,25 +316,19 @@ def node_set_checksum(
         node_iterable = sorted(node_iterable, key=_node_repr)
 
     hasher = hashlib.blake2b(digest_size=16)
-
-    if store:
-        digest_tuple = tuple(_hash_node(n) for n in node_iterable)
-
-        cached = graph.get("_node_set_checksum_cache")
-        if cached and cached[0] == digest_tuple:
-            return cached[1]
-
-        for d in digest_tuple:
-            hasher.update(d)
-
-        checksum = hasher.hexdigest()
-        graph["_node_set_checksum_cache"] = (digest_tuple, checksum)
-        return checksum
-
+    token_hasher = hashlib.blake2b(digest_size=8)
     for n in node_iterable:
-        hasher.update(_hash_node(n))
-
-    return hasher.hexdigest()
+        digest = _hash_node(n)
+        hasher.update(digest)
+        token_hasher.update(digest)
+    checksum = hasher.hexdigest()
+    token = token_hasher.hexdigest()
+    if store:
+        cached = graph.get("_node_set_checksum_cache")
+        if cached and cached[0] == token:
+            return cached[1]
+        graph["_node_set_checksum_cache"] = (token, checksum)
+    return checksum
 
 
 def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:

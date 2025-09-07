@@ -91,7 +91,14 @@ def read_structured_file(path: Path) -> Any:
     try:
         text = path.read_text(encoding="utf-8")
         return parser(text)
-    except Exception as e:
+    except (
+        OSError,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+        YAMLError,
+        TOMLDecodeError,
+        ImportError,
+    ) as e:
         raise StructuredFileError(path, e) from e
 
 
@@ -144,8 +151,6 @@ def safe_write(
             raise
     except (OSError, ValueError, TypeError) as e:
         raise type(e)(f"Failed to write file {path}: {e}") from e
-    except Exception as e:  # noqa: BLE001 - rewrap after cleanup
-        raise OSError(f"Failed to write file {path}: {e}") from e
     finally:
         if tmp_path is not None:
             tmp_path.unlink(missing_ok=True)

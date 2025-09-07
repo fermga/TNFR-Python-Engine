@@ -175,8 +175,5 @@ def test_read_structured_file_unhandled_error(
 
     monkeypatch.setattr(io_mod, "_get_parser", lambda suffix: bad_parser)
 
-    with pytest.raises(StructuredFileError) as excinfo:
+    with pytest.raises(ValueError):
         read_structured_file(path)
-    msg = str(excinfo.value)
-    assert msg.startswith("Error parsing")
-    assert str(path) in msg

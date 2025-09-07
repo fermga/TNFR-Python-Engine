@@ -132,7 +132,7 @@ def add_edge(
     n1,
     n2,
     weight,
-    overwrite,
+    overwrite: bool = False,
     *,
     strategy: EdgeStrategy | None = None,
     exists_cb=None,

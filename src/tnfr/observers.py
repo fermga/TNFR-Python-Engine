@@ -3,7 +3,7 @@
 from __future__ import annotations
 from functools import partial
 import statistics
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 
 from .constants import ALIAS_THETA, get_param
 from .alias import get_attr
@@ -134,7 +134,7 @@ def wbar(G, window: int | None = None) -> float:
     if not cs:
         # fallback: coherencia instantánea
         return compute_coherence(G)
-    if not isinstance(cs, list):
+    if not isinstance(cs, (list, tuple)):
         cs = list(cs)
     w = int(get_param(G, "WBAR_WINDOW") if window is None else window)
     if w <= 0:
