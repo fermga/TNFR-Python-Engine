@@ -20,7 +20,7 @@ logger = get_logger(__name__)
 _FAILED_IMPORT_LIMIT = 128  # keep only this many recent failures
 
 
-@dataclass
+@dataclass(slots=True)
 class _ImportState:
     failed: OrderedDict[str, None] = field(default_factory=OrderedDict)
     lock: threading.Lock = field(default_factory=threading.Lock)
@@ -46,7 +46,8 @@ class _ImportState:
 _IMPORT_STATE = _ImportState()
 
 
-_WARNED_MODULES: set[str] = set()
+_WARNED_LIMIT = 256
+_WARNED_MODULES: OrderedDict[str, None] = OrderedDict()
 _WARNED_LOCK = threading.Lock()
 
 
@@ -58,7 +59,9 @@ def _warn_failure(module: str, attr: str | None, err: Exception) -> None:
     with _WARNED_LOCK:
         first = module not in _WARNED_MODULES
         if first:
-            _WARNED_MODULES.add(module)
+            _WARNED_MODULES[module] = None
+            if len(_WARNED_MODULES) > _WARNED_LIMIT:
+                _WARNED_MODULES.popitem(last=False)
 
     if not first:
         logger.debug(msg)
@@ -106,7 +109,7 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
             for item in (name, module_name):
                 _IMPORT_STATE.discard(item)
         with _WARNED_LOCK:
-            _WARNED_MODULES.discard(module_name)
+            _WARNED_MODULES.pop(module_name, None)
         return obj
     except (ImportError, AttributeError) as e:
         _warn_failure(module_name, attr, e)

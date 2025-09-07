@@ -63,18 +63,19 @@ __all__ = [
 ]
 
 
-def _flatten_tokens(obj: Any):
-    """Iteratively yield each token in order."""
+from collections import deque
 
-    stack = [iter([obj])]
+
+def _flatten_tokens(obj: Any):
+    """Yield each token in order using a deque for clarity."""
+
+    stack = deque([obj])
     while stack:
-        for item in stack[-1]:
-            if isinstance(item, Sequence) and not isinstance(item, str):
-                stack.append(iter(item))
-                break
-            yield item
+        item = stack.pop()
+        if isinstance(item, Sequence) and not isinstance(item, (str, bytes)):
+            stack.extend(reversed(item))
         else:
-            stack.pop()
+            yield item
 
 
 def validate_token(tok: Any, pos: int) -> Any:
@@ -178,6 +179,14 @@ GRAMMAR_ARG_SPECS = specs(
     ("--grammar.si_high", {"type": float}),
     ("--glyph.hysteresis_window", {"type": int}),
 )
+
+GRAMMAR_ARG_SPECS_WITH_DEST = [
+    (
+        opt,
+        {**kwargs, "dest": opt.lstrip("-").replace(".", "_"), "default": None},
+    )
+    for opt, kwargs in GRAMMAR_ARG_SPECS
+]
 
 # Especificaciones para opciones relacionadas con el histórico
 HISTORY_ARG_SPECS = specs(
@@ -384,18 +393,7 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
 def add_grammar_args(parser: argparse.ArgumentParser) -> None:
     """Add grammar and glyph hysteresis options."""
     group = parser.add_argument_group("Grammar")
-    specs = [
-        (
-            opt,
-            {
-                **kwargs,
-                "dest": opt.lstrip("-").replace(".", "_"),
-                "default": None,
-            },
-        )
-        for opt, kwargs in GRAMMAR_ARG_SPECS
-    ]
-    add_arg_specs(group, specs)
+    add_arg_specs(group, GRAMMAR_ARG_SPECS_WITH_DEST)
 
 
 def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
