@@ -23,8 +23,8 @@ def _convert_value(
     """Attempt to convert ``value`` using ``conv`` with error handling.
 
     ``log_level`` controls the logging level when conversion fails in lax
-    mode. Defaults to ``logging.ERROR`` if ``strict`` is ``True`` and
-    ``logging.DEBUG`` otherwise.
+    mode. Defaults to ``logging.DEBUG``. If ``strict`` is ``True`` the
+    exception is raised and no log is emitted.
     """
     try:
         return True, conv(value)
