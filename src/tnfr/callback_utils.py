@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, Callable, DefaultDict, TYPE_CHECKING
 from enum import Enum
 from collections import defaultdict, deque
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from .logging_utils import get_logger
 
 from .constants import DEFAULTS
@@ -39,8 +39,16 @@ CallbackRegistry = DefaultDict[str, list["CallbackSpec"]]
 def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
     """Ensure the callback structure in ``G.graph``."""
     cbs = G.graph.get("callbacks")
-    if not isinstance(cbs, defaultdict):
-        cbs = defaultdict(list, cbs or {})
+
+    # Defensive: if callbacks store is not a mapping, discard it to avoid
+    # failures when constructing the defaultdict below.
+    if not isinstance(cbs, Mapping):
+        logger.warning("Invalid callbacks registry on graph; resetting to empty")
+        cbs = defaultdict(list)
+        G.graph["callbacks"] = cbs
+        G.graph["_callbacks_dirty"] = True
+    elif not isinstance(cbs, defaultdict):
+        cbs = defaultdict(list, cbs)
         G.graph["callbacks"] = cbs
         G.graph["_callbacks_dirty"] = True
     if not G.graph.pop("_callbacks_dirty", False):
