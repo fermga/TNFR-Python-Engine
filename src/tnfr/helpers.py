@@ -12,7 +12,6 @@ import math
 import hashlib
 from statistics import fmean, StatisticsError
 import threading
-import weakref
 import json
 import sys
 from functools import lru_cache
@@ -31,6 +30,7 @@ from .alias import get_attr
 from .graph_utils import mark_dnfr_prep_dirty
 
 _EDGE_CACHE_LOCK = threading.RLock()
+_RECURSION_LIMIT = sys.getrecursionlimit()
 
 # Keys of cache entries dependent on the edge version.  Any change to the edge
 # set requires these to be dropped to avoid stale data.
@@ -179,10 +179,9 @@ def get_graph(obj: Any) -> Any:
 def _stable_json(obj: Any, max_depth: int = 10) -> str:
     """Return a JSON string with deterministic ordering."""
 
-    recursion_limit = sys.getrecursionlimit()
-    if max_depth >= recursion_limit:
+    if max_depth >= _RECURSION_LIMIT:
         raise ValueError(
-            f"max_depth={max_depth} exceeds recursion limit ({recursion_limit})"
+            f"max_depth={max_depth} exceeds recursion limit ({_RECURSION_LIMIT})"
         )
 
     seen: set[int] = set()
@@ -318,9 +317,8 @@ def edge_version_cache(
     Cache lookups and updates are serialized via ``_EDGE_CACHE_LOCK``.  A
     dedicated ``threading.Lock`` is maintained for each cache key so that
     different keys can be computed concurrently while still preventing
-    duplicate work for the same key.  Locks are stored in a
-    :class:`weakref.WeakValueDictionary` and thus cleaned up automatically
-    when no longer in use.
+    duplicate work for the same key. Locks are stored in a simple ``dict``
+    and cleared when the cache is invalidated.
 
     When ``max_entries`` is a positive integer, only the most recent
     ``max_entries`` cache entries are kept (defaults to ``128``).  The
@@ -350,8 +348,8 @@ def edge_version_cache(
             graph["_edge_version_cache"] = cache
 
         locks = graph.get("_edge_version_cache_locks")
-        if locks is None or not isinstance(locks, weakref.WeakValueDictionary):
-            locks = weakref.WeakValueDictionary()
+        if locks is None or not isinstance(locks, dict):
+            locks = {}
             graph["_edge_version_cache_locks"] = locks
 
         edge_version = int(graph.get("_edge_version", 0))
@@ -387,7 +385,7 @@ def invalidate_edge_version_cache(G: Any) -> None:
     locks = graph.get("_edge_version_cache_locks")
     if isinstance(cache, (dict, LRUCache)):
         cache.clear()
-    if isinstance(locks, weakref.WeakValueDictionary):
+    if isinstance(locks, dict):
         locks.clear()
 
 

@@ -106,12 +106,13 @@ class HistoryDict(dict):
         target = len(self._counts) + self._compact_every
         if len(self._heap) <= target:
             return
-        self._heap = [
-            (cnt, key) for cnt, key in self._heap if self._counts.get(key) == cnt
-        ]
-        heapq.heapify(self._heap)
-        while len(self._heap) > target:
-            heapq.heappop(self._heap)
+        new_heap: list[tuple[int, str]] = []
+        while self._heap and len(new_heap) < target:
+            cnt, key = heapq.heappop(self._heap)
+            if self._counts.get(key) == cnt:
+                new_heap.append((cnt, key))
+        heapq.heapify(new_heap)
+        self._heap = new_heap
 
     def _pop_heap_key(self) -> str:
         """Pop and return the key with the smallest count from the heap."""
@@ -272,21 +273,21 @@ def count_glyphs(
     if window_int is not None and window_int <= 0:
         return Counter()
 
-    def _iter_seq(nd: Dict[str, Any]) -> Iterable[str]:
+    counts: Counter[str] = Counter()
+    for _, nd in G.nodes(data=True):
         if last_only:
             g = last_glyph(nd)
             if g:
-                yield g
-            return
+                counts[g] += 1
+            continue
         hist = nd.get("glyph_history")
         if not hist:
-            return
+            continue
         if window_int is None:
-            yield from hist
+            seq = hist
         else:
             start = max(len(hist) - window_int, 0)
-            yield from islice(hist, start, None)
+            seq = islice(hist, start, None)
+        counts.update(seq)
 
-    return Counter(
-        g for _, nd in G.nodes(data=True) for g in _iter_seq(nd)
-    )
+    return counts

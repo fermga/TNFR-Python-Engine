@@ -13,7 +13,7 @@ from typing import (
 )
 import logging
 import math
-from collections import deque
+from itertools import islice
 from .logging_utils import get_logger
 
 from .value_utils import _convert_value
@@ -21,6 +21,8 @@ from .value_utils import _convert_value
 T = TypeVar("T")
 
 logger = get_logger(__name__)
+
+NEGATIVE_WEIGHTS_MSG = "Negative weights detected: %s"
 
 __all__ = [
     "MAX_MATERIALIZE_DEFAULT",
@@ -60,18 +62,12 @@ def ensure_collection(
         limit = max_materialize
         if limit == 0:
             return ()
-        dq: deque[T] = deque()
-        it = iter(iterable)
-        for _ in range(limit + 1):
-            try:
-                dq.append(next(it))
-            except StopIteration:
-                break
-        if len(dq) > limit:
+        materialized = list(islice(iterable, limit + 1))
+        if len(materialized) > limit:
             raise ValueError(
-                f"Iterable produced {len(dq)} items, exceeds limit {limit}"
+                f"Iterable produced {len(materialized)} items, exceeds limit {limit}"
             )
-        return tuple(dq)
+        return tuple(materialized)
 
     try:
         return _materialise(it)
@@ -114,8 +110,8 @@ def normalize_weights(
         weights[k] = w
     if negatives:
         if error_on_negative:
-            raise ValueError(f"Negative weights detected: {negatives}")
-        logger.warning("Negative weights detected: %s", negatives)
+            raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
+        logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
     total = math.fsum(weights.values())
     if total <= 0:
         uniform = 1.0 / len(keys)
