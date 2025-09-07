@@ -4,7 +4,6 @@ from __future__ import annotations
 from typing import Any, Callable
 import json
 from pathlib import Path
-from functools import lru_cache
 import os
 from .logging_utils import get_logger
 
@@ -52,12 +51,11 @@ PARSERS = {
 }
 
 
-@lru_cache(maxsize=None)
 def _get_parser(suffix: str) -> Callable[[str], Any]:
-    parser = PARSERS.get(suffix)
-    if parser is None:
-        raise ValueError(f"Unsupported suffix: {suffix}")
-    return parser
+    try:
+        return PARSERS[suffix]
+    except KeyError as exc:
+        raise ValueError(f"Unsupported suffix: {suffix}") from exc
 
 
 ERROR_MESSAGES = {

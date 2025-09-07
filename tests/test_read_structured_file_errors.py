@@ -90,7 +90,6 @@ def test_read_structured_file_missing_dependency(
         raise ImportError("pyyaml is not installed")
 
     monkeypatch.setattr(io_mod, "yaml", type("Y", (), {"safe_load": fake_safe_load}))
-    io_mod._get_parser.cache_clear()
 
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
@@ -110,7 +109,6 @@ def test_read_structured_file_missing_dependency_toml(
         raise ImportError("toml is not installed")
 
     monkeypatch.setattr(io_mod, "tomllib", type("T", (), {"loads": fake_loads}))
-    io_mod._get_parser.cache_clear()
 
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
@@ -163,7 +161,6 @@ def test_read_structured_file_ignores_missing_yaml_when_parsing_json(
     path.write_text("{\"a\": 1}", encoding="utf-8")
     monkeypatch.setattr(io_mod, "yaml", None)
     monkeypatch.setattr(io_mod, "tomllib", None)
-    io_mod._get_parser.cache_clear()
     assert read_structured_file(path) == {"a": 1}
 
 
