@@ -90,13 +90,10 @@ def clamp01(x: float) -> float:
 
 def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
     """Return the arithmetic mean of ``xs`` or ``default`` if empty."""
-    # Pre-cast ``default`` to anticipate errors and avoid multiple casting
-    result = float(default)
     try:
-        result = float(fmean(xs))
+        return float(fmean(xs))
     except (StatisticsError, ValueError, TypeError):
-        pass
-    return result
+        return float(default)
 
 
 def angle_diff(a: float, b: float) -> float:

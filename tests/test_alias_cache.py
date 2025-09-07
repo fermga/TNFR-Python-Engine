@@ -1,5 +1,3 @@
-import pytest
-
 from tnfr.alias import alias_get, alias_set, _validate_aliases
 
 

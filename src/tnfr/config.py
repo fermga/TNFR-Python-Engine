@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
+from collections.abc import Mapping
 from pathlib import Path
 from .io import read_structured_file
 
@@ -11,10 +12,10 @@ if TYPE_CHECKING:  # pragma: no cover - only for type checkers
     import networkx as nx
 
 
-def load_config(path: str | Path) -> dict[str, Any]:
-    """Read a JSON/YAML file and return a ``dict`` with parameters."""
+def load_config(path: str | Path) -> Mapping[str, Any]:
+    """Read a JSON/YAML file and return a mapping with parameters."""
     data = read_structured_file(Path(path))
-    if not isinstance(data, dict):
+    if not isinstance(data, Mapping):
         raise ValueError("Configuration file must contain an object")
     return data
 
