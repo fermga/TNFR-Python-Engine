@@ -119,6 +119,15 @@ def mapping_field(G, graph_key: str, out_key: str) -> Dict[str, Any]:
     return {out_key: mapping} if mapping is not None else {}
 
 
+def make_mapping_field(graph_key: str, out_key: str) -> Callable[[Any], Dict[str, Any]]:
+    """Return a field function reading ``graph_key`` into ``out_key``."""
+
+    def field(G):
+        return mapping_field(G, graph_key, out_key)
+
+    return field
+
+
 # -------------------------
 # Builders
 # -------------------------
@@ -172,16 +181,13 @@ def _trace_capture(
     append_metric(hist, key, meta)
 
 
-def gamma_field(G):
-    """Return Γ configuration."""
-
-    return mapping_field(G, "GAMMA", "gamma")
+gamma_field = make_mapping_field("GAMMA", "gamma")
 
 
-def grammar_field(G):
-    """Return canonical grammar configuration."""
+grammar_field = make_mapping_field("GRAMMAR_CANON", "grammar")
 
-    return mapping_field(G, "GRAMMAR_CANON", "grammar")
+
+dnfr_weights_field = make_mapping_field("DNFR_WEIGHTS", "dnfr_weights")
 
 
 def selector_field(G):
@@ -189,23 +195,18 @@ def selector_field(G):
     return {"selector": getattr(sel, "__name__", str(sel)) if sel else None}
 
 
-def dnfr_weights_field(G):
-    """Return ΔNFR mix declared in the engine."""
+_si_weights_field = make_mapping_field("_Si_weights", "si_weights")
 
-    return mapping_field(G, "DNFR_WEIGHTS", "dnfr_weights")
+
+_si_sensitivity_field = make_mapping_field("_Si_sensitivity", "si_sensitivity")
 
 
 def si_weights_field(G):
     """Return sense-plane weights and sensitivity."""
 
     return {
-        **(
-            mapping_field(G, "_Si_weights", "si_weights") or {"si_weights": {}}
-        ),
-        **(
-            mapping_field(G, "_Si_sensitivity", "si_sensitivity")
-            or {"si_sensitivity": {}}
-        ),
+        **(_si_weights_field(G) or {"si_weights": {}}),
+        **(_si_sensitivity_field(G) or {"si_sensitivity": {}}),
     }
 
 
