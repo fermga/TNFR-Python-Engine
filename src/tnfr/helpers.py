@@ -13,7 +13,6 @@ import hashlib
 from statistics import fmean, StatisticsError
 import threading
 import json
-import sys
 from functools import lru_cache
 from cachetools import LRUCache
 import networkx as nx
@@ -30,7 +29,6 @@ from .alias import get_attr
 from .graph_utils import mark_dnfr_prep_dirty
 
 _EDGE_CACHE_LOCK = threading.RLock()
-_RECURSION_LIMIT = sys.getrecursionlimit()
 
 # Keys of cache entries dependent on the edge version.  Any change to the edge
 # set requires these to be dropped to avoid stale data.
@@ -179,43 +177,38 @@ def get_graph(obj: Any) -> Any:
 def _stable_json(obj: Any, max_depth: int = 10) -> str:
     """Return a JSON string with deterministic ordering."""
 
-    if max_depth >= _RECURSION_LIMIT:
-        raise ValueError(
-            f"max_depth={max_depth} exceeds recursion limit ({_RECURSION_LIMIT})"
-        )
+    class _Encoder(json.JSONEncoder):
+        def __init__(self, *args, **kwargs):
+            self._max_depth = max_depth
+            super().__init__(*args, **kwargs)
 
-    seen: set[int] = set()
-
-    def _to_basic(o: Any, depth: int) -> Any:
-        if isinstance(o, (str, int, float, bool)) or o is None:
-            return o
-        if depth <= 0:
-            return "<max-depth>"
-        oid = id(o)
-        if oid in seen:
-            return "<recursion>"
-        seen.add(oid)
-        try:
-            if isinstance(o, dict):
-                return {
-                    json.dumps(
-                        (type(k).__name__, _to_basic(k, depth - 1)), sort_keys=True
-                    ): _to_basic(v, depth - 1)
-                    for k, v in o.items()
-                }
+        def default(self, o):
             if isinstance(o, set):
-                items = [_to_basic(v, depth - 1) for v in o]
-                return sorted(items, key=str)
-            if isinstance(o, (list, tuple)):
-                return [_to_basic(v, depth - 1) for v in o]
+                return sorted(o, key=lambda x: repr(x))
             if hasattr(o, "__dict__"):
-                return _to_basic(vars(o), depth - 1)
+                return o.__dict__
             return repr(o)
-        finally:
-            seen.discard(oid)
 
-    basic = _to_basic(obj, max_depth)
-    return json.dumps(basic, sort_keys=True)
+        def encode(self, o):
+            try:
+                self._check_depth(o, 0)
+            except RecursionError as exc:
+                raise ValueError("circular reference detected") from exc
+            return super().encode(o)
+
+        def _check_depth(self, o, depth):
+            if depth > self._max_depth:
+                raise ValueError(f"max depth {self._max_depth} exceeded")
+            if isinstance(o, dict):
+                for v in o.values():
+                    self._check_depth(v, depth + 1)
+            elif isinstance(o, (list, tuple, set)):
+                for item in o:
+                    self._check_depth(item, depth + 1)
+            elif hasattr(o, "__dict__"):
+                self._check_depth(o.__dict__, depth + 1)
+
+    return json.dumps(obj, sort_keys=True, ensure_ascii=False, cls=_Encoder)
 
 
 @lru_cache(maxsize=1024)
