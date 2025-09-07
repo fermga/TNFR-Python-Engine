@@ -38,7 +38,7 @@ from .alias import get_attr, set_attr
 from .rng import get_rng, make_rng
 from .callback_utils import invoke_callbacks
 from .glyph_history import append_metric
-from .import_utils import import_nodonx
+from .import_utils import import_nodonx, optional_import
 
 if TYPE_CHECKING:
     from .node import NodoProtocol
@@ -64,9 +64,16 @@ def clear_rng_cache() -> None:
 
 @cache
 def _get_networkx_modules():
-    import networkx as nx
-    from networkx.algorithms import community as nx_comm
-
+    nx = optional_import("networkx")
+    if nx is None:
+        raise ImportError(
+            "networkx is required for network operators; install 'networkx' to enable this feature"
+        )
+    nx_comm = optional_import("networkx.algorithms.community")
+    if nx_comm is None:
+        raise ImportError(
+            "networkx.algorithms.community is required for community-based operations; install 'networkx' to enable this feature"
+        )
     return nx, nx_comm
 
 
