@@ -768,19 +768,20 @@ def apply_remesh_if_globally_stable(
     G, pasos_estables_consecutivos: Optional[int] = None
 ) -> None:
     params = [
-        ("REMESH_STABILITY_WINDOW", int),
-        ("REMESH_REQUIRE_STABILITY", bool),
-        ("REMESH_MIN_PHASE_SYNC", float),
-        ("REMESH_MAX_GLYPH_DISR", float),
-        ("REMESH_MIN_SIGMA_MAG", float),
-        ("REMESH_MIN_KURAMOTO_R", float),
-        ("REMESH_MIN_SI_HI_FRAC", float),
-        ("REMESH_COOLDOWN_VENTANA", int),
-        ("REMESH_COOLDOWN_TS", float),
+        ("REMESH_STABILITY_WINDOW", int, REMESH_DEFAULTS["REMESH_STABILITY_WINDOW"]),
+        ("REMESH_REQUIRE_STABILITY", bool, REMESH_DEFAULTS["REMESH_REQUIRE_STABILITY"]),
+        ("REMESH_MIN_PHASE_SYNC", float, REMESH_DEFAULTS["REMESH_MIN_PHASE_SYNC"]),
+        ("REMESH_MAX_GLYPH_DISR", float, REMESH_DEFAULTS["REMESH_MAX_GLYPH_DISR"]),
+        ("REMESH_MIN_SIGMA_MAG", float, REMESH_DEFAULTS["REMESH_MIN_SIGMA_MAG"]),
+        ("REMESH_MIN_KURAMOTO_R", float, REMESH_DEFAULTS["REMESH_MIN_KURAMOTO_R"]),
+        ("REMESH_MIN_SI_HI_FRAC", float, REMESH_DEFAULTS["REMESH_MIN_SI_HI_FRAC"]),
+        ("REMESH_COOLDOWN_VENTANA", int, REMESH_DEFAULTS["REMESH_COOLDOWN_VENTANA"]),
+        ("REMESH_COOLDOWN_TS", float, REMESH_DEFAULTS["REMESH_COOLDOWN_TS"]),
     ]
-    cfg = {
-        key: conv(G.graph.get(key, REMESH_DEFAULTS.get(key))) for key, conv in params
-    }
+    cfg = {}
+    for key, conv, _default in params:
+        cfg[key] = conv(get_param(G, key))
+    # Parámetros de remallado: ventana de estabilidad, umbrales y cooldowns.
     frac_req = float(get_param(G, "FRACTION_STABLE_REMESH"))
     w_estab = (
         pasos_estables_consecutivos
