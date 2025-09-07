@@ -1,4 +1,10 @@
-"""Attribute helpers supporting alias keys."""
+"""Attribute helpers supporting alias keys.
+
+``AliasAccessor`` provides the main implementation for dealing with
+alias-based attribute access.  The module-level :func:`alias_get` and
+``alias_set`` functions are thin wrappers over a shared
+``AliasAccessor`` instance kept for backward compatibility.
+"""
 
 from __future__ import annotations
 from typing import (
@@ -13,7 +19,7 @@ from typing import (
     Generic,
 )
 import logging
-from functools import lru_cache, partial
+from functools import lru_cache
 
 from .value_utils import _convert_value
 from .constants import ALIAS_VF, ALIAS_DNFR
@@ -82,6 +88,69 @@ def _alias_resolve(
     return def_val if ok_def else None
 
 
+class AliasAccessor(Generic[T]):
+    """Helper providing ``get`` and ``set`` for alias-based attributes.
+
+    This class implements all logic for resolving and assigning values
+    using alias keys.  Function helpers :func:`alias_get` and
+    :func:`alias_set` simply delegate to a module-level instance of this
+    class.
+    """
+
+    def __init__(
+        self, conv: Callable[[Any], T] | None = None, default: T | None = None
+    ) -> None:
+        self._conv = conv
+        self._default = default
+
+    def get(
+        self,
+        d: Dict[str, Any],
+        aliases: Sequence[str],
+        default: Optional[T] = None,
+        *,
+        strict: bool = False,
+        log_level: int | None = None,
+        conv: Callable[[Any], T] | None = None,
+    ) -> Optional[T]:
+        aliases = _validate_aliases(aliases)
+        if conv is None:
+            conv = self._conv
+        if conv is None:
+            raise TypeError("'conv' must be provided")
+        if default is None:
+            default = self._default
+        return _alias_resolve(
+            d,
+            aliases,
+            conv=conv,
+            default=default,
+            strict=strict,
+            log_level=log_level,
+        )
+
+    def set(
+        self,
+        d: Dict[str, Any],
+        aliases: Sequence[str],
+        value: Any,
+        conv: Callable[[Any], T] | None = None,
+    ) -> T:
+        aliases = _validate_aliases(aliases)
+        if conv is None:
+            conv = self._conv
+        if conv is None:
+            raise TypeError("'conv' must be provided")
+        val = conv(value)
+        key = next((k for k in aliases if k in d), aliases[0])
+        d[key] = val
+        return val
+
+
+# Shared accessor used by wrapper functions
+_alias_accessor: AliasAccessor[Any] = AliasAccessor()
+
+
 @overload
 def alias_get(
     d: Dict[str, Any],
@@ -115,15 +184,18 @@ def alias_get(
     strict: bool = False,
     log_level: int | None = None,
 ) -> Optional[T]:
-    """Return the value for the first existing key in ``aliases``."""
-    aliases = _validate_aliases(aliases)
-    return _alias_resolve(
+    """Return the value for the first existing key in ``aliases``.
+
+    This is a convenience wrapper over a shared :class:`AliasAccessor`
+    instance.
+    """
+    return _alias_accessor.get(
         d,
         aliases,
-        conv=conv,
         default=default,
         strict=strict,
         log_level=log_level,
+        conv=conv,
     )
 
 
@@ -133,12 +205,12 @@ def alias_set(
     conv: Callable[[Any], T],
     value: Any,
 ) -> T:
-    """Assign ``value`` converted to the first available key in ``aliases``."""
-    aliases = _validate_aliases(aliases)
-    val = conv(value)
-    key = next((k for k in aliases if k in d), aliases[0])
-    d[key] = val
-    return val
+    """Assign ``value`` converted to the first available key in ``aliases``.
+
+    This is a convenience wrapper over a shared :class:`AliasAccessor`
+    instance.
+    """
+    return _alias_accessor.set(d, aliases, value, conv=conv)
 
 
 class _Getter(Protocol[T]):
@@ -151,6 +223,7 @@ class _Getter(Protocol[T]):
         *,
         strict: bool = False,
         log_level: int | None = None,
+        conv: Callable[[Any], T] | None = ...,
     ) -> T: ...
 
     @overload
@@ -162,46 +235,18 @@ class _Getter(Protocol[T]):
         *,
         strict: bool = False,
         log_level: int | None = None,
+        conv: Callable[[Any], T] | None = ...,
     ) -> Optional[T]: ...
 
 
 class _Setter(Protocol[T]):
     def __call__(
-        self, d: Dict[str, Any], aliases: Sequence[str], value: T
-    ) -> T:
-        ...
-
-
-class AliasAccessor(Generic[T]):
-    """Helper providing ``get`` and ``set`` for alias-based attributes."""
-
-    def __init__(self, conv: Callable[[Any], T], default: T | None = None) -> None:
-        self._conv = conv
-        self._default = default
-        self._base_get = partial(_alias_resolve, conv=conv)
-
-    def get(
         self,
         d: Dict[str, Any],
         aliases: Sequence[str],
-        default: Optional[T] = None,
-        *,
-        strict: bool = False,
-        log_level: int | None = None,
-    ) -> Optional[T]:
-        aliases = _validate_aliases(aliases)
-        if default is None:
-            default = self._default
-        return self._base_get(
-            d,
-            aliases,
-            default=default,
-            strict=strict,
-            log_level=log_level,
-        )
-
-    def set(self, d: Dict[str, Any], aliases: Sequence[str], value: T) -> T:
-        return alias_set(d, aliases, self._conv, value)
+        value: Any,
+        conv: Callable[[Any], T] | None = ...,
+    ) -> T: ...
 
 
 _float_accessor = AliasAccessor(float, default=0.0)
