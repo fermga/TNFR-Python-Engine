@@ -151,16 +151,16 @@ def _configure_dnfr_weights(G) -> dict:
     return weights
 
 
-def _init_dnfr_cache(G, nodes, cache, checksum, dirty):
+def _init_dnfr_cache(G, nodes, prev_cache, checksum, dirty):
     """Initialise or reuse cached ΔNFR arrays."""
-    if cache and cache.get("checksum") == checksum and not dirty:
-        idx = cache["idx"]
-        theta = cache["theta"]
-        epi = cache["epi"]
-        vf = cache["vf"]
-        cos_theta = cache["cos_theta"]
-        sin_theta = cache["sin_theta"]
-        return cache, idx, theta, epi, vf, cos_theta, sin_theta, False
+    if prev_cache and prev_cache.get("checksum") == checksum and not dirty:
+        idx = prev_cache["idx"]
+        theta = prev_cache["theta"]
+        epi = prev_cache["epi"]
+        vf = prev_cache["vf"]
+        cos_theta = prev_cache["cos_theta"]
+        sin_theta = prev_cache["sin_theta"]
+        return prev_cache, idx, theta, epi, vf, cos_theta, sin_theta, False
 
     idx = {n: i for i, n in enumerate(nodes)}
     theta = [0.0] * len(nodes)
@@ -176,7 +176,7 @@ def _init_dnfr_cache(G, nodes, cache, checksum, dirty):
         "vf": vf,
         "cos_theta": cos_theta,
         "sin_theta": sin_theta,
-        "degs": cache.get("degs") if cache else None,
+        "degs": prev_cache.get("degs") if prev_cache else None,
     }
     G.graph["_dnfr_prep_cache"] = cache
     return cache, idx, theta, epi, vf, cos_theta, sin_theta, True
