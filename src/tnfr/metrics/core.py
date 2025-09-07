@@ -23,7 +23,6 @@ from ..constants import (
 from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, last_glyph, append_metric
 from ..alias import get_attr, set_attr
-from ..helpers import list_mean
 from ..metrics_utils import compute_coherence
 from ..constants_glyphs import GLYPHS_CANONICAL, GLYPH_GROUPS
 from ..types import Glyph
@@ -265,20 +264,32 @@ def _aggregate_si(G, hist):
     """Aggregate Si statistics for all nodes."""
 
     try:
+        thr_sel = get_param(G, "SELECTOR_THRESHOLDS")
+        thr_def = get_param(G, "GLYPH_THRESHOLDS")
+        si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
+        si_lo = float(thr_sel.get("si_lo", thr_def.get("lo", 0.33)))
+
         sis = [
-            get_attr(nd, ALIAS_SI, float("nan")) for _, nd in G.nodes(data=True)
+            s
+            for _, nd in G.nodes(data=True)
+            if not math.isnan(s := get_attr(nd, ALIAS_SI, float("nan")))
         ]
-        sis = [s for s in sis if not math.isnan(s)]
-        if sis:
-            si_mean = list_mean(sis, 0.0)
-            hist["Si_mean"].append(si_mean)
-            thr_sel = get_param(G, "SELECTOR_THRESHOLDS")
-            thr_def = get_param(G, "GLYPH_THRESHOLDS")
-            si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
-            si_lo = float(thr_sel.get("si_lo", thr_def.get("lo", 0.33)))
-            n = len(sis)
-            hist["Si_hi_frac"].append(sum(1 for s in sis if s >= si_hi) / n)
-            hist["Si_lo_frac"].append(sum(1 for s in sis if s <= si_lo) / n)
+
+        total = 0.0
+        hi_count = 0
+        lo_count = 0
+        for s in sis:
+            total += s
+            if s >= si_hi:
+                hi_count += 1
+            if s <= si_lo:
+                lo_count += 1
+
+        n = len(sis)
+        if n:
+            hist["Si_mean"].append(total / n)
+            hist["Si_hi_frac"].append(hi_count / n)
+            hist["Si_lo_frac"].append(lo_count / n)
         else:
             hist["Si_mean"].append(0.0)
             hist["Si_hi_frac"].append(0.0)
