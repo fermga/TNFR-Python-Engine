@@ -120,34 +120,36 @@ def _wij_loops(
     return wij
 
 
-def _stats_numpy(wij, self_diag, np):
-    n = wij.shape[0]
-    mask = ~np.eye(n, dtype=bool)
-    values = wij[mask]
-    min_val = float(values.min()) if values.size else 0.0
-    max_val = float(values.max()) if values.size else 0.0
-    mean_val = float(values.mean()) if values.size else 0.0
-    row_sum = wij.sum(axis=1)
-    row_count = np.full(n, n if self_diag else n - 1)
-    Wi = [float(row_sum[i] / max(1, row_count[i])) for i in range(n)]
-    count_val = int(values.size)
-    return min_val, max_val, mean_val, Wi, count_val, mask
-
-
-def _stats_from_lists(values, row_sum, n, self_diag):
-    min_val = min(values) if values else 0.0
-    max_val = max(values) if values else 0.0
-    sum_val = sum(values)
-    count_val = len(values)
-    mean_val = (sum_val / count_val) if count_val else 0.0
+def _compute_stats(values, row_sum, n, self_diag, np=None):
+    if np is not None:
+        count_val = int(values.size)
+        if count_val:
+            min_val = float(values.min())
+            max_val = float(values.max())
+            mean_val = float(values.mean())
+        else:
+            min_val = max_val = mean_val = 0.0
+    else:
+        count_val = len(values)
+        if count_val:
+            min_val = min(values)
+            max_val = max(values)
+            mean_val = sum(values) / count_val
+        else:
+            min_val = max_val = mean_val = 0.0
     row_count = n if self_diag else n - 1
-    Wi = [row_sum[i] / max(1, row_count) for i in range(n)]
+    denom = max(1, row_count)
+    Wi = [float(row_sum[i]) / denom for i in range(n)]
     return min_val, max_val, mean_val, Wi, count_val
 
 
 def _finalize_wij_numpy(wij, mode, thr, self_diag, np):
-    min_val, max_val, mean_val, Wi, count_val, mask = _stats_numpy(
-        wij, self_diag, np
+    n = wij.shape[0]
+    mask = ~np.eye(n, dtype=bool)
+    values = wij[mask]
+    row_sum = wij.sum(axis=1)
+    min_val, max_val, mean_val, Wi, count_val = _compute_stats(
+        values, row_sum, n, self_diag, np
     )
     if mode == "dense":
         W = wij.tolist()
@@ -189,7 +191,7 @@ def _finalize_wij_python(wij, mode, thr, self_diag):
                     if w >= thr:
                         W.append((i, j, w))
                 row_sum[i] += w
-    min_val, max_val, mean_val, Wi, count_val = _stats_from_lists(
+    min_val, max_val, mean_val, Wi, count_val = _compute_stats(
         values, row_sum, n, self_diag
     )
     stats = {
