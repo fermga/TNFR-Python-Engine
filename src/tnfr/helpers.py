@@ -303,12 +303,19 @@ def edge_version_cache(
         raise ValueError("max_entries must be non-negative or None")
     graph = get_graph(G)
     cache = graph.get("_edge_version_cache")
-    if cache is None or (
-        isinstance(cache, LRUCache)
-        and max_entries not in (None, 0)
-        and cache.maxsize != max_entries
+    use_lru = bool(max_entries)
+    if (
+        cache is None
+        or (
+            use_lru
+            and (
+                not isinstance(cache, LRUCache)
+                or cache.maxsize != max_entries
+            )
+        )
+        or (not use_lru and isinstance(cache, LRUCache))
     ):
-        cache = LRUCache(max_entries) if max_entries not in (None, 0) else {}
+        cache = LRUCache(max_entries) if use_lru else {}
         graph["_edge_version_cache"] = cache
     edge_version = int(graph.get("_edge_version", 0))
 
@@ -336,7 +343,7 @@ def invalidate_edge_version_cache(G: Any) -> None:
     """Clear cached entries associated with ``G``."""
     graph = get_graph(G)
     cache = graph.get("_edge_version_cache")
-    if cache is not None:
+    if isinstance(cache, (dict, LRUCache)):
         cache.clear()
 
 
