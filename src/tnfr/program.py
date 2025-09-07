@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
 
+from .token_parser import _flatten_tokens, validate_token, _parse_tokens
+
 from .constants import get_param
 from .grammar import apply_glyph_with_grammar
 from .constants_glyphs import GLYPHS_CANONICAL_SET
@@ -32,6 +34,9 @@ __all__ = [
     "_handle_target",
     "_handle_wait",
     "_handle_glyph",
+    "_flatten_tokens",
+    "validate_token",
+    "_parse_tokens",
     "seq",
     "block",
     "target",
