@@ -281,28 +281,33 @@ def coherence_matrix(G):
     return _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np)
 
 
-def local_phase_sync_weighted(
-    G, n, nodes_order=None, W_row=None, node_to_index=None
-):
+def local_phase_sync(G, n):
     cfg = G.graph.get("COHERENCE", COHERENCE)
     scope = str(cfg.get("scope", "neighbors")).lower()
     neighbors_only = scope != "all"
+    targets = (
+        G.neighbors(n)
+        if neighbors_only
+        else (v for v in G.nodes() if v != n)
+    )
+    vec = [
+        complex(
+            math.cos(get_attr(G.nodes[v], ALIAS_THETA, 0.0)),
+            math.sin(get_attr(G.nodes[v], ALIAS_THETA, 0.0)),
+        )
+        for v in targets
+    ]
+    if not vec:
+        return 0.0
+    mean = sum(vec) / len(vec)
+    return abs(mean)
 
-    # --- Caso sin pesos ---
+
+def local_phase_sync_weighted(
+    G, n, nodes_order=None, W_row=None, node_to_index=None
+):
     if W_row is None or nodes_order is None:
-        vec = [
-            complex(
-                math.cos(get_attr(G.nodes[v], ALIAS_THETA, 0.0)),
-                math.sin(get_attr(G.nodes[v], ALIAS_THETA, 0.0)),
-            )
-            for v in (
-                G.neighbors(n) if neighbors_only else (set(G.nodes()) - {n})
-            )
-        ]
-        if not vec:
-            return 0.0
-        mean = sum(vec) / len(vec)
-        return abs(mean)
+        return local_phase_sync(G, n)
 
     # --- Mapeo nodo → índice ---
     if node_to_index is None:

@@ -18,7 +18,7 @@ from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
 from ..helpers import clamp01
 from ..metrics_utils import compute_dnfr_accel_max, min_max_range
-from .coherence import local_phase_sync_weighted, _similarity_abs
+from .coherence import local_phase_sync_weighted, local_phase_sync, _similarity_abs
 
 
 def _dnfr_norm(nd, dnfr_max):
@@ -108,9 +108,7 @@ def _diagnosis_step(G, ctx=None):
                 G, n, nodes_order=nodes, W_row=row, node_to_index=node_to_index
             )
         else:
-            Rloc = local_phase_sync_weighted(
-                G, n, nodes_order=nodes, node_to_index=node_to_index
-            )
+            Rloc = local_phase_sync(G, n)
 
         symm = (
             _symmetry_index(G, n, epi_min=epi_min, epi_max=epi_max)
@@ -160,9 +158,7 @@ def dissonance_events(G, ctx=None):
     for n in nodes:
         nd = G.nodes[n]
         dn = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
-        Rloc = local_phase_sync_weighted(
-            G, n, nodes_order=nodes, node_to_index=node_to_index
-        )
+        Rloc = local_phase_sync(G, n)
         st = bool(nd.get("_disr_state", False))
         if (not st) and dn >= 0.5 and Rloc <= 0.4:
             nd["_disr_state"] = True
