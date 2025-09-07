@@ -164,11 +164,8 @@ def compute_Si_node(
     return Si
 
 
-def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
-    """Compute ``Si`` per node and write it to ``G.nodes[n]['Si']``."""
-    neighbors = ensure_neighbors_map(G)
-    alpha, beta, gamma = get_Si_weights(G)
-
+def _get_vf_dnfr_max(G) -> tuple[float, float]:
+    """Ensure and return absolute maxima for ``vf`` and ``ΔNFR``."""
     vfmax = G.graph.get("_vfmax")
     dnfrmax = G.graph.get("_dnfrmax")
     if vfmax is None or dnfrmax is None:
@@ -181,6 +178,15 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
             G.graph.setdefault("_dnfrmax", dnfrmax)
     vfmax = 1.0 if vfmax == 0 else vfmax
     dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
+    return vfmax, dnfrmax
+
+
+def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
+    """Compute ``Si`` per node and write it to ``G.nodes[n]['Si']``."""
+    neighbors = ensure_neighbors_map(G)
+    alpha, beta, gamma = get_Si_weights(G)
+
+    vfmax, dnfrmax = _get_vf_dnfr_max(G)
 
     trig = precompute_trigonometry(G)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
