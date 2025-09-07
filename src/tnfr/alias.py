@@ -21,8 +21,9 @@ from typing import (
 import logging
 from functools import lru_cache
 
-from .value_utils import _convert_value
 from .constants import ALIAS_VF, ALIAS_DNFR
+
+logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
@@ -77,23 +78,44 @@ def _alias_resolve(
     ``aliases`` must already be validated with :func:`_validate_aliases`.
     """
 
+    errors: list[tuple[str, Exception]] = []
     for key in aliases:
         if key in d:
-            ok, val = _convert_value(
-                d[key], conv, strict=strict, key=key, log_level=log_level
-            )
-            if ok:
-                return val
-    if default is None:
-        return None
-    ok_def, def_val = _convert_value(
-        default,
-        conv,
-        strict=strict,
-        key="default",
-        log_level=logging.WARNING if not strict else log_level,
-    )
-    return def_val if ok_def else None
+            try:
+                return conv(d[key])
+            except (ValueError, TypeError) as exc:
+                errors.append((key, exc))
+                if not strict:
+                    lvl = log_level if log_level is not None else logging.DEBUG
+                    logger.log(
+                        lvl, "No se pudo convertir el valor para %r: %s", key, exc
+                    )
+    if default is not None:
+        try:
+            return conv(default)
+        except (ValueError, TypeError) as exc:
+            errors.append(("default", exc))
+            if not strict:
+                lvl = (
+                    logging.WARNING
+                    if log_level is None
+                    else log_level
+                )
+                logger.log(
+                    lvl, "No se pudo convertir el valor para 'default': %s", exc
+                )
+
+    if errors and strict:
+        err_msg = "; ".join(f"{k!r}: {e}" for k, e in errors)
+        raise ValueError(f"No se pudieron convertir valores para {err_msg}")
+
+    if errors and not strict:
+        # In lax mode errors have already been logged individually; emit a summary
+        lvl = log_level if log_level is not None else logging.DEBUG
+        summary = "; ".join(f"{k!r}: {e}" for k, e in errors)
+        logger.log(lvl, "No se pudieron convertir valores para %s", summary)
+
+    return None
 
 
 class AliasAccessor(Generic[T]):
