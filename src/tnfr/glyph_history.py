@@ -93,18 +93,23 @@ class HistoryDict(dict):
         else:
             for k in self:
                 self._counts[k] = 0
-        self._compact()
+        self._heap = [(cnt, k) for k, cnt in self._counts.items()]
+        heapq.heapify(self._heap)
 
     def _increment(self, key: str) -> None:
         self._counts[key] += 1
         heapq.heappush(self._heap, (self._counts[key], key))
-        if len(self._heap) > len(self._counts) + self._compact_every:
-            self._compact()
+        self._prune_heap()
 
-    def _compact(self) -> None:
-        """Rebuild the heap from the current counts."""
-        self._heap = [(cnt, k) for k, cnt in self._counts.items()]
-        heapq.heapify(self._heap)
+    def _prune_heap(self) -> None:
+        """Remove stale heap entries incrementally."""
+        target = len(self._counts) + self._compact_every
+        while len(self._heap) > target:
+            cnt, key = heapq.heappushpop(self._heap, self._heap[0])
+            if self._counts.get(key) != cnt:
+                continue
+            heapq.heappush(self._heap, (cnt, key))
+            break
 
     def _pop_heap_key(self) -> str:
         """Pop and return the key with the smallest count from the heap."""
@@ -146,6 +151,7 @@ class HistoryDict(dict):
         else:
             self._counts[key] = 0
             heapq.heappush(self._heap, (0, key))
+        self._prune_heap()
 
     def setdefault(self, key, default=None):  # type: ignore[override]
         insert = key not in self
@@ -153,10 +159,10 @@ class HistoryDict(dict):
         if insert:
             self._counts[key] = 0
             heapq.heappush(self._heap, (0, key))
+            self._prune_heap()
         return val
 
     def pop_least_used(self) -> Any:
-        self._compact()
         while self._counts:
             key = self._pop_heap_key()
             self._counts.pop(key, None)
@@ -166,7 +172,6 @@ class HistoryDict(dict):
 
     def pop_least_used_batch(self, k: int) -> None:
         if k > 0 and self._counts:
-            self._compact()
             removed = 0
             while removed < k and self._counts:
                 key = self._pop_heap_key()
