@@ -29,6 +29,10 @@ def test_setdefault_inserts_and_converts_without_usage():
     val2 = hist.setdefault("a", [2])
     assert val2 is val
     assert hist._counts.get("a", 0) == 0
+    existing = deque([3])
+    val3 = hist.setdefault("b", existing)
+    assert val3 is existing
+    assert hist._counts.get("b", 0) == 0
 
 
 def test_pop_least_used_removes_least_frequent_key():

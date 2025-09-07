@@ -125,8 +125,11 @@ class HistoryDict(dict):
             val = super().setdefault(key, default)
         else:
             val = super().__getitem__(key)
-        if self._maxlen > 0 and isinstance(val, list):
-            val = deque(val, maxlen=self._maxlen)
+        if self._maxlen > 0 and not isinstance(val, deque):
+            if isinstance(val, Iterable) and not isinstance(val, (str, bytes)):
+                val = deque(val, maxlen=self._maxlen)
+            else:
+                val = deque([val], maxlen=self._maxlen)
             super().__setitem__(key, val)
         return val
 
