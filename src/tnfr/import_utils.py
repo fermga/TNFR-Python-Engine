@@ -46,12 +46,23 @@ class _ImportState:
 _IMPORT_STATE = _ImportState()
 
 
+_WARNED_MODULES: set[str] = set()
+_WARNED_LOCK = threading.Lock()
+
+
 def _warn_failure(module: str, attr: str | None, err: Exception) -> None:
     msg = (
         f"Failed to import module '{module}': {err}" if isinstance(err, ImportError)
         else f"Module '{module}' has no attribute '{attr}': {err}"
     )
-    warnings.warn(msg, RuntimeWarning, stacklevel=2)
+    with _WARNED_LOCK:
+        first = module not in _WARNED_MODULES
+        if first:
+            _WARNED_MODULES.add(module)
+    if first:
+        warnings.warn(msg, RuntimeWarning, stacklevel=2)
+    else:
+        warnings.warn(msg, RuntimeWarning)
 
 
 @lru_cache(maxsize=128)
@@ -85,18 +96,17 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     """
 
     module_name, attr = (name.rsplit(".", 1) + [None])[:2]
-    with _IMPORT_STATE.lock:
-        previously_failed = name in _IMPORT_STATE or module_name in _IMPORT_STATE
     try:
         module = importlib.import_module(module_name)
         obj = getattr(module, attr) if attr else module
         with _IMPORT_STATE.lock:
             for item in (name, module_name):
                 _IMPORT_STATE.discard(item)
+        with _WARNED_LOCK:
+            _WARNED_MODULES.discard(module_name)
         return obj
     except (ImportError, AttributeError) as e:
-        if not previously_failed:
-            _warn_failure(module_name, attr, e)
+        _warn_failure(module_name, attr, e)
         with _IMPORT_STATE.lock:
             if isinstance(e, ImportError):
                 _IMPORT_STATE.record(module_name)
@@ -114,6 +124,8 @@ def _cache_clear() -> None:
     _optional_import_cache_clear()
     with _IMPORT_STATE.lock:
         _IMPORT_STATE.clear()
+    with _WARNED_LOCK:
+        _WARNED_MODULES.clear()
 
 
 optional_import.cache_clear = _cache_clear  # type: ignore[attr-defined]
