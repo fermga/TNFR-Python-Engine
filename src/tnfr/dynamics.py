@@ -52,6 +52,7 @@ from .alias import (
     set_attr_str,
     set_vf,
     set_dnfr,
+    multi_recompute_abs_max,
 )
 from .metrics_utils import compute_Si, compute_dnfr_accel_max
 from .rng import get_rng
@@ -82,15 +83,17 @@ def _update_node_sample(G, *, step: int) -> None:
     """
     limit = int(G.graph.get("UM_CANDIDATE_COUNT", 0))
     nodes = G.graph.get("_node_list")
-    checksum = G.graph.get("_node_list_checksum")
-    current_checksum = (
-        node_set_checksum(G, nodes, store=False) if nodes is not None else None
-    )
-    if nodes is None or checksum != current_checksum:
+    stored_len = G.graph.get("_node_list_len")
+    current_n = G.number_of_nodes()
+    dirty = bool(G.graph.pop("_node_list_dirty", False))
+    if nodes is None or stored_len != current_n or dirty:
         nodes = tuple(G.nodes())
         checksum = node_set_checksum(G, nodes, store=False)
         G.graph["_node_list"] = nodes
         G.graph["_node_list_checksum"] = checksum
+        G.graph["_node_list_len"] = current_n
+    else:
+        checksum = G.graph.get("_node_list_checksum")
     n = len(nodes)
     if limit <= 0 or n < 50 or limit >= n:
         # Avoid exposing a mutable NodeView that may change later.
@@ -307,70 +310,75 @@ def _compute_dnfr_common(
     _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
 
 
-def _build_neighbor_sums_numpy(G, data):
-    np = get_numpy(warn=True)
-    if np is None:  # pragma: no cover - runtime check
-        raise RuntimeError("numpy no disponible para la versión vectorizada")
+def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
     nodes = data["nodes"]
-    if not nodes:
-        return None
-    A = data.get("A")
-    if A is None:
-        _, A = cached_nodes_and_A(G, cache_size=data.get("cache_size"))
-        data["A"] = A
-    theta = np.array(data["theta"], dtype=float)
-    epi = np.array(data["epi"], dtype=float)
-    vf = np.array(data["vf"], dtype=float)
-    cos_th = np.cos(theta)
-    sin_th = np.sin(theta)
-    x = A @ cos_th
-    y = A @ sin_th
-    epi_sum = A @ epi
-    vf_sum = A @ vf
-    count = A.sum(axis=1)
     w_topo = data["w_topo"]
-    if w_topo != 0.0:
-        degs = count
-        deg_sum = A @ degs
+    if use_numpy:
+        np = get_numpy(warn=True)
+        if np is None:  # pragma: no cover - runtime check
+            raise RuntimeError("numpy no disponible para la versión vectorizada")
+        if not nodes:
+            return None
+        A = data.get("A")
+        if A is None:
+            _, A = cached_nodes_and_A(G, cache_size=data.get("cache_size"))
+            data["A"] = A
+        theta = np.array(data["theta"], dtype=float)
+        epi = np.array(data["epi"], dtype=float)
+        vf = np.array(data["vf"], dtype=float)
+        cos_th = np.cos(theta)
+        sin_th = np.sin(theta)
+        x = A @ cos_th
+        y = A @ sin_th
+        epi_sum = A @ epi
+        vf_sum = A @ vf
+        count = A.sum(axis=1)
+        if w_topo != 0.0:
+            degs = count
+            deg_sum = A @ degs
+        else:
+            degs = deg_sum = None
+        return x, y, epi_sum, vf_sum, count, deg_sum, degs
     else:
-        degs = deg_sum = None
-    return x, y, epi_sum, vf_sum, count, deg_sum, degs
+        idx = data["idx"]
+        theta = data["theta"]
+        epi = data["epi"]
+        vf = data["vf"]
+        degs = data["degs"]
+        cos_th = [math.cos(t) for t in theta]
+        sin_th = [math.sin(t) for t in theta]
+        n = len(nodes)
+        x = [0.0] * n
+        y = [0.0] * n
+        epi_sum = [0.0] * n
+        vf_sum = [0.0] * n
+        count = [0] * n
+        if w_topo != 0 and degs is not None:
+            deg_sum = [0.0] * n
+            degs_list = [float(degs.get(node, 0)) for node in nodes]
+        else:
+            deg_sum = None
+            degs_list = None
+        for i, node in enumerate(nodes):
+            deg_i = degs_list[i] if degs_list is not None else 0.0
+            for v in G.neighbors(node):
+                j = idx[v]
+                x[i] += cos_th[j]
+                y[i] += sin_th[j]
+                epi_sum[i] += epi[j]
+                vf_sum[i] += vf[j]
+                count[i] += 1
+                if deg_sum is not None:
+                    deg_sum[i] += degs.get(v, deg_i)
+        return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
+
+
+def _build_neighbor_sums_numpy(G, data):
+    return _build_neighbor_sums_common(G, data, use_numpy=True)
 
 
 def _build_neighbor_sums_loops(G, data):
-    nodes = data["nodes"]
-    idx = data["idx"]
-    theta = data["theta"]
-    epi = data["epi"]
-    vf = data["vf"]
-    w_topo = data["w_topo"]
-    degs = data["degs"]
-    cos_th = [math.cos(t) for t in theta]
-    sin_th = [math.sin(t) for t in theta]
-    n = len(nodes)
-    x = [0.0] * n
-    y = [0.0] * n
-    epi_sum = [0.0] * n
-    vf_sum = [0.0] * n
-    count = [0] * n
-    if w_topo != 0 and degs is not None:
-        deg_sum = [0.0] * n
-        degs_list = [float(degs.get(node, 0)) for node in nodes]
-    else:
-        deg_sum = None
-        degs_list = None
-    for i, node in enumerate(nodes):
-        deg_i = degs_list[i] if degs_list is not None else 0.0
-        for v in G.neighbors(node):
-            j = idx[v]
-            x[i] += cos_th[j]
-            y[i] += sin_th[j]
-            epi_sum[i] += epi[j]
-            vf_sum[i] += vf[j]
-            count[i] += 1
-            if deg_sum is not None:
-                deg_sum[i] += degs.get(v, deg_i)
-    return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
+    return _build_neighbor_sums_common(G, data, use_numpy=False)
 
 
 def _compute_dnfr_numpy(G, data) -> None:
@@ -715,7 +723,7 @@ def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
 
     set_attr(nd, ALIAS_EPI, clamp(epi, eps_min, eps_max))
     if G is not None and node is not None:
-        set_vf(G, node, clamp(vf, vf_min, vf_max))
+        set_vf(G, node, clamp(vf, vf_min, vf_max), update_max=False)
     else:
         set_attr(nd, ALIAS_VF, clamp(vf, vf_min, vf_max))
     if G.graph.get("THETA_WRAP") if G is not None else DEFAULTS["THETA_WRAP"]:
@@ -731,6 +739,8 @@ def validate_canon(G) -> None:
     """
     for n, nd in G.nodes(data=True):
         apply_canonical_clamps(nd, G, n)
+    maxes = multi_recompute_abs_max(G, {"_vfmax": ALIAS_VF})
+    G.graph.update(maxes)
     return G
 
 

@@ -222,6 +222,43 @@ def _op_OZ(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # OZ — Disonancia
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
 
 
+def _um_candidate_iter(node: NodoProtocol):
+    sample_ids = node.graph.get("_node_sample")
+    if sample_ids is not None and hasattr(node, "G"):
+        NodoNX = import_nodonx()
+        base = (NodoNX.from_graph(node.G, j) for j in sample_ids)
+    else:
+        base = node.all_nodes()
+    for j in base:
+        same = (j is node) or (getattr(node, "n", None) == getattr(j, "n", None))
+        if same or node.has_edge(j):
+            continue
+        yield j
+
+
+def _um_select_candidates(
+    node: NodoProtocol,
+    candidates,
+    limit: int,
+    mode: str,
+    th: float,
+):
+    cand_list = list(candidates)
+    if limit > 0 and len(cand_list) > limit:
+        if mode == "proximity":
+            cand_list = heapq.nsmallest(
+                limit, cand_list, key=lambda j: abs(angle_diff(j.theta, th))
+            )
+        else:
+            rng = get_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
+            cand_list = rng.sample(cand_list, limit)
+    elif mode == "sample" and limit > 0:
+        rng = get_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
+        rng.shuffle(cand_list)
+        cand_list = cand_list[:limit]
+    return cand_list
+
+
 def _op_UM(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # UM — Coupling
     """Align phase and optionally create functional links.
 
@@ -255,44 +292,11 @@ def _op_UM(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # UM — Coupling
         epi_i = node.EPI
         si_i = node.Si
 
-        sample_ids = node.graph.get("_node_sample")
-        if sample_ids is not None and hasattr(node, "G"):
-            NodoNX = import_nodonx()
-            iter_nodes = (NodoNX.from_graph(node.G, j) for j in sample_ids)
-        else:
-            iter_nodes = node.all_nodes()
-
         limit = int(node.graph.get("UM_CANDIDATE_COUNT", 0))
         mode = str(node.graph.get("UM_CANDIDATE_MODE", "sample")).lower()
-
-        candidates = []
-        for j in iter_nodes:
-            same = (j is node) or (
-                getattr(node, "n", None) == getattr(j, "n", None)
-            )
-            if same or node.has_edge(j):
-                continue
-            candidates.append(j)
-            if mode == "sample" and limit > 0 and len(candidates) >= limit:
-                break
-
-        if limit > 0 and len(candidates) > limit:
-            if mode == "proximity":
-                candidates = heapq.nsmallest(
-                    limit,
-                    candidates,
-                    key=lambda j: abs(angle_diff(j.theta, th)),
-                )
-            else:
-                rng = get_rng(
-                    int(node.graph.get("RANDOM_SEED", 0)), node.offset()
-                )
-                candidates = rng.sample(candidates, limit)
-        elif mode == "sample" and limit > 0:
-            rng = get_rng(
-                int(node.graph.get("RANDOM_SEED", 0)), node.offset()
-            )
-            rng.shuffle(candidates)
+        candidates = _um_select_candidates(
+            node, _um_candidate_iter(node), limit, mode, th
+        )
 
         for j in candidates:
             th_j = j.theta

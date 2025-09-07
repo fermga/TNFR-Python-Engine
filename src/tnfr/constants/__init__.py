@@ -45,8 +45,11 @@ def _is_immutable(value: Any) -> bool:
     entry = _IMMUTABLE_CACHE.get(oid)
     if entry is not None:
         obj_ref, cached = entry
-        if obj_ref() is value:
+        obj = obj_ref()
+        if obj is value:
             return cached
+        if obj is None:
+            del _IMMUTABLE_CACHE[oid]
     if isinstance(value, IMMUTABLE_SIMPLE):
         res = True
     elif isinstance(value, (tuple, frozenset)):
@@ -57,6 +60,10 @@ def _is_immutable(value: Any) -> bool:
         res = False
     try:
         _IMMUTABLE_CACHE[oid] = (ref(value), res)
+        if len(_IMMUTABLE_CACHE) > 1024:
+            dead = [k for k, (r, _) in _IMMUTABLE_CACHE.items() if r() is None]
+            for k in dead:
+                _IMMUTABLE_CACHE.pop(k, None)
     except TypeError:
         pass
     return res
@@ -155,6 +162,18 @@ ALIAS_dVF = ("dνf_dt", "dvf_dt", "dnu_dt", "dvf")
 ALIAS_D2VF = ("d2νf_dt2", "d2vf_dt2", "d2nu_dt2", "B")
 ALIAS_dSI = ("δSi", "delta_Si", "dSi")
 
+VF_PRIMARY = ALIAS_VF[0]
+THETA_PRIMARY = ALIAS_THETA[0]
+DNFR_PRIMARY = ALIAS_DNFR[0]
+EPI_PRIMARY = ALIAS_EPI[0]
+EPI_KIND_PRIMARY = ALIAS_EPI_KIND[0]
+SI_PRIMARY = ALIAS_SI[0]
+dEPI_PRIMARY = ALIAS_dEPI[0]
+D2EPI_PRIMARY = ALIAS_D2EPI[0]
+dVF_PRIMARY = ALIAS_dVF[0]
+D2VF_PRIMARY = ALIAS_D2VF[0]
+dSI_PRIMARY = ALIAS_dSI[0]
+
 __all__ = [
     "CORE_DEFAULTS",
     "INIT_DEFAULTS",
@@ -185,4 +204,15 @@ __all__ = [
     "ALIAS_dVF",
     "ALIAS_D2VF",
     "ALIAS_dSI",
+    "VF_PRIMARY",
+    "THETA_PRIMARY",
+    "DNFR_PRIMARY",
+    "EPI_PRIMARY",
+    "EPI_KIND_PRIMARY",
+    "SI_PRIMARY",
+    "dEPI_PRIMARY",
+    "D2EPI_PRIMARY",
+    "dVF_PRIMARY",
+    "D2VF_PRIMARY",
+    "dSI_PRIMARY",
 ]

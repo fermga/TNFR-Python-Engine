@@ -10,7 +10,7 @@ from .dynamics import (
 )
 from .grammar import apply_glyph_with_grammar
 from .types import Glyph
-from .constants import ALIAS_EPI, ALIAS_VF, ALIAS_THETA
+from .constants import EPI_PRIMARY, VF_PRIMARY, THETA_PRIMARY
 
 
 # ---------------------------------------------------------------------------
@@ -35,9 +35,9 @@ def create_nfr(
     G.add_node(
         name,
         **{
-            ALIAS_EPI[0]: float(epi),
-            ALIAS_VF[0]: float(vf),
-            ALIAS_THETA[0]: float(theta),
+            EPI_PRIMARY: float(epi),
+            VF_PRIMARY: float(vf),
+            THETA_PRIMARY: float(theta),
         },
     )
     set_delta_nfr_hook(G, dnfr_hook)

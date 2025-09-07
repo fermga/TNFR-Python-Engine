@@ -7,6 +7,7 @@ import cmath
 import logging
 import warnings
 import json
+import hashlib
 from collections.abc import Mapping
 
 from .constants import ALIAS_THETA
@@ -69,7 +70,8 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
     prev_hash = G.graph.get("_gamma_spec_hash")
     # ``json.dumps(..., default=str)`` provides a stable representation for
     # hash calculation even when values are not natively serialisable.
-    cur_hash = hash(json.dumps(raw, sort_keys=True, default=str))
+    dumped = json.dumps(raw, sort_keys=True, default=str).encode("utf-8")
+    cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
     if cached is not None and prev_hash == cur_hash:
         return cached
     if raw is None:
