@@ -10,3 +10,13 @@ def test_stable_json_set_order_deterministic():
     res2 = _stable_json(s)
     assert res1 == res2
     assert res1 == sorted(res1, key=str)
+
+
+def test_stable_json_respects_max_depth_dict():
+    obj = {"a": {"b": {"c": 1}}}
+    assert _stable_json(obj, max_depth=1) == {"a": "<max-depth>"}
+
+
+def test_stable_json_respects_max_depth_list():
+    obj = [1, [2, [3]]]
+    assert _stable_json(obj, max_depth=1) == [1, "<max-depth>"]

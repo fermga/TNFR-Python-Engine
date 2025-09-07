@@ -154,10 +154,15 @@ from .glyph_history import (  # noqa: E402
 # -------------------------
 
 
-def _stable_json(obj: Any, visited: set[int] | None = None) -> Any:
+def _stable_json(
+    obj: Any, visited: set[int] | None = None, max_depth: int = 10
+) -> Any:
     """Return a structure with deterministic ordering suitable for ``repr``."""
     if isinstance(obj, (str, int, float, bool)) or obj is None:
         return obj
+
+    if max_depth <= 0:
+        return "<max-depth>"
 
     if visited is None:
         visited = set()
@@ -168,18 +173,18 @@ def _stable_json(obj: Any, visited: set[int] | None = None) -> Any:
     visited.add(obj_id)
     try:
         if isinstance(obj, (list, tuple)):
-            return [_stable_json(o, visited) for o in obj]
+            return [_stable_json(o, visited, max_depth - 1) for o in obj]
         if isinstance(obj, set):
-            stable_items = [_stable_json(o, visited) for o in obj]
+            stable_items = [_stable_json(o, visited, max_depth - 1) for o in obj]
             return sorted(stable_items, key=str)
         if isinstance(obj, dict):
             return {
-                str(k): _stable_json(v, visited)
+                str(k): _stable_json(v, visited, max_depth - 1)
                 for k, v in sorted(obj.items(), key=lambda kv: str(kv[0]))
             }
         if hasattr(obj, "__dict__"):
             return {
-                k: _stable_json(v, visited)
+                k: _stable_json(v, visited, max_depth - 1)
                 for k, v in sorted(vars(obj).items(), key=lambda kv: kv[0])
             }
         return f"{obj.__module__}.{obj.__class__.__qualname__}"
