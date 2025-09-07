@@ -13,6 +13,7 @@ import hashlib
 from statistics import fmean, StatisticsError
 import threading
 import json
+import sys
 from functools import lru_cache
 from cachetools import LRUCache
 import networkx as nx
@@ -165,7 +166,19 @@ def get_graph(obj: Any) -> Any:
 def _stable_json(
     obj: Any, visited: set[int] | None = None, max_depth: int = 10
 ) -> str:
-    """Return a JSON string with deterministic ordering."""
+    """Return a JSON string with deterministic ordering.
+
+    Raises
+    ------
+    ValueError
+        If ``max_depth`` is greater than or equal to Python's recursion limit.
+    """
+
+    recursion_limit = sys.getrecursionlimit()
+    if max_depth >= recursion_limit:
+        raise ValueError(
+            f"max_depth={max_depth} exceeds recursion limit ({recursion_limit})"
+        )
 
     def _to_basic(o: Any, depth: int) -> Any:
         if isinstance(o, (str, int, float, bool)) or o is None:

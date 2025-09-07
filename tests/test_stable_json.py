@@ -1,4 +1,7 @@
 import json
+import sys
+
+import pytest
 
 from tnfr.helpers import _stable_json
 
@@ -26,3 +29,13 @@ def test_stable_json_respects_max_depth_dict():
 def test_stable_json_respects_max_depth_list():
     obj = [1, [2, [3]]]
     assert json.loads(_stable_json(obj, max_depth=1)) == [1, "<max-depth>"]
+
+
+def test_stable_json_recursion_limit_guard():
+    limit = sys.getrecursionlimit()
+    obj = current = {}
+    for _ in range(limit - 1):
+        current["a"] = {}
+        current = current["a"]
+    with pytest.raises(ValueError):
+        _stable_json(obj, max_depth=limit)
