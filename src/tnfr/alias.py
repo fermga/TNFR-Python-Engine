@@ -92,27 +92,20 @@ def _alias_resolve(
             return conv(d[key])
         except (ValueError, TypeError) as exc:
             errors.append((key, exc))
-            if not strict:
-                lvl = log_level if log_level is not None else logging.DEBUG
-                logger.log(
-                    lvl, "Could not convert value for %r: %s", key, exc
-                )
     if default is not None:
         try:
             return conv(default)
         except (ValueError, TypeError) as exc:
             errors.append(("default", exc))
-            if not strict:
-                lvl = logging.WARNING if log_level is None else log_level
-                logger.log(
-                    lvl, "Could not convert value for 'default': %s", exc
-                )
 
     if errors:
         if strict:
             err_msg = "; ".join(f"{k!r}: {e}" for k, e in errors)
             raise ValueError(f"Could not convert values for {err_msg}")
-        lvl = log_level if log_level is not None else logging.DEBUG
+        if log_level is not None:
+            lvl = log_level
+        else:
+            lvl = logging.WARNING if any(k == "default" for k, _ in errors) else logging.DEBUG
         summary = "; ".join(f"{k!r}: {e}" for k, e in errors)
         logger.log(lvl, "Could not convert values for %s", summary)
 
