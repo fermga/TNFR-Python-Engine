@@ -1,0 +1,37 @@
+import networkx as nx
+
+from tnfr.constants import ALIAS_THETA, ALIAS_VF, ALIAS_DNFR
+from tnfr.metrics_utils import compute_Si
+from tnfr.alias import set_attr
+
+
+def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch):
+    calls = 0
+    sentinel = object()
+
+    def fake_get_numpy():
+        nonlocal calls
+        calls += 1
+        return sentinel
+
+    captured = []
+
+    def fake_compute_Si_node(n, nd, *, alpha, beta, gamma, vfmax, dnfrmax,
+                             cos_th, sin_th, thetas, neighbors, inplace, np=None):
+        captured.append(np)
+        return 0.0
+
+    monkeypatch.setattr("tnfr.metrics_utils.get_numpy", fake_get_numpy)
+    monkeypatch.setattr("tnfr.metrics_utils.compute_Si_node", fake_compute_Si_node)
+
+    G = nx.Graph()
+    G.add_edge(1, 2)
+    for n in G.nodes:
+        set_attr(G.nodes[n], ALIAS_THETA, 0.0)
+        set_attr(G.nodes[n], ALIAS_VF, 0.0)
+        set_attr(G.nodes[n], ALIAS_DNFR, 0.0)
+
+    compute_Si(G, inplace=False)
+
+    assert calls == 1
+    assert captured == [sentinel] * G.number_of_nodes()
