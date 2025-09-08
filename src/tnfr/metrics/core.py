@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 from statistics import mean, median
-from typing import Any, Callable, Dict
+
+from typing import Any
+
 import heapq
 import math
 

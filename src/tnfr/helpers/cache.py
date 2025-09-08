@@ -4,18 +4,10 @@ import hashlib
 import json
 import threading
 import warnings
-from collections.abc import Mapping
+from collections.abc import Callable, Iterable, Mapping
 from functools import lru_cache
 from types import MappingProxyType
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    Optional,
-    Tuple,
-    TypeVar,
-)
+from typing import Any, TypeVar
 
 from cachetools import LRUCache
 import networkx as nx
@@ -59,7 +51,7 @@ def get_graph(obj: Any) -> Any:
     return obj.graph if hasattr(obj, "graph") else obj
 
 
-def get_graph_mapping(G: Any, key: str, warn_msg: str) -> Dict[str, Any] | None:
+def get_graph_mapping(G: Any, key: str, warn_msg: str) -> dict[str, Any] | None:
     """Return a shallow copy of ``G.graph[key]`` if it is a mapping.
 
     ``warn_msg`` is emitted via :func:`warnings.warn` when the stored value is
@@ -218,7 +210,7 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     return nodes
 
 
-def _ensure_node_map(G, *, key: str, sort: bool = False) -> Dict[Any, int]:
+def _ensure_node_map(G, *, key: str, sort: bool = False) -> dict[Any, int]:
     """Return cached node→index mapping for ``G`` under ``key``.
 
     ``sort`` controls whether nodes are ordered by their string representation
@@ -238,12 +230,12 @@ def _ensure_node_map(G, *, key: str, sort: bool = False) -> Dict[Any, int]:
     return mapping
 
 
-def ensure_node_index_map(G) -> Dict[Any, int]:
+def ensure_node_index_map(G) -> dict[Any, int]:
     """Return cached node→index mapping for ``G``."""
     return _ensure_node_map(G, key="_node_index_map", sort=False)
 
 
-def ensure_node_offset_map(G) -> Dict[Any, int]:
+def ensure_node_offset_map(G) -> dict[Any, int]:
     """Return cached node→offset mapping for ``G``."""
     sort = bool(G.graph.get("SORT_NODES", False))
     return _ensure_node_map(G, key="_node_offset_map", sort=sort)

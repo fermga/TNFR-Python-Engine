@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, DefaultDict, TYPE_CHECKING
+
+from typing import Any, TYPE_CHECKING
 from enum import Enum
-from collections import deque, defaultdict
-from collections.abc import Mapping, Sequence
+from collections import defaultdict, deque
+from collections.abc import Callable, Mapping, Sequence
+
 import traceback
 from .logging_utils import get_logger
 
@@ -32,10 +34,8 @@ _CALLBACK_EVENTS: set[str] = {e.value for e in CallbackEvent}
 
 _CALLBACK_ERROR_LIMIT = 100  # keep only this many recent callback errors
 
-
-Callback = Callable[["nx.Graph", Dict[str, Any]], None]
-CallbackRegistry = DefaultDict[str, list["CallbackSpec"]]
-
+Callback = Callable[["nx.Graph", dict[str, Any]], None]
+CallbackRegistry = dict[str, list["CallbackSpec"]]
 
 def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
     """Ensure the callback structure in ``G.graph``."""

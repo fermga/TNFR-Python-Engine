@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Dict, Any, Iterable, Protocol
+from typing import Any, Protocol
 from collections import deque, Counter
 from itertools import islice
 import heapq
-
-from collections.abc import Iterable as abcIterable
+from collections.abc import Iterable
 
 from .constants import get_param
 
@@ -31,7 +30,7 @@ def _validate_window(window: int) -> int:
     return window_int
 
 
-def _ensure_glyph_history(nd: Dict[str, Any], window: int) -> deque:
+def _ensure_glyph_history(nd: dict[str, Any], window: int) -> deque:
     """Return ``nd['glyph_history']`` deque after validating ``window``.
 
     Non-iterable existing values are discarded.
@@ -40,13 +39,13 @@ def _ensure_glyph_history(nd: Dict[str, Any], window: int) -> deque:
     window_int = _validate_window(window)
     hist = nd.get("glyph_history")
     if not isinstance(hist, deque) or hist.maxlen != window_int:
-        seq = hist if isinstance(hist, abcIterable) else []
+        seq = hist if isinstance(hist, Iterable) else []
         hist = deque(seq, maxlen=window_int)
         nd["glyph_history"] = hist
     return hist
 
 
-def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
+def push_glyph(nd: dict[str, Any], glyph: str, window: int) -> None:
     """Add ``glyph`` to node history with maximum size ``window``.
 
     ``window`` is validated and the underlying deque is ensured by
@@ -57,7 +56,7 @@ def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
     hist.append(str(glyph))
 
 
-def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
+def recent_glyph(nd: dict[str, Any], glyph: str, window: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions.
 
     ``window`` is validated and the history deque ensured internally. A
@@ -95,7 +94,7 @@ class HistoryDict(dict):
 
     def __init__(
         self,
-        data: Dict[str, Any] | None = None,
+        data: dict[str, Any] | None = None,
         *,
         maxlen: int = 0,
         compact_every: int = 100,
@@ -209,7 +208,7 @@ class HistoryDict(dict):
                 break
 
 
-def ensure_history(G) -> Dict[str, Any]:
+def ensure_history(G) -> dict[str, Any]:
     """Ensure ``G.graph['history']`` exists and return it.
 
     ``HISTORY_MAXLEN`` must be non-negative and ``HISTORY_COMPACT_EVERY``
@@ -258,14 +257,14 @@ class SupportsGetIncrement(Protocol):
 class _IncrementProxy:
     """Adapter to provide :meth:`get_increment` for plain dictionaries."""
 
-    def __init__(self, data: Dict[str, Any]) -> None:
+    def __init__(self, data: dict[str, Any]) -> None:
         self._data = data
 
     def get_increment(self, key: str, default: Any | None = None) -> Any:
         return self._data.setdefault(key, default)
 
 
-def _ensure_increment(hist: Dict[str, Any] | SupportsGetIncrement) -> SupportsGetIncrement:
+def _ensure_increment(hist: dict[str, Any] | SupportsGetIncrement) -> SupportsGetIncrement:
     return (
         hist
         if callable(getattr(hist, "get_increment", None))
@@ -273,12 +272,12 @@ def _ensure_increment(hist: Dict[str, Any] | SupportsGetIncrement) -> SupportsGe
     )  # type: ignore[return-value]
 
 
-def append_metric(hist: Dict[str, Any] | SupportsGetIncrement, key: str, value: Any) -> None:
+def append_metric(hist: dict[str, Any] | SupportsGetIncrement, key: str, value: Any) -> None:
     """Append ``value`` to ``hist[key]`` list, creating it if missing."""
     _ensure_increment(hist).get_increment(key, []).append(value)
 
 
-def last_glyph(nd: Dict[str, Any]) -> str | None:
+def last_glyph(nd: dict[str, Any]) -> str | None:
     """Return the most recent glyph for node or ``None``."""
     hist = nd.get("glyph_history")
     return hist[-1] if hist else None
