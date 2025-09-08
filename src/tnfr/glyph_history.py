@@ -20,18 +20,19 @@ __all__ = [
 ]
 
 
-def _ensure_glyph_history(nd: Dict[str, Any], window: int) -> deque:
-    """Return ``nd['glyph_history']`` deque after validating ``window``.
-
-    The ``window`` value is coerced to ``int`` and must be non-negative.
-    ``nd`` is updated in-place to contain a ``deque`` with ``maxlen`` equal to
-    ``window``.
-    """
+def _validate_window(window: int) -> int:
+    """Validate and coerce ``window`` to a non-negative ``int``."""
 
     window_int = int(window)
     if window_int < 0:
         raise ValueError("'window' must be non-negative")
+    return window_int
 
+
+def _ensure_glyph_history(nd: Dict[str, Any], window: int) -> deque:
+    """Return ``nd['glyph_history']`` deque after validating ``window``."""
+
+    window_int = _validate_window(window)
     hist = nd.get("glyph_history")
     if not isinstance(hist, deque) or hist.maxlen != window_int:
         hist = deque(hist or [], maxlen=window_int)
@@ -57,9 +58,7 @@ def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
     ``window`` of zero returns ``False`` without modifying ``nd``. Negative
     values raise :class:`ValueError`.
     """
-    window_int = int(window)
-    if window_int < 0:
-        raise ValueError("'window' must be non-negative")
+    window_int = _validate_window(window)
     if window_int == 0:
         return False
     hist = _ensure_glyph_history(nd, window_int)
@@ -122,11 +121,14 @@ class HistoryDict(dict):
         if len(self._heap) <= target:
             return
         new_heap: list[tuple[int, str]] = []
-        while self._heap and len(new_heap) < target:
+        while self._heap:
             cnt, key = heapq.heappop(self._heap)
-            if self._counts.get(key) == cnt:
-                new_heap.append((cnt, key))
-        heapq.heapify(new_heap)
+            if self._counts.get(key) != cnt:
+                continue
+            if len(new_heap) < target:
+                heapq.heappush(new_heap, (cnt, key))
+            else:
+                heapq.heappushpop(new_heap, (cnt, key))
         self._heap = new_heap
 
     def _pop_heap_key(self) -> str:
@@ -282,11 +284,12 @@ def count_glyphs(
     :class:`ValueError`.
     """
 
-    window_int = int(window) if window is not None else None
-    if window_int is not None:
-        _ensure_glyph_history({}, window_int)
+    if window is not None:
+        window_int = _validate_window(window)
         if window_int == 0:
             return Counter()
+    else:
+        window_int = None
 
     counts: Counter[str] = Counter()
     for _, nd in G.nodes(data=True):

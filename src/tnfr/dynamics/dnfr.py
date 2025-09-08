@@ -349,8 +349,19 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
         return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
 
 
-def _compute_dnfr(G, data, *, use_numpy: bool) -> None:
-    """Helper for ΔNFR computation using neighbour sums."""
+def _compute_dnfr(G, data, *, use_numpy: bool = False) -> None:
+    """Compute ΔNFR using neighbour sums.
+
+    Parameters
+    ----------
+    G : nx.Graph
+        Graph on which the computation is performed.
+    data : dict
+        Precomputed ΔNFR data as returned by :func:`_prepare_dnfr_data`.
+    use_numpy : bool, optional
+        When ``True`` the vectorised ``numpy`` strategy is used. Defaults to
+        ``False`` to fall back to the loop-based implementation.
+    """
     res = _build_neighbor_sums_common(G, data, use_numpy=use_numpy)
     if res is None:
         return
@@ -366,16 +377,6 @@ def _compute_dnfr(G, data, *, use_numpy: bool) -> None:
         deg_sum=deg_sum,
         degs=degs,
     )
-
-
-def _compute_dnfr_numpy(G, data) -> None:
-    """Vectorised strategy using ``numpy``."""
-    _compute_dnfr(G, data, use_numpy=True)
-
-
-def _compute_dnfr_loops(G, data) -> None:
-    """Loop-based strategy."""
-    _compute_dnfr(G, data, use_numpy=False)
 
 
 def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
@@ -396,10 +397,8 @@ def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
         weights=data["weights"],
         hook_name="default_compute_delta_nfr",
     )
-    if get_numpy() is not None and G.graph.get("vectorized_dnfr"):
-        _compute_dnfr_numpy(G, data)
-    else:
-        _compute_dnfr_loops(G, data)
+    use_numpy = get_numpy() is not None and G.graph.get("vectorized_dnfr")
+    _compute_dnfr(G, data, use_numpy=use_numpy)
 
 
 def set_delta_nfr_hook(

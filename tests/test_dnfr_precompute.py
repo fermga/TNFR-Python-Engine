@@ -5,8 +5,7 @@ import networkx as nx
 
 from tnfr.dynamics import (
     _prepare_dnfr_data,
-    _compute_dnfr_numpy,
-    _compute_dnfr_loops,
+    _compute_dnfr,
 )
 from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
 from tnfr.alias import get_attr
@@ -31,11 +30,11 @@ def test_strategies_share_precomputed_data():
     pytest.importorskip("numpy")
     G = _setup_graph()
     data = _prepare_dnfr_data(G)
-    _compute_dnfr_loops(G, data)
+    _compute_dnfr(G, data, use_numpy=False)
     dnfr_loop = [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in G.nodes]
     expected = [0.1, -0.05, 0.0, -0.05, 0.1]
     assert dnfr_loop == pytest.approx(expected)
-    _compute_dnfr_numpy(G, data)
+    _compute_dnfr(G, data, use_numpy=True)
     dnfr_vec = [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in G.nodes]
     assert dnfr_vec == pytest.approx(expected)
     assert dnfr_loop == pytest.approx(dnfr_vec)
