@@ -79,6 +79,7 @@ def set_cache_maxsize(size: int) -> None:
     """Update RNG cache maximum size.
 
     ``size`` must be a non-negative integer; ``0`` disables caching.
+    If caching is disabled, ``get_rng.cache_clear`` has no effect.
     """
 
     global _CACHE_MAXSIZE, _RNG_CACHE
@@ -90,8 +91,10 @@ def set_cache_maxsize(size: int) -> None:
         _RNG_CACHE.clear()
         if new_size > 0:
             _RNG_CACHE = LRUCache(maxsize=new_size)
+            get_rng.cache_clear = _cache_clear  # type: ignore[attr-defined]
         else:
             _RNG_CACHE = {}
+            get_rng.cache_clear = lambda: None  # type: ignore[attr-defined]
 
 
 __all__ = ["get_rng", "make_rng", "set_cache_maxsize", "base_seed", "cache_enabled"]
