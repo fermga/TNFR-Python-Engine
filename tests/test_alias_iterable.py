@@ -1,39 +1,43 @@
 """Pruebas de helpers de alias con iterables genéricos."""
 
 import pytest
-from tnfr.alias import alias_get, alias_set
+from tnfr.alias import AliasAccessor
 
 
-def test_alias_get_accepts_hashable_iterable():
+def test_get_attr_accepts_hashable_iterable():
     d = {"b": "1"}
-    assert alias_get(d, ("a", "b"), int) == 1
+    acc = AliasAccessor(int)
+    assert acc.get(d, ("a", "b")) == 1
 
 
-def test_alias_set_accepts_hashable_iterable():
+def test_set_attr_accepts_hashable_iterable():
     d = {}
-    alias_set(d, ("x", "y"), int, "5")
+    acc = AliasAccessor(int)
+    acc.set(d, ("x", "y"), "5")
     assert d["x"] == 5
 
 
-def test_alias_rejects_str():
+def test_rejects_str():
     with pytest.raises(TypeError):
-        alias_get({}, "x", int)
+        AliasAccessor(int).get({}, "x")
     with pytest.raises(TypeError):
-        alias_set({}, "x", int, 1)
+        AliasAccessor(int).set({}, "x", 1)
 
 
-def test_alias_accepts_list_iterable():
+def test_accepts_list_iterable():
     d = {"b": "1"}
-    assert alias_get(d, ["a", "b"], int) == 1
+    acc = AliasAccessor(int)
+    assert acc.get(d, ["a", "b"]) == 1
     d2 = {}
-    alias_set(d2, ["x", "y"], int, "5")
+    acc.set(d2, ["x", "y"], "5")
     assert d2["x"] == 5
 
 
-def test_alias_accepts_generator_iterable():
+def test_accepts_generator_iterable():
     d = {"b": "1"}
     aliases = (a for a in ("a", "b"))
-    assert alias_get(d, aliases, int) == 1
+    acc = AliasAccessor(int)
+    assert acc.get(d, aliases) == 1
     d2 = {}
-    alias_set(d2, (a for a in ("x", "y")), int, "5")
+    acc.set(d2, (a for a in ("x", "y")), "5")
     assert d2["x"] == 5

@@ -1,11 +1,9 @@
 """Attribute helpers supporting alias keys.
 
 ``AliasAccessor`` provides the main implementation for dealing with
-alias-based attribute access.  The module-level :func:`alias_get` and
-``alias_set`` functions are thin wrappers over a shared
-``AliasAccessor`` instance kept for backward compatibility.  These
-wrappers are deprecated in favour of :func:`get_attr` and
-:func:`set_attr`.
+alias-based attribute access. Legacy wrappers ``alias_get`` and
+``alias_set`` have been removed; use :func:`get_attr` and
+:func:`set_attr` instead.
 """
 
 from __future__ import annotations
@@ -24,7 +22,6 @@ from typing import (
 )
 import logging
 from functools import lru_cache
-import warnings
 from .logging_utils import get_logger
 
 from .constants import ALIAS_VF, ALIAS_DNFR
@@ -37,8 +34,6 @@ logger = get_logger(__name__)
 T = TypeVar("T")
 
 __all__ = [
-    "alias_get",
-    "alias_set",
     "get_attr",
     "set_attr",
     "get_attr_str",
@@ -124,9 +119,8 @@ class AliasAccessor(Generic[T]):
     """Helper providing ``get`` and ``set`` for alias-based attributes.
 
     This class implements all logic for resolving and assigning values
-    using alias keys.  Function helpers :func:`alias_get` and
-    :func:`alias_set` simply delegate to a module-level instance of this
-    class.
+    using alias keys. Helper functions :func:`get_attr` and
+    :func:`set_attr` delegate to a module-level instance of this class.
     """
 
     def __init__(
@@ -179,95 +173,13 @@ class AliasAccessor(Generic[T]):
         return val
 
 
-# Shared accessor used by wrapper functions
-_alias_accessor: AliasAccessor[Any] = AliasAccessor()
-
-
-@overload
-def alias_get(
-    d: Dict[str, Any],
-    aliases: Iterable[str],
-    conv: Callable[[Any], T],
-    *,
-    default: T,
-    strict: bool = False,
-    log_level: int | None = None,
-) -> T: ...
-
-
-@overload
-def alias_get(
-    d: Dict[str, Any],
-    aliases: Iterable[str],
-    conv: Callable[[Any], T],
-    *,
-    default: None = ...,
-    strict: bool = False,
-    log_level: int | None = None,
-) -> Optional[T]: ...
-
-
-def alias_get(
-    d: Dict[str, Any],
-    aliases: Iterable[str],
-    conv: Callable[[Any], T],
-    *,
-    default: Optional[Any] = None,
-    strict: bool = False,
-    log_level: int | None = None,
-) -> Optional[T]:
-    """Return the value for the first existing key in ``aliases``.
-
-    .. deprecated:: 4.5
-       Use :func:`get_attr` instead.
-
-    This is a convenience wrapper over a shared :class:`AliasAccessor`
-    instance. ``aliases`` can be any iterable of candidate keys.
-    """
-    warnings.warn(
-        "alias_get is deprecated; use get_attr instead",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _alias_accessor.get(
-        d,
-        aliases,
-        default=default,
-        strict=strict,
-        log_level=log_level,
-        conv=conv,
-    )
-
-
-def alias_set(
-    d: Dict[str, Any],
-    aliases: Iterable[str],
-    conv: Callable[[Any], T],
-    value: Any,
-) -> T:
-    """Assign ``value`` converted to the first available key in ``aliases``.
-
-    .. deprecated:: 4.5
-       Use :func:`set_attr` instead.
-
-    This is a convenience wrapper over a shared :class:`AliasAccessor`
-    instance. ``aliases`` can be any iterable of candidate keys.
-    """
-    warnings.warn(
-        "alias_set is deprecated; use set_attr instead",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _alias_accessor.set(d, aliases, value, conv=conv)
-
-
 class _Getter(Protocol[T]):
     @overload
     def __call__(
         self,
         d: Dict[str, Any],
         aliases: Iterable[str],
-        default: T = ...,  # noqa: D401 - documented in alias_get
+        default: T = ...,  # noqa: D401 - documented in get_attr
         *,
         strict: bool = False,
         log_level: int | None = None,
@@ -279,7 +191,7 @@ class _Getter(Protocol[T]):
         self,
         d: Dict[str, Any],
         aliases: Iterable[str],
-        default: None = ...,  # noqa: D401 - documented in alias_get
+        default: None = ...,  # noqa: D401 - documented in get_attr
         *,
         strict: bool = False,
         log_level: int | None = None,

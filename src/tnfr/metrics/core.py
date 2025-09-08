@@ -74,25 +74,29 @@ def _update_coherence(G, hist) -> None:
     """
 
     C, dnfr_mean, depi_mean = compute_coherence(G, return_means=True)
-    append_metric(hist, "C_steps", C)
-    append_metric(hist, "dnfr_mean", dnfr_mean)
-    append_metric(hist, "depi_mean", depi_mean)
+    _record_metric(lambda: C, hist, "C_steps")
+    _record_metric(lambda: dnfr_mean, hist, "dnfr_mean")
+    _record_metric(lambda: depi_mean, hist, "depi_mean")
 
     wbar_w = int(get_param(G, "WBAR_WINDOW"))
     cs = hist["C_steps"]
     if cs:
         w = min(len(cs), max(1, wbar_w))
         wbar = sum(cs[-w:]) / w
-        append_metric(hist, "W_bar", wbar)
+        _record_metric(lambda: wbar, hist, "W_bar")
+
+
+def _record_metric(fn, hist, key, *args, **kwargs) -> None:
+    """Compute a metric using ``fn`` and append it to ``hist`` under ``key``."""
+
+    append_metric(hist, key, fn(*args, **kwargs))
 
 
 def _update_phase_sync(G, hist) -> None:
     """Record phase synchrony and Kuramoto order."""
 
-    ps = phase_sync(G)
-    append_metric(hist, "phase_sync", ps)
-    R = kuramoto_order(G)
-    append_metric(hist, "kuramoto_R", R)
+    _record_metric(phase_sync, hist, "phase_sync", G)
+    _record_metric(kuramoto_order, hist, "kuramoto_R", G)
 
 
 def _update_sigma(G, hist) -> None:
@@ -100,19 +104,15 @@ def _update_sigma(G, hist) -> None:
 
     win = int(get_param(G, "GLYPH_LOAD_WINDOW"))
     gl = glyph_load(G, window=win)
-    append_metric(
-        hist,
-        "glyph_load_estab",
-        gl.get("_estabilizadores", 0.0),
-    )
-    append_metric(hist, "glyph_load_disr", gl.get("_disruptivos", 0.0))
+    _record_metric(lambda: gl.get("_estabilizadores", 0.0), hist, "glyph_load_estab")
+    _record_metric(lambda: gl.get("_disruptivos", 0.0), hist, "glyph_load_disr")
 
     dist = {k: v for k, v in gl.items() if not k.startswith("_")}
     sig = sigma_vector(dist)
-    append_metric(hist, "sense_sigma_x", sig.get("x", 0.0))
-    append_metric(hist, "sense_sigma_y", sig.get("y", 0.0))
-    append_metric(hist, "sense_sigma_mag", sig.get("mag", 0.0))
-    append_metric(hist, "sense_sigma_angle", sig.get("angle", 0.0))
+    _record_metric(lambda: sig.get("x", 0.0), hist, "sense_sigma_x")
+    _record_metric(lambda: sig.get("y", 0.0), hist, "sense_sigma_y")
+    _record_metric(lambda: sig.get("mag", 0.0), hist, "sense_sigma_mag")
+    _record_metric(lambda: sig.get("angle", 0.0), hist, "sense_sigma_angle")
 
 
 # -------------

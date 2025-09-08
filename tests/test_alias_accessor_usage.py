@@ -2,15 +2,15 @@
 
 import pytest
 
-from tnfr.alias import AliasAccessor, alias_get, alias_set
+from tnfr.alias import AliasAccessor
 
 
 def _func_get(d, aliases, *, default=None):
-    return alias_get(d, aliases, int, default=default)
+    return AliasAccessor(int).get(d, aliases, default=default)
 
 
 def _func_set(d, aliases, value):
-    return alias_set(d, aliases, int, value)
+    return AliasAccessor(int).set(d, aliases, value)
 
 
 _accessor = AliasAccessor(int)
