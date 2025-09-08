@@ -29,6 +29,7 @@ from .helpers import (
     list_mean,
     angle_diff,
     neighbor_phase_mean,
+    neighbor_mean,
     increment_edge_version,
     ensure_node_offset_map,
 )
@@ -143,18 +144,33 @@ def get_glyph_factors(node: NodoProtocol) -> Dict[str, Any]:
 # -------------------------
 
 
+def _any_neighbor_has(node: NodoProtocol, aliases: tuple[str, ...]) -> bool:
+    """Return ``True`` if any neighbour defines one of ``aliases``."""
+    if hasattr(node, "G"):
+        G = node.G
+        return any(
+            any(a in G.nodes[v] for a in aliases) for v in G.neighbors(node.n)
+        )
+    return any(
+        any(hasattr(neigh, a) for a in aliases) for neigh in node.neighbors()
+    )
+
+
 def _mix_epi_with_neighbors(
     node: NodoProtocol, mix: float, default_glyph: Glyph | str
 ) -> tuple[float, str]:
     """Mix ``EPI`` of ``node`` with the mean of its neighbours.
 
     ``mix`` controls the neighbour influence fraction and ``default_glyph``
-    is assigned when there are no neighbours or no dominant one.
+    is assigned when there are no neighbours or no dominant one.  When no
+    neighbour defines an ``ALIAS_EPI``, the costly mean computation is
+    skipped and ``node.EPI`` is used directly.
 
     Returns
     -------
     epi_bar: float
-        Mean ``EPI`` of the neighbours (``node.EPI`` if there are none).
+        Mean ``EPI`` of the neighbours (``node.EPI`` if there are none or
+        they lack ``ALIAS_EPI``).
     dominant: str
         ``epi_kind`` with the highest absolute ``EPI`` between ``node`` and
         its neighbours. Falls back to ``default_glyph`` when undefined.
@@ -167,10 +183,20 @@ def _mix_epi_with_neighbors(
     )
     epi = node.EPI
     neigh = list(node.neighbors())
+
+    if not neigh:
+        node.epi_kind = default_kind
+        return epi, default_kind
+
     if hasattr(node, "G"):
+        if not _any_neighbor_has(node, ALIAS_EPI):
+            node.epi_kind = default_kind
+            return epi, default_kind
+        epi_bar = neighbor_mean(node.G, node.n, ALIAS_EPI, default=epi)
         NodoNX = import_nodonx()
         neigh = [v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v) for v in neigh]
-    epi_bar = list_mean((v.EPI for v in neigh), default=epi)
+    else:
+        epi_bar = list_mean((v.EPI for v in neigh), default=epi)
 
     count = 0
     best_kind: Optional[str] = None
