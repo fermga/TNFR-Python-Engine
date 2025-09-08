@@ -210,14 +210,13 @@ def _compute_neighbor_means(
     count,
     deg_sum=None,
     degs=None,
+    np=None,
 ):
     """Return neighbour mean arrays for ΔNFR."""
     w_topo = data["w_topo"]
     theta = data["theta"]
     epi = data["epi"]
     vf = data["vf"]
-    np = get_numpy()
-
     if np is not None and isinstance(count, np.ndarray):
         mask = count > 0
         th_bar = np.array(theta, dtype=float)
@@ -273,7 +272,7 @@ def _compute_dnfr_common(
     degs=None,
 ):
     """Compute neighbour means and apply ΔNFR gradients."""
-
+    np = get_numpy()
     th_bar, epi_bar, vf_bar, deg_bar = _compute_neighbor_means(
         G,
         data,
@@ -284,6 +283,7 @@ def _compute_dnfr_common(
         count=count,
         deg_sum=deg_sum,
         degs=degs,
+        np=np,
     )
     _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
 

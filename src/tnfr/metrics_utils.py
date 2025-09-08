@@ -74,14 +74,14 @@ def compute_coherence(
     """
     count = G.number_of_nodes()
     if count:
-        dnfr_vals = []
-        depi_vals = []
-        for _, nd in G.nodes(data=True):
-            # single-pass accumulation of dnfr and depi values
-            dnfr_vals.append(abs(get_attr(nd, ALIAS_DNFR, 0.0)))
-            depi_vals.append(abs(get_attr(nd, ALIAS_dEPI, 0.0)))
-        dnfr_mean = math.fsum(dnfr_vals) / count
-        depi_mean = math.fsum(depi_vals) / count
+        dnfr_sum = math.fsum(
+            abs(get_attr(nd, ALIAS_DNFR, 0.0)) for _, nd in G.nodes(data=True)
+        )
+        depi_sum = math.fsum(
+            abs(get_attr(nd, ALIAS_dEPI, 0.0)) for _, nd in G.nodes(data=True)
+        )
+        dnfr_mean = dnfr_sum / count
+        depi_mean = depi_sum / count
     else:
         dnfr_mean = depi_mean = 0.0
     coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)

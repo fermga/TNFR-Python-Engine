@@ -2,6 +2,7 @@
 
 import networkx as nx
 from collections import deque, Counter
+import pytest
 
 from tnfr.glyph_history import count_glyphs
 
@@ -24,4 +25,5 @@ def test_count_glyphs_non_positive_window():
     G.add_node(1, glyph_history=deque(["C"]))
 
     assert count_glyphs(G, window=0) == Counter()
-    assert count_glyphs(G, window=-1) == Counter()
+    with pytest.raises(ValueError):
+        count_glyphs(G, window=-1)

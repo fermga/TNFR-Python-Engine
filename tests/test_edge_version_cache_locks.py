@@ -1,0 +1,11 @@
+import networkx as nx
+
+from tnfr.helpers import edge_version_cache
+
+
+def test_edge_version_cache_prunes_locks():
+    G = nx.Graph()
+    for i in range(5):
+        edge_version_cache(G, str(i), lambda i=i: i, max_entries=2)
+    locks = G.graph["_edge_version_cache_locks"]
+    assert len(locks) <= 2

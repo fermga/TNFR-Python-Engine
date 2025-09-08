@@ -18,6 +18,7 @@ from functools import lru_cache
 from cachetools import LRUCache
 import warnings
 from collections.abc import Mapping
+from types import MappingProxyType
 import networkx as nx
 
 from .import_utils import get_numpy, import_nodonx
@@ -116,10 +117,10 @@ def neighbor_mean(G, n, aliases: tuple[str, ...], default: float = 0.0) -> float
 
 
 def _neighbor_phase_mean(node, trig) -> float:
-    cos_th, sin_th = trig.cos, trig.sin
-    it = ((cos_th.get(v), sin_th.get(v)) for v in node.neighbors())
+    """Internal helper delegating to :func:`neighbor_phase_mean_list`."""
     fallback = trig.theta.get(node.n, 0.0)
-    return _phase_mean_from_iter(it, fallback)
+    neigh = node.G[node.n]
+    return neighbor_phase_mean_list(neigh, trig.cos, trig.sin, np=None, fallback=fallback)
 
 
 def _phase_mean_from_iter(
@@ -217,7 +218,7 @@ def get_graph_mapping(G: Any, key: str, warn_msg: str) -> Dict[str, Any] | None:
     if not isinstance(data, Mapping):
         warnings.warn(warn_msg, UserWarning, stacklevel=2)
         return None
-    return dict(data)
+    return MappingProxyType(data)
 
 
 class _Encoder(json.JSONEncoder):
@@ -394,6 +395,38 @@ def ensure_node_offset_map(G) -> Dict[Any, int]:
     return _ensure_node_map(G, key="_node_offset_map", sort=sort)
 
 
+def _get_edge_cache(graph: Any, max_entries: int | None, *, create: bool = True):
+    """Return edge cache and lock mapping for ``graph``.
+
+    When ``create`` is ``True`` missing structures are initialized according
+    to ``max_entries``. Returns a tuple ``(cache, locks, use_lru)`` where
+    ``use_lru`` indicates whether an ``LRUCache`` is employed.
+    """
+
+    use_lru = bool(max_entries)
+    cache = graph.get("_edge_version_cache")
+    if create:
+        if (
+            cache is None
+            or (
+                use_lru
+                and (
+                    not isinstance(cache, LRUCache)
+                    or cache.maxsize != max_entries
+                )
+            )
+            or (not use_lru and isinstance(cache, LRUCache))
+        ):
+            cache = LRUCache(max_entries) if use_lru else {}
+            graph["_edge_version_cache"] = cache
+    locks = graph.get("_edge_version_cache_locks")
+    if create:
+        if locks is None or not isinstance(locks, dict):
+            locks = {}
+            graph["_edge_version_cache_locks"] = locks
+    return cache, locks, use_lru
+
+
 def edge_version_cache(
     G: Any, key: str, builder: Callable[[], T], *, max_entries: int | None = 128
 ) -> T:
@@ -422,37 +455,14 @@ def edge_version_cache(
         return builder()
 
     graph = get_graph(G)
-    use_lru = bool(max_entries)
-
     with _EDGE_CACHE_LOCK:
-        cache = graph.get("_edge_version_cache")
-        if (
-            cache is None
-            or (
-                use_lru
-                and (
-                    not isinstance(cache, LRUCache)
-                    or cache.maxsize != max_entries
-                )
-            )
-            or (not use_lru and isinstance(cache, LRUCache))
-        ):
-            cache = LRUCache(max_entries) if use_lru else {}
-            graph["_edge_version_cache"] = cache
-
-        locks = graph.get("_edge_version_cache_locks")
-        if locks is None or not isinstance(locks, dict):
-            locks = {}
-            graph["_edge_version_cache_locks"] = locks
-
+        cache, locks, use_lru = _get_edge_cache(graph, max_entries)
         edge_version = int(graph.get("_edge_version", 0))
         entry = cache.get(key)
         if entry is not None and entry[0] == edge_version:
             return entry[1]
 
         lock = locks.setdefault(key, threading.RLock())
-        # Double locking: _EDGE_CACHE_LOCK guards cache structures while each
-        # per-key lock prevents duplicate work for a given key.
 
     with lock:
         with _EDGE_CACHE_LOCK:
@@ -463,15 +473,19 @@ def edge_version_cache(
         value = builder()
 
         with _EDGE_CACHE_LOCK:
+            prev_keys = set(cache.keys()) if use_lru else None
             cache[key] = (edge_version, value)
+            if use_lru and prev_keys is not None:
+                evicted = prev_keys - set(cache.keys())
+                for ev in evicted:
+                    locks.pop(ev, None)
             return value
 
 
 def invalidate_edge_version_cache(G: Any) -> None:
     """Clear cached entries associated with ``G``."""
     graph = get_graph(G)
-    cache = graph.get("_edge_version_cache")
-    locks = graph.get("_edge_version_cache_locks")
+    cache, locks, _ = _get_edge_cache(graph, None, create=False)
     if isinstance(cache, (dict, LRUCache)):
         cache.clear()
     if isinstance(locks, dict):
