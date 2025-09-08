@@ -6,8 +6,10 @@ import warnings
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Mapping
 from functools import lru_cache
+from itertools import islice
 from types import MappingProxyType
 from typing import Any, TypeVar
+import heapq
 
 from cachetools import LRUCache
 import networkx as nx
@@ -130,26 +132,42 @@ def node_set_checksum(
 ) -> str:
     """Return a BLAKE2b checksum of ``G``'s node set.
 
-    Nodes are serialised using :func:`_node_repr`. When ``presorted`` is
-    ``False`` the resulting representations are sorted to make the checksum
-    independent of node ordering. The digests of the ordered representations
-    are fed into a new :class:`hashlib.blake2b` instance. When ``store`` is
-    ``True`` the tuple of digests along with the final checksum is cached under
-    ``"_node_set_checksum_cache"`` to avoid recalculating it for unchanged
-    graphs.
+    Nodes are serialised using :func:`_node_repr`.  When ``presorted`` is
+    ``False`` the per-node digests are generated and sorted incrementally using
+    a small heap-based merge.  This updates the hash as digests become
+    available, avoiding materialising the full sorted list and keeping the
+    checksum independent of node ordering.  When ``store`` is ``True`` the
+    final checksum is cached under ``"_node_set_checksum_cache"`` to avoid
+    recomputation for unchanged graphs.
     """
     graph = get_graph(G)
     node_iterable = G.nodes() if nodes is None else nodes
-    if presorted:
-        representations = map(_node_repr, node_iterable)
-    else:
-        representations = sorted(_node_repr(n) for n in node_iterable)
+
     hasher = hashlib.blake2b(digest_size=16)
     token_hasher = hashlib.blake2b(digest_size=8)
-    for rep in representations:
-        digest = hashlib.blake2b(rep.encode("utf-8"), digest_size=16).digest()
-        hasher.update(digest)
-        token_hasher.update(digest)
+
+    if presorted:
+        for n in node_iterable:
+            digest = _hash_node(n)
+            hasher.update(digest)
+            token_hasher.update(digest)
+    else:
+        iterator = ((_node_repr(n), _hash_node(n)) for n in node_iterable)
+        pending = sorted(list(islice(iterator, 1024)))
+        while pending:
+            chunk = sorted(list(islice(iterator, 1024)))
+            if not chunk:
+                for _, digest in pending:
+                    hasher.update(digest)
+                    token_hasher.update(digest)
+                break
+            merged = heapq.merge(pending, chunk)
+            for _ in range(len(pending)):
+                _, digest = next(merged)
+                hasher.update(digest)
+                token_hasher.update(digest)
+            pending = list(merged)
+
     checksum = hasher.hexdigest()
     token = token_hasher.hexdigest()
     if store:
