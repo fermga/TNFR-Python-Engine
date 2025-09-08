@@ -5,6 +5,8 @@ from types import MappingProxyType
 from typing import Any
 
 from tnfr.constants import _is_immutable, _is_immutable_inner
+from tnfr.constants import _IMMUTABLE_CACHE
+import gc
 
 
 def test_is_immutable_nested_structures():
@@ -79,3 +81,21 @@ def test_is_immutable_detects_cycles():
     d: dict[str, Any] = {}
     d["self"] = d
     assert not _is_immutable(d)
+
+
+def test_is_immutable_cache_auto_cleanup():
+    class Dummy:
+        pass
+
+    obj = Dummy()
+    _is_immutable(obj)
+    obj_id = id(obj)
+
+    # ensure our object is present in cache
+    assert obj in _IMMUTABLE_CACHE
+
+    del obj
+    gc.collect()
+
+    # the weak cache should have removed the entry
+    assert obj_id not in {id(k) for k in _IMMUTABLE_CACHE.keys()}

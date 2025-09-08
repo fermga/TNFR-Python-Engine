@@ -98,9 +98,9 @@ def _is_immutable_inner(value: Any) -> bool:
     return False
 
 
-_IMMUTABLE_CACHE_SIZE = 1024
-# Mapping of object id to (weakref, result)
-_IMMUTABLE_CACHE: dict[int, tuple[weakref.ReferenceType[Any] | None, bool]] = {}
+# Cache of previous results keyed by object identity. Uses ``WeakKeyDictionary``
+# so entries vanish automatically when objects are garbage collected.
+_IMMUTABLE_CACHE: weakref.WeakKeyDictionary[Any, bool] = weakref.WeakKeyDictionary()
 _IMMUTABLE_CACHE_LOCK = threading.Lock()
 
 
@@ -113,34 +113,28 @@ def _is_immutable(value: Any) -> bool:
     for a given object ID.
     """
 
-    obj_id = id(value)
+    # Try to fetch from cache using object identity. Objects that cannot be
+    # weak-referenced will raise ``TypeError``; those simply bypass the cache.
     with _IMMUTABLE_CACHE_LOCK:
-        entry = _IMMUTABLE_CACHE.get(obj_id)
-        if entry is not None:
-            ref, cached = entry
-            obj = ref() if ref is not None else value
-            if obj is value:
-                return cached
-            if ref is not None and obj is None:
-                del _IMMUTABLE_CACHE[obj_id]
+        try:
+            return _IMMUTABLE_CACHE[value]
+        except (KeyError, TypeError):
+            pass
+
     try:
         frozen = _freeze(value)
     except (TypeError, ValueError):
         result = False
     else:
         result = _is_immutable_inner(frozen)
-    try:
-        ref = weakref.ref(value)
-    except TypeError:
-        ref = None
+
+    # Store result in cache when possible.
     with _IMMUTABLE_CACHE_LOCK:
-        _IMMUTABLE_CACHE[obj_id] = (ref, result)
-        if len(_IMMUTABLE_CACHE) > _IMMUTABLE_CACHE_SIZE:
-            dead = [k for k, (r, _) in _IMMUTABLE_CACHE.items() if r is not None and r() is None]
-            for k in dead:
-                del _IMMUTABLE_CACHE[k]
-            while len(_IMMUTABLE_CACHE) > _IMMUTABLE_CACHE_SIZE:
-                _IMMUTABLE_CACHE.pop(next(iter(_IMMUTABLE_CACHE)))
+        try:
+            _IMMUTABLE_CACHE[value] = result
+        except TypeError:
+            pass
+
     return result
 
 
