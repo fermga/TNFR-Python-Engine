@@ -57,10 +57,12 @@ def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
     ``window`` of zero returns ``False`` without modifying ``nd``. Negative
     values raise :class:`ValueError`.
     """
-    if int(window) == 0:
-        _ensure_glyph_history({}, window)
+    window_int = int(window)
+    if window_int < 0:
+        raise ValueError("'window' must be non-negative")
+    if window_int == 0:
         return False
-    hist = _ensure_glyph_history(nd, window)
+    hist = _ensure_glyph_history(nd, window_int)
     gl = str(glyph)
     return gl in hist
 

@@ -6,6 +6,7 @@ from typing import Any, Callable, DefaultDict, TYPE_CHECKING
 from enum import Enum
 from collections import defaultdict, deque
 from collections.abc import Mapping, Sequence
+import traceback
 from .logging_utils import get_logger
 
 from .constants import DEFAULTS
@@ -192,6 +193,7 @@ def invoke_callbacks(
                     "event": event,
                     "step": ctx.get("step"),
                     "error": repr(e),
+                    "traceback": traceback.format_exc(),
                     "fn": repr(fn),
                     "name": name,
                 }
