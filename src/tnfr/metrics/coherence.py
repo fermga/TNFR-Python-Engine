@@ -27,6 +27,74 @@ def _similarity_abs(a, b, lo, hi):
     return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, hi - lo)
 
 
+def compute_wij_phase_epi_vf_si(
+    th_vals,
+    epi_vals,
+    vf_vals,
+    si_vals,
+    i: int | None = None,
+    j: int | None = None,
+    cos_th=None,
+    sin_th=None,
+    epi_range: float = 1.0,
+    vf_range: float = 1.0,
+    np=None,
+):
+    """Return similarity components for nodes ``i`` and ``j``.
+
+    When ``np`` is provided and ``i`` and ``j`` are ``None`` the computation is
+    vectorized returning full matrices for all node pairs.
+    """
+
+    if np is not None and i is None and j is None:
+        th = np.asarray(th_vals)
+        epi = np.asarray(epi_vals)
+        vf = np.asarray(vf_vals)
+        si = np.asarray(si_vals)
+        cos_th = np.cos(th)
+        sin_th = np.sin(th)
+        epi_range = epi_range if epi_range > 0 else 1.0
+        vf_range = vf_range if vf_range > 0 else 1.0
+        s_phase = 0.5 * (
+            1.0
+            + cos_th[:, None] * cos_th[None, :]
+            + sin_th[:, None] * sin_th[None, :]
+        )
+        s_epi = 1.0 - np.abs(epi[:, None] - epi[None, :]) / epi_range
+        s_vf = 1.0 - np.abs(vf[:, None] - vf[None, :]) / vf_range
+        s_si = 1.0 - np.abs(si[:, None] - si[None, :])
+        return s_phase, s_epi, s_vf, s_si
+
+    if i is None or j is None:
+        raise ValueError("i and j are required for non-vectorized computation")
+    epi_range = epi_range if epi_range > 0 else 1.0
+    vf_range = vf_range if vf_range > 0 else 1.0
+    cos_th = cos_th or [math.cos(t) for t in th_vals]
+    sin_th = sin_th or [math.sin(t) for t in th_vals]
+    s_phase = 0.5 * (1.0 + (cos_th[i] * cos_th[j] + sin_th[i] * sin_th[j]))
+    s_epi = 1.0 - abs(epi_vals[i] - epi_vals[j]) / epi_range
+    s_vf = 1.0 - abs(vf_vals[i] - vf_vals[j]) / vf_range
+    s_si = 1.0 - abs(si_vals[i] - si_vals[j])
+    return s_phase, s_epi, s_vf, s_si
+
+
+def _combine_similarity(
+    s_phase,
+    s_epi,
+    s_vf,
+    s_si,
+    phase_w,
+    epi_w,
+    vf_w,
+    si_w,
+    np=None,
+):
+    wij = phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
+    if np is not None:
+        return np.clip(wij, 0.0, 1.0)
+    return clamp01(wij)
+
+
 def _wij_vectorized(
     th_vals,
     epi_vals,
@@ -40,24 +108,28 @@ def _wij_vectorized(
     self_diag,
     np,
 ):
-    th = np.array(th_vals)
-    epi = np.array(epi_vals)
-    vf = np.array(vf_vals)
-    si = np.array(si_vals)
-    th_diff = th[:, None] - th[None, :]
-    s_phase = 0.5 * (1.0 + np.cos(th_diff))
     epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
     vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
-    s_epi = 1.0 - np.abs(epi[:, None] - epi[None, :]) / epi_range
-    s_vf = 1.0 - np.abs(vf[:, None] - vf[None, :]) / vf_range
-    s_si = 1.0 - np.abs(si[:, None] - si[None, :])
-    wij = (
-        wnorm["phase"] * s_phase
-        + wnorm["epi"] * s_epi
-        + wnorm["vf"] * s_vf
-        + wnorm["si"] * s_si
+    s_phase, s_epi, s_vf, s_si = compute_wij_phase_epi_vf_si(
+        th_vals,
+        epi_vals,
+        vf_vals,
+        si_vals,
+        epi_range=epi_range,
+        vf_range=vf_range,
+        np=np,
     )
-    wij = np.clip(wij, 0.0, 1.0)
+    wij = _combine_similarity(
+        s_phase,
+        s_epi,
+        s_vf,
+        s_si,
+        wnorm["phase"],
+        wnorm["epi"],
+        wnorm["vf"],
+        wnorm["si"],
+        np=np,
+    )
     if self_diag:
         np.fill_diagonal(wij, 1.0)
     else:
@@ -97,12 +169,20 @@ def _wij_loops(
     vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
 
     def assign_wij(i: int, j: int) -> None:
-        s_phase = 0.5 * (1.0 + (cos_th[i] * cos_th[j] + sin_th[i] * sin_th[j]))
-        s_epi = 1.0 - abs(epi_vals[i] - epi_vals[j]) / epi_range
-        s_vf = 1.0 - abs(vf_vals[i] - vf_vals[j]) / vf_range
-        s_si = 1.0 - abs(si_vals[i] - si_vals[j])
-        wij_ij = clamp01(
-            phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
+        s_phase, s_epi, s_vf, s_si = compute_wij_phase_epi_vf_si(
+            th_vals,
+            epi_vals,
+            vf_vals,
+            si_vals,
+            i,
+            j,
+            cos_th,
+            sin_th,
+            epi_range,
+            vf_range,
+        )
+        wij_ij = _combine_similarity(
+            s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w
         )
         wij[i][j] = wij[j][i] = wij_ij
 
