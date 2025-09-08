@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Iterable, Sequence, Dict
+from typing import Any
+from collections.abc import Iterable, Sequence
 from statistics import fmean, StatisticsError
 import math
 
@@ -96,8 +97,8 @@ def _phase_mean_from_iter(
 
 def neighbor_phase_mean_list(
     neigh: Sequence[Any],
-    cos_th: Dict[Any, float],
-    sin_th: Dict[Any, float],
+    cos_th: dict[Any, float],
+    sin_th: dict[Any, float],
     np=None,
     fallback: float = 0.0,
 ) -> float:
