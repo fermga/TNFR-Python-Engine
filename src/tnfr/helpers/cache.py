@@ -4,6 +4,7 @@ import hashlib
 import json
 import threading
 import warnings
+from collections import defaultdict
 from collections.abc import Callable, Iterable, Mapping
 from functools import lru_cache
 from types import MappingProxyType
@@ -284,35 +285,35 @@ def _get_edge_cache(
     """Return edge cache and lock mapping for ``graph``.
 
     When ``create`` is ``True`` missing structures are initialized according
-    to ``max_entries``. Returns a tuple ``(cache, locks, use_lru)`` where
-    ``use_lru`` indicates whether an :class:`cachetools.LRUCache` is employed.
-    Actual cache construction is handled by :func:`_make_edge_cache`.
+    to ``max_entries``. Returns a tuple ``(cache, locks)``. Actual cache
+    construction is handled by :func:`_make_edge_cache`.
     """
     use_lru = bool(max_entries)
-    locks = graph.get("_edge_version_cache_locks")
-    if create:
-        if locks is None or not isinstance(locks, dict):
-            locks = {}
-            graph["_edge_version_cache_locks"] = locks
-    cache = graph.get("_edge_version_cache")
-    if create:
-        if (
-            cache is None
-            or (
-                use_lru
-                and (
-                    not isinstance(cache, LRUCache)
-                    or cache.maxsize != max_entries
+    with _EDGE_CACHE_LOCK:
+        locks = graph.get("_edge_version_cache_locks")
+        if create:
+            if (
+                not isinstance(locks, defaultdict)
+                or locks.default_factory is not threading.RLock
+            ):
+                locks = defaultdict(threading.RLock)
+                graph["_edge_version_cache_locks"] = locks
+        cache = graph.get("_edge_version_cache")
+        if create:
+            if (
+                cache is None
+                or (
+                    use_lru
+                    and (
+                        not isinstance(cache, LRUCache)
+                        or cache.maxsize != max_entries
+                    )
                 )
-            )
-            or (not use_lru and isinstance(cache, LRUCache))
-        ):
-            if use_lru:
-                cache = _make_edge_cache(max_entries, locks)
-            else:
-                cache = {}
-            graph["_edge_version_cache"] = cache
-    return cache, locks, use_lru
+                or (not use_lru and isinstance(cache, LRUCache))
+            ):
+                cache = _make_edge_cache(max_entries, locks) if use_lru else {}
+                graph["_edge_version_cache"] = cache
+    return cache, locks
 
 
 def edge_version_cache(
@@ -324,20 +325,21 @@ def edge_version_cache(
 ) -> T:
     """Return cached ``builder`` output tied to the edge version of ``G``.
 
-    Cache lookups and updates are serialized via ``_EDGE_CACHE_LOCK``.  A
-    dedicated ``threading.Lock`` is maintained for each cache key so that
-    different keys can be computed concurrently while still preventing
-    duplicate work for the same key. Locks are stored in a simple ``dict``
-    and cleared when the cache is invalidated.
+    A per-key :class:`threading.RLock` is stored in a ``defaultdict`` to
+    allow concurrent computations for different keys while still preventing
+    duplicate work. The function employs a simplified double-checked locking
+    pattern: the cache is consulted before acquiring the key-specific lock,
+    then checked again once the lock is held before computing and storing the
+    value.
 
-    When ``max_entries`` is a positive integer-like value, only the most recent
-    ``max_entries`` cache entries are kept (defaults to ``128``).  If
-    ``max_entries`` is ``None`` the cache may grow without bound.  An explicit
+    When ``max_entries`` is a positive integer-like value, only the most
+    recent ``max_entries`` cache entries are kept (defaults to ``128``). If
+    ``max_entries`` is ``None`` the cache may grow without bound. An explicit
     ``max_entries`` value of ``0`` disables caching entirely and ``builder``
-    is executed on each invocation.  ``max_entries`` is coerced to ``int`` on
-    entry and validated to be non-negative. The ``builder`` is executed
-    outside the global lock when a cache miss occurs, so it **must** be pure
-    and yield identical results across concurrent invocations.
+    is executed on each invocation. ``max_entries`` is coerced to ``int`` on
+    entry and validated to be non-negative. The ``builder`` is executed outside
+    any locks on a cache miss, so it **must** be pure and yield identical
+    results across concurrent invocations.
     """
     if max_entries is not None:
         max_entries = int(max_entries)
@@ -347,32 +349,27 @@ def edge_version_cache(
         return builder()
 
     graph = get_graph(G)
-    with _EDGE_CACHE_LOCK:
-        cache, locks, use_lru = _get_edge_cache(graph, max_entries)
-        edge_version = int(graph.get("_edge_version", 0))
+    cache, locks = _get_edge_cache(graph, max_entries)
+    edge_version = int(graph.get("_edge_version", 0))
+    entry = cache.get(key)
+    if entry is not None and entry[0] == edge_version:
+        return entry[1]
+
+    lock = locks[key]
+    with lock:
         entry = cache.get(key)
         if entry is not None and entry[0] == edge_version:
             return entry[1]
 
-        lock = locks.setdefault(key, threading.RLock())
-
-    with lock:
-        with _EDGE_CACHE_LOCK:
-            entry = cache.get(key)
-            if entry is not None and entry[0] == edge_version:
-                return entry[1]
-
         value = builder()
-
-        with _EDGE_CACHE_LOCK:
-            cache[key] = (edge_version, value)
-            return value
+        cache[key] = (edge_version, value)
+        return value
 
 
 def invalidate_edge_version_cache(G: Any) -> None:
     """Clear cached entries associated with ``G``."""
     graph = get_graph(G)
-    cache, locks, _ = _get_edge_cache(graph, None, create=False)
+    cache, locks = _get_edge_cache(graph, None, create=False)
     if isinstance(cache, (dict, LRUCache)):
         cache.clear()
     if isinstance(locks, dict):
