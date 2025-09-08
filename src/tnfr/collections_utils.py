@@ -25,18 +25,26 @@ __all__ = [
     "mix_groups",
 ]
 
-MAX_MATERIALIZE_DEFAULT: int = 1000  # default materialization limit in ensure_collection
+MAX_MATERIALIZE_DEFAULT: int = 1000
+"""Default materialization limit used by :func:`ensure_collection`.
+
+This guard prevents accidentally consuming huge or infinite iterables when a
+limit is not explicitly provided. Pass ``max_materialize=None`` to disable the
+limit.
+"""
 
 
 def ensure_collection(
-    it: Iterable[T], *, max_materialize: int | None = MAX_MATERIALIZE_DEFAULT
+    it: Iterable[T], *,
+    max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
+    error_msg: str | None = None,
 ) -> Collection[T]:
     """Return ``it`` as a ``Collection`` materializing if necessary.
 
     Strings and bytes are treated as single elements. ``max_materialize``
     controls the maximum number of items to materialize when ``it`` is not
-    already a collection; ``None`` means no limit. A :class:`ValueError`` is
-    raised for negative ``max_materialize`` or when the iterable yields more
+    already a collection; ``None`` means no limit. ``error_msg`` customizes the
+    message of the :class:`ValueError` raised when the iterable yields more
     items than allowed. ``TypeError`` is raised when ``it`` is not iterable.
     The input is consumed at most once and no extra items beyond the limit
     are stored in memory.
@@ -61,9 +69,13 @@ def ensure_collection(
             return ()
         materialized = list(islice(it, limit + 1))
         if len(materialized) > limit:
-            raise ValueError(
-                f"Iterable produced {len(materialized)} items, exceeds limit {limit}"
+            examples = ", ".join(repr(x) for x in materialized[:3])
+            msg = (
+                error_msg
+                or f"Iterable produced {len(materialized)} items, exceeds limit {limit}; "
+                   f"first items: [{examples}]"
             )
+            raise ValueError(msg)
         return tuple(materialized)
     except TypeError as exc:
         raise TypeError(f"{it!r} is not iterable") from exc
