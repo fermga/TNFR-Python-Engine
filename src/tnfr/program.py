@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
 from functools import lru_cache
+from enum import Enum
 
 from .token_parser import _flatten_tokens, validate_token, _parse_tokens
 
@@ -43,6 +44,7 @@ __all__ = [
     "WAIT",
     "TARGET",
     "THOL",
+    "OpTag",
     "Token",
     "THOL_SENTINEL",
     "_flatten_thol",
@@ -111,6 +113,13 @@ Token = Union[Glyph, WAIT, TARGET, THOL]
 
 # Sentinel used internally by ``_flatten`` to mark the end of a ``THOL`` block
 THOL_SENTINEL = object()
+
+
+class OpTag(Enum):
+    TARGET = "TARGET"
+    WAIT = "WAIT"
+    GLYPH = "GLYPH"
+    THOL = "THOL"
 
 # ---------------------
 # Internal utilities
@@ -188,14 +197,14 @@ def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
     stack.append(THOL_SENTINEL)
 
 
-def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
+def _flatten(seq: Sequence[Token]) -> list[tuple[OpTag, Any]]:
     """Return list of operations ``(op, payload)``.
-    ``op`` ∈ { 'GLYPH', 'WAIT', 'TARGET', 'THOL' }.
+    ``op`` ∈ :class:`OpTag`.
 
     Implemented iteratively using an explicit stack to avoid deep recursion
     when ``THOL`` blocks are nested.
     """
-    ops: list[tuple[str, Any]] = []
+    ops: list[tuple[OpTag, Any]] = []
     stack: deque[Any] = deque(
         reversed(ensure_collection(seq, max_materialize=None))
     )
@@ -203,19 +212,19 @@ def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
     while stack:
         item = stack.pop()
         if item is THOL_SENTINEL:
-            ops.append(("THOL", Glyph.THOL.value))
+            ops.append((OpTag.THOL, Glyph.THOL.value))
         elif isinstance(item, TARGET):
-            ops.append(("TARGET", item))
+            ops.append((OpTag.TARGET, item))
         elif isinstance(item, WAIT):
             steps = max(1, int(getattr(item, "steps", 1)))
-            ops.append(("WAIT", steps))
+            ops.append((OpTag.WAIT, steps))
         elif isinstance(item, THOL):
             _flatten_thol(item, stack)
         elif isinstance(item, (Glyph, str)):
             g = item.value if isinstance(item, Glyph) else str(item)
             if g not in GLYPHS_CANONICAL_SET:
                 raise ValueError(f"Non-canonical glyph: {g}")
-            ops.append(("GLYPH", g))
+            ops.append((OpTag.GLYPH, g))
         else:
             raise TypeError(f"Unsupported token: {item!r}")
     return ops
@@ -226,14 +235,14 @@ def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
 # ---------------------
 
 
-def _record_trace(trace: deque, G, op: str, **data) -> None:
-    trace.append({"t": float(G.graph.get("_t", 0.0)), "op": op, **data})
+def _record_trace(trace: deque, G, op: OpTag, **data) -> None:
+    trace.append({"t": float(G.graph.get("_t", 0.0)), "op": op.value, **data})
 
 
 def _advance_and_record(
     G,
     trace: deque,
-    label: str,
+    label: OpTag,
     step_fn: Optional[AdvanceFn],
     *,
     times: int = 1,
@@ -260,14 +269,14 @@ def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
     nodes_src = _all_nodes(G) if payload.nodes is None else payload.nodes
     nodes = ensure_collection(nodes_src, max_materialize=None)
     curr_target = nodes if isinstance(nodes, Sequence) else tuple(nodes)
-    _record_trace(trace, G, "TARGET", n=len(curr_target))
+    _record_trace(trace, G, OpTag.TARGET, n=len(curr_target))
     return curr_target
 
 
 def _handle_wait(
     G, steps: int, curr_target, trace: deque, step_fn: Optional[AdvanceFn]
 ):
-    _advance_and_record(G, trace, "WAIT", step_fn, times=steps, k=steps)
+    _advance_and_record(G, trace, OpTag.WAIT, step_fn, times=steps, k=steps)
     return curr_target
 
 
@@ -277,7 +286,7 @@ def _handle_glyph(
     curr_target,
     trace: deque,
     step_fn: Optional[AdvanceFn],
-    label: str = "GLYPH",
+    label: OpTag = OpTag.GLYPH,
 ):
     _apply_glyph_to_targets(G, g, curr_target)
     _advance_and_record(G, trace, label, step_fn, g=g)
@@ -288,15 +297,15 @@ def _handle_thol(
     G, g, curr_target, trace: deque, step_fn: Optional[AdvanceFn]
 ):
     return _handle_glyph(
-        G, g or Glyph.THOL.value, curr_target, trace, step_fn, label="THOL"
+        G, g or Glyph.THOL.value, curr_target, trace, step_fn, label=OpTag.THOL
     )
 
 
 HANDLERS = {
-    "TARGET": _handle_target,
-    "WAIT": _handle_wait,
-    "GLYPH": _handle_glyph,
-    "THOL": _handle_thol,
+    OpTag.TARGET: _handle_target,
+    OpTag.WAIT: _handle_wait,
+    OpTag.GLYPH: _handle_glyph,
+    OpTag.THOL: _handle_thol,
 }
 
 

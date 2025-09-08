@@ -10,6 +10,7 @@ from tnfr.cli import _load_sequence
 from tnfr.program import (
     WAIT,
     TARGET,
+    OpTag,
     _handle_target,
     _flatten,
     _flatten_thol,
@@ -53,7 +54,7 @@ def test_wait_logs_sanitized_steps(graph_canon):
 def test_flatten_wait_sanitizes_steps():
     program = seq(WAIT(-2.5), WAIT(2.4))
     ops = _flatten(program)
-    assert ops == [("WAIT", 1), ("WAIT", 2)]
+    assert ops == [(OpTag.WAIT, 1), (OpTag.WAIT, 2)]
 
 
 def test_play_handles_deeply_nested_blocks(graph_canon):
@@ -181,15 +182,15 @@ def test_flatten_nested_blocks_preserves_order():
     )
     ops = _flatten(program)
     expected = [
-        ("THOL", Glyph.THOL.value),
-        ("THOL", Glyph.THOL.value),
-        ("GLYPH", Glyph.AL.value),
-        ("GLYPH", Glyph.RA.value),
-        ("GLYPH", Glyph.NUL.value),
-        ("GLYPH", Glyph.AL.value),
-        ("GLYPH", Glyph.RA.value),
-        ("GLYPH", Glyph.NUL.value),
-        ("GLYPH", Glyph.ZHIR.value),
+        (OpTag.THOL, Glyph.THOL.value),
+        (OpTag.THOL, Glyph.THOL.value),
+        (OpTag.GLYPH, Glyph.AL.value),
+        (OpTag.GLYPH, Glyph.RA.value),
+        (OpTag.GLYPH, Glyph.NUL.value),
+        (OpTag.GLYPH, Glyph.AL.value),
+        (OpTag.GLYPH, Glyph.RA.value),
+        (OpTag.GLYPH, Glyph.NUL.value),
+        (OpTag.GLYPH, Glyph.ZHIR.value),
     ]
     assert ops == expected
 
@@ -208,7 +209,7 @@ class NoReverseSeq(Sequence):
 def test_flatten_accepts_sequence_without_reversed():
     program = NoReverseSeq([Glyph.AL, Glyph.OZ])
     ops = _flatten(program)
-    assert ops == [("GLYPH", Glyph.AL.value), ("GLYPH", Glyph.OZ.value)]
+    assert ops == [(OpTag.GLYPH, Glyph.AL.value), (OpTag.GLYPH, Glyph.OZ.value)]
 
 
 def test_thol_repeat_lt_one_raises():
