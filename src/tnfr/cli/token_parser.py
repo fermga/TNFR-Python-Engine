@@ -5,6 +5,7 @@ from ..types import Glyph
 from ..token_parser import (
     validate_token as _tp_validate_token,
     _parse_tokens as _tp_parse_tokens,
+    _flatten_tokens as _tp_flatten_tokens,
 )
 
 
@@ -14,6 +15,10 @@ def validate_token(tok: Any, pos: int) -> Any:
 
 def _parse_tokens(obj: Any) -> list[Any]:
     return _tp_parse_tokens(obj, TOKEN_MAP)
+
+
+def _flatten_tokens(obj: Any):
+    return _tp_flatten_tokens(obj)
 
 
 def parse_thol(spec: dict[str, Any]) -> Any:
