@@ -10,7 +10,7 @@ import warnings
 from types import MappingProxyType
 from functools import lru_cache
 from dataclasses import asdict, is_dataclass
-from cachetools import LRUCache
+import weakref
 
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
 from .init import INIT_DEFAULTS
@@ -99,32 +99,48 @@ def _is_immutable_inner(value: Any) -> bool:
 
 
 _IMMUTABLE_CACHE_SIZE = 1024
-_IMMUTABLE_CACHE = LRUCache(maxsize=_IMMUTABLE_CACHE_SIZE)
+# Mapping of object id to (weakref, result)
+_IMMUTABLE_CACHE: dict[int, tuple[weakref.ReferenceType[Any] | None, bool]] = {}
 _IMMUTABLE_CACHE_LOCK = threading.Lock()
 
 
 def _is_immutable(value: Any) -> bool:
     """Check recursively if ``value`` is immutable with caching.
 
-    Results are memoised by object identity. This avoids recomputing the
-    expensive :func:`_freeze` for repeatedly queried objects. Note that
-    mutated objects may yield stale results; ``_is_immutable`` assumes
-    immutability does not change for a given object ID.
+    Results are memoised by object identity using weak references to avoid
+    retaining objects that are no longer in use. Note that mutated objects may
+    yield stale results; ``_is_immutable`` assumes immutability does not change
+    for a given object ID.
     """
 
     obj_id = id(value)
     with _IMMUTABLE_CACHE_LOCK:
-        cached = _IMMUTABLE_CACHE.get(obj_id)
-    if cached is not None:
-        return cached
+        entry = _IMMUTABLE_CACHE.get(obj_id)
+        if entry is not None:
+            ref, cached = entry
+            obj = ref() if ref is not None else value
+            if obj is value:
+                return cached
+            if ref is not None and obj is None:
+                del _IMMUTABLE_CACHE[obj_id]
     try:
         frozen = _freeze(value)
     except (TypeError, ValueError):
         result = False
     else:
         result = _is_immutable_inner(frozen)
+    try:
+        ref = weakref.ref(value)
+    except TypeError:
+        ref = None
     with _IMMUTABLE_CACHE_LOCK:
-        _IMMUTABLE_CACHE[obj_id] = result
+        _IMMUTABLE_CACHE[obj_id] = (ref, result)
+        if len(_IMMUTABLE_CACHE) > _IMMUTABLE_CACHE_SIZE:
+            dead = [k for k, (r, _) in _IMMUTABLE_CACHE.items() if r is not None and r() is None]
+            for k in dead:
+                del _IMMUTABLE_CACHE[k]
+            while len(_IMMUTABLE_CACHE) > _IMMUTABLE_CACHE_SIZE:
+                _IMMUTABLE_CACHE.pop(next(iter(_IMMUTABLE_CACHE)))
     return result
 
 

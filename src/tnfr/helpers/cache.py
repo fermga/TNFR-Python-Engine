@@ -55,10 +55,12 @@ def get_graph(obj: Any) -> Any:
 def get_graph_mapping(
     G: Any, key: str, warn_msg: str
 ) -> dict[str, Any] | None:
-    """Return a shallow copy of ``G.graph[key]`` if it is a mapping.
+    """Return an immutable view of ``G.graph[key]`` if it is a mapping.
 
-    ``warn_msg`` is emitted via :func:`warnings.warn` when the stored value is
-    not a mapping. ``None`` is returned when the key is absent or invalid.
+    The mapping is wrapped in :class:`types.MappingProxyType` to prevent
+    accidental modification. ``warn_msg`` is emitted via :func:`warnings.warn`
+    when the stored value is not a mapping. ``None`` is returned when the key is
+    absent or invalid.
     """
     data = G.graph.get(key)
     if data is None:

@@ -1,5 +1,7 @@
 """Utilities for CLI modules."""
 
+from __future__ import annotations
+
 from typing import Any
 
 
