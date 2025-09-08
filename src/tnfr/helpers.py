@@ -120,20 +120,32 @@ def _neighbor_phase_mean(node, trig) -> float:
     """Internal helper delegating to :func:`neighbor_phase_mean_list`."""
     fallback = trig.theta.get(node.n, 0.0)
     neigh = node.G[node.n]
-    return neighbor_phase_mean_list(neigh, trig.cos, trig.sin, np=None, fallback=fallback)
+    np = get_numpy()
+    return neighbor_phase_mean_list(
+        neigh, trig.cos, trig.sin, np=np, fallback=fallback
+    )
 
 
 def _phase_mean_from_iter(
     it: Iterable[tuple[float, float] | None], fallback: float
 ) -> float:
     x = y = 0.0
+    cx = cy = 0.0  # Kahan compensation terms
     count = 0
     for cs in it:
         if cs is None:
             continue
         cos_val, sin_val = cs
-        x += cos_val
-        y += sin_val
+        # compensated summation for cosine
+        tx = cos_val - cx
+        vx = x + tx
+        cx = (vx - x) - tx
+        x = vx
+        # compensated summation for sine
+        ty = sin_val - cy
+        vy = y + ty
+        cy = (vy - y) - ty
+        y = vy
         count += 1
     if count == 0:
         return fallback
@@ -404,6 +416,11 @@ def _get_edge_cache(graph: Any, max_entries: int | None, *, create: bool = True)
     """
 
     use_lru = bool(max_entries)
+    locks = graph.get("_edge_version_cache_locks")
+    if create:
+        if locks is None or not isinstance(locks, dict):
+            locks = {}
+            graph["_edge_version_cache_locks"] = locks
     cache = graph.get("_edge_version_cache")
     if create:
         if (
@@ -417,13 +434,31 @@ def _get_edge_cache(graph: Any, max_entries: int | None, *, create: bool = True)
             )
             or (not use_lru and isinstance(cache, LRUCache))
         ):
-            cache = LRUCache(max_entries) if use_lru else {}
+            if use_lru:
+                try:
+                    cache = LRUCache(
+                        max_entries,
+                        callback=lambda k, _: locks.pop(k, None),
+                    )
+                except TypeError:  # pragma: no cover - legacy cachetools
+                    class _LRUCache(LRUCache):
+                        def __init__(self, maxsize, *, callback=None):
+                            super().__init__(maxsize)
+                            self._callback = callback
+
+                        def popitem(self):
+                            key, value = super().popitem()
+                            cb = getattr(self, "_callback", None)
+                            if cb is not None:
+                                cb(key, value)
+                            return key, value
+
+                    cache = _LRUCache(
+                        max_entries, callback=lambda k, v: locks.pop(k, None)
+                    )
+            else:
+                cache = {}
             graph["_edge_version_cache"] = cache
-    locks = graph.get("_edge_version_cache_locks")
-    if create:
-        if locks is None or not isinstance(locks, dict):
-            locks = {}
-            graph["_edge_version_cache_locks"] = locks
     return cache, locks, use_lru
 
 
@@ -473,12 +508,7 @@ def edge_version_cache(
         value = builder()
 
         with _EDGE_CACHE_LOCK:
-            prev_keys = set(cache.keys()) if use_lru else None
             cache[key] = (edge_version, value)
-            if use_lru and prev_keys is not None:
-                evicted = prev_keys - set(cache.keys())
-                for ev in evicted:
-                    locks.pop(ev, None)
             return value
 
 
