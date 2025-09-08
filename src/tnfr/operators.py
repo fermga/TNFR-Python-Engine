@@ -97,7 +97,10 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     The value is derived from ``(RANDOM_SEED, node.offset())`` and does
     not store references to nodes. ``get_rng`` provides a global LRU
     cache keyed by ``(seed, key)`` so sequences advance deterministically
-    across calls.
+    across calls. The Blake2 hash used to derive ``seed`` is cached per
+    node in ``_jitter_seed_hash`` keyed by ``(seed_root, scope_id)`` to
+    avoid recomputation. Clear this cache if the base seed changes to
+    prevent stale values from being reused.
     """
 
     if amplitude < 0:
@@ -107,8 +110,25 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
 
     seed_root = base_seed(node.G)
     seed_key, scope_id = _resolve_jitter_seed(node)
-    seed_bytes = f"{seed_root}:{scope_id}".encode()
-    seed = int.from_bytes(hashlib.blake2b(seed_bytes, digest_size=8).digest(), "little")
+
+    cache = getattr(node, "_jitter_seed_hash", None)
+    if cache is None:
+        try:
+            cache = {}
+            setattr(node, "_jitter_seed_hash", cache)
+        except AttributeError:
+            graph_cache = node.graph.setdefault("_jitter_seed_hash", {})
+            cache = graph_cache.get(id(node))
+            if cache is None:
+                cache = {}
+                graph_cache[id(node)] = cache
+
+    cache_key = (seed_root, scope_id)
+    seed = cache.get(cache_key)
+    if seed is None:
+        seed_bytes = f"{seed_root}:{scope_id}".encode()
+        seed = int.from_bytes(hashlib.blake2b(seed_bytes, digest_size=8).digest(), "little")
+        cache[cache_key] = seed
     rng = get_rng(seed, seed_key)
     return rng.uniform(-amplitude, amplitude)
 
