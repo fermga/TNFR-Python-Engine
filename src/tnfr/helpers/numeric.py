@@ -11,6 +11,7 @@ __all__ = [
     "clamp",
     "clamp01",
     "list_mean",
+    "kahan_sum",
     "angle_diff",
     "neighbor_mean",
     "neighbor_phase_mean",
@@ -34,6 +35,18 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
         return float(fmean(xs))
     except (StatisticsError, ValueError, TypeError):
         return float(default)
+
+
+def kahan_sum(values: Iterable[float]) -> float:
+    """Return the precise sum of ``values`` using Kahan compensation."""
+    total = 0.0
+    c = 0.0
+    for v in values:
+        y = float(v) - c
+        t = total + y
+        c = (t - total) - y
+        total = t
+    return total
 
 
 def angle_diff(a: float, b: float) -> float:
