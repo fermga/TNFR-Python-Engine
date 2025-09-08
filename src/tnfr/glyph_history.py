@@ -20,35 +20,47 @@ __all__ = [
 ]
 
 
-def _validate_window(window: int) -> int:
-    window = int(window)
-    if window < 0:
-        raise ValueError("'window' must be non-negative")
-    return window
-
-
 def _ensure_glyph_history(nd: Dict[str, Any], window: int) -> deque:
+    """Return ``nd['glyph_history']`` deque after validating ``window``.
+
+    The ``window`` value is coerced to ``int`` and must be non-negative.
+    ``nd`` is updated in-place to contain a ``deque`` with ``maxlen`` equal to
+    ``window``.
+    """
+
+    window_int = int(window)
+    if window_int < 0:
+        raise ValueError("'window' must be non-negative")
+
     hist = nd.get("glyph_history")
-    if not isinstance(hist, deque) or hist.maxlen != window:
-        hist = deque(hist or [], maxlen=window)
+    if not isinstance(hist, deque) or hist.maxlen != window_int:
+        hist = deque(hist or [], maxlen=window_int)
         nd["glyph_history"] = hist
     return hist
 
 
 def push_glyph(nd: Dict[str, Any], glyph: str, window: int) -> None:
-    """Add ``glyph`` to node history with maximum size ``window``."""
-    window = _validate_window(window)
+    """Add ``glyph`` to node history with maximum size ``window``.
+
+    ``window`` is validated and the underlying deque is ensured by
+    :func:`_ensure_glyph_history`.
+    """
+
     hist = _ensure_glyph_history(nd, window)
     hist.append(str(glyph))
 
 
 def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
-    """Return ``True`` if ``glyph`` appeared in last ``window`` emissions."""
-    window = _validate_window(window)
-    if window == 0:
+    """Return ``True`` if ``glyph`` appeared in last ``window`` emissions.
+
+    ``window`` is validated and the history deque ensured internally. A
+    ``window`` of zero returns ``False`` without modifying ``nd``.
+    """
+    if int(window) == 0:
+        _ensure_glyph_history({}, window)
         return False
-    gl = str(glyph)
     hist = _ensure_glyph_history(nd, window)
+    gl = str(glyph)
     return gl in hist
 
 
