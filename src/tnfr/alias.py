@@ -117,6 +117,37 @@ class AliasAccessor(Generic[T]):
         self._conv = conv
         self._default = default
 
+    def _prepare(
+        self,
+        aliases: Iterable[str],
+        conv: Callable[[Any], T] | None,
+        default: Optional[T] = None,
+    ) -> tuple[tuple[str, ...], Callable[[Any], T], Optional[T]]:
+        """Validate ``aliases`` and resolve ``conv`` and ``default``.
+
+        Parameters
+        ----------
+        aliases:
+            Iterable of alias strings. Must not be a single string.
+        conv:
+            Conversion callable. If ``None``, the accessor's default
+            converter is used.
+        default:
+            Default value to use if no alias is found. If ``None``, the
+            accessor's default is used.
+        """
+
+        if isinstance(aliases, str) or not isinstance(aliases, Iterable):
+            raise TypeError("'aliases' must be a non-string iterable")
+        aliases = _validate_aliases(tuple(aliases))
+        if conv is None:
+            conv = self._conv
+        if conv is None:
+            raise TypeError("'conv' must be provided")
+        if default is None:
+            default = self._default
+        return aliases, conv, default
+
     def get(
         self,
         d: Dict[str, Any],
@@ -127,15 +158,7 @@ class AliasAccessor(Generic[T]):
         log_level: int | None = None,
         conv: Callable[[Any], T] | None = None,
     ) -> Optional[T]:
-        if isinstance(aliases, str) or not isinstance(aliases, Iterable):
-            raise TypeError("'aliases' must be a non-string iterable")
-        aliases = _validate_aliases(tuple(aliases))
-        if conv is None:
-            conv = self._conv
-        if conv is None:
-            raise TypeError("'conv' must be provided")
-        if default is None:
-            default = self._default
+        aliases, conv, default = self._prepare(aliases, conv, default)
         return _alias_resolve(
             d,
             aliases,
@@ -152,13 +175,7 @@ class AliasAccessor(Generic[T]):
         value: Any,
         conv: Callable[[Any], T] | None = None,
     ) -> T:
-        if isinstance(aliases, str) or not isinstance(aliases, Iterable):
-            raise TypeError("'aliases' must be a non-string iterable")
-        aliases = _validate_aliases(tuple(aliases))
-        if conv is None:
-            conv = self._conv
-        if conv is None:
-            raise TypeError("'conv' must be provided")
+        aliases, conv, _ = self._prepare(aliases, conv)
         val = conv(value)
         key = next((k for k in aliases if k in d), aliases[0])
         d[key] = val

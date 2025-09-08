@@ -22,3 +22,8 @@ def test_get_and_set_work_with_functions_and_object(getter, setter):
     assert getter(d, ("a", "b"), default=None) == 1
     setter(d, ("b", "c"), "2")
     assert getter(d, ("b", "c"), default=None) == 2
+
+
+def test_get_uses_accessor_default():
+    acc = AliasAccessor(int, default=7)
+    assert acc.get({}, ("x", "y")) == 7
