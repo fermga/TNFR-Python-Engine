@@ -86,14 +86,15 @@ def test_compute_Si_node():
     assert get_attr(G.nodes[1], ALIAS_SI, 0.0) == pytest.approx(0.7)
 
     class DummyNP:
-        def array(self, iterable, dtype=float):
-            class Arr(list):
-                def mean(self, axis=None):
-                    if axis == 0:
-                        cols = len(self[0])
-                        return [sum(row[i] for row in self) / len(self) for i in range(cols)]
-                    return sum(self) / len(self)
-            return Arr(list(iterable))
+        class Arr(list):
+            def mean(self, axis=None):
+                if axis == 0:
+                    cols = len(self[0])
+                    return [sum(row[i] for row in self) / len(self) for i in range(cols)]
+                return sum(self) / len(self)
+
+        def fromiter(self, iterable, dtype=float, count=-1):
+            return self.Arr(list(iterable))
 
         def arctan2(self, y, x):
             return math.atan2(y, x)
