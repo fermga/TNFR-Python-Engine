@@ -39,8 +39,23 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
 
 
 def kahan_sum(values: Iterable[float]) -> float:
-    """Return the precise sum of ``values``."""
-    return float(math.fsum(values))
+    """Return a compensated sum of ``values`` using Kahan summation.
+
+    The implementation follows the Kahan–Babuška (Neumaier) algorithm,
+    which keeps track of a small correction term to reduce floating point
+    error. It is more accurate than the built-in :func:`sum` while being
+    cheaper than :func:`math.fsum`.
+    """
+    total = 0.0
+    c = 0.0
+    for v in values:
+        t = total + v
+        if abs(total) >= abs(v):
+            c += (total - t) + v
+        else:
+            c += (v - t) + total
+        total = t
+    return float(total + c)
 
 
 def angle_diff(a: float, b: float) -> float:
