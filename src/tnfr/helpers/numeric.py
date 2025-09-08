@@ -84,25 +84,19 @@ def _neighbor_phase_mean(node, trig) -> float:
 def _phase_mean_from_iter(
     it: Iterable[tuple[float, float] | None], fallback: float
 ) -> float:
-    x = y = 0.0
-    cx = cy = 0.0  # Kahan compensation terms
-    count = 0
+    cos_vals: list[float] = []
+    sin_vals: list[float] = []
     for cs in it:
         if cs is None:
             continue
         cos_val, sin_val = cs
-        tx = cos_val - cx
-        vx = x + tx
-        cx = (vx - x) - tx
-        x = vx
-        ty = sin_val - cy
-        vy = y + ty
-        cy = (vy - y) - ty
-        y = vy
-        count += 1
-    if count == 0:
+        cos_vals.append(cos_val)
+        sin_vals.append(sin_val)
+    if not cos_vals:
         return fallback
-    return math.atan2(y, x)
+    sum_cos = kahan_sum(cos_vals)
+    sum_sin = kahan_sum(sin_vals)
+    return math.atan2(sum_sin, sum_cos)
 
 
 def neighbor_phase_mean_list(
