@@ -7,7 +7,6 @@ import cmath
 import logging
 import hashlib
 import json
-import warnings
 from collections.abc import Mapping
 
 from .constants import ALIAS_THETA
@@ -17,6 +16,12 @@ from .logging_utils import get_logger
 
 
 logger = get_logger(__name__)
+
+DEFAULT_GAMMA: Mapping[str, str] = {"type": "none"}
+DEFAULT_GAMMA_DUMPED = json.dumps(DEFAULT_GAMMA, sort_keys=True).encode("utf-8")
+DEFAULT_GAMMA_HASH = hashlib.blake2b(
+    DEFAULT_GAMMA_DUMPED, digest_size=16
+).hexdigest()
 
 __all__ = [
     "kuramoto_R_psi",
@@ -80,26 +85,28 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
     raw = G.graph.get("GAMMA")
     cached = G.graph.get("_gamma_spec")
     prev_hash = G.graph.get("_gamma_spec_hash")
-
     if raw is None or isinstance(raw, Mapping):
-        spec = raw if isinstance(raw, Mapping) else {"type": "none"}
-        dumped = json.dumps(spec, sort_keys=True).encode("utf-8")
-        cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
+        spec = raw if isinstance(raw, Mapping) else DEFAULT_GAMMA
+        if spec is DEFAULT_GAMMA:
+            dumped = DEFAULT_GAMMA_DUMPED
+            cur_hash = DEFAULT_GAMMA_HASH
+        else:
+            dumped = json.dumps(spec, sort_keys=True).encode("utf-8")
+            cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
         if cached is not None and prev_hash == cur_hash:
             return cached
         G.graph["_gamma_spec"] = spec
         G.graph["_gamma_spec_hash"] = cur_hash
         return spec
 
-    dumped = json.dumps({"type": "none"}, sort_keys=True).encode("utf-8")
-    cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
+    cur_hash = DEFAULT_GAMMA_HASH
     if cached is not None and prev_hash == cur_hash:
         return cached
     spec = get_graph_mapping(
         G,
         "GAMMA",
         "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}",
-    ) or {"type": "none"}
+    ) or DEFAULT_GAMMA
     G.graph["_gamma_spec"] = spec
     G.graph["_gamma_spec_hash"] = cur_hash
     return spec

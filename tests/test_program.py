@@ -19,6 +19,7 @@ from tnfr.program import (
     target,
     wait,
     THOL,
+    THOL_SENTINEL,
 )
 from tnfr.constants import get_param
 from tnfr.types import Glyph
@@ -213,3 +214,17 @@ def test_flatten_accepts_sequence_without_reversed():
 def test_thol_repeat_lt_one_raises():
     with pytest.raises(ValueError, match="repeat must be ≥1"):
         _flatten_thol(THOL(body=[], repeat=0), deque())
+
+
+def test_flatten_thol_multiple_repeats():
+    stack = deque()
+    _flatten_thol(THOL(body=[Glyph.AL, Glyph.RA], repeat=3), stack)
+    assert list(stack) == [
+        Glyph.RA,
+        Glyph.AL,
+        Glyph.RA,
+        Glyph.AL,
+        Glyph.RA,
+        Glyph.AL,
+        THOL_SENTINEL,
+    ]

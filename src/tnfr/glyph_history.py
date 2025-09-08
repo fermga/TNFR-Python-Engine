@@ -7,6 +7,8 @@ from collections import deque, Counter
 from itertools import islice
 import heapq
 
+from collections.abc import Iterable as abcIterable
+
 from .constants import get_param
 
 __all__ = [
@@ -30,12 +32,16 @@ def _validate_window(window: int) -> int:
 
 
 def _ensure_glyph_history(nd: Dict[str, Any], window: int) -> deque:
-    """Return ``nd['glyph_history']`` deque after validating ``window``."""
+    """Return ``nd['glyph_history']`` deque after validating ``window``.
+
+    Non-iterable existing values are discarded.
+    """
 
     window_int = _validate_window(window)
     hist = nd.get("glyph_history")
     if not isinstance(hist, deque) or hist.maxlen != window_int:
-        hist = deque(hist or [], maxlen=window_int)
+        seq = hist if isinstance(hist, abcIterable) else []
+        hist = deque(seq, maxlen=window_int)
         nd["glyph_history"] = hist
     return hist
 
@@ -260,7 +266,11 @@ class _IncrementProxy:
 
 
 def _ensure_increment(hist: Dict[str, Any] | SupportsGetIncrement) -> SupportsGetIncrement:
-    return hist if hasattr(hist, "get_increment") else _IncrementProxy(hist)  # type: ignore[return-value]
+    return (
+        hist
+        if callable(getattr(hist, "get_increment", None))
+        else _IncrementProxy(hist)
+    )  # type: ignore[return-value]
 
 
 def append_metric(hist: Dict[str, Any] | SupportsGetIncrement, key: str, value: Any) -> None:
