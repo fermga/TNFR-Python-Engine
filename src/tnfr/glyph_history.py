@@ -141,18 +141,27 @@ class HistoryDict(dict):
                 return key
         raise KeyError("HistoryDict is empty; cannot pop least used")
 
+    def _to_deque(self, val: Any) -> deque:
+        """Coerce ``val`` to a deque respecting ``self._maxlen``.
+
+        ``Iterable`` inputs (excluding ``str`` and ``bytes``) are expanded into
+        the deque, while single values are wrapped. Existing deques are returned
+        unchanged.
+        """
+
+        if isinstance(val, deque):
+            return val
+        if isinstance(val, Iterable) and not isinstance(val, (str, bytes)):
+            return deque(val, maxlen=self._maxlen)
+        return deque([val], maxlen=self._maxlen)
+
     def _resolve_value(self, key: str, default: Any, *, insert: bool) -> Any:
         if insert:
             val = super().setdefault(key, default)
         else:
             val = super().__getitem__(key)
         if self._maxlen > 0:
-            if isinstance(val, deque):
-                return val
-            if isinstance(val, Iterable) and not isinstance(val, (str, bytes)):
-                val = deque(val, maxlen=self._maxlen)
-            else:
-                val = deque([val], maxlen=self._maxlen)
+            val = self._to_deque(val)
             super().__setitem__(key, val)
         return val
 
