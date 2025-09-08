@@ -22,8 +22,29 @@ from .glyph_history import ensure_history
 # Basic types
 Node = Any
 AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
-_STEP_FN: Optional[AdvanceFn] = None
-_STEP_LOCK = Lock()
+
+
+class _StepFnCache:
+    """Thread-safe cache for the dynamics ``step`` function."""
+
+    step_fn: Optional[AdvanceFn] = None
+    lock = Lock()
+
+    @classmethod
+    def get_step_fn(cls) -> AdvanceFn:
+        if cls.step_fn is None:
+            with cls.lock:
+                if cls.step_fn is None:
+                    from .dynamics import step as step_impl
+
+                    cls.step_fn = step_impl
+        return cls.step_fn
+
+
+def get_step_fn() -> AdvanceFn:
+    """Return cached dynamics ``step`` function, initialising lazily."""
+
+    return _StepFnCache.get_step_fn()
 
 __all__ = [
     "WAIT",
@@ -39,6 +60,7 @@ __all__ = [
     "_flatten_tokens",
     "validate_token",
     "_parse_tokens",
+    "get_step_fn",
     "seq",
     "block",
     "target",
@@ -134,13 +156,8 @@ def _apply_glyph_to_targets(
 
 
 def _advance(G, step_fn: Optional[AdvanceFn] = None):
-    global _STEP_FN
     if step_fn is None:
-        if _STEP_FN is None:
-            with _STEP_LOCK:
-                if _STEP_FN is None:
-                    from .dynamics import step as _STEP_FN
-        step_fn = _STEP_FN
+        step_fn = get_step_fn()
     step_fn(G)
 
 
