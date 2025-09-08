@@ -7,7 +7,11 @@ from tnfr.alias import set_attr
 
 def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch):
     calls = 0
-    sentinel = object()
+    class DummyNP:
+        def fromiter(self, iterable, dtype=float, count=-1):
+            return list(iterable)
+
+    sentinel = DummyNP()
 
     def fake_get_numpy():
         nonlocal calls
@@ -17,7 +21,8 @@ def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch):
     captured = []
 
     def fake_compute_Si_node(n, nd, *, alpha, beta, gamma, vfmax, dnfrmax,
-                             cos_th, sin_th, thetas, neighbors, inplace, np=None):
+                             cos_vals, sin_vals, theta_vals, theta_i,
+                             inplace, np=None):
         captured.append(np)
         return 0.0
 
