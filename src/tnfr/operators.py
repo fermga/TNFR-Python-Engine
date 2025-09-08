@@ -78,7 +78,8 @@ def _get_networkx_modules():
     nx_comm = optional_import("networkx.algorithms.community")
     if nx_comm is None:
         raise ImportError(
-            "networkx.algorithms.community is required for community-based operations; install 'networkx' to enable this feature"
+            "networkx.algorithms.community is required for community-based operations; install "
+            "'networkx' to enable this feature"
         )
     return nx, nx_comm
 
