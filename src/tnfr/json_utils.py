@@ -22,7 +22,11 @@ def json_dumps(
     to_bytes: bool = True,
     **kwargs: Any,
 ) -> bytes | str:
-    """Serialize ``obj`` to JSON using ``orjson`` when available."""
+    """Serialize ``obj`` to JSON using ``orjson`` when available.
+
+    When :mod:`orjson` is used, the ``ensure_ascii`` and ``separators`` options
+    are ignored because they are not supported by ``orjson.dumps``.
+    """
     if _orjson is not None:
         option = _orjson.OPT_SORT_KEYS if sort_keys else 0
         data = _orjson.dumps(obj, option=option, default=default)

@@ -241,13 +241,13 @@ def recompute_abs_max(
     G: "nx.Graph", aliases: tuple[str, ...]
 ) -> tuple[float, Hashable | None]:
     """Recalculate and return ``(max_val, node)`` for ``aliases`` in ``G``."""
-    node: Hashable | None = max(
-        G.nodes(),
-        key=lambda m: abs(get_attr(G.nodes[m], aliases, 0.0)),
-        default=None,
-    )
-    max_val = (
-        abs(get_attr(G.nodes[node], aliases, 0.0)) if node is not None else 0.0
+    node, max_val = max(
+        (
+            (n, abs(get_attr(G.nodes[n], aliases, 0.0)))
+            for n in G.nodes()
+        ),
+        key=lambda x: x[1],
+        default=(None, 0.0),
     )
     return max_val, node
 

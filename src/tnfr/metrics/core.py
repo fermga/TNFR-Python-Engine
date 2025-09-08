@@ -78,11 +78,9 @@ def _update_coherence(G, hist) -> None:
     C, dnfr_mean, depi_mean = compute_coherence(G, return_means=True)
     _record_metrics(
         hist,
-        [
-            (lambda: C, "C_steps"),
-            (lambda: dnfr_mean, "dnfr_mean"),
-            (lambda: depi_mean, "depi_mean"),
-        ],
+        (lambda: C, "C_steps"),
+        (lambda: dnfr_mean, "dnfr_mean"),
+        (lambda: depi_mean, "depi_mean"),
     )
 
     wbar_w = int(get_param(G, "WBAR_WINDOW"))
@@ -90,27 +88,15 @@ def _update_coherence(G, hist) -> None:
     if cs:
         w = min(len(cs), max(1, wbar_w))
         wbar = sum(cs[-w:]) / w
-        _record_metrics(hist, [(lambda: wbar, "W_bar")])
-
-
-def _record_metric(
-    fn: Callable[..., Any],
-    hist: Dict[str, Any],
-    key: str,
-    *args: Any,
-    **kwargs: Any,
-) -> None:
-    """Compute ``fn`` and append the result to ``hist`` under ``key``."""
-
-    append_metric(hist, key, fn(*args, **kwargs))
+        _record_metrics(hist, (lambda: wbar, "W_bar"))
 
 
 def _record_metrics(
-    hist: Dict[str, Any], pairs: list[tuple[Callable[[], Any], str]]
+    hist: Dict[str, Any], *pairs: tuple[Callable[[], Any], str]
 ) -> None:
-    """Record multiple metrics using ``pairs`` of callables and keys."""
+    """Record metrics using pairs of callables and keys."""
     for fn, key in pairs:
-        _record_metric(fn, hist, key)
+        append_metric(hist, key, fn())
 
 
 def _update_phase_sync(G, hist) -> None:
@@ -118,10 +104,8 @@ def _update_phase_sync(G, hist) -> None:
 
     _record_metrics(
         hist,
-        [
-            (lambda: phase_sync(G), "phase_sync"),
-            (lambda: kuramoto_order(G), "kuramoto_R"),
-        ],
+        (lambda: phase_sync(G), "phase_sync"),
+        (lambda: kuramoto_order(G), "kuramoto_R"),
     )
 
 
@@ -132,22 +116,18 @@ def _update_sigma(G, hist) -> None:
     gl = glyph_load(G, window=win)
     _record_metrics(
         hist,
-        [
-            (lambda: gl.get("_estabilizadores", 0.0), "glyph_load_estab"),
-            (lambda: gl.get("_disruptivos", 0.0), "glyph_load_disr"),
-        ],
+        (lambda: gl.get("_estabilizadores", 0.0), "glyph_load_estab"),
+        (lambda: gl.get("_disruptivos", 0.0), "glyph_load_disr"),
     )
 
     dist = {k: v for k, v in gl.items() if not k.startswith("_")}
     sig = sigma_vector(dist)
     _record_metrics(
         hist,
-        [
-            (lambda: sig.get("x", 0.0), "sense_sigma_x"),
-            (lambda: sig.get("y", 0.0), "sense_sigma_y"),
-            (lambda: sig.get("mag", 0.0), "sense_sigma_mag"),
-            (lambda: sig.get("angle", 0.0), "sense_sigma_angle"),
-        ],
+        (lambda: sig.get("x", 0.0), "sense_sigma_x"),
+        (lambda: sig.get("y", 0.0), "sense_sigma_y"),
+        (lambda: sig.get("mag", 0.0), "sense_sigma_mag"),
+        (lambda: sig.get("angle", 0.0), "sense_sigma_angle"),
     )
 
 
