@@ -121,7 +121,6 @@ class _Encoder(json.JSONEncoder):
 
 def _stable_json(obj: Any, max_depth: int = 10) -> str:
     """Return a JSON string with deterministic ordering."""
-    _check_depth(obj, 0, max_depth)
     return json_dumps(
         obj,
         sort_keys=True,
