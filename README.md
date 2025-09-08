@@ -30,7 +30,10 @@ pip install tnfr
 * Install extras:
   * NumPy: `pip install tnfr[numpy]`
   * YAML: `pip install tnfr[yaml]`
-  * Both: `pip install tnfr[numpy,yaml]`
+  * orjson (faster JSON serialization): `pip install tnfr[orjson]`
+  * All: `pip install tnfr[numpy,yaml,orjson]`
+* When `orjson` is unavailable the engine falls back to Python's built-in
+  `json` module.
 
 For optional JavaScript tooling, install the Node.js dependencies:
 

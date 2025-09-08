@@ -34,6 +34,7 @@ from ..helpers.numeric import list_mean
 from ..observers import attach_standard_observer
 from ..logging_utils import get_logger
 from ..types import Glyph
+from ..json_utils import fast_dumps
 
 from .arguments import _args_to_dict
 from .token_parser import _parse_tokens
@@ -240,5 +241,5 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     if args.save:
         _save_json(args.save, out)
     else:
-        logger.info("%s", json.dumps(out, ensure_ascii=False, indent=2))
+        logger.info("%s", fast_dumps(out).decode("utf-8"))
     return 0
