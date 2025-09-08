@@ -73,3 +73,8 @@ def test_custom_error_msg():
 def test_non_iterable_error():
     with pytest.raises(TypeError):
         ensure_collection(42)  # type: ignore[arg-type]
+
+
+def test_max_materialize_accepts_float():
+    gen = (i for i in range(3))
+    assert ensure_collection(gen, max_materialize=3.0) == (0, 1, 2)

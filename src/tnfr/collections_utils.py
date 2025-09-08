@@ -56,14 +56,17 @@ def ensure_collection(
     if isinstance(it, (str, bytes, bytearray)):
         # Treat raw bytes/strings as single elements
         return cast(Collection[T], (it,))
-    if max_materialize is not None and max_materialize < 0:
-        raise ValueError("'max_materialize' must be non-negative")
+    if max_materialize is not None:
+        limit = int(max_materialize)
+        if limit < 0:
+            raise ValueError("'max_materialize' must be non-negative")
+    else:
+        limit = None
 
     try:
-        if max_materialize is None:
+        if limit is None:
             # No limit: consume iterable fully
             return tuple(it)
-        limit = max_materialize  # materialization cap
         if limit == 0:
             # Explicitly allow empty result without consumption
             return ()

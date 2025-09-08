@@ -45,6 +45,12 @@ def test_recent_glyph_history_lookup():
     assert recent_glyph(nd, "A", window=3)
 
 
+def test_recent_glyph_discards_non_iterable_history():
+    nd = {"glyph_history": 1}  # type: ignore[assignment]
+    assert not recent_glyph(nd, "A", window=1)
+    assert list(nd["glyph_history"]) == []
+
+
 @pytest.mark.slow
 def test_recent_glyph_benchmark():
     nd = _make_node([str(i) for i in range(1000)], window=1000)
