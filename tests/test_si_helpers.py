@@ -1,4 +1,3 @@
-import math
 import networkx as nx
 import pytest
 import math
@@ -8,7 +7,6 @@ from tnfr.metrics_utils import (
     compute_Si_node,
     get_Si_weights,
     get_trig_cache,
-    get_numpy,
 )
 from tnfr.alias import get_attr, set_attr, set_theta
 from tnfr.helpers.cache import increment_edge_version
@@ -79,13 +77,7 @@ def test_compute_Si_node():
     set_attr(G.nodes[1], ALIAS_DNFR, 0.2)
     set_attr(G.nodes[1], ALIAS_THETA, 0.0)
     set_attr(G.nodes[2], ALIAS_THETA, 0.0)
-    trig = get_trig_cache(G)
-    cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
-    neigh = [2]
-    np_mod = get_numpy()
-    assert np_mod is not None
-    cos_arr = np_mod.fromiter((cos_th[v] for v in neigh), dtype=float, count=len(neigh))
-    sin_arr = np_mod.fromiter((sin_th[v] for v in neigh), dtype=float, count=len(neigh))
+    disp_fase = 0.0
     Si = compute_Si_node(
         1,
         G.nodes[1],
@@ -94,44 +86,8 @@ def test_compute_Si_node():
         gamma=0.25,
         vfmax=1.0,
         dnfrmax=1.0,
-        cos_vals=cos_arr,
-        sin_vals=sin_arr,
-        theta_i=thetas[1],
+        disp_fase=disp_fase,
         inplace=True,
-        np=np_mod,
     )
     assert Si == pytest.approx(0.7)
     assert get_attr(G.nodes[1], ALIAS_SI, 0.0) == pytest.approx(0.7)
-
-    class DummyNP:
-        class Arr(list):
-            def mean(self, axis=None):
-                if axis == 0:
-                    cols = len(self[0])
-                    return [sum(row[i] for row in self) / len(self) for i in range(cols)]
-                return sum(self) / len(self)
-
-        def fromiter(self, iterable, dtype=float, count=-1):
-            return self.Arr(list(iterable))
-
-        def arctan2(self, y, x):
-            return math.atan2(y, x)
-
-    np_dummy = DummyNP()
-    cos_arr = np_dummy.fromiter((cos_th[v] for v in neigh), dtype=float, count=len(neigh))
-    sin_arr = np_dummy.fromiter((sin_th[v] for v in neigh), dtype=float, count=len(neigh))
-    Si_np = compute_Si_node(
-        1,
-        G.nodes[1],
-        alpha=0.5,
-        beta=0.25,
-        gamma=0.25,
-        vfmax=1.0,
-        dnfrmax=1.0,
-        cos_vals=cos_arr,
-        sin_vals=sin_arr,
-        theta_i=thetas[1],
-        inplace=False,
-        np=np_dummy,
-    )
-    assert Si_np == pytest.approx(0.7)
