@@ -14,36 +14,40 @@ from .helpers.cache import get_graph
 
 _RNG_LOCK = threading.Lock()
 _CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
-_RNG_CACHE: MutableMapping[Tuple[int, int], random.Random] = LRUCache(
+_RNG_CACHE: MutableMapping[Tuple[int, int], int] = LRUCache(
     maxsize=max(1, _CACHE_MAXSIZE)
 )
 
 
-def make_rng(seed_int: int, key_int: int) -> random.Random:
+def _seed_hash(seed_int: int, key_int: int) -> int:
     seed_bytes = struct.pack(
         ">QQ",
         seed_int & 0xFFFFFFFFFFFFFFFF,
         key_int & 0xFFFFFFFFFFFFFFFF,
     )
-    seed_hash = int.from_bytes(
+    return int.from_bytes(
         hashlib.blake2b(seed_bytes, digest_size=8).digest(), "big"
     )
-    return random.Random(seed_hash)
+
+
+def make_rng(seed_int: int, key_int: int) -> random.Random:
+    return random.Random(_seed_hash(seed_int, key_int))
 
 
 def get_rng(seed: int, key: int) -> random.Random:
-    """Return a cached ``random.Random`` for ``(seed, key)``."""
+    """Return a ``random.Random`` for ``(seed, key)`` using a cached seed."""
     seed_int = int(seed)
     key_int = int(key)
     k = (seed_int, key_int)
     with _RNG_LOCK:
         if _CACHE_MAXSIZE <= 0:
-            return make_rng(seed_int, key_int)
-        rng = _RNG_CACHE.get(k)
-        if rng is None:
-            rng = make_rng(seed_int, key_int)
-            _RNG_CACHE[k] = rng
-        return rng
+            seed_hash = _seed_hash(seed_int, key_int)
+        else:
+            seed_hash = _RNG_CACHE.get(k)
+            if seed_hash is None:
+                seed_hash = _seed_hash(seed_int, key_int)
+                _RNG_CACHE[k] = seed_hash
+        return random.Random(seed_hash)
 
 
 def _cache_clear() -> None:
