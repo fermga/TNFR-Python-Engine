@@ -24,6 +24,13 @@ def _flatten_tokens(obj: Any):
 def validate_token(
     tok: Any, pos: int, token_map: dict[str, Callable[[Any], Any]]
 ) -> Any:
+    """Validate a token and wrap handler errors with context.
+
+    The handler retrieved from ``token_map`` may raise ``KeyError``,
+    ``ValueError`` or ``TypeError``. These exceptions are intercepted and
+    re-raised as :class:`ValueError` with additional positional context.
+    """
+
     if isinstance(tok, dict):
         if len(tok) != 1:
             raise ValueError(
@@ -37,7 +44,7 @@ def validate_token(
             )
         try:
             return handler(val)
-        except (KeyError, ValueError) as e:
+        except (KeyError, ValueError, TypeError) as e:
             msg = f"{type(e).__name__}: {e} (posición {pos}, token {tok!r})"
             raise ValueError(msg) from e
     if isinstance(tok, str):
