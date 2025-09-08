@@ -23,6 +23,8 @@ def build_graph(
     if n <= 0:
         raise ValueError("n must be a positive integer")
 
+    topology = topology.lower()
+
     if topology == "ring":
         G = nx.cycle_graph(n)
     elif topology == "complete":
@@ -36,7 +38,7 @@ def build_graph(
         valid = ["ring", "complete", "erdos"]
         raise ValueError(
             f"Invalid topology '{topology}'. "
-            f"Valid options are: {', '.join(valid)}"
+            f"Accepted options are: {', '.join(valid)}"
         )
 
     # Valores canónicos para inicialización
