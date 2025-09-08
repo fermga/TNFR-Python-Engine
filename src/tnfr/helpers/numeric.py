@@ -12,6 +12,7 @@ __all__ = [
     "clamp",
     "clamp01",
     "list_mean",
+    "kahan_sum_nd",
     "kahan_sum",
     "kahan_sum2d",
     "angle_diff",
@@ -39,51 +40,37 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
         return float(default)
 
 
-def kahan_sum(values: Iterable[float]) -> float:
-    """Return a compensated sum of ``values`` using Kahan summation.
+def kahan_sum_nd(values: Iterable[Sequence[float]], dims: int) -> tuple[float, ...]:
+    """Return compensated sums of ``values`` with ``dims`` components.
 
-    The implementation follows the Kahan–Babuška (Neumaier) algorithm,
-    which keeps track of a small correction term to reduce floating point
-    error. It is more accurate than the built-in :func:`sum` while being
-    cheaper than :func:`math.fsum`.
+    Each component of the tuples in ``values`` is summed independently using the
+    Kahan–Babuška (Neumaier) algorithm to reduce floating point error.
     """
-    total = 0.0
-    c = 0.0
-    for v in values:
-        t = total + v
-        if abs(total) >= abs(v):
-            c += (total - t) + v
-        else:
-            c += (v - t) + total
-        total = t
-    return float(total + c)
+    if dims < 1:
+        raise ValueError("dims must be >= 1")
+    totals = [0.0] * dims
+    comps = [0.0] * dims
+    for vs in values:
+        for i in range(dims):
+            v = vs[i]
+            t = totals[i] + v
+            if abs(totals[i]) >= abs(v):
+                comps[i] += (totals[i] - t) + v
+            else:
+                comps[i] += (v - t) + totals[i]
+            totals[i] = t
+    return tuple(float(totals[i] + comps[i]) for i in range(dims))
+
+
+def kahan_sum(values: Iterable[float]) -> float:
+    """Return a compensated sum of ``values`` using Kahan summation."""
+    (result,) = kahan_sum_nd(((v,) for v in values), dims=1)
+    return result
 
 
 def kahan_sum2d(values: Iterable[tuple[float, float]]) -> tuple[float, float]:
-    """Return compensated sums of paired ``values`` using Kahan summation.
-
-    Each component is summed independently using the Kahan–Babuška (Neumaier)
-    algorithm to reduce floating point error.
-    """
-    total_x = 0.0
-    comp_x = 0.0
-    total_y = 0.0
-    comp_y = 0.0
-    for x, y in values:
-        t = total_x + x
-        if abs(total_x) >= abs(x):
-            comp_x += (total_x - t) + x
-        else:
-            comp_x += (x - t) + total_x
-        total_x = t
-
-        t = total_y + y
-        if abs(total_y) >= abs(y):
-            comp_y += (total_y - t) + y
-        else:
-            comp_y += (y - t) + total_y
-        total_y = t
-    return float(total_x + comp_x), float(total_y + comp_y)
+    """Return compensated sums of paired ``values`` using Kahan summation."""
+    return kahan_sum_nd(values, dims=2)
 
 
 def angle_diff(a: float, b: float) -> float:
