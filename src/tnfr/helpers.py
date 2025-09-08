@@ -146,19 +146,20 @@ def neighbor_phase_mean_list(
     np=None,
     fallback: float = 0.0,
 ) -> float:
-    """Return circular mean of neighbour phases from cosine/sine mappings."""
+    """Return circular mean of neighbour phases from cosine/sine mappings.
+
+    When ``np`` (NumPy) is provided, ``np.fromiter`` is used to compute the
+    averages. Otherwise, the mean is computed using the pure-Python
+    :func:`_phase_mean_from_iter` helper.
+    """
     deg = len(neigh)
     if deg == 0:
         return fallback
     if np is not None:
-        if hasattr(np, "fromiter"):
-            cos_vals = np.fromiter((cos_th[v] for v in neigh), dtype=float, count=deg)
-            sin_vals = np.fromiter((sin_th[v] for v in neigh), dtype=float, count=deg)
-            mean_cos = float(cos_vals.mean())
-            mean_sin = float(sin_vals.mean())
-        else:
-            vals = np.array([(cos_th[v], sin_th[v]) for v in neigh], dtype=float)
-            mean_cos, mean_sin = vals.mean(axis=0)
+        cos_vals = np.fromiter((cos_th[v] for v in neigh), dtype=float, count=deg)
+        sin_vals = np.fromiter((sin_th[v] for v in neigh), dtype=float, count=deg)
+        mean_cos = float(cos_vals.mean())
+        mean_sin = float(sin_vals.mean())
         return float(np.arctan2(mean_sin, mean_cos))
     return _phase_mean_from_iter(((cos_th[v], sin_th[v]) for v in neigh), fallback)
 
