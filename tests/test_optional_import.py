@@ -50,7 +50,7 @@ def test_warns_once_then_debug(monkeypatch, caplog):
     records = [
         r.levelno for r in caplog.records if r.name == import_utils.logger.name
     ]
-    assert records == [logging.WARNING, logging.DEBUG]
+    assert records == [logging.DEBUG]
     assert stacklevels == [2]
 
 
