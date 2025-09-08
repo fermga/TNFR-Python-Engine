@@ -405,16 +405,19 @@ def edge_version_cache(
     duplicate work for the same key. Locks are stored in a simple ``dict``
     and cleared when the cache is invalidated.
 
-    When ``max_entries`` is a positive integer, only the most recent
+    When ``max_entries`` is a positive integer-like value, only the most recent
     ``max_entries`` cache entries are kept (defaults to ``128``).  If
     ``max_entries`` is ``None`` the cache may grow without bound.  A
     ``max_entries`` value of ``0`` disables caching entirely and ``builder``
-    is executed on each invocation.  The ``builder`` is executed outside the
-    global lock when a cache miss occurs, so it **must** be pure and yield
-    identical results across concurrent invocations.
+    is executed on each invocation.  ``max_entries`` is coerced to ``int`` on
+    entry and validated to be non-negative. The ``builder`` is executed
+    outside the global lock when a cache miss occurs, so it **must** be pure
+    and yield identical results across concurrent invocations.
     """
-    if max_entries is not None and max_entries < 0:
-        raise ValueError("max_entries must be non-negative or None")
+    if max_entries is not None:
+        max_entries = int(max_entries)
+        if max_entries < 0:
+            raise ValueError("max_entries must be non-negative or None")
     if max_entries == 0:
         return builder()
 
