@@ -47,11 +47,12 @@ from ..helpers.cache import (
 )
 from ..alias import (
     get_attr,
-    set_attr,
     get_attr_str,
     set_attr_str,
     set_vf,
     set_dnfr,
+    set_attr,
+    set_theta,
     multi_recompute_abs_max,
 )
 from ..metrics_utils import compute_Si, compute_dnfr_accel_max, get_trig_cache
@@ -147,7 +148,11 @@ def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
     else:
         set_attr(nd, ALIAS_VF, clamp(vf, vf_min, vf_max))
     if G.graph.get("THETA_WRAP") if G is not None else DEFAULTS["THETA_WRAP"]:
-        set_attr(nd, ALIAS_THETA, ((th + math.pi) % (2 * math.pi) - math.pi))
+        new_th = ((th + math.pi) % (2 * math.pi) - math.pi)
+        if G is not None and node is not None:
+            set_theta(G, node, new_th)
+        else:
+            set_attr(nd, ALIAS_THETA, new_th)
 
 
 def validate_canon(G) -> None:
@@ -300,7 +305,7 @@ def coordinate_global_local_phase(
         thL = neighbor_phase_mean(G, n)
         dG = angle_diff(thG, th)
         dL = angle_diff(thL, th)
-        set_attr(nd, ALIAS_THETA, th + kG * dG + kL * dL)
+        set_theta(G, n, th + kG * dG + kL * dL)
 
 
 # -------------------------

@@ -1,6 +1,7 @@
 import math
 import networkx as nx
 import pytest
+import math
 
 from tnfr.constants import ALIAS_DNFR, ALIAS_SI, ALIAS_THETA, ALIAS_VF
 from tnfr.metrics_utils import (
@@ -9,7 +10,7 @@ from tnfr.metrics_utils import (
     get_trig_cache,
     get_numpy,
 )
-from tnfr.alias import get_attr, set_attr
+from tnfr.alias import get_attr, set_attr, set_theta
 from tnfr.helpers.cache import increment_edge_version
 
 
@@ -57,6 +58,18 @@ def test_get_trig_cache_invalidation_on_version():
     trig3 = get_trig_cache(G)
     assert trig3 is not trig1
     assert 1 in trig3.cos and 1 not in trig1.cos
+
+
+def test_get_trig_cache_invalidation_on_phase_change():
+    G = nx.Graph()
+    G.add_edge(1, 2)
+    set_attr(G.nodes[1], ALIAS_THETA, 0.0)
+    set_attr(G.nodes[2], ALIAS_THETA, 0.0)
+    trig1 = get_trig_cache(G)
+    set_theta(G, 1, math.pi / 2)
+    trig2 = get_trig_cache(G)
+    assert trig2 is not trig1
+    assert trig2.theta[1] == pytest.approx(math.pi / 2)
 
 
 def test_compute_Si_node():
