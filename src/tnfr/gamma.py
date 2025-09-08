@@ -22,10 +22,8 @@ from .logging_utils import get_logger
 logger = get_logger(__name__)
 
 DEFAULT_GAMMA: Mapping[str, str] = {"type": "none"}
-DEFAULT_GAMMA_DUMPED = json_dumps(DEFAULT_GAMMA, sort_keys=True)
-DEFAULT_GAMMA_HASH = hashlib.blake2b(
-    DEFAULT_GAMMA_DUMPED, digest_size=16
-).hexdigest()
+DEFAULT_GAMMA_DUMPED: bytes | None = None
+DEFAULT_GAMMA_HASH: str | None = None
 
 __all__ = [
     "kuramoto_R_psi",
@@ -38,6 +36,15 @@ __all__ = [
     "GAMMA_REGISTRY",
     "eval_gamma",
 ]
+
+
+def _default_gamma_spec() -> tuple[bytes, str]:
+    global DEFAULT_GAMMA_DUMPED, DEFAULT_GAMMA_HASH
+    if DEFAULT_GAMMA_HASH is None or DEFAULT_GAMMA_DUMPED is None:
+        dumped = json_dumps(DEFAULT_GAMMA, sort_keys=True)
+        DEFAULT_GAMMA_DUMPED = dumped
+        DEFAULT_GAMMA_HASH = hashlib.blake2b(dumped, digest_size=16).hexdigest()
+    return DEFAULT_GAMMA_DUMPED, DEFAULT_GAMMA_HASH
 
 
 def _ensure_kuramoto_cache(G, t) -> None:
@@ -94,8 +101,9 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
     if raw is None or isinstance(raw, Mapping):
         spec = raw if isinstance(raw, Mapping) else DEFAULT_GAMMA
         if spec is DEFAULT_GAMMA:
-            dumped = DEFAULT_GAMMA_DUMPED
-            cur_hash = DEFAULT_GAMMA_HASH
+            if cached is spec and prev_hash is not None:
+                return cached
+            dumped, cur_hash = _default_gamma_spec()
         else:
             dumped = json_dumps(spec, sort_keys=True)
             cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
@@ -105,7 +113,7 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
         G.graph["_gamma_spec_hash"] = cur_hash
         return spec
 
-    cur_hash = DEFAULT_GAMMA_HASH
+    _, cur_hash = _default_gamma_spec()
     if cached is not None and prev_hash == cur_hash:
         return cached
     spec = (
