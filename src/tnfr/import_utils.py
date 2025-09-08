@@ -10,7 +10,7 @@ from __future__ import annotations
 import importlib
 import warnings
 from functools import lru_cache
-from typing import Any
+from typing import Any, Literal
 from collections import OrderedDict
 from dataclasses import dataclass, field
 import threading
@@ -69,7 +69,28 @@ _WARNED_MODULES: OrderedDict[str, None] = OrderedDict()
 _WARNED_LOCK = threading.Lock()
 
 
-def _warn_failure(module: str, attr: str | None, err: Exception) -> None:
+def _warn_failure(
+    module: str,
+    attr: str | None,
+    err: Exception,
+    *,
+    emit: Literal["warn", "log", "both"] = "warn",
+) -> None:
+    """Emit a warning about a failed import.
+
+    Parameters
+    ----------
+    module:
+        Module name that failed to import.
+    attr:
+        Optional attribute that was looked up on the module.
+    err:
+        Exception that was raised during import or attribute access.
+    emit:
+        Destination for the warning: ``"warn"`` (default) uses
+        :func:`warnings.warn`, ``"log"`` uses :func:`logger.warning` and
+        ``"both"`` emits to both destinations.
+    """
     msg = (
         f"Failed to import module '{module}': {err}"
         if isinstance(err, ImportError)
@@ -86,8 +107,10 @@ def _warn_failure(module: str, attr: str | None, err: Exception) -> None:
         logger.debug(msg)
         return
 
-    warnings.warn(msg, RuntimeWarning, stacklevel=2)
-    logger.warning(msg)
+    if emit in {"warn", "both"}:
+        warnings.warn(msg, RuntimeWarning, stacklevel=2)
+    if emit in {"log", "both"}:
+        logger.warning(msg)
 
 
 @lru_cache(maxsize=128)
