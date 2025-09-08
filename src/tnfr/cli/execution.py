@@ -1,5 +1,6 @@
 import argparse
 import json
+
 from pathlib import Path
 from typing import Any, Iterable, Optional, TYPE_CHECKING
 
