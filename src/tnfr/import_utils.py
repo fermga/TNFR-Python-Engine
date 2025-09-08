@@ -11,7 +11,7 @@ import importlib
 import warnings
 from functools import lru_cache
 from typing import Any, Literal
-from collections import OrderedDict
+from collections import OrderedDict, deque
 from dataclasses import dataclass, field
 import threading
 import time
@@ -65,7 +65,8 @@ _IMPORT_STATE = _ImportState()
 
 
 _WARNED_LIMIT = 256
-_WARNED_MODULES: OrderedDict[str, None] = OrderedDict()
+_WARNED_MODULES: set[str] = set()
+_WARNED_QUEUE: deque[str] = deque()
 _WARNED_LOCK = threading.Lock()
 
 
@@ -99,9 +100,11 @@ def _warn_failure(
     with _WARNED_LOCK:
         first = module not in _WARNED_MODULES
         if first:
-            _WARNED_MODULES[module] = None
-            if len(_WARNED_MODULES) > _WARNED_LIMIT:
-                _WARNED_MODULES.popitem(last=False)
+            if len(_WARNED_QUEUE) >= _WARNED_LIMIT:
+                removed = _WARNED_QUEUE.popleft()
+                _WARNED_MODULES.discard(removed)
+            _WARNED_MODULES.add(module)
+            _WARNED_QUEUE.append(module)
 
     if not first:
         logger.debug(msg)
@@ -151,7 +154,12 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
             for item in (name, module_name):
                 _IMPORT_STATE.discard(item)
         with _WARNED_LOCK:
-            _WARNED_MODULES.pop(module_name, None)
+            if module_name in _WARNED_MODULES:
+                _WARNED_MODULES.discard(module_name)
+                try:
+                    _WARNED_QUEUE.remove(module_name)
+                except ValueError:
+                    pass
         return obj
     except (ImportError, AttributeError) as e:
         _warn_failure(module_name, attr, e)
@@ -174,6 +182,7 @@ def _cache_clear() -> None:
         _IMPORT_STATE.clear()
     with _WARNED_LOCK:
         _WARNED_MODULES.clear()
+        _WARNED_QUEUE.clear()
 
 
 optional_import.cache_clear = _cache_clear  # type: ignore[attr-defined]

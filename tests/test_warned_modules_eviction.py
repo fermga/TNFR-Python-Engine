@@ -4,12 +4,14 @@ from tnfr.import_utils import (
     _WARNED_MODULES,
     _WARNED_LIMIT,
     _WARNED_LOCK,
+    _WARNED_QUEUE,
 )
 
 
 def test_warned_modules_eviction():
     with _WARNED_LOCK:
         _WARNED_MODULES.clear()
+        _WARNED_QUEUE.clear()
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         for i in range(_WARNED_LIMIT + 5):
