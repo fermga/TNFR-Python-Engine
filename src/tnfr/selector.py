@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 from collections.abc import Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -44,7 +44,7 @@ def _selector_thresholds(G: "nx.Graph") -> dict:
         "accel_lo": (None, SELECTOR_THRESHOLD_DEFAULTS["accel_lo"]),
     }
 
-    out: Dict[str, float] = {}
+    out: dict[str, float] = {}
     for key, (legacy, default) in specs.items():
         if legacy is not None:
             val = thr_sel.get(key, thr_def.get(legacy, default))
@@ -63,7 +63,7 @@ def _norms_para_selector(G: "nx.Graph") -> dict:
 
 
 def _calc_selector_score(
-    Si: float, dnfr: float, accel: float, weights: Dict[str, float]
+    Si: float, dnfr: float, accel: float, weights: dict[str, float]
 ) -> float:
     """Compute a weighted score assuming normalised weights."""
     return (
@@ -79,11 +79,11 @@ def dist_to_threshold(value: float, hi: float, lo: float) -> float:
 
 
 def _apply_selector_hysteresis(
-    nd: Dict[str, Any],
+    nd: dict[str, Any],
     Si: float,
     dnfr: float,
     accel: float,
-    thr: Dict[str, float],
+    thr: dict[str, float],
     margin: float,
 ) -> str | None:
     """Apply hysteresis, returning the previous glyph when close to

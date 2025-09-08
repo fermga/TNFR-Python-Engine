@@ -1,7 +1,7 @@
 """Grammar rules."""
 
 from __future__ import annotations
-from typing import Dict, Any, Set, Iterable, Optional, Callable
+from typing import Any, Iterable, Optional, Callable
 
 from .constants import (
     DEFAULTS,
@@ -57,7 +57,7 @@ __all__ = [
 # -------------------------
 
 
-def _gram_state(nd: Dict[str, Any]) -> Dict[str, Any]:
+def _gram_state(nd: dict[str, Any]) -> dict[str, Any]:
     """Create or return the node grammar state.
 
     Fields:
@@ -70,7 +70,7 @@ def _gram_state(nd: Dict[str, Any]) -> Dict[str, Any]:
 # -------------------------
 # Canonical compatibilities (allowed next glyphs)
 # -------------------------
-CANON_COMPAT: Dict[Glyph, Set[Glyph]] = {
+CANON_COMPAT: dict[Glyph, set[Glyph]] = {
     # Inicio / apertura
     Glyph.AL: {Glyph.EN, Glyph.RA, Glyph.NAV, Glyph.VAL, Glyph.UM},
     Glyph.EN: {Glyph.IL, Glyph.UM, Glyph.RA, Glyph.NAV},
@@ -100,7 +100,7 @@ CANON_COMPAT: Dict[Glyph, Set[Glyph]] = {
 }
 
 # Canonical fallbacks when a transition is not allowed
-CANON_FALLBACK: Dict[Glyph, Glyph] = {
+CANON_FALLBACK: dict[Glyph, Glyph] = {
     Glyph.AL: Glyph.EN,
     Glyph.EN: Glyph.IL,
     Glyph.IL: Glyph.RA,
@@ -124,7 +124,7 @@ def _coerce_glyph(val: Any) -> Glyph | Any:
         return val
 
 
-def _glyph_fallback(cand_key: str, fallbacks: Dict[str, Any]) -> Glyph | str:
+def _glyph_fallback(cand_key: str, fallbacks: dict[str, Any]) -> Glyph | str:
     """Determine fallback glyph for ``cand_key`` and return converted value."""
     glyph_key = _coerce_glyph(cand_key)
     canon_fb = (
@@ -169,7 +169,7 @@ def _accel_norm(G, nd) -> float:
 
 
 def _check_repeats(
-    G, n, cand: Glyph | str, cfg: Dict[str, Any]
+    G, n, cand: Glyph | str, cfg: dict[str, Any]
 ) -> Glyph | str:
     """Avoid recent repetitions according to ``cfg``."""
     nd = G.nodes[n]
@@ -187,8 +187,8 @@ def _maybe_force(
     n,
     cand: str,
     original: str,
-    cfg: Dict[str, Any],
-    accessor: Callable[[Any, Dict[str, Any]], float],
+    cfg: dict[str, Any],
+    accessor: Callable[[Any, dict[str, Any]], float],
     key: str,
 ) -> str:
     """Restore ``original`` if ``accessor`` exceeds ``key`` threshold."""
@@ -200,7 +200,7 @@ def _maybe_force(
     return cand
 
 
-def _check_oz_to_zhir(G, n, cand: str, cfg: Dict[str, Any]) -> str:
+def _check_oz_to_zhir(G, n, cand: str, cfg: dict[str, Any]) -> str:
     nd = G.nodes[n]
     if cand == Glyph.ZHIR:
         win = int(cfg.get("zhir_requires_oz_window", 3))
@@ -211,7 +211,7 @@ def _check_oz_to_zhir(G, n, cand: str, cfg: Dict[str, Any]) -> str:
 
 
 def _check_thol_closure(
-    G, n, cand: str, cfg: Dict[str, Any], st: Dict[str, Any]
+    G, n, cand: str, cfg: dict[str, Any], st: dict[str, Any]
 ) -> str:
     nd = G.nodes[n]
     if st.get("thol_open", False):

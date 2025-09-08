@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import math
-from typing import Dict
 
 from .types import Glyph
 
@@ -62,7 +61,7 @@ GLYPH_GROUPS = {
 # Ángulos canónicos para todos los glyphs reconocidos. Las categorías
 # anteriores se distribuyen uniformemente en el círculo y se ajustan a
 # orientaciones semánticas específicas en el plano σ.
-ANGLE_MAP: Dict[str, float] = {
+ANGLE_MAP: dict[str, float] = {
     # AL no participa en el plano σ pero se incluye por completitud.
     # Comparte el ángulo base (0 rad) con IL de forma intencionada.
     Glyph.AL.value: 0.0,

@@ -1,7 +1,7 @@
 """Structural analysis."""
 
 from __future__ import annotations
-from typing import Iterable, Tuple, List
+from typing import Iterable
 import networkx as nx
 
 from .dynamics import (
@@ -26,7 +26,7 @@ def create_nfr(
     theta: float = 0.0,
     graph: nx.Graph | None = None,
     dnfr_hook=dnfr_epi_vf_mixed,
-) -> Tuple[nx.Graph, str]:
+) -> tuple[nx.Graph, str]:
     """Create a graph with an initialised NFR node.
 
     Returns the tuple ``(G, name)`` for convenience.
@@ -68,7 +68,7 @@ class Operador:
 
 # Derivados concretos -------------------------------------------------------
 #
-def operador_factory(*pairs: Tuple[str, str]) -> dict[str, type[Operador]]:
+def operador_factory(*pairs: tuple[str, str]) -> dict[str, type[Operador]]:
     """Dynamically build ``Operador`` subclasses.
 
     Each ``(name, glyph)`` pair produces a concrete subclass with the
@@ -126,7 +126,7 @@ _TRAMO_INTERMEDIO = {"disonancia", "acoplamiento", "resonancia"}
 _CIERRE_VALIDO = {"silencio", "transicion", "recursividad"}
 
 
-def _verify_token_format(nombres: List[str]) -> Tuple[bool, str]:
+def _verify_token_format(nombres: list[str]) -> tuple[bool, str]:
     """Check basic type and format of the token list."""
     if not nombres:
         return False, "empty sequence"
@@ -141,7 +141,7 @@ def _verify_token_format(nombres: List[str]) -> Tuple[bool, str]:
     return True, "ok"
 
 
-def _validate_logical_coherence(nombres: List[str]) -> Tuple[bool, str]:
+def _validate_logical_coherence(nombres: list[str]) -> tuple[bool, str]:
     """Validate logical coherence of the sequence."""
     i_rec = i_coh = -1
     found_intermedio = False
@@ -172,7 +172,7 @@ def _validate_logical_coherence(nombres: List[str]) -> Tuple[bool, str]:
     return True, "ok"
 
 
-def validate_sequence(nombres: List[str]) -> Tuple[bool, str]:
+def validate_sequence(nombres: list[str]) -> tuple[bool, str]:
     """Validate minimal TNFR syntax rules."""
     ok, msg = _verify_token_format(nombres)
     if not ok:

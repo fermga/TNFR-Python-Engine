@@ -3,7 +3,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, Any
+from typing import Any
 
 __all__ = ["NodeState", "Glyph"]
 
@@ -15,7 +15,7 @@ class NodeState:
     theta: float = 0.0  # θ
     Si: float = 0.0
     epi_kind: str = ""
-    extra: Dict[str, Any] = field(default_factory=dict)
+    extra: dict[str, Any] = field(default_factory=dict)
 
 
 class Glyph(str, Enum):

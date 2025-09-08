@@ -1,7 +1,7 @@
 """Sense calculations."""
 
 from __future__ import annotations
-from typing import Dict, Iterable, List, TypeVar
+from typing import Iterable, TypeVar
 import math
 from collections import Counter
 
@@ -26,7 +26,7 @@ from .constants_glyphs import (
 # Canon: orden circular de glyphs y ángulos
 # -------------------------
 
-GLYPH_UNITS: Dict[str, complex] = {
+GLYPH_UNITS: dict[str, complex] = {
     g: complex(math.cos(a), math.sin(a)) for g, a in ANGLE_MAP.items()
 }
 
@@ -51,7 +51,7 @@ __all__ = [
 T = TypeVar("T")
 
 
-def _resolve_glyph(g: str, mapping: Dict[str, T]) -> T:
+def _resolve_glyph(g: str, mapping: dict[str, T]) -> T:
     """Return ``mapping[g]`` or raise ``KeyError`` with a standard message."""
 
     try:
@@ -112,7 +112,7 @@ def _to_complex(val: complex | float | int) -> complex:
 def _sigma_from_iterable(
     values: Iterable[complex | float | int] | complex | float | int,
     fallback_angle: float = 0.0,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Normalise vectors in the σ-plane.
 
     ``values`` may contain complex or real numbers; real inputs are promoted to
@@ -163,8 +163,8 @@ _sigma_from_vectors = _sigma_from_iterable
 
 
 def _ema_update(
-    prev: Dict[str, float], current: Dict[str, float], alpha: float
-) -> Dict[str, float]:
+    prev: dict[str, float], current: dict[str, float], alpha: float
+) -> dict[str, float]:
     """Exponential moving average update for σ vectors."""
     x = (1 - alpha) * prev["x"] + alpha * current["x"]
     y = (1 - alpha) * prev["y"] + alpha * current["y"]
@@ -175,7 +175,7 @@ def _ema_update(
 
 def sigma_vector_node(
     G, n, weight_mode: str | None = None
-) -> Dict[str, float] | None:
+) -> dict[str, float] | None:
     cfg = _sigma_cfg(G)
     nd = G.nodes[n]
     nw = _node_weight(nd, weight_mode or cfg.get("weight", "Si"))
@@ -197,7 +197,7 @@ def sigma_vector_node(
     }
 
 
-def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
+def sigma_vector(dist: dict[str, float]) -> dict[str, float]:
     """Compute Σ⃗ from a glyph distribution.
 
     ``dist`` may contain raw counts or proportions. All ``(glyph, weight)``
@@ -211,7 +211,7 @@ def sigma_vector(dist: Dict[str, float]) -> Dict[str, float]:
 
 def sigma_vector_from_graph(
     G: nx.Graph, weight_mode: str | None = None
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Global vector in the σ sense plane for a graph.
 
     Parameters
@@ -223,7 +223,7 @@ def sigma_vector_from_graph(
 
     Returns
     -------
-    Dict[str, float]
+    dict[str, float]
         Cartesian components, magnitude and angle of the average vector.
     """
 
@@ -298,7 +298,7 @@ def register_sigma_callback(G) -> None:
 # -------------------------
 
 
-def sigma_series(G, key: str | None = None) -> Dict[str, List[float]]:
+def sigma_series(G, key: str | None = None) -> dict[str, list[float]]:
     cfg = _sigma_cfg(G)
     key = key or cfg.get("history_key", "sigma_global")
     hist = G.graph.get("history", {})
@@ -312,7 +312,7 @@ def sigma_series(G, key: str | None = None) -> Dict[str, List[float]]:
     }
 
 
-def sigma_rose(G, steps: int | None = None) -> Dict[str, int]:
+def sigma_rose(G, steps: int | None = None) -> dict[str, int]:
     """Histogram of glyphs in the last ``steps`` steps (or all)."""
     hist = G.graph.get("history", {})
     counts = hist.get("sigma_counts", [])

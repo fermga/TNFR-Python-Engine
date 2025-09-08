@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 
-from typing import Any, TYPE_CHECKING, Dict
+from typing import Any, TYPE_CHECKING
 from enum import Enum
 from collections import defaultdict, deque
 from collections.abc import Callable, Mapping, Sequence
@@ -168,7 +168,7 @@ def register_callback(
 def invoke_callbacks(
     G: "nx.Graph",
     event: CallbackEvent | str,
-    ctx: Dict[str, Any] | None = None,
+    ctx: dict[str, Any] | None = None,
 ) -> None:
     """Invoke all callbacks registered for ``event`` with context ``ctx``."""
     event = _normalize_event(event)

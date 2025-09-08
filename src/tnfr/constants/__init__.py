@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 from collections.abc import Mapping
 import threading
 import copy
@@ -142,7 +142,7 @@ def _is_immutable(value: Any) -> bool:
 # Unimos los diccionarios en orden de menor a mayor prioridad para que los
 # valores de ``METRIC_DEFAULTS`` sobrescriban al resto,
 # como hacía ``ChainMap``.
-_DEFAULTS_COMBINED: Dict[str, Any] = (
+_DEFAULTS_COMBINED: dict[str, Any] = (
     CORE_DEFAULTS | INIT_DEFAULTS | REMESH_DEFAULTS | METRIC_DEFAULTS
 )
 DEFAULTS: Mapping[str, Any] = MappingProxyType(_DEFAULTS_COMBINED)
@@ -152,11 +152,11 @@ DEFAULTS: Mapping[str, Any] = MappingProxyType(_DEFAULTS_COMBINED)
 # -------------------------
 # "REMESH_TAU" era el nombre original para la memoria de REMESH. Hoy se
 # desglosa en ``REMESH_TAU_GLOBAL`` y ``REMESH_TAU_LOCAL``.
-ALIASES: Dict[str, tuple[str, ...]] = {
+ALIASES: dict[str, tuple[str, ...]] = {
     "REMESH_TAU": ("REMESH_TAU_GLOBAL", "REMESH_TAU_LOCAL"),
 }
 
-_ALIAS_TARGET_TO_KEY: Dict[str, str] = {
+_ALIAS_TARGET_TO_KEY: dict[str, str] = {
     target: alias for alias, targets in ALIASES.items() for target in targets
 }
 
