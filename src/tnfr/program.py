@@ -185,13 +185,12 @@ def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
         else None
     )
     seq = ensure_collection(item.body, max_materialize=None)
-    rev_seq = tuple(reversed(seq))
 
     def _iter_reversed_body():
         for _ in range(repeats):
             if closing is not None:
                 yield closing
-            yield from rev_seq
+            yield from reversed(seq)
 
     stack.extend(_iter_reversed_body())
     stack.append(THOL_SENTINEL)
@@ -327,10 +326,7 @@ def play(
         repeats the body and optionally forces closure with SHA/NUL.
       - Glyphs are applied via ``enforce_canonical_grammar``.
     """
-    if step_fn is None:
-        from . import dynamics
-
-        step_fn = dynamics.step
+    step_fn = step_fn or get_step_fn()
 
     ops = _flatten(sequence)
     curr_target: Optional[list[Node]] = None

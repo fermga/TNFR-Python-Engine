@@ -64,7 +64,8 @@ def prepare_integration_params(
         steps = int(math.ceil(dt / dt_min))
     else:
         steps = 1
-    dt_step = dt / steps if steps else 0.0
+    # ``steps`` is guaranteed to be ≥1 at this point
+    dt_step = dt / steps
 
     return dt_step, steps, t, method
 
@@ -74,10 +75,7 @@ def _integrate_euler(G, dt_step: float, t_local: float):
     gamma_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
     new_states: Dict[Any, tuple[float, float, float]] = {}
     for n, nd in G.nodes(data=True):
-        vf = get_attr(nd, ALIAS_VF, 0.0)
-        dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
-        dEPI_dt_prev = get_attr(nd, ALIAS_dEPI, 0.0)
-        epi_i = get_attr(nd, ALIAS_EPI, 0.0)
+        vf, dnfr, dEPI_dt_prev, epi_i = _node_state(nd)
 
         base = vf * dnfr
         dEPI_dt = base + gamma_map.get(n, 0.0)
@@ -97,20 +95,16 @@ def _integrate_rk4(G, dt_step: float, t_local: float):
 
     new_states: Dict[Any, tuple[float, float, float]] = {}
     for n, nd in G.nodes(data=True):
-        vf = get_attr(nd, ALIAS_VF, 0.0)
-        dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
-        dEPI_dt_prev = get_attr(nd, ALIAS_dEPI, 0.0)
-        epi_i = get_attr(nd, ALIAS_EPI, 0.0)
+        vf, dnfr, dEPI_dt_prev, epi_i = _node_state(nd)
 
         base = vf * dnfr
         g1 = g1_map.get(n, 0.0)
         g_mid = g_mid_map.get(n, 0.0)
         g4 = g4_map.get(n, 0.0)
         k1 = base + g1
-        k2 = base + g_mid
-        k3 = base + g_mid
+        k2 = k3 = base + g_mid
         k4 = base + g4
-        epi = epi_i + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
+        epi = epi_i + (dt_step / 6.0) * (k1 + 4 * k2 + k4)
         dEPI_dt = k4
         d2epi = (dEPI_dt - dEPI_dt_prev) / dt_step if dt_step != 0 else 0.0
         new_states[n] = (epi, dEPI_dt, d2epi)
@@ -120,7 +114,7 @@ def _integrate_rk4(G, dt_step: float, t_local: float):
 def update_epi_via_nodal_equation(
     G,
     *,
-    dt: float = None,
+    dt: float | None = None,
     t: float | None = None,
     method: Literal["euler", "rk4"] | None = None,
 ) -> None:
@@ -170,3 +164,18 @@ def update_epi_via_nodal_equation(
 
 def integrar_epi_euler(G, dt: float | None = None) -> None:
     update_epi_via_nodal_equation(G, dt=dt, method="euler")
+
+
+def _node_state(nd: Dict[str, Any]) -> tuple[float, float, float, float]:
+    """Return common node state attributes.
+
+    Extracts ``νf``, ``ΔNFR``, previous ``dEPI/dt`` and current ``EPI``
+    using alias helpers, providing ``0.0`` defaults when attributes are
+    missing.
+    """
+
+    vf = get_attr(nd, ALIAS_VF, 0.0)
+    dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
+    dEPI_dt_prev = get_attr(nd, ALIAS_dEPI, 0.0)
+    epi_i = get_attr(nd, ALIAS_EPI, 0.0)
+    return vf, dnfr, dEPI_dt_prev, epi_i

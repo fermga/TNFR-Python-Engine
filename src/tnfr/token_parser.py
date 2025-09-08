@@ -34,22 +34,22 @@ def validate_token(
     if isinstance(tok, dict):
         if len(tok) != 1:
             raise ValueError(
-                f"Token inválido: {tok} (posición {pos}, token {tok!r})"
+                f"Invalid token: {tok} (position {pos}, token {tok!r})"
             )
         key, val = next(iter(tok.items()))
         handler = token_map.get(key)
         if handler is None:
             raise ValueError(
-                f"Token no reconocido: {key} (posición {pos}, token {tok!r})"
+                f"Unrecognized token: {key} (position {pos}, token {tok!r})"
             )
         try:
             return handler(val)
         except (KeyError, ValueError, TypeError) as e:
-            msg = f"{type(e).__name__}: {e} (posición {pos}, token {tok!r})"
+            msg = f"{type(e).__name__}: {e} (position {pos}, token {tok!r})"
             raise ValueError(msg) from e
     if isinstance(tok, str):
         return tok
-    raise ValueError(f"Token inválido: {tok} (posición {pos}, token {tok!r})")
+    raise ValueError(f"Invalid token: {tok} (position {pos}, token {tok!r})")
 
 
 def _parse_tokens(
