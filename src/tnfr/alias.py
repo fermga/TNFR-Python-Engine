@@ -24,6 +24,7 @@ from functools import lru_cache
 from .logging_utils import get_logger
 
 from .constants import ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
+from .value_utils import _convert_value
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
@@ -76,39 +77,28 @@ def _alias_resolve(
     ``aliases`` must already be validated with :func:`_validate_aliases`.
     """
 
-    errors: list[tuple[str, Exception]] | None = None
     for key in aliases:
         if key not in d:
             continue
-        try:
-            return conv(d[key])
-        except (ValueError, TypeError) as exc:
-            if errors is None:
-                errors = []
-            errors.append((key, exc))
+        ok, value = _convert_value(
+            d[key],
+            conv,
+            strict=strict,
+            key=key,
+            log_level=log_level,
+        )
+        if ok:
+            return value
     if default is not None:
-        try:
-            return conv(default)
-        except (ValueError, TypeError) as exc:
-            if errors is None:
-                errors = []
-            errors.append(("default", exc))
-
-    if errors is not None:
-        if strict:
-            err_msg = "; ".join(f"{k!r}: {e}" for k, e in errors)
-            raise ValueError(f"Could not convert values for {err_msg}")
-        if log_level is not None:
-            lvl = log_level
-        else:
-            lvl = (
-                logging.WARNING
-                if any(k == "default" for k, _ in errors)
-                else logging.DEBUG
-            )
-        summary = "; ".join(f"{k!r}: {e}" for k, e in errors)
-        logger.log(lvl, "Could not convert values for %s", summary)
-
+        ok, value = _convert_value(
+            default,
+            conv,
+            strict=strict,
+            key="default",
+            log_level=log_level if log_level is not None else logging.WARNING,
+        )
+        if ok:
+            return value
     return None
 
 
