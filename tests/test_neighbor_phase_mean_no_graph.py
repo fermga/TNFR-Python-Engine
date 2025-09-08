@@ -20,5 +20,3 @@ def test_neighbor_phase_mean_requires_graph():
     node = DummyNode()
     with pytest.raises(TypeError):
         neighbor_phase_mean(node)
-
-

@@ -90,7 +90,9 @@ def test_read_structured_file_missing_dependency(
     def fake_safe_load(_: str) -> None:
         raise ImportError("pyyaml is not installed")
 
-    monkeypatch.setattr(io_mod, "yaml", type("Y", (), {"safe_load": fake_safe_load}))
+    monkeypatch.setattr(
+        io_mod, "yaml", type("Y", (), {"safe_load": fake_safe_load})
+    )
 
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
@@ -109,7 +111,9 @@ def test_read_structured_file_missing_dependency_toml(
     def fake_loads(_: str) -> None:
         raise ImportError("toml is not installed")
 
-    monkeypatch.setattr(io_mod, "tomllib", type("T", (), {"loads": fake_loads}))
+    monkeypatch.setattr(
+        io_mod, "tomllib", type("T", (), {"loads": fake_loads})
+    )
 
     with pytest.raises(StructuredFileError) as excinfo:
         read_structured_file(path)
@@ -129,7 +133,9 @@ def test_read_structured_file_unicode_error(tmp_path: Path):
     assert str(path) in msg
 
 
-def test_json_error_not_reported_as_toml(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_json_error_not_reported_as_toml(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     class DummyTOMLDecodeError(Exception):
         pass
 
@@ -142,7 +148,9 @@ def test_json_error_not_reported_as_toml(monkeypatch: pytest.MonkeyPatch) -> Non
     assert not msg.startswith("Error parsing TOML file")
 
 
-def test_import_error_not_reported_as_toml(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_import_error_not_reported_as_toml(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     class DummyTOMLDecodeError(Exception):
         pass
 
@@ -159,7 +167,7 @@ def test_read_structured_file_ignores_missing_yaml_when_parsing_json(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
     path = tmp_path / "data.json"
-    path.write_text("{\"a\": 1}", encoding="utf-8")
+    path.write_text('{"a": 1}', encoding="utf-8")
     monkeypatch.setattr(io_mod, "yaml", None)
     monkeypatch.setattr(io_mod, "tomllib", None)
     assert read_structured_file(path) == {"a": 1}

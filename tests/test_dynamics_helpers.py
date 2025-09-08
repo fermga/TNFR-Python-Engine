@@ -17,7 +17,9 @@ def test_init_and_refresh_dnfr_cache(graph_canon):
     for i in range(2):
         G.add_node(i, theta=0.1 * i, EPI=float(i), VF=float(i))
     nodes = list(G.nodes())
-    cache, idx, th, epi, vf, cx, sx, refreshed = _init_dnfr_cache(G, nodes, None, 1, False)
+    cache, idx, th, epi, vf, cx, sx, refreshed = _init_dnfr_cache(
+        G, nodes, None, 1, False
+    )
     assert refreshed
     _refresh_dnfr_vectors(G, nodes, th, epi, vf, cx, sx)
     assert th[1] == pytest.approx(0.1)
@@ -56,7 +58,10 @@ def test_compute_neighbor_means_list():
 def test_choose_glyph_respects_lags(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    selector = lambda G, n: "RA"
+
+    def selector(G, n):
+        return "RA"
+
     h_al = {0: 2}
     h_en = {0: 0}
     g = _choose_glyph(G, 0, selector, False, h_al, h_en, 1, 5)

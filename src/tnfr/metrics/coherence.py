@@ -82,7 +82,10 @@ def _wij_loops(
     self_diag: bool,
 ) -> list[list[float]]:
     n = len(nodes)
-    wij = [[1.0 if (self_diag and i == j) else 0.0 for j in range(n)] for i in range(n)]
+    wij = [
+        [1.0 if (self_diag and i == j) else 0.0 for j in range(n)]
+        for i in range(n)
+    ]
     phase_w = wnorm["phase"]
     epi_w = wnorm["epi"]
     vf_w = wnorm["vf"]
@@ -143,6 +146,7 @@ def _compute_stats(values, row_sum, n, self_diag, np=None):
     denom = max(1, row_count)
     Wi = [float(row_sum[i]) / denom for i in range(n)]
     return min_val, max_val, mean_val, Wi, count_val
+
 
 def _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np=None):
     """Finalize the coherence matrix ``wij`` and store results in history.
@@ -243,7 +247,9 @@ def coherence_matrix(G, use_numpy: bool | None = None):
     if mode not in ("sparse", "dense"):
         mode = "sparse"
     np = get_numpy()
-    use_np = np is not None if use_numpy is None else (use_numpy and np is not None)
+    use_np = (
+        np is not None if use_numpy is None else (use_numpy and np is not None)
+    )
     if use_np:
         wij = _wij_vectorized(
             th_vals,
@@ -286,12 +292,15 @@ def coherence_matrix(G, use_numpy: bool | None = None):
 
     return _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np)
 
-def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=None):
+
+def local_phase_sync_weighted(
+    G, n, nodes_order=None, W_row=None, node_to_index=None
+):
     """Compute local phase synchrony using explicit weights.
 
-    ``nodes_order`` is the node ordering used to build the coherence matrix and
-    ``W_row`` contains either the dense row corresponding to ``n`` or the sparse
-    list of ``(i, j, w)`` tuples for the whole matrix.
+    ``nodes_order`` is the node ordering used to build the coherence matrix
+    and ``W_row`` contains either the dense row corresponding to ``n`` or the
+    sparse list of ``(i, j, w)`` tuples for the whole matrix.
     """
     if W_row is None or nodes_order is None:
         raise ValueError(
@@ -307,7 +316,11 @@ def local_phase_sync_weighted(G, n, nodes_order=None, W_row=None, node_to_index=
     num = 0 + 0j
     den = 0.0
 
-    if isinstance(W_row, list) and W_row and isinstance(W_row[0], (int, float)):
+    if (
+        isinstance(W_row, list)
+        and W_row
+        and isinstance(W_row[0], (int, float))
+    ):
         for w, nj in zip(W_row, nodes_order):
             if nj == n:
                 continue

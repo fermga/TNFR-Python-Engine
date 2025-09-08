@@ -55,7 +55,8 @@ def _selector_thresholds(G: "nx.Graph") -> dict:
 
 
 def _norms_para_selector(G: "nx.Graph") -> dict:
-    """Compute and store maxima in ``G.graph`` to normalise |ΔNFR| and |d²EPI/dt²|."""
+    """Compute and store maxima in ``G.graph`` to normalise |ΔNFR| and
+    |d²EPI/dt²|."""
     norms = compute_dnfr_accel_max(G)
     G.graph["_sel_norms"] = norms
     return norms
@@ -85,7 +86,8 @@ def _apply_selector_hysteresis(
     thr: Dict[str, float],
     margin: float,
 ) -> str | None:
-    """Apply hysteresis, returning the previous glyph when close to thresholds."""
+    """Apply hysteresis, returning the previous glyph when close to
+    thresholds."""
     d_si = dist_to_threshold(Si, thr["si_hi"], thr["si_lo"])
     d_dn = dist_to_threshold(dnfr, thr["dnfr_hi"], thr["dnfr_lo"])
     d_ac = dist_to_threshold(accel, thr["accel_hi"], thr["accel_lo"])

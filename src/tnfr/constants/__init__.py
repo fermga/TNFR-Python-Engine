@@ -52,7 +52,10 @@ def _freeze(value: Any, seen: set[int] | None = None):
             frozen = bool(params and params.frozen)
             value = asdict(value)
             tag = "mapping" if frozen else "dict"
-            return (tag, tuple((k, _freeze(v, seen)) for k, v in value.items()))
+            return (
+                tag,
+                tuple((k, _freeze(v, seen)) for k, v in value.items()),
+            )
         if isinstance(value, IMMUTABLE_SIMPLE):
             return value
         if isinstance(value, tuple):
@@ -67,7 +70,10 @@ def _freeze(value: Any, seen: set[int] | None = None):
             return ("bytearray", bytes(value))
         if isinstance(value, Mapping):
             tag = "dict" if hasattr(value, "__setitem__") else "mapping"
-            return (tag, tuple((k, _freeze(v, seen)) for k, v in value.items()))
+            return (
+                tag,
+                tuple((k, _freeze(v, seen)) for k, v in value.items()),
+            )
         raise TypeError
     finally:
         seen.remove(obj_id)
@@ -97,6 +103,7 @@ def _is_immutable(value: Any) -> bool:
     except (TypeError, ValueError):
         return False
     return _is_immutable_inner(frozen)
+
 
 # Diccionario combinado exportado
 # Unimos los diccionarios en orden de menor a mayor prioridad para que los

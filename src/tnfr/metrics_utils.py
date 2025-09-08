@@ -176,7 +176,9 @@ def _get_vf_dnfr_max(G) -> tuple[float, float]:
     vfmax = G.graph.get("_vfmax")
     dnfrmax = G.graph.get("_dnfrmax")
     if vfmax is None or dnfrmax is None:
-        maxes = multi_recompute_abs_max(G, {"_vfmax": ALIAS_VF, "_dnfrmax": ALIAS_DNFR})
+        maxes = multi_recompute_abs_max(
+            G, {"_vfmax": ALIAS_VF, "_dnfrmax": ALIAS_DNFR}
+        )
         if vfmax is None:
             vfmax = maxes["_vfmax"]
             G.graph.setdefault("_vfmax", vfmax)
@@ -200,11 +202,14 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     np = get_numpy()
 
     if np is None:
+
         def phase_mean_fn(neigh, *, fallback):
             return neighbor_phase_mean_list(
                 neigh, cos_th, sin_th, fallback=fallback
             )
+
     else:
+
         def phase_mean_fn(neigh, *, fallback):
             return neighbor_phase_mean_list(
                 neigh, cos_th, sin_th, np=np, fallback=fallback

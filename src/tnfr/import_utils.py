@@ -17,7 +17,12 @@ import threading
 import time
 from .logging_utils import get_logger
 
-__all__ = ["optional_import", "get_numpy", "import_nodonx", "prune_failed_imports"]
+__all__ = [
+    "optional_import",
+    "get_numpy",
+    "import_nodonx",
+    "prune_failed_imports",
+]
 
 
 logger = get_logger(__name__)
@@ -66,7 +71,8 @@ _WARNED_LOCK = threading.Lock()
 
 def _warn_failure(module: str, attr: str | None, err: Exception) -> None:
     msg = (
-        f"Failed to import module '{module}': {err}" if isinstance(err, ImportError)
+        f"Failed to import module '{module}': {err}"
+        if isinstance(err, ImportError)
         else f"Module '{module}' has no attribute '{attr}': {err}"
     )
     with _WARNED_LOCK:
@@ -176,9 +182,7 @@ def get_numpy(*, warn: bool = False) -> Any | None:
     module = optional_import("numpy")
     if module is None:
         log = logger.warning if warn else logger.debug
-        log(
-            "Failed to import numpy; continuing in non-vectorised mode"
-        )
+        log("Failed to import numpy; continuing in non-vectorised mode")
     return module
 
 

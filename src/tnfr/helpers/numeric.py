@@ -55,7 +55,9 @@ def angle_diff(a: float, b: float) -> float:
     return (float(a) - float(b) + math.pi) % math.tau - math.pi
 
 
-def neighbor_mean(G, n, aliases: tuple[str, ...], default: float = 0.0) -> float:
+def neighbor_mean(
+    G, n, aliases: tuple[str, ...], default: float = 0.0
+) -> float:
     """Mean of ``aliases`` attribute among neighbours of ``n``."""
     vals = (get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
     return list_mean(vals, default)
@@ -112,12 +114,18 @@ def neighbor_phase_mean_list(
     if deg == 0:
         return fallback
     if np is not None:
-        cos_vals = np.fromiter((cos_th[v] for v in neigh), dtype=float, count=deg)
-        sin_vals = np.fromiter((sin_th[v] for v in neigh), dtype=float, count=deg)
+        cos_vals = np.fromiter(
+            (cos_th[v] for v in neigh), dtype=float, count=deg
+        )
+        sin_vals = np.fromiter(
+            (sin_th[v] for v in neigh), dtype=float, count=deg
+        )
         mean_cos = float(cos_vals.mean())
         mean_sin = float(sin_vals.mean())
         return float(np.arctan2(mean_sin, mean_cos))
-    return _phase_mean_from_iter(((cos_th[v], sin_th[v]) for v in neigh), fallback)
+    return _phase_mean_from_iter(
+        ((cos_th[v], sin_th[v]) for v in neigh), fallback
+    )
 
 
 def neighbor_phase_mean(obj, n=None) -> float:

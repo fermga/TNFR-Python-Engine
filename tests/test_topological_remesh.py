@@ -16,7 +16,9 @@ def _graph_with_epi(graph_canon, n=6):
     return G
 
 
-def test_remesh_community_reduces_nodes_and_preserves_connectivity(graph_canon):
+def test_remesh_community_reduces_nodes_and_preserves_connectivity(
+    graph_canon,
+):
     G = _graph_with_epi(graph_canon, n=6)
     G.add_edges_from(
         [

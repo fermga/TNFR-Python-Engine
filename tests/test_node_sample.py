@@ -70,7 +70,9 @@ json.dump(G.graph["_node_sample"], sys.stdout)
     env = dict(
         os.environ,
         PYTHONHASHSEED=str(hashseed),
-        PYTHONPATH=os.pathsep.join([os.getcwd(), os.path.join(os.getcwd(), "src")]),
+        PYTHONPATH=os.pathsep.join(
+            [os.getcwd(), os.path.join(os.getcwd(), "src")]
+        ),
     )
     result = subprocess.run(
         [sys.executable, "-c", code],

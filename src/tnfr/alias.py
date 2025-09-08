@@ -96,7 +96,11 @@ def _alias_resolve(
         if log_level is not None:
             lvl = log_level
         else:
-            lvl = logging.WARNING if any(k == "default" for k, _ in errors) else logging.DEBUG
+            lvl = (
+                logging.WARNING
+                if any(k == "default" for k, _ in errors)
+                else logging.DEBUG
+            )
         summary = "; ".join(f"{k!r}: {e}" for k, e in errors)
         logger.log(lvl, "Could not convert values for %s", summary)
 
@@ -229,7 +233,9 @@ get_attr_str, set_attr_str = _str_accessor.get, _str_accessor.set
 # -------------------------
 
 
-def recompute_abs_max(G: "nx.Graph", aliases: tuple[str, ...]) -> tuple[float, Hashable | None]:
+def recompute_abs_max(
+    G: "nx.Graph", aliases: tuple[str, ...]
+) -> tuple[float, Hashable | None]:
     """Recalculate and return ``(max_val, node)`` for ``aliases`` in ``G``."""
     node: Hashable | None = max(
         G.nodes(),
@@ -263,7 +269,12 @@ def multi_recompute_abs_max(
 
 
 def _update_cached_abs_max(
-    G: "nx.Graph", aliases: tuple[str, ...], n: Hashable, value: float, *, key: str
+    G: "nx.Graph",
+    aliases: tuple[str, ...],
+    n: Hashable,
+    value: float,
+    *,
+    key: str,
 ) -> None:
     """Update ``G.graph[key]`` and ``G.graph[f"{key}_node"]``."""
     node_key = f"{key}_node"
@@ -280,7 +291,12 @@ def _update_cached_abs_max(
 
 
 def set_attr_with_max(
-    G: "nx.Graph", n: Hashable, aliases: tuple[str, ...], value: float, *, cache: str
+    G: "nx.Graph",
+    n: Hashable,
+    aliases: tuple[str, ...],
+    value: float,
+    *,
+    cache: str,
 ) -> None:
     """Assign ``value`` to node ``n`` and update the global maximum."""
     val = float(value)
@@ -288,7 +304,9 @@ def set_attr_with_max(
     _update_cached_abs_max(G, aliases, n, val, key=cache)
 
 
-def set_vf(G: "nx.Graph", n: Hashable, value: float, *, update_max: bool = True) -> None:
+def set_vf(
+    G: "nx.Graph", n: Hashable, value: float, *, update_max: bool = True
+) -> None:
     """Set ``νf`` for node ``n`` and optionally update the global maximum."""
     val = float(value)
     set_attr(G.nodes[n], ALIAS_VF, val)

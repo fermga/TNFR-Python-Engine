@@ -18,7 +18,6 @@ from .numeric import (
     neighbor_mean,
     neighbor_phase_mean,
     neighbor_phase_mean_list,
-    _phase_mean_from_iter,
 )
 from .history import (
     push_glyph,
@@ -31,9 +30,6 @@ from .cache import (
     get_graph,
     get_graph_mapping,
     node_set_checksum,
-    _stable_json,
-    _node_repr,
-    _cache_node_list,
     ensure_node_index_map,
     ensure_node_offset_map,
     edge_version_cache,

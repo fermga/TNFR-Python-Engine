@@ -11,7 +11,12 @@ from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
 from .alias import get_attr
 from .helpers.numeric import clamp01, kahan_sum
 from .callback_utils import register_callback
-from .glyph_history import ensure_history, last_glyph, count_glyphs, append_metric
+from .glyph_history import (
+    ensure_history,
+    last_glyph,
+    count_glyphs,
+    append_metric,
+)
 from .constants_glyphs import (
     ANGLE_MAP,
     GLYPHS_CANONICAL,
@@ -150,7 +155,9 @@ def _sigma_from_iterable(
 _sigma_from_vectors = _sigma_from_iterable
 
 
-def _ema_update(prev: Dict[str, float], current: Dict[str, float], alpha: float) -> Dict[str, float]:
+def _ema_update(
+    prev: Dict[str, float], current: Dict[str, float], alpha: float
+) -> Dict[str, float]:
     """Exponential moving average update for σ vectors."""
     x = (1 - alpha) * prev["x"] + alpha * current["x"]
     y = (1 - alpha) * prev["y"] + alpha * current["y"]
@@ -304,7 +311,11 @@ def sigma_rose(G, steps: int | None = None) -> Dict[str, int]:
     counts = hist.get("sigma_counts", [])
     if not counts:
         return {g: 0 for g in GLYPHS_CANONICAL}
-    rows = counts if steps is None or steps >= len(counts) else counts[-int(steps):]
+    rows = (
+        counts
+        if steps is None or steps >= len(counts)
+        else counts[-int(steps) :]  # noqa: E203
+    )
     counter = Counter()
     for row in rows:
         for k, v in row.items():

@@ -1,5 +1,10 @@
 import warnings
-from tnfr.import_utils import _warn_failure, _WARNED_MODULES, _WARNED_LIMIT, _WARNED_LOCK
+from tnfr.import_utils import (
+    _warn_failure,
+    _WARNED_MODULES,
+    _WARNED_LIMIT,
+    _WARNED_LOCK,
+)
 
 
 def test_warned_modules_eviction():

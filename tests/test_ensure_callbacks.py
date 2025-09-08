@@ -1,6 +1,10 @@
 """Tests for `_ensure_callbacks` behavior."""
 
-from tnfr.callback_utils import _ensure_callbacks, register_callback, CallbackEvent
+from tnfr.callback_utils import (
+    _ensure_callbacks,
+    register_callback,
+    CallbackEvent,
+)
 
 
 def test_ensure_callbacks_drops_unknown_events(graph_canon):

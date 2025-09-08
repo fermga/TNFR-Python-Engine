@@ -135,6 +135,7 @@ def _glyph_fallback(cand_key: str, fallbacks: Dict[str, Any]) -> Glyph | str:
     fb = fallbacks.get(cand_key, canon_fb)
     return _coerce_glyph(fb)
 
+
 # -------------------------
 # THOL closures and ZHIR preconditions
 # -------------------------

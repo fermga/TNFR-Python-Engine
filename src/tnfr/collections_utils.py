@@ -35,7 +35,8 @@ limit.
 
 
 def ensure_collection(
-    it: Iterable[T], *,
+    it: Iterable[T],
+    *,
     max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
     error_msg: str | None = None,
 ) -> Collection[T]:
@@ -50,7 +51,9 @@ def ensure_collection(
     are stored in memory.
     """
 
-    if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
+    if isinstance(it, Collection) and not isinstance(
+        it, (str, bytes, bytearray)
+    ):
         # Already a collection; no materialization needed
         return it
     if isinstance(it, (str, bytes, bytearray)):
@@ -73,10 +76,9 @@ def ensure_collection(
         materialized = list(islice(it, limit + 1))
         if len(materialized) > limit:
             examples = ", ".join(repr(x) for x in materialized[:3])
-            msg = (
-                error_msg
-                or f"Iterable produced {len(materialized)} items, exceeds limit {limit}; "
-                   f"first items: [{examples}]"
+            msg = error_msg or (
+                f"Iterable produced {len(materialized)} items, "
+                f"exceeds limit {limit}; first items: [{examples}]"
             )
             raise ValueError(msg)
         return tuple(materialized)

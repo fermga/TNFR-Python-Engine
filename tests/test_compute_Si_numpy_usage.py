@@ -21,13 +21,16 @@ def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch):
 
     captured = []
 
-    def fake_neighbor_phase_mean_list(neigh, cos_th, sin_th, np=None, fallback=0.0):
+    def fake_neighbor_phase_mean_list(
+        neigh, cos_th, sin_th, np=None, fallback=0.0
+    ):
         captured.append(np)
         return 0.0
 
     monkeypatch.setattr("tnfr.metrics_utils.get_numpy", fake_get_numpy)
     monkeypatch.setattr(
-        "tnfr.metrics_utils.neighbor_phase_mean_list", fake_neighbor_phase_mean_list
+        "tnfr.metrics_utils.neighbor_phase_mean_list",
+        fake_neighbor_phase_mean_list,
     )
 
     G = nx.Graph()

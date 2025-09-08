@@ -100,7 +100,9 @@ def mapping_field(G, graph_key: str, out_key: str) -> Dict[str, Any]:
     return {out_key: mapping} if mapping is not None else {}
 
 
-def make_mapping_field(graph_key: str, out_key: str) -> Callable[[Any], Dict[str, Any]]:
+def make_mapping_field(
+    graph_key: str, out_key: str
+) -> Callable[[Any], Dict[str, Any]]:
     """Return a field function reading ``graph_key`` into ``out_key``."""
 
     def field(G):

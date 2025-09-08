@@ -168,7 +168,5 @@ def update_epi_via_nodal_equation(
     G.graph["_t"] = t_local
 
 
-
-
 def integrar_epi_euler(G, dt: float | None = None) -> None:
     update_epi_via_nodal_equation(G, dt=dt, method="euler")

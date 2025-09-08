@@ -38,6 +38,7 @@ def get_step_fn() -> AdvanceFn:
 
     return _load_step_fn()
 
+
 __all__ = [
     "WAIT",
     "TARGET",
@@ -164,7 +165,9 @@ def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
     repeats = int(item.repeat)
     if repeats < 1:
         raise ValueError("repeat must be ≥1")
-    if item.force_close is not None and not isinstance(item.force_close, Glyph):
+    if item.force_close is not None and not isinstance(
+        item.force_close, Glyph
+    ):
         raise ValueError("force_close must be a Glyph")
     closing = (
         item.force_close
@@ -193,7 +196,9 @@ def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
     when ``THOL`` blocks are nested.
     """
     ops: list[tuple[str, Any]] = []
-    stack: deque[Any] = deque(reversed(ensure_collection(seq, max_materialize=None)))
+    stack: deque[Any] = deque(
+        reversed(ensure_collection(seq, max_materialize=None))
+    )
 
     while stack:
         item = stack.pop()
@@ -226,7 +231,13 @@ def _record_trace(trace: deque, G, op: str, **data) -> None:
 
 
 def _advance_and_record(
-    G, trace: deque, label: str, step_fn: Optional[AdvanceFn], *, times: int = 1, **data
+    G,
+    trace: deque,
+    label: str,
+    step_fn: Optional[AdvanceFn],
+    *,
+    times: int = 1,
+    **data,
 ) -> None:
     for _ in range(times):
         _advance(G, step_fn)
@@ -273,7 +284,9 @@ def _handle_glyph(
     return curr_target
 
 
-def _handle_thol(G, g, curr_target, trace: deque, step_fn: Optional[AdvanceFn]):
+def _handle_thol(
+    G, g, curr_target, trace: deque, step_fn: Optional[AdvanceFn]
+):
     return _handle_glyph(
         G, g or Glyph.THOL.value, curr_target, trace, step_fn, label="THOL"
     )
