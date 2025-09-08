@@ -85,7 +85,8 @@ def _get_networkx_modules():
 
 
 def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
-    if isinstance(node, import_nodonx()):
+    NodoNX = import_nodonx()  # cache import to avoid repeated lookups
+    if isinstance(node, NodoNX):
         return _node_offset(node.G, node.n), id(node.G)
     uid = getattr(node, "_noise_uid", None)
     if uid is None:
