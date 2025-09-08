@@ -120,11 +120,34 @@ def _update_sigma(G, hist) -> None:
 # -------------
 
 
-def _update_tg(G, hist, dt, save_by_node: bool):
-    """Accumulate glyph times per node and return counts and latency.
+def _update_tg_node(n, nd, dt, tg_total, tg_by_node):
+    """Process a single node glyph transition.
 
-    ``save_by_node`` controls whether per-node runs are recorded.
+    Returns ``(glyph, is_latent)`` or ``(None, False)`` when the node has no
+    glyph. ``tg_total`` and ``tg_by_node`` are updated in-place.
     """
+    g = last_glyph(nd)
+    if not g:
+        return None, False
+    st = _tg_state(nd)
+    curr = st[TgCurr]
+    if curr is None:
+        st[TgCurr] = g
+        st[TgRun] = dt
+    elif g == curr:
+        st[TgRun] += dt
+    else:
+        dur = float(st[TgRun])
+        tg_total[curr] += dur
+        if tg_by_node is not None:
+            tg_by_node[n][curr].append(dur)
+        st[TgCurr] = g
+        st[TgRun] = dt
+    return g, g == LATENT_GLYPH
+
+
+def _update_tg(G, hist, dt, save_by_node: bool):
+    """Accumulate glyph times per node and return counts and latency."""
     counts = Counter()
     tg_total = hist.setdefault("Tg_total", defaultdict(float))
     tg_by_node = (
@@ -133,36 +156,16 @@ def _update_tg(G, hist, dt, save_by_node: bool):
         else None
     )
 
-    last = last_glyph
-    tg_state = _tg_state
-    latent = LATENT_GLYPH
-    curr_key = TgCurr
-    run_key = TgRun
-
     n_total = 0
     n_latent = 0
     for n, nd in G.nodes(data=True):
-        g = last(nd)
-        if not g:
+        g, is_latent = _update_tg_node(n, nd, dt, tg_total, tg_by_node)
+        if g is None:
             continue
         n_total += 1
-        if g == latent:
+        if is_latent:
             n_latent += 1
         counts[g] += 1
-        st = tg_state(nd)
-        curr = st[curr_key]
-        if curr is None:
-            st[curr_key] = g
-            st[run_key] = dt
-        elif g == curr:
-            st[run_key] += dt
-        else:
-            dur = float(st[run_key])
-            tg_total[curr] += dur
-            if tg_by_node is not None:
-                tg_by_node[n][curr].append(dur)
-            st[curr_key] = g
-            st[run_key] = dt
     return counts, n_total, n_latent
 
 

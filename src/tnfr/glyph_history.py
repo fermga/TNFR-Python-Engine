@@ -1,4 +1,4 @@
-"""Helpers for glyph history management."""
+"""Utilities for tracking glyph emission history and related metrics."""
 
 from __future__ import annotations
 
@@ -54,7 +54,8 @@ def recent_glyph(nd: Dict[str, Any], glyph: str, window: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions.
 
     ``window`` is validated and the history deque ensured internally. A
-    ``window`` of zero returns ``False`` without modifying ``nd``.
+    ``window`` of zero returns ``False`` without modifying ``nd``. Negative
+    values raise :class:`ValueError`.
     """
     if int(window) == 0:
         _ensure_glyph_history({}, window)
@@ -274,13 +275,16 @@ def count_glyphs(
 ) -> Counter:
     """Count recent glyphs in the network.
 
-    If ``window`` is ``None``, the full history for each node is used. When
-    ``window`` is less than or equal to zero, no glyphs are counted for any
-    node."""
+    If ``window`` is ``None``, the full history for each node is used. A
+    ``window`` of zero yields an empty :class:`Counter`. Negative values raise
+    :class:`ValueError`.
+    """
 
     window_int = int(window) if window is not None else None
-    if window_int is not None and window_int <= 0:
-        return Counter()
+    if window_int is not None:
+        _ensure_glyph_history({}, window_int)
+        if window_int == 0:
+            return Counter()
 
     counts: Counter[str] = Counter()
     for _, nd in G.nodes(data=True):

@@ -88,11 +88,12 @@ def test_grammar_field_non_mapping_warns(graph_canon):
     assert out == {}
 
 
-def test_get_graph_mapping_accepts_mapping_proxy(graph_canon):
+def test_get_graph_mapping_returns_proxy(graph_canon):
     G = graph_canon()
-    data = MappingProxyType({"a": 1})
+    data = {"a": 1}
     G.graph["foo"] = data
     out = get_graph_mapping(G, "foo", "msg")
-    assert out == {"a": 1}
-    out["b"] = 2
-    assert "b" not in data
+    assert isinstance(out, MappingProxyType)
+    assert out["a"] == 1
+    with pytest.raises(TypeError):
+        out["b"] = 2

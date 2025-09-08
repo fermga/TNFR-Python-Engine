@@ -1,4 +1,4 @@
-"""Utilidades para importaciones opcionales."""
+"""Helpers for optional imports and cached access to heavy modules."""
 
 from __future__ import annotations
 

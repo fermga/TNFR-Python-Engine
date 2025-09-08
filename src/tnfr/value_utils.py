@@ -1,4 +1,4 @@
-"""Utilities for value conversion."""
+"""Conversion helpers with logging for value normalization."""
 
 from __future__ import annotations
 

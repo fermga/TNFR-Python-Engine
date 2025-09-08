@@ -1,4 +1,4 @@
-"""Utilities for working with collections and weights."""
+"""Utilities for working with generic collections and weight mappings."""
 
 from __future__ import annotations
 
