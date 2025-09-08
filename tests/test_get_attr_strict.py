@@ -14,15 +14,16 @@ def test_get_attr_logs_on_error(caplog):
     assert any("Could not convert" in m for m in caplog.messages)
 
 
-def test_get_attr_logs_once_for_multiple_errors(caplog):
+def test_get_attr_logs_each_error(caplog):
     d = {"x": "abc", "y": "def"}
     acc = AliasAccessor(int)
     with caplog.at_level(logging.DEBUG):
         result = acc.get(d, ("x", "y"))
     assert result is None
     messages = [m for m in caplog.messages if "Could not convert" in m]
-    assert len(messages) == 1
-    assert "'x'" in messages[0] and "'y'" in messages[0]
+    assert len(messages) == 2
+    assert any("'x'" in m for m in messages)
+    assert any("'y'" in m for m in messages)
 
 
 def test_get_attr_custom_log_level(caplog):
