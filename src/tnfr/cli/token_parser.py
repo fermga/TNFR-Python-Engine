@@ -2,8 +2,7 @@ from typing import Any, Callable
 
 from ..program import block, wait, target
 from ..types import Glyph
-from ..token_parser import (  # noqa: F401
-    _flatten_tokens,
+from ..token_parser import (
     validate_token as _tp_validate_token,
     _parse_tokens as _tp_parse_tokens,
 )
