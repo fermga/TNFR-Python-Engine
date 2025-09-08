@@ -48,10 +48,12 @@ __all__ = [
 
 @lru_cache(maxsize=128)
 def _validate_aliases(aliases: tuple[str, ...]) -> tuple[str, ...]:
-    """Validate and cache ``aliases`` as a tuple of strings."""
+    """Validate and cache ``aliases`` as a tuple of strings.
 
-    if not isinstance(aliases, tuple):
-        raise TypeError("'aliases' must be a tuple of strings")
+    The caller is responsible for providing a tuple; this function only
+    ensures that at least one alias is present and that every element is
+    a string.
+    """
     if not aliases:
         raise ValueError("'aliases' must contain at least one key")
     for a in aliases:

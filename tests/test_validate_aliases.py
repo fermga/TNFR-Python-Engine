@@ -2,12 +2,6 @@ import pytest
 
 from tnfr.alias import _validate_aliases, AliasAccessor
 
-
-def test_rejects_string():
-    with pytest.raises(TypeError):
-        _validate_aliases("abc")
-
-
 def test_rejects_empty_iterable():
     with pytest.raises(ValueError):
         _validate_aliases(())
