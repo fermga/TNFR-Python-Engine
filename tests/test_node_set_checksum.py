@@ -12,19 +12,9 @@ from tnfr.helpers.cache import (
 
 
 def build_graph():
-    class Foo:
-        def __init__(self, value):
-            self.value = value
-
-        def __hash__(self):
-            return hash(self.value)
-
-        def __eq__(self, other):
-            return isinstance(other, Foo) and self.value == other.value
-
     G = nx.Graph()
-    G.add_node(Foo(1))
-    G.add_node(Foo(2))
+    G.add_node(("foo", 1))
+    G.add_node(("foo", 2))
     return G
 
 

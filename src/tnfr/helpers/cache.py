@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import threading
 import warnings
 from collections import defaultdict
@@ -70,65 +69,13 @@ def get_graph_mapping(
     return MappingProxyType(data)
 
 
-
-
-def _stable_default(o: Any) -> Any:
-    if isinstance(o, set):
-        return sorted(o, key=lambda x: repr(x))
-    slots = getattr(o, "__slots__", None)
-    if slots:
-        return {s: getattr(o, s) for s in slots if hasattr(o, s)}
-    if hasattr(o, "__dict__"):
-        return o.__dict__
-    r = repr(o)
-    return r.split(" at ", 1)[0] + ">" if " at " in r else r
-
-
-def _check_depth(o: Any, depth: int, max_depth: int) -> None:
-    if depth > max_depth:
-        raise ValueError(f"max depth {max_depth} exceeded")
-    if isinstance(o, dict):
-        for v in o.values():
-            _check_depth(v, depth + 1, max_depth)
-    elif isinstance(o, (list, tuple, set)):
-        for item in o:
-            _check_depth(item, depth + 1, max_depth)
-    else:
-        slots = getattr(o, "__slots__", None)
-        if slots:
-            for s in slots:
-                if hasattr(o, s):
-                    _check_depth(getattr(o, s), depth + 1, max_depth)
-        if hasattr(o, "__dict__"):
-            _check_depth(o.__dict__, depth + 1, max_depth)
-
-
-class _Encoder(json.JSONEncoder):
-    def __init__(self, *args, max_depth: int = 10, **kwargs):
-        self._max_depth = max_depth
-        super().__init__(*args, **kwargs)
-
-    def default(self, o):
-        return _stable_default(o)
-
-    def encode(self, o):
-        try:
-            _check_depth(o, 0, self._max_depth)
-        except RecursionError as exc:
-            raise ValueError("circular reference detected") from exc
-        return super().encode(o)
-
-
-def _stable_json(obj: Any, max_depth: int = 10) -> str:
+def _stable_json(obj: Any) -> str:
     """Return a JSON string with deterministic ordering."""
     return json_dumps(
         obj,
         sort_keys=True,
-        default=_stable_default,
         ensure_ascii=False,
-        cls=_Encoder,
         to_bytes=False,
-        max_depth=max_depth,
     )
 
 
