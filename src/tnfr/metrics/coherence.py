@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from typing import Any, Dict, Sequence
+from typing import Any, Sequence
 
 
 from ..constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_SI, COHERENCE
@@ -140,12 +140,12 @@ def _wij_vectorized(
 def _wij_loops(
     G,
     nodes: Sequence[Any],
-    node_to_index: Dict[Any, int],
+    node_to_index: dict[Any, int],
     th_vals: Sequence[float],
     epi_vals: Sequence[float],
     vf_vals: Sequence[float],
     si_vals: Sequence[float],
-    wnorm: Dict[str, float],
+    wnorm: dict[str, float],
     epi_min: float,
     epi_max: float,
     vf_min: float,

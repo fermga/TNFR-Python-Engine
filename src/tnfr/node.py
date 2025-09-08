@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Callable, Deque, Dict, Iterable, Optional, Protocol, TypeVar
+from typing import Callable, Deque, Iterable, Optional, Protocol, TypeVar
 from enum import Enum
 from collections import deque
 from collections.abc import Hashable
@@ -206,7 +206,7 @@ class NodoProtocol(Protocol):
     epi_kind: str
     dnfr: float
     d2EPI: float
-    graph: Dict[str, object]
+    graph: dict[str, object]
 
     def neighbors(self) -> Iterable[NodoProtocol | Hashable]: ...
 
@@ -239,8 +239,8 @@ class NodoTNFR:
     epi_kind: str = ""
     dnfr: float = 0.0
     d2EPI: float = 0.0
-    graph: Dict[str, object] = field(default_factory=dict)
-    _neighbors: Dict["NodoTNFR", float] = field(default_factory=dict)
+    graph: dict[str, object] = field(default_factory=dict)
+    _neighbors: dict["NodoTNFR", float] = field(default_factory=dict)
     _glyph_history: Deque[str] = field(
         default_factory=lambda: deque(
             maxlen=DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 7)

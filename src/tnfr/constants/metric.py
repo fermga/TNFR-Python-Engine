@@ -3,21 +3,21 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict, field
-from typing import Dict, Any
+from typing import Any
 from types import MappingProxyType
 
 
 @dataclass(frozen=True)
 class MetricDefaults:
     PHASE_HISTORY_MAXLEN: int = 50
-    STOP_EARLY: Dict[str, Any] = field(
+    STOP_EARLY: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": False,
             "window": 25,
             "fraction": 0.90,
         }
     )
-    SIGMA: Dict[str, Any] = field(
+    SIGMA: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": True,
             "weight": "Si",  # "Si" | "EPI" | "1"
@@ -26,7 +26,7 @@ class MetricDefaults:
             "per_node": False,
         }
     )
-    TRACE: Dict[str, Any] = field(
+    TRACE: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": True,
             "capture": [
@@ -44,14 +44,14 @@ class MetricDefaults:
             "history_key": "trace_meta",
         }
     )
-    METRICS: Dict[str, Any] = field(
+    METRICS: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": True,
             "save_by_node": True,
             "normalize_series": False,
         }
     )
-    GRAMMAR_CANON: Dict[str, Any] = field(
+    GRAMMAR_CANON: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": True,
             "zhir_requires_oz_window": 3,
@@ -62,7 +62,7 @@ class MetricDefaults:
             "si_high": 0.66,
         }
     )
-    COHERENCE: Dict[str, Any] = field(
+    COHERENCE: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": True,
             "scope": "neighbors",
@@ -75,7 +75,7 @@ class MetricDefaults:
             "stats_history_key": "W_stats",
         }
     )
-    DIAGNOSIS: Dict[str, Any] = field(
+    DIAGNOSIS: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": True,
             "window": 16,
@@ -106,4 +106,4 @@ GRAMMAR_CANON = MappingProxyType(METRIC_DEFAULTS["GRAMMAR_CANON"])
 COHERENCE = MappingProxyType(METRIC_DEFAULTS["COHERENCE"])
 DIAGNOSIS = MappingProxyType(METRIC_DEFAULTS["DIAGNOSIS"])
 
-DEFAULTS_PART: Dict[str, Any] = METRIC_DEFAULTS
+DEFAULTS_PART: dict[str, Any] = METRIC_DEFAULTS

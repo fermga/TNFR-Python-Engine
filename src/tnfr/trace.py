@@ -7,7 +7,7 @@ structures as immutable snapshots.
 
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Optional, Protocol, NamedTuple
+from typing import Any, Callable, Optional, Protocol, NamedTuple
 
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs, append_metric
@@ -22,7 +22,7 @@ class _KuramotoFn(Protocol):
 class _SigmaVectorFn(Protocol):
     def __call__(
         self, G: Any, weight_mode: str | None = None
-    ) -> Dict[str, float]: ...
+    ) -> dict[str, float]: ...
 
 
 class CallbackSpec(NamedTuple):
@@ -43,7 +43,7 @@ kuramoto_R_psi: _KuramotoFn = optional_import(
 
 def _sigma_fallback(
     G: Any, weight_mode: str | None = None
-) -> Dict[str, float]:
+) -> dict[str, float]:
     return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
 
 
@@ -68,7 +68,7 @@ __all__ = [
 def _trace_setup(
     G,
 ) -> tuple[
-    Optional[Dict[str, Any]], set[str], Optional[Dict[str, Any]], Optional[str]
+    Optional[dict[str, Any]], set[str], Optional[dict[str, Any]], Optional[str]
 ]:
     """Common configuration for trace snapshots.
 
@@ -92,7 +92,7 @@ def _callback_names(callbacks: list[CallbackSpec]) -> list[str]:
     return [cb.name or getattr(cb.func, "__name__", "fn") for cb in callbacks]
 
 
-def mapping_field(G, graph_key: str, out_key: str) -> Dict[str, Any]:
+def mapping_field(G, graph_key: str, out_key: str) -> dict[str, Any]:
     """Helper to copy mappings from ``G.graph`` into trace output."""
     mapping = get_graph_mapping(
         G, graph_key, f"G.graph[{graph_key!r}] no es un mapeo; se ignora"
@@ -102,7 +102,7 @@ def mapping_field(G, graph_key: str, out_key: str) -> Dict[str, Any]:
 
 def make_mapping_field(
     graph_key: str, out_key: str
-) -> Callable[[Any], Dict[str, Any]]:
+) -> Callable[[Any], dict[str, Any]]:
     """Return a field function reading ``graph_key`` into ``out_key``."""
 
     def field(G):
@@ -119,7 +119,7 @@ def make_mapping_field(
 def _new_trace_meta(
     G, phase: str
 ) -> Optional[
-    tuple[Dict[str, Any], set[str], Optional[Dict[str, Any]], Optional[str]]
+    tuple[dict[str, Any], set[str], Optional[dict[str, Any]], Optional[str]]
 ]:
     """Initialise trace metadata for a ``phase``.
 
@@ -131,7 +131,7 @@ def _new_trace_meta(
     if not cfg:
         return None
 
-    meta: Dict[str, Any] = {"t": float(G.graph.get("_t", 0.0)), "phase": phase}
+    meta: dict[str, Any] = {"t": float(G.graph.get("_t", 0.0)), "phase": phase}
     return meta, capture, hist, key
 
 
@@ -141,7 +141,7 @@ def _new_trace_meta(
 
 
 def _trace_capture(
-    G, phase: str, fields: Dict[str, Callable[[Any], Dict[str, Any]]]
+    G, phase: str, fields: dict[str, Callable[[Any], dict[str, Any]]]
 ) -> None:
     """Capture ``fields`` for a ``phase`` and store the snapshot.
 

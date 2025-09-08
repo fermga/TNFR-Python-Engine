@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from typing import Dict, Any, Callable
+from typing import Any, Callable
 
 from ..collections_utils import normalize_weights
 from ..constants import DEFAULTS, ALIAS_THETA, ALIAS_EPI, ALIAS_VF
@@ -443,9 +443,9 @@ def set_delta_nfr_hook(
 
 def _apply_dnfr_hook(
     G,
-    grads: Dict[str, Callable[[Any, Any], float]],
+    grads: dict[str, Callable[[Any, Any], float]],
     *,
-    weights: Dict[str, float],
+    weights: dict[str, float],
     hook_name: str,
     note: str | None = None,
 ) -> None:

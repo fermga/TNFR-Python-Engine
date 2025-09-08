@@ -9,7 +9,6 @@ alias-based attribute access. Legacy wrappers ``alias_get`` and
 from __future__ import annotations
 from collections.abc import Iterable, Sequence
 from typing import (
-    Dict,
     Any,
     Callable,
     TypeVar,
@@ -62,7 +61,7 @@ def _validate_aliases(aliases: tuple[str, ...]) -> tuple[str, ...]:
 
 
 def _alias_resolve(
-    d: Dict[str, Any],
+    d: dict[str, Any],
     aliases: Sequence[str],
     *,
     conv: Callable[[Any], T],
@@ -158,7 +157,7 @@ class AliasAccessor(Generic[T]):
 
     def get(
         self,
-        d: Dict[str, Any],
+        d: dict[str, Any],
         aliases: Iterable[str],
         default: Optional[T] = None,
         *,
@@ -178,7 +177,7 @@ class AliasAccessor(Generic[T]):
 
     def set(
         self,
-        d: Dict[str, Any],
+        d: dict[str, Any],
         aliases: Iterable[str],
         value: Any,
         conv: Callable[[Any], T] | None = None,
@@ -194,7 +193,7 @@ class _Getter(Protocol[T]):
     @overload
     def __call__(
         self,
-        d: Dict[str, Any],
+        d: dict[str, Any],
         aliases: Iterable[str],
         default: T = ...,  # noqa: D401 - documented in get_attr
         *,
@@ -206,7 +205,7 @@ class _Getter(Protocol[T]):
     @overload
     def __call__(
         self,
-        d: Dict[str, Any],
+        d: dict[str, Any],
         aliases: Iterable[str],
         default: None = ...,  # noqa: D401 - documented in get_attr
         *,
@@ -219,7 +218,7 @@ class _Getter(Protocol[T]):
 class _Setter(Protocol[T]):
     def __call__(
         self,
-        d: Dict[str, Any],
+        d: dict[str, Any],
         aliases: Iterable[str],
         value: Any,
         conv: Callable[[Any], T] | None = ...,
@@ -253,8 +252,8 @@ def recompute_abs_max(
 
 
 def multi_recompute_abs_max(
-    G: "nx.Graph", alias_map: Dict[str, tuple[str, ...]]
-) -> Dict[str, float]:
+    G: "nx.Graph", alias_map: dict[str, tuple[str, ...]]
+) -> dict[str, float]:
     """Return absolute maxima for each entry in ``alias_map``.
 
     ``G`` is a :class:`networkx.Graph`. ``alias_map`` maps result keys to

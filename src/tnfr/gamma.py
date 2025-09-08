@@ -1,7 +1,7 @@
 """Gamma registry."""
 
 from __future__ import annotations
-from typing import Dict, Any, Tuple, Callable, NamedTuple
+from typing import Any, Callable, NamedTuple
 import math
 import cmath
 import logging
@@ -50,7 +50,7 @@ def _ensure_kuramoto_cache(G, t) -> None:
     nodes_sig = (len(G), checksum)
     max_steps = int(G.graph.get("KURAMOTO_CACHE_STEPS", 1))
 
-    def builder() -> Dict[str, float]:
+    def builder() -> dict[str, float]:
         R, psi = kuramoto_R_psi(G)
         return {"R": R, "psi": psi}
 
@@ -59,7 +59,7 @@ def _ensure_kuramoto_cache(G, t) -> None:
     G.graph["_kuramoto_cache"] = entry
 
 
-def kuramoto_R_psi(G) -> Tuple[float, float]:
+def kuramoto_R_psi(G) -> tuple[float, float]:
     """Return ``(R, ψ)`` for Kuramoto order using θ from all nodes."""
     acc = 0 + 0j
     n = 0
@@ -150,11 +150,11 @@ def _gamma_params(
 # -----------------
 
 
-def gamma_none(G, node, t, cfg: Dict[str, Any]) -> float:
+def gamma_none(G, node, t, cfg: dict[str, Any]) -> float:
     return 0.0
 
 
-def gamma_kuramoto_linear(G, node, t, cfg: Dict[str, Any]) -> float:
+def gamma_kuramoto_linear(G, node, t, cfg: dict[str, Any]) -> float:
     """Linear Kuramoto coupling for Γi(R).
 
     Formula: Γ = β · (R - R0) · cos(θ_i - ψ)
@@ -170,7 +170,7 @@ def gamma_kuramoto_linear(G, node, t, cfg: Dict[str, Any]) -> float:
     return beta * (R - R0) * math.cos(th_i - psi)
 
 
-def gamma_kuramoto_bandpass(G, node, t, cfg: Dict[str, Any]) -> float:
+def gamma_kuramoto_bandpass(G, node, t, cfg: dict[str, Any]) -> float:
     """Γ = β · R(1-R) · sign(cos(θ_i - ψ))"""
     (beta,) = _gamma_params(cfg, beta=0.0)
     th_i, R, psi = _kuramoto_common(G, node, cfg)
@@ -178,7 +178,7 @@ def gamma_kuramoto_bandpass(G, node, t, cfg: Dict[str, Any]) -> float:
     return beta * R * (1.0 - R) * sgn
 
 
-def gamma_kuramoto_tanh(G, node, t, cfg: Dict[str, Any]) -> float:
+def gamma_kuramoto_tanh(G, node, t, cfg: dict[str, Any]) -> float:
     """Saturating tanh coupling for Γi(R).
 
     Formula: Γ = β · tanh(k·(R - R0)) · cos(θ_i - ψ)
@@ -191,7 +191,7 @@ def gamma_kuramoto_tanh(G, node, t, cfg: Dict[str, Any]) -> float:
     return beta * math.tanh(k * (R - R0)) * math.cos(th_i - psi)
 
 
-def gamma_harmonic(G, node, t, cfg: Dict[str, Any]) -> float:
+def gamma_harmonic(G, node, t, cfg: dict[str, Any]) -> float:
     """Harmonic forcing aligned with the global phase field.
 
     Formula: Γ = β · sin(ω·t + φ) · cos(θ_i - ψ)
@@ -205,7 +205,7 @@ def gamma_harmonic(G, node, t, cfg: Dict[str, Any]) -> float:
 
 
 class GammaEntry(NamedTuple):
-    fn: Callable[[Any, Any, Any, Dict[str, Any]], float]
+    fn: Callable[[Any, Any, Any, dict[str, Any]], float]
     needs_kuramoto: bool
 
 

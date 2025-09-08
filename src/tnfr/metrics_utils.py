@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Any, Dict, Sequence, Iterable, Mapping
+from typing import Any, Sequence, Iterable, Mapping
 from types import MappingProxyType
 import math
 
@@ -41,9 +41,9 @@ __all__ = [
 
 @dataclass
 class TrigCache:
-    cos: Dict[Any, float]
-    sin: Dict[Any, float]
-    theta: Dict[Any, float]
+    cos: dict[Any, float]
+    sin: dict[Any, float]
+    theta: dict[Any, float]
 
 
 def compute_dnfr_accel_max(G) -> dict:
@@ -121,9 +121,9 @@ def get_Si_weights(G: Any) -> tuple[float, float, float]:
 
 def _build_trig_cache(G: Any) -> TrigCache:
     """Construct trigonometric cache for ``G``."""
-    cos_th: Dict[Any, float] = {}
-    sin_th: Dict[Any, float] = {}
-    thetas: Dict[Any, float] = {}
+    cos_th: dict[Any, float] = {}
+    sin_th: dict[Any, float] = {}
+    thetas: dict[Any, float] = {}
     for n, nd in G.nodes(data=True):
         th = get_attr(nd, ALIAS_THETA, 0.0)
         thetas[n] = th
@@ -147,7 +147,7 @@ def get_trig_cache(G: Any) -> TrigCache:
 
 def compute_Si_node(
     n: Any,
-    nd: Dict[str, Any],
+    nd: dict[str, Any],
     *,
     alpha: float,
     beta: float,
@@ -196,7 +196,7 @@ def _get_vf_dnfr_max(G) -> tuple[float, float]:
     return vfmax, dnfrmax
 
 
-def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
+def compute_Si(G, *, inplace: bool = True) -> dict[Any, float]:
     """Compute ``Si`` per node and write it to ``G.nodes[n]['Si']``."""
     neighbors = ensure_neighbors_map(G)
     alpha, beta, gamma = get_Si_weights(G)
@@ -216,7 +216,7 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
             neigh, cos_th, sin_th, np=np, fallback=fallback
         )
 
-    out: Dict[Any, float] = {}
+    out: dict[Any, float] = {}
     for n, nd in G.nodes(data=True):
         neigh = neighbors[n]
         th_bar = phase_mean_fn(neigh, fallback=thetas[n])

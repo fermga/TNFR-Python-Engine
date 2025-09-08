@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from typing import Dict, Any, Literal
+from typing import Any, Literal
 
 import networkx as nx
 
@@ -73,7 +73,7 @@ def prepare_integration_params(
 def _integrate_euler(G, dt_step: float, t_local: float):
     """One explicit Euler integration step."""
     gamma_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
-    new_states: Dict[Any, tuple[float, float, float]] = {}
+    new_states: dict[Any, tuple[float, float, float]] = {}
     for n, nd in G.nodes(data=True):
         vf, dnfr, dEPI_dt_prev, epi_i = _node_state(nd)
 
@@ -93,7 +93,7 @@ def _integrate_rk4(G, dt_step: float, t_local: float):
     g_mid_map = {n: eval_gamma(G, n, t_mid) for n in G.nodes}
     g4_map = {n: eval_gamma(G, n, t_end) for n in G.nodes}
 
-    new_states: Dict[Any, tuple[float, float, float]] = {}
+    new_states: dict[Any, tuple[float, float, float]] = {}
     for n, nd in G.nodes(data=True):
         vf, dnfr, dEPI_dt_prev, epi_i = _node_state(nd)
 
@@ -166,7 +166,7 @@ def integrar_epi_euler(G, dt: float | None = None) -> None:
     update_epi_via_nodal_equation(G, dt=dt, method="euler")
 
 
-def _node_state(nd: Dict[str, Any]) -> tuple[float, float, float, float]:
+def _node_state(nd: dict[str, Any]) -> tuple[float, float, float, float]:
     """Return common node state attributes.
 
     Extracts ``νf``, ``ΔNFR``, previous ``dEPI/dt`` and current ``EPI``

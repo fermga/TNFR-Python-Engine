@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from collections import deque
-from typing import Dict, Any
+from typing import Any
 
 # Importar compute_Si y apply_glyph a nivel de módulo evita el coste de
 # realizar la importación en cada paso de la dinámica. Como los módulos de
@@ -108,7 +108,7 @@ def _log_clamp(hist, node, attr, value, lo, hi):
         hist.append({"node": node, "attr": attr, "value": float(value)})
 
 
-def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
+def apply_canonical_clamps(nd: dict[str, Any], G=None, node=None) -> None:
     g = G.graph if G is not None else DEFAULTS
     eps_min = float(g.get("EPI_MIN", DEFAULTS["EPI_MIN"]))
     eps_max = float(g.get("EPI_MAX", DEFAULTS["EPI_MAX"]))
@@ -154,8 +154,8 @@ def validate_canon(G) -> None:
 
 
 def _read_adaptive_params(
-    g: Dict[str, Any],
-) -> tuple[Dict[str, Any], float, float]:
+    g: dict[str, Any],
+) -> tuple[dict[str, Any], float, float]:
     """Obtain configuration and current values for phase adaptation."""
     cfg = g.get("PHASE_ADAPT", DEFAULTS.get("PHASE_ADAPT", {}))
     kG = float(g.get("PHASE_K_GLOBAL", DEFAULTS["PHASE_K_GLOBAL"]))
@@ -163,7 +163,7 @@ def _read_adaptive_params(
     return cfg, kG, kL
 
 
-def _compute_state(G, cfg: Dict[str, Any]) -> tuple[str, float, float]:
+def _compute_state(G, cfg: dict[str, Any]) -> tuple[str, float, float]:
     """Return current state (stable/dissonant/transition) and metrics."""
     R = kuramoto_order(G)
     win = int(
@@ -186,7 +186,7 @@ def _compute_state(G, cfg: Dict[str, Any]) -> tuple[str, float, float]:
 
 
 def _smooth_adjust_k(
-    kG: float, kL: float, state: str, cfg: Dict[str, Any]
+    kG: float, kL: float, state: str, cfg: dict[str, Any]
 ) -> tuple[float, float]:
     """Smoothly update kG/kL toward targets according to state."""
     kG_min = float(cfg.get("kG_min", 0.01))

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict, field
-from typing import Dict, Any, Mapping
+from typing import Any, Mapping
 from types import MappingProxyType
 
 
@@ -30,7 +30,7 @@ class CoreDefaults:
     VF_MIN: float = 0.0
     VF_MAX: float = 1.0
     THETA_WRAP: bool = True
-    DNFR_WEIGHTS: Dict[str, float] = field(
+    DNFR_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {
             "phase": 0.34,
             "epi": 0.33,
@@ -38,12 +38,12 @@ class CoreDefaults:
             "topo": 0.0,
         }
     )
-    SI_WEIGHTS: Dict[str, float] = field(
+    SI_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {"alpha": 0.34, "beta": 0.33, "gamma": 0.33}
     )
     PHASE_K_GLOBAL: float = 0.05
     PHASE_K_LOCAL: float = 0.15
-    PHASE_ADAPT: Dict[str, Any] = field(
+    PHASE_ADAPT: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": True,
             "R_hi": 0.90,
@@ -67,7 +67,7 @@ class CoreDefaults:
     GLYPH_SELECTOR_MARGIN: float = 0.05
     VF_ADAPT_TAU: int = 5
     VF_ADAPT_MU: float = 0.1
-    GLYPH_FACTORS: Dict[str, float] = field(
+    GLYPH_FACTORS: dict[str, float] = field(
         default_factory=lambda: {
             "AL_boost": 0.05,
             "EN_mix": 0.25,
@@ -85,7 +85,7 @@ class CoreDefaults:
             "REMESH_alpha": 0.5,
         }
     )
-    GLYPH_THRESHOLDS: Dict[str, float] = field(
+    GLYPH_THRESHOLDS: dict[str, float] = field(
         default_factory=lambda: {"hi": 0.66, "lo": 0.33, "dnfr": 1e-3}
     )
     NAV_RANDOM: bool = True
@@ -94,7 +94,7 @@ class CoreDefaults:
     JITTER_CACHE_SIZE: int = 256
     OZ_NOISE_MODE: bool = False
     OZ_SIGMA: float = 0.1
-    GRAMMAR: Dict[str, Any] = field(
+    GRAMMAR: dict[str, Any] = field(
         default_factory=lambda: {
             "window": 3,
             "avoid_repeats": ["ZHIR", "OZ", "THOL"],
@@ -103,13 +103,13 @@ class CoreDefaults:
             "fallbacks": {"ZHIR": "NAV", "OZ": "ZHIR", "THOL": "NAV"},
         }
     )
-    SELECTOR_WEIGHTS: Dict[str, float] = field(
+    SELECTOR_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {"w_si": 0.5, "w_dnfr": 0.3, "w_accel": 0.2}
     )
-    SELECTOR_THRESHOLDS: Dict[str, float] = field(
+    SELECTOR_THRESHOLDS: dict[str, float] = field(
         default_factory=lambda: dict(SELECTOR_THRESHOLD_DEFAULTS)
     )
-    GAMMA: Dict[str, Any] = field(
+    GAMMA: dict[str, Any] = field(
         default_factory=lambda: {"type": "none", "beta": 0.0, "R0": 0.0}
     )
     CALLBACKS_STRICT: bool = False
