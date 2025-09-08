@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import math
 from itertools import zip_longest, tee
 
 from ..glyph_history import ensure_history
@@ -50,10 +51,10 @@ def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
         for i, (t, x, y, m, a) in enumerate(rows_raw):
             yield (
                 i if t is None else t,
-                x or 0,
-                y or 0,
-                m or 0,
-                a or 0,
+                0 if x is None or (isinstance(x, float) and math.isnan(x)) else x,
+                0 if y is None or (isinstance(y, float) and math.isnan(y)) else y,
+                0 if m is None or (isinstance(m, float) and math.isnan(m)) else m,
+                0 if a is None or (isinstance(a, float) and math.isnan(a)) else a,
             )
 
     rows_csv, rows_sigma = tee(_gen_rows())
