@@ -14,7 +14,8 @@ from cachetools import LRUCache
 import networkx as nx
 
 from ..graph_utils import mark_dnfr_prep_dirty
-from ..import_utils import get_numpy, optional_import
+from ..import_utils import get_numpy
+from ..json_utils import json_dumps
 
 T = TypeVar("T")
 
@@ -69,7 +70,6 @@ def get_graph_mapping(
     return MappingProxyType(data)
 
 
-_ORJSON = optional_import("orjson")
 
 
 def _stable_default(o: Any) -> Any:
@@ -121,20 +121,15 @@ class _Encoder(json.JSONEncoder):
 
 def _stable_json(obj: Any, max_depth: int = 10) -> str:
     """Return a JSON string with deterministic ordering."""
-    if _ORJSON is not None:
-        _check_depth(obj, 0, max_depth)
-        return _ORJSON.dumps(
-            obj,
-            option=_ORJSON.OPT_SORT_KEYS,
-            default=_stable_default,
-        ).decode("utf-8")
-    return json.dumps(
+    _check_depth(obj, 0, max_depth)
+    return json_dumps(
         obj,
         sort_keys=True,
+        default=_stable_default,
         ensure_ascii=False,
         cls=_Encoder,
+        to_bytes=False,
         max_depth=max_depth,
-        separators=(",", ":"),
     )
 
 
