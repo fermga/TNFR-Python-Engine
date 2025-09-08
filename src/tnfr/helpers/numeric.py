@@ -99,30 +99,19 @@ def _neighbor_phase_mean(node, trig) -> float:
 def _phase_mean_from_iter(
     it: Iterable[tuple[float, float] | None], fallback: float
 ) -> float:
-    total_cos = 0.0
-    comp_cos = 0.0
-    total_sin = 0.0
-    comp_sin = 0.0
+    """Return circular mean from an iterator of cosine/sine pairs.
+
+    ``it`` yields optional ``(cos, sin)`` tuples; ``None`` entries are
+    ignored. The pairs are accumulated using :func:`kahan_sum2d` for numerical
+    stability. If no valid pairs are found ``fallback`` is returned.
+    """
+
     found = False
-    for cs in it:
-        if cs is None:
-            continue
-        found = True
-        cos_val, sin_val = cs
-        # Kahan summation for cosine
-        y = cos_val - comp_cos
-        t = total_cos + y
-        comp_cos = (t - total_cos) - y
-        total_cos = t
-        # Kahan summation for sine
-        y = sin_val - comp_sin
-        t = total_sin + y
-        comp_sin = (t - total_sin) - y
-        total_sin = t
+    # Filter out ``None`` values and mark when at least one pair is seen
+    cos_sin_pairs = ((found := True) and cs for cs in it if cs is not None)
+    total_cos, total_sin = kahan_sum2d(cos_sin_pairs)
     if not found:
         return fallback
-    total_cos += comp_cos
-    total_sin += comp_sin
     return math.atan2(total_sin, total_cos)
 
 
@@ -137,7 +126,8 @@ def neighbor_phase_mean_list(
 
     When ``np`` (NumPy) is provided, ``np.fromiter`` is used to compute the
     averages. Otherwise, the mean is computed using the pure-Python
-    :func:`_phase_mean_from_iter` helper.
+    :func:`_phase_mean_from_iter` helper which internally reuses
+    :func:`kahan_sum2d` for stable accumulation.
     """
     deg = len(neigh)
     if np is not None and deg > 0:
