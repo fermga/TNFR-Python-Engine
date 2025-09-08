@@ -19,6 +19,8 @@ else:  # pragma: no cover - depende de tomllib/tomli
     has_toml = False
 
     class TOMLDecodeError(Exception):
+        """Fallback error used when tomllib/tomli is missing."""
+
         pass
 
 
@@ -28,6 +30,8 @@ if yaml is not None:
 else:  # pragma: no cover - depende de pyyaml
 
     class YAMLError(Exception):
+        """Fallback error used when pyyaml is missing."""
+
         pass
 
 
@@ -163,4 +167,10 @@ def safe_write(
             tmp_path.unlink(missing_ok=True)
 
 
-__all__ = ["read_structured_file", "safe_write", "StructuredFileError"]
+__all__ = [
+    "read_structured_file",
+    "safe_write",
+    "StructuredFileError",
+    "TOMLDecodeError",
+    "YAMLError",
+]
