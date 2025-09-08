@@ -141,6 +141,26 @@ def test_gamma_spec_normalized_once(graph_canon, monkeypatch):
     assert len(calls) == 1
 
 
+def test_default_gamma_spec_called_once(graph_canon, monkeypatch):
+    from tnfr import gamma as gamma_mod
+
+    G = graph_canon()
+    G.graph.pop("GAMMA", None)
+    G.add_node(0, θ=0.0)
+    calls = []
+
+    real = gamma_mod._default_gamma_spec
+
+    def fake_default():
+        calls.append(1)
+        return real()
+
+    monkeypatch.setattr(gamma_mod, "_default_gamma_spec", fake_default)
+    gamma_mod.eval_gamma(G, 0, t=0.0)
+    gamma_mod.eval_gamma(G, 0, t=0.0)
+    assert calls == [1]
+
+
 def test_kuramoto_cache_reuses_checksum(graph_canon, monkeypatch):
     from tnfr import gamma as gamma_mod
 
