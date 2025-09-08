@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from typing import Any, Dict, Sequence
 
 
 from ..constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_SI, COHERENCE
@@ -66,20 +67,20 @@ def _wij_vectorized(
 
 def _wij_loops(
     G,
-    nodes,
-    node_to_index,
-    th_vals,
-    epi_vals,
-    vf_vals,
-    si_vals,
-    wnorm,
-    epi_min,
-    epi_max,
-    vf_min,
-    vf_max,
-    neighbors_only,
-    self_diag,
-):
+    nodes: Sequence[Any],
+    node_to_index: Dict[Any, int],
+    th_vals: Sequence[float],
+    epi_vals: Sequence[float],
+    vf_vals: Sequence[float],
+    si_vals: Sequence[float],
+    wnorm: Dict[str, float],
+    epi_min: float,
+    epi_max: float,
+    vf_min: float,
+    vf_max: float,
+    neighbors_only: bool,
+    self_diag: bool,
+) -> list[list[float]]:
     n = len(nodes)
     wij = [[1.0 if (self_diag and i == j) else 0.0 for j in range(n)] for i in range(n)]
     phase_w = wnorm["phase"]
