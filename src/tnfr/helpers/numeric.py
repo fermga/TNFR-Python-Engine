@@ -13,6 +13,7 @@ __all__ = [
     "clamp01",
     "list_mean",
     "kahan_sum",
+    "kahan_sum2d",
     "angle_diff",
     "neighbor_mean",
     "neighbor_phase_mean",
@@ -56,6 +57,33 @@ def kahan_sum(values: Iterable[float]) -> float:
             c += (v - t) + total
         total = t
     return float(total + c)
+
+
+def kahan_sum2d(values: Iterable[tuple[float, float]]) -> tuple[float, float]:
+    """Return compensated sums of paired ``values`` using Kahan summation.
+
+    Each component is summed independently using the Kahan–Babuška (Neumaier)
+    algorithm to reduce floating point error.
+    """
+    total_x = 0.0
+    comp_x = 0.0
+    total_y = 0.0
+    comp_y = 0.0
+    for x, y in values:
+        t = total_x + x
+        if abs(total_x) >= abs(x):
+            comp_x += (total_x - t) + x
+        else:
+            comp_x += (x - t) + total_x
+        total_x = t
+
+        t = total_y + y
+        if abs(total_y) >= abs(y):
+            comp_y += (total_y - t) + y
+        else:
+            comp_y += (y - t) + total_y
+        total_y = t
+    return float(total_x + comp_x), float(total_y + comp_y)
 
 
 def angle_diff(a: float, b: float) -> float:

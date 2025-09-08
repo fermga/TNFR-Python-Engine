@@ -9,7 +9,7 @@ import networkx as nx
 
 from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
 from .alias import get_attr
-from .helpers.numeric import clamp01, kahan_sum
+from .helpers.numeric import clamp01, kahan_sum2d
 from .callback_utils import register_callback
 from .glyph_history import (
     ensure_history,
@@ -125,24 +125,16 @@ def _sigma_from_iterable(
     except TypeError:
         iterator = iter([values])
 
-    sum_x = 0.0
-    sum_y = 0.0
-    c_x = 0.0  # Kahan compensation for x
-    c_y = 0.0  # Kahan compensation for y
     cnt = 0
-    for val in iterator:
-        z = _to_complex(val)
-        # Kahan summation for the real part
-        dx = z.real - c_x
-        tx = sum_x + dx
-        c_x = (tx - sum_x) - dx
-        sum_x = tx
-        # Kahan summation for the imaginary part
-        dy = z.imag - c_y
-        ty = sum_y + dy
-        c_y = (ty - sum_y) - dy
-        sum_y = ty
-        cnt += 1
+
+    def pair_iter():
+        nonlocal cnt
+        for val in iterator:
+            z = _to_complex(val)
+            cnt += 1
+            yield (z.real, z.imag)
+
+    sum_x, sum_y = kahan_sum2d(pair_iter())
 
     if cnt == 0:
         return {
