@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from functools import partial
+import math
 import statistics
 from collections.abc import Mapping, Sequence
 
@@ -85,10 +86,19 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
         angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
         for _, data in G.nodes(data=True)
     )
-    try:
-        var = statistics.pvariance(diffs)
-    except statistics.StatisticsError:
+    # Manual population variance in a single pass using ``math.fsum``.
+    count = 0
+    sum_diff = 0.0
+    sum_sq = 0.0
+    for d in diffs:
+        count += 1
+        sum_diff = math.fsum((sum_diff, d))
+        sum_sq = math.fsum((sum_sq, d * d))
+    if count <= 1:
         var = 0.0
+    else:
+        mean = sum_diff / count
+        var = sum_sq / count - mean * mean
     return 1.0 / (1.0 + var)
 
 
