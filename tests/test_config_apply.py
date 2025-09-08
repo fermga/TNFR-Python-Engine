@@ -5,6 +5,7 @@ import networkx as nx
 import pytest
 from tnfr.config import load_config, apply_config
 from collections import UserDict
+from tnfr.constants import DEFAULTS, merge_overrides
 
 try:  # pragma: no cover - dependencia opcional
     import yaml  # type: ignore
@@ -77,3 +78,12 @@ def test_apply_config_passes_path_object(monkeypatch, tmp_path):
     G = nx.Graph()
     apply_config(G, path)
     assert received["path"] is path
+
+
+def test_merge_overrides_does_not_modify_defaults():
+    G = nx.Graph()
+    orig_enabled = DEFAULTS["TRACE"]["enabled"]
+    merge_overrides(G, TRACE=DEFAULTS["TRACE"])
+    assert G.graph["TRACE"] is not DEFAULTS["TRACE"]
+    G.graph["TRACE"]["enabled"] = not orig_enabled
+    assert DEFAULTS["TRACE"]["enabled"] == orig_enabled

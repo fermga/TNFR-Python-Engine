@@ -186,11 +186,15 @@ def inject_defaults(
 
 
 def merge_overrides(G, **overrides) -> None:
-    """Apply specific changes to ``G.graph``."""
+    """Apply specific changes to ``G.graph``.
+
+    Non-immutable values are deep-copied to avoid shared state with
+    :data:`DEFAULTS`.
+    """
     for key, value in overrides.items():
         if key not in DEFAULTS:
             raise KeyError(f"Parámetro desconocido: '{key}'")
-        G.graph[key] = value
+        G.graph[key] = value if _is_immutable(value) else copy.deepcopy(value)
 
 
 def get_param(G, key: str):
