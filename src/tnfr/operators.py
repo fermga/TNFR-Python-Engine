@@ -28,7 +28,6 @@ from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers import (
     list_mean,
     angle_diff,
-    neighbor_mean,
     neighbor_phase_mean,
     increment_edge_version,
     ensure_node_offset_map,
@@ -149,14 +148,9 @@ def _mix_epi_with_neighbors(
     epi = node.EPI
     neigh = list(node.neighbors())
     if hasattr(node, "G"):
-        epi_bar = neighbor_mean(node.G, node.n, ALIAS_EPI, default=epi)
         NodoNX = import_nodonx()
         neigh = [v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v) for v in neigh]
-    else:
-        if not neigh:
-            node.epi_kind = default_kind
-            return epi, default_kind
-        epi_bar = list_mean((v.EPI for v in neigh), default=epi)
+    epi_bar = list_mean((v.EPI for v in neigh), default=epi)
 
     count = 0
     best_kind: Optional[str] = None
