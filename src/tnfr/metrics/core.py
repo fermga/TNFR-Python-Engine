@@ -78,9 +78,9 @@ def _update_coherence(G, hist) -> None:
     C, dnfr_mean, depi_mean = compute_coherence(G, return_means=True)
     _record_metrics(
         hist,
-        (lambda: C, "C_steps"),
-        (lambda: dnfr_mean, "dnfr_mean"),
-        (lambda: depi_mean, "depi_mean"),
+        (C, "C_steps"),
+        (dnfr_mean, "dnfr_mean"),
+        (depi_mean, "depi_mean"),
     )
 
     wbar_w = int(get_param(G, "WBAR_WINDOW"))
@@ -88,24 +88,29 @@ def _update_coherence(G, hist) -> None:
     if cs:
         w = min(len(cs), max(1, wbar_w))
         wbar = sum(cs[-w:]) / w
-        _record_metrics(hist, (lambda: wbar, "W_bar"))
+        _record_metrics(hist, (wbar, "W_bar"))
 
 
 def _record_metrics(
-    hist: dict[str, Any], *pairs: tuple[Callable[[], Any], str]
+    hist: dict[str, Any], *pairs: tuple[Any, str], callable: bool = False
 ) -> None:
-    """Record metrics using pairs of callables and keys."""
-    for fn, key in pairs:
-        append_metric(hist, key, fn())
+    """Record metrics using pairs of values and keys.
+
+    When ``callable`` is ``True`` the values are assumed to be callables and
+    will be evaluated before being recorded.
+    """
+    for value, key in pairs:
+        append_metric(hist, key, value() if callable else value)
 
 
 def _update_phase_sync(G, hist) -> None:
     """Record phase synchrony and Kuramoto order."""
-
+    ps = phase_sync(G)
+    ko = kuramoto_order(G)
     _record_metrics(
         hist,
-        (lambda: phase_sync(G), "phase_sync"),
-        (lambda: kuramoto_order(G), "kuramoto_R"),
+        (ps, "phase_sync"),
+        (ko, "kuramoto_R"),
     )
 
 
@@ -116,18 +121,18 @@ def _update_sigma(G, hist) -> None:
     gl = glyph_load(G, window=win)
     _record_metrics(
         hist,
-        (lambda: gl.get("_estabilizadores", 0.0), "glyph_load_estab"),
-        (lambda: gl.get("_disruptivos", 0.0), "glyph_load_disr"),
+        (gl.get("_estabilizadores", 0.0), "glyph_load_estab"),
+        (gl.get("_disruptivos", 0.0), "glyph_load_disr"),
     )
 
     dist = {k: v for k, v in gl.items() if not k.startswith("_")}
     sig = sigma_vector(dist)
     _record_metrics(
         hist,
-        (lambda: sig.get("x", 0.0), "sense_sigma_x"),
-        (lambda: sig.get("y", 0.0), "sense_sigma_y"),
-        (lambda: sig.get("mag", 0.0), "sense_sigma_mag"),
-        (lambda: sig.get("angle", 0.0), "sense_sigma_angle"),
+        (sig.get("x", 0.0), "sense_sigma_x"),
+        (sig.get("y", 0.0), "sense_sigma_y"),
+        (sig.get("mag", 0.0), "sense_sigma_mag"),
+        (sig.get("angle", 0.0), "sense_sigma_angle"),
     )
 
 
