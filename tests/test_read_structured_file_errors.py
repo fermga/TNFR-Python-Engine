@@ -21,9 +21,10 @@ def test_read_structured_file_missing_file(tmp_path: Path):
 def test_read_structured_file_unsupported_suffix(tmp_path: Path):
     path = tmp_path / "data.txt"
     path.write_text("a", encoding="utf-8")
-    with pytest.raises(ValueError) as exc:
+    with pytest.raises(StructuredFileError) as exc:
         read_structured_file(path)
-    assert str(exc.value) == "Unsupported suffix: .txt"
+    msg = str(exc.value)
+    assert msg == f"Error parsing {path}: Unsupported suffix: .txt"
 
 
 def test_read_structured_file_permission_error(

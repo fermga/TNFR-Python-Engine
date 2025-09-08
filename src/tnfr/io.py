@@ -87,7 +87,10 @@ class StructuredFileError(Exception):
 def read_structured_file(path: Path) -> Any:
     """Read a JSON, YAML or TOML file and return parsed data."""
     suffix = path.suffix.lower()
-    parser = _get_parser(suffix)
+    try:
+        parser = _get_parser(suffix)
+    except ValueError as e:
+        raise StructuredFileError(path, e) from e
     try:
         text = path.read_text(encoding="utf-8")
         return parser(text)

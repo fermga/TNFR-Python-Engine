@@ -10,7 +10,7 @@ from tnfr.constants import (
 )
 from tnfr.validators import run_validators
 from tnfr.alias import set_attr_str, set_attr
-from tnfr.io import read_structured_file
+from tnfr.io import read_structured_file, StructuredFileError
 from tnfr.config import load_config
 
 try:  # pragma: no cover - compatibilidad Python
@@ -87,7 +87,7 @@ def test_read_structured_file_toml(tmp_path):
 def test_read_structured_file_invalid_extension(tmp_path):
     path = tmp_path / "cfg.txt"
     path.write_text("{}", encoding="utf-8")
-    with pytest.raises(ValueError):
+    with pytest.raises(StructuredFileError):
         read_structured_file(path)
 
 

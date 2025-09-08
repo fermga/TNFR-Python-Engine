@@ -113,15 +113,16 @@ def normalize_weights(
             log_level=logging.WARNING,
         )
         w = converted if ok and converted is not None else default_float
+        weights[k] = w
         if w < 0:
             negatives[k] = w
-            w = 0.0
-        weights[k] = w
-    total = kahan_sum(weights.values())
     if negatives:
         if error_on_negative:
             raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
         logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
+        for k in negatives:
+            weights[k] = 0.0
+    total = kahan_sum(weights.values())
     if total <= 0:
         uniform = 1.0 / len(keys)
         return {k: uniform for k in keys}
@@ -129,10 +130,10 @@ def normalize_weights(
 
 
 def normalize_counter(
-    counts: Mapping[str, int],
-) -> tuple[dict[str, float], int]:
+    counts: Mapping[str, float | int],
+) -> tuple[dict[str, float], float]:
     """Normalize a ``Counter`` returning proportions and total."""
-    total = sum(counts.values())
+    total = kahan_sum(counts.values())
     if total <= 0:
         return {}, 0
     dist = {k: v / total for k, v in counts.items() if v}
