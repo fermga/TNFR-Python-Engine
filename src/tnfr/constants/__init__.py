@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any, Dict
 from collections.abc import Mapping
+from collections import OrderedDict
+import threading
 import copy
 import warnings
 from types import MappingProxyType
@@ -37,6 +39,32 @@ IMMUTABLE_SIMPLE = (
     bytes,
     type(None),
 )
+
+
+class LRUCache(OrderedDict):
+    """Simple LRU cache implemented with :class:`OrderedDict`.
+
+    The cache discards the least-recently-used entry once ``maxsize`` is
+    exceeded. Accessing an entry marks it as most recently used.
+    """
+
+    def __init__(self, maxsize: int = 1024) -> None:
+        self.maxsize = maxsize
+        super().__init__()
+
+    def get(self, key: int) -> bool | None:
+        if key not in self:
+            return None
+        value = super().__getitem__(key)
+        self.move_to_end(key)
+        return value
+
+    def __setitem__(self, key: int, value: bool) -> None:  # type: ignore[override]
+        if key in self:
+            self.move_to_end(key)
+        super().__setitem__(key, value)
+        if len(self) > self.maxsize:
+            self.popitem(last=False)
 
 
 def _freeze(value: Any, seen: set[int] | None = None):
@@ -96,7 +124,9 @@ def _is_immutable_inner(value: Any) -> bool:
     return False
 
 
-_IMMUTABLE_CACHE: dict[int, bool] = {}
+_IMMUTABLE_CACHE_SIZE = 1024
+_IMMUTABLE_CACHE = LRUCache(maxsize=_IMMUTABLE_CACHE_SIZE)
+_IMMUTABLE_CACHE_LOCK = threading.Lock()
 
 
 def _is_immutable(value: Any) -> bool:
@@ -109,7 +139,8 @@ def _is_immutable(value: Any) -> bool:
     """
 
     obj_id = id(value)
-    cached = _IMMUTABLE_CACHE.get(obj_id)
+    with _IMMUTABLE_CACHE_LOCK:
+        cached = _IMMUTABLE_CACHE.get(obj_id)
     if cached is not None:
         return cached
     try:
@@ -118,7 +149,8 @@ def _is_immutable(value: Any) -> bool:
         result = False
     else:
         result = _is_immutable_inner(frozen)
-    _IMMUTABLE_CACHE[obj_id] = result
+    with _IMMUTABLE_CACHE_LOCK:
+        _IMMUTABLE_CACHE[obj_id] = result
     return result
 
 
