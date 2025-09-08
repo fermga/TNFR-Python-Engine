@@ -1,18 +1,27 @@
 from __future__ import annotations
 
-from typing import Any, Iterable, Dict, Callable, TypeVar
 import hashlib
-import threading
 import json
-from functools import lru_cache
-from cachetools import LRUCache
+import threading
 import warnings
 from collections.abc import Mapping
+from functools import lru_cache
 from types import MappingProxyType
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Optional,
+    Tuple,
+    TypeVar,
+)
+
+from cachetools import LRUCache
 import networkx as nx
 
-from ..import_utils import get_numpy
 from ..graph_utils import mark_dnfr_prep_dirty
+from ..import_utils import get_numpy
 
 T = TypeVar("T")
 
