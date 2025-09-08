@@ -172,7 +172,7 @@ def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
         and item.force_close in {Glyph.SHA, Glyph.NUL}
         else None
     )
-    seq = ensure_collection(item.body)
+    seq = ensure_collection(item.body, max_materialize=None)
 
     def _iter_reversed_body():
         for _ in range(repeats):
@@ -192,7 +192,7 @@ def _flatten(seq: Sequence[Token]) -> list[tuple[str, Any]]:
     when ``THOL`` blocks are nested.
     """
     ops: list[tuple[str, Any]] = []
-    stack: deque[Any] = deque(reversed(ensure_collection(seq)))
+    stack: deque[Any] = deque(reversed(ensure_collection(seq, max_materialize=None)))
 
     while stack:
         item = stack.pop()
