@@ -26,6 +26,7 @@ from .alias import (
     set_attr_str,
     set_vf,
     set_dnfr,
+    set_theta,
 )
 from .helpers.cache import increment_edge_version
 
@@ -271,7 +272,7 @@ class NodoNX(NodoProtocol):
 
     EPI = _nx_attr_property(ALIAS_EPI)
     vf = _nx_attr_property(ALIAS_VF, setter=set_vf, use_graph_setter=True)
-    theta = _nx_attr_property(ALIAS_THETA)
+    theta = _nx_attr_property(ALIAS_THETA, setter=set_theta, use_graph_setter=True)
     Si = _nx_attr_property(ALIAS_SI)
     epi_kind = _nx_attr_property(
         ALIAS_EPI_KIND,

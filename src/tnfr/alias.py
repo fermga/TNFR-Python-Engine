@@ -24,7 +24,7 @@ import logging
 from functools import lru_cache
 from .logging_utils import get_logger
 
-from .constants import ALIAS_VF, ALIAS_DNFR
+from .constants import ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
@@ -41,6 +41,7 @@ __all__ = [
     "set_attr_with_max",
     "set_vf",
     "set_dnfr",
+    "set_theta",
     "recompute_abs_max",
     "multi_recompute_abs_max",
 ]
@@ -281,3 +282,11 @@ def set_vf(G: "nx.Graph", n: Hashable, value: float, *, update_max: bool = True)
 def set_dnfr(G: "nx.Graph", n: Hashable, value: float) -> None:
     """Set ``ΔNFR`` for node ``n`` and update the global maximum."""
     set_attr_with_max(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
+
+
+def set_theta(G: "nx.Graph", n: Hashable, value: float) -> None:
+    """Set ``θ`` for node ``n`` and increment the trig cache version."""
+    val = float(value)
+    set_attr(G.nodes[n], ALIAS_THETA, val)
+    g = G.graph
+    g["_trig_version"] = int(g.get("_trig_version", 0)) + 1
