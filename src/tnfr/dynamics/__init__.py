@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import math
 from collections import deque
-from typing import Dict, Any, Literal
-import networkx as nx
+from typing import Dict, Any
 
 # Importar compute_Si y apply_glyph a nivel de módulo evita el coste de
 # realizar la importación en cada paso de la dinámica. Como los módulos de
@@ -24,13 +23,10 @@ from ..constants import (
     ALIAS_DNFR,
     ALIAS_EPI,
     ALIAS_SI,
-    ALIAS_dEPI,
     ALIAS_D2EPI,
     ALIAS_dSI,
-    ALIAS_EPI_KIND,
     get_param,
 )
-from ..gamma import eval_gamma
 from ..observers import glyph_load, kuramoto_order
 
 from ..helpers.numeric import (
@@ -39,28 +35,18 @@ from ..helpers.numeric import (
     angle_diff,
     neighbor_mean,
     neighbor_phase_mean,
-    _phase_mean_from_iter,
-)
-from ..helpers.cache import (
-    cached_nodes_and_A,
-    _cache_node_list,
 )
 from ..alias import (
     get_attr,
-    get_attr_str,
-    set_attr_str,
     set_vf,
-    set_dnfr,
     set_attr,
     set_theta,
     multi_recompute_abs_max,
 )
-from ..metrics_utils import compute_Si, compute_dnfr_accel_max, get_trig_cache
-from ..rng import _rng_for_step, base_seed
+from ..metrics_utils import compute_Si, compute_dnfr_accel_max
 from ..callback_utils import invoke_callbacks
 from ..glyph_history import recent_glyph, ensure_history, append_metric
 from ..collections_utils import normalize_weights
-from ..import_utils import get_numpy
 from ..selector import (
     _selector_thresholds,
     _norms_para_selector,
@@ -71,7 +57,7 @@ from ..selector import (
 from ..logging_utils import get_logger
 
 from .sampling import update_node_sample as _update_node_sample
-from .dnfr import (
+from .dnfr import (  # noqa: F401
     _prepare_dnfr_data,
     _init_dnfr_cache,
     _refresh_dnfr_vectors,
@@ -111,6 +97,8 @@ __all__ = [
     "step",
     "run",
 ]
+
+
 def _param(G, name):
     return float(G.graph.get(name) if G is not None else DEFAULTS[name])
 
@@ -148,7 +136,7 @@ def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
     else:
         set_attr(nd, ALIAS_VF, clamp(vf, vf_min, vf_max))
     if G.graph.get("THETA_WRAP") if G is not None else DEFAULTS["THETA_WRAP"]:
-        new_th = ((th + math.pi) % (2 * math.pi) - math.pi)
+        new_th = (th + math.pi) % (2 * math.pi) - math.pi
         if G is not None and node is not None:
             set_theta(G, node, new_th)
         else:
@@ -453,11 +441,15 @@ def _apply_score_override(cand, score, dnfr, dnfr_lo):
 
 
 def parametric_glyph_selector(G, n) -> str:
-    """Multiobjective: combine Si, |ΔNFR|_norm and |accel|_norm with hysteresis.
+    """Multiobjective: combine Si, |ΔNFR|_norm and |accel|_norm with
+    hysteresis.
+
     Base rules:
       - High Si  ⇒ IL
-      - Low Si   ⇒ OZ if |ΔNFR| high; ZHIR if |ΔNFR| low; THOL if acceleration is high
-      - Medium Si ⇒ NAV if |ΔNFR| high (or acceleration high), otherwise RA
+      - Low Si   ⇒ OZ if |ΔNFR| high; ZHIR if |ΔNFR| low;
+        THOL if acceleration is high
+      - Medium Si ⇒ NAV if |ΔNFR| high (or acceleration high),
+        otherwise RA
     """
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
@@ -547,7 +539,9 @@ def _apply_glyphs(G, selector, hist) -> None:
     for n, _ in G.nodes(data=True):
         h_al[n] = int(h_al.get(n, 0)) + 1
         h_en[n] = int(h_en.get(n, 0)) + 1
-        g = _choose_glyph(G, n, selector, use_canon, h_al, h_en, al_max, en_max)
+        g = _choose_glyph(
+            G, n, selector, use_canon, h_al, h_en, al_max, en_max
+        )
         apply_glyph(G, n, g, window=window)
         if use_canon:
             on_applied_glyph(G, n, g)

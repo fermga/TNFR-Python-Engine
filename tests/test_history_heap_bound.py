@@ -34,8 +34,10 @@ def test_prune_heap_discards_stale_entries():
 
 def test_prune_heap_performance():
     hist = HistoryDict({f"k{i}": [] for i in range(100)}, compact_every=5)
+
     def churn():
         for i in range(5_000):
             hist.get_increment(f"k{i % 100}")
+
     t = timeit.timeit(churn, number=1)
     assert t < 1.0

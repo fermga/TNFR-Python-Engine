@@ -74,7 +74,9 @@ def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
 
 
 def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
-    return build_graph(n=args.nodes, topology=args.topology, seed=args.seed, p=args.p)
+    return build_graph(
+        n=args.nodes, topology=args.topology, seed=args.seed, p=args.p
+    )
 
 
 def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
@@ -105,7 +107,9 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
             "basic": default_glyph_selector,
             "param": parametric_glyph_selector,
         }
-        G.graph["glyph_selector"] = sel_map.get(selector, default_glyph_selector)
+        G.graph["glyph_selector"] = sel_map.get(
+            selector, default_glyph_selector
+        )
 
     if hasattr(args, "gamma_type"):
         G.graph["GAMMA"] = {
@@ -115,7 +119,9 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
         }
 
 
-def register_callbacks_and_observer(G: "nx.Graph", args: argparse.Namespace) -> None:
+def register_callbacks_and_observer(
+    G: "nx.Graph", args: argparse.Namespace
+) -> None:
     _attach_callbacks(G)
     if args.observer:
         attach_standard_observer(G)
@@ -134,7 +140,9 @@ def _load_sequence(path: Path) -> list[Any]:
     return seq(*_parse_tokens(data))
 
 
-def resolve_program(args: argparse.Namespace, default: Optional[Any] = None) -> Optional[Any]:
+def resolve_program(
+    args: argparse.Namespace, default: Optional[Any] = None
+) -> Optional[Any]:
     if getattr(args, "preset", None):
         return get_preset(args.preset)
     if getattr(args, "sequence_file", None):
@@ -142,7 +150,9 @@ def resolve_program(args: argparse.Namespace, default: Optional[Any] = None) -> 
     return default
 
 
-def run_program(G: Optional["nx.Graph"], program: Optional[Any], args: argparse.Namespace) -> "nx.Graph":
+def run_program(
+    G: Optional["nx.Graph"], program: Optional[Any], args: argparse.Namespace
+) -> "nx.Graph":
     if G is None:
         G = _build_graph_from_args(args)
 

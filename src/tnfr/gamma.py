@@ -11,14 +11,20 @@ from collections.abc import Mapping
 
 from .constants import ALIAS_THETA
 from .alias import get_attr
-from .helpers.cache import node_set_checksum, edge_version_cache, get_graph_mapping
+from .helpers.cache import (
+    node_set_checksum,
+    edge_version_cache,
+    get_graph_mapping,
+)
 from .logging_utils import get_logger
 
 
 logger = get_logger(__name__)
 
 DEFAULT_GAMMA: Mapping[str, str] = {"type": "none"}
-DEFAULT_GAMMA_DUMPED = json.dumps(DEFAULT_GAMMA, sort_keys=True).encode("utf-8")
+DEFAULT_GAMMA_DUMPED = json.dumps(DEFAULT_GAMMA, sort_keys=True).encode(
+    "utf-8"
+)
 DEFAULT_GAMMA_HASH = hashlib.blake2b(
     DEFAULT_GAMMA_DUMPED, digest_size=16
 ).hexdigest()
@@ -36,7 +42,8 @@ __all__ = [
 
 
 def _ensure_kuramoto_cache(G, t) -> None:
-    """Cache ``(R, ψ)`` for the current step ``t`` using ``edge_version_cache``."""
+    """Cache ``(R, ψ)`` for the current step ``t`` using
+    ``edge_version_cache``."""
     checksum = G.graph.get("_dnfr_nodes_checksum")
     if checksum is None:
         # reuse checksum from cached_nodes_and_A when available
@@ -102,11 +109,14 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
     cur_hash = DEFAULT_GAMMA_HASH
     if cached is not None and prev_hash == cur_hash:
         return cached
-    spec = get_graph_mapping(
-        G,
-        "GAMMA",
-        "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}",
-    ) or DEFAULT_GAMMA
+    spec = (
+        get_graph_mapping(
+            G,
+            "GAMMA",
+            "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}",
+        )
+        or DEFAULT_GAMMA
+    )
     G.graph["_gamma_spec"] = spec
     G.graph["_gamma_spec_hash"] = cur_hash
     return spec

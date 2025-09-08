@@ -52,7 +52,9 @@ def validate_token(
     raise ValueError(f"Token inválido: {tok} (posición {pos}, token {tok!r})")
 
 
-def _parse_tokens(obj: Any, token_map: dict[str, Callable[[Any], Any]]) -> list[Any]:
+def _parse_tokens(
+    obj: Any, token_map: dict[str, Callable[[Any], Any]]
+) -> list[Any]:
     return [
         validate_token(tok, pos, token_map)
         for pos, tok in enumerate(_flatten_tokens(obj), start=1)

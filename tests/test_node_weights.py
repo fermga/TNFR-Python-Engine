@@ -117,7 +117,9 @@ def test_add_edge_rejects_non_finite_weight():
     a = NodoTNFR()
     b = NodoTNFR()
     for w in (math.nan, math.inf, -math.inf):
-        with pytest.raises(ValueError, match="Edge weight must be a finite number"):
+        with pytest.raises(
+            ValueError, match="Edge weight must be a finite number"
+        ):
             a.add_edge(b, weight=w)
         assert not a.has_edge(b)
         assert not b.has_edge(a)
@@ -129,6 +131,8 @@ def test_add_edge_rejects_non_finite_weight_nx():
     a = NodoNX(G, 0)
     b = NodoNX(G, 1)
     for w in (math.nan, math.inf, -math.inf):
-        with pytest.raises(ValueError, match="Edge weight must be a finite number"):
+        with pytest.raises(
+            ValueError, match="Edge weight must be a finite number"
+        ):
             a.add_edge(b, weight=w)
         assert not a.has_edge(b)

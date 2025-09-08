@@ -3,6 +3,7 @@ import hashlib
 import struct
 from tnfr.rng import get_rng
 
+
 def _derive_seed(seed: int, key: int) -> int:
     seed_bytes = struct.pack(
         ">QQ",
@@ -12,6 +13,7 @@ def _derive_seed(seed: int, key: int) -> int:
     return int.from_bytes(
         hashlib.blake2b(seed_bytes, digest_size=8).digest(), "big"
     )
+
 
 def test_get_rng_reproducible_sequence():
     get_rng.cache_clear()

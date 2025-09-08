@@ -73,13 +73,14 @@ def _get_networkx_modules():
     nx = optional_import("networkx")
     if nx is None:
         raise ImportError(
-            "networkx is required for network operators; install 'networkx' to enable this feature"
+            "networkx is required for network operators; install 'networkx' "
+            "to enable this feature"
         )
     nx_comm = optional_import("networkx.algorithms.community")
     if nx_comm is None:
         raise ImportError(
-            "networkx.algorithms.community is required for community-based operations; install "
-            "'networkx' to enable this feature"
+            "networkx.algorithms.community is required for community-based "
+            "operations; install 'networkx' to enable this feature"
         )
     return nx, nx_comm
 
@@ -132,7 +133,9 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     seed = cache.get(cache_key)
     if seed is None:
         seed_bytes = f"{seed_root}:{scope_id}".encode()
-        seed = int.from_bytes(hashlib.blake2b(seed_bytes, digest_size=8).digest(), "little")
+        seed = int.from_bytes(
+            hashlib.blake2b(seed_bytes, digest_size=8).digest(), "little"
+        )
         cache[cache_key] = seed
     rng = get_rng(seed, seed_key)
     return rng.uniform(-amplitude, amplitude)
@@ -198,7 +201,10 @@ def _mix_epi_with_neighbors(
             return epi, default_kind
         epi_bar = neighbor_mean(node.G, node.n, ALIAS_EPI, default=epi)
         NodoNX = import_nodonx()
-        neigh = [v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v) for v in neigh]
+        neigh = [
+            v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)
+            for v in neigh
+        ]
     else:
         epi_bar = list_mean((v.EPI for v in neigh), default=epi)
 
@@ -219,9 +225,7 @@ def _mix_epi_with_neighbors(
     new_epi = (1 - mix) * epi + mix * epi_bar
     node.EPI = new_epi
     dominant = (
-        best_kind
-        if best_kind and best_abs > abs(new_epi)
-        else node.epi_kind
+        best_kind if best_kind and best_abs > abs(new_epi) else node.epi_kind
     )
     if not dominant:
         dominant = default_kind
@@ -265,7 +269,9 @@ def _um_candidate_iter(node: NodoProtocol):
     else:
         base = node.all_nodes()
     for j in base:
-        same = (j is node) or (getattr(node, "n", None) == getattr(j, "n", None))
+        same = (j is node) or (
+            getattr(node, "n", None) == getattr(j, "n", None)
+        )
         if same or node.has_edge(j):
             continue
         yield j
@@ -376,17 +382,23 @@ def _make_scale_op(glyph: Glyph):
     return _op
 
 
-def _op_THOL(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # THOL — Autoorganización
+def _op_THOL(
+    node: NodoProtocol, gf: Dict[str, Any]
+) -> None:  # THOL — Autoorganización
     a = float(gf.get("THOL_accel", 0.10))
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
-def _op_ZHIR(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # ZHIR — Mutación
+def _op_ZHIR(
+    node: NodoProtocol, gf: Dict[str, Any]
+) -> None:  # ZHIR — Mutación
     shift = float(gf.get("ZHIR_theta_shift", math.pi / 2))
     node.theta = node.theta + shift
 
 
-def _op_NAV(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # NAV — Transición
+def _op_NAV(
+    node: NodoProtocol, gf: Dict[str, Any]
+) -> None:  # NAV — Transición
     dnfr = node.dnfr
     vf = node.vf
     eta = float(gf.get("NAV_eta", 0.5))
@@ -405,7 +417,9 @@ def _op_NAV(node: NodoProtocol, gf: Dict[str, Any]) -> None:  # NAV — Transici
     node.dnfr = base + jitter
 
 
-def _op_REMESH(node: NodoProtocol, gf: Dict[str, Any] | None = None) -> None:  # REMESH — aviso
+def _op_REMESH(
+    node: NodoProtocol, gf: Dict[str, Any] | None = None
+) -> None:  # REMESH — aviso
     step_idx = len(node.graph.get("history", {}).get("C_steps", []))
     last_warn = node.graph.get("_remesh_warn_step", None)
     if last_warn != step_idx:
@@ -616,7 +630,10 @@ def _mst_edges_from_epi(nx, nodes, epi):
     H.add_weighted_edges_from(
         (u, v, abs(epi[u] - epi[v])) for u, v in combinations(nodes, 2)
     )
-    return {tuple(sorted((u, v))) for u, v in nx.minimum_spanning_edges(H, data=False)}
+    return {
+        tuple(sorted((u, v)))
+        for u, v in nx.minimum_spanning_edges(H, data=False)
+    }
 
 
 def _knn_edges(nodes, epi, k_val, p_rewire, rnd):
@@ -681,7 +698,9 @@ def _community_remesh(
                 v = ordered[left]
                 left -= 1
             else:
-                if abs(epi_u - epi_vals[ordered[left]]) <= abs(epi_vals[ordered[right]] - epi_u):
+                if abs(epi_u - epi_vals[ordered[left]]) <= abs(
+                    epi_vals[ordered[right]] - epi_u
+                ):
                     v = ordered[left]
                     left -= 1
                 else:
@@ -714,6 +733,7 @@ def _community_remesh(
                 "mapping": mapping,
             },
         )
+
 
 def apply_topological_remesh(
     G,
@@ -755,9 +775,12 @@ def apply_topological_remesh(
 
     mst_edges = _mst_edges_from_epi(nx, nodes, epi)
 
-    # Valor por defecto para ``k`` en los modos "community" y "knn" (2 si no se especifica)
+    # Valor por defecto para ``k`` en los modos "community" y "knn"
+    # (2 si no se especifica)
     default_k = int(
-        G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2))
+        G.graph.get(
+            "REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2)
+        )
     )
     # ``k_val`` se calcula una sola vez, asegurando un mínimo de 1
     k_val = max(1, int(k) if k is not None else default_k)
@@ -809,14 +832,46 @@ def apply_remesh_if_globally_stable(
     G, pasos_estables_consecutivos: Optional[int] = None
 ) -> None:
     params = [
-        ("REMESH_STABILITY_WINDOW", int, REMESH_DEFAULTS["REMESH_STABILITY_WINDOW"]),
-        ("REMESH_REQUIRE_STABILITY", bool, REMESH_DEFAULTS["REMESH_REQUIRE_STABILITY"]),
-        ("REMESH_MIN_PHASE_SYNC", float, REMESH_DEFAULTS["REMESH_MIN_PHASE_SYNC"]),
-        ("REMESH_MAX_GLYPH_DISR", float, REMESH_DEFAULTS["REMESH_MAX_GLYPH_DISR"]),
-        ("REMESH_MIN_SIGMA_MAG", float, REMESH_DEFAULTS["REMESH_MIN_SIGMA_MAG"]),
-        ("REMESH_MIN_KURAMOTO_R", float, REMESH_DEFAULTS["REMESH_MIN_KURAMOTO_R"]),
-        ("REMESH_MIN_SI_HI_FRAC", float, REMESH_DEFAULTS["REMESH_MIN_SI_HI_FRAC"]),
-        ("REMESH_COOLDOWN_VENTANA", int, REMESH_DEFAULTS["REMESH_COOLDOWN_VENTANA"]),
+        (
+            "REMESH_STABILITY_WINDOW",
+            int,
+            REMESH_DEFAULTS["REMESH_STABILITY_WINDOW"],
+        ),
+        (
+            "REMESH_REQUIRE_STABILITY",
+            bool,
+            REMESH_DEFAULTS["REMESH_REQUIRE_STABILITY"],
+        ),
+        (
+            "REMESH_MIN_PHASE_SYNC",
+            float,
+            REMESH_DEFAULTS["REMESH_MIN_PHASE_SYNC"],
+        ),
+        (
+            "REMESH_MAX_GLYPH_DISR",
+            float,
+            REMESH_DEFAULTS["REMESH_MAX_GLYPH_DISR"],
+        ),
+        (
+            "REMESH_MIN_SIGMA_MAG",
+            float,
+            REMESH_DEFAULTS["REMESH_MIN_SIGMA_MAG"],
+        ),
+        (
+            "REMESH_MIN_KURAMOTO_R",
+            float,
+            REMESH_DEFAULTS["REMESH_MIN_KURAMOTO_R"],
+        ),
+        (
+            "REMESH_MIN_SI_HI_FRAC",
+            float,
+            REMESH_DEFAULTS["REMESH_MIN_SI_HI_FRAC"],
+        ),
+        (
+            "REMESH_COOLDOWN_VENTANA",
+            int,
+            REMESH_DEFAULTS["REMESH_COOLDOWN_VENTANA"],
+        ),
         ("REMESH_COOLDOWN_TS", float, REMESH_DEFAULTS["REMESH_COOLDOWN_TS"]),
     ]
     cfg = {}
@@ -848,9 +903,10 @@ def apply_remesh_if_globally_stable(
         return
     t_now = float(G.graph.get("_t", 0.0))
     last_ts = float(G.graph.get("_last_remesh_ts", -1e12))
-    if cfg["REMESH_COOLDOWN_TS"] > 0 and (
-        t_now - last_ts
-    ) < cfg["REMESH_COOLDOWN_TS"]:
+    if (
+        cfg["REMESH_COOLDOWN_TS"] > 0
+        and (t_now - last_ts) < cfg["REMESH_COOLDOWN_TS"]
+    ):
         return
 
     apply_network_remesh(G)

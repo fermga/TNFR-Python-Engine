@@ -155,7 +155,11 @@ def add_edge(
 
     if exists_cb is None and set_cb is None:
         if strategy is None:
-            strategy = EdgeStrategy.NX if hasattr(graph, "add_edge") else EdgeStrategy.TNFR
+            strategy = (
+                EdgeStrategy.NX
+                if hasattr(graph, "add_edge")
+                else EdgeStrategy.TNFR
+            )
         try:
             exists_cb, set_cb = _STRATEGY_CBS[strategy]
         except KeyError as e:
@@ -272,7 +276,9 @@ class NodoNX(NodoProtocol):
 
     EPI = _nx_attr_property(ALIAS_EPI)
     vf = _nx_attr_property(ALIAS_VF, setter=set_vf, use_graph_setter=True)
-    theta = _nx_attr_property(ALIAS_THETA, setter=set_theta, use_graph_setter=True)
+    theta = _nx_attr_property(
+        ALIAS_THETA, setter=set_theta, use_graph_setter=True
+    )
     Si = _nx_attr_property(ALIAS_SI)
     epi_kind = _nx_attr_property(
         ALIAS_EPI_KIND,

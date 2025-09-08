@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 from functools import partial
-import math
 import statistics
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 
 from .constants import ALIAS_THETA, get_param
 from .alias import get_attr
@@ -31,6 +30,7 @@ __all__ = [
 
 
 logger = get_logger(__name__)
+
 
 # -------------------------
 # Observador estándar Γ(R)
@@ -63,7 +63,9 @@ def attach_standard_observer(G):
     return G
 
 
-def _get_R_psi(G, R: float | None = None, psi: float | None = None) -> tuple[float, float]:
+def _get_R_psi(
+    G, R: float | None = None, psi: float | None = None
+) -> tuple[float, float]:
     """Return ``(R, ψ)`` using cached values if provided."""
     if R is None or psi is None:
         R_calc, psi_calc = kuramoto_R_psi(G)
@@ -89,7 +91,9 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
     return 1.0 / (1.0 + statistics.pvariance(diffs))
 
 
-def kuramoto_order(G, R: float | None = None, psi: float | None = None) -> float:
+def kuramoto_order(
+    G, R: float | None = None, psi: float | None = None
+) -> float:
     """R in [0,1], 1 means perfectly aligned phases."""
     if not _has_nodes(G):
         return 1.0
@@ -125,7 +129,9 @@ def wbar(G, window: int | None = None) -> float:
         raise ValueError("window must be positive")
     hist = G.graph.get("history")
     if not isinstance(hist, Mapping):
-        logger.warning("history is not a mapping; using instantaneous coherence")
+        logger.warning(
+            "history is not a mapping; using instantaneous coherence"
+        )
         return compute_coherence(G)
     cs = hist.get("C_steps", [])
     if not cs:

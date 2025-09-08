@@ -245,7 +245,9 @@ def ensure_history(G) -> dict[str, Any]:
 class _IncrementDict(dict):
     """Dict with ``get_increment`` for metric history."""
 
-    def get_increment(self, key: str, default: Any = None) -> Any:  # noqa: D401
+    def get_increment(
+        self, key: str, default: Any = None
+    ) -> Any:  # noqa: D401
         return self.setdefault(key, default)
 
 
@@ -264,7 +266,9 @@ class _IncrementProxy:
         return self._data.setdefault(key, default)
 
 
-def _ensure_increment(hist: dict[str, Any] | SupportsGetIncrement) -> SupportsGetIncrement:
+def _ensure_increment(
+    hist: dict[str, Any] | SupportsGetIncrement,
+) -> SupportsGetIncrement:
     return (
         hist
         if callable(getattr(hist, "get_increment", None))
@@ -272,7 +276,9 @@ def _ensure_increment(hist: dict[str, Any] | SupportsGetIncrement) -> SupportsGe
     )  # type: ignore[return-value]
 
 
-def append_metric(hist: dict[str, Any] | SupportsGetIncrement, key: str, value: Any) -> None:
+def append_metric(
+    hist: dict[str, Any] | SupportsGetIncrement, key: str, value: Any
+) -> None:
     """Append ``value`` to ``hist[key]`` list, creating it if missing."""
     _ensure_increment(hist).get_increment(key, []).append(value)
 

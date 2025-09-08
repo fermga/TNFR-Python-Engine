@@ -51,7 +51,9 @@ def get_graph(obj: Any) -> Any:
     return obj.graph if hasattr(obj, "graph") else obj
 
 
-def get_graph_mapping(G: Any, key: str, warn_msg: str) -> dict[str, Any] | None:
+def get_graph_mapping(
+    G: Any, key: str, warn_msg: str
+) -> dict[str, Any] | None:
     """Return a shallow copy of ``G.graph[key]`` if it is a mapping.
 
     ``warn_msg`` is emitted via :func:`warnings.warn` when the stored value is
@@ -111,7 +113,11 @@ class _Encoder(json.JSONEncoder):
 def _stable_json(obj: Any, max_depth: int = 10) -> str:
     """Return a JSON string with deterministic ordering."""
     return json.dumps(
-        obj, sort_keys=True, ensure_ascii=False, cls=_Encoder, max_depth=max_depth
+        obj,
+        sort_keys=True,
+        ensure_ascii=False,
+        cls=_Encoder,
+        max_depth=max_depth,
     )
 
 
@@ -136,14 +142,19 @@ def _update_node_cache(
     value: Any | None = None,
     *,
     checksum: str | None = None,
+    presorted: bool = False,
 ) -> str:
     """Store ``value`` and its node checksum in ``G.graph``.
 
     ``nodes`` is the iterable used to compute the checksum. When ``value`` is
     ``None`` it defaults to ``nodes``. The computed checksum is returned.
+    Set ``presorted`` to ``True`` when ``nodes`` is already sorted in a stable
+    manner to avoid redundant sorting.
     """
     if checksum is None:
-        checksum = node_set_checksum(G, nodes, store=False)
+        checksum = node_set_checksum(
+            G, nodes, presorted=presorted, store=False
+        )
     graph = get_graph(G)
     graph[key_prefix] = nodes if value is None else value
     graph[f"{key_prefix}_checksum"] = checksum
@@ -159,22 +170,23 @@ def node_set_checksum(
 ) -> str:
     """Return a BLAKE2b checksum of ``G``'s node set.
 
-    Nodes are serialised using :func:`_node_repr`. Each node's digest is
-    computed individually and the collection of digests is sorted to make the
-    resulting checksum independent of node ordering. The sorted digests are then
-    fed into a new :class:`hashlib.blake2b` instance. When ``store`` is ``True``
-    the tuple of digests along with the final checksum is cached under
+    Nodes are serialised using :func:`_node_repr`. When ``presorted`` is
+    ``False`` the resulting representations are sorted to make the checksum
+    independent of node ordering. The digests of the ordered representations
+    are fed into a new :class:`hashlib.blake2b` instance. When ``store`` is
+    ``True`` the tuple of digests along with the final checksum is cached under
     ``"_node_set_checksum_cache"`` to avoid recalculating it for unchanged
     graphs.
     """
     graph = get_graph(G)
     node_iterable = G.nodes() if nodes is None else nodes
+    representations = [_node_repr(n) for n in node_iterable]
     if not presorted:
-        node_iterable = sorted(node_iterable, key=_node_repr)
+        representations.sort()
     hasher = hashlib.blake2b(digest_size=16)
     token_hasher = hashlib.blake2b(digest_size=8)
-    for n in node_iterable:
-        digest = _hash_node(n)
+    for rep in representations:
+        digest = hashlib.blake2b(rep.encode("utf-8"), digest_size=16).digest()
         hasher.update(digest)
         token_hasher.update(digest)
     checksum = hasher.hexdigest()
@@ -224,9 +236,7 @@ def _ensure_node_map(G, *, key: str, sort: bool = False) -> dict[Any, int]:
     checksum_key = f"{key}_checksum"
     if mapping is None or G.graph.get(checksum_key) != checksum:
         mapping = {node: idx for idx, node in enumerate(nodes)}
-        _update_node_cache(
-            G, nodes, key, mapping, checksum=checksum
-        )
+        _update_node_cache(G, nodes, key, mapping, checksum=checksum)
     return mapping
 
 
@@ -251,6 +261,7 @@ def _make_edge_cache(max_entries: int, locks: dict) -> Any:
     try:
         return LRUCache(max_entries, callback=lambda k, _: locks.pop(k, None))
     except TypeError:  # pragma: no cover - legacy cachetools
+
         class _LRUCache(LRUCache):
             def __init__(self, maxsize, *, callback=None):
                 super().__init__(maxsize)
@@ -266,7 +277,9 @@ def _make_edge_cache(max_entries: int, locks: dict) -> Any:
         return _LRUCache(max_entries, callback=lambda k, v: locks.pop(k, None))
 
 
-def _get_edge_cache(graph: Any, max_entries: int | None, *, create: bool = True):
+def _get_edge_cache(
+    graph: Any, max_entries: int | None, *, create: bool = True
+):
     """Return edge cache and lock mapping for ``graph``.
 
     When ``create`` is ``True`` missing structures are initialized according
@@ -302,7 +315,11 @@ def _get_edge_cache(graph: Any, max_entries: int | None, *, create: bool = True)
 
 
 def edge_version_cache(
-    G: Any, key: str, builder: Callable[[], T], *, max_entries: int | None = 128
+    G: Any,
+    key: str,
+    builder: Callable[[], T],
+    *,
+    max_entries: int | None = 128,
 ) -> T:
     """Return cached ``builder`` output tied to the edge version of ``G``.
 
@@ -373,7 +390,9 @@ def cached_nodes_and_A(
 
     def builder() -> tuple[list[int], Any]:
         if np is not None:
-            A = nx.to_numpy_array(G, nodelist=nodes_list, weight=None, dtype=float)
+            A = nx.to_numpy_array(
+                G, nodelist=nodes_list, weight=None, dtype=float
+            )
         else:  # pragma: no cover - dependiente de numpy
             A = None
         return nodes_list, A

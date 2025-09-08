@@ -20,7 +20,9 @@ def get_logger(name: str) -> logging.Logger:
     with _LOCK:
         root = logging.getLogger()
         if not root.handlers:
-            level = root.level if root.level != logging.WARNING else logging.INFO
+            level = (
+                root.level if root.level != logging.WARNING else logging.INFO
+            )
             logging.basicConfig(
                 level=level,
                 format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",

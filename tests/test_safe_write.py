@@ -10,7 +10,9 @@ def test_safe_write_atomic(tmp_path: Path):
     assert dest.read_text() == "hi"
 
 
-def test_safe_write_cleans_temp_on_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def test_safe_write_cleans_temp_on_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
     dest = tmp_path / "out.txt"
 
     def fake_replace(src, dst):  # pragma: no cover - monkeypatch helper
@@ -34,4 +36,3 @@ def test_safe_write_preserves_exception(tmp_path: Path):
 
     with pytest.raises(ValueError):
         safe_write(dest, writer)
-

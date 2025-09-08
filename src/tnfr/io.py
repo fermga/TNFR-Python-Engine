@@ -21,6 +21,7 @@ else:  # pragma: no cover - depende de tomllib/tomli
     class TOMLDecodeError(Exception):
         pass
 
+
 yaml = optional_import("yaml")
 if yaml is not None:
     YAMLError = getattr(yaml, "YAMLError", Exception)
@@ -40,6 +41,7 @@ def _missing_dependency(name: str) -> Callable[[str], Any]:
 def _parse_yaml(text: str) -> Any:
     """Parse YAML ``text`` using ``safe_load`` if available."""
     return getattr(yaml, "safe_load", _missing_dependency("pyyaml"))(text)
+
 
 PARSERS = {
     ".json": json.loads,
@@ -128,8 +130,8 @@ def safe_write(
     mode:
         File mode passed to :func:`open`. Text modes (default) use UTF-8
         encoding unless ``encoding`` is ``None``. When a binary mode is used
-        (``'b'`` in ``mode``) no encoding parameter is supplied so ``write`` may
-        write bytes.
+        (``'b'`` in ``mode``) no encoding parameter is supplied so
+        ``write`` may write bytes.
     encoding:
         Encoding for text modes. Ignored for binary modes.
     """
@@ -150,7 +152,9 @@ def safe_write(
         try:
             os.replace(tmp_path, path)
         except OSError as e:
-            logger.error("Atomic replace failed for %s -> %s: %s", tmp_path, path, e)
+            logger.error(
+                "Atomic replace failed for %s -> %s: %s", tmp_path, path, e
+            )
             raise
     except (OSError, ValueError, TypeError) as e:
         raise type(e)(f"Failed to write file {path}: {e}") from e
@@ -160,4 +164,3 @@ def safe_write(
 
 
 __all__ = ["read_structured_file", "safe_write", "StructuredFileError"]
-

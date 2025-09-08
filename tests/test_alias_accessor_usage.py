@@ -16,7 +16,9 @@ def _func_set(d, aliases, value):
 _accessor = AliasAccessor(int)
 
 
-@pytest.mark.parametrize("getter,setter", [(_func_get, _func_set), (_accessor.get, _accessor.set)])
+@pytest.mark.parametrize(
+    "getter,setter", [(_func_get, _func_set), (_accessor.get, _accessor.set)]
+)
 def test_get_and_set_work_with_functions_and_object(getter, setter):
     d = {"a": "1"}
     assert getter(d, ("a", "b"), default=None) == 1

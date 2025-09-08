@@ -1,4 +1,5 @@
 """Deterministic RNG helpers."""
+
 from __future__ import annotations
 
 import random
@@ -77,5 +78,6 @@ def set_cache_maxsize(size: int) -> None:
             _RNG_CACHE = LRUCache(maxsize=new_size)
         else:
             _RNG_CACHE = {}
+
 
 __all__ = ["get_rng", "make_rng", "set_cache_maxsize", "base_seed"]

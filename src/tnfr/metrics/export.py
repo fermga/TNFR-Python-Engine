@@ -117,4 +117,7 @@ def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
             "epi_support": epi_supp,
         }
         json_path = base_path + ".json"
-        safe_write(json_path, lambda f: json.dump(data, f, ensure_ascii=False, indent=2))
+        safe_write(
+            json_path,
+            lambda f: json.dump(data, f, ensure_ascii=False, indent=2),
+        )

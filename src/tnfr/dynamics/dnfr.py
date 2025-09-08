@@ -27,6 +27,8 @@ __all__ = [
     "dnfr_laplacian",
     "apply_dnfr_field",
 ]
+
+
 def _write_dnfr_metadata(
     G, *, weights: dict, hook_name: str, note: str | None = None
 ) -> None:
@@ -117,8 +119,8 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     cache = G.graph.get("_dnfr_prep_cache")
     checksum = G.graph.get("_dnfr_nodes_checksum")
     dirty = bool(G.graph.pop("_dnfr_prep_dirty", False))
-    cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = _init_dnfr_cache(
-        G, nodes, cache, checksum, dirty
+    cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = (
+        _init_dnfr_cache(G, nodes, cache, checksum, dirty)
     )
     if refreshed:
         _refresh_dnfr_vectors(G, nodes, theta, epi, vf, cos_theta, sin_theta)
@@ -294,7 +296,9 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
     if use_numpy:
         np = get_numpy(warn=True)
         if np is None:  # pragma: no cover - runtime check
-            raise RuntimeError("numpy no disponible para la versión vectorizada")
+            raise RuntimeError(
+                "numpy no disponible para la versión vectorizada"
+            )
         if not nodes:
             return None
         A = data.get("A")
@@ -443,9 +447,7 @@ def _apply_dnfr_hook(
                 total += w * func(G, n, nd)
         set_dnfr(G, n, total)
 
-    _write_dnfr_metadata(
-        G, weights=weights, hook_name=hook_name, note=note
-    )
+    _write_dnfr_metadata(G, weights=weights, hook_name=hook_name, note=note)
 
 
 # --- Hooks de ejemplo (opcionales) ---
@@ -497,7 +499,9 @@ def dnfr_laplacian(G) -> None:
         epi = get_attr(nd, ALIAS_EPI, 0.0)
         neigh = list(G.neighbors(n))
         deg = len(neigh) or 1
-        epi_bar = sum(get_attr(G.nodes[v], ALIAS_EPI, epi) for v in neigh) / deg
+        epi_bar = (
+            sum(get_attr(G.nodes[v], ALIAS_EPI, epi) for v in neigh) / deg
+        )
         return epi_bar - epi
 
     def g_vf(G, n, nd):
