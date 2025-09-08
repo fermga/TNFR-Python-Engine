@@ -1,4 +1,9 @@
-"""Helpers for optional imports and cached access to heavy modules."""
+"""Helpers for optional imports and cached access to heavy modules.
+
+The module maintains a registry of failed import attempts. Entries older than
+``_FAILED_IMPORT_MAX_AGE`` seconds are pruned automatically; use
+``prune_failed_imports`` to trigger cleanup manually.
+"""
 
 from __future__ import annotations
 
@@ -9,29 +14,37 @@ from typing import Any
 from collections import OrderedDict
 from dataclasses import dataclass, field
 import threading
+import time
 from .logging_utils import get_logger
 
-__all__ = ["optional_import", "get_numpy", "import_nodonx"]
+__all__ = ["optional_import", "get_numpy", "import_nodonx", "prune_failed_imports"]
 
 
 logger = get_logger(__name__)
 
-
 _FAILED_IMPORT_LIMIT = 128  # keep only this many recent failures
+_FAILED_IMPORT_MAX_AGE = 3600.0  # seconds
 
 
 @dataclass(slots=True)
 class _ImportState:
-    failed: OrderedDict[str, None] = field(default_factory=OrderedDict)
+    failed: OrderedDict[str, float] = field(default_factory=OrderedDict)
     lock: threading.Lock = field(default_factory=threading.Lock)
     limit: int = _FAILED_IMPORT_LIMIT
+    max_age: float = _FAILED_IMPORT_MAX_AGE
+
+    def prune(self, now: float | None = None) -> None:
+        now = time.monotonic() if now is None else now
+        expiry = now - self.max_age
+        while self.failed and next(iter(self.failed.values())) < expiry:
+            self.failed.popitem(last=False)
+        while len(self.failed) > self.limit:
+            self.failed.popitem(last=False)
 
     def record(self, item: str) -> None:
-        if item in self.failed:
-            return
-        self.failed[item] = None
-        if len(self.failed) > self.limit:
-            self.failed.popitem(last=False)
+        now = time.monotonic()
+        self.failed[item] = now
+        self.prune(now)
 
     def discard(self, item: str) -> None:
         self.failed.pop(item, None)
@@ -135,6 +148,18 @@ def _cache_clear() -> None:
 
 
 optional_import.cache_clear = _cache_clear  # type: ignore[attr-defined]
+
+
+def prune_failed_imports() -> None:
+    """Remove expired entries from the failed import registry.
+
+    This function purges entries older than ``_FAILED_IMPORT_MAX_AGE`` seconds
+    from the internal failure registry. It can be invoked to force cleanup
+    without performing additional import attempts.
+    """
+
+    with _IMPORT_STATE.lock:
+        _IMPORT_STATE.prune()
 
 
 @lru_cache(maxsize=1)
