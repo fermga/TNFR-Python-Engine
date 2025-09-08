@@ -24,9 +24,13 @@ def _write_csv(path, headers, rows):
 
 def _iter_glif_rows(glyph):
     ts = glyph.get("t", [])
+    # Precompute columns for each glyph to avoid repeated lookups.
+    # ``default_col`` is shared by reference for missing glyphs to prevent
+    # unnecessary list allocations.
     default_col = [0] * len(ts)
+    cols = [glyph.get(g, default_col) for g in GLYPHS_CANONICAL]
     for i, t in enumerate(ts):
-        yield [t] + [glyph.get(g, default_col)[i] for g in GLYPHS_CANONICAL]
+        yield [t] + [col[i] for col in cols]
 
 
 def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
