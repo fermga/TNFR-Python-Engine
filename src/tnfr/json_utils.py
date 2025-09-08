@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 import json
@@ -5,7 +6,7 @@ from typing import Any, Callable
 
 from .import_utils import optional_import
 
-__all__ = ["fast_dumps", "json_dumps"]
+__all__ = ["json_dumps"]
 
 _orjson = optional_import("orjson")
 
@@ -36,12 +37,3 @@ def json_dumps(
         **kwargs,
     )
     return result if not to_bytes else result.encode("utf-8")
-
-
-def fast_dumps(obj: Any, *, sort_keys: bool = False) -> bytes:
-    """Serialize ``obj`` to JSON and return ``bytes``.
-
-    Uses :func:`json_dumps` with compact separators. ``orjson`` is employed
-    when available otherwise falling back to :mod:`json`.
-    """
-    return json_dumps(obj, sort_keys=sort_keys, to_bytes=True)
