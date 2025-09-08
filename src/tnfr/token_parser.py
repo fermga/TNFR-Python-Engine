@@ -38,7 +38,8 @@ def validate_token(
         try:
             return handler(val)
         except (KeyError, ValueError) as e:
-            raise type(e)(f"{e} (posición {pos}, token {tok!r})") from e
+            msg = f"{type(e).__name__}: {e} (posición {pos}, token {tok!r})"
+            raise ValueError(msg) from e
     if isinstance(tok, str):
         return tok
     raise ValueError(f"Token inválido: {tok} (posición {pos}, token {tok!r})")

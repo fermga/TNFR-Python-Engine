@@ -13,6 +13,7 @@ def test_parse_tokens_value_error_context():
     msg = str(exc.value)
     assert "posición 1" in msg
     assert "WAIT" in msg
+    assert isinstance(exc.value.__cause__, ValueError)
 
 
 def test_parse_tokens_key_error_context(monkeypatch):
@@ -20,11 +21,12 @@ def test_parse_tokens_key_error_context(monkeypatch):
         return spec["missing"]
 
     monkeypatch.setitem(TOKEN_MAP, "RAISE", raiser)
-    with pytest.raises(KeyError) as exc:
+    with pytest.raises(ValueError) as exc:
         _parse_tokens([{"RAISE": {}}])
     msg = str(exc.value)
     assert "posición 1" in msg
     assert "RAISE" in msg
+    assert isinstance(exc.value.__cause__, KeyError)
 
 
 def test_thol_invalid_close():
@@ -33,3 +35,4 @@ def test_thol_invalid_close():
     msg = str(exc.value)
     assert "XYZ" in msg
     assert "Glyph" in msg
+    assert isinstance(exc.value.__cause__, ValueError)
