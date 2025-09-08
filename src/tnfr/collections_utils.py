@@ -5,7 +5,6 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping, Collection, Sequence
 from typing import Any, TypeVar, cast
 import logging
-from itertools import islice
 from .logging_utils import get_logger
 
 from .helpers.numeric import kahan_sum
@@ -73,14 +72,19 @@ def ensure_collection(
         if limit == 0:
             # Explicitly allow empty result without consumption
             return ()
-        materialized = list(islice(it, limit + 1))
-        if len(materialized) > limit:
-            examples = ", ".join(repr(x) for x in materialized[:3])
-            msg = error_msg or (
-                f"Iterable produced {len(materialized)} items, "
-                f"exceeds limit {limit}; first items: [{examples}]"
-            )
-            raise ValueError(msg)
+        materialized: list[T] = []
+        count = 0
+        for item in it:
+            if count < limit:
+                materialized.append(item)
+                count += 1
+            else:
+                examples = ", ".join(repr(x) for x in materialized[:3])
+                msg = error_msg or (
+                    f"Iterable produced {count + 1} items, "
+                    f"exceeds limit {limit}; first items: [{examples}]"
+                )
+                raise ValueError(msg)
         return tuple(materialized)
     except TypeError as exc:
         raise TypeError(f"{it!r} is not iterable") from exc
