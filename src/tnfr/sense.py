@@ -9,7 +9,7 @@ import networkx as nx
 
 from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
 from .alias import get_attr
-from .helpers.numeric import clamp01
+from .helpers.numeric import clamp01, kahan_sum
 from .callback_utils import register_callback
 from .glyph_history import ensure_history, last_glyph, count_glyphs, append_metric
 from .constants_glyphs import (
@@ -120,9 +120,9 @@ def _sigma_from_iterable(
     except TypeError:
         iterator = iter([values])
 
-    try:
-        first = _to_complex(next(iterator))
-    except StopIteration:
+    vals = [_to_complex(z) for z in iterator]
+    cnt = len(vals)
+    if cnt == 0:
         return {
             "x": 0.0,
             "y": 0.0,
@@ -131,22 +131,8 @@ def _sigma_from_iterable(
             "n": 0,
         }
 
-    sum_x = first.real
-    sum_y = first.imag
-    c_x = 0.0
-    c_y = 0.0
-    cnt = 1
-    for z in iterator:
-        zc = _to_complex(z)
-        x_val = zc.real - c_x
-        t_x = sum_x + x_val
-        c_x = (t_x - sum_x) - x_val
-        sum_x = t_x
-        y_val = zc.imag - c_y
-        t_y = sum_y + y_val
-        c_y = (t_y - sum_y) - y_val
-        sum_y = t_y
-        cnt += 1
+    sum_x = kahan_sum(z.real for z in vals)
+    sum_y = kahan_sum(z.imag for z in vals)
     x = sum_x / cnt
     y = sum_y / cnt
     mag = math.hypot(x, y)

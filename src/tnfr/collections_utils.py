@@ -5,10 +5,10 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping, Collection, Sequence
 from typing import Any, TypeVar, cast
 import logging
-import math
 from itertools import islice
 from .logging_utils import get_logger
 
+from .helpers.numeric import kahan_sum
 from .value_utils import _convert_value
 
 T = TypeVar("T")
@@ -88,8 +88,6 @@ def normalize_weights(
         return {}
     weights: dict[str, float] = {}
     negatives: dict[str, float] = {}
-    total = 0.0
-    c = 0.0  # Kahan summation compensation
     for k in keys:
         val = dict_like.get(k, default_float)
         ok, converted = _convert_value(
@@ -104,10 +102,7 @@ def normalize_weights(
             negatives[k] = w
             w = 0.0
         weights[k] = w
-        y = w - c
-        t = total + y
-        c = (t - total) - y
-        total = t
+    total = kahan_sum(weights.values())
     if negatives:
         if error_on_negative:
             raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
