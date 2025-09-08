@@ -5,6 +5,7 @@ import logging
 import tnfr.import_utils as import_utils
 from tnfr.import_utils import (
     optional_import,
+    prune_failed_imports,
     _IMPORT_STATE,
     _optional_import_cache_clear,
 )
@@ -68,3 +69,30 @@ def test_optional_import_removes_entry_on_success(monkeypatch):
     result = optional_import("fake_mod")
     assert result is not None
     assert "fake_mod" not in _IMPORT_STATE
+
+
+def test_record_prunes_expired_entries(monkeypatch):
+    state = import_utils._IMPORT_STATE
+    with state.lock:
+        state.failed.clear()
+        state.max_age = 10
+    times = iter([0.0, 11.0])
+    monkeypatch.setattr(import_utils.time, "monotonic", lambda: next(times))
+    with state.lock:
+        state.record("old")
+        state.record("new")
+    assert "old" not in state.failed
+    assert "new" in state.failed
+
+
+def test_prune_failed_imports(monkeypatch):
+    state = import_utils._IMPORT_STATE
+    with state.lock:
+        state.failed.clear()
+        state.max_age = 10
+    times = iter([0.0, 20.0])
+    monkeypatch.setattr(import_utils.time, "monotonic", lambda: next(times))
+    with state.lock:
+        state.record("stale")
+    prune_failed_imports()
+    assert "stale" not in state.failed
