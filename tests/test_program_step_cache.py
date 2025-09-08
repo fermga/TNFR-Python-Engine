@@ -1,6 +1,7 @@
 import threading
 import networkx as nx
 import tnfr.dynamics as dyn
+import tnfr.program as program
 from tnfr.program import _advance
 
 
@@ -16,12 +17,12 @@ def test_advance_caches_step(monkeypatch):
         calls.append(2)
 
     monkeypatch.setattr(dyn, "step", first_step)
-    monkeypatch.setattr("tnfr.program._StepFnCache.step_fn", None)
+    program._load_step_fn.cache_clear()
     _advance(G)
     monkeypatch.setattr(dyn, "step", second_step)
     _advance(G)
     assert calls == [1, 1]
-    monkeypatch.setattr("tnfr.program._StepFnCache.step_fn", None)
+    program._load_step_fn.cache_clear()
 
 
 def test_advance_thread_safe(monkeypatch):
@@ -36,7 +37,7 @@ def test_advance_thread_safe(monkeypatch):
         calls.append(2)
 
     monkeypatch.setattr(dyn, "step", first_step)
-    monkeypatch.setattr("tnfr.program._StepFnCache.step_fn", None)
+    program._load_step_fn.cache_clear()
 
     barrier = threading.Barrier(5)
 
@@ -54,4 +55,4 @@ def test_advance_thread_safe(monkeypatch):
     _advance(G)
 
     assert calls == [1] * 6
-    monkeypatch.setattr("tnfr.program._StepFnCache.step_fn", None)
+    program._load_step_fn.cache_clear()

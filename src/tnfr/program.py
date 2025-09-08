@@ -8,7 +8,7 @@ from typing import Any, Optional, Union
 from dataclasses import dataclass
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
-from threading import Lock
+from functools import lru_cache
 
 from .token_parser import _flatten_tokens, validate_token, _parse_tokens
 
@@ -24,27 +24,19 @@ Node = Any
 AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
 
 
-class _StepFnCache:
-    """Thread-safe cache for the dynamics ``step`` function."""
+@lru_cache(maxsize=1)
+def _load_step_fn() -> AdvanceFn:
+    """Return the dynamics ``step`` function, caching the import."""
 
-    step_fn: Optional[AdvanceFn] = None
-    lock = Lock()
+    from .dynamics import step as step_impl
 
-    @classmethod
-    def get_step_fn(cls) -> AdvanceFn:
-        if cls.step_fn is None:
-            with cls.lock:
-                if cls.step_fn is None:
-                    from .dynamics import step as step_impl
-
-                    cls.step_fn = step_impl
-        return cls.step_fn
+    return step_impl
 
 
 def get_step_fn() -> AdvanceFn:
     """Return cached dynamics ``step`` function, initialising lazily."""
 
-    return _StepFnCache.get_step_fn()
+    return _load_step_fn()
 
 __all__ = [
     "WAIT",

@@ -46,31 +46,18 @@ __all__ = [
 ]
 
 
-def _validate_aliases(aliases: Iterable[str]) -> tuple[str, ...]:
-    """Return ``aliases`` as a validated tuple of strings.
-
-    ``aliases`` may be any non-string iterable of strings. The iterable is
-    converted to a tuple before validation and caching.
-    """
-    if isinstance(aliases, str) or not isinstance(aliases, Iterable):
-        raise TypeError("'aliases' must be a non-string iterable")
-    aliases = tuple(aliases)
-    return _cached_validate_aliases(aliases)
-
-
 @lru_cache(maxsize=128)
-def _cached_validate_aliases(aliases: tuple[str, ...]) -> tuple[str, ...]:
+def _validate_aliases(aliases: tuple[str, ...]) -> tuple[str, ...]:
+    """Validate and cache ``aliases`` as a tuple of strings."""
+
+    if not isinstance(aliases, tuple):
+        raise TypeError("'aliases' must be a tuple of strings")
     if not aliases:
         raise ValueError("'aliases' must contain at least one key")
     for a in aliases:
         if not isinstance(a, str):
             raise TypeError("'aliases' elements must be strings")
     return aliases
-
-
-# expose cache management helpers on the public function
-_validate_aliases.cache_clear = _cached_validate_aliases.cache_clear  # type: ignore[attr-defined]
-_validate_aliases.cache_info = _cached_validate_aliases.cache_info  # type: ignore[attr-defined]
 
 
 def _alias_resolve(
@@ -139,7 +126,9 @@ class AliasAccessor(Generic[T]):
         log_level: int | None = None,
         conv: Callable[[Any], T] | None = None,
     ) -> Optional[T]:
-        aliases = _validate_aliases(aliases)
+        if isinstance(aliases, str) or not isinstance(aliases, Iterable):
+            raise TypeError("'aliases' must be a non-string iterable")
+        aliases = _validate_aliases(tuple(aliases))
         if conv is None:
             conv = self._conv
         if conv is None:
@@ -162,7 +151,9 @@ class AliasAccessor(Generic[T]):
         value: Any,
         conv: Callable[[Any], T] | None = None,
     ) -> T:
-        aliases = _validate_aliases(aliases)
+        if isinstance(aliases, str) or not isinstance(aliases, Iterable):
+            raise TypeError("'aliases' must be a non-string iterable")
+        aliases = _validate_aliases(tuple(aliases))
         if conv is None:
             conv = self._conv
         if conv is None:
