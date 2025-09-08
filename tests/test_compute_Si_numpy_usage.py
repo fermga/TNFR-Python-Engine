@@ -7,6 +7,7 @@ from tnfr.alias import set_attr
 
 def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch):
     calls = 0
+
     class DummyNP:
         def fromiter(self, iterable, dtype=float, count=-1):
             return list(iterable)
@@ -20,14 +21,14 @@ def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch):
 
     captured = []
 
-    def fake_compute_Si_node(n, nd, *, alpha, beta, gamma, vfmax, dnfrmax,
-                             cos_vals, sin_vals, theta_i,
-                             inplace, np=None):
+    def fake_neighbor_phase_mean_list(neigh, cos_th, sin_th, np=None, fallback=0.0):
         captured.append(np)
         return 0.0
 
     monkeypatch.setattr("tnfr.metrics_utils.get_numpy", fake_get_numpy)
-    monkeypatch.setattr("tnfr.metrics_utils.compute_Si_node", fake_compute_Si_node)
+    monkeypatch.setattr(
+        "tnfr.metrics_utils.neighbor_phase_mean_list", fake_neighbor_phase_mean_list
+    )
 
     G = nx.Graph()
     G.add_edge(1, 2)

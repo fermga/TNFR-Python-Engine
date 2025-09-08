@@ -20,6 +20,7 @@ from .collections_utils import normalize_weights
 from .helpers.numeric import (
     clamp01,
     angle_diff,
+    neighbor_phase_mean_list,
 )
 from .helpers.cache import edge_version_cache
 from .import_utils import get_numpy
@@ -147,37 +148,18 @@ def compute_Si_node(
     gamma: float,
     vfmax: float,
     dnfrmax: float,
-    cos_vals: Sequence[float],
-    sin_vals: Sequence[float],
-    theta_i: float,
+    disp_fase: float,
     inplace: bool,
-    np=None,
 ) -> float:
     """Compute ``Si`` for a single node.
 
     Parameters
     ----------
-    cos_vals, sin_vals:
-        Pre-computed trigonometric values of the neighbouring nodes.
-    theta_i:
-        Phase of the current node.
+    disp_fase:
+        Normalised phase displacement ``|θᵢ - \bar{θ}|/π``.
     """
     vf = get_attr(nd, ALIAS_VF, 0.0)
     vf_norm = clamp01(abs(vf) / vfmax)
-
-    deg = len(cos_vals)
-    if deg == 0:
-        th_bar = theta_i
-    else:
-        if np is not None and hasattr(cos_vals, "mean"):
-            mean_cos = float(cos_vals.mean())
-            mean_sin = float(sin_vals.mean())
-            th_bar = float(np.arctan2(mean_sin, mean_cos))
-        else:
-            mean_cos = sum(cos_vals) / deg
-            mean_sin = sum(sin_vals) / deg
-            th_bar = math.atan2(mean_sin, mean_cos)
-    disp_fase = abs(angle_diff(theta_i, th_bar)) / math.pi
 
     dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
     dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
@@ -217,19 +199,13 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
     np = get_numpy()
 
-    cos_cache: Dict[Any, Sequence[float]] = {}
-    sin_cache: Dict[Any, Sequence[float]] = {}
-    for n, neigh in neighbors.items():
-        deg = len(neigh)
-        if np is not None and deg:
-            cos_cache[n] = np.fromiter((cos_th[v] for v in neigh), dtype=float, count=deg)
-            sin_cache[n] = np.fromiter((sin_th[v] for v in neigh), dtype=float, count=deg)
-        else:
-            cos_cache[n] = [cos_th[v] for v in neigh]
-            sin_cache[n] = [sin_th[v] for v in neigh]
-
     out: Dict[Any, float] = {}
     for n, nd in G.nodes(data=True):
+        neigh = neighbors[n]
+        th_bar = neighbor_phase_mean_list(
+            neigh, cos_th, sin_th, np=np, fallback=thetas[n]
+        )
+        disp_fase = abs(angle_diff(thetas[n], th_bar)) / math.pi
         out[n] = compute_Si_node(
             n,
             nd,
@@ -238,11 +214,8 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
             gamma=gamma,
             vfmax=vfmax,
             dnfrmax=dnfrmax,
-            cos_vals=cos_cache[n],
-            sin_vals=sin_cache[n],
-            theta_i=thetas[n],
+            disp_fase=disp_fase,
             inplace=inplace,
-            np=np,
         )
     return out
 
