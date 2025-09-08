@@ -109,39 +109,35 @@ def _log_clamp(hist, node, attr, value, lo, hi):
 
 
 def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
-    eps_min = _param(G, "EPI_MIN")
-    eps_max = _param(G, "EPI_MAX")
-    vf_min = _param(G, "VF_MIN")
-    vf_max = _param(G, "VF_MAX")
+    g = G.graph if G is not None else DEFAULTS
+    eps_min = float(g.get("EPI_MIN", DEFAULTS["EPI_MIN"]))
+    eps_max = float(g.get("EPI_MAX", DEFAULTS["EPI_MAX"]))
+    vf_min = float(g.get("VF_MIN", DEFAULTS["VF_MIN"]))
+    vf_max = float(g.get("VF_MAX", DEFAULTS["VF_MAX"]))
+    theta_wrap = bool(g.get("THETA_WRAP", DEFAULTS["THETA_WRAP"]))
 
     epi = get_attr(nd, ALIAS_EPI, 0.0)
     vf = get_attr(nd, ALIAS_VF, 0.0)
     th = get_attr(nd, ALIAS_THETA, 0.0)
 
-    strict = bool(
-        (
-            G.graph.get("VALIDATORS_STRICT")
-            if G is not None
-            else DEFAULTS.get("VALIDATORS_STRICT", False)
-        )
-    )
+    strict = bool(g.get("VALIDATORS_STRICT", DEFAULTS.get("VALIDATORS_STRICT", False)))
     if strict and G is not None:
-        hist = G.graph.setdefault("history", {}).setdefault("clamp_alerts", [])
+        hist = g.setdefault("history", {}).setdefault("clamp_alerts", [])
         _log_clamp(hist, node, "EPI", epi, eps_min, eps_max)
         _log_clamp(hist, node, "VF", vf, vf_min, vf_max)
 
     set_attr(nd, ALIAS_EPI, clamp(epi, eps_min, eps_max))
 
-    def _maybe_set(G, node, alias, value, setter, **kwargs):
+    def _maybe_set(alias, value, setter, **kwargs):
         if G is not None and node is not None:
             setter(G, node, value, **kwargs)
         else:
             set_attr(nd, alias, value)
 
-    _maybe_set(G, node, ALIAS_VF, clamp(vf, vf_min, vf_max), set_vf, update_max=False)
-    if G.graph.get("THETA_WRAP") if G is not None else DEFAULTS["THETA_WRAP"]:
+    _maybe_set(ALIAS_VF, clamp(vf, vf_min, vf_max), set_vf, update_max=False)
+    if theta_wrap:
         new_th = (th + math.pi) % (2 * math.pi) - math.pi
-        _maybe_set(G, node, ALIAS_THETA, new_th, set_theta)
+        _maybe_set(ALIAS_THETA, new_th, set_theta)
 
 
 def validate_canon(G) -> None:
