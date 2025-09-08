@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from typing import Any, Iterable, Sequence, Dict
-import math
 from statistics import fmean, StatisticsError
+import math
 
 from ..import_utils import get_numpy, import_nodonx
 from ..alias import get_attr
