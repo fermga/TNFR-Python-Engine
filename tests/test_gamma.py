@@ -6,7 +6,7 @@ import pytest
 
 from tnfr.constants import inject_defaults, merge_overrides
 from tnfr.dynamics import update_epi_via_nodal_equation
-from tnfr.gamma import eval_gamma, GAMMA_REGISTRY
+from tnfr.gamma import eval_gamma, GAMMA_REGISTRY, GammaEntry
 from tnfr.helpers.cache import increment_edge_version
 
 
@@ -304,7 +304,7 @@ def test_eval_gamma_unhandled_exception_propagates(graph_canon):
     def bad_gamma(G, node, t, cfg):
         raise RuntimeError("boom")
 
-    GAMMA_REGISTRY["bad"] = (bad_gamma, False)
+    GAMMA_REGISTRY["bad"] = GammaEntry(bad_gamma, False)
     try:
         with pytest.raises(RuntimeError):
             eval_gamma(G, 0, t=0.0, strict=False)
