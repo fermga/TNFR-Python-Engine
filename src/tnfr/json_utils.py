@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import warnings
 from typing import Any, Callable
 
 from .import_utils import optional_import
@@ -28,6 +29,12 @@ def json_dumps(
     are ignored because they are not supported by ``orjson.dumps``.
     """
     if _orjson is not None:
+        if ensure_ascii is not True or separators != (",", ":"):
+            warnings.warn(
+                "'ensure_ascii' and 'separators' are ignored when using orjson",
+                UserWarning,
+                stacklevel=2,
+            )
         option = _orjson.OPT_SORT_KEYS if sort_keys else 0
         data = _orjson.dumps(obj, option=option, default=default)
         return data if to_bytes else data.decode("utf-8")
