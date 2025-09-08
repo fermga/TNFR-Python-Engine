@@ -234,13 +234,18 @@ def _advance_and_record(
 def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
     """Handle a ``TARGET`` token and return the active node set.
 
+    Notes
+    -----
+    The node source is materialized with ``max_materialize=None`` so there is
+    no limit on the number of nodes retrieved.
+
     Returns
     -------
     Collection[Node]
         Collection of nodes to be used for subsequent operations.
     """
     nodes_src = _all_nodes(G) if payload.nodes is None else payload.nodes
-    nodes = ensure_collection(nodes_src)
+    nodes = ensure_collection(nodes_src, max_materialize=None)
     curr_target = nodes if isinstance(nodes, Sequence) else tuple(nodes)
     _record_trace(trace, G, "TARGET", n=len(curr_target))
     return curr_target
