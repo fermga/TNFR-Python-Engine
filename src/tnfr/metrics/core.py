@@ -67,10 +67,16 @@ def for_each_glyph(fn) -> None:
 
 
 def _update_coherence(G, hist) -> None:
-    """Update global coherence and its moving average."""
+    """Update coherence and related means.
 
-    C = compute_coherence(G)
+    Records instantaneous coherence ``C`` along with the mean absolute
+    ``ΔNFR`` and ``dEPI`` values, and updates the moving average ``W̄``.
+    """
+
+    C, dnfr_mean, depi_mean = compute_coherence(G, return_means=True)
     append_metric(hist, "C_steps", C)
+    append_metric(hist, "dnfr_mean", dnfr_mean)
+    append_metric(hist, "depi_mean", depi_mean)
 
     wbar_w = int(get_param(G, "WBAR_WINDOW"))
     cs = hist["C_steps"]

@@ -44,3 +44,16 @@ def test_compute_coherence_precision_improved():
     )
     assert result == expected
     assert abs(result - expected) < abs(naive - expected)
+
+
+def test_compute_coherence_return_means():
+    G = nx.Graph()
+    G.add_node(0, dnfr=0.1, dEPI=0.2)
+    G.add_node(1, dnfr=0.4, dEPI=0.5)
+    C, dnfr_mean, depi_mean = compute_coherence(G, return_means=True)
+    expected_dnfr = (0.1 + 0.4) / 2
+    expected_depi = (0.2 + 0.5) / 2
+    expected_C = 1.0 / (1.0 + expected_dnfr + expected_depi)
+    assert C == pytest.approx(expected_C)
+    assert dnfr_mean == pytest.approx(expected_dnfr)
+    assert depi_mean == pytest.approx(expected_depi)

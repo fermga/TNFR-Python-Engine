@@ -54,8 +54,24 @@ def compute_dnfr_accel_max(G) -> dict:
     return maxes
 
 
-def compute_coherence(G) -> float:
-    """Compute global coherence C(t) from ΔNFR and dEPI."""
+def compute_coherence(
+    G, *, return_means: bool = False
+) -> float | tuple[float, float, float]:
+    """Compute global coherence ``C`` from ``ΔNFR`` and ``dEPI``.
+
+    Parameters
+    ----------
+    G:
+        Graph containing ``dnfr`` and ``dEPI`` attributes per node.
+    return_means:
+        If ``True``, also return the means of ``|ΔNFR|`` and ``|dEPI|``.
+
+    Returns
+    -------
+    float or tuple
+        ``C`` when ``return_means`` is ``False`` (default). When ``True``, a
+        tuple ``(C, dnfr_mean, depi_mean)`` is returned.
+    """
     count = G.number_of_nodes()
     if count:
         dnfr_vals = []
@@ -68,7 +84,8 @@ def compute_coherence(G) -> float:
         depi_mean = math.fsum(depi_vals) / count
     else:
         dnfr_mean = depi_mean = 0.0
-    return 1.0 / (1.0 + dnfr_mean + depi_mean)
+    coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)
+    return (coherence, dnfr_mean, depi_mean) if return_means else coherence
 
 
 def ensure_neighbors_map(G) -> Mapping[Any, Sequence[Any]]:
