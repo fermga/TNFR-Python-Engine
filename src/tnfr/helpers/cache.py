@@ -73,9 +73,13 @@ class _Encoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, set):
             return sorted(o, key=lambda x: repr(x))
+        slots = getattr(o, "__slots__", None)
+        if slots:
+            return {s: getattr(o, s) for s in slots if hasattr(o, s)}
         if hasattr(o, "__dict__"):
             return o.__dict__
-        return repr(o)
+        r = repr(o)
+        return r.split(" at ", 1)[0] + ">" if " at " in r else r
 
     def encode(self, o):
         try:
@@ -93,8 +97,14 @@ class _Encoder(json.JSONEncoder):
         elif isinstance(o, (list, tuple, set)):
             for item in o:
                 self._check_depth(item, depth + 1)
-        elif hasattr(o, "__dict__"):
-            self._check_depth(o.__dict__, depth + 1)
+        else:
+            slots = getattr(o, "__slots__", None)
+            if slots:
+                for s in slots:
+                    if hasattr(o, s):
+                        self._check_depth(getattr(o, s), depth + 1)
+            if hasattr(o, "__dict__"):
+                self._check_depth(o.__dict__, depth + 1)
 
 
 def _stable_json(obj: Any, max_depth: int = 10) -> str:
