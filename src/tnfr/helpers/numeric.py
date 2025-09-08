@@ -39,15 +39,8 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
 
 
 def kahan_sum(values: Iterable[float]) -> float:
-    """Return the precise sum of ``values`` using Kahan compensation."""
-    total = 0.0
-    c = 0.0
-    for v in values:
-        y = float(v) - c
-        t = total + y
-        c = (t - total) - y
-        total = t
-    return total
+    """Return the precise sum of ``values``."""
+    return float(math.fsum(values))
 
 
 def angle_diff(a: float, b: float) -> float:
@@ -114,18 +107,14 @@ def neighbor_phase_mean_list(
     if deg == 0:
         return fallback
     if np is not None:
-        cos_vals = np.fromiter(
-            (cos_th[v] for v in neigh), dtype=float, count=deg
-        )
-        sin_vals = np.fromiter(
-            (sin_th[v] for v in neigh), dtype=float, count=deg
-        )
-        mean_cos = float(cos_vals.mean())
-        mean_sin = float(sin_vals.mean())
+        pairs = np.fromiter(
+            (val for v in neigh for val in (cos_th[v], sin_th[v])),
+            dtype=float,
+            count=deg * 2,
+        ).reshape(deg, 2)
+        mean_cos, mean_sin = pairs.mean(axis=0)
         return float(np.arctan2(mean_sin, mean_cos))
-    return _phase_mean_from_iter(
-        ((cos_th[v], sin_th[v]) for v in neigh), fallback
-    )
+    return _phase_mean_from_iter(((cos_th[v], sin_th[v]) for v in neigh), fallback)
 
 
 def neighbor_phase_mean(obj, n=None) -> float:

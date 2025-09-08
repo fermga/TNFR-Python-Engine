@@ -259,7 +259,8 @@ class NodoTNFR:
         return 0
 
     def all_nodes(self) -> Iterable["NodoTNFR"]:
-        return list(self.graph.get("_all_nodes", [self]))
+        nodes = self.graph.get("_all_nodes")
+        return nodes if nodes is not None else [self]
 
     def apply_glyph(self, glyph: str, window: Optional[int] = None) -> None:
         apply_glyph_obj(self, glyph, window=window)

@@ -7,14 +7,16 @@ from typing import Dict, Any, Mapping
 from types import MappingProxyType
 
 
-SELECTOR_THRESHOLD_DEFAULTS = {
-    "si_hi": 0.66,
-    "si_lo": 0.33,
-    "dnfr_hi": 0.50,
-    "dnfr_lo": 0.10,
-    "accel_hi": 0.50,
-    "accel_lo": 0.10,
-}
+SELECTOR_THRESHOLD_DEFAULTS: Mapping[str, float] = MappingProxyType(
+    {
+        "si_hi": 0.66,
+        "si_lo": 0.33,
+        "dnfr_hi": 0.50,
+        "dnfr_lo": 0.10,
+        "accel_hi": 0.50,
+        "accel_lo": 0.10,
+    }
+)
 
 
 @dataclass(frozen=True)
