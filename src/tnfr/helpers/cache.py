@@ -272,6 +272,10 @@ def _get_edge_cache(
             ):
                 cache = _make_edge_cache(max_entries, locks) if use_lru else {}
                 graph["_edge_version_cache"] = cache
+        if isinstance(cache, dict) and isinstance(locks, dict):
+            for key in list(locks.keys()):
+                if key not in cache:
+                    locks.pop(key, None)
     return cache, locks
 
 
