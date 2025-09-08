@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import math
+import sys
+
 from .constants import ALIAS_EPI, ALIAS_VF, get_param
 from .alias import get_attr
 from .glyph_history import last_glyph
 from .sense import sigma_vector_from_graph
 from .constants_glyphs import GLYPHS_CANONICAL_SET
-
-EPS = 1e-9
 
 __all__ = ["run_validators"]
 
@@ -40,7 +41,7 @@ def _validate_epi_vf(G) -> None:
 
 def _validate_sigma(G) -> None:
     sv = sigma_vector_from_graph(G)
-    if sv.get("mag", 0.0) > 1.0 + EPS:
+    if sv.get("mag", 0.0) > 1.0 + sys.float_info.epsilon:
         raise ValueError("σ norm exceeds 1")
 
 
@@ -50,9 +51,13 @@ def _validate_glyphs(G) -> None:
 
 
 def _check_epi_vf(epi, vf, epi_min, epi_max, vf_min, vf_max, n):
-    if not (epi_min - EPS <= epi <= epi_max + EPS):
+    if epi < epi_min and not math.isclose(epi, epi_min):
         raise ValueError(f"EPI out of range in node {n}: {epi}")
-    if not (vf_min - EPS <= vf <= vf_max + EPS):
+    if epi > epi_max and not math.isclose(epi, epi_max):
+        raise ValueError(f"EPI out of range in node {n}: {epi}")
+    if vf < vf_min and not math.isclose(vf, vf_min):
+        raise ValueError(f"VF out of range in node {n}: {vf}")
+    if vf > vf_max and not math.isclose(vf, vf_max):
         raise ValueError(f"VF out of range in node {n}: {vf}")
 
 
