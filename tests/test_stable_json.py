@@ -1,6 +1,9 @@
 import json
 
+import pytest
+
 from tnfr.helpers.cache import _stable_json
+from tnfr.json_utils import _orjson
 
 
 def test_stable_json_dict_order_deterministic():
@@ -9,3 +12,10 @@ def test_stable_json_dict_order_deterministic():
     res2 = _stable_json(obj)
     assert res1 == res2
     assert json.loads(res1) == {"a": 2, "b": 1}
+
+
+def test_stable_json_warns_with_orjson():
+    if _orjson is None:
+        pytest.skip("orjson not installed")
+    with pytest.warns(UserWarning, match="ignored when using orjson"):
+        _stable_json({"a": 1})
