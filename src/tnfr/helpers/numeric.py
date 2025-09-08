@@ -84,19 +84,31 @@ def _neighbor_phase_mean(node, trig) -> float:
 def _phase_mean_from_iter(
     it: Iterable[tuple[float, float] | None], fallback: float
 ) -> float:
-    cos_vals: list[float] = []
-    sin_vals: list[float] = []
+    total_cos = 0.0
+    comp_cos = 0.0
+    total_sin = 0.0
+    comp_sin = 0.0
+    found = False
     for cs in it:
         if cs is None:
             continue
+        found = True
         cos_val, sin_val = cs
-        cos_vals.append(cos_val)
-        sin_vals.append(sin_val)
-    if not cos_vals:
+        # Kahan summation for cosine
+        y = cos_val - comp_cos
+        t = total_cos + y
+        comp_cos = (t - total_cos) - y
+        total_cos = t
+        # Kahan summation for sine
+        y = sin_val - comp_sin
+        t = total_sin + y
+        comp_sin = (t - total_sin) - y
+        total_sin = t
+    if not found:
         return fallback
-    sum_cos = kahan_sum(cos_vals)
-    sum_sin = kahan_sum(sin_vals)
-    return math.atan2(sum_sin, sum_cos)
+    total_cos += comp_cos
+    total_sin += comp_sin
+    return math.atan2(total_sin, total_cos)
 
 
 def neighbor_phase_mean_list(
@@ -113,9 +125,7 @@ def neighbor_phase_mean_list(
     :func:`_phase_mean_from_iter` helper.
     """
     deg = len(neigh)
-    if deg == 0:
-        return fallback
-    if np is not None:
+    if np is not None and deg > 0:
         pairs = np.fromiter(
             (val for v in neigh for val in (cos_th[v], sin_th[v])),
             dtype=float,
