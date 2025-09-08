@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from typing import Any, Dict
 from collections.abc import Mapping
-from collections import OrderedDict
 import threading
 import copy
 import warnings
 from types import MappingProxyType
 from functools import lru_cache
 from dataclasses import asdict, is_dataclass
+from cachetools import LRUCache
 
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
 from .init import INIT_DEFAULTS
@@ -39,32 +39,6 @@ IMMUTABLE_SIMPLE = (
     bytes,
     type(None),
 )
-
-
-class LRUCache(OrderedDict):
-    """Simple LRU cache implemented with :class:`OrderedDict`.
-
-    The cache discards the least-recently-used entry once ``maxsize`` is
-    exceeded. Accessing an entry marks it as most recently used.
-    """
-
-    def __init__(self, maxsize: int = 1024) -> None:
-        self.maxsize = maxsize
-        super().__init__()
-
-    def get(self, key: int) -> bool | None:
-        if key not in self:
-            return None
-        value = super().__getitem__(key)
-        self.move_to_end(key)
-        return value
-
-    def __setitem__(self, key: int, value: bool) -> None:  # type: ignore[override]
-        if key in self:
-            self.move_to_end(key)
-        super().__setitem__(key, value)
-        if len(self) > self.maxsize:
-            self.popitem(last=False)
 
 
 def _freeze(value: Any, seen: set[int] | None = None):
