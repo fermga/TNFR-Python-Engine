@@ -26,8 +26,7 @@ def test_get_rng_reproducible_sequence():
 
     seed_int = _derive_seed(seed, key)
     rng_ref = random.Random(seed_int)
-    exp1 = [rng_ref.random() for _ in range(3)]
-    exp2 = [rng_ref.random() for _ in range(3)]
+    exp = [rng_ref.random() for _ in range(3)]
 
-    assert seq1 == exp1
-    assert seq2 == exp2
+    assert seq1 == exp
+    assert seq2 == exp
