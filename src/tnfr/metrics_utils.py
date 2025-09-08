@@ -141,7 +141,6 @@ def compute_Si_node(
     dnfrmax: float,
     cos_vals: Sequence[float],
     sin_vals: Sequence[float],
-    theta_vals: Sequence[float],
     theta_i: float,
     inplace: bool,
     np=None,
@@ -150,7 +149,7 @@ def compute_Si_node(
 
     Parameters
     ----------
-    cos_vals, sin_vals, theta_vals:
+    cos_vals, sin_vals:
         Pre-computed trigonometric values of the neighbouring nodes.
     theta_i:
         Phase of the current node.
@@ -212,17 +211,14 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
 
     cos_cache: Dict[Any, Sequence[float]] = {}
     sin_cache: Dict[Any, Sequence[float]] = {}
-    theta_cache: Dict[Any, Sequence[float]] = {}
     for n, neigh in neighbors.items():
         deg = len(neigh)
         if np is not None and deg:
             cos_cache[n] = np.fromiter((cos_th[v] for v in neigh), dtype=float, count=deg)
             sin_cache[n] = np.fromiter((sin_th[v] for v in neigh), dtype=float, count=deg)
-            theta_cache[n] = np.fromiter((thetas[v] for v in neigh), dtype=float, count=deg)
         else:
             cos_cache[n] = [cos_th[v] for v in neigh]
             sin_cache[n] = [sin_th[v] for v in neigh]
-            theta_cache[n] = [thetas[v] for v in neigh]
 
     out: Dict[Any, float] = {}
     for n, nd in G.nodes(data=True):
@@ -236,7 +232,6 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
             dnfrmax=dnfrmax,
             cos_vals=cos_cache[n],
             sin_vals=sin_cache[n],
-            theta_vals=theta_cache[n],
             theta_i=thetas[n],
             inplace=inplace,
             np=np,
