@@ -17,12 +17,12 @@ from .constants import (
 )
 from .alias import get_attr, set_attr, multi_recompute_abs_max
 from .collections_utils import normalize_weights
-from .helpers import (
+from .helpers.numeric import (
     clamp01,
     angle_diff,
-    edge_version_cache,
     neighbor_phase_mean_list,
 )
+from .helpers.cache import edge_version_cache
 from .import_utils import get_numpy
 
 

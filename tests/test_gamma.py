@@ -7,7 +7,7 @@ import pytest
 from tnfr.constants import inject_defaults, merge_overrides
 from tnfr.dynamics import update_epi_via_nodal_equation
 from tnfr.gamma import eval_gamma, GAMMA_REGISTRY
-from tnfr.helpers import increment_edge_version
+from tnfr.helpers.cache import increment_edge_version
 
 
 def test_gamma_linear_integration(graph_canon):

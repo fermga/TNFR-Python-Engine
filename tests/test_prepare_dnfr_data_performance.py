@@ -4,7 +4,7 @@ import pytest
 
 from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF
 from tnfr.dynamics import _prepare_dnfr_data
-from tnfr.helpers import cached_nodes_and_A
+from tnfr.helpers.cache import cached_nodes_and_A
 from tnfr.alias import get_attr
 
 

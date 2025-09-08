@@ -27,7 +27,7 @@ from .alias import (
     set_vf,
     set_dnfr,
 )
-from .helpers import increment_edge_version
+from .helpers.cache import increment_edge_version
 
 from .operators import apply_glyph_obj
 

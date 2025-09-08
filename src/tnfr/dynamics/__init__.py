@@ -33,15 +33,17 @@ from ..constants import (
 from ..gamma import eval_gamma
 from ..observers import glyph_load, kuramoto_order
 
-from ..helpers import (
+from ..helpers.numeric import (
     clamp,
     clamp01,
     angle_diff,
     neighbor_mean,
     neighbor_phase_mean,
+    _phase_mean_from_iter,
+)
+from ..helpers.cache import (
     cached_nodes_and_A,
     _cache_node_list,
-    _phase_mean_from_iter,
 )
 from ..alias import (
     get_attr,

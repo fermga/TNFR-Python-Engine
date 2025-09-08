@@ -10,7 +10,8 @@ from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
 from ..collections_utils import normalize_weights
-from ..helpers import clamp01, ensure_node_index_map
+from ..helpers.numeric import clamp01
+from ..helpers.cache import ensure_node_index_map
 from ..metrics_utils import min_max_range
 from ..import_utils import get_numpy
 

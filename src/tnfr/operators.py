@@ -25,11 +25,13 @@ from itertools import combinations
 from io import StringIO
 
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
-from .helpers import (
+from .helpers.numeric import (
     list_mean,
     angle_diff,
     neighbor_phase_mean,
     neighbor_mean,
+)
+from .helpers.cache import (
     increment_edge_version,
     ensure_node_offset_map,
 )

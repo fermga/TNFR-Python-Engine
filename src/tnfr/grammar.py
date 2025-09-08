@@ -11,7 +11,7 @@ from .constants import (
     get_param,
 )
 from .alias import get_attr
-from .helpers import clamp01
+from .helpers.numeric import clamp01
 from .glyph_history import recent_glyph
 from .types import Glyph
 from .operators import apply_glyph  # avoid repeated import inside functions

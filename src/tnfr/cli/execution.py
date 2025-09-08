@@ -29,7 +29,7 @@ from ..scenarios import build_graph
 from ..presets import get_preset
 from ..config import apply_config
 from ..io import read_structured_file, safe_write
-from ..helpers import list_mean
+from ..helpers.numeric import list_mean
 from ..observers import attach_standard_observer
 from ..logging_utils import get_logger
 from ..types import Glyph

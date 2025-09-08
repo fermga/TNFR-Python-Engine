@@ -1,17 +1,7 @@
-"""Helper functions."""
-
 from __future__ import annotations
-from typing import (
-    Iterable,
-    Sequence,
-    Dict,
-    Any,
-    Callable,
-    TypeVar,
-)
-import math
+
+from typing import Any, Iterable, Dict, Callable, TypeVar
 import hashlib
-from statistics import fmean, StatisticsError
 import threading
 import json
 from functools import lru_cache
@@ -21,16 +11,10 @@ from collections.abc import Mapping
 from types import MappingProxyType
 import networkx as nx
 
-from .import_utils import get_numpy, import_nodonx
-from .collections_utils import (
-    MAX_MATERIALIZE_DEFAULT,
-    ensure_collection,
-    normalize_weights,
-    normalize_counter,
-    mix_groups,
-)
-from .alias import get_attr
-from .graph_utils import mark_dnfr_prep_dirty
+from ..import_utils import get_numpy
+from ..graph_utils import mark_dnfr_prep_dirty
+
+T = TypeVar("T")
 
 _EDGE_CACHE_LOCK = threading.RLock()
 
@@ -44,176 +28,25 @@ EDGE_VERSION_CACHE_KEYS = (
     "_trig_version",
 )
 
+
 __all__ = [
-    "MAX_MATERIALIZE_DEFAULT",
-    "ensure_collection",
-    "clamp",
-    "clamp01",
-    "list_mean",
-    "angle_diff",
-    "normalize_weights",
-    "neighbor_mean",
-    "neighbor_phase_mean",
-    "neighbor_phase_mean_list",
-    "push_glyph",
-    "recent_glyph",
-    "ensure_history",
-    "last_glyph",
-    "count_glyphs",
-    "normalize_counter",
-    "mix_groups",
+    "get_graph",
+    "get_graph_mapping",
+    "node_set_checksum",
+    "_stable_json",
+    "_node_repr",
+    "_cache_node_list",
     "ensure_node_index_map",
     "ensure_node_offset_map",
     "edge_version_cache",
     "cached_nodes_and_A",
     "invalidate_edge_version_cache",
     "increment_edge_version",
-    "node_set_checksum",
-    "get_graph",
-    "get_graph_mapping",
-    "mark_dnfr_prep_dirty",
 ]
-
-
-T = TypeVar("T")
-
-# -------------------------
-# Utilidades numéricas básicas
-# -------------------------
-
-
-def clamp(x: float, a: float, b: float) -> float:
-    """Return ``x`` clamped to the ``[a, b]`` interval."""
-    return max(a, min(b, x))
-
-
-def clamp01(x: float) -> float:
-    """Clamp ``x`` to the ``[0,1]`` interval."""
-    return clamp(float(x), 0.0, 1.0)
-
-
-def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
-    """Return the arithmetic mean of ``xs`` or ``default`` if empty."""
-    try:
-        return float(fmean(xs))
-    except (StatisticsError, ValueError, TypeError):
-        return float(default)
-
-
-def angle_diff(a: float, b: float) -> float:
-    """Return the minimal difference between two angles in radians."""
-    return (float(a) - float(b) + math.pi) % math.tau - math.pi
-
-
-# -------------------------
-# Estadísticos vecinales
-# -------------------------
-
-
-def neighbor_mean(G, n, aliases: tuple[str, ...], default: float = 0.0) -> float:
-    """Mean of ``aliases`` attribute among neighbours of ``n``."""
-    vals = (get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
-    return list_mean(vals, default)
-
-
-def _neighbor_phase_mean(node, trig) -> float:
-    """Internal helper delegating to :func:`neighbor_phase_mean_list`."""
-    fallback = trig.theta.get(node.n, 0.0)
-    neigh = node.G[node.n]
-    np = get_numpy()
-    return neighbor_phase_mean_list(
-        neigh, trig.cos, trig.sin, np=np, fallback=fallback
-    )
-
-
-def _phase_mean_from_iter(
-    it: Iterable[tuple[float, float] | None], fallback: float
-) -> float:
-    x = y = 0.0
-    cx = cy = 0.0  # Kahan compensation terms
-    count = 0
-    for cs in it:
-        if cs is None:
-            continue
-        cos_val, sin_val = cs
-        # compensated summation for cosine
-        tx = cos_val - cx
-        vx = x + tx
-        cx = (vx - x) - tx
-        x = vx
-        # compensated summation for sine
-        ty = sin_val - cy
-        vy = y + ty
-        cy = (vy - y) - ty
-        y = vy
-        count += 1
-    if count == 0:
-        return fallback
-    return math.atan2(y, x)
-
-
-def neighbor_phase_mean_list(
-    neigh: Sequence[Any],
-    cos_th: Dict[Any, float],
-    sin_th: Dict[Any, float],
-    np=None,
-    fallback: float = 0.0,
-) -> float:
-    """Return circular mean of neighbour phases from cosine/sine mappings.
-
-    When ``np`` (NumPy) is provided, ``np.fromiter`` is used to compute the
-    averages. Otherwise, the mean is computed using the pure-Python
-    :func:`_phase_mean_from_iter` helper.
-    """
-    deg = len(neigh)
-    if deg == 0:
-        return fallback
-    if np is not None:
-        cos_vals = np.fromiter((cos_th[v] for v in neigh), dtype=float, count=deg)
-        sin_vals = np.fromiter((sin_th[v] for v in neigh), dtype=float, count=deg)
-        mean_cos = float(cos_vals.mean())
-        mean_sin = float(sin_vals.mean())
-        return float(np.arctan2(mean_sin, mean_cos))
-    return _phase_mean_from_iter(((cos_th[v], sin_th[v]) for v in neigh), fallback)
-
-
-def neighbor_phase_mean(obj, n=None) -> float:
-    """Circular mean of neighbour phases.
-
-    The :class:`NodoNX` import is cached after the first call.
-    """
-    NodoNX = import_nodonx()
-    node = NodoNX(obj, n) if n is not None else obj
-    if getattr(node, "G", None) is None:
-        raise TypeError("neighbor_phase_mean requires nodes bound to a graph")
-    from .metrics_utils import get_trig_cache
-
-    trig = get_trig_cache(node.G)
-    return _neighbor_phase_mean(node, trig)
-
-
-# -------------------------
-# Historial de glyphs por nodo
-# -------------------------
-
-# Importaciones diferidas para evitar ciclos con ``alias``
-from .glyph_history import (  # noqa: E402
-    push_glyph,
-    recent_glyph,
-    ensure_history,
-    last_glyph,
-    count_glyphs,
-)
-
-
-# -------------------------
-# Grafos
-# -------------------------
 
 
 def get_graph(obj: Any) -> Any:
     """Return ``obj.graph`` if available or ``obj`` otherwise."""
-
     return obj.graph if hasattr(obj, "graph") else obj
 
 
@@ -223,7 +56,6 @@ def get_graph_mapping(G: Any, key: str, warn_msg: str) -> Dict[str, Any] | None:
     ``warn_msg`` is emitted via :func:`warnings.warn` when the stored value is
     not a mapping. ``None`` is returned when the key is absent or invalid.
     """
-
     data = G.graph.get(key)
     if data is None:
         return None
@@ -267,7 +99,6 @@ class _Encoder(json.JSONEncoder):
 
 def _stable_json(obj: Any, max_depth: int = 10) -> str:
     """Return a JSON string with deterministic ordering."""
-
     return json.dumps(
         obj, sort_keys=True, ensure_ascii=False, cls=_Encoder, max_depth=max_depth
     )
@@ -300,7 +131,6 @@ def _update_node_cache(
     ``nodes`` is the iterable used to compute the checksum. When ``value`` is
     ``None`` it defaults to ``nodes``. The computed checksum is returned.
     """
-
     if checksum is None:
         checksum = node_set_checksum(G, nodes, store=False)
     graph = get_graph(G)
@@ -326,13 +156,10 @@ def node_set_checksum(
     ``"_node_set_checksum_cache"`` to avoid recalculating it for unchanged
     graphs.
     """
-
     graph = get_graph(G)
     node_iterable = G.nodes() if nodes is None else nodes
-
     if not presorted:
         node_iterable = sorted(node_iterable, key=_node_repr)
-
     hasher = hashlib.blake2b(digest_size=16)
     token_hasher = hashlib.blake2b(digest_size=8)
     for n in node_iterable:
@@ -357,7 +184,6 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     refreshed when the number of nodes changes or when the optional
     ``"_node_list_dirty"`` flag is set to ``True``.
     """
-
     graph = get_graph(G)
     nodes = graph.get("_node_list")
     stored_len = graph.get("_node_list_len")
@@ -379,7 +205,6 @@ def _ensure_node_map(G, *, key: str, sort: bool = False) -> Dict[Any, int]:
     ``sort`` controls whether nodes are ordered by their string representation
     before assigning indices.
     """
-
     nodes = list(G.nodes())
     if sort:
         nodes.sort(key=_node_repr)
@@ -396,13 +221,11 @@ def _ensure_node_map(G, *, key: str, sort: bool = False) -> Dict[Any, int]:
 
 def ensure_node_index_map(G) -> Dict[Any, int]:
     """Return cached node→index mapping for ``G``."""
-
     return _ensure_node_map(G, key="_node_index_map", sort=False)
 
 
 def ensure_node_offset_map(G) -> Dict[Any, int]:
     """Return cached node→offset mapping for ``G``."""
-
     sort = bool(G.graph.get("SORT_NODES", False))
     return _ensure_node_map(G, key="_node_offset_map", sort=sort)
 
@@ -414,7 +237,6 @@ def _get_edge_cache(graph: Any, max_entries: int | None, *, create: bool = True)
     to ``max_entries``. Returns a tuple ``(cache, locks, use_lru)`` where
     ``use_lru`` indicates whether an ``LRUCache`` is employed.
     """
-
     use_lru = bool(max_entries)
     locks = graph.get("_edge_version_cache_locks")
     if create:
@@ -446,7 +268,7 @@ def _get_edge_cache(graph: Any, max_entries: int | None, *, create: bool = True)
                             super().__init__(maxsize)
                             self._callback = callback
 
-                        def popitem(self):
+                        def popitem(self):  # type: ignore[override]
                             key, value = super().popitem()
                             cb = getattr(self, "_callback", None)
                             if cb is not None:

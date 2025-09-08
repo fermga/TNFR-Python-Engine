@@ -1,6 +1,6 @@
 import pytest
 
-from tnfr.helpers import neighbor_phase_mean
+from tnfr.helpers.numeric import neighbor_phase_mean
 
 
 class DummyNeighbor:

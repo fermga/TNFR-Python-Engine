@@ -5,13 +5,13 @@ from typing import Dict, Any, Callable
 
 from ..collections_utils import normalize_weights
 from ..constants import DEFAULTS, ALIAS_THETA, ALIAS_EPI, ALIAS_VF
-from ..helpers import (
+from ..helpers.numeric import (
     angle_diff,
     neighbor_mean,
     neighbor_phase_mean,
-    cached_nodes_and_A,
     _phase_mean_from_iter,
 )
+from ..helpers.cache import cached_nodes_and_A
 from ..alias import (
     get_attr,
     set_dnfr,
