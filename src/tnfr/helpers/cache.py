@@ -256,6 +256,40 @@ def _make_edge_cache(max_entries: int, locks: dict) -> Any:
         return _LRUCache(max_entries, callback=lambda k, v: locks.pop(k, None))
 
 
+def _ensure_edge_cache_locks(graph: Any) -> defaultdict:
+    """Ensure per-key lock mapping for edge cache."""
+    locks = graph.get("_edge_version_cache_locks")
+    if (
+        not isinstance(locks, defaultdict)
+        or locks.default_factory is not threading.RLock
+    ):
+        locks = defaultdict(threading.RLock)
+        graph["_edge_version_cache_locks"] = locks
+    return locks
+
+
+def _ensure_edge_cache(
+    graph: Any, locks: dict, max_entries: int | None
+) -> dict | LRUCache:
+    """Return cache mapping for edge data, initializing when needed."""
+    use_lru = bool(max_entries)
+    cache = graph.get("_edge_version_cache")
+    if (
+        cache is None
+        or (
+            use_lru
+            and (
+                not isinstance(cache, LRUCache)
+                or cache.maxsize != max_entries
+            )
+        )
+        or (not use_lru and isinstance(cache, LRUCache))
+    ):
+        cache = _make_edge_cache(max_entries, locks) if use_lru else {}
+        graph["_edge_version_cache"] = cache
+    return cache
+
+
 def _get_edge_cache(
     graph: Any, max_entries: int | None, *, create: bool = True
 ):
@@ -265,31 +299,13 @@ def _get_edge_cache(
     to ``max_entries``. Returns a tuple ``(cache, locks)``. Actual cache
     construction is handled by :func:`_make_edge_cache`.
     """
-    use_lru = bool(max_entries)
     with _EDGE_CACHE_LOCK:
-        locks = graph.get("_edge_version_cache_locks")
         if create:
-            if (
-                not isinstance(locks, defaultdict)
-                or locks.default_factory is not threading.RLock
-            ):
-                locks = defaultdict(threading.RLock)
-                graph["_edge_version_cache_locks"] = locks
-        cache = graph.get("_edge_version_cache")
-        if create:
-            if (
-                cache is None
-                or (
-                    use_lru
-                    and (
-                        not isinstance(cache, LRUCache)
-                        or cache.maxsize != max_entries
-                    )
-                )
-                or (not use_lru and isinstance(cache, LRUCache))
-            ):
-                cache = _make_edge_cache(max_entries, locks) if use_lru else {}
-                graph["_edge_version_cache"] = cache
+            locks = _ensure_edge_cache_locks(graph)
+            cache = _ensure_edge_cache(graph, locks, max_entries)
+        else:
+            locks = graph.get("_edge_version_cache_locks")
+            cache = graph.get("_edge_version_cache")
         if isinstance(cache, dict) and isinstance(locks, dict):
             for key in list(locks.keys()):
                 if key not in cache:
