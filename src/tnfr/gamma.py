@@ -1,7 +1,7 @@
 """Gamma registry."""
 
 from __future__ import annotations
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Callable, NamedTuple
 import math
 import cmath
 import logging
@@ -34,6 +34,7 @@ __all__ = [
     "gamma_kuramoto_bandpass",
     "gamma_kuramoto_tanh",
     "gamma_harmonic",
+    "GammaEntry",
     "GAMMA_REGISTRY",
     "eval_gamma",
 ]
@@ -203,15 +204,20 @@ def gamma_harmonic(G, node, t, cfg: Dict[str, Any]) -> float:
     return beta * math.sin(omega * t + phi) * math.cos(th_i - psi)
 
 
-# ``GAMMA_REGISTRY`` asocia el nombre del acoplamiento con un par
-# ``(fn, needs_kuramoto)`` donde ``fn`` es la función evaluadora y
+class GammaEntry(NamedTuple):
+    fn: Callable[[Any, Any, Any, Dict[str, Any]], float]
+    needs_kuramoto: bool
+
+
+# ``GAMMA_REGISTRY`` asocia el nombre del acoplamiento con un
+# ``GammaEntry`` donde ``fn`` es la función evaluadora y
 # ``needs_kuramoto`` indica si requiere precomputar el orden global de fase.
-GAMMA_REGISTRY = {
-    "none": (gamma_none, False),
-    "kuramoto_linear": (gamma_kuramoto_linear, True),
-    "kuramoto_bandpass": (gamma_kuramoto_bandpass, True),
-    "kuramoto_tanh": (gamma_kuramoto_tanh, True),
-    "harmonic": (gamma_harmonic, True),
+GAMMA_REGISTRY: dict[str, GammaEntry] = {
+    "none": GammaEntry(gamma_none, False),
+    "kuramoto_linear": GammaEntry(gamma_kuramoto_linear, True),
+    "kuramoto_bandpass": GammaEntry(gamma_kuramoto_bandpass, True),
+    "kuramoto_tanh": GammaEntry(gamma_kuramoto_tanh, True),
+    "harmonic": GammaEntry(gamma_harmonic, True),
 }
 
 
@@ -243,13 +249,13 @@ def eval_gamma(
         if strict:
             raise ValueError(msg)
         logger.warning(msg)
-        fn, needs_kuramoto = gamma_none, False
+        entry = GammaEntry(gamma_none, False)
     else:
-        fn, needs_kuramoto = reg_entry
-    if needs_kuramoto:
+        entry = reg_entry
+    if entry.needs_kuramoto:
         _ensure_kuramoto_cache(G, t)
     try:
-        return float(fn(G, node, t, spec))
+        return float(entry.fn(G, node, t, spec))
     except (ValueError, TypeError, ArithmeticError) as exc:
         level = (
             log_level

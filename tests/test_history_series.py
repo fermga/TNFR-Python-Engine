@@ -26,7 +26,7 @@ def test_gamma_kuramoto_tanh_registry(graph_canon):
     G.nodes[0]["θ"] = 0.0
     G.nodes[1]["θ"] = 0.0
     cfg = {"type": "kuramoto_tanh", "beta": 0.5, "k": 2.0, "R0": 0.0}
-    gamma_fn, _ = GAMMA_REGISTRY["kuramoto_tanh"]
+    gamma_fn = GAMMA_REGISTRY["kuramoto_tanh"].fn
     val = gamma_fn(G, 0, 0.0, cfg)
     assert abs(val) <= cfg["beta"]
 
