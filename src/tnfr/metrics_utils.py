@@ -199,12 +199,21 @@ def compute_Si(G, *, inplace: bool = True) -> Dict[Any, float]:
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
     np = get_numpy()
 
+    if np is None:
+        def phase_mean_fn(neigh, *, fallback):
+            return neighbor_phase_mean_list(
+                neigh, cos_th, sin_th, fallback=fallback
+            )
+    else:
+        def phase_mean_fn(neigh, *, fallback):
+            return neighbor_phase_mean_list(
+                neigh, cos_th, sin_th, np=np, fallback=fallback
+            )
+
     out: Dict[Any, float] = {}
     for n, nd in G.nodes(data=True):
         neigh = neighbors[n]
-        th_bar = neighbor_phase_mean_list(
-            neigh, cos_th, sin_th, np=np, fallback=thetas[n]
-        )
+        th_bar = phase_mean_fn(neigh, fallback=thetas[n])
         disp_fase = abs(angle_diff(thetas[n], th_bar)) / math.pi
         out[n] = compute_Si_node(
             n,
