@@ -290,6 +290,35 @@ def _compute_dnfr_common(
     _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
 
 
+def _init_neighbor_sums(data, *, np=None):
+    """Initialise containers for neighbour sums."""
+    nodes = data["nodes"]
+    n = len(nodes)
+    w_topo = data["w_topo"]
+    if np is not None:
+        x = np.zeros(n, dtype=float)
+        y = np.zeros(n, dtype=float)
+        epi_sum = np.zeros(n, dtype=float)
+        vf_sum = np.zeros(n, dtype=float)
+        count = np.zeros(n, dtype=float)
+        deg_sum = np.zeros(n, dtype=float) if w_topo != 0.0 else None
+        degs = None
+    else:
+        x = [0.0] * n
+        y = [0.0] * n
+        epi_sum = [0.0] * n
+        vf_sum = [0.0] * n
+        count = [0] * n
+        degs_dict = data.get("degs")
+        if w_topo != 0 and degs_dict is not None:
+            deg_sum = [0.0] * n
+            degs = [float(degs_dict.get(node, 0)) for node in nodes]
+        else:
+            deg_sum = None
+            degs = None
+    return x, y, epi_sum, vf_sum, count, deg_sum, degs
+
+
 def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
     nodes = data["nodes"]
     w_topo = data["w_topo"]
@@ -297,10 +326,11 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
         np = get_numpy(warn=True)
         if np is None:  # pragma: no cover - runtime check
             raise RuntimeError(
-                "numpy no disponible para la versión vectorizada"
+                "numpy no disponible para la versión vectorizada",
             )
         if not nodes:
             return None
+        x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(data, np=np)
         A = data.get("A")
         if A is None:
             _, A = cached_nodes_and_A(G, cache_size=data.get("cache_size"))
@@ -309,36 +339,23 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
         vf = np.array(data["vf"], dtype=float)
         cos_th = np.array(data["cos_theta"], dtype=float)
         sin_th = np.array(data["sin_theta"], dtype=float)
-        x = A @ cos_th
-        y = A @ sin_th
-        epi_sum = A @ epi
-        vf_sum = A @ vf
-        count = A.sum(axis=1)
+        x[:] = A @ cos_th
+        y[:] = A @ sin_th
+        epi_sum[:] = A @ epi
+        vf_sum[:] = A @ vf
+        count[:] = A.sum(axis=1)
         if w_topo != 0.0:
             degs = count
-            deg_sum = A @ degs
-        else:
-            degs = deg_sum = None
+            deg_sum[:] = A @ degs
         return x, y, epi_sum, vf_sum, count, deg_sum, degs
     else:
+        x, y, epi_sum, vf_sum, count, deg_sum, degs_list = _init_neighbor_sums(data)
         idx = data["idx"]
         epi = data["epi"]
         vf = data["vf"]
-        degs = data["degs"]
+        degs_dict = data["degs"]
         cos_th = data["cos_theta"]
         sin_th = data["sin_theta"]
-        n = len(nodes)
-        x = [0.0] * n
-        y = [0.0] * n
-        epi_sum = [0.0] * n
-        vf_sum = [0.0] * n
-        count = [0] * n
-        if w_topo != 0 and degs is not None:
-            deg_sum = [0.0] * n
-            degs_list = [float(degs.get(node, 0)) for node in nodes]
-        else:
-            deg_sum = None
-            degs_list = None
         for i, node in enumerate(nodes):
             deg_i = degs_list[i] if degs_list is not None else 0.0
             for v in G.neighbors(node):
@@ -349,7 +366,7 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
                 vf_sum[i] += vf[j]
                 count[i] += 1
                 if deg_sum is not None:
-                    deg_sum[i] += degs.get(v, deg_i)
+                    deg_sum[i] += degs_dict.get(v, deg_i)
         return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
 
 
