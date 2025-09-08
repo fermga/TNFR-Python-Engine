@@ -49,6 +49,7 @@ __all__ = [
     "_handle_target",
     "_handle_wait",
     "_handle_glyph",
+    "_handle_thol",
     "_flatten_tokens",
     "validate_token",
     "_parse_tokens",
@@ -271,13 +272,17 @@ def _handle_glyph(
     return curr_target
 
 
+def _handle_thol(G, g, curr_target, trace: deque, step_fn: Optional[AdvanceFn]):
+    return _handle_glyph(
+        G, g or Glyph.THOL.value, curr_target, trace, step_fn, label="THOL"
+    )
+
+
 HANDLERS = {
     "TARGET": _handle_target,
     "WAIT": _handle_wait,
     "GLYPH": _handle_glyph,
-    "THOL": lambda G, g, curr_target, trace, step_fn: _handle_glyph(
-        G, g or Glyph.THOL.value, curr_target, trace, step_fn, label="THOL"
-    ),
+    "THOL": _handle_thol,
 }
 
 
