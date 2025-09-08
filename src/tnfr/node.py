@@ -91,8 +91,8 @@ def _add_edge_common(n1, n2, weight) -> Optional[float]:
         return None
 
     weight = float(weight)
-    if math.isnan(weight):
-        raise ValueError("Edge weight must be a number")
+    if not math.isfinite(weight):
+        raise ValueError("Edge weight must be a finite number")
     if weight < 0:
         raise ValueError("Edge weight must be non-negative")
 
