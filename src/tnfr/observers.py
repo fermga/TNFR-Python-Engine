@@ -86,20 +86,7 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
         angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
         for _, data in G.nodes(data=True)
     )
-    # Manual population variance in a single pass using simple accumulation.
-    count = 0
-    sum_diff = 0.0
-    sum_sq = 0.0
-    for d in diffs:
-        count += 1
-        sum_diff += d
-        sum_sq += d * d
-    if count <= 1:
-        var = 0.0
-    else:
-        mean = sum_diff / count
-        var = sum_sq / count - mean * mean
-    return 1.0 / (1.0 + var)
+    return 1.0 / (1.0 + statistics.pvariance(diffs))
 
 
 def kuramoto_order(G, R: float | None = None, psi: float | None = None) -> float:
