@@ -131,16 +131,17 @@ def apply_canonical_clamps(nd: Dict[str, Any], G=None, node=None) -> None:
         _log_clamp(hist, node, "VF", vf, vf_min, vf_max)
 
     set_attr(nd, ALIAS_EPI, clamp(epi, eps_min, eps_max))
-    if G is not None and node is not None:
-        set_vf(G, node, clamp(vf, vf_min, vf_max), update_max=False)
-    else:
-        set_attr(nd, ALIAS_VF, clamp(vf, vf_min, vf_max))
+
+    def _maybe_set(G, node, alias, value, setter, **kwargs):
+        if G is not None and node is not None:
+            setter(G, node, value, **kwargs)
+        else:
+            set_attr(nd, alias, value)
+
+    _maybe_set(G, node, ALIAS_VF, clamp(vf, vf_min, vf_max), set_vf, update_max=False)
     if G.graph.get("THETA_WRAP") if G is not None else DEFAULTS["THETA_WRAP"]:
         new_th = (th + math.pi) % (2 * math.pi) - math.pi
-        if G is not None and node is not None:
-            set_theta(G, node, new_th)
-        else:
-            set_attr(nd, ALIAS_THETA, new_th)
+        _maybe_set(G, node, ALIAS_THETA, new_th, set_theta)
 
 
 def validate_canon(G) -> None:
