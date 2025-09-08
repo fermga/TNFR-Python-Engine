@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Deque, Dict, Iterable, Optional, Protocol, TypeVar
+from typing import Callable, Deque, Dict, Iterable, Optional, Protocol, TypeVar
 from enum import Enum
 from collections import deque
 from collections.abc import Hashable
@@ -100,31 +100,53 @@ def _add_edge_common(n1, n2, weight) -> Optional[float]:
     return weight
 
 
-def _exists_nx(graph, n1, n2):
-    return graph.has_edge(n1, n2)
-
-
-def _set_nx(graph, n1, n2, w: float) -> None:
-    graph.add_edge(n1, n2, weight=w)
-
-
-def _exists_tnfr(graph, n1, n2):
-    return n2 in n1._neighbors
-
-
-def _set_tnfr(graph, n1, n2, w: float) -> None:
-    n1._neighbors[n2] = w
-    n2._neighbors[n1] = w
-
-
 class EdgeStrategy(Enum):
     NX = "nx"
     TNFR = "tnfr"
 
 
-_STRATEGY_CBS = {
-    EdgeStrategy.NX: (_exists_nx, _set_nx),
-    EdgeStrategy.TNFR: (_exists_tnfr, _set_tnfr),
+class EdgeOps(Protocol):
+    """Interface for edge operations."""
+
+    def exists(self, graph, n1, n2): ...
+
+    def set(self, graph, n1, n2, w: float) -> None: ...
+
+
+@dataclass(frozen=True)
+class NXEdgeOps:
+    def exists(self, graph, n1, n2):
+        return graph.has_edge(n1, n2)
+
+    def set(self, graph, n1, n2, w: float) -> None:
+        graph.add_edge(n1, n2, weight=w)
+
+
+@dataclass(frozen=True)
+class TNFREdgeOps:
+    def exists(self, graph, n1, n2):
+        return n2 in n1._neighbors
+
+    def set(self, graph, n1, n2, w: float) -> None:
+        n1._neighbors[n2] = w
+        n2._neighbors[n1] = w
+
+
+@dataclass(frozen=True)
+class _CallbackEdgeOps:
+    exists_cb: Callable
+    set_cb: Callable
+
+    def exists(self, graph, n1, n2):
+        return self.exists_cb(graph, n1, n2)
+
+    def set(self, graph, n1, n2, w: float) -> None:
+        self.set_cb(graph, n1, n2, w)
+
+
+_EDGE_OPS: dict[EdgeStrategy, EdgeOps] = {
+    EdgeStrategy.NX: NXEdgeOps(),
+    EdgeStrategy.TNFR: TNFREdgeOps(),
 }
 
 
@@ -161,14 +183,16 @@ def add_edge(
                 else EdgeStrategy.TNFR
             )
         try:
-            exists_cb, set_cb = _STRATEGY_CBS[strategy]
+            ops = _EDGE_OPS[strategy]
         except KeyError as e:
             raise ValueError("Unknown edge strategy") from e
+    else:
+        ops = _CallbackEdgeOps(exists_cb, set_cb)
 
-    if exists_cb(graph, n1, n2) and not overwrite:
+    if ops.exists(graph, n1, n2) and not overwrite:
         return
 
-    set_cb(graph, n1, n2, weight)
+    ops.set(graph, n1, n2, weight)
     increment_edge_version(graph)
 
 
