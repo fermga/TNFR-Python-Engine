@@ -1,6 +1,6 @@
 import pytest
 
-from tnfr.alias import _validate_aliases, alias_get
+from tnfr.alias import _validate_aliases, AliasAccessor
 
 
 def test_rejects_string():
@@ -26,15 +26,15 @@ def test_accepts_generator_iterable():
     assert _validate_aliases((x for x in ["a", "b"])) == ("a", "b")
 
 
-def test_alias_get_reports_all_failures():
+def test_get_attr_reports_all_failures():
     d = {"a": "x", "b": "y"}
     with pytest.raises(ValueError) as exc:
-        alias_get(d, ("a", "b"), int, strict=True)
+        AliasAccessor(int).get(d, ("a", "b"), strict=True)
     msg = str(exc.value)
     assert "'a'" in msg and "'b'" in msg
 
 
-def test_alias_get_includes_default_failure():
+def test_get_attr_includes_default_failure():
     with pytest.raises(ValueError) as exc:
-        alias_get({}, ("a",), int, default="x", strict=True)
+        AliasAccessor(int).get({}, ("a",), default="x", strict=True)
     assert "default" in str(exc.value)

@@ -1,4 +1,4 @@
-"""Node operations."""
+"""Node utilities and structures for TNFR graphs."""
 
 from __future__ import annotations
 from dataclasses import dataclass, field

@@ -88,6 +88,8 @@ def normalize_weights(
         return {}
     weights: dict[str, float] = {}
     negatives: dict[str, float] = {}
+    total = 0.0
+    c = 0.0  # Kahan summation compensation
     for k in keys:
         val = dict_like.get(k, default_float)
         ok, converted = _convert_value(
@@ -102,11 +104,14 @@ def normalize_weights(
             negatives[k] = w
             w = 0.0
         weights[k] = w
+        y = w - c
+        t = total + y
+        c = (t - total) - y
+        total = t
     if negatives:
         if error_on_negative:
             raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
         logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
-    total = math.fsum(weights.values())
     if total <= 0:
         uniform = 1.0 / len(keys)
         return {k: uniform for k in keys}

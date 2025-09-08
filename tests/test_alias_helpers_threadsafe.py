@@ -2,14 +2,15 @@
 
 from concurrent.futures import ThreadPoolExecutor
 
-from tnfr.alias import alias_get, alias_set, _validate_aliases
+from tnfr.alias import AliasAccessor, _validate_aliases
 
 
 def _worker(i):
     d = {}
     aliases = _validate_aliases((f"k{i}", f"a{i}"))
-    alias_set(d, aliases, int, i)
-    return alias_get(d, aliases, int)
+    acc = AliasAccessor(int)
+    acc.set(d, aliases, i)
+    return acc.get(d, aliases)
 
 
 def test_alias_helpers_thread_safety():
