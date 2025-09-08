@@ -75,21 +75,25 @@ def _alias_resolve(
     ``aliases`` must already be validated with :func:`_validate_aliases`.
     """
 
-    errors: list[tuple[str, Exception]] = []
+    errors: list[tuple[str, Exception]] | None = None
     for key in aliases:
         if key not in d:
             continue
         try:
             return conv(d[key])
         except (ValueError, TypeError) as exc:
+            if errors is None:
+                errors = []
             errors.append((key, exc))
     if default is not None:
         try:
             return conv(default)
         except (ValueError, TypeError) as exc:
+            if errors is None:
+                errors = []
             errors.append(("default", exc))
 
-    if errors:
+    if errors is not None:
         if strict:
             err_msg = "; ".join(f"{k!r}: {e}" for k, e in errors)
             raise ValueError(f"Could not convert values for {err_msg}")
