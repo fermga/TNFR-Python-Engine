@@ -9,7 +9,7 @@ from tnfr.metrics_utils import (
     get_trig_cache,
 )
 from tnfr.alias import get_attr, set_attr
-from tnfr.helpers import increment_edge_version
+from tnfr.helpers.cache import increment_edge_version
 
 
 def test_get_si_weights_normalization():

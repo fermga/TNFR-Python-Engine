@@ -14,7 +14,7 @@ def mark_dnfr_prep_dirty(G: Any) -> None:
     changed and cached arrays need to be refreshed.
     """
 
-    from .helpers import get_graph
+    from .helpers.cache import get_graph
 
     graph = get_graph(G)
     graph["_dnfr_prep_dirty"] = True

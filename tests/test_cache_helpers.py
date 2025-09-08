@@ -1,7 +1,7 @@
 import networkx as nx
 
 from tnfr import dynamics
-from tnfr.helpers import (
+from tnfr.helpers.cache import (
     increment_edge_version,
     ensure_node_offset_map,
     _cache_node_list,

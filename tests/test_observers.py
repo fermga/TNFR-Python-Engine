@@ -10,7 +10,7 @@ from tnfr.observers import phase_sync, kuramoto_order, glyph_load, wbar
 from tnfr.gamma import kuramoto_R_psi
 from tnfr.sense import sigma_vector
 from tnfr.constants_glyphs import ANGLE_MAP
-from tnfr.helpers import angle_diff
+from tnfr.helpers.numeric import angle_diff
 from tnfr.alias import set_attr
 from tnfr.callback_utils import CallbackEvent
 from tnfr.observers import attach_standard_observer

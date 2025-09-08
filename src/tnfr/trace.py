@@ -12,7 +12,7 @@ from typing import Any, Callable, Dict, Optional, Protocol, NamedTuple
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs, append_metric
 from .import_utils import optional_import
-from .helpers import get_graph_mapping
+from .helpers.cache import get_graph_mapping
 
 
 class _KuramotoFn(Protocol):

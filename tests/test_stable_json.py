@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from tnfr.helpers import _stable_json
+from tnfr.helpers.cache import _stable_json
 
 
 def test_stable_json_set_order_deterministic():

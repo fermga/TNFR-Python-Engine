@@ -11,7 +11,7 @@ from tnfr.selector import (
 )
 from tnfr.constants import DEFAULTS, ALIAS_DNFR, ALIAS_D2EPI
 from tnfr.constants.core import SELECTOR_THRESHOLD_DEFAULTS
-from tnfr.helpers import clamp01
+from tnfr.helpers.numeric import clamp01
 from tnfr.collections_utils import normalize_weights
 from tnfr.dynamics import _configure_selector_weights
 

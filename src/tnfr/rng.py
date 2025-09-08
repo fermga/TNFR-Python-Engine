@@ -9,7 +9,7 @@ from typing import MutableMapping, Tuple, Any
 
 from cachetools import LRUCache
 from .constants import DEFAULTS
-from .helpers import get_graph
+from .helpers.cache import get_graph
 
 _RNG_LOCK = threading.Lock()
 _CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))

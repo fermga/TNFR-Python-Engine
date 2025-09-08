@@ -1,5 +1,5 @@
 import pytest
-from tnfr.helpers import list_mean
+from tnfr.helpers.numeric import list_mean
 
 
 def test_list_mean_non_empty():

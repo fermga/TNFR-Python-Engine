@@ -9,7 +9,7 @@ import networkx as nx
 
 from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
 from .alias import get_attr
-from .helpers import clamp01
+from .helpers.numeric import clamp01
 from .callback_utils import register_callback
 from .glyph_history import ensure_history, last_glyph, count_glyphs, append_metric
 from .constants_glyphs import (

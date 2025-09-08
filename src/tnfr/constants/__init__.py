@@ -23,7 +23,7 @@ from .metric import (
 )
 
 try:  # pragma: no cover - optional dependency
-    from ..helpers import ensure_node_offset_map
+    from ..helpers.cache import ensure_node_offset_map
 except ImportError:  # noqa: BLE001 - allow any import error
     ensure_node_offset_map = None
 

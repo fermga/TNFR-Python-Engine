@@ -9,7 +9,7 @@ from tnfr.trace import (
     grammar_field,
     CallbackSpec,
 )
-from tnfr.helpers import get_graph_mapping
+from tnfr.helpers.cache import get_graph_mapping
 from tnfr.callback_utils import register_callback, invoke_callbacks
 from types import MappingProxyType
 

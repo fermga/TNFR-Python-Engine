@@ -8,7 +8,7 @@ from collections.abc import Mapping, Sequence
 
 from .constants import ALIAS_THETA, get_param
 from .alias import get_attr
-from .helpers import angle_diff
+from .helpers.numeric import angle_diff
 from .metrics_utils import compute_coherence
 from .callback_utils import register_callback
 from .glyph_history import ensure_history, count_glyphs, append_metric

@@ -5,7 +5,7 @@ import math
 import networkx as nx
 import pytest
 
-from tnfr.helpers import neighbor_phase_mean
+from tnfr.helpers.numeric import neighbor_phase_mean
 from tnfr.constants import ALIAS_THETA
 from tnfr.node import NodoNX
 
