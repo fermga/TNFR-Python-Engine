@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Collection, Sequence
+from itertools import islice
 from typing import Any, TypeVar, cast
 import logging
 from .logging_utils import get_logger
@@ -72,11 +73,7 @@ def ensure_collection(
         if limit == 0:
             # Explicitly allow empty result without consumption
             return ()
-        materialized: list[T] = []
-        for item in it:
-            materialized.append(item)
-            if len(materialized) > limit:
-                break
+        materialized = list(islice(it, limit + 1))
         if len(materialized) > limit:
             examples = ", ".join(repr(x) for x in materialized[:3])
             msg = error_msg or (
