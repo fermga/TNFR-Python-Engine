@@ -21,7 +21,7 @@ def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch):
     captured = []
 
     def fake_compute_Si_node(n, nd, *, alpha, beta, gamma, vfmax, dnfrmax,
-                             cos_vals, sin_vals, theta_vals, theta_i,
+                             cos_vals, sin_vals, theta_i,
                              inplace, np=None):
         captured.append(np)
         return 0.0

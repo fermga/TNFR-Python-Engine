@@ -70,9 +70,9 @@ def test_compute_Si_node():
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
     neigh = [2]
     np_mod = get_numpy()
+    assert np_mod is not None
     cos_arr = np_mod.fromiter((cos_th[v] for v in neigh), dtype=float, count=len(neigh))
     sin_arr = np_mod.fromiter((sin_th[v] for v in neigh), dtype=float, count=len(neigh))
-    theta_arr = np_mod.fromiter((thetas[v] for v in neigh), dtype=float, count=len(neigh))
     Si = compute_Si_node(
         1,
         G.nodes[1],
@@ -83,7 +83,6 @@ def test_compute_Si_node():
         dnfrmax=1.0,
         cos_vals=cos_arr,
         sin_vals=sin_arr,
-        theta_vals=theta_arr,
         theta_i=thetas[1],
         inplace=True,
         np=np_mod,
@@ -108,7 +107,6 @@ def test_compute_Si_node():
     np_dummy = DummyNP()
     cos_arr = np_dummy.fromiter((cos_th[v] for v in neigh), dtype=float, count=len(neigh))
     sin_arr = np_dummy.fromiter((sin_th[v] for v in neigh), dtype=float, count=len(neigh))
-    theta_arr = np_dummy.fromiter((thetas[v] for v in neigh), dtype=float, count=len(neigh))
     Si_np = compute_Si_node(
         1,
         G.nodes[1],
@@ -119,7 +117,6 @@ def test_compute_Si_node():
         dnfrmax=1.0,
         cos_vals=cos_arr,
         sin_vals=sin_arr,
-        theta_vals=theta_arr,
         theta_i=thetas[1],
         inplace=False,
         np=np_dummy,
