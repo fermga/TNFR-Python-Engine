@@ -1,25 +1,47 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Any, Callable
 
 from .import_utils import optional_import
 
-__all__ = ["fast_dumps"]
+__all__ = ["fast_dumps", "json_dumps"]
 
 _orjson = optional_import("orjson")
 
 
-def fast_dumps(obj: Any, *, sort_keys: bool = False) -> bytes:
-    """Serialize ``obj`` to JSON using ``orjson`` when available.
-
-    Returns ``bytes`` for compatibility with :func:`hashlib` and other
-    consumers.  When ``orjson`` is missing the standard :mod:`json` module is
-    used with compact separators to reduce overhead.
-    """
+def json_dumps(
+    obj: Any,
+    *,
+    sort_keys: bool = False,
+    default: Callable[[Any], Any] | None = None,
+    ensure_ascii: bool = True,
+    separators: tuple[str, str] = (",", ":"),
+    cls: type[json.JSONEncoder] | None = None,
+    to_bytes: bool = True,
+    **kwargs: Any,
+) -> bytes | str:
+    """Serialize ``obj`` to JSON using ``orjson`` when available."""
     if _orjson is not None:
         option = _orjson.OPT_SORT_KEYS if sort_keys else 0
-        return _orjson.dumps(obj, option=option)
-    return json.dumps(
-        obj, sort_keys=sort_keys, separators=(",", ":")
-    ).encode("utf-8")
+        data = _orjson.dumps(obj, option=option, default=default)
+        return data if to_bytes else data.decode("utf-8")
+    result = json.dumps(
+        obj,
+        sort_keys=sort_keys,
+        ensure_ascii=ensure_ascii,
+        separators=separators,
+        cls=cls,
+        default=default,
+        **kwargs,
+    )
+    return result if not to_bytes else result.encode("utf-8")
+
+
+def fast_dumps(obj: Any, *, sort_keys: bool = False) -> bytes:
+    """Serialize ``obj`` to JSON and return ``bytes``.
+
+    Uses :func:`json_dumps` with compact separators. ``orjson`` is employed
+    when available otherwise falling back to :mod:`json`.
+    """
+    return json_dumps(obj, sort_keys=sort_keys, to_bytes=True)
