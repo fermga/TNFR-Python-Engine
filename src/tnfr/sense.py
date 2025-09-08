@@ -125,8 +125,25 @@ def _sigma_from_iterable(
     except TypeError:
         iterator = iter([values])
 
-    vals = [_to_complex(z) for z in iterator]
-    cnt = len(vals)
+    sum_x = 0.0
+    sum_y = 0.0
+    c_x = 0.0  # Kahan compensation for x
+    c_y = 0.0  # Kahan compensation for y
+    cnt = 0
+    for val in iterator:
+        z = _to_complex(val)
+        # Kahan summation for the real part
+        dx = z.real - c_x
+        tx = sum_x + dx
+        c_x = (tx - sum_x) - dx
+        sum_x = tx
+        # Kahan summation for the imaginary part
+        dy = z.imag - c_y
+        ty = sum_y + dy
+        c_y = (ty - sum_y) - dy
+        sum_y = ty
+        cnt += 1
+
     if cnt == 0:
         return {
             "x": 0.0,
@@ -136,8 +153,6 @@ def _sigma_from_iterable(
             "n": 0,
         }
 
-    sum_x = kahan_sum(z.real for z in vals)
-    sum_y = kahan_sum(z.imag for z in vals)
     x = sum_x / cnt
     y = sum_y / cnt
     mag = math.hypot(x, y)
