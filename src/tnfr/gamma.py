@@ -6,7 +6,6 @@ import math
 import cmath
 import logging
 import hashlib
-import json
 from collections.abc import Mapping
 
 from .constants import ALIAS_THETA
@@ -16,15 +15,14 @@ from .helpers.cache import (
     edge_version_cache,
     get_graph_mapping,
 )
+from .json_utils import fast_dumps
 from .logging_utils import get_logger
 
 
 logger = get_logger(__name__)
 
 DEFAULT_GAMMA: Mapping[str, str] = {"type": "none"}
-DEFAULT_GAMMA_DUMPED = json.dumps(DEFAULT_GAMMA, sort_keys=True).encode(
-    "utf-8"
-)
+DEFAULT_GAMMA_DUMPED = fast_dumps(DEFAULT_GAMMA, sort_keys=True)
 DEFAULT_GAMMA_HASH = hashlib.blake2b(
     DEFAULT_GAMMA_DUMPED, digest_size=16
 ).hexdigest()
@@ -98,7 +96,7 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
             dumped = DEFAULT_GAMMA_DUMPED
             cur_hash = DEFAULT_GAMMA_HASH
         else:
-            dumped = json.dumps(spec, sort_keys=True).encode("utf-8")
+            dumped = fast_dumps(spec, sort_keys=True)
             cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
         if cached is not None and prev_hash == cur_hash:
             return cached
