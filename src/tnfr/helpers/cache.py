@@ -180,9 +180,10 @@ def node_set_checksum(
     """
     graph = get_graph(G)
     node_iterable = G.nodes() if nodes is None else nodes
-    representations = [_node_repr(n) for n in node_iterable]
-    if not presorted:
-        representations.sort()
+    if presorted:
+        representations = map(_node_repr, node_iterable)
+    else:
+        representations = sorted(_node_repr(n) for n in node_iterable)
     hasher = hashlib.blake2b(digest_size=16)
     token_hasher = hashlib.blake2b(digest_size=8)
     for rep in representations:

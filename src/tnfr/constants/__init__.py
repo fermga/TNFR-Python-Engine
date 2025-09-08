@@ -96,13 +96,30 @@ def _is_immutable_inner(value: Any) -> bool:
     return False
 
 
+_IMMUTABLE_CACHE: dict[int, bool] = {}
+
+
 def _is_immutable(value: Any) -> bool:
-    """Check recursively if ``value`` is immutable with caching."""
+    """Check recursively if ``value`` is immutable with caching.
+
+    Results are memoised by object identity. This avoids recomputing the
+    expensive :func:`_freeze` for repeatedly queried objects. Note that
+    mutated objects may yield stale results; ``_is_immutable`` assumes
+    immutability does not change for a given object ID.
+    """
+
+    obj_id = id(value)
+    cached = _IMMUTABLE_CACHE.get(obj_id)
+    if cached is not None:
+        return cached
     try:
         frozen = _freeze(value)
     except (TypeError, ValueError):
-        return False
-    return _is_immutable_inner(frozen)
+        result = False
+    else:
+        result = _is_immutable_inner(frozen)
+    _IMMUTABLE_CACHE[obj_id] = result
+    return result
 
 
 # Diccionario combinado exportado

@@ -67,10 +67,15 @@ def _rng_for_step(seed: int, step: int) -> random.Random:
 
 
 def set_cache_maxsize(size: int) -> None:
-    """Update RNG cache maximum size."""
+    """Update RNG cache maximum size.
+
+    ``size`` must be a non-negative integer; ``0`` disables caching.
+    """
 
     global _CACHE_MAXSIZE, _RNG_CACHE
     new_size = int(size)
+    if new_size < 0:
+        raise ValueError("size must be non-negative")
     with _RNG_LOCK:
         _CACHE_MAXSIZE = new_size
         _RNG_CACHE.clear()

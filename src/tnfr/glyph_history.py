@@ -177,6 +177,8 @@ class HistoryDict(dict):
     def __setitem__(self, key, value):  # type: ignore[override]
         super().__setitem__(key, value)
         if key in self._counts:
+            self._heap = [(cnt, k) for cnt, k in self._heap if k != key]
+            heapq.heapify(self._heap)
             heapq.heappush(self._heap, (self._counts[key], key))
         else:
             self._counts[key] = 0

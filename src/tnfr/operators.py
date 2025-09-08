@@ -19,6 +19,7 @@ from typing import Dict, Any, TYPE_CHECKING, Optional
 import math
 import hashlib
 import heapq
+import struct
 from operator import ge, le
 from functools import cache
 from itertools import combinations
@@ -132,7 +133,11 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     cache_key = (seed_root, scope_id)
     seed = cache.get(cache_key)
     if seed is None:
-        seed_bytes = f"{seed_root}:{scope_id}".encode()
+        seed_bytes = struct.pack(
+            ">QQ",
+            seed_root & 0xFFFFFFFFFFFFFFFF,
+            scope_id & 0xFFFFFFFFFFFFFFFF,
+        )
         seed = int.from_bytes(
             hashlib.blake2b(seed_bytes, digest_size=8).digest(), "little"
         )
