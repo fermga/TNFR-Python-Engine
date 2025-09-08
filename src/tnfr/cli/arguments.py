@@ -2,12 +2,7 @@ import argparse
 from typing import Any
 
 from ..gamma import GAMMA_REGISTRY
-
-
-# Helper to build reusable argument specification lists
-
-def specs(*pairs: tuple[str, dict[str, Any]]) -> list[tuple[str, dict[str, Any]]]:
-    return list(pairs)
+from .utils import specs
 
 
 GRAMMAR_ARG_SPECS = specs(
