@@ -6,10 +6,8 @@ import warnings
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Mapping
 from functools import lru_cache
-from itertools import islice
 from types import MappingProxyType
 from typing import Any, TypeVar
-import heapq
 
 from cachetools import LRUCache
 import networkx as nx
@@ -19,9 +17,6 @@ from ..import_utils import get_numpy
 from ..json_utils import json_dumps
 
 T = TypeVar("T")
-
-# Chunk size for incremental node digest merging; adjust to tune performance.
-NODE_CHUNK = 1024
 
 _EDGE_CACHE_LOCK = threading.RLock()
 
@@ -106,27 +101,16 @@ def _iter_node_digests(
     """Yield node digests in a deterministic order.
 
     When ``presorted`` is ``True`` the nodes are assumed to already be sorted
-    in a stable manner and their digests are yielded directly.  Otherwise the
-    digests are produced in sorted order using ``heapq.merge`` over small
-    chunks, keeping memory usage low.
+    in a stable manner and their digests are yielded directly. Otherwise the
+    nodes are converted to their stable representations, sorted with
+    ``sorted`` and mapped to :func:`_hash_node`.
     """
     if presorted:
-        for n in nodes:
-            yield _hash_node(n)
+        yield from (_hash_node(n) for n in nodes)
     else:
-        iterator = ((_node_repr(n), _hash_node(n)) for n in nodes)
-        pending = sorted(islice(iterator, NODE_CHUNK))
-        while pending:
-            chunk = sorted(islice(iterator, NODE_CHUNK))
-            if not chunk:
-                for _, digest in pending:
-                    yield digest
-                break
-            merged = heapq.merge(pending, chunk)
-            for _ in range(len(pending)):
-                _, digest = next(merged)
-                yield digest
-            pending = list(merged)
+        repr_nodes = [(_node_repr(n), n) for n in nodes]
+        repr_nodes = sorted(repr_nodes)
+        yield from (_hash_node(n) for _, n in repr_nodes)
 
 
 def _update_node_cache(
