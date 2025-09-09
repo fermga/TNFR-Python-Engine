@@ -34,6 +34,16 @@ limit.
 """
 
 
+def _validate_limit(max_materialize: int | None) -> int | None:
+    """Normalize and validate ``max_materialize`` returning a usable limit."""
+    if max_materialize is None:
+        return None
+    limit = int(max_materialize)
+    if limit < 0:
+        raise ValueError("'max_materialize' must be non-negative")
+    return limit
+
+
 def ensure_collection(
     it: Iterable[T],
     *,
@@ -42,38 +52,30 @@ def ensure_collection(
 ) -> Collection[T]:
     """Return ``it`` as a ``Collection`` materializing if necessary.
 
-    Strings and bytes are treated as single elements. ``max_materialize``
-    controls the maximum number of items to materialize when ``it`` is not
-    already a collection; ``None`` means no limit. ``error_msg`` customizes the
-    message of the :class:`ValueError` raised when the iterable yields more
-    items than allowed. ``TypeError`` is raised when ``it`` is not iterable.
-    The input is consumed at most once and no extra items beyond the limit
-    are stored in memory.
+    Step 1 detects collections and string-like inputs early. ``max_materialize``
+    limits materialization for non-collection iterables; ``None`` disables the
+    limit. ``error_msg`` customizes the :class:`ValueError` raised when the
+    iterable yields more items than allowed. ``TypeError`` is raised when ``it``
+    is not iterable. The input is consumed at most once and no extra items
+    beyond the limit are stored in memory.
     """
 
-    if isinstance(it, Collection) and not isinstance(
-        it, (str, bytes, bytearray)
-    ):
-        # Already a collection; no materialization needed
+    # Step 1: detect collections and raw strings/bytes early
+    if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
         return it
     if isinstance(it, (str, bytes, bytearray)):
-        # Treat raw bytes/strings as single elements
         return cast(Collection[T], (it,))
-    if max_materialize is not None:
-        limit = int(max_materialize)
-        if limit < 0:
-            raise ValueError("'max_materialize' must be non-negative")
-    else:
-        limit = None
 
+    # Step 2: validate limit
+    limit = _validate_limit(max_materialize)
+
+    # Step 3: materialize up to ``limit`` items using ``islice`` only once
     try:
         if limit is None:
-            # No limit: consume iterable fully
             return tuple(it)
         if limit == 0:
-            # Explicitly allow empty result without consumption
             return ()
-        materialized = list(islice(it, limit + 1))
+        materialized = tuple(islice(it, limit + 1))
         if len(materialized) > limit:
             examples = ", ".join(repr(x) for x in materialized[:3])
             msg = error_msg or (
@@ -81,7 +83,7 @@ def ensure_collection(
                 f"exceeds limit {limit}; first items: [{examples}]"
             )
             raise ValueError(msg)
-        return tuple(materialized)
+        return materialized
     except TypeError as exc:
         raise TypeError(f"{it!r} is not iterable") from exc
 

@@ -52,6 +52,14 @@ def test_zero_limit_returns_empty():
     assert ensure_collection(gen, max_materialize=0) == ()
 
 
+def test_zero_limit_does_not_consume_iterator():
+    gen = (i for i in range(5))
+    result = ensure_collection(gen, max_materialize=0)
+    assert result == ()
+    # The generator should remain untouched
+    assert list(gen) == [0, 1, 2, 3, 4]
+
+
 def test_default_limit_enforced():
     gen = (i for i in range(1001))
     with pytest.raises(ValueError):
@@ -78,3 +86,10 @@ def test_non_iterable_error():
 def test_max_materialize_accepts_float():
     gen = (i for i in range(3))
     assert ensure_collection(gen, max_materialize=3.0) == (0, 1, 2)
+
+
+def test_map_iterable_materialized():
+    data = map(lambda x: x * 2, range(3))
+    assert ensure_collection(data, max_materialize=3) == (0, 2, 4)
+    # Iterator should be exhausted
+    assert list(data) == []
