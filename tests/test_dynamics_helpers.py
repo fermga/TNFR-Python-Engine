@@ -8,6 +8,7 @@ from tnfr.dynamics import (
     _refresh_dnfr_vectors,
     _compute_neighbor_means,
     _choose_glyph,
+    run,
 )
 from tnfr.grammar import AL, EN
 
@@ -70,3 +71,9 @@ def test_choose_glyph_respects_lags(graph_canon):
     h_en[0] = 6
     g = _choose_glyph(G, 0, selector, False, h_al, h_en, 1, 5)
     assert g == EN
+
+
+def test_run_rejects_negative_steps(graph_canon):
+    G = graph_canon()
+    with pytest.raises(ValueError):
+        run(G, steps=-1)

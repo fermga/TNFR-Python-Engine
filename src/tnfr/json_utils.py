@@ -28,17 +28,23 @@ def json_dumps(
 ) -> bytes | str:
     """Serialize ``obj`` to JSON using ``orjson`` when available.
 
-    When :mod:`orjson` is used, the ``ensure_ascii`` and ``separators`` options
-    are ignored because they are not supported by ``orjson.dumps``. A warning is
-    emitted only the first time such ignored parameters are detected.
+    When :mod:`orjson` is used, the ``ensure_ascii``, ``separators``, ``cls``
+    and any additional keyword arguments are ignored because they are not
+    supported by :func:`orjson.dumps`. A warning is emitted only the first time
+    such ignored parameters are detected.
     """
     if _orjson is not None:
-        if ensure_ascii is not True or separators != (",", ":"):
+        if (
+            ensure_ascii is not True
+            or separators != (",", ":")
+            or cls is not None
+            or kwargs
+        ):
             global _ignored_param_warned
             with _warn_lock:
                 if not _ignored_param_warned:
                     warnings.warn(
-                        "'ensure_ascii' and 'separators' are ignored when using orjson",
+                        "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson",
                         UserWarning,
                         stacklevel=2,
                     )

@@ -73,6 +73,18 @@ def test_optional_import_removes_entry_on_success(monkeypatch):
     assert "fake_mod" not in _IMPORT_STATE
 
 
+def test_optional_import_handles_distinct_fallbacks(monkeypatch):
+    def fake_import(name):
+        raise ImportError("boom")
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+    clear_optional_import_cache()
+    fb1: list[str] = []
+    fb2: dict[str, int] = {}
+    assert optional_import("fake_mod", fb1) is fb1
+    assert optional_import("fake_mod", fb2) is fb2
+
+
 def test_record_prunes_expired_entries(monkeypatch):
     state = import_utils._IMPORT_STATE
     with state.lock:

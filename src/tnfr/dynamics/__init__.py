@@ -97,12 +97,6 @@ __all__ = [
     "step",
     "run",
 ]
-
-
-def _param(G, name):
-    return float(G.graph.get(name) if G is not None else DEFAULTS[name])
-
-
 def _log_clamp(hist, node, attr, value, lo, hi):
     if value < lo or value > hi:
         hist.append({"node": node, "attr": attr, "value": float(value)})
@@ -649,7 +643,10 @@ def run(
     use_Si: bool = True,
     apply_glyphs: bool = True,
 ) -> None:
-    for _ in range(int(steps)):
+    steps_int = int(steps)
+    if steps_int < 0:
+        raise ValueError("'steps' must be non-negative")
+    for _ in range(steps_int):
         step(G, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)
         # Early-stop opcional
         stop_cfg = G.graph.get(
