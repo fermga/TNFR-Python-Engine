@@ -125,17 +125,19 @@ def test_wbar_list_and_deque_same_result(graph_canon):
     assert wbar(G, window=2) == pytest.approx(expected)
 
 
-def test_wbar_rejects_non_positive_window(graph_canon):
+@pytest.mark.parametrize("w", [0, -1])
+def test_wbar_rejects_non_positive_window(graph_canon, w):
     G = graph_canon()
     G.graph["history"] = {"C_steps": [0.1, 0.2]}
     with pytest.raises(ValueError):
-        wbar(G, window=0)
+        wbar(G, window=w)
 
 
-def test_glyph_load_rejects_non_positive_window(graph_canon):
+@pytest.mark.parametrize("w", [0, -1])
+def test_glyph_load_rejects_non_positive_window(graph_canon, w):
     G = graph_canon()
     with pytest.raises(ValueError):
-        glyph_load(G, window=0)
+        glyph_load(G, window=w)
 
 
 def test_wbar_uses_default_window(graph_canon):
