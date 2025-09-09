@@ -16,7 +16,7 @@ from .constants import get_param
 from .grammar import apply_glyph_with_grammar
 from .constants_glyphs import GLYPHS_CANONICAL_SET
 from .types import Glyph
-from .collections_utils import ensure_collection
+from .collections_utils import ensure_collection, MAX_MATERIALIZE_DEFAULT
 from .glyph_history import ensure_history
 
 # Basic types
@@ -168,8 +168,26 @@ def _advance(G, step_fn: Optional[AdvanceFn] = None):
 # ---------------------
 
 
-def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
-    """Expand a ``THOL`` block onto ``stack`` for processing."""
+def _flatten_thol(
+    item: THOL,
+    stack: deque[Any],
+    *,
+    max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
+) -> None:
+    """Expand a ``THOL`` block onto ``stack`` for processing.
+
+    Parameters
+    ----------
+    item:
+        The :class:`THOL` block to expand.
+    stack:
+        Destination stack where the expanded tokens are pushed.
+    max_materialize:
+        Maximum number of tokens from ``item.body`` to materialize when it is
+        not already a collection. Defaults to
+        :data:`MAX_MATERIALIZE_DEFAULT`; ``None`` disables the limit.
+    """
+
     repeats = int(item.repeat)
     if repeats < 1:
         raise ValueError("repeat must be ≥1")
@@ -183,7 +201,7 @@ def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
         and item.force_close in {Glyph.SHA, Glyph.NUL}
         else None
     )
-    seq = ensure_collection(item.body, max_materialize=None)
+    seq = ensure_collection(item.body, max_materialize=max_materialize)
     for _ in range(repeats):
         if closing is not None:
             stack.append(closing)
@@ -192,16 +210,30 @@ def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
     stack.append(THOL_SENTINEL)
 
 
-def _flatten(seq: Sequence[Token]) -> list[tuple[OpTag, Any]]:
+def _flatten(
+    seq: Sequence[Token],
+    *,
+    max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
+) -> list[tuple[OpTag, Any]]:
     """Return list of operations ``(op, payload)``.
     ``op`` ∈ :class:`OpTag`.
+
+    Parameters
+    ----------
+    seq:
+        Sequence of tokens to flatten.
+    max_materialize:
+        Maximum number of items to materialize from ``seq`` or ``THOL`` bodies
+        when they are not already collections. Defaults to
+        :data:`MAX_MATERIALIZE_DEFAULT`; ``None`` disables the limit.
 
     Implemented iteratively using an explicit stack to avoid deep recursion
     when ``THOL`` blocks are nested.
     """
+
     ops: list[tuple[OpTag, Any]] = []
     stack: deque[Any] = deque(
-        reversed(ensure_collection(seq, max_materialize=None))
+        reversed(ensure_collection(seq, max_materialize=max_materialize))
     )
 
     while stack:
@@ -214,7 +246,7 @@ def _flatten(seq: Sequence[Token]) -> list[tuple[OpTag, Any]]:
             steps = max(1, int(getattr(item, "steps", 1)))
             ops.append((OpTag.WAIT, steps))
         elif isinstance(item, THOL):
-            _flatten_thol(item, stack)
+            _flatten_thol(item, stack, max_materialize=max_materialize)
         elif isinstance(item, (Glyph, str)):
             g = item.value if isinstance(item, Glyph) else str(item)
             if g not in GLYPHS_CANONICAL_SET:
