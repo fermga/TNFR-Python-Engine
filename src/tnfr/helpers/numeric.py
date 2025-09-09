@@ -138,12 +138,7 @@ def neighbor_phase_mean_list(
     """
     deg = len(neigh)
     if np is not None and deg > 0:
-        # column_stack with list comprehensions avoids flattening/reshaping
-        # overhead compared to fromiter
-        pairs = np.column_stack((
-            [cos_th[v] for v in neigh],
-            [sin_th[v] for v in neigh],
-        ))
+        pairs = np.asarray(list((cos_th[v], sin_th[v]) for v in neigh))
         mean_cos, mean_sin = pairs.mean(axis=0)
         return float(np.arctan2(mean_sin, mean_cos))
     return _phase_mean_from_iter(((cos_th[v], sin_th[v]) for v in neigh), fallback)
