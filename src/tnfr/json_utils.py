@@ -21,6 +21,62 @@ _warn_lock = threading.Lock()
 _load_lock = threading.Lock()
 
 
+def _json_dumps_orjson(
+    obj: Any,
+    *,
+    sort_keys: bool,
+    default: Callable[[Any], Any] | None,
+    ensure_ascii: bool,
+    separators: tuple[str, str],
+    cls: type[json.JSONEncoder] | None,
+    to_bytes: bool,
+    **kwargs: Any,
+) -> bytes | str:
+    """Serialize using :mod:`orjson` and warn about unsupported parameters."""
+    if (
+        ensure_ascii is not True
+        or separators != (",", ":")
+        or cls is not None
+        or kwargs
+    ):
+        global _ignored_param_warned
+        with _warn_lock:
+            if not _ignored_param_warned:
+                warnings.warn(
+                    "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson",
+                    UserWarning,
+                    stacklevel=3,
+                )
+                _ignored_param_warned = True
+    option = _orjson.OPT_SORT_KEYS if sort_keys else 0
+    data = _orjson.dumps(obj, option=option, default=default)
+    return data if to_bytes else data.decode("utf-8")
+
+
+def _json_dumps_std(
+    obj: Any,
+    *,
+    sort_keys: bool,
+    default: Callable[[Any], Any] | None,
+    ensure_ascii: bool,
+    separators: tuple[str, str],
+    cls: type[json.JSONEncoder] | None,
+    to_bytes: bool,
+    **kwargs: Any,
+) -> bytes | str:
+    """Serialize using the standard library :func:`json.dumps`."""
+    result = json.dumps(
+        obj,
+        sort_keys=sort_keys,
+        ensure_ascii=ensure_ascii,
+        separators=separators,
+        cls=cls,
+        default=default,
+        **kwargs,
+    )
+    return result if not to_bytes else result.encode("utf-8")
+
+
 def json_dumps(
     obj: Any,
     *,
@@ -45,32 +101,14 @@ def json_dumps(
             if not _orjson_loaded:
                 _orjson = optional_import("orjson")
                 _orjson_loaded = True
-    if _orjson is not None:
-        if (
-            ensure_ascii is not True
-            or separators != (",", ":")
-            or cls is not None
-            or kwargs
-        ):
-            global _ignored_param_warned
-            with _warn_lock:
-                if not _ignored_param_warned:
-                    warnings.warn(
-                        "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson",
-                        UserWarning,
-                        stacklevel=2,
-                    )
-                    _ignored_param_warned = True
-        option = _orjson.OPT_SORT_KEYS if sort_keys else 0
-        data = _orjson.dumps(obj, option=option, default=default)
-        return data if to_bytes else data.decode("utf-8")
-    result = json.dumps(
+    dumps_fn = _json_dumps_orjson if _orjson is not None else _json_dumps_std
+    return dumps_fn(
         obj,
         sort_keys=sort_keys,
+        default=default,
         ensure_ascii=ensure_ascii,
         separators=separators,
         cls=cls,
-        default=default,
+        to_bytes=to_bytes,
         **kwargs,
     )
-    return result if not to_bytes else result.encode("utf-8")
