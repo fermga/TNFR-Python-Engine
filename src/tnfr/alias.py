@@ -335,10 +335,21 @@ def _increment_trig_version(
 ) -> None:
     g = G.graph
     g["_trig_version"] = int(g.get("_trig_version", 0)) + 1
+    # Clear cached trigonometric values to avoid stale data. Any existing
+    # `_cos_th`, `_sin_th`, or `_thetas` entries are removed so that a fresh
+    # cache will be built on the next access.
+    g.pop("_cos_th", None)
+    g.pop("_sin_th", None)
+    g.pop("_thetas", None)
 
 
 def set_theta(G: "nx.Graph", n: Hashable, value: float) -> None:
-    """Set ``θ`` for node ``n`` and increment the trig cache version."""
+    """Set ``θ`` for node ``n`` and invalidate trig caches.
+
+    Updating a node's phase triggers invalidation of cached trigonometric
+    values. The per-graph ``_trig_version`` counter is incremented and any
+    previously cached cosines, sines or angles are cleared from ``G.graph``.
+    """
     set_attr_and_cache(
         G, n, ALIAS_THETA, value, extra=_increment_trig_version
     )

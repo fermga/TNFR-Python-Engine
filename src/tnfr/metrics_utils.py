@@ -148,9 +148,11 @@ def get_trig_cache(G: Any, *, np: Any | None = None) -> TrigCache:
     """Return cached cosines and sines of ``θ`` per node.
 
     The cache is invalidated not only when the edge set changes but also when
-    node phases ``θ`` are updated. A per-graph ``_trig_version`` counter is
-    incremented whenever phases change and forms part of the cache key, forcing
-    a rebuild when the counter advances.
+    node phases ``θ`` are updated. Calling :func:`tnfr.alias.set_theta`
+    increments a per-graph ``_trig_version`` counter and purges any previously
+    stored ``_cos_th``, ``_sin_th`` or ``_thetas`` entries in ``G.graph``.
+    The counter forms part of the cache key, forcing a rebuild when it
+    advances.
     """
     version = G.graph.setdefault("_trig_version", 0)
     key = ("_trig", version)
