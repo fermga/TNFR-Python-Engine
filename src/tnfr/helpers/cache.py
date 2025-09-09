@@ -162,16 +162,15 @@ def node_set_checksum(
     node_iterable = G.nodes() if nodes is None else nodes
 
     hasher = hashlib.blake2b(digest_size=16)
-    token_hasher = hashlib.blake2b(digest_size=8)
 
     # Generate digests in stable order; `_iter_node_digests` sorts when needed
     # unless `presorted` indicates the nodes are already ordered.
     for digest in _iter_node_digests(node_iterable, presorted=presorted):
         hasher.update(digest)
-        token_hasher.update(digest)
 
-    checksum = hasher.hexdigest()
-    token = token_hasher.hexdigest()
+    digest = hasher.digest()
+    checksum = digest.hex()
+    token = digest[:8].hex()
     if store:
         # Cache the result using a short token to detect unchanged node sets.
         cached = graph.get("_node_set_checksum_cache")
