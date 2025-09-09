@@ -16,35 +16,7 @@ from .glyph_history import recent_glyph
 from .types import Glyph
 from .operators import apply_glyph  # avoid repeated import inside functions
 
-# Nominal glyphs (to avoid typos)
-AL = Glyph.AL
-EN = Glyph.EN
-IL = Glyph.IL
-OZ = Glyph.OZ
-UM = Glyph.UM
-RA = Glyph.RA
-SHA = Glyph.SHA
-VAL = Glyph.VAL
-NUL = Glyph.NUL
-THOL = Glyph.THOL
-ZHIR = Glyph.ZHIR
-NAV = Glyph.NAV
-REMESH = Glyph.REMESH
-
 __all__ = [
-    "AL",
-    "EN",
-    "IL",
-    "OZ",
-    "UM",
-    "RA",
-    "SHA",
-    "VAL",
-    "NUL",
-    "THOL",
-    "ZHIR",
-    "NAV",
-    "REMESH",
     "CANON_COMPAT",
     "CANON_FALLBACK",
     "enforce_canonical_grammar",

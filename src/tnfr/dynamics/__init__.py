@@ -8,12 +8,8 @@ from typing import Any
 # realizar la importación en cada paso de la dinámica. Como los módulos de
 # origen no dependen de ``dynamics``, no se introducen ciclos.
 from ..operators import apply_remesh_if_globally_stable, apply_glyph
-from ..grammar import (
-    enforce_canonical_grammar,
-    on_applied_glyph,
-    AL,
-    EN,
-)
+from ..grammar import enforce_canonical_grammar, on_applied_glyph
+from ..types import Glyph
 from ..constants import (
     DEFAULTS,
     REMESH_DEFAULTS,
@@ -467,9 +463,9 @@ def parametric_glyph_selector(G, n) -> str:
 def _choose_glyph(G, n, selector, use_canon, h_al, h_en, al_max, en_max):
     """Select the glyph to apply on node ``n``."""
     if h_al[n] > al_max:
-        return AL
+        return Glyph.AL
     if h_en[n] > en_max:
-        return EN
+        return Glyph.EN
     g = selector(G, n)
     if use_canon:
         g = enforce_canonical_grammar(G, n, g)
@@ -536,10 +532,10 @@ def _apply_glyphs(G, selector, hist) -> None:
         apply_glyph(G, n, g, window=window)
         if use_canon:
             on_applied_glyph(G, n, g)
-        if g == AL:
+        if g == Glyph.AL:
             h_al[n] = 0
             h_en[n] = min(h_en[n], en_max)
-        elif g == EN:
+        elif g == Glyph.EN:
             h_en[n] = 0
 
 
