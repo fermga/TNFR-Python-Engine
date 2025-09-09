@@ -19,6 +19,7 @@ _orjson: Any | None = None
 _orjson_loaded = False
 _ignored_param_warned = False
 _warn_lock = threading.Lock()
+_load_lock = threading.Lock()
 
 
 def json_dumps(
@@ -41,8 +42,10 @@ def json_dumps(
     """
     global _orjson, _orjson_loaded
     if not _orjson_loaded:
-        _orjson = optional_import("orjson")
-        _orjson_loaded = True
+        with _load_lock:
+            if not _orjson_loaded:
+                _orjson = optional_import("orjson")
+                _orjson_loaded = True
     if _orjson is not None:
         if (
             ensure_ascii is not True
