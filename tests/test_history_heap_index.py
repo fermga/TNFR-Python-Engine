@@ -29,3 +29,26 @@ def test_eviction_updates_heap_index():
     assert "c" not in hist._heap_index
     assert len(hist._heap_index) == len(hist._counts)
 
+
+def test_get_increment_updates_heap_index():
+    hist = HistoryDict()
+    hist.get_increment("a")
+    assert hist._heap_index["a"] == 0
+    assert hist._heap[0] == (1, "a")
+
+
+def test_setdefault_tracks_heap_index():
+    hist = HistoryDict()
+    hist.setdefault("a", [])
+    assert hist._heap_index["a"] == 0
+    assert hist._heap[0] == (0, "a")
+
+
+def test_prune_heap_keeps_index_consistent():
+    hist = HistoryDict({f"k{i}": [] for i in range(3)}, compact_every=1)
+    for _ in range(5):
+        hist.get_increment("k0")
+    assert len(hist._heap_index) == len(hist._counts)
+    for k, idx in hist._heap_index.items():
+        assert hist._heap[idx][1] == k
+
