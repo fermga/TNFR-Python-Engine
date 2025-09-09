@@ -10,6 +10,7 @@ from collections import deque
 from collections.abc import Callable, Iterable, Sequence
 from functools import lru_cache
 from enum import Enum, auto
+from itertools import chain, repeat
 
 from .token_parser import _flatten_tokens, validate_token, _parse_tokens
 
@@ -185,14 +186,12 @@ def _flatten_thol(item: THOL, stack: deque[Any]) -> None:
         else None
     )
     seq = ensure_collection(item.body, max_materialize=None)
-
-    def _iter_reversed_body():
-        for _ in range(repeats):
-            if closing is not None:
-                yield closing
-            yield from reversed(seq)
-
-    stack.extend(_iter_reversed_body())
+    closing_iter = (closing,) if closing is not None else ()
+    stack.extend(
+        chain.from_iterable(
+            chain(closing_iter, reversed(seq)) for _ in repeat(None, repeats)
+        )
+    )
     stack.append(THOL_SENTINEL)
 
 
