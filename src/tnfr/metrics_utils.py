@@ -39,7 +39,7 @@ __all__ = [
 ]
 
 
-@dataclass
+@dataclass(slots=True)
 class TrigCache:
     cos: dict[Any, float]
     sin: dict[Any, float]
