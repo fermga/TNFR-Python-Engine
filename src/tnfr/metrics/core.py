@@ -92,15 +92,15 @@ def _update_coherence(G, hist) -> None:
 
 
 def _record_metrics(
-    hist: dict[str, Any], *pairs: tuple[Any, str], callable: bool = False
+    hist: dict[str, Any], *pairs: tuple[Any, str], evaluate: bool = False
 ) -> None:
     """Record metrics using pairs of values and keys.
 
-    When ``callable`` is ``True`` the values are assumed to be callables and
+    When ``evaluate`` is ``True`` the values are assumed to be callables and
     will be evaluated before being recorded.
     """
     for value, key in pairs:
-        append_metric(hist, key, value() if callable else value)
+        append_metric(hist, key, value() if evaluate else value)
 
 
 def _update_phase_sync(G, hist) -> None:
