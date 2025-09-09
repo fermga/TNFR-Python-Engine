@@ -1,6 +1,11 @@
 
 from __future__ import annotations
 
+"""JSON serialization helpers.
+
+This module lazily imports :mod:`orjson` on first use of :func:`json_dumps`.
+"""
+
 import json
 import warnings
 import threading
@@ -10,7 +15,8 @@ from .import_utils import optional_import
 
 __all__ = ["json_dumps"]
 
-_orjson = optional_import("orjson")
+_orjson: Any | None = None
+_orjson_loaded = False
 _ignored_param_warned = False
 _warn_lock = threading.Lock()
 
@@ -33,6 +39,10 @@ def json_dumps(
     supported by :func:`orjson.dumps`. A warning is emitted only the first time
     such ignored parameters are detected.
     """
+    global _orjson, _orjson_loaded
+    if not _orjson_loaded:
+        _orjson = optional_import("orjson")
+        _orjson_loaded = True
     if _orjson is not None:
         if (
             ensure_ascii is not True
