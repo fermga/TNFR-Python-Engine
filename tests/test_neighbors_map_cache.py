@@ -1,4 +1,3 @@
-import networkx as nx
 from types import MappingProxyType
 
 from tnfr.metrics_utils import ensure_neighbors_map

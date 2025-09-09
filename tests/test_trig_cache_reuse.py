@@ -1,5 +1,4 @@
 import math
-import networkx as nx
 import pytest
 
 from tnfr.constants import ALIAS_THETA, ALIAS_VF, ALIAS_DNFR

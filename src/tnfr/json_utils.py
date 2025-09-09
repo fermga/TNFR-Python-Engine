@@ -1,10 +1,9 @@
-
-from __future__ import annotations
-
 """JSON serialization helpers.
 
 This module lazily imports :mod:`orjson` on first use of :func:`json_dumps`.
 """
+
+from __future__ import annotations
 
 import json
 import warnings

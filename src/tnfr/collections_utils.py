@@ -6,6 +6,7 @@ from collections.abc import Iterable, Mapping, Collection, Sequence
 from itertools import islice
 from typing import Any, TypeVar, cast
 import logging
+import threading
 from .logging_utils import get_logger
 
 from .helpers.numeric import kahan_sum
@@ -19,6 +20,7 @@ NEGATIVE_WEIGHTS_MSG = "Negative weights detected: %s"
 
 # Track keys that have already triggered a negative weight warning
 _warned_negative_keys: set[str] = set()
+_warned_negative_keys_lock = threading.Lock()
 
 __all__ = [
     "MAX_MATERIALIZE_DEFAULT",
@@ -138,10 +140,11 @@ def normalize_weights(
         if error_on_negative:
             raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
         if warn_once:
-            new_negatives = {
-                k: v for k, v in negatives.items() if k not in _warned_negative_keys
-            }
-            _warned_negative_keys.update(new_negatives)
+            with _warned_negative_keys_lock:
+                new_negatives = {
+                    k: v for k, v in negatives.items() if k not in _warned_negative_keys
+                }
+                _warned_negative_keys.update(new_negatives)
             if new_negatives:
                 logger.warning(NEGATIVE_WEIGHTS_MSG, new_negatives)
         else:

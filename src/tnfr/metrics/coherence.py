@@ -219,20 +219,40 @@ def _compute_stats(values, row_sum, n, self_diag, np=None):
             row_sum = np.asarray(list(row_sum), dtype=float)
         else:
             row_sum = row_sum.astype(float)
-        size_fn = lambda v: int(v.size)
-        min_fn = lambda v: float(v.min()) if v.size else 0.0
-        max_fn = lambda v: float(v.max()) if v.size else 0.0
-        mean_fn = lambda v: float(v.mean()) if v.size else 0.0
-        wi_fn = lambda r, d: (r / d).astype(float).tolist()
+
+        def size_fn(v):
+            return int(v.size)
+
+        def min_fn(v):
+            return float(v.min()) if v.size else 0.0
+
+        def max_fn(v):
+            return float(v.max()) if v.size else 0.0
+
+        def mean_fn(v):
+            return float(v.mean()) if v.size else 0.0
+
+        def wi_fn(r, d):
+            return (r / d).astype(float).tolist()
     else:
         # Fall back to pure Python lists
         values = list(values)
         row_sum = list(row_sum)
-        size_fn = lambda v: len(v)
-        min_fn = lambda v: min(v) if v else 0.0
-        max_fn = lambda v: max(v) if v else 0.0
-        mean_fn = lambda v: sum(v) / len(v) if v else 0.0
-        wi_fn = lambda r, d: [float(r[i]) / d for i in range(n)]
+
+        def size_fn(v):
+            return len(v)
+
+        def min_fn(v):
+            return min(v) if v else 0.0
+
+        def max_fn(v):
+            return max(v) if v else 0.0
+
+        def mean_fn(v):
+            return sum(v) / len(v) if v else 0.0
+
+        def wi_fn(r, d):
+            return [float(r[i]) / d for i in range(n)]
 
     count_val = size_fn(values)
     min_val = min_fn(values)
