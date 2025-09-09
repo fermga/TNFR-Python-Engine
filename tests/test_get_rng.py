@@ -1,7 +1,7 @@
 import random
 import hashlib
 import struct
-from tnfr.rng import get_rng
+from tnfr.rng import get_rng, clear_rng_cache
 
 
 def _derive_seed(seed: int, key: int) -> int:
@@ -16,7 +16,7 @@ def _derive_seed(seed: int, key: int) -> int:
 
 
 def test_get_rng_reproducible_sequence():
-    get_rng.cache_clear()
+    clear_rng_cache()
     seed = 123
     key = 456
     rng1 = get_rng(seed, key)

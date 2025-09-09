@@ -1,5 +1,5 @@
 import networkx as nx
-from tnfr.rng import base_seed, get_rng, set_cache_maxsize
+from tnfr.rng import base_seed, set_cache_maxsize, clear_rng_cache
 
 
 def test_base_seed_returns_value():
@@ -19,6 +19,6 @@ def test_cache_clear_no_fail_when_cache_disabled():
     old_size = rng_module._CACHE_MAXSIZE
     set_cache_maxsize(0)
     try:
-        assert get_rng.cache_clear() is None
+        assert clear_rng_cache() is None
     finally:
         set_cache_maxsize(old_size)

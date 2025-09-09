@@ -70,19 +70,40 @@ def prepare_integration_params(
     return dt_step, steps, t, method
 
 
-def _integrate_euler(G, dt_step: float, t_local: float):
-    """One explicit Euler integration step."""
-    gamma_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
+def _apply_increments(
+    G: Any, dt_step: float, increments: dict[Any, tuple[float, ...]], *, method: str
+) -> dict[Any, tuple[float, float, float]]:
+    """Combine precomputed increments to update node states."""
+
     new_states: dict[Any, tuple[float, float, float]] = {}
     for n, nd in G.nodes(data=True):
         vf, dnfr, dEPI_dt_prev, epi_i = _node_state(nd)
-
-        base = vf * dnfr
-        dEPI_dt = base + gamma_map.get(n, 0.0)
-        epi = epi_i + dt_step * dEPI_dt
+        ks = increments[n]
+        if method == "rk4":
+            k1, k2, k3, k4 = ks
+            # RK4: EPIₙ₊₁ = EPIᵢ + Δt/6·(k1 + 2k2 + 2k3 + k4)
+            epi = epi_i + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
+            dEPI_dt = k4
+        else:
+            (k1,) = ks
+            # Euler: EPIₙ₊₁ = EPIᵢ + Δt·k1 where k1 = νf·ΔNFR + Γ
+            epi = epi_i + dt_step * k1
+            dEPI_dt = k1
         d2epi = (dEPI_dt - dEPI_dt_prev) / dt_step if dt_step != 0 else 0.0
         new_states[n] = (epi, dEPI_dt, d2epi)
     return new_states
+
+
+def _integrate_euler(G, dt_step: float, t_local: float):
+    """One explicit Euler integration step."""
+    gamma_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
+    increments: dict[Any, tuple[float, ...]] = {}
+    for n, nd in G.nodes(data=True):
+        vf, dnfr, *_ = _node_state(nd)
+        base = vf * dnfr
+        k1 = base + gamma_map.get(n, 0.0)
+        increments[n] = (k1,)
+    return _apply_increments(G, dt_step, increments, method="euler")
 
 
 def _integrate_rk4(G, dt_step: float, t_local: float):
@@ -93,10 +114,9 @@ def _integrate_rk4(G, dt_step: float, t_local: float):
     g_mid_map = {n: eval_gamma(G, n, t_mid) for n in G.nodes}
     g4_map = {n: eval_gamma(G, n, t_end) for n in G.nodes}
 
-    new_states: dict[Any, tuple[float, float, float]] = {}
+    increments: dict[Any, tuple[float, ...]] = {}
     for n, nd in G.nodes(data=True):
-        vf, dnfr, dEPI_dt_prev, epi_i = _node_state(nd)
-
+        vf, dnfr, *_ = _node_state(nd)
         base = vf * dnfr
         g1 = g1_map.get(n, 0.0)
         g_mid = g_mid_map.get(n, 0.0)
@@ -104,11 +124,8 @@ def _integrate_rk4(G, dt_step: float, t_local: float):
         k1 = base + g1
         k2 = k3 = base + g_mid
         k4 = base + g4
-        epi = epi_i + (dt_step / 6.0) * (k1 + 4 * k2 + k4)
-        dEPI_dt = k4
-        d2epi = (dEPI_dt - dEPI_dt_prev) / dt_step if dt_step != 0 else 0.0
-        new_states[n] = (epi, dEPI_dt, d2epi)
-    return new_states
+        increments[n] = (k1, k2, k3, k4)
+    return _apply_increments(G, dt_step, increments, method="rk4")
 
 
 def update_epi_via_nodal_equation(

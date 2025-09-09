@@ -21,7 +21,7 @@ from .numeric import (
     neighbor_phase_mean,
     neighbor_phase_mean_list,
 )
-from .history import (
+from ..glyph_history import (
     push_glyph,
     recent_glyph,
     ensure_history,

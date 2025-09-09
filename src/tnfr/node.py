@@ -165,7 +165,7 @@ def add_edge(
 
     ``strategy`` can be ``"nx"`` for :mod:`networkx` graphs or ``"tnfr"`` for
     TNFR nodes. Custom callbacks may be supplied via ``exists_cb`` and
-    ``set_cb``.
+    ``set_cb``; both must be callables and provided together.
     """
 
     weight = _add_edge_common(n1, n2, weight)
@@ -174,6 +174,10 @@ def add_edge(
 
     if (exists_cb is None) != (set_cb is None):
         raise ValueError("exists_cb and set_cb must be provided together")
+
+    if exists_cb is not None and set_cb is not None:
+        if not callable(exists_cb) or not callable(set_cb):
+            raise TypeError("exists_cb and set_cb must be callables")
 
     if exists_cb is None and set_cb is None:
         if strategy is None:
