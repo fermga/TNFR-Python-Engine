@@ -150,6 +150,21 @@ _EDGE_OPS: dict[EdgeStrategy, EdgeOps] = {
 }
 
 
+def _resolve_edge_ops(graph, strategy, exists_cb, set_cb):
+    if exists_cb is not None and set_cb is not None:
+        return _CallbackEdgeOps(exists_cb, set_cb)
+    if strategy is None:
+        strategy = (
+            EdgeStrategy.NX
+            if hasattr(graph, "add_edge")
+            else EdgeStrategy.TNFR
+        )
+    try:
+        return _EDGE_OPS[strategy]
+    except KeyError as e:
+        raise ValueError("Unknown edge strategy") from e
+
+
 def add_edge(
     graph,
     n1,
@@ -179,19 +194,7 @@ def add_edge(
         if not callable(exists_cb) or not callable(set_cb):
             raise TypeError("exists_cb and set_cb must be callables")
 
-    if exists_cb is None and set_cb is None:
-        if strategy is None:
-            strategy = (
-                EdgeStrategy.NX
-                if hasattr(graph, "add_edge")
-                else EdgeStrategy.TNFR
-            )
-        try:
-            ops = _EDGE_OPS[strategy]
-        except KeyError as e:
-            raise ValueError("Unknown edge strategy") from e
-    else:
-        ops = _CallbackEdgeOps(exists_cb, set_cb)
+    ops = _resolve_edge_ops(graph, strategy, exists_cb, set_cb)
 
     if ops.exists(graph, n1, n2) and not overwrite:
         return
