@@ -22,12 +22,27 @@ __all__ = [
 ]
 
 
-def validate_window(window: int) -> int:
-    """Validate and coerce ``window`` to a non-negative ``int``."""
+def validate_window(window: int, *, positive: bool = False) -> int:
+    """Validate and coerce ``window`` to an ``int``.
+
+    Parameters
+    ----------
+    window:
+        Value to validate.
+    positive:
+        If ``True``, ``window`` must be strictly positive; otherwise it may be
+        zero.
+
+    Returns
+    -------
+    int
+        The coerced ``int`` value if validation succeeds.
+    """
 
     window_int = int(window)
-    if window_int < 0:
-        raise ValueError("'window' must be non-negative")
+    if window_int < 0 or (positive and window_int == 0):
+        kind = "positive" if positive else "non-negative"
+        raise ValueError(f"'window' must be {kind}")
     return window_int
 
 

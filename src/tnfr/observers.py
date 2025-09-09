@@ -120,9 +120,7 @@ def glyph_load(G, window: int | None = None) -> dict:
     """
     window_int: int | None = None
     if window is not None:
-        window_int = validate_window(window)
-        if window_int == 0:
-            raise ValueError("window must be positive")
+        window_int = validate_window(window, positive=True)
     total = count_glyphs(G, window=window_int, last_only=(window_int == 1))
     dist, count = normalize_counter(total)
     if count == 0:
@@ -151,8 +149,9 @@ def wbar(G, window: int | None = None) -> float:
         return compute_coherence(G)
     if not isinstance(cs, (list, tuple)):
         cs = list(cs)
-    w = validate_window(get_param(G, "WBAR_WINDOW") if window is None else window)
-    if w == 0:
-        raise ValueError("window must be positive")
+    w = validate_window(
+        get_param(G, "WBAR_WINDOW") if window is None else window,
+        positive=True,
+    )
     w = min(len(cs), w)
     return float(statistics.fmean(cs[-w:]))
