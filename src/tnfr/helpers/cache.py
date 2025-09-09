@@ -270,6 +270,16 @@ def _ensure_edge_cache_locks(graph: Any) -> defaultdict:
     return locks
 
 
+def _init_edge_cache(
+    graph: Any, locks: dict, max_entries: int | None
+) -> dict | LRUCache:
+    """Initialize and store edge cache in ``graph``."""
+    use_lru = bool(max_entries)
+    cache = _make_edge_cache(max_entries, locks) if use_lru else {}
+    graph["_edge_version_cache"] = cache
+    return cache
+
+
 def _ensure_edge_cache(
     graph: Any, locks: dict, max_entries: int | None
 ) -> dict | LRUCache:
@@ -287,8 +297,7 @@ def _ensure_edge_cache(
         )
         or (not use_lru and isinstance(cache, LRUCache))
     ):
-        cache = _make_edge_cache(max_entries, locks) if use_lru else {}
-        graph["_edge_version_cache"] = cache
+        cache = _init_edge_cache(graph, locks, max_entries)
     return cache
 
 
@@ -304,7 +313,20 @@ def _get_edge_cache(
     with _EDGE_CACHE_LOCK:
         if create:
             locks = _ensure_edge_cache_locks(graph)
-            cache = _ensure_edge_cache(graph, locks, max_entries)
+            use_lru = bool(max_entries)
+            cache = graph.get("_edge_version_cache")
+            if (
+                cache is None
+                or (
+                    use_lru
+                    and (
+                        not isinstance(cache, LRUCache)
+                        or cache.maxsize != max_entries
+                    )
+                )
+                or (not use_lru and isinstance(cache, LRUCache))
+            ):
+                cache = _init_edge_cache(graph, locks, max_entries)
         else:
             locks = graph.get("_edge_version_cache_locks")
             cache = graph.get("_edge_version_cache")
