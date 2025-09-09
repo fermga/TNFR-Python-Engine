@@ -20,6 +20,9 @@ from ..json_utils import json_dumps
 
 T = TypeVar("T")
 
+# Chunk size for incremental node digest merging; adjust to tune performance.
+NODE_CHUNK = 1024
+
 _EDGE_CACHE_LOCK = threading.RLock()
 
 # Keys of cache entries dependent on the edge version.  Any change to the edge
@@ -153,9 +156,9 @@ def node_set_checksum(
             token_hasher.update(digest)
     else:
         iterator = ((_node_repr(n), _hash_node(n)) for n in node_iterable)
-        pending = sorted(list(islice(iterator, 1024)))
+        pending = sorted(list(islice(iterator, NODE_CHUNK)))
         while pending:
-            chunk = sorted(list(islice(iterator, 1024)))
+            chunk = sorted(list(islice(iterator, NODE_CHUNK)))
             if not chunk:
                 for _, digest in pending:
                     hasher.update(digest)
