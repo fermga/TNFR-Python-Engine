@@ -137,6 +137,41 @@ def _wij_vectorized(
     return wij
 
 
+def _assign_wij(
+    wij: list[list[float]],
+    i: int,
+    j: int,
+    th_vals: Sequence[float],
+    epi_vals: Sequence[float],
+    vf_vals: Sequence[float],
+    si_vals: Sequence[float],
+    cos_th: Sequence[float],
+    sin_th: Sequence[float],
+    epi_range: float,
+    vf_range: float,
+    phase_w: float,
+    epi_w: float,
+    vf_w: float,
+    si_w: float,
+) -> None:
+    s_phase, s_epi, s_vf, s_si = compute_wij_phase_epi_vf_si(
+        th_vals,
+        epi_vals,
+        vf_vals,
+        si_vals,
+        i,
+        j,
+        cos_th,
+        sin_th,
+        epi_range,
+        vf_range,
+    )
+    wij_ij = _combine_similarity(
+        s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w
+    )
+    wij[i][j] = wij[j][i] = wij_ij
+
+
 def _wij_loops(
     G,
     nodes: Sequence[Any],
@@ -167,36 +202,49 @@ def _wij_loops(
     sin_th = [math.sin(t) for t in th_vals]
     epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
     vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
-
-    def assign_wij(i: int, j: int) -> None:
-        s_phase, s_epi, s_vf, s_si = compute_wij_phase_epi_vf_si(
-            th_vals,
-            epi_vals,
-            vf_vals,
-            si_vals,
-            i,
-            j,
-            cos_th,
-            sin_th,
-            epi_range,
-            vf_range,
-        )
-        wij_ij = _combine_similarity(
-            s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w
-        )
-        wij[i][j] = wij[j][i] = wij_ij
-
     if neighbors_only:
         for u, v in G.edges():
             i = node_to_index[u]
             j = node_to_index[v]
             if i == j:
                 continue
-            assign_wij(i, j)
+            _assign_wij(
+                wij,
+                i,
+                j,
+                th_vals,
+                epi_vals,
+                vf_vals,
+                si_vals,
+                cos_th,
+                sin_th,
+                epi_range,
+                vf_range,
+                phase_w,
+                epi_w,
+                vf_w,
+                si_w,
+            )
     else:
         for i in range(n):
             for j in range(i + 1, n):
-                assign_wij(i, j)
+                _assign_wij(
+                    wij,
+                    i,
+                    j,
+                    th_vals,
+                    epi_vals,
+                    vf_vals,
+                    si_vals,
+                    cos_th,
+                    sin_th,
+                    epi_range,
+                    vf_range,
+                    phase_w,
+                    epi_w,
+                    vf_w,
+                    si_w,
+                )
     return wij
 
 
