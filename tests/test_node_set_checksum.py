@@ -66,6 +66,15 @@ def test_node_set_checksum_no_store_does_not_cache(graph_canon):
     assert "_node_set_checksum_cache" not in G.graph
 
 
+def test_node_set_checksum_cache_token_is_prefix(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([1, 2])
+    checksum = node_set_checksum(G)
+    token, stored_checksum = G.graph["_node_set_checksum_cache"]
+    assert stored_checksum == checksum
+    assert token == checksum[:16]
+
+
 def test_node_repr_cache_cleared_on_increment(graph_canon):
     nxG = graph_canon()
     _node_repr("foo")
