@@ -7,7 +7,7 @@ from tnfr.collections_utils import normalize_weights
 
 
 def test_normalize_weights_warns_on_negative_value(caplog):
-    cu._warned_negative_keys.clear()
+    cu._warned_negative_key.cache_clear()
     weights = {"a": -1.0, "b": 2.0}
     with caplog.at_level("WARNING"):
         norm = normalize_weights(weights, ("a", "b"))
@@ -23,7 +23,7 @@ def test_normalize_weights_raises_on_negative_value():
 
 
 def test_normalize_weights_warns_on_negative_default(caplog):
-    cu._warned_negative_keys.clear()
+    cu._warned_negative_key.cache_clear()
     with caplog.at_level("WARNING"):
         normalize_weights({}, ("a", "b"), default=-0.5)
     assert any("Negative weights" in m for m in caplog.messages)
@@ -44,7 +44,7 @@ def test_normalize_weights_warns_on_non_numeric_value(caplog):
 
 
 def test_normalize_weights_warn_once(caplog):
-    cu._warned_negative_keys.clear()
+    cu._warned_negative_key.cache_clear()
     weights = {"x": -1.0}
     with caplog.at_level("WARNING"):
         normalize_weights(weights, ("x",))

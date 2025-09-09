@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from collections import OrderedDict
 from collections.abc import Iterable, Mapping, Collection, Sequence
 from itertools import islice
 from typing import Any, TypeVar, cast
 import logging
-import threading
+from functools import lru_cache
 from .logging_utils import get_logger
 
 from .helpers.numeric import kahan_sum
@@ -20,10 +19,25 @@ logger = get_logger(__name__)
 NEGATIVE_WEIGHTS_MSG = "Negative weights detected: %s"
 
 # Track keys that have already triggered a negative weight warning
-# Use an ordered mapping to support eviction of older entries
+# Leverage an ``lru_cache`` to handle eviction automatically
 _WARNED_NEGATIVE_KEYS_LIMIT = 1024
-_warned_negative_keys: OrderedDict[str, None] = OrderedDict()
-_warned_negative_keys_lock = threading.Lock()
+
+
+@lru_cache(maxsize=_WARNED_NEGATIVE_KEYS_LIMIT)
+def _warned_negative_key(key: str) -> None:  # pragma: no cover - trivial
+    return None
+
+
+def _log_negative_keys_once(negatives: Mapping[str, float]) -> None:
+    """Log new negative weight keys once using an LRU cache."""
+    new: dict[str, float] = {}
+    for k, v in negatives.items():
+        info = _warned_negative_key.cache_info()
+        _warned_negative_key(k)
+        if _warned_negative_key.cache_info().misses > info.misses:
+            new[k] = v
+    if new:
+        logger.warning(NEGATIVE_WEIGHTS_MSG, new)
 
 __all__ = [
     "MAX_MATERIALIZE_DEFAULT",
@@ -100,27 +114,17 @@ def _process_negative_weights(
     weights: dict[str, float],
     negatives: dict[str, float],
     warn_once: bool,
+    total: float,
 ) -> float:
-    """Handle negative weights by logging and clamping them to zero.
-
-    Returns the recomputed total after negatives have been zeroed out.
-    """
+    """Handle negative weights by logging, clamping and adjusting total."""
     if warn_once:
-        with _warned_negative_keys_lock:
-            new_negatives = {
-                k: v for k, v in negatives.items() if k not in _warned_negative_keys
-            }
-            for k in new_negatives:
-                _warned_negative_keys[k] = None
-            while len(_warned_negative_keys) > _WARNED_NEGATIVE_KEYS_LIMIT:
-                _warned_negative_keys.popitem(last=False)
-        if new_negatives:
-            logger.warning(NEGATIVE_WEIGHTS_MSG, new_negatives)
+        _log_negative_keys_once(negatives)
     else:
         logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
-    for k in negatives:
+    for k, w in negatives.items():
         weights[k] = 0.0
-    return kahan_sum(weights.values())
+        total -= w
+    return total
 
 
 def normalize_weights(
@@ -169,7 +173,7 @@ def normalize_weights(
     if negatives:
         if error_on_negative:
             raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
-        total = _process_negative_weights(weights, negatives, warn_once)
+        total = _process_negative_weights(weights, negatives, warn_once, total)
     if total <= 0:
         uniform = 1.0 / len(keys)
         return {k: uniform for k in keys}
