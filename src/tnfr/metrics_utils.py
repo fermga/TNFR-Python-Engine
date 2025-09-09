@@ -114,20 +114,40 @@ def get_Si_weights(G: Any) -> tuple[float, float, float]:
     return alpha, beta, gamma
 
 
-def _build_trig_cache(G: Any) -> TrigCache:
+def _build_trig_cache(G: Any, np: Any | None = None) -> TrigCache:
     """Construct trigonometric cache for ``G``."""
+    if np is None:
+        np = get_numpy()
+
     cos_th: dict[Any, float] = {}
     sin_th: dict[Any, float] = {}
     thetas: dict[Any, float] = {}
-    for n, nd in G.nodes(data=True):
-        th = get_attr(nd, ALIAS_THETA, 0.0)
-        thetas[n] = th
-        cos_th[n] = math.cos(th)
-        sin_th[n] = math.sin(th)
+
+    if (
+        np is not None
+        and all(hasattr(np, attr) for attr in ("asarray", "cos", "sin"))
+    ):
+        nodes = list(G.nodes())
+        theta_arr = np.asarray(
+            [get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in nodes], dtype=float
+        )
+        cos_arr = np.cos(theta_arr)
+        sin_arr = np.sin(theta_arr)
+
+        thetas = dict(zip(nodes, theta_arr.tolist()))
+        cos_th = dict(zip(nodes, cos_arr.tolist()))
+        sin_th = dict(zip(nodes, sin_arr.tolist()))
+    else:
+        for n, nd in G.nodes(data=True):
+            th = get_attr(nd, ALIAS_THETA, 0.0)
+            thetas[n] = th
+            cos_th[n] = math.cos(th)
+            sin_th[n] = math.sin(th)
+
     return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
 
 
-def get_trig_cache(G: Any) -> TrigCache:
+def get_trig_cache(G: Any, *, np: Any | None = None) -> TrigCache:
     """Return cached cosines and sines of ``θ`` per node.
 
     The cache is invalidated not only when the edge set changes but also when
@@ -137,7 +157,7 @@ def get_trig_cache(G: Any) -> TrigCache:
     """
     version = G.graph.setdefault("_trig_version", 0)
     key = ("_trig", version)
-    return edge_version_cache(G, key, lambda: _build_trig_cache(G))
+    return edge_version_cache(G, key, lambda: _build_trig_cache(G, np=np))
 
 
 def compute_Si_node(
@@ -198,17 +218,17 @@ def compute_Si(G, *, inplace: bool = True) -> dict[Any, float]:
 
     vfmax, dnfrmax = _get_vf_dnfr_max(G)
 
-    trig = get_trig_cache(G)
+    np_mod = get_numpy()
+    trig = get_trig_cache(G, np=np_mod)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
-    np = get_numpy()
 
     def phase_mean_fn(neigh, *, fallback):
-        if np is None:
+        if np_mod is None:
             return neighbor_phase_mean_list(
                 neigh, cos_th, sin_th, fallback=fallback
             )
         return neighbor_phase_mean_list(
-            neigh, cos_th, sin_th, np=np, fallback=fallback
+            neigh, cos_th, sin_th, np=np_mod, fallback=fallback
         )
 
     out: dict[Any, float] = {}
