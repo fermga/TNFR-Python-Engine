@@ -87,11 +87,15 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
 
     # Variance via Welford's single-pass algorithm to avoid materializing
     # intermediate generators while maintaining numerical stability.
+    get_attr_ = get_attr
+    angle_diff_ = angle_diff
+    theta_alias = ALIAS_THETA
+    # If performance is critical, consider extracting theta values into a list
     n = 0
     mean = 0.0
     M2 = 0.0
     for _, data in G.nodes(data=True):
-        diff = angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
+        diff = angle_diff_(get_attr_(data, theta_alias, 0.0), psi)
         n += 1
         delta = diff - mean
         mean += delta / n
