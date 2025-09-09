@@ -138,14 +138,22 @@ def _is_immutable(value: Any) -> bool:
     return result
 
 
+# Secciones individuales exportadas
+DEFAULT_SECTIONS: Mapping[str, Mapping[str, Any]] = MappingProxyType(
+    {
+        "core": CORE_DEFAULTS,
+        "init": INIT_DEFAULTS,
+        "remesh": REMESH_DEFAULTS,
+        "metric": METRIC_DEFAULTS,
+    }
+)
+
 # Diccionario combinado exportado
 # Unimos los diccionarios en orden de menor a mayor prioridad para que los
-# valores de ``METRIC_DEFAULTS`` sobrescriban al resto,
-# como hacía ``ChainMap``.
-_DEFAULTS_COMBINED: dict[str, Any] = (
+# valores de ``METRIC_DEFAULTS`` sobrescriban al resto, como hacía ``ChainMap``.
+DEFAULTS: Mapping[str, Any] = MappingProxyType(
     CORE_DEFAULTS | INIT_DEFAULTS | REMESH_DEFAULTS | METRIC_DEFAULTS
 )
-DEFAULTS: Mapping[str, Any] = MappingProxyType(_DEFAULTS_COMBINED)
 
 # -------------------------
 # Retrocompatibilidad y aliases
@@ -255,6 +263,7 @@ __all__ = [
     "COHERENCE",
     "DIAGNOSIS",
     "DEFAULTS",
+    "DEFAULT_SECTIONS",
     "ALIASES",
     "inject_defaults",
     "merge_overrides",
