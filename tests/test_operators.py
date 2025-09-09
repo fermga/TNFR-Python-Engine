@@ -9,7 +9,6 @@ from tnfr.operators import (
 )
 from types import SimpleNamespace
 from tnfr.constants import inject_defaults
-import networkx as nx
 import pytest
 
 

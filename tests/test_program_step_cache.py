@@ -1,5 +1,4 @@
 import threading
-import networkx as nx
 import tnfr.dynamics as dyn
 import tnfr.program as program
 from tnfr.program import _advance

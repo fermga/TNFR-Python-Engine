@@ -1,5 +1,4 @@
 import hashlib
-import networkx as nx
 import timeit
 
 from tnfr.helpers.cache import (

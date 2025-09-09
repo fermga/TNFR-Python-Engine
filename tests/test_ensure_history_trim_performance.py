@@ -1,6 +1,5 @@
 import time
 import pytest
-import networkx as nx
 
 from tnfr.glyph_history import HistoryDict, ensure_history
 from tnfr.constants import inject_defaults

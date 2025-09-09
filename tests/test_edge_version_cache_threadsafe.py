@@ -1,4 +1,3 @@
-import networkx as nx
 from concurrent.futures import ThreadPoolExecutor
 
 from tnfr.helpers.cache import edge_version_cache, increment_edge_version

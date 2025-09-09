@@ -1,6 +1,5 @@
 """Pruebas de count glyphs."""
 
-import networkx as nx
 from collections import deque, Counter
 import pytest
 

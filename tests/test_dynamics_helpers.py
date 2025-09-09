@@ -1,7 +1,6 @@
 """Tests for dynamics helpers."""
 
 import pytest
-import networkx as nx
 
 from tnfr.dynamics import (
     _init_dnfr_cache,

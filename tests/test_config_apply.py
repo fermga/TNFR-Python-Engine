@@ -1,7 +1,6 @@
 """Tests for ``load_config`` and ``apply_config``."""
 
 import json
-import networkx as nx
 import pytest
 from tnfr.config import load_config, apply_config
 from collections import UserDict

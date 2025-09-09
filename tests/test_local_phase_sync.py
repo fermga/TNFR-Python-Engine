@@ -1,4 +1,3 @@
-import networkx as nx
 import pytest
 
 from tnfr.constants import THETA_PRIMARY
