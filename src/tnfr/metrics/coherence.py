@@ -95,6 +95,47 @@ def _combine_similarity(
     return clamp01(wij)
 
 
+def _wij_components_weights(
+    th_vals,
+    epi_vals,
+    vf_vals,
+    si_vals,
+    wnorm,
+    i: int | None = None,
+    j: int | None = None,
+    cos_th=None,
+    sin_th=None,
+    epi_range: float = 1.0,
+    vf_range: float = 1.0,
+    np=None,
+):
+    """Return similarity components together with their weights.
+
+    This consolidates repeated computations ensuring that both the
+    similarity components and the corresponding weights are derived once and
+    consistently across different implementations.
+    """
+
+    s_phase, s_epi, s_vf, s_si = compute_wij_phase_epi_vf_si(
+        th_vals,
+        epi_vals,
+        vf_vals,
+        si_vals,
+        i,
+        j,
+        cos_th,
+        sin_th,
+        epi_range,
+        vf_range,
+        np,
+    )
+    phase_w = wnorm["phase"]
+    epi_w = wnorm["epi"]
+    vf_w = wnorm["vf"]
+    si_w = wnorm["si"]
+    return s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w
+
+
 def _wij_vectorized(
     th_vals,
     epi_vals,
@@ -110,25 +151,27 @@ def _wij_vectorized(
 ):
     epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
     vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
-    s_phase, s_epi, s_vf, s_si = compute_wij_phase_epi_vf_si(
+    (
+        s_phase,
+        s_epi,
+        s_vf,
+        s_si,
+        phase_w,
+        epi_w,
+        vf_w,
+        si_w,
+    ) = _wij_components_weights(
         th_vals,
         epi_vals,
         vf_vals,
         si_vals,
+        wnorm,
         epi_range=epi_range,
         vf_range=vf_range,
         np=np,
     )
     wij = _combine_similarity(
-        s_phase,
-        s_epi,
-        s_vf,
-        s_si,
-        wnorm["phase"],
-        wnorm["epi"],
-        wnorm["vf"],
-        wnorm["si"],
-        np=np,
+        s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w, np=np
     )
     if self_diag:
         np.fill_diagonal(wij, 1.0)
@@ -149,16 +192,23 @@ def _assign_wij(
     sin_th: Sequence[float],
     epi_range: float,
     vf_range: float,
-    phase_w: float,
-    epi_w: float,
-    vf_w: float,
-    si_w: float,
+    wnorm: dict[str, float],
 ) -> None:
-    s_phase, s_epi, s_vf, s_si = compute_wij_phase_epi_vf_si(
+    (
+        s_phase,
+        s_epi,
+        s_vf,
+        s_si,
+        phase_w,
+        epi_w,
+        vf_w,
+        si_w,
+    ) = _wij_components_weights(
         th_vals,
         epi_vals,
         vf_vals,
         si_vals,
+        wnorm,
         i,
         j,
         cos_th,
@@ -193,11 +243,6 @@ def _wij_loops(
         [1.0 if (self_diag and i == j) else 0.0 for j in range(n)]
         for i in range(n)
     ]
-    phase_w = wnorm["phase"]
-    epi_w = wnorm["epi"]
-    vf_w = wnorm["vf"]
-    si_w = wnorm["si"]
-
     cos_th = [math.cos(t) for t in th_vals]
     sin_th = [math.sin(t) for t in th_vals]
     epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
@@ -220,10 +265,7 @@ def _wij_loops(
                 sin_th,
                 epi_range,
                 vf_range,
-                phase_w,
-                epi_w,
-                vf_w,
-                si_w,
+                wnorm,
             )
     else:
         for i in range(n):
@@ -240,10 +282,7 @@ def _wij_loops(
                     sin_th,
                     epi_range,
                     vf_range,
-                    phase_w,
-                    epi_w,
-                    vf_w,
-                    si_w,
+                    wnorm,
                 )
     return wij
 
