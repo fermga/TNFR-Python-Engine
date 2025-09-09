@@ -206,25 +206,46 @@ def _wij_loops(
 
 
 def _compute_stats(values, row_sum, n, self_diag, np=None):
+    """Return aggregate statistics for ``values`` and normalized row sums.
+
+    ``values`` and ``row_sum`` can be any iterables. They are normalized to
+    either NumPy arrays or Python lists depending on the availability of
+    NumPy. The computation then delegates to the appropriate numerical
+    functions with minimal branching.
+    """
+
     if np is not None:
-        count_val = int(values.size)
-        if count_val:
-            min_val = float(values.min())
-            max_val = float(values.max())
-            mean_val = float(values.mean())
+        # Normalize inputs to NumPy arrays
+        if not isinstance(values, np.ndarray):
+            values = np.asarray(list(values), dtype=float)
         else:
-            min_val = max_val = mean_val = 0.0
+            values = values.astype(float)
+        if not isinstance(row_sum, np.ndarray):
+            row_sum = np.asarray(list(row_sum), dtype=float)
+        else:
+            row_sum = row_sum.astype(float)
+        size_fn = lambda v: int(v.size)
+        min_fn = lambda v: float(v.min()) if v.size else 0.0
+        max_fn = lambda v: float(v.max()) if v.size else 0.0
+        mean_fn = lambda v: float(v.mean()) if v.size else 0.0
+        wi_fn = lambda r, d: (r / d).astype(float).tolist()
     else:
-        count_val = len(values)
-        if count_val:
-            min_val = min(values)
-            max_val = max(values)
-            mean_val = sum(values) / count_val
-        else:
-            min_val = max_val = mean_val = 0.0
+        # Fall back to pure Python lists
+        values = list(values)
+        row_sum = list(row_sum)
+        size_fn = lambda v: len(v)
+        min_fn = lambda v: min(v) if v else 0.0
+        max_fn = lambda v: max(v) if v else 0.0
+        mean_fn = lambda v: sum(v) / len(v) if v else 0.0
+        wi_fn = lambda r, d: [float(r[i]) / d for i in range(n)]
+
+    count_val = size_fn(values)
+    min_val = min_fn(values)
+    max_val = max_fn(values)
+    mean_val = mean_fn(values)
     row_count = n if self_diag else n - 1
     denom = max(1, row_count)
-    Wi = [float(row_sum[i]) / denom for i in range(n)]
+    Wi = wi_fn(row_sum, denom)
     return min_val, max_val, mean_val, Wi, count_val
 
 
