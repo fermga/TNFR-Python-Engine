@@ -10,6 +10,7 @@ from .import_utils import optional_import
 __all__ = ["json_dumps"]
 
 _orjson = optional_import("orjson")
+_ignored_param_warned = False
 
 
 def json_dumps(
@@ -26,15 +27,19 @@ def json_dumps(
     """Serialize ``obj`` to JSON using ``orjson`` when available.
 
     When :mod:`orjson` is used, the ``ensure_ascii`` and ``separators`` options
-    are ignored because they are not supported by ``orjson.dumps``.
+    are ignored because they are not supported by ``orjson.dumps``. A warning is
+    emitted only the first time such ignored parameters are detected.
     """
     if _orjson is not None:
         if ensure_ascii is not True or separators != (",", ":"):
-            warnings.warn(
-                "'ensure_ascii' and 'separators' are ignored when using orjson",
-                UserWarning,
-                stacklevel=2,
-            )
+            global _ignored_param_warned
+            if not _ignored_param_warned:
+                warnings.warn(
+                    "'ensure_ascii' and 'separators' are ignored when using orjson",
+                    UserWarning,
+                    stacklevel=2,
+                )
+                _ignored_param_warned = True
         option = _orjson.OPT_SORT_KEYS if sort_keys else 0
         data = _orjson.dumps(obj, option=option, default=default)
         return data if to_bytes else data.decode("utf-8")
