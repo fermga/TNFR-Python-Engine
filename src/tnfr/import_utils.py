@@ -91,6 +91,7 @@ def _warn_failure(
         :func:`warnings.warn`, ``"log"`` uses :func:`logger.warning` and
         ``"both"`` emits to both destinations.
     """
+    prune_failed_imports()
     msg = (
         f"Failed to import module '{module}': {err}"
         if isinstance(err, ImportError)
