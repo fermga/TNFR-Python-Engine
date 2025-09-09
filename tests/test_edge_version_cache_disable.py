@@ -1,5 +1,3 @@
-import networkx as nx
-
 from tnfr.helpers.cache import edge_version_cache
 
 

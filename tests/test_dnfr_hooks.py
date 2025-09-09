@@ -1,4 +1,3 @@
-import networkx as nx
 from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
 from tnfr.dynamics import dnfr_phase_only, dnfr_epi_vf_mixed, dnfr_laplacian
 from tnfr.alias import get_attr

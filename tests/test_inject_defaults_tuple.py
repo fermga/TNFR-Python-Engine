@@ -1,6 +1,5 @@
 """Pruebas para ``inject_defaults`` con tuplas mutables."""
 
-import networkx as nx
 
 from tnfr.constants import inject_defaults, DEFAULTS
 

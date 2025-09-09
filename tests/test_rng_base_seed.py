@@ -1,4 +1,3 @@
-import networkx as nx
 from tnfr.rng import base_seed, set_cache_maxsize, clear_rng_cache
 
 

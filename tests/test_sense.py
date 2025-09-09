@@ -1,7 +1,6 @@
 """Pruebas de sense."""
 
 import time
-import networkx as nx
 import pytest
 
 from tnfr.sense import (

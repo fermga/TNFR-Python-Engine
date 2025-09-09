@@ -1,7 +1,6 @@
 """Pruebas de metrics."""
 
 import pytest
-import networkx as nx
 from typing import Any
 
 from tnfr.constants import (
