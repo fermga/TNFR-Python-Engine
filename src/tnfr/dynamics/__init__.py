@@ -53,7 +53,7 @@ from ..selector import (
 from ..logging_utils import get_logger
 
 from .sampling import update_node_sample as _update_node_sample
-from .dnfr import (  # noqa: F401
+from .dnfr import (
     _prepare_dnfr_data,
     _init_dnfr_cache,
     _refresh_dnfr_vectors,
@@ -92,6 +92,11 @@ __all__ = [
     "parametric_glyph_selector",
     "step",
     "run",
+    "_prepare_dnfr_data",
+    "_init_dnfr_cache",
+    "_refresh_dnfr_vectors",
+    "_compute_neighbor_means",
+    "_compute_dnfr",
 ]
 def _log_clamp(hist, node, attr, value, lo, hi):
     if value < lo or value > hi:
