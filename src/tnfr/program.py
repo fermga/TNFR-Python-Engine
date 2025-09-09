@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
 from functools import lru_cache
-from enum import Enum
+from enum import Enum, auto
 
 from .token_parser import _flatten_tokens, validate_token, _parse_tokens
 
@@ -116,10 +116,10 @@ THOL_SENTINEL = object()
 
 
 class OpTag(Enum):
-    TARGET = "TARGET"
-    WAIT = "WAIT"
-    GLYPH = "GLYPH"
-    THOL = "THOL"
+    TARGET = auto()
+    WAIT = auto()
+    GLYPH = auto()
+    THOL = auto()
 
 # ---------------------
 # Internal utilities
@@ -235,7 +235,7 @@ def _flatten(seq: Sequence[Token]) -> list[tuple[OpTag, Any]]:
 
 
 def _record_trace(trace: deque, G, op: OpTag, **data) -> None:
-    trace.append({"t": float(G.graph.get("_t", 0.0)), "op": op.value, **data})
+    trace.append({"t": float(G.graph.get("_t", 0.0)), "op": op.name, **data})
 
 
 def _advance_and_record(
