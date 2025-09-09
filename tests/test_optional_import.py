@@ -104,7 +104,7 @@ def test_prune_failed_imports(monkeypatch):
     with state.lock:
         state.failed.clear()
         state.max_age = 10
-    times = iter([0.0, 20.0])
+    times = iter([0.0, 20.0, 20.0])
     monkeypatch.setattr(import_utils.time, "monotonic", lambda: next(times))
     with state.lock:
         state.record("stale")
