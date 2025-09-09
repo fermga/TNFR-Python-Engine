@@ -10,7 +10,7 @@ from tnfr.dynamics import (
     _choose_glyph,
     run,
 )
-from tnfr.grammar import AL, EN
+from tnfr.types import Glyph
 
 
 def test_init_and_refresh_dnfr_cache(graph_canon):
@@ -66,11 +66,11 @@ def test_choose_glyph_respects_lags(graph_canon):
     h_al = {0: 2}
     h_en = {0: 0}
     g = _choose_glyph(G, 0, selector, False, h_al, h_en, 1, 5)
-    assert g == AL
+    assert g == Glyph.AL
     h_al[0] = 0
     h_en[0] = 6
     g = _choose_glyph(G, 0, selector, False, h_al, h_en, 1, 5)
-    assert g == EN
+    assert g == Glyph.EN
 
 
 def test_run_rejects_negative_steps(graph_canon):
