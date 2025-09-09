@@ -42,19 +42,21 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
     """Ensure the callback structure in ``G.graph``."""
     cbs = G.graph.setdefault("callbacks", defaultdict(list))
 
-    dirty = G.graph.pop("_callbacks_dirty", False)
+    dirty: set[str] = set(G.graph.pop("_callbacks_dirty", ()))
 
     # Defensive: if callbacks store is not a mapping, discard it.
     if not isinstance(cbs, Mapping):
         logger.warning("Invalid callbacks registry on graph; resetting to empty")
         cbs = G.graph["callbacks"] = defaultdict(list)
-        dirty = True
+        dirty.clear()
     elif not isinstance(cbs, defaultdict):
         cbs = G.graph["callbacks"] = defaultdict(list, cbs)
-        dirty = True
+        dirty.update(cbs.keys())
 
     if dirty:
-        for event in list(cbs):
+        for event in dirty:
+            if event not in cbs:
+                continue
             if event not in _CALLBACK_EVENTS:
                 del cbs[event]
                 continue
@@ -156,7 +158,8 @@ def register_callback(
             break
     else:
         existing_list.append(new_cb)
-    G.graph["_callbacks_dirty"] = True
+    dirty = G.graph.setdefault("_callbacks_dirty", set())
+    dirty.add(event)
     return func
 
 

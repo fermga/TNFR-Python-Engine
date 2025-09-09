@@ -34,3 +34,23 @@ def test_register_callback_cleans_unknown_events(graph_canon):
     register_callback(G, CallbackEvent.AFTER_STEP, cb, name="cb")
 
     assert list(G.graph["callbacks"]) == [CallbackEvent.AFTER_STEP.value]
+
+
+def test_ensure_callbacks_only_processes_dirty_events(graph_canon):
+    G = graph_canon()
+    from collections import defaultdict
+
+    dummy = object()
+    G.graph["callbacks"] = defaultdict(
+        list,
+        {
+            CallbackEvent.BEFORE_STEP.value: [dummy],
+            CallbackEvent.AFTER_STEP.value: [dummy],
+        },
+    )
+    G.graph["_callbacks_dirty"] = {CallbackEvent.BEFORE_STEP.value}
+
+    _ensure_callbacks(G)
+
+    assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == []
+    assert G.graph["callbacks"][CallbackEvent.AFTER_STEP.value] == [dummy]
