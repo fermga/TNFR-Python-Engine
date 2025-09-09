@@ -99,6 +99,11 @@ def normalize_weights(
 
     ``keys`` may be any iterable of strings. Sequences and other collections
     are used directly while non-collection iterables are materialized.
+
+    Negative weights are handled according to ``error_on_negative``. When
+    ``True`` a :class:`ValueError` is raised. Otherwise negatives are logged,
+    replaced with ``0`` and the remaining weights are renormalized. If all
+    weights are non-positive a uniform distribution is returned.
     """
     if not isinstance(keys, Collection):
         keys = list(keys)
@@ -107,6 +112,7 @@ def normalize_weights(
         return {}
     weights: dict[str, float] = {}
     negatives: dict[str, float] = {}
+    # First pass: convert values and record negative entries
     for k in keys:
         val = dict_like.get(k, default_float)
         ok, converted = _convert_value(
@@ -126,10 +132,10 @@ def normalize_weights(
         if error_on_negative:
             raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
         logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
-        neg_total = kahan_sum(negatives.values())
-        total -= neg_total
+        # Second pass: clamp negatives to zero and recompute total
         for k in negatives:
             weights[k] = 0.0
+        total = kahan_sum(weights.values())
     if total <= 0:
         uniform = 1.0 / len(keys)
         return {k: uniform for k in keys}
