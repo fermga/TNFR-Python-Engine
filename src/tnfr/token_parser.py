@@ -35,7 +35,7 @@ def validate_token(
 
     if isinstance(tok, dict):
         if len(tok) != 1:
-            raise ValueError(f"Invalid token: {tok} {tok_info}")
+            raise ValueError(f"Invalid token: {tok} (pos {pos})")
         key, val = next(iter(tok.items()))
         handler = token_map.get(key)
         if handler is None:
@@ -47,7 +47,7 @@ def validate_token(
             raise ValueError(msg) from e
     if isinstance(tok, str):
         return tok
-    raise ValueError(f"Invalid token: {tok} {tok_info}")
+    raise ValueError(f"Invalid token: {tok} (pos {pos})")
 
 
 def _parse_tokens(

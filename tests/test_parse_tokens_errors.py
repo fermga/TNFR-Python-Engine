@@ -75,4 +75,7 @@ def test_parse_tokens_error_format_unified(monkeypatch):
             _parse_tokens(tokens)
         msg = str(exc.value)
         assert msg.startswith(start)
-        assert msg.endswith(f"(pos 1, token {tokens[0]!r})")
+        expected_end = (
+            "(pos 1)" if start == "Invalid token" else f"(pos 1, token {tokens[0]!r})"
+        )
+        assert msg.endswith(expected_end)
