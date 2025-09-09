@@ -104,16 +104,17 @@ def _iter_node_digests(
     """Yield node digests in a deterministic order.
 
     When ``presorted`` is ``True`` the nodes are assumed to already be sorted
-    in a stable manner and their digests are yielded directly. Otherwise the
-    nodes are converted to their stable representations, sorted with
-    ``sorted`` and mapped to :func:`_hash_node`.
+    in a stable manner and their digests are yielded directly. Otherwise
+    ``sorted`` is applied with ``key=_node_repr`` which consumes the iterable
+    without materialising additional ``(repr, node)`` pairs and the nodes are
+    mapped directly to :func:`_hash_node`.
     """
     if presorted:
         yield from (_hash_node(n) for n in nodes)
     else:
-        repr_nodes = [(_node_repr(n), n) for n in nodes]
-        repr_nodes = sorted(repr_nodes)
-        yield from (_hash_node(n) for _, n in repr_nodes)
+        # `sorted` accepts the iterable directly and uses `key=_node_repr` to
+        # order nodes without building ``(repr, node)`` tuples.
+        yield from map(_hash_node, sorted(nodes, key=_node_repr))
 
 
 def _update_node_cache(
