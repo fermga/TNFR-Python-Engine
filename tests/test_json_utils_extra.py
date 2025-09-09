@@ -13,8 +13,8 @@ class DummyOrjson:
 
 def _reset_json_utils(monkeypatch, module):
     monkeypatch.setattr(json_utils, "optional_import", lambda name: module)
+    json_utils._load_orjson.cache_clear()
     monkeypatch.setattr(json_utils, "_orjson", None)
-    monkeypatch.setattr(json_utils, "_orjson_loaded", False)
     monkeypatch.setattr(json_utils, "_ignored_param_warned", False)
 
 

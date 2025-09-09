@@ -10,18 +10,26 @@ import warnings
 import threading
 from typing import Any, Callable
 
+from functools import lru_cache
 from .import_utils import optional_import
 
 __all__ = ["json_dumps"]
 
 _orjson: Any | None = None
-_orjson_loaded = False
 _ignored_param_warned = False
 _warn_lock = threading.Lock()
-_load_lock = threading.Lock()
+
+
+@lru_cache(maxsize=1)
+def _load_orjson() -> Any | None:
+    """Lazily import :mod:`orjson` once."""
+    global _orjson
+    _orjson = optional_import("orjson")
+    return _orjson
 
 
 def _json_dumps_orjson(
+    orjson: Any,
     obj: Any,
     *,
     sort_keys: bool,
@@ -48,8 +56,8 @@ def _json_dumps_orjson(
                     stacklevel=3,
                 )
                 _ignored_param_warned = True
-    option = _orjson.OPT_SORT_KEYS if sort_keys else 0
-    data = _orjson.dumps(obj, option=option, default=default)
+    option = orjson.OPT_SORT_KEYS if sort_keys else 0
+    data = orjson.dumps(obj, option=option, default=default)
     return data if to_bytes else data.decode("utf-8")
 
 
@@ -95,14 +103,20 @@ def json_dumps(
     supported by :func:`orjson.dumps`. A warning is emitted only the first time
     such ignored parameters are detected.
     """
-    global _orjson, _orjson_loaded
-    if not _orjson_loaded:
-        with _load_lock:
-            if not _orjson_loaded:
-                _orjson = optional_import("orjson")
-                _orjson_loaded = True
-    dumps_fn = _json_dumps_orjson if _orjson is not None else _json_dumps_std
-    return dumps_fn(
+    orjson = _load_orjson()
+    if orjson is not None:
+        return _json_dumps_orjson(
+            orjson,
+            obj,
+            sort_keys=sort_keys,
+            default=default,
+            ensure_ascii=ensure_ascii,
+            separators=separators,
+            cls=cls,
+            to_bytes=to_bytes,
+            **kwargs,
+        )
+    return _json_dumps_std(
         obj,
         sort_keys=sort_keys,
         default=default,
