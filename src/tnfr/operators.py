@@ -185,6 +185,56 @@ def _any_neighbor_has(node: NodoProtocol, aliases: tuple[str, ...]) -> bool:
     )
 
 
+def _gather_neighbors(node: NodoProtocol) -> tuple[list[NodoProtocol], float]:
+    """Return neighbour list and their mean ``EPI``.
+
+    When ``node`` is bound to a graph and none of its neighbours defines an
+    ``ALIAS_EPI`` attribute, the neighbours list is returned empty and the
+    mean defaults to ``node.EPI``.  This allows callers to fall back to the
+    node's own values without additional checks.
+    """
+
+    epi = node.EPI
+    neigh = list(node.neighbors())
+    if not neigh:
+        return [], epi
+
+    if hasattr(node, "G"):
+        if not _any_neighbor_has(node, ALIAS_EPI):
+            return [], epi
+        epi_bar = neighbor_mean(node.G, node.n, ALIAS_EPI, default=epi)
+        NodoNX = import_nodonx()
+        neigh = [
+            v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)
+            for v in neigh
+        ]
+    else:
+        epi_bar = list_mean((v.EPI for v in neigh), default=epi)
+
+    return neigh, epi_bar
+
+
+def _determine_dominant(
+    neigh: list[NodoProtocol], default_kind: str
+) -> tuple[str, float]:
+    """Return dominant ``epi_kind`` among ``neigh`` and its absolute ``EPI``.
+
+    Falls back to ``default_kind`` when neighbours lack ``epi_kind``.
+    """
+
+    best_kind: Optional[str] = None
+    best_abs = 0.0
+    for v in neigh:
+        abs_v = abs(v.EPI)
+        if abs_v > best_abs:
+            best_abs = abs_v
+            best_kind = v.epi_kind
+
+    if not best_kind:
+        return default_kind, 0.0
+    return best_kind, best_abs
+
+
 def _mix_epi_with_neighbors(
     node: NodoProtocol, mix: float, default_glyph: Glyph | str
 ) -> tuple[float, str]:
@@ -211,48 +261,20 @@ def _mix_epi_with_neighbors(
         else str(default_glyph)
     )
     epi = node.EPI
-    neigh = list(node.neighbors())
+    neigh, epi_bar = _gather_neighbors(node)
 
     if not neigh:
         node.epi_kind = default_kind
         return epi, default_kind
 
-    if hasattr(node, "G"):
-        if not _any_neighbor_has(node, ALIAS_EPI):
-            node.epi_kind = default_kind
-            return epi, default_kind
-        epi_bar = neighbor_mean(node.G, node.n, ALIAS_EPI, default=epi)
-        NodoNX = import_nodonx()
-        neigh = [
-            v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)
-            for v in neigh
-        ]
-    else:
-        epi_bar = list_mean((v.EPI for v in neigh), default=epi)
-
-    count = 0
-    best_kind: Optional[str] = None
-    best_abs = 0.0
-    for v in neigh:
-        count += 1
-        abs_v = abs(v.EPI)
-        if abs_v > best_abs:
-            best_abs = abs_v
-            best_kind = v.epi_kind
-
-    if count == 0:
-        node.epi_kind = default_kind
-        return epi, default_kind
-
+    dominant, best_abs = _determine_dominant(neigh, default_kind)
     new_epi = (1 - mix) * epi + mix * epi_bar
     node.EPI = new_epi
-    dominant = (
-        best_kind if best_kind and best_abs > abs(new_epi) else node.epi_kind
-    )
-    if not dominant:
-        dominant = default_kind
-    node.epi_kind = dominant
-    return epi_bar, dominant
+    final = dominant if best_abs > abs(new_epi) else node.epi_kind
+    if not final:
+        final = default_kind
+    node.epi_kind = final
+    return epi_bar, final
 
 
 def _op_AL(node: NodoProtocol, gf: dict[str, Any]) -> None:  # AL — Emisión
