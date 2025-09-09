@@ -11,7 +11,7 @@ import importlib
 import warnings
 from functools import lru_cache
 from typing import Any, Literal
-from collections import OrderedDict, deque
+from collections import OrderedDict
 from dataclasses import dataclass, field
 import threading
 import time
@@ -65,9 +65,7 @@ class _ImportState:
 _IMPORT_STATE = _ImportState()
 
 
-_WARNED_LIMIT = 256
-_WARNED_MODULES: set[str] = set()
-_WARNED_QUEUE: deque[str] = deque()
+_WARNED_MODULES: dict[str, float] = {}
 _WARNED_LOCK = threading.Lock()
 
 
@@ -98,14 +96,11 @@ def _warn_failure(
         if isinstance(err, ImportError)
         else f"Module '{module}' has no attribute '{attr}': {err}"
     )
+    now = time.monotonic()
     with _WARNED_LOCK:
         first = module not in _WARNED_MODULES
         if first:
-            if len(_WARNED_QUEUE) >= _WARNED_LIMIT:
-                removed = _WARNED_QUEUE.popleft()
-                _WARNED_MODULES.discard(removed)
-            _WARNED_MODULES.add(module)
-            _WARNED_QUEUE.append(module)
+            _WARNED_MODULES[module] = now
 
     if not first:
         logger.debug(msg)
@@ -130,12 +125,7 @@ def _optional_import_cached(name: str) -> Any | None:
             for item in (name, module_name):
                 _IMPORT_STATE.discard(item)
         with _WARNED_LOCK:
-            if module_name in _WARNED_MODULES:
-                _WARNED_MODULES.discard(module_name)
-                try:
-                    _WARNED_QUEUE.remove(module_name)
-                except ValueError:
-                    pass
+            _WARNED_MODULES.pop(module_name, None)
         return obj
     except (ImportError, AttributeError) as e:
         _warn_failure(module_name, attr, e)
@@ -152,7 +142,7 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     """Import ``name`` returning ``fallback`` if it fails.
 
     This function is thread-safe: concurrent failures are recorded in a bounded
-    deque protected by a lock to avoid race conditions. Results are cached by
+    registry protected by a lock to avoid race conditions. Results are cached by
     ``name`` only, so ``fallback`` can be any object, even if unhashable.
 
     ``name`` may refer to a module, submodule or attribute. If the import or
@@ -193,19 +183,18 @@ def clear_optional_import_cache() -> None:
         _IMPORT_STATE.clear()
     with _WARNED_LOCK:
         _WARNED_MODULES.clear()
-        _WARNED_QUEUE.clear()
 
 
 def prune_failed_imports() -> None:
-    """Remove expired entries from the failed import registry.
-
-    This function purges entries older than ``_FAILED_IMPORT_MAX_AGE`` seconds
-    from the internal failure registry. It can be invoked to force cleanup
-    without performing additional import attempts.
-    """
+    """Remove expired entries from the failed import registry."""
 
     with _IMPORT_STATE.lock:
         _IMPORT_STATE.prune()
+    with _WARNED_LOCK:
+        expiry = time.monotonic() - _FAILED_IMPORT_MAX_AGE
+        stale = [m for m, t in _WARNED_MODULES.items() if t < expiry]
+        for m in stale:
+            _WARNED_MODULES.pop(m, None)
 
 
 @lru_cache(maxsize=1)
