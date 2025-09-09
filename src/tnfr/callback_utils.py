@@ -40,34 +40,29 @@ CallbackRegistry = dict[str, list["CallbackSpec"]]
 
 def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
     """Ensure the callback structure in ``G.graph``."""
-    cbs = G.graph.get("callbacks")
+    cbs = G.graph.setdefault("callbacks", defaultdict(list))
 
-    # Defensive: if callbacks store is not a mapping, discard it to avoid
-    # failures when constructing the defaultdict below.
+    dirty = G.graph.pop("_callbacks_dirty", False)
+
+    # Defensive: if callbacks store is not a mapping, discard it.
     if not isinstance(cbs, Mapping):
-        logger.warning(
-            "Invalid callbacks registry on graph; resetting to empty"
-        )
-        cbs = defaultdict(list)
-        G.graph["callbacks"] = cbs
-        G.graph["_callbacks_dirty"] = True
+        logger.warning("Invalid callbacks registry on graph; resetting to empty")
+        cbs = G.graph["callbacks"] = defaultdict(list)
+        dirty = True
     elif not isinstance(cbs, defaultdict):
-        cbs = defaultdict(list, cbs)
-        G.graph["callbacks"] = cbs
-        G.graph["_callbacks_dirty"] = True
-    if not G.graph.pop("_callbacks_dirty", False):
-        return cbs
-    for event in list(cbs):
-        if event not in _CALLBACK_EVENTS:
-            del cbs[event]
-            continue
-        lst = cbs[event]
-        cbs[event] = [
-            spec
-            for entry in lst
-            if (spec := _normalize_callback_entry(entry)) is not None
-        ]
-    G.graph["_callbacks_dirty"] = False
+        cbs = G.graph["callbacks"] = defaultdict(list, cbs)
+        dirty = True
+
+    if dirty:
+        for event in list(cbs):
+            if event not in _CALLBACK_EVENTS:
+                del cbs[event]
+                continue
+            cbs[event] = [
+                spec
+                for entry in cbs[event]
+                if (spec := _normalize_callback_entry(entry)) is not None
+            ]
     return cbs
 
 
