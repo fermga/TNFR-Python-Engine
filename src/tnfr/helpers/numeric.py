@@ -107,9 +107,12 @@ def _phase_mean_from_iter(
     """
 
     found = False
-    # Filter out ``None`` values and mark when at least one pair is seen
-    cos_sin_pairs = ((found := True) and cs for cs in it if cs is not None)
-    total_cos, total_sin = kahan_sum2d(cos_sin_pairs)
+    pairs: list[tuple[float, float]] = []
+    for cs in it:
+        if cs is not None:
+            found = True
+            pairs.append(cs)
+    total_cos, total_sin = kahan_sum2d(pairs)
     if not found:
         return fallback
     return math.atan2(total_sin, total_cos)

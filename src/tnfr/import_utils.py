@@ -117,35 +117,10 @@ def _warn_failure(
         logger.warning(msg)
 
 
+
 @lru_cache(maxsize=128)
-def optional_import(name: str, fallback: Any | None = None) -> Any | None:
-    """Import ``name`` returning ``fallback`` if it fails.
-
-    This function is thread-safe: concurrent failures are recorded in a bounded
-    deque protected by a lock to avoid race conditions.
-
-    ``name`` may refer to a module, submodule or attribute. If the import or
-    attribute access fails a warning is emitted and ``fallback`` is returned.
-
-    Parameters
-    ----------
-    name:
-        Fully qualified module, submodule or attribute path.
-    fallback:
-        Value to return when import fails. Defaults to ``None``.
-
-    Returns
-    -------
-    Any | None
-        Imported object or ``fallback`` if an error occurs.
-
-    Notes
-    -----
-    ``fallback`` is returned when the module is unavailable or the requested
-    attribute does not exist. In both cases a warning is emitted and logged.
-    Use :func:`clear_optional_import_cache` to reset the internal cache and
-    failure registry after installing new optional dependencies.
-    """
+def _optional_import_cached(name: str) -> Any | None:
+    """Internal helper implementing ``optional_import`` logic without fallback."""
 
     module_name, attr = (name.rsplit(".", 1) + [None])[:2]
     try:
@@ -170,7 +145,45 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
                 _IMPORT_STATE.record(name)
             else:
                 _IMPORT_STATE.record(name)
-    return fallback
+    return None
+
+
+def optional_import(name: str, fallback: Any | None = None) -> Any | None:
+    """Import ``name`` returning ``fallback`` if it fails.
+
+    This function is thread-safe: concurrent failures are recorded in a bounded
+    deque protected by a lock to avoid race conditions. Results are cached by
+    ``name`` only, so ``fallback`` can be any object, even if unhashable.
+
+    ``name`` may refer to a module, submodule or attribute. If the import or
+    attribute access fails a warning is emitted and ``fallback`` is returned.
+
+    Parameters
+    ----------
+    name:
+        Fully qualified module, submodule or attribute path.
+    fallback:
+        Value to return when import fails. Defaults to ``None``.
+
+    Returns
+    -------
+    Any | None
+        Imported object or ``fallback`` if an error occurs.
+
+    Notes
+    -----
+    ``fallback`` is returned when the module is unavailable or the requested
+    attribute does not exist. In both cases a warning is emitted and logged.
+    Use :func:`clear_optional_import_cache` to reset the internal cache and
+    failure registry after installing new optional dependencies.
+    """
+
+    result = _optional_import_cached(name)
+    return fallback if result is None else result
+
+
+# Expose cache management utilities for backward compatibility
+optional_import.cache_clear = _optional_import_cached.cache_clear  # type: ignore[attr-defined]
 
 
 def clear_optional_import_cache() -> None:

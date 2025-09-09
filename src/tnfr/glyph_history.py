@@ -39,7 +39,11 @@ def _ensure_glyph_history(nd: dict[str, Any], window: int) -> deque:
     window_int = _validate_window(window)
     hist = nd.get("glyph_history")
     if not isinstance(hist, deque) or hist.maxlen != window_int:
-        seq = hist if isinstance(hist, Iterable) else []
+        seq = (
+            hist
+            if isinstance(hist, Iterable) and not isinstance(hist, (str, bytes))
+            else []
+        )
         hist = deque(seq, maxlen=window_int)
         nd["glyph_history"] = hist
     return hist
