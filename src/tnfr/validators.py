@@ -67,7 +67,16 @@ def _check_glyph(g, n):
 
 
 def run_validators(G) -> None:
-    """Run all invariant validators on ``G``."""
-    _validate_epi_vf(G)
-    _validate_glyphs(G)
+    """Run all invariant validators on ``G`` with a single node pass."""
+    epi_min = float(get_param(G, "EPI_MIN"))
+    epi_max = float(get_param(G, "EPI_MAX"))
+    vf_min = float(get_param(G, "VF_MIN"))
+    vf_max = float(get_param(G, "VF_MAX"))
+
+    for n, data in G.nodes(data=True):
+        epi = _require_attr(data, ALIAS_EPI, n, "EPI")
+        vf = _require_attr(data, ALIAS_VF, n, "VF")
+        _check_epi_vf(epi, vf, epi_min, epi_max, vf_min, vf_max, n)
+        _check_glyph(last_glyph(data), n)
+
     _validate_sigma(G)
