@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
-from typing import Any
 import math
 
 
@@ -21,4 +20,3 @@ class InitDefaults:
 
 
 INIT_DEFAULTS = asdict(InitDefaults())
-DEFAULTS_PART: dict[str, Any] = INIT_DEFAULTS

@@ -147,7 +147,3 @@ _remesh_defaults = asdict(RemeshDefaults())
 
 CORE_DEFAULTS = MappingProxyType(_core_defaults)
 REMESH_DEFAULTS = MappingProxyType(_remesh_defaults)
-
-DEFAULTS_PART: Mapping[str, Any] = MappingProxyType(
-    {**_core_defaults, **_remesh_defaults}
-)
