@@ -31,25 +31,23 @@ def validate_token(
     re-raised as :class:`ValueError` with additional positional context.
     """
 
+    tok_info = f"(pos {pos}, token {tok!r})"
+
     if isinstance(tok, dict):
         if len(tok) != 1:
-            raise ValueError(
-                f"Invalid token: {tok} (position {pos}, token {tok!r})"
-            )
+            raise ValueError(f"Invalid token: {tok} {tok_info}")
         key, val = next(iter(tok.items()))
         handler = token_map.get(key)
         if handler is None:
-            raise ValueError(
-                f"Unrecognized token: {key} (position {pos}, token {tok!r})"
-            )
+            raise ValueError(f"Unrecognized token: {key} {tok_info}")
         try:
             return handler(val)
         except (KeyError, ValueError, TypeError) as e:
-            msg = f"{type(e).__name__}: {e} (position {pos}, token {tok!r})"
+            msg = f"{type(e).__name__}: {e} {tok_info}"
             raise ValueError(msg) from e
     if isinstance(tok, str):
         return tok
-    raise ValueError(f"Invalid token: {tok} (position {pos}, token {tok!r})")
+    raise ValueError(f"Invalid token: {tok} {tok_info}")
 
 
 def _parse_tokens(
