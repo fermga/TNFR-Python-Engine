@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import warnings
+import threading
 from typing import Any, Callable
 
 from .import_utils import optional_import
@@ -11,6 +12,7 @@ __all__ = ["json_dumps"]
 
 _orjson = optional_import("orjson")
 _ignored_param_warned = False
+_warn_lock = threading.Lock()
 
 
 def json_dumps(
@@ -33,13 +35,14 @@ def json_dumps(
     if _orjson is not None:
         if ensure_ascii is not True or separators != (",", ":"):
             global _ignored_param_warned
-            if not _ignored_param_warned:
-                warnings.warn(
-                    "'ensure_ascii' and 'separators' are ignored when using orjson",
-                    UserWarning,
-                    stacklevel=2,
-                )
-                _ignored_param_warned = True
+            with _warn_lock:
+                if not _ignored_param_warned:
+                    warnings.warn(
+                        "'ensure_ascii' and 'separators' are ignored when using orjson",
+                        UserWarning,
+                        stacklevel=2,
+                    )
+                    _ignored_param_warned = True
         option = _orjson.OPT_SORT_KEYS if sort_keys else 0
         data = _orjson.dumps(obj, option=option, default=default)
         return data if to_bytes else data.decode("utf-8")

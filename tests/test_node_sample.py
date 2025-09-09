@@ -1,6 +1,7 @@
 """Pruebas de node sample."""
 
 from tnfr.dynamics import step, _update_node_sample
+from tnfr.rng import clear_rng_cache
 from tnfr.rng import get_rng
 from tests.utils import build_graph
 import json
@@ -38,14 +39,14 @@ def test_node_sample_immutable_after_graph_change():
 
 
 def test_node_sample_deterministic_with_seed():
-    get_rng.cache_clear()
+    clear_rng_cache()
     G1 = build_graph(80)
     G1.graph["UM_CANDIDATE_COUNT"] = 10
     G1.graph["RANDOM_SEED"] = 123
     _update_node_sample(G1, step=5)
     sample1 = G1.graph["_node_sample"]
 
-    get_rng.cache_clear()
+    clear_rng_cache()
     G2 = build_graph(80)
     G2.graph["UM_CANDIDATE_COUNT"] = 10
     G2.graph["RANDOM_SEED"] = 123

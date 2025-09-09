@@ -1,14 +1,14 @@
 import threading
 
 from tnfr import rng as rng_mod
-from tnfr.rng import get_rng
+from tnfr.rng import get_rng, clear_rng_cache
 from tnfr.constants import DEFAULTS
 
 
 def test_get_rng_thread_safety(monkeypatch):
     monkeypatch.setattr(rng_mod, "DEFAULTS", dict(DEFAULTS))
     monkeypatch.setitem(rng_mod.DEFAULTS, "JITTER_CACHE_SIZE", 4)
-    get_rng.cache_clear()
+    clear_rng_cache()
 
     results = []
     errors = []

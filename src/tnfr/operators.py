@@ -37,7 +37,7 @@ from .helpers.cache import (
     ensure_node_offset_map,
 )
 from .alias import get_attr, set_attr
-from .rng import get_rng, base_seed, cache_enabled
+from .rng import get_rng, base_seed, cache_enabled, clear_rng_cache as _clear_rng_cache
 from .callback_utils import invoke_callbacks
 from .glyph_history import append_metric
 from .import_utils import import_nodonx, optional_import
@@ -68,7 +68,7 @@ def _node_offset(G, n) -> int:
 
 def clear_rng_cache() -> None:
     """Clear cached RNGs."""
-    get_rng.cache_clear()
+    _clear_rng_cache()
     _JITTER_SEQ.clear()
 
 
