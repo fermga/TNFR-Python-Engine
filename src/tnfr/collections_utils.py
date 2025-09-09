@@ -96,6 +96,33 @@ def ensure_collection(
         raise TypeError(f"{it!r} is not iterable") from exc
 
 
+def _process_negative_weights(
+    weights: dict[str, float],
+    negatives: dict[str, float],
+    warn_once: bool,
+) -> float:
+    """Handle negative weights by logging and clamping them to zero.
+
+    Returns the recomputed total after negatives have been zeroed out.
+    """
+    if warn_once:
+        with _warned_negative_keys_lock:
+            new_negatives = {
+                k: v for k, v in negatives.items() if k not in _warned_negative_keys
+            }
+            for k in new_negatives:
+                _warned_negative_keys[k] = None
+            while len(_warned_negative_keys) > _WARNED_NEGATIVE_KEYS_LIMIT:
+                _warned_negative_keys.popitem(last=False)
+        if new_negatives:
+            logger.warning(NEGATIVE_WEIGHTS_MSG, new_negatives)
+    else:
+        logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
+    for k in negatives:
+        weights[k] = 0.0
+    return kahan_sum(weights.values())
+
+
 def normalize_weights(
     dict_like: dict[str, Any],
     keys: Iterable[str] | Sequence[str],
@@ -142,23 +169,7 @@ def normalize_weights(
     if negatives:
         if error_on_negative:
             raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
-        if warn_once:
-            with _warned_negative_keys_lock:
-                new_negatives = {
-                    k: v for k, v in negatives.items() if k not in _warned_negative_keys
-                }
-                for k in new_negatives:
-                    _warned_negative_keys[k] = None
-                while len(_warned_negative_keys) > _WARNED_NEGATIVE_KEYS_LIMIT:
-                    _warned_negative_keys.popitem(last=False)
-            if new_negatives:
-                logger.warning(NEGATIVE_WEIGHTS_MSG, new_negatives)
-        else:
-            logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
-        # Second pass: clamp negatives to zero and recompute total
-        for k in negatives:
-            weights[k] = 0.0
-        total = kahan_sum(weights.values())
+        total = _process_negative_weights(weights, negatives, warn_once)
     if total <= 0:
         uniform = 1.0 / len(keys)
         return {k: uniform for k in keys}
