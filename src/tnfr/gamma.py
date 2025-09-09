@@ -94,39 +94,63 @@ def _kuramoto_common(G, node, _cfg):
     return th_i, R, psi
 
 
-def _get_gamma_spec(G) -> Mapping[str, Any]:
+def _read_gamma_raw(G) -> Mapping[str, Any]:
+    """Return raw Γ specification from ``G.graph['GAMMA']``.
+
+    Handles ``None`` values, direct mappings and invalid entries (mapping
+    vs. path) falling back to :data:`DEFAULT_GAMMA`.  When the stored value
+    is not a mapping, :func:`get_graph_mapping` is used which may emit a
+    warning and ``DEFAULT_GAMMA`` is returned.
+    """
+
     raw = G.graph.get("GAMMA")
+    if raw is None or isinstance(raw, Mapping):
+        return raw if isinstance(raw, Mapping) else DEFAULT_GAMMA
+    spec = get_graph_mapping(
+        G, "GAMMA", "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}"
+    )
+    return spec or DEFAULT_GAMMA
+
+
+def _cache_gamma_spec(
+    G, spec: Mapping[str, Any], *, cur_hash: str | None = None
+) -> Mapping[str, Any]:
+    """Cache ``spec`` and return the cached version.
+
+    ``cur_hash`` may be provided to avoid recomputing the hash when already
+    known by the caller.
+    """
+
     cached = G.graph.get("_gamma_spec")
     prev_hash = G.graph.get("_gamma_spec_hash")
-    if raw is None or isinstance(raw, Mapping):
-        spec = raw if isinstance(raw, Mapping) else DEFAULT_GAMMA
-        if spec is DEFAULT_GAMMA:
-            if cached is spec and prev_hash is not None:
-                return cached
-            dumped, cur_hash = _default_gamma_spec()
-        else:
+    if spec is DEFAULT_GAMMA:
+        if cached is spec and prev_hash is not None and cur_hash is None:
+            return cached
+        if cur_hash is None:
+            _, cur_hash = _default_gamma_spec()
+    else:
+        if cur_hash is None:
             dumped = json_dumps(spec, sort_keys=True)
             cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
-        if cached is not None and prev_hash == cur_hash:
-            return cached
-        G.graph["_gamma_spec"] = spec
-        G.graph["_gamma_spec_hash"] = cur_hash
-        return spec
-
-    _, cur_hash = _default_gamma_spec()
     if cached is not None and prev_hash == cur_hash:
         return cached
-    spec = (
-        get_graph_mapping(
-            G,
-            "GAMMA",
-            "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}",
-        )
-        or DEFAULT_GAMMA
-    )
     G.graph["_gamma_spec"] = spec
     G.graph["_gamma_spec_hash"] = cur_hash
     return spec
+
+
+def _get_gamma_spec(G) -> Mapping[str, Any]:
+    raw = G.graph.get("GAMMA")
+    if raw is None or isinstance(raw, Mapping):
+        spec = raw if isinstance(raw, Mapping) else DEFAULT_GAMMA
+        return _cache_gamma_spec(G, spec)
+    _, cur_hash = _default_gamma_spec()
+    cached = G.graph.get("_gamma_spec")
+    prev_hash = G.graph.get("_gamma_spec_hash")
+    if cached is not None and prev_hash == cur_hash:
+        return cached
+    spec = _read_gamma_raw(G)
+    return _cache_gamma_spec(G, spec, cur_hash=cur_hash)
 
 
 # -----------------
