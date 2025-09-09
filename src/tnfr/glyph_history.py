@@ -12,6 +12,7 @@ from .constants import get_param
 
 __all__ = [
     "HistoryDict",
+    "IncrementDict",
     "push_glyph",
     "recent_glyph",
     "ensure_history",
@@ -265,8 +266,8 @@ def ensure_history(G) -> dict[str, Any]:
         raise ValueError("HISTORY_COMPACT_EVERY must be > 0")
     hist = G.graph.get("history")
     if maxlen == 0:
-        if not isinstance(hist, _IncrementDict):
-            hist = _IncrementDict(hist or {})
+        if not isinstance(hist, IncrementDict):
+            hist = IncrementDict(hist or {})
             G.graph["history"] = hist
         return hist
     if (
@@ -282,7 +283,7 @@ def ensure_history(G) -> dict[str, Any]:
     return hist
 
 
-class _IncrementDict(dict):
+class IncrementDict(dict):
     """Dict with ``get_increment`` for metric history."""
 
     def get_increment(
