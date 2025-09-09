@@ -6,8 +6,8 @@ from tnfr.metrics import coherence_matrix, local_phase_sync_weighted
 from tnfr.helpers.cache import ensure_node_index_map
 
 
-def make_graph(offset=0):
-    G = nx.Graph()
+def make_graph(graph_canon, offset=0):
+    G = graph_canon()
     G.add_node(offset)
     G.add_node(offset + 1)
     G.add_edge(offset, offset + 1)
@@ -16,9 +16,9 @@ def make_graph(offset=0):
     return G
 
 
-def test_local_phase_sync_independent_graphs():
-    G1 = make_graph(0)
-    G2 = make_graph(10)
+def test_local_phase_sync_independent_graphs(graph_canon):
+    G1 = make_graph(graph_canon, 0)
+    G2 = make_graph(graph_canon, 10)
 
     nodes1, W1 = coherence_matrix(G1)
     nodes2, W2 = coherence_matrix(G2)
@@ -42,8 +42,8 @@ def test_local_phase_sync_independent_graphs():
     assert ensure_node_index_map(G1) is map1
 
 
-def test_node_index_map_invalidation():
-    G = make_graph(0)
+def test_node_index_map_invalidation(graph_canon):
+    G = make_graph(graph_canon, 0)
     coherence_matrix(G)
     mapping1 = ensure_node_index_map(G)
 

@@ -59,8 +59,8 @@ def test_rng_cache_disabled_with_size_zero(graph_canon):
     set_cache_maxsize(DEFAULTS["JITTER_CACHE_SIZE"])
 
 
-def test_um_candidate_subset_proximity():
-    G = nx.Graph()
+def test_um_candidate_subset_proximity(graph_canon):
+    G = graph_canon()
     inject_defaults(G)
     for i, th in enumerate([0.0, 0.1, 0.2, 1.0]):
         G.add_node(i, **{"θ": th, "EPI": 0.5, "Si": 0.5})

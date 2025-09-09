@@ -16,15 +16,15 @@ from tnfr.sense import (
 from tnfr.types import Glyph
 
 
-def _make_graph():
-    G = nx.Graph()
+def _make_graph(graph_canon):
+    G = graph_canon()
     G.add_node(0, glyph_history=[Glyph.AL.value], Si=1.0, EPI=2.0)
     G.add_node(1, Si=0.3, EPI=1.5)
     return G
 
 
-def test_sigma_vector_node_paths():
-    G = _make_graph()
+def test_sigma_vector_node_paths(graph_canon):
+    G = _make_graph(graph_canon)
     sv_si = sigma_vector_node(G, 0)
     assert sv_si and sv_si["glyph"] == Glyph.AL.value
     assert sv_si["w"] == 1.0
@@ -34,8 +34,8 @@ def test_sigma_vector_node_paths():
     assert sv_epi["mag"] == pytest.approx(2 * sv_si["mag"])
 
 
-def test_sigma_vector_from_graph_paths():
-    G = _make_graph()
+def test_sigma_vector_from_graph_paths(graph_canon):
+    G = _make_graph(graph_canon)
     sv_si = sigma_vector_from_graph(G)
     sv_epi = sigma_vector_from_graph(G, weight_mode="EPI")
     assert sv_si["n"] == 1
@@ -57,10 +57,10 @@ def _sigma_vector_from_graph_naive(G, weight_mode: str = "Si"):
     return vec
 
 
-def test_sigma_vector_from_graph_matches_naive():
+def test_sigma_vector_from_graph_matches_naive(graph_canon):
     """La versión optimizada coincide con el cálculo ingenuo y no es
     más lenta."""
-    G_opt = nx.Graph()
+    G_opt = graph_canon()
     glyphs = list(Glyph)
     for i in range(1000):
         g = glyphs[i % len(glyphs)].value

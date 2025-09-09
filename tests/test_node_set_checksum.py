@@ -11,16 +11,16 @@ from tnfr.helpers.cache import (
 )
 
 
-def build_graph():
-    G = nx.Graph()
+def build_graph(graph_canon):
+    G = graph_canon()
     G.add_node(("foo", 1))
     G.add_node(("foo", 2))
     return G
 
 
-def test_node_set_checksum_object_stable():
-    checksum1 = node_set_checksum(build_graph())
-    checksum2 = node_set_checksum(build_graph())
+def test_node_set_checksum_object_stable(graph_canon):
+    checksum1 = node_set_checksum(build_graph(graph_canon))
+    checksum2 = node_set_checksum(build_graph(graph_canon))
     assert checksum1 == checksum2
 
 
@@ -35,21 +35,21 @@ def _reference_checksum(G):
     return hasher.hexdigest()
 
 
-def test_node_set_checksum_compatibility():
-    G = nx.Graph()
+def test_node_set_checksum_compatibility(graph_canon):
+    G = graph_canon()
     G.add_nodes_from([1, 2, 3])
     assert node_set_checksum(G) == _reference_checksum(G)
 
 
-def test_node_set_checksum_iterable_equivalence():
-    G = nx.Graph()
+def test_node_set_checksum_iterable_equivalence(graph_canon):
+    G = graph_canon()
     G.add_nodes_from([3, 1, 2])
     gen = (n for n in G.nodes())
     assert node_set_checksum(G, gen) == node_set_checksum(G)
 
 
-def test_node_set_checksum_presorted_performance():
-    G = nx.Graph()
+def test_node_set_checksum_presorted_performance(graph_canon):
+    G = graph_canon()
     G.add_nodes_from(range(1000))
     nodes = list(G.nodes())
     nodes.sort(key=_node_repr)
@@ -60,23 +60,23 @@ def test_node_set_checksum_presorted_performance():
     assert t_presorted <= t_unsorted * 3.0
 
 
-def test_node_set_checksum_no_store_does_not_cache():
-    G = nx.Graph()
+def test_node_set_checksum_no_store_does_not_cache(graph_canon):
+    G = graph_canon()
     G.add_nodes_from([1, 2])
     node_set_checksum(G, store=False)
     assert "_node_set_checksum_cache" not in G.graph
 
 
-def test_node_repr_cache_cleared_on_increment():
-    nxG = nx.Graph()
+def test_node_repr_cache_cleared_on_increment(graph_canon):
+    nxG = graph_canon()
     _node_repr("foo")
     assert _node_repr.cache_info().currsize > 0
     increment_edge_version(nxG)
     assert _node_repr.cache_info().currsize == 0
 
 
-def test_hash_node_cache_cleared_on_increment():
-    nxG = nx.Graph()
+def test_hash_node_cache_cleared_on_increment(graph_canon):
+    nxG = graph_canon()
     _hash_node(("foo", 1))
     assert _hash_node.cache_info().currsize > 0
     increment_edge_version(nxG)

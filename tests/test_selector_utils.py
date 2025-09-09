@@ -99,8 +99,8 @@ def _selector_thresholds_original(G: nx.Graph) -> dict:
     }
 
 
-def test_selector_thresholds_defaults():
-    G = nx.Graph()
+def test_selector_thresholds_defaults(graph_canon):
+    G = graph_canon()
     thr = _selector_thresholds(G)
     sel_def = DEFAULTS["SELECTOR_THRESHOLDS"]
     assert thr["si_hi"] == sel_def["si_hi"]
@@ -111,19 +111,19 @@ def test_selector_thresholds_defaults():
     assert thr["accel_lo"] == sel_def["accel_lo"]
 
 
-def test_selector_thresholds_refactor_equivalent_defaults():
-    G = nx.Graph()
+def test_selector_thresholds_refactor_equivalent_defaults(graph_canon):
+    G = graph_canon()
     assert _selector_thresholds(G) == _selector_thresholds_original(G)
 
 
-def test_selector_thresholds_refactor_equivalent_legacy():
-    G = nx.Graph()
+def test_selector_thresholds_refactor_equivalent_legacy(graph_canon):
+    G = graph_canon()
     G.graph["GLYPH_THRESHOLDS"] = {"hi": 0.9, "lo": 0.2}
     assert _selector_thresholds(G) == _selector_thresholds_original(G)
 
 
-def test_selector_thresholds_refactor_equivalent_overrides():
-    G = nx.Graph()
+def test_selector_thresholds_refactor_equivalent_overrides(graph_canon):
+    G = graph_canon()
     G.graph["SELECTOR_THRESHOLDS"] = {
         "si_hi": 0.9,
         "si_lo": 0.2,
@@ -135,8 +135,8 @@ def test_selector_thresholds_refactor_equivalent_overrides():
     assert _selector_thresholds(G) == _selector_thresholds_original(G)
 
 
-def test_norms_para_selector_computes_max():
-    G = nx.Graph()
+def test_norms_para_selector_computes_max(graph_canon):
+    G = graph_canon()
     G.add_node(0, **{ALIAS_DNFR[-1]: 2.0, ALIAS_D2EPI[-2]: 1.0})
     G.add_node(1, **{ALIAS_DNFR[-1]: -3.0, ALIAS_D2EPI[-2]: 0.5})
     norms = _norms_para_selector(G)
@@ -152,8 +152,8 @@ def test_calc_selector_score_assumes_normalized_weights():
     assert _calc_selector_score(0.0, 1.0, 1.0, W) == 0.0
 
 
-def test_configure_selector_weights_normalizes():
-    G = nx.Graph()
+def test_configure_selector_weights_normalizes(graph_canon):
+    G = graph_canon()
     G.graph["SELECTOR_WEIGHTS"] = {"w_si": 2.0, "w_dnfr": 1.0, "w_accel": 1.0}
     weights = _configure_selector_weights(G)
     assert weights == pytest.approx(

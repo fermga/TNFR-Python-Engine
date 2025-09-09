@@ -27,10 +27,10 @@ from tnfr.constants import METRIC_DEFAULTS
 from tnfr.types import Glyph
 
 
-def test_track_stability_updates_hist():
+def test_track_stability_updates_hist(graph_canon):
     """_track_stability aggregates stability and derivatives."""
 
-    G = nx.Graph()
+    G = graph_canon()
     hist = {"stable_frac": [], "delta_Si": [], "B": []}
 
     G.add_node(0)
@@ -74,10 +74,10 @@ def test_update_sigma_uses_default_window(graph_canon):
     assert hist == expected
 
 
-def test_aggregate_si_computes_stats():
+def test_aggregate_si_computes_stats(graph_canon):
     """_aggregate_si computes mean and fractions."""
 
-    G = nx.Graph()
+    G = graph_canon()
     inject_defaults(G)
     hist = {"Si_mean": [], "Si_hi_frac": [], "Si_lo_frac": []}
     G.add_node(0)
@@ -94,10 +94,10 @@ def test_aggregate_si_computes_stats():
     assert hist["Si_lo_frac"][0] == pytest.approx(1 / 3)
 
 
-def test_compute_advanced_metrics_populates_history():
+def test_compute_advanced_metrics_populates_history(graph_canon):
     """_compute_advanced_metrics records glyph-based metrics."""
 
-    G = nx.Graph()
+    G = graph_canon()
     inject_defaults(G)
     hist: dict[str, Any] = {}
     cfg = G.graph["METRICS"]
@@ -183,9 +183,9 @@ def test_save_by_node_flag_keeps_metrics_equal(graph_canon):
     assert hist_false.get("Tg_by_node", {}) == {}
 
 
-def test_latency_index_uses_max_denominator():
+def test_latency_index_uses_max_denominator(graph_canon):
     """Latency index uses max(1, n_total) to avoid zero division."""
-    G = nx.Graph()
+    G = graph_canon()
     hist = {}
     _update_latency_index(G, hist, n_total=0, n_latent=2, t=0)
     assert hist["latency_index"][0]["value"] == 2.0

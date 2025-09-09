@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import argparse
-import json
 
 from pathlib import Path
-from typing import Any, Iterable, Optional, TYPE_CHECKING
+from typing import Any, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
@@ -44,19 +43,11 @@ from .token_parser import _parse_tokens
 logger = get_logger(__name__)
 
 
-def _default(obj: Any) -> Any:
-    if isinstance(obj, Iterable) and not isinstance(obj, (str, bytes)):
-        return list(obj)
-    raise TypeError(
-        f"Object of type {obj.__class__.__name__} is not JSON serializable"
-    )
-
-
 def _save_json(path: str, data: Any) -> None:
-    def _write(f):
-        json.dump(data, f, ensure_ascii=False, indent=2, default=_default)
-
-    safe_write(path, _write)
+    payload = json_dumps(
+        data, ensure_ascii=False, indent=2, to_bytes=False, default=list
+    )
+    safe_write(path, lambda f: f.write(payload))
 
 
 def _attach_callbacks(G: "nx.Graph") -> None:

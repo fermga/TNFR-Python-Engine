@@ -26,7 +26,7 @@ except ImportError:  # pragma: no cover - skip if not installed
         ),
     ],
 )
-def test_apply_config_injects_graph_params(tmp_path, suffix, dump):
+def test_apply_config_injects_graph_params(tmp_path, suffix, dump, graph_canon):
     cfg = {"RANDOM_SEED": 123, "INIT_THETA_MIN": -1.23}
     path = tmp_path / f"cfg{suffix}"
     path.write_text(dump(cfg), encoding="utf-8")
@@ -34,7 +34,7 @@ def test_apply_config_injects_graph_params(tmp_path, suffix, dump):
     loaded = load_config(path)
     assert loaded == cfg
 
-    G = nx.Graph()
+    G = graph_canon()
     G.add_node(0)
     G.graph["RANDOM_SEED"] = 0
     G.graph["INIT_THETA_MIN"] = 0.0
@@ -65,7 +65,7 @@ def test_load_config_accepts_str(tmp_path):
     assert loaded == cfg
 
 
-def test_apply_config_passes_path_object(monkeypatch, tmp_path):
+def test_apply_config_passes_path_object(monkeypatch, tmp_path, graph_canon):
     path = tmp_path / "cfg.json"
     path.write_text("{}", encoding="utf-8")
     received = {}
@@ -75,13 +75,13 @@ def test_apply_config_passes_path_object(monkeypatch, tmp_path):
         return {}
 
     monkeypatch.setattr("tnfr.config.load_config", fake_load)
-    G = nx.Graph()
+    G = graph_canon()
     apply_config(G, path)
     assert received["path"] is path
 
 
-def test_merge_overrides_does_not_modify_defaults():
-    G = nx.Graph()
+def test_merge_overrides_does_not_modify_defaults(graph_canon):
+    G = graph_canon()
     orig_enabled = DEFAULTS["TRACE"]["enabled"]
     merge_overrides(G, TRACE=DEFAULTS["TRACE"])
     assert G.graph["TRACE"] is not DEFAULTS["TRACE"]

@@ -16,8 +16,8 @@ def test_add_edge_stores_weight():
     assert math.isclose(b.edge_weight(a), 2.5)
 
 
-def test_add_edge_stores_weight_nx():
-    G = nx.Graph()
+def test_add_edge_stores_weight_nx(graph_canon):
+    G = graph_canon()
     G.add_nodes_from([0, 1])
     a = NodoNX(G, 0)
     b = NodoNX(G, 1)
@@ -42,8 +42,8 @@ def test_add_edge_preserves_weight_by_default():
     assert math.isclose(b.edge_weight(a), 1.0)
 
 
-def test_add_edge_preserves_weight_by_default_nx():
-    G = nx.Graph()
+def test_add_edge_preserves_weight_by_default_nx(graph_canon):
+    G = graph_canon()
     G.add_nodes_from([0, 1])
     a = NodoNX(G, 0)
     b = NodoNX(G, 1)
@@ -61,8 +61,8 @@ def test_add_edge_overwrite():
     assert math.isclose(b.edge_weight(a), 2.0)
 
 
-def test_add_edge_overwrite_nx():
-    G = nx.Graph()
+def test_add_edge_overwrite_nx(graph_canon):
+    G = graph_canon()
     G.add_nodes_from([0, 1])
     a = NodoNX(G, 0)
     b = NodoNX(G, 1)
@@ -80,8 +80,8 @@ def test_add_edge_rejects_negative_weight():
     assert not b.has_edge(a)
 
 
-def test_add_edge_rejects_negative_weight_nx():
-    G = nx.Graph()
+def test_add_edge_rejects_negative_weight_nx(graph_canon):
+    G = graph_canon()
     G.add_node(0)
     G.add_node(1)
     a = NodoNX(G, 0)
@@ -101,8 +101,8 @@ def test_add_edge_rejects_negative_weight_existing_edge():
     assert math.isclose(b.edge_weight(a), 1.0)
 
 
-def test_add_edge_rejects_negative_weight_existing_edge_nx():
-    G = nx.Graph()
+def test_add_edge_rejects_negative_weight_existing_edge_nx(graph_canon):
+    G = graph_canon()
     G.add_node(0)
     G.add_node(1)
     a = NodoNX(G, 0)
@@ -125,8 +125,8 @@ def test_add_edge_rejects_non_finite_weight():
         assert not b.has_edge(a)
 
 
-def test_add_edge_rejects_non_finite_weight_nx():
-    G = nx.Graph()
+def test_add_edge_rejects_non_finite_weight_nx(graph_canon):
+    G = graph_canon()
     G.add_nodes_from([0, 1])
     a = NodoNX(G, 0)
     b = NodoNX(G, 1)

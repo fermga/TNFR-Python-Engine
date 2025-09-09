@@ -2,8 +2,8 @@ import networkx as nx
 from tnfr.helpers.cache import edge_version_cache
 
 
-def test_edge_version_cache_reentrant():
-    G = nx.Graph()
+def test_edge_version_cache_reentrant(graph_canon):
+    G = graph_canon()
     calls = []
 
     def builder():
