@@ -24,6 +24,7 @@ from operator import ge, le
 from functools import cache
 from itertools import combinations
 from io import StringIO
+from weakref import WeakKeyDictionary, WeakSet
 
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers.numeric import (
@@ -43,6 +44,7 @@ from .glyph_history import append_metric
 from .import_utils import import_nodonx, optional_import
 
 _JITTER_SEQ: dict[tuple[int, int], int] = {}
+_JITTER_GRAPHS: WeakSet[Any] = WeakSet()
 
 if TYPE_CHECKING:
     from .node import NodoProtocol
@@ -70,6 +72,10 @@ def clear_rng_cache() -> None:
     """Clear cached RNGs."""
     _clear_rng_cache()
     _JITTER_SEQ.clear()
+    for G in list(_JITTER_GRAPHS):
+        cache = G.graph.get("_jitter_seed_hash")
+        if cache is not None:
+            cache.clear()
 
 
 @cache
@@ -127,11 +133,15 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
             cache = {}
             setattr(node, "_jitter_seed_hash", cache)
         except AttributeError:
-            graph_cache = node.graph.setdefault("_jitter_seed_hash", {})
-            cache = graph_cache.get(id(node))
+            graph_cache = node.graph.get("_jitter_seed_hash")
+            if graph_cache is None:
+                graph_cache = WeakKeyDictionary()
+                node.graph["_jitter_seed_hash"] = graph_cache
+                _JITTER_GRAPHS.add(node.graph)
+            cache = graph_cache.get(node)
             if cache is None:
                 cache = {}
-                graph_cache[id(node)] = cache
+                graph_cache[node] = cache
 
     cache_key = (seed_root, scope_id)
     seed = cache.get(cache_key)
