@@ -100,6 +100,35 @@ def _hash_node(obj: Any) -> bytes:
     ).digest()
 
 
+def _iter_node_digests(
+    nodes: Iterable[Any], *, presorted: bool
+) -> Iterable[bytes]:
+    """Yield node digests in a deterministic order.
+
+    When ``presorted`` is ``True`` the nodes are assumed to already be sorted
+    in a stable manner and their digests are yielded directly.  Otherwise the
+    digests are produced in sorted order using ``heapq.merge`` over small
+    chunks, keeping memory usage low.
+    """
+    if presorted:
+        for n in nodes:
+            yield _hash_node(n)
+    else:
+        iterator = ((_node_repr(n), _hash_node(n)) for n in nodes)
+        pending = sorted(islice(iterator, NODE_CHUNK))
+        while pending:
+            chunk = sorted(islice(iterator, NODE_CHUNK))
+            if not chunk:
+                for _, digest in pending:
+                    yield digest
+                break
+            merged = heapq.merge(pending, chunk)
+            for _ in range(len(pending)):
+                _, digest = next(merged)
+                yield digest
+            pending = list(merged)
+
+
 def _update_node_cache(
     G: nx.Graph,
     nodes: Iterable[Any],
@@ -135,12 +164,10 @@ def node_set_checksum(
 ) -> str:
     """Return a BLAKE2b checksum of ``G``'s node set.
 
-    Nodes are serialised using :func:`_node_repr`.  When ``presorted`` is
-    ``False`` the per-node digests are generated and sorted incrementally using
-    a small heap-based merge.  This updates the hash as digests become
-    available, avoiding materialising the full sorted list and keeping the
-    checksum independent of node ordering.  When ``store`` is ``True`` the
-    final checksum is cached under ``"_node_set_checksum_cache"`` to avoid
+    Nodes are serialised using :func:`_node_repr`. The helper
+    :func:`_iter_node_digests` yields their digests in a deterministic order,
+    handling the ``presorted`` and unsorted cases. When ``store`` is ``True``
+    the final checksum is cached under ``"_node_set_checksum_cache"`` to avoid
     recomputation for unchanged graphs.
     """
     graph = get_graph(G)
@@ -149,31 +176,16 @@ def node_set_checksum(
     hasher = hashlib.blake2b(digest_size=16)
     token_hasher = hashlib.blake2b(digest_size=8)
 
-    if presorted:
-        for n in node_iterable:
-            digest = _hash_node(n)
-            hasher.update(digest)
-            token_hasher.update(digest)
-    else:
-        iterator = ((_node_repr(n), _hash_node(n)) for n in node_iterable)
-        pending = sorted(list(islice(iterator, NODE_CHUNK)))
-        while pending:
-            chunk = sorted(list(islice(iterator, NODE_CHUNK)))
-            if not chunk:
-                for _, digest in pending:
-                    hasher.update(digest)
-                    token_hasher.update(digest)
-                break
-            merged = heapq.merge(pending, chunk)
-            for _ in range(len(pending)):
-                _, digest = next(merged)
-                hasher.update(digest)
-                token_hasher.update(digest)
-            pending = list(merged)
+    # Generate digests in stable order; `_iter_node_digests` sorts when needed
+    # unless `presorted` indicates the nodes are already ordered.
+    for digest in _iter_node_digests(node_iterable, presorted=presorted):
+        hasher.update(digest)
+        token_hasher.update(digest)
 
     checksum = hasher.hexdigest()
     token = token_hasher.hexdigest()
     if store:
+        # Cache the result using a short token to detect unchanged node sets.
         cached = graph.get("_node_set_checksum_cache")
         if cached and cached[0] == token:
             return cached[1]
