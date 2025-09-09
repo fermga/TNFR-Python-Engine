@@ -10,7 +10,7 @@ from .alias import get_attr
 from .helpers.numeric import angle_diff
 from .metrics_utils import compute_coherence
 from .callback_utils import register_callback
-from .glyph_history import ensure_history, count_glyphs, append_metric
+from .glyph_history import ensure_history, count_glyphs, append_metric, validate_window
 from .collections_utils import normalize_counter, mix_groups
 from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
@@ -113,13 +113,17 @@ def kuramoto_order(
 
 def glyph_load(G, window: int | None = None) -> dict:
     """Return distribution of glyphs applied in the network.
+
     - ``window``: if provided, count only the last ``window`` events per node;
       otherwise use the deque's maxlen.
     Returns a dict with proportions per glyph and useful aggregates.
     """
-    if window is not None and window <= 0:
-        raise ValueError("window must be positive")
-    total = count_glyphs(G, window=window, last_only=(window == 1))
+    window_int: int | None = None
+    if window is not None:
+        window_int = validate_window(window)
+        if window_int == 0:
+            raise ValueError("window must be positive")
+    total = count_glyphs(G, window=window_int, last_only=(window_int == 1))
     dist, count = normalize_counter(total)
     if count == 0:
         return {"_count": 0}
@@ -135,8 +139,6 @@ def wbar(G, window: int | None = None) -> float:
     ``"C_steps"`` sequence. If the history is missing or malformed, the
     instantaneous coherence is computed instead.
     """
-    if window is not None and window <= 0:
-        raise ValueError("window must be positive")
     hist = G.graph.get("history")
     if not isinstance(hist, Mapping):
         logger.warning(
@@ -149,8 +151,8 @@ def wbar(G, window: int | None = None) -> float:
         return compute_coherence(G)
     if not isinstance(cs, (list, tuple)):
         cs = list(cs)
-    w = int(get_param(G, "WBAR_WINDOW") if window is None else window)
-    if w <= 0:
+    w = validate_window(get_param(G, "WBAR_WINDOW") if window is None else window)
+    if w == 0:
         raise ValueError("window must be positive")
     w = min(len(cs), w)
     return float(statistics.fmean(cs[-w:]))

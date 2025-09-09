@@ -18,10 +18,11 @@ __all__ = [
     "append_metric",
     "last_glyph",
     "count_glyphs",
+    "validate_window",
 ]
 
 
-def _validate_window(window: int) -> int:
+def validate_window(window: int) -> int:
     """Validate and coerce ``window`` to a non-negative ``int``."""
 
     window_int = int(window)
@@ -36,7 +37,7 @@ def _ensure_glyph_history(nd: dict[str, Any], window: int) -> deque:
     Non-iterable existing values are discarded.
     """
 
-    window_int = _validate_window(window)
+    window_int = validate_window(window)
     hist = nd.get("glyph_history")
     if not isinstance(hist, deque) or hist.maxlen != window_int:
         seq = (
@@ -67,7 +68,7 @@ def recent_glyph(nd: dict[str, Any], glyph: str, window: int) -> bool:
     ``window`` of zero returns ``False`` without modifying ``nd``. Negative
     values raise :class:`ValueError`.
     """
-    window_int = _validate_window(window)
+    window_int = validate_window(window)
     if window_int == 0:
         return False
     hist = _ensure_glyph_history(nd, window_int)
@@ -326,7 +327,7 @@ def count_glyphs(
     """
 
     if window is not None:
-        window_int = _validate_window(window)
+        window_int = validate_window(window)
         if window_int == 0:
             return Counter()
     else:
