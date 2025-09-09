@@ -229,3 +229,12 @@ def test_flatten_thol_multiple_repeats():
         Glyph.AL,
         THOL_SENTINEL,
     ]
+
+
+def test_flatten_thol_body_limit_error_message():
+    stack = deque()
+    body = (Glyph.AL for _ in range(5))
+    with pytest.raises(
+        ValueError, match="THOL body exceeds max_materialize=3"
+    ):
+        _flatten_thol(THOL(body=body), stack, max_materialize=3)

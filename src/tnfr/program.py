@@ -193,7 +193,11 @@ def _flatten_thol(
         and item.force_close in {Glyph.SHA, Glyph.NUL}
         else None
     )
-    seq = ensure_collection(item.body, max_materialize=max_materialize)
+    seq = ensure_collection(
+        item.body,
+        max_materialize=max_materialize,
+        error_msg=f"THOL body exceeds max_materialize={max_materialize}",
+    )
     for _ in range(repeats):
         if closing is not None:
             stack.append(closing)
