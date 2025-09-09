@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from collections.abc import Iterable, Mapping, Collection, Sequence
 from itertools import islice
 from typing import Any, TypeVar, cast
@@ -19,7 +20,9 @@ logger = get_logger(__name__)
 NEGATIVE_WEIGHTS_MSG = "Negative weights detected: %s"
 
 # Track keys that have already triggered a negative weight warning
-_warned_negative_keys: set[str] = set()
+# Use an ordered mapping to support eviction of older entries
+_WARNED_NEGATIVE_KEYS_LIMIT = 1024
+_warned_negative_keys: OrderedDict[str, None] = OrderedDict()
 _warned_negative_keys_lock = threading.Lock()
 
 __all__ = [
@@ -144,7 +147,10 @@ def normalize_weights(
                 new_negatives = {
                     k: v for k, v in negatives.items() if k not in _warned_negative_keys
                 }
-                _warned_negative_keys.update(new_negatives)
+                for k in new_negatives:
+                    _warned_negative_keys[k] = None
+                while len(_warned_negative_keys) > _WARNED_NEGATIVE_KEYS_LIMIT:
+                    _warned_negative_keys.popitem(last=False)
             if new_negatives:
                 logger.warning(NEGATIVE_WEIGHTS_MSG, new_negatives)
         else:
