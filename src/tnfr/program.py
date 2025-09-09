@@ -202,6 +202,35 @@ def _flatten_thol(
     stack.append(THOL_SENTINEL)
 
 
+def _flatten_target(item: TARGET, stack: deque[Any], ops: list[tuple[OpTag, Any]], max_materialize: int | None) -> None:
+    ops.append((OpTag.TARGET, item))
+
+
+def _flatten_wait(item: WAIT, stack: deque[Any], ops: list[tuple[OpTag, Any]], max_materialize: int | None) -> None:
+    steps = max(1, int(getattr(item, "steps", 1)))
+    ops.append((OpTag.WAIT, steps))
+
+
+def _flatten_thol_proxy(item: THOL, stack: deque[Any], ops: list[tuple[OpTag, Any]], max_materialize: int | None) -> None:
+    _flatten_thol(item, stack, max_materialize=max_materialize)
+
+
+def _flatten_glyph(item: Glyph | str, stack: deque[Any], ops: list[tuple[OpTag, Any]], max_materialize: int | None) -> None:
+    g = item.value if isinstance(item, Glyph) else str(item)
+    if g not in GLYPHS_CANONICAL_SET:
+        raise ValueError(f"Non-canonical glyph: {g}")
+    ops.append((OpTag.GLYPH, g))
+
+
+_TOKEN_DISPATCH: dict[type, Callable[[Any, deque[Any], list[tuple[OpTag, Any]], int | None], None]] = {
+    TARGET: _flatten_target,
+    WAIT: _flatten_wait,
+    THOL: _flatten_thol_proxy,
+    Glyph: _flatten_glyph,
+    str: _flatten_glyph,
+}
+
+
 def _flatten(
     seq: Sequence[Token],
     *,
@@ -232,20 +261,11 @@ def _flatten(
         item = stack.pop()
         if item is THOL_SENTINEL:
             ops.append((OpTag.THOL, Glyph.THOL.value))
-        elif isinstance(item, TARGET):
-            ops.append((OpTag.TARGET, item))
-        elif isinstance(item, WAIT):
-            steps = max(1, int(getattr(item, "steps", 1)))
-            ops.append((OpTag.WAIT, steps))
-        elif isinstance(item, THOL):
-            _flatten_thol(item, stack, max_materialize=max_materialize)
-        elif isinstance(item, (Glyph, str)):
-            g = item.value if isinstance(item, Glyph) else str(item)
-            if g not in GLYPHS_CANONICAL_SET:
-                raise ValueError(f"Non-canonical glyph: {g}")
-            ops.append((OpTag.GLYPH, g))
-        else:
+            continue
+        handler = _TOKEN_DISPATCH.get(type(item))
+        if handler is None:
             raise TypeError(f"Unsupported token: {item!r}")
+        handler(item, stack, ops, max_materialize)
     return ops
 
 
