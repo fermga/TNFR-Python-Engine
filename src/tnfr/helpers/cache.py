@@ -363,26 +363,26 @@ def edge_version_cache(
     cache, locks = _get_edge_cache(graph, max_entries)
     edge_version = int(graph.get("_edge_version", 0))
     lock = locks[key]
+    # The lock is deliberately acquired twice. We first check for a cached
+    # value under the lock, release it for the potentially expensive
+    # ``builder`` computation and then re-acquire the lock to store the result.
 
-    lock.acquire()
-    try:
+    # First acquisition: inspect cache while holding the lock.
+    with lock:
         entry = cache.get(key)
         if entry is not None and entry[0] == edge_version:
             return entry[1]
-    finally:
-        lock.release()
 
+    # Execute builder without holding the lock to avoid blocking other threads.
     value = builder()
 
-    lock.acquire()
-    try:
+    # Second acquisition: verify and store the result atomically after building.
+    with lock:
         entry = cache.get(key)
         if entry is not None and entry[0] == edge_version:
             return entry[1]
         cache[key] = (edge_version, value)
         return value
-    finally:
-        lock.release()
 
 
 def invalidate_edge_version_cache(G: Any) -> None:
