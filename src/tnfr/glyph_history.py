@@ -140,16 +140,83 @@ class HistoryDict(dict):
 
     # heap utilities -----------------------------------------------------
 
-    def _rebuild_index(self) -> None:
-        """Rebuild mapping of keys to their heap indices."""
-        self._heap_index = {
-            k: i for i, (cnt, k) in enumerate(self._heap) if self._counts.get(k) == cnt
-        }
+    def _rebuild_index(self, keys: Iterable[str] | None = None) -> None:
+        """Rebuild mapping of *keys* to their heap indices.
+
+        When ``keys`` is ``None`` the entire mapping is regenerated. Otherwise
+        only the provided keys are updated or removed, avoiding unnecessary
+        work on unaffected entries.
+        """
+        if keys is None:
+            self._heap_index = {
+                k: i
+                for i, (cnt, k) in enumerate(self._heap)
+                if self._counts.get(k) == cnt
+            }
+            return
+        keys_set = set(keys)
+        for k in keys_set:
+            self._heap_index.pop(k, None)
+        for i, (cnt, k) in enumerate(self._heap):
+            if k in keys_set and self._counts.get(k) == cnt:
+                self._heap_index[k] = i
+
+    def _siftdown(self, startpos: int, pos: int) -> None:
+        """Like :func:`heapq._siftdown` but updates ``_heap_index``."""
+        item = self._heap[pos]
+        while pos > startpos:
+            parentpos = (pos - 1) >> 1
+            parent = self._heap[parentpos]
+            if item < parent:
+                self._heap[pos] = parent
+                self._heap_index[parent[1]] = pos
+                pos = parentpos
+                continue
+            break
+        self._heap[pos] = item
+        self._heap_index[item[1]] = pos
+
+    def _siftup(self, pos: int) -> None:
+        """Like :func:`heapq._siftup` but updates ``_heap_index``."""
+        endpos = len(self._heap)
+        startpos = pos
+        item = self._heap[pos]
+        childpos = 2 * pos + 1
+        while childpos < endpos:
+            rightpos = childpos + 1
+            if rightpos < endpos and self._heap[rightpos] < self._heap[childpos]:
+                childpos = rightpos
+            self._heap[pos] = self._heap[childpos]
+            self._heap_index[self._heap[pos][1]] = pos
+            pos = childpos
+            childpos = 2 * pos + 1
+        self._heap[pos] = item
+        self._heap_index[item[1]] = pos
+        self._siftdown(startpos, pos)
+
+    def _heap_push(self, cnt: int, key: str) -> None:
+        """Push ``(cnt, key)`` onto ``_heap`` updating ``_heap_index``."""
+        self._heap.append((cnt, key))
+        self._heap_index[key] = len(self._heap) - 1
+        self._siftdown(0, len(self._heap) - 1)
+
+    def _heap_pop(self) -> tuple[int, str]:
+        """Pop the smallest item from ``_heap`` updating ``_heap_index``."""
+        last = self._heap.pop()
+        if not self._heap:
+            self._heap_index.pop(last[1], None)
+            return last
+        item = self._heap[0]
+        if self._heap_index.get(item[1]) == 0:
+            self._heap_index.pop(item[1], None)
+        self._heap[0] = last
+        self._heap_index[last[1]] = 0
+        self._siftup(0)
+        return item
 
     def _increment(self, key: str) -> None:
         self._counts[key] += 1
-        heapq.heappush(self._heap, (self._counts[key], key))
-        self._rebuild_index()
+        self._heap_push(self._counts[key], key)
         self._prune_heap()
 
     def _prune_heap(self) -> None:
@@ -161,16 +228,14 @@ class HistoryDict(dict):
             (cnt, key) for cnt, key in self._heap if self._counts.get(key) == cnt
         ]
         heapq.heapify(self._heap)
-        self._rebuild_index()
+        self._heap_index = {k: i for i, (cnt, k) in enumerate(self._heap)}
 
     def _pop_heap_key(self) -> str:
         """Pop and return the key with the smallest count from the heap."""
         while self._heap:
-            cnt, key = heapq.heappop(self._heap)
+            cnt, key = self._heap_pop()
             if self._counts.get(key) == cnt:
-                self._rebuild_index()
                 return key
-            self._rebuild_index()
         raise KeyError("HistoryDict is empty; cannot pop least used")
 
     def _to_deque(self, val: Any) -> deque:
@@ -216,11 +281,9 @@ class HistoryDict(dict):
         super().__setitem__(key, value)
         if key not in self._counts:
             self._counts[key] = 0
-            heapq.heappush(self._heap, (0, key))
-            self._rebuild_index()
+            self._heap_push(0, key)
         elif key not in self._heap_index:
-            heapq.heappush(self._heap, (self._counts[key], key))
-            self._rebuild_index()
+            self._heap_push(self._counts[key], key)
         self._prune_heap()
 
     def setdefault(self, key, default=None):  # type: ignore[override]
@@ -228,8 +291,7 @@ class HistoryDict(dict):
         val = self._resolve_value(key, default, insert=insert)
         if insert:
             self._counts[key] = 0
-            heapq.heappush(self._heap, (0, key))
-            self._rebuild_index()
+            self._heap_push(0, key)
             self._prune_heap()
         return val
 
