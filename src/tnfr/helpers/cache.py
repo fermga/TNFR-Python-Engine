@@ -54,7 +54,7 @@ __all__ = [
 
 def get_graph(obj: Any) -> Any:
     """Return ``obj.graph`` if available or ``obj`` otherwise."""
-    return obj.graph if hasattr(obj, "graph") else obj
+    return getattr(obj, "graph", obj)
 
 
 def get_graph_mapping(
