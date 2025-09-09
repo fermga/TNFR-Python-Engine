@@ -42,7 +42,7 @@ def validate_window(window: int, *, positive: bool = False) -> int:
     window_int = int(window)
     if window_int < 0 or (positive and window_int == 0):
         kind = "positive" if positive else "non-negative"
-        raise ValueError(f"'window' must be {kind}")
+        raise ValueError(f"'window'={window} must be {kind}")
     return window_int
 
 
