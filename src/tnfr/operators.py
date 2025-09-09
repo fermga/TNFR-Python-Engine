@@ -670,26 +670,8 @@ def _knn_edges(nodes, epi, k_val, p_rewire, rnd):
     return new_edges
 
 
-def _community_remesh(
-    G,
-    epi,
-    k_val,
-    p_rewire,
-    rnd,
-    nx,
-    nx_comm,
-    mst_edges,
-    n_before,
-):
-    """Remesh ``G`` replacing nodes by modular communities."""
-    comms = list(nx_comm.greedy_modularity_communities(G))
-    if len(comms) <= 1:
-        G.clear_edges()
-        increment_edge_version(G)
-        G.add_edges_from(mst_edges)
-        increment_edge_version(G)
-        return
-
+def _community_graph(comms, epi, nx):
+    """Return community graph ``C`` with mean EPI per community."""
     C = nx.Graph()
     for idx, comm in enumerate(comms):
         members = list(comm)
@@ -703,10 +685,14 @@ def _community_remesh(
             - get_attr(C.nodes[j], ALIAS_EPI, 0.0)
         )
         C.add_edge(i, j, weight=w)
-    mst_c = nx.minimum_spanning_tree(C, weight="weight")
-    new_edges = set(mst_c.edges())
+    return C
+
+
+def _community_k_neighbor_edges(C, k_val, p_rewire, rnd):
+    """Edges linking each community to its ``k`` nearest neighbours."""
     epi_vals = {n: get_attr(C.nodes[n], ALIAS_EPI, 0.0) for n in C.nodes()}
     ordered = sorted(C.nodes(), key=lambda v: epi_vals[v])
+    new_edges = set()
     for idx, u in enumerate(ordered):
         epi_u = epi_vals[u]
         left = idx - 1
@@ -731,6 +717,32 @@ def _community_remesh(
             if rnd.random() < p_rewire:
                 new_edges.add(tuple(sorted((u, v))))
             added += 1
+    return new_edges
+
+
+def _community_remesh(
+    G,
+    epi,
+    k_val,
+    p_rewire,
+    rnd,
+    nx,
+    nx_comm,
+    mst_edges,
+    n_before,
+):
+    """Remesh ``G`` replacing nodes by modular communities."""
+    comms = list(nx_comm.greedy_modularity_communities(G))
+    if len(comms) <= 1:
+        G.clear_edges()
+        increment_edge_version(G)
+        G.add_edges_from(mst_edges)
+        increment_edge_version(G)
+        return
+    C = _community_graph(comms, epi, nx)
+    mst_c = nx.minimum_spanning_tree(C, weight="weight")
+    new_edges = set(mst_c.edges())
+    new_edges |= _community_k_neighbor_edges(C, k_val, p_rewire, rnd)
 
     G.clear_edges()
     increment_edge_version(G)
