@@ -11,7 +11,7 @@ def test_parse_tokens_value_error_context():
     with pytest.raises(ValueError) as exc:
         _parse_tokens([{"WAIT": "x"}])
     msg = str(exc.value)
-    assert "posición 1" in msg
+    assert "position 1" in msg
     assert "WAIT" in msg
     assert isinstance(exc.value.__cause__, ValueError)
 
@@ -24,7 +24,7 @@ def test_parse_tokens_key_error_context(monkeypatch):
     with pytest.raises(ValueError) as exc:
         _parse_tokens([{"RAISE": {}}])
     msg = str(exc.value)
-    assert "posición 1" in msg
+    assert "position 1" in msg
     assert "RAISE" in msg
     assert isinstance(exc.value.__cause__, KeyError)
 
@@ -37,7 +37,7 @@ def test_parse_tokens_type_error_context(monkeypatch):
     with pytest.raises(ValueError) as exc:
         _parse_tokens([{"RAISE_TYPE": {}}])
     msg = str(exc.value)
-    assert "posición 1" in msg
+    assert "position 1" in msg
     assert "RAISE_TYPE" in msg
     assert isinstance(exc.value.__cause__, TypeError)
 
