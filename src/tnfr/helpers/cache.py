@@ -339,19 +339,18 @@ def edge_version_cache(
 
     A per-key :class:`threading.RLock` is stored in a ``defaultdict`` to
     allow concurrent computations for different keys while still preventing
-    duplicate work. The function employs a simplified double-checked locking
-    pattern: the cache is consulted before acquiring the key-specific lock,
-    then checked again once the lock is held before computing and storing the
-    value.
+    duplicate work. The cache is checked while holding the key-specific lock;
+    on a miss the lock is released for the potentially expensive ``builder``
+    computation, then reacquired to verify and store the result.
 
     When ``max_entries`` is a positive integer-like value, only the most
     recent ``max_entries`` cache entries are kept (defaults to ``128``). If
     ``max_entries`` is ``None`` the cache may grow without bound. An explicit
     ``max_entries`` value of ``0`` disables caching entirely and ``builder``
     is executed on each invocation. ``max_entries`` is coerced to ``int`` on
-    entry and validated to be non-negative. The ``builder`` is executed outside
-    any locks on a cache miss, so it **must** be pure and yield identical
-    results across concurrent invocations.
+    entry and validated to be non-negative. The ``builder`` runs outside the
+    lock on a cache miss, so it **must** be pure and yield identical results
+    across concurrent invocations.
     """
     if max_entries is not None:
         max_entries = int(max_entries)
@@ -363,19 +362,27 @@ def edge_version_cache(
     graph = get_graph(G)
     cache, locks = _get_edge_cache(graph, max_entries)
     edge_version = int(graph.get("_edge_version", 0))
-    entry = cache.get(key)
-    if entry is not None and entry[0] == edge_version:
-        return entry[1]
-
     lock = locks[key]
-    with lock:
+
+    lock.acquire()
+    try:
         entry = cache.get(key)
         if entry is not None and entry[0] == edge_version:
             return entry[1]
+    finally:
+        lock.release()
 
-        value = builder()
+    value = builder()
+
+    lock.acquire()
+    try:
+        entry = cache.get(key)
+        if entry is not None and entry[0] == edge_version:
+            return entry[1]
         cache[key] = (edge_version, value)
         return value
+    finally:
+        lock.release()
 
 
 def invalidate_edge_version_cache(G: Any) -> None:
