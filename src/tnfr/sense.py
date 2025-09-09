@@ -173,28 +173,34 @@ def _ema_update(
     return {"x": x, "y": y, "mag": mag, "angle": ang, "n": current.get("n", 0)}
 
 
+def _sigma_from_nodes(
+    nodes: Iterable[dict], weight_mode: str, fallback_angle: float = 0.0
+) -> tuple[dict[str, float], list[tuple[str, float, complex]]]:
+    """Aggregate weighted glyph vectors for ``nodes``.
+
+    Returns the aggregated σ vector and the list of ``(glyph, weight, vector)``
+    triples used in the calculation.
+    """
+
+    nws = [nw for nd in nodes if (nw := _node_weight(nd, weight_mode))]
+    sv = _sigma_from_iterable((nw[2] for nw in nws), fallback_angle)
+    return sv, nws
+
+
 def sigma_vector_node(
     G, n, weight_mode: str | None = None
 ) -> dict[str, float] | None:
     cfg = _sigma_cfg(G)
     nd = G.nodes[n]
-    nw = _node_weight(nd, weight_mode or cfg.get("weight", "Si"))
-    if not nw:
+    weight_mode = weight_mode or cfg.get("weight", "Si")
+    sv, nws = _sigma_from_nodes([nd], weight_mode)
+    if not nws:
         return None
-    g, w, z = nw
-    x = z.real
-    y = z.imag
-    mag = math.hypot(x, y)
-    ang = math.atan2(y, x) if mag > 0 else glyph_angle(g)
-    return {
-        "x": float(x),
-        "y": float(y),
-        "mag": float(mag),
-        "angle": float(ang),
-        "glyph": g,
-        "w": float(w),
-        "n": 1,
-    }
+    g, w, _ = nws[0]
+    if sv["mag"] == 0:
+        sv["angle"] = glyph_angle(g)
+    sv.update({"glyph": g, "w": float(w)})
+    return sv
 
 
 def sigma_vector(dist: dict[str, float]) -> dict[str, float]:
@@ -232,12 +238,8 @@ def sigma_vector_from_graph(
 
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
-    vectors = (
-        nw[2]
-        for _, nd in G.nodes(data=True)
-        if (nw := _node_weight(nd, weight_mode))
-    )
-    return _sigma_from_iterable(vectors)
+    sv, _ = _sigma_from_nodes((nd for _, nd in G.nodes(data=True)), weight_mode)
+    return sv
 
 
 # -------------------------
