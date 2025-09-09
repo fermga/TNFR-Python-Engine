@@ -9,6 +9,7 @@ import heapq
 from collections.abc import Iterable
 
 from .constants import get_param
+from .collections_utils import ensure_collection
 
 __all__ = [
     "HistoryDict",
@@ -56,11 +57,12 @@ def _ensure_glyph_history(nd: dict[str, Any], window: int) -> deque:
     window_int = validate_window(window)
     hist = nd.get("glyph_history")
     if not isinstance(hist, deque) or hist.maxlen != window_int:
-        seq = (
-            hist
-            if isinstance(hist, Iterable) and not isinstance(hist, (str, bytes))
-            else []
-        )
+        try:
+            seq = ensure_collection(hist, max_materialize=None)
+        except TypeError:
+            seq = ()
+        if isinstance(hist, (str, bytes, bytearray)):
+            seq = ()
         hist = deque(seq, maxlen=window_int)
         nd["glyph_history"] = hist
     return hist
