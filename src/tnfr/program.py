@@ -10,7 +10,7 @@ from collections import deque
 from collections.abc import Callable, Iterable, Sequence
 from functools import lru_cache
 from enum import Enum, auto
-from .token_parser import _flatten_tokens, validate_token, _parse_tokens
+from .token_parser import validate_token
 
 from .constants import get_param
 from .grammar import apply_glyph_with_grammar

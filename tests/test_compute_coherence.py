@@ -1,5 +1,4 @@
 import math
-import networkx as nx
 import pytest
 
 from tnfr.metrics_utils import compute_coherence

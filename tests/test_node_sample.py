@@ -2,7 +2,6 @@
 
 from tnfr.dynamics import step, _update_node_sample
 from tnfr.rng import clear_rng_cache
-from tnfr.rng import get_rng
 from tests.utils import build_graph
 import json
 import os

@@ -1,5 +1,3 @@
-import networkx as nx
-
 from tnfr.constants import ALIAS_THETA, ALIAS_VF, ALIAS_DNFR
 from tnfr.metrics_utils import compute_Si
 from tnfr.alias import set_attr

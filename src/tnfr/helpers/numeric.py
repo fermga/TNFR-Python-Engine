@@ -138,7 +138,11 @@ def neighbor_phase_mean_list(
     """
     deg = len(neigh)
     if np is not None and deg > 0:
-        pairs = np.asarray(list((cos_th[v], sin_th[v]) for v in neigh))
+        pairs = np.fromiter(
+            (c for v in neigh for c in (cos_th[v], sin_th[v])),
+            dtype=float,
+            count=deg * 2,
+        ).reshape(deg, 2)
         mean_cos, mean_sin = pairs.mean(axis=0)
         return float(np.arctan2(mean_sin, mean_cos))
     return _phase_mean_from_iter(((cos_th[v], sin_th[v]) for v in neigh), fallback)

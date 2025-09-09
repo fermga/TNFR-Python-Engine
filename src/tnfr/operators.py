@@ -25,6 +25,7 @@ from functools import cache
 from itertools import combinations
 from io import StringIO
 from weakref import WeakKeyDictionary, WeakSet
+from collections import deque
 
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers.numeric import (
@@ -42,14 +43,13 @@ from .rng import get_rng, base_seed, cache_enabled, clear_rng_cache as _clear_rn
 from .callback_utils import invoke_callbacks
 from .glyph_history import append_metric
 from .import_utils import import_nodonx, optional_import
+from .types import Glyph
 
 _JITTER_SEQ: dict[tuple[int, int], int] = {}
 _JITTER_GRAPHS: WeakSet[Any] = WeakSet()
 
 if TYPE_CHECKING:
     from .node import NodoProtocol
-from .types import Glyph
-from collections import deque
 
 __all__ = [
     "clear_rng_cache",
