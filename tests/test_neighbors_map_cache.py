@@ -5,8 +5,8 @@ from tnfr.metrics_utils import ensure_neighbors_map
 from tnfr.helpers.cache import increment_edge_version
 
 
-def test_neighbors_map_reuses_proxy():
-    G = nx.Graph()
+def test_neighbors_map_reuses_proxy(graph_canon):
+    G = graph_canon()
     G.add_edge(1, 2)
     first = ensure_neighbors_map(G)
     assert isinstance(first, MappingProxyType)

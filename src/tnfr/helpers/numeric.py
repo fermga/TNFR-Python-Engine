@@ -102,34 +102,23 @@ def _phase_mean_from_iter(
     """Return circular mean from an iterator of cosine/sine pairs.
 
     ``it`` yields optional ``(cos, sin)`` tuples; ``None`` entries are
-    ignored. The components are accumulated using a streaming variant of the
-    Kahan–Babuška algorithm to maintain numerical stability without storing
-    the entire list. If no valid pairs are found ``fallback`` is returned.
+    ignored. The components are accumulated using :func:`kahan_sum2d` to
+    maintain numerical stability without storing the entire list. If no valid
+    pairs are found ``fallback`` is returned.
     """
     found = False
-    cos_total = sin_total = 0.0
-    comp_cos = comp_sin = 0.0
-    for cs in it:
-        if cs is None:
-            continue
-        found = True
-        c, s = cs
-        t = cos_total + c
-        if abs(cos_total) >= abs(c):
-            comp_cos += (cos_total - t) + c
-        else:
-            comp_cos += (c - t) + cos_total
-        cos_total = t
-        t = sin_total + s
-        if abs(sin_total) >= abs(s):
-            comp_sin += (sin_total - t) + s
-        else:
-            comp_sin += (s - t) + sin_total
-        sin_total = t
+
+    def _pairs():
+        nonlocal found
+        for cs in it:
+            if cs is None:
+                continue
+            found = True
+            yield cs
+
+    total_cos, total_sin = kahan_sum2d(_pairs())
     if not found:
         return fallback
-    total_cos = cos_total + comp_cos
-    total_sin = sin_total + comp_sin
     return math.atan2(total_sin, total_cos)
 
 
@@ -144,7 +133,7 @@ def neighbor_phase_mean_list(
 
     When ``np`` (NumPy) is provided, ``np.fromiter`` is used to compute the
     averages. Otherwise, the mean is computed using the pure-Python
-    :func:`_phase_mean_from_iter` helper which internally reuses
+    :func:`_phase_mean_from_iter` helper which delegates to
     :func:`kahan_sum2d` for stable accumulation.
     """
     deg = len(neigh)

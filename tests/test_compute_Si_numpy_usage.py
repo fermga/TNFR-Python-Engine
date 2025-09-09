@@ -5,7 +5,7 @@ from tnfr.metrics_utils import compute_Si
 from tnfr.alias import set_attr
 
 
-def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch):
+def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch, graph_canon):
     calls = 0
 
     class DummyNP:
@@ -33,7 +33,7 @@ def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch):
         fake_neighbor_phase_mean_list,
     )
 
-    G = nx.Graph()
+    G = graph_canon()
     G.add_edge(1, 2)
     for n in G.nodes:
         set_attr(G.nodes[n], ALIAS_THETA, 0.0)

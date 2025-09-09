@@ -10,8 +10,8 @@ import subprocess
 import sys
 
 
-def test_node_sample_large_graph():
-    G = build_graph(80)
+def test_node_sample_large_graph(graph_canon):
+    G = build_graph(80, graph_canon)
     G.graph["UM_CANDIDATE_COUNT"] = 10
     step(G, use_Si=False, apply_glyphs=False)
     sample = G.graph.get("_node_sample")
@@ -20,8 +20,8 @@ def test_node_sample_large_graph():
     assert set(sample).issubset(set(G.nodes()))
 
 
-def test_node_sample_small_graph():
-    G = build_graph(20)
+def test_node_sample_small_graph(graph_canon):
+    G = build_graph(20, graph_canon)
     G.graph["UM_CANDIDATE_COUNT"] = 5
     step(G, use_Si=False, apply_glyphs=False)
     sample = G.graph.get("_node_sample")
@@ -29,8 +29,8 @@ def test_node_sample_small_graph():
     assert len(sample) == len(G.nodes())
 
 
-def test_node_sample_immutable_after_graph_change():
-    G = build_graph(20)
+def test_node_sample_immutable_after_graph_change(graph_canon):
+    G = build_graph(20, graph_canon)
     _update_node_sample(G, step=0)
     sample = G.graph["_node_sample"]
     G.add_node(99)
@@ -38,16 +38,16 @@ def test_node_sample_immutable_after_graph_change():
     assert 99 not in sample
 
 
-def test_node_sample_deterministic_with_seed():
+def test_node_sample_deterministic_with_seed(graph_canon):
     clear_rng_cache()
-    G1 = build_graph(80)
+    G1 = build_graph(80, graph_canon)
     G1.graph["UM_CANDIDATE_COUNT"] = 10
     G1.graph["RANDOM_SEED"] = 123
     _update_node_sample(G1, step=5)
     sample1 = G1.graph["_node_sample"]
 
     clear_rng_cache()
-    G2 = build_graph(80)
+    G2 = build_graph(80, graph_canon)
     G2.graph["UM_CANDIDATE_COUNT"] = 10
     G2.graph["RANDOM_SEED"] = 123
     _update_node_sample(G2, step=5)

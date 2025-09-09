@@ -2,14 +2,14 @@ import networkx as nx
 from tnfr.rng import base_seed, set_cache_maxsize, clear_rng_cache
 
 
-def test_base_seed_returns_value():
-    G = nx.Graph()
+def test_base_seed_returns_value(graph_canon):
+    G = graph_canon()
     G.graph["RANDOM_SEED"] = 123
     assert base_seed(G) == 123
 
 
-def test_base_seed_defaults_to_zero():
-    G = nx.Graph()
+def test_base_seed_defaults_to_zero(graph_canon):
+    G = graph_canon()
     assert base_seed(G) == 0
 
 

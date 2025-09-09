@@ -5,8 +5,8 @@ import tnfr.program as program
 from tnfr.program import _advance
 
 
-def test_advance_caches_step(monkeypatch):
-    G = nx.Graph()
+def test_advance_caches_step(monkeypatch, graph_canon):
+    G = graph_canon()
     G.add_node(0)
     calls = []
 
@@ -25,8 +25,8 @@ def test_advance_caches_step(monkeypatch):
     program._load_step_fn.cache_clear()
 
 
-def test_advance_thread_safe(monkeypatch):
-    G = nx.Graph()
+def test_advance_thread_safe(monkeypatch, graph_canon):
+    G = graph_canon()
     G.add_node(0)
     calls = []
 

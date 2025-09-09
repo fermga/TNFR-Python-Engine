@@ -7,8 +7,8 @@ from tnfr.constants import inject_defaults
 
 
 @pytest.mark.slow
-def test_ensure_history_trim_performance():
-    G = nx.Graph()
+def test_ensure_history_trim_performance(graph_canon):
+    G = graph_canon()
     inject_defaults(G)
     G.graph["HISTORY_MAXLEN"] = 1000
     G.graph["HISTORY_COMPACT_EVERY"] = 100

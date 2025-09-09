@@ -21,8 +21,8 @@ def naive_compute_coherence(G):
     return 1.0 / (1.0 + dnfr_mean + depi_mean)
 
 
-def test_compute_coherence_typical():
-    G = nx.Graph()
+def test_compute_coherence_typical(graph_canon):
+    G = graph_canon()
     G.add_node(0, dnfr=0.1, dEPI=0.2)
     G.add_node(1, dnfr=0.4, dEPI=0.5)
     result = compute_coherence(G)
@@ -30,8 +30,8 @@ def test_compute_coherence_typical():
     assert result == pytest.approx(expected)
 
 
-def test_compute_coherence_precision_improved():
-    G = nx.Graph()
+def test_compute_coherence_precision_improved(graph_canon):
+    G = graph_canon()
     G.add_node(0, dnfr=1e16)
     for i in range(1, 11):
         G.add_node(i, dnfr=1.0)
@@ -47,8 +47,8 @@ def test_compute_coherence_precision_improved():
     assert abs(result - expected) < abs(naive - expected)
 
 
-def test_compute_coherence_return_means():
-    G = nx.Graph()
+def test_compute_coherence_return_means(graph_canon):
+    G = graph_canon()
     G.add_node(0, dnfr=0.1, dEPI=0.2)
     G.add_node(1, dnfr=0.4, dEPI=0.5)
     C, dnfr_mean, depi_mean = compute_coherence(G, return_means=True)

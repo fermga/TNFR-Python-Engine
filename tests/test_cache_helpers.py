@@ -8,8 +8,8 @@ from tnfr.helpers.cache import (
 )
 
 
-def test_cached_nodes_and_A_reuse_and_invalidate():
-    G = nx.Graph()
+def test_cached_nodes_and_A_reuse_and_invalidate(graph_canon):
+    G = graph_canon()
     G.add_edges_from([(0, 1), (1, 2)])
     data1 = dynamics._prepare_dnfr_data(G)
     nodes1 = data1["nodes"]
@@ -21,8 +21,8 @@ def test_cached_nodes_and_A_reuse_and_invalidate():
     assert data3["nodes"] is not nodes1
 
 
-def test_cached_nodes_and_A_invalidate_on_node_addition():
-    G = nx.Graph()
+def test_cached_nodes_and_A_invalidate_on_node_addition(graph_canon):
+    G = graph_canon()
     G.add_edge(0, 1)
     data1 = dynamics._prepare_dnfr_data(G)
     nodes1 = data1["nodes"]
@@ -32,8 +32,8 @@ def test_cached_nodes_and_A_invalidate_on_node_addition():
     assert data2["nodes"] is not nodes1
 
 
-def test_node_offset_map_updates_on_node_addition():
-    G = nx.Graph()
+def test_node_offset_map_updates_on_node_addition(graph_canon):
+    G = graph_canon()
     G.add_nodes_from([0, 1])
     mapping1 = ensure_node_offset_map(G)
     assert mapping1[0] == 0
@@ -45,8 +45,8 @@ def test_node_offset_map_updates_on_node_addition():
     assert mapping2[2] == 2
 
 
-def test_cache_node_list_updates_on_dirty():
-    G = nx.Graph()
+def test_cache_node_list_updates_on_dirty(graph_canon):
+    G = graph_canon()
     G.add_nodes_from([0, 1])
     nodes1 = _cache_node_list(G)
     nodes2 = _cache_node_list(G)

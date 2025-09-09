@@ -6,10 +6,10 @@ from tnfr.constants import inject_defaults, DEFAULTS
 import tnfr.constants as const
 
 
-def test_mutating_graph_tuple_does_not_affect_defaults(monkeypatch):
+def test_mutating_graph_tuple_does_not_affect_defaults(monkeypatch, graph_canon):
     tup = ([1], {"a": 1})
     monkeypatch.setitem(const._DEFAULTS_COMBINED, "_test_tuple", tup)
-    G = nx.Graph()
+    G = graph_canon()
     inject_defaults(G)
     assert (
         G.graph["_test_tuple"] is not const._DEFAULTS_COMBINED["_test_tuple"]

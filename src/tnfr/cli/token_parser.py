@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Callable
+from functools import partial
 
 from ..program import block, wait, target
 from ..types import Glyph
@@ -10,26 +11,23 @@ from ..token_parser import (
     _flatten_tokens as _tp_flatten_tokens,
 )
 
-
-def validate_token(tok: Any, pos: int) -> Any:
-    return _tp_validate_token(tok, pos, TOKEN_MAP)
-
-
-def _parse_tokens(obj: Any) -> list[Any]:
-    return _tp_parse_tokens(obj, TOKEN_MAP)
-
-
-def _flatten_tokens(obj: Any):
-    return _tp_flatten_tokens(obj)
+__all__ = [
+    "validate_token",
+    "_parse_tokens",
+    "_flatten_tokens",
+    "parse_thol",
+    "TOKEN_MAP",
+]
 
 
 def parse_thol(spec: dict[str, Any]) -> Any:
     """Parse the specification of a ``THOL`` block."""
     close = spec.get("close")
     if isinstance(close, str):
-        if close not in Glyph.__members__:
+        close_enum = Glyph.__members__.get(close)
+        if close_enum is None:
             raise ValueError(f"Glyph de cierre desconocido: {close!r}")
-        close = Glyph[close]
+        close = close_enum
 
     return block(
         *_parse_tokens(spec.get("body", [])),
@@ -43,3 +41,8 @@ TOKEN_MAP: dict[str, Callable[[Any], Any]] = {
     "TARGET": lambda v: target(v),
     "THOL": parse_thol,
 }
+
+
+validate_token = partial(_tp_validate_token, token_map=TOKEN_MAP)
+_parse_tokens = partial(_tp_parse_tokens, token_map=TOKEN_MAP)
+_flatten_tokens = _tp_flatten_tokens

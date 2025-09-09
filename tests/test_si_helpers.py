@@ -12,8 +12,8 @@ from tnfr.alias import get_attr, set_attr, set_theta
 from tnfr.helpers.cache import increment_edge_version
 
 
-def test_get_si_weights_normalization():
-    G = nx.Graph()
+def test_get_si_weights_normalization(graph_canon):
+    G = graph_canon()
     G.graph["SI_WEIGHTS"] = {"alpha": 2, "beta": 1, "gamma": 1}
     alpha, beta, gamma = get_Si_weights(G)
     assert (alpha, beta, gamma) == pytest.approx((0.5, 0.25, 0.25))
@@ -29,8 +29,8 @@ def test_get_si_weights_normalization():
     }
 
 
-def test_get_trig_cache():
-    G = nx.Graph()
+def test_get_trig_cache(graph_canon):
+    G = graph_canon()
     G.add_nodes_from([1, 2])
     set_attr(G.nodes[1], ALIAS_THETA, 0.0)
     set_attr(G.nodes[2], ALIAS_THETA, math.pi / 2)
@@ -43,8 +43,8 @@ def test_get_trig_cache():
     assert thetas[2] == pytest.approx(math.pi / 2)
 
 
-def test_get_trig_cache_invalidation_on_version():
-    G = nx.Graph()
+def test_get_trig_cache_invalidation_on_version(graph_canon):
+    G = graph_canon()
     G.add_node(0)
     set_attr(G.nodes[0], ALIAS_THETA, 0.0)
     trig1 = get_trig_cache(G)
@@ -58,8 +58,8 @@ def test_get_trig_cache_invalidation_on_version():
     assert 1 in trig3.cos and 1 not in trig1.cos
 
 
-def test_get_trig_cache_invalidation_on_phase_change():
-    G = nx.Graph()
+def test_get_trig_cache_invalidation_on_phase_change(graph_canon):
+    G = graph_canon()
     G.add_edge(1, 2)
     set_attr(G.nodes[1], ALIAS_THETA, 0.0)
     set_attr(G.nodes[2], ALIAS_THETA, 0.0)
@@ -70,8 +70,8 @@ def test_get_trig_cache_invalidation_on_phase_change():
     assert trig2.theta[1] == pytest.approx(math.pi / 2)
 
 
-def test_compute_Si_node():
-    G = nx.Graph()
+def test_compute_Si_node(graph_canon):
+    G = graph_canon()
     G.add_edge(1, 2)
     set_attr(G.nodes[1], ALIAS_VF, 0.5)
     set_attr(G.nodes[1], ALIAS_DNFR, 0.2)

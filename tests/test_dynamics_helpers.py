@@ -29,8 +29,8 @@ def test_init_and_refresh_dnfr_cache(graph_canon):
     assert cache2 is cache
 
 
-def test_compute_neighbor_means_list():
-    G = nx.Graph()
+def test_compute_neighbor_means_list(graph_canon):
+    G = graph_canon()
     G.add_edge(0, 1)
     data = {
         "w_topo": 0.0,

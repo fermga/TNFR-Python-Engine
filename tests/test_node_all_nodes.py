@@ -39,8 +39,8 @@ def _peak_memory(fn, *args) -> int:
     return peak
 
 
-def test_node_set_checksum_peak_memory_reduced():
-    G = nx.Graph()
+def test_node_set_checksum_peak_memory_reduced(graph_canon):
+    G = graph_canon()
     for i in range(100_000):
         G.add_node(f"node-{i:05d}" * 2)
     peak_new = _peak_memory(node_set_checksum, G)
