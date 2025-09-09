@@ -108,6 +108,7 @@ class HistoryDict(dict):
         self._compact_every = max(1, int(compact_every))
         self._counts: Counter[str] = Counter()
         self._heap: list[tuple[int, str]] = []
+        self._heap_index: dict[str, int] = {}
         if self._maxlen > 0:
             for k, v in list(self.items()):
                 if isinstance(v, list):
@@ -118,10 +119,12 @@ class HistoryDict(dict):
                 self._counts[k] = 0
         self._heap = [(cnt, k) for k, cnt in self._counts.items()]
         heapq.heapify(self._heap)
+        self._heap_index = {k: i for i, (_, k) in enumerate(self._heap)}
 
     def _increment(self, key: str) -> None:
         self._counts[key] += 1
         heapq.heappush(self._heap, (self._counts[key], key))
+        self._heap_index = {k: i for i, (_, k) in enumerate(self._heap)}
         self._prune_heap()
 
     def _prune_heap(self) -> None:
@@ -138,13 +141,16 @@ class HistoryDict(dict):
             ),
         )
         heapq.heapify(self._heap)
+        self._heap_index = {k: i for i, (_, k) in enumerate(self._heap)}
 
     def _pop_heap_key(self) -> str:
         """Pop and return the key with the smallest count from the heap."""
         while self._heap:
             cnt, key = heapq.heappop(self._heap)
             if self._counts.get(key) == cnt:
+                self._heap_index = {k: i for i, (_, k) in enumerate(self._heap)}
                 return key
+        self._heap_index = {k: i for i, (_, k) in enumerate(self._heap)}
         raise KeyError("HistoryDict is empty; cannot pop least used")
 
     def _to_deque(self, val: Any) -> deque:
@@ -189,12 +195,17 @@ class HistoryDict(dict):
     def __setitem__(self, key, value):  # type: ignore[override]
         super().__setitem__(key, value)
         if key in self._counts:
-            self._heap = [(cnt, k) for cnt, k in self._heap if k != key]
-            heapq.heapify(self._heap)
-            heapq.heappush(self._heap, (self._counts[key], key))
+            idx = self._heap_index.get(key)
+            if idx is not None:
+                self._heap[idx] = (self._counts[key], key)
+                heapq._siftup(self._heap, idx)
+                heapq._siftdown(self._heap, 0, idx)
+            else:
+                heapq.heappush(self._heap, (self._counts[key], key))
         else:
             self._counts[key] = 0
             heapq.heappush(self._heap, (0, key))
+        self._heap_index = {k: i for i, (_, k) in enumerate(self._heap)}
         self._prune_heap()
 
     def setdefault(self, key, default=None):  # type: ignore[override]
@@ -203,6 +214,7 @@ class HistoryDict(dict):
         if insert:
             self._counts[key] = 0
             heapq.heappush(self._heap, (0, key))
+            self._heap_index = {k: i for i, (_, k) in enumerate(self._heap)}
             self._prune_heap()
         return val
 
