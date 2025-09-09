@@ -1,4 +1,5 @@
 import threading
+import random
 
 from tnfr import rng as rng_mod
 from tnfr.rng import get_rng, clear_rng_cache
@@ -32,3 +33,18 @@ def test_get_rng_thread_safety(monkeypatch):
 
     assert not errors
     assert all(seq == results[0] for seq in results)
+
+
+def test_no_lock_when_cache_disabled(monkeypatch):
+    monkeypatch.setattr(rng_mod, "_CACHE_MAXSIZE", 0)
+
+    class FailLock:
+        def __enter__(self):  # pragma: no cover - failing ensures no lock
+            raise AssertionError("lock should not be acquired")
+
+        def __exit__(self, exc_type, exc, tb):
+            pass
+
+    monkeypatch.setattr(rng_mod, "_RNG_LOCK", FailLock())
+    rng = rng_mod.get_rng(123, 456)
+    assert isinstance(rng, random.Random)

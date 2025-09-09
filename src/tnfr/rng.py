@@ -38,15 +38,15 @@ def get_rng(seed: int, key: int) -> random.Random:
     """Return a ``random.Random`` for ``(seed, key)`` using a cached seed."""
     seed_int = int(seed)
     key_int = int(key)
+    if _CACHE_MAXSIZE <= 0:
+        return random.Random(_seed_hash(seed_int, key_int))
+
     k = (seed_int, key_int)
     with _RNG_LOCK:
-        if _CACHE_MAXSIZE <= 0:
+        seed_hash = _RNG_CACHE.get(k)
+        if seed_hash is None:
             seed_hash = _seed_hash(seed_int, key_int)
-        else:
-            seed_hash = _RNG_CACHE.get(k)
-            if seed_hash is None:
-                seed_hash = _seed_hash(seed_int, key_int)
-                _RNG_CACHE[k] = seed_hash
+            _RNG_CACHE[k] = seed_hash
         return random.Random(seed_hash)
 
 
