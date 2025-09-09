@@ -38,6 +38,7 @@ __all__ = [
     "set_attr",
     "get_attr_str",
     "set_attr_str",
+    "set_attr_and_cache",
     "set_attr_with_max",
     "set_vf",
     "set_dnfr",
@@ -285,6 +286,25 @@ def _update_cached_abs_max(
         G.graph[node_key] = max_node
 
 
+def set_attr_and_cache(
+    G: "nx.Graph",
+    n: Hashable,
+    aliases: tuple[str, ...],
+    value: float,
+    *,
+    cache: str | None = None,
+    extra: Callable[["nx.Graph", Hashable, float], None] | None = None,
+) -> float:
+    """Assign ``value`` to node ``n`` and update caches if requested."""
+
+    val = set_attr(G.nodes[n], aliases, value)
+    if cache is not None:
+        _update_cached_abs_max(G, aliases, n, val, key=cache)
+    if extra is not None:
+        extra(G, n, val)
+    return val
+
+
 def set_attr_with_max(
     G: "nx.Graph",
     n: Hashable,
@@ -294,29 +314,31 @@ def set_attr_with_max(
     cache: str,
 ) -> None:
     """Assign ``value`` to node ``n`` and update the global maximum."""
-    val = float(value)
-    set_attr(G.nodes[n], aliases, val)
-    _update_cached_abs_max(G, aliases, n, val, key=cache)
+    set_attr_and_cache(G, n, aliases, value, cache=cache)
 
 
 def set_vf(
     G: "nx.Graph", n: Hashable, value: float, *, update_max: bool = True
 ) -> None:
     """Set ``νf`` for node ``n`` and optionally update the global maximum."""
-    val = float(value)
-    set_attr(G.nodes[n], ALIAS_VF, val)
-    if update_max:
-        _update_cached_abs_max(G, ALIAS_VF, n, val, key="_vfmax")
+    cache = "_vfmax" if update_max else None
+    set_attr_and_cache(G, n, ALIAS_VF, value, cache=cache)
 
 
 def set_dnfr(G: "nx.Graph", n: Hashable, value: float) -> None:
     """Set ``ΔNFR`` for node ``n`` and update the global maximum."""
-    set_attr_with_max(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
+    set_attr_and_cache(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
+
+
+def _increment_trig_version(
+    G: "nx.Graph", _: Hashable, __: float
+) -> None:
+    g = G.graph
+    g["_trig_version"] = int(g.get("_trig_version", 0)) + 1
 
 
 def set_theta(G: "nx.Graph", n: Hashable, value: float) -> None:
     """Set ``θ`` for node ``n`` and increment the trig cache version."""
-    val = float(value)
-    set_attr(G.nodes[n], ALIAS_THETA, val)
-    g = G.graph
-    g["_trig_version"] = int(g.get("_trig_version", 0)) + 1
+    set_attr_and_cache(
+        G, n, ALIAS_THETA, value, extra=_increment_trig_version
+    )
