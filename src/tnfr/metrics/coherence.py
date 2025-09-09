@@ -187,16 +187,11 @@ def _wij_loops(
         wij[i][j] = wij[j][i] = wij_ij
 
     if neighbors_only:
-        seen: set[tuple[int, int]] = set()
         for u, v in G.edges():
             i = node_to_index[u]
             j = node_to_index[v]
             if i == j:
                 continue
-            key = (i, j) if i < j else (j, i)
-            if key in seen:
-                continue
-            seen.add(key)
             assign_wij(i, j)
     else:
         for i in range(n):
