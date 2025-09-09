@@ -15,8 +15,11 @@ import networkx as nx
 from ..graph_utils import mark_dnfr_prep_dirty
 from ..import_utils import get_numpy
 from ..json_utils import json_dumps
+from ..logging_utils import get_logger
 
 T = TypeVar("T")
+
+logger = get_logger(__name__)
 
 _EDGE_CACHE_LOCK = threading.RLock()
 
@@ -358,15 +361,19 @@ def edge_version_cache(
             return entry[1]
 
     # Execute builder without holding the lock to avoid blocking other threads.
-    value = builder()
-
-    # Second acquisition: verify and store the result atomically after building.
-    with lock:
-        entry = cache.get(key)
-        if entry is not None and entry[0] == edge_version:
-            return entry[1]
-        cache[key] = (edge_version, value)
-        return value
+    try:
+        value = builder()
+    except Exception as exc:  # pragma: no cover - logging side effect
+        logger.exception("edge_version_cache builder failed for %r: %s", key, exc)
+        raise
+    else:
+        # Second acquisition: verify and store the result atomically after building.
+        with lock:
+            entry = cache.get(key)
+            if entry is not None and entry[0] == edge_version:
+                return entry[1]
+            cache[key] = (edge_version, value)
+            return value
 
 
 def invalidate_edge_version_cache(G: Any) -> None:
