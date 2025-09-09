@@ -22,6 +22,7 @@ __all__ = [
     "get_numpy",
     "import_nodonx",
     "prune_failed_imports",
+    "clear_optional_import_cache",
 ]
 
 
@@ -142,7 +143,7 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     -----
     ``fallback`` is returned when the module is unavailable or the requested
     attribute does not exist. In both cases a warning is emitted and logged.
-    Use ``optional_import.cache_clear()`` to reset the internal cache and
+    Use :func:`clear_optional_import_cache` to reset the internal cache and
     failure registry after installing new optional dependencies.
     """
 
@@ -172,20 +173,14 @@ def optional_import(name: str, fallback: Any | None = None) -> Any | None:
     return fallback
 
 
-_optional_import_cache_clear = optional_import.cache_clear
-
-
-def _cache_clear() -> None:
-    """Clear ``optional_import`` cache and failure records."""
-    _optional_import_cache_clear()
+def clear_optional_import_cache() -> None:
+    """Clear ``optional_import`` cache, failure records and warning state."""
+    optional_import.cache_clear()
     with _IMPORT_STATE.lock:
         _IMPORT_STATE.clear()
     with _WARNED_LOCK:
         _WARNED_MODULES.clear()
         _WARNED_QUEUE.clear()
-
-
-optional_import.cache_clear = _cache_clear  # type: ignore[attr-defined]
 
 
 def prune_failed_imports() -> None:
