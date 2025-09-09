@@ -17,6 +17,9 @@ logger = get_logger(__name__)
 
 NEGATIVE_WEIGHTS_MSG = "Negative weights detected: %s"
 
+# Track keys that have already triggered a negative weight warning
+_warned_negative_keys: set[str] = set()
+
 __all__ = [
     "MAX_MATERIALIZE_DEFAULT",
     "ensure_collection",
@@ -94,6 +97,7 @@ def normalize_weights(
     default: float = 0.0,
     *,
     error_on_negative: bool = False,
+    warn_once: bool = True,
 ) -> dict[str, float]:
     """Normalize ``keys`` in ``dict_like`` so their sum is 1.
 
@@ -103,7 +107,9 @@ def normalize_weights(
     Negative weights are handled according to ``error_on_negative``. When
     ``True`` a :class:`ValueError` is raised. Otherwise negatives are logged,
     replaced with ``0`` and the remaining weights are renormalized. If all
-    weights are non-positive a uniform distribution is returned.
+    weights are non-positive a uniform distribution is returned. When
+    ``warn_once`` is ``True`` warnings for a given key are emitted only on their
+    first occurrence across calls.
     """
     if not isinstance(keys, Collection):
         keys = list(keys)
@@ -131,7 +137,15 @@ def normalize_weights(
     if negatives:
         if error_on_negative:
             raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
-        logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
+        if warn_once:
+            new_negatives = {
+                k: v for k, v in negatives.items() if k not in _warned_negative_keys
+            }
+            _warned_negative_keys.update(new_negatives)
+            if new_negatives:
+                logger.warning(NEGATIVE_WEIGHTS_MSG, new_negatives)
+        else:
+            logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
         # Second pass: clamp negatives to zero and recompute total
         for k in negatives:
             weights[k] = 0.0
