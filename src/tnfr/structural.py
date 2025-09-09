@@ -141,33 +141,59 @@ def _verify_token_format(nombres: list[str]) -> tuple[bool, str]:
     return True, "ok"
 
 
+def _find_recepcion(nombres: list[str]) -> int:
+    """Return index of the first ``recepcion`` token or ``-1``."""
+
+    try:
+        return nombres.index("recepcion")
+    except ValueError:
+        return -1
+
+
+def _find_coherencia(nombres: list[str], start: int) -> int:
+    """Return index of the first ``coherencia`` token after ``start`` or ``-1``."""
+
+    try:
+        return nombres.index("coherencia", start)
+    except ValueError:
+        return -1
+
+
+def _has_tramo_intermedio(nombres: list[str], start: int) -> bool:
+    """Check if any intermediate segment token appears after ``start``."""
+
+    return any(n in _TRAMO_INTERMEDIO for n in nombres[start:])
+
+
+def _has_cierre(nombres: list[str]) -> bool:
+    """Check if the sequence ends with a valid closure token."""
+
+    return any(n in _CIERRE_VALIDO for n in nombres[-2:])
+
+
+def _thol_blocks_closed(nombres: list[str]) -> bool:
+    """Ensure ``autoorganizacion`` blocks are closed with silence or contraction."""
+
+    open_block = False
+    for n in nombres:
+        if n == "autoorganizacion":
+            open_block = True
+        elif open_block and n in {"silencio", "contraccion"}:
+            open_block = False
+    return not open_block
+
+
 def _validate_logical_coherence(nombres: list[str]) -> tuple[bool, str]:
     """Validate logical coherence of the sequence."""
-    i_rec = i_coh = -1
-    found_intermedio = False
-    cierre_ok = False
-    thol_open = False
-    total = len(nombres)
-    for idx, n in enumerate(nombres):
-        if n == "autoorganizacion":
-            thol_open = True
-        elif thol_open and n in {"silencio", "contraccion"}:
-            thol_open = False
-        if i_rec == -1 and n == "recepcion":
-            i_rec = idx
-        elif i_rec != -1 and i_coh == -1 and n == "coherencia":
-            i_coh = idx
-        elif i_coh != -1 and not found_intermedio and n in _TRAMO_INTERMEDIO:
-            found_intermedio = True
-        if idx >= total - 2 and n in _CIERRE_VALIDO:
-            cierre_ok = True
+    i_rec = _find_recepcion(nombres)
+    i_coh = _find_coherencia(nombres, i_rec + 1 if i_rec != -1 else 0)
     if i_rec == -1 or i_coh == -1:
         return False, "missing input→coherence segment"
-    if not found_intermedio:
+    if not _has_tramo_intermedio(nombres, i_coh + 1):
         return False, "missing tension/coupling/resonance segment"
-    if not cierre_ok:
+    if not _has_cierre(nombres):
         return False, "missing closure (silence/transition/recursion)"
-    if thol_open:
+    if not _thol_blocks_closed(nombres):
         return False, "THOL block without closure"
     return True, "ok"
 
