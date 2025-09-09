@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Callable
 from collections.abc import Mapping
 import threading
 import copy
@@ -29,7 +29,7 @@ try:  # pragma: no cover - optional dependency
 except ImportError:  # noqa: BLE001 - allow any import error
     ensure_node_offset_map = None
 
-# Valores que pueden asignarse directamente sin copiar
+# Values that can be assigned directly without copying
 IMMUTABLE_SIMPLE = (
     int,
     float,
@@ -41,6 +41,55 @@ IMMUTABLE_SIMPLE = (
 )
 
 
+def _freeze_dataclass(value: Any, seen: set[int]):
+    params = getattr(type(value), "__dataclass_params__", None)
+    frozen = bool(params and params.frozen)
+    value = asdict(value)
+    tag = "mapping" if frozen else "dict"
+    return (
+        tag,
+        tuple((k, _freeze(v, seen)) for k, v in value.items()),
+    )
+
+
+def _freeze_tuple(value: tuple, seen: set[int]):
+    return tuple(_freeze(v, seen) for v in value)
+
+
+def _freeze_list(value: list, seen: set[int]):
+    return ("list", tuple(_freeze(v, seen) for v in value))
+
+
+def _freeze_set(value: set, seen: set[int]):
+    return ("set", tuple(_freeze(v, seen) for v in value))
+
+
+def _freeze_frozenset(value: frozenset, seen: set[int]):
+    return frozenset(_freeze(v, seen) for v in value)
+
+
+def _freeze_bytearray(value: bytearray, seen: set[int]):
+    return ("bytearray", bytes(value))
+
+
+def _freeze_mapping(value: Mapping, seen: set[int]):
+    tag = "dict" if hasattr(value, "__setitem__") else "mapping"
+    return (
+        tag,
+        tuple((k, _freeze(v, seen)) for k, v in value.items()),
+    )
+
+
+_FREEZE_DISPATCH: dict[type, Callable[[Any, set[int]], Any]] = {
+    tuple: _freeze_tuple,
+    list: _freeze_list,
+    set: _freeze_set,
+    frozenset: _freeze_frozenset,
+    bytearray: _freeze_bytearray,
+    Mapping: _freeze_mapping,
+}
+
+
 def _freeze(value: Any, seen: set[int] | None = None):
     if seen is None:
         seen = set()
@@ -50,32 +99,12 @@ def _freeze(value: Any, seen: set[int] | None = None):
     seen.add(obj_id)
     try:
         if is_dataclass(value) and not isinstance(value, type):
-            params = getattr(type(value), "__dataclass_params__", None)
-            frozen = bool(params and params.frozen)
-            value = asdict(value)
-            tag = "mapping" if frozen else "dict"
-            return (
-                tag,
-                tuple((k, _freeze(v, seen)) for k, v in value.items()),
-            )
+            return _freeze_dataclass(value, seen)
         if isinstance(value, IMMUTABLE_SIMPLE):
             return value
-        if isinstance(value, tuple):
-            return tuple(_freeze(v, seen) for v in value)
-        if isinstance(value, list):
-            return ("list", tuple(_freeze(v, seen) for v in value))
-        if isinstance(value, set):
-            return ("set", tuple(_freeze(v, seen) for v in value))
-        if isinstance(value, frozenset):
-            return frozenset(_freeze(v, seen) for v in value)
-        if isinstance(value, bytearray):
-            return ("bytearray", bytes(value))
-        if isinstance(value, Mapping):
-            tag = "dict" if hasattr(value, "__setitem__") else "mapping"
-            return (
-                tag,
-                tuple((k, _freeze(v, seen)) for k, v in value.items()),
-            )
+        for typ, func in _FREEZE_DISPATCH.items():
+            if isinstance(value, typ):
+                return func(value, seen)
         raise TypeError
     finally:
         seen.remove(obj_id)
