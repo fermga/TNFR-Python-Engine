@@ -8,6 +8,12 @@ import math
 
 @dataclass(frozen=True)
 class InitDefaults:
+    """Default parameters for node initialisation.
+
+    The fields are collected into :data:`INIT_DEFAULTS` and may therefore
+    appear unused to tools like Vulture.
+    """
+
     INIT_RANDOM_PHASE: bool = True
     INIT_THETA_MIN: float = -math.pi
     INIT_THETA_MAX: float = math.pi
