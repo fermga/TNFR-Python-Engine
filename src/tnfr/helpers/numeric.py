@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 from collections.abc import Iterable, Sequence
 from statistics import fmean, StatisticsError, pvariance
-from itertools import chain
+from itertools import chain, tee
 import math
 
 from ..import_utils import get_numpy, import_nodonx
@@ -155,15 +155,16 @@ def neighbor_phase_mean_list(
     summation for stable accumulation.
     """
     if np is not None:
-        pairs = [
+        valid_pairs = (
             (c, s)
             for v in neigh
             if (c := cos_th.get(v)) is not None
             and (s := sin_th.get(v)) is not None
-        ]
-        if pairs:
-            arr = np.array(pairs, dtype=float)
-            cos_arr, sin_arr = arr[:, 0], arr[:, 1]
+        )
+        cos_iter, sin_iter = tee(valid_pairs)
+        cos_arr = np.fromiter((c for c, _ in cos_iter), dtype=float)
+        if cos_arr.size:
+            sin_arr = np.fromiter((s for _, s in sin_iter), dtype=float)
             mean_cos = float(np.mean(cos_arr))
             mean_sin = float(np.mean(sin_arr))
             return float(np.arctan2(mean_sin, mean_cos))
