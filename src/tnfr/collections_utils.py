@@ -15,6 +15,8 @@ T = TypeVar("T")
 
 logger = get_logger(__name__)
 
+STRING_TYPES = (str, bytes, bytearray)
+
 NEGATIVE_WEIGHTS_MSG = "Negative weights detected: %s"
 
 # Track keys that have already triggered a negative weight warning
@@ -81,9 +83,9 @@ def ensure_collection(
     """
 
     # Step 1: detect collections and raw strings/bytes early
-    if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
+    if isinstance(it, Collection) and not isinstance(it, STRING_TYPES):
         return it
-    if isinstance(it, (str, bytes, bytearray)):
+    if isinstance(it, STRING_TYPES):
         return (cast(T, it),)
 
     # Step 2: validate limit
