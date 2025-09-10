@@ -15,7 +15,7 @@ from ..constants import (
     ALIAS_D2EPI,
 )
 from ..gamma import eval_gamma
-from ..alias import get_attr, set_attr, get_attr_str, set_attr_str
+from ..alias import get_attr, set_attr
 
 __all__ = (
     "prepare_integration_params",
@@ -171,10 +171,10 @@ def update_epi_via_nodal_equation(
 
         for n, (epi, dEPI_dt, d2epi) in updates.items():
             nd = G.nodes[n]
-            epi_kind = get_attr_str(nd, ALIAS_EPI_KIND, "")
+            epi_kind = get_attr(nd, ALIAS_EPI_KIND, "", conv=str)
             set_attr(nd, ALIAS_EPI, epi)
             if epi_kind:
-                set_attr_str(nd, ALIAS_EPI_KIND, epi_kind)
+                set_attr(nd, ALIAS_EPI_KIND, epi_kind, conv=str)
             set_attr(nd, ALIAS_dEPI, dEPI_dt)
             set_attr(nd, ALIAS_D2EPI, d2epi)
 
