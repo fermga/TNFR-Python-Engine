@@ -7,7 +7,7 @@ consistent configuration across the project.
 from __future__ import annotations
 
 import logging
-from functools import lru_cache
+from collections import OrderedDict
 from typing import Any, Hashable, Mapping
 
 __all__ = ("get_logger", "warn_once")
@@ -54,26 +54,26 @@ def warn_once(
     """Return a function that logs ``msg`` once per key.
 
     The returned callable accepts a mapping of keys to values. Keys are
-    tracked using an LRU cache limited to ``maxsize`` entries. When
-    called, new keys trigger a warning with their associated values while
+    tracked in an LRU set limited to ``maxsize`` entries. When called,
+    new keys trigger a warning with their associated values while
     repeated keys are ignored. The callable exposes ``clear()`` to reset
     the tracked keys, useful for tests.
     """
-
-    @lru_cache(maxsize=maxsize)
-    def _seen(key: Hashable) -> None:  # pragma: no cover - simple cache
-        return None
+    _seen: OrderedDict[Hashable, None] = OrderedDict()
 
     def _log(mapping: Mapping[Hashable, Any]) -> None:
         new: dict[Hashable, Any] = {}
         for k, v in mapping.items():
-            info = _seen.cache_info()
-            _seen(k)
-            if _seen.cache_info().misses > info.misses:
+            if k in _seen:
+                _seen.move_to_end(k)
+            else:
+                _seen[k] = None
                 new[k] = v
+                if len(_seen) > maxsize:
+                    _seen.popitem(last=False)
         if new:
             logger.warning(msg, new)
 
-    _log.clear = _seen.cache_clear  # type: ignore[attr-defined]
+    _log.clear = _seen.clear  # type: ignore[attr-defined]
     return _log
 

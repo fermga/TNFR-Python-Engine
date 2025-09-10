@@ -19,6 +19,7 @@ from typing import (
 )
 
 from functools import lru_cache, partial
+from threading import Lock
 
 from .value_utils import _convert_value
 
@@ -45,6 +46,9 @@ __all__ = (
 
 # Sentinel object used internally when resolving aliases
 SENTINEL = object()
+
+# Module-level lock to guard alias cache operations
+_alias_cache_lock = Lock()
 
 def _convert_default(
     default: Any,
@@ -111,11 +115,13 @@ def _alias_resolve(
 
 @lru_cache(maxsize=128)
 def _alias_cache(alias_tuple: tuple[str, ...]) -> tuple[str, ...]:
-    if not alias_tuple:
-        raise ValueError("'aliases' must contain at least one key")
-    if not all(isinstance(a, str) for a in alias_tuple):
-        raise TypeError("'aliases' elements must be strings")
-    return alias_tuple
+    """Validate and cache alias tuples with thread safety."""
+    with _alias_cache_lock:
+        if not alias_tuple:
+            raise ValueError("'aliases' must contain at least one key")
+        if not all(isinstance(a, str) for a in alias_tuple):
+            raise TypeError("'aliases' elements must be strings")
+        return alias_tuple
 
 
 class AliasAccessor(Generic[T]):

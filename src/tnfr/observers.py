@@ -124,6 +124,8 @@ def glyph_load(G, window: int | None = None) -> dict:
       otherwise use the deque's maxlen.
     Returns a dict with proportions per glyph and useful aggregates.
     """
+    if window == 0:
+        return {"_count": 0}
     window_int: int | None = None
     if window is not None:
         window_int = validate_window(window, positive=True)
