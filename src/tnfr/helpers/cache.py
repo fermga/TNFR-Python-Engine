@@ -24,8 +24,6 @@ T = TypeVar("T")
 
 logger = get_logger(__name__)
 
-_EDGE_CACHE_LOCK = threading.RLock()
-
 # Keys of cache entries dependent on the edge version.  Any change to the edge
 # set requires these to be dropped to avoid stale data.
 EDGE_VERSION_CACHE_KEYS = (
@@ -269,86 +267,81 @@ def _make_edge_cache(
     return _LockAwareLRUCache(max_entries, locks)
 
 
-def _ensure_edge_cache_locks(
-    graph: Any,
-) -> defaultdict[Hashable, threading.RLock]:
-    """Ensure per-key lock mapping for edge cache."""
-    locks = graph.get("_edge_version_cache_locks")
-    if (
-        not isinstance(locks, defaultdict)
-        or locks.default_factory is not threading.RLock
-    ):
-        locks = defaultdict(threading.RLock)
-        graph["_edge_version_cache_locks"] = locks
-    return locks
+class EdgeCacheManager:
+    """Manage per-graph edge caches and their associated locks."""
 
+    _LOCK = threading.RLock()
 
-def _init_edge_cache(
-    graph: Any,
-    locks: dict[Hashable, threading.RLock],
-    max_entries: int | None,
-) -> dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]:
-    """Initialize and store edge cache in ``graph``."""
-    use_lru = bool(max_entries)
-    cache: (
-        dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]
-    )
-    cache = _make_edge_cache(max_entries, locks) if use_lru else {}
-    graph["_edge_version_cache"] = cache
-    return cache
+    def __init__(self, graph: Any) -> None:
+        self.graph = graph
 
+    def _ensure_locks(self) -> defaultdict[Hashable, threading.RLock]:
+        locks = self.graph.get("_edge_version_cache_locks")
+        if (
+            not isinstance(locks, defaultdict)
+            or locks.default_factory is not threading.RLock
+        ):
+            locks = defaultdict(threading.RLock)
+            self.graph["_edge_version_cache_locks"] = locks
+        return locks
 
-def _maybe_init_edge_cache(
-    graph: Any,
-    locks: dict[Hashable, threading.RLock],
-    max_entries: int | None,
-) -> dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]:
-    """Return existing cache or initialise a new one if needed."""
-    use_lru = bool(max_entries)
-    cache = graph.get("_edge_version_cache")
-    if (
-        cache is None
-        or (
-            use_lru
-            and (
-                not isinstance(cache, LRUCache) or cache.maxsize != max_entries
-            )
+    def _init_cache(
+        self,
+        locks: dict[Hashable, threading.RLock],
+        max_entries: int | None,
+    ) -> dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]:
+        use_lru = bool(max_entries)
+        cache: (
+            dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]
         )
-        or (not use_lru and isinstance(cache, LRUCache))
-    ):
-        cache = _init_edge_cache(graph, locks, max_entries)
-    return cache
+        cache = _make_edge_cache(max_entries, locks) if use_lru else {}
+        self.graph["_edge_version_cache"] = cache
+        return cache
 
+    def _maybe_init_cache(
+        self,
+        locks: dict[Hashable, threading.RLock],
+        max_entries: int | None,
+    ) -> dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]:
+        use_lru = bool(max_entries)
+        cache = self.graph.get("_edge_version_cache")
+        if (
+            cache is None
+            or (
+                use_lru
+                and (
+                    not isinstance(cache, LRUCache) or cache.maxsize != max_entries
+                )
+            )
+            or (not use_lru and isinstance(cache, LRUCache))
+        ):
+            cache = self._init_cache(locks, max_entries)
+        return cache
 
-def _get_edge_cache(
-    graph: Any, max_entries: int | None, *, create: bool = True
-) -> tuple[
-    dict[Hashable, tuple[int, Any]]
-    | LRUCache[Hashable, tuple[int, Any]]
-    | None,
-    dict[Hashable, threading.RLock]
-    | defaultdict[Hashable, threading.RLock]
-    | None,
-]:
-    """Return edge cache and lock mapping for ``graph``.
-
-    When ``create`` is ``True`` missing structures are initialized according
-    to ``max_entries``. Returns a tuple ``(cache, locks)``. Actual cache
-    construction is handled by :func:`_make_edge_cache`.
-    """
-    with _EDGE_CACHE_LOCK:
-        if create:
-            locks = _ensure_edge_cache_locks(graph)
-            cache = _maybe_init_edge_cache(graph, locks, max_entries)
-        else:
-            locks = graph.get("_edge_version_cache_locks")
-            cache = graph.get("_edge_version_cache")
-        if max_entries is None and isinstance(locks, dict):
-            cache_keys = cache.keys() if isinstance(cache, dict) else ()
-            for key in list(locks.keys()):
-                if key not in cache_keys:
-                    locks.pop(key, None)
-    return cache, locks
+    def get_cache(
+        self, max_entries: int | None, *, create: bool = True
+    ) -> tuple[
+        dict[Hashable, tuple[int, Any]]
+        | LRUCache[Hashable, tuple[int, Any]]
+        | None,
+        dict[Hashable, threading.RLock]
+        | defaultdict[Hashable, threading.RLock]
+        | None,
+    ]:
+        """Return the edge cache and lock mapping for ``graph``."""
+        with self._LOCK:
+            if create:
+                locks = self._ensure_locks()
+                cache = self._maybe_init_cache(locks, max_entries)
+            else:
+                locks = self.graph.get("_edge_version_cache_locks")
+                cache = self.graph.get("_edge_version_cache")
+            if max_entries is None and isinstance(locks, dict):
+                cache_keys = cache.keys() if isinstance(cache, dict) else ()
+                for key in list(locks.keys()):
+                    if key not in cache_keys:
+                        locks.pop(key, None)
+        return cache, locks
 
 
 def edge_version_cache(
@@ -383,7 +376,7 @@ def edge_version_cache(
         return builder()
 
     graph = get_graph(G)
-    cache, locks = _get_edge_cache(graph, max_entries)
+    cache, locks = EdgeCacheManager(graph).get_cache(max_entries)
     edge_version = int(graph.get("_edge_version", 0))
     lock = locks[key]
     # The lock is deliberately acquired twice. We first check for a cached
@@ -420,7 +413,7 @@ def edge_version_cache(
 def invalidate_edge_version_cache(G: Any) -> None:
     """Clear cached entries associated with ``G``."""
     graph = get_graph(G)
-    cache, locks = _get_edge_cache(graph, None, create=False)
+    cache, locks = EdgeCacheManager(graph).get_cache(None, create=False)
     if isinstance(cache, (dict, LRUCache)):
         cache.clear()
     if isinstance(locks, dict):
