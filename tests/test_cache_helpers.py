@@ -46,6 +46,17 @@ def test_node_offset_map_updates_on_node_addition(graph_canon):
     assert mapping2[2] == 2
 
 
+def test_node_offset_map_updates_on_node_replacement(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([0, 1])
+    mapping1 = ensure_node_offset_map(G)
+    G.remove_node(0)
+    G.add_node(2)
+    mapping2 = ensure_node_offset_map(G)
+    assert mapping2 is not mapping1
+    assert 0 not in mapping2 and 2 in mapping2
+
+
 def test_cache_node_list_updates_on_dirty(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
@@ -55,6 +66,17 @@ def test_cache_node_list_updates_on_dirty(graph_canon):
     G.graph["_node_list_dirty"] = True
     nodes3 = _cache_node_list(G)
     assert nodes3 is not nodes1
+
+
+def test_cache_node_list_invalidate_on_node_replacement(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([0, 1])
+    nodes1 = _cache_node_list(G)
+    G.remove_node(0)
+    G.add_node(2)
+    nodes2 = _cache_node_list(G)
+    assert nodes2 is not nodes1
+    assert set(nodes2) == {1, 2}
 
 
 def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon):

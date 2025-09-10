@@ -185,8 +185,8 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
 
     The cached values are stored in ``G.graph`` under ``"_node_list"``,
     ``"_node_list_len"`` and ``"_node_list_checksum"``.  The cache is
-    refreshed when the number of nodes changes or when the optional
-    ``"_node_list_dirty"`` flag is set to ``True``.
+    refreshed when the node set checksum or number of nodes changes, or when
+    the optional ``"_node_list_dirty"`` flag is set to ``True``.
     """
     graph = get_graph(G)
     nodes = graph.get("_node_list")
@@ -195,11 +195,17 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     dirty = bool(graph.pop("_node_list_dirty", False))
     if nodes is None or stored_len != current_n or dirty:
         nodes = tuple(G.nodes())
-        _update_node_cache(graph, nodes, "_node_list")
+        checksum = node_set_checksum(G, nodes, store=True)
+        _update_node_cache(graph, nodes, "_node_list", checksum=checksum)
         graph["_node_list_len"] = current_n
     else:
-        if "_node_list_checksum" not in graph:
-            _update_node_cache(graph, nodes, "_node_list")
+        new_checksum = node_set_checksum(G)
+        if graph.get("_node_list_checksum") != new_checksum:
+            nodes = tuple(G.nodes())
+            _update_node_cache(graph, nodes, "_node_list", checksum=new_checksum)
+            graph["_node_list_len"] = current_n
+        elif "_node_list_checksum" not in graph:
+            _update_node_cache(graph, nodes, "_node_list", checksum=new_checksum)
     return nodes
 
 
