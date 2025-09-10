@@ -235,6 +235,35 @@ def _apply_dnfr_gradients(
         set_dnfr(G, n, float(dnfr))
 
 
+def _init_bar_arrays(data, *, degs=None, np=None):
+    """Prepare containers for neighbour means.
+
+    If ``np`` is provided, NumPy arrays are created; otherwise lists are used.
+    ``degs`` is optional and only initialised when the topological term is
+    active.
+    """
+
+    theta = data["theta"]
+    epi = data["epi"]
+    vf = data["vf"]
+    w_topo = data["w_topo"]
+    if np is not None:
+        th_bar = np.array(theta, dtype=float)
+        epi_bar = np.array(epi, dtype=float)
+        vf_bar = np.array(vf, dtype=float)
+        deg_bar = (
+            np.array(degs, dtype=float)
+            if w_topo != 0.0 and degs is not None
+            else None
+        )
+    else:
+        th_bar = list(theta)
+        epi_bar = list(epi)
+        vf_bar = list(vf)
+        deg_bar = list(degs) if w_topo != 0.0 and degs is not None else None
+    return th_bar, epi_bar, vf_bar, deg_bar
+
+
 def _compute_neighbor_means(
     G,
     data,
@@ -251,16 +280,13 @@ def _compute_neighbor_means(
     """Return neighbour mean arrays for ΔNFR."""
     w_topo = data["w_topo"]
     theta = data["theta"]
-    epi = data["epi"]
-    vf = data["vf"]
-    if np is not None and isinstance(count, np.ndarray):
+    is_numpy = np is not None and isinstance(count, np.ndarray)
+    th_bar, epi_bar, vf_bar, deg_bar = _init_bar_arrays(
+        data, degs=degs, np=np if is_numpy else None
+    )
+
+    if is_numpy:
         mask = count > 0
-        th_bar = np.array(theta, dtype=float)
-        epi_bar = np.array(epi, dtype=float)
-        vf_bar = np.array(vf, dtype=float)
-        deg_bar = None
-        if w_topo != 0.0 and degs is not None:
-            deg_bar = np.array(degs, dtype=float)
         if np.any(mask):
             th_bar[mask] = np.arctan2(
                 y[mask] / count[mask], x[mask] / count[mask]
@@ -272,10 +298,6 @@ def _compute_neighbor_means(
         return th_bar, epi_bar, vf_bar, deg_bar
 
     n = len(theta)
-    th_bar = list(theta)
-    epi_bar = list(epi)
-    vf_bar = list(vf)
-    deg_bar = list(degs) if w_topo != 0.0 and degs is not None else None
     cos_th = data["cos_theta"]
     sin_th = data["sin_theta"]
     idx = data["idx"]
