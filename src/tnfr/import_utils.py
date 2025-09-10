@@ -32,8 +32,6 @@ _FAILED_IMPORT_LIMIT = 128  # keep only this many recent failures
 _FAILED_IMPORT_MAX_AGE = 3600.0  # seconds
 _FAILED_IMPORT_PRUNE_INTERVAL = 60.0  # seconds between automatic prunes
 
-_LAST_FAILED_IMPORT_PRUNE = 0.0
-
 
 @dataclass(slots=True)
 class _ImportState:
@@ -41,6 +39,7 @@ class _ImportState:
     lock: threading.Lock = field(default_factory=threading.Lock)
     limit: int = _FAILED_IMPORT_LIMIT
     max_age: float = _FAILED_IMPORT_MAX_AGE
+    last_prune: float = 0.0
 
     def prune(self, now: float | None = None) -> None:
         now = time.monotonic() if now is None else now
@@ -95,7 +94,8 @@ def _warn_failure(
         ``"both"`` emits to both destinations.
     """
     now = time.monotonic()
-    if now - _LAST_FAILED_IMPORT_PRUNE >= _FAILED_IMPORT_PRUNE_INTERVAL:
+    state = _IMPORT_STATE
+    if now - state.last_prune >= _FAILED_IMPORT_PRUNE_INTERVAL:
         prune_failed_imports()
     msg = (
         f"Failed to import module '{module}': {err}"
@@ -193,15 +193,15 @@ def clear_optional_import_cache() -> None:
 def prune_failed_imports() -> None:
     """Remove expired entries from the failed import registry."""
     now = time.monotonic()
-    with _IMPORT_STATE.lock:
-        _IMPORT_STATE.prune(now)
+    state = _IMPORT_STATE
+    with state.lock:
+        state.prune(now)
+        state.last_prune = now
     with _WARNED_LOCK:
         expiry = now - _FAILED_IMPORT_MAX_AGE
         stale = [m for m, t in _WARNED_MODULES.items() if t < expiry]
         for m in stale:
             _WARNED_MODULES.pop(m, None)
-    global _LAST_FAILED_IMPORT_PRUNE
-    _LAST_FAILED_IMPORT_PRUNE = now
 
 
 @lru_cache(maxsize=1)

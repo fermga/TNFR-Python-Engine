@@ -19,7 +19,7 @@ def test_warned_modules_pruning(monkeypatch):
     with _WARNED_LOCK:
         assert "mod" in _WARNED_MODULES
         _WARNED_MODULES["mod"] = time.monotonic() - (_FAILED_IMPORT_MAX_AGE + 1)
-    monkeypatch.setattr(import_utils, "_LAST_FAILED_IMPORT_PRUNE", 0.0)
+    monkeypatch.setattr(import_utils._IMPORT_STATE, "last_prune", 0.0)
     monkeypatch.setattr(import_utils, "_FAILED_IMPORT_PRUNE_INTERVAL", 0.0)
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
