@@ -56,28 +56,32 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
 
     if dirty:
         for event in dirty:
-            if event not in cbs:
-                continue
-            if event not in _CALLBACK_EVENTS:
-                del cbs[event]
-                continue
-            cb_map = cbs[event]
-            if isinstance(cb_map, Mapping):
-                entries = cb_map.values()
-            elif isinstance(cb_map, Sequence) and not isinstance(cb_map, (str, bytes)):
-                entries = cb_map
-            else:
-                entries = []
-            new_map: dict[str, CallbackSpec] = {}
-            for entry in entries:
-                spec = _normalize_callback_entry(entry)
-                if spec is None:
-                    continue
-                key = spec.name or repr(spec.func)
-                new_map[key] = spec
-            cbs[event] = new_map
+            _normalize_event_callbacks(cbs, event)
     return cbs
 
+
+def _normalize_event_callbacks(cbs: CallbackRegistry, event: str) -> None:
+    """Clean and rebuild callbacks for ``event`` in ``cbs``."""
+    if event not in cbs:
+        return
+    if event not in _CALLBACK_EVENTS:
+        del cbs[event]
+        return
+    cb_map = cbs[event]
+    if isinstance(cb_map, Mapping):
+        entries = cb_map.values()
+    elif isinstance(cb_map, Sequence) and not isinstance(cb_map, (str, bytes)):
+        entries = cb_map
+    else:
+        entries = []
+    new_map: dict[str, CallbackSpec] = {}
+    for entry in entries:
+        spec = _normalize_callback_entry(entry)
+        if spec is None:
+            continue
+        key = spec.name or repr(spec.func)
+        new_map[key] = spec
+    cbs[event] = new_map
 
 
 def _normalize_event(event: CallbackEvent | str) -> str:
