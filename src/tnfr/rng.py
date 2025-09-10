@@ -56,9 +56,6 @@ def make_rng(seed: int, key: int) -> random.Random:
     key_int = int(key)
     return random.Random(_seed_hash_for(seed_int, key_int))
 
-# Backwards compatibility alias
-get_rng = make_rng
-
 
 def clear_rng_cache() -> None:
     """Clear cached seed hashes."""
