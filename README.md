@@ -65,6 +65,14 @@ instantiate ad-hoc locks directly when they are not shared.
 
 ---
 
+## Callback error handling
+
+Callback errors are stored in a ring buffer attached to the graph.  The
+buffer retains at most the last 100 errors by default, but the limit can be
+adjusted at runtime via ``tnfr.callback_utils.set_callback_error_limit``.
+
+---
+
 ## Why TNFR (in 60 seconds)
 
 * **From objects to coherences:** you model **processes** that hold, not fixed entities.
