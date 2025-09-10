@@ -38,7 +38,7 @@ __all__ = ("NodoTNFR", "NodoNX", "NodoProtocol", "EdgeStrategy")
 
 
 def _nx_attr_property(
-    aliases,
+    aliases: tuple[str, ...],
     *,
     default=0.0,
     getter=get_attr,
@@ -308,14 +308,16 @@ class NodoNX(NodoProtocol):
         self.graph = G.graph
         G.graph.setdefault("_node_cache", {})[n] = self
 
-    EPI = _nx_attr_property(ALIAS_EPI)
-    vf = _nx_attr_property(ALIAS_VF, setter=set_vf, use_graph_setter=True)
-    theta = _nx_attr_property(
-        ALIAS_THETA, setter=set_theta, use_graph_setter=True
+    EPI = _nx_attr_property(aliases=ALIAS_EPI)
+    vf = _nx_attr_property(
+        aliases=ALIAS_VF, setter=set_vf, use_graph_setter=True
     )
-    Si = _nx_attr_property(ALIAS_SI)
+    theta = _nx_attr_property(
+        aliases=ALIAS_THETA, setter=set_theta, use_graph_setter=True
+    )
+    Si = _nx_attr_property(aliases=ALIAS_SI)
     epi_kind = _nx_attr_property(
-        ALIAS_EPI_KIND,
+        aliases=ALIAS_EPI_KIND,
         default="",
         getter=get_attr_str,
         setter=set_attr_str,
@@ -323,9 +325,9 @@ class NodoNX(NodoProtocol):
         to_storage=str,
     )
     dnfr = _nx_attr_property(
-        ALIAS_DNFR, setter=set_dnfr, use_graph_setter=True
+        aliases=ALIAS_DNFR, setter=set_dnfr, use_graph_setter=True
     )
-    d2EPI = _nx_attr_property(ALIAS_D2EPI)
+    d2EPI = _nx_attr_property(aliases=ALIAS_D2EPI)
 
     @classmethod
     def from_graph(cls, G, n):

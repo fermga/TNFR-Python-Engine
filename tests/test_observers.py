@@ -147,11 +147,16 @@ def test_wbar_rejects_non_positive_window(graph_canon, w):
         wbar(G, window=w)
 
 
-@pytest.mark.parametrize("w", [0, -1])
+@pytest.mark.parametrize("w", [-1])
 def test_glyph_load_rejects_non_positive_window(graph_canon, w):
     G = graph_canon()
     with pytest.raises(ValueError):
         glyph_load(G, window=w)
+
+
+def test_glyph_load_zero_window(graph_canon):
+    G = graph_canon()
+    assert glyph_load(G, window=0) == {"_count": 0}
 
 
 def test_wbar_uses_default_window(graph_canon):

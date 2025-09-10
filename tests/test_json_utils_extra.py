@@ -20,7 +20,7 @@ def _reset_json_utils(monkeypatch, module):
 def test_json_dumps_without_orjson(monkeypatch, caplog):
     _reset_json_utils(monkeypatch, None)
 
-    with warnings.catch_warnings(record=True) as w:
+    with warnings.catch_warnings(record=True):
 
         result = json_utils.json_dumps({"a": 1}, ensure_ascii=False, to_bytes=True)
     assert result == b'{"a":1}'
@@ -31,7 +31,6 @@ def test_json_dumps_with_orjson_warns(monkeypatch):
     _reset_json_utils(monkeypatch, DummyOrjson())
 
     with warnings.catch_warnings(record=True) as w:
-        warnings.filterwarnings("once", message=".*ignored when using orjson")
 
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)

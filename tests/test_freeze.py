@@ -3,8 +3,6 @@
 from dataclasses import dataclass
 from types import MappingProxyType
 
-import pytest
-
 from tnfr.immutable import _freeze
 
 

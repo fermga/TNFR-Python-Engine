@@ -1,6 +1,8 @@
 """JSON serialization helpers.
 
 This module lazily imports :mod:`orjson` on first use of :func:`json_dumps`.
+The :func:`json_dumps_str` helper mirrors :func:`json_dumps` but always returns
+``str`` output.
 """
 
 from __future__ import annotations
@@ -8,6 +10,7 @@ from __future__ import annotations
 import json
 
 import warnings
+import inspect
 
 from typing import Any, Callable, overload, Literal
 
@@ -22,6 +25,7 @@ warnings.filterwarnings(
 _ORJSON_PARAMS_MSG = (
     "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson"
 )
+
 @lru_cache(maxsize=1)
 def _load_orjson() -> Any | None:
     """Lazily import :mod:`orjson` once."""
@@ -51,7 +55,9 @@ def _json_dumps_orjson(
         or params.cls is not None
         or kwargs
     ):
+
         warnings.warn(_ORJSON_PARAMS_MSG, UserWarning, stacklevel=3)
+
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
     data = orjson.dumps(obj, option=option, default=params.default)
     return data if params.to_bytes else data.decode("utf-8")
