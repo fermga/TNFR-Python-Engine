@@ -100,13 +100,6 @@ _FREEZE_DISPATCH: dict[type, Callable[[Any, set[int]], Any]] = {
 }
 
 
-def _all_immutable(iterable) -> bool:
-    return all(_is_immutable(v) for v in iterable)
-
-
-_IMMUTABLE_TAG_DISPATCH: dict[str, Callable[[Any], bool]] = {}
-
-
 def _freeze(value: Any, seen: set[int] | None = None):
     if seen is None:
         seen = set()
