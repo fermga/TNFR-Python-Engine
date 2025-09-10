@@ -4,9 +4,13 @@ from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any
 from collections.abc import Mapping
+import pytest
 
-from tnfr.constants import _is_immutable, _is_immutable_inner
-from tnfr.constants import _IMMUTABLE_CACHE
+from tnfr.immutable import (
+    _IMMUTABLE_CACHE,
+    _is_immutable,
+    _is_immutable_inner,
+)
 import gc
 
 
@@ -34,6 +38,14 @@ def test_is_immutable_lists_dicts_nested():
     assert not _is_immutable(data)
     # call twice to exercise cache behaviour
     assert not _is_immutable(data)
+
+
+@pytest.mark.parametrize(
+    "value",
+    [1, 1.0, 1 + 0j, "a", True, b"abc", None],
+)
+def test_is_immutable_simple_types(value):
+    assert _is_immutable(value)
 
 
 def test_is_immutable_inner_handles_mapping_tag():
