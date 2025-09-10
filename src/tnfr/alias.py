@@ -14,7 +14,6 @@ from typing import (
     TypeVar,
     Optional,
     overload,
-    Protocol,
     Generic,
     Hashable,
     TYPE_CHECKING,
@@ -178,46 +177,124 @@ class AliasAccessor(Generic[T]):
         return val
 
 
-class _Getter(Protocol[T]):
-    @overload
-    def __call__(
-        self,
-        d: dict[str, Any],
-        aliases: Iterable[str],
-        default: T = ...,  # noqa: D401 - documented in get_attr
-        *,
-        strict: bool = False,
-        log_level: int | None = None,
-        conv: Callable[[Any], T] | None = ...,
-    ) -> T: ...
-
-    @overload
-    def __call__(
-        self,
-        d: dict[str, Any],
-        aliases: Iterable[str],
-        default: None = ...,  # noqa: D401 - documented in get_attr
-        *,
-        strict: bool = False,
-        log_level: int | None = None,
-        conv: Callable[[Any], T] | None = ...,
-    ) -> Optional[T]: ...
-
-
-class _Setter(Protocol[T]):
-    def __call__(
-        self,
-        d: dict[str, Any],
-        aliases: Iterable[str],
-        value: Any,
-        conv: Callable[[Any], T] | None = ...,
-    ) -> T: ...
-
-
 _float_accessor = AliasAccessor(float, default=0.0)
-get_attr, set_attr = _float_accessor.get, _float_accessor.set
 _str_accessor = AliasAccessor(str, default="")
-get_attr_str, set_attr_str = _str_accessor.get, _str_accessor.set
+
+
+@overload
+def get_attr(
+    d: dict[str, Any],
+    aliases: Iterable[str],
+    default: float,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+    conv: Callable[[Any], float] | None = None,
+) -> float:
+    ...
+
+
+@overload
+def get_attr(
+    d: dict[str, Any],
+    aliases: Iterable[str],
+    default: None = None,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+    conv: Callable[[Any], float] | None = None,
+) -> float | None:
+    ...
+
+
+def get_attr(
+    d: dict[str, Any],
+    aliases: Iterable[str],
+    default: float | None = None,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+    conv: Callable[[Any], float] | None = None,
+) -> float | None:
+    """Return the value for the first key in ``aliases`` found in ``d``."""
+
+    return _float_accessor.get(
+        d,
+        aliases,
+        default=default,
+        strict=strict,
+        log_level=log_level,
+        conv=conv,
+    )
+
+
+def set_attr(
+    d: dict[str, Any],
+    aliases: Iterable[str],
+    value: Any,
+    conv: Callable[[Any], float] | None = None,
+) -> float:
+    """Assign ``value`` to the first alias key found in ``d``."""
+
+    return _float_accessor.set(d, aliases, value, conv=conv)
+
+
+@overload
+def get_attr_str(
+    d: dict[str, Any],
+    aliases: Iterable[str],
+    default: str,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+    conv: Callable[[Any], str] | None = None,
+) -> str:
+    ...
+
+
+@overload
+def get_attr_str(
+    d: dict[str, Any],
+    aliases: Iterable[str],
+    default: None = None,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+    conv: Callable[[Any], str] | None = None,
+) -> str | None:
+    ...
+
+
+def get_attr_str(
+    d: dict[str, Any],
+    aliases: Iterable[str],
+    default: str | None = None,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+    conv: Callable[[Any], str] | None = None,
+) -> str | None:
+    """Return the string value for the first key in ``aliases``."""
+
+    return _str_accessor.get(
+        d,
+        aliases,
+        default=default,
+        strict=strict,
+        log_level=log_level,
+        conv=conv,
+    )
+
+
+def set_attr_str(
+    d: dict[str, Any],
+    aliases: Iterable[str],
+    value: Any,
+    conv: Callable[[Any], str] | None = None,
+) -> str:
+    """Assign ``value`` to the first alias key in ``d`` as ``str``."""
+
+    return _str_accessor.set(d, aliases, value, conv=conv)
 
 
 # -------------------------
