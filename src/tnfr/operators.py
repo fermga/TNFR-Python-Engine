@@ -34,6 +34,7 @@ from .helpers.numeric import (
     angle_diff,
     neighbor_phase_mean,
     neighbor_mean,
+    kahan_sum,
 )
 from .helpers.cache import (
     increment_edge_version,
@@ -645,15 +646,14 @@ def _snapshot_topology(G, nx):
 
 def _snapshot_epi(G):
     """Return ``(mean, checksum)`` of the node EPI values."""
-    total = 0.0
-    count = 0
     buf = StringIO()
+    values = []
     for n, data in G.nodes(data=True):
         v = float(get_attr(data, ALIAS_EPI, 0.0))
-        total += v
-        count += 1
+        values.append(v)
         buf.write(f"{str(n)}:{round(v, 6)};")
-    mean_val = total / count if count else 0.0
+    total = kahan_sum(values)
+    mean_val = total / len(values) if values else 0.0
     checksum = hashlib.sha1(buf.getvalue().encode()).hexdigest()[:12]
     return float(mean_val), checksum
 
