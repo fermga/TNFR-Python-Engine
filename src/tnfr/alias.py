@@ -18,17 +18,12 @@ from typing import (
     Hashable,
     TYPE_CHECKING,
 )
-import logging
-from functools import lru_cache, partial
-from .logging_utils import get_logger
+from functools import lru_cache
 
-from .constants import ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
 from .value_utils import _convert_value
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx  # type: ignore[import-untyped]
-
-logger = get_logger(__name__)
 
 T = TypeVar("T")
 
@@ -46,6 +41,29 @@ __all__ = (
     "recompute_abs_max",
     "multi_recompute_abs_max",
 )
+
+
+def _convert_default(
+    default: Any,
+    conv: Callable[[Any], T],
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+) -> tuple[bool, T | None]:
+    """Convert ``default`` using ``conv`` with error handling.
+
+    Behaves like :func:`_convert_value` but uses a fixed ``key`` so the log
+    message identifies the value as a default.
+    """
+
+    return _convert_value(
+        default,
+        conv,
+        strict=strict,
+        key="default",
+        log_level=log_level,
+    )
+
 
 def _alias_resolve(
     d: dict[str, Any],
@@ -416,15 +434,16 @@ def set_vf(
 ) -> None:
     """Set ``νf`` for node ``n`` and optionally update the global maximum."""
     cache = "_vfmax" if update_max else None
+    from .constants import ALIAS_VF
+
     set_scalar(G, n, ALIAS_VF, value, cache=cache)
-
-
-_set_dnfr = partial(set_scalar, alias=ALIAS_DNFR, cache="_dnfrmax")
 
 
 def set_dnfr(G: "networkx.Graph", n: Hashable, value: float) -> None:
     """Set ``ΔNFR`` for node ``n`` and update the global maximum."""
-    _set_dnfr(G, n, value=value)
+    from .constants import ALIAS_DNFR
+
+    set_scalar(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
 
 
 def _increment_trig_version(
@@ -440,14 +459,16 @@ def _increment_trig_version(
     g.pop("_thetas", None)
 
 
-_set_theta = partial(set_scalar, alias=ALIAS_THETA, extra=_increment_trig_version)
-
 
 def set_theta(G: "networkx.Graph", n: Hashable, value: float) -> None:
-    """Set ``θ`` for node ``n`` and invalidate trig caches.
+    """Set ``θ`` for node ``n`` and invalidate trig caches."""
+    from .constants import ALIAS_THETA
 
-    Updating a node's phase triggers invalidation of cached trigonometric
-    values. The per-graph ``_trig_version`` counter is incremented and any
-    previously cached cosines, sines or angles are cleared from ``G.graph``.
-    """
-    _set_theta(G, n, value=value)
+    set_scalar(
+        G,
+        n,
+        ALIAS_THETA,
+        value,
+        cache=None,
+        extra=_increment_trig_version,
+    )
