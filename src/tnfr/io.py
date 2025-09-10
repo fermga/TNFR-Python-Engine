@@ -175,10 +175,10 @@ def safe_write(
             tmp_path.unlink(missing_ok=True)
 
 
-__all__ = [
+__all__ = (
     "read_structured_file",
     "safe_write",
     "StructuredFileError",
     "TOMLDecodeError",
     "YAMLError",
-]
+)

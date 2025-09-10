@@ -35,13 +35,13 @@ def _log_negative_keys_once(negatives: Mapping[str, float]) -> None:
     if new:
         logger.warning(NEGATIVE_WEIGHTS_MSG, new)
 
-__all__ = [
+__all__ = (
     "MAX_MATERIALIZE_DEFAULT",
     "ensure_collection",
     "normalize_weights",
     "normalize_counter",
     "mix_groups",
-]
+)
 
 MAX_MATERIALIZE_DEFAULT: int = 1000
 """Default materialization limit used by :func:`ensure_collection`.

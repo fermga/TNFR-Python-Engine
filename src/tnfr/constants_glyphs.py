@@ -85,11 +85,11 @@ ANGLE_MAP: Mapping[str, float] = MappingProxyType(
     }
 )
 
-__all__ = [
+__all__ = (
     "GLYPHS_CANONICAL",
     "GLYPHS_CANONICAL_SET",
     "ESTABILIZADORES",
     "DISRUPTIVOS",
     "GLYPH_GROUPS",
     "ANGLE_MAP",
-]
+)

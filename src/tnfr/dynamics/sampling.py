@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..helpers.cache import _cache_node_list
 from ..rng import _rng_for_step, base_seed
 
-__all__ = ["update_node_sample"]
+__all__ = ("update_node_sample",)
 
 
 def update_node_sample(G, *, step: int) -> None:

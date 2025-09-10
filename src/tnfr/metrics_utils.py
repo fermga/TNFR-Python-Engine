@@ -40,7 +40,7 @@ class GraphLike(Protocol):
     def __iter__(self) -> Iterable[Any]: ...
 
 
-__all__ = [
+__all__ = (
     "TrigCache",
     "compute_dnfr_accel_max",
     "compute_coherence",
@@ -50,7 +50,7 @@ __all__ = [
     "compute_Si_node",
     "compute_Si",
     "min_max_range",
-]
+)
 
 
 @dataclass(slots=True)

@@ -34,7 +34,7 @@ from .operators import apply_glyph_obj
 
 T = TypeVar("T")
 
-__all__ = ["NodoTNFR", "NodoNX", "NodoProtocol", "EdgeStrategy"]
+__all__ = ("NodoTNFR", "NodoNX", "NodoProtocol", "EdgeStrategy")
 
 
 def _nx_attr_property(

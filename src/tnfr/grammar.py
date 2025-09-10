@@ -16,13 +16,13 @@ from .glyph_history import recent_glyph
 from .types import Glyph
 from .operators import apply_glyph  # avoid repeated import inside functions
 
-__all__ = [
+__all__ = (
     "CANON_COMPAT",
     "CANON_FALLBACK",
     "enforce_canonical_grammar",
     "on_applied_glyph",
     "apply_glyph_with_grammar",
-]
+)
 
 # -------------------------
 # Per-node grammar state

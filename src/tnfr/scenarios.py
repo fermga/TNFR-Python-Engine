@@ -8,7 +8,7 @@ from .initialization import init_node_attrs
 
 VALID_TOPOLOGIES = ("ring", "complete", "erdos")
 
-__all__ = ["build_graph"]
+__all__ = ("build_graph",)
 
 
 def build_graph(

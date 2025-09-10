@@ -16,12 +16,12 @@ from .metrics_utils import compute_dnfr_accel_max
 
 HYSTERESIS_GLYPHS: set[str] = {"IL", "OZ", "ZHIR", "THOL", "NAV", "RA"}
 
-__all__ = [
+__all__ = (
     "_selector_thresholds",
     "_norms_para_selector",
     "_calc_selector_score",
     "_apply_selector_hysteresis",
-]
+)
 
 
 def _selector_thresholds(G: "nx.Graph") -> dict:

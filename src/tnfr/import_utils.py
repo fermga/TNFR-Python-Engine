@@ -17,13 +17,13 @@ import threading
 import time
 from .logging_utils import get_logger
 
-__all__ = [
+__all__ = (
     "optional_import",
     "get_numpy",
     "import_nodonx",
     "prune_failed_imports",
     "clear_optional_import_cache",
-]
+)
 
 
 logger = get_logger(__name__)

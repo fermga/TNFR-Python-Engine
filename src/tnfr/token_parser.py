@@ -6,7 +6,7 @@ from typing import Any, Callable
 from collections import deque
 from collections.abc import Sequence
 
-__all__ = ["_flatten_tokens", "validate_token", "_parse_tokens"]
+__all__ = ("_flatten_tokens", "validate_token", "_parse_tokens")
 
 
 def _flatten_tokens(obj: Any):

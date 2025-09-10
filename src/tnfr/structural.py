@@ -111,11 +111,11 @@ OPERADORES = operador_factory(
 )
 
 # Exposición dinámica de clases concretas en el espacio global
-__all__ = ["create_nfr", "Operador", "OPERADORES"]
+__all__ = ("create_nfr", "Operador", "OPERADORES")
 for _cls in OPERADORES.values():
     globals()[_cls.__name__] = _cls
-    __all__.append(_cls.__name__)
-__all__ += ["validate_sequence", "run_sequence"]
+    __all__ += (_cls.__name__,)
+__all__ += ("validate_sequence", "run_sequence")
 # ---------------------------------------------------------------------------
 # 3) Motor de secuencias + validador sintáctico
 # ---------------------------------------------------------------------------

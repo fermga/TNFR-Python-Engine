@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 from .import_utils import optional_import
 
-__all__ = ["json_dumps", "json_dumps_str"]
+__all__ = ("json_dumps", "json_dumps_str")
 
 _ignored_param_warned = False
 _warn_lock = threading.Lock()

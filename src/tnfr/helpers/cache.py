@@ -36,7 +36,7 @@ EDGE_VERSION_CACHE_KEYS = (
 )
 
 
-__all__ = [
+__all__ = (
     "get_graph",
     "get_graph_mapping",
     "node_set_checksum",
@@ -49,7 +49,7 @@ __all__ = [
     "cached_nodes_and_A",
     "invalidate_edge_version_cache",
     "increment_edge_version",
-]
+)
 
 
 def get_graph(obj: Any) -> Any:

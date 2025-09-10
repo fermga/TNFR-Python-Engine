@@ -11,7 +11,7 @@ from collections.abc import Iterable
 from .constants import get_param
 from .collections_utils import ensure_collection
 
-__all__ = [
+__all__ = (
     "HistoryDict",
     "IncrementDict",
     "push_glyph",
@@ -22,7 +22,7 @@ __all__ = [
     "last_glyph",
     "count_glyphs",
     "validate_window",
-]
+)
 
 
 def validate_window(window: int, *, positive: bool = False) -> int:

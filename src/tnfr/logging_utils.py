@@ -12,7 +12,7 @@ import threading
 _LOCK = threading.Lock()
 _LOGGING_CONFIGURED = False
 
-__all__ = ["get_logger"]
+__all__ = ("get_logger",)
 
 
 def _configure_root() -> None:

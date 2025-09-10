@@ -11,7 +11,7 @@ from .rng import make_rng
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx  # type: ignore[import-untyped]
 
-__all__ = ["init_node_attrs"]
+__all__ = ("init_node_attrs",)
 
 
 def _init_phase(
