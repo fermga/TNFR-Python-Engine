@@ -9,7 +9,7 @@ from tnfr.constants import (
     ALIAS_VF,
 )
 from tnfr.validators import run_validators
-from tnfr.alias import set_attr_str, set_attr
+from tnfr.alias import set_attr
 from tnfr.io import read_structured_file, StructuredFileError
 from tnfr.config import load_config
 
@@ -58,7 +58,7 @@ def test_validator_sigma_norm(monkeypatch):
 def test_validator_invalid_glyph():
     G = _base_graph()
     n0 = list(G.nodes())[0]
-    set_attr_str(G.nodes[n0], ALIAS_EPI_KIND, "INVALID")
+    set_attr(G.nodes[n0], ALIAS_EPI_KIND, "INVALID", conv=str)
     G.nodes[n0]["glyph_history"] = ["INVALID"]
     with pytest.raises(KeyError):
         run_validators(G)

@@ -29,6 +29,8 @@ if TYPE_CHECKING:  # pragma: no cover
 T = TypeVar("T")
 
 __all__ = (
+    "get_attr_generic",
+    "set_attr_generic",
     "get_attr",
     "set_attr",
     "get_attr_str",
@@ -200,8 +202,64 @@ class AliasAccessor(Generic[T]):
         return val
 
 
-_float_accessor = AliasAccessor(float, default=0.0)
-_str_accessor = AliasAccessor(str, default="")
+_generic_accessor: AliasAccessor[Any] = AliasAccessor()
+
+
+@overload
+def get_attr_generic(
+    d: dict[str, Any],
+    aliases: Iterable[str],
+    default: T,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+    conv: Callable[[Any], T],
+) -> T: ...
+
+
+@overload
+def get_attr_generic(
+    d: dict[str, Any],
+    aliases: Iterable[str],
+    default: None = None,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+    conv: Callable[[Any], T],
+) -> T | None: ...
+
+
+def get_attr_generic(
+    d: dict[str, Any],
+    aliases: Iterable[str],
+    default: T | None = None,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+    conv: Callable[[Any], T],
+) -> T | None:
+    """Return the value for the first key in ``aliases`` found in ``d``."""
+
+    return _generic_accessor.get(
+        d,
+        aliases,
+        default=default,
+        strict=strict,
+        log_level=log_level,
+        conv=conv,
+    )
+
+
+def set_attr_generic(
+    d: dict[str, Any],
+    aliases: Iterable[str],
+    value: Any,
+    *,
+    conv: Callable[[Any], T],
+) -> T:
+    """Assign ``value`` to the first alias key found in ``d``."""
+
+    return _generic_accessor.set(d, aliases, value, conv=conv)
 
 
 @overload
@@ -239,10 +297,12 @@ def get_attr(
 ) -> float | None:
     """Return the value for the first key in ``aliases`` found in ``d``."""
 
-    return _float_accessor.get(
+    if conv is None:
+        conv = float
+    return get_attr_generic(
         d,
         aliases,
-        default=default,
+        default,
         strict=strict,
         log_level=log_level,
         conv=conv,
@@ -257,7 +317,9 @@ def set_attr(
 ) -> float:
     """Assign ``value`` to the first alias key found in ``d``."""
 
-    return _float_accessor.set(d, aliases, value, conv=conv)
+    if conv is None:
+        conv = float
+    return set_attr_generic(d, aliases, value, conv=conv)
 
 
 @overload
@@ -295,10 +357,12 @@ def get_attr_str(
 ) -> str | None:
     """Return the string value for the first key in ``aliases``."""
 
-    return _str_accessor.get(
+    if conv is None:
+        conv = str
+    return get_attr_generic(
         d,
         aliases,
-        default=default,
+        default,
         strict=strict,
         log_level=log_level,
         conv=conv,
@@ -313,7 +377,9 @@ def set_attr_str(
 ) -> str:
     """Assign ``value`` to the first alias key in ``d`` as ``str``."""
 
-    return _str_accessor.set(d, aliases, value, conv=conv)
+    if conv is None:
+        conv = str
+    return set_attr_generic(d, aliases, value, conv=conv)
 
 
 # -------------------------
