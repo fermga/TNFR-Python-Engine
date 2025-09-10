@@ -387,14 +387,22 @@ def set_attr_str(
 
 
 def recompute_abs_max(
-    G: "networkx.Graph", aliases: tuple[str, ...]
+    G: "networkx.Graph", aliases: tuple[str, ...], *, key: str | None = None
 ) -> tuple[float, Hashable | None]:
-    """Recalculate and return ``(max_val, node)`` for ``aliases`` in ``G``."""
+    """Recalculate absolute maximum for ``aliases`` in ``G``.
+
+    When ``key`` is provided, the graph caches ``G.graph[key]`` and
+    ``G.graph[f"{key}_node"]`` are updated with the new maximum value and the
+    node where it occurs.
+    """
     node, max_val = max(
         ((n, abs(get_attr(G.nodes[n], aliases, 0.0))) for n in G.nodes()),
         key=lambda x: x[1],
         default=(None, 0.0),
     )
+    if key is not None:
+        G.graph[key] = max_val
+        G.graph[f"{key}_node"] = node
     return max_val, node
 
 
@@ -438,9 +446,7 @@ def _update_cached_abs_max(
         G.graph[key] = val
         G.graph[node_key] = n
     elif cur_node == n and val < cur:
-        max_val, max_node = recompute_abs_max(G, aliases)
-        G.graph[key] = max_val
-        G.graph[node_key] = max_node
+        recompute_abs_max(G, aliases, key=key)
 
 
 def set_attr_and_cache(
@@ -452,7 +458,11 @@ def set_attr_and_cache(
     cache: str | None = None,
     extra: Callable[["networkx.Graph", Hashable, float], None] | None = None,
 ) -> float:
-    """Assign ``value`` to node ``n`` and update caches if requested."""
+    """Assign ``value`` to node ``n`` and update caches if requested.
+
+    Cache updates are performed via :func:`recompute_abs_max` when the
+    existing maximum becomes invalid.
+    """
 
     val = set_attr(G.nodes[n], aliases, value)
     if cache is not None:
@@ -470,7 +480,10 @@ def set_attr_with_max(
     *,
     cache: str,
 ) -> None:
-    """Assign ``value`` to node ``n`` and update the global maximum."""
+    """Assign ``value`` to node ``n`` and update the global maximum.
+
+    This is a convenience wrapper around :func:`set_attr_and_cache`.
+    """
     set_attr_and_cache(G, n, aliases, value, cache=cache)
 
 
