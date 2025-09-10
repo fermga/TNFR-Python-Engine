@@ -148,6 +148,17 @@ _EDGE_OPS: dict[EdgeStrategy, EdgeOps] = {
 }
 
 
+def _validate_callbacks(exists_cb, set_cb) -> None:
+    """Validate callback pair provided to :func:`add_edge`."""
+
+    if (exists_cb is None) != (set_cb is None):
+        raise ValueError("exists_cb and set_cb must be provided together")
+
+    if exists_cb is not None and set_cb is not None:
+        if not callable(exists_cb) or not callable(set_cb):
+            raise TypeError("exists_cb and set_cb must be callables")
+
+
 def _resolve_edge_ops(graph, strategy, exists_cb, set_cb):
     if exists_cb is not None and set_cb is not None:
         return _CallbackEdgeOps(exists_cb, set_cb)
@@ -185,12 +196,7 @@ def add_edge(
     if weight is None:
         return
 
-    if (exists_cb is None) != (set_cb is None):
-        raise ValueError("exists_cb and set_cb must be provided together")
-
-    if exists_cb is not None and set_cb is not None:
-        if not callable(exists_cb) or not callable(set_cb):
-            raise TypeError("exists_cb and set_cb must be callables")
+    _validate_callbacks(exists_cb, set_cb)
 
     ops = _resolve_edge_ops(graph, strategy, exists_cb, set_cb)
 
