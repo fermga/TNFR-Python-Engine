@@ -89,6 +89,8 @@ def compute_coherence(
     if G.number_of_nodes() == 0:
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
+    count = G.number_of_nodes()
+
     np = get_numpy()
 
     use_np = np is not None
@@ -98,6 +100,7 @@ def compute_coherence(
     else:
         dnfr_sum = dnfr_c = 0.0
         depi_sum = depi_c = 0.0
+        count = 0
 
     for idx, (_, nd) in enumerate(G.nodes(data=True)):
         dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0))
@@ -114,6 +117,7 @@ def compute_coherence(
             t = depi_sum + y
             depi_c = (t - depi_sum) - y
             depi_sum = t
+            count += 1
 
     if use_np:
         dnfr_mean = float(np.mean(dnfr_arr))
