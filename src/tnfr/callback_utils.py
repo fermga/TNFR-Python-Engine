@@ -114,6 +114,32 @@ def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
         return None
 
 
+def _record_callback_error(
+    G: "nx.Graph",
+    event: str,
+    ctx: dict[str, Any],
+    spec: CallbackSpec,
+    err: Exception,
+) -> None:
+    """Log and store a callback error for later inspection."""
+
+    logger.exception("callback %r failed for %s: %s", spec.name, event, err)
+    err_list = G.graph.get("_callback_errors")
+    if not isinstance(err_list, deque) or err_list.maxlen != _CALLBACK_ERROR_LIMIT:
+        err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
+        G.graph["_callback_errors"] = err_list
+    err_list.append(
+        {
+            "event": event,
+            "step": ctx.get("step"),
+            "error": repr(err),
+            "traceback": traceback.format_exc(),
+            "fn": repr(spec.func),
+            "name": spec.name,
+        }
+    )
+
+
 def register_callback(
     G: "nx.Graph",
     event: CallbackEvent | str,
@@ -190,32 +216,15 @@ def invoke_callbacks(
     )
     if ctx is None:
         ctx = {}
-    err_list: deque | None = None
     for spec in cbs.values():
-        name, fn = spec.name, spec.func
         try:
-            fn(G, ctx)
+            spec.func(G, ctx)
         except (RuntimeError, ValueError, TypeError) as e:  # catch expected callback errors
-            logger.exception("callback %r failed for %s: %s", name, event, e)
+            _record_callback_error(G, event, ctx, spec, e)
             if strict:
                 raise
-            if err_list is None:
-                err_list = G.graph.get("_callback_errors")
-                if not isinstance(err_list, deque) or err_list.maxlen != _CALLBACK_ERROR_LIMIT:
-                    err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
-                    G.graph["_callback_errors"] = err_list
-            err_list.append(
-                {
-                    "event": event,
-                    "step": ctx.get("step"),
-                    "error": repr(e),
-                    "traceback": traceback.format_exc(),
-                    "fn": repr(fn),
-                    "name": name,
-                }
-            )
         except Exception:
             logger.exception(
-                "callback %r raised unexpected exception for %s", name, event
+                "callback %r raised unexpected exception for %s", spec.name, event
             )
             raise
