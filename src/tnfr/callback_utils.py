@@ -190,10 +190,7 @@ def invoke_callbacks(
     )
     if ctx is None:
         ctx = {}
-    err_list = G.graph.get("_callback_errors")
-    if not isinstance(err_list, deque) or err_list.maxlen != _CALLBACK_ERROR_LIMIT:
-        err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
-        G.graph["_callback_errors"] = err_list
+    err_list: deque | None = None
     for spec in cbs.values():
         name, fn = spec.name, spec.func
         try:
@@ -202,6 +199,11 @@ def invoke_callbacks(
             logger.exception("callback %r failed for %s: %s", name, event, e)
             if strict:
                 raise
+            if err_list is None:
+                err_list = G.graph.get("_callback_errors")
+                if not isinstance(err_list, deque) or err_list.maxlen != _CALLBACK_ERROR_LIMIT:
+                    err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
+                    G.graph["_callback_errors"] = err_list
             err_list.append(
                 {
                     "event": event,

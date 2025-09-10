@@ -88,12 +88,22 @@ def compute_coherence(
     count = G.number_of_nodes()
     if not count:
         return (0.0, 0.0, 0.0) if return_means else 0.0
-    dnfr_mean = math.fsum(
-        abs(get_attr(nd, ALIAS_DNFR, 0.0)) for _, nd in G.nodes(data=True)
-    ) / count
-    depi_mean = math.fsum(
-        abs(get_attr(nd, ALIAS_dEPI, 0.0)) for _, nd in G.nodes(data=True)
-    ) / count
+
+    np = get_numpy()
+    dnfr_vals: list[float] = []
+    depi_vals: list[float] = []
+    for _, nd in G.nodes(data=True):
+        dnfr_vals.append(get_attr(nd, ALIAS_DNFR, 0.0))
+        depi_vals.append(get_attr(nd, ALIAS_dEPI, 0.0))
+    if np is not None:
+        dnfr_arr = np.abs(np.asarray(dnfr_vals, dtype=float))
+        depi_arr = np.abs(np.asarray(depi_vals, dtype=float))
+        dnfr_mean = float(np.mean(dnfr_arr))
+        depi_mean = float(np.mean(depi_arr))
+    else:
+        dnfr_mean = math.fsum(map(abs, dnfr_vals)) / count
+        depi_mean = math.fsum(map(abs, depi_vals)) / count
+
     coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence
 
@@ -132,21 +142,20 @@ def _build_trig_cache(G: GraphLike, np: Any | None = None) -> TrigCache:
     sin_th: dict[Any, float] = {}
     thetas: dict[Any, float] = {}
 
-    if (
-        np is not None
-        and all(hasattr(np, attr) for attr in ("asarray", "cos", "sin"))
-    ):
-        nodes = list(G.nodes())
-        theta_arr = np.asarray(
-            [get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in nodes], dtype=float
-        )
-        cos_arr = np.cos(theta_arr)
-        sin_arr = np.sin(theta_arr)
-
-        thetas = dict(zip(nodes, theta_arr.tolist()))
-        cos_th = dict(zip(nodes, cos_arr.tolist()))
-        sin_th = dict(zip(nodes, sin_arr.tolist()))
-    else:
+    if np is not None:
+        try:
+            nodes = list(G.nodes())
+            theta_arr = np.asarray(
+                [get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in nodes], dtype=float
+            )
+            cos_arr = np.cos(theta_arr)
+            sin_arr = np.sin(theta_arr)
+            thetas = dict(zip(nodes, map(float, theta_arr)))
+            cos_th = dict(zip(nodes, map(float, cos_arr)))
+            sin_th = dict(zip(nodes, map(float, sin_arr)))
+        except AttributeError:
+            np = None
+    if np is None:
         for n, nd in G.nodes(data=True):
             th = get_attr(nd, ALIAS_THETA, 0.0)
             thetas[n] = th

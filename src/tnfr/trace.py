@@ -48,9 +48,6 @@ def _sigma_fallback(
     return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
 
 
-sigma_vector_from_graph: _SigmaVectorFn = optional_import(
-    "tnfr.sense.sigma_vector_from_graph", fallback=_sigma_fallback
-)
 
 # Public exports for this module
 __all__ = [
@@ -228,6 +225,9 @@ def kuramoto_field(G):
 
 
 def sigma_field(G):
+    sigma_vector_from_graph: _SigmaVectorFn = optional_import(
+        "tnfr.sense.sigma_vector_from_graph", fallback=_sigma_fallback
+    )
     sv = sigma_vector_from_graph(G)
     return {
         "sigma": {
