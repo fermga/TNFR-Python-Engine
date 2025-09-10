@@ -1,19 +1,21 @@
 import pytest
 
-from tnfr.alias import _validate_aliases, AliasAccessor
+from tnfr.alias import AliasAccessor
 
 def test_rejects_empty_iterable():
     with pytest.raises(ValueError):
-        _validate_aliases(())
+        AliasAccessor(int).get({}, ())
 
 
 def test_rejects_non_string_elements():
     with pytest.raises(TypeError):
-        _validate_aliases(("a", 1))
+        AliasAccessor(int).get({}, ("a", 1))
 
 
 def test_accepts_tuple():
-    assert _validate_aliases(("a",)) == ("a",)
+    acc = AliasAccessor(int)
+    aliases, _, _ = acc._prepare(("a",), int)
+    assert aliases == ("a",)
 
 
 def test_get_attr_reports_all_failures():
