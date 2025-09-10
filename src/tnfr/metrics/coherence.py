@@ -41,6 +41,8 @@ def compute_wij_phase_epi_vf_si(
     epi_range: float = 1.0,
     vf_range: float = 1.0,
     np=None,
+    cos_vals=None,
+    sin_vals=None,
 ):
     """Return similarity components for nodes ``i`` and ``j``.
 
@@ -49,24 +51,20 @@ def compute_wij_phase_epi_vf_si(
     """
 
     trig = trig or (get_trig_cache(G, np=np) if G is not None else None)
+    if cos_vals is None or sin_vals is None:
+        if trig is not None and nodes is not None:
+            cos_vals = [trig.cos.get(n, math.cos(t)) for n, t in zip(nodes, th_vals)]
+            sin_vals = [trig.sin.get(n, math.sin(t)) for n, t in zip(nodes, th_vals)]
+        else:
+            cos_vals = [math.cos(t) for t in th_vals]
+            sin_vals = [math.sin(t) for t in th_vals]
 
     if np is not None and i is None and j is None:
-        th = np.asarray(th_vals)
         epi = np.asarray(epi_vals)
         vf = np.asarray(vf_vals)
         si = np.asarray(si_vals)
-        if trig is not None and nodes is not None:
-            cos_th = np.asarray(
-                [trig.cos.get(n, math.cos(t)) for n, t in zip(nodes, th_vals)],
-                dtype=float,
-            )
-            sin_th = np.asarray(
-                [trig.sin.get(n, math.sin(t)) for n, t in zip(nodes, th_vals)],
-                dtype=float,
-            )
-        else:
-            cos_th = np.cos(th)
-            sin_th = np.sin(th)
+        cos_th = np.asarray(cos_vals, dtype=float)
+        sin_th = np.asarray(sin_vals, dtype=float)
         epi_range = epi_range if epi_range > 0 else 1.0
         vf_range = vf_range if vf_range > 0 else 1.0
         s_phase = 0.5 * (
@@ -83,16 +81,10 @@ def compute_wij_phase_epi_vf_si(
         raise ValueError("i and j are required for non-vectorized computation")
     epi_range = epi_range if epi_range > 0 else 1.0
     vf_range = vf_range if vf_range > 0 else 1.0
-    if trig is not None and nodes is not None:
-        cos_i = trig.cos.get(nodes[i], math.cos(th_vals[i]))
-        sin_i = trig.sin.get(nodes[i], math.sin(th_vals[i]))
-        cos_j = trig.cos.get(nodes[j], math.cos(th_vals[j]))
-        sin_j = trig.sin.get(nodes[j], math.sin(th_vals[j]))
-    else:
-        cos_i = math.cos(th_vals[i])
-        sin_i = math.sin(th_vals[i])
-        cos_j = math.cos(th_vals[j])
-        sin_j = math.sin(th_vals[j])
+    cos_i = cos_vals[i]
+    sin_i = sin_vals[i]
+    cos_j = cos_vals[j]
+    sin_j = sin_vals[j]
     s_phase = 0.5 * (1.0 + (cos_i * cos_j + sin_i * sin_j))
     s_epi = 1.0 - abs(epi_vals[i] - epi_vals[j]) / epi_range
     s_vf = 1.0 - abs(vf_vals[i] - vf_vals[j]) / vf_range
@@ -130,7 +122,8 @@ def _wij_components_weights(
     epi_range: float = 1.0,
     vf_range: float = 1.0,
     np=None,
-    trig=None,
+    cos_vals=None,
+    sin_vals=None,
 ):
     """Return similarity components together with their weights.
 
@@ -146,12 +139,13 @@ def _wij_components_weights(
         si_vals,
         i,
         j,
-        trig=trig,
         G=G,
         nodes=nodes,
         epi_range=epi_range,
         vf_range=vf_range,
         np=np,
+        cos_vals=cos_vals,
+        sin_vals=sin_vals,
     )
     phase_w = wnorm["phase"]
     epi_w = wnorm["epi"]
@@ -174,7 +168,8 @@ def _wij_vectorized(
     vf_max,
     self_diag,
     np,
-    trig,
+    cos_vals,
+    sin_vals,
 ):
     epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
     vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
@@ -198,7 +193,8 @@ def _wij_vectorized(
         epi_range=epi_range,
         vf_range=vf_range,
         np=np,
-        trig=trig,
+        cos_vals=cos_vals,
+        sin_vals=sin_vals,
     )
     wij = _combine_similarity(
         s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w, np=np
@@ -223,7 +219,8 @@ def _assign_wij(
     epi_range: float,
     vf_range: float,
     wnorm: dict[str, float],
-    trig,
+    cos_vals,
+    sin_vals,
 ) -> None:
     (
         s_phase,
@@ -246,7 +243,8 @@ def _assign_wij(
         j,
         epi_range,
         vf_range,
-        trig=trig,
+        cos_vals=cos_vals,
+        sin_vals=sin_vals,
     )
     wij_ij = _combine_similarity(
         s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w
@@ -269,7 +267,8 @@ def _wij_loops(
     vf_max: float,
     neighbors_only: bool,
     self_diag: bool,
-    trig,
+    cos_vals,
+    sin_vals,
 ) -> list[list[float]]:
     n = len(nodes)
     wij = [
@@ -297,7 +296,8 @@ def _wij_loops(
                 epi_range,
                 vf_range,
                 wnorm,
-                trig,
+                cos_vals,
+                sin_vals,
             )
     else:
         for i in range(n):
@@ -315,7 +315,8 @@ def _wij_loops(
                     epi_range,
                     vf_range,
                     wnorm,
-                    trig,
+                    cos_vals,
+                    sin_vals,
                 )
     return wij
 
@@ -487,6 +488,9 @@ def coherence_matrix(G, use_numpy: bool | None = None):
         np is not None if use_numpy is None else (use_numpy and np is not None)
     )
     trig = get_trig_cache(G, np=np)
+    cos_map, sin_map = trig.cos, trig.sin
+    cos_vals = [cos_map.get(n, math.cos(t)) for n, t in zip(nodes, th_vals)]
+    sin_vals = [sin_map.get(n, math.sin(t)) for n, t in zip(nodes, th_vals)]
     if use_np:
         wij = _wij_vectorized(
             G,
@@ -502,7 +506,8 @@ def coherence_matrix(G, use_numpy: bool | None = None):
             vf_max,
             self_diag,
             np,
-            trig,
+            cos_vals,
+            sin_vals,
         )
         if neighbors_only:
             adj = np.eye(n, dtype=bool)
@@ -528,7 +533,8 @@ def coherence_matrix(G, use_numpy: bool | None = None):
             vf_max,
             neighbors_only,
             self_diag,
-            trig,
+            cos_vals,
+            sin_vals,
         )
 
     return _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np)
