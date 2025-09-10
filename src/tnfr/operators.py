@@ -62,7 +62,7 @@ _JITTER_LOCK = threading.Lock()
 if TYPE_CHECKING:
     from .node import NodoProtocol
 
-__all__ = [
+__all__ = (
     "clear_rng_cache",
     "random_jitter",
     "get_glyph_factors",
@@ -71,7 +71,7 @@ __all__ = [
     "apply_network_remesh",
     "apply_topological_remesh",
     "apply_remesh_if_globally_stable",
-]
+)
 
 
 def _node_offset(G, n) -> int:

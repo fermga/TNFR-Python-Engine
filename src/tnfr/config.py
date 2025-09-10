@@ -11,7 +11,7 @@ from .constants import inject_defaults
 if TYPE_CHECKING:  # pragma: no cover - only for type checkers
     import networkx as nx  # type: ignore[import-untyped]
 
-__all__ = ["load_config", "apply_config"]
+__all__ = ("load_config", "apply_config")
 
 
 def load_config(path: str | Path) -> Mapping[str, Any]:

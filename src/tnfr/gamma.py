@@ -24,7 +24,7 @@ logger = get_logger(__name__)
 
 DEFAULT_GAMMA: Mapping[str, str] = {"type": "none"}
 
-__all__ = [
+__all__ = (
     "kuramoto_R_psi",
     "gamma_none",
     "gamma_kuramoto_linear",
@@ -34,7 +34,7 @@ __all__ = [
     "GammaEntry",
     "GAMMA_REGISTRY",
     "eval_gamma",
-]
+)
 
 
 @lru_cache(maxsize=1)

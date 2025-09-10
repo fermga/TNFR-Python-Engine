@@ -36,7 +36,7 @@ from .. import __version__
 
 logger = get_logger(__name__)
 
-__all__ = [
+__all__ = (
     "main",
     "add_common_args",
     "add_grammar_args",
@@ -55,7 +55,7 @@ __all__ = [
     "_flatten_tokens",
     "_save_json",
     "_args_to_dict",
-]
+)
 
 
 def main(argv: Optional[list[str]] = None) -> int:

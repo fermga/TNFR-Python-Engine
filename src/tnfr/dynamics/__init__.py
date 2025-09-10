@@ -74,7 +74,7 @@ from .integrators import (
 
 logger = get_logger(__name__)
 
-__all__ = [
+__all__ = (
     "default_compute_delta_nfr",
     "set_delta_nfr_hook",
     "dnfr_phase_only",
@@ -97,7 +97,7 @@ __all__ = [
     "_refresh_dnfr_vectors",
     "_compute_neighbor_means",
     "_compute_dnfr",
-]
+)
 def _log_clamp(hist, node, attr, value, lo, hi):
     if value < lo or value > hi:
         hist.append({"node": node, "attr": attr, "value": float(value)})

@@ -40,7 +40,7 @@ from .cache import (
     increment_edge_version,
 )
 
-__all__ = [
+__all__ = (
     "MAX_MATERIALIZE_DEFAULT",
     "ensure_collection",
     "clamp",
@@ -71,4 +71,4 @@ __all__ = [
     "get_graph",
     "get_graph_mapping",
     "mark_dnfr_prep_dirty",
-]
+)

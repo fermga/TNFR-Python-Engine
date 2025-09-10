@@ -79,11 +79,11 @@ ANGLE_MAP: dict[str, float] = {
     Glyph.REMESH.value: 24 * math.pi / 13,
 }
 
-__all__ = [
+__all__ = (
     "GLYPHS_CANONICAL",
     "GLYPHS_CANONICAL_SET",
     "ESTABILIZADORES",
     "DISRUPTIVOS",
     "GLYPH_GROUPS",
     "ANGLE_MAP",
-]
+)

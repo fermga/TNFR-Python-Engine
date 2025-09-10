@@ -11,7 +11,7 @@ from .glyph_history import last_glyph
 from .sense import sigma_vector_from_graph
 from .constants_glyphs import GLYPHS_CANONICAL_SET
 
-__all__ = ["run_validators"]
+__all__ = ("run_validators",)
 
 
 def _require_attr(data, alias, node, name):

@@ -50,13 +50,13 @@ def _sigma_fallback(
 
 
 # Public exports for this module
-__all__ = [
+__all__ = (
     "CallbackSpec",
     "register_trace",
     "_callback_names",
     "gamma_field",
     "grammar_field",
-]
+)
 
 # -------------------------
 # Helpers

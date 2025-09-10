@@ -32,7 +32,7 @@ logger = get_logger(__name__)
 
 T = TypeVar("T")
 
-__all__ = [
+__all__ = (
     "get_attr",
     "set_attr",
     "get_attr_str",
@@ -45,7 +45,7 @@ __all__ = [
     "set_theta",
     "recompute_abs_max",
     "multi_recompute_abs_max",
-]
+)
 
 
 @lru_cache(maxsize=128)

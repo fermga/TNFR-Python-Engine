@@ -32,7 +32,7 @@ from .diagnosis import (
 )
 from .export import export_metrics
 
-__all__ = [
+__all__ = (
     "register_metrics_callbacks",
     "Tg_global",
     "Tg_by_node",
@@ -55,4 +55,4 @@ __all__ = [
     "register_diagnosis_callbacks",
     "dissonance_events",
     "export_metrics",
-]
+)

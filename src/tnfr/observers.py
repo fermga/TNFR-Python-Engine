@@ -18,7 +18,7 @@ from .logging_utils import get_logger
 from .import_utils import get_numpy
 
 
-__all__ = [
+__all__ = (
     "attach_standard_observer",
     "std_before",
     "std_after",
@@ -27,7 +27,7 @@ __all__ = [
     "kuramoto_order",
     "glyph_load",
     "wbar",
-]
+)
 
 
 logger = get_logger(__name__)

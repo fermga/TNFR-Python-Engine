@@ -17,7 +17,7 @@ from .trace import CallbackSpec
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx  # type: ignore[import-untyped]
 
-__all__ = ["CallbackEvent", "register_callback", "invoke_callbacks"]
+__all__ = ("CallbackEvent", "register_callback", "invoke_callbacks")
 
 logger = get_logger(__name__)
 

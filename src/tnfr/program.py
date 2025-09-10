@@ -44,7 +44,7 @@ def get_step_fn() -> AdvanceFn:
     return step_impl
 
 
-__all__ = [
+__all__ = (
     "WAIT",
     "TARGET",
     "THOL",
@@ -59,7 +59,7 @@ __all__ = [
     "wait",
     "play",
     "basic_canonical_example",
-]
+)
 
 # ---------------------
 # DSL constructs

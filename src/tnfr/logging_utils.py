@@ -11,7 +11,7 @@ import threading
 
 _LOCK = threading.Lock()
 
-__all__ = ["get_logger"]
+__all__ = ("get_logger",)
 
 
 def get_logger(name: str) -> logging.Logger:

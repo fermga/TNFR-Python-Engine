@@ -32,7 +32,7 @@ GLYPH_UNITS: dict[str, complex] = {
     g: complex(math.cos(a), math.sin(a)) for g, a in ANGLE_MAP.items()
 }
 
-__all__ = [
+__all__ = (
     "GLYPH_UNITS",
     "glyph_angle",
     "glyph_unit",
@@ -43,7 +43,7 @@ __all__ = [
     "register_sigma_callback",
     "sigma_series",
     "sigma_rose",
-]
+)
 
 # -------------------------
 # Utilidades básicas

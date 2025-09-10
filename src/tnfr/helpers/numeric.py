@@ -11,7 +11,7 @@ import math
 from ..import_utils import get_numpy, import_nodonx
 from ..alias import get_attr
 
-__all__ = [
+__all__ = (
     "clamp",
     "clamp01",
     "list_mean",
@@ -22,7 +22,7 @@ __all__ = [
     "neighbor_mean",
     "neighbor_phase_mean",
     "neighbor_phase_mean_list",
-]
+)
 
 
 def clamp(x: float, a: float, b: float) -> float:

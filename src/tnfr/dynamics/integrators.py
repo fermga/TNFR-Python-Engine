@@ -17,11 +17,11 @@ from ..constants import (
 from ..gamma import eval_gamma
 from ..alias import get_attr, set_attr, get_attr_str, set_attr_str
 
-__all__ = [
+__all__ = (
     "prepare_integration_params",
     "update_epi_via_nodal_equation",
     "integrar_epi_euler",
-]
+)
 
 
 def prepare_integration_params(

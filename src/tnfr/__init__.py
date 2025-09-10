@@ -54,7 +54,7 @@ except PackageNotFoundError:  # pragma: no cover
     else:  # pragma: no cover
         __version__ = "0+unknown"
 
-__all__ = [
+__all__ = (
     "__version__",
     "step",
     "run",
@@ -64,4 +64,4 @@ __all__ = [
     "NodeState",
     "apply_topological_remesh",
     "CallbackSpec",
-]
+)
