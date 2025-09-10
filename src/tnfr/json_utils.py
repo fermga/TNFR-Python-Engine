@@ -10,7 +10,7 @@ import json
 from typing import Any, Callable, overload, Literal
 
 from dataclasses import dataclass
-from functools import lru_cache
+from functools import lru_cache, partial
 from .import_utils import optional_import
 
 from .logging_utils import warn_once
@@ -136,6 +136,4 @@ def json_dumps(
     return _json_dumps_std(obj, params, **kwargs)
 
 
-def json_dumps_str(obj: Any, **kwargs: Any) -> str:
-    """``json_dumps`` wrapper that always returns ``str``."""
-    return json_dumps(obj, to_bytes=False, **kwargs)
+json_dumps_str = partial(json_dumps, to_bytes=False)

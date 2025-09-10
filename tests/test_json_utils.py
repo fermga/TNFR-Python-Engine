@@ -38,4 +38,11 @@ def test_warns_once(monkeypatch, caplog):
     with caplog.at_level(logging.WARNING):
         json_utils.json_dumps({}, ensure_ascii=False)
         json_utils.json_dumps({}, ensure_ascii=False)
-    assert sum("ignored" in r.message for r in caplog.records) == 1
+
+    assert len(w) == 1
+
+
+def test_json_dumps_str_matches_json_dumps():
+    data = {"a": 1, "b": [1, 2, 3]}
+    assert json_utils.json_dumps_str(data) == json_utils.json_dumps(data, to_bytes=False)
+
