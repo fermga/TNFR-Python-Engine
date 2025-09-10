@@ -9,7 +9,7 @@ import copy
 import warnings
 from types import MappingProxyType
 
-from functools import lru_cache, partial
+from functools import lru_cache, partial, wraps
 
 from dataclasses import asdict, is_dataclass
 import weakref
@@ -69,29 +69,20 @@ def _freeze_dataclass(value: Any, seen: set[int]):
         tag,
         tuple((k, _freeze(v, seen)) for k, v in value.items()),
     )
+#
+# Removed ``singledispatch`` variant of ``_freeze`` in favour of manual
+# dispatch below.
 
 
-@singledispatch
-@_check_cycle
-def _freeze(value: Any, seen: set[int] | None = None):
-    if is_dataclass(value) and not isinstance(value, type):
-        return _freeze_dataclass(value, seen)
-    if isinstance(value, IMMUTABLE_SIMPLE):
-        return value
-    raise TypeError
-
-
-@_freeze.register(tuple)
 @_check_cycle
 def _freeze_tuple(value: tuple, seen: set[int] | None = None):
     return tuple(_freeze(v, seen) for v in value)
+
 
 def _freeze_iterable(tag: str, iterable, seen: set[int]):
     return (tag, tuple(_freeze(v, seen) for v in iterable))
 
 
-
-@_freeze.register(Mapping)
 @_check_cycle
 def _freeze_mapping(value: Mapping, seen: set[int] | None = None):
     tag = "dict" if hasattr(value, "__setitem__") else "mapping"
@@ -99,6 +90,7 @@ def _freeze_mapping(value: Mapping, seen: set[int] | None = None):
         tag,
         tuple((k, _freeze(v, seen)) for k, v in value.items()),
     )
+
 
 _FREEZE_DISPATCH: dict[type, Callable[[Any, set[int]], Any]] = {
     tuple: _freeze_tuple,
@@ -130,6 +122,21 @@ def _freeze(value: Any, seen: set[int] | None = None):
     finally:
         seen.remove(obj_id)
 
+
+def _all_immutable(iterable) -> bool:
+    return all(_is_immutable_inner(v) for v in iterable)
+
+
+_IMMUTABLE_TAG_DISPATCH: dict[str, Callable[[tuple], bool]] = {
+    "mapping": lambda v: _all_immutable(v[1]),
+    "frozenset": lambda v: _all_immutable(v[1]),
+    "list": lambda v: False,
+    "set": lambda v: False,
+    "bytearray": lambda v: False,
+    "dict": lambda v: False,
+}
+
+
 @lru_cache(maxsize=1024)
 def _is_immutable_inner(value: Any) -> bool:
     if isinstance(value, IMMUTABLE_SIMPLE):
@@ -145,9 +152,12 @@ def _is_immutable_inner(value: Any) -> bool:
     return False
 
 
-# Cache of previous results keyed by object identity. Uses ``WeakKeyDictionary``
-# so entries vanish automatically when objects are garbage collected.
-_IMMUTABLE_CACHE: weakref.WeakKeyDictionary[Any, bool] = weakref.WeakKeyDictionary()
+# Cache of previous results keyed by object identity. Uses
+# ``WeakKeyDictionary`` so entries vanish automatically when objects are
+# garbage collected.
+_IMMUTABLE_CACHE: weakref.WeakKeyDictionary[Any, bool] = (
+    weakref.WeakKeyDictionary()
+)
 _IMMUTABLE_CACHE_LOCK = threading.Lock()
 
 
@@ -197,7 +207,8 @@ DEFAULT_SECTIONS: Mapping[str, Mapping[str, Any]] = MappingProxyType(
 
 # Diccionario combinado exportado
 # Unimos los diccionarios en orden de menor a mayor prioridad para que los
-# valores de ``METRIC_DEFAULTS`` sobrescriban al resto, como hacía ``ChainMap``.
+# valores de ``METRIC_DEFAULTS`` sobrescriban al resto, como hacía
+# ``ChainMap``.
 DEFAULTS: Mapping[str, Any] = MappingProxyType(
     CORE_DEFAULTS | INIT_DEFAULTS | REMESH_DEFAULTS | METRIC_DEFAULTS
 )
