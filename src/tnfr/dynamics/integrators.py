@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from typing import Any, Literal
 
-import networkx as nx
+import networkx as nx  # type: ignore[import-untyped]
 
 from ..constants import (
     DEFAULTS,

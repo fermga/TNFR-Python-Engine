@@ -27,7 +27,7 @@ from .constants import ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
 from .value_utils import _convert_value
 
 if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx
+    import networkx as nx  # type: ignore[import-untyped]
 
 logger = get_logger(__name__)
 
@@ -40,6 +40,7 @@ __all__ = [
     "set_attr_str",
     "set_attr_and_cache",
     "set_attr_with_max",
+    "set_scalar",
     "set_vf",
     "set_dnfr",
     "set_theta",
@@ -320,17 +321,30 @@ def set_attr_with_max(
     set_attr_and_cache(G, n, aliases, value, cache=cache)
 
 
+def set_scalar(
+    G: "nx.Graph",
+    n: Hashable,
+    alias: tuple[str, ...],
+    value: float,
+    *,
+    cache: str | None = None,
+    extra: Callable[["nx.Graph", Hashable, float], None] | None = None,
+) -> float:
+    """Assign ``value`` to ``alias`` for node ``n`` and update caches."""
+    return set_attr_and_cache(G, n, alias, value, cache=cache, extra=extra)
+
+
 def set_vf(
     G: "nx.Graph", n: Hashable, value: float, *, update_max: bool = True
 ) -> None:
     """Set ``νf`` for node ``n`` and optionally update the global maximum."""
     cache = "_vfmax" if update_max else None
-    set_attr_and_cache(G, n, ALIAS_VF, value, cache=cache)
+    set_scalar(G, n, ALIAS_VF, value, cache=cache)
 
 
 def set_dnfr(G: "nx.Graph", n: Hashable, value: float) -> None:
     """Set ``ΔNFR`` for node ``n`` and update the global maximum."""
-    set_attr_and_cache(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
+    set_scalar(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
 
 
 def _increment_trig_version(
@@ -353,6 +367,4 @@ def set_theta(G: "nx.Graph", n: Hashable, value: float) -> None:
     values. The per-graph ``_trig_version`` counter is incremented and any
     previously cached cosines, sines or angles are cleared from ``G.graph``.
     """
-    set_attr_and_cache(
-        G, n, ALIAS_THETA, value, extra=_increment_trig_version
-    )
+    set_scalar(G, n, ALIAS_THETA, value, extra=_increment_trig_version)

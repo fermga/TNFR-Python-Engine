@@ -10,7 +10,7 @@ from ..glyph_history import ensure_history
 from ..io import safe_write
 from ..constants_glyphs import GLYPHS_CANONICAL
 from .core import glyphogram_series
-from ..json_utils import json_dumps
+from ..json_utils import json_dumps_str
 
 
 def _write_csv(path, headers, rows):
@@ -47,19 +47,31 @@ def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
         t_series, sigma_x, sigma_y, sigma_mag, sigma_angle, fillvalue=None
     )
 
+    def _clean(value: float | None) -> float:
+        """Return ``0`` for ``None`` or ``NaN`` values."""
+        if value is None or (isinstance(value, float) and math.isnan(value)):
+            return 0
+        return value
+
     def _gen_rows():
         for i, (t, x, y, m, a) in enumerate(rows_raw):
             yield (
                 i if t is None else t,
-                0 if x is None or (isinstance(x, float) and math.isnan(x)) else x,
-                0 if y is None or (isinstance(y, float) and math.isnan(y)) else y,
-                0 if m is None or (isinstance(m, float) and math.isnan(m)) else m,
-                0 if a is None or (isinstance(a, float) and math.isnan(a)) else a,
+                _clean(x),
+                _clean(y),
+                _clean(m),
+                _clean(a),
             )
 
     rows_csv, rows_sigma = tee(_gen_rows())
 
-    sigma = {"t": [], "sigma_x": [], "sigma_y": [], "mag": [], "angle": []}
+    sigma: dict[str, list[float]] = {
+        "t": [],
+        "sigma_x": [],
+        "sigma_y": [],
+        "mag": [],
+        "angle": [],
+    }
     for t, x, y, m, a in rows_sigma:
         sigma["t"].append(t)
         sigma["sigma_x"].append(x)
@@ -122,7 +134,4 @@ def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
             "epi_support": epi_supp,
         }
         json_path = base_path + ".json"
-        safe_write(
-            json_path,
-            lambda f: f.write(json_dumps(data).decode("utf-8")),
-        )
+        safe_write(json_path, lambda f: f.write(json_dumps_str(data)))

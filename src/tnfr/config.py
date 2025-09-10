@@ -9,7 +9,7 @@ from .io import read_structured_file
 from .constants import inject_defaults
 
 if TYPE_CHECKING:  # pragma: no cover - only for type checkers
-    import networkx as nx
+    import networkx as nx  # type: ignore[import-untyped]
 
 __all__ = ["load_config", "apply_config"]
 

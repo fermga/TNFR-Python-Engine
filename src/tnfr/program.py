@@ -4,7 +4,7 @@ Public exports are declared in ``__all__`` for explicit star imports.
 """
 
 from __future__ import annotations
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, TYPE_CHECKING
 from dataclasses import dataclass
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
@@ -19,9 +19,17 @@ from .types import Glyph
 from .collections_utils import ensure_collection, MAX_MATERIALIZE_DEFAULT
 from .glyph_history import ensure_history
 
+if TYPE_CHECKING:  # pragma: no cover
+    import networkx as nx  # type: ignore[import-untyped]
+
 # Basic types
 Node = Any
 AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
+
+HandlerFn = Callable[
+    ["nx.Graph", Any, Optional[list[Node]], deque, Optional[AdvanceFn]],
+    Optional[list[Node]],
+]
 
 
 @lru_cache(maxsize=1)
@@ -252,8 +260,8 @@ def _flatten(
 
     ops: list[tuple[OpTag, Any]] = []
     stack: deque[Any] = deque(
-        reversed(ensure_collection(seq, max_materialize=max_materialize))
-    )
+        reversed(list(ensure_collection(seq, max_materialize=max_materialize)))
+    )  # list() ensures reversibility for generic collections
 
     while stack:
         item = stack.pop()
@@ -338,7 +346,7 @@ def _handle_thol(
     )
 
 
-HANDLERS = {
+HANDLERS: dict[OpTag, HandlerFn] = {
     OpTag.TARGET: _handle_target,
     OpTag.WAIT: _handle_wait,
     OpTag.GLYPH: _handle_glyph,
@@ -378,7 +386,7 @@ def play(
         history["program_trace"] = trace
 
     for op, payload in ops:
-        handler = HANDLERS.get(op)
+        handler: HandlerFn | None = HANDLERS.get(op)
         if handler is None:
             raise ValueError(f"Unknown operation: {op}")
         curr_target = handler(G, payload, curr_target, trace, step_fn)

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Any, Sequence, Iterable, Mapping
+from typing import Any, Sequence, Iterable, Mapping, Protocol
 from types import MappingProxyType
 import math
 
@@ -26,6 +26,18 @@ from .helpers.cache import edge_version_cache
 from .import_utils import get_numpy
 
 
+class GraphLike(Protocol):
+    graph: dict[str, Any]
+
+    def nodes(self, data: bool = ...) -> Iterable[Any]: ...
+
+    def number_of_nodes(self) -> int: ...
+
+    def neighbors(self, n: Any) -> Iterable[Any]: ...
+
+    def __iter__(self) -> Iterable[Any]: ...
+
+
 __all__ = [
     "TrigCache",
     "compute_dnfr_accel_max",
@@ -46,7 +58,7 @@ class TrigCache:
     theta: dict[Any, float]
 
 
-def compute_dnfr_accel_max(G) -> dict:
+def compute_dnfr_accel_max(G: GraphLike) -> dict[str, float]:
     """Compute absolute maxima of |ΔNFR| and |d²EPI/dt²|."""
     maxes = multi_recompute_abs_max(
         G, {"dnfr_max": ALIAS_DNFR, "accel_max": ALIAS_D2EPI}
@@ -55,7 +67,7 @@ def compute_dnfr_accel_max(G) -> dict:
 
 
 def compute_coherence(
-    G, *, return_means: bool = False
+    G: GraphLike, *, return_means: bool = False
 ) -> float | tuple[float, float, float]:
     """Compute global coherence ``C`` from ``ΔNFR`` and ``dEPI``.
 
@@ -86,7 +98,7 @@ def compute_coherence(
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence
 
 
-def ensure_neighbors_map(G) -> Mapping[Any, Sequence[Any]]:
+def ensure_neighbors_map(G: GraphLike) -> Mapping[Any, Sequence[Any]]:
     """Return cached neighbors list keyed by node as a read-only mapping."""
 
     def builder() -> Mapping[Any, Sequence[Any]]:
@@ -95,7 +107,7 @@ def ensure_neighbors_map(G) -> Mapping[Any, Sequence[Any]]:
     return edge_version_cache(G, "_neighbors", builder)
 
 
-def get_Si_weights(G: Any) -> tuple[float, float, float]:
+def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
     """Obtain and normalise weights for the sense index."""
     w = {**DEFAULTS["SI_WEIGHTS"], **G.graph.get("SI_WEIGHTS", {})}
     weights = normalize_weights(w, ("alpha", "beta", "gamma"), default=0.0)
@@ -111,7 +123,7 @@ def get_Si_weights(G: Any) -> tuple[float, float, float]:
     return alpha, beta, gamma
 
 
-def _build_trig_cache(G: Any, np: Any | None = None) -> TrigCache:
+def _build_trig_cache(G: GraphLike, np: Any | None = None) -> TrigCache:
     """Construct trigonometric cache for ``G``."""
     if np is None:
         np = get_numpy()
@@ -144,7 +156,7 @@ def _build_trig_cache(G: Any, np: Any | None = None) -> TrigCache:
     return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
 
 
-def get_trig_cache(G: Any, *, np: Any | None = None) -> TrigCache:
+def get_trig_cache(G: GraphLike, *, np: Any | None = None) -> TrigCache:
     """Return cached cosines and sines of ``θ`` per node.
 
     The cache is invalidated not only when the edge set changes but also when
@@ -191,7 +203,7 @@ def compute_Si_node(
     return Si
 
 
-def _get_vf_dnfr_max(G) -> tuple[float, float]:
+def _get_vf_dnfr_max(G: GraphLike) -> tuple[float, float]:
     """Ensure and return absolute maxima for ``vf`` and ``ΔNFR``."""
     vfmax = G.graph.get("_vfmax")
     dnfrmax = G.graph.get("_dnfrmax")
@@ -210,7 +222,7 @@ def _get_vf_dnfr_max(G) -> tuple[float, float]:
     return vfmax, dnfrmax
 
 
-def compute_Si(G, *, inplace: bool = True) -> dict[Any, float]:
+def compute_Si(G: GraphLike, *, inplace: bool = True) -> dict[Any, float]:
     """Compute ``Si`` per node and write it to ``G.nodes[n]['Si']``."""
     neighbors = ensure_neighbors_map(G)
     alpha, beta, gamma = get_Si_weights(G)

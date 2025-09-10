@@ -85,7 +85,7 @@ COMMON_ARG_SPECS = specs(
 )
 
 
-def add_arg_specs(parser: argparse.ArgumentParser, specs) -> None:
+def add_arg_specs(parser: argparse._ActionsContainer, specs) -> None:
     """Register arguments from ``specs`` on ``parser``."""
     for opt, kwargs in specs:
         parser.add_argument(opt, **kwargs)

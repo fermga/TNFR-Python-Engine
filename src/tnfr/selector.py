@@ -6,7 +6,7 @@ from typing import Any, TYPE_CHECKING
 from collections.abc import Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx
+    import networkx as nx  # type: ignore[import-untyped]
 
 from .constants import DEFAULTS
 from .constants.core import SELECTOR_THRESHOLD_DEFAULTS
