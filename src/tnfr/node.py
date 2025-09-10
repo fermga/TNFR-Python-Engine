@@ -21,7 +21,9 @@ from .constants import (
 from .glyph_history import push_glyph
 from .alias import (
     get_attr,
+    get_attr_str,
     set_attr,
+    set_attr_str,
     set_vf,
     set_dnfr,
     set_theta,
@@ -309,8 +311,8 @@ class NodoNX(NodoProtocol):
     epi_kind = _nx_attr_property(
         ALIAS_EPI_KIND,
         default="",
-        getter=lambda d, a, default: get_attr(d, a, default, conv=str),
-        setter=lambda d, a, value: set_attr(d, a, value, conv=str),
+        getter=get_attr_str,
+        setter=set_attr_str,
         to_python=str,
         to_storage=str,
     )
