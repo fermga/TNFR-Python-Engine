@@ -201,10 +201,10 @@ def _get_vf_dnfr_max(G) -> tuple[float, float]:
         )
         if vfmax is None:
             vfmax = maxes["_vfmax"]
-            G.graph.setdefault("_vfmax", vfmax)
         if dnfrmax is None:
             dnfrmax = maxes["_dnfrmax"]
-            G.graph.setdefault("_dnfrmax", dnfrmax)
+        G.graph["_vfmax"] = vfmax
+        G.graph["_dnfrmax"] = dnfrmax
     vfmax = 1.0 if vfmax == 0 else vfmax
     dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
     return vfmax, dnfrmax
