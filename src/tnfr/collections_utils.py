@@ -133,9 +133,8 @@ def normalize_weights(
 ) -> dict[str, float]:
     """Normalize ``keys`` in ``dict_like`` so their sum is 1.
 
-    ``keys`` may be any iterable of strings. Sequences and other collections
-    are used directly while non-collection iterables are materialized.
-    Repeated keys are automatically collapsed preserving their first occurrence.
+    ``keys`` may be any iterable of strings and is materialized once while
+    collapsing repeated entries preserving their first occurrence.
 
     Negative weights are handled according to ``error_on_negative``. When
     ``True`` a :class:`ValueError` is raised. Otherwise negatives are logged,
@@ -144,8 +143,6 @@ def normalize_weights(
     ``warn_once`` is ``True`` warnings for a given key are emitted only on their
     first occurrence across calls.
     """
-    if not isinstance(keys, Collection):
-        keys = list(keys)
     keys = list(dict.fromkeys(keys))
     default_float = float(default)
     if not keys:

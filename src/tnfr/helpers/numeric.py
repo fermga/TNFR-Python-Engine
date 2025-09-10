@@ -1,8 +1,11 @@
+"""Numeric helper functions and compensated summation utilities."""
+
 from __future__ import annotations
 
 from typing import Any
 from collections.abc import Iterable, Sequence
 from statistics import fmean, StatisticsError
+from itertools import chain
 import math
 
 from ..import_utils import get_numpy, import_nodonx
@@ -102,38 +105,17 @@ def _phase_mean_from_iter(
     """Return circular mean from an iterator of cosine/sine pairs.
 
     ``it`` yields optional ``(cos, sin)`` tuples; ``None`` entries are ignored.
-    The iterator is consumed directly and the components are accumulated with a
-    running Kahan–Babuška summation to avoid storing intermediate results. If
-    no valid pairs are found ``fallback`` is returned.
+    The iterator is consumed directly and the components are accumulated using
+    :func:`kahan_sum2d` to avoid storing intermediate results. If no valid pairs
+    are found ``fallback`` is returned.
     """
-    found = False
-    total_cos = total_sin = 0.0
-    comp_cos = comp_sin = 0.0
-    for cs in it:
-        if cs is None:
-            continue
-        found = True
-        cos_val, sin_val = cs
-        # Accumulate cosine component
-        t = total_cos + cos_val
-        if abs(total_cos) >= abs(cos_val):
-            comp_cos += (total_cos - t) + cos_val
-        else:
-            comp_cos += (cos_val - t) + total_cos
-        total_cos = t
-        # Accumulate sine component
-        t = total_sin + sin_val
-        if abs(total_sin) >= abs(sin_val):
-            comp_sin += (total_sin - t) + sin_val
-        else:
-            comp_sin += (sin_val - t) + total_sin
-        total_sin = t
-
-    if not found:
+    values = (cs for cs in it if cs is not None)
+    try:
+        first = next(values)
+    except StopIteration:
         return fallback
-    total_cos += comp_cos
-    total_sin += comp_sin
-    return math.atan2(total_sin, total_cos)
+    sum_cos, sum_sin = kahan_sum2d(chain([first], values))
+    return math.atan2(sum_sin, sum_cos)
 
 
 def neighbor_phase_mean_list(
