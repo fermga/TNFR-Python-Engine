@@ -41,6 +41,18 @@ For optional JavaScript tooling, install the Node.js dependencies:
 npm install
 ```
 
+## Tests
+
+Run the test suite from the project root using the helper script, which sets
+the necessary `PYTHONPATH`:
+
+```bash
+./scripts/run_tests.sh
+```
+
+Avoid running `pytest` directly or executing the script from other directories,
+as the environment may be misconfigured and imports will fail.
+
 ---
 
 ## Why TNFR (in 60 seconds)
