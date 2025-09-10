@@ -7,6 +7,7 @@ import cmath
 import logging
 import hashlib
 from collections.abc import Mapping
+from functools import lru_cache
 
 from .constants import ALIAS_THETA
 from .alias import get_attr
@@ -22,8 +23,6 @@ from .logging_utils import get_logger
 logger = get_logger(__name__)
 
 DEFAULT_GAMMA: Mapping[str, str] = {"type": "none"}
-DEFAULT_GAMMA_DUMPED: bytes | None = None
-DEFAULT_GAMMA_HASH: str | None = None
 
 __all__ = [
     "kuramoto_R_psi",
@@ -38,13 +37,11 @@ __all__ = [
 ]
 
 
+@lru_cache(maxsize=1)
 def _default_gamma_spec() -> tuple[bytes, str]:
-    global DEFAULT_GAMMA_DUMPED, DEFAULT_GAMMA_HASH
-    if DEFAULT_GAMMA_HASH is None or DEFAULT_GAMMA_DUMPED is None:
-        dumped = json_dumps(DEFAULT_GAMMA, sort_keys=True)
-        DEFAULT_GAMMA_DUMPED = dumped
-        DEFAULT_GAMMA_HASH = hashlib.blake2b(dumped, digest_size=16).hexdigest()
-    return DEFAULT_GAMMA_DUMPED, DEFAULT_GAMMA_HASH
+    dumped = json_dumps(DEFAULT_GAMMA, sort_keys=True)
+    hash_ = hashlib.blake2b(dumped, digest_size=16).hexdigest()
+    return dumped, hash_
 
 
 def _ensure_kuramoto_cache(G, t) -> None:
