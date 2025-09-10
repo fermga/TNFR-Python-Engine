@@ -4,7 +4,6 @@ import math
 import pytest
 import tnfr.collections_utils as cu
 from tnfr.collections_utils import normalize_weights
-import tnfr.logging_utils as logging_utils
 
 
 def test_normalize_weights_warns_on_negative_value(caplog):

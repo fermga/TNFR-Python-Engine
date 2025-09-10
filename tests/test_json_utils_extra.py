@@ -2,7 +2,6 @@ import warnings
 from dataclasses import is_dataclass
 
 import tnfr.json_utils as json_utils
-import tnfr.logging_utils as logging_utils
 
 
 class DummyOrjson:
@@ -22,7 +21,7 @@ def _reset_json_utils(monkeypatch, module):
 def test_json_dumps_without_orjson(monkeypatch, caplog):
     _reset_json_utils(monkeypatch, None)
 
-    with warnings.catch_warnings(record=True) as w:
+    with warnings.catch_warnings(record=True):
 
         result = json_utils.json_dumps({"a": 1}, ensure_ascii=False, to_bytes=True)
     assert result == b'{"a":1}'
@@ -32,7 +31,7 @@ def test_json_dumps_without_orjson(monkeypatch, caplog):
 def test_json_dumps_with_orjson_warns(monkeypatch, caplog):
     _reset_json_utils(monkeypatch, DummyOrjson())
 
-    with warnings.catch_warnings(record=True) as w:
+    with warnings.catch_warnings(record=True):
         warnings.filterwarnings("once", message=".*ignored when using orjson")
 
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
