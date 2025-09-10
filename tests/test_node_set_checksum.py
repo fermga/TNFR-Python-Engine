@@ -73,6 +73,7 @@ def test_node_set_checksum_cache_token_is_prefix(graph_canon):
     token, stored_checksum = G.graph["_node_set_checksum_cache"]
     assert stored_checksum == checksum
     assert token == checksum[:16]
+    assert len(token) == 16
 
 
 def test_node_repr_cache_cleared_on_increment(graph_canon):
