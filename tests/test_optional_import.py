@@ -110,3 +110,30 @@ def test_prune_failed_imports(monkeypatch):
         state.record("stale")
     prune_failed_imports()
     assert "stale" not in state.failed
+
+
+def test_failure_log_bounded_without_frequent_prune(monkeypatch):
+    state = import_utils._IMPORT_STATE
+    with state.lock:
+        state.failed.clear()
+    monkeypatch.setattr(state, "limit", 3)
+    monkeypatch.setattr(import_utils, "_FAILED_IMPORT_PRUNE_INTERVAL", 10.0)
+    monkeypatch.setattr(import_utils, "_LAST_FAILED_IMPORT_PRUNE", 0.0)
+    monkeypatch.setattr(import_utils.time, "monotonic", lambda: 1.0)
+
+    calls = {"n": 0}
+
+    def fake_prune() -> None:
+        calls["n"] += 1
+
+    monkeypatch.setattr(import_utils, "prune_failed_imports", fake_prune)
+
+    def fake_import(name):
+        raise ImportError("boom")
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+    clear_optional_import_cache()
+    for i in range(10):
+        optional_import(f"fake_mod{i}")
+    assert calls["n"] == 0
+    assert len(state.failed) <= 3

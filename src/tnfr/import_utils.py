@@ -30,6 +30,9 @@ logger = get_logger(__name__)
 
 _FAILED_IMPORT_LIMIT = 128  # keep only this many recent failures
 _FAILED_IMPORT_MAX_AGE = 3600.0  # seconds
+_FAILED_IMPORT_PRUNE_INTERVAL = 60.0  # seconds between automatic prunes
+
+_LAST_FAILED_IMPORT_PRUNE = 0.0
 
 
 @dataclass(slots=True)
@@ -91,13 +94,14 @@ def _warn_failure(
         :func:`warnings.warn`, ``"log"`` uses :func:`logger.warning` and
         ``"both"`` emits to both destinations.
     """
-    prune_failed_imports()
+    now = time.monotonic()
+    if now - _LAST_FAILED_IMPORT_PRUNE >= _FAILED_IMPORT_PRUNE_INTERVAL:
+        prune_failed_imports()
     msg = (
         f"Failed to import module '{module}': {err}"
         if isinstance(err, ImportError)
         else f"Module '{module}' has no attribute '{attr}': {err}"
     )
-    now = time.monotonic()
     with _WARNED_LOCK:
         first = module not in _WARNED_MODULES
         if first:
@@ -188,14 +192,16 @@ def clear_optional_import_cache() -> None:
 
 def prune_failed_imports() -> None:
     """Remove expired entries from the failed import registry."""
-
+    now = time.monotonic()
     with _IMPORT_STATE.lock:
-        _IMPORT_STATE.prune()
+        _IMPORT_STATE.prune(now)
     with _WARNED_LOCK:
-        expiry = time.monotonic() - _FAILED_IMPORT_MAX_AGE
+        expiry = now - _FAILED_IMPORT_MAX_AGE
         stale = [m for m, t in _WARNED_MODULES.items() if t < expiry]
         for m in stale:
             _WARNED_MODULES.pop(m, None)
+    global _LAST_FAILED_IMPORT_PRUNE
+    _LAST_FAILED_IMPORT_PRUNE = now
 
 
 @lru_cache(maxsize=1)
