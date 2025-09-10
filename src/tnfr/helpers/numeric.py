@@ -104,12 +104,18 @@ def _phase_mean_from_iter(
 ) -> float:
     """Return circular mean from an iterator of cosine/sine pairs.
 
-    ``it`` yields optional ``(cos, sin)`` tuples; ``None`` entries are ignored.
-    The iterator is consumed directly and the components are accumulated using
-    :func:`kahan_sum2d` to avoid storing intermediate results. If no valid pairs
-    are found ``fallback`` is returned.
+    ``it`` yields optional ``(cos, sin)`` tuples. Entries with ``None``
+    components are ignored. The iterator is consumed directly and the
+    components are accumulated using :func:`kahan_sum2d` to avoid storing
+    intermediate results. If no valid pairs are found ``fallback`` is
+    returned.
     """
-    values = (cs for cs in it if cs is not None)
+    values = (
+        (c, s)
+        for cs in it
+        if cs is not None and cs[0] is not None and cs[1] is not None
+        for c, s in [cs]
+    )
     try:
         first = next(values)
     except StopIteration:
@@ -133,14 +139,22 @@ def neighbor_phase_mean_list(
     summation for stable accumulation.
     """
     if np is not None:
-        deg = len(neigh)
+        pairs = [
+            (c, s)
+            for v in neigh
+            if (c := cos_th.get(v)) is not None and (s := sin_th.get(v)) is not None
+        ]
+        deg = len(pairs)
         if deg > 0:
-            cos_arr = np.fromiter((cos_th[v] for v in neigh), dtype=float, count=deg)
-            sin_arr = np.fromiter((sin_th[v] for v in neigh), dtype=float, count=deg)
+            cos_arr = np.fromiter((c for c, _ in pairs), dtype=float, count=deg)
+            sin_arr = np.fromiter((s for _, s in pairs), dtype=float, count=deg)
             mean_cos = float(np.mean(cos_arr))
             mean_sin = float(np.mean(sin_arr))
             return float(np.arctan2(mean_sin, mean_cos))
-    return _phase_mean_from_iter(((cos_th[v], sin_th[v]) for v in neigh), fallback)
+        return fallback
+    return _phase_mean_from_iter(
+        ((cos_th.get(v), sin_th.get(v)) for v in neigh), fallback
+    )
 
 
 def neighbor_phase_mean(obj, n=None) -> float:
