@@ -1,5 +1,8 @@
+import pytest
+
 from tnfr import dynamics
 from tnfr.helpers.cache import (
+    cached_nodes_and_A,
     increment_edge_version,
     ensure_node_offset_map,
     _cache_node_list,
@@ -52,3 +55,20 @@ def test_cache_node_list_updates_on_dirty(graph_canon):
     G.graph["_node_list_dirty"] = True
     nodes3 = _cache_node_list(G)
     assert nodes3 is not nodes1
+
+
+def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon):
+    monkeypatch.setattr("tnfr.helpers.cache.get_numpy", lambda: None)
+    G = graph_canon()
+    G.add_edge(0, 1)
+    nodes, A = cached_nodes_and_A(G)
+    assert A is None
+    assert nodes == [0, 1]
+
+
+def test_cached_nodes_and_A_requires_numpy(monkeypatch, graph_canon):
+    monkeypatch.setattr("tnfr.helpers.cache.get_numpy", lambda: None)
+    G = graph_canon()
+    G.add_edge(0, 1)
+    with pytest.raises(RuntimeError):
+        cached_nodes_and_A(G, require_numpy=True)

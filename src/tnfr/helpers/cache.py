@@ -408,14 +408,20 @@ def invalidate_edge_version_cache(G: Any) -> None:
 
 
 def cached_nodes_and_A(
-    G: nx.Graph, *, cache_size: int | None = 1
+    G: nx.Graph, *, cache_size: int | None = 1, require_numpy: bool = False
 ) -> tuple[list[int], Any]:
-    """Return list of nodes and adjacency matrix for ``G`` with caching."""
+    """Return list of nodes and adjacency matrix for ``G`` with caching.
+
+    ``A`` is ``None`` when NumPy is unavailable. When ``require_numpy`` is
+    ``True`` a :class:`RuntimeError` is raised if NumPy cannot be imported.
+    """
     nodes_list = list(G.nodes())
     checksum = node_set_checksum(G, nodes_list, store=False)
     key = f"_dnfr_{len(nodes_list)}_{checksum}"
     G.graph["_dnfr_nodes_checksum"] = checksum
     np = get_numpy()
+    if require_numpy and np is None:
+        raise RuntimeError("NumPy is required for adjacency caching")
 
     def builder() -> tuple[list[int], Any]:
         if np is not None:
