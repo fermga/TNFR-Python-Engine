@@ -260,10 +260,6 @@ class NodoTNFR:
     def has_edge(self, other: "NodoTNFR") -> bool:
         return other in self._neighbors
 
-    def edge_weight(self, other: "NodoTNFR") -> float:
-        """Return the edge weight towards ``other`` or ``0.0`` if absent."""
-        return self._neighbors.get(other, 0.0)
-
     def add_edge(
         self,
         other: "NodoTNFR",
