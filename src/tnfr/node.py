@@ -113,7 +113,7 @@ class EdgeOps(Protocol):
     def set(self, graph, n1, n2, w: float) -> None: ...
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class NXEdgeOps:
     def exists(self, graph, n1, n2):
         return graph.has_edge(n1, n2)
@@ -122,7 +122,7 @@ class NXEdgeOps:
         graph.add_edge(n1, n2, weight=w)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class TNFREdgeOps:
     def exists(self, graph, n1, n2):
         return n2 in n1._neighbors
@@ -132,7 +132,7 @@ class TNFREdgeOps:
         n2._neighbors[n1] = w
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class _CallbackEdgeOps:
     exists_cb: Callable
     set_cb: Callable
