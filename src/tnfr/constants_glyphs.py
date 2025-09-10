@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import math
+from types import MappingProxyType
+from typing import Mapping
 
 from .types import Glyph
 
@@ -43,16 +45,18 @@ DISRUPTIVOS = (
 )
 
 # Mapa general de agrupaciones glíficas para referencia cruzada.
-GLYPH_GROUPS = {
-    "estabilizadores": ESTABILIZADORES,
-    "disruptivos": DISRUPTIVOS,
-    # Grupos auxiliares para métricas morfosintácticas
-    "ID": (Glyph.OZ.value,),
-    "CM": (Glyph.ZHIR.value, Glyph.NAV.value),
-    "NE": (Glyph.IL.value, Glyph.THOL.value),
-    "PP_num": (Glyph.SHA.value,),
-    "PP_den": (Glyph.REMESH.value,),
-}
+GLYPH_GROUPS: Mapping[str, tuple[str, ...]] = MappingProxyType(
+    {
+        "estabilizadores": ESTABILIZADORES,
+        "disruptivos": DISRUPTIVOS,
+        # Grupos auxiliares para métricas morfosintácticas
+        "ID": (Glyph.OZ.value,),
+        "CM": (Glyph.ZHIR.value, Glyph.NAV.value),
+        "NE": (Glyph.IL.value, Glyph.THOL.value),
+        "PP_num": (Glyph.SHA.value,),
+        "PP_den": (Glyph.REMESH.value,),
+    }
+)
 
 # -------------------------
 # Mapa de ángulos glíficos
@@ -61,23 +65,25 @@ GLYPH_GROUPS = {
 # Ángulos canónicos para todos los glyphs reconocidos. Las categorías
 # anteriores se distribuyen uniformemente en el círculo y se ajustan a
 # orientaciones semánticas específicas en el plano σ.
-ANGLE_MAP: dict[str, float] = {
-    # AL no participa en el plano σ pero se incluye por completitud.
-    # Comparte el ángulo base (0 rad) con IL de forma intencionada.
-    Glyph.AL.value: 0.0,
-    Glyph.EN.value: 2 * math.pi / 13,
-    Glyph.IL.value: 0.0,
-    Glyph.UM.value: math.pi / 2,
-    Glyph.RA.value: math.pi / 4,
-    Glyph.VAL.value: 10 * math.pi / 13,
-    Glyph.OZ.value: math.pi,
-    Glyph.ZHIR.value: 5 * math.pi / 4,
-    Glyph.NAV.value: 3 * math.pi / 2,
-    Glyph.THOL.value: 7 * math.pi / 4,
-    Glyph.NUL.value: 20 * math.pi / 13,
-    Glyph.SHA.value: 3 * math.pi / 4,
-    Glyph.REMESH.value: 24 * math.pi / 13,
-}
+ANGLE_MAP: Mapping[str, float] = MappingProxyType(
+    {
+        # AL no participa en el plano σ pero se incluye por completitud.
+        # Comparte el ángulo base (0 rad) con IL de forma intencionada.
+        Glyph.AL.value: 0.0,
+        Glyph.EN.value: 2 * math.pi / 13,
+        Glyph.IL.value: 0.0,
+        Glyph.UM.value: math.pi / 2,
+        Glyph.RA.value: math.pi / 4,
+        Glyph.VAL.value: 10 * math.pi / 13,
+        Glyph.OZ.value: math.pi,
+        Glyph.ZHIR.value: 5 * math.pi / 4,
+        Glyph.NAV.value: 3 * math.pi / 2,
+        Glyph.THOL.value: 7 * math.pi / 4,
+        Glyph.NUL.value: 20 * math.pi / 13,
+        Glyph.SHA.value: 3 * math.pi / 4,
+        Glyph.REMESH.value: 24 * math.pi / 13,
+    }
+)
 
 __all__ = [
     "GLYPHS_CANONICAL",
