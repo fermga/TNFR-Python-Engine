@@ -13,7 +13,7 @@ from typing import Any, Callable
 from functools import lru_cache
 from .import_utils import optional_import
 
-__all__ = ["json_dumps"]
+__all__ = ["json_dumps", "json_dumps_str"]
 
 _ignored_param_warned = False
 _warn_lock = threading.Lock()
@@ -112,7 +112,7 @@ def json_dumps(
             cls=cls,
             to_bytes=to_bytes,
             **kwargs,
-        )
+    )
     return _json_dumps_std(
         obj,
         sort_keys=sort_keys,
@@ -123,3 +123,8 @@ def json_dumps(
         to_bytes=to_bytes,
         **kwargs,
     )
+
+
+def json_dumps_str(obj: Any, **kwargs: Any) -> str:
+    """``json_dumps`` wrapper that always returns ``str``."""
+    return json_dumps(obj, to_bytes=False, **kwargs)  # type: ignore[arg-type]

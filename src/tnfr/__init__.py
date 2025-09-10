@@ -26,10 +26,15 @@ _metadata = optional_import("importlib.metadata")
 if _metadata is None:  # pragma: no cover
     _metadata = optional_import("importlib_metadata")
 
-version = _metadata.version  # type: ignore[attr-defined]
-PackageNotFoundError = (
-    _metadata.PackageNotFoundError  # type: ignore[attr-defined]
-)
+if _metadata is not None:  # pragma: no cover
+    version = _metadata.version  # type: ignore[attr-defined]
+    PackageNotFoundError = _metadata.PackageNotFoundError  # type: ignore[attr-defined]
+else:  # pragma: no cover
+    class PackageNotFoundError(Exception):
+        pass
+
+    def version(_: str) -> str:
+        raise PackageNotFoundError
 
 try:
     __version__ = version("tnfr")

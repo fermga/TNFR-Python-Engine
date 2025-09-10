@@ -27,25 +27,29 @@ __all__ = [
 def validate_window(window: int, *, positive: bool = False) -> int:
     """Validate and coerce ``window`` to an ``int``.
 
-    Parameters
-    ----------
-    window:
-        Value to validate.
-    positive:
-        If ``True``, ``window`` must be strictly positive; otherwise it may be
-        zero.
-
-    Returns
-    -------
-    int
-        The coerced ``int`` value if validation succeeds.
+    Non-integer values raise :class:`TypeError`. When ``positive`` is ``True``
+    the value must be strictly greater than zero; otherwise it may be zero.
+    Negative values always raise :class:`ValueError`.
     """
 
     window_int = int(window)
+    if window_int != window:
+        raise TypeError("'window' must be an integer")
     if window_int < 0 or (positive and window_int == 0):
         kind = "positive" if positive else "non-negative"
         raise ValueError(f"'window'={window} must be {kind}")
     return window_int
+
+
+def _normalize_history_input(hist: Any) -> Iterable[Any]:
+    """Normalise ``hist`` to an iterable excluding strings/bytes."""
+    try:
+        seq = ensure_collection(hist, max_materialize=None)
+    except TypeError:
+        return ()
+    if isinstance(hist, (str, bytes, bytearray)):
+        return ()
+    return seq
 
 
 def _ensure_glyph_history(nd: dict[str, Any], window: int, *, validated: bool = False) -> deque:
@@ -68,12 +72,7 @@ def _ensure_glyph_history(nd: dict[str, Any], window: int, *, validated: bool = 
     window_int = window if validated else validate_window(window)
     hist = nd.get("glyph_history")
     if not isinstance(hist, deque) or hist.maxlen != window_int:
-        try:
-            seq = ensure_collection(hist, max_materialize=None)
-        except TypeError:
-            seq = ()
-        if isinstance(hist, (str, bytes, bytearray)):
-            seq = ()
+        seq = _normalize_history_input(hist)
         hist = deque(seq, maxlen=window_int)
         nd["glyph_history"] = hist
     return hist
@@ -175,57 +174,17 @@ class HistoryDict(dict):
             if k in keys_set and self._counts.get(k) == cnt:
                 self._heap_index[k] = i
 
-    def _siftdown(self, startpos: int, pos: int) -> None:
-        """Like :func:`heapq._siftdown` but updates ``_heap_index``."""
-        item = self._heap[pos]
-        while pos > startpos:
-            parentpos = (pos - 1) >> 1
-            parent = self._heap[parentpos]
-            if item < parent:
-                self._heap[pos] = parent
-                self._heap_index[parent[1]] = pos
-                pos = parentpos
-                continue
-            break
-        self._heap[pos] = item
-        self._heap_index[item[1]] = pos
-
-    def _siftup(self, pos: int) -> None:
-        """Like :func:`heapq._siftup` but updates ``_heap_index``."""
-        endpos = len(self._heap)
-        startpos = pos
-        item = self._heap[pos]
-        childpos = 2 * pos + 1
-        while childpos < endpos:
-            rightpos = childpos + 1
-            if rightpos < endpos and self._heap[rightpos] < self._heap[childpos]:
-                childpos = rightpos
-            self._heap[pos] = self._heap[childpos]
-            self._heap_index[self._heap[pos][1]] = pos
-            pos = childpos
-            childpos = 2 * pos + 1
-        self._heap[pos] = item
-        self._heap_index[item[1]] = pos
-        self._siftdown(startpos, pos)
+    # heap operations ---------------------------------------------------
 
     def _heap_push(self, cnt: int, key: str) -> None:
         """Push ``(cnt, key)`` onto ``_heap`` updating ``_heap_index``."""
-        self._heap.append((cnt, key))
-        self._heap_index[key] = len(self._heap) - 1
-        self._siftdown(0, len(self._heap) - 1)
+        heapq.heappush(self._heap, (cnt, key))
+        self._rebuild_index()
 
     def _heap_pop(self) -> tuple[int, str]:
         """Pop the smallest item from ``_heap`` updating ``_heap_index``."""
-        last = self._heap.pop()
-        if not self._heap:
-            self._heap_index.pop(last[1], None)
-            return last
-        item = self._heap[0]
-        if self._heap_index.get(item[1]) == 0:
-            self._heap_index.pop(item[1], None)
-        self._heap[0] = last
-        self._heap_index[last[1]] = 0
-        self._siftup(0)
+        item = heapq.heappop(self._heap)
+        self._rebuild_index()
         return item
 
     def _increment(self, key: str) -> None:

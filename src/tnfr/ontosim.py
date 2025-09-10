@@ -12,7 +12,7 @@ from .glyph_history import append_metric
 from .import_utils import optional_import
 
 if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx
+    import networkx as nx  # type: ignore[import-untyped]
 
 # API de alto nivel
 __all__ = ["preparar_red", "step", "run"]

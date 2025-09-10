@@ -1,7 +1,7 @@
 """Scenario generation."""
 
 from __future__ import annotations
-import networkx as nx
+import networkx as nx  # type: ignore[import-untyped]
 
 from .constants import inject_defaults
 from .initialization import init_node_attrs

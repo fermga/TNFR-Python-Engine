@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx
+    import networkx as nx  # type: ignore[import-untyped]
 
 from ..constants import inject_defaults, DEFAULTS, METRIC_DEFAULTS
 from ..sense import register_sigma_callback, sigma_rose
@@ -35,7 +35,7 @@ from ..helpers.numeric import list_mean
 from ..observers import attach_standard_observer
 from ..logging_utils import get_logger
 from ..types import Glyph
-from ..json_utils import json_dumps
+from ..json_utils import json_dumps_str
 
 from .arguments import _args_to_dict
 from .token_parser import _parse_tokens
@@ -44,8 +44,8 @@ logger = get_logger(__name__)
 
 
 def _save_json(path: str, data: Any) -> None:
-    payload = json_dumps(
-        data, ensure_ascii=False, indent=2, to_bytes=False, default=list
+    payload = json_dumps_str(
+        data, ensure_ascii=False, indent=2, default=list
     )
     safe_write(path, lambda f: f.write(payload))
 
@@ -234,5 +234,5 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     if args.save:
         _save_json(args.save, out)
     else:
-        logger.info("%s", json_dumps(out).decode("utf-8"))
+        logger.info("%s", json_dumps_str(out))
     return 0

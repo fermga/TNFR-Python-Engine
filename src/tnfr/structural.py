@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from typing import Iterable
-import networkx as nx
+import networkx as nx  # type: ignore[import-untyped]
 
 from .dynamics import (
     set_delta_nfr_hook,

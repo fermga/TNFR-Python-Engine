@@ -15,7 +15,7 @@ from .constants import DEFAULTS
 from .trace import CallbackSpec
 
 if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx
+    import networkx as nx  # type: ignore[import-untyped]
 
 __all__ = ["CallbackEvent", "register_callback", "invoke_callbacks"]
 

@@ -5,7 +5,7 @@ from typing import Iterable, TypeVar
 import math
 from collections import Counter
 
-import networkx as nx
+import networkx as nx  # type: ignore[import-untyped]
 
 from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
 from .alias import get_attr

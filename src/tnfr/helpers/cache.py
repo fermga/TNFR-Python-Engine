@@ -10,7 +10,7 @@ from types import MappingProxyType
 from typing import Any, TypeVar
 
 from cachetools import LRUCache
-import networkx as nx
+import networkx as nx  # type: ignore[import-untyped]
 
 from ..graph_utils import mark_dnfr_prep_dirty
 from ..import_utils import get_numpy
@@ -231,12 +231,22 @@ def ensure_node_offset_map(G) -> dict[Any, int]:
     return _ensure_node_map(G, key="_node_offset_map", sort=sort)
 
 
-def _make_edge_cache(max_entries: int, locks: dict) -> LRUCache:
-    """Create an ``LRUCache`` for edge data with lock cleanup support.
+class _LockAwareLRUCache(LRUCache):
+    """``LRUCache`` that drops per-key locks when evicting items."""
 
-    The cache removes any per-key locks when entries are evicted.
-    """
-    return LRUCache(max_entries, callback=lambda k, _: locks.pop(k, None))
+    def __init__(self, maxsize: int, locks: dict):
+        super().__init__(maxsize)
+        self._locks = locks
+
+    def popitem(self):  # type: ignore[override]
+        key, value = super().popitem()
+        self._locks.pop(key, None)
+        return key, value
+
+
+def _make_edge_cache(max_entries: int, locks: dict) -> LRUCache:
+    """Create an ``LRUCache`` for edge data."""
+    return _LockAwareLRUCache(max_entries, locks)
 
 
 def _ensure_edge_cache_locks(graph: Any) -> defaultdict:
@@ -261,10 +271,10 @@ def _init_edge_cache(
     return cache
 
 
-def _ensure_edge_cache(
+def _maybe_init_edge_cache(
     graph: Any, locks: dict, max_entries: int | None
 ) -> dict | LRUCache:
-    """Return cache mapping for edge data, initializing when needed."""
+    """Return existing cache or initialise a new one if needed."""
     use_lru = bool(max_entries)
     cache = graph.get("_edge_version_cache")
     if (
@@ -282,6 +292,13 @@ def _ensure_edge_cache(
     return cache
 
 
+def _ensure_edge_cache(
+    graph: Any, locks: dict, max_entries: int | None
+) -> dict | LRUCache:
+    """Return cache mapping for edge data, initializing when needed."""
+    return _maybe_init_edge_cache(graph, locks, max_entries)
+
+
 def _get_edge_cache(
     graph: Any, max_entries: int | None, *, create: bool = True
 ):
@@ -294,20 +311,7 @@ def _get_edge_cache(
     with _EDGE_CACHE_LOCK:
         if create:
             locks = _ensure_edge_cache_locks(graph)
-            use_lru = bool(max_entries)
-            cache = graph.get("_edge_version_cache")
-            if (
-                cache is None
-                or (
-                    use_lru
-                    and (
-                        not isinstance(cache, LRUCache)
-                        or cache.maxsize != max_entries
-                    )
-                )
-                or (not use_lru and isinstance(cache, LRUCache))
-            ):
-                cache = _init_edge_cache(graph, locks, max_entries)
+            cache = _maybe_init_edge_cache(graph, locks, max_entries)
         else:
             locks = graph.get("_edge_version_cache_locks")
             cache = graph.get("_edge_version_cache")
@@ -402,28 +406,32 @@ def cached_nodes_and_A(
     key = f"_dnfr_{len(nodes_list)}_{checksum}"
     G.graph["_dnfr_nodes_checksum"] = checksum
     np = get_numpy()
-    if require_numpy and np is None:
-        raise RuntimeError("NumPy is required for adjacency caching")
+    if np is None:
+        if require_numpy:
+            raise RuntimeError("NumPy is required for adjacency caching")
+        return edge_version_cache(
+            G, key, lambda: (nodes_list, None), max_entries=cache_size
+        )
 
     def builder() -> tuple[list[int], Any]:
-        if np is not None:
-            A = nx.to_numpy_array(
-                G, nodelist=nodes_list, weight=None, dtype=float
-            )
-        else:  # pragma: no cover - dependiente de numpy
-            A = None
+        A = nx.to_numpy_array(G, nodelist=nodes_list, weight=None, dtype=float)
         return nodes_list, A
 
     return edge_version_cache(G, key, builder, max_entries=cache_size)
 
 
-def increment_edge_version(G: Any) -> None:
-    """Increment the edge version counter in ``G.graph``."""
-    graph = get_graph(G)
-    graph["_edge_version"] = int(graph.get("_edge_version", 0)) + 1
+def _reset_edge_caches(graph: Any, G: Any) -> None:
+    """Clear caches affected by edge updates."""
     invalidate_edge_version_cache(G)
     mark_dnfr_prep_dirty(G)
     _node_repr.cache_clear()
     _hash_node.cache_clear()
     for key in EDGE_VERSION_CACHE_KEYS:
         graph.pop(key, None)
+
+
+def increment_edge_version(G: Any) -> None:
+    """Increment the edge version counter in ``G.graph``."""
+    graph = get_graph(G)
+    graph["_edge_version"] = int(graph.get("_edge_version", 0)) + 1
+    _reset_edge_caches(graph, G)
