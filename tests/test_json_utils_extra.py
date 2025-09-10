@@ -1,4 +1,4 @@
-import logging
+import warnings
 from dataclasses import is_dataclass
 
 import tnfr.json_utils as json_utils
@@ -15,6 +15,8 @@ class DummyOrjson:
 
 def _reset_json_utils(monkeypatch, module):
     monkeypatch.setattr(json_utils, "optional_import", lambda name: module)
+    json_utils._load_orjson.cache_clear()
+    json_utils._warned_orjson_params = False
 
 
 def test_json_dumps_without_orjson(monkeypatch, caplog):

@@ -2,6 +2,7 @@
 
 import math
 import pytest
+import tnfr.collections_utils as cu
 from tnfr.collections_utils import normalize_weights
 import tnfr.logging_utils as logging_utils
 
