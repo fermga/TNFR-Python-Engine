@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import pytest
 
 from tnfr.io import safe_write
@@ -36,3 +37,20 @@ def test_safe_write_preserves_exception(tmp_path: Path):
 
     with pytest.raises(ValueError):
         safe_write(dest, writer)
+
+
+def test_safe_write_non_atomic(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    dest = tmp_path / "out.txt"
+
+    def fake_fsync(_fd):  # pragma: no cover - monkeypatch helper
+        raise AssertionError("fsync should not be called")
+
+    def fake_replace(_src, _dst):  # pragma: no cover - monkeypatch helper
+        raise AssertionError("replace should not be called")
+
+    monkeypatch.setattr(os, "fsync", fake_fsync)
+    monkeypatch.setattr(os, "replace", fake_replace)
+
+    safe_write(dest, lambda f: f.write("hi"), atomic=False)
+
+    assert dest.read_text() == "hi"
