@@ -5,13 +5,11 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping, Collection, Sequence
 from itertools import islice
 from typing import Any, TypeVar, cast
-import logging
 from threading import Lock
 from cachetools import LRUCache
 from .logging_utils import get_logger
 
 from .helpers.numeric import kahan_sum
-from .value_utils import _convert_value
 
 T = TypeVar("T")
 
@@ -152,23 +150,19 @@ def normalize_weights(
     default_float = float(default)
     if not keys:
         return {}
-    weights: dict[str, float] = {}
-    negatives: dict[str, float] = {}
-    # First pass: convert values and record negative entries
-    for k in keys:
-        val = dict_like.get(k, default_float)
-        ok, converted = _convert_value(
-            val,
-            float,
-            strict=error_on_negative,
-            key=k,
-            log_level=logging.WARNING,
-        )
-        w = converted if ok and converted is not None else default_float
-        weights[k] = w
-        if w < 0:
-            negatives[k] = w
 
+    def _get_float(key: str) -> float:
+        val = dict_like.get(key, default_float)
+        try:
+            return float(val)
+        except (TypeError, ValueError) as exc:
+            if error_on_negative:
+                raise
+            logger.warning("Could not convert value for %r: %s", key, exc)
+            return default_float
+
+    weights = {k: _get_float(k) for k in keys}
+    negatives = {k: w for k, w in weights.items() if w < 0}
     total = kahan_sum(weights.values())
     if negatives:
         if error_on_negative:
