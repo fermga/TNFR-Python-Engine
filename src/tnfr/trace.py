@@ -8,6 +8,7 @@ structures as immutable snapshots.
 from __future__ import annotations
 
 from typing import Any, Callable, Optional, Protocol, NamedTuple
+from collections.abc import Iterable, Mapping, Sequence
 
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs, append_metric
@@ -87,8 +88,12 @@ def _trace_setup(
     return cfg, capture, hist, key
 
 
-def _callback_names(callbacks: list[CallbackSpec]) -> list[str]:
+def _callback_names(
+    callbacks: Mapping[str, CallbackSpec] | Iterable[CallbackSpec]
+) -> list[str]:
     """Return callback names from ``callbacks``."""
+    if isinstance(callbacks, Mapping):
+        callbacks = callbacks.values()
     return [cb.name or getattr(cb.func, "__name__", "fn") for cb in callbacks]
 
 
@@ -195,12 +200,16 @@ def si_weights_field(G):
 
 def callbacks_field(G):
     cb = G.graph.get("callbacks")
-    if not isinstance(cb, dict):
+    if not isinstance(cb, Mapping):
         return {}
-    out = {
-        phase: _callback_names(cb_list) if isinstance(cb_list, list) else None
-        for phase, cb_list in cb.items()
-    }
+    out = {}
+    for phase, cb_map in cb.items():
+        if isinstance(cb_map, Mapping):
+            out[phase] = _callback_names(cb_map)
+        elif isinstance(cb_map, Sequence) and not isinstance(cb_map, (str, bytes)):
+            out[phase] = _callback_names(cb_map)
+        else:
+            out[phase] = None
     return {"callbacks": out}
 
 

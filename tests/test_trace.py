@@ -19,13 +19,13 @@ def test_register_trace_idempotent(graph_canon):
     register_trace(G)
     # callbacks should be registered once and flag set
     assert G.graph["_trace_registered"] is True
-    before = list(G.graph["callbacks"]["before_step"])
-    after = list(G.graph["callbacks"]["after_step"])
+    before = dict(G.graph["callbacks"]["before_step"])
+    after = dict(G.graph["callbacks"]["after_step"])
 
     register_trace(G)
 
-    assert list(G.graph["callbacks"]["before_step"]) == before
-    assert list(G.graph["callbacks"]["after_step"]) == after
+    assert dict(G.graph["callbacks"]["before_step"]) == before
+    assert dict(G.graph["callbacks"]["after_step"]) == after
 
 
 def test_trace_metadata_contains_callback_names(graph_canon):
