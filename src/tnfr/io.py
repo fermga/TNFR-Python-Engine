@@ -48,13 +48,16 @@ def _parse_yaml(text: str) -> Any:
     return getattr(yaml, "safe_load", _missing_dependency("pyyaml"))(text)
 
 
+def _parse_toml(text: str) -> Any:
+    """Parse TOML ``text`` using ``tomllib`` or ``tomli``."""
+    return getattr(tomllib, "loads", _missing_dependency("tomllib/tomli"))(text)
+
+
 PARSERS = {
     ".json": json.loads,
     ".yaml": _parse_yaml,
     ".yml": _parse_yaml,
-    ".toml": lambda text: getattr(
-        tomllib, "loads", _missing_dependency("tomllib/tomli")
-    )(text),
+    ".toml": _parse_toml,
 }
 
 
