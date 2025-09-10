@@ -33,9 +33,9 @@ def validate_window(window: int, *, positive: bool = False) -> int:
     Negative values always raise :class:`ValueError`.
     """
 
-    window_int = int(window)
-    if window_int != window:
+    if not isinstance(window, int):
         raise TypeError("'window' must be an integer")
+    window_int = int(window)
     if window_int < 0 or (positive and window_int == 0):
         kind = "positive" if positive else "non-negative"
         raise ValueError(f"'window'={window} must be {kind}")
@@ -162,7 +162,7 @@ class HistoryDict(dict):
 
         When ``keys`` is ``None`` the entire mapping is regenerated. Otherwise
         only the provided keys are updated or removed, avoiding unnecessary
-        work on unaffected entries.
+        work on unaffected entries. ``keys`` may be any iterable of strings.
         """
         if keys is None:
             self._heap_index = {
@@ -171,25 +171,73 @@ class HistoryDict(dict):
                 if self._counts.get(k) == cnt
             }
             return
-        keys_set = set(keys)
-        for k in keys_set:
+        for k in set(keys):
             self._heap_index.pop(k, None)
-        for i, (cnt, k) in enumerate(self._heap):
-            if k in keys_set and self._counts.get(k) == cnt:
-                self._heap_index[k] = i
+            for i, (cnt, k2) in enumerate(self._heap):
+                if k2 == k and self._counts.get(k) == cnt:
+                    self._heap_index[k] = i
+                    break
 
     # heap operations ---------------------------------------------------
 
     def _heap_push(self, cnt: int, key: str) -> None:
         """Push ``(cnt, key)`` onto ``_heap`` updating ``_heap_index``."""
-        heapq.heappush(self._heap, (cnt, key))
-        self._rebuild_index()
+        heap = self._heap
+        heap.append((cnt, key))
+        pos = len(heap) - 1
+        self._heap_index[key] = pos
+        # sift down (percolate up) updating indices only for affected keys
+        while pos > 0:
+            parentpos = (pos - 1) >> 1
+            parent = heap[parentpos]
+            if (cnt, key) < parent:
+                heap[pos] = parent
+                self._heap_index[parent[1]] = pos
+                pos = parentpos
+                continue
+            break
+        heap[pos] = (cnt, key)
+        self._heap_index[key] = pos
 
     def _heap_pop(self) -> tuple[int, str]:
         """Pop the smallest item from ``_heap`` updating ``_heap_index``."""
-        item = heapq.heappop(self._heap)
-        self._rebuild_index()
-        return item
+        heap = self._heap
+        lastelt = heap.pop()
+        if not heap:
+            self._heap_index.pop(lastelt[1], None)
+            return lastelt
+        returnitem = heap[0]
+        heap[0] = lastelt
+        self._heap_index[lastelt[1]] = 0
+        endpos = len(heap)
+        pos = 0
+        childpos = 2 * pos + 1
+        # sift up: move new root down the tree
+        while childpos < endpos:
+            rightpos = childpos + 1
+            if rightpos < endpos and heap[rightpos] < heap[childpos]:
+                childpos = rightpos
+            heap[pos] = heap[childpos]
+            self._heap_index[heap[pos][1]] = pos
+            pos = childpos
+            childpos = 2 * pos + 1
+        heap[pos] = lastelt
+        self._heap_index[lastelt[1]] = pos
+        # sift down: move the element up if necessary
+        while pos > 0:
+            parentpos = (pos - 1) >> 1
+            parent = heap[parentpos]
+            if heap[pos] < parent:
+                heap[pos] = parent
+                self._heap_index[parent[1]] = pos
+                pos = parentpos
+                continue
+            break
+        heap[pos] = lastelt
+        self._heap_index[lastelt[1]] = pos
+        if self._counts.get(returnitem[1]) == returnitem[0]:
+            self._heap_index.pop(returnitem[1], None)
+        return returnitem
 
     def _increment(self, key: str) -> None:
         self._counts[key] += 1
