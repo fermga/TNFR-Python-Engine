@@ -11,6 +11,9 @@ import pytest
 # Import ``AliasAccessor`` without triggering package-level side effects.
 pkg = types.ModuleType("tnfr")
 pkg.__path__ = [str(Path(__file__).resolve().parents[1] / "src" / "tnfr")]
+
+_orig = sys.modules.get("tnfr")
+
 sys.modules["tnfr"] = pkg
 spec = importlib.util.spec_from_file_location(
     "tnfr.alias", Path(__file__).resolve().parents[1] / "src" / "tnfr" / "alias.py"
@@ -19,6 +22,10 @@ alias = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(alias)  # type: ignore[union-attr]
 AliasAccessor = alias.AliasAccessor
 
+if _orig is not None:
+    sys.modules["tnfr"] = _orig
+else:  # pragma: no cover - cleanup when original module absent
+    del sys.modules["tnfr"]
 
 def test_get_attr_default_none_returns_none():
     d = {}
