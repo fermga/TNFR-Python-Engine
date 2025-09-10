@@ -39,7 +39,7 @@ __all__ = [
 
 @lru_cache(maxsize=1)
 def _default_gamma_spec() -> tuple[bytes, str]:
-    dumped = json_dumps(DEFAULT_GAMMA, sort_keys=True)
+    dumped = json_dumps(DEFAULT_GAMMA, sort_keys=True, to_bytes=True)
     hash_ = hashlib.blake2b(dumped, digest_size=16).hexdigest()
     return dumped, hash_
 
@@ -127,7 +127,7 @@ def _cache_gamma_spec(
             _, cur_hash = _default_gamma_spec()
     else:
         if cur_hash is None:
-            dumped = json_dumps(spec, sort_keys=True)
+            dumped = json_dumps(spec, sort_keys=True, to_bytes=True)
             cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
     if cached is not None and prev_hash == cur_hash:
         return cached

@@ -48,31 +48,34 @@ def preparar_red(
             "PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]
         )
     )
-    G.graph.setdefault(
-        "history",
+    hist_keys = [
+        "C_steps",
+        "stable_frac",
+        "phase_sync",
+        "kuramoto_R",
+        "sense_sigma_x",
+        "sense_sigma_y",
+        "sense_sigma_mag",
+        "sense_sigma_angle",
+        "iota",
+        "glyph_load_estab",
+        "glyph_load_disr",
+        "Si_mean",
+        "Si_hi_frac",
+        "Si_lo_frac",
+        "W_bar",
+        "phase_kG",
+        "phase_kL",
+    ]
+    history = {k: [] for k in hist_keys}
+    history.update(
         {
-            "C_steps": [],
-            "stable_frac": [],
-            "phase_sync": [],
-            "kuramoto_R": [],
-            "sense_sigma_x": [],
-            "sense_sigma_y": [],
-            "sense_sigma_mag": [],
-            "sense_sigma_angle": [],
-            "iota": [],
-            "glyph_load_estab": [],
-            "glyph_load_disr": [],
-            "Si_mean": [],
-            "Si_hi_frac": [],
-            "Si_lo_frac": [],
-            "W_bar": [],
-            "phase_kG": [],
-            "phase_kL": [],
             "phase_state": deque(maxlen=ph_len),
             "phase_R": deque(maxlen=ph_len),
             "phase_disr": deque(maxlen=ph_len),
-        },
+        }
     )
+    G.graph.setdefault("history", history)
     # REMESH_TAU: alias legado resuelto por ``get_param``
     tau = int(get_param(G, "REMESH_TAU_GLOBAL"))
     maxlen = max(2 * tau + 5, 64)

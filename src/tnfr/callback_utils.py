@@ -10,8 +10,8 @@ from collections.abc import Callable, Mapping, Sequence
 
 import traceback
 from .logging_utils import get_logger
-
 from .constants import DEFAULTS
+
 from .trace import CallbackSpec
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -195,7 +195,7 @@ def invoke_callbacks(
         name, fn = spec.name, spec.func
         try:
             fn(G, ctx)
-        except Exception as e:  # catch all callback errors
+        except (RuntimeError, ValueError, TypeError) as e:  # catch expected callback errors
             logger.exception("callback %r failed for %s: %s", name, event, e)
             if strict:
                 raise
@@ -214,3 +214,8 @@ def invoke_callbacks(
                     "name": name,
                 }
             )
+        except Exception:
+            logger.exception(
+                "callback %r raised unexpected exception for %s", name, event
+            )
+            raise

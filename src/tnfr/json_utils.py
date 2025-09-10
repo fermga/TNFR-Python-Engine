@@ -121,15 +121,16 @@ def json_dumps(
     ensure_ascii: bool = True,
     separators: tuple[str, str] = (",", ":"),
     cls: type[json.JSONEncoder] | None = None,
-    to_bytes: bool = True,
+    to_bytes: bool = False,
     **kwargs: Any,
 ) -> bytes | str:
     """Serialize ``obj`` to JSON using ``orjson`` when available.
 
-    When :mod:`orjson` is used, the ``ensure_ascii``, ``separators``, ``cls``
-    and any additional keyword arguments are ignored because they are not
-    supported by :func:`orjson.dumps`. A warning is emitted only the first time
-    such ignored parameters are detected.
+    Returns a ``str`` by default. Pass ``to_bytes=True`` to obtain a ``bytes``
+    result. When :mod:`orjson` is used, the ``ensure_ascii``, ``separators``,
+    ``cls`` and any additional keyword arguments are ignored because they are
+    not supported by :func:`orjson.dumps`. A warning is emitted only the first
+    time such ignored parameters are detected.
     """
     orjson = _load_orjson()
     if orjson is not None:
