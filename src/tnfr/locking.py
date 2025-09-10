@@ -1,0 +1,50 @@
+"""Utilities for named locks.
+
+This module provides helpers to obtain process-wide ``threading.Lock``
+instances identified by name. Locks are created lazily and reused,
+allowing different modules to synchronise on shared resources without
+redefining locks repeatedly.
+"""
+
+from __future__ import annotations
+
+import threading
+from contextlib import contextmanager
+from typing import Dict, Iterator
+
+# Registry of locks by name guarded by ``_REGISTRY_LOCK``.
+_locks: Dict[str, threading.Lock] = {}
+_REGISTRY_LOCK = threading.Lock()
+
+
+def get_lock(name: str) -> threading.Lock:
+    """Return a re-usable lock identified by ``name``.
+
+    The same lock object is returned for identical names. Locks are
+    created on first use and stored in a process-wide registry.
+    """
+
+    with _REGISTRY_LOCK:
+        lock = _locks.get(name)
+        if lock is None:
+            lock = threading.Lock()
+            _locks[name] = lock
+        return lock
+
+
+@contextmanager
+def locked(name: str) -> Iterator[None]:
+    """Context manager acquiring the lock for ``name``.
+
+    Usage::
+
+        with locked("resource"):
+            ...  # critical section
+    """
+
+    lock = get_lock(name)
+    with lock:
+        yield
+
+
+__all__ = ["get_lock", "locked"]

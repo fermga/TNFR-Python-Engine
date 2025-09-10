@@ -7,12 +7,14 @@ consistent configuration across the project.
 from __future__ import annotations
 
 import logging
+
 import threading
 from functools import lru_cache
 from typing import Any, Hashable, Mapping
 
-_LOCK = threading.Lock()
-_LOGGING_CONFIGURED = False
+
+__all__ = ("get_logger", "warn_once")
+
 
 __all__ = ("get_logger", "warn_once")
 
@@ -27,27 +29,20 @@ def _configure_root() -> None:
         _LOGGING_CONFIGURED = True
         return
 
+
+root = logging.getLogger()
+if not root.handlers:
     kwargs = {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
     if root.level == logging.NOTSET:
         kwargs["level"] = logging.INFO
     logging.basicConfig(**kwargs)
-    _LOGGING_CONFIGURED = True
 
 
 def get_logger(name: str) -> logging.Logger:
-    """Return a logger with a standard configuration.
+    """Return a module-specific logger."""
 
-    If the root logger has no handlers, it is configured with a default
-    format. A default log level of ``INFO`` is only set when the root
-    logger's level is ``NOTSET``; otherwise the existing level is
-    preserved.
-    """
-
-    if not _LOGGING_CONFIGURED:
-        with _LOCK:
-            if not _LOGGING_CONFIGURED:
-                _configure_root()
     return logging.getLogger(name)
+
 
 
 def warn_once(
@@ -81,3 +76,4 @@ def warn_once(
 
     _log.clear = _seen.cache_clear  # type: ignore[attr-defined]
     return _log
+

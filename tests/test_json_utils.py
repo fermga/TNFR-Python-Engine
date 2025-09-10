@@ -1,6 +1,7 @@
-import warnings
+import logging
 
 import tnfr.json_utils as json_utils
+import tnfr.logging_utils as logging_utils
 
 
 class FakeOrjson:
@@ -20,7 +21,6 @@ def test_lazy_orjson_import(monkeypatch):
 
     monkeypatch.setattr(json_utils, "optional_import", fake_optional_import)
     json_utils._load_orjson.cache_clear()
-    monkeypatch.setattr(json_utils, "_ignored_param_warned", False)
 
     assert calls["n"] == 0
     json_utils.json_dumps({})
@@ -29,13 +29,20 @@ def test_lazy_orjson_import(monkeypatch):
     assert calls["n"] == 1
 
 
-def test_warns_once(monkeypatch):
+def test_warns_once(monkeypatch, caplog):
     monkeypatch.setattr(json_utils, "optional_import", lambda name: FakeOrjson())
     json_utils._load_orjson.cache_clear()
-    monkeypatch.setattr(json_utils, "_ignored_param_warned", False)
 
     with warnings.catch_warnings(record=True) as w:
-        warnings.simplefilter("always")
+        warnings.filterwarnings("once", message=".*ignored when using orjson")
+
         json_utils.json_dumps({}, ensure_ascii=False)
         json_utils.json_dumps({}, ensure_ascii=False)
+
     assert len(w) == 1
+
+
+def test_json_dumps_str_matches_json_dumps():
+    data = {"a": 1, "b": [1, 2, 3]}
+    assert json_utils.json_dumps_str(data) == json_utils.json_dumps(data, to_bytes=False)
+

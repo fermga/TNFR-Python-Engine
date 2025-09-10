@@ -7,7 +7,7 @@ import pytest
 from tnfr.constants import inject_defaults, merge_overrides
 from tnfr.dynamics import update_epi_via_nodal_equation
 from tnfr.gamma import eval_gamma, GAMMA_REGISTRY, GammaEntry
-from tnfr.helpers.cache import increment_edge_version
+from tnfr.helpers.cache import EdgeCacheManager, increment_edge_version
 
 
 def test_gamma_linear_integration(graph_canon):
@@ -221,7 +221,7 @@ def test_kuramoto_cache_step_limit(graph_canon):
     gamma_mod._ensure_kuramoto_cache(G, t=0)
     gamma_mod._ensure_kuramoto_cache(G, t=1)
     gamma_mod._ensure_kuramoto_cache(G, t=2)
-    cache = G.graph["_edge_version_cache"]
+    cache, _ = EdgeCacheManager(G.graph).get_cache(2)
     entries = [k for k in cache if isinstance(k, tuple)]
     assert len(entries) == 2
 

@@ -13,13 +13,12 @@ from typing import (
     Callable,
     TypeVar,
     Optional,
-    overload,
     Generic,
     Hashable,
     TYPE_CHECKING,
 )
 
-from functools import lru_cache
+from functools import lru_cache, partial
 
 from .value_utils import _convert_value
 
@@ -29,7 +28,6 @@ if TYPE_CHECKING:  # pragma: no cover
 T = TypeVar("T")
 
 __all__ = (
-    "get_attr_generic",
     "set_attr_generic",
     "get_attr",
     "set_attr",
@@ -133,6 +131,8 @@ class AliasAccessor(Generic[T]):
     ) -> None:
         self._conv = conv
         self._default = default
+        # expose cache for testing and manual control
+        self._alias_cache = _alias_cache
 
     def _prepare(
         self,
@@ -202,38 +202,14 @@ class AliasAccessor(Generic[T]):
 _generic_accessor: AliasAccessor[Any] = AliasAccessor()
 
 
-@overload
-def get_attr_generic(
-    d: dict[str, Any],
-    aliases: Iterable[str],
-    default: T,
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-    conv: Callable[[Any], T],
-) -> T: ...
-
-
-@overload
-def get_attr_generic(
-    d: dict[str, Any],
-    aliases: Iterable[str],
-    default: None = None,
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-    conv: Callable[[Any], T],
-) -> T | None: ...
-
-
-def get_attr_generic(
+def get_attr(
     d: dict[str, Any],
     aliases: Iterable[str],
     default: T | None = None,
     *,
     strict: bool = False,
     log_level: int | None = None,
-    conv: Callable[[Any], T],
+    conv: Callable[[Any], T] = float,
 ) -> T | None:
     """Return the value for the first key in ``aliases`` found in ``d``."""
 
@@ -259,53 +235,6 @@ def set_attr_generic(
     return _generic_accessor.set(d, aliases, value, conv=conv)
 
 
-@overload
-def get_attr(
-    d: dict[str, Any],
-    aliases: Iterable[str],
-    default: float,
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-    conv: Callable[[Any], float] | None = None,
-) -> float: ...
-
-
-@overload
-def get_attr(
-    d: dict[str, Any],
-    aliases: Iterable[str],
-    default: None = None,
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-    conv: Callable[[Any], float] | None = None,
-) -> float | None: ...
-
-
-def get_attr(
-    d: dict[str, Any],
-    aliases: Iterable[str],
-    default: float | None = None,
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-    conv: Callable[[Any], float] | None = None,
-) -> float | None:
-    """Return the value for the first key in ``aliases`` found in ``d``."""
-
-    if conv is None:
-        conv = float
-    return get_attr_generic(
-        d,
-        aliases,
-        default,
-        strict=strict,
-        log_level=log_level,
-        conv=conv,
-    )
-
-
 def set_attr(
     d: dict[str, Any],
     aliases: Iterable[str],
@@ -319,64 +248,8 @@ def set_attr(
     return set_attr_generic(d, aliases, value, conv=conv)
 
 
-@overload
-def get_attr_str(
-    d: dict[str, Any],
-    aliases: Iterable[str],
-    default: str,
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-    conv: Callable[[Any], str] | None = None,
-) -> str: ...
-
-
-@overload
-def get_attr_str(
-    d: dict[str, Any],
-    aliases: Iterable[str],
-    default: None = None,
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-    conv: Callable[[Any], str] | None = None,
-) -> str | None: ...
-
-
-def get_attr_str(
-    d: dict[str, Any],
-    aliases: Iterable[str],
-    default: str | None = None,
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-    conv: Callable[[Any], str] | None = None,
-) -> str | None:
-    """Return the string value for the first key in ``aliases``."""
-
-    if conv is None:
-        conv = str
-    return get_attr_generic(
-        d,
-        aliases,
-        default,
-        strict=strict,
-        log_level=log_level,
-        conv=conv,
-    )
-
-
-def set_attr_str(
-    d: dict[str, Any],
-    aliases: Iterable[str],
-    value: Any,
-    conv: Callable[[Any], str] | None = None,
-) -> str:
-    """Assign ``value`` to the first alias key in ``d`` as ``str``."""
-
-    if conv is None:
-        conv = str
-    return set_attr_generic(d, aliases, value, conv=conv)
+get_attr_str = partial(get_attr, conv=str)
+set_attr_str = partial(set_attr, conv=str)
 
 
 # -------------------------
@@ -385,14 +258,22 @@ def set_attr_str(
 
 
 def recompute_abs_max(
-    G: "networkx.Graph", aliases: tuple[str, ...]
+    G: "networkx.Graph", aliases: tuple[str, ...], *, key: str | None = None
 ) -> tuple[float, Hashable | None]:
-    """Recalculate and return ``(max_val, node)`` for ``aliases`` in ``G``."""
+    """Recalculate absolute maximum for ``aliases`` in ``G``.
+
+    When ``key`` is provided, the graph caches ``G.graph[key]`` and
+    ``G.graph[f"{key}_node"]`` are updated with the new maximum value and the
+    node where it occurs.
+    """
     node, max_val = max(
         ((n, abs(get_attr(G.nodes[n], aliases, 0.0))) for n in G.nodes()),
         key=lambda x: x[1],
         default=(None, 0.0),
     )
+    if key is not None:
+        G.graph[key] = max_val
+        G.graph[f"{key}_node"] = node
     return max_val, node
 
 
@@ -436,9 +317,7 @@ def _update_cached_abs_max(
         G.graph[key] = val
         G.graph[node_key] = n
     elif cur_node == n and val < cur:
-        max_val, max_node = recompute_abs_max(G, aliases)
-        G.graph[key] = max_val
-        G.graph[node_key] = max_node
+        recompute_abs_max(G, aliases, key=key)
 
 
 def set_attr_and_cache(
@@ -450,7 +329,11 @@ def set_attr_and_cache(
     cache: str | None = None,
     extra: Callable[["networkx.Graph", Hashable, float], None] | None = None,
 ) -> float:
-    """Assign ``value`` to node ``n`` and update caches if requested."""
+    """Assign ``value`` to node ``n`` and update caches if requested.
+
+    Cache updates are performed via :func:`recompute_abs_max` when the
+    existing maximum becomes invalid.
+    """
 
     val = set_attr(G.nodes[n], aliases, value)
     if cache is not None:
@@ -468,7 +351,10 @@ def set_attr_with_max(
     *,
     cache: str,
 ) -> None:
-    """Assign ``value`` to node ``n`` and update the global maximum."""
+    """Assign ``value`` to node ``n`` and update the global maximum.
+
+    This is a convenience wrapper around :func:`set_attr_and_cache`.
+    """
     set_attr_and_cache(G, n, aliases, value, cache=cache)
 
 
