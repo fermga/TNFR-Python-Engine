@@ -118,7 +118,7 @@ def _iter_node_digests(
 
 
 def _update_node_cache(
-    G: nx.Graph,
+    graph: Any,
     nodes: Iterable[Any],
     key_prefix: str,
     value: Any | None = None,
@@ -126,7 +126,7 @@ def _update_node_cache(
     checksum: str | None = None,
     presorted: bool = False,
 ) -> str:
-    """Store ``value`` and its node checksum in ``G.graph``.
+    """Store ``value`` and its node checksum in ``graph``.",
 
     ``nodes`` is the iterable used to compute the checksum. When ``value`` is
     ``None`` it defaults to ``nodes``. The computed checksum is returned.
@@ -135,9 +135,8 @@ def _update_node_cache(
     """
     if checksum is None:
         checksum = node_set_checksum(
-            G, nodes, presorted=presorted, store=False
+            graph, nodes, presorted=presorted, store=False
         )
-    graph = get_graph(G)
     graph[key_prefix] = nodes if value is None else value
     graph[f"{key_prefix}_checksum"] = checksum
     return checksum
@@ -195,11 +194,11 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     dirty = bool(graph.pop("_node_list_dirty", False))
     if nodes is None or stored_len != current_n or dirty:
         nodes = tuple(G.nodes())
-        _update_node_cache(G, nodes, "_node_list")
+        _update_node_cache(graph, nodes, "_node_list")
         graph["_node_list_len"] = current_n
     else:
         if "_node_list_checksum" not in graph:
-            _update_node_cache(G, nodes, "_node_list")
+            _update_node_cache(graph, nodes, "_node_list")
     return nodes
 
 
@@ -217,7 +216,7 @@ def _ensure_node_map(G, *, key: str, sort: bool = False) -> dict[Any, int]:
     checksum_key = f"{key}_checksum"
     if mapping is None or G.graph.get(checksum_key) != checksum:
         mapping = {node: idx for idx, node in enumerate(nodes)}
-        _update_node_cache(G, nodes, key, mapping, checksum=checksum)
+        _update_node_cache(G.graph, nodes, key, mapping, checksum=checksum)
     return mapping
 
 

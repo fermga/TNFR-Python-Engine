@@ -25,18 +25,12 @@ AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
 
 
 @lru_cache(maxsize=1)
-def _load_step_fn() -> AdvanceFn:
+def get_step_fn() -> AdvanceFn:
     """Return the dynamics ``step`` function, caching the import."""
 
     from .dynamics import step as step_impl
 
     return step_impl
-
-
-def get_step_fn() -> AdvanceFn:
-    """Return cached dynamics ``step`` function, initialising lazily."""
-
-    return _load_step_fn()
 
 
 __all__ = [

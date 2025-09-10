@@ -176,7 +176,7 @@ def invoke_callbacks(
     )
     ctx = ctx or {}
     err_list = G.graph.get("_callback_errors")
-    if not isinstance(err_list, deque):
+    if not isinstance(err_list, deque) or err_list.maxlen != _CALLBACK_ERROR_LIMIT:
         err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
         G.graph["_callback_errors"] = err_list
     # ``cbs`` is a list and callbacks are not modified during iteration,

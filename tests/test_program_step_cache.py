@@ -16,12 +16,12 @@ def test_advance_caches_step(monkeypatch, graph_canon):
         calls.append(2)
 
     monkeypatch.setattr(dyn, "step", first_step)
-    program._load_step_fn.cache_clear()
+    program.get_step_fn.cache_clear()
     _advance(G)
     monkeypatch.setattr(dyn, "step", second_step)
     _advance(G)
     assert calls == [1, 1]
-    program._load_step_fn.cache_clear()
+    program.get_step_fn.cache_clear()
 
 
 def test_advance_thread_safe(monkeypatch, graph_canon):
@@ -36,7 +36,7 @@ def test_advance_thread_safe(monkeypatch, graph_canon):
         calls.append(2)
 
     monkeypatch.setattr(dyn, "step", first_step)
-    program._load_step_fn.cache_clear()
+    program.get_step_fn.cache_clear()
 
     barrier = threading.Barrier(5)
 
@@ -54,4 +54,4 @@ def test_advance_thread_safe(monkeypatch, graph_canon):
     _advance(G)
 
     assert calls == [1] * 6
-    program._load_step_fn.cache_clear()
+    program.get_step_fn.cache_clear()
