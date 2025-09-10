@@ -123,15 +123,6 @@ def _window(G) -> int:
     return int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
 
 
-def _all_nodes(G):
-    """Return a view or generator over all nodes in ``G``.
-
-    Using ``G.nodes()`` avoids creating an intermediate list and allows
-    callers to materialise the collection only when strictly necessary.
-    """
-    return G.nodes()
-
-
 # ---------------------
 # Execution core
 # ---------------------
@@ -146,7 +137,7 @@ def _apply_glyph_to_targets(
     iterables. To avoid unnecessary materialisation, iteration happens over the
     iterable as-is; callers must materialise it if indexing is needed.
     """
-    nodes_iter = _all_nodes(G) if nodes is None else nodes
+    nodes_iter = G.nodes() if nodes is None else nodes
     w = _window(G)
     apply_glyph_with_grammar(G, nodes_iter, g, w)
 
@@ -334,7 +325,7 @@ def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
     Collection[Node]
         Collection of nodes to be used for subsequent operations.
     """
-    nodes_src = _all_nodes(G) if payload.nodes is None else payload.nodes
+    nodes_src = G.nodes() if payload.nodes is None else payload.nodes
     nodes = ensure_collection(nodes_src, max_materialize=None)
     curr_target = nodes if isinstance(nodes, Sequence) else tuple(nodes)
     _record_trace(trace, G, OpTag.TARGET, n=len(curr_target))
