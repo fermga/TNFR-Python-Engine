@@ -43,20 +43,15 @@ npm install
 
 ## Tests
 
-```bash
-python -m pip install -e .
-python -m pytest
-```
-
-The repository ships with a `pytest.ini` that adds the `src` directory to
-`PYTHONPATH`, so tests can import the package without extra configuration.
-
-Test dependencies such as `networkx`, `cachetools` and `numpy` are required; if
-they are not already installed, fetch them together with `pytest`:
+Run the test suite from the project root using the helper script, which sets
+the necessary `PYTHONPATH`:
 
 ```bash
-python -m pip install networkx cachetools numpy pytest
+./scripts/run_tests.sh
 ```
+
+Avoid running `pytest` directly or executing the script from other directories,
+as the environment may be misconfigured and imports will fail.
 
 ---
 
