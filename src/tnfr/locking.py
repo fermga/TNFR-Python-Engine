@@ -10,10 +10,10 @@ from __future__ import annotations
 
 import threading
 from contextlib import contextmanager
-from typing import Dict, Iterator
+from collections.abc import Iterator
 
 # Registry of locks by name guarded by ``_REGISTRY_LOCK``.
-_locks: Dict[str, threading.Lock] = {}
+_locks: dict[str, threading.Lock] = {}
 _REGISTRY_LOCK = threading.Lock()
 
 
