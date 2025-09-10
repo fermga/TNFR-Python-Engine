@@ -18,14 +18,22 @@ GRAMMAR_ARG_SPECS = specs(
     ("--glyph.hysteresis_window", {"type": int}),
 )
 
+def _with_dest_and_default(arg_specs):
+    """Return ``specs`` adding a ``dest`` and ``default`` for each option.
 
-GRAMMAR_ARG_SPECS_WITH_DEST = [
-    (
-        opt,
-        {**kwargs, "dest": opt.lstrip("-").replace(".", "_"), "default": None},
-    )
-    for opt, kwargs in GRAMMAR_ARG_SPECS
-]
+    The ``dest`` is derived from the option string by stripping leading dashes
+    and replacing dots with underscores so that nested CLI options can be
+    accessed as regular attributes. All options default to ``None`` to allow
+    ``_args_to_dict`` to filter them out when not provided.
+    """
+
+    return [
+        (
+            opt,
+            {**kwargs, "dest": opt.lstrip("-").replace(".", "_"), "default": None},
+        )
+        for opt, kwargs in arg_specs
+    ]
 
 
 # Especificaciones para opciones relacionadas con el histórico
@@ -108,7 +116,7 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
 def add_grammar_args(parser: argparse.ArgumentParser) -> None:
     """Add grammar and glyph hysteresis options."""
     group = parser.add_argument_group("Grammar")
-    add_arg_specs(group, GRAMMAR_ARG_SPECS_WITH_DEST)
+    add_arg_specs(group, _with_dest_and_default(GRAMMAR_ARG_SPECS))
 
 
 def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
