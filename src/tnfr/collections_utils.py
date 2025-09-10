@@ -137,6 +137,7 @@ def normalize_weights(
 
     ``keys`` may be any iterable of strings. Sequences and other collections
     are used directly while non-collection iterables are materialized.
+    Repeated keys are automatically collapsed preserving their first occurrence.
 
     Negative weights are handled according to ``error_on_negative``. When
     ``True`` a :class:`ValueError` is raised. Otherwise negatives are logged,
@@ -147,6 +148,7 @@ def normalize_weights(
     """
     if not isinstance(keys, Collection):
         keys = list(keys)
+    keys = list(dict.fromkeys(keys))
     default_float = float(default)
     if not keys:
         return {}
