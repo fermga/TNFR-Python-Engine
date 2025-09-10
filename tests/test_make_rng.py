@@ -1,7 +1,10 @@
 import random
 import hashlib
 import struct
-from tnfr.rng import make_rng, clear_rng_cache
+import networkx as nx
+
+from tnfr import rng as rng_mod
+from tnfr.rng import make_rng, clear_rng_cache, cache_enabled
 
 
 def _derive_seed(seed: int, key: int) -> int:
@@ -30,3 +33,21 @@ def test_make_rng_reproducible_sequence():
 
     assert seq1 == exp
     assert seq2 == exp
+
+
+def test_cache_size_updates_from_graph():
+    G = nx.Graph()
+
+    # Initial state uses default size
+    cache_enabled(G)
+    default_size = rng_mod.DEFAULTS["JITTER_CACHE_SIZE"]
+    assert rng_mod._CACHE_MAXSIZE == default_size
+
+    G.graph["JITTER_CACHE_SIZE"] = 0
+    cache_enabled(G)
+    assert rng_mod._CACHE_MAXSIZE == 0
+
+    G.graph["JITTER_CACHE_SIZE"] = 3
+    make_rng(1, 2, G)
+    assert rng_mod._CACHE_MAXSIZE == 3
+

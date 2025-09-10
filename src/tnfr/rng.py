@@ -9,7 +9,7 @@ import threading
 from typing import MutableMapping, Any, Callable, Tuple
 
 from cachetools import LRUCache, cached
-from .constants import DEFAULTS
+from .constants import DEFAULTS, get_param
 from .helpers.cache import get_graph
 
 MASK64 = 0xFFFFFFFFFFFFFFFF
@@ -53,8 +53,16 @@ def _seed_hash_for(seed_int: int, key_int: int) -> int:
     return _seed_hash_cached(seed_int, key_int)
 
 
-def make_rng(seed: int, key: int) -> random.Random:
-    """Return a ``random.Random`` for ``seed`` and ``key``."""
+def make_rng(seed: int, key: int, G: Any | None = None) -> random.Random:
+    """Return a ``random.Random`` for ``seed`` and ``key``.
+
+    When ``G`` is provided, ``JITTER_CACHE_SIZE`` is read from ``G`` and the
+    internal cache size is updated accordingly.
+    """
+    if G is not None:
+        size = get_cache_maxsize(G)
+        if size != _CACHE_MAXSIZE:
+            set_cache_maxsize(size)
     seed_int = int(seed)
     key_int = int(key)
     return random.Random(_seed_hash_for(seed_int, key_int))
@@ -67,8 +75,21 @@ def clear_rng_cache() -> None:
     _seed_hash_cached.cache_clear()
 
 
-def cache_enabled() -> bool:
-    """Return ``True`` if RNG caching is enabled."""
+def get_cache_maxsize(G: Any) -> int:
+    """Return RNG cache maximum size for ``G``."""
+    return int(get_param(G, "JITTER_CACHE_SIZE"))
+
+
+def cache_enabled(G: Any | None = None) -> bool:
+    """Return ``True`` if RNG caching is enabled.
+
+    When ``G`` is provided, the cache size is synchronised with
+    ``JITTER_CACHE_SIZE`` stored in ``G``.
+    """
+    if G is not None:
+        size = get_cache_maxsize(G)
+        if size != _CACHE_MAXSIZE:
+            set_cache_maxsize(size)
     return _CACHE_MAXSIZE > 0
 
 
@@ -103,6 +124,7 @@ def set_cache_maxsize(size: int) -> None:
 __all__ = (
     "seed_hash",
     "make_rng",
+    "get_cache_maxsize",
     "set_cache_maxsize",
     "base_seed",
     "cache_enabled",
