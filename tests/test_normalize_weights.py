@@ -66,3 +66,15 @@ def test_normalize_weights_high_precision():
     norm = normalize_weights(weights, weights.keys())
     assert all(v == 0.1 for v in norm.values())
     assert math.isclose(math.fsum(norm.values()), 1.0)
+
+
+def test_normalize_weights_deduplicates_keys():
+    cu._warned_negative_keys.clear()
+    weights = {"a": -1.0, "b": -1.0}
+    dup_keys = ["a", "b", "a"]
+    unique_keys = ["a", "b"]
+    norm_dup = normalize_weights(weights, dup_keys)
+    norm_unique = normalize_weights(weights, unique_keys)
+    expected = {"a": 0.5, "b": 0.5}
+    assert norm_dup == norm_unique
+    assert norm_dup == pytest.approx(expected)
