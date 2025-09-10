@@ -21,33 +21,10 @@ def _require_attr(data, alias, node, name):
         raise ValueError(f"Missing {name} attribute in node {node}")
     return val
 
-
-def _validate_epi_vf(G) -> None:
-    epi_min = float(get_param(G, "EPI_MIN"))
-    epi_max = float(get_param(G, "EPI_MAX"))
-    vf_min = float(get_param(G, "VF_MIN"))
-    vf_max = float(get_param(G, "VF_MAX"))
-    for n, data in G.nodes(data=True):
-        _check_epi_vf(
-            _require_attr(data, ALIAS_EPI, n, "EPI"),
-            _require_attr(data, ALIAS_VF, n, "VF"),
-            epi_min,
-            epi_max,
-            vf_min,
-            vf_max,
-            n,
-        )
-
-
 def _validate_sigma(G) -> None:
     sv = sigma_vector_from_graph(G)
     if sv.get("mag", 0.0) > 1.0 + sys.float_info.epsilon:
         raise ValueError("σ norm exceeds 1")
-
-
-def _validate_glyphs(G) -> None:
-    for n, data in G.nodes(data=True):
-        _check_glyph(last_glyph(data), n)
 
 
 def _check_epi_vf(epi, vf, epi_min, epi_max, vf_min, vf_max, n):
