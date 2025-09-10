@@ -11,6 +11,7 @@ from tnfr.sense import (
     _sigma_from_iterable,
     glyph_unit,
     glyph_angle,
+    sigma_rose,
 )
 from tnfr.types import Glyph
 
@@ -103,3 +104,19 @@ def test_unknown_glyph_raises():
         glyph_angle("ZZ")
     with pytest.raises(KeyError):
         glyph_unit("ZZ")
+
+
+def test_sigma_rose_valid_and_invalid_steps(graph_canon):
+    G = graph_canon()
+    G.graph["history"] = {
+        "sigma_counts": [
+            {"t": 0, Glyph.AL.value: 1},
+            {"t": 1, Glyph.AL.value: 2, Glyph.EN.value: 1},
+            {"t": 2, Glyph.EN.value: 3},
+        ]
+    }
+    res = sigma_rose(G, steps=2.0)
+    assert res[Glyph.AL.value] == 2
+    assert res[Glyph.EN.value] == 4
+    with pytest.raises(ValueError):
+        sigma_rose(G, steps=-1)

@@ -345,11 +345,13 @@ def sigma_rose(G, steps: int | None = None) -> dict[str, int]:
     counts = hist.get("sigma_counts", [])
     if not counts:
         return {g: 0 for g in GLYPHS_CANONICAL}
-    rows = (
-        counts
-        if steps is None or steps >= len(counts)
-        else counts[-int(steps) :]  # noqa: E203
-    )
+    if steps is not None:
+        steps = int(steps)
+        if steps < 0:
+            raise ValueError("steps must be non-negative")
+        rows = counts if steps >= len(counts) else counts[-steps:]  # noqa: E203
+    else:
+        rows = counts
     counter = Counter()
     for row in rows:
         for k, v in row.items():
