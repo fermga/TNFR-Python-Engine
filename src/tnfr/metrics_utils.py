@@ -90,34 +90,37 @@ def compute_coherence(
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
     np = get_numpy()
-    if np is not None:
-        dnfr_vals: list[float] = []
-        depi_vals: list[float] = []
-        for _, nd in G.nodes(data=True):
-            dnfr_vals.append(get_attr(nd, ALIAS_DNFR, 0.0))
-            depi_vals.append(get_attr(nd, ALIAS_dEPI, 0.0))
-        dnfr_arr = np.abs(np.asarray(dnfr_vals, dtype=float))
-        depi_arr = np.abs(np.asarray(depi_vals, dtype=float))
+
+    use_np = np is not None
+    if use_np:
+        dnfr_arr = np.empty(count, dtype=float)
+        depi_arr = np.empty(count, dtype=float)
+    else:
+        dnfr_sum = dnfr_c = 0.0
+        depi_sum = depi_c = 0.0
+
+    for idx, (_, nd) in enumerate(G.nodes(data=True)):
+        dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0))
+        depi = abs(get_attr(nd, ALIAS_dEPI, 0.0))
+        if use_np:
+            dnfr_arr[idx] = dnfr
+            depi_arr[idx] = depi
+        else:
+            y = dnfr - dnfr_c
+            t = dnfr_sum + y
+            dnfr_c = (t - dnfr_sum) - y
+            dnfr_sum = t
+            y = depi - depi_c
+            t = depi_sum + y
+            depi_c = (t - depi_sum) - y
+            depi_sum = t
+
+    if use_np:
         dnfr_mean = float(np.mean(dnfr_arr))
         depi_mean = float(np.mean(depi_arr))
     else:
-        count = 0
-
-        def pair_iter():
-            nonlocal count
-            for _, nd in G.nodes(data=True):
-                count += 1
-                yield (
-                    abs(get_attr(nd, ALIAS_DNFR, 0.0)),
-                    abs(get_attr(nd, ALIAS_dEPI, 0.0)),
-                )
-
-        dnfr_sum, depi_sum = kahan_sum2d(pair_iter())
-        if count:
-            dnfr_mean = dnfr_sum / count
-            depi_mean = depi_sum / count
-        else:
-            dnfr_mean = depi_mean = 0.0
+        dnfr_mean = dnfr_sum / count
+        depi_mean = depi_sum / count
 
     coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence
