@@ -13,7 +13,7 @@ from ..alias import get_attr
 from ..collections_utils import normalize_weights
 from ..helpers.numeric import clamp01
 from ..helpers.cache import ensure_node_index_map
-from ..metrics_utils import min_max_range
+from ..metrics_utils import get_trig_cache, min_max_range
 from ..import_utils import get_numpy
 
 
@@ -34,8 +34,10 @@ def compute_wij_phase_epi_vf_si(
     si_vals,
     i: int | None = None,
     j: int | None = None,
-    cos_th=None,
-    sin_th=None,
+    *,
+    trig=None,
+    G: Any | None = None,
+    nodes: Sequence[Any] | None = None,
     epi_range: float = 1.0,
     vf_range: float = 1.0,
     np=None,
@@ -46,13 +48,25 @@ def compute_wij_phase_epi_vf_si(
     vectorized returning full matrices for all node pairs.
     """
 
+    trig = trig or (get_trig_cache(G, np=np) if G is not None else None)
+
     if np is not None and i is None and j is None:
         th = np.asarray(th_vals)
         epi = np.asarray(epi_vals)
         vf = np.asarray(vf_vals)
         si = np.asarray(si_vals)
-        cos_th = np.cos(th)
-        sin_th = np.sin(th)
+        if trig is not None and nodes is not None:
+            cos_th = np.asarray(
+                [trig.cos.get(n, math.cos(t)) for n, t in zip(nodes, th_vals)],
+                dtype=float,
+            )
+            sin_th = np.asarray(
+                [trig.sin.get(n, math.sin(t)) for n, t in zip(nodes, th_vals)],
+                dtype=float,
+            )
+        else:
+            cos_th = np.cos(th)
+            sin_th = np.sin(th)
         epi_range = epi_range if epi_range > 0 else 1.0
         vf_range = vf_range if vf_range > 0 else 1.0
         s_phase = 0.5 * (
@@ -69,9 +83,17 @@ def compute_wij_phase_epi_vf_si(
         raise ValueError("i and j are required for non-vectorized computation")
     epi_range = epi_range if epi_range > 0 else 1.0
     vf_range = vf_range if vf_range > 0 else 1.0
-    cos_th = cos_th or [math.cos(t) for t in th_vals]
-    sin_th = sin_th or [math.sin(t) for t in th_vals]
-    s_phase = 0.5 * (1.0 + (cos_th[i] * cos_th[j] + sin_th[i] * sin_th[j]))
+    if trig is not None and nodes is not None:
+        cos_i = trig.cos.get(nodes[i], math.cos(th_vals[i]))
+        sin_i = trig.sin.get(nodes[i], math.sin(th_vals[i]))
+        cos_j = trig.cos.get(nodes[j], math.cos(th_vals[j]))
+        sin_j = trig.sin.get(nodes[j], math.sin(th_vals[j]))
+    else:
+        cos_i = math.cos(th_vals[i])
+        sin_i = math.sin(th_vals[i])
+        cos_j = math.cos(th_vals[j])
+        sin_j = math.sin(th_vals[j])
+    s_phase = 0.5 * (1.0 + (cos_i * cos_j + sin_i * sin_j))
     s_epi = 1.0 - abs(epi_vals[i] - epi_vals[j]) / epi_range
     s_vf = 1.0 - abs(vf_vals[i] - vf_vals[j]) / vf_range
     s_si = 1.0 - abs(si_vals[i] - si_vals[j])
@@ -96,6 +118,8 @@ def _combine_similarity(
 
 
 def _wij_components_weights(
+    G,
+    nodes,
     th_vals,
     epi_vals,
     vf_vals,
@@ -103,11 +127,10 @@ def _wij_components_weights(
     wnorm,
     i: int | None = None,
     j: int | None = None,
-    cos_th=None,
-    sin_th=None,
     epi_range: float = 1.0,
     vf_range: float = 1.0,
     np=None,
+    trig=None,
 ):
     """Return similarity components together with their weights.
 
@@ -123,11 +146,12 @@ def _wij_components_weights(
         si_vals,
         i,
         j,
-        cos_th,
-        sin_th,
-        epi_range,
-        vf_range,
-        np,
+        trig=trig,
+        G=G,
+        nodes=nodes,
+        epi_range=epi_range,
+        vf_range=vf_range,
+        np=np,
     )
     phase_w = wnorm["phase"]
     epi_w = wnorm["epi"]
@@ -137,6 +161,8 @@ def _wij_components_weights(
 
 
 def _wij_vectorized(
+    G,
+    nodes,
     th_vals,
     epi_vals,
     vf_vals,
@@ -148,6 +174,7 @@ def _wij_vectorized(
     vf_max,
     self_diag,
     np,
+    trig,
 ):
     epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
     vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
@@ -161,6 +188,8 @@ def _wij_vectorized(
         vf_w,
         si_w,
     ) = _wij_components_weights(
+        G,
+        nodes,
         th_vals,
         epi_vals,
         vf_vals,
@@ -169,6 +198,7 @@ def _wij_vectorized(
         epi_range=epi_range,
         vf_range=vf_range,
         np=np,
+        trig=trig,
     )
     wij = _combine_similarity(
         s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w, np=np
@@ -184,15 +214,16 @@ def _assign_wij(
     wij: list[list[float]],
     i: int,
     j: int,
+    G: Any,
+    nodes: Sequence[Any],
     th_vals: Sequence[float],
     epi_vals: Sequence[float],
     vf_vals: Sequence[float],
     si_vals: Sequence[float],
-    cos_th: Sequence[float],
-    sin_th: Sequence[float],
     epi_range: float,
     vf_range: float,
     wnorm: dict[str, float],
+    trig,
 ) -> None:
     (
         s_phase,
@@ -204,6 +235,8 @@ def _assign_wij(
         vf_w,
         si_w,
     ) = _wij_components_weights(
+        G,
+        nodes,
         th_vals,
         epi_vals,
         vf_vals,
@@ -211,10 +244,9 @@ def _assign_wij(
         wnorm,
         i,
         j,
-        cos_th,
-        sin_th,
         epi_range,
         vf_range,
+        trig=trig,
     )
     wij_ij = _combine_similarity(
         s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w
@@ -237,14 +269,13 @@ def _wij_loops(
     vf_max: float,
     neighbors_only: bool,
     self_diag: bool,
+    trig,
 ) -> list[list[float]]:
     n = len(nodes)
     wij = [
         [1.0 if (self_diag and i == j) else 0.0 for j in range(n)]
         for i in range(n)
     ]
-    cos_th = [math.cos(t) for t in th_vals]
-    sin_th = [math.sin(t) for t in th_vals]
     epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
     vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
     if neighbors_only:
@@ -257,15 +288,16 @@ def _wij_loops(
                 wij,
                 i,
                 j,
+                G,
+                nodes,
                 th_vals,
                 epi_vals,
                 vf_vals,
                 si_vals,
-                cos_th,
-                sin_th,
                 epi_range,
                 vf_range,
                 wnorm,
+                trig,
             )
     else:
         for i in range(n):
@@ -274,15 +306,16 @@ def _wij_loops(
                     wij,
                     i,
                     j,
+                    G,
+                    nodes,
                     th_vals,
                     epi_vals,
                     vf_vals,
                     si_vals,
-                    cos_th,
-                    sin_th,
                     epi_range,
                     vf_range,
                     wnorm,
+                    trig,
                 )
     return wij
 
@@ -453,8 +486,11 @@ def coherence_matrix(G, use_numpy: bool | None = None):
     use_np = (
         np is not None if use_numpy is None else (use_numpy and np is not None)
     )
+    trig = get_trig_cache(G, np=np)
     if use_np:
         wij = _wij_vectorized(
+            G,
+            nodes,
             th_vals,
             epi_vals,
             vf_vals,
@@ -466,6 +502,7 @@ def coherence_matrix(G, use_numpy: bool | None = None):
             vf_max,
             self_diag,
             np,
+            trig,
         )
         if neighbors_only:
             adj = np.eye(n, dtype=bool)
@@ -491,6 +528,7 @@ def coherence_matrix(G, use_numpy: bool | None = None):
             vf_max,
             neighbors_only,
             self_diag,
+            trig,
         )
 
     return _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np)
@@ -519,6 +557,9 @@ def local_phase_sync_weighted(
     num = 0 + 0j
     den = 0.0
 
+    trig = get_trig_cache(G)
+    cos_map, sin_map = trig.cos, trig.sin
+
     if (
         isinstance(W_row, list)
         and W_row
@@ -528,8 +569,13 @@ def local_phase_sync_weighted(
             if nj == n:
                 continue
             den += w
-            th_j = get_attr(G.nodes[nj], ALIAS_THETA, 0.0)
-            num += w * complex(math.cos(th_j), math.sin(th_j))
+            cos_j = cos_map.get(nj)
+            sin_j = sin_map.get(nj)
+            if cos_j is None or sin_j is None:
+                th_j = get_attr(G.nodes[nj], ALIAS_THETA, 0.0)
+                cos_j = math.cos(th_j)
+                sin_j = math.sin(th_j)
+            num += w * complex(cos_j, sin_j)
     else:
         for ii, jj, w in W_row:
             if ii != i:
@@ -538,8 +584,13 @@ def local_phase_sync_weighted(
             if nj == n:
                 continue
             den += w
-            th_j = get_attr(G.nodes[nj], ALIAS_THETA, 0.0)
-            num += w * complex(math.cos(th_j), math.sin(th_j))
+            cos_j = cos_map.get(nj)
+            sin_j = sin_map.get(nj)
+            if cos_j is None or sin_j is None:
+                th_j = get_attr(G.nodes[nj], ALIAS_THETA, 0.0)
+                cos_j = math.cos(th_j)
+                sin_j = math.sin(th_j)
+            num += w * complex(cos_j, sin_j)
 
     return abs(num / den) if den else 0.0
 
