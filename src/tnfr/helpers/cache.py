@@ -293,13 +293,6 @@ def _maybe_init_edge_cache(
     return cache
 
 
-def _ensure_edge_cache(
-    graph: Any, locks: dict, max_entries: int | None
-) -> dict | LRUCache:
-    """Return cache mapping for edge data, initializing when needed."""
-    return _maybe_init_edge_cache(graph, locks, max_entries)
-
-
 def _get_edge_cache(
     graph: Any, max_entries: int | None, *, create: bool = True
 ):
