@@ -7,35 +7,35 @@ consistent configuration across the project.
 from __future__ import annotations
 
 import logging
-
-import threading
 from functools import lru_cache
 from typing import Any, Hashable, Mapping
 
-
 __all__ = ("get_logger", "warn_once")
 
 
-__all__ = ("get_logger", "warn_once")
+_LOGGING_CONFIGURED = False
 
 
 def _configure_root() -> None:
     """Configure the root logger if it has no handlers."""
 
     global _LOGGING_CONFIGURED
-
-    root = logging.getLogger()
-    if root.handlers:
-        _LOGGING_CONFIGURED = True
+    if _LOGGING_CONFIGURED:
         return
 
+    root = logging.getLogger()
+    if not root.handlers:
+        kwargs = {
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        }
+        if root.level == logging.NOTSET:
+            kwargs["level"] = logging.INFO
+        logging.basicConfig(**kwargs)
 
-root = logging.getLogger()
-if not root.handlers:
-    kwargs = {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
-    if root.level == logging.NOTSET:
-        kwargs["level"] = logging.INFO
-    logging.basicConfig(**kwargs)
+    _LOGGING_CONFIGURED = True
+
+
+_configure_root()
 
 
 def get_logger(name: str) -> logging.Logger:
