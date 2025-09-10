@@ -21,12 +21,17 @@ SELECTOR_THRESHOLD_DEFAULTS: Mapping[str, float] = MappingProxyType(
 
 @dataclass(frozen=True)
 class CoreDefaults:
+    """Default parameters for the core engine.
+
+    The fields are exported via :data:`CORE_DEFAULTS` and may therefore appear
+    unused to static analysis tools such as Vulture.
+    """
+
     DT: float = 1.0
     INTEGRATOR_METHOD: str = "euler"
     DT_MIN: float = 0.1
     EPI_MIN: float = -1.0
     EPI_MAX: float = 1.0
-    EPI_MAX_GLOBAL: float = 1.0
     VF_MIN: float = 0.0
     VF_MAX: float = 1.0
     THETA_WRAP: bool = True
@@ -121,6 +126,12 @@ class CoreDefaults:
 
 @dataclass(frozen=True)
 class RemeshDefaults:
+    """Default parameters for the remeshing subsystem.
+
+    As with :class:`CoreDefaults`, the fields are exported via
+    :data:`REMESH_DEFAULTS` and may look unused to static analysers.
+    """
+
     EPS_DNFR_STABLE: float = 1e-3
     EPS_DEPI_STABLE: float = 1e-3
     FRACTION_STABLE_REMESH: float = 0.80

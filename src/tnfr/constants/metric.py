@@ -9,6 +9,12 @@ from types import MappingProxyType
 
 @dataclass(frozen=True)
 class MetricDefaults:
+    """Default parameters for metric computation.
+
+    The fields are gathered into :data:`METRIC_DEFAULTS` and exposed through
+    read-only views below, so they may appear unused to static analysis tools.
+    """
+
     PHASE_HISTORY_MAXLEN: int = 50
     STOP_EARLY: dict[str, Any] = field(
         default_factory=lambda: {
