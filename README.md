@@ -41,6 +41,23 @@ For optional JavaScript tooling, install the Node.js dependencies:
 npm install
 ```
 
+## Tests
+
+```bash
+python -m pip install -e .
+python -m pytest
+```
+
+The repository ships with a `pytest.ini` that adds the `src` directory to
+`PYTHONPATH`, so tests can import the package without extra configuration.
+
+Test dependencies such as `networkx`, `cachetools` and `numpy` are required; if
+they are not already installed, fetch them together with `pytest`:
+
+```bash
+python -m pip install networkx cachetools numpy pytest
+```
+
 ---
 
 ## Why TNFR (in 60 seconds)
