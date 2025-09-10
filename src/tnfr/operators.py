@@ -23,7 +23,7 @@ import struct
 import threading
 from operator import ge, le
 from functools import cache
-from itertools import combinations
+from itertools import combinations, islice
 from io import StringIO
 from weakref import WeakKeyDictionary, WeakSet
 from collections import deque
@@ -340,18 +340,34 @@ def _um_select_candidates(
     mode: str,
     th: float,
 ):
-    cand_list = list(candidates)
+    """Select a subset of ``candidates`` for UM coupling.
+
+    ``candidates`` may be a large or lazy iterable. This function consumes
+    it incrementally to avoid loading every element into memory.
+    """
     rng = make_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
-    if limit > 0 and len(cand_list) > limit:
-        if mode == "proximity":
-            cand_list = heapq.nsmallest(
-                limit, cand_list, key=lambda j: abs(angle_diff(j.theta, th))
-            )
-        else:
-            cand_list = rng.sample(cand_list, limit)
-    elif mode == "sample" and limit > 0:
-        cand_list = rng.sample(cand_list, min(limit, len(cand_list)))
-    return cand_list
+
+    if limit <= 0:
+        # No limit requested; fully materialize the iterable.
+        return list(candidates)
+
+    if mode == "proximity":
+        # ``nsmallest`` only keeps ``limit`` elements in memory.
+        return heapq.nsmallest(
+            limit, candidates, key=lambda j: abs(angle_diff(j.theta, th))
+        )
+
+    # Deterministic reservoir sampling for large iterables.
+    reservoir = list(islice(candidates, limit))
+    for i, cand in enumerate(candidates, start=limit):
+        j = rng.randint(0, i)
+        if j < limit:
+            reservoir[j] = cand
+
+    if mode == "sample":
+        rng.shuffle(reservoir)
+
+    return reservoir
 
 
 def _op_UM(node: NodoProtocol, gf: dict[str, Any]) -> None:  # UM — Coupling
