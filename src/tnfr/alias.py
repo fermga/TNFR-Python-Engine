@@ -256,8 +256,11 @@ def multi_recompute_abs_max(
     """
 
     maxima = {k: 0.0 for k in alias_map}
+    # Micro-optimization: materialize alias_map items once to avoid
+    # repeated dictionary lookups during iteration.
+    items = list(alias_map.items())
     for _, nd in G.nodes(data=True):
-        for key, aliases in alias_map.items():
+        for key, aliases in items:
             val = abs(get_attr(nd, aliases, 0.0))
             if val > maxima[key]:
                 maxima[key] = val
