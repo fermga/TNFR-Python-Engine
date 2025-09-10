@@ -8,7 +8,7 @@ import threading
 import copy
 import warnings
 from types import MappingProxyType
-from functools import lru_cache
+from functools import lru_cache, partial
 from dataclasses import asdict, is_dataclass
 import weakref
 
@@ -56,20 +56,8 @@ def _freeze_tuple(value: tuple, seen: set[int]):
     return tuple(_freeze(v, seen) for v in value)
 
 
-def _freeze_list(value: list, seen: set[int]):
-    return ("list", tuple(_freeze(v, seen) for v in value))
-
-
-def _freeze_set(value: set, seen: set[int]):
-    return ("set", tuple(_freeze(v, seen) for v in value))
-
-
-def _freeze_frozenset(value: frozenset, seen: set[int]):
-    return frozenset(_freeze(v, seen) for v in value)
-
-
-def _freeze_bytearray(value: bytearray, seen: set[int]):
-    return ("bytearray", bytes(value))
+def _freeze_iterable(tag: str, iterable, seen: set[int]):
+    return (tag, tuple(_freeze(v, seen) for v in iterable))
 
 
 def _freeze_mapping(value: Mapping, seen: set[int]):
@@ -82,10 +70,10 @@ def _freeze_mapping(value: Mapping, seen: set[int]):
 
 _FREEZE_DISPATCH: dict[type, Callable[[Any, set[int]], Any]] = {
     tuple: _freeze_tuple,
-    list: _freeze_list,
-    set: _freeze_set,
-    frozenset: _freeze_frozenset,
-    bytearray: _freeze_bytearray,
+    list: partial(_freeze_iterable, "list"),
+    set: partial(_freeze_iterable, "set"),
+    frozenset: partial(_freeze_iterable, "frozenset"),
+    bytearray: partial(_freeze_iterable, "bytearray"),
 }
 
 
