@@ -9,6 +9,7 @@ from tnfr.operators import (
     _get_jitter_cache,
     _JITTER_GRAPHS,
 )
+import tnfr.operators as operators
 from types import SimpleNamespace
 from tnfr.constants import inject_defaults
 import pytest
@@ -95,6 +96,18 @@ def test_rng_cache_disabled_with_size_zero(graph_canon):
     j2 = random_jitter(n0, 0.5)
     assert j1 == j2
     set_cache_maxsize(DEFAULTS["JITTER_CACHE_SIZE"])
+
+
+def test_jitter_seq_purges_old_entries(monkeypatch):
+    clear_rng_cache()
+    monkeypatch.setattr(operators, "_JITTER_MAX_ENTRIES", 4)
+    graph = SimpleNamespace(graph={})
+    nodes = [SimpleNamespace(G=graph) for _ in range(5)]
+    first_key = (0, id(nodes[0]))
+    for n in nodes:
+        random_jitter(n, 0.1)
+    assert len(operators._JITTER_SEQ) == 4
+    assert first_key not in operators._JITTER_SEQ
 
 
 def test_um_candidate_subset_proximity(graph_canon):
