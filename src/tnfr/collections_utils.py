@@ -192,7 +192,7 @@ def mix_groups(
     out: dict[str, float] = dict(dist)
     out.update(
         {
-            f"{prefix}{label}": sum(dist.get(k, 0.0) for k in keys)
+            f"{prefix}{label}": kahan_sum(dist.get(k, 0.0) for k in keys)
             for label, keys in groups.items()
         }
     )
