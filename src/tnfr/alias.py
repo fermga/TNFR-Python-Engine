@@ -110,6 +110,15 @@ def _alias_resolve(
     return None
 
 
+@lru_cache(maxsize=128)
+def _alias_cache(alias_tuple: tuple[str, ...]) -> tuple[str, ...]:
+    if not alias_tuple:
+        raise ValueError("'aliases' must contain at least one key")
+    if not all(isinstance(a, str) for a in alias_tuple):
+        raise TypeError("'aliases' elements must be strings")
+    return alias_tuple
+
+
 class AliasAccessor(Generic[T]):
     """Helper providing ``get`` and ``set`` for alias-based attributes.
 
@@ -146,20 +155,7 @@ class AliasAccessor(Generic[T]):
 
         if isinstance(aliases, str) or not isinstance(aliases, Iterable):
             raise TypeError("'aliases' must be a non-string iterable")
-
-        if not hasattr(self, "_alias_cache"):
-
-            @lru_cache(maxsize=128)
-            def _alias_cache(alias_tuple: tuple[str, ...]) -> tuple[str, ...]:
-                if not alias_tuple:
-                    raise ValueError("'aliases' must contain at least one key")
-                if not all(isinstance(a, str) for a in alias_tuple):
-                    raise TypeError("'aliases' elements must be strings")
-                return alias_tuple
-
-            self._alias_cache = _alias_cache
-
-        aliases = self._alias_cache(tuple(aliases))
+        aliases = _alias_cache(tuple(aliases))
         if conv is None:
             conv = self._conv
         if conv is None:
