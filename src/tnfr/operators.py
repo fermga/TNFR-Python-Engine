@@ -26,7 +26,7 @@ from functools import cache
 from itertools import combinations, islice
 from io import StringIO
 from weakref import WeakKeyDictionary, WeakSet
-from collections import deque
+from collections import deque, OrderedDict
 
 from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
 from .helpers.numeric import (
@@ -52,7 +52,10 @@ from .import_utils import import_nodonx, optional_import
 from .types import Glyph
 
 # Guarded by ``_JITTER_LOCK`` to ensure thread-safe access.
-_JITTER_SEQ: dict[tuple[int, int], int] = {}
+# ``_JITTER_SEQ`` stores per-scope jitter sequence counters and is
+# bounded to avoid unbounded memory usage.
+_JITTER_MAX_ENTRIES = 1024
+_JITTER_SEQ: OrderedDict[tuple[int, int], int] = OrderedDict()
 _JITTER_GRAPHS: WeakSet[Any] = WeakSet()
 _JITTER_LOCK = threading.Lock()
 
@@ -82,7 +85,8 @@ def clear_rng_cache() -> None:
 
     Access to ``_JITTER_SEQ`` and ``_JITTER_GRAPHS`` is serialized via
     ``_JITTER_LOCK`` to avoid race conditions when mutating these global
-    caches.
+    caches. ``_JITTER_SEQ`` is a bounded LRU cache capped at
+    ``_JITTER_MAX_ENTRIES`` to limit memory usage.
     """
     with _JITTER_LOCK:
         _clear_rng_cache()
@@ -162,7 +166,10 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     across calls. The Blake2 hash used to derive ``seed`` is cached per
     node in ``_jitter_seed_hash`` keyed by ``(seed_root, scope_id)`` to
     avoid recomputation. Clear this cache if the base seed changes to
-    prevent stale values from being reused.
+    prevent stale values from being reused. Per-scope sequence numbers are
+    stored in ``_JITTER_SEQ``, a bounded LRU cache limited to
+    ``_JITTER_MAX_ENTRIES`` entries; older scopes are discarded when the
+    limit is exceeded.
     """
 
     if amplitude < 0:
@@ -192,6 +199,9 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
         with _JITTER_LOCK:
             seq = _JITTER_SEQ.get(cache_key, 0)
             _JITTER_SEQ[cache_key] = seq + 1
+            _JITTER_SEQ.move_to_end(cache_key)
+            if len(_JITTER_SEQ) > _JITTER_MAX_ENTRIES:
+                _JITTER_SEQ.popitem(last=False)
     rng = make_rng(seed, seed_key + seq)
     return rng.uniform(-amplitude, amplitude)
 
