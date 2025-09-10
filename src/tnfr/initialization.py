@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from .constants import DEFAULTS, INIT_DEFAULTS, VF_KEY, THETA_KEY
 from .helpers.numeric import clamp
-from .rng import get_rng
+from .rng import make_rng
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
@@ -144,7 +144,7 @@ def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
     si_max = float(G.graph.get("INIT_SI_MAX", 0.7))
     epi_val = float(G.graph.get("INIT_EPI_VALUE", 0.0))
 
-    rng_template = get_rng(seed, -1)
+    rng_template = make_rng(seed, -1)
     rng = random.Random()
     rng.setstate(rng_template.getstate())
     for _, nd in G.nodes(data=True):

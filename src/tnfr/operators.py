@@ -39,7 +39,7 @@ from .helpers.cache import (
     ensure_node_offset_map,
 )
 from .alias import get_attr, set_attr
-from .rng import get_rng, base_seed, cache_enabled, clear_rng_cache as _clear_rng_cache
+from .rng import make_rng, base_seed, cache_enabled, clear_rng_cache as _clear_rng_cache
 from .callback_utils import invoke_callbacks
 from .glyph_history import append_metric
 from .import_utils import import_nodonx, optional_import
@@ -111,7 +111,7 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     ``node``.
 
     The value is derived from ``(RANDOM_SEED, node.offset())`` and does
-    not store references to nodes. ``get_rng`` provides a global LRU
+    not store references to nodes. ``make_rng`` provides a global LRU
     cache keyed by ``(seed, key)`` so sequences advance deterministically
     across calls. The Blake2 hash used to derive ``seed`` is cached per
     node in ``_jitter_seed_hash`` keyed by ``(seed_root, scope_id)`` to
@@ -159,7 +159,7 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     if cache_enabled():
         seq = _JITTER_SEQ.get(cache_key, 0)
         _JITTER_SEQ[cache_key] = seq + 1
-    rng = get_rng(seed, seed_key + seq)
+    rng = make_rng(seed, seed_key + seq)
     return rng.uniform(-amplitude, amplitude)
 
 
@@ -329,7 +329,7 @@ def _um_select_candidates(
     th: float,
 ):
     cand_list = list(candidates)
-    rng = get_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
+    rng = make_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
     if limit > 0 and len(cand_list) > limit:
         if mode == "proximity":
             cand_list = heapq.nsmallest(
@@ -815,7 +815,7 @@ def apply_topological_remesh(
     if n_before <= 1:
         return
     base_seed = 0 if seed is None else int(seed)
-    rnd = get_rng(base_seed, -2)
+    rnd = make_rng(base_seed, -2)
     rnd.seed(base_seed)
 
     if mode is None:

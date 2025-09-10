@@ -1,12 +1,13 @@
 import threading
+import threading
 import random
 
 from tnfr import rng as rng_mod
-from tnfr.rng import get_rng, clear_rng_cache
+from tnfr.rng import make_rng, clear_rng_cache
 from tnfr.constants import DEFAULTS
 
 
-def test_get_rng_thread_safety(monkeypatch):
+def test_make_rng_thread_safety(monkeypatch):
     monkeypatch.setattr(rng_mod, "DEFAULTS", dict(DEFAULTS))
     monkeypatch.setitem(rng_mod.DEFAULTS, "JITTER_CACHE_SIZE", 4)
     clear_rng_cache()
@@ -17,7 +18,7 @@ def test_get_rng_thread_safety(monkeypatch):
 
     def worker():
         try:
-            rng = get_rng(123, 456)
+            rng = make_rng(123, 456)
             seq = [rng.random() for _ in range(3)]
             with lock:
                 results.append(seq)
@@ -46,5 +47,5 @@ def test_no_lock_when_cache_disabled(monkeypatch):
             pass
 
     monkeypatch.setattr(rng_mod, "_RNG_LOCK", FailLock())
-    rng = rng_mod.get_rng(123, 456)
+    rng = rng_mod.make_rng(123, 456)
     assert isinstance(rng, random.Random)
