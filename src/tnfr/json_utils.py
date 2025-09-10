@@ -15,7 +15,6 @@ from .import_utils import optional_import
 
 __all__ = ["json_dumps"]
 
-_orjson: Any | None = None
 _ignored_param_warned = False
 _warn_lock = threading.Lock()
 
@@ -23,9 +22,7 @@ _warn_lock = threading.Lock()
 @lru_cache(maxsize=1)
 def _load_orjson() -> Any | None:
     """Lazily import :mod:`orjson` once."""
-    global _orjson
-    _orjson = optional_import("orjson")
-    return _orjson
+    return optional_import("orjson")
 
 
 def _json_dumps_orjson(

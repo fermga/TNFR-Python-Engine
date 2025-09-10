@@ -48,16 +48,16 @@ def _seed_hash_for(seed_int: int, key_int: int) -> int:
     return _seed_hash_cached(seed_int, key_int)
 
 
-def make_rng(seed_int: int, key_int: int) -> random.Random:
+def make_rng(seed: int, key: int) -> random.Random:
+    """Return a ``random.Random`` for ``seed`` and ``key``."""
+    seed_int = int(seed)
+    key_int = int(key)
     return random.Random(_seed_hash_for(seed_int, key_int))
 
 
 def get_rng(seed: int, key: int) -> random.Random:
-    """Return a ``random.Random`` for ``(seed, key)`` using a cached seed."""
-    seed_int = int(seed)
-    key_int = int(key)
-    seed_hash = _seed_hash_for(seed_int, key_int)
-    return random.Random(seed_hash)
+    """Return a ``random.Random`` for ``(seed, key)`` using :func:`make_rng`."""
+    return make_rng(seed, key)
 
 
 def clear_rng_cache() -> None:
