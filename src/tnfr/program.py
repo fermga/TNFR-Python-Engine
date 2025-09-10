@@ -27,7 +27,7 @@ Node = Any
 AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
 
 HandlerFn = Callable[
-    [nx.Graph, Any, Optional[list[Node]], deque, Optional[AdvanceFn]],
+    [nx.Graph, Any, Optional[list[Node]], deque, AdvanceFn],
     Optional[list[Node]],
 ]
 
@@ -143,9 +143,7 @@ def _apply_glyph_to_targets(
     apply_glyph_with_grammar(G, nodes_iter, g, w)
 
 
-def _advance(G, step_fn: Optional[AdvanceFn] = None):
-    if step_fn is None:
-        step_fn = get_step_fn()
+def _advance(G, step_fn: AdvanceFn):
     step_fn(G)
 
 
@@ -303,7 +301,7 @@ def _advance_and_record(
     G,
     trace: deque,
     label: OpTag,
-    step_fn: Optional[AdvanceFn],
+    step_fn: AdvanceFn,
     *,
     times: int = 1,
     **data,
@@ -313,7 +311,9 @@ def _advance_and_record(
     _record_trace(trace, G, label, **data)
 
 
-def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
+def _handle_target(
+    G, payload: TARGET, _curr_target, trace: deque, _step_fn: AdvanceFn
+):
     """Handle a ``TARGET`` token and return the active node set.
 
     Notes
@@ -334,7 +334,7 @@ def _handle_target(G, payload: TARGET, _curr_target, trace: deque, _step_fn):
 
 
 def _handle_wait(
-    G, steps: int, curr_target, trace: deque, step_fn: Optional[AdvanceFn]
+    G, steps: int, curr_target, trace: deque, step_fn: AdvanceFn
 ):
     _advance_and_record(G, trace, OpTag.WAIT, step_fn, times=steps, k=steps)
     return curr_target
@@ -345,7 +345,7 @@ def _handle_glyph(
     g: str,
     curr_target,
     trace: deque,
-    step_fn: Optional[AdvanceFn],
+    step_fn: AdvanceFn,
     label: OpTag = OpTag.GLYPH,
 ):
     _apply_glyph_to_targets(G, g, curr_target)
@@ -354,7 +354,7 @@ def _handle_glyph(
 
 
 def _handle_thol(
-    G, g, curr_target, trace: deque, step_fn: Optional[AdvanceFn]
+    G, g, curr_target, trace: deque, step_fn: AdvanceFn
 ):
     return _handle_glyph(
         G, g or Glyph.THOL.value, curr_target, trace, step_fn, label=OpTag.THOL
