@@ -8,7 +8,9 @@ import threading
 import copy
 import warnings
 from types import MappingProxyType
-from functools import lru_cache, singledispatch, wraps
+
+from functools import lru_cache, partial
+
 from dataclasses import asdict, is_dataclass
 import weakref
 
@@ -84,29 +86,9 @@ def _freeze(value: Any, seen: set[int] | None = None):
 def _freeze_tuple(value: tuple, seen: set[int] | None = None):
     return tuple(_freeze(v, seen) for v in value)
 
+def _freeze_iterable(tag: str, iterable, seen: set[int]):
+    return (tag, tuple(_freeze(v, seen) for v in iterable))
 
-@_freeze.register(list)
-@_check_cycle
-def _freeze_list(value: list, seen: set[int] | None = None):
-    return ("list", tuple(_freeze(v, seen) for v in value))
-
-
-@_freeze.register(set)
-@_check_cycle
-def _freeze_set(value: set, seen: set[int] | None = None):
-    return ("set", tuple(_freeze(v, seen) for v in value))
-
-
-@_freeze.register(frozenset)
-@_check_cycle
-def _freeze_frozenset(value: frozenset, seen: set[int] | None = None):
-    return frozenset(_freeze(v, seen) for v in value)
-
-
-@_freeze.register(bytearray)
-@_check_cycle
-def _freeze_bytearray(value: bytearray, seen: set[int] | None = None):
-    return ("bytearray", bytes(value))
 
 
 @_freeze.register(Mapping)
@@ -117,6 +99,36 @@ def _freeze_mapping(value: Mapping, seen: set[int] | None = None):
         tag,
         tuple((k, _freeze(v, seen)) for k, v in value.items()),
     )
+
+_FREEZE_DISPATCH: dict[type, Callable[[Any, set[int]], Any]] = {
+    tuple: _freeze_tuple,
+    list: partial(_freeze_iterable, "list"),
+    set: partial(_freeze_iterable, "set"),
+    frozenset: partial(_freeze_iterable, "frozenset"),
+    bytearray: partial(_freeze_iterable, "bytearray"),
+}
+
+
+def _freeze(value: Any, seen: set[int] | None = None):
+    if seen is None:
+        seen = set()
+    obj_id = id(value)
+    if obj_id in seen:
+        raise ValueError("cycle detected")
+    seen.add(obj_id)
+    try:
+        if is_dataclass(value) and not isinstance(value, type):
+            return _freeze_dataclass(value, seen)
+        if isinstance(value, IMMUTABLE_SIMPLE):
+            return value
+        func = _FREEZE_DISPATCH.get(type(value))
+        if func is None and isinstance(value, Mapping):
+            func = _freeze_mapping
+        if func is not None:
+            return func(value, seen)
+        raise TypeError
+    finally:
+        seen.remove(obj_id)
 
 @lru_cache(maxsize=1024)
 def _is_immutable_inner(value: Any) -> bool:
