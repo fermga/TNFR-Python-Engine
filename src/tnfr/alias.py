@@ -59,6 +59,24 @@ def _validate_aliases(aliases: tuple[str, ...]) -> tuple[str, ...]:
     return aliases
 
 
+def _convert_default(
+    default: Any,
+    conv: Callable[[Any], T],
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+) -> tuple[bool, T | None]:
+    """Convert ``default`` value honoring logging and ``strict`` semantics."""
+
+    return _convert_value(
+        default,
+        conv,
+        strict=strict,
+        key="default",
+        log_level=log_level if log_level is not None else logging.WARNING,
+    )
+
+
 def _alias_resolve(
     d: dict[str, Any],
     aliases: Sequence[str],
@@ -73,25 +91,33 @@ def _alias_resolve(
     ``aliases`` must already be validated with :func:`_validate_aliases`.
     """
 
-    for key in aliases:
-        if key not in d:
-            continue
-        ok, value = _convert_value(
-            d[key],
-            conv,
-            strict=strict,
-            key=key,
-            log_level=log_level,
-        )
-        if ok:
-            return value
+    sentinel = object()
+    value = next(
+        (
+            v
+            for key in aliases
+            if key in d
+            for ok, v in [
+                _convert_value(
+                    d[key],
+                    conv,
+                    strict=strict,
+                    key=key,
+                    log_level=log_level,
+                )
+            ]
+            if ok
+        ),
+        sentinel,
+    )
+    if value is not sentinel:
+        return value
     if default is not None:
-        ok, value = _convert_value(
+        ok, value = _convert_default(
             default,
             conv,
             strict=strict,
-            key="default",
-            log_level=log_level if log_level is not None else logging.WARNING,
+            log_level=log_level,
         )
         if ok:
             return value
