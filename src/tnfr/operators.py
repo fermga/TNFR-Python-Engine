@@ -19,7 +19,6 @@ from typing import Any, TYPE_CHECKING
 import math
 import hashlib
 import heapq
-import threading
 from operator import ge, le
 from functools import cache
 from itertools import combinations, islice
@@ -51,6 +50,7 @@ from .callback_utils import invoke_callbacks
 from .glyph_history import append_metric, ensure_history, current_step_idx
 from .import_utils import import_nodonx, optional_import
 from .types import Glyph
+from .locking import get_lock
 
 # Guarded by ``_JITTER_LOCK`` to ensure thread-safe access.
 # ``_JITTER_SEQ`` stores per-scope jitter sequence counters and is
@@ -58,7 +58,7 @@ from .types import Glyph
 _JITTER_MAX_ENTRIES = 1024
 _JITTER_SEQ: OrderedDict[tuple[int, int], int] = OrderedDict()
 _JITTER_GRAPHS: WeakSet[Any] = WeakSet()
-_JITTER_LOCK = threading.Lock()
+_JITTER_LOCK = get_lock("jitter")
 
 if TYPE_CHECKING:
     from .node import NodoProtocol

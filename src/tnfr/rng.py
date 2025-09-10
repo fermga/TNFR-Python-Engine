@@ -5,16 +5,16 @@ from __future__ import annotations
 import random
 import hashlib
 import struct
-import threading
 from typing import MutableMapping, Any, Callable, Tuple
 
 from cachetools import LRUCache, cached
 from .constants import DEFAULTS
 from .helpers.cache import get_graph
+from .locking import get_lock
 
 MASK64 = 0xFFFFFFFFFFFFFFFF
 
-_RNG_LOCK = threading.Lock()
+_RNG_LOCK = get_lock("rng")
 _CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
 
 
