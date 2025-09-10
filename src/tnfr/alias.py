@@ -47,18 +47,6 @@ __all__ = (
     "multi_recompute_abs_max",
 )
 
-
-@lru_cache(maxsize=128)
-def _validate_aliases(aliases: tuple[str, ...]) -> tuple[str, ...]:
-    """Validate and cache ``aliases`` as a tuple of strings."""
-
-    if not aliases:
-        raise ValueError("'aliases' must contain at least one key")
-    if not all(isinstance(a, str) for a in aliases):
-        raise TypeError("'aliases' elements must be strings")
-    return aliases
-
-
 def _alias_resolve(
     d: dict[str, Any],
     aliases: Sequence[str],
@@ -68,30 +56,35 @@ def _alias_resolve(
     strict: bool = False,
     log_level: int | None = None,
 ) -> Optional[T]:
-    """Resolve the first matching key in ``aliases`` from ``d``.
+    """Resolve the first matching key in ``aliases`` from ``d``."""
 
-    ``aliases`` must already be validated with :func:`_validate_aliases`.
-    """
-
-    for key in aliases:
-        if key not in d:
-            continue
-        ok, value = _convert_value(
-            d[key],
-            conv,
-            strict=strict,
-            key=key,
-            log_level=log_level,
-        )
-        if ok:
-            return value
+    sentinel = object()
+    value = next(
+        (
+            v
+            for key in aliases
+            if key in d
+            for ok, v in [
+                _convert_value(
+                    d[key],
+                    conv,
+                    strict=strict,
+                    key=key,
+                    log_level=log_level,
+                )
+            ]
+            if ok
+        ),
+        sentinel,
+    )
+    if value is not sentinel:
+        return value
     if default is not None:
-        ok, value = _convert_value(
+        ok, value = _convert_default(
             default,
             conv,
             strict=strict,
-            key="default",
-            log_level=log_level if log_level is not None else logging.WARNING,
+            log_level=log_level,
         )
         if ok:
             return value
@@ -134,7 +127,19 @@ class AliasAccessor(Generic[T]):
 
         if isinstance(aliases, str) or not isinstance(aliases, Iterable):
             raise TypeError("'aliases' must be a non-string iterable")
-        aliases = _validate_aliases(tuple(aliases))
+
+        if not hasattr(self, "_alias_cache"):
+            @lru_cache(maxsize=128)
+            def _alias_cache(alias_tuple: tuple[str, ...]) -> tuple[str, ...]:
+                if not alias_tuple:
+                    raise ValueError("'aliases' must contain at least one key")
+                if not all(isinstance(a, str) for a in alias_tuple):
+                    raise TypeError("'aliases' elements must be strings")
+                return alias_tuple
+
+            self._alias_cache = _alias_cache
+
+        aliases = self._alias_cache(tuple(aliases))
         if conv is None:
             conv = self._conv
         if conv is None:

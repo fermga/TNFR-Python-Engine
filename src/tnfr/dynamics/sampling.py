@@ -12,10 +12,11 @@ def update_node_sample(G, *, step: int) -> None:
     The sample is limited by ``UM_CANDIDATE_COUNT`` and refreshed every
     simulation step. When the network is small (``< 50`` nodes) or the limit
     is non‑positive, the full node set is used and sampling is effectively
-    disabled. A tuple snapshot of nodes is cached in
-    ``G.graph['_node_list']`` and reused across steps; it is only refreshed
-    when the graph size changes. Sampling operates directly on this cached
-    tuple.
+    disabled. A snapshot of nodes is cached via a
+    :class:`~tnfr.helpers.cache.NodeCache` instance stored in
+    ``G.graph['_node_list_cache']`` and reused across steps; it is only refreshed
+    when the graph size changes. Sampling operates directly on the cached
+    tuple of nodes.
     """
     graph = G.graph
     limit = int(graph.get("UM_CANDIDATE_COUNT", 0))

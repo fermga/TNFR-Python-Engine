@@ -128,6 +128,7 @@ def safe_write(
     *,
     mode: str = "w",
     encoding: str | None = "utf-8",
+    atomic: bool = True,
     **open_kwargs: Any,
 ) -> None:
     """Write to ``path`` ensuring parent directory exists and handle errors.
@@ -146,33 +147,44 @@ def safe_write(
         ``write`` may write bytes.
     encoding:
         Encoding for text modes. Ignored for binary modes.
+    atomic:
+        When ``True`` (default) writes to a temporary file and atomically
+        replaces the destination after flushing to disk. When ``False``
+        writes directly to ``path`` without any atomicity guarantee.
     """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     open_params = dict(mode=mode, **open_kwargs)
     if "b" not in mode and encoding is not None:
         open_params["encoding"] = encoding
-    tmp_path: Path | None = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            dir=path.parent, delete=False, **open_params
-        ) as tmp:
-            tmp_path = Path(tmp.name)
-            write(tmp)
-            tmp.flush()
-            os.fsync(tmp.fileno())
+    if atomic:
+        tmp_path: Path | None = None
         try:
-            os.replace(tmp_path, path)
-        except OSError as e:
-            logger.error(
-                "Atomic replace failed for %s -> %s: %s", tmp_path, path, e
-            )
-            raise
-    except (OSError, ValueError, TypeError) as e:
-        raise type(e)(f"Failed to write file {path}: {e}") from e
-    finally:
-        if tmp_path is not None:
-            tmp_path.unlink(missing_ok=True)
+            with tempfile.NamedTemporaryFile(
+                dir=path.parent, delete=False, **open_params
+            ) as tmp:
+                tmp_path = Path(tmp.name)
+                write(tmp)
+                tmp.flush()
+                os.fsync(tmp.fileno())
+            try:
+                os.replace(tmp_path, path)
+            except OSError as e:
+                logger.error(
+                    "Atomic replace failed for %s -> %s: %s", tmp_path, path, e
+                )
+                raise
+        except (OSError, ValueError, TypeError) as e:
+            raise type(e)(f"Failed to write file {path}: {e}") from e
+        finally:
+            if tmp_path is not None:
+                tmp_path.unlink(missing_ok=True)
+    else:
+        try:
+            with open(path, **open_params) as f:
+                write(f)
+        except (OSError, ValueError, TypeError) as e:
+            raise type(e)(f"Failed to write file {path}: {e}") from e
 
 
 __all__ = (
