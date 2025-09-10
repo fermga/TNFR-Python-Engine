@@ -1,9 +1,8 @@
 """Pruebas de remeshing topológico."""
-
 import networkx as nx
 
 from tnfr.constants import inject_defaults
-from tnfr.operators import apply_topological_remesh
+from tnfr import apply_topological_remesh
 
 
 def _graph_with_epi(graph_canon, n=6):

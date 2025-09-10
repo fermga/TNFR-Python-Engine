@@ -4,8 +4,8 @@ This module implements:
 - The 13 glyphs as smooth local operators.
 - A dispatcher ``apply_glyph`` that maps the glyph name (with typographic
   apostrophe) to its function.
-- Network remeshing: ``apply_network_remesh`` and
-  ``apply_remesh_if_globally_stable``.
+- Network remeshing: ``apply_network_remesh``,
+  ``apply_topological_remesh`` and ``apply_remesh_if_globally_stable``.
 
 Note on REMESH α (alpha) precedence:
 1) ``G.graph["GLYPH_FACTORS"]["REMESH_alpha"]``
@@ -66,6 +66,7 @@ __all__ = [
     "apply_glyph_obj",
     "apply_glyph",
     "apply_network_remesh",
+    "apply_topological_remesh",
     "apply_remesh_if_globally_stable",
 ]
 
