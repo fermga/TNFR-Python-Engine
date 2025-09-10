@@ -4,92 +4,47 @@ import argparse
 from typing import Any
 
 from ..gamma import GAMMA_REGISTRY
-from .utils import specs
+from .utils import spec, specs
 
 
 GRAMMAR_ARG_SPECS = specs(
-    ("--grammar.enabled", {"action": argparse.BooleanOptionalAction}),
-    ("--grammar.zhir_requires_oz_window", {"type": int}),
-    ("--grammar.zhir_dnfr_min", {"type": float}),
-    ("--grammar.thol_min_len", {"type": int}),
-    ("--grammar.thol_max_len", {"type": int}),
-    ("--grammar.thol_close_dnfr", {"type": float}),
-    ("--grammar.si_high", {"type": float}),
-    ("--glyph.hysteresis_window", {"type": int}),
+    spec("--grammar.enabled", action=argparse.BooleanOptionalAction),
+    spec("--grammar.zhir_requires_oz_window", type=int),
+    spec("--grammar.zhir_dnfr_min", type=float),
+    spec("--grammar.thol_min_len", type=int),
+    spec("--grammar.thol_max_len", type=int),
+    spec("--grammar.thol_close_dnfr", type=float),
+    spec("--grammar.si_high", type=float),
+    spec("--glyph.hysteresis_window", type=int),
 )
-
-def _with_dest_and_default(arg_specs):
-    """Return ``specs`` adding a ``dest`` and ``default`` for each option.
-
-    The ``dest`` is derived from the option string by stripping leading dashes
-    and replacing dots with underscores so that nested CLI options can be
-    accessed as regular attributes. All options default to ``None`` to allow
-    ``_args_to_dict`` to filter them out when not provided.
-    """
-
-    return [
-        (
-            opt,
-            {**kwargs, "dest": opt.lstrip("-").replace(".", "_"), "default": None},
-        )
-        for opt, kwargs in arg_specs
-    ]
 
 
 # Especificaciones para opciones relacionadas con el histórico
 HISTORY_ARG_SPECS = specs(
-    ("--save-history", {"dest": "save_history", "type": str, "default": None}),
-    (
-        "--export-history-base",
-        {"dest": "export_history_base", "type": str, "default": None},
-    ),
-    (
-        "--export-format",
-        {
-            "dest": "export_format",
-            "choices": ["csv", "json"],
-            "default": "json",
-        },
-    ),
+    spec("--save-history", type=str),
+    spec("--export-history-base", type=str),
+    spec("--export-format", choices=["csv", "json"], default="json"),
 )
 
 
 # Argumentos comunes a los subcomandos
 COMMON_ARG_SPECS = specs(
-    ("--nodes", {"type": int, "default": 24}),
-    (
-        "--topology",
-        {"choices": ["ring", "complete", "erdos"], "default": "ring"},
-    ),
-    ("--seed", {"type": int, "default": 1}),
-    (
+    spec("--nodes", type=int, default=24),
+    spec("--topology", choices=["ring", "complete", "erdos"], default="ring"),
+    spec("--seed", type=int, default=1),
+    spec(
         "--p",
-        {
-            "type": float,
-            "default": None,
-            "help": "Probabilidad de arista si topology=erdos",
-        },
+        type=float,
+        help="Probabilidad de arista si topology=erdos",
     ),
-    (
-        "--observer",
-        {"action": "store_true", "help": "Adjunta observador estándar"},
-    ),
-    ("--config", {"type": str, "default": None}),
-    ("--dt", {"type": float, "default": None}),
-    (
-        "--integrator",
-        {"choices": ["euler", "rk4"], "default": None},
-    ),
-    (
-        "--remesh-mode",
-        {"choices": ["knn", "mst", "community"], "default": None},
-    ),
-    (
-        "--gamma-type",
-        {"choices": list(GAMMA_REGISTRY.keys()), "default": "none"},
-    ),
-    ("--gamma-beta", {"type": float, "default": 0.0}),
-    ("--gamma-R0", {"type": float, "default": 0.0}),
+    spec("--observer", action="store_true", help="Adjunta observador estándar"),
+    spec("--config", type=str),
+    spec("--dt", type=float),
+    spec("--integrator", choices=["euler", "rk4"]),
+    spec("--remesh-mode", choices=["knn", "mst", "community"]),
+    spec("--gamma-type", choices=list(GAMMA_REGISTRY.keys()), default="none"),
+    spec("--gamma-beta", type=float, default=0.0),
+    spec("--gamma-R0", type=float, default=0.0),
 )
 
 
@@ -116,7 +71,7 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
 def add_grammar_args(parser: argparse.ArgumentParser) -> None:
     """Add grammar and glyph hysteresis options."""
     group = parser.add_argument_group("Grammar")
-    add_arg_specs(group, _with_dest_and_default(GRAMMAR_ARG_SPECS))
+    add_arg_specs(group, GRAMMAR_ARG_SPECS)
 
 
 def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
