@@ -118,7 +118,7 @@ def test_failure_log_bounded_without_frequent_prune(monkeypatch):
         state.failed.clear()
     monkeypatch.setattr(state, "limit", 3)
     monkeypatch.setattr(import_utils, "_FAILED_IMPORT_PRUNE_INTERVAL", 10.0)
-    monkeypatch.setattr(import_utils, "_LAST_FAILED_IMPORT_PRUNE", 0.0)
+    monkeypatch.setattr(import_utils._IMPORT_STATE, "last_prune", 0.0)
     monkeypatch.setattr(import_utils.time, "monotonic", lambda: 1.0)
 
     calls = {"n": 0}
