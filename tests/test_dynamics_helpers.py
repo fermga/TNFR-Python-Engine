@@ -21,7 +21,7 @@ def test_init_and_refresh_dnfr_cache(graph_canon):
         G, nodes, None, 1, False
     )
     assert refreshed
-    _refresh_dnfr_vectors(G, nodes, th, epi, vf, cx, sx)
+    _refresh_dnfr_vectors(G, nodes, cache)
     assert th[1] == pytest.approx(0.1)
     cache2, *_rest, refreshed2 = _init_dnfr_cache(G, nodes, cache, 1, False)
     assert not refreshed2
