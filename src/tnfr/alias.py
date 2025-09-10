@@ -133,6 +133,8 @@ class AliasAccessor(Generic[T]):
     ) -> None:
         self._conv = conv
         self._default = default
+        # expose cache for testing and manual control
+        self._alias_cache = _alias_cache
 
     def _prepare(
         self,
