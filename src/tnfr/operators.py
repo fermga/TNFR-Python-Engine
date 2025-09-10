@@ -20,6 +20,7 @@ import math
 import hashlib
 import heapq
 import struct
+import threading
 from operator import ge, le
 from functools import cache
 from itertools import combinations
@@ -45,8 +46,10 @@ from .glyph_history import append_metric
 from .import_utils import import_nodonx, optional_import
 from .types import Glyph
 
+# Guarded by ``_JITTER_LOCK`` to ensure thread-safe access.
 _JITTER_SEQ: dict[tuple[int, int], int] = {}
 _JITTER_GRAPHS: WeakSet[Any] = WeakSet()
+_JITTER_LOCK = threading.Lock()
 
 if TYPE_CHECKING:
     from .node import NodoProtocol
@@ -69,13 +72,20 @@ def _node_offset(G, n) -> int:
 
 
 def clear_rng_cache() -> None:
-    """Clear cached RNGs."""
-    _clear_rng_cache()
-    _JITTER_SEQ.clear()
-    for G in list(_JITTER_GRAPHS):
-        cache = G.graph.get("_jitter_seed_hash")
-        if cache is not None:
-            cache.clear()
+    """Clear cached RNGs and jitter state.
+
+    Access to ``_JITTER_SEQ`` and ``_JITTER_GRAPHS`` is serialized via
+    ``_JITTER_LOCK`` to avoid race conditions when mutating these global
+    caches.
+    """
+    with _JITTER_LOCK:
+        _clear_rng_cache()
+        _JITTER_SEQ.clear()
+        for G in list(_JITTER_GRAPHS):
+            cache = G.graph.get("_jitter_seed_hash")
+            if cache is not None:
+                cache.clear()
+        _JITTER_GRAPHS.clear()
 
 
 @cache
@@ -137,7 +147,8 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
             if graph_cache is None:
                 graph_cache = WeakKeyDictionary()
                 node.graph["_jitter_seed_hash"] = graph_cache
-                _JITTER_GRAPHS.add(node.graph)
+                with _JITTER_LOCK:
+                    _JITTER_GRAPHS.add(node.graph)
             cache = graph_cache.get(node)
             if cache is None:
                 cache = {}
@@ -157,8 +168,9 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
         cache[cache_key] = seed
     seq = 0
     if cache_enabled():
-        seq = _JITTER_SEQ.get(cache_key, 0)
-        _JITTER_SEQ[cache_key] = seq + 1
+        with _JITTER_LOCK:
+            seq = _JITTER_SEQ.get(cache_key, 0)
+            _JITTER_SEQ[cache_key] = seq + 1
     rng = make_rng(seed, seed_key + seq)
     return rng.uniform(-amplitude, amplitude)
 
