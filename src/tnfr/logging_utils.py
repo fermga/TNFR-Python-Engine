@@ -7,46 +7,21 @@ consistent configuration across the project.
 from __future__ import annotations
 
 import logging
-from .locking import get_lock
-
-_LOCK = get_lock("logging")
-_LOGGING_CONFIGURED = False
-_WARN_ONCE_LOCK = threading.Lock()
-_WARNED_KEYS: set[str] = set()
 
 __all__ = ("get_logger", "warn_once")
 
 
-def _configure_root() -> None:
-    """Configure the root logger if it has no handlers."""
-
-    global _LOGGING_CONFIGURED
-
-    root = logging.getLogger()
-    if root.handlers:
-        _LOGGING_CONFIGURED = True
-        return
-
+root = logging.getLogger()
+if not root.handlers:
     kwargs = {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
     if root.level == logging.NOTSET:
         kwargs["level"] = logging.INFO
     logging.basicConfig(**kwargs)
-    _LOGGING_CONFIGURED = True
 
 
 def get_logger(name: str) -> logging.Logger:
-    """Return a logger with a standard configuration.
+    """Return a module-specific logger."""
 
-    If the root logger has no handlers, it is configured with a default
-    format. A default log level of ``INFO`` is only set when the root
-    logger's level is ``NOTSET``; otherwise the existing level is
-    preserved.
-    """
-
-    if not _LOGGING_CONFIGURED:
-        with _LOCK:
-            if not _LOGGING_CONFIGURED:
-                _configure_root()
     return logging.getLogger(name)
 
 
