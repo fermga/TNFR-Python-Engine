@@ -7,7 +7,7 @@ from collections.abc import Mapping
 
 from .constants import ALIAS_THETA, get_param
 from .alias import get_attr
-from .helpers.numeric import angle_diff
+from .helpers.numeric import angle_diff, list_pvariance
 from .metrics_utils import compute_coherence
 from .callback_utils import register_callback
 from .glyph_history import ensure_history, count_glyphs, append_metric, validate_window
@@ -90,20 +90,11 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
         diff = (th - psi + np.pi) % (2 * np.pi) - np.pi
         var = float(np.var(diff)) if diff.size else 0.0
     else:
-        # Variance via Welford's single-pass algorithm to avoid materializing
-        # intermediate generators while maintaining numerical stability.
-        # If performance is critical, consider extracting theta values into a list
-        n = 0
-        mean = 0.0
-        M2 = 0.0
-        for _, data in G.nodes(data=True):
-            diff = angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
-            n += 1
-            delta = diff - mean
-            mean += delta / n
-            M2 += delta * (diff - mean)
-
-        var = M2 / n if n else 0.0
+        diffs = (
+            angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
+            for _, data in G.nodes(data=True)
+        )
+        var = list_pvariance(diffs, default=0.0)
 
     return 1.0 / (1.0 + var)
 
