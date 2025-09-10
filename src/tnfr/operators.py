@@ -202,9 +202,7 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
 
 def get_glyph_factors(node: NodoProtocol) -> dict[str, Any]:
     """Return glyph factors for ``node`` with defaults."""
-    return node.graph.get(
-        "GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"].copy()
-    )
+    return node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"].copy())
 
 
 # -------------------------

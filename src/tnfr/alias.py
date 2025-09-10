@@ -18,6 +18,7 @@ from typing import (
     Hashable,
     TYPE_CHECKING,
 )
+
 from functools import lru_cache
 
 from .value_utils import _convert_value
@@ -42,7 +43,6 @@ __all__ = (
     "multi_recompute_abs_max",
 )
 
-
 def _convert_default(
     default: Any,
     conv: Callable[[Any], T],
@@ -63,7 +63,6 @@ def _convert_default(
         key="default",
         log_level=log_level,
     )
-
 
 def _alias_resolve(
     d: dict[str, Any],
@@ -147,6 +146,7 @@ class AliasAccessor(Generic[T]):
             raise TypeError("'aliases' must be a non-string iterable")
 
         if not hasattr(self, "_alias_cache"):
+
             @lru_cache(maxsize=128)
             def _alias_cache(alias_tuple: tuple[str, ...]) -> tuple[str, ...]:
                 if not alias_tuple:
@@ -213,8 +213,7 @@ def get_attr(
     strict: bool = False,
     log_level: int | None = None,
     conv: Callable[[Any], float] | None = None,
-) -> float:
-    ...
+) -> float: ...
 
 
 @overload
@@ -226,8 +225,7 @@ def get_attr(
     strict: bool = False,
     log_level: int | None = None,
     conv: Callable[[Any], float] | None = None,
-) -> float | None:
-    ...
+) -> float | None: ...
 
 
 def get_attr(
@@ -271,8 +269,7 @@ def get_attr_str(
     strict: bool = False,
     log_level: int | None = None,
     conv: Callable[[Any], str] | None = None,
-) -> str:
-    ...
+) -> str: ...
 
 
 @overload
@@ -284,8 +281,7 @@ def get_attr_str(
     strict: bool = False,
     log_level: int | None = None,
     conv: Callable[[Any], str] | None = None,
-) -> str | None:
-    ...
+) -> str | None: ...
 
 
 def get_attr_str(
@@ -330,10 +326,7 @@ def recompute_abs_max(
 ) -> tuple[float, Hashable | None]:
     """Recalculate and return ``(max_val, node)`` for ``aliases`` in ``G``."""
     node, max_val = max(
-        (
-            (n, abs(get_attr(G.nodes[n], aliases, 0.0)))
-            for n in G.nodes()
-        ),
+        ((n, abs(get_attr(G.nodes[n], aliases, 0.0))) for n in G.nodes()),
         key=lambda x: x[1],
         default=(None, 0.0),
     )
@@ -457,7 +450,6 @@ def _increment_trig_version(
     g.pop("_cos_th", None)
     g.pop("_sin_th", None)
     g.pop("_thetas", None)
-
 
 
 def set_theta(G: "networkx.Graph", n: Hashable, value: float) -> None:

@@ -46,7 +46,9 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
 
     # Defensive: if callbacks store is not a mapping, discard it.
     if not isinstance(cbs, Mapping):
-        logger.warning("Invalid callbacks registry on graph; resetting to empty")
+        logger.warning(
+            "Invalid callbacks registry on graph; resetting to empty"
+        )
         cbs = G.graph["callbacks"] = defaultdict(dict)
         dirty.clear()
     elif not isinstance(cbs, defaultdict) or cbs.default_factory is not dict:
@@ -129,7 +131,10 @@ def _record_callback_error(
 
     logger.exception("callback %r failed for %s: %s", spec.name, event, err)
     err_list = G.graph.get("_callback_errors")
-    if not isinstance(err_list, deque) or err_list.maxlen != _CALLBACK_ERROR_LIMIT:
+    if (
+        not isinstance(err_list, deque)
+        or err_list.maxlen != _CALLBACK_ERROR_LIMIT
+    ):
         err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
         G.graph["_callback_errors"] = err_list
     err_list.append(
@@ -223,12 +228,18 @@ def invoke_callbacks(
     for spec in cbs.values():
         try:
             spec.func(G, ctx)
-        except (RuntimeError, ValueError, TypeError) as e:  # catch expected callback errors
+        except (
+            RuntimeError,
+            ValueError,
+            TypeError,
+        ) as e:  # catch expected callback errors
             _record_callback_error(G, event, ctx, spec, e)
             if strict:
                 raise
         except Exception:
             logger.exception(
-                "callback %r raised unexpected exception for %s", spec.name, event
+                "callback %r raised unexpected exception for %s",
+                spec.name,
+                event,
             )
             raise
