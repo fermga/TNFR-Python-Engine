@@ -230,16 +230,27 @@ def register_callback(
 
     cb_name = name or getattr(func, "__name__", None)
     new_cb = CallbackSpec(cb_name, func)
-
     existing_map = cbs[event]
     cb_key = cb_name or repr(func)
+
+    if cb_name is not None:
+        for spec in existing_map.values():
+            if spec.name == cb_name and spec.func is not func:
+                strict = bool(
+                    G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
+                )
+                msg = f"Callback {cb_name!r} already registered for {event}"
+                if strict:
+                    raise ValueError(msg)
+                else:
+                    logger.warning(msg)
+                break
+
     for key, spec in list(existing_map.items()):
         if spec.func is func or (cb_name is not None and spec.name == cb_name):
             del existing_map[key]
-            existing_map[cb_key] = new_cb
             break
-    else:
-        existing_map[cb_key] = new_cb
+    existing_map[cb_key] = new_cb
     dirty = G.graph.setdefault("_callbacks_dirty", set())
     dirty.add(event)
     return func
