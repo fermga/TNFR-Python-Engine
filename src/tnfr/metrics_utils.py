@@ -155,30 +155,31 @@ def _build_trig_cache(G: GraphLike, np: Any | None = None) -> TrigCache:
     """Construct trigonometric cache for ``G``."""
     if np is None:
         np = get_numpy()
-
-    cos_th: dict[Any, float] = {}
-    sin_th: dict[Any, float] = {}
-    thetas: dict[Any, float] = {}
-
     if np is not None:
         try:
-            nodes = list(G.nodes())
-            theta_arr = np.asarray(
-                [get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in nodes], dtype=float
-            )
+            nodes: list[Any] = []
+            theta_vals: list[float] = []
+            for n, nd in G.nodes(data=True):
+                nodes.append(n)
+                theta_vals.append(get_attr(nd, ALIAS_THETA, 0.0))
+            theta_arr = np.asarray(theta_vals, dtype=float)
             cos_arr = np.cos(theta_arr)
             sin_arr = np.sin(theta_arr)
             thetas = dict(zip(nodes, map(float, theta_arr)))
             cos_th = dict(zip(nodes, map(float, cos_arr)))
             sin_th = dict(zip(nodes, map(float, sin_arr)))
+            return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
         except AttributeError:
             np = None
-    if np is None:
-        for n, nd in G.nodes(data=True):
-            th = get_attr(nd, ALIAS_THETA, 0.0)
-            thetas[n] = th
-            cos_th[n] = math.cos(th)
-            sin_th[n] = math.sin(th)
+
+    cos_th: dict[Any, float] = {}
+    sin_th: dict[Any, float] = {}
+    thetas: dict[Any, float] = {}
+    for n, nd in G.nodes(data=True):
+        th = get_attr(nd, ALIAS_THETA, 0.0)
+        thetas[n] = th
+        cos_th[n] = math.cos(th)
+        sin_th[n] = math.sin(th)
 
     return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
 
