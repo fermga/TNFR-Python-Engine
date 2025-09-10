@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import json
 
+import warnings
+
 from typing import Any, Callable, overload, Literal
 
 from dataclasses import dataclass
@@ -15,7 +17,10 @@ from .import_utils import optional_import
 
 from .logging_utils import warn_once
 
-__all__ = ("json_dumps", "json_dumps_str")
+warnings.filterwarnings(
+    "once", message=".*ignored when using orjson", category=UserWarning
+)
+
 
 
 @lru_cache(maxsize=1)
@@ -47,10 +52,12 @@ def _json_dumps_orjson(
         or params.cls is not None
         or kwargs
     ):
-        warn_once(
-            "json_utils:ignored_orjson_params",
+        warnings.warn(
             "'ensure_ascii', 'separators', 'cls' and extra kwargs are "
             "ignored when using orjson",
+            UserWarning,
+            stacklevel=3,
+
         )
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
     data = orjson.dumps(obj, option=option, default=params.default)

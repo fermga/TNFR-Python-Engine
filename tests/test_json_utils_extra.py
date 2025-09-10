@@ -15,13 +15,13 @@ class DummyOrjson:
 
 def _reset_json_utils(monkeypatch, module):
     monkeypatch.setattr(json_utils, "optional_import", lambda name: module)
-    json_utils._load_orjson.cache_clear()
-    logging_utils._WARNED_KEYS.clear()
 
 
 def test_json_dumps_without_orjson(monkeypatch, caplog):
     _reset_json_utils(monkeypatch, None)
-    with caplog.at_level(logging.WARNING):
+
+    with warnings.catch_warnings(record=True) as w:
+
         result = json_utils.json_dumps({"a": 1}, ensure_ascii=False, to_bytes=True)
     assert result == b'{"a":1}'
     assert caplog.records == []
@@ -29,7 +29,10 @@ def test_json_dumps_without_orjson(monkeypatch, caplog):
 
 def test_json_dumps_with_orjson_warns(monkeypatch, caplog):
     _reset_json_utils(monkeypatch, DummyOrjson())
-    with caplog.at_level(logging.WARNING):
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.filterwarnings("once", message=".*ignored when using orjson")
+
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
     assert sum("ignored" in r.message for r in caplog.records) == 1
 
