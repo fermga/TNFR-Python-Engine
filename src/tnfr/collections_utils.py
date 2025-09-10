@@ -6,7 +6,7 @@ from collections.abc import Iterable, Mapping, Collection, Sequence
 from itertools import islice
 from typing import Any, TypeVar, cast
 import logging
-from functools import lru_cache
+from cachetools import LRUCache
 from .logging_utils import get_logger
 
 from .helpers.numeric import kahan_sum
@@ -19,23 +19,18 @@ logger = get_logger(__name__)
 NEGATIVE_WEIGHTS_MSG = "Negative weights detected: %s"
 
 # Track keys that have already triggered a negative weight warning
-# Leverage an ``lru_cache`` to handle eviction automatically
+# Use an ``LRUCache`` for automatic eviction and thread safety
 _WARNED_NEGATIVE_KEYS_LIMIT = 1024
-
-
-@lru_cache(maxsize=_WARNED_NEGATIVE_KEYS_LIMIT)
-def _warned_negative_key(key: str) -> None:  # pragma: no cover - trivial
-    return None
+_warned_negative_keys: LRUCache[str, bool] = LRUCache(maxsize=_WARNED_NEGATIVE_KEYS_LIMIT)
 
 
 def _log_negative_keys_once(negatives: Mapping[str, float]) -> None:
     """Log new negative weight keys once using an LRU cache."""
     new: dict[str, float] = {}
     for k, v in negatives.items():
-        info = _warned_negative_key.cache_info()
-        _warned_negative_key(k)
-        if _warned_negative_key.cache_info().misses > info.misses:
+        if k not in _warned_negative_keys:
             new[k] = v
+            _warned_negative_keys[k] = True
     if new:
         logger.warning(NEGATIVE_WEIGHTS_MSG, new)
 
