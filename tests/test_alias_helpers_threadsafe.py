@@ -2,12 +2,12 @@
 
 from concurrent.futures import ThreadPoolExecutor
 
-from tnfr.alias import AliasAccessor, _validate_aliases
+from tnfr.alias import AliasAccessor
 
 
 def _worker(i):
     d = {}
-    aliases = _validate_aliases((f"k{i}", f"a{i}"))
+    aliases = (f"k{i}", f"a{i}")
     acc = AliasAccessor(int)
     acc.set(d, aliases, i)
     return acc.get(d, aliases)
