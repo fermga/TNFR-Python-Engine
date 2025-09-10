@@ -26,7 +26,7 @@ def _load_orjson() -> Any | None:
     return optional_import("orjson")
 
 
-@dataclass
+@dataclass(slots=True)
 class JsonDumpsParams:
     sort_keys: bool
     default: Callable[[Any], Any] | None
