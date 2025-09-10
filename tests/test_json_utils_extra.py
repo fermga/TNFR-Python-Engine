@@ -31,8 +31,7 @@ def test_json_dumps_without_orjson(monkeypatch, caplog):
 def test_json_dumps_with_orjson_warns(monkeypatch, caplog):
     _reset_json_utils(monkeypatch, DummyOrjson())
 
-    with warnings.catch_warnings(record=True):
-        warnings.filterwarnings("once", message=".*ignored when using orjson")
+    with warnings.catch_warnings(record=True) as w:
 
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
     assert sum("ignored" in r.message for r in caplog.records) == 1
