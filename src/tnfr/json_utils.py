@@ -6,11 +6,13 @@ This module lazily imports :mod:`orjson` on first use of :func:`json_dumps`.
 from __future__ import annotations
 
 import json
+
 from typing import Any, Callable, overload, Literal
 
 from dataclasses import dataclass
 from functools import lru_cache
 from .import_utils import optional_import
+
 from .logging_utils import warn_once
 
 __all__ = ("json_dumps", "json_dumps_str")

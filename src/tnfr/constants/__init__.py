@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Any, Callable
 from collections.abc import Mapping
-import threading
 import copy
 import warnings
 from types import MappingProxyType
@@ -14,6 +13,7 @@ from functools import lru_cache, partial, wraps
 
 from dataclasses import asdict, is_dataclass
 import weakref
+from ..locking import get_lock
 
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
 from .init import INIT_DEFAULTS
@@ -95,7 +95,6 @@ def _freeze_dataclass(value: Any, seen: set[int]):
 # dispatch below.
 
 
-@_check_cycle
 def _freeze_tuple(value: tuple, seen: set[int] | None = None):
     return tuple(_freeze(v, seen) for v in value)
 
@@ -103,7 +102,7 @@ def _freeze_tuple(value: tuple, seen: set[int] | None = None):
 def _freeze_iterable(tag: str, iterable, seen: set[int]):
     return (tag, tuple(_freeze(v, seen) for v in iterable))
 
-@_check_cycle
+
 def _freeze_mapping(value: Mapping, seen: set[int] | None = None):
     tag = "dict" if hasattr(value, "__setitem__") else "mapping"
     return (
@@ -170,7 +169,7 @@ def _is_immutable_inner(value: Any) -> bool:
 _IMMUTABLE_CACHE: weakref.WeakKeyDictionary[Any, bool] = (
     weakref.WeakKeyDictionary()
 )
-_IMMUTABLE_CACHE_LOCK = threading.Lock()
+_IMMUTABLE_CACHE_LOCK = get_lock("immutable_cache")
 
 
 def _is_immutable(value: Any) -> bool:

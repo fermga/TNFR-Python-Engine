@@ -13,11 +13,45 @@ example :mod:`tnfr.metrics`, :mod:`tnfr.observers` or
 
 from __future__ import annotations
 
-from .dynamics import step, run
 from .ontosim import preparar_red
-from .structural import create_nfr, run_sequence
 from .types import NodeState
-from .operators import apply_topological_remesh
+
+
+def _missing_dependency(name: str, exc: Exception):
+    def _stub(*args, **kwargs):
+        raise ImportError(
+            f"{name} is unavailable because dependencies are missing. "
+            f"Original error: {exc}. Install required packages such as "
+            "'networkx' or grammar modules."
+        ) from exc
+
+    return _stub
+
+
+try:  # pragma: no cover - exercised in import tests
+    from .dynamics import step, run
+except Exception as exc:  # pragma: no cover - no missing deps in CI
+    step = _missing_dependency("step", exc)
+    run = _missing_dependency("run", exc)
+
+
+_HAS_RUN_SEQUENCE = False
+try:  # pragma: no cover - exercised in import tests
+    from .structural import create_nfr, run_sequence
+except Exception as exc:  # pragma: no cover - no missing deps in CI
+    create_nfr = _missing_dependency("create_nfr", exc)
+    run_sequence = _missing_dependency("run_sequence", exc)
+else:
+    _HAS_RUN_SEQUENCE = True
+
+
+_HAS_APPLY_TOPOLOGICAL_REMESH = False
+try:  # pragma: no cover - exercised in import tests
+    from .operators import apply_topological_remesh
+except Exception as exc:  # pragma: no cover - no missing deps in CI
+    apply_topological_remesh = _missing_dependency("apply_topological_remesh", exc)
+else:
+    _HAS_APPLY_TOPOLOGICAL_REMESH = True
 
 # re-exported for tests
 from .trace import CallbackSpec  # noqa: F401
@@ -56,14 +90,17 @@ except PackageNotFoundError:  # pragma: no cover
     else:  # pragma: no cover
         __version__ = "0+unknown"
 
-__all__ = (
+__all__ = [
     "__version__",
     "step",
     "run",
     "preparar_red",
     "create_nfr",
-    "run_sequence",
     "NodeState",
-    "apply_topological_remesh",
     "CallbackSpec",
-)
+]
+
+if _HAS_RUN_SEQUENCE:
+    __all__.append("run_sequence")
+if _HAS_APPLY_TOPOLOGICAL_REMESH:
+    __all__.append("apply_topological_remesh")
