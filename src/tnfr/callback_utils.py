@@ -35,22 +35,23 @@ _CALLBACK_EVENTS: set[str] = {e.value for e in CallbackEvent}
 _CALLBACK_ERROR_LIMIT = 100  # keep only this many recent callback errors
 
 Callback = Callable[["nx.Graph", dict[str, Any]], None]
-CallbackRegistry = dict[str, list["CallbackSpec"]]
+CallbackRegistry = dict[str, dict[str, "CallbackSpec"]]
 
 
 def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
     """Ensure the callback structure in ``G.graph``."""
-    cbs = G.graph.setdefault("callbacks", defaultdict(list))
+    cbs = G.graph.setdefault("callbacks", defaultdict(dict))
 
     dirty: set[str] = set(G.graph.pop("_callbacks_dirty", ()))
 
     # Defensive: if callbacks store is not a mapping, discard it.
     if not isinstance(cbs, Mapping):
         logger.warning("Invalid callbacks registry on graph; resetting to empty")
-        cbs = G.graph["callbacks"] = defaultdict(list)
+        cbs = G.graph["callbacks"] = defaultdict(dict)
         dirty.clear()
-    elif not isinstance(cbs, defaultdict):
-        cbs = G.graph["callbacks"] = defaultdict(list, cbs)
+    elif not isinstance(cbs, defaultdict) or cbs.default_factory is not dict:
+        # Convert to expected defaultdict(dict) and process existing keys.
+        cbs = G.graph["callbacks"] = defaultdict(dict, cbs)
         dirty.update(cbs.keys())
 
     if dirty:
@@ -60,12 +61,23 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
             if event not in _CALLBACK_EVENTS:
                 del cbs[event]
                 continue
-            cbs[event] = [
-                spec
-                for entry in cbs[event]
-                if (spec := _normalize_callback_entry(entry)) is not None
-            ]
+            cb_map = cbs[event]
+            if isinstance(cb_map, Mapping):
+                entries = cb_map.values()
+            elif isinstance(cb_map, Sequence) and not isinstance(cb_map, (str, bytes)):
+                entries = cb_map
+            else:
+                entries = []
+            new_map: dict[str, CallbackSpec] = {}
+            for entry in entries:
+                spec = _normalize_callback_entry(entry)
+                if spec is None:
+                    continue
+                key = spec.name or repr(spec.func)
+                new_map[key] = spec
+            cbs[event] = new_map
     return cbs
+
 
 
 def _normalize_event(event: CallbackEvent | str) -> str:
@@ -151,13 +163,15 @@ def register_callback(
     cb_name = name or getattr(func, "__name__", None)
     new_cb = CallbackSpec(cb_name, func)
 
-    existing_list = cbs[event]
-    for i, spec in enumerate(existing_list):
+    existing_map = cbs[event]
+    cb_key = cb_name or repr(func)
+    for key, spec in list(existing_map.items()):
         if spec.func is func or (cb_name is not None and spec.name == cb_name):
-            existing_list[i] = new_cb
+            del existing_map[key]
+            existing_map[cb_key] = new_cb
             break
     else:
-        existing_list.append(new_cb)
+        existing_map[cb_key] = new_cb
     dirty = G.graph.setdefault("_callbacks_dirty", set())
     dirty.add(event)
     return func
@@ -170,7 +184,7 @@ def invoke_callbacks(
 ) -> None:
     """Invoke all callbacks registered for ``event`` with context ``ctx``."""
     event = _normalize_event(event)
-    cbs = _ensure_callbacks(G).get(event, [])
+    cbs = _ensure_callbacks(G).get(event, {})
     strict = bool(
         G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
     )
@@ -180,9 +194,7 @@ def invoke_callbacks(
     if not isinstance(err_list, deque) or err_list.maxlen != _CALLBACK_ERROR_LIMIT:
         err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
         G.graph["_callback_errors"] = err_list
-    # ``cbs`` is a list and callbacks are not modified during iteration,
-    # so iterating directly avoids an unnecessary copy.
-    for spec in cbs:
+    for spec in cbs.values():
         name, fn = spec.name, spec.func
         try:
             fn(G, ctx)

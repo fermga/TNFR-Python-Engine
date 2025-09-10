@@ -158,8 +158,8 @@ def test_attach_standard_observer_registers_callbacks(graph_canon):
 def test_attach_standard_observer_idempotent(graph_canon):
     G = graph_canon()
     attach_standard_observer(G)
-    callbacks = {ev: list(cbs) for ev, cbs in G.graph["callbacks"].items()}
+    callbacks = {ev: dict(cbs) for ev, cbs in G.graph["callbacks"].items()}
     attach_standard_observer(G)
     assert {
-        ev: list(cbs) for ev, cbs in G.graph["callbacks"].items()
+        ev: dict(cbs) for ev, cbs in G.graph["callbacks"].items()
     } == callbacks

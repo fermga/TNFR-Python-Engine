@@ -52,5 +52,5 @@ def test_ensure_callbacks_only_processes_dirty_events(graph_canon):
 
     _ensure_callbacks(G)
 
-    assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == []
-    assert G.graph["callbacks"][CallbackEvent.AFTER_STEP.value] == [dummy]
+    assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {}
+    assert G.graph["callbacks"][CallbackEvent.AFTER_STEP.value] == {}
