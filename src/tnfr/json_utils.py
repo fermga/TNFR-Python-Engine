@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 
 import warnings
+import inspect
 
 from typing import Any, Callable, overload, Literal
 
@@ -17,15 +18,12 @@ from .import_utils import optional_import
 
 from .logging_utils import get_logger
 
-warnings.filterwarnings(
-    "once", message=".*ignored when using orjson", category=UserWarning
-)
-
 logger = get_logger(__name__)
 _ORJSON_PARAMS_MSG = (
     "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson"
 )
 _warned_orjson_params = False
+_warned_call_sites: set[tuple[str, int]] = set()
 @lru_cache(maxsize=1)
 def _load_orjson() -> Any | None:
     """Lazily import :mod:`orjson` once."""
@@ -55,7 +53,17 @@ def _json_dumps_orjson(
         or params.cls is not None
         or kwargs
     ):
-        warnings.warn(_ORJSON_PARAMS_MSG, UserWarning, stacklevel=3)
+        frame = inspect.currentframe()
+        outer = frame.f_back.f_back if frame else None
+        call_site = (outer.f_code.co_filename, outer.f_lineno) if outer else None
+        if call_site is None or call_site not in _warned_call_sites:
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "default", message=_ORJSON_PARAMS_MSG, category=UserWarning
+                )
+                warnings.warn(_ORJSON_PARAMS_MSG, UserWarning, stacklevel=3)
+            if call_site is not None:
+                _warned_call_sites.add(call_site)
         global _warned_orjson_params
         if not _warned_orjson_params:
             logger.warning(_ORJSON_PARAMS_MSG)

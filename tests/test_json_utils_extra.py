@@ -33,8 +33,6 @@ def test_json_dumps_with_orjson_warns(monkeypatch, caplog):
     _reset_json_utils(monkeypatch, DummyOrjson())
 
     with warnings.catch_warnings(record=True) as w:
-        warnings.filterwarnings("once", message=".*ignored when using orjson")
-
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
     assert sum("ignored" in r.message for r in caplog.records) == 1
 

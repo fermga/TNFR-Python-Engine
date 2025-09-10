@@ -35,10 +35,8 @@ def test_warns_once(monkeypatch, caplog):
     json_utils._load_orjson.cache_clear()
 
     with warnings.catch_warnings(record=True) as w:
-        warnings.filterwarnings("once", message=".*ignored when using orjson")
-
-        json_utils.json_dumps({}, ensure_ascii=False)
-        json_utils.json_dumps({}, ensure_ascii=False)
+        for _ in range(2):
+            json_utils.json_dumps({}, ensure_ascii=False)
 
     assert len(w) == 1
 
