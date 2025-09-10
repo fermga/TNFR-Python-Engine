@@ -8,7 +8,9 @@ import threading
 import copy
 import warnings
 from types import MappingProxyType
+
 from functools import lru_cache, partial
+
 from dataclasses import asdict, is_dataclass
 import weakref
 
@@ -41,6 +43,23 @@ IMMUTABLE_SIMPLE = (
 )
 
 
+def _check_cycle(func: Callable[[Any, set[int] | None], Any]):
+    @wraps(func)
+    def wrapper(value: Any, seen: set[int] | None = None):
+        if seen is None:
+            seen = set()
+        obj_id = id(value)
+        if obj_id in seen:
+            raise ValueError("cycle detected")
+        seen.add(obj_id)
+        try:
+            return func(value, seen)
+        finally:
+            seen.remove(obj_id)
+
+    return wrapper
+
+
 def _freeze_dataclass(value: Any, seen: set[int]):
     params = getattr(type(value), "__dataclass_params__", None)
     frozen = bool(params and params.frozen)
@@ -52,21 +71,34 @@ def _freeze_dataclass(value: Any, seen: set[int]):
     )
 
 
-def _freeze_tuple(value: tuple, seen: set[int]):
-    return tuple(_freeze(v, seen) for v in value)
+@singledispatch
+@_check_cycle
+def _freeze(value: Any, seen: set[int] | None = None):
+    if is_dataclass(value) and not isinstance(value, type):
+        return _freeze_dataclass(value, seen)
+    if isinstance(value, IMMUTABLE_SIMPLE):
+        return value
+    raise TypeError
 
+
+@_freeze.register(tuple)
+@_check_cycle
+def _freeze_tuple(value: tuple, seen: set[int] | None = None):
+    return tuple(_freeze(v, seen) for v in value)
 
 def _freeze_iterable(tag: str, iterable, seen: set[int]):
     return (tag, tuple(_freeze(v, seen) for v in iterable))
 
 
-def _freeze_mapping(value: Mapping, seen: set[int]):
+
+@_freeze.register(Mapping)
+@_check_cycle
+def _freeze_mapping(value: Mapping, seen: set[int] | None = None):
     tag = "dict" if hasattr(value, "__setitem__") else "mapping"
     return (
         tag,
         tuple((k, _freeze(v, seen)) for k, v in value.items()),
     )
-
 
 _FREEZE_DISPATCH: dict[type, Callable[[Any, set[int]], Any]] = {
     tuple: _freeze_tuple,
@@ -98,21 +130,18 @@ def _freeze(value: Any, seen: set[int] | None = None):
     finally:
         seen.remove(obj_id)
 
-
 @lru_cache(maxsize=1024)
 def _is_immutable_inner(value: Any) -> bool:
     if isinstance(value, IMMUTABLE_SIMPLE):
         return True
     if isinstance(value, tuple):
         if value and isinstance(value[0], str):
-            tag = value[0]
-            if tag in {"list", "dict", "set", "bytearray"}:
-                return False
-            if tag == "mapping":
-                return all(_is_immutable_inner(v) for v in value[1])
-        return all(_is_immutable_inner(v) for v in value)
+            handler = _IMMUTABLE_TAG_DISPATCH.get(value[0])
+            if handler is not None:
+                return handler(value)
+        return _all_immutable(value)
     if isinstance(value, frozenset):
-        return all(_is_immutable_inner(v) for v in value)
+        return _all_immutable(value)
     return False
 
 

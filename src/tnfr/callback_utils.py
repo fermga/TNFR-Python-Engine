@@ -56,28 +56,32 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
 
     if dirty:
         for event in dirty:
-            if event not in cbs:
-                continue
-            if event not in _CALLBACK_EVENTS:
-                del cbs[event]
-                continue
-            cb_map = cbs[event]
-            if isinstance(cb_map, Mapping):
-                entries = cb_map.values()
-            elif isinstance(cb_map, Sequence) and not isinstance(cb_map, (str, bytes)):
-                entries = cb_map
-            else:
-                entries = []
-            new_map: dict[str, CallbackSpec] = {}
-            for entry in entries:
-                spec = _normalize_callback_entry(entry)
-                if spec is None:
-                    continue
-                key = spec.name or repr(spec.func)
-                new_map[key] = spec
-            cbs[event] = new_map
+            _normalize_event_callbacks(cbs, event)
     return cbs
 
+
+def _normalize_event_callbacks(cbs: CallbackRegistry, event: str) -> None:
+    """Clean and rebuild callbacks for ``event`` in ``cbs``."""
+    if event not in cbs:
+        return
+    if event not in _CALLBACK_EVENTS:
+        del cbs[event]
+        return
+    cb_map = cbs[event]
+    if isinstance(cb_map, Mapping):
+        entries = cb_map.values()
+    elif isinstance(cb_map, Sequence) and not isinstance(cb_map, (str, bytes)):
+        entries = cb_map
+    else:
+        entries = []
+    new_map: dict[str, CallbackSpec] = {}
+    for entry in entries:
+        spec = _normalize_callback_entry(entry)
+        if spec is None:
+            continue
+        key = spec.name or repr(spec.func)
+        new_map[key] = spec
+    cbs[event] = new_map
 
 
 def _normalize_event(event: CallbackEvent | str) -> str:
@@ -112,6 +116,32 @@ def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
         return CallbackSpec(name, entry)
     else:
         return None
+
+
+def _record_callback_error(
+    G: "nx.Graph",
+    event: str,
+    ctx: dict[str, Any],
+    spec: CallbackSpec,
+    err: Exception,
+) -> None:
+    """Log and store a callback error for later inspection."""
+
+    logger.exception("callback %r failed for %s: %s", spec.name, event, err)
+    err_list = G.graph.get("_callback_errors")
+    if not isinstance(err_list, deque) or err_list.maxlen != _CALLBACK_ERROR_LIMIT:
+        err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
+        G.graph["_callback_errors"] = err_list
+    err_list.append(
+        {
+            "event": event,
+            "step": ctx.get("step"),
+            "error": repr(err),
+            "traceback": traceback.format_exc(),
+            "fn": repr(spec.func),
+            "name": spec.name,
+        }
+    )
 
 
 def register_callback(
@@ -190,32 +220,15 @@ def invoke_callbacks(
     )
     if ctx is None:
         ctx = {}
-    err_list: deque | None = None
     for spec in cbs.values():
-        name, fn = spec.name, spec.func
         try:
-            fn(G, ctx)
+            spec.func(G, ctx)
         except (RuntimeError, ValueError, TypeError) as e:  # catch expected callback errors
-            logger.exception("callback %r failed for %s: %s", name, event, e)
+            _record_callback_error(G, event, ctx, spec, e)
             if strict:
                 raise
-            if err_list is None:
-                err_list = G.graph.get("_callback_errors")
-                if not isinstance(err_list, deque) or err_list.maxlen != _CALLBACK_ERROR_LIMIT:
-                    err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
-                    G.graph["_callback_errors"] = err_list
-            err_list.append(
-                {
-                    "event": event,
-                    "step": ctx.get("step"),
-                    "error": repr(e),
-                    "traceback": traceback.format_exc(),
-                    "fn": repr(fn),
-                    "name": name,
-                }
-            )
         except Exception:
             logger.exception(
-                "callback %r raised unexpected exception for %s", name, event
+                "callback %r raised unexpected exception for %s", spec.name, event
             )
             raise
