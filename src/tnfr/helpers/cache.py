@@ -6,7 +6,7 @@ import hashlib
 import threading
 import warnings
 from collections import defaultdict
-from collections.abc import Callable, Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping, Hashable
 from functools import lru_cache
 from types import MappingProxyType
 from typing import Any, TypeVar
@@ -244,25 +244,27 @@ def ensure_node_offset_map(G) -> dict[Any, int]:
     return _ensure_node_map(G, key="_node_offset_map", sort=sort)
 
 
-class _LockAwareLRUCache(LRUCache):
+class _LockAwareLRUCache(LRUCache[Hashable, Any]):
     """``LRUCache`` that drops per-key locks when evicting items."""
 
-    def __init__(self, maxsize: int, locks: dict):
+    def __init__(self, maxsize: int, locks: dict[Hashable, threading.RLock]):
         super().__init__(maxsize)
-        self._locks = locks
+        self._locks: dict[Hashable, threading.RLock] = locks
 
-    def popitem(self):  # type: ignore[override]
+    def popitem(self) -> tuple[Hashable, Any]:  # type: ignore[override]
         key, value = super().popitem()
         self._locks.pop(key, None)
         return key, value
 
 
-def _make_edge_cache(max_entries: int, locks: dict) -> LRUCache:
+def _make_edge_cache(
+    max_entries: int, locks: dict[Hashable, threading.RLock]
+) -> LRUCache[Hashable, Any]:
     """Create an ``LRUCache`` for edge data."""
     return _LockAwareLRUCache(max_entries, locks)
 
 
-def _ensure_edge_cache_locks(graph: Any) -> defaultdict:
+def _ensure_edge_cache_locks(graph: Any) -> defaultdict[Hashable, threading.RLock]:
     """Ensure per-key lock mapping for edge cache."""
     locks = graph.get("_edge_version_cache_locks")
     if (
@@ -275,18 +277,23 @@ def _ensure_edge_cache_locks(graph: Any) -> defaultdict:
 
 
 def _init_edge_cache(
-    graph: Any, locks: dict, max_entries: int | None
-) -> dict | LRUCache:
+    graph: Any,
+    locks: dict[Hashable, threading.RLock],
+    max_entries: int | None,
+) -> dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]:
     """Initialize and store edge cache in ``graph``."""
     use_lru = bool(max_entries)
+    cache: dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]
     cache = _make_edge_cache(max_entries, locks) if use_lru else {}
     graph["_edge_version_cache"] = cache
     return cache
 
 
 def _maybe_init_edge_cache(
-    graph: Any, locks: dict, max_entries: int | None
-) -> dict | LRUCache:
+    graph: Any,
+    locks: dict[Hashable, threading.RLock],
+    max_entries: int | None,
+) -> dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]:
     """Return existing cache or initialise a new one if needed."""
     use_lru = bool(max_entries)
     cache = graph.get("_edge_version_cache")
@@ -307,7 +314,10 @@ def _maybe_init_edge_cache(
 
 def _get_edge_cache(
     graph: Any, max_entries: int | None, *, create: bool = True
-):
+) -> tuple[
+    dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]] | None,
+    dict[Hashable, threading.RLock] | defaultdict[Hashable, threading.RLock] | None,
+]:
     """Return edge cache and lock mapping for ``graph``.
 
     When ``create`` is ``True`` missing structures are initialized according
@@ -330,7 +340,7 @@ def _get_edge_cache(
 
 def edge_version_cache(
     G: Any,
-    key: str,
+    key: Hashable,
     builder: Callable[[], T],
     *,
     max_entries: int | None = 128,
