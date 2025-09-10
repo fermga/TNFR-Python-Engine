@@ -45,6 +45,9 @@ __all__ = (
     "multi_recompute_abs_max",
 )
 
+# Sentinel object used internally when resolving aliases
+SENTINEL = object()
+
 def _convert_default(
     default: Any,
     conv: Callable[[Any], T],
@@ -76,8 +79,6 @@ def _alias_resolve(
     log_level: int | None = None,
 ) -> Optional[T]:
     """Resolve the first matching key in ``aliases`` from ``d``."""
-
-    sentinel = object()
     value = next(
         (
             v
@@ -94,9 +95,9 @@ def _alias_resolve(
             ]
             if ok
         ),
-        sentinel,
+        SENTINEL,
     )
-    if value is not sentinel:
+    if value is not SENTINEL:
         return value
     if default is not None:
         ok, value = _convert_default(
