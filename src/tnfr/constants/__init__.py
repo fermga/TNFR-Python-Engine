@@ -26,6 +26,7 @@ try:  # pragma: no cover - optional dependency
     from ..helpers.cache import ensure_node_offset_map
 except ImportError:  # noqa: BLE001 - allow any import error
     ensure_node_offset_map = None
+
 # Secciones individuales exportadas
 DEFAULT_SECTIONS: Mapping[str, Mapping[str, Any]] = MappingProxyType(
     {

@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from collections import OrderedDict
 from collections.abc import Collection, Iterable, Mapping, Sequence
 from itertools import islice
-from threading import Lock
 from typing import Any, TypeVar, cast
-from .logging_utils import get_logger
+
+from .logging_utils import get_logger, warn_once
+
 
 from .helpers.numeric import kahan_sum
 
@@ -19,25 +19,17 @@ STRING_TYPES = (str, bytes, bytearray)
 
 NEGATIVE_WEIGHTS_MSG = "Negative weights detected: %s"
 
-# Track keys that have already triggered a negative weight warning
-# Use an ``OrderedDict`` with a lock for manual eviction and thread safety
+
 _WARNED_NEGATIVE_KEYS_LIMIT = 1024
-_warned_negative_keys: OrderedDict[str, None] = OrderedDict()
-_warned_negative_keys_lock = Lock()
+_log_negative_keys_once = warn_once(
+    logger, NEGATIVE_WEIGHTS_MSG, maxsize=_WARNED_NEGATIVE_KEYS_LIMIT
+)
 
 
-def _log_negative_keys_once(negatives: Mapping[str, float]) -> None:
-    """Log new negative weight keys once using a locked ordered dict."""
-    new: dict[str, float] = {}
-    with _warned_negative_keys_lock:
-        for k, v in negatives.items():
-            if k not in _warned_negative_keys:
-                new[k] = v
-                _warned_negative_keys[k] = None
-                if len(_warned_negative_keys) > _WARNED_NEGATIVE_KEYS_LIMIT:
-                    _warned_negative_keys.popitem(last=False)
-    if new:
-        logger.warning(NEGATIVE_WEIGHTS_MSG, new)
+def clear_warned_negative_keys() -> None:
+    """Clear the cache of warned negative weight keys."""
+    _log_negative_keys_once.clear()
+
 
 
 __all__ = (
@@ -46,6 +38,7 @@ __all__ = (
     "normalize_weights",
     "normalize_counter",
     "mix_groups",
+    "clear_warned_negative_keys",
 )
 
 MAX_MATERIALIZE_DEFAULT: int = 1000
@@ -72,22 +65,29 @@ def ensure_collection(
     *,
     max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
     error_msg: str | None = None,
+    treat_strings_as_iterables: bool = False,
 ) -> Collection[T]:
     """Return ``it`` as a ``Collection`` materializing if necessary.
 
-    Step 1 detects collections and string-like inputs early. ``max_materialize``
-    limits materialization for non-collection iterables; ``None`` disables the
-    limit. ``error_msg`` customizes the :class:`ValueError` raised when the
-    iterable yields more items than allowed. ``TypeError`` is raised when ``it``
-    is not iterable. The input is consumed at most once and no extra items
-    beyond the limit are stored in memory.
+    Step 1 detects collections and handles string-like inputs (``str``,
+    ``bytes`` and ``bytearray``) specially. By default these are wrapped as a
+    single item tuple so they are not iterated character by character. Pass
+    ``treat_strings_as_iterables=True`` to materialize them like any other
+    iterable. ``max_materialize`` limits materialization for non-collection
+    iterables; ``None`` disables the limit. ``error_msg`` customizes the
+    :class:`ValueError` raised when the iterable yields more items than allowed.
+    ``TypeError`` is raised when ``it`` is not iterable. The input is consumed
+    at most once and no extra items beyond the limit are stored in memory.
     """
 
     # Step 1: detect collections and raw strings/bytes early
-    if isinstance(it, Collection) and not isinstance(it, STRING_TYPES):
-        return it
-    if isinstance(it, STRING_TYPES):
-        return (cast(T, it),)
+    if isinstance(it, Collection):
+        if isinstance(it, STRING_TYPES):
+            if not treat_strings_as_iterables:
+                return (cast(T, it),)
+            # Fall through to materialization when treating as iterable
+        else:
+            return it
 
     # Step 2: validate limit
     limit = _validate_limit(max_materialize)
@@ -119,7 +119,8 @@ def _process_negative_weights(
 ) -> float:
     """Handle negative weights by logging, clamping and adjusting total."""
     if warn_once:
-        _log_negative_keys_once(negatives)
+        for k, v in negatives.items():
+            log_warn_once(f"negative_weight:{k}", NEGATIVE_WEIGHTS_MSG % {k: v})
     else:
         logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
     for k, w in negatives.items():

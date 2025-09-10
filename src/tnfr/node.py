@@ -21,7 +21,9 @@ from .constants import (
 from .glyph_history import push_glyph
 from .alias import (
     get_attr,
+    get_attr_str,
     set_attr,
+    set_attr_str,
     set_vf,
     set_dnfr,
     set_theta,
@@ -148,6 +150,17 @@ _EDGE_OPS: dict[EdgeStrategy, EdgeOps] = {
 }
 
 
+def _validate_callbacks(exists_cb, set_cb) -> None:
+    """Validate callback pair provided to :func:`add_edge`."""
+
+    if (exists_cb is None) != (set_cb is None):
+        raise ValueError("exists_cb and set_cb must be provided together")
+
+    if exists_cb is not None and set_cb is not None:
+        if not callable(exists_cb) or not callable(set_cb):
+            raise TypeError("exists_cb and set_cb must be callables")
+
+
 def _resolve_edge_ops(graph, strategy, exists_cb, set_cb):
     if exists_cb is not None and set_cb is not None:
         return _CallbackEdgeOps(exists_cb, set_cb)
@@ -185,12 +198,7 @@ def add_edge(
     if weight is None:
         return
 
-    if (exists_cb is None) != (set_cb is None):
-        raise ValueError("exists_cb and set_cb must be provided together")
-
-    if exists_cb is not None and set_cb is not None:
-        if not callable(exists_cb) or not callable(set_cb):
-            raise TypeError("exists_cb and set_cb must be callables")
+    _validate_callbacks(exists_cb, set_cb)
 
     ops = _resolve_edge_ops(graph, strategy, exists_cb, set_cb)
 
@@ -309,8 +317,8 @@ class NodoNX(NodoProtocol):
     epi_kind = _nx_attr_property(
         ALIAS_EPI_KIND,
         default="",
-        getter=lambda d, a, default: get_attr(d, a, default, conv=str),
-        setter=lambda d, a, value: set_attr(d, a, value, conv=str),
+        getter=get_attr_str,
+        setter=set_attr_str,
         to_python=str,
         to_storage=str,
     )
