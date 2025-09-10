@@ -26,7 +26,7 @@ __all__ = (
 
 
 def validate_window(window: int, *, positive: bool = False) -> int:
-    """Validate and coerce ``window`` to an ``int``.
+    """Validate ``window`` as an ``int`` and return it.
 
     Non-integer values raise :class:`TypeError`. When ``positive`` is ``True``
     the value must be strictly greater than zero; otherwise it may be zero.
@@ -35,11 +35,10 @@ def validate_window(window: int, *, positive: bool = False) -> int:
 
     if not isinstance(window, int):
         raise TypeError("'window' must be an integer")
-    window_int = int(window)
-    if window_int < 0 or (positive and window_int == 0):
+    if window < 0 or (positive and window == 0):
         kind = "positive" if positive else "non-negative"
         raise ValueError(f"'window'={window} must be {kind}")
-    return window_int
+    return int(window)
 
 
 def _normalize_history_input(hist: Any) -> Iterable[Any]:
