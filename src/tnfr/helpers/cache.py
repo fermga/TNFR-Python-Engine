@@ -195,18 +195,25 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     current_n = G.number_of_nodes()
     dirty = bool(graph.pop("_node_list_dirty", False))
 
-    new_checksum = node_set_checksum(G) if nodes is not None else None
-    if (
-        nodes is None
-        or stored_len != current_n
-        or dirty
-        or (cache and cache.checksum != new_checksum)
-    ):
+    # Determine if inexpensive checks already mark the cache as invalid
+    invalid = nodes is None or stored_len != current_n or dirty
+    new_checksum: str | None = None
+
+    if not invalid and cache:
+        # Only compute the checksum when the quick checks pass.
+        # This avoids hashing the node set unless we suspect a change.
+        new_checksum = node_set_checksum(G)
+        invalid = cache.checksum != new_checksum
+
+    if invalid:
+        # Refresh the cached node list and store its checksum since something changed.
         nodes = tuple(G.nodes())
         new_checksum = node_set_checksum(G, nodes, store=True)
         _update_node_cache(graph, nodes, "_node_list", checksum=new_checksum)
         graph["_node_list_len"] = current_n
     elif cache and "_node_list_checksum" not in graph:
+        # Cache is valid but its checksum wasn't recorded on the graph; reuse it.
+        new_checksum = new_checksum if new_checksum is not None else cache.checksum
         _update_node_cache(graph, nodes, "_node_list", checksum=new_checksum)
     return nodes
 
