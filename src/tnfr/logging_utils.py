@@ -11,8 +11,10 @@ import threading
 
 _LOCK = threading.Lock()
 _LOGGING_CONFIGURED = False
+_WARN_ONCE_LOCK = threading.Lock()
+_WARNED_KEYS: set[str] = set()
 
-__all__ = ("get_logger",)
+__all__ = ("get_logger", "warn_once")
 
 
 def _configure_root() -> None:
@@ -46,4 +48,14 @@ def get_logger(name: str) -> logging.Logger:
             if not _LOGGING_CONFIGURED:
                 _configure_root()
     return logging.getLogger(name)
+
+
+def warn_once(key: str, message: str) -> None:
+    """Log ``message`` once for ``key`` using a global set with lock."""
+
+    with _WARN_ONCE_LOCK:
+        if key in _WARNED_KEYS:
+            return
+        _WARNED_KEYS.add(key)
+    logging.getLogger().warning(message)
 
