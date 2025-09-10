@@ -355,9 +355,13 @@ def _metrics_step(G, *args, **kwargs):
         return
 
     hist = ensure_history(G)
+    # Cache frequently accessed parameters to avoid repeated lookups while
+    # still allowing updates between calls to ``_metrics_step``.
     dt = float(get_param(G, "DT"))
-    t = float(G.graph.get("_t", 0.0))
     thr = float(get_param(G, "EPI_SUPPORT_THR"))
+    eps_dnfr = float(get_param(G, "EPS_DNFR_STABLE"))
+    eps_depi = float(get_param(G, "EPS_DEPI_STABLE"))
+    t = float(G.graph.get("_t", 0.0))
 
     # -- Métricas básicas heredadas de ``dynamics`` --
     for k in (
@@ -376,8 +380,6 @@ def _metrics_step(G, *args, **kwargs):
 
     _update_coherence(G, hist)
 
-    eps_dnfr = float(get_param(G, "EPS_DNFR_STABLE"))
-    eps_depi = float(get_param(G, "EPS_DEPI_STABLE"))
     _track_stability(G, hist, dt, eps_dnfr, eps_depi)
     try:
         _update_phase_sync(G, hist)
