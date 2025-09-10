@@ -92,6 +92,16 @@ def test_sigma_from_vectors_rejects_invalid_iterable():
         _sigma_from_vectors("abc")
 
 
+def test_sigma_from_iterable_rejects_str():
+    with pytest.raises(TypeError, match="real or complex"):
+        _sigma_from_iterable("abc")
+
+
+def test_sigma_from_iterable_rejects_bytes():
+    with pytest.raises(TypeError, match="real or complex"):
+        _sigma_from_iterable(b"\x01\x02")
+
+
 def test_sigma_from_iterable_accepts_reals():
     vec = _sigma_from_iterable([1.0, 3.0])
     assert vec["n"] == 2

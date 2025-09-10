@@ -124,7 +124,10 @@ def _sigma_from_iterable(
     number of processed values under the ``"n"`` key.
     """
 
-    iterator = values if isinstance(values, Iterable) else [values]
+    if isinstance(values, Iterable) and not isinstance(values, (str, bytes, bytearray)):
+        iterator = values
+    else:
+        iterator = [values]
     np = get_numpy()
     if np is not None:
         arr = np.fromiter((_to_complex(v) for v in iterator), dtype=np.complex128)
