@@ -119,8 +119,12 @@ def _process_negative_weights(
 ) -> float:
     """Handle negative weights by logging, clamping and adjusting total."""
     if warn_once:
-        for k, v in negatives.items():
-            log_warn_once(f"negative_weight:{k}", NEGATIVE_WEIGHTS_MSG % {k: v})
+        # ``warn_once`` returns a callable that logs at most once per key.
+        # ``_log_negative_keys_once`` expects a mapping of keys to values so
+        # pass the entire ``negatives`` dict at once.  This ensures each
+        # negative weight is only warned about on its first occurrence across
+        # all calls to :func:`normalize_weights`.
+        _log_negative_keys_once(negatives)
     else:
         logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
     for k, w in negatives.items():

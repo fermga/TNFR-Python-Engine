@@ -86,7 +86,10 @@ def cache_enabled(G: Any | None = None) -> bool:
     When ``G`` is provided, the cache size is synchronised with
     ``JITTER_CACHE_SIZE`` stored in ``G``.
     """
-    if G is not None:
+    # Only synchronise the cache size with ``G`` when caching is enabled.  This
+    # preserves explicit calls to :func:`set_cache_maxsize(0)` which are used in
+    # tests to temporarily disable caching regardless of graph defaults.
+    if _CACHE_MAXSIZE > 0 and G is not None:
         size = get_cache_maxsize(G)
         if size != _CACHE_MAXSIZE:
             set_cache_maxsize(size)
