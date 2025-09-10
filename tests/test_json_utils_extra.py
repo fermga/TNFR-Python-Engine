@@ -1,4 +1,5 @@
 import warnings
+from dataclasses import is_dataclass
 
 import tnfr.json_utils as json_utils
 
@@ -33,3 +34,31 @@ def test_json_dumps_with_orjson_warns(monkeypatch):
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
     assert len(w) == 1
     assert "ignored" in str(w[0].message)
+
+
+def test_params_passed_to_std(monkeypatch):
+    _reset_json_utils(monkeypatch, None)
+
+    captured = {}
+
+    def fake_std(obj, params, **kwargs):
+        captured["params"] = params
+        return b"{}"
+
+    monkeypatch.setattr(json_utils, "_json_dumps_std", fake_std)
+    json_utils.json_dumps({"a": 1})
+    assert is_dataclass(captured["params"])
+
+
+def test_params_passed_to_orjson(monkeypatch):
+    _reset_json_utils(monkeypatch, DummyOrjson())
+
+    captured = {}
+
+    def fake_orjson(orjson_mod, obj, params, **kwargs):
+        captured["params"] = params
+        return b"{}"
+
+    monkeypatch.setattr(json_utils, "_json_dumps_orjson", fake_orjson)
+    json_utils.json_dumps({"a": 1})
+    assert is_dataclass(captured["params"])
