@@ -17,7 +17,12 @@ from .trace import CallbackSpec
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx  # type: ignore[import-untyped]
 
-__all__ = ("CallbackEvent", "register_callback", "invoke_callbacks")
+__all__ = (
+    "CallbackEvent",
+    "register_callback",
+    "invoke_callbacks",
+    "set_callback_error_limit",
+)
 
 logger = get_logger(__name__)
 
@@ -32,7 +37,9 @@ class CallbackEvent(str, Enum):
 
 _CALLBACK_EVENTS: set[str] = {e.value for e in CallbackEvent}
 
-_CALLBACK_ERROR_LIMIT = 100  # keep only this many recent callback errors
+# Default number of recent callback errors to retain.
+# Use ``set_callback_error_limit`` to adjust.
+_CALLBACK_ERROR_LIMIT = 100
 
 Callback = Callable[["nx.Graph", dict[str, Any]], None]
 CallbackRegistry = dict[str, dict[str, "CallbackSpec"]]
@@ -127,7 +134,11 @@ def _record_callback_error(
     spec: CallbackSpec,
     err: Exception,
 ) -> None:
-    """Log and store a callback error for later inspection."""
+    """Log and store a callback error for later inspection.
+
+    The number of stored errors is bounded by the limit configured via
+    :func:`set_callback_error_limit`.
+    """
 
     logger.exception("callback %r failed for %s: %s", spec.name, event, err)
     err_list = G.graph.get("_callback_errors")
@@ -147,6 +158,28 @@ def _record_callback_error(
             "name": spec.name,
         }
     )
+
+
+def set_callback_error_limit(limit: int) -> int:
+    """Set the maximum number of callback errors retained.
+
+    Parameters
+    ----------
+    limit:
+        Maximum number of recent callback errors to keep. Must be ``>= 1``.
+
+    Returns
+    -------
+    int
+        The previous limit.
+    """
+
+    if limit < 1:
+        raise ValueError("limit must be positive")
+    global _CALLBACK_ERROR_LIMIT
+    previous = _CALLBACK_ERROR_LIMIT
+    _CALLBACK_ERROR_LIMIT = int(limit)
+    return previous
 
 
 def register_callback(
