@@ -15,6 +15,7 @@ from .collections_utils import normalize_counter, mix_groups
 from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 from .logging_utils import get_logger
+from .import_utils import get_numpy
 
 
 __all__ = [
@@ -81,20 +82,29 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
         return 1.0
     _, psi = _get_R_psi(G, R, psi)
 
-    # Variance via Welford's single-pass algorithm to avoid materializing
-    # intermediate generators while maintaining numerical stability.
-    # If performance is critical, consider extracting theta values into a list
-    n = 0
-    mean = 0.0
-    M2 = 0.0
-    for _, data in G.nodes(data=True):
-        diff = angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
-        n += 1
-        delta = diff - mean
-        mean += delta / n
-        M2 += delta * (diff - mean)
+    if (np := get_numpy()) is not None:
+        th = np.fromiter(
+            (get_attr(data, ALIAS_THETA, 0.0) for _, data in G.nodes(data=True)),
+            dtype=float,
+        )
+        diff = (th - psi + np.pi) % (2 * np.pi) - np.pi
+        var = float(np.var(diff)) if diff.size else 0.0
+    else:
+        # Variance via Welford's single-pass algorithm to avoid materializing
+        # intermediate generators while maintaining numerical stability.
+        # If performance is critical, consider extracting theta values into a list
+        n = 0
+        mean = 0.0
+        M2 = 0.0
+        for _, data in G.nodes(data=True):
+            diff = angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
+            n += 1
+            delta = diff - mean
+            mean += delta / n
+            M2 += delta * (diff - mean)
 
-    var = M2 / n if n else 0.0
+        var = M2 / n if n else 0.0
+
     return 1.0 / (1.0 + var)
 
 
