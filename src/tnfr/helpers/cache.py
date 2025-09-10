@@ -218,15 +218,18 @@ def _ensure_node_map(G, *, key: str, sort: bool = False) -> dict[Any, int]:
     ``sort`` controls whether nodes are ordered by their string representation
     before assigning indices.
     """
-    nodes = list(G.nodes())
-    if sort:
-        nodes.sort(key=_node_repr)
-    checksum = node_set_checksum(G, nodes, presorted=sort, store=False)
-    mapping = G.graph.get(key)
+    graph = G.graph
+    mapping = graph.get(key)
     checksum_key = f"{key}_checksum"
-    if mapping is None or G.graph.get(checksum_key) != checksum:
+    stored_checksum = graph.get(checksum_key)
+    checksum = node_set_checksum(G, store=False)
+
+    if mapping is None or stored_checksum != checksum:
+        nodes = list(G.nodes())
+        if sort:
+            nodes.sort(key=_node_repr)
         mapping = {node: idx for idx, node in enumerate(nodes)}
-        _update_node_cache(G.graph, nodes, key, mapping, checksum=checksum)
+        _update_node_cache(graph, nodes, key, mapping, checksum=checksum)
     return mapping
 
 
