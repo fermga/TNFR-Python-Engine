@@ -82,7 +82,7 @@ def ensure_collection(
     if isinstance(it, Collection) and not isinstance(it, (str, bytes, bytearray)):
         return it
     if isinstance(it, (str, bytes, bytearray)):
-        return cast(Collection[T], (it,))
+        return (cast(T, it),)
 
     # Step 2: validate limit
     limit = _validate_limit(max_materialize)

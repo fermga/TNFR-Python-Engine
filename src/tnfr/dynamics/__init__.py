@@ -123,16 +123,18 @@ def apply_canonical_clamps(nd: dict[str, Any], G=None, node=None) -> None:
 
     set_attr(nd, ALIAS_EPI, clamp(epi, eps_min, eps_max))
 
-    def _maybe_set(alias, value, setter, **kwargs):
-        if G is not None and node is not None:
-            setter(G, node, value, **kwargs)
-        else:
-            set_attr(nd, alias, value)
+    vf_val = clamp(vf, vf_min, vf_max)
+    if G is not None and node is not None:
+        set_vf(G, node, vf_val, update_max=False)
+    else:
+        set_attr(nd, ALIAS_VF, vf_val)
 
-    _maybe_set(ALIAS_VF, clamp(vf, vf_min, vf_max), set_vf, update_max=False)
     if theta_wrap:
         new_th = (th + math.pi) % (2 * math.pi) - math.pi
-        _maybe_set(ALIAS_THETA, new_th, set_theta)
+        if G is not None and node is not None:
+            set_theta(G, node, new_th)
+        else:
+            set_attr(nd, ALIAS_THETA, new_th)
 
 
 def validate_canon(G) -> None:

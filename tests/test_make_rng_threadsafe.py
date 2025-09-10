@@ -1,5 +1,4 @@
 import threading
-import threading
 import random
 
 from tnfr import rng as rng_mod

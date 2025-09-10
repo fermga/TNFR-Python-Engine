@@ -150,15 +150,16 @@ def neighbor_phase_mean_list(
     :func:`_phase_mean_from_iter` helper which uses a running Kahan
     summation for stable accumulation.
     """
-    deg = len(neigh)
-    if np is not None and deg > 0:
-        pairs = np.fromiter(
-            (c for v in neigh for c in (cos_th[v], sin_th[v])),
-            dtype=float,
-            count=deg * 2,
-        ).reshape(deg, 2)
-        mean_cos, mean_sin = pairs.mean(axis=0)
-        return float(np.arctan2(mean_sin, mean_cos))
+    if np is not None:
+        deg = len(neigh)
+        if deg > 0:
+            pairs = np.fromiter(
+                (c for v in neigh for c in (cos_th[v], sin_th[v])),
+                dtype=float,
+                count=deg * 2,
+            ).reshape(deg, 2)
+            mean_cos, mean_sin = pairs.mean(axis=0)
+            return float(np.arctan2(mean_sin, mean_cos))
     return _phase_mean_from_iter(((cos_th[v], sin_th[v]) for v in neigh), fallback)
 
 

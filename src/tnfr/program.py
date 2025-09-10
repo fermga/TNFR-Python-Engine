@@ -4,7 +4,7 @@ Public exports are declared in ``__all__`` for explicit star imports.
 """
 
 from __future__ import annotations
-from typing import Any, Optional, Union, TYPE_CHECKING
+from typing import Any, Optional, Union
 from dataclasses import dataclass
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
@@ -19,15 +19,12 @@ from .types import Glyph
 from .collections_utils import ensure_collection, MAX_MATERIALIZE_DEFAULT
 from .glyph_history import ensure_history
 
-if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx  # type: ignore[import-untyped]  # noqa: F401
-
 # Basic types
 Node = Any
 AdvanceFn = Callable[[Any], None]  # normalmente dynamics.step
 
 HandlerFn = Callable[
-    ["nx.Graph", Any, Optional[list[Node]], deque, Optional[AdvanceFn]],
+    ["networkx.Graph", Any, Optional[list[Node]], deque, Optional[AdvanceFn]],
     Optional[list[Node]],
 ]
 

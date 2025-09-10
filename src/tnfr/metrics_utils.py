@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Sequence, Iterable, Mapping, Protocol
 from types import MappingProxyType
 import math
+from functools import partial
 
 from .constants import (
     DEFAULTS,
@@ -85,15 +86,14 @@ def compute_coherence(
         tuple ``(C, dnfr_mean, depi_mean)`` is returned.
     """
     count = G.number_of_nodes()
-    if count:
-        dnfr_mean = math.fsum(
-            abs(get_attr(nd, ALIAS_DNFR, 0.0)) for _, nd in G.nodes(data=True)
-        ) / count
-        depi_mean = math.fsum(
-            abs(get_attr(nd, ALIAS_dEPI, 0.0)) for _, nd in G.nodes(data=True)
-        ) / count
-    else:
-        dnfr_mean = depi_mean = 0.0
+    if not count:
+        return (0.0, 0.0, 0.0) if return_means else 0.0
+    dnfr_mean = math.fsum(
+        abs(get_attr(nd, ALIAS_DNFR, 0.0)) for _, nd in G.nodes(data=True)
+    ) / count
+    depi_mean = math.fsum(
+        abs(get_attr(nd, ALIAS_dEPI, 0.0)) for _, nd in G.nodes(data=True)
+    ) / count
     coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence
 
@@ -102,7 +102,7 @@ def ensure_neighbors_map(G: GraphLike) -> Mapping[Any, Sequence[Any]]:
     """Return cached neighbors list keyed by node as a read-only mapping."""
 
     def builder() -> Mapping[Any, Sequence[Any]]:
-        return MappingProxyType({n: list(G.neighbors(n)) for n in G})
+        return MappingProxyType({n: tuple(G.neighbors(n)) for n in G})
 
     return edge_version_cache(G, "_neighbors", builder)
 
@@ -233,19 +233,14 @@ def compute_Si(G: GraphLike, *, inplace: bool = True) -> dict[Any, float]:
     trig = get_trig_cache(G, np=np_mod)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
 
-    def phase_mean_fn(neigh, *, fallback):
-        if np_mod is None:
-            return neighbor_phase_mean_list(
-                neigh, cos_th, sin_th, fallback=fallback
-            )
-        return neighbor_phase_mean_list(
-            neigh, cos_th, sin_th, np=np_mod, fallback=fallback
-        )
+    pm_fn = partial(
+        neighbor_phase_mean_list, cos_th=cos_th, sin_th=sin_th, np=np_mod
+    )
 
     out: dict[Any, float] = {}
     for n, nd in G.nodes(data=True):
         neigh = neighbors[n]
-        th_bar = phase_mean_fn(neigh, fallback=thetas[n])
+        th_bar = pm_fn(neigh, fallback=thetas[n])
         disp_fase = abs(angle_diff(thetas[n], th_bar)) / math.pi
         out[n] = compute_Si_node(
             n,

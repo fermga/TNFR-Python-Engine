@@ -12,6 +12,8 @@ from cachetools import LRUCache, cached
 from .constants import DEFAULTS
 from .helpers.cache import get_graph
 
+MASK64 = 0xFFFFFFFFFFFFFFFF
+
 _RNG_LOCK = threading.Lock()
 _CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
 
@@ -19,8 +21,8 @@ _CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
 def _seed_hash(seed_int: int, key_int: int) -> int:
     seed_bytes = struct.pack(
         ">QQ",
-        seed_int & 0xFFFFFFFFFFFFFFFF,
-        key_int & 0xFFFFFFFFFFFFFFFF,
+        seed_int & MASK64,
+        key_int & MASK64,
     )
     return int.from_bytes(
         hashlib.blake2b(seed_bytes, digest_size=8).digest(), "big"

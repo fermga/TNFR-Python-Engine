@@ -167,9 +167,8 @@ def node_set_checksum(
     for digest in _iter_node_digests(node_iterable, presorted=presorted):
         hasher.update(digest)
 
-    hash_hex = hasher.hexdigest()
-    checksum = hash_hex
-    token = hash_hex[:16]
+    checksum = hasher.hexdigest()
+    token = checksum[:16]
     if store:
         # Cache the result using a short token to detect unchanged node sets.
         cached = graph.get("_node_set_checksum_cache")

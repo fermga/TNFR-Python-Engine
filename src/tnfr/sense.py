@@ -1,7 +1,8 @@
 """Sense calculations."""
 
 from __future__ import annotations
-from typing import Iterable, TypeVar
+from typing import TypeVar
+from collections.abc import Iterable
 import math
 from collections import Counter
 
@@ -72,12 +73,14 @@ def glyph_unit(g: str) -> complex:
     return _resolve_glyph(g, GLYPH_UNITS)
 
 
+MODE_FUNCS = {
+    "Si": lambda nd: clamp01(get_attr(nd, ALIAS_SI, 0.5)),
+    "EPI": lambda nd: max(0.0, get_attr(nd, ALIAS_EPI, 0.0)),
+}
+
+
 def _weight(nd, mode: str) -> float:
-    if mode == "Si":
-        return clamp01(get_attr(nd, ALIAS_SI, 0.5))
-    if mode == "EPI":
-        return max(0.0, get_attr(nd, ALIAS_EPI, 0.0))
-    return 1.0
+    return MODE_FUNCS.get(mode, lambda _: 1.0)(nd)
 
 
 def _node_weight(nd, weight_mode: str) -> tuple[str, float, complex] | None:
@@ -120,10 +123,8 @@ def _sigma_from_iterable(
     number of processed values under the ``"n"`` key.
     """
 
-    try:
-        iterator = iter(values)
-    except TypeError:
-        iterator = iter([values])
+    iterator = values if isinstance(values, Iterable) else [values]
+    iterator = iter(iterator)
 
     cnt = 0
 
