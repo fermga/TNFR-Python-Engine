@@ -19,7 +19,6 @@ from typing import Any, TYPE_CHECKING
 import math
 import hashlib
 import heapq
-import threading
 from operator import ge, le
 from functools import cache
 from itertools import combinations, islice
@@ -51,6 +50,7 @@ from .callback_utils import invoke_callbacks
 from .glyph_history import append_metric, ensure_history, current_step_idx
 from .import_utils import import_nodonx, optional_import
 from .types import Glyph
+from .locking import get_lock
 
 # Guarded by ``_JITTER_LOCK`` to ensure thread-safe access.
 # ``_JITTER_SEQ`` stores per-scope jitter sequence counters and is
@@ -58,7 +58,7 @@ from .types import Glyph
 _JITTER_MAX_ENTRIES = 1024
 _JITTER_SEQ: OrderedDict[tuple[int, int], int] = OrderedDict()
 _JITTER_GRAPHS: WeakSet[Any] = WeakSet()
-_JITTER_LOCK = threading.Lock()
+_JITTER_LOCK = get_lock("jitter")
 
 if TYPE_CHECKING:
     from .node import NodoProtocol
@@ -189,14 +189,14 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
         seed = seed_hash(seed_root, scope_id)
         cache[cache_key] = seed
     seq = 0
-    if cache_enabled():
+    if cache_enabled(node.G):
         with _JITTER_LOCK:
             seq = _JITTER_SEQ.get(cache_key, 0)
             _JITTER_SEQ[cache_key] = seq + 1
             _JITTER_SEQ.move_to_end(cache_key)
             if len(_JITTER_SEQ) > _JITTER_MAX_ENTRIES:
                 _JITTER_SEQ.popitem(last=False)
-    rng = make_rng(seed, seed_key + seq)
+    rng = make_rng(seed, seed_key + seq, node.G)
     return rng.uniform(-amplitude, amplitude)
 
 
@@ -370,7 +370,7 @@ def _um_select_candidates(
     ``candidates`` may be a large or lazy iterable. This function consumes
     it incrementally to avoid loading every element into memory.
     """
-    rng = make_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset())
+    rng = make_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset(), node.G)
 
     if limit <= 0:
         # No limit requested; fully materialize the iterable.
@@ -867,7 +867,7 @@ def apply_topological_remesh(
     if n_before <= 1:
         return
     base_seed = 0 if seed is None else int(seed)
-    rnd = make_rng(base_seed, -2)
+    rnd = make_rng(base_seed, -2, G)
     rnd.seed(base_seed)
 
     if mode is None:

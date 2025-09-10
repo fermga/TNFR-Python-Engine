@@ -29,14 +29,21 @@ def _validate_sigma(G) -> None:
 
 
 def _check_epi_vf(epi, vf, epi_min, epi_max, vf_min, vf_max, n):
-    if epi < epi_min and not math.isclose(epi, epi_min):
-        raise ValueError(f"EPI out of range in node {n}: {epi}")
-    if epi > epi_max and not math.isclose(epi, epi_max):
-        raise ValueError(f"EPI out of range in node {n}: {epi}")
-    if vf < vf_min and not math.isclose(vf, vf_min):
-        raise ValueError(f"VF out of range in node {n}: {vf}")
-    if vf > vf_max and not math.isclose(vf, vf_max):
-        raise ValueError(f"VF out of range in node {n}: {vf}")
+    _check_range(epi, epi_min, epi_max, "EPI", n)
+    _check_range(vf, vf_min, vf_max, "VF", n)
+
+
+def _out_of_range_msg(name, node, val):
+    return f"{name} out of range in node {node}: {val}"
+
+
+def _check_range(val, lower, upper, name, node):
+    if not (
+        lower <= val <= upper
+        or math.isclose(val, lower)
+        or math.isclose(val, upper)
+    ):
+        raise ValueError(_out_of_range_msg(name, node, val))
 
 
 def _check_glyph(g, n):

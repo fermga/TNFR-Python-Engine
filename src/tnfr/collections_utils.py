@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-from collections import OrderedDict
 from collections.abc import Collection, Iterable, Mapping, Sequence
 from itertools import islice
-from threading import Lock
 from typing import Any, TypeVar, cast
-from .logging_utils import get_logger
+from .logging_utils import get_logger, warn_once as log_warn_once
 
 from .helpers.numeric import kahan_sum
 
@@ -19,25 +17,6 @@ STRING_TYPES = (str, bytes, bytearray)
 
 NEGATIVE_WEIGHTS_MSG = "Negative weights detected: %s"
 
-# Track keys that have already triggered a negative weight warning
-# Use an ``OrderedDict`` with a lock for manual eviction and thread safety
-_WARNED_NEGATIVE_KEYS_LIMIT = 1024
-_warned_negative_keys: OrderedDict[str, None] = OrderedDict()
-_warned_negative_keys_lock = Lock()
-
-
-def _log_negative_keys_once(negatives: Mapping[str, float]) -> None:
-    """Log new negative weight keys once using a locked ordered dict."""
-    new: dict[str, float] = {}
-    with _warned_negative_keys_lock:
-        for k, v in negatives.items():
-            if k not in _warned_negative_keys:
-                new[k] = v
-                _warned_negative_keys[k] = None
-                if len(_warned_negative_keys) > _WARNED_NEGATIVE_KEYS_LIMIT:
-                    _warned_negative_keys.popitem(last=False)
-    if new:
-        logger.warning(NEGATIVE_WEIGHTS_MSG, new)
 
 
 __all__ = (
@@ -119,7 +98,8 @@ def _process_negative_weights(
 ) -> float:
     """Handle negative weights by logging, clamping and adjusting total."""
     if warn_once:
-        _log_negative_keys_once(negatives)
+        for k, v in negatives.items():
+            log_warn_once(f"negative_weight:{k}", NEGATIVE_WEIGHTS_MSG % {k: v})
     else:
         logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
     for k, w in negatives.items():
