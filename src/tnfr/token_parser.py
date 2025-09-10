@@ -16,7 +16,9 @@ def _flatten_tokens(obj: Any):
     while stack:
         item = stack.pop()
         if isinstance(item, Sequence) and not isinstance(item, (str, bytes)):
-            stack.extend(reversed(item))
+            # ``extendleft`` pushes items in reverse order, preserving
+            # LIFO semantics without creating an intermediate reversed list
+            stack.extendleft(item)
         else:
             yield item
 
