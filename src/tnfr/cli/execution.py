@@ -44,9 +44,7 @@ logger = get_logger(__name__)
 
 
 def _save_json(path: str, data: Any) -> None:
-    payload = json_dumps_str(
-        data, ensure_ascii=False, indent=2, default=list
-    )
+    payload = json_dumps_str(data, ensure_ascii=False, indent=2, default=list)
     safe_write(path, lambda f: f.write(payload))
 
 
