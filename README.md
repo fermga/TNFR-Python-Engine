@@ -82,6 +82,19 @@ npm install
 * `gradient(state) → ΔNFR`: local demand for reorganization (high = risk of collapse/bifurcation).
 * `sense_index(traj) → Si`: proxy for **structural sense** (capacity to generate shared coherence) combining **νf**, phase, and topology.
 
+## Topological remeshing
+
+Use ``apply_topological_remesh`` to reorganize connectivity based on nodal
+EPI similarity while preserving graph connectivity. Modes:
+
+- ``"knn"`` – connect each node to its ``k`` nearest neighbours (with optional
+  rewiring).
+- ``"mst"`` – retain only a minimum spanning tree.
+- ``"community"`` – collapse modular communities and reconnect them by
+  similarity.
+
+All modes ensure connectivity by adding a base MST.
+
 ---
 
 ## History configuration

@@ -17,6 +17,7 @@ from .dynamics import step, run
 from .ontosim import preparar_red
 from .structural import create_nfr
 from .types import NodeState
+from .operators import apply_topological_remesh
 
 # re-exported for tests
 from .trace import CallbackSpec  # noqa: F401
@@ -60,5 +61,6 @@ __all__ = [
     "preparar_red",
     "create_nfr",
     "NodeState",
+    "apply_topological_remesh",
     "CallbackSpec",
 ]
