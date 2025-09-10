@@ -6,10 +6,13 @@ from tnfr.operators import (
     clear_rng_cache,
     apply_glyph,
     _mix_epi_with_neighbors,
+    _get_jitter_cache,
+    _JITTER_GRAPHS,
 )
 from types import SimpleNamespace
 from tnfr.constants import inject_defaults
 import pytest
+from weakref import WeakKeyDictionary
 
 
 def test_random_jitter_deterministic(graph_canon):
@@ -41,6 +44,42 @@ def test_random_jitter_negative_amplitude(graph_canon):
     n0 = NodoNX(G, 0)
     with pytest.raises(ValueError):
         random_jitter(n0, -0.1)
+
+
+def test_get_jitter_cache_node_attribute():
+    clear_rng_cache()
+    node = SimpleNamespace(graph={})
+    cache1 = _get_jitter_cache(node)
+    cache1["a"] = 1
+    cache2 = _get_jitter_cache(node)
+    assert cache1 is cache2
+    assert hasattr(node, "_jitter_seed_hash")
+    assert node._jitter_seed_hash is cache1
+    assert "_jitter_seed_hash" not in node.graph
+    assert node.graph not in _JITTER_GRAPHS
+
+
+def test_get_jitter_cache_graph_fallback():
+    class G(dict):
+        __hash__ = object.__hash__
+
+    class SlotNode:
+        __slots__ = ("graph", "__weakref__")
+
+        def __init__(self):
+            self.graph = G()
+
+    clear_rng_cache()
+    node = SlotNode()
+    cache1 = _get_jitter_cache(node)
+    cache1["b"] = 2
+    cache2 = _get_jitter_cache(node)
+    assert cache1 is cache2
+    assert not hasattr(node, "_jitter_seed_hash")
+    graph_cache = node.graph["_jitter_seed_hash"]
+    assert isinstance(graph_cache, WeakKeyDictionary)
+    assert graph_cache[node] is cache1
+    assert node.graph in _JITTER_GRAPHS
 
 
 def test_rng_cache_disabled_with_size_zero(graph_canon):

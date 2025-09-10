@@ -116,6 +116,36 @@ def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
     return int(uid), id(node)
 
 
+def _get_jitter_cache(node: NodoProtocol) -> dict:
+    """Return the jitter cache for ``node``.
+
+    If the node cannot store attributes, fall back to a graph-level
+    ``WeakKeyDictionary`` and ensure the graph is tracked in
+    ``_JITTER_GRAPHS`` so its cache can be cleared when needed.
+    """
+
+    cache = getattr(node, "_jitter_seed_hash", None)
+    if cache is not None:
+        return cache
+
+    try:
+        cache = {}
+        setattr(node, "_jitter_seed_hash", cache)
+        return cache
+    except AttributeError:
+        graph_cache = node.graph.get("_jitter_seed_hash")
+        if graph_cache is None:
+            graph_cache = WeakKeyDictionary()
+            node.graph["_jitter_seed_hash"] = graph_cache
+            with _JITTER_LOCK:
+                _JITTER_GRAPHS.add(node.graph)
+        cache = graph_cache.get(node)
+        if cache is None:
+            cache = {}
+            graph_cache[node] = cache
+        return cache
+
+
 def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for
     ``node``.
@@ -137,22 +167,7 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     seed_root = base_seed(node.G)
     seed_key, scope_id = _resolve_jitter_seed(node)
 
-    cache = getattr(node, "_jitter_seed_hash", None)
-    if cache is None:
-        try:
-            cache = {}
-            setattr(node, "_jitter_seed_hash", cache)
-        except AttributeError:
-            graph_cache = node.graph.get("_jitter_seed_hash")
-            if graph_cache is None:
-                graph_cache = WeakKeyDictionary()
-                node.graph["_jitter_seed_hash"] = graph_cache
-                with _JITTER_LOCK:
-                    _JITTER_GRAPHS.add(node.graph)
-            cache = graph_cache.get(node)
-            if cache is None:
-                cache = {}
-                graph_cache[node] = cache
+    cache = _get_jitter_cache(node)
 
     cache_key = (seed_root, scope_id)
     seed = cache.get(cache_key)
