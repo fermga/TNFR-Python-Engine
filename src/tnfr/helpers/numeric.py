@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 from collections.abc import Iterable, Sequence
-from statistics import fmean, StatisticsError
+from statistics import fmean, StatisticsError, pvariance
 from itertools import chain
 import math
 
@@ -15,6 +15,7 @@ __all__ = (
     "clamp",
     "clamp01",
     "list_mean",
+    "list_pvariance",
     "kahan_sum_nd",
     "kahan_sum",
     "kahan_sum2d",
@@ -39,6 +40,18 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
     """Return the arithmetic mean of ``xs`` or ``default`` if empty."""
     try:
         return fmean(xs)
+    except StatisticsError:
+        return float(default)
+
+
+def list_pvariance(xs: Iterable[float], default: float = 0.0) -> float:
+    """Return the population variance of ``xs`` or ``default`` if empty."""
+    np = get_numpy()
+    if np is not None:
+        arr = np.fromiter(xs, dtype=float)
+        return float(np.var(arr)) if arr.size else float(default)
+    try:
+        return pvariance(xs)
     except StatisticsError:
         return float(default)
 

@@ -42,6 +42,20 @@ def test_phase_observers_match_manual_calculation(graph_canon):
     assert math.isclose(R_again, R)
 
 
+def test_phase_sync_equivalent_with_without_numpy(monkeypatch, graph_canon):
+    pytest.importorskip("numpy")
+    G = graph_canon()
+    angles = [0.1, -2.0, 2.5, 3.0]
+    for idx, th in enumerate(angles):
+        G.add_node(idx)
+        set_attr(G.nodes[idx], ALIAS_THETA, th)
+
+    ps_np = phase_sync(G)
+    monkeypatch.setattr("tnfr.observers.get_numpy", lambda: None)
+    ps_py = phase_sync(G)
+    assert ps_np == pytest.approx(ps_py)
+
+
 def test_phase_sync_bounds(graph_canon):
     G = graph_canon()
     angles = [0.1, 1.2, -2.5, 3.6]
