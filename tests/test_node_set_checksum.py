@@ -86,7 +86,8 @@ def test_node_repr_cache_cleared_on_increment(graph_canon):
 
 def test_hash_node_cache_cleared_on_increment(graph_canon):
     nxG = graph_canon()
-    _hash_node(("foo", 1))
+    obj = ("foo", 1)
+    _hash_node(obj, _node_repr(obj))
     assert _hash_node.cache_info().currsize > 0
     increment_edge_version(nxG)
     assert _hash_node.cache_info().currsize == 0
@@ -94,7 +95,6 @@ def test_hash_node_cache_cleared_on_increment(graph_canon):
 
 def test_hash_node_matches_manual():
     obj = ("a", 1)
-    manual = hashlib.blake2b(
-        _node_repr(obj).encode("utf-8"), digest_size=16
-    ).digest()
-    assert _hash_node(obj) == manual
+    obj_repr = _node_repr(obj)
+    manual = hashlib.blake2b(obj_repr.encode("utf-8"), digest_size=16).digest()
+    assert _hash_node(obj, obj_repr) == manual
