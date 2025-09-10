@@ -54,10 +54,8 @@ def make_rng(seed: int, key: int) -> random.Random:
     key_int = int(key)
     return random.Random(_seed_hash_for(seed_int, key_int))
 
-
-def get_rng(seed: int, key: int) -> random.Random:
-    """Return a ``random.Random`` for ``(seed, key)`` using :func:`make_rng`."""
-    return make_rng(seed, key)
+# Backwards compatibility alias
+get_rng = make_rng
 
 
 def clear_rng_cache() -> None:
@@ -81,7 +79,7 @@ def base_seed(G: Any) -> int:
 def _rng_for_step(seed: int, step: int) -> random.Random:
     """Return deterministic RNG for a simulation ``step``."""
 
-    return get_rng(seed, step)
+    return make_rng(seed, step)
 
 
 def set_cache_maxsize(size: int) -> None:
@@ -101,7 +99,6 @@ def set_cache_maxsize(size: int) -> None:
 
 
 __all__ = [
-    "get_rng",
     "make_rng",
     "set_cache_maxsize",
     "base_seed",
