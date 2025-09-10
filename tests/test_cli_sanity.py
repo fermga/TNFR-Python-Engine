@@ -9,6 +9,7 @@ from tnfr.cli import (
     _build_graph_from_args,
     _args_to_dict,
 )
+from tnfr.cli.arguments import GRAMMAR_ARG_SPECS
 from tnfr.constants import METRIC_DEFAULTS
 from tnfr.io import read_structured_file
 from tnfr import __version__
@@ -98,3 +99,12 @@ def test_args_to_dict_filters_none_values():
     args = parser.parse_args(["--grammar.enabled"])
     result = _args_to_dict(args, "grammar_")
     assert result == {"enabled": True}
+
+
+def test_grammar_args_dest_and_default():
+    parser = argparse.ArgumentParser()
+    add_grammar_args(parser)
+    for opt, _ in GRAMMAR_ARG_SPECS:
+        action = next(a for a in parser._actions if opt in a.option_strings)
+        assert action.dest == opt.lstrip("-").replace(".", "_")
+        assert action.default is None
