@@ -48,13 +48,24 @@ def validate_window(window: int, *, positive: bool = False) -> int:
     return window_int
 
 
-def _ensure_glyph_history(nd: dict[str, Any], window: int) -> deque:
-    """Return ``nd['glyph_history']`` deque after validating ``window``.
+def _ensure_glyph_history(nd: dict[str, Any], window: int, *, validated: bool = False) -> deque:
+    """Return ``nd['glyph_history']`` deque ensuring size ``window``.
+
+    Parameters
+    ----------
+    nd:
+        Mapping potentially containing ``"glyph_history"``.
+    window:
+        Desired history size. If ``validated`` is ``False`` the value is
+        validated via :func:`validate_window`.
+    validated:
+        Set to ``True`` when ``window`` has already been validated to skip the
+        second check.
 
     Non-iterable existing values are discarded.
     """
 
-    window_int = validate_window(window)
+    window_int = window if validated else validate_window(window)
     hist = nd.get("glyph_history")
     if not isinstance(hist, deque) or hist.maxlen != window_int:
         try:
@@ -82,14 +93,15 @@ def push_glyph(nd: dict[str, Any], glyph: str, window: int) -> None:
 def recent_glyph(nd: dict[str, Any], glyph: str, window: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions.
 
-    ``window`` is validated and the history deque ensured internally. A
-    ``window`` of zero returns ``False`` without modifying ``nd``. Negative
-    values raise :class:`ValueError`.
+    ``window`` is validated once and the validated value is reused when ensuring
+    the history deque, avoiding redundant validation. A ``window`` of zero
+    returns ``False`` without modifying ``nd``. Negative values raise
+    :class:`ValueError`.
     """
     window_int = validate_window(window)
     if window_int == 0:
         return False
-    hist = _ensure_glyph_history(nd, window_int)
+    hist = _ensure_glyph_history(nd, window_int, validated=True)
     gl = str(glyph)
     return gl in hist
 
