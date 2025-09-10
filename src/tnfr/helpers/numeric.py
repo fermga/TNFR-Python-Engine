@@ -143,15 +143,25 @@ def neighbor_phase_mean_list(
     summation for stable accumulation.
     """
     if np is not None:
-        pairs = [
-            (c, s)
-            for v in neigh
-            if (c := cos_th.get(v)) is not None and (s := sin_th.get(v)) is not None
-        ]
-        deg = len(pairs)
+        cos_arr = np.fromiter(
+            (
+                c
+                for v in neigh
+                if (c := cos_th.get(v)) is not None and sin_th.get(v) is not None
+            ),
+            dtype=float,
+        )
+        deg = len(cos_arr)
         if deg > 0:
-            cos_arr = np.fromiter((c for c, _ in pairs), dtype=float, count=deg)
-            sin_arr = np.fromiter((s for _, s in pairs), dtype=float, count=deg)
+            sin_arr = np.fromiter(
+                (
+                    s
+                    for v in neigh
+                    if cos_th.get(v) is not None and (s := sin_th.get(v)) is not None
+                ),
+                dtype=float,
+                count=deg,
+            )
             mean_cos = float(np.mean(cos_arr))
             mean_sin = float(np.mean(sin_arr))
             return float(np.arctan2(mean_sin, mean_cos))
