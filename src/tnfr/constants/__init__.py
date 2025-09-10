@@ -9,6 +9,7 @@ import copy
 import warnings
 from types import MappingProxyType
 
+from contextlib import contextmanager
 from functools import lru_cache, partial, wraps
 
 from dataclasses import asdict, is_dataclass
@@ -43,19 +44,39 @@ IMMUTABLE_SIMPLE = (
 )
 
 
+@contextmanager
+def _cycle_guard(value: Any, seen: set[int] | None = None):
+    """Context manager that detects reference cycles.
+
+    The ``seen`` set collects object ids encountered during a freeze
+    operation. If ``value`` has already been processed a ``ValueError`` is
+    raised. The id is removed when the context exits so nested calls may reuse
+    the same ``seen`` set.
+    """
+
+    if seen is None:
+        seen = set()
+    obj_id = id(value)
+    if obj_id in seen:
+        raise ValueError("cycle detected")
+    seen.add(obj_id)
+    try:
+        yield seen
+    finally:
+        seen.remove(obj_id)
+
+
 def _check_cycle(func: Callable[[Any, set[int] | None], Any]):
+    """Decorator applying :func:`_cycle_guard` to ``func``.
+
+    Using this decorator ensures consistent cycle detection across helper
+    functions and prevents future copy‑paste implementations.
+    """
+
     @wraps(func)
     def wrapper(value: Any, seen: set[int] | None = None):
-        if seen is None:
-            seen = set()
-        obj_id = id(value)
-        if obj_id in seen:
-            raise ValueError("cycle detected")
-        seen.add(obj_id)
-        try:
+        with _cycle_guard(value, seen) as seen:
             return func(value, seen)
-        finally:
-            seen.remove(obj_id)
 
     return wrapper
 
@@ -101,13 +122,9 @@ _FREEZE_DISPATCH: dict[type, Callable[[Any, set[int]], Any]] = {
 
 
 def _freeze(value: Any, seen: set[int] | None = None):
-    if seen is None:
-        seen = set()
-    obj_id = id(value)
-    if obj_id in seen:
-        raise ValueError("cycle detected")
-    seen.add(obj_id)
-    try:
+    """Recursively convert ``value`` into an immutable representation."""
+
+    with _cycle_guard(value, seen) as seen:
         if is_dataclass(value) and not isinstance(value, type):
             return _freeze_dataclass(value, seen)
         if isinstance(value, IMMUTABLE_SIMPLE):
@@ -118,8 +135,6 @@ def _freeze(value: Any, seen: set[int] | None = None):
         if func is not None:
             return func(value, seen)
         raise TypeError
-    finally:
-        seen.remove(obj_id)
 
 def _all_immutable(iterable) -> bool:
     return all(_is_immutable_inner(v) for v in iterable)
