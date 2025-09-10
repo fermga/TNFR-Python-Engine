@@ -1,3 +1,5 @@
+"""Helper utilities for caching graph-related data and computations."""
+
 from __future__ import annotations
 
 import hashlib

@@ -12,28 +12,30 @@ from .import_utils import optional_import
 from .logging_utils import get_logger
 
 
+def _missing_dependency_error(dep: str) -> type[Exception]:
+    """Return a fallback :class:`Exception` when ``dep`` is unavailable."""
+
+    class _MissingDependencyError(Exception):
+        pass
+
+    _MissingDependencyError.__doc__ = f"Fallback error used when {dep} is missing."
+    return _MissingDependencyError
+
+
 tomllib = optional_import("tomllib") or optional_import("tomli")
 if tomllib is not None:
     TOMLDecodeError = getattr(tomllib, "TOMLDecodeError", Exception)
     has_toml = True
 else:  # pragma: no cover - depende de tomllib/tomli
     has_toml = False
-
-    class TOMLDecodeError(Exception):
-        """Fallback error used when tomllib/tomli is missing."""
-
-        pass
+    TOMLDecodeError = _missing_dependency_error("tomllib/tomli")
 
 
 yaml = optional_import("yaml")
 if yaml is not None:
     YAMLError = getattr(yaml, "YAMLError", Exception)
 else:  # pragma: no cover - depende de pyyaml
-
-    class YAMLError(Exception):
-        """Fallback error used when pyyaml is missing."""
-
-        pass
+    YAMLError = _missing_dependency_error("pyyaml")
 
 
 def _missing_dependency(name: str) -> Callable[[str], Any]:

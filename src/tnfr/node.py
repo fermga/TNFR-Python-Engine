@@ -159,10 +159,10 @@ def _resolve_edge_ops(graph, strategy, exists_cb, set_cb):
             if hasattr(graph, "add_edge")
             else EdgeStrategy.TNFR
         )
-    try:
-        return _EDGE_OPS[strategy]
-    except KeyError as e:
-        raise ValueError("Unknown edge strategy") from e
+    ops = _EDGE_OPS.get(strategy)
+    if ops is None:
+        raise ValueError("Unknown edge strategy")
+    return ops
 
 
 def add_edge(
