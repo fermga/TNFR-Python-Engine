@@ -40,9 +40,14 @@ from .helpers.cache import (
     ensure_node_offset_map,
 )
 from .alias import get_attr, set_attr
-from .rng import make_rng, base_seed, cache_enabled, clear_rng_cache as _clear_rng_cache
+from .rng import (
+    make_rng,
+    base_seed,
+    cache_enabled,
+    clear_rng_cache as _clear_rng_cache,
+)
 from .callback_utils import invoke_callbacks
-from .glyph_history import append_metric
+from .glyph_history import append_metric, ensure_history, current_step_idx
 from .import_utils import import_nodonx, optional_import
 from .types import Glyph
 
@@ -192,7 +197,9 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
 
 def get_glyph_factors(node: NodoProtocol) -> dict[str, Any]:
     """Return glyph factors for ``node`` with defaults."""
-    return node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"])
+    return node.graph.get(
+        "GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"].copy()
+    )
 
 
 # -------------------------
@@ -507,14 +514,14 @@ def _op_NAV(
 def _op_REMESH(
     node: NodoProtocol, gf: dict[str, Any] | None = None
 ) -> None:  # REMESH — aviso
-    step_idx = len(node.graph.get("history", {}).get("C_steps", []))
+    step_idx = current_step_idx(node)
     last_warn = node.graph.get("_remesh_warn_step", None)
     if last_warn != step_idx:
         msg = (
             "REMESH es a escala de red. Usa apply_remesh_if_globally_"
             "stable(G) o apply_network_remesh(G)."
         )
-        hist = node.graph.setdefault("history", {})
+        hist = ensure_history(node)
         append_metric(
             hist,
             "events",
@@ -553,8 +560,8 @@ def apply_glyph_obj(
     try:
         g = glyph if isinstance(glyph, Glyph) else Glyph(str(glyph))
     except ValueError:
-        step_idx = len(node.graph.get("history", {}).get("C_steps", []))
-        hist = node.graph.setdefault("history", {})
+        step_idx = current_step_idx(node)
+        hist = ensure_history(node)
         append_metric(
             hist,
             "events",
@@ -682,7 +689,7 @@ def apply_network_remesh(G) -> None:
     epi_mean_after, epi_checksum_after = _snapshot_epi(G)
 
     # --- Metadatos y logging de evento ---
-    step_idx = len(G.graph.get("history", {}).get("C_steps", []))
+    step_idx = current_step_idx(G)
     meta = {
         "alpha": alpha,
         "alpha_source": alpha_src,
@@ -984,8 +991,8 @@ def apply_remesh_if_globally_stable(
         else cfg["REMESH_STABILITY_WINDOW"]
     )
 
-    hist = G.graph.setdefault("history", {"stable_frac": []})
-    sf = hist.get("stable_frac", [])
+    hist = ensure_history(G)
+    sf = hist.setdefault("stable_frac", [])
     if len(sf) < w_estab:
         return
     win_sf = sf[-w_estab:]

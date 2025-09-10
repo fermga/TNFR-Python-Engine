@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import warnings
 import threading
-from typing import Any, Callable
+from typing import Any, Callable, overload, Literal
 
 from functools import lru_cache
 from .import_utils import optional_import
@@ -48,7 +48,8 @@ def _json_dumps_orjson(
         with _warn_lock:
             if not _ignored_param_warned:
                 warnings.warn(
-                    "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson",
+                    "'ensure_ascii', 'separators', 'cls' and extra kwargs are "
+                    "ignored when using orjson",
                     UserWarning,
                     stacklevel=3,
                 )
@@ -82,6 +83,36 @@ def _json_dumps_std(
     return result if not to_bytes else result.encode("utf-8")
 
 
+@overload
+def json_dumps(
+    obj: Any,
+    *,
+    sort_keys: bool = ...,
+    default: Callable[[Any], Any] | None = ...,
+    ensure_ascii: bool = ...,
+    separators: tuple[str, str] = ...,
+    cls: type[json.JSONEncoder] | None = ...,
+    to_bytes: Literal[True] = ...,
+    **kwargs: Any,
+) -> bytes:
+    ...
+
+
+@overload
+def json_dumps(
+    obj: Any,
+    *,
+    sort_keys: bool = ...,
+    default: Callable[[Any], Any] | None = ...,
+    ensure_ascii: bool = ...,
+    separators: tuple[str, str] = ...,
+    cls: type[json.JSONEncoder] | None = ...,
+    to_bytes: Literal[False],
+    **kwargs: Any,
+) -> str:
+    ...
+
+
 def json_dumps(
     obj: Any,
     *,
@@ -112,7 +143,7 @@ def json_dumps(
             cls=cls,
             to_bytes=to_bytes,
             **kwargs,
-    )
+        )
     return _json_dumps_std(
         obj,
         sort_keys=sort_keys,
@@ -127,4 +158,4 @@ def json_dumps(
 
 def json_dumps_str(obj: Any, **kwargs: Any) -> str:
     """``json_dumps`` wrapper that always returns ``str``."""
-    return json_dumps(obj, to_bytes=False, **kwargs)  # type: ignore[arg-type]
+    return json_dumps(obj, to_bytes=False, **kwargs)

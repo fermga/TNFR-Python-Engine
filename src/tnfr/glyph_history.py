@@ -17,6 +17,7 @@ __all__ = [
     "push_glyph",
     "recent_glyph",
     "ensure_history",
+    "current_step_idx",
     "append_metric",
     "last_glyph",
     "count_glyphs",
@@ -52,7 +53,12 @@ def _normalize_history_input(hist: Any) -> Iterable[Any]:
     return seq
 
 
-def _ensure_glyph_history(nd: dict[str, Any], window: int, *, validated: bool = False) -> deque:
+def _ensure_glyph_history(
+    nd: dict[str, Any],
+    window: int,
+    *,
+    validated: bool = False,
+) -> deque:
     """Return ``nd['glyph_history']`` deque ensuring size ``window``.
 
     Parameters
@@ -92,10 +98,9 @@ def push_glyph(nd: dict[str, Any], glyph: str, window: int) -> None:
 def recent_glyph(nd: dict[str, Any], glyph: str, window: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions.
 
-    ``window`` is validated once and the validated value is reused when ensuring
-    the history deque, avoiding redundant validation. A ``window`` of zero
-    returns ``False`` without modifying ``nd``. Negative values raise
-    :class:`ValueError`.
+    ``window`` is validated once and reused when ensuring the history deque,
+    avoiding redundant validation. A ``window`` of zero returns ``False``
+    without modifying ``nd``. Negative values raise :class:`ValueError`.
     """
     window_int = validate_window(window)
     if window_int == 0:
@@ -198,7 +203,9 @@ class HistoryDict(dict):
         if len(self._heap) <= target:
             return
         self._heap = [
-            (cnt, key) for cnt, key in self._heap if self._counts.get(key) == cnt
+            (cnt, key)
+            for cnt, key in self._heap
+            if self._counts.get(key) == cnt
         ]
         heapq.heapify(self._heap)
         self._heap_index = {k: i for i, (cnt, k) in enumerate(self._heap)}
@@ -215,8 +222,8 @@ class HistoryDict(dict):
         """Coerce ``val`` to a deque respecting ``self._maxlen``.
 
         ``Iterable`` inputs (excluding ``str`` and ``bytes``) are expanded into
-        the deque, while single values are wrapped. Existing deques are returned
-        unchanged.
+        the deque, while single values are wrapped. Existing deques are
+        returned unchanged.
         """
 
         if isinstance(val, deque):
@@ -316,6 +323,13 @@ def ensure_history(G) -> dict[str, Any]:
     if excess > 0:
         hist.pop_least_used_batch(excess)
     return hist
+
+
+def current_step_idx(G) -> int:
+    """Return the current step index from ``G`` history."""
+
+    graph = getattr(G, "graph", G)
+    return len(graph.get("history", {}).get("C_steps", []))
 
 
 class IncrementDict(dict):
