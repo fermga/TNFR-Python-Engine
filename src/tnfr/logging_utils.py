@@ -10,8 +10,26 @@ import logging
 import threading
 
 _LOCK = threading.Lock()
+_LOGGING_CONFIGURED = False
 
 __all__ = ["get_logger"]
+
+
+def _configure_root() -> None:
+    """Configure the root logger if it has no handlers."""
+
+    global _LOGGING_CONFIGURED
+
+    root = logging.getLogger()
+    if root.handlers:
+        _LOGGING_CONFIGURED = True
+        return
+
+    kwargs = {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
+    if root.level == logging.NOTSET:
+        kwargs["level"] = logging.INFO
+    logging.basicConfig(**kwargs)
+    _LOGGING_CONFIGURED = True
 
 
 def get_logger(name: str) -> logging.Logger:
@@ -23,13 +41,14 @@ def get_logger(name: str) -> logging.Logger:
     preserved.
     """
 
+    if _LOGGING_CONFIGURED:
+        return logging.getLogger(name)
+
     with _LOCK:
-        root = logging.getLogger()
-        if not root.handlers:
-            kwargs = {
-                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            }
-            if root.level == logging.NOTSET:
-                kwargs["level"] = logging.INFO
-            logging.basicConfig(**kwargs)
+        if not _LOGGING_CONFIGURED:
+            _configure_root()
     return logging.getLogger(name)
+
+
+# Configure logging at import time.
+_configure_root()
