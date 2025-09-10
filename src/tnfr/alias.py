@@ -47,7 +47,6 @@ __all__ = (
     "multi_recompute_abs_max",
 )
 
-
 def _alias_resolve(
     d: dict[str, Any],
     aliases: Sequence[str],
@@ -59,25 +58,33 @@ def _alias_resolve(
 ) -> Optional[T]:
     """Resolve the first matching key in ``aliases`` from ``d``."""
 
-    for key in aliases:
-        if key not in d:
-            continue
-        ok, value = _convert_value(
-            d[key],
-            conv,
-            strict=strict,
-            key=key,
-            log_level=log_level,
-        )
-        if ok:
-            return value
+    sentinel = object()
+    value = next(
+        (
+            v
+            for key in aliases
+            if key in d
+            for ok, v in [
+                _convert_value(
+                    d[key],
+                    conv,
+                    strict=strict,
+                    key=key,
+                    log_level=log_level,
+                )
+            ]
+            if ok
+        ),
+        sentinel,
+    )
+    if value is not sentinel:
+        return value
     if default is not None:
-        ok, value = _convert_value(
+        ok, value = _convert_default(
             default,
             conv,
             strict=strict,
-            key="default",
-            log_level=log_level if log_level is not None else logging.WARNING,
+            log_level=log_level,
         )
         if ok:
             return value

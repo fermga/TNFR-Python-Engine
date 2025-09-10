@@ -7,6 +7,7 @@ import threading
 import warnings
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Mapping, Hashable
+from dataclasses import dataclass
 from functools import lru_cache
 from types import MappingProxyType
 from typing import Any, TypeVar
@@ -122,29 +123,18 @@ def _iter_node_digests(
             yield _hash_node(node, repr_)
 
 
-def _update_node_cache(
-    graph: Any,
-    nodes: Iterable[Any],
-    key_prefix: str,
-    value: Any | None = None,
-    *,
-    checksum: str | None = None,
-    presorted: bool = False,
-) -> str:
-    """Store ``value`` and its node checksum in ``graph``.",
+@dataclass
+class NodeCache:
+    """Container for cached node data."""
 
-    ``nodes`` is the iterable used to compute the checksum. When ``value`` is
-    ``None`` it defaults to ``nodes``. The computed checksum is returned.
-    Set ``presorted`` to ``True`` when ``nodes`` is already sorted in a stable
-    manner to avoid redundant sorting.
-    """
-    if checksum is None:
-        checksum = node_set_checksum(
-            graph, nodes, presorted=presorted, store=False
-        )
-    graph[key_prefix] = nodes if value is None else value
-    graph[f"{key_prefix}_checksum"] = checksum
-    return checksum
+    checksum: str
+    nodes: tuple[Any, ...]
+    idx: dict[Any, int] | None = None
+    offset: dict[Any, int] | None = None
+
+    @property
+    def n(self) -> int:
+        return len(self.nodes)
 
 
 def node_set_checksum(
@@ -186,63 +176,59 @@ def node_set_checksum(
 def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     """Cache and return the tuple of nodes for ``G``.
 
-    The cached values are stored in ``G.graph`` under ``"_node_list"``,
-    ``"_node_list_len"`` and ``"_node_list_checksum"``.  The cache is
-    refreshed when the node set checksum or number of nodes changes, or when
+    A :class:`NodeCache` instance is stored in ``G.graph`` under
+    ``"_node_list_cache"``. The cache refreshes when the node set changes or when
     the optional ``"_node_list_dirty"`` flag is set to ``True``.
     """
     graph = get_graph(G)
-    nodes = graph.get("_node_list")
-    stored_len = graph.get("_node_list_len")
+    cache: NodeCache | None = graph.get("_node_list_cache")
     current_n = G.number_of_nodes()
     dirty = bool(graph.pop("_node_list_dirty", False))
-    if nodes is None or stored_len != current_n or dirty:
+
+    new_checksum = node_set_checksum(G) if nodes is not None else None
+    if (
+        nodes is None
+        or stored_len != current_n
+        or dirty
+        or graph.get("_node_list_checksum") != new_checksum
+    ):
         nodes = tuple(G.nodes())
-        checksum = node_set_checksum(G, nodes, store=True)
-        _update_node_cache(graph, nodes, "_node_list", checksum=checksum)
+        new_checksum = node_set_checksum(G, nodes, store=True)
+        _update_node_cache(graph, nodes, "_node_list", checksum=new_checksum)
         graph["_node_list_len"] = current_n
-    else:
-        new_checksum = node_set_checksum(G)
-        if graph.get("_node_list_checksum") != new_checksum:
-            nodes = tuple(G.nodes())
-            _update_node_cache(graph, nodes, "_node_list", checksum=new_checksum)
-            graph["_node_list_len"] = current_n
-        elif "_node_list_checksum" not in graph:
-            _update_node_cache(graph, nodes, "_node_list", checksum=new_checksum)
+    elif "_node_list_checksum" not in graph:
+        _update_node_cache(graph, nodes, "_node_list", checksum=new_checksum)
     return nodes
 
+def _ensure_node_map(G, *, attr: str, sort: bool = False) -> dict[Any, int]:
+    """Return cached node-to-index mapping stored on ``NodeCache``.
 
-def _ensure_node_map(G, *, key: str, sort: bool = False) -> dict[Any, int]:
-    """Return cached node→index mapping for ``G`` under ``key``.
-
-    ``sort`` controls whether nodes are ordered by their string representation
-    before assigning indices.
+    ``attr`` selects the attribute on :class:`NodeCache` used to store the
+    mapping. ``sort`` controls whether nodes are ordered by their string
+    representation before assigning indices.
     """
     graph = G.graph
-    mapping = graph.get(key)
-    checksum_key = f"{key}_checksum"
-    stored_checksum = graph.get(checksum_key)
-    checksum = node_set_checksum(G, store=False)
-
-    if mapping is None or stored_checksum != checksum:
-        nodes = list(G.nodes())
+    _cache_node_list(G)
+    cache: NodeCache = graph["_node_list_cache"]
+    mapping = getattr(cache, attr)
+    if mapping is None:
+        nodes = list(cache.nodes)
         if sort:
             nodes.sort(key=_node_repr)
         mapping = {node: idx for idx, node in enumerate(nodes)}
-        _update_node_cache(graph, nodes, key, mapping, checksum=checksum)
+        setattr(cache, attr, mapping)
     return mapping
 
 
 def ensure_node_index_map(G) -> dict[Any, int]:
-    """Return cached node→index mapping for ``G``."""
-    return _ensure_node_map(G, key="_node_index_map", sort=False)
+    """Return cached node-to-index mapping for ``G``."""
+    return _ensure_node_map(G, attr="idx", sort=False)
 
 
 def ensure_node_offset_map(G) -> dict[Any, int]:
-    """Return cached node→offset mapping for ``G``."""
+    """Return cached node-to-offset mapping for ``G``."""
     sort = bool(G.graph.get("SORT_NODES", False))
-    return _ensure_node_map(G, key="_node_offset_map", sort=sort)
-
+    return _ensure_node_map(G, attr="offset", sort=sort)
 
 class _LockAwareLRUCache(LRUCache[Hashable, Any]):
     """``LRUCache`` that drops per-key locks when evicting items."""

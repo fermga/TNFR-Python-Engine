@@ -8,6 +8,7 @@ simulations.
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 from typing import Any, Callable
 
 from ..collections_utils import normalize_weights
@@ -25,6 +26,18 @@ from ..alias import (
 )
 from ..metrics_utils import get_trig_cache
 from ..import_utils import get_numpy
+
+
+@dataclass
+class DnfrCache:
+    idx: dict[Any, int]
+    theta: list[float]
+    epi: list[float]
+    vf: list[float]
+    cos_theta: list[float]
+    sin_theta: list[float]
+    degs: dict[Any, float] | None = None
+    checksum: Any | None = None
 
 __all__ = (
     "default_compute_delta_nfr",
@@ -70,16 +83,21 @@ def _configure_dnfr_weights(G) -> dict:
     return weights
 
 
-def _init_dnfr_cache(G, nodes, prev_cache, checksum, dirty):
+def _init_dnfr_cache(
+    G, nodes, prev_cache: DnfrCache | None, checksum, dirty
+):
     """Initialise or reuse cached ΔNFR arrays."""
-    if prev_cache and prev_cache.get("checksum") == checksum and not dirty:
-        idx = prev_cache["idx"]
-        theta = prev_cache["theta"]
-        epi = prev_cache["epi"]
-        vf = prev_cache["vf"]
-        cos_theta = prev_cache["cos_theta"]
-        sin_theta = prev_cache["sin_theta"]
-        return prev_cache, idx, theta, epi, vf, cos_theta, sin_theta, False
+    if prev_cache and prev_cache.checksum == checksum and not dirty:
+        return (
+            prev_cache,
+            prev_cache.idx,
+            prev_cache.theta,
+            prev_cache.epi,
+            prev_cache.vf,
+            prev_cache.cos_theta,
+            prev_cache.sin_theta,
+            False,
+        )
 
     idx = {n: i for i, n in enumerate(nodes)}
     theta = [0.0] * len(nodes)
@@ -87,31 +105,40 @@ def _init_dnfr_cache(G, nodes, prev_cache, checksum, dirty):
     vf = [0.0] * len(nodes)
     cos_theta = [1.0] * len(nodes)
     sin_theta = [0.0] * len(nodes)
-    cache = {
-        "checksum": checksum,
-        "idx": idx,
-        "theta": theta,
-        "epi": epi,
-        "vf": vf,
-        "cos_theta": cos_theta,
-        "sin_theta": sin_theta,
-        "degs": prev_cache.get("degs") if prev_cache else None,
-    }
+    cache = DnfrCache(
+        idx=idx,
+        theta=theta,
+        epi=epi,
+        vf=vf,
+        cos_theta=cos_theta,
+        sin_theta=sin_theta,
+        degs=prev_cache.degs if prev_cache else None,
+        checksum=checksum,
+    )
     G.graph["_dnfr_prep_cache"] = cache
-    return cache, idx, theta, epi, vf, cos_theta, sin_theta, True
+    return (
+        cache,
+        cache.idx,
+        cache.theta,
+        cache.epi,
+        cache.vf,
+        cache.cos_theta,
+        cache.sin_theta,
+        True,
+    )
 
 
-def _refresh_dnfr_vectors(G, nodes, theta, epi, vf, cos_theta, sin_theta):
+def _refresh_dnfr_vectors(G, nodes, cache: DnfrCache):
     """Update cached angle and state vectors for ΔNFR."""
     trig = get_trig_cache(G)
     for i, n in enumerate(nodes):
         nd = G.nodes[n]
         th = get_attr(nd, ALIAS_THETA, 0.0)
-        theta[i] = th
-        epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
-        vf[i] = get_attr(nd, ALIAS_VF, 0.0)
-        cos_theta[i] = trig.cos.get(n, math.cos(th))
-        sin_theta[i] = trig.sin.get(n, math.sin(th))
+        cache.theta[i] = th
+        cache.epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
+        cache.vf[i] = get_attr(nd, ALIAS_VF, 0.0)
+        cache.cos_theta[i] = trig.cos.get(n, math.cos(th))
+        cache.sin_theta[i] = trig.sin.get(n, math.sin(th))
 
 
 def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
@@ -123,27 +150,27 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     use_numpy = get_numpy() is not None and G.graph.get("vectorized_dnfr")
 
     nodes, A = cached_nodes_and_A(G, cache_size=cache_size)
-    cache = G.graph.get("_dnfr_prep_cache")
+    cache: DnfrCache | None = G.graph.get("_dnfr_prep_cache")
     checksum = G.graph.get("_dnfr_nodes_checksum")
     dirty = bool(G.graph.pop("_dnfr_prep_dirty", False))
-    cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = (
-        _init_dnfr_cache(G, nodes, cache, checksum, dirty)
+    cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = _init_dnfr_cache(
+        G, nodes, cache, checksum, dirty
     )
     if refreshed:
-        _refresh_dnfr_vectors(G, nodes, theta, epi, vf, cos_theta, sin_theta)
+        _refresh_dnfr_vectors(G, nodes, cache)
 
     w_phase = float(weights.get("phase", 0.0))
     w_epi = float(weights.get("epi", 0.0))
     w_vf = float(weights.get("vf", 0.0))
     w_topo = float(weights.get("topo", 0.0))
-    degs = cache.get("degs") if cache else None
+    degs = cache.degs if cache else None
     if w_topo != 0 and (dirty or degs is None):
         degs = dict(G.degree())
-        cache["degs"] = degs
+        cache.degs = degs
     elif w_topo == 0:
         degs = None
         if cache is not None:
-            cache["degs"] = None
+            cache.degs = None
 
     if not use_numpy:
         A = None
@@ -208,6 +235,35 @@ def _apply_dnfr_gradients(
         set_dnfr(G, n, float(dnfr))
 
 
+def _init_bar_arrays(data, *, degs=None, np=None):
+    """Prepare containers for neighbour means.
+
+    If ``np`` is provided, NumPy arrays are created; otherwise lists are used.
+    ``degs`` is optional and only initialised when the topological term is
+    active.
+    """
+
+    theta = data["theta"]
+    epi = data["epi"]
+    vf = data["vf"]
+    w_topo = data["w_topo"]
+    if np is not None:
+        th_bar = np.array(theta, dtype=float)
+        epi_bar = np.array(epi, dtype=float)
+        vf_bar = np.array(vf, dtype=float)
+        deg_bar = (
+            np.array(degs, dtype=float)
+            if w_topo != 0.0 and degs is not None
+            else None
+        )
+    else:
+        th_bar = list(theta)
+        epi_bar = list(epi)
+        vf_bar = list(vf)
+        deg_bar = list(degs) if w_topo != 0.0 and degs is not None else None
+    return th_bar, epi_bar, vf_bar, deg_bar
+
+
 def _compute_neighbor_means(
     G,
     data,
@@ -224,16 +280,13 @@ def _compute_neighbor_means(
     """Return neighbour mean arrays for ΔNFR."""
     w_topo = data["w_topo"]
     theta = data["theta"]
-    epi = data["epi"]
-    vf = data["vf"]
-    if np is not None and isinstance(count, np.ndarray):
+    is_numpy = np is not None and isinstance(count, np.ndarray)
+    th_bar, epi_bar, vf_bar, deg_bar = _init_bar_arrays(
+        data, degs=degs, np=np if is_numpy else None
+    )
+
+    if is_numpy:
         mask = count > 0
-        th_bar = np.array(theta, dtype=float)
-        epi_bar = np.array(epi, dtype=float)
-        vf_bar = np.array(vf, dtype=float)
-        deg_bar = None
-        if w_topo != 0.0 and degs is not None:
-            deg_bar = np.array(degs, dtype=float)
         if np.any(mask):
             th_bar[mask] = np.arctan2(
                 y[mask] / count[mask], x[mask] / count[mask]
@@ -245,10 +298,6 @@ def _compute_neighbor_means(
         return th_bar, epi_bar, vf_bar, deg_bar
 
     n = len(theta)
-    th_bar = list(theta)
-    epi_bar = list(epi)
-    vf_bar = list(vf)
-    deg_bar = list(degs) if w_topo != 0.0 and degs is not None else None
     cos_th = data["cos_theta"]
     sin_th = data["sin_theta"]
     idx = data["idx"]
