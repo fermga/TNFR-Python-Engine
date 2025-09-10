@@ -8,7 +8,7 @@ import threading
 import copy
 import warnings
 from types import MappingProxyType
-from functools import lru_cache
+from functools import lru_cache, singledispatch, wraps
 from dataclasses import asdict, is_dataclass
 import weakref
 
@@ -41,6 +41,23 @@ IMMUTABLE_SIMPLE = (
 )
 
 
+def _check_cycle(func: Callable[[Any, set[int] | None], Any]):
+    @wraps(func)
+    def wrapper(value: Any, seen: set[int] | None = None):
+        if seen is None:
+            seen = set()
+        obj_id = id(value)
+        if obj_id in seen:
+            raise ValueError("cycle detected")
+        seen.add(obj_id)
+        try:
+            return func(value, seen)
+        finally:
+            seen.remove(obj_id)
+
+    return wrapper
+
+
 def _freeze_dataclass(value: Any, seen: set[int]):
     params = getattr(type(value), "__dataclass_params__", None)
     frozen = bool(params and params.frozen)
@@ -52,86 +69,54 @@ def _freeze_dataclass(value: Any, seen: set[int]):
     )
 
 
-def _freeze_tuple(value: tuple, seen: set[int]):
+@singledispatch
+@_check_cycle
+def _freeze(value: Any, seen: set[int] | None = None):
+    if is_dataclass(value) and not isinstance(value, type):
+        return _freeze_dataclass(value, seen)
+    if isinstance(value, IMMUTABLE_SIMPLE):
+        return value
+    raise TypeError
+
+
+@_freeze.register(tuple)
+@_check_cycle
+def _freeze_tuple(value: tuple, seen: set[int] | None = None):
     return tuple(_freeze(v, seen) for v in value)
 
 
-def _freeze_list(value: list, seen: set[int]):
+@_freeze.register(list)
+@_check_cycle
+def _freeze_list(value: list, seen: set[int] | None = None):
     return ("list", tuple(_freeze(v, seen) for v in value))
 
 
-def _freeze_set(value: set, seen: set[int]):
+@_freeze.register(set)
+@_check_cycle
+def _freeze_set(value: set, seen: set[int] | None = None):
     return ("set", tuple(_freeze(v, seen) for v in value))
 
 
-def _freeze_frozenset(value: frozenset, seen: set[int]):
+@_freeze.register(frozenset)
+@_check_cycle
+def _freeze_frozenset(value: frozenset, seen: set[int] | None = None):
     return frozenset(_freeze(v, seen) for v in value)
 
 
-def _freeze_bytearray(value: bytearray, seen: set[int]):
+@_freeze.register(bytearray)
+@_check_cycle
+def _freeze_bytearray(value: bytearray, seen: set[int] | None = None):
     return ("bytearray", bytes(value))
 
 
-def _freeze_mapping(value: Mapping, seen: set[int]):
+@_freeze.register(Mapping)
+@_check_cycle
+def _freeze_mapping(value: Mapping, seen: set[int] | None = None):
     tag = "dict" if hasattr(value, "__setitem__") else "mapping"
     return (
         tag,
         tuple((k, _freeze(v, seen)) for k, v in value.items()),
     )
-
-
-_FREEZE_DISPATCH: dict[type, Callable[[Any, set[int]], Any]] = {
-    tuple: _freeze_tuple,
-    list: _freeze_list,
-    set: _freeze_set,
-    frozenset: _freeze_frozenset,
-    bytearray: _freeze_bytearray,
-}
-
-
-def _freeze(value: Any, seen: set[int] | None = None):
-    if seen is None:
-        seen = set()
-    obj_id = id(value)
-    if obj_id in seen:
-        raise ValueError("cycle detected")
-    seen.add(obj_id)
-    try:
-        if is_dataclass(value) and not isinstance(value, type):
-            return _freeze_dataclass(value, seen)
-        if isinstance(value, IMMUTABLE_SIMPLE):
-            return value
-        func = _FREEZE_DISPATCH.get(type(value))
-        if func is None and isinstance(value, Mapping):
-            func = _freeze_mapping
-        if func is not None:
-            return func(value, seen)
-        raise TypeError
-    finally:
-        seen.remove(obj_id)
-
-
-# Helper utilities for immutability checks
-def _all_immutable(values: tuple | frozenset) -> bool:
-    return all(_is_immutable_inner(v) for v in values)
-
-
-def _tag_mapping(value: tuple) -> bool:
-    return _all_immutable(value[1])
-
-
-def _tag_mutable(_: tuple) -> bool:  # pragma: no cover - simple return
-    return False
-
-
-_IMMUTABLE_TAG_DISPATCH: dict[str, Callable[[tuple], bool]] = {
-    "list": _tag_mutable,
-    "dict": _tag_mutable,
-    "set": _tag_mutable,
-    "bytearray": _tag_mutable,
-    "mapping": _tag_mapping,
-}
-
 
 @lru_cache(maxsize=1024)
 def _is_immutable_inner(value: Any) -> bool:
