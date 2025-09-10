@@ -18,15 +18,13 @@ from dataclasses import dataclass
 from functools import lru_cache, partial
 from .import_utils import optional_import
 
-from .logging_utils import get_logger
+warnings.filterwarnings(
+    "once", message=".*ignored when using orjson", category=UserWarning
+)
 
-logger = get_logger(__name__)
 _ORJSON_PARAMS_MSG = (
     "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson"
 )
-_warned_orjson_params = False
-
-_warned_call_sites: set[tuple[str, int]] = set()
 
 @lru_cache(maxsize=1)
 def _load_orjson() -> Any | None:
@@ -57,21 +55,9 @@ def _json_dumps_orjson(
         or params.cls is not None
         or kwargs
     ):
-        frame = inspect.currentframe()
-        outer = frame.f_back.f_back if frame else None
-        call_site = (outer.f_code.co_filename, outer.f_lineno) if outer else None
-        if call_site is None or call_site not in _warned_call_sites:
-            with warnings.catch_warnings():
-                warnings.filterwarnings(
-                    "default", message=_ORJSON_PARAMS_MSG, category=UserWarning
-                )
-                warnings.warn(_ORJSON_PARAMS_MSG, UserWarning, stacklevel=3)
-            if call_site is not None:
-                _warned_call_sites.add(call_site)
-        global _warned_orjson_params
-        if not _warned_orjson_params:
-            logger.warning(_ORJSON_PARAMS_MSG)
-            _warned_orjson_params = True
+
+        warnings.warn(_ORJSON_PARAMS_MSG, UserWarning, stacklevel=3)
+
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
     data = orjson.dumps(obj, option=option, default=params.default)
     return data if params.to_bytes else data.decode("utf-8")
@@ -139,8 +125,9 @@ def json_dumps(
     Returns a ``str`` by default. Pass ``to_bytes=True`` to obtain a ``bytes``
     result. When :mod:`orjson` is used, the ``ensure_ascii``, ``separators``,
     ``cls`` and any additional keyword arguments are ignored because they are
-    not supported by :func:`orjson.dumps`. A warning is emitted only the first
-    time such ignored parameters are detected.
+    not supported by :func:`orjson.dumps`. A warning is emitted when such
+    ignored parameters are detected and, by default, is shown only once per
+    process.
     """
     params = JsonDumpsParams(
         sort_keys=sort_keys,
