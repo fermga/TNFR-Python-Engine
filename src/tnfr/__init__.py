@@ -7,7 +7,7 @@ example :mod:`tnfr.metrics`, :mod:`tnfr.observers` or
 
 - ``step`` and ``run`` in :mod:`tnfr.dynamics`
 - ``preparar_red`` in :mod:`tnfr.ontosim`
-- ``create_nfr`` in :mod:`tnfr.structural`
+- ``create_nfr`` and ``run_sequence`` in :mod:`tnfr.structural`
 - ``NodeState`` in :mod:`tnfr.types`
 """
 
@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from .dynamics import step, run
 from .ontosim import preparar_red
-from .structural import create_nfr
+from .structural import create_nfr, run_sequence
 from .types import NodeState
 from .operators import apply_topological_remesh
 
@@ -60,6 +60,7 @@ __all__ = [
     "run",
     "preparar_red",
     "create_nfr",
+    "run_sequence",
     "NodeState",
     "apply_topological_remesh",
     "CallbackSpec",

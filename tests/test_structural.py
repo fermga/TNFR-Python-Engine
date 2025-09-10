@@ -2,6 +2,7 @@
 
 import networkx as nx
 
+from tnfr import run_sequence
 from tnfr.structural import (
     create_nfr,
     Emision,
@@ -11,7 +12,6 @@ from tnfr.structural import (
     Silencio,
     Autoorganizacion,
     validate_sequence,
-    run_sequence,
 )
 from tnfr.constants import EPI_PRIMARY
 
