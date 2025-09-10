@@ -331,9 +331,10 @@ def _get_edge_cache(
         else:
             locks = graph.get("_edge_version_cache_locks")
             cache = graph.get("_edge_version_cache")
-        if isinstance(cache, dict) and isinstance(locks, dict):
+        if max_entries is None and isinstance(locks, dict):
+            cache_keys = cache.keys() if isinstance(cache, dict) else ()
             for key in list(locks.keys()):
-                if key not in cache:
+                if key not in cache_keys:
                     locks.pop(key, None)
     return cache, locks
 
