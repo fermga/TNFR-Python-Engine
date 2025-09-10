@@ -204,7 +204,6 @@ def _flatten_target(
     item: TARGET,
     stack: deque[Any],
     ops: list[tuple[OpTag, Any]],
-    max_materialize: int | None,
 ) -> None:
     ops.append((OpTag.TARGET, item))
 
@@ -213,7 +212,6 @@ def _flatten_wait(
     item: WAIT,
     stack: deque[Any],
     ops: list[tuple[OpTag, Any]],
-    max_materialize: int | None,
 ) -> None:
     steps = max(1, int(getattr(item, "steps", 1)))
     ops.append((OpTag.WAIT, steps))
@@ -223,16 +221,14 @@ def _flatten_thol_proxy(
     item: THOL,
     stack: deque[Any],
     ops: list[tuple[OpTag, Any]],
-    max_materialize: int | None,
 ) -> None:
-    _flatten_thol(item, stack, max_materialize=max_materialize)
+    _flatten_thol(item, stack)
 
 
 def _flatten_glyph(
     item: Glyph | str,
     stack: deque[Any],
     ops: list[tuple[OpTag, Any]],
-    max_materialize: int | None,
 ) -> None:
     g = item.value if isinstance(item, Glyph) else str(item)
     if g not in GLYPHS_CANONICAL_SET:
@@ -242,7 +238,7 @@ def _flatten_glyph(
 
 _TOKEN_DISPATCH: dict[
     type,
-    Callable[[Any, deque[Any], list[tuple[OpTag, Any]], int | None], None],
+    Callable[[Any, deque[Any], list[tuple[OpTag, Any]]], None],
 ] = {
     TARGET: _flatten_target,
     WAIT: _flatten_wait,
@@ -286,7 +282,7 @@ def _flatten(
         handler = _TOKEN_DISPATCH.get(type(item))
         if handler is None:
             raise TypeError(f"Unsupported token: {item!r}")
-        handler(item, stack, ops, max_materialize)
+        handler(item, stack, ops)
     return ops
 
 
