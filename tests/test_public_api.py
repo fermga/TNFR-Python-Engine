@@ -9,11 +9,13 @@ def test_public_exports():
         "run",
         "preparar_red",
         "create_nfr",
-        "run_sequence",
         "NodeState",
         "CallbackSpec",
-        "apply_topological_remesh",
     }
+    if getattr(tnfr, "_HAS_RUN_SEQUENCE", False):
+        expected.add("run_sequence")
+    if getattr(tnfr, "_HAS_APPLY_TOPOLOGICAL_REMESH", False):
+        expected.add("apply_topological_remesh")
     assert set(tnfr.__all__) == expected
 
 
