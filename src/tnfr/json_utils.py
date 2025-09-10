@@ -93,8 +93,7 @@ def json_dumps(
     cls: type[json.JSONEncoder] | None = ...,
     to_bytes: Literal[True] = ...,
     **kwargs: Any,
-) -> bytes:
-    ...
+) -> bytes: ...
 
 
 @overload
@@ -108,8 +107,7 @@ def json_dumps(
     cls: type[json.JSONEncoder] | None = ...,
     to_bytes: Literal[False],
     **kwargs: Any,
-) -> str:
-    ...
+) -> str: ...
 
 
 def json_dumps(

@@ -39,6 +39,7 @@ class DnfrCache:
     degs: dict[Any, float] | None = None
     checksum: Any | None = None
 
+
 __all__ = (
     "default_compute_delta_nfr",
     "set_delta_nfr_hook",
@@ -83,9 +84,7 @@ def _configure_dnfr_weights(G) -> dict:
     return weights
 
 
-def _init_dnfr_cache(
-    G, nodes, prev_cache: DnfrCache | None, checksum, dirty
-):
+def _init_dnfr_cache(G, nodes, prev_cache: DnfrCache | None, checksum, dirty):
     """Initialise or reuse cached ΔNFR arrays."""
     if prev_cache and prev_cache.checksum == checksum and not dirty:
         return (
@@ -153,8 +152,8 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     cache: DnfrCache | None = G.graph.get("_dnfr_prep_cache")
     checksum = G.graph.get("_dnfr_nodes_checksum")
     dirty = bool(G.graph.pop("_dnfr_prep_dirty", False))
-    cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = _init_dnfr_cache(
-        G, nodes, cache, checksum, dirty
+    cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = (
+        _init_dnfr_cache(G, nodes, cache, checksum, dirty)
     )
     if refreshed:
         _refresh_dnfr_vectors(G, nodes, cache)
@@ -386,7 +385,9 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
             )
         if not nodes:
             return None
-        x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(data, np=np)
+        x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(
+            data, np=np
+        )
         A = data.get("A")
         if A is None:
             _, A = cached_nodes_and_A(G, cache_size=data.get("cache_size"))
@@ -405,7 +406,9 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
             deg_sum[:] = A @ degs
         return x, y, epi_sum, vf_sum, count, deg_sum, degs
     else:
-        x, y, epi_sum, vf_sum, count, deg_sum, degs_list = _init_neighbor_sums(data)
+        x, y, epi_sum, vf_sum, count, deg_sum, degs_list = _init_neighbor_sums(
+            data
+        )
         idx = data["idx"]
         epi = data["epi"]
         vf = data["vf"]

@@ -10,7 +10,12 @@ from .alias import get_attr
 from .helpers.numeric import angle_diff, list_pvariance
 from .metrics_utils import compute_coherence
 from .callback_utils import register_callback
-from .glyph_history import ensure_history, count_glyphs, append_metric, validate_window
+from .glyph_history import (
+    ensure_history,
+    count_glyphs,
+    append_metric,
+    validate_window,
+)
 from .collections_utils import normalize_counter, mix_groups
 from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
@@ -84,7 +89,10 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
 
     if (np := get_numpy()) is not None:
         th = np.fromiter(
-            (get_attr(data, ALIAS_THETA, 0.0) for _, data in G.nodes(data=True)),
+            (
+                get_attr(data, ALIAS_THETA, 0.0)
+                for _, data in G.nodes(data=True)
+            ),
             dtype=float,
         )
         diff = (th - psi + np.pi) % (2 * np.pi) - np.pi
