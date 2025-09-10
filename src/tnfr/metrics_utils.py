@@ -22,7 +22,6 @@ from .helpers.numeric import (
     clamp01,
     angle_diff,
     neighbor_phase_mean_list,
-    kahan_sum2d,
 )
 from .helpers.cache import edge_version_cache
 from .import_utils import get_numpy
@@ -90,8 +89,6 @@ def compute_coherence(
     if count == 0:
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
-    count = G.number_of_nodes()
-
     np = get_numpy()
 
     use_np = np is not None
@@ -101,7 +98,6 @@ def compute_coherence(
     else:
         dnfr_sum = dnfr_c = 0.0
         depi_sum = depi_c = 0.0
-        count = 0
 
     for idx, (_, nd) in enumerate(G.nodes(data=True)):
         dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0))
@@ -118,20 +114,11 @@ def compute_coherence(
             t = depi_sum + y
             depi_c = (t - depi_sum) - y
             depi_sum = t
-            count += 1
 
     if use_np:
         dnfr_mean = float(np.mean(dnfr_arr))
         depi_mean = float(np.mean(depi_arr))
     else:
-        pairs = (
-            (
-                abs(get_attr(nd, ALIAS_DNFR, 0.0)),
-                abs(get_attr(nd, ALIAS_dEPI, 0.0)),
-            )
-            for _, nd in G.nodes(data=True)
-        )
-        dnfr_sum, depi_sum = kahan_sum2d(pairs)
         dnfr_mean = dnfr_sum / count
         depi_mean = depi_sum / count
 
