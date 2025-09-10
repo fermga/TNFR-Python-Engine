@@ -114,6 +114,7 @@ class OpTag(Enum):
     GLYPH = auto()
     THOL = auto()
 
+
 # ---------------------
 # Internal utilities
 # ---------------------

@@ -98,6 +98,8 @@ __all__ = (
     "_compute_neighbor_means",
     "_compute_dnfr",
 )
+
+
 def _log_clamp(hist, node, attr, value, lo, hi):
     if value < lo or value > hi:
         hist.append({"node": node, "attr": attr, "value": float(value)})
@@ -115,7 +117,9 @@ def apply_canonical_clamps(nd: dict[str, Any], G=None, node=None) -> None:
     vf = get_attr(nd, ALIAS_VF, 0.0)
     th = get_attr(nd, ALIAS_THETA, 0.0)
 
-    strict = bool(g.get("VALIDATORS_STRICT", DEFAULTS.get("VALIDATORS_STRICT", False)))
+    strict = bool(
+        g.get("VALIDATORS_STRICT", DEFAULTS.get("VALIDATORS_STRICT", False))
+    )
     if strict and G is not None:
         hist = g.setdefault("history", {}).setdefault("clamp_alerts", [])
         _log_clamp(hist, node, "EPI", epi, eps_min, eps_max)

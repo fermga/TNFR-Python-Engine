@@ -39,6 +39,7 @@ def _log_negative_keys_once(negatives: Mapping[str, float]) -> None:
     if new:
         logger.warning(NEGATIVE_WEIGHTS_MSG, new)
 
+
 __all__ = (
     "MAX_MATERIALIZE_DEFAULT",
     "ensure_collection",

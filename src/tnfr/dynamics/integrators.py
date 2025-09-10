@@ -71,7 +71,11 @@ def prepare_integration_params(
 
 
 def _apply_increments(
-    G: Any, dt_step: float, increments: dict[Any, tuple[float, ...]], *, method: str
+    G: Any,
+    dt_step: float,
+    increments: dict[Any, tuple[float, ...]],
+    *,
+    method: str,
 ) -> dict[Any, tuple[float, float, float]]:
     """Combine precomputed increments to update node states."""
 

@@ -86,9 +86,9 @@ def _freeze(value: Any, seen: set[int] | None = None):
 def _freeze_tuple(value: tuple, seen: set[int] | None = None):
     return tuple(_freeze(v, seen) for v in value)
 
+
 def _freeze_iterable(tag: str, iterable, seen: set[int]):
     return (tag, tuple(_freeze(v, seen) for v in iterable))
-
 
 
 @_freeze.register(Mapping)
@@ -100,6 +100,7 @@ def _freeze_mapping(value: Mapping, seen: set[int] | None = None):
         tuple((k, _freeze(v, seen)) for k, v in value.items()),
     )
 
+
 _FREEZE_DISPATCH: dict[type, Callable[[Any, set[int]], Any]] = {
     tuple: _freeze_tuple,
     list: partial(_freeze_iterable, "list"),
@@ -107,6 +108,13 @@ _FREEZE_DISPATCH: dict[type, Callable[[Any, set[int]], Any]] = {
     frozenset: partial(_freeze_iterable, "frozenset"),
     bytearray: partial(_freeze_iterable, "bytearray"),
 }
+
+
+def _all_immutable(iterable) -> bool:
+    return all(_is_immutable(v) for v in iterable)
+
+
+_IMMUTABLE_TAG_DISPATCH: dict[str, Callable[[Any], bool]] = {}
 
 
 def _freeze(value: Any, seen: set[int] | None = None):
@@ -130,6 +138,7 @@ def _freeze(value: Any, seen: set[int] | None = None):
     finally:
         seen.remove(obj_id)
 
+
 @lru_cache(maxsize=1024)
 def _is_immutable_inner(value: Any) -> bool:
     if isinstance(value, IMMUTABLE_SIMPLE):
@@ -147,7 +156,9 @@ def _is_immutable_inner(value: Any) -> bool:
 
 # Cache of previous results keyed by object identity. Uses ``WeakKeyDictionary``
 # so entries vanish automatically when objects are garbage collected.
-_IMMUTABLE_CACHE: weakref.WeakKeyDictionary[Any, bool] = weakref.WeakKeyDictionary()
+_IMMUTABLE_CACHE: weakref.WeakKeyDictionary[Any, bool] = (
+    weakref.WeakKeyDictionary()
+)
 _IMMUTABLE_CACHE_LOCK = threading.Lock()
 
 

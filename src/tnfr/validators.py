@@ -21,6 +21,7 @@ def _require_attr(data, alias, node, name):
         raise ValueError(f"Missing {name} attribute in node {node}")
     return val
 
+
 def _validate_sigma(G) -> None:
     sv = sigma_vector_from_graph(G)
     if sv.get("mag", 0.0) > 1.0 + sys.float_info.epsilon:

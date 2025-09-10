@@ -53,8 +53,12 @@ def compute_wij_phase_epi_vf_si(
     trig = trig or (get_trig_cache(G, np=np) if G is not None else None)
     if cos_vals is None or sin_vals is None:
         if trig is not None and nodes is not None:
-            cos_vals = [trig.cos.get(n, math.cos(t)) for n, t in zip(nodes, th_vals)]
-            sin_vals = [trig.sin.get(n, math.sin(t)) for n, t in zip(nodes, th_vals)]
+            cos_vals = [
+                trig.cos.get(n, math.cos(t)) for n, t in zip(nodes, th_vals)
+            ]
+            sin_vals = [
+                trig.sin.get(n, math.sin(t)) for n, t in zip(nodes, th_vals)
+            ]
         else:
             cos_vals = [math.cos(t) for t in th_vals]
             sin_vals = [math.sin(t) for t in th_vals]
@@ -355,6 +359,7 @@ def _compute_stats(values, row_sum, n, self_diag, np=None):
 
         def wi_fn(r, d):
             return (r / d).astype(float).tolist()
+
     else:
         # Fall back to pure Python lists
         values = list(values)

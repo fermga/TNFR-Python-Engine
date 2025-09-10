@@ -56,7 +56,9 @@ def list_pvariance(xs: Iterable[float], default: float = 0.0) -> float:
         return float(default)
 
 
-def kahan_sum_nd(values: Iterable[Sequence[float]], dims: int) -> tuple[float, ...]:
+def kahan_sum_nd(
+    values: Iterable[Sequence[float]], dims: int
+) -> tuple[float, ...]:
     """Return compensated sums of ``values`` with ``dims`` components.
 
     Each component of the tuples in ``values`` is summed independently using the
@@ -156,7 +158,8 @@ def neighbor_phase_mean_list(
         pairs = [
             (c, s)
             for v in neigh
-            if (c := cos_th.get(v)) is not None and (s := sin_th.get(v)) is not None
+            if (c := cos_th.get(v)) is not None
+            and (s := sin_th.get(v)) is not None
         ]
         if pairs:
             arr = np.array(pairs, dtype=float)

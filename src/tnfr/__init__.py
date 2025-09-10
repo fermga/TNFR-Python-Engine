@@ -31,11 +31,13 @@ if _metadata is not None:  # pragma: no cover
     version = _metadata.version  # type: ignore[attr-defined]
     PackageNotFoundError = _metadata.PackageNotFoundError  # type: ignore[attr-defined]
 else:  # pragma: no cover
+
     class PackageNotFoundError(Exception):
         pass
 
     def version(_: str) -> str:
         raise PackageNotFoundError
+
 
 try:
     __version__ = version("tnfr")
