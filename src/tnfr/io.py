@@ -20,7 +20,9 @@ def _missing_dependency_error(dep: str) -> type[Exception]:
     class _MissingDependencyError(Exception):
         pass
 
-    _MissingDependencyError.__doc__ = f"Fallback error used when {dep} is missing."
+    _MissingDependencyError.__doc__ = (
+        f"Fallback error used when {dep} is missing."
+    )
     return _MissingDependencyError
 
 
@@ -54,7 +56,9 @@ def _parse_yaml(text: str) -> Any:
 
 def _parse_toml(text: str) -> Any:
     """Parse TOML ``text`` using ``tomllib`` or ``tomli``."""
-    return getattr(tomllib, "loads", _missing_dependency("tomllib/tomli"))(text)
+    return getattr(tomllib, "loads", _missing_dependency("tomllib/tomli"))(
+        text
+    )
 
 
 PARSERS = {

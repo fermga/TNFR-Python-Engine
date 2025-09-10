@@ -48,7 +48,6 @@ def _sigma_fallback(
     return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
 
 
-
 # Public exports for this module
 __all__ = (
     "CallbackSpec",
@@ -86,7 +85,7 @@ def _trace_setup(
 
 
 def _callback_names(
-    callbacks: Mapping[str, CallbackSpec] | Iterable[CallbackSpec]
+    callbacks: Mapping[str, CallbackSpec] | Iterable[CallbackSpec],
 ) -> list[str]:
     """Return callback names from ``callbacks``."""
     if isinstance(callbacks, Mapping):
@@ -203,7 +202,9 @@ def callbacks_field(G):
     for phase, cb_map in cb.items():
         if isinstance(cb_map, Mapping):
             out[phase] = _callback_names(cb_map)
-        elif isinstance(cb_map, Sequence) and not isinstance(cb_map, (str, bytes)):
+        elif isinstance(cb_map, Sequence) and not isinstance(
+            cb_map, (str, bytes)
+        ):
             out[phase] = _callback_names(cb_map)
         else:
             out[phase] = None

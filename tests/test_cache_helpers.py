@@ -79,6 +79,20 @@ def test_cache_node_list_invalidate_on_node_replacement(graph_canon):
     assert set(nodes2) == {1, 2}
 
 
+def test_cache_node_list_cache_updated_on_node_set_change(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([0, 1])
+    nodes1 = _cache_node_list(G)
+    cache1 = G.graph["_node_list_cache"]
+    G.add_node(2)
+    nodes2 = _cache_node_list(G)
+    cache2 = G.graph["_node_list_cache"]
+    assert nodes2 is not nodes1
+    assert cache2 is not cache1
+    assert set(nodes2) == {0, 1, 2}
+    assert G.graph["_node_list_len"] == 3
+
+
 def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon):
     monkeypatch.setattr("tnfr.helpers.cache.get_numpy", lambda: None)
     G = graph_canon()

@@ -124,13 +124,17 @@ def _sigma_from_iterable(
     number of processed values under the ``"n"`` key.
     """
 
-    if isinstance(values, Iterable) and not isinstance(values, (str, bytes, bytearray)):
+    if isinstance(values, Iterable) and not isinstance(
+        values, (str, bytes, bytearray)
+    ):
         iterator = values
     else:
         iterator = [values]
     np = get_numpy()
     if np is not None:
-        arr = np.fromiter((_to_complex(v) for v in iterator), dtype=np.complex128)
+        arr = np.fromiter(
+            (_to_complex(v) for v in iterator), dtype=np.complex128
+        )
         cnt = int(arr.size)
         if cnt == 0:
             return {
@@ -266,7 +270,9 @@ def sigma_vector_from_graph(
 
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
-    sv, _ = _sigma_from_nodes((nd for _, nd in G.nodes(data=True)), weight_mode)
+    sv, _ = _sigma_from_nodes(
+        (nd for _, nd in G.nodes(data=True)), weight_mode
+    )
     return sv
 
 
@@ -352,7 +358,9 @@ def sigma_rose(G, steps: int | None = None) -> dict[str, int]:
         steps = int(steps)
         if steps < 0:
             raise ValueError("steps must be non-negative")
-        rows = counts if steps >= len(counts) else counts[-steps:]  # noqa: E203
+        rows = (
+            counts if steps >= len(counts) else counts[-steps:]
+        )  # noqa: E203
     else:
         rows = counts
     counter = Counter()

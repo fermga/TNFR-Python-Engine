@@ -117,7 +117,6 @@ def _warn_failure(
         logger.warning(msg)
 
 
-
 @lru_cache(maxsize=128)
 def _optional_import_cached(name: str) -> Any | None:
     """Internal helper implementing ``optional_import`` logic without fallback."""
