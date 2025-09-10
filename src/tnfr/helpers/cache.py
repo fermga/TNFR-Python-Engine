@@ -173,6 +173,14 @@ def node_set_checksum(
     return checksum
 
 
+def _update_node_cache(
+    graph: Any, nodes: tuple[Any, ...], key: str, *, checksum: str
+) -> None:
+    """Store ``nodes`` and ``checksum`` in ``graph`` under ``key``."""
+    graph[f"{key}_cache"] = NodeCache(checksum=checksum, nodes=nodes)
+    graph[f"{key}_checksum"] = checksum
+
+
 def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     """Cache and return the tuple of nodes for ``G``.
 
@@ -182,6 +190,8 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     """
     graph = get_graph(G)
     cache: NodeCache | None = graph.get("_node_list_cache")
+    nodes = cache.nodes if cache else None
+    stored_len = graph.get("_node_list_len")
     current_n = G.number_of_nodes()
     dirty = bool(graph.pop("_node_list_dirty", False))
 
@@ -190,13 +200,13 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
         nodes is None
         or stored_len != current_n
         or dirty
-        or graph.get("_node_list_checksum") != new_checksum
+        or (cache and cache.checksum != new_checksum)
     ):
         nodes = tuple(G.nodes())
         new_checksum = node_set_checksum(G, nodes, store=True)
         _update_node_cache(graph, nodes, "_node_list", checksum=new_checksum)
         graph["_node_list_len"] = current_n
-    elif "_node_list_checksum" not in graph:
+    elif cache and "_node_list_checksum" not in graph:
         _update_node_cache(graph, nodes, "_node_list", checksum=new_checksum)
     return nodes
 

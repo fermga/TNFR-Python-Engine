@@ -9,7 +9,7 @@ import copy
 import warnings
 from types import MappingProxyType
 
-from functools import lru_cache, partial
+from functools import lru_cache, partial, singledispatch, wraps
 
 from dataclasses import asdict, is_dataclass
 import weakref
