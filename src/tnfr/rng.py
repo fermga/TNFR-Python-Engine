@@ -5,7 +5,9 @@ from __future__ import annotations
 import random
 import hashlib
 import struct
-from typing import MutableMapping, Any, Callable, Tuple
+import threading
+from typing import Any, Callable
+
 
 from cachetools import LRUCache, cached
 from .constants import DEFAULTS, get_param
@@ -30,16 +32,14 @@ def seed_hash(seed_int: int, key_int: int) -> int:
     )
 
 
-def _make_cache(
-    size: int,
-) -> Tuple[MutableMapping[tuple[int, int], int], Callable[[int, int], int]]:
+def _make_cache(size: int) -> Callable[[int, int], int]:
     if size > 0:
         cache = LRUCache(maxsize=max(1, size))
-        return cache, cached(cache=cache, lock=_RNG_LOCK)(seed_hash)
-    return {}, seed_hash
+        return cached(cache=cache, lock=_RNG_LOCK)(seed_hash)
+    return seed_hash
 
 
-_RNG_CACHE, _seed_hash_cached = _make_cache(_CACHE_MAXSIZE)
+_seed_hash_cached = _make_cache(_CACHE_MAXSIZE)
 
 
 def _seed_hash_for(seed_int: int, key_int: int) -> int:
@@ -112,13 +112,13 @@ def set_cache_maxsize(size: int) -> None:
     If caching is disabled, ``clear_rng_cache`` has no effect.
     """
 
-    global _CACHE_MAXSIZE, _RNG_CACHE, _seed_hash_cached
+    global _CACHE_MAXSIZE, _seed_hash_cached
     new_size = int(size)
     if new_size < 0:
         raise ValueError("size must be non-negative")
     with _RNG_LOCK:
         _CACHE_MAXSIZE = new_size
-        _RNG_CACHE, _seed_hash_cached = _make_cache(new_size)
+        _seed_hash_cached = _make_cache(new_size)
 
 
 __all__ = (
