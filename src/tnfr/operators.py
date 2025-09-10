@@ -19,7 +19,6 @@ from typing import Any, TYPE_CHECKING
 import math
 import hashlib
 import heapq
-import struct
 import threading
 from operator import ge, le
 from functools import cache
@@ -46,6 +45,7 @@ from .rng import (
     base_seed,
     cache_enabled,
     clear_rng_cache as _clear_rng_cache,
+    seed_hash,
 )
 from .callback_utils import invoke_callbacks
 from .glyph_history import append_metric, ensure_history, current_step_idx
@@ -186,14 +186,7 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     cache_key = (seed_root, scope_id)
     seed = cache.get(cache_key)
     if seed is None:
-        seed_bytes = struct.pack(
-            ">QQ",
-            seed_root & 0xFFFFFFFFFFFFFFFF,
-            scope_id & 0xFFFFFFFFFFFFFFFF,
-        )
-        seed = int.from_bytes(
-            hashlib.blake2b(seed_bytes, digest_size=8).digest(), "little"
-        )
+        seed = seed_hash(seed_root, scope_id)
         cache[cache_key] = seed
     seq = 0
     if cache_enabled():

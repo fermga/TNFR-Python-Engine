@@ -18,7 +18,8 @@ _RNG_LOCK = threading.Lock()
 _CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
 
 
-def _seed_hash(seed_int: int, key_int: int) -> int:
+def seed_hash(seed_int: int, key_int: int) -> int:
+    """Return a 64-bit hash derived from ``seed_int`` and ``key_int``."""
     seed_bytes = struct.pack(
         ">QQ",
         seed_int & MASK64,
@@ -32,8 +33,8 @@ def _seed_hash(seed_int: int, key_int: int) -> int:
 def _make_cache(size: int) -> Tuple[MutableMapping[tuple[int, int], int], Callable[[int, int], int]]:
     if size > 0:
         cache = LRUCache(maxsize=max(1, size))
-        return cache, cached(cache=cache, lock=_RNG_LOCK)(_seed_hash)
-    return {}, _seed_hash
+        return cache, cached(cache=cache, lock=_RNG_LOCK)(seed_hash)
+    return {}, seed_hash
 
 
 _RNG_CACHE, _seed_hash_cached = _make_cache(_CACHE_MAXSIZE)
@@ -46,7 +47,7 @@ def _seed_hash_for(seed_int: int, key_int: int) -> int:
     """
 
     if _CACHE_MAXSIZE <= 0:
-        return _seed_hash(seed_int, key_int)
+        return seed_hash(seed_int, key_int)
     return _seed_hash_cached(seed_int, key_int)
 
 
@@ -98,6 +99,7 @@ def set_cache_maxsize(size: int) -> None:
 
 
 __all__ = (
+    "seed_hash",
     "make_rng",
     "set_cache_maxsize",
     "base_seed",
