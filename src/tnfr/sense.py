@@ -11,6 +11,7 @@ import networkx as nx  # type: ignore[import-untyped]
 from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
 from .alias import get_attr
 from .helpers.numeric import clamp01, kahan_sum2d
+from .import_utils import get_numpy
 from .callback_utils import register_callback
 from .glyph_history import (
     ensure_history,
@@ -124,8 +125,31 @@ def _sigma_from_iterable(
     """
 
     iterator = values if isinstance(values, Iterable) else [values]
-    iterator = iter(iterator)
+    np = get_numpy()
+    if np is not None:
+        arr = np.fromiter((_to_complex(v) for v in iterator), dtype=np.complex128)
+        cnt = int(arr.size)
+        if cnt == 0:
+            return {
+                "x": 0.0,
+                "y": 0.0,
+                "mag": 0.0,
+                "angle": float(fallback_angle),
+                "n": 0,
+            }
+        x = float(np.mean(arr.real))
+        y = float(np.mean(arr.imag))
+        mag = float(np.hypot(x, y))
+        ang = float(np.arctan2(y, x)) if mag > 0 else float(fallback_angle)
+        return {
+            "x": x,
+            "y": y,
+            "mag": mag,
+            "angle": ang,
+            "n": cnt,
+        }
 
+    iterator = iter(iterator)
     cnt = 0
 
     def pair_iter():
