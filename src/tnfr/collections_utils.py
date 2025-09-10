@@ -65,22 +65,29 @@ def ensure_collection(
     *,
     max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
     error_msg: str | None = None,
+    treat_strings_as_iterables: bool = False,
 ) -> Collection[T]:
     """Return ``it`` as a ``Collection`` materializing if necessary.
 
-    Step 1 detects collections and string-like inputs early. ``max_materialize``
-    limits materialization for non-collection iterables; ``None`` disables the
-    limit. ``error_msg`` customizes the :class:`ValueError` raised when the
-    iterable yields more items than allowed. ``TypeError`` is raised when ``it``
-    is not iterable. The input is consumed at most once and no extra items
-    beyond the limit are stored in memory.
+    Step 1 detects collections and handles string-like inputs (``str``,
+    ``bytes`` and ``bytearray``) specially. By default these are wrapped as a
+    single item tuple so they are not iterated character by character. Pass
+    ``treat_strings_as_iterables=True`` to materialize them like any other
+    iterable. ``max_materialize`` limits materialization for non-collection
+    iterables; ``None`` disables the limit. ``error_msg`` customizes the
+    :class:`ValueError` raised when the iterable yields more items than allowed.
+    ``TypeError`` is raised when ``it`` is not iterable. The input is consumed
+    at most once and no extra items beyond the limit are stored in memory.
     """
 
     # Step 1: detect collections and raw strings/bytes early
-    if isinstance(it, Collection) and not isinstance(it, STRING_TYPES):
-        return it
-    if isinstance(it, STRING_TYPES):
-        return (cast(T, it),)
+    if isinstance(it, Collection):
+        if isinstance(it, STRING_TYPES):
+            if not treat_strings_as_iterables:
+                return (cast(T, it),)
+            # Fall through to materialization when treating as iterable
+        else:
+            return it
 
     # Step 2: validate limit
     limit = _validate_limit(max_materialize)
