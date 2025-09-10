@@ -174,7 +174,8 @@ def invoke_callbacks(
     strict = bool(
         G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
     )
-    ctx = ctx or {}
+    if ctx is None:
+        ctx = {}
     err_list = G.graph.get("_callback_errors")
     if not isinstance(err_list, deque) or err_list.maxlen != _CALLBACK_ERROR_LIMIT:
         err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
