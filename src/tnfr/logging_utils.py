@@ -8,7 +8,26 @@ from __future__ import annotations
 
 import logging
 
+import threading
+from functools import lru_cache
+from typing import Any, Hashable, Mapping
+
+
 __all__ = ("get_logger", "warn_once")
+
+
+__all__ = ("get_logger", "warn_once")
+
+
+def _configure_root() -> None:
+    """Configure the root logger if it has no handlers."""
+
+    global _LOGGING_CONFIGURED
+
+    root = logging.getLogger()
+    if root.handlers:
+        _LOGGING_CONFIGURED = True
+        return
 
 
 root = logging.getLogger()
@@ -25,12 +44,36 @@ def get_logger(name: str) -> logging.Logger:
     return logging.getLogger(name)
 
 
-def warn_once(key: str, message: str) -> None:
-    """Log ``message`` once for ``key`` using a global set with lock."""
 
-    with _WARN_ONCE_LOCK:
-        if key in _WARNED_KEYS:
-            return
-        _WARNED_KEYS.add(key)
-    logging.getLogger().warning(message)
+def warn_once(
+    logger: logging.Logger,
+    msg: str,
+    *,
+    maxsize: int = 1024,
+) -> callable:
+    """Return a function that logs ``msg`` once per key.
+
+    The returned callable accepts a mapping of keys to values. Keys are
+    tracked using an LRU cache limited to ``maxsize`` entries. When
+    called, new keys trigger a warning with their associated values while
+    repeated keys are ignored. The callable exposes ``clear()`` to reset
+    the tracked keys, useful for tests.
+    """
+
+    @lru_cache(maxsize=maxsize)
+    def _seen(key: Hashable) -> None:  # pragma: no cover - simple cache
+        return None
+
+    def _log(mapping: Mapping[Hashable, Any]) -> None:
+        new: dict[Hashable, Any] = {}
+        for k, v in mapping.items():
+            info = _seen.cache_info()
+            _seen(k)
+            if _seen.cache_info().misses > info.misses:
+                new[k] = v
+        if new:
+            logger.warning(msg, new)
+
+    _log.clear = _seen.cache_clear  # type: ignore[attr-defined]
+    return _log
 

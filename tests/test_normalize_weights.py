@@ -7,7 +7,9 @@ import tnfr.logging_utils as logging_utils
 
 
 def test_normalize_weights_warns_on_negative_value(caplog):
-    logging_utils._WARNED_KEYS.clear()
+
+    cu.clear_warned_negative_keys()
+
     weights = {"a": -1.0, "b": 2.0}
     with caplog.at_level("WARNING"):
         norm = normalize_weights(weights, ("a", "b"))
@@ -23,7 +25,9 @@ def test_normalize_weights_raises_on_negative_value():
 
 
 def test_normalize_weights_warns_on_negative_default(caplog):
-    logging_utils._WARNED_KEYS.clear()
+
+    cu.clear_warned_negative_keys()
+
     with caplog.at_level("WARNING"):
         normalize_weights({}, ("a", "b"), default=-0.5)
     assert any("Negative weights" in m for m in caplog.messages)
@@ -44,7 +48,9 @@ def test_normalize_weights_warns_on_non_numeric_value(caplog):
 
 
 def test_normalize_weights_warn_once(caplog):
-    logging_utils._WARNED_KEYS.clear()
+
+    cu.clear_warned_negative_keys()
+
     weights = {"x": -1.0}
     with caplog.at_level("WARNING"):
         normalize_weights(weights, ("x",))
@@ -69,7 +75,9 @@ def test_normalize_weights_high_precision():
 
 
 def test_normalize_weights_deduplicates_keys():
-    logging_utils._WARNED_KEYS.clear()
+
+    cu.clear_warned_negative_keys()
+
     weights = {"a": -1.0, "b": -1.0}
     dup_keys = ["a", "b", "a"]
     unique_keys = ["a", "b"]

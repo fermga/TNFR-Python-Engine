@@ -5,7 +5,9 @@ from __future__ import annotations
 from collections.abc import Collection, Iterable, Mapping, Sequence
 from itertools import islice
 from typing import Any, TypeVar, cast
-from .logging_utils import get_logger, warn_once as log_warn_once
+
+from .logging_utils import get_logger, warn_once
+
 
 from .helpers.numeric import kahan_sum
 
@@ -18,6 +20,17 @@ STRING_TYPES = (str, bytes, bytearray)
 NEGATIVE_WEIGHTS_MSG = "Negative weights detected: %s"
 
 
+_WARNED_NEGATIVE_KEYS_LIMIT = 1024
+_log_negative_keys_once = warn_once(
+    logger, NEGATIVE_WEIGHTS_MSG, maxsize=_WARNED_NEGATIVE_KEYS_LIMIT
+)
+
+
+def clear_warned_negative_keys() -> None:
+    """Clear the cache of warned negative weight keys."""
+    _log_negative_keys_once.clear()
+
+
 
 __all__ = (
     "MAX_MATERIALIZE_DEFAULT",
@@ -25,6 +38,7 @@ __all__ = (
     "normalize_weights",
     "normalize_counter",
     "mix_groups",
+    "clear_warned_negative_keys",
 )
 
 MAX_MATERIALIZE_DEFAULT: int = 1000
