@@ -86,7 +86,8 @@ def compute_coherence(
         ``C`` when ``return_means`` is ``False`` (default). When ``True``, a
         tuple ``(C, dnfr_mean, depi_mean)`` is returned.
     """
-    if G.number_of_nodes() == 0:
+    count = G.number_of_nodes()
+    if count == 0:
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
     count = G.number_of_nodes()
@@ -123,6 +124,14 @@ def compute_coherence(
         dnfr_mean = float(np.mean(dnfr_arr))
         depi_mean = float(np.mean(depi_arr))
     else:
+        pairs = (
+            (
+                abs(get_attr(nd, ALIAS_DNFR, 0.0)),
+                abs(get_attr(nd, ALIAS_dEPI, 0.0)),
+            )
+            for _, nd in G.nodes(data=True)
+        )
+        dnfr_sum, depi_sum = kahan_sum2d(pairs)
         dnfr_mean = dnfr_sum / count
         depi_mean = depi_sum / count
 
