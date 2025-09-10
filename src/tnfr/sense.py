@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from typing import TypeVar
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 import math
 from collections import Counter
 
@@ -53,7 +53,7 @@ __all__ = [
 T = TypeVar("T")
 
 
-def _resolve_glyph(g: str, mapping: dict[str, T]) -> T:
+def _resolve_glyph(g: str, mapping: Mapping[str, T]) -> T:
     """Return ``mapping[g]`` or raise ``KeyError`` with a standard message."""
 
     try:
