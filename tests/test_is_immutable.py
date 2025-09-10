@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any
+from collections.abc import Mapping
 
 from tnfr.constants import _is_immutable, _is_immutable_inner
 from tnfr.constants import _IMMUTABLE_CACHE
@@ -72,6 +73,37 @@ class MutableDC:
 
 def test_is_immutable_mutable_dataclass():
     assert not _is_immutable(MutableDC([1, 2]))
+
+
+class CustomMapping(Mapping):
+    def __init__(self, data):
+        self._data = data
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+    def __iter__(self):
+        return iter(self._data)
+
+    def __len__(self):
+        return len(self._data)
+
+
+def test_is_immutable_custom_mapping():
+    imm = CustomMapping({"a": 1, "b": (2, 3)})
+    assert _is_immutable(imm)
+
+    mut = CustomMapping({"a": [1]})
+    assert not _is_immutable(mut)
+
+
+def test_is_immutable_custom_mapping_cycle():
+    class CustomDict(dict):
+        pass
+
+    cyc = CustomDict()
+    cyc["self"] = cyc
+    assert not _is_immutable(cyc)
 
 
 def test_is_immutable_detects_cycles():

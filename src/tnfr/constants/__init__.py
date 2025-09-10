@@ -86,7 +86,6 @@ _FREEZE_DISPATCH: dict[type, Callable[[Any, set[int]], Any]] = {
     set: _freeze_set,
     frozenset: _freeze_frozenset,
     bytearray: _freeze_bytearray,
-    Mapping: _freeze_mapping,
 }
 
 
@@ -102,9 +101,11 @@ def _freeze(value: Any, seen: set[int] | None = None):
             return _freeze_dataclass(value, seen)
         if isinstance(value, IMMUTABLE_SIMPLE):
             return value
-        for typ, func in _FREEZE_DISPATCH.items():
-            if isinstance(value, typ):
-                return func(value, seen)
+        func = _FREEZE_DISPATCH.get(type(value))
+        if func is None and isinstance(value, Mapping):
+            func = _freeze_mapping
+        if func is not None:
+            return func(value, seen)
         raise TypeError
     finally:
         seen.remove(obj_id)
