@@ -9,6 +9,7 @@ def test_public_exports():
         "run",
         "preparar_red",
         "create_nfr",
+        "run_sequence",
         "NodeState",
         "CallbackSpec",
         "apply_topological_remesh",

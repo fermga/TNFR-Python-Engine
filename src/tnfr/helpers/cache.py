@@ -93,11 +93,15 @@ def _node_repr(n: Any) -> str:
 
 
 @lru_cache(maxsize=1024)
-def _hash_node(obj: Any) -> bytes:
-    """Return a stable digest for ``obj`` used in node checksums."""
-    return hashlib.blake2b(
-        _node_repr(obj).encode("utf-8"), digest_size=16
-    ).digest()
+def _hash_node(obj: Any, repr_: str | None = None) -> bytes:
+    """Return a stable digest for ``obj`` used in node checksums.
+
+    ``repr_`` provides an optional precomputed representation of ``obj`` and
+    avoids an additional call to :func:`_node_repr` when supplied.
+    """
+    if repr_ is None:
+        repr_ = _node_repr(obj)
+    return hashlib.blake2b(repr_.encode("utf-8"), digest_size=16).digest()
 
 
 def _iter_node_digests(
@@ -106,17 +110,16 @@ def _iter_node_digests(
     """Yield node digests in a deterministic order.
 
     When ``presorted`` is ``True`` the nodes are assumed to already be sorted
-    in a stable manner and their digests are yielded directly. Otherwise
-    ``sorted`` is applied with ``key=_node_repr`` which consumes the iterable
-    without materialising additional ``(repr, node)`` pairs and the nodes are
-    mapped directly to :func:`_hash_node`.
+    in a stable manner and their digests are yielded directly. Otherwise,
+    tuples of ``(repr, node)`` are generated and sorted by ``repr`` before
+    passing both values to :func:`_hash_node`.
     """
     if presorted:
         yield from (_hash_node(n) for n in nodes)
     else:
-        # `sorted` accepts the iterable directly and uses `key=_node_repr` to
-        # order nodes without building ``(repr, node)`` tuples.
-        yield from map(_hash_node, sorted(nodes, key=_node_repr))
+        # Precompute representations to avoid duplicate work during hashing.
+        for repr_, node in sorted((_node_repr(n), n) for n in nodes):
+            yield _hash_node(node, repr_)
 
 
 def _update_node_cache(
