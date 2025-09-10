@@ -2,7 +2,6 @@ import warnings
 from dataclasses import is_dataclass
 
 import tnfr.json_utils as json_utils
-import tnfr.logging_utils as logging_utils
 
 
 class DummyOrjson:
@@ -16,7 +15,6 @@ class DummyOrjson:
 def _reset_json_utils(monkeypatch, module):
     monkeypatch.setattr(json_utils, "optional_import", lambda name: module)
     json_utils._load_orjson.cache_clear()
-    json_utils._warned_orjson_params = False
 
 
 def test_json_dumps_without_orjson(monkeypatch, caplog):
@@ -29,14 +27,15 @@ def test_json_dumps_without_orjson(monkeypatch, caplog):
     assert caplog.records == []
 
 
-def test_json_dumps_with_orjson_warns(monkeypatch, caplog):
+def test_json_dumps_with_orjson_warns(monkeypatch):
     _reset_json_utils(monkeypatch, DummyOrjson())
 
     with warnings.catch_warnings(record=True) as w:
         warnings.filterwarnings("once", message=".*ignored when using orjson")
 
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
-    assert sum("ignored" in r.message for r in caplog.records) == 1
+        json_utils.json_dumps({"a": 1}, ensure_ascii=False)
+    assert sum("ignored" in str(r.message) for r in w) == 1
 
 
 def test_params_passed_to_std(monkeypatch):
