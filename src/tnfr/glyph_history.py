@@ -44,13 +44,12 @@ def validate_window(window: int, *, positive: bool = False) -> int:
 
 def _normalize_history_input(hist: Any) -> Iterable[Any]:
     """Normalise ``hist`` to an iterable excluding strings/bytes."""
-    try:
-        seq = ensure_collection(hist, max_materialize=None)
-    except TypeError:
-        return ()
     if isinstance(hist, (str, bytes, bytearray)):
         return ()
-    return seq
+    try:
+        return ensure_collection(hist, max_materialize=None)
+    except TypeError:
+        return ()
 
 
 def _ensure_glyph_history(
