@@ -22,6 +22,7 @@ from .helpers.numeric import (
     clamp01,
     angle_diff,
     neighbor_phase_mean_list,
+    kahan_sum2d,
 )
 from .helpers.cache import edge_version_cache
 from .import_utils import get_numpy
@@ -85,24 +86,38 @@ def compute_coherence(
         ``C`` when ``return_means`` is ``False`` (default). When ``True``, a
         tuple ``(C, dnfr_mean, depi_mean)`` is returned.
     """
-    count = G.number_of_nodes()
-    if not count:
+    if G.number_of_nodes() == 0:
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
     np = get_numpy()
-    dnfr_vals: list[float] = []
-    depi_vals: list[float] = []
-    for _, nd in G.nodes(data=True):
-        dnfr_vals.append(get_attr(nd, ALIAS_DNFR, 0.0))
-        depi_vals.append(get_attr(nd, ALIAS_dEPI, 0.0))
     if np is not None:
+        dnfr_vals: list[float] = []
+        depi_vals: list[float] = []
+        for _, nd in G.nodes(data=True):
+            dnfr_vals.append(get_attr(nd, ALIAS_DNFR, 0.0))
+            depi_vals.append(get_attr(nd, ALIAS_dEPI, 0.0))
         dnfr_arr = np.abs(np.asarray(dnfr_vals, dtype=float))
         depi_arr = np.abs(np.asarray(depi_vals, dtype=float))
         dnfr_mean = float(np.mean(dnfr_arr))
         depi_mean = float(np.mean(depi_arr))
     else:
-        dnfr_mean = math.fsum(map(abs, dnfr_vals)) / count
-        depi_mean = math.fsum(map(abs, depi_vals)) / count
+        count = 0
+
+        def pair_iter():
+            nonlocal count
+            for _, nd in G.nodes(data=True):
+                count += 1
+                yield (
+                    abs(get_attr(nd, ALIAS_DNFR, 0.0)),
+                    abs(get_attr(nd, ALIAS_dEPI, 0.0)),
+                )
+
+        dnfr_sum, depi_sum = kahan_sum2d(pair_iter())
+        if count:
+            dnfr_mean = dnfr_sum / count
+            depi_mean = depi_sum / count
+        else:
+            dnfr_mean = depi_mean = 0.0
 
     coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence
