@@ -37,10 +37,14 @@ def clamp01(x: float) -> float:
 
 def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
     """Return the arithmetic mean of ``xs`` or ``default`` if empty."""
-    try:
-        return float(fmean(xs))
-    except (StatisticsError, ValueError, TypeError):
-        return float(default)
+    total = 0.0
+    count = 0
+    for x in xs:
+        total = math.fsum((total, float(x)))
+        count += 1
+    if count:
+        return total / count
+    return float(default)
 
 
 def kahan_sum_nd(values: Iterable[Sequence[float]], dims: int) -> tuple[float, ...]:
