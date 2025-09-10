@@ -20,7 +20,7 @@ from .collections_utils import ensure_collection, MAX_MATERIALIZE_DEFAULT
 from .glyph_history import ensure_history
 
 if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx  # type: ignore[import-untyped]
+    import networkx as nx  # type: ignore[import-untyped]  # noqa: F401
 
 # Basic types
 Node = Any
@@ -208,27 +208,50 @@ def _flatten_thol(
     stack.append(THOL_SENTINEL)
 
 
-def _flatten_target(item: TARGET, stack: deque[Any], ops: list[tuple[OpTag, Any]], max_materialize: int | None) -> None:
+def _flatten_target(
+    item: TARGET,
+    stack: deque[Any],
+    ops: list[tuple[OpTag, Any]],
+    max_materialize: int | None,
+) -> None:
     ops.append((OpTag.TARGET, item))
 
 
-def _flatten_wait(item: WAIT, stack: deque[Any], ops: list[tuple[OpTag, Any]], max_materialize: int | None) -> None:
+def _flatten_wait(
+    item: WAIT,
+    stack: deque[Any],
+    ops: list[tuple[OpTag, Any]],
+    max_materialize: int | None,
+) -> None:
     steps = max(1, int(getattr(item, "steps", 1)))
     ops.append((OpTag.WAIT, steps))
 
 
-def _flatten_thol_proxy(item: THOL, stack: deque[Any], ops: list[tuple[OpTag, Any]], max_materialize: int | None) -> None:
+def _flatten_thol_proxy(
+    item: THOL,
+    stack: deque[Any],
+    ops: list[tuple[OpTag, Any]],
+    max_materialize: int | None,
+) -> None:
     _flatten_thol(item, stack, max_materialize=max_materialize)
 
 
-def _flatten_glyph(item: Glyph | str, stack: deque[Any], ops: list[tuple[OpTag, Any]], max_materialize: int | None) -> None:
+def _flatten_glyph(
+    item: Glyph | str,
+    stack: deque[Any],
+    ops: list[tuple[OpTag, Any]],
+    max_materialize: int | None,
+) -> None:
     g = item.value if isinstance(item, Glyph) else str(item)
     if g not in GLYPHS_CANONICAL_SET:
         raise ValueError(f"Non-canonical glyph: {g}")
     ops.append((OpTag.GLYPH, g))
 
 
-_TOKEN_DISPATCH: dict[type, Callable[[Any, deque[Any], list[tuple[OpTag, Any]], int | None], None]] = {
+_TOKEN_DISPATCH: dict[
+    type,
+    Callable[[Any, deque[Any], list[tuple[OpTag, Any]], int | None], None],
+] = {
     TARGET: _flatten_target,
     WAIT: _flatten_wait,
     THOL: _flatten_thol_proxy,
