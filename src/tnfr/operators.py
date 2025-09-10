@@ -15,7 +15,7 @@ Note on REMESH α (alpha) precedence:
 
 # operators.py — TNFR canónica (ASCII-safe)
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, Optional
+from typing import Any, TYPE_CHECKING
 import math
 import hashlib
 import heapq
@@ -256,7 +256,7 @@ def _determine_dominant(
     Falls back to ``default_kind`` when neighbours lack ``epi_kind``.
     """
 
-    best_kind: Optional[str] = None
+    best_kind: str | None = None
     best_abs = 0.0
     for v in neigh:
         abs_v = abs(v.EPI)
@@ -553,7 +553,7 @@ _NAME_TO_OP = {
 
 
 def apply_glyph_obj(
-    node: NodoProtocol, glyph: Glyph | str, *, window: Optional[int] = None
+    node: NodoProtocol, glyph: Glyph | str, *, window: int | None = None
 ) -> None:
     """Apply ``glyph`` to an object satisfying :class:`NodoProtocol`."""
 
@@ -587,7 +587,7 @@ def apply_glyph_obj(
 
 
 def apply_glyph(
-    G, n, glyph: Glyph | str, *, window: Optional[int] = None
+    G, n, glyph: Glyph | str, *, window: int | None = None
 ) -> None:
     """Adapter to operate on ``networkx`` graphs."""
     NodoNX = import_nodonx()
@@ -843,11 +843,11 @@ def _community_remesh(
 
 def apply_topological_remesh(
     G,
-    mode: Optional[str] = None,
+    mode: str | None = None,
     *,
-    k: Optional[int] = None,
+    k: int | None = None,
     p_rewire: float = 0.2,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> None:
     """Approximate topological remeshing.
 
@@ -935,7 +935,7 @@ def _extra_gating_ok(hist, cfg, w_estab):
 
 
 def apply_remesh_if_globally_stable(
-    G, pasos_estables_consecutivos: Optional[int] = None
+    G, pasos_estables_consecutivos: int | None = None
 ) -> None:
     params = [
         (

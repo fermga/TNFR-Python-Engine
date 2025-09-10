@@ -1,3 +1,10 @@
+"""ΔNFR (dynamic network field response) utilities and strategies.
+
+This module provides helper functions to configure, cache and apply ΔNFR
+components such as phase, epidemiological state and vortex fields during
+simulations.
+"""
+
 from __future__ import annotations
 
 import math

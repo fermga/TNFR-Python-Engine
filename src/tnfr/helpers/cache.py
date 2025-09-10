@@ -371,7 +371,7 @@ def edge_version_cache(
     # Execute builder without holding the lock to avoid blocking other threads.
     try:
         value = builder()
-    except Exception as exc:  # pragma: no cover - logging side effect
+    except (RuntimeError, ValueError) as exc:  # pragma: no cover - logging side effect
         logger.exception("edge_version_cache builder failed for %r: %s", key, exc)
         raise
     else:
