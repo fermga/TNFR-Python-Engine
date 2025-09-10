@@ -6,18 +6,21 @@ This module lazily imports :mod:`orjson` on first use of :func:`json_dumps`.
 from __future__ import annotations
 
 import json
+
 import warnings
+
 from typing import Any, Callable, overload, Literal
 
 from dataclasses import dataclass
-from functools import lru_cache
+from functools import lru_cache, partial
 from .import_utils import optional_import
 
-__all__ = ("json_dumps", "json_dumps_str")
+from .logging_utils import warn_once
 
 warnings.filterwarnings(
     "once", message=".*ignored when using orjson", category=UserWarning
 )
+
 
 
 @lru_cache(maxsize=1)
@@ -54,6 +57,7 @@ def _json_dumps_orjson(
             "ignored when using orjson",
             UserWarning,
             stacklevel=3,
+
         )
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
     data = orjson.dumps(obj, option=option, default=params.default)
@@ -139,6 +143,4 @@ def json_dumps(
     return _json_dumps_std(obj, params, **kwargs)
 
 
-def json_dumps_str(obj: Any, **kwargs: Any) -> str:
-    """``json_dumps`` wrapper that always returns ``str``."""
-    return json_dumps(obj, to_bytes=False, **kwargs)
+json_dumps_str = partial(json_dumps, to_bytes=False)

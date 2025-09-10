@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 import threading
 import time
 from .logging_utils import get_logger
+from .locking import get_lock
 
 __all__ = (
     "optional_import",
@@ -68,7 +69,7 @@ _IMPORT_STATE = _ImportState()
 
 
 _WARNED_MODULES: dict[str, float] = {}
-_WARNED_LOCK = threading.Lock()
+_WARNED_LOCK = get_lock("import_warned")
 
 
 def _warn_failure(
