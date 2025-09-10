@@ -20,14 +20,14 @@ from typing import (
     TYPE_CHECKING,
 )
 import logging
-from functools import lru_cache
+from functools import lru_cache, partial
 from .logging_utils import get_logger
 
 from .constants import ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
 from .value_utils import _convert_value
 
 if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx  # type: ignore[import-untyped]
+    import networkx  # type: ignore[import-untyped]
 
 logger = get_logger(__name__)
 
@@ -51,17 +51,12 @@ __all__ = [
 
 @lru_cache(maxsize=128)
 def _validate_aliases(aliases: tuple[str, ...]) -> tuple[str, ...]:
-    """Validate and cache ``aliases`` as a tuple of strings.
+    """Validate and cache ``aliases`` as a tuple of strings."""
 
-    The caller is responsible for providing a tuple; this function only
-    ensures that at least one alias is present and that every element is
-    a string.
-    """
     if not aliases:
         raise ValueError("'aliases' must contain at least one key")
-    for a in aliases:
-        if not isinstance(a, str):
-            raise TypeError("'aliases' elements must be strings")
+    if not all(isinstance(a, str) for a in aliases):
+        raise TypeError("'aliases' elements must be strings")
     return aliases
 
 
@@ -231,7 +226,7 @@ get_attr_str, set_attr_str = _str_accessor.get, _str_accessor.set
 
 
 def recompute_abs_max(
-    G: "nx.Graph", aliases: tuple[str, ...]
+    G: "networkx.Graph", aliases: tuple[str, ...]
 ) -> tuple[float, Hashable | None]:
     """Recalculate and return ``(max_val, node)`` for ``aliases`` in ``G``."""
     node, max_val = max(
@@ -246,7 +241,7 @@ def recompute_abs_max(
 
 
 def multi_recompute_abs_max(
-    G: "nx.Graph", alias_map: dict[str, tuple[str, ...]]
+    G: "networkx.Graph", alias_map: dict[str, tuple[str, ...]]
 ) -> dict[str, float]:
     """Return absolute maxima for each entry in ``alias_map``.
 
@@ -269,7 +264,7 @@ def multi_recompute_abs_max(
 
 
 def _update_cached_abs_max(
-    G: "nx.Graph",
+    G: "networkx.Graph",
     aliases: tuple[str, ...],
     n: Hashable,
     value: float,
@@ -291,13 +286,13 @@ def _update_cached_abs_max(
 
 
 def set_attr_and_cache(
-    G: "nx.Graph",
+    G: "networkx.Graph",
     n: Hashable,
     aliases: tuple[str, ...],
     value: float,
     *,
     cache: str | None = None,
-    extra: Callable[["nx.Graph", Hashable, float], None] | None = None,
+    extra: Callable[["networkx.Graph", Hashable, float], None] | None = None,
 ) -> float:
     """Assign ``value`` to node ``n`` and update caches if requested."""
 
@@ -310,7 +305,7 @@ def set_attr_and_cache(
 
 
 def set_attr_with_max(
-    G: "nx.Graph",
+    G: "networkx.Graph",
     n: Hashable,
     aliases: tuple[str, ...],
     value: float,
@@ -322,33 +317,36 @@ def set_attr_with_max(
 
 
 def set_scalar(
-    G: "nx.Graph",
+    G: "networkx.Graph",
     n: Hashable,
     alias: tuple[str, ...],
     value: float,
     *,
     cache: str | None = None,
-    extra: Callable[["nx.Graph", Hashable, float], None] | None = None,
+    extra: Callable[["networkx.Graph", Hashable, float], None] | None = None,
 ) -> float:
     """Assign ``value`` to ``alias`` for node ``n`` and update caches."""
     return set_attr_and_cache(G, n, alias, value, cache=cache, extra=extra)
 
 
 def set_vf(
-    G: "nx.Graph", n: Hashable, value: float, *, update_max: bool = True
+    G: "networkx.Graph", n: Hashable, value: float, *, update_max: bool = True
 ) -> None:
     """Set ``νf`` for node ``n`` and optionally update the global maximum."""
     cache = "_vfmax" if update_max else None
     set_scalar(G, n, ALIAS_VF, value, cache=cache)
 
 
-def set_dnfr(G: "nx.Graph", n: Hashable, value: float) -> None:
+_set_dnfr = partial(set_scalar, alias=ALIAS_DNFR, cache="_dnfrmax")
+
+
+def set_dnfr(G: "networkx.Graph", n: Hashable, value: float) -> None:
     """Set ``ΔNFR`` for node ``n`` and update the global maximum."""
-    set_scalar(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
+    _set_dnfr(G, n, value=value)
 
 
 def _increment_trig_version(
-    G: "nx.Graph", _: Hashable, __: float
+    G: "networkx.Graph", _: Hashable, __: float
 ) -> None:
     g = G.graph
     g["_trig_version"] = int(g.get("_trig_version", 0)) + 1
@@ -360,11 +358,14 @@ def _increment_trig_version(
     g.pop("_thetas", None)
 
 
-def set_theta(G: "nx.Graph", n: Hashable, value: float) -> None:
+_set_theta = partial(set_scalar, alias=ALIAS_THETA, extra=_increment_trig_version)
+
+
+def set_theta(G: "networkx.Graph", n: Hashable, value: float) -> None:
     """Set ``θ`` for node ``n`` and invalidate trig caches.
 
     Updating a node's phase triggers invalidation of cached trigonometric
     values. The per-graph ``_trig_version`` counter is incremented and any
     previously cached cosines, sines or angles are cleared from ``G.graph``.
     """
-    set_scalar(G, n, ALIAS_THETA, value, extra=_increment_trig_version)
+    _set_theta(G, n, value=value)

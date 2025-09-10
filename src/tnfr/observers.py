@@ -150,15 +150,11 @@ def wbar(G, window: int | None = None) -> float:
             "history is not a mapping; using instantaneous coherence"
         )
         return compute_coherence(G)
-    cs = hist.get("C_steps", [])
+    cs = list(hist.get("C_steps", []))
     if not cs:
         # fallback: coherencia instantánea
         return compute_coherence(G)
-    if not isinstance(cs, (list, tuple)):
-        cs = list(cs)
-    w = validate_window(
-        get_param(G, "WBAR_WINDOW") if window is None else window,
-        positive=True,
-    )
+    w_param = get_param(G, "WBAR_WINDOW") if window is None else window
+    w = validate_window(w_param, positive=True)
     w = min(len(cs), w)
     return float(statistics.fmean(cs[-w:]))
