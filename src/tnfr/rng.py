@@ -97,10 +97,10 @@ def set_cache_maxsize(size: int) -> None:
         _RNG_CACHE, _seed_hash_cached = _make_cache(new_size)
 
 
-__all__ = [
+__all__ = (
     "make_rng",
     "set_cache_maxsize",
     "base_seed",
     "cache_enabled",
     "clear_rng_cache",
-]
+)

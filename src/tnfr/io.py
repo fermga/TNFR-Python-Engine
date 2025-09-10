@@ -7,11 +7,13 @@ import os
 import tempfile
 from pathlib import Path
 from typing import Any, Callable
+from functools import lru_cache
 
 from .import_utils import optional_import
 from .logging_utils import get_logger
 
 
+@lru_cache(maxsize=None)
 def _missing_dependency_error(dep: str) -> type[Exception]:
     """Return a fallback :class:`Exception` when ``dep`` is unavailable."""
 
@@ -173,10 +175,10 @@ def safe_write(
             tmp_path.unlink(missing_ok=True)
 
 
-__all__ = [
+__all__ = (
     "read_structured_file",
     "safe_write",
     "StructuredFileError",
     "TOMLDecodeError",
     "YAMLError",
-]
+)

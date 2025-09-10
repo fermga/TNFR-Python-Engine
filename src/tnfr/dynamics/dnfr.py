@@ -26,14 +26,14 @@ from ..alias import (
 from ..metrics_utils import get_trig_cache
 from ..import_utils import get_numpy
 
-__all__ = [
+__all__ = (
     "default_compute_delta_nfr",
     "set_delta_nfr_hook",
     "dnfr_phase_only",
     "dnfr_epi_vf_mixed",
     "dnfr_laplacian",
     "apply_dnfr_field",
-]
+)
 
 
 def _write_dnfr_metadata(

@@ -22,6 +22,7 @@ from .helpers.numeric import (
     clamp01,
     angle_diff,
     neighbor_phase_mean_list,
+    kahan_sum2d,
 )
 from .helpers.cache import edge_version_cache
 from .import_utils import get_numpy
@@ -39,7 +40,7 @@ class GraphLike(Protocol):
     def __iter__(self) -> Iterable[Any]: ...
 
 
-__all__ = [
+__all__ = (
     "TrigCache",
     "compute_dnfr_accel_max",
     "compute_coherence",
@@ -49,7 +50,7 @@ __all__ = [
     "compute_Si_node",
     "compute_Si",
     "min_max_range",
-]
+)
 
 
 @dataclass(slots=True)
@@ -85,11 +86,11 @@ def compute_coherence(
         ``C`` when ``return_means`` is ``False`` (default). When ``True``, a
         tuple ``(C, dnfr_mean, depi_mean)`` is returned.
     """
-    count = G.number_of_nodes()
-    if not count:
+    if G.number_of_nodes() == 0:
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
     np = get_numpy()
+
     use_np = np is not None
     if use_np:
         dnfr_arr = np.empty(count, dtype=float)

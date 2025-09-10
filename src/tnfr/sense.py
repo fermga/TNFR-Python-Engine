@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from typing import TypeVar
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 import math
 from collections import Counter
 
@@ -32,7 +32,7 @@ GLYPH_UNITS: dict[str, complex] = {
     g: complex(math.cos(a), math.sin(a)) for g, a in ANGLE_MAP.items()
 }
 
-__all__ = [
+__all__ = (
     "GLYPH_UNITS",
     "glyph_angle",
     "glyph_unit",
@@ -43,7 +43,7 @@ __all__ = [
     "register_sigma_callback",
     "sigma_series",
     "sigma_rose",
-]
+)
 
 # -------------------------
 # Utilidades básicas
@@ -53,7 +53,7 @@ __all__ = [
 T = TypeVar("T")
 
 
-def _resolve_glyph(g: str, mapping: dict[str, T]) -> T:
+def _resolve_glyph(g: str, mapping: Mapping[str, T]) -> T:
     """Return ``mapping[g]`` or raise ``KeyError`` with a standard message."""
 
     try:

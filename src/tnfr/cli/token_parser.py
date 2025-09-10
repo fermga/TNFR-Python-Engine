@@ -11,13 +11,13 @@ from ..token_parser import (
     _flatten_tokens as _tp_flatten_tokens,
 )
 
-__all__ = [
+__all__ = (
     "validate_token",
     "_parse_tokens",
     "_flatten_tokens",
     "parse_thol",
     "TOKEN_MAP",
-]
+)
 
 
 def parse_thol(spec: dict[str, Any]) -> Any:

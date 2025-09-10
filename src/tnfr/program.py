@@ -4,12 +4,15 @@ Public exports are declared in ``__all__`` for explicit star imports.
 """
 
 from __future__ import annotations
-from typing import Any, Optional, Union, TYPE_CHECKING
+from typing import Any, Optional, Union
 from dataclasses import dataclass
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
 from functools import lru_cache
 from enum import Enum, auto
+
+import networkx as nx  # networkx is used at runtime
+
 from .token_parser import validate_token
 
 from .constants import get_param
@@ -18,12 +21,6 @@ from .constants_glyphs import GLYPHS_CANONICAL_SET
 from .types import Glyph
 from .collections_utils import ensure_collection, MAX_MATERIALIZE_DEFAULT
 from .glyph_history import ensure_history
-
-if TYPE_CHECKING:
-    import networkx as nx
-else:  # pragma: no cover
-    class nx:
-        Graph = Any
 
 # Basic types
 Node = Any
@@ -44,7 +41,7 @@ def get_step_fn() -> AdvanceFn:
     return step_impl
 
 
-__all__ = [
+__all__ = (
     "WAIT",
     "TARGET",
     "THOL",
@@ -59,7 +56,7 @@ __all__ = [
     "wait",
     "play",
     "basic_canonical_example",
-]
+)
 
 # ---------------------
 # DSL constructs

@@ -19,7 +19,7 @@ SELECTOR_THRESHOLD_DEFAULTS: Mapping[str, float] = MappingProxyType(
 )
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class CoreDefaults:
     """Default parameters for the core engine.
 
@@ -124,7 +124,7 @@ class CoreDefaults:
     HISTORY_COMPACT_EVERY: int = 100
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class RemeshDefaults:
     """Default parameters for the remeshing subsystem.
 

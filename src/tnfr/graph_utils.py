@@ -3,7 +3,7 @@
 from __future__ import annotations
 from typing import Any
 
-__all__ = ["mark_dnfr_prep_dirty"]
+__all__ = ("mark_dnfr_prep_dirty",)
 
 
 def mark_dnfr_prep_dirty(G: Any) -> None:

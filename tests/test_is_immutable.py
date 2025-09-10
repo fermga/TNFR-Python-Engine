@@ -56,7 +56,7 @@ def test_is_immutable_inner_handles_bytearray_tag():
     assert not _is_immutable_inner(frozen)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class FrozenDC:
     x: int
     y: int
@@ -66,7 +66,7 @@ def test_is_immutable_frozen_dataclass():
     assert _is_immutable(FrozenDC(1, 2))
 
 
-@dataclass
+@dataclass(slots=True)
 class MutableDC:
     items: list[int]
 

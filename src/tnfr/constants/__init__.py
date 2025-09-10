@@ -281,7 +281,7 @@ dVF_PRIMARY = ALIAS_dVF[0]
 D2VF_PRIMARY = ALIAS_D2VF[0]
 dSI_PRIMARY = ALIAS_dSI[0]
 
-__all__ = [
+__all__ = (
     "CORE_DEFAULTS",
     "INIT_DEFAULTS",
     "REMESH_DEFAULTS",
@@ -322,4 +322,4 @@ __all__ = [
     "dVF_PRIMARY",
     "D2VF_PRIMARY",
     "dSI_PRIMARY",
-]
+)

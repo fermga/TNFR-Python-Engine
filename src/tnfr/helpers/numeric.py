@@ -11,7 +11,7 @@ import math
 from ..import_utils import get_numpy, import_nodonx
 from ..alias import get_attr
 
-__all__ = [
+__all__ = (
     "clamp",
     "clamp01",
     "list_mean",
@@ -22,7 +22,7 @@ __all__ = [
     "neighbor_mean",
     "neighbor_phase_mean",
     "neighbor_phase_mean_list",
-]
+)
 
 
 def clamp(x: float, a: float, b: float) -> float:
@@ -37,10 +37,14 @@ def clamp01(x: float) -> float:
 
 def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
     """Return the arithmetic mean of ``xs`` or ``default`` if empty."""
-    try:
-        return float(fmean(xs))
-    except (StatisticsError, ValueError, TypeError):
-        return float(default)
+    total = 0.0
+    count = 0
+    for x in xs:
+        total = math.fsum((total, float(x)))
+        count += 1
+    if count:
+        return total / count
+    return float(default)
 
 
 def kahan_sum_nd(values: Iterable[Sequence[float]], dims: int) -> tuple[float, ...]:
@@ -139,15 +143,25 @@ def neighbor_phase_mean_list(
     summation for stable accumulation.
     """
     if np is not None:
-        pairs = [
-            (c, s)
-            for v in neigh
-            if (c := cos_th.get(v)) is not None and (s := sin_th.get(v)) is not None
-        ]
-        deg = len(pairs)
+        cos_arr = np.fromiter(
+            (
+                c
+                for v in neigh
+                if (c := cos_th.get(v)) is not None and sin_th.get(v) is not None
+            ),
+            dtype=float,
+        )
+        deg = len(cos_arr)
         if deg > 0:
-            cos_arr = np.fromiter((c for c, _ in pairs), dtype=float, count=deg)
-            sin_arr = np.fromiter((s for _, s in pairs), dtype=float, count=deg)
+            sin_arr = np.fromiter(
+                (
+                    s
+                    for v in neigh
+                    if cos_th.get(v) is not None and (s := sin_th.get(v)) is not None
+                ),
+                dtype=float,
+                count=deg,
+            )
             mean_cos = float(np.mean(cos_arr))
             mean_sin = float(np.mean(sin_arr))
             return float(np.arctan2(mean_sin, mean_cos))

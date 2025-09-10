@@ -10,7 +10,7 @@ T = TypeVar("T")
 
 logger = get_logger(__name__)
 
-__all__ = ["_convert_value"]
+__all__ = ("_convert_value",)
 
 
 def _convert_value(

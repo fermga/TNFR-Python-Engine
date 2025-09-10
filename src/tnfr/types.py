@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-__all__ = ["NodeState", "Glyph"]
+__all__ = ("NodeState", "Glyph")
 
 
 @dataclass(slots=True)
