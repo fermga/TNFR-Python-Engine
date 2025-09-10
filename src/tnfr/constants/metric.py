@@ -7,7 +7,7 @@ from typing import Any
 from types import MappingProxyType
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class MetricDefaults:
     """Default parameters for metric computation.
 

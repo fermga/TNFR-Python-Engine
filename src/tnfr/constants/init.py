@@ -6,7 +6,7 @@ from dataclasses import dataclass, asdict
 import math
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class InitDefaults:
     """Default parameters for node initialisation.
 
