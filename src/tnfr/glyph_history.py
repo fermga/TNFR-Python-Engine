@@ -201,13 +201,18 @@ class HistoryDict(dict):
         target = len(self._counts) + self._compact_every
         if len(self._heap) <= target:
             return
-        self._heap = [
-            (cnt, key)
-            for cnt, key in self._heap
-            if self._counts.get(key) == cnt
-        ]
-        heapq.heapify(self._heap)
-        self._heap_index = {k: i for i, (cnt, k) in enumerate(self._heap)}
+        removed = False
+        temp: list[tuple[int, str]] = []
+        while len(self._heap) + len(temp) > target:
+            cnt, key = heapq.heappop(self._heap)
+            if self._counts.get(key) == cnt:
+                temp.append((cnt, key))
+            else:
+                removed = True
+        for item in temp:
+            heapq.heappush(self._heap, item)
+        if removed:
+            self._rebuild_index()
 
     def _pop_heap_key(self) -> str:
         """Pop and return the key with the smallest count from the heap."""
