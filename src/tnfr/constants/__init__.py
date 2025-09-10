@@ -111,20 +111,40 @@ def _freeze(value: Any, seen: set[int] | None = None):
         seen.remove(obj_id)
 
 
+# Helper utilities for immutability checks
+def _all_immutable(values: tuple | frozenset) -> bool:
+    return all(_is_immutable_inner(v) for v in values)
+
+
+def _tag_mapping(value: tuple) -> bool:
+    return _all_immutable(value[1])
+
+
+def _tag_mutable(_: tuple) -> bool:  # pragma: no cover - simple return
+    return False
+
+
+_IMMUTABLE_TAG_DISPATCH: dict[str, Callable[[tuple], bool]] = {
+    "list": _tag_mutable,
+    "dict": _tag_mutable,
+    "set": _tag_mutable,
+    "bytearray": _tag_mutable,
+    "mapping": _tag_mapping,
+}
+
+
 @lru_cache(maxsize=1024)
 def _is_immutable_inner(value: Any) -> bool:
     if isinstance(value, IMMUTABLE_SIMPLE):
         return True
     if isinstance(value, tuple):
         if value and isinstance(value[0], str):
-            tag = value[0]
-            if tag in {"list", "dict", "set", "bytearray"}:
-                return False
-            if tag == "mapping":
-                return all(_is_immutable_inner(v) for v in value[1])
-        return all(_is_immutable_inner(v) for v in value)
+            handler = _IMMUTABLE_TAG_DISPATCH.get(value[0])
+            if handler is not None:
+                return handler(value)
+        return _all_immutable(value)
     if isinstance(value, frozenset):
-        return all(_is_immutable_inner(v) for v in value)
+        return _all_immutable(value)
     return False
 
 
