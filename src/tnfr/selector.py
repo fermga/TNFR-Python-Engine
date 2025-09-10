@@ -72,12 +72,6 @@ def _calc_selector_score(
         + weights["w_accel"] * (1.0 - accel)
     )
 
-
-def _dist_to_threshold(value: float, hi: float, lo: float) -> float:
-    """Return distance from ``value`` to nearest of ``hi`` or ``lo``."""
-    return min(abs(value - hi), abs(value - lo))
-
-
 def _apply_selector_hysteresis(
     nd: dict[str, Any],
     Si: float,
@@ -88,9 +82,13 @@ def _apply_selector_hysteresis(
 ) -> str | None:
     """Apply hysteresis, returning the previous glyph when close to
     thresholds."""
-    d_si = _dist_to_threshold(Si, thr["si_hi"], thr["si_lo"])
-    d_dn = _dist_to_threshold(dnfr, thr["dnfr_hi"], thr["dnfr_lo"])
-    d_ac = _dist_to_threshold(accel, thr["accel_hi"], thr["accel_lo"])
+    dist = lambda val, prefix: min(
+        abs(val - thr[f"{prefix}_hi"]),
+        abs(val - thr[f"{prefix}_lo"]),
+    )
+    d_si = dist(Si, "si")
+    d_dn = dist(dnfr, "dnfr")
+    d_ac = dist(accel, "accel")
     certeza = min(d_si, d_dn, d_ac)
     if certeza < margin:
         hist = nd.get("glyph_history")
