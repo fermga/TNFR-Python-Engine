@@ -102,7 +102,7 @@ class THOL:
     )
 
 
-Token = Union[Glyph, WAIT, TARGET, THOL]
+Token = Union[Glyph, WAIT, TARGET, THOL, str]
 
 # Sentinel used internally by ``_flatten`` to mark the end of a ``THOL`` block
 THOL_SENTINEL = object()
