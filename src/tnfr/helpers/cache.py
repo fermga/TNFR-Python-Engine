@@ -231,30 +231,12 @@ def ensure_node_offset_map(G) -> dict[Any, int]:
     return _ensure_node_map(G, key="_node_offset_map", sort=sort)
 
 
-def _make_edge_cache(max_entries: int, locks: dict) -> Any:
+def _make_edge_cache(max_entries: int, locks: dict) -> LRUCache:
     """Create an ``LRUCache`` for edge data with lock cleanup support.
 
-    The cache removes any per-key locks when entries are evicted.  For older
-    versions of :mod:`cachetools` lacking a ``callback`` parameter, a small
-    subclass provides equivalent behaviour.
+    The cache removes any per-key locks when entries are evicted.
     """
-    try:
-        return LRUCache(max_entries, callback=lambda k, _: locks.pop(k, None))
-    except TypeError:  # pragma: no cover - legacy cachetools
-
-        class _LRUCache(LRUCache):
-            def __init__(self, maxsize, *, callback=None):
-                super().__init__(maxsize)
-                self._callback = callback
-
-            def popitem(self):  # type: ignore[override]
-                key, value = super().popitem()
-                cb = getattr(self, "_callback", None)
-                if cb is not None:
-                    cb(key, value)
-                return key, value
-
-        return _LRUCache(max_entries, callback=lambda k, v: locks.pop(k, None))
+    return LRUCache(max_entries, callback=lambda k, _: locks.pop(k, None))
 
 
 def _ensure_edge_cache_locks(graph: Any) -> defaultdict:
