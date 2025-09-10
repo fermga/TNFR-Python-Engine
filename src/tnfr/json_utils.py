@@ -7,17 +7,17 @@ from __future__ import annotations
 
 import json
 import warnings
-import threading
 from typing import Any, Callable, overload, Literal
 
 from dataclasses import dataclass
 from functools import lru_cache
 from .import_utils import optional_import
+from .locking import get_lock
 
 __all__ = ("json_dumps", "json_dumps_str")
 
 _ignored_param_warned = False
-_warn_lock = threading.Lock()
+_warn_lock = get_lock("json_warn")
 
 
 @lru_cache(maxsize=1)

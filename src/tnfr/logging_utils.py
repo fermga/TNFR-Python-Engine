@@ -7,9 +7,9 @@ consistent configuration across the project.
 from __future__ import annotations
 
 import logging
-import threading
+from .locking import get_lock
 
-_LOCK = threading.Lock()
+_LOCK = get_lock("logging")
 _LOGGING_CONFIGURED = False
 
 __all__ = ("get_logger",)
