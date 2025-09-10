@@ -52,3 +52,14 @@ def test_prune_heap_keeps_index_consistent():
     for k, idx in hist._heap_index.items():
         assert hist._heap[idx][1] == k
 
+
+def test_prune_heap_prunes_in_place():
+    hist = HistoryDict({f"k{i}": [] for i in range(3)}, compact_every=1)
+    original_heap = id(hist._heap)
+    for _ in range(5):
+        hist.get_increment("k0")
+    assert id(hist._heap) == original_heap
+    assert len(hist._heap) <= len(hist._counts) + hist._compact_every
+    for k, idx in hist._heap_index.items():
+        assert hist._heap[idx][1] == k
+
