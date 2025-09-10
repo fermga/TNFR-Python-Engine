@@ -41,14 +41,9 @@ def get_logger(name: str) -> logging.Logger:
     preserved.
     """
 
-    if _LOGGING_CONFIGURED:
-        return logging.getLogger(name)
-
-    with _LOCK:
-        if not _LOGGING_CONFIGURED:
-            _configure_root()
+    if not _LOGGING_CONFIGURED:
+        with _LOCK:
+            if not _LOGGING_CONFIGURED:
+                _configure_root()
     return logging.getLogger(name)
 
-
-# Configure logging at import time.
-_configure_root()
