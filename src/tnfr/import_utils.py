@@ -68,10 +68,14 @@ class _ImportState:
     def prune(self, now: float | None = None) -> None:
         now = time.monotonic() if now is None else now
         expiry = now - self.max_age
-        while self.failed and next(iter(self.failed.values())) < expiry:
-            self.failed.popitem(last=False)
-        while len(self.failed) > self.limit:
-            self.failed.popitem(last=False)
+        failed = self.failed
+        while failed:
+            key, timestamp = next(iter(failed.items()))
+            if timestamp >= expiry:
+                break
+            failed.pop(key)
+        while len(failed) > self.limit:
+            failed.popitem(last=False)
 
     def record(self, item: str) -> None:
         now = time.monotonic()
