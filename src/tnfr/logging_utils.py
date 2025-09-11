@@ -7,8 +7,9 @@ consistent configuration across the project.
 from __future__ import annotations
 
 import logging
-from collections import OrderedDict
 from typing import Any, Hashable, Mapping
+
+from cachetools import LRUCache
 
 __all__ = ("get_logger", "warn_once")
 
@@ -55,18 +56,16 @@ def warn_once(
     repeated keys are ignored. The callable exposes ``clear()`` to reset
     the tracked keys, useful for tests.
     """
-    _seen: OrderedDict[Hashable, None] = OrderedDict()
+    _seen: LRUCache[Hashable, None] = LRUCache(maxsize)
 
     def _log(mapping: Mapping[Hashable, Any]) -> None:
         new: dict[Hashable, Any] = {}
         for k, v in mapping.items():
             if k in _seen:
-                _seen.move_to_end(k)
+                _seen[k]
             else:
                 _seen[k] = None
                 new[k] = v
-                if len(_seen) > maxsize:
-                    _seen.popitem(last=False)
         if new:
             logger.warning(msg, new)
 
