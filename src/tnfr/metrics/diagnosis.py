@@ -10,9 +10,8 @@ from ..constants import (
     ALIAS_VF,
     ALIAS_DNFR,
     ALIAS_SI,
-    DIAGNOSIS,
-    COHERENCE,
     VF_KEY,
+    get_param,
 )
 from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, append_metric
@@ -84,7 +83,7 @@ def _recommendation(state, cfg):
 
 def _get_last_weights(G, hist):
     """Return last Wi and Wm matrices from history."""
-    CfgW = G.graph.get("COHERENCE", COHERENCE)
+    CfgW = get_param(G, "COHERENCE")
     Wkey = CfgW.get("Wi_history_key", "W_i")
     Wm_key = CfgW.get("history_key", "W_sparse")
     Wi_series = hist.get(Wkey, [])
@@ -155,7 +154,7 @@ def _node_diagnostics(
 
 
 def _diagnosis_step(G, ctx=None):
-    dcfg = G.graph.get("DIAGNOSIS", DIAGNOSIS)
+    dcfg = get_param(G, "DIAGNOSIS")
     if not dcfg.get("enabled", True):
         return
 
