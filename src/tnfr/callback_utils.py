@@ -68,6 +68,21 @@ class CallbackError(TypedDict):
     name: str | None
 
 
+def _func_id(fn: Callable[..., Any]) -> str:
+    """Return a deterministic identifier for ``fn``.
+
+    Combines the function's module and qualified name to avoid the
+    nondeterminism of ``repr(fn)`` which includes the memory address.
+    """
+    module = getattr(fn, "__module__", fn.__class__.__module__)
+    qualname = getattr(
+        fn,
+        "__qualname__",
+        getattr(fn, "__name__", fn.__class__.__qualname__),
+    )
+    return f"{module}.{qualname}"
+
+
 def _ensure_callbacks_nolock(G: "nx.Graph") -> CallbackRegistry:
     """Internal helper implementing ``_ensure_callbacks`` without locking."""
     cbs = G.graph.setdefault("callbacks", defaultdict(dict))
@@ -116,7 +131,7 @@ def _normalize_callback_registry(cbs: Any) -> dict[str, CallbackSpec]:
         spec = _normalize_callback_entry(entry)
         if spec is None:
             continue
-        key = spec.name or repr(spec.func)
+        key = spec.name or _func_id(spec.func)
         new_map[key] = spec
     return new_map
 
@@ -192,7 +207,7 @@ def _record_callback_error(
         "step": ctx.get("step"),
         "error": repr(err),
         "traceback": traceback.format_exc(),
-        "fn": repr(spec.func),
+        "fn": _func_id(spec.func),
         "name": spec.name,
     }
     err_list.append(error)
