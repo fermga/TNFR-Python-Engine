@@ -10,6 +10,7 @@ from tnfr.dynamics import step
 from tnfr.metrics import register_metrics_callbacks, _metrics_step
 from tnfr.operators import apply_glyph, apply_remesh_if_globally_stable
 from tnfr.types import Glyph
+from tnfr.glyph_history import ensure_history
 
 
 @pytest.fixture
@@ -86,15 +87,15 @@ def test_remesh_cooldown_if_present(G_small):
     )
 
     apply_remesh_if_globally_stable(G_small)
-    events = list(G_small.graph.get("history", {}).get("remesh_events", []))
+    events = list(ensure_history(G_small).get("remesh_events", []))
     assert len(events) == 1
 
     sf.append(1.0)
     apply_remesh_if_globally_stable(G_small)
-    events2 = list(G_small.graph.get("history", {}).get("remesh_events", []))
+    events2 = list(ensure_history(G_small).get("remesh_events", []))
     assert len(events2) == 1
 
     sf.extend([1.0] * int(cooldown))
     apply_remesh_if_globally_stable(G_small)
-    events3 = list(G_small.graph.get("history", {}).get("remesh_events", []))
+    events3 = list(ensure_history(G_small).get("remesh_events", []))
     assert len(events3) == 2

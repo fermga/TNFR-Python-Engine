@@ -421,7 +421,7 @@ def _compute_selector_score(G, nd, Si, dnfr, accel, cand):
     hist_prev = nd.get("glyph_history")
     if hist_prev and hist_prev[-1] == cand:
         delta_si = get_attr(nd, ALIAS_dSI, 0.0)
-        h = G.graph.get("history", {})
+        h = ensure_history(G)
         sig = h.get("sense_sigma_mag", [])
         delta_sigma = sig[-1] - sig[-2] if len(sig) >= 2 else 0.0
         if delta_si <= 0.0 and delta_sigma <= 0.0:
@@ -600,7 +600,7 @@ def _run_validators(G) -> None:
 
 
 def _run_after_callbacks(G, *, step_idx: int) -> None:
-    h = G.graph.get("history", {})
+    h = ensure_history(G)
     ctx = {"step": step_idx}
     metric_pairs = [
         ("C", "C_steps"),
