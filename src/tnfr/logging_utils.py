@@ -7,6 +7,7 @@ consistent configuration across the project.
 from __future__ import annotations
 
 import logging
+import threading
 from typing import Any, Hashable, Mapping
 
 from cachetools import LRUCache
@@ -57,17 +58,23 @@ def warn_once(
     the tracked keys, useful for tests.
     """
     _seen: LRUCache[Hashable, None] = LRUCache(maxsize)
+    _lock = threading.Lock()
 
     def _log(mapping: Mapping[Hashable, Any]) -> None:
         new: dict[Hashable, Any] = {}
-        for k, v in mapping.items():
-            if k in _seen:
-                _seen[k]
-            else:
-                _seen[k] = None
-                new[k] = v
+        with _lock:
+            for k, v in mapping.items():
+                if k in _seen:
+                    _seen[k]
+                else:
+                    _seen[k] = None
+                    new[k] = v
         if new:
             logger.warning(msg, new)
 
-    _log.clear = _seen.clear  # type: ignore[attr-defined]
+    def _clear() -> None:
+        with _lock:
+            _seen.clear()
+
+    _log.clear = _clear  # type: ignore[attr-defined]
     return _log
