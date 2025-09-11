@@ -187,6 +187,50 @@ def _update_node_cache(
     graph[f"{key}_checksum"] = checksum
 
 
+def _refresh_node_list_cache(
+    G: nx.Graph,
+    graph: Any,
+    *,
+    sort_nodes: bool,
+    current_n: int,
+) -> tuple[Any, ...]:
+    """Refresh the cached node list and return the nodes."""
+    nodes = tuple(G.nodes())
+    checksum = node_set_checksum(G, nodes, store=True)
+    sorted_nodes = tuple(sorted(nodes, key=_node_repr)) if sort_nodes else None
+    _update_node_cache(
+        graph,
+        nodes,
+        "_node_list",
+        checksum=checksum,
+        sorted_nodes=sorted_nodes,
+    )
+    graph["_node_list_len"] = current_n
+    return nodes
+
+
+def _reuse_node_list_cache(
+    graph: Any,
+    cache: NodeCache,
+    nodes: tuple[Any, ...],
+    sorted_nodes: tuple[Any, ...] | None,
+    *,
+    sort_nodes: bool,
+    new_checksum: str | None,
+) -> None:
+    """Reuse existing node cache and record its checksum if missing."""
+    checksum = cache.checksum if new_checksum is None else new_checksum
+    if sort_nodes and sorted_nodes is None:
+        sorted_nodes = tuple(sorted(nodes, key=_node_repr))
+    _update_node_cache(
+        graph,
+        nodes,
+        "_node_list",
+        checksum=checksum,
+        sorted_nodes=sorted_nodes,
+    )
+
+
 def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     """Cache and return the tuple of nodes for ``G``.
 
@@ -215,32 +259,17 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     sort_nodes = bool(graph.get("SORT_NODES", False))
 
     if invalid:
-        # Refresh the cached node list and store its checksum since something changed.
-        nodes = tuple(G.nodes())
-        new_checksum = node_set_checksum(G, nodes, store=True)
-        if sort_nodes:
-            sorted_nodes = tuple(sorted(nodes, key=_node_repr))
-        else:
-            sorted_nodes = None
-        _update_node_cache(
-            graph,
-            nodes,
-            "_node_list",
-            checksum=new_checksum,
-            sorted_nodes=sorted_nodes,
+        nodes = _refresh_node_list_cache(
+            G, graph, sort_nodes=sort_nodes, current_n=current_n
         )
-        graph["_node_list_len"] = current_n
     elif cache and "_node_list_checksum" not in graph:
-        # Cache is valid but its checksum wasn't recorded on the graph; reuse it.
-        new_checksum = new_checksum if new_checksum is not None else cache.checksum
-        if sort_nodes and sorted_nodes is None:
-            sorted_nodes = tuple(sorted(nodes, key=_node_repr))
-        _update_node_cache(
+        _reuse_node_list_cache(
             graph,
+            cache,
             nodes,
-            "_node_list",
-            checksum=new_checksum,
-            sorted_nodes=sorted_nodes,
+            sorted_nodes,
+            sort_nodes=sort_nodes,
+            new_checksum=new_checksum,
         )
     else:
         if sort_nodes and sorted_nodes is None and cache is not None:
