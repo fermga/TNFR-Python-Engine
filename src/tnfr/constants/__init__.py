@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Callable
 from collections.abc import Mapping
 import copy
 import warnings
@@ -112,6 +112,17 @@ def get_param(G, key: str):
     return DEFAULTS[key]
 
 
+def get_graph_param(G, key: str, cast: Callable[[Any], Any] = float):
+    """Return ``key`` from ``G.graph`` applying ``cast``.
+
+    The ``cast`` argument must be a function (e.g. ``float``, ``int``,
+    ``bool``). If the stored value is ``None`` it is returned without
+    casting.
+    """
+    val = get_param(G, key)
+    return None if val is None else cast(val)
+
+
 # Claves canónicas con nombres ASCII
 VF_KEY = "νf"
 THETA_KEY = "θ"
@@ -158,6 +169,7 @@ __all__ = (
     "inject_defaults",
     "merge_overrides",
     "get_param",
+    "get_graph_param",
     "VF_KEY",
     "THETA_KEY",
     "ALIAS_VF",
