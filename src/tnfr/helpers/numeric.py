@@ -11,9 +11,6 @@ import math
 from ..import_utils import get_numpy, import_nodonx
 from ..alias import get_attr
 
-
-np = get_numpy()
-
 __all__ = (
     "clamp",
     "clamp01",
@@ -49,6 +46,7 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
 
 def list_pvariance(xs: Iterable[float], default: float = 0.0) -> float:
     """Return the population variance of ``xs`` or ``default`` if empty."""
+    np = get_numpy()
     if np is not None:
         arr = np.fromiter(xs, dtype=float)
         return float(np.var(arr)) if arr.size else float(default)
@@ -109,6 +107,7 @@ def neighbor_mean(
 def _neighbor_phase_mean(node, trig) -> float:
     """Internal helper delegating to :func:`neighbor_phase_mean_list`."""
     fallback = trig.theta.get(node.n, 0.0)
+    np = get_numpy()
     neigh = node.G[node.n]
     return neighbor_phase_mean_list(
         neigh, trig.cos, trig.sin, np=np, fallback=fallback
@@ -144,7 +143,7 @@ def neighbor_phase_mean_list(
     neigh: Sequence[Any],
     cos_th: dict[Any, float],
     sin_th: dict[Any, float],
-    np=np,
+    np=None,
     fallback: float = 0.0,
 ) -> float:
     """Return circular mean of neighbour phases from cosine/sine mappings.
@@ -155,6 +154,9 @@ def neighbor_phase_mean_list(
     computed using the pure-Python :func:`_phase_mean_from_iter` helper which
     uses a running Kahan summation for stable accumulation.
     """
+    if np is None:
+        np = get_numpy()
+
     if np is not None:
         flat_pairs = (
             val

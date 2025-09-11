@@ -21,9 +21,6 @@ from .gamma import kuramoto_R_psi
 from .logging_utils import get_logger
 from .import_utils import get_numpy
 
-
-np = get_numpy()
-
 __all__ = (
     "attach_standard_observer",
     "std_before",
@@ -88,6 +85,7 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
         return 1.0
     _, psi = _get_R_psi(G, R, psi)
 
+    np = get_numpy()
     if np is not None:
         th = np.fromiter(
             (
