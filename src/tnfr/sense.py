@@ -337,7 +337,7 @@ def register_sigma_callback(G) -> None:
 def sigma_series(G, key: str | None = None) -> dict[str, list[float]]:
     cfg = _sigma_cfg(G)
     key = key or cfg.get("history_key", "sigma_global")
-    hist = G.graph.get("history", {})
+    hist = ensure_history(G)
     xs = hist.get(key, [])
     if not xs:
         return {"t": [], "angle": [], "mag": []}
@@ -350,7 +350,7 @@ def sigma_series(G, key: str | None = None) -> dict[str, list[float]]:
 
 def sigma_rose(G, steps: int | None = None) -> dict[str, int]:
     """Histogram of glyphs in the last ``steps`` steps (or all)."""
-    hist = G.graph.get("history", {})
+    hist = ensure_history(G)
     counts = hist.get("sigma_counts", [])
     if not counts:
         return {g: 0 for g in GLYPHS_CANONICAL}

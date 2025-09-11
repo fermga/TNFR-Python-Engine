@@ -31,6 +31,7 @@ from ..scenarios import build_graph
 from ..presets import get_preset
 from ..config import apply_config
 from ..io import read_structured_file, safe_write
+from ..glyph_history import ensure_history
 from ..helpers.numeric import list_mean
 from ..observers import attach_standard_observer
 from ..logging_utils import get_logger
@@ -58,7 +59,7 @@ def _attach_callbacks(G: "nx.Graph") -> None:
 
 def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
     if args.save_history or args.export_history_base:
-        history = G.graph.get("history", {})
+        history = ensure_history(G)
         if args.save_history:
             _save_json(args.save_history, history)
         if args.export_history_base:
@@ -162,7 +163,7 @@ def run_program(
 def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
     cfg_coh = G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"])
     cfg_diag = G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"])
-    hist = G.graph.get("history", {})
+    hist = ensure_history(G)
 
     if cfg_coh.get("enabled", True):
         Wstats = hist.get(cfg_coh.get("stats_history_key", "W_stats"), [])

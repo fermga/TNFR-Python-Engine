@@ -4,7 +4,7 @@ from tnfr.constants import inject_defaults
 from tnfr.dynamics import step
 from tnfr.metrics import register_metrics_callbacks
 from tnfr.gamma import GAMMA_REGISTRY
-from tnfr.glyph_history import HistoryDict
+from tnfr.glyph_history import HistoryDict, ensure_history
 
 
 def test_history_delta_si_and_B(graph_canon):
@@ -14,7 +14,7 @@ def test_history_delta_si_and_B(graph_canon):
     register_metrics_callbacks(G)
     step(G, apply_glyphs=False)
     step(G, apply_glyphs=False)
-    hist = G.graph.get("history", {})
+    hist = ensure_history(G)
     assert "delta_Si" in hist and len(hist["delta_Si"]) >= 2
     assert "B" in hist and len(hist["B"]) >= 2
 

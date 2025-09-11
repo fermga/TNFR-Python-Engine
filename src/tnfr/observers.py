@@ -3,7 +3,6 @@
 from __future__ import annotations
 from functools import partial
 import statistics
-from collections.abc import Mapping
 
 from .constants import ALIAS_THETA, get_param
 from .alias import get_attr
@@ -141,16 +140,10 @@ def glyph_load(G, window: int | None = None) -> dict:
 def wbar(G, window: int | None = None) -> float:
     """Return W̄ = mean of ``C(t)`` over a recent window.
 
-    The function expects ``G.graph['history']`` to be a mapping containing the
-    ``"C_steps"`` sequence. If the history is missing or malformed, the
-    instantaneous coherence is computed instead.
+    Uses :func:`ensure_history` to obtain ``G.graph['history']`` and falls back
+    to the instantaneous coherence when ``"C_steps"`` is missing or empty.
     """
-    hist = G.graph.get("history")
-    if not isinstance(hist, Mapping):
-        logger.warning(
-            "history is not a mapping; using instantaneous coherence"
-        )
-        return compute_coherence(G)
+    hist = ensure_history(G)
     cs = list(hist.get("C_steps", []))
     if not cs:
         # fallback: coherencia instantánea

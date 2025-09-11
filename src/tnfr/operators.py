@@ -709,7 +709,7 @@ def apply_network_remesh(G) -> None:
     }
 
     # Snapshot opcional de métricas recientes
-    h = G.graph.get("history", {})
+    h = ensure_history(G)
     if h:
         if h.get("stable_frac"):
             meta["stable_frac_last"] = h["stable_frac"][-1]

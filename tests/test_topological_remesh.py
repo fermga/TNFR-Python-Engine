@@ -3,6 +3,7 @@ import networkx as nx
 
 from tnfr.constants import inject_defaults
 from tnfr import apply_topological_remesh
+from tnfr.glyph_history import ensure_history
 
 
 def _graph_with_epi(graph_canon, n=6):
@@ -34,7 +35,7 @@ def test_remesh_community_reduces_nodes_and_preserves_connectivity(
     apply_topological_remesh(G, mode="community")
     assert nx.is_connected(G)
     assert G.number_of_nodes() < 6
-    ev = G.graph.get("history", {}).get("remesh_events", [])
+    ev = ensure_history(G).get("remesh_events", [])
     assert ev and ev[-1].get("mode") == "community"
 
 

@@ -3,7 +3,7 @@
 import pytest
 
 from tnfr.metrics import _metrics_step
-from tnfr.glyph_history import push_glyph
+from tnfr.glyph_history import push_glyph, ensure_history
 
 
 def test_phase_sync_and_kuramoto_recorded(graph_canon):
@@ -11,7 +11,7 @@ def test_phase_sync_and_kuramoto_recorded(graph_canon):
     G.add_node(1, theta=0.0)
     G.add_node(2, theta=0.0)
     _metrics_step(G)
-    hist = G.graph.get("history", {})
+    hist = ensure_history(G)
     assert hist["phase_sync"][-1] == pytest.approx(1.0)
     assert "kuramoto_R" in hist
     assert hist["kuramoto_R"][-1] == pytest.approx(1.0)
