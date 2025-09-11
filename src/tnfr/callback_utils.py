@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, TypedDict
 from enum import Enum
 from collections import defaultdict, deque
 from collections.abc import Callable, Mapping, Sequence
@@ -22,6 +22,7 @@ __all__ = (
     "register_callback",
     "invoke_callbacks",
     "set_callback_error_limit",
+    "CallbackError",
 )
 
 logger = get_logger(__name__)
@@ -43,6 +44,17 @@ _CALLBACK_ERROR_LIMIT = 100
 
 Callback = Callable[["nx.Graph", dict[str, Any]], None]
 CallbackRegistry = dict[str, dict[str, "CallbackSpec"]]
+
+
+class CallbackError(TypedDict):
+    """Metadata for a failed callback invocation."""
+
+    event: str
+    step: int | None
+    error: str
+    traceback: str
+    fn: str
+    name: str | None
 
 
 def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
@@ -136,7 +148,8 @@ def _record_callback_error(
 ) -> None:
     """Log and store a callback error for later inspection.
 
-    The number of stored errors is bounded by the limit configured via
+    Errors are stored as :class:`CallbackError` entries inside
+    ``G.graph['_callback_errors']``. The size of this deque is bounded by
     :func:`set_callback_error_limit`.
     """
 
@@ -146,18 +159,17 @@ def _record_callback_error(
         not isinstance(err_list, deque)
         or err_list.maxlen != _CALLBACK_ERROR_LIMIT
     ):
-        err_list = deque(maxlen=_CALLBACK_ERROR_LIMIT)
+        err_list = deque[CallbackError](maxlen=_CALLBACK_ERROR_LIMIT)
         G.graph["_callback_errors"] = err_list
-    err_list.append(
-        {
-            "event": event,
-            "step": ctx.get("step"),
-            "error": repr(err),
-            "traceback": traceback.format_exc(),
-            "fn": repr(spec.func),
-            "name": spec.name,
-        }
-    )
+    error: CallbackError = {
+        "event": event,
+        "step": ctx.get("step"),
+        "error": repr(err),
+        "traceback": traceback.format_exc(),
+        "fn": repr(spec.func),
+        "name": spec.name,
+    }
+    err_list.append(error)
 
 
 def set_callback_error_limit(limit: int) -> int:

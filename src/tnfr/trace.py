@@ -7,7 +7,7 @@ structures as immutable snapshots.
 
 from __future__ import annotations
 
-from typing import Any, Callable, Optional, Protocol, NamedTuple
+from typing import Any, Callable, Optional, Protocol, NamedTuple, TypedDict, cast
 from collections.abc import Iterable, Mapping, Sequence
 
 from .constants import TRACE
@@ -33,12 +33,30 @@ class CallbackSpec(NamedTuple):
     func: Callable[..., Any]
 
 
+class TraceSnapshot(TypedDict, total=False):
+    """Trace snapshot stored in the history."""
+
+    t: float
+    phase: str
+    gamma: Mapping[str, Any]
+    grammar: Mapping[str, Any]
+    selector: str | None
+    dnfr_weights: Mapping[str, Any]
+    si_weights: Mapping[str, Any]
+    callbacks: Mapping[str, list[str] | None]
+    thol_open_nodes: int
+    kuramoto: Mapping[str, float]
+    sigma: Mapping[str, float]
+    glyphs: Mapping[str, int]
+
+
 def _kuramoto_fallback(G: Any) -> tuple[float, float]:
     return 0.0, 0.0
 
 
-kuramoto_R_psi: _KuramotoFn = optional_import(
-    "tnfr.gamma.kuramoto_R_psi", fallback=_kuramoto_fallback
+kuramoto_R_psi: _KuramotoFn = cast(
+    _KuramotoFn,
+    optional_import("tnfr.gamma.kuramoto_R_psi", fallback=_kuramoto_fallback),
 )
 
 
@@ -51,6 +69,7 @@ def _sigma_fallback(
 # Public exports for this module
 __all__ = (
     "CallbackSpec",
+    "TraceSnapshot",
     "register_trace",
     "_callback_names",
     "gamma_field",
@@ -90,7 +109,12 @@ def _callback_names(
     """Return callback names from ``callbacks``."""
     if isinstance(callbacks, Mapping):
         callbacks = callbacks.values()
-    return [cb.name or getattr(cb.func, "__name__", "fn") for cb in callbacks]
+    return [
+        cb.name
+        if cb.name is not None
+        else str(getattr(cb.func, "__name__", "fn"))
+        for cb in callbacks
+    ]
 
 
 def mapping_field(G, graph_key: str, out_key: str) -> dict[str, Any]:
@@ -120,7 +144,7 @@ def make_mapping_field(
 def _new_trace_meta(
     G, phase: str
 ) -> Optional[
-    tuple[dict[str, Any], set[str], Optional[dict[str, Any]], Optional[str]]
+    tuple[TraceSnapshot, set[str], Optional[dict[str, Any]], Optional[str]]
 ]:
     """Initialise trace metadata for a ``phase``.
 
@@ -132,7 +156,7 @@ def _new_trace_meta(
     if not cfg:
         return None
 
-    meta: dict[str, Any] = {"t": float(G.graph.get("_t", 0.0)), "phase": phase}
+    meta: TraceSnapshot = {"t": float(G.graph.get("_t", 0.0)), "phase": phase}
     return meta, capture, hist, key
 
 
@@ -142,12 +166,13 @@ def _new_trace_meta(
 
 
 def _trace_capture(
-    G, phase: str, fields: dict[str, Callable[[Any], dict[str, Any]]]
+    G, phase: str, fields: Mapping[str, Callable[[Any], dict[str, Any]]]
 ) -> None:
-    """Capture ``fields`` for a ``phase`` and store the snapshot.
+    """Capture ``fields`` for ``phase`` and store the snapshot.
 
-    If there is no active history or storage key the capture is silently
-    ignored.
+    A :class:`TraceSnapshot` is appended to the configured history when
+    tracing is active. If there is no active history or storage key the
+    capture is silently ignored.
     """
 
     res = _new_trace_meta(G, phase)
@@ -159,7 +184,7 @@ def _trace_capture(
         return
     for name, getter in fields.items():
         if name in capture:
-            meta.update(getter(G))
+            meta.update(cast(TraceSnapshot, getter(G)))
     if hist is None or key is None:
         return
     append_metric(hist, key, meta)
@@ -226,8 +251,11 @@ def kuramoto_field(G):
 
 
 def sigma_field(G):
-    sigma_vector_from_graph: _SigmaVectorFn = optional_import(
-        "tnfr.sense.sigma_vector_from_graph", fallback=_sigma_fallback
+    sigma_vector_from_graph: _SigmaVectorFn = cast(
+        _SigmaVectorFn,
+        optional_import(
+            "tnfr.sense.sigma_vector_from_graph", fallback=_sigma_fallback
+        ),
     )
     sv = sigma_vector_from_graph(G)
     return {
@@ -286,8 +314,8 @@ def register_trace(G) -> None:
     """Enable before/after-step snapshots and dump operational metadata
     to history.
 
-    Stores in ``G.graph['history'][TRACE.history_key]`` a list of
-    entries ``{'phase': 'before'|'after', ...}`` with:
+    Trace snapshots are stored as :class:`TraceSnapshot` entries in
+    ``G.graph['history'][TRACE.history_key]`` with:
       - gamma: active Γi(R) specification
       - grammar: canonical grammar configuration
       - selector: glyph selector name
