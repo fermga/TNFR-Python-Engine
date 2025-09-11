@@ -22,6 +22,7 @@ from ..constants import (
     ALIAS_D2EPI,
     ALIAS_DSI,
     get_param,
+    get_graph_param,
 )
 from ..observers import glyph_load, kuramoto_order
 
@@ -167,9 +168,7 @@ def _read_adaptive_params(
 def _compute_state(G, cfg: dict[str, Any]) -> tuple[str, float, float]:
     """Return current state (stable/dissonant/transition) and metrics."""
     R = kuramoto_order(G)
-    win = int(
-        G.graph.get("GLYPH_LOAD_WINDOW", METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"])
-    )
+    win = get_graph_param(G, "GLYPH_LOAD_WINDOW", int)
     dist = glyph_load(G, window=win)
     disr = float(dist.get("_disruptivos", 0.0)) if dist else 0.0
 
@@ -301,20 +300,14 @@ def coordinate_global_local_phase(
 
 def adapt_vf_by_coherence(G) -> None:
     """Adjust νf toward neighbour mean in nodes with sustained stability."""
-    tau = int(G.graph.get("VF_ADAPT_TAU", DEFAULTS.get("VF_ADAPT_TAU", 5)))
-    mu = float(G.graph.get("VF_ADAPT_MU", DEFAULTS.get("VF_ADAPT_MU", 0.1)))
-    eps_dnfr = float(
-        G.graph.get("EPS_DNFR_STABLE", REMESH_DEFAULTS["EPS_DNFR_STABLE"])
-    )
-    thr_sel = G.graph.get(
-        "SELECTOR_THRESHOLDS", DEFAULTS.get("SELECTOR_THRESHOLDS", {})
-    )
-    thr_def = G.graph.get(
-        "GLYPH_THRESHOLDS", DEFAULTS.get("GLYPH_THRESHOLDS", {"hi": 0.66})
-    )
+    tau = get_graph_param(G, "VF_ADAPT_TAU", int)
+    mu = get_graph_param(G, "VF_ADAPT_MU")
+    eps_dnfr = get_graph_param(G, "EPS_DNFR_STABLE")
+    thr_sel = get_graph_param(G, "SELECTOR_THRESHOLDS", dict)
+    thr_def = get_graph_param(G, "GLYPH_THRESHOLDS", dict)
     si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
-    vf_min = float(G.graph.get("VF_MIN", DEFAULTS["VF_MIN"]))
-    vf_max = float(G.graph.get("VF_MAX", DEFAULTS["VF_MAX"]))
+    vf_min = get_graph_param(G, "VF_MIN")
+    vf_max = get_graph_param(G, "VF_MAX")
 
     updates = {}
     for n, nd in G.nodes(data=True):
@@ -365,7 +358,7 @@ def default_glyph_selector(G, n) -> str:
 # -------------------------
 def _soft_grammar_prefilter(G, n, cand, dnfr, accel):
     """Soft grammar: avoid repetitions before the canonical one."""
-    gram = G.graph.get("GRAMMAR", DEFAULTS.get("GRAMMAR", {}))
+    gram = get_graph_param(G, "GRAMMAR", dict)
     gwin = int(gram.get("window", 3))
     avoid = set(gram.get("avoid_repeats", []))
     force_dn = float(gram.get("force_dnfr", 0.60))
@@ -451,9 +444,7 @@ def parametric_glyph_selector(G, n) -> str:
     """
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
-    margin = float(
-        G.graph.get("GLYPH_SELECTOR_MARGIN", DEFAULTS["GLYPH_SELECTOR_MARGIN"])
-    )
+    margin = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
 
     norms = G.graph.get("_sel_norms") or _norms_para_selector(G)
     Si, dnfr, accel = _selector_normalized_metrics(nd, norms)
@@ -526,12 +517,10 @@ def _apply_glyphs(G, selector, hist) -> None:
     """Apply glyphs to nodes using ``selector`` and update history."""
     window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
     use_canon = bool(
-        G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})).get(
-            "enabled", False
-        )
+        get_graph_param(G, "GRAMMAR_CANON", dict).get("enabled", False)
     )
-    al_max = int(G.graph.get("AL_MAX_LAG", DEFAULTS["AL_MAX_LAG"]))
-    en_max = int(G.graph.get("EN_MAX_LAG", DEFAULTS["EN_MAX_LAG"]))
+    al_max = get_graph_param(G, "AL_MAX_LAG", int)
+    en_max = get_graph_param(G, "EN_MAX_LAG", int)
     h_al = hist.setdefault("since_AL", {})
     h_en = hist.setdefault("since_EN", {})
     for n, _ in G.nodes(data=True):
@@ -564,10 +553,8 @@ def _update_nodes(
     selector = _apply_selector(G)
     if apply_glyphs:
         _apply_glyphs(G, selector, hist)
-    _dt = float(G.graph.get("DT", DEFAULTS["DT"])) if dt is None else float(dt)
-    method = G.graph.get(
-        "INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler")
-    )
+    _dt = get_graph_param(G, "DT") if dt is None else float(dt)
+    method = get_graph_param(G, "INTEGRATOR_METHOD", str)
     update_epi_via_nodal_equation(G, dt=_dt, method=method)
     for n, nd in G.nodes(data=True):
         apply_canonical_clamps(nd, G, n)
@@ -656,9 +643,7 @@ def run(
     for _ in range(steps_int):
         step(G, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)
         # Early-stop opcional
-        stop_cfg = G.graph.get(
-            "STOP_EARLY", METRIC_DEFAULTS.get("STOP_EARLY", {"enabled": False})
-        )
+        stop_cfg = get_graph_param(G, "STOP_EARLY", dict)
         if stop_cfg and stop_cfg.get("enabled", False):
             w = int(stop_cfg.get("window", 25))
             frac = float(stop_cfg.get("fraction", 0.90))

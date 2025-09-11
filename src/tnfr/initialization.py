@@ -4,7 +4,7 @@ from __future__ import annotations
 import random
 from typing import TYPE_CHECKING
 
-from .constants import DEFAULTS, INIT_DEFAULTS, VF_KEY, THETA_KEY
+from .constants import VF_KEY, THETA_KEY, get_graph_param
 from .helpers.numeric import clamp
 from .rng import make_rng
 
@@ -99,30 +99,18 @@ def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
     for ``EPI`` via ``INIT_EPI_VALUE``. If ``INIT_VF_MIN`` is greater than
     ``INIT_VF_MAX``, values are swapped and clamped to ``VF_MIN``/``VF_MAX``.
     """
-    seed = int(G.graph.get("RANDOM_SEED", 0))
-    init_rand_phase = bool(
-        G.graph.get("INIT_RANDOM_PHASE", INIT_DEFAULTS["INIT_RANDOM_PHASE"])
-    )
+    seed = get_graph_param(G, "RANDOM_SEED", int)
+    init_rand_phase = get_graph_param(G, "INIT_RANDOM_PHASE", bool)
 
-    th_min = float(
-        G.graph.get("INIT_THETA_MIN", INIT_DEFAULTS["INIT_THETA_MIN"])
-    )
-    th_max = float(
-        G.graph.get("INIT_THETA_MAX", INIT_DEFAULTS["INIT_THETA_MAX"])
-    )
+    th_min = get_graph_param(G, "INIT_THETA_MIN")
+    th_max = get_graph_param(G, "INIT_THETA_MAX")
 
-    vf_mode = str(
-        G.graph.get("INIT_VF_MODE", INIT_DEFAULTS["INIT_VF_MODE"])
-    ).lower()
-    vf_min_lim = float(G.graph.get("VF_MIN", DEFAULTS["VF_MIN"]))
-    vf_max_lim = float(G.graph.get("VF_MAX", DEFAULTS["VF_MAX"]))
+    vf_mode = str(get_graph_param(G, "INIT_VF_MODE", str)).lower()
+    vf_min_lim = get_graph_param(G, "VF_MIN")
+    vf_max_lim = get_graph_param(G, "VF_MAX")
 
-    vf_uniform_min = G.graph.get(
-        "INIT_VF_MIN", INIT_DEFAULTS.get("INIT_VF_MIN")
-    )
-    vf_uniform_max = G.graph.get(
-        "INIT_VF_MAX", INIT_DEFAULTS.get("INIT_VF_MAX")
-    )
+    vf_uniform_min = get_graph_param(G, "INIT_VF_MIN")
+    vf_uniform_max = get_graph_param(G, "INIT_VF_MAX")
     if vf_uniform_min is None:
         vf_uniform_min = vf_min_lim
     if vf_uniform_max is None:
@@ -132,12 +120,10 @@ def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
     vf_uniform_min = max(vf_uniform_min, vf_min_lim)
     vf_uniform_max = min(vf_uniform_max, vf_max_lim)
 
-    vf_mean = float(G.graph.get("INIT_VF_MEAN", INIT_DEFAULTS["INIT_VF_MEAN"]))
-    vf_std = float(G.graph.get("INIT_VF_STD", INIT_DEFAULTS["INIT_VF_STD"]))
-    clamp_to_limits = bool(
-        G.graph.get(
-            "INIT_VF_CLAMP_TO_LIMITS", INIT_DEFAULTS["INIT_VF_CLAMP_TO_LIMITS"]
-        )
+    vf_mean = get_graph_param(G, "INIT_VF_MEAN")
+    vf_std = get_graph_param(G, "INIT_VF_STD")
+    clamp_to_limits = get_graph_param(
+        G, "INIT_VF_CLAMP_TO_LIMITS", bool
     )
 
     si_min = float(G.graph.get("INIT_SI_MIN", 0.4))
