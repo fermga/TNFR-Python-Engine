@@ -29,6 +29,15 @@ __all__ = (
 
 logger = get_logger(__name__)
 
+EMIT_MAP: dict[str, tuple] = {
+    "warn": (lambda m: warnings.warn(m, RuntimeWarning, stacklevel=2),),
+    "log": (logger.warning,),
+    "both": (
+        lambda m: warnings.warn(m, RuntimeWarning, stacklevel=2),
+        logger.warning,
+    ),
+}
+
 _FAILED_IMPORT_LIMIT = 128  # keep only this many recent failures
 _FAILED_IMPORT_MAX_AGE = 3600.0  # seconds
 _FAILED_IMPORT_PRUNE_INTERVAL = 60.0  # seconds between automatic prunes
@@ -111,16 +120,7 @@ def _warn_failure(
     if not first:
         logger.debug(msg)
         return
-
-    emit_map = {
-        "warn": (lambda m: warnings.warn(m, RuntimeWarning, stacklevel=2),),
-        "log": (logger.warning,),
-        "both": (
-            lambda m: warnings.warn(m, RuntimeWarning, stacklevel=2),
-            logger.warning,
-        ),
-    }
-    for fn in emit_map[emit]:
+    for fn in EMIT_MAP[emit]:
         fn(msg)
 
 

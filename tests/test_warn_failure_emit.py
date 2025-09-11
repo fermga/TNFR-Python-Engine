@@ -39,3 +39,25 @@ def test_warn_failure_both(caplog):
         assert len(w) == 1
         assert len(caplog.records) == 1
         assert "mod_both" in caplog.records[0].message
+
+
+def test_warn_failure_uses_emit_map():
+    from tnfr import import_utils
+
+    called: list[str] = []
+
+    def fake_warn(msg: str) -> None:
+        called.append(msg)
+
+    _clear_warned()
+    original = import_utils.EMIT_MAP["warn"]
+    import_utils.EMIT_MAP["warn"] = (fake_warn,)
+    try:
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            _warn_failure("mod_emit_map", None, ImportError("boom"))
+        assert not w
+        assert called == ["Failed to import module 'mod_emit_map': boom"]
+    finally:
+        import_utils.EMIT_MAP["warn"] = original
+        _clear_warned()
