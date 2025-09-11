@@ -33,6 +33,36 @@ def _similarity_abs(a, b, lo, hi):
     return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, hi - lo)
 
 
+def _compute_wij_phase_epi_vf_si_vectorized(
+    epi,
+    vf,
+    si,
+    cos_th,
+    sin_th,
+    epi_range,
+    vf_range,
+    np,
+):
+    """Vectorized computation of similarity components.
+
+    All parameters are expected to be NumPy arrays already cast to ``float``
+    when appropriate. ``epi_range`` and ``vf_range`` are normalized inside the
+    function to avoid division by zero.
+    """
+
+    epi_range = epi_range if epi_range > 0 else 1.0
+    vf_range = vf_range if vf_range > 0 else 1.0
+    s_phase = 0.5 * (
+        1.0
+        + cos_th[:, None] * cos_th[None, :]
+        + sin_th[:, None] * sin_th[None, :]
+    )
+    s_epi = 1.0 - np.abs(epi[:, None] - epi[None, :]) / epi_range
+    s_vf = 1.0 - np.abs(vf[:, None] - vf[None, :]) / vf_range
+    s_si = 1.0 - np.abs(si[:, None] - si[None, :])
+    return s_phase, s_epi, s_vf, s_si
+
+
 def compute_wij_phase_epi_vf_si(
     th_vals,
     epi_vals,
@@ -75,17 +105,16 @@ def compute_wij_phase_epi_vf_si(
         si = np.asarray(si_vals)
         cos_th = np.asarray(cos_vals, dtype=float)
         sin_th = np.asarray(sin_vals, dtype=float)
-        epi_range = epi_range if epi_range > 0 else 1.0
-        vf_range = vf_range if vf_range > 0 else 1.0
-        s_phase = 0.5 * (
-            1.0
-            + cos_th[:, None] * cos_th[None, :]
-            + sin_th[:, None] * sin_th[None, :]
+        return _compute_wij_phase_epi_vf_si_vectorized(
+            epi,
+            vf,
+            si,
+            cos_th,
+            sin_th,
+            epi_range,
+            vf_range,
+            np,
         )
-        s_epi = 1.0 - np.abs(epi[:, None] - epi[None, :]) / epi_range
-        s_vf = 1.0 - np.abs(vf[:, None] - vf[None, :]) / vf_range
-        s_si = 1.0 - np.abs(si[:, None] - si[None, :])
-        return s_phase, s_epi, s_vf, s_si
 
     if i is None or j is None:
         raise ValueError("i and j are required for non-vectorized computation")
@@ -277,10 +306,13 @@ def _wij_loops(
     vf_max: float,
     neighbors_only: bool,
     self_diag: bool,
-    cos_vals,
-    sin_vals,
+    cos_vals=None,
+    sin_vals=None,
 ) -> list[list[float]]:
     n = len(nodes)
+    if cos_vals is None or sin_vals is None:
+        cos_vals = [math.cos(t) for t in th_vals]
+        sin_vals = [math.sin(t) for t in th_vals]
     wij = [
         [1.0 if (self_diag and i == j) else 0.0 for j in range(n)]
         for i in range(n)
