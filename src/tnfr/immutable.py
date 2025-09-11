@@ -73,29 +73,24 @@ def _freeze_tuple(value: tuple, seen: set[int] | None = None):
     return tuple(_freeze(v, seen) for v in value)
 
 
-@_freeze.register(list)
-@_check_cycle
-def _freeze_list(value: list, seen: set[int] | None = None):
-    return ("list", tuple(_freeze(v, seen) for v in value))
+def _freeze_iterable(container: Any, tag: str, seen: set[int] | None) -> tuple[str, tuple]:
+    return (tag, tuple(_freeze(v, seen) for v in container))
 
 
-@_freeze.register(set)
-@_check_cycle
-def _freeze_set(value: set, seen: set[int] | None = None):
-    return ("set", tuple(_freeze(v, seen) for v in value))
+def _register_iterable(cls: type, tag: str) -> None:
+    @_freeze.register(cls)
+    @_check_cycle
+    def _freeze_iterable_wrapper(value: Any, seen: set[int] | None = None):
+        return _freeze_iterable(value, tag, seen)
 
 
-@_freeze.register(frozenset)
-@_check_cycle
-def _freeze_frozenset(value: frozenset, seen: set[int] | None = None):
-    return ("frozenset", tuple(_freeze(v, seen) for v in value))
-
-
-@_freeze.register(bytearray)
-@_check_cycle
-def _freeze_bytearray(value: bytearray, seen: set[int] | None = None):
-    return ("bytearray", tuple(_freeze(v, seen) for v in value))
-
+for _cls, _tag in (
+    (list, "list"),
+    (set, "set"),
+    (frozenset, "frozenset"),
+    (bytearray, "bytearray"),
+):
+    _register_iterable(_cls, _tag)
 
 @_freeze.register(Mapping)
 @_check_cycle
