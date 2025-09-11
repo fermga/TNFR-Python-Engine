@@ -19,7 +19,11 @@ from .constants import get_param
 from .grammar import apply_glyph_with_grammar
 from .constants_glyphs import GLYPHS_CANONICAL_SET
 from .types import Glyph
-from .collections_utils import ensure_collection, MAX_MATERIALIZE_DEFAULT
+from .collections_utils import (
+    ensure_collection,
+    MAX_MATERIALIZE_DEFAULT,
+    is_non_string_sequence,
+)
 from .glyph_history import ensure_history
 
 # Basic types
@@ -324,7 +328,7 @@ def _handle_target(
     """
     nodes_src = G.nodes() if payload.nodes is None else payload.nodes
     nodes = ensure_collection(nodes_src, max_materialize=None)
-    curr_target = nodes if isinstance(nodes, Sequence) else tuple(nodes)
+    curr_target = nodes if is_non_string_sequence(nodes) else tuple(nodes)
     _record_trace(trace, G, OpTag.TARGET, n=len(curr_target))
     return curr_target
 

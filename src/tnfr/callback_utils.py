@@ -6,13 +6,14 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING, TypedDict
 from enum import Enum
 from collections import defaultdict, deque
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Mapping
 
 import traceback
 from .logging_utils import get_logger
 from .constants import DEFAULTS
 
 from .trace import CallbackSpec
+from .collections_utils import is_non_string_sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx  # type: ignore[import-untyped]
@@ -91,7 +92,7 @@ def _normalize_event_callbacks(cbs: CallbackRegistry, event: str) -> None:
     cb_map = cbs[event]
     if isinstance(cb_map, Mapping):
         entries = cb_map.values()
-    elif isinstance(cb_map, Sequence) and not isinstance(cb_map, (str, bytes)):
+    elif is_non_string_sequence(cb_map):
         entries = cb_map
     else:
         entries = []
@@ -125,7 +126,7 @@ def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
 
     if isinstance(entry, CallbackSpec):
         return entry
-    elif isinstance(entry, Sequence) and not isinstance(entry, str):
+    elif is_non_string_sequence(entry):
         if len(entry) != 2:
             return None
         name, fn = entry
