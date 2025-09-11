@@ -135,6 +135,14 @@ def test_selector_thresholds_refactor_equivalent_overrides(graph_canon):
     assert _selector_thresholds(G) == _selector_thresholds_original(G)
 
 
+def test_selector_thresholds_cached_per_graph(graph_canon):
+    """Repeated calls should reuse cached thresholds for the same graph."""
+    G = graph_canon()
+    thr1 = _selector_thresholds(G)
+    thr2 = _selector_thresholds(G)
+    assert thr1 is thr2
+
+
 def test_norms_para_selector_computes_max(graph_canon):
     G = graph_canon()
     G.add_node(0, **{ALIAS_DNFR[-1]: 2.0, ALIAS_D2EPI[-2]: 1.0})

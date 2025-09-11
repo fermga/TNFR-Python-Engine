@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from functools import lru_cache
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -24,16 +25,22 @@ __all__ = (
 )
 
 
-def _selector_thresholds(G: "nx.Graph") -> dict:
-    """Return normalised hi/lo thresholds for Si, ΔNFR and acceleration.
 
-    Combines ``SELECTOR_THRESHOLDS`` with legacy ``GLYPH_THRESHOLDS`` for Si
-    cutoffs. All values are clamped to ``[0, 1]``.
+@lru_cache(maxsize=None)
+def _build_selector_thresholds(
+    graph_id: int,
+    thr_sel_items: tuple[tuple[str, float], ...],
+    thr_def_items: tuple[tuple[str, float], ...],
+) -> dict[str, float]:
+    """Construct threshold dict once per graph.
+
+    Parameters are hashable representations of the selector and legacy
+    thresholds, enabling memoisation via ``lru_cache``. The returned dictionary
+    is reused for subsequent calls with the same arguments.
     """
-    sel_defaults = DEFAULTS.get("SELECTOR_THRESHOLDS", {})
-    thr_sel = {**sel_defaults, **G.graph.get("SELECTOR_THRESHOLDS", {})}
-    glyph_defaults = DEFAULTS.get("GLYPH_THRESHOLDS", {})
-    thr_def = {**glyph_defaults, **G.graph.get("GLYPH_THRESHOLDS", {})}
+
+    thr_sel = dict(thr_sel_items)
+    thr_def = dict(thr_def_items)
 
     specs = {
         "si_hi": ("hi", SELECTOR_THRESHOLD_DEFAULTS["si_hi"]),
@@ -52,6 +59,26 @@ def _selector_thresholds(G: "nx.Graph") -> dict:
             val = thr_sel.get(key, default)
         out[key] = clamp01(float(val))
     return out
+
+
+def _selector_thresholds(G: "nx.Graph") -> dict[str, float]:
+    """Return normalised hi/lo thresholds for Si, ΔNFR and acceleration.
+
+    Combines ``SELECTOR_THRESHOLDS`` with legacy ``GLYPH_THRESHOLDS`` for Si
+    cutoffs. All values are clamped to ``[0, 1]``. Results are memoised so that
+    each graph builds the thresholds only once.
+    """
+
+    sel_defaults = DEFAULTS.get("SELECTOR_THRESHOLDS", {})
+    thr_sel = {**sel_defaults, **G.graph.get("SELECTOR_THRESHOLDS", {})}
+    glyph_defaults = DEFAULTS.get("GLYPH_THRESHOLDS", {})
+    thr_def = {**glyph_defaults, **G.graph.get("GLYPH_THRESHOLDS", {})}
+
+    return _build_selector_thresholds(
+        id(G),
+        tuple(sorted(thr_sel.items())),
+        tuple(sorted(thr_def.items())),
+    )
 
 
 def _norms_para_selector(G: "nx.Graph") -> dict:
