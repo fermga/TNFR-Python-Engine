@@ -20,7 +20,7 @@ from ..constants import (
     ALIAS_EPI,
     ALIAS_SI,
     ALIAS_D2EPI,
-    ALIAS_dSI,
+    ALIAS_DSI,
     get_param,
 )
 from ..observers import glyph_load, kuramoto_order
@@ -420,7 +420,7 @@ def _compute_selector_score(G, nd, Si, dnfr, accel, cand):
     score = _calc_selector_score(Si, dnfr, accel, W)
     hist_prev = nd.get("glyph_history")
     if hist_prev and hist_prev[-1] == cand:
-        delta_si = get_attr(nd, ALIAS_dSI, 0.0)
+        delta_si = get_attr(nd, ALIAS_DSI, 0.0)
         h = ensure_history(G)
         sig = h.get("sense_sigma_mag", [])
         delta_sigma = sig[-1] - sig[-2] if len(sig) >= 2 else 0.0

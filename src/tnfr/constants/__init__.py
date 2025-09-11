@@ -123,11 +123,11 @@ ALIAS_DNFR = ("ΔNFR", "delta_nfr", "dnfr")
 ALIAS_EPI = ("EPI", "psi", "PSI", "value")
 ALIAS_EPI_KIND = ("EPI_kind", "epi_kind", "source_glyph")
 ALIAS_SI = ("Si", "sense_index", "S_i", "sense", "meaning_index")
-ALIAS_dEPI = ("dEPI_dt", "dpsi_dt", "dEPI", "velocity")
+ALIAS_DEPI = ("dEPI_dt", "dpsi_dt", "dEPI", "velocity")
 ALIAS_D2EPI = ("d2EPI_dt2", "d2psi_dt2", "d2EPI", "accel")
-ALIAS_dVF = ("dνf_dt", "dvf_dt", "dnu_dt", "dvf")
+ALIAS_DVF = ("dνf_dt", "dvf_dt", "dnu_dt", "dvf")
 ALIAS_D2VF = ("d2νf_dt2", "d2vf_dt2", "d2nu_dt2", "B")
-ALIAS_dSI = ("δSi", "delta_Si", "dSi")
+ALIAS_DSI = ("δSi", "delta_Si", "dSi")
 
 VF_PRIMARY = ALIAS_VF[0]
 THETA_PRIMARY = ALIAS_THETA[0]
@@ -135,11 +135,11 @@ DNFR_PRIMARY = ALIAS_DNFR[0]
 EPI_PRIMARY = ALIAS_EPI[0]
 EPI_KIND_PRIMARY = ALIAS_EPI_KIND[0]
 SI_PRIMARY = ALIAS_SI[0]
-dEPI_PRIMARY = ALIAS_dEPI[0]
+dEPI_PRIMARY = ALIAS_DEPI[0]
 D2EPI_PRIMARY = ALIAS_D2EPI[0]
-dVF_PRIMARY = ALIAS_dVF[0]
+dVF_PRIMARY = ALIAS_DVF[0]
 D2VF_PRIMARY = ALIAS_D2VF[0]
-dSI_PRIMARY = ALIAS_dSI[0]
+dSI_PRIMARY = ALIAS_DSI[0]
 
 __all__ = (
     "CORE_DEFAULTS",
@@ -166,11 +166,11 @@ __all__ = (
     "ALIAS_EPI",
     "ALIAS_EPI_KIND",
     "ALIAS_SI",
-    "ALIAS_dEPI",
+    "ALIAS_DEPI",
     "ALIAS_D2EPI",
-    "ALIAS_dVF",
+    "ALIAS_DVF",
     "ALIAS_D2VF",
-    "ALIAS_dSI",
+    "ALIAS_DSI",
     "VF_PRIMARY",
     "THETA_PRIMARY",
     "DNFR_PRIMARY",
@@ -183,3 +183,24 @@ __all__ = (
     "D2VF_PRIMARY",
     "dSI_PRIMARY",
 )
+
+# Deprecated names ---------------------------------------------------------
+# Keep legacy lowercase derivative aliases for backwards compatibility.
+# Accessing them triggers a ``DeprecationWarning`` pointing to the new
+# uppercase variants.
+_DEPRECATED_ALIASES = {
+    "ALIAS_dEPI": "ALIAS_DEPI",
+    "ALIAS_dVF": "ALIAS_DVF",
+    "ALIAS_dSI": "ALIAS_DSI",
+}
+
+
+def __getattr__(name: str):
+    if name in _DEPRECATED_ALIASES:
+        warnings.warn(
+            f"'{name}' is deprecated; use '{_DEPRECATED_ALIASES[name]}'",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return globals()[_DEPRECATED_ALIASES[name]]
+    raise AttributeError(f"module {__name__} has no attribute {name}")

@@ -9,7 +9,7 @@ from ..constants import (
     DEFAULTS,
     ALIAS_VF,
     ALIAS_DNFR,
-    ALIAS_dEPI,
+    ALIAS_DEPI,
     ALIAS_EPI,
     ALIAS_EPI_KIND,
     ALIAS_D2EPI,
@@ -175,7 +175,7 @@ def update_epi_via_nodal_equation(
             set_attr(nd, ALIAS_EPI, epi)
             if epi_kind:
                 set_attr_str(nd, ALIAS_EPI_KIND, epi_kind)
-            set_attr(nd, ALIAS_dEPI, dEPI_dt)
+            set_attr(nd, ALIAS_DEPI, dEPI_dt)
             set_attr(nd, ALIAS_D2EPI, d2epi)
 
         t_local += dt_step
@@ -197,6 +197,6 @@ def _node_state(nd: dict[str, Any]) -> tuple[float, float, float, float]:
 
     vf = get_attr(nd, ALIAS_VF, 0.0)
     dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
-    dEPI_dt_prev = get_attr(nd, ALIAS_dEPI, 0.0)
+    dEPI_dt_prev = get_attr(nd, ALIAS_DEPI, 0.0)
     epi_i = get_attr(nd, ALIAS_EPI, 0.0)
     return vf, dnfr, dEPI_dt_prev, epi_i
