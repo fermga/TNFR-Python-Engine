@@ -27,6 +27,7 @@ if _orig is not None:
 else:  # pragma: no cover - cleanup when original module absent
     del sys.modules["tnfr"]
 
+
 def test_get_attr_default_none_returns_none():
     d = {}
     acc = AliasAccessor(int)

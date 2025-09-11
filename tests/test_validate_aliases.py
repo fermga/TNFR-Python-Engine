@@ -2,6 +2,7 @@ import pytest
 
 from tnfr.alias import AliasAccessor
 
+
 def test_rejects_empty_iterable():
     with pytest.raises(ValueError):
         AliasAccessor(int).get({}, ())

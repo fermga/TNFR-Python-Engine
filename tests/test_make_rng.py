@@ -50,4 +50,3 @@ def test_cache_size_updates_from_graph():
     G.graph["JITTER_CACHE_SIZE"] = 3
     make_rng(1, 2, G)
     assert rng_mod._CACHE_MAXSIZE == 3
-

@@ -38,4 +38,3 @@ def test_warn_failure_thread_safety(monkeypatch):
     with _WARNED_LOCK:
         assert len(_WARNED_MODULES) == 1 and "mod" in _WARNED_MODULES
     assert _IMPORT_STATE.last_prune > 0.0
-
