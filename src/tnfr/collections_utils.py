@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+from collections import deque
 from collections.abc import Collection, Iterable, Mapping, Sequence
 from itertools import islice
-from typing import Any, TypeVar, cast
+from typing import Any, Callable, Iterator, TypeVar, cast
 
 from .logging_utils import get_logger, warn_once
 
@@ -36,9 +37,40 @@ def is_non_string_sequence(obj: Any) -> bool:
     return isinstance(obj, Sequence) and not isinstance(obj, STRING_TYPES)
 
 
+def flatten_structure(
+    obj: Any,
+    *,
+    expand: Callable[[Any], Iterable[Any] | None] | None = None,
+) -> Iterator[Any]:
+    """Yield leaf items from ``obj`` preserving order.
+
+    Parameters
+    ----------
+    obj:
+        Object that may contain nested sequences.
+    expand:
+        Optional callable returning a replacement iterable for ``item``. When
+        it returns ``None`` the ``item`` is processed normally.
+    """
+
+    stack = deque([obj])
+    while stack:
+        item = stack.pop()
+        if expand is not None:
+            replacement = expand(item)
+            if replacement is not None:
+                stack.extendleft(replacement)
+                continue
+        if is_non_string_sequence(item):
+            stack.extendleft(item)
+        else:
+            yield item
+
+
 __all__ = (
     "MAX_MATERIALIZE_DEFAULT",
     "is_non_string_sequence",
+    "flatten_structure",
     "ensure_collection",
     "normalize_weights",
     "normalize_counter",
