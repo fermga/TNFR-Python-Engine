@@ -11,7 +11,7 @@ from .constants import (
     DEFAULTS,
     ALIAS_DNFR,
     ALIAS_D2EPI,
-    ALIAS_dEPI,
+    ALIAS_DEPI,
     ALIAS_VF,
     ALIAS_THETA,
     ALIAS_SI,
@@ -98,7 +98,7 @@ def compute_coherence(
         depi_arr = np.empty(count, dtype=float)
         for idx, (_, nd) in enumerate(G.nodes(data=True)):
             dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0))
-            depi = abs(get_attr(nd, ALIAS_dEPI, 0.0))
+            depi = abs(get_attr(nd, ALIAS_DEPI, 0.0))
             dnfr_arr[idx] = dnfr
             depi_arr[idx] = depi
         dnfr_mean = float(np.mean(dnfr_arr))
@@ -108,7 +108,7 @@ def compute_coherence(
             (
                 (
                     abs(get_attr(nd, ALIAS_DNFR, 0.0)),
-                    abs(get_attr(nd, ALIAS_dEPI, 0.0)),
+                    abs(get_attr(nd, ALIAS_DEPI, 0.0)),
                 )
                 for _, nd in G.nodes(data=True)
             )

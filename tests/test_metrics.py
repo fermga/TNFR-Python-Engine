@@ -7,7 +7,7 @@ from tnfr.constants import (
     inject_defaults,
     ALIAS_EPI,
     ALIAS_DNFR,
-    ALIAS_dEPI,
+    ALIAS_DEPI,
     ALIAS_SI,
     ALIAS_VF,
 )
@@ -37,7 +37,7 @@ def test_track_stability_updates_hist(graph_canon):
 
     # Node 0: stable
     set_attr(G.nodes[0], ALIAS_DNFR, 0.0)
-    set_attr(G.nodes[0], ALIAS_dEPI, 0.0)
+    set_attr(G.nodes[0], ALIAS_DEPI, 0.0)
     set_attr(G.nodes[0], ALIAS_SI, 2.0)
     G.nodes[0]["_prev_Si"] = 1.0
     set_attr(G.nodes[0], ALIAS_VF, 1.0)
@@ -46,7 +46,7 @@ def test_track_stability_updates_hist(graph_canon):
 
     # Node 1: unstable
     set_attr(G.nodes[1], ALIAS_DNFR, 10.0)
-    set_attr(G.nodes[1], ALIAS_dEPI, 10.0)
+    set_attr(G.nodes[1], ALIAS_DEPI, 10.0)
     set_attr(G.nodes[1], ALIAS_SI, 3.0)
     G.nodes[1]["_prev_Si"] = 1.0
     set_attr(G.nodes[1], ALIAS_VF, 1.0)

@@ -13,11 +13,11 @@ import math
 from ..constants import (
     ALIAS_EPI,
     ALIAS_DNFR,
-    ALIAS_dEPI,
+    ALIAS_DEPI,
     ALIAS_SI,
-    ALIAS_dSI,
+    ALIAS_DSI,
     ALIAS_VF,
-    ALIAS_dVF,
+    ALIAS_DVF,
     ALIAS_D2VF,
     get_param,
 )
@@ -259,7 +259,7 @@ def _track_stability(G, hist, dt, eps_dnfr, eps_depi):
     for _, nd in G.nodes(data=True):
         if (
             abs(get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr
-            and abs(get_attr(nd, ALIAS_dEPI, 0.0)) <= eps_depi
+            and abs(get_attr(nd, ALIAS_DEPI, 0.0)) <= eps_depi
         ):
             stables += 1
 
@@ -267,7 +267,7 @@ def _track_stability(G, hist, dt, eps_dnfr, eps_depi):
         Si_prev = nd.get("_prev_Si", Si_curr)
         dSi = Si_curr - Si_prev
         nd["_prev_Si"] = Si_curr
-        set_attr(nd, ALIAS_dSI, dSi)
+        set_attr(nd, ALIAS_DSI, dSi)
         delta_si_sum += dSi
         delta_si_count += 1
 
@@ -278,7 +278,7 @@ def _track_stability(G, hist, dt, eps_dnfr, eps_depi):
         B = (dvf_dt - dvf_prev) / dt
         nd["_prev_vf"] = vf_curr
         nd["_prev_dvf"] = dvf_dt
-        set_attr(nd, ALIAS_dVF, dvf_dt)
+        set_attr(nd, ALIAS_DVF, dvf_dt)
         set_attr(nd, ALIAS_D2VF, B)
         B_sum += B
         B_count += 1
