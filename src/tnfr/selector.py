@@ -83,14 +83,17 @@ def _apply_selector_hysteresis(
 ) -> str | None:
     """Apply hysteresis, returning the previous glyph when close to
     thresholds."""
-    def dist(val, prefix):
-        return min(
-            abs(val - thr[f"{prefix}_hi"]),
-            abs(val - thr[f"{prefix}_lo"]),
-        )
-    d_si = dist(Si, "si")
-    d_dn = dist(dnfr, "dnfr")
-    d_ac = dist(accel, "accel")
+    # Cache threshold lookups to avoid repeated dictionary access.
+    si_hi = thr["si_hi"]
+    si_lo = thr["si_lo"]
+    dnfr_hi = thr["dnfr_hi"]
+    dnfr_lo = thr["dnfr_lo"]
+    accel_hi = thr["accel_hi"]
+    accel_lo = thr["accel_lo"]
+
+    d_si = min(abs(Si - si_hi), abs(Si - si_lo))
+    d_dn = min(abs(dnfr - dnfr_hi), abs(dnfr - dnfr_lo))
+    d_ac = min(abs(accel - accel_hi), abs(accel - accel_lo))
     certeza = min(d_si, d_dn, d_ac)
     if certeza < margin:
         hist = nd.get("glyph_history")
