@@ -55,7 +55,17 @@ __all__ = (
     "_callback_names",
     "gamma_field",
     "grammar_field",
+    "register_trace_field",
 )
+
+# Trace field registry
+_TRACE_FIELDS: dict[str, dict[str, Callable[[Any], dict[str, Any]]]] = {}
+
+
+def register_trace_field(phase: str, name: str, func: Callable[[Any], dict[str, Any]]) -> None:
+    """Register ``func`` to capture ``name`` during ``phase`` snapshots."""
+
+    _TRACE_FIELDS.setdefault(phase, {})[name] = func
 
 # -------------------------
 # Helpers
@@ -165,18 +175,36 @@ def _trace_capture(
     append_metric(hist, key, meta)
 
 
+_TRACE_CALLBACKS: dict[str, Callable] = {}
+
+
+def _get_trace_callback(phase: str) -> Callable:
+    """Return a callback that captures fields for ``phase``."""
+
+    if phase not in _TRACE_CALLBACKS:
+        def _trace(G, *args, _phase=phase, **kwargs):
+            _trace_capture(G, _phase, _TRACE_FIELDS.get(_phase, {}))
+
+        _TRACE_CALLBACKS[phase] = _trace
+    return _TRACE_CALLBACKS[phase]
+
+
 gamma_field = make_mapping_field("GAMMA", "gamma")
+register_trace_field("before", "gamma", gamma_field)
 
 
 grammar_field = make_mapping_field("GRAMMAR_CANON", "grammar")
+register_trace_field("before", "grammar", grammar_field)
 
 
 dnfr_weights_field = make_mapping_field("DNFR_WEIGHTS", "dnfr_weights")
+register_trace_field("before", "dnfr_weights", dnfr_weights_field)
 
 
 def selector_field(G):
     sel = G.graph.get("glyph_selector")
     return {"selector": getattr(sel, "__name__", str(sel)) if sel else None}
+register_trace_field("before", "selector", selector_field)
 
 
 _si_weights_field = make_mapping_field("_Si_weights", "si_weights")
@@ -192,6 +220,7 @@ def si_weights_field(G):
         **(_si_weights_field(G) or {"si_weights": {}}),
         **(_si_sensitivity_field(G) or {"si_sensitivity": {}}),
     }
+register_trace_field("before", "si_weights", si_weights_field)
 
 
 def callbacks_field(G):
@@ -209,6 +238,7 @@ def callbacks_field(G):
         else:
             out[phase] = None
     return {"callbacks": out}
+register_trace_field("before", "callbacks", callbacks_field)
 
 
 def thol_state_field(G):
@@ -218,11 +248,13 @@ def thol_state_field(G):
         if st.get("thol_open", False):
             th_open += 1
     return {"thol_open_nodes": th_open}
+register_trace_field("before", "thol_state", thol_state_field)
 
 
 def kuramoto_field(G):
     R, psi = kuramoto_R_psi(G)
     return {"kuramoto": {"R": float(R), "psi": float(psi)}}
+register_trace_field("after", "kuramoto", kuramoto_field)
 
 
 def sigma_field(G):
@@ -238,6 +270,7 @@ def sigma_field(G):
             "angle": float(sv.get("angle", 0.0)),
         }
     }
+register_trace_field("after", "sigma", sigma_field)
 
 
 def glyph_counts_field(G):
@@ -249,32 +282,7 @@ def glyph_counts_field(G):
 
     cnt = count_glyphs(G, window=1)
     return {"glyphs": cnt}
-
-
-TRACE_FIELDS_BEFORE = {
-    "gamma": gamma_field,
-    "grammar": grammar_field,
-    "selector": selector_field,
-    "dnfr_weights": dnfr_weights_field,
-    "si_weights": si_weights_field,
-    "callbacks": callbacks_field,
-    "thol_state": thol_state_field,
-}
-
-
-TRACE_FIELDS_AFTER = {
-    "kuramoto": kuramoto_field,
-    "sigma": sigma_field,
-    "glyph_counts": glyph_counts_field,
-}
-
-
-def _trace_before(G, *args, **kwargs):
-    _trace_capture(G, "before", TRACE_FIELDS_BEFORE)
-
-
-def _trace_after(G, *args, **kwargs):
-    _trace_capture(G, "after", TRACE_FIELDS_AFTER)
+register_trace_field("after", "glyph_counts", glyph_counts_field)
 
 
 # -------------------------
@@ -308,11 +316,13 @@ def register_trace(G) -> None:
 
     from .callback_utils import register_callback
 
-    register_callback(
-        G, event="before_step", func=_trace_before, name="trace_before"
-    )
-    register_callback(
-        G, event="after_step", func=_trace_after, name="trace_after"
-    )
+    for phase in _TRACE_FIELDS:
+        cb = _get_trace_callback(phase)
+        register_callback(
+            G,
+            event=f"{phase}_step",
+            func=cb,
+            name=f"trace_{phase}",
+        )
 
     G.graph["_trace_registered"] = True

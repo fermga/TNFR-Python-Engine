@@ -56,7 +56,7 @@ def _json_dumps_orjson(
         or kwargs
     ):
 
-        warnings.warn(_ORJSON_PARAMS_MSG, UserWarning, stacklevel=3)
+        warnings.warn(_ORJSON_PARAMS_MSG, UserWarning, stacklevel=2)
 
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
     data = orjson.dumps(obj, option=option, default=params.default)

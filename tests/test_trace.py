@@ -4,6 +4,7 @@ import pytest
 
 from tnfr.trace import (
     register_trace,
+    register_trace_field,
     _callback_names,
     gamma_field,
     grammar_field,
@@ -58,6 +59,22 @@ def test_trace_sigma_no_glyphs(graph_canon):
         "mag": 0.0,
         "angle": 0.0,
     }
+
+
+def test_register_trace_field_dynamic(graph_canon):
+    from tnfr import trace as trace_mod
+
+    def foo_field(G):
+        return {"foo": 42}
+
+    trace_mod.register_trace_field("before", "foo", foo_field)
+    G = graph_canon()
+    G.graph["TRACE"] = {"capture": ["foo"]}
+    register_trace(G)
+    invoke_callbacks(G, "before_step")
+    meta = G.graph["history"]["trace_meta"][0]
+    assert meta["foo"] == 42
+    trace_mod._TRACE_FIELDS["before"].pop("foo", None)
 
 
 def test_callback_names_spec():
