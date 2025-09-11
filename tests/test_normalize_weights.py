@@ -64,7 +64,16 @@ def test_normalize_weights_warn_once(caplog):
 def test_normalize_weights_raises_on_non_numeric_value():
     weights = {"a": "not-a-number", "b": 2.0}
     with pytest.raises(ValueError):
-        normalize_weights(weights, ("a", "b"), error_on_negative=True)
+        normalize_weights(weights, ("a", "b"), error_on_conversion=True)
+
+
+def test_normalize_weights_error_on_negative_does_not_raise_conversion(caplog):
+    """error_on_negative should not affect conversion errors."""
+    weights = {"a": "not-a-number", "b": 2.0}
+    with caplog.at_level("WARNING"):
+        norm = normalize_weights(weights, ("a", "b"), error_on_negative=True, default=1.0)
+    assert any("Could not convert" in m for m in caplog.messages)
+    assert math.isclose(math.fsum(norm.values()), 1.0)
 
 
 def test_normalize_weights_high_precision():
