@@ -65,12 +65,10 @@ def _ensure_glyph_history(nd: dict[str, Any], window: int) -> deque:
 
     Non-iterable existing values are discarded.
     """
-
-    window_int = window
     hist = nd.get("glyph_history")
-    if not isinstance(hist, deque) or hist.maxlen != window_int:
+    if not isinstance(hist, deque) or hist.maxlen != window:
         seq = _normalize_history_input(hist)
-        hist = deque(seq, maxlen=window_int)
+        hist = deque(seq, maxlen=window)
         nd["glyph_history"] = hist
     return hist
 
@@ -446,11 +444,9 @@ def count_glyphs(
     """
 
     if window is not None:
-        window_int = validate_window(window)
-        if window_int == 0:
+        window = validate_window(window)
+        if window == 0:
             return Counter()
-    else:
-        window_int = None
 
     counts: Counter[str] = Counter()
     for _, nd in G.nodes(data=True):
@@ -462,10 +458,10 @@ def count_glyphs(
         hist = nd.get("glyph_history")
         if not hist:
             continue
-        if window_int is None:
+        if window is None:
             seq = hist
         else:
-            start = max(len(hist) - window_int, 0)
+            start = max(len(hist) - window, 0)
             seq = islice(hist, start, None)
         counts.update(seq)
 
