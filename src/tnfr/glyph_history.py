@@ -17,7 +17,6 @@ __all__ = (
     "push_glyph",
     "recent_glyph",
     "validate_and_ensure_history",
-    "ensure_history_with_window",
     "ensure_history",
     "current_step_idx",
     "append_metric",
@@ -73,16 +72,30 @@ def _ensure_glyph_history(nd: dict[str, Any], window: int) -> deque:
     return hist
 
 
-def ensure_history_with_window(nd: dict[str, Any], validated_window: int) -> deque:
-    """Ensure a history deque for ``nd`` using a pre-validated window."""
+def validate_and_ensure_history(
+    nd: dict[str, Any],
+    window: int | None = None,
+    *,
+    validated_window: int | None = None,
+) -> deque:
+    """Ensure a history deque for ``nd``.
 
+    Parameters
+    ----------
+    nd:
+        Mapping potentially containing ``"glyph_history"``.
+    window:
+        History size to validate when ``validated_window`` is ``None``.
+    validated_window:
+        Pre-validated history size. When supplied ``window`` is ignored and no
+        additional validation occurs.
+    """
+
+    if validated_window is None:
+        if window is None:
+            raise TypeError("'window' must be provided when 'validated_window' is None")
+        validated_window = validate_window(window)
     return _ensure_glyph_history(nd, validated_window)
-
-
-def validate_and_ensure_history(nd: dict[str, Any], window: int) -> deque:
-    """Validate ``window`` and ensure a history deque for ``nd``."""
-
-    return _ensure_glyph_history(nd, validate_window(window))
 
 
 def push_glyph(nd: dict[str, Any], glyph: str, window: int) -> None:
@@ -104,8 +117,9 @@ def recent_glyph(nd: dict[str, Any], glyph: str, window: int) -> bool:
     Negative values raise :class:`ValueError`.
     """
 
-    hist = validate_and_ensure_history(nd, window)
-    if hist.maxlen == 0:
+    v_window = validate_window(window)
+    hist = validate_and_ensure_history(nd, validated_window=v_window)
+    if v_window == 0:
         return False
     gl = str(glyph)
     return gl in hist
