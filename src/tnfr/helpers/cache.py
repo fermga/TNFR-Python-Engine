@@ -127,6 +127,7 @@ class NodeCache:
 
     checksum: str
     nodes: tuple[Any, ...]
+    sorted_nodes: tuple[Any, ...] | None = None
     idx: dict[Any, int] | None = None
     offset: dict[Any, int] | None = None
 
@@ -172,10 +173,17 @@ def node_set_checksum(
 
 
 def _update_node_cache(
-    graph: Any, nodes: tuple[Any, ...], key: str, *, checksum: str
+    graph: Any,
+    nodes: tuple[Any, ...],
+    key: str,
+    *,
+    checksum: str,
+    sorted_nodes: tuple[Any, ...] | None = None,
 ) -> None:
     """Store ``nodes`` and ``checksum`` in ``graph`` under ``key``."""
-    graph[f"{key}_cache"] = NodeCache(checksum=checksum, nodes=nodes)
+    graph[f"{key}_cache"] = NodeCache(
+        checksum=checksum, nodes=nodes, sorted_nodes=sorted_nodes
+    )
     graph[f"{key}_checksum"] = checksum
 
 
@@ -189,6 +197,7 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     graph = get_graph(G)
     cache: NodeCache | None = graph.get("_node_list_cache")
     nodes = cache.nodes if cache else None
+    sorted_nodes = cache.sorted_nodes if cache else None
     stored_len = graph.get("_node_list_len")
     current_n = G.number_of_nodes()
     dirty = bool(graph.pop("_node_list_dirty", False))
@@ -203,16 +212,39 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
         new_checksum = node_set_checksum(G)
         invalid = cache.checksum != new_checksum
 
+    sort_nodes = bool(graph.get("SORT_NODES", False))
+
     if invalid:
         # Refresh the cached node list and store its checksum since something changed.
         nodes = tuple(G.nodes())
         new_checksum = node_set_checksum(G, nodes, store=True)
-        _update_node_cache(graph, nodes, "_node_list", checksum=new_checksum)
+        if sort_nodes:
+            sorted_nodes = tuple(sorted(nodes, key=_node_repr))
+        else:
+            sorted_nodes = None
+        _update_node_cache(
+            graph,
+            nodes,
+            "_node_list",
+            checksum=new_checksum,
+            sorted_nodes=sorted_nodes,
+        )
         graph["_node_list_len"] = current_n
     elif cache and "_node_list_checksum" not in graph:
         # Cache is valid but its checksum wasn't recorded on the graph; reuse it.
         new_checksum = new_checksum if new_checksum is not None else cache.checksum
-        _update_node_cache(graph, nodes, "_node_list", checksum=new_checksum)
+        if sort_nodes and sorted_nodes is None:
+            sorted_nodes = tuple(sorted(nodes, key=_node_repr))
+        _update_node_cache(
+            graph,
+            nodes,
+            "_node_list",
+            checksum=new_checksum,
+            sorted_nodes=sorted_nodes,
+        )
+    else:
+        if sort_nodes and sorted_nodes is None and cache is not None:
+            cache.sorted_nodes = tuple(sorted(nodes, key=_node_repr))
     return nodes
 
 
@@ -228,11 +260,37 @@ def _ensure_node_map(G, *, attr: str, sort: bool = False) -> dict[Any, int]:
     cache: NodeCache = graph["_node_list_cache"]
     mapping = getattr(cache, attr)
     if mapping is None:
-        nodes = list(cache.nodes)
-        if sort:
-            nodes.sort(key=_node_repr)
-        mapping = {node: idx for idx, node in enumerate(nodes)}
+        if attr == "offset" and sort:
+            nodes_for_attr = cache.sorted_nodes
+            if nodes_for_attr is None:
+                nodes_for_attr = cache.sorted_nodes = tuple(
+                    sorted(cache.nodes, key=_node_repr)
+                )
+        else:
+            nodes_for_attr = cache.nodes
+        mapping = {node: idx for idx, node in enumerate(nodes_for_attr)}
         setattr(cache, attr, mapping)
+
+        other_attr = "offset" if attr == "idx" else "idx"
+        other_mapping = getattr(cache, other_attr)
+        if other_mapping is None:
+            if other_attr == "offset":
+                sort_other = bool(graph.get("SORT_NODES", False))
+                if sort_other:
+                    nodes_for_other = cache.sorted_nodes
+                    if nodes_for_other is None:
+                        nodes_for_other = cache.sorted_nodes = tuple(
+                            sorted(cache.nodes, key=_node_repr)
+                        )
+                else:
+                    nodes_for_other = cache.nodes
+            else:
+                nodes_for_other = cache.nodes
+            setattr(
+                cache,
+                other_attr,
+                {node: idx for idx, node in enumerate(nodes_for_other)},
+            )
     return mapping
 
 
