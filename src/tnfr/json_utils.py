@@ -9,7 +9,7 @@ import json
 
 import warnings
 
-from typing import Any, Callable, Literal, cast, overload
+from typing import Any, Callable, Literal, Set, cast, overload
 
 from dataclasses import dataclass
 from functools import lru_cache
@@ -23,7 +23,7 @@ _ORJSON_PARAMS_MSG = (
 _warned_orjson_param_combos: set[tuple[str, ...]] = set()
 
 
-def _warn_orjson_params_once(ignored: tuple[str, ...]) -> None:
+def _warn_orjson_params_once(ignored: Set[str]) -> None:
     """Warn once per unique combination of ignored parameters."""
     combo = tuple(sorted(ignored))
     if combo not in _warned_orjson_param_combos:
@@ -78,7 +78,7 @@ def _json_dumps_orjson(
     if kwargs:
         ignored.extend(kwargs)
     if ignored:
-        _warn_orjson_params_once(tuple(ignored))
+        _warn_orjson_params_once(set(ignored))
 
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
     data = orjson.dumps(obj, option=option, default=params.default)
