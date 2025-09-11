@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 from collections.abc import Iterable, Sequence
 from statistics import fmean, StatisticsError, pvariance
-from itertools import chain, tee
+from itertools import chain
 import math
 
 from ..import_utils import get_numpy, import_nodonx
