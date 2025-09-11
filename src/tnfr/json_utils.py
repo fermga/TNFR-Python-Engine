@@ -18,10 +18,6 @@ from dataclasses import dataclass
 from functools import lru_cache, partial
 from .import_utils import optional_import
 
-warnings.filterwarnings(
-    "once", message=".*ignored when using orjson", category=UserWarning
-)
-
 _ORJSON_PARAMS_MSG = (
     "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson"
 )
@@ -72,7 +68,11 @@ def _json_dumps_orjson(
             _warned_orjson_params = True
 
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
-    data = orjson.dumps(obj, option=option, default=params.default)
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "once", message=".*ignored when using orjson", category=UserWarning
+        )
+        data = orjson.dumps(obj, option=option, default=params.default)
     return data if params.to_bytes else data.decode("utf-8")
 
 
