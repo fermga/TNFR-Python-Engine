@@ -121,7 +121,7 @@ def _iter_node_digests(
             yield _hash_node(node, repr_)
 
 
-@dataclass
+@dataclass(slots=True)
 class NodeCache:
     """Container for cached node data."""
 
