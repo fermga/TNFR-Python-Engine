@@ -57,6 +57,15 @@ def test_flatten_wait_sanitizes_steps():
     assert ops == [(OpTag.WAIT, 1), (OpTag.WAIT, 2)]
 
 
+def test_flatten_accepts_wait_subclass():
+    class CustomWait(WAIT):
+        pass
+
+    program = seq(CustomWait(3))
+    ops = _flatten(program)
+    assert ops == [(OpTag.WAIT, 3)]
+
+
 def test_play_handles_deeply_nested_blocks(graph_canon):
     G = graph_canon()
     G.add_node(1)
