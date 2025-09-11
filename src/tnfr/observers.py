@@ -98,6 +98,7 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
                 for _, data in G.nodes(data=True)
             ),
             dtype=float,
+            count=G.number_of_nodes(),
         )
         diff = (th - psi + np.pi) % (2 * np.pi) - np.pi
         var = float(np.var(diff)) if diff.size else 0.0
