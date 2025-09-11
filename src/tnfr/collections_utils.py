@@ -33,8 +33,8 @@ def clear_warned_negative_keys() -> None:
 
 
 def is_non_string_sequence(obj: Any) -> bool:
-    """Return ``True`` if ``obj`` is a ``Sequence`` but not string-like."""
-    return isinstance(obj, Sequence) and not isinstance(obj, STRING_TYPES)
+    """Return ``True`` if ``obj`` is an ``Iterable`` but not string-like or a mapping."""
+    return isinstance(obj, Iterable) and not isinstance(obj, (*STRING_TYPES, Mapping))
 
 
 def flatten_structure(
@@ -42,12 +42,16 @@ def flatten_structure(
     *,
     expand: Callable[[Any], Iterable[Any] | None] | None = None,
 ) -> Iterator[Any]:
-    """Yield leaf items from ``obj`` preserving order.
+    """Yield leaf items from ``obj``.
+
+    The order of yielded items follows the order of the input iterable when it
+    is defined. For unordered iterables like :class:`set` the resulting order is
+    arbitrary. Mappings are treated as atomic items and not expanded.
 
     Parameters
     ----------
     obj:
-        Object that may contain nested sequences.
+        Object that may contain nested iterables.
     expand:
         Optional callable returning a replacement iterable for ``item``. When
         it returns ``None`` the ``item`` is processed normally.
