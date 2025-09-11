@@ -133,23 +133,24 @@ def ensure_collection(
     # Step 2: validate limit
     limit = _validate_limit(max_materialize)
 
+    # Step 2.5: ensure input is iterable
+    if not isinstance(it, Iterable):
+        raise TypeError(f"{it!r} is not iterable")
+
     # Step 3: materialize up to ``limit`` items using ``islice`` only once
-    try:
-        if limit is None:
-            return tuple(it)
-        if limit == 0:
-            return ()
-        materialized = tuple(islice(it, limit + 1))
-        if len(materialized) > limit:
-            examples = ", ".join(repr(x) for x in materialized[:3])
-            msg = error_msg or (
-                f"Iterable produced {len(materialized)} items, "
-                f"exceeds limit {limit}; first items: [{examples}]"
-            )
-            raise ValueError(msg)
-        return materialized
-    except TypeError as exc:
-        raise TypeError(f"{it!r} is not iterable") from exc
+    if limit is None:
+        return tuple(it)
+    if limit == 0:
+        return ()
+    materialized = tuple(islice(it, limit + 1))
+    if len(materialized) > limit:
+        examples = ", ".join(repr(x) for x in materialized[:3])
+        msg = error_msg or (
+            f"Iterable produced {len(materialized)} items, "
+            f"exceeds limit {limit}; first items: [{examples}]"
+        )
+        raise ValueError(msg)
+    return materialized
 
 
 def _process_negative_weights(
