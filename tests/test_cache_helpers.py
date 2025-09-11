@@ -6,6 +6,8 @@ from tnfr.helpers.cache import (
     increment_edge_version,
     ensure_node_offset_map,
     _cache_node_list,
+    ensure_node_index_map,
+    _ensure_node_map,
 )
 
 
@@ -55,6 +57,27 @@ def test_node_offset_map_updates_on_node_replacement(graph_canon):
     mapping2 = ensure_node_offset_map(G)
     assert mapping2 is not mapping1
     assert 0 not in mapping2 and 2 in mapping2
+
+
+def test__ensure_node_map_creates_multiple_maps(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([2, 0, 1])
+    mapping = _ensure_node_map(G, attrs=("idx", "offset"), sort=False)
+    cache = G.graph["_node_list_cache"]
+    assert mapping is cache.idx
+    assert cache.offset == {2: 0, 0: 1, 1: 2}
+    assert mapping == {2: 0, 0: 1, 1: 2}
+
+
+def test_node_maps_order(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([2, 0, 1])
+    idx_map = ensure_node_index_map(G)
+    assert idx_map == {2: 0, 0: 1, 1: 2}
+    G.graph["SORT_NODES"] = True
+    offset_map = ensure_node_offset_map(G)
+    assert offset_map == {0: 0, 1: 1, 2: 2}
+    assert ensure_node_index_map(G) is idx_map
 
 
 def test_cache_node_list_updates_on_dirty(graph_canon):

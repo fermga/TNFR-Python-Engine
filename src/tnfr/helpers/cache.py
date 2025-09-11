@@ -248,61 +248,43 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     return nodes
 
 
-def _ensure_node_map(G, *, attr: str, sort: bool = False) -> dict[Any, int]:
-    """Return cached node-to-index mapping stored on ``NodeCache``.
+def _ensure_node_map(G, *, attrs: tuple[str, ...], sort: bool = False) -> dict[Any, int]:
+    """Return cached node-to-index/offset mappings stored on ``NodeCache``.
 
-    ``attr`` selects the attribute on :class:`NodeCache` used to store the
-    mapping. ``sort`` controls whether nodes are ordered by their string
+    ``attrs`` selects the attributes on :class:`NodeCache` used to store the
+    mapping(s). ``sort`` controls whether nodes are ordered by their string
     representation before assigning indices.
     """
     graph = G.graph
     _cache_node_list(G)
     cache: NodeCache = graph["_node_list_cache"]
-    mapping = getattr(cache, attr)
-    if mapping is None:
-        if attr == "offset" and sort:
-            nodes_for_attr = cache.sorted_nodes
-            if nodes_for_attr is None:
-                nodes_for_attr = cache.sorted_nodes = tuple(
-                    sorted(cache.nodes, key=_node_repr)
-                )
-        else:
-            nodes_for_attr = cache.nodes
-        mapping = {node: idx for idx, node in enumerate(nodes_for_attr)}
-        setattr(cache, attr, mapping)
 
-        other_attr = "offset" if attr == "idx" else "idx"
-        other_mapping = getattr(cache, other_attr)
-        if other_mapping is None:
-            if other_attr == "offset":
-                sort_other = bool(graph.get("SORT_NODES", False))
-                if sort_other:
-                    nodes_for_other = cache.sorted_nodes
-                    if nodes_for_other is None:
-                        nodes_for_other = cache.sorted_nodes = tuple(
-                            sorted(cache.nodes, key=_node_repr)
-                        )
-                else:
-                    nodes_for_other = cache.nodes
-            else:
-                nodes_for_other = cache.nodes
-            setattr(
-                cache,
-                other_attr,
-                {node: idx for idx, node in enumerate(nodes_for_other)},
-            )
-    return mapping
+    missing = [attr for attr in attrs if getattr(cache, attr) is None]
+    if missing:
+        if sort:
+            nodes = cache.sorted_nodes
+            if nodes is None:
+                nodes = cache.sorted_nodes = tuple(sorted(cache.nodes, key=_node_repr))
+        else:
+            nodes = cache.nodes
+        mappings: dict[str, dict[Any, int]] = {attr: {} for attr in missing}
+        for idx, node in enumerate(nodes):
+            for attr in missing:
+                mappings[attr][node] = idx
+        for attr in missing:
+            setattr(cache, attr, mappings[attr])
+    return getattr(cache, attrs[0])
 
 
 def ensure_node_index_map(G) -> dict[Any, int]:
     """Return cached node-to-index mapping for ``G``."""
-    return _ensure_node_map(G, attr="idx", sort=False)
+    return _ensure_node_map(G, attrs=("idx",), sort=False)
 
 
 def ensure_node_offset_map(G) -> dict[Any, int]:
     """Return cached node-to-offset mapping for ``G``."""
     sort = bool(G.graph.get("SORT_NODES", False))
-    return _ensure_node_map(G, attr="offset", sort=sort)
+    return _ensure_node_map(G, attrs=("offset",), sort=sort)
 
 
 class _LockAwareLRUCache(LRUCache[Hashable, Any]):
