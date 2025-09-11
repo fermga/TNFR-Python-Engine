@@ -62,4 +62,3 @@ def test_prune_heap_prunes_in_place():
     assert len(hist._heap) <= len(hist._counts) + hist._compact_every
     for k, idx in hist._heap_index.items():
         assert hist._heap[idx][1] == k
-

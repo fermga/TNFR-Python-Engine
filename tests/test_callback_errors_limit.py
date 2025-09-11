@@ -29,4 +29,3 @@ def test_callback_error_list_resets_limit(graph_canon):
         assert len(err_list) == 1
     finally:
         set_callback_error_limit(prev)
-

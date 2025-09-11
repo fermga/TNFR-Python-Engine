@@ -10,7 +10,6 @@ from tnfr.callback_utils import (
 import logging
 
 
-
 def test_register_callback_replaces_existing(graph_canon):
     G = graph_canon()
 
