@@ -13,6 +13,9 @@ example :mod:`tnfr.metrics`, :mod:`tnfr.observers` or
 
 from __future__ import annotations
 
+# re-exported for tests
+from .trace import CallbackSpec  # noqa: F401
+from .import_utils import optional_import
 from .ontosim import preparar_red
 from .types import NodeState
 
@@ -52,10 +55,6 @@ except Exception as exc:  # pragma: no cover - no missing deps in CI
     apply_topological_remesh = _missing_dependency("apply_topological_remesh", exc)
 else:
     _HAS_APPLY_TOPOLOGICAL_REMESH = True
-
-# re-exported for tests
-from .trace import CallbackSpec  # noqa: F401
-from .import_utils import optional_import
 
 _metadata = optional_import("importlib.metadata")
 if _metadata is None:  # pragma: no cover
