@@ -16,6 +16,7 @@ __all__ = (
     "IncrementDict",
     "push_glyph",
     "recent_glyph",
+    "validate_and_ensure_history",
     "ensure_history_with_window",
     "ensure_history",
     "current_step_idx",
@@ -74,12 +75,14 @@ def _ensure_glyph_history(nd: dict[str, Any], window: int) -> deque:
     return hist
 
 
-def ensure_history_with_window(nd: dict[str, Any], window: int) -> deque:
-    """Validate ``window`` and ensure a history deque for ``nd``.
+def ensure_history_with_window(nd: dict[str, Any], validated_window: int) -> deque:
+    """Ensure a history deque for ``nd`` using a pre-validated window."""
 
-    This wrapper performs a single :func:`validate_window` call before
-    delegating to :func:`_ensure_glyph_history`.
-    """
+    return _ensure_glyph_history(nd, validated_window)
+
+
+def validate_and_ensure_history(nd: dict[str, Any], window: int) -> deque:
+    """Validate ``window`` and ensure a history deque for ``nd``."""
 
     return _ensure_glyph_history(nd, validate_window(window))
 
@@ -88,10 +91,10 @@ def push_glyph(nd: dict[str, Any], glyph: str, window: int) -> None:
     """Add ``glyph`` to node history with maximum size ``window``.
 
     ``window`` is validated and the underlying deque is ensured by
-    :func:`ensure_history_with_window`.
+    :func:`validate_and_ensure_history`.
     """
 
-    hist = ensure_history_with_window(nd, window)
+    hist = validate_and_ensure_history(nd, window)
     hist.append(str(glyph))
 
 
@@ -103,7 +106,7 @@ def recent_glyph(nd: dict[str, Any], glyph: str, window: int) -> bool:
     Negative values raise :class:`ValueError`.
     """
 
-    hist = ensure_history_with_window(nd, window)
+    hist = validate_and_ensure_history(nd, window)
     if hist.maxlen == 0:
         return False
     gl = str(glyph)
