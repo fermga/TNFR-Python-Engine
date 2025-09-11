@@ -35,7 +35,7 @@ def validate_window(window: int, *, positive: bool = False) -> int:
     Negative values always raise :class:`ValueError`.
     """
 
-    if not isinstance(window, int):
+    if isinstance(window, bool) or not isinstance(window, int):
         raise TypeError("'window' must be an integer")
     if window < 0 or (positive and window == 0):
         kind = "positive" if positive else "non-negative"
