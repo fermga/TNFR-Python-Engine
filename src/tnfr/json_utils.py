@@ -6,7 +6,7 @@ This module lazily imports :mod:`orjson` on first use of :func:`json_dumps`.
 from __future__ import annotations
 
 import json
-
+import threading
 import warnings
 
 from typing import Any, Callable, Literal, Set, cast, overload
@@ -21,18 +21,21 @@ _ORJSON_PARAMS_MSG = (
 
 # Track combinations of parameters for which a warning has already been emitted.
 _warned_orjson_param_combos: set[tuple[str, ...]] = set()
+_warn_lock = threading.Lock()
 
 
 def _warn_orjson_params_once(ignored: Set[str]) -> None:
     """Warn once per unique combination of ignored parameters."""
     combo = tuple(sorted(ignored))
-    if combo not in _warned_orjson_param_combos:
+    with _warn_lock:
+        if combo in _warned_orjson_param_combos:
+            return
         _warned_orjson_param_combos.add(combo)
-        warnings.warn(
-            _ORJSON_PARAMS_MSG % (combo,),
-            UserWarning,
-            stacklevel=2,
-        )
+    warnings.warn(
+        _ORJSON_PARAMS_MSG % (combo,),
+        UserWarning,
+        stacklevel=2,
+    )
 
 
 def _load_orjson_impl() -> Any | None:
@@ -163,5 +166,3 @@ def json_dumps(
     if orjson is not None:
         return _json_dumps_orjson(orjson, obj, params, **kwargs)
     return _json_dumps_std(obj, params, **kwargs)
-
-
