@@ -51,7 +51,7 @@ def test_phase_sync_equivalent_with_without_numpy(monkeypatch, graph_canon):
         set_attr(G.nodes[idx], ALIAS_THETA, th)
 
     ps_np = phase_sync(G)
-    monkeypatch.setattr("tnfr.observers.np", None)
+    monkeypatch.setattr("tnfr.observers.get_numpy", lambda: None)
     ps_py = phase_sync(G)
     assert ps_np == pytest.approx(ps_py)
 

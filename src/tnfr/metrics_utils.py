@@ -26,9 +26,6 @@ from .helpers.numeric import (
 )
 from .helpers.cache import edge_version_cache, _stable_json
 from .import_utils import get_numpy
-
-
-np = get_numpy()
 class GraphLike(Protocol):
     graph: dict[str, Any]
 
@@ -92,8 +89,8 @@ def compute_coherence(
     if count == 0:
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
-    use_np = np is not None
-    if use_np:
+    np = get_numpy()
+    if np is not None:
         dnfr_arr = np.empty(count, dtype=float)
         depi_arr = np.empty(count, dtype=float)
         for idx, (_, nd) in enumerate(G.nodes(data=True)):
@@ -166,8 +163,10 @@ def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
     return edge_version_cache(G, ("_Si_weights", cfg_key), builder)
 
 
-def _build_trig_cache(G: GraphLike, np: Any | None = np) -> TrigCache:
+def _build_trig_cache(G: GraphLike, np: Any | None = None) -> TrigCache:
     """Construct trigonometric cache for ``G``."""
+    if np is None:
+        np = get_numpy()
     if np is not None:
         try:
             nodes: list[Any] = []
@@ -197,7 +196,7 @@ def _build_trig_cache(G: GraphLike, np: Any | None = np) -> TrigCache:
     return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
 
 
-def get_trig_cache(G: GraphLike, *, np: Any | None = np) -> TrigCache:
+def get_trig_cache(G: GraphLike, *, np: Any | None = None) -> TrigCache:
     """Return cached cosines and sines of ``θ`` per node.
 
     The cache is invalidated not only when the edge set changes but also when
@@ -207,6 +206,8 @@ def get_trig_cache(G: GraphLike, *, np: Any | None = np) -> TrigCache:
     The counter forms part of the cache key, forcing a rebuild when it
     advances.
     """
+    if np is None:
+        np = get_numpy()
     version = G.graph.setdefault("_trig_version", 0)
     key = ("_trig", version)
     return edge_version_cache(G, key, lambda: _build_trig_cache(G, np=np))
@@ -267,9 +268,9 @@ def compute_Si(G: GraphLike, *, inplace: bool = True) -> dict[Any, float]:
     """Compute ``Si`` per node and write it to ``G.nodes[n]['Si']``."""
     neighbors = ensure_neighbors_map(G)
     alpha, beta, gamma = get_Si_weights(G)
-
     vfmax, dnfrmax = _get_vf_dnfr_max(G)
 
+    np = get_numpy()
     trig = get_trig_cache(G, np=np)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
 
