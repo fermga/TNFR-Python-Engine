@@ -155,19 +155,14 @@ def neighbor_phase_mean_list(
     running Kahan summation for stable accumulation.
     """
     if np is not None:
-        cos_iter = (
-            c
+        pairs = [
+            (c, s)
             for v in neigh
-            if (c := cos_th.get(v)) is not None and sin_th.get(v) is not None
-        )
-        cos_arr = np.fromiter(cos_iter, dtype=float)
-        if cos_arr.size:
-            sin_iter = (
-                s
-                for v in neigh
-                if cos_th.get(v) is not None and (s := sin_th.get(v)) is not None
-            )
-            sin_arr = np.fromiter(sin_iter, dtype=float)
+            if (c := cos_th.get(v)) is not None
+            and (s := sin_th.get(v)) is not None
+        ]
+        if pairs:
+            cos_arr, sin_arr = np.array(pairs, dtype=float).T
             mean_cos = float(np.mean(cos_arr))
             mean_sin = float(np.mean(sin_arr))
             return float(np.arctan2(mean_sin, mean_cos))
