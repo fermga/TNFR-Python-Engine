@@ -297,25 +297,30 @@ def register_callback(
         cb_name = name or getattr(func, "__name__", None)
         new_cb = CallbackSpec(cb_name, func)
         existing_map = cbs[event]
-        cb_key = cb_name or repr(func)
+        cb_key = cb_name or _func_id(func)
 
         if cb_name is not None:
-            for spec in existing_map.values():
-                if spec.name == cb_name and spec.func is not func:
-                    strict = bool(
-                        G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
-                    )
-                    msg = f"Callback {cb_name!r} already registered for {event}"
-                    if strict:
-                        raise ValueError(msg)
-                    else:
-                        logger.warning(msg)
-                    break
+            existing_spec = existing_map.get(cb_key)
+            if existing_spec is not None and existing_spec.func is not func:
+                strict = bool(
+                    G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
+                )
+                msg = f"Callback {cb_name!r} already registered for {event}"
+                if strict:
+                    raise ValueError(msg)
+                else:
+                    logger.warning(msg)
+            # Explicit names override function identity when both are present.
+            existing_map.pop(cb_key, None)
+        else:
+            # Remove any existing registration by function identity when no
+            # name is given.
+            fn_key = next(
+                (k for k, spec in existing_map.items() if spec.func is func),
+                _func_id(func),
+            )
+            existing_map.pop(fn_key, None)
 
-        for key, spec in list(existing_map.items()):
-            if spec.func is func or (cb_name is not None and spec.name == cb_name):
-                del existing_map[key]
-                break
         existing_map[cb_key] = new_cb
         dirty = G.graph.setdefault("_callbacks_dirty", set())
         dirty.add(event)
