@@ -194,15 +194,15 @@ def add_edge(
     ``set_cb``; both must be callables and provided together.
     """
 
-    weight = _add_edge_common(n1, n2, weight)
-    if weight is None:
-        return
-
     _validate_callbacks(exists_cb, set_cb)
 
     ops = _resolve_edge_ops(graph, strategy, exists_cb, set_cb)
 
     if ops.exists(graph, n1, n2) and not overwrite:
+        return
+
+    weight = _add_edge_common(n1, n2, weight)
+    if weight is None:
         return
 
     ops.set(graph, n1, n2, weight)
