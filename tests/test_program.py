@@ -230,13 +230,13 @@ def test_flatten_thol_multiple_repeats():
     stack = deque()
     _flatten_thol(THOL(body=[Glyph.AL, Glyph.RA], repeat=3), stack)
     assert list(stack) == [
-        Glyph.RA,
-        Glyph.AL,
-        Glyph.RA,
-        Glyph.AL,
-        Glyph.RA,
-        Glyph.AL,
         THOL_SENTINEL,
+        Glyph.AL,
+        Glyph.RA,
+        Glyph.AL,
+        Glyph.RA,
+        Glyph.AL,
+        Glyph.RA,
     ]
 
 

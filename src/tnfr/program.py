@@ -190,17 +190,67 @@ def _flatten_thol(
         and item.force_close in {Glyph.SHA, Glyph.NUL}
         else None
     )
-    seq = ensure_collection(
+    seq0 = ensure_collection(
         item.body,
         max_materialize=max_materialize,
         error_msg=f"THOL body exceeds max_materialize={max_materialize}",
     )
-    for _ in range(repeats):
-        if closing is not None:
-            stack.append(closing)
-        for token in reversed(seq):
-            stack.append(token)
     stack.append(THOL_SENTINEL)
+    frames: list[dict[str, Any]] = [
+        {
+            "seq": seq0,
+            "index": 0,
+            "remaining": repeats,
+            "closing": closing,
+        }
+    ]
+    while frames:
+        frame = frames[-1]
+        seq = frame["seq"]
+        idx = frame["index"]
+        if idx < len(seq):
+            token = seq[idx]
+            frame["index"] = idx + 1
+            if isinstance(token, THOL):
+                rep = int(token.repeat)
+                if rep < 1:
+                    raise ValueError("repeat must be ≥1")
+                if token.force_close is not None and not isinstance(
+                    token.force_close, Glyph
+                ):
+                    raise ValueError("force_close must be a Glyph")
+                closing2 = (
+                    token.force_close
+                    if isinstance(token.force_close, Glyph)
+                    and token.force_close in {Glyph.SHA, Glyph.NUL}
+                    else None
+                )
+                subseq = ensure_collection(
+                    token.body,
+                    max_materialize=max_materialize,
+                    error_msg=(
+                        f"THOL body exceeds max_materialize={max_materialize}"
+                    ),
+                )
+                stack.append(THOL_SENTINEL)
+                frames.append(
+                    {
+                        "seq": subseq,
+                        "index": 0,
+                        "remaining": rep,
+                        "closing": closing2,
+                    }
+                )
+            else:
+                stack.append(token)
+        else:
+            if (cl := frame["closing"]) is not None:
+                stack.append(cl)
+            frame["remaining"] -= 1
+            if frame["remaining"] > 0:
+                frame["index"] = 0
+            else:
+                frames.pop()
 
 
 def _flatten_target(
@@ -261,7 +311,7 @@ def _flatten(
         if isinstance(item, THOL):
             tmp: deque[Any] = deque()
             _flatten_thol(item, tmp, max_materialize=max_materialize)
-            return reversed(tmp)
+            return tmp
         return None
 
     for item in flatten_structure(sequence, expand=_expand):
