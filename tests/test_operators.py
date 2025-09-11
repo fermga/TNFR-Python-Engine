@@ -101,6 +101,7 @@ def test_rng_cache_disabled_with_size_zero(graph_canon):
 def test_jitter_seq_purges_old_entries(monkeypatch):
     clear_rng_cache()
     monkeypatch.setattr(operators, "_JITTER_MAX_ENTRIES", 4)
+    operators.setup_jitter_cache(force=True)
     graph = SimpleNamespace(graph={})
     nodes = [SimpleNamespace(G=graph) for _ in range(5)]
     first_key = (0, id(nodes[0]))

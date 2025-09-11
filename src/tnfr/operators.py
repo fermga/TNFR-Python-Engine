@@ -61,10 +61,35 @@ _JITTER_SEQ: LRUCache[tuple[int, int], int] = LRUCache(maxsize=_JITTER_MAX_ENTRI
 _JITTER_GRAPHS: WeakSet[Any] = WeakSet()
 _JITTER_LOCK = get_lock("jitter")
 
+# Track last-applied cache settings to avoid repeated resets.
+_JITTER_SETTINGS = {"max_entries": _JITTER_MAX_ENTRIES}
+
+
+def setup_jitter_cache(force: bool = False) -> None:
+    """Ensure `_JITTER_SEQ` matches the configured size.
+
+    Parameters
+    ----------
+    force:
+        When ``True`` the cache is always recreated. Otherwise it is only
+        reset when the configured ``_JITTER_MAX_ENTRIES`` value changes.
+    """
+
+    global _JITTER_SEQ
+    max_entries = _JITTER_MAX_ENTRIES
+    if force or _JITTER_SETTINGS.get("max_entries") != max_entries:
+        _JITTER_SEQ = LRUCache(maxsize=max_entries)
+        _JITTER_SETTINGS["max_entries"] = max_entries
+
+
+# Initialize jitter cache on module import.
+setup_jitter_cache(force=True)
+
 if TYPE_CHECKING:
     from .node import NodoProtocol
 
 __all__ = (
+    "setup_jitter_cache",
     "clear_rng_cache",
     "random_jitter",
     "get_glyph_factors",
@@ -90,10 +115,9 @@ def clear_rng_cache() -> None:
     caches. ``_JITTER_SEQ`` is a bounded LRU cache capped at
     ``_JITTER_MAX_ENTRIES`` to limit memory usage.
     """
-    global _JITTER_SEQ
     with _JITTER_LOCK:
         _clear_rng_cache()
-        _JITTER_SEQ = LRUCache(maxsize=_JITTER_MAX_ENTRIES)
+        setup_jitter_cache(force=True)
         for G in list(_JITTER_GRAPHS):
             cache = G.graph.get("_jitter_seed_hash")
             if cache is not None:
@@ -185,7 +209,6 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
 
     cache = _get_jitter_cache(node)
 
-    global _JITTER_SEQ
     cache_key = (seed_root, scope_id)
     seed = cache.get(cache_key)
     if seed is None:
@@ -194,8 +217,6 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     seq = 0
     if cache_enabled(node.G):
         with _JITTER_LOCK:
-            if _JITTER_SEQ.maxsize != _JITTER_MAX_ENTRIES:
-                _JITTER_SEQ = LRUCache(maxsize=_JITTER_MAX_ENTRIES)
             seq = _JITTER_SEQ.get(cache_key, 0)
             _JITTER_SEQ[cache_key] = seq + 1
     rng = make_rng(seed, seed_key + seq, node.G)
