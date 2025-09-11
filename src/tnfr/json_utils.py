@@ -1,8 +1,6 @@
 """JSON serialization helpers.
 
 This module lazily imports :mod:`orjson` on first use of :func:`json_dumps`.
-The :func:`json_dumps_str` helper mirrors :func:`json_dumps` but always returns
-``str`` output.
 """
 
 from __future__ import annotations
@@ -14,7 +12,7 @@ import warnings
 from typing import Any, Callable, Literal, cast, overload
 
 from dataclasses import dataclass
-from functools import lru_cache, partial
+from functools import lru_cache
 from .import_utils import optional_import
 
 _ORJSON_PARAMS_MSG = (
@@ -167,4 +165,3 @@ def json_dumps(
     return _json_dumps_std(obj, params, **kwargs)
 
 
-json_dumps_str = partial(json_dumps, to_bytes=False)

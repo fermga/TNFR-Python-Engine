@@ -10,7 +10,7 @@ from ..glyph_history import ensure_history
 from ..io import safe_write
 from ..constants_glyphs import GLYPHS_CANONICAL
 from .core import glyphogram_series
-from ..json_utils import json_dumps_str
+from ..json_utils import json_dumps
 
 
 def _write_csv(path, headers, rows):
@@ -134,4 +134,4 @@ def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
             "epi_support": epi_supp,
         }
         json_path = base_path + ".json"
-        safe_write(json_path, lambda f: f.write(json_dumps_str(data)))
+        safe_write(json_path, lambda f: f.write(json_dumps(data)))
