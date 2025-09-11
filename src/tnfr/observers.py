@@ -67,6 +67,11 @@ def attach_standard_observer(G):
     return G
 
 
+def _ensure_nodes(G) -> bool:
+    """Return ``True`` when the graph has nodes."""
+    return bool(G.number_of_nodes())
+
+
 def _get_R_psi(
     G, R: float | None = None, psi: float | None = None
 ) -> tuple[float, float]:
@@ -81,7 +86,7 @@ def _get_R_psi(
 
 
 def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
-    if not G.number_of_nodes():
+    if not _ensure_nodes(G):
         return 1.0
     _, psi = _get_R_psi(G, R, psi)
 
@@ -110,7 +115,7 @@ def kuramoto_order(
     G, R: float | None = None, psi: float | None = None
 ) -> float:
     """R in [0,1], 1 means perfectly aligned phases."""
-    if not G.number_of_nodes():
+    if not _ensure_nodes(G):
         return 1.0
     R, _ = _get_R_psi(G, R, psi)
     return float(R)
