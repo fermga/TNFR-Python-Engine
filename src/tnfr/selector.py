@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from typing import Any, TYPE_CHECKING
-from collections.abc import Sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx  # type: ignore[import-untyped]
@@ -12,6 +11,7 @@ from .constants import DEFAULTS
 from .constants.core import SELECTOR_THRESHOLD_DEFAULTS
 from .helpers.numeric import clamp01
 from .metrics_utils import compute_dnfr_accel_max
+from .collections_utils import is_non_string_sequence
 
 
 HYSTERESIS_GLYPHS: set[str] = {"IL", "OZ", "ZHIR", "THOL", "NAV", "RA"}
@@ -72,6 +72,7 @@ def _calc_selector_score(
         + weights["w_accel"] * (1.0 - accel)
     )
 
+
 def _apply_selector_hysteresis(
     nd: dict[str, Any],
     Si: float,
@@ -82,17 +83,18 @@ def _apply_selector_hysteresis(
 ) -> str | None:
     """Apply hysteresis, returning the previous glyph when close to
     thresholds."""
-    dist = lambda val, prefix: min(
-        abs(val - thr[f"{prefix}_hi"]),
-        abs(val - thr[f"{prefix}_lo"]),
-    )
+    def dist(val, prefix):
+        return min(
+            abs(val - thr[f"{prefix}_hi"]),
+            abs(val - thr[f"{prefix}_lo"]),
+        )
     d_si = dist(Si, "si")
     d_dn = dist(dnfr, "dnfr")
     d_ac = dist(accel, "accel")
     certeza = min(d_si, d_dn, d_ac)
     if certeza < margin:
         hist = nd.get("glyph_history")
-        if not isinstance(hist, Sequence) or not hist:
+        if not is_non_string_sequence(hist) or not hist:
             return None
         prev = hist[-1]
         if isinstance(prev, str) and prev in HYSTERESIS_GLYPHS:

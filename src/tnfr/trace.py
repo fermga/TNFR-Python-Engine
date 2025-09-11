@@ -8,12 +8,13 @@ structures as immutable snapshots.
 from __future__ import annotations
 
 from typing import Any, Callable, Optional, Protocol, NamedTuple, TypedDict, cast
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Iterable, Mapping
 
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs, append_metric
 from .import_utils import optional_import
 from .helpers.cache import get_graph_mapping
+from .collections_utils import is_non_string_sequence
 
 
 class _KuramotoFn(Protocol):
@@ -227,9 +228,7 @@ def callbacks_field(G):
     for phase, cb_map in cb.items():
         if isinstance(cb_map, Mapping):
             out[phase] = _callback_names(cb_map)
-        elif isinstance(cb_map, Sequence) and not isinstance(
-            cb_map, (str, bytes)
-        ):
+        elif is_non_string_sequence(cb_map):
             out[phase] = _callback_names(cb_map)
         else:
             out[phase] = None

@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from typing import Any, Callable
 from collections import deque
-from collections.abc import Sequence
+
+from .collections_utils import is_non_string_sequence
 
 __all__ = ("_flatten_tokens", "validate_token", "_parse_tokens")
 
@@ -15,7 +16,7 @@ def _flatten_tokens(obj: Any):
     stack = deque([obj])
     while stack:
         item = stack.pop()
-        if isinstance(item, Sequence) and not isinstance(item, (str, bytes)):
+        if is_non_string_sequence(item):
             # ``extendleft`` pushes items in reverse order, preserving
             # LIFO semantics without creating an intermediate reversed list
             stack.extendleft(item)

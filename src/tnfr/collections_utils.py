@@ -31,9 +31,14 @@ def clear_warned_negative_keys() -> None:
     _log_negative_keys_once.clear()
 
 
+def is_non_string_sequence(obj: Any) -> bool:
+    """Return ``True`` if ``obj`` is a ``Sequence`` but not string-like."""
+    return isinstance(obj, Sequence) and not isinstance(obj, STRING_TYPES)
+
 
 __all__ = (
     "MAX_MATERIALIZE_DEFAULT",
+    "is_non_string_sequence",
     "ensure_collection",
     "normalize_weights",
     "normalize_counter",
