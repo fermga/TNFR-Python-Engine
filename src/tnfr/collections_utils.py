@@ -181,6 +181,7 @@ def normalize_weights(
     *,
     error_on_negative: bool = False,
     warn_once: bool = True,
+    error_on_conversion: bool = False,
 ) -> dict[str, float]:
     """Normalize ``keys`` in ``dict_like`` so their sum is 1.
 
@@ -190,9 +191,15 @@ def normalize_weights(
     Negative weights are handled according to ``error_on_negative``. When
     ``True`` a :class:`ValueError` is raised. Otherwise negatives are logged,
     replaced with ``0`` and the remaining weights are renormalized. If all
-    weights are non-positive a uniform distribution is returned. When
-    ``warn_once`` is ``True`` warnings for a given key are emitted only on their
-    first occurrence across calls.
+    weights are non-positive a uniform distribution is returned.
+
+    Conversion errors are controlled separately by ``error_on_conversion``. When
+    ``True`` any :class:`TypeError` or :class:`ValueError` while converting a
+    value to ``float`` is propagated. Otherwise the error is logged and the
+    ``default`` value is used.
+
+    When ``warn_once`` is ``True`` warnings for a given key are emitted only on
+    their first occurrence across calls.
     """
     keys = list(dict.fromkeys(keys))
     default_float = float(default)
@@ -204,7 +211,7 @@ def normalize_weights(
         try:
             return float(val)
         except (TypeError, ValueError) as exc:
-            if error_on_negative:
+            if error_on_conversion:
                 raise
             logger.warning("Could not convert value for %r: %s", key, exc)
             return default_float
