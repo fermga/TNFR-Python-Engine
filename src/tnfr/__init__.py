@@ -20,12 +20,12 @@ from .ontosim import preparar_red
 from .types import NodeState
 
 
-def _missing_dependency(name: str, exc: Exception):
+def _missing_dependency(name: str, exc: ImportError):
     def _stub(*args, **kwargs):
         raise ImportError(
-            f"{name} is unavailable because dependencies are missing. "
-            f"Original error: {exc}. Install required packages such as "
-            "'networkx' or grammar modules."
+            f"{name} is unavailable because required dependencies could not be imported. "
+            f"Original error ({exc.__class__.__name__}): {exc}. "
+            "Install the missing packages (e.g. 'networkx' or grammar modules)."
         ) from exc
 
     return _stub
@@ -33,7 +33,7 @@ def _missing_dependency(name: str, exc: Exception):
 
 try:  # pragma: no cover - exercised in import tests
     from .dynamics import step, run
-except Exception as exc:  # pragma: no cover - no missing deps in CI
+except ImportError as exc:  # pragma: no cover - no missing deps in CI
     step = _missing_dependency("step", exc)
     run = _missing_dependency("run", exc)
 
@@ -41,7 +41,7 @@ except Exception as exc:  # pragma: no cover - no missing deps in CI
 _HAS_RUN_SEQUENCE = False
 try:  # pragma: no cover - exercised in import tests
     from .structural import create_nfr, run_sequence
-except Exception as exc:  # pragma: no cover - no missing deps in CI
+except ImportError as exc:  # pragma: no cover - no missing deps in CI
     create_nfr = _missing_dependency("create_nfr", exc)
     run_sequence = _missing_dependency("run_sequence", exc)
 else:
@@ -51,7 +51,7 @@ else:
 _HAS_APPLY_TOPOLOGICAL_REMESH = False
 try:  # pragma: no cover - exercised in import tests
     from .operators import apply_topological_remesh
-except Exception as exc:  # pragma: no cover - no missing deps in CI
+except ImportError as exc:  # pragma: no cover - no missing deps in CI
     apply_topological_remesh = _missing_dependency("apply_topological_remesh", exc)
 else:
     _HAS_APPLY_TOPOLOGICAL_REMESH = True
