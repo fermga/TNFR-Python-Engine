@@ -88,7 +88,12 @@ def _ensure_callbacks_nolock(G: "nx.Graph") -> CallbackRegistry:
 
     if dirty:
         for event in dirty:
-            _normalize_event_callbacks(cbs, event)
+            if event not in cbs:
+                continue
+            if event not in _CALLBACK_EVENTS:
+                del cbs[event]
+                continue
+            cbs[event] = _normalize_callback_registry(cbs[event])
     return cbs
 
 
@@ -98,18 +103,12 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
         return _ensure_callbacks_nolock(G)
 
 
-def _normalize_event_callbacks(cbs: CallbackRegistry, event: str) -> None:
-    """Clean and rebuild callbacks for ``event`` in ``cbs``."""
-    if event not in cbs:
-        return
-    if event not in _CALLBACK_EVENTS:
-        del cbs[event]
-        return
-    cb_map = cbs[event]
-    if isinstance(cb_map, Mapping):
-        entries = cb_map.values()
-    elif is_non_string_sequence(cb_map):
-        entries = cb_map
+def _normalize_callback_registry(cbs: Any) -> dict[str, CallbackSpec]:
+    """Return a normalized callback mapping from ``cbs``."""
+    if isinstance(cbs, Mapping):
+        entries = cbs.values()
+    elif is_non_string_sequence(cbs):
+        entries = cbs
     else:
         entries = []
     new_map: dict[str, CallbackSpec] = {}
@@ -119,7 +118,17 @@ def _normalize_event_callbacks(cbs: CallbackRegistry, event: str) -> None:
             continue
         key = spec.name or repr(spec.func)
         new_map[key] = spec
-    cbs[event] = new_map
+    return new_map
+
+
+def _normalize_event_callbacks(cbs: CallbackRegistry, event: str) -> None:
+    """Clean and rebuild callbacks for ``event`` in ``cbs``."""
+    if event not in cbs:
+        return
+    if event not in _CALLBACK_EVENTS:
+        del cbs[event]
+        return
+    cbs[event] = _normalize_callback_registry(cbs[event])
 
 
 def _normalize_event(event: CallbackEvent | str) -> str:
