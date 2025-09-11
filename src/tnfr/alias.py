@@ -50,6 +50,7 @@ SENTINEL = object()
 # Module-level lock to guard alias cache operations
 _alias_cache_lock = Lock()
 
+
 def _convert_default(
     default: Any,
     conv: Callable[[Any], T],
@@ -70,6 +71,7 @@ def _convert_default(
         key="default",
         log_level=log_level,
     )
+
 
 def _alias_resolve(
     d: dict[str, Any],
