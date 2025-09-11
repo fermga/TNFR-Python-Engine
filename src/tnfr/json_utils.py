@@ -61,21 +61,15 @@ def _json_dumps_orjson(
     **kwargs: Any,
 ) -> bytes | str:
     """Serialize using :mod:`orjson` and warn about unsupported parameters."""
-    if (
-        params.ensure_ascii is not True
-        or params.separators != (",", ":")
-        or params.cls is not None
-        or kwargs
-    ):
-        ignored: list[str] = []
-        if params.ensure_ascii is not True:
-            ignored.append("ensure_ascii")
-        if params.separators != (",", ":"):
-            ignored.append("separators")
-        if params.cls is not None:
-            ignored.append("cls")
-        if kwargs:
-            ignored.extend(kwargs.keys())
+    mapping = {
+        params.ensure_ascii is not True: "ensure_ascii",
+        params.separators != (",", ":"): "separators",
+        params.cls is not None: "cls",
+    }
+    ignored = [name for cond, name in mapping.items() if cond]
+    if kwargs:
+        ignored.extend(kwargs)
+    if ignored:
         _log_orjson_params_once({"params": tuple(ignored)})
 
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
