@@ -241,21 +241,11 @@ def set_attr_generic(
     return _generic_accessor.set(d, aliases, value, conv=conv)
 
 
-def set_attr(
-    d: dict[str, Any],
-    aliases: Iterable[str],
-    value: Any,
-    conv: Callable[[Any], float] | None = None,
-) -> float:
-    """Assign ``value`` to the first alias key found in ``d``."""
-
-    if conv is None:
-        conv = float
-    return set_attr_generic(d, aliases, value, conv=conv)
+set_attr = partial(set_attr_generic, conv=float)
 
 
 get_attr_str = partial(get_attr, conv=str)
-set_attr_str = partial(set_attr, conv=str)
+set_attr_str = partial(set_attr_generic, conv=str)
 
 
 # -------------------------
