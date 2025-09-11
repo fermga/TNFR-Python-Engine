@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from ..collections_utils import normalize_weights
-from ..constants import DEFAULTS, ALIAS_THETA, ALIAS_EPI, ALIAS_VF
+from ..constants import DEFAULTS, ALIAS_THETA, ALIAS_EPI, ALIAS_VF, get_param
 from ..helpers.numeric import (
     angle_diff,
     neighbor_mean,
@@ -78,7 +78,7 @@ def _configure_dnfr_weights(G) -> dict:
     dictionary of normalised components reused at each simulation step
     without recomputing the mix.
     """
-    w = {**DEFAULTS["DNFR_WEIGHTS"], **G.graph.get("DNFR_WEIGHTS", {})}
+    w = {**DEFAULTS["DNFR_WEIGHTS"], **get_param(G, "DNFR_WEIGHTS")}
     weights = normalize_weights(w, ("phase", "epi", "vf", "topo"), default=0.0)
     G.graph["_dnfr_weights"] = weights
     return weights
@@ -568,8 +568,9 @@ def dnfr_epi_vf_mixed(G) -> None:
 
 def dnfr_laplacian(G) -> None:
     """Explicit topological gradient using Laplacian over EPI and νf."""
-    wE = float(G.graph.get("DNFR_WEIGHTS", {}).get("epi", 0.33))
-    wV = float(G.graph.get("DNFR_WEIGHTS", {}).get("vf", 0.33))
+    weights_cfg = get_param(G, "DNFR_WEIGHTS")
+    wE = float(weights_cfg.get("epi", DEFAULTS["DNFR_WEIGHTS"]["epi"]))
+    wV = float(weights_cfg.get("vf", DEFAULTS["DNFR_WEIGHTS"]["vf"]))
 
     def g_epi(G, n, nd):
         epi = get_attr(nd, ALIAS_EPI, 0.0)
@@ -598,7 +599,7 @@ def dnfr_laplacian(G) -> None:
 
 def apply_dnfr_field(G, w_theta=None, w_epi=None, w_vf=None) -> None:
     if any(v is not None for v in (w_theta, w_epi, w_vf)):
-        mix = G.graph.get("DNFR_WEIGHTS", DEFAULTS["DNFR_WEIGHTS"]).copy()
+        mix = get_param(G, "DNFR_WEIGHTS").copy()
         if w_theta is not None:
             mix["phase"] = float(w_theta)
         if w_epi is not None:
