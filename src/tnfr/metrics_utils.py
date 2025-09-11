@@ -28,6 +28,7 @@ from .helpers.cache import edge_version_cache
 from .import_utils import get_numpy
 
 
+np = get_numpy()
 class GraphLike(Protocol):
     graph: dict[str, Any]
 
@@ -91,8 +92,6 @@ def compute_coherence(
     if count == 0:
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
-    np = get_numpy()
-
     use_np = np is not None
     if use_np:
         dnfr_arr = np.empty(count, dtype=float)
@@ -152,10 +151,8 @@ def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
     return alpha, beta, gamma
 
 
-def _build_trig_cache(G: GraphLike, np: Any | None = None) -> TrigCache:
+def _build_trig_cache(G: GraphLike, np: Any | None = np) -> TrigCache:
     """Construct trigonometric cache for ``G``."""
-    if np is None:
-        np = get_numpy()
     if np is not None:
         try:
             nodes: list[Any] = []
@@ -185,7 +182,7 @@ def _build_trig_cache(G: GraphLike, np: Any | None = None) -> TrigCache:
     return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
 
 
-def get_trig_cache(G: GraphLike, *, np: Any | None = None) -> TrigCache:
+def get_trig_cache(G: GraphLike, *, np: Any | None = np) -> TrigCache:
     """Return cached cosines and sines of ``θ`` per node.
 
     The cache is invalidated not only when the edge set changes but also when
@@ -258,12 +255,11 @@ def compute_Si(G: GraphLike, *, inplace: bool = True) -> dict[Any, float]:
 
     vfmax, dnfrmax = _get_vf_dnfr_max(G)
 
-    np_mod = get_numpy()
-    trig = get_trig_cache(G, np=np_mod)
+    trig = get_trig_cache(G, np=np)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
 
     pm_fn = partial(
-        neighbor_phase_mean_list, cos_th=cos_th, sin_th=sin_th, np=np_mod
+        neighbor_phase_mean_list, cos_th=cos_th, sin_th=sin_th, np=np
     )
 
     out: dict[Any, float] = {}

@@ -11,6 +11,9 @@ import math
 from ..import_utils import get_numpy, import_nodonx
 from ..alias import get_attr
 
+
+np = get_numpy()
+
 __all__ = (
     "clamp",
     "clamp01",
@@ -46,7 +49,6 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
 
 def list_pvariance(xs: Iterable[float], default: float = 0.0) -> float:
     """Return the population variance of ``xs`` or ``default`` if empty."""
-    np = get_numpy()
     if np is not None:
         arr = np.fromiter(xs, dtype=float)
         return float(np.var(arr)) if arr.size else float(default)
@@ -108,7 +110,6 @@ def _neighbor_phase_mean(node, trig) -> float:
     """Internal helper delegating to :func:`neighbor_phase_mean_list`."""
     fallback = trig.theta.get(node.n, 0.0)
     neigh = node.G[node.n]
-    np = get_numpy()
     return neighbor_phase_mean_list(
         neigh, trig.cos, trig.sin, np=np, fallback=fallback
     )
@@ -143,7 +144,7 @@ def neighbor_phase_mean_list(
     neigh: Sequence[Any],
     cos_th: dict[Any, float],
     sin_th: dict[Any, float],
-    np=None,
+    np=np,
     fallback: float = 0.0,
 ) -> float:
     """Return circular mean of neighbour phases from cosine/sine mappings.

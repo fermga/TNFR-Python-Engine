@@ -28,6 +28,8 @@ from ..metrics_utils import get_trig_cache, merge_graph_weights
 from ..import_utils import get_numpy
 
 
+np = get_numpy()
+
 @dataclass
 class DnfrCache:
     idx: dict[Any, int]
@@ -146,7 +148,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     if weights is None:
         weights = _configure_dnfr_weights(G)
 
-    use_numpy = get_numpy() is not None and G.graph.get("vectorized_dnfr")
+    use_numpy = np is not None and G.graph.get("vectorized_dnfr")
 
     nodes, A = cached_nodes_and_A(G, cache_size=cache_size)
     cache: DnfrCache | None = G.graph.get("_dnfr_prep_cache")
@@ -234,7 +236,7 @@ def _apply_dnfr_gradients(
         set_dnfr(G, n, float(dnfr))
 
 
-def _init_bar_arrays(data, *, degs=None, np=None):
+def _init_bar_arrays(data, *, degs=None, np=np):
     """Prepare containers for neighbour means.
 
     If ``np`` is provided, NumPy arrays are created; otherwise lists are used.
@@ -274,7 +276,7 @@ def _compute_neighbor_means(
     count,
     deg_sum=None,
     degs=None,
-    np=None,
+    np=np,
 ):
     """Return neighbour mean arrays for ΔNFR."""
     w_topo = data["w_topo"]
@@ -329,7 +331,6 @@ def _compute_dnfr_common(
     degs=None,
 ):
     """Compute neighbour means and apply ΔNFR gradients."""
-    np = get_numpy()
     th_bar, epi_bar, vf_bar, deg_bar = _compute_neighbor_means(
         G,
         data,
@@ -345,7 +346,7 @@ def _compute_dnfr_common(
     _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
 
 
-def _init_neighbor_sums(data, *, np=None):
+def _init_neighbor_sums(data, *, np=np):
     """Initialise containers for neighbour sums."""
     nodes = data["nodes"]
     n = len(nodes)
@@ -378,7 +379,6 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
     nodes = data["nodes"]
     w_topo = data["w_topo"]
     if use_numpy:
-        np = get_numpy(warn=True)
         if np is None:  # pragma: no cover - runtime check
             raise RuntimeError(
                 "numpy no disponible para la versión vectorizada",
@@ -477,7 +477,7 @@ def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
         weights=data["weights"],
         hook_name="default_compute_delta_nfr",
     )
-    use_numpy = get_numpy() is not None and G.graph.get("vectorized_dnfr")
+    use_numpy = np is not None and G.graph.get("vectorized_dnfr")
     _compute_dnfr(G, data, use_numpy=use_numpy)
 
 
