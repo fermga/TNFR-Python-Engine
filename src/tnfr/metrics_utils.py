@@ -24,7 +24,7 @@ from .helpers.numeric import (
     neighbor_phase_mean_list,
     kahan_sum2d,
 )
-from .helpers.cache import edge_version_cache
+from .helpers.cache import edge_version_cache, _stable_json
 from .import_utils import get_numpy
 
 
@@ -138,17 +138,32 @@ def merge_graph_weights(G: GraphLike, key: str) -> dict[str, float]:
 def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
     """Obtain and normalise weights for the sense index."""
     w = merge_graph_weights(G, "SI_WEIGHTS")
-    weights = normalize_weights(w, ("alpha", "beta", "gamma"), default=0.0)
-    alpha = weights["alpha"]
-    beta = weights["beta"]
-    gamma = weights["gamma"]
-    G.graph["_Si_weights"] = weights
-    G.graph["_Si_sensitivity"] = {
-        "dSi_dvf_norm": alpha,
-        "dSi_ddisp_fase": -beta,
-        "dSi_ddnfr_norm": -gamma,
-    }
-    return alpha, beta, gamma
+    cfg_key = _stable_json(w)
+
+    def builder() -> tuple[float, float, float]:
+        existing = G.graph.get("_Si_weights")
+        if (
+            isinstance(existing, Mapping)
+            and G.graph.get("_Si_weights_key") == cfg_key
+        ):
+            alpha = float(existing.get("alpha", 0.0))
+            beta = float(existing.get("beta", 0.0))
+            gamma = float(existing.get("gamma", 0.0))
+        else:
+            weights = normalize_weights(w, ("alpha", "beta", "gamma"), default=0.0)
+            alpha = weights["alpha"]
+            beta = weights["beta"]
+            gamma = weights["gamma"]
+            G.graph["_Si_weights"] = weights
+            G.graph["_Si_weights_key"] = cfg_key
+            G.graph["_Si_sensitivity"] = {
+                "dSi_dvf_norm": alpha,
+                "dSi_ddisp_fase": -beta,
+                "dSi_ddnfr_norm": -gamma,
+            }
+        return alpha, beta, gamma
+
+    return edge_version_cache(G, ("_Si_weights", cfg_key), builder)
 
 
 def _build_trig_cache(G: GraphLike, np: Any | None = np) -> TrigCache:
