@@ -1,4 +1,11 @@
-"""Callback registration and invocation helpers."""
+"""Callback registration and invocation helpers.
+
+This module is thread-safe: all mutations of the callback registry stored in a
+graph's ``G.graph`` are serialised using a process-wide lock obtained via
+``locking.get_lock("callbacks")``. Callback functions themselves execute
+outside of the lock and must therefore be independently thread-safe if they
+modify shared state.
+"""
 
 from __future__ import annotations
 
@@ -11,6 +18,7 @@ from collections.abc import Callable, Mapping
 import traceback
 from .logging_utils import get_logger
 from .constants import DEFAULTS
+from .locking import get_lock
 
 from .trace import CallbackSpec
 from .collections_utils import is_non_string_sequence
@@ -27,6 +35,8 @@ __all__ = (
 )
 
 logger = get_logger(__name__)
+
+_CALLBACK_LOCK = get_lock("callbacks")
 
 
 class CallbackEvent(str, Enum):
@@ -58,8 +68,8 @@ class CallbackError(TypedDict):
     name: str | None
 
 
-def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
-    """Ensure the callback structure in ``G.graph``."""
+def _ensure_callbacks_nolock(G: "nx.Graph") -> CallbackRegistry:
+    """Internal helper implementing ``_ensure_callbacks`` without locking."""
     cbs = G.graph.setdefault("callbacks", defaultdict(dict))
 
     dirty: set[str] = set(G.graph.pop("_callbacks_dirty", ()))
@@ -80,6 +90,12 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
         for event in dirty:
             _normalize_event_callbacks(cbs, event)
     return cbs
+
+
+def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
+    """Ensure the callback structure in ``G.graph``."""
+    with _CALLBACK_LOCK:
+        return _ensure_callbacks_nolock(G)
 
 
 def _normalize_event_callbacks(cbs: CallbackRegistry, event: str) -> None:
@@ -239,33 +255,34 @@ def register_callback(
         raise ValueError(f"Unknown event: {event}")
     if not callable(func):
         raise TypeError("func must be callable")
-    cbs = _ensure_callbacks(G)
+    with _CALLBACK_LOCK:
+        cbs = _ensure_callbacks_nolock(G)
 
-    cb_name = name or getattr(func, "__name__", None)
-    new_cb = CallbackSpec(cb_name, func)
-    existing_map = cbs[event]
-    cb_key = cb_name or repr(func)
+        cb_name = name or getattr(func, "__name__", None)
+        new_cb = CallbackSpec(cb_name, func)
+        existing_map = cbs[event]
+        cb_key = cb_name or repr(func)
 
-    if cb_name is not None:
-        for spec in existing_map.values():
-            if spec.name == cb_name and spec.func is not func:
-                strict = bool(
-                    G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
-                )
-                msg = f"Callback {cb_name!r} already registered for {event}"
-                if strict:
-                    raise ValueError(msg)
-                else:
-                    logger.warning(msg)
+        if cb_name is not None:
+            for spec in existing_map.values():
+                if spec.name == cb_name and spec.func is not func:
+                    strict = bool(
+                        G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
+                    )
+                    msg = f"Callback {cb_name!r} already registered for {event}"
+                    if strict:
+                        raise ValueError(msg)
+                    else:
+                        logger.warning(msg)
+                    break
+
+        for key, spec in list(existing_map.items()):
+            if spec.func is func or (cb_name is not None and spec.name == cb_name):
+                del existing_map[key]
                 break
-
-    for key, spec in list(existing_map.items()):
-        if spec.func is func or (cb_name is not None and spec.name == cb_name):
-            del existing_map[key]
-            break
-    existing_map[cb_key] = new_cb
-    dirty = G.graph.setdefault("_callbacks_dirty", set())
-    dirty.add(event)
+        existing_map[cb_key] = new_cb
+        dirty = G.graph.setdefault("_callbacks_dirty", set())
+        dirty.add(event)
     return func
 
 
@@ -276,10 +293,11 @@ def invoke_callbacks(
 ) -> None:
     """Invoke all callbacks registered for ``event`` with context ``ctx``."""
     event = _normalize_event(event)
-    cbs = _ensure_callbacks(G).get(event, {})
-    strict = bool(
-        G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
-    )
+    with _CALLBACK_LOCK:
+        cbs = dict(_ensure_callbacks_nolock(G).get(event, {}))
+        strict = bool(
+            G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
+        )
     if ctx is None:
         ctx = {}
     for spec in cbs.values():
@@ -290,7 +308,8 @@ def invoke_callbacks(
             ValueError,
             TypeError,
         ) as e:  # catch expected callback errors
-            _record_callback_error(G, event, ctx, spec, e)
+            with _CALLBACK_LOCK:
+                _record_callback_error(G, event, ctx, spec, e)
             if strict:
                 raise
         except Exception:
