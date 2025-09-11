@@ -255,9 +255,7 @@ def callbacks_field(G: Any) -> TraceMetadata:
         return {}
     out: dict[str, list[str] | None] = {}
     for phase, cb_map in cb.items():
-        if isinstance(cb_map, Mapping):
-            out[phase] = _callback_names(cb_map)
-        elif is_non_string_sequence(cb_map):
+        if isinstance(cb_map, Mapping) or is_non_string_sequence(cb_map):
             out[phase] = _callback_names(cb_map)
         else:
             out[phase] = None
