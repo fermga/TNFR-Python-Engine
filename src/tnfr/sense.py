@@ -8,7 +8,7 @@ from collections import Counter
 
 import networkx as nx  # type: ignore[import-untyped]
 
-from .constants import ALIAS_SI, ALIAS_EPI, SIGMA
+from .constants import ALIAS_SI, ALIAS_EPI, SIGMA, get_param
 from .alias import get_attr
 from .helpers.numeric import clamp01, kahan_sum2d
 from .import_utils import get_numpy
@@ -95,7 +95,7 @@ def _node_weight(nd, weight_mode: str) -> tuple[str, float, complex] | None:
 
 
 def _sigma_cfg(G):
-    return G.graph.get("SIGMA", SIGMA)
+    return get_param(G, "SIGMA")
 
 
 def _to_complex(val: complex | float | int) -> complex:

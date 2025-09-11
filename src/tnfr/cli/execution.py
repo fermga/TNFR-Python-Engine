@@ -8,7 +8,7 @@ from typing import Any, Optional, TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx  # type: ignore[import-untyped]
 
-from ..constants import inject_defaults, DEFAULTS, METRIC_DEFAULTS
+from ..constants import inject_defaults, DEFAULTS, METRIC_DEFAULTS, get_param
 from ..sense import register_sigma_callback, sigma_rose
 from ..metrics import (
     register_metrics_callbacks,
@@ -160,8 +160,8 @@ def run_program(
 
 
 def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
-    cfg_coh = G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"])
-    cfg_diag = G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"])
+    cfg_coh = get_param(G, "COHERENCE")
+    cfg_diag = get_param(G, "DIAGNOSIS")
     hist = G.graph.get("history", {})
 
     if cfg_coh.get("enabled", True):

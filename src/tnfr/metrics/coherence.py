@@ -6,7 +6,14 @@ import math
 from typing import Any, Sequence
 
 
-from ..constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_SI, COHERENCE
+from ..constants import (
+    ALIAS_THETA,
+    ALIAS_EPI,
+    ALIAS_VF,
+    ALIAS_SI,
+    COHERENCE,
+    get_param,
+)
 from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
@@ -449,7 +456,7 @@ def _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np=None):
     }
 
     hist = ensure_history(G)
-    cfg = G.graph.get("COHERENCE", COHERENCE)
+    cfg = get_param(G, "COHERENCE")
     append_metric(hist, cfg.get("history_key", "W_sparse"), W)
     append_metric(hist, cfg.get("Wi_history_key", "W_i"), Wi)
     append_metric(hist, cfg.get("stats_history_key", "W_stats"), stats)
@@ -457,7 +464,7 @@ def _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np=None):
 
 
 def coherence_matrix(G, use_numpy: bool | None = None):
-    cfg = G.graph.get("COHERENCE", COHERENCE)
+    cfg = get_param(G, "COHERENCE")
     if not cfg.get("enabled", True):
         return None, None
 
@@ -615,7 +622,7 @@ def local_phase_sync(G, n):
 
 
 def _coherence_step(G, ctx=None):
-    if not G.graph.get("COHERENCE", COHERENCE).get("enabled", True):
+    if not get_param(G, "COHERENCE").get("enabled", True):
         return
     coherence_matrix(G)
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ..helpers.cache import _cache_node_list
 from ..rng import _rng_for_step, base_seed
+from ..constants import get_param
 
 __all__ = ("update_node_sample",)
 
@@ -19,7 +20,7 @@ def update_node_sample(G, *, step: int) -> None:
     tuple of nodes.
     """
     graph = G.graph
-    limit = int(graph.get("UM_CANDIDATE_COUNT", 0))
+    limit = int(get_param(G, "UM_CANDIDATE_COUNT"))
     nodes = _cache_node_list(G)
     current_n = len(nodes)
     if limit <= 0 or current_n < 50 or limit >= current_n:

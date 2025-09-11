@@ -13,6 +13,7 @@ from ..constants import (
     ALIAS_EPI,
     ALIAS_EPI_KIND,
     ALIAS_D2EPI,
+    get_param,
 )
 from ..gamma import eval_gamma
 from ..alias import get_attr, get_attr_str, set_attr, set_attr_str
@@ -37,7 +38,7 @@ def prepare_integration_params(
     initial time.
     """
     if dt is None:
-        dt = float(G.graph.get("DT", DEFAULTS["DT"]))
+        dt = float(get_param(G, "DT"))
     else:
         if not isinstance(dt, (int, float)):
             raise TypeError("dt must be a number")
@@ -50,16 +51,11 @@ def prepare_integration_params(
     else:
         t = float(t)
 
-    method = (
-        method
-        or G.graph.get(
-            "INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler")
-        )
-    ).lower()
+    method = (method or get_param(G, "INTEGRATOR_METHOD")).lower()
     if method not in ("euler", "rk4"):
         raise ValueError("method must be 'euler' or 'rk4'")
 
-    dt_min = float(G.graph.get("DT_MIN", DEFAULTS.get("DT_MIN", 0.0)))
+    dt_min = float(get_param(G, "DT_MIN"))
     if dt_min > 0 and dt > dt_min:
         steps = int(math.ceil(dt / dt_min))
     else:

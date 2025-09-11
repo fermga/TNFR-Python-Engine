@@ -230,8 +230,8 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
     """
     nd = G.nodes[n]
     st = _gram_state(nd)
-    cfg_canon = G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {}))
-    cfg_soft = G.graph.get("GRAMMAR", DEFAULTS.get("GRAMMAR", {}))
+    cfg_canon = get_param(G, "GRAMMAR_CANON")
+    cfg_soft = get_param(G, "GRAMMAR")
 
     # 0) If glyphs outside the alphabet arrive, leave untouched
     if cand not in CANON_COMPAT:

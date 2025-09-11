@@ -4,7 +4,7 @@ from __future__ import annotations
 import math
 import pytest
 
-from tnfr.constants import inject_defaults
+from tnfr.constants import inject_defaults, get_param
 from tnfr.scenarios import build_graph
 from tnfr.dynamics import step
 from tnfr.metrics import register_metrics_callbacks, _metrics_step
@@ -28,8 +28,8 @@ def _repeat_steps(G, k: int):
 
 def test_clamps_numeric_stability(G_small):
     _repeat_steps(G_small, 50)
-    epi_min = G_small.graph.get("EPI_MIN", -1e9)
-    epi_max = G_small.graph.get("EPI_MAX", 1e9)
+    epi_min = get_param(G_small, "EPI_MIN")
+    epi_max = get_param(G_small, "EPI_MAX")
     for n in G_small.nodes():
         x = float(G_small.nodes[n].get("EPI", 0.0))
         assert math.isfinite(x)
@@ -74,10 +74,10 @@ def test_remesh_cooldown_if_present(G_small):
     if cooldown is None:
         pytest.skip("No hay REMESH_COOLDOWN definido en el motor")
 
-    w_estab = int(G_small.graph.get("REMESH_STABILITY_WINDOW", 0))
+    w_estab = int(get_param(G_small, "REMESH_STABILITY_WINDOW"))
     sf = G_small.graph.setdefault("history", {}).setdefault("stable_frac", [])
     sf.extend([1.0] * w_estab)
-    tau_g = int(G_small.graph.get("REMESH_TAU_GLOBAL", 0))
+    tau_g = int(get_param(G_small, "REMESH_TAU_GLOBAL"))
     snap = {n: G_small.nodes[n].get("EPI", 0.0) for n in G_small.nodes()}
     from collections import deque
 

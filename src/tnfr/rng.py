@@ -97,8 +97,7 @@ def cache_enabled(G: Any | None = None) -> bool:
 
 def base_seed(G: Any) -> int:
     """Return base RNG seed stored in ``G.graph``."""
-    graph = get_graph(G)
-    return int(graph.get("RANDOM_SEED", 0))
+    return int(get_param(G, "RANDOM_SEED"))
 
 
 def _rng_for_step(seed: int, step: int) -> random.Random:

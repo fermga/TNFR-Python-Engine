@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Any, Callable, Optional, Protocol, NamedTuple
 from collections.abc import Iterable, Mapping, Sequence
 
-from .constants import TRACE
+from .constants import TRACE, get_param
 from .glyph_history import ensure_history, count_glyphs, append_metric
 from .import_utils import optional_import
 from .helpers.cache import get_graph_mapping
@@ -74,7 +74,7 @@ def _trace_setup(
     ``(None, set(), None, None)``.
     """
 
-    cfg = G.graph.get("TRACE", TRACE)
+    cfg = get_param(G, "TRACE")
     if not cfg.get("enabled", True):
         return None, set(), None, None
 

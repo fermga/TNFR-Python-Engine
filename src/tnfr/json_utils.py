@@ -22,6 +22,8 @@ warnings.filterwarnings(
     "once", message=".*ignored when using orjson", category=UserWarning
 )
 
+_warned_orjson_params = False
+
 _ORJSON_PARAMS_MSG = (
     "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson"
 )
@@ -30,6 +32,17 @@ _ORJSON_PARAMS_MSG = (
 def _load_orjson() -> Any | None:
     """Lazily import :mod:`orjson` once."""
     return optional_import("orjson")
+
+_original_cache_clear = _load_orjson.cache_clear
+
+
+def _clear_orjson_cache() -> None:
+    global _warned_orjson_params
+    _warned_orjson_params = False
+    _original_cache_clear()
+
+
+_load_orjson.cache_clear = _clear_orjson_cache  # type: ignore[attr-defined]
 
 
 @dataclass(slots=True)
@@ -49,14 +62,15 @@ def _json_dumps_orjson(
     **kwargs: Any,
 ) -> bytes | str:
     """Serialize using :mod:`orjson` and warn about unsupported parameters."""
+    global _warned_orjson_params
     if (
         params.ensure_ascii is not True
         or params.separators != (",", ":")
         or params.cls is not None
         or kwargs
-    ):
-
+    ) and not _warned_orjson_params:
         warnings.warn(_ORJSON_PARAMS_MSG, UserWarning, stacklevel=3)
+        _warned_orjson_params = True
 
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
     data = orjson.dumps(obj, option=option, default=params.default)
