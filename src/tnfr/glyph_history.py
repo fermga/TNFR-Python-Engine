@@ -10,6 +10,9 @@ from collections.abc import Iterable
 
 from .constants import get_param
 from .collections_utils import ensure_collection
+from .logging_utils import get_logger
+
+logger = get_logger(__name__)
 
 __all__ = (
     "HistoryDict",
@@ -49,6 +52,7 @@ def _normalize_history_input(hist: Any) -> Iterable[Any]:
     try:
         return ensure_collection(hist, max_materialize=None)
     except TypeError:
+        logger.debug("Discarding non-iterable glyph history value %r", hist)
         return ()
 
 
