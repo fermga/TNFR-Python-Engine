@@ -149,21 +149,24 @@ def neighbor_phase_mean_list(
 ) -> float:
     """Return circular mean of neighbour phases from cosine/sine mappings.
 
-    When ``np`` (NumPy) is provided, a vectorised approach computes the
-    averages from independent cosine and sine generators without creating
-    intermediate ``(cos, sin)`` pair lists. Otherwise, the mean is computed
-    using the pure-Python :func:`_phase_mean_from_iter` helper which uses a
-    running Kahan summation for stable accumulation.
+    When ``np`` (NumPy) is provided, ``np.fromiter`` is used to build cosine and
+    sine arrays directly from a generator, avoiding the creation of an
+    intermediate Python list of ``(cos, sin)`` pairs. Otherwise, the mean is
+    computed using the pure-Python :func:`_phase_mean_from_iter` helper which
+    uses a running Kahan summation for stable accumulation.
     """
     if np is not None:
-        pairs = [
-            (c, s)
+        flat_pairs = (
+            val
             for v in neigh
             if (c := cos_th.get(v)) is not None
             and (s := sin_th.get(v)) is not None
-        ]
-        if pairs:
-            cos_arr, sin_arr = np.array(pairs, dtype=float).T
+            for val in (c, s)
+        )
+        arr = np.fromiter(flat_pairs, dtype=float)
+        if arr.size:
+            cos_arr = arr[0::2]
+            sin_arr = arr[1::2]
             mean_cos = float(np.mean(cos_arr))
             mean_sin = float(np.mean(sin_arr))
             return float(np.arctan2(mean_sin, mean_cos))
