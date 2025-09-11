@@ -29,13 +29,27 @@ __all__ = (
 
 logger = get_logger(__name__)
 
+
+def _emit_warn(message: str) -> None:
+    """Emit a warning preserving caller context."""
+    warnings.warn(message, RuntimeWarning, stacklevel=2)
+
+
+def _emit_log(message: str) -> None:
+    """Log a warning message using the module logger."""
+    logger.warning(message)
+
+
+def _emit_both(message: str) -> None:
+    """Emit a warning and log it."""
+    warnings.warn(message, RuntimeWarning, stacklevel=2)
+    logger.warning(message)
+
+
 EMIT_MAP: dict[str, tuple] = {
-    "warn": (lambda m: warnings.warn(m, RuntimeWarning, stacklevel=2),),
-    "log": (logger.warning,),
-    "both": (
-        lambda m: warnings.warn(m, RuntimeWarning, stacklevel=2),
-        logger.warning,
-    ),
+    "warn": (_emit_warn,),
+    "log": (_emit_log,),
+    "both": (_emit_both,),
 }
 
 _FAILED_IMPORT_LIMIT = 128  # keep only this many recent failures
