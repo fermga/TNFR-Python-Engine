@@ -34,21 +34,27 @@ class CallbackSpec(NamedTuple):
     func: Callable[..., Any]
 
 
-class TraceSnapshot(TypedDict, total=False):
-    """Trace snapshot stored in the history."""
+class TraceMetadata(TypedDict, total=False):
+    """Metadata captured by trace field functions."""
 
-    t: float
-    phase: str
     gamma: Mapping[str, Any]
     grammar: Mapping[str, Any]
     selector: str | None
     dnfr_weights: Mapping[str, Any]
     si_weights: Mapping[str, Any]
+    si_sensitivity: Mapping[str, Any]
     callbacks: Mapping[str, list[str] | None]
     thol_open_nodes: int
     kuramoto: Mapping[str, float]
     sigma: Mapping[str, float]
     glyphs: Mapping[str, int]
+
+
+class TraceSnapshot(TraceMetadata, total=False):
+    """Trace snapshot stored in the history."""
+
+    t: float
+    phase: str
 
 
 def _kuramoto_fallback(G: Any) -> tuple[float, float]:
@@ -70,6 +76,7 @@ def _sigma_fallback(
 # Public exports for this module
 __all__ = (
     "CallbackSpec",
+    "TraceMetadata",
     "TraceSnapshot",
     "register_trace",
     "register_trace_field",
@@ -119,20 +126,22 @@ def _callback_names(
     ]
 
 
-def mapping_field(G, graph_key: str, out_key: str) -> dict[str, Any]:
+def mapping_field(G: Any, graph_key: str, out_key: str) -> TraceMetadata:
     """Helper to copy mappings from ``G.graph`` into trace output."""
     mapping = get_graph_mapping(
         G, graph_key, f"G.graph[{graph_key!r}] no es un mapeo; se ignora"
     )
-    return {out_key: mapping} if mapping is not None else {}
+    if mapping is None:
+        return {}
+    return cast(TraceMetadata, {out_key: mapping})
 
 
 def make_mapping_field(
     graph_key: str, out_key: str
-) -> Callable[[Any], dict[str, Any]]:
+) -> Callable[[Any], TraceMetadata]:
     """Return a field function reading ``graph_key`` into ``out_key``."""
 
-    def field(G):
+    def field(G: Any) -> TraceMetadata:
         return mapping_field(G, graph_key, out_key)
 
     return field
@@ -168,7 +177,7 @@ def _new_trace_meta(
 
 
 def _trace_capture(
-    G, phase: str, fields: Mapping[str, Callable[[Any], dict[str, Any]]]
+    G, phase: str, fields: Mapping[str, Callable[[Any], TraceMetadata]]
 ) -> None:
     """Capture ``fields`` for ``phase`` and store the snapshot.
 
@@ -197,11 +206,11 @@ def _trace_capture(
 # -------------------------
 
 
-TRACE_FIELDS: dict[str, dict[str, Callable[[Any], dict[str, Any]]]] = {}
+TRACE_FIELDS: dict[str, dict[str, Callable[[Any], TraceMetadata]]] = {}
 
 
 def register_trace_field(
-    phase: str, name: str, func: Callable[[Any], dict[str, Any]]
+    phase: str, name: str, func: Callable[[Any], TraceMetadata]
 ) -> None:
     """Register ``func`` to populate trace field ``name`` during ``phase``."""
 
@@ -217,9 +226,9 @@ grammar_field = make_mapping_field("GRAMMAR_CANON", "grammar")
 dnfr_weights_field = make_mapping_field("DNFR_WEIGHTS", "dnfr_weights")
 
 
-def selector_field(G):
+def selector_field(G: Any) -> TraceMetadata:
     sel = G.graph.get("glyph_selector")
-    return {"selector": getattr(sel, "__name__", str(sel)) if sel else None}
+    return cast(TraceMetadata, {"selector": getattr(sel, "__name__", str(sel)) if sel else None})
 
 
 _si_weights_field = make_mapping_field("_Si_weights", "si_weights")
@@ -228,20 +237,23 @@ _si_weights_field = make_mapping_field("_Si_weights", "si_weights")
 _si_sensitivity_field = make_mapping_field("_Si_sensitivity", "si_sensitivity")
 
 
-def si_weights_field(G):
+def si_weights_field(G: Any) -> TraceMetadata:
     """Return sense-plane weights and sensitivity."""
 
-    return {
-        **(_si_weights_field(G) or {"si_weights": {}}),
-        **(_si_sensitivity_field(G) or {"si_sensitivity": {}}),
-    }
+    return cast(
+        TraceMetadata,
+        {
+            **(_si_weights_field(G) or {"si_weights": {}}),
+            **(_si_sensitivity_field(G) or {"si_sensitivity": {}}),
+        },
+    )
 
 
-def callbacks_field(G):
+def callbacks_field(G: Any) -> TraceMetadata:
     cb = G.graph.get("callbacks")
     if not isinstance(cb, Mapping):
         return {}
-    out = {}
+    out: dict[str, list[str] | None] = {}
     for phase, cb_map in cb.items():
         if isinstance(cb_map, Mapping):
             out[phase] = _callback_names(cb_map)
@@ -249,24 +261,24 @@ def callbacks_field(G):
             out[phase] = _callback_names(cb_map)
         else:
             out[phase] = None
-    return {"callbacks": out}
+    return cast(TraceMetadata, {"callbacks": out})
 
 
-def thol_state_field(G):
+def thol_state_field(G: Any) -> TraceMetadata:
     th_open = 0
     for _, nd in G.nodes(data=True):
         st = nd.get("_GRAM", {})
         if st.get("thol_open", False):
             th_open += 1
-    return {"thol_open_nodes": th_open}
+    return cast(TraceMetadata, {"thol_open_nodes": th_open})
 
 
-def kuramoto_field(G):
+def kuramoto_field(G: Any) -> TraceMetadata:
     R, psi = kuramoto_R_psi(G)
-    return {"kuramoto": {"R": float(R), "psi": float(psi)}}
+    return cast(TraceMetadata, {"kuramoto": {"R": float(R), "psi": float(psi)}})
 
 
-def sigma_field(G):
+def sigma_field(G: Any) -> TraceMetadata:
     sigma_vector_from_graph: _SigmaVectorFn = cast(
         _SigmaVectorFn,
         optional_import(
@@ -274,17 +286,20 @@ def sigma_field(G):
         ),
     )
     sv = sigma_vector_from_graph(G)
-    return {
-        "sigma": {
-            "x": float(sv.get("x", 0.0)),
-            "y": float(sv.get("y", 0.0)),
-            "mag": float(sv.get("mag", 0.0)),
-            "angle": float(sv.get("angle", 0.0)),
-        }
-    }
+    return cast(
+        TraceMetadata,
+        {
+            "sigma": {
+                "x": float(sv.get("x", 0.0)),
+                "y": float(sv.get("y", 0.0)),
+                "mag": float(sv.get("mag", 0.0)),
+                "angle": float(sv.get("angle", 0.0)),
+            }
+        },
+    )
 
 
-def glyph_counts_field(G):
+def glyph_counts_field(G: Any) -> TraceMetadata:
     """Return glyph count snapshot.
 
     ``count_glyphs`` already produces a fresh mapping so no additional copy
@@ -292,7 +307,7 @@ def glyph_counts_field(G):
     """
 
     cnt = count_glyphs(G, window=1)
-    return {"glyphs": cnt}
+    return cast(TraceMetadata, {"glyphs": cnt})
 
 
 # Pre-register default fields
