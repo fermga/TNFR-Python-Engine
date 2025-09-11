@@ -111,6 +111,7 @@ def set_cache_maxsize(size: int) -> None:
     """Update RNG cache maximum size.
 
     ``size`` must be a non-negative integer; ``0`` disables caching.
+    Changing the cache size resets any cached seed hashes.
     If caching is disabled, ``clear_rng_cache`` has no effect.
     """
 
@@ -119,6 +120,8 @@ def set_cache_maxsize(size: int) -> None:
     if new_size < 0:
         raise ValueError("size must be non-negative")
     with _RNG_LOCK:
+        if _CACHE_MAXSIZE > 0:
+            _seed_hash_cached.cache_clear()
         _CACHE_MAXSIZE = new_size
         _seed_hash_cached = _make_cache(new_size)
 
