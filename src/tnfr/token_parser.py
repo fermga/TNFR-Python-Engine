@@ -3,25 +3,16 @@
 from __future__ import annotations
 
 from typing import Any, Callable
-from collections import deque
 
-from .collections_utils import is_non_string_sequence
+from .collections_utils import flatten_structure
 
 __all__ = ("_flatten_tokens", "validate_token", "_parse_tokens")
 
 
 def _flatten_tokens(obj: Any):
-    """Yield each token in order using a deque for clarity."""
+    """Yield each token in order."""
 
-    stack = deque([obj])
-    while stack:
-        item = stack.pop()
-        if is_non_string_sequence(item):
-            # ``extendleft`` pushes items in reverse order, preserving
-            # LIFO semantics without creating an intermediate reversed list
-            stack.extendleft(item)
-        else:
-            yield item
+    yield from flatten_structure(obj)
 
 
 def validate_token(

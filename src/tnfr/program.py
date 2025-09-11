@@ -23,6 +23,7 @@ from .collections_utils import (
     ensure_collection,
     MAX_MATERIALIZE_DEFAULT,
     is_non_string_sequence,
+    flatten_structure,
 )
 from .glyph_history import ensure_history
 
@@ -204,7 +205,6 @@ def _flatten_thol(
 
 def _flatten_target(
     item: TARGET,
-    stack: deque[Any],
     ops: list[tuple[OpTag, Any]],
 ) -> None:
     ops.append((OpTag.TARGET, item))
@@ -212,24 +212,14 @@ def _flatten_target(
 
 def _flatten_wait(
     item: WAIT,
-    stack: deque[Any],
     ops: list[tuple[OpTag, Any]],
 ) -> None:
     steps = max(1, int(getattr(item, "steps", 1)))
     ops.append((OpTag.WAIT, steps))
 
 
-def _flatten_thol_proxy(
-    item: THOL,
-    stack: deque[Any],
-    ops: list[tuple[OpTag, Any]],
-) -> None:
-    _flatten_thol(item, stack)
-
-
 def _flatten_glyph(
     item: Glyph | str,
-    stack: deque[Any],
     ops: list[tuple[OpTag, Any]],
 ) -> None:
     g = item.value if isinstance(item, Glyph) else str(item)
@@ -238,13 +228,9 @@ def _flatten_glyph(
     ops.append((OpTag.GLYPH, g))
 
 
-_TOKEN_DISPATCH: dict[
-    type,
-    Callable[[Any, deque[Any], list[tuple[OpTag, Any]]], None],
-] = {
+_TOKEN_DISPATCH: dict[type, Callable[[Any, list[tuple[OpTag, Any]]], None]] = {
     TARGET: _flatten_target,
     WAIT: _flatten_wait,
-    THOL: _flatten_thol_proxy,
     Glyph: _flatten_glyph,
     str: _flatten_glyph,
 }
@@ -266,25 +252,26 @@ def _flatten(
         Maximum number of items to materialize from ``seq`` or ``THOL`` bodies
         when they are not already collections. Defaults to
         :data:`MAX_MATERIALIZE_DEFAULT`; ``None`` disables the limit.
-
-    Implemented iteratively using an explicit stack to avoid deep recursion
-    when ``THOL`` blocks are nested.
     """
 
     ops: list[tuple[OpTag, Any]] = []
-    stack: deque[Any] = deque(
-        reversed(list(ensure_collection(seq, max_materialize=max_materialize)))
-    )  # list() ensures reversibility for generic collections
+    sequence = ensure_collection(seq, max_materialize=max_materialize)
 
-    while stack:
-        item = stack.pop()
+    def _expand(item: Any):
+        if isinstance(item, THOL):
+            tmp: deque[Any] = deque()
+            _flatten_thol(item, tmp, max_materialize=max_materialize)
+            return reversed(tmp)
+        return None
+
+    for item in flatten_structure(sequence, expand=_expand):
         if item is THOL_SENTINEL:
             ops.append((OpTag.THOL, Glyph.THOL.value))
             continue
         handler = _TOKEN_DISPATCH.get(type(item))
         if handler is None:
             raise TypeError(f"Unsupported token: {item!r}")
-        handler(item, stack, ops)
+        handler(item, ops)
     return ops
 
 
