@@ -23,6 +23,9 @@ class InitDefaults:
     INIT_VF_MEAN: float = 0.5
     INIT_VF_STD: float = 0.15
     INIT_VF_CLAMP_TO_LIMITS: bool = True
+    INIT_SI_MIN: float = 0.4
+    INIT_SI_MAX: float = 0.7
+    INIT_EPI_VALUE: float = 0.0
 
 
 INIT_DEFAULTS = asdict(InitDefaults())
