@@ -45,6 +45,7 @@ __all__ = (
     "compute_dnfr_accel_max",
     "compute_coherence",
     "ensure_neighbors_map",
+    "merge_graph_weights",
     "get_Si_weights",
     "get_trig_cache",
     "compute_Si_node",
@@ -129,9 +130,15 @@ def ensure_neighbors_map(G: GraphLike) -> Mapping[Any, Sequence[Any]]:
     return edge_version_cache(G, "_neighbors", builder)
 
 
+def merge_graph_weights(G: GraphLike, key: str) -> dict[str, float]:
+    """Merge default weights for ``key`` with any graph overrides."""
+
+    return {**DEFAULTS[key], **G.graph.get(key, {})}
+
+
 def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
     """Obtain and normalise weights for the sense index."""
-    w = {**DEFAULTS["SI_WEIGHTS"], **G.graph.get("SI_WEIGHTS", {})}
+    w = merge_graph_weights(G, "SI_WEIGHTS")
     weights = normalize_weights(w, ("alpha", "beta", "gamma"), default=0.0)
     alpha = weights["alpha"]
     beta = weights["beta"]

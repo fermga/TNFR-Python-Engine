@@ -24,7 +24,7 @@ from ..alias import (
     get_attr,
     set_dnfr,
 )
-from ..metrics_utils import get_trig_cache
+from ..metrics_utils import get_trig_cache, merge_graph_weights
 from ..import_utils import get_numpy
 
 
@@ -78,7 +78,7 @@ def _configure_dnfr_weights(G) -> dict:
     dictionary of normalised components reused at each simulation step
     without recomputing the mix.
     """
-    w = {**DEFAULTS["DNFR_WEIGHTS"], **get_param(G, "DNFR_WEIGHTS")}
+    w = merge_graph_weights(G, "DNFR_WEIGHTS")
     weights = normalize_weights(w, ("phase", "epi", "vf", "topo"), default=0.0)
     G.graph["_dnfr_weights"] = weights
     return weights
