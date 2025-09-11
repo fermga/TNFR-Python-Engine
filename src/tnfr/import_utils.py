@@ -68,8 +68,9 @@ class _ImportState:
 _IMPORT_STATE = _ImportState()
 
 
-_WARNED_MODULES: dict[str, float] = {}
-_WARNED_LOCK = get_lock("import_warned")
+_WARNED_STATE = _ImportState(lock=get_lock("import_warned"))
+_WARNED_MODULES = _WARNED_STATE.failed
+_WARNED_LOCK = _WARNED_STATE.lock
 
 
 def _warn_failure(
@@ -103,19 +104,24 @@ def _warn_failure(
         if isinstance(err, ImportError)
         else f"Module '{module}' has no attribute '{attr}': {err}"
     )
-    with _WARNED_LOCK:
-        first = module not in _WARNED_MODULES
-        if first:
-            _WARNED_MODULES[module] = now
+    with _WARNED_STATE.lock:
+        first = module not in _WARNED_STATE.failed
+        _WARNED_STATE.record(module)
 
     if not first:
         logger.debug(msg)
         return
 
-    if emit in {"warn", "both"}:
-        warnings.warn(msg, RuntimeWarning, stacklevel=2)
-    if emit in {"log", "both"}:
-        logger.warning(msg)
+    emit_map = {
+        "warn": (lambda m: warnings.warn(m, RuntimeWarning, stacklevel=2),),
+        "log": (logger.warning,),
+        "both": (
+            lambda m: warnings.warn(m, RuntimeWarning, stacklevel=2),
+            logger.warning,
+        ),
+    }
+    for fn in emit_map[emit]:
+        fn(msg)
 
 
 @lru_cache(maxsize=128)
@@ -129,8 +135,8 @@ def _optional_import_cached(name: str) -> Any | None:
         with _IMPORT_STATE.lock:
             for item in (name, module_name):
                 _IMPORT_STATE.discard(item)
-        with _WARNED_LOCK:
-            _WARNED_MODULES.pop(module_name, None)
+        with _WARNED_STATE.lock:
+            _WARNED_STATE.discard(module_name)
         return obj
     except (ImportError, AttributeError) as e:
         _warn_failure(module_name, attr, e)
@@ -186,8 +192,8 @@ def clear_optional_import_cache() -> None:
     optional_import.cache_clear()
     with _IMPORT_STATE.lock:
         _IMPORT_STATE.clear()
-    with _WARNED_LOCK:
-        _WARNED_MODULES.clear()
+    with _WARNED_STATE.lock:
+        _WARNED_STATE.clear()
 
 
 def prune_failed_imports() -> None:
@@ -197,11 +203,9 @@ def prune_failed_imports() -> None:
     with state.lock:
         state.prune(now)
         state.last_prune = now
-    with _WARNED_LOCK:
-        expiry = now - _FAILED_IMPORT_MAX_AGE
-        stale = [m for m, t in _WARNED_MODULES.items() if t < expiry]
-        for m in stale:
-            _WARNED_MODULES.pop(m, None)
+    with _WARNED_STATE.lock:
+        _WARNED_STATE.prune(now)
+        _WARNED_STATE.last_prune = now
 
 
 @lru_cache(maxsize=1)
