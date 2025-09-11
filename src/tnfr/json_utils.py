@@ -10,19 +10,23 @@ from __future__ import annotations
 import json
 
 import warnings
-import inspect
 
-from typing import Any, Callable, overload, Literal, cast
+from typing import Any, Callable, Literal, cast, overload
 
 from dataclasses import dataclass
 from functools import lru_cache, partial
 from .import_utils import optional_import
+from .logging_utils import get_logger, warn_once
+
+logger = get_logger(__name__)
 
 _ORJSON_PARAMS_MSG = (
-    "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson"
+    "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
 )
 
-_warned_orjson_params = False
+_log_orjson_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
+
+
 def _load_orjson_impl() -> Any | None:
     """Lazily import :mod:`orjson` once."""
     return optional_import("orjson")
@@ -31,10 +35,11 @@ def _load_orjson_impl() -> Any | None:
 _load_orjson = lru_cache(maxsize=1)(_load_orjson_impl)
 _orig_cache_clear = _load_orjson.cache_clear
 
+
 def _cache_clear_and_reset() -> None:
-    global _warned_orjson_params
-    _warned_orjson_params = False
+    _log_orjson_params_once.clear()
     _orig_cache_clear()
+
 
 cast(Any, _load_orjson).cache_clear = _cache_clear_and_reset  # type: ignore[attr-defined]
 
@@ -62,10 +67,16 @@ def _json_dumps_orjson(
         or params.cls is not None
         or kwargs
     ):
-        global _warned_orjson_params
-        if not _warned_orjson_params:
-            warnings.warn(_ORJSON_PARAMS_MSG, UserWarning, stacklevel=3)
-            _warned_orjson_params = True
+        ignored: list[str] = []
+        if params.ensure_ascii is not True:
+            ignored.append("ensure_ascii")
+        if params.separators != (",", ":"):
+            ignored.append("separators")
+        if params.cls is not None:
+            ignored.append("cls")
+        if kwargs:
+            ignored.extend(kwargs.keys())
+        _log_orjson_params_once({"params": tuple(ignored)})
 
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
     with warnings.catch_warnings():
