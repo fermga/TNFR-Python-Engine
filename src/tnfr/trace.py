@@ -72,6 +72,7 @@ __all__ = (
     "CallbackSpec",
     "TraceSnapshot",
     "register_trace",
+    "register_trace_field",
     "_callback_names",
     "gamma_field",
     "grammar_field",
@@ -191,6 +192,22 @@ def _trace_capture(
     append_metric(hist, key, meta)
 
 
+# -------------------------
+# Registry
+# -------------------------
+
+
+TRACE_FIELDS: dict[str, dict[str, Callable[[Any], dict[str, Any]]]] = {}
+
+
+def register_trace_field(
+    phase: str, name: str, func: Callable[[Any], dict[str, Any]]
+) -> None:
+    """Register ``func`` to populate trace field ``name`` during ``phase``."""
+
+    TRACE_FIELDS.setdefault(phase, {})[name] = func
+
+
 gamma_field = make_mapping_field("GAMMA", "gamma")
 
 
@@ -278,30 +295,18 @@ def glyph_counts_field(G):
     return {"glyphs": cnt}
 
 
-TRACE_FIELDS_BEFORE = {
-    "gamma": gamma_field,
-    "grammar": grammar_field,
-    "selector": selector_field,
-    "dnfr_weights": dnfr_weights_field,
-    "si_weights": si_weights_field,
-    "callbacks": callbacks_field,
-    "thol_state": thol_state_field,
-}
+# Pre-register default fields
+register_trace_field("before", "gamma", gamma_field)
+register_trace_field("before", "grammar", grammar_field)
+register_trace_field("before", "selector", selector_field)
+register_trace_field("before", "dnfr_weights", dnfr_weights_field)
+register_trace_field("before", "si_weights", si_weights_field)
+register_trace_field("before", "callbacks", callbacks_field)
+register_trace_field("before", "thol_state", thol_state_field)
 
-
-TRACE_FIELDS_AFTER = {
-    "kuramoto": kuramoto_field,
-    "sigma": sigma_field,
-    "glyph_counts": glyph_counts_field,
-}
-
-
-def _trace_before(G, *args, **kwargs):
-    _trace_capture(G, "before", TRACE_FIELDS_BEFORE)
-
-
-def _trace_after(G, *args, **kwargs):
-    _trace_capture(G, "after", TRACE_FIELDS_AFTER)
+register_trace_field("after", "kuramoto", kuramoto_field)
+register_trace_field("after", "sigma", sigma_field)
+register_trace_field("after", "glyph_counts", glyph_counts_field)
 
 
 # -------------------------
@@ -335,11 +340,17 @@ def register_trace(G) -> None:
 
     from .callback_utils import register_callback
 
-    register_callback(
-        G, event="before_step", func=_trace_before, name="trace_before"
-    )
-    register_callback(
-        G, event="after_step", func=_trace_after, name="trace_after"
-    )
+    for phase in TRACE_FIELDS.keys():
+        event = f"{phase}_step"
+
+        def _make_cb(ph):
+            def _cb(G, *args, **kwargs):
+                _trace_capture(G, ph, TRACE_FIELDS.get(ph, {}))
+
+            return _cb
+
+        register_callback(
+            G, event=event, func=_make_cb(phase), name=f"trace_{phase}"
+        )
 
     G.graph["_trace_registered"] = True
