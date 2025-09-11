@@ -58,14 +58,20 @@ def flatten_structure(
     """
 
     stack = deque([obj])
+    seen: set[int] = set()
     while stack:
         item = stack.pop()
+        item_id = id(item)
+        if item_id in seen:
+            continue
         if expand is not None:
             replacement = expand(item)
             if replacement is not None:
+                seen.add(item_id)
                 stack.extendleft(replacement)
                 continue
         if is_non_string_sequence(item):
+            seen.add(item_id)
             stack.extendleft(item)
         else:
             yield item
