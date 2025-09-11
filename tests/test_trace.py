@@ -4,11 +4,13 @@ import pytest
 
 from tnfr.trace import (
     register_trace,
+    register_trace_field,
     _callback_names,
     gamma_field,
     grammar_field,
     CallbackSpec,
 )
+from tnfr import trace
 from tnfr.helpers.cache import get_graph_mapping
 from tnfr.callback_utils import register_callback, invoke_callbacks
 from types import MappingProxyType
@@ -97,3 +99,19 @@ def test_get_graph_mapping_returns_proxy(graph_canon):
     assert out["a"] == 1
     with pytest.raises(TypeError):
         out["b"] = 2
+
+
+def test_register_trace_field_runtime(graph_canon):
+    G = graph_canon()
+    G.graph["TRACE"] = {"enabled": True, "capture": ["custom"], "history_key": "trace_meta"}
+    register_trace(G)
+
+    def custom_field(G):
+        return {"custom": 42}
+
+    register_trace_field("before", "custom", custom_field)
+    invoke_callbacks(G, "before_step")
+
+    meta = G.graph["history"]["trace_meta"][0]
+    assert meta["custom"] == 42
+    del trace.TRACE_FIELDS["before"]["custom"]
