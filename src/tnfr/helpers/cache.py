@@ -58,7 +58,7 @@ def get_graph(obj: Any) -> Any:
 
 def get_graph_mapping(
     G: Any, key: str, warn_msg: str
-) -> dict[str, Any] | None:
+) -> Mapping[str, Any] | None:
     """Return an immutable view of ``G.graph[key]`` if it is a mapping.
 
     The mapping is wrapped in :class:`types.MappingProxyType` to prevent
