@@ -12,7 +12,7 @@ import json
 import warnings
 import inspect
 
-from typing import Any, Callable, overload, Literal
+from typing import Any, Callable, overload, Literal, cast
 
 from dataclasses import dataclass
 from functools import lru_cache, partial
@@ -26,10 +26,21 @@ _ORJSON_PARAMS_MSG = (
     "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson"
 )
 
-@lru_cache(maxsize=1)
-def _load_orjson() -> Any | None:
+_warned_orjson_params = False
+def _load_orjson_impl() -> Any | None:
     """Lazily import :mod:`orjson` once."""
     return optional_import("orjson")
+
+
+_load_orjson = lru_cache(maxsize=1)(_load_orjson_impl)
+_orig_cache_clear = _load_orjson.cache_clear
+
+def _cache_clear_and_reset() -> None:
+    global _warned_orjson_params
+    _warned_orjson_params = False
+    _orig_cache_clear()
+
+cast(Any, _load_orjson).cache_clear = _cache_clear_and_reset  # type: ignore[attr-defined]
 
 
 @dataclass(slots=True)
@@ -55,8 +66,10 @@ def _json_dumps_orjson(
         or params.cls is not None
         or kwargs
     ):
-
-        warnings.warn(_ORJSON_PARAMS_MSG, UserWarning, stacklevel=3)
+        global _warned_orjson_params
+        if not _warned_orjson_params:
+            warnings.warn(_ORJSON_PARAMS_MSG, UserWarning, stacklevel=3)
+            _warned_orjson_params = True
 
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
     data = orjson.dumps(obj, option=option, default=params.default)
