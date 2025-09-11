@@ -16,15 +16,25 @@ from typing import Any, Callable, Literal, cast, overload
 from dataclasses import dataclass
 from functools import lru_cache, partial
 from .import_utils import optional_import
-from .logging_utils import get_logger, warn_once
-
-logger = get_logger(__name__)
 
 _ORJSON_PARAMS_MSG = (
     "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
 )
 
-_log_orjson_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
+# Track combinations of parameters for which a warning has already been emitted.
+_warned_orjson_param_combos: set[tuple[str, ...]] = set()
+
+
+def _warn_orjson_params_once(ignored: tuple[str, ...]) -> None:
+    """Warn once per unique combination of ignored parameters."""
+    combo = tuple(sorted(ignored))
+    if combo not in _warned_orjson_param_combos:
+        _warned_orjson_param_combos.add(combo)
+        warnings.warn(
+            _ORJSON_PARAMS_MSG % (combo,),
+            UserWarning,
+            stacklevel=2,
+        )
 
 
 def _load_orjson_impl() -> Any | None:
@@ -37,7 +47,7 @@ _orig_cache_clear = _load_orjson.cache_clear
 
 
 def _cache_clear_and_reset() -> None:
-    _log_orjson_params_once.clear()
+    _warned_orjson_param_combos.clear()
     _orig_cache_clear()
 
 
@@ -70,14 +80,10 @@ def _json_dumps_orjson(
     if kwargs:
         ignored.extend(kwargs)
     if ignored:
-        _log_orjson_params_once({"params": tuple(ignored)})
+        _warn_orjson_params_once(tuple(ignored))
 
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
-    with warnings.catch_warnings():
-        warnings.filterwarnings(
-            "once", message=".*ignored when using orjson", category=UserWarning
-        )
-        data = orjson.dumps(obj, option=option, default=params.default)
+    data = orjson.dumps(obj, option=option, default=params.default)
     return data if params.to_bytes else data.decode("utf-8")
 
 
