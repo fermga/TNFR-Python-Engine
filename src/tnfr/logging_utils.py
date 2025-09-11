@@ -35,14 +35,10 @@ def _configure_root() -> None:
     _LOGGING_CONFIGURED = True
 
 
-_configure_root()
-
-
 def get_logger(name: str) -> logging.Logger:
     """Return a module-specific logger."""
-
+    _configure_root()
     return logging.getLogger(name)
-
 
 
 def warn_once(
@@ -76,4 +72,3 @@ def warn_once(
 
     _log.clear = _seen.clear  # type: ignore[attr-defined]
     return _log
-
