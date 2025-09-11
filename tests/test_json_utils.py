@@ -38,6 +38,8 @@ def test_warns_once(monkeypatch, caplog):
     assert len(w) == 1
 
 
-def test_json_dumps_str_matches_json_dumps():
+def test_json_dumps_returns_str_by_default():
     data = {"a": 1, "b": [1, 2, 3]}
-    assert json_utils.json_dumps_str(data) == json_utils.json_dumps(data, to_bytes=False)
+    result = json_utils.json_dumps(data)
+    assert isinstance(result, str)
+    assert result == json_utils.json_dumps(data, to_bytes=False)

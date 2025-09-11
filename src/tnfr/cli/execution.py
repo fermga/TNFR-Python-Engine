@@ -36,7 +36,7 @@ from ..helpers.numeric import list_mean
 from ..observers import attach_standard_observer
 from ..logging_utils import get_logger
 from ..types import Glyph
-from ..json_utils import json_dumps_str
+from ..json_utils import json_dumps
 
 from .arguments import _args_to_dict
 from .token_parser import _parse_tokens
@@ -45,7 +45,7 @@ logger = get_logger(__name__)
 
 
 def _save_json(path: str, data: Any) -> None:
-    payload = json_dumps_str(data, ensure_ascii=False, indent=2, default=list)
+    payload = json_dumps(data, ensure_ascii=False, indent=2, default=list)
     safe_write(path, lambda f: f.write(payload))
 
 
@@ -233,5 +233,5 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     if args.save:
         _save_json(args.save, out)
     else:
-        logger.info("%s", json_dumps_str(out))
+        logger.info("%s", json_dumps(out))
     return 0
