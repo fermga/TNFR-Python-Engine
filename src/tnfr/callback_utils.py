@@ -83,16 +83,19 @@ def _func_id(fn: Callable[..., Any]) -> str:
     return f"{module}.{qualname}"
 
 
-def _ensure_callbacks_nolock(G: "nx.Graph") -> CallbackRegistry:
-    """Internal helper implementing ``_ensure_callbacks`` without locking."""
-    cbs = G.graph.setdefault("callbacks", defaultdict(dict))
+def _validate_registry(
+    G: "nx.Graph", cbs: Any, dirty: set[str]
+) -> tuple[CallbackRegistry, set[str]]:
+    """Validate and normalise the callback registry.
 
-    dirty: set[str] = set(G.graph.pop("_callbacks_dirty", ()))
+    Ensures ``cbs`` is a ``defaultdict(dict)`` and updates ``dirty`` with
+    existing keys when conversion occurs. Returns the validated registry and
+    updated ``dirty`` set.
+    """
 
-    # Defensive: if callbacks store is not a mapping, discard it.
     if not isinstance(cbs, Mapping):
         logger.warning(
-            "Invalid callbacks registry on graph; resetting to empty"
+            "Invalid callbacks registry on graph; resetting to empty",
         )
         cbs = G.graph["callbacks"] = defaultdict(dict)
         dirty.clear()
@@ -100,6 +103,16 @@ def _ensure_callbacks_nolock(G: "nx.Graph") -> CallbackRegistry:
         # Convert to expected defaultdict(dict) and process existing keys.
         cbs = G.graph["callbacks"] = defaultdict(dict, cbs)
         dirty.update(cbs.keys())
+
+    return cbs, dirty
+
+
+def _ensure_callbacks_nolock(G: "nx.Graph") -> CallbackRegistry:
+    """Internal helper implementing ``_ensure_callbacks`` without locking."""
+    cbs = G.graph.setdefault("callbacks", defaultdict(dict))
+
+    dirty: set[str] = set(G.graph.pop("_callbacks_dirty", ()))
+    cbs, dirty = _validate_registry(G, cbs, dirty)
 
     if dirty:
         for event in dirty:
@@ -110,7 +123,6 @@ def _ensure_callbacks_nolock(G: "nx.Graph") -> CallbackRegistry:
                 continue
             cbs[event] = _normalize_callback_registry(cbs[event])
     return cbs
-
 
 def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
     """Ensure the callback structure in ``G.graph``."""
