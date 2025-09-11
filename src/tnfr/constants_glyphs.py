@@ -62,28 +62,31 @@ GLYPH_GROUPS: Mapping[str, tuple[str, ...]] = MappingProxyType(
 # Mapa de ángulos glíficos
 # -------------------------
 
-# Ángulos canónicos para todos los glyphs reconocidos. Las categorías
-# anteriores se distribuyen uniformemente en el círculo y se ajustan a
-# orientaciones semánticas específicas en el plano σ.
-ANGLE_MAP: Mapping[str, float] = MappingProxyType(
-    {
-        # AL no participa en el plano σ pero se incluye por completitud.
-        # Comparte el ángulo base (0 rad) con IL de forma intencionada.
-        Glyph.AL.value: 0.0,
-        Glyph.EN.value: 2 * math.pi / 13,
-        Glyph.IL.value: 0.0,
-        Glyph.UM.value: math.pi / 2,
-        Glyph.RA.value: math.pi / 4,
-        Glyph.VAL.value: 10 * math.pi / 13,
-        Glyph.OZ.value: math.pi,
-        Glyph.ZHIR.value: 5 * math.pi / 4,
-        Glyph.NAV.value: 3 * math.pi / 2,
-        Glyph.THOL.value: 7 * math.pi / 4,
-        Glyph.NUL.value: 20 * math.pi / 13,
-        Glyph.SHA.value: 3 * math.pi / 4,
-        Glyph.REMESH.value: 24 * math.pi / 13,
-    }
-)
+# Ángulos canónicos para todos los glyphs reconocidos. Se calculan a partir
+# del orden canónico y reglas de orientación para las categorías
+# "estabilizadores" y "disruptivos".
+
+
+def _build_angle_map() -> dict[str, float]:
+    """Construir el mapa de ángulos en el plano σ."""
+    step = 2 * math.pi / len(GLYPHS_CANONICAL)
+    canonical = {g: i * step for i, g in enumerate(GLYPHS_CANONICAL)}
+    angles = dict(canonical)
+
+    # Reglas específicas de orientación
+    for idx, g in enumerate(ESTABILIZADORES):
+        angles[g] = idx * math.pi / 4
+    for idx, g in enumerate(DISRUPTIVOS):
+        angles[g] = math.pi + idx * math.pi / 4
+
+    # Excepciones manuales
+    angles[Glyph.VAL.value] = canonical[Glyph.RA.value]
+    angles[Glyph.NUL.value] = canonical[Glyph.ZHIR.value]
+    angles[Glyph.AL.value] = 0.0
+    return angles
+
+
+ANGLE_MAP: Mapping[str, float] = MappingProxyType(_build_angle_map())
 
 __all__ = (
     "GLYPHS_CANONICAL",
