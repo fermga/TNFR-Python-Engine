@@ -3,19 +3,12 @@ from tnfr.metrics_utils import compute_Si
 from tnfr.alias import set_attr
 
 
-def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch, graph_canon):
-    calls = 0
-
+def test_compute_Si_uses_module_numpy_and_propagates(monkeypatch, graph_canon):
     class DummyNP:
         def fromiter(self, iterable, dtype=float, count=-1):
             return list(iterable)
 
     sentinel = DummyNP()
-
-    def fake_get_numpy():
-        nonlocal calls
-        calls += 1
-        return sentinel
 
     captured = []
 
@@ -25,7 +18,7 @@ def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch, graph_canon
         captured.append(np)
         return 0.0
 
-    monkeypatch.setattr("tnfr.metrics_utils.get_numpy", fake_get_numpy)
+    monkeypatch.setattr("tnfr.metrics_utils.np", sentinel)
     monkeypatch.setattr(
         "tnfr.metrics_utils.neighbor_phase_mean_list",
         fake_neighbor_phase_mean_list,
@@ -40,5 +33,4 @@ def test_compute_Si_calls_get_numpy_once_and_propagates(monkeypatch, graph_canon
 
     compute_Si(G, inplace=False)
 
-    assert calls == 1
     assert captured == [sentinel] * G.number_of_nodes()
