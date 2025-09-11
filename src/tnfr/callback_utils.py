@@ -10,7 +10,7 @@ modify shared state.
 from __future__ import annotations
 
 
-from typing import Any, TYPE_CHECKING, TypedDict
+from typing import Any, TypedDict
 from enum import Enum
 from collections import defaultdict, deque
 from collections.abc import Callable, Mapping
@@ -23,8 +23,7 @@ from .locking import get_lock
 from .trace import CallbackSpec
 from .collections_utils import is_non_string_sequence
 
-if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx  # type: ignore[import-untyped]
+import networkx as nx  # type: ignore[import-untyped]
 
 __all__ = (
     "CallbackEvent",
@@ -353,10 +352,11 @@ def invoke_callbacks(
                 _record_callback_error(G, event, ctx, spec, e)
             if strict:
                 raise
-        except Exception:
+        except nx.NetworkXError as err:
             logger.exception(
-                "callback %r raised unexpected exception for %s",
+                "callback %r raised NetworkXError for %s with ctx=%r",
                 spec.name,
                 event,
+                ctx,
             )
             raise
