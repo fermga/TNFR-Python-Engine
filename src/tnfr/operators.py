@@ -36,6 +36,7 @@ from .helpers.numeric import (
     kahan_sum,
 )
 from .helpers.cache import (
+    edge_version_update,
     increment_edge_version,
     ensure_node_offset_map,
 )
@@ -864,25 +865,22 @@ def _community_remesh(
     """Remesh ``G`` replacing nodes by modular communities."""
     comms = list(nx_comm.greedy_modularity_communities(G))
     if len(comms) <= 1:
-        G.clear_edges()
-        increment_edge_version(G)
-        G.add_edges_from(mst_edges)
-        increment_edge_version(G)
+        with edge_version_update(G):  # maintain edge update logs
+            G.clear_edges()
+            G.add_edges_from(mst_edges)
         return
     C = _community_graph(comms, epi, nx)
     mst_c = nx.minimum_spanning_tree(C, weight="weight")
     new_edges = set(mst_c.edges())
     new_edges |= _community_k_neighbor_edges(C, k_val, p_rewire, rnd)
 
-    G.clear_edges()
-    increment_edge_version(G)
-    G.remove_nodes_from(list(G.nodes()))
-    increment_edge_version(G)
-    for idx in C.nodes():
-        data = dict(C.nodes[idx])
-        G.add_node(idx, **data)
-    G.add_edges_from(new_edges)
-    increment_edge_version(G)
+    with edge_version_update(G):  # maintain edge update logs
+        G.clear_edges()
+        G.remove_nodes_from(list(G.nodes()))
+        for idx in C.nodes():
+            data = dict(C.nodes[idx])
+            G.add_node(idx, **data)
+        G.add_edges_from(new_edges)
 
     if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
         hist = G.graph.setdefault("history", {})
@@ -967,10 +965,9 @@ def apply_topological_remesh(
     if mode == "knn":
         new_edges |= _knn_edges(nodes, epi, k_val, p_rewire, rnd)
 
-    G.clear_edges()
-    increment_edge_version(G)
-    G.add_edges_from(new_edges)
-    increment_edge_version(G)
+    with edge_version_update(G):  # maintain edge update logs
+        G.clear_edges()
+        G.add_edges_from(new_edges)
 
 
 def _extra_gating_ok(hist, cfg, w_estab):

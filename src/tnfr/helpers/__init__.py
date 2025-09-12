@@ -38,6 +38,7 @@ from .cache import (
     cached_nodes_and_A,
     invalidate_edge_version_cache,
     increment_edge_version,
+    edge_version_update,
 )
 
 __all__ = (
@@ -67,6 +68,7 @@ __all__ = (
     "cached_nodes_and_A",
     "invalidate_edge_version_cache",
     "increment_edge_version",
+    "edge_version_update",
     "node_set_checksum",
     "get_graph",
     "get_graph_mapping",

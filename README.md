@@ -148,9 +148,15 @@ has fewer than **50 nodes**, in which case all nodes are included.
 ### Jitter RNG cache
 
 `random_jitter` uses an LRU cache of `random.Random` instances keyed by `(seed, node)`.
-`JITTER_CACHE_SIZE` controls the maximum number of cached generators (default: `256`);
-when the limit is exceeded the least‑recently used entry is discarded. Increase it for
+`JITTER_CACHE_SIZE` controls the maximum number of cached generators (default: `256`); 
+when the limit is exceeded the least‑recently used entry is discarded. Increase it for 
 large graphs or heavy jitter usage, or lower it to save memory.
+
+### Edge version tracking
+
+Wrap sequences of edge mutations with `edge_version_update(G)` so the edge
+version increments on entry and exit. This keeps caches and structural logs
+aligned with the network's evolution.
 
 ### Defaults injection performance
 

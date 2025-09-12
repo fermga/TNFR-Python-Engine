@@ -4,11 +4,20 @@ from tnfr import dynamics
 from tnfr.helpers.cache import (
     cached_nodes_and_A,
     increment_edge_version,
+    edge_version_update,
     ensure_node_offset_map,
     _cache_node_list,
     ensure_node_index_map,
     _ensure_node_map,
 )
+
+
+def test_edge_version_update_scopes_mutations(graph_canon):
+    G = graph_canon()
+    start = int(G.graph.get("_edge_version", 0))
+    with edge_version_update(G):
+        assert G.graph["_edge_version"] == start + 1
+    assert G.graph["_edge_version"] == start + 2
 
 
 def test_cached_nodes_and_A_reuse_and_invalidate(graph_canon):
