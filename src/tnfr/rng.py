@@ -47,8 +47,6 @@ def _seed_hash_for(seed_int: int, key_int: int) -> int:
     Uses the cached hash when caching is enabled.
     """
 
-    if _CACHE_MAXSIZE <= 0:
-        return seed_hash(seed_int, key_int)
     return _seed_hash_cached(seed_int, key_int)
 
 
