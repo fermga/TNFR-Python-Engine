@@ -9,7 +9,7 @@ import json
 import threading
 import warnings
 
-from typing import Any, Callable, Literal, Set, cast, overload
+from typing import Any, Callable, Literal, cast, overload
 
 from dataclasses import dataclass
 from functools import lru_cache
@@ -24,7 +24,7 @@ _warned_orjson_param_combos: set[frozenset[str]] = set()
 _warn_lock = threading.Lock()
 
 
-def _warn_orjson_params_once(ignored: Set[str]) -> None:
+def _warn_orjson_params_once(ignored: set[str]) -> None:
     """Warn once per unique combination of ignored parameters."""
     combo = frozenset(ignored)
     with _warn_lock:
