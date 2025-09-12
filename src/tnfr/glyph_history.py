@@ -93,15 +93,16 @@ def push_glyph(nd: dict[str, Any], glyph: str, window: int) -> None:
 def recent_glyph(nd: dict[str, Any], glyph: str, window: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions.
 
-    ``window`` is validated once and reused when ensuring the history deque,
-    avoiding redundant validation. A ``window`` of zero returns ``False``.
-    Negative values raise :class:`ValueError`.
+    ``window`` is validated once. A ``window`` of zero returns ``False`` and
+    leaves ``nd`` unchanged. For positive windows the history deque is ensured
+    exactly once via :func:`ensure_history_deque`. Negative values raise
+    :class:`ValueError`.
     """
 
     v_window = validate_window(window)
-    hist = ensure_history_deque(nd, v_window)
     if v_window == 0:
         return False
+    hist = ensure_history_deque(nd, v_window)
     gl = str(glyph)
     return gl in hist
 

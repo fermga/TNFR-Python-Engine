@@ -26,10 +26,10 @@ def test_recent_glyph_window_zero():
     assert not recent_glyph(nd, "B", window=0)
 
 
-def test_recent_glyph_window_zero_creates_empty_history():
+def test_recent_glyph_window_zero_does_not_create_history():
     nd = {}
     assert not recent_glyph(nd, "B", window=0)
-    assert list(nd["glyph_history"]) == []
+    assert "glyph_history" not in nd
 
 
 def test_recent_glyph_window_negative():
