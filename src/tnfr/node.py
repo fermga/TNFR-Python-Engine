@@ -108,14 +108,14 @@ class EdgeStrategy(Enum):
 class EdgeOps(Protocol):
     """Interface for edge operations."""
 
-    def exists(self, graph, n1, n2): ...
+    def exists(self, graph, n1, n2) -> bool: ...
 
     def set(self, graph, n1, n2, w: float) -> None: ...
 
 
 @dataclass(frozen=True, slots=True)
 class NXEdgeOps:
-    def exists(self, graph, n1, n2):
+    def exists(self, graph, n1, n2) -> bool:
         return graph.has_edge(n1, n2)
 
     def set(self, graph, n1, n2, w: float) -> None:
@@ -124,7 +124,7 @@ class NXEdgeOps:
 
 @dataclass(frozen=True, slots=True)
 class TNFREdgeOps:
-    def exists(self, graph, n1, n2):
+    def exists(self, graph, n1, n2) -> bool:
         return n2 in n1._neighbors
 
     def set(self, graph, n1, n2, w: float) -> None:
@@ -137,7 +137,7 @@ class _CallbackEdgeOps:
     exists_cb: Callable
     set_cb: Callable
 
-    def exists(self, graph, n1, n2):
+    def exists(self, graph, n1, n2) -> bool:
         return self.exists_cb(graph, n1, n2)
 
     def set(self, graph, n1, n2, w: float) -> None:
