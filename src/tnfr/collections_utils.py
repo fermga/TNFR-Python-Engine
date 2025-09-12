@@ -9,7 +9,7 @@ from itertools import islice
 from typing import Any, Callable, Iterator, TypeVar, cast
 
 from .logging_utils import get_logger, warn_once
-from .value_utils import _convert_value
+from .value_utils import convert_value
 
 T = TypeVar("T")
 
@@ -214,7 +214,7 @@ def normalize_weights(
 
     weights: dict[str, float] = {}
     for k in keys:
-        ok, val = _convert_value(
+        ok, val = convert_value(
             dict_like.get(k, default_float),
             float,
             strict=error_on_conversion,

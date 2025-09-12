@@ -22,7 +22,7 @@ from typing import (
 from functools import lru_cache, partial
 
 from .constants import ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
-from .value_utils import _convert_value
+from .value_utils import convert_value
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx  # type: ignore[import-untyped]
@@ -55,11 +55,11 @@ def _convert_default(
 ) -> tuple[bool, T | None]:
     """Convert ``default`` using ``conv`` with error handling.
 
-    Behaves like :func:`_convert_value` but uses a fixed ``key`` so the log
+    Behaves like :func:`convert_value` but uses a fixed ``key`` so the log
     message identifies the value as a default.
     """
 
-    return _convert_value(
+    return convert_value(
         default,
         conv,
         strict=strict,
@@ -80,7 +80,7 @@ def _alias_resolve(
     """Resolve the first matching key in ``aliases`` from ``d``."""
     for key in aliases:
         if key in d:
-            ok, value = _convert_value(
+            ok, value = convert_value(
                 d[key],
                 conv,
                 strict=strict,

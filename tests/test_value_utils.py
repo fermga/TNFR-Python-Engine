@@ -2,7 +2,7 @@
 
 import logging
 
-from tnfr.value_utils import _convert_value
+from tnfr.value_utils import convert_value
 
 
 def test_convert_value_logs_debug_by_default(caplog):
@@ -10,7 +10,7 @@ def test_convert_value_logs_debug_by_default(caplog):
         raise ValueError("bad")
 
     with caplog.at_level(logging.DEBUG, logger="tnfr.value_utils"):
-        ok, result = _convert_value("x", conv, key="foo")
+        ok, result = convert_value("x", conv, key="foo")
 
     assert not ok and result is None
     assert len(caplog.records) == 1
@@ -22,7 +22,7 @@ def test_convert_value_logs_custom_level(caplog):
         raise ValueError("bad")
 
     with caplog.at_level(logging.INFO, logger="tnfr.value_utils"):
-        ok, result = _convert_value(
+        ok, result = convert_value(
             "x", conv, key="foo", log_level=logging.INFO
         )
 
