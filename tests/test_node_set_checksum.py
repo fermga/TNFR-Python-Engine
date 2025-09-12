@@ -2,6 +2,7 @@ import hashlib
 import timeit
 
 from tnfr.helpers.cache import (
+    NODE_SET_CHECKSUM_KEY,
     node_set_checksum,
     _stable_json,
     increment_edge_version,
@@ -63,14 +64,14 @@ def test_node_set_checksum_no_store_does_not_cache(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2])
     node_set_checksum(G, store=False)
-    assert "_node_set_checksum_cache" not in G.graph
+    assert NODE_SET_CHECKSUM_KEY not in G.graph
 
 
 def test_node_set_checksum_cache_token_is_prefix(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2])
     checksum = node_set_checksum(G)
-    token, stored_checksum = G.graph["_node_set_checksum_cache"]
+    token, stored_checksum = G.graph[NODE_SET_CHECKSUM_KEY]
     assert stored_checksum == checksum
     assert token == checksum[:16]
     assert len(token) == 16
