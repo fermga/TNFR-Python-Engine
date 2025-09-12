@@ -113,14 +113,14 @@ def _iter_node_digests(
 
     When ``presorted`` is ``True`` the nodes are assumed to already be sorted
     in a stable manner and their digests are yielded directly. Otherwise,
-    tuples of ``(repr, node)`` are generated and sorted by ``repr`` before
-    passing both values to :func:`_hash_node`.
+    nodes are sorted using :func:`_node_repr` as the key before computing
+    their digests with :func:`_hash_node`.
     """
     if presorted:
         yield from (_hash_node(n) for n in nodes)
     else:
-        # Precompute representations to avoid duplicate work during hashing.
-        for repr_, node in sorted((_node_repr(n), n) for n in nodes):
+        for node in sorted(nodes, key=_node_repr):
+            repr_ = _node_repr(node)
             yield _hash_node(node, repr_)
 
 
