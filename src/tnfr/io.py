@@ -134,6 +134,30 @@ def _write_to_fd(fd: IO[Any], write: Callable[[Any], Any], *, sync: bool = False
         os.fsync(fd.fileno())
 
 
+def _write_file(
+    path: Path | str,
+    open_params: dict[str, Any],
+    write_cb: Callable[[Any], Any],
+    *,
+    sync: bool,
+) -> None:
+    """Open ``path`` using ``open_params`` and write via ``write_cb``.
+
+    Parameters
+    ----------
+    path:
+        Destination file path.
+    open_params:
+        Parameters forwarded to :func:`open`.
+    write_cb:
+        Callback receiving the opened file object.
+    sync:
+        When ``True`` flushes and fsyncs the file descriptor.
+    """
+    with open(path, **open_params) as fd:
+        _write_to_fd(fd, write_cb, sync=sync)
+
+
 def safe_write(
     path: str | Path,
     write: Callable[[Any], Any],
@@ -169,14 +193,13 @@ def safe_write(
     open_params = dict(mode=mode, **open_kwargs)
     if "b" not in mode and encoding is not None:
         open_params["encoding"] = encoding
-    if atomic:
-        tmp_path: Path | None = None
-        try:
-            with tempfile.NamedTemporaryFile(
-                dir=path.parent, delete=False, **open_params
-            ) as tmp:
-                tmp_path = Path(tmp.name)
-                _write_to_fd(tmp, write, sync=True)
+    tmp_path: Path | None = None
+    try:
+        if atomic:
+            tmp_fd = tempfile.NamedTemporaryFile(dir=path.parent, delete=False)
+            tmp_path = Path(tmp_fd.name)
+            tmp_fd.close()
+            _write_file(tmp_path, open_params, write, sync=True)
             try:
                 os.replace(tmp_path, path)
             except OSError as e:
@@ -184,17 +207,13 @@ def safe_write(
                     "Atomic replace failed for %s -> %s: %s", tmp_path, path, e
                 )
                 raise
-        except (OSError, ValueError, TypeError) as e:
-            raise type(e)(f"Failed to write file {path}: {e}") from e
-        finally:
-            if tmp_path is not None:
-                tmp_path.unlink(missing_ok=True)
-    else:
-        try:
-            with open(path, **open_params) as f:
-                _write_to_fd(f, write)
-        except (OSError, ValueError, TypeError) as e:
-            raise type(e)(f"Failed to write file {path}: {e}") from e
+        else:
+            _write_file(path, open_params, write, sync=False)
+    except (OSError, ValueError, TypeError) as e:
+        raise type(e)(f"Failed to write file {path}: {e}") from e
+    finally:
+        if tmp_path is not None:
+            tmp_path.unlink(missing_ok=True)
 
 
 __all__ = (
