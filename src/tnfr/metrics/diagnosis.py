@@ -8,7 +8,6 @@ from operator import ge, le
 from ..constants import (
     ALIAS_EPI,
     ALIAS_VF,
-    ALIAS_DNFR,
     ALIAS_SI,
     VF_KEY,
     get_param,
@@ -17,22 +16,12 @@ from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
 from ..helpers.numeric import clamp01
-from ..metrics_utils import compute_dnfr_accel_max, min_max_range
+from ..metrics_utils import compute_dnfr_accel_max, min_max_range, normalize_dnfr
 from .coherence import (
     local_phase_sync,
     local_phase_sync_weighted,
     _similarity_abs,
 )
-
-
-def _dnfr_norm(nd, dnfr_max):
-    val = abs(get_attr(nd, ALIAS_DNFR, 0.0))
-    if dnfr_max <= 0:
-        return 0.0
-    x = val / dnfr_max
-    return 1.0 if x > 1 else x
-
-
 def _symmetry_index(
     G, n, epi_min: float | None = None, epi_max: float | None = None
 ):
@@ -110,7 +99,7 @@ def _node_diagnostics(
     Si = clamp01(get_attr(nd, ALIAS_SI, 0.0))
     EPI = get_attr(nd, ALIAS_EPI, 0.0)
     vf = get_attr(nd, ALIAS_VF, 0.0)
-    dnfr_n = _dnfr_norm(nd, dnfr_max)
+    dnfr_n = normalize_dnfr(nd, dnfr_max)
 
     if Wm_last is not None:
         if Wm_last and isinstance(Wm_last[0], list):
@@ -203,7 +192,7 @@ def dissonance_events(G, ctx=None):
     nodes = list(G.nodes())
     for n in nodes:
         nd = G.nodes[n]
-        dn = abs(get_attr(nd, ALIAS_DNFR, 0.0)) / dnfr_max
+        dn = normalize_dnfr(nd, dnfr_max)
         Rloc = local_phase_sync(G, n)
         st = bool(nd.get("_disr_state", False))
         if (not st) and dn >= 0.5 and Rloc <= 0.4:

@@ -41,6 +41,7 @@ class GraphLike(Protocol):
 __all__ = (
     "TrigCache",
     "compute_dnfr_accel_max",
+    "normalize_dnfr",
     "compute_coherence",
     "ensure_neighbors_map",
     "merge_graph_weights",
@@ -65,6 +66,27 @@ def compute_dnfr_accel_max(G: GraphLike) -> dict[str, float]:
         G, {"dnfr_max": ALIAS_DNFR, "accel_max": ALIAS_D2EPI}
     )
     return maxes
+
+
+def normalize_dnfr(nd: Mapping[str, Any], max_val: float) -> float:
+    """Normalise ``|ΔNFR|`` using ``max_val``.
+
+    Parameters
+    ----------
+    nd:
+        Node data mapping containing ``ΔNFR``.
+    max_val:
+        Global maximum for ``|ΔNFR|``. If non-positive, ``0.0`` is returned.
+
+    Returns
+    -------
+    float
+        Normalised value of ``|ΔNFR|`` clamped to ``[0, 1]``.
+    """
+    if max_val <= 0:
+        return 0.0
+    val = abs(get_attr(nd, ALIAS_DNFR, 0.0))
+    return clamp01(val / max_val)
 
 
 def compute_coherence(
