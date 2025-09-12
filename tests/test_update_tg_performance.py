@@ -6,7 +6,7 @@ from collections import Counter, defaultdict
 from tnfr.constants import inject_defaults
 from tnfr.glyph_history import last_glyph
 from tnfr.metrics import _update_tg, _tg_state
-from tnfr.metrics.core import LATENT_GLYPH, TgCurr, TgRun
+from tnfr.metrics.core import LATENT_GLYPH
 
 
 def _update_tg_naive(G, hist, dt, save_by_node):
@@ -35,19 +35,19 @@ def _update_tg_naive(G, hist, dt, save_by_node):
         counts[g] += 1
 
         st = _tg_state(nd)
-        if st[TgCurr] is None:
-            st[TgCurr] = g
-            st[TgRun] = dt
-        elif g == st[TgCurr]:
-            st[TgRun] += dt
+        if st.curr is None:
+            st.curr = g
+            st.run = dt
+        elif g == st.curr:
+            st.run += dt
         else:
-            prev = st[TgCurr]
-            dur = float(st[TgRun])
+            prev = st.curr
+            dur = float(st.run)
             tg_total[prev] += dur
             if save_by_node:
                 tg_by_node[n][prev].append(dur)
-            st[TgCurr] = g
-            st[TgRun] = dt
+            st.curr = g
+            st.run = dt
 
     return counts, n_total, n_latent
 
