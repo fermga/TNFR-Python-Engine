@@ -217,6 +217,15 @@ def _smooth_adjust_k(
     return _step(kG, kG_t, kG_min, kG_max), _step(kL, kL_t, kL_min, kL_max)
 
 
+def _ensure_hist_deque(hist: dict[str, Any], key: str, maxlen: int) -> deque:
+    """Ensure history entry ``key`` is a deque with ``maxlen``."""
+    dq = hist.setdefault(key, deque(maxlen=maxlen))
+    if not isinstance(dq, deque):
+        dq = deque(dq, maxlen=maxlen)
+        hist[key] = dq
+    return dq
+
+
 def coordinate_global_local_phase(
     G, global_force: float | None = None, local_force: float | None = None
 ) -> None:
@@ -232,18 +241,9 @@ def coordinate_global_local_phase(
     maxlen = int(
         g.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"])
     )
-    hist_state = hist.setdefault("phase_state", deque(maxlen=maxlen))
-    if not isinstance(hist_state, deque):
-        hist_state = deque(hist_state, maxlen=maxlen)
-        hist["phase_state"] = hist_state
-    hist_R = hist.setdefault("phase_R", deque(maxlen=maxlen))
-    if not isinstance(hist_R, deque):
-        hist_R = deque(hist_R, maxlen=maxlen)
-        hist["phase_R"] = hist_R
-    hist_disr = hist.setdefault("phase_disr", deque(maxlen=maxlen))
-    if not isinstance(hist_disr, deque):
-        hist_disr = deque(hist_disr, maxlen=maxlen)
-        hist["phase_disr"] = hist_disr
+    hist_state = _ensure_hist_deque(hist, "phase_state", maxlen)
+    hist_R = _ensure_hist_deque(hist, "phase_R", maxlen)
+    hist_disr = _ensure_hist_deque(hist, "phase_disr", maxlen)
     # 0) Si hay fuerzas explícitas, usar y salir del modo adaptativo
     if (global_force is not None) or (local_force is not None):
         kG = float(
