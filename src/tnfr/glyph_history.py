@@ -7,6 +7,7 @@ from collections import deque, Counter
 from itertools import islice
 import heapq
 from collections.abc import Iterable
+import numbers
 
 from .constants import get_param
 from .collections_utils import ensure_collection
@@ -37,7 +38,7 @@ def validate_window(window: int, *, positive: bool = False) -> int:
     Negative values always raise :class:`ValueError`.
     """
 
-    if isinstance(window, bool) or not isinstance(window, int):
+    if isinstance(window, bool) or not isinstance(window, numbers.Integral):
         raise TypeError("'window' must be an integer")
     if window < 0 or (positive and window == 0):
         kind = "positive" if positive else "non-negative"
