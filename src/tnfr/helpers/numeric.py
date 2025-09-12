@@ -19,6 +19,7 @@ __all__ = (
     "kahan_sum_nd",
     "kahan_sum",
     "kahan_sum2d",
+    "accumulate_cos_sin",
     "angle_diff",
     "neighbor_mean",
     "neighbor_phase_mean",
@@ -148,10 +149,10 @@ def _neighbor_phase_mean(node, trig) -> float:
     )
 
 
-def _accumulate_cos_sin(
+def accumulate_cos_sin(
     it: Iterable[tuple[float, float] | None],
 ) -> tuple[float, float, bool]:
-    """Accumulate cosine and sine pairs using Kahan summation.
+    """Accumulate cosine and sine pairs with compensated summation.
 
     ``it`` yields optional ``(cos, sin)`` tuples. Entries with ``None``
     components are ignored. The returned values are the compensated sums of
@@ -187,6 +188,13 @@ def _accumulate_cos_sin(
     return sum_cos + comp_cos, sum_sin + comp_sin, processed
 
 
+def _accumulate_cos_sin(
+    it: Iterable[tuple[float, float] | None],
+) -> tuple[float, float, bool]:
+    """Legacy wrapper for :func:`accumulate_cos_sin`."""
+    return accumulate_cos_sin(it)
+
+
 def _phase_mean_from_iter(
     it: Iterable[tuple[float, float] | None], fallback: float
 ) -> float:
@@ -195,7 +203,7 @@ def _phase_mean_from_iter(
     ``it`` yields optional ``(cos, sin)`` tuples. ``fallback`` is returned if
     no valid pairs are processed.
     """
-    sum_cos, sum_sin, processed = _accumulate_cos_sin(it)
+    sum_cos, sum_sin, processed = accumulate_cos_sin(it)
     if not processed:
         return fallback
     return math.atan2(sum_sin, sum_cos)
@@ -213,7 +221,7 @@ def neighbor_phase_mean_list(
     When ``np`` (NumPy) is provided, ``np.fromiter`` is used to build cosine and
     sine arrays directly from a generator, avoiding the creation of an
     intermediate Python list of ``(cos, sin)`` pairs. Otherwise, cosine and
-    sine values are accumulated via :func:`_accumulate_cos_sin` using a running
+    sine values are accumulated via :func:`accumulate_cos_sin` using a running
     Kahan summation.
     """
     if np is None:
@@ -239,7 +247,7 @@ def neighbor_phase_mean_list(
             return float(np.arctan2(mean_sin, mean_cos))
         return fallback
 
-    sum_cos, sum_sin, processed = _accumulate_cos_sin(pairs)
+    sum_cos, sum_sin, processed = accumulate_cos_sin(pairs)
     if not processed:
         return fallback
     return math.atan2(sum_sin, sum_cos)
