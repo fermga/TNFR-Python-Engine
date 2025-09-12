@@ -18,7 +18,7 @@ from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
 from ..collections_utils import normalize_weights
-from ..helpers.numeric import clamp01
+from ..helpers.numeric import clamp01, _norm01, _similarity_abs
 from ..helpers.cache import ensure_node_index_map
 from ..metrics_utils import get_trig_cache, min_max_range
 from ..import_utils import get_numpy
@@ -34,16 +34,6 @@ class SimilarityInputs:
     si_vals: Sequence[float]
     cos_vals: Sequence[float] | None = None
     sin_vals: Sequence[float] | None = None
-
-
-def _norm01(x, lo, hi):
-    if hi <= lo:
-        return 0.0
-    return clamp01((float(x) - float(lo)) / (float(hi) - float(lo)))
-
-
-def _similarity_abs(a, b, lo, hi):
-    return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, hi - lo)
 
 
 def _compute_wij_phase_epi_vf_si_vectorized(

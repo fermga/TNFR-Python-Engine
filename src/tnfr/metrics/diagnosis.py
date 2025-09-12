@@ -15,12 +15,11 @@ from ..constants import (
 from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
-from ..helpers.numeric import clamp01
+from ..helpers.numeric import clamp01, _similarity_abs
 from ..metrics_utils import compute_dnfr_accel_max, min_max_range, normalize_dnfr
 from .coherence import (
     local_phase_sync,
     local_phase_sync_weighted,
-    _similarity_abs,
 )
 def _symmetry_index(
     G, n, epi_min: float | None = None, epi_max: float | None = None
