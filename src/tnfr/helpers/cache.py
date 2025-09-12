@@ -390,6 +390,51 @@ class EdgeCacheManager:
             cache = self._init_cache(locks, max_entries)
         return cache
 
+    def _create_cache(
+        self, max_entries: int | None
+    ) -> tuple[
+        dict[Hashable, tuple[int, Any]]
+        | LRUCache[Hashable, tuple[int, Any]]
+        | None,
+        dict[Hashable, threading.RLock]
+        | defaultdict[Hashable, threading.RLock]
+        | None,
+    ]:
+        """Ensure locks and initialise the cache when requested."""
+        locks = self._ensure_locks()
+        cache = self._maybe_init_cache(locks, max_entries)
+        return cache, locks
+
+    def _synchronise_locks(
+        self, create: bool, max_entries: int | None
+    ) -> tuple[
+        dict[Hashable, tuple[int, Any]]
+        | LRUCache[Hashable, tuple[int, Any]]
+        | None,
+        dict[Hashable, threading.RLock]
+        | defaultdict[Hashable, threading.RLock]
+        | None,
+    ]:
+        """Return cache and locks, creating them when requested."""
+        if create:
+            return self._create_cache(max_entries)
+        locks = self.graph.get("_edge_version_cache_locks")
+        cache = self.graph.get("_edge_version_cache")
+        return cache, locks
+
+    def _prune_locks(
+        self,
+        cache: dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]] | None,
+        locks: dict[Hashable, threading.RLock] | defaultdict[Hashable, threading.RLock] | None,
+    ) -> None:
+        """Drop locks with no corresponding cache entry."""
+        if not isinstance(locks, dict):
+            return
+        cache_keys = cache.keys() if isinstance(cache, dict) else ()
+        for key in list(locks.keys()):
+            if key not in cache_keys:
+                locks.pop(key, None)
+
     def get_cache(
         self, max_entries: int | None, *, create: bool = True
     ) -> tuple[
@@ -402,17 +447,9 @@ class EdgeCacheManager:
     ]:
         """Return the edge cache and lock mapping for ``graph``."""
         with self._LOCK:
-            if create:
-                locks = self._ensure_locks()
-                cache = self._maybe_init_cache(locks, max_entries)
-            else:
-                locks = self.graph.get("_edge_version_cache_locks")
-                cache = self.graph.get("_edge_version_cache")
-            if max_entries is None and isinstance(locks, dict):
-                cache_keys = cache.keys() if isinstance(cache, dict) else ()
-                for key in list(locks.keys()):
-                    if key not in cache_keys:
-                        locks.pop(key, None)
+            cache, locks = self._synchronise_locks(create, max_entries)
+            if max_entries is None:
+                self._prune_locks(cache, locks)
         return cache, locks
 
 
