@@ -428,7 +428,6 @@ def play(
     """
     step_fn = step_fn or get_step_fn()
 
-    ops = _flatten(sequence)
     curr_target: Optional[list[Node]] = None
 
     # Traza de programa en history
@@ -439,7 +438,7 @@ def play(
         trace = deque(trace or [], maxlen=maxlen)
         history["program_trace"] = trace
 
-    for op, payload in ops:
+    for op, payload in _flatten(sequence):
         handler: HandlerFn | None = HANDLERS.get(op)
         if handler is None:
             raise ValueError(f"Unknown operation: {op}")
