@@ -1,5 +1,6 @@
+import logging
+
 import tnfr.json_utils as json_utils
-import warnings
 
 
 class FakeOrjson:
@@ -31,11 +32,11 @@ def test_warns_once(monkeypatch, caplog):
     monkeypatch.setattr(json_utils, "optional_import", lambda name: FakeOrjson())
     json_utils.clear_orjson_cache()
 
-    with warnings.catch_warnings(record=True) as w:
+    with caplog.at_level(logging.WARNING):
         for _ in range(2):
             json_utils.json_dumps({}, ensure_ascii=False)
 
-    assert len(w) == 1
+    assert sum("ignored" in r.message for r in caplog.records) == 1
 
 
 def test_json_dumps_returns_str_by_default():
