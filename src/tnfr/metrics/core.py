@@ -9,6 +9,7 @@ from typing import Any, Callable
 
 import heapq
 import math
+from dataclasses import dataclass
 
 from ..constants import (
     ALIAS_EPI,
@@ -38,8 +39,12 @@ logger = get_logger(__name__)
 
 
 LATENT_GLYPH = Glyph.SHA.value
-TgCurr = "curr"
-TgRun = "run"
+
+
+@dataclass
+class GlyphTiming:
+    curr: str | None = None
+    run: float = 0.0
 
 
 # -------------
@@ -47,11 +52,9 @@ TgRun = "run"
 # -------------
 
 
-def _tg_state(nd: dict[str, Any]) -> dict[str, Any]:
-    """Internal per-node structure for accumulating run times per glyph.
-    Fields: curr (current glyph), run (accumulated time in current glyph)
-    """
-    return nd.setdefault("_Tg", {TgCurr: None, TgRun: 0.0})
+def _tg_state(nd: dict[str, Any]) -> GlyphTiming:
+    """Internal per-node structure for accumulating run times per glyph."""
+    return nd.setdefault("_Tg", GlyphTiming())
 
 
 def for_each_glyph(fn: Callable[[str], Any]) -> None:
@@ -151,19 +154,19 @@ def _update_tg_node(n, nd, dt, tg_total, tg_by_node):
     if not g:
         return None, False
     st = _tg_state(nd)
-    curr = st[TgCurr]
+    curr = st.curr
     if curr is None:
-        st[TgCurr] = g
-        st[TgRun] = dt
+        st.curr = g
+        st.run = dt
     elif g == curr:
-        st[TgRun] += dt
+        st.run += dt
     else:
-        dur = float(st[TgRun])
+        dur = float(st.run)
         tg_total[curr] += dur
         if tg_by_node is not None:
             tg_by_node[n][curr].append(dur)
-        st[TgCurr] = g
-        st[TgRun] = dt
+        st.curr = g
+        st.run = dt
     return g, g == LATENT_GLYPH
 
 

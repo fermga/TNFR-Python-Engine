@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from tnfr.metrics.core import _update_tg_node, TgCurr, TgRun
+from tnfr.metrics.core import _update_tg_node, GlyphTiming
 from tnfr.glyph_history import push_glyph
 
 
@@ -18,4 +18,5 @@ def test_update_tg_node_accumulates_and_resets():
     assert tg_total["A"] == 1.0
     assert tg_by_node[1]["A"] == [1.0]
     st = nd["_Tg"]
-    assert st[TgCurr] == "B" and st[TgRun] == 2.0
+    assert isinstance(st, GlyphTiming)
+    assert st.curr == "B" and st.run == 2.0
