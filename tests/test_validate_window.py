@@ -1,6 +1,7 @@
 """Tests for validate_window parameter handling."""
 
 import pytest
+import numpy as np
 
 from tnfr.glyph_history import validate_window
 
@@ -9,3 +10,8 @@ from tnfr.glyph_history import validate_window
 def test_validate_window_rejects_bool(value):
     with pytest.raises(TypeError):
         validate_window(value)
+
+
+@pytest.mark.parametrize("value", [np.int32(0), np.int64(3)])
+def test_validate_window_accepts_numpy_int(value):
+    assert validate_window(value) == int(value)
