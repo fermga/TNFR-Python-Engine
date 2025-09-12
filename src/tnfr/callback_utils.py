@@ -115,12 +115,7 @@ def _ensure_callbacks_nolock(G: "nx.Graph") -> CallbackRegistry:
 
     if dirty:
         for event in dirty:
-            if event not in cbs:
-                continue
-            if event not in _CALLBACK_EVENTS:
-                del cbs[event]
-                continue
-            cbs[event] = _normalize_callback_registry(cbs[event])
+            _normalize_event_callbacks(cbs, event)
     return cbs
 
 def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
@@ -311,6 +306,12 @@ def register_callback(
                     logger.warning(msg)
             # Explicit names override function identity when both are present.
             existing_map.pop(cb_key, None)
+            fn_key = next(
+                (k for k, spec in existing_map.items() if spec.func is func),
+                None,
+            )
+            if fn_key is not None:
+                existing_map.pop(fn_key, None)
         else:
             # Remove any existing registration by function identity when no
             # name is given.
