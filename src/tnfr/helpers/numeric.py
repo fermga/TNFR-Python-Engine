@@ -119,21 +119,39 @@ def _phase_mean_from_iter(
     """Return circular mean from an iterator of cosine/sine pairs.
 
     ``it`` yields optional ``(cos, sin)`` tuples. Entries with ``None``
-    components are ignored. Valid pairs are collected and accumulated using
-    :func:`kahan_sum2d`. If no valid pairs are found ``fallback`` is returned.
+    components are ignored. Valid pairs are accumulated using a running
+    Kahan–Babuška summation for both cosine and sine components. ``fallback``
+    is returned if no valid pairs are processed.
     """
-    values: list[tuple[float, float]] = []
+    sum_cos = 0.0
+    sum_sin = 0.0
+    comp_cos = 0.0
+    comp_sin = 0.0
+    processed = False
     for cs in it:
         if cs is None:
             continue
         c, s = cs
         if c is None or s is None:
             continue
-        values.append((c, s))
-    if not values:
+        processed = True
+        t = sum_cos + c
+        if abs(sum_cos) >= abs(c):
+            comp_cos += (sum_cos - t) + c
+        else:
+            comp_cos += (c - t) + sum_cos
+        sum_cos = t
+
+        t = sum_sin + s
+        if abs(sum_sin) >= abs(s):
+            comp_sin += (sum_sin - t) + s
+        else:
+            comp_sin += (s - t) + sum_sin
+        sum_sin = t
+
+    if not processed:
         return fallback
-    sum_cos, sum_sin = kahan_sum2d(values)
-    return math.atan2(sum_sin, sum_cos)
+    return math.atan2(sum_sin + comp_sin, sum_cos + comp_cos)
 
 
 def neighbor_phase_mean_list(
