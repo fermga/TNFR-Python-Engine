@@ -50,16 +50,23 @@ def _seed_hash_for(seed_int: int, key_int: int) -> int:
     return _seed_hash_cached(seed_int, key_int)
 
 
+def _sync_cache_size(G: Any | None) -> None:
+    """Synchronise cache size with ``G`` when needed."""
+
+    if G is None:
+        return
+    size = get_cache_maxsize(G)
+    if size != _CACHE_MAXSIZE:
+        set_cache_maxsize(size)
+
+
 def make_rng(seed: int, key: int, G: Any | None = None) -> random.Random:
     """Return a ``random.Random`` for ``seed`` and ``key``.
 
     When ``G`` is provided, ``JITTER_CACHE_SIZE`` is read from ``G`` and the
     internal cache size is updated accordingly.
     """
-    if G is not None:
-        size = get_cache_maxsize(G)
-        if size != _CACHE_MAXSIZE:
-            set_cache_maxsize(size)
+    _sync_cache_size(G)
     seed_int = int(seed)
     key_int = int(key)
     return random.Random(_seed_hash_for(seed_int, key_int))
@@ -86,10 +93,8 @@ def cache_enabled(G: Any | None = None) -> bool:
     # Only synchronise the cache size with ``G`` when caching is enabled.  This
     # preserves explicit calls to :func:`set_cache_maxsize(0)` which are used in
     # tests to temporarily disable caching regardless of graph defaults.
-    if _CACHE_MAXSIZE > 0 and G is not None:
-        size = get_cache_maxsize(G)
-        if size != _CACHE_MAXSIZE:
-            set_cache_maxsize(size)
+    if _CACHE_MAXSIZE > 0:
+        _sync_cache_size(G)
     return _CACHE_MAXSIZE > 0
 
 
