@@ -35,6 +35,30 @@ def clamp01(x: float) -> float:
     return clamp(float(x), 0.0, 1.0)
 
 
+def _norm01(x: float, lo: float, hi: float) -> float:
+    """Normalize ``x`` to the unit interval given bounds.
+
+    ``lo`` and ``hi`` delimit the original value range. When ``hi`` is not
+    greater than ``lo`` the function returns ``0.0`` to avoid division by
+    zero. The result is clamped to ``[0,1]``.
+    """
+
+    if hi <= lo:
+        return 0.0
+    return clamp01((float(x) - float(lo)) / (float(hi) - float(lo)))
+
+
+def _similarity_abs(a: float, b: float, lo: float, hi: float) -> float:
+    """Return absolute similarity of ``a`` and ``b`` over ``[lo, hi]``.
+
+    It computes ``1`` minus the normalized absolute difference between
+    ``a`` and ``b``. Values are scaled using :func:`_norm01` so the result
+    falls within ``[0,1]``.
+    """
+
+    return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, hi - lo)
+
+
 def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
     """Return the arithmetic mean of ``xs`` or ``default`` if empty."""
     try:
