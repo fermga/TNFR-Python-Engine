@@ -2,6 +2,11 @@ import pytest
 from tnfr.collections_utils import ensure_collection
 
 
+def test_existing_collection_returned_as_is():
+    items = [0, 1, 2]
+    assert ensure_collection(items) is items
+
+
 def test_wraps_string():
     assert ensure_collection("node") == ("node",)
 
