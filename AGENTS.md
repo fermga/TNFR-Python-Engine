@@ -1,181 +1,181 @@
-# AGENTS.md — Guía para agentes de IA
+# AGENTS.md — Guide for AI Agents
 
-> **Objetivo**: orientar a cualquier agente de IA (LLM, asistentes de refactorización, herramientas de documentación y test) que interactúe con este repositorio para mantener **canónica** la implementación computacional del paradigma **TNFR** (Teoría de la Naturaleza Fractal Resonante).
-
----
-
-## 1) Misión del repositorio
-
-Este repositorio existe para **llevar TNFR a formato computacional de manera canónica**. Toda modificación, sugerencia, refactorización, corrección o mejora **debe priorizar la fidelidad al paradigma TNFR** por encima de preferencias de estilo, micro‑optimizaciones o convenciones del framework de turno.
-
-**TL;DR**: *Primero TNFR, luego el código.*
+> **Goal**: orient any AI agent (LLM, refactoring assistants, doc/test tools) interacting with this repository to keep the **canonical** computational implementation of the **TNFR** paradigm (Resonant Fractal Nature Theory).
 
 ---
 
-## 2) Qué es TNFR (visión mínima operativa)
+## 1) Repository Mission
 
-* **TNFR** propone que lo real no está hecho de “cosas”, sino de **coherencia**: estructuras que se **sostienen en red** porque **resuenan**.
-* Un **nodo** existe cuando su coherencia se mantiene acoplada al entorno.
-* **Ecuación nodal (canónica)**:
+This repo exists to **bring TNFR into code in a canonical way**. Every modification, suggestion, refactor, fix, or improvement **must prioritize fidelity to TNFR** over stylistic preferences, micro‑optimizations, or framework conventions.
+
+**TL;DR**: *TNFR first, then code.*
+
+---
+
+## 2) TNFR in a nutshell (operational view)
+
+* **TNFR** proposes that reality is not made of “things” but of **coherence**: structures that **persist in networks** because they **resonate**.
+* A **node** exists when its coherence remains coupled to its environment.
+* **Canonical nodal equation**:
   `∂EPI / ∂t = νf · ΔNFR(t)`
-  Donde **EPI** es la *Estructura Primaria de Información*, **νf** la *frecuencia estructural* del nodo (Hz\_str) y **ΔNFR** el *operador de reorganización interna* en el tiempo.
-* **Tríada estructural**: **frecuencia** (ritmo de reorganización), **fase** (sincronía con la red), **forma** (configuración coherente de la EPI).
-* **Operadores estructurales** (13): Emisión, Recepción, Coherencia, Disonancia, Acoplamiento, Resonancia, Silencio, Expansión, Contracción, Autoorganización, Mutación, Transición, Recursividad.
+  where **EPI** is the *Primary Information Structure*, **νf** is the node’s *structural frequency* (Hz\_str), and **ΔNFR** is the *internal reorganization operator* over time.
+* **Structural triad**: **frequency** (reorganization rate), **phase** (network synchrony), **form** (coherent configuration of EPI).
+* **Structural operators** (13): Emission, Reception, Coherence, Dissonance, Coupling, Resonance, Silence, Expansion, Contraction, Self‑organization, Mutation, Transition, Recursivity.
 
-  > Nota: en la documentación pública del repo, **evitar** la palabra “glifos”; nombrarlos por su **función estructural**.
+  > Public docs should **avoid** the word “glyphs”; name them by their **structural function**.
 
-Para la explicación extendida, ver `tnfr.pdf` dentro del propio repo.
-
----
-
-## 3) Invariantes canónicos (no romper)
-
-Estos invariantes **definen** la canonicidad TNFR y **deben preservarse** por cualquier agente de IA al proponer cambios:
-
-1. **EPI como forma coherente**: solo puede cambiar vía **operadores estructurales**; no se admiten mutaciones ad‑hoc.
-2. **Unidades estructurales**: **νf** expresada en **Hz\_str** (hertz estructural). No reetiquetar ni mezclar unidades.
-3. **Semántica de ΔNFR**: su signo y magnitud modulan la tasa de reorganización; no reinterpretar como “error” o “gradiente de pérdida”.
-4. **Cierre operatorio**: la composición de operadores produce estados TNFR válidos; toda nueva función debe mapearse a operadores existentes o definirse como tal.
-5. **Chequeo de fase**: ningún acoplamiento es válido sin verificación explícita de **fase** (sincronía).
-6. **Nacimiento/colapso nodal**: condiciones mínimas (νf suficiente, acoplamiento, ΔNFR reducido) y causas de colapso (disonancia extrema, desacoplamiento, fallo de frecuencia) deben conservarse.
-7. **Fractalidad operativa**: EPIs pueden anidarse sin perder identidad funcional; no aplanar estructuras si rompe la recursividad.
-8. **Determinismo controlado**: simulaciones pueden ser estocásticas, pero deben ser **reproducibles** (semillas) y **trazables** (logs estructurales).
-9. **Métricas estructurales**: exponer **C(t)** (coherencia total), **Si** (índice de sentido), fase y νf en telemetría. Evitar métricas ajenas que confundan la semántica TNFR.
-10. **Neutralidad de dominio**: el motor es **trans‑escalar** y **trans‑dominio**. No incrustar supuestos de un campo (p.ej., neuro, social) en el núcleo.
+For the extended explanation, see `tnfr.pdf` inside the repo.
 
 ---
 
-## 4) Contratos formales (pre/post‑condiciones)
+## 3) Canonical invariants (do not break)
 
-* **Coherencia (I: Coherencia)**: aplicar `coherencia()` **no** debe reducir `C(t)` salvo que un test de disonancia programada lo justifique.
-* **Disonancia (O: Disonancia)**: `disonancia()` debe **aumentar** `|ΔNFR|` y puede disparar **bifurcación** si `∂²EPI/∂t² > τ`.
-* **Resonancia (R: Resonancia)**: `resonancia()` incrementa **acoplamiento** efectivo (`ϕ_i ≈ ϕ_j`) y **propaga** EPI sin alterar su identidad.
-* **Autoorganización (T: Autoorganización)**: puede crear **sub‑EPIs** conservando la **forma** global (fractalidad operativa).
-* **Mutación (Z: Mutación)**: cambio de fase `θ → θ'` si `ΔEPI/Δt > ξ` (mantener límites ξ configurables y testeados).
-* **Silencio**: `silencio()` congela evolución (`νf ≈ 0`) sin pérdida de EPI.
+These invariants **define** TNFR canonicity and **must be preserved** by any AI agent proposing changes:
 
-Toda función nueva debe declararse como **especialización** o **composición** de estos operadores.
+1. **EPI as coherent form**: it only changes via **structural operators**; ad‑hoc mutations are not allowed.
+2. **Structural units**: **νf** expressed in **Hz\_str** (structural hertz). Do not relabel or mix units.
+3. **ΔNFR semantics**: its sign and magnitude modulate the reorganization rate; do **not** reinterpret it as a classic ML “error” or “loss gradient”.
+4. **Operator closure**: operator composition yields valid TNFR states; any new function must map to existing operators or be defined as one.
+5. **Phase check**: no coupling is valid without explicit **phase** verification (synchrony).
+6. **Node birth/collapse**: keep minimal conditions (sufficient νf, coupling, reduced ΔNFR) and collapse causes (extreme dissonance, decoupling, frequency failure).
+7. **Operational fractality**: EPIs can nest without losing functional identity; avoid flattening that breaks recursivity.
+8. **Controlled determinism**: simulations may be stochastic, but must be **reproducible** (seeds) and **traceable** (structural logs).
+9. **Structural metrics**: expose **C(t)** (total coherence), **Si** (sense index), phase and νf in telemetry. Avoid alien metrics that dilute TNFR semantics.
+10. **Domain neutrality**: the engine is **trans‑scale** and **trans‑domain**. Do not hard‑wire assumptions from a specific field into the core.
 
 ---
 
-## 5) Guía de contribución para agentes de IA
+## 4) Formal contracts (pre/post‑conditions)
 
-**Antes de tocar código**:
+* **Coherence**: applying `coherence()` must **not** reduce `C(t)` unless a programmed dissonance test justifies it.
+* **Dissonance**: `dissonance()` must **increase** `|ΔNFR|` and may trigger **bifurcation** if `∂²EPI/∂t² > τ`.
+* **Resonance**: `resonance()` increases effective **coupling** (`ϕ_i ≈ ϕ_j`) and **propagates** EPI without altering its identity.
+* **Self‑organization**: may create **sub‑EPIs** while preserving the global **form** (operational fractality).
+* **Mutation**: phase change `θ → θ'` if `ΔEPI/Δt > ξ` (keep limits ξ configurable and tested).
+* **Silence**: `silence()` freezes evolution (`νf ≈ 0`) without EPI loss.
 
-1. Lee `tnfr.pdf` (fundamentos, operadores, ecuación nodal).
-2. Ejecuta la suite de tests: deben cubrir invariantes de §3 y contratos de §5.
-3. Añade/actualiza **pruebas estructurales** (ver plantilla abajo) por cada cambio.
+Any new function must be declared as a **specialization** or **composition** of these operators.
 
-**Plantilla de commit (AGENT\_COMMIT\_TEMPLATE)**:
+---
+
+## 5) Contribution guide for AI agents
+
+**Before touching code**:
+
+1. Read `tnfr.pdf` (fundamentals, operators, nodal equation).
+2. Run the test suite: it must cover §3 invariants and §5 contracts.
+3. Add/update **structural tests** (see template below) for each change.
+
+**Commit template (AGENT\_COMMIT\_TEMPLATE)**:
 
 ```text
-Intento: (qué coherencia mejora)
-Operadores implicados: [Emisión|Recepción|...]
-Invariantes afectados: [#1, #4, ...]
-Cambios clave: (breve lista)
-Riesgos/disonancias previstas: (y cómo se contienen)
-Métricas: (C(t), Si, νf, fase) esperadas antes/después
-Pruebas: (nuevas/actualizadas)
-Mapa de equivalencias: (si renombraste APIs)
+Intent: (which coherence is improved)
+Operators involved: [Emission|Reception|...]
+Affected invariants: [#1, #4, ...]
+Key changes: (bullet list)
+Expected risks/dissonances: (and how they’re contained)
+Metrics: (C(t), Si, νf, phase) before/after expectations
+Equivalence map: (if you renamed APIs)
 ```
 
-**Plantilla de PR** (*resumen estructural*):
+**PR template** (*structural summary*):
 
 ```markdown
-### Qué reorganiza
-- [ ] Incrementa C(t) o reduce ΔNFR donde corresponde
-- [ ] Mantiene cierre operatorio y fractalidad operativa
+### What it reorganizes
+- [ ] Increases C(t) or reduces ΔNFR where appropriate
+- [ ] Preserves operator closure and operational fractality
 
-### Evidencias
-- [ ] Logs de fase/νf
-- [ ] Curvas C(t), Si
-- [ ] Casos de bifurcación controlada
+### Evidence
+- [ ] Phase/νf logs
+- [ ] C(t), Si curves
+- [ ] Controlled bifurcation cases
 
-### Compatibilidad
-- [ ] API estable o mapeada
-- [ ] Seed reproducible
+### Compatibility
+- [ ] Stable or mapped API
+- [ ] Reproducible seed
 ```
 
 ---
 
-## 6) Ejemplos de cambios **aceptables**
+## 6) Examples of **acceptable** changes
 
-* Refactorizar para **hacer explícita la fase** en acoplamientos (mejora trazabilidad).
-* Añadir `sense_index()` con pruebas que correlacionen Si con estabilidad de red.
-* Optimizar `resonancia()` manteniendo propagación sin pérdida de identidad de EPI.
+* Refactoring to **make phase explicit** in couplings (improves traceability).
+* Adding `sense_index()` with tests correlating Si with network stability.
+* Optimizing `resonance()` preserving propagation **without identity loss** of EPI.
 
-### Cambios **no aceptables**
+### **Not acceptable** changes
 
-* Reinterpretar `ΔNFR` como “gradiente de error” de ML clásico.
-* Sustituir operadores por funciones imperativas no mapeadas a la gramática TNFR.
-* Aplanar anidamiento de EPIs rompiendo fractalidad/recursividad.
-
----
-
-## 7) Testing estructural (mínimos)
-
-* **Monótonos**: `coherencia()` no disminuye `C(t)` (salvo tests de disonancia controlada).
-* **Bifurcación**: `autoorganizacion()`/`disonancia()` disparan bifurcación cuando `∂²EPI/∂t² > τ`.
-* **Propagación**: `resonancia()` aumenta conectividad efectiva (medida por fase).
-* **Latencia**: `silencio()` mantiene EPI invariante en `t + Δt`.
-* **Mutación**: `mutacion()` cambia `θ` respetando `ξ`.
-
-Incluye **pruebas multiescala** (EPIs anidadas) y **reproducibilidad** (seed).
+* Recasting `ΔNFR` as a classic ML “error gradient”.
+* Replacing operators with imperative functions not mapped to the TNFR grammar.
+* Flattening nested EPIs in ways that break fractality/recursivity.
 
 ---
 
-## 8) Telemetría y trazas
+## 7) Structural testing (minimums)
 
-* Exportar: `C(t)`, `νf`, `fase`, `Si`, `ΔNFR`.
-* Registrar **operadores aplicados** (tipo, orden, parámetros) y **eventos** (nacimiento, bifurcación, colapso).
-* Preferir formatos legibles + JSONL para pipelines.
+* **Monotonicity**: `coherence()` does not decrease `C(t)` (except for controlled dissonance tests).
+* **Bifurcation**: `self_organization()`/`dissonance()` trigger bifurcation when `∂²EPI/∂t² > τ`.
+* **Propagation**: `resonance()` increases effective connectivity (measured via phase).
+* **Latency**: `silence()` keeps EPI invariant over `t + Δt`.
+* **Mutation**: `mutation()` changes `θ` respecting `ξ`.
 
----
-
-## 9) Estilo y organización del código
-
-* Priorizar **claridad semántica TNFR** sobre micro‑optimizaciones.
-* Documentación en línea: describir **efecto estructural** (qué reorganiza) antes que detalles de implementación.
-* Módulos cortos, funciones puras cuando sea posible, separación núcleo/IO.
-* Mantener un **glosario** compartido de términos (EPI, fase, νf, ΔNFR, Si, etc.).
+Include **multi‑scale tests** (nested EPIs) and **reproducibility** (seeds).
 
 ---
 
-## 10) Instalación y uso
+## 8) Telemetry & traces
 
-* Paquete PyPI: `pip install tnfr`.
-* Asegurar scripts/ejemplos mínimos: creación de un nodo, aplicación de operadores, medición de C(t) y Si, visualización simple.
-
----
-
-## 11) Roadmap sugerido (orientativo)
-
-* [ ] `sense_index()` robusto con baterías de ejemplos trans‑dominio.
-* [ ] Visualización de **fase** y **acoplamientos** (grafos dinámicos).
-* [ ] Plantillas de **experimentos** (disonancia → bifurcación → nueva coherencia).
-* [ ] Exportación de **trazas estructurales** para análisis externo.
+* Export: `C(t)`, `νf`, `phase`, `Si`, `ΔNFR`.
+* Log **operators applied** (type, order, parameters) and **events** (birth, bifurcation, collapse).
+* Prefer human‑readable formats + JSONL for pipelines.
 
 ---
 
-## 12) Referencias internas
+## 9) Code style & organization
 
-* Documento base del paradigma: `tnfr.pdf` (en el repo).
-* Notas del motor y ejemplos
-
----
-
-## 13) Glosario mínimo
-
-* **EPI**: Estructura Primaria de Información (la “forma” coherente).
-* **νf (Hz\_str)**: Frecuencia estructural (ritmo de reorganización).
-* **ΔNFR**: Gradiente/operador de reorganización interna.
-* **Fase (φ)**: sincronía relativa con la red.
-* **C(t)**: Coherencia total (estabilidad global).
-* **Si**: Índice de sentido (capacidad de generar reorganización estable).
-* **Operadores estructurales**: funciones que inician, estabilizan, acoplan, propagan, expanden/contraen, autoorganizan, mutan, transitan o ponen en silencio estructuras.
+* Prioritize **TNFR semantic clarity** over micro‑optimizations.
+* Inline docs: describe the **structural effect** (what it reorganizes) before implementation details.
+* Short modules, pure functions when possible, clear core/IO separation.
+* Maintain a shared **glossary** (EPI, phase, νf, ΔNFR, Si, etc.).
 
 ---
 
-### Recordatorio final
+## 10) Installation & usage
 
-> Si una mejora “hace el código más bonito” pero **debilita** la fidelidad TNFR, **no se acepta**. Si una mejora **fortalece** la coherencia estructural y la trazabilidad del paradigma, **adelante**.
+* PyPI package: `pip install tnfr`.
+* Provide minimal scripts/examples: create a node, apply operators, measure C(t) and Si, simple visualization.
+
+---
+
+## 11) Suggested roadmap (indicative)
+
+* [ ] Robust `sense_index()` with cross‑domain example batteries.
+* [ ] Visualization for **phase** and **couplings** (dynamic graphs).
+* [ ] **Experiment templates** (dissonance → bifurcation → new coherence).
+* [ ] Export **structural traces** for external analysis.
+
+---
+
+## 12) Internal references
+
+* Base paradigm document: `tnfr.pdf` (in the repo).
+* Engine notes & examples
+
+---
+
+## 13) Mini‑glossary
+
+* **EPI**: Primary Information Structure (the coherent “form”).
+* **νf (Hz\_str)**: Structural frequency (reorganization rate).
+* **ΔNFR**: Internal reorganization operator/gradient.
+* **Phase (φ)**: relative synchrony with the network.
+* **C(t)**: Total coherence (global stability).
+* **Si**: Sense index (capacity to generate stable reorganization).
+* **Structural operators**: functions that initiate, stabilize, couple, propagate, expand/contract, self‑organize, mutate, transition, or silence structures.
+
+---
+
+### Final reminder
+
+> If a change “prettifies the code” but **weakens** TNFR fidelity, it is **not accepted**. If a change **strengthens** structural coherence and paradigm traceability, **go ahead**.
+
