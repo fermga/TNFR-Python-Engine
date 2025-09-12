@@ -105,49 +105,29 @@ class EdgeStrategy(Enum):
     NX = "nx"
     TNFR = "tnfr"
 
-
-class EdgeOps(Protocol):
-    """Interface for edge operations."""
-
-    def exists(self, graph, n1, n2) -> bool: ...
-
-    def set(self, graph, n1, n2, w: float) -> None: ...
+# Strategy implementations are provided as ``(exists_fn, set_fn)`` pairs.
 
 
-@dataclass(frozen=True, slots=True)
-class NXEdgeOps:
-    def exists(self, graph, n1, n2) -> bool:
-        return graph.has_edge(n1, n2)
-
-    def set(self, graph, n1, n2, w: float) -> None:
-        graph.add_edge(n1, n2, weight=w)
+def _nx_exists(graph, n1, n2) -> bool:
+    return graph.has_edge(n1, n2)
 
 
-@dataclass(frozen=True, slots=True)
-class TNFREdgeOps:
-    def exists(self, graph, n1, n2) -> bool:
-        return n2 in n1._neighbors
-
-    def set(self, graph, n1, n2, w: float) -> None:
-        n1._neighbors[n2] = w
-        n2._neighbors[n1] = w
+def _nx_set(graph, n1, n2, w: float) -> None:
+    graph.add_edge(n1, n2, weight=w)
 
 
-@dataclass(frozen=True, slots=True)
-class _CallbackEdgeOps:
-    exists_cb: Callable
-    set_cb: Callable
-
-    def exists(self, graph, n1, n2) -> bool:
-        return self.exists_cb(graph, n1, n2)
-
-    def set(self, graph, n1, n2, w: float) -> None:
-        self.set_cb(graph, n1, n2, w)
+def _tnfr_exists(graph, n1, n2) -> bool:
+    return n2 in n1._neighbors
 
 
-_EDGE_OPS: dict[EdgeStrategy, EdgeOps] = {
-    EdgeStrategy.NX: NXEdgeOps(),
-    EdgeStrategy.TNFR: TNFREdgeOps(),
+def _tnfr_set(graph, n1, n2, w: float) -> None:
+    n1._neighbors[n2] = w
+    n2._neighbors[n1] = w
+
+
+_EDGE_OPS: dict[EdgeStrategy, tuple[Callable, Callable]] = {
+    EdgeStrategy.NX: (_nx_exists, _nx_set),
+    EdgeStrategy.TNFR: (_tnfr_exists, _tnfr_set),
 }
 
 
@@ -162,9 +142,9 @@ def _validate_callbacks(exists_cb, set_cb) -> None:
             raise TypeError("exists_cb and set_cb must be callables")
 
 
-def _resolve_edge_ops(graph, strategy, exists_cb, set_cb):
+def _resolve_edge_ops(graph, strategy, exists_cb, set_cb) -> tuple[Callable, Callable]:
     if exists_cb is not None and set_cb is not None:
-        return _CallbackEdgeOps(exists_cb, set_cb)
+        return exists_cb, set_cb
     if strategy is None:
         strategy = (
             EdgeStrategy.NX
@@ -197,16 +177,16 @@ def add_edge(
 
     _validate_callbacks(exists_cb, set_cb)
 
-    ops = _resolve_edge_ops(graph, strategy, exists_cb, set_cb)
+    exists_fn, set_fn = _resolve_edge_ops(graph, strategy, exists_cb, set_cb)
 
-    if ops.exists(graph, n1, n2) and not overwrite:
+    if exists_fn(graph, n1, n2) and not overwrite:
         return
 
     weight = _add_edge_common(n1, n2, weight)
     if weight is None:
         return
 
-    ops.set(graph, n1, n2, weight)
+    set_fn(graph, n1, n2, weight)
     increment_edge_version(graph)
 
 
