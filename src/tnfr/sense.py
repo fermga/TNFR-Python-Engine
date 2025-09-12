@@ -108,6 +108,23 @@ def _to_complex(val: complex | float | int) -> complex:
     raise TypeError("values must be an iterable of real or complex numbers")
 
 
+
+def _empty_sigma(fallback_angle: float) -> dict[str, float]:
+    """Return an empty σ-vector with ``fallback_angle``.
+
+    Helps centralise the default structure returned when no values are
+    available for σ calculations.
+    """
+
+    return {
+        "x": 0.0,
+        "y": 0.0,
+        "mag": 0.0,
+        "angle": float(fallback_angle),
+        "n": 0,
+    }
+
+
 # -------------------------
 # σ por nodo y σ global
 # -------------------------
@@ -137,13 +154,7 @@ def _sigma_from_iterable(
         )
         cnt = int(arr.size)
         if cnt == 0:
-            return {
-                "x": 0.0,
-                "y": 0.0,
-                "mag": 0.0,
-                "angle": float(fallback_angle),
-                "n": 0,
-            }
+            return _empty_sigma(fallback_angle)
         x = float(np.mean(arr.real))
         y = float(np.mean(arr.imag))
         mag = float(np.hypot(x, y))
@@ -169,13 +180,7 @@ def _sigma_from_iterable(
     sum_x, sum_y = kahan_sum2d(pair_iter())
 
     if cnt == 0:
-        return {
-            "x": 0.0,
-            "y": 0.0,
-            "mag": 0.0,
-            "angle": float(fallback_angle),
-            "n": 0,
-        }
+        return _empty_sigma(fallback_angle)
 
     x = sum_x / cnt
     y = sum_y / cnt
