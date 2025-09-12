@@ -10,10 +10,10 @@ T = TypeVar("T")
 
 logger = get_logger(__name__)
 
-__all__ = ("_convert_value",)
+__all__ = ("convert_value",)
 
 
-def _convert_value(
+def convert_value(
     value: Any,
     conv: Callable[[Any], T],
     *,
