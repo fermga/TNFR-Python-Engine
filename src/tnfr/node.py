@@ -28,7 +28,7 @@ from .alias import (
     set_dnfr,
     set_theta,
 )
-from .helpers.cache import increment_edge_version
+from .helpers.cache import increment_edge_version, ensure_node_offset_map
 
 from .operators import apply_glyph_obj
 
@@ -289,7 +289,8 @@ class NodoTNFR:
         self.epi_kind = glyph
 
     def offset(self) -> int:
-        return 0
+        mapping = ensure_node_offset_map(self.graph)
+        return mapping.get(self, 0)
 
     def all_nodes(self) -> Iterable["NodoTNFR"]:
         nodes = self.graph.get("_all_nodes")
