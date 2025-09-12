@@ -24,6 +24,9 @@ T = TypeVar("T")
 
 logger = get_logger(__name__)
 
+# Key used to store the node set checksum in a graph's ``graph`` attribute.
+NODE_SET_CHECKSUM_KEY = "_node_set_checksum_cache"
+
 # Keys of cache entries dependent on the edge version.  Any change to the edge
 # set requires these to be dropped to avoid stale data.
 EDGE_VERSION_CACHE_KEYS = (
@@ -148,7 +151,7 @@ def node_set_checksum(
     Nodes are serialised using :func:`_node_repr`. The helper
     :func:`_iter_node_digests` yields their digests in a deterministic order,
     handling the ``presorted`` and unsorted cases. When ``store`` is ``True``
-    the final checksum is cached under ``"_node_set_checksum_cache"`` to avoid
+    the final checksum is cached under ``NODE_SET_CHECKSUM_KEY`` to avoid
     recomputation for unchanged graphs.
     """
     graph = get_graph(G)
@@ -165,10 +168,10 @@ def node_set_checksum(
     token = checksum[:16]
     if store:
         # Cache the result using a short token to detect unchanged node sets.
-        cached = graph.get("_node_set_checksum_cache")
+        cached = graph.get(NODE_SET_CHECKSUM_KEY)
         if cached and cached[0] == token:
             return cached[1]
-        graph["_node_set_checksum_cache"] = (token, checksum)
+        graph[NODE_SET_CHECKSUM_KEY] = (token, checksum)
     return checksum
 
 
