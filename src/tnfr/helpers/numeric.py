@@ -172,14 +172,17 @@ def neighbor_phase_mean_list(
     if np is None:
         np = get_numpy()
 
+    def _iter_pairs():
+        for v in neigh:
+            c = cos_th.get(v)
+            s = sin_th.get(v)
+            if c is not None and s is not None:
+                yield c, s
+
+    pairs = _iter_pairs()
+
     if np is not None:
-        flat_pairs = (
-            val
-            for v in neigh
-            if (c := cos_th.get(v)) is not None
-            and (s := sin_th.get(v)) is not None
-            for val in (c, s)
-        )
+        flat_pairs = (val for pair in pairs for val in pair)
         arr = np.fromiter(flat_pairs, dtype=float)
         if arr.size:
             cos_arr = arr[0::2]
@@ -188,9 +191,7 @@ def neighbor_phase_mean_list(
             mean_sin = float(np.mean(sin_arr))
             return float(np.arctan2(mean_sin, mean_cos))
         return fallback
-    return _phase_mean_from_iter(
-        ((cos_th.get(v), sin_th.get(v)) for v in neigh), fallback
-    )
+    return _phase_mean_from_iter(pairs, fallback)
 
 
 def neighbor_phase_mean(obj, n=None) -> float:
