@@ -78,31 +78,40 @@ def ensure_history_deque(nd: dict[str, Any], window: int) -> deque:
     return hist
 
 
+def _validated_history(
+    nd: dict[str, Any], window: int, *, create_zero: bool = False
+) -> tuple[int, deque | None]:
+    """Validate ``window`` and ensure the node history deque."""
+
+    v_window = validate_window(window)
+    if v_window == 0 and not create_zero:
+        return v_window, None
+    hist = ensure_history_deque(nd, v_window)
+    return v_window, hist
+
+
 def push_glyph(nd: dict[str, Any], glyph: str, window: int) -> None:
     """Add ``glyph`` to node history with maximum size ``window``.
 
-    ``window`` is validated via :func:`validate_window` and the underlying
-    deque is ensured by :func:`ensure_history_deque`.
+    ``window`` validation and deque creation are handled by
+    :func:`_validated_history`.
     """
 
-    v_window = validate_window(window)
-    hist = ensure_history_deque(nd, v_window)
+    _, hist = _validated_history(nd, window, create_zero=True)
     hist.append(str(glyph))
 
 
 def recent_glyph(nd: dict[str, Any], glyph: str, window: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions.
 
-    ``window`` is validated once. A ``window`` of zero returns ``False`` and
-    leaves ``nd`` unchanged. For positive windows the history deque is ensured
-    exactly once via :func:`ensure_history_deque`. Negative values raise
-    :class:`ValueError`.
+    ``window`` validation and deque creation are handled by
+    :func:`_validated_history`. A ``window`` of zero returns ``False`` and
+    leaves ``nd`` unchanged. Negative values raise :class:`ValueError`.
     """
 
-    v_window = validate_window(window)
+    v_window, hist = _validated_history(nd, window)
     if v_window == 0:
         return False
-    hist = ensure_history_deque(nd, v_window)
     gl = str(glyph)
     return gl in hist
 
