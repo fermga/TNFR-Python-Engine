@@ -3,18 +3,13 @@
 from __future__ import annotations
 from typing import Any, Iterable, Optional, Callable
 
-from .constants import (
-    DEFAULTS,
-    ALIAS_SI,
-    ALIAS_DNFR,
-    ALIAS_D2EPI,
-    get_param,
-)
+from .constants import DEFAULTS, ALIAS_SI, ALIAS_D2EPI, get_param
 from .alias import get_attr
 from .helpers.numeric import clamp01
 from .glyph_history import recent_glyph
 from .types import Glyph
 from .operators import apply_glyph  # avoid repeated import inside functions
+from .metrics_utils import normalize_dnfr
 
 __all__ = (
     "CANON_COMPAT",
@@ -126,11 +121,6 @@ def _norm_attr(G, nd, attr_alias: str, norm_key: str) -> float:
     return clamp01(abs(get_attr(nd, attr_alias, 0.0)) / max_val)
 
 
-def _dnfr_norm(G, nd) -> float:
-    """Robust normaliser for |ΔNFR|."""
-    return _norm_attr(G, nd, ALIAS_DNFR, "dnfr_max")
-
-
 def _si(G, nd) -> float:
     return clamp01(get_attr(nd, ALIAS_SI, 0.5))
 
@@ -177,7 +167,12 @@ def _check_oz_to_zhir(G, n, cand: str, cfg: dict[str, Any]) -> str:
     if cand == Glyph.ZHIR:
         win = int(cfg.get("zhir_requires_oz_window", 3))
         dn_min = float(cfg.get("zhir_dnfr_min", 0.05))
-        if not recent_glyph(nd, Glyph.OZ, win) and _dnfr_norm(G, nd) < dn_min:
+        norms = G.graph.get("_sel_norms") or {}
+        dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
+        if (
+            not recent_glyph(nd, Glyph.OZ, win)
+            and normalize_dnfr(nd, dnfr_max) < dn_min
+        ):
             return Glyph.OZ
     return cand
 
@@ -191,8 +186,11 @@ def _check_thol_closure(
         minlen = int(cfg.get("thol_min_len", 2))
         maxlen = int(cfg.get("thol_max_len", 6))
         close_dn = float(cfg.get("thol_close_dnfr", 0.15))
+        norms = G.graph.get("_sel_norms") or {}
+        dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
         if st["thol_len"] >= maxlen or (
-            st["thol_len"] >= minlen and _dnfr_norm(G, nd) <= close_dn
+            st["thol_len"] >= minlen
+            and normalize_dnfr(nd, dnfr_max) <= close_dn
         ):
             return (
                 Glyph.NUL
@@ -239,9 +237,13 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
 
     original = cand
     cand = _check_repeats(G, n, cand, cfg_soft)
-    cand = _maybe_force(
-        G, n, cand, original, cfg_soft, _dnfr_norm, "force_dnfr"
+    dnfr_accessor = (
+        lambda G, nd: normalize_dnfr(
+            nd,
+            float((G.graph.get("_sel_norms") or {}).get("dnfr_max", 1.0)) or 1.0,
+        )
     )
+    cand = _maybe_force(G, n, cand, original, cfg_soft, dnfr_accessor, "force_dnfr")
     cand = _maybe_force(
         G, n, cand, original, cfg_soft, _accel_norm, "force_accel"
     )
