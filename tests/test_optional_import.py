@@ -1,6 +1,7 @@
 import types
 import importlib
 import logging
+from cachetools import TTLCache
 
 import tnfr.import_utils as import_utils
 from tnfr.import_utils import (
@@ -88,8 +89,11 @@ def test_optional_import_handles_distinct_fallbacks(monkeypatch):
 def test_record_prunes_expired_entries(monkeypatch):
     state = import_utils._IMPORT_STATE
     with state.lock:
-        state.failed.clear()
-        state.max_age = 10
+        monkeypatch.setattr(
+            import_utils._IMPORT_STATE,
+            "failed",
+            TTLCache(state.limit, 10, timer=lambda: import_utils.time.monotonic()),
+        )
     times = iter([0.0, 11.0])
     monkeypatch.setattr(import_utils.time, "monotonic", lambda: next(times))
     with state.lock:
@@ -102,8 +106,11 @@ def test_record_prunes_expired_entries(monkeypatch):
 def test_prune_failed_imports(monkeypatch):
     state = import_utils._IMPORT_STATE
     with state.lock:
-        state.failed.clear()
-        state.max_age = 10
+        monkeypatch.setattr(
+            import_utils._IMPORT_STATE,
+            "failed",
+            TTLCache(state.limit, 10, timer=lambda: import_utils.time.monotonic()),
+        )
     times = iter([0.0, 20.0, 20.0])
     monkeypatch.setattr(import_utils.time, "monotonic", lambda: next(times))
     with state.lock:
@@ -115,8 +122,11 @@ def test_prune_failed_imports(monkeypatch):
 def test_failure_log_bounded_without_frequent_prune(monkeypatch):
     state = import_utils._IMPORT_STATE
     with state.lock:
-        state.failed.clear()
-    monkeypatch.setattr(state, "limit", 3)
+        monkeypatch.setattr(
+            import_utils._IMPORT_STATE,
+            "failed",
+            TTLCache(3, state.max_age, timer=lambda: import_utils.time.monotonic()),
+        )
     monkeypatch.setattr(import_utils, "_FAILED_IMPORT_PRUNE_INTERVAL", 10.0)
     monkeypatch.setattr(import_utils._IMPORT_STATE, "last_prune", 0.0)
     monkeypatch.setattr(import_utils.time, "monotonic", lambda: 1.0)
