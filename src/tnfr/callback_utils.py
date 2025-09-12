@@ -13,7 +13,7 @@ from __future__ import annotations
 from typing import Any, TypedDict
 from enum import Enum
 from collections import defaultdict, deque
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Iterable
 
 import traceback
 from .logging_utils import get_logger
@@ -124,22 +124,34 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
         return _ensure_callbacks_nolock(G)
 
 
-def _normalize_callback_registry(cbs: Any) -> dict[str, CallbackSpec]:
-    """Return a normalized callback mapping from ``cbs``."""
-    if isinstance(cbs, Mapping):
-        entries = cbs.values()
-    elif is_non_string_sequence(cbs):
-        entries = cbs
+def _normalized_callbacks(entries: Any) -> dict[str, CallbackSpec]:
+    """Return ``entries`` normalized into a callback mapping.
+
+    Accepts any iterable or mapping of callback specifications. For mappings,
+    the values are treated as the callback entries. Non-iterable inputs yield
+    an empty mapping.
+    """
+
+    if isinstance(entries, Mapping):
+        entries_iter = entries.values()
+    elif isinstance(entries, Iterable) and not isinstance(entries, (str, bytes, bytearray)):
+        entries_iter = entries
     else:
-        entries = []
+        return {}
+
     new_map: dict[str, CallbackSpec] = {}
-    for entry in entries:
+    for entry in entries_iter:
         spec = _normalize_callback_entry(entry)
         if spec is None:
             continue
         key = spec.name or _func_id(spec.func)
         new_map[key] = spec
     return new_map
+
+
+def _normalize_callback_registry(cbs: Any) -> dict[str, CallbackSpec]:
+    """Return a normalized callback mapping from ``cbs``."""
+    return _normalized_callbacks(cbs)
 
 
 def _normalize_event_callbacks(cbs: CallbackRegistry, event: str) -> None:
@@ -149,7 +161,7 @@ def _normalize_event_callbacks(cbs: CallbackRegistry, event: str) -> None:
     if event not in _CALLBACK_EVENTS:
         del cbs[event]
         return
-    cbs[event] = _normalize_callback_registry(cbs[event])
+    cbs[event] = _normalized_callbacks(cbs[event])
 
 
 def _normalize_event(event: CallbackEvent | str) -> str:
