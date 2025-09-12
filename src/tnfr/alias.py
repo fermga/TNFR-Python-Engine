@@ -7,6 +7,7 @@ alias-based attribute access. Legacy wrappers ``alias_get`` and
 """
 
 from __future__ import annotations
+from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from typing import (
     Any,
@@ -273,15 +274,15 @@ def multi_recompute_abs_max(
     keys as ``alias_map``.
     """
 
-    maxima = {k: 0.0 for k in alias_map}
-    # Micro-optimization: materialize alias_map items once to avoid
-    # repeated dictionary lookups during iteration.
+    maxima: defaultdict[str, float] = defaultdict(float)
     items = list(alias_map.items())
     for _, nd in G.nodes(data=True):
-        for key, aliases in items:
-            val = abs(get_attr(nd, aliases, 0.0))
-            if val > maxima[key]:
-                maxima[key] = val
+        maxima.update(
+            {
+                key: max(maxima[key], abs(get_attr(nd, aliases, 0.0)))
+                for key, aliases in items
+            }
+        )
     return {k: float(v) for k, v in maxima.items()}
 
 
