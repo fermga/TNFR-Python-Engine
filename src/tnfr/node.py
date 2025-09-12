@@ -12,7 +12,6 @@ from .constants import (
     DEFAULTS,
     get_aliases,
 )
-from .glyph_history import push_glyph
 from .alias import (
     get_attr,
     get_attr_str,
@@ -23,7 +22,7 @@ from .alias import (
     set_theta,
 )
 from .helpers.cache import increment_edge_version, ensure_node_offset_map
-
+from .node_base import NodeBase
 from .operators import apply_glyph_obj
 
 ALIAS_EPI = get_aliases("EPI")
@@ -36,7 +35,7 @@ ALIAS_D2EPI = get_aliases("D2EPI")
 
 T = TypeVar("T")
 
-__all__ = ("NodoTNFR", "NodoNX", "NodoProtocol", "EdgeStrategy")
+__all__ = ("NodeBase", "NodoTNFR", "NodoNX", "NodoProtocol", "EdgeStrategy")
 
 
 def _nx_attr_property(
@@ -239,7 +238,7 @@ class NodoProtocol(Protocol):
 
 
 @dataclass(eq=False, slots=True)
-class NodoTNFR:
+class NodoTNFR(NodeBase):
     """Autonomous TNFR node representation.
 
     Each neighbour stores the connection weight. Although current operations
@@ -261,6 +260,9 @@ class NodoTNFR:
             maxlen=DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 7)
         )
     )
+
+    def _glyph_storage(self) -> dict[str, Deque[str]]:
+        return {"glyph_history": self._glyph_history}
 
     def neighbors(self) -> Iterable["NodoTNFR"]:
         return self._neighbors.keys()
@@ -286,23 +288,11 @@ class NodoTNFR:
             strategy=EdgeStrategy.TNFR,
         )
 
-    def push_glyph(self, glyph: str, window: int) -> None:
-        push_glyph({"glyph_history": self._glyph_history}, glyph, window)
-        self.epi_kind = glyph
-
-    def offset(self) -> int:
-        mapping = ensure_node_offset_map(self.graph)
-        return mapping.get(self, 0)
-
-    def all_nodes(self) -> Iterable["NodoTNFR"]:
-        nodes = self.graph.get("_all_nodes")
-        return nodes if nodes is not None else [self]
-
     def apply_glyph(self, glyph: str, window: Optional[int] = None) -> None:
         apply_glyph_obj(self, glyph, window=window)
 
 
-class NodoNX(NodoProtocol):
+class NodoNX(NodeBase, NodoProtocol):
     """Adapter for ``networkx`` nodes."""
 
     def __init__(self, G, n):
@@ -310,6 +300,9 @@ class NodoNX(NodoProtocol):
         self.n = n
         self.graph = G.graph
         G.graph.setdefault("_node_cache", {})[n] = self
+
+    def _glyph_storage(self):
+        return self.G.nodes[self.n]
 
     EPI = _nx_attr_property(aliases=ALIAS_EPI)
     vf = _nx_attr_property(
@@ -349,10 +342,6 @@ class NodoNX(NodoProtocol):
         """
         return self.G.neighbors(self.n)
 
-    def push_glyph(self, glyph: str, window: int) -> None:
-        push_glyph(self.G.nodes[self.n], glyph, window)
-        self.epi_kind = glyph
-
     def has_edge(self, other: NodoProtocol) -> bool:
         if isinstance(other, NodoNX):
             return self.G.has_edge(self.n, other.n)
@@ -374,9 +363,8 @@ class NodoNX(NodoProtocol):
             raise NotImplementedError
 
     def offset(self) -> int:
-        from .operators import _node_offset
-
-        return _node_offset(self.G, self.n)
+        mapping = ensure_node_offset_map(self.G)
+        return mapping.get(self.n, 0)
 
     def all_nodes(self) -> Iterable[NodoProtocol]:
         return (NodoNX.from_graph(self.G, v) for v in self.G.nodes())
