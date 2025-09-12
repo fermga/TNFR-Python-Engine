@@ -113,15 +113,15 @@ def _neighbor_phase_mean(node, trig) -> float:
     )
 
 
-def _phase_mean_from_iter(
-    it: Iterable[tuple[float, float] | None], fallback: float
-) -> float:
-    """Return circular mean from an iterator of cosine/sine pairs.
+def _accumulate_cos_sin(
+    it: Iterable[tuple[float, float] | None],
+) -> tuple[float, float, bool]:
+    """Accumulate cosine and sine pairs using Kahan summation.
 
     ``it`` yields optional ``(cos, sin)`` tuples. Entries with ``None``
-    components are ignored. Valid pairs are accumulated using a running
-    Kahan–Babuška summation for both cosine and sine components. ``fallback``
-    is returned if no valid pairs are processed.
+    components are ignored. The returned values are the compensated sums of
+    cosines and sines along with a flag indicating whether any pair was
+    processed.
     """
     sum_cos = 0.0
     sum_sin = 0.0
@@ -149,9 +149,21 @@ def _phase_mean_from_iter(
             comp_sin += (s - t) + sum_sin
         sum_sin = t
 
+    return sum_cos + comp_cos, sum_sin + comp_sin, processed
+
+
+def _phase_mean_from_iter(
+    it: Iterable[tuple[float, float] | None], fallback: float
+) -> float:
+    """Return circular mean from an iterator of cosine/sine pairs.
+
+    ``it`` yields optional ``(cos, sin)`` tuples. ``fallback`` is returned if
+    no valid pairs are processed.
+    """
+    sum_cos, sum_sin, processed = _accumulate_cos_sin(it)
     if not processed:
         return fallback
-    return math.atan2(sum_sin + comp_sin, sum_cos + comp_cos)
+    return math.atan2(sum_sin, sum_cos)
 
 
 def neighbor_phase_mean_list(
@@ -165,9 +177,9 @@ def neighbor_phase_mean_list(
 
     When ``np`` (NumPy) is provided, ``np.fromiter`` is used to build cosine and
     sine arrays directly from a generator, avoiding the creation of an
-    intermediate Python list of ``(cos, sin)`` pairs. Otherwise, the mean is
-    computed using the pure-Python :func:`_phase_mean_from_iter` helper which
-    uses a running Kahan summation for stable accumulation.
+    intermediate Python list of ``(cos, sin)`` pairs. Otherwise, cosine and
+    sine values are accumulated via :func:`_accumulate_cos_sin` using a running
+    Kahan summation.
     """
     if np is None:
         np = get_numpy()
@@ -191,7 +203,11 @@ def neighbor_phase_mean_list(
             mean_sin = float(np.mean(sin_arr))
             return float(np.arctan2(mean_sin, mean_cos))
         return fallback
-    return _phase_mean_from_iter(pairs, fallback)
+
+    sum_cos, sum_sin, processed = _accumulate_cos_sin(pairs)
+    if not processed:
+        return fallback
+    return math.atan2(sum_sin, sum_cos)
 
 
 def neighbor_phase_mean(obj, n=None) -> float:
