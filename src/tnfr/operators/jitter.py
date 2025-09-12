@@ -51,46 +51,51 @@ class JitterCache:
                     cache.clear()
             self.graphs.clear()
 
+class JitterCacheManager:
+    """Manager exposing the jitter cache without global reassignment."""
 
-# Module-level singleton
-JITTER_CACHE = JitterCache()
+    def __init__(self, cache: JitterCache | None = None) -> None:
+        self.cache = cache or JitterCache()
 
-# Backward-compatibility aliases; updated by ``_update_cache_refs``.
-_JITTER_SEQ = JITTER_CACHE.seq
-_JITTER_GRAPHS = JITTER_CACHE.graphs
-_JITTER_SETTINGS = JITTER_CACHE.settings
+    # Convenience passthrough properties
+    @property
+    def seq(self) -> LRUCache[tuple[int, int], int]:
+        return self.cache.seq
+
+    @property
+    def graphs(self) -> WeakSet[Any]:
+        return self.cache.graphs
+
+    @property
+    def settings(self) -> dict[str, Any]:
+        return self.cache.settings
+
+    @property
+    def lock(self):
+        return self.cache.lock
+
+    def setup(self, force: bool = False) -> None:
+        """Ensure jitter cache matches the configured size."""
+        self.cache.max_entries = _JITTER_MAX_ENTRIES
+        self.cache.setup(force)
+
+    def clear(self) -> None:
+        """Clear cached RNGs and jitter state."""
+        self.cache.clear()
 
 
-def _update_cache_refs(cache: JitterCache) -> None:
-    global _JITTER_SEQ, _JITTER_GRAPHS, _JITTER_SETTINGS
-    _JITTER_SEQ = cache.seq
-    _JITTER_GRAPHS = cache.graphs
-    _JITTER_SETTINGS = cache.settings
-
-
-def setup_jitter_cache(
-    force: bool = False, cache: JitterCache = JITTER_CACHE
-) -> None:
-    """Ensure jitter cache matches the configured size."""
-    cache.max_entries = _JITTER_MAX_ENTRIES
-    cache.setup(force)
-    _update_cache_refs(cache)
-
+# Module-level singleton manager and cache
+JITTER_MANAGER = JitterCacheManager()
+JITTER_CACHE = JITTER_MANAGER.cache
 
 # Initialize jitter cache on module import.
-setup_jitter_cache(force=True)
+JITTER_MANAGER.setup(force=True)
 
 
 def _node_offset(G, n) -> int:
     """Deterministic node index used for jitter seeds."""
     mapping = ensure_node_offset_map(G)
     return int(mapping.get(n, 0))
-
-
-def clear_rng_cache(cache: JitterCache = JITTER_CACHE) -> None:
-    """Clear cached RNGs and jitter state."""
-    cache.clear()
-    _update_cache_refs(cache)
 
 
 def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
@@ -105,13 +110,13 @@ def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
 
 
 def _get_jitter_cache(
-    node: NodoProtocol, cache: JitterCache = JITTER_CACHE
+    node: NodoProtocol, manager: JitterCacheManager = JITTER_MANAGER
 ) -> dict:
     """Return the jitter cache for ``node``.
 
     If the node cannot store attributes, fall back to a graph-level
     ``WeakKeyDictionary`` and ensure the graph is tracked in
-    ``_JITTER_GRAPHS`` so its cache can be cleared when needed.
+    ``JITTER_MANAGER.graphs`` so its cache can be cleared when needed.
     """
 
     cache = getattr(node, "_jitter_seed_hash", None)
@@ -127,8 +132,8 @@ def _get_jitter_cache(
         if graph_cache is None:
             graph_cache = WeakKeyDictionary()
             node.graph["_jitter_seed_hash"] = graph_cache
-            with cache.lock:
-                cache.graphs.add(node.graph)
+            with manager.lock:
+                manager.graphs.add(node.graph)
         cache = graph_cache.get(node)
         if cache is None:
             cache = {}
@@ -136,9 +141,15 @@ def _get_jitter_cache(
         return cache
 
 
-def random_jitter(node: NodoProtocol, amplitude: float) -> float:
-    """Return deterministic noise in ``[-amplitude, amplitude]`` for
-    ``node``."""
+def random_jitter(
+    node: NodoProtocol,
+    amplitude: float,
+    manager: JitterCacheManager = JITTER_MANAGER,
+) -> float:
+    """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
+
+    Uses ``manager`` to track per-node jitter sequences.
+    """
     if amplitude < 0:
         raise ValueError("amplitude must be positive")
     if amplitude == 0:
@@ -147,7 +158,7 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
     seed_root = base_seed(node.G)
     seed_key, scope_id = _resolve_jitter_seed(node)
 
-    cache = _get_jitter_cache(node)
+    cache = _get_jitter_cache(node, manager)
 
     cache_key = (seed_root, scope_id)
     seed = cache.get(cache_key)
@@ -156,21 +167,18 @@ def random_jitter(node: NodoProtocol, amplitude: float) -> float:
         cache[cache_key] = seed
     seq = 0
     if cache_enabled(node.G):
-        with JITTER_CACHE.lock:
-            seq = JITTER_CACHE.seq.get(cache_key, 0)
-            JITTER_CACHE.seq[cache_key] = seq + 1
+        with manager.lock:
+            seq = manager.seq.get(cache_key, 0)
+            manager.seq[cache_key] = seq + 1
     rng = make_rng(seed, seed_key + seq, node.G)
     return rng.uniform(-amplitude, amplitude)
 
 
 __all__ = [
     "JitterCache",
+    "JitterCacheManager",
+    "JITTER_MANAGER",
     "JITTER_CACHE",
-    "setup_jitter_cache",
-    "clear_rng_cache",
     "random_jitter",
     "_get_jitter_cache",
-    "_JITTER_SEQ",
-    "_JITTER_GRAPHS",
-    "_JITTER_SETTINGS",
 ]

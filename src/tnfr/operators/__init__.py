@@ -20,14 +20,11 @@ from ..types import Glyph
 
 from .jitter import (
     JitterCache,
+    JitterCacheManager,
+    JITTER_MANAGER,
     JITTER_CACHE,
-    setup_jitter_cache,
-    clear_rng_cache,
     random_jitter,
     _get_jitter_cache,
-    _JITTER_SEQ,
-    _JITTER_GRAPHS,
-    _JITTER_SETTINGS,
 )
 from .remesh import (
     apply_network_remesh,
@@ -42,14 +39,11 @@ ALIAS_EPI = get_aliases("EPI")
 
 __all__ = [
     "JitterCache",
+    "JitterCacheManager",
+    "JITTER_MANAGER",
     "JITTER_CACHE",
-    "setup_jitter_cache",
-    "clear_rng_cache",
     "random_jitter",
     "_get_jitter_cache",
-    "_JITTER_SEQ",
-    "_JITTER_GRAPHS",
-    "_JITTER_SETTINGS",
     "get_glyph_factors",
     "apply_glyph_obj",
     "apply_glyph",
