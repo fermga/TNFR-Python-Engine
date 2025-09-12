@@ -3,6 +3,7 @@
 from tnfr.callback_utils import (
     _ensure_callbacks,
     _normalize_callback_registry,
+    _normalized_callbacks,
     register_callback,
     CallbackEvent,
 )
@@ -77,3 +78,19 @@ def test_normalize_callback_registry_handles_sequences_and_mappings():
     assert set(res_map.keys()) == {"a", "cb2"}
     assert res_map["a"].func is cb1
     assert res_map["cb2"].func is cb2
+
+
+def test_normalized_callbacks_handles_iterables():
+    def cb1(G, ctx):
+        pass
+
+    def cb2(G, ctx):
+        pass
+
+    entries = (e for e in [("a", cb1), cb2, ("bad", 1), object()])
+
+    res = _normalized_callbacks(entries)
+
+    assert set(res.keys()) == {"a", "cb2"}
+    assert res["a"].func is cb1
+    assert res["cb2"].func is cb2
