@@ -2,12 +2,11 @@
 
 from tnfr.node import NodoNX
 from tnfr.operators import (
+    JITTER_MANAGER,
     random_jitter,
-    clear_rng_cache,
     apply_glyph,
     _mix_epi_with_neighbors,
     _get_jitter_cache,
-    _JITTER_GRAPHS,
 )
 import tnfr.operators as operators
 from types import SimpleNamespace
@@ -17,7 +16,7 @@ from weakref import WeakKeyDictionary
 
 
 def test_random_jitter_deterministic(graph_canon):
-    clear_rng_cache()
+    JITTER_MANAGER.clear()
     G = graph_canon()
     G.add_node(0)
     n0 = NodoNX(G, 0)
@@ -26,7 +25,7 @@ def test_random_jitter_deterministic(graph_canon):
     j2 = random_jitter(n0, 0.5)
     assert j1 != j2
 
-    clear_rng_cache()
+    JITTER_MANAGER.clear()
     j3 = random_jitter(n0, 0.5)
     j4 = random_jitter(n0, 0.5)
     assert [j3, j4] == [j1, j2]
@@ -48,7 +47,7 @@ def test_random_jitter_negative_amplitude(graph_canon):
 
 
 def test_get_jitter_cache_node_attribute():
-    clear_rng_cache()
+    JITTER_MANAGER.clear()
     node = SimpleNamespace(graph={})
     cache1 = _get_jitter_cache(node)
     cache1["a"] = 1
@@ -57,7 +56,7 @@ def test_get_jitter_cache_node_attribute():
     assert hasattr(node, "_jitter_seed_hash")
     assert node._jitter_seed_hash is cache1
     assert "_jitter_seed_hash" not in node.graph
-    assert node.graph not in _JITTER_GRAPHS
+    assert node.graph not in JITTER_MANAGER.graphs
 
 
 def test_get_jitter_cache_graph_fallback():
@@ -70,7 +69,7 @@ def test_get_jitter_cache_graph_fallback():
         def __init__(self):
             self.graph = G()
 
-    clear_rng_cache()
+    JITTER_MANAGER.clear()
     node = SlotNode()
     cache1 = _get_jitter_cache(node)
     cache1["b"] = 2
@@ -80,14 +79,14 @@ def test_get_jitter_cache_graph_fallback():
     graph_cache = node.graph["_jitter_seed_hash"]
     assert isinstance(graph_cache, WeakKeyDictionary)
     assert graph_cache[node] is cache1
-    assert node.graph in _JITTER_GRAPHS
+    assert node.graph in JITTER_MANAGER.graphs
 
 
 def test_rng_cache_disabled_with_size_zero(graph_canon):
     from tnfr.rng import set_cache_maxsize
     from tnfr.constants import DEFAULTS
 
-    clear_rng_cache()
+    JITTER_MANAGER.clear()
     set_cache_maxsize(0)
     G = graph_canon()
     G.add_node(0)
@@ -99,16 +98,16 @@ def test_rng_cache_disabled_with_size_zero(graph_canon):
 
 
 def test_jitter_seq_purges_old_entries(monkeypatch):
-    clear_rng_cache()
+    JITTER_MANAGER.clear()
     monkeypatch.setattr(operators, "_JITTER_MAX_ENTRIES", 4)
-    operators.setup_jitter_cache(force=True)
+    operators.JITTER_MANAGER.setup(force=True)
     graph = SimpleNamespace(graph={})
     nodes = [SimpleNamespace(G=graph) for _ in range(5)]
     first_key = (0, id(nodes[0]))
     for n in nodes:
         random_jitter(n, 0.1)
-    assert len(operators._JITTER_SEQ) == 4
-    assert first_key not in operators._JITTER_SEQ
+    assert len(operators.JITTER_MANAGER.seq) == 4
+    assert first_key not in operators.JITTER_MANAGER.seq
 
 
 def test_um_candidate_subset_proximity(graph_canon):
