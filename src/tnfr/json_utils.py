@@ -53,7 +53,14 @@ def _cache_clear_and_reset() -> None:
     _orig_cache_clear()
 
 
-cast(Any, _load_orjson).cache_clear = _cache_clear_and_reset  # type: ignore[attr-defined]
+def clear_orjson_cache() -> None:
+    """Clear cached :mod:`orjson` module and warning state.
+
+    This is a thin wrapper around the internal reset routine used in tests to
+    drop the optional import cache and reset the set of ignored-parameter
+    warnings.
+    """
+    _cache_clear_and_reset()
 
 
 @dataclass(slots=True)
