@@ -6,7 +6,7 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, IO
 from functools import lru_cache
 
 from .import_utils import optional_import
@@ -126,6 +126,14 @@ def read_structured_file(path: Path) -> Any:
 logger = get_logger(__name__)
 
 
+def _write_to_fd(fd: IO[Any], write: Callable[[Any], Any], *, sync: bool = False) -> None:
+    """Write using ``write`` callback and optionally sync to disk."""
+    write(fd)
+    if sync:
+        fd.flush()
+        os.fsync(fd.fileno())
+
+
 def safe_write(
     path: str | Path,
     write: Callable[[Any], Any],
@@ -168,9 +176,7 @@ def safe_write(
                 dir=path.parent, delete=False, **open_params
             ) as tmp:
                 tmp_path = Path(tmp.name)
-                write(tmp)
-                tmp.flush()
-                os.fsync(tmp.fileno())
+                _write_to_fd(tmp, write, sync=True)
             try:
                 os.replace(tmp_path, path)
             except OSError as e:
@@ -186,7 +192,7 @@ def safe_write(
     else:
         try:
             with open(path, **open_params) as f:
-                write(f)
+                _write_to_fd(f, write)
         except (OSError, ValueError, TypeError) as e:
             raise type(e)(f"Failed to write file {path}: {e}") from e
 
