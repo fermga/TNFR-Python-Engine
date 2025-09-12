@@ -69,7 +69,8 @@ instantiate ad-hoc locks directly when they are not shared.
 
 Callback errors are stored in a ring buffer attached to the graph.  The
 buffer retains at most the last 100 errors by default, but the limit can be
-adjusted at runtime via ``tnfr.callback_utils.set_callback_error_limit``.
+adjusted at runtime via ``tnfr.callback_utils.set_callback_error_limit`` and
+inspected with ``tnfr.callback_utils.get_callback_error_limit``.
 
 ---
 
