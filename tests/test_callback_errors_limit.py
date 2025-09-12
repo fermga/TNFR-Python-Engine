@@ -25,7 +25,7 @@ def test_callback_error_list_resets_limit(graph_canon):
         invoke_callbacks(G, CallbackEvent.BEFORE_STEP, {})
         err_list = G.graph.get("_callback_errors")
         assert err_list is not original
-        assert err_list.maxlen == cb_utils._CALLBACK_ERROR_LIMIT == 7
+        assert err_list.maxlen == cb_utils.get_callback_error_limit() == 7
         assert len(err_list) == 1
     finally:
         set_callback_error_limit(prev)

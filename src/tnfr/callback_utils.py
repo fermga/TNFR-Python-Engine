@@ -29,6 +29,7 @@ __all__ = (
     "CallbackEvent",
     "register_callback",
     "invoke_callbacks",
+    "get_callback_error_limit",
     "set_callback_error_limit",
     "CallbackError",
 )
@@ -51,6 +52,12 @@ _CALLBACK_EVENTS: set[str] = {e.value for e in CallbackEvent}
 # Default number of recent callback errors to retain.
 # Use ``set_callback_error_limit`` to adjust.
 _CALLBACK_ERROR_LIMIT = 100
+
+
+def get_callback_error_limit() -> int:
+    """Return the current callback error retention limit."""
+    return _CALLBACK_ERROR_LIMIT
+
 
 Callback = Callable[["nx.Graph", dict[str, Any]], None]
 CallbackRegistry = dict[str, dict[str, "CallbackSpec"]]
@@ -117,6 +124,7 @@ def _ensure_callbacks_nolock(G: "nx.Graph") -> CallbackRegistry:
         for event in dirty:
             _normalize_event_callbacks(cbs, event)
     return cbs
+
 
 def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
     """Ensure the callback structure in ``G.graph``."""
@@ -214,11 +222,12 @@ def _record_callback_error(
 
     logger.exception("callback %r failed for %s: %s", spec.name, event, err)
     err_list = G.graph.get("_callback_errors")
+    limit = get_callback_error_limit()
     if (
         not isinstance(err_list, deque)
-        or err_list.maxlen != _CALLBACK_ERROR_LIMIT
+        or err_list.maxlen != limit
     ):
-        err_list = deque[CallbackError](maxlen=_CALLBACK_ERROR_LIMIT)
+        err_list = deque[CallbackError](maxlen=limit)
         G.graph["_callback_errors"] = err_list
     error: CallbackError = {
         "event": event,
@@ -248,7 +257,7 @@ def set_callback_error_limit(limit: int) -> int:
     if limit < 1:
         raise ValueError("limit must be positive")
     global _CALLBACK_ERROR_LIMIT
-    previous = _CALLBACK_ERROR_LIMIT
+    previous = get_callback_error_limit()
     _CALLBACK_ERROR_LIMIT = int(limit)
     return previous
 
