@@ -19,7 +19,7 @@ __all__ = (
     "IncrementDict",
     "push_glyph",
     "recent_glyph",
-    "validate_and_ensure_history",
+    "ensure_history_deque",
     "ensure_history",
     "current_step_idx",
     "append_metric",
@@ -56,7 +56,7 @@ def _normalize_history_input(hist: Any) -> Iterable[Any]:
         return ()
 
 
-def _ensure_glyph_history(nd: dict[str, Any], window: int) -> deque:
+def ensure_history_deque(nd: dict[str, Any], window: int) -> deque:
     """Return ``nd['glyph_history']`` deque ensuring size ``window``.
 
     Parameters
@@ -64,10 +64,12 @@ def _ensure_glyph_history(nd: dict[str, Any], window: int) -> deque:
     nd:
         Mapping potentially containing ``"glyph_history"``.
     window:
-        Desired history size that has **already** been validated.
+        Desired history size that has **already** been validated via
+        :func:`validate_window`.
 
     Non-iterable existing values are discarded.
     """
+
     hist = nd.get("glyph_history")
     if not isinstance(hist, deque) or hist.maxlen != window:
         seq = _normalize_history_input(hist)
@@ -76,40 +78,15 @@ def _ensure_glyph_history(nd: dict[str, Any], window: int) -> deque:
     return hist
 
 
-def validate_and_ensure_history(
-    nd: dict[str, Any],
-    window: int | None = None,
-    *,
-    validated_window: int | None = None,
-) -> deque:
-    """Ensure a history deque for ``nd``.
-
-    Parameters
-    ----------
-    nd:
-        Mapping potentially containing ``"glyph_history"``.
-    window:
-        History size to validate when ``validated_window`` is ``None``.
-    validated_window:
-        Pre-validated history size. When supplied ``window`` is ignored and no
-        additional validation occurs.
-    """
-
-    if validated_window is None:
-        if window is None:
-            raise TypeError("'window' must be provided when 'validated_window' is None")
-        validated_window = validate_window(window)
-    return _ensure_glyph_history(nd, validated_window)
-
-
 def push_glyph(nd: dict[str, Any], glyph: str, window: int) -> None:
     """Add ``glyph`` to node history with maximum size ``window``.
 
-    ``window`` is validated and the underlying deque is ensured by
-    :func:`validate_and_ensure_history`.
+    ``window`` is validated via :func:`validate_window` and the underlying
+    deque is ensured by :func:`ensure_history_deque`.
     """
 
-    hist = validate_and_ensure_history(nd, window)
+    v_window = validate_window(window)
+    hist = ensure_history_deque(nd, v_window)
     hist.append(str(glyph))
 
 
@@ -122,7 +99,7 @@ def recent_glyph(nd: dict[str, Any], glyph: str, window: int) -> bool:
     """
 
     v_window = validate_window(window)
-    hist = validate_and_ensure_history(nd, validated_window=v_window)
+    hist = ensure_history_deque(nd, v_window)
     if v_window == 0:
         return False
     gl = str(glyph)
