@@ -18,7 +18,7 @@ def test_lazy_orjson_import(monkeypatch):
         return FakeOrjson()
 
     monkeypatch.setattr(json_utils, "optional_import", fake_optional_import)
-    json_utils._load_orjson.cache_clear()
+    json_utils.clear_orjson_cache()
 
     assert calls["n"] == 0
     json_utils.json_dumps({})
@@ -29,7 +29,7 @@ def test_lazy_orjson_import(monkeypatch):
 
 def test_warns_once(monkeypatch, caplog):
     monkeypatch.setattr(json_utils, "optional_import", lambda name: FakeOrjson())
-    json_utils._load_orjson.cache_clear()
+    json_utils.clear_orjson_cache()
 
     with warnings.catch_warnings(record=True) as w:
         for _ in range(2):
