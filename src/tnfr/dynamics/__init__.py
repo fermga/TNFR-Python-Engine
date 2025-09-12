@@ -12,7 +12,6 @@ from ..grammar import enforce_canonical_grammar, on_applied_glyph
 from ..types import Glyph
 from ..constants import (
     DEFAULTS,
-    REMESH_DEFAULTS,
     METRIC_DEFAULTS,
     ALIAS_VF,
     ALIAS_THETA,
