@@ -22,6 +22,7 @@ from typing import (
 from functools import lru_cache, partial
 from threading import Lock
 
+from .constants import ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
 from .value_utils import _convert_value
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -362,14 +363,12 @@ def set_vf(
 ) -> None:
     """Set ``νf`` for node ``n`` and optionally update the global maximum."""
     cache = "_vfmax" if update_max else None
-    from .constants import ALIAS_VF
 
     set_scalar(G, n, ALIAS_VF, value, cache=cache)
 
 
 def set_dnfr(G: "networkx.Graph", n: Hashable, value: float) -> None:
     """Set ``ΔNFR`` for node ``n`` and update the global maximum."""
-    from .constants import ALIAS_DNFR
 
     set_scalar(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
 
@@ -388,7 +387,6 @@ def _increment_trig_version(
 
 def set_theta(G: "networkx.Graph", n: Hashable, value: float) -> None:
     """Set ``θ`` for node ``n`` and invalidate trig caches."""
-    from .constants import ALIAS_THETA
 
     set_scalar(
         G,
