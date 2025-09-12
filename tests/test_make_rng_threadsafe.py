@@ -12,18 +12,13 @@ def test_make_rng_thread_safety(monkeypatch):
     clear_rng_cache()
 
     results = []
-    errors = []
     lock = threading.Lock()
 
     def worker():
-        try:
-            rng = make_rng(123, 456)
-            seq = [rng.random() for _ in range(3)]
-            with lock:
-                results.append(seq)
-        except Exception as e:  # pragma: no cover - should not happen
-            with lock:
-                errors.append(e)
+        rng = make_rng(123, 456)
+        seq = [rng.random() for _ in range(3)]
+        with lock:
+            results.append(seq)
 
     threads = [threading.Thread(target=worker) for _ in range(20)]
     for t in threads:
@@ -31,7 +26,7 @@ def test_make_rng_thread_safety(monkeypatch):
     for t in threads:
         t.join()
 
-    assert not errors
+    assert len(results) == 20
     assert all(seq == results[0] for seq in results)
 
 
