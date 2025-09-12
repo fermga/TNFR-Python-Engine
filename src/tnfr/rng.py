@@ -33,7 +33,7 @@ def seed_hash(seed_int: int, key_int: int) -> int:
 
 def _make_cache(size: int) -> Callable[[int, int], int]:
     if size > 0:
-        cache = LRUCache(maxsize=max(1, size))
+        cache = LRUCache(maxsize=size)
         return cached(cache=cache, lock=_RNG_LOCK)(seed_hash)
     return seed_hash
 
