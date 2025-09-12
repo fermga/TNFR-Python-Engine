@@ -2,17 +2,17 @@
 
 from __future__ import annotations
 
-import math
 import sys
 
 from .constants import get_aliases, get_param
 from .alias import get_attr
 from .glyph_history import last_glyph
 from .sense import sigma_vector_from_graph
+from .helpers.numeric import within_range
+from .constants_glyphs import GLYPHS_CANONICAL_SET
 
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
-from .constants_glyphs import GLYPHS_CANONICAL_SET
 
 __all__ = ("run_validators",)
 
@@ -40,12 +40,8 @@ def _out_of_range_msg(name, node, val):
     return f"{name} out of range in node {node}: {val}"
 
 
-def _check_range(val, lower, upper, name, node):
-    if not (
-        lower <= val <= upper
-        or math.isclose(val, lower)
-        or math.isclose(val, upper)
-    ):
+def _check_range(val, lower, upper, name, node, tol: float = 1e-9):
+    if not within_range(val, lower, upper, tol):
         raise ValueError(_out_of_range_msg(name, node, val))
 
 
