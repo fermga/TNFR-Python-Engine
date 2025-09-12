@@ -43,10 +43,6 @@ __all__ = (
     "recompute_abs_max",
     "multi_recompute_abs_max",
 )
-
-# Sentinel object used internally when resolving aliases
-SENTINEL = object()
-
 # Module-level lock to guard alias cache operations
 _alias_cache_lock = Lock()
 
@@ -83,26 +79,17 @@ def _alias_resolve(
     log_level: int | None = None,
 ) -> Optional[T]:
     """Resolve the first matching key in ``aliases`` from ``d``."""
-    value = next(
-        (
-            v
-            for key in aliases
-            if key in d
-            for ok, v in [
-                _convert_value(
-                    d[key],
-                    conv,
-                    strict=strict,
-                    key=key,
-                    log_level=log_level,
-                )
-            ]
-            if ok
-        ),
-        SENTINEL,
-    )
-    if value is not SENTINEL:
-        return value
+    for key in aliases:
+        if key in d:
+            ok, value = _convert_value(
+                d[key],
+                conv,
+                strict=strict,
+                key=key,
+                log_level=log_level,
+            )
+            if ok:
+                return value
     if default is not None:
         ok, value = _convert_default(
             default,
