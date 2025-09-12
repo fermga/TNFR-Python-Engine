@@ -19,7 +19,6 @@ from .collections_utils import normalize_counter, mix_groups
 from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 from .logging_utils import get_logger
-from .import_utils import get_numpy
 
 __all__ = (
     "attach_standard_observer",
@@ -89,26 +88,11 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
     if not _ensure_nodes(G):
         return 1.0
     _, psi = _get_R_psi(G, R, psi)
-
-    np = get_numpy()
-    if np is not None:
-        th = np.fromiter(
-            (
-                get_attr(data, ALIAS_THETA, 0.0)
-                for _, data in G.nodes(data=True)
-            ),
-            dtype=float,
-            count=G.number_of_nodes(),
-        )
-        diff = (th - psi + np.pi) % (2 * np.pi) - np.pi
-        var = float(np.var(diff)) if diff.size else 0.0
-    else:
-        diffs = (
-            angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
-            for _, data in G.nodes(data=True)
-        )
-        var = list_pvariance(diffs, default=0.0)
-
+    diffs = (
+        angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
+        for _, data in G.nodes(data=True)
+    )
+    var = list_pvariance(diffs, default=0.0)
     return 1.0 / (1.0 + var)
 
 
