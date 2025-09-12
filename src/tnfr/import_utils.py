@@ -52,6 +52,16 @@ EMIT_MAP: dict[str, tuple] = {
     "both": (_emit_both,),
 }
 
+
+def _format_failure_message(module: str, attr: str | None, err: Exception) -> str:
+    """Return a standardised failure message."""
+    return (
+        f"Failed to import module '{module}': {err}"
+        if isinstance(err, ImportError)
+        else f"Module '{module}' has no attribute '{attr}': {err}"
+    )
+
+
 _FAILED_IMPORT_LIMIT = 128  # keep only this many recent failures
 _FAILED_IMPORT_MAX_AGE = 3600.0  # seconds
 _FAILED_IMPORT_PRUNE_INTERVAL = 60.0  # seconds between automatic prunes
@@ -120,11 +130,7 @@ def _warn_failure(
     state = _IMPORT_STATE
     if now - state.last_prune >= _FAILED_IMPORT_PRUNE_INTERVAL:
         prune_failed_imports()
-    msg = (
-        f"Failed to import module '{module}': {err}"
-        if isinstance(err, ImportError)
-        else f"Module '{module}' has no attribute '{attr}': {err}"
-    )
+    msg = _format_failure_message(module, attr, err)
     with _WARNED_STATE.lock:
         first = module not in _WARNED_STATE.failed
         _WARNED_STATE.record(module)
@@ -144,10 +150,9 @@ def _optional_import_cached(name: str) -> Any | None:
     try:
         module = importlib.import_module(module_name)
         obj = getattr(module, attr) if attr else module
-        with _IMPORT_STATE.lock:
+        with _IMPORT_STATE.lock, _WARNED_STATE.lock:
             for item in (name, module_name):
                 _IMPORT_STATE.discard(item)
-        with _WARNED_STATE.lock:
             _WARNED_STATE.discard(module_name)
         return obj
     except (ImportError, AttributeError) as e:
@@ -202,19 +207,17 @@ optional_import.cache_clear = _optional_import_cached.cache_clear  # type: ignor
 def clear_optional_import_cache() -> None:
     """Clear ``optional_import`` cache, failure records and warning state."""
     optional_import.cache_clear()
-    with _IMPORT_STATE.lock:
+    with _IMPORT_STATE.lock, _WARNED_STATE.lock:
         _IMPORT_STATE.clear()
-    with _WARNED_STATE.lock:
         _WARNED_STATE.clear()
 
 
 def prune_failed_imports() -> None:
     """Remove expired entries from the failed import registry."""
     now = time.monotonic()
-    with _IMPORT_STATE.lock:
+    with _IMPORT_STATE.lock, _WARNED_STATE.lock:
         _IMPORT_STATE.failed.expire(now)
         _IMPORT_STATE.last_prune = now
-    with _WARNED_STATE.lock:
         _WARNED_STATE.failed.expire(now)
         _WARNED_STATE.last_prune = now
 
