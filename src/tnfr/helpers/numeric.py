@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Any
 from collections.abc import Iterable, Sequence
 from statistics import fmean, StatisticsError, pvariance
-from itertools import chain
 import math
 
 from ..import_utils import get_numpy, import_nodonx
@@ -120,22 +119,20 @@ def _phase_mean_from_iter(
     """Return circular mean from an iterator of cosine/sine pairs.
 
     ``it`` yields optional ``(cos, sin)`` tuples. Entries with ``None``
-    components are ignored. The iterator is consumed directly and the
-    components are accumulated using :func:`kahan_sum2d` to avoid storing
-    intermediate results. If no valid pairs are found ``fallback`` is
-    returned.
+    components are ignored. Valid pairs are collected and accumulated using
+    :func:`kahan_sum2d`. If no valid pairs are found ``fallback`` is returned.
     """
-    values = (
-        (c, s)
-        for cs in it
-        if cs is not None and cs[0] is not None and cs[1] is not None
-        for c, s in [cs]
-    )
-    try:
-        first = next(values)
-    except StopIteration:
+    values: list[tuple[float, float]] = []
+    for cs in it:
+        if cs is None:
+            continue
+        c, s = cs
+        if c is None or s is None:
+            continue
+        values.append((c, s))
+    if not values:
         return fallback
-    sum_cos, sum_sin = kahan_sum2d(chain([first], values))
+    sum_cos, sum_sin = kahan_sum2d(values)
     return math.atan2(sum_sin, sum_cos)
 
 
