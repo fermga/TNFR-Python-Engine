@@ -97,7 +97,9 @@ def kahan_sum_nd(
     """Return compensated sums of ``values`` with ``dims`` components.
 
     Each component of the tuples in ``values`` is summed independently using the
-    Kahan–Babuška (Neumaier) algorithm to reduce floating point error.
+    Kahan–Babuška (Neumaier) algorithm to reduce floating point error.  Other
+    helpers like :func:`kahan_sum` and :func:`kahan_sum2d` are thin wrappers
+    around this generic implementation.
     """
     if dims < 1:
         raise ValueError("dims must be >= 1")
@@ -116,13 +118,19 @@ def kahan_sum_nd(
 
 
 def kahan_sum(values: Iterable[float]) -> float:
-    """Return a compensated sum of ``values`` using Kahan summation."""
-    (result,) = kahan_sum_nd(((v,) for v in values), dims=1)
-    return result
+    """Return a compensated sum of ``values`` using Kahan summation.
+
+    This is a convenience wrapper over :func:`kahan_sum_nd` for one-dimensional
+    input.
+    """
+    return kahan_sum_nd(((v,) for v in values), dims=1)[0]
 
 
 def kahan_sum2d(values: Iterable[tuple[float, float]]) -> tuple[float, float]:
-    """Return compensated sums of paired ``values`` using Kahan summation."""
+    """Return compensated sums of paired ``values`` using Kahan summation.
+
+    It wraps :func:`kahan_sum_nd` for two-dimensional input.
+    """
     return kahan_sum_nd(values, dims=2)
 
 
