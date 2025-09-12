@@ -5,11 +5,7 @@ from typing import Any
 
 from tnfr.constants import (
     inject_defaults,
-    ALIAS_EPI,
-    ALIAS_DNFR,
-    ALIAS_DEPI,
-    ALIAS_SI,
-    ALIAS_VF,
+    get_aliases,
 )
 from tnfr.alias import get_attr, set_attr
 from tnfr.metrics import (
@@ -24,6 +20,12 @@ from tnfr.metrics.core import LATENT_GLYPH
 from tnfr.metrics.core import _update_sigma
 from tnfr.constants import METRIC_DEFAULTS
 from tnfr.types import Glyph
+
+ALIAS_EPI = get_aliases("EPI")
+ALIAS_DNFR = get_aliases("DNFR")
+ALIAS_DEPI = get_aliases("DEPI")
+ALIAS_SI = get_aliases("SI")
+ALIAS_VF = get_aliases("VF")
 
 
 def test_track_stability_updates_hist(graph_canon):

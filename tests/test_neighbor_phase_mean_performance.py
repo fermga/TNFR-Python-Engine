@@ -6,8 +6,10 @@ import networkx as nx
 import pytest
 
 from tnfr.helpers.numeric import neighbor_phase_mean
-from tnfr.constants import ALIAS_THETA
+from tnfr.constants import get_aliases
 from tnfr.node import NodoNX
+
+ALIAS_THETA = get_aliases("THETA")
 
 
 def _naive_neighbor_phase_mean(G, n):

@@ -21,8 +21,12 @@ from typing import (
 
 from functools import lru_cache, partial
 
-from .constants import ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
+from .constants import get_aliases
 from .value_utils import convert_value
+
+ALIAS_VF = get_aliases("VF")
+ALIAS_DNFR = get_aliases("DNFR")
+ALIAS_THETA = get_aliases("THETA")
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx  # type: ignore[import-untyped]

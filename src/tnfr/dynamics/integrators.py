@@ -7,15 +7,17 @@ import networkx as nx  # type: ignore[import-untyped]
 
 from ..constants import (
     DEFAULTS,
-    ALIAS_VF,
-    ALIAS_DNFR,
-    ALIAS_DEPI,
-    ALIAS_EPI,
-    ALIAS_EPI_KIND,
-    ALIAS_D2EPI,
+    get_aliases,
 )
 from ..gamma import eval_gamma
 from ..alias import get_attr, get_attr_str, set_attr, set_attr_str
+
+ALIAS_VF = get_aliases("VF")
+ALIAS_DNFR = get_aliases("DNFR")
+ALIAS_DEPI = get_aliases("DEPI")
+ALIAS_EPI = get_aliases("EPI")
+ALIAS_EPI_KIND = get_aliases("EPI_KIND")
+ALIAS_D2EPI = get_aliases("D2EPI")
 
 __all__ = (
     "prepare_integration_params",

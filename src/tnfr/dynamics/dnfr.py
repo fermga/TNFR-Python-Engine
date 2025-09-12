@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from ..collections_utils import normalize_weights
-from ..constants import DEFAULTS, ALIAS_THETA, ALIAS_EPI, ALIAS_VF, get_param
+from ..constants import DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import (
     angle_diff,
     neighbor_mean,
@@ -26,6 +26,10 @@ from ..alias import (
 )
 from ..metrics_utils import get_trig_cache, merge_graph_weights
 from ..import_utils import get_numpy
+
+ALIAS_THETA = get_aliases("THETA")
+ALIAS_EPI = get_aliases("EPI")
+ALIAS_VF = get_aliases("VF")
 
 
 np = get_numpy()

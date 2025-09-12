@@ -1,8 +1,11 @@
 import pytest
 
 from tnfr.alias import set_attr
-from tnfr.constants import ALIAS_VF, ALIAS_DNFR
+from tnfr.constants import get_aliases
 from tnfr.metrics_utils import _get_vf_dnfr_max
+
+ALIAS_VF = get_aliases("VF")
+ALIAS_DNFR = get_aliases("DNFR")
 
 
 def test_get_vf_dnfr_max_updates_graph_on_none(graph_canon):

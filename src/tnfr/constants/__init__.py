@@ -50,12 +50,12 @@ DEFAULTS: Mapping[str, Any] = MappingProxyType(
 # -------------------------
 # "REMESH_TAU" era el nombre original para la memoria de REMESH. Hoy se
 # desglosa en ``REMESH_TAU_GLOBAL`` y ``REMESH_TAU_LOCAL``.
-ALIASES: dict[str, tuple[str, ...]] = {
+PARAM_ALIASES: dict[str, tuple[str, ...]] = {
     "REMESH_TAU": ("REMESH_TAU_GLOBAL", "REMESH_TAU_LOCAL"),
 }
 
-_ALIAS_TARGET_TO_KEY: dict[str, str] = {
-    target: alias for alias, targets in ALIASES.items() for target in targets
+_PARAM_ALIAS_TARGET_TO_KEY: dict[str, str] = {
+    target: alias for alias, targets in PARAM_ALIASES.items() for target in targets
 }
 
 # -------------------------
@@ -99,7 +99,7 @@ def get_param(G, key: str):
     """Retrieve a parameter from ``G.graph`` resolving legacy aliases."""
     if key in G.graph:
         return G.graph[key]
-    alias = _ALIAS_TARGET_TO_KEY.get(key)
+    alias = _PARAM_ALIAS_TARGET_TO_KEY.get(key)
     if alias and alias in G.graph:
         warnings.warn(
             f"'{alias}' es alias legado; usa '{key}'",
@@ -127,30 +127,39 @@ def get_graph_param(G, key: str, cast: Callable[[Any], Any] = float):
 VF_KEY = "νf"
 THETA_KEY = "θ"
 
-# Alias exportados por conveniencia (evita imports circulares)
-ALIAS_VF = (VF_KEY, "nu_f", "nu-f", "nu", "freq", "frequency")
-ALIAS_THETA = (THETA_KEY, "theta", "fase", "phi", "phase")
-ALIAS_DNFR = ("ΔNFR", "delta_nfr", "dnfr")
-ALIAS_EPI = ("EPI", "psi", "PSI", "value")
-ALIAS_EPI_KIND = ("EPI_kind", "epi_kind", "source_glyph")
-ALIAS_SI = ("Si", "sense_index", "S_i", "sense", "meaning_index")
-ALIAS_DEPI = ("dEPI_dt", "dpsi_dt", "dEPI", "velocity")
-ALIAS_D2EPI = ("d2EPI_dt2", "d2psi_dt2", "d2EPI", "accel")
-ALIAS_DVF = ("dνf_dt", "dvf_dt", "dnu_dt", "dvf")
-ALIAS_D2VF = ("d2νf_dt2", "d2vf_dt2", "d2nu_dt2", "B")
-ALIAS_DSI = ("δSi", "delta_Si", "dSi")
+# Mapa de aliases para atributos nodales
+ALIASES: dict[str, tuple[str, ...]] = {
+    "VF": (VF_KEY, "nu_f", "nu-f", "nu", "freq", "frequency"),
+    "THETA": (THETA_KEY, "theta", "fase", "phi", "phase"),
+    "DNFR": ("ΔNFR", "delta_nfr", "dnfr"),
+    "EPI": ("EPI", "psi", "PSI", "value"),
+    "EPI_KIND": ("EPI_kind", "epi_kind", "source_glyph"),
+    "SI": ("Si", "sense_index", "S_i", "sense", "meaning_index"),
+    "DEPI": ("dEPI_dt", "dpsi_dt", "dEPI", "velocity"),
+    "D2EPI": ("d2EPI_dt2", "d2psi_dt2", "d2EPI", "accel"),
+    "DVF": ("dνf_dt", "dvf_dt", "dnu_dt", "dvf"),
+    "D2VF": ("d2νf_dt2", "d2vf_dt2", "d2nu_dt2", "B"),
+    "DSI": ("δSi", "delta_Si", "dSi"),
+}
 
-VF_PRIMARY = ALIAS_VF[0]
-THETA_PRIMARY = ALIAS_THETA[0]
-DNFR_PRIMARY = ALIAS_DNFR[0]
-EPI_PRIMARY = ALIAS_EPI[0]
-EPI_KIND_PRIMARY = ALIAS_EPI_KIND[0]
-SI_PRIMARY = ALIAS_SI[0]
-dEPI_PRIMARY = ALIAS_DEPI[0]
-D2EPI_PRIMARY = ALIAS_D2EPI[0]
-dVF_PRIMARY = ALIAS_DVF[0]
-D2VF_PRIMARY = ALIAS_D2VF[0]
-dSI_PRIMARY = ALIAS_DSI[0]
+
+def get_aliases(key: str) -> tuple[str, ...]:
+    """Return alias tuple for canonical ``key``."""
+
+    return ALIASES[key]
+
+
+VF_PRIMARY = get_aliases("VF")[0]
+THETA_PRIMARY = get_aliases("THETA")[0]
+DNFR_PRIMARY = get_aliases("DNFR")[0]
+EPI_PRIMARY = get_aliases("EPI")[0]
+EPI_KIND_PRIMARY = get_aliases("EPI_KIND")[0]
+SI_PRIMARY = get_aliases("SI")[0]
+dEPI_PRIMARY = get_aliases("DEPI")[0]
+D2EPI_PRIMARY = get_aliases("D2EPI")[0]
+dVF_PRIMARY = get_aliases("DVF")[0]
+D2VF_PRIMARY = get_aliases("D2VF")[0]
+dSI_PRIMARY = get_aliases("DSI")[0]
 
 __all__ = (
     "CORE_DEFAULTS",
@@ -165,24 +174,15 @@ __all__ = (
     "DIAGNOSIS",
     "DEFAULTS",
     "DEFAULT_SECTIONS",
+    "PARAM_ALIASES",
     "ALIASES",
     "inject_defaults",
     "merge_overrides",
     "get_param",
     "get_graph_param",
+    "get_aliases",
     "VF_KEY",
     "THETA_KEY",
-    "ALIAS_VF",
-    "ALIAS_THETA",
-    "ALIAS_DNFR",
-    "ALIAS_EPI",
-    "ALIAS_EPI_KIND",
-    "ALIAS_SI",
-    "ALIAS_DEPI",
-    "ALIAS_D2EPI",
-    "ALIAS_DVF",
-    "ALIAS_D2VF",
-    "ALIAS_DSI",
     "VF_PRIMARY",
     "THETA_PRIMARY",
     "DNFR_PRIMARY",
@@ -197,22 +197,29 @@ __all__ = (
 )
 
 # Deprecated names ---------------------------------------------------------
-# Keep legacy lowercase derivative aliases for backwards compatibility.
-# Accessing them triggers a ``DeprecationWarning`` pointing to the new
-# uppercase variants.
+# Keep legacy alias constants for backwards compatibility.
 _DEPRECATED_ALIASES = {
-    "ALIAS_dEPI": "ALIAS_DEPI",
-    "ALIAS_dVF": "ALIAS_DVF",
-    "ALIAS_dSI": "ALIAS_DSI",
+    "ALIAS_dEPI": "DEPI",
+    "ALIAS_dVF": "DVF",
+    "ALIAS_dSI": "DSI",
 }
 
 
 def __getattr__(name: str):
     if name in _DEPRECATED_ALIASES:
+        key = _DEPRECATED_ALIASES[name]
         warnings.warn(
-            f"'{name}' is deprecated; use '{_DEPRECATED_ALIASES[name]}'",
+            f"'{name}' is deprecated; use get_aliases('{key}')",
             DeprecationWarning,
             stacklevel=2,
         )
-        return globals()[_DEPRECATED_ALIASES[name]]
+        return ALIASES[key]
+    if name.startswith("ALIAS_") and name[6:] in ALIASES:
+        key = name[6:]
+        warnings.warn(
+            f"'{name}' is deprecated; use get_aliases('{key}')",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return ALIASES[key]
     raise AttributeError(f"module {__name__} has no attribute {name}")

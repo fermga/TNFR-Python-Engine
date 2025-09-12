@@ -10,13 +10,7 @@ import math
 
 from .constants import (
     DEFAULTS,
-    ALIAS_EPI,
-    ALIAS_VF,
-    ALIAS_THETA,
-    ALIAS_SI,
-    ALIAS_EPI_KIND,
-    ALIAS_DNFR,
-    ALIAS_D2EPI,
+    get_aliases,
 )
 from .glyph_history import push_glyph
 from .alias import (
@@ -31,6 +25,14 @@ from .alias import (
 from .helpers.cache import increment_edge_version, ensure_node_offset_map
 
 from .operators import apply_glyph_obj
+
+ALIAS_EPI = get_aliases("EPI")
+ALIAS_VF = get_aliases("VF")
+ALIAS_THETA = get_aliases("THETA")
+ALIAS_SI = get_aliases("SI")
+ALIAS_EPI_KIND = get_aliases("EPI_KIND")
+ALIAS_DNFR = get_aliases("DNFR")
+ALIAS_D2EPI = get_aliases("D2EPI")
 
 T = TypeVar("T")
 

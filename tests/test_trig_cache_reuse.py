@@ -1,10 +1,14 @@
 import math
 import pytest
 
-from tnfr.constants import ALIAS_THETA, ALIAS_VF, ALIAS_DNFR
+from tnfr.constants import get_aliases
 from tnfr.metrics_utils import get_trig_cache, compute_Si
 from tnfr.helpers.numeric import neighbor_phase_mean
 from tnfr.alias import set_attr
+
+ALIAS_THETA = get_aliases("THETA")
+ALIAS_VF = get_aliases("VF")
+ALIAS_DNFR = get_aliases("DNFR")
 
 
 def test_trig_cache_reuse_between_modules(monkeypatch, graph_canon):

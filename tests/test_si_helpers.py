@@ -1,7 +1,7 @@
 import pytest
 import math
 
-from tnfr.constants import ALIAS_DNFR, ALIAS_SI, ALIAS_THETA, ALIAS_VF
+from tnfr.constants import get_aliases
 from tnfr.metrics_utils import (
     compute_Si_node,
     get_Si_weights,
@@ -9,6 +9,11 @@ from tnfr.metrics_utils import (
 )
 from tnfr.alias import get_attr, set_attr, set_theta
 from tnfr.helpers.cache import increment_edge_version
+
+ALIAS_DNFR = get_aliases("DNFR")
+ALIAS_SI = get_aliases("SI")
+ALIAS_THETA = get_aliases("THETA")
+ALIAS_VF = get_aliases("VF")
 
 
 def test_get_si_weights_normalization(graph_canon):

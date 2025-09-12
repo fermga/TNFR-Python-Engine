@@ -5,7 +5,11 @@ import networkx as nx
 import pytest
 
 from tnfr.dynamics import default_compute_delta_nfr
-from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF
+from tnfr.constants import get_aliases
+
+ALIAS_THETA = get_aliases("THETA")
+ALIAS_EPI = get_aliases("EPI")
+ALIAS_VF = get_aliases("VF")
 
 
 @pytest.mark.slow

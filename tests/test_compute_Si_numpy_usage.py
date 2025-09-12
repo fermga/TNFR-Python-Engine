@@ -1,6 +1,10 @@
-from tnfr.constants import ALIAS_THETA, ALIAS_VF, ALIAS_DNFR
+from tnfr.constants import get_aliases
 from tnfr.metrics_utils import compute_Si
 from tnfr.alias import set_attr
+
+ALIAS_THETA = get_aliases("THETA")
+ALIAS_VF = get_aliases("VF")
+ALIAS_DNFR = get_aliases("DNFR")
 
 
 def test_compute_Si_uses_module_numpy_and_propagates(monkeypatch, graph_canon):

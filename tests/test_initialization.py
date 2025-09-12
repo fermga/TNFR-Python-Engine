@@ -7,10 +7,12 @@ from tnfr.constants import (
     inject_defaults,
     VF_KEY,
     THETA_KEY,
-    ALIAS_VF,
-    ALIAS_THETA,
+    get_aliases,
 )
 from tnfr.alias import get_attr
+
+ALIAS_VF = get_aliases("VF")
+ALIAS_THETA = get_aliases("THETA")
 
 
 def test_init_node_attrs_reproducible():

@@ -5,10 +5,13 @@ from __future__ import annotations
 import math
 import sys
 
-from .constants import ALIAS_EPI, ALIAS_VF, get_param
+from .constants import get_aliases, get_param
 from .alias import get_attr
 from .glyph_history import last_glyph
 from .sense import sigma_vector_from_graph
+
+ALIAS_EPI = get_aliases("EPI")
+ALIAS_VF = get_aliases("VF")
 from .constants_glyphs import GLYPHS_CANONICAL_SET
 
 __all__ = ("run_validators",)

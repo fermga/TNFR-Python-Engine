@@ -9,11 +9,14 @@ from tnfr.selector import (
     _calc_selector_score,
     _apply_selector_hysteresis,
 )
-from tnfr.constants import DEFAULTS, ALIAS_DNFR, ALIAS_D2EPI
+from tnfr.constants import DEFAULTS, get_aliases
 from tnfr.constants.core import SELECTOR_THRESHOLD_DEFAULTS
 from tnfr.helpers.numeric import clamp01
 from tnfr.collections_utils import normalize_weights
 from tnfr.dynamics import _configure_selector_weights
+
+ALIAS_DNFR = get_aliases("DNFR")
+ALIAS_D2EPI = get_aliases("D2EPI")
 
 
 def _selector_thresholds_original(G: nx.Graph) -> dict:
