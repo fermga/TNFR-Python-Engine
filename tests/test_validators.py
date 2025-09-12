@@ -46,6 +46,23 @@ def test_validator_vf_range():
         run_validators(G)
 
 
+def test_validator_epi_range_tolerance():
+    G = _base_graph()
+    n0 = list(G.nodes())[0]
+    epi_min = float(G.graph["EPI_MIN"])
+    set_attr(G.nodes[n0], ALIAS_EPI, epi_min - 5e-10)
+    run_validators(G)
+
+
+def test_validator_epi_range_below_tolerance():
+    G = _base_graph()
+    n0 = list(G.nodes())[0]
+    epi_min = float(G.graph["EPI_MIN"])
+    set_attr(G.nodes[n0], ALIAS_EPI, epi_min - 2e-9)
+    with pytest.raises(ValueError):
+        run_validators(G)
+
+
 def test_validator_sigma_norm(monkeypatch):
     G = _base_graph()
 

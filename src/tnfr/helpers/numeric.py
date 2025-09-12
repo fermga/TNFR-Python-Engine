@@ -13,6 +13,7 @@ from ..alias import get_attr
 __all__ = (
     "clamp",
     "clamp01",
+    "within_range",
     "list_mean",
     "list_pvariance",
     "kahan_sum_nd",
@@ -33,6 +34,16 @@ def clamp(x: float, a: float, b: float) -> float:
 def clamp01(x: float) -> float:
     """Clamp ``x`` to the ``[0,1]`` interval."""
     return clamp(float(x), 0.0, 1.0)
+
+
+def within_range(val: float, lower: float, upper: float, tol: float = 1e-9) -> bool:
+    """Return ``True`` if ``val`` lies in ``[lower, upper]`` within ``tol``.
+
+    The comparison uses absolute differences instead of :func:`math.isclose`.
+    """
+
+    v = float(val)
+    return lower <= v <= upper or abs(v - lower) <= tol or abs(v - upper) <= tol
 
 
 def _norm01(x: float, lo: float, hi: float) -> float:
