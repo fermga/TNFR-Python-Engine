@@ -8,7 +8,7 @@ from tnfr.dynamics import (
     _compute_dnfr,
 )
 from tnfr.constants import get_aliases
-from tnfr.alias import get_attr, set_attr
+from tnfr.alias import set_attr, collect_attr
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
@@ -37,10 +37,10 @@ def test_strategies_share_precomputed_data():
     G = _setup_graph()
     data = _prepare_dnfr_data(G)
     _compute_dnfr(G, data, use_numpy=False)
-    dnfr_loop = [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in G.nodes]
+    dnfr_loop = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     for n in G.nodes:
         set_attr(G.nodes[n], ALIAS_DNFR, 0.0)
     data = _prepare_dnfr_data(G)
     _compute_dnfr(G, data, use_numpy=True)
-    dnfr_vec = [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in G.nodes]
+    dnfr_vec = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert dnfr_loop == pytest.approx(dnfr_vec)
