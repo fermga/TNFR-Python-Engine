@@ -20,19 +20,20 @@ _ORJSON_PARAMS_MSG = (
 )
 
 # Track combinations of parameters for which a warning has already been emitted.
-_warned_orjson_param_combos: set[tuple[str, ...]] = set()
+_warned_orjson_param_combos: set[frozenset[str]] = set()
 _warn_lock = threading.Lock()
 
 
 def _warn_orjson_params_once(ignored: Set[str]) -> None:
     """Warn once per unique combination of ignored parameters."""
-    combo = tuple(sorted(ignored))
+    combo = frozenset(ignored)
     with _warn_lock:
         if combo in _warned_orjson_param_combos:
             return
         _warned_orjson_param_combos.add(combo)
+    formatted_combo = "{" + ", ".join(map(repr, sorted(combo))) + "}"
     warnings.warn(
-        _ORJSON_PARAMS_MSG % (combo,),
+        _ORJSON_PARAMS_MSG % formatted_combo,
         UserWarning,
         stacklevel=2,
     )
