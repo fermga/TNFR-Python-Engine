@@ -10,6 +10,7 @@ from typing import Any, Callable, Iterator, TypeVar, cast
 
 from .logging_utils import get_logger, warn_once
 from .value_utils import convert_value
+from .helpers.numeric import kahan_sum
 
 T = TypeVar("T")
 
@@ -186,10 +187,20 @@ def _handle_negative_weights(
     error_on_negative: bool,
     warn_once: bool,
 ) -> float:
-    """Clamp negative weights and adjust total according to policy."""
-    negatives = {k: w for k, w in weights.items() if w < 0}
-    from .helpers.numeric import kahan_sum  # local import to avoid circular dependency
-    total = kahan_sum(weights.values())
+    """Clamp negative weights and adjust total according to policy.
+
+    Negative detection and total accumulation share a single pass using
+    Kahan summation.
+    """
+    negatives: dict[str, float] = {}
+
+    def values() -> Iterable[float]:
+        for k, w in weights.items():
+            if w < 0:
+                negatives[k] = w
+            yield w
+
+    total = kahan_sum(values())
     if not negatives:
         return total
     if error_on_negative:
@@ -263,7 +274,6 @@ def normalize_counter(
     counts: Mapping[str, float | int],
 ) -> tuple[dict[str, float], float]:
     """Normalize a ``Counter`` returning proportions and total."""
-    from .helpers.numeric import kahan_sum  # local import to avoid circular dependency
     total = kahan_sum(counts.values())
     if total <= 0:
         return {}, 0
@@ -279,7 +289,6 @@ def mix_groups(
 ) -> dict[str, float]:
     """Aggregate values of ``dist`` according to ``groups``."""
     out: dict[str, float] = dict(dist)
-    from .helpers.numeric import kahan_sum  # local import to avoid circular dependency
     out.update(
         {
             f"{prefix}{label}": kahan_sum(dist.get(k, 0.0) for k in keys)

@@ -1,12 +1,5 @@
 from __future__ import annotations
 
-from ..collections_utils import (
-    MAX_MATERIALIZE_DEFAULT,
-    ensure_collection,
-    normalize_weights,
-    normalize_counter,
-    mix_groups,
-)
 from ..graph_utils import mark_dnfr_prep_dirty
 
 from .numeric import (
@@ -20,13 +13,6 @@ from .numeric import (
     neighbor_mean,
     neighbor_phase_mean,
     neighbor_phase_mean_list,
-)
-from ..glyph_history import (
-    push_glyph,
-    recent_glyph,
-    ensure_history,
-    last_glyph,
-    count_glyphs,
 )
 from .cache import (
     get_graph,
@@ -74,3 +60,25 @@ __all__ = (
     "get_graph_mapping",
     "mark_dnfr_prep_dirty",
 )
+
+
+def __getattr__(name: str):
+    if name in {
+        "MAX_MATERIALIZE_DEFAULT",
+        "ensure_collection",
+        "normalize_weights",
+        "normalize_counter",
+        "mix_groups",
+    }:
+        from .. import collections_utils as _cu
+        return getattr(_cu, name)
+    if name in {
+        "push_glyph",
+        "recent_glyph",
+        "ensure_history",
+        "last_glyph",
+        "count_glyphs",
+    }:
+        from .. import glyph_history as _gh
+        return getattr(_gh, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name}")
