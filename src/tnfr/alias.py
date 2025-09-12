@@ -382,9 +382,8 @@ def _increment_trig_version(
     # Clear cached trigonometric values to avoid stale data. Any existing
     # `_cos_th`, `_sin_th`, or `_thetas` entries are removed so that a fresh
     # cache will be built on the next access.
-    g.pop("_cos_th", None)
-    g.pop("_sin_th", None)
-    g.pop("_thetas", None)
+    for k in ("_cos_th", "_sin_th", "_thetas"):
+        g.pop(k, None)
 
 
 def set_theta(G: "networkx.Graph", n: Hashable, value: float) -> None:
