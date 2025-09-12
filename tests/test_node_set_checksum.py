@@ -8,6 +8,7 @@ from tnfr.helpers.cache import (
     increment_edge_version,
     _node_repr,
     _hash_node,
+    _node_repr_digest,
 )
 
 
@@ -77,25 +78,17 @@ def test_node_set_checksum_cache_token_is_prefix(graph_canon):
     assert len(token) == 16
 
 
-def test_node_repr_cache_cleared_on_increment(graph_canon):
+def test_node_cache_cleared_on_increment(graph_canon):
     nxG = graph_canon()
-    _node_repr("foo")
-    assert _node_repr.cache_info().currsize > 0
+    _node_repr_digest("foo")
+    assert _node_repr_digest.cache_info().currsize > 0
     increment_edge_version(nxG)
-    assert _node_repr.cache_info().currsize == 0
-
-
-def test_hash_node_cache_cleared_on_increment(graph_canon):
-    nxG = graph_canon()
-    obj = ("foo", 1)
-    _hash_node(obj, _node_repr(obj))
-    assert _hash_node.cache_info().currsize > 0
-    increment_edge_version(nxG)
-    assert _hash_node.cache_info().currsize == 0
+    assert _node_repr_digest.cache_info().currsize == 0
 
 
 def test_hash_node_matches_manual():
     obj = ("a", 1)
     obj_repr = _node_repr(obj)
     manual = hashlib.blake2b(obj_repr.encode("utf-8"), digest_size=16).digest()
-    assert _hash_node(obj, obj_repr) == manual
+    assert _hash_node(obj) == manual
+    assert _node_repr_digest(obj)[1] == manual

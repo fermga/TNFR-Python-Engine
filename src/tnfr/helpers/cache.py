@@ -44,6 +44,7 @@ __all__ = (
     "get_graph_mapping",
     "node_set_checksum",
     "_stable_json",
+    "_node_repr_digest",
     "_node_repr",
     "_cache_node_list",
     "ensure_node_index_map",
@@ -90,21 +91,25 @@ def _stable_json(obj: Any) -> str:
 
 
 @lru_cache(maxsize=1024)
+def _node_repr_digest(obj: Any) -> tuple[str, bytes]:
+    """Return cached stable representation and digest for ``obj``.
+
+    This single helper centralises caching for node representations and their
+    digests, ensuring both values stay in sync.
+    """
+    repr_ = _stable_json(obj)
+    digest = hashlib.blake2b(repr_.encode("utf-8"), digest_size=16).digest()
+    return repr_, digest
+
+
 def _node_repr(n: Any) -> str:
     """Stable representation for node hashing and sorting."""
-    return _stable_json(n)
+    return _node_repr_digest(n)[0]
 
 
-@lru_cache(maxsize=1024)
-def _hash_node(obj: Any, repr_: str | None = None) -> bytes:
-    """Return a stable digest for ``obj`` used in node checksums.
-
-    ``repr_`` provides an optional precomputed representation of ``obj`` and
-    avoids an additional call to :func:`_node_repr` when supplied.
-    """
-    if repr_ is None:
-        repr_ = _node_repr(obj)
-    return hashlib.blake2b(repr_.encode("utf-8"), digest_size=16).digest()
+def _hash_node(obj: Any) -> bytes:
+    """Return a stable digest for ``obj`` used in node checksums."""
+    return _node_repr_digest(obj)[1]
 
 
 def _iter_node_digests(
@@ -114,15 +119,16 @@ def _iter_node_digests(
 
     When ``presorted`` is ``True`` the nodes are assumed to already be sorted
     in a stable manner and their digests are yielded directly. Otherwise,
-    nodes are sorted using :func:`_node_repr` as the key before computing
-    their digests with :func:`_hash_node`.
+    the tuple of representation and digest provided by
+    :func:`_node_repr_digest` is used to avoid redundant computation.
     """
     if presorted:
-        yield from (_hash_node(n) for n in nodes)
+        for node in nodes:
+            yield _node_repr_digest(node)[1]
     else:
-        for node in sorted(nodes, key=_node_repr):
-            repr_ = _node_repr(node)
-            yield _hash_node(node, repr_)
+        pairs = [_node_repr_digest(n) for n in nodes]
+        for _, digest in sorted(pairs, key=lambda x: x[0]):
+            yield digest
 
 
 @dataclass(slots=True)
@@ -577,8 +583,7 @@ def _reset_edge_caches(graph: Any, G: Any) -> None:
     """Clear caches affected by edge updates."""
     invalidate_edge_version_cache(G)
     mark_dnfr_prep_dirty(G)
-    _node_repr.cache_clear()
-    _hash_node.cache_clear()
+    _node_repr_digest.cache_clear()
     for key in EDGE_VERSION_CACHE_KEYS:
         graph.pop(key, None)
 
