@@ -21,6 +21,7 @@ from ..json_utils import json_dumps
 from ..logging_utils import get_logger
 
 T = TypeVar("T")
+U = TypeVar("U")
 
 logger = get_logger(__name__)
 
@@ -347,15 +348,27 @@ class EdgeCacheManager:
     def __init__(self, graph: Any) -> None:
         self.graph = graph
 
+    def _ensure_graph_entry(
+        self,
+        key: str,
+        factory: Callable[[], U],
+        validator: Callable[[Any], bool],
+    ) -> U:
+        """Return a validated entry from ``graph`` or create one when missing."""
+        value = self.graph.get(key)
+        if not validator(value):
+            value = factory()
+            self.graph[key] = value
+        return value
+
     def _ensure_locks(self) -> defaultdict[Hashable, threading.RLock]:
-        locks = self.graph.get("_edge_version_cache_locks")
-        if (
-            not isinstance(locks, defaultdict)
-            or locks.default_factory is not threading.RLock
-        ):
-            locks = defaultdict(threading.RLock)
-            self.graph["_edge_version_cache_locks"] = locks
-        return locks
+        return self._ensure_graph_entry(
+            "_edge_version_cache_locks",
+            factory=lambda: defaultdict(threading.RLock),
+            validator=lambda v: (
+                isinstance(v, defaultdict) and v.default_factory is threading.RLock
+            ),
+        )
 
     def _init_cache(
         self,
@@ -363,12 +376,14 @@ class EdgeCacheManager:
         max_entries: int | None,
     ) -> dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]:
         use_lru = bool(max_entries)
-        cache: (
-            dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]
+
+        return self._ensure_graph_entry(
+            "_edge_version_cache",
+            factory=lambda: (
+                _make_edge_cache(max_entries, locks) if use_lru else {}
+            ),
+            validator=lambda _: False,
         )
-        cache = _make_edge_cache(max_entries, locks) if use_lru else {}
-        self.graph["_edge_version_cache"] = cache
-        return cache
 
     def _maybe_init_cache(
         self,
@@ -376,19 +391,21 @@ class EdgeCacheManager:
         max_entries: int | None,
     ) -> dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]:
         use_lru = bool(max_entries)
-        cache = self.graph.get("_edge_version_cache")
-        if (
-            cache is None
-            or (
-                use_lru
-                and (
-                    not isinstance(cache, LRUCache) or cache.maxsize != max_entries
-                )
-            )
-            or (not use_lru and isinstance(cache, LRUCache))
-        ):
-            cache = self._init_cache(locks, max_entries)
-        return cache
+
+        def validator(value: Any) -> bool:
+            if value is None:
+                return False
+            if use_lru:
+                return isinstance(value, LRUCache) and value.maxsize == max_entries
+            return not isinstance(value, LRUCache)
+
+        return self._ensure_graph_entry(
+            "_edge_version_cache",
+            factory=lambda: (
+                _make_edge_cache(max_entries, locks) if use_lru else {}
+            ),
+            validator=validator,
+        )
 
     def _create_cache(
         self, max_entries: int | None
