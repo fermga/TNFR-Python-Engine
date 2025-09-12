@@ -6,37 +6,28 @@ This module lazily imports :mod:`orjson` on first use of :func:`json_dumps`.
 from __future__ import annotations
 
 import json
-import threading
-import warnings
 
 from typing import Any, Callable, Literal, overload
 
 from dataclasses import dataclass
 from functools import lru_cache
 from .import_utils import optional_import
+from .logging_utils import get_logger, warn_once
 
 _ORJSON_PARAMS_MSG = (
     "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
 )
 
 # Track combinations of parameters for which a warning has already been emitted.
-_warned_orjson_param_combos: set[frozenset[str]] = set()
-_warn_lock = threading.Lock()
+logger = get_logger(__name__)
+_log_orjson_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
 
 
 def _warn_orjson_params_once(ignored: set[str]) -> None:
     """Warn once per unique combination of ignored parameters."""
     combo = frozenset(ignored)
-    with _warn_lock:
-        if combo in _warned_orjson_param_combos:
-            return
-        _warned_orjson_param_combos.add(combo)
     formatted_combo = "{" + ", ".join(map(repr, sorted(combo))) + "}"
-    warnings.warn(
-        _ORJSON_PARAMS_MSG % formatted_combo,
-        UserWarning,
-        stacklevel=2,
-    )
+    _log_orjson_params_once({combo: formatted_combo})
 
 
 def _load_orjson_impl() -> Any | None:
@@ -49,7 +40,7 @@ _orig_cache_clear = _load_orjson.cache_clear
 
 
 def _cache_clear_and_reset() -> None:
-    _warned_orjson_param_combos.clear()
+    _log_orjson_params_once.clear()
     _orig_cache_clear()
 
 

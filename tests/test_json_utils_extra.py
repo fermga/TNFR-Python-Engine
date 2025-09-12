@@ -1,4 +1,4 @@
-import warnings
+import logging
 from dataclasses import is_dataclass
 
 import tnfr.json_utils as json_utils
@@ -20,21 +20,19 @@ def _reset_json_utils(monkeypatch, module):
 def test_json_dumps_without_orjson(monkeypatch, caplog):
     _reset_json_utils(monkeypatch, None)
 
-    with warnings.catch_warnings(record=True):
-
+    with caplog.at_level(logging.WARNING):
         result = json_utils.json_dumps({"a": 1}, ensure_ascii=False, to_bytes=True)
     assert result == b'{"a":1}'
     assert caplog.records == []
 
 
-def test_json_dumps_with_orjson_warns(monkeypatch):
+def test_json_dumps_with_orjson_warns(monkeypatch, caplog):
     _reset_json_utils(monkeypatch, DummyOrjson())
 
-    with warnings.catch_warnings(record=True) as w:
-
+    with caplog.at_level(logging.WARNING):
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
-    assert sum("ignored" in str(r.message) for r in w) == 1
+    assert sum("ignored" in r.message for r in caplog.records) == 1
 
 
 def test_params_passed_to_std(monkeypatch):
