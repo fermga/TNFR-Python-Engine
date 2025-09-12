@@ -36,6 +36,7 @@ T = TypeVar("T")
 __all__ = (
     "set_attr_generic",
     "get_attr",
+    "collect_attr",
     "set_attr",
     "get_attr_str",
     "set_attr_str",
@@ -223,6 +224,45 @@ def get_attr(
         log_level=log_level,
         conv=conv,
     )
+
+
+def collect_attr(
+    G: "networkx.Graph",
+    nodes: Iterable[Any],
+    aliases: Iterable[str],
+    default: float = 0.0,
+    *,
+    np=None,
+):
+    """Collect attribute values for ``nodes`` from ``G`` using ``aliases``.
+
+    Parameters
+    ----------
+    G:
+        Graph containing node attribute mappings.
+    nodes:
+        Iterable of node identifiers to query.
+    aliases:
+        Sequence of alias keys passed to :func:`get_attr`.
+    default:
+        Fallback value when no alias is found for a node.
+    np:
+        Optional NumPy module. When provided, the result is returned as a
+        NumPy array of ``float``; otherwise a Python ``list`` is returned.
+
+    Returns
+    -------
+    list or numpy.ndarray
+        Collected attribute values in the same order as ``nodes``.
+    """
+
+    if np is not None:
+        nodes_list = list(nodes)
+        arr = np.empty(len(nodes_list), dtype=float)
+        for idx, n in enumerate(nodes_list):
+            arr[idx] = get_attr(G.nodes[n], aliases, default)
+        return arr
+    return [get_attr(G.nodes[n], aliases, default) for n in nodes]
 
 
 def set_attr_generic(

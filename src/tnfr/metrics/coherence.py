@@ -13,7 +13,7 @@ from ..constants import (
 )
 from ..callback_utils import register_callback
 from ..glyph_history import ensure_history, append_metric
-from ..alias import get_attr
+from ..alias import get_attr, collect_attr
 from ..collections_utils import normalize_weights
 from ..helpers.numeric import clamp01, _norm01, _similarity_abs
 from ..helpers.cache import ensure_node_index_map
@@ -471,12 +471,23 @@ def coherence_matrix(G, use_numpy: bool | None = None):
     if n == 0:
         return nodes, []
 
+    # NumPy handling for optional vectorized operations
+    np = get_numpy()
+    use_np = (
+        np is not None if use_numpy is None else (use_numpy and np is not None)
+    )
+
     # Precompute indices to avoid repeated list.index calls within loops
 
-    th_vals = [get_attr(G.nodes[v], ALIAS_THETA, 0.0) for v in nodes]
-    epi_vals = [get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in nodes]
-    vf_vals = [get_attr(G.nodes[v], ALIAS_VF, 0.0) for v in nodes]
-    si_vals = [clamp01(get_attr(G.nodes[v], ALIAS_SI, 0.0)) for v in nodes]
+    th_vals = collect_attr(G, nodes, ALIAS_THETA, 0.0, np=np if use_np else None)
+    epi_vals = collect_attr(G, nodes, ALIAS_EPI, 0.0, np=np if use_np else None)
+    vf_vals = collect_attr(G, nodes, ALIAS_VF, 0.0, np=np if use_np else None)
+    si_vals = collect_attr(G, nodes, ALIAS_SI, 0.0, np=np if use_np else None)
+    si_vals = (
+        np.clip(si_vals, 0.0, 1.0)
+        if use_np
+        else [clamp01(v) for v in si_vals]
+    )
     epi_min, epi_max = min_max_range(epi_vals)
     vf_min, vf_max = min_max_range(vf_vals)
 
@@ -492,10 +503,6 @@ def coherence_matrix(G, use_numpy: bool | None = None):
     thr = float(cfg.get("threshold", 0.0))
     if mode not in ("sparse", "dense"):
         mode = "sparse"
-    np = get_numpy()
-    use_np = (
-        np is not None if use_numpy is None else (use_numpy and np is not None)
-    )
     trig = get_trig_cache(G, np=np)
     cos_map, sin_map = trig.cos, trig.sin
     cos_vals = [cos_map.get(n, math.cos(t)) for n, t in zip(nodes, th_vals)]
