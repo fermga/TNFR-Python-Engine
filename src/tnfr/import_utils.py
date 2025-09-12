@@ -11,8 +11,8 @@ import importlib
 import warnings
 from functools import lru_cache
 from typing import Any, Literal
-from collections import OrderedDict
 from dataclasses import dataclass, field
+from cachetools import TTLCache
 import threading
 import time
 from .logging_utils import get_logger
@@ -59,28 +59,22 @@ _FAILED_IMPORT_PRUNE_INTERVAL = 60.0  # seconds between automatic prunes
 
 @dataclass(slots=True)
 class _ImportState:
-    failed: OrderedDict[str, float] = field(default_factory=OrderedDict)
-    lock: threading.Lock = field(default_factory=threading.Lock)
     limit: int = _FAILED_IMPORT_LIMIT
     max_age: float = _FAILED_IMPORT_MAX_AGE
+    failed: TTLCache = field(init=False)
+    lock: threading.Lock = field(default_factory=threading.Lock)
     last_prune: float = 0.0
 
+    def __post_init__(self) -> None:
+        self.failed = TTLCache(
+            self.limit, self.max_age, timer=lambda: time.monotonic()
+        )
+
     def prune(self, now: float | None = None) -> None:
-        now = time.monotonic() if now is None else now
-        expiry = now - self.max_age
-        failed = self.failed
-        while failed:
-            key, timestamp = next(iter(failed.items()))
-            if timestamp >= expiry:
-                break
-            failed.pop(key)
-        while len(failed) > self.limit:
-            failed.popitem(last=False)
+        self.failed.expire(now)
 
     def record(self, item: str) -> None:
-        now = time.monotonic()
-        self.failed[item] = now
-        self.prune(now)
+        self.failed[item] = True
 
     def discard(self, item: str) -> None:
         self.failed.pop(item, None)
@@ -217,12 +211,11 @@ def clear_optional_import_cache() -> None:
 def prune_failed_imports() -> None:
     """Remove expired entries from the failed import registry."""
     now = time.monotonic()
-    state = _IMPORT_STATE
-    with state.lock:
-        state.prune(now)
-        state.last_prune = now
+    with _IMPORT_STATE.lock:
+        _IMPORT_STATE.failed.expire(now)
+        _IMPORT_STATE.last_prune = now
     with _WARNED_STATE.lock:
-        _WARNED_STATE.prune(now)
+        _WARNED_STATE.failed.expire(now)
         _WARNED_STATE.last_prune = now
 
 
