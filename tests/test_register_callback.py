@@ -6,6 +6,7 @@ from tnfr.callback_utils import (
     register_callback,
     invoke_callbacks,
     CallbackEvent,
+    CallbackSpec,
 )
 import logging
 
@@ -22,13 +23,13 @@ def test_register_callback_replaces_existing(graph_canon):
     # initial registration
     register_callback(G, event=CallbackEvent.BEFORE_STEP, func=cb1, name="cb")
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
-        "cb": ("cb", cb1)
+        "cb": CallbackSpec("cb", cb1)
     }
 
     # same name should replace existing
     register_callback(G, event=CallbackEvent.BEFORE_STEP, func=cb2, name="cb")
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
-        "cb": ("cb", cb2)
+        "cb": CallbackSpec("cb", cb2)
     }
 
     # same function with different name should also replace existing
@@ -36,7 +37,7 @@ def test_register_callback_replaces_existing(graph_canon):
         G, event=CallbackEvent.BEFORE_STEP, func=cb2, name="other"
     )
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
-        "other": ("other", cb2)
+        "other": CallbackSpec("other", cb2)
     }
 
 
