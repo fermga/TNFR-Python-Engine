@@ -9,7 +9,7 @@ import json
 import threading
 import warnings
 
-from typing import Any, Callable, Literal, cast, overload
+from typing import Any, Callable, Literal, overload
 
 from dataclasses import dataclass
 from functools import lru_cache
