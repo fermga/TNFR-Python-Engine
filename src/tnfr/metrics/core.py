@@ -12,14 +12,7 @@ import math
 from dataclasses import dataclass
 
 from ..constants import (
-    ALIAS_EPI,
-    ALIAS_DNFR,
-    ALIAS_DEPI,
-    ALIAS_SI,
-    ALIAS_DSI,
-    ALIAS_VF,
-    ALIAS_DVF,
-    ALIAS_D2VF,
+    get_aliases,
     get_param,
 )
 from ..callback_utils import register_callback
@@ -33,6 +26,15 @@ from .diagnosis import register_diagnosis_callbacks
 from ..observers import phase_sync, glyph_load, kuramoto_order
 from ..sense import sigma_vector
 from ..logging_utils import get_logger
+
+ALIAS_EPI = get_aliases("EPI")
+ALIAS_DNFR = get_aliases("DNFR")
+ALIAS_DEPI = get_aliases("DEPI")
+ALIAS_SI = get_aliases("SI")
+ALIAS_DSI = get_aliases("DSI")
+ALIAS_VF = get_aliases("VF")
+ALIAS_DVF = get_aliases("DVF")
+ALIAS_D2VF = get_aliases("D2VF")
 
 
 logger = get_logger(__name__)

@@ -4,14 +4,16 @@ import pytest
 from tnfr.scenarios import build_graph
 from tnfr.constants import (
     inject_defaults,
-    ALIAS_EPI_KIND,
-    ALIAS_EPI,
-    ALIAS_VF,
+    get_aliases,
 )
 from tnfr.validators import run_validators
 from tnfr.alias import set_attr, set_attr_str
 from tnfr.io import read_structured_file, StructuredFileError
 from tnfr.config import load_config
+
+ALIAS_EPI_KIND = get_aliases("EPI_KIND")
+ALIAS_EPI = get_aliases("EPI")
+ALIAS_VF = get_aliases("VF")
 
 try:  # pragma: no cover - compatibilidad Python
     import tomllib  # type: ignore[attr-defined]

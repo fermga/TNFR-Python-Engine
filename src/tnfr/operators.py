@@ -27,7 +27,7 @@ from weakref import WeakKeyDictionary, WeakSet
 from collections import deque
 from cachetools import LRUCache
 
-from .constants import DEFAULTS, REMESH_DEFAULTS, ALIAS_EPI, get_param
+from .constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
 from .helpers.numeric import (
     list_mean,
     angle_diff,
@@ -50,6 +50,8 @@ from .rng import (
 from .callback_utils import invoke_callbacks
 from .glyph_history import append_metric, ensure_history, current_step_idx
 from .import_utils import import_nodonx, optional_import
+
+ALIAS_EPI = get_aliases("EPI")
 from .types import Glyph
 from .locking import get_lock
 

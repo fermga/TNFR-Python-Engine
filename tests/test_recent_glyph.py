@@ -1,9 +1,11 @@
 """Pruebas de recent_glyph."""
 
 from tnfr.glyph_history import push_glyph, recent_glyph
-from tnfr.constants import ALIAS_EPI_KIND
+from tnfr.constants import get_aliases
 import time
 import pytest
+
+ALIAS_EPI_KIND = get_aliases("EPI_KIND")
 
 
 def _make_node(history, current=None, window=10):

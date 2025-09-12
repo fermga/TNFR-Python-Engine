@@ -3,7 +3,9 @@ import networkx as nx
 import pytest
 
 from tnfr.alias import set_attr_with_max, set_attr, recompute_abs_max
-from tnfr.constants import ALIAS_VF
+from tnfr.constants import get_aliases
+
+ALIAS_VF = get_aliases("VF")
 
 
 @pytest.mark.slow

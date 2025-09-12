@@ -9,12 +9,7 @@ from functools import partial
 
 from .constants import (
     DEFAULTS,
-    ALIAS_DNFR,
-    ALIAS_D2EPI,
-    ALIAS_DEPI,
-    ALIAS_VF,
-    ALIAS_THETA,
-    ALIAS_SI,
+    get_aliases,
 )
 from .alias import get_attr, set_attr, multi_recompute_abs_max
 from .collections_utils import normalize_weights
@@ -26,6 +21,13 @@ from .helpers.numeric import (
 )
 from .helpers.cache import edge_version_cache, _stable_json
 from .import_utils import get_numpy
+
+ALIAS_DNFR = get_aliases("DNFR")
+ALIAS_D2EPI = get_aliases("D2EPI")
+ALIAS_DEPI = get_aliases("DEPI")
+ALIAS_VF = get_aliases("VF")
+ALIAS_THETA = get_aliases("THETA")
+ALIAS_SI = get_aliases("SI")
 class GraphLike(Protocol):
     graph: dict[str, Any]
 

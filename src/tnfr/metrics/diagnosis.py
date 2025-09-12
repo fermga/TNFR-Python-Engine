@@ -6,10 +6,8 @@ from statistics import fmean, StatisticsError
 from operator import ge, le
 
 from ..constants import (
-    ALIAS_EPI,
-    ALIAS_VF,
-    ALIAS_SI,
     VF_KEY,
+    get_aliases,
     get_param,
 )
 from ..callback_utils import register_callback
@@ -21,6 +19,10 @@ from .coherence import (
     local_phase_sync,
     local_phase_sync_weighted,
 )
+
+ALIAS_EPI = get_aliases("EPI")
+ALIAS_VF = get_aliases("VF")
+ALIAS_SI = get_aliases("SI")
 def _symmetry_index(
     G, n, epi_min: float | None = None, epi_max: float | None = None
 ):

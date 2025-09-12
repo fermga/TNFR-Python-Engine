@@ -1,6 +1,11 @@
-from tnfr.constants import ALIAS_THETA, ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
+from tnfr.constants import get_aliases
 from tnfr.dynamics import dnfr_phase_only, dnfr_epi_vf_mixed, dnfr_laplacian
 from tnfr.alias import get_attr
+
+ALIAS_THETA = get_aliases("THETA")
+ALIAS_EPI = get_aliases("EPI")
+ALIAS_VF = get_aliases("VF")
+ALIAS_DNFR = get_aliases("DNFR")
 
 
 def test_dnfr_phase_only_computes_gradient(graph_canon):

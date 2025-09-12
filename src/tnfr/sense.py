@@ -8,7 +8,7 @@ from collections import Counter
 
 import networkx as nx  # type: ignore[import-untyped]
 
-from .constants import ALIAS_SI, ALIAS_EPI, get_graph_param
+from .constants import get_aliases, get_graph_param
 from .alias import get_attr
 from .helpers.numeric import clamp01, kahan_sum2d
 from .import_utils import get_numpy
@@ -73,6 +73,9 @@ def glyph_unit(g: str) -> complex:
 
     return _resolve_glyph(g, GLYPH_UNITS)
 
+
+ALIAS_SI = get_aliases("SI")
+ALIAS_EPI = get_aliases("EPI")
 
 MODE_FUNCS = {
     "Si": lambda nd: clamp01(get_attr(nd, ALIAS_SI, 0.5)),

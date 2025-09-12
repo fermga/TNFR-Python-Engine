@@ -8,10 +8,7 @@ from typing import Any, Sequence
 
 
 from ..constants import (
-    ALIAS_THETA,
-    ALIAS_EPI,
-    ALIAS_VF,
-    ALIAS_SI,
+    get_aliases,
     get_param,
 )
 from ..callback_utils import register_callback
@@ -22,6 +19,11 @@ from ..helpers.numeric import clamp01, _norm01, _similarity_abs
 from ..helpers.cache import ensure_node_index_map
 from ..metrics_utils import get_trig_cache, min_max_range
 from ..import_utils import get_numpy
+
+ALIAS_THETA = get_aliases("THETA")
+ALIAS_EPI = get_aliases("EPI")
+ALIAS_VF = get_aliases("VF")
+ALIAS_SI = get_aliases("SI")
 
 
 @dataclass

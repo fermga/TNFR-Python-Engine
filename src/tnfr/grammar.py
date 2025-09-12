@@ -3,13 +3,16 @@
 from __future__ import annotations
 from typing import Any, Iterable, Optional, Callable
 
-from .constants import DEFAULTS, ALIAS_SI, ALIAS_D2EPI, get_param
+from .constants import DEFAULTS, get_aliases, get_param
 from .alias import get_attr
 from .helpers.numeric import clamp01
 from .glyph_history import recent_glyph
 from .types import Glyph
 from .operators import apply_glyph  # avoid repeated import inside functions
 from .metrics_utils import normalize_dnfr
+
+ALIAS_SI = get_aliases("SI")
+ALIAS_D2EPI = get_aliases("D2EPI")
 
 __all__ = (
     "CANON_COMPAT",

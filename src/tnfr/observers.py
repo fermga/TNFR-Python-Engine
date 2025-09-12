@@ -4,7 +4,7 @@ from __future__ import annotations
 from functools import partial
 import statistics
 
-from .constants import ALIAS_THETA, get_param
+from .constants import get_aliases, get_param
 from .alias import get_attr
 from .helpers.numeric import angle_diff, list_pvariance
 from .metrics_utils import compute_coherence
@@ -19,6 +19,8 @@ from .collections_utils import normalize_counter, mix_groups
 from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 from .logging_utils import get_logger
+
+ALIAS_THETA = get_aliases("THETA")
 
 __all__ = (
     "attach_standard_observer",

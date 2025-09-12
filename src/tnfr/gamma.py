@@ -9,7 +9,7 @@ import hashlib
 from collections.abc import Mapping
 from functools import lru_cache
 
-from .constants import ALIAS_THETA
+from .constants import get_aliases
 from .alias import get_attr
 from .helpers.cache import (
     node_set_checksum,
@@ -18,6 +18,8 @@ from .helpers.cache import (
 )
 from .json_utils import json_dumps
 from .logging_utils import get_logger
+
+ALIAS_THETA = get_aliases("THETA")
 
 
 logger = get_logger(__name__)
