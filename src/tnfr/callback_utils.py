@@ -354,6 +354,9 @@ def invoke_callbacks(
             if strict:
                 raise
         except nx.NetworkXError as err:
+            with _CALLBACK_LOCK:
+                _record_callback_error(G, event, ctx, spec, err)
+            # NetworkX errors are unexpected; log and re-raise
             logger.exception(
                 "callback %r raised NetworkXError for %s with ctx=%r",
                 spec.name,
