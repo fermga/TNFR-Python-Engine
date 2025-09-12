@@ -114,49 +114,50 @@ def ensure_collection(
     error_msg: str | None = None,
     treat_strings_as_iterables: bool = False,
 ) -> Collection[T]:
-    """Return ``it`` as a ``Collection`` materializing if necessary.
+    """Return ``it`` as a :class:`Collection`, materializing when needed.
 
-    Step 1 detects collections and handles string-like inputs (``str``,
-    ``bytes`` and ``bytearray``) specially. By default these are wrapped as a
-    single item tuple so they are not iterated character by character. Pass
-    ``treat_strings_as_iterables=True`` to materialize them like any other
-    iterable. ``max_materialize`` limits materialization for non-collection
-    iterables; ``None`` disables the limit. ``error_msg`` customizes the
-    :class:`ValueError` raised when the iterable yields more items than allowed.
-    ``TypeError`` is raised when ``it`` is not iterable. The input is consumed
-    at most once and no extra items beyond the limit are stored in memory.
+    Checks are executed in the following order:
+
+    1. Existing collections are returned directly. String-like inputs
+       (``str``, ``bytes`` and ``bytearray``) are wrapped as a single item
+       tuple unless ``treat_strings_as_iterables=True``.
+    2. The object must be an :class:`Iterable`; otherwise ``TypeError`` is
+       raised.
+    3. Remaining iterables are materialized up to ``max_materialize`` items.
+       ``None`` disables the limit. ``error_msg`` customizes the
+       :class:`ValueError` raised when the iterable yields more items than
+       allowed. The input is consumed at most once and no extra items beyond the
+       limit are stored in memory.
     """
 
-    # Step 1: detect collections and raw strings/bytes early
+    # Step 1: early-return for collections and raw strings/bytes
     if isinstance(it, Collection):
         if isinstance(it, STRING_TYPES):
             if not treat_strings_as_iterables:
                 return (cast(T, it),)
-            # Fall through to materialization when treating as iterable
+            # fall through for materialization when treating as iterable
         else:
             return it
 
-    # Step 2: validate limit
-    limit = _validate_limit(max_materialize)
-
-    # Step 2.5: ensure input is iterable
+    # Step 2: ensure the input is iterable
     if not isinstance(it, Iterable):
         raise TypeError(f"{it!r} is not iterable")
 
-    # Step 3: materialize up to ``limit`` items using ``islice`` only once
+    # Step 3: validate limit and materialize items once
+    limit = _validate_limit(max_materialize)
     if limit is None:
         return tuple(it)
     if limit == 0:
         return ()
-    materialized = tuple(islice(it, limit + 1))
-    if len(materialized) > limit:
-        examples = ", ".join(repr(x) for x in materialized[:3])
+
+    items = tuple(islice(it, limit + 1))
+    if len(items) > limit:
+        examples = ", ".join(repr(x) for x in items[:3])
         msg = error_msg or (
-            f"Iterable produced {len(materialized)} items, "
-            f"exceeds limit {limit}; first items: [{examples}]"
+            f"Iterable produced {len(items)} items, exceeds limit {limit}; first items: [{examples}]"
         )
         raise ValueError(msg)
-    return materialized
+    return items
 
 def _convert_weights(
     dict_like: Mapping[str, Any],
