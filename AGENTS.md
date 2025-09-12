@@ -45,39 +45,7 @@ Estos invariantes **definen** la canonicidad TNFR y **deben preservarse** por cu
 
 ---
 
-## 4) Superficie de API (esperada)
-
-> **Aviso**: si el nombre real del módulo difiere, añade un **mapa de equivalencia** en la doc. El criterio es conceptual, no nominal.
-
-* `tnfr.core`
-
-  * `EPI` (estructura primaria de información)
-  * `Node` / `NFR` (envoltorio de EPI + estado de fase y νf)
-  * `Field` (campos estructurantes: `phi(νf, θ)`, `psi(x,t)`)
-* `tnfr.operators`
-
-  * `emision()`, `recepcion()`, `coherencia()`, `disonancia()`, `acoplamiento()`, `resonancia()`, `silencio()`, `expansion()`, `contraccion()`, `autoorganizacion()`, `mutacion()`, `transicion()`, `recursividad()`
-* `tnfr.metrics`
-
-  * `coherence(EPI) -> C(t)`
-  * `sense_index(EPI, net) -> Si`
-  * `phase(nodo_i, nodo_j) -> φ_ij`
-  * `frequency(nodo) -> νf`
-* `tnfr.sim`
-
-  * `step(state, dt)`
-  * `evolve(state, T)`
-  * `bifurcate(state, τ)`
-* `tnfr.io`
-
-  * serialización de EPI/nodos + snapshots de fase/νf
-* `tnfr.viz` (opcional)
-
-  * utilidades de trazado de C(t), νf, fase, mapas de operadores
-
----
-
-## 5) Contratos formales (pre/post‑condiciones)
+## 4) Contratos formales (pre/post‑condiciones)
 
 * **Coherencia (I: Coherencia)**: aplicar `coherencia()` **no** debe reducir `C(t)` salvo que un test de disonancia programada lo justifique.
 * **Disonancia (O: Disonancia)**: `disonancia()` debe **aumentar** `|ΔNFR|` y puede disparar **bifurcación** si `∂²EPI/∂t² > τ`.
@@ -90,7 +58,7 @@ Toda función nueva debe declararse como **especialización** o **composición**
 
 ---
 
-## 6) Guía de contribución para agentes de IA
+## 5) Guía de contribución para agentes de IA
 
 **Antes de tocar código**:
 
@@ -130,7 +98,7 @@ Mapa de equivalencias: (si renombraste APIs)
 
 ---
 
-## 7) Ejemplos de cambios **aceptables**
+## 6) Ejemplos de cambios **aceptables**
 
 * Refactorizar para **hacer explícita la fase** en acoplamientos (mejora trazabilidad).
 * Añadir `sense_index()` con pruebas que correlacionen Si con estabilidad de red.
@@ -144,7 +112,7 @@ Mapa de equivalencias: (si renombraste APIs)
 
 ---
 
-## 8) Testing estructural (mínimos)
+## 7) Testing estructural (mínimos)
 
 * **Monótonos**: `coherencia()` no disminuye `C(t)` (salvo tests de disonancia controlada).
 * **Bifurcación**: `autoorganizacion()`/`disonancia()` disparan bifurcación cuando `∂²EPI/∂t² > τ`.
@@ -156,7 +124,7 @@ Incluye **pruebas multiescala** (EPIs anidadas) y **reproducibilidad** (seed).
 
 ---
 
-## 9) Telemetría y trazas
+## 8) Telemetría y trazas
 
 * Exportar: `C(t)`, `νf`, `fase`, `Si`, `ΔNFR`.
 * Registrar **operadores aplicados** (tipo, orden, parámetros) y **eventos** (nacimiento, bifurcación, colapso).
@@ -164,7 +132,7 @@ Incluye **pruebas multiescala** (EPIs anidadas) y **reproducibilidad** (seed).
 
 ---
 
-## 10) Estilo y organización del código
+## 9) Estilo y organización del código
 
 * Priorizar **claridad semántica TNFR** sobre micro‑optimizaciones.
 * Documentación en línea: describir **efecto estructural** (qué reorganiza) antes que detalles de implementación.
@@ -173,14 +141,14 @@ Incluye **pruebas multiescala** (EPIs anidadas) y **reproducibilidad** (seed).
 
 ---
 
-## 11) Instalación y uso
+## 10) Instalación y uso
 
 * Paquete PyPI: `pip install tnfr`.
 * Asegurar scripts/ejemplos mínimos: creación de un nodo, aplicación de operadores, medición de C(t) y Si, visualización simple.
 
 ---
 
-## 12) Roadmap sugerido (orientativo)
+## 11) Roadmap sugerido (orientativo)
 
 * [ ] `sense_index()` robusto con baterías de ejemplos trans‑dominio.
 * [ ] Visualización de **fase** y **acoplamientos** (grafos dinámicos).
@@ -189,14 +157,14 @@ Incluye **pruebas multiescala** (EPIs anidadas) y **reproducibilidad** (seed).
 
 ---
 
-## 13) Referencias internas
+## 12) Referencias internas
 
 * Documento base del paradigma: `tnfr.pdf` (en el repo).
-* Notas del motor y ejemplos: carpeta `examples/` y `docs/` (si aplica).
+* Notas del motor y ejemplos
 
 ---
 
-## 14) Glosario mínimo
+## 13) Glosario mínimo
 
 * **EPI**: Estructura Primaria de Información (la “forma” coherente).
 * **νf (Hz\_str)**: Frecuencia estructural (ritmo de reorganización).
