@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 from collections import deque
 from collections.abc import Collection, Iterable, Mapping, Sequence
 from itertools import islice
 from typing import Any, Callable, Iterator, TypeVar, cast
 
 from .logging_utils import get_logger, warn_once
-
+from .value_utils import _convert_value
 
 from .helpers.numeric import kahan_sum
 
@@ -213,17 +214,16 @@ def normalize_weights(
     if not keys:
         return {}
 
-    def _get_float(key: str) -> float:
-        val = dict_like.get(key, default_float)
-        try:
-            return float(val)
-        except (TypeError, ValueError) as exc:
-            if error_on_conversion:
-                raise
-            logger.warning("Could not convert value for %r: %s", key, exc)
-            return default_float
-
-    weights = {k: _get_float(k) for k in keys}
+    weights: dict[str, float] = {}
+    for k in keys:
+        ok, val = _convert_value(
+            dict_like.get(k, default_float),
+            float,
+            strict=error_on_conversion,
+            key=k,
+            log_level=logging.WARNING,
+        )
+        weights[k] = cast(float, val) if ok else default_float
     negatives = {k: w for k, w in weights.items() if w < 0}
     total = kahan_sum(weights.values())
     if negatives:
