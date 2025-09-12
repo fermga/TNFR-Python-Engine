@@ -7,6 +7,7 @@ import threading
 import warnings
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Mapping, Hashable
+from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import lru_cache
 from types import MappingProxyType
@@ -53,6 +54,7 @@ __all__ = (
     "cached_nodes_and_A",
     "invalidate_edge_version_cache",
     "increment_edge_version",
+    "edge_version_update",
 )
 
 
@@ -593,3 +595,19 @@ def increment_edge_version(G: Any) -> None:
     graph = get_graph(G)
     graph["_edge_version"] = int(graph.get("_edge_version", 0)) + 1
     _reset_edge_caches(graph, G)
+
+
+@contextmanager
+def edge_version_update(G: Any):
+    """Scope a batch of edge mutations.
+
+    Increments the edge version counter on entry **and** exit so caches and
+    TNFR structural logs observe a single, coherent update cycle.  Use this to
+    group related edge operations that should be treated as one semantic
+    modification.
+    """
+    increment_edge_version(G)
+    try:
+        yield
+    finally:
+        increment_edge_version(G)
