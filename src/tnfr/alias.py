@@ -8,7 +8,7 @@ alias-based attribute access. Legacy wrappers ``alias_get`` and
 
 from __future__ import annotations
 from collections import defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 from typing import (
     Any,
     Callable,
@@ -73,39 +73,6 @@ def _convert_default(
     )
 
 
-def _alias_resolve(
-    d: dict[str, Any],
-    aliases: Sequence[str],
-    *,
-    conv: Callable[[Any], T],
-    default: Optional[Any] = None,
-    strict: bool = False,
-    log_level: int | None = None,
-) -> Optional[T]:
-    """Resolve the first matching key in ``aliases`` from ``d``."""
-    for key in aliases:
-        if key in d:
-            ok, value = convert_value(
-                d[key],
-                conv,
-                strict=strict,
-                key=key,
-                log_level=log_level,
-            )
-            if ok:
-                return value
-    if default is not None:
-        ok, value = _convert_default(
-            default,
-            conv,
-            strict=strict,
-            log_level=log_level,
-        )
-        if ok:
-            return value
-    return None
-
-
 @lru_cache(maxsize=128)
 def _alias_cache(alias_tuple: tuple[str, ...]) -> tuple[str, ...]:
     """Validate and cache alias tuples.
@@ -136,6 +103,7 @@ class AliasAccessor(Generic[T]):
         self._default = default
         # expose cache for testing and manual control
         self._alias_cache = _alias_cache
+        self._key_cache: dict[tuple[int, tuple[str, ...]], tuple[str, int]] = {}
 
     def _prepare(
         self,
@@ -179,14 +147,33 @@ class AliasAccessor(Generic[T]):
         conv: Callable[[Any], T] | None = None,
     ) -> Optional[T]:
         aliases, conv, default = self._prepare(aliases, conv, default)
-        return _alias_resolve(
-            d,
-            aliases,
-            conv=conv,
-            default=default,
-            strict=strict,
-            log_level=log_level,
-        )
+        cache_key = (id(d), aliases)
+        cached = self._key_cache.get(cache_key)
+        if cached is not None:
+            key, size = cached
+            if size == len(d) and key in d:
+                ok, value = convert_value(
+                    d[key], conv, strict=strict, key=key, log_level=log_level
+                )
+                if ok:
+                    return value
+            else:
+                self._key_cache.pop(cache_key, None)
+        for key in aliases:
+            if key in d:
+                ok, value = convert_value(
+                    d[key], conv, strict=strict, key=key, log_level=log_level
+                )
+                if ok:
+                    self._key_cache[cache_key] = (key, len(d))
+                    return value
+        if default is not None:
+            ok, value = _convert_default(
+                default, conv, strict=strict, log_level=log_level
+            )
+            if ok:
+                return value
+        return None
 
     def set(
         self,
@@ -196,9 +183,19 @@ class AliasAccessor(Generic[T]):
         conv: Callable[[Any], T] | None = None,
     ) -> T:
         aliases, conv, _ = self._prepare(aliases, conv)
-        val = conv(value)
+        cache_key = (id(d), aliases)
+        cached = self._key_cache.get(cache_key)
+        if cached is not None:
+            key, size = cached
+            if size == len(d) and key in d:
+                d[key] = conv(value)
+                return d[key]
+            else:
+                self._key_cache.pop(cache_key, None)
         key = next((k for k in aliases if k in d), aliases[0])
+        val = conv(value)
         d[key] = val
+        self._key_cache[cache_key] = (key, len(d))
         return val
 
 
