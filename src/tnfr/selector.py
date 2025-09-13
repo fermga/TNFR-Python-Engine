@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from operator import itemgetter
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -110,13 +111,10 @@ def _apply_selector_hysteresis(
 ) -> str | None:
     """Apply hysteresis, returning the previous glyph when close to
     thresholds."""
-    # Cache threshold lookups to avoid repeated dictionary access.
-    si_hi = thr["si_hi"]
-    si_lo = thr["si_lo"]
-    dnfr_hi = thr["dnfr_hi"]
-    dnfr_lo = thr["dnfr_lo"]
-    accel_hi = thr["accel_hi"]
-    accel_lo = thr["accel_lo"]
+    # Batch extraction reduces dictionary lookups inside loops.
+    si_hi, si_lo, dnfr_hi, dnfr_lo, accel_hi, accel_lo = itemgetter(
+        "si_hi", "si_lo", "dnfr_hi", "dnfr_lo", "accel_hi", "accel_lo"
+    )(thr)
 
     d_si = min(abs(Si - si_hi), abs(Si - si_lo))
     d_dn = min(abs(dnfr - dnfr_hi), abs(dnfr - dnfr_lo))
