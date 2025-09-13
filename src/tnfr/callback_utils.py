@@ -16,6 +16,7 @@ from collections import defaultdict, deque
 from collections.abc import Callable, Mapping, Iterable
 
 import traceback
+import threading
 from .logging import get_module_logger
 from .constants import DEFAULTS
 from .locking import get_lock
@@ -51,12 +52,14 @@ _CALLBACK_EVENTS: set[str] = {e.value for e in CallbackEvent}
 
 # Default number of recent callback errors to retain.
 # Use ``set_callback_error_limit`` to adjust.
+_CALLBACK_ERROR_LIMIT_LOCK = threading.Lock()
 _CALLBACK_ERROR_LIMIT = 100
 
 
 def get_callback_error_limit() -> int:
     """Return the current callback error retention limit."""
-    return _CALLBACK_ERROR_LIMIT
+    with _CALLBACK_ERROR_LIMIT_LOCK:
+        return _CALLBACK_ERROR_LIMIT
 
 
 Callback = Callable[["nx.Graph", dict[str, Any]], None]
@@ -257,8 +260,9 @@ def set_callback_error_limit(limit: int) -> int:
     if limit < 1:
         raise ValueError("limit must be positive")
     global _CALLBACK_ERROR_LIMIT
-    previous = get_callback_error_limit()
-    _CALLBACK_ERROR_LIMIT = int(limit)
+    with _CALLBACK_ERROR_LIMIT_LOCK:
+        previous = _CALLBACK_ERROR_LIMIT
+        _CALLBACK_ERROR_LIMIT = int(limit)
     return previous
 
 
