@@ -41,6 +41,7 @@ class GrammarContext:
             norms=G.graph.get("_sel_norms") or {},
         )
 
+
 __all__ = (
     "CANON_COMPAT",
     "CANON_FALLBACK",
