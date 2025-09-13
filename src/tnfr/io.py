@@ -32,7 +32,9 @@ def _missing_dependency_error(dep: str) -> type[Exception]:
     return _MissingDependencyError
 
 
-tomllib = cached_import("tomllib") or cached_import("tomli")
+tomllib = cached_import("tomllib", emit="log") or cached_import(
+    "tomli", emit="log"
+)
 if tomllib is not None:
     TOMLDecodeError = getattr(tomllib, "TOMLDecodeError", Exception)
     has_toml = True
@@ -41,7 +43,7 @@ else:  # pragma: no cover - depende de tomllib/tomli
     TOMLDecodeError = _missing_dependency_error("tomllib/tomli")
 
 
-yaml = cached_import("yaml")
+yaml = cached_import("yaml", emit="log")
 if yaml is not None:
     YAMLError = getattr(yaml, "YAMLError", Exception)
 else:  # pragma: no cover - depende de pyyaml
