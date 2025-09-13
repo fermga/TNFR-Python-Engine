@@ -22,6 +22,7 @@ from .alias import (
     set_theta,
 )
 from .helpers.cache import increment_edge_version, ensure_node_offset_map
+from .graph_utils import supports_add_edge
 from .node_base import NodeBase
 from .operators import apply_glyph_obj
 from .locking import get_lock
@@ -185,7 +186,8 @@ def _resolve_edge_ops(
 
     ``strategy`` accepts :class:`EdgeStrategy`, string labels or ``None``.
     Custom callbacks, when provided together, bypass the built-in strategy
-    mapping.
+    mapping. When ``strategy`` is ``None``, the default is determined once
+    based on :func:`supports_add_edge`.
     """
 
     if isinstance(strategy, str):
@@ -194,19 +196,11 @@ def _resolve_edge_ops(
         except ValueError as exc:
             raise ValueError(f"Invalid edge strategy: {strategy!r}") from exc
 
-    if exists_cb is not None and set_cb is not None:
-        if strategy is None:
-            strategy = (
-                EdgeStrategy.NX
-                if hasattr(graph, "add_edge")
-                else EdgeStrategy.TNFR
-            )
-        return exists_cb, set_cb, strategy
-
     if strategy is None:
-        strategy = (
-            EdgeStrategy.NX if hasattr(graph, "add_edge") else EdgeStrategy.TNFR
-        )
+        strategy = EdgeStrategy.NX if supports_add_edge(graph) else EdgeStrategy.TNFR
+
+    if exists_cb is not None and set_cb is not None:
+        return exists_cb, set_cb, strategy
 
     ops = _EDGE_OPS.get(strategy)
     if ops is None:
