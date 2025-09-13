@@ -1,6 +1,8 @@
 """Tests for normalize_weights helper."""
 
 import math
+from types import MappingProxyType
+
 import pytest
 import tnfr.collections_utils as cu
 from tnfr.collections_utils import normalize_weights
@@ -95,3 +97,9 @@ def test_normalize_weights_deduplicates_keys():
     expected = {"a": 0.5, "b": 0.5}
     assert norm_dup == norm_unique
     assert norm_dup == pytest.approx(expected)
+
+
+def test_normalize_weights_accepts_mapping_proxy():
+    weights = MappingProxyType({"a": 1.0, "b": 2.0})
+    norm = normalize_weights(weights, weights.keys())
+    assert norm == pytest.approx({"a": 1 / 3, "b": 2 / 3})
