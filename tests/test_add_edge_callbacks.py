@@ -36,6 +36,27 @@ def test_add_edge_validates_same_graph_for_tnfr_nodes():
         add_edge(n1.graph, n1, n2, 1.0, strategy=EdgeStrategy.TNFR)
 
 
+@pytest.mark.parametrize("strategy", [None, EdgeStrategy.TNFR, "tnfr"])
+def test_add_edge_mixed_graph_with_callbacks(strategy):
+    g1 = {}
+    g2 = {}
+    n1 = NodoTNFR(graph=g1)
+    n2 = NodoTNFR(graph=g2)
+    calls = []
+
+    def exists_cb(*args, **kwargs):
+        calls.append("exists")
+        return False
+
+    def set_cb(*args, **kwargs):
+        calls.append("set")
+
+    with pytest.raises(ValueError):
+        add_edge(g1, n1, n2, 1.0, strategy=strategy, exists_cb=exists_cb, set_cb=set_cb)
+
+    assert calls == []
+
+
 def test_add_edge_checks_weight_before_callbacks():
     with pytest.raises(ValueError, match="Edge weight must be non-negative"):
         add_edge({}, 1, 2, -1.0, exists_cb=lambda *_: False)

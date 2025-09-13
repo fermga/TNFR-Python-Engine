@@ -143,19 +143,25 @@ def _validate_callbacks(exists_cb, set_cb) -> None:
             raise TypeError("exists_cb and set_cb must be callables")
 
 
-def _resolve_edge_ops(graph, strategy, exists_cb, set_cb) -> tuple[Callable, Callable]:
+def _resolve_edge_ops(
+    graph, strategy, exists_cb, set_cb
+) -> tuple[Callable, Callable, EdgeStrategy]:
     if exists_cb is not None and set_cb is not None:
-        return exists_cb, set_cb
+        if strategy is None:
+            strategy = (
+                EdgeStrategy.NX
+                if hasattr(graph, "add_edge")
+                else EdgeStrategy.TNFR
+            )
+        return exists_cb, set_cb, strategy
     if strategy is None:
         strategy = (
-            EdgeStrategy.NX
-            if hasattr(graph, "add_edge")
-            else EdgeStrategy.TNFR
+            EdgeStrategy.NX if hasattr(graph, "add_edge") else EdgeStrategy.TNFR
         )
     ops = _EDGE_OPS.get(strategy)
     if ops is None:
         raise ValueError(f"Unknown edge strategy: {strategy!r}")
-    return ops
+    return *ops, strategy
 
 
 def add_edge(
@@ -198,9 +204,13 @@ def add_edge(
             EdgeStrategy.NX if hasattr(graph, "add_edge") else EdgeStrategy.TNFR
         )
 
-    exists_fn, set_fn = _resolve_edge_ops(graph, strategy, exists_cb, set_cb)
+    exists_fn, set_fn, resolved_strategy = _resolve_edge_ops(
+        graph, strategy, exists_cb, set_cb
+    )
 
-    if strategy is EdgeStrategy.TNFR and getattr(n1, "graph", None) is not getattr(n2, "graph", None):
+    if resolved_strategy is EdgeStrategy.TNFR and getattr(n1, "graph", None) is not getattr(
+        n2, "graph", None
+    ):
         raise ValueError("Cannot connect nodes from different graphs")
 
     if exists_fn(graph, n1, n2) and not overwrite:
