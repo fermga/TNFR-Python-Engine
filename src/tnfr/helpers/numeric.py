@@ -8,7 +8,7 @@ from statistics import fmean, StatisticsError, pvariance
 from itertools import tee
 import math
 
-from ..import_utils import cached_import
+from ..import_utils import cached_import, optional_numpy
 from ..alias import get_attr
 from ..logging import get_module_logger
 
@@ -85,9 +85,7 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
 
 def list_pvariance(xs: Iterable[float], default: float = 0.0) -> float:
     """Return the population variance of ``xs`` or ``default`` if empty."""
-    np = cached_import("numpy")
-    if np is None:
-        logger.debug("Failed to import numpy; continuing in non-vectorised mode")
+    np = optional_numpy(logger)
     if np is not None:
         arr = np.fromiter(xs, dtype=float)
         return float(np.var(arr)) if arr.size else float(default)
@@ -156,9 +154,7 @@ def neighbor_mean(
 def _neighbor_phase_mean(node, trig) -> float:
     """Internal helper delegating to :func:`_neighbor_phase_mean_core`."""
     fallback = trig.theta.get(node.n, 0.0)
-    np = cached_import("numpy")
-    if np is None:
-        logger.debug("Failed to import numpy; continuing in non-vectorised mode")
+    np = optional_numpy(logger)
     neigh = node.G[node.n]
     return _neighbor_phase_mean_core(neigh, trig.cos, trig.sin, np, fallback)
 
@@ -266,9 +262,7 @@ def neighbor_phase_mean_list(
     Kahan summation.
     """
     if np is None:
-        np = cached_import("numpy")
-        if np is None:
-            logger.debug("Failed to import numpy; continuing in non-vectorised mode")
+        np = optional_numpy(logger)
 
     return _neighbor_phase_mean_core(neigh, cos_th, sin_th, np, fallback)
 

@@ -11,7 +11,7 @@ import networkx as nx  # type: ignore[import-untyped]
 from .constants import get_aliases, get_graph_param
 from .alias import get_attr
 from .helpers.numeric import clamp01, kahan_sum2d
-from .import_utils import cached_import
+from .import_utils import optional_numpy
 from .callback_utils import register_callback
 from .glyph_history import (
     ensure_history,
@@ -152,9 +152,7 @@ def _sigma_from_iterable(
         iterator = values
     else:
         iterator = [values]
-    np = cached_import("numpy")
-    if np is None:
-        logger.debug("Failed to import numpy; continuing in non-vectorised mode")
+    np = optional_numpy(logger)
     if np is not None:
         arr = np.fromiter(
             (_to_complex(v) for v in iterator), dtype=np.complex128
