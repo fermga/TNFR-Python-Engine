@@ -42,6 +42,7 @@ class GraphLike(Protocol):
 
 __all__ = (
     "TrigCache",
+    "compute_theta_trig",
     "compute_dnfr_accel_max",
     "normalize_dnfr",
     "compute_coherence",
@@ -61,6 +62,48 @@ class TrigCache:
     cos: dict[Any, float]
     sin: dict[Any, float]
     theta: dict[Any, float]
+
+
+def compute_theta_trig(
+    nodes: Iterable[tuple[Any, Mapping[str, Any] | float]],
+    np: Any | None = None,
+) -> TrigCache:
+    """Return trigonometría de ``θ`` por nodo.
+
+    ``nodes`` debe ser un iterable de pares ``(n, datos)`` donde ``datos`` es
+    un mapeo con la fase ``θ`` o directamente el valor ``θ``.
+    """
+    if np is None:
+        np = get_numpy()
+    node_list: list[Any] = []
+    theta_vals: list[float] = []
+    for n, data in nodes:
+        if isinstance(data, Mapping):
+            th = get_attr(data, ALIAS_THETA, 0.0)
+        else:
+            th = float(data)
+        node_list.append(n)
+        theta_vals.append(th)
+    if np is not None:
+        try:
+            theta_arr = np.asarray(theta_vals, dtype=float)
+            cos_arr = np.cos(theta_arr)
+            sin_arr = np.sin(theta_arr)
+            return TrigCache(
+                cos=dict(zip(node_list, map(float, cos_arr))),
+                sin=dict(zip(node_list, map(float, sin_arr))),
+                theta=dict(zip(node_list, map(float, theta_arr))),
+            )
+        except AttributeError:
+            np = None
+    cos_th: dict[Any, float] = {}
+    sin_th: dict[Any, float] = {}
+    thetas: dict[Any, float] = {}
+    for n, th in zip(node_list, theta_vals):
+        thetas[n] = th
+        cos_th[n] = math.cos(th)
+        sin_th[n] = math.sin(th)
+    return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
 
 
 def compute_dnfr_accel_max(G: GraphLike) -> dict[str, float]:
@@ -222,35 +265,7 @@ def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
 
 def _build_trig_cache(G: GraphLike, np: Any | None = None) -> TrigCache:
     """Construct trigonometric cache for ``G``."""
-    if np is None:
-        np = get_numpy()
-    if np is not None:
-        try:
-            nodes: list[Any] = []
-            theta_vals: list[float] = []
-            for n, nd in G.nodes(data=True):
-                nodes.append(n)
-                theta_vals.append(get_attr(nd, ALIAS_THETA, 0.0))
-            theta_arr = np.asarray(theta_vals, dtype=float)
-            cos_arr = np.cos(theta_arr)
-            sin_arr = np.sin(theta_arr)
-            thetas = dict(zip(nodes, map(float, theta_arr)))
-            cos_th = dict(zip(nodes, map(float, cos_arr)))
-            sin_th = dict(zip(nodes, map(float, sin_arr)))
-            return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
-        except AttributeError:
-            np = None
-
-    cos_th: dict[Any, float] = {}
-    sin_th: dict[Any, float] = {}
-    thetas: dict[Any, float] = {}
-    for n, nd in G.nodes(data=True):
-        th = get_attr(nd, ALIAS_THETA, 0.0)
-        thetas[n] = th
-        cos_th[n] = math.cos(th)
-        sin_th[n] = math.sin(th)
-
-    return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
+    return compute_theta_trig(G.nodes(data=True), np=np)
 
 
 def get_trig_cache(G: GraphLike, *, np: Any | None = None) -> TrigCache:

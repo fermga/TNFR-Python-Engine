@@ -24,7 +24,7 @@ from ..alias import (
     get_attr,
     set_dnfr,
 )
-from ..metrics_utils import get_trig_cache, merge_and_normalize_weights
+from ..metrics_utils import compute_theta_trig, merge_and_normalize_weights
 from ..import_utils import get_numpy
 
 ALIAS_THETA = get_aliases("THETA")
@@ -136,15 +136,14 @@ def _init_dnfr_cache(G, nodes, prev_cache: DnfrCache | None, checksum, dirty):
 
 def _refresh_dnfr_vectors(G, nodes, cache: DnfrCache):
     """Update cached angle and state vectors for ΔNFR."""
-    trig = get_trig_cache(G)
+    trig = compute_theta_trig(((n, G.nodes[n]) for n in nodes), np=np)
     for i, n in enumerate(nodes):
         nd = G.nodes[n]
-        th = get_attr(nd, ALIAS_THETA, 0.0)
-        cache.theta[i] = th
+        cache.theta[i] = trig.theta[n]
         cache.epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
         cache.vf[i] = get_attr(nd, ALIAS_VF, 0.0)
-        cache.cos_theta[i] = trig.cos.get(n, math.cos(th))
-        cache.sin_theta[i] = trig.sin.get(n, math.sin(th))
+        cache.cos_theta[i] = trig.cos[n]
+        cache.sin_theta[i] = trig.sin[n]
 
 
 def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
