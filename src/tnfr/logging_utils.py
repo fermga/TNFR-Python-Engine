@@ -12,29 +12,9 @@ from typing import Any, Hashable, Mapping
 
 from cachetools import LRUCache
 
+from .logging_base import _configure_root
+
 __all__ = ("get_logger", "warn_once")
-
-
-_LOGGING_CONFIGURED = False
-
-
-def _configure_root() -> None:
-    """Configure the root logger if it has no handlers."""
-
-    global _LOGGING_CONFIGURED
-    if _LOGGING_CONFIGURED:
-        return
-
-    root = logging.getLogger()
-    if not root.handlers:
-        kwargs = {
-            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        }
-        if root.level == logging.NOTSET:
-            kwargs["level"] = logging.INFO
-        logging.basicConfig(**kwargs)
-
-    _LOGGING_CONFIGURED = True
 
 
 def get_logger(name: str) -> logging.Logger:
