@@ -401,6 +401,56 @@ def _compute_stats(values, row_sum, n, self_diag, np=None):
     return min_val, max_val, mean_val, Wi, count_val
 
 
+def _coherence_numpy(wij, mode, thr, np):
+    """Aggregate coherence weights using vectorized operations.
+
+    Produces the structural weight matrix ``W`` along with the list of off
+    diagonal values and row sums ready for statistical analysis.
+    """
+
+    n = wij.shape[0]
+    mask = ~np.eye(n, dtype=bool)
+    values = wij[mask]
+    row_sum = wij.sum(axis=1)
+    if mode == "dense":
+        W = wij.tolist()
+    else:
+        idx = np.where((wij >= thr) & mask)
+        W = [
+            (int(i), int(j), float(wij[i, j]))
+            for i, j in zip(idx[0], idx[1])
+        ]
+    return n, values, row_sum, W
+
+
+def _coherence_python(wij, mode, thr):
+    """Aggregate coherence weights using pure Python loops."""
+
+    n = len(wij)
+    values: list[float] = []
+    row_sum = [0.0] * n
+    if mode == "dense":
+        W = [row[:] for row in wij]
+        for i in range(n):
+            for j in range(n):
+                w = W[i][j]
+                if i != j:
+                    values.append(w)
+                row_sum[i] += w
+    else:
+        W: list[tuple[int, int, float]] = []
+        for i in range(n):
+            row_i = wij[i]
+            for j in range(n):
+                w = row_i[j]
+                if i != j:
+                    values.append(w)
+                    if w >= thr:
+                        W.append((i, j, w))
+                row_sum[i] += w
+    return n, values, row_sum, W
+
+
 def _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np=None):
     """Finalize the coherence matrix ``wij`` and store results in history.
 
@@ -410,42 +460,11 @@ def _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np=None):
     """
 
     use_np = np is not None and isinstance(wij, np.ndarray)
-    if use_np:
-        n = wij.shape[0]
-        mask = ~np.eye(n, dtype=bool)
-        values = wij[mask]
-        row_sum = wij.sum(axis=1)
-        if mode == "dense":
-            W = wij.tolist()
-        else:
-            idx = np.where((wij >= thr) & mask)
-            W = [
-                (int(i), int(j), float(wij[i, j]))
-                for i, j in zip(idx[0], idx[1])
-            ]
-    else:
-        n = len(wij)
-        values: list[float] = []
-        row_sum = [0.0] * n
-        if mode == "dense":
-            W = [row[:] for row in wij]
-            for i in range(n):
-                for j in range(n):
-                    w = W[i][j]
-                    if i != j:
-                        values.append(w)
-                    row_sum[i] += w
-        else:
-            W = []
-            for i in range(n):
-                row_i = wij[i]
-                for j in range(n):
-                    w = row_i[j]
-                    if i != j:
-                        values.append(w)
-                        if w >= thr:
-                            W.append((i, j, w))
-                    row_sum[i] += w
+    n, values, row_sum, W = (
+        _coherence_numpy(wij, mode, thr, np)
+        if use_np
+        else _coherence_python(wij, mode, thr)
+    )
 
     min_val, max_val, mean_val, Wi, count_val = _compute_stats(
         values, row_sum, n, self_diag, np if use_np else None
