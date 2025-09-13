@@ -9,8 +9,7 @@ from __future__ import annotations
 
 import importlib
 import warnings
-from functools import lru_cache
-from typing import Any, Literal
+from typing import Any, Literal, MutableMapping
 from dataclasses import dataclass, field
 from cachetools import TTLCache
 import threading
@@ -19,6 +18,7 @@ from .logging import get_module_logger
 from .locking import get_lock
 
 __all__ = (
+    "cached_import",
     "optional_import",
     "get_numpy",
     "import_nodonx",
@@ -103,6 +103,14 @@ _WARNED_STATE = _ImportState(lock=get_lock("import_warned"))
 _WARNED_MODULES = _WARNED_STATE.failed
 _WARNED_LOCK = _WARNED_STATE.lock
 
+_DEFAULT_CACHE_SIZE = 128
+_DEFAULT_CACHE_TTL = _FAILED_IMPORT_MAX_AGE
+_IMPORT_CACHE: TTLCache[str, Any] = TTLCache(
+    _DEFAULT_CACHE_SIZE, _DEFAULT_CACHE_TTL, timer=lambda: time.monotonic()
+)
+_CACHE_LOCK = threading.Lock()
+_FAIL = object()
+
 
 def _warn_failure(
     module: str,
@@ -142,66 +150,75 @@ def _warn_failure(
         fn(msg)
 
 
-@lru_cache(maxsize=128)
-def _optional_import_cached(name: str) -> Any | None:
-    """Internal helper implementing ``optional_import`` logic without fallback."""
+def cached_import(
+    module_name: str,
+    attr: str | None = None,
+    *,
+    fallback: Any | None = None,
+    cache: MutableMapping[str, Any] | None = None,
+    ttl: float = _DEFAULT_CACHE_TTL,
+    emit: Literal["warn", "log", "both"] = "warn",
+) -> Any | None:
+    """Import ``module_name`` (and optional ``attr``) with caching and fallback."""
 
-    module_name, attr = (name.rsplit(".", 1) + [None])[:2]
+    key = module_name if attr is None else f"{module_name}.{attr}"
+    global _IMPORT_CACHE
+    if cache is None:
+        lock = _CACHE_LOCK
+        if ttl != _IMPORT_CACHE.ttl:
+            with lock:
+                if _IMPORT_CACHE.ttl != ttl:
+                    _IMPORT_CACHE = TTLCache(
+                        _DEFAULT_CACHE_SIZE, ttl, timer=lambda: time.monotonic()
+                    )
+        cache = _IMPORT_CACHE
+    else:
+        lock = threading.Lock()
+
+    with lock:
+        try:
+            value = cache[key]
+            return fallback if value is _FAIL else value
+        except KeyError:
+            pass
+
     try:
         module = importlib.import_module(module_name)
         obj = getattr(module, attr) if attr else module
+        with lock:
+            cache[key] = obj
         with _IMPORT_STATE.lock, _WARNED_STATE.lock:
-            for item in (name, module_name):
+            for item in (key, module_name):
                 _IMPORT_STATE.discard(item)
             _WARNED_STATE.discard(module_name)
         return obj
     except (ImportError, AttributeError) as e:
-        _warn_failure(module_name, attr, e)
+        _warn_failure(module_name, attr, e, emit=emit)
         with _IMPORT_STATE.lock:
             if isinstance(e, ImportError):
                 _IMPORT_STATE.record(module_name)
-                _IMPORT_STATE.record(name)
+                _IMPORT_STATE.record(key)
             else:
-                _IMPORT_STATE.record(name)
-    return None
+                _IMPORT_STATE.record(key)
+        with lock:
+            cache[key] = _FAIL
+        return fallback
 
 
 def optional_import(name: str, fallback: Any | None = None) -> Any | None:
-    """Import ``name`` returning ``fallback`` if it fails.
+    """Wrapper around :func:`cached_import` parsing dotted names."""
 
-    This function is thread-safe: concurrent failures are recorded in a bounded
-    registry protected by a lock to avoid race conditions. Results are cached by
-    ``name`` only, so ``fallback`` can be any object, even if unhashable.
-
-    ``name`` may refer to a module, submodule or attribute. If the import or
-    attribute access fails a warning is emitted and ``fallback`` is returned.
-
-    Parameters
-    ----------
-    name:
-        Fully qualified module, submodule or attribute path.
-    fallback:
-        Value to return when import fails. Defaults to ``None``.
-
-    Returns
-    -------
-    Any | None
-        Imported object or ``fallback`` if an error occurs.
-
-    Notes
-    -----
-    ``fallback`` is returned when the module is unavailable or the requested
-    attribute does not exist. In both cases a warning is emitted and logged.
-    Use :func:`clear_optional_import_cache` to reset the internal cache and
-    failure registry after installing new optional dependencies.
-    """
-
-    result = _optional_import_cached(name)
-    return fallback if result is None else result
+    module_name, attr = (name.rsplit(".", 1) + [None])[:2]
+    return cached_import(module_name, attr, fallback=fallback)
 
 
-# Expose cache management utilities for backward compatibility
-optional_import.cache_clear = _optional_import_cached.cache_clear  # type: ignore[attr-defined]
+def _clear_cache() -> None:
+    with _CACHE_LOCK:
+        _IMPORT_CACHE.clear()
+
+
+cached_import.cache_clear = _clear_cache  # type: ignore[attr-defined]
+optional_import.cache_clear = _clear_cache  # type: ignore[attr-defined]
 
 
 def clear_optional_import_cache() -> None:
@@ -222,7 +239,6 @@ def prune_failed_imports() -> None:
         _WARNED_STATE.last_prune = now
 
 
-@lru_cache(maxsize=1)
 def get_numpy(*, warn: bool = False) -> Any | None:
     """Return :mod:`numpy` or ``None`` if unavailable.
 
@@ -233,19 +249,17 @@ def get_numpy(*, warn: bool = False) -> Any | None:
         ``DEBUG`` message is recorded.
     """
 
-    module = optional_import("numpy")
+    module = cached_import("numpy")
     if module is None:
         log = logger.warning if warn else logger.debug
         log("Failed to import numpy; continuing in non-vectorised mode")
     return module
 
 
-@lru_cache(maxsize=1)
 def import_nodonx():
-    """Lazily import :class:`NodoNX` to avoid circular dependencies.
+    """Lazily import :class:`NodoNX` to avoid circular dependencies."""
 
-    The import is cached after the first successful call.
-    """
-    from .node import NodoNX
-
-    return NodoNX
+    nodo = cached_import("tnfr.node", attr="NodoNX")
+    if nodo is None:
+        raise ImportError("NodoNX is unavailable")
+    return nodo
