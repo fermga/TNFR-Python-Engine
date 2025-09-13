@@ -12,6 +12,7 @@ from .constants import get_aliases, get_graph_param
 from .alias import get_attr
 from .helpers.numeric import clamp01, kahan_sum2d
 from .import_utils import optional_numpy
+from .collections_utils import ensure_collection
 from .callback_utils import register_callback
 from .glyph_history import (
     ensure_history,
@@ -146,12 +147,10 @@ def _sigma_from_iterable(
     number of processed values under the ``"n"`` key.
     """
 
-    if isinstance(values, Iterable) and not isinstance(
-        values, (str, bytes, bytearray)
-    ):
-        iterator = values
-    else:
-        iterator = [values]
+    try:
+        iterator = ensure_collection(values, treat_strings_as_iterables=False)
+    except TypeError:
+        iterator = (values,)
     np = optional_numpy(logger)
     if np is not None:
         arr = np.fromiter(
