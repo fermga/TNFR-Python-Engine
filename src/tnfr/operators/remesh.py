@@ -1,10 +1,9 @@
 from __future__ import annotations
-from typing import Any
 import hashlib
 import heapq
 from operator import ge, le
 from functools import cache
-from itertools import combinations, islice
+from itertools import combinations
 from io import StringIO
 from collections import deque
 
