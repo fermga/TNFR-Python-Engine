@@ -8,13 +8,11 @@ from ..types import Glyph
 from ..token_parser import (
     validate_token as _tp_validate_token,
     _parse_tokens as _tp_parse_tokens,
-    _flatten_tokens as _tp_flatten_tokens,
 )
 
 __all__ = (
     "validate_token",
     "_parse_tokens",
-    "_flatten_tokens",
     "parse_thol",
     "TOKEN_MAP",
 )
@@ -45,4 +43,3 @@ TOKEN_MAP: dict[str, Callable[[Any], Any]] = {
 
 validate_token = partial(_tp_validate_token, token_map=TOKEN_MAP)
 _parse_tokens = partial(_tp_parse_tokens, token_map=TOKEN_MAP)
-_flatten_tokens = _tp_flatten_tokens

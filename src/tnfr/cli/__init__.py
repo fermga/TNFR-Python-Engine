@@ -17,7 +17,6 @@ from .arguments import (
     _args_to_dict,
 )
 from .token_parser import (
-    _flatten_tokens,
     _parse_tokens,
     TOKEN_MAP,
 )
@@ -52,7 +51,6 @@ __all__ = (
     "_load_sequence",
     "_parse_tokens",
     "TOKEN_MAP",
-    "_flatten_tokens",
     "_save_json",
     "_args_to_dict",
 )
