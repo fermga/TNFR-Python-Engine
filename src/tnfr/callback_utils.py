@@ -170,16 +170,23 @@ def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
     Supported formats
     -----------------
     * :class:`CallbackSpec` instances (returned unchanged).
-    * Sequences ``(name: str, func: Callable)`` such as lists or tuples.
+    * Sequences ``(name: str, func: Callable)`` such as lists, tuples or other
+      iterables.
     * Bare callables ``func`` whose name is taken from ``func.__name__``.
 
     ``None`` is returned when ``entry`` does not match any of the accepted
-    formats.  The original ``entry`` is never mutated.
+    formats. The original ``entry`` is never mutated. Sequence inputs are
+    converted to ``tuple`` before validation to support generators; the
+    materialization consumes the iterable and failure results in ``None``.
     """
 
     if isinstance(entry, CallbackSpec):
         return entry
     elif is_non_string_sequence(entry):
+        try:
+            entry = tuple(entry)
+        except TypeError:
+            return None
         if len(entry) != 2:
             return None
         name, fn = entry
