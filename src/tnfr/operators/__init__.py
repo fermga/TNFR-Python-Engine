@@ -59,6 +59,11 @@ def get_glyph_factors(node: NodoProtocol) -> dict[str, Any]:
     return node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"].copy())
 
 
+def get_factor(gf: dict[str, Any], key: str, default: float) -> float:
+    """Return ``gf[key]`` as ``float`` with ``default`` fallback."""
+    return float(gf.get(key, default))
+
+
 # -------------------------
 # Glyphs (operadores locales)
 # -------------------------
@@ -143,22 +148,22 @@ def _mix_epi_with_neighbors(
 
 
 def _op_AL(node: NodoProtocol, gf: dict[str, Any]) -> None:  # AL — Emisión
-    f = float(gf.get("AL_boost", 0.05))
+    f = get_factor(gf, "AL_boost", 0.05)
     node.EPI = node.EPI + f
 
 
 def _op_EN(node: NodoProtocol, gf: dict[str, Any]) -> None:  # EN — Recepción
-    mix = float(gf.get("EN_mix", 0.25))
+    mix = get_factor(gf, "EN_mix", 0.25)
     _mix_epi_with_neighbors(node, mix, Glyph.EN)
 
 
 def _op_IL(node: NodoProtocol, gf: dict[str, Any]) -> None:  # IL — Coherencia
-    factor = float(gf.get("IL_dnfr_factor", 0.7))
+    factor = get_factor(gf, "IL_dnfr_factor", 0.7)
     node.dnfr = factor * getattr(node, "dnfr", 0.0)
 
 
 def _op_OZ(node: NodoProtocol, gf: dict[str, Any]) -> None:  # OZ — Disonancia
-    factor = float(gf.get("OZ_dnfr_factor", 1.3))
+    factor = get_factor(gf, "OZ_dnfr_factor", 1.3)
     dnfr = getattr(node, "dnfr", 0.0)
     if bool(node.graph.get("OZ_NOISE_MODE", False)):
         sigma = float(node.graph.get("OZ_SIGMA", 0.1))
@@ -219,7 +224,7 @@ def _um_select_candidates(
 
 
 def _op_UM(node: NodoProtocol, gf: dict[str, Any]) -> None:  # UM — Coupling
-    k = float(gf.get("UM_theta_push", 0.25))
+    k = get_factor(gf, "UM_theta_push", 0.25)
     th = node.theta
     thL = neighbor_phase_mean(node)
     d = angle_diff(thL, th)
@@ -256,12 +261,12 @@ def _op_UM(node: NodoProtocol, gf: dict[str, Any]) -> None:  # UM — Coupling
 
 
 def _op_RA(node: NodoProtocol, gf: dict[str, Any]) -> None:  # RA — Resonancia
-    diff = float(gf.get("RA_epi_diff", 0.15))
+    diff = get_factor(gf, "RA_epi_diff", 0.15)
     _mix_epi_with_neighbors(node, diff, Glyph.RA)
 
 
 def _op_SHA(node: NodoProtocol, gf: dict[str, Any]) -> None:  # SHA — Silencio
-    factor = float(gf.get("SHA_vf_factor", 0.85))
+    factor = get_factor(gf, "SHA_vf_factor", 0.85)
     node.vf = factor * node.vf
 
 
@@ -279,8 +284,8 @@ def _op_scale(node: NodoProtocol, glyph: Glyph, factor: float) -> None:
 
 def _make_scale_op(glyph: Glyph):
     def _op(node: NodoProtocol, gf: dict[str, Any]) -> None:
-        factor_val = float(gf.get("VAL_scale", _SCALE_FACTORS[Glyph.VAL]))
-        factor_nul = float(gf.get("NUL_scale", _SCALE_FACTORS[Glyph.NUL]))
+        factor_val = get_factor(gf, "VAL_scale", _SCALE_FACTORS[Glyph.VAL])
+        factor_nul = get_factor(gf, "NUL_scale", _SCALE_FACTORS[Glyph.NUL])
         factor = factor_val if glyph is Glyph.VAL else factor_nul
         _op_scale(node, glyph, factor)
 
@@ -290,14 +295,14 @@ def _make_scale_op(glyph: Glyph):
 def _op_THOL(
     node: NodoProtocol, gf: dict[str, Any]
 ) -> None:  # THOL — Autoorganización
-    a = float(gf.get("THOL_accel", 0.10))
+    a = get_factor(gf, "THOL_accel", 0.10)
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
 def _op_ZHIR(
     node: NodoProtocol, gf: dict[str, Any]
 ) -> None:  # ZHIR — Mutación
-    shift = float(gf.get("ZHIR_theta_shift", math.pi / 2))
+    shift = get_factor(gf, "ZHIR_theta_shift", math.pi / 2)
     node.theta = node.theta + shift
 
 
@@ -306,7 +311,7 @@ def _op_NAV(
 ) -> None:  # NAV — Transición
     dnfr = node.dnfr
     vf = node.vf
-    eta = float(gf.get("NAV_eta", 0.5))
+    eta = get_factor(gf, "NAV_eta", 0.5)
     strict = bool(node.graph.get("NAV_STRICT", False))
     if strict:
         base = vf
@@ -314,7 +319,7 @@ def _op_NAV(
         sign = 1.0 if dnfr >= 0 else -1.0
         target = sign * vf
         base = (1.0 - eta) * dnfr + eta * target
-    j = float(gf.get("NAV_jitter", 0.05))
+    j = get_factor(gf, "NAV_jitter", 0.05)
     if bool(node.graph.get("NAV_RANDOM", True)):
         jitter = random_jitter(node, j)
     else:
