@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from cachetools import TTLCache
 import threading
 import time
-from .logging_utils import get_logger
+from .logging import get_module_logger
 from .locking import get_lock
 
 __all__ = (
@@ -27,7 +27,7 @@ __all__ = (
 )
 
 
-logger = get_logger(__name__)
+logger = get_module_logger(__name__)
 
 
 def _emit_warn(message: str) -> None:

@@ -10,7 +10,7 @@ from typing import Any, Callable, IO
 from functools import lru_cache
 
 from .import_utils import optional_import
-from .logging_utils import get_logger
+from .logging import get_module_logger
 
 
 @lru_cache(maxsize=None)
@@ -123,7 +123,7 @@ def read_structured_file(path: Path) -> Any:
         raise StructuredFileError(path, e) from e
 
 
-logger = get_logger(__name__)
+logger = get_module_logger(__name__)
 
 
 def _write_to_fd(fd: IO[Any], write: Callable[[Any], Any], *, sync: bool = False) -> None:

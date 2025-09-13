@@ -17,12 +17,12 @@ from .helpers.cache import (
     get_graph_mapping,
 )
 from .json_utils import json_dumps
-from .logging_utils import get_logger
+from .logging import get_module_logger
 
 ALIAS_THETA = get_aliases("THETA")
 
 
-logger = get_logger(__name__)
+logger = get_module_logger(__name__)
 
 DEFAULT_GAMMA: Mapping[str, str] = {"type": "none"}
 

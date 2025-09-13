@@ -25,7 +25,7 @@ from .coherence import register_coherence_callbacks
 from .diagnosis import register_diagnosis_callbacks
 from ..observers import phase_sync, glyph_load, kuramoto_order
 from ..sense import sigma_vector
-from ..logging_utils import get_logger
+from ..logging import get_module_logger
 
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_DNFR = get_aliases("DNFR")
@@ -37,7 +37,7 @@ ALIAS_DVF = get_aliases("DVF")
 ALIAS_D2VF = get_aliases("D2VF")
 
 
-logger = get_logger(__name__)
+logger = get_module_logger(__name__)
 
 
 LATENT_GLYPH = Glyph.SHA.value

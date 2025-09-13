@@ -49,7 +49,7 @@ from ..selector import (
     _apply_selector_hysteresis,
 )
 
-from ..logging_utils import get_logger
+from ..logging import get_module_logger
 
 from .sampling import update_node_sample as _update_node_sample
 from .dnfr import (
@@ -79,7 +79,7 @@ ALIAS_SI = get_aliases("SI")
 ALIAS_D2EPI = get_aliases("D2EPI")
 ALIAS_DSI = get_aliases("DSI")
 
-logger = get_logger(__name__)
+logger = get_module_logger(__name__)
 
 __all__ = (
     "default_compute_delta_nfr",

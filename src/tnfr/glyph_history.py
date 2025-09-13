@@ -11,9 +11,9 @@ import numbers
 
 from .constants import get_param
 from .collections_utils import ensure_collection
-from .logging_utils import get_logger
+from .logging import get_module_logger
 
-logger = get_logger(__name__)
+logger = get_module_logger(__name__)
 
 __all__ = (
     "HistoryDict",
