@@ -4,21 +4,9 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
-from .collections_utils import is_non_string_sequence
+from .collections_utils import flatten_structure
 
-__all__ = ("_flatten_tokens", "validate_token", "_parse_tokens")
-
-
-def _flatten_tokens(obj: Any):
-    """Yield each token in order preserving natural sequence."""
-
-    stack = [obj]
-    while stack:
-        item = stack.pop()
-        if is_non_string_sequence(item):
-            stack.extend(reversed(item))
-        else:
-            yield item
+__all__ = ("validate_token", "_parse_tokens")
 
 
 def validate_token(
@@ -55,5 +43,5 @@ def _parse_tokens(
 ) -> list[Any]:
     return [
         validate_token(tok, pos, token_map)
-        for pos, tok in enumerate(_flatten_tokens(obj), start=1)
+        for pos, tok in enumerate(flatten_structure(obj), start=1)
     ]
