@@ -1,8 +1,10 @@
 """Helpers for optional imports and cached access to heavy modules.
 
-The module maintains a registry of failed import attempts. Entries older than
+The module maintains caches for successful imports alongside registries of
+failed attempts and previously warned modules. Entries older than
 ``_FAILED_IMPORT_MAX_AGE`` seconds are pruned automatically; use
-``prune_failed_imports`` to trigger cleanup manually.
+``prune_failed_imports`` to trigger cleanup manually and
+``clear_optional_import_cache`` to reset both caches and logs.
 """
 
 from __future__ import annotations
@@ -79,6 +81,7 @@ class _ImportState:
 
     def prune(self, now: float | None = None) -> None:
         self.failed.expire(now)
+        self.last_prune = time.monotonic() if now is None else now
 
     def record(self, item: str) -> None:
         self.failed[item] = True
@@ -91,6 +94,7 @@ class _ImportState:
 
     def clear(self) -> None:
         self.failed.clear()
+        self.last_prune = 0.0
 
 
 _IMPORT_STATE = _ImportState()
@@ -232,8 +236,10 @@ optional_import.cache_clear = _clear_cache  # type: ignore[attr-defined]
 def clear_optional_import_cache() -> None:
     """Deprecated cache reset for :func:`optional_import`.
 
-    Use ``cached_import.cache_clear()`` and :func:`prune_failed_imports`
-    instead to release cached modules and clear failure records.
+    The function now clears the internal import-result cache as well as the
+    registries tracking failed imports and previously warned modules. Prefer
+    calling ``cached_import.cache_clear()`` together with
+    :func:`prune_failed_imports` in new code.
     """
 
     warnings.warn(
@@ -242,19 +248,17 @@ def clear_optional_import_cache() -> None:
         DeprecationWarning,
         stacklevel=2,
     )
-    optional_import.cache_clear()
+    cached_import.cache_clear()
     with _IMPORT_STATE.lock, _WARNED_STATE.lock:
         _IMPORT_STATE.clear()
         _WARNED_STATE.clear()
 
 
 def prune_failed_imports() -> None:
-    """Remove expired entries from the failed import registry."""
+    """Prune expired entries from failure and warning registries."""
     now = time.monotonic()
     with _IMPORT_STATE.lock, _WARNED_STATE.lock:
-        _IMPORT_STATE.failed.expire(now)
-        _IMPORT_STATE.last_prune = now
-        _WARNED_STATE.failed.expire(now)
-        _WARNED_STATE.last_prune = now
+        _IMPORT_STATE.prune(now)
+        _WARNED_STATE.prune(now)
 
 

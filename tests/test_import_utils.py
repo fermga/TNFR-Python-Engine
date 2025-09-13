@@ -3,7 +3,15 @@ import sys
 import types
 
 import pytest
-from tnfr.import_utils import cached_import, optional_import, prune_failed_imports
+from tnfr.import_utils import (
+    cached_import,
+    clear_optional_import_cache,
+    optional_import,
+    prune_failed_imports,
+    _IMPORT_CACHE,
+    _IMPORT_STATE,
+    _WARNED_STATE,
+)
 
 
 def reset() -> None:
@@ -45,3 +53,22 @@ def test_optional_import_wrapper(monkeypatch):
     reset()
     with pytest.warns(DeprecationWarning):
         assert optional_import("fake_mod") is fake_mod
+
+
+def test_clear_optional_import_cache_resets_all(monkeypatch):
+    reset()
+
+    def fake_import(name):
+        raise ImportError("boom")
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+    cached_import("fake_mod")
+    with _IMPORT_STATE.lock, _WARNED_STATE.lock:
+        assert "fake_mod" in _IMPORT_STATE.failed
+        assert "fake_mod" in _WARNED_STATE.failed
+    assert _IMPORT_CACHE
+    clear_optional_import_cache()
+    with _IMPORT_STATE.lock, _WARNED_STATE.lock:
+        assert not _IMPORT_STATE.failed
+        assert not _WARNED_STATE.failed
+    assert not _IMPORT_CACHE
