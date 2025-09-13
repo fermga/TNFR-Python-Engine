@@ -1,3 +1,5 @@
+import math
+
 from tnfr.constants import get_aliases
 from tnfr.metrics_utils import compute_Si
 from tnfr.alias import set_attr
@@ -12,6 +14,12 @@ def test_compute_Si_uses_module_numpy_and_propagates(monkeypatch, graph_canon):
     class DummyNP:
         def fromiter(self, iterable, dtype=float, count=-1):
             return list(iterable)
+
+        def cos(self, arr):
+            return [math.cos(x) for x in arr]
+
+        def sin(self, arr):
+            return [math.sin(x) for x in arr]
 
     sentinel = DummyNP()
 

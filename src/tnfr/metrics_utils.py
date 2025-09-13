@@ -68,6 +68,25 @@ class TrigCache:
     theta: dict[Any, float]
 
 
+def _compute_trig_python(
+    nodes: Iterable[tuple[Any, Mapping[str, Any] | float]],
+) -> TrigCache:
+    """Compute trigonometric mappings using pure Python."""
+
+    cos_th: dict[Any, float] = {}
+    sin_th: dict[Any, float] = {}
+    thetas: dict[Any, float] = {}
+    for n, data in nodes:
+        if isinstance(data, Mapping):
+            th = get_attr(data, ALIAS_THETA, 0.0)
+        else:
+            th = float(data)
+        thetas[n] = th
+        cos_th[n] = math.cos(th)
+        sin_th[n] = math.sin(th)
+    return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
+
+
 def compute_theta_trig(
     nodes: Iterable[tuple[Any, Mapping[str, Any] | float]],
     np: Any | None = None,
@@ -79,34 +98,26 @@ def compute_theta_trig(
     """
     if np is None:
         np = optional_numpy(logger)
+    if np is None or not all(hasattr(np, attr) for attr in ("fromiter", "cos", "sin")):
+        return _compute_trig_python(nodes)
+
     node_list: list[Any] = []
-    theta_vals: list[float] = []
-    for n, data in nodes:
-        if isinstance(data, Mapping):
-            th = get_attr(data, ALIAS_THETA, 0.0)
-        else:
-            th = float(data)
-        node_list.append(n)
-        theta_vals.append(th)
-    if np is not None:
-        try:
-            theta_arr = np.asarray(theta_vals, dtype=float)
-            cos_arr = np.cos(theta_arr)
-            sin_arr = np.sin(theta_arr)
-            return TrigCache(
-                cos=dict(zip(node_list, map(float, cos_arr))),
-                sin=dict(zip(node_list, map(float, sin_arr))),
-                theta=dict(zip(node_list, map(float, theta_arr))),
-            )
-        except AttributeError:
-            np = None
-    cos_th: dict[Any, float] = {}
-    sin_th: dict[Any, float] = {}
-    thetas: dict[Any, float] = {}
-    for n, th in zip(node_list, theta_vals):
-        thetas[n] = th
-        cos_th[n] = math.cos(th)
-        sin_th[n] = math.sin(th)
+
+    def theta_iter() -> Iterable[float]:
+        for n, data in nodes:
+            node_list.append(n)
+            if isinstance(data, Mapping):
+                yield get_attr(data, ALIAS_THETA, 0.0)
+            else:
+                yield float(data)
+
+    theta_arr = np.fromiter(theta_iter(), dtype=float)
+    cos_arr = np.cos(theta_arr)
+    sin_arr = np.sin(theta_arr)
+
+    cos_th = dict(zip(node_list, map(float, cos_arr)))
+    sin_th = dict(zip(node_list, map(float, sin_arr)))
+    thetas = dict(zip(node_list, map(float, theta_arr)))
     return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
 
 
