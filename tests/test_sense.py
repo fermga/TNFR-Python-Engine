@@ -109,6 +109,27 @@ def test_sigma_from_iterable_accepts_reals():
     assert vec["y"] == pytest.approx(0.0)
 
 
+def test_sigma_from_iterable_large_generator_efficient():
+    N = 100_000
+    counter = 0
+
+    def gen():
+        nonlocal counter
+        for i in range(N):
+            counter += 1
+            yield float(i)
+
+    start = time.perf_counter()
+    vec = _sigma_from_iterable(gen())
+    elapsed = time.perf_counter() - start
+
+    assert vec["n"] == N
+    assert vec["x"] == pytest.approx((N - 1) / 2)
+    assert vec["y"] == pytest.approx(0.0)
+    assert counter == N
+    assert elapsed < 2.0
+
+
 def test_unknown_glyph_raises():
     with pytest.raises(KeyError):
         glyph_angle("ZZ")

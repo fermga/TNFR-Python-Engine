@@ -5,6 +5,7 @@ from typing import TypeVar
 from collections.abc import Iterable, Mapping
 import math
 from collections import Counter
+from itertools import tee
 
 import networkx as nx  # type: ignore[import-untyped]
 
@@ -12,7 +13,6 @@ from .constants import get_aliases, get_graph_param
 from .alias import get_attr
 from .helpers.numeric import clamp01, kahan_sum2d
 from .import_utils import optional_numpy
-from .collections_utils import ensure_collection
 from .callback_utils import register_callback
 from .glyph_history import (
     ensure_history,
@@ -147,15 +147,15 @@ def _sigma_from_iterable(
     number of processed values under the ``"n"`` key.
     """
 
-    try:
-        iterator = ensure_collection(values, treat_strings_as_iterables=False)
-    except TypeError:
-        iterator = (values,)
+    if isinstance(values, Iterable) and not isinstance(values, (str, bytes, bytearray, Mapping)):
+        iterator = iter(values)
+    else:
+        iterator = iter((values,))
+
     np = optional_numpy(logger)
     if np is not None:
-        arr = np.fromiter(
-            (_to_complex(v) for v in iterator), dtype=np.complex128
-        )
+        iterator, np_iter = tee(iterator)
+        arr = np.fromiter((_to_complex(v) for v in np_iter), dtype=np.complex128)
         cnt = int(arr.size)
         if cnt == 0:
             return _empty_sigma(fallback_angle)
@@ -170,8 +170,6 @@ def _sigma_from_iterable(
             "angle": ang,
             "n": cnt,
         }
-
-    iterator = iter(iterator)
     cnt = 0
 
     def pair_iter():
