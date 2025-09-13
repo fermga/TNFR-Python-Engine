@@ -14,6 +14,7 @@ from tnfr.helpers.numeric import angle_diff
 from tnfr.alias import set_attr
 from tnfr.callback_utils import CallbackEvent
 from tnfr.observers import attach_standard_observer
+from tnfr.import_utils import clear_optional_import_cache
 
 ALIAS_THETA = get_aliases("THETA")
 
@@ -46,6 +47,7 @@ def test_phase_observers_match_manual_calculation(graph_canon):
 
 def test_phase_sync_equivalent_with_without_numpy(monkeypatch, graph_canon):
     pytest.importorskip("numpy")
+    clear_optional_import_cache()
     G = graph_canon()
     angles = [0.1, -2.0, 2.5, 3.0]
     for idx, th in enumerate(angles):

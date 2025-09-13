@@ -10,6 +10,7 @@ from tnfr.helpers.cache import (
     ensure_node_index_map,
     _ensure_node_map,
 )
+from tnfr.import_utils import clear_optional_import_cache
 
 
 def test_edge_version_update_scopes_mutations(graph_canon):
@@ -126,6 +127,7 @@ def test_cache_node_list_cache_updated_on_node_set_change(graph_canon):
 
 
 def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon):
+    clear_optional_import_cache()
     monkeypatch.setattr("tnfr.helpers.cache.get_numpy", lambda: None)
     G = graph_canon()
     G.add_edge(0, 1)
@@ -135,6 +137,7 @@ def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon)
 
 
 def test_cached_nodes_and_A_requires_numpy(monkeypatch, graph_canon):
+    clear_optional_import_cache()
     monkeypatch.setattr("tnfr.helpers.cache.get_numpy", lambda: None)
     G = graph_canon()
     G.add_edge(0, 1)

@@ -1,3 +1,4 @@
+import sys
 import types
 import importlib
 import logging
@@ -5,6 +6,7 @@ from cachetools import TTLCache
 
 import tnfr.import_utils as import_utils
 from tnfr.import_utils import (
+    cached_import,
     optional_import,
     prune_failed_imports,
     _IMPORT_STATE,
@@ -12,7 +14,7 @@ from tnfr.import_utils import (
 )
 
 
-def test_optional_import_clears_failures(monkeypatch):
+def test_cached_import_clears_failures(monkeypatch):
     calls = {"n": 0}
 
     def fake_import(name):
@@ -23,15 +25,15 @@ def test_optional_import_clears_failures(monkeypatch):
 
     monkeypatch.setattr(importlib, "import_module", fake_import)
     clear_optional_import_cache()
-    assert optional_import("fake_mod") is None
+    assert cached_import("fake_mod") is None
     assert "fake_mod" in _IMPORT_STATE
     clear_optional_import_cache()
-    result = optional_import("fake_mod")
+    result = cached_import("fake_mod")
     assert result is not None
     assert "fake_mod" not in _IMPORT_STATE
 
 
-def test_warns_once_then_debug(monkeypatch, caplog):
+def test_cached_import_warns_once_then_debug(monkeypatch, caplog):
     def fake_import(name):
         raise ImportError("boom")
 
@@ -45,8 +47,8 @@ def test_warns_once_then_debug(monkeypatch, caplog):
     monkeypatch.setattr(import_utils.warnings, "warn", fake_warn)
     clear_optional_import_cache()
     with caplog.at_level(logging.DEBUG, logger=import_utils.logger.name):
-        optional_import("fake_mod.attr1")
-        optional_import("fake_mod.attr2")
+        cached_import("fake_mod", attr="attr1")
+        cached_import("fake_mod", attr="attr2")
     clear_optional_import_cache()
     records = [
         r.levelno for r in caplog.records if r.name == import_utils.logger.name
@@ -55,7 +57,7 @@ def test_warns_once_then_debug(monkeypatch, caplog):
     assert stacklevels == [2]
 
 
-def test_optional_import_removes_entry_on_success(monkeypatch):
+def test_cached_import_removes_entry_on_success(monkeypatch):
     calls = {"n": 0}
 
     def fake_import(name):
@@ -66,15 +68,15 @@ def test_optional_import_removes_entry_on_success(monkeypatch):
 
     monkeypatch.setattr(importlib, "import_module", fake_import)
     clear_optional_import_cache()
-    assert optional_import("fake_mod") is None
+    assert cached_import("fake_mod") is None
     assert "fake_mod" in _IMPORT_STATE
-    optional_import.cache_clear()  # retry without clearing failure registry
-    result = optional_import("fake_mod")
+    cached_import.cache_clear()  # retry without clearing failure registry
+    result = cached_import("fake_mod")
     assert result is not None
     assert "fake_mod" not in _IMPORT_STATE
 
 
-def test_optional_import_handles_distinct_fallbacks(monkeypatch):
+def test_cached_import_handles_distinct_fallbacks(monkeypatch):
     def fake_import(name):
         raise ImportError("boom")
 
@@ -82,8 +84,41 @@ def test_optional_import_handles_distinct_fallbacks(monkeypatch):
     clear_optional_import_cache()
     fb1: list[str] = []
     fb2: dict[str, int] = {}
-    assert optional_import("fake_mod", fb1) is fb1
-    assert optional_import("fake_mod", fb2) is fb2
+    assert cached_import("fake_mod", fallback=fb1) is fb1
+    assert cached_import("fake_mod", fallback=fb2) is fb2
+
+
+def test_cached_import_respects_cache_ttl(monkeypatch):
+    calls = {"n": 0}
+
+    def fake_import(name):
+        calls["n"] += 1
+        return types.SimpleNamespace()
+
+    from collections import deque
+
+    times = deque([0.0, 0.0, 0.5, 0.5, 1.5, 1.5])
+
+    def monotonic() -> float:
+        return times.popleft() if times else 1.5
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+    monkeypatch.setattr(import_utils.time, "monotonic", monotonic)
+    clear_optional_import_cache()
+    cached_import("fake_mod", ttl=1.0)
+    cached_import("fake_mod", ttl=1.0)
+    cached_import("fake_mod", ttl=1.0)
+    assert calls["n"] == 2
+
+
+def test_cached_import_attribute_and_fallback(monkeypatch):
+    clear_optional_import_cache()
+    fake_mod = types.SimpleNamespace(value=5)
+    monkeypatch.setitem(sys.modules, "fake_mod", fake_mod)
+    assert cached_import("fake_mod", attr="value") == 5
+    clear_optional_import_cache()
+    monkeypatch.delitem(sys.modules, "fake_mod")
+    assert cached_import("fake_mod", attr="value", fallback=1) == 1
 
 
 def test_record_prunes_expired_entries(monkeypatch):
@@ -95,7 +130,7 @@ def test_record_prunes_expired_entries(monkeypatch):
             TTLCache(state.limit, 10, timer=lambda: import_utils.time.monotonic()),
         )
     times = iter([0.0, 11.0])
-    monkeypatch.setattr(import_utils.time, "monotonic", lambda: next(times))
+    monkeypatch.setattr(import_utils.time, "monotonic", lambda: next(times, 11.0))
     with state.lock:
         state.record("old")
         state.record("new")
@@ -144,6 +179,21 @@ def test_failure_log_bounded_without_frequent_prune(monkeypatch):
     monkeypatch.setattr(importlib, "import_module", fake_import)
     clear_optional_import_cache()
     for i in range(10):
-        optional_import(f"fake_mod{i}")
+        cached_import(f"fake_mod{i}")
     assert calls["n"] == 0
     assert len(state.failed) <= 3
+
+
+def test_optional_import_wrapper(monkeypatch):
+    calls = {"n": 0}
+
+    def fake_import(name):
+        calls["n"] += 1
+        return types.SimpleNamespace(value=5)
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+    clear_optional_import_cache()
+    assert optional_import("fake_mod.value") == 5
+    assert optional_import("fake_mod.value") == 5
+    assert calls["n"] == 1
+
