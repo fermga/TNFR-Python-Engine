@@ -1,6 +1,7 @@
 """Grammar rules."""
 
 from __future__ import annotations
+from dataclasses import dataclass
 from typing import Any, Iterable, Optional, Callable
 
 from .constants import DEFAULTS, get_aliases, get_param
@@ -14,12 +15,39 @@ from .metrics_utils import normalize_dnfr
 ALIAS_SI = get_aliases("SI")
 ALIAS_D2EPI = get_aliases("D2EPI")
 
+
+@dataclass
+class GrammarContext:
+    """Shared context for grammar helpers.
+
+    Collects graph-level settings to reduce positional parameters across
+    helper functions.
+    """
+
+    G: Any
+    cfg_soft: dict[str, Any]
+    cfg_canon: dict[str, Any]
+    norms: dict[str, Any]
+
+    @classmethod
+    def from_graph(cls, G: Any) -> "GrammarContext":
+        """Create a :class:`GrammarContext` for ``G``."""
+        return cls(
+            G=G,
+            cfg_soft=G.graph.get("GRAMMAR", DEFAULTS.get("GRAMMAR", {})),
+            cfg_canon=G.graph.get(
+                "GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})
+            ),
+            norms=G.graph.get("_sel_norms") or {},
+        )
+
 __all__ = (
     "CANON_COMPAT",
     "CANON_FALLBACK",
     "enforce_canonical_grammar",
     "on_applied_glyph",
     "apply_glyph_with_grammar",
+    "GrammarContext",
 )
 
 # -------------------------
@@ -111,33 +139,26 @@ def _glyph_fallback(cand_key: str, fallbacks: dict[str, Any]) -> Glyph | str:
 # -------------------------
 
 
-def _norm_attr(G, nd, attr_alias: str, norm_key: str) -> float:
-    """Normalise ``attr_alias`` using the global maximum ``norm_key``.
+def _norm_attr(ctx: GrammarContext, nd, attr_alias: str, norm_key: str) -> float:
+    """Normalise ``attr_alias`` using the global maximum ``norm_key``."""
 
-    ``_sel_norms`` is stored in ``G.graph`` and contains per-attribute
-    maxima computed by selectors. If ``norm_key`` is missing the default
-    value ``1.0`` is used to avoid division by zero.
-    """
-
-    norms = G.graph.get("_sel_norms") or {}
-    max_val = float(norms.get(norm_key, 1.0)) or 1.0
+    max_val = float(ctx.norms.get(norm_key, 1.0)) or 1.0
     return clamp01(abs(get_attr(nd, attr_alias, 0.0)) / max_val)
 
 
-def _si(G, nd) -> float:
+def _si(nd) -> float:
     return clamp01(get_attr(nd, ALIAS_SI, 0.5))
 
 
-def _accel_norm(G, nd) -> float:
+def _accel_norm(ctx: GrammarContext, nd) -> float:
     """Normalise acceleration using the global maximum."""
-    return _norm_attr(G, nd, ALIAS_D2EPI, "accel_max")
+    return _norm_attr(ctx, nd, ALIAS_D2EPI, "accel_max")
 
 
-def _check_repeats(
-    G, n, cand: Glyph | str, cfg: dict[str, Any]
-) -> Glyph | str:
-    """Avoid recent repetitions according to ``cfg``."""
-    nd = G.nodes[n]
+def _check_repeats(ctx: GrammarContext, n, cand: Glyph | str) -> Glyph | str:
+    """Avoid recent repetitions according to ``ctx.cfg_soft``."""
+    nd = ctx.G.nodes[n]
+    cfg = ctx.cfg_soft
     gwin = int(cfg.get("window", 0))
     avoid = set(cfg.get("avoid_repeats", []))
     fallbacks = cfg.get("fallbacks", {})
@@ -148,30 +169,29 @@ def _check_repeats(
 
 
 def _maybe_force(
-    G,
+    ctx: GrammarContext,
     n,
     cand: str,
     original: str,
-    cfg: dict[str, Any],
-    accessor: Callable[[Any, dict[str, Any]], float],
+    accessor: Callable[[GrammarContext, dict[str, Any]], float],
     key: str,
 ) -> str:
     """Restore ``original`` if ``accessor`` exceeds ``key`` threshold."""
     if cand == original:
         return cand
-    force_th = float(cfg.get(key, 0.60))
-    if accessor(G, G.nodes[n]) >= force_th:
+    force_th = float(ctx.cfg_soft.get(key, 0.60))
+    if accessor(ctx, ctx.G.nodes[n]) >= force_th:
         return original
     return cand
 
 
-def _check_oz_to_zhir(G, n, cand: str, cfg: dict[str, Any]) -> str:
-    nd = G.nodes[n]
+def _check_oz_to_zhir(ctx: GrammarContext, n, cand: str) -> str:
+    nd = ctx.G.nodes[n]
     if cand == Glyph.ZHIR:
+        cfg = ctx.cfg_canon
         win = int(cfg.get("zhir_requires_oz_window", 3))
         dn_min = float(cfg.get("zhir_dnfr_min", 0.05))
-        norms = G.graph.get("_sel_norms") or {}
-        dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
+        dnfr_max = float(ctx.norms.get("dnfr_max", 1.0)) or 1.0
         if (
             not recent_glyph(nd, Glyph.OZ, win)
             and normalize_dnfr(nd, dnfr_max) < dn_min
@@ -181,30 +201,30 @@ def _check_oz_to_zhir(G, n, cand: str, cfg: dict[str, Any]) -> str:
 
 
 def _check_thol_closure(
-    G, n, cand: str, cfg: dict[str, Any], st: dict[str, Any]
+    ctx: GrammarContext, n, cand: str, st: dict[str, Any]
 ) -> str:
-    nd = G.nodes[n]
+    nd = ctx.G.nodes[n]
     if st.get("thol_open", False):
         st["thol_len"] = int(st.get("thol_len", 0)) + 1
+        cfg = ctx.cfg_canon
         minlen = int(cfg.get("thol_min_len", 2))
         maxlen = int(cfg.get("thol_max_len", 6))
         close_dn = float(cfg.get("thol_close_dnfr", 0.15))
-        norms = G.graph.get("_sel_norms") or {}
-        dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
+        dnfr_max = float(ctx.norms.get("dnfr_max", 1.0)) or 1.0
         if st["thol_len"] >= maxlen or (
             st["thol_len"] >= minlen
             and normalize_dnfr(nd, dnfr_max) <= close_dn
         ):
             return (
                 Glyph.NUL
-                if _si(G, nd) >= float(cfg.get("si_high", 0.66))
+                if _si(nd) >= float(cfg.get("si_high", 0.66))
                 else Glyph.SHA
             )
     return cand
 
 
-def _check_compatibility(G, n, cand: str) -> str:
-    nd = G.nodes[n]
+def _check_compatibility(ctx: GrammarContext, n, cand: str) -> str:
+    nd = ctx.G.nodes[n]
     hist = nd.get("glyph_history")
     prev = hist[-1] if hist else None
     if prev in CANON_COMPAT and cand not in CANON_COMPAT[prev]:
@@ -217,7 +237,9 @@ def _check_compatibility(G, n, cand: str) -> str:
 # -------------------------
 
 
-def enforce_canonical_grammar(G, n, cand: str) -> str:
+def enforce_canonical_grammar(
+    G, n, cand: str, ctx: Optional[GrammarContext] = None
+) -> str:
     """Validate and adjust a candidate glyph according to canonical grammar.
 
     Key rules:
@@ -229,30 +251,29 @@ def enforce_canonical_grammar(G, n, cand: str) -> str:
 
     Returns the effective glyph to apply.
     """
-    nd = G.nodes[n]
+    if ctx is None:
+        ctx = GrammarContext.from_graph(G)
+
+    nd = ctx.G.nodes[n]
     st = _gram_state(nd)
-    cfg_canon = G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {}))
-    cfg_soft = G.graph.get("GRAMMAR", DEFAULTS.get("GRAMMAR", {}))
 
     # 0) If glyphs outside the alphabet arrive, leave untouched
     if cand not in CANON_COMPAT:
         return cand
 
     original = cand
-    cand = _check_repeats(G, n, cand, cfg_soft)
+    cand = _check_repeats(ctx, n, cand)
+
     dnfr_accessor = (
-        lambda G, nd: normalize_dnfr(
-            nd,
-            float((G.graph.get("_sel_norms") or {}).get("dnfr_max", 1.0)) or 1.0,
+        lambda ctx, nd: normalize_dnfr(
+            nd, float(ctx.norms.get("dnfr_max", 1.0)) or 1.0
         )
     )
-    cand = _maybe_force(G, n, cand, original, cfg_soft, dnfr_accessor, "force_dnfr")
-    cand = _maybe_force(
-        G, n, cand, original, cfg_soft, _accel_norm, "force_accel"
-    )
-    cand = _check_oz_to_zhir(G, n, cand, cfg_canon)
-    cand = _check_thol_closure(G, n, cand, cfg_canon, st)
-    cand = _check_compatibility(G, n, cand)
+    cand = _maybe_force(ctx, n, cand, original, dnfr_accessor, "force_dnfr")
+    cand = _maybe_force(ctx, n, cand, original, _accel_norm, "force_accel")
+    cand = _check_oz_to_zhir(ctx, n, cand)
+    cand = _check_thol_closure(ctx, n, cand, st)
+    cand = _check_compatibility(ctx, n, cand)
 
     return cand
 
@@ -295,7 +316,8 @@ def apply_glyph_with_grammar(
 
     g_str = glyph.value if isinstance(glyph, Glyph) else str(glyph)
     iter_nodes = G.nodes() if nodes is None else nodes
+    ctx = GrammarContext.from_graph(G)
     for n in iter_nodes:
-        g_eff = enforce_canonical_grammar(G, n, g_str)
+        g_eff = enforce_canonical_grammar(G, n, g_str, ctx)
         apply_glyph(G, n, g_eff, window=window)
         on_applied_glyph(G, n, g_eff)
