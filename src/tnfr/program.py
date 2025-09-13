@@ -50,6 +50,7 @@ __all__ = (
     "WAIT",
     "TARGET",
     "THOL",
+    "THOLEvaluator",
     "OpTag",
     "Token",
     "THOL_SENTINEL",
@@ -156,6 +157,98 @@ def _advance(G, step_fn: AdvanceFn):
 # Sequence compilation → list of atomic operations
 # ---------------------
 
+class THOLEvaluator:
+    """Generador que expande un bloque :class:`THOL`."""
+
+    def __init__(
+        self,
+        item: THOL,
+        *,
+        max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
+    ) -> None:
+        repeats = int(item.repeat)
+        if repeats < 1:
+            raise ValueError("repeat must be ≥1")
+        if item.force_close is not None and not isinstance(item.force_close, Glyph):
+            raise ValueError("force_close must be a Glyph")
+        closing = (
+            item.force_close
+            if isinstance(item.force_close, Glyph)
+            and item.force_close in {Glyph.SHA, Glyph.NUL}
+            else None
+        )
+        seq0 = ensure_collection(
+            item.body,
+            max_materialize=max_materialize,
+            error_msg=f"THOL body exceeds max_materialize={max_materialize}",
+        )
+        self._frames: list[dict[str, Any]] = [
+            {
+                "seq": seq0,
+                "index": 0,
+                "remaining": repeats,
+                "closing": closing,
+            }
+        ]
+        self._max_materialize = max_materialize
+        self._started = False
+
+    def __iter__(self) -> "THOLEvaluator":
+        return self
+
+    def __next__(self):
+        if not self._started:
+            self._started = True
+            return THOL_SENTINEL
+        while self._frames:
+            frame = self._frames[-1]
+            seq = frame["seq"]
+            idx = frame["index"]
+            if idx < len(seq):
+                token = seq[idx]
+                frame["index"] = idx + 1
+                if isinstance(token, THOL):
+                    rep = int(token.repeat)
+                    if rep < 1:
+                        raise ValueError("repeat must be ≥1")
+                    if token.force_close is not None and not isinstance(
+                        token.force_close, Glyph
+                    ):
+                        raise ValueError("force_close must be a Glyph")
+                    closing2 = (
+                        token.force_close
+                        if isinstance(token.force_close, Glyph)
+                        and token.force_close in {Glyph.SHA, Glyph.NUL}
+                        else None
+                    )
+                    subseq = ensure_collection(
+                        token.body,
+                        max_materialize=self._max_materialize,
+                        error_msg=(
+                            f"THOL body exceeds max_materialize={self._max_materialize}"
+                        ),
+                    )
+                    self._frames.append(
+                        {
+                            "seq": subseq,
+                            "index": 0,
+                            "remaining": rep,
+                            "closing": closing2,
+                        }
+                    )
+                    return THOL_SENTINEL
+                return token
+            else:
+                cl = frame["closing"]
+                frame["remaining"] -= 1
+                if frame["remaining"] > 0:
+                    frame["index"] = 0
+                else:
+                    self._frames.pop()
+                if cl is not None:
+                    return cl
+        raise StopIteration
+
 
 def _flatten_thol(
     item: THOL,
@@ -163,94 +256,10 @@ def _flatten_thol(
     *,
     max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
 ) -> None:
-    """Expand a ``THOL`` block onto ``stack`` for processing.
+    """Expand a ``THOL`` block onto ``stack`` para su procesamiento."""
 
-    Parameters
-    ----------
-    item:
-        The :class:`THOL` block to expand.
-    stack:
-        Destination stack where the expanded tokens are pushed.
-    max_materialize:
-        Maximum number of tokens from ``item.body`` to materialize when it is
-        not already a collection. Defaults to
-        :data:`MAX_MATERIALIZE_DEFAULT`; ``None`` disables the limit.
-    """
-
-    repeats = int(item.repeat)
-    if repeats < 1:
-        raise ValueError("repeat must be ≥1")
-    if item.force_close is not None and not isinstance(
-        item.force_close, Glyph
-    ):
-        raise ValueError("force_close must be a Glyph")
-    closing = (
-        item.force_close
-        if isinstance(item.force_close, Glyph)
-        and item.force_close in {Glyph.SHA, Glyph.NUL}
-        else None
-    )
-    seq0 = ensure_collection(
-        item.body,
-        max_materialize=max_materialize,
-        error_msg=f"THOL body exceeds max_materialize={max_materialize}",
-    )
-    stack.append(THOL_SENTINEL)
-    frames: list[dict[str, Any]] = [
-        {
-            "seq": seq0,
-            "index": 0,
-            "remaining": repeats,
-            "closing": closing,
-        }
-    ]
-    while frames:
-        frame = frames[-1]
-        seq = frame["seq"]
-        idx = frame["index"]
-        if idx < len(seq):
-            token = seq[idx]
-            frame["index"] = idx + 1
-            if isinstance(token, THOL):
-                rep = int(token.repeat)
-                if rep < 1:
-                    raise ValueError("repeat must be ≥1")
-                if token.force_close is not None and not isinstance(
-                    token.force_close, Glyph
-                ):
-                    raise ValueError("force_close must be a Glyph")
-                closing2 = (
-                    token.force_close
-                    if isinstance(token.force_close, Glyph)
-                    and token.force_close in {Glyph.SHA, Glyph.NUL}
-                    else None
-                )
-                subseq = ensure_collection(
-                    token.body,
-                    max_materialize=max_materialize,
-                    error_msg=(
-                        f"THOL body exceeds max_materialize={max_materialize}"
-                    ),
-                )
-                stack.append(THOL_SENTINEL)
-                frames.append(
-                    {
-                        "seq": subseq,
-                        "index": 0,
-                        "remaining": rep,
-                        "closing": closing2,
-                    }
-                )
-            else:
-                stack.append(token)
-        else:
-            if (cl := frame["closing"]) is not None:
-                stack.append(cl)
-            frame["remaining"] -= 1
-            if frame["remaining"] > 0:
-                frame["index"] = 0
-            else:
-                frames.pop()
+    for token in THOLEvaluator(item, max_materialize=max_materialize):
+        stack.append(token)
 
 
 def _flatten_target(
@@ -309,9 +318,7 @@ def _flatten(
 
     def _expand(item: Any):
         if isinstance(item, THOL):
-            tmp: deque[Any] = deque()
-            _flatten_thol(item, tmp, max_materialize=max_materialize)
-            return tmp
+            return THOLEvaluator(item, max_materialize=max_materialize)
         return None
 
     for item in flatten_structure(sequence, expand=_expand):
