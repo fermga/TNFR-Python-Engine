@@ -47,6 +47,14 @@ from tnfr import cached_import
 np = cached_import("numpy")
 safe_load = cached_import("yaml", "safe_load")
 
+# provide a shared cache with an explicit lock
+from cachetools import TTLCache
+import threading
+
+cache = TTLCache(32, 60)
+lock = threading.Lock()
+cached_import("numpy", cache=cache, lock=lock)
+
 # clear the cache (e.g. after installing a dependency at runtime)
 cached_import.cache_clear()
 ```
