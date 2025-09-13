@@ -16,3 +16,10 @@ def test_accumulate_cos_sin_handles_empty_iterable():
     assert processed is False
     assert sum_cos == pytest.approx(0.0)
     assert sum_sin == pytest.approx(0.0)
+
+
+def test_accumulate_cos_sin_wrapper_removed():
+    import tnfr.helpers.numeric as numeric
+
+    with pytest.raises(AttributeError):
+        getattr(numeric, "_accumulate_cos_sin")
