@@ -149,13 +149,11 @@ def neighbor_mean(
 
 
 def _neighbor_phase_mean(node, trig) -> float:
-    """Internal helper delegating to :func:`neighbor_phase_mean_list`."""
+    """Internal helper delegating to :func:`_neighbor_phase_mean_core`."""
     fallback = trig.theta.get(node.n, 0.0)
     np = get_numpy()
     neigh = node.G[node.n]
-    return neighbor_phase_mean_list(
-        neigh, trig.cos, trig.sin, np=np, fallback=fallback
-    )
+    return _neighbor_phase_mean_core(neigh, trig.cos, trig.sin, np, fallback)
 
 
 def accumulate_cos_sin(
@@ -211,28 +209,19 @@ def _phase_mean_from_iter(
     return math.atan2(sum_sin, sum_cos)
 
 
-def neighbor_phase_mean_list(
+def _neighbor_phase_mean_core(
     neigh: Sequence[Any],
-    cos_th: dict[Any, float],
-    sin_th: dict[Any, float],
-    np=None,
-    fallback: float = 0.0,
+    cos_map: dict[Any, float],
+    sin_map: dict[Any, float],
+    np,
+    fallback: float,
 ) -> float:
-    """Return circular mean of neighbour phases from cosine/sine mappings.
-
-    When ``np`` (NumPy) is provided, ``np.fromiter`` is used to build cosine and
-    sine arrays directly from a generator, avoiding the creation of an
-    intermediate Python list of ``(cos, sin)`` pairs. Otherwise, cosine and
-    sine values are accumulated via :func:`accumulate_cos_sin` using a running
-    Kahan summation.
-    """
-    if np is None:
-        np = get_numpy()
+    """Return circular mean of neighbour phases given trig mappings."""
 
     def _iter_pairs():
         for v in neigh:
-            c = cos_th.get(v)
-            s = sin_th.get(v)
+            c = cos_map.get(v)
+            s = sin_map.get(v)
             if c is not None and s is not None:
                 yield c, s
 
@@ -252,6 +241,27 @@ def neighbor_phase_mean_list(
     if not processed:
         return fallback
     return math.atan2(sum_sin, sum_cos)
+
+
+def neighbor_phase_mean_list(
+    neigh: Sequence[Any],
+    cos_th: dict[Any, float],
+    sin_th: dict[Any, float],
+    np=None,
+    fallback: float = 0.0,
+) -> float:
+    """Return circular mean of neighbour phases from cosine/sine mappings.
+
+    When ``np`` (NumPy) is provided, ``np.fromiter`` is used to build cosine and
+    sine arrays directly from a generator, avoiding the creation of an
+    intermediate Python list of ``(cos, sin)`` pairs. Otherwise, cosine and
+    sine values are accumulated via :func:`accumulate_cos_sin` using a running
+    Kahan summation.
+    """
+    if np is None:
+        np = get_numpy()
+
+    return _neighbor_phase_mean_core(neigh, cos_th, sin_th, np, fallback)
 
 
 def neighbor_phase_mean(obj, n=None) -> float:
