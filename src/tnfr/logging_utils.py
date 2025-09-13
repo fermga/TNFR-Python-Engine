@@ -14,7 +14,7 @@ from cachetools import LRUCache
 
 from .logging_base import _configure_root
 
-__all__ = ("get_logger", "warn_once")
+__all__ = ("get_logger", "WarnOnce", "warn_once")
 
 
 def get_logger(name: str) -> logging.Logger:
@@ -23,38 +23,44 @@ def get_logger(name: str) -> logging.Logger:
     return logging.getLogger(name)
 
 
+class WarnOnce:
+    """Log a message once per unique key.
+
+    The callable maintains an LRU set of keys limited by ``maxsize`` to
+    preserve coherence while avoiding unbounded growth. New keys trigger
+    a warning with their associated values, repeated keys are ignored.
+    ``clear()`` resets the tracked keys, aiding controlled tests.
+    """
+
+    def __init__(self, logger: logging.Logger, msg: str, *, maxsize: int = 1024) -> None:
+        self._logger = logger
+        self._msg = msg
+        self._seen: LRUCache[Hashable, None] = LRUCache(maxsize)
+        self._lock = threading.Lock()
+
+    def __call__(self, mapping: Mapping[Hashable, Any]) -> None:
+        new: dict[Hashable, Any] = {}
+        with self._lock:
+            for k, v in mapping.items():
+                if k in self._seen:
+                    self._seen[k]
+                else:
+                    self._seen[k] = None
+                    new[k] = v
+        if new:
+            self._logger.warning(self._msg, new)
+
+    def clear(self) -> None:
+        """Reset tracked keys."""
+        with self._lock:
+            self._seen.clear()
+
+
 def warn_once(
     logger: logging.Logger,
     msg: str,
     *,
     maxsize: int = 1024,
-) -> callable:
-    """Return a function that logs ``msg`` once per key.
-
-    The returned callable accepts a mapping of keys to values. Keys are
-    tracked in an LRU set limited to ``maxsize`` entries. When called,
-    new keys trigger a warning with their associated values while
-    repeated keys are ignored. The callable exposes ``clear()`` to reset
-    the tracked keys, useful for tests.
-    """
-    _seen: LRUCache[Hashable, None] = LRUCache(maxsize)
-    _lock = threading.Lock()
-
-    def _log(mapping: Mapping[Hashable, Any]) -> None:
-        new: dict[Hashable, Any] = {}
-        with _lock:
-            for k, v in mapping.items():
-                if k in _seen:
-                    _seen[k]
-                else:
-                    _seen[k] = None
-                    new[k] = v
-        if new:
-            logger.warning(msg, new)
-
-    def _clear() -> None:
-        with _lock:
-            _seen.clear()
-
-    _log.clear = _clear  # type: ignore[attr-defined]
-    return _log
+) -> WarnOnce:
+    """Return a :class:`WarnOnce` logger."""
+    return WarnOnce(logger, msg, maxsize=maxsize)
