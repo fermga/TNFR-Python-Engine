@@ -5,6 +5,8 @@ failed attempts and previously warned modules. Entries older than
 ``_FAILED_IMPORT_MAX_AGE`` seconds are pruned automatically; use
 ``prune_failed_imports`` to trigger cleanup manually and
 ``clear_optional_import_cache`` to reset both caches and logs.
+Additional helpers like :func:`get_nodonx` provide light-weight access to
+TNFR-specific structures on demand.
 """
 
 from __future__ import annotations
@@ -22,6 +24,7 @@ from .locking import get_lock
 __all__ = (
     "cached_import",
     "optional_numpy",
+    "get_nodonx",
     "prune_failed_imports",
     "clear_optional_import_cache",
 )
@@ -214,6 +217,22 @@ def optional_numpy(logger: Any) -> Any | None:
     if np is None:
         logger.debug("Failed to import numpy; continuing in non-vectorised mode")
     return np
+
+
+def get_nodonx() -> type | None:
+    """Return :class:`tnfr.node.NodoNX` using import caching.
+
+    The helper centralises access to the lightweight ``NodoNX`` wrapper so
+    modules can interact with graph nodes without incurring repeated import
+    overhead.
+
+    Returns
+    -------
+    type | None
+        ``NodoNX`` when available, otherwise ``None``.
+    """
+
+    return cached_import("tnfr.node", "NodoNX")
 
 
 def optional_import(name: str, fallback: Any | None = None) -> Any | None:

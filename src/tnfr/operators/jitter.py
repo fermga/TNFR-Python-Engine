@@ -12,7 +12,7 @@ from ..rng import (
     seed_hash,
 )
 from ..locking import get_lock
-from ..import_utils import cached_import
+from ..import_utils import get_nodonx
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodoProtocol
@@ -115,7 +115,7 @@ def _node_offset(G, n) -> int:
 
 
 def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
-    NodoNX = cached_import("tnfr.node", "NodoNX")
+    NodoNX = get_nodonx()
     if NodoNX is None:
         raise ImportError("NodoNX is unavailable")
     if isinstance(node, NodoNX):
