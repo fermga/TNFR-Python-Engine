@@ -159,6 +159,7 @@ def ensure_collection(
         raise ValueError(msg)
     return items
 
+
 def _convert_weights(
     dict_like: Mapping[str, Any],
     keys: Iterable[str] | Sequence[str],
