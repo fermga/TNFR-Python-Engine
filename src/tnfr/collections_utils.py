@@ -161,18 +161,25 @@ def ensure_collection(
     return items
 
 
-def _convert_weights(
+def _prepare_weights(
     dict_like: Mapping[str, Any],
     keys: Iterable[str] | Sequence[str],
     default: float,
     *,
     error_on_conversion: bool,
-) -> tuple[dict[str, float], list[str]]:
-    """Materialize ``keys`` and convert values in ``dict_like`` to ``float``."""
+    error_on_negative: bool,
+    warn_once: bool,
+) -> tuple[dict[str, float], list[str], float]:
+    """Materialize ``keys``, convert values and clamp negatives.
+
+    Returns the converted ``weights`` mapping, the deduplicated ``keys_list``
+    and the accumulated ``total`` using Kahan summation.
+    """
+
     keys_list = list(dict.fromkeys(keys))
     default_float = float(default)
-    weights: dict[str, float] = {}
-    for k in keys_list:
+
+    def conv(k: str) -> float:
         ok, val = convert_value(
             dict_like.get(k, default_float),
             float,
@@ -180,54 +187,24 @@ def _convert_weights(
             key=k,
             log_level=logging.WARNING,
         )
-        weights[k] = cast(float, val) if ok else default_float
-    return weights, keys_list
+        return cast(float, val) if ok else default_float
 
+    weights = {k: conv(k) for k in keys_list}
+    negatives = {k: w for k, w in weights.items() if w < 0}
+    total = kahan_sum(weights.values())
 
-def _handle_negative_weights(
-    weights: dict[str, float],
-    *,
-    error_on_negative: bool,
-    warn_once: bool,
-) -> float:
-    """Clamp negative weights and adjust total according to policy.
+    if negatives:
+        if error_on_negative:
+            raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
+        if warn_once:
+            _log_negative_keys_once(negatives)
+        else:
+            logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
+        for k, w in negatives.items():
+            weights[k] = 0.0
+            total -= w
 
-    Negative detection and total accumulation share a single pass using
-    Kahan summation.
-    """
-    negatives: dict[str, float] = {}
-
-    def values() -> Iterable[float]:
-        for k, w in weights.items():
-            if w < 0:
-                negatives[k] = w
-            yield w
-
-    total = kahan_sum(values())
-    if not negatives:
-        return total
-    if error_on_negative:
-        raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
-    if warn_once:
-        _log_negative_keys_once(negatives)
-    else:
-        logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
-    for k, w in negatives.items():
-        weights[k] = 0.0
-        total -= w
-    return total
-
-
-def _normalize_non_negative_weights(
-    weights: dict[str, float],
-    keys: Sequence[str],
-    total: float,
-) -> dict[str, float]:
-    """Return weights normalized to sum to 1 or a uniform distribution."""
-    if total <= 0:
-        uniform = 1.0 / len(keys)
-        return {k: uniform for k in keys}
-    return {k: w / total for k, w in weights.items()}
+    return weights, keys_list, total
 
 
 def normalize_weights(
@@ -257,20 +234,20 @@ def normalize_weights(
     When ``warn_once`` is ``True`` warnings for a given key are emitted only on
     their first occurrence across calls.
     """
-    weights, keys_list = _convert_weights(
+    weights, keys_list, total = _prepare_weights(
         dict_like,
         keys,
         default,
         error_on_conversion=error_on_conversion,
-    )
-    if not keys_list:
-        return {}
-    total = _handle_negative_weights(
-        weights,
         error_on_negative=error_on_negative,
         warn_once=warn_once,
     )
-    return _normalize_non_negative_weights(weights, keys_list, total)
+    if not keys_list:
+        return {}
+    if total <= 0:
+        uniform = 1.0 / len(keys_list)
+        return {k: uniform for k in keys_list}
+    return {k: w / total for k, w in weights.items()}
 
 
 def normalize_counter(
