@@ -1,7 +1,8 @@
 """Tests for validate_window parameter handling."""
 
 import pytest
-import numpy as np
+
+np = pytest.importorskip("numpy")
 
 from tnfr.glyph_history import validate_window
 
