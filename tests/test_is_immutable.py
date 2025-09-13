@@ -8,6 +8,8 @@ import pytest
 
 from tnfr.immutable import (
     _IMMUTABLE_CACHE,
+    _IMMUTABLE_TAG_DISPATCH,
+    IMMUTABLE_SIMPLE,
     _is_immutable,
     _is_immutable_inner,
 )
@@ -143,3 +145,12 @@ def test_is_immutable_cache_auto_cleanup():
 
     # the weak cache should have removed the entry
     assert obj_id not in {id(k) for k in _IMMUTABLE_CACHE.keys()}
+
+
+def test_internal_constants_are_immutable():
+    assert isinstance(IMMUTABLE_SIMPLE, frozenset)
+    assert isinstance(_IMMUTABLE_TAG_DISPATCH, MappingProxyType)
+    with pytest.raises(TypeError):
+        _IMMUTABLE_TAG_DISPATCH["new"] = lambda v: False  # type: ignore[index]
+    with pytest.raises(AttributeError):
+        IMMUTABLE_SIMPLE.add(int)  # type: ignore[attr-defined]

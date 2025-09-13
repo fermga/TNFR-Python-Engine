@@ -7,18 +7,13 @@ from dataclasses import asdict, is_dataclass
 from functools import lru_cache, singledispatch, wraps
 from typing import Any, Callable
 from collections.abc import Mapping
+from types import MappingProxyType
 import threading
 import weakref
 
 # Types considered immutable without further inspection
-IMMUTABLE_SIMPLE = (
-    int,
-    float,
-    complex,
-    str,
-    bool,
-    bytes,
-    type(None),
+IMMUTABLE_SIMPLE = frozenset(
+    {int, float, complex, str, bool, bytes, type(None)}
 )
 
 
@@ -62,7 +57,7 @@ def _freeze(value: Any, seen: set[int] | None = None):
     """Recursively convert ``value`` into an immutable representation."""
     if is_dataclass(value) and not isinstance(value, type):
         return _freeze_dataclass(value, seen)
-    if isinstance(value, IMMUTABLE_SIMPLE):
+    if type(value) in IMMUTABLE_SIMPLE:
         return value
     raise TypeError
 
@@ -103,20 +98,23 @@ def _all_immutable(iterable) -> bool:
     return all(_is_immutable_inner(v) for v in iterable)
 
 
-_IMMUTABLE_TAG_DISPATCH: dict[str, Callable[[tuple], bool]] = {
-    "mapping": lambda v: _all_immutable(v[1]),
-    "frozenset": lambda v: _all_immutable(v[1]),
-    "list": lambda v: False,
-    "set": lambda v: False,
-    "bytearray": lambda v: False,
-    "dict": lambda v: False,
-}
+# Dispatch table kept immutable to avoid accidental mutation.
+_IMMUTABLE_TAG_DISPATCH: Mapping[str, Callable[[tuple], bool]] = MappingProxyType(
+    {
+        "mapping": lambda v: _all_immutable(v[1]),
+        "frozenset": lambda v: _all_immutable(v[1]),
+        "list": lambda v: False,
+        "set": lambda v: False,
+        "bytearray": lambda v: False,
+        "dict": lambda v: False,
+    }
+)
 
 
 @lru_cache(maxsize=1024)
 @singledispatch
 def _is_immutable_inner(value: Any) -> bool:
-    return isinstance(value, IMMUTABLE_SIMPLE)
+    return type(value) in IMMUTABLE_SIMPLE
 
 
 @_is_immutable_inner.register(tuple)
