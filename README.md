@@ -182,21 +182,22 @@ when the limit is exceeded the least‑recently used entry is discarded. Increas
 large graphs or heavy jitter usage, or lower it to save memory.
 
 To adjust the number of cached jitter sequences used for deterministic noise,
-configure `JITTER_MANAGER` before calling `setup`:
+obtain the manager with ``get_jitter_manager`` before calling ``setup``:
 
 ```python
-from tnfr.operators import JITTER_MANAGER
+from tnfr.operators import get_jitter_manager
 
+manager = get_jitter_manager()
 # Resize cache to keep only 512 entries
-JITTER_MANAGER.max_entries = 512
-JITTER_MANAGER.setup(force=True)
+manager.max_entries = 512
+manager.setup(force=True)
 
 # or in a single call
-JITTER_MANAGER.setup(max_entries=512)
+manager.setup(max_entries=512)
 ```
 
-`setup` preserves the current size unless a new `max_entries` value is supplied.
-Custom sizes persist across subsequent `setup` calls.
+``setup`` preserves the current size unless a new ``max_entries`` value is
+supplied. Custom sizes persist across subsequent ``setup`` calls.
 
 ### Edge version tracking
 

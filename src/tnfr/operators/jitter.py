@@ -17,9 +17,9 @@ from ..import_utils import get_nodonx
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodoProtocol
 
-# Guarded by ``JITTER_CACHE.lock`` to ensure thread-safe access.
-# ``JITTER_CACHE.seq`` stores per-scope jitter sequence counters in an LRU cache
-# bounded to avoid unbounded memory usage.
+# Guarded by the cache lock to ensure thread-safe access. ``seq`` stores
+# per-scope jitter sequence counters in an LRU cache bounded to avoid
+# unbounded memory usage.
 _JITTER_MAX_ENTRIES = 1024
 
 
@@ -100,12 +100,25 @@ class JitterCacheManager:
         self.cache.clear()
 
 
-# Module-level singleton manager and cache
-JITTER_MANAGER = JitterCacheManager()
-JITTER_CACHE = JITTER_MANAGER.cache
+# Lazy manager instance
+_JITTER_MANAGER: JitterCacheManager | None = None
 
-# Initialize jitter cache on module import.
-JITTER_MANAGER.setup(force=True)
+
+def get_jitter_manager() -> JitterCacheManager:
+    """Return the singleton jitter manager, initializing on first use."""
+    global _JITTER_MANAGER
+    if _JITTER_MANAGER is None:
+        _JITTER_MANAGER = JitterCacheManager()
+        _JITTER_MANAGER.setup(force=True)
+    return _JITTER_MANAGER
+
+
+def reset_jitter_manager() -> None:
+    """Reset the global jitter manager (useful for tests)."""
+    global _JITTER_MANAGER
+    if _JITTER_MANAGER is not None:
+        _JITTER_MANAGER.clear()
+    _JITTER_MANAGER = None
 
 
 def _node_offset(G, n) -> int:
@@ -128,14 +141,16 @@ def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
 
 
 def _get_jitter_cache(
-    node: NodoProtocol, manager: JitterCacheManager = JITTER_MANAGER
+    node: NodoProtocol, manager: JitterCacheManager | None = None
 ) -> dict:
     """Return the jitter cache for ``node``.
 
     If the node cannot store attributes, fall back to a graph-level
     ``WeakKeyDictionary`` and ensure the graph is tracked in
-    ``JITTER_MANAGER.graphs`` so its cache can be cleared when needed.
+    ``manager.graphs`` so its cache can be cleared when needed.
     """
+    if manager is None:
+        manager = get_jitter_manager()
 
     cache = getattr(node, "_jitter_seed_hash", None)
     if cache is not None:
@@ -162,11 +177,12 @@ def _get_jitter_cache(
 def random_jitter(
     node: NodoProtocol,
     amplitude: float,
-    manager: JitterCacheManager = JITTER_MANAGER,
+    manager: JitterCacheManager | None = None,
 ) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
 
-    Uses ``manager`` to track per-node jitter sequences.
+    Uses ``manager`` to track per-node jitter sequences. When ``manager`` is
+    ``None`` the global manager from :func:`get_jitter_manager` is used.
     """
     if amplitude < 0:
         raise ValueError("amplitude must be positive")
@@ -176,6 +192,7 @@ def random_jitter(
     seed_root = base_seed(node.G)
     seed_key, scope_id = _resolve_jitter_seed(node)
 
+    manager = manager or get_jitter_manager()
     cache = _get_jitter_cache(node, manager)
 
     cache_key = (seed_root, scope_id)
@@ -195,8 +212,8 @@ def random_jitter(
 __all__ = [
     "JitterCache",
     "JitterCacheManager",
-    "JITTER_MANAGER",
-    "JITTER_CACHE",
+    "get_jitter_manager",
+    "reset_jitter_manager",
     "random_jitter",
     "_get_jitter_cache",
 ]

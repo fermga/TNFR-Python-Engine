@@ -2,7 +2,8 @@
 
 from tnfr.node import NodoNX
 from tnfr.operators import (
-    JITTER_MANAGER,
+    get_jitter_manager,
+    reset_jitter_manager,
     random_jitter,
     apply_glyph,
     _mix_epi_with_neighbors,
@@ -21,18 +22,19 @@ def test_glyph_operations_complete():
 
 
 def test_random_jitter_deterministic(graph_canon):
-    JITTER_MANAGER.clear()
+    reset_jitter_manager()
+    manager = get_jitter_manager()
     G = graph_canon()
     G.add_node(0)
     n0 = NodoNX(G, 0)
 
-    j1 = random_jitter(n0, 0.5)
-    j2 = random_jitter(n0, 0.5)
+    j1 = random_jitter(n0, 0.5, manager)
+    j2 = random_jitter(n0, 0.5, manager)
     assert j1 != j2
 
-    JITTER_MANAGER.clear()
-    j3 = random_jitter(n0, 0.5)
-    j4 = random_jitter(n0, 0.5)
+    manager.clear()
+    j3 = random_jitter(n0, 0.5, manager)
+    j4 = random_jitter(n0, 0.5, manager)
     assert [j3, j4] == [j1, j2]
 
 
@@ -52,16 +54,17 @@ def test_random_jitter_negative_amplitude(graph_canon):
 
 
 def test_get_jitter_cache_node_attribute():
-    JITTER_MANAGER.clear()
+    reset_jitter_manager()
+    manager = get_jitter_manager()
     node = SimpleNamespace(graph={})
-    cache1 = _get_jitter_cache(node)
+    cache1 = _get_jitter_cache(node, manager)
     cache1["a"] = 1
-    cache2 = _get_jitter_cache(node)
+    cache2 = _get_jitter_cache(node, manager)
     assert cache1 is cache2
     assert hasattr(node, "_jitter_seed_hash")
     assert node._jitter_seed_hash is cache1
     assert "_jitter_seed_hash" not in node.graph
-    assert node.graph not in JITTER_MANAGER.graphs
+    assert node.graph not in manager.graphs
 
 
 def test_get_jitter_cache_graph_fallback():
@@ -74,61 +77,66 @@ def test_get_jitter_cache_graph_fallback():
         def __init__(self):
             self.graph = G()
 
-    JITTER_MANAGER.clear()
+    reset_jitter_manager()
+    manager = get_jitter_manager()
     node = SlotNode()
-    cache1 = _get_jitter_cache(node)
+    cache1 = _get_jitter_cache(node, manager)
     cache1["b"] = 2
-    cache2 = _get_jitter_cache(node)
+    cache2 = _get_jitter_cache(node, manager)
     assert cache1 is cache2
     assert not hasattr(node, "_jitter_seed_hash")
     graph_cache = node.graph["_jitter_seed_hash"]
     assert isinstance(graph_cache, WeakKeyDictionary)
     assert graph_cache[node] is cache1
-    assert node.graph in JITTER_MANAGER.graphs
+    assert node.graph in manager.graphs
 
 
 def test_rng_cache_disabled_with_size_zero(graph_canon):
     from tnfr.rng import set_cache_maxsize
     from tnfr.constants import DEFAULTS
 
-    JITTER_MANAGER.clear()
+    reset_jitter_manager()
+    manager = get_jitter_manager()
     set_cache_maxsize(0)
     G = graph_canon()
     G.add_node(0)
     n0 = NodoNX(G, 0)
-    j1 = random_jitter(n0, 0.5)
-    j2 = random_jitter(n0, 0.5)
+    j1 = random_jitter(n0, 0.5, manager)
+    j2 = random_jitter(n0, 0.5, manager)
     assert j1 == j2
     set_cache_maxsize(DEFAULTS["JITTER_CACHE_SIZE"])
 
 
 def test_jitter_seq_purges_old_entries():
-    JITTER_MANAGER.clear()
-    operators.JITTER_MANAGER.setup(force=True, max_entries=4)
+    reset_jitter_manager()
+    manager = operators.get_jitter_manager()
+    manager.setup(force=True, max_entries=4)
     graph = SimpleNamespace(graph={})
     nodes = [SimpleNamespace(G=graph) for _ in range(5)]
     first_key = (0, id(nodes[0]))
     for n in nodes:
-        random_jitter(n, 0.1)
-    assert len(operators.JITTER_MANAGER.seq) == 4
-    assert first_key not in operators.JITTER_MANAGER.seq
+        random_jitter(n, 0.1, manager)
+    assert len(manager.seq) == 4
+    assert first_key not in manager.seq
 
 
 def test_jitter_manager_respects_custom_max_entries():
-    JITTER_MANAGER.clear()
-    operators.JITTER_MANAGER.max_entries = 8
-    operators.JITTER_MANAGER.setup(force=True)
-    assert operators.JITTER_MANAGER.settings["max_entries"] == 8
-    operators.JITTER_MANAGER.setup()
-    assert operators.JITTER_MANAGER.settings["max_entries"] == 8
+    reset_jitter_manager()
+    manager = operators.get_jitter_manager()
+    manager.max_entries = 8
+    manager.setup(force=True)
+    assert manager.settings["max_entries"] == 8
+    manager.setup()
+    assert manager.settings["max_entries"] == 8
 
 
 def test_jitter_manager_setup_override_size():
-    JITTER_MANAGER.clear()
-    operators.JITTER_MANAGER.setup(force=True, max_entries=5)
-    assert operators.JITTER_MANAGER.settings["max_entries"] == 5
-    operators.JITTER_MANAGER.setup(max_entries=7)
-    assert operators.JITTER_MANAGER.settings["max_entries"] == 7
+    reset_jitter_manager()
+    manager = operators.get_jitter_manager()
+    manager.setup(force=True, max_entries=5)
+    assert manager.settings["max_entries"] == 5
+    manager.setup(max_entries=7)
+    assert manager.settings["max_entries"] == 7
 
 
 def test_um_candidate_subset_proximity(graph_canon):
