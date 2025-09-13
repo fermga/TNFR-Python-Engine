@@ -61,3 +61,19 @@ def test_params_passed_to_orjson(monkeypatch):
     monkeypatch.setattr(json_utils, "_json_dumps_orjson", fake_orjson)
     json_utils.json_dumps({"a": 1})
     assert is_dataclass(captured["params"])
+
+
+def test_default_params_reused(monkeypatch):
+    _reset_json_utils(monkeypatch, None)
+
+    calls: list[json_utils.JsonDumpsParams] = []
+
+    def fake_std(obj, params, **kwargs):
+        calls.append(params)
+        return b"{}"
+
+    monkeypatch.setattr(json_utils, "_json_dumps_std", fake_std)
+    json_utils.json_dumps({"a": 1})
+    json_utils.json_dumps({"a": 1}, sort_keys=True)
+    assert calls[0] is json_utils.DEFAULT_PARAMS
+    assert calls[1] is not json_utils.DEFAULT_PARAMS
