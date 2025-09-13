@@ -51,14 +51,6 @@ from ..selector import (
 
 from ..logging_utils import get_logger
 
-ALIAS_VF = get_aliases("VF")
-ALIAS_THETA = get_aliases("THETA")
-ALIAS_DNFR = get_aliases("DNFR")
-ALIAS_EPI = get_aliases("EPI")
-ALIAS_SI = get_aliases("SI")
-ALIAS_D2EPI = get_aliases("D2EPI")
-ALIAS_DSI = get_aliases("DSI")
-
 from .sampling import update_node_sample as _update_node_sample
 from .dnfr import (
     _prepare_dnfr_data,
@@ -78,6 +70,14 @@ from .integrators import (
     update_epi_via_nodal_equation,
     integrar_epi_euler,
 )
+
+ALIAS_VF = get_aliases("VF")
+ALIAS_THETA = get_aliases("THETA")
+ALIAS_DNFR = get_aliases("DNFR")
+ALIAS_EPI = get_aliases("EPI")
+ALIAS_SI = get_aliases("SI")
+ALIAS_D2EPI = get_aliases("D2EPI")
+ALIAS_DSI = get_aliases("DSI")
 
 logger = get_logger(__name__)
 
