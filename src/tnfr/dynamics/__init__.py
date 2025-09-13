@@ -38,6 +38,7 @@ from ..metrics_utils import (
     compute_Si,
     compute_dnfr_accel_max,
     merge_and_normalize_weights,
+    compute_theta_trig,
 )
 from ..callback_utils import invoke_callbacks
 from ..glyph_history import recent_glyph, ensure_history, append_metric
@@ -278,14 +279,12 @@ def coordinate_global_local_phase(
     append_metric(hist, "phase_kL", float(kL))
 
     # 6) Fase GLOBAL (centroide) para empuje
-    x_sum = y_sum = 0.0
-    for _, nd in G.nodes(data=True):
-        th = get_attr(nd, ALIAS_THETA, 0.0)
-        x_sum += math.cos(th)
-        y_sum += math.sin(th)
+    trig = compute_theta_trig(G.nodes(data=True))
     num_nodes = G.number_of_nodes()
     if num_nodes:
-        thG = math.atan2(y_sum / num_nodes, x_sum / num_nodes)
+        mean_cos = sum(trig.cos.values()) / num_nodes
+        mean_sin = sum(trig.sin.values()) / num_nodes
+        thG = math.atan2(mean_sin, mean_cos)
     else:
         thG = 0.0
 

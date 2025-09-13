@@ -17,7 +17,7 @@ from ..alias import get_attr, collect_attr
 from ..collections_utils import normalize_weights
 from ..helpers.numeric import clamp01, _norm01, _similarity_abs
 from ..helpers.cache import ensure_node_index_map
-from ..metrics_utils import get_trig_cache, min_max_range
+from ..metrics_utils import get_trig_cache, min_max_range, compute_theta_trig
 from ..import_utils import get_numpy
 
 ALIAS_THETA = get_aliases("THETA")
@@ -91,12 +91,15 @@ def compute_wij_phase_epi_vf_si(
     sin_vals = inputs.sin_vals
     if cos_vals is None or sin_vals is None:
         th_vals = inputs.th_vals
+        pairs = zip(nodes or range(len(th_vals)), th_vals)
+        trig_local = compute_theta_trig(pairs, np=np)
+        index_iter = nodes if nodes is not None else range(len(th_vals))
         if trig is not None and nodes is not None:
-            cos_vals = [trig.cos.get(n, math.cos(t)) for n, t in zip(nodes, th_vals)]
-            sin_vals = [trig.sin.get(n, math.sin(t)) for n, t in zip(nodes, th_vals)]
+            cos_vals = [trig.cos.get(n, trig_local.cos[n]) for n in nodes]
+            sin_vals = [trig.sin.get(n, trig_local.sin[n]) for n in nodes]
         else:
-            cos_vals = [math.cos(t) for t in th_vals]
-            sin_vals = [math.sin(t) for t in th_vals]
+            cos_vals = [trig_local.cos[i] for i in index_iter]
+            sin_vals = [trig_local.sin[i] for i in index_iter]
         inputs.cos_vals = cos_vals
         inputs.sin_vals = sin_vals
 
@@ -285,8 +288,9 @@ def _wij_loops(
     sin_vals = inputs.sin_vals
     if cos_vals is None or sin_vals is None:
         th_vals = inputs.th_vals
-        cos_vals = [math.cos(t) for t in th_vals]
-        sin_vals = [math.sin(t) for t in th_vals]
+        trig_local = compute_theta_trig(zip(nodes, th_vals))
+        cos_vals = [trig_local.cos[n] for n in nodes]
+        sin_vals = [trig_local.sin[n] for n in nodes]
         inputs.cos_vals = cos_vals
         inputs.sin_vals = sin_vals
     wij = [
@@ -505,8 +509,9 @@ def coherence_matrix(G, use_numpy: bool | None = None):
         mode = "sparse"
     trig = get_trig_cache(G, np=np)
     cos_map, sin_map = trig.cos, trig.sin
-    cos_vals = [cos_map.get(n, math.cos(t)) for n, t in zip(nodes, th_vals)]
-    sin_vals = [sin_map.get(n, math.sin(t)) for n, t in zip(nodes, th_vals)]
+    trig_local = compute_theta_trig(zip(nodes, th_vals), np=np)
+    cos_vals = [cos_map.get(n, trig_local.cos[n]) for n in nodes]
+    sin_vals = [sin_map.get(n, trig_local.sin[n]) for n in nodes]
     inputs = SimilarityInputs(
         th_vals=th_vals,
         epi_vals=epi_vals,
@@ -592,9 +597,9 @@ def local_phase_sync_weighted(
             cos_j = cos_map.get(nj)
             sin_j = sin_map.get(nj)
             if cos_j is None or sin_j is None:
-                th_j = get_attr(G.nodes[nj], ALIAS_THETA, 0.0)
-                cos_j = math.cos(th_j)
-                sin_j = math.sin(th_j)
+                trig_j = compute_theta_trig(((nj, G.nodes[nj]),))
+                cos_j = trig_j.cos[nj]
+                sin_j = trig_j.sin[nj]
             num += w * complex(cos_j, sin_j)
     else:
         for ii, jj, w in W_row:
@@ -607,9 +612,9 @@ def local_phase_sync_weighted(
             cos_j = cos_map.get(nj)
             sin_j = sin_map.get(nj)
             if cos_j is None or sin_j is None:
-                th_j = get_attr(G.nodes[nj], ALIAS_THETA, 0.0)
-                cos_j = math.cos(th_j)
-                sin_j = math.sin(th_j)
+                trig_j = compute_theta_trig(((nj, G.nodes[nj]),))
+                cos_j = trig_j.cos[nj]
+                sin_j = trig_j.sin[nj]
             num += w * complex(cos_j, sin_j)
 
     return abs(num / den) if den else 0.0
