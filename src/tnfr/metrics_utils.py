@@ -28,6 +28,7 @@ ALIAS_DEPI = get_aliases("DEPI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_SI = get_aliases("SI")
+
 class GraphLike(Protocol):
     graph: dict[str, Any]
 
