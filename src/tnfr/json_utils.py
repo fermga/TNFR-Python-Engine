@@ -50,7 +50,7 @@ def clear_orjson_cache() -> None:
     _load_orjson.cache_clear()
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class JsonDumpsParams:
     sort_keys: bool
     default: Callable[[Any], Any] | None
@@ -58,6 +58,16 @@ class JsonDumpsParams:
     separators: tuple[str, str]
     cls: type[json.JSONEncoder] | None
     to_bytes: bool
+
+
+DEFAULT_PARAMS = JsonDumpsParams(
+    sort_keys=False,
+    default=None,
+    ensure_ascii=True,
+    separators=(",", ":"),
+    cls=None,
+    to_bytes=False,
+)
 
 
 def _json_dumps_orjson(
@@ -149,14 +159,24 @@ def json_dumps(
     ignored parameters are detected and, by default, is shown only once per
     process.
     """
-    params = JsonDumpsParams(
-        sort_keys=sort_keys,
-        default=default,
-        ensure_ascii=ensure_ascii,
-        separators=separators,
-        cls=cls,
-        to_bytes=to_bytes,
-    )
+    if (
+        sort_keys is False
+        and default is None
+        and ensure_ascii is True
+        and separators == (",", ":")
+        and cls is None
+        and to_bytes is False
+    ):
+        params = DEFAULT_PARAMS
+    else:
+        params = JsonDumpsParams(
+            sort_keys=sort_keys,
+            default=default,
+            ensure_ascii=ensure_ascii,
+            separators=separators,
+            cls=cls,
+            to_bytes=to_bytes,
+        )
     orjson = _load_orjson()
     if orjson is not None:
         return _json_dumps_orjson(orjson, obj, params, **kwargs)
