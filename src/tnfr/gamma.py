@@ -93,63 +93,56 @@ def _kuramoto_common(G, node, _cfg):
     return th_i, R, psi
 
 
-def _read_gamma_raw(G) -> Mapping[str, Any]:
+def _read_gamma_raw(G) -> Mapping[str, Any] | None:
     """Return raw Γ specification from ``G.graph['GAMMA']``.
 
-    Handles ``None`` values, direct mappings and invalid entries (mapping
-    vs. path) falling back to :data:`DEFAULT_GAMMA`.  When the stored value
-    is not a mapping, :func:`get_graph_mapping` is used which may emit a
-    warning and ``DEFAULT_GAMMA`` is returned.
+    The returned value is the direct contents of ``G.graph['GAMMA']`` when
+    it is a mapping or the result of :func:`get_graph_mapping` if a path is
+    provided.  Final validation and caching are handled elsewhere.
     """
 
     raw = G.graph.get("GAMMA")
     if raw is None or isinstance(raw, Mapping):
-        return raw if isinstance(raw, Mapping) else DEFAULT_GAMMA
-    spec = get_graph_mapping(
+        return raw
+    return get_graph_mapping(
         G, "GAMMA", "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}"
     )
-    return spec or DEFAULT_GAMMA
-
-
-def _cache_gamma_spec(
-    G, spec: Mapping[str, Any], *, cur_hash: str | None = None
-) -> Mapping[str, Any]:
-    """Cache ``spec`` and return the cached version.
-
-    ``cur_hash`` may be provided to avoid recomputing the hash when already
-    known by the caller.
-    """
-
-    cached = G.graph.get("_gamma_spec")
-    prev_hash = G.graph.get("_gamma_spec_hash")
-    if spec is DEFAULT_GAMMA:
-        if cached is spec and prev_hash is not None and cur_hash is None:
-            return cached
-        if cur_hash is None:
-            _, cur_hash = _default_gamma_spec()
-    else:
-        if cur_hash is None:
-            dumped = json_dumps(spec, sort_keys=True, to_bytes=True)
-            cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
-    if cached is not None and prev_hash == cur_hash:
-        return cached
-    G.graph["_gamma_spec"] = spec
-    G.graph["_gamma_spec_hash"] = cur_hash
-    return spec
 
 
 def _get_gamma_spec(G) -> Mapping[str, Any]:
+    """Return validated Γ specification caching results.
+
+    The raw value from ``G.graph['GAMMA']`` is cached together with the
+    normalized specification and its hash. When the raw value is unchanged,
+    the cached spec is returned without re-reading or re-validating,
+    preventing repeated warnings or costly hashing.
+    """
+
     raw = G.graph.get("GAMMA")
+    cached_raw = G.graph.get("_gamma_raw")
+    cached_spec = G.graph.get("_gamma_spec")
+    cached_hash = G.graph.get("_gamma_spec_hash")
+    if raw is cached_raw and cached_spec is not None and cached_hash is not None:
+        return cached_spec
+
     if raw is None or isinstance(raw, Mapping):
         spec = raw if isinstance(raw, Mapping) else DEFAULT_GAMMA
-        return _cache_gamma_spec(G, spec)
-    _, cur_hash = _default_gamma_spec()
-    cached = G.graph.get("_gamma_spec")
-    prev_hash = G.graph.get("_gamma_spec_hash")
-    if cached is not None and prev_hash == cur_hash:
-        return cached
-    spec = _read_gamma_raw(G)
-    return _cache_gamma_spec(G, spec, cur_hash=cur_hash)
+    else:
+        spec_raw = _read_gamma_raw(G)
+        spec = spec_raw if isinstance(spec_raw, Mapping) and spec_raw is not None else DEFAULT_GAMMA
+
+    # Compute hash of spec to track changes
+    if spec is DEFAULT_GAMMA:
+        _, cur_hash = _default_gamma_spec()
+    else:
+        dumped = json_dumps(spec, sort_keys=True, to_bytes=True)
+        cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
+
+    # Store raw input, validated spec and its hash for future calls
+    G.graph["_gamma_raw"] = raw
+    G.graph["_gamma_spec"] = spec
+    G.graph["_gamma_spec_hash"] = cur_hash
+    return spec
 
 
 # -----------------
