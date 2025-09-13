@@ -1,3 +1,5 @@
+"""Validate caching and clearing behaviour of optional imports."""
+
 import sys
 import types
 import importlib

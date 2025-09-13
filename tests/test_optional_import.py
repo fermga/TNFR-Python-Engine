@@ -1,3 +1,5 @@
+"""Exercise optional import helpers backed by TTL caches."""
+
 import types
 import importlib
 import logging
@@ -94,7 +96,7 @@ def test_record_prunes_expired_entries(monkeypatch):
             "failed",
             TTLCache(state.limit, 10, timer=lambda: import_utils.time.monotonic()),
         )
-    times = iter([0.0, 11.0])
+    times = iter([0.0, 11.0, 11.0])
     monkeypatch.setattr(import_utils.time, "monotonic", lambda: next(times))
     with state.lock:
         state.record("old")

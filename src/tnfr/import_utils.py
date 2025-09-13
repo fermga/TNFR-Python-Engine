@@ -1,8 +1,10 @@
 """Helpers for optional imports and cached access to heavy modules.
 
-The module maintains a registry of failed import attempts. Entries older than
-``_FAILED_IMPORT_MAX_AGE`` seconds are pruned automatically; use
-``prune_failed_imports`` to trigger cleanup manually.
+Successful imports are memoised in a TTL cache while failed import attempts
+and emitted warnings are tracked in separate TTL-based registries.  Expired
+entries are removed automatically; use :func:`prune_failed_imports` to trigger
+cleanup manually or :func:`clear_optional_import_cache` to wipe all cached
+modules and failure records.
 """
 
 from __future__ import annotations
@@ -219,20 +221,23 @@ optional_import.cache_clear = _clear_cache  # type: ignore[attr-defined]
 
 
 def clear_optional_import_cache() -> None:
-    """Clear ``optional_import`` cache, failure records and warning state."""
+    """Clear cached imports, failure records and warning state."""
     optional_import.cache_clear()
+    now = time.monotonic()
     with _IMPORT_STATE.lock, _WARNED_STATE.lock:
         _IMPORT_STATE.clear()
+        _IMPORT_STATE.last_prune = now
         _WARNED_STATE.clear()
+        _WARNED_STATE.last_prune = now
 
 
 def prune_failed_imports() -> None:
-    """Remove expired entries from the failed import registry."""
+    """Remove expired entries from failure and warning registries."""
     now = time.monotonic()
     with _IMPORT_STATE.lock, _WARNED_STATE.lock:
-        _IMPORT_STATE.failed.expire(now)
+        _IMPORT_STATE.prune(now)
         _IMPORT_STATE.last_prune = now
-        _WARNED_STATE.failed.expire(now)
+        _WARNED_STATE.prune(now)
         _WARNED_STATE.last_prune = now
 
 
