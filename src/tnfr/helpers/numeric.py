@@ -196,13 +196,6 @@ def accumulate_cos_sin(
     return sum_cos + comp_cos, sum_sin + comp_sin, processed
 
 
-def _accumulate_cos_sin(
-    it: Iterable[tuple[float, float] | None],
-) -> tuple[float, float, bool]:
-    """Legacy wrapper for :func:`accumulate_cos_sin`."""
-    return accumulate_cos_sin(it)
-
-
 def _phase_mean_from_iter(
     it: Iterable[tuple[float, float] | None], fallback: float
 ) -> float:
