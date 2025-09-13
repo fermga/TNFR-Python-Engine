@@ -164,8 +164,10 @@ def _knn_edges(nodes, epi, k_val, p_rewire, rnd):
     new_edges = set()
     for u in nodes:
         epi_u = epi[u]
-        dist_pairs = [(abs(epi_u - epi[v]), v) for v in nodes if v != u]
-        for _, v in heapq.nsmallest(k_val, dist_pairs):
+        for _, v in heapq.nsmallest(
+            k_val,
+            ((abs(epi_u - epi[v]), v) for v in nodes if v != u),
+        ):
             if rnd.random() < p_rewire:
                 new_edges.add(tuple(sorted((u, v))))
     return new_edges
