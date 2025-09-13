@@ -11,7 +11,7 @@ import networkx as nx  # type: ignore[import-untyped]
 from .constants import get_aliases, get_graph_param
 from .alias import get_attr
 from .helpers.numeric import clamp01, kahan_sum2d
-from .import_utils import get_numpy
+from .import_utils import cached_import
 from .callback_utils import register_callback
 from .glyph_history import (
     ensure_history,
@@ -23,10 +23,13 @@ from .constants_glyphs import (
     ANGLE_MAP,
     GLYPHS_CANONICAL,
 )
+from .logging import get_module_logger
 
 # -------------------------
 # Canon: orden circular de glyphs y ángulos
 # -------------------------
+
+logger = get_module_logger(__name__)
 
 GLYPH_UNITS: dict[str, complex] = {
     g: complex(math.cos(a), math.sin(a)) for g, a in ANGLE_MAP.items()
@@ -149,7 +152,9 @@ def _sigma_from_iterable(
         iterator = values
     else:
         iterator = [values]
-    np = get_numpy()
+    np = cached_import("numpy")
+    if np is None:
+        logger.debug("Failed to import numpy; continuing in non-vectorised mode")
     if np is not None:
         arr = np.fromiter(
             (_to_complex(v) for v in iterator), dtype=np.complex128

@@ -25,14 +25,19 @@ from ..alias import (
     set_dnfr,
 )
 from ..metrics_utils import compute_theta_trig, merge_and_normalize_weights
-from ..import_utils import get_numpy
+from ..import_utils import cached_import
+from ..logging import get_module_logger
+
+logger = get_module_logger(__name__)
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 
 
-np = get_numpy()
+np = cached_import("numpy")
+if np is None:
+    logger.debug("Failed to import numpy; continuing in non-vectorised mode")
 
 
 @dataclass

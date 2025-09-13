@@ -12,7 +12,7 @@ from collections.abc import Iterable, Mapping
 
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs, append_metric
-from .import_utils import optional_import
+from .import_utils import cached_import
 from .helpers.cache import get_graph_mapping
 from .collections_utils import is_non_string_sequence
 
@@ -63,7 +63,7 @@ def _kuramoto_fallback(G: Any) -> tuple[float, float]:
 
 kuramoto_R_psi: _KuramotoFn = cast(
     _KuramotoFn,
-    optional_import("tnfr.gamma.kuramoto_R_psi", fallback=_kuramoto_fallback),
+    cached_import("tnfr.gamma", "kuramoto_R_psi", fallback=_kuramoto_fallback),
 )
 
 
@@ -279,8 +279,10 @@ def kuramoto_field(G: Any) -> TraceMetadata:
 def sigma_field(G: Any) -> TraceMetadata:
     sigma_vector_from_graph: _SigmaVectorFn = cast(
         _SigmaVectorFn,
-        optional_import(
-            "tnfr.sense.sigma_vector_from_graph", fallback=_sigma_fallback
+        cached_import(
+            "tnfr.sense",
+            "sigma_vector_from_graph",
+            fallback=_sigma_fallback,
         ),
     )
     sv = sigma_vector_from_graph(G)
