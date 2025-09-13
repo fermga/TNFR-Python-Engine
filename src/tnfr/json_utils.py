@@ -68,6 +68,40 @@ DEFAULT_PARAMS = JsonDumpsParams(
 )
 
 
+def _make_params(
+    *,
+    sort_keys: bool = False,
+    default: Callable[[Any], Any] | None = None,
+    ensure_ascii: bool = True,
+    separators: tuple[str, str] = (",", ":"),
+    cls: type[json.JSONEncoder] | None = None,
+    to_bytes: bool = False,
+) -> JsonDumpsParams:
+    """Return a :class:`JsonDumpsParams` applying defaults.
+
+    The function reuses ``DEFAULT_PARAMS`` when all options match the
+    canonical defaults so downstream serializers can rely on identity
+    comparisons to avoid extra allocations.
+    """
+    if (
+        sort_keys is False
+        and default is None
+        and ensure_ascii is True
+        and separators == (",", ":")
+        and cls is None
+        and to_bytes is False
+    ):
+        return DEFAULT_PARAMS
+    return JsonDumpsParams(
+        sort_keys=sort_keys,
+        default=default,
+        ensure_ascii=ensure_ascii,
+        separators=separators,
+        cls=cls,
+        to_bytes=to_bytes,
+    )
+
+
 def _json_dumps_orjson(
     orjson: Any,
     obj: Any,
@@ -157,24 +191,14 @@ def json_dumps(
     ignored parameters are detected and, by default, is shown only once per
     process.
     """
-    if (
-        sort_keys is False
-        and default is None
-        and ensure_ascii is True
-        and separators == (",", ":")
-        and cls is None
-        and to_bytes is False
-    ):
-        params = DEFAULT_PARAMS
-    else:
-        params = JsonDumpsParams(
-            sort_keys=sort_keys,
-            default=default,
-            ensure_ascii=ensure_ascii,
-            separators=separators,
-            cls=cls,
-            to_bytes=to_bytes,
-        )
+    params = _make_params(
+        sort_keys=sort_keys,
+        default=default,
+        ensure_ascii=ensure_ascii,
+        separators=separators,
+        cls=cls,
+        to_bytes=to_bytes,
+    )
     orjson = cached_import("orjson", emit="log")
     if orjson is not None:
         return _json_dumps_orjson(orjson, obj, params, **kwargs)
