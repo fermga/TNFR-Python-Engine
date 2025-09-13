@@ -140,10 +140,15 @@ def _glyph_fallback(cand_key: str, fallbacks: dict[str, Any]) -> Glyph | str:
 # -------------------------
 
 
+def get_norm(ctx: GrammarContext, key: str) -> float:
+    """Retrieve a global normalisation value from ``ctx.norms``."""
+    return float(ctx.norms.get(key, 1.0)) or 1.0
+
+
 def _norm_attr(ctx: GrammarContext, nd, attr_alias: str, norm_key: str) -> float:
     """Normalise ``attr_alias`` using the global maximum ``norm_key``."""
 
-    max_val = float(ctx.norms.get(norm_key, 1.0)) or 1.0
+    max_val = get_norm(ctx, norm_key)
     return clamp01(abs(get_attr(nd, attr_alias, 0.0)) / max_val)
 
 
@@ -192,7 +197,7 @@ def _check_oz_to_zhir(ctx: GrammarContext, n, cand: str) -> str:
         cfg = ctx.cfg_canon
         win = int(cfg.get("zhir_requires_oz_window", 3))
         dn_min = float(cfg.get("zhir_dnfr_min", 0.05))
-        dnfr_max = float(ctx.norms.get("dnfr_max", 1.0)) or 1.0
+        dnfr_max = get_norm(ctx, "dnfr_max")
         if (
             not recent_glyph(nd, Glyph.OZ, win)
             and normalize_dnfr(nd, dnfr_max) < dn_min
@@ -211,7 +216,7 @@ def _check_thol_closure(
         minlen = int(cfg.get("thol_min_len", 2))
         maxlen = int(cfg.get("thol_max_len", 6))
         close_dn = float(cfg.get("thol_close_dnfr", 0.15))
-        dnfr_max = float(ctx.norms.get("dnfr_max", 1.0)) or 1.0
+        dnfr_max = get_norm(ctx, "dnfr_max")
         if st["thol_len"] >= maxlen or (
             st["thol_len"] >= minlen
             and normalize_dnfr(nd, dnfr_max) <= close_dn
@@ -265,11 +270,7 @@ def enforce_canonical_grammar(
     original = cand
     cand = _check_repeats(ctx, n, cand)
 
-    dnfr_accessor = (
-        lambda ctx, nd: normalize_dnfr(
-            nd, float(ctx.norms.get("dnfr_max", 1.0)) or 1.0
-        )
-    )
+    dnfr_accessor = lambda ctx, nd: normalize_dnfr(nd, get_norm(ctx, "dnfr_max"))
     cand = _maybe_force(ctx, n, cand, original, dnfr_accessor, "force_dnfr")
     cand = _maybe_force(ctx, n, cand, original, _accel_norm, "force_accel")
     cand = _check_oz_to_zhir(ctx, n, cand)
