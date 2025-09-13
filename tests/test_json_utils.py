@@ -39,6 +39,18 @@ def test_warns_once(monkeypatch, caplog):
     assert sum("ignored" in r.message for r in caplog.records) == 1
 
 
+def test_warns_once_per_unique_combo(monkeypatch, caplog):
+    monkeypatch.setattr(json_utils, "optional_import", lambda name: FakeOrjson())
+    json_utils.clear_orjson_cache()
+
+    with caplog.at_level(logging.WARNING):
+        json_utils.json_dumps({}, ensure_ascii=False)
+        json_utils.json_dumps({}, ensure_ascii=False, separators=(";", ":"))
+        json_utils.json_dumps({}, ensure_ascii=False, separators=(";", ":"))
+
+    assert sum("ignored" in r.message for r in caplog.records) == 2
+
+
 def test_json_dumps_returns_str_by_default():
     data = {"a": 1, "b": [1, 2, 3]}
     result = json_utils.json_dumps(data)
