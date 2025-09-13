@@ -166,9 +166,9 @@ def _has_tramo_intermedio(nombres: list[str], start: int) -> bool:
 
 
 def _has_cierre(nombres: list[str]) -> bool:
-    """Check if the sequence ends with a valid closure token."""
+    """Check if the last token is a valid closure token."""
 
-    return any(n in _CIERRE_VALIDO for n in nombres[-2:])
+    return bool(nombres) and nombres[-1] in _CIERRE_VALIDO
 
 
 def _thol_blocks_closed(nombres: list[str]) -> bool:
@@ -192,7 +192,7 @@ def _validate_logical_coherence(nombres: list[str]) -> tuple[bool, str]:
     if not _has_tramo_intermedio(nombres, i_coh + 1):
         return False, "missing tension/coupling/resonance segment"
     if not _has_cierre(nombres):
-        return False, "missing closure (silence/transition/recursion)"
+        return False, "sequence must end with silence/transition/recursion"
     if not _thol_blocks_closed(nombres):
         return False, "THOL block without closure"
     return True, "ok"
