@@ -23,6 +23,7 @@ from .coherence import (
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_SI = get_aliases("SI")
+
 def _symmetry_index(
     G, n, epi_min: float | None = None, epi_max: float | None = None
 ):
