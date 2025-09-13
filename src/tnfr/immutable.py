@@ -87,6 +87,7 @@ for _cls, _tag in (
 ):
     _register_iterable(_cls, _tag)
 
+
 @_freeze.register(Mapping)
 @_check_cycle
 def _freeze_mapping(value: Mapping, seen: set[int] | None = None):
