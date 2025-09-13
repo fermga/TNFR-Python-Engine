@@ -34,3 +34,13 @@ def test_add_edge_validates_same_graph_for_tnfr_nodes():
     n2 = NodoTNFR()
     with pytest.raises(ValueError):
         add_edge(n1.graph, n1, n2, 1.0, strategy=EdgeStrategy.TNFR)
+
+
+def test_add_edge_checks_weight_before_callbacks():
+    with pytest.raises(ValueError, match="Edge weight must be non-negative"):
+        add_edge({}, 1, 2, -1.0, exists_cb=lambda *_: False)
+
+
+def test_add_edge_self_connection_skips_callback_validation():
+    # Should not raise even though callbacks are invalid
+    add_edge({}, 1, 1, 1.0, exists_cb=lambda *_: False)
