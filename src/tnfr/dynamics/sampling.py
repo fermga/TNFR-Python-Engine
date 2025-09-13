@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..helpers.cache import _cache_node_list
+from ..helpers.cache import cached_node_list
 from ..rng import _rng_for_step, base_seed
 
 __all__ = ("update_node_sample",)
@@ -20,7 +20,7 @@ def update_node_sample(G, *, step: int) -> None:
     """
     graph = G.graph
     limit = int(graph.get("UM_CANDIDATE_COUNT", 0))
-    nodes = _cache_node_list(G)
+    nodes = cached_node_list(G)
     current_n = len(nodes)
     if limit <= 0 or current_n < 50 or limit >= current_n:
         graph["_node_sample"] = nodes

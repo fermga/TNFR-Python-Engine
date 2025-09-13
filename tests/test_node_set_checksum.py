@@ -5,7 +5,7 @@ from unittest.mock import patch
 from tnfr.helpers.cache import (
     NODE_SET_CHECKSUM_KEY,
     node_set_checksum,
-    _stable_json,
+    stable_json,
     increment_edge_version,
     _node_repr,
     _hash_node,
@@ -31,7 +31,7 @@ def _reference_checksum(G):
     hasher = hashlib.blake2b(digest_size=16)
     for n in nodes:
         d = hashlib.blake2b(
-            _stable_json(n).encode("utf-8"), digest_size=16
+            stable_json(n).encode("utf-8"), digest_size=16
         ).digest()
         hasher.update(d)
     return hasher.hexdigest()

@@ -7,7 +7,7 @@ from tnfr.helpers.cache import (
     increment_edge_version,
     edge_version_update,
     ensure_node_offset_map,
-    _cache_node_list,
+    cached_node_list,
     ensure_node_index_map,
     _ensure_node_map,
 )
@@ -93,21 +93,21 @@ def test_node_maps_order(graph_canon):
 def test_cache_node_list_updates_on_dirty(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
-    nodes1 = _cache_node_list(G)
-    nodes2 = _cache_node_list(G)
+    nodes1 = cached_node_list(G)
+    nodes2 = cached_node_list(G)
     assert nodes1 is nodes2
     G.graph["_node_list_dirty"] = True
-    nodes3 = _cache_node_list(G)
+    nodes3 = cached_node_list(G)
     assert nodes3 is not nodes1
 
 
 def test_cache_node_list_invalidate_on_node_replacement(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
-    nodes1 = _cache_node_list(G)
+    nodes1 = cached_node_list(G)
     G.remove_node(0)
     G.add_node(2)
-    nodes2 = _cache_node_list(G)
+    nodes2 = cached_node_list(G)
     assert nodes2 is not nodes1
     assert set(nodes2) == {1, 2}
 
@@ -115,10 +115,10 @@ def test_cache_node_list_invalidate_on_node_replacement(graph_canon):
 def test_cache_node_list_cache_updated_on_node_set_change(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
-    nodes1 = _cache_node_list(G)
+    nodes1 = cached_node_list(G)
     cache1 = G.graph["_node_list_cache"]
     G.add_node(2)
-    nodes2 = _cache_node_list(G)
+    nodes2 = cached_node_list(G)
     cache2 = G.graph["_node_list_cache"]
     assert nodes2 is not nodes1
     assert cache2 is not cache1

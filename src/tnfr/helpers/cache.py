@@ -44,10 +44,8 @@ __all__ = (
     "get_graph",
     "get_graph_mapping",
     "node_set_checksum",
-    "_stable_json",
-    "_node_repr_digest",
-    "_node_repr",
-    "_cache_node_list",
+    "stable_json",
+    "cached_node_list",
     "ensure_node_index_map",
     "ensure_node_offset_map",
     "edge_version_cache",
@@ -90,6 +88,11 @@ def _stable_json(obj: Any) -> str:
         ensure_ascii=False,
         to_bytes=False,
     )
+
+
+def stable_json(obj: Any) -> str:
+    """Public wrapper returning a stable JSON string for ``obj``."""
+    return _stable_json(obj)
 
 
 @lru_cache(maxsize=1024)
@@ -300,6 +303,11 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
         if sort_nodes and sorted_nodes is None and cache is not None:
             cache.sorted_nodes = tuple(sorted(nodes, key=_node_repr))
     return nodes
+
+
+def cached_node_list(G: nx.Graph) -> tuple[Any, ...]:
+    """Public wrapper returning the cached node tuple for ``G``."""
+    return _cache_node_list(G)
 
 
 def _ensure_node_map(G, *, attrs: tuple[str, ...], sort: bool = False) -> dict[Any, int]:
