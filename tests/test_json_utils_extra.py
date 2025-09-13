@@ -13,7 +13,7 @@ class DummyOrjson:
 
 
 def _reset_json_utils(monkeypatch, module):
-    monkeypatch.setattr(json_utils, "optional_import", lambda name: module)
+    monkeypatch.setattr(json_utils, "cached_import", lambda name, attr=None, cache=None: module)
     json_utils.clear_orjson_cache()
 
 

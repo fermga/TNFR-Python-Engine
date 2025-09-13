@@ -13,7 +13,7 @@ from ..helpers.numeric import (
     neighbor_phase_mean,
     neighbor_mean,
 )
-from ..import_utils import import_nodonx
+from ..import_utils import cached_import
 from ..rng import make_rng
 from ..glyph_history import append_metric, ensure_history, current_step_idx
 from ..types import Glyph
@@ -86,7 +86,7 @@ def _gather_neighbors(node: NodoProtocol) -> tuple[list[NodoProtocol], float]:
         if not _any_neighbor_has(node, ALIAS_EPI):
             return [], epi
         epi_bar = neighbor_mean(node.G, node.n, ALIAS_EPI, default=epi)
-        NodoNX = import_nodonx()
+        NodoNX = cached_import("tnfr.node", "NodoNX")
         neigh = [
             v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)
             for v in neigh
@@ -170,7 +170,7 @@ def _op_OZ(node: NodoProtocol, gf: dict[str, Any]) -> None:  # OZ — Disonancia
 def _um_candidate_iter(node: NodoProtocol):
     sample_ids = node.graph.get("_node_sample")
     if sample_ids is not None and hasattr(node, "G"):
-        NodoNX = import_nodonx()
+        NodoNX = cached_import("tnfr.node", "NodoNX")
         base = (NodoNX.from_graph(node.G, j) for j in sample_ids)
     else:
         base = node.all_nodes()
@@ -396,6 +396,6 @@ def apply_glyph(
     G, n, glyph: Glyph | str, *, window: int | None = None
 ) -> None:
     """Adapter to operate on ``networkx`` graphs."""
-    NodoNX = import_nodonx()
+    NodoNX = cached_import("tnfr.node", "NodoNX")
     node = NodoNX(G, n)
     apply_glyph_obj(node, glyph, window=window)

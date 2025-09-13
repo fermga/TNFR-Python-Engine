@@ -9,8 +9,7 @@ from __future__ import annotations
 
 import importlib
 import warnings
-from functools import lru_cache
-from typing import Any, Literal
+from typing import Any, Literal, MutableMapping
 from dataclasses import dataclass, field
 from cachetools import TTLCache
 import threading
@@ -19,11 +18,9 @@ from .logging_utils import get_logger
 from .locking import get_lock
 
 __all__ = (
-    "optional_import",
-    "get_numpy",
-    "import_nodonx",
+    "cached_import",
     "prune_failed_imports",
-    "clear_optional_import_cache",
+    "clear_cached_imports",
 )
 
 
@@ -142,71 +139,68 @@ def _warn_failure(
         fn(msg)
 
 
-@lru_cache(maxsize=128)
-def _optional_import_cached(name: str) -> Any | None:
-    """Internal helper implementing ``optional_import`` logic without fallback."""
+_IMPORT_CACHE: MutableMapping[str, Any] = TTLCache(128, 3600.0)
 
-    module_name, attr = (name.rsplit(".", 1) + [None])[:2]
+
+def cached_import(
+    module_name: str,
+    attr: str | None = None,
+    *,
+    cache: MutableMapping[str, Any] | None = _IMPORT_CACHE,
+    emit: Literal["warn", "log", "both"] = "warn",
+) -> Any | None:
+    """Import ``module_name`` and cache the result with optional attribute.
+
+    Parameters
+    ----------
+    module_name:
+        Name of the module to import.
+    attr:
+        Optional attribute to retrieve from the imported module.
+    cache:
+        Mapping used to memoise successful imports. Pass ``None`` to disable
+        caching for the call.
+    emit:
+        Destination for warnings when imports fail. See :func:`_warn_failure`.
+    """
+
+    key = f"{module_name}.{attr}" if attr else module_name
+    if cache is not None:
+        try:
+            return cache[key]
+        except KeyError:
+            pass
     try:
         module = importlib.import_module(module_name)
         obj = getattr(module, attr) if attr else module
         with _IMPORT_STATE.lock, _WARNED_STATE.lock:
-            for item in (name, module_name):
+            for item in (key, module_name):
                 _IMPORT_STATE.discard(item)
             _WARNED_STATE.discard(module_name)
+        if cache is not None:
+            cache[key] = obj
         return obj
     except (ImportError, AttributeError) as e:
-        _warn_failure(module_name, attr, e)
+        _warn_failure(module_name, attr, e, emit=emit)
         with _IMPORT_STATE.lock:
             if isinstance(e, ImportError):
                 _IMPORT_STATE.record(module_name)
-                _IMPORT_STATE.record(name)
+                _IMPORT_STATE.record(key)
             else:
-                _IMPORT_STATE.record(name)
+                _IMPORT_STATE.record(key)
     return None
 
 
-def optional_import(name: str, fallback: Any | None = None) -> Any | None:
-    """Import ``name`` returning ``fallback`` if it fails.
-
-    This function is thread-safe: concurrent failures are recorded in a bounded
-    registry protected by a lock to avoid race conditions. Results are cached by
-    ``name`` only, so ``fallback`` can be any object, even if unhashable.
-
-    ``name`` may refer to a module, submodule or attribute. If the import or
-    attribute access fails a warning is emitted and ``fallback`` is returned.
-
-    Parameters
-    ----------
-    name:
-        Fully qualified module, submodule or attribute path.
-    fallback:
-        Value to return when import fails. Defaults to ``None``.
-
-    Returns
-    -------
-    Any | None
-        Imported object or ``fallback`` if an error occurs.
-
-    Notes
-    -----
-    ``fallback`` is returned when the module is unavailable or the requested
-    attribute does not exist. In both cases a warning is emitted and logged.
-    Use :func:`clear_optional_import_cache` to reset the internal cache and
-    failure registry after installing new optional dependencies.
-    """
-
-    result = _optional_import_cached(name)
-    return fallback if result is None else result
+def _cache_clear() -> None:
+    _IMPORT_CACHE.clear()
 
 
-# Expose cache management utilities for backward compatibility
-optional_import.cache_clear = _optional_import_cached.cache_clear  # type: ignore[attr-defined]
+cached_import.cache_clear = _cache_clear  # type: ignore[attr-defined]
 
 
-def clear_optional_import_cache() -> None:
-    """Clear ``optional_import`` cache, failure records and warning state."""
-    optional_import.cache_clear()
+def clear_cached_imports() -> None:
+    """Clear cached imports, failure records and warning state."""
+    cached_import.cache_clear()
     with _IMPORT_STATE.lock, _WARNED_STATE.lock:
         _IMPORT_STATE.clear()
         _WARNED_STATE.clear()
@@ -220,32 +214,3 @@ def prune_failed_imports() -> None:
         _IMPORT_STATE.last_prune = now
         _WARNED_STATE.failed.expire(now)
         _WARNED_STATE.last_prune = now
-
-
-@lru_cache(maxsize=1)
-def get_numpy(*, warn: bool = False) -> Any | None:
-    """Return :mod:`numpy` or ``None`` if unavailable.
-
-    Parameters
-    ----------
-    warn:
-        When ``True`` a warning is logged if import fails; otherwise a
-        ``DEBUG`` message is recorded.
-    """
-
-    module = optional_import("numpy")
-    if module is None:
-        log = logger.warning if warn else logger.debug
-        log("Failed to import numpy; continuing in non-vectorised mode")
-    return module
-
-
-@lru_cache(maxsize=1)
-def import_nodonx():
-    """Lazily import :class:`NodoNX` to avoid circular dependencies.
-
-    The import is cached after the first successful call.
-    """
-    from .node import NodoNX
-
-    return NodoNX
