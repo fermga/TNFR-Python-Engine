@@ -23,11 +23,17 @@ logger = get_logger(__name__)
 _log_orjson_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
 
 
-def _warn_orjson_params_once(ignored: set[str]) -> None:
+def _format_ignored_params(combo: frozenset[str]) -> str:
+    """Return a stable representation for ignored parameter combinations."""
+    return "{" + ", ".join(map(repr, sorted(combo))) + "}"
+
+
+def _warn_orjson_params_once(combo: frozenset[str]) -> None:
     """Warn once per unique combination of ignored parameters."""
-    combo = frozenset(ignored)
-    formatted_combo = "{" + ", ".join(map(repr, sorted(combo))) + "}"
-    _log_orjson_params_once({combo: formatted_combo})
+    _log_orjson_params_once({combo: _format_ignored_params(combo)})
+
+
+_warn_orjson_params_once.clear = _log_orjson_params_once.clear  # type: ignore[attr-defined]
 
 
 def _load_orjson_impl() -> Any | None:
@@ -36,22 +42,12 @@ def _load_orjson_impl() -> Any | None:
 
 
 _load_orjson = lru_cache(maxsize=1)(_load_orjson_impl)
-_orig_cache_clear = _load_orjson.cache_clear
-
-
-def _cache_clear_and_reset() -> None:
-    _log_orjson_params_once.clear()
-    _orig_cache_clear()
 
 
 def clear_orjson_cache() -> None:
-    """Clear cached :mod:`orjson` module and warning state.
-
-    This is a thin wrapper around the internal reset routine used in tests to
-    drop the optional import cache and reset the set of ignored-parameter
-    warnings.
-    """
-    _cache_clear_and_reset()
+    """Clear cached :mod:`orjson` module and warning state."""
+    _warn_orjson_params_once.clear()
+    _load_orjson.cache_clear()
 
 
 @dataclass(slots=True)
@@ -80,7 +76,7 @@ def _json_dumps_orjson(
     if kwargs:
         ignored.extend(kwargs)
     if ignored:
-        _warn_orjson_params_once(set(ignored))
+        _warn_orjson_params_once(frozenset(ignored))
 
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
     data = orjson.dumps(obj, option=option, default=params.default)
