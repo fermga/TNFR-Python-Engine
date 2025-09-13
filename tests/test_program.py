@@ -13,7 +13,7 @@ from tnfr.program import (
     OpTag,
     _handle_target,
     _flatten,
-    _flatten_thol,
+    THOLEvaluator,
     block,
     play,
     seq,
@@ -223,13 +223,12 @@ def test_flatten_accepts_sequence_without_reversed():
 
 def test_thol_repeat_lt_one_raises():
     with pytest.raises(ValueError, match="repeat must be ≥1"):
-        _flatten_thol(THOL(body=[], repeat=0), deque())
+        list(THOLEvaluator(THOL(body=[], repeat=0)))
 
 
 def test_flatten_thol_multiple_repeats():
-    stack = deque()
-    _flatten_thol(THOL(body=[Glyph.AL, Glyph.RA], repeat=3), stack)
-    assert list(stack) == [
+    tokens = list(THOLEvaluator(THOL(body=[Glyph.AL, Glyph.RA], repeat=3)))
+    assert tokens == [
         THOL_SENTINEL,
         Glyph.AL,
         Glyph.RA,
@@ -241,9 +240,8 @@ def test_flatten_thol_multiple_repeats():
 
 
 def test_flatten_thol_body_limit_error_message():
-    stack = deque()
     body = (Glyph.AL for _ in range(5))
     with pytest.raises(
         ValueError, match="THOL body exceeds max_materialize=3"
     ):
-        _flatten_thol(THOL(body=body), stack, max_materialize=3)
+        list(THOLEvaluator(THOL(body=body), max_materialize=3))
