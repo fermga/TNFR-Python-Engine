@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 from collections.abc import Iterable, Sequence
 from statistics import fmean, StatisticsError, pvariance
+from itertools import tee
 import math
 
 from ..import_utils import get_numpy, import_nodonx
@@ -245,11 +246,10 @@ def neighbor_phase_mean_list(
     pairs = _iter_pairs()
 
     if np is not None:
-        flat_pairs = (val for pair in pairs for val in pair)
-        arr = np.fromiter(flat_pairs, dtype=float)
-        if arr.size:
-            cos_arr = arr[0::2]
-            sin_arr = arr[1::2]
+        cos_iter, sin_iter = tee(pairs, 2)
+        cos_arr = np.fromiter((c for c, _ in cos_iter), dtype=float)
+        sin_arr = np.fromiter((s for _, s in sin_iter), dtype=float)
+        if cos_arr.size:
             mean_cos = float(np.mean(cos_arr))
             mean_sin = float(np.mean(sin_arr))
             return float(np.arctan2(mean_sin, mean_cos))
