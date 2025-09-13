@@ -46,7 +46,6 @@ else:
     _HAS_RUN_SEQUENCE = True
 
 
-
 _metadata = optional_import("importlib.metadata")
 if _metadata is None:  # pragma: no cover
     _metadata = optional_import("importlib_metadata")
