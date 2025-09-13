@@ -175,6 +175,9 @@ def add_edge(
     TNFR nodes. Custom callbacks may be supplied via ``exists_cb`` and
     ``set_cb``; both must be callables and provided together.
     """
+    weight = _add_edge_common(n1, n2, weight)
+    if weight is None:
+        return
 
     _validate_callbacks(exists_cb, set_cb)
 
@@ -190,10 +193,6 @@ def add_edge(
         raise ValueError("Cannot connect nodes from different graphs")
 
     if exists_fn(graph, n1, n2) and not overwrite:
-        return
-
-    weight = _add_edge_common(n1, n2, weight)
-    if weight is None:
         return
 
     set_fn(graph, n1, n2, weight)
