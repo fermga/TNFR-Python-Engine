@@ -34,6 +34,38 @@ ALIAS_EPI_KIND = get_aliases("EPI_KIND")
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_D2EPI = get_aliases("D2EPI")
 
+# Mapping of NodoNX attribute specifications used to dynamically generate
+# properties. Each entry defines the keyword arguments passed to
+# ``_nx_attr_property`` for a given attribute name.
+ATTR_SPECS: dict[str, dict] = {
+    "EPI": {"aliases": ALIAS_EPI},
+    "vf": {
+        "aliases": ALIAS_VF,
+        "setter": set_vf,
+        "use_graph_setter": True,
+    },
+    "theta": {
+        "aliases": ALIAS_THETA,
+        "setter": set_theta,
+        "use_graph_setter": True,
+    },
+    "Si": {"aliases": ALIAS_SI},
+    "epi_kind": {
+        "aliases": ALIAS_EPI_KIND,
+        "default": "",
+        "getter": get_attr_str,
+        "setter": set_attr_str,
+        "to_python": str,
+        "to_storage": str,
+    },
+    "dnfr": {
+        "aliases": ALIAS_DNFR,
+        "setter": set_dnfr,
+        "use_graph_setter": True,
+    },
+    "d2EPI": {"aliases": ALIAS_D2EPI},
+}
+
 T = TypeVar("T")
 
 __all__ = ("NodeBase", "NodoTNFR", "NodoNX", "NodoProtocol", "EdgeStrategy")
@@ -314,27 +346,6 @@ class NodoNX(NodeBase, NodoProtocol):
     def _glyph_storage(self):
         return self.G.nodes[self.n]
 
-    EPI = _nx_attr_property(aliases=ALIAS_EPI)
-    vf = _nx_attr_property(
-        aliases=ALIAS_VF, setter=set_vf, use_graph_setter=True
-    )
-    theta = _nx_attr_property(
-        aliases=ALIAS_THETA, setter=set_theta, use_graph_setter=True
-    )
-    Si = _nx_attr_property(aliases=ALIAS_SI)
-    epi_kind = _nx_attr_property(
-        aliases=ALIAS_EPI_KIND,
-        default="",
-        getter=get_attr_str,
-        setter=set_attr_str,
-        to_python=str,
-        to_storage=str,
-    )
-    dnfr = _nx_attr_property(
-        aliases=ALIAS_DNFR, setter=set_dnfr, use_graph_setter=True
-    )
-    d2EPI = _nx_attr_property(aliases=ALIAS_D2EPI)
-
     @classmethod
     def from_graph(cls, G, n):
         """Return cached ``NodoNX`` for ``(G, n)`` with thread safety."""
@@ -380,3 +391,9 @@ class NodoNX(NodeBase, NodoProtocol):
 
     def all_nodes(self) -> Iterable[NodoProtocol]:
         return (NodoNX.from_graph(self.G, v) for v in self.G.nodes())
+
+
+# Dynamically attach attribute properties defined in ``ATTR_SPECS``.
+for _attr, _spec in ATTR_SPECS.items():
+    setattr(NodoNX, _attr, _nx_attr_property(**_spec))
+del _attr, _spec
