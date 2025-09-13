@@ -203,8 +203,19 @@ def cached_import(
 
 
 def optional_import(name: str, fallback: Any | None = None) -> Any | None:
-    """Wrapper around :func:`cached_import` parsing dotted names."""
+    """Deprecated wrapper around :func:`cached_import` parsing dotted names.
 
+    This helper will be removed in a future release. Use
+    :func:`cached_import` directly instead:
+
+    ``cached_import("pkg", "attr")``.
+    """
+
+    warnings.warn(
+        "optional_import is deprecated; use cached_import instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     module_name, attr = (name.rsplit(".", 1) + [None])[:2]
     return cached_import(module_name, attr, fallback=fallback)
 
@@ -219,7 +230,18 @@ optional_import.cache_clear = _clear_cache  # type: ignore[attr-defined]
 
 
 def clear_optional_import_cache() -> None:
-    """Clear ``optional_import`` cache, failure records and warning state."""
+    """Deprecated cache reset for :func:`optional_import`.
+
+    Use ``cached_import.cache_clear()`` and :func:`prune_failed_imports`
+    instead to release cached modules and clear failure records.
+    """
+
+    warnings.warn(
+        "clear_optional_import_cache is deprecated; use cached_import.cache_clear() "
+        "and prune_failed_imports()",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     optional_import.cache_clear()
     with _IMPORT_STATE.lock, _WARNED_STATE.lock:
         _IMPORT_STATE.clear()

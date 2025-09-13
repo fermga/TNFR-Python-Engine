@@ -3,13 +3,24 @@ import importlib
 import logging
 from cachetools import TTLCache
 
+import pytest
 import tnfr.import_utils as import_utils
 from tnfr.import_utils import (
-    optional_import,
+    optional_import as _optional_import,
     prune_failed_imports,
     _IMPORT_STATE,
-    clear_optional_import_cache,
+    clear_optional_import_cache as _clear_optional_import_cache,
 )
+
+
+def optional_import(*args, **kwargs):
+    with pytest.warns(DeprecationWarning):
+        return _optional_import(*args, **kwargs)
+
+
+def clear_optional_import_cache(*args, **kwargs):
+    with pytest.warns(DeprecationWarning):
+        return _clear_optional_import_cache(*args, **kwargs)
 
 
 def test_optional_import_clears_failures(monkeypatch):

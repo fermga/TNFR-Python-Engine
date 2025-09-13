@@ -35,6 +35,25 @@ pip install tnfr
 * When `orjson` is unavailable the engine falls back to Python's built-in
   `json` module.
 
+### Optional imports with cache
+
+Use ``tnfr.cached_import`` to load optional dependencies and cache the result.
+It returns ``None`` when the module (or attribute) is missing, avoiding
+repeated import attempts:
+
+```python
+from tnfr import cached_import
+
+np = cached_import("numpy")
+safe_load = cached_import("yaml", "safe_load")
+
+# clear the cache (e.g. after installing a dependency at runtime)
+cached_import.cache_clear()
+```
+
+``tnfr.import_utils.optional_import`` is deprecated; use
+``cached_import`` instead.
+
 For optional JavaScript tooling, install the Node.js dependencies:
 
 ```bash
