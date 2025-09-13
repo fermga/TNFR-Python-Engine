@@ -11,9 +11,13 @@ from __future__ import annotations
 import threading
 from contextlib import contextmanager
 from collections.abc import Iterator
+from weakref import WeakValueDictionary
 
 # Registry of locks by name guarded by ``_REGISTRY_LOCK``.
-_locks: dict[str, threading.Lock] = {}
+# Using ``WeakValueDictionary`` ensures that once a lock is no longer
+# referenced elsewhere, it is removed from the registry automatically,
+# keeping the catalogue aligned with active coherence nodes.
+_locks: WeakValueDictionary[str, threading.Lock] = WeakValueDictionary()
 _REGISTRY_LOCK = threading.Lock()
 
 
@@ -29,7 +33,7 @@ def get_lock(name: str) -> threading.Lock:
         if lock is None:
             lock = threading.Lock()
             _locks[name] = lock
-        return lock
+    return lock
 
 
 @contextmanager
