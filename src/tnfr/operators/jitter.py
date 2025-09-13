@@ -51,6 +51,7 @@ class JitterCache:
                     cache.clear()
             self.graphs.clear()
 
+
 class JitterCacheManager:
     """Manager exposing the jitter cache without global reassignment."""
 
