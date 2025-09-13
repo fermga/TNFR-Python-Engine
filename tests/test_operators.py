@@ -13,6 +13,11 @@ from types import SimpleNamespace
 from tnfr.constants import inject_defaults
 import pytest
 from weakref import WeakKeyDictionary
+from tnfr.types import Glyph
+
+
+def test_glyph_operations_complete():
+    assert set(operators.GLYPH_OPERATIONS) == set(Glyph)
 
 
 def test_random_jitter_deterministic(graph_canon):

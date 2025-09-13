@@ -1,7 +1,7 @@
 """Network operators."""
 
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, Callable
 import math
 import heapq
 from itertools import islice
@@ -45,6 +45,7 @@ __all__ = [
     "random_jitter",
     "_get_jitter_cache",
     "get_glyph_factors",
+    "GLYPH_OPERATIONS",
     "apply_glyph_obj",
     "apply_glyph",
     "apply_network_remesh",
@@ -345,7 +346,7 @@ def _op_REMESH(
 # Dispatcher
 # -------------------------
 
-_NAME_TO_OP = {
+GLYPH_OPERATIONS: dict[Glyph, Callable[["NodoProtocol", dict[str, Any]], None]] = {
     Glyph.AL: _op_AL,
     Glyph.EN: _op_EN,
     Glyph.IL: _op_IL,
@@ -386,7 +387,7 @@ def apply_glyph_obj(
         )
         raise ValueError(f"glyph desconocido: {glyph}")
 
-    op = _NAME_TO_OP.get(g)
+    op = GLYPH_OPERATIONS.get(g)
     if op is None:
         raise ValueError(f"glyph sin operador: {g}")
     if window is None:
