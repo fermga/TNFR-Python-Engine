@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 from collections import deque
+from operator import itemgetter
 from typing import Any
 
 # Importar compute_Si y apply_glyph a nivel de módulo evita el coste de
@@ -338,8 +339,8 @@ def adapt_vf_by_coherence(G) -> None:
 def default_glyph_selector(G, n) -> str:
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
-    hi, lo = thr["si_hi"], thr["si_lo"]
-    dnfr_hi = thr["dnfr_hi"]
+    hi, lo, dnfr_hi = itemgetter("si_hi", "si_lo", "dnfr_hi")(thr)
+    # Extract thresholds in one call to reduce dict lookups inside loops.
 
     norms = G.graph.get("_sel_norms")
     if norms is None:
@@ -387,9 +388,9 @@ def _selector_normalized_metrics(nd, norms):
 
 def _selector_base_choice(Si, dnfr, accel, thr):
     """Base decision according to thresholds of Si, ΔNFR and acceleration."""
-    si_hi, si_lo = thr["si_hi"], thr["si_lo"]
-    dnfr_hi = thr["dnfr_hi"]
-    acc_hi = thr["accel_hi"]
+    si_hi, si_lo, dnfr_hi, acc_hi = itemgetter(
+        "si_hi", "si_lo", "dnfr_hi", "accel_hi"
+    )(thr)  # Reduce dict lookups inside loops.
     if Si >= si_hi:
         return "IL"
     if Si <= si_lo:
