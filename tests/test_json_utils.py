@@ -25,7 +25,7 @@ def test_lazy_orjson_import(monkeypatch):
     json_utils.json_dumps({})
     assert calls["n"] == 1
     json_utils.json_dumps({})
-    assert calls["n"] == 1
+    assert calls["n"] == 2
 
 
 def test_warns_once(monkeypatch, caplog):

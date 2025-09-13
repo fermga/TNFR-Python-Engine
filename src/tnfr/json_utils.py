@@ -10,7 +10,6 @@ import json
 from typing import Any, Callable, Literal, overload
 
 from dataclasses import dataclass
-from functools import lru_cache
 from .import_utils import cached_import
 from .logging import get_module_logger
 from .logging_utils import warn_once
@@ -37,18 +36,12 @@ def _warn_orjson_params_once(combo: frozenset[str]) -> None:
 _warn_orjson_params_once.clear = _log_orjson_params_once.clear  # type: ignore[attr-defined]
 
 
-def _load_orjson_impl() -> Any | None:
-    """Lazily import :mod:`orjson` once."""
-    return cached_import("orjson")
-
-
-_load_orjson = lru_cache(maxsize=1)(_load_orjson_impl)
-
-
 def clear_orjson_cache() -> None:
     """Clear cached :mod:`orjson` module and warning state."""
     _warn_orjson_params_once.clear()
-    _load_orjson.cache_clear()
+    cache_clear = getattr(cached_import, "cache_clear", None)
+    if cache_clear:
+        cache_clear()
 
 
 @dataclass(slots=True, frozen=True)
@@ -178,7 +171,7 @@ def json_dumps(
             cls=cls,
             to_bytes=to_bytes,
         )
-    orjson = _load_orjson()
+    orjson = cached_import("orjson")
     if orjson is not None:
         return _json_dumps_orjson(orjson, obj, params, **kwargs)
     return _json_dumps_std(obj, params, **kwargs)
