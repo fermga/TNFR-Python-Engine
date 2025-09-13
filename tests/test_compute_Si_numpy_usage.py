@@ -1,6 +1,7 @@
 from tnfr.constants import get_aliases
 from tnfr.metrics_utils import compute_Si
 from tnfr.alias import set_attr
+import tnfr.import_utils as import_utils
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_VF = get_aliases("VF")
@@ -23,8 +24,12 @@ def test_compute_Si_uses_module_numpy_and_propagates(monkeypatch, graph_canon):
         return 0.0
 
     monkeypatch.setattr(
-        "tnfr.metrics_utils.cached_import",
+        import_utils,
+        "cached_import",
         lambda module, attr=None, **kwargs: sentinel if module == "numpy" else None,
+    )
+    monkeypatch.setattr(
+        "tnfr.metrics_utils.cached_import", import_utils.cached_import
     )
     monkeypatch.setattr(
         "tnfr.metrics_utils.neighbor_phase_mean_list",

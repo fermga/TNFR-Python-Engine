@@ -5,6 +5,8 @@ import statistics as st
 from collections import deque
 import pytest
 
+import tnfr.import_utils as import_utils
+
 from tnfr.constants import get_aliases
 from tnfr.observers import phase_sync, kuramoto_order, glyph_load, wbar
 from tnfr.gamma import kuramoto_R_psi
@@ -53,8 +55,9 @@ def test_phase_sync_equivalent_with_without_numpy(monkeypatch, graph_canon):
         set_attr(G.nodes[idx], ALIAS_THETA, th)
 
     ps_np = phase_sync(G)
+    monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
     monkeypatch.setattr(
-        "tnfr.helpers.numeric.cached_import", lambda *a, **k: None
+        "tnfr.helpers.numeric.cached_import", import_utils.cached_import
     )
     ps_py = phase_sync(G)
     assert ps_np == pytest.approx(ps_py)
