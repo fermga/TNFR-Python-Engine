@@ -1,4 +1,7 @@
-"""Conversion helpers with logging for value normalization."""
+"""Conversion helpers with logging for value normalisation.
+
+Wraps conversion callables to standardise error handling and logging.
+"""
 
 from __future__ import annotations
 
@@ -21,11 +24,27 @@ def convert_value(
     key: str | None = None,
     log_level: int | None = None,
 ) -> tuple[bool, T | None]:
-    """Attempt to convert ``value`` using ``conv`` with error handling.
+    """Attempt to convert a value and report failures.
 
-    ``log_level`` controls the logging level when conversion fails in lax
-    mode. Defaults to ``logging.DEBUG``. If ``strict`` is ``True`` the
-    exception is raised and no log is emitted.
+    Parameters
+    ----------
+    value : Any
+        Input value to convert.
+    conv : Callable[[Any], T]
+        Callable performing the conversion.
+    strict : bool, optional
+        Raise exceptions directly instead of logging them. Defaults to ``False``.
+    key : str, optional
+        Name associated with the value for logging context.
+    log_level : int, optional
+        Logging level used when reporting failures. Defaults to
+        ``logging.DEBUG``.
+
+    Returns
+    -------
+    tuple[bool, T | None]
+        ``(True, result)`` on success or ``(False, None)`` when conversion
+        fails.
     """
     try:
         return True, conv(value)

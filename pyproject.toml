@@ -38,6 +38,7 @@ dependencies = [
 numpy = ["numpy>=1.24"]
 yaml = ["pyyaml>=6.0"]
 orjson = ["orjson>=3"]
+test = ["pytest>=7", "pydocstyle>=6"]
 
 [project.scripts]
 tnfr = "tnfr.cli:main"
