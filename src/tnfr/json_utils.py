@@ -1,6 +1,10 @@
-"""JSON serialization helpers.
+"""JSON helpers with optional :mod:`orjson` support.
 
 This module lazily imports :mod:`orjson` on first use of :func:`json_dumps`.
+The fast serializer is brought in through
+``tnfr.import_utils.cached_import``; its cache and failure registry can be
+reset using :func:`tnfr.import_utils.clear_optional_import_cache` or the
+local :func:`clear_orjson_cache` helper.
 """
 
 from __future__ import annotations
