@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Callable, IO
 from functools import lru_cache
 
-from .import_utils import optional_import
+from .import_utils import cached_import
 from .logging_utils import get_logger
 
 
@@ -26,7 +26,7 @@ def _missing_dependency_error(dep: str) -> type[Exception]:
     return _MissingDependencyError
 
 
-tomllib = optional_import("tomllib") or optional_import("tomli")
+tomllib = cached_import("tomllib") or cached_import("tomli")
 if tomllib is not None:
     TOMLDecodeError = getattr(tomllib, "TOMLDecodeError", Exception)
     has_toml = True
@@ -35,7 +35,7 @@ else:  # pragma: no cover - depende de tomllib/tomli
     TOMLDecodeError = _missing_dependency_error("tomllib/tomli")
 
 
-yaml = optional_import("yaml")
+yaml = cached_import("yaml")
 if yaml is not None:
     YAMLError = getattr(yaml, "YAMLError", Exception)
 else:  # pragma: no cover - depende de pyyaml

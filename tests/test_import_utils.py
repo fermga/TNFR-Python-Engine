@@ -1,19 +1,18 @@
 import sys
 import types
 
-from tnfr.import_utils import clear_optional_import_cache, optional_import
+from tnfr.import_utils import clear_cached_imports, cached_import
 
 
-def test_optional_import_success_and_failure(monkeypatch):
-    clear_optional_import_cache()
-    fallback = object()
-    # module missing -> fallback returned
-    assert optional_import("fake_mod", fallback) is fallback
+def test_cached_import_success_and_failure(monkeypatch):
+    clear_cached_imports()
+    # module missing -> None returned
+    assert cached_import("fake_mod") is None
     # insert fake module
     fake_mod = types.ModuleType("fake_mod")
     monkeypatch.setitem(sys.modules, "fake_mod", fake_mod)
-    # cached failure still returns fallback
-    assert optional_import("fake_mod", fallback) is fallback
+    # cached failure still returns None
+    assert cached_import("fake_mod") is None
     # clearing cache allows successful import
-    clear_optional_import_cache()
-    assert optional_import("fake_mod") is fake_mod
+    clear_cached_imports()
+    assert cached_import("fake_mod") is fake_mod

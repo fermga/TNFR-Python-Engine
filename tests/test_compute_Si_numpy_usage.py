@@ -22,7 +22,9 @@ def test_compute_Si_uses_module_numpy_and_propagates(monkeypatch, graph_canon):
         captured.append(np)
         return 0.0
 
-    monkeypatch.setattr("tnfr.metrics_utils.get_numpy", lambda: sentinel)
+    monkeypatch.setattr(
+        "tnfr.metrics_utils.cached_import", lambda *a, **k: sentinel
+    )
     monkeypatch.setattr(
         "tnfr.metrics_utils.neighbor_phase_mean_list",
         fake_neighbor_phase_mean_list,

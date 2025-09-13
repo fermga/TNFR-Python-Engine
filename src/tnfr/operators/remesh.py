@@ -14,20 +14,20 @@ from ..alias import get_attr, set_attr
 from ..rng import make_rng
 from ..callback_utils import invoke_callbacks
 from ..glyph_history import append_metric, ensure_history, current_step_idx
-from ..import_utils import optional_import
+from ..import_utils import cached_import
 
 ALIAS_EPI = get_aliases("EPI")
 
 
 @cache
 def _get_networkx_modules():
-    nx = optional_import("networkx")
+    nx = cached_import("networkx")
     if nx is None:
         raise ImportError(
             "networkx is required for network operators; install 'networkx' "
             "to enable this feature"
         )
-    nx_comm = optional_import("networkx.algorithms.community")
+    nx_comm = cached_import("networkx.algorithms.community")
     if nx_comm is None:
         raise ImportError(
             "networkx.algorithms.community is required for community-based "

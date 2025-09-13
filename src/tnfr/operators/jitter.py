@@ -12,7 +12,7 @@ from ..rng import (
     seed_hash,
 )
 from ..locking import get_lock
-from ..import_utils import import_nodonx
+from ..import_utils import cached_import
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodoProtocol
@@ -100,7 +100,7 @@ def _node_offset(G, n) -> int:
 
 
 def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
-    NodoNX = import_nodonx()  # cache import to avoid repeated lookups
+    NodoNX = cached_import("tnfr.node", "NodoNX")  # cache import to avoid repeated lookups
     if isinstance(node, NodoNX):
         return _node_offset(node.G, node.n), id(node.G)
     uid = getattr(node, "_noise_uid", None)
