@@ -26,7 +26,6 @@ __all__ = (
 )
 
 
-
 @lru_cache(maxsize=None)
 def _build_selector_thresholds(
     graph_id: int,
