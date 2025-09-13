@@ -75,9 +75,24 @@ class JitterCacheManager:
     def lock(self):
         return self.cache.lock
 
-    def setup(self, force: bool = False) -> None:
-        """Ensure jitter cache matches the configured size."""
-        self.cache.max_entries = _JITTER_MAX_ENTRIES
+    @property
+    def max_entries(self) -> int:
+        """Return the maximum number of cached jitter entries."""
+        return self.cache.max_entries
+
+    @max_entries.setter
+    def max_entries(self, value: int) -> None:
+        """Set the maximum number of cached jitter entries."""
+        self.cache.max_entries = value
+
+    def setup(self, force: bool = False, max_entries: int | None = None) -> None:
+        """Ensure jitter cache matches the configured size.
+
+        ``max_entries`` may be provided to explicitly resize the cache.
+        When omitted the existing ``cache.max_entries`` is preserved.
+        """
+        if max_entries is not None:
+            self.cache.max_entries = max_entries
         self.cache.setup(force)
 
     def clear(self) -> None:

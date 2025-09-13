@@ -169,9 +169,26 @@ has fewer than **50 nodes**, in which case all nodes are included.
 ### Jitter RNG cache
 
 `random_jitter` uses an LRU cache of `random.Random` instances keyed by `(seed, node)`.
-`JITTER_CACHE_SIZE` controls the maximum number of cached generators (default: `256`); 
-when the limit is exceeded the least‑recently used entry is discarded. Increase it for 
+`JITTER_CACHE_SIZE` controls the maximum number of cached generators (default: `256`);
+when the limit is exceeded the least‑recently used entry is discarded. Increase it for
 large graphs or heavy jitter usage, or lower it to save memory.
+
+To adjust the number of cached jitter sequences used for deterministic noise,
+configure `JITTER_MANAGER` before calling `setup`:
+
+```python
+from tnfr.operators import JITTER_MANAGER
+
+# Resize cache to keep only 512 entries
+JITTER_MANAGER.max_entries = 512
+JITTER_MANAGER.setup(force=True)
+
+# or in a single call
+JITTER_MANAGER.setup(max_entries=512)
+```
+
+`setup` preserves the current size unless a new `max_entries` value is supplied.
+Custom sizes persist across subsequent `setup` calls.
 
 ### Edge version tracking
 

@@ -97,10 +97,9 @@ def test_rng_cache_disabled_with_size_zero(graph_canon):
     set_cache_maxsize(DEFAULTS["JITTER_CACHE_SIZE"])
 
 
-def test_jitter_seq_purges_old_entries(monkeypatch):
+def test_jitter_seq_purges_old_entries():
     JITTER_MANAGER.clear()
-    monkeypatch.setattr(operators, "_JITTER_MAX_ENTRIES", 4)
-    operators.JITTER_MANAGER.setup(force=True)
+    operators.JITTER_MANAGER.setup(force=True, max_entries=4)
     graph = SimpleNamespace(graph={})
     nodes = [SimpleNamespace(G=graph) for _ in range(5)]
     first_key = (0, id(nodes[0]))
@@ -108,6 +107,23 @@ def test_jitter_seq_purges_old_entries(monkeypatch):
         random_jitter(n, 0.1)
     assert len(operators.JITTER_MANAGER.seq) == 4
     assert first_key not in operators.JITTER_MANAGER.seq
+
+
+def test_jitter_manager_respects_custom_max_entries():
+    JITTER_MANAGER.clear()
+    operators.JITTER_MANAGER.max_entries = 8
+    operators.JITTER_MANAGER.setup(force=True)
+    assert operators.JITTER_MANAGER.settings["max_entries"] == 8
+    operators.JITTER_MANAGER.setup()
+    assert operators.JITTER_MANAGER.settings["max_entries"] == 8
+
+
+def test_jitter_manager_setup_override_size():
+    JITTER_MANAGER.clear()
+    operators.JITTER_MANAGER.setup(force=True, max_entries=5)
+    assert operators.JITTER_MANAGER.settings["max_entries"] == 5
+    operators.JITTER_MANAGER.setup(max_entries=7)
+    assert operators.JITTER_MANAGER.settings["max_entries"] == 7
 
 
 def test_um_candidate_subset_proximity(graph_canon):
