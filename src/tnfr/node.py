@@ -154,7 +154,7 @@ def _resolve_edge_ops(graph, strategy, exists_cb, set_cb) -> tuple[Callable, Cal
         )
     ops = _EDGE_OPS.get(strategy)
     if ops is None:
-        raise ValueError("Unknown edge strategy")
+        raise ValueError(f"Unknown edge strategy: {strategy!r}")
     return ops
 
 
@@ -165,21 +165,32 @@ def add_edge(
     weight,
     overwrite: bool = False,
     *,
-    strategy: EdgeStrategy | None = None,
+    strategy: EdgeStrategy | str | None = None,
     exists_cb=None,
     set_cb=None,
 ):
     """Add an edge between ``n1`` and ``n2`` using the given strategy.
 
-    ``strategy`` can be ``"nx"`` for :mod:`networkx` graphs or ``"tnfr"`` for
-    TNFR nodes. Custom callbacks may be supplied via ``exists_cb`` and
-    ``set_cb``; both must be callables and provided together.
+    Parameters
+    ----------
+    strategy:
+        ``EdgeStrategy`` enum or string (``"nx"`` / ``"tnfr"``). String values
+        are mapped to :class:`EdgeStrategy` before use. Custom callbacks may be
+        supplied via ``exists_cb`` and ``set_cb``; both must be callables and
+        provided together. A ``ValueError`` is raised for invalid or unknown
+        strategies.
     """
     weight = _add_edge_common(n1, n2, weight)
     if weight is None:
         return
 
     _validate_callbacks(exists_cb, set_cb)
+
+    if isinstance(strategy, str):
+        try:
+            strategy = EdgeStrategy(strategy.lower())
+        except ValueError as exc:
+            raise ValueError(f"Invalid edge strategy: {strategy!r}") from exc
 
     # Determine effective strategy when callbacks are not provided
     if exists_cb is None and set_cb is None and strategy is None:
