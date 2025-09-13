@@ -24,7 +24,7 @@ from ..alias import (
     get_attr,
     set_dnfr,
 )
-from ..metrics_utils import get_trig_cache, merge_graph_weights
+from ..metrics_utils import get_trig_cache, merge_and_normalize_weights
 from ..import_utils import get_numpy
 
 ALIAS_THETA = get_aliases("THETA")
@@ -84,8 +84,9 @@ def _configure_dnfr_weights(G) -> dict:
     dictionary of normalised components reused at each simulation step
     without recomputing the mix.
     """
-    w = merge_graph_weights(G, "DNFR_WEIGHTS")
-    weights = normalize_weights(w, ("phase", "epi", "vf", "topo"), default=0.0)
+    weights = merge_and_normalize_weights(
+        G, "DNFR_WEIGHTS", ("phase", "epi", "vf", "topo"), default=0.0
+    )
     G.graph["_dnfr_weights"] = weights
     return weights
 
