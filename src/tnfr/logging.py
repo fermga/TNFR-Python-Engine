@@ -10,30 +10,9 @@ from __future__ import annotations
 
 import logging
 
+from .logging_base import _configure_root
+
 __all__ = ["get_module_logger"]
-
-_LOGGING_CONFIGURED = False
-
-
-def _configure_root() -> None:
-    """Ensure the root logger has handlers and a default format.
-
-    The configuration matches :func:`tnfr.logging_utils.get_logger` so modules
-    can safely switch to this lighter helper without affecting existing
-    behaviour.
-    """
-
-    global _LOGGING_CONFIGURED
-    if _LOGGING_CONFIGURED:
-        return
-
-    root = logging.getLogger()
-    if not root.handlers:
-        kwargs = {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
-        if root.level == logging.NOTSET:
-            kwargs["level"] = logging.INFO
-        logging.basicConfig(**kwargs)
-    _LOGGING_CONFIGURED = True
 
 
 def get_module_logger(name: str) -> logging.Logger:

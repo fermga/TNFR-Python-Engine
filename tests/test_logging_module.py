@@ -2,10 +2,12 @@ import importlib
 import logging
 
 import tnfr.logging as tnfr_logging
+import tnfr.logging_base as logging_base
 
 
 def reload_logging():
     global tnfr_logging
+    importlib.reload(logging_base)
     tnfr_logging = importlib.reload(tnfr_logging)
     return tnfr_logging
 
