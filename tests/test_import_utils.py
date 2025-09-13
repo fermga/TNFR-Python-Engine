@@ -3,6 +3,8 @@ import sys
 import types
 
 import pytest
+from cachetools import TTLCache
+import tnfr.import_utils as import_utils
 from tnfr.import_utils import (
     cached_import,
     clear_optional_import_cache,
@@ -41,6 +43,24 @@ def test_cached_import_uses_cache(monkeypatch):
     cached_import("fake_mod")
     cached_import("fake_mod")
     assert calls["n"] == 1
+
+
+def test_cached_import_uses_provided_lock(monkeypatch):
+    reset()
+    calls = {"lock": 0}
+    orig_lock = import_utils.threading.Lock
+
+    def fake_lock():
+        calls["lock"] += 1
+        return orig_lock()
+
+    monkeypatch.setattr(import_utils.threading, "Lock", fake_lock)
+    cache = TTLCache(16, 1)
+    lock = orig_lock()
+    fake_mod = types.ModuleType("fake_mod")
+    monkeypatch.setitem(sys.modules, "fake_mod", fake_mod)
+    cached_import("fake_mod", cache=cache, lock=lock)
+    assert calls["lock"] == 0
 
 
 def test_optional_import_wrapper(monkeypatch):

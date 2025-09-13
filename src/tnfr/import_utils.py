@@ -161,10 +161,32 @@ def cached_import(
     *,
     fallback: Any | None = None,
     cache: MutableMapping[str, Any] | None = None,
+    lock: threading.Lock | None = None,
     ttl: float = _DEFAULT_CACHE_TTL,
     emit: Literal["warn", "log", "both"] = "warn",
 ) -> Any | None:
-    """Import ``module_name`` (and optional ``attr``) with caching and fallback."""
+    """Import ``module_name`` (and optional ``attr``) with caching and fallback.
+
+    Parameters
+    ----------
+    module_name:
+        Name of the module to import.
+    attr:
+        Optional attribute to fetch from ``module_name``.
+    fallback:
+        Value returned when the import fails.
+    cache:
+        Mapping used to store cached results. When ``None`` the internal
+        process-wide cache is used.
+    lock:
+        Optional :class:`threading.Lock` guarding ``cache``. Providing a lock
+        avoids creating a new one on every call when supplying a custom
+        ``cache``.
+    ttl:
+        Time-to-live for entries when using the internal cache.
+    emit:
+        Destination for warnings emitted on import failures.
+    """
 
     key = module_name if attr is None else f"{module_name}.{attr}"
     global _IMPORT_CACHE
@@ -177,7 +199,7 @@ def cached_import(
                         _DEFAULT_CACHE_SIZE, ttl, timer=lambda: time.monotonic()
                     )
         cache = _IMPORT_CACHE
-    else:
+    elif lock is None:
         lock = threading.Lock()
 
     with lock:
