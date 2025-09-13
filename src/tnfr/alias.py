@@ -20,6 +20,7 @@ from typing import (
 )
 
 from functools import lru_cache, partial
+from threading import Lock
 
 from .constants import get_aliases
 from .value_utils import convert_value
@@ -104,6 +105,7 @@ class AliasAccessor(Generic[T]):
         # expose cache for testing and manual control
         self._alias_cache = _alias_cache
         self._key_cache: dict[tuple[int, tuple[str, ...]], tuple[str, int]] = {}
+        self._lock = Lock()
 
     def _prepare(
         self,
@@ -148,7 +150,8 @@ class AliasAccessor(Generic[T]):
     ) -> Optional[T]:
         aliases, conv, default = self._prepare(aliases, conv, default)
         cache_key = (id(d), aliases)
-        cached = self._key_cache.get(cache_key)
+        with self._lock:
+            cached = self._key_cache.get(cache_key)
         if cached is not None:
             key, size = cached
             if size == len(d) and key in d:
@@ -158,14 +161,16 @@ class AliasAccessor(Generic[T]):
                 if ok:
                     return value
             else:
-                self._key_cache.pop(cache_key, None)
+                with self._lock:
+                    self._key_cache.pop(cache_key, None)
         for key in aliases:
             if key in d:
                 ok, value = convert_value(
                     d[key], conv, strict=strict, key=key, log_level=log_level
                 )
                 if ok:
-                    self._key_cache[cache_key] = (key, len(d))
+                    with self._lock:
+                        self._key_cache[cache_key] = (key, len(d))
                     return value
         if default is not None:
             ok, value = _convert_default(
@@ -184,18 +189,21 @@ class AliasAccessor(Generic[T]):
     ) -> T:
         aliases, conv, _ = self._prepare(aliases, conv)
         cache_key = (id(d), aliases)
-        cached = self._key_cache.get(cache_key)
+        with self._lock:
+            cached = self._key_cache.get(cache_key)
         if cached is not None:
             key, size = cached
             if size == len(d) and key in d:
                 d[key] = conv(value)
                 return d[key]
             else:
-                self._key_cache.pop(cache_key, None)
+                with self._lock:
+                    self._key_cache.pop(cache_key, None)
         key = next((k for k in aliases if k in d), aliases[0])
         val = conv(value)
         d[key] = val
-        self._key_cache[cache_key] = (key, len(d))
+        with self._lock:
+            self._key_cache[cache_key] = (key, len(d))
         return val
 
 
