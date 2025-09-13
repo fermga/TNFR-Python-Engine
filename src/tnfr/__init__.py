@@ -13,7 +13,7 @@ example :mod:`tnfr.metrics`, :mod:`tnfr.observers` or
 
 from __future__ import annotations
 
-from .import_utils import optional_import
+from .import_utils import cached_import
 from .ontosim import preparar_red
 from .types import NodeState
 
@@ -46,9 +46,9 @@ else:
     _HAS_RUN_SEQUENCE = True
 
 
-_metadata = optional_import("importlib.metadata")
+_metadata = cached_import("importlib.metadata")
 if _metadata is None:  # pragma: no cover
-    _metadata = optional_import("importlib_metadata")
+    _metadata = cached_import("importlib_metadata")
 
 if _metadata is not None:  # pragma: no cover
     version = _metadata.version  # type: ignore[attr-defined]
@@ -65,7 +65,7 @@ else:  # pragma: no cover
 try:
     __version__ = version("tnfr")
 except PackageNotFoundError:  # pragma: no cover
-    tomllib = optional_import("tomllib")
+    tomllib = cached_import("tomllib")
     if tomllib is not None:
         from pathlib import Path
 

@@ -18,7 +18,10 @@ from ..collections_utils import normalize_weights
 from ..helpers.numeric import clamp01, _norm01, _similarity_abs
 from ..helpers.cache import ensure_node_index_map
 from ..metrics_utils import get_trig_cache, min_max_range, compute_theta_trig
-from ..import_utils import get_numpy
+from ..import_utils import cached_import
+from ..logging import get_module_logger
+
+logger = get_module_logger(__name__)
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
@@ -476,7 +479,9 @@ def coherence_matrix(G, use_numpy: bool | None = None):
         return nodes, []
 
     # NumPy handling for optional vectorized operations
-    np = get_numpy()
+    np = cached_import("numpy")
+    if np is None:
+        logger.debug("Failed to import numpy; continuing in non-vectorised mode")
     use_np = (
         np is not None if use_numpy is None else (use_numpy and np is not None)
     )

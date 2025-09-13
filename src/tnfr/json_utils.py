@@ -11,7 +11,7 @@ from typing import Any, Callable, Literal, overload
 
 from dataclasses import dataclass
 from functools import lru_cache
-from .import_utils import optional_import
+from .import_utils import cached_import
 from .logging import get_module_logger
 from .logging_utils import warn_once
 
@@ -39,7 +39,7 @@ _warn_orjson_params_once.clear = _log_orjson_params_once.clear  # type: ignore[a
 
 def _load_orjson_impl() -> Any | None:
     """Lazily import :mod:`orjson` once."""
-    return optional_import("orjson")
+    return cached_import("orjson")
 
 
 _load_orjson = lru_cache(maxsize=1)(_load_orjson_impl)

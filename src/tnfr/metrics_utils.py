@@ -20,7 +20,10 @@ from .helpers.numeric import (
     kahan_sum2d,
 )
 from .helpers.cache import edge_version_cache, _stable_json
-from .import_utils import get_numpy
+from .import_utils import cached_import
+from .logging import get_module_logger
+
+logger = get_module_logger(__name__)
 
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_D2EPI = get_aliases("D2EPI")
@@ -75,7 +78,9 @@ def compute_theta_trig(
     un mapeo con la fase ``θ`` o directamente el valor ``θ``.
     """
     if np is None:
-        np = get_numpy()
+        np = cached_import("numpy")
+        if np is None:
+            logger.debug("Failed to import numpy; continuing in non-vectorised mode")
     node_list: list[Any] = []
     theta_vals: list[float] = []
     for n, data in nodes:
@@ -158,7 +163,9 @@ def compute_coherence(
     if count == 0:
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
-    np = get_numpy()
+    np = cached_import("numpy")
+    if np is None:
+        logger.debug("Failed to import numpy; continuing in non-vectorised mode")
     if np is not None:
         dnfr_arr = np.empty(count, dtype=float)
         depi_arr = np.empty(count, dtype=float)
@@ -280,7 +287,9 @@ def get_trig_cache(G: GraphLike, *, np: Any | None = None) -> TrigCache:
     advances.
     """
     if np is None:
-        np = get_numpy()
+        np = cached_import("numpy")
+        if np is None:
+            logger.debug("Failed to import numpy; continuing in non-vectorised mode")
     version = G.graph.setdefault("_trig_version", 0)
     key = ("_trig", version)
     return edge_version_cache(G, key, lambda: _build_trig_cache(G, np=np))
@@ -343,7 +352,9 @@ def compute_Si(G: GraphLike, *, inplace: bool = True) -> dict[Any, float]:
     alpha, beta, gamma = get_Si_weights(G)
     vfmax, dnfrmax = _get_vf_dnfr_max(G)
 
-    np = get_numpy()
+    np = cached_import("numpy")
+    if np is None:
+        logger.debug("Failed to import numpy; continuing in non-vectorised mode")
     trig = get_trig_cache(G, np=np)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
 

@@ -19,9 +19,6 @@ from .locking import get_lock
 
 __all__ = (
     "cached_import",
-    "optional_import",
-    "get_numpy",
-    "import_nodonx",
     "prune_failed_imports",
     "clear_optional_import_cache",
 )
@@ -239,27 +236,3 @@ def prune_failed_imports() -> None:
         _WARNED_STATE.last_prune = now
 
 
-def get_numpy(*, warn: bool = False) -> Any | None:
-    """Return :mod:`numpy` or ``None`` if unavailable.
-
-    Parameters
-    ----------
-    warn:
-        When ``True`` a warning is logged if import fails; otherwise a
-        ``DEBUG`` message is recorded.
-    """
-
-    module = cached_import("numpy")
-    if module is None:
-        log = logger.warning if warn else logger.debug
-        log("Failed to import numpy; continuing in non-vectorised mode")
-    return module
-
-
-def import_nodonx():
-    """Lazily import :class:`NodoNX` to avoid circular dependencies."""
-
-    nodo = cached_import("tnfr.node", attr="NodoNX")
-    if nodo is None:
-        raise ImportError("NodoNX is unavailable")
-    return nodo
