@@ -42,7 +42,7 @@ def _update_tg_naive(G, hist, dt, save_by_node):
             st.run += dt
         else:
             prev = st.curr
-            dur = float(st.run)
+            dur = st.run
             tg_total[prev] += dur
             if save_by_node:
                 tg_by_node[n][prev].append(dur)

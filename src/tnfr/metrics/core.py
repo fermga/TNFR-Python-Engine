@@ -163,7 +163,7 @@ def _update_tg_node(n, nd, dt, tg_total, tg_by_node):
     elif g == curr:
         st.run += dt
     else:
-        dur = float(st.run)
+        dur = st.run
         tg_total[curr] += dur
         if tg_by_node is not None:
             tg_by_node[n][curr].append(dur)
