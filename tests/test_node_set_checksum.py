@@ -1,5 +1,6 @@
 import hashlib
 import timeit
+from unittest.mock import patch
 
 from tnfr.helpers.cache import (
     NODE_SET_CHECKSUM_KEY,
@@ -72,10 +73,20 @@ def test_node_set_checksum_cache_token_is_prefix(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2])
     checksum = node_set_checksum(G)
-    token, stored_checksum = G.graph[NODE_SET_CHECKSUM_KEY]
+    token, stored_checksum, nodes_snapshot = G.graph[NODE_SET_CHECKSUM_KEY]
     assert stored_checksum == checksum
     assert token == checksum[:16]
     assert len(token) == 16
+    assert nodes_snapshot == frozenset(G.nodes())
+
+
+def test_node_set_checksum_uses_cached_result_without_rehash(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([1, 2])
+    node_set_checksum(G)
+    with patch("tnfr.helpers.cache._node_repr_digest") as mock_digest:
+        assert node_set_checksum(G) == G.graph[NODE_SET_CHECKSUM_KEY][1]
+        mock_digest.assert_not_called()
 
 
 def test_node_cache_cleared_on_increment(graph_canon):

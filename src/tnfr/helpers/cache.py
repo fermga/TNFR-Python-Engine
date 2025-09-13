@@ -164,6 +164,14 @@ def node_set_checksum(
     recomputation for unchanged graphs.
     """
     graph = get_graph(G)
+    cached = None
+    current_nodes: frozenset[Any] | None = None
+    if nodes is None:
+        current_nodes = frozenset(G.nodes())
+        cached = graph.get(NODE_SET_CHECKSUM_KEY)
+        if cached and len(cached) == 3 and cached[2] == current_nodes:
+            return cached[1]
+
     node_iterable = G.nodes() if nodes is None else nodes
 
     hasher = hashlib.blake2b(digest_size=16)
@@ -180,7 +188,12 @@ def node_set_checksum(
         cached = graph.get(NODE_SET_CHECKSUM_KEY)
         if cached and cached[0] == token:
             return cached[1]
-        graph[NODE_SET_CHECKSUM_KEY] = (token, checksum)
+        if nodes is None:
+            if current_nodes is None:
+                current_nodes = frozenset(G.nodes())
+            graph[NODE_SET_CHECKSUM_KEY] = (token, checksum, current_nodes)
+        else:
+            graph[NODE_SET_CHECKSUM_KEY] = (token, checksum)
     return checksum
 
 
