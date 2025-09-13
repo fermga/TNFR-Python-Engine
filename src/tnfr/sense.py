@@ -111,7 +111,6 @@ def _to_complex(val: complex | float | int) -> complex:
     raise TypeError("values must be an iterable of real or complex numbers")
 
 
-
 def _empty_sigma(fallback_angle: float) -> dict[str, float]:
     """Return an empty σ-vector with ``fallback_angle``.
 
