@@ -34,6 +34,7 @@ ALIAS_VF = get_aliases("VF")
 
 np = get_numpy()
 
+
 @dataclass
 class DnfrCache:
     idx: dict[Any, int]
