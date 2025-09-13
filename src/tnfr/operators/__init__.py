@@ -21,8 +21,8 @@ from ..types import Glyph
 from .jitter import (
     JitterCache,
     JitterCacheManager,
-    JITTER_MANAGER,
-    JITTER_CACHE,
+    get_jitter_manager,
+    reset_jitter_manager,
     random_jitter,
     _get_jitter_cache,
 )
@@ -40,8 +40,8 @@ ALIAS_EPI = get_aliases("EPI")
 __all__ = [
     "JitterCache",
     "JitterCacheManager",
-    "JITTER_MANAGER",
-    "JITTER_CACHE",
+    "get_jitter_manager",
+    "reset_jitter_manager",
     "random_jitter",
     "_get_jitter_cache",
     "get_glyph_factors",
