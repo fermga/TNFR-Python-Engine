@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 from operator import itemgetter
-from typing import Any, TYPE_CHECKING
+from typing import Any, Mapping, TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx  # type: ignore[import-untyped]
@@ -24,6 +24,15 @@ __all__ = (
     "_calc_selector_score",
     "_apply_selector_hysteresis",
 )
+
+
+def _sorted_items(mapping: Mapping[str, float]) -> tuple[tuple[str, float], ...]:
+    """Return mapping items sorted by key.
+
+    Provides a stable, hashable representation for memoisation.
+    """
+
+    return tuple(sorted(mapping.items()))
 
 
 @lru_cache(maxsize=None)
@@ -74,11 +83,9 @@ def _selector_thresholds(G: "nx.Graph") -> dict[str, float]:
     glyph_defaults = DEFAULTS.get("GLYPH_THRESHOLDS", {})
     thr_def = {**glyph_defaults, **G.graph.get("GLYPH_THRESHOLDS", {})}
 
-    return _build_selector_thresholds(
-        id(G),
-        tuple(sorted(thr_sel.items())),
-        tuple(sorted(thr_def.items())),
-    )
+    thr_sel_items = _sorted_items(thr_sel)
+    thr_def_items = _sorted_items(thr_def)
+    return _build_selector_thresholds(id(G), thr_sel_items, thr_def_items)
 
 
 def _norms_para_selector(G: "nx.Graph") -> dict:
