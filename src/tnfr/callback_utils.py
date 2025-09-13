@@ -94,39 +94,44 @@ def _func_id(fn: Callable[..., Any]) -> str:
 
 def _validate_registry(
     G: "nx.Graph", cbs: Any, dirty: set[str]
-) -> tuple[CallbackRegistry, set[str]]:
+) -> CallbackRegistry:
     """Validate and normalise the callback registry.
 
-    Ensures ``cbs`` is a ``defaultdict(dict)`` and updates ``dirty`` with
-    existing keys when conversion occurs. Returns the validated registry and
-    updated ``dirty`` set.
+    ``cbs`` is coerced to a ``defaultdict(dict)`` and any events listed in
+    ``dirty`` are rebuilt using :func:`_normalize_callbacks`. Unknown events are
+    removed. The cleaned registry is stored back on the graph and returned.
     """
 
     if not isinstance(cbs, Mapping):
         logger.warning(
             "Invalid callbacks registry on graph; resetting to empty",
         )
-        cbs = G.graph["callbacks"] = defaultdict(dict)
-        dirty.clear()
+        cbs = defaultdict(dict)
     elif not isinstance(cbs, defaultdict) or cbs.default_factory is not dict:
-        # Convert to expected defaultdict(dict) and process existing keys.
-        cbs = G.graph["callbacks"] = defaultdict(dict, cbs)
-        dirty.update(cbs.keys())
+        cbs = defaultdict(
+            dict,
+            {
+                event: _normalize_callbacks(entries)
+                for event, entries in dict(cbs).items()
+                if event in _CALLBACK_EVENTS
+            },
+        )
+    else:
+        for event in dirty:
+            if event in _CALLBACK_EVENTS:
+                cbs[event] = _normalize_callbacks(cbs.get(event))
+            else:
+                cbs.pop(event, None)
 
-    return cbs, dirty
+    G.graph["callbacks"] = cbs
+    return cbs
 
 
 def _ensure_callbacks_nolock(G: "nx.Graph") -> CallbackRegistry:
     """Internal helper implementing ``_ensure_callbacks`` without locking."""
     cbs = G.graph.setdefault("callbacks", defaultdict(dict))
-
     dirty: set[str] = set(G.graph.pop("_callbacks_dirty", ()))
-    cbs, dirty = _validate_registry(G, cbs, dirty)
-
-    if dirty:
-        for event in dirty:
-            _normalize_event_callbacks(cbs, event)
-    return cbs
+    return _validate_registry(G, cbs, dirty)
 
 
 def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
@@ -135,14 +140,8 @@ def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
         return _ensure_callbacks_nolock(G)
 
 
-def _normalized_callbacks(entries: Any) -> dict[str, CallbackSpec]:
-    """Return ``entries`` normalized into a callback mapping.
-
-    Accepts any iterable or mapping of callback specifications. For mappings,
-    the values are treated as the callback entries. Non-iterable inputs yield
-    an empty mapping.
-    """
-
+def _normalize_callbacks(entries: Any) -> dict[str, CallbackSpec]:
+    """Return ``entries`` normalised into a callback mapping."""
     if isinstance(entries, Mapping):
         entries_iter = entries.values()
     elif isinstance(entries, Iterable) and not isinstance(entries, (str, bytes, bytearray)):
@@ -158,21 +157,6 @@ def _normalized_callbacks(entries: Any) -> dict[str, CallbackSpec]:
         key = spec.name or _func_id(spec.func)
         new_map[key] = spec
     return new_map
-
-
-def _normalize_callback_registry(cbs: Any) -> dict[str, CallbackSpec]:
-    """Return a normalized callback mapping from ``cbs``."""
-    return _normalized_callbacks(cbs)
-
-
-def _normalize_event_callbacks(cbs: CallbackRegistry, event: str) -> None:
-    """Clean and rebuild callbacks for ``event`` in ``cbs``."""
-    if event not in cbs:
-        return
-    if event not in _CALLBACK_EVENTS:
-        del cbs[event]
-        return
-    cbs[event] = _normalized_callbacks(cbs[event])
 
 
 def _normalize_event(event: CallbackEvent | str) -> str:

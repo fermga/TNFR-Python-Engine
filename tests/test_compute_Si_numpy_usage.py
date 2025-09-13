@@ -37,7 +37,8 @@ def test_compute_Si_uses_module_numpy_and_propagates(monkeypatch, graph_canon):
         lambda module, attr=None, **kwargs: sentinel if module == "numpy" else None,
     )
     monkeypatch.setattr(
-        "tnfr.metrics_utils.cached_import", import_utils.cached_import
+        "tnfr.metrics_utils.optional_numpy",
+        lambda logger: import_utils.cached_import("numpy"),
     )
     monkeypatch.setattr(
         "tnfr.metrics_utils.neighbor_phase_mean_list",
