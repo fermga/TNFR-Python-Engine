@@ -208,7 +208,7 @@ def _prepare_weights(
 
 
 def normalize_weights(
-    dict_like: dict[str, Any],
+    dict_like: Mapping[str, Any],
     keys: Iterable[str] | Sequence[str],
     default: float = 0.0,
     *,
@@ -216,7 +216,7 @@ def normalize_weights(
     warn_once: bool = True,
     error_on_conversion: bool = False,
 ) -> dict[str, float]:
-    """Normalize ``keys`` in ``dict_like`` so their sum is 1.
+    """Normalize ``keys`` in mapping ``dict_like`` so their sum is 1.
 
     ``keys`` may be any iterable of strings and is materialized once while
     collapsing repeated entries preserving their first occurrence.
