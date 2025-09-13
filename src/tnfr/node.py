@@ -24,6 +24,7 @@ from .alias import (
 from .helpers.cache import increment_edge_version, ensure_node_offset_map
 from .node_base import NodeBase
 from .operators import apply_glyph_obj
+from .locking import get_lock
 
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
@@ -307,12 +308,14 @@ class NodoNX(NodeBase, NodoProtocol):
 
     @classmethod
     def from_graph(cls, G, n):
-        """Return cached ``NodoNX`` for ``(G, n)``."""
-        cache = G.graph.setdefault("_node_cache", {})
-        node = cache.get(n)
-        if node is None:
-            node = cls(G, n)
-        return node
+        """Return cached ``NodoNX`` for ``(G, n)`` with thread safety."""
+        lock = get_lock(f"nodonx_cache_{id(G)}")
+        with lock:
+            cache = G.graph.setdefault("_node_cache", {})
+            node = cache.get(n)
+            if node is None:
+                node = cls(G, n)
+            return node
 
     def neighbors(self) -> Iterable[Hashable]:
         """Iterate neighbour identifiers (IDs).
