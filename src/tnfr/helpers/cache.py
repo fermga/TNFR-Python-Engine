@@ -19,12 +19,12 @@ import networkx as nx  # type: ignore[import-untyped]
 from ..graph_utils import mark_dnfr_prep_dirty
 from ..import_utils import get_numpy
 from ..json_utils import json_dumps
-from ..logging_utils import get_logger
+from ..logging import get_module_logger
 
 T = TypeVar("T")
 U = TypeVar("U")
 
-logger = get_logger(__name__)
+logger = get_module_logger(__name__)
 
 # Key used to store the node set checksum in a graph's ``graph`` attribute.
 NODE_SET_CHECKSUM_KEY = "_node_set_checksum_cache"

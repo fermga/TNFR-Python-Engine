@@ -12,14 +12,15 @@ from typing import Any, Callable, Literal, overload
 from dataclasses import dataclass
 from functools import lru_cache
 from .import_utils import optional_import
-from .logging_utils import get_logger, warn_once
+from .logging import get_module_logger
+from .logging_utils import warn_once
 
 _ORJSON_PARAMS_MSG = (
     "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
 )
 
 # Track combinations of parameters for which a warning has already been emitted.
-logger = get_logger(__name__)
+logger = get_module_logger(__name__)
 _log_orjson_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
 
 

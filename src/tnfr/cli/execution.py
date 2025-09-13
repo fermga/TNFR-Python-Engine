@@ -34,14 +34,14 @@ from ..io import read_structured_file, safe_write
 from ..glyph_history import ensure_history
 from ..helpers.numeric import list_mean
 from ..observers import attach_standard_observer
-from ..logging_utils import get_logger
+from ..logging import get_module_logger
 from ..types import Glyph
 from ..json_utils import json_dumps
 
 from .arguments import _args_to_dict
 from .token_parser import _parse_tokens
 
-logger = get_logger(__name__)
+logger = get_module_logger(__name__)
 
 
 def _save_json(path: str, data: Any) -> None:

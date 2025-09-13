@@ -16,7 +16,7 @@ from collections import defaultdict, deque
 from collections.abc import Callable, Mapping, Iterable
 
 import traceback
-from .logging_utils import get_logger
+from .logging import get_module_logger
 from .constants import DEFAULTS
 from .locking import get_lock
 
@@ -34,7 +34,7 @@ __all__ = (
     "CallbackError",
 )
 
-logger = get_logger(__name__)
+logger = get_module_logger(__name__)
 
 _CALLBACK_LOCK = get_lock("callbacks")
 

@@ -18,7 +18,7 @@ from .glyph_history import (
 from .collections_utils import normalize_counter, mix_groups
 from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
-from .logging_utils import get_logger
+from .logging import get_module_logger
 
 ALIAS_THETA = get_aliases("THETA")
 
@@ -34,7 +34,7 @@ __all__ = (
 )
 
 
-logger = get_logger(__name__)
+logger = get_module_logger(__name__)
 
 
 # -------------------------
