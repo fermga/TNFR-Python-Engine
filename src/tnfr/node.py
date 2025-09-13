@@ -176,8 +176,24 @@ def _validate_callbacks(exists_cb, set_cb) -> None:
 
 
 def _resolve_edge_ops(
-    graph, strategy, exists_cb, set_cb
+    graph,
+    strategy: EdgeStrategy | str | None,
+    exists_cb,
+    set_cb,
 ) -> tuple[Callable, Callable, EdgeStrategy]:
+    """Select edge operations and resolve strategy.
+
+    ``strategy`` accepts :class:`EdgeStrategy`, string labels or ``None``.
+    Custom callbacks, when provided together, bypass the built-in strategy
+    mapping.
+    """
+
+    if isinstance(strategy, str):
+        try:
+            strategy = EdgeStrategy(strategy.lower())
+        except ValueError as exc:
+            raise ValueError(f"Invalid edge strategy: {strategy!r}") from exc
+
     if exists_cb is not None and set_cb is not None:
         if strategy is None:
             strategy = (
@@ -186,13 +202,16 @@ def _resolve_edge_ops(
                 else EdgeStrategy.TNFR
             )
         return exists_cb, set_cb, strategy
+
     if strategy is None:
         strategy = (
             EdgeStrategy.NX if hasattr(graph, "add_edge") else EdgeStrategy.TNFR
         )
+
     ops = _EDGE_OPS.get(strategy)
     if ops is None:
         raise ValueError(f"Unknown edge strategy: {strategy!r}")
+
     return *ops, strategy
 
 
@@ -223,18 +242,6 @@ def add_edge(
         return
 
     _validate_callbacks(exists_cb, set_cb)
-
-    if isinstance(strategy, str):
-        try:
-            strategy = EdgeStrategy(strategy.lower())
-        except ValueError as exc:
-            raise ValueError(f"Invalid edge strategy: {strategy!r}") from exc
-
-    # Determine effective strategy when callbacks are not provided
-    if exists_cb is None and set_cb is None and strategy is None:
-        strategy = (
-            EdgeStrategy.NX if hasattr(graph, "add_edge") else EdgeStrategy.TNFR
-        )
 
     exists_fn, set_fn, resolved_strategy = _resolve_edge_ops(
         graph, strategy, exists_cb, set_cb
