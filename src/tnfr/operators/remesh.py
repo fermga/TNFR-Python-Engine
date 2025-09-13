@@ -159,16 +159,24 @@ def _mst_edges_from_epi(nx, nodes, epi):
 
 
 def _knn_edges(nodes, epi, k_val, p_rewire, rnd):
-    """Edges linking each node to its k nearest neighbours in EPI."""
+    """Edges linking each node to its ``k`` nearest neighbours in EPI."""
     new_edges = set()
+    node_set = set(nodes)
     for u in nodes:
         epi_u = epi[u]
-        for _, v in heapq.nsmallest(
-            k_val,
-            ((abs(epi_u - epi[v]), v) for v in nodes if v != u),
-        ):
+        neighbours = [
+            v
+            for _, v in heapq.nsmallest(
+                k_val,
+                ((abs(epi_u - epi[v]), v) for v in nodes if v != u),
+            )
+        ]
+        for v in neighbours:
             if rnd.random() < p_rewire:
-                new_edges.add(tuple(sorted((u, v))))
+                choices = list(node_set - {u, v})
+                if choices:
+                    v = rnd.choice(choices)
+            new_edges.add(tuple(sorted((u, v))))
     return new_edges
 
 
