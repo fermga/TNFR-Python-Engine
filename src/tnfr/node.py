@@ -177,7 +177,16 @@ def add_edge(
 
     _validate_callbacks(exists_cb, set_cb)
 
+    # Determine effective strategy when callbacks are not provided
+    if exists_cb is None and set_cb is None and strategy is None:
+        strategy = (
+            EdgeStrategy.NX if hasattr(graph, "add_edge") else EdgeStrategy.TNFR
+        )
+
     exists_fn, set_fn = _resolve_edge_ops(graph, strategy, exists_cb, set_cb)
+
+    if strategy is EdgeStrategy.TNFR and getattr(n1, "graph", None) is not getattr(n2, "graph", None):
+        raise ValueError("Cannot connect nodes from different graphs")
 
     if exists_fn(graph, n1, n2) and not overwrite:
         return
