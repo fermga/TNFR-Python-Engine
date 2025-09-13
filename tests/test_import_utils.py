@@ -1,12 +1,27 @@
 import sys
+import sys
+import sys
+import sys
+import sys
 import types
 import importlib
 
+import pytest
 from tnfr.import_utils import (
-    clear_optional_import_cache,
-    optional_import,
+    clear_optional_import_cache as _clear_optional_import_cache,
+    optional_import as _optional_import,
     cached_import,
 )
+
+
+def optional_import(*args, **kwargs):
+    with pytest.warns(DeprecationWarning):
+        return _optional_import(*args, **kwargs)
+
+
+def clear_optional_import_cache(*args, **kwargs):
+    with pytest.warns(DeprecationWarning):
+        return _clear_optional_import_cache(*args, **kwargs)
 
 
 def test_optional_import_success_and_failure(monkeypatch):

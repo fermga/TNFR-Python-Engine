@@ -9,6 +9,7 @@ example :mod:`tnfr.metrics`, :mod:`tnfr.observers` or
 - ``preparar_red`` in :mod:`tnfr.ontosim`
 - ``create_nfr`` and ``run_sequence`` in :mod:`tnfr.structural`
 - ``NodeState`` in :mod:`tnfr.types`
+- ``cached_import`` for optional dependencies
 """
 
 from __future__ import annotations
@@ -86,6 +87,7 @@ __all__ = [
     "preparar_red",
     "create_nfr",
     "NodeState",
+    "cached_import",
 ]
 
 if _HAS_RUN_SEQUENCE:
