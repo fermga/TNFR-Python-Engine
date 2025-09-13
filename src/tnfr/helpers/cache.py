@@ -17,7 +17,7 @@ from cachetools import LRUCache
 import networkx as nx  # type: ignore[import-untyped]
 
 from ..graph_utils import mark_dnfr_prep_dirty
-from ..import_utils import cached_import
+from ..import_utils import optional_numpy, cached_import
 from ..json_utils import json_dumps
 from ..logging import get_module_logger
 
@@ -579,9 +579,8 @@ def cached_nodes_and_A(
     checksum = node_set_checksum(G, nodes_list, store=False)
     key = f"_dnfr_{len(nodes_list)}_{checksum}"
     G.graph["_dnfr_nodes_checksum"] = checksum
-    np = cached_import("numpy")
+    np = optional_numpy(logger)
     if np is None:
-        logger.debug("Failed to import numpy; continuing in non-vectorised mode")
         if require_numpy:
             raise RuntimeError("NumPy is required for adjacency caching")
         return edge_version_cache(

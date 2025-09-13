@@ -21,6 +21,7 @@ from .locking import get_lock
 
 __all__ = (
     "cached_import",
+    "optional_numpy",
     "prune_failed_imports",
     "clear_optional_import_cache",
 )
@@ -204,6 +205,15 @@ def cached_import(
         with lock:
             cache[key] = _FAIL
         return fallback
+
+
+def optional_numpy(logger: Any) -> Any | None:
+    """Return NumPy module or ``None`` if unavailable, logging the failure."""
+
+    np = cached_import("numpy")
+    if np is None:
+        logger.debug("Failed to import numpy; continuing in non-vectorised mode")
+    return np
 
 
 def optional_import(name: str, fallback: Any | None = None) -> Any | None:
