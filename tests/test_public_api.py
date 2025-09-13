@@ -10,12 +10,9 @@ def test_public_exports():
         "preparar_red",
         "create_nfr",
         "NodeState",
-        "CallbackSpec",
     }
     if getattr(tnfr, "_HAS_RUN_SEQUENCE", False):
         expected.add("run_sequence")
-    if getattr(tnfr, "_HAS_APPLY_TOPOLOGICAL_REMESH", False):
-        expected.add("apply_topological_remesh")
     assert set(tnfr.__all__) == expected
 
 
@@ -29,5 +26,5 @@ def test_basic_flow():
     assert isinstance(tnfr.NodeState(), tnfr.NodeState)
 
 
-def test_topological_remesh_exported():
-    assert hasattr(tnfr, "apply_topological_remesh")
+def test_topological_remesh_not_exported():
+    assert not hasattr(tnfr, "apply_topological_remesh")

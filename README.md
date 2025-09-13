@@ -115,8 +115,9 @@ inspected with ``tnfr.callback_utils.get_callback_error_limit``.
 
 ## Topological remeshing
 
-Use ``apply_topological_remesh`` to reorganize connectivity based on nodal
-EPI similarity while preserving graph connectivity. Modes:
+Use ``tnfr.operators.apply_topological_remesh`` (``from tnfr.operators import apply_topological_remesh``)
+to reorganize connectivity based on nodal EPI similarity while preserving
+graph connectivity. Modes:
 
 - ``"knn"`` – connect each node to its ``k`` nearest neighbours (with optional
   rewiring).
@@ -177,6 +178,8 @@ https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-teoria-de-la-natur
 
 * Removed deprecated alias `sigma_vector_global`; use `sigma_vector_from_graph` instead.
 * Cleaned up `tnfr.program.__all__` to exclude private helpers.
+* Stopped re-exporting ``CallbackSpec`` and ``apply_topological_remesh`` at the
+  package root; import them via ``tnfr.trace`` and ``tnfr.operators``.
 
 ---
 

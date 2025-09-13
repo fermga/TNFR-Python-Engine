@@ -2,7 +2,7 @@
 import networkx as nx
 
 from tnfr.constants import inject_defaults
-from tnfr import apply_topological_remesh
+from tnfr.operators import apply_topological_remesh
 from tnfr.glyph_history import ensure_history
 
 

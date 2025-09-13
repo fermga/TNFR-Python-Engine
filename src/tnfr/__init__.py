@@ -13,8 +13,6 @@ example :mod:`tnfr.metrics`, :mod:`tnfr.observers` or
 
 from __future__ import annotations
 
-# re-exported for tests
-from .trace import CallbackSpec  # noqa: F401
 from .import_utils import optional_import
 from .ontosim import preparar_red
 from .types import NodeState
@@ -48,13 +46,6 @@ else:
     _HAS_RUN_SEQUENCE = True
 
 
-_HAS_APPLY_TOPOLOGICAL_REMESH = False
-try:  # pragma: no cover - exercised in import tests
-    from .operators import apply_topological_remesh
-except ImportError as exc:  # pragma: no cover - no missing deps in CI
-    apply_topological_remesh = _missing_dependency("apply_topological_remesh", exc)
-else:
-    _HAS_APPLY_TOPOLOGICAL_REMESH = True
 
 _metadata = optional_import("importlib.metadata")
 if _metadata is None:  # pragma: no cover
@@ -96,10 +87,7 @@ __all__ = [
     "preparar_red",
     "create_nfr",
     "NodeState",
-    "CallbackSpec",
 ]
 
 if _HAS_RUN_SEQUENCE:
     __all__.append("run_sequence")
-if _HAS_APPLY_TOPOLOGICAL_REMESH:
-    __all__.append("apply_topological_remesh")
