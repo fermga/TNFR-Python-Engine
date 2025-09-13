@@ -33,10 +33,13 @@ from ..alias import (
     set_theta,
     multi_recompute_abs_max,
 )
-from ..metrics_utils import compute_Si, compute_dnfr_accel_max, merge_graph_weights
+from ..metrics_utils import (
+    compute_Si,
+    compute_dnfr_accel_max,
+    merge_and_normalize_weights,
+)
 from ..callback_utils import invoke_callbacks
 from ..glyph_history import recent_glyph, ensure_history, append_metric
-from ..collections_utils import normalize_weights
 from ..selector import (
     _selector_thresholds,
     _norms_para_selector,
@@ -400,8 +403,9 @@ def _selector_base_choice(Si, dnfr, accel, thr):
 
 def _configure_selector_weights(G) -> dict:
     """Normalise and store selector weights in ``G.graph``."""
-    w = merge_graph_weights(G, "SELECTOR_WEIGHTS")
-    weights = normalize_weights(w, ("w_si", "w_dnfr", "w_accel"))
+    weights = merge_and_normalize_weights(
+        G, "SELECTOR_WEIGHTS", ("w_si", "w_dnfr", "w_accel")
+    )
     G.graph["_selector_weights"] = weights
     return weights
 

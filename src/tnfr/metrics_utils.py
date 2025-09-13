@@ -47,6 +47,7 @@ __all__ = (
     "compute_coherence",
     "ensure_neighbors_map",
     "merge_graph_weights",
+    "merge_and_normalize_weights",
     "get_Si_weights",
     "get_trig_cache",
     "compute_Si_node",
@@ -156,6 +157,36 @@ def merge_graph_weights(G: GraphLike, key: str) -> dict[str, float]:
     return {**DEFAULTS[key], **G.graph.get(key, {})}
 
 
+def merge_and_normalize_weights(
+    G: GraphLike,
+    key: str,
+    fields: Sequence[str],
+    *,
+    default: float = 0.0,
+) -> dict[str, float]:
+    """Merge defaults for ``key`` and normalise ``fields``.
+
+    Parameters
+    ----------
+    G:
+        Graph providing overrides in ``G.graph``.
+    key:
+        Entry in :data:`DEFAULTS` containing default weights.
+    fields:
+        Iterable of field names to normalise.
+    default:
+        Value used when a field is absent. Defaults to ``0.0``.
+
+    Returns
+    -------
+    dict[str, float]
+        Normalised weight mapping for ``fields``.
+    """
+
+    w = merge_graph_weights(G, key)
+    return normalize_weights(w, fields, default=default)
+
+
 def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
     """Obtain and normalise weights for the sense index."""
     w = merge_graph_weights(G, "SI_WEIGHTS")
@@ -171,7 +202,9 @@ def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
             beta = float(existing.get("beta", 0.0))
             gamma = float(existing.get("gamma", 0.0))
         else:
-            weights = normalize_weights(w, ("alpha", "beta", "gamma"), default=0.0)
+            weights = merge_and_normalize_weights(
+                G, "SI_WEIGHTS", ("alpha", "beta", "gamma"), default=0.0
+            )
             alpha = weights["alpha"]
             beta = weights["beta"]
             gamma = weights["gamma"]
