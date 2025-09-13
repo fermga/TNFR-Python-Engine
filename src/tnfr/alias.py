@@ -254,11 +254,19 @@ def collect_attr(
     """
 
     if np is not None:
-        nodes_list = list(nodes)
-        arr = np.empty(len(nodes_list), dtype=float)
-        for idx, n in enumerate(nodes_list):
-            arr[idx] = get_attr(G.nodes[n], aliases, default)
-        return arr
+        if nodes is G.nodes:
+            size = G.number_of_nodes()
+        else:
+            try:
+                size = len(nodes)  # type: ignore[arg-type]
+            except TypeError:
+                nodes = list(nodes)
+                size = len(nodes)
+        return np.fromiter(
+            (get_attr(G.nodes[n], aliases, default) for n in nodes),
+            float,
+            count=size,
+        )
     return [get_attr(G.nodes[n], aliases, default) for n in nodes]
 
 
