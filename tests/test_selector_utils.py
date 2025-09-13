@@ -146,6 +146,17 @@ def test_selector_thresholds_cached_per_graph(graph_canon):
     assert thr1 is thr2
 
 
+def test_selector_thresholds_cache_ignores_dict_order(graph_canon):
+    """Changing insertion order should not break cached thresholds."""
+    G = graph_canon()
+    G.graph["SELECTOR_THRESHOLDS"] = {"si_hi": 0.9, "si_lo": 0.2}
+    thr1 = _selector_thresholds(G)
+    # Reassign with reversed insertion order
+    G.graph["SELECTOR_THRESHOLDS"] = {"si_lo": 0.2, "si_hi": 0.9}
+    thr2 = _selector_thresholds(G)
+    assert thr1 is thr2
+
+
 def test_norms_para_selector_computes_max(graph_canon):
     G = graph_canon()
     G.add_node(0, **{ALIAS_DNFR[-1]: 2.0, ALIAS_D2EPI[-2]: 1.0})
