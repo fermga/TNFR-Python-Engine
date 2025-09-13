@@ -175,7 +175,7 @@ def json_dumps(
             cls=cls,
             to_bytes=to_bytes,
         )
-    orjson = cached_import("orjson")
+    orjson = cached_import("orjson", emit="log")
     if orjson is not None:
         return _json_dumps_orjson(orjson, obj, params, **kwargs)
     return _json_dumps_std(obj, params, **kwargs)

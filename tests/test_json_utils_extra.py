@@ -1,7 +1,9 @@
+import importlib
 import logging
 from dataclasses import is_dataclass
 
 import tnfr.json_utils as json_utils
+import tnfr.import_utils as import_utils
 
 
 class DummyOrjson:
@@ -17,15 +19,31 @@ def _reset_json_utils(monkeypatch, module):
         json_utils, "cached_import", lambda name, attr=None, **kwargs: module
     )
     json_utils.clear_orjson_cache()
+    import_utils.prune_failed_imports()
+    with import_utils._WARNED_STATE.lock:
+        import_utils._WARNED_STATE.clear()
 
 
 def test_json_dumps_without_orjson(monkeypatch, caplog):
-    _reset_json_utils(monkeypatch, None)
+    json_utils.clear_orjson_cache()
+    import_utils.prune_failed_imports()
+    with import_utils._WARNED_STATE.lock:
+        import_utils._WARNED_STATE.clear()
 
-    with caplog.at_level(logging.WARNING):
+    original = import_utils.importlib.import_module
+
+    def fake_import(name, package=None):  # pragma: no cover - monkeypatch helper
+        if name == "orjson":
+            raise ImportError("missing")
+        return original(name, package)
+
+    monkeypatch.setattr(import_utils.importlib, "import_module", fake_import)
+
+    with caplog.at_level(logging.WARNING, logger="tnfr.import_utils"):
         result = json_utils.json_dumps({"a": 1}, ensure_ascii=False, to_bytes=True)
+
     assert result == b'{"a":1}'
-    assert caplog.records == []
+    assert any("Failed to import module 'orjson'" in r.message for r in caplog.records)
 
 
 def test_json_dumps_with_orjson_warns(monkeypatch, caplog):
