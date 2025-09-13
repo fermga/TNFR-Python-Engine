@@ -19,7 +19,7 @@ from .helpers.numeric import (
     neighbor_phase_mean_list,
     kahan_sum2d,
 )
-from .helpers.cache import edge_version_cache, _stable_json
+from .helpers.cache import edge_version_cache, stable_json
 from .import_utils import optional_numpy
 from .logging import get_module_logger
 
@@ -253,7 +253,7 @@ def _cache_weights(G: GraphLike) -> tuple[float, float, float]:
     merely prepares the data stored in ``G.graph`` when invoked.
     """
     w = merge_graph_weights(G, "SI_WEIGHTS")
-    cfg_key = _stable_json(w)
+    cfg_key = stable_json(w)
 
     def builder() -> tuple[float, float, float]:
         weights = normalize_weights(w, ("alpha", "beta", "gamma"), default=0.0)
