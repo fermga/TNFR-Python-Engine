@@ -84,6 +84,8 @@ def kuramoto_metrics(G) -> tuple[float, float]:
 
 
 def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
+    from .import_utils import optional_numpy
+
     if not _ensure_nodes(G):
         return 1.0
     if R is None or psi is None:
@@ -96,7 +98,13 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
         angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
         for _, data in G.nodes(data=True)
     )
-    var = list_pvariance(diffs, default=0.0)
+    # Try NumPy for a vectorised population variance
+    np = optional_numpy(logger)
+    if np is not None:
+        arr = np.fromiter(diffs, dtype=float)
+        var = float(np.var(arr)) if arr.size else 0.0
+    else:
+        var = list_pvariance(diffs, default=0.0)
     return 1.0 / (1.0 + var)
 
 
