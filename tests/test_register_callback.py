@@ -41,6 +41,19 @@ def test_register_callback_replaces_existing(graph_canon):
     }
 
 
+def test_register_callback_same_callable_dedupes(graph_canon):
+    G = graph_canon()
+
+    def cb(G, ctx):
+        pass
+
+    register_callback(G, CallbackEvent.BEFORE_STEP, cb)
+    register_callback(G, CallbackEvent.BEFORE_STEP, cb)
+    assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
+        "cb": CallbackSpec("cb", cb)
+    }
+
+
 def test_register_callback_rejects_tuple(graph_canon):
     G = graph_canon()
 
