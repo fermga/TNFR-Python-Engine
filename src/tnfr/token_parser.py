@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import Any, Callable, Iterator
 
 from .collections_utils import flatten_structure
 
@@ -40,8 +40,8 @@ def validate_token(
 
 def _parse_tokens(
     obj: Any, token_map: dict[str, Callable[[Any], Any]]
-) -> list[Any]:
-    return [
-        validate_token(tok, pos, token_map)
-        for pos, tok in enumerate(flatten_structure(obj), start=1)
-    ]
+) -> Iterator[Any]:
+    """Yield validated tokens from ``obj`` lazily."""
+
+    for pos, tok in enumerate(flatten_structure(obj), start=1):
+        yield validate_token(tok, pos, token_map)
