@@ -39,10 +39,12 @@ pip install tnfr
 
 Use ``tnfr.cached_import`` to load optional dependencies and cache the result.
 It returns ``None`` when the module (or attribute) is missing, avoiding
-repeated import attempts:
+repeated import attempts. Call ``prune_failed_imports`` to discard records of
+previous failures when dependencies are installed at runtime; this prevents
+stale failure logs from lingering:
 
 ```python
-from tnfr import cached_import
+from tnfr import cached_import, prune_failed_imports
 
 np = cached_import("numpy")
 safe_load = cached_import("yaml", "safe_load")
@@ -55,12 +57,10 @@ cache = TTLCache(32, 60)
 lock = threading.Lock()
 cached_import("numpy", cache=cache, lock=lock)
 
-# clear the cache (e.g. after installing a dependency at runtime)
+# clear caches after installing a dependency at runtime
 cached_import.cache_clear()
+prune_failed_imports()
 ```
-
-``tnfr.import_utils.optional_import`` is deprecated; use
-``cached_import`` instead.
 
 For optional JavaScript tooling, install the Node.js dependencies:
 

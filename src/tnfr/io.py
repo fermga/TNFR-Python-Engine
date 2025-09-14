@@ -3,7 +3,8 @@
 Optional parsers such as ``tomllib``/``tomli`` and ``pyyaml`` are loaded via
 the :func:`tnfr.import_utils.cached_import` helper. Their import results and
 failure states are cached and can be cleared with
-``clear_optional_import_cache`` when needed.
+``cached_import.cache_clear()`` and :func:`tnfr.import_utils.prune_failed_imports`
+when needed.
 """
 
 from __future__ import annotations

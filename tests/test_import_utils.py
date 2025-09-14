@@ -7,8 +7,6 @@ from cachetools import TTLCache
 import tnfr.import_utils as import_utils
 from tnfr.import_utils import (
     cached_import,
-    clear_optional_import_cache,
-    optional_import,
     prune_failed_imports,
     _IMPORT_CACHE,
     _IMPORT_STATE,
@@ -63,19 +61,7 @@ def test_cached_import_uses_provided_lock(monkeypatch):
     assert calls["lock"] == 0
 
 
-def test_optional_import_wrapper(monkeypatch):
-    reset()
-    fallback = object()
-    with pytest.warns(DeprecationWarning):
-        assert optional_import("fake_mod", fallback) is fallback
-    fake_mod = types.ModuleType("fake_mod")
-    monkeypatch.setitem(sys.modules, "fake_mod", fake_mod)
-    reset()
-    with pytest.warns(DeprecationWarning):
-        assert optional_import("fake_mod") is fake_mod
-
-
-def test_clear_optional_import_cache_resets_all(monkeypatch):
+def test_cache_clear_and_prune_reset_all(monkeypatch):
     reset()
 
     def fake_import(name):
@@ -87,7 +73,9 @@ def test_clear_optional_import_cache_resets_all(monkeypatch):
         assert "fake_mod" in _IMPORT_STATE.failed
         assert "fake_mod" in _WARNED_STATE.failed
     assert _IMPORT_CACHE
-    clear_optional_import_cache()
+    cached_import.cache_clear()
+    monkeypatch.setattr(import_utils.time, "monotonic", lambda: 1e9)
+    prune_failed_imports()
     with _IMPORT_STATE.lock, _WARNED_STATE.lock:
         assert not _IMPORT_STATE.failed
         assert not _WARNED_STATE.failed
