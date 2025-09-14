@@ -196,10 +196,7 @@ def random_jitter(
     cache = _get_jitter_cache(node, manager)
 
     cache_key = (seed_root, scope_id)
-    seed = cache.get(cache_key)
-    if seed is None:
-        seed = seed_hash(seed_root, scope_id)
-        cache[cache_key] = seed
+    seed = cache.setdefault(cache_key, seed_hash(seed_root, scope_id))
     seq = 0
     if cache_enabled(node.G):
         with manager.lock:
