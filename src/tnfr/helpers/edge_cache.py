@@ -90,27 +90,22 @@ class EdgeCacheManager:
                 isinstance(v, defaultdict) and v.default_factory is threading.RLock
             ),
         )
+    def _cache_and_locks(
+        self, max_entries: int | None, *, create: bool
+    ) -> tuple[
+        dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]] | None,
+        dict[Hashable, threading.RLock]
+        | defaultdict[Hashable, threading.RLock]
+        | None,
+    ]:
+        """Return the cache and locks, creating/validating when requested."""
 
-    def _init_cache(
-        self,
-        locks: dict[Hashable, threading.RLock],
-        max_entries: int | None,
-    ) -> dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]:
-        use_lru = bool(max_entries)
+        if not create:
+            cache = self.graph.get("_edge_version_cache")
+            locks = self.graph.get("_edge_version_cache_locks")
+            return cache, locks
 
-        return self._ensure_graph_entry(
-            "_edge_version_cache",
-            factory=lambda: (
-                _make_edge_cache(max_entries, locks) if use_lru else {}
-            ),
-            validator=lambda _: False,
-        )
-
-    def _maybe_init_cache(
-        self,
-        locks: dict[Hashable, threading.RLock],
-        max_entries: int | None,
-    ) -> dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]]:
+        locks = self._ensure_locks()
         use_lru = bool(max_entries)
 
         def validator(value: Any) -> bool:
@@ -120,42 +115,13 @@ class EdgeCacheManager:
                 return isinstance(value, LRUCache) and value.maxsize == max_entries
             return not isinstance(value, LRUCache)
 
-        return self._ensure_graph_entry(
+        cache = self._ensure_graph_entry(
             "_edge_version_cache",
             factory=lambda: (
                 _make_edge_cache(max_entries, locks) if use_lru else {}
             ),
             validator=validator,
         )
-
-    def _create_cache(
-        self, max_entries: int | None
-    ) -> tuple[
-        dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]] | None,
-        dict[Hashable, threading.RLock]
-        | defaultdict[Hashable, threading.RLock]
-        | None,
-    ]:
-        """Ensure locks and initialise the cache when requested."""
-
-        locks = self._ensure_locks()
-        cache = self._maybe_init_cache(locks, max_entries)
-        return cache, locks
-
-    def _synchronise_locks(
-        self, create: bool, max_entries: int | None
-    ) -> tuple[
-        dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]] | None,
-        dict[Hashable, threading.RLock]
-        | defaultdict[Hashable, threading.RLock]
-        | None,
-    ]:
-        """Return cache and locks, creating them when requested."""
-
-        if create:
-            return self._create_cache(max_entries)
-        locks = self.graph.get("_edge_version_cache_locks")
-        cache = self.graph.get("_edge_version_cache")
         return cache, locks
 
     def _prune_locks(
@@ -183,7 +149,7 @@ class EdgeCacheManager:
         """Return the edge cache and lock mapping for ``graph``."""
 
         with self._LOCK:
-            cache, locks = self._synchronise_locks(create, max_entries)
+            cache, locks = self._cache_and_locks(max_entries, create=create)
             if max_entries is None:
                 self._prune_locks(cache, locks)
         return cache, locks
