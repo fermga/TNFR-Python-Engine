@@ -151,12 +151,43 @@ def neighbor_mean(
     return list_mean(vals, default)
 
 
-def _neighbor_phase_mean(node, trig) -> float:
-    """Internal helper delegating to :func:`_neighbor_phase_mean_core`."""
-    fallback = trig.theta.get(node.n, 0.0)
-    np = optional_numpy(logger)
-    neigh = node.G[node.n]
-    return _neighbor_phase_mean_core(neigh, trig.cos, trig.sin, np, fallback)
+def _neighbor_phase_mean_generic(
+    obj,
+    cos_map: dict[Any, float] | None = None,
+    sin_map: dict[Any, float] | None = None,
+    np=None,
+    fallback: float = 0.0,
+) -> float:
+    """Internal helper delegating to :func:`_neighbor_phase_mean_core`.
+
+    ``obj`` may be either a node bound to a graph or a sequence of neighbours.
+    When ``cos_map`` and ``sin_map`` are ``None`` the function assumes ``obj`` is
+    a node and obtains the required trigonometric mappings from the cached
+    structures.  Otherwise ``obj`` is treated as an explicit neighbour
+    sequence and ``cos_map``/``sin_map`` must be provided.
+    """
+
+    if cos_map is None or sin_map is None:
+        node = obj
+        if getattr(node, "G", None) is None:
+            raise TypeError(
+                "neighbor_phase_mean requires nodes bound to a graph"
+            )
+        from ..metrics_utils import get_trig_cache
+
+        trig = get_trig_cache(node.G)
+        fallback = trig.theta.get(node.n, fallback)
+        cos_map = trig.cos
+        sin_map = trig.sin
+        neigh = node.G[node.n]
+        if np is None:
+            np = optional_numpy(logger)
+    else:
+        neigh = obj
+        if np is None:
+            np = optional_numpy(logger)
+
+    return _neighbor_phase_mean_core(neigh, cos_map, sin_map, np, fallback)
 
 
 def accumulate_cos_sin(
@@ -255,16 +286,13 @@ def neighbor_phase_mean_list(
 ) -> float:
     """Return circular mean of neighbour phases from cosine/sine mappings.
 
-    When ``np`` (NumPy) is provided, ``np.fromiter`` is used to build cosine and
-    sine arrays directly from a generator, avoiding the creation of an
-    intermediate Python list of ``(cos, sin)`` pairs. Otherwise, cosine and
-    sine values are accumulated via :func:`accumulate_cos_sin` using a running
-    Kahan summation.
+    This is a thin wrapper over :func:`_neighbor_phase_mean_generic` that
+    operates on explicit neighbour lists.
     """
-    if np is None:
-        np = optional_numpy(logger)
 
-    return _neighbor_phase_mean_core(neigh, cos_th, sin_th, np, fallback)
+    return _neighbor_phase_mean_generic(
+        neigh, cos_map=cos_th, sin_map=sin_th, np=np, fallback=fallback
+    )
 
 
 def neighbor_phase_mean(obj, n=None) -> float:
@@ -276,9 +304,4 @@ def neighbor_phase_mean(obj, n=None) -> float:
     if NodoNX is None:
         raise ImportError("NodoNX is unavailable")
     node = NodoNX(obj, n) if n is not None else obj
-    if getattr(node, "G", None) is None:
-        raise TypeError("neighbor_phase_mean requires nodes bound to a graph")
-    from ..metrics_utils import get_trig_cache
-
-    trig = get_trig_cache(node.G)
-    return _neighbor_phase_mean(node, trig)
+    return _neighbor_phase_mean_generic(node)
