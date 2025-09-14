@@ -18,14 +18,14 @@ def _reset_json_utils(monkeypatch, module):
     monkeypatch.setattr(
         json_utils, "cached_import", lambda name, attr=None, **kwargs: module
     )
-    json_utils.clear_orjson_cache()
+    json_utils._clear_orjson_cache()
     import_utils.prune_failed_imports()
     with import_utils._WARNED_STATE.lock:
         import_utils._WARNED_STATE.clear()
 
 
 def test_json_dumps_without_orjson(monkeypatch, caplog):
-    json_utils.clear_orjson_cache()
+    json_utils._clear_orjson_cache()
     import_utils.prune_failed_imports()
     with import_utils._WARNED_STATE.lock:
         import_utils._WARNED_STATE.clear()

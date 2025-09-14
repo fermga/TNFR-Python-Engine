@@ -7,7 +7,7 @@ from tnfr import json_utils
 
 
 def test_stable_json_dict_order_deterministic():
-    json_utils.clear_orjson_cache()
+    json_utils._clear_orjson_cache()
     json_utils._orjson = None
     obj = {"b": 1, "a": 2}
     res1 = stable_json(obj)
