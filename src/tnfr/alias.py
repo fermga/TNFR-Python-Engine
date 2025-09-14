@@ -8,7 +8,7 @@ alias-based attribute access. Legacy wrappers ``alias_get`` and
 
 from __future__ import annotations
 from collections import defaultdict
-from collections.abc import Iterable
+from collections.abc import Iterable, Sized
 from typing import (
     Any,
     Callable,
@@ -262,24 +262,23 @@ def collect_attr(
         Collected attribute values in the same order as ``nodes``.
     """
 
-    if np is not None:
+    def _nodes_iter_and_size(nodes: Iterable[Any]) -> tuple[Iterable[Any], int]:
         if nodes is G.nodes:
-            nodes_iter = G.nodes
-            size = G.number_of_nodes()
-        else:
-            try:
-                size = len(nodes)  # type: ignore[arg-type]
-                nodes_iter = nodes
-            except TypeError:
-                nodes_list = list(nodes)
-                nodes_iter = nodes_list
-                size = len(nodes_list)
+            return G.nodes, G.number_of_nodes()
+        if isinstance(nodes, Sized):
+            return nodes, len(nodes)  # type: ignore[arg-type]
+        nodes_list = list(nodes)
+        return nodes_list, len(nodes_list)
+
+    nodes_iter, size = _nodes_iter_and_size(nodes)
+
+    if np is not None:
         return np.fromiter(
             (get_attr(G.nodes[n], aliases, default) for n in nodes_iter),
             float,
             count=size,
         )
-    return [get_attr(G.nodes[n], aliases, default) for n in nodes]
+    return [get_attr(G.nodes[n], aliases, default) for n in nodes_iter]
 
 
 def set_attr_generic(
