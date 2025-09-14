@@ -17,7 +17,7 @@ from collections.abc import Callable, Mapping, Iterable
 
 import traceback
 import threading
-from .logging import get_module_logger
+from .logging_utils import get_logger
 from .constants import DEFAULTS
 from .locking import get_lock
 
@@ -35,7 +35,7 @@ __all__ = (
     "CallbackError",
 )
 
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 
 _CALLBACK_LOCK = get_lock("callbacks")
 

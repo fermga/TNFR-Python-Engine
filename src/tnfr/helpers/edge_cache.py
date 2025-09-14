@@ -11,13 +11,13 @@ import networkx as nx  # type: ignore[import-untyped]
 
 from ..graph_utils import mark_dnfr_prep_dirty
 from ..import_utils import optional_numpy, cached_import  # noqa: F401 - used in tests
-from ..logging import get_module_logger
+from ..logging_utils import get_logger
 from .node_cache import get_graph, node_set_checksum, clear_node_repr_cache
 
 T = TypeVar("T")
 U = TypeVar("U")
 
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 
 # Keys of cache entries dependent on the edge version. Any change to the edge
 # set requires these to be dropped to avoid stale data.

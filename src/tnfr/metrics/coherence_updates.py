@@ -8,7 +8,7 @@ from typing import Any
 from ..alias import get_attr, set_attr
 from ..constants import get_aliases, get_param
 from ..glyph_history import append_metric
-from ..logging import get_module_logger
+from ..logging_utils import get_logger
 from ..metrics_utils import compute_coherence
 from ..observers import glyph_load, kuramoto_order, phase_sync
 from ..sense import sigma_vector
@@ -21,7 +21,7 @@ ALIAS_VF = get_aliases("VF")
 ALIAS_DVF = get_aliases("DVF")
 ALIAS_D2VF = get_aliases("D2VF")
 
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 
 __all__ = [
     "_update_coherence",

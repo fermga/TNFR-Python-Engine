@@ -16,7 +16,7 @@ from typing import Any, Callable, Literal, overload
 
 from dataclasses import dataclass
 from .import_utils import cached_import
-from .logging import get_module_logger
+from .logging_utils import get_logger
 from .logging_utils import warn_once
 
 _ORJSON_PARAMS_MSG = (
@@ -24,7 +24,7 @@ _ORJSON_PARAMS_MSG = (
 )
 
 # Track combinations of parameters for which a warning has already been emitted.
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 _warn_orjson_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
 
 
