@@ -2,24 +2,23 @@
 
 from __future__ import annotations
 
-from .core import (
-    register_metrics_callbacks,
+from .core import register_metrics_callbacks, _metrics_step
+from .reporting import (
     Tg_global,
     Tg_by_node,
     latency_series,
     glyphogram_series,
     glyph_top,
     glyph_dwell_stats,
+)
+from .glyph_timing import (
     _tg_state,
     _update_tg,
     _update_latency_index,
     _update_epi_support,
-    _track_stability,
-    _aggregate_si,
     _compute_advanced_metrics,
-    _metrics_step,
 )
-
+from .coherence_updates import _track_stability, _aggregate_si
 from .coherence import (
     coherence_matrix,
     local_phase_sync,
