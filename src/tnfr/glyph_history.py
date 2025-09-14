@@ -44,15 +44,15 @@ def validate_window(window: int, *, positive: bool = False) -> int:
     return int(window)
 
 
-def _normalize_history_input(hist: Any) -> Iterable[Any]:
-    """Normalise ``hist`` to an iterable excluding strings/bytes."""
+def _normalize_history_input(hist: Any) -> list[Any]:
+    """Normalise ``hist`` to a list excluding strings/bytes."""
     if isinstance(hist, (str, bytes, bytearray)):
-        return ()
+        return []
     try:
-        return ensure_collection(hist, max_materialize=None)
+        return list(ensure_collection(hist, max_materialize=None))
     except TypeError:
         logger.debug("Discarding non-iterable glyph history value %r", hist)
-        return ()
+        return []
 
 
 def _ensure_history(
@@ -65,8 +65,7 @@ def _ensure_history(
         return v_window, None
     hist = nd.get("glyph_history")
     if not isinstance(hist, deque) or hist.maxlen != v_window:
-        seq = _normalize_history_input(hist)
-        hist = deque(seq, maxlen=v_window)
+        hist = deque(_normalize_history_input(hist), maxlen=v_window)
         nd["glyph_history"] = hist
     return v_window, hist
 
