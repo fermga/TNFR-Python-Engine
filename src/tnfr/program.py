@@ -267,12 +267,12 @@ def _flatten_glyph(
     ops.append((OpTag.GLYPH, g))
 
 
-_TOKEN_DISPATCH: list[tuple[type, Callable[[Any, list[tuple[OpTag, Any]]], None]]] = [
-    (TARGET, _flatten_target),
-    (WAIT, _flatten_wait),
-    (Glyph, _flatten_glyph),
-    (str, _flatten_glyph),
-]
+_TOKEN_DISPATCH: dict[type, Callable[[Any, list[tuple[OpTag, Any]]], None]] = {
+    TARGET: _flatten_target,
+    WAIT: _flatten_wait,
+    Glyph: _flatten_glyph,
+    str: _flatten_glyph,
+}
 
 
 def _flatten(
@@ -305,12 +305,10 @@ def _flatten(
         if item is THOL_SENTINEL:
             ops.append((OpTag.THOL, Glyph.THOL.value))
             continue
-        for cls, handler in _TOKEN_DISPATCH:
-            if isinstance(item, cls):
-                handler(item, ops)
-                break
-        else:
+        handler = _TOKEN_DISPATCH.get(type(item))
+        if handler is None:
             raise TypeError(f"Unsupported token: {item!r}")
+        handler(item, ops)
     return ops
 
 
