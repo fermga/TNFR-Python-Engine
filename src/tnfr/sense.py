@@ -24,13 +24,13 @@ from .constants_glyphs import (
     ANGLE_MAP,
     GLYPHS_CANONICAL,
 )
-from .logging import get_module_logger
+from .logging_utils import get_logger
 
 # -------------------------
 # Canon: orden circular de glyphs y ángulos
 # -------------------------
 
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 
 GLYPH_UNITS: dict[str, complex] = {
     g: complex(math.cos(a), math.sin(a)) for g, a in ANGLE_MAP.items()

@@ -8,14 +8,13 @@ from collections.abc import Collection, Iterable, Mapping, Sequence
 from itertools import islice
 from typing import Any, Callable, Iterator, TypeVar, cast
 
-from .logging import get_module_logger
-from .logging_utils import warn_once
+from .logging_utils import get_logger, warn_once
 from .value_utils import convert_value
 from .helpers.numeric import kahan_sum
 
 T = TypeVar("T")
 
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 
 STRING_TYPES = (str, bytes, bytearray)
 

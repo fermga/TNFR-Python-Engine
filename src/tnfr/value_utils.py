@@ -7,11 +7,11 @@ from __future__ import annotations
 
 from typing import Any, Callable, TypeVar
 import logging
-from .logging import get_module_logger
+from .logging_utils import get_logger
 
 T = TypeVar("T")
 
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 
 __all__ = ("convert_value",)
 

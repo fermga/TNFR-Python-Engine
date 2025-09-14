@@ -30,10 +30,10 @@ from .execution import (
     _load_sequence,
     _save_json,
 )
-from ..logging import get_module_logger
+from ..logging_utils import get_logger
 from .. import __version__
 
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 
 __all__ = (
     "main",

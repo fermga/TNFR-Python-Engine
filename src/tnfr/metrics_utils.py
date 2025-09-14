@@ -20,9 +20,9 @@ from .helpers.numeric import (
 )
 from .helpers import edge_version_cache, stable_json
 from .import_utils import optional_numpy
-from .logging import get_module_logger
+from .logging_utils import get_logger
 
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_D2EPI = get_aliases("D2EPI")

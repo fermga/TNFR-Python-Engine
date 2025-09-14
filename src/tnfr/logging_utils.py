@@ -14,13 +14,17 @@ from collections import deque
 
 from .logging_base import _configure_root
 
-__all__ = ("get_logger", "WarnOnce", "warn_once")
+__all__ = ("get_logger", "get_module_logger", "WarnOnce", "warn_once")
 
 
 def get_logger(name: str) -> logging.Logger:
-    """Return a module-specific logger."""
+    """Return a module-specific logger configured with TNFR defaults."""
     _configure_root()
     return logging.getLogger(name)
+
+
+# Backwards compatibility for modules still importing ``get_module_logger``.
+get_module_logger = get_logger
 
 
 class WarnOnce:
