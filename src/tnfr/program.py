@@ -157,6 +157,41 @@ def _advance(G, step_fn: AdvanceFn):
 # Sequence compilation → list of atomic operations
 # ---------------------
 
+
+def _push_thol_frame(
+    frames: list[dict[str, Any]],
+    item: THOL,
+    *,
+    max_materialize: int | None,
+) -> None:
+    """Validate ``item`` and append a frame for its evaluation."""
+
+    repeats = int(item.repeat)
+    if repeats < 1:
+        raise ValueError("repeat must be ≥1")
+    if item.force_close is not None and not isinstance(item.force_close, Glyph):
+        raise ValueError("force_close must be a Glyph")
+    closing = (
+        item.force_close
+        if isinstance(item.force_close, Glyph)
+        and item.force_close in {Glyph.SHA, Glyph.NUL}
+        else None
+    )
+    seq0 = ensure_collection(
+        item.body,
+        max_materialize=max_materialize,
+        error_msg=f"THOL body exceeds max_materialize={max_materialize}",
+    )
+    frames.append(
+        {
+            "seq": seq0,
+            "index": 0,
+            "remaining": repeats,
+            "closing": closing,
+        }
+    )
+
+
 class THOLEvaluator:
     """Generador que expande un bloque :class:`THOL`."""
 
@@ -166,30 +201,10 @@ class THOLEvaluator:
         *,
         max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
     ) -> None:
-        repeats = int(item.repeat)
-        if repeats < 1:
-            raise ValueError("repeat must be ≥1")
-        if item.force_close is not None and not isinstance(item.force_close, Glyph):
-            raise ValueError("force_close must be a Glyph")
-        closing = (
-            item.force_close
-            if isinstance(item.force_close, Glyph)
-            and item.force_close in {Glyph.SHA, Glyph.NUL}
-            else None
+        self._frames: list[dict[str, Any]] = []
+        _push_thol_frame(
+            self._frames, item, max_materialize=max_materialize
         )
-        seq0 = ensure_collection(
-            item.body,
-            max_materialize=max_materialize,
-            error_msg=f"THOL body exceeds max_materialize={max_materialize}",
-        )
-        self._frames: list[dict[str, Any]] = [
-            {
-                "seq": seq0,
-                "index": 0,
-                "remaining": repeats,
-                "closing": closing,
-            }
-        ]
         self._max_materialize = max_materialize
         self._started = False
 
@@ -208,33 +223,10 @@ class THOLEvaluator:
                 token = seq[idx]
                 frame["index"] = idx + 1
                 if isinstance(token, THOL):
-                    rep = int(token.repeat)
-                    if rep < 1:
-                        raise ValueError("repeat must be ≥1")
-                    if token.force_close is not None and not isinstance(
-                        token.force_close, Glyph
-                    ):
-                        raise ValueError("force_close must be a Glyph")
-                    closing2 = (
-                        token.force_close
-                        if isinstance(token.force_close, Glyph)
-                        and token.force_close in {Glyph.SHA, Glyph.NUL}
-                        else None
-                    )
-                    subseq = ensure_collection(
-                        token.body,
+                    _push_thol_frame(
+                        self._frames,
+                        token,
                         max_materialize=self._max_materialize,
-                        error_msg=(
-                            f"THOL body exceeds max_materialize={self._max_materialize}"
-                        ),
-                    )
-                    self._frames.append(
-                        {
-                            "seq": subseq,
-                            "index": 0,
-                            "remaining": rep,
-                            "closing": closing2,
-                        }
                     )
                     return THOL_SENTINEL
                 return token

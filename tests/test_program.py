@@ -245,3 +245,30 @@ def test_flatten_thol_body_limit_error_message():
         ValueError, match="THOL body exceeds max_materialize=3"
     ):
         list(THOLEvaluator(THOL(body=body), max_materialize=3))
+
+
+def test_thol_recursive_expansion():
+    inner = THOL(body=[Glyph.RA], repeat=2)
+    outer = THOL(body=[Glyph.AL, inner, Glyph.ZHIR])
+    tokens = list(THOLEvaluator(outer))
+    assert tokens == [
+        THOL_SENTINEL,
+        Glyph.AL,
+        THOL_SENTINEL,
+        Glyph.RA,
+        Glyph.RA,
+        Glyph.ZHIR,
+    ]
+
+
+@pytest.mark.parametrize(
+    "bad, message",
+    [
+        (THOL(body=[Glyph.AL], repeat=0), "repeat must be ≥1"),
+        (THOL(body=[Glyph.AL], force_close="AL"), "force_close must be a Glyph"),
+    ],
+)
+def test_thol_nested_parameter_errors(bad, message):
+    outer = THOL(body=[bad])
+    with pytest.raises(ValueError, match=message):
+        list(THOLEvaluator(outer))
