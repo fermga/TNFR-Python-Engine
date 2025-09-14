@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import asdict, is_dataclass
-from functools import lru_cache, singledispatch, wraps
+from functools import lru_cache, singledispatch, wraps, partial
 from typing import Any, Callable
 from collections.abc import Mapping
 from types import MappingProxyType
@@ -72,11 +72,14 @@ def _freeze_iterable(container: Any, tag: str, seen: set[int] | None) -> tuple[s
     return (tag, tuple(_freeze(v, seen) for v in container))
 
 
+def _freeze_iterable_with_tag(
+    value: Any, seen: set[int] | None = None, *, tag: str
+) -> tuple[str, tuple]:
+    return _freeze_iterable(value, tag, seen)
+
+
 def _register_iterable(cls: type, tag: str) -> None:
-    @_freeze.register(cls)
-    @_check_cycle
-    def _freeze_iterable_wrapper(value: Any, seen: set[int] | None = None):
-        return _freeze_iterable(value, tag, seen)
+    _freeze.register(cls)(_check_cycle(partial(_freeze_iterable_with_tag, tag=tag)))
 
 
 for _cls, _tag in (
