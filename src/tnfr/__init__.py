@@ -9,12 +9,12 @@ example :mod:`tnfr.metrics`, :mod:`tnfr.observers` or
 - ``preparar_red`` in :mod:`tnfr.ontosim`
 - ``create_nfr`` and ``run_sequence`` in :mod:`tnfr.structural`
 - ``NodeState`` in :mod:`tnfr.types`
-- ``cached_import`` for optional dependencies
+- ``cached_import`` and ``prune_failed_imports`` for optional dependencies
 """
 
 from __future__ import annotations
 
-from .import_utils import cached_import
+from .import_utils import cached_import, prune_failed_imports
 from .ontosim import preparar_red
 from .types import NodeState
 
@@ -88,6 +88,7 @@ __all__ = [
     "create_nfr",
     "NodeState",
     "cached_import",
+    "prune_failed_imports",
 ]
 
 if _HAS_RUN_SEQUENCE:

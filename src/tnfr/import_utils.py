@@ -3,8 +3,8 @@
 The module maintains caches for successful imports alongside registries of
 failed attempts and previously warned modules. Entries older than
 ``_FAILED_IMPORT_MAX_AGE`` seconds are pruned automatically; use
-``prune_failed_imports`` to trigger cleanup manually and
-``clear_optional_import_cache`` to reset both caches and logs.
+``prune_failed_imports`` to trigger cleanup manually or call
+``cached_import.cache_clear`` to reset import results.
 Additional helpers like :func:`get_nodonx` provide light-weight access to
 TNFR-specific structures on demand.
 """
@@ -26,7 +26,6 @@ __all__ = (
     "optional_numpy",
     "get_nodonx",
     "prune_failed_imports",
-    "clear_optional_import_cache",
 )
 
 
@@ -257,52 +256,12 @@ def get_nodonx() -> type | None:
     return cached_import("tnfr.node", "NodoNX")
 
 
-def optional_import(name: str, fallback: Any | None = None) -> Any | None:
-    """Deprecated wrapper around :func:`cached_import` parsing dotted names.
-
-    This helper will be removed in a future release. Use
-    :func:`cached_import` directly instead:
-
-    ``cached_import("pkg", "attr")``.
-    """
-
-    warnings.warn(
-        "optional_import is deprecated; use cached_import instead",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    module_name, attr = (name.rsplit(".", 1) + [None])[:2]
-    return cached_import(module_name, attr, fallback=fallback)
-
-
 def _clear_cache() -> None:
     with _CACHE_LOCK:
         _IMPORT_CACHE.clear()
 
 
 cached_import.cache_clear = _clear_cache  # type: ignore[attr-defined]
-optional_import.cache_clear = _clear_cache  # type: ignore[attr-defined]
-
-
-def clear_optional_import_cache() -> None:
-    """Deprecated cache reset for :func:`optional_import`.
-
-    The function now clears the internal import-result cache as well as the
-    registries tracking failed imports and previously warned modules. Prefer
-    calling ``cached_import.cache_clear()`` together with
-    :func:`prune_failed_imports` in new code.
-    """
-
-    warnings.warn(
-        "clear_optional_import_cache is deprecated; use cached_import.cache_clear() "
-        "and prune_failed_imports()",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    cached_import.cache_clear()
-    with _IMPORT_STATE.lock, _WARNED_STATE.lock:
-        _IMPORT_STATE.clear()
-        _WARNED_STATE.clear()
 
 
 def prune_failed_imports() -> None:
