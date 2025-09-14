@@ -178,9 +178,9 @@ def cached_import(
         Mapping used to store cached results. When ``None`` the internal
         process-wide cache is used.
     lock:
-        Optional :class:`threading.Lock` guarding ``cache``. Providing a lock
-        avoids creating a new one on every call when supplying a custom
-        ``cache``.
+        Optional :class:`threading.Lock` guarding ``cache``. When using an
+        external cache, passing a lock is recommended to avoid repeated
+        creations. If omitted, the shared ``_CACHE_LOCK`` is used.
     ttl:
         Time-to-live for entries when using the internal cache.
     emit:
@@ -199,7 +199,7 @@ def cached_import(
                     )
         cache = _IMPORT_CACHE
     elif lock is None:
-        lock = threading.Lock()
+        lock = _CACHE_LOCK
 
     with lock:
         try:

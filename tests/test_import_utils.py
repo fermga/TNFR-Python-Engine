@@ -61,6 +61,23 @@ def test_cached_import_uses_provided_lock(monkeypatch):
     assert calls["lock"] == 0
 
 
+def test_cached_import_uses_shared_lock_when_missing(monkeypatch):
+    reset()
+    calls = {"lock": 0}
+    orig_lock = import_utils.threading.Lock
+
+    def fake_lock():
+        calls["lock"] += 1
+        return orig_lock()
+
+    monkeypatch.setattr(import_utils.threading, "Lock", fake_lock)
+    cache = TTLCache(16, 1)
+    fake_mod = types.ModuleType("fake_mod")
+    monkeypatch.setitem(sys.modules, "fake_mod", fake_mod)
+    cached_import("fake_mod", cache=cache)
+    assert calls["lock"] == 0
+
+
 def test_cache_clear_and_prune_reset_all(monkeypatch):
     reset()
 
