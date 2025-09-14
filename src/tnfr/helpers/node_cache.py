@@ -130,6 +130,37 @@ class NodeCache:
         return len(self.nodes)
 
 
+def _node_set_checksum_no_nodes(
+    G: nx.Graph,
+    graph: Any,
+    *,
+    presorted: bool,
+    store: bool,
+) -> str:
+    """Checksum helper when no explicit node set is provided.
+
+    This isolates the flow that hashes the whole graph, preventing duplicate
+    lookups and repeated ``current_nodes`` assignments.
+    """
+    nodes_view = G.nodes()
+    current_nodes = frozenset(nodes_view)
+    cached = graph.get(NODE_SET_CHECKSUM_KEY)
+    if cached and len(cached) == 3 and cached[2] == current_nodes:
+        return cached[1]
+
+    hasher = hashlib.blake2b(digest_size=16)
+    for digest in _iter_node_digests(nodes_view, presorted=presorted):
+        hasher.update(digest)
+
+    checksum = hasher.hexdigest()
+    if store:
+        token = checksum[:16]
+        if cached and cached[0] == token:
+            return cached[1]
+        graph[NODE_SET_CHECKSUM_KEY] = (token, checksum, current_nodes)
+    return checksum
+
+
 def node_set_checksum(
     G: nx.Graph,
     nodes: Iterable[Any] | None = None,
@@ -146,36 +177,25 @@ def node_set_checksum(
     recomputation for unchanged graphs.
     """
     graph = get_graph(G)
-    cached = None
-    current_nodes: frozenset[Any] | None = None
     if nodes is None:
-        current_nodes = frozenset(G.nodes())
-        cached = graph.get(NODE_SET_CHECKSUM_KEY)
-        if cached and len(cached) == 3 and cached[2] == current_nodes:
-            return cached[1]
-
-    node_iterable = G.nodes() if nodes is None else nodes
+        return _node_set_checksum_no_nodes(
+            G, graph, presorted=presorted, store=store
+        )
 
     hasher = hashlib.blake2b(digest_size=16)
 
     # Generate digests in stable order; `_iter_node_digests` sorts when needed
     # unless `presorted` indicates the nodes are already ordered.
-    for digest in _iter_node_digests(node_iterable, presorted=presorted):
+    for digest in _iter_node_digests(nodes, presorted=presorted):
         hasher.update(digest)
 
     checksum = hasher.hexdigest()
-    token = checksum[:16]
     if store:
-        # Cache the result using a short token to detect unchanged node sets.
+        token = checksum[:16]
         cached = graph.get(NODE_SET_CHECKSUM_KEY)
         if cached and cached[0] == token:
             return cached[1]
-        if nodes is None:
-            if current_nodes is None:
-                current_nodes = frozenset(G.nodes())
-            graph[NODE_SET_CHECKSUM_KEY] = (token, checksum, current_nodes)
-        else:
-            graph[NODE_SET_CHECKSUM_KEY] = (token, checksum)
+        graph[NODE_SET_CHECKSUM_KEY] = (token, checksum)
     return checksum
 
 
