@@ -17,7 +17,6 @@ from .helpers.numeric import (
     clamp01,
     angle_diff,
     neighbor_phase_mean_list,
-    kahan_sum2d,
 )
 from .helpers import edge_version_cache, stable_json
 from .import_utils import optional_numpy
@@ -187,17 +186,27 @@ def compute_coherence(
         dnfr_mean = float(np.mean(dnfr_arr))
         depi_mean = float(np.mean(depi_arr))
     else:
-        dnfr_sum, depi_sum = kahan_sum2d(
-            (
-                (
-                    abs(get_attr(nd, ALIAS_DNFR, 0.0)),
-                    abs(get_attr(nd, ALIAS_DEPI, 0.0)),
-                )
-                for _, nd in G.nodes(data=True)
-            )
-        )
-        dnfr_mean = dnfr_sum / count
-        depi_mean = depi_sum / count
+        dnfr_sum = depi_sum = 0.0
+        dnfr_comp = depi_comp = 0.0
+        for _, nd in G.nodes(data=True):
+            dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0))
+            t = dnfr_sum + dnfr
+            if abs(dnfr_sum) >= abs(dnfr):
+                dnfr_comp += (dnfr_sum - t) + dnfr
+            else:
+                dnfr_comp += (dnfr - t) + dnfr_sum
+            dnfr_sum = t
+
+            depi = abs(get_attr(nd, ALIAS_DEPI, 0.0))
+            t = depi_sum + depi
+            if abs(depi_sum) >= abs(depi):
+                depi_comp += (depi_sum - t) + depi
+            else:
+                depi_comp += (depi - t) + depi_sum
+            depi_sum = t
+
+        dnfr_mean = (dnfr_sum + dnfr_comp) / count
+        depi_mean = (depi_sum + depi_comp) / count
 
     coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence
