@@ -10,7 +10,7 @@ from cachetools import LRUCache
 import networkx as nx  # type: ignore[import-untyped]
 
 from ..graph_utils import mark_dnfr_prep_dirty
-from ..import_utils import optional_numpy, cached_import  # noqa: F401 - used in tests
+from ..import_utils import optional_numpy
 from ..logging_utils import get_logger
 from .node_cache import get_graph, node_set_checksum, clear_node_repr_cache
 

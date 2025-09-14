@@ -130,9 +130,6 @@ def test_cache_node_list_cache_updated_on_node_set_change(graph_canon):
 
 def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon):
     monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
-    monkeypatch.setattr(
-        "tnfr.helpers.edge_cache.cached_import", import_utils.cached_import
-    )
     G = graph_canon()
     G.add_edge(0, 1)
     nodes, A = cached_nodes_and_A(G)
@@ -142,9 +139,6 @@ def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon)
 
 def test_cached_nodes_and_A_requires_numpy(monkeypatch, graph_canon):
     monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
-    monkeypatch.setattr(
-        "tnfr.helpers.edge_cache.cached_import", import_utils.cached_import
-    )
     G = graph_canon()
     G.add_edge(0, 1)
     with pytest.raises(RuntimeError):
