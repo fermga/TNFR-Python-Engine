@@ -24,6 +24,12 @@ from .import_utils import optional_numpy
 from .logging import get_module_logger
 
 logger = get_module_logger(__name__)
+NP = optional_numpy(logger)
+
+
+def _refresh_numpy() -> Any | None:
+    """Obtain the optional NumPy module without altering :data:`NP`."""
+    return optional_numpy(logger)
 
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_D2EPI = get_aliases("D2EPI")
@@ -105,7 +111,7 @@ def compute_theta_trig(
     un mapeo con la fase ``θ`` o directamente el valor ``θ``.
     """
     if np is None:
-        np = optional_numpy(logger)
+        np = NP
     if np is None or not all(hasattr(np, attr) for attr in ("fromiter", "cos", "sin")):
         return _compute_trig_python(nodes)
 
@@ -175,7 +181,7 @@ def compute_coherence(
     if count == 0:
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
-    np = optional_numpy(logger)
+    np = NP
     if np is not None:
         dnfr_arr = np.empty(count, dtype=float)
         depi_arr = np.empty(count, dtype=float)
@@ -292,7 +298,7 @@ def get_trig_cache(G: GraphLike, *, np: Any | None = None) -> TrigCache:
     advances.
     """
     if np is None:
-        np = optional_numpy(logger)
+        np = NP
     version = G.graph.setdefault("_trig_version", 0)
     key = ("_trig", version)
     return edge_version_cache(G, key, lambda: _build_trig_cache(G, np=np))
@@ -355,7 +361,7 @@ def compute_Si(G: GraphLike, *, inplace: bool = True) -> dict[Any, float]:
     alpha, beta, gamma = get_Si_weights(G)
     vfmax, dnfrmax = _get_vf_dnfr_max(G)
 
-    np = optional_numpy(logger)
+    np = _refresh_numpy()
     trig = get_trig_cache(G, np=np)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
 
