@@ -242,18 +242,6 @@ class THOLEvaluator:
         raise StopIteration
 
 
-def _flatten_thol(
-    item: THOL,
-    stack: deque[Any],
-    *,
-    max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
-) -> None:
-    """Expand a ``THOL`` block onto ``stack`` para su procesamiento."""
-
-    for token in THOLEvaluator(item, max_materialize=max_materialize):
-        stack.append(token)
-
-
 def _flatten_target(
     item: TARGET,
     ops: list[tuple[OpTag, Any]],
