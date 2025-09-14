@@ -35,8 +35,8 @@ ALIAS_EPI_KIND = get_aliases("EPI_KIND")
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_D2EPI = get_aliases("D2EPI")
 
-# Mapping of NodoNX attribute specifications used to dynamically generate
-# properties. Each entry defines the keyword arguments passed to
+# Mapping of NodoNX attribute specifications used to generate property
+# descriptors. Each entry defines the keyword arguments passed to
 # ``_nx_attr_property`` for a given attribute name.
 ATTR_SPECS: dict[str, dict] = {
     "EPI": {"aliases": ALIAS_EPI},
@@ -338,6 +338,17 @@ class NodoTNFR(NodeBase):
 class NodoNX(NodeBase, NodoProtocol):
     """Adapter for ``networkx`` nodes."""
 
+    # Statically defined property descriptors for ``NodoNX`` attributes.
+    # Declaring them here makes the attributes discoverable by type checkers
+    # and IDEs, avoiding the previous runtime ``setattr`` loop.
+    EPI: float = _nx_attr_property(**ATTR_SPECS["EPI"])
+    vf: float = _nx_attr_property(**ATTR_SPECS["vf"])
+    theta: float = _nx_attr_property(**ATTR_SPECS["theta"])
+    Si: float = _nx_attr_property(**ATTR_SPECS["Si"])
+    epi_kind: str = _nx_attr_property(**ATTR_SPECS["epi_kind"])
+    dnfr: float = _nx_attr_property(**ATTR_SPECS["dnfr"])
+    d2EPI: float = _nx_attr_property(**ATTR_SPECS["d2EPI"])
+
     def __init__(self, G, n):
         self.G = G
         self.n = n
@@ -394,7 +405,3 @@ class NodoNX(NodeBase, NodoProtocol):
         return (NodoNX.from_graph(self.G, v) for v in self.G.nodes())
 
 
-# Dynamically attach attribute properties defined in ``ATTR_SPECS``.
-for _attr, _spec in ATTR_SPECS.items():
-    setattr(NodoNX, _attr, _nx_attr_property(**_spec))
-del _attr, _spec
