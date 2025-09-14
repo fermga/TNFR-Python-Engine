@@ -58,9 +58,18 @@ def test_normalize_weights_warn_once(caplog):
         normalize_weights(weights, ("x",))
     assert any("Negative weights" in m for m in caplog.messages)
     caplog.clear()
+
+    # second call with same key should not warn
     with caplog.at_level("WARNING"):
         normalize_weights(weights, ("x",))
     assert not any("Negative weights" in m for m in caplog.messages)
+
+    # clearing cache should allow warning again
+    cu.clear_warned_negative_keys()
+    caplog.clear()
+    with caplog.at_level("WARNING"):
+        normalize_weights(weights, ("x",))
+    assert any("Negative weights" in m for m in caplog.messages)
 
 
 def test_normalize_weights_raises_on_non_numeric_value():

@@ -18,3 +18,18 @@ def test_warn_once_lru_limit(caplog):
         "{'c': 4}",
         "{'a': 5}",
     ]
+
+
+def test_warn_once_clear(caplog):
+    logger = logging.getLogger("warn_once_clear")
+    warn = warn_once(logger, "%s")
+    with caplog.at_level(logging.WARNING):
+        warn({"a": 1})
+        warn({"a": 2})  # ignored
+    assert [r.message for r in caplog.records] == ["{'a': 1}"]
+
+    warn.clear()
+    caplog.clear()
+    with caplog.at_level(logging.WARNING):
+        warn({"a": 3})
+    assert [r.message for r in caplog.records] == ["{'a': 3}"]
