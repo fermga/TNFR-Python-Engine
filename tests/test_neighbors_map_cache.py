@@ -1,7 +1,7 @@
 from types import MappingProxyType
 
 from tnfr.metrics_utils import ensure_neighbors_map
-from tnfr.helpers.cache import increment_edge_version
+from tnfr.helpers import increment_edge_version
 
 
 def test_neighbors_map_reuses_proxy(graph_canon):

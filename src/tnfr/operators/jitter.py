@@ -3,7 +3,7 @@ from typing import Any, TYPE_CHECKING
 from weakref import WeakKeyDictionary, WeakSet
 from cachetools import LRUCache
 
-from ..helpers.cache import ensure_node_offset_map
+from ..helpers import ensure_node_offset_map
 from ..rng import (
     make_rng,
     base_seed,

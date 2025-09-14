@@ -2,15 +2,15 @@ import pytest
 
 import tnfr.import_utils as import_utils
 from tnfr import dynamics
-from tnfr.helpers.cache import (
+from tnfr.helpers import (
     cached_nodes_and_A,
     increment_edge_version,
     edge_version_update,
     ensure_node_offset_map,
     cached_node_list,
     ensure_node_index_map,
-    _ensure_node_map,
 )
+from tnfr.helpers.node_cache import _ensure_node_map
 
 
 def test_edge_version_update_scopes_mutations(graph_canon):
@@ -129,7 +129,7 @@ def test_cache_node_list_cache_updated_on_node_set_change(graph_canon):
 def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon):
     monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
     monkeypatch.setattr(
-        "tnfr.helpers.cache.cached_import", import_utils.cached_import
+        "tnfr.helpers.edge_cache.cached_import", import_utils.cached_import
     )
     G = graph_canon()
     G.add_edge(0, 1)
@@ -141,7 +141,7 @@ def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon)
 def test_cached_nodes_and_A_requires_numpy(monkeypatch, graph_canon):
     monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
     monkeypatch.setattr(
-        "tnfr.helpers.cache.cached_import", import_utils.cached_import
+        "tnfr.helpers.edge_cache.cached_import", import_utils.cached_import
     )
     G = graph_canon()
     G.add_edge(0, 1)

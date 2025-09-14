@@ -11,7 +11,7 @@ from tnfr.trace import (
     CallbackSpec,
 )
 from tnfr import trace
-from tnfr.helpers.cache import get_graph_mapping
+from tnfr.helpers import get_graph_mapping
 from tnfr.callback_utils import register_callback, invoke_callbacks
 from types import MappingProxyType
 

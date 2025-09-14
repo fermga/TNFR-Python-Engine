@@ -21,7 +21,7 @@ from .alias import (
     set_dnfr,
     set_theta,
 )
-from .helpers.cache import increment_edge_version, ensure_node_offset_map
+from .helpers import increment_edge_version, ensure_node_offset_map
 from .graph_utils import supports_add_edge
 from .node_base import NodeBase
 from .operators import apply_glyph_obj

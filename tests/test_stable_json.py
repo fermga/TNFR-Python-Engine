@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from tnfr.helpers.cache import stable_json
+from tnfr.helpers import stable_json
 from tnfr import json_utils
 
 

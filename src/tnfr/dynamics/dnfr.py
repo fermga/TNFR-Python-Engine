@@ -19,7 +19,7 @@ from ..helpers.numeric import (
     neighbor_phase_mean,
     _phase_mean_from_iter,
 )
-from ..helpers.cache import cached_nodes_and_A
+from ..helpers import cached_nodes_and_A
 from ..alias import (
     get_attr,
     set_dnfr,

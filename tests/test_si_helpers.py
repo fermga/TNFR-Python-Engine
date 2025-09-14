@@ -8,7 +8,7 @@ from tnfr.metrics_utils import (
     get_trig_cache,
 )
 from tnfr.alias import get_attr, set_attr, set_theta
-from tnfr.helpers.cache import increment_edge_version
+from tnfr.helpers import increment_edge_version
 
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_SI = get_aliases("SI")

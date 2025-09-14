@@ -19,7 +19,7 @@ from .helpers.numeric import (
     neighbor_phase_mean_list,
     kahan_sum2d,
 )
-from .helpers.cache import edge_version_cache, stable_json
+from .helpers import edge_version_cache, stable_json
 from .import_utils import optional_numpy
 from .logging import get_module_logger
 

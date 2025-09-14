@@ -7,7 +7,7 @@ import pytest
 from tnfr.constants import inject_defaults, merge_overrides
 from tnfr.dynamics import update_epi_via_nodal_equation
 from tnfr.gamma import eval_gamma, GAMMA_REGISTRY, GammaEntry
-from tnfr.helpers.cache import EdgeCacheManager, increment_edge_version
+from tnfr.helpers import EdgeCacheManager, increment_edge_version
 
 
 def test_gamma_linear_integration(graph_canon):
@@ -135,7 +135,7 @@ def test_gamma_spec_normalized_once(graph_canon, monkeypatch):
     def fake_warn(*args, **kwargs):
         calls.append(1)
 
-    monkeypatch.setattr("tnfr.helpers.cache.warnings.warn", fake_warn)
+    monkeypatch.setattr("tnfr.helpers.node_cache.warnings.warn", fake_warn)
     eval_gamma(G, 0, t=0.0)
     eval_gamma(G, 0, t=0.0)
     assert len(calls) == 1
