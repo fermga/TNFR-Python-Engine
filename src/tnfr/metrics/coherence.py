@@ -16,7 +16,7 @@ from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr, collect_attr
 from ..collections_utils import normalize_weights
 from ..helpers.numeric import clamp01, _norm01, _similarity_abs
-from ..helpers.cache import ensure_node_index_map
+from ..helpers import ensure_node_index_map
 from ..metrics_utils import get_trig_cache, min_max_range, compute_theta_trig
 from ..import_utils import optional_numpy
 from ..logging import get_module_logger

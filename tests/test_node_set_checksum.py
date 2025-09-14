@@ -2,11 +2,13 @@ import hashlib
 import timeit
 from unittest.mock import patch
 
-from tnfr.helpers.cache import (
+from tnfr.helpers import (
     NODE_SET_CHECKSUM_KEY,
     node_set_checksum,
     stable_json,
     increment_edge_version,
+)
+from tnfr.helpers.node_cache import (
     _node_repr,
     _hash_node,
     _node_repr_digest,
@@ -84,7 +86,7 @@ def test_node_set_checksum_uses_cached_result_without_rehash(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2])
     node_set_checksum(G)
-    with patch("tnfr.helpers.cache._node_repr_digest") as mock_digest:
+    with patch("tnfr.helpers.node_cache._node_repr_digest") as mock_digest:
         assert node_set_checksum(G) == G.graph[NODE_SET_CHECKSUM_KEY][1]
         mock_digest.assert_not_called()
 

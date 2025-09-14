@@ -23,7 +23,7 @@ def mark_dnfr_prep_dirty(G: Any) -> None:
     None
         This function mutates ``G`` in place.
     """
-    from .helpers.cache import get_graph
+    from .helpers import get_graph
 
     graph = get_graph(G)
     graph["_dnfr_prep_dirty"] = True

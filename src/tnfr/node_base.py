@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Iterable, MutableMapping
 
 from .glyph_history import push_glyph
-from .helpers.cache import ensure_node_offset_map
+from .helpers import ensure_node_offset_map
 
 
 class NodeBase:

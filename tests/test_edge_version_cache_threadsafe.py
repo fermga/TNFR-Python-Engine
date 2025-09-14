@@ -1,6 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 
-from tnfr.helpers.cache import edge_version_cache, increment_edge_version
+from tnfr.helpers import edge_version_cache, increment_edge_version
 
 
 def test_edge_version_cache_thread_safety(graph_canon):

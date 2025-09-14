@@ -9,7 +9,7 @@ from collections import deque
 
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import list_mean, kahan_sum
-from ..helpers.cache import edge_version_update
+from ..helpers import edge_version_update
 from ..alias import get_attr, set_attr
 from ..rng import make_rng
 from ..callback_utils import invoke_callbacks

@@ -30,12 +30,18 @@ from .numeric import (
     neighbor_phase_mean,
     neighbor_phase_mean_list,
 )
-from .cache import (
+from .node_cache import (
+    NODE_SET_CHECKSUM_KEY,
     get_graph,
     get_graph_mapping,
     node_set_checksum,
+    stable_json,
+    cached_node_list,
     ensure_node_index_map,
     ensure_node_offset_map,
+)
+from .edge_cache import (
+    EdgeCacheManager,
     edge_version_cache,
     cached_nodes_and_A,
     invalidate_edge_version_cache,
@@ -65,8 +71,12 @@ __all__ = (
     "count_glyphs",
     "normalize_counter",
     "mix_groups",
+    "cached_node_list",
+    "NODE_SET_CHECKSUM_KEY",
     "ensure_node_index_map",
     "ensure_node_offset_map",
+    "stable_json",
+    "EdgeCacheManager",
     "edge_version_cache",
     "cached_nodes_and_A",
     "invalidate_edge_version_cache",

@@ -11,7 +11,7 @@ from functools import lru_cache
 
 from .constants import get_aliases
 from .alias import get_attr
-from .helpers.cache import (
+from .helpers import (
     node_set_checksum,
     edge_version_cache,
     get_graph_mapping,

@@ -13,7 +13,7 @@ from collections.abc import Iterable, Mapping
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs, append_metric
 from .import_utils import cached_import
-from .helpers.cache import get_graph_mapping
+from .helpers import get_graph_mapping
 from .collections_utils import is_non_string_sequence
 
 
