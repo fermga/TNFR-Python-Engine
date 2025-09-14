@@ -31,6 +31,8 @@ _warn_orjson_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
 def _format_ignored_params(combo: frozenset[str]) -> str:
     """Return a stable representation for ignored parameter combinations."""
     return "{" + ", ".join(map(repr, sorted(combo))) + "}"
+
+
 def clear_orjson_cache() -> None:
     """Clear cached :mod:`orjson` module and warning state."""
     _warn_orjson_params_once.clear()
@@ -105,9 +107,9 @@ def _json_dumps_orjson(
         (params.separators != (",", ":"), "separators"),
         (params.cls is not None, "cls"),
     ]
-    ignored = [name for cond, name in checks if cond]
+    ignored = {name for cond, name in checks if cond}
     if kwargs:
-        ignored.extend(kwargs)
+        ignored.update(kwargs)
     if ignored:
         combo = frozenset(ignored)
         _warn_orjson_params_once({combo: _format_ignored_params(combo)})
