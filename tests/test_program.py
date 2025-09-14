@@ -226,7 +226,7 @@ def test_thol_repeat_lt_one_raises():
         list(THOLEvaluator(THOL(body=[], repeat=0)))
 
 
-def test_flatten_thol_multiple_repeats():
+def test_thol_evaluator_multiple_repeats():
     tokens = list(THOLEvaluator(THOL(body=[Glyph.AL, Glyph.RA], repeat=3)))
     assert tokens == [
         THOL_SENTINEL,
@@ -239,7 +239,7 @@ def test_flatten_thol_multiple_repeats():
     ]
 
 
-def test_flatten_thol_body_limit_error_message():
+def test_thol_evaluator_body_limit_error_message():
     body = (Glyph.AL for _ in range(5))
     with pytest.raises(
         ValueError, match="THOL body exceeds max_materialize=3"
