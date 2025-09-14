@@ -161,6 +161,7 @@ def edge_version_cache(
     builder: Callable[[], T],
     *,
     max_entries: int | None = 128,
+    manager: EdgeCacheManager | None = None,
 ) -> T:
     """Return cached ``builder`` output tied to the edge version of ``G``."""
 
@@ -172,7 +173,15 @@ def edge_version_cache(
         return builder()
 
     graph = get_graph(G)
-    cache, locks = EdgeCacheManager(graph).get_cache(max_entries)
+    if manager is None:
+        manager = graph.get("_edge_cache_manager")  # type: ignore[assignment]
+        if not isinstance(manager, EdgeCacheManager) or manager.graph is not graph:
+            manager = EdgeCacheManager(graph)
+            graph["_edge_cache_manager"] = manager
+    else:
+        graph["_edge_cache_manager"] = manager
+
+    cache, locks = manager.get_cache(max_entries)
     edge_version = int(graph.get("_edge_version", 0))
     lock = locks[key]
 
