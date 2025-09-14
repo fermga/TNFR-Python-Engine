@@ -224,19 +224,19 @@ def cached_nodes_and_A(
     checksum = node_set_checksum(G, nodes_list, store=False)
     key = f"_dnfr_{len(nodes_list)}_{checksum}"
     G.graph["_dnfr_nodes_checksum"] = checksum
-    np = optional_numpy(logger)
-    if np is None:
-        if require_numpy:
-            raise RuntimeError("NumPy is required for adjacency caching")
-        return edge_version_cache(
-            G, key, lambda: (nodes_list, None), max_entries=cache_size
-        )
-
     def builder() -> tuple[list[int], Any]:
+        np = optional_numpy(logger)
+        if np is None:
+            return nodes_list, None
         A = nx.to_numpy_array(G, nodelist=nodes_list, weight=None, dtype=float)
         return nodes_list, A
 
-    return edge_version_cache(G, key, builder, max_entries=cache_size)
+    nodes, A = edge_version_cache(G, key, builder, max_entries=cache_size)
+
+    if require_numpy and A is None:
+        raise RuntimeError("NumPy is required for adjacency caching")
+
+    return nodes, A
 
 
 def _reset_edge_caches(graph: Any, G: Any) -> None:
