@@ -27,6 +27,7 @@ __all__ = (
     "std_before",
     "std_after",
     "std_on_remesh",
+    "kuramoto_metrics",
     "phase_sync",
     "kuramoto_order",
     "glyph_load",
@@ -73,23 +74,24 @@ def _ensure_nodes(G) -> bool:
     return bool(G.number_of_nodes())
 
 
-def _get_R_psi(
-    G, R: float | None = None, psi: float | None = None
-) -> tuple[float, float]:
-    """Return ``(R, ψ)`` using cached values if provided."""
-    if R is None or psi is None:
-        R_calc, psi_calc = kuramoto_R_psi(G)
-        if R is None:
-            R = R_calc
-        if psi is None:
-            psi = psi_calc
-    return R, psi
+def kuramoto_metrics(G) -> tuple[float, float]:
+    """Return Kuramoto order ``R`` and mean phase ``ψ``.
+
+    Delegates to :func:`kuramoto_R_psi` and performs the computation exactly
+    once per invocation.
+    """
+    return kuramoto_R_psi(G)
 
 
 def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
     if not _ensure_nodes(G):
         return 1.0
-    _, psi = _get_R_psi(G, R, psi)
+    if R is None or psi is None:
+        R_calc, psi_calc = kuramoto_metrics(G)
+        if R is None:
+            R = R_calc
+        if psi is None:
+            psi = psi_calc
     diffs = (
         angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
         for _, data in G.nodes(data=True)
@@ -104,7 +106,8 @@ def kuramoto_order(
     """R in [0,1], 1 means perfectly aligned phases."""
     if not _ensure_nodes(G):
         return 1.0
-    R, _ = _get_R_psi(G, R, psi)
+    if R is None or psi is None:
+        R, psi = kuramoto_metrics(G)
     return float(R)
 
 

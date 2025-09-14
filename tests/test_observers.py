@@ -8,7 +8,13 @@ import pytest
 import tnfr.import_utils as import_utils
 
 from tnfr.constants import get_aliases
-from tnfr.observers import phase_sync, kuramoto_order, glyph_load, wbar
+from tnfr.observers import (
+    phase_sync,
+    kuramoto_order,
+    kuramoto_metrics,
+    glyph_load,
+    wbar,
+)
 from tnfr.gamma import kuramoto_R_psi
 from tnfr.sense import sigma_vector
 from tnfr.constants_glyphs import ANGLE_MAP
@@ -86,6 +92,35 @@ def test_kuramoto_order_matches_kuramoto_R_psi(graph_canon):
     assert math.isclose(R_ok, R)
     assert math.isclose(kuramoto_order(G, R, psi), R)
     assert math.isclose(phase_sync(G, R, psi), phase_sync(G))
+
+
+def test_phase_sync_and_kuramoto_order_share_metrics(monkeypatch, graph_canon):
+    G = graph_canon()
+    angles = [0.1, 1.5, 2.9]
+    for idx, th in enumerate(angles):
+        G.add_node(idx)
+        set_attr(G.nodes[idx], ALIAS_THETA, th)
+
+    calls = {"count": 0}
+
+    def wrapped(G_inner):
+        calls["count"] += 1
+        return kuramoto_R_psi(G_inner)
+
+    monkeypatch.setattr("tnfr.observers.kuramoto_R_psi", wrapped)
+
+    R, psi = kuramoto_metrics(G)
+    assert calls["count"] == 1
+
+    ps = phase_sync(G, R, psi)
+    R_val = kuramoto_order(G, R, psi)
+
+    assert calls["count"] == 1
+
+    var = st.pvariance(angle_diff(th, psi) for th in angles)
+    expected_ps = 1.0 / (1.0 + var)
+    assert ps == pytest.approx(expected_ps)
+    assert R_val == pytest.approx(R)
 
 
 def test_glyph_load_uses_module_constants(monkeypatch, graph_canon):
