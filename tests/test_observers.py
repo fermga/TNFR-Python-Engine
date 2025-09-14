@@ -69,6 +69,22 @@ def test_phase_sync_equivalent_with_without_numpy(monkeypatch, graph_canon):
     assert ps_np == pytest.approx(ps_py)
 
 
+# NumPy and pure-Python variants should match numerically
+def test_phase_sync_numpy_and_python_consistent(monkeypatch, graph_canon):
+    pytest.importorskip("numpy")
+    G = graph_canon()
+    angles = [0.2, -1.0, 1.5, 2.1]
+    for idx, th in enumerate(angles):
+        G.add_node(idx)
+        set_attr(G.nodes[idx], ALIAS_THETA, th)
+
+    ps_np = phase_sync(G)
+    monkeypatch.setattr("tnfr.import_utils.optional_numpy", lambda logger: None)
+    monkeypatch.setattr("tnfr.helpers.numeric.optional_numpy", lambda logger: None)
+    ps_py = phase_sync(G)
+    assert ps_np == pytest.approx(ps_py)
+
+
 def test_phase_sync_bounds(graph_canon):
     G = graph_canon()
     angles = [0.1, 1.2, -2.5, 3.6]
