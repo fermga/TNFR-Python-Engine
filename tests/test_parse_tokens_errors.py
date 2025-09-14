@@ -9,7 +9,7 @@ from tnfr.cli import _parse_tokens, TOKEN_MAP
 
 def test_parse_tokens_value_error_context():
     with pytest.raises(ValueError) as exc:
-        _parse_tokens([{"WAIT": "x"}])
+        list(_parse_tokens([{"WAIT": "x"}]))
     msg = str(exc.value)
     assert msg.endswith("(pos 1, token {'WAIT': 'x'})")
     assert isinstance(exc.value.__cause__, ValueError)
@@ -21,7 +21,7 @@ def test_parse_tokens_key_error_context(monkeypatch):
 
     monkeypatch.setitem(TOKEN_MAP, "RAISE", raiser)
     with pytest.raises(ValueError) as exc:
-        _parse_tokens([{"RAISE": {}}])
+        list(_parse_tokens([{"RAISE": {}}]))
     msg = str(exc.value)
     assert msg.endswith("(pos 1, token {'RAISE': {}})")
     assert isinstance(exc.value.__cause__, KeyError)
@@ -33,7 +33,7 @@ def test_parse_tokens_type_error_context(monkeypatch):
 
     monkeypatch.setitem(TOKEN_MAP, "RAISE_TYPE", raiser)
     with pytest.raises(ValueError) as exc:
-        _parse_tokens([{"RAISE_TYPE": {}}])
+        list(_parse_tokens([{"RAISE_TYPE": {}}]))
     msg = str(exc.value)
     assert msg.endswith("(pos 1, token {'RAISE_TYPE': {}})")
     assert isinstance(exc.value.__cause__, TypeError)
@@ -41,7 +41,7 @@ def test_parse_tokens_type_error_context(monkeypatch):
 
 def test_thol_invalid_close():
     with pytest.raises(ValueError) as exc:
-        _parse_tokens([{"THOL": {"close": "XYZ"}}])
+        list(_parse_tokens([{"THOL": {"close": "XYZ"}}]))
     msg = str(exc.value)
     assert "XYZ" in msg
     assert "Glyph" in msg
@@ -72,7 +72,7 @@ def test_parse_tokens_error_format_unified(monkeypatch):
 
     for tokens, start in cases:
         with pytest.raises(ValueError) as exc:
-            _parse_tokens(tokens)
+            list(_parse_tokens(tokens))
         msg = str(exc.value)
         assert msg.startswith(start)
         expected_end = (
