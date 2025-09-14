@@ -126,87 +126,57 @@ _TRAMO_INTERMEDIO = {"disonancia", "acoplamiento", "resonancia"}
 _CIERRE_VALIDO = {"silencio", "transicion", "recursividad"}
 
 
-def _verify_token_format(nombres: list[str]) -> tuple[bool, str]:
-    """Check basic type and format of the token list."""
+def _validate_token_sequence(nombres: list[str]) -> tuple[bool, str]:
+    """Validate token format and logical coherence in one pass."""
+
     if not nombres:
         return False, "empty sequence"
-    if any(not isinstance(n, str) for n in nombres):
-        return False, "tokens must be str"
-    if nombres[0] not in _INICIO_VALIDOS:
-        return False, "must start with emission or recursion"
-    nombres_set = set(nombres)
+
+    nombres_set: set[str] = set()
+    found_recepcion = False
+    found_coherencia = False
+    seen_intermedio = False
+    open_thol = False
+    last_token = ""
+
+    for idx, n in enumerate(nombres):
+        if not isinstance(n, str):
+            return False, "tokens must be str"
+        last_token = n
+        nombres_set.add(n)
+
+        if idx == 0 and n not in _INICIO_VALIDOS:
+            return False, "must start with emission or recursion"
+
+        if n == "recepcion" and not found_recepcion:
+            found_recepcion = True
+        elif found_recepcion and n == "coherencia" and not found_coherencia:
+            found_coherencia = True
+        elif found_coherencia and not seen_intermedio and n in _TRAMO_INTERMEDIO:
+            seen_intermedio = True
+
+        if n == "autoorganizacion":
+            open_thol = True
+        elif open_thol and n in {"silencio", "contraccion"}:
+            open_thol = False
+
     desconocidos = nombres_set - OPERADORES.keys()
     if desconocidos:
         return False, f"unknown tokens: {', '.join(desconocidos)}"
-    return True, "ok"
-
-
-def _find_recepcion(nombres: list[str]) -> int:
-    """Return index of the first ``recepcion`` token or ``-1``."""
-
-    try:
-        return nombres.index("recepcion")
-    except ValueError:
-        return -1
-
-
-def _find_coherencia(nombres: list[str], start: int) -> int:
-    """Return index of the first ``coherencia`` token after ``start`` or ``-1``."""
-
-    try:
-        return nombres.index("coherencia", start)
-    except ValueError:
-        return -1
-
-
-def _has_tramo_intermedio(nombres: list[str], start: int) -> bool:
-    """Check if any intermediate segment token appears after ``start``."""
-
-    return any(n in _TRAMO_INTERMEDIO for n in nombres[start:])
-
-
-def _has_cierre(nombres: list[str]) -> bool:
-    """Check if the last token is a valid closure token."""
-
-    return bool(nombres) and nombres[-1] in _CIERRE_VALIDO
-
-
-def _thol_blocks_closed(nombres: list[str]) -> bool:
-    """Ensure ``autoorganizacion`` blocks are closed with silence or contraction."""
-
-    open_block = False
-    for n in nombres:
-        if n == "autoorganizacion":
-            open_block = True
-        elif open_block and n in {"silencio", "contraccion"}:
-            open_block = False
-    return not open_block
-
-
-def _validate_logical_coherence(nombres: list[str]) -> tuple[bool, str]:
-    """Validate logical coherence of the sequence."""
-    i_rec = _find_recepcion(nombres)
-    i_coh = _find_coherencia(nombres, i_rec + 1 if i_rec != -1 else 0)
-    if i_rec == -1 or i_coh == -1:
+    if not (found_recepcion and found_coherencia):
         return False, "missing input→coherence segment"
-    if not _has_tramo_intermedio(nombres, i_coh + 1):
+    if not seen_intermedio:
         return False, "missing tension/coupling/resonance segment"
-    if not _has_cierre(nombres):
+    if last_token not in _CIERRE_VALIDO:
         return False, "sequence must end with silence/transition/recursion"
-    if not _thol_blocks_closed(nombres):
+    if open_thol:
         return False, "THOL block without closure"
     return True, "ok"
 
 
 def validate_sequence(nombres: list[str]) -> tuple[bool, str]:
     """Validate minimal TNFR syntax rules."""
-    ok, msg = _verify_token_format(nombres)
-    if not ok:
-        return False, msg
-    ok, msg = _validate_logical_coherence(nombres)
-    if not ok:
-        return False, msg
-    return True, "ok"
+    return _validate_token_sequence(nombres)
 
 
 def run_sequence(G: nx.Graph, node, ops: Iterable[Operador]) -> None:
