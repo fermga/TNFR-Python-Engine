@@ -154,6 +154,51 @@ def _warn_failure(
         fn(msg)
 
 
+def _update_import_cache(ttl: float) -> MutableMapping[str, Any]:
+    """Return the shared import cache.
+
+    Updates its TTL when required to maintain deterministic behaviour.
+    """
+    global _IMPORT_CACHE
+    if _IMPORT_CACHE.ttl != ttl:
+        with _CACHE_LOCK:
+            if _IMPORT_CACHE.ttl != ttl:
+                _IMPORT_CACHE = TTLCache(
+                    _DEFAULT_CACHE_SIZE, ttl, timer=lambda: time.monotonic()
+                )
+    return _IMPORT_CACHE
+
+
+def _get_cache_lock(
+    cache: MutableMapping[str, Any] | None,
+    lock: threading.Lock | None,
+    ttl: float,
+) -> tuple[MutableMapping[str, Any], threading.Lock]:
+    """Resolve cache and lock arguments for :func:`cached_import`.
+
+    Ensures the shared cache respects the requested ``ttl``.
+    """
+    if cache is None:
+        cache = _update_import_cache(ttl)
+        lock = _CACHE_LOCK
+    elif lock is None:
+        lock = _CACHE_LOCK
+    return cache, lock
+
+
+def _record_failure(key: str, module: str, err: Exception) -> None:
+    """Record a failed import attempt in the process-wide registry.
+
+    This keeps deterministic failure accounting across modules.
+    """
+    with _IMPORT_STATE.lock:
+        if isinstance(err, ImportError):
+            _IMPORT_STATE.record(module)
+            _IMPORT_STATE.record(key)
+        else:
+            _IMPORT_STATE.record(key)
+
+
 def cached_import(
     module_name: str,
     attr: str | None = None,
@@ -188,25 +233,15 @@ def cached_import(
     """
 
     key = module_name if attr is None else f"{module_name}.{attr}"
-    global _IMPORT_CACHE
-    if cache is None:
-        lock = _CACHE_LOCK
-        if ttl != _IMPORT_CACHE.ttl:
-            with lock:
-                if _IMPORT_CACHE.ttl != ttl:
-                    _IMPORT_CACHE = TTLCache(
-                        _DEFAULT_CACHE_SIZE, ttl, timer=lambda: time.monotonic()
-                    )
-        cache = _IMPORT_CACHE
-    elif lock is None:
-        lock = _CACHE_LOCK
+    cache, lock = _get_cache_lock(cache, lock, ttl)
 
     with lock:
         try:
             value = cache[key]
-            return fallback if value is _FAIL else value
         except KeyError:
             pass
+        else:
+            return fallback if value is _FAIL else value
 
     try:
         module = importlib.import_module(module_name)
@@ -220,12 +255,7 @@ def cached_import(
         return obj
     except (ImportError, AttributeError) as e:
         _warn_failure(module_name, attr, e, emit=emit)
-        with _IMPORT_STATE.lock:
-            if isinstance(e, ImportError):
-                _IMPORT_STATE.record(module_name)
-                _IMPORT_STATE.record(key)
-            else:
-                _IMPORT_STATE.record(key)
+        _record_failure(key, module_name, e)
         with lock:
             cache[key] = _FAIL
         return fallback
