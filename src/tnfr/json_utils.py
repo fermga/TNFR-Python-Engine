@@ -4,8 +4,7 @@ This module lazily imports :mod:`orjson` on first use of :func:`json_dumps`.
 The fast serializer is brought in through
 ``tnfr.import_utils.cached_import``; its cache and failure registry can be
 reset using ``cached_import.cache_clear()`` and
-:func:`tnfr.import_utils.prune_failed_imports` or the local
-:func:`_clear_orjson_cache` helper.
+:func:`tnfr.import_utils.prune_failed_imports`.
 """
 
 from __future__ import annotations
@@ -31,14 +30,6 @@ _warn_orjson_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
 def _format_ignored_params(combo: frozenset[str]) -> str:
     """Return a stable representation for ignored parameter combinations."""
     return "{" + ", ".join(map(repr, sorted(combo))) + "}"
-
-
-def _clear_orjson_cache() -> None:
-    """Clear cached :mod:`orjson` module and warning state."""
-    _warn_orjson_params_once.clear()
-    cache_clear = getattr(cached_import, "cache_clear", None)
-    if cache_clear:
-        cache_clear()
 
 
 @dataclass(slots=True, frozen=True)
