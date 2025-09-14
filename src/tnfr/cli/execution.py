@@ -150,7 +150,8 @@ def run_program(
         G = _build_graph_from_args(args)
 
     if program is None:
-        steps = int(getattr(args, "steps", 100) or 100)
+        steps = getattr(args, "steps", 100)
+        steps = 100 if steps is None else int(steps)
         for _ in range(steps):
             step(G)
     else:
