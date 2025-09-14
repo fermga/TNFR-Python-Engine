@@ -198,7 +198,7 @@ class HistoryDict(dict):
     def pop_least_used(self) -> Any:
         """Remove and return the value with the smallest usage count."""
         while self._counts:
-            key, _ = self._counts.most_common()[-1]
+            key = min(self._counts, key=self._counts.get)
             self._counts.pop(key, None)
             if key in self:
                 return super().pop(key)

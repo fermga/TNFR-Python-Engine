@@ -15,7 +15,7 @@ def test_pop_least_used_discards_minimum_count():
     for i in range(30):
         hist.get_increment(f"k{i % 3}")
     hist.get_increment("k0")
-    expected = hist._counts.most_common()[-1][0]
+    expected = min(hist._counts, key=hist._counts.get)
     hist.pop_least_used()
     assert expected not in hist
     assert expected not in hist._counts
