@@ -53,11 +53,16 @@ def _seed_hash_for(seed_int: int, key_int: int) -> int:
 def _sync_cache_size(G: Any | None) -> None:
     """Synchronise cache size with ``G`` when needed."""
 
+    global _CACHE_MAXSIZE, _seed_hash_cached
     if G is None:
         return
     size = get_cache_maxsize(G)
-    if size != _CACHE_MAXSIZE:
-        set_cache_maxsize(size)
+    with _RNG_LOCK:
+        if size != _CACHE_MAXSIZE:
+            if _CACHE_MAXSIZE > 0:
+                _seed_hash_cached.cache_clear()
+            _CACHE_MAXSIZE = size
+            _seed_hash_cached = _make_cache(size)
 
 
 def make_rng(seed: int, key: int, G: Any | None = None) -> random.Random:
