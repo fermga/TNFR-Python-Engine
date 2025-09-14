@@ -58,12 +58,14 @@ def _attach_callbacks(G: "nx.Graph") -> None:
 
 
 def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
-    if args.save_history or args.export_history_base:
+    save_history = getattr(args, "save_history", None)
+    export_base = getattr(args, "export_history_base", None)
+    if save_history or export_base:
         history = ensure_history(G)
-        if args.save_history:
-            _save_json(args.save_history, history)
-        if args.export_history_base:
-            export_metrics(G, args.export_history_base, fmt=args.export_format)
+        if save_history:
+            _save_json(save_history, history)
+        if export_base:
+            export_metrics(G, export_base, fmt=args.export_format)
 
 
 def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
@@ -150,7 +152,8 @@ def run_program(
         G = _build_graph_from_args(args)
 
     if program is None:
-        steps = int(getattr(args, "steps", 100) or 100)
+        raw_steps = getattr(args, "steps", None)
+        steps = 100 if raw_steps is None else int(raw_steps)
         for _ in range(steps):
             step(G)
     else:
@@ -215,9 +218,7 @@ def cmd_sequence(args: argparse.Namespace) -> int:
 
 
 def cmd_metrics(args: argparse.Namespace) -> int:
-    G = _build_graph_from_args(args)
-    for _ in range(int(args.steps or 200)):
-        step(G)
+    G = run_program(None, None, args)
 
     tg = Tg_global(G, normalize=True)
     lat = latency_series(G)
