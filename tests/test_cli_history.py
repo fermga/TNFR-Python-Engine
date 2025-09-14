@@ -14,6 +14,7 @@ def test_cli_run_save_history(tmp_path):
     assert rc == 0
     data = json.loads(path.read_text())
     assert isinstance(data, dict)
+    assert len(data["C_steps"]) == 1
 
 
 def test_cli_run_export_metrics(tmp_path):
@@ -33,6 +34,7 @@ def test_cli_run_export_metrics(tmp_path):
     assert rc == 0
     data = json.loads((base.with_suffix(".json")).read_text())
     assert isinstance(data, dict)
+    assert len(data["glyphogram"]["t"]) == 1
 
 
 def test_cli_run_save_and_export_metrics(tmp_path):
@@ -56,6 +58,8 @@ def test_cli_run_save_and_export_metrics(tmp_path):
     data_export = json.loads((export_base.with_suffix(".json")).read_text())
     assert isinstance(data_save, dict)
     assert isinstance(data_export, dict)
+    assert len(data_save["C_steps"]) == 1
+    assert len(data_export["glyphogram"]["t"]) == 1
 
 
 def test_cli_sequence_save_history(tmp_path):
