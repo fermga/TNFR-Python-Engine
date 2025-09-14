@@ -58,11 +58,11 @@ def _attach_callbacks(G: "nx.Graph") -> None:
 
 
 def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
-    if args.save_history or args.export_history_base:
+    if getattr(args, "save_history", None) or getattr(args, "export_history_base", None):
         history = ensure_history(G)
-        if args.save_history:
+        if getattr(args, "save_history", None):
             _save_json(args.save_history, history)
-        if args.export_history_base:
+        if getattr(args, "export_history_base", None):
             export_metrics(G, args.export_history_base, fmt=args.export_format)
 
 
@@ -216,9 +216,10 @@ def cmd_sequence(args: argparse.Namespace) -> int:
 
 
 def cmd_metrics(args: argparse.Namespace) -> int:
-    G = _build_graph_from_args(args)
-    for _ in range(int(args.steps or 200)):
-        step(G)
+    if getattr(args, "steps", None) is None:
+        # Default a longer run for metrics stability
+        args.steps = 200
+    G = run_program(None, None, args)
 
     tg = Tg_global(G, normalize=True)
     lat = latency_series(G)
