@@ -26,9 +26,9 @@ from ..alias import (
 )
 from ..metrics_utils import compute_theta_trig, merge_and_normalize_weights
 from ..import_utils import optional_numpy
-from ..logging import get_module_logger
+from ..logging_utils import get_logger
 
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")

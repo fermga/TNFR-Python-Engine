@@ -10,9 +10,9 @@ from typing import Any, Iterable, Mapping
 import networkx as nx  # type: ignore[import-untyped]
 
 from ..json_utils import json_dumps
-from ..logging import get_module_logger
+from ..logging_utils import get_logger
 
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 
 # Key used to store the node set checksum in a graph's ``graph`` attribute.
 NODE_SET_CHECKSUM_KEY = "_node_set_checksum_cache"

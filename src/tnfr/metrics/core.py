@@ -5,7 +5,7 @@ from __future__ import annotations
 from ..callback_utils import register_callback
 from ..constants import get_param
 from ..glyph_history import append_metric, ensure_history
-from ..logging import get_module_logger
+from ..logging_utils import get_logger
 from .coherence import register_coherence_callbacks
 from .diagnosis import register_diagnosis_callbacks
 from .coherence_updates import (
@@ -38,7 +38,7 @@ from .reporting import (
     latency_series,
 )
 
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 
 __all__ = [
     "LATENT_GLYPH",

@@ -19,9 +19,9 @@ from ..helpers.numeric import clamp01, _norm01, _similarity_abs
 from ..helpers import ensure_node_index_map
 from ..metrics_utils import get_trig_cache, min_max_range, compute_theta_trig
 from ..import_utils import optional_numpy
-from ..logging import get_module_logger
+from ..logging_utils import get_logger
 
-logger = get_module_logger(__name__)
+logger = get_logger(__name__)
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
