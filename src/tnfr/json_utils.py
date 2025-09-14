@@ -5,7 +5,7 @@ The fast serializer is brought in through
 ``tnfr.import_utils.cached_import``; its cache and failure registry can be
 reset using ``cached_import.cache_clear()`` and
 :func:`tnfr.import_utils.prune_failed_imports` or the local
-:func:`clear_orjson_cache` helper.
+:func:`_clear_orjson_cache` helper.
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ def _format_ignored_params(combo: frozenset[str]) -> str:
     return "{" + ", ".join(map(repr, sorted(combo))) + "}"
 
 
-def clear_orjson_cache() -> None:
+def _clear_orjson_cache() -> None:
     """Clear cached :mod:`orjson` module and warning state."""
     _warn_orjson_params_once.clear()
     cache_clear = getattr(cached_import, "cache_clear", None)
