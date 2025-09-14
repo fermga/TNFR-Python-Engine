@@ -109,8 +109,9 @@ def _iter_node_digests(
         for node in nodes:
             yield _node_repr_digest(node)[1]
     else:
-        pairs = [_node_repr_digest(n) for n in nodes]
-        for _, digest in sorted(pairs, key=lambda x: x[0]):
+        for _, digest in sorted(
+            (_node_repr_digest(n) for n in nodes), key=lambda x: x[0]
+        ):
             yield digest
 
 
