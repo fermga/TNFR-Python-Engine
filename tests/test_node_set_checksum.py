@@ -7,7 +7,6 @@ from tnfr.helpers.node_cache import (
     node_set_checksum,
     stable_json,
     _node_repr,
-    _hash_node,
     _node_repr_digest,
 )
 from tnfr.helpers.edge_cache import increment_edge_version
@@ -95,11 +94,3 @@ def test_node_cache_cleared_on_increment(graph_canon):
     assert _node_repr_digest.cache_info().currsize > 0
     increment_edge_version(nxG)
     assert _node_repr_digest.cache_info().currsize == 0
-
-
-def test_hash_node_matches_manual():
-    obj = ("a", 1)
-    obj_repr = _node_repr(obj)
-    manual = hashlib.blake2b(obj_repr.encode("utf-8"), digest_size=16).digest()
-    assert _hash_node(obj) == manual
-    assert _node_repr_digest(obj)[1] == manual

@@ -89,12 +89,6 @@ def _node_repr(n: Any) -> str:
     """Stable representation for node hashing and sorting."""
     return _node_repr_digest(n)[0]
 
-
-def _hash_node(obj: Any) -> bytes:
-    """Return a stable digest for ``obj`` used in node checksums."""
-    return _node_repr_digest(obj)[1]
-
-
 def _iter_node_digests(
     nodes: Iterable[Any], *, presorted: bool
 ) -> Iterable[bytes]:
