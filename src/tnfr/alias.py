@@ -139,6 +139,27 @@ class AliasAccessor(Generic[T]):
             default = self._default
         return aliases, conv, default
 
+    def _resolve_cache_key(
+        self, d: dict[str, Any], aliases: tuple[str, ...]
+    ) -> tuple[tuple[int, tuple[str, ...]], str | None]:
+        """Return cache entry for ``d`` and ``aliases`` if still valid.
+
+        The mapping remains coherent only when the cached key exists in
+        ``d`` and the dictionary size has not changed. Invalid entries are
+        removed to preserve structural consistency.
+        """
+
+        cache_key = (id(d), aliases)
+        with self._lock:
+            cached = self._key_cache.get(cache_key)
+        if cached is not None:
+            key, size = cached
+            if size == len(d) and key in d:
+                return cache_key, key
+            with self._lock:
+                self._key_cache.pop(cache_key, None)
+        return cache_key, None
+
     def get(
         self,
         d: dict[str, Any],
@@ -150,20 +171,13 @@ class AliasAccessor(Generic[T]):
         conv: Callable[[Any], T] | None = None,
     ) -> Optional[T]:
         aliases, conv, default = self._prepare(aliases, conv, default)
-        cache_key = (id(d), aliases)
-        with self._lock:
-            cached = self._key_cache.get(cache_key)
-        if cached is not None:
-            key, size = cached
-            if size == len(d) and key in d:
-                ok, value = convert_value(
-                    d[key], conv, strict=strict, key=key, log_level=log_level
-                )
-                if ok:
-                    return value
-            else:
-                with self._lock:
-                    self._key_cache.pop(cache_key, None)
+        cache_key, key = self._resolve_cache_key(d, aliases)
+        if key is not None:
+            ok, value = convert_value(
+                d[key], conv, strict=strict, key=key, log_level=log_level
+            )
+            if ok:
+                return value
         for key in aliases:
             if key in d:
                 ok, value = convert_value(
@@ -189,17 +203,10 @@ class AliasAccessor(Generic[T]):
         conv: Callable[[Any], T] | None = None,
     ) -> T:
         aliases, conv, _ = self._prepare(aliases, conv)
-        cache_key = (id(d), aliases)
-        with self._lock:
-            cached = self._key_cache.get(cache_key)
-        if cached is not None:
-            key, size = cached
-            if size == len(d) and key in d:
-                d[key] = conv(value)
-                return d[key]
-            else:
-                with self._lock:
-                    self._key_cache.pop(cache_key, None)
+        cache_key, key = self._resolve_cache_key(d, aliases)
+        if key is not None:
+            d[key] = conv(value)
+            return d[key]
         key = next((k for k in aliases if k in d), aliases[0])
         val = conv(value)
         d[key] = val
