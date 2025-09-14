@@ -68,6 +68,17 @@ class TrigCache:
     sin: dict[Any, float]
     theta: dict[Any, float]
 
+def _iter_theta_pairs(
+    nodes: Iterable[tuple[Any, Mapping[str, Any] | float]],
+) -> Iterable[tuple[Any, float]]:
+    """Yield ``(node, θ)`` pairs from ``nodes``."""
+
+    for n, data in nodes:
+        if isinstance(data, Mapping):
+            yield n, get_attr(data, ALIAS_THETA, 0.0)
+        else:
+            yield n, float(data)
+
 
 def _compute_trig_python(
     nodes: Iterable[tuple[Any, Mapping[str, Any] | float]],
@@ -77,11 +88,7 @@ def _compute_trig_python(
     cos_th: dict[Any, float] = {}
     sin_th: dict[Any, float] = {}
     thetas: dict[Any, float] = {}
-    for n, data in nodes:
-        if isinstance(data, Mapping):
-            th = get_attr(data, ALIAS_THETA, 0.0)
-        else:
-            th = float(data)
+    for n, th in _iter_theta_pairs(nodes):
         thetas[n] = th
         cos_th[n] = math.cos(th)
         sin_th[n] = math.sin(th)
@@ -102,17 +109,12 @@ def compute_theta_trig(
     if np is None or not all(hasattr(np, attr) for attr in ("fromiter", "cos", "sin")):
         return _compute_trig_python(nodes)
 
-    node_list: list[Any] = []
+    pairs = list(_iter_theta_pairs(nodes))
+    if not pairs:
+        return TrigCache(cos={}, sin={}, theta={})
 
-    def theta_iter() -> Iterable[float]:
-        for n, data in nodes:
-            node_list.append(n)
-            if isinstance(data, Mapping):
-                yield get_attr(data, ALIAS_THETA, 0.0)
-            else:
-                yield float(data)
-
-    theta_arr = np.fromiter(theta_iter(), dtype=float)
+    node_list, theta_vals = zip(*pairs)
+    theta_arr = np.fromiter(theta_vals, dtype=float)
     cos_arr = np.cos(theta_arr)
     sin_arr = np.sin(theta_arr)
 
