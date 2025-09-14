@@ -257,6 +257,55 @@ def set_callback_error_limit(limit: int) -> int:
     return previous
 
 
+def _reconcile_callback(
+    event: str,
+    existing_map: dict[str, CallbackSpec],
+    spec: CallbackSpec,
+    strict: bool,
+) -> str:
+    """Reconcile ``spec`` with ``existing_map``.
+
+    Ensures that callbacks remain unique by explicit name or function identity.
+    When a name collision occurs with a different function, ``strict`` controls
+    whether a :class:`ValueError` is raised or a warning is logged.
+
+    Parameters
+    ----------
+    event:
+        Event under which ``spec`` will be registered. Only used for messages.
+    existing_map:
+        Current mapping of callbacks for ``event``.
+    spec:
+        Callback specification being registered.
+    strict:
+        Whether to raise on name collisions instead of logging a warning.
+
+    Returns
+    -------
+    str
+        Key under which ``spec`` should be stored in ``existing_map``.
+    """
+
+    key = spec.name or _func_id(spec.func)
+
+    if spec.name is not None:
+        existing_spec = existing_map.get(key)
+        if existing_spec is not None and existing_spec.func is not spec.func:
+            msg = f"Callback {spec.name!r} already registered for {event}"
+            if strict:
+                raise ValueError(msg)
+            logger.warning(msg)
+
+    # Remove existing entries under the same key and any other using the same
+    # function identity to avoid duplicates.
+    existing_map.pop(key, None)
+    fn_key = next((k for k, s in existing_map.items() if s.func is spec.func), None)
+    if fn_key is not None:
+        existing_map.pop(fn_key, None)
+
+    return key
+
+
 def register_callback(
     G: "nx.Graph",
     event: CallbackEvent | str,
@@ -305,39 +354,14 @@ def register_callback(
         cbs = _ensure_callbacks_nolock(G)
 
         cb_name = name or getattr(func, "__name__", None)
-        new_cb = CallbackSpec(cb_name, func)
+        spec = CallbackSpec(cb_name, func)
         existing_map = cbs[event]
-        cb_key = cb_name or _func_id(func)
+        strict = bool(
+            G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
+        )
+        key = _reconcile_callback(event, existing_map, spec, strict)
 
-        if cb_name is not None:
-            existing_spec = existing_map.get(cb_key)
-            if existing_spec is not None and existing_spec.func is not func:
-                strict = bool(
-                    G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
-                )
-                msg = f"Callback {cb_name!r} already registered for {event}"
-                if strict:
-                    raise ValueError(msg)
-                else:
-                    logger.warning(msg)
-            # Explicit names override function identity when both are present.
-            existing_map.pop(cb_key, None)
-            fn_key = next(
-                (k for k, spec in existing_map.items() if spec.func is func),
-                None,
-            )
-            if fn_key is not None:
-                existing_map.pop(fn_key, None)
-        else:
-            # Remove any existing registration by function identity when no
-            # name is given.
-            fn_key = next(
-                (k for k, spec in existing_map.items() if spec.func is func),
-                _func_id(func),
-            )
-            existing_map.pop(fn_key, None)
-
-        existing_map[cb_key] = new_cb
+        existing_map[key] = spec
         dirty = G.graph.setdefault("_callbacks_dirty", set())
         dirty.add(event)
     return func
