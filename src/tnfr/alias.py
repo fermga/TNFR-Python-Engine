@@ -44,6 +44,7 @@ __all__ = (
     "set_attr_and_cache",
     "set_attr_with_max",
     "set_scalar",
+    "SCALAR_SETTERS",
     "set_vf",
     "set_dnfr",
     "set_theta",
@@ -416,41 +417,64 @@ def set_scalar(
     return set_attr_and_cache(G, n, alias, value, cache=cache, extra=extra)
 
 
-def set_vf(
-    G: "networkx.Graph", n: Hashable, value: float, *, update_max: bool = True
-) -> None:
-    """Set ``νf`` for node ``n`` and optionally update the global maximum."""
-    cache = "_vfmax" if update_max else None
-
-    set_scalar(G, n, ALIAS_VF, value, cache=cache)
-
-
-def set_dnfr(G: "networkx.Graph", n: Hashable, value: float) -> None:
-    """Set ``ΔNFR`` for node ``n`` and update the global maximum."""
-
-    set_scalar(G, n, ALIAS_DNFR, value, cache="_dnfrmax")
-
-
 def _increment_trig_version(
     G: "networkx.Graph", _: Hashable, __: float
 ) -> None:
+    """Increment cached trig version and purge cached values."""
     g = G.graph
     g["_trig_version"] = int(g.get("_trig_version", 0)) + 1
-    # Clear cached trigonometric values to avoid stale data. Any existing
-    # `_cos_th`, `_sin_th`, or `_thetas` entries are removed so that a fresh
-    # cache will be built on the next access.
     for k in ("_cos_th", "_sin_th", "_thetas"):
         g.pop(k, None)
 
 
-def set_theta(G: "networkx.Graph", n: Hashable, value: float) -> None:
-    """Set ``θ`` for node ``n`` and invalidate trig caches."""
+SCALAR_SETTERS: dict[str, dict[str, Any]] = {
+    "vf": {
+        "alias": ALIAS_VF,
+        "cache": "_vfmax",
+        "doc": "Set ``νf`` for node ``n`` and optionally update the global maximum.",
+        "update_max_param": True,
+    },
+    "dnfr": {
+        "alias": ALIAS_DNFR,
+        "cache": "_dnfrmax",
+        "doc": "Set ``ΔNFR`` for node ``n`` and update the global maximum.",
+    },
+    "theta": {
+        "alias": ALIAS_THETA,
+        "extra": _increment_trig_version,
+        "doc": "Set ``θ`` for node ``n`` and invalidate trig caches.",
+    },
+}
 
-    set_scalar(
-        G,
-        n,
-        ALIAS_THETA,
-        value,
-        cache=None,
-        extra=_increment_trig_version,
-    )
+
+def _make_scalar_setter(name: str, spec: dict[str, Any]) -> Callable[..., None]:
+    alias = spec["alias"]
+    cache = spec.get("cache")
+    extra = spec.get("extra")
+    doc = spec.get("doc")
+    has_update = spec.get("update_max_param", False)
+
+    if has_update:
+        def setter(
+            G: "networkx.Graph",
+            n: Hashable,
+            value: float,
+            *,
+            update_max: bool = True,
+        ) -> None:
+            cache_key = cache if update_max else None
+            set_scalar(G, n, alias, value, cache=cache_key, extra=extra)
+    else:
+        def setter(G: "networkx.Graph", n: Hashable, value: float) -> None:
+            set_scalar(G, n, alias, value, cache=cache, extra=extra)
+
+    setter.__name__ = f"set_{name}"
+    setter.__qualname__ = f"set_{name}"
+    setter.__doc__ = doc
+    return setter
+
+
+for _name, _spec in SCALAR_SETTERS.items():
+    globals()[f"set_{_name}"] = _make_scalar_setter(_name, _spec)
+
+del _name, _spec, _make_scalar_setter
