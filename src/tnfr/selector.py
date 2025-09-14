@@ -48,7 +48,7 @@ def _sorted_items(mapping: Mapping[str, float]) -> tuple[tuple[str, float], ...]
 
 @lru_cache(maxsize=None)
 def _build_selector_thresholds(
-    graph_id: int,
+    _graph_id: int,
     thr_sel_items: tuple[tuple[str, float], ...],
     thr_def_items: tuple[tuple[str, float], ...],
 ) -> dict[str, float]:
@@ -56,7 +56,7 @@ def _build_selector_thresholds(
 
     Parameters
     ----------
-    graph_id : int
+    _graph_id : int
         Identifier of the graph used to seed the cache.
     thr_sel_items : tuple[tuple[str, float], ...]
         Selector threshold items as ``(key, value)`` pairs.
@@ -110,7 +110,11 @@ def _selector_thresholds(G: "nx.Graph") -> dict[str, float]:
 
     thr_sel_items = _sorted_items(thr_sel)
     thr_def_items = _sorted_items(thr_def)
-    return _build_selector_thresholds(id(G), thr_sel_items, thr_def_items)
+    return _build_selector_thresholds(
+        _graph_id=id(G),
+        thr_sel_items=thr_sel_items,
+        thr_def_items=thr_def_items,
+    )
 
 
 def _norms_para_selector(G: "nx.Graph") -> dict:
