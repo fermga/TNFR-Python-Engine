@@ -39,7 +39,7 @@ def test_pop_least_used_batch_stops_after_k_even_with_stale():
     hist._counts["stale"] = 0
     hist.pop_least_used_batch(2)
     assert not hist
-    assert set(hist._counts) == {"stale"}
+    assert not hist._counts
 
 
 def test_pop_least_used_batch_removes_k_elements():

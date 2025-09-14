@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Any, Protocol
 from collections import deque, Counter
 from itertools import islice
-import heapq
 from collections.abc import Iterable
 import numbers
 
@@ -103,9 +102,9 @@ class HistoryDict(dict):
 
     Usage counts are tracked explicitly via :meth:`get_increment`. Accessing
     keys through ``__getitem__`` or :meth:`get` does not affect the internal
-    counters, avoiding surprising evictions on mere reads. Stale entries are
-    periodically discarded to keep the heap size under control without
-    maintaining explicit dirtiness counters.
+    counters, avoiding surprising evictions on mere reads. Counting is now
+    handled with :class:`collections.Counter` alone, relying on
+    :meth:`Counter.most_common` to locate least-used entries when required.
 
     Parameters
     ----------
@@ -128,9 +127,9 @@ class HistoryDict(dict):
     ) -> None:
         super().__init__(data or {})
         self._maxlen = maxlen
+        # ``compact_every`` retained for API compatibility; no longer used.
         self._compact_every = max(1, int(compact_every))
         self._counts: Counter[str] = Counter()
-        self._heap: list[tuple[int, str]] = []
         if self._maxlen > 0:
             for k, v in list(self.items()):
                 if isinstance(v, list):
@@ -139,39 +138,11 @@ class HistoryDict(dict):
         else:
             for k in self:
                 self._counts[k] = 0
-        self._heap = [(cnt, k) for k, cnt in self._counts.items()]
-        heapq.heapify(self._heap)
-
-    # heap operations ---------------------------------------------------
+        # ``_heap`` is no longer required with ``Counter.most_common``.
 
     def _increment(self, key: str) -> None:
+        """Increase usage count for ``key``."""
         self._counts[key] += 1
-        heapq.heappush(self._heap, (self._counts[key], key))
-        self._prune_heap()
-
-    def _prune_heap(self) -> None:
-        """Ensure heap size stays within ``target`` keeping valid entries."""
-        target = len(self._counts) + self._compact_every
-        if len(self._heap) <= target:
-            return
-        temp: list[tuple[int, str]] = []
-        while len(self._heap) + len(temp) > target:
-            cnt, key = heapq.heappop(self._heap)
-            if self._counts.get(key) == cnt:
-                temp.append((cnt, key))
-        for item in temp:
-            heapq.heappush(self._heap, item)
-
-    def _pop_heap_key(self) -> str:
-        """Pop and return the key with the smallest count from the heap."""
-        while self._heap:
-            if len(self._heap) > 1:
-                cnt, key = heapq.heapreplace(self._heap, self._heap.pop())
-            else:
-                cnt, key = self._heap.pop()
-            if self._counts.get(key) == cnt:
-                return key
-        raise KeyError("HistoryDict is empty; cannot pop least used")
 
     def _to_deque(self, val: Any) -> deque:
         """Coerce ``val`` to a deque respecting ``self._maxlen``.
@@ -216,21 +187,18 @@ class HistoryDict(dict):
         super().__setitem__(key, value)
         if key not in self._counts:
             self._counts[key] = 0
-            heapq.heappush(self._heap, (0, key))
-        self._prune_heap()
 
     def setdefault(self, key, default=None):  # type: ignore[override]
         insert = key not in self
         val = self._resolve_value(key, default, insert=insert)
         if insert:
             self._counts[key] = 0
-            heapq.heappush(self._heap, (0, key))
-        self._prune_heap()
         return val
 
     def pop_least_used(self) -> Any:
+        """Remove and return the value with the smallest usage count."""
         while self._counts:
-            key = self._pop_heap_key()
+            key, _ = self._counts.most_common()[-1]
             self._counts.pop(key, None)
             if key in self:
                 return super().pop(key)
