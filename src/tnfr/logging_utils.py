@@ -12,7 +12,7 @@ import logging
 import threading
 from typing import Any, Hashable, Mapping
 
-from collections import deque
+from collections import OrderedDict
 
 from .logging_base import _configure_root
 
@@ -34,39 +34,36 @@ class WarnOnce:
     """Log a message once per unique key.
 
     The callable maintains an LRU set of keys limited by ``maxsize`` using
-    a deque and set combination to preserve coherence while avoiding
+    an :class:`collections.OrderedDict` to preserve coherence while avoiding
     unbounded growth. New keys trigger a warning with their associated
-    values, repeated keys are ignored.
-    ``clear()`` resets the tracked keys, aiding controlled tests.
+    values, repeated keys are ignored. ``clear()`` resets the tracked keys,
+    aiding controlled tests.
     """
 
     def __init__(self, logger: logging.Logger, msg: str, *, maxsize: int = 1024) -> None:
         self._logger = logger
         self._msg = msg
         self._maxsize = maxsize
-        self._seen_deque: deque[Hashable] = deque()
-        self._seen_set: set[Hashable] = set()
+        self._seen: OrderedDict[Hashable, None] = OrderedDict()
         self._lock = threading.Lock()
 
     def __call__(self, mapping: Mapping[Hashable, Any]) -> None:
         new: dict[Hashable, Any] = {}
         with self._lock:
             for k, v in mapping.items():
-                if k not in self._seen_set:
-                    self._seen_set.add(k)
-                    self._seen_deque.append(k)
+                if k not in self._seen:
+                    self._seen[k] = None
+                    self._seen.move_to_end(k)
                     new[k] = v
-                    if len(self._seen_deque) > self._maxsize:
-                        old = self._seen_deque.popleft()
-                        self._seen_set.remove(old)
+                    if len(self._seen) > self._maxsize:
+                        self._seen.popitem(last=False)
         if new:
             self._logger.warning(self._msg, new)
 
     def clear(self) -> None:
         """Reset tracked keys."""
         with self._lock:
-            self._seen_deque.clear()
-            self._seen_set.clear()
+            self._seen.clear()
 
 
 def warn_once(
