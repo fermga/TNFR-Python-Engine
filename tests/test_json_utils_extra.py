@@ -1,9 +1,9 @@
-import importlib
 import logging
 from dataclasses import is_dataclass
 
 import tnfr.json_utils as json_utils
 import tnfr.import_utils as import_utils
+from .utils import clear_orjson_cache
 
 
 class DummyOrjson:
@@ -18,14 +18,14 @@ def _reset_json_utils(monkeypatch, module):
     monkeypatch.setattr(
         json_utils, "cached_import", lambda name, attr=None, **kwargs: module
     )
-    json_utils._clear_orjson_cache()
+    clear_orjson_cache()
     import_utils.prune_failed_imports()
     with import_utils._WARNED_STATE.lock:
         import_utils._WARNED_STATE.clear()
 
 
 def test_json_dumps_without_orjson(monkeypatch, caplog):
-    json_utils._clear_orjson_cache()
+    clear_orjson_cache()
     import_utils.prune_failed_imports()
     with import_utils._WARNED_STATE.lock:
         import_utils._WARNED_STATE.clear()

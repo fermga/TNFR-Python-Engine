@@ -1,6 +1,7 @@
 import logging
 
 import tnfr.json_utils as json_utils
+from .utils import clear_orjson_cache
 
 
 class FakeOrjson:
@@ -19,7 +20,7 @@ def test_lazy_orjson_import(monkeypatch):
         return FakeOrjson()
 
     monkeypatch.setattr(json_utils, "cached_import", fake_cached_import)
-    json_utils._clear_orjson_cache()
+    clear_orjson_cache()
 
     assert calls["n"] == 0
     json_utils.json_dumps({})
@@ -32,7 +33,7 @@ def test_warns_once(monkeypatch, caplog):
     monkeypatch.setattr(
         json_utils, "cached_import", lambda *a, **k: FakeOrjson()
     )
-    json_utils._clear_orjson_cache()
+    clear_orjson_cache()
 
     with caplog.at_level(logging.WARNING):
         for _ in range(2):
@@ -45,7 +46,7 @@ def test_warns_once_per_unique_combo(monkeypatch, caplog):
     monkeypatch.setattr(
         json_utils, "cached_import", lambda *a, **k: FakeOrjson()
     )
-    json_utils._clear_orjson_cache()
+    clear_orjson_cache()
 
     with caplog.at_level(logging.WARNING):
         json_utils.json_dumps({}, ensure_ascii=False)
