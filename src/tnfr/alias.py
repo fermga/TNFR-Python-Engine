@@ -34,24 +34,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
 T = TypeVar("T")
 
-__all__ = (
-    "set_attr_generic",
-    "get_attr",
-    "collect_attr",
-    "set_attr",
-    "get_attr_str",
-    "set_attr_str",
-    "set_attr_and_cache",
-    "set_attr_with_max",
-    "set_scalar",
-    "SCALAR_SETTERS",
-    "set_vf",
-    "set_dnfr",
-    "set_theta",
-    "recompute_abs_max",
-    "multi_recompute_abs_max",
-)
-
 
 def _convert_default(
     default: Any,
@@ -487,3 +469,20 @@ for _name, _spec in SCALAR_SETTERS.items():
     globals()[f"set_{_name}"] = _make_scalar_setter(_name, _spec)
 
 del _name, _spec, _make_scalar_setter
+
+
+__all__ = [
+    "set_attr_generic",
+    "get_attr",
+    "collect_attr",
+    "set_attr",
+    "get_attr_str",
+    "set_attr_str",
+    "set_attr_and_cache",
+    "set_attr_with_max",
+    "set_scalar",
+    "SCALAR_SETTERS",
+    *[f"set_{name}" for name in SCALAR_SETTERS],
+    "recompute_abs_max",
+    "multi_recompute_abs_max",
+]
