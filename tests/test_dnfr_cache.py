@@ -5,7 +5,7 @@ import networkx as nx
 
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.constants import THETA_PRIMARY, EPI_PRIMARY, VF_PRIMARY
-from tnfr.helpers import increment_edge_version, cached_nodes_and_A
+from tnfr.helpers.edge_cache import increment_edge_version, cached_nodes_and_A
 
 
 def _counting_trig(monkeypatch):

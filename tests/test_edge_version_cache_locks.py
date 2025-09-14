@@ -1,4 +1,4 @@
-from tnfr.helpers import EdgeCacheManager, edge_version_cache
+from tnfr.helpers.edge_cache import EdgeCacheManager, edge_version_cache
 
 
 def test_edge_version_cache_prunes_locks(graph_canon):
