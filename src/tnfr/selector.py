@@ -111,7 +111,7 @@ def _selector_thresholds(G: "nx.Graph") -> dict[str, float]:
     thr_sel_items = _sorted_items(thr_sel)
     thr_def_items = _sorted_items(thr_def)
     return _build_selector_thresholds(
-        _graph_id=id(G),
+        _graph_id=id(G),  # seed cache; value is unused beyond hashing
         thr_sel_items=thr_sel_items,
         thr_def_items=thr_def_items,
     )
