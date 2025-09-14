@@ -31,6 +31,7 @@ from .logging import get_module_logger
 # -------------------------
 
 logger = get_module_logger(__name__)
+NP = optional_numpy(logger)
 
 GLYPH_UNITS: dict[str, complex] = {
     g: complex(math.cos(a), math.sin(a)) for g, a in ANGLE_MAP.items()
@@ -152,7 +153,7 @@ def _sigma_from_iterable(
     else:
         iterator = iter((values,))
 
-    np = optional_numpy(logger)
+    np = NP
     if np is not None:
         iterator, np_iter = tee(iterator)
         arr = np.fromiter((_to_complex(v) for v in np_iter), dtype=np.complex128)
