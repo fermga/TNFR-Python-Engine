@@ -58,7 +58,7 @@ DEFAULT_PARAMS = JsonDumpsParams(
     separators=(",", ":"),
     cls=None,
     to_bytes=False,
-)
+    )
 
 
 def _make_params(
@@ -95,6 +95,13 @@ def _make_params(
     )
 
 
+_ORJSON_PARAM_CHECKS: tuple[tuple[Callable[[JsonDumpsParams], bool], str], ...] = (
+    (lambda p: p.ensure_ascii is not True, "ensure_ascii"),
+    (lambda p: p.separators != (",", ":"), "separators"),
+    (lambda p: p.cls is not None, "cls"),
+)
+
+
 def _json_dumps_orjson(
     orjson: Any,
     obj: Any,
@@ -102,12 +109,7 @@ def _json_dumps_orjson(
     **kwargs: Any,
 ) -> bytes | str:
     """Serialize using :mod:`orjson` and warn about unsupported parameters."""
-    checks = [
-        (params.ensure_ascii is not True, "ensure_ascii"),
-        (params.separators != (",", ":"), "separators"),
-        (params.cls is not None, "cls"),
-    ]
-    ignored = {name for cond, name in checks if cond}
+    ignored = {name for check, name in _ORJSON_PARAM_CHECKS if check(params)}
     if kwargs:
         ignored.update(kwargs)
     if ignored:
