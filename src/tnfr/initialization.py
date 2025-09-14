@@ -4,6 +4,8 @@ from __future__ import annotations
 import random
 from typing import TYPE_CHECKING
 
+from dataclasses import dataclass
+
 from .constants import VF_KEY, THETA_KEY, get_graph_param
 from .helpers.numeric import clamp
 from .rng import make_rng
@@ -11,7 +13,52 @@ from .rng import make_rng
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx  # type: ignore[import-untyped]
 
-__all__ = ("init_node_attrs",)
+__all__ = ("InitParams", "init_node_attrs")
+
+
+@dataclass
+class InitParams:
+    """Parametros de inicialización nodal."""
+
+    seed: int | None
+    init_rand_phase: bool
+    th_min: float
+    th_max: float
+    vf_mode: str
+    vf_min_lim: float
+    vf_max_lim: float
+    vf_uniform_min: float | None
+    vf_uniform_max: float | None
+    vf_mean: float
+    vf_std: float
+    clamp_to_limits: bool
+    si_min: float
+    si_max: float
+    epi_val: float
+
+    @classmethod
+    def from_graph(cls, G: "nx.Graph") -> "InitParams":
+        """Construir ``InitParams`` desde ``G.graph``."""
+
+        return cls(
+            seed=get_graph_param(G, "RANDOM_SEED", int),
+            init_rand_phase=get_graph_param(G, "INIT_RANDOM_PHASE", bool),
+            th_min=get_graph_param(G, "INIT_THETA_MIN"),
+            th_max=get_graph_param(G, "INIT_THETA_MAX"),
+            vf_mode=str(get_graph_param(G, "INIT_VF_MODE", str)).lower(),
+            vf_min_lim=get_graph_param(G, "VF_MIN"),
+            vf_max_lim=get_graph_param(G, "VF_MAX"),
+            vf_uniform_min=get_graph_param(G, "INIT_VF_MIN"),
+            vf_uniform_max=get_graph_param(G, "INIT_VF_MAX"),
+            vf_mean=get_graph_param(G, "INIT_VF_MEAN"),
+            vf_std=get_graph_param(G, "INIT_VF_STD"),
+            clamp_to_limits=get_graph_param(
+                G, "INIT_VF_CLAMP_TO_LIMITS", bool
+            ),
+            si_min=get_graph_param(G, "INIT_SI_MIN"),
+            si_max=get_graph_param(G, "INIT_SI_MAX"),
+            epi_val=get_graph_param(G, "INIT_EPI_VALUE"),
+        )
 
 
 def _init_phase(
@@ -99,70 +146,52 @@ def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
     for ``EPI`` via ``INIT_EPI_VALUE``. If ``INIT_VF_MIN`` is greater than
     ``INIT_VF_MAX``, values are swapped and clamped to ``VF_MIN``/``VF_MAX``.
     """
-    params = {
-        "seed": get_graph_param(G, "RANDOM_SEED", int),
-        "init_rand_phase": get_graph_param(G, "INIT_RANDOM_PHASE", bool),
-        "th_min": get_graph_param(G, "INIT_THETA_MIN"),
-        "th_max": get_graph_param(G, "INIT_THETA_MAX"),
-        "vf_mode": str(get_graph_param(G, "INIT_VF_MODE", str)).lower(),
-        "vf_min_lim": get_graph_param(G, "VF_MIN"),
-        "vf_max_lim": get_graph_param(G, "VF_MAX"),
-        "vf_uniform_min": get_graph_param(G, "INIT_VF_MIN"),
-        "vf_uniform_max": get_graph_param(G, "INIT_VF_MAX"),
-        "vf_mean": get_graph_param(G, "INIT_VF_MEAN"),
-        "vf_std": get_graph_param(G, "INIT_VF_STD"),
-        "clamp_to_limits": get_graph_param(
-            G, "INIT_VF_CLAMP_TO_LIMITS", bool
-        ),
-        "si_min": get_graph_param(G, "INIT_SI_MIN"),
-        "si_max": get_graph_param(G, "INIT_SI_MAX"),
-        "epi_val": get_graph_param(G, "INIT_EPI_VALUE"),
-    }
+    params = InitParams.from_graph(G)
 
-    vf_uniform_min = params["vf_uniform_min"]
-    vf_uniform_max = params["vf_uniform_max"]
-    vf_min_lim = params["vf_min_lim"]
-    vf_max_lim = params["vf_max_lim"]
+    vf_uniform_min = params.vf_uniform_min
+    vf_uniform_max = params.vf_uniform_max
+    vf_min_lim = params.vf_min_lim
+    vf_max_lim = params.vf_max_lim
     if vf_uniform_min is None:
         vf_uniform_min = vf_min_lim
     if vf_uniform_max is None:
         vf_uniform_max = vf_max_lim
     if vf_uniform_min > vf_uniform_max:
         vf_uniform_min, vf_uniform_max = vf_uniform_max, vf_uniform_min
-    params["vf_uniform_min"] = max(vf_uniform_min, vf_min_lim)
-    params["vf_uniform_max"] = min(vf_uniform_max, vf_max_lim)
+    params.vf_uniform_min = max(vf_uniform_min, vf_min_lim)
+    params.vf_uniform_max = min(vf_uniform_max, vf_max_lim)
 
-    rng = make_rng(params["seed"], -1, G)
+    rng = make_rng(params.seed, -1, G)
     for _, nd in G.nodes(data=True):
 
         _init_phase(
             nd,
             rng,
             override=override,
-            random_phase=params["init_rand_phase"],
-            th_min=params["th_min"],
-            th_max=params["th_max"],
+            random_phase=params.init_rand_phase,
+            th_min=params.th_min,
+            th_max=params.th_max,
         )
         _init_vf(
             nd,
             rng,
             override=override,
-            mode=params["vf_mode"],
-            vf_uniform_min=params["vf_uniform_min"],
-            vf_uniform_max=params["vf_uniform_max"],
-            vf_mean=params["vf_mean"],
-            vf_std=params["vf_std"],
-            vf_min_lim=params["vf_min_lim"],
-            vf_max_lim=params["vf_max_lim"],
-            clamp_to_limits=params["clamp_to_limits"],
+            mode=params.vf_mode,
+            vf_uniform_min=params.vf_uniform_min,
+            vf_uniform_max=params.vf_uniform_max,
+            vf_mean=params.vf_mean,
+            vf_std=params.vf_std,
+            vf_min_lim=params.vf_min_lim,
+            vf_max_lim=params.vf_max_lim,
+            clamp_to_limits=params.clamp_to_limits,
         )
         _init_si_epi(
             nd,
             rng,
             override=override,
-            si_min=params["si_min"],
-            si_max=params["si_max"],
-            epi_val=params["epi_val"],
+            si_min=params.si_min,
+            si_max=params.si_max,
+            epi_val=params.epi_val,
         )
 
     return G
