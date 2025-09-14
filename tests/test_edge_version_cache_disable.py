@@ -1,4 +1,4 @@
-from tnfr.helpers import edge_version_cache
+from tnfr.helpers.edge_cache import edge_version_cache
 
 
 def test_edge_version_cache_disable(graph_canon):

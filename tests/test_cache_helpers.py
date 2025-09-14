@@ -2,15 +2,17 @@ import pytest
 
 import tnfr.import_utils as import_utils
 from tnfr import dynamics
-from tnfr.helpers import (
+from tnfr.helpers.edge_cache import (
     cached_nodes_and_A,
     increment_edge_version,
     edge_version_update,
+)
+from tnfr.helpers.node_cache import (
     ensure_node_offset_map,
     cached_node_list,
     ensure_node_index_map,
+    _ensure_node_map,
 )
-from tnfr.helpers.node_cache import _ensure_node_map
 
 
 def test_edge_version_update_scopes_mutations(graph_canon):
