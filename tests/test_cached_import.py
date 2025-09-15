@@ -1,6 +1,5 @@
-import types
 import importlib
-import logging
+import types
 from cachetools import TTLCache
 
 import tnfr.import_utils as import_utils
@@ -16,7 +15,7 @@ def reset() -> None:
 def test_cached_import_clears_failures(monkeypatch):
     calls = {"n": 0}
 
-    def fake_import(name):
+    def fake_import(_name):
         calls["n"] += 1
         if calls["n"] == 1:
             raise ImportError("boom")
@@ -33,14 +32,14 @@ def test_cached_import_clears_failures(monkeypatch):
 
 
 def test_warns_once_then_debug(monkeypatch):
-    def fake_import(name):
+    def fake_import(_name):
         raise ImportError("boom")
 
     monkeypatch.setattr(importlib, "import_module", fake_import)
 
     stacklevels: list[int] = []
 
-    def fake_warn(msg, category=None, stacklevel=1):
+    def fake_warn(_msg, _category=None, stacklevel=1):
         stacklevels.append(stacklevel)
 
     monkeypatch.setattr(import_utils.warnings, "warn", fake_warn)
@@ -52,7 +51,7 @@ def test_warns_once_then_debug(monkeypatch):
 
 
 def test_cached_import_handles_distinct_fallbacks(monkeypatch):
-    def fake_import(name):
+    def fake_import(_name):
         raise ImportError("boom")
 
     monkeypatch.setattr(importlib, "import_module", fake_import)
@@ -66,7 +65,7 @@ def test_cached_import_handles_distinct_fallbacks(monkeypatch):
 def test_cache_ttl(monkeypatch):
     calls = {"n": 0}
 
-    def fake_import(name):
+    def fake_import(_name):
         calls["n"] += 1
         return types.SimpleNamespace()
 
@@ -134,7 +133,7 @@ def test_failure_log_bounded_without_frequent_prune(monkeypatch):
 
     monkeypatch.setattr(import_utils, "prune_failed_imports", fake_prune)
 
-    def fake_import(name):
+    def fake_import(_name):
         raise ImportError("boom")
 
     monkeypatch.setattr(importlib, "import_module", fake_import)

@@ -1,7 +1,6 @@
 """Tests for glyph factor retrieval helper."""
 
 from types import SimpleNamespace
-import math
 import pytest
 
 from tnfr.types import Glyph
