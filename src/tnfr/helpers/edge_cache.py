@@ -52,14 +52,6 @@ class _LockAwareLRUCache(LRUCache[Hashable, Any]):
         return key, value
 
 
-def _make_edge_cache(
-    max_entries: int, locks: dict[Hashable, threading.RLock]
-) -> LRUCache[Hashable, Any]:
-    """Create an ``LRUCache`` for edge data."""
-
-    return _LockAwareLRUCache(max_entries, locks)
-
-
 class EdgeCacheManager:
     """Manage per-graph edge caches and their associated locks."""
 
@@ -90,6 +82,7 @@ class EdgeCacheManager:
                 isinstance(v, defaultdict) and v.default_factory is threading.RLock
             ),
         )
+
     def _cache_and_locks(
         self, max_entries: int | None, *, create: bool
     ) -> tuple[
@@ -118,7 +111,7 @@ class EdgeCacheManager:
         cache = self._ensure_graph_entry(
             "_edge_version_cache",
             factory=lambda: (
-                _make_edge_cache(max_entries, locks) if use_lru else {}
+                _LockAwareLRUCache(max_entries, locks) if use_lru else {}
             ),
             validator=validator,
         )
@@ -224,6 +217,7 @@ def cached_nodes_and_A(
     checksum = node_set_checksum(G, nodes_list, store=False)
     key = f"_dnfr_{len(nodes_list)}_{checksum}"
     G.graph["_dnfr_nodes_checksum"] = checksum
+
     def builder() -> tuple[list[int], Any]:
         np = optional_numpy(logger)
         if np is None:
@@ -266,4 +260,3 @@ def edge_version_update(G: Any):
         yield
     finally:
         increment_edge_version(G)
-
