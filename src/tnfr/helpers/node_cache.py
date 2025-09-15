@@ -5,14 +5,14 @@ from typing import Any
 
 import networkx as nx  # type: ignore[import-untyped]
 
-from ..graph_utils import get_graph, get_graph_mapping
-from .cache_utils import (
+from ..cache import (
     NODE_SET_CHECKSUM_KEY,
-    node_set_checksum,
-    stable_json,
     _node_repr,
     _node_repr_digest,
+    node_set_checksum,
+    stable_json,
 )
+from ..graph_utils import get_graph, get_graph_mapping
 
 __all__ = (
     "NODE_SET_CHECKSUM_KEY",
