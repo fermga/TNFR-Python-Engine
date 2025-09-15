@@ -1,9 +1,7 @@
 """Logging utilities for TNFR.
 
 Centralises creation of module-specific loggers so that all TNFR
-modules share a consistent configuration.  ``get_module_logger`` is
-retained as a lightweight alias to ``get_logger`` for backwards
-compatibility.
+modules share a consistent configuration.
 """
 
 from __future__ import annotations
@@ -13,7 +11,7 @@ import threading
 from collections import OrderedDict
 from typing import Any, Hashable, Mapping
 
-__all__ = ("_configure_root", "get_logger", "get_module_logger", "WarnOnce", "warn_once")
+__all__ = ("_configure_root", "get_logger", "WarnOnce", "warn_once")
 
 _LOGGING_CONFIGURED = False
 
@@ -39,11 +37,6 @@ def get_logger(name: str) -> logging.Logger:
     """Return a module-specific logger."""
     _configure_root()
     return logging.getLogger(name)
-
-
-# Backwards compatibility --------------------------------------------------
-
-get_module_logger = get_logger
 
 
 class WarnOnce:
