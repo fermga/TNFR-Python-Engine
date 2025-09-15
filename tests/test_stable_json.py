@@ -12,6 +12,8 @@ def test_stable_json_dict_order_deterministic():
     obj = {"b": 1, "a": 2}
     res1 = stable_json(obj)
     res2 = stable_json(obj)
+    assert isinstance(res1, str)
+    assert isinstance(res2, str)
     assert res1 == res2
     assert json.loads(res1) == {"a": 2, "b": 1}
 

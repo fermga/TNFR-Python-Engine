@@ -1,5 +1,5 @@
 import logging
-from dataclasses import is_dataclass
+from typing import Mapping
 
 import tnfr.import_utils as import_utils
 import tnfr.json_utils as json_utils
@@ -119,7 +119,9 @@ def test_params_passed_to_std(monkeypatch):
 
     monkeypatch.setattr(json_utils, "_json_dumps_std", fake_std)
     json_utils.json_dumps({"a": 1})
-    assert is_dataclass(captured["params"])
+    assert isinstance(captured["params"], Mapping)
+    assert captured["params"]["sort_keys"] is False
+    assert captured["params"]["ensure_ascii"] is True
 
 
 def test_params_passed_to_orjson(monkeypatch):
@@ -133,13 +135,15 @@ def test_params_passed_to_orjson(monkeypatch):
 
     monkeypatch.setattr(json_utils, "_json_dumps_orjson", fake_orjson)
     json_utils.json_dumps({"a": 1})
-    assert is_dataclass(captured["params"])
+    assert isinstance(captured["params"], Mapping)
+    assert captured["params"]["sort_keys"] is False
+    assert captured["params"]["ensure_ascii"] is True
 
 
 def test_default_params_reused(monkeypatch):
     _reset_json_utils(monkeypatch, None)
 
-    calls: list[json_utils.JsonDumpsParams] = []
+    calls: list[Mapping[str, object]] = []
 
     def fake_std(obj, params, **kwargs):
         calls.append(params)

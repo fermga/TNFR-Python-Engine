@@ -10,10 +10,9 @@ reset using ``cached_import.cache_clear()`` and
 from __future__ import annotations
 
 import json
+from types import MappingProxyType
+from typing import Any, Callable, Mapping
 
-from typing import Any, Callable, Literal, overload
-
-from dataclasses import dataclass, replace
 from .import_utils import cached_import
 from .logging_utils import get_logger
 from .logging_utils import warn_once
@@ -32,32 +31,26 @@ def _format_ignored_params(combo: frozenset[str]) -> str:
     return "{" + ", ".join(map(repr, sorted(combo))) + "}"
 
 
-@dataclass(slots=True, frozen=True)
-class JsonDumpsParams:
-    sort_keys: bool
-    default: Callable[[Any], Any] | None
-    ensure_ascii: bool
-    separators: tuple[str, str]
-    cls: type[json.JSONEncoder] | None
-    to_bytes: bool
+JsonDumpsParams = Mapping[str, Any]
 
 
-DEFAULT_PARAMS = JsonDumpsParams(
-    sort_keys=False,
-    default=None,
-    ensure_ascii=True,
-    separators=(",", ":"),
-    cls=None,
-    to_bytes=False,
-    )
+_DEFAULT_PARAMS_DICT: dict[str, Any] = {
+    "sort_keys": False,
+    "default": None,
+    "ensure_ascii": True,
+    "separators": (",", ":"),
+    "cls": None,
+    "to_bytes": False,
+}
 
 
+DEFAULT_PARAMS: Mapping[str, Any] = MappingProxyType(_DEFAULT_PARAMS_DICT)
 
 
 _ORJSON_PARAM_CHECKS: tuple[tuple[Callable[[JsonDumpsParams], bool], str], ...] = (
-    (lambda p: p.ensure_ascii is not True, "ensure_ascii"),
-    (lambda p: p.separators != (",", ":"), "separators"),
-    (lambda p: p.cls is not None, "cls"),
+    (lambda p: p["ensure_ascii"] is not True, "ensure_ascii"),
+    (lambda p: p["separators"] != (",", ":"), "separators"),
+    (lambda p: p["cls"] is not None, "cls"),
 )
 
 
@@ -75,9 +68,9 @@ def _json_dumps_orjson(
         combo = frozenset(ignored)
         _warn_orjson_params_once({combo: _format_ignored_params(combo)})
 
-    option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
-    data = orjson.dumps(obj, option=option, default=params.default)
-    return data if params.to_bytes else data.decode("utf-8")
+    option = orjson.OPT_SORT_KEYS if params["sort_keys"] else 0
+    data = orjson.dumps(obj, option=option, default=params["default"])
+    return data if params["to_bytes"] else data.decode("utf-8")
 
 
 def _json_dumps_std(
@@ -88,42 +81,14 @@ def _json_dumps_std(
     """Serialize using the standard library :func:`json.dumps`."""
     result = json.dumps(
         obj,
-        sort_keys=params.sort_keys,
-        ensure_ascii=params.ensure_ascii,
-        separators=params.separators,
-        cls=params.cls,
-        default=params.default,
+        sort_keys=params["sort_keys"],
+        ensure_ascii=params["ensure_ascii"],
+        separators=params["separators"],
+        cls=params["cls"],
+        default=params["default"],
         **kwargs,
     )
-    return result if not params.to_bytes else result.encode("utf-8")
-
-
-@overload
-def json_dumps(
-    obj: Any,
-    *,
-    sort_keys: bool = ...,
-    default: Callable[[Any], Any] | None = ...,
-    ensure_ascii: bool = ...,
-    separators: tuple[str, str] = ...,
-    cls: type[json.JSONEncoder] | None = ...,
-    to_bytes: Literal[True] = ...,
-    **kwargs: Any,
-) -> bytes: ...
-
-
-@overload
-def json_dumps(
-    obj: Any,
-    *,
-    sort_keys: bool = ...,
-    default: Callable[[Any], Any] | None = ...,
-    ensure_ascii: bool = ...,
-    separators: tuple[str, str] = ...,
-    cls: type[json.JSONEncoder] | None = ...,
-    to_bytes: Literal[False],
-    **kwargs: Any,
-) -> str: ...
+    return result if not params["to_bytes"] else result.encode("utf-8")
 
 
 def json_dumps(
@@ -146,17 +111,40 @@ def json_dumps(
     ignored parameters are detected and, by default, is shown only once per
     process.
     """
-    params = replace(
-        DEFAULT_PARAMS,
-        sort_keys=sort_keys,
-        default=default,
-        ensure_ascii=ensure_ascii,
-        separators=separators,
-        cls=cls,
-        to_bytes=to_bytes,
-    )
-    if params == DEFAULT_PARAMS:
-        params = DEFAULT_PARAMS
+    if not isinstance(sort_keys, bool):
+        raise TypeError("sort_keys must be a boolean")
+    if default is not None and not callable(default):
+        raise TypeError("default must be callable when provided")
+    if not isinstance(ensure_ascii, bool):
+        raise TypeError("ensure_ascii must be a boolean")
+    if not isinstance(separators, tuple) or len(separators) != 2:
+        raise TypeError("separators must be a tuple of two strings")
+    if not all(isinstance(part, str) for part in separators):
+        raise TypeError("separators must be a tuple of two strings")
+    if cls is not None:
+        if not isinstance(cls, type) or not issubclass(cls, json.JSONEncoder):
+            raise TypeError("cls must be a subclass of json.JSONEncoder")
+    if not isinstance(to_bytes, bool):
+        raise TypeError("to_bytes must be a boolean")
+
+    if (
+        sort_keys is False
+        and default is None
+        and ensure_ascii is True
+        and separators == (",", ":")
+        and cls is None
+        and to_bytes is False
+    ):
+        params: JsonDumpsParams = DEFAULT_PARAMS
+    else:
+        params = {
+            "sort_keys": sort_keys,
+            "default": default,
+            "ensure_ascii": ensure_ascii,
+            "separators": separators,
+            "cls": cls,
+            "to_bytes": to_bytes,
+        }
     orjson = cached_import("orjson", emit="log")
     if orjson is not None:
         return _json_dumps_orjson(orjson, obj, params, **kwargs)
