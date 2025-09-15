@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Any, Callable
 from collections.abc import Mapping
 import copy
-import warnings
 from types import MappingProxyType
 
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
@@ -46,19 +45,6 @@ DEFAULTS: Mapping[str, Any] = MappingProxyType(
 )
 
 # -------------------------
-# Retrocompatibilidad y aliases
-# -------------------------
-# "REMESH_TAU" era el nombre original para la memoria de REMESH. Hoy se
-# desglosa en ``REMESH_TAU_GLOBAL`` y ``REMESH_TAU_LOCAL``.
-PARAM_ALIASES: dict[str, tuple[str, ...]] = {
-    "REMESH_TAU": ("REMESH_TAU_GLOBAL", "REMESH_TAU_LOCAL"),
-}
-
-_PARAM_ALIAS_TARGET_TO_KEY: dict[str, str] = {
-    target: alias for alias, targets in PARAM_ALIASES.items() for target in targets
-}
-
-# -------------------------
 # Utilidades
 # -------------------------
 
@@ -96,17 +82,9 @@ def merge_overrides(G, **overrides) -> None:
 
 
 def get_param(G, key: str):
-    """Retrieve a parameter from ``G.graph`` resolving legacy aliases."""
+    """Retrieve a parameter from ``G.graph`` or fall back to defaults."""
     if key in G.graph:
         return G.graph[key]
-    alias = _PARAM_ALIAS_TARGET_TO_KEY.get(key)
-    if alias and alias in G.graph:
-        warnings.warn(
-            f"'{alias}' es alias legado; usa '{key}'",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return G.graph[alias]
     if key not in DEFAULTS:
         raise KeyError(f"Parámetro desconocido: '{key}'")
     return DEFAULTS[key]
@@ -174,7 +152,6 @@ __all__ = (
     "DIAGNOSIS",
     "DEFAULTS",
     "DEFAULT_SECTIONS",
-    "PARAM_ALIASES",
     "ALIASES",
     "inject_defaults",
     "merge_overrides",
@@ -195,31 +172,3 @@ __all__ = (
     "D2VF_PRIMARY",
     "dSI_PRIMARY",
 )
-
-# Deprecated names ---------------------------------------------------------
-# Keep legacy alias constants for backwards compatibility.
-_DEPRECATED_ALIASES = {
-    "ALIAS_dEPI": "DEPI",
-    "ALIAS_dVF": "DVF",
-    "ALIAS_dSI": "DSI",
-}
-
-
-def __getattr__(name: str):
-    if name in _DEPRECATED_ALIASES:
-        key = _DEPRECATED_ALIASES[name]
-        warnings.warn(
-            f"'{name}' is deprecated; use get_aliases('{key}')",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return ALIASES[key]
-    if name.startswith("ALIAS_") and name[6:] in ALIASES:
-        key = name[6:]
-        warnings.warn(
-            f"'{name}' is deprecated; use get_aliases('{key}')",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return ALIASES[key]
-    raise AttributeError(f"module {__name__} has no attribute {name}")
