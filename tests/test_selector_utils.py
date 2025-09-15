@@ -1,6 +1,11 @@
 """Pruebas de selector utils."""
 
+import gc
+import weakref
+
 import pytest
+
+import tnfr.selector as selector
 
 from tnfr.selector import (
     _selector_thresholds,
@@ -73,6 +78,22 @@ def test_selector_thresholds_cache_ignores_dict_order(graph_canon):
     G.graph["SELECTOR_THRESHOLDS"] = {"si_lo": 0.2, "si_hi": 0.9}
     thr2 = _selector_thresholds(G)
     assert thr1 is thr2
+
+
+def test_selector_thresholds_cache_releases_graph(graph_canon):
+    """The selector cache must not keep graphs alive once discarded."""
+
+    selector._SELECTOR_THRESHOLD_CACHE.clear()
+    G = graph_canon()
+    selector._selector_thresholds(G)
+    assert len(selector._SELECTOR_THRESHOLD_CACHE) == 1
+
+    ref = weakref.ref(G)
+    del G
+    gc.collect()
+
+    assert ref() is None
+    assert len(selector._SELECTOR_THRESHOLD_CACHE) == 0
 
 
 def test_norms_para_selector_computes_max(graph_canon):
