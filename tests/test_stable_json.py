@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from tnfr.helpers.node_cache import stable_json
+from tnfr.helpers.cache_utils import stable_json
 from .utils import clear_orjson_cache
 
 

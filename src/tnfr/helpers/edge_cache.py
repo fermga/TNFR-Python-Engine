@@ -9,13 +9,21 @@ from typing import Any, TypeVar
 from cachetools import LRUCache
 import networkx as nx  # type: ignore[import-untyped]
 
-from ..graph_utils import mark_dnfr_prep_dirty
+from ..graph_utils import get_graph, mark_dnfr_prep_dirty
 from ..import_utils import get_numpy
 from ..logging_utils import get_logger
-from .node_cache import get_graph, node_set_checksum, clear_node_repr_cache
+from .cache_utils import (
+    LockAwareLRUCache,
+    clear_node_repr_cache,
+    ensure_graph_entry,
+    ensure_lock_mapping,
+    get_graph_version,
+    increment_graph_version,
+    node_set_checksum,
+    prune_locks,
+)
 
 T = TypeVar("T")
-U = TypeVar("U")
 
 logger = get_logger(__name__)
 
@@ -38,19 +46,6 @@ __all__ = (
 )
 
 
-class _LockAwareLRUCache(LRUCache[Hashable, Any]):
-    """``LRUCache`` that drops per-key locks when evicting items."""
-
-    def __init__(self, maxsize: int, locks: dict[Hashable, threading.RLock]):
-        super().__init__(maxsize)
-        self._locks: dict[Hashable, threading.RLock] = locks
-
-    def popitem(self) -> tuple[Hashable, Any]:  # type: ignore[override]
-        key, value = super().popitem()
-        self._locks.pop(key, None)
-        return key, value
-
-
 class EdgeCacheManager:
     """Manage per-graph edge caches and their associated locks."""
 
@@ -58,29 +53,6 @@ class EdgeCacheManager:
 
     def __init__(self, graph: Any) -> None:
         self.graph = graph
-
-    def _ensure_graph_entry(
-        self,
-        key: str,
-        factory: Callable[[], U],
-        validator: Callable[[Any], bool],
-    ) -> U:
-        """Return a validated entry from ``graph`` or create one when missing."""
-
-        value = self.graph.get(key)
-        if not validator(value):
-            value = factory()
-            self.graph[key] = value
-        return value
-
-    def _ensure_locks(self) -> defaultdict[Hashable, threading.RLock]:
-        return self._ensure_graph_entry(
-            "_edge_version_cache_locks",
-            factory=lambda: defaultdict(threading.RLock),
-            validator=lambda v: (
-                isinstance(v, defaultdict) and v.default_factory is threading.RLock
-            ),
-        )
 
     def _cache_and_locks(
         self, max_entries: int | None, *, create: bool
@@ -97,7 +69,7 @@ class EdgeCacheManager:
             locks = self.graph.get("_edge_version_cache_locks")
             return cache, locks
 
-        locks = self._ensure_locks()
+        locks = ensure_lock_mapping(self.graph, "_edge_version_cache_locks")
         use_lru = bool(max_entries)
 
         def validator(value: Any) -> bool:
@@ -107,28 +79,15 @@ class EdgeCacheManager:
                 return isinstance(value, LRUCache) and value.maxsize == max_entries
             return not isinstance(value, LRUCache)
 
-        cache = self._ensure_graph_entry(
+        cache = ensure_graph_entry(
+            self.graph,
             "_edge_version_cache",
             factory=lambda: (
-                _LockAwareLRUCache(max_entries, locks) if use_lru else {}
+                LockAwareLRUCache(max_entries, locks) if use_lru else {}
             ),
             validator=validator,
         )
         return cache, locks
-
-    def _prune_locks(
-        self,
-        cache: dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]] | None,
-        locks: dict[Hashable, threading.RLock] | defaultdict[Hashable, threading.RLock] | None,
-    ) -> None:
-        """Drop locks with no corresponding cache entry."""
-
-        if not isinstance(locks, dict):
-            return
-        cache_keys = cache.keys() if isinstance(cache, dict) else ()
-        for key in list(locks.keys()):
-            if key not in cache_keys:
-                locks.pop(key, None)
 
     def get_cache(
         self, max_entries: int | None, *, create: bool = True
@@ -143,7 +102,7 @@ class EdgeCacheManager:
         with self._LOCK:
             cache, locks = self._cache_and_locks(max_entries, create=create)
             if max_entries is None:
-                self._prune_locks(cache, locks)
+                prune_locks(cache, locks)
         return cache, locks
 
 
@@ -174,7 +133,7 @@ def edge_version_cache(
         graph["_edge_cache_manager"] = manager
 
     cache, locks = manager.get_cache(max_entries)
-    edge_version = int(graph.get("_edge_version", 0))
+    edge_version = get_graph_version(graph, "_edge_version")
     lock = locks[key]
 
     with lock:
@@ -239,7 +198,7 @@ def increment_edge_version(G: Any) -> None:
     """Increment the edge version counter in ``G.graph``."""
 
     graph = get_graph(G)
-    graph["_edge_version"] = int(graph.get("_edge_version", 0)) + 1
+    increment_graph_version(graph, "_edge_version")
     _reset_edge_caches(graph, G)
 
 
