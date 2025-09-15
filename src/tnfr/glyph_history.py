@@ -6,7 +6,7 @@ from typing import Any
 from collections import deque, Counter
 from itertools import islice
 from collections.abc import Iterable
-import numbers
+from functools import lru_cache
 
 from .constants import get_param
 from .collections_utils import ensure_collection
@@ -23,24 +23,18 @@ __all__ = (
     "append_metric",
     "last_glyph",
     "count_glyphs",
-    "validate_window",
 )
 
 
-def validate_window(window: int, *, positive: bool = False) -> int:
-    """Validate ``window`` as an ``int`` and return it.
+@lru_cache(maxsize=1)
+def _resolve_validate_window():
+    from .validators import validate_window
 
-    Non-integer values raise :class:`TypeError`. When ``positive`` is ``True``
-    the value must be strictly greater than zero; otherwise it may be zero.
-    Negative values always raise :class:`ValueError`.
-    """
+    return validate_window
 
-    if isinstance(window, bool) or not isinstance(window, numbers.Integral):
-        raise TypeError("'window' must be an integer")
-    if window < 0 or (positive and window == 0):
-        kind = "positive" if positive else "non-negative"
-        raise ValueError(f"'window'={window} must be {kind}")
-    return int(window)
+
+def _validate_window(window: int, *, positive: bool = False) -> int:
+    return _resolve_validate_window()(window, positive=positive)
 
 
 def _ensure_history(
@@ -48,7 +42,7 @@ def _ensure_history(
 ) -> tuple[int, deque | None]:
     """Validate ``window`` and ensure ``nd['glyph_history']`` deque."""
 
-    v_window = validate_window(window)
+    v_window = _validate_window(window)
     if v_window == 0 and not create_zero:
         return v_window, None
     hist = nd.setdefault("glyph_history", deque(maxlen=v_window))
@@ -257,7 +251,7 @@ def count_glyphs(
     """
 
     if window is not None:
-        window = validate_window(window)
+        window = _validate_window(window)
         if window == 0:
             return Counter()
 
