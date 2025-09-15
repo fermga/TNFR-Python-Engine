@@ -3,15 +3,17 @@
 from __future__ import annotations
 import pytest
 
+import networkx as nx
 from tnfr.constants import inject_defaults
-from tnfr.scenarios import build_graph
+from tnfr.initialization import init_node_attrs
 from tnfr.dynamics import step
 
 
 @pytest.mark.parametrize("method", ["euler", "rk4"])
 def test_epi_limits_preserved(method):
-    G = build_graph(n=6, topology="ring", seed=1)
+    G = nx.cycle_graph(6)
     inject_defaults(G)
+    init_node_attrs(G, override=True)
     G.graph["INTEGRATOR_METHOD"] = method
     G.graph["DT_MIN"] = 0.1
     G.graph["GAMMA"] = {"type": "none"}

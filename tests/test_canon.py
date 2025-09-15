@@ -1,12 +1,15 @@
 """Pruebas de canon."""
 
-from tnfr.scenarios import build_graph
+import networkx as nx
 from tnfr.dynamics import validate_canon
-from tnfr.constants import VF_KEY, THETA_KEY
+from tnfr.constants import VF_KEY, THETA_KEY, inject_defaults
+from tnfr.initialization import init_node_attrs
 
 
 def test_build_graph_vf_within_limits():
-    G = build_graph(n=10, topology="ring", seed=42)
+    G = nx.cycle_graph(10)
+    inject_defaults(G)
+    init_node_attrs(G, override=True)
     vf_min = G.graph["VF_MIN"]
     vf_max = G.graph["VF_MAX"]
     for n in G.nodes():
@@ -15,7 +18,9 @@ def test_build_graph_vf_within_limits():
 
 
 def test_validate_canon_clamps():
-    G = build_graph(n=5, topology="ring", seed=1)
+    G = nx.cycle_graph(5)
+    inject_defaults(G)
+    init_node_attrs(G, override=True)
     for n in G.nodes():
         nd = G.nodes[n]
         nd[VF_KEY] = 2.0
