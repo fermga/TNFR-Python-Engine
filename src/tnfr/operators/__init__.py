@@ -44,6 +44,7 @@ __all__ = [
     "reset_jitter_manager",
     "random_jitter",
     "_get_jitter_cache",
+    "get_neighbor_epi",
     "get_glyph_factors",
     "GLYPH_OPERATIONS",
     "apply_glyph_obj",
@@ -81,8 +82,9 @@ def _any_neighbor_has(node: NodoProtocol, aliases: tuple[str, ...]) -> bool:
     )
 
 
-def _gather_neighbors(node: NodoProtocol) -> tuple[list[NodoProtocol], float]:
-    """Return neighbour list and their mean ``EPI``."""
+def get_neighbor_epi(node: NodoProtocol) -> tuple[list[NodoProtocol], float]:
+    """Return neighbour list and their mean ``EPI`` without mutating ``node``."""
+
     epi = node.EPI
     neigh = list(node.neighbors())
     if not neigh:
@@ -131,7 +133,7 @@ def _mix_epi_with_neighbors(
         else str(default_glyph)
     )
     epi = node.EPI
-    neigh, epi_bar = _gather_neighbors(node)
+    neigh, epi_bar = get_neighbor_epi(node)
 
     if not neigh:
         node.epi_kind = default_kind

@@ -6,6 +6,7 @@ from tnfr.operators import (
     reset_jitter_manager,
     random_jitter,
     apply_glyph,
+    get_neighbor_epi,
     _mix_epi_with_neighbors,
     _get_jitter_cache,
 )
@@ -137,6 +138,49 @@ def test_jitter_manager_setup_override_size():
     assert manager.settings["max_entries"] == 5
     manager.setup(max_entries=7)
     assert manager.settings["max_entries"] == 7
+
+
+def test_get_neighbor_epi_without_graph_preserves_state():
+    neigh = [
+        SimpleNamespace(EPI=2.0),
+        SimpleNamespace(EPI=4.0),
+    ]
+    node = SimpleNamespace(EPI=1.0, neighbors=lambda: neigh)
+
+    result, epi_bar = get_neighbor_epi(node)
+
+    assert result == neigh
+    assert epi_bar == pytest.approx(3.0)
+    assert node.EPI == pytest.approx(1.0)
+
+
+def test_get_neighbor_epi_with_graph_returns_wrapped_nodes(graph_canon):
+    G = graph_canon()
+    G.add_node(0, EPI=1.0)
+    G.add_node(1, EPI=2.0)
+    G.add_node(2, EPI=4.0)
+    G.add_edge(0, 1)
+    G.add_edge(0, 2)
+
+    node = NodoNX(G, 0)
+    neighbors, epi_bar = get_neighbor_epi(node)
+
+    assert {n.n for n in neighbors} == {1, 2}
+    assert all(hasattr(n, "EPI") for n in neighbors)
+    assert epi_bar == pytest.approx(3.0)
+    assert node.EPI == pytest.approx(1.0)
+
+
+def test_get_neighbor_epi_no_neighbors_returns_defaults(graph_canon):
+    G = graph_canon()
+    G.add_node(0, EPI=1.5)
+
+    node = NodoNX(G, 0)
+    neighbors, epi_bar = get_neighbor_epi(node)
+
+    assert neighbors == []
+    assert epi_bar == pytest.approx(1.5)
+    assert node.EPI == pytest.approx(1.5)
 
 
 def test_um_candidate_subset_proximity(graph_canon):
