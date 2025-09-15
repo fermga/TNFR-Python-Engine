@@ -8,6 +8,7 @@ from tnfr.trace import (
     _callback_names,
     gamma_field,
     grammar_field,
+    mapping_field,
     CallbackSpec,
 )
 from tnfr import trace
@@ -88,6 +89,17 @@ def test_grammar_field_non_mapping_warns(graph_canon):
     with pytest.warns(UserWarning):
         out = grammar_field(G)
     assert out == {}
+
+
+def test_mapping_field_returns_proxy(graph_canon):
+    G = graph_canon()
+    G.graph["FOO"] = {"a": 1}
+    out = mapping_field(G, "FOO", "bar")
+    mapping = out["bar"]
+    assert isinstance(mapping, MappingProxyType)
+    assert mapping["a"] == 1
+    with pytest.raises(TypeError):
+        mapping["b"] = 2
 
 
 def test_get_graph_mapping_returns_proxy(graph_canon):
