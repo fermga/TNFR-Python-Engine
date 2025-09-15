@@ -4,13 +4,7 @@ import types
 
 from cachetools import TTLCache
 import tnfr.import_utils as import_utils
-from tnfr.import_utils import (
-    cached_import,
-    prune_failed_imports,
-    _IMPORT_CACHE,
-    _IMPORT_STATE,
-    _WARNED_STATE,
-)
+from tnfr.import_utils import cached_import, prune_failed_imports, _IMPORT_STATE
 
 
 def reset() -> None:
@@ -85,14 +79,26 @@ def test_cache_clear_and_prune_reset_all(monkeypatch):
 
     monkeypatch.setattr(importlib, "import_module", fake_import)
     cached_import("fake_mod")
-    with _IMPORT_STATE.lock, _WARNED_STATE.lock:
+    with _IMPORT_STATE.lock:
         assert "fake_mod" in _IMPORT_STATE.failed
-        assert "fake_mod" in _WARNED_STATE.failed
-    assert _IMPORT_CACHE
-    cached_import.cache_clear()
-    monkeypatch.setattr(import_utils.time, "monotonic", lambda: 1e9)
+        assert "fake_mod" in _IMPORT_STATE.warned
+
     prune_failed_imports()
-    with _IMPORT_STATE.lock, _WARNED_STATE.lock:
+    with _IMPORT_STATE.lock:
         assert not _IMPORT_STATE.failed
-        assert not _WARNED_STATE.failed
-    assert not _IMPORT_CACHE
+        assert not _IMPORT_STATE.warned
+
+    calls = {"n": 0}
+
+    def success_import(_name):
+        calls["n"] += 1
+        return types.SimpleNamespace()
+
+    monkeypatch.setattr(importlib, "import_module", success_import)
+    cached_import.cache_clear()
+    cached_import("fake_mod")
+    cached_import("fake_mod")
+    assert calls["n"] == 1
+    cached_import.cache_clear()
+    cached_import("fake_mod")
+    assert calls["n"] == 2
