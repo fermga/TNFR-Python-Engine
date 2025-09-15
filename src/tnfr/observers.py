@@ -12,7 +12,6 @@ from .glyph_history import (
     ensure_history,
     count_glyphs,
     append_metric,
-    validate_window,
 )
 from .collections_utils import normalize_counter, mix_groups
 from .constants_glyphs import GLYPH_GROUPS
@@ -20,6 +19,7 @@ from .gamma import kuramoto_R_psi
 from .logging_utils import get_logger
 from .import_utils import get_numpy
 from .metrics.common import compute_coherence
+from .validators import validate_window
 
 ALIAS_THETA = get_aliases("THETA")
 
