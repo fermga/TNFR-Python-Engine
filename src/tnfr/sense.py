@@ -11,7 +11,7 @@ import networkx as nx  # type: ignore[import-untyped]
 
 from .constants import get_aliases, get_graph_param
 from .alias import get_attr
-from .helpers.numeric import clamp01, kahan_sum2d
+from .helpers.numeric import clamp01, kahan_sum_nd
 from .import_utils import get_numpy
 from .callback_utils import callback_manager
 from .glyph_history import (
@@ -179,7 +179,7 @@ def _sigma_from_iterable(
             cnt += 1
             yield (z.real, z.imag)
 
-    sum_x, sum_y = kahan_sum2d(pair_iter())
+    sum_x, sum_y = kahan_sum_nd(pair_iter(), dims=2)
 
     if cnt == 0:
         return _empty_sigma(fallback_angle)

@@ -11,7 +11,7 @@ from typing import Any, Callable, Iterator, TypeVar, cast
 from .logging_utils import get_logger
 from .logging_utils import warn_once
 from .value_utils import convert_value
-from .helpers.numeric import kahan_sum
+from .helpers.numeric import kahan_sum_nd
 
 T = TypeVar("T")
 
@@ -188,7 +188,7 @@ def _convert_and_validate_weights(
 
     weights = {k: convert(k) for k in keys_list}
     negatives = {k: w for k, w in weights.items() if w < 0}
-    total = kahan_sum(weights.values())
+    total = kahan_sum_nd(((w,) for w in weights.values()), dims=1)[0]
 
     if negatives:
         if error_on_negative:
@@ -280,7 +280,7 @@ def normalize_counter(
     counts: Mapping[str, float | int],
 ) -> tuple[dict[str, float], float]:
     """Normalize a ``Counter`` returning proportions and total."""
-    total = kahan_sum(counts.values())
+    total = kahan_sum_nd(((c,) for c in counts.values()), dims=1)[0]
     if total <= 0:
         return {}, 0
     dist = {k: v / total for k, v in counts.items() if v}
@@ -297,7 +297,10 @@ def mix_groups(
     out: dict[str, float] = dict(dist)
     out.update(
         {
-            f"{prefix}{label}": kahan_sum(dist.get(k, 0.0) for k in keys)
+            f"{prefix}{label}": kahan_sum_nd(
+                ((dist.get(k, 0.0),) for k in keys),
+                dims=1,
+            )[0]
             for label, keys in groups.items()
         }
     )
