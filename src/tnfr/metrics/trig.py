@@ -1,4 +1,8 @@
-"""Trigonometric helpers shared across metrics and helpers."""
+"""Trigonometric helpers shared across metrics and helpers.
+
+This module focuses on mathematical utilities (means, compensated sums, etc.).
+Caching of cosine/sine values lives in :mod:`tnfr.metrics.trig_cache`.
+"""
 
 from __future__ import annotations
 
@@ -133,7 +137,7 @@ def _neighbor_phase_mean_generic(
             raise TypeError(
                 "neighbor_phase_mean requires nodes bound to a graph"
             )
-        from .trigonometry import get_trig_cache
+        from .trig_cache import get_trig_cache
 
         trig = get_trig_cache(node.G)
         fallback = trig.theta.get(node.n, fallback)

@@ -1,4 +1,8 @@
-"""Trigonometric caches for TNFR metrics."""
+"""Trigonometric caches for TNFR metrics.
+
+The cosine/sine storage helpers live here to keep :mod:`tnfr.metrics.trig`
+focused on pure mathematical utilities (phase means, compensated sums, etc.).
+"""
 
 from __future__ import annotations
 

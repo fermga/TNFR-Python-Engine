@@ -3,7 +3,7 @@ import math
 
 from tnfr.constants import get_aliases
 from tnfr.metrics.sense_index import compute_Si_node, get_Si_weights
-from tnfr.metrics.trigonometry import get_trig_cache
+from tnfr.metrics.trig_cache import get_trig_cache
 from tnfr.alias import get_attr, set_attr, set_theta
 from tnfr.helpers.edge_cache import increment_edge_version
 
