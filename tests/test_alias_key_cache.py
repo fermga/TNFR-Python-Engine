@@ -71,4 +71,8 @@ def test_key_cache_threadsafe(accessor, max_workers):
         with ThreadPoolExecutor(max_workers=max_workers) as ex:
             list(ex.map(worker, range(16)))
 
-    assert len(accessor._key_cache) == 1
+    assert len(d) == 1
+    assert set(d.keys()) == {"k"}
+    final_value = accessor.get(d, aliases)
+    assert isinstance(final_value, int)
+    assert d["k"] == final_value
