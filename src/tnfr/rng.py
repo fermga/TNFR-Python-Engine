@@ -10,7 +10,7 @@ from typing import Any, Callable
 
 from cachetools import LRUCache, cached
 from .constants import DEFAULTS, get_param
-from .helpers import get_graph
+from .graph_utils import get_graph
 from .locking import get_lock
 
 MASK64 = 0xFFFFFFFFFFFFFFFF

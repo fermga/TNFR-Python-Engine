@@ -15,7 +15,7 @@ from ..glyph_history import (
     push_glyph,
     recent_glyph,
 )
-from ..graph_utils import mark_dnfr_prep_dirty
+from ..graph_utils import get_graph, get_graph_mapping, mark_dnfr_prep_dirty
 
 from .edge_cache import (
     EdgeCacheManager,
@@ -28,8 +28,6 @@ from .node_cache import (
     cached_node_list,
     ensure_node_index_map,
     ensure_node_offset_map,
-    get_graph,
-    get_graph_mapping,
     node_set_checksum,
     stable_json,
 )

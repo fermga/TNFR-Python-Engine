@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import hashlib
-import warnings
 from dataclasses import dataclass
 from functools import lru_cache
-from types import MappingProxyType
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable
 
 import networkx as nx  # type: ignore[import-untyped]
 
+from ..graph_utils import get_graph, get_graph_mapping
 from ..json_utils import json_dumps
 from ..logging_utils import get_logger
 
@@ -27,30 +26,6 @@ __all__ = (
     "ensure_node_index_map",
     "ensure_node_offset_map",
 )
-
-
-def get_graph(obj: Any) -> Any:
-    """Return ``obj.graph`` if available or ``obj`` otherwise."""
-    return getattr(obj, "graph", obj)
-
-
-def get_graph_mapping(
-    G: Any, key: str, warn_msg: str
-) -> Mapping[str, Any] | None:
-    """Return an immutable view of ``G.graph[key]`` if it is a mapping.
-
-    The mapping is wrapped in :class:`types.MappingProxyType` to prevent
-    accidental modification. ``warn_msg`` is emitted via :func:`warnings.warn`
-    when the stored value is not a mapping. ``None`` is returned when the key is
-    absent or invalid.
-    """
-    data = G.graph.get(key)
-    if data is None:
-        return None
-    if not isinstance(data, Mapping):
-        warnings.warn(warn_msg, UserWarning, stacklevel=2)
-        return None
-    return MappingProxyType(data)
 
 
 def stable_json(obj: Any) -> str:
