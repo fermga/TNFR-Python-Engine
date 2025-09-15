@@ -2,7 +2,7 @@ import math
 import pytest
 
 from tnfr.constants import get_aliases
-from tnfr.metrics.trigonometry import get_trig_cache
+from tnfr.metrics.trig_cache import get_trig_cache
 from tnfr.metrics.sense_index import compute_Si
 from tnfr.metrics.trig import neighbor_phase_mean
 from tnfr.alias import set_attr

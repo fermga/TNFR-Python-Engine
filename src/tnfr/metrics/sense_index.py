@@ -20,7 +20,7 @@ from .common import (
     merge_graph_weights,
     _get_vf_dnfr_max,
 )
-from .trigonometry import get_trig_cache
+from .trig_cache import get_trig_cache
 
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")

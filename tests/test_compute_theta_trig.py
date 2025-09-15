@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from tnfr.metrics.trigonometry import _compute_trig_python, compute_theta_trig
+from tnfr.metrics.trig_cache import _compute_trig_python, compute_theta_trig
 
 
 def test_compute_theta_trig_numpy_matches_python():
