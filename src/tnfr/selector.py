@@ -6,9 +6,10 @@ hysteresis when assigning glyphs to nodes.
 
 from __future__ import annotations
 
-from functools import lru_cache
+import threading
 from operator import itemgetter
 from typing import Any, Mapping, TYPE_CHECKING
+from weakref import WeakKeyDictionary
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx  # type: ignore[import-untyped]
@@ -30,6 +31,17 @@ __all__ = (
 )
 
 
+_SelectorThresholdCacheEntry = tuple[
+    tuple[tuple[str, float], ...],
+    dict[str, float],
+]
+_SELECTOR_THRESHOLD_CACHE: WeakKeyDictionary[
+    "nx.Graph",
+    _SelectorThresholdCacheEntry,
+] = WeakKeyDictionary()
+_SELECTOR_THRESHOLD_CACHE_LOCK = threading.Lock()
+
+
 def _sorted_items(mapping: Mapping[str, float]) -> tuple[tuple[str, float], ...]:
     """Return mapping items sorted by key.
 
@@ -46,17 +58,13 @@ def _sorted_items(mapping: Mapping[str, float]) -> tuple[tuple[str, float], ...]
     return tuple(sorted(mapping.items()))
 
 
-@lru_cache(maxsize=None)
-def _build_selector_thresholds(
-    _graph_id: int,
+def _compute_selector_thresholds(
     thr_sel_items: tuple[tuple[str, float], ...],
 ) -> dict[str, float]:
     """Construct selector thresholds for a graph.
 
     Parameters
     ----------
-    _graph_id : int
-        Identifier of the graph used to seed the cache.
     thr_sel_items : tuple[tuple[str, float], ...]
         Selector threshold items as ``(key, value)`` pairs.
 
@@ -90,10 +98,20 @@ def _selector_thresholds(G: "nx.Graph") -> dict[str, float]:
     sel_defaults = DEFAULTS.get("SELECTOR_THRESHOLDS", {})
     thr_sel = {**sel_defaults, **G.graph.get("SELECTOR_THRESHOLDS", {})}
     thr_sel_items = _sorted_items(thr_sel)
-    return _build_selector_thresholds(
-        _graph_id=id(G),  # seed cache; value is unused beyond hashing
-        thr_sel_items=thr_sel_items,
-    )
+
+    with _SELECTOR_THRESHOLD_CACHE_LOCK:
+        cached = _SELECTOR_THRESHOLD_CACHE.get(G)
+        if cached is not None and cached[0] == thr_sel_items:
+            return cached[1]
+
+    thresholds = _compute_selector_thresholds(thr_sel_items)
+
+    with _SELECTOR_THRESHOLD_CACHE_LOCK:
+        cached = _SELECTOR_THRESHOLD_CACHE.get(G)
+        if cached is not None and cached[0] == thr_sel_items:
+            return cached[1]
+        _SELECTOR_THRESHOLD_CACHE[G] = (thr_sel_items, thresholds)
+    return thresholds
 
 
 def _norms_para_selector(G: "nx.Graph") -> dict:

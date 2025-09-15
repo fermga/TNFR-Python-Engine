@@ -20,7 +20,7 @@ from .import_utils import cached_import
 from .logging_utils import get_logger
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=32)
 def _missing_dependency_error(dep: str) -> type[Exception]:
     """Return a fallback :class:`Exception` when ``dep`` is unavailable."""
 
