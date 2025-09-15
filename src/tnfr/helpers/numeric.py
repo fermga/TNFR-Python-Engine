@@ -9,9 +9,6 @@ import math
 
 from ..import_utils import get_numpy
 from ..alias import get_attr
-from ..logging_utils import get_logger
-
-logger = get_logger(__name__)
 
 _TRIG_MODULE = None
 

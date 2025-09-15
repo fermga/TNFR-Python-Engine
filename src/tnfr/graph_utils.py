@@ -22,7 +22,6 @@ __all__ = (
 
 def get_graph(obj: Any) -> Any:
     """Return ``obj.graph`` when present or ``obj`` otherwise."""
-
     return getattr(obj, "graph", obj)
 
 
@@ -37,7 +36,6 @@ def get_graph_mapping(
     against accidental mutation.  ``warn_msg`` is emitted via
     :func:`warnings.warn` when the stored value is not a mapping.
     """
-
     graph = get_graph(G)
     getter = getattr(graph, "get", None)
     if getter is None:
