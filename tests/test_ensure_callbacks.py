@@ -1,10 +1,9 @@
 """Tests for `_ensure_callbacks` behavior."""
 
 from tnfr.callback_utils import (
-    _ensure_callbacks,
     _normalize_callbacks,
-    register_callback,
     CallbackEvent,
+    callback_manager,
 )
 
 
@@ -19,7 +18,7 @@ def test_ensure_callbacks_drops_unknown_events(graph_canon):
         CallbackEvent.BEFORE_STEP.value: [("cb", cb)],
     }
 
-    _ensure_callbacks(G)
+    callback_manager._ensure_callbacks(G)
 
     assert list(G.graph["callbacks"]) == [CallbackEvent.BEFORE_STEP.value]
 
@@ -32,7 +31,7 @@ def test_register_callback_cleans_unknown_events(graph_canon):
 
     G.graph["callbacks"] = {"nope": [("cb", cb)]}
 
-    register_callback(G, CallbackEvent.AFTER_STEP, cb, name="cb")
+    callback_manager.register_callback(G, CallbackEvent.AFTER_STEP, cb, name="cb")
 
     assert list(G.graph["callbacks"]) == [CallbackEvent.AFTER_STEP.value]
 
@@ -51,7 +50,7 @@ def test_ensure_callbacks_only_processes_dirty_events(graph_canon):
     )
     G.graph["_callbacks_dirty"] = {CallbackEvent.BEFORE_STEP.value}
 
-    _ensure_callbacks(G)
+    callback_manager._ensure_callbacks(G)
 
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {}
     assert G.graph["callbacks"][CallbackEvent.AFTER_STEP.value] == {}

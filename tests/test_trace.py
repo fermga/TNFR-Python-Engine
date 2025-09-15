@@ -13,7 +13,7 @@ from tnfr.trace import (
 )
 from tnfr import trace
 from tnfr.helpers.node_cache import get_graph_mapping
-from tnfr.callback_utils import register_callback, invoke_callbacks
+from tnfr.callback_utils import callback_manager
 from types import MappingProxyType
 
 
@@ -38,8 +38,8 @@ def test_trace_metadata_contains_callback_names(graph_canon):
     def foo(G, ctx):
         pass
 
-    register_callback(G, event="before_step", func=foo, name="custom_cb")
-    invoke_callbacks(G, "before_step")
+    callback_manager.register_callback(G, event="before_step", func=foo, name="custom_cb")
+    callback_manager.invoke_callbacks(G, "before_step")
 
     hist = G.graph["history"]["trace_meta"]
     meta = hist[0]
@@ -52,7 +52,7 @@ def test_trace_sigma_no_glyphs(graph_canon):
     # add nodes without glyph history
     G.add_nodes_from([1, 2, 3])
     register_trace(G)
-    invoke_callbacks(G, "after_step")
+    callback_manager.invoke_callbacks(G, "after_step")
     meta = G.graph["history"]["trace_meta"][0]
     assert meta["phase"] == "after"
     assert meta["sigma"] == {
@@ -122,7 +122,7 @@ def test_register_trace_field_runtime(graph_canon):
         return {"custom": 42}
 
     register_trace_field("before", "custom", custom_field)
-    invoke_callbacks(G, "before_step")
+    callback_manager.invoke_callbacks(G, "before_step")
 
     meta = G.graph["history"]["trace_meta"][0]
     assert meta["custom"] == 42

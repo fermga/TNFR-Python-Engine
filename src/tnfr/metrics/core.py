@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ..callback_utils import register_callback
+from ..callback_utils import callback_manager
 from ..constants import get_param
 from ..glyph_history import append_metric, ensure_history
 from ..logging_utils import get_logger
@@ -116,7 +116,7 @@ def _metrics_step(G, *args, **kwargs):
 
 
 def register_metrics_callbacks(G) -> None:
-    register_callback(
+    callback_manager.register_callback(
         G, event="after_step", func=_metrics_step, name="metrics_step"
     )
     register_coherence_callbacks(G)

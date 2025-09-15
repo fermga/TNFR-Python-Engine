@@ -10,7 +10,7 @@ from ..constants import (
     get_aliases,
     get_param,
 )
-from ..callback_utils import register_callback
+from ..callback_utils import callback_manager
 from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
 from ..helpers.numeric import clamp01, _similarity_abs
@@ -214,9 +214,9 @@ def dissonance_events(G, ctx=None):
 
 
 def register_diagnosis_callbacks(G) -> None:
-    register_callback(
+    callback_manager.register_callback(
         G, event="after_step", func=_diagnosis_step, name="diagnosis_step"
     )
-    register_callback(
+    callback_manager.register_callback(
         G, event="after_step", func=dissonance_events, name="dissonance_events"
     )
