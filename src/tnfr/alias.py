@@ -35,28 +35,6 @@ if TYPE_CHECKING:  # pragma: no cover
 T = TypeVar("T")
 
 
-def _convert_default(
-    default: Any,
-    conv: Callable[[Any], T],
-    *,
-    strict: bool = False,
-    log_level: int | None = None,
-) -> tuple[bool, T | None]:
-    """Convert ``default`` using ``conv`` with error handling.
-
-    Behaves like :func:`convert_value` but uses a fixed ``key`` so the log
-    message identifies the value as a default.
-    """
-
-    return convert_value(
-        default,
-        conv,
-        strict=strict,
-        key="default",
-        log_level=log_level,
-    )
-
-
 @lru_cache(maxsize=128)
 def _alias_cache(alias_tuple: tuple[str, ...]) -> tuple[str, ...]:
     """Validate and cache alias tuples.
@@ -170,8 +148,12 @@ class AliasAccessor(Generic[T]):
                         self._key_cache[cache_key] = (key, len(d))
                     return value
         if default is not None:
-            ok, value = _convert_default(
-                default, conv, strict=strict, log_level=log_level
+            ok, value = convert_value(
+                default,
+                conv,
+                strict=strict,
+                key="default",
+                log_level=log_level,
             )
             if ok:
                 return value
