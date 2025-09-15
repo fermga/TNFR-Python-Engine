@@ -12,7 +12,6 @@ def run():
     G = nx.Graph()
     inject_defaults(G)
     G.graph["HISTORY_MAXLEN"] = 1000
-    G.graph["HISTORY_COMPACT_EVERY"] = 100
     hist = {f"k{i}": [] for i in range(2000)}
     G.graph["history"] = HistoryDict(hist, maxlen=2000)
 

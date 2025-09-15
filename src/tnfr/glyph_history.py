@@ -110,10 +110,6 @@ class HistoryDict(dict):
         Initial mapping to populate the dictionary.
     maxlen:
         Maximum length for history lists stored as values.
-    compact_every:
-        Additional slack allowed in the internal heap before pruning stale
-        entries. Larger values reduce the frequency of pruning. The default
-        is 100.
     """
 
     def __init__(
@@ -121,12 +117,9 @@ class HistoryDict(dict):
         data: dict[str, Any] | None = None,
         *,
         maxlen: int = 0,
-        compact_every: int = 100,
     ) -> None:
         super().__init__(data or {})
         self._maxlen = maxlen
-        # ``compact_every`` retained for API compatibility; no longer used.
-        self._compact_every = max(1, int(compact_every))
         self._counts: Counter[str] = Counter()
         if self._maxlen > 0:
             for k, v in list(self.items()):
@@ -213,14 +206,11 @@ class HistoryDict(dict):
 def ensure_history(G) -> dict[str, Any]:
     """Ensure ``G.graph['history']`` exists and return it.
 
-    ``HISTORY_MAXLEN`` must be non-negative and ``HISTORY_COMPACT_EVERY``
-    must be a positive integer; otherwise a :class:`ValueError` is raised.
-    When ``HISTORY_MAXLEN`` is zero, a regular ``dict`` is used.
+    ``HISTORY_MAXLEN`` must be non-negative; otherwise a
+    :class:`ValueError` is raised. When ``HISTORY_MAXLEN`` is zero, a regular
+    ``dict`` is used.
     """
     maxlen, _ = _ensure_history({}, int(get_param(G, "HISTORY_MAXLEN")))
-    compact_every = validate_window(
-        int(get_param(G, "HISTORY_COMPACT_EVERY")), positive=True
-    )
     hist = G.graph.get("history")
     if maxlen == 0:
         hist = G.graph.setdefault("history", {})
@@ -228,9 +218,8 @@ def ensure_history(G) -> dict[str, Any]:
     if (
         not isinstance(hist, HistoryDict)
         or hist._maxlen != maxlen
-        or hist._compact_every != compact_every
     ):
-        hist = HistoryDict(hist, maxlen=maxlen, compact_every=compact_every)
+        hist = HistoryDict(hist, maxlen=maxlen)
         G.graph["history"] = hist
     excess = len(hist) - maxlen
     if excess > 0:

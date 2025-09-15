@@ -163,9 +163,6 @@ the graph (or override the default) to keep only the most recent entries. The
 value must be non‑negative; negative values raise ``ValueError``. When the
 limit is positive the library uses bounded `deque` objects and removes the
 least populated series when the number of history keys grows beyond the limit.
-Compaction of internal usage counters happens every
-``HISTORY_COMPACT_EVERY`` accesses, which can also be adjusted through
-``G.graph``.
 
 ### Random node sampling
 
