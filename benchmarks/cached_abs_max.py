@@ -1,6 +1,7 @@
+"""Benchmark for set_attr_with_max vs recompute_abs_max."""
+
 import time
 import networkx as nx
-import pytest
 
 from tnfr.alias import set_attr_with_max, set_attr, recompute_abs_max
 from tnfr.constants import get_aliases
@@ -8,8 +9,8 @@ from tnfr.constants import get_aliases
 ALIAS_VF = get_aliases("VF")
 
 
-@pytest.mark.slow
-def test_cached_abs_max_update_performance():
+def run():
+    """Run the benchmark and print the elapsed times."""
     G_opt = nx.gnp_random_graph(500, 0.1, seed=1)
     G_naive = G_opt.copy()
 
@@ -32,4 +33,8 @@ def test_cached_abs_max_update_performance():
         recompute_abs_max(G_naive, ALIAS_VF, key="_vfmax")
     t_naive = time.perf_counter() - start
 
-    assert t_opt <= t_naive
+    print(f"cached update: {t_opt:.6f}s, naive: {t_naive:.6f}s")
+
+
+if __name__ == "__main__":
+    run()

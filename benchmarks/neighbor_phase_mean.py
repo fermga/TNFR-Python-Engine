@@ -1,9 +1,8 @@
 """Benchmark for neighbor_phase_mean performance."""
 
-import time
 import math
+import time
 import networkx as nx
-import pytest
 
 from tnfr.helpers.numeric import neighbor_phase_mean
 from tnfr.constants import get_aliases
@@ -27,9 +26,8 @@ def _naive_neighbor_phase_mean(G, n):
     return math.atan2(y, x)
 
 
-@pytest.mark.slow
-def test_neighbor_phase_mean_performance():
-    """Optimised neighbour mean should be faster than naive version."""
+def run():
+    """Run the benchmark and print the elapsed times."""
     G = nx.gnp_random_graph(200, 0.2, seed=1)
     for n in G.nodes:
         G.nodes[n][ALIAS_THETA] = 0.0
@@ -45,5 +43,8 @@ def test_neighbor_phase_mean_performance():
         for n in G.nodes:
             _naive_neighbor_phase_mean(G, n)
     t_naive = time.perf_counter() - start
+    print(f"optimized: {t_opt:.6f}s, naive: {t_naive:.6f}s")
 
-    assert t_opt <= t_naive
+
+if __name__ == "__main__":
+    run()

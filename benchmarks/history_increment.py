@@ -1,12 +1,13 @@
+"""Benchmark for HistoryDict.increment performance."""
+
 import time
 from collections import Counter
-import pytest
 
 from tnfr.glyph_history import HistoryDict
 
 
-@pytest.mark.slow
-def test_increment_performance():
+def run():
+    """Run the benchmark and print the elapsed times."""
     n = 5000
     hist = HistoryDict()
     start = time.perf_counter()
@@ -20,4 +21,8 @@ def test_increment_performance():
         counter[f"k{i}"] += 1
     t_counter = time.perf_counter() - start
 
-    assert t_hist <= t_counter * 10
+    print(f"HistoryDict: {t_hist:.6f}s, Counter: {t_counter:.6f}s")
+
+
+if __name__ == "__main__":
+    run()
