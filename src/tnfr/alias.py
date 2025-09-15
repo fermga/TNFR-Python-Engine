@@ -9,6 +9,7 @@ alias-based attribute access. Legacy wrappers ``alias_get`` and
 from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Iterable, Sized
+from dataclasses import dataclass
 from typing import (
     Any,
     Callable,
@@ -17,6 +18,7 @@ from typing import (
     Generic,
     Hashable,
     TYPE_CHECKING,
+    cast,
 )
 
 from functools import lru_cache, partial
@@ -276,6 +278,76 @@ set_attr_str = partial(set_attr_generic, conv=str)
 # -------------------------
 
 
+@dataclass(slots=True)
+class AbsMaxResult:
+    """Pair storing an absolute maximum value and its node."""
+
+    max_value: float
+    node: Hashable | None
+
+    def as_tuple(self) -> tuple[float, Hashable | None]:
+        """Return ``(max_value, node)`` for backward compatibility."""
+
+        return self.max_value, self.node
+
+
+def _coerce_abs_value(value: Any) -> float:
+    """Return ``value`` as ``float`` treating ``None`` as ``0.0``."""
+
+    if value is None:
+        return 0.0
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _compute_abs_max_result(
+    G: "networkx.Graph",
+    aliases: tuple[str, ...],
+    *,
+    key: str | None = None,
+    candidate: tuple[Hashable, float] | None = None,
+) -> AbsMaxResult:
+    """Return the absolute maximum (and node) for ``aliases``.
+
+    Parameters
+    ----------
+    G:
+        Graph containing nodal data.
+    aliases:
+        Attribute aliases to inspect.
+    key:
+        Cache key to update. When ``None``, the graph cache is untouched.
+    candidate:
+        Optional ``(node, value)`` pair representing a candidate maximum.
+
+    Returns
+    -------
+    AbsMaxResult
+        Structure holding the absolute maximum and the node where it
+        occurs. When ``candidate`` is provided, its value is assumed to be
+        the current maximum and no recomputation is performed.
+    """
+
+    if candidate is not None:
+        node, value = candidate
+        max_val = abs(float(value))
+    else:
+        node, max_val = max(
+            ((n, abs(get_attr(G.nodes[n], aliases, 0.0))) for n in G.nodes()),
+            key=lambda item: item[1],
+            default=(None, 0.0),
+        )
+        max_val = float(max_val)
+
+    if key is not None:
+        G.graph[key] = max_val
+        G.graph[f"{key}_node"] = node
+
+    return AbsMaxResult(max_value=max_val, node=node)
+
+
 def recompute_abs_max(
     G: "networkx.Graph", aliases: tuple[str, ...], *, key: str | None = None
 ) -> tuple[float, Hashable | None]:
@@ -285,15 +357,8 @@ def recompute_abs_max(
     ``G.graph[f"{key}_node"]`` are updated with the new maximum value and the
     node where it occurs.
     """
-    node, max_val = max(
-        ((n, abs(get_attr(G.nodes[n], aliases, 0.0))) for n in G.nodes()),
-        key=lambda x: x[1],
-        default=(None, 0.0),
-    )
-    if key is not None:
-        G.graph[key] = max_val
-        G.graph[f"{key}_node"] = node
-    return max_val, node
+
+    return _compute_abs_max_result(G, aliases, key=key).as_tuple()
 
 
 def multi_recompute_abs_max(
@@ -326,17 +391,27 @@ def _update_cached_abs_max(
     value: float,
     *,
     key: str,
-) -> None:
-    """Update ``G.graph[key]`` and ``G.graph[f"{key}_node"]``."""
+) -> AbsMaxResult:
+    """Update cached absolute maxima for ``aliases``.
+
+    The current cached value is updated when ``value`` becomes the new
+    maximum or when the stored node matches ``n`` but its magnitude
+    decreases. The returned :class:`AbsMaxResult` always reflects the
+    cached maximum after applying the update.
+    """
+
     node_key = f"{key}_node"
-    val = abs(value)
-    cur = float(G.graph.get(key, 0.0))
-    cur_node = G.graph.get(node_key)
+    val = abs(float(value))
+    cur = _coerce_abs_value(G.graph.get(key))
+    cur_node = cast(Hashable | None, G.graph.get(node_key))
+
     if val >= cur:
-        G.graph[key] = val
-        G.graph[node_key] = n
-    elif cur_node == n and val < cur:
-        recompute_abs_max(G, aliases, key=key)
+        return _compute_abs_max_result(
+            G, aliases, key=key, candidate=(n, val)
+        )
+    if cur_node == n:
+        return _compute_abs_max_result(G, aliases, key=key)
+    return AbsMaxResult(max_value=cur, node=cur_node)
 
 
 def set_attr_and_cache(
@@ -347,19 +422,23 @@ def set_attr_and_cache(
     *,
     cache: str | None = None,
     extra: Callable[["networkx.Graph", Hashable, float], None] | None = None,
-) -> float:
-    """Assign ``value`` to node ``n`` and update caches if requested.
+) -> AbsMaxResult | None:
+    """Assign ``value`` to node ``n`` and optionally update cached maxima.
 
-    Cache updates are performed via :func:`recompute_abs_max` when the
-    existing maximum becomes invalid.
+    Returns
+    -------
+    AbsMaxResult | None
+        Absolute maximum information when ``cache`` is provided; otherwise
+        ``None``.
     """
 
     val = set_attr(G.nodes[n], aliases, value)
+    result: AbsMaxResult | None = None
     if cache is not None:
-        _update_cached_abs_max(G, aliases, n, val, key=cache)
+        result = _update_cached_abs_max(G, aliases, n, val, key=cache)
     if extra is not None:
         extra(G, n, val)
-    return val
+    return result
 
 
 def set_attr_with_max(
@@ -369,12 +448,15 @@ def set_attr_with_max(
     value: float,
     *,
     cache: str,
-) -> None:
+) -> AbsMaxResult:
     """Assign ``value`` to node ``n`` and update the global maximum.
 
     This is a convenience wrapper around :func:`set_attr_and_cache`.
     """
-    set_attr_and_cache(G, n, aliases, value, cache=cache)
+    return cast(
+        AbsMaxResult,
+        set_attr_and_cache(G, n, aliases, value, cache=cache),
+    )
 
 
 def set_scalar(
@@ -385,8 +467,15 @@ def set_scalar(
     *,
     cache: str | None = None,
     extra: Callable[["networkx.Graph", Hashable, float], None] | None = None,
-) -> float:
-    """Assign ``value`` to ``alias`` for node ``n`` and update caches."""
+) -> AbsMaxResult | None:
+    """Assign ``value`` to ``alias`` for node ``n`` and update caches.
+
+    Returns
+    -------
+    AbsMaxResult | None
+        Updated absolute maximum details when ``cache`` is provided.
+    """
+
     return set_attr_and_cache(G, n, alias, value, cache=cache, extra=extra)
 
 
@@ -420,7 +509,9 @@ SCALAR_SETTERS: dict[str, dict[str, Any]] = {
 }
 
 
-def _make_scalar_setter(name: str, spec: dict[str, Any]) -> Callable[..., None]:
+def _make_scalar_setter(
+    name: str, spec: dict[str, Any]
+) -> Callable[..., AbsMaxResult | None]:
     alias = spec["alias"]
     cache = spec.get("cache")
     extra = spec.get("extra")
@@ -428,18 +519,23 @@ def _make_scalar_setter(name: str, spec: dict[str, Any]) -> Callable[..., None]:
     has_update = spec.get("update_max_param", False)
 
     if has_update:
+
         def setter(
             G: "networkx.Graph",
             n: Hashable,
             value: float,
             *,
             update_max: bool = True,
-        ) -> None:
+        ) -> AbsMaxResult | None:
             cache_key = cache if update_max else None
-            set_scalar(G, n, alias, value, cache=cache_key, extra=extra)
+            return set_scalar(G, n, alias, value, cache=cache_key, extra=extra)
+
     else:
-        def setter(G: "networkx.Graph", n: Hashable, value: float) -> None:
-            set_scalar(G, n, alias, value, cache=cache, extra=extra)
+
+        def setter(
+            G: "networkx.Graph", n: Hashable, value: float
+        ) -> AbsMaxResult | None:
+            return set_scalar(G, n, alias, value, cache=cache, extra=extra)
 
     setter.__name__ = f"set_{name}"
     setter.__qualname__ = f"set_{name}"
@@ -454,6 +550,7 @@ del _name, _spec, _make_scalar_setter
 
 
 __all__ = [
+    "AbsMaxResult",
     "set_attr_generic",
     "get_attr",
     "collect_attr",
