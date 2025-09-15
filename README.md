@@ -123,9 +123,9 @@ when orchestrating TNFR experiments.
   operator parameters.
 * ``list_mean(xs, default=0.0)`` — return the arithmetic mean with a fallback
   when the input is empty.
-* ``kahan_sum(values)``, ``kahan_sum2d(values)`` and ``kahan_sum_nd(values,
-  dims)`` — numerically stable accumulators used to track coherence magnitudes
-  across long trajectories.
+* ``kahan_sum_nd(values, dims)`` — numerically stable accumulators used to
+  track coherence magnitudes across long trajectories (use ``dims=1`` for
+  scalars, ``dims=2`` for paired values, etc.).
 * ``angle_diff(a, b)`` — compute minimal angular differences (radians) to
   compare structural phases.
 * ``neighbor_mean(G, n, aliases, default=0.0)`` — obtain the mean value of an

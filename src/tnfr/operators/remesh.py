@@ -8,7 +8,7 @@ from io import StringIO
 from collections import deque
 
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
-from ..helpers.numeric import list_mean, kahan_sum
+from ..helpers.numeric import list_mean, kahan_sum_nd
 from ..helpers import edge_version_update
 from ..alias import get_attr, set_attr
 from ..rng import make_rng
@@ -76,7 +76,7 @@ def _snapshot_epi(G):
         v = float(get_attr(data, ALIAS_EPI, 0.0))
         values.append(v)
         buf.write(f"{str(n)}:{round(v, 6)};")
-    total = kahan_sum(values)
+    total = kahan_sum_nd(((v,) for v in values), dims=1)[0]
     mean_val = total / len(values) if values else 0.0
     checksum = hashlib.sha1(buf.getvalue().encode()).hexdigest()[:12]
     return float(mean_val), checksum

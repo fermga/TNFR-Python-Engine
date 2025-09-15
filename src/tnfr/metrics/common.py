@@ -9,7 +9,7 @@ from ..alias import get_attr, multi_recompute_abs_max
 from ..collections_utils import normalize_weights
 from ..constants import DEFAULTS, get_aliases
 from ..helpers import edge_version_cache
-from ..helpers.numeric import clamp01, kahan_sum
+from ..helpers.numeric import clamp01, kahan_sum_nd
 from ..import_utils import get_numpy
 from ..types import GraphLike
 
@@ -53,12 +53,20 @@ def compute_coherence(
         depi_mean = float(np.mean(depi_arr))
     else:
         nodes = list(G.nodes(data=True))
-        dnfr_mean = kahan_sum(
-            abs(get_attr(nd, ALIAS_DNFR, 0.0)) for _, nd in nodes
-        ) / count
-        depi_mean = kahan_sum(
-            abs(get_attr(nd, ALIAS_DEPI, 0.0)) for _, nd in nodes
-        ) / count
+        dnfr_mean = (
+            kahan_sum_nd(
+                ((abs(get_attr(nd, ALIAS_DNFR, 0.0)),) for _, nd in nodes),
+                dims=1,
+            )[0]
+            / count
+        )
+        depi_mean = (
+            kahan_sum_nd(
+                ((abs(get_attr(nd, ALIAS_DEPI, 0.0)),) for _, nd in nodes),
+                dims=1,
+            )[0]
+            / count
+        )
 
     coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence
