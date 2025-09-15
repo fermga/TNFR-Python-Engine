@@ -1,6 +1,6 @@
 import pytest
 
-from tnfr.helpers.numeric import accumulate_cos_sin
+from tnfr.metrics.trig import accumulate_cos_sin
 
 
 def test_accumulate_cos_sin_accumulates_pairs_and_ignores_missing():

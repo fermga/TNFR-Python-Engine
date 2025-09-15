@@ -35,11 +35,8 @@ __all__ = (
     "kahan_sum_nd",
     "kahan_sum",
     "kahan_sum2d",
-    "accumulate_cos_sin",
     "angle_diff",
     "neighbor_mean",
-    "neighbor_phase_mean",
-    "neighbor_phase_mean_list",
 )
 
 
@@ -162,21 +159,6 @@ def neighbor_mean(
     vals = (get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
     return list_mean(vals, default)
 
-
-def accumulate_cos_sin(
-    it: Iterable[tuple[float, float] | None],
-) -> tuple[float, float, bool]:
-    """Accumulate cosine and sine pairs with compensated summation.
-
-    ``it`` yields optional ``(cos, sin)`` tuples. Entries with ``None``
-    components are ignored. The returned values are the compensated sums of
-    cosines and sines along with a flag indicating whether any pair was
-    processed.
-    """
-
-    return _get_trig_module().accumulate_cos_sin(it)
-
-
 def _phase_mean_from_iter(
     it: Iterable[tuple[float, float] | None], fallback: float
 ) -> float:
@@ -226,32 +208,5 @@ def _neighbor_phase_mean_generic(
         np=np,
         fallback=fallback,
     )
-
-
-def neighbor_phase_mean_list(
-    neigh: Sequence[Any],
-    cos_th: dict[Any, float],
-    sin_th: dict[Any, float],
-    np=None,
-    fallback: float = 0.0,
-) -> float:
-    """Return circular mean of neighbour phases from cosine/sine mappings.
-
-    This is a thin wrapper over :func:`_neighbor_phase_mean_generic` that
-    operates on explicit neighbour lists.
-    """
-
-    return _get_trig_module().neighbor_phase_mean_list(
-        neigh, cos_th, sin_th, np=np, fallback=fallback
-    )
-
-
-def neighbor_phase_mean(obj, n=None) -> float:
-    """Circular mean of neighbour phases.
-
-    The :class:`NodoNX` import is cached after the first call.
-    """
-
-    return _get_trig_module().neighbor_phase_mean(obj, n)
 
 
