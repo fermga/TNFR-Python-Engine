@@ -28,3 +28,16 @@ def test_ensure_history_positive_window():
     assert hist.maxlen == 2
     hist.append("A")
     assert list(nd["glyph_history"]) == ["A"]
+
+
+def test_ensure_history_discards_string_input():
+    nd: dict[str, object] = {"glyph_history": "ABC"}
+    _, hist = _ensure_history(nd, 2)
+    assert isinstance(hist, deque)
+    assert list(hist) == []
+
+
+def test_ensure_history_accepts_iterable_input():
+    nd: dict[str, object] = {"glyph_history": ["A", "B"]}
+    _, hist = _ensure_history(nd, 2)
+    assert list(hist) == ["A", "B"]
