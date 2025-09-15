@@ -50,7 +50,6 @@ def _sorted_items(mapping: Mapping[str, float]) -> tuple[tuple[str, float], ...]
 def _build_selector_thresholds(
     _graph_id: int,
     thr_sel_items: tuple[tuple[str, float], ...],
-    thr_def_items: tuple[tuple[str, float], ...],
 ) -> dict[str, float]:
     """Construct selector thresholds for a graph.
 
@@ -60,32 +59,17 @@ def _build_selector_thresholds(
         Identifier of the graph used to seed the cache.
     thr_sel_items : tuple[tuple[str, float], ...]
         Selector threshold items as ``(key, value)`` pairs.
-    thr_def_items : tuple[tuple[str, float], ...]
-        Legacy threshold items used as fallbacks.
 
     Returns
     -------
     dict[str, float]
-        Normalised thresholds combining selector and legacy values.
+        Normalised thresholds for selector metrics.
     """
     thr_sel = dict(thr_sel_items)
-    thr_def = dict(thr_def_items)
-
-    specs = {
-        "si_hi": ("hi", SELECTOR_THRESHOLD_DEFAULTS["si_hi"]),
-        "si_lo": ("lo", SELECTOR_THRESHOLD_DEFAULTS["si_lo"]),
-        "dnfr_hi": (None, SELECTOR_THRESHOLD_DEFAULTS["dnfr_hi"]),
-        "dnfr_lo": (None, SELECTOR_THRESHOLD_DEFAULTS["dnfr_lo"]),
-        "accel_hi": (None, SELECTOR_THRESHOLD_DEFAULTS["accel_hi"]),
-        "accel_lo": (None, SELECTOR_THRESHOLD_DEFAULTS["accel_lo"]),
-    }
 
     out: dict[str, float] = {}
-    for key, (legacy, default) in specs.items():
-        if legacy is not None:
-            val = thr_sel.get(key, thr_def.get(legacy, default))
-        else:
-            val = thr_sel.get(key, default)
+    for key, default in SELECTOR_THRESHOLD_DEFAULTS.items():
+        val = thr_sel.get(key, default)
         out[key] = clamp01(float(val))
     return out
 
@@ -105,15 +89,10 @@ def _selector_thresholds(G: "nx.Graph") -> dict[str, float]:
     """
     sel_defaults = DEFAULTS.get("SELECTOR_THRESHOLDS", {})
     thr_sel = {**sel_defaults, **G.graph.get("SELECTOR_THRESHOLDS", {})}
-    glyph_defaults = DEFAULTS.get("GLYPH_THRESHOLDS", {})
-    thr_def = {**glyph_defaults, **G.graph.get("GLYPH_THRESHOLDS", {})}
-
     thr_sel_items = _sorted_items(thr_sel)
-    thr_def_items = _sorted_items(thr_def)
     return _build_selector_thresholds(
         _graph_id=id(G),  # seed cache; value is unused beyond hashing
         thr_sel_items=thr_sel_items,
-        thr_def_items=thr_def_items,
     )
 
 

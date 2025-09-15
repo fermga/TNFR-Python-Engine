@@ -1,6 +1,5 @@
 """Pruebas de selector utils."""
 
-import networkx as nx
 import pytest
 
 from tnfr.selector import (
@@ -10,96 +9,11 @@ from tnfr.selector import (
     _apply_selector_hysteresis,
 )
 from tnfr.constants import DEFAULTS, get_aliases
-from tnfr.constants.core import SELECTOR_THRESHOLD_DEFAULTS
-from tnfr.helpers.numeric import clamp01
 from tnfr.collections_utils import normalize_weights
 from tnfr.dynamics import _configure_selector_weights
 
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_D2EPI = get_aliases("D2EPI")
-
-
-def _selector_thresholds_original(G: nx.Graph) -> dict:
-    sel_defaults = DEFAULTS.get("SELECTOR_THRESHOLDS", {})
-    thr_sel = {**sel_defaults, **G.graph.get("SELECTOR_THRESHOLDS", {})}
-    glyph_defaults = DEFAULTS.get("GLYPH_THRESHOLDS", {})
-    thr_def = {**glyph_defaults, **G.graph.get("GLYPH_THRESHOLDS", {})}
-
-    si_hi = clamp01(
-        float(
-            thr_sel.get(
-                "si_hi",
-                thr_def.get(
-                    "hi",
-                    glyph_defaults.get(
-                        "hi", SELECTOR_THRESHOLD_DEFAULTS["si_hi"]
-                    ),
-                ),
-            )
-        )
-    )
-    si_lo = clamp01(
-        float(
-            thr_sel.get(
-                "si_lo",
-                thr_def.get(
-                    "lo",
-                    glyph_defaults.get(
-                        "lo", SELECTOR_THRESHOLD_DEFAULTS["si_lo"]
-                    ),
-                ),
-            )
-        )
-    )
-    dnfr_hi = clamp01(
-        float(
-            thr_sel.get(
-                "dnfr_hi",
-                sel_defaults.get(
-                    "dnfr_hi", SELECTOR_THRESHOLD_DEFAULTS["dnfr_hi"]
-                ),
-            )
-        )
-    )
-    dnfr_lo = clamp01(
-        float(
-            thr_sel.get(
-                "dnfr_lo",
-                sel_defaults.get(
-                    "dnfr_lo", SELECTOR_THRESHOLD_DEFAULTS["dnfr_lo"]
-                ),
-            )
-        )
-    )
-    acc_hi = clamp01(
-        float(
-            thr_sel.get(
-                "accel_hi",
-                sel_defaults.get(
-                    "accel_hi", SELECTOR_THRESHOLD_DEFAULTS["accel_hi"]
-                ),
-            )
-        )
-    )
-    acc_lo = clamp01(
-        float(
-            thr_sel.get(
-                "accel_lo",
-                sel_defaults.get(
-                    "accel_lo", SELECTOR_THRESHOLD_DEFAULTS["accel_lo"]
-                ),
-            )
-        )
-    )
-
-    return {
-        "si_hi": si_hi,
-        "si_lo": si_lo,
-        "dnfr_hi": dnfr_hi,
-        "dnfr_lo": dnfr_lo,
-        "accel_hi": acc_hi,
-        "accel_lo": acc_lo,
-    }
 
 
 def test_selector_thresholds_defaults(graph_canon):
@@ -114,20 +28,23 @@ def test_selector_thresholds_defaults(graph_canon):
     assert thr["accel_lo"] == sel_def["accel_lo"]
 
 
-def test_selector_thresholds_refactor_equivalent_defaults(graph_canon):
+def test_selector_thresholds_recreate_defaults_when_missing(graph_canon):
     G = graph_canon()
-    assert _selector_thresholds(G) == _selector_thresholds_original(G)
+    del G.graph["SELECTOR_THRESHOLDS"]
+    thr = _selector_thresholds(G)
+    assert thr == DEFAULTS["SELECTOR_THRESHOLDS"]
 
 
-def test_selector_thresholds_refactor_equivalent_legacy(graph_canon):
+def test_selector_thresholds_ignore_glyph_thresholds(graph_canon):
     G = graph_canon()
     G.graph["GLYPH_THRESHOLDS"] = {"hi": 0.9, "lo": 0.2}
-    assert _selector_thresholds(G) == _selector_thresholds_original(G)
+    thr = _selector_thresholds(G)
+    assert thr == DEFAULTS["SELECTOR_THRESHOLDS"]
 
 
-def test_selector_thresholds_refactor_equivalent_overrides(graph_canon):
+def test_selector_thresholds_applies_overrides(graph_canon):
     G = graph_canon()
-    G.graph["SELECTOR_THRESHOLDS"] = {
+    overrides = {
         "si_hi": 0.9,
         "si_lo": 0.2,
         "dnfr_hi": 0.7,
@@ -135,7 +52,8 @@ def test_selector_thresholds_refactor_equivalent_overrides(graph_canon):
         "accel_hi": 0.8,
         "accel_lo": 0.1,
     }
-    assert _selector_thresholds(G) == _selector_thresholds_original(G)
+    G.graph["SELECTOR_THRESHOLDS"] = overrides
+    assert _selector_thresholds(G) == overrides
 
 
 def test_selector_thresholds_cached_per_graph(graph_canon):
