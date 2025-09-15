@@ -76,7 +76,7 @@ def preparar_red(
         }
     )
     G.graph.setdefault("history", history)
-    # REMESH_TAU: alias legado resuelto por ``get_param``
+    # Memoria global de REMESH
     tau = int(get_param(G, "REMESH_TAU_GLOBAL"))
     maxlen = max(2 * tau + 5, 64)
     G.graph.setdefault("_epi_hist", deque(maxlen=maxlen))
