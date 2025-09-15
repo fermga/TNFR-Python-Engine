@@ -30,12 +30,9 @@ __all__ = (
     "LockAwareLRUCache",
     "NODE_SET_CHECKSUM_KEY",
     "clear_node_repr_cache",
-    "ensure_graph_entry",
-    "ensure_lock_mapping",
     "get_graph_version",
     "increment_graph_version",
     "node_set_checksum",
-    "prune_locks",
     "stable_json",
     "_node_repr",
     "_node_repr_digest",
@@ -58,7 +55,7 @@ class LockAwareLRUCache(LRUCache[Hashable, Any]):
         return key, value
 
 
-def ensure_graph_entry(
+def _ensure_graph_entry(
     graph: Any,
     key: str,
     factory: Callable[[], T],
@@ -73,7 +70,7 @@ def ensure_graph_entry(
     return value
 
 
-def ensure_lock_mapping(
+def _ensure_lock_mapping(
     graph: Any,
     key: str,
     *,
@@ -81,7 +78,7 @@ def ensure_lock_mapping(
 ) -> defaultdict[Hashable, threading.RLock]:
     """Ensure ``graph`` holds a ``defaultdict`` of locks under ``key``."""
 
-    return ensure_graph_entry(
+    return _ensure_graph_entry(
         graph,
         key,
         factory=lambda: defaultdict(lock_factory),
@@ -90,7 +87,7 @@ def ensure_lock_mapping(
     )
 
 
-def prune_locks(
+def _prune_locks(
     cache: dict[Hashable, Any] | LRUCache[Hashable, Any] | None,
     locks: dict[Hashable, threading.RLock]
     | defaultdict[Hashable, threading.RLock]
@@ -268,15 +265,15 @@ class CacheManager:
                 locks = self.graph.get(self.locks_key)
                 return cache, locks
 
-            locks = ensure_lock_mapping(self.graph, self.locks_key)
-            cache = ensure_graph_entry(
+            locks = _ensure_lock_mapping(self.graph, self.locks_key)
+            cache = _ensure_graph_entry(
                 self.graph,
                 self.cache_key,
                 factory=lambda: self._factory(max_entries, locks),
                 validator=self._validator(max_entries),
             )
             if max_entries is None:
-                prune_locks(cache, locks)
+                _prune_locks(cache, locks)
             return cache, locks
 
 
