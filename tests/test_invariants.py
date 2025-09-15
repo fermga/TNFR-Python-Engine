@@ -4,8 +4,9 @@ from __future__ import annotations
 import math
 import pytest
 
+import networkx as nx
 from tnfr.constants import inject_defaults
-from tnfr.scenarios import build_graph
+from tnfr.initialization import init_node_attrs
 from tnfr.dynamics import step
 from tnfr.metrics import register_metrics_callbacks, _metrics_step
 from tnfr.operators import apply_glyph, apply_remesh_if_globally_stable
@@ -15,8 +16,10 @@ from tnfr.glyph_history import ensure_history
 
 @pytest.fixture
 def G_small():
-    G = build_graph(n=8, topology="ring", seed=7)
+    G = nx.cycle_graph(8)
     inject_defaults(G)
+    init_node_attrs(G, override=True)
+    G.graph["RANDOM_SEED"] = 7
     register_metrics_callbacks(G)
     _metrics_step(G)
     return G

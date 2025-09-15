@@ -1,11 +1,12 @@
 """Tests for validators."""
 
 import pytest
-from tnfr.scenarios import build_graph
+import networkx as nx
 from tnfr.constants import (
     inject_defaults,
     get_aliases,
 )
+from tnfr.initialization import init_node_attrs
 from tnfr.validators import run_validators
 from tnfr.alias import set_attr, set_attr_str
 from tnfr.io import read_structured_file, StructuredFileError
@@ -25,8 +26,10 @@ except ModuleNotFoundError:  # pragma: no cover
 
 
 def _base_graph():
-    G = build_graph(n=4, topology="ring", seed=1)
+    G = nx.cycle_graph(4)
     inject_defaults(G)
+    init_node_attrs(G, override=True)
+    G.graph["RANDOM_SEED"] = 1
     return G
 
 

@@ -3,12 +3,12 @@ from __future__ import annotations
 import argparse
 
 from pathlib import Path
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Any, Optional
 
-if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx  # type: ignore[import-untyped]
+import networkx as nx  # type: ignore[import-untyped]
 
 from ..constants import inject_defaults, DEFAULTS, METRIC_DEFAULTS
+from ..initialization import init_node_attrs
 from ..sense import register_sigma_callback, sigma_rose
 from ..metrics import (
     register_metrics_callbacks,
@@ -27,7 +27,6 @@ from ..dynamics import (
     parametric_glyph_selector,
     validate_canon,
 )
-from ..scenarios import build_graph
 from ..presets import get_preset
 from ..config import apply_config
 from ..io import read_structured_file, safe_write
@@ -67,9 +66,27 @@ def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
 
 
 def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
-    return build_graph(
-        n=args.nodes, topology=args.topology, seed=args.seed, p=args.p
-    )
+    n = args.nodes
+    topology = getattr(args, "topology", "ring").lower()
+    seed = getattr(args, "seed", None)
+    if topology == "ring":
+        G = nx.cycle_graph(n)
+    elif topology == "complete":
+        G = nx.complete_graph(n)
+    elif topology == "erdos":
+        prob = float(args.p) if getattr(args, "p", None) is not None else 3.0 / n
+        if not 0.0 <= prob <= 1.0:
+            raise ValueError(f"p must be between 0 and 1; received {prob}")
+        G = nx.gnp_random_graph(n, prob, seed=seed)
+    else:
+        raise ValueError(
+            f"Invalid topology '{topology}'. Accepted options are: ring, complete, erdos"
+        )
+    inject_defaults(G)
+    if seed is not None:
+        G.graph["RANDOM_SEED"] = int(seed)
+    init_node_attrs(G, override=True)
+    return G
 
 
 def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
