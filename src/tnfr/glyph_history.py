@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Protocol
+from typing import Any
 from collections import deque, Counter
 from itertools import islice
 from collections.abc import Iterable
@@ -16,7 +16,6 @@ logger = get_logger(__name__)
 
 __all__ = (
     "HistoryDict",
-    "IncrementDict",
     "push_glyph",
     "recent_glyph",
     "ensure_history",
@@ -63,7 +62,7 @@ def _ensure_history(
     v_window = validate_window(window)
     if v_window == 0 and not create_zero:
         return v_window, None
-    hist = nd.get("glyph_history")
+    hist = nd.setdefault("glyph_history", deque(maxlen=v_window))
     if not isinstance(hist, deque) or hist.maxlen != v_window:
         hist = deque(_normalize_history_input(hist), maxlen=v_window)
         nd["glyph_history"] = hist
@@ -216,9 +215,7 @@ def ensure_history(G) -> dict[str, Any]:
 
     ``HISTORY_MAXLEN`` must be non-negative and ``HISTORY_COMPACT_EVERY``
     must be a positive integer; otherwise a :class:`ValueError` is raised.
-    When ``HISTORY_MAXLEN`` is zero, a lightweight dictionary subclass is
-    returned to avoid the overhead of :class:`HistoryDict` while still
-    exposing :meth:`get_increment`.
+    When ``HISTORY_MAXLEN`` is zero, a regular ``dict`` is used.
     """
     maxlen, _ = _ensure_history({}, int(get_param(G, "HISTORY_MAXLEN")))
     compact_every = validate_window(
@@ -226,9 +223,7 @@ def ensure_history(G) -> dict[str, Any]:
     )
     hist = G.graph.get("history")
     if maxlen == 0:
-        if not isinstance(hist, IncrementDict):
-            hist = IncrementDict(hist or {})
-            G.graph["history"] = hist
+        hist = G.graph.setdefault("history", {})
         return hist
     if (
         not isinstance(hist, HistoryDict)
@@ -249,46 +244,11 @@ def current_step_idx(G) -> int:
     graph = getattr(G, "graph", G)
     return len(graph.get("history", {}).get("C_steps", []))
 
+    
 
-class IncrementDict(dict):
-    """Dict with ``get_increment`` for metric history."""
-
-    def get_increment(
-        self, key: str, default: Any = None
-    ) -> Any:  # noqa: D401
-        return self.setdefault(key, default)
-
-
-class SupportsGetIncrement(Protocol):
-    def get_increment(self, key: str, default: Any | None = None) -> Any:
-        """Return value for *key*, inserting *default* if missing."""
-
-
-class _IncrementProxy:
-    """Adapter to provide :meth:`get_increment` for plain dictionaries."""
-
-    def __init__(self, data: dict[str, Any]) -> None:
-        self._data = data
-
-    def get_increment(self, key: str, default: Any | None = None) -> Any:
-        return self._data.setdefault(key, default)
-
-
-def _ensure_increment(
-    hist: dict[str, Any] | SupportsGetIncrement,
-) -> SupportsGetIncrement:
-    return (
-        hist
-        if callable(getattr(hist, "get_increment", None))
-        else _IncrementProxy(hist)
-    )  # type: ignore[return-value]
-
-
-def append_metric(
-    hist: dict[str, Any] | SupportsGetIncrement, key: str, value: Any
-) -> None:
+def append_metric(hist: dict[str, Any], key: str, value: Any) -> None:
     """Append ``value`` to ``hist[key]`` list, creating it if missing."""
-    _ensure_increment(hist).get_increment(key, []).append(value)
+    hist.setdefault(key, []).append(value)
 
 
 def last_glyph(nd: dict[str, Any]) -> str | None:
