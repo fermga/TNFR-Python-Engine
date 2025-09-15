@@ -33,7 +33,6 @@ __all__ = (
     "EdgeCacheManager",
     "edge_version_cache",
     "cached_nodes_and_A",
-    "invalidate_edge_version_cache",
     "increment_edge_version",
     "edge_version_update",
 )
@@ -197,17 +196,6 @@ def edge_version_cache(
             return value
 
 
-def invalidate_edge_version_cache(G: Any) -> None:
-    """Clear cached entries associated with ``G``."""
-
-    graph = get_graph(G)
-    cache, locks = EdgeCacheManager(graph).get_cache(None, create=False)
-    if isinstance(cache, (dict, LRUCache)):
-        cache.clear()
-    if isinstance(locks, dict):
-        locks.clear()
-
-
 def cached_nodes_and_A(
     G: nx.Graph, *, cache_size: int | None = 1, require_numpy: bool = False
 ) -> tuple[list[int], Any]:
@@ -236,7 +224,11 @@ def cached_nodes_and_A(
 def _reset_edge_caches(graph: Any, G: Any) -> None:
     """Clear caches affected by edge updates."""
 
-    invalidate_edge_version_cache(G)
+    cache, locks = EdgeCacheManager(graph).get_cache(None, create=False)
+    if isinstance(cache, (dict, LRUCache)):
+        cache.clear()
+    if isinstance(locks, dict):
+        locks.clear()
     mark_dnfr_prep_dirty(G)
     clear_node_repr_cache()
     for key in EDGE_VERSION_CACHE_KEYS:

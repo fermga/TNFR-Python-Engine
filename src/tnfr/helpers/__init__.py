@@ -44,7 +44,6 @@ from .edge_cache import (
     EdgeCacheManager,
     edge_version_cache,
     cached_nodes_and_A,
-    invalidate_edge_version_cache,
     increment_edge_version,
     edge_version_update,
 )
@@ -79,7 +78,6 @@ __all__ = (
     "EdgeCacheManager",
     "edge_version_cache",
     "cached_nodes_and_A",
-    "invalidate_edge_version_cache",
     "increment_edge_version",
     "edge_version_update",
     "node_set_checksum",
