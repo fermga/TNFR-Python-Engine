@@ -62,11 +62,17 @@ cached_import.cache_clear()
 prune_failed_imports()
 ```
 
-For optional JavaScript tooling, install the Node.js dependencies:
+### JavaScript dependencies
+
+Some auxiliary tooling (such as documentation builds) relies on Node.js
+packages defined in `package.json`. These are **not** required to run the
+Python engine itself. If you need them, install with:
 
 ```bash
 npm install
 ```
+
+The resulting `node_modules/` directory is ignored by version control.
 
 ## Tests
 
