@@ -16,10 +16,8 @@ from .arguments import (
     _add_metrics_parser,
     _args_to_dict,
 )
-from .token_parser import (
-    _parse_tokens,
-    TOKEN_MAP,
-)
+from .token_parser import _parse_tokens
+from ..token_map import TOKEN_MAP
 from .execution import (
     build_basic_graph,
     apply_cli_config,

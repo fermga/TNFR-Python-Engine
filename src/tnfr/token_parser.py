@@ -5,12 +5,15 @@ from __future__ import annotations
 from typing import Any, Callable, Iterator
 
 from .collections_utils import flatten_structure
+from .token_map import TOKEN_MAP
 
-__all__ = ("validate_token", "_parse_tokens")
+__all__ = ("validate_token", "_parse_tokens", "TOKEN_MAP")
 
 
 def validate_token(
-    tok: Any, pos: int, token_map: dict[str, Callable[[Any], Any]]
+    tok: Any,
+    pos: int,
+    token_map: dict[str, Callable[[Any], Any]] | None = None,
 ) -> Any:
     """Validate a token and wrap handler errors with context.
 
@@ -19,6 +22,7 @@ def validate_token(
     re-raised as :class:`ValueError` with additional positional context.
     """
 
+    token_map = TOKEN_MAP if token_map is None else token_map
     tok_info = f"(pos {pos}, token {tok!r})"
 
     if isinstance(tok, dict):
@@ -39,9 +43,10 @@ def validate_token(
 
 
 def _parse_tokens(
-    obj: Any, token_map: dict[str, Callable[[Any], Any]]
+    obj: Any, token_map: dict[str, Callable[[Any], Any]] | None = None
 ) -> Iterator[Any]:
     """Yield validated tokens from ``obj`` lazily."""
 
+    token_map = TOKEN_MAP if token_map is None else token_map
     for pos, tok in enumerate(flatten_structure(obj), start=1):
         yield validate_token(tok, pos, token_map)
