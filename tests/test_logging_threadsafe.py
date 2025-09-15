@@ -3,14 +3,12 @@ import importlib
 import logging
 
 import tnfr.logging_utils as logging_utils
-import tnfr.logging_base as logging_base
 
 
 def reload_logging_utils():
     """Reload logging_utils after clearing root handlers."""
 
     global logging_utils
-    importlib.reload(logging_base)
     logging_utils = importlib.reload(logging_utils)
     return logging_utils
 
