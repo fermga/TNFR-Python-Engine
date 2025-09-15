@@ -10,7 +10,7 @@ from .helpers.numeric import clamp01
 from .glyph_history import recent_glyph
 from .types import Glyph
 from .operators import apply_glyph  # avoid repeated import inside functions
-from .metrics_utils import normalize_dnfr
+from .metrics.common import normalize_dnfr
 
 ALIAS_SI = get_aliases("SI")
 ALIAS_D2EPI = get_aliases("D2EPI")

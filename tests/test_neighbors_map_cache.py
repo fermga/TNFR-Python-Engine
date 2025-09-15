@@ -1,6 +1,6 @@
 from types import MappingProxyType
 
-from tnfr.metrics_utils import ensure_neighbors_map
+from tnfr.metrics.common import ensure_neighbors_map
 from tnfr.helpers.edge_cache import increment_edge_version
 
 

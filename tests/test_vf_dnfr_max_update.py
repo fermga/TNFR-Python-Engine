@@ -8,7 +8,7 @@ from tnfr.alias import (
     set_scalar,
 )
 from tnfr.constants import get_aliases
-from tnfr.metrics_utils import _get_vf_dnfr_max
+from tnfr.metrics.common import _get_vf_dnfr_max
 
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")

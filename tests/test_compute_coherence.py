@@ -1,7 +1,7 @@
 import math
 import pytest
 
-from tnfr.metrics_utils import compute_coherence
+from tnfr.metrics.common import compute_coherence
 
 
 def naive_compute_coherence(G):

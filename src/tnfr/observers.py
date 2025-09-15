@@ -7,7 +7,6 @@ import statistics
 from .constants import get_aliases, get_param
 from .alias import get_attr
 from .helpers.numeric import angle_diff, list_pvariance
-from .metrics_utils import compute_coherence
 from .callback_utils import callback_manager
 from .glyph_history import (
     ensure_history,
@@ -20,6 +19,7 @@ from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 from .logging_utils import get_logger
 from .import_utils import get_numpy
+from .metrics.common import compute_coherence
 
 ALIAS_THETA = get_aliases("THETA")
 

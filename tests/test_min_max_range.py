@@ -1,5 +1,5 @@
 import pytest
-from tnfr.metrics_utils import min_max_range
+from tnfr.metrics.common import min_max_range
 
 
 def test_min_max_range_generator():

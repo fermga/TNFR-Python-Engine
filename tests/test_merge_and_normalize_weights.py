@@ -1,6 +1,6 @@
 import pytest
 
-from tnfr.metrics_utils import merge_and_normalize_weights
+from tnfr.metrics.common import merge_and_normalize_weights
 
 
 def test_merge_and_normalize_weights(graph_canon):

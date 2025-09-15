@@ -176,7 +176,7 @@ def _neighbor_phase_mean_generic(
             raise TypeError(
                 "neighbor_phase_mean requires nodes bound to a graph"
             )
-        from ..metrics_utils import get_trig_cache
+        from ..metrics.trigonometry import get_trig_cache
 
         trig = get_trig_cache(node.G)
         fallback = trig.theta.get(node.n, fallback)

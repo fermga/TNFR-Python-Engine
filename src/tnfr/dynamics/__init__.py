@@ -34,12 +34,9 @@ from ..alias import (
     set_theta,
     multi_recompute_abs_max,
 )
-from ..metrics_utils import (
-    compute_Si,
-    compute_dnfr_accel_max,
-    merge_and_normalize_weights,
-    compute_theta_trig,
-)
+from ..metrics.sense_index import compute_Si
+from ..metrics.common import compute_dnfr_accel_max, merge_and_normalize_weights
+from ..metrics.trigonometry import compute_theta_trig
 from ..callback_utils import callback_manager
 from ..glyph_history import recent_glyph, ensure_history, append_metric
 from ..selector import (
