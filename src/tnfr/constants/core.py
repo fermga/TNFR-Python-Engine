@@ -121,7 +121,6 @@ class CoreDefaults:
     VALIDATORS_STRICT: bool = False
     PROGRAM_TRACE_MAXLEN: int = 50
     HISTORY_MAXLEN: int = 0
-    HISTORY_COMPACT_EVERY: int = 100
 
 
 @dataclass(frozen=True, slots=True)
