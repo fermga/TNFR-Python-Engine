@@ -38,7 +38,7 @@ from ..types import Glyph
 from ..json_utils import json_dumps
 
 from .arguments import _args_to_dict
-from .token_parser import _parse_tokens
+from ..token_parser import _parse_tokens
 
 logger = get_logger(__name__)
 

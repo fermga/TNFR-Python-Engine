@@ -5,9 +5,9 @@ from __future__ import annotations
 from typing import Any, Callable, Iterator
 
 from .collections_utils import flatten_structure
-from .token_map import TOKEN_MAP
+from .token_map import TOKEN_MAP, parse_thol
 
-__all__ = ("validate_token", "_parse_tokens", "TOKEN_MAP")
+__all__ = ("validate_token", "_parse_tokens", "parse_thol", "TOKEN_MAP")
 
 
 def validate_token(
