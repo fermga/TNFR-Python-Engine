@@ -37,7 +37,7 @@ def test_no_lock_when_cache_disabled(monkeypatch):
         def __enter__(self):  # pragma: no cover - failing ensures no lock
             raise AssertionError("lock should not be acquired")
 
-        def __exit__(self, exc_type, exc, tb):
+        def __exit__(self, _exc_type, _exc, _tb):
             pass
 
     monkeypatch.setattr(rng_mod, "_RNG_LOCK", FailLock())

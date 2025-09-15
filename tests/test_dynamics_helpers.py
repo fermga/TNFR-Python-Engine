@@ -17,7 +17,7 @@ def test_init_and_refresh_dnfr_cache(graph_canon):
     for i in range(2):
         G.add_node(i, theta=0.1 * i, EPI=float(i), VF=float(i))
     nodes = list(G.nodes())
-    cache, idx, th, epi, vf, cx, sx, refreshed = _init_dnfr_cache(
+    cache, idx, th, epi, vf, _cx, _sx, refreshed = _init_dnfr_cache(
         G, nodes, None, 1, False
     )
     assert refreshed

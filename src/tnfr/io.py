@@ -13,7 +13,7 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from typing import Any, Callable, IO
+from typing import Any, Callable
 from functools import lru_cache
 
 from .import_utils import cached_import

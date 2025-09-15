@@ -127,7 +127,7 @@ def test_params_passed_to_orjson(monkeypatch):
 
     captured = {}
 
-    def fake_orjson(orjson_mod, obj, params, **kwargs):
+    def fake_orjson(_orjson_mod, obj, params, **kwargs):
         captured["params"] = params
         return b"{}"
 

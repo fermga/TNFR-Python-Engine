@@ -13,6 +13,7 @@ ALIAS_DNFR = get_aliases("DNFR")
 def test_compute_Si_uses_module_numpy_and_propagates(monkeypatch, graph_canon):
     class DummyNP:
         def fromiter(self, iterable, dtype=float, count=-1):
+            _ = dtype
             return list(iterable)
 
         def cos(self, arr):
