@@ -7,6 +7,7 @@ structures as immutable snapshots.
 
 from __future__ import annotations
 
+from functools import partial
 from typing import Any, Callable, Optional, Protocol, NamedTuple, TypedDict, cast
 from collections.abc import Iterable, Mapping
 
@@ -136,17 +137,6 @@ def mapping_field(G: Any, graph_key: str, out_key: str) -> TraceMetadata:
     return cast(TraceMetadata, {out_key: mapping})
 
 
-def make_mapping_field(
-    graph_key: str, out_key: str
-) -> Callable[[Any], TraceMetadata]:
-    """Return a field function reading ``graph_key`` into ``out_key``."""
-
-    def field(G: Any) -> TraceMetadata:
-        return mapping_field(G, graph_key, out_key)
-
-    return field
-
-
 # -------------------------
 # Builders
 # -------------------------
@@ -217,13 +207,15 @@ def register_trace_field(
     TRACE_FIELDS.setdefault(phase, {})[name] = func
 
 
-gamma_field = make_mapping_field("GAMMA", "gamma")
+gamma_field = partial(mapping_field, graph_key="GAMMA", out_key="gamma")
 
 
-grammar_field = make_mapping_field("GRAMMAR_CANON", "grammar")
+grammar_field = partial(mapping_field, graph_key="GRAMMAR_CANON", out_key="grammar")
 
 
-dnfr_weights_field = make_mapping_field("DNFR_WEIGHTS", "dnfr_weights")
+dnfr_weights_field = partial(
+    mapping_field, graph_key="DNFR_WEIGHTS", out_key="dnfr_weights"
+)
 
 
 def selector_field(G: Any) -> TraceMetadata:
@@ -231,10 +223,12 @@ def selector_field(G: Any) -> TraceMetadata:
     return cast(TraceMetadata, {"selector": getattr(sel, "__name__", str(sel)) if sel else None})
 
 
-_si_weights_field = make_mapping_field("_Si_weights", "si_weights")
+_si_weights_field = partial(mapping_field, graph_key="_Si_weights", out_key="si_weights")
 
 
-_si_sensitivity_field = make_mapping_field("_Si_sensitivity", "si_sensitivity")
+_si_sensitivity_field = partial(
+    mapping_field, graph_key="_Si_sensitivity", out_key="si_sensitivity"
+)
 
 
 def si_weights_field(G: Any) -> TraceMetadata:
