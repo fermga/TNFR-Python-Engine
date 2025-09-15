@@ -135,38 +135,6 @@ def read_structured_file(path: Path) -> Any:
 logger = get_logger(__name__)
 
 
-def _write_to_fd(fd: IO[Any], write: Callable[[Any], Any], *, sync: bool = False) -> None:
-    """Write using ``write`` callback and optionally sync to disk."""
-    write(fd)
-    if sync:
-        fd.flush()
-        os.fsync(fd.fileno())
-
-
-def _write_file(
-    path: Path | str,
-    open_params: dict[str, Any],
-    write_cb: Callable[[Any], Any],
-    *,
-    sync: bool,
-) -> None:
-    """Open ``path`` using ``open_params`` and write via ``write_cb``.
-
-    Parameters
-    ----------
-    path:
-        Destination file path.
-    open_params:
-        Parameters forwarded to :func:`open`.
-    write_cb:
-        Callback receiving the opened file object.
-    sync:
-        When ``True`` flushes and fsyncs the file descriptor.
-    """
-    with open(path, **open_params) as fd:
-        _write_to_fd(fd, write_cb, sync=sync)
-
-
 def safe_write(
     path: str | Path,
     write: Callable[[Any], Any],
@@ -174,6 +142,7 @@ def safe_write(
     mode: str = "w",
     encoding: str | None = "utf-8",
     atomic: bool = True,
+    sync: bool | None = None,
     **open_kwargs: Any,
 ) -> None:
     """Write to ``path`` ensuring parent directory exists and handle errors.
@@ -196,19 +165,28 @@ def safe_write(
         When ``True`` (default) writes to a temporary file and atomically
         replaces the destination after flushing to disk. When ``False``
         writes directly to ``path`` without any atomicity guarantee.
+    sync:
+        When ``True`` flushes and fsyncs the file descriptor after writing.
+        ``None`` uses ``atomic`` to determine syncing behaviour.
     """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     open_params = dict(mode=mode, **open_kwargs)
     if "b" not in mode and encoding is not None:
         open_params["encoding"] = encoding
+    if sync is None:
+        sync = atomic
     tmp_path: Path | None = None
     try:
         if atomic:
             tmp_fd = tempfile.NamedTemporaryFile(dir=path.parent, delete=False)
             tmp_path = Path(tmp_fd.name)
             tmp_fd.close()
-            _write_file(tmp_path, open_params, write, sync=True)
+            with open(tmp_path, **open_params) as fd:
+                write(fd)
+                if sync:
+                    fd.flush()
+                    os.fsync(fd.fileno())
             try:
                 os.replace(tmp_path, path)
             except OSError as e:
@@ -217,7 +195,11 @@ def safe_write(
                 )
                 raise
         else:
-            _write_file(path, open_params, write, sync=False)
+            with open(path, **open_params) as fd:
+                write(fd)
+                if sync:
+                    fd.flush()
+                    os.fsync(fd.fileno())
     except (OSError, ValueError, TypeError) as e:
         raise type(e)(f"Failed to write file {path}: {e}") from e
     finally:
