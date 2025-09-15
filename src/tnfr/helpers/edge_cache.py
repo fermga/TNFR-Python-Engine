@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import threading
-from collections import defaultdict
 from collections.abc import Callable, Hashable
 from contextlib import contextmanager
 from typing import Any, TypeVar
@@ -9,19 +7,16 @@ from typing import Any, TypeVar
 from cachetools import LRUCache
 import networkx as nx  # type: ignore[import-untyped]
 
-from ..graph_utils import get_graph, mark_dnfr_prep_dirty
-from ..import_utils import get_numpy
-from ..logging_utils import get_logger
-from .cache_utils import (
-    LockAwareLRUCache,
+from ..cache import (
+    EdgeCacheManager,
     clear_node_repr_cache,
-    ensure_graph_entry,
-    ensure_lock_mapping,
     get_graph_version,
     increment_graph_version,
     node_set_checksum,
-    prune_locks,
 )
+from ..graph_utils import get_graph, mark_dnfr_prep_dirty
+from ..import_utils import get_numpy
+from ..logging_utils import get_logger
 
 T = TypeVar("T")
 
@@ -44,66 +39,6 @@ __all__ = (
     "increment_edge_version",
     "edge_version_update",
 )
-
-
-class EdgeCacheManager:
-    """Manage per-graph edge caches and their associated locks."""
-
-    _LOCK = threading.RLock()
-
-    def __init__(self, graph: Any) -> None:
-        self.graph = graph
-
-    def _cache_and_locks(
-        self, max_entries: int | None, *, create: bool
-    ) -> tuple[
-        dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]] | None,
-        dict[Hashable, threading.RLock]
-        | defaultdict[Hashable, threading.RLock]
-        | None,
-    ]:
-        """Return the cache and locks, creating/validating when requested."""
-
-        if not create:
-            cache = self.graph.get("_edge_version_cache")
-            locks = self.graph.get("_edge_version_cache_locks")
-            return cache, locks
-
-        locks = ensure_lock_mapping(self.graph, "_edge_version_cache_locks")
-        use_lru = bool(max_entries)
-
-        def validator(value: Any) -> bool:
-            if value is None:
-                return False
-            if use_lru:
-                return isinstance(value, LRUCache) and value.maxsize == max_entries
-            return not isinstance(value, LRUCache)
-
-        cache = ensure_graph_entry(
-            self.graph,
-            "_edge_version_cache",
-            factory=lambda: (
-                LockAwareLRUCache(max_entries, locks) if use_lru else {}
-            ),
-            validator=validator,
-        )
-        return cache, locks
-
-    def get_cache(
-        self, max_entries: int | None, *, create: bool = True
-    ) -> tuple[
-        dict[Hashable, tuple[int, Any]] | LRUCache[Hashable, tuple[int, Any]] | None,
-        dict[Hashable, threading.RLock]
-        | defaultdict[Hashable, threading.RLock]
-        | None,
-    ]:
-        """Return the edge cache and lock mapping for ``graph``."""
-
-        with self._LOCK:
-            cache, locks = self._cache_and_locks(max_entries, create=create)
-            if max_entries is None:
-                prune_locks(cache, locks)
-        return cache, locks
 
 
 def edge_version_cache(

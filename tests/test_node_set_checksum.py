@@ -2,7 +2,7 @@ import hashlib
 import timeit
 from unittest.mock import patch
 
-from tnfr.helpers.cache_utils import (
+from tnfr.cache import (
     NODE_SET_CHECKSUM_KEY,
     node_set_checksum,
     stable_json,

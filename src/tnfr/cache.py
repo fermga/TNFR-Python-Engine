@@ -1,8 +1,16 @@
+"""Core caching utilities shared across TNFR helpers.
+
+This module consolidates structural cache helpers that previously lived in
+``tnfr.helpers.cache_utils`` and ``tnfr.helpers.edge_cache``.  The functions
+exposed here are responsible for maintaining deterministic node digests,
+scoped graph caches guarded by locks, and version counters that keep edge
+artifacts in sync with ΔNFR driven updates.
+"""
+
 from __future__ import annotations
 
 import hashlib
 import threading
-
 from collections import defaultdict
 from collections.abc import Callable, Hashable, Iterable
 from functools import lru_cache
@@ -11,12 +19,14 @@ from typing import Any, TypeVar
 from cachetools import LRUCache
 import networkx as nx  # type: ignore[import-untyped]
 
-from ..graph_utils import get_graph
-from ..json_utils import json_dumps
+from .graph_utils import get_graph
+from .json_utils import json_dumps
 
 T = TypeVar("T")
 
 __all__ = (
+    "CacheManager",
+    "EdgeCacheManager",
     "LockAwareLRUCache",
     "NODE_SET_CHECKSUM_KEY",
     "clear_node_repr_cache",
@@ -27,7 +37,6 @@ __all__ = (
     "node_set_checksum",
     "prune_locks",
     "stable_json",
-    "_iter_node_digests",
     "_node_repr",
     "_node_repr_digest",
 )
@@ -213,3 +222,66 @@ def node_set_checksum(
             return cached[1]
         graph[NODE_SET_CHECKSUM_KEY] = (token, checksum)
     return checksum
+
+
+class CacheManager:
+    """Coordinate cache stores and per-key locks for graph-level caches."""
+
+    _LOCK = threading.RLock()
+
+    def __init__(self, graph: Any, cache_key: str, locks_key: str) -> None:
+        self.graph = graph
+        self.cache_key = cache_key
+        self.locks_key = locks_key
+
+    def _validator(self, max_entries: int | None) -> Callable[[Any], bool]:
+        if max_entries is None:
+            return lambda value: value is not None and not isinstance(value, LRUCache)
+        return lambda value: isinstance(value, LRUCache) and value.maxsize == max_entries
+
+    def _factory(
+        self,
+        max_entries: int | None,
+        locks: dict[Hashable, threading.RLock]
+        | defaultdict[Hashable, threading.RLock],
+    ) -> dict[Hashable, Any] | LRUCache[Hashable, Any]:
+        if max_entries:
+            return LockAwareLRUCache(max_entries, locks)  # type: ignore[arg-type]
+        return {}
+
+    def get_cache(
+        self,
+        max_entries: int | None,
+        *,
+        create: bool = True,
+    ) -> tuple[
+        dict[Hashable, Any] | LRUCache[Hashable, Any] | None,
+        dict[Hashable, threading.RLock]
+        | defaultdict[Hashable, threading.RLock]
+        | None,
+    ]:
+        """Return the cache and lock mapping for ``graph``."""
+
+        with self._LOCK:
+            if not create:
+                cache = self.graph.get(self.cache_key)
+                locks = self.graph.get(self.locks_key)
+                return cache, locks
+
+            locks = ensure_lock_mapping(self.graph, self.locks_key)
+            cache = ensure_graph_entry(
+                self.graph,
+                self.cache_key,
+                factory=lambda: self._factory(max_entries, locks),
+                validator=self._validator(max_entries),
+            )
+            if max_entries is None:
+                prune_locks(cache, locks)
+            return cache, locks
+
+
+class EdgeCacheManager(CacheManager):
+    """Cache manager specialised for edge version caches."""
+
+    def __init__(self, graph: Any) -> None:
+        super().__init__(graph, "_edge_version_cache", "_edge_version_cache_locks")
