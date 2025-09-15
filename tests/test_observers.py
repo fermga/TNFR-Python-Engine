@@ -63,9 +63,7 @@ def test_phase_sync_equivalent_with_without_numpy(monkeypatch, graph_canon):
     ps_np = phase_sync(G)
     monkeypatch.setattr(import_utils, "_NP_CACHE", import_utils._NP_CACHE_SENTINEL)
     monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
-    monkeypatch.setattr(
-        "tnfr.helpers.numeric.cached_import", import_utils.cached_import
-    )
+    monkeypatch.setattr("tnfr.observers.get_numpy", import_utils.get_numpy)
     ps_py = phase_sync(G)
     assert ps_np == pytest.approx(ps_py)
 
@@ -81,7 +79,7 @@ def test_phase_sync_numpy_and_python_consistent(monkeypatch, graph_canon):
 
     ps_np = phase_sync(G)
     monkeypatch.setattr("tnfr.import_utils.get_numpy", lambda logger=None: None)
-    monkeypatch.setattr("tnfr.helpers.numeric.get_numpy", lambda: None)
+    monkeypatch.setattr("tnfr.observers.get_numpy", lambda: None)
     ps_py = phase_sync(G)
     assert ps_np == pytest.approx(ps_py)
 

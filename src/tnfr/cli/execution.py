@@ -4,6 +4,7 @@ import argparse
 
 from pathlib import Path
 from typing import Any, Optional
+from statistics import fmean, StatisticsError
 
 import networkx as nx  # type: ignore[import-untyped]
 
@@ -31,7 +32,6 @@ from ..presets import get_preset
 from ..config import apply_config
 from ..io import read_structured_file, safe_write
 from ..glyph_history import ensure_history
-from ..helpers.numeric import list_mean
 from ..observers import attach_standard_observer
 from ..logging_utils import get_logger
 from ..types import Glyph
@@ -200,7 +200,11 @@ def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
         logger.info("Tg global: %s", tg)
         logger.info("Top operadores por Tg: %s", glyph_top(G, k=5))
         if lat["value"]:
-            logger.info("Latencia media: %s", list_mean(lat["value"], 0.0))
+            try:
+                lat_mean = fmean(lat["value"])
+            except StatisticsError:
+                lat_mean = 0.0
+            logger.info("Latencia media: %s", lat_mean)
 
 
 def cmd_run(args: argparse.Namespace) -> int:
@@ -243,9 +247,15 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     rose = sigma_rose(G)
     glyph = glyphogram_series(G)
 
+    latency_values = lat["value"]
+    try:
+        latency_mean = fmean(latency_values)
+    except StatisticsError:
+        latency_mean = 0.0
+
     out = {
         "Tg_global": tg,
-        "latency_mean": list_mean(lat["value"], 0.0),
+        "latency_mean": latency_mean,
         "rose": rose,
         "glyphogram": {k: v[:10] for k, v in glyph.items()},
     }

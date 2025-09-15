@@ -121,8 +121,6 @@ when orchestrating TNFR experiments.
   bounded.
 * ``clamp(x, a, b)`` and ``clamp01(x)`` — restrict scalars to safe ranges for
   operator parameters.
-* ``list_mean(xs, default=0.0)`` — return the arithmetic mean with a fallback
-  when the input is empty.
 * ``kahan_sum_nd(values, dims)`` — numerically stable accumulators used to
   track coherence magnitudes across long trajectories (use ``dims=1`` for
   scalars, ``dims=2`` for paired values, etc.).
