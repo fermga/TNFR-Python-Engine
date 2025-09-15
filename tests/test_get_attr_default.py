@@ -11,6 +11,7 @@ import pytest
 # Import ``AliasAccessor`` without triggering package-level side effects.
 pkg = types.ModuleType("tnfr")
 pkg.__path__ = [str(Path(__file__).resolve().parents[1] / "src" / "tnfr")]
+assert pkg.__path__  # ensure attribute is used for package resolution
 
 _orig = sys.modules.get("tnfr")
 
