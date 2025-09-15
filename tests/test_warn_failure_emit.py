@@ -51,7 +51,7 @@ def test_warn_failure_uses_emit_map():
 
     _clear_warned()
     original = import_utils.EMIT_MAP["warn"]
-    import_utils.EMIT_MAP["warn"] = (fake_warn,)
+    import_utils.EMIT_MAP["warn"] = fake_warn
     try:
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")

@@ -13,7 +13,8 @@ from __future__ import annotations
 
 import importlib
 import warnings
-from typing import Any, Literal, MutableMapping
+from functools import partial
+from typing import Any, Callable, Literal, MutableMapping
 from dataclasses import dataclass, field
 from cachetools import TTLCache
 import threading
@@ -32,26 +33,18 @@ __all__ = (
 logger = get_logger(__name__)
 
 
-def _emit_warn(message: str) -> None:
-    """Emit a warning preserving caller context."""
-    warnings.warn(message, RuntimeWarning, stacklevel=2)
+def _emit(message: str, mode: Literal["warn", "log", "both"]) -> None:
+    """Emit ``message`` via warning, logger or both."""
+    if mode in ("warn", "both"):
+        warnings.warn(message, RuntimeWarning, stacklevel=2)
+    if mode in ("log", "both"):
+        logger.warning(message)
 
 
-def _emit_log(message: str) -> None:
-    """Log a warning message using the module logger."""
-    logger.warning(message)
-
-
-def _emit_both(message: str) -> None:
-    """Emit a warning and log it."""
-    warnings.warn(message, RuntimeWarning, stacklevel=2)
-    logger.warning(message)
-
-
-EMIT_MAP: dict[str, tuple] = {
-    "warn": (_emit_warn,),
-    "log": (_emit_log,),
-    "both": (_emit_both,),
+EMIT_MAP: dict[str, Callable[[str], None]] = {
+    "warn": partial(_emit, mode="warn"),
+    "log": partial(_emit, mode="log"),
+    "both": partial(_emit, mode="both"),
 }
 
 
@@ -150,8 +143,7 @@ def _warn_failure(
     if not first:
         logger.debug(msg)
         return
-    for fn in EMIT_MAP[emit]:
-        fn(msg)
+    EMIT_MAP[emit](msg)
 
 
 def _update_import_cache(ttl: float) -> MutableMapping[str, Any]:
