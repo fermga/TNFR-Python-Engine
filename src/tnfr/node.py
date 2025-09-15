@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Callable, Deque, Iterable, Optional, Protocol, TypeVar
+from typing import Callable, Deque, Iterable, MutableMapping, Optional, Protocol, TypeVar
 from enum import Enum
 from collections import deque
 from collections.abc import Hashable
@@ -267,7 +267,7 @@ class NodoProtocol(Protocol):
 
     def neighbors(self) -> Iterable[NodoProtocol | Hashable]: ...
 
-    def push_glyph(self, glyph: str, window: int) -> None: ...
+    def _glyph_storage(self) -> MutableMapping[str, object]: ...
 
     def has_edge(self, other: "NodoProtocol") -> bool: ...
 
