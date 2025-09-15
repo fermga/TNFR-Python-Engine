@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from types import MappingProxyType
-from typing import Any, Iterable, Mapping, Protocol, Sequence
+from typing import Any, Iterable, Mapping, Sequence
 
 from ..alias import get_attr, multi_recompute_abs_max
 from ..collections_utils import normalize_weights
@@ -11,6 +11,7 @@ from ..constants import DEFAULTS, get_aliases
 from ..helpers import edge_version_cache
 from ..helpers.numeric import clamp01, kahan_sum
 from ..import_utils import get_numpy
+from ..types import GraphLike
 
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_D2EPI = get_aliases("D2EPI")
@@ -28,20 +29,6 @@ __all__ = (
     "min_max_range",
     "_get_vf_dnfr_max",
 )
-
-
-class GraphLike(Protocol):
-    """Protocol for graph objects used throughout the metrics package."""
-
-    graph: dict[str, Any]
-
-    def nodes(self, data: bool = ...) -> Iterable[Any]: ...
-
-    def number_of_nodes(self) -> int: ...
-
-    def neighbors(self, n: Any) -> Iterable[Any]: ...
-
-    def __iter__(self) -> Iterable[Any]: ...
 
 
 def compute_coherence(
