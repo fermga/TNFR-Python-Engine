@@ -83,6 +83,7 @@ __all__ = (
     "is_non_string_sequence",
     "flatten_structure",
     "ensure_collection",
+    "prepare_weights",
     "normalize_weights",
     "normalize_counter",
     "mix_groups",
@@ -161,7 +162,7 @@ def ensure_collection(
     return items
 
 
-def _prepare_weights(
+def prepare_weights(
     dict_like: Mapping[str, Any],
     keys: Iterable[str] | Sequence[str],
     default: float,
@@ -207,6 +208,10 @@ def _prepare_weights(
     return weights, keys_list, total
 
 
+# Backward compatible alias
+_prepare_weights = prepare_weights
+
+
 def normalize_weights(
     dict_like: Mapping[str, Any],
     keys: Iterable[str] | Sequence[str],
@@ -234,7 +239,7 @@ def normalize_weights(
     When ``warn_once`` is ``True`` warnings for a given key are emitted only on
     their first occurrence across calls.
     """
-    weights, keys_list, total = _prepare_weights(
+    weights, keys_list, total = prepare_weights(
         dict_like,
         keys,
         default,
