@@ -1,81 +1,75 @@
+"""Curated high-level helpers exposed by :mod:`tnfr.helpers`.
+
+The module is intentionally small and surfaces utilities that are stable for
+external use, covering data preparation, glyph history management, and graph
+cache invalidation.
+"""
+
 from __future__ import annotations
 
-from ..graph_utils import mark_dnfr_prep_dirty
-
-from ..collections_utils import (
-    MAX_MATERIALIZE_DEFAULT,
-    ensure_collection,
-    normalize_weights,
-    normalize_counter,
-    mix_groups,
-)
+from ..collections_utils import ensure_collection
 from ..glyph_history import (
-    push_glyph,
-    recent_glyph,
+    count_glyphs,
     ensure_history,
     last_glyph,
-    count_glyphs,
+    push_glyph,
+    recent_glyph,
 )
+from ..graph_utils import mark_dnfr_prep_dirty
 
-from .numeric import (
-    clamp,
-    clamp01,
-    list_mean,
-    kahan_sum_nd,
-    kahan_sum,
-    kahan_sum2d,
-    angle_diff,
-    neighbor_mean,
+from .edge_cache import (
+    EdgeCacheManager,
+    cached_nodes_and_A,
+    edge_version_cache,
+    edge_version_update,
+    increment_edge_version,
 )
 from .node_cache import (
-    NODE_SET_CHECKSUM_KEY,
+    cached_node_list,
+    ensure_node_index_map,
+    ensure_node_offset_map,
     get_graph,
     get_graph_mapping,
     node_set_checksum,
     stable_json,
-    cached_node_list,
-    ensure_node_index_map,
-    ensure_node_offset_map,
 )
-from .edge_cache import (
-    EdgeCacheManager,
-    edge_version_cache,
-    cached_nodes_and_A,
-    increment_edge_version,
-    edge_version_update,
+from .numeric import (
+    angle_diff,
+    clamp,
+    clamp01,
+    kahan_sum,
+    kahan_sum2d,
+    kahan_sum_nd,
+    list_mean,
+    neighbor_mean,
 )
 
 __all__ = (
-    "MAX_MATERIALIZE_DEFAULT",
-    "ensure_collection",
+    "EdgeCacheManager",
+    "angle_diff",
+    "cached_node_list",
+    "cached_nodes_and_A",
     "clamp",
     "clamp01",
-    "list_mean",
-    "kahan_sum_nd",
-    "kahan_sum",
-    "kahan_sum2d",
-    "angle_diff",
-    "normalize_weights",
-    "neighbor_mean",
-    "push_glyph",
-    "recent_glyph",
-    "ensure_history",
-    "last_glyph",
     "count_glyphs",
-    "normalize_counter",
-    "mix_groups",
-    "cached_node_list",
-    "NODE_SET_CHECKSUM_KEY",
+    "edge_version_cache",
+    "edge_version_update",
+    "ensure_collection",
+    "ensure_history",
     "ensure_node_index_map",
     "ensure_node_offset_map",
-    "stable_json",
-    "EdgeCacheManager",
-    "edge_version_cache",
-    "cached_nodes_and_A",
-    "increment_edge_version",
-    "edge_version_update",
-    "node_set_checksum",
     "get_graph",
     "get_graph_mapping",
+    "increment_edge_version",
+    "kahan_sum",
+    "kahan_sum2d",
+    "kahan_sum_nd",
+    "last_glyph",
+    "list_mean",
     "mark_dnfr_prep_dirty",
+    "neighbor_mean",
+    "node_set_checksum",
+    "push_glyph",
+    "recent_glyph",
+    "stable_json",
 )

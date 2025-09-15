@@ -108,6 +108,62 @@ inspected with ``tnfr.callback_utils.get_callback_error_limit``.
 
 ---
 
+## Helper utilities API
+
+`tnfr.helpers` bundles a compact set of public helpers that stay stable across
+releases. They provide ergonomic access to the most common preparation steps
+when orchestrating TNFR experiments.
+
+### Collections and numeric helpers
+
+* ``ensure_collection(it, *, max_materialize=...)`` — materialize potentially
+  lazy iterables once, enforcing a configurable limit to keep simulations
+  bounded.
+* ``clamp(x, a, b)`` and ``clamp01(x)`` — restrict scalars to safe ranges for
+  operator parameters.
+* ``list_mean(xs, default=0.0)`` — return the arithmetic mean with a fallback
+  when the input is empty.
+* ``kahan_sum(values)``, ``kahan_sum2d(values)`` and ``kahan_sum_nd(values,
+  dims)`` — numerically stable accumulators used to track coherence magnitudes
+  across long trajectories.
+* ``angle_diff(a, b)`` — compute minimal angular differences (radians) to
+  compare structural phases.
+* ``neighbor_mean(G, n, aliases, default=0.0)`` — obtain the mean value of an
+  attribute among the neighbours of ``n`` leveraging cached graph aliases.
+
+### Glyph history helpers
+
+* ``push_glyph(nd, glyph, window)`` — update node history respecting the
+  configured rolling window.
+* ``recent_glyph(nd, glyph, window)`` — test whether a glyph appeared in the
+  recent history of a node.
+* ``ensure_history(G)`` — prepare the graph-level history container with the
+  appropriate bounds.
+* ``last_glyph(nd)`` — inspect the most recent glyph emitted by a node.
+* ``count_glyphs(G, window=None, *, last_only=False)`` — aggregate glyph usage
+  across the network either from the whole history or a limited window.
+
+### Graph caches and ΔNFR invalidation
+
+* ``cached_node_list(G)`` — lazily cache a stable tuple of node identifiers,
+  respecting opt-in sorted ordering.
+* ``ensure_node_index_map(G)`` / ``ensure_node_offset_map(G)`` — expose cached
+  index and offset mappings for graphs that need to project nodes to arrays.
+* ``node_set_checksum(G, nodes=None, *, presorted=False, store=True)`` —
+  produce deterministic BLAKE2b hashes to detect topology changes.
+* ``stable_json(obj)`` — render deterministic JSON strings suited for hashing
+  and reproducible logs.
+* ``get_graph(obj)`` / ``get_graph_mapping(G, key, warn_msg)`` — normalise
+  access to graph-level metadata regardless of wrappers.
+* ``EdgeCacheManager`` together with ``edge_version_cache``,
+  ``cached_nodes_and_A`` and ``edge_version_update`` encapsulate the edge
+  version cache. ``increment_edge_version`` bumps the version manually for
+  imperative workflows.
+* ``mark_dnfr_prep_dirty(G)`` — invalidate precomputed ΔNFR preparation when
+  mutating edges outside the cache helpers.
+
+---
+
 ## Why TNFR (in 60 seconds)
 
 * **From objects to coherences:** you model **processes** that hold, not fixed entities.
