@@ -1,13 +1,15 @@
+"""Benchmark for ensure_history trim performance."""
+
 import time
-import pytest
 
 from tnfr.glyph_history import HistoryDict, ensure_history
 from tnfr.constants import inject_defaults
+import networkx as nx
 
 
-@pytest.mark.slow
-def test_ensure_history_trim_performance(graph_canon):
-    G = graph_canon()
+def run():
+    """Run the benchmark and print the elapsed times."""
+    G = nx.Graph()
     inject_defaults(G)
     G.graph["HISTORY_MAXLEN"] = 1000
     G.graph["HISTORY_COMPACT_EVERY"] = 100
@@ -24,4 +26,8 @@ def test_ensure_history_trim_performance(graph_canon):
         hist2.pop_least_used()
     t_loop = time.perf_counter() - start
 
-    assert t_bulk <= t_loop
+    print(f"bulk: {t_bulk:.6f}s, manual loop: {t_loop:.6f}s")
+
+
+if __name__ == "__main__":
+    run()

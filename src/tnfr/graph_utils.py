@@ -42,5 +42,4 @@ def supports_add_edge(graph: Any) -> bool:
     bool
         ``True`` when ``graph`` implements ``add_edge``; ``False`` otherwise.
     """
-
     return hasattr(graph, "add_edge")

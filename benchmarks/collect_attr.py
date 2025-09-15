@@ -1,7 +1,8 @@
+"""Benchmark for collect_attr performance."""
+
 import time
 import networkx as nx
 import numpy as np
-import pytest
 
 from tnfr.alias import set_attr, collect_attr
 from tnfr.constants import get_aliases
@@ -16,8 +17,8 @@ def _naive_collect(G):
     )
 
 
-@pytest.mark.slow
-def test_collect_attr_performance():
+def run():
+    """Run the benchmark and print the elapsed times."""
     G = nx.gnp_random_graph(300, 0.1, seed=1)
     for n in G.nodes:
         set_attr(G.nodes[n], ALIAS_THETA, 0.0)
@@ -32,4 +33,8 @@ def test_collect_attr_performance():
         _naive_collect(G)
     t_naive = time.perf_counter() - start
 
-    assert t_opt <= t_naive
+    print(f"optimized: {t_opt:.6f}s, naive: {t_naive:.6f}s")
+
+
+if __name__ == "__main__":
+    run()

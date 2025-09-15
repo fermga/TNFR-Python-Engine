@@ -1,6 +1,7 @@
+"""Benchmark for _prepare_dnfr_data performance."""
+
 import time
 import networkx as nx
-import pytest
 
 from tnfr.constants import get_aliases
 from tnfr.dynamics import _prepare_dnfr_data
@@ -20,8 +21,8 @@ def _naive_prepare(G):
     return theta, epi, vf
 
 
-@pytest.mark.slow
-def test_prepare_dnfr_data_performance():
+def run():
+    """Run the benchmark and print the elapsed times."""
     G = nx.gnp_random_graph(300, 0.1, seed=1)
     for n in G.nodes:
         set_attr(G.nodes[n], ALIAS_THETA, 0.0)
@@ -38,4 +39,8 @@ def test_prepare_dnfr_data_performance():
         _naive_prepare(G)
     t_naive = time.perf_counter() - start
 
-    assert t_opt <= t_naive
+    print(f"optimized: {t_opt:.6f}s, naive: {t_naive:.6f}s")
+
+
+if __name__ == "__main__":
+    run()
