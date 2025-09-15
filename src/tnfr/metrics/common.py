@@ -1,0 +1,174 @@
+"""Shared helpers for TNFR metrics."""
+
+from __future__ import annotations
+
+from types import MappingProxyType
+from typing import Any, Iterable, Mapping, Protocol, Sequence
+
+from ..alias import get_attr, multi_recompute_abs_max
+from ..collections_utils import prepare_weights
+from ..constants import DEFAULTS, get_aliases
+from ..helpers import edge_version_cache
+from ..helpers.numeric import clamp01, kahan_sum
+from ..import_utils import get_numpy
+
+ALIAS_DNFR = get_aliases("DNFR")
+ALIAS_D2EPI = get_aliases("D2EPI")
+ALIAS_DEPI = get_aliases("DEPI")
+ALIAS_VF = get_aliases("VF")
+
+__all__ = (
+    "GraphLike",
+    "compute_coherence",
+    "compute_dnfr_accel_max",
+    "normalize_dnfr",
+    "ensure_neighbors_map",
+    "merge_graph_weights",
+    "merge_and_normalize_weights",
+    "min_max_range",
+    "_get_vf_dnfr_max",
+)
+
+
+class GraphLike(Protocol):
+    """Protocol for graph objects used throughout the metrics package."""
+
+    graph: dict[str, Any]
+
+    def nodes(self, data: bool = ...) -> Iterable[Any]: ...
+
+    def number_of_nodes(self) -> int: ...
+
+    def neighbors(self, n: Any) -> Iterable[Any]: ...
+
+    def __iter__(self) -> Iterable[Any]: ...
+
+
+def compute_coherence(
+    G: GraphLike, *, return_means: bool = False
+) -> float | tuple[float, float, float]:
+    """Compute global coherence ``C`` from ``ΔNFR`` and ``dEPI``."""
+
+    count = G.number_of_nodes()
+    if count == 0:
+        return (0.0, 0.0, 0.0) if return_means else 0.0
+
+    np = get_numpy()
+    if np is not None:
+        dnfr_arr = np.empty(count, dtype=float)
+        depi_arr = np.empty(count, dtype=float)
+        for idx, (_, nd) in enumerate(G.nodes(data=True)):
+            dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0))
+            depi = abs(get_attr(nd, ALIAS_DEPI, 0.0))
+            dnfr_arr[idx] = dnfr
+            depi_arr[idx] = depi
+        dnfr_mean = float(np.mean(dnfr_arr))
+        depi_mean = float(np.mean(depi_arr))
+    else:
+        nodes = list(G.nodes(data=True))
+        dnfr_mean = kahan_sum(
+            abs(get_attr(nd, ALIAS_DNFR, 0.0)) for _, nd in nodes
+        ) / count
+        depi_mean = kahan_sum(
+            abs(get_attr(nd, ALIAS_DEPI, 0.0)) for _, nd in nodes
+        ) / count
+
+    coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)
+    return (coherence, dnfr_mean, depi_mean) if return_means else coherence
+
+
+def ensure_neighbors_map(G: GraphLike) -> Mapping[Any, Sequence[Any]]:
+    """Return cached neighbors list keyed by node as a read-only mapping."""
+
+    def builder() -> Mapping[Any, Sequence[Any]]:
+        return MappingProxyType({n: tuple(G.neighbors(n)) for n in G})
+
+    return edge_version_cache(G, "_neighbors", builder)
+
+
+def merge_graph_weights(G: GraphLike, key: str) -> dict[str, float]:
+    """Merge default weights for ``key`` with any graph overrides."""
+
+    return {**DEFAULTS[key], **G.graph.get(key, {})}
+
+
+def merge_and_normalize_weights(
+    G: GraphLike,
+    key: str,
+    fields: Sequence[str],
+    *,
+    default: float = 0.0,
+) -> dict[str, float]:
+    """Merge defaults for ``key`` and normalise ``fields``."""
+
+    w = merge_graph_weights(G, key)
+    weights, keys_list, total = prepare_weights(
+        w,
+        fields,
+        default,
+        error_on_conversion=False,
+        error_on_negative=False,
+        warn_once=True,
+    )
+    if not keys_list:
+        return {}
+    if total <= 0:
+        uniform = 1.0 / len(keys_list)
+        return {k: uniform for k in keys_list}
+    return {k: val / total for k, val in weights.items()}
+
+
+def compute_dnfr_accel_max(G: GraphLike) -> dict[str, float]:
+    """Compute absolute maxima of |ΔNFR| and |d²EPI/dt²|."""
+
+    return multi_recompute_abs_max(
+        G, {"dnfr_max": ALIAS_DNFR, "accel_max": ALIAS_D2EPI}
+    )
+
+
+def normalize_dnfr(nd: Mapping[str, Any], max_val: float) -> float:
+    """Normalise ``|ΔNFR|`` using ``max_val``."""
+
+    if max_val <= 0:
+        return 0.0
+    val = abs(get_attr(nd, ALIAS_DNFR, 0.0))
+    return clamp01(val / max_val)
+
+
+def min_max_range(
+    values: Iterable[float], *, default: tuple[float, float] = (0.0, 0.0)
+) -> tuple[float, float]:
+    """Return the minimum and maximum values observed in ``values``."""
+
+    it = iter(values)
+    try:
+        first = next(it)
+    except StopIteration:
+        return default
+    min_val = max_val = first
+    for val in it:
+        if val < min_val:
+            min_val = val
+        elif val > max_val:
+            max_val = val
+    return min_val, max_val
+
+
+def _get_vf_dnfr_max(G: GraphLike) -> tuple[float, float]:
+    """Ensure and return absolute maxima for ``νf`` and ``ΔNFR``."""
+
+    vfmax = G.graph.get("_vfmax")
+    dnfrmax = G.graph.get("_dnfrmax")
+    if vfmax is None or dnfrmax is None:
+        maxes = multi_recompute_abs_max(
+            G, {"_vfmax": ALIAS_VF, "_dnfrmax": ALIAS_DNFR}
+        )
+        if vfmax is None:
+            vfmax = maxes["_vfmax"]
+        if dnfrmax is None:
+            dnfrmax = maxes["_dnfrmax"]
+        G.graph["_vfmax"] = vfmax
+        G.graph["_dnfrmax"] = dnfrmax
+    vfmax = 1.0 if vfmax == 0 else vfmax
+    dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
+    return float(vfmax), float(dnfrmax)

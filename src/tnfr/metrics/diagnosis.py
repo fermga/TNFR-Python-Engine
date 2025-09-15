@@ -14,7 +14,7 @@ from ..callback_utils import callback_manager
 from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
 from ..helpers.numeric import clamp01, _similarity_abs
-from ..metrics_utils import compute_dnfr_accel_max, min_max_range, normalize_dnfr
+from .common import compute_dnfr_accel_max, min_max_range, normalize_dnfr
 from .coherence import (
     local_phase_sync,
     local_phase_sync_weighted,

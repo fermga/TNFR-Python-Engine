@@ -24,7 +24,8 @@ from ..alias import (
     get_attr,
     set_dnfr,
 )
-from ..metrics_utils import compute_theta_trig, merge_and_normalize_weights
+from ..metrics.trigonometry import compute_theta_trig
+from ..metrics.common import merge_and_normalize_weights
 from ..import_utils import get_numpy
 from ..logging_utils import get_logger
 

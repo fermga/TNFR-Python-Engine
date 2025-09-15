@@ -17,7 +17,7 @@ if TYPE_CHECKING:  # pragma: no cover
 from .constants import DEFAULTS
 from .constants.core import SELECTOR_THRESHOLD_DEFAULTS
 from .helpers.numeric import clamp01
-from .metrics_utils import compute_dnfr_accel_max
+from .metrics.common import compute_dnfr_accel_max
 from .collections_utils import is_non_string_sequence
 
 

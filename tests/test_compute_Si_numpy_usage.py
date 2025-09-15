@@ -1,7 +1,7 @@
 import math
 
 from tnfr.constants import get_aliases
-from tnfr.metrics_utils import compute_Si
+from tnfr.metrics.sense_index import compute_Si
 from tnfr.alias import set_attr
 import tnfr.import_utils as import_utils
 
@@ -43,7 +43,7 @@ def test_compute_Si_uses_module_numpy_and_propagates(monkeypatch, graph_canon):
         lambda module, attr=None, **kwargs: sentinel if module == "numpy" else None,
     )
     monkeypatch.setattr(
-        "tnfr.metrics_utils.neighbor_phase_mean_list",
+        "tnfr.metrics.sense_index.neighbor_phase_mean_list",
         fake_neighbor_phase_mean_list,
     )
 

@@ -17,12 +17,8 @@ from ..alias import collect_attr, get_attr, set_attr
 from ..collections_utils import normalize_weights
 from ..helpers.numeric import clamp01
 from ..helpers import ensure_node_index_map
-from ..metrics_utils import (
-    compute_coherence,
-    compute_theta_trig,
-    get_trig_cache,
-    min_max_range,
-)
+from .common import compute_coherence, min_max_range
+from .trigonometry import compute_theta_trig, get_trig_cache
 from ..observers import glyph_load, kuramoto_order, phase_sync
 from ..sense import sigma_vector
 from ..import_utils import get_numpy
