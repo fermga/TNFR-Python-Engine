@@ -25,6 +25,7 @@ from .locking import get_lock
 __all__ = (
     "cached_import",
     "optional_numpy",
+    "get_numpy",
     "get_nodonx",
     "prune_failed_imports",
 )
@@ -260,6 +261,19 @@ def optional_numpy(logger: Any) -> Any | None:
     if np is None:
         logger.debug("Failed to import numpy; continuing in non-vectorised mode")
     return np
+
+
+_NP_CACHE_SENTINEL = object()
+_NP_CACHE: Any | None | object = _NP_CACHE_SENTINEL
+
+
+def get_numpy(logger: Any | None = None) -> Any | None:
+    """Return cached NumPy module if available."""
+
+    global _NP_CACHE
+    if _NP_CACHE is _NP_CACHE_SENTINEL:
+        _NP_CACHE = optional_numpy(logger or get_logger(__name__))
+    return _NP_CACHE
 
 
 def get_nodonx() -> type | None:

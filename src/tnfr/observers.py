@@ -19,7 +19,7 @@ from .collections_utils import normalize_counter, mix_groups
 from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 from .logging_utils import get_logger
-from .import_utils import optional_numpy
+from .import_utils import get_numpy
 
 ALIAS_THETA = get_aliases("THETA")
 
@@ -38,8 +38,6 @@ __all__ = (
 
 logger = get_logger(__name__)
 
-# Compute optional NumPy dependency once
-_NP = optional_numpy(logger)
 
 
 # -------------------------
@@ -101,7 +99,7 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
         for _, data in G.nodes(data=True)
     )
     # Try NumPy for a vectorised population variance
-    np = _NP
+    np = get_numpy()
     if np is not None:
         arr = np.fromiter(diffs, dtype=float)
         var = float(np.var(arr)) if arr.size else 0.0

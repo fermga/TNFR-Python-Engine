@@ -25,7 +25,7 @@ from ..metrics_utils import (
 )
 from ..observers import glyph_load, kuramoto_order, phase_sync
 from ..sense import sigma_vector
-from ..import_utils import optional_numpy
+from ..import_utils import get_numpy
 from ..logging_utils import get_logger
 
 logger = get_logger(__name__)
@@ -510,7 +510,7 @@ def coherence_matrix(G, use_numpy: bool | None = None):
         return nodes, []
 
     # NumPy handling for optional vectorized operations
-    np = optional_numpy(logger)
+    np = get_numpy()
     use_np = (
         np is not None if use_numpy is None else (use_numpy and np is not None)
     )

@@ -129,6 +129,7 @@ def test_cache_node_list_cache_updated_on_node_set_change(graph_canon):
 
 
 def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon):
+    monkeypatch.setattr(import_utils, "_NP_CACHE", import_utils._NP_CACHE_SENTINEL)
     monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
     G = graph_canon()
     G.add_edge(0, 1)
@@ -138,6 +139,7 @@ def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon)
 
 
 def test_cached_nodes_and_A_requires_numpy(monkeypatch, graph_canon):
+    monkeypatch.setattr(import_utils, "_NP_CACHE", import_utils._NP_CACHE_SENTINEL)
     monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
     G = graph_canon()
     G.add_edge(0, 1)

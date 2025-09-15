@@ -8,7 +8,7 @@ from statistics import fmean, StatisticsError, pvariance
 from itertools import tee
 import math
 
-from ..import_utils import cached_import, optional_numpy
+from ..import_utils import cached_import, get_numpy
 from ..alias import get_attr
 from ..logging_utils import get_logger
 
@@ -85,7 +85,7 @@ def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
 
 def list_pvariance(xs: Iterable[float], default: float = 0.0) -> float:
     """Return the population variance of ``xs`` or ``default`` if empty."""
-    np = optional_numpy(logger)
+    np = get_numpy()
     if np is not None:
         arr = np.fromiter(xs, dtype=float)
         return float(np.var(arr)) if arr.size else float(default)
@@ -181,11 +181,11 @@ def _neighbor_phase_mean_generic(
         sin_map = trig.sin
         neigh = node.G[node.n]
         if np is None:
-            np = optional_numpy(logger)
+            np = get_numpy()
     else:
         neigh = obj
         if np is None:
-            np = optional_numpy(logger)
+            np = get_numpy()
 
     return _neighbor_phase_mean_core(neigh, cos_map, sin_map, np, fallback)
 
