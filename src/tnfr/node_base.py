@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 from typing import Iterable, MutableMapping
-
-from .glyph_history import push_glyph
 from .helpers import ensure_node_offset_map
 
 
@@ -15,11 +13,6 @@ class NodeBase:
     def _glyph_storage(self) -> MutableMapping[str, object]:
         """Return mapping holding glyph history for this node."""
         raise NotImplementedError
-
-    def push_glyph(self, glyph: str, window: int) -> None:
-        """Record ``glyph`` and update :attr:`epi_kind`."""
-        push_glyph(self._glyph_storage(), glyph, window)
-        self.epi_kind = glyph
 
     def offset(self) -> int:
         """Return positional offset for this node within its graph."""

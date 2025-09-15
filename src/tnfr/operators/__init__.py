@@ -15,7 +15,7 @@ from ..helpers.numeric import (
 )
 from ..import_utils import get_nodonx
 from ..rng import make_rng
-from ..glyph_history import append_metric, ensure_history, current_step_idx
+from tnfr import glyph_history
 from ..types import Glyph
 
 from .jitter import (
@@ -330,15 +330,15 @@ def _op_NAV(
 def _op_REMESH(
     node: NodoProtocol, gf: dict[str, Any] | None = None
 ) -> None:  # REMESH — aviso
-    step_idx = current_step_idx(node)
+    step_idx = glyph_history.current_step_idx(node)
     last_warn = node.graph.get("_remesh_warn_step", None)
     if last_warn != step_idx:
         msg = (
             "REMESH es a escala de red. Usa apply_remesh_if_globally_"
             "stable(G) o apply_network_remesh(G)."
         )
-        hist = ensure_history(node)
-        append_metric(
+        hist = glyph_history.ensure_history(node)
+        glyph_history.append_metric(
             hist,
             "events",
             ("warn", {"step": step_idx, "node": None, "msg": msg}),
@@ -376,9 +376,9 @@ def apply_glyph_obj(
     try:
         g = glyph if isinstance(glyph, Glyph) else Glyph(str(glyph))
     except ValueError:
-        step_idx = current_step_idx(node)
-        hist = ensure_history(node)
-        append_metric(
+        step_idx = glyph_history.current_step_idx(node)
+        hist = glyph_history.ensure_history(node)
+        glyph_history.append_metric(
             hist,
             "events",
             (
@@ -399,7 +399,8 @@ def apply_glyph_obj(
         window = int(get_param(node, "GLYPH_HYSTERESIS_WINDOW"))
     gf = get_glyph_factors(node)
     op(node, gf)
-    node.push_glyph(g.value, window)
+    glyph_history.push_glyph(node._glyph_storage(), g.value, window)
+    node.epi_kind = g.value
 
 
 def apply_glyph(
