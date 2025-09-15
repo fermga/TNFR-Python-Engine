@@ -11,10 +11,10 @@ from functools import lru_cache
 
 from .constants import get_aliases
 from .alias import get_attr
+from .graph_utils import get_graph_mapping
 from .helpers import (
     node_set_checksum,
     edge_version_cache,
-    get_graph_mapping,
 )
 from .json_utils import json_dumps
 from .logging_utils import get_logger
