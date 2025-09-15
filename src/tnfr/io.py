@@ -14,60 +14,90 @@ import os
 import tempfile
 from pathlib import Path
 from typing import Any, Callable
-from functools import lru_cache
+from functools import partial
 
 from .import_utils import cached_import
 from .logging_utils import get_logger
 
 
-@lru_cache(maxsize=32)
-def _missing_dependency_error(dep: str) -> type[Exception]:
-    """Return a fallback :class:`Exception` when ``dep`` is unavailable."""
-
-    class _MissingDependencyError(Exception):
-        pass
-
-    _MissingDependencyError.__doc__ = (
-        f"Fallback error used when {dep} is missing."
-    )
-    return _MissingDependencyError
+def _raise_import_error(name: str, *_: Any, **__: Any) -> Any:
+    raise ImportError(f"{name} is not installed")
 
 
-tomllib = cached_import("tomllib", emit="log") or cached_import(
-    "tomli", emit="log"
+_MISSING_TOML_ERROR = type(
+    "MissingTOMLDependencyError",
+    (Exception,),
+    {"__doc__": "Fallback error used when tomllib/tomli is missing."},
 )
-if tomllib is not None:
-    TOMLDecodeError = getattr(tomllib, "TOMLDecodeError", Exception)
-    has_toml = True
-else:  # pragma: no cover - depende de tomllib/tomli
-    has_toml = False
-    TOMLDecodeError = _missing_dependency_error("tomllib/tomli")
+
+_MISSING_YAML_ERROR = type(
+    "MissingPyYAMLDependencyError",
+    (Exception,),
+    {"__doc__": "Fallback error used when pyyaml is missing."},
+)
+
+
+tomllib = cached_import(
+    "tomllib",
+    emit="log",
+    fallback=cached_import("tomli", emit="log"),
+)
+has_toml = tomllib is not None
+
+
+TOMLDecodeError = cached_import(
+    "tomllib",
+    "TOMLDecodeError",
+    emit="log",
+    fallback=cached_import(
+        "tomli",
+        "TOMLDecodeError",
+        emit="log",
+        fallback=_MISSING_TOML_ERROR,
+    ),
+)
+
+
+_TOML_LOADS: Callable[[str], Any] = cached_import(
+    "tomllib",
+    "loads",
+    emit="log",
+    fallback=cached_import(
+        "tomli",
+        "loads",
+        emit="log",
+        fallback=partial(_raise_import_error, "tomllib/tomli"),
+    ),
+)
 
 
 yaml = cached_import("yaml", emit="log")
-if yaml is not None:
-    YAMLError = getattr(yaml, "YAMLError", Exception)
-else:  # pragma: no cover - depende de pyyaml
-    YAMLError = _missing_dependency_error("pyyaml")
 
 
-def _missing_dependency(name: str) -> Callable[[str], Any]:
-    def _raise(_: str) -> Any:
-        raise ImportError(f"{name} is not installed")
+YAMLError = cached_import(
+    "yaml",
+    "YAMLError",
+    emit="log",
+    fallback=_MISSING_YAML_ERROR,
+)
 
-    return _raise
+
+_YAML_SAFE_LOAD: Callable[[str], Any] = cached_import(
+    "yaml",
+    "safe_load",
+    emit="log",
+    fallback=partial(_raise_import_error, "pyyaml"),
+)
 
 
 def _parse_yaml(text: str) -> Any:
     """Parse YAML ``text`` using ``safe_load`` if available."""
-    return getattr(yaml, "safe_load", _missing_dependency("pyyaml"))(text)
+    return _YAML_SAFE_LOAD(text)
 
 
 def _parse_toml(text: str) -> Any:
     """Parse TOML ``text`` using ``tomllib`` or ``tomli``."""
-    return getattr(tomllib, "loads", _missing_dependency("tomllib/tomli"))(
-        text
-    )
+    return _TOML_LOADS(text)
 
 
 PARSERS = {
