@@ -1,11 +1,13 @@
-from tnfr.io import _missing_dependency_error
+from tnfr.io import _MISSING_TOML_ERROR, _MISSING_YAML_ERROR
 
 
 def test_missing_dependency_error_cached() -> None:
-    cls1 = _missing_dependency_error("fake_dep")
-    cls2 = _missing_dependency_error("fake_dep")
-    assert cls1 is cls2
-    assert issubclass(cls1, Exception)
-    assert cls1.__doc__ == "Fallback error used when fake_dep is missing."
-    cls3 = _missing_dependency_error("other_dep")
-    assert cls3 is not cls1
+    assert issubclass(_MISSING_TOML_ERROR, Exception)
+    assert (
+        _MISSING_TOML_ERROR.__doc__
+        == "Fallback error used when tomllib/tomli is missing."
+    )
+    assert issubclass(_MISSING_YAML_ERROR, Exception)
+    assert _MISSING_YAML_ERROR.__doc__ == (
+        "Fallback error used when pyyaml is missing."
+    )
