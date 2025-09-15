@@ -10,7 +10,7 @@ from cachetools import LRUCache
 import networkx as nx  # type: ignore[import-untyped]
 
 from ..graph_utils import mark_dnfr_prep_dirty
-from ..import_utils import optional_numpy
+from ..import_utils import get_numpy
 from ..logging_utils import get_logger
 from .node_cache import get_graph, node_set_checksum, clear_node_repr_cache
 
@@ -219,7 +219,7 @@ def cached_nodes_and_A(
     G.graph["_dnfr_nodes_checksum"] = checksum
 
     def builder() -> tuple[list[int], Any]:
-        np = optional_numpy(logger)
+        np = get_numpy()
         if np is None:
             return nodes_list, None
         A = nx.to_numpy_array(G, nodelist=nodes_list, weight=None, dtype=float)

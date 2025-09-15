@@ -25,7 +25,7 @@ from ..alias import (
     set_dnfr,
 )
 from ..metrics_utils import compute_theta_trig, merge_and_normalize_weights
-from ..import_utils import optional_numpy
+from ..import_utils import get_numpy
 from ..logging_utils import get_logger
 
 logger = get_logger(__name__)
@@ -35,7 +35,6 @@ ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 
 
-np = optional_numpy(logger)
 
 
 @dataclass
@@ -140,6 +139,7 @@ def _init_dnfr_cache(G, nodes, prev_cache: DnfrCache | None, checksum, dirty):
 
 def _refresh_dnfr_vectors(G, nodes, cache: DnfrCache):
     """Update cached angle and state vectors for ΔNFR."""
+    np = get_numpy()
     trig = compute_theta_trig(((n, G.nodes[n]) for n in nodes), np=np)
     for i, n in enumerate(nodes):
         nd = G.nodes[n]
@@ -156,6 +156,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     if weights is None:
         weights = _configure_dnfr_weights(G)
 
+    np = get_numpy()
     use_numpy = np is not None and G.graph.get("vectorized_dnfr")
 
     nodes, A = cached_nodes_and_A(G, cache_size=cache_size)
@@ -244,7 +245,7 @@ def _apply_dnfr_gradients(
         set_dnfr(G, n, float(dnfr))
 
 
-def _init_bar_arrays(data, *, degs=None, np=np):
+def _init_bar_arrays(data, *, degs=None, np=None):
     """Prepare containers for neighbour means.
 
     If ``np`` is provided, NumPy arrays are created; otherwise lists are used.
@@ -256,6 +257,8 @@ def _init_bar_arrays(data, *, degs=None, np=np):
     epi = data["epi"]
     vf = data["vf"]
     w_topo = data["w_topo"]
+    if np is None:
+        np = get_numpy()
     if np is not None:
         th_bar = np.array(theta, dtype=float)
         epi_bar = np.array(epi, dtype=float)
@@ -284,7 +287,7 @@ def _compute_neighbor_means(
     count,
     deg_sum=None,
     degs=None,
-    np=np,
+    np=None,
 ):
     """Return neighbour mean arrays for ΔNFR."""
     w_topo = data["w_topo"]
@@ -339,6 +342,7 @@ def _compute_dnfr_common(
     degs=None,
 ):
     """Compute neighbour means and apply ΔNFR gradients."""
+    np = get_numpy()
     th_bar, epi_bar, vf_bar, deg_bar = _compute_neighbor_means(
         G,
         data,
@@ -354,11 +358,13 @@ def _compute_dnfr_common(
     _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
 
 
-def _init_neighbor_sums(data, *, np=np):
+def _init_neighbor_sums(data, *, np=None):
     """Initialise containers for neighbour sums."""
     nodes = data["nodes"]
     n = len(nodes)
     w_topo = data["w_topo"]
+    if np is None:
+        np = get_numpy()
     if np is not None:
         x = np.zeros(n, dtype=float)
         y = np.zeros(n, dtype=float)
@@ -384,6 +390,7 @@ def _init_neighbor_sums(data, *, np=np):
 
 
 def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
+    np = get_numpy()
     nodes = data["nodes"]
     w_topo = data["w_topo"]
     if use_numpy:
@@ -485,6 +492,7 @@ def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
         weights=data["weights"],
         hook_name="default_compute_delta_nfr",
     )
+    np = get_numpy()
     use_numpy = np is not None and G.graph.get("vectorized_dnfr")
     _compute_dnfr(G, data, use_numpy=use_numpy)
 

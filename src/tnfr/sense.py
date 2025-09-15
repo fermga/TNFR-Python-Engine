@@ -12,7 +12,7 @@ import networkx as nx  # type: ignore[import-untyped]
 from .constants import get_aliases, get_graph_param
 from .alias import get_attr
 from .helpers.numeric import clamp01, kahan_sum2d
-from .import_utils import optional_numpy
+from .import_utils import get_numpy
 from .callback_utils import register_callback
 from .glyph_history import (
     ensure_history,
@@ -31,7 +31,6 @@ from .logging_utils import get_logger
 # -------------------------
 
 logger = get_logger(__name__)
-NP = optional_numpy(logger)
 
 GLYPH_UNITS: dict[str, complex] = {
     g: complex(math.cos(a), math.sin(a)) for g, a in ANGLE_MAP.items()
@@ -153,7 +152,7 @@ def _sigma_from_iterable(
     else:
         iterator = iter((values,))
 
-    np = NP
+    np = get_numpy()
     if np is not None:
         iterator, np_iter = tee(iterator)
         arr = np.fromiter((_to_complex(v) for v in np_iter), dtype=np.complex128)
