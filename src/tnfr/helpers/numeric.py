@@ -167,6 +167,9 @@ def _neighbor_phase_mean_generic(
     sequence and ``cos_map``/``sin_map`` must be provided.
     """
 
+    if np is None:
+        np = get_numpy()
+
     if cos_map is None or sin_map is None:
         node = obj
         if getattr(node, "G", None) is None:
@@ -180,12 +183,8 @@ def _neighbor_phase_mean_generic(
         cos_map = trig.cos
         sin_map = trig.sin
         neigh = node.G[node.n]
-        if np is None:
-            np = get_numpy()
     else:
         neigh = obj
-        if np is None:
-            np = get_numpy()
 
     return _neighbor_phase_mean_core(neigh, cos_map, sin_map, np, fallback)
 
