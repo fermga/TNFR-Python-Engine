@@ -18,8 +18,9 @@ from .glyph_timing import (
     _update_epi_support,
     _compute_advanced_metrics,
 )
-from .coherence_updates import _track_stability, _aggregate_si
 from .coherence import (
+    _aggregate_si,
+    _track_stability,
     coherence_matrix,
     local_phase_sync,
     local_phase_sync_weighted,

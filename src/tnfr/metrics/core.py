@@ -6,16 +6,16 @@ from ..callback_utils import register_callback
 from ..constants import get_param
 from ..glyph_history import append_metric, ensure_history
 from ..logging_utils import get_logger
-from .coherence import register_coherence_callbacks
-from .diagnosis import register_diagnosis_callbacks
-from .coherence_updates import (
+from .coherence import (
     _aggregate_si,
     _record_metrics,
     _track_stability,
     _update_coherence,
     _update_phase_sync,
     _update_sigma,
+    register_coherence_callbacks,
 )
+from .diagnosis import register_diagnosis_callbacks
 from .glyph_timing import (
     GlyphTiming,
     _compute_advanced_metrics,
