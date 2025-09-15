@@ -25,9 +25,6 @@ ALIAS_THETA = get_aliases("THETA")
 
 __all__ = (
     "attach_standard_observer",
-    "std_before",
-    "std_after",
-    "std_on_remesh",
     "kuramoto_metrics",
     "phase_sync",
     "kuramoto_order",
@@ -54,11 +51,6 @@ _STD_CALLBACKS = {
     "after_step": partial(_std_log, "after"),
     "on_remesh": partial(_std_log, "remesh"),
 }
-
-# alias conservados por compatibilidad
-std_before = _STD_CALLBACKS["before_step"]
-std_after = _STD_CALLBACKS["after_step"]
-std_on_remesh = _STD_CALLBACKS["on_remesh"]
 
 
 def attach_standard_observer(G):
