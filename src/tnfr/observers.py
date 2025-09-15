@@ -3,10 +3,11 @@
 from __future__ import annotations
 from functools import partial
 import statistics
+from statistics import StatisticsError, pvariance
 
 from .constants import get_aliases, get_param
 from .alias import get_attr
-from .helpers.numeric import angle_diff, list_pvariance
+from .helpers.numeric import angle_diff
 from .callback_utils import callback_manager
 from .glyph_history import (
     ensure_history,
@@ -96,7 +97,10 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
         arr = np.fromiter(diffs, dtype=float)
         var = float(np.var(arr)) if arr.size else 0.0
     else:
-        var = list_pvariance(diffs, default=0.0)
+        try:
+            var = pvariance(diffs)
+        except StatisticsError:
+            var = 0.0
     return 1.0 / (1.0 + var)
 
 

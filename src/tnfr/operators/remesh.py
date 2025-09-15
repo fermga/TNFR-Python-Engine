@@ -6,9 +6,10 @@ from functools import cache
 from itertools import combinations
 from io import StringIO
 from collections import deque
+from statistics import fmean, StatisticsError
 
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
-from ..helpers.numeric import list_mean, kahan_sum_nd
+from ..helpers.numeric import kahan_sum_nd
 from ..helpers import edge_version_update
 from ..alias import get_attr, set_attr
 from ..rng import make_rng
@@ -185,7 +186,10 @@ def _community_graph(comms, epi, nx):
     C = nx.Graph()
     for idx, comm in enumerate(comms):
         members = list(comm)
-        epi_mean = list_mean(epi[n] for n in members)
+        try:
+            epi_mean = fmean(epi[n] for n in members)
+        except StatisticsError:
+            epi_mean = 0.0
         C.add_node(idx)
         set_attr(C.nodes[idx], ALIAS_EPI, epi_mean)
         C.nodes[idx]["members"] = members

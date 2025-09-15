@@ -4,10 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 from collections.abc import Iterable, Sequence
-from statistics import fmean, StatisticsError, pvariance
+from statistics import fmean, StatisticsError
 import math
 
-from ..import_utils import get_numpy
 from ..alias import get_attr
 
 _TRIG_MODULE = None
@@ -27,8 +26,6 @@ __all__ = (
     "clamp",
     "clamp01",
     "within_range",
-    "list_mean",
-    "list_pvariance",
     "kahan_sum_nd",
     "angle_diff",
     "neighbor_mean",
@@ -78,27 +75,6 @@ def _similarity_abs(a: float, b: float, lo: float, hi: float) -> float:
 
     return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, hi - lo)
 
-
-def list_mean(xs: Iterable[float], default: float = 0.0) -> float:
-    """Return the arithmetic mean of ``xs`` or ``default`` if empty."""
-    try:
-        return fmean(xs)
-    except StatisticsError:
-        return float(default)
-
-
-def list_pvariance(xs: Iterable[float], default: float = 0.0) -> float:
-    """Return the population variance of ``xs`` or ``default`` if empty."""
-    np = get_numpy()
-    if np is not None:
-        arr = np.fromiter(xs, dtype=float)
-        return float(np.var(arr)) if arr.size else float(default)
-    try:
-        return pvariance(xs)
-    except StatisticsError:
-        return float(default)
-
-
 def kahan_sum_nd(
     values: Iterable[Sequence[float]], dims: int
 ) -> tuple[float, ...]:
@@ -133,7 +109,10 @@ def neighbor_mean(
 ) -> float:
     """Mean of ``aliases`` attribute among neighbours of ``n``."""
     vals = (get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
-    return list_mean(vals, default)
+    try:
+        return fmean(vals)
+    except StatisticsError:
+        return float(default)
 
 def _phase_mean_from_iter(
     it: Iterable[tuple[float, float] | None], fallback: float

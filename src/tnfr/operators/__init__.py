@@ -5,10 +5,11 @@ from typing import Any, TYPE_CHECKING, Callable
 import math
 import heapq
 from itertools import islice
+from statistics import fmean, StatisticsError
 
 from ..constants import DEFAULTS, get_aliases, get_param
+
 from ..helpers.numeric import (
-    list_mean,
     angle_diff,
     neighbor_mean,
 )
@@ -102,7 +103,10 @@ def get_neighbor_epi(node: NodoProtocol) -> tuple[list[NodoProtocol], float]:
             for v in neigh
         ]
     else:
-        epi_bar = list_mean((v.EPI for v in neigh), default=epi)
+        try:
+            epi_bar = fmean(v.EPI for v in neigh)
+        except StatisticsError:
+            epi_bar = epi
 
     return neigh, epi_bar
 

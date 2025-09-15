@@ -30,7 +30,6 @@ from .numeric import (
     clamp,
     clamp01,
     kahan_sum_nd,
-    list_mean,
     neighbor_mean,
 )
 
@@ -53,7 +52,6 @@ __all__ = (
     "increment_edge_version",
     "kahan_sum_nd",
     "last_glyph",
-    "list_mean",
     "mark_dnfr_prep_dirty",
     "neighbor_mean",
     "node_set_checksum",
