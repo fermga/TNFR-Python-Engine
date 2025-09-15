@@ -12,7 +12,7 @@ from .constants import (
     get_aliases,
 )
 from .alias import get_attr, set_attr, multi_recompute_abs_max
-from .collections_utils import normalize_weights
+from .collections_utils import normalize_weights, prepare_weights
 from .helpers.numeric import (
     clamp01,
     angle_diff,
@@ -248,7 +248,20 @@ def merge_and_normalize_weights(
     """
 
     w = merge_graph_weights(G, key)
-    return normalize_weights(w, fields, default=default)
+    weights, keys_list, total = prepare_weights(
+        w,
+        fields,
+        default,
+        error_on_conversion=False,
+        error_on_negative=False,
+        warn_once=True,
+    )
+    if not keys_list:
+        return {}
+    if total <= 0:
+        uniform = 1.0 / len(keys_list)
+        return {k: uniform for k in keys_list}
+    return {k: val / total for k, val in weights.items()}
 
 
 def _cache_weights(G: GraphLike) -> tuple[float, float, float]:
