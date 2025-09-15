@@ -108,6 +108,13 @@ def test_normalize_weights_deduplicates_keys():
     assert norm_dup == pytest.approx(expected)
 
 
+def test_normalize_weights_dedup_and_defaults():
+    weights = {"a": "1", "c": "bad"}
+    norm = normalize_weights(weights, ["a", "b", "c", "a"], default=2.0)
+    assert math.isclose(math.fsum(norm.values()), 1.0)
+    assert norm == pytest.approx({"a": 1 / 5, "b": 2 / 5, "c": 2 / 5})
+
+
 def test_normalize_weights_accepts_mapping_proxy():
     weights = MappingProxyType({"a": 1.0, "b": 2.0})
     norm = normalize_weights(weights, weights.keys())
