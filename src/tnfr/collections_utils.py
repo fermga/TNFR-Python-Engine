@@ -162,6 +162,48 @@ def ensure_collection(
     return items
 
 
+def _convert_and_validate_weights(
+    dict_like: Mapping[str, Any],
+    keys: Iterable[str] | Sequence[str],
+    default: float,
+    *,
+    error_on_conversion: bool,
+    error_on_negative: bool,
+    warn_once: bool,
+) -> tuple[dict[str, float], list[str], float]:
+    """Return converted weights, deduplicated keys and the accumulated total."""
+
+    keys_list = list(dict.fromkeys(keys))
+    default_float = float(default)
+
+    def convert(k: str) -> float:
+        ok, val = convert_value(
+            dict_like.get(k, default_float),
+            float,
+            strict=error_on_conversion,
+            key=k,
+            log_level=logging.WARNING,
+        )
+        return cast(float, val) if ok else default_float
+
+    weights = {k: convert(k) for k in keys_list}
+    negatives = {k: w for k, w in weights.items() if w < 0}
+    total = kahan_sum(weights.values())
+
+    if negatives:
+        if error_on_negative:
+            raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
+        if warn_once:
+            _log_negative_keys_once(negatives)
+        else:
+            logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
+        for key, weight in negatives.items():
+            weights[key] = 0.0
+            total -= weight
+
+    return weights, keys_list, total
+
+
 def prepare_weights(
     dict_like: Mapping[str, Any],
     keys: Iterable[str] | Sequence[str],
@@ -177,35 +219,14 @@ def prepare_weights(
     and the accumulated ``total`` using Kahan summation.
     """
 
-    keys_list = list(dict.fromkeys(keys))
-    default_float = float(default)
-
-    def conv(k: str) -> float:
-        ok, val = convert_value(
-            dict_like.get(k, default_float),
-            float,
-            strict=error_on_conversion,
-            key=k,
-            log_level=logging.WARNING,
-        )
-        return cast(float, val) if ok else default_float
-
-    weights = {k: conv(k) for k in keys_list}
-    negatives = {k: w for k, w in weights.items() if w < 0}
-    total = kahan_sum(weights.values())
-
-    if negatives:
-        if error_on_negative:
-            raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
-        if warn_once:
-            _log_negative_keys_once(negatives)
-        else:
-            logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
-        for k, w in negatives.items():
-            weights[k] = 0.0
-            total -= w
-
-    return weights, keys_list, total
+    return _convert_and_validate_weights(
+        dict_like,
+        keys,
+        default,
+        error_on_conversion=error_on_conversion,
+        error_on_negative=error_on_negative,
+        warn_once=warn_once,
+    )
 
 
 # Backward compatible alias

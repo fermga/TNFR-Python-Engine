@@ -6,7 +6,7 @@ from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Protocol, Sequence
 
 from ..alias import get_attr, multi_recompute_abs_max
-from ..collections_utils import prepare_weights
+from ..collections_utils import normalize_weights
 from ..constants import DEFAULTS, get_aliases
 from ..helpers import edge_version_cache
 from ..helpers.numeric import clamp01, kahan_sum
@@ -102,20 +102,14 @@ def merge_and_normalize_weights(
     """Merge defaults for ``key`` and normalise ``fields``."""
 
     w = merge_graph_weights(G, key)
-    weights, keys_list, total = prepare_weights(
+    return normalize_weights(
         w,
         fields,
-        default,
+        default=default,
         error_on_conversion=False,
         error_on_negative=False,
         warn_once=True,
     )
-    if not keys_list:
-        return {}
-    if total <= 0:
-        uniform = 1.0 / len(keys_list)
-        return {k: uniform for k in keys_list}
-    return {k: val / total for k, val in weights.items()}
 
 
 def compute_dnfr_accel_max(G: GraphLike) -> dict[str, float]:
