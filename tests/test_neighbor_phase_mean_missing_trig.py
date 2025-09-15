@@ -1,8 +1,8 @@
 import math
 import pytest
 
-import tnfr.helpers.numeric as numeric
-from tnfr.helpers.numeric import (
+import tnfr.metrics.trig as trig
+from tnfr.metrics.trig import (
     neighbor_phase_mean_list,
     _neighbor_phase_mean_core,
 )
@@ -32,7 +32,7 @@ def test_neighbor_phase_mean_list_delegates_generic(monkeypatch):
         return 1.23
 
     monkeypatch.setattr(
-        "tnfr.helpers.numeric._neighbor_phase_mean_generic", fake_generic
+        "tnfr.metrics.trig._neighbor_phase_mean_generic", fake_generic
     )
     result = neighbor_phase_mean_list(neigh, cos_th, sin_th, np=None, fallback=0.0)
     assert result == pytest.approx(1.23)
@@ -66,18 +66,18 @@ def test_neighbor_phase_mean_generic_uses_cached_numpy(monkeypatch):
         calls += 1
         return fake_np
 
-    monkeypatch.setattr(numeric, "get_numpy", fake_get_numpy)
+    monkeypatch.setattr(trig, "get_numpy", fake_get_numpy)
 
-    original_core = numeric._neighbor_phase_mean_core
+    original_core = trig._neighbor_phase_mean_core
     captured_np = []
 
     def wrapped_core(neigh, cos_map, sin_map, np_arg, fallback):
         captured_np.append(np_arg)
         return original_core(neigh, cos_map, sin_map, np_arg, fallback)
 
-    monkeypatch.setattr(numeric, "_neighbor_phase_mean_core", wrapped_core)
+    monkeypatch.setattr(trig, "_neighbor_phase_mean_core", wrapped_core)
 
-    result = numeric._neighbor_phase_mean_generic(
+    result = trig._neighbor_phase_mean_generic(
         [1, 2],
         cos_map={1: 1.0, 2: 0.0},
         sin_map={1: 0.0, 2: 1.0},

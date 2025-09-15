@@ -16,9 +16,8 @@ from ..constants import DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import (
     angle_diff,
     neighbor_mean,
-    neighbor_phase_mean,
-    _phase_mean_from_iter,
 )
+from ..metrics.trig import neighbor_phase_mean, _phase_mean_from_iter
 from ..helpers import cached_nodes_and_A
 from ..alias import (
     get_attr,

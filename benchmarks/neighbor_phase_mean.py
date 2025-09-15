@@ -4,7 +4,7 @@ import math
 import time
 import networkx as nx
 
-from tnfr.helpers.numeric import neighbor_phase_mean
+from tnfr.metrics.trig import neighbor_phase_mean
 from tnfr.constants import get_aliases
 from tnfr.node import NodoNX
 
