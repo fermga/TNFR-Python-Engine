@@ -1,12 +1,11 @@
 import logging
 import warnings
 
-from tnfr.import_utils import _warn_failure, _WARNED_MODULES, _WARNED_LOCK
+from tnfr.import_utils import IMPORT_LOG, _warn_failure
 
 
 def _clear_warned():
-    with _WARNED_LOCK:
-        _WARNED_MODULES.clear()
+    IMPORT_LOG.clear()
 
 
 def test_warn_failure_warns_only(caplog):

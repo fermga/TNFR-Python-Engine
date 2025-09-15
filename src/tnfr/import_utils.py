@@ -1,26 +1,23 @@
 """Helpers for optional imports and cached access to heavy modules.
 
-The module maintains caches for successful imports alongside registries of
-failed attempts and previously warned modules. Entries older than
-``_FAILED_IMPORT_MAX_AGE`` seconds are pruned automatically; use
-``prune_failed_imports`` to trigger cleanup manually or call
-``cached_import.cache_clear`` to reset import results.
-Additional helpers like :func:`get_nodonx` provide light-weight access to
-TNFR-specific structures on demand.
+This module centralises caching for optional dependencies. It exposes
+:func:`cached_import`, backed by a small :func:`functools.lru_cache`, alongside a
+light-weight registry that tracks failed imports and warnings. Use
+:func:`prune_failed_imports` or ``cached_import.cache_clear`` to reset state when
+new packages become available at runtime.
 """
 
 from __future__ import annotations
 
 import importlib
 import warnings
-from functools import partial
-from typing import Any, Callable, Literal, MutableMapping
+from collections import OrderedDict
 from dataclasses import dataclass, field
-from cachetools import TTLCache
+from functools import lru_cache
+from typing import Any, Callable, Literal, MutableMapping
 import threading
-import time
+
 from .logging_utils import get_logger
-from .locking import get_lock
 
 __all__ = (
     "cached_import",
@@ -28,6 +25,7 @@ __all__ = (
     "get_numpy",
     "get_nodonx",
     "prune_failed_imports",
+    "IMPORT_LOG",
 )
 
 
@@ -35,7 +33,8 @@ logger = get_logger(__name__)
 
 
 def _emit(message: str, mode: Literal["warn", "log", "both"]) -> None:
-    """Emit ``message`` via warning, logger or both."""
+    """Emit ``message`` via :mod:`warnings`, logger or both."""
+
     if mode in ("warn", "both"):
         warnings.warn(message, RuntimeWarning, stacklevel=2)
     if mode in ("log", "both"):
@@ -43,14 +42,15 @@ def _emit(message: str, mode: Literal["warn", "log", "both"]) -> None:
 
 
 EMIT_MAP: dict[str, Callable[[str], None]] = {
-    "warn": partial(_emit, mode="warn"),
-    "log": partial(_emit, mode="log"),
-    "both": partial(_emit, mode="both"),
+    "warn": lambda msg: _emit(msg, "warn"),
+    "log": lambda msg: _emit(msg, "log"),
+    "both": lambda msg: _emit(msg, "both"),
 }
 
 
 def _format_failure_message(module: str, attr: str | None, err: Exception) -> str:
     """Return a standardised failure message."""
+
     return (
         f"Failed to import module '{module}': {err}"
         if isinstance(err, ImportError)
@@ -58,56 +58,78 @@ def _format_failure_message(module: str, attr: str | None, err: Exception) -> st
     )
 
 
-_FAILED_IMPORT_LIMIT = 128  # keep only this many recent failures
-_FAILED_IMPORT_MAX_AGE = 3600.0  # seconds
-_FAILED_IMPORT_PRUNE_INTERVAL = 60.0  # seconds between automatic prunes
+_FAILED_IMPORT_LIMIT = 128
+_DEFAULT_CACHE_SIZE = 128
+_FAIL = object()
+_MANUAL_CACHE_LOCK = threading.Lock()
 
 
 @dataclass(slots=True)
-class _ImportState:
+class ImportRegistry:
+    """Process-wide registry tracking failed imports and emitted warnings."""
+
     limit: int = _FAILED_IMPORT_LIMIT
-    max_age: float = _FAILED_IMPORT_MAX_AGE
-    failed: TTLCache = field(init=False)
+    failed: OrderedDict[str, None] = field(default_factory=OrderedDict)
+    warned: set[str] = field(default_factory=set)
     lock: threading.Lock = field(default_factory=threading.Lock)
-    last_prune: float = 0.0
 
-    def __post_init__(self) -> None:
-        self.failed = TTLCache(
-            self.limit, self.max_age, timer=lambda: time.monotonic()
-        )
+    def _insert(self, key: str) -> None:
+        self.failed[key] = None
+        self.failed.move_to_end(key)
+        while len(self.failed) > self.limit:
+            self.failed.popitem(last=False)
 
-    def prune(self, now: float | None = None) -> None:
-        self.failed.expire(now)
-        self.last_prune = time.monotonic() if now is None else now
+    def record_failure(self, key: str, *, module: str | None = None) -> None:
+        """Record ``key`` and, optionally, ``module`` as failed imports."""
 
-    def record(self, item: str) -> None:
-        self.failed[item] = True
+        with self.lock:
+            self._insert(key)
+            if module and module != key:
+                self._insert(module)
 
-    def discard(self, item: str) -> None:
-        self.failed.pop(item, None)
+    def discard(self, key: str) -> None:
+        """Remove ``key`` from the registry and clear its warning state."""
 
-    def __contains__(self, item: str) -> bool:  # pragma: no cover - trivial
-        return item in self.failed
+        with self.lock:
+            self.failed.pop(key, None)
+            self.warned.discard(key)
+
+    def mark_warning(self, module: str) -> bool:
+        """Mark ``module`` as warned and return ``True`` if it was new."""
+
+        with self.lock:
+            if module in self.warned:
+                return False
+            self.warned.add(module)
+            return True
 
     def clear(self) -> None:
-        self.failed.clear()
-        self.last_prune = 0.0
+        """Remove all failure records and warning markers."""
+
+        with self.lock:
+            self.failed.clear()
+            self.warned.clear()
+
+    def __contains__(self, key: str) -> bool:  # pragma: no cover - trivial
+        with self.lock:
+            return key in self.failed
 
 
-_IMPORT_STATE = _ImportState()
+_IMPORT_STATE = ImportRegistry()
+# Public alias to ease direct introspection in tests and diagnostics.
+IMPORT_LOG = _IMPORT_STATE
 
 
-_WARNED_STATE = _ImportState(lock=get_lock("import_warned"))
-_WARNED_MODULES = _WARNED_STATE.failed
-_WARNED_LOCK = _WARNED_STATE.lock
+@lru_cache(maxsize=_DEFAULT_CACHE_SIZE)
+def _import_cached(module_name: str, attr: str | None) -> tuple[bool, Any]:
+    """Import ``module_name`` (and optional ``attr``) capturing failures."""
 
-_DEFAULT_CACHE_SIZE = 128
-_DEFAULT_CACHE_TTL = _FAILED_IMPORT_MAX_AGE
-_IMPORT_CACHE: TTLCache[str, Any] = TTLCache(
-    _DEFAULT_CACHE_SIZE, _DEFAULT_CACHE_TTL, timer=lambda: time.monotonic()
-)
-_CACHE_LOCK = threading.Lock()
-_FAIL = object()
+    try:
+        module = importlib.import_module(module_name)
+        obj = getattr(module, attr) if attr else module
+    except (ImportError, AttributeError) as exc:
+        return False, exc
+    return True, obj
 
 
 def _warn_failure(
@@ -117,79 +139,13 @@ def _warn_failure(
     *,
     emit: Literal["warn", "log", "both"] = "warn",
 ) -> None:
-    """Emit a warning about a failed import.
+    """Emit a warning about a failed import."""
 
-    Parameters
-    ----------
-    module:
-        Module name that failed to import.
-    attr:
-        Optional attribute that was looked up on the module.
-    err:
-        Exception that was raised during import or attribute access.
-    emit:
-        Destination for the warning: ``"warn"`` (default) uses
-        :func:`warnings.warn`, ``"log"`` uses :func:`logger.warning` and
-        ``"both"`` emits to both destinations.
-    """
-    now = time.monotonic()
-    state = _IMPORT_STATE
-    if now - state.last_prune >= _FAILED_IMPORT_PRUNE_INTERVAL:
-        prune_failed_imports()
     msg = _format_failure_message(module, attr, err)
-    with _WARNED_STATE.lock:
-        first = module not in _WARNED_STATE.failed
-        _WARNED_STATE.record(module)
-
-    if not first:
+    if _IMPORT_STATE.mark_warning(module):
+        EMIT_MAP[emit](msg)
+    else:
         logger.debug(msg)
-        return
-    EMIT_MAP[emit](msg)
-
-
-def _update_import_cache(ttl: float) -> MutableMapping[str, Any]:
-    """Return the shared import cache.
-
-    Updates its TTL when required to maintain deterministic behaviour.
-    """
-    global _IMPORT_CACHE
-    if _IMPORT_CACHE.ttl != ttl:
-        with _CACHE_LOCK:
-            if _IMPORT_CACHE.ttl != ttl:
-                _IMPORT_CACHE = TTLCache(
-                    _DEFAULT_CACHE_SIZE, ttl, timer=lambda: time.monotonic()
-                )
-    return _IMPORT_CACHE
-
-
-def _get_cache_lock(
-    cache: MutableMapping[str, Any] | None,
-    lock: threading.Lock | None,
-    ttl: float,
-) -> tuple[MutableMapping[str, Any], threading.Lock]:
-    """Resolve cache and lock arguments for :func:`cached_import`.
-
-    Ensures the shared cache respects the requested ``ttl``.
-    """
-    if cache is None:
-        cache = _update_import_cache(ttl)
-        lock = _CACHE_LOCK
-    elif lock is None:
-        lock = _CACHE_LOCK
-    return cache, lock
-
-
-def _record_failure(key: str, module: str, err: Exception) -> None:
-    """Record a failed import attempt in the process-wide registry.
-
-    This keeps deterministic failure accounting across modules.
-    """
-    with _IMPORT_STATE.lock:
-        if isinstance(err, ImportError):
-            _IMPORT_STATE.record(module)
-            _IMPORT_STATE.record(key)
-        else:
-            _IMPORT_STATE.record(key)
 
 
 def cached_import(
@@ -199,7 +155,7 @@ def cached_import(
     fallback: Any | None = None,
     cache: MutableMapping[str, Any] | None = None,
     lock: threading.Lock | None = None,
-    ttl: float = _DEFAULT_CACHE_TTL,
+    ttl: float | None = None,
     emit: Literal["warn", "log", "both"] = "warn",
 ) -> Any | None:
     """Import ``module_name`` (and optional ``attr``) with caching and fallback.
@@ -207,27 +163,38 @@ def cached_import(
     Parameters
     ----------
     module_name:
-        Name of the module to import.
+        Module to import.
     attr:
-        Optional attribute to fetch from ``module_name``.
+        Optional attribute to fetch from the module.
     fallback:
         Value returned when the import fails.
     cache:
-        Mapping used to store cached results. When ``None`` the internal
-        process-wide cache is used.
+        Custom mapping used to store cached results. When ``None`` a process-wide
+        :func:`functools.lru_cache` is used.
     lock:
-        Optional :class:`threading.Lock` guarding ``cache``. When using an
-        external cache, passing a lock is recommended to avoid repeated
-        creations. If omitted, the shared ``_CACHE_LOCK`` is used.
+        Lock guarding ``cache`` when a custom mapping is supplied.
     ttl:
-        Time-to-live for entries when using the internal cache.
+        Deprecated; retained for backwards compatibility. The shared cache
+        ignores this argument.
     emit:
-        Destination for warnings emitted on import failures.
+        Destination for warnings emitted on failure (``"warn"``/``"log"``/``"both"``).
     """
 
     key = module_name if attr is None else f"{module_name}.{attr}"
-    cache, lock = _get_cache_lock(cache, lock, ttl)
+    if cache is None:
+        success, result = _import_cached(module_name, attr)
+        if success:
+            _IMPORT_STATE.discard(key)
+            if attr is not None:
+                _IMPORT_STATE.discard(module_name)
+            return result
+        exc = result
+        include_module = isinstance(exc, ImportError)
+        _warn_failure(module_name, attr, exc, emit=emit)
+        _IMPORT_STATE.record_failure(key, module=module_name if include_module else None)
+        return fallback
 
+    lock = lock or _MANUAL_CACHE_LOCK
     with lock:
         try:
             value = cache[key]
@@ -239,19 +206,27 @@ def cached_import(
     try:
         module = importlib.import_module(module_name)
         obj = getattr(module, attr) if attr else module
-        with lock:
-            cache[key] = obj
-        with _IMPORT_STATE.lock, _WARNED_STATE.lock:
-            for item in (key, module_name):
-                _IMPORT_STATE.discard(item)
-            _WARNED_STATE.discard(module_name)
-        return obj
-    except (ImportError, AttributeError) as e:
-        _warn_failure(module_name, attr, e, emit=emit)
-        _record_failure(key, module_name, e)
+    except (ImportError, AttributeError) as exc:
+        include_module = isinstance(exc, ImportError)
+        _warn_failure(module_name, attr, exc, emit=emit)
+        _IMPORT_STATE.record_failure(key, module=module_name if include_module else None)
         with lock:
             cache[key] = _FAIL
         return fallback
+
+    with lock:
+        cache[key] = obj
+    _IMPORT_STATE.discard(key)
+    if attr is not None:
+        _IMPORT_STATE.discard(module_name)
+    return obj
+
+
+def _clear_default_cache() -> None:
+    _import_cached.cache_clear()
+
+
+cached_import.cache_clear = _clear_default_cache  # type: ignore[attr-defined]
 
 
 def optional_numpy(logger: Any) -> Any | None:
@@ -277,34 +252,12 @@ def get_numpy(logger: Any | None = None) -> Any | None:
 
 
 def get_nodonx() -> type | None:
-    """Return :class:`tnfr.node.NodoNX` using import caching.
-
-    The helper centralises access to the lightweight ``NodoNX`` wrapper so
-    modules can interact with graph nodes without incurring repeated import
-    overhead.
-
-    Returns
-    -------
-    type | None
-        ``NodoNX`` when available, otherwise ``None``.
-    """
+    """Return :class:`tnfr.node.NodoNX` using import caching."""
 
     return cached_import("tnfr.node", "NodoNX")
 
 
-def _clear_cache() -> None:
-    with _CACHE_LOCK:
-        _IMPORT_CACHE.clear()
-
-
-cached_import.cache_clear = _clear_cache  # type: ignore[attr-defined]
-
-
 def prune_failed_imports() -> None:
-    """Prune expired entries from failure and warning registries."""
-    now = time.monotonic()
-    with _IMPORT_STATE.lock, _WARNED_STATE.lock:
-        _IMPORT_STATE.prune(now)
-        _WARNED_STATE.prune(now)
+    """Clear the registry of recorded import failures and warnings."""
 
-
+    _IMPORT_STATE.clear()

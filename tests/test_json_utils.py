@@ -20,8 +20,6 @@ def _reset_json_utils(monkeypatch, module):
     )
     clear_orjson_cache()
     import_utils.prune_failed_imports()
-    with import_utils._WARNED_STATE.lock:
-        import_utils._WARNED_STATE.clear()
 
 
 def test_lazy_orjson_import(monkeypatch):
@@ -78,8 +76,6 @@ def test_json_dumps_returns_str_by_default():
 def test_json_dumps_without_orjson(monkeypatch, caplog):
     clear_orjson_cache()
     import_utils.prune_failed_imports()
-    with import_utils._WARNED_STATE.lock:
-        import_utils._WARNED_STATE.clear()
 
     original = import_utils.importlib.import_module
 
