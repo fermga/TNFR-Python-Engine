@@ -53,19 +53,14 @@ def get_graph_mapping(
     return MappingProxyType(data)
 
 
-def _stable_json(obj: Any) -> str:
-    """Return a JSON string with deterministic ordering."""
+def stable_json(obj: Any) -> str:
+    """Return a JSON string with deterministic ordering for ``obj``."""
     return json_dumps(
         obj,
         sort_keys=True,
         ensure_ascii=False,
         to_bytes=False,
     )
-
-
-def stable_json(obj: Any) -> str:
-    """Public wrapper returning a stable JSON string for ``obj``."""
-    return _stable_json(obj)
 
 
 @lru_cache(maxsize=1024)
@@ -75,7 +70,7 @@ def _node_repr_digest(obj: Any) -> tuple[str, bytes]:
     This single helper centralises caching for node representations and their
     digests, ensuring both values stay in sync.
     """
-    repr_ = _stable_json(obj)
+    repr_ = stable_json(obj)
     digest = hashlib.blake2b(repr_.encode("utf-8"), digest_size=16).digest()
     return repr_, digest
 
