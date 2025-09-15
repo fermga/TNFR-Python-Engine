@@ -2,7 +2,6 @@ import importlib
 import sys
 import types
 
-import pytest
 from cachetools import TTLCache
 import tnfr.import_utils as import_utils
 from tnfr.import_utils import (
@@ -33,7 +32,7 @@ def test_cached_import_uses_cache(monkeypatch):
     reset()
     calls = {"n": 0}
 
-    def fake_import(name):
+    def fake_import(_name):
         calls["n"] += 1
         return types.SimpleNamespace()
 
@@ -81,7 +80,7 @@ def test_cached_import_uses_shared_lock_when_missing(monkeypatch):
 def test_cache_clear_and_prune_reset_all(monkeypatch):
     reset()
 
-    def fake_import(name):
+    def fake_import(_name):
         raise ImportError("boom")
 
     monkeypatch.setattr(importlib, "import_module", fake_import)
