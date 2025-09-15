@@ -13,9 +13,9 @@ from ..helpers import edge_version_cache, stable_json
 from ..helpers.numeric import angle_diff, clamp01
 from .trig import neighbor_phase_mean_list
 from ..import_utils import get_numpy
+from ..types import GraphLike
 
 from .common import (
-    GraphLike,
     ensure_neighbors_map,
     merge_graph_weights,
     _get_vf_dnfr_max,
