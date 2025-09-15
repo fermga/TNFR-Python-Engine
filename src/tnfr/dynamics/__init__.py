@@ -25,8 +25,8 @@ from ..helpers.numeric import (
     clamp01,
     angle_diff,
     neighbor_mean,
-    neighbor_phase_mean,
 )
+from ..metrics.trig import neighbor_phase_mean
 from ..alias import (
     get_attr,
     set_vf,

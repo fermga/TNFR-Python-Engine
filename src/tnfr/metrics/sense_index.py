@@ -10,7 +10,8 @@ from ..alias import get_attr, set_attr
 from ..collections_utils import normalize_weights
 from ..constants import get_aliases
 from ..helpers import edge_version_cache, stable_json
-from ..helpers.numeric import angle_diff, clamp01, neighbor_phase_mean_list
+from ..helpers.numeric import angle_diff, clamp01
+from .trig import neighbor_phase_mean_list
 from ..import_utils import get_numpy
 
 from .common import (

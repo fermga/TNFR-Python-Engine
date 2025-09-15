@@ -1,6 +1,6 @@
 import pytest
 
-from tnfr.helpers.numeric import neighbor_phase_mean
+from tnfr.metrics.trig import neighbor_phase_mean
 from tnfr.constants import get_aliases
 from tnfr.alias import set_attr
 
@@ -37,7 +37,7 @@ def test_neighbor_phase_mean_uses_generic(monkeypatch, graph_canon):
         calls.append((obj, cos_map, sin_map, np, fallback))
         return 0.0
 
-    monkeypatch.setattr("tnfr.helpers.numeric._neighbor_phase_mean_generic", fake_generic)
+    monkeypatch.setattr("tnfr.metrics.trig._neighbor_phase_mean_generic", fake_generic)
     neighbor_phase_mean(G, 1)
     assert len(calls) == 1
     node_arg, cos_map, sin_map, np_arg, fallback = calls[0]
