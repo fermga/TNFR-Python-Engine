@@ -28,6 +28,8 @@ import networkx as nx  # type: ignore[import-untyped]
 
 __all__ = (
     "CallbackEvent",
+    "CallbackManager",
+    "callback_manager",
     "register_callback",
     "invoke_callbacks",
     "get_callback_error_limit",
@@ -36,8 +38,6 @@ __all__ = (
 )
 
 logger = get_logger(__name__)
-
-_CALLBACK_LOCK = get_lock("callbacks")
 
 
 class CallbackEvent(str, Enum):
@@ -50,21 +50,143 @@ class CallbackEvent(str, Enum):
 
 _CALLBACK_EVENTS: set[str] = {e.value for e in CallbackEvent}
 
-# Default number of recent callback errors to retain.
-# Use ``set_callback_error_limit`` to adjust.
-_CALLBACK_ERROR_LIMIT_LOCK = threading.Lock()
-_CALLBACK_ERROR_LIMIT = 100
 
+class CallbackManager:
+    """Centralised registry and error tracking for callbacks."""
 
-def get_callback_error_limit() -> int:
-    """Return the current callback error retention limit."""
-    with _CALLBACK_ERROR_LIMIT_LOCK:
-        return _CALLBACK_ERROR_LIMIT
+    def __init__(self) -> None:
+        self._lock = get_lock("callbacks")
+        self._error_limit_lock = threading.Lock()
+        self._error_limit = 100
+        self._error_limit_cache = self._error_limit
 
+    # ------------------------------------------------------------------
+    # Error limit management
+    # ------------------------------------------------------------------
+    def get_callback_error_limit(self) -> int:
+        """Return the current callback error retention limit."""
+        with self._error_limit_lock:
+            return self._error_limit
 
-# Cache the callback error limit to avoid repeated lookups during error
-# recording. ``set_callback_error_limit`` refreshes this value.
-_CALLBACK_ERROR_LIMIT_CACHE = get_callback_error_limit()
+    def set_callback_error_limit(self, limit: int) -> int:
+        """Set the maximum number of callback errors retained."""
+        if limit < 1:
+            raise ValueError("limit must be positive")
+        with self._error_limit_lock:
+            previous = self._error_limit
+            self._error_limit = int(limit)
+            self._error_limit_cache = self._error_limit
+        return previous
+
+    # ------------------------------------------------------------------
+    # Registry helpers
+    # ------------------------------------------------------------------
+    def _record_callback_error(
+        self,
+        G: "nx.Graph",
+        event: str,
+        ctx: dict[str, Any],
+        spec: CallbackSpec,
+        err: Exception,
+    ) -> None:
+        """Log and store a callback error for later inspection."""
+
+        logger.exception("callback %r failed for %s: %s", spec.name, event, err)
+        limit = self._error_limit_cache
+        err_list = G.graph.setdefault(
+            "_callback_errors", deque[CallbackError](maxlen=limit)
+        )
+        if err_list.maxlen != limit:
+            err_list = deque[CallbackError](err_list, maxlen=limit)
+            G.graph["_callback_errors"] = err_list
+        error: CallbackError = {
+            "event": event,
+            "step": ctx.get("step"),
+            "error": repr(err),
+            "traceback": traceback.format_exc(),
+            "fn": _func_id(spec.func),
+            "name": spec.name,
+        }
+        err_list.append(error)
+
+    def _ensure_callbacks_nolock(self, G: "nx.Graph") -> CallbackRegistry:
+        cbs = G.graph.setdefault("callbacks", defaultdict(dict))
+        dirty: set[str] = set(G.graph.pop("_callbacks_dirty", ()))
+        return _validate_registry(G, cbs, dirty)
+
+    def _ensure_callbacks(self, G: "nx.Graph") -> CallbackRegistry:
+        with self._lock:
+            return self._ensure_callbacks_nolock(G)
+
+    def register_callback(
+        self,
+        G: "nx.Graph",
+        event: CallbackEvent | str,
+        func: Callback,
+        *,
+        name: str | None = None,
+    ) -> Callback:
+        """Register ``func`` as callback for ``event``."""
+
+        event = _normalize_event(event)
+        if event not in _CALLBACK_EVENTS:
+            raise ValueError(f"Unknown event: {event}")
+        if not callable(func):
+            raise TypeError("func must be callable")
+        with self._lock:
+            cbs = self._ensure_callbacks_nolock(G)
+
+            cb_name = name or getattr(func, "__name__", None)
+            spec = CallbackSpec(cb_name, func)
+            existing_map = cbs[event]
+            strict = bool(
+                G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
+            )
+            key = _reconcile_callback(event, existing_map, spec, strict)
+
+            existing_map[key] = spec
+            dirty = G.graph.setdefault("_callbacks_dirty", set())
+            dirty.add(event)
+        return func
+
+    def invoke_callbacks(
+        self,
+        G: "nx.Graph",
+        event: CallbackEvent | str,
+        ctx: dict[str, Any] | None = None,
+    ) -> None:
+        """Invoke all callbacks registered for ``event`` with context ``ctx``."""
+
+        event = _normalize_event(event)
+        with self._lock:
+            cbs = dict(self._ensure_callbacks_nolock(G).get(event, {}))
+            strict = bool(
+                G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
+            )
+        if ctx is None:
+            ctx = {}
+        for spec in cbs.values():
+            try:
+                spec.func(G, ctx)
+            except (
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as e:
+                with self._lock:
+                    self._record_callback_error(G, event, ctx, spec, e)
+                if strict:
+                    raise
+            except nx.NetworkXError as err:
+                with self._lock:
+                    self._record_callback_error(G, event, ctx, spec, err)
+                logger.exception(
+                    "callback %r raised NetworkXError for %s with ctx=%r",
+                    spec.name,
+                    event,
+                    ctx,
+                )
+                raise
 
 
 Callback = Callable[["nx.Graph", dict[str, Any]], None]
@@ -132,17 +254,6 @@ def _validate_registry(
     return cbs
 
 
-def _ensure_callbacks_nolock(G: "nx.Graph") -> CallbackRegistry:
-    """Internal helper implementing ``_ensure_callbacks`` without locking."""
-    cbs = G.graph.setdefault("callbacks", defaultdict(dict))
-    dirty: set[str] = set(G.graph.pop("_callbacks_dirty", ()))
-    return _validate_registry(G, cbs, dirty)
-
-
-def _ensure_callbacks(G: "nx.Graph") -> CallbackRegistry:
-    """Ensure the callback structure in ``G.graph``."""
-    with _CALLBACK_LOCK:
-        return _ensure_callbacks_nolock(G)
 
 
 def _normalize_callbacks(entries: Any) -> dict[str, CallbackSpec]:
@@ -205,62 +316,6 @@ def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
         return None
 
 
-def _record_callback_error(
-    G: "nx.Graph",
-    event: str,
-    ctx: dict[str, Any],
-    spec: CallbackSpec,
-    err: Exception,
-) -> None:
-    """Log and store a callback error for later inspection.
-
-    Errors are stored as :class:`CallbackError` entries inside
-    ``G.graph['_callback_errors']``. The size of this deque is bounded by
-    :func:`set_callback_error_limit`.
-    """
-
-    logger.exception("callback %r failed for %s: %s", spec.name, event, err)
-    limit = _CALLBACK_ERROR_LIMIT_CACHE
-    err_list = G.graph.setdefault(
-        "_callback_errors", deque[CallbackError](maxlen=limit)
-    )
-    if err_list.maxlen != limit:
-        err_list = deque[CallbackError](err_list, maxlen=limit)
-        G.graph["_callback_errors"] = err_list
-    error: CallbackError = {
-        "event": event,
-        "step": ctx.get("step"),
-        "error": repr(err),
-        "traceback": traceback.format_exc(),
-        "fn": _func_id(spec.func),
-        "name": spec.name,
-    }
-    err_list.append(error)
-
-
-def set_callback_error_limit(limit: int) -> int:
-    """Set the maximum number of callback errors retained.
-
-    Parameters
-    ----------
-    limit:
-        Maximum number of recent callback errors to keep. Must be ``>= 1``.
-
-    Returns
-    -------
-    int
-        The previous limit.
-    """
-
-    if limit < 1:
-        raise ValueError("limit must be positive")
-    global _CALLBACK_ERROR_LIMIT, _CALLBACK_ERROR_LIMIT_CACHE
-    with _CALLBACK_ERROR_LIMIT_LOCK:
-        previous = _CALLBACK_ERROR_LIMIT
-        _CALLBACK_ERROR_LIMIT = int(limit)
-        _CALLBACK_ERROR_LIMIT_CACHE = _CALLBACK_ERROR_LIMIT
-    return previous
-
 
 def _reconcile_callback(
     event: str,
@@ -311,101 +366,17 @@ def _reconcile_callback(
     return key
 
 
-def register_callback(
-    G: "nx.Graph",
-    event: CallbackEvent | str,
-    func: Callback,
-    *,
-    name: str | None = None,
-) -> Callback:
-    """Register ``func`` as callback for ``event``.
+# ---------------------------------------------------------------------------
+# Default manager instance and convenience wrappers
+# ---------------------------------------------------------------------------
 
-    Parameters
-    ----------
-    G:
-        Graph where the callback registry is stored.
-    event:
-        Name of the event to register ``func`` under.
-    func:
-        Callable receiving ``(G, ctx)``.
-    name:
-        Optional explicit name for the callback. Defaults to ``func.__name__``.
+callback_manager = CallbackManager()
 
-    Returns
-    -------
-    Callable
-        The registered ``func``.
-
-    Examples
-    --------
-    >>> import networkx as nx
-    >>> from tnfr.callback_utils import register_callback, invoke_callbacks
-    >>> G = nx.Graph()
-    >>> def cb(G, ctx):
-    ...     ctx.setdefault("called", 0)
-    ...     ctx["called"] += 1
-    >>> register_callback(G, "before_step", cb, name="counter")
-    >>> ctx = {}
-    >>> invoke_callbacks(G, "before_step", ctx)
-    >>> ctx["called"]
-    1
-    """
-    event = _normalize_event(event)
-    if event not in _CALLBACK_EVENTS:
-        raise ValueError(f"Unknown event: {event}")
-    if not callable(func):
-        raise TypeError("func must be callable")
-    with _CALLBACK_LOCK:
-        cbs = _ensure_callbacks_nolock(G)
-
-        cb_name = name or getattr(func, "__name__", None)
-        spec = CallbackSpec(cb_name, func)
-        existing_map = cbs[event]
-        strict = bool(
-            G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
-        )
-        key = _reconcile_callback(event, existing_map, spec, strict)
-
-        existing_map[key] = spec
-        dirty = G.graph.setdefault("_callbacks_dirty", set())
-        dirty.add(event)
-    return func
+# Backwards-compatible function aliases
+register_callback = callback_manager.register_callback
+invoke_callbacks = callback_manager.invoke_callbacks
+get_callback_error_limit = callback_manager.get_callback_error_limit
+set_callback_error_limit = callback_manager.set_callback_error_limit
 
 
-def invoke_callbacks(
-    G: "nx.Graph",
-    event: CallbackEvent | str,
-    ctx: dict[str, Any] | None = None,
-) -> None:
-    """Invoke all callbacks registered for ``event`` with context ``ctx``."""
-    event = _normalize_event(event)
-    with _CALLBACK_LOCK:
-        cbs = dict(_ensure_callbacks_nolock(G).get(event, {}))
-        strict = bool(
-            G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
-        )
-    if ctx is None:
-        ctx = {}
-    for spec in cbs.values():
-        try:
-            spec.func(G, ctx)
-        except (
-            RuntimeError,
-            ValueError,
-            TypeError,
-        ) as e:  # catch expected callback errors
-            with _CALLBACK_LOCK:
-                _record_callback_error(G, event, ctx, spec, e)
-            if strict:
-                raise
-        except nx.NetworkXError as err:
-            with _CALLBACK_LOCK:
-                _record_callback_error(G, event, ctx, spec, err)
-            # NetworkX errors are unexpected; log and re-raise
-            logger.exception(
-                "callback %r raised NetworkXError for %s with ctx=%r",
-                spec.name,
-                event,
-                ctx,
-            )
-            raise
+

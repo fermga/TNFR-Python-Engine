@@ -12,7 +12,7 @@ from ..helpers.numeric import list_mean, kahan_sum
 from ..helpers import edge_version_update
 from ..alias import get_attr, set_attr
 from ..rng import make_rng
-from ..callback_utils import invoke_callbacks
+from ..callback_utils import callback_manager
 from ..glyph_history import append_metric, ensure_history, current_step_idx
 from ..import_utils import cached_import
 
@@ -88,7 +88,7 @@ def _log_remesh_event(G, meta):
     if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
         hist = G.graph.setdefault("history", {})
         append_metric(hist, "remesh_events", dict(meta))
-    invoke_callbacks(G, "on_remesh", dict(meta))
+    callback_manager.invoke_callbacks(G, "on_remesh", dict(meta))
 
 
 def apply_network_remesh(G) -> None:

@@ -347,7 +347,7 @@ def register_trace(G) -> None:
     if G.graph.get("_trace_registered"):
         return
 
-    from .callback_utils import register_callback
+    from .callback_utils import callback_manager
 
     for phase in TRACE_FIELDS.keys():
         event = f"{phase}_step"
@@ -358,7 +358,7 @@ def register_trace(G) -> None:
 
             return _cb
 
-        register_callback(
+        callback_manager.register_callback(
             G, event=event, func=_make_cb(phase), name=f"trace_{phase}"
         )
 

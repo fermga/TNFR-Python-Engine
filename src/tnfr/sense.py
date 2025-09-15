@@ -13,7 +13,7 @@ from .constants import get_aliases, get_graph_param
 from .alias import get_attr
 from .helpers.numeric import clamp01, kahan_sum2d
 from .import_utils import get_numpy
-from .callback_utils import register_callback
+from .callback_utils import callback_manager
 from .glyph_history import (
     ensure_history,
     last_glyph,
@@ -331,7 +331,7 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
 
 
 def register_sigma_callback(G) -> None:
-    register_callback(
+    callback_manager.register_callback(
         G, event="after_step", func=push_sigma_snapshot, name="sigma_snapshot"
     )
 

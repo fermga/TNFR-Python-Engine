@@ -3,8 +3,7 @@
 import pytest
 
 from tnfr.callback_utils import (
-    register_callback,
-    invoke_callbacks,
+    callback_manager,
     CallbackEvent,
     CallbackSpec,
 )
@@ -21,19 +20,19 @@ def test_register_callback_replaces_existing(graph_canon):
         pass
 
     # initial registration
-    register_callback(G, event=CallbackEvent.BEFORE_STEP, func=cb1, name="cb")
+    callback_manager.register_callback(G, event=CallbackEvent.BEFORE_STEP, func=cb1, name="cb")
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
         "cb": CallbackSpec("cb", cb1)
     }
 
     # same name should replace existing
-    register_callback(G, event=CallbackEvent.BEFORE_STEP, func=cb2, name="cb")
+    callback_manager.register_callback(G, event=CallbackEvent.BEFORE_STEP, func=cb2, name="cb")
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
         "cb": CallbackSpec("cb", cb2)
     }
 
     # same function with different name should also replace existing
-    register_callback(
+    callback_manager.register_callback(
         G, event=CallbackEvent.BEFORE_STEP, func=cb2, name="other"
     )
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
@@ -47,8 +46,8 @@ def test_register_callback_same_callable_dedupes(graph_canon):
     def cb(G, ctx):
         pass
 
-    register_callback(G, CallbackEvent.BEFORE_STEP, cb)
-    register_callback(G, CallbackEvent.BEFORE_STEP, cb)
+    callback_manager.register_callback(G, CallbackEvent.BEFORE_STEP, cb)
+    callback_manager.register_callback(G, CallbackEvent.BEFORE_STEP, cb)
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
         "cb": CallbackSpec("cb", cb)
     }
@@ -61,7 +60,7 @@ def test_register_callback_rejects_tuple(graph_canon):
         pass
 
     with pytest.raises(TypeError, match="must be callable"):
-        register_callback(G, event=CallbackEvent.BEFORE_STEP, func=("cb", cb))
+        callback_manager.register_callback(G, event=CallbackEvent.BEFORE_STEP, func=("cb", cb))
 
 
 def test_enum_registration_and_invocation(graph_canon):
@@ -70,9 +69,9 @@ def test_enum_registration_and_invocation(graph_canon):
     def cb(G, ctx):
         ctx["called"] += 1
 
-    register_callback(G, CallbackEvent.AFTER_STEP, cb)
+    callback_manager.register_callback(G, CallbackEvent.AFTER_STEP, cb)
     ctx = {"called": 0}
-    invoke_callbacks(G, CallbackEvent.AFTER_STEP, ctx)
+    callback_manager.invoke_callbacks(G, CallbackEvent.AFTER_STEP, ctx)
     assert ctx["called"] == 1
 
 
@@ -83,7 +82,7 @@ def test_register_callback_unknown_event(graph_canon):
         pass
 
     with pytest.raises(ValueError, match="Unknown event"):
-        register_callback(G, event="nope", func=cb)
+        callback_manager.register_callback(G, event="nope", func=cb)
 
 
 def test_register_callback_logs_on_overwrite(graph_canon, caplog):
@@ -95,9 +94,9 @@ def test_register_callback_logs_on_overwrite(graph_canon, caplog):
     def cb2(G, ctx):
         pass
 
-    register_callback(G, CallbackEvent.BEFORE_STEP, cb1, name="cb")
+    callback_manager.register_callback(G, CallbackEvent.BEFORE_STEP, cb1, name="cb")
     with caplog.at_level(logging.WARNING):
-        register_callback(G, CallbackEvent.BEFORE_STEP, cb2, name="cb")
+        callback_manager.register_callback(G, CallbackEvent.BEFORE_STEP, cb2, name="cb")
         assert any("already registered" in r.message for r in caplog.records)
 
 
@@ -111,6 +110,6 @@ def test_register_callback_strict_overwrite_raises(graph_canon):
     def cb2(G, ctx):
         pass
 
-    register_callback(G, CallbackEvent.BEFORE_STEP, cb1, name="cb")
+    callback_manager.register_callback(G, CallbackEvent.BEFORE_STEP, cb1, name="cb")
     with pytest.raises(ValueError, match="already registered"):
-        register_callback(G, CallbackEvent.BEFORE_STEP, cb2, name="cb")
+        callback_manager.register_callback(G, CallbackEvent.BEFORE_STEP, cb2, name="cb")

@@ -4,8 +4,7 @@ import tnfr.callback_utils as cb_utils
 
 from tnfr.callback_utils import (
     CallbackEvent,
-    invoke_callbacks,
-    register_callback,
+    callback_manager,
 )
 
 
@@ -15,14 +14,14 @@ def test_callback_error_list_resets_limit(graph_canon):
     def failing_cb(G, ctx):
         raise RuntimeError("boom")
 
-    register_callback(G, CallbackEvent.BEFORE_STEP, failing_cb, name="fail")
+    callback_manager.register_callback(G, CallbackEvent.BEFORE_STEP, failing_cb, name="fail")
     original = deque(maxlen=None)
     G.graph["_callback_errors"] = original
 
     prev = cb_utils.get_callback_error_limit()
     cb_utils.set_callback_error_limit(7)
     try:
-        invoke_callbacks(G, CallbackEvent.BEFORE_STEP, {})
+        callback_manager.invoke_callbacks(G, CallbackEvent.BEFORE_STEP, {})
         err_list = G.graph.get("_callback_errors")
         assert err_list is not original
         assert err_list.maxlen == cb_utils.get_callback_error_limit() == 7

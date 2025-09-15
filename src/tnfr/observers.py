@@ -8,7 +8,7 @@ from .constants import get_aliases, get_param
 from .alias import get_attr
 from .helpers.numeric import angle_diff, list_pvariance
 from .metrics_utils import compute_coherence
-from .callback_utils import register_callback
+from .callback_utils import callback_manager
 from .glyph_history import (
     ensure_history,
     count_glyphs,
@@ -66,7 +66,7 @@ def attach_standard_observer(G):
     if G.graph.get("_STD_OBSERVER"):
         return G
     for event, fn in _STD_CALLBACKS.items():
-        register_callback(G, event, fn)
+        callback_manager.register_callback(G, event, fn)
     G.graph["_STD_OBSERVER"] = "attached"
     return G
 

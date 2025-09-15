@@ -40,7 +40,7 @@ from ..metrics_utils import (
     merge_and_normalize_weights,
     compute_theta_trig,
 )
-from ..callback_utils import invoke_callbacks
+from ..callback_utils import callback_manager
 from ..glyph_history import recent_glyph, ensure_history, append_metric
 from ..selector import (
     _selector_thresholds,
@@ -487,7 +487,7 @@ def _choose_glyph(G, n, selector, use_canon, h_al, h_en, al_max, en_max):
 def _run_before_callbacks(
     G, *, step_idx: int, dt: float | None, use_Si: bool, apply_glyphs: bool
 ) -> None:
-    invoke_callbacks(
+    callback_manager.invoke_callbacks(
         G,
         "before_step",
         {
@@ -605,7 +605,7 @@ def _run_after_callbacks(G, *, step_idx: int) -> None:
         values = h.get(src)
         if values:
             ctx[dst] = values[-1]
-    invoke_callbacks(G, "after_step", ctx)
+    callback_manager.invoke_callbacks(G, "after_step", ctx)
 
 
 def step(
