@@ -6,6 +6,8 @@ from collections.abc import Sequence
 
 import pytest
 
+import tnfr.flatten as flatten_module
+
 from tnfr.cli import _load_sequence
 from tnfr.execution import _handle_target, block, play, seq, target, wait
 from tnfr.flatten import THOLEvaluator, _flatten
@@ -207,6 +209,37 @@ def test_flatten_accepts_sequence_without_reversed():
     program = NoReverseSeq([Glyph.AL, Glyph.OZ])
     ops = _flatten(program)
     assert ops == [(OpTag.GLYPH, Glyph.AL.value), (OpTag.GLYPH, Glyph.OZ.value)]
+
+
+def test_flatten_plain_sequence_skips_materialization(monkeypatch):
+    called = False
+    original = flatten_module.ensure_collection
+
+    def spy(it, *args, **kwargs):
+        nonlocal called
+        called = True
+        return original(it, *args, **kwargs)
+
+    monkeypatch.setattr(flatten_module, "ensure_collection", spy)
+    ops = _flatten([Glyph.AL, Glyph.RA])
+    assert ops == [
+        (OpTag.GLYPH, Glyph.AL.value),
+        (OpTag.GLYPH, Glyph.RA.value),
+    ]
+    assert called is False
+
+
+def test_flatten_enforces_limit_for_iterables():
+    def token_stream():
+        yield Glyph.AL
+        yield Glyph.RA
+        yield Glyph.ZHIR
+        yield Glyph.OZ
+
+    with pytest.raises(
+        ValueError, match=r"Iterable produced 4 items, exceeds limit 3"
+    ):
+        _flatten(token_stream(), max_materialize=3)
 
 
 def test_thol_repeat_lt_one_raises():

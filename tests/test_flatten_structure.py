@@ -37,3 +37,16 @@ def _make_deep_nesting() -> object:
 )
 def test_flatten_structure(factory, expected, coerce):
     assert coerce(flatten_structure(factory())) == expected
+
+
+def test_flatten_structure_streaming_iteration():
+    iterator = flatten_structure(((i,) for i in range(3)))
+
+    # ``flatten_structure`` yields a real iterator so progressive ``next`` calls
+    # allow streaming consumption in client code.
+    assert iter(iterator) is iterator
+    assert next(iterator) == 0
+    assert next(iterator) == 1
+    assert next(iterator) == 2
+    with pytest.raises(StopIteration):
+        next(iterator)
