@@ -56,6 +56,23 @@ def test_gamma_linear_string_params(graph_canon):
     assert pytest.approx(g1, rel=1e-6) == 1.0
 
 
+def test_gamma_inplace_mutation_updates_spec(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([0, 1])
+    inject_defaults(G)
+    cfg = {"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0}
+    G.graph["GAMMA"] = cfg
+    for n in G.nodes():
+        G.nodes[n]["θ"] = 0.0
+
+    g_initial = eval_gamma(G, 0, t=0.0)
+    cfg["beta"] = 2.0
+    g_updated = eval_gamma(G, 0, t=0.0)
+
+    assert pytest.approx(g_initial, rel=1e-6) == 1.0
+    assert pytest.approx(g_updated, rel=1e-6) == 2.0
+
+
 def test_gamma_tanh_eval(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1, 2, 3])
@@ -135,7 +152,7 @@ def test_gamma_spec_normalized_once(graph_canon, monkeypatch):
     def fake_warn(*args, **kwargs):
         calls.append(1)
 
-    monkeypatch.setattr("tnfr.helpers.node_cache.warnings.warn", fake_warn)
+    monkeypatch.setattr("tnfr.graph_utils.warnings.warn", fake_warn)
     eval_gamma(G, 0, t=0.0)
     eval_gamma(G, 0, t=0.0)
     assert len(calls) == 1
