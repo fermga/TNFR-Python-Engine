@@ -102,6 +102,21 @@ def test_mapping_field_returns_proxy(graph_canon):
         mapping["b"] = 2
 
 
+def test_trace_metadata_fields_have_generators(graph_canon):
+    """Each ``TraceMetadata`` key has a registered producer."""
+
+    G = graph_canon()
+    register_trace(G)
+
+    produced_keys = set()
+    for phase_fields in trace.TRACE_FIELDS.values():
+        for getter in phase_fields.values():
+            produced_keys.update(getter(G).keys())
+
+    missing = set(trace.TraceMetadata.__annotations__) - produced_keys
+    assert not missing, f"Trace fields without producers: {sorted(missing)}"
+
+
 def test_get_graph_mapping_returns_proxy(graph_canon):
     G = graph_canon()
     data = {"a": 1}
