@@ -22,7 +22,6 @@ ALIAS_D2EPI = get_aliases("D2EPI")
 __all__ = (
     "prepare_integration_params",
     "update_epi_via_nodal_equation",
-    "integrar_epi_euler",
 )
 
 
@@ -100,15 +99,52 @@ def _apply_increments(
     return new_states
 
 
-def _integrate_euler(G, dt_step: float, t_local: float):
-    """One explicit Euler integration step."""
-    gamma_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
+def _collect_nodal_increments(
+    G: Any,
+    gamma_maps: tuple[dict[Any, float], ...],
+    *,
+    method: str,
+) -> dict[Any, tuple[float, ...]]:
+    """Combine node base state with staged Γ contributions.
+
+    ``gamma_maps`` must contain one entry for Euler integration and four for
+    RK4. The helper merges the structural frequency/ΔNFR base contribution
+    with the supplied Γ evaluations.
+    """
+
     increments: dict[Any, tuple[float, ...]] = {}
     for n, nd in G.nodes(data=True):
         vf, dnfr, *_ = _node_state(nd)
         base = vf * dnfr
-        k1 = base + gamma_map.get(n, 0.0)
-        increments[n] = (k1,)
+        gammas = [gm.get(n, 0.0) for gm in gamma_maps]
+
+        if method == "rk4":
+            if len(gammas) != 4:
+                raise ValueError("rk4 integration requires four gamma maps")
+            k1, k2, k3, k4 = gammas
+            increments[n] = (
+                base + k1,
+                base + k2,
+                base + k3,
+                base + k4,
+            )
+        else:
+            if len(gammas) != 1:
+                raise ValueError("euler integration requires one gamma map")
+            (k1,) = gammas
+            increments[n] = (base + k1,)
+
+    return increments
+
+
+def _integrate_euler(G, dt_step: float, t_local: float):
+    """One explicit Euler integration step."""
+    gamma_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
+    increments = _collect_nodal_increments(
+        G,
+        (gamma_map,),
+        method="euler",
+    )
     return _apply_increments(G, dt_step, increments, method="euler")
 
 
@@ -119,18 +155,8 @@ def _integrate_rk4(G, dt_step: float, t_local: float):
     g1_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
     g_mid_map = {n: eval_gamma(G, n, t_mid) for n in G.nodes}
     g4_map = {n: eval_gamma(G, n, t_end) for n in G.nodes}
-
-    increments: dict[Any, tuple[float, ...]] = {}
-    for n, nd in G.nodes(data=True):
-        vf, dnfr, *_ = _node_state(nd)
-        base = vf * dnfr
-        g1 = g1_map.get(n, 0.0)
-        g_mid = g_mid_map.get(n, 0.0)
-        g4 = g4_map.get(n, 0.0)
-        k1 = base + g1
-        k2 = k3 = base + g_mid
-        k4 = base + g4
-        increments[n] = (k1, k2, k3, k4)
+    gamma_maps = (g1_map, g_mid_map, g_mid_map, g4_map)
+    increments = _collect_nodal_increments(G, gamma_maps, method="rk4")
     return _apply_increments(G, dt_step, increments, method="rk4")
 
 
@@ -183,10 +209,6 @@ def update_epi_via_nodal_equation(
         t_local += dt_step
 
     G.graph["_t"] = t_local
-
-
-def integrar_epi_euler(G, dt: float | None = None) -> None:
-    update_epi_via_nodal_equation(G, dt=dt, method="euler")
 
 
 def _node_state(nd: dict[str, Any]) -> tuple[float, float, float, float]:
