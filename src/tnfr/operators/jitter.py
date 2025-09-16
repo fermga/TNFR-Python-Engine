@@ -66,9 +66,8 @@ class JitterCache:
     def clear(self) -> None:
         """Clear cached RNGs and jitter state."""
 
-        with self.lock:
-            _clear_rng_cache()
-            self._sequence.reset_unlocked()
+        _clear_rng_cache()
+        self._sequence.clear()
 
     def bump(self, key: tuple[int, int]) -> int:
         """Return current jitter sequence counter for ``key`` and increment it."""
