@@ -25,7 +25,6 @@ from .jitter import (
     get_jitter_manager,
     reset_jitter_manager,
     random_jitter,
-    _get_jitter_cache,
 )
 from .remesh import (
     apply_network_remesh,
@@ -44,7 +43,6 @@ __all__ = [
     "get_jitter_manager",
     "reset_jitter_manager",
     "random_jitter",
-    "_get_jitter_cache",
     "get_neighbor_epi",
     "get_glyph_factors",
     "GLYPH_OPERATIONS",

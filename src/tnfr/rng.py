@@ -5,7 +5,7 @@ from __future__ import annotations
 import random
 import hashlib
 import struct
-from typing import Any, Callable
+from typing import Any, Callable, Generic, Hashable, TypeVar
 
 
 from cachetools import LRUCache, cached
@@ -17,6 +17,76 @@ MASK64 = 0xFFFFFFFFFFFFFFFF
 
 _RNG_LOCK = get_lock("rng")
 _CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
+
+K = TypeVar("K", bound=Hashable)
+
+
+class ScopedCounterCache(Generic[K]):
+    """Thread-safe LRU cache storing monotonic counters by ``key``."""
+
+    def __init__(self, name: str, max_entries: int) -> None:
+        if max_entries < 0:
+            raise ValueError("max_entries must be non-negative")
+        self._lock = get_lock(name)
+        self._max_entries = int(max_entries)
+        self._cache: LRUCache[K, int] = LRUCache(maxsize=self._max_entries)
+
+    @property
+    def lock(self):
+        """Return the lock guarding access to the underlying cache."""
+
+        return self._lock
+
+    @property
+    def max_entries(self) -> int:
+        """Return the configured maximum number of cached entries."""
+
+        return self._max_entries
+
+    @property
+    def cache(self) -> LRUCache[K, int]:
+        """Expose the underlying ``LRUCache`` for inspection."""
+
+        return self._cache
+
+    def configure(
+        self, *, force: bool = False, max_entries: int | None = None
+    ) -> None:
+        """Resize or reset the cache keeping previous settings."""
+
+        size = self._max_entries if max_entries is None else int(max_entries)
+        if size < 0:
+            raise ValueError("max_entries must be non-negative")
+        with self._lock:
+            if size != self._max_entries:
+                self._max_entries = size
+                force = True
+            if force:
+                self._cache = LRUCache(maxsize=self._max_entries)
+
+    def clear(self) -> None:
+        """Clear stored counters preserving ``max_entries``."""
+
+        self.configure(force=True)
+
+    def reset_unlocked(self) -> None:
+        """Reset cache without acquiring ``lock``.
+
+        Callers must hold :attr:`lock` before invoking this method.
+        """
+
+        self._cache = LRUCache(maxsize=self._max_entries)
+
+    def bump(self, key: K) -> int:
+        """Return current counter for ``key`` and increment it atomically."""
+
+        with self._lock:
+            value = int(self._cache.get(key, 0))
+            self._cache[key] = value + 1
+            return value
+
+    def __len__(self) -> int:
+        return len(self._cache)
 
 
 def seed_hash(seed_int: int, key_int: int) -> int:
@@ -142,4 +212,5 @@ __all__ = (
     "base_seed",
     "cache_enabled",
     "clear_rng_cache",
+    "ScopedCounterCache",
 )
