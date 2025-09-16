@@ -8,13 +8,11 @@ from tnfr.operators import (
     apply_glyph,
     get_neighbor_epi,
     _mix_epi_with_neighbors,
-    _get_jitter_cache,
 )
 import tnfr.operators as operators
 from types import SimpleNamespace
 from tnfr.constants import inject_defaults
 import pytest
-from weakref import WeakKeyDictionary
 from tnfr.types import Glyph
 
 
@@ -54,44 +52,6 @@ def test_random_jitter_negative_amplitude(graph_canon):
         random_jitter(n0, -0.1)
 
 
-def test_get_jitter_cache_node_attribute():
-    reset_jitter_manager()
-    manager = get_jitter_manager()
-    node = SimpleNamespace(graph={})
-    cache1 = _get_jitter_cache(node, manager)
-    cache1["a"] = 1
-    cache2 = _get_jitter_cache(node, manager)
-    assert cache1 is cache2
-    assert hasattr(node, "_jitter_seed_hash")
-    assert node._jitter_seed_hash is cache1
-    assert "_jitter_seed_hash" not in node.graph
-    assert node.graph not in manager.graphs
-
-
-def test_get_jitter_cache_graph_fallback():
-    class G(dict):
-        __hash__ = object.__hash__
-
-    class SlotNode:
-        __slots__ = ("graph", "__weakref__")
-
-        def __init__(self):
-            self.graph = G()
-
-    reset_jitter_manager()
-    manager = get_jitter_manager()
-    node = SlotNode()
-    cache1 = _get_jitter_cache(node, manager)
-    cache1["b"] = 2
-    cache2 = _get_jitter_cache(node, manager)
-    assert cache1 is cache2
-    assert not hasattr(node, "_jitter_seed_hash")
-    graph_cache = node.graph["_jitter_seed_hash"]
-    assert isinstance(graph_cache, WeakKeyDictionary)
-    assert graph_cache[node] is cache1
-    assert node.graph in manager.graphs
-
-
 def test_rng_cache_disabled_with_size_zero(graph_canon):
     from tnfr.rng import set_cache_maxsize
     from tnfr.constants import DEFAULTS
@@ -125,9 +85,8 @@ def test_jitter_manager_respects_custom_max_entries():
     reset_jitter_manager()
     manager = operators.get_jitter_manager()
     manager.max_entries = 8
-    manager.setup(force=True)
     assert manager.settings["max_entries"] == 8
-    manager.setup()
+    manager.setup(force=True)
     assert manager.settings["max_entries"] == 8
 
 
@@ -138,6 +97,18 @@ def test_jitter_manager_setup_override_size():
     assert manager.settings["max_entries"] == 5
     manager.setup(max_entries=7)
     assert manager.settings["max_entries"] == 7
+
+
+def test_jitter_manager_clear_resets_state():
+    reset_jitter_manager()
+    manager = operators.get_jitter_manager()
+    graph = SimpleNamespace(graph={})
+    nodes = [SimpleNamespace(G=graph) for _ in range(3)]
+    for node in nodes:
+        random_jitter(node, 0.1, manager)
+    assert len(manager.seq) == 3
+    manager.clear()
+    assert len(manager.seq) == 0
 
 
 def test_get_neighbor_epi_without_graph_preserves_state():

@@ -248,14 +248,14 @@ from tnfr.operators import get_jitter_manager
 manager = get_jitter_manager()
 # Resize cache to keep only 512 entries
 manager.max_entries = 512
-manager.setup(force=True)
 
-# or in a single call
+# or in a single call that also clears previous counters
 manager.setup(max_entries=512)
 ```
 
 ``setup`` preserves the current size unless a new ``max_entries`` value is
-supplied. Custom sizes persist across subsequent ``setup`` calls.
+supplied. Custom sizes persist across subsequent ``setup`` calls, and
+``max_entries`` assignments take effect immediately.
 
 ### Edge version tracking
 

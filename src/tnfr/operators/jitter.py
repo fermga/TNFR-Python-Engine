@@ -1,17 +1,17 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-from weakref import WeakKeyDictionary, WeakSet
+
 from cachetools import LRUCache
 
 from ..helpers import ensure_node_offset_map
 from ..rng import (
+    ScopedCounterCache,
     make_rng,
     base_seed,
     cache_enabled,
     clear_rng_cache as _clear_rng_cache,
     seed_hash,
 )
-from ..locking import get_lock
 from ..import_utils import get_nodonx
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
@@ -27,29 +27,53 @@ class JitterCache:
     """Container for jitter-related caches."""
 
     def __init__(self, max_entries: int = _JITTER_MAX_ENTRIES) -> None:
-        self.max_entries = max_entries
-        self.seq: LRUCache[tuple[int, int], int] = LRUCache(maxsize=max_entries)
-        self.graphs: WeakSet[Any] = WeakSet()
-        self.settings: dict[str, Any] = {"max_entries": max_entries}
-        self.lock = get_lock("jitter")
+        self._sequence = ScopedCounterCache("jitter", max_entries)
+        self.settings: dict[str, Any] = {"max_entries": self._sequence.max_entries}
 
-    def setup(self, force: bool = False) -> None:
-        """Ensure ``seq`` matches the configured size."""
-        max_entries = self.max_entries
-        if force or self.settings.get("max_entries") != max_entries:
-            self.seq = LRUCache(maxsize=max_entries)
-            self.settings["max_entries"] = max_entries
+    @property
+    def seq(self) -> LRUCache[tuple[int, int], int]:
+        """Expose the sequence cache for tests and diagnostics."""
+
+        return self._sequence.cache
+
+    @property
+    def lock(self):
+        """Return the lock protecting the sequence cache."""
+
+        return self._sequence.lock
+
+    @property
+    def max_entries(self) -> int:
+        """Return the maximum number of cached jitter sequences."""
+
+        return self._sequence.max_entries
+
+    @max_entries.setter
+    def max_entries(self, value: int) -> None:
+        """Set the maximum number of cached jitter sequences."""
+
+        self._sequence.configure(max_entries=int(value))
+        self.settings["max_entries"] = self._sequence.max_entries
+
+    def setup(
+        self, force: bool = False, max_entries: int | None = None
+    ) -> None:
+        """Ensure jitter cache matches the configured size."""
+
+        self._sequence.configure(force=force, max_entries=max_entries)
+        self.settings["max_entries"] = self._sequence.max_entries
 
     def clear(self) -> None:
         """Clear cached RNGs and jitter state."""
+
         with self.lock:
             _clear_rng_cache()
-            self.setup(force=True)
-            for G in list(self.graphs):
-                cache = G.graph.get("_jitter_seed_hash")
-                if cache is not None:
-                    cache.clear()
-            self.graphs.clear()
+            self._sequence.reset_unlocked()
+
+    def bump(self, key: tuple[int, int]) -> int:
+        """Return current jitter sequence counter for ``key`` and increment it."""
+
+        return self._sequence.bump(key)
 
 
 class JitterCacheManager:
@@ -62,10 +86,6 @@ class JitterCacheManager:
     @property
     def seq(self) -> LRUCache[tuple[int, int], int]:
         return self.cache.seq
-
-    @property
-    def graphs(self) -> WeakSet[Any]:
-        return self.cache.graphs
 
     @property
     def settings(self) -> dict[str, Any]:
@@ -85,19 +105,27 @@ class JitterCacheManager:
         """Set the maximum number of cached jitter entries."""
         self.cache.max_entries = value
 
-    def setup(self, force: bool = False, max_entries: int | None = None) -> None:
+    def setup(
+        self, force: bool = False, max_entries: int | None = None
+    ) -> None:
         """Ensure jitter cache matches the configured size.
 
         ``max_entries`` may be provided to explicitly resize the cache.
         When omitted the existing ``cache.max_entries`` is preserved.
         """
         if max_entries is not None:
-            self.cache.max_entries = max_entries
-        self.cache.setup(force)
+            self.cache.setup(force=True, max_entries=max_entries)
+        else:
+            self.cache.setup(force=force)
 
     def clear(self) -> None:
         """Clear cached RNGs and jitter state."""
         self.cache.clear()
+
+    def bump(self, key: tuple[int, int]) -> int:
+        """Return and increment the jitter sequence counter for ``key``."""
+
+        return self.cache.bump(key)
 
 
 # Lazy manager instance
@@ -140,40 +168,6 @@ def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
     return int(uid), id(node)
 
 
-def _get_jitter_cache(
-    node: NodoProtocol, manager: JitterCacheManager | None = None
-) -> dict:
-    """Return the jitter cache for ``node``.
-
-    If the node cannot store attributes, fall back to a graph-level
-    ``WeakKeyDictionary`` and ensure the graph is tracked in
-    ``manager.graphs`` so its cache can be cleared when needed.
-    """
-    if manager is None:
-        manager = get_jitter_manager()
-
-    cache = getattr(node, "_jitter_seed_hash", None)
-    if cache is not None:
-        return cache
-
-    try:
-        cache = {}
-        setattr(node, "_jitter_seed_hash", cache)
-        return cache
-    except AttributeError:
-        graph_cache = node.graph.get("_jitter_seed_hash")
-        if graph_cache is None:
-            graph_cache = WeakKeyDictionary()
-            node.graph["_jitter_seed_hash"] = graph_cache
-            with manager.lock:
-                manager.graphs.add(node.graph)
-        cache = graph_cache.get(node)
-        if cache is None:
-            cache = {}
-            graph_cache[node] = cache
-        return cache
-
-
 def random_jitter(
     node: NodoProtocol,
     amplitude: float,
@@ -193,15 +187,12 @@ def random_jitter(
     seed_key, scope_id = _resolve_jitter_seed(node)
 
     manager = manager or get_jitter_manager()
-    cache = _get_jitter_cache(node, manager)
 
     cache_key = (seed_root, scope_id)
-    seed = cache.setdefault(cache_key, seed_hash(seed_root, scope_id))
     seq = 0
     if cache_enabled(node.G):
-        with manager.lock:
-            seq = manager.seq.get(cache_key, 0)
-            manager.seq[cache_key] = seq + 1
+        seq = manager.bump(cache_key)
+    seed = seed_hash(seed_root, scope_id)
     rng = make_rng(seed, seed_key + seq, node.G)
     return rng.uniform(-amplitude, amplitude)
 
@@ -212,5 +203,4 @@ __all__ = [
     "get_jitter_manager",
     "reset_jitter_manager",
     "random_jitter",
-    "_get_jitter_cache",
 ]
