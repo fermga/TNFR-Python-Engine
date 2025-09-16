@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from heapq import nlargest
-from statistics import mean, median
+from statistics import mean
 
 from ..glyph_history import ensure_history
 from .glyph_timing import for_each_glyph
@@ -14,7 +14,6 @@ __all__ = [
     "latency_series",
     "glyphogram_series",
     "glyph_top",
-    "glyph_dwell_stats",
 ]
 
 
@@ -93,26 +92,3 @@ def glyph_top(G, k: int = 3) -> list[tuple[str, float]]:
         raise ValueError("k must be a positive integer")
     tg = Tg_global(G, normalize=True)
     return nlargest(k, tg.items(), key=lambda kv: kv[1])
-
-
-def glyph_dwell_stats(G, n) -> dict[str, dict[str, float]]:
-    """Per-node dwell time statistics for each glyph."""
-
-    hist = ensure_history(G)
-    rec = hist.get("Tg_by_node", {}).get(n, {})
-    out: dict[str, dict[str, float]] = {}
-
-    def add(g):
-        runs = list(rec.get(g, []))
-        if not runs:
-            out[g] = {"mean": 0.0, "median": 0.0, "max": 0.0, "count": 0}
-        else:
-            out[g] = {
-                "mean": float(mean(runs)),
-                "median": float(median(runs)),
-                "max": float(max(runs)),
-                "count": int(len(runs)),
-            }
-
-    for_each_glyph(add)
-    return out
