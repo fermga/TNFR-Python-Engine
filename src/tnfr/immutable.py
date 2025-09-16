@@ -1,4 +1,9 @@
-"""Utilities for freezing objects and checking immutability."""
+"""Utilities for freezing objects and checking immutability.
+
+Handlers registered via :func:`functools.singledispatch` live in this module
+and are triggered indirectly by the dispatcher when matching types are
+encountered.
+"""
 
 from __future__ import annotations
 
@@ -64,7 +69,7 @@ def _freeze(value: Any, seen: set[int] | None = None):
 
 @_freeze.register(tuple)
 @_check_cycle
-def _freeze_tuple(value: tuple, seen: set[int] | None = None):
+def _freeze_tuple(value: tuple, seen: set[int] | None = None):  # noqa: F401
     return tuple(_freeze(v, seen) for v in value)
 
 
@@ -93,7 +98,7 @@ for _cls, _tag in (
 
 @_freeze.register(Mapping)
 @_check_cycle
-def _freeze_mapping(value: Mapping, seen: set[int] | None = None):
+def _freeze_mapping(value: Mapping, seen: set[int] | None = None):  # noqa: F401
     tag = "dict" if hasattr(value, "__setitem__") else "mapping"
     return (tag, tuple((k, _freeze(v, seen)) for k, v in value.items()))
 
@@ -122,7 +127,7 @@ def _is_immutable_inner(value: Any) -> bool:
 
 
 @_is_immutable_inner.register(tuple)
-def _is_immutable_inner_tuple(value: tuple) -> bool:
+def _is_immutable_inner_tuple(value: tuple) -> bool:  # noqa: F401
     if value and isinstance(value[0], str):
         handler = _IMMUTABLE_TAG_DISPATCH.get(value[0])
         if handler is not None:
@@ -131,7 +136,7 @@ def _is_immutable_inner_tuple(value: tuple) -> bool:
 
 
 @_is_immutable_inner.register(frozenset)
-def _is_immutable_inner_frozenset(value: frozenset) -> bool:
+def _is_immutable_inner_frozenset(value: frozenset) -> bool:  # noqa: F401
     return _all_immutable(value)
 
 
