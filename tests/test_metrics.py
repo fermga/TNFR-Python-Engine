@@ -18,8 +18,7 @@ from tnfr.metrics import (
 )
 from tnfr.metrics.core import LATENT_GLYPH
 from tnfr.metrics.core import _update_sigma
-from tnfr.constants import METRIC_DEFAULTS
-from tnfr.types import Glyph
+from tnfr.metrics.glyph_timing import DEFAULT_EPI_SUPPORT_LIMIT
 
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_DNFR = get_aliases("DNFR")
@@ -62,17 +61,36 @@ def test_track_stability_updates_hist(graph_canon):
     assert hist["B"] == [pytest.approx(0.15)]
 
 
-def test_update_sigma_uses_default_window(graph_canon):
+def test_update_sigma_uses_default_window(monkeypatch, graph_canon):
     G = graph_canon()
-    for n in range(2):
-        G.add_node(n, glyph_history=[Glyph.AL.value, Glyph.EN.value])
-    hist = {}
-    G.graph.pop("GLYPH_LOAD_WINDOW", None)
+    captured: dict[str, int | None] = {}
+
+    monkeypatch.setattr("tnfr.metrics.coherence.DEFAULT_GLYPH_LOAD_SPAN", 7)
+
+    def fake_glyph_load(G, window=None):  # noqa: ANN001 - test double
+        captured["window"] = window
+        return {
+            "_estabilizadores": 0.25,
+            "_disruptivos": 0.75,
+            "AL": 0.25,
+            "RA": 0.75,
+        }
+
+    sigma = {"x": 1.0, "y": 2.0, "mag": 3.0, "angle": 4.0}
+
+    monkeypatch.setattr("tnfr.metrics.coherence.glyph_load", fake_glyph_load)
+    monkeypatch.setattr("tnfr.metrics.coherence.sigma_vector", lambda dist: sigma)
+
+    hist: dict[str, list] = {}
     _update_sigma(G, hist)
-    expected = {}
-    G.graph["GLYPH_LOAD_WINDOW"] = METRIC_DEFAULTS["GLYPH_LOAD_WINDOW"]
-    _update_sigma(G, expected)
-    assert hist == expected
+
+    assert captured["window"] == 7
+    assert hist["glyph_load_estab"] == [0.25]
+    assert hist["glyph_load_disr"] == [0.75]
+    assert hist["sense_sigma_x"] == [sigma["x"]]
+    assert hist["sense_sigma_y"] == [sigma["y"]]
+    assert hist["sense_sigma_mag"] == [sigma["mag"]]
+    assert hist["sense_sigma_angle"] == [sigma["angle"]]
 
 
 def test_aggregate_si_computes_stats(graph_canon):
@@ -102,7 +120,6 @@ def test_compute_advanced_metrics_populates_history(graph_canon):
     inject_defaults(G)
     hist: dict[str, Any] = {}
     cfg = G.graph["METRICS"]
-    thr = float(G.graph.get("EPI_SUPPORT_THR"))
 
     G.add_node(0)
     set_attr(G.nodes[0], ALIAS_EPI, 0.1)
@@ -112,7 +129,7 @@ def test_compute_advanced_metrics_populates_history(graph_canon):
     set_attr(G.nodes[1], ALIAS_EPI, 0.2)
     G.nodes[1]["glyph_history"] = [LATENT_GLYPH]
 
-    _compute_advanced_metrics(G, hist, t=0, dt=1.0, cfg=cfg, thr=thr)
+    _compute_advanced_metrics(G, hist, t=0, dt=1.0, cfg=cfg)
 
     assert hist["glyphogram"][0]["OZ"] == 1
     assert hist["latency_index"][0]["value"] == pytest.approx(0.5)
@@ -202,13 +219,13 @@ def test_update_epi_support_matches_manual(graph_canon):
     G.add_node(3, EPI=0.05)
     inject_defaults(G)
     hist = {}
-    thr = float(G.graph.get("EPI_SUPPORT_THR"))
-    _update_epi_support(G, hist, t=0, thr=thr)
+    threshold = DEFAULT_EPI_SUPPORT_LIMIT
+    _update_epi_support(G, hist, t=0, threshold=threshold)
 
     expected_vals = [
         abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0))
         for n in G.nodes()
-        if abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= thr
+        if abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= threshold
     ]
     expected_size = len(expected_vals)
     expected_norm = (

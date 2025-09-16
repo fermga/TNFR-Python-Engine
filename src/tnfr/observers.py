@@ -5,7 +5,7 @@ from functools import partial
 import statistics
 from statistics import StatisticsError, pvariance
 
-from .constants import get_aliases, get_param
+from .constants import get_aliases
 from .alias import get_attr
 from .helpers.numeric import angle_diff
 from .callback_utils import CallbackEvent, callback_manager
@@ -31,10 +31,15 @@ __all__ = (
     "kuramoto_order",
     "glyph_load",
     "wbar",
+    "DEFAULT_GLYPH_LOAD_SPAN",
+    "DEFAULT_WBAR_SPAN",
 )
 
 
 logger = get_logger(__name__)
+
+DEFAULT_GLYPH_LOAD_SPAN = 50
+DEFAULT_WBAR_SPAN = 25
 
 
 
@@ -119,13 +124,14 @@ def glyph_load(G, window: int | None = None) -> dict:
     """Return distribution of glyphs applied in the network.
 
     - ``window``: if provided, count only the last ``window`` events per node;
-      otherwise use the deque's maxlen.
+      otherwise use :data:`DEFAULT_GLYPH_LOAD_SPAN`.
     Returns a dict with proportions per glyph and useful aggregates.
     """
     if window == 0:
         return {"_count": 0}
-    window_int: int | None = None
-    if window is not None:
+    if window is None:
+        window_int = DEFAULT_GLYPH_LOAD_SPAN
+    else:
         window_int = validate_window(window, positive=True)
     total = count_glyphs(G, window=window_int, last_only=(window_int == 1))
     dist, count = normalize_counter(total)
@@ -147,7 +153,7 @@ def wbar(G, window: int | None = None) -> float:
     if not cs:
         # fallback: coherencia instantánea
         return compute_coherence(G)
-    w_param = get_param(G, "WBAR_WINDOW") if window is None else window
+    w_param = DEFAULT_WBAR_SPAN if window is None else window
     w = validate_window(w_param, positive=True)
     w = min(len(cs), w)
     return float(statistics.fmean(cs[-w:]))
