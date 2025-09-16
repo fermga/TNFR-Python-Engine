@@ -30,10 +30,6 @@ __all__ = (
     "CallbackEvent",
     "CallbackManager",
     "callback_manager",
-    "register_callback",
-    "invoke_callbacks",
-    "get_callback_error_limit",
-    "set_callback_error_limit",
     "CallbackError",
 )
 
@@ -387,12 +383,6 @@ def _reconcile_callback(
 # ---------------------------------------------------------------------------
 
 callback_manager = CallbackManager()
-
-# Backwards-compatible function aliases
-register_callback = callback_manager.register_callback
-invoke_callbacks = callback_manager.invoke_callbacks
-get_callback_error_limit = callback_manager.get_callback_error_limit
-set_callback_error_limit = callback_manager.set_callback_error_limit
 
 
 
