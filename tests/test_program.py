@@ -7,21 +7,9 @@ from collections.abc import Sequence
 import pytest
 
 from tnfr.cli import _load_sequence
-from tnfr.program import (
-    WAIT,
-    TARGET,
-    OpTag,
-    _handle_target,
-    _flatten,
-    THOLEvaluator,
-    block,
-    play,
-    seq,
-    target,
-    wait,
-    THOL,
-    THOL_SENTINEL,
-)
+from tnfr.execution import _handle_target, block, play, seq, target, wait
+from tnfr.flatten import THOLEvaluator, _flatten
+from tnfr.tokens import OpTag, TARGET, THOL, THOL_SENTINEL, WAIT
 from tnfr.constants import get_param
 from tnfr.types import Glyph
 
