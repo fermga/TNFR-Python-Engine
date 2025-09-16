@@ -9,7 +9,7 @@ from itertools import islice
 from typing import Any, Callable, Iterator, TypeVar, cast
 
 from .logging_utils import get_logger
-from .logging_utils import warn_once
+from .logging_utils import warn_once as _warn_once_factory
 from .value_utils import convert_value
 from .helpers.numeric import kahan_sum_nd
 
@@ -21,11 +21,38 @@ STRING_TYPES = (str, bytes, bytearray)
 
 NEGATIVE_WEIGHTS_MSG = "Negative weights detected: %s"
 
+_NEGATIVE_WARN_ONCE_MAXSIZE = 1024
 
-_WARNED_NEGATIVE_KEYS_LIMIT = 1024
-_log_negative_keys_once = warn_once(
-    logger, NEGATIVE_WEIGHTS_MSG, maxsize=_WARNED_NEGATIVE_KEYS_LIMIT
-)
+
+def negative_weights_warn_once(
+    *, maxsize: int = _NEGATIVE_WARN_ONCE_MAXSIZE
+) -> Callable[[Mapping[str, float]], None]:
+    """Return a ``WarnOnce`` callable for negative weight warnings.
+
+    The returned callable may be reused across multiple
+    :func:`normalize_weights` invocations to suppress duplicate warnings for
+    the same keys.
+    """
+
+    return _warn_once_factory(logger, NEGATIVE_WEIGHTS_MSG, maxsize=maxsize)
+
+
+def _log_negative_weights(negatives: Mapping[str, float]) -> None:
+    """Log negative weight warnings without deduplicating keys."""
+
+    logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
+
+
+def _resolve_negative_warn_handler(
+    warn_once: bool | Callable[[Mapping[str, float]], None]
+) -> Callable[[Mapping[str, float]], None]:
+    """Return a callable that logs negative weight warnings."""
+
+    if callable(warn_once):
+        return warn_once
+    if warn_once:
+        return negative_weights_warn_once()
+    return _log_negative_weights
 
 
 def is_non_string_sequence(obj: Any) -> bool:
@@ -80,6 +107,7 @@ __all__ = (
     "ensure_collection",
     "prepare_weights",
     "normalize_weights",
+    "negative_weights_warn_once",
     "normalize_counter",
     "mix_groups",
 )
@@ -163,7 +191,7 @@ def _convert_and_validate_weights(
     *,
     error_on_conversion: bool,
     error_on_negative: bool,
-    warn_once: bool,
+    warn_once: bool | Callable[[Mapping[str, float]], None],
 ) -> tuple[dict[str, float], list[str], float]:
     """Return converted weights, deduplicated keys and the accumulated total."""
 
@@ -187,10 +215,8 @@ def _convert_and_validate_weights(
     if negatives:
         if error_on_negative:
             raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
-        if warn_once:
-            _log_negative_keys_once(negatives)
-        else:
-            logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
+        warn_negative = _resolve_negative_warn_handler(warn_once)
+        warn_negative(negatives)
         for key, weight in negatives.items():
             weights[key] = 0.0
             total -= weight
@@ -205,7 +231,7 @@ def prepare_weights(
     *,
     error_on_conversion: bool,
     error_on_negative: bool,
-    warn_once: bool,
+    warn_once: bool | Callable[[Mapping[str, float]], None],
 ) -> tuple[dict[str, float], list[str], float]:
     """Materialize ``keys``, convert values and clamp negatives.
 
@@ -229,7 +255,7 @@ def normalize_weights(
     default: float = 0.0,
     *,
     error_on_negative: bool = False,
-    warn_once: bool = True,
+    warn_once: bool | Callable[[Mapping[str, float]], None] = True,
     error_on_conversion: bool = False,
 ) -> dict[str, float]:
     """Normalize ``keys`` in mapping ``dict_like`` so their sum is 1.
@@ -247,8 +273,12 @@ def normalize_weights(
     value to ``float`` is propagated. Otherwise the error is logged and the
     ``default`` value is used.
 
-    When ``warn_once`` is ``True`` warnings for a given key are emitted only on
-    their first occurrence across calls.
+    ``warn_once`` accepts either a boolean or a callable. ``False`` logs all
+    negative weights using :func:`logging.Logger.warning`. ``True`` (the
+    default) creates a fresh :class:`~tnfr.logging_utils.WarnOnce` instance for
+    the call, emitting a single warning containing all negative keys. To reuse
+    deduplication state across calls, pass a callable such as
+    :func:`negative_weights_warn_once`.
     """
     weights, keys_list, total = prepare_weights(
         dict_like,

@@ -4,6 +4,7 @@ import math
 from types import MappingProxyType
 
 import pytest
+from tnfr.collections_utils import negative_weights_warn_once
 from tnfr.collections_utils import normalize_weights
 
 
@@ -48,21 +49,26 @@ def test_normalize_weights_warns_on_non_numeric_value(caplog):
 def test_normalize_weights_warn_once(caplog):
     first_key = "warn-once-key-1"
     weights = {first_key: -1.0}
+    warn_once = negative_weights_warn_once()
     with caplog.at_level("WARNING"):
-        normalize_weights(weights, (first_key,))
+        normalize_weights(weights, (first_key,), warn_once=warn_once)
     assert any("Negative weights" in m for m in caplog.messages)
     caplog.clear()
 
     # second call with same key should not warn
     with caplog.at_level("WARNING"):
-        normalize_weights(weights, (first_key,))
+        normalize_weights(weights, (first_key,), warn_once=warn_once)
     assert not any("Negative weights" in m for m in caplog.messages)
 
     # new keys should still trigger warnings
     caplog.clear()
     second_key = "warn-once-key-2"
     with caplog.at_level("WARNING"):
-        normalize_weights({second_key: -1.0}, (second_key,))
+        normalize_weights(
+            {second_key: -1.0},
+            (second_key,),
+            warn_once=warn_once,
+        )
     assert any("Negative weights" in m for m in caplog.messages)
 
 
