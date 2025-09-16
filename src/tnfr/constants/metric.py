@@ -42,7 +42,7 @@ class MetricDefaults:
                 "dnfr_weights",
                 "si_weights",
                 "callbacks",
-                "thol_state",
+                "thol_open_nodes",
                 "sigma",
                 "kuramoto",
                 "glyph_counts",
