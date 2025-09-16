@@ -67,10 +67,13 @@ prune_failed_imports()
 
 Some auxiliary tooling (such as documentation builds) relies on Node.js
 packages defined in `package.json`. These are **not** required to run the
-Python engine itself. If you need them, install with:
+Python engine itself. If you need them, install from the repository root using
+your preferred package manager:
 
 ```bash
 npm install
+# or
+pnpm install
 ```
 
 The resulting `node_modules/` directory is ignored by version control.
