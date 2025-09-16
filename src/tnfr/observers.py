@@ -8,7 +8,7 @@ from statistics import StatisticsError, pvariance
 from .constants import get_aliases, get_param
 from .alias import get_attr
 from .helpers.numeric import angle_diff
-from .callback_utils import callback_manager
+from .callback_utils import CallbackEvent, callback_manager
 from .glyph_history import (
     ensure_history,
     count_glyphs,
@@ -50,7 +50,7 @@ def _std_log(kind: str, G, ctx: dict):
 _STD_CALLBACKS = {
     "before_step": partial(_std_log, "before"),
     "after_step": partial(_std_log, "after"),
-    "on_remesh": partial(_std_log, "remesh"),
+    CallbackEvent.ON_REMESH.value: partial(_std_log, "remesh"),
 }
 
 
