@@ -311,7 +311,7 @@ register_trace_field("before", "selector", selector_field)
 register_trace_field("before", "dnfr_weights", dnfr_weights_field)
 register_trace_field("before", "si_weights", si_weights_field)
 register_trace_field("before", "callbacks", callbacks_field)
-register_trace_field("before", "thol_state", thol_state_field)
+register_trace_field("before", "thol_open_nodes", thol_state_field)
 
 register_trace_field("after", "kuramoto", kuramoto_field)
 register_trace_field("after", "sigma", sigma_field)
