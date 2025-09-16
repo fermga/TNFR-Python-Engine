@@ -78,7 +78,6 @@ def _metrics_step(G, *args, **kwargs):
 
     hist = ensure_history(G)
     dt = float(get_param(G, "DT"))
-    thr = float(get_param(G, "EPI_SUPPORT_THR"))
     eps_dnfr = float(get_param(G, "EPS_DNFR_STABLE"))
     eps_depi = float(get_param(G, "EPS_DEPI_STABLE"))
     t = float(G.graph.get("_t", 0.0))
@@ -112,7 +111,7 @@ def _metrics_step(G, *args, **kwargs):
         logger.debug("observer update failed: %s", exc)
 
     _aggregate_si(G, hist)
-    _compute_advanced_metrics(G, hist, t, dt, cfg, thr)
+    _compute_advanced_metrics(G, hist, t, dt, cfg)
 
 
 def register_metrics_callbacks(G) -> None:

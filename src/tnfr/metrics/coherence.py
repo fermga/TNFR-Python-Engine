@@ -19,7 +19,13 @@ from ..helpers.numeric import clamp01
 from ..helpers import ensure_node_index_map
 from .common import compute_coherence, min_max_range
 from .trig_cache import compute_theta_trig, get_trig_cache
-from ..observers import glyph_load, kuramoto_order, phase_sync
+from ..observers import (
+    DEFAULT_GLYPH_LOAD_SPAN,
+    DEFAULT_WBAR_SPAN,
+    glyph_load,
+    kuramoto_order,
+    phase_sync,
+)
 from ..sense import sigma_vector
 from ..import_utils import get_numpy
 from ..logging_utils import get_logger
@@ -698,10 +704,10 @@ def _update_coherence(G, hist) -> None:
         (depi_mean, "depi_mean"),
     )
 
-    wbar_w = int(get_param(G, "WBAR_WINDOW"))
     cs = hist["C_steps"]
     if cs:
-        w = min(len(cs), max(1, wbar_w))
+        window = min(len(cs), DEFAULT_WBAR_SPAN)
+        w = max(1, window)
         wbar = sum(cs[-w:]) / w
         _record_metrics(hist, (wbar, "W_bar"))
 
@@ -721,8 +727,7 @@ def _update_phase_sync(G, hist) -> None:
 def _update_sigma(G, hist) -> None:
     """Record glyph load and associated Σ⃗ vector."""
 
-    win = int(get_param(G, "GLYPH_LOAD_WINDOW"))
-    gl = glyph_load(G, window=win)
+    gl = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
     _record_metrics(
         hist,
         (gl.get("_estabilizadores", 0.0), "glyph_load_estab"),

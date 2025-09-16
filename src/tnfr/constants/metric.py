@@ -98,9 +98,6 @@ class MetricDefaults:
             },
         }
     )
-    EPI_SUPPORT_THR: float = 0.05
-    GLYPH_LOAD_WINDOW: int = 50
-    WBAR_WINDOW: int = 25
 
 
 METRIC_DEFAULTS = asdict(MetricDefaults())

@@ -216,12 +216,12 @@ def test_glyph_load_zero_window(graph_canon):
     assert glyph_load(G, window=0) == {"_count": 0}
 
 
-def test_wbar_uses_default_window(graph_canon):
+def test_wbar_uses_default_window(monkeypatch, graph_canon):
     G = graph_canon()
     hist = G.graph.setdefault("history", {})
-    hist["C_steps"] = [0.5, 1.0]
-    G.graph.pop("WBAR_WINDOW", None)
-    assert wbar(G) == pytest.approx(0.75)
+    hist["C_steps"] = [0.5, 1.0, 1.5]
+    monkeypatch.setattr("tnfr.observers.DEFAULT_WBAR_SPAN", 2)
+    assert wbar(G) == pytest.approx((1.0 + 1.5) / 2)
 
 
 def test_attach_standard_observer_registers_callbacks(graph_canon):

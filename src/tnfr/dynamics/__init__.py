@@ -18,7 +18,7 @@ from ..constants import (
     get_param,
     get_graph_param,
 )
-from ..observers import glyph_load, kuramoto_order
+from ..observers import DEFAULT_GLYPH_LOAD_SPAN, glyph_load, kuramoto_order
 
 from ..helpers.numeric import (
     clamp,
@@ -164,8 +164,7 @@ def _read_adaptive_params(
 def _compute_state(G, cfg: dict[str, Any]) -> tuple[str, float, float]:
     """Return current state (stable/dissonant/transition) and metrics."""
     R = kuramoto_order(G)
-    win = get_graph_param(G, "GLYPH_LOAD_WINDOW", int)
-    dist = glyph_load(G, window=win)
+    dist = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
     disr = float(dist.get("_disruptivos", 0.0)) if dist else 0.0
 
     R_hi = float(cfg.get("R_hi", 0.90))

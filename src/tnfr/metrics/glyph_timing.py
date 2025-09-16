@@ -15,6 +15,7 @@ from ..types import Glyph
 ALIAS_EPI = get_aliases("EPI")
 
 LATENT_GLYPH = Glyph.SHA.value
+DEFAULT_EPI_SUPPORT_LIMIT = 0.05
 
 
 @dataclass
@@ -127,14 +128,19 @@ def _update_latency_index(G, hist, n_total, n_latent, t):
     append_metric(hist, "latency_index", {"t": t, "value": li})
 
 
-def _update_epi_support(G, hist, t, thr):
+def _update_epi_support(
+    G,
+    hist,
+    t,
+    threshold: float = DEFAULT_EPI_SUPPORT_LIMIT,
+):
     """Measure EPI support and normalized magnitude."""
 
     total = 0.0
     count = 0
     for _, nd in G.nodes(data=True):
         epi_val = abs(get_attr(nd, ALIAS_EPI, 0.0))
-        if epi_val >= thr:
+        if epi_val >= threshold:
             total += epi_val
             count += 1
     epi_norm = (total / count) if count else 0.0
@@ -165,12 +171,19 @@ def _update_morph_metrics(G, hist, counts, t):
     )
 
 
-def _compute_advanced_metrics(G, hist, t, dt, cfg, thr):
+def _compute_advanced_metrics(
+    G,
+    hist,
+    t,
+    dt,
+    cfg,
+    threshold: float = DEFAULT_EPI_SUPPORT_LIMIT,
+):
     """Compute glyph timing derived metrics."""
 
     save_by_node = bool(cfg.get("save_by_node", True))
     counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node)
     _update_glyphogram(G, hist, counts, t, n_total)
     _update_latency_index(G, hist, n_total, n_latent, t)
-    _update_epi_support(G, hist, t, thr)
+    _update_epi_support(G, hist, t, threshold)
     _update_morph_metrics(G, hist, counts, t)
