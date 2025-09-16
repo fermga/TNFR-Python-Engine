@@ -1,18 +1,17 @@
 import importlib
 import types
+
+import pytest
 from cachetools import TTLCache
 
 import tnfr.import_utils as import_utils
 from tnfr.import_utils import cached_import, prune_failed_imports, _IMPORT_STATE
 
 
-def reset() -> None:
-    """Clear caches and failure records."""
-    cached_import.cache_clear()
-    prune_failed_imports()
+pytestmark = pytest.mark.usefixtures("reset_cached_import")
 
 
-def test_cached_import_clears_failures(monkeypatch):
+def test_cached_import_clears_failures(monkeypatch, reset_cached_import):
     calls = {"n": 0}
 
     def fake_import(_name):
@@ -22,20 +21,20 @@ def test_cached_import_clears_failures(monkeypatch):
         return types.SimpleNamespace(value=1)
 
     monkeypatch.setattr(importlib, "import_module", fake_import)
-    reset()
+    reset_cached_import()
     assert cached_import("fake_mod") is None
     with _IMPORT_STATE.lock:
-        assert "fake_mod" in _IMPORT_STATE
+        assert "fake_mod" in _IMPORT_STATE.failed
         assert "fake_mod" in _IMPORT_STATE.warned
-    reset()
+    reset_cached_import()
     result = cached_import("fake_mod")
     assert result is not None
     with _IMPORT_STATE.lock:
-        assert "fake_mod" not in _IMPORT_STATE
+        assert "fake_mod" not in _IMPORT_STATE.failed
         assert "fake_mod" not in _IMPORT_STATE.warned
 
 
-def test_warns_once_then_debug(monkeypatch):
+def test_warns_once_then_debug(monkeypatch, reset_cached_import):
     def fake_import(_name):
         raise ImportError("boom")
 
@@ -47,19 +46,19 @@ def test_warns_once_then_debug(monkeypatch):
         stacklevels.append(stacklevel)
 
     monkeypatch.setattr(import_utils.warnings, "warn", fake_warn)
-    reset()
+    reset_cached_import()
     cached_import("fake_mod", attr="attr1")
     cached_import("fake_mod", attr="attr2")
-    reset()
+    reset_cached_import()
     assert stacklevels == [2]
 
 
-def test_cached_import_handles_distinct_fallbacks(monkeypatch):
+def test_cached_import_handles_distinct_fallbacks(monkeypatch, reset_cached_import):
     def fake_import(_name):
         raise ImportError("boom")
 
     monkeypatch.setattr(importlib, "import_module", fake_import)
-    reset()
+    reset_cached_import()
     fb1: list[str] = []
     fb2: dict[str, int] = {}
     assert cached_import("fake_mod", fallback=fb1) is fb1
@@ -84,9 +83,9 @@ def test_cache_ttl(monkeypatch):
     assert calls["n"] == 2
 
 
-def test_failure_log_respects_limit(monkeypatch):
+def test_failure_log_respects_limit(monkeypatch, reset_cached_import):
     state = import_utils._IMPORT_STATE
-    reset()
+    reset_cached_import()
     monkeypatch.setattr(import_utils._IMPORT_STATE, "limit", 3)
 
     def fake_import(_name):
@@ -99,5 +98,5 @@ def test_failure_log_respects_limit(monkeypatch):
     with state.lock:
         assert len(state.failed) <= 3
 
-    reset()
+    reset_cached_import()
 
