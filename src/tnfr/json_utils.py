@@ -14,13 +14,21 @@ import json
 from typing import Any, Callable
 
 from .import_utils import cached_import
-from .logging_utils import get_logger
+from .logging_utils import get_logger, warn_once
 
 _ORJSON_PARAMS_MSG = (
     "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
 )
 
 logger = get_logger(__name__)
+
+_warn_ignored_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
+
+
+def clear_orjson_param_warnings() -> None:
+    """Reset cached warnings for ignored :mod:`orjson` parameters."""
+
+    _warn_ignored_params_once.clear()
 
 
 def _format_ignored_params(combo: frozenset[str]) -> str:
@@ -70,7 +78,7 @@ def _json_dumps_orjson(
 
     ignored = _collect_ignored_params(params, kwargs)
     if ignored:
-        logger.warning(_ORJSON_PARAMS_MSG, _format_ignored_params(ignored))
+        _warn_ignored_params_once(ignored, _format_ignored_params(ignored))
 
     option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
     data = orjson.dumps(obj, option=option, default=params.default)

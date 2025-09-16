@@ -38,7 +38,7 @@ def test_lazy_orjson_import(monkeypatch):
     assert calls["n"] == 2
 
 
-def test_warns_each_time(monkeypatch, caplog):
+def test_warns_once_per_combo(monkeypatch, caplog):
     monkeypatch.setattr(
         json_utils, "cached_import", lambda *a, **k: DummyOrjson()
     )
@@ -48,7 +48,7 @@ def test_warns_each_time(monkeypatch, caplog):
         for _ in range(2):
             json_utils.json_dumps({}, ensure_ascii=False)
 
-    assert sum("ignored" in r.message for r in caplog.records) == 2
+    assert sum("ignored" in r.message for r in caplog.records) == 1
 
 
 def test_warns_for_each_combo(monkeypatch, caplog):
@@ -62,7 +62,7 @@ def test_warns_for_each_combo(monkeypatch, caplog):
         json_utils.json_dumps({}, ensure_ascii=False, separators=(";", ":"))
         json_utils.json_dumps({}, ensure_ascii=False, separators=(";", ":"))
 
-    assert sum("ignored" in r.message for r in caplog.records) == 3
+    assert sum("ignored" in r.message for r in caplog.records) == 2
 
 
 def test_json_dumps_returns_str_by_default():
@@ -100,7 +100,7 @@ def test_json_dumps_with_orjson_warns(monkeypatch, caplog):
     with caplog.at_level(logging.WARNING):
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
-    assert sum("ignored" in r.message for r in caplog.records) == 2
+    assert sum("ignored" in r.message for r in caplog.records) == 1
 
 
 def test_params_passed_to_std(monkeypatch):
