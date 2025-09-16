@@ -280,15 +280,10 @@ set_attr_str = partial(set_attr_generic, conv=str)
 
 @dataclass(slots=True)
 class AbsMaxResult:
-    """Pair storing an absolute maximum value and its node."""
+    """Absolute maximum value and the node where it occurs."""
 
     max_value: float
     node: Hashable | None
-
-    def as_tuple(self) -> tuple[float, Hashable | None]:
-        """Return ``(max_value, node)`` for backward compatibility."""
-
-        return self.max_value, self.node
 
 
 def _coerce_abs_value(value: Any) -> float:
@@ -326,8 +321,8 @@ def _compute_abs_max_result(
     -------
     AbsMaxResult
         Structure holding the absolute maximum and the node where it
-        occurs. When ``candidate`` is provided, its value is assumed to be
-        the current maximum and no recomputation is performed.
+        occurs. When ``candidate`` is provided, its value is treated as the
+        current maximum and no recomputation is performed.
     """
 
     if candidate is not None:
@@ -346,19 +341,6 @@ def _compute_abs_max_result(
         G.graph[f"{key}_node"] = node
 
     return AbsMaxResult(max_value=max_val, node=node)
-
-
-def recompute_abs_max(
-    G: "networkx.Graph", aliases: tuple[str, ...], *, key: str | None = None
-) -> tuple[float, Hashable | None]:
-    """Recalculate absolute maximum for ``aliases`` in ``G``.
-
-    When ``key`` is provided, the graph caches ``G.graph[key]`` and
-    ``G.graph[f"{key}_node"]`` are updated with the new maximum value and the
-    node where it occurs.
-    """
-
-    return _compute_abs_max_result(G, aliases, key=key).as_tuple()
 
 
 def multi_recompute_abs_max(
@@ -562,6 +544,5 @@ __all__ = [
     "set_scalar",
     "SCALAR_SETTERS",
     *[f"set_{name}" for name in SCALAR_SETTERS],
-    "recompute_abs_max",
     "multi_recompute_abs_max",
 ]
