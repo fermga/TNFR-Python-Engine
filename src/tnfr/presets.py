@@ -1,7 +1,7 @@
 """Predefined configurations."""
 
 from __future__ import annotations
-from .program import seq, block, wait, basic_canonical_example
+from .execution import seq, block, wait, basic_canonical_example
 from .types import Glyph
 
 # Secuencias comunes

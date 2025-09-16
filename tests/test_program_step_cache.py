@@ -1,6 +1,7 @@
 import threading
+
 import tnfr.dynamics as dyn
-import tnfr.program as program
+import tnfr.execution as execution
 
 
 def test_advance_caches_step(monkeypatch, graph_canon):
@@ -15,14 +16,14 @@ def test_advance_caches_step(monkeypatch, graph_canon):
         calls.append(2)
 
     monkeypatch.setattr(dyn, "step", first_step)
-    program.get_step_fn.cache_clear()
-    step_fn = program.get_step_fn()
+    execution.get_step_fn.cache_clear()
+    step_fn = execution.get_step_fn()
     step_fn(G)
     monkeypatch.setattr(dyn, "step", second_step)
-    step_fn = program.get_step_fn()
+    step_fn = execution.get_step_fn()
     step_fn(G)
     assert calls == [1, 1]
-    program.get_step_fn.cache_clear()
+    execution.get_step_fn.cache_clear()
 
 
 def test_advance_thread_safe(monkeypatch, graph_canon):
@@ -37,13 +38,13 @@ def test_advance_thread_safe(monkeypatch, graph_canon):
         calls.append(2)
 
     monkeypatch.setattr(dyn, "step", first_step)
-    program.get_step_fn.cache_clear()
+    execution.get_step_fn.cache_clear()
 
     barrier = threading.Barrier(5)
 
     def worker():
         barrier.wait()
-        program.get_step_fn()(G)
+        execution.get_step_fn()(G)
 
     threads = [threading.Thread(target=worker) for _ in range(5)]
     for t in threads:
@@ -52,7 +53,7 @@ def test_advance_thread_safe(monkeypatch, graph_canon):
         t.join()
 
     monkeypatch.setattr(dyn, "step", second_step)
-    program.get_step_fn()(G)
+    execution.get_step_fn()(G)
 
     assert calls == [1] * 6
-    program.get_step_fn.cache_clear()
+    execution.get_step_fn.cache_clear()

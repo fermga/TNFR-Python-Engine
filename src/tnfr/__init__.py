@@ -2,8 +2,9 @@
 
 This package only re-exports a handful of high level helpers.  Most
 functionality lives in submodules that should be imported directly, for
-example :mod:`tnfr.metrics`, :mod:`tnfr.observers` or
-:mod:`tnfr.program`.  Recommended entry points are:
+example :mod:`tnfr.metrics`, :mod:`tnfr.observers` or the DSL utilities
+in :mod:`tnfr.tokens`, :mod:`tnfr.flatten` and :mod:`tnfr.execution`.
+Recommended entry points are:
 
 - ``step`` and ``run`` in :mod:`tnfr.dynamics`
 - ``preparar_red`` in :mod:`tnfr.ontosim`
