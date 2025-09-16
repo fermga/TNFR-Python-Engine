@@ -28,11 +28,6 @@ _log_negative_keys_once = warn_once(
 )
 
 
-def clear_warned_negative_keys() -> None:
-    """Clear the cache of warned negative weight keys."""
-    _log_negative_keys_once.clear()
-
-
 def is_non_string_sequence(obj: Any) -> bool:
     """Return ``True`` if ``obj`` is an ``Iterable`` but not string-like or a mapping."""
     return isinstance(obj, Iterable) and not isinstance(obj, (*STRING_TYPES, Mapping))
@@ -87,7 +82,6 @@ __all__ = (
     "normalize_weights",
     "normalize_counter",
     "mix_groups",
-    "clear_warned_negative_keys",
 )
 
 MAX_MATERIALIZE_DEFAULT: int = 1000
@@ -227,10 +221,6 @@ def prepare_weights(
         error_on_negative=error_on_negative,
         warn_once=warn_once,
     )
-
-
-# Backward compatible alias
-_prepare_weights = prepare_weights
 
 
 def normalize_weights(
