@@ -48,7 +48,6 @@ __all__ = (
     "dnfr_phase_only",
     "dnfr_epi_vf_mixed",
     "dnfr_laplacian",
-    "apply_dnfr_field",
 )
 
 
@@ -620,14 +619,3 @@ def dnfr_laplacian(G) -> None:
     )
 
 
-def apply_dnfr_field(G, w_theta=None, w_epi=None, w_vf=None) -> None:
-    if any(v is not None for v in (w_theta, w_epi, w_vf)):
-        mix = get_param(G, "DNFR_WEIGHTS").copy()
-        if w_theta is not None:
-            mix["phase"] = float(w_theta)
-        if w_epi is not None:
-            mix["epi"] = float(w_epi)
-        if w_vf is not None:
-            mix["vf"] = float(w_vf)
-        G.graph["DNFR_WEIGHTS"] = mix
-    default_compute_delta_nfr(G)

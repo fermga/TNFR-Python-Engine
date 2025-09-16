@@ -57,7 +57,6 @@ from .dnfr import (
     dnfr_phase_only,
     dnfr_epi_vf_mixed,
     dnfr_laplacian,
-    apply_dnfr_field,
 )
 from .integrators import (
     prepare_integration_params,
@@ -80,7 +79,6 @@ __all__ = (
     "dnfr_laplacian",
     "prepare_integration_params",
     "update_epi_via_nodal_equation",
-    "apply_dnfr_field",
     "apply_canonical_clamps",
     "validate_canon",
     "coordinate_global_local_phase",
