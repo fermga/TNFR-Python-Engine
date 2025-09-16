@@ -9,7 +9,6 @@ from .reporting import (
     latency_series,
     glyphogram_series,
     glyph_top,
-    glyph_dwell_stats,
 )
 from .glyph_timing import (
     _tg_state,
@@ -39,7 +38,6 @@ __all__ = (
     "latency_series",
     "glyphogram_series",
     "glyph_top",
-    "glyph_dwell_stats",
     "_tg_state",
     "_update_tg",
     "_update_latency_index",

@@ -32,7 +32,6 @@ from .glyph_timing import (
 from .reporting import (
     Tg_by_node,
     Tg_global,
-    glyph_dwell_stats,
     glyphogram_series,
     glyph_top,
     latency_series,
@@ -65,7 +64,6 @@ __all__ = [
     "latency_series",
     "glyphogram_series",
     "glyph_top",
-    "glyph_dwell_stats",
 ]
 
 
