@@ -7,7 +7,6 @@ from tnfr.sense import (
     sigma_vector_node,
     sigma_vector_from_graph,
     _node_weight,
-    _sigma_from_vectors,
     _sigma_from_iterable,
     glyph_unit,
     glyph_angle,
@@ -78,18 +77,6 @@ def test_sigma_vector_from_graph_matches_naive(graph_canon):
     for key in ("x", "y", "mag", "angle", "n"):
         assert vec_opt[key] == pytest.approx(vec_ref[key])
     assert t_opt <= t_ref * 2
-
-
-def test_sigma_from_vectors_accepts_single_complex():
-    vec = _sigma_from_vectors(1 + 1j)
-    assert vec["n"] == 1
-    assert vec["x"] == pytest.approx(1.0)
-    assert vec["y"] == pytest.approx(1.0)
-
-
-def test_sigma_from_vectors_rejects_invalid_iterable():
-    with pytest.raises(TypeError, match="real or complex"):
-        _sigma_from_vectors("abc")
 
 
 def test_sigma_from_iterable_rejects_str():
