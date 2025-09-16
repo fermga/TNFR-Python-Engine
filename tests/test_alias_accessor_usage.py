@@ -19,9 +19,9 @@ class CountingDict(dict):
         return super().__contains__(item)
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def clear_alias_cache():
-    """Reset the global alias tuple cache around each test for determinism."""
+    """Reset the global alias tuple cache around the module tests."""
 
     _alias_cache.cache_clear()
     yield

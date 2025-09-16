@@ -2,28 +2,27 @@ import importlib
 import sys
 import types
 
+import pytest
 from cachetools import TTLCache
 import tnfr.import_utils as import_utils
 from tnfr.import_utils import cached_import, prune_failed_imports, _IMPORT_STATE
 
 
-def reset() -> None:
-    cached_import.cache_clear()
-    prune_failed_imports()
+pytestmark = pytest.mark.usefixtures("reset_cached_import")
 
 
-def test_cached_import_attribute_and_fallback(monkeypatch):
-    reset()
+def test_cached_import_attribute_and_fallback(monkeypatch, reset_cached_import):
+    reset_cached_import()
     fake_mod = types.SimpleNamespace(value=5)
     monkeypatch.setitem(sys.modules, "fake_mod", fake_mod)
     assert cached_import("fake_mod", attr="value") == 5
-    reset()
+    reset_cached_import()
     monkeypatch.delitem(sys.modules, "fake_mod")
     assert cached_import("fake_mod", attr="value", fallback=1) == 1
 
 
-def test_cached_import_uses_cache(monkeypatch):
-    reset()
+def test_cached_import_uses_cache(monkeypatch, reset_cached_import):
+    reset_cached_import()
     calls = {"n": 0}
 
     def fake_import(_name):
@@ -36,8 +35,8 @@ def test_cached_import_uses_cache(monkeypatch):
     assert calls["n"] == 1
 
 
-def test_cached_import_uses_provided_lock(monkeypatch):
-    reset()
+def test_cached_import_uses_provided_lock(monkeypatch, reset_cached_import):
+    reset_cached_import()
     calls = {"lock": 0}
     orig_lock = import_utils.threading.Lock
 
@@ -54,8 +53,8 @@ def test_cached_import_uses_provided_lock(monkeypatch):
     assert calls["lock"] == 0
 
 
-def test_cached_import_uses_shared_lock_when_missing(monkeypatch):
-    reset()
+def test_cached_import_uses_shared_lock_when_missing(monkeypatch, reset_cached_import):
+    reset_cached_import()
     calls = {"lock": 0}
     orig_lock = import_utils.threading.Lock
 
@@ -71,8 +70,8 @@ def test_cached_import_uses_shared_lock_when_missing(monkeypatch):
     assert calls["lock"] == 0
 
 
-def test_cache_clear_and_prune_reset_all(monkeypatch):
-    reset()
+def test_cache_clear_and_prune_reset_all(monkeypatch, reset_cached_import):
+    reset_cached_import()
 
     def fake_import(_name):
         raise ImportError("boom")
