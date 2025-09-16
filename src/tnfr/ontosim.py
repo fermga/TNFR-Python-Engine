@@ -4,6 +4,7 @@ from __future__ import annotations
 from collections import deque
 from typing import TYPE_CHECKING
 
+from .callback_utils import CallbackEvent
 from .constants import METRIC_DEFAULTS, inject_defaults, get_param
 from .dynamics import step as _step, run as _run
 from .dynamics import default_compute_delta_nfr
@@ -104,7 +105,7 @@ def preparar_red(
         {
             "before_step": [],
             "after_step": [],
-            "on_remesh": [],
+            CallbackEvent.ON_REMESH.value: [],
         },
     )
     G.graph.setdefault(
