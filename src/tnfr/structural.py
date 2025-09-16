@@ -53,8 +53,8 @@ class Operador:
     """Base class for TNFR operators.
 
     Each operator defines ``name`` (ASCII identifier) and ``glyph``
-    (canonical glyph). Calling an instance applies the corresponding glyph
-    to the node.
+    (símbolo TNFR canónico). Calling an instance applies the corresponding
+    symbol to the node.
     """
 
     name = "operador"
@@ -66,56 +66,147 @@ class Operador:
         apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
 
 
-# Derivados concretos -------------------------------------------------------
-#
-def operador_factory(*pairs: tuple[str, str]) -> dict[str, type[Operador]]:
-    """Dynamically build ``Operador`` subclasses.
+class Emision(Operador):
+    """Aplicación del operador de emisión (símbolo ``AL``)."""
 
-    Each ``(name, glyph)`` pair produces a concrete subclass with the
-    corresponding attributes. Generated classes are exposed in the module as
-    ``CamelCase`` versions of the original name and registered in a dictionary
-    for easy access by name.
-    """
-
-    registry: dict[str, type[Operador]] = {}
-    for nombre, glyph in pairs:
-        class_name = nombre.title().replace("_", "").replace(" ", "")
-        cls = type(
-            class_name,
-            (Operador,),
-            {
-                "name": nombre,
-                "glyph": glyph,
-                "__module__": __name__,
-                "__slots__": (),
-            },
-        )
-        registry[nombre] = cls
-    return registry
+    __slots__ = ()
+    name = "emision"
+    glyph = Glyph.AL.value
 
 
-OPERADORES = operador_factory(
-    ("emision", Glyph.AL.value),
-    ("recepcion", Glyph.EN.value),
-    ("coherencia", Glyph.IL.value),
-    ("disonancia", Glyph.OZ.value),
-    ("acoplamiento", Glyph.UM.value),
-    ("resonancia", Glyph.RA.value),
-    ("silencio", Glyph.SHA.value),
-    ("expansion", Glyph.VAL.value),
-    ("contraccion", Glyph.NUL.value),
-    ("autoorganizacion", Glyph.THOL.value),
-    ("mutacion", Glyph.ZHIR.value),
-    ("transicion", Glyph.NAV.value),
-    ("recursividad", Glyph.REMESH.value),
+class Recepcion(Operador):
+    """Operador de recepción (símbolo ``EN``)."""
+
+    __slots__ = ()
+    name = "recepcion"
+    glyph = Glyph.EN.value
+
+
+class Coherencia(Operador):
+    """Operador de coherencia (símbolo ``IL``)."""
+
+    __slots__ = ()
+    name = "coherencia"
+    glyph = Glyph.IL.value
+
+
+class Disonancia(Operador):
+    """Operador de disonancia (símbolo ``OZ``)."""
+
+    __slots__ = ()
+    name = "disonancia"
+    glyph = Glyph.OZ.value
+
+
+class Acoplamiento(Operador):
+    """Operador de acoplamiento (símbolo ``UM``)."""
+
+    __slots__ = ()
+    name = "acoplamiento"
+    glyph = Glyph.UM.value
+
+
+class Resonancia(Operador):
+    """Operador de resonancia (símbolo ``RA``)."""
+
+    __slots__ = ()
+    name = "resonancia"
+    glyph = Glyph.RA.value
+
+
+class Silencio(Operador):
+    """Operador de silencio (símbolo ``SHA``)."""
+
+    __slots__ = ()
+    name = "silencio"
+    glyph = Glyph.SHA.value
+
+
+class Expansion(Operador):
+    """Operador de expansión (símbolo ``VAL``)."""
+
+    __slots__ = ()
+    name = "expansion"
+    glyph = Glyph.VAL.value
+
+
+class Contraccion(Operador):
+    """Operador de contracción (símbolo ``NUL``)."""
+
+    __slots__ = ()
+    name = "contraccion"
+    glyph = Glyph.NUL.value
+
+
+class Autoorganizacion(Operador):
+    """Operador de autoorganización (símbolo ``THOL``)."""
+
+    __slots__ = ()
+    name = "autoorganizacion"
+    glyph = Glyph.THOL.value
+
+
+class Mutacion(Operador):
+    """Operador de mutación (símbolo ``ZHIR``)."""
+
+    __slots__ = ()
+    name = "mutacion"
+    glyph = Glyph.ZHIR.value
+
+
+class Transicion(Operador):
+    """Operador de transición (símbolo ``NAV``)."""
+
+    __slots__ = ()
+    name = "transicion"
+    glyph = Glyph.NAV.value
+
+
+class Recursividad(Operador):
+    """Operador de recursividad (símbolo ``REMESH``)."""
+
+    __slots__ = ()
+    name = "recursividad"
+    glyph = Glyph.REMESH.value
+
+
+OPERADORES: dict[str, type[Operador]] = {
+    Emision.name: Emision,
+    Recepcion.name: Recepcion,
+    Coherencia.name: Coherencia,
+    Disonancia.name: Disonancia,
+    Acoplamiento.name: Acoplamiento,
+    Resonancia.name: Resonancia,
+    Silencio.name: Silencio,
+    Expansion.name: Expansion,
+    Contraccion.name: Contraccion,
+    Autoorganizacion.name: Autoorganizacion,
+    Mutacion.name: Mutacion,
+    Transicion.name: Transicion,
+    Recursividad.name: Recursividad,
+}
+
+
+__all__ = (
+    "create_nfr",
+    "Operador",
+    "Emision",
+    "Recepcion",
+    "Coherencia",
+    "Disonancia",
+    "Acoplamiento",
+    "Resonancia",
+    "Silencio",
+    "Expansion",
+    "Contraccion",
+    "Autoorganizacion",
+    "Mutacion",
+    "Transicion",
+    "Recursividad",
+    "OPERADORES",
+    "validate_sequence",
+    "run_sequence",
 )
-
-# Exposición dinámica de clases concretas en el espacio global
-__all__ = ("create_nfr", "Operador", "OPERADORES")
-for _cls in OPERADORES.values():
-    globals()[_cls.__name__] = _cls
-    __all__ += (_cls.__name__,)
-__all__ += ("validate_sequence", "run_sequence")
 # ---------------------------------------------------------------------------
 # 3) Motor de secuencias + validador sintáctico
 # ---------------------------------------------------------------------------
