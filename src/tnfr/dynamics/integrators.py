@@ -137,12 +137,36 @@ def _collect_nodal_increments(
     return increments
 
 
+def _build_gamma_increments(
+    G: Any,
+    dt_step: float,
+    t_local: float,
+    *,
+    method: str,
+) -> dict[Any, tuple[float, ...]]:
+    """Evaluate Γ contributions and merge them with ``νf·ΔNFR`` base terms."""
+
+    if method == "rk4":
+        t_mid = t_local + dt_step / 2.0
+        t_end = t_local + dt_step
+        g1_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
+        g_mid_map = {n: eval_gamma(G, n, t_mid) for n in G.nodes}
+        g4_map = {n: eval_gamma(G, n, t_end) for n in G.nodes}
+        gamma_maps = (g1_map, g_mid_map, g_mid_map, g4_map)
+    elif method == "euler":
+        gamma_maps = ({n: eval_gamma(G, n, t_local) for n in G.nodes},)
+    else:
+        raise ValueError("method must be 'euler' or 'rk4'")
+
+    return _collect_nodal_increments(G, gamma_maps, method=method)
+
+
 def _integrate_euler(G, dt_step: float, t_local: float):
     """One explicit Euler integration step."""
-    gamma_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
-    increments = _collect_nodal_increments(
+    increments = _build_gamma_increments(
         G,
-        (gamma_map,),
+        dt_step,
+        t_local,
         method="euler",
     )
     return _apply_increments(G, dt_step, increments, method="euler")
@@ -150,13 +174,12 @@ def _integrate_euler(G, dt_step: float, t_local: float):
 
 def _integrate_rk4(G, dt_step: float, t_local: float):
     """One Runge–Kutta order-4 integration step."""
-    t_mid = t_local + dt_step / 2.0
-    t_end = t_local + dt_step
-    g1_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
-    g_mid_map = {n: eval_gamma(G, n, t_mid) for n in G.nodes}
-    g4_map = {n: eval_gamma(G, n, t_end) for n in G.nodes}
-    gamma_maps = (g1_map, g_mid_map, g_mid_map, g4_map)
-    increments = _collect_nodal_increments(G, gamma_maps, method="rk4")
+    increments = _build_gamma_increments(
+        G,
+        dt_step,
+        t_local,
+        method="rk4",
+    )
     return _apply_increments(G, dt_step, increments, method="rk4")
 
 
