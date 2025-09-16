@@ -63,7 +63,6 @@ from .dnfr import (
 from .integrators import (
     prepare_integration_params,
     update_epi_via_nodal_equation,
-    integrar_epi_euler,
 )
 
 ALIAS_VF = get_aliases("VF")
@@ -83,7 +82,6 @@ __all__ = (
     "prepare_integration_params",
     "update_epi_via_nodal_equation",
     "apply_dnfr_field",
-    "integrar_epi_euler",
     "apply_canonical_clamps",
     "validate_canon",
     "coordinate_global_local_phase",

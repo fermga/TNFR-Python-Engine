@@ -6,7 +6,7 @@ import pytest
 import networkx as nx
 from tnfr.constants import inject_defaults
 from tnfr.initialization import init_node_attrs
-from tnfr.dynamics import step
+from tnfr.dynamics import update_epi_via_nodal_equation, validate_canon
 
 
 @pytest.mark.parametrize("method", ["euler", "rk4"])
@@ -25,9 +25,9 @@ def test_epi_limits_preserved(method):
             nd["νf"] = 1.0
             nd["EPI"] = 0.0
 
-    G.graph["compute_delta_nfr"] = const_dnfr
-
-    step(G, dt=1.0)
+    const_dnfr(G)
+    update_epi_via_nodal_equation(G, dt=1.0, method=method)
+    validate_canon(G)
 
     e_min = G.graph["EPI_MIN"]
     e_max = G.graph["EPI_MAX"]
