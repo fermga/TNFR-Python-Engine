@@ -9,7 +9,7 @@ __all__ = ("TOKEN_MAP", "parse_thol")
 
 def parse_thol(spec: dict[str, Any]) -> Any:
     """Parse the specification of a ``THOL`` block."""
-    from .program import block
+    from .execution import block
     from .token_parser import _parse_tokens
 
     close = spec.get("close")
@@ -27,13 +27,13 @@ def parse_thol(spec: dict[str, Any]) -> Any:
 
 
 def _wait_handler(v: Any) -> Any:
-    from .program import wait
+    from .execution import wait
 
     return wait(int(v))
 
 
 def _target_handler(v: Any) -> Any:
-    from .program import target
+    from .execution import target
 
     return target(v)
 
