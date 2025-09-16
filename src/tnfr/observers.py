@@ -48,8 +48,8 @@ def _std_log(kind: str, G, ctx: dict):
 
 
 _STD_CALLBACKS = {
-    "before_step": partial(_std_log, "before"),
-    "after_step": partial(_std_log, "after"),
+    CallbackEvent.BEFORE_STEP.value: partial(_std_log, "before"),
+    CallbackEvent.AFTER_STEP.value: partial(_std_log, "after"),
     CallbackEvent.ON_REMESH.value: partial(_std_log, "remesh"),
 }
 
