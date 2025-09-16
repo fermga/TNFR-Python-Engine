@@ -194,7 +194,11 @@ def _convert_and_validate_weights(
         if error_on_negative:
             raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
         if warn_once:
-            _log_negative_keys_once(negatives)
+            new_negatives = {
+                key: weight for key, weight in negatives.items() if _log_negative_keys_once.check(key)
+            }
+            if new_negatives:
+                logger.warning(NEGATIVE_WEIGHTS_MSG, new_negatives)
         else:
             logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
         for key, weight in negatives.items():

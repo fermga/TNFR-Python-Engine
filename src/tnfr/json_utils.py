@@ -66,7 +66,7 @@ def _json_dumps_orjson(
         ignored.update(kwargs)
     if ignored:
         combo = frozenset(ignored)
-        _warn_orjson_params_once({combo: _format_ignored_params(combo)})
+        _warn_orjson_params_once(combo, _format_ignored_params(combo))
 
     option = orjson.OPT_SORT_KEYS if params["sort_keys"] else 0
     data = orjson.dumps(obj, option=option, default=params["default"])

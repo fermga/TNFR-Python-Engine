@@ -8,8 +8,7 @@ from __future__ import annotations
 
 import logging
 import threading
-from collections import OrderedDict
-from typing import Any, Hashable, Mapping
+from typing import Any, Hashable
 
 __all__ = ("_configure_root", "get_logger", "WarnOnce", "warn_once")
 
@@ -40,34 +39,52 @@ def get_logger(name: str) -> logging.Logger:
 
 
 class WarnOnce:
-    """Log a message once per unique key.
+    """Log a message once per unique ``key``.
 
-    The callable maintains an LRU set of keys limited by ``maxsize`` using
-    an :class:`collections.OrderedDict` to preserve coherence while avoiding
-    unbounded growth. New keys trigger a warning with their associated
-    values, repeated keys are ignored. ``clear()`` resets the tracked keys,
-    aiding controlled tests.
+    The class keeps track of seen keys using a plain :class:`set` guarded by
+    a :class:`threading.Lock`. The cache size is bounded by ``maxsize``; when
+    the limit is reached the cache is cleared to keep memory usage bounded
+    without maintaining ordering metadata. ``clear()`` resets the cache making
+    the instance suitable for deterministic tests.
     """
 
-    def __init__(self, logger: logging.Logger, msg: str, *, maxsize: int = 1024) -> None:
+    def __init__(self, logger: logging.Logger, msg: str, *, maxsize: int | None = 1024) -> None:
         self._logger = logger
         self._msg = msg
         self._maxsize = maxsize
-        self._seen: OrderedDict[Hashable, None] = OrderedDict()
+        self._seen: set[Hashable] = set()
         self._lock = threading.Lock()
 
-    def __call__(self, mapping: Mapping[Hashable, Any]) -> None:
-        new: dict[Hashable, Any] = {}
+    def check(self, key: Hashable) -> bool:
+        """Return ``True`` if ``key`` has not been seen before.
+
+        When ``maxsize`` is a positive integer the cache is cleared whenever
+        the number of tracked keys reaches the limit, preventing unbounded
+        growth while favouring simplicity over ordered eviction.
+        """
+
         with self._lock:
-            for k, v in mapping.items():
-                if k not in self._seen:
-                    self._seen[k] = None
-                    self._seen.move_to_end(k)
-                    new[k] = v
-                    if len(self._seen) > self._maxsize:
-                        self._seen.popitem(last=False)
-        if new:
-            self._logger.warning(self._msg, new)
+            if self._maxsize is not None and self._maxsize <= 0:
+                return True
+            if key in self._seen:
+                return False
+            if self._maxsize is not None and len(self._seen) >= self._maxsize:
+                self._seen.clear()
+            self._seen.add(key)
+            return True
+
+    def __call__(self, key: Hashable, *args: Any, **kwargs: Any) -> bool:
+        """Emit a warning for ``key`` if it was not previously logged.
+
+        Additional ``*args`` and ``**kwargs`` are forwarded to
+        :meth:`logging.Logger.warning`. The method returns ``True`` when the
+        warning is emitted and ``False`` otherwise.
+        """
+
+        if self.check(key):
+            self._logger.warning(self._msg, *args, **kwargs)
+            return True
+        return False
 
     def clear(self) -> None:
         """Reset tracked keys."""
@@ -79,7 +96,8 @@ def warn_once(
     logger: logging.Logger,
     msg: str,
     *,
-    maxsize: int = 1024,
+    maxsize: int | None = 1024,
 ) -> WarnOnce:
-    """Return a :class:`WarnOnce` logger."""
+    """Return a :class:`WarnOnce` helper bound to ``logger`` and ``msg``."""
+
     return WarnOnce(logger, msg, maxsize=maxsize)
