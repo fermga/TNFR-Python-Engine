@@ -126,8 +126,6 @@ when orchestrating TNFR experiments.
   scalars, ``dims=2`` for paired values, etc.).
 * ``angle_diff(a, b)`` — compute minimal angular differences (radians) to
   compare structural phases.
-* ``neighbor_mean(G, n, aliases, default=0.0)`` — obtain the mean value of an
-  attribute among the neighbours of ``n`` leveraging cached graph aliases.
 
 ### Glyph history helpers
 

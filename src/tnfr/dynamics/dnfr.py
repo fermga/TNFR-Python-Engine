@@ -10,13 +10,11 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from typing import Any, Callable
+from statistics import StatisticsError, fmean
 
 from ..collections_utils import normalize_weights
 from ..constants import DEFAULTS, get_aliases, get_param
-from ..helpers.numeric import (
-    angle_diff,
-    neighbor_mean,
-)
+from ..helpers.numeric import angle_diff
 from ..metrics.trig import neighbor_phase_mean, _phase_mean_from_iter
 from ..helpers import cached_nodes_and_A
 from ..alias import (
@@ -561,12 +559,22 @@ def dnfr_epi_vf_mixed(G) -> None:
 
     def g_epi(G, n, nd):
         epi_i = get_attr(nd, ALIAS_EPI, 0.0)
-        epi_bar = neighbor_mean(G, n, ALIAS_EPI, default=epi_i)
+        try:
+            epi_bar = fmean(
+                get_attr(G.nodes[v], ALIAS_EPI, epi_i) for v in G.neighbors(n)
+            )
+        except StatisticsError:
+            epi_bar = float(epi_i)
         return epi_bar - epi_i
 
     def g_vf(G, n, nd):
         vf_i = get_attr(nd, ALIAS_VF, 0.0)
-        vf_bar = neighbor_mean(G, n, ALIAS_VF, default=vf_i)
+        try:
+            vf_bar = fmean(
+                get_attr(G.nodes[v], ALIAS_VF, vf_i) for v in G.neighbors(n)
+            )
+        except StatisticsError:
+            vf_bar = float(vf_i)
         return vf_bar - vf_i
 
     _apply_dnfr_hook(

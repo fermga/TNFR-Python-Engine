@@ -9,13 +9,11 @@ from statistics import fmean, StatisticsError
 
 from ..constants import DEFAULTS, get_aliases, get_param
 
-from ..helpers.numeric import (
-    angle_diff,
-    neighbor_mean,
-)
+from ..helpers.numeric import angle_diff
 from ..metrics.trig import neighbor_phase_mean
 from ..import_utils import get_nodonx
 from ..rng import make_rng
+from ..alias import get_attr
 from tnfr import glyph_history
 from ..types import Glyph
 
@@ -92,7 +90,12 @@ def get_neighbor_epi(node: NodoProtocol) -> tuple[list[NodoProtocol], float]:
     if hasattr(node, "G"):
         if not _any_neighbor_has(node, ALIAS_EPI):
             return [], epi
-        epi_bar = neighbor_mean(node.G, node.n, ALIAS_EPI, default=epi)
+        try:
+            epi_bar = fmean(
+                get_attr(node.G.nodes[v], ALIAS_EPI, epi) for v in neigh
+            )
+        except StatisticsError:
+            epi_bar = float(epi)
         NodoNX = get_nodonx()
         if NodoNX is None:
             raise ImportError("NodoNX is unavailable")

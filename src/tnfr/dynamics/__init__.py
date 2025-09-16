@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 from collections import deque
 from operator import itemgetter
+from statistics import StatisticsError, fmean
 from typing import Any
 
 # Importar compute_Si y apply_glyph a nivel de módulo evita el coste de
@@ -24,7 +25,6 @@ from ..helpers.numeric import (
     clamp,
     clamp01,
     angle_diff,
-    neighbor_mean,
 )
 from ..metrics.trig import neighbor_phase_mean
 from ..alias import (
@@ -318,7 +318,12 @@ def adapt_vf_by_coherence(G) -> None:
 
         if nd["stable_count"] >= tau:
             vf = get_attr(nd, ALIAS_VF, 0.0)
-            vf_bar = neighbor_mean(G, n, ALIAS_VF, default=vf)
+            try:
+                vf_bar = fmean(
+                    get_attr(G.nodes[v], ALIAS_VF, vf) for v in G.neighbors(n)
+                )
+            except StatisticsError:
+                vf_bar = float(vf)
             updates[n] = vf + mu * (vf_bar - vf)
 
     for n, vf_new in updates.items():

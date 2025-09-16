@@ -4,10 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 from collections.abc import Iterable, Sequence
-from statistics import fmean, StatisticsError
 import math
-
-from ..alias import get_attr
 
 _TRIG_MODULE = None
 
@@ -28,7 +25,6 @@ __all__ = (
     "within_range",
     "kahan_sum_nd",
     "angle_diff",
-    "neighbor_mean",
 )
 
 
@@ -103,16 +99,6 @@ def angle_diff(a: float, b: float) -> float:
     """Return the minimal difference between two angles in radians."""
     return (float(a) - float(b) + math.pi) % math.tau - math.pi
 
-
-def neighbor_mean(
-    G, n, aliases: tuple[str, ...], default: float = 0.0
-) -> float:
-    """Mean of ``aliases`` attribute among neighbours of ``n``."""
-    vals = (get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
-    try:
-        return fmean(vals)
-    except StatisticsError:
-        return float(default)
 
 def _phase_mean_from_iter(
     it: Iterable[tuple[float, float] | None], fallback: float
