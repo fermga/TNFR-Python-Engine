@@ -2,25 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Any
 from collections.abc import Iterable, Sequence
 from statistics import fmean, StatisticsError
 import math
 
 from ..alias import get_attr
-
-_TRIG_MODULE = None
-
-
-def _get_trig_module():
-    """Return the shared trigonometric helpers module lazily."""
-
-    global _TRIG_MODULE
-    if _TRIG_MODULE is None:
-        from ..metrics import trig as trig_module
-
-        _TRIG_MODULE = trig_module
-    return _TRIG_MODULE
 
 __all__ = (
     "clamp",
@@ -113,55 +99,4 @@ def neighbor_mean(
         return fmean(vals)
     except StatisticsError:
         return float(default)
-
-def _phase_mean_from_iter(
-    it: Iterable[tuple[float, float] | None], fallback: float
-) -> float:
-    """Return circular mean from an iterator of cosine/sine pairs.
-
-    ``it`` yields optional ``(cos, sin)`` tuples. ``fallback`` is returned if
-    no valid pairs are processed.
-    """
-
-    return _get_trig_module()._phase_mean_from_iter(it, fallback)
-
-
-def _neighbor_phase_mean_core(
-    neigh: Sequence[Any],
-    cos_map: dict[Any, float],
-    sin_map: dict[Any, float],
-    np,
-    fallback: float,
-) -> float:
-    """Return circular mean of neighbour phases given trig mappings."""
-
-    return _get_trig_module()._neighbor_phase_mean_core(
-        neigh, cos_map, sin_map, np, fallback
-    )
-
-
-def _neighbor_phase_mean_generic(
-    obj,
-    cos_map: dict[Any, float] | None = None,
-    sin_map: dict[Any, float] | None = None,
-    np=None,
-    fallback: float = 0.0,
-) -> float:
-    """Internal helper delegating to :func:`_neighbor_phase_mean_core`.
-
-    ``obj`` may be either a node bound to a graph or a sequence of neighbours.
-    When ``cos_map`` and ``sin_map`` are ``None`` the function assumes ``obj`` is
-    a node and obtains the required trigonometric mappings from the cached
-    structures. Otherwise ``obj`` is treated as an explicit neighbour
-    sequence and ``cos_map``/``sin_map`` must be provided.
-    """
-
-    return _get_trig_module()._neighbor_phase_mean_generic(
-        obj,
-        cos_map=cos_map,
-        sin_map=sin_map,
-        np=np,
-        fallback=fallback,
-    )
-
 
