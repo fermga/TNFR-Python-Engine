@@ -9,6 +9,7 @@ __all__ = (
     "clamp",
     "clamp01",
     "within_range",
+    "similarity_abs",
     "kahan_sum_nd",
     "angle_diff",
 )
@@ -47,7 +48,7 @@ def _norm01(x: float, lo: float, hi: float) -> float:
     return clamp01((float(x) - float(lo)) / (float(hi) - float(lo)))
 
 
-def _similarity_abs(a: float, b: float, lo: float, hi: float) -> float:
+def similarity_abs(a: float, b: float, lo: float, hi: float) -> float:
     """Return absolute similarity of ``a`` and ``b`` over ``[lo, hi]``.
 
     It computes ``1`` minus the normalized absolute difference between

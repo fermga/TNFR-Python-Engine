@@ -13,7 +13,7 @@ from ..constants import (
 from ..callback_utils import callback_manager
 from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
-from ..helpers.numeric import clamp01, _similarity_abs
+from ..helpers.numeric import clamp01, similarity_abs
 from .common import compute_dnfr_accel_max, min_max_range, normalize_dnfr
 from .coherence import (
     local_phase_sync,
@@ -38,7 +38,7 @@ def _symmetry_index(
     if epi_min is None or epi_max is None:
         epi_iter = (get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in G.nodes())
         epi_min, epi_max = min_max_range(epi_iter, default=(0.0, 1.0))
-    return _similarity_abs(epi_i, epi_bar, epi_min, epi_max)
+    return similarity_abs(epi_i, epi_bar, epi_min, epi_max)
 
 
 def _state_from_thresholds(Rloc, dnfr_n, cfg):
