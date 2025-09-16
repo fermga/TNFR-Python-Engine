@@ -4,20 +4,19 @@ import math
 from types import MappingProxyType
 
 import pytest
-import tnfr.collections_utils as cu
 from tnfr.collections_utils import normalize_weights
 
 
 def test_normalize_weights_warns_on_negative_value(caplog):
-
-    cu.clear_warned_negative_keys()
-
-    weights = {"a": -1.0, "b": 2.0}
+    weights = {"warn-negative-value-a": -1.0, "warn-negative-value-b": 2.0}
     with caplog.at_level("WARNING"):
-        norm = normalize_weights(weights, ("a", "b"))
+        norm = normalize_weights(
+            weights,
+            ("warn-negative-value-a", "warn-negative-value-b"),
+        )
     assert any("Negative weights" in m for m in caplog.messages)
-    assert norm["a"] == 0.0
-    assert math.isclose(norm["b"], 1.0)
+    assert norm["warn-negative-value-a"] == 0.0
+    assert math.isclose(norm["warn-negative-value-b"], 1.0)
 
 
 def test_normalize_weights_raises_on_negative_value():
@@ -27,11 +26,8 @@ def test_normalize_weights_raises_on_negative_value():
 
 
 def test_normalize_weights_warns_on_negative_default(caplog):
-
-    cu.clear_warned_negative_keys()
-
     with caplog.at_level("WARNING"):
-        normalize_weights({}, ("a", "b"), default=-0.5)
+        normalize_weights({}, ("warn-negative-default-a", "warn-negative-default-b"), default=-0.5)
     assert any("Negative weights" in m for m in caplog.messages)
 
 
@@ -50,25 +46,23 @@ def test_normalize_weights_warns_on_non_numeric_value(caplog):
 
 
 def test_normalize_weights_warn_once(caplog):
-
-    cu.clear_warned_negative_keys()
-
-    weights = {"x": -1.0}
+    first_key = "warn-once-key-1"
+    weights = {first_key: -1.0}
     with caplog.at_level("WARNING"):
-        normalize_weights(weights, ("x",))
+        normalize_weights(weights, (first_key,))
     assert any("Negative weights" in m for m in caplog.messages)
     caplog.clear()
 
     # second call with same key should not warn
     with caplog.at_level("WARNING"):
-        normalize_weights(weights, ("x",))
+        normalize_weights(weights, (first_key,))
     assert not any("Negative weights" in m for m in caplog.messages)
 
-    # clearing cache should allow warning again
-    cu.clear_warned_negative_keys()
+    # new keys should still trigger warnings
     caplog.clear()
+    second_key = "warn-once-key-2"
     with caplog.at_level("WARNING"):
-        normalize_weights(weights, ("x",))
+        normalize_weights({second_key: -1.0}, (second_key,))
     assert any("Negative weights" in m for m in caplog.messages)
 
 
@@ -95,15 +89,12 @@ def test_normalize_weights_high_precision():
 
 
 def test_normalize_weights_deduplicates_keys():
-
-    cu.clear_warned_negative_keys()
-
-    weights = {"a": -1.0, "b": -1.0}
-    dup_keys = ["a", "b", "a"]
-    unique_keys = ["a", "b"]
+    weights = {"dedup-a": -1.0, "dedup-b": -1.0}
+    dup_keys = ["dedup-a", "dedup-b", "dedup-a"]
+    unique_keys = ["dedup-a", "dedup-b"]
     norm_dup = normalize_weights(weights, dup_keys)
     norm_unique = normalize_weights(weights, unique_keys)
-    expected = {"a": 0.5, "b": 0.5}
+    expected = {"dedup-a": 0.5, "dedup-b": 0.5}
     assert norm_dup == norm_unique
     assert norm_dup == pytest.approx(expected)
 
