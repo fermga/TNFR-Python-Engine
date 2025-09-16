@@ -147,15 +147,15 @@ def test_gamma_spec_normalized_once(graph_canon, monkeypatch):
     G = graph_canon()
     G.add_node(0, θ=0.0)
     G.graph["GAMMA"] = []  # invalid spec
-    calls = []
+    emitted = []
 
-    def fake_warn(*args, **kwargs):
-        calls.append(1)
+    def fake_warn(message, category=None, stacklevel=1):
+        emitted.append(message)
 
     monkeypatch.setattr("tnfr.graph_utils.warnings.warn", fake_warn)
     eval_gamma(G, 0, t=0.0)
     eval_gamma(G, 0, t=0.0)
-    assert len(calls) == 1
+    assert len(emitted) == 1
 
 
 def test_default_gamma_spec_called_once(graph_canon, monkeypatch):
