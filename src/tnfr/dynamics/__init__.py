@@ -24,7 +24,6 @@ from ..helpers.numeric import (
     clamp,
     clamp01,
     angle_diff,
-    neighbor_mean,
 )
 from ..metrics.trig import neighbor_phase_mean
 from ..alias import (
@@ -316,7 +315,14 @@ def adapt_vf_by_coherence(G) -> None:
 
         if nd["stable_count"] >= tau:
             vf = get_attr(nd, ALIAS_VF, 0.0)
-            vf_bar = neighbor_mean(G, n, ALIAS_VF, default=vf)
+            neigh = list(G.neighbors(n))
+            if neigh:
+                total = 0.0
+                for v in neigh:
+                    total += float(get_attr(G.nodes[v], ALIAS_VF, vf))
+                vf_bar = total / len(neigh)
+            else:
+                vf_bar = float(vf)
             updates[n] = vf + mu * (vf_bar - vf)
 
     for n, vf_new in updates.items():
