@@ -155,7 +155,6 @@ def cached_import(
     fallback: Any | None = None,
     cache: MutableMapping[str, Any] | None = None,
     lock: threading.Lock | None = None,
-    ttl: float | None = None,
     emit: Literal["warn", "log", "both"] = "warn",
 ) -> Any | None:
     """Import ``module_name`` (and optional ``attr``) with caching and fallback.
@@ -173,9 +172,6 @@ def cached_import(
         :func:`functools.lru_cache` is used.
     lock:
         Lock guarding ``cache`` when a custom mapping is supplied.
-    ttl:
-        Deprecated; retained for backwards compatibility. The shared cache
-        ignores this argument.
     emit:
         Destination for warnings emitted on failure (``"warn"``/``"log"``/``"both"``).
     """
