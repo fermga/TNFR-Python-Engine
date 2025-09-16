@@ -9,7 +9,7 @@ from itertools import islice
 from typing import Any, Callable, Iterator, TypeVar, cast
 
 from .logging_utils import get_logger
-from .logging_utils import warn_once
+from .logging_utils import warn_once as create_warn_once
 from .value_utils import convert_value
 from .helpers.numeric import kahan_sum_nd
 
@@ -20,17 +20,7 @@ logger = get_logger(__name__)
 STRING_TYPES = (str, bytes, bytearray)
 
 NEGATIVE_WEIGHTS_MSG = "Negative weights detected: %s"
-
-
-_WARNED_NEGATIVE_KEYS_LIMIT = 1024
-_log_negative_keys_once = warn_once(
-    logger, NEGATIVE_WEIGHTS_MSG, maxsize=_WARNED_NEGATIVE_KEYS_LIMIT
-)
-
-
-def clear_warned_negative_keys() -> None:
-    """Clear the cache of warned negative weight keys."""
-    _log_negative_keys_once.clear()
+WarnCallback = Callable[[Mapping[str, float]], None]
 
 
 def is_non_string_sequence(obj: Any) -> bool:
@@ -87,7 +77,6 @@ __all__ = (
     "normalize_weights",
     "normalize_counter",
     "mix_groups",
-    "clear_warned_negative_keys",
 )
 
 MAX_MATERIALIZE_DEFAULT: int = 1000
@@ -97,6 +86,26 @@ This guard prevents accidentally consuming huge or infinite iterables when a
 limit is not explicitly provided. Pass ``max_materialize=None`` to disable the
 limit.
 """
+
+
+def _warn_negative_weights(
+    negatives: Mapping[str, float],
+    warn_once: bool | WarnCallback,
+) -> None:
+    """Log a warning about ``negatives`` honouring ``warn_once`` semantics."""
+
+    if not negatives:
+        return
+    if callable(warn_once):
+        warn_callable = warn_once
+    elif warn_once:
+        warn_callable = create_warn_once(logger, NEGATIVE_WEIGHTS_MSG)
+    else:
+        warn_callable = None
+    if warn_callable is not None:
+        warn_callable(negatives)
+    else:
+        logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
 
 
 def _validate_limit(max_materialize: int | None) -> int | None:
@@ -169,7 +178,7 @@ def _convert_and_validate_weights(
     *,
     error_on_conversion: bool,
     error_on_negative: bool,
-    warn_once: bool,
+    warn_once: bool | WarnCallback,
 ) -> tuple[dict[str, float], list[str], float]:
     """Return converted weights, deduplicated keys and the accumulated total."""
 
@@ -193,10 +202,7 @@ def _convert_and_validate_weights(
     if negatives:
         if error_on_negative:
             raise ValueError(NEGATIVE_WEIGHTS_MSG % negatives)
-        if warn_once:
-            _log_negative_keys_once(negatives)
-        else:
-            logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
+        _warn_negative_weights(negatives, warn_once)
         for key, weight in negatives.items():
             weights[key] = 0.0
             total -= weight
@@ -211,12 +217,14 @@ def prepare_weights(
     *,
     error_on_conversion: bool,
     error_on_negative: bool,
-    warn_once: bool,
+    warn_once: bool | WarnCallback,
 ) -> tuple[dict[str, float], list[str], float]:
     """Materialize ``keys``, convert values and clamp negatives.
 
     Returns the converted ``weights`` mapping, the deduplicated ``keys_list``
-    and the accumulated ``total`` using Kahan summation.
+    and the accumulated ``total`` using Kahan summation. ``warn_once`` accepts
+    the same values as :func:`normalize_weights` and controls how negative
+    weight warnings are emitted.
     """
 
     return _convert_and_validate_weights(
@@ -239,7 +247,7 @@ def normalize_weights(
     default: float = 0.0,
     *,
     error_on_negative: bool = False,
-    warn_once: bool = True,
+    warn_once: bool | WarnCallback = True,
     error_on_conversion: bool = False,
 ) -> dict[str, float]:
     """Normalize ``keys`` in mapping ``dict_like`` so their sum is 1.
@@ -257,8 +265,11 @@ def normalize_weights(
     value to ``float`` is propagated. Otherwise the error is logged and the
     ``default`` value is used.
 
-    When ``warn_once`` is ``True`` warnings for a given key are emitted only on
-    their first occurrence across calls.
+    ``warn_once`` accepts either a boolean or a callable. Passing ``True`` uses
+    a transient ``WarnOnce`` helper so that each invocation emits at most a
+    single warning. To share suppression state across calls supply a callable
+    such as :func:`tnfr.logging_utils.warn_once`. Passing ``False`` logs every
+    occurrence.
     """
     weights, keys_list, total = prepare_weights(
         dict_like,
