@@ -36,7 +36,7 @@ from ..alias import (
 from ..metrics.sense_index import compute_Si
 from ..metrics.common import compute_dnfr_accel_max, merge_and_normalize_weights
 from ..metrics.trig_cache import compute_theta_trig
-from ..callback_utils import callback_manager
+from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import recent_glyph, ensure_history, append_metric
 from ..selector import (
     _selector_thresholds,
@@ -486,7 +486,7 @@ def _run_before_callbacks(
 ) -> None:
     callback_manager.invoke_callbacks(
         G,
-        "before_step",
+        CallbackEvent.BEFORE_STEP.value,
         {
             "step": step_idx,
             "dt": dt,
@@ -602,7 +602,7 @@ def _run_after_callbacks(G, *, step_idx: int) -> None:
         values = h.get(src)
         if values:
             ctx[dst] = values[-1]
-    callback_manager.invoke_callbacks(G, "after_step", ctx)
+    callback_manager.invoke_callbacks(G, CallbackEvent.AFTER_STEP.value, ctx)
 
 
 def step(

@@ -11,7 +11,7 @@ from ..constants import (
     get_aliases,
     get_param,
 )
-from ..callback_utils import callback_manager
+from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import ensure_history, append_metric
 from ..alias import collect_attr, get_attr, set_attr
 from ..collections_utils import normalize_weights
@@ -666,7 +666,10 @@ def _coherence_step(G, ctx=None):
 
 def register_coherence_callbacks(G) -> None:
     callback_manager.register_callback(
-        G, event="after_step", func=_coherence_step, name="coherence_step"
+        G,
+        event=CallbackEvent.AFTER_STEP.value,
+        func=_coherence_step,
+        name="coherence_step",
     )
 
 

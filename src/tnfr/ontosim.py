@@ -103,8 +103,8 @@ def preparar_red(
     G.graph.setdefault(
         "callbacks",
         {
-            "before_step": [],
-            "after_step": [],
+            CallbackEvent.BEFORE_STEP.value: [],
+            CallbackEvent.AFTER_STEP.value: [],
             CallbackEvent.ON_REMESH.value: [],
         },
     )

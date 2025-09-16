@@ -48,9 +48,6 @@ class CallbackEvent(str, Enum):
     ON_REMESH = "on_remesh"
 
 
-_CALLBACK_EVENTS: set[str] = {e.value for e in CallbackEvent}
-
-
 class CallbackManager:
     """Centralised registry and error tracking for callbacks."""
 
@@ -129,8 +126,7 @@ class CallbackManager:
         """Register ``func`` as callback for ``event``."""
 
         event = _normalize_event(event)
-        if event not in _CALLBACK_EVENTS:
-            raise ValueError(f"Unknown event: {event}")
+        _ensure_known_event(event)
         if not callable(func):
             raise TypeError("func must be callable")
         with self._lock:
@@ -240,12 +236,12 @@ def _validate_registry(
             {
                 event: _normalize_callbacks(entries)
                 for event, entries in dict(cbs).items()
-                if event in _CALLBACK_EVENTS
+                if _is_known_event(event)
             },
         )
     else:
         for event in dirty:
-            if event in _CALLBACK_EVENTS:
+            if _is_known_event(event):
                 cbs[event] = _normalize_callbacks(cbs.get(event))
             else:
                 cbs.pop(event, None)
@@ -278,6 +274,26 @@ def _normalize_callbacks(entries: Any) -> dict[str, CallbackSpec]:
 def _normalize_event(event: CallbackEvent | str) -> str:
     """Return ``event`` as a string."""
     return event.value if isinstance(event, CallbackEvent) else str(event)
+
+
+def _is_known_event(event: str) -> bool:
+    """Return ``True`` when ``event`` matches a declared :class:`CallbackEvent`."""
+
+    try:
+        CallbackEvent(event)
+    except ValueError:
+        return False
+    else:
+        return True
+
+
+def _ensure_known_event(event: str) -> None:
+    """Raise :class:`ValueError` when ``event`` is not a known callback."""
+
+    try:
+        CallbackEvent(event)
+    except ValueError as exc:  # pragma: no cover - defensive branch
+        raise ValueError(f"Unknown event: {event}") from exc
 
 
 def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
