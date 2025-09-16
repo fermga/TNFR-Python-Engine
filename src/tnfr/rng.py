@@ -5,7 +5,8 @@ from __future__ import annotations
 import random
 import hashlib
 import struct
-from typing import Any, Callable, Generic, Hashable, TypeVar
+from collections.abc import Iterator, MutableMapping
+from typing import Any, Generic, Hashable, TypeVar
 
 
 from cachetools import LRUCache, cached
@@ -16,9 +17,71 @@ from .locking import get_lock
 MASK64 = 0xFFFFFFFFFFFFFFFF
 
 _RNG_LOCK = get_lock("rng")
-_CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
+_DEFAULT_CACHE_MAXSIZE = int(DEFAULTS.get("JITTER_CACHE_SIZE", 128))
+_CACHE_MAXSIZE = _DEFAULT_CACHE_MAXSIZE
+_CACHE_LOCKED = False
 
 K = TypeVar("K", bound=Hashable)
+
+
+class _SeedHashCache(MutableMapping[tuple[int, int], int]):
+    """Mutable mapping proxy exposing a configurable LRU cache."""
+
+    def __init__(self, maxsize: int) -> None:
+        self._maxsize = 0
+        self._cache: LRUCache[tuple[int, int], int] | None = None
+        self.configure(maxsize)
+
+    def configure(self, maxsize: int) -> None:
+        """Configure internal cache size, clearing previous entries."""
+
+        self._maxsize = int(maxsize)
+        if self._maxsize <= 0:
+            self._cache = None
+        else:
+            self._cache = LRUCache(maxsize=self._maxsize)
+
+    def __getitem__(self, key: tuple[int, int]) -> int:
+        if self._cache is None:
+            raise KeyError(key)
+        return self._cache[key]
+
+    def __setitem__(self, key: tuple[int, int], value: int) -> None:
+        if self._cache is not None:
+            self._cache[key] = value
+
+    def __delitem__(self, key: tuple[int, int]) -> None:
+        if self._cache is None:
+            raise KeyError(key)
+        del self._cache[key]
+
+    def __iter__(self) -> Iterator[tuple[int, int]]:
+        if self._cache is None:
+            return iter(())
+        return iter(self._cache)
+
+    def __len__(self) -> int:
+        if self._cache is None:
+            return 0
+        return len(self._cache)
+
+    def clear(self) -> None:  # type: ignore[override]
+        if self._cache is not None:
+            self._cache.clear()
+
+    @property
+    def maxsize(self) -> int:
+        return self._maxsize
+
+    @property
+    def enabled(self) -> bool:
+        return self._cache is not None
+
+    @property
+    def data(self) -> LRUCache[tuple[int, int], int] | None:
+        """Expose the underlying cache for diagnostics/tests."""
+
+        return self._cache
 
 
 class ScopedCounterCache(Generic[K]):
@@ -69,14 +132,6 @@ class ScopedCounterCache(Generic[K]):
 
         self.configure(force=True)
 
-    def reset_unlocked(self) -> None:
-        """Reset cache without acquiring ``lock``.
-
-        Callers must hold :attr:`lock` before invoking this method.
-        """
-
-        self._cache = LRUCache(maxsize=self._max_entries)
-
     def bump(self, key: K) -> int:
         """Return current counter for ``key`` and increment it atomically."""
 
@@ -89,8 +144,13 @@ class ScopedCounterCache(Generic[K]):
         return len(self._cache)
 
 
+_seed_hash_cache = _SeedHashCache(_CACHE_MAXSIZE)
+
+
+@cached(cache=_seed_hash_cache, lock=_RNG_LOCK)
 def seed_hash(seed_int: int, key_int: int) -> int:
     """Return a 64-bit hash derived from ``seed_int`` and ``key_int``."""
+
     seed_bytes = struct.pack(
         ">QQ",
         seed_int & MASK64,
@@ -101,38 +161,17 @@ def seed_hash(seed_int: int, key_int: int) -> int:
     )
 
 
-def _make_cache(size: int) -> Callable[[int, int], int]:
-    if size > 0:
-        cache = LRUCache(maxsize=size)
-        return cached(cache=cache, lock=_RNG_LOCK)(seed_hash)
-    return seed_hash
-
-
-_seed_hash_cached = _make_cache(_CACHE_MAXSIZE)
-
-
-def _seed_hash_for(seed_int: int, key_int: int) -> int:
-    """Return a seed hash for ``seed_int`` and ``key_int``.
-
-    Uses the cached hash when caching is enabled.
-    """
-
-    return _seed_hash_cached(seed_int, key_int)
-
-
 def _sync_cache_size(G: Any | None) -> None:
     """Synchronise cache size with ``G`` when needed."""
 
-    global _CACHE_MAXSIZE, _seed_hash_cached
-    if G is None:
+    global _CACHE_MAXSIZE
+    if G is None or _CACHE_LOCKED:
         return
     size = get_cache_maxsize(G)
     with _RNG_LOCK:
         if size != _CACHE_MAXSIZE:
-            if _CACHE_MAXSIZE > 0:
-                _seed_hash_cached.cache_clear()
+            _seed_hash_cache.configure(size)
             _CACHE_MAXSIZE = size
-            _seed_hash_cached = _make_cache(size)
 
 
 def make_rng(seed: int, key: int, G: Any | None = None) -> random.Random:
@@ -144,14 +183,14 @@ def make_rng(seed: int, key: int, G: Any | None = None) -> random.Random:
     _sync_cache_size(G)
     seed_int = int(seed)
     key_int = int(key)
-    return random.Random(_seed_hash_for(seed_int, key_int))
+    return random.Random(seed_hash(seed_int, key_int))
 
 
 def clear_rng_cache() -> None:
     """Clear cached seed hashes."""
-    if _CACHE_MAXSIZE <= 0:
+    if _CACHE_MAXSIZE <= 0 or not _seed_hash_cache.enabled:
         return
-    _seed_hash_cached.cache_clear()
+    seed_hash.cache_clear()
 
 
 def get_cache_maxsize(G: Any) -> int:
@@ -193,15 +232,14 @@ def set_cache_maxsize(size: int) -> None:
     If caching is disabled, ``clear_rng_cache`` has no effect.
     """
 
-    global _CACHE_MAXSIZE, _seed_hash_cached
+    global _CACHE_MAXSIZE, _CACHE_LOCKED
     new_size = int(size)
     if new_size < 0:
         raise ValueError("size must be non-negative")
     with _RNG_LOCK:
-        if _CACHE_MAXSIZE > 0:
-            _seed_hash_cached.cache_clear()
+        _seed_hash_cache.configure(new_size)
         _CACHE_MAXSIZE = new_size
-        _seed_hash_cached = _make_cache(new_size)
+    _CACHE_LOCKED = new_size != _DEFAULT_CACHE_MAXSIZE
 
 
 __all__ = (
