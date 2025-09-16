@@ -21,7 +21,7 @@ from ..metrics import (
     _metrics_step,
 )
 from ..trace import register_trace
-from ..program import play, seq, block
+from ..execution import play, seq, block
 from ..dynamics import (
     step,
     default_glyph_selector,
