@@ -27,6 +27,15 @@ def test_gamma_linear_integration(graph_canon):
     assert pytest.approx(G.nodes[1]["EPI"], rel=1e-6) == 1.0
 
 
+def test_eval_gamma_none_returns_zero(graph_canon):
+    G = graph_canon()
+    G.add_node(0, θ=0.0)
+    inject_defaults(G)
+    G.graph["GAMMA"] = {"type": "none"}
+
+    assert eval_gamma(G, 0, 1.0) == 0.0
+
+
 def test_gamma_bandpass_eval(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1, 2, 3])
