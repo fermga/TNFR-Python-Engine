@@ -8,8 +8,7 @@ from statistics import fmean, StatisticsError
 
 import networkx as nx  # type: ignore[import-untyped]
 
-from ..constants import inject_defaults, DEFAULTS, METRIC_DEFAULTS
-from ..initialization import init_node_attrs
+from ..constants import METRIC_DEFAULTS
 from ..sense import register_sigma_callback, sigma_rose
 from ..metrics import (
     register_metrics_callbacks,
@@ -32,7 +31,7 @@ from ..presets import get_preset
 from ..config import apply_config
 from ..io import read_structured_file, safe_write
 from ..glyph_history import ensure_history
-from ..observers import attach_standard_observer
+from ..ontosim import preparar_red
 from ..logging_utils import get_logger
 from ..types import Glyph
 from ..json_utils import json_dumps
@@ -49,7 +48,6 @@ def _save_json(path: str, data: Any) -> None:
 
 
 def _attach_callbacks(G: "nx.Graph") -> None:
-    inject_defaults(G, DEFAULTS)
     register_sigma_callback(G)
     register_metrics_callbacks(G)
     register_trace(G)
@@ -82,10 +80,8 @@ def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
         raise ValueError(
             f"Invalid topology '{topology}'. Accepted options are: ring, complete, erdos"
         )
-    inject_defaults(G)
     if seed is not None:
         G.graph["RANDOM_SEED"] = int(seed)
-    init_node_attrs(G, override=True)
     return G
 
 
@@ -130,17 +126,18 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
 
 
 def register_callbacks_and_observer(
-    G: "nx.Graph", args: argparse.Namespace
+    G: "nx.Graph", _args: argparse.Namespace
 ) -> None:
     _attach_callbacks(G)
-    if args.observer:
-        attach_standard_observer(G)
     validate_canon(G)
 
 
 def _build_graph_from_args(args: argparse.Namespace) -> "nx.Graph":
     G = build_basic_graph(args)
     apply_cli_config(G, args)
+    if getattr(args, "observer", False):
+        G.graph["ATTACH_STD_OBSERVER"] = True
+    preparar_red(G)
     register_callbacks_and_observer(G, args)
     return G
 

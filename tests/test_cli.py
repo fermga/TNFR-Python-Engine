@@ -122,6 +122,32 @@ def test_args_to_dict_nested_options():
     assert METRIC_DEFAULTS["GRAMMAR_CANON"]["thol_min_len"] == 2
 
 
+def test_build_graph_uses_preparar_red_defaults():
+    parser = argparse.ArgumentParser()
+    add_common_args(parser)
+    add_grammar_args(parser)
+    args = parser.parse_args(["--nodes", "4"])
+
+    G = _build_graph_from_args(args)
+
+    assert G.graph.get("_tnfr_defaults_attached") is True
+    history = G.graph["history"]
+    assert "phase_state" in history
+    assert callable(G.graph.get("compute_delta_nfr"))
+    assert G.graph.get("_dnfr_hook_name") == "default_compute_delta_nfr"
+
+
+def test_build_graph_attaches_observer_via_preparar_red():
+    parser = argparse.ArgumentParser()
+    add_common_args(parser)
+    add_grammar_args(parser)
+    args = parser.parse_args(["--nodes", "4", "--observer"])
+
+    G = _build_graph_from_args(args)
+
+    assert G.graph.get("_STD_OBSERVER") == "attached"
+
+
 def test_args_to_dict_filters_none_values():
     parser = argparse.ArgumentParser()
     add_grammar_args(parser)
