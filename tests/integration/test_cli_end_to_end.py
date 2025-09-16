@@ -9,7 +9,7 @@ import pytest
 from tnfr.cli import main
 
 
-pytestmark = pytest.mark.slow
+pytestmark = pytest.mark.slow  # noqa: F841
 
 
 def test_metrics_command_generates_output(tmp_path):
