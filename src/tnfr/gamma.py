@@ -122,21 +122,37 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
     cached_raw = G.graph.get("_gamma_raw")
     cached_spec = G.graph.get("_gamma_spec")
     cached_hash = G.graph.get("_gamma_spec_hash")
-    if raw is cached_raw and cached_spec is not None and cached_hash is not None:
+
+    def _hash_mapping(mapping: Mapping[str, Any]) -> str:
+        dumped = json_dumps(mapping, sort_keys=True, to_bytes=True)
+        return hashlib.blake2b(dumped, digest_size=16).hexdigest()
+
+    mapping_hash: str | None = None
+    if isinstance(raw, Mapping):
+        mapping_hash = _hash_mapping(raw)
+        if (
+            raw is cached_raw
+            and cached_spec is not None
+            and cached_hash == mapping_hash
+        ):
+            return cached_spec
+    elif raw is cached_raw and cached_spec is not None and cached_hash is not None:
         return cached_spec
 
-    if raw is None or isinstance(raw, Mapping):
-        spec = raw if isinstance(raw, Mapping) else DEFAULT_GAMMA
+    if raw is None:
+        spec = DEFAULT_GAMMA
+        _, cur_hash = _default_gamma_spec()
+    elif isinstance(raw, Mapping):
+        spec = raw
+        cur_hash = mapping_hash if mapping_hash is not None else _hash_mapping(spec)
     else:
         spec_raw = _read_gamma_raw(G)
-        spec = spec_raw if isinstance(spec_raw, Mapping) and spec_raw is not None else DEFAULT_GAMMA
-
-    # Compute hash of spec to track changes
-    if spec is DEFAULT_GAMMA:
-        _, cur_hash = _default_gamma_spec()
-    else:
-        dumped = json_dumps(spec, sort_keys=True, to_bytes=True)
-        cur_hash = hashlib.blake2b(dumped, digest_size=16).hexdigest()
+        if isinstance(spec_raw, Mapping) and spec_raw is not None:
+            spec = spec_raw
+            cur_hash = _hash_mapping(spec)
+        else:
+            spec = DEFAULT_GAMMA
+            _, cur_hash = _default_gamma_spec()
 
     # Store raw input, validated spec and its hash for future calls
     G.graph["_gamma_raw"] = raw
