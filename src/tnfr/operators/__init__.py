@@ -286,19 +286,16 @@ factor_nul = 0.85
 _SCALE_FACTORS = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
 
 
-def _op_scale(node: NodoProtocol, glyph: Glyph, factor: float) -> None:
-    if glyph is Glyph.VAL:
-        node.vf *= factor
-    else:
-        node.vf *= factor
+def _op_scale(node: NodoProtocol, factor: float) -> None:
+    node.vf *= factor
 
 
 def _make_scale_op(glyph: Glyph):
     def _op(node: NodoProtocol, gf: dict[str, Any]) -> None:
-        factor_val = get_factor(gf, "VAL_scale", _SCALE_FACTORS[Glyph.VAL])
-        factor_nul = get_factor(gf, "NUL_scale", _SCALE_FACTORS[Glyph.NUL])
-        factor = factor_val if glyph is Glyph.VAL else factor_nul
-        _op_scale(node, glyph, factor)
+        key = "VAL_scale" if glyph is Glyph.VAL else "NUL_scale"
+        default = _SCALE_FACTORS[glyph]
+        factor = get_factor(gf, key, default)
+        _op_scale(node, factor)
 
     return _op
 
