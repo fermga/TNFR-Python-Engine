@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, Sequence
+from collections.abc import Collection, Iterable, Iterator, Sequence
+from typing import Any, Callable
 
 from .collections_utils import (
     MAX_MATERIALIZE_DEFAULT,
@@ -20,6 +21,58 @@ __all__ = [
     "_flatten_target",
     "_flatten_wait",
 ]
+
+
+_STRING_TYPES = (str, bytes, bytearray)
+
+
+def _normalize_limit(max_materialize: int | None) -> int | None:
+    """Validate ``max_materialize`` mirroring :func:`ensure_collection`."""
+
+    if max_materialize is None:
+        return None
+    limit = int(max_materialize)
+    if limit < 0:
+        raise ValueError("'max_materialize' must be non-negative")
+    return limit
+
+
+def _iter_source(
+    seq: Iterable[Token] | Sequence[Token] | Any,
+    *,
+    max_materialize: int | None,
+) -> Iterable[Any]:
+    """Yield items from ``seq`` enforcing ``max_materialize`` when needed."""
+
+    if isinstance(seq, Collection) and not isinstance(seq, _STRING_TYPES):
+        return seq
+
+    if isinstance(seq, _STRING_TYPES):
+        return (seq,)
+
+    if not isinstance(seq, Iterable):
+        raise TypeError(f"{seq!r} is not iterable")
+
+    limit = _normalize_limit(max_materialize)
+    if limit is None:
+        return seq
+    if limit == 0:
+        return ()
+
+    def _limited() -> Iterator[Any]:
+        samples: list[Any] = []
+        for idx, item in enumerate(seq, 1):
+            if len(samples) < 3:
+                samples.append(item)
+            if idx > limit:
+                examples = ", ".join(repr(x) for x in samples)
+                raise ValueError(
+                    "Iterable produced "
+                    f"{idx} items, exceeds limit {limit}; first items: [{examples}]"
+                )
+            yield item
+
+    return _limited()
 
 
 def _push_thol_frame(
@@ -138,14 +191,14 @@ _TOKEN_DISPATCH: dict[type, Callable[[Any, list[tuple[OpTag, Any]]], None]] = {
 
 
 def _flatten(
-    seq: Sequence[Token],
+    seq: Iterable[Token] | Sequence[Token] | Any,
     *,
     max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
 ) -> list[tuple[OpTag, Any]]:
     """Return a list of operations ``(op, payload)`` where ``op`` ∈ :class:`OpTag`."""
 
     ops: list[tuple[OpTag, Any]] = []
-    sequence = ensure_collection(seq, max_materialize=max_materialize)
+    sequence = _iter_source(seq, max_materialize=max_materialize)
 
     def _expand(item: Any):
         if isinstance(item, THOL):
