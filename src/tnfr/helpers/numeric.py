@@ -3,10 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from statistics import fmean, StatisticsError
 import math
-
-from ..alias import get_attr
 
 __all__ = (
     "clamp",
@@ -14,7 +11,6 @@ __all__ = (
     "within_range",
     "kahan_sum_nd",
     "angle_diff",
-    "neighbor_mean",
 )
 
 
@@ -88,15 +84,3 @@ def kahan_sum_nd(
 def angle_diff(a: float, b: float) -> float:
     """Return the minimal difference between two angles in radians."""
     return (float(a) - float(b) + math.pi) % math.tau - math.pi
-
-
-def neighbor_mean(
-    G, n, aliases: tuple[str, ...], default: float = 0.0
-) -> float:
-    """Mean of ``aliases`` attribute among neighbours of ``n``."""
-    vals = (get_attr(G.nodes[v], aliases, default) for v in G.neighbors(n))
-    try:
-        return fmean(vals)
-    except StatisticsError:
-        return float(default)
-
