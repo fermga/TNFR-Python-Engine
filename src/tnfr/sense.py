@@ -192,10 +192,6 @@ def _sigma_from_iterable(
     }
 
 
-# Retro-compatibilidad
-_sigma_from_vectors = _sigma_from_iterable
-
-
 def _ema_update(
     prev: dict[str, float], current: dict[str, float], alpha: float
 ) -> dict[str, float]:
