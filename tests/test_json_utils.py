@@ -1,5 +1,4 @@
 import logging
-from typing import Mapping
 
 import tnfr.import_utils as import_utils
 import tnfr.json_utils as json_utils
@@ -39,7 +38,7 @@ def test_lazy_orjson_import(monkeypatch):
     assert calls["n"] == 2
 
 
-def test_warns_once(monkeypatch, caplog):
+def test_warns_each_time(monkeypatch, caplog):
     monkeypatch.setattr(
         json_utils, "cached_import", lambda *a, **k: DummyOrjson()
     )
@@ -49,10 +48,10 @@ def test_warns_once(monkeypatch, caplog):
         for _ in range(2):
             json_utils.json_dumps({}, ensure_ascii=False)
 
-    assert sum("ignored" in r.message for r in caplog.records) == 1
+    assert sum("ignored" in r.message for r in caplog.records) == 2
 
 
-def test_warns_once_per_unique_combo(monkeypatch, caplog):
+def test_warns_for_each_combo(monkeypatch, caplog):
     monkeypatch.setattr(
         json_utils, "cached_import", lambda *a, **k: DummyOrjson()
     )
@@ -63,7 +62,7 @@ def test_warns_once_per_unique_combo(monkeypatch, caplog):
         json_utils.json_dumps({}, ensure_ascii=False, separators=(";", ":"))
         json_utils.json_dumps({}, ensure_ascii=False, separators=(";", ":"))
 
-    assert sum("ignored" in r.message for r in caplog.records) == 2
+    assert sum("ignored" in r.message for r in caplog.records) == 3
 
 
 def test_json_dumps_returns_str_by_default():
@@ -101,7 +100,7 @@ def test_json_dumps_with_orjson_warns(monkeypatch, caplog):
     with caplog.at_level(logging.WARNING):
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
-    assert sum("ignored" in r.message for r in caplog.records) == 1
+    assert sum("ignored" in r.message for r in caplog.records) == 2
 
 
 def test_params_passed_to_std(monkeypatch):
@@ -115,9 +114,9 @@ def test_params_passed_to_std(monkeypatch):
 
     monkeypatch.setattr(json_utils, "_json_dumps_std", fake_std)
     json_utils.json_dumps({"a": 1})
-    assert isinstance(captured["params"], Mapping)
-    assert captured["params"]["sort_keys"] is False
-    assert captured["params"]["ensure_ascii"] is True
+    assert isinstance(captured["params"], json_utils.JsonDumpsParams)
+    assert captured["params"].sort_keys is False
+    assert captured["params"].ensure_ascii is True
 
 
 def test_params_passed_to_orjson(monkeypatch):
@@ -131,15 +130,15 @@ def test_params_passed_to_orjson(monkeypatch):
 
     monkeypatch.setattr(json_utils, "_json_dumps_orjson", fake_orjson)
     json_utils.json_dumps({"a": 1})
-    assert isinstance(captured["params"], Mapping)
-    assert captured["params"]["sort_keys"] is False
-    assert captured["params"]["ensure_ascii"] is True
+    assert isinstance(captured["params"], json_utils.JsonDumpsParams)
+    assert captured["params"].sort_keys is False
+    assert captured["params"].ensure_ascii is True
 
 
 def test_default_params_reused(monkeypatch):
     _reset_json_utils(monkeypatch, None)
 
-    calls: list[Mapping[str, object]] = []
+    calls: list[json_utils.JsonDumpsParams] = []
 
     def fake_std(obj, params, **kwargs):
         calls.append(params)

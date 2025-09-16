@@ -9,21 +9,18 @@ reset using ``cached_import.cache_clear()`` and
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import json
-from types import MappingProxyType
-from typing import Any, Callable, Mapping
+from typing import Any, Callable
 
 from .import_utils import cached_import
 from .logging_utils import get_logger
-from .logging_utils import warn_once
 
 _ORJSON_PARAMS_MSG = (
     "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
 )
 
-# Track combinations of parameters for which a warning has already been emitted.
 logger = get_logger(__name__)
-_warn_orjson_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
 
 
 def _format_ignored_params(combo: frozenset[str]) -> str:
@@ -31,27 +28,36 @@ def _format_ignored_params(combo: frozenset[str]) -> str:
     return "{" + ", ".join(map(repr, sorted(combo))) + "}"
 
 
-JsonDumpsParams = Mapping[str, Any]
+@dataclass(frozen=True)
+class JsonDumpsParams:
+    """Container describing the parameters used by :func:`json_dumps`."""
+
+    sort_keys: bool = False
+    default: Callable[[Any], Any] | None = None
+    ensure_ascii: bool = True
+    separators: tuple[str, str] = (",", ":")
+    cls: type[json.JSONEncoder] | None = None
+    to_bytes: bool = False
 
 
-_DEFAULT_PARAMS_DICT: dict[str, Any] = {
-    "sort_keys": False,
-    "default": None,
-    "ensure_ascii": True,
-    "separators": (",", ":"),
-    "cls": None,
-    "to_bytes": False,
-}
+DEFAULT_PARAMS = JsonDumpsParams()
 
 
-DEFAULT_PARAMS: Mapping[str, Any] = MappingProxyType(_DEFAULT_PARAMS_DICT)
+def _collect_ignored_params(
+    params: JsonDumpsParams, extra_kwargs: dict[str, Any]
+) -> frozenset[str]:
+    """Return a stable set of parameters ignored by :mod:`orjson`."""
 
-
-_ORJSON_PARAM_CHECKS: tuple[tuple[Callable[[JsonDumpsParams], bool], str], ...] = (
-    (lambda p: p["ensure_ascii"] is not True, "ensure_ascii"),
-    (lambda p: p["separators"] != (",", ":"), "separators"),
-    (lambda p: p["cls"] is not None, "cls"),
-)
+    ignored: set[str] = set()
+    if params.ensure_ascii is not True:
+        ignored.add("ensure_ascii")
+    if params.separators != (",", ":"):
+        ignored.add("separators")
+    if params.cls is not None:
+        ignored.add("cls")
+    if extra_kwargs:
+        ignored.update(extra_kwargs.keys())
+    return frozenset(ignored)
 
 
 def _json_dumps_orjson(
@@ -61,16 +67,14 @@ def _json_dumps_orjson(
     **kwargs: Any,
 ) -> bytes | str:
     """Serialize using :mod:`orjson` and warn about unsupported parameters."""
-    ignored = {name for check, name in _ORJSON_PARAM_CHECKS if check(params)}
-    if kwargs:
-        ignored.update(kwargs)
-    if ignored:
-        combo = frozenset(ignored)
-        _warn_orjson_params_once({combo: _format_ignored_params(combo)})
 
-    option = orjson.OPT_SORT_KEYS if params["sort_keys"] else 0
-    data = orjson.dumps(obj, option=option, default=params["default"])
-    return data if params["to_bytes"] else data.decode("utf-8")
+    ignored = _collect_ignored_params(params, kwargs)
+    if ignored:
+        logger.warning(_ORJSON_PARAMS_MSG, _format_ignored_params(ignored))
+
+    option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
+    data = orjson.dumps(obj, option=option, default=params.default)
+    return data if params.to_bytes else data.decode("utf-8")
 
 
 def _json_dumps_std(
@@ -81,14 +85,14 @@ def _json_dumps_std(
     """Serialize using the standard library :func:`json.dumps`."""
     result = json.dumps(
         obj,
-        sort_keys=params["sort_keys"],
-        ensure_ascii=params["ensure_ascii"],
-        separators=params["separators"],
-        cls=params["cls"],
-        default=params["default"],
+        sort_keys=params.sort_keys,
+        ensure_ascii=params.ensure_ascii,
+        separators=params.separators,
+        cls=params.cls,
+        default=params.default,
         **kwargs,
     )
-    return result if not params["to_bytes"] else result.encode("utf-8")
+    return result if not params.to_bytes else result.encode("utf-8")
 
 
 def json_dumps(
@@ -107,9 +111,8 @@ def json_dumps(
     Returns a ``str`` by default. Pass ``to_bytes=True`` to obtain a ``bytes``
     result. When :mod:`orjson` is used, the ``ensure_ascii``, ``separators``,
     ``cls`` and any additional keyword arguments are ignored because they are
-    not supported by :func:`orjson.dumps`. A warning is emitted when such
-    ignored parameters are detected and, by default, is shown only once per
-    process.
+    not supported by :func:`orjson.dumps`. A warning is emitted whenever such
+    ignored parameters are detected.
     """
     if not isinstance(sort_keys, bool):
         raise TypeError("sort_keys must be a boolean")
@@ -135,16 +138,16 @@ def json_dumps(
         and cls is None
         and to_bytes is False
     ):
-        params: JsonDumpsParams = DEFAULT_PARAMS
+        params = DEFAULT_PARAMS
     else:
-        params = {
-            "sort_keys": sort_keys,
-            "default": default,
-            "ensure_ascii": ensure_ascii,
-            "separators": separators,
-            "cls": cls,
-            "to_bytes": to_bytes,
-        }
+        params = JsonDumpsParams(
+            sort_keys=sort_keys,
+            default=default,
+            ensure_ascii=ensure_ascii,
+            separators=separators,
+            cls=cls,
+            to_bytes=to_bytes,
+        )
     orjson = cached_import("orjson", emit="log")
     if orjson is not None:
         return _json_dumps_orjson(orjson, obj, params, **kwargs)
