@@ -41,7 +41,6 @@ __all__ = (
     "sigma_vector_from_graph",
     "push_sigma_snapshot",
     "register_sigma_callback",
-    "sigma_series",
     "sigma_rose",
 )
 
@@ -333,25 +332,6 @@ def register_sigma_callback(G) -> None:
         func=push_sigma_snapshot,
         name="sigma_snapshot",
     )
-
-
-# -------------------------
-# Series de utilidad
-# -------------------------
-
-
-def sigma_series(G, key: str | None = None) -> dict[str, list[float]]:
-    cfg = _sigma_cfg(G)
-    key = key or cfg.get("history_key", "sigma_global")
-    hist = ensure_history(G)
-    xs = hist.get(key, [])
-    if not xs:
-        return {"t": [], "angle": [], "mag": []}
-    return {
-        "t": [float(x.get("t", i)) for i, x in enumerate(xs)],
-        "angle": [float(x["angle"]) for x in xs],
-        "mag": [float(x["mag"]) for x in xs],
-    }
 
 
 def sigma_rose(G, steps: int | None = None) -> dict[str, int]:
