@@ -196,6 +196,19 @@ def _gamma_kuramoto(
     return builder(th_i, R, psi, *params)
 
 
+def _builder_linear(th_i: float, R: float, psi: float, beta: float, R0: float) -> float:
+    return beta * (R - R0) * math.cos(th_i - psi)
+
+
+def _builder_bandpass(th_i: float, R: float, psi: float, beta: float) -> float:
+    sgn = 1.0 if math.cos(th_i - psi) >= 0.0 else -1.0
+    return beta * R * (1.0 - R) * sgn
+
+
+def _builder_tanh(th_i: float, R: float, psi: float, beta: float, k: float, R0: float) -> float:
+    return beta * math.tanh(k * (R - R0)) * math.cos(th_i - psi)
+
+
 def gamma_kuramoto_linear(G, node, t, cfg: dict[str, Any]) -> float:
     """Linear Kuramoto coupling for Γi(R).
 
@@ -208,19 +221,13 @@ def gamma_kuramoto_linear(G, node, t, cfg: dict[str, Any]) -> float:
     coherence (R>R0).
     """
 
-    def builder(th_i, R, psi, beta, R0):
-        return beta * (R - R0) * math.cos(th_i - psi)
-
-    return _gamma_kuramoto(G, node, cfg, builder, beta=0.0, R0=0.0)
+    return _gamma_kuramoto(G, node, cfg, _builder_linear, beta=0.0, R0=0.0)
 
 
 def gamma_kuramoto_bandpass(G, node, t, cfg: dict[str, Any]) -> float:
     """Γ = β · R(1-R) · sign(cos(θ_i - ψ))"""
-    def builder(th_i, R, psi, beta):
-        sgn = 1.0 if math.cos(th_i - psi) >= 0.0 else -1.0
-        return beta * R * (1.0 - R) * sgn
 
-    return _gamma_kuramoto(G, node, cfg, builder, beta=0.0)
+    return _gamma_kuramoto(G, node, cfg, _builder_bandpass, beta=0.0)
 
 
 def gamma_kuramoto_tanh(G, node, t, cfg: dict[str, Any]) -> float:
@@ -231,10 +238,8 @@ def gamma_kuramoto_tanh(G, node, t, cfg: dict[str, Any]) -> float:
       - k: tanh slope (how fast it saturates)
       - R0: activation threshold
     """
-    def builder(th_i, R, psi, beta, k, R0):
-        return beta * math.tanh(k * (R - R0)) * math.cos(th_i - psi)
 
-    return _gamma_kuramoto(G, node, cfg, builder, beta=0.0, k=1.0, R0=0.0)
+    return _gamma_kuramoto(G, node, cfg, _builder_tanh, beta=0.0, k=1.0, R0=0.0)
 
 
 def gamma_harmonic(G, node, t, cfg: dict[str, Any]) -> float:
