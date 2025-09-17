@@ -102,6 +102,7 @@ def flatten_structure(
 
 __all__ = (
     "MAX_MATERIALIZE_DEFAULT",
+    "normalize_materialize_limit",
     "is_non_string_sequence",
     "flatten_structure",
     "ensure_collection",
@@ -121,7 +122,7 @@ limit.
 """
 
 
-def _validate_limit(max_materialize: int | None) -> int | None:
+def normalize_materialize_limit(max_materialize: int | None) -> int | None:
     """Normalize and validate ``max_materialize`` returning a usable limit."""
     if max_materialize is None:
         return None
@@ -168,7 +169,7 @@ def ensure_collection(
         raise TypeError(f"{it!r} is not iterable")
 
     # Step 3: validate limit and materialize items once
-    limit = _validate_limit(max_materialize)
+    limit = normalize_materialize_limit(max_materialize)
     if limit is None:
         return tuple(it)
     if limit == 0:
