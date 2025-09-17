@@ -63,20 +63,8 @@ cached_import.cache_clear()
 prune_failed_imports()
 ```
 
-### JavaScript dependencies
-
-Some auxiliary tooling (such as documentation builds) relies on Node.js
-packages defined in `package.json`. These are **not** required to run the
-Python engine itself. If you need them, install from the repository root using
-your preferred package manager:
-
-```bash
-npm install
-# or
-pnpm install
-```
-
-The resulting `node_modules/` directory is ignored by version control.
+All project tooling is now Python-native; no Node.js or npm workflows are
+required to build, test, or document the engine.
 
 ## Tests
 

@@ -1,5 +1,0 @@
-[build]
-  command = "npm run build"
-
-[build.lifecycle]
-  onPreBuild = "npm install"
