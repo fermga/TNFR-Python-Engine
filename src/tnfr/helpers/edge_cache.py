@@ -9,14 +9,15 @@ import networkx as nx  # type: ignore[import-untyped]
 
 from ..cache import (
     EdgeCacheManager,
+    NODE_SET_CHECKSUM_KEY,
     clear_node_repr_cache,
     get_graph_version,
     increment_graph_version,
-    node_set_checksum,
 )
 from ..graph_utils import get_graph, mark_dnfr_prep_dirty
 from ..import_utils import get_numpy
 from ..logging_utils import get_logger
+from .node_cache import cached_node_list
 
 T = TypeVar("T")
 
@@ -92,20 +93,31 @@ def edge_version_cache(
 
 def cached_nodes_and_A(
     G: nx.Graph, *, cache_size: int | None = 1, require_numpy: bool = False
-) -> tuple[list[int], Any]:
-    """Return list of nodes and adjacency matrix for ``G`` with caching."""
+) -> tuple[tuple[Any, ...], Any]:
+    """Return cached nodes tuple and adjacency matrix for ``G``."""
 
-    nodes_list = list(G.nodes())
-    checksum = node_set_checksum(G, nodes_list, store=False)
-    key = f"_dnfr_{len(nodes_list)}_{checksum}"
-    G.graph["_dnfr_nodes_checksum"] = checksum
+    nodes = cached_node_list(G)
+    graph = G.graph
 
-    def builder() -> tuple[list[int], Any]:
+    checksum = getattr(graph.get("_node_list_cache"), "checksum", None)
+    if checksum is None:
+        checksum = graph.get("_node_list_checksum")
+    if checksum is None:
+        node_set_cache = graph.get(NODE_SET_CHECKSUM_KEY)
+        if isinstance(node_set_cache, tuple) and len(node_set_cache) >= 2:
+            checksum = node_set_cache[1]
+    if checksum is None:
+        checksum = ""
+
+    key = f"_dnfr_{len(nodes)}_{checksum}"
+    graph["_dnfr_nodes_checksum"] = checksum
+
+    def builder() -> tuple[tuple[Any, ...], Any]:
         np = get_numpy()
         if np is None:
-            return nodes_list, None
-        A = nx.to_numpy_array(G, nodelist=nodes_list, weight=None, dtype=float)
-        return nodes_list, A
+            return nodes, None
+        A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
+        return nodes, A
 
     nodes, A = edge_version_cache(G, key, builder, max_entries=cache_size)
 

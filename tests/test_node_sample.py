@@ -1,8 +1,11 @@
 """Pruebas de node sample."""
 
+import pytest
+
 from tnfr.dynamics import step, _update_node_sample
 from tnfr.rng import clear_rng_cache
 from tnfr.constants import inject_defaults
+from tnfr.helpers.edge_cache import cached_nodes_and_A, increment_edge_version
 import networkx as nx
 import json
 import os
@@ -62,6 +65,37 @@ def test_node_sample_deterministic_with_seed(graph_canon):
     sample2 = G2.graph["_node_sample"]
 
     assert sample1 == sample2
+
+
+def test_node_sample_adjacency_cache_tracks_mutations(graph_canon):
+    pytest.importorskip("numpy")
+
+    G = _build_graph(6, graph_canon)
+    G.add_edges_from((i, i + 1) for i in range(5))
+    G.add_edge(0, 5)
+
+    _update_node_sample(G, step=0)
+    nodes1, A1 = cached_nodes_and_A(G, require_numpy=True)
+    assert isinstance(nodes1, tuple)
+    assert A1 is not None and A1.shape == (6, 6)
+
+    nodes2, A2 = cached_nodes_and_A(G, require_numpy=True)
+    assert nodes2 is nodes1
+    assert A2 is A1
+
+    G.add_node(99)
+    G.add_edge(0, 99)
+    increment_edge_version(G)
+    _update_node_sample(G, step=1)
+
+    nodes3, A3 = cached_nodes_and_A(G, require_numpy=True)
+    assert len(nodes3) == 7
+    assert nodes3 is not nodes1
+    assert A3 is not None and A3.shape == (7, 7)
+
+    nodes4, A4 = cached_nodes_and_A(G, require_numpy=True)
+    assert nodes4 is nodes3
+    assert A4 is A3
 
 
 def _run_sample_with_hashseed(hashseed):
