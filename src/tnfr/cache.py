@@ -132,7 +132,10 @@ def stable_json(obj: Any) -> str:
 def _node_repr_digest(obj: Any) -> tuple[str, bytes]:
     """Return cached stable representation and digest for ``obj``."""
 
-    repr_ = stable_json(obj)
+    try:
+        repr_ = stable_json(obj)
+    except TypeError:
+        repr_ = repr(obj)
     digest = hashlib.blake2b(repr_.encode("utf-8"), digest_size=16).digest()
     return repr_, digest
 

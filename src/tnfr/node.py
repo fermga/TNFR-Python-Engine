@@ -21,7 +21,7 @@ from .alias import (
     set_dnfr,
     set_theta,
 )
-from .helpers import increment_edge_version, ensure_node_offset_map
+from .helpers import cached_node_list, increment_edge_version, ensure_node_offset_map
 from .graph_utils import supports_add_edge
 from .node_base import NodeBase
 from .operators import apply_glyph_obj
@@ -402,6 +402,7 @@ class NodoNX(NodeBase, NodoProtocol):
         return mapping.get(self.n, 0)
 
     def all_nodes(self) -> Iterable[NodoProtocol]:
-        return (NodoNX.from_graph(self.G, v) for v in self.G.nodes())
+        nodes = cached_node_list(self.G)
+        return (NodoNX.from_graph(self.G, v) for v in nodes)
 
 
