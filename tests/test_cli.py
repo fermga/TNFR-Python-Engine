@@ -19,9 +19,15 @@ from tnfr.cli.arguments import (
     add_grammar_selector_args,
     add_history_export_args,
 )
-from tnfr.cli.execution import _build_graph_from_args, _save_json, run_program
+from tnfr.cli.execution import (
+    _build_graph_from_args,
+    _save_json,
+    run_program,
+    resolve_program,
+)
 from tnfr.constants import METRIC_DEFAULTS
 from tnfr import __version__
+from tnfr.execution import basic_canonical_example
 
 
 def test_cli_version(capsys):
@@ -40,6 +46,49 @@ def test_cli_metrics_generates_metrics_payload(tmp_path):
         assert key in data
     assert isinstance(data["glyphogram"], dict)
     assert all(len(v) <= 10 for v in data["glyphogram"].values())
+
+
+def test_sequence_defaults_to_canonical(monkeypatch):
+    recorded: dict[str, Any] = {}
+
+    def fake_run_program(graph, program, args):
+        recorded["program"] = program
+        return object()
+
+    monkeypatch.setattr("tnfr.cli.execution.run_program", fake_run_program)
+
+    rc = main(["sequence"])
+    assert rc == 0
+    assert recorded["program"] == basic_canonical_example()
+
+
+def test_resolve_program_prefers_preset(monkeypatch):
+    args = argparse.Namespace(preset="demo", sequence_file=None)
+    sentinel = object()
+
+    monkeypatch.setattr("tnfr.cli.execution.get_preset", lambda name: sentinel)
+
+    result = resolve_program(args, default=[])
+    assert result is sentinel
+
+
+def test_resolve_program_prefers_sequence_file(monkeypatch, tmp_path):
+    seq_path = tmp_path / "custom.json"
+    args = argparse.Namespace(preset=None, sequence_file=str(seq_path))
+    sentinel = object()
+
+    monkeypatch.setattr("tnfr.cli.execution._load_sequence", lambda path: sentinel)
+
+    result = resolve_program(args, default=[])
+    assert result is sentinel
+
+
+def test_resolve_program_uses_default_when_missing_inputs():
+    args = argparse.Namespace(preset=None, sequence_file=None)
+    default = basic_canonical_example()
+
+    result = resolve_program(args, default=default)
+    assert result == default
 
 
 @pytest.mark.parametrize("command", ["run", "sequence"])
