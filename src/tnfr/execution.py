@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
-from functools import lru_cache
 from typing import Any, Optional
 
 import networkx as nx  # networkx is used at runtime
 
 from .collections_utils import ensure_collection, is_non_string_sequence
 from .constants import get_param
+from .dynamics import step
 from .flatten import _flatten
 from .glyph_history import ensure_history
 from .grammar import apply_glyph_with_grammar
@@ -31,21 +31,11 @@ __all__ = [
     "_record_trace",
     "basic_canonical_example",
     "block",
-    "get_step_fn",
     "play",
     "seq",
     "target",
     "wait",
 ]
-
-
-@lru_cache(maxsize=1)
-def get_step_fn() -> AdvanceFn:
-    """Return the dynamics ``step`` function, caching the import."""
-
-    from .dynamics import step as step_impl
-
-    return step_impl
 
 
 def _window(G) -> int:
@@ -137,7 +127,7 @@ def play(
 ) -> None:
     """Execute a canonical sequence on graph ``G``."""
 
-    step_fn = step_fn or get_step_fn()
+    step_fn = step_fn or step
 
     curr_target: Optional[list[Node]] = None
 
