@@ -20,7 +20,7 @@ from ..metrics import (
     _metrics_step,
 )
 from ..trace import register_trace
-from ..execution import play, seq, block
+from ..execution import play, seq, basic_canonical_example
 from ..dynamics import (
     run,
     default_glyph_selector,
@@ -225,17 +225,7 @@ def cmd_sequence(args: argparse.Namespace) -> int:
             "No se puede usar --preset y --sequence-file al mismo tiempo"
         )
         return 1
-    program = resolve_program(
-        args,
-        default=seq(
-            Glyph.AL,
-            Glyph.EN,
-            Glyph.IL,
-            block(Glyph.OZ, Glyph.ZHIR, Glyph.IL, repeat=1),
-            Glyph.RA,
-            Glyph.SHA,
-        ),
-    )
+    program = resolve_program(args, default=basic_canonical_example())
 
     run_program(None, program, args)
     return 0
