@@ -16,6 +16,10 @@ def _graph_with_epi(graph_canon, n=6):
     return G
 
 
+def _edge_set(G):
+    return {tuple(sorted(edge)) for edge in G.edges()}
+
+
 def test_remesh_community_reduces_nodes_and_preserves_connectivity(
     graph_canon,
 ):
@@ -52,3 +56,36 @@ def test_remesh_mst_returns_tree(graph_canon):
     apply_topological_remesh(G, mode="mst")
     assert nx.is_tree(G)
     assert G.number_of_nodes() == 5
+
+
+def test_remesh_respects_graph_random_seed(graph_canon):
+    base = _graph_with_epi(graph_canon, n=6)
+    base.graph["RANDOM_SEED"] = 1234
+
+    G1 = base.copy()
+    G2 = base.copy()
+
+    apply_topological_remesh(G1, mode="knn", k=2, p_rewire=0.3)
+    apply_topological_remesh(G2, mode="knn", k=2, p_rewire=0.3)
+
+    assert _edge_set(G1) == _edge_set(G2)
+
+
+def test_remesh_sequences_depend_on_mode_and_k(graph_canon):
+    base = _graph_with_epi(graph_canon, n=6)
+    base.graph["RANDOM_SEED"] = 4321
+
+    knn2 = base.copy()
+    knn3 = base.copy()
+    mst = base.copy()
+
+    apply_topological_remesh(knn2, mode="knn", k=2, p_rewire=0.3)
+    apply_topological_remesh(knn3, mode="knn", k=3, p_rewire=0.3)
+    apply_topological_remesh(mst, mode="mst")
+
+    edges_knn2 = _edge_set(knn2)
+    edges_knn3 = _edge_set(knn3)
+    edges_mst = _edge_set(mst)
+
+    assert edges_knn2 != edges_knn3
+    assert edges_knn2 != edges_mst

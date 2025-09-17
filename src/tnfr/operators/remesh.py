@@ -290,14 +290,20 @@ def apply_topological_remesh(
     p_rewire: float = 0.2,
     seed: int | None = None,
 ) -> None:
-    """Approximate topological remeshing."""
+    """Approximate topological remeshing.
+
+    When ``seed`` is ``None`` the RNG draws its base seed from
+    ``G.graph['RANDOM_SEED']`` to keep runs reproducible.
+    """
     nodes = list(G.nodes())
     n_before = len(nodes)
     if n_before <= 1:
         return
-    base_seed = 0 if seed is None else int(seed)
+    if seed is None:
+        base_seed = int(G.graph.get("RANDOM_SEED", 0))
+    else:
+        base_seed = int(seed)
     rnd = make_rng(base_seed, -2, G)
-    rnd.seed(base_seed)
 
     if mode is None:
         mode = str(
