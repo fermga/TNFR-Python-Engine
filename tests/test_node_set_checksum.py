@@ -89,7 +89,7 @@ def test_node_set_checksum_uses_cached_result_without_rehash(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2])
     node_set_checksum(G)
-    with patch("tnfr.helpers.node_cache._node_repr_digest") as mock_digest:
+    with patch("tnfr.cache._node_repr_digest") as mock_digest:
         assert node_set_checksum(G) == G.graph[NODE_SET_CHECKSUM_KEY][1]
         mock_digest.assert_not_called()
 

@@ -3,15 +3,13 @@ import pytest
 import tnfr.import_utils as import_utils
 from tnfr import dynamics
 from tnfr.cache import (
-    cached_nodes_and_A,
-    increment_edge_version,
-    edge_version_update,
-)
-from tnfr.helpers.node_cache import (
-    ensure_node_offset_map,
-    cached_node_list,
-    ensure_node_index_map,
     _ensure_node_map,
+    cached_node_list,
+    cached_nodes_and_A,
+    edge_version_update,
+    ensure_node_index_map,
+    ensure_node_offset_map,
+    increment_edge_version,
 )
 
 
