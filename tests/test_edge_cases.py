@@ -1,7 +1,10 @@
 """Pruebas de edge cases."""
 
+import networkx as nx
 import pytest
-from tnfr.node import NodoTNFR
+
+from tnfr.node import NodoNX
+from tnfr.operators import apply_glyph_obj
 from tnfr.types import Glyph
 
 from tnfr.dynamics import (
@@ -46,18 +49,26 @@ def test_dnfr_weights_normalization(graph_canon):
     assert cache == weights
 
 
+def _build_isolated_node(value: float = 0.0) -> NodoNX:
+    graph = nx.Graph()
+    graph.add_node(0)
+    node = NodoNX(graph, 0)
+    node.EPI = value
+    return node
+
+
 def test_op_en_sets_epi_kind_on_isolated_node():
-    node = NodoTNFR(EPI=1.0)
-    node.apply_glyph("EN")
-    assert node.EPI == 1.0
+    node = _build_isolated_node(1.0)
+    apply_glyph_obj(node, "EN")
+    assert pytest.approx(node.EPI) == 1.0
     assert node.epi_kind == Glyph.EN.value
 
 
 def test_apply_glyph_invalid_glyph_raises_and_logs():
-    node = NodoTNFR()
+    node = _build_isolated_node()
     node.graph["history"] = {}
     with pytest.raises(ValueError):
-        node.apply_glyph("NO_EXISTE")
+        apply_glyph_obj(node, "NO_EXISTE")
     events = node.graph["history"].get("events")
     assert events and events[-1][0] == "warn"
     assert "glyph desconocido" in events[-1][1]["msg"]

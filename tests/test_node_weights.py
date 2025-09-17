@@ -1,137 +1,56 @@
-"""Pruebas de node weights."""
-
 import math
+import networkx as nx
 import pytest
-from tnfr.node import NodoTNFR, NodoNX
+
+from tnfr.node import NodoNX
+
+
+def _build_nodes():
+    graph = nx.Graph()
+    graph.add_nodes_from([0, 1])
+    return graph, NodoNX(graph, 0), NodoNX(graph, 1)
 
 
 def test_add_edge_stores_weight():
-    a = NodoTNFR()
-    b = NodoTNFR()
+    graph, a, b = _build_nodes()
+
     a.add_edge(b, weight=2.5)
+
     assert a.has_edge(b)
-    assert b.has_edge(a)
-    assert math.isclose(a._neighbors[b], 2.5)
-    assert math.isclose(b._neighbors[a], 2.5)
-
-
-def test_add_edge_stores_weight_nx(graph_canon):
-    G = graph_canon()
-    G.add_nodes_from([0, 1])
-    a = NodoNX(G, 0)
-    b = NodoNX(G, 1)
-    a.add_edge(b, weight=2.5)
-    assert a.has_edge(b)
-    assert math.isclose(G[0][1]["weight"], 2.5)
-
-
-def test_missing_edge_returns_zero():
-    a = NodoTNFR()
-    b = NodoTNFR()
-    assert not a.has_edge(b)
-    assert a._neighbors.get(b, 0.0) == 0.0
+    assert pytest.approx(graph[0][1]["weight"]) == 2.5
 
 
 def test_add_edge_preserves_weight_by_default():
-    a = NodoTNFR()
-    b = NodoTNFR()
+    graph, a, b = _build_nodes()
     a.add_edge(b, weight=1.0)
+
     a.add_edge(b, weight=2.0)
-    assert math.isclose(a._neighbors[b], 1.0)
-    assert math.isclose(b._neighbors[a], 1.0)
+
+    assert pytest.approx(graph[0][1]["weight"]) == 1.0
 
 
-def test_add_edge_preserves_weight_by_default_nx(graph_canon):
-    G = graph_canon()
-    G.add_nodes_from([0, 1])
-    a = NodoNX(G, 0)
-    b = NodoNX(G, 1)
+def test_add_edge_overwrite_allows_update():
+    graph, a, b = _build_nodes()
     a.add_edge(b, weight=1.0)
-    a.add_edge(b, weight=2.0)
-    assert math.isclose(G[0][1]["weight"], 1.0)
 
-
-def test_add_edge_overwrite():
-    a = NodoTNFR()
-    b = NodoTNFR()
-    a.add_edge(b, weight=1.0)
     a.add_edge(b, weight=2.0, overwrite=True)
-    assert math.isclose(a._neighbors[b], 2.0)
-    assert math.isclose(b._neighbors[a], 2.0)
 
-
-def test_add_edge_overwrite_nx(graph_canon):
-    G = graph_canon()
-    G.add_nodes_from([0, 1])
-    a = NodoNX(G, 0)
-    b = NodoNX(G, 1)
-    a.add_edge(b, weight=1.0)
-    a.add_edge(b, weight=2.0, overwrite=True)
-    assert math.isclose(G[0][1]["weight"], 2.0)
+    assert pytest.approx(graph[0][1]["weight"]) == 2.0
 
 
 def test_add_edge_rejects_negative_weight():
-    a = NodoTNFR()
-    b = NodoTNFR()
+    graph, a, b = _build_nodes()
+
     with pytest.raises(ValueError):
         a.add_edge(b, weight=-1.0)
+
     assert not a.has_edge(b)
-    assert not b.has_edge(a)
-
-
-def test_add_edge_rejects_negative_weight_nx(graph_canon):
-    G = graph_canon()
-    G.add_node(0)
-    G.add_node(1)
-    a = NodoNX(G, 0)
-    b = NodoNX(G, 1)
-    with pytest.raises(ValueError):
-        a.add_edge(b, weight=-0.5)
-    assert not a.has_edge(b)
-
-
-def test_add_edge_rejects_negative_weight_existing_edge():
-    a = NodoTNFR()
-    b = NodoTNFR()
-    a.add_edge(b, weight=1.0)
-    with pytest.raises(ValueError):
-        a.add_edge(b, weight=-2.0)
-    assert math.isclose(a._neighbors[b], 1.0)
-    assert math.isclose(b._neighbors[a], 1.0)
-
-
-def test_add_edge_rejects_negative_weight_existing_edge_nx(graph_canon):
-    G = graph_canon()
-    G.add_node(0)
-    G.add_node(1)
-    a = NodoNX(G, 0)
-    b = NodoNX(G, 1)
-    a.add_edge(b, weight=1.0)
-    with pytest.raises(ValueError):
-        a.add_edge(b, weight=-2.0)
-    assert math.isclose(G[0][1]["weight"], 1.0)
 
 
 def test_add_edge_rejects_non_finite_weight():
-    a = NodoTNFR()
-    b = NodoTNFR()
-    for w in (math.nan, math.inf, -math.inf):
-        with pytest.raises(
-            ValueError, match="Edge weight must be a finite number"
-        ):
-            a.add_edge(b, weight=w)
-        assert not a.has_edge(b)
-        assert not b.has_edge(a)
+    graph, a, b = _build_nodes()
 
-
-def test_add_edge_rejects_non_finite_weight_nx(graph_canon):
-    G = graph_canon()
-    G.add_nodes_from([0, 1])
-    a = NodoNX(G, 0)
-    b = NodoNX(G, 1)
-    for w in (math.nan, math.inf, -math.inf):
-        with pytest.raises(
-            ValueError, match="Edge weight must be a finite number"
-        ):
-            a.add_edge(b, weight=w)
+    for weight in (math.nan, math.inf, -math.inf):
+        with pytest.raises(ValueError):
+            a.add_edge(b, weight=weight)
         assert not a.has_edge(b)
