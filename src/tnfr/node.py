@@ -15,8 +15,11 @@ from .alias import (
     set_dnfr,
     set_theta,
 )
-from .cache import increment_edge_version
-from .helpers import cached_node_list, ensure_node_offset_map
+from .cache import (
+    cached_node_list,
+    ensure_node_offset_map,
+    increment_edge_version,
+)
 from .graph_utils import supports_add_edge
 from .node_base import NodeBase
 from .locking import get_lock

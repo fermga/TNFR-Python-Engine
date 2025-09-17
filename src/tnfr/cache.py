@@ -15,6 +15,7 @@ from collections import defaultdict
 from collections.abc import Callable, Hashable, Iterable
 from contextlib import contextmanager
 from functools import lru_cache
+from dataclasses import dataclass
 from typing import Any, TypeVar
 
 from cachetools import LRUCache
@@ -32,10 +33,13 @@ __all__ = (
     "EdgeCacheManager",
     "LockAwareLRUCache",
     "NODE_SET_CHECKSUM_KEY",
+    "cached_node_list",
     "cached_nodes_and_A",
     "clear_node_repr_cache",
     "edge_version_cache",
     "edge_version_update",
+    "ensure_node_index_map",
+    "ensure_node_offset_map",
     "get_graph_version",
     "increment_edge_version",
     "increment_graph_version",
@@ -209,6 +213,8 @@ def _node_set_checksum_no_nodes(
         if cached and cached[0] == token:
             return cached[1]
         graph[NODE_SET_CHECKSUM_KEY] = (token, checksum, current_nodes)
+    else:
+        graph.pop(NODE_SET_CHECKSUM_KEY, None)
     return checksum
 
 
@@ -238,7 +244,175 @@ def node_set_checksum(
         if cached and cached[0] == token:
             return cached[1]
         graph[NODE_SET_CHECKSUM_KEY] = (token, checksum)
+    else:
+        graph.pop(NODE_SET_CHECKSUM_KEY, None)
     return checksum
+
+
+@dataclass(slots=True)
+class NodeCache:
+    """Container for cached node data."""
+
+    checksum: str
+    nodes: tuple[Any, ...]
+    sorted_nodes: tuple[Any, ...] | None = None
+    idx: dict[Any, int] | None = None
+    offset: dict[Any, int] | None = None
+
+    @property
+    def n(self) -> int:
+        return len(self.nodes)
+
+
+def _update_node_cache(
+    graph: Any,
+    nodes: tuple[Any, ...],
+    key: str,
+    *,
+    checksum: str,
+    sorted_nodes: tuple[Any, ...] | None = None,
+) -> None:
+    """Store ``nodes`` and ``checksum`` in ``graph`` under ``key``."""
+
+    graph[f"{key}_cache"] = NodeCache(
+        checksum=checksum, nodes=nodes, sorted_nodes=sorted_nodes
+    )
+    graph[f"{key}_checksum"] = checksum
+
+
+def _refresh_node_list_cache(
+    G: nx.Graph,
+    graph: Any,
+    *,
+    sort_nodes: bool,
+    current_n: int,
+) -> tuple[Any, ...]:
+    """Refresh the cached node list and return the nodes."""
+
+    nodes = tuple(G.nodes())
+    checksum = node_set_checksum(G, nodes, store=True)
+    sorted_nodes = tuple(sorted(nodes, key=_node_repr)) if sort_nodes else None
+    _update_node_cache(
+        graph,
+        nodes,
+        "_node_list",
+        checksum=checksum,
+        sorted_nodes=sorted_nodes,
+    )
+    graph["_node_list_len"] = current_n
+    return nodes
+
+
+def _reuse_node_list_cache(
+    graph: Any,
+    cache: NodeCache,
+    nodes: tuple[Any, ...],
+    sorted_nodes: tuple[Any, ...] | None,
+    *,
+    sort_nodes: bool,
+    new_checksum: str | None,
+) -> None:
+    """Reuse existing node cache and record its checksum if missing."""
+
+    checksum = cache.checksum if new_checksum is None else new_checksum
+    if sort_nodes and sorted_nodes is None:
+        sorted_nodes = tuple(sorted(nodes, key=_node_repr))
+    _update_node_cache(
+        graph,
+        nodes,
+        "_node_list",
+        checksum=checksum,
+        sorted_nodes=sorted_nodes,
+    )
+
+
+def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
+    """Cache and return the tuple of nodes for ``G``."""
+
+    graph = get_graph(G)
+    cache: NodeCache | None = graph.get("_node_list_cache")
+    nodes = cache.nodes if cache else None
+    sorted_nodes = cache.sorted_nodes if cache else None
+    stored_len = graph.get("_node_list_len")
+    current_n = G.number_of_nodes()
+    dirty = bool(graph.pop("_node_list_dirty", False))
+
+    invalid = nodes is None or stored_len != current_n or dirty
+    new_checksum: str | None = None
+
+    if not invalid and cache:
+        new_checksum = node_set_checksum(G)
+        invalid = cache.checksum != new_checksum
+
+    sort_nodes = bool(graph.get("SORT_NODES", False))
+
+    if invalid:
+        nodes = _refresh_node_list_cache(
+            G, graph, sort_nodes=sort_nodes, current_n=current_n
+        )
+    elif cache and "_node_list_checksum" not in graph:
+        _reuse_node_list_cache(
+            graph,
+            cache,
+            nodes,
+            sorted_nodes,
+            sort_nodes=sort_nodes,
+            new_checksum=new_checksum,
+        )
+    else:
+        if sort_nodes and sorted_nodes is None and cache is not None:
+            cache.sorted_nodes = tuple(sorted(nodes, key=_node_repr))
+    return nodes
+
+
+def cached_node_list(G: nx.Graph) -> tuple[Any, ...]:
+    """Public wrapper returning the cached node tuple for ``G``."""
+
+    return _cache_node_list(G)
+
+
+def _ensure_node_map(
+    G,
+    *,
+    attrs: tuple[str, ...],
+    sort: bool = False,
+) -> dict[Any, int]:
+    """Return cached node-to-index/offset mappings stored on ``NodeCache``."""
+
+    graph = G.graph
+    _cache_node_list(G)
+    cache: NodeCache = graph["_node_list_cache"]
+
+    missing = [attr for attr in attrs if getattr(cache, attr) is None]
+    if missing:
+        if sort:
+            nodes = cache.sorted_nodes
+            if nodes is None:
+                nodes = cache.sorted_nodes = tuple(
+                    sorted(cache.nodes, key=_node_repr)
+                )
+        else:
+            nodes = cache.nodes
+        mappings: dict[str, dict[Any, int]] = {attr: {} for attr in missing}
+        for idx, node in enumerate(nodes):
+            for attr in missing:
+                mappings[attr][node] = idx
+        for attr in missing:
+            setattr(cache, attr, mappings[attr])
+    return getattr(cache, attrs[0])
+
+
+def ensure_node_index_map(G) -> dict[Any, int]:
+    """Return cached node-to-index mapping for ``G``."""
+
+    return _ensure_node_map(G, attrs=("idx",), sort=False)
+
+
+def ensure_node_offset_map(G) -> dict[Any, int]:
+    """Return cached node-to-offset mapping for ``G``."""
+
+    sort = bool(G.graph.get("SORT_NODES", False))
+    return _ensure_node_map(G, attrs=("offset",), sort=sort)
 
 
 class CacheManager:
@@ -357,8 +531,6 @@ def cached_nodes_and_A(
     G: nx.Graph, *, cache_size: int | None = 1, require_numpy: bool = False
 ) -> tuple[tuple[Any, ...], Any]:
     """Return cached nodes tuple and adjacency matrix for ``G``."""
-
-    from .helpers.node_cache import cached_node_list  # Local import to avoid cycle
 
     nodes = cached_node_list(G)
     graph = G.graph

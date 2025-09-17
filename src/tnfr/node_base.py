@@ -4,7 +4,7 @@ import weakref
 from threading import RLock
 from typing import Iterable, MutableMapping
 
-from .helpers import cached_node_list, ensure_node_offset_map
+from .cache import cached_node_list, ensure_node_offset_map
 
 _NODE_LOCK = RLock()
 _PLAIN_GRAPH_REGISTRY: dict[int, set[int]] = {}

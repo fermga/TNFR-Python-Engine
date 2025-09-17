@@ -7,31 +7,43 @@ cache invalidation.
 
 from __future__ import annotations
 
-from ..collections_utils import ensure_collection
-from ..glyph_history import (
-    count_glyphs,
-    ensure_history,
-    last_glyph,
-    push_glyph,
-    recent_glyph,
-)
 from ..cache import (
     EdgeCacheManager,
+    cached_node_list,
     cached_nodes_and_A,
     edge_version_cache,
     edge_version_update,
+    ensure_node_index_map,
+    ensure_node_offset_map,
     increment_edge_version,
     node_set_checksum,
     stable_json,
 )
 from ..graph_utils import get_graph, get_graph_mapping, mark_dnfr_prep_dirty
-from .node_cache import cached_node_list, ensure_node_index_map, ensure_node_offset_map
 from .numeric import (
     angle_diff,
     clamp,
     clamp01,
     kahan_sum_nd,
 )
+
+
+def ensure_collection(*args, **kwargs):
+    """Proxy to :func:`tnfr.collections_utils.ensure_collection`."""
+
+    from ..collections_utils import ensure_collection as _ensure_collection
+
+    return _ensure_collection(*args, **kwargs)
+
+
+def __getattr__(name: str):
+    if name in _GLYPH_HISTORY_EXPORTS:
+        from .. import glyph_history as _glyph_history
+
+        value = getattr(_glyph_history, name)
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 __all__ = (
     "EdgeCacheManager",
@@ -40,21 +52,29 @@ __all__ = (
     "cached_nodes_and_A",
     "clamp",
     "clamp01",
-    "count_glyphs",
     "edge_version_cache",
     "edge_version_update",
     "ensure_collection",
-    "ensure_history",
     "ensure_node_index_map",
     "ensure_node_offset_map",
     "get_graph",
     "get_graph_mapping",
     "increment_edge_version",
     "kahan_sum_nd",
-    "last_glyph",
     "mark_dnfr_prep_dirty",
     "node_set_checksum",
+    "stable_json",
+    "count_glyphs",
+    "ensure_history",
+    "last_glyph",
     "push_glyph",
     "recent_glyph",
-    "stable_json",
+)
+
+_GLYPH_HISTORY_EXPORTS = (
+    "count_glyphs",
+    "ensure_history",
+    "last_glyph",
+    "push_glyph",
+    "recent_glyph",
 )

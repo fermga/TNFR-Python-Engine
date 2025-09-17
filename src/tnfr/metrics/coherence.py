@@ -16,7 +16,7 @@ from ..glyph_history import ensure_history, append_metric
 from ..alias import collect_attr, get_attr, set_attr
 from ..collections_utils import normalize_weights
 from ..helpers.numeric import clamp01
-from ..helpers import ensure_node_index_map
+from ..cache import ensure_node_index_map
 from .common import compute_coherence, min_max_range
 from .trig_cache import compute_theta_trig, get_trig_cache
 from ..observers import (
