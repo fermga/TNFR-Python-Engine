@@ -81,12 +81,13 @@ as the environment may be misconfigured and imports will fail.
 ## Locking policy
 
 The engine centralises reusable process-wide locks in
-`tnfr.locking`. Modules obtain named locks via `locking.get_lock()` or
-use `locking.locked()` as a context manager. This avoids scattering
-`threading.Lock` instances across the codebase and ensures that shared
-resources are synchronised consistently. Module-level caches or global
-state should always use these named locks; only short-lived objects may
-instantiate ad-hoc locks directly when they are not shared.
+`tnfr.locking`. Modules obtain named locks via `locking.get_lock()` and
+use the returned `threading.Lock` in their own critical sections. This
+avoids scattering `threading.Lock` instances across the codebase and
+ensures that shared resources are synchronised consistently.
+Module-level caches or global state should always use these named
+locks; only short-lived objects may instantiate ad-hoc locks directly
+when they are not shared.
 
 ---
 
