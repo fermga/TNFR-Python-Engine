@@ -33,7 +33,8 @@ def test_cached_nodes_and_A_reuse_and_invalidate(graph_canon):
     G.add_edge(0, 2)
     increment_edge_version(G)
     data3 = dynamics._prepare_dnfr_data(G)
-    assert data3["nodes"] is not nodes1
+    assert data3["idx"] is not data1["idx"]
+    assert data3["theta"] is not data1["theta"]
 
 
 def test_cached_nodes_and_A_invalidate_on_node_addition(graph_canon):
@@ -135,7 +136,8 @@ def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon)
     G.add_edge(0, 1)
     nodes, A = cached_nodes_and_A(G)
     assert A is None
-    assert nodes == [0, 1]
+    assert isinstance(nodes, tuple)
+    assert nodes == (0, 1)
 
 
 def test_cached_nodes_and_A_requires_numpy(monkeypatch, graph_canon):
