@@ -2,7 +2,7 @@
 
 import pytest
 
-from tnfr.metrics import _metrics_step
+from tnfr.metrics.core import _metrics_step
 from tnfr.glyph_history import push_glyph, ensure_history
 
 
