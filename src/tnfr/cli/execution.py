@@ -22,7 +22,7 @@ from ..metrics import (
 from ..trace import register_trace
 from ..execution import play, seq, block
 from ..dynamics import (
-    step,
+    run,
     default_glyph_selector,
     parametric_glyph_selector,
     validate_canon,
@@ -166,8 +166,16 @@ def run_program(
     if program is None:
         steps = getattr(args, "steps", 100)
         steps = 100 if steps is None else int(steps)
-        for _ in range(steps):
-            step(G)
+        if steps < 0:
+            steps = 0
+
+        run_kwargs: dict[str, Any] = {}
+        for attr in ("dt", "use_Si", "apply_glyphs"):
+            value = getattr(args, attr, None)
+            if value is not None:
+                run_kwargs[attr] = value
+
+        run(G, steps=steps, **run_kwargs)
     else:
         play(G, program)
 
