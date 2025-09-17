@@ -154,6 +154,20 @@ def test_get_neighbor_epi_no_neighbors_returns_defaults(graph_canon):
     assert node.EPI == pytest.approx(1.5)
 
 
+def test_get_neighbor_epi_without_epi_alias_returns_empty(graph_canon):
+    G = graph_canon()
+    G.add_node(0, EPI=2.0)
+    G.add_node(1)
+    G.add_edge(0, 1)
+
+    node = NodoNX(G, 0)
+    neighbors, epi_bar = get_neighbor_epi(node)
+
+    assert neighbors == []
+    assert epi_bar == pytest.approx(2.0)
+    assert node.EPI == pytest.approx(2.0)
+
+
 def test_um_candidate_subset_proximity(graph_canon):
     G = graph_canon()
     inject_defaults(G)
