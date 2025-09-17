@@ -110,11 +110,6 @@ cached_import.cache_clear()
 prune_failed_imports()
 ```
 
-All project tooling is now Python-native; no Node.js or npm workflows are
-required to build, test, or document the engine. The repository therefore
-does not vendor any JavaScript dependencies and keeps the `node_modules/`
-tree out of version control.
-
 ## Tests
 
 Run the test suite from the project root using the helper script, which sets
