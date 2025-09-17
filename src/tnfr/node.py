@@ -1,17 +1,11 @@
 """Node utilities and structures for TNFR graphs."""
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Callable, Deque, Iterable, MutableMapping, Optional, Protocol, TypeVar
-from enum import Enum
-from collections import deque
+from typing import Iterable, MutableMapping, Optional, Protocol, TypeVar
 from collections.abc import Hashable
 import math
 
-from .constants import (
-    DEFAULTS,
-    get_aliases,
-)
+from .constants import get_aliases
 from .alias import (
     get_attr,
     get_attr_str,
@@ -24,7 +18,6 @@ from .alias import (
 from .helpers import cached_node_list, increment_edge_version, ensure_node_offset_map
 from .graph_utils import supports_add_edge
 from .node_base import NodeBase
-from .operators import apply_glyph_obj
 from .locking import get_lock
 
 ALIAS_EPI = get_aliases("EPI")
@@ -69,7 +62,7 @@ ATTR_SPECS: dict[str, dict] = {
 
 T = TypeVar("T")
 
-__all__ = ("NodeBase", "NodoTNFR", "NodoNX", "NodoProtocol", "EdgeStrategy")
+__all__ = ("NodeBase", "NodoNX", "NodoProtocol", "add_edge")
 
 
 def _nx_attr_property(
@@ -135,121 +128,26 @@ def _add_edge_common(n1, n2, weight) -> Optional[float]:
     return weight
 
 
-class EdgeStrategy(Enum):
-    NX = "nx"
-    TNFR = "tnfr"
-
-# Strategy implementations are provided as ``(exists_fn, set_fn)`` pairs.
-
-
-def _nx_exists(graph, n1, n2) -> bool:
-    return graph.has_edge(n1, n2)
-
-
-def _nx_set(graph, n1, n2, w: float) -> None:
-    graph.add_edge(n1, n2, weight=w)
-
-
-def _tnfr_exists(graph, n1, n2) -> bool:
-    return n2 in n1._neighbors
-
-
-def _tnfr_set(graph, n1, n2, w: float) -> None:
-    n1._neighbors[n2] = w
-    n2._neighbors[n1] = w
-
-
-_EDGE_OPS: dict[EdgeStrategy, tuple[Callable, Callable]] = {
-    EdgeStrategy.NX: (_nx_exists, _nx_set),
-    EdgeStrategy.TNFR: (_tnfr_exists, _tnfr_set),
-}
-
-
-def _validate_callbacks(exists_cb, set_cb) -> None:
-    """Validate callback pair provided to :func:`add_edge`."""
-
-    if (exists_cb is None) != (set_cb is None):
-        raise ValueError("exists_cb and set_cb must be provided together")
-
-    if exists_cb is not None and set_cb is not None:
-        if not callable(exists_cb) or not callable(set_cb):
-            raise TypeError("exists_cb and set_cb must be callables")
-
-
-def _resolve_edge_ops(
-    graph,
-    strategy: EdgeStrategy | str | None,
-    exists_cb,
-    set_cb,
-) -> tuple[Callable, Callable, EdgeStrategy]:
-    """Select edge operations and resolve strategy.
-
-    ``strategy`` accepts :class:`EdgeStrategy`, string labels or ``None``.
-    Custom callbacks, when provided together, bypass the built-in strategy
-    mapping. When ``strategy`` is ``None``, the default is determined once
-    based on :func:`supports_add_edge`.
-    """
-
-    if isinstance(strategy, str):
-        try:
-            strategy = EdgeStrategy(strategy.lower())
-        except ValueError as exc:
-            raise ValueError(f"Invalid edge strategy: {strategy!r}") from exc
-
-    if strategy is None:
-        strategy = EdgeStrategy.NX if supports_add_edge(graph) else EdgeStrategy.TNFR
-
-    if exists_cb is not None and set_cb is not None:
-        return exists_cb, set_cb, strategy
-
-    ops = _EDGE_OPS.get(strategy)
-    if ops is None:
-        raise ValueError(f"Unknown edge strategy: {strategy!r}")
-
-    return *ops, strategy
-
-
 def add_edge(
     graph,
     n1,
     n2,
     weight,
     overwrite: bool = False,
-    *,
-    strategy: EdgeStrategy | str | None = None,
-    exists_cb=None,
-    set_cb=None,
 ):
-    """Add an edge between ``n1`` and ``n2`` using the given strategy.
+    """Add an edge between ``n1`` and ``n2`` in a ``networkx`` graph."""
 
-    Parameters
-    ----------
-    strategy:
-        ``EdgeStrategy`` enum or string (``"nx"`` / ``"tnfr"``). String values
-        are mapped to :class:`EdgeStrategy` before use. Custom callbacks may be
-        supplied via ``exists_cb`` and ``set_cb``; both must be callables and
-        provided together. A ``ValueError`` is raised for invalid or unknown
-        strategies.
-    """
     weight = _add_edge_common(n1, n2, weight)
     if weight is None:
         return
 
-    _validate_callbacks(exists_cb, set_cb)
+    if not supports_add_edge(graph):
+        raise TypeError("add_edge only supports networkx graphs")
 
-    exists_fn, set_fn, resolved_strategy = _resolve_edge_ops(
-        graph, strategy, exists_cb, set_cb
-    )
-
-    if resolved_strategy is EdgeStrategy.TNFR and getattr(n1, "graph", None) is not getattr(
-        n2, "graph", None
-    ):
-        raise ValueError("Cannot connect nodes from different graphs")
-
-    if exists_fn(graph, n1, n2) and not overwrite:
+    if graph.has_edge(n1, n2) and not overwrite:
         return
 
-    set_fn(graph, n1, n2, weight)
+    graph.add_edge(n1, n2, weight=weight)
     increment_edge_version(graph)
 
 
@@ -278,61 +176,6 @@ class NodoProtocol(Protocol):
     def offset(self) -> int: ...
 
     def all_nodes(self) -> Iterable["NodoProtocol"]: ...
-
-
-@dataclass(eq=False, slots=True)
-class NodoTNFR(NodeBase):
-    """Autonomous TNFR node representation.
-
-    Each neighbour stores the connection weight. Although current operations
-    do not use the weights, they are preserved for potential future
-    calculations.
-    """
-
-    EPI: float = 0.0
-    vf: float = 0.0
-    theta: float = 0.0
-    Si: float = 0.0
-    epi_kind: str = ""
-    dnfr: float = 0.0
-    d2EPI: float = 0.0
-    graph: dict[str, object] = field(default_factory=dict)
-    _neighbors: dict["NodoTNFR", float] = field(default_factory=dict)
-    _glyph_history: Deque[str] = field(
-        default_factory=lambda: deque(
-            maxlen=DEFAULTS.get("GLYPH_HYSTERESIS_WINDOW", 7)
-        )
-    )
-
-    def _glyph_storage(self) -> dict[str, Deque[str]]:
-        return {"glyph_history": self._glyph_history}
-
-    def neighbors(self) -> Iterable["NodoTNFR"]:
-        return self._neighbors.keys()
-
-    def has_edge(self, other: "NodoTNFR") -> bool:
-        return other in self._neighbors
-
-    def add_edge(
-        self,
-        other: "NodoTNFR",
-        weight: float = 1.0,
-        *,
-        overwrite: bool = False,
-    ) -> None:
-        """Connect this node with ``other``."""
-
-        add_edge(
-            self.graph,
-            self,
-            other,
-            weight,
-            overwrite,
-            strategy=EdgeStrategy.TNFR,
-        )
-
-    def apply_glyph(self, glyph: str, window: Optional[int] = None) -> None:
-        apply_glyph_obj(self, glyph, window=window)
 
 
 class NodoNX(NodeBase, NodoProtocol):
@@ -392,7 +235,6 @@ class NodoNX(NodeBase, NodoProtocol):
                 other.n,
                 weight,
                 overwrite,
-                strategy=EdgeStrategy.NX,
             )
         else:
             raise NotImplementedError
@@ -402,6 +244,10 @@ class NodoNX(NodeBase, NodoProtocol):
         return mapping.get(self.n, 0)
 
     def all_nodes(self) -> Iterable[NodoProtocol]:
+        override = self.graph.get("_all_nodes")
+        if override is not None:
+            return override
+
         nodes = cached_node_list(self.G)
         return (NodoNX.from_graph(self.G, v) for v in nodes)
 
