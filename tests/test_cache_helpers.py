@@ -2,7 +2,7 @@ import pytest
 
 import tnfr.import_utils as import_utils
 from tnfr import dynamics
-from tnfr.helpers.edge_cache import (
+from tnfr.cache import (
     cached_nodes_and_A,
     increment_edge_version,
     edge_version_update,

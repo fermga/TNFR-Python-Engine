@@ -12,7 +12,7 @@ from typing import Any, Iterable, Mapping
 
 from ..alias import get_attr
 from ..constants import get_aliases
-from ..helpers import edge_version_cache
+from ..cache import edge_version_cache
 from ..import_utils import get_numpy
 from ..types import GraphLike
 

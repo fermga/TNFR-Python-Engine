@@ -13,10 +13,7 @@ from types import MappingProxyType
 from .constants import DEFAULTS, get_aliases
 from .alias import get_attr
 from .graph_utils import get_graph_mapping
-from .helpers import (
-    node_set_checksum,
-    edge_version_cache,
-)
+from .cache import edge_version_cache, node_set_checksum
 from .json_utils import json_dumps
 from .logging_utils import get_logger
 

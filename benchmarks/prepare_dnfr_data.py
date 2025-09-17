@@ -5,7 +5,7 @@ import networkx as nx
 
 from tnfr.constants import get_aliases
 from tnfr.dynamics import _prepare_dnfr_data
-from tnfr.helpers.edge_cache import cached_nodes_and_A
+from tnfr.cache import cached_nodes_and_A
 from tnfr.alias import set_attr, collect_attr
 
 ALIAS_THETA = get_aliases("THETA")
