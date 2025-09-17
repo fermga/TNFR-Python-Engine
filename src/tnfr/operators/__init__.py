@@ -67,18 +67,6 @@ def get_factor(gf: dict[str, Any], key: str, default: float) -> float:
 # -------------------------
 
 
-def _any_neighbor_has(node: NodoProtocol, aliases: tuple[str, ...]) -> bool:
-    """Return ``True`` if any neighbour defines one of ``aliases``."""
-    if hasattr(node, "G"):
-        G = node.G
-        return any(
-            any(a in G.nodes[v] for a in aliases) for v in G.neighbors(node.n)
-        )
-    return any(
-        any(hasattr(neigh, a) for a in aliases) for neigh in node.neighbors()
-    )
-
-
 def get_neighbor_epi(node: NodoProtocol) -> tuple[list[NodoProtocol], float]:
     """Return neighbour list and their mean ``EPI`` without mutating ``node``."""
 
@@ -88,25 +76,35 @@ def get_neighbor_epi(node: NodoProtocol) -> tuple[list[NodoProtocol], float]:
         return [], epi
 
     if hasattr(node, "G"):
-        if not _any_neighbor_has(node, ALIAS_EPI):
-            return [], epi
         G = node.G
         total = 0.0
         count = 0
+        has_valid_neighbor = False
+        needs_conversion = False
         for v in neigh:
             if hasattr(v, "EPI"):
                 total += float(v.EPI)
+                has_valid_neighbor = True
             else:
-                total += float(get_attr(G.nodes[v], ALIAS_EPI, epi))
+                attr = get_attr(G.nodes[v], ALIAS_EPI, None)
+                if attr is not None:
+                    total += float(attr)
+                    has_valid_neighbor = True
+                else:
+                    total += float(epi)
+                needs_conversion = True
             count += 1
+        if not has_valid_neighbor:
+            return [], epi
         epi_bar = total / count if count else float(epi)
-        NodoNX = get_nodonx()
-        if NodoNX is None:
-            raise ImportError("NodoNX is unavailable")
-        neigh = [
-            v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)
-            for v in neigh
-        ]
+        if needs_conversion:
+            NodoNX = get_nodonx()
+            if NodoNX is None:
+                raise ImportError("NodoNX is unavailable")
+            neigh = [
+                v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)
+                for v in neigh
+            ]
     else:
         try:
             epi_bar = fmean(v.EPI for v in neigh)
