@@ -12,7 +12,7 @@ from tnfr.trace import (
     CallbackSpec,
 )
 from tnfr import trace
-from tnfr.helpers.node_cache import get_graph_mapping
+from tnfr.graph_utils import get_graph_mapping
 from tnfr.callback_utils import CallbackEvent, callback_manager
 from types import MappingProxyType
 

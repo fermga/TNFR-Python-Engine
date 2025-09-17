@@ -6,20 +6,13 @@ from typing import Any
 import networkx as nx  # type: ignore[import-untyped]
 
 from ..cache import (
-    NODE_SET_CHECKSUM_KEY,
     _node_repr,
     _node_repr_digest,
     node_set_checksum,
-    stable_json,
 )
-from ..graph_utils import get_graph, get_graph_mapping
+from ..graph_utils import get_graph
 
 __all__ = (
-    "NODE_SET_CHECKSUM_KEY",
-    "get_graph",
-    "get_graph_mapping",
-    "node_set_checksum",
-    "stable_json",
     "cached_node_list",
     "ensure_node_index_map",
     "ensure_node_offset_map",
