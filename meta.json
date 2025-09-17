@@ -4,7 +4,7 @@
   "language": "en",
   "license": "MIT",
   "description": "TNFR is an operational framework that models reality as coherent reorganization rather than fixed substances. Forms that persist (cells, ideas, teams, emotional states) do so because they resonate — they share structure, rhythm and phase with their environment. TNFR provides a practical grammar (structural operators) and a nodal equation to design, stabilize, transform or collapse forms in a controlled way.",
-  "summary": "Design-by-coherence: use structural frequency, phase and nodal gradients to activate and stabilize forms (EPI) across scales, from personal routines to teams, products and curricula.",
+  "summary": "Python engine for modeling, simulating and measuring multiscale coherence: use structural frequency, phase and nodal gradients to activate and stabilize forms (EPI) across domains.",
   "theory": {
     "premises": [
       "What persists is coherence. Not substance but structure-in-reorganization.",
@@ -49,11 +49,11 @@
     "topology": "Connection pattern among nodes that influences coupling and propagation."
   },
   "install": {"pip": "pip install tnfr"},
-  "compatibility": {"python": ">=3.8"},
+  "compatibility": {"python": ">=3.9"},
   "links": {
     "repository": "https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-",
     "package": "https://pypi.org/project/tnfr/",
-    "documentation": "El_pulso_que_nos_atraviesa.pdf"
+    "documentation": "TNFR.pdf"
   },
   "status": "research/operational",
   "maintainers": [{"name": "fmg"}],
