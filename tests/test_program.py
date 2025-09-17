@@ -8,7 +8,7 @@ import pytest
 
 import tnfr.flatten as flatten_module
 
-from tnfr.cli import _load_sequence
+from tnfr.cli.execution import _load_sequence
 from tnfr.execution import HANDLERS, block, play, seq, target, wait
 from tnfr.flatten import THOLEvaluator, _flatten
 from tnfr.tokens import OpTag, TARGET, THOL, THOL_SENTINEL, WAIT

@@ -8,15 +8,14 @@ from collections import deque
 
 import pytest
 
-from tnfr.cli import (
-    main,
+from tnfr.cli import main
+from tnfr.cli.arguments import (
+    GRAMMAR_ARG_SPECS,
+    _args_to_dict,
     add_common_args,
     add_grammar_args,
-    _build_graph_from_args,
-    _args_to_dict,
-    _save_json,
 )
-from tnfr.cli.arguments import GRAMMAR_ARG_SPECS
+from tnfr.cli.execution import _build_graph_from_args, _save_json
 from tnfr.constants import METRIC_DEFAULTS
 from tnfr import __version__
 
