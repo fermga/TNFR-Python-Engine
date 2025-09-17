@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Iterable, Protocol
 
-__all__ = ("GraphLike", "NodeState", "Glyph")
+__all__ = ("GraphLike", "Glyph")
 
 
 class GraphLike(Protocol):
@@ -26,17 +25,6 @@ class GraphLike(Protocol):
     def neighbors(self, n: Any) -> Iterable[Any]: ...
 
     def __iter__(self) -> Iterable[Any]: ...
-
-
-@dataclass(slots=True)
-class NodeState:
-    EPI: float = 0.0
-    vf: float = 0.0  # νf
-    theta: float = 0.0  # θ
-    Si: float = 0.0
-    epi_kind: str = ""
-    extra: dict[str, Any] = field(default_factory=dict)
-
 
 class Glyph(str, Enum):
     """Canonical TNFR glyphs."""

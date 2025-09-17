@@ -9,7 +9,6 @@ def test_public_exports():
         "run",
         "preparar_red",
         "create_nfr",
-        "NodeState",
     }
     if getattr(tnfr, "_HAS_RUN_SEQUENCE", False):
         expected.add("run_sequence")
@@ -23,7 +22,6 @@ def test_basic_flow():
     tnfr.step(G)
     tnfr.run(G, steps=2)
     assert len(G.graph["history"]["C_steps"]) == 3
-    assert isinstance(tnfr.NodeState(), tnfr.NodeState)
 
 
 def test_topological_remesh_not_exported():
