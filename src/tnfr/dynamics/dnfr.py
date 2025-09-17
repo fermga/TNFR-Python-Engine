@@ -39,6 +39,13 @@ class DnfrCache:
     cos_theta: list[float]
     sin_theta: list[float]
     degs: dict[Any, float] | None = None
+    deg_list: list[float] | None = None
+    theta_np: Any | None = None
+    epi_np: Any | None = None
+    vf_np: Any | None = None
+    cos_theta_np: Any | None = None
+    sin_theta_np: Any | None = None
+    deg_array: Any | None = None
     checksum: Any | None = None
 
 
@@ -129,10 +136,56 @@ def _init_dnfr_cache(G, nodes, prev_cache: DnfrCache | None, checksum, dirty):
     )
 
 
+def _ensure_numpy_vectors(cache: DnfrCache, np):
+    """Ensure NumPy copies of cached vectors are initialised and up to date."""
+
+    if cache is None:
+        return (None, None, None, None, None)
+
+    arrays = []
+    for attr_np, source_attr in (
+        ("theta_np", "theta"),
+        ("epi_np", "epi"),
+        ("vf_np", "vf"),
+        ("cos_theta_np", "cos_theta"),
+        ("sin_theta_np", "sin_theta"),
+    ):
+        src = getattr(cache, source_attr)
+        arr = getattr(cache, attr_np)
+        if src is None:
+            setattr(cache, attr_np, None)
+            arrays.append(None)
+            continue
+        if arr is None or len(arr) != len(src):
+            arr = np.array(src, dtype=float)
+        else:
+            np.copyto(arr, src, casting="unsafe")
+        setattr(cache, attr_np, arr)
+        arrays.append(arr)
+    return tuple(arrays)
+
+
+def _ensure_numpy_degrees(cache: DnfrCache, deg_list, np):
+    """Initialise/update NumPy array mirroring ``deg_list``."""
+
+    if cache is None or deg_list is None:
+        if cache is not None:
+            cache.deg_array = None
+        return None
+    arr = cache.deg_array
+    if arr is None or len(arr) != len(deg_list):
+        arr = np.array(deg_list, dtype=float)
+    else:
+        np.copyto(arr, deg_list, casting="unsafe")
+    cache.deg_array = arr
+    return arr
+
+
 def _refresh_dnfr_vectors(G, nodes, cache: DnfrCache):
     """Update cached angle and state vectors for ΔNFR."""
     np = get_numpy()
     trig = compute_theta_trig(((n, G.nodes[n]) for n in nodes), np=np)
+    use_numpy = np is not None and G.graph.get("vectorized_dnfr")
     for i, n in enumerate(nodes):
         nd = G.nodes[n]
         cache.theta[i] = trig.theta[n]
@@ -140,6 +193,14 @@ def _refresh_dnfr_vectors(G, nodes, cache: DnfrCache):
         cache.vf[i] = get_attr(nd, ALIAS_VF, 0.0)
         cache.cos_theta[i] = trig.cos[n]
         cache.sin_theta[i] = trig.sin[n]
+    if use_numpy and np is not None:
+        _ensure_numpy_vectors(cache, np)
+    else:
+        cache.theta_np = None
+        cache.epi_np = None
+        cache.vf_np = None
+        cache.cos_theta_np = None
+        cache.sin_theta_np = None
 
 
 def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
@@ -174,10 +235,29 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         if cache is not None:
             cache.degs = None
 
-    if not use_numpy:
-        A = None
-
     G.graph["_dnfr_prep_dirty"] = False
+
+    deg_list: list[float] | None = None
+    if w_topo != 0.0 and degs is not None:
+        if cache.deg_list is None or dirty or len(cache.deg_list) != len(nodes):
+            cache.deg_list = [float(degs.get(node, 0.0)) for node in nodes]
+        deg_list = cache.deg_list
+    else:
+        cache.deg_list = None
+
+    if use_numpy and np is not None:
+        theta_np, epi_np, vf_np, cos_theta_np, sin_theta_np = _ensure_numpy_vectors(
+            cache, np
+        )
+        deg_array = _ensure_numpy_degrees(cache, deg_list, np)
+    else:
+        theta_np = None
+        epi_np = None
+        vf_np = None
+        cos_theta_np = None
+        sin_theta_np = None
+        deg_array = None
+        cache.deg_array = None
 
     return {
         "weights": weights,
@@ -188,13 +268,21 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         "vf": vf,
         "cos_theta": cos_theta,
         "sin_theta": sin_theta,
+        "theta_np": theta_np,
+        "epi_np": epi_np,
+        "vf_np": vf_np,
+        "cos_theta_np": cos_theta_np,
+        "sin_theta_np": sin_theta_np,
         "w_phase": w_phase,
         "w_epi": w_epi,
         "w_vf": w_vf,
         "w_topo": w_topo,
         "degs": degs,
+        "deg_list": deg_list,
+        "deg_array": deg_array,
         "A": A,
         "cache_size": cache_size,
+        "cache": cache,
     }
 
 
@@ -306,6 +394,7 @@ def _compute_neighbor_means(
     sin_th = data["sin_theta"]
     idx = data["idx"]
     nodes = data["nodes"]
+    deg_list = data.get("deg_list")
     for i in range(n):
         c = count[i]
         if c:
@@ -355,8 +444,6 @@ def _init_neighbor_sums(data, *, np=None):
     nodes = data["nodes"]
     n = len(nodes)
     w_topo = data["w_topo"]
-    if np is None:
-        np = get_numpy()
     if np is not None:
         x = np.zeros(n, dtype=float)
         y = np.zeros(n, dtype=float)
@@ -371,10 +458,10 @@ def _init_neighbor_sums(data, *, np=None):
         epi_sum = [0.0] * n
         vf_sum = [0.0] * n
         count = [0] * n
-        degs_dict = data.get("degs")
-        if w_topo != 0 and degs_dict is not None:
+        deg_list = data.get("deg_list")
+        if w_topo != 0 and deg_list is not None:
             deg_sum = [0.0] * n
-            degs = [float(degs_dict.get(node, 0)) for node in nodes]
+            degs = list(deg_list)
         else:
             deg_sum = None
             degs = None
@@ -399,18 +486,43 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
         if A is None:
             _, A = cached_nodes_and_A(G, cache_size=data.get("cache_size"))
             data["A"] = A
-        epi = np.array(data["epi"], dtype=float)
-        vf = np.array(data["vf"], dtype=float)
-        cos_th = np.array(data["cos_theta"], dtype=float)
-        sin_th = np.array(data["sin_theta"], dtype=float)
+        epi = data.get("epi_np")
+        vf = data.get("vf_np")
+        cos_th = data.get("cos_theta_np")
+        sin_th = data.get("sin_theta_np")
+        cache = data.get("cache")
+        if epi is None or vf is None or cos_th is None or sin_th is None:
+            epi = np.array(data["epi"], dtype=float)
+            vf = np.array(data["vf"], dtype=float)
+            cos_th = np.array(data["cos_theta"], dtype=float)
+            sin_th = np.array(data["sin_theta"], dtype=float)
+            data["epi_np"] = epi
+            data["vf_np"] = vf
+            data["cos_theta_np"] = cos_th
+            data["sin_theta_np"] = sin_th
+            if cache is not None:
+                cache.epi_np = epi
+                cache.vf_np = vf
+                cache.cos_theta_np = cos_th
+                cache.sin_theta_np = sin_th
         x[:] = A @ cos_th
         y[:] = A @ sin_th
         epi_sum[:] = A @ epi
         vf_sum[:] = A @ vf
         count[:] = A.sum(axis=1)
         if w_topo != 0.0:
-            degs = count
-            deg_sum[:] = A @ degs
+            deg_array = data.get("deg_array")
+            if deg_array is None:
+                deg_list = data.get("deg_list")
+                if deg_list is not None:
+                    deg_array = np.array(deg_list, dtype=float)
+                    data["deg_array"] = deg_array
+                    if cache is not None:
+                        cache.deg_array = deg_array
+                else:
+                    deg_array = count
+            deg_sum[:] = A @ deg_array
+            degs = deg_array
         return x, y, epi_sum, vf_sum, count, deg_sum, degs
     else:
         x, y, epi_sum, vf_sum, count, deg_sum, degs_list = _init_neighbor_sums(
@@ -419,9 +531,9 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
         idx = data["idx"]
         epi = data["epi"]
         vf = data["vf"]
-        degs_dict = data["degs"]
         cos_th = data["cos_theta"]
         sin_th = data["sin_theta"]
+        deg_list = data.get("deg_list")
         for i, node in enumerate(nodes):
             deg_i = degs_list[i] if degs_list is not None else 0.0
             for v in G.neighbors(node):
@@ -432,7 +544,7 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
                 vf_sum[i] += vf[j]
                 count[i] += 1
                 if deg_sum is not None:
-                    deg_sum[i] += degs_dict.get(v, deg_i)
+                    deg_sum[i] += deg_list[j] if deg_list is not None else deg_i
         return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
 
 
