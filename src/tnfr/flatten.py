@@ -9,6 +9,7 @@ from .collections_utils import (
     MAX_MATERIALIZE_DEFAULT,
     ensure_collection,
     flatten_structure,
+    normalize_materialize_limit,
 )
 from .constants_glyphs import GLYPHS_CANONICAL_SET
 from .tokens import THOL, TARGET, WAIT, OpTag, THOL_SENTINEL, Token
@@ -24,17 +25,6 @@ __all__ = [
 
 
 _STRING_TYPES = (str, bytes, bytearray)
-
-
-def _normalize_limit(max_materialize: int | None) -> int | None:
-    """Validate ``max_materialize`` mirroring :func:`ensure_collection`."""
-
-    if max_materialize is None:
-        return None
-    limit = int(max_materialize)
-    if limit < 0:
-        raise ValueError("'max_materialize' must be non-negative")
-    return limit
 
 
 def _iter_source(
@@ -53,7 +43,7 @@ def _iter_source(
     if not isinstance(seq, Iterable):
         raise TypeError(f"{seq!r} is not iterable")
 
-    limit = _normalize_limit(max_materialize)
+    limit = normalize_materialize_limit(max_materialize)
     if limit is None:
         return seq
     if limit == 0:
