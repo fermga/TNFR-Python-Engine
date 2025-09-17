@@ -105,6 +105,7 @@ __all__ = (
     "normalize_materialize_limit",
     "is_non_string_sequence",
     "flatten_structure",
+    "STRING_TYPES",
     "ensure_collection",
     "prepare_weights",
     "normalize_weights",

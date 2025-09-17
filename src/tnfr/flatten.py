@@ -9,6 +9,7 @@ from .collections_utils import (
     MAX_MATERIALIZE_DEFAULT,
     ensure_collection,
     flatten_structure,
+    STRING_TYPES,
     normalize_materialize_limit,
 )
 from .constants_glyphs import GLYPHS_CANONICAL_SET
@@ -24,9 +25,6 @@ __all__ = [
 ]
 
 
-_STRING_TYPES = (str, bytes, bytearray)
-
-
 def _iter_source(
     seq: Iterable[Token] | Sequence[Token] | Any,
     *,
@@ -34,10 +32,10 @@ def _iter_source(
 ) -> Iterable[Any]:
     """Yield items from ``seq`` enforcing ``max_materialize`` when needed."""
 
-    if isinstance(seq, Collection) and not isinstance(seq, _STRING_TYPES):
+    if isinstance(seq, Collection) and not isinstance(seq, STRING_TYPES):
         return seq
 
-    if isinstance(seq, _STRING_TYPES):
+    if isinstance(seq, STRING_TYPES):
         return (seq,)
 
     if not isinstance(seq, Iterable):
