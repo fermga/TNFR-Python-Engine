@@ -21,7 +21,6 @@ from .logging_utils import get_logger
 
 __all__ = (
     "cached_import",
-    "optional_numpy",
     "get_numpy",
     "get_nodonx",
     "prune_failed_imports",
@@ -225,15 +224,6 @@ def _clear_default_cache() -> None:
 cached_import.cache_clear = _clear_default_cache  # type: ignore[attr-defined]
 
 
-def optional_numpy(logger: Any) -> Any | None:
-    """Return NumPy module or ``None`` if unavailable, logging the failure."""
-
-    np = cached_import("numpy")
-    if np is None:
-        logger.debug("Failed to import numpy; continuing in non-vectorised mode")
-    return np
-
-
 _NP_CACHE_SENTINEL = object()
 _NP_CACHE: Any | None | object = _NP_CACHE_SENTINEL
 
@@ -243,7 +233,13 @@ def get_numpy(logger: Any | None = None) -> Any | None:
 
     global _NP_CACHE
     if _NP_CACHE is _NP_CACHE_SENTINEL:
-        _NP_CACHE = optional_numpy(logger or get_logger(__name__))
+        resolved_logger = logger or get_logger(__name__)
+        np = cached_import("numpy")
+        if np is None:
+            resolved_logger.debug(
+                "Failed to import numpy; continuing in non-vectorised mode"
+            )
+        _NP_CACHE = np
     return _NP_CACHE
 
 
