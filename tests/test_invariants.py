@@ -8,7 +8,8 @@ import networkx as nx
 from tnfr.constants import inject_defaults
 from tnfr.initialization import init_node_attrs
 from tnfr.dynamics import step
-from tnfr.metrics import register_metrics_callbacks, _metrics_step
+from tnfr.metrics import register_metrics_callbacks
+from tnfr.metrics.core import _metrics_step
 from tnfr.operators import apply_glyph, apply_remesh_if_globally_stable
 from tnfr.types import Glyph
 from tnfr.glyph_history import ensure_history

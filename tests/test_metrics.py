@@ -8,15 +8,13 @@ from tnfr.constants import (
     get_aliases,
 )
 from tnfr.alias import get_attr, set_attr
-from tnfr.metrics import (
-    _metrics_step,
+from tnfr.metrics.coherence import _track_stability, _aggregate_si
+from tnfr.metrics.core import LATENT_GLYPH, _metrics_step
+from tnfr.metrics.glyph_timing import (
     _update_latency_index,
     _update_epi_support,
-    _track_stability,
-    _aggregate_si,
     _compute_advanced_metrics,
 )
-from tnfr.metrics.core import LATENT_GLYPH
 from tnfr.metrics.core import _update_sigma
 from tnfr.metrics.glyph_timing import DEFAULT_EPI_SUPPORT_LIMIT
 

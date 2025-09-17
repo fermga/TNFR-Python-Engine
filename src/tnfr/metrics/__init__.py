@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .core import register_metrics_callbacks, _metrics_step
+from .core import register_metrics_callbacks
 from .reporting import (
     Tg_global,
     Tg_by_node,
@@ -10,16 +10,7 @@ from .reporting import (
     glyphogram_series,
     glyph_top,
 )
-from .glyph_timing import (
-    _tg_state,
-    _update_tg,
-    _update_latency_index,
-    _update_epi_support,
-    _compute_advanced_metrics,
-)
 from .coherence import (
-    _aggregate_si,
-    _track_stability,
     coherence_matrix,
     local_phase_sync,
     local_phase_sync_weighted,
@@ -38,14 +29,6 @@ __all__ = (
     "latency_series",
     "glyphogram_series",
     "glyph_top",
-    "_tg_state",
-    "_update_tg",
-    "_update_latency_index",
-    "_update_epi_support",
-    "_track_stability",
-    "_aggregate_si",
-    "_compute_advanced_metrics",
-    "_metrics_step",
     "coherence_matrix",
     "local_phase_sync",
     "local_phase_sync_weighted",

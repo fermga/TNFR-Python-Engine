@@ -17,8 +17,8 @@ from ..metrics import (
     glyphogram_series,
     glyph_top,
     export_metrics,
-    _metrics_step,
 )
+from ..metrics.core import _metrics_step
 from ..trace import register_trace
 from ..execution import play, seq, basic_canonical_example
 from ..dynamics import (
