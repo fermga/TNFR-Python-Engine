@@ -8,8 +8,9 @@ import logging
 import hashlib
 from collections.abc import Mapping
 from functools import lru_cache
+from types import MappingProxyType
 
-from .constants import get_aliases
+from .constants import DEFAULTS, get_aliases
 from .alias import get_attr
 from .graph_utils import get_graph_mapping
 from .helpers import (
@@ -24,7 +25,7 @@ ALIAS_THETA = get_aliases("THETA")
 
 logger = get_logger(__name__)
 
-DEFAULT_GAMMA: Mapping[str, str] = {"type": "none"}
+DEFAULT_GAMMA: Mapping[str, Any] = MappingProxyType(dict(DEFAULTS["GAMMA"]))
 
 __all__ = (
     "kuramoto_R_psi",
@@ -41,7 +42,7 @@ __all__ = (
 
 @lru_cache(maxsize=1)
 def _default_gamma_spec() -> tuple[bytes, str]:
-    dumped = json_dumps(DEFAULT_GAMMA, sort_keys=True, to_bytes=True)
+    dumped = json_dumps(dict(DEFAULT_GAMMA), sort_keys=True, to_bytes=True)
     hash_ = hashlib.blake2b(dumped, digest_size=16).hexdigest()
     return dumped, hash_
 
