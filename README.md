@@ -64,7 +64,9 @@ prune_failed_imports()
 ```
 
 All project tooling is now Python-native; no Node.js or npm workflows are
-required to build, test, or document the engine.
+required to build, test, or document the engine. The repository therefore
+does not vendor any JavaScript dependencies and keeps the `node_modules/`
+tree out of version control.
 
 ## Tests
 
