@@ -9,8 +9,6 @@ redefining locks repeatedly.
 from __future__ import annotations
 
 import threading
-from contextlib import contextmanager
-from collections.abc import Iterator
 from weakref import WeakValueDictionary
 
 # Registry of locks by name guarded by ``_REGISTRY_LOCK``.
@@ -36,19 +34,4 @@ def get_lock(name: str) -> threading.Lock:
     return lock
 
 
-@contextmanager
-def locked(name: str) -> Iterator[None]:
-    """Context manager acquiring the lock for ``name``.
-
-    Usage::
-
-        with locked("resource"):
-            ...  # critical section
-    """
-
-    lock = get_lock(name)
-    with lock:
-        yield
-
-
-__all__ = ["get_lock", "locked"]
+__all__ = ["get_lock"]
