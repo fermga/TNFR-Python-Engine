@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections import deque
+from typing import Any
 
 import pytest
 
@@ -14,8 +15,11 @@ from tnfr.cli.arguments import (
     _args_to_dict,
     add_common_args,
     add_grammar_args,
+    add_canon_toggle,
+    add_grammar_selector_args,
+    add_history_export_args,
 )
-from tnfr.cli.execution import _build_graph_from_args, _save_json
+from tnfr.cli.execution import _build_graph_from_args, _save_json, run_program
 from tnfr.constants import METRIC_DEFAULTS
 from tnfr import __version__
 
@@ -80,6 +84,47 @@ def test_cli_without_history_args(tmp_path, monkeypatch, command):
     rc = main(args)
     assert rc == 0
     assert not any(tmp_path.iterdir())
+
+
+def test_run_program_delegates_to_dynamics_run(monkeypatch):
+    recorded: dict[str, Any] = {}
+
+    def fake_run(
+        G, *, steps: int, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool = True
+    ) -> None:
+        recorded.update(
+            {
+                "graph": G,
+                "steps": steps,
+                "dt": dt,
+                "use_Si": use_Si,
+                "apply_glyphs": apply_glyphs,
+            }
+        )
+
+    monkeypatch.setattr("tnfr.cli.execution.run", fake_run)
+
+    parser = argparse.ArgumentParser()
+    add_common_args(parser)
+    parser.add_argument("--steps", type=int, default=100)
+    add_canon_toggle(parser)
+    add_grammar_selector_args(parser)
+    add_history_export_args(parser)
+    parser.add_argument("--preset", type=str, default=None)
+    parser.add_argument("--sequence-file", type=str, default=None)
+    parser.add_argument("--summary", action="store_true")
+
+    args = parser.parse_args(["--nodes", "4", "--steps", "-2", "--dt", "0.25"])
+    args.use_Si = False
+    args.apply_glyphs = False
+
+    G = run_program(None, None, args)
+
+    assert recorded["graph"] is G
+    assert recorded["steps"] == 0  # negative steps are clamped to preserve CLI behaviour
+    assert recorded["dt"] == pytest.approx(0.25)
+    assert recorded["use_Si"] is False
+    assert recorded["apply_glyphs"] is False
 
 
 def test_save_json_serializes_iterables(tmp_path):
