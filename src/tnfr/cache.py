@@ -34,8 +34,6 @@ __all__ = (
     "increment_graph_version",
     "node_set_checksum",
     "stable_json",
-    "_node_repr",
-    "_node_repr_digest",
 )
 
 # Key used to store the node set checksum in a graph's ``graph`` attribute.
