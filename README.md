@@ -118,14 +118,22 @@ tree out of version control.
 ## Tests
 
 Run the test suite from the project root using the helper script, which sets
-the necessary `PYTHONPATH`:
+the necessary `PYTHONPATH` and mirrors the checks described in
+[`CONTRIBUTING.md`](CONTRIBUTING.md):
 
 ```bash
 ./scripts/run_tests.sh
 ```
 
-Avoid running `pytest` directly or executing the script from other directories,
-as the environment may be misconfigured and imports will fail.
+The script sequentially executes `pydocstyle`, `pytest` under `coverage`, the
+coverage summary, and `vulture --min-confidence 80 src tests`. Avoid running
+`pytest` directly or executing the script from other directories, as the
+environment may be misconfigured and imports will fail. To pass additional
+flags to `pytest`, append them after `--`, for example:
+
+```bash
+./scripts/run_tests.sh -- -k coherence
+```
 
 ## Locking policy
 
