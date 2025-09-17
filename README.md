@@ -18,6 +18,53 @@ In practical terms, `tnfr` lets you:
 
 A form emerges and persists when **internal reorganization** (ΔNFR) **resonates** with the node’s **frequency** (νf).
 
+## Quick start
+
+### Desde Python
+
+```python
+from tnfr import create_nfr, run_sequence
+from tnfr.structural import (
+    Emision,
+    Recepcion,
+    Coherencia,
+    Resonancia,
+    Silencio,
+)
+from tnfr.metrics.common import compute_coherence
+from tnfr.metrics.sense_index import compute_Si
+
+G, nodo = create_nfr("A", epi=0.2, vf=1.0, theta=0.0)
+ops = [Emision(), Recepcion(), Coherencia(), Resonancia(), Silencio()]
+run_sequence(G, nodo, ops)
+
+C, delta_nfr_medio, depi_medio = compute_coherence(G, return_means=True)
+si_por_nodo = compute_Si(G)
+print(f"C(t)={C:.3f}, ΔNFR̄={delta_nfr_medio:.3f}, dEPI/dt̄={depi_medio:.3f}, Si={si_por_nodo[nodo]:.3f}")
+```
+
+La secuencia respeta la ecuación nodal porque `create_nfr` inicializa el nodo con su **νf** y fase, `run_sequence` aplica operadores canónicos en el orden emisión → recepción → coherencia → resonancia → silencio y, después de cada paso, el gancho dinámico recalcula **ΔNFR** y la fase activa del nodo. Esa telemetría permite medir **C(t)** y **Si**, adelantando lo que se desarrolla en [Key concepts (operational summary)](#key-concepts-operational-summary) y [Main metrics](#main-metrics).
+
+### Desde la línea de comandos
+
+Archivo `secuencia.json`:
+
+```json
+[
+  "emision",
+  "recepcion",
+  "coherencia",
+  "resonancia",
+  "silencio"
+]
+```
+
+```bash
+tnfr sequence --nodes 1 --sequence-file secuencia.json --save-history historia.json
+```
+
+El subcomando `sequence` carga la trayectoria canónica del archivo JSON, ejecuta los operadores con la gramática oficial y actualiza **νf**, **ΔNFR** y fase usando los mismos ganchos que la API de Python. Al finalizar se vuelcan en `historia.json` las series de **C(t)**, **ΔNFR** medio y **Si**, que amplían las secciones sobre [operadores estructurales](#key-concepts-operational-summary) y [métricas](#main-metrics).
+
 ---
 
 ## Installation
