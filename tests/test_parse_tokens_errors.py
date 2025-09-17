@@ -4,15 +4,16 @@ from __future__ import annotations
 
 import pytest
 
+import tnfr.cli as cli_module
 from tnfr import token_parser as core_token_parser
-from tnfr.cli import _parse_tokens, TOKEN_MAP
+from tnfr.token_parser import TOKEN_MAP, _parse_tokens
 
 
 def test_cli_reexports_consolidated_token_parser():
     """Ensure the CLI exposes the consolidated parser API."""
 
-    assert _parse_tokens is core_token_parser._parse_tokens
-    assert TOKEN_MAP is core_token_parser.TOKEN_MAP
+    assert cli_module._parse_tokens is core_token_parser._parse_tokens
+    assert cli_module.TOKEN_MAP is core_token_parser.TOKEN_MAP
 
 
 def test_parse_tokens_value_error_context():

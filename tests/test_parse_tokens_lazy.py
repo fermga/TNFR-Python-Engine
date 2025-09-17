@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from tnfr.cli import _parse_tokens
+from tnfr.token_parser import _parse_tokens
 
 
 def test_parse_tokens_lazy_evaluation():
