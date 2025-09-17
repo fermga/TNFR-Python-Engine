@@ -209,6 +209,9 @@ def _community_k_neighbor_edges(C, k_val, p_rewire, rnd):
     epi_vals = {n: get_attr(C.nodes[n], ALIAS_EPI, 0.0) for n in C.nodes()}
     ordered = sorted(C.nodes(), key=lambda v: epi_vals[v])
     new_edges = set()
+    attempts = {n: 0 for n in C.nodes()}
+    rewired = []
+    node_set = set(C.nodes())
     for idx, u in enumerate(ordered):
         epi_u = epi_vals[u]
         left = idx - 1
@@ -230,10 +233,19 @@ def _community_k_neighbor_edges(C, k_val, p_rewire, rnd):
                 else:
                     v = ordered[right]
                     right += 1
+            original_v = v
+            rewired_now = False
             if rnd.random() < p_rewire:
-                new_edges.add(tuple(sorted((u, v))))
+                choices = list(node_set - {u, original_v})
+                if choices:
+                    v = rnd.choice(choices)
+                    rewired_now = True
+            new_edges.add(tuple(sorted((u, v))))
+            attempts[u] += 1
+            if rewired_now:
+                rewired.append((u, original_v, v))
             added += 1
-    return new_edges
+    return new_edges, attempts, rewired
 
 
 def _community_remesh(
@@ -257,7 +269,15 @@ def _community_remesh(
     C = _community_graph(comms, epi, nx)
     mst_c = nx.minimum_spanning_tree(C, weight="weight")
     new_edges = set(mst_c.edges())
-    new_edges |= _community_k_neighbor_edges(C, k_val, p_rewire, rnd)
+    extra_edges, attempts, rewired_edges = _community_k_neighbor_edges(
+        C, k_val, p_rewire, rnd
+    )
+    new_edges |= extra_edges
+
+    extra_degrees = {idx: 0 for idx in C.nodes()}
+    for u, v in extra_edges:
+        extra_degrees[u] += 1
+        extra_degrees[v] += 1
 
     with edge_version_update(G):
         G.clear_edges()
@@ -278,6 +298,15 @@ def _community_remesh(
                 "n_before": n_before,
                 "n_after": G.number_of_nodes(),
                 "mapping": mapping,
+                "k": int(k_val),
+                "p_rewire": float(p_rewire),
+                "extra_edges_added": len(extra_edges),
+                "extra_edge_attempts": attempts,
+                "extra_edge_degrees": extra_degrees,
+                "rewired_edges": [
+                    {"source": int(u), "from": int(v0), "to": int(v1)}
+                    for u, v0, v1 in rewired_edges
+                ],
             },
         )
 
