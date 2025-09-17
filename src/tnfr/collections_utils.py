@@ -107,7 +107,6 @@ __all__ = (
     "flatten_structure",
     "STRING_TYPES",
     "ensure_collection",
-    "prepare_weights",
     "normalize_weights",
     "negative_weights_warn_once",
     "normalize_counter",
@@ -226,31 +225,6 @@ def _convert_and_validate_weights(
     return weights, keys_list, total
 
 
-def prepare_weights(
-    dict_like: Mapping[str, Any],
-    keys: Iterable[str] | Sequence[str],
-    default: float,
-    *,
-    error_on_conversion: bool,
-    error_on_negative: bool,
-    warn_once: bool | Callable[[Mapping[str, float]], None],
-) -> tuple[dict[str, float], list[str], float]:
-    """Materialize ``keys``, convert values and clamp negatives.
-
-    Returns the converted ``weights`` mapping, the deduplicated ``keys_list``
-    and the accumulated ``total`` using Kahan summation.
-    """
-
-    return _convert_and_validate_weights(
-        dict_like,
-        keys,
-        default,
-        error_on_conversion=error_on_conversion,
-        error_on_negative=error_on_negative,
-        warn_once=warn_once,
-    )
-
-
 def normalize_weights(
     dict_like: Mapping[str, Any],
     keys: Iterable[str] | Sequence[str],
@@ -282,7 +256,7 @@ def normalize_weights(
     deduplication state across calls, pass a callable such as
     :func:`negative_weights_warn_once`.
     """
-    weights, keys_list, total = prepare_weights(
+    weights, keys_list, total = _convert_and_validate_weights(
         dict_like,
         keys,
         default,
