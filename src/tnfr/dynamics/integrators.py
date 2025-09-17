@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from typing import Any, Literal
 
 import networkx as nx  # type: ignore[import-untyped]
@@ -9,7 +10,7 @@ from ..constants import (
     DEFAULTS,
     get_aliases,
 )
-from ..gamma import eval_gamma
+from ..gamma import _get_gamma_spec, eval_gamma
 from ..alias import get_attr, get_attr_str, set_attr, set_attr_str
 
 ALIAS_VF = get_aliases("VF")
@@ -147,16 +148,33 @@ def _build_gamma_increments(
     """Evaluate Γ contributions and merge them with ``νf·ΔNFR`` base terms."""
 
     if method == "rk4":
+        gamma_count = 4
+    elif method == "euler":
+        gamma_count = 1
+    else:
+        raise ValueError("method must be 'euler' or 'rk4'")
+
+    gamma_spec = G.graph.get("_gamma_spec")
+    if gamma_spec is None:
+        gamma_spec = _get_gamma_spec(G)
+
+    gamma_type = ""
+    if isinstance(gamma_spec, Mapping):
+        gamma_type = str(gamma_spec.get("type", "")).lower()
+
+    if gamma_type == "none":
+        gamma_maps = tuple({} for _ in range(gamma_count))
+        return _collect_nodal_increments(G, gamma_maps, method=method)
+
+    if method == "rk4":
         t_mid = t_local + dt_step / 2.0
         t_end = t_local + dt_step
         g1_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
         g_mid_map = {n: eval_gamma(G, n, t_mid) for n in G.nodes}
         g4_map = {n: eval_gamma(G, n, t_end) for n in G.nodes}
         gamma_maps = (g1_map, g_mid_map, g_mid_map, g4_map)
-    elif method == "euler":
+    else:  # method == "euler"
         gamma_maps = ({n: eval_gamma(G, n, t_local) for n in G.nodes},)
-    else:
-        raise ValueError("method must be 'euler' or 'rk4'")
 
     return _collect_nodal_increments(G, gamma_maps, method=method)
 

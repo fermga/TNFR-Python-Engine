@@ -75,3 +75,28 @@ def test_update_epi_uses_shared_gamma_builder(method, monkeypatch):
     assert all(call_method == method for _, _, call_method in calls)
     assert all(dt_step == pytest.approx(0.2) for dt_step, _, _ in calls)
     assert [t_local for _, t_local, _ in calls] == pytest.approx([0.0, 0.2, 0.4])
+
+
+@pytest.mark.parametrize("method", ["euler", "rk4"])
+def test_update_epi_skips_eval_gamma_when_none(method, monkeypatch):
+    G = nx.path_graph(2)
+    inject_defaults(G)
+    init_node_attrs(G, override=True)
+    G.graph["GAMMA"] = {"type": "none"}
+
+    for nd in G.nodes.values():
+        nd["ΔNFR"] = 1.0
+        nd["νf"] = 1.0
+
+    calls = 0
+
+    def fake_eval_gamma(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        return 0.0
+
+    monkeypatch.setattr(integrators_mod, "eval_gamma", fake_eval_gamma)
+
+    update_epi_via_nodal_equation(G, dt=0.3, method=method)
+
+    assert calls == 0
