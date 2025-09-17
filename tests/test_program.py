@@ -9,7 +9,7 @@ import pytest
 import tnfr.flatten as flatten_module
 
 from tnfr.cli import _load_sequence
-from tnfr.execution import _handle_target, block, play, seq, target, wait
+from tnfr.execution import HANDLERS, block, play, seq, target, wait
 from tnfr.flatten import THOLEvaluator, _flatten
 from tnfr.tokens import OpTag, TARGET, THOL, THOL_SENTINEL, WAIT
 from tnfr.constants import get_param
@@ -117,7 +117,8 @@ def test_handle_target_reuses_sequence(graph_canon):
     G.add_nodes_from([1, 2])
     nodes = [1]
     trace = deque()
-    curr = _handle_target(G, TARGET(nodes), None, trace, None)
+    handler = HANDLERS[OpTag.TARGET]
+    curr = handler(G, TARGET(nodes), None, trace, _step_noop)
     assert curr is nodes
 
 
@@ -126,7 +127,8 @@ def test_handle_target_materializes_non_sequence(graph_canon):
     G.add_nodes_from([1, 2])
     trace = deque()
     nodes_view = G.nodes()
-    curr = _handle_target(G, TARGET(nodes_view), None, trace, None)
+    handler = HANDLERS[OpTag.TARGET]
+    curr = handler(G, TARGET(nodes_view), None, trace, _step_noop)
     assert isinstance(curr, tuple)
 
 
