@@ -121,17 +121,18 @@ when orchestrating TNFR experiments.
 * ``angle_diff(a, b)`` — compute minimal angular differences (radians) to
   compare structural phases.
 
-### Glyph history helpers
+### Historial de operadores estructurales
 
-* ``push_glyph(nd, glyph, window)`` — update node history respecting the
-  configured rolling window.
-* ``recent_glyph(nd, glyph, window)`` — test whether a glyph appeared in the
-  recent history of a node.
+* ``push_glyph(nd, glyph, window)`` — registra la aplicación de un operador en el
+  historial del nodo respetando la ventana configurada.
+* ``recent_glyph(nd, glyph, window)`` — comprueba si un operador específico
+  aparece en el historial reciente de un nodo.
 * ``ensure_history(G)`` — prepare the graph-level history container with the
   appropriate bounds.
-* ``last_glyph(nd)`` — inspect the most recent glyph emitted by a node.
-* ``count_glyphs(G, window=None, *, last_only=False)`` — aggregate glyph usage
-  across the network either from the whole history or a limited window.
+* ``last_glyph(nd)`` — inspecciona el último operador emitido por un nodo.
+* ``count_glyphs(G, window=None, *, last_only=False)`` — agrega el uso de
+  operadores estructurales en la red ya sea desde todo el historial o una
+  ventana limitada.
 
 ### Graph caches and ΔNFR invalidation
 
