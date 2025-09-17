@@ -4,10 +4,9 @@ from unittest.mock import patch
 
 from tnfr.cache import (
     NODE_SET_CHECKSUM_KEY,
+    clear_node_repr_cache,
     node_set_checksum,
     stable_json,
-    _node_repr,
-    _node_repr_digest,
 )
 from tnfr.helpers.edge_cache import increment_edge_version
 
@@ -25,8 +24,15 @@ def test_node_set_checksum_object_stable(graph_canon):
     assert checksum1 == checksum2
 
 
+def _sorting_key(node):
+    try:
+        return stable_json(node)
+    except TypeError:
+        return repr(node)
+
+
 def _reference_checksum(G):
-    nodes = sorted(G.nodes(), key=_node_repr)
+    nodes = sorted(G.nodes(), key=_sorting_key)
     hasher = hashlib.blake2b(digest_size=16)
     for n in nodes:
         d = hashlib.blake2b(
@@ -53,7 +59,7 @@ def test_node_set_checksum_presorted_performance(graph_canon):
     G = graph_canon()
     G.add_nodes_from(range(1000))
     nodes = list(G.nodes())
-    nodes.sort(key=_node_repr)
+    nodes.sort(key=_sorting_key)
     t_unsorted = timeit.timeit(lambda: node_set_checksum(G, nodes), number=1)
     t_presorted = timeit.timeit(
         lambda: node_set_checksum(G, nodes, presorted=True), number=1
@@ -88,9 +94,18 @@ def test_node_set_checksum_uses_cached_result_without_rehash(graph_canon):
         mock_digest.assert_not_called()
 
 
-def test_node_cache_cleared_on_increment(graph_canon):
+def test_increment_edge_version_clears_node_repr_cache(graph_canon):
     nxG = graph_canon()
-    _node_repr_digest("foo")
-    assert _node_repr_digest.cache_info().currsize > 0
-    increment_edge_version(nxG)
-    assert _node_repr_digest.cache_info().currsize == 0
+    nxG.add_nodes_from([1, 2, 3])
+    with patch("tnfr.cache.stable_json", wraps=stable_json) as mock_stable_json:
+        clear_node_repr_cache()
+        node_set_checksum(nxG, store=False)
+        first_call_count = mock_stable_json.call_count
+        assert first_call_count == len(nxG.nodes())
+
+        node_set_checksum(nxG, store=False)
+        assert mock_stable_json.call_count == first_call_count
+
+        increment_edge_version(nxG)
+        node_set_checksum(nxG, store=False)
+        assert mock_stable_json.call_count == first_call_count + len(nxG.nodes())
