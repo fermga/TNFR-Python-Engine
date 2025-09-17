@@ -8,7 +8,7 @@ from tnfr.cache import (
     node_set_checksum,
     stable_json,
 )
-from tnfr.helpers.edge_cache import increment_edge_version
+from tnfr.cache import increment_edge_version
 
 
 def build_graph(graph_canon):

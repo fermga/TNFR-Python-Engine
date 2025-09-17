@@ -13,9 +13,9 @@ from typing import Any, Callable
 
 from ..collections_utils import normalize_weights
 from ..constants import DEFAULTS, get_aliases, get_param
+from ..cache import cached_nodes_and_A
 from ..helpers.numeric import angle_diff
 from ..metrics.trig import neighbor_phase_mean, _phase_mean_from_iter
-from ..helpers import cached_nodes_and_A
 from ..alias import (
     get_attr,
     set_dnfr,

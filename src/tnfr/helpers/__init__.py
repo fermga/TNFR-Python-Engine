@@ -15,15 +15,16 @@ from ..glyph_history import (
     push_glyph,
     recent_glyph,
 )
-from ..cache import node_set_checksum, stable_json
-from ..graph_utils import get_graph, get_graph_mapping, mark_dnfr_prep_dirty
-from .edge_cache import (
+from ..cache import (
     EdgeCacheManager,
     cached_nodes_and_A,
     edge_version_cache,
     edge_version_update,
     increment_edge_version,
+    node_set_checksum,
+    stable_json,
 )
+from ..graph_utils import get_graph, get_graph_mapping, mark_dnfr_prep_dirty
 from .node_cache import cached_node_list, ensure_node_index_map, ensure_node_offset_map
 from .numeric import (
     angle_diff,

@@ -8,7 +8,7 @@ from typing import Any, Iterable, Mapping, Sequence
 from ..alias import get_attr, multi_recompute_abs_max
 from ..collections_utils import normalize_weights
 from ..constants import DEFAULTS, get_aliases
-from ..helpers import edge_version_cache
+from ..cache import edge_version_cache
 from ..helpers.numeric import clamp01, kahan_sum_nd
 from ..import_utils import get_numpy
 from ..types import GraphLike
