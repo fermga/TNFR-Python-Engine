@@ -23,6 +23,7 @@ from tnfr.cli.arguments import (
 from tnfr.cli.execution import (
     _build_graph_from_args,
     _save_json,
+    _run_cli_program,
     run_program,
     resolve_program,
 )
@@ -125,6 +126,51 @@ def test_sequence_defaults_to_canonical(monkeypatch):
     rc = main(["sequence"])
     assert rc == 0
     assert recorded["program"] == basic_canonical_example()
+
+
+def test_run_cli_program_handles_system_exit(monkeypatch):
+    args = argparse.Namespace()
+
+    def boom(_args, default=None):  # pragma: no cover - defensive default
+        raise SystemExit(5)
+
+    monkeypatch.setattr("tnfr.cli.execution.resolve_program", boom)
+
+    code, graph = _run_cli_program(args)
+
+    assert code == 5
+    assert graph is None
+
+
+def test_run_cli_program_runs_and_returns_graph(monkeypatch):
+    args = argparse.Namespace()
+    expected_default = object()
+    expected_program = object()
+    provided_graph = object()
+    result_graph = object()
+    recorded: dict[str, Any] = {}
+
+    def fake_resolve(_args, default=None):
+        recorded["default"] = default
+        return expected_program
+
+    def fake_run_program(graph, program, _args):
+        recorded["graph"] = graph
+        recorded["program"] = program
+        return result_graph
+
+    monkeypatch.setattr("tnfr.cli.execution.resolve_program", fake_resolve)
+    monkeypatch.setattr("tnfr.cli.execution.run_program", fake_run_program)
+
+    code, graph = _run_cli_program(
+        args, default_program=expected_default, graph=provided_graph
+    )
+
+    assert code == 0
+    assert graph is result_graph
+    assert recorded["default"] is expected_default
+    assert recorded["graph"] is provided_graph
+    assert recorded["program"] is expected_program
 
 
 def test_resolve_program_prefers_preset(monkeypatch):
