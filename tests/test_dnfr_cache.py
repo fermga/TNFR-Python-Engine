@@ -1,12 +1,19 @@
 """Pruebas de dnfr cache."""
 
+import math
+
 import pytest
 import networkx as nx
 
 import tnfr.import_utils as import_utils
 
 from tnfr.dynamics import default_compute_delta_nfr
-from tnfr.constants import THETA_PRIMARY, EPI_PRIMARY, VF_PRIMARY
+from tnfr.constants import (
+    THETA_PRIMARY,
+    EPI_PRIMARY,
+    VF_PRIMARY,
+    DNFR_PRIMARY,
+)
 from tnfr.cache import (
     increment_edge_version,
     cached_node_list,
@@ -101,7 +108,7 @@ def test_cache_invalidated_on_node_rename():
     assert set(nodes2) == {0, 1, 9}
 
 
-def test_prepare_dnfr_data_reuses_cache(monkeypatch):
+def test_prepare_dnfr_data_refreshes_cached_vectors(monkeypatch):
     cos_calls, sin_calls = _counting_trig(monkeypatch)
     G = _setup_graph()
     default_compute_delta_nfr(G)
@@ -109,10 +116,40 @@ def test_prepare_dnfr_data_reuses_cache(monkeypatch):
     cos_first = cos_calls["n"]
     sin_first = sin_calls["n"]
 
-    # Subsequent call without modifications should reuse cached trig values
+    # Subsequent call without modifications should refresh cached trig values
     default_compute_delta_nfr(G)
-    assert cos_calls["n"] == cos_first
-    assert sin_calls["n"] == sin_first
+    assert cos_calls["n"] == cos_first + len(G)
+    assert sin_calls["n"] == sin_first + len(G)
+
+
+@pytest.mark.parametrize("vectorized", [False, True])
+def test_default_compute_delta_nfr_updates_on_state_change(vectorized):
+    if vectorized:
+        pytest.importorskip("numpy")
+
+    G = _setup_graph()
+    G.graph["DNFR_WEIGHTS"] = {
+        "phase": 1.0,
+        "epi": 1.0,
+        "vf": 1.0,
+        "topo": 0.0,
+    }
+    G.graph["vectorized_dnfr"] = vectorized
+
+    default_compute_delta_nfr(G, cache_size=2)
+    before = {n: G.nodes[n].get(DNFR_PRIMARY, 0.0) for n in G.nodes}
+
+    # Modify only the central node without touching topology
+    target = 1
+    G.nodes[target][THETA_PRIMARY] += 0.5
+    G.nodes[target][EPI_PRIMARY] += 1.2
+    G.nodes[target][VF_PRIMARY] -= 0.8
+
+    default_compute_delta_nfr(G, cache_size=2)
+    after = {n: G.nodes[n].get(DNFR_PRIMARY, 0.0) for n in G.nodes}
+
+    assert not math.isclose(before[target], after[target])
+    assert any(not math.isclose(before[n], after[n]) for n in G.nodes)
 
 
 def test_cached_nodes_and_A_reuses_until_edge_change():
