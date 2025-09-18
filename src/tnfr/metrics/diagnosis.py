@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from statistics import fmean, StatisticsError
 from operator import ge, le
+from typing import Any
 
 from ..constants import (
     VF_KEY,
