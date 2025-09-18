@@ -640,15 +640,18 @@ def run(
     if steps_int < 0:
         raise ValueError("'steps' must be non-negative")
     stop_cfg = get_graph_param(G, "STOP_EARLY", dict)
-    history = None
+    stop_enabled = False
     if stop_cfg and stop_cfg.get("enabled", False):
         w = int(stop_cfg.get("window", 25))
         frac = float(stop_cfg.get("fraction", 0.90))
-        history = G.graph.setdefault("history", {"stable_frac": []})
+        stop_enabled = True
     for _ in range(steps_int):
         step(G, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)
         # Early-stop opcional
-        if history is not None:
+        if stop_enabled:
+            history = ensure_history(G)
             series = history.get("stable_frac", [])
+            if not isinstance(series, list):
+                series = list(series)
             if len(series) >= w and all(v >= frac for v in series[-w:]):
                 break
