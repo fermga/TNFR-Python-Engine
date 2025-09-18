@@ -8,6 +8,7 @@ from collections import deque
 from typing import Any
 
 import pytest
+import networkx as nx  # type: ignore[import-untyped]
 
 from tnfr.cli import main
 from tnfr.cli.arguments import (
@@ -35,6 +36,35 @@ def test_cli_version(capsys):
     assert rc == 0
     out = capsys.readouterr().out.strip()
     assert __version__ in out
+
+
+@pytest.mark.parametrize(
+    ("nodes", "p_arg", "expected_p"),
+    [
+        ("1", None, 1.0),
+        ("2", "0.2", 0.2),
+        ("0", None, 0.0),
+    ],
+)
+def test_cli_run_erdos_low_nodes(monkeypatch, nodes, p_arg, expected_p):
+    recorded: dict[str, float] = {}
+    original = nx.gnp_random_graph
+
+    def spy(n: int, p: float, seed: int | None = None):
+        recorded.update({"n": n, "p": p, "seed": seed})
+        return original(n, p, seed=seed)
+
+    monkeypatch.setattr("tnfr.cli.execution.nx.gnp_random_graph", spy)
+
+    args = ["run", "--nodes", nodes, "--steps", "0", "--topology", "erdos"]
+    if p_arg is not None:
+        args.extend(["--p", p_arg])
+
+    rc = main(args)
+
+    assert rc == 0
+    assert recorded["n"] == int(nodes)
+    assert recorded["p"] == pytest.approx(expected_p)
 
 
 def test_cli_metrics_generates_metrics_payload(tmp_path):
