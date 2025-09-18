@@ -132,9 +132,7 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
         }
 
 
-def register_callbacks_and_observer(
-    G: "nx.Graph", _args: argparse.Namespace
-) -> None:
+def register_callbacks_and_observer(G: "nx.Graph") -> None:
     _attach_callbacks(G)
     validate_canon(G)
 
@@ -145,7 +143,7 @@ def _build_graph_from_args(args: argparse.Namespace) -> "nx.Graph":
     if getattr(args, "observer", False):
         G.graph["ATTACH_STD_OBSERVER"] = True
     preparar_red(G)
-    register_callbacks_and_observer(G, args)
+    register_callbacks_and_observer(G)
     return G
 
 
