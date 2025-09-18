@@ -2,7 +2,7 @@
 
 import json
 from collections import deque
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 
 import pytest
 
@@ -41,10 +41,27 @@ def test_wait_logs_sanitized_steps(graph_canon):
     assert trace[0]["k"] == 1
 
 
-def test_flatten_wait_sanitizes_steps():
+def test_flatten_wait_sanitizes_steps(monkeypatch):
     program = seq(WAIT(-2.5), WAIT(2.4))
-    ops = _flatten(program)
-    assert ops == [(OpTag.WAIT, 1), (OpTag.WAIT, 2)]
+    expected = [(OpTag.WAIT, 1), (OpTag.WAIT, 2)]
+    assert _flatten(program) == expected
+
+    calls: list[object] = []
+    original = flatten_module.ensure_collection
+
+    def spy(it, *args, **kwargs):
+        calls.append(it)
+        return original(it, *args, **kwargs)
+
+    monkeypatch.setattr(flatten_module, "ensure_collection", spy)
+
+    def wait_stream():
+        yield WAIT(-2.5)
+        yield WAIT(2.4)
+
+    assert _flatten(wait_stream()) == expected
+    assert len(calls) == 1
+    assert not isinstance(calls[0], Collection)
 
 
 def test_flatten_accepts_wait_subclass():

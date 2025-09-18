@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Collection, Iterable, Iterator, Mapping, Sequence
+from collections.abc import Collection, Iterable, Mapping, Sequence
+from itertools import chain
 from typing import Any, Callable
 
 from .collections_utils import (
@@ -48,20 +49,23 @@ def _iter_source(
     if limit == 0:
         return ()
 
-    def _limited() -> Iterator[Any]:
-        samples: list[Any] = []
-        for idx, item in enumerate(seq, 1):
-            if len(samples) < 3:
-                samples.append(item)
-            if idx > limit:
-                examples = ", ".join(repr(x) for x in samples)
-                raise ValueError(
-                    "Iterable produced "
-                    f"{idx} items, exceeds limit {limit}; first items: [{examples}]"
-                )
-            yield item
+    iterator = iter(seq)
 
-    return _limited()
+    def _preview() -> Iterable[Any]:
+        for idx, item in enumerate(iterator):
+            yield item
+            if idx >= limit:
+                break
+
+    preview = ensure_collection(
+        _preview(),
+        max_materialize=limit,
+    )
+
+    if not preview:
+        return ()
+
+    return chain(preview, iterator)
 
 
 def _push_thol_frame(
