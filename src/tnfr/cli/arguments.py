@@ -4,10 +4,10 @@ import argparse
 from typing import Any
 
 from ..gamma import GAMMA_REGISTRY
-from .utils import spec, specs
+from .utils import spec
 
 
-GRAMMAR_ARG_SPECS = specs(
+GRAMMAR_ARG_SPECS = (
     spec("--grammar.enabled", action=argparse.BooleanOptionalAction),
     spec("--grammar.zhir_requires_oz_window", type=int),
     spec("--grammar.zhir_dnfr_min", type=float),
@@ -20,7 +20,7 @@ GRAMMAR_ARG_SPECS = specs(
 
 
 # Especificaciones para opciones relacionadas con el histórico
-HISTORY_ARG_SPECS = specs(
+HISTORY_ARG_SPECS = (
     spec("--save-history", type=str),
     spec("--export-history-base", type=str),
     spec("--export-format", choices=["csv", "json"], default="json"),
@@ -28,7 +28,7 @@ HISTORY_ARG_SPECS = specs(
 
 
 # Argumentos comunes a los subcomandos
-COMMON_ARG_SPECS = specs(
+COMMON_ARG_SPECS = (
     spec("--nodes", type=int, default=24),
     spec("--topology", choices=["ring", "complete", "erdos"], default="ring"),
     spec("--seed", type=int, default=1),
