@@ -10,7 +10,6 @@ from ..glyph_history import append_metric, ensure_history
 from ..logging_utils import get_logger
 from .coherence import (
     _aggregate_si,
-    _record_metrics,
     _track_stability,
     _update_coherence,
     _update_phase_sync,
@@ -18,19 +17,7 @@ from .coherence import (
     register_coherence_callbacks,
 )
 from .diagnosis import register_diagnosis_callbacks
-from .glyph_timing import (
-    GlyphTiming,
-    _compute_advanced_metrics,
-    LATENT_GLYPH,
-    _tg_state,
-    _update_tg,
-    _update_tg_node,
-    _update_glyphogram,
-    _update_latency_index,
-    _update_epi_support,
-    _update_morph_metrics,
-    for_each_glyph,
-)
+from .glyph_timing import _compute_advanced_metrics
 from .reporting import (
     Tg_by_node,
     Tg_global,
@@ -42,23 +29,6 @@ from .reporting import (
 logger = get_logger(__name__)
 
 __all__ = [
-    "LATENT_GLYPH",
-    "GlyphTiming",
-    "_tg_state",
-    "for_each_glyph",
-    "_update_tg_node",
-    "_update_tg",
-    "_update_glyphogram",
-    "_update_latency_index",
-    "_update_epi_support",
-    "_update_morph_metrics",
-    "_update_coherence",
-    "_record_metrics",
-    "_update_phase_sync",
-    "_update_sigma",
-    "_track_stability",
-    "_aggregate_si",
-    "_compute_advanced_metrics",
     "_metrics_step",
     "register_metrics_callbacks",
     "Tg_global",
