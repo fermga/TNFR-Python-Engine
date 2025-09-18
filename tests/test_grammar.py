@@ -1,6 +1,6 @@
 """Pruebas de grammar."""
 
-from collections import deque
+from collections import deque, defaultdict
 
 from tnfr.constants import inject_defaults
 from tnfr.grammar import (
@@ -9,6 +9,7 @@ from tnfr.grammar import (
     apply_glyph_with_grammar,
 )
 from tnfr.types import Glyph
+from tnfr.dynamics import _choose_glyph
 
 
 def test_compatibility_fallback(graph_canon):
@@ -103,6 +104,27 @@ def test_repeat_invalid_fallback_type(graph_canon):
         "fallbacks": {"ZHIR": obj},
     }
     assert enforce_canonical_grammar(G, 0, Glyph.ZHIR) == Glyph.IL
+
+
+def test_canonical_enforcement_with_string_history(graph_canon):
+    G = graph_canon()
+    G.add_node(0)
+    inject_defaults(G)
+    G.graph.setdefault("GRAMMAR_CANON", {})["enabled"] = True
+
+    nd = G.nodes[0]
+    nd["glyph_history"] = deque([Glyph.AL.value])
+
+    def selector(_, __):
+        return "IL"
+
+    h_al = defaultdict(int)
+    h_en = defaultdict(int)
+
+    result = _choose_glyph(G, 0, selector, True, h_al, h_en, 10, 10)
+
+    assert isinstance(result, str)
+    assert result == Glyph.EN.value
 
 
 def test_lag_counters_enforced(graph_canon):
