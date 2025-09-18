@@ -158,7 +158,7 @@ def test_gamma_spec_normalized_once(graph_canon, monkeypatch):
     G.graph["GAMMA"] = []  # invalid spec
     emitted = []
 
-    def fake_warn(message, *args, **kwargs):
+    def fake_warn(message, *_args, **_kwargs):
         emitted.append(message)
 
     monkeypatch.setattr("tnfr.graph_utils.warnings.warn", fake_warn)
