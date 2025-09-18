@@ -1,7 +1,13 @@
 """Predefined configurations."""
 
 from __future__ import annotations
-from .execution import seq, block, wait, basic_canonical_example
+from .execution import (
+    CANONICAL_PRESET_NAME,
+    CANONICAL_PROGRAM_TOKENS,
+    block,
+    seq,
+    wait,
+)
 from .types import Glyph
 
 __all__ = ("get_preset",)
@@ -35,7 +41,7 @@ _PRESETS = {
         Glyph.RA,
         Glyph.SHA,
     ),
-    "ejemplo_canonico": basic_canonical_example(),
+    CANONICAL_PRESET_NAME: list(CANONICAL_PROGRAM_TOKENS),
     # Topologías fractales: expansión/contracción modular
     "fractal_expand": seq(
         block(Glyph.THOL, Glyph.VAL, Glyph.UM, repeat=2, close=Glyph.NUL),

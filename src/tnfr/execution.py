@@ -30,6 +30,8 @@ HandlerFn = Callable[
 
 __all__ = [
     "AdvanceFn",
+    "CANONICAL_PRESET_NAME",
+    "CANONICAL_PROGRAM_TOKENS",
     "HANDLERS",
     "_apply_glyph_to_targets",
     "_record_trace",
@@ -41,6 +43,17 @@ __all__ = [
     "target",
     "wait",
 ]
+
+
+CANONICAL_PRESET_NAME = "ejemplo_canonico"
+CANONICAL_PROGRAM_TOKENS: tuple[Token, ...] = (
+    Glyph.SHA,
+    Glyph.AL,
+    Glyph.RA,
+    Glyph.ZHIR,
+    Glyph.NUL,
+    Glyph.THOL,
+)
 
 
 def _window(G) -> int:
@@ -179,8 +192,10 @@ def wait(steps: int = 1) -> WAIT:
 
 
 def basic_canonical_example() -> list[Token]:
-    """Reference canonical sequence."""
+    """Reference canonical sequence.
 
-    return seq(
-        Glyph.SHA, Glyph.AL, Glyph.RA, Glyph.ZHIR, Glyph.NUL, Glyph.THOL
-    )
+    Returns a copy of the canonical preset tokens to keep CLI defaults aligned
+    with :func:`tnfr.presets.get_preset`.
+    """
+
+    return list(CANONICAL_PROGRAM_TOKENS)
