@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Collection, Iterable, Iterator, Sequence
+from collections.abc import Collection, Iterable, Iterator, Mapping, Sequence
 from typing import Any, Callable
 
 from .collections_utils import (
@@ -22,6 +22,7 @@ __all__ = [
     "_flatten_glyph",
     "_flatten_target",
     "_flatten_wait",
+    "parse_program_tokens",
 ]
 
 
@@ -178,6 +179,65 @@ _TOKEN_DISPATCH: dict[type, Callable[[Any, list[tuple[OpTag, Any]]], None]] = {
 }
 
 
+def _coerce_mapping_token(
+    mapping: Mapping[str, Any],
+    *,
+    max_materialize: int | None,
+) -> Token:
+    if len(mapping) != 1:
+        raise ValueError(f"Invalid token mapping: {mapping!r}")
+    key, value = next(iter(mapping.items()))
+    if key == "WAIT":
+        return WAIT(int(value))
+    if key == "TARGET":
+        return TARGET(value)
+    if key != "THOL":
+        raise ValueError(f"Unrecognized token: {key!r}")
+    if not isinstance(value, Mapping):
+        raise TypeError("THOL specification must be a mapping")
+
+    close = value.get("close")
+    if isinstance(close, str):
+        close_enum = Glyph.__members__.get(close)
+        if close_enum is None:
+            raise ValueError(f"Glyph de cierre desconocido: {close!r}")
+        close = close_enum
+    elif close is not None and not isinstance(close, Glyph):
+        raise TypeError("THOL close glyph must be a Glyph or string name")
+
+    body = parse_program_tokens(value.get("body", []), max_materialize=max_materialize)
+    repeat = int(value.get("repeat", 1))
+    return THOL(body=body, repeat=repeat, force_close=close)
+
+
+def parse_program_tokens(
+    obj: Iterable[Any] | Sequence[Any] | Any,
+    *,
+    max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
+) -> list[Token]:
+    """Materialize ``obj`` into a list of canonical tokens.
+
+    The function accepts the same iterables handled by :func:`_flatten`,
+    including dictionaries describing ``WAIT``, ``TARGET`` and ``THOL`` tokens.
+    Nested iterables are flattened following :func:`flatten_structure` rules.
+    """
+
+    sequence = _iter_source(obj, max_materialize=max_materialize)
+
+    def _expand(item: Any):
+        if isinstance(item, Mapping):
+            return (_coerce_mapping_token(item, max_materialize=max_materialize),)
+        return None
+
+    tokens: list[Token] = []
+    for item in flatten_structure(sequence, expand=_expand):
+        if isinstance(item, (Glyph, WAIT, TARGET, THOL, str)):
+            tokens.append(item)
+            continue
+        raise TypeError(f"Unsupported token: {item!r}")
+    return tokens
+
+
 def _flatten(
     seq: Iterable[Token] | Sequence[Token] | Any,
     *,
@@ -191,6 +251,9 @@ def _flatten(
     def _expand(item: Any):
         if isinstance(item, THOL):
             return THOLEvaluator(item, max_materialize=max_materialize)
+        if isinstance(item, Mapping):
+            token = _coerce_mapping_token(item, max_materialize=max_materialize)
+            return (token,)
         return None
 
     for item in flatten_structure(sequence, expand=_expand):
@@ -198,6 +261,11 @@ def _flatten(
             ops.append((OpTag.THOL, Glyph.THOL.value))
             continue
         handler = _TOKEN_DISPATCH.get(type(item))
+        if handler is None:
+            for cls, candidate in _TOKEN_DISPATCH.items():
+                if isinstance(item, cls):
+                    handler = candidate
+                    break
         if handler is None:
             raise TypeError(f"Unsupported token: {item!r}")
         handler(item, ops)

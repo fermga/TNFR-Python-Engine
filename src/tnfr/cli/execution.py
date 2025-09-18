@@ -35,9 +35,9 @@ from ..ontosim import preparar_red
 from ..logging_utils import get_logger
 from ..types import Glyph
 from ..json_utils import json_dumps
+from ..flatten import parse_program_tokens
 
 from .arguments import _args_to_dict
-from ..token_parser import _parse_tokens
 
 logger = get_logger(__name__)
 
@@ -159,7 +159,7 @@ def _load_sequence(path: Path) -> list[Any]:
             message = str(StructuredFileError(path, exc))
         logger.error("%s", message)
         raise SystemExit(1) from exc
-    return seq(*_parse_tokens(data))
+    return seq(*parse_program_tokens(data))
 
 
 def resolve_program(
