@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Collection, Iterable, Mapping, Sequence
+from dataclasses import dataclass
 from itertools import chain
 from typing import Any, Callable
 
@@ -25,6 +26,16 @@ __all__ = [
     "_flatten_wait",
     "parse_program_tokens",
 ]
+
+
+@dataclass
+class TholFrame:
+    """Execution frame used to evaluate nested THOL blocks."""
+
+    seq: Sequence[Token]
+    index: int
+    remaining: int
+    closing: Glyph | None
 
 
 def _iter_source(
@@ -69,7 +80,7 @@ def _iter_source(
 
 
 def _push_thol_frame(
-    frames: list[dict[str, Any]],
+    frames: list[TholFrame],
     item: THOL,
     *,
     max_materialize: int | None,
@@ -93,12 +104,12 @@ def _push_thol_frame(
         error_msg=f"THOL body exceeds max_materialize={max_materialize}",
     )
     frames.append(
-        {
-            "seq": seq0,
-            "index": 0,
-            "remaining": repeats,
-            "closing": closing,
-        }
+        TholFrame(
+            seq=seq0,
+            index=0,
+            remaining=repeats,
+            closing=closing,
+        )
     )
 
 
@@ -111,7 +122,7 @@ class THOLEvaluator:
         *,
         max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
     ) -> None:
-        self._frames: list[dict[str, Any]] = []
+        self._frames: list[TholFrame] = []
         _push_thol_frame(self._frames, item, max_materialize=max_materialize)
         self._max_materialize = max_materialize
         self._started = False
@@ -125,11 +136,11 @@ class THOLEvaluator:
             return THOL_SENTINEL
         while self._frames:
             frame = self._frames[-1]
-            seq = frame["seq"]
-            idx = frame["index"]
+            seq = frame.seq
+            idx = frame.index
             if idx < len(seq):
                 token = seq[idx]
-                frame["index"] = idx + 1
+                frame.index = idx + 1
                 if isinstance(token, THOL):
                     _push_thol_frame(
                         self._frames,
@@ -139,10 +150,10 @@ class THOLEvaluator:
                     return THOL_SENTINEL
                 return token
             else:
-                cl = frame["closing"]
-                frame["remaining"] -= 1
-                if frame["remaining"] > 0:
-                    frame["index"] = 0
+                cl = frame.closing
+                frame.remaining -= 1
+                if frame.remaining > 0:
+                    frame.index = 0
                 else:
                     self._frames.pop()
                 if cl is not None:
