@@ -57,3 +57,17 @@ def test_compute_coherence_return_means(graph_canon):
     assert C == pytest.approx(expected_C)
     assert dnfr_mean == pytest.approx(expected_dnfr)
     assert depi_mean == pytest.approx(expected_depi)
+
+
+def test_compute_coherence_without_numpy(monkeypatch, graph_canon):
+    monkeypatch.setattr("tnfr.metrics.common.get_numpy", lambda: None)
+    G = graph_canon()
+    G.add_node(0, dnfr=0.1, dEPI=0.2)
+    G.add_node(1, dnfr=0.4, dEPI=0.5)
+    coherence, dnfr_mean, depi_mean = compute_coherence(G, return_means=True)
+    expected_dnfr = (0.1 + 0.4) / 2
+    expected_depi = (0.2 + 0.5) / 2
+    expected_coherence = 1.0 / (1.0 + expected_dnfr + expected_depi)
+    assert coherence == pytest.approx(expected_coherence)
+    assert dnfr_mean == pytest.approx(expected_dnfr)
+    assert depi_mean == pytest.approx(expected_depi)

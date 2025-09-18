@@ -52,21 +52,18 @@ def compute_coherence(
         dnfr_mean = float(np.mean(dnfr_arr))
         depi_mean = float(np.mean(depi_arr))
     else:
-        nodes = list(G.nodes(data=True))
-        dnfr_mean = (
-            kahan_sum_nd(
-                ((abs(get_attr(nd, ALIAS_DNFR, 0.0)),) for _, nd in nodes),
-                dims=1,
-            )[0]
-            / count
+        dnfr_sum, depi_sum = kahan_sum_nd(
+            (
+                (
+                    abs(get_attr(nd, ALIAS_DNFR, 0.0)),
+                    abs(get_attr(nd, ALIAS_DEPI, 0.0)),
+                )
+                for _, nd in G.nodes(data=True)
+            ),
+            dims=2,
         )
-        depi_mean = (
-            kahan_sum_nd(
-                ((abs(get_attr(nd, ALIAS_DEPI, 0.0)),) for _, nd in nodes),
-                dims=1,
-            )[0]
-            / count
-        )
+        dnfr_mean = dnfr_sum / count
+        depi_mean = depi_sum / count
 
     coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence
