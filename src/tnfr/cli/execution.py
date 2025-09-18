@@ -51,7 +51,7 @@ def _attach_callbacks(G: "nx.Graph") -> None:
     register_sigma_callback(G)
     register_metrics_callbacks(G)
     register_trace(G)
-    _metrics_step(G)
+    _metrics_step(G, ctx=None)
 
 
 def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
