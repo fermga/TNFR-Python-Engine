@@ -161,7 +161,7 @@ def test_load_sequence_json_yaml(tmp_path):
     ypath = tmp_path / "prog.yaml"
     ypath.write_text(yaml.safe_dump(data))
 
-    expected = seq("AL", block("OZ", "EN", "RA"), wait(1))
+    expected = flatten_module.parse_program_tokens(data)
     assert _load_sequence(jpath) == expected
     assert _load_sequence(ypath) == expected
 
@@ -176,7 +176,7 @@ def test_load_sequence_repeated_calls(tmp_path):
     path = tmp_path / "prog.json"
     path.write_text(json.dumps(data))
 
-    expected = seq("AL", block("OZ", "EN", "RA"), wait(1))
+    expected = flatten_module.parse_program_tokens(data)
     for _ in range(5):
         assert _load_sequence(path) == expected
 
