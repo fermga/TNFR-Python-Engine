@@ -72,7 +72,14 @@ def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
     elif topology == "complete":
         G = nx.complete_graph(n)
     elif topology == "erdos":
-        prob = float(args.p) if getattr(args, "p", None) is not None else 3.0 / n
+        if getattr(args, "p", None) is not None:
+            prob = float(args.p)
+        else:
+            if n <= 0:
+                fallback = 0.0
+            else:
+                fallback = 3.0 / n
+            prob = min(max(fallback, 0.0), 1.0)
         if not 0.0 <= prob <= 1.0:
             raise ValueError(f"p must be between 0 and 1; received {prob}")
         G = nx.gnp_random_graph(n, prob, seed=seed)
