@@ -21,20 +21,6 @@ def test_wraps_bytearray():
     assert ensure_collection(arr) == (arr,)
 
 
-def test_string_materialized_when_requested():
-    assert ensure_collection("node", treat_strings_as_iterables=True) == tuple("node")
-
-
-def test_bytes_materialized_when_requested():
-    data = b"node"
-    assert ensure_collection(data, treat_strings_as_iterables=True) == tuple(data)
-
-
-def test_bytearray_materialized_when_requested():
-    arr = bytearray(b"node")
-    assert ensure_collection(arr, treat_strings_as_iterables=True) == tuple(arr)
-
-
 def test_iterable_not_iterator_materialized():
     class CustomIterable:
         def __iter__(self):

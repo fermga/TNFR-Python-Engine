@@ -137,7 +137,6 @@ def ensure_collection(
     *,
     max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
     error_msg: str | None = None,
-    treat_strings_as_iterables: bool = False,
 ) -> Collection[T]:
     """Return ``it`` as a :class:`Collection`, materializing when needed.
 
@@ -145,7 +144,7 @@ def ensure_collection(
 
     1. Existing collections are returned directly. String-like inputs
        (``str``, ``bytes`` and ``bytearray``) are wrapped as a single item
-       tuple unless ``treat_strings_as_iterables=True``.
+       tuple.
     2. The object must be an :class:`Iterable`; otherwise ``TypeError`` is
        raised.
     3. Remaining iterables are materialized up to ``max_materialize`` items.
@@ -158,9 +157,7 @@ def ensure_collection(
     # Step 1: early-return for collections and raw strings/bytes
     if isinstance(it, Collection):
         if isinstance(it, STRING_TYPES):
-            if not treat_strings_as_iterables:
-                return (cast(T, it),)
-            # fall through for materialization when treating as iterable
+            return (cast(T, it),)
         else:
             return it
 
