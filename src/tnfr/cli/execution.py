@@ -205,6 +205,22 @@ def run_program(
     return G
 
 
+def _run_cli_program(
+    args: argparse.Namespace,
+    *,
+    default_program: Optional[Any] = None,
+    graph: Optional["nx.Graph"] = None,
+) -> tuple[int, Optional["nx.Graph"]]:
+    try:
+        program = resolve_program(args, default=default_program)
+    except SystemExit as exc:
+        code = exc.code if isinstance(exc.code, int) else 1
+        return code or 1, None
+
+    result_graph = run_program(graph, program, args)
+    return 0, result_graph
+
+
 def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
     cfg_coh = G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"])
     cfg_diag = G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"])
@@ -235,13 +251,12 @@ def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
 
 
 def cmd_run(args: argparse.Namespace) -> int:
-    try:
-        program = resolve_program(args)
-    except SystemExit as exc:
-        code = exc.code if isinstance(exc.code, int) else 1
-        return code or 1
-    G = run_program(None, program, args)
-    _log_run_summaries(G, args)
+    code, graph = _run_cli_program(args)
+    if code != 0:
+        return code
+
+    if graph is not None:
+        _log_run_summaries(graph, args)
     return 0
 
 
@@ -251,26 +266,23 @@ def cmd_sequence(args: argparse.Namespace) -> int:
             "No se puede usar --preset y --sequence-file al mismo tiempo"
         )
         return 1
-    try:
-        program = resolve_program(args, default=basic_canonical_example())
-    except SystemExit as exc:
-        code = exc.code if isinstance(exc.code, int) else 1
-        return code or 1
-
-    run_program(None, program, args)
-    return 0
+    code, _ = _run_cli_program(args, default_program=basic_canonical_example())
+    return code
 
 
 def cmd_metrics(args: argparse.Namespace) -> int:
     if getattr(args, "steps", None) is None:
         # Default a longer run for metrics stability
         args.steps = 200
-    G = run_program(None, None, args)
 
-    tg = Tg_global(G, normalize=True)
-    lat = latency_series(G)
-    rose = sigma_rose(G)
-    glyph = glyphogram_series(G)
+    code, graph = _run_cli_program(args)
+    if code != 0 or graph is None:
+        return code
+
+    tg = Tg_global(graph, normalize=True)
+    lat = latency_series(graph)
+    rose = sigma_rose(graph)
+    glyph = glyphogram_series(graph)
 
     latency_values = lat["value"]
     try:
