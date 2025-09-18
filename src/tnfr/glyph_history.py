@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 from collections import deque, Counter
 from itertools import islice
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from functools import lru_cache
 
 from .constants import get_param
@@ -149,7 +149,8 @@ class HistoryDict(dict):
         else:
             val = super().__getitem__(key)
         if self._maxlen > 0:
-            val = self._to_deque(val)
+            if not isinstance(val, Mapping):
+                val = self._to_deque(val)
             super().__setitem__(key, val)
         return val
 
