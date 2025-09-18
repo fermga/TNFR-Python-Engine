@@ -89,11 +89,21 @@ def _build_trig_cache(G: GraphLike, np: Any | None = None) -> TrigCache:
     return compute_theta_trig(G.nodes(data=True), np=np)
 
 
-def get_trig_cache(G: GraphLike, *, np: Any | None = None) -> TrigCache:
+def get_trig_cache(
+    G: GraphLike,
+    *,
+    np: Any | None = None,
+    cache_size: int | None = 128,
+) -> TrigCache:
     """Return cached cosines and sines of ``θ`` per node."""
 
     if np is None:
         np = get_numpy()
     version = G.graph.setdefault("_trig_version", 0)
     key = ("_trig", version)
-    return edge_version_cache(G, key, lambda: _build_trig_cache(G, np=np))
+    return edge_version_cache(
+        G,
+        key,
+        lambda: _build_trig_cache(G, np=np),
+        max_entries=cache_size,
+    )
