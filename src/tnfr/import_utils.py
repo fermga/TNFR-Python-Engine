@@ -14,7 +14,7 @@ import warnings
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from functools import lru_cache
-from typing import Any, Callable, Literal, MutableMapping
+from typing import Any, Callable, Literal
 import threading
 
 from .logging_utils import get_logger
@@ -59,8 +59,6 @@ def _format_failure_message(module: str, attr: str | None, err: Exception) -> st
 
 _FAILED_IMPORT_LIMIT = 128
 _DEFAULT_CACHE_SIZE = 128
-_FAIL = object()
-_MANUAL_CACHE_LOCK = threading.Lock()
 
 
 @dataclass(slots=True)
@@ -152,8 +150,6 @@ def cached_import(
     attr: str | None = None,
     *,
     fallback: Any | None = None,
-    cache: MutableMapping[str, Any] | None = None,
-    lock: threading.Lock | None = None,
     emit: Literal["warn", "log", "both"] = "warn",
 ) -> Any | None:
     """Import ``module_name`` (and optional ``attr``) with caching and fallback.
@@ -166,55 +162,22 @@ def cached_import(
         Optional attribute to fetch from the module.
     fallback:
         Value returned when the import fails.
-    cache:
-        Custom mapping used to store cached results. When ``None`` a process-wide
-        :func:`functools.lru_cache` is used.
-    lock:
-        Lock guarding ``cache`` when a custom mapping is supplied.
     emit:
         Destination for warnings emitted on failure (``"warn"``/``"log"``/``"both"``).
     """
 
     key = module_name if attr is None else f"{module_name}.{attr}"
-    if cache is None:
-        success, result = _import_cached(module_name, attr)
-        if success:
-            _IMPORT_STATE.discard(key)
-            if attr is not None:
-                _IMPORT_STATE.discard(module_name)
-            return result
-        exc = result
-        include_module = isinstance(exc, ImportError)
-        _warn_failure(module_name, attr, exc, emit=emit)
-        _IMPORT_STATE.record_failure(key, module=module_name if include_module else None)
-        return fallback
-
-    lock = lock or _MANUAL_CACHE_LOCK
-    with lock:
-        try:
-            value = cache[key]
-        except KeyError:
-            pass
-        else:
-            return fallback if value is _FAIL else value
-
-    try:
-        module = importlib.import_module(module_name)
-        obj = getattr(module, attr) if attr else module
-    except (ImportError, AttributeError) as exc:
-        include_module = isinstance(exc, ImportError)
-        _warn_failure(module_name, attr, exc, emit=emit)
-        _IMPORT_STATE.record_failure(key, module=module_name if include_module else None)
-        with lock:
-            cache[key] = _FAIL
-        return fallback
-
-    with lock:
-        cache[key] = obj
-    _IMPORT_STATE.discard(key)
-    if attr is not None:
-        _IMPORT_STATE.discard(module_name)
-    return obj
+    success, result = _import_cached(module_name, attr)
+    if success:
+        _IMPORT_STATE.discard(key)
+        if attr is not None:
+            _IMPORT_STATE.discard(module_name)
+        return result
+    exc = result
+    include_module = isinstance(exc, ImportError)
+    _warn_failure(module_name, attr, exc, emit=emit)
+    _IMPORT_STATE.record_failure(key, module=module_name if include_module else None)
+    return fallback
 
 
 def _clear_default_cache() -> None:
