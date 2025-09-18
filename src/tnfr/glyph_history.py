@@ -207,8 +207,19 @@ def ensure_history(G) -> dict[str, Any]:
     """
     maxlen, _ = _ensure_history({}, int(get_param(G, "HISTORY_MAXLEN")))
     hist = G.graph.get("history")
+    sentinel_key = "_metrics_history_id"
+    replaced = False
     if maxlen == 0:
-        hist = G.graph.setdefault("history", {})
+        if isinstance(hist, HistoryDict):
+            hist = dict(hist)
+            G.graph["history"] = hist
+            replaced = True
+        elif hist is None:
+            hist = {}
+            G.graph["history"] = hist
+            replaced = True
+        if replaced:
+            G.graph.pop(sentinel_key, None)
         return hist
     if (
         not isinstance(hist, HistoryDict)
@@ -216,9 +227,12 @@ def ensure_history(G) -> dict[str, Any]:
     ):
         hist = HistoryDict(hist, maxlen=maxlen)
         G.graph["history"] = hist
+        replaced = True
     excess = len(hist) - maxlen
     if excess > 0:
         hist.pop_least_used_batch(excess)
+    if replaced:
+        G.graph.pop(sentinel_key, None)
     return hist
 
 
