@@ -35,3 +35,40 @@ def test_run_stops_early_with_historydict(monkeypatch, graph_canon):
     series = hist.get("stable_frac")
     assert isinstance(series, deque)
     assert list(series)[-2:] == [0.95, 0.95]
+
+
+def test_step_preserves_since_mappings(monkeypatch, graph_canon):
+    """``since_*`` history entries should stay as mappings when bounded."""
+
+    G = graph_canon()
+    G.add_node(0)
+    G.graph["HISTORY_MAXLEN"] = 3
+
+    def fake_update_nodes(
+        G,
+        *,
+        dt,
+        use_Si,
+        apply_glyphs,
+        step_idx,
+        hist,
+    ) -> None:
+        h_al = hist.setdefault("since_AL", {})
+        h_en = hist.setdefault("since_EN", {})
+        h_al[0] = h_al.get(0, 0) + 1
+        h_en[0] = h_en.get(0, 0) + 1
+
+    monkeypatch.setattr(dynamics, "_update_nodes", fake_update_nodes)
+    monkeypatch.setattr(dynamics, "_update_epi_hist", lambda G: None)
+    monkeypatch.setattr(dynamics, "_maybe_remesh", lambda G: None)
+    monkeypatch.setattr(dynamics, "_run_validators", lambda G: None)
+
+    dynamics.step(G)
+
+    hist = ensure_history(G)
+    since_al = hist["since_AL"]
+    since_en = hist["since_EN"]
+    assert isinstance(since_al, dict)
+    assert isinstance(since_en, dict)
+    assert since_al[0] == 1
+    assert since_en[0] == 1
