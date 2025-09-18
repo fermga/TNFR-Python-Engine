@@ -177,11 +177,11 @@ def _check_repeats(ctx: GrammarContext, n, cand: Glyph | str) -> Glyph | str:
 def _maybe_force(
     ctx: GrammarContext,
     n,
-    cand: str,
-    original: str,
+    cand: Glyph | str,
+    original: Glyph | str,
     accessor: Callable[[GrammarContext, dict[str, Any]], float],
     key: str,
-) -> str:
+) -> Glyph | str:
     """Restore ``original`` if ``accessor`` exceeds ``key`` threshold."""
     if cand == original:
         return cand
@@ -191,9 +191,10 @@ def _maybe_force(
     return cand
 
 
-def _check_oz_to_zhir(ctx: GrammarContext, n, cand: str) -> str:
+def _check_oz_to_zhir(ctx: GrammarContext, n, cand: Glyph | str) -> Glyph | str:
     nd = ctx.G.nodes[n]
-    if cand == Glyph.ZHIR:
+    cand_glyph = _coerce_glyph(cand)
+    if cand_glyph == Glyph.ZHIR:
         cfg = ctx.cfg_canon
         win = int(cfg.get("zhir_requires_oz_window", 3))
         dn_min = float(cfg.get("zhir_dnfr_min", 0.05))
@@ -207,8 +208,8 @@ def _check_oz_to_zhir(ctx: GrammarContext, n, cand: str) -> str:
 
 
 def _check_thol_closure(
-    ctx: GrammarContext, n, cand: str, st: dict[str, Any]
-) -> str:
+    ctx: GrammarContext, n, cand: Glyph | str, st: dict[str, Any]
+) -> Glyph | str:
     nd = ctx.G.nodes[n]
     if st.get("thol_open", False):
         st["thol_len"] = int(st.get("thol_len", 0)) + 1
@@ -229,12 +230,21 @@ def _check_thol_closure(
     return cand
 
 
-def _check_compatibility(ctx: GrammarContext, n, cand: str) -> str:
+def _check_compatibility(ctx: GrammarContext, n, cand: Glyph | str) -> Glyph | str:
     nd = ctx.G.nodes[n]
     hist = nd.get("glyph_history")
     prev = hist[-1] if hist else None
-    if prev in CANON_COMPAT and cand not in CANON_COMPAT[prev]:
-        return CANON_FALLBACK.get(prev, cand)
+    prev_glyph = _coerce_glyph(prev)
+    cand_glyph = _coerce_glyph(cand)
+    if isinstance(prev_glyph, Glyph):
+        allowed = CANON_COMPAT.get(prev_glyph)
+        if allowed is None:
+            return cand
+        if isinstance(cand_glyph, Glyph):
+            if cand_glyph not in allowed:
+                return CANON_FALLBACK.get(prev_glyph, cand_glyph)
+        else:
+            return CANON_FALLBACK.get(prev_glyph, cand)
     return cand
 
 
@@ -244,8 +254,8 @@ def _check_compatibility(ctx: GrammarContext, n, cand: str) -> str:
 
 
 def enforce_canonical_grammar(
-    G, n, cand: str, ctx: Optional[GrammarContext] = None
-) -> str:
+    G, n, cand: Glyph | str, ctx: Optional[GrammarContext] = None
+) -> Glyph | str:
     """Validate and adjust a candidate glyph according to canonical grammar.
 
     Key rules:
@@ -263,9 +273,13 @@ def enforce_canonical_grammar(
     nd = ctx.G.nodes[n]
     st = _gram_state(nd)
 
+    raw_cand = cand
+    cand = _coerce_glyph(cand)
+    input_was_str = isinstance(raw_cand, str)
+
     # 0) If glyphs outside the alphabet arrive, leave untouched
-    if cand not in CANON_COMPAT:
-        return cand
+    if not isinstance(cand, Glyph) or cand not in CANON_COMPAT:
+        return raw_cand if input_was_str else cand
 
     original = cand
     cand = _check_repeats(ctx, n, cand)
@@ -277,7 +291,12 @@ def enforce_canonical_grammar(
     cand = _check_thol_closure(ctx, n, cand, st)
     cand = _check_compatibility(ctx, n, cand)
 
-    return cand
+    coerced_final = _coerce_glyph(cand)
+    if input_was_str:
+        if isinstance(coerced_final, Glyph):
+            return coerced_final.value
+        return str(cand)
+    return coerced_final if isinstance(coerced_final, Glyph) else cand
 
 
 # -------------------------
