@@ -158,7 +158,14 @@ def resolve_program(
     args: argparse.Namespace, default: Optional[Any] = None
 ) -> Optional[Any]:
     if getattr(args, "preset", None):
-        return get_preset(args.preset)
+        try:
+            return get_preset(args.preset)
+        except KeyError as exc:
+            logger.error(
+                "Preset desconocido '%s'. Usa --sequence-file para cargar secuencias personalizadas",
+                args.preset,
+            )
+            raise SystemExit(1) from exc
     if getattr(args, "sequence_file", None):
         return _load_sequence(Path(args.sequence_file))
     return default
@@ -220,7 +227,11 @@ def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
 
 
 def cmd_run(args: argparse.Namespace) -> int:
-    program = resolve_program(args)
+    try:
+        program = resolve_program(args)
+    except SystemExit as exc:
+        code = exc.code if isinstance(exc.code, int) else 1
+        return code or 1
     G = run_program(None, program, args)
     _log_run_summaries(G, args)
     return 0
@@ -232,7 +243,11 @@ def cmd_sequence(args: argparse.Namespace) -> int:
             "No se puede usar --preset y --sequence-file al mismo tiempo"
         )
         return 1
-    program = resolve_program(args, default=basic_canonical_example())
+    try:
+        program = resolve_program(args, default=basic_canonical_example())
+    except SystemExit as exc:
+        code = exc.code if isinstance(exc.code, int) else 1
+        return code or 1
 
     run_program(None, program, args)
     return 0
