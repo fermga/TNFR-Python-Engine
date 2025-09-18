@@ -464,11 +464,9 @@ def set_scalar(
 def _increment_trig_version(
     G: "networkx.Graph", _: Hashable, __: float
 ) -> None:
-    """Increment cached trig version and purge cached values."""
+    """Increment cached trig version to invalidate trig caches."""
     g = G.graph
     g["_trig_version"] = int(g.get("_trig_version", 0)) + 1
-    for k in ("_cos_th", "_sin_th", "_thetas"):
-        g.pop(k, None)
 
 
 SCALAR_SETTERS: dict[str, dict[str, Any]] = {

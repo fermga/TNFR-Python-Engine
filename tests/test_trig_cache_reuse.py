@@ -12,6 +12,8 @@ ALIAS_THETA = get_aliases("THETA")
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
+TRIG_SENTINEL_KEYS = ("_cos_th", "_sin_th", "_thetas", "_trig_cache")
+
 
 def test_trig_cache_reuse_between_modules(monkeypatch, graph_canon):
     cos_calls = 0
@@ -46,6 +48,9 @@ def test_trig_cache_reuse_between_modules(monkeypatch, graph_canon):
     )
 
     G = graph_canon()
+    sentinel = object()
+    for key in TRIG_SENTINEL_KEYS:
+        G.graph[key] = sentinel
     G.add_edge(1, 2)
     set_attr(G.nodes[1], ALIAS_THETA, 0.0)
     set_attr(G.nodes[2], ALIAS_THETA, math.pi / 2)
@@ -55,6 +60,7 @@ def test_trig_cache_reuse_between_modules(monkeypatch, graph_canon):
     set_attr(G.nodes[2], ALIAS_DNFR, 0.0)
 
     trig1 = get_trig_cache(G)
+    version = G.graph.get("_trig_version", 0)
     assert cos_calls == 2
     assert sin_calls == 2
 
@@ -68,3 +74,6 @@ def test_trig_cache_reuse_between_modules(monkeypatch, graph_canon):
 
     trig2 = get_trig_cache(G)
     assert trig1 is trig2
+    assert G.graph.get("_trig_version") == version
+    for key in TRIG_SENTINEL_KEYS:
+        assert G.graph[key] is sentinel

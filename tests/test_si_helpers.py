@@ -12,6 +12,8 @@ ALIAS_SI = get_aliases("SI")
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_VF = get_aliases("VF")
 
+TRIG_SENTINEL_KEYS = ("_cos_th", "_sin_th", "_thetas", "_trig_cache")
+
 
 def test_get_si_weights_normalization(graph_canon):
     G = graph_canon()
@@ -48,15 +50,22 @@ def test_get_trig_cache_invalidation_on_version(graph_canon):
     G = graph_canon()
     G.add_node(0)
     set_attr(G.nodes[0], ALIAS_THETA, 0.0)
+    sentinel = object()
+    for key in TRIG_SENTINEL_KEYS:
+        G.graph[key] = sentinel
     trig1 = get_trig_cache(G)
     trig2 = get_trig_cache(G)
     assert trig1 is trig2
+    version = G.graph.get("_trig_version", 0)
     G.add_node(1)
     set_attr(G.nodes[1], ALIAS_THETA, math.pi / 2)
     increment_edge_version(G)
+    for key in TRIG_SENTINEL_KEYS:
+        assert G.graph[key] is sentinel
     trig3 = get_trig_cache(G)
     assert trig3 is not trig1
     assert 1 in trig3.cos and 1 not in trig1.cos
+    assert G.graph.get("_trig_version", 0) == version
 
 
 def test_get_trig_cache_invalidation_on_phase_change(graph_canon):
@@ -64,8 +73,15 @@ def test_get_trig_cache_invalidation_on_phase_change(graph_canon):
     G.add_edge(1, 2)
     set_attr(G.nodes[1], ALIAS_THETA, 0.0)
     set_attr(G.nodes[2], ALIAS_THETA, 0.0)
+    sentinel = object()
+    for key in TRIG_SENTINEL_KEYS:
+        G.graph[key] = sentinel
     trig1 = get_trig_cache(G)
+    version = G.graph.get("_trig_version", 0)
     set_theta(G, 1, math.pi / 2)
+    for key in TRIG_SENTINEL_KEYS:
+        assert G.graph[key] is sentinel
+    assert G.graph.get("_trig_version", 0) == version + 1
     trig2 = get_trig_cache(G)
     assert trig2 is not trig1
     assert trig2.theta[1] == pytest.approx(math.pi / 2)
