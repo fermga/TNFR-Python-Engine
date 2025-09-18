@@ -29,7 +29,6 @@ from .logging_utils import get_logger
 T = TypeVar("T")
 
 __all__ = (
-    "CacheManager",
     "EdgeCacheManager",
     "LockAwareLRUCache",
     "NODE_SET_CHECKSUM_KEY",
@@ -415,15 +414,15 @@ def ensure_node_offset_map(G) -> dict[Any, int]:
     return _ensure_node_map(G, attrs=("offset",), sort=sort)
 
 
-class CacheManager:
-    """Coordinate cache stores and per-key locks for graph-level caches."""
+class EdgeCacheManager:
+    """Coordinate cache storage and per-key locks for edge version caches."""
 
     _LOCK = threading.RLock()
 
-    def __init__(self, graph: Any, cache_key: str, locks_key: str) -> None:
+    def __init__(self, graph: Any) -> None:
         self.graph = graph
-        self.cache_key = cache_key
-        self.locks_key = locks_key
+        self.cache_key = "_edge_version_cache"
+        self.locks_key = "_edge_version_cache_locks"
 
     def _validator(self, max_entries: int | None) -> Callable[[Any], bool]:
         if max_entries is None:
@@ -451,7 +450,7 @@ class CacheManager:
         | defaultdict[Hashable, threading.RLock]
         | None,
     ]:
-        """Return the cache and lock mapping for ``graph``."""
+        """Return the cache and lock mapping for the manager's graph."""
 
         with self._LOCK:
             if not create:
@@ -469,13 +468,6 @@ class CacheManager:
             if max_entries is None:
                 _prune_locks(cache, locks)
             return cache, locks
-
-
-class EdgeCacheManager(CacheManager):
-    """Cache manager specialised for edge version caches."""
-
-    def __init__(self, graph: Any) -> None:
-        super().__init__(graph, "_edge_version_cache", "_edge_version_cache_locks")
 
 
 def edge_version_cache(
