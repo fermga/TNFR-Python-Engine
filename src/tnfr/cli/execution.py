@@ -157,7 +157,7 @@ def _load_sequence(path: Path) -> list[Any]:
             message = str(StructuredFileError(path, exc))
         logger.error("%s", message)
         raise SystemExit(1) from exc
-    return seq(*parse_program_tokens(data))
+    return parse_program_tokens(data)
 
 
 def resolve_program(
