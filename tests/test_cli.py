@@ -67,6 +67,20 @@ def test_cli_run_erdos_low_nodes(monkeypatch, nodes, p_arg, expected_p):
     assert recorded["p"] == pytest.approx(expected_p)
 
 
+@pytest.mark.parametrize("command", ["run", "sequence"])
+def test_cli_invalid_preset_exits_gracefully(capsys, command):
+    args = [command, "--preset", "nope"]
+    if command == "run":
+        args.extend(["--steps", "0"])
+
+    rc = main(args)
+    captured = capsys.readouterr()
+
+    assert rc == 1
+    assert "Preset desconocido" in captured.out
+    assert "nope" in captured.out
+
+
 def test_cli_metrics_generates_metrics_payload(tmp_path):
     out = tmp_path / "metrics.json"
     rc = main(["metrics", "--nodes", "6", "--steps", "5", "--save", str(out)])
