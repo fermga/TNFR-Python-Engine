@@ -11,6 +11,7 @@ from collections.abc import Iterable, Sequence
 from itertools import tee
 from typing import Any
 
+from ..helpers.numeric import kahan_sum_nd
 from ..import_utils import cached_import, get_numpy
 
 __all__ = (
@@ -34,33 +35,20 @@ def accumulate_cos_sin(
     processed.
     """
 
-    sum_cos = 0.0
-    sum_sin = 0.0
-    comp_cos = 0.0
-    comp_sin = 0.0
-    processed = False
+    valid_pairs: list[tuple[float, float]] = []
     for cs in it:
         if cs is None:
             continue
         c, s = cs
         if c is None or s is None:
             continue
-        processed = True
-        t = sum_cos + c
-        if abs(sum_cos) >= abs(c):
-            comp_cos += (sum_cos - t) + c
-        else:
-            comp_cos += (c - t) + sum_cos
-        sum_cos = t
+        valid_pairs.append((float(c), float(s)))
 
-        t = sum_sin + s
-        if abs(sum_sin) >= abs(s):
-            comp_sin += (sum_sin - t) + s
-        else:
-            comp_sin += (s - t) + sum_sin
-        sum_sin = t
+    if not valid_pairs:
+        return 0.0, 0.0, False
 
-    return sum_cos + comp_cos, sum_sin + comp_sin, processed
+    sum_cos, sum_sin = kahan_sum_nd(valid_pairs, dims=2)
+    return sum_cos, sum_sin, True
 
 
 def _phase_mean_from_iter(
