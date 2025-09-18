@@ -3,7 +3,6 @@
 from __future__ import annotations
 from typing import Any, Callable, NamedTuple
 import math
-import cmath
 import logging
 import hashlib
 from collections.abc import Mapping
@@ -16,6 +15,7 @@ from .graph_utils import get_graph_mapping
 from .cache import edge_version_cache, node_set_checksum
 from .json_utils import json_dumps
 from .logging_utils import get_logger
+from .metrics.trig_cache import get_trig_cache
 
 ALIAS_THETA = get_aliases("THETA")
 
@@ -65,16 +65,17 @@ def _ensure_kuramoto_cache(G, t) -> None:
 
 def kuramoto_R_psi(G) -> tuple[float, float]:
     """Return ``(R, ψ)`` for Kuramoto order using θ from all nodes."""
-    acc = 0 + 0j
-    n = 0
-    for _, nd in G.nodes(data=True):
-        th = get_attr(nd, ALIAS_THETA, 0.0)
-        acc += cmath.exp(1j * th)
-        n += 1
+    max_steps = int(G.graph.get("KURAMOTO_CACHE_STEPS", 1))
+    trig = get_trig_cache(G, cache_size=max_steps)
+    n = len(trig.theta)
     if n == 0:
         return 0.0, 0.0
-    z = acc / n
-    return abs(z), math.atan2(z.imag, z.real)
+
+    cos_sum = sum(trig.cos.values())
+    sin_sum = sum(trig.sin.values())
+    R = math.hypot(cos_sum, sin_sum) / n
+    psi = math.atan2(sin_sum, cos_sum)
+    return R, psi
 
 
 def _kuramoto_common(G, node, _cfg):
