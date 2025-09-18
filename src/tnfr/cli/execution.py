@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Tuple
 from statistics import fmean, StatisticsError
 
 import networkx as nx  # type: ignore[import-untyped]
@@ -219,6 +219,27 @@ def _run_cli_program(
     return 0, result_graph
 
 
+def _build_metrics_summary(G: "nx.Graph") -> Tuple[dict[str, Any], bool]:
+    tg = Tg_global(G, normalize=True)
+    latency = latency_series(G)
+    rose = sigma_rose(G)
+    glyph = glyphogram_series(G)
+
+    latency_values = latency.get("value", [])
+    try:
+        latency_mean = fmean(latency_values)
+    except StatisticsError:
+        latency_mean = 0.0
+
+    summary = {
+        "Tg_global": tg,
+        "latency_mean": latency_mean,
+        "rose": rose,
+        "glyphogram": {k: v[:10] for k, v in glyph.items()},
+    }
+    return summary, bool(latency_values)
+
+
 def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
     cfg_coh = G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"])
     cfg_diag = G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"])
@@ -236,16 +257,11 @@ def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
             logger.info("[DIAGNOSIS] ejemplo: %s", sample)
 
     if args.summary:
-        tg = Tg_global(G, normalize=True)
-        lat = latency_series(G)
-        logger.info("Tg global: %s", tg)
+        summary, has_latency_values = _build_metrics_summary(G)
+        logger.info("Tg global: %s", summary["Tg_global"])
         logger.info("Top operadores por Tg: %s", glyph_top(G, k=5))
-        if lat["value"]:
-            try:
-                lat_mean = fmean(lat["value"])
-            except StatisticsError:
-                lat_mean = 0.0
-            logger.info("Latencia media: %s", lat_mean)
+        if has_latency_values:
+            logger.info("Latencia media: %s", summary["latency_mean"])
 
 
 def cmd_run(args: argparse.Namespace) -> int:
@@ -279,23 +295,7 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     if code != 0 or graph is None:
         return code
 
-    tg = Tg_global(graph, normalize=True)
-    lat = latency_series(graph)
-    rose = sigma_rose(graph)
-    glyph = glyphogram_series(graph)
-
-    latency_values = lat["value"]
-    try:
-        latency_mean = fmean(latency_values)
-    except StatisticsError:
-        latency_mean = 0.0
-
-    out = {
-        "Tg_global": tg,
-        "latency_mean": latency_mean,
-        "rose": rose,
-        "glyphogram": {k: v[:10] for k, v in glyph.items()},
-    }
+    out, _ = _build_metrics_summary(graph)
     if args.save:
         _save_json(args.save, out)
     else:
