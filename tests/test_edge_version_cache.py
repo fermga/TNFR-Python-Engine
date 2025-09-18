@@ -68,16 +68,15 @@ def test_edge_version_cache_lock_cleanup(graph_and_manager, max_entries):
         assert set(locks) == set(cache)
 
 
-@pytest.mark.parametrize("pass_manager", [False, True])
-def test_edge_version_cache_manager(graph_and_manager, pass_manager):
-    G, manager = graph_and_manager()
-    if pass_manager:
-        edge_version_cache(G, "a", lambda: 1, manager=manager)
-        assert G.graph.get("_edge_cache_manager") is manager
-    else:
-        edge_version_cache(G, "a", lambda: 1)
-        manager = G.graph.get("_edge_cache_manager")
-        assert isinstance(manager, EdgeCacheManager)
+def test_edge_version_cache_manager(graph_and_manager):
+    G, _ = graph_and_manager()
+    assert "_edge_cache_manager" not in G.graph
+
+    edge_version_cache(G, "a", lambda: 1)
+    manager = G.graph.get("_edge_cache_manager")
+    assert isinstance(manager, EdgeCacheManager)
+    assert manager.graph is G.graph
+
     edge_version_cache(G, "b", lambda: 2)
     assert G.graph.get("_edge_cache_manager") is manager
 
