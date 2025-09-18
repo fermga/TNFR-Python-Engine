@@ -219,7 +219,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = (
         _init_dnfr_cache(G, nodes, cache, checksum, dirty)
     )
-    if refreshed:
+    if cache is not None:
         _refresh_dnfr_vectors(G, nodes, cache)
 
     w_phase = float(weights.get("phase", 0.0))
