@@ -17,6 +17,7 @@ from tnfr.metrics.glyph_timing import (
 )
 from tnfr.metrics.core import _update_sigma
 from tnfr.metrics.glyph_timing import DEFAULT_EPI_SUPPORT_LIMIT
+from tnfr.metrics.reporting import build_metrics_summary
 
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_DNFR = get_aliases("DNFR")
@@ -197,6 +198,60 @@ def test_save_by_node_flag_keeps_metrics_equal(graph_canon):
     assert hist_true["morph"] == hist_false["morph"]
     assert hist_true["Tg_by_node"] != {}
     assert hist_false.get("Tg_by_node", {}) == {}
+
+
+def test_build_metrics_summary_reuses_metrics_helpers(monkeypatch):
+    G = object()
+    calls: dict[str, Any] = {}
+
+    def fake_tg(graph, *, normalize=True):  # noqa: ANN001 - test helper
+        calls["tg"] = {"graph": graph, "normalize": normalize}
+        return {"AL": 0.75}
+
+    def fake_latency(graph):  # noqa: ANN001 - test helper
+        calls["latency"] = graph
+        return {"value": [1.0, 2.0, 3.0]}
+
+    def fake_glyphogram(graph):  # noqa: ANN001 - test helper
+        calls["glyphogram"] = graph
+        return {"t": list(range(12)), "AL": [1, 2, 3]}
+
+    def fake_sigma(graph):  # noqa: ANN001 - test helper
+        calls["sigma"] = graph
+        return {"mag": 0.5}
+
+    monkeypatch.setattr("tnfr.metrics.reporting.Tg_global", fake_tg)
+    monkeypatch.setattr("tnfr.metrics.reporting.latency_series", fake_latency)
+    monkeypatch.setattr("tnfr.metrics.reporting.glyphogram_series", fake_glyphogram)
+    monkeypatch.setattr("tnfr.metrics.reporting.sigma_rose", fake_sigma)
+
+    summary, has_latency = build_metrics_summary(G)
+
+    assert has_latency is True
+    assert calls["tg"]["graph"] is G
+    assert calls["tg"]["normalize"] is True
+    assert calls["latency"] is G
+    assert calls["glyphogram"] is G
+    assert calls["sigma"] is G
+    assert summary["Tg_global"] == {"AL": 0.75}
+    assert summary["latency_mean"] == pytest.approx(2.0)
+    assert summary["rose"] == {"mag": 0.5}
+    assert summary["glyphogram"]["t"] == list(range(10))
+    assert summary["glyphogram"]["AL"] == [1, 2, 3]
+
+
+def test_build_metrics_summary_handles_empty_latency(monkeypatch):
+    G = object()
+
+    monkeypatch.setattr("tnfr.metrics.reporting.Tg_global", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr("tnfr.metrics.reporting.latency_series", lambda *_: {"value": []})
+    monkeypatch.setattr("tnfr.metrics.reporting.glyphogram_series", lambda *_: {"t": []})
+    monkeypatch.setattr("tnfr.metrics.reporting.sigma_rose", lambda *_: {})
+
+    summary, has_latency = build_metrics_summary(G)
+
+    assert has_latency is False
+    assert summary["latency_mean"] == 0.0
 
 
 def test_latency_index_uses_max_denominator(graph_canon):

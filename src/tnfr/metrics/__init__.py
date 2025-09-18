@@ -9,6 +9,7 @@ from .reporting import (
     latency_series,
     glyphogram_series,
     glyph_top,
+    build_metrics_summary,
 )
 from .coherence import (
     coherence_matrix,
@@ -29,6 +30,7 @@ __all__ = (
     "latency_series",
     "glyphogram_series",
     "glyph_top",
+    "build_metrics_summary",
     "coherence_matrix",
     "local_phase_sync",
     "local_phase_sync_weighted",
