@@ -152,7 +152,7 @@ def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
         "metrics", help="Correr breve y volcar métricas clave"
     )
     add_common_args(p_met)
-    p_met.add_argument("--steps", type=int, default=300)
+    p_met.add_argument("--steps", type=int, default=None)
     add_canon_toggle(p_met)
     add_grammar_selector_args(p_met)
     p_met.add_argument("--save", type=str, default=None)
