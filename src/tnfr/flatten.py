@@ -20,10 +20,6 @@ from .types import Glyph
 
 __all__ = [
     "THOLEvaluator",
-    "_flatten",
-    "_flatten_glyph",
-    "_flatten_target",
-    "_flatten_wait",
     "parse_program_tokens",
 ]
 
