@@ -16,7 +16,6 @@ from .arguments import (
     _add_metrics_parser,
     _args_to_dict,
 )
-from ..token_parser import _parse_tokens, validate_token, parse_thol, TOKEN_MAP
 from .execution import (
     build_basic_graph,
     apply_cli_config,
@@ -44,9 +43,6 @@ __all__ = (
     "register_callbacks_and_observer",
     "run_program",
     "resolve_program",
-    "validate_token",
-    "parse_thol",
-    "TOKEN_MAP",
 )
 
 
