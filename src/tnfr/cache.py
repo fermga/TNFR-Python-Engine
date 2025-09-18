@@ -53,13 +53,7 @@ logger = get_logger(__name__)
 
 # Keys of cache entries dependent on the edge version. Any change to the edge
 # set requires these to be dropped to avoid stale data.
-EDGE_VERSION_CACHE_KEYS = (
-    "_cos_th",
-    "_sin_th",
-    "_thetas",
-    "_trig_cache",
-    "_trig_version",
-)
+EDGE_VERSION_CACHE_KEYS = ("_trig_version",)
 
 
 class LockAwareLRUCache(LRUCache[Hashable, Any]):
