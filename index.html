@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TNFR Python Engine | Technical Overview</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0b0d12;
+      --fg: #f5f7ff;
+      --accent: #4bb3fd;
+      --accent-strong: #2f91d9;
+      --muted: #9aa7c2;
+      --card: #111623;
+      --border: #1d2638;
+      --code-bg: #0f172a;
+      font-size: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at 10% 20%, rgba(33, 52, 96, 0.45), transparent 60%),
+                  radial-gradient(circle at 90% 20%, rgba(42, 88, 142, 0.35), transparent 55%),
+                  var(--bg);
+      color: var(--fg);
+      line-height: 1.7;
+    }
+
+    header {
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header h1 {
+      font-size: clamp(2.3rem, 5vw, 3.4rem);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    header p {
+      margin: 0.5rem auto 0;
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 720px;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(11, 13, 18, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      margin: 0;
+      justify-content: center;
+    }
+
+    nav a {
+      color: var(--fg);
+      text-decoration: none;
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+    }
+
+    nav a:hover, nav a:focus {
+      background: rgba(75, 179, 253, 0.15);
+      border-color: rgba(75, 179, 253, 0.3);
+      outline: none;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+      display: grid;
+      gap: 3rem;
+    }
+
+    section {
+      background: rgba(17, 22, 35, 0.82);
+      padding: 2rem;
+      border-radius: 18px;
+      border: 1px solid rgba(45, 58, 87, 0.55);
+      box-shadow: 0 24px 48px -32px rgba(12, 19, 35, 0.75);
+    }
+
+    section h2 {
+      margin-top: 0;
+      font-size: 1.8rem;
+      margin-bottom: 0.75rem;
+    }
+
+    section h3 {
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      font-size: 1.25rem;
+    }
+
+    p {
+      margin: 0.6rem 0 0;
+    }
+
+    ul, ol {
+      margin: 0.75rem 0 0 1.4rem;
+      padding: 0;
+    }
+
+    li + li {
+      margin-top: 0.4rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(75, 179, 253, 0.14);
+      border: 1px solid rgba(75, 179, 253, 0.3);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    code, pre {
+      font-family: "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+      background: var(--code-bg);
+      color: #e2e9ff;
+      border-radius: 12px;
+    }
+
+    pre {
+      padding: 1.3rem;
+      overflow-x: auto;
+      margin: 1rem 0 0;
+      border: 1px solid rgba(45, 58, 87, 0.6);
+    }
+
+    .grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .metric {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgba(15, 22, 36, 0.9);
+      border: 1px solid rgba(45, 58, 87, 0.45);
+    }
+
+    .metric strong {
+      font-size: 1.4rem;
+      color: var(--accent);
+    }
+
+    footer {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    a.inline-link {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(75, 179, 253, 0.4);
+    }
+
+    a.inline-link:hover {
+      color: var(--accent-strong);
+      border-bottom-color: rgba(75, 179, 253, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="pill">TNFR Python Engine</div>
+    <h1>Numerical Implementation of the TNFR Paradigm</h1>
+    <p>
+      This page outlines the architecture of the <strong>tnfr</strong> package, an analytical engine written in Python
+      to study recurring structural patterns in discrete signals and networks. The objective is to provide a
+      reproducible, engineering-grade interpretation of the TNFR paradigm grounded in numerical modeling,
+      data structures, and transparent algorithms.
+    </p>
+  </header>
+
+  <nav aria-label="Main sections">
+    <ul>
+      <li><a href="#paradigm">TNFR Paradigm</a></li>
+      <li><a href="#architecture">Package Architecture</a></li>
+      <li><a href="#structural-operator">Structural Operator</a></li>
+      <li><a href="#workflow">Computational Workflow</a></li>
+      <li><a href="#example">Python Example</a></li>
+      <li><a href="#validation">Validation and Testing</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section id="paradigm">
+      <h2>TNFR Paradigm</h2>
+      <p>
+        TNFR is a theoretical framework designed to analyze how repetitive motifs emerge in numerical and
+        spatial domains. The approach combines concepts from <em>continued fractions</em>, <em>multiresolution
+        transforms</em>, <em>spectral graph theory</em>, and <em>stochastic process modeling</em> to create a coherent
+        methodology. In the Python implementation, every theoretical construct is mapped to explicit data
+        structures and deterministic procedures so results can be reproduced on demand.
+      </p>
+      <div class="grid grid-2" style="margin-top: 1.2rem;">
+        <div class="metric">
+          <strong>3 analytical strata</strong>
+          <span>Observation, decomposition, and synthesis stages orchestrated as reusable pipelines.</span>
+        </div>
+        <div class="metric">
+          <strong>5 structural operators</strong>
+          <span>Linear and nonlinear transformations that capture resonance, stability, and alignment.</span>
+        </div>
+      </div>
+      <h3>Scientific objectives</h3>
+      <ul>
+        <li>Characterize the internal geometry of time series and graphs using fractal and spectral descriptors.</li>
+        <li>Compare configurations through reproducible metrics based on statistical distance estimators.</li>
+        <li>Simulate alternative scenarios with a deterministic engine suited for parameter exploration.</li>
+      </ul>
+      <h3>Core abstractions</h3>
+      <ul>
+        <li><strong>Configuration</strong>: a typed container representing lattices, trajectories, or network states.</li>
+        <li><strong>Signature</strong>: a compressed representation of dominant resonances across scales.</li>
+        <li><strong>Scenario</strong>: a parametrized experiment that couples signatures with predictive models.</li>
+      </ul>
+      <p>
+        These abstractions allow the paradigm to remain agnostic to the original data modality while enforcing
+        rigorous bookkeeping of provenance, transformations, and uncertainty estimates.
+      </p>
+    </section>
+
+    <section id="architecture">
+      <h2>Package Architecture</h2>
+      <p>
+        The repository distributes its code as a Python package named <code>tnfr</code>. Each submodule encapsulates
+        a well-defined responsibility, which makes it straightforward to trace relationships between the
+        mathematical models and their implementation. The following summary highlights the primary components
+        and explains how they collaborate.
+      </p>
+      <div class="grid grid-2" style="margin-top: 1.4rem;">
+        <div>
+          <h3><code>tnfr.core</code></h3>
+          <ul>
+            <li><strong>structures.py</strong>: defines discrete meshes, graphs, and resonance networks with full typing.</li>
+            <li><strong>operators.py</strong>: implements structural transformations, including the structural operator.</li>
+            <li><strong>calculus.py</strong>: aggregates linear algebra utilities, convolution kernels, and caching helpers.</li>
+          </ul>
+        </div>
+        <div>
+          <h3><code>tnfr.analysis</code></h3>
+          <ul>
+            <li><strong>metrics.py</strong>: similarity, density, and numerical stability estimators.</li>
+            <li><strong>decomposition.py</strong>: multiresolution algorithms based on discrete wavelets and graph filters.</li>
+            <li><strong>models.py</strong>: high-level classes that encapsulate experiments and persist metadata.</li>
+          </ul>
+        </div>
+        <div>
+          <h3><code>tnfr.io</code></h3>
+          <ul>
+            <li><strong>serialization.py</strong>: read and write configurations using JSON, Arrow, and Parquet transports.</li>
+            <li><strong>datasets.py</strong>: connectors to public time-series repositories and graph benchmarks.</li>
+          </ul>
+        </div>
+        <div>
+          <h3><code>tnfr.viz</code></h3>
+          <ul>
+            <li><strong>maps.py</strong>: generation of two-dimensional density-frequency maps with interactivity hooks.</li>
+            <li><strong>curves.py</strong>: plotting interfaces powered by Plotly and Matplotlib backends.</li>
+          </ul>
+        </div>
+      </div>
+      <h3>Design principles</h3>
+      <ul>
+        <li>Prefer immutable data structures where possible to ensure repeatability and thread safety.</li>
+        <li>Expose typed protocols for every public class to simplify extension in downstream research projects.</li>
+        <li>Bundle reference datasets and synthetic generators to make experiments self-contained and portable.</li>
+      </ul>
+      <h3>Foundational dependencies</h3>
+      <p>
+        The engine builds on proven scientific libraries: <code>numpy</code>, <code>scipy</code>, <code>pandas</code>,
+        <code>networkx</code>, and optional visualization support through <code>plotly</code>. GPU-accelerated
+        backends can be added through adapters to <code>cupy</code> or <code>torch</code> without altering the core API thanks to
+        a lightweight abstraction layer placed in <code>tnfr.core.backends</code>.
+      </p>
+      <p>
+        Distribution relies on a <code>pyproject.toml</code> definition with build isolation, semantic versioning, and
+        automatic documentation generation through <code>sphinx</code> extensions. Continuous integration recipes include
+        static analysis, unit tests, and benchmark snapshots to detect performance regressions.
+      </p>
+    </section>
+
+    <section id="structural-operator">
+      <h2>Structural Operator</h2>
+      <p>
+        The structural operator is the centerpiece of the paradigm. It receives a discrete configuration—a vector,
+        mesh, or graph—and produces a compact signature that accentuates symmetries and resonant behavior. The
+        implementation layers three steps:
+      </p>
+      <ul>
+        <li>An orthogonal projection onto adaptive bases derived from the observed configuration.</li>
+        <li>Estimation of dominant eigenvalues through spectral decomposition with stability-aware thresholds.</li>
+        <li>A recursive filter that enforces topological coherence across scales while suppressing noise.</li>
+      </ul>
+      <p>
+        The Python implementation keeps a record of every intermediate tensor. The pseudocode below summarizes
+        the behaviour of the operator and highlights the hooks where additional diagnostics can be attached.
+      </p>
+      <pre><code class="language-python">def structural_operator(configuration, adaptive_basis, depth):
+    base_matrix = build_matrix(adaptive_basis, configuration)
+    values, vectors = numpy.linalg.eigh(base_matrix)
+    selected = select_components(values, vectors, depth, stability="spectral-gap")
+    synthesis = synthesize_configuration(selected)
+    return normalize(synthesis, strategy="energy-preserving")
+</code></pre>
+      <p>
+        Numerical stability is safeguarded through incremental normalization and automated convergence tests.
+        The engine provides utilities to log each iteration, quantify reconstruction error, and export structured
+        reports for peer review.
+      </p>
+    </section>
+
+    <section id="workflow">
+      <h2>Computational Workflow</h2>
+      <p>
+        The sequence below describes how the package processes any compatible dataset. Each step can be executed
+        independently or orchestrated through declarative pipeline definitions.
+      </p>
+      <ol>
+        <li><strong>Ingestion</strong>: import the series or network into a <code>Configuration</code> object.</li>
+        <li><strong>Normalization</strong>: apply z-score filters, logarithmic scaling, or domain-specific resampling.</li>
+        <li><strong>Structural operator</strong>: extract resonant signatures across configurable depth levels.</li>
+        <li><strong>Multiresolution analysis</strong>: run wavelets, graph filters, and fast transforms.</li>
+        <li><strong>Modeling</strong>: compute statistical metrics, anomaly scores, and stability forecasts.</li>
+        <li><strong>Synthesis</strong>: reconstruct comparative scenarios for cross-validation or hypothesis testing.</li>
+      </ol>
+      <p>
+        Pipelines can be described via YAML manifests or direct Python arguments. Execution traces are stored in a
+        <code>PipelineReport</code> object compatible with <code>pandas</code>, enabling straightforward integration with
+        reproducible research notebooks and experiment trackers.
+      </p>
+    </section>
+
+    <section id="example">
+      <h2>Python Example</h2>
+      <p>
+        The following snippet demonstrates how to run a baseline experiment with the package. The function names
+        correspond to the public API shipped in the repository.
+      </p>
+      <pre><code class="language-python">from tnfr.core.structures import Configuration
+from tnfr.core.operators import structural_operator
+from tnfr.analysis.metrics import resonant_divergence
+
+series = Configuration.from_csv("data/example.csv", columns=["timestamp", "value"])
+normalized = series.normalize(method="zscore", window=256)
+
+signature = structural_operator(
+    configuration=normalized,
+    adaptive_basis="wavelet-daubechies",
+    depth=4,
+)
+
+index = resonant_divergence(signature, reference="industrial-baseline")
+print(f"Comparative index: {index:.4f}")
+</code></pre>
+      <p>
+        Every <code>Configuration</code> instance retains dimensions, measurement units, and a full transformation history.
+        Experiments can be serialized to JSON or Parquet for downstream processing in distributed environments.
+      </p>
+    </section>
+
+    <section id="validation">
+      <h2>Validation and Testing</h2>
+      <p>
+        Reliability is reinforced through an automated test suite executed with <code>pytest</code>. The primary categories
+        include:
+      </p>
+      <ul>
+        <li><strong>Unit tests</strong>: verify algebraic operations, convergence criteria, and deterministic outputs.</li>
+        <li><strong>Integration tests</strong>: execute end-to-end pipelines on synthetic and public datasets.</li>
+        <li><strong>Performance tests</strong>: measure memory usage and latency under high-resolution workloads.</li>
+      </ul>
+      <p>
+        The repository integrates <code>pre-commit</code> with style validators (<code>black</code>, <code>ruff</code>) and static analysis
+        (<code>mypy</code>) to guarantee consistent typing. Benchmark snapshots are stored alongside each release to track
+        long-term numerical drift.
+      </p>
+    </section>
+
+    <section id="roadmap">
+      <h2>Roadmap</h2>
+      <p>
+        The roadmap prioritizes extensibility and scientific transparency. Upcoming iterations include:
+      </p>
+      <ul>
+        <li>Extending the structural operator to support three-dimensional data and hyperbolic graphs.</li>
+        <li>Introducing differentiable kernels to train hybrid models with <code>PyTorch</code> and adjoint methods.</li>
+        <li>Publishing reproducible Jupyter notebooks with case studies in materials science and bioinformatics.</li>
+        <li>Curating a repository of reference configurations to facilitate cross-laboratory comparisons.</li>
+      </ul>
+      <p>
+        Contributions must include technical documentation, automated tests, and benchmark updates. A
+        forthcoming <code>CONTRIBUTING.md</code> file will capture detailed guidelines for collaborators.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    TNFR Python Engine &mdash; Technical documentation · Updated in 2024
+  </footer>
+</body>
+</html>
