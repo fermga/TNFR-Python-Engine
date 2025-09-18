@@ -5,7 +5,7 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Sequence
 
-from ..alias import get_attr, multi_recompute_abs_max
+from ..alias import collect_attr, get_attr, multi_recompute_abs_max
 from ..collections_utils import normalize_weights
 from ..constants import DEFAULTS, get_aliases
 from ..cache import edge_version_cache
@@ -40,26 +40,17 @@ def compute_coherence(
     if count == 0:
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
+    nodes = G.nodes
     np = get_numpy()
+    dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np)
+    depi_values = collect_attr(G, nodes, ALIAS_DEPI, 0.0, np=np)
+
     if np is not None:
-        dnfr_arr = np.empty(count, dtype=float)
-        depi_arr = np.empty(count, dtype=float)
-        for idx, (_, nd) in enumerate(G.nodes(data=True)):
-            dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0))
-            depi = abs(get_attr(nd, ALIAS_DEPI, 0.0))
-            dnfr_arr[idx] = dnfr
-            depi_arr[idx] = depi
-        dnfr_mean = float(np.mean(dnfr_arr))
-        depi_mean = float(np.mean(depi_arr))
+        dnfr_mean = float(np.mean(np.abs(dnfr_values)))
+        depi_mean = float(np.mean(np.abs(depi_values)))
     else:
         dnfr_sum, depi_sum = kahan_sum_nd(
-            (
-                (
-                    abs(get_attr(nd, ALIAS_DNFR, 0.0)),
-                    abs(get_attr(nd, ALIAS_DEPI, 0.0)),
-                )
-                for _, nd in G.nodes(data=True)
-            ),
+            ((abs(d), abs(e)) for d, e in zip(dnfr_values, depi_values)),
             dims=2,
         )
         dnfr_mean = dnfr_sum / count
