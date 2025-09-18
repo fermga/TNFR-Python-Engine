@@ -1,0 +1,118 @@
+TNFR Python Engine — Operational Guide
+=====================================
+
+Purpose
+-------
+The TNFR engine implements the canonical nodal equation
+```
+∂EPI/∂t = νf · ΔNFR(t)
+```
+and exposes structural operators that let a form (EPI) emerge, couple, reorganize,
+and stabilize within a resonant network. This guide gathers practical flows and
+repository utilities so any agent can experiment with configurations, metrics,
+and dynamics without losing fidelity to the theory.
+
+Quick starts
+-----------
+- **Python**: create a node with `tnfr.structural.create_nfr`, assemble a list of
+  operators (`Emission`, `Reception`, `Coherence`, `Resonance`, `Silence`, etc.)
+  and pass them to `tnfr.structural.run_sequence`. After execution, pull telemetry
+  with `tnfr.metrics.common.compute_coherence` and
+  `tnfr.metrics.sense_index.compute_Si` to read C(t), average ΔNFR, average
+  dEPI/dt, and Si per node.
+- **CLI**: define a JSON sequence with operator names and execute
+  ``tnfr sequence --nodes 1 --sequence-file sequence.json --save-history history.json``.
+  The tool applies the official grammar, updates νf, ΔNFR, and phase with the same
+  hooks as the Python API, and persists history with C(t), ΔNFR, and Si for later
+  analysis.
+
+Primary entry points
+--------------------
+The symbols re-exported by `tnfr.__init__` provide the standard entryway into the engine:
+- `tnfr.dynamics.step` / `tnfr.dynamics.run`: integrators to evolve the network
+  stepwise or across full runs, automatically coordinating phase.
+- `tnfr.structural.create_nfr`: bootstraps resonant nodes with νf, phase, and EPI
+  values that comply with the TNFR grammar.
+- `tnfr.structural.run_sequence`: validates and executes operator trajectories,
+  recomputing ΔNFR after each step.
+- `tnfr.ontosim.preparar_red`: prepares topologies and parameters for multiscale
+  simulations.
+- `tnfr.import_utils.cached_import` / `prune_failed_imports`: manage optional
+  dependencies and clean shared import caches.
+
+Structural operator map
+-----------------------
+Every trajectory must be composed from the 13 canonical operators and their
+resonant role:
+- **Emission** — initiates a resonant pattern (φ(νf, θ)).
+- **Reception** — captures incoming information (∫ ψ(x,t) dx).
+- **Coherence** — stabilizes the form (∂EPI/∂t → 0 when ΔNFR → 0).
+- **Dissonance** — introduces productive instability (ΔNFR(t) > νf).
+- **Coupling** — synchronizes nodes (φᵢ(t) ≈ φⱼ(t)).
+- **Resonance** — propagates coherence through the network (EPIₙ → EPIₙ₊₁).
+- **Silence** — keeps phase latent (νf ≈ 0 ⇒ ∂EPI/∂t ≈ 0).
+- **Expansion** — scales the structure (EPI → k·EPI, k ∈ ℕ⁺).
+- **Contraction** — densifies the form (‖EPI′‖ ≥ τ, reduced support).
+- **Self-organization** — reorganizes coherently (∂²EPI/∂t² > τ).
+- **Mutation** — adjusts phase without destroying the form (θ → θ′ if ΔEPI/Δt > ξ).
+- **Transition** — triggers creative thresholds (ΔNFR ≈ νf).
+- **Recursivity** — maintains adaptive memory (EPI(t) = EPI(t − τ)).
+
+Experimentation flows
+---------------------
+1. Model the network: identify nodes (agents, ideas, tissues, modules) and
+   relevant couplings.
+2. Design the operator trajectory aligned with your objective (e.g., initiate →
+   couple → stabilize → resonate).
+3. Simulate with `tnfr.dynamics.step` or `tnfr.dynamics.run`, configuring steps,
+   tolerances, and phase coordinators as needed.
+4. Measure C(t), ΔNFR, and Si to detect bifurcations, collapses, or stabilization.
+5. Introduce controlled dissonance to explore new coherences without breaking the
+   form.
+
+Official metrics and telemetry
+------------------------------
+- **C(t)** (`tnfr.metrics.common.compute_coherence`): global stability.
+- **ΔNFR** (graph hooks such as `compute_delta_nfr`): reorganization demand.
+- **νf**: structural frequency in Hz_str, maintained by the operators.
+- **Si** (`tnfr.metrics.sense_index.compute_Si`): ability to produce meaningful
+  reorganization combining νf, phase, and topology.
+- **Phase θ** (`tnfr.dynamics.coordinate_global_local_phase`, etc.): relative
+  synchrony that conditions effective coupling.
+- **Topology**: coupling maps (useful with `tnfr.operators` such as
+  `apply_topological_remesh`).
+
+Key utilities (`tnfr.helpers`)
+------------------------------
+- **Collections and numerics**: `ensure_collection`, `clamp`, `clamp01`,
+  `kahan_sum_nd`, `angle_diff` for safe data preparation and stable accumulators.
+- **Structural history**: `push_glyph`, `recent_glyph`, `ensure_history`,
+  `last_glyph`, `count_glyphs` to track applied operators and observation windows.
+- **Caches and ΔNFR**: `cached_node_list`, `ensure_node_index_map`,
+  `ensure_node_offset_map`, `node_set_checksum`, `stable_json`,
+  `get_graph_mapping`, `EdgeCacheManager`, `cached_nodes_and_A`,
+  `edge_version_update`, `mark_dnfr_prep_dirty` to keep indexes, topology
+  detectors, and computations coherent.
+
+Simulation best practices
+-------------------------
+- Configure histories with `G.graph['history']` and `HISTORY_MAXLEN` to cap series
+  without losing traceability.
+- Use random sampling (`G.graph['_node_sample']`) and the jitter cache
+  (`tnfr.operators.get_jitter_manager`) to accelerate comparisons and deterministic
+  noise.
+- Coordinate edge updates with `edge_version_update(G)` to keep topology versions
+  and derived caches aligned.
+
+Additional references
+---------------------
+- **Extended theory**: consult `TNFR.pdf` at the repository root for the complete
+  conceptual background.
+- **Support scripts**: `scripts/run_tests.sh` runs `pydocstyle`, `pytest` with
+  coverage, and `vulture`, mirroring the official battery described in
+  `CONTRIBUTING.md`.
+- **CLI**: the `tnfr` entrypoint installed from PyPI exposes subcommands such as
+  `sequence`, `metrics`, and related utilities (run `tnfr --help`).
+- **Specialized modules**: explore `tnfr.dynamics`, `tnfr.structural`,
+  `tnfr.metrics`, `tnfr.operators`, `tnfr.helpers`, and `tnfr.observers` to dive
+  into integrators, custom operators, metric computations, and tracers.
