@@ -61,7 +61,6 @@ def test_phase_sync_equivalent_with_without_numpy(monkeypatch, graph_canon):
         set_attr(G.nodes[idx], ALIAS_THETA, th)
 
     ps_np = phase_sync(G)
-    monkeypatch.setattr(import_utils, "_NP_CACHE", import_utils._NP_CACHE_SENTINEL)
     monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
     monkeypatch.setattr("tnfr.observers.get_numpy", import_utils.get_numpy)
     ps_py = phase_sync(G)

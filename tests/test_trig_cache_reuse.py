@@ -41,11 +41,6 @@ def test_trig_cache_reuse_between_modules(monkeypatch, graph_canon):
         return original_cached_import(module, attr=attr, **kwargs)
 
     monkeypatch.setattr(import_utils, "cached_import", fake_cached_import)
-    monkeypatch.setattr(
-        import_utils,
-        "_NP_CACHE",
-        import_utils._NP_CACHE_SENTINEL,
-    )
 
     G = graph_canon()
     sentinel = object()
