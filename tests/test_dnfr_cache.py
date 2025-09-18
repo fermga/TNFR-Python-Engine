@@ -3,9 +3,15 @@
 import pytest
 import networkx as nx
 
+import tnfr.import_utils as import_utils
+
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.constants import THETA_PRIMARY, EPI_PRIMARY, VF_PRIMARY
-from tnfr.cache import increment_edge_version, cached_nodes_and_A
+from tnfr.cache import (
+    increment_edge_version,
+    cached_node_list,
+    cached_nodes_and_A,
+)
 
 
 def _counting_trig(monkeypatch):
@@ -55,6 +61,8 @@ def test_cache_invalidated_on_graph_change(vectorized):
     nodes1, _ = cached_nodes_and_A(G, cache_size=2)
 
     G.add_edge(2, 3)  # Cambia número de nodos y aristas
+    for attr, scale in ((THETA_PRIMARY, 0.1), (EPI_PRIMARY, 0.2), (VF_PRIMARY, 0.3)):
+        G.nodes[3][attr] = scale * 4
     increment_edge_version(G)
     G.graph["vectorized_dnfr"] = vectorized
     default_compute_delta_nfr(G, cache_size=2)
@@ -83,13 +91,14 @@ def test_cache_is_per_graph():
 
 def test_cache_invalidated_on_node_rename():
     G = _setup_graph()
-    default_compute_delta_nfr(G)
-    assert set(G.nodes) == {0, 1, 2}
+    nodes1 = cached_node_list(G)
 
     nx.relabel_nodes(G, {2: 9}, copy=False)
-    default_compute_delta_nfr(G)
 
-    assert set(G.nodes) == {0, 1, 9}
+    nodes2 = cached_node_list(G)
+
+    assert nodes2 is not nodes1
+    assert set(nodes2) == {0, 1, 9}
 
 
 def test_prepare_dnfr_data_reuses_cache(monkeypatch):
@@ -104,3 +113,78 @@ def test_prepare_dnfr_data_reuses_cache(monkeypatch):
     default_compute_delta_nfr(G)
     assert cos_calls["n"] == cos_first
     assert sin_calls["n"] == sin_first
+
+
+def test_cached_nodes_and_A_reuses_until_edge_change():
+    pytest.importorskip("numpy")
+
+    G = _setup_graph()
+
+    nodes1, A1 = cached_nodes_and_A(G, cache_size=2)
+    nodes2, A2 = cached_nodes_and_A(G, cache_size=2)
+
+    assert nodes1 is nodes2
+    assert A1 is A2
+
+    G.add_edge(2, 3)
+    for attr, scale in ((THETA_PRIMARY, 0.1), (EPI_PRIMARY, 0.2), (VF_PRIMARY, 0.3)):
+        G.nodes[3][attr] = scale * 4
+    increment_edge_version(G)
+
+    nodes3, A3 = cached_nodes_and_A(G, cache_size=2)
+
+    assert nodes3 is not nodes2
+    assert A3 is not A2
+
+
+def test_cached_node_list_reuses_tuple():
+    G = _setup_graph()
+
+    nodes1 = cached_node_list(G)
+    nodes2 = cached_node_list(G)
+
+    assert nodes1 is nodes2
+
+
+def test_cached_node_list_invalidate_on_node_addition():
+    G = _setup_graph()
+
+    nodes1 = cached_node_list(G)
+    G.add_node(99)
+
+    nodes2 = cached_node_list(G)
+
+    assert nodes2 is not nodes1
+    assert set(nodes2) == {0, 1, 2, 99}
+
+
+def test_cached_node_list_invalidate_on_node_rename():
+    G = _setup_graph()
+
+    nodes1 = cached_node_list(G)
+    nx.relabel_nodes(G, {2: 9}, copy=False)
+
+    nodes2 = cached_node_list(G)
+
+    assert nodes2 is not nodes1
+    assert set(nodes2) == {0, 1, 9}
+
+
+def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon):
+    monkeypatch.setattr(import_utils, "_NP_CACHE", import_utils._NP_CACHE_SENTINEL)
+    monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
+    G = graph_canon()
+    G.add_edge(0, 1)
+    nodes, A = cached_nodes_and_A(G)
+    assert A is None
+    assert isinstance(nodes, tuple)
+    assert nodes == (0, 1)
+
+
+def test_cached_nodes_and_A_requires_numpy(monkeypatch, graph_canon):
+    monkeypatch.setattr(import_utils, "_NP_CACHE", import_utils._NP_CACHE_SENTINEL)
+    monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
+    G = graph_canon()
+    G.add_edge(0, 1)
+    with pytest.raises(RuntimeError):
+        cached_nodes_and_A(G, require_numpy=True)
