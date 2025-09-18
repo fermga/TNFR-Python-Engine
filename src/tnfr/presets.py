@@ -4,32 +4,37 @@ from __future__ import annotations
 from .execution import seq, block, wait, basic_canonical_example
 from .types import Glyph
 
-# Secuencias comunes
-ARRANQUE_BASICO = seq(Glyph.AL, Glyph.EN)
-CIERRE_BASICO = seq(Glyph.RA, Glyph.SHA)
-NUCLEO_VAL_UM = seq(Glyph.VAL, Glyph.UM)
-
-__all__ = (
-    "ARRANQUE_BASICO",
-    "CIERRE_BASICO",
-    "NUCLEO_VAL_UM",
-    "get_preset",
-)
+__all__ = ("get_preset",)
 
 
 _PRESETS = {
-    "arranque_resonante": ARRANQUE_BASICO
-    + seq(Glyph.IL, Glyph.RA)
-    + NUCLEO_VAL_UM
-    + seq(wait(3), Glyph.SHA),
-    "mutacion_contenida": ARRANQUE_BASICO
-    + seq(block(Glyph.OZ, Glyph.ZHIR, Glyph.IL, repeat=2))
-    + CIERRE_BASICO,
-    "exploracion_acople": ARRANQUE_BASICO
-    + seq(Glyph.IL)
-    + NUCLEO_VAL_UM
-    + seq(block(Glyph.OZ, Glyph.NAV, Glyph.IL, repeat=1))
-    + CIERRE_BASICO,
+    "arranque_resonante": seq(
+        Glyph.AL,
+        Glyph.EN,
+        Glyph.IL,
+        Glyph.RA,
+        Glyph.VAL,
+        Glyph.UM,
+        wait(3),
+        Glyph.SHA,
+    ),
+    "mutacion_contenida": seq(
+        Glyph.AL,
+        Glyph.EN,
+        block(Glyph.OZ, Glyph.ZHIR, Glyph.IL, repeat=2),
+        Glyph.RA,
+        Glyph.SHA,
+    ),
+    "exploracion_acople": seq(
+        Glyph.AL,
+        Glyph.EN,
+        Glyph.IL,
+        Glyph.VAL,
+        Glyph.UM,
+        block(Glyph.OZ, Glyph.NAV, Glyph.IL, repeat=1),
+        Glyph.RA,
+        Glyph.SHA,
+    ),
     "ejemplo_canonico": basic_canonical_example(),
     # Topologías fractales: expansión/contracción modular
     "fractal_expand": seq(
