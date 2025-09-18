@@ -69,8 +69,10 @@ kuramoto_R_psi: _KuramotoFn = cast(
 
 
 def _sigma_fallback(
-    G: Any, weight_mode: str | None = None
+    G: Any, _weight_mode: str | None = None
 ) -> dict[str, float]:
+    """Return a null sigma vector regardless of ``_weight_mode``."""
+
     return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
 
 
