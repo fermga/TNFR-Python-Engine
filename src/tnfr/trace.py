@@ -353,7 +353,9 @@ def register_trace(G) -> None:
         event = f"{phase}_step"
 
         def _make_cb(ph):
-            def _cb(G, *args, **kwargs):
+            def _cb(G, ctx: dict[str, Any] | None = None):
+                del ctx
+
                 _trace_capture(G, ph, TRACE_FIELDS.get(ph, {}))
 
             return _cb

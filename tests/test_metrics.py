@@ -145,7 +145,7 @@ def test_pp_val_zero_when_no_remesh(graph_canon):
     G.add_node(0, EPI_kind=LATENT_GLYPH)
     inject_defaults(G)
 
-    _metrics_step(G)
+    _metrics_step(G, ctx=None)
 
     morph = G.graph["history"]["morph"][0]
     assert morph["PP"] == 0.0
@@ -158,7 +158,7 @@ def test_pp_val_handles_missing_sha(graph_canon):
     G.add_node(0, EPI_kind="REMESH")
     inject_defaults(G)
 
-    _metrics_step(G)
+    _metrics_step(G, ctx=None)
 
     morph = G.graph["history"]["morph"][0]
     assert morph["PP"] == 0.0
@@ -182,11 +182,11 @@ def test_save_by_node_flag_keeps_metrics_equal(graph_canon):
             nd = G.nodes[n]
             nd["glyph_history"] = [nd.get("EPI_kind")]
         G.graph["_t"] = 0
-        _metrics_step(G)
+        _metrics_step(G, ctx=None)
         G.nodes[0]["EPI_kind"] = "NAV"
         G.nodes[0].setdefault("glyph_history", []).append("NAV")
         G.graph["_t"] = 1
-        _metrics_step(G)
+        _metrics_step(G, ctx=None)
 
     hist_true = G_true.graph["history"]
     hist_false = G_false.graph["history"]

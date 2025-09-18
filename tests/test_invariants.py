@@ -22,7 +22,7 @@ def G_small():
     init_node_attrs(G, override=True)
     G.graph["RANDOM_SEED"] = 7
     register_metrics_callbacks(G)
-    _metrics_step(G)
+    _metrics_step(G, ctx=None)
     return G
 
 

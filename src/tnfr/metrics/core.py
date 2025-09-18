@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from ..callback_utils import CallbackEvent, callback_manager
 from ..constants import get_param
 from ..glyph_history import append_metric, ensure_history
@@ -67,8 +69,10 @@ __all__ = [
 ]
 
 
-def _metrics_step(G, *args, **kwargs):
+def _metrics_step(G, ctx: dict[str, Any] | None = None):
     """Update operational TNFR metrics per step."""
+
+    del ctx
 
     cfg = get_param(G, "METRICS")
     if not cfg.get("enabled", True):

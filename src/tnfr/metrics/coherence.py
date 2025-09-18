@@ -664,7 +664,9 @@ def local_phase_sync(G, n):
     return local_phase_sync_weighted(G, n, nodes_order=nodes, W_row=W)
 
 
-def _coherence_step(G, ctx=None):
+def _coherence_step(G, ctx: dict[str, Any] | None = None):
+    del ctx
+
     if not get_param(G, "COHERENCE").get("enabled", True):
         return
     coherence_matrix(G)

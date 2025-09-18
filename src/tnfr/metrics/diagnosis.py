@@ -144,7 +144,9 @@ def _node_diagnostics(
     }
 
 
-def _diagnosis_step(G, ctx=None):
+def _diagnosis_step(G, ctx: dict[str, Any] | None = None):
+    del ctx
+
     dcfg = get_param(G, "DIAGNOSIS")
     if not dcfg.get("enabled", True):
         return
@@ -181,11 +183,14 @@ def _diagnosis_step(G, ctx=None):
     append_metric(hist, key, diag)
 
 
-def dissonance_events(G, ctx=None):
+def dissonance_events(G, ctx: dict[str, Any] | None = None):
     """Emit per-node structural dissonance start/end events.
 
     Events are recorded as ``"dissonance_start"`` and ``"dissonance_end"``.
     """
+
+    del ctx
+
     hist = ensure_history(G)
     # eventos de disonancia se registran en ``history['events']``
     norms = G.graph.get("_sel_norms", {})
