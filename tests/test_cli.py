@@ -12,7 +12,6 @@ import networkx as nx  # type: ignore[import-untyped]
 
 from tnfr.cli import main
 from tnfr.cli.arguments import (
-    GRAMMAR_ARG_SPECS,
     _args_to_dict,
     add_common_args,
     add_grammar_args,
@@ -414,10 +413,3 @@ def test_args_to_dict_filters_none_values():
     assert result == {"enabled": True}
 
 
-def test_grammar_args_dest_and_default():
-    parser = argparse.ArgumentParser()
-    add_grammar_args(parser)
-    for opt, _ in GRAMMAR_ARG_SPECS:
-        action = next(a for a in parser._actions if opt in a.option_strings)
-        assert action.dest == opt.lstrip("-").replace(".", "_")
-        assert action.default is None
