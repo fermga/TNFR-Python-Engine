@@ -28,14 +28,6 @@ from .numeric import (
 )
 
 
-def ensure_collection(*args, **kwargs):
-    """Proxy to :func:`tnfr.collections_utils.ensure_collection`."""
-
-    from ..collections_utils import ensure_collection as _ensure_collection
-
-    return _ensure_collection(*args, **kwargs)
-
-
 def __getattr__(name: str):
     if name in _GLYPH_HISTORY_EXPORTS:
         from .. import glyph_history as _glyph_history
@@ -54,7 +46,6 @@ __all__ = (
     "clamp01",
     "edge_version_cache",
     "edge_version_update",
-    "ensure_collection",
     "ensure_node_index_map",
     "ensure_node_offset_map",
     "get_graph",
