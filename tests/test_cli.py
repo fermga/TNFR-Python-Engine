@@ -81,6 +81,27 @@ def test_cli_invalid_preset_exits_gracefully(capsys, command):
     assert "nope" in captured.out
 
 
+def test_cli_sequence_file_missing(tmp_path, capsys):
+    missing = tmp_path / "custom.json"
+
+    rc = main(["sequence", "--sequence-file", str(missing)])
+    captured = capsys.readouterr()
+
+    assert rc == 1
+    assert f"Could not read {missing}" in captured.out
+
+
+def test_cli_sequence_file_invalid_json(tmp_path, capsys):
+    seq_path = tmp_path / "invalid.json"
+    seq_path.write_text("{invalid json}", encoding="utf-8")
+
+    rc = main(["sequence", "--sequence-file", str(seq_path)])
+    captured = capsys.readouterr()
+
+    assert rc == 1
+    assert f"Error parsing JSON file at {seq_path}" in captured.out
+
+
 def test_cli_metrics_generates_metrics_payload(tmp_path):
     out = tmp_path / "metrics.json"
     rc = main(["metrics", "--nodes", "6", "--steps", "5", "--save", str(out)])

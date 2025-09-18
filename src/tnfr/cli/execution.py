@@ -29,7 +29,7 @@ from ..dynamics import (
 )
 from ..presets import get_preset
 from ..config import apply_config
-from ..io import read_structured_file, safe_write
+from ..io import read_structured_file, safe_write, StructuredFileError
 from ..glyph_history import ensure_history
 from ..ontosim import preparar_red
 from ..logging_utils import get_logger
@@ -150,7 +150,15 @@ def _build_graph_from_args(args: argparse.Namespace) -> "nx.Graph":
 
 
 def _load_sequence(path: Path) -> list[Any]:
-    data = read_structured_file(path)
+    try:
+        data = read_structured_file(path)
+    except (StructuredFileError, OSError) as exc:
+        if isinstance(exc, StructuredFileError):
+            message = str(exc)
+        else:
+            message = str(StructuredFileError(path, exc))
+        logger.error("%s", message)
+        raise SystemExit(1) from exc
     return seq(*_parse_tokens(data))
 
 
