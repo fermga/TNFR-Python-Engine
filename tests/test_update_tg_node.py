@@ -1,7 +1,7 @@
 from collections import defaultdict
 import builtins
 
-from tnfr.metrics.core import _update_tg_node, GlyphTiming
+from tnfr.metrics.glyph_timing import _update_tg_node, GlyphTiming
 from tnfr.glyph_history import push_glyph
 
 
