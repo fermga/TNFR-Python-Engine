@@ -499,6 +499,7 @@ def _prepare_dnfr(G, *, use_Si: bool) -> None:
         "compute_delta_nfr", default_compute_delta_nfr
     )
     compute_dnfr_cb(G)
+    G.graph.pop("_sel_norms", None)
     if use_Si:
         compute_Si(G, inplace=True)
 
