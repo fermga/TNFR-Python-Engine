@@ -170,12 +170,11 @@ def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
 def random_jitter(
     node: NodoProtocol,
     amplitude: float,
-    manager: JitterCacheManager | None = None,
 ) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
 
-    Uses ``manager`` to track per-node jitter sequences. When ``manager`` is
-    ``None`` the global manager from :func:`get_jitter_manager` is used.
+    The per-node jitter sequences are tracked using the global manager
+    returned by :func:`get_jitter_manager`.
     """
     if amplitude < 0:
         raise ValueError("amplitude must be positive")
@@ -185,11 +184,10 @@ def random_jitter(
     seed_root = base_seed(node.G)
     seed_key, scope_id = _resolve_jitter_seed(node)
 
-    manager = manager or get_jitter_manager()
-
     cache_key = (seed_root, scope_id)
     seq = 0
     if cache_enabled(node.G):
+        manager = get_jitter_manager()
         seq = manager.bump(cache_key)
     seed = seed_hash(seed_root, scope_id)
     rng = make_rng(seed, seed_key + seq, node.G)
