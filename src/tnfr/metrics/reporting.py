@@ -98,8 +98,19 @@ def glyph_top(G, k: int = 3) -> list[tuple[str, float]]:
     return nlargest(k, tg.items(), key=lambda kv: kv[1])
 
 
-def build_metrics_summary(G) -> tuple[dict[str, Any], bool]:
-    """Collect a compact metrics summary for CLI reporting."""
+def build_metrics_summary(
+    G, *, series_limit: int | None = None
+) -> tuple[dict[str, Any], bool]:
+    """Collect a compact metrics summary for CLI reporting.
+
+    Parameters
+    ----------
+    G:
+        Graph containing the recorded metrics.
+    series_limit:
+        Maximum number of samples to keep for each glyphogram series. ``None`` or
+        non-positive values disable trimming and return the full history.
+    """
 
     tg = Tg_global(G, normalize=True)
     latency = latency_series(G)
@@ -112,10 +123,26 @@ def build_metrics_summary(G) -> tuple[dict[str, Any], bool]:
     except StatisticsError:
         latency_mean = 0.0
 
+    limit: int | None
+    if series_limit is None:
+        limit = None
+    else:
+        limit = int(series_limit)
+        if limit <= 0:
+            limit = None
+
+    def _trim(values: list[Any]) -> list[Any]:
+        seq = list(values)
+        if limit is None:
+            return seq
+        return seq[:limit]
+
+    glyph_summary = {k: _trim(v) for k, v in glyph.items()}
+
     summary = {
         "Tg_global": tg,
         "latency_mean": latency_mean,
         "rose": rose,
-        "glyphogram": {k: v[:10] for k, v in glyph.items()},
+        "glyphogram": glyph_summary,
     }
     return summary, bool(latency_values)

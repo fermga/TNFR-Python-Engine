@@ -225,7 +225,7 @@ def test_build_metrics_summary_reuses_metrics_helpers(monkeypatch):
     monkeypatch.setattr("tnfr.metrics.reporting.glyphogram_series", fake_glyphogram)
     monkeypatch.setattr("tnfr.metrics.reporting.sigma_rose", fake_sigma)
 
-    summary, has_latency = build_metrics_summary(G)
+    summary, has_latency = build_metrics_summary(G, series_limit=10)
 
     assert has_latency is True
     assert calls["tg"]["graph"] is G
@@ -252,6 +252,26 @@ def test_build_metrics_summary_handles_empty_latency(monkeypatch):
 
     assert has_latency is False
     assert summary["latency_mean"] == 0.0
+
+
+def test_build_metrics_summary_accepts_unbounded_limit(monkeypatch):
+    G = object()
+
+    monkeypatch.setattr("tnfr.metrics.reporting.Tg_global", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(
+        "tnfr.metrics.reporting.latency_series", lambda *_: {"value": [1.0]}
+    )
+    monkeypatch.setattr(
+        "tnfr.metrics.reporting.glyphogram_series",
+        lambda *_: {"t": list(range(12)), "AL": list(range(12))},
+    )
+    monkeypatch.setattr("tnfr.metrics.reporting.sigma_rose", lambda *_: {})
+
+    summary, has_latency = build_metrics_summary(G, series_limit=0)
+
+    assert has_latency is True
+    assert summary["glyphogram"]["t"] == list(range(12))
+    assert summary["glyphogram"]["AL"] == list(range(12))
 
 
 def test_latency_index_uses_max_denominator(graph_canon):
