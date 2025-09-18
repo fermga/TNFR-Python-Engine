@@ -228,17 +228,20 @@ _NP_CACHE_SENTINEL = object()
 _NP_CACHE: Any | None | object = _NP_CACHE_SENTINEL
 
 
-def get_numpy(logger: Any | None = None) -> Any | None:
-    """Return cached NumPy module if available."""
+def get_numpy() -> Any | None:
+    """Return the cached :mod:`numpy` module when available.
+
+    The first call performs a lazy import via :func:`cached_import`; later calls
+    reuse the stored result. When :mod:`numpy` cannot be imported the function
+    logs a debug message and returns ``None`` to signal that pure Python fallbacks
+    should be used instead.
+    """
 
     global _NP_CACHE
     if _NP_CACHE is _NP_CACHE_SENTINEL:
-        resolved_logger = logger or get_logger(__name__)
         np = cached_import("numpy")
         if np is None:
-            resolved_logger.debug(
-                "Failed to import numpy; continuing in non-vectorised mode"
-            )
+            logger.debug("Failed to import numpy; continuing in non-vectorised mode")
         _NP_CACHE = np
     return _NP_CACHE
 

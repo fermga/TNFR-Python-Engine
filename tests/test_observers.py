@@ -78,7 +78,7 @@ def test_phase_sync_numpy_and_python_consistent(monkeypatch, graph_canon):
         set_attr(G.nodes[idx], ALIAS_THETA, th)
 
     ps_np = phase_sync(G)
-    monkeypatch.setattr("tnfr.import_utils.get_numpy", lambda logger=None: None)
+    monkeypatch.setattr("tnfr.import_utils.get_numpy", lambda: None)
     monkeypatch.setattr("tnfr.observers.get_numpy", lambda: None)
     ps_py = phase_sync(G)
     assert ps_np == pytest.approx(ps_py)
