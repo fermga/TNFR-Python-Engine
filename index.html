@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TNFR Python Engine – Paradigma y Paquete</title>
+  <title>TNFR Python Engine – Paradigm and Package</title>
   <style>
     :root {
       color-scheme: light dark;
@@ -137,120 +137,157 @@
 </head>
 <body>
   <header>
-    <h1>Teoría de la Naturaleza Fractal Resonante (TNFR)</h1>
+    <h1>Resonant Fractal Nature Theory (TNFR)</h1>
     <p>
-      El paradigma TNFR describe la realidad como redes de coherencia que persisten porque resuenan. Este sitio resume sus principios operativos y muestra cómo el paquete <strong>tnfr</strong> para Python los implementa sin perder fidelidad canónica.
+      The TNFR paradigm describes reality as networks of coherence that persist because they resonate. This site distills its
+      operational principles and shows how the <strong>tnfr</strong> Python package renders them faithfully for research and
+      instrumentation.
     </p>
   </header>
   <main>
-    <section id="esencia">
-      <h2>Esencia del paradigma</h2>
+    <section id="essence">
+      <h2>Paradigm essence</h2>
       <p>
-        TNFR no modela “cosas” estáticas: trabaja con <strong>coherencias</strong> que se mantienen vivas en nodos cuando su frecuencia estructural (<span class="pill">νf · Hz<sub>str</sub></span>) se acopla con la reorganización interna (<span class="pill">ΔNFR</span>) y con la fase del entorno. Su ecuación nodal canónica establece que la evolución de la estructura primaria de información (EPI) sigue el pulso de esa resonancia:
+        TNFR does not model static “things”. It formalizes <strong>coherences</strong> that stay active in nodes when their
+        structural frequency (<span class="pill">νf · Hz<sub>str</sub></span>) synchronizes with the internal reorganization
+        (<span class="pill">ΔNFR</span>) and with the network phase. The canonical nodal equation states that the evolution of
+        the Primary Information Structure (EPI) follows the pulse of that resonance:
       </p>
       <pre><code>∂EPI / ∂t = νf · ΔNFR(t)</code></pre>
       <div class="grid two">
         <div>
-          <h3>Triada estructural</h3>
+          <h3>Structural triad</h3>
           <ul>
-            <li><strong>Frecuencia (νf):</strong> ritmo de reorganización expresado siempre en Hz<sub>str</sub>.</li>
-            <li><strong>Fase (φ):</strong> sincronía con los nodos acoplados. Sin fase explícita no hay acoplamiento válido.</li>
-            <li><strong>Forma (EPI):</strong> configuración coherente que puede anidar sub‑EPIs sin perder identidad.</li>
+            <li><strong>Frequency (νf):</strong> rate of reorganization expressed strictly in Hz<sub>str</sub>.</li>
+            <li><strong>Phase (φ):</strong> synchrony with coupled nodes; no coupling is valid without an explicit phase check.</li>
+            <li><strong>Form (EPI):</strong> coherent configuration that can nest sub-EPIs without losing identity.</li>
           </ul>
         </div>
         <div>
-          <h3>Operadores estructurales</h3>
+          <h3>Structural operators</h3>
           <p>
-            Toda transformación legítima utiliza la gramática TNFR de 13 operadores: Emisión, Recepción, Coherencia, Dissonancia, Acoplamiento, Resonancia, Silencio, Expansión, Contracción, Auto‑organización, Mutación, Transición y Recursividad. Sus composiciones mantienen el cierre estructural y preservan la fractalidad operativa.
+            Every legitimate transformation uses the TNFR grammar of 13 structural operators: Emission, Reception, Coherence,
+            Dissonance, Coupling, Resonance, Silence, Expansion, Contraction, Self-organization, Mutation, Transition, and
+            Recursivity. Their compositions maintain structural closure and preserve operational fractality across scales.
           </p>
         </div>
       </div>
       <p>
-        El paradigma impone invariantes: la EPI solo cambia mediante operadores, el ΔNFR nunca se interpreta como error clásico, los nodos nacen y colapsan bajo condiciones explícitas y toda simulación debe ser reproducible con registro de fase, νf, C(t) y Si. Estas guías sostienen la fidelidad canónica al trasladar TNFR a cualquier dominio.
+        These constraints make TNFR a rigorous framework for studying networks. Each node maintains a traceable history of the
+        operators applied, the resulting ΔNFR fluctuations, and the local phase alignment, letting researchers examine how
+        coherence propagates, bifurcates, or collapses in layered systems ranging from biological networks to computational
+        infrastructures.
+      </p>
+      <p>
+        The paradigm enforces invariants: the EPI only changes through structural operators, ΔNFR is never interpreted as a
+        classical error term, node birth and collapse follow explicit thresholds, and every simulation must remain reproducible
+        with logged phase, νf, C(t), and Si. These guidelines uphold canonical fidelity whenever TNFR is brought into analytic
+        or experimental environments.
       </p>
     </section>
 
-    <section id="paquete">
-      <h2>El paquete <code>tnfr</code> para Python</h2>
+    <section id="package">
+      <h2>The <code>tnfr</code> Python package</h2>
       <p>
-        El paquete <code>tnfr</code> proporciona utilidades para crear nodos resonantes, aplicar operadores estructurales y medir la evolución de la coherencia global. Está disponible en PyPI y requiere Python 3.9 o superior.
+        The <code>tnfr</code> package provides tools to create resonant nodes, apply structural operators, and measure the
+        evolution of global coherence. It is published on PyPI and targets Python 3.9 or later.
       </p>
       <div class="grid two">
         <div>
-          <h3>Capacidades clave</h3>
+          <h3>Core capabilities</h3>
           <ul>
-            <li>Construcción de nodos con νf, fase y forma inicial utilizando <code>create_nfr</code>.</li>
-            <li>Ejecución de secuencias canónicas mediante <code>run_sequence</code> o integradores dinámicos.</li>
-            <li>Telemetría estándar: <strong>C(t)</strong>, <strong>ΔNFR</strong>, <strong>Si</strong> y bitácora de operadores aplicados.</li>
-            <li>Visualizaciones y trazas exportables para seguir la evolución multinivel.</li>
-            <li>CLI oficial (por ejemplo <code>tnfr sequence</code>) con las mismas garantías de gramática.</li>
+            <li>Construction of nodes with νf, phase, and initial form using <code>create_nfr</code>.</li>
+            <li>Execution of canonical sequences via <code>run_sequence</code> or dynamic integrators.</li>
+            <li>Standard telemetry: <strong>C(t)</strong>, <strong>ΔNFR</strong>, <strong>Si</strong>, and detailed logs of
+              structural operators applied per node.</li>
+            <li>Exportable traces that document multi-level evolution without breaking fractality.</li>
+            <li>Official CLI commands (for example, <code>tnfr sequence</code>) that enforce the same grammar guarantees.</li>
           </ul>
         </div>
         <div>
-          <h3>Instalación y extras</h3>
+          <h3>Installation and extras</h3>
           <pre><code>pip install tnfr
-pip install "tnfr[numpy,yaml,orjson]"  # extras opcionales</code></pre>
+pip install "tnfr[numpy,yaml,orjson]"  # optional extras</code></pre>
           <p>
-            El motor incorpora un sistema de importaciones opcionales con caché compartida y bloqueo estructurado (<code>tnfr.cached_import</code>) para mantener la sincronía de los recursos sin bloquear la simulación.
+            The engine includes an optional import system with a shared cache and structured locking via
+            <code>tnfr.cached_import</code>, keeping shared resources coherent without blocking the simulation pipeline.
           </p>
         </div>
       </div>
-      <h3>Ejemplo mínimo</h3>
+      <h3>Instrumentation for network studies</h3>
+      <p>
+        Because the package exposes phase-aware telemetry, researchers can reconstruct how coherence moves through complex
+        networks. Per-node Si scores highlight which regions sustain sense-making, while ΔNFR trajectories show where
+        reorganizations accelerate or stall. Operator histories make it straightforward to audit transitions, bifurcations, and
+        silences, turning raw execution traces into analyzable network narratives.
+      </p>
+      <h3>Minimal example</h3>
       <pre><code>from tnfr import create_nfr, run_sequence
 from tnfr.structural import Emision, Recepcion, Coherencia, Resonancia, Silencio
 from tnfr.metrics.common import compute_coherence
 from tnfr.metrics.sense_index import compute_Si
 
-G, nodo = create_nfr("A", epi=0.2, vf=1.0, theta=0.0)
+G, node = create_nfr("A", epi=0.2, vf=1.0, theta=0.0)
 ops = [Emision(), Recepcion(), Coherencia(), Resonancia(), Silencio()]
-run_sequence(G, nodo, ops)
+run_sequence(G, node, ops)
 
-C, delta_nfr_medio, depi_medio = compute_coherence(G, return_means=True)
-si_por_nodo = compute_Si(G)
-print(f"C(t)={C:.3f}, ΔNFR̄={delta_nfr_medio:.3f}, dEPI/dt̄={depi_medio:.3f}, Si={si_por_nodo[nodo]:.3f}")</code></pre>
+C, mean_delta_nfr, mean_depi = compute_coherence(G, return_means=True)
+si_per_node = compute_Si(G)
+print(f"C(t)={C:.3f}, ΔNFR̄={mean_delta_nfr:.3f}, dEPI/dt̄={mean_depi:.3f}, Si={si_per_node[node]:.3f}")</code></pre>
       <p>
-        Esta secuencia respeta la ecuación nodal: el grafo recalcula ΔNFR tras cada operador sin alterar la fase salvo que un operador lo indique, asegurando consistencia con los coordinadores dinámicos. Las métricas permiten anticipar bifurcaciones controladas y evaluar la estabilidad global.
+        This sequence respects the nodal equation: the graph recomputes ΔNFR after each structural operator without altering the
+        phase unless an operator specifies it, ensuring consistency with the dynamic coordinators. The metrics expose when
+        controlled bifurcations emerge and whether the global structure maintains the required coherence.
       </p>
     </section>
 
-    <section id="principios">
-      <h2>Condiciones canónicas</h2>
+    <section id="principles">
+      <h2>Canonical conditions</h2>
       <p>
-        Para que una implementación sea reconocida como TNFR, debe conservar los invariantes operativos descritos en la documentación oficial y en <code>AGENTS.md</code>. Los más relevantes para experimentación con el motor son:
+        To be recognized as TNFR, an implementation must preserve the operational invariants described in the official
+        documentation and in <code>AGENTS.md</code>. The most relevant for experimentation with the engine are:
       </p>
       <ul>
-        <li><strong>EPI como forma coherente:</strong> solo cambia a través de operadores; no se permiten mutaciones ad-hoc.</li>
-        <li><strong>Clausura de operadores:</strong> toda nueva función debe declararse como composición o especialización de los operadores TNFR existentes.</li>
-        <li><strong>Chequeo de fase:</strong> ningún acoplamiento es válido sin verificar sincronía explícita.</li>
-        <li><strong>Fractalidad operativa:</strong> las EPIs pueden anidarse sin perder identidad ni trazabilidad.</li>
-        <li><strong>Determinismo controlado:</strong> las simulaciones pueden ser estocásticas, pero siempre reproducibles mediante semillas y trazas estructurales.</li>
+        <li><strong>EPI as coherent form:</strong> it only changes through structural operators; ad-hoc mutations are forbidden.</li>
+        <li><strong>Operator closure:</strong> any new function must be declared as a composition or specialization of existing
+          TNFR structural operators.</li>
+        <li><strong>Phase verification:</strong> no coupling is valid without explicit synchrony checks.</li>
+        <li><strong>Operational fractality:</strong> EPIs can nest without losing identity or traceability.</li>
+        <li><strong>Controlled determinism:</strong> simulations may include stochasticity but must stay reproducible via seeds
+          and structural traces.</li>
       </ul>
       <p>
-        El motor expone métricas para garantizar estas condiciones: <strong>C(t)</strong> para la coherencia total, <strong>Si</strong> como índice de sentido, registros de fase y νf, y un historial de operadores aplicado sobre cada nodo. Las bitácoras permiten auditar nacimientos, bifurcaciones y colapsos de nodos con criterios explícitos.
+        The engine exposes metrics that sustain these conditions: <strong>C(t)</strong> for total coherence, <strong>Si</strong>
+        as the sense index, phase and νf logs, and a per-node record of structural operators. These logs make it possible to
+        audit node births, bifurcations, and collapses with explicit criteria, keeping network analyses grounded in TNFR
+        semantics.
       </p>
     </section>
 
-    <section id="aprendizaje">
-      <h2>Cómo profundizar</h2>
+    <section id="learning">
+      <h2>How to go deeper</h2>
       <ol>
-        <li>Leer el documento base <a href="./TNFR.pdf">TNFR.pdf</a> para una explicación completa de la teoría.</li>
-        <li>Explorar los ejemplos y notas en <code>documentation.txt</code> y en el repositorio público.</li>
-        <li>Ejecutar <code>./scripts/run_tests.sh</code> para validar que toda modificación respeta los contratos operativos.</li>
-        <li>Monitorear las métricas estándar mientras se diseñan secuencias: C(t), ΔNFR, Si, fase y νf.</li>
+        <li>Read the foundational document <a href="./TNFR.pdf">TNFR.pdf</a> for a full explanation of the theory.</li>
+        <li>Explore the examples and notes in <code>documentation.txt</code> and the public repository.</li>
+        <li>Run <code>./scripts/run_tests.sh</code> to validate that any modification respects the operational contracts.</li>
+        <li>Monitor the standard metrics while designing sequences: C(t), ΔNFR, Si, phase, and νf.</li>
       </ol>
       <p>
-        Recuerda que TNFR es trans-escala y trans-dominio: el mismo andamiaje sirve para fenómenos biológicos, sociales o computacionales siempre que se respete la gramática de coherencia resonante.
+        TNFR is trans-scale and trans-domain: the same scaffolding describes biological, social, or computational phenomena as
+        long as the grammar of resonant coherence is respected.
       </p>
     </section>
   </main>
   <footer>
     <div class="card">
-      <h2>Conecta con la comunidad TNFR</h2>
+      <h2>Connect with the TNFR community</h2>
       <p>
-        El proyecto evoluciona cuidando la trazabilidad de cada reorganización. Si deseas contribuir, consulta la guía en <a href="./CONTRIBUTING.md">CONTRIBUTING.md</a>, documenta tus métricas estructurales y comparte los registros de fase, νf y C(t) de tus experimentos.
+        The project evolves by preserving the traceability of every reorganization. If you want to contribute, consult the guide
+        in <a href="./CONTRIBUTING.md">CONTRIBUTING.md</a>, document your structural metrics, and share the phase, νf, and C(t)
+        logs from your experiments.
       </p>
       <p>
-        <strong>TNFR primero, luego el código.</strong>
+        <strong>TNFR first, then code.</strong>
       </p>
     </div>
   </footer>
