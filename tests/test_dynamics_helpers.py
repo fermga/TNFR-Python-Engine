@@ -7,8 +7,12 @@ from tnfr.dynamics import (
     _refresh_dnfr_vectors,
     _compute_neighbor_means,
     _choose_glyph,
+    _prepare_dnfr,
+    default_glyph_selector,
     run,
 )
+from tnfr.alias import get_attr, set_attr
+from tnfr.constants import get_aliases
 from tnfr.types import Glyph
 
 
@@ -76,3 +80,50 @@ def test_run_rejects_negative_steps(graph_canon):
     G = graph_canon()
     with pytest.raises(ValueError):
         run(G, steps=-1)
+
+
+def test_default_selector_refreshes_norms(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from((0, 1))
+
+    dnfr_alias = get_aliases("DNFR")
+    accel_alias = get_aliases("D2EPI")
+    si_alias = get_aliases("SI")
+
+    for node in G.nodes:
+        set_attr(G.nodes[node], si_alias, 0.5)
+
+    def assign_metrics(dnfr_map, accel_map):
+        def _cb(graph):
+            for node, value in dnfr_map.items():
+                set_attr(graph.nodes[node], dnfr_alias, value)
+            for node, value in accel_map.items():
+                set_attr(graph.nodes[node], accel_alias, value)
+
+        return _cb
+
+    G.graph["compute_delta_nfr"] = assign_metrics(
+        {0: 10.0, 1: 6.0},
+        {0: 8.0, 1: 5.0},
+    )
+    _prepare_dnfr(G, use_Si=False)
+    default_glyph_selector(G, 0)
+    norms_initial = G.graph["_sel_norms"]
+    assert norms_initial["dnfr_max"] == pytest.approx(10.0)
+    assert norms_initial["accel_max"] == pytest.approx(8.0)
+
+    G.graph["compute_delta_nfr"] = assign_metrics(
+        {0: 4.0, 1: 2.0},
+        {0: 3.0, 1: 1.0},
+    )
+    _prepare_dnfr(G, use_Si=False)
+    default_glyph_selector(G, 0)
+    norms_updated = G.graph["_sel_norms"]
+    assert norms_updated["dnfr_max"] == pytest.approx(4.0)
+    assert norms_updated["accel_max"] == pytest.approx(3.0)
+
+    nd = G.nodes[0]
+    dnfr_norm = abs(get_attr(nd, dnfr_alias, 0.0)) / norms_updated["dnfr_max"]
+    accel_norm = abs(get_attr(nd, accel_alias, 0.0)) / norms_updated["accel_max"]
+    assert dnfr_norm == pytest.approx(1.0)
+    assert accel_norm == pytest.approx(1.0)
