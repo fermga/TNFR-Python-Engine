@@ -22,18 +22,18 @@ def test_glyph_operations_complete():
 
 def test_random_jitter_deterministic(graph_canon):
     reset_jitter_manager()
-    manager = get_jitter_manager()
     G = graph_canon()
     G.add_node(0)
     n0 = NodoNX(G, 0)
 
-    j1 = random_jitter(n0, 0.5, manager)
-    j2 = random_jitter(n0, 0.5, manager)
+    j1 = random_jitter(n0, 0.5)
+    j2 = random_jitter(n0, 0.5)
     assert j1 != j2
 
+    manager = get_jitter_manager()
     manager.clear()
-    j3 = random_jitter(n0, 0.5, manager)
-    j4 = random_jitter(n0, 0.5, manager)
+    j3 = random_jitter(n0, 0.5)
+    j4 = random_jitter(n0, 0.5)
     assert [j3, j4] == [j1, j2]
 
 
@@ -57,13 +57,12 @@ def test_rng_cache_disabled_with_size_zero(graph_canon):
     from tnfr.constants import DEFAULTS
 
     reset_jitter_manager()
-    manager = get_jitter_manager()
     set_cache_maxsize(0)
     G = graph_canon()
     G.add_node(0)
     n0 = NodoNX(G, 0)
-    j1 = random_jitter(n0, 0.5, manager)
-    j2 = random_jitter(n0, 0.5, manager)
+    j1 = random_jitter(n0, 0.5)
+    j2 = random_jitter(n0, 0.5)
     assert j1 == j2
     set_cache_maxsize(DEFAULTS["JITTER_CACHE_SIZE"])
 
@@ -76,7 +75,7 @@ def test_jitter_seq_purges_old_entries():
     nodes = [SimpleNamespace(G=graph) for _ in range(5)]
     first_key = (0, id(nodes[0]))
     for n in nodes:
-        random_jitter(n, 0.1, manager)
+        random_jitter(n, 0.1)
     assert len(manager.seq) == 4
     assert first_key not in manager.seq
 
@@ -105,7 +104,7 @@ def test_jitter_manager_clear_resets_state():
     graph = SimpleNamespace(graph={})
     nodes = [SimpleNamespace(G=graph) for _ in range(3)]
     for node in nodes:
-        random_jitter(node, 0.1, manager)
+        random_jitter(node, 0.1)
     assert len(manager.seq) == 3
     manager.clear()
     assert len(manager.seq) == 0
