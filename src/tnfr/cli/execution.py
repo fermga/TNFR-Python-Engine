@@ -20,7 +20,7 @@ from ..metrics import (
 )
 from ..metrics.core import _metrics_step
 from ..trace import register_trace
-from ..execution import play, seq, basic_canonical_example
+from ..execution import CANONICAL_PRESET_NAME, play, seq
 from ..dynamics import (
     run,
     default_glyph_selector,
@@ -264,7 +264,9 @@ def cmd_sequence(args: argparse.Namespace) -> int:
             "No se puede usar --preset y --sequence-file al mismo tiempo"
         )
         return 1
-    code, _ = _run_cli_program(args, default_program=basic_canonical_example())
+    code, _ = _run_cli_program(
+        args, default_program=get_preset(CANONICAL_PRESET_NAME)
+    )
     return code
 
 

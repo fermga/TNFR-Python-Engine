@@ -29,7 +29,8 @@ from tnfr.cli.execution import (
 )
 from tnfr.constants import METRIC_DEFAULTS
 from tnfr import __version__
-from tnfr.execution import basic_canonical_example
+from tnfr.execution import CANONICAL_PRESET_NAME, basic_canonical_example
+from tnfr.presets import get_preset
 
 
 def test_cli_version(capsys):
@@ -116,16 +117,27 @@ def test_cli_metrics_generates_metrics_payload(tmp_path):
 
 def test_sequence_defaults_to_canonical(monkeypatch):
     recorded: dict[str, Any] = {}
+    sentinel = object()
+
+    def fake_get_preset(name: str):
+        recorded["preset_name"] = name
+        return sentinel
 
     def fake_run_program(graph, program, args):
         recorded["program"] = program
         return object()
 
+    monkeypatch.setattr("tnfr.cli.execution.get_preset", fake_get_preset)
     monkeypatch.setattr("tnfr.cli.execution.run_program", fake_run_program)
 
     rc = main(["sequence"])
     assert rc == 0
-    assert recorded["program"] == basic_canonical_example()
+    assert recorded["preset_name"] == CANONICAL_PRESET_NAME
+    assert recorded["program"] is sentinel
+
+
+def test_basic_canonical_example_matches_preset():
+    assert basic_canonical_example() == get_preset(CANONICAL_PRESET_NAME)
 
 
 def test_run_cli_program_handles_system_exit(monkeypatch):
