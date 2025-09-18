@@ -21,7 +21,6 @@ from .cache import (
     increment_edge_version,
 )
 from .graph_utils import supports_add_edge
-from .node_base import NodeBase
 from .locking import get_lock
 
 ALIAS_EPI = get_aliases("EPI")
@@ -66,7 +65,7 @@ ATTR_SPECS: dict[str, dict] = {
 
 T = TypeVar("T")
 
-__all__ = ("NodeBase", "NodoNX", "NodoProtocol", "add_edge")
+__all__ = ("NodoNX", "NodoProtocol", "add_edge")
 
 
 def _nx_attr_property(
@@ -182,7 +181,7 @@ class NodoProtocol(Protocol):
     def all_nodes(self) -> Iterable["NodoProtocol"]: ...
 
 
-class NodoNX(NodeBase, NodoProtocol):
+class NodoNX(NodoProtocol):
     """Adapter for ``networkx`` nodes."""
 
     # Statically defined property descriptors for ``NodoNX`` attributes.
@@ -253,6 +252,6 @@ class NodoNX(NodeBase, NodoProtocol):
             return override
 
         nodes = cached_node_list(self.G)
-        return (NodoNX.from_graph(self.G, v) for v in nodes)
+        return tuple(NodoNX.from_graph(self.G, v) for v in nodes)
 
 
