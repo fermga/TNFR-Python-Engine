@@ -218,32 +218,39 @@ def cached_import(
 
 
 def _clear_default_cache() -> None:
+    global _NP_MISSING_LOGGED
+
     _import_cached.cache_clear()
+    _NP_MISSING_LOGGED = False
 
 
 cached_import.cache_clear = _clear_default_cache  # type: ignore[attr-defined]
 
 
-_NP_CACHE_SENTINEL = object()
-_NP_CACHE: Any | None | object = _NP_CACHE_SENTINEL
+_NP_MISSING_LOGGED = False
 
 
 def get_numpy() -> Any | None:
     """Return the cached :mod:`numpy` module when available.
 
-    The first call performs a lazy import via :func:`cached_import`; later calls
-    reuse the stored result. When :mod:`numpy` cannot be imported the function
-    logs a debug message and returns ``None`` to signal that pure Python fallbacks
-    should be used instead.
+    Import attempts are delegated to :func:`cached_import`, which already caches
+    successes and failures. A lightweight flag suppresses duplicate debug logs
+    when :mod:`numpy` is unavailable so callers can repeatedly probe without
+    spamming the logger.
     """
 
-    global _NP_CACHE
-    if _NP_CACHE is _NP_CACHE_SENTINEL:
-        np = cached_import("numpy")
-        if np is None:
+    global _NP_MISSING_LOGGED
+
+    np = cached_import("numpy")
+    if np is None:
+        if not _NP_MISSING_LOGGED:
             logger.debug("Failed to import numpy; continuing in non-vectorised mode")
-        _NP_CACHE = np
-    return _NP_CACHE
+            _NP_MISSING_LOGGED = True
+        return None
+
+    if _NP_MISSING_LOGGED:
+        _NP_MISSING_LOGGED = False
+    return np
 
 
 def get_nodonx() -> type | None:

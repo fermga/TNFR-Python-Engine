@@ -34,11 +34,6 @@ def test_compute_Si_uses_module_numpy_and_propagates(monkeypatch, graph_canon):
 
     monkeypatch.setattr(
         import_utils,
-        "_NP_CACHE",
-        import_utils._NP_CACHE_SENTINEL,
-    )
-    monkeypatch.setattr(
-        import_utils,
         "cached_import",
         lambda module, attr=None, **kwargs: sentinel if module == "numpy" else None,
     )
