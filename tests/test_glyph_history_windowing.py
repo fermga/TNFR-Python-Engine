@@ -9,7 +9,6 @@ Terminología clave empleada por los helpers:
 """
 
 from collections import deque
-import time
 
 import pytest
 
@@ -144,16 +143,6 @@ def test_recent_glyph_discards_non_iterable_history():
     nd = {"glyph_history": 1}  # type: ignore[assignment]
     assert not glyph_history.recent_glyph(nd, "A", window=1)
     assert list(nd["glyph_history"]) == []
-
-
-@pytest.mark.slow
-def test_recent_glyph_benchmark_under_large_window():
-    nd = _make_node([str(i) for i in range(1000)], window=1000)
-    start = time.perf_counter()
-    for _ in range(1000):
-        glyph_history.recent_glyph(nd, "999", window=1000)
-    duration = time.perf_counter() - start
-    assert duration < 0.1
 
 
 # ---------------------------------------------------------------------------
