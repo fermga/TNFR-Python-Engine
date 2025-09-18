@@ -9,9 +9,8 @@ import pytest
 import tnfr.flatten as flatten_module
 
 from tnfr.cli.execution import _load_sequence
-from tnfr.execution import HANDLERS, block, play, seq, target, wait
-from tnfr.flatten import THOLEvaluator, _flatten
-from tnfr.tokens import OpTag, TARGET, THOL, THOL_SENTINEL, WAIT
+from tnfr.execution import HANDLERS, block, compile_sequence, play, seq, target, wait
+from tnfr.tokens import OpTag, TARGET, THOL, WAIT
 from tnfr.constants import get_param
 from tnfr.types import Glyph
 
@@ -44,7 +43,7 @@ def test_wait_logs_sanitized_steps(graph_canon):
 def test_flatten_wait_sanitizes_steps(monkeypatch):
     program = seq(WAIT(-2.5), WAIT(2.4))
     expected = [(OpTag.WAIT, 1), (OpTag.WAIT, 2)]
-    assert _flatten(program) == expected
+    assert compile_sequence(program) == expected
 
     calls: list[object] = []
     original = flatten_module.ensure_collection
@@ -59,7 +58,7 @@ def test_flatten_wait_sanitizes_steps(monkeypatch):
         yield WAIT(-2.5)
         yield WAIT(2.4)
 
-    assert _flatten(wait_stream()) == expected
+    assert compile_sequence(wait_stream()) == expected
     assert len(calls) == 1
     assert not isinstance(calls[0], Collection)
 
@@ -69,7 +68,7 @@ def test_flatten_accepts_wait_subclass():
         pass
 
     program = seq(CustomWait(3))
-    ops = _flatten(program)
+    ops = compile_sequence(program)
     assert ops == [(OpTag.WAIT, 3)]
 
 
@@ -198,7 +197,7 @@ def test_flatten_nested_blocks_preserves_order():
             Glyph.ZHIR,
         )
     )
-    ops = _flatten(program)
+    ops = compile_sequence(program)
     expected = [
         (OpTag.THOL, Glyph.THOL.value),
         (OpTag.THOL, Glyph.THOL.value),
@@ -226,7 +225,7 @@ class NoReverseSeq(Sequence):
 
 def test_flatten_accepts_sequence_without_reversed():
     program = NoReverseSeq([Glyph.AL, Glyph.OZ])
-    ops = _flatten(program)
+    ops = compile_sequence(program)
     assert ops == [(OpTag.GLYPH, Glyph.AL.value), (OpTag.GLYPH, Glyph.OZ.value)]
 
 
@@ -240,7 +239,7 @@ def test_flatten_plain_sequence_skips_materialization(monkeypatch):
         return original(it, *args, **kwargs)
 
     monkeypatch.setattr(flatten_module, "ensure_collection", spy)
-    ops = _flatten([Glyph.AL, Glyph.RA])
+    ops = compile_sequence([Glyph.AL, Glyph.RA])
     assert ops == [
         (OpTag.GLYPH, Glyph.AL.value),
         (OpTag.GLYPH, Glyph.RA.value),
@@ -258,24 +257,24 @@ def test_flatten_enforces_limit_for_iterables():
     with pytest.raises(
         ValueError, match=r"Iterable produced 4 items, exceeds limit 3"
     ):
-        _flatten(token_stream(), max_materialize=3)
+        compile_sequence(token_stream(), max_materialize=3)
 
 
 def test_thol_repeat_lt_one_raises():
     with pytest.raises(ValueError, match="repeat must be ≥1"):
-        list(THOLEvaluator(THOL(body=[], repeat=0)))
+        compile_sequence([THOL(body=[], repeat=0)])
 
 
 def test_thol_evaluator_multiple_repeats():
-    tokens = list(THOLEvaluator(THOL(body=[Glyph.AL, Glyph.RA], repeat=3)))
-    assert tokens == [
-        THOL_SENTINEL,
-        Glyph.AL,
-        Glyph.RA,
-        Glyph.AL,
-        Glyph.RA,
-        Glyph.AL,
-        Glyph.RA,
+    ops = compile_sequence([THOL(body=[Glyph.AL, Glyph.RA], repeat=3)])
+    assert ops == [
+        (OpTag.THOL, Glyph.THOL.value),
+        (OpTag.GLYPH, Glyph.AL.value),
+        (OpTag.GLYPH, Glyph.RA.value),
+        (OpTag.GLYPH, Glyph.AL.value),
+        (OpTag.GLYPH, Glyph.RA.value),
+        (OpTag.GLYPH, Glyph.AL.value),
+        (OpTag.GLYPH, Glyph.RA.value),
     ]
 
 
@@ -284,20 +283,20 @@ def test_thol_evaluator_body_limit_error_message():
     with pytest.raises(
         ValueError, match="THOL body exceeds max_materialize=3"
     ):
-        list(THOLEvaluator(THOL(body=body), max_materialize=3))
+        compile_sequence([THOL(body=body)], max_materialize=3)
 
 
 def test_thol_recursive_expansion():
     inner = THOL(body=[Glyph.RA], repeat=2)
     outer = THOL(body=[Glyph.AL, inner, Glyph.ZHIR])
-    tokens = list(THOLEvaluator(outer))
-    assert tokens == [
-        THOL_SENTINEL,
-        Glyph.AL,
-        THOL_SENTINEL,
-        Glyph.RA,
-        Glyph.RA,
-        Glyph.ZHIR,
+    ops = compile_sequence([outer])
+    assert ops == [
+        (OpTag.THOL, Glyph.THOL.value),
+        (OpTag.GLYPH, Glyph.AL.value),
+        (OpTag.THOL, Glyph.THOL.value),
+        (OpTag.GLYPH, Glyph.RA.value),
+        (OpTag.GLYPH, Glyph.RA.value),
+        (OpTag.GLYPH, Glyph.ZHIR.value),
     ]
 
 
@@ -311,4 +310,4 @@ def test_thol_recursive_expansion():
 def test_thol_nested_parameter_errors(bad, message):
     outer = THOL(body=[bad])
     with pytest.raises(ValueError, match=message):
-        list(THOLEvaluator(outer))
+        compile_sequence([outer])

@@ -8,7 +8,11 @@ from typing import Any, Optional
 
 import networkx as nx  # networkx is used at runtime
 
-from .collections_utils import ensure_collection, is_non_string_sequence
+from .collections_utils import (
+    MAX_MATERIALIZE_DEFAULT,
+    ensure_collection,
+    is_non_string_sequence,
+)
 from .constants import get_param
 from .dynamics import step
 from .flatten import _flatten
@@ -29,6 +33,7 @@ __all__ = [
     "HANDLERS",
     "_apply_glyph_to_targets",
     "_record_trace",
+    "compile_sequence",
     "basic_canonical_example",
     "block",
     "play",
@@ -143,6 +148,16 @@ def play(
         if handler is None:
             raise ValueError(f"Unknown operation: {op}")
         curr_target = handler(G, payload, curr_target, trace, step_fn)
+
+
+def compile_sequence(
+    sequence: Iterable[Token] | Sequence[Token] | Any,
+    *,
+    max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
+) -> list[tuple[OpTag, Any]]:
+    """Return the operations executed by :func:`play` for ``sequence``."""
+
+    return _flatten(sequence, max_materialize=max_materialize)
 
 
 def seq(*tokens: Token) -> list[Token]:
