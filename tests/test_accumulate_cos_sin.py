@@ -16,3 +16,12 @@ def test_accumulate_cos_sin_handles_empty_iterable():
     assert processed is False
     assert sum_cos == pytest.approx(0.0)
     assert sum_sin == pytest.approx(0.0)
+
+
+def test_accumulate_cos_sin_maintains_precision_with_large_values():
+    large = 1e16
+    pairs = iter([(large, 0.0), (-large, 0.0), (1.0, 0.0)])
+    sum_cos, sum_sin, processed = accumulate_cos_sin(pairs)
+    assert processed is True
+    assert sum_cos == pytest.approx(1.0)
+    assert sum_sin == pytest.approx(0.0)
