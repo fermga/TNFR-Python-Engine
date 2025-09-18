@@ -49,24 +49,28 @@ def _metrics_step(G, ctx: dict[str, Any] | None = None):
         return
 
     hist = ensure_history(G)
+    metrics_sentinel_key = "_metrics_history_id"
+    history_id = id(hist)
+    if G.graph.get(metrics_sentinel_key) != history_id:
+        for k in (
+            "C_steps",
+            "stable_frac",
+            "phase_sync",
+            "glyph_load_estab",
+            "glyph_load_disr",
+            "Si_mean",
+            "Si_hi_frac",
+            "Si_lo_frac",
+            "delta_Si",
+            "B",
+        ):
+            hist.setdefault(k, [])
+        G.graph[metrics_sentinel_key] = history_id
+
     dt = float(get_param(G, "DT"))
     eps_dnfr = float(get_param(G, "EPS_DNFR_STABLE"))
     eps_depi = float(get_param(G, "EPS_DEPI_STABLE"))
     t = float(G.graph.get("_t", 0.0))
-
-    for k in (
-        "C_steps",
-        "stable_frac",
-        "phase_sync",
-        "glyph_load_estab",
-        "glyph_load_disr",
-        "Si_mean",
-        "Si_hi_frac",
-        "Si_lo_frac",
-        "delta_Si",
-        "B",
-    ):
-        hist.setdefault(k, [])
 
     _update_coherence(G, hist)
     _track_stability(G, hist, dt, eps_dnfr, eps_depi)
