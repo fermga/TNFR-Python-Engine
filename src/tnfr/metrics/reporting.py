@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from heapq import nlargest
-from statistics import mean
+from statistics import mean, fmean, StatisticsError
 
 from ..glyph_history import ensure_history
+from ..sense import sigma_rose
 from .glyph_timing import for_each_glyph
 
 __all__ = [
@@ -14,6 +17,7 @@ __all__ = [
     "latency_series",
     "glyphogram_series",
     "glyph_top",
+    "build_metrics_summary",
 ]
 
 
@@ -92,3 +96,26 @@ def glyph_top(G, k: int = 3) -> list[tuple[str, float]]:
         raise ValueError("k must be a positive integer")
     tg = Tg_global(G, normalize=True)
     return nlargest(k, tg.items(), key=lambda kv: kv[1])
+
+
+def build_metrics_summary(G) -> tuple[dict[str, Any], bool]:
+    """Collect a compact metrics summary for CLI reporting."""
+
+    tg = Tg_global(G, normalize=True)
+    latency = latency_series(G)
+    glyph = glyphogram_series(G)
+    rose = sigma_rose(G)
+
+    latency_values = latency.get("value", [])
+    try:
+        latency_mean = fmean(latency_values)
+    except StatisticsError:
+        latency_mean = 0.0
+
+    summary = {
+        "Tg_global": tg,
+        "latency_mean": latency_mean,
+        "rose": rose,
+        "glyphogram": {k: v[:10] for k, v in glyph.items()},
+    }
+    return summary, bool(latency_values)

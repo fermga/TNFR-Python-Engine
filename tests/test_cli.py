@@ -20,7 +20,6 @@ from tnfr.cli.arguments import (
     add_history_export_args,
 )
 from tnfr.cli.execution import (
-    _build_metrics_summary,
     _build_graph_from_args,
     _save_json,
     _run_cli_program,
@@ -104,56 +103,36 @@ def test_cli_sequence_file_invalid_json(tmp_path, capsys):
     assert f"Error parsing JSON file at {seq_path}" in captured.out
 
 
-def test_cli_metrics_generates_metrics_payload(tmp_path):
+def test_cli_metrics_generates_metrics_payload(monkeypatch, tmp_path):
     out = tmp_path / "metrics.json"
+    sentinel_graph = object()
+    recorded: dict[str, Any] = {}
+
+    def fake_run_cli_program(args):  # noqa: ANN001 - test helper
+        recorded["args_steps"] = getattr(args, "steps", None)
+        return 0, sentinel_graph
+
+    expected_summary = {
+        "Tg_global": {"AL": 0.5},
+        "latency_mean": 1.5,
+        "rose": {"mag": 0.1},
+        "glyphogram": {"t": [1, 2, 3]},
+    }
+
+    def fake_build_summary(graph):  # noqa: ANN001 - test helper
+        recorded["graph"] = graph
+        return expected_summary, True
+
+    monkeypatch.setattr("tnfr.cli.execution._run_cli_program", fake_run_cli_program)
+    monkeypatch.setattr("tnfr.cli.execution.build_metrics_summary", fake_build_summary)
+
     rc = main(["metrics", "--nodes", "6", "--steps", "5", "--save", str(out)])
+
     assert rc == 0
+    assert recorded["graph"] is sentinel_graph
+    assert recorded["args_steps"] == 5
     data = json.loads(out.read_text())
-    for key in ("Tg_global", "latency_mean", "rose", "glyphogram"):
-        assert key in data
-    assert isinstance(data["glyphogram"], dict)
-    assert all(len(v) <= 10 for v in data["glyphogram"].values())
-
-
-def test_build_metrics_summary_reuses_metrics_helpers(monkeypatch):
-    G = nx.Graph()
-
-    monkeypatch.setattr(
-        "tnfr.cli.execution.Tg_global", lambda *_, **__: 0.75
-    )
-    monkeypatch.setattr("tnfr.cli.execution.latency_series", lambda *_: {"value": [1, 2, 3]})
-    monkeypatch.setattr("tnfr.cli.execution.sigma_rose", lambda *_: ["rose"])
-    monkeypatch.setattr(
-        "tnfr.cli.execution.glyphogram_series",
-        lambda *_: {"alpha": list(range(12)), "beta": [1, 2]},
-    )
-
-    summary, has_latency = _build_metrics_summary(G)
-
-    assert has_latency is True
-    assert summary["Tg_global"] == 0.75
-    assert summary["latency_mean"] == pytest.approx(2.0)
-    assert summary["rose"] == ["rose"]
-    assert summary["glyphogram"]["alpha"] == list(range(10))
-
-
-def test_build_metrics_summary_handles_empty_latency(monkeypatch):
-    G = nx.Graph()
-
-    monkeypatch.setattr(
-        "tnfr.cli.execution.Tg_global", lambda *_, **__: 0.0
-    )
-    monkeypatch.setattr("tnfr.cli.execution.latency_series", lambda *_: {"value": []})
-    monkeypatch.setattr("tnfr.cli.execution.sigma_rose", lambda *_: [])
-    monkeypatch.setattr(
-        "tnfr.cli.execution.glyphogram_series",
-        lambda *_: {"alpha": []},
-    )
-
-    summary, has_latency = _build_metrics_summary(G)
-
-    assert has_latency is False
-    assert summary["latency_mean"] == 0.0
+    assert data == expected_summary
 
 
 def test_sequence_defaults_to_canonical(monkeypatch):

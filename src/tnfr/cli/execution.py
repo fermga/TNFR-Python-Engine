@@ -3,20 +3,17 @@ from __future__ import annotations
 import argparse
 
 from pathlib import Path
-from typing import Any, Optional, Tuple
-from statistics import fmean, StatisticsError
+from typing import Any, Optional
 
 import networkx as nx  # type: ignore[import-untyped]
 
 from ..constants import METRIC_DEFAULTS
-from ..sense import register_sigma_callback, sigma_rose
+from ..sense import register_sigma_callback
 from ..metrics import (
     register_metrics_callbacks,
-    Tg_global,
-    latency_series,
-    glyphogram_series,
     glyph_top,
     export_metrics,
+    build_metrics_summary,
 )
 from ..metrics.core import _metrics_step
 from ..trace import register_trace
@@ -219,27 +216,6 @@ def _run_cli_program(
     return 0, result_graph
 
 
-def _build_metrics_summary(G: "nx.Graph") -> Tuple[dict[str, Any], bool]:
-    tg = Tg_global(G, normalize=True)
-    latency = latency_series(G)
-    rose = sigma_rose(G)
-    glyph = glyphogram_series(G)
-
-    latency_values = latency.get("value", [])
-    try:
-        latency_mean = fmean(latency_values)
-    except StatisticsError:
-        latency_mean = 0.0
-
-    summary = {
-        "Tg_global": tg,
-        "latency_mean": latency_mean,
-        "rose": rose,
-        "glyphogram": {k: v[:10] for k, v in glyph.items()},
-    }
-    return summary, bool(latency_values)
-
-
 def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
     cfg_coh = G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"])
     cfg_diag = G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"])
@@ -257,7 +233,7 @@ def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
             logger.info("[DIAGNOSIS] ejemplo: %s", sample)
 
     if args.summary:
-        summary, has_latency_values = _build_metrics_summary(G)
+        summary, has_latency_values = build_metrics_summary(G)
         logger.info("Tg global: %s", summary["Tg_global"])
         logger.info("Top operadores por Tg: %s", glyph_top(G, k=5))
         if has_latency_values:
@@ -295,7 +271,7 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     if code != 0 or graph is None:
         return code
 
-    out, _ = _build_metrics_summary(graph)
+    out, _ = build_metrics_summary(graph)
     if args.save:
         _save_json(args.save, out)
     else:
