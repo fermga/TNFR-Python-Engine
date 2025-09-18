@@ -100,7 +100,7 @@ def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
 
 def _add_run_parser(sub: argparse._SubParsersAction) -> None:
     """Configure the ``run`` subcommand."""
-    from .execution import cmd_run
+    from .execution import cmd_run, DEFAULT_SUMMARY_SERIES_LIMIT
 
     p_run = sub.add_parser(
         "run",
@@ -116,6 +116,15 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
     p_run.add_argument("--preset", type=str, default=None)
     p_run.add_argument("--sequence-file", type=str, default=None)
     p_run.add_argument("--summary", action="store_true")
+    p_run.add_argument(
+        "--summary-limit",
+        type=int,
+        default=DEFAULT_SUMMARY_SERIES_LIMIT,
+        help=(
+            "Número máximo de muestras por serie en el resumen (<=0 para"
+            " desactivar el recorte)"
+        ),
+    )
     p_run.set_defaults(func=cmd_run)
 
 
@@ -156,4 +165,13 @@ def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
     add_canon_toggle(p_met)
     add_grammar_selector_args(p_met)
     p_met.add_argument("--save", type=str, default=None)
+    p_met.add_argument(
+        "--summary-limit",
+        type=int,
+        default=None,
+        help=(
+            "Número máximo de muestras por serie en el resumen (<=0 para"
+            " desactivar el recorte)"
+        ),
+    )
     p_met.set_defaults(func=cmd_metrics)

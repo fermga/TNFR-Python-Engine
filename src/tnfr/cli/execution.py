@@ -39,6 +39,11 @@ from .arguments import _args_to_dict
 logger = get_logger(__name__)
 
 
+# CLI summaries should remain concise by default while allowing callers to
+# inspect the full glyphogram series when needed.
+DEFAULT_SUMMARY_SERIES_LIMIT = 10
+
+
 def _save_json(path: str, data: Any) -> None:
     payload = json_dumps(data, ensure_ascii=False, indent=2, default=list)
     safe_write(path, lambda f: f.write(payload))
@@ -233,7 +238,10 @@ def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
             logger.info("[DIAGNOSIS] ejemplo: %s", sample)
 
     if args.summary:
-        summary, has_latency_values = build_metrics_summary(G)
+        summary_limit = getattr(args, "summary_limit", DEFAULT_SUMMARY_SERIES_LIMIT)
+        summary, has_latency_values = build_metrics_summary(
+            G, series_limit=summary_limit
+        )
         logger.info("Tg global: %s", summary["Tg_global"])
         logger.info("Top operadores por Tg: %s", glyph_top(G, k=5))
         if has_latency_values:
@@ -271,7 +279,8 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     if code != 0 or graph is None:
         return code
 
-    out, _ = build_metrics_summary(graph)
+    summary_limit = getattr(args, "summary_limit", None)
+    out, _ = build_metrics_summary(graph, series_limit=summary_limit)
     if args.save:
         _save_json(args.save, out)
     else:

@@ -116,11 +116,12 @@ def test_cli_metrics_generates_metrics_payload(monkeypatch, tmp_path):
         "Tg_global": {"AL": 0.5},
         "latency_mean": 1.5,
         "rose": {"mag": 0.1},
-        "glyphogram": {"t": [1, 2, 3]},
+        "glyphogram": {"t": list(range(15))},
     }
 
-    def fake_build_summary(graph):  # noqa: ANN001 - test helper
+    def fake_build_summary(graph, *, series_limit=None):  # noqa: ANN001 - test helper
         recorded["graph"] = graph
+        recorded["series_limit"] = series_limit
         return expected_summary, True
 
     monkeypatch.setattr("tnfr.cli.execution._run_cli_program", fake_run_cli_program)
@@ -131,8 +132,31 @@ def test_cli_metrics_generates_metrics_payload(monkeypatch, tmp_path):
     assert rc == 0
     assert recorded["graph"] is sentinel_graph
     assert recorded["args_steps"] == 5
+    assert recorded["series_limit"] is None
     data = json.loads(out.read_text())
     assert data == expected_summary
+
+
+def test_cli_metrics_accepts_summary_limit(monkeypatch):
+    sentinel_graph = object()
+    recorded: dict[str, Any] = {}
+
+    def fake_run_cli_program(args):  # noqa: ANN001 - test helper
+        return 0, sentinel_graph
+
+    def fake_build_summary(graph, *, series_limit=None):  # noqa: ANN001 - test helper
+        recorded["graph"] = graph
+        recorded["series_limit"] = series_limit
+        return {"glyphogram": {}}, False
+
+    monkeypatch.setattr("tnfr.cli.execution._run_cli_program", fake_run_cli_program)
+    monkeypatch.setattr("tnfr.cli.execution.build_metrics_summary", fake_build_summary)
+
+    rc = main(["metrics", "--summary-limit", "7"])
+
+    assert rc == 0
+    assert recorded["graph"] is sentinel_graph
+    assert recorded["series_limit"] == 7
 
 
 def test_sequence_defaults_to_canonical(monkeypatch):
