@@ -66,19 +66,27 @@ else:  # pragma: no cover
 try:
     __version__ = version("tnfr")
 except PackageNotFoundError:  # pragma: no cover
-    tomllib = cached_import("tomllib")
-    if tomllib is not None:
-        from pathlib import Path
+    from pathlib import Path
 
+    pyproject_path = Path(__file__).resolve().parents[2] / "pyproject.toml"
+    __version__ = "0+unknown"
+    for module_name in ("tomllib", "tomli"):
+        parser = cached_import(module_name)
+        if parser is None:
+            continue
         try:
-            with (Path(__file__).resolve().parents[2] / "pyproject.toml").open(
-                "rb",
-            ) as f:
-                __version__ = tomllib.load(f)["project"]["version"]
-        except (OSError, KeyError, ValueError):  # pragma: no cover
-            __version__ = "0+unknown"
-    else:  # pragma: no cover
-        __version__ = "0+unknown"
+            with pyproject_path.open("rb") as f:
+                data = parser.load(f)
+        except (OSError, AttributeError, TypeError, ValueError):
+            continue
+        try:
+            project = data["project"]
+            project_version = project["version"]
+        except (KeyError, TypeError, ValueError):
+            continue
+        if isinstance(project_version, str):
+            __version__ = project_version
+            break
 
 __all__ = [
     "__version__",
