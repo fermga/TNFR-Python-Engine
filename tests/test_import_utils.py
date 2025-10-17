@@ -4,11 +4,22 @@ import types
 
 import pytest
 
+import tnfr.import_utils as legacy_import_utils
 import tnfr.utils.init as import_utils
 from tnfr.utils.init import _IMPORT_STATE, cached_import, prune_failed_imports
 
 
 pytestmark = pytest.mark.usefixtures("reset_cached_import")
+
+
+# -- Compatibility layer --------------------------------------------------------------------
+
+
+def test_legacy_import_utils_exposes_same_objects():
+    assert legacy_import_utils.IMPORT_LOG is import_utils.IMPORT_LOG
+    assert legacy_import_utils._IMPORT_STATE is import_utils._IMPORT_STATE
+    assert legacy_import_utils.cached_import is import_utils.cached_import
+    assert legacy_import_utils.prune_failed_imports is import_utils.prune_failed_imports
 
 
 # -- Attribute and fallback handling ---------------------------------------------------------
