@@ -17,6 +17,22 @@ from ..rng import make_rng
 from tnfr import glyph_history
 from ..types import Glyph
 
+from .definitions import (
+    Operador,
+    Emision,
+    Recepcion,
+    Coherencia,
+    Disonancia,
+    Acoplamiento,
+    Resonancia,
+    Silencio,
+    Expansion,
+    Contraccion,
+    Autoorganizacion,
+    Mutacion,
+    Transicion,
+    Recursividad,
+)
 from .jitter import (
     JitterCache,
     JitterCacheManager,
@@ -24,6 +40,7 @@ from .jitter import (
     reset_jitter_manager,
     random_jitter,
 )
+from .registry import OPERADORES
 from .remesh import (
     apply_network_remesh,
     apply_topological_remesh,
@@ -49,6 +66,21 @@ __all__ = [
     "apply_network_remesh",
     "apply_topological_remesh",
     "apply_remesh_if_globally_stable",
+    "Operador",
+    "Emision",
+    "Recepcion",
+    "Coherencia",
+    "Disonancia",
+    "Acoplamiento",
+    "Resonancia",
+    "Silencio",
+    "Expansion",
+    "Contraccion",
+    "Autoorganizacion",
+    "Mutacion",
+    "Transicion",
+    "Recursividad",
+    "OPERADORES",
 ]
 
 
