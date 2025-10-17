@@ -5,7 +5,7 @@ import statistics as st
 from collections import deque
 import pytest
 
-import tnfr.import_utils as import_utils
+import tnfr.utils.init as utils_init
 
 from tnfr.constants import get_aliases
 from tnfr.observers import (
@@ -61,8 +61,8 @@ def test_phase_sync_equivalent_with_without_numpy(monkeypatch, graph_canon):
         set_attr(G.nodes[idx], ALIAS_THETA, th)
 
     ps_np = phase_sync(G)
-    monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
-    monkeypatch.setattr("tnfr.observers.get_numpy", import_utils.get_numpy)
+    monkeypatch.setattr(utils_init, "cached_import", lambda *a, **k: None)
+    monkeypatch.setattr("tnfr.observers.get_numpy", utils_init.get_numpy)
     ps_py = phase_sync(G)
     assert ps_np == pytest.approx(ps_py)
 
@@ -77,7 +77,7 @@ def test_phase_sync_numpy_and_python_consistent(monkeypatch, graph_canon):
         set_attr(G.nodes[idx], ALIAS_THETA, th)
 
     ps_np = phase_sync(G)
-    monkeypatch.setattr("tnfr.import_utils.get_numpy", lambda: None)
+    monkeypatch.setattr("tnfr.utils.get_numpy", lambda: None)
     monkeypatch.setattr("tnfr.observers.get_numpy", lambda: None)
     ps_py = phase_sync(G)
     assert ps_np == pytest.approx(ps_py)

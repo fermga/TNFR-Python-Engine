@@ -15,7 +15,7 @@ from ..alias import get_attr, set_attr
 from ..rng import make_rng
 from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import append_metric, ensure_history, current_step_idx
-from ..import_utils import cached_import
+from ..utils import cached_import
 
 ALIAS_EPI = get_aliases("EPI")
 

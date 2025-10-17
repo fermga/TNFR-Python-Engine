@@ -8,11 +8,7 @@ from typing import Any, Optional
 
 import networkx as nx  # networkx is used at runtime
 
-from .collections_utils import (
-    MAX_MATERIALIZE_DEFAULT,
-    ensure_collection,
-    is_non_string_sequence,
-)
+from .utils import MAX_MATERIALIZE_DEFAULT, ensure_collection, is_non_string_sequence
 from .constants import get_param
 from .dynamics import step
 from .flatten import _flatten

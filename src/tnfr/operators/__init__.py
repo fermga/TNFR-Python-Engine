@@ -12,7 +12,7 @@ from ..constants import DEFAULTS, get_aliases, get_param
 
 from ..helpers.numeric import angle_diff
 from ..metrics.trig import neighbor_phase_mean
-from ..import_utils import get_nodonx
+from ..utils import get_nodonx
 from ..rng import make_rng
 from tnfr import glyph_history
 from ..types import Glyph

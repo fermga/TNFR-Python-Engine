@@ -12,7 +12,7 @@ import networkx as nx  # type: ignore[import-untyped]
 from .constants import get_aliases, get_graph_param
 from .alias import get_attr
 from .helpers.numeric import clamp01, kahan_sum_nd
-from .import_utils import get_numpy
+from .utils import get_numpy
 from .callback_utils import CallbackEvent, callback_manager
 from .glyph_history import (
     ensure_history,

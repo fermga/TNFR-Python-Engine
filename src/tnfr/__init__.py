@@ -9,12 +9,13 @@ Recommended entry points are:
 - ``step`` and ``run`` in :mod:`tnfr.dynamics`
 - ``preparar_red`` in :mod:`tnfr.ontosim`
 - ``create_nfr`` and ``run_sequence`` in :mod:`tnfr.structural`
-- ``cached_import`` and ``prune_failed_imports`` for optional dependencies
+- ``cached_import`` and ``prune_failed_imports`` in :mod:`tnfr.utils` for
+  optional dependencies
 """
 
 from __future__ import annotations
 
-from .import_utils import cached_import, prune_failed_imports
+from .utils import cached_import, prune_failed_imports
 from .ontosim import preparar_red
 
 

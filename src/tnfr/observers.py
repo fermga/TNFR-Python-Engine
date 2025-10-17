@@ -14,11 +14,10 @@ from .glyph_history import (
     count_glyphs,
     append_metric,
 )
-from .collections_utils import normalize_counter, mix_groups
+from .utils import mix_groups, normalize_counter
 from .constants_glyphs import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
-from .logging_utils import get_logger
-from .import_utils import get_numpy
+from .utils import get_logger, get_numpy
 from .metrics.common import compute_coherence
 from .validators import validate_window
 

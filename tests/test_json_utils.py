@@ -1,7 +1,7 @@
 import logging
 
-import tnfr.import_utils as import_utils
-import tnfr.json_utils as json_utils
+import tnfr.utils.init as import_utils
+import tnfr.utils.io as json_utils
 from .utils import clear_orjson_cache
 
 
@@ -85,7 +85,7 @@ def test_json_dumps_without_orjson(monkeypatch, caplog):
 
     monkeypatch.setattr(import_utils.importlib, "import_module", fake_import)
 
-    with caplog.at_level(logging.WARNING, logger="tnfr.import_utils"):
+    with caplog.at_level(logging.WARNING, logger="tnfr.utils.init"):
         result = json_utils.json_dumps({"a": 1}, ensure_ascii=False, to_bytes=True)
 
     assert result == b'{"a":1}'

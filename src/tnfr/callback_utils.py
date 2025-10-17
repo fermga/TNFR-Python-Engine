@@ -17,12 +17,11 @@ from collections.abc import Callable, Mapping, Iterable
 
 import traceback
 import threading
-from .logging_utils import get_logger
+from .utils import get_logger, is_non_string_sequence
 from .constants import DEFAULTS
 from .locking import get_lock
 
 from .trace import CallbackSpec
-from .collections_utils import is_non_string_sequence
 
 import networkx as nx  # type: ignore[import-untyped]
 

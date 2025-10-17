@@ -5,7 +5,7 @@ import math
 import pytest
 import networkx as nx
 
-import tnfr.import_utils as import_utils
+import tnfr.utils.init as utils_init
 
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.constants import (
@@ -109,14 +109,14 @@ def test_cache_invalidated_on_node_rename():
 
 
 def test_prepare_dnfr_data_refreshes_cached_vectors(monkeypatch):
-    original_cached_import = import_utils.cached_import
+    original_cached_import = utils_init.cached_import
 
     def fake_cached_import(module, attr=None, **kwargs):
         if module == "numpy":
             return None
         return original_cached_import(module, attr=attr, **kwargs)
 
-    monkeypatch.setattr(import_utils, "cached_import", fake_cached_import)
+    monkeypatch.setattr(utils_init, "cached_import", fake_cached_import)
     cos_calls, sin_calls = _counting_trig(monkeypatch)
     G = _setup_graph()
     default_compute_delta_nfr(G)
@@ -216,7 +216,7 @@ def test_cached_node_list_invalidate_on_node_rename():
 
 
 def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon):
-    monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
+    monkeypatch.setattr(utils_init, "cached_import", lambda *a, **k: None)
     G = graph_canon()
     G.add_edge(0, 1)
     nodes, A = cached_nodes_and_A(G)
@@ -226,7 +226,7 @@ def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon)
 
 
 def test_cached_nodes_and_A_requires_numpy(monkeypatch, graph_canon):
-    monkeypatch.setattr(import_utils, "cached_import", lambda *a, **k: None)
+    monkeypatch.setattr(utils_init, "cached_import", lambda *a, **k: None)
     G = graph_canon()
     G.add_edge(0, 1)
     with pytest.raises(RuntimeError):

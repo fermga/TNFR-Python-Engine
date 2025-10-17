@@ -10,7 +10,7 @@ from .dynamics import step as _step, run as _run
 from .dynamics import default_compute_delta_nfr
 from .initialization import init_node_attrs
 from .glyph_history import append_metric
-from .import_utils import cached_import
+from .utils import cached_import
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx  # type: ignore[import-untyped]

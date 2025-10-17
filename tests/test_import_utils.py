@@ -4,8 +4,8 @@ import types
 
 import pytest
 
-import tnfr.import_utils as import_utils
-from tnfr.import_utils import _IMPORT_STATE, cached_import, prune_failed_imports
+import tnfr.utils.init as import_utils
+from tnfr.utils.init import _IMPORT_STATE, cached_import, prune_failed_imports
 
 
 pytestmark = pytest.mark.usefixtures("reset_cached_import")

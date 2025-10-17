@@ -11,10 +11,8 @@ from types import MappingProxyType
 
 from .constants import DEFAULTS, get_aliases
 from .alias import get_attr
-from .graph_utils import get_graph_mapping
+from .utils import get_graph_mapping, get_logger, json_dumps
 from .cache import edge_version_cache, node_set_checksum
-from .json_utils import json_dumps
-from .logging_utils import get_logger
 from .metrics.trig_cache import get_trig_cache
 
 ALIAS_THETA = get_aliases("THETA")
