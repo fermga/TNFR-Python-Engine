@@ -1,9 +1,9 @@
 """Structured file I/O utilities.
 
 Optional parsers such as ``tomllib``/``tomli`` and ``pyyaml`` are loaded via
-the :func:`tnfr.import_utils.cached_import` helper. Their import results and
+the :func:`tnfr.utils.cached_import` helper. Their import results and
 failure states are cached and can be cleared with
-``cached_import.cache_clear()`` and :func:`tnfr.import_utils.prune_failed_imports`
+``cached_import.cache_clear()`` and :func:`tnfr.utils.prune_failed_imports`
 when needed.
 """
 
@@ -16,8 +16,7 @@ from pathlib import Path
 from typing import Any, Callable
 from functools import partial
 
-from .import_utils import cached_import
-from .logging_utils import get_logger
+from .utils import cached_import, get_logger
 
 
 def _raise_import_error(name: str, *_: Any, **__: Any) -> Any:

@@ -11,8 +11,8 @@ from collections.abc import Iterable, Sequence
 from itertools import tee
 from typing import Any
 
-from ..import_utils import cached_import, get_numpy
 from ..helpers.numeric import kahan_sum_nd
+from ..utils import cached_import, get_numpy
 
 __all__ = (
     "accumulate_cos_sin",

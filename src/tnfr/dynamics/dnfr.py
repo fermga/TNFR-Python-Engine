@@ -11,18 +11,17 @@ import math
 from dataclasses import dataclass
 from typing import Any, Callable
 
-from ..collections_utils import normalize_weights
-from ..constants import DEFAULTS, get_aliases, get_param
-from ..cache import cached_nodes_and_A
-from ..helpers.numeric import angle_diff
-from ..metrics.trig import neighbor_phase_mean, _phase_mean_from_iter
 from ..alias import (
     get_attr,
     set_dnfr,
 )
-from ..metrics.trig_cache import compute_theta_trig
+from ..cache import cached_nodes_and_A
+from ..constants import DEFAULTS, get_aliases, get_param
+from ..helpers.numeric import angle_diff
 from ..metrics.common import merge_and_normalize_weights
-from ..import_utils import get_numpy
+from ..metrics.trig import _phase_mean_from_iter, neighbor_phase_mean
+from ..metrics.trig_cache import compute_theta_trig
+from ..utils import get_numpy, normalize_weights
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")

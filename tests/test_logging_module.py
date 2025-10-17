@@ -1,7 +1,7 @@
 import importlib
 import logging
 
-import tnfr.logging_utils as logging_utils
+import tnfr.utils.init as logging_utils
 
 
 def reload_logging_utils():

@@ -1,4 +1,4 @@
-import tnfr.json_utils as json_utils
+import tnfr.utils.io as json_utils
 
 
 def clear_orjson_cache() -> None:

@@ -1,7 +1,8 @@
 import logging
 import warnings
 
-from tnfr.import_utils import IMPORT_LOG, _warn_failure
+import tnfr.utils.init as utils_init
+from tnfr.utils.init import IMPORT_LOG, _warn_failure
 
 
 def _clear_warned():
@@ -41,16 +42,14 @@ def test_warn_failure_both(caplog):
 
 
 def test_warn_failure_uses_emit_map():
-    from tnfr import import_utils
-
     called: list[str] = []
 
     def fake_warn(msg: str) -> None:
         called.append(msg)
 
     _clear_warned()
-    original = import_utils.EMIT_MAP["warn"]
-    import_utils.EMIT_MAP["warn"] = fake_warn
+    original = utils_init.EMIT_MAP["warn"]
+    utils_init.EMIT_MAP["warn"] = fake_warn
     try:
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
@@ -58,5 +57,5 @@ def test_warn_failure_uses_emit_map():
         assert not w
         assert called == ["Failed to import module 'mod_emit_map': boom"]
     finally:
-        import_utils.EMIT_MAP["warn"] = original
+        utils_init.EMIT_MAP["warn"] = original
         _clear_warned()

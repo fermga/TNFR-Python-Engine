@@ -21,10 +21,9 @@ from typing import Any, TypeVar
 from cachetools import LRUCache
 import networkx as nx  # type: ignore[import-untyped]
 
-from .graph_utils import get_graph, mark_dnfr_prep_dirty
-from .import_utils import get_numpy
-from .json_utils import json_dumps
-from .logging_utils import get_logger
+from .utils.graph import get_graph, mark_dnfr_prep_dirty
+from .utils.init import get_logger, get_numpy
+from .utils.io import json_dumps
 
 T = TypeVar("T")
 

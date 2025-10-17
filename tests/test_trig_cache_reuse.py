@@ -1,12 +1,12 @@
 import math
 import pytest
 
+from tnfr.alias import set_attr
 from tnfr.constants import get_aliases
-from tnfr.metrics.trig_cache import get_trig_cache
 from tnfr.metrics.sense_index import compute_Si
 from tnfr.metrics.trig import neighbor_phase_mean
-from tnfr.alias import set_attr
-import tnfr.import_utils as import_utils
+from tnfr.metrics.trig_cache import get_trig_cache
+import tnfr.utils.init as utils_init
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_VF = get_aliases("VF")
@@ -33,14 +33,14 @@ def test_trig_cache_reuse_between_modules(monkeypatch, graph_canon):
 
     monkeypatch.setattr(math, "cos", cos_wrapper)
     monkeypatch.setattr(math, "sin", sin_wrapper)
-    original_cached_import = import_utils.cached_import
+    original_cached_import = utils_init.cached_import
 
     def fake_cached_import(module, attr=None, **kwargs):
         if module == "numpy":
             return None
         return original_cached_import(module, attr=attr, **kwargs)
 
-    monkeypatch.setattr(import_utils, "cached_import", fake_cached_import)
+    monkeypatch.setattr(utils_init, "cached_import", fake_cached_import)
 
     G = graph_canon()
     sentinel = object()

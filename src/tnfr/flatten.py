@@ -7,11 +7,11 @@ from dataclasses import dataclass
 from itertools import chain
 from typing import Any, Callable
 
-from .collections_utils import (
+from .utils import (
     MAX_MATERIALIZE_DEFAULT,
+    STRING_TYPES,
     ensure_collection,
     flatten_structure,
-    STRING_TYPES,
     normalize_materialize_limit,
 )
 from .constants_glyphs import GLYPHS_CANONICAL_SET

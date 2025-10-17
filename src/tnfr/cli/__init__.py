@@ -22,8 +22,8 @@ from .execution import (
     run_program,
     resolve_program,
 )
-from ..logging_utils import get_logger
 from .. import __version__
+from ..utils import get_logger
 
 logger = get_logger(__name__)
 

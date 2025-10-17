@@ -11,7 +11,7 @@ from typing import Any, Generic, Hashable, TypeVar
 
 from cachetools import LRUCache, cached
 from .constants import DEFAULTS, get_param
-from .graph_utils import get_graph
+from .utils import get_graph
 from .locking import get_lock
 
 MASK64 = 0xFFFFFFFFFFFFFFFF

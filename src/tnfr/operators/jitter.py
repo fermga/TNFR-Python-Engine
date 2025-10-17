@@ -12,7 +12,7 @@ from ..rng import (
     clear_rng_cache as _clear_rng_cache,
     seed_hash,
 )
-from ..import_utils import get_nodonx
+from ..utils import get_nodonx
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodoProtocol

@@ -19,7 +19,7 @@ from ..cache import (
     node_set_checksum,
     stable_json,
 )
-from ..graph_utils import get_graph, get_graph_mapping, mark_dnfr_prep_dirty
+from ..utils.graph import get_graph, get_graph_mapping, mark_dnfr_prep_dirty
 from .numeric import (
     angle_diff,
     clamp,

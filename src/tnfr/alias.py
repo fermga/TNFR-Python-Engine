@@ -25,7 +25,7 @@ from functools import lru_cache, partial
 from threading import Lock
 
 from .constants import get_aliases
-from .value_utils import convert_value
+from .utils import convert_value
 
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")

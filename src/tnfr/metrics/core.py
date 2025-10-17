@@ -7,7 +7,7 @@ from typing import Any
 from ..callback_utils import CallbackEvent, callback_manager
 from ..constants import get_param
 from ..glyph_history import append_metric, ensure_history
-from ..logging_utils import get_logger
+from ..utils import get_logger
 from .coherence import (
     _aggregate_si,
     _track_stability,

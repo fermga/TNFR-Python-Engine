@@ -37,7 +37,7 @@ The symbols re-exported by `tnfr.__init__` provide the standard entryway into th
   recomputing ΔNFR after each step.
 - `tnfr.ontosim.preparar_red`: prepares topologies and parameters for multiscale
   simulations.
-- `tnfr.import_utils.cached_import` / `prune_failed_imports`: manage optional
+- `tnfr.utils.cached_import` / `prune_failed_imports`: manage optional
   dependencies and clean shared import caches.
 
 Structural operator map

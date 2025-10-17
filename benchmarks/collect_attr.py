@@ -8,9 +8,9 @@ executing the benchmark.
 import time
 import networkx as nx
 
-from tnfr.alias import set_attr, collect_attr
+from tnfr.alias import collect_attr, set_attr
 from tnfr.constants import get_aliases
-from tnfr.import_utils import cached_import
+from tnfr.utils import cached_import
 
 np = cached_import("numpy")
 

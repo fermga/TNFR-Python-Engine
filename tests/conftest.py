@@ -4,7 +4,7 @@ import pytest
 import networkx as nx
 
 from tnfr.constants import inject_defaults
-from tnfr.import_utils import cached_import, prune_failed_imports
+from tnfr.utils import cached_import, prune_failed_imports
 
 
 @pytest.fixture

@@ -20,7 +20,7 @@ from .cache import (
     ensure_node_offset_map,
     increment_edge_version,
 )
-from .graph_utils import supports_add_edge
+from .utils import supports_add_edge
 from .locking import get_lock
 
 ALIAS_EPI = get_aliases("EPI")
