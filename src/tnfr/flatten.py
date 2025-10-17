@@ -14,7 +14,7 @@ from .utils import (
     flatten_structure,
     normalize_materialize_limit,
 )
-from .constants_glyphs import GLYPHS_CANONICAL_SET
+from .config.constants import GLYPHS_CANONICAL_SET
 from .tokens import THOL, TARGET, WAIT, OpTag, THOL_SENTINEL, Token
 from .types import Glyph
 

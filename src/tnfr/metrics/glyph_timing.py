@@ -8,7 +8,7 @@ from typing import Any, Callable
 
 from ..alias import get_attr
 from ..constants import get_aliases, get_param
-from ..constants_glyphs import GLYPH_GROUPS, GLYPHS_CANONICAL
+from ..config.constants import GLYPH_GROUPS, GLYPHS_CANONICAL
 from ..glyph_history import append_metric, last_glyph
 from ..types import Glyph
 

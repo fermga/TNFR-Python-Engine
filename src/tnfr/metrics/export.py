@@ -6,7 +6,7 @@ import csv
 import math
 from itertools import zip_longest, tee
 
-from ..constants_glyphs import GLYPHS_CANONICAL
+from ..config.constants import GLYPHS_CANONICAL
 from ..glyph_history import ensure_history
 from ..io import safe_write
 from ..utils import json_dumps

@@ -15,7 +15,7 @@ from .glyph_history import (
     append_metric,
 )
 from .utils import mix_groups, normalize_counter
-from .constants_glyphs import GLYPH_GROUPS
+from .config.constants import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 from .utils import get_logger, get_numpy
 from .metrics.common import compute_coherence

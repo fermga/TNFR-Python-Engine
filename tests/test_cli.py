@@ -29,7 +29,7 @@ from tnfr.cli.execution import (
 from tnfr.constants import METRIC_DEFAULTS
 from tnfr import __version__
 from tnfr.execution import CANONICAL_PRESET_NAME, basic_canonical_example
-from tnfr.presets import get_preset
+from tnfr.config.presets import get_preset
 
 
 def test_cli_version(capsys):

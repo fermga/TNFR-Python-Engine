@@ -20,7 +20,7 @@ from .glyph_history import (
     count_glyphs,
     append_metric,
 )
-from .constants_glyphs import (
+from .config.constants import (
     ANGLE_MAP,
     GLYPHS_CANONICAL,
 )
