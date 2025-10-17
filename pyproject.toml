@@ -45,7 +45,7 @@ tnfr = "tnfr.cli:main"
 
 [project.urls]
 Homepage = "https://pypi.org/project/tnfr/"
-Repository = "https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-"
+Repository = "https://github.com/fermga/TNFR-Python-Engine"
 GPT = "https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-teoria-de-la-naturaleza-fractal-resonante"
 
 [tool.setuptools.dynamic]
