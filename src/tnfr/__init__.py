@@ -15,7 +15,8 @@ Recommended entry points are:
 
 from __future__ import annotations
 
-import re
+from pathlib import Path
+from typing import Any
 
 from .ontosim import preparar_red
 
@@ -54,21 +55,55 @@ except ImportError:  # pragma: no cover
     from importlib_metadata import PackageNotFoundError, version  # type: ignore[import-not-found]
 
 
+try:  # pragma: no cover - Python 3.11+
+    import tomllib as _tomllib  # type: ignore[attr-defined]
+except ModuleNotFoundError:  # pragma: no cover - Python <3.11
+    try:
+        import tomli as _tomllib  # type: ignore[import-not-found]
+    except ModuleNotFoundError:  # pragma: no cover - optional dependency missing
+        _tomllib = None  # type: ignore[assignment]
+
+if _tomllib is not None:  # pragma: no cover - trivial branch
+    _TOML_DECODE_ERRORS = (getattr(_tomllib, "TOMLDecodeError", ValueError),)
+else:  # pragma: no cover - optional dependency missing
+    _TOML_DECODE_ERRORS = (ValueError,)
+
+
+def _read_pyproject_version() -> str | None:
+    """Return the project version declared in :file:`pyproject.toml`.
+
+    The file is parsed using :mod:`tomllib` (or :mod:`tomli` as a fallback for
+    Python versions prior to 3.11).  ``None`` is returned when the file cannot
+    be read or parsed, or when the version field is absent.
+    """
+
+    if _tomllib is None:
+        return None
+
+    pyproject_path = Path(__file__).resolve().parents[2] / "pyproject.toml"
+    try:
+        with pyproject_path.open("rb") as stream:
+            data: dict[str, Any] = _tomllib.load(stream)
+    except OSError:
+        return None
+    except _TOML_DECODE_ERRORS:  # type: ignore[misc]
+        return None
+
+    project_data = data.get("project")
+    if not isinstance(project_data, dict):
+        return None
+
+    version = project_data.get("version")
+    if isinstance(version, str):
+        return version
+    return None
+
+
 try:
     __version__ = version("tnfr")
 except PackageNotFoundError:  # pragma: no cover
-    from pathlib import Path
-
-    pyproject_path = Path(__file__).resolve().parents[2] / "pyproject.toml"
-    __version__ = "0+unknown"
-    try:
-        text = pyproject_path.read_text(encoding="utf-8")
-    except OSError:
-        pass
-    else:
-        match = re.search(r"^version\s*=\s*\"([^\"]+)\"", text, flags=re.MULTILINE)
-        if match:
-            __version__ = match.group(1)
+    _fallback_version = _read_pyproject_version()
+    __version__ = _fallback_version if _fallback_version is not None else "0+unknown"
 
 __all__ = [
     "__version__",

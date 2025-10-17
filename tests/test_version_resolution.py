@@ -3,20 +3,46 @@
 from __future__ import annotations
 
 import os
-import re
 import subprocess
 import sys
 import textwrap
 from pathlib import Path
 
+try:  # pragma: no cover - Python 3.11+
+    import tomllib  # type: ignore[attr-defined]
+except ModuleNotFoundError:  # pragma: no cover - Python <3.11
+    try:
+        import tomli as tomllib  # type: ignore[import-not-found]
+    except ModuleNotFoundError:  # pragma: no cover - optional dependency missing
+        tomllib = None  # type: ignore[assignment]
+
+if tomllib is not None:  # pragma: no cover - trivial branch
+    _TOML_DECODE_ERRORS = (getattr(tomllib, "TOMLDecodeError", ValueError),)
+else:  # pragma: no cover - optional dependency missing
+    _TOML_DECODE_ERRORS = (ValueError,)
+
 
 def _read_project_version() -> str:
     pyproject_path = Path(__file__).resolve().parents[1] / "pyproject.toml"
-    text = pyproject_path.read_text(encoding="utf-8")
-    match = re.search(r"^version\s*=\s*\"([^\"]+)\"", text, flags=re.MULTILINE)
-    if not match:  # pragma: no cover - defensive guard for unexpected formats
-        raise RuntimeError("version not found in pyproject.toml")
-    return match.group(1)
+    if tomllib is None:
+        raise RuntimeError("tomllib/tomli is required to parse pyproject.toml")
+
+    try:
+        with pyproject_path.open("rb") as stream:
+            data = tomllib.load(stream)
+    except OSError as exc:  # pragma: no cover - defensive guard for IO errors
+        raise RuntimeError("pyproject.toml is unreadable") from exc
+    except _TOML_DECODE_ERRORS as exc:  # pragma: no cover - invalid format guard
+        raise RuntimeError("pyproject.toml could not be parsed") from exc
+
+    project_data = data.get("project")
+    if not isinstance(project_data, dict):  # pragma: no cover - defensive guard
+        raise RuntimeError("pyproject.toml has no [project] table")
+
+    version = project_data.get("version")
+    if isinstance(version, str):
+        return version
+    raise RuntimeError("version not found in pyproject.toml")
 
 
 def test_version_falls_back_to_pyproject() -> None:
