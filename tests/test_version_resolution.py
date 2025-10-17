@@ -24,9 +24,7 @@ def test_version_falls_back_to_pyproject() -> None:
     repo_root = Path(__file__).resolve().parents[1]
     script = textwrap.dedent(
         """
-        import importlib
         import importlib.metadata as metadata
-        import re
         import sys
         from types import ModuleType
         import warnings
@@ -48,30 +46,6 @@ def test_version_falls_back_to_pyproject() -> None:
             for attr in attributes:
                 setattr(module, attr, lambda *args, **kwargs: None)
             sys.modules[module_name] = module
-
-        real_import_module = importlib.import_module
-
-        def fake_import_module(name, package=None):
-            if name == "tomllib":
-                raise ModuleNotFoundError("tomllib missing in test")
-            return real_import_module(name, package)
-
-        importlib.import_module = fake_import_module
-
-        module = ModuleType("tomli")
-        pattern = r'^version\\s*=\\s*"([^\"]+)"'
-
-        def load(handle):
-            data = handle.read()
-            if isinstance(data, bytes):
-                data = data.decode("utf-8")
-            match = re.search(pattern, data, flags=re.MULTILINE)
-            if not match:
-                raise ValueError("Missing version field")
-            return {{"project": {{"version": match.group(1)}}}}
-
-        module.load = load
-        sys.modules["tomli"] = module
 
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
