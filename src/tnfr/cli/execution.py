@@ -24,7 +24,7 @@ from ..dynamics import (
     parametric_glyph_selector,
     validate_canon,
 )
-from ..presets import get_preset
+from ..config.presets import get_preset
 from ..config import apply_config
 from ..io import read_structured_file, safe_write, StructuredFileError
 from ..glyph_history import ensure_history

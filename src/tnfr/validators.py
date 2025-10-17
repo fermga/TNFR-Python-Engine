@@ -9,7 +9,7 @@ from .constants import get_aliases, get_param
 from .alias import get_attr
 from .sense import sigma_vector_from_graph
 from .helpers.numeric import within_range
-from .constants_glyphs import GLYPHS_CANONICAL_SET
+from .config.constants import GLYPHS_CANONICAL_SET
 
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")

@@ -49,7 +49,7 @@ def test_load_config_accepts_mapping(monkeypatch, tmp_path):
     def fake_reader(path):
         return data
 
-    monkeypatch.setattr("tnfr.config.read_structured_file", fake_reader)
+    monkeypatch.setattr("tnfr.config.init.read_structured_file", fake_reader)
     path = tmp_path / "dummy.json"
     path.write_text("{}", encoding="utf-8")
     loaded = load_config(path)
@@ -73,7 +73,7 @@ def test_apply_config_passes_path_object(monkeypatch, tmp_path, graph_canon):
         received["path"] = p
         return {}
 
-    monkeypatch.setattr("tnfr.config.load_config", fake_load)
+    monkeypatch.setattr("tnfr.config.init.load_config", fake_load)
     G = graph_canon()
     apply_config(G, path)
     assert received["path"] is path

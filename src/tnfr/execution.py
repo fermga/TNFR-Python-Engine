@@ -191,7 +191,7 @@ def basic_canonical_example() -> list[Token]:
     """Reference canonical sequence.
 
     Returns a copy of the canonical preset tokens to keep CLI defaults aligned
-    with :func:`tnfr.presets.get_preset`.
+    with :func:`tnfr.config.presets.get_preset`.
     """
 
     return list(CANONICAL_PROGRAM_TOKENS)
