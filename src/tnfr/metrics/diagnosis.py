@@ -11,6 +11,7 @@ from ..constants import (
     get_aliases,
     get_param,
 )
+from ..config.operator_names import TRANSICION
 from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import ensure_history, append_metric
 from ..alias import get_attr
@@ -60,14 +61,14 @@ def _state_from_thresholds(Rloc, dnfr_n, cfg):
     if all(comp(val, thr) for val, thr, comp in dissonant_checks.values()):
         return "disonante"
 
-    return "transicion"
+    return TRANSICION
 
 
 def _recommendation(state, cfg):
     adv = cfg.get("advice", {})
     key = {
         "estable": "stable",
-        "transicion": "transition",
+        TRANSICION: "transition",
         "disonante": "dissonant",
     }[state]
     return list(adv.get(key, []))

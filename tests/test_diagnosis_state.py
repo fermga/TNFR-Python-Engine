@@ -1,6 +1,7 @@
 """Tests for _state_from_thresholds."""
 
 from tnfr.metrics.diagnosis import _state_from_thresholds
+from tnfr.config.operator_names import TRANSICION
 
 
 def test_state_from_thresholds_checks_all_conditions():
@@ -10,4 +11,4 @@ def test_state_from_thresholds_checks_all_conditions():
     }
     assert _state_from_thresholds(0.9, 0.1, cfg) == "estable"
     assert _state_from_thresholds(0.3, 0.6, cfg) == "disonante"
-    assert _state_from_thresholds(0.5, 0.3, cfg) == "transicion"
+    assert _state_from_thresholds(0.5, 0.3, cfg) == TRANSICION

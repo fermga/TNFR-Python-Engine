@@ -3,13 +3,19 @@
 from __future__ import annotations
 
 from ..operators.registry import OPERADORES
+from ..config.operator_names import (
+    INICIO_VALIDOS,
+    TRAMO_INTERMEDIO,
+    CIERRE_VALIDO,
+    AUTOORGANIZACION,
+    RECEPCION,
+    COHERENCIA,
+    SILENCIO,
+    CONTRACCION,
+    AUTOORGANIZACION_CIERRES,
+)
 
 __all__ = ("validate_sequence",)
-
-
-_INICIO_VALIDOS = {"emision", "recursividad"}
-_TRAMO_INTERMEDIO = {"disonancia", "acoplamiento", "resonancia"}
-_CIERRE_VALIDO = {"silencio", "transicion", "recursividad"}
 
 
 def _validate_start(token: str) -> tuple[bool, str]:
@@ -17,7 +23,7 @@ def _validate_start(token: str) -> tuple[bool, str]:
 
     if not isinstance(token, str):
         return False, "tokens must be str"
-    if token not in _INICIO_VALIDOS:
+    if token not in INICIO_VALIDOS:
         return False, "must start with emission or recursion"
     return True, ""
 
@@ -37,7 +43,7 @@ def _validate_intermediate(
 def _validate_end(last_token: str, open_thol: bool) -> tuple[bool, str]:
     """Validate closing operator and any pending THOL blocks."""
 
-    if last_token not in _CIERRE_VALIDO:
+    if last_token not in CIERRE_VALIDO:
         return False, "sequence must end with silence/transition/recursion"
     if open_thol:
         return False, "THOL block without closure"
@@ -76,16 +82,16 @@ def _validate_token_sequence(nombres: list[str]) -> tuple[bool, str]:
             return False, "tokens must be str"
         nombres_set.add(n)
 
-        if n == "recepcion" and not found_recepcion:
+        if n == RECEPCION and not found_recepcion:
             found_recepcion = True
-        elif found_recepcion and n == "coherencia" and not found_coherencia:
+        elif found_recepcion and n == COHERENCIA and not found_coherencia:
             found_coherencia = True
-        elif found_coherencia and not seen_intermedio and n in _TRAMO_INTERMEDIO:
+        elif found_coherencia and not seen_intermedio and n in TRAMO_INTERMEDIO:
             seen_intermedio = True
 
-        if n == "autoorganizacion":
+        if n == AUTOORGANIZACION:
             open_thol = True
-        elif open_thol and n in {"silencio", "contraccion"}:
+        elif open_thol and n in AUTOORGANIZACION_CIERRES:
             open_thol = False
 
     ok, msg = _validate_known_tokens(nombres_set)
