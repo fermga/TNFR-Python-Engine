@@ -1,9 +1,10 @@
 """Node utilities and structures for TNFR graphs."""
 
 from __future__ import annotations
-from typing import Iterable, MutableMapping, Optional, Protocol, TypeVar
+from typing import Iterable, MutableMapping, Optional, Protocol, TypeVar, Callable, Any
 from collections.abc import Hashable
 import math
+from dataclasses import dataclass
 
 from .constants import get_aliases
 from .alias import (
@@ -31,85 +32,65 @@ ALIAS_EPI_KIND = get_aliases("EPI_KIND")
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_D2EPI = get_aliases("D2EPI")
 
-# Mapping of NodoNX attribute specifications used to generate property
-# descriptors. Each entry defines the keyword arguments passed to
-# ``_nx_attr_property`` for a given attribute name.
-ATTR_SPECS: dict[str, dict] = {
-    "EPI": {"aliases": ALIAS_EPI},
-    "vf": {
-        "aliases": ALIAS_VF,
-        "setter": set_vf,
-        "use_graph_setter": True,
-    },
-    "theta": {
-        "aliases": ALIAS_THETA,
-        "setter": set_theta,
-        "use_graph_setter": True,
-    },
-    "Si": {"aliases": ALIAS_SI},
-    "epi_kind": {
-        "aliases": ALIAS_EPI_KIND,
-        "default": "",
-        "getter": get_attr_str,
-        "setter": set_attr_str,
-        "to_python": str,
-        "to_storage": str,
-    },
-    "dnfr": {
-        "aliases": ALIAS_DNFR,
-        "setter": set_dnfr,
-        "use_graph_setter": True,
-    },
-    "d2EPI": {"aliases": ALIAS_D2EPI},
-}
-
 T = TypeVar("T")
 
 __all__ = ("NodoNX", "NodoProtocol", "add_edge")
 
 
-def _nx_attr_property(
-    aliases: tuple[str, ...],
-    *,
-    default=0.0,
-    getter=get_attr,
-    setter=set_attr,
-    to_python=float,
-    to_storage=float,
-    use_graph_setter=False,
-):
-    """Generate ``NodoNX`` property descriptors.
+@dataclass(frozen=True)
+class AttrSpec:
+    """Configuration required to expose a ``networkx`` node attribute.
 
-    Parameters
-    ----------
-    aliases:
-        Immutable tuple of aliases used to access the attribute in the
-        underlying ``networkx`` node.
-    default:
-        Value returned when the attribute is missing.
-    getter, setter:
-        Helper functions used to retrieve or store the value. ``setter`` can
-        either accept ``(mapping, aliases, value)`` or, when
-        ``use_graph_setter`` is ``True``, ``(G, n, value)``.
-    to_python, to_storage:
-        Conversion helpers applied when getting or setting the value,
-        respectively.
-    use_graph_setter:
-        Whether ``setter`` expects ``(G, n, value)`` instead of
-        ``(mapping, aliases, value)``.
+    ``AttrSpec`` mirrors the defaults previously used by
+    :func:`_nx_attr_property` and centralises the descriptor generation
+    logic to keep a single source of truth for NodoNX attribute access.
     """
 
-    def fget(self) -> T:
-        return to_python(getter(self.G.nodes[self.n], aliases, default))
+    aliases: tuple[str, ...]
+    default: Any = 0.0
+    getter: Callable[[MutableMapping[str, Any], tuple[str, ...], Any], Any] = get_attr
+    setter: Callable[..., None] = set_attr
+    to_python: Callable[[Any], Any] = float
+    to_storage: Callable[[Any], Any] = float
+    use_graph_setter: bool = False
 
-    def fset(self, value: T) -> None:
-        value = to_storage(value)
-        if use_graph_setter:
-            setter(self.G, self.n, value)
-        else:
-            setter(self.G.nodes[self.n], aliases, value)
+    def build_property(self) -> property:
+        """Create the property descriptor for ``NodoNX`` attributes."""
 
-    return property(fget, fset)
+        def fget(instance) -> T:
+            return self.to_python(
+                self.getter(instance.G.nodes[instance.n], self.aliases, self.default)
+            )
+
+        def fset(instance, value: T) -> None:
+            value = self.to_storage(value)
+            if self.use_graph_setter:
+                self.setter(instance.G, instance.n, value)
+            else:
+                self.setter(instance.G.nodes[instance.n], self.aliases, value)
+
+        return property(fget, fset)
+
+
+# Mapping of NodoNX attribute specifications used to generate property
+# descriptors. Each entry defines the keyword arguments passed to
+# ``AttrSpec.build_property`` for a given attribute name.
+ATTR_SPECS: dict[str, AttrSpec] = {
+    "EPI": AttrSpec(aliases=ALIAS_EPI),
+    "vf": AttrSpec(aliases=ALIAS_VF, setter=set_vf, use_graph_setter=True),
+    "theta": AttrSpec(aliases=ALIAS_THETA, setter=set_theta, use_graph_setter=True),
+    "Si": AttrSpec(aliases=ALIAS_SI),
+    "epi_kind": AttrSpec(
+        aliases=ALIAS_EPI_KIND,
+        default="",
+        getter=get_attr_str,
+        setter=set_attr_str,
+        to_python=str,
+        to_storage=str,
+    ),
+    "dnfr": AttrSpec(aliases=ALIAS_DNFR, setter=set_dnfr, use_graph_setter=True),
+    "d2EPI": AttrSpec(aliases=ALIAS_D2EPI),
+}
 
 
 def _add_edge_common(n1, n2, weight) -> Optional[float]:
@@ -187,13 +168,13 @@ class NodoNX(NodoProtocol):
     # Statically defined property descriptors for ``NodoNX`` attributes.
     # Declaring them here makes the attributes discoverable by type checkers
     # and IDEs, avoiding the previous runtime ``setattr`` loop.
-    EPI: float = _nx_attr_property(**ATTR_SPECS["EPI"])
-    vf: float = _nx_attr_property(**ATTR_SPECS["vf"])
-    theta: float = _nx_attr_property(**ATTR_SPECS["theta"])
-    Si: float = _nx_attr_property(**ATTR_SPECS["Si"])
-    epi_kind: str = _nx_attr_property(**ATTR_SPECS["epi_kind"])
-    dnfr: float = _nx_attr_property(**ATTR_SPECS["dnfr"])
-    d2EPI: float = _nx_attr_property(**ATTR_SPECS["d2EPI"])
+    EPI: float = ATTR_SPECS["EPI"].build_property()
+    vf: float = ATTR_SPECS["vf"].build_property()
+    theta: float = ATTR_SPECS["theta"].build_property()
+    Si: float = ATTR_SPECS["Si"].build_property()
+    epi_kind: str = ATTR_SPECS["epi_kind"].build_property()
+    dnfr: float = ATTR_SPECS["dnfr"].build_property()
+    d2EPI: float = ATTR_SPECS["d2EPI"].build_property()
 
     def __init__(self, G, n):
         self.G = G
