@@ -1,6 +1,6 @@
 [project]
 name = "tnfr"
-version = "4.5.2"
+dynamic = ["version"]
 description = "Modular structural-based dynamics on networks."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -47,6 +47,9 @@ tnfr = "tnfr.cli:main"
 Homepage = "https://pypi.org/project/tnfr/"
 Repository = "https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-"
 GPT = "https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-teoria-de-la-naturaleza-fractal-resonante"
+
+[tool.setuptools.dynamic]
+version = { attr = "tnfr._version.__version__" }
 
 [build-system]
 requires = ["setuptools>=61", "wheel"]
