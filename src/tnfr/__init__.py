@@ -15,7 +15,7 @@ Recommended entry points are:
 
 from __future__ import annotations
 
-from .utils import cached_import, prune_failed_imports
+from .utils import cached_import
 from .ontosim import preparar_red
 
 
@@ -47,20 +47,10 @@ else:
     _HAS_RUN_SEQUENCE = True
 
 
-_metadata = cached_import("importlib.metadata")
-if _metadata is None:  # pragma: no cover
-    _metadata = cached_import("importlib_metadata")
-
-if _metadata is not None:  # pragma: no cover
-    version = _metadata.version  # type: ignore[attr-defined]
-    PackageNotFoundError = _metadata.PackageNotFoundError  # type: ignore[attr-defined]
-else:  # pragma: no cover
-
-    class PackageNotFoundError(Exception):
-        pass
-
-    def version(_: str) -> str:
-        raise PackageNotFoundError
+try:  # pragma: no cover
+    from importlib.metadata import PackageNotFoundError, version
+except ImportError:  # pragma: no cover
+    from importlib_metadata import PackageNotFoundError, version  # type: ignore[import-not-found]
 
 
 try:
