@@ -17,7 +17,7 @@ from .constants import get_param
 from .dynamics import step
 from .flatten import _flatten
 from .glyph_history import ensure_history
-from .grammar import apply_glyph_with_grammar
+from .validation.grammar import apply_glyph_with_grammar
 from .tokens import OpTag, TARGET, THOL, WAIT, Token
 from .types import Glyph
 

@@ -9,7 +9,7 @@ from typing import Any
 # realizar la importación en cada paso de la dinámica. Como los módulos de
 # origen no dependen de ``dynamics``, no se introducen ciclos.
 from ..operators import apply_remesh_if_globally_stable, apply_glyph
-from ..grammar import enforce_canonical_grammar, on_applied_glyph
+from ..validation.grammar import enforce_canonical_grammar, on_applied_glyph
 from ..types import Glyph
 from ..constants import (
     DEFAULTS,

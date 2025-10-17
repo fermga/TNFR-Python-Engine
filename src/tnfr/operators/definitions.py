@@ -40,7 +40,9 @@ class Operador:
     def __call__(self, G: nx.Graph, node: Any, **kw: Any) -> None:
         if self.glyph is None:
             raise NotImplementedError("Operador sin glyph asignado")
-        from ..grammar import apply_glyph_with_grammar  # local import to avoid cycles
+        from ..validation.grammar import (
+            apply_glyph_with_grammar,
+        )  # local import to avoid cycles
 
         apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
 
