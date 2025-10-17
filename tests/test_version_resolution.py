@@ -29,6 +29,7 @@ def test_version_falls_back_to_pyproject() -> None:
         import re
         import sys
         from types import ModuleType
+        import warnings
 
         sys.path.insert(0, {src_path!r})
 
@@ -36,6 +37,17 @@ def test_version_falls_back_to_pyproject() -> None:
             raise metadata.PackageNotFoundError
 
         metadata.version = fake_version
+
+        fake_modules = {{
+            "tnfr.dynamics": ("step", "run"),
+            "tnfr.structural": ("create_nfr", "run_sequence"),
+            "tnfr.ontosim": ("preparar_red",),
+        }}
+        for module_name, attributes in fake_modules.items():
+            module = ModuleType(module_name)
+            for attr in attributes:
+                setattr(module, attr, lambda *args, **kwargs: None)
+            sys.modules[module_name] = module
 
         real_import_module = importlib.import_module
 
@@ -61,7 +73,13 @@ def test_version_falls_back_to_pyproject() -> None:
         module.load = load
         sys.modules["tomli"] = module
 
-        import tnfr
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            import tnfr
+
+        if caught:
+            raise RuntimeError(f"unexpected warnings: {{caught}}")
+
         print(tnfr.__version__, end="")
         """
     ).format(src_path=str(repo_root / "src"))

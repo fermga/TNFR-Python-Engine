@@ -15,7 +15,8 @@ Recommended entry points are:
 
 from __future__ import annotations
 
-from .utils import cached_import
+from importlib import import_module
+
 from .ontosim import preparar_red
 
 
@@ -61,12 +62,17 @@ except PackageNotFoundError:  # pragma: no cover
     pyproject_path = Path(__file__).resolve().parents[2] / "pyproject.toml"
     __version__ = "0+unknown"
     for module_name in ("tomllib", "tomli"):
-        parser = cached_import(module_name)
-        if parser is None:
+        try:
+            parser = import_module(module_name)
+        except ModuleNotFoundError:
+            continue
+
+        load = getattr(parser, "load", None)
+        if load is None:
             continue
         try:
             with pyproject_path.open("rb") as f:
-                data = parser.load(f)
+                data = load(f)
         except (OSError, AttributeError, TypeError, ValueError):
             continue
         try:
