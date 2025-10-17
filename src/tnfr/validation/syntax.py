@@ -47,7 +47,8 @@ def _validate_end(last_token: str, open_thol: bool) -> tuple[bool, str]:
 def _validate_known_tokens(nombres_set: set[str]) -> tuple[bool, str]:
     """Ensure all tokens map to canonical operators."""
 
-    desconocidos = nombres_set - OPERADORES.keys()
+    operadores_canonicos = set(OPERADORES)
+    desconocidos = nombres_set - operadores_canonicos
     if desconocidos:
         return False, f"unknown tokens: {', '.join(desconocidos)}"
     return True, ""
