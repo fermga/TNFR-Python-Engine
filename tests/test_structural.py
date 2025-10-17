@@ -62,6 +62,19 @@ def test_thol_requires_closure():
     assert not ok
 
 
+def test_validate_sequence_rejects_unknown_tokens():
+    names = [
+        "emision",
+        "recepcion",
+        "coherencia",
+        "resonancia",
+        "silencio",
+        "desconocido",
+    ]
+    ok, msg = validate_sequence(names)
+    assert not ok and "unknown tokens" in msg
+
+
 def test_thol_closed_by_silencio():
     ops = [
         Emision(),
