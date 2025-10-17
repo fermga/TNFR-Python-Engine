@@ -57,7 +57,11 @@ def main(argv: Optional[list[str]] = None) -> int:
         ),
     )
     p.add_argument(
-        "--version", action="store_true", help="muestra versión y sale"
+        "--version",
+        action="store_true",
+        help=(
+            "muestra versión real y sale (lee pyproject.toml en desarrollo)"
+        ),
     )
     sub = p.add_subparsers(dest="cmd")
 
