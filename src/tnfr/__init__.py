@@ -15,8 +15,17 @@ Recommended entry points are:
 
 from __future__ import annotations
 
-from ._version import __version__
+from importlib import metadata
+from importlib.metadata import PackageNotFoundError
 from .ontosim import preparar_red
+
+
+try:  # pragma: no cover - exercised in version resolution tests
+    __version__ = metadata.version("tnfr")
+except PackageNotFoundError:  # pragma: no cover - fallback tested explicitly
+    from ._version import __version__ as _fallback_version
+
+    __version__ = _fallback_version
 
 
 def _missing_dependency(name: str, exc: ImportError):
