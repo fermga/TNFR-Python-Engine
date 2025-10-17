@@ -7,6 +7,21 @@ from typing import Any
 import networkx as nx  # type: ignore[import-untyped]
 
 from ..types import Glyph
+from ..config.operator_names import (
+    EMISION,
+    RECEPCION,
+    COHERENCIA,
+    DISONANCIA,
+    ACOPLAMIENTO,
+    RESONANCIA,
+    SILENCIO,
+    EXPANSION,
+    CONTRACCION,
+    AUTOORGANIZACION,
+    MUTACION,
+    TRANSICION,
+    RECURSIVIDAD,
+)
 
 __all__ = (
     "Operador",
@@ -51,7 +66,7 @@ class Emision(Operador):
     """Aplicación del operador de emisión (símbolo ``AL``)."""
 
     __slots__ = ()
-    name = "emision"
+    name = EMISION
     glyph = Glyph.AL.value
 
 
@@ -59,7 +74,7 @@ class Recepcion(Operador):
     """Operador de recepción (símbolo ``EN``)."""
 
     __slots__ = ()
-    name = "recepcion"
+    name = RECEPCION
     glyph = Glyph.EN.value
 
 
@@ -67,7 +82,7 @@ class Coherencia(Operador):
     """Operador de coherencia (símbolo ``IL``)."""
 
     __slots__ = ()
-    name = "coherencia"
+    name = COHERENCIA
     glyph = Glyph.IL.value
 
 
@@ -75,7 +90,7 @@ class Disonancia(Operador):
     """Operador de disonancia (símbolo ``OZ``)."""
 
     __slots__ = ()
-    name = "disonancia"
+    name = DISONANCIA
     glyph = Glyph.OZ.value
 
 
@@ -83,7 +98,7 @@ class Acoplamiento(Operador):
     """Operador de acoplamiento (símbolo ``UM``)."""
 
     __slots__ = ()
-    name = "acoplamiento"
+    name = ACOPLAMIENTO
     glyph = Glyph.UM.value
 
 
@@ -91,7 +106,7 @@ class Resonancia(Operador):
     """Operador de resonancia (símbolo ``RA``)."""
 
     __slots__ = ()
-    name = "resonancia"
+    name = RESONANCIA
     glyph = Glyph.RA.value
 
 
@@ -99,7 +114,7 @@ class Silencio(Operador):
     """Operador de silencio (símbolo ``SHA``)."""
 
     __slots__ = ()
-    name = "silencio"
+    name = SILENCIO
     glyph = Glyph.SHA.value
 
 
@@ -107,7 +122,7 @@ class Expansion(Operador):
     """Operador de expansión (símbolo ``VAL``)."""
 
     __slots__ = ()
-    name = "expansion"
+    name = EXPANSION
     glyph = Glyph.VAL.value
 
 
@@ -115,7 +130,7 @@ class Contraccion(Operador):
     """Operador de contracción (símbolo ``NUL``)."""
 
     __slots__ = ()
-    name = "contraccion"
+    name = CONTRACCION
     glyph = Glyph.NUL.value
 
 
@@ -123,7 +138,7 @@ class Autoorganizacion(Operador):
     """Operador de autoorganización (símbolo ``THOL``)."""
 
     __slots__ = ()
-    name = "autoorganizacion"
+    name = AUTOORGANIZACION
     glyph = Glyph.THOL.value
 
 
@@ -131,7 +146,7 @@ class Mutacion(Operador):
     """Operador de mutación (símbolo ``ZHIR``)."""
 
     __slots__ = ()
-    name = "mutacion"
+    name = MUTACION
     glyph = Glyph.ZHIR.value
 
 
@@ -139,7 +154,7 @@ class Transicion(Operador):
     """Operador de transición (símbolo ``NAV``)."""
 
     __slots__ = ()
-    name = "transicion"
+    name = TRANSICION
     glyph = Glyph.NAV.value
 
 
@@ -147,5 +162,5 @@ class Recursividad(Operador):
     """Operador de recursividad (símbolo ``REMESH``)."""
 
     __slots__ = ()
-    name = "recursividad"
+    name = RECURSIVIDAD
     glyph = Glyph.REMESH.value

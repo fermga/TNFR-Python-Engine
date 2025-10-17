@@ -44,6 +44,7 @@ from ..selector import (
     _calc_selector_score,
     _apply_selector_hysteresis,
 )
+from ..config.operator_names import TRANSICION
 
 from .sampling import update_node_sample as _update_node_sample
 from .dnfr import (
@@ -174,7 +175,7 @@ def _compute_state(G, cfg: dict[str, Any]) -> tuple[str, float, float]:
     elif (R <= R_lo) or (disr >= disr_hi):
         state = "disonante"
     else:
-        state = "transicion"
+        state = TRANSICION
     return state, float(R), disr
 
 

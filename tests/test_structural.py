@@ -14,6 +14,15 @@ from tnfr.structural import (
     validate_sequence,
 )
 from tnfr.constants import EPI_PRIMARY
+from tnfr.config.operator_names import (
+    EMISION,
+    RECEPCION,
+    COHERENCIA,
+    RESONANCIA,
+    SILENCIO,
+    AUTOORGANIZACION,
+    TRANSICION,
+)
 
 
 def test_create_nfr_basic():
@@ -51,12 +60,12 @@ def test_invalid_sequence():
 
 def test_thol_requires_closure():
     names = [
-        "emision",
-        "recepcion",
-        "coherencia",
-        "autoorganizacion",
-        "resonancia",
-        "transicion",
+        EMISION,
+        RECEPCION,
+        COHERENCIA,
+        AUTOORGANIZACION,
+        RESONANCIA,
+        TRANSICION,
     ]
     ok, msg = validate_sequence(names)
     assert not ok
@@ -64,11 +73,11 @@ def test_thol_requires_closure():
 
 def test_validate_sequence_rejects_unknown_tokens():
     names = [
-        "emision",
-        "recepcion",
-        "coherencia",
-        "resonancia",
-        "silencio",
+        EMISION,
+        RECEPCION,
+        COHERENCIA,
+        RESONANCIA,
+        SILENCIO,
         "desconocido",
     ]
     ok, msg = validate_sequence(names)
@@ -91,12 +100,12 @@ def test_thol_closed_by_silencio():
 
 def test_sequence_rejects_trailing_tokens():
     names = [
-        "emision",
-        "recepcion",
-        "coherencia",
-        "resonancia",
-        "silencio",
-        "emision",
+        EMISION,
+        RECEPCION,
+        COHERENCIA,
+        RESONANCIA,
+        SILENCIO,
+        EMISION,
     ]
     ok, msg = validate_sequence(names)
     assert not ok
