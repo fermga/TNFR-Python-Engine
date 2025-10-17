@@ -3,7 +3,7 @@
 from collections import deque, defaultdict
 
 from tnfr.constants import inject_defaults
-from tnfr.grammar import (
+from tnfr.validation.grammar import (
     enforce_canonical_grammar,
     on_applied_glyph,
     apply_glyph_with_grammar,
