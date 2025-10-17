@@ -21,13 +21,9 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Intended Audience :: Science/Research",
-  "Topic :: Scientific/Engineering :: Networks",
-  "Topic :: Scientific/Engineering :: Dynamics",
-  "Topic :: Scientific/Engineering :: Structure",
-  "Topic :: Scientific/Engineering :: Complexity",
-  "Topic :: Scientific/Engineering :: Fractals",
-  "Topic :: Scientific/Engineering :: Resonance",
-  "Topic :: Scientific/Engineering :: TNFR"
+  "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Scientific/Engineering :: Mathematics"
 ]
 dependencies = [
   "networkx>=2.6",
