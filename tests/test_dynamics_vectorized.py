@@ -1,7 +1,6 @@
 """Pruebas de dynamics vectorized."""
 
 import math
-import time
 
 import pytest
 import networkx as nx
@@ -336,23 +335,37 @@ def test_sparse_graph_prefers_edge_accumulation_and_matches_dnfr():
     assert cache is not None
     assert cache.edge_src is not None and cache.edge_dst is not None
 
-    # Compare runtimes between vectorised edge accumulation and the fallback loop.
-    loops = 10
+    loops = 6
     sparse_data = data.copy()
     sparse_data["prefer_sparse"] = True
     sparse_data["A"] = None
-    start = time.perf_counter()
+    workspace_ids = set()
     for _ in range(loops):
         _build_neighbor_sums_common(G_vector, sparse_data, use_numpy=True)
-    sparse_time = time.perf_counter() - start
+        workspace = cache.neighbor_workspace_np
+        if workspace is not None:
+            workspace_ids.add(id(workspace))
+    assert len(workspace_ids) <= 1
+    assert cache.deg_array is not None
 
     loop_data = data.copy()
-    start = time.perf_counter()
+    x_id = id(cache.neighbor_x)
+    y_id = id(cache.neighbor_y)
+    epi_id = id(cache.neighbor_epi_sum)
+    vf_id = id(cache.neighbor_vf_sum)
+    count_id = id(cache.neighbor_count)
+    deg_buffer_id = (
+        id(cache.neighbor_deg_sum) if cache.neighbor_deg_sum is not None else None
+    )
     for _ in range(loops):
         _build_neighbor_sums_common(G_vector, loop_data, use_numpy=False)
-    loop_time = time.perf_counter() - start
-
-    assert sparse_time < loop_time
+        assert id(cache.neighbor_x) == x_id
+        assert id(cache.neighbor_y) == y_id
+        assert id(cache.neighbor_epi_sum) == epi_id
+        assert id(cache.neighbor_vf_sum) == vf_id
+        assert id(cache.neighbor_count) == count_id
+        if deg_buffer_id is not None:
+            assert id(cache.neighbor_deg_sum) == deg_buffer_id
 
 
 @pytest.mark.parametrize("factory", [nx.path_graph, nx.complete_graph])

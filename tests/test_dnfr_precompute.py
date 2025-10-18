@@ -16,8 +16,8 @@ ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
 
-def _setup_graph():
-    G = nx.path_graph(5)
+def _setup_graph(size: int = 5, factory=nx.path_graph):
+    G = factory(size)
     for n in G.nodes:
         set_attr(G.nodes[n], ALIAS_THETA, 0.1 * (n + 1))
         set_attr(G.nodes[n], ALIAS_EPI, 0.2 * (n + 1))
@@ -74,3 +74,31 @@ def test_prepare_dnfr_numpy_vectors_match_aliases():
     _compute_dnfr(G, data, use_numpy=True)
     dnfr_vec = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert all(isinstance(val, float) for val in dnfr_vec)
+
+
+@pytest.mark.parametrize(
+    "factory,size",
+    [
+        (nx.path_graph, 7),
+        (nx.complete_graph, 6),
+    ],
+)
+def test_numpy_broadcast_fallback_matches_python(factory, size, monkeypatch):
+    np = pytest.importorskip("numpy")
+    del np
+
+    template = _setup_graph(size=size, factory=factory)
+    broadcast = template.copy()
+    data = _prepare_dnfr_data(broadcast)
+    _compute_dnfr(broadcast, data, use_numpy=False)
+    dnfr_broadcast = collect_attr(broadcast, broadcast.nodes, ALIAS_DNFR, 0.0)
+
+    import tnfr.dynamics.dnfr as dnfr_module
+
+    monkeypatch.setattr(dnfr_module, "get_numpy", lambda: None)
+    python_only = template.copy()
+    data_loop = _prepare_dnfr_data(python_only)
+    _compute_dnfr(python_only, data_loop, use_numpy=False)
+    dnfr_loop = collect_attr(python_only, python_only.nodes, ALIAS_DNFR, 0.0)
+
+    assert dnfr_broadcast == pytest.approx(dnfr_loop, rel=1e-9, abs=1e-9)

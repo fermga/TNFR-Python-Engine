@@ -2,7 +2,10 @@
 
 This module provides helper functions to configure, cache and apply ΔNFR
 components such as phase, epidemiological state and vortex fields during
-simulations.
+simulations.  The neighbour accumulation helpers reuse cached edge indices
+and NumPy workspaces whenever available so cosine, sine, EPI, νf and topology
+means remain faithful to the canonical ΔNFR reorganisation without redundant
+allocations.
 """
 
 from __future__ import annotations
@@ -1174,40 +1177,132 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
         x, y, epi_sum, vf_sum, count, deg_sum, degs_list = _init_neighbor_sums(
             data
         )
-        idx = data["idx"]
-        epi = data["epi"]
-        vf = data["vf"]
-        cos_th = data["cos_theta"]
-        sin_th = data["sin_theta"]
-        deg_list = data.get("deg_list")
-        for i, node in enumerate(nodes):
-            deg_i = degs_list[i] if degs_list is not None else 0.0
-            x_i = x[i]
-            y_i = y[i]
-            epi_i = epi_sum[i]
-            vf_i = vf_sum[i]
-            count_i = count[i]
-            deg_acc = deg_sum[i] if deg_sum is not None else 0.0
-            for v in G.neighbors(node):
-                j = idx[v]
-                cos_j = cos_th[j]
-                sin_j = sin_th[j]
-                epi_j = epi[j]
-                vf_j = vf[j]
-                x_i += cos_j
-                y_i += sin_j
-                epi_i += epi_j
-                vf_i += vf_j
-                count_i += 1
+        if not nodes:
+            return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
+
+        if np is not None:
+            cache: DnfrCache | None = data.get("cache")
+            edge_src = data.get("edge_src")
+            edge_dst = data.get("edge_dst")
+            if edge_src is None or edge_dst is None:
+                edge_src, edge_dst = _build_edge_index_arrays(
+                    G, nodes, data["idx"], np
+                )
+                data["edge_src"] = edge_src
+                data["edge_dst"] = edge_dst
+                if cache is not None:
+                    cache.edge_src = edge_src
+                    cache.edge_dst = edge_dst
+
+            if edge_src is not None and edge_dst is not None:
+                edge_src = np.asarray(edge_src, dtype=np.intp)
+                edge_dst = np.asarray(edge_dst, dtype=np.intp)
+
+                cos_th = data.get("cos_theta_np")
+                sin_th = data.get("sin_theta_np")
+                epi = data.get("epi_np")
+                vf = data.get("vf_np")
+                if cos_th is None or sin_th is None or epi is None or vf is None:
+                    cos_th = np.asarray(data["cos_theta"], dtype=float)
+                    sin_th = np.asarray(data["sin_theta"], dtype=float)
+                    epi = np.asarray(data["epi"], dtype=float)
+                    vf = np.asarray(data["vf"], dtype=float)
+                    data["cos_theta_np"] = cos_th
+                    data["sin_theta_np"] = sin_th
+                    data["epi_np"] = epi
+                    data["vf_np"] = vf
+                    if cache is not None:
+                        cache.cos_theta_np = cos_th
+                        cache.sin_theta_np = sin_th
+                        cache.epi_np = epi
+                        cache.vf_np = vf
+
+                if edge_src.size:
+                    counts = np.bincount(
+                        edge_src, minlength=len(nodes)
+                    ).astype(float, copy=False)
+                    cos_vals = np.take(cos_th, edge_dst)
+                    sin_vals = np.take(sin_th, edge_dst)
+                    epi_vals = np.take(epi, edge_dst)
+                    vf_vals = np.take(vf, edge_dst)
+                    cos_acc = np.bincount(
+                        edge_src, weights=cos_vals, minlength=len(nodes)
+                    )
+                    sin_acc = np.bincount(
+                        edge_src, weights=sin_vals, minlength=len(nodes)
+                    )
+                    epi_acc = np.bincount(
+                        edge_src, weights=epi_vals, minlength=len(nodes)
+                    )
+                    vf_acc = np.bincount(
+                        edge_src, weights=vf_vals, minlength=len(nodes)
+                    )
+                else:
+                    counts = np.zeros(len(nodes), dtype=float)
+                    cos_acc = np.zeros(len(nodes), dtype=float)
+                    sin_acc = np.zeros(len(nodes), dtype=float)
+                    epi_acc = np.zeros(len(nodes), dtype=float)
+                    vf_acc = np.zeros(len(nodes), dtype=float)
+
+                x[:] = cos_acc.tolist()
+                y[:] = sin_acc.tolist()
+                epi_sum[:] = epi_acc.tolist()
+                vf_sum[:] = vf_acc.tolist()
+                count[:] = counts.tolist()
+
                 if deg_sum is not None:
-                    deg_acc += deg_list[j] if deg_list is not None else deg_i
-            x[i] = x_i
-            y[i] = y_i
-            epi_sum[i] = epi_i
-            vf_sum[i] = vf_i
-            count[i] = count_i
-            if deg_sum is not None:
-                deg_sum[i] = deg_acc
+                    deg_list = data.get("deg_list")
+                    if deg_list is not None:
+                        deg_array = data.get("deg_array")
+                        if deg_array is None or len(deg_array) != len(deg_list):
+                            deg_array = np.asarray(deg_list, dtype=float)
+                            data["deg_array"] = deg_array
+                            if cache is not None:
+                                cache.deg_array = deg_array
+                        deg_vals = np.take(deg_array, edge_dst)
+                        deg_acc = np.bincount(
+                            edge_src, weights=deg_vals, minlength=len(nodes)
+                        )
+                    else:
+                        deg_acc = np.zeros(len(nodes), dtype=float)
+                    deg_sum[:] = deg_acc.tolist()
+                return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
+
+        if np is None:
+            idx = data["idx"]
+            epi = data["epi"]
+            vf = data["vf"]
+            cos_th = data["cos_theta"]
+            sin_th = data["sin_theta"]
+            deg_list = data.get("deg_list")
+            for i, node in enumerate(nodes):
+                deg_i = degs_list[i] if degs_list is not None else 0.0
+                x_i = x[i]
+                y_i = y[i]
+                epi_i = epi_sum[i]
+                vf_i = vf_sum[i]
+                count_i = count[i]
+                deg_acc = deg_sum[i] if deg_sum is not None else 0.0
+                for v in G.neighbors(node):
+                    j = idx[v]
+                    cos_j = cos_th[j]
+                    sin_j = sin_th[j]
+                    epi_j = epi[j]
+                    vf_j = vf[j]
+                    x_i += cos_j
+                    y_i += sin_j
+                    epi_i += epi_j
+                    vf_i += vf_j
+                    count_i += 1
+                    if deg_sum is not None:
+                        deg_acc += deg_list[j] if deg_list is not None else deg_i
+                x[i] = x_i
+                y[i] = y_i
+                epi_sum[i] = epi_i
+                vf_sum[i] = vf_i
+                count[i] = count_i
+                if deg_sum is not None:
+                    deg_sum[i] = deg_acc
         return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
 
 
