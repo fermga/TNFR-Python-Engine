@@ -887,145 +887,168 @@ def _prefer_sparse_accumulation(n: int, edge_count: int | None) -> bool:
     return edge_count * 4 < n * n
 
 
+def _accumulate_neighbors_numpy(
+    G,
+    data,
+    *,
+    x,
+    y,
+    epi_sum,
+    vf_sum,
+    count,
+    deg_sum,
+    np,
+):
+    """Vectorised neighbour accumulation reusing cached NumPy buffers."""
+
+    nodes = data["nodes"]
+    if not nodes:
+        return x, y, epi_sum, vf_sum, count, deg_sum, None
+
+    cache: DnfrCache | None = data.get("cache")
+    prefer_sparse = data.get("prefer_sparse")
+    if prefer_sparse is None:
+        prefer_sparse = _prefer_sparse_accumulation(len(nodes), data.get("edge_count"))
+
+    epi = data.get("epi_np")
+    vf = data.get("vf_np")
+    cos_th = data.get("cos_theta_np")
+    sin_th = data.get("sin_theta_np")
+    if epi is None or vf is None or cos_th is None or sin_th is None:
+        epi = np.array(data["epi"], dtype=float)
+        vf = np.array(data["vf"], dtype=float)
+        cos_th = np.array(data["cos_theta"], dtype=float)
+        sin_th = np.array(data["sin_theta"], dtype=float)
+        data["epi_np"] = epi
+        data["vf_np"] = vf
+        data["cos_theta_np"] = cos_th
+        data["sin_theta_np"] = sin_th
+        if cache is not None:
+            cache.epi_np = epi
+            cache.vf_np = vf
+            cache.cos_theta_np = cos_th
+            cache.sin_theta_np = sin_th
+
+    if not prefer_sparse:
+        A = data.get("A")
+        if A is None:
+            _, A = cached_nodes_and_A(
+                G,
+                cache_size=data.get("cache_size"),
+                require_numpy=True,
+                nodes=nodes,
+            )
+            data["A"] = A
+        if A is not None and getattr(A, "size", 0):
+            np.sum(A, axis=1, out=count)
+            component_sources = [cos_th, sin_th, epi, vf]
+            deg_column = None
+            deg_array = None
+            if deg_sum is not None:
+                deg_array = _resolve_numpy_degree_array(
+                    data, count, cache=cache, np=np
+                )
+                if deg_array is not None:
+                    deg_column = len(component_sources)
+                    component_sources.append(deg_array)
+
+            stack_shape = (len(nodes), len(component_sources))
+            stacked = _ensure_cached_array(
+                cache, "neighbor_component_stack_np", stack_shape, np
+            )
+            for col, src_vec in enumerate(component_sources):
+                np.copyto(stacked[:, col], src_vec, casting="unsafe")
+
+            accum = _ensure_cached_array(
+                cache, "neighbor_component_accum_np", stack_shape, np
+            )
+            np.dot(A, stacked, out=accum)
+
+            np.copyto(x, accum[:, 0], casting="unsafe")
+            np.copyto(y, accum[:, 1], casting="unsafe")
+            np.copyto(epi_sum, accum[:, 2], casting="unsafe")
+            np.copyto(vf_sum, accum[:, 3], casting="unsafe")
+            degs = None
+            if deg_column is not None and deg_sum is not None:
+                np.copyto(deg_sum, accum[:, deg_column], casting="unsafe")
+                degs = deg_array
+            return x, y, epi_sum, vf_sum, count, deg_sum, degs
+
+    edge_src = data.get("edge_src")
+    edge_dst = data.get("edge_dst")
+    if edge_src is None or edge_dst is None:
+        edge_src, edge_dst = _build_edge_index_arrays(G, nodes, data["idx"], np)
+        data["edge_src"] = edge_src
+        data["edge_dst"] = edge_dst
+        if cache is not None:
+            cache.edge_src = edge_src
+            cache.edge_dst = edge_dst
+
+    if edge_src.size:
+        np.add.at(count, edge_src, 1.0)
+
+    component_sources = [cos_th, sin_th, epi, vf]
+    deg_column = None
+    deg_array = None
+    if deg_sum is not None:
+        deg_array = _resolve_numpy_degree_array(
+            data, count, cache=cache, np=np
+        )
+        if deg_array is not None:
+            deg_column = len(component_sources)
+            component_sources.append(deg_array)
+
+    stack_shape = (len(nodes), len(component_sources))
+    stacked = _ensure_cached_array(
+        cache, "neighbor_component_stack_np", stack_shape, np
+    )
+    for col, src_vec in enumerate(component_sources):
+        np.copyto(stacked[:, col], src_vec, casting="unsafe")
+
+    edge_shape = (edge_src.size, len(component_sources))
+    edge_values = _ensure_cached_array(
+        cache, "edge_component_values_np", edge_shape, np
+    )
+    if edge_values.size:
+        np.take(stacked, edge_dst, axis=0, out=edge_values)
+
+    accum = _ensure_cached_array(
+        cache, "neighbor_component_accum_np", stack_shape, np
+    )
+    accum.fill(0.0)
+    if edge_values.size:
+        np.add.at(accum, edge_src, edge_values)
+
+    np.copyto(x, accum[:, 0], casting="unsafe")
+    np.copyto(y, accum[:, 1], casting="unsafe")
+    np.copyto(epi_sum, accum[:, 2], casting="unsafe")
+    np.copyto(vf_sum, accum[:, 3], casting="unsafe")
+    degs = None
+    if deg_column is not None and deg_sum is not None:
+        np.copyto(deg_sum, accum[:, deg_column], casting="unsafe")
+        degs = deg_array
+    return x, y, epi_sum, vf_sum, count, deg_sum, degs
+
+
 def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
     np = get_numpy()
     nodes = data["nodes"]
     w_topo = data["w_topo"]
-    if use_numpy:
-        if np is None:  # pragma: no cover - runtime check
-            raise RuntimeError(
-                "numpy no disponible para la versión vectorizada",
-            )
-        if not nodes:
-            return None
-        prefer_sparse = data.get("prefer_sparse")
-        if prefer_sparse is None:
-            prefer_sparse = _prefer_sparse_accumulation(
-                len(nodes), data.get("edge_count")
-            )
+    if np is not None and nodes:
         x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(
             data, np=np
         )
-        cache = data.get("cache")
-        epi = data.get("epi_np")
-        vf = data.get("vf_np")
-        cos_th = data.get("cos_theta_np")
-        sin_th = data.get("sin_theta_np")
-        if epi is None or vf is None or cos_th is None or sin_th is None:
-            epi = np.array(data["epi"], dtype=float)
-            vf = np.array(data["vf"], dtype=float)
-            cos_th = np.array(data["cos_theta"], dtype=float)
-            sin_th = np.array(data["sin_theta"], dtype=float)
-            data["epi_np"] = epi
-            data["vf_np"] = vf
-            data["cos_theta_np"] = cos_th
-            data["sin_theta_np"] = sin_th
-            if cache is not None:
-                cache.epi_np = epi
-                cache.vf_np = vf
-                cache.cos_theta_np = cos_th
-                cache.sin_theta_np = sin_th
-        if not prefer_sparse:
-            A = data.get("A")
-            if A is None:
-                _, A = cached_nodes_and_A(
-                    G,
-                    cache_size=data.get("cache_size"),
-                    require_numpy=True,
-                    nodes=nodes,
-                )
-                data["A"] = A
-            if A is not None and getattr(A, "size", 0):
-                np.sum(A, axis=1, out=count)
-                component_sources = [cos_th, sin_th, epi, vf]
-                deg_column = None
-                deg_array = None
-                if deg_sum is not None:
-                    deg_array = _resolve_numpy_degree_array(
-                        data, count, cache=cache, np=np
-                    )
-                    if deg_array is not None:
-                        deg_column = len(component_sources)
-                        component_sources.append(deg_array)
-
-                stack_shape = (len(nodes), len(component_sources))
-                stacked = _ensure_cached_array(
-                    cache, "neighbor_component_stack_np", stack_shape, np
-                )
-                for col, src_vec in enumerate(component_sources):
-                    np.copyto(stacked[:, col], src_vec, casting="unsafe")
-
-                accum = _ensure_cached_array(
-                    cache, "neighbor_component_accum_np", stack_shape, np
-                )
-                np.dot(A, stacked, out=accum)
-
-                np.copyto(x, accum[:, 0], casting="unsafe")
-                np.copyto(y, accum[:, 1], casting="unsafe")
-                np.copyto(epi_sum, accum[:, 2], casting="unsafe")
-                np.copyto(vf_sum, accum[:, 3], casting="unsafe")
-                degs = None
-                if deg_column is not None and deg_sum is not None:
-                    np.copyto(deg_sum, accum[:, deg_column], casting="unsafe")
-                    degs = deg_array
-                return x, y, epi_sum, vf_sum, count, deg_sum, degs
-
-        edge_src = data.get("edge_src")
-        edge_dst = data.get("edge_dst")
-        if edge_src is None or edge_dst is None:
-            edge_src, edge_dst = _build_edge_index_arrays(
-                G, nodes, data["idx"], np
-            )
-            data["edge_src"] = edge_src
-            data["edge_dst"] = edge_dst
-            if cache is not None:
-                cache.edge_src = edge_src
-                cache.edge_dst = edge_dst
-        if edge_src.size:
-            np.add.at(count, edge_src, 1.0)
-
-        component_sources = [cos_th, sin_th, epi, vf]
-        deg_column = None
-        deg_array = None
-        if deg_sum is not None:
-            deg_array = _resolve_numpy_degree_array(
-                data, count, cache=cache, np=np
-            )
-            if deg_array is not None:
-                deg_column = len(component_sources)
-                component_sources.append(deg_array)
-
-        stack_shape = (len(nodes), len(component_sources))
-        stacked = _ensure_cached_array(
-            cache, "neighbor_component_stack_np", stack_shape, np
+        return _accumulate_neighbors_numpy(
+            G,
+            data,
+            x=x,
+            y=y,
+            epi_sum=epi_sum,
+            vf_sum=vf_sum,
+            count=count,
+            deg_sum=deg_sum,
+            np=np,
         )
-        for col, src_vec in enumerate(component_sources):
-            np.copyto(stacked[:, col], src_vec, casting="unsafe")
-
-        edge_shape = (edge_src.size, len(component_sources))
-        edge_values = _ensure_cached_array(
-            cache, "edge_component_values_np", edge_shape, np
-        )
-        if edge_values.size:
-            for col in range(len(component_sources)):
-                np.take(stacked[:, col], edge_dst, out=edge_values[:, col])
-
-        accum = _ensure_cached_array(
-            cache, "neighbor_component_accum_np", stack_shape, np
-        )
-        accum.fill(0.0)
-        if edge_values.size:
-            np.add.at(accum, edge_src, edge_values)
-
-        np.copyto(x, accum[:, 0], casting="unsafe")
-        np.copyto(y, accum[:, 1], casting="unsafe")
-        np.copyto(epi_sum, accum[:, 2], casting="unsafe")
-        np.copyto(vf_sum, accum[:, 3], casting="unsafe")
-        degs = None
-        if deg_column is not None and deg_sum is not None:
-            np.copyto(deg_sum, accum[:, deg_column], casting="unsafe")
-            degs = deg_array
-        return x, y, epi_sum, vf_sum, count, deg_sum, degs
     else:
         x, y, epi_sum, vf_sum, count, deg_sum, degs_list = _init_neighbor_sums(
             data
