@@ -871,20 +871,11 @@ def _init_neighbor_sums(data, *, np=None):
 
 
 def _prefer_sparse_accumulation(n: int, edge_count: int | None) -> bool:
-    """Return ``True`` when edge accumulation is expected to be cheaper.
-
-    We compare the number of edges against ``n²`` because the dense matrix
-    multiplication used for neighbour sums costs Θ(n²) per component, while the
-    ``np.add.at`` path scales with Θ(n + m).  Using a 0.25 density cut keeps the
-    heuristic conservative while documenting the trade-off for TNFR traces.
-    """
+    """Return ``True`` when neighbour sums should use edge accumulation."""
 
     if n == 0 or edge_count is None:
         return False
-    # ``density`` is ``m / n²`` without double-counting edges since both
-    # strategies already account for undirected pairs.  Empirically the dense
-    # path wins for densities above 0.25 while sparse addition dominates below.
-    return edge_count * 4 < n * n
+    return edge_count > 0
 
 
 def _accumulate_neighbors_numpy(
@@ -929,51 +920,6 @@ def _accumulate_neighbors_numpy(
             cache.cos_theta_np = cos_th
             cache.sin_theta_np = sin_th
 
-    if not prefer_sparse:
-        A = data.get("A")
-        if A is None:
-            _, A = cached_nodes_and_A(
-                G,
-                cache_size=data.get("cache_size"),
-                require_numpy=True,
-                nodes=nodes,
-            )
-            data["A"] = A
-        if A is not None and getattr(A, "size", 0):
-            np.sum(A, axis=1, out=count)
-            component_sources = [cos_th, sin_th, epi, vf]
-            deg_column = None
-            deg_array = None
-            if deg_sum is not None:
-                deg_array = _resolve_numpy_degree_array(
-                    data, count, cache=cache, np=np
-                )
-                if deg_array is not None:
-                    deg_column = len(component_sources)
-                    component_sources.append(deg_array)
-
-            stack_shape = (len(nodes), len(component_sources))
-            stacked = _ensure_cached_array(
-                cache, "neighbor_component_stack_np", stack_shape, np
-            )
-            for col, src_vec in enumerate(component_sources):
-                np.copyto(stacked[:, col], src_vec, casting="unsafe")
-
-            accum = _ensure_cached_array(
-                cache, "neighbor_component_accum_np", stack_shape, np
-            )
-            np.dot(A, stacked, out=accum)
-
-            np.copyto(x, accum[:, 0], casting="unsafe")
-            np.copyto(y, accum[:, 1], casting="unsafe")
-            np.copyto(epi_sum, accum[:, 2], casting="unsafe")
-            np.copyto(vf_sum, accum[:, 3], casting="unsafe")
-            degs = None
-            if deg_column is not None and deg_sum is not None:
-                np.copyto(deg_sum, accum[:, deg_column], casting="unsafe")
-                degs = deg_array
-            return x, y, epi_sum, vf_sum, count, deg_sum, degs
-
     edge_src = data.get("edge_src")
     edge_dst = data.get("edge_dst")
     if edge_src is None or edge_dst is None:
@@ -984,6 +930,7 @@ def _accumulate_neighbors_numpy(
             cache.edge_src = edge_src
             cache.edge_dst = edge_dst
 
+    count.fill(0.0)
     if edge_src.size:
         np.add.at(count, edge_src, 1.0)
 
@@ -1005,19 +952,19 @@ def _accumulate_neighbors_numpy(
     for col, src_vec in enumerate(component_sources):
         np.copyto(stacked[:, col], src_vec, casting="unsafe")
 
-    edge_shape = (edge_src.size, len(component_sources))
-    edge_values = _ensure_cached_array(
-        cache, "edge_component_values_np", edge_shape, np
-    )
-    if edge_values.size:
-        np.take(stacked, edge_dst, axis=0, out=edge_values)
-
     accum = _ensure_cached_array(
         cache, "neighbor_component_accum_np", stack_shape, np
     )
     accum.fill(0.0)
-    if edge_values.size:
-        np.add.at(accum, edge_src, edge_values)
+
+    if edge_src.size:
+        edge_shape = (edge_src.size, len(component_sources))
+        edge_values = _ensure_cached_array(
+            cache, "edge_component_values_np", edge_shape, np
+        )
+        if edge_values.size:
+            np.copyto(edge_values, stacked[edge_dst], casting="unsafe")
+            np.add.at(accum, edge_src, edge_values)
 
     np.copyto(x, accum[:, 0], casting="unsafe")
     np.copyto(y, accum[:, 1], casting="unsafe")
@@ -1034,7 +981,7 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
     np = get_numpy()
     nodes = data["nodes"]
     w_topo = data["w_topo"]
-    if np is not None and nodes:
+    if use_numpy and np is not None and nodes:
         x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(
             data, np=np
         )
