@@ -1,6 +1,7 @@
 """Pruebas de dynamics vectorized."""
 
 import math
+import time
 
 import pytest
 import networkx as nx
@@ -810,3 +811,60 @@ def test_broadcast_accumulation_invalidation_on_edge_change():
     loop_dnfr = collect_attr(loop_graph, loop_graph.nodes, ALIAS_DNFR, 0.0)
 
     np.testing.assert_allclose(vector_dnfr, loop_dnfr, rtol=1e-9, atol=1e-9)
+
+
+def _build_large_random_graph(np_module, *, nodes=480, edges=9600, seed=20240517):
+    """Create a dense-ish random graph with seeded TNFR attributes."""
+
+    G = nx.gnm_random_graph(nodes, edges, seed=seed)
+    rng = np_module.random.default_rng(seed + 1337)
+    for node in G.nodes:
+        angle = float(rng.uniform(-math.pi, math.pi))
+        epi = float(rng.normal(0.0, 1.0))
+        vf = float(rng.uniform(-0.5, 0.5))
+        set_attr(G.nodes[node], ALIAS_THETA, angle)
+        set_attr(G.nodes[node], ALIAS_EPI, epi)
+        set_attr(G.nodes[node], ALIAS_VF, vf)
+    G.graph["DNFR_WEIGHTS"] = {
+        "phase": 0.3,
+        "epi": 0.25,
+        "vf": 0.25,
+        "topo": 0.2,
+    }
+    return G
+
+
+def test_vectorized_matches_python_and_is_faster_large_graph(monkeypatch):
+    np = pytest.importorskip("numpy")
+
+    def _timed_run(graph, *, disable_numpy: bool) -> float:
+        if disable_numpy:
+            with numpy_disabled(monkeypatch):
+                start = time.perf_counter()
+                default_compute_delta_nfr(graph)
+                return time.perf_counter() - start
+        start = time.perf_counter()
+        default_compute_delta_nfr(graph)
+        return time.perf_counter() - start
+
+    base_vector = _build_large_random_graph(np, seed=20240517)
+    base_python = base_vector.copy()
+
+    vector_time = _timed_run(base_vector, disable_numpy=False)
+    python_time = _timed_run(base_python, disable_numpy=True)
+
+    vec_dnfr = np.array(collect_attr(base_vector, base_vector.nodes, ALIAS_DNFR, 0.0))
+    py_dnfr = np.array(collect_attr(base_python, base_python.nodes, ALIAS_DNFR, 0.0))
+    np.testing.assert_allclose(vec_dnfr, py_dnfr, rtol=1e-10, atol=1e-10)
+
+    timings_vector = [vector_time]
+    timings_python = [python_time]
+
+    for seed in (20240518, 20240519):
+        sample_vector = _build_large_random_graph(np, seed=seed)
+        sample_python = sample_vector.copy()
+        timings_vector.append(_timed_run(sample_vector, disable_numpy=False))
+        timings_python.append(_timed_run(sample_python, disable_numpy=True))
+
+    assert min(timings_python) > 0.0
+    assert min(timings_vector) < min(timings_python)
