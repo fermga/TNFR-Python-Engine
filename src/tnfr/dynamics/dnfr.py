@@ -96,8 +96,6 @@ class DnfrCache:
     dense_degree_np: Any | None = None
     neighbor_contrib_np: Any | None = None
     neighbor_workspace_np: Any | None = None
-    neighbor_flat_index_np: Any | None = None
-    neighbor_offsets_np: Any | None = None
     edge_signature: Any | None = None
     neighbor_accum_signature: Any | None = None
 
@@ -117,8 +115,6 @@ _NUMPY_CACHE_ATTRS = (
     "neighbor_deg_sum_np",
     "neighbor_contrib_np",
     "neighbor_workspace_np",
-    "neighbor_flat_index_np",
-    "neighbor_offsets_np",
     "dense_components_np",
     "dense_accum_np",
     "dense_degree_np",
@@ -319,19 +315,6 @@ def _ensure_cached_array(cache: DnfrCache | None, attr: str, shape, np):
     arr = getattr(cache, attr) if cache is not None else None
     if arr is None or getattr(arr, "shape", None) != shape:
         arr = np.empty(shape, dtype=float)
-        if cache is not None:
-            setattr(cache, attr, arr)
-    return arr
-
-
-def _ensure_cached_int_array(cache: DnfrCache | None, attr: str, shape, np):
-    """Return an integer NumPy buffer with ``shape`` reusing cached storage."""
-
-    if np is None:
-        raise RuntimeError("NumPy is required to build cached arrays")
-    arr = getattr(cache, attr) if cache is not None else None
-    if arr is None or getattr(arr, "shape", None) != shape:
-        arr = np.empty(shape, dtype=np.intp)
         if cache is not None:
             setattr(cache, attr, arr)
     return arr
@@ -542,8 +525,6 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
             for attr in (
                 "neighbor_workspace_np",
                 "neighbor_contrib_np",
-                "neighbor_offsets_np",
-                "neighbor_flat_index_np",
             ):
                 arr = getattr(cache, attr, None)
                 if arr is not None:
@@ -1172,48 +1153,13 @@ def _accumulate_neighbors_broadcasted(
     workspace = _ensure_cached_array(cache, "neighbor_workspace_np", (n, columns), np)
     workspace.fill(0.0)
 
-    rebuild_layout = True
-    base_signature = None
     if cache is not None:
         base_signature = (id(edge_src), id(edge_dst), n)
-        if cache.edge_signature != base_signature:
-            cache.edge_signature = base_signature
-            cache.neighbor_accum_signature = None
-        desired_signature = (base_signature, columns)
-        if cache.neighbor_accum_signature == desired_signature:
-            rebuild_layout = False
-        else:
-            cache.neighbor_accum_signature = desired_signature
-    else:
-        desired_signature = None
+        cache.edge_signature = base_signature
+        cache.neighbor_accum_signature = (base_signature, columns)
 
-    offsets = _ensure_cached_int_array(cache, "neighbor_offsets_np", (columns,), np)
-    if rebuild_layout:
-        offsets[:] = np.arange(columns, dtype=np.intp) * n
-
-    flat_indices = _ensure_cached_int_array(
-        cache, "neighbor_flat_index_np", (edge_count * columns,), np
-    )
-    if rebuild_layout and edge_count:
-        flat_view = flat_indices.reshape(edge_count, columns)
-        flat_view[...] = edge_src[:, None]
-        flat_view += offsets
-    elif edge_count == 0:
-        flat_indices.fill(0)
-
-    weights_flat = contrib.reshape(-1)
     if edge_count:
-        accum_flat = np.bincount(
-            flat_indices,
-            weights=weights_flat,
-            minlength=n * columns,
-        )
-        if accum_flat.dtype != float:
-            accum_flat = accum_flat.astype(float, copy=False)
-        accum = accum_flat.reshape(columns, n).T
-        np.copyto(workspace, accum, casting="unsafe")
-    else:
-        workspace.fill(0.0)
+        np.add.at(workspace, edge_src, contrib)
 
     np.copyto(x, workspace[:, 0], casting="unsafe")
     np.copyto(y, workspace[:, 1], casting="unsafe")
@@ -1227,8 +1173,6 @@ def _accumulate_neighbors_broadcasted(
     return {
         "workspace": workspace,
         "contrib": contrib,
-        "offsets": offsets,
-        "flat_indices": flat_indices,
     }
 
 
@@ -1618,9 +1562,6 @@ def _accumulate_neighbors_numpy(
 
     data["neighbor_workspace_np"] = accum["workspace"]
     data["neighbor_contrib_np"] = accum["contrib"]
-    data["neighbor_offsets_np"] = accum["offsets"]
-    data["neighbor_flat_index_np"] = accum["flat_indices"]
-
     degs = deg_array if deg_sum is not None and deg_array is not None else None
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
