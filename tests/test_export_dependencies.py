@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 
 def test_preparar_red_dependencies():
     from tnfr import EXPORT_DEPENDENCIES
@@ -50,3 +52,14 @@ def test_structural_helpers_dependencies():
         deps = EXPORT_DEPENDENCIES[helper]
         assert set(deps["submodules"]) == expected_submodules
         assert deps["third_party"] == expected_third_party
+
+
+def test_manifest_validator_catches_mismatches(monkeypatch):
+    import tnfr
+
+    broken_manifest = dict(tnfr.EXPORT_DEPENDENCIES)
+    broken_manifest.pop("run")
+    monkeypatch.setattr(tnfr, "EXPORT_DEPENDENCIES", broken_manifest)
+
+    with pytest.raises(tnfr.ExportDependencyError, match="run"):
+        tnfr._validate_export_dependencies()

@@ -145,6 +145,69 @@ def _missing_dependency(name: str, exc: ImportError, *, module: str | None = Non
 _MISSING_EXPORTS: dict[str, dict[str, Any]] = {}
 
 
+class ExportDependencyError(RuntimeError):
+    """Raised when the export dependency manifest is inconsistent."""
+
+
+def _validate_export_dependencies() -> None:
+    """Ensure exported helpers and their manifest entries stay in sync."""
+
+    if "__all__" not in globals():
+        # Defensive guard for unusual import orders (should never trigger).
+        return
+
+    issues: list[str] = []
+    manifest = EXPORT_DEPENDENCIES
+    export_names = [name for name in __all__ if name != "__version__"]
+    manifest_names = set(manifest)
+
+    for export_name in export_names:
+        if export_name not in manifest:
+            issues.append(
+                f"helper '{export_name}' is exported via __all__ but missing from EXPORT_DEPENDENCIES"
+            )
+            continue
+
+        entry = manifest[export_name]
+        if not isinstance(entry, dict):
+            issues.append(
+                f"helper '{export_name}' has a malformed manifest entry (expected mapping, got {type(entry)!r})"
+            )
+            continue
+
+        for key in ("submodules", "third_party"):
+            value = entry.get(key)
+            if not value:
+                issues.append(
+                    f"helper '{export_name}' is missing '{key}' dependencies in EXPORT_DEPENDENCIES"
+                )
+
+    missing_exports = manifest_names.difference(export_names).difference(_MISSING_EXPORTS)
+    for manifest_only in sorted(missing_exports):
+        entry = manifest[manifest_only]
+        if not isinstance(entry, dict):
+            issues.append(
+                f"helper '{manifest_only}' has a malformed manifest entry (expected mapping, got {type(entry)!r})"
+            )
+            continue
+
+        for key in ("submodules", "third_party"):
+            value = entry.get(key)
+            if not value:
+                issues.append(
+                    f"helper '{manifest_only}' is missing '{key}' dependencies in EXPORT_DEPENDENCIES"
+                )
+
+        issues.append(
+            f"helper '{manifest_only}' is listed in EXPORT_DEPENDENCIES but not exported via __all__"
+        )
+
+    if issues:
+        raise ExportDependencyError(
+            "Invalid TNFR export dependency manifest:\n- " + "\n- ".join(issues)
+        )
+
+
 def _assign_exports(module: str, names: tuple[str, ...]) -> bool:
     try:  # pragma: no cover - exercised in import tests
         mod = import_module(f".{module}", __name__)
@@ -200,3 +263,6 @@ __all__ = [
 
 if _HAS_RUN_SEQUENCE:
     __all__.append("run_sequence")
+
+
+_validate_export_dependencies()
