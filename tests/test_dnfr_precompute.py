@@ -112,3 +112,26 @@ def test_numpy_broadcast_fallback_matches_python(factory, size, monkeypatch):
     dnfr_loop = collect_attr(python_only, python_only.nodes, ALIAS_DNFR, 0.0)
 
     assert dnfr_broadcast == pytest.approx(dnfr_loop, rel=1e-9, abs=1e-9)
+
+
+def test_prepare_reuses_neighbor_workspace_vectorized():
+    np = pytest.importorskip("numpy")
+    del np
+
+    G = _setup_graph()
+    data = _prepare_dnfr_data(G)
+    _compute_dnfr(G, data)
+
+    cache = data["cache"]
+    assert cache is not None, "Expected ΔNFR cache to be initialised"
+
+    workspace_first = data["neighbor_workspace_np"]
+    assert workspace_first is not None
+    assert cache.neighbor_workspace_np is workspace_first
+
+    reused = _prepare_dnfr_data(G)
+    assert reused["neighbor_workspace_np"] is workspace_first
+    assert reused["neighbor_contrib_np"] is data["neighbor_contrib_np"]
+
+    _compute_dnfr(G, reused)
+    assert reused["neighbor_workspace_np"] is cache.neighbor_workspace_np

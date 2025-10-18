@@ -445,6 +445,11 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     if weights is None:
         weights = _configure_dnfr_weights(G)
 
+    result: dict[str, Any] = {
+        "weights": weights,
+        "cache_size": cache_size,
+    }
+
     np_module = get_numpy()
     use_numpy = _should_vectorize(G, np_module)
 
@@ -463,12 +468,21 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         prefer_sparse=prefer_sparse,
         nodes=nodes,
     )
+    result["nodes"] = nodes
+    result["A"] = A
     cache: DnfrCache | None = G.graph.get("_dnfr_prep_cache")
     checksum = G.graph.get("_dnfr_nodes_checksum")
     dirty = bool(G.graph.pop("_dnfr_prep_dirty", False))
     cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = (
         _init_dnfr_cache(G, nodes, cache, checksum, dirty)
     )
+    result["cache"] = cache
+    result["idx"] = idx
+    result["theta"] = theta
+    result["epi"] = epi
+    result["vf"] = vf
+    result["cos_theta"] = cos_theta
+    result["sin_theta"] = sin_theta
     if cache is not None:
         _refresh_dnfr_vectors(G, nodes, cache)
 
@@ -476,6 +490,10 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     w_epi = float(weights.get("epi", 0.0))
     w_vf = float(weights.get("vf", 0.0))
     w_topo = float(weights.get("topo", 0.0))
+    result["w_phase"] = w_phase
+    result["w_epi"] = w_epi
+    result["w_vf"] = w_vf
+    result["w_topo"] = w_topo
     degree_map: dict[Any, float] | None = cache.degs if cache else None
     if cache is not None and dirty:
         cache.degs = None
@@ -493,7 +511,12 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
 
     G.graph["_dnfr_prep_dirty"] = False
 
-    if cache is not None and cache.deg_list is not None and not dirty and len(cache.deg_list) == len(nodes):
+    if (
+        cache is not None
+        and cache.deg_list is not None
+        and not dirty
+        and len(cache.deg_list) == len(nodes)
+    ):
         deg_list: list[float] | None = cache.deg_list
     else:
         deg_list = [float(degree_map.get(node, 0.0)) for node in nodes]
@@ -504,6 +527,8 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         degs = degree_map
     else:
         degs = None
+    result["degs"] = degs
+    result["deg_list"] = deg_list
 
     deg_array = None
     if np_module is not None and deg_list is not None:
@@ -539,10 +564,10 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
             ):
                 arr = getattr(cache, attr, None)
                 if arr is not None:
-                    data[attr] = arr
+                    result[attr] = arr
         if edge_src is not None and edge_dst is not None:
             signature = (id(edge_src), id(edge_dst), len(nodes))
-            data["edge_signature"] = signature
+            result["edge_signature"] = signature
             if cache is not None:
                 cache.edge_signature = signature
     else:
@@ -557,36 +582,24 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
             cache.edge_src = None
             cache.edge_dst = None
 
-    return {
-        "weights": weights,
-        "nodes": nodes,
-        "idx": idx,
-        "theta": theta,
-        "epi": epi,
-        "vf": vf,
-        "cos_theta": cos_theta,
-        "sin_theta": sin_theta,
-        "theta_np": theta_np,
-        "epi_np": epi_np,
-        "vf_np": vf_np,
-        "cos_theta_np": cos_theta_np,
-        "sin_theta_np": sin_theta_np,
-        "w_phase": w_phase,
-        "w_epi": w_epi,
-        "w_vf": w_vf,
-        "w_topo": w_topo,
-        "degs": degs,
-        "deg_list": deg_list,
-        "deg_array": deg_array,
-        "edge_src": edge_src,
-        "edge_dst": edge_dst,
-        "A": A,
-        "cache_size": cache_size,
-        "cache": cache,
-        "edge_count": edge_count,
-        "prefer_sparse": prefer_sparse,
-        "dense_override": dense_override,
-    }
+    result.setdefault("neighbor_workspace_np", None)
+    result.setdefault("neighbor_contrib_np", None)
+    if cache is not None and "edge_signature" not in result:
+        result["edge_signature"] = cache.edge_signature
+
+    result["theta_np"] = theta_np
+    result["epi_np"] = epi_np
+    result["vf_np"] = vf_np
+    result["cos_theta_np"] = cos_theta_np
+    result["sin_theta_np"] = sin_theta_np
+    result["deg_array"] = deg_array
+    result["edge_src"] = edge_src
+    result["edge_dst"] = edge_dst
+    result["edge_count"] = edge_count
+    result["prefer_sparse"] = prefer_sparse
+    result["dense_override"] = dense_override
+
+    return result
 
 
 def _apply_dnfr_gradients(
