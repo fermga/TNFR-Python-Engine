@@ -38,7 +38,7 @@ class _CounterState(Generic[K]):
     max_entries: int
 
 
-_RNG_CACHE_MANAGER = CacheManager()
+_RNG_CACHE_MANAGER = CacheManager(default_capacity=_DEFAULT_CACHE_MAXSIZE)
 
 
 
@@ -47,41 +47,58 @@ class _SeedHashCache(MutableMapping[tuple[int, int], int]):
 
     def __init__(
         self,
-        maxsize: int,
         *,
         manager: CacheManager | None = None,
         state_key: str = "seed_hash_cache",
+        default_maxsize: int = _DEFAULT_CACHE_MAXSIZE,
     ) -> None:
         self._manager = manager or _RNG_CACHE_MANAGER
         self._state_key = state_key
-        initial_size = int(maxsize)
+        self._default_maxsize = int(default_maxsize)
+        if not self._manager.has_override(self._state_key):
+            self._manager.configure(
+                overrides={self._state_key: self._default_maxsize}
+            )
         self._manager.register(
             self._state_key,
-            lambda: self._create_state(initial_size),
+            self._create_state,
             reset=self._reset_state,
         )
 
-    def _create_state(self, maxsize: int) -> _SeedCacheState:
-        if maxsize <= 0:
+    def _resolved_size(self, requested: int | None = None) -> int:
+        size = self._manager.get_capacity(
+            self._state_key,
+            requested=requested,
+            fallback=self._default_maxsize,
+        )
+        if size is None:
+            return 0
+        return int(size)
+
+    def _create_state(self) -> _SeedCacheState:
+        size = self._resolved_size()
+        if size <= 0:
             return _SeedCacheState(cache=None, maxsize=0)
-        return _SeedCacheState(cache=LRUCache(maxsize=maxsize), maxsize=maxsize)
+        return _SeedCacheState(cache=LRUCache(maxsize=size), maxsize=size)
 
     def _reset_state(self, state: _SeedCacheState | None) -> _SeedCacheState:
-        size = state.maxsize if isinstance(state, _SeedCacheState) else 0
-        return self._create_state(size)
+        return self._create_state()
 
     def _get_state(self, *, create: bool = True) -> _SeedCacheState | None:
         state = self._manager.get(self._state_key, create=create)
         if state is None:
             return None
         if not isinstance(state, _SeedCacheState):
-            state = self._create_state(0)
+            state = self._create_state()
             self._manager.store(self._state_key, state)
         return state
 
     def configure(self, maxsize: int) -> None:
         size = int(maxsize)
-        self._manager.update(self._state_key, lambda _: self._create_state(size))
+        if size < 0:
+            raise ValueError("maxsize must be non-negative")
+        self._manager.configure(overrides={self._state_key: size})
+        self._manager.update(self._state_key, lambda _: self._create_state())
 
     def __getitem__(self, key: tuple[int, int]) -> int:
         state = self._get_state()
@@ -139,30 +156,48 @@ class ScopedCounterCache(Generic[K]):
     def __init__(
         self,
         name: str,
-        max_entries: int,
+        max_entries: int | None = None,
         *,
         manager: CacheManager | None = None,
+        default_max_entries: int = _DEFAULT_CACHE_MAXSIZE,
     ) -> None:
-        if max_entries < 0:
-            raise ValueError("max_entries must be non-negative")
         self._name = name
         self._manager = manager or _RNG_CACHE_MANAGER
         self._state_key = f"scoped_counter:{name}"
-        initial_size = int(max_entries)
+        self._default_max_entries = int(default_max_entries)
+        requested = None if max_entries is None else int(max_entries)
+        if requested is not None and requested < 0:
+            raise ValueError("max_entries must be non-negative")
+        if not self._manager.has_override(self._state_key):
+            fallback = requested
+            if fallback is None:
+                fallback = self._default_max_entries
+            self._manager.configure(overrides={self._state_key: fallback})
+        elif requested is not None:
+            self._manager.configure(overrides={self._state_key: requested})
         self._manager.register(
             self._state_key,
-            lambda: self._create_state(initial_size),
+            self._create_state,
             lock_factory=lambda: get_lock(name),
             reset=self._reset_state,
         )
-        self.configure(force=True, max_entries=max_entries)
 
-    def _create_state(self, max_entries: int) -> _CounterState[K]:
-        return _CounterState(cache=LRUCache(maxsize=max_entries), max_entries=max_entries)
+    def _resolved_entries(self, requested: int | None = None) -> int:
+        size = self._manager.get_capacity(
+            self._state_key,
+            requested=requested,
+            fallback=self._default_max_entries,
+        )
+        if size is None:
+            return 0
+        return int(size)
+
+    def _create_state(self) -> _CounterState[K]:
+        size = self._resolved_entries()
+        return _CounterState(cache=LRUCache(maxsize=size), max_entries=size)
 
     def _reset_state(self, state: _CounterState[K] | None) -> _CounterState[K]:
-        size = state.max_entries if isinstance(state, _CounterState) else 0
-        return self._create_state(size)
+        return self._create_state()
 
     def _get_state(self) -> _CounterState[K]:
         state = self._manager.get(self._state_key)
@@ -194,15 +229,25 @@ class ScopedCounterCache(Generic[K]):
     ) -> None:
         """Resize or reset the cache keeping previous settings."""
 
-        size = self.max_entries if max_entries is None else int(max_entries)
-        if size < 0:
-            raise ValueError("max_entries must be non-negative")
+        if max_entries is None:
+            size = self._resolved_entries()
+            update_policy = False
+        else:
+            size = int(max_entries)
+            if size < 0:
+                raise ValueError("max_entries must be non-negative")
+            update_policy = True
 
         def _update(state: _CounterState[K] | None) -> _CounterState[K]:
             if not isinstance(state, _CounterState) or force or state.max_entries != size:
-                return self._create_state(size)
+                return _CounterState(
+                    cache=LRUCache(maxsize=size),
+                    max_entries=size,
+                )
             return cast(_CounterState[K], state)
 
+        if update_policy:
+            self._manager.configure(overrides={self._state_key: size})
         self._manager.update(self._state_key, _update)
 
     def clear(self) -> None:
@@ -229,13 +274,10 @@ class ScopedCounterCache(Generic[K]):
 
     def __len__(self) -> int:
         return len(self.cache)
-_seed_hash_cache = _SeedHashCache(_CACHE_MAXSIZE)
+_seed_hash_cache = _SeedHashCache()
 
 
-@cached(cache=_seed_hash_cache, lock=_RNG_LOCK)
-def seed_hash(seed_int: int, key_int: int) -> int:
-    """Return a 64-bit hash derived from ``seed_int`` and ``key_int``."""
-
+def _compute_seed_hash(seed_int: int, key_int: int) -> int:
     seed_bytes = struct.pack(
         ">QQ",
         seed_int & MASK64,
@@ -246,6 +288,23 @@ def seed_hash(seed_int: int, key_int: int) -> int:
     )
 
 
+@cached(cache=_seed_hash_cache, lock=_RNG_LOCK)
+def _cached_seed_hash(seed_int: int, key_int: int) -> int:
+    return _compute_seed_hash(seed_int, key_int)
+
+
+def seed_hash(seed_int: int, key_int: int) -> int:
+    """Return a 64-bit hash derived from ``seed_int`` and ``key_int``."""
+
+    if _CACHE_MAXSIZE <= 0 or not _seed_hash_cache.enabled:
+        return _compute_seed_hash(seed_int, key_int)
+    return _cached_seed_hash(seed_int, key_int)
+
+
+seed_hash.cache_clear = _cached_seed_hash.cache_clear  # type: ignore[attr-defined]
+seed_hash.cache = _seed_hash_cache  # type: ignore[attr-defined]
+
+
 def _sync_cache_size(G: Any | None) -> None:
     """Synchronise cache size with ``G`` when needed."""
 
@@ -254,9 +313,9 @@ def _sync_cache_size(G: Any | None) -> None:
         return
     size = get_cache_maxsize(G)
     with _RNG_LOCK:
-        if size != _CACHE_MAXSIZE:
+        if size != _seed_hash_cache.maxsize:
             _seed_hash_cache.configure(size)
-            _CACHE_MAXSIZE = size
+            _CACHE_MAXSIZE = _seed_hash_cache.maxsize
 
 
 def make_rng(seed: int, key: int, G: Any | None = None) -> random.Random:
@@ -273,7 +332,7 @@ def make_rng(seed: int, key: int, G: Any | None = None) -> random.Random:
 
 def clear_rng_cache() -> None:
     """Clear cached seed hashes."""
-    if _CACHE_MAXSIZE <= 0 or not _seed_hash_cache.enabled:
+    if _seed_hash_cache.maxsize <= 0 or not _seed_hash_cache.enabled:
         return
     seed_hash.cache_clear()
 
@@ -292,9 +351,9 @@ def cache_enabled(G: Any | None = None) -> bool:
     # Only synchronise the cache size with ``G`` when caching is enabled.  This
     # preserves explicit calls to :func:`set_cache_maxsize(0)` which are used in
     # tests to temporarily disable caching regardless of graph defaults.
-    if _CACHE_MAXSIZE > 0:
+    if _seed_hash_cache.maxsize > 0:
         _sync_cache_size(G)
-    return _CACHE_MAXSIZE > 0
+    return _seed_hash_cache.maxsize > 0
 
 
 def base_seed(G: Any) -> int:
@@ -323,7 +382,7 @@ def set_cache_maxsize(size: int) -> None:
         raise ValueError("size must be non-negative")
     with _RNG_LOCK:
         _seed_hash_cache.configure(new_size)
-        _CACHE_MAXSIZE = new_size
+        _CACHE_MAXSIZE = _seed_hash_cache.maxsize
     _CACHE_LOCKED = new_size != _DEFAULT_CACHE_MAXSIZE
 
 

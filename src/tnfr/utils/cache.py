@@ -12,7 +12,7 @@ from __future__ import annotations
 import hashlib
 import threading
 from collections import defaultdict
-from collections.abc import Callable, Hashable, Iterable
+from collections.abc import Callable, Hashable, Iterable, Mapping
 from contextlib import contextmanager
 from functools import lru_cache
 from dataclasses import dataclass
@@ -21,7 +21,7 @@ from typing import Any, TypeVar
 from cachetools import LRUCache
 import networkx as nx  # type: ignore[import-untyped]
 
-from ..cache import CacheManager
+from ..cache import CacheCapacityConfig, CacheManager
 from .graph import get_graph, mark_dnfr_prep_dirty
 from .init import get_logger, get_numpy
 from .io import json_dumps
@@ -44,6 +44,7 @@ __all__ = (
     "increment_graph_version",
     "node_set_checksum",
     "stable_json",
+    "configure_graph_cache_limits",
 )
 
 # Key used to store the node set checksum in a graph's ``graph`` attribute.
@@ -384,14 +385,42 @@ class EdgeCacheState:
 
 
 _GRAPH_CACHE_MANAGER_KEY = "_tnfr_cache_manager"
+_GRAPH_CACHE_CONFIG_KEY = "_tnfr_cache_config"
 
 
 def _graph_cache_manager(graph: Any) -> CacheManager:
     manager = graph.get(_GRAPH_CACHE_MANAGER_KEY)
     if not isinstance(manager, CacheManager):
-        manager = CacheManager()
+        manager = CacheManager(default_capacity=128)
         graph[_GRAPH_CACHE_MANAGER_KEY] = manager
+    config = graph.get(_GRAPH_CACHE_CONFIG_KEY)
+    if isinstance(config, dict):
+        manager.configure_from_mapping(config)
     return manager
+
+
+def configure_graph_cache_limits(
+    G: Any,
+    *,
+    default_capacity: int | None | object = CacheManager._MISSING,
+    overrides: Mapping[str, int | None] | None = None,
+    replace_overrides: bool = False,
+) -> CacheCapacityConfig:
+    """Update cache capacity policy stored on ``G.graph``."""
+
+    graph = get_graph(G)
+    manager = _graph_cache_manager(graph)
+    manager.configure(
+        default_capacity=default_capacity,
+        overrides=overrides,
+        replace_overrides=replace_overrides,
+    )
+    snapshot = manager.export_config()
+    graph[_GRAPH_CACHE_CONFIG_KEY] = {
+        "default_capacity": snapshot.default_capacity,
+        "overrides": dict(snapshot.overrides),
+    }
+    return snapshot
 
 
 class EdgeCacheManager:
@@ -411,6 +440,17 @@ class EdgeCacheManager:
     def _default_state(self) -> EdgeCacheState:
         return self._build_state(None)
 
+    def resolve_max_entries(self, max_entries: int | None | object) -> int | None:
+        """Return effective capacity for the edge cache."""
+
+        if max_entries is CacheManager._MISSING:
+            return self._manager.get_capacity(self._STATE_KEY)
+        return self._manager.get_capacity(
+            self._STATE_KEY,
+            requested=None if max_entries is None else int(max_entries),
+            use_default=False,
+        )
+
     def _build_state(self, max_entries: int | None) -> EdgeCacheState:
         locks: defaultdict[Hashable, threading.RLock] = defaultdict(threading.RLock)
         if max_entries is None:
@@ -420,12 +460,11 @@ class EdgeCacheManager:
         return EdgeCacheState(cache=cache, locks=locks, max_entries=max_entries)
 
     def _ensure_state(
-        self, state: EdgeCacheState | None, max_entries: int | None
+        self, state: EdgeCacheState | None, max_entries: int | None | object
     ) -> EdgeCacheState:
-        if max_entries is None:
-            target = None
-        else:
-            target = int(max_entries)
+        target = self.resolve_max_entries(max_entries)
+        if target is not None:
+            target = int(target)
             if target < 0:
                 raise ValueError("max_entries must be non-negative or None")
         if not isinstance(state, EdgeCacheState) or state.max_entries != target:
@@ -443,7 +482,7 @@ class EdgeCacheManager:
 
     def get_cache(
         self,
-        max_entries: int | None,
+        max_entries: int | None | object,
         *,
         create: bool = True,
     ) -> tuple[
@@ -477,16 +516,9 @@ def edge_version_cache(
     key: Hashable,
     builder: Callable[[], T],
     *,
-    max_entries: int | None = 128,
+    max_entries: int | None | object = CacheManager._MISSING,
 ) -> T:
     """Return cached ``builder`` output tied to the edge version of ``G``."""
-
-    if max_entries is not None:
-        max_entries = int(max_entries)
-        if max_entries < 0:
-            raise ValueError("max_entries must be non-negative or None")
-    if max_entries is not None and max_entries == 0:
-        return builder()
 
     graph = get_graph(G)
     manager = graph.get("_edge_cache_manager")  # type: ignore[assignment]
@@ -494,7 +526,11 @@ def edge_version_cache(
         manager = EdgeCacheManager(graph)
         graph["_edge_cache_manager"] = manager
 
-    cache, locks = manager.get_cache(max_entries)
+    resolved = manager.resolve_max_entries(max_entries)
+    if resolved == 0:
+        return builder()
+
+    cache, locks = manager.get_cache(resolved)
     edge_version = get_graph_version(graph, "_edge_version")
     lock = locks[key]
 
