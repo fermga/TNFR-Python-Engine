@@ -57,6 +57,10 @@ def _setup_graph():
     return G
 
 
+def _collect_dnfr(G):
+    return [float(G.nodes[n].get(DNFR_PRIMARY, 0.0)) for n in G.nodes]
+
+
 @pytest.mark.parametrize("vectorized", [False, True])
 def test_cache_invalidated_on_graph_change(vectorized):
     if vectorized:
@@ -94,6 +98,96 @@ def test_cache_is_per_graph():
     nodes1, _ = cached_nodes_and_A(G1)
     nodes2, _ = cached_nodes_and_A(G2)
     assert nodes1 is not nodes2
+
+
+@pytest.mark.parametrize("vectorized", [False, True])
+def test_neighbor_sum_buffers_reused_and_results_stable(vectorized):
+    if vectorized:
+        pytest.importorskip("numpy")
+
+    G = nx.path_graph(5)
+    for idx, node in enumerate(G.nodes):
+        G.nodes[node][THETA_PRIMARY] = 0.15 * (idx + 1)
+        G.nodes[node][EPI_PRIMARY] = 0.05 * (idx + 2)
+        G.nodes[node][VF_PRIMARY] = 0.08 * (idx + 3)
+    G.graph["DNFR_WEIGHTS"] = {
+        "phase": 0.4,
+        "epi": 0.3,
+        "vf": 0.2,
+        "topo": 0.1,
+    }
+    G.graph["vectorized_dnfr"] = vectorized
+
+    default_compute_delta_nfr(G)
+    first = _collect_dnfr(G)
+    cache = G.graph.get("_dnfr_prep_cache")
+    assert cache is not None
+
+    list_buffers = (
+        cache.neighbor_x,
+        cache.neighbor_y,
+        cache.neighbor_epi_sum,
+        cache.neighbor_vf_sum,
+        cache.neighbor_count,
+        cache.neighbor_deg_sum,
+    )
+    for buf in list_buffers[:-1]:
+        assert isinstance(buf, list)
+        assert len(buf) == len(G)
+    if list_buffers[-1] is not None:
+        assert len(list_buffers[-1]) == len(G)
+
+    if vectorized:
+        arr_buffers = (
+            cache.neighbor_x_np,
+            cache.neighbor_y_np,
+            cache.neighbor_epi_sum_np,
+            cache.neighbor_vf_sum_np,
+            cache.neighbor_count_np,
+            cache.neighbor_deg_sum_np,
+        )
+        for arr in arr_buffers[:-1]:
+            assert arr is not None
+            assert arr.shape == (len(G),)
+        if arr_buffers[-1] is not None:
+            assert arr_buffers[-1].shape == (len(G),)
+    else:
+        assert cache.neighbor_x_np is None
+        assert cache.neighbor_y_np is None
+
+    # Corrupt buffers to ensure they are cleaned instead of recreated.
+    for buf in list_buffers:
+        if buf is not None and buf:
+            buf[0] = 999.0
+    if vectorized:
+        for arr in arr_buffers:
+            if arr is not None and arr.size:
+                arr.fill(777.0)
+
+    default_compute_delta_nfr(G)
+    second = _collect_dnfr(G)
+
+    assert second == pytest.approx(first)
+    assert cache.neighbor_x is list_buffers[0]
+    assert cache.neighbor_y is list_buffers[1]
+    assert cache.neighbor_epi_sum is list_buffers[2]
+    assert cache.neighbor_vf_sum is list_buffers[3]
+    assert cache.neighbor_count is list_buffers[4]
+    if list_buffers[5] is not None:
+        assert cache.neighbor_deg_sum is list_buffers[5]
+    if vectorized:
+        assert cache.neighbor_x_np is arr_buffers[0]
+        assert cache.neighbor_y_np is arr_buffers[1]
+        assert cache.neighbor_epi_sum_np is arr_buffers[2]
+        assert cache.neighbor_vf_sum_np is arr_buffers[3]
+        assert cache.neighbor_count_np is arr_buffers[4]
+        if arr_buffers[5] is not None:
+            assert cache.neighbor_deg_sum_np is arr_buffers[5]
+
+    # Los resultados deben permanecer invariantes tras recomputar.
+    for before, after in zip(first, second):
+        assert math.isfinite(after)
+        assert before == pytest.approx(after)
 
 
 def test_cache_invalidated_on_node_rename():
