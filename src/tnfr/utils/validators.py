@@ -9,8 +9,6 @@ from ..alias import get_attr
 from ..config.constants import GLYPHS_CANONICAL_SET
 from ..constants import get_aliases, get_param
 from ..helpers.numeric import within_range
-from ..sense import sigma_vector_from_graph
-
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 
@@ -42,6 +40,8 @@ def _require_attr(data, alias, node, name):
 
 
 def _validate_sigma(G) -> None:
+    from ..sense import sigma_vector_from_graph
+
     sv = sigma_vector_from_graph(G)
     if sv.get("mag", 0.0) > 1.0 + sys.float_info.epsilon:
         raise ValueError("σ norm exceeds 1")
