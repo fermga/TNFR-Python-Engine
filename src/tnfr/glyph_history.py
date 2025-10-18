@@ -9,7 +9,8 @@ from collections.abc import Iterable, Mapping
 from functools import lru_cache
 
 from .constants import get_param
-from .utils import ensure_collection, get_logger
+from .utils.data import ensure_collection
+from .utils.init import get_logger
 
 logger = get_logger(__name__)
 

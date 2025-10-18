@@ -7,8 +7,20 @@ cache invalidation.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Any, Callable
 
+from ..utils.cache import (
+    EdgeCacheManager,
+    cached_node_list,
+    cached_nodes_and_A,
+    edge_version_cache,
+    edge_version_update,
+    ensure_node_index_map,
+    ensure_node_offset_map,
+    increment_edge_version,
+    node_set_checksum,
+    stable_json,
+)
 from ..utils.graph import get_graph, get_graph_mapping, mark_dnfr_prep_dirty
 from .numeric import (
     angle_diff,
@@ -16,36 +28,6 @@ from .numeric import (
     clamp01,
     kahan_sum_nd,
 )
-
-if TYPE_CHECKING:  # pragma: no cover - import only for static analysis
-    from ..utils import (
-        EdgeCacheManager,
-        cached_node_list,
-        cached_nodes_and_A,
-        edge_version_cache,
-        edge_version_update,
-        ensure_node_index_map,
-        ensure_node_offset_map,
-        increment_edge_version,
-        node_set_checksum,
-        stable_json,
-    )
-
-
-def __getattr__(name: str):
-    if name in _CACHE_EXPORTS:
-        from .. import utils as _utils
-
-        value = getattr(_utils, name)
-        globals()[name] = value
-        return value
-    if name in _GLYPH_HISTORY_EXPORTS:
-        from .. import glyph_history as _glyph_history
-
-        value = getattr(_glyph_history, name)
-        globals()[name] = value
-        return value
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 __all__ = (
     "EdgeCacheManager",
@@ -72,22 +54,29 @@ __all__ = (
     "recent_glyph",
 )
 
-_CACHE_EXPORTS = (
-    "EdgeCacheManager",
-    "cached_node_list",
-    "cached_nodes_and_A",
-    "edge_version_cache",
-    "edge_version_update",
-    "ensure_node_index_map",
-    "ensure_node_offset_map",
-    "increment_edge_version",
-    "node_set_checksum",
-    "stable_json",
-)
-_GLYPH_HISTORY_EXPORTS = (
-    "count_glyphs",
-    "ensure_history",
-    "last_glyph",
-    "push_glyph",
-    "recent_glyph",
-)
+
+def _glyph_history_proxy(name: str) -> Callable[..., Any]:
+    """Return a wrapper that delegates to :mod:`tnfr.glyph_history` lazily."""
+
+    target: dict[str, Callable[..., Any] | None] = {"func": None}
+
+    def _call(*args: Any, **kwargs: Any):
+        func = target["func"]
+        if func is None:
+            from .. import glyph_history as _glyph_history
+
+            func = getattr(_glyph_history, name)
+            target["func"] = func
+        return func(*args, **kwargs)
+
+    _call.__name__ = name
+    _call.__qualname__ = name
+    _call.__doc__ = f"Proxy for :func:`tnfr.glyph_history.{name}`."
+    return _call
+
+
+count_glyphs = _glyph_history_proxy("count_glyphs")
+ensure_history = _glyph_history_proxy("ensure_history")
+last_glyph = _glyph_history_proxy("last_glyph")
+push_glyph = _glyph_history_proxy("push_glyph")
+recent_glyph = _glyph_history_proxy("recent_glyph")
