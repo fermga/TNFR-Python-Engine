@@ -1,6 +1,8 @@
 """Pruebas de dnfr precompute."""
 
 import pytest
+from contextlib import contextmanager
+
 import networkx as nx
 
 from tnfr.dynamics import (
@@ -14,6 +16,15 @@ ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
+
+
+@contextmanager
+def numpy_disabled(monkeypatch):
+    import tnfr.dynamics.dnfr as dnfr_module
+
+    with monkeypatch.context() as ctx:
+        ctx.setattr(dnfr_module, "get_numpy", lambda: None)
+        yield
 
 
 def _setup_graph(size: int = 5, factory=nx.path_graph):
@@ -31,17 +42,17 @@ def _setup_graph(size: int = 5, factory=nx.path_graph):
     return G
 
 
-def test_strategies_share_precomputed_data():
-    pytest.importorskip("numpy")
+def test_strategies_share_precomputed_data(monkeypatch):
+    np = pytest.importorskip("numpy")
+    del np
+
     G = _setup_graph()
-    G.graph["vectorized_dnfr"] = True
     data = _prepare_dnfr_data(G)
-    G.graph["vectorized_dnfr"] = False
-    _compute_dnfr(G, data)
+    with numpy_disabled(monkeypatch):
+        _compute_dnfr(G, data)
     dnfr_loop = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     for n in G.nodes:
         set_attr(G.nodes[n], ALIAS_DNFR, 0.0)
-    G.graph["vectorized_dnfr"] = True
     _compute_dnfr(G, data)
     dnfr_vec = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert dnfr_loop == pytest.approx(dnfr_vec)
@@ -50,7 +61,6 @@ def test_strategies_share_precomputed_data():
 def test_prepare_dnfr_numpy_vectors_match_aliases():
     pytest.importorskip("numpy")
     G = _setup_graph()
-    G.graph["vectorized_dnfr"] = True
     data = _prepare_dnfr_data(G)
     A = data.get("A")
     if A is not None:
@@ -95,12 +105,10 @@ def test_numpy_broadcast_fallback_matches_python(factory, size, monkeypatch):
     _compute_dnfr(broadcast, data)
     dnfr_broadcast = collect_attr(broadcast, broadcast.nodes, ALIAS_DNFR, 0.0)
 
-    import tnfr.dynamics.dnfr as dnfr_module
-
-    monkeypatch.setattr(dnfr_module, "get_numpy", lambda: None)
-    python_only = template.copy()
-    data_loop = _prepare_dnfr_data(python_only)
-    _compute_dnfr(python_only, data_loop)
+    with numpy_disabled(monkeypatch):
+        python_only = template.copy()
+        data_loop = _prepare_dnfr_data(python_only)
+        _compute_dnfr(python_only, data_loop)
     dnfr_loop = collect_attr(python_only, python_only.nodes, ALIAS_DNFR, 0.0)
 
     assert dnfr_broadcast == pytest.approx(dnfr_loop, rel=1e-9, abs=1e-9)
