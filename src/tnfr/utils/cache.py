@@ -60,13 +60,25 @@ EDGE_VERSION_CACHE_KEYS = ("_trig_version",)
 class LockAwareLRUCache(LRUCache[Hashable, Any]):
     """``LRUCache`` that drops per-key locks when evicting items."""
 
-    def __init__(self, maxsize: int, locks: dict[Hashable, threading.RLock]):
+    def __init__(
+        self,
+        maxsize: int,
+        locks: dict[Hashable, threading.RLock],
+        *,
+        on_evict: Callable[[Hashable, Any], None] | None = None,
+    ) -> None:
         super().__init__(maxsize)
         self._locks: dict[Hashable, threading.RLock] = locks
+        self._on_evict = on_evict
 
     def popitem(self) -> tuple[Hashable, Any]:  # type: ignore[override]
         key, value = super().popitem()
         self._locks.pop(key, None)
+        if self._on_evict is not None:
+            try:
+                self._on_evict(key, value)
+            except Exception:  # pragma: no cover - defensive logging
+                logger.exception("edge cache eviction callback failed for %r", key)
         return key, value
 
 
@@ -437,6 +449,26 @@ class EdgeCacheManager:
             reset=self._reset_state,
         )
 
+    def record_hit(self) -> None:
+        """Record a cache hit for telemetry."""
+
+        self._manager.increment_hit(self._STATE_KEY)
+
+    def record_miss(self) -> None:
+        """Record a cache miss for telemetry."""
+
+        self._manager.increment_miss(self._STATE_KEY)
+
+    def record_eviction(self) -> None:
+        """Record cache eviction events for telemetry."""
+
+        self._manager.increment_eviction(self._STATE_KEY)
+
+    def timer(self):
+        """Return a timing context linked to this cache."""
+
+        return self._manager.timer(self._STATE_KEY)
+
     def _default_state(self) -> EdgeCacheState:
         return self._build_state(None)
 
@@ -456,7 +488,11 @@ class EdgeCacheManager:
         if max_entries is None:
             cache: dict[Hashable, Any] | LRUCache[Hashable, Any] = {}
         else:
-            cache = LockAwareLRUCache(max_entries, locks)  # type: ignore[arg-type]
+            cache = LockAwareLRUCache(
+                max_entries,
+                locks,
+                on_evict=lambda _key, _value: self.record_eviction(),
+            )  # type: ignore[arg-type]
         return EdgeCacheState(cache=cache, locks=locks, max_entries=max_entries)
 
     def _ensure_state(
@@ -537,17 +573,21 @@ def edge_version_cache(
     with lock:
         entry = cache.get(key)
         if entry is not None and entry[0] == edge_version:
+            manager.record_hit()
             return entry[1]
 
     try:
-        value = builder()
+        with manager.timer():
+            value = builder()
     except (RuntimeError, ValueError) as exc:  # pragma: no cover - logging side effect
         logger.exception("edge_version_cache builder failed for %r: %s", key, exc)
         raise
     else:
+        manager.record_miss()
         with lock:
             entry = cache.get(key)
             if entry is not None and entry[0] == edge_version:
+                manager.record_hit()
                 return entry[1]
             cache[key] = (edge_version, value)
             return value

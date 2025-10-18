@@ -37,6 +37,24 @@ def test_random_jitter_deterministic(graph_canon):
     assert [j3, j4] == [j1, j2]
 
 
+def test_jitter_cache_metrics(graph_canon):
+    reset_jitter_manager()
+    G = graph_canon()
+    G.add_node(0)
+    node = NodoNX(G, 0)
+
+    manager = get_jitter_manager()
+    telemetry = manager.cache.manager
+    before = telemetry.get_metrics("scoped_counter:jitter")
+
+    random_jitter(node, 0.5)
+    random_jitter(node, 0.5)
+
+    after = telemetry.get_metrics("scoped_counter:jitter")
+    assert after.misses - before.misses == 1
+    assert after.hits - before.hits == 1
+
+
 def test_random_jitter_zero_amplitude(graph_canon):
     G = graph_canon()
     G.add_node(0)
