@@ -12,20 +12,25 @@ submodules and third-party packages are required to load each helper.
 The imports are grouped as follows:
 
 ``step`` / ``run``
-    Provided by :mod:`tnfr.dynamics`.  These helpers rely exclusively on
-    internal TNFR modules (``tnfr.operators``, ``tnfr.metrics`` and
-    friends) and do not require additional third-party packages.
+    Provided by :mod:`tnfr.dynamics`.  These helpers rely on the
+    machinery defined within the :mod:`tnfr.dynamics` package (operator
+    orchestration, validation hooks and metrics integration) and do not
+    require additional third-party packages.
 
 ``preparar_red``
-    Defined in :mod:`tnfr.ontosim`.  It configures graphs generated via
-    :mod:`networkx`, but the helper itself only depends on TNFR modules
-    such as :mod:`tnfr.constants`, :mod:`tnfr.dynamics` and
-    :mod:`tnfr.utils`.
+    Defined in :mod:`tnfr.ontosim`.  Besides :mod:`tnfr.ontosim`
+    itself, the helper imports :mod:`tnfr.callback_utils`,
+    :mod:`tnfr.constants`, :mod:`tnfr.dynamics`, :mod:`tnfr.glyph_history`,
+    :mod:`tnfr.initialization` and :mod:`tnfr.utils` to assemble the
+    graph preparation pipeline.  No third-party packages are required at
+    import time.
 
 ``create_nfr`` / ``run_sequence``
-    Re-exported from :mod:`tnfr.structural`.  Both helpers require the
-    ``networkx`` package in addition to TNFR structural utilities
-    (``tnfr.structural``, ``tnfr.validation`` and operator registries).
+    Re-exported from :mod:`tnfr.structural`.  They depend on
+    :mod:`tnfr.structural`, :mod:`tnfr.constants`, :mod:`tnfr.dynamics`,
+    :mod:`tnfr.operators.definitions`, :mod:`tnfr.operators.registry` and
+    :mod:`tnfr.validation`, and additionally require the ``networkx``
+    package.
 
 ``cached_import`` and ``prune_failed_imports`` remain available from
 ``tnfr.utils`` for optional dependency management.
@@ -51,15 +56,37 @@ EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
         "third_party": (),
     },
     "preparar_red": {
-        "submodules": ("tnfr.ontosim",),
+        "submodules": (
+            "tnfr.ontosim",
+            "tnfr.callback_utils",
+            "tnfr.constants",
+            "tnfr.dynamics",
+            "tnfr.glyph_history",
+            "tnfr.initialization",
+            "tnfr.utils",
+        ),
         "third_party": (),
     },
     "create_nfr": {
-        "submodules": ("tnfr.structural",),
+        "submodules": (
+            "tnfr.structural",
+            "tnfr.constants",
+            "tnfr.dynamics",
+            "tnfr.operators.definitions",
+            "tnfr.operators.registry",
+            "tnfr.validation",
+        ),
         "third_party": ("networkx",),
     },
     "run_sequence": {
-        "submodules": ("tnfr.structural",),
+        "submodules": (
+            "tnfr.structural",
+            "tnfr.constants",
+            "tnfr.dynamics",
+            "tnfr.operators.definitions",
+            "tnfr.operators.registry",
+            "tnfr.validation",
+        ),
         "third_party": ("networkx",),
     },
 }
