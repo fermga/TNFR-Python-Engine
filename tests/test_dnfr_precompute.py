@@ -114,7 +114,7 @@ def test_numpy_broadcast_fallback_matches_python(factory, size, monkeypatch):
     assert dnfr_broadcast == pytest.approx(dnfr_loop, rel=1e-9, abs=1e-9)
 
 
-def test_prepare_reuses_neighbor_workspace_vectorized():
+def test_prepare_reuses_neighbor_reduction_buffers_vectorized():
     np = pytest.importorskip("numpy")
     del np
 
@@ -125,13 +125,17 @@ def test_prepare_reuses_neighbor_workspace_vectorized():
     cache = data["cache"]
     assert cache is not None, "Expected ΔNFR cache to be initialised"
 
-    workspace_first = data["neighbor_workspace_np"]
-    assert workspace_first is not None
-    assert cache.neighbor_workspace_np is workspace_first
+    edge_values_first = data["neighbor_edge_values_np"]
+    accum_first = data["neighbor_accum_np"]
+    assert edge_values_first is not None
+    assert accum_first is not None
+    assert cache.neighbor_edge_values_np is edge_values_first
+    assert cache.neighbor_accum_np is accum_first
 
     reused = _prepare_dnfr_data(G)
-    assert reused["neighbor_workspace_np"] is workspace_first
-    assert reused["neighbor_edge_weights_np"] is data["neighbor_edge_weights_np"]
+    assert reused["neighbor_edge_values_np"] is edge_values_first
+    assert reused["neighbor_accum_np"] is accum_first
 
     _compute_dnfr(G, reused)
-    assert reused["neighbor_workspace_np"] is cache.neighbor_workspace_np
+    assert reused["neighbor_edge_values_np"] is cache.neighbor_edge_values_np
+    assert reused["neighbor_accum_np"] is cache.neighbor_accum_np

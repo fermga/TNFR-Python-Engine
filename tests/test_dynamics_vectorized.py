@@ -409,13 +409,18 @@ def test_sparse_graph_prefers_edge_accumulation_and_matches_dnfr(monkeypatch):
     sparse_data = data.copy()
     sparse_data["prefer_sparse"] = True
     sparse_data["A"] = None
-    workspace_ids = set()
+    edge_buffer_ids = set()
+    accum_ids = set()
     for _ in range(loops):
         _build_neighbor_sums_common(G_vector, sparse_data, use_numpy=True)
-        workspace = cache.neighbor_workspace_np
-        if workspace is not None:
-            workspace_ids.add(id(workspace))
-    assert len(workspace_ids) <= 1
+        edge_buffer = cache.neighbor_edge_values_np
+        if edge_buffer is not None:
+            edge_buffer_ids.add(id(edge_buffer))
+        accum = cache.neighbor_accum_np
+        if accum is not None:
+            accum_ids.add(id(accum))
+    assert len(edge_buffer_ids) <= 1
+    assert len(accum_ids) <= 1
     assert cache.deg_array is not None
 
     loop_data = data.copy()
@@ -523,7 +528,7 @@ def test_edge_accumulation_matches_legacy_stack(factory, topo_weight):
 
 
 @pytest.mark.parametrize("topo_weight", [0.0, 0.4])
-def test_edge_accumulation_workspace_cached_and_stable(topo_weight, monkeypatch):
+def test_edge_accumulation_buffers_cached_and_stable(topo_weight, monkeypatch):
     np = pytest.importorskip("numpy")
 
     base = _build_weighted_graph(nx.path_graph, 24, topo_weight)
@@ -545,11 +550,9 @@ def test_edge_accumulation_workspace_cached_and_stable(topo_weight, monkeypatch)
 
     cache = data_vec.get("cache")
     assert cache is not None
-    workspace = cache.neighbor_workspace_np
-    weights = cache.neighbor_edge_weights_np
+    edge_values = cache.neighbor_edge_values_np
     accumulator = cache.neighbor_accum_np
-    assert workspace is not None
-    assert weights is not None
+    assert edge_values is not None
     assert accumulator is not None
 
     with numpy_disabled(monkeypatch):
@@ -609,8 +612,7 @@ def test_edge_accumulation_workspace_cached_and_stable(topo_weight, monkeypatch)
         np=np,
     )
 
-    assert cache.neighbor_workspace_np is workspace
-    assert cache.neighbor_edge_weights_np is weights
+    assert cache.neighbor_edge_values_np is edge_values
     assert cache.neighbor_accum_np is accumulator
 
     for arr, snapshot in zip(result_second[:-1], snapshots):
@@ -772,11 +774,9 @@ def test_broadcast_accumulation_dense_graph_equivalence():
 
     cache = data_vec.get("cache")
     assert cache is not None
-    workspace = cache.neighbor_workspace_np
+    edge_buffer = cache.neighbor_edge_values_np
     signature = cache.neighbor_accum_signature
-    assert isinstance(workspace, np.ndarray)
-    weights = cache.neighbor_edge_weights_np
-    assert isinstance(weights, np.ndarray)
+    assert isinstance(edge_buffer, np.ndarray)
     accumulator = cache.neighbor_accum_np
     assert isinstance(accumulator, np.ndarray)
 
@@ -789,8 +789,7 @@ def test_broadcast_accumulation_dense_graph_equivalence():
     data_vec["A"] = None
     _compute_dnfr(dense_graph, data_vec)
 
-    assert id(cache.neighbor_edge_weights_np) == id(weights)
-    assert id(cache.neighbor_workspace_np) == id(workspace)
+    assert id(cache.neighbor_edge_values_np) == id(edge_buffer)
     assert cache.neighbor_accum_signature == signature
     assert id(cache.neighbor_accum_np) == id(accumulator)
 
@@ -814,7 +813,7 @@ def test_broadcast_accumulation_invalidation_on_edge_change():
     cache = data_vec.get("cache")
     assert cache is not None
     old_signature = cache.neighbor_accum_signature
-    old_weights_shape = cache.neighbor_edge_weights_np.shape
+    old_edge_shape = cache.neighbor_edge_values_np.shape
     old_accum = cache.neighbor_accum_np
     assert isinstance(old_accum, np.ndarray)
 
@@ -828,7 +827,7 @@ def test_broadcast_accumulation_invalidation_on_edge_change():
 
     new_signature = cache.neighbor_accum_signature
     assert new_signature != old_signature
-    assert cache.neighbor_edge_weights_np.shape != old_weights_shape
+    assert cache.neighbor_edge_values_np.shape != old_edge_shape
     assert cache.neighbor_accum_np is not old_accum
 
     loop_graph = base.copy()

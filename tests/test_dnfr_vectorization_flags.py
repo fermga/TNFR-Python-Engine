@@ -33,25 +33,27 @@ def _graph_fixture(size: int = 4) -> nx.Graph:
 def _assert_loop_state(data):
     cache = data.get("cache")
     assert data.get("edge_src") is None
-    assert data.get("neighbor_workspace_np") is None
+    assert data.get("neighbor_edge_values_np") is None
     if cache is not None:
         assert cache.edge_src is None
-        assert cache.neighbor_workspace_np is None
-        assert cache.neighbor_edge_weights_np is None
+        assert cache.neighbor_edge_values_np is None
+        assert cache.neighbor_accum_np is None
 
 
 def _assert_vector_state(data, np):
-    workspace = data.get("neighbor_workspace_np")
-    assert workspace is not None
-    assert isinstance(workspace, np.ndarray)
+    accum = data.get("neighbor_accum_np")
+    assert accum is not None
+    assert isinstance(accum, np.ndarray)
+    assert accum.ndim == 2
     cache = data.get("cache")
     if cache is not None:
-        assert cache.neighbor_workspace_np is workspace
+        assert cache.neighbor_accum_np is accum
         assert cache.edge_src is not None
-        weights = cache.neighbor_edge_weights_np
+        edge_values = cache.neighbor_edge_values_np
+        assert data.get("neighbor_edge_values_np") is edge_values
         if data.get("edge_count", 0):
-            assert isinstance(weights, np.ndarray)
-            assert weights.shape[0] == data["edge_count"]
+            assert isinstance(edge_values, np.ndarray)
+            assert edge_values.shape[0] == data["edge_count"]
 
 
 def test_compute_dnfr_uses_numpy_even_when_graph_disables_vectorization():
@@ -81,14 +83,14 @@ def test_compute_dnfr_reuses_cached_numpy_when_flag_disabled_again():
     data["A"] = None
 
     _compute_dnfr(G, data)
-    cached_workspace = data.get("neighbor_workspace_np")
-    assert cached_workspace is not None
+    cached_accum = data.get("neighbor_accum_np")
+    assert cached_accum is not None
 
     G.graph["vectorized_dnfr"] = False
     _compute_dnfr(G, data)
 
     _assert_vector_state(data, np)
-    assert data.get("neighbor_workspace_np") is cached_workspace
+    assert data.get("neighbor_accum_np") is cached_accum
     dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert all(isinstance(val, float) for val in dnfr_values)
 
