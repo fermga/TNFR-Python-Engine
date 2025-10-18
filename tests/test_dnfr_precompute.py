@@ -36,11 +36,13 @@ def test_strategies_share_precomputed_data():
     G = _setup_graph()
     G.graph["vectorized_dnfr"] = True
     data = _prepare_dnfr_data(G)
-    _compute_dnfr(G, data, use_numpy=False)
+    G.graph["vectorized_dnfr"] = False
+    _compute_dnfr(G, data)
     dnfr_loop = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     for n in G.nodes:
         set_attr(G.nodes[n], ALIAS_DNFR, 0.0)
-    _compute_dnfr(G, data, use_numpy=True)
+    G.graph["vectorized_dnfr"] = True
+    _compute_dnfr(G, data)
     dnfr_vec = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert dnfr_loop == pytest.approx(dnfr_vec)
 
@@ -71,7 +73,7 @@ def test_prepare_dnfr_numpy_vectors_match_aliases():
     assert data["deg_array"].tolist() == pytest.approx(deg_expected)
 
     # Ensure we can reuse the prepared data for the vectorised computation
-    _compute_dnfr(G, data, use_numpy=True)
+    _compute_dnfr(G, data)
     dnfr_vec = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert all(isinstance(val, float) for val in dnfr_vec)
 
@@ -90,7 +92,7 @@ def test_numpy_broadcast_fallback_matches_python(factory, size, monkeypatch):
     template = _setup_graph(size=size, factory=factory)
     broadcast = template.copy()
     data = _prepare_dnfr_data(broadcast)
-    _compute_dnfr(broadcast, data, use_numpy=False)
+    _compute_dnfr(broadcast, data)
     dnfr_broadcast = collect_attr(broadcast, broadcast.nodes, ALIAS_DNFR, 0.0)
 
     import tnfr.dynamics.dnfr as dnfr_module
@@ -98,7 +100,7 @@ def test_numpy_broadcast_fallback_matches_python(factory, size, monkeypatch):
     monkeypatch.setattr(dnfr_module, "get_numpy", lambda: None)
     python_only = template.copy()
     data_loop = _prepare_dnfr_data(python_only)
-    _compute_dnfr(python_only, data_loop, use_numpy=False)
+    _compute_dnfr(python_only, data_loop)
     dnfr_loop = collect_attr(python_only, python_only.nodes, ALIAS_DNFR, 0.0)
 
     assert dnfr_broadcast == pytest.approx(dnfr_loop, rel=1e-9, abs=1e-9)

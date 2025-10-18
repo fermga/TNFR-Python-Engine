@@ -98,6 +98,47 @@ class DnfrCache:
     neighbor_workspace_np: Any | None = None
 
 
+_NUMPY_CACHE_ATTRS = (
+    "theta_np",
+    "epi_np",
+    "vf_np",
+    "cos_theta_np",
+    "sin_theta_np",
+    "deg_array",
+    "neighbor_x_np",
+    "neighbor_y_np",
+    "neighbor_epi_sum_np",
+    "neighbor_vf_sum_np",
+    "neighbor_count_np",
+    "neighbor_deg_sum_np",
+    "neighbor_contrib_np",
+    "neighbor_workspace_np",
+    "dense_components_np",
+    "dense_accum_np",
+    "dense_degree_np",
+)
+
+def _is_numpy_like(obj) -> bool:
+    return getattr(obj, "dtype", None) is not None and getattr(obj, "shape", None) is not None
+
+
+def _has_cached_numpy_buffers(data: dict, cache: DnfrCache | None) -> bool:
+    for attr in _NUMPY_CACHE_ATTRS:
+        arr = data.get(attr)
+        if _is_numpy_like(arr):
+            return True
+    if cache is not None:
+        for attr in _NUMPY_CACHE_ATTRS:
+            arr = getattr(cache, attr, None)
+            if _is_numpy_like(arr):
+                return True
+    A = data.get("A")
+    if _is_numpy_like(A):
+        return True
+    return False
+
+
+
 __all__ = (
     "default_compute_delta_nfr",
     "set_delta_nfr_hook",
@@ -1144,13 +1185,24 @@ def _accumulate_neighbors_numpy(
 def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
     np = get_numpy()
     nodes = data["nodes"]
-    w_topo = data["w_topo"]
-    if use_numpy and np is not None and nodes:
+    if not nodes:
+        if np is not None and use_numpy:
+            return _init_neighbor_sums(data, np=np)
+        return _init_neighbor_sums(data)
+
+    vector_flag = np is not None and (
+        use_numpy or G.graph.get("vectorized_dnfr") is not False
+    )
+    if vector_flag:
         x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(
             data, np=np
         )
         A = data.get("A")
-        if A is not None and getattr(A, "shape", (None, None))[0] == len(nodes):
+        if (
+            A is not None
+            and getattr(A, "shape", (None, None))[0] == len(nodes)
+            and getattr(A, "shape", (None, None))[1] == len(nodes)
+        ):
             return _accumulate_neighbors_dense(
                 G,
                 data,
@@ -1173,140 +1225,406 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
             deg_sum=deg_sum,
             np=np,
         )
+
+    x, y, epi_sum, vf_sum, count, deg_sum, degs_list = _init_neighbor_sums(data)
+    idx = data["idx"]
+    epi = data["epi"]
+    vf = data["vf"]
+    cos_th = data["cos_theta"]
+    sin_th = data["sin_theta"]
+    deg_list = data.get("deg_list")
+    for i, node in enumerate(nodes):
+        deg_i = degs_list[i] if degs_list is not None else 0.0
+        x_i = x[i]
+        y_i = y[i]
+        epi_i = epi_sum[i]
+        vf_i = vf_sum[i]
+        count_i = count[i]
+        deg_acc = deg_sum[i] if deg_sum is not None else 0.0
+        for v in G.neighbors(node):
+            j = idx[v]
+            cos_j = cos_th[j]
+            sin_j = sin_th[j]
+            epi_j = epi[j]
+            vf_j = vf[j]
+            x_i += cos_j
+            y_i += sin_j
+            epi_i += epi_j
+            vf_i += vf_j
+            count_i += 1
+            if deg_sum is not None:
+                deg_acc += deg_list[j] if deg_list is not None else deg_i
+        x[i] = x_i
+        y[i] = y_i
+        epi_sum[i] = epi_i
+        vf_sum[i] = vf_i
+        count[i] = count_i
+        if deg_sum is not None:
+            deg_sum[i] = deg_acc
+    return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
+
+def _compute_dnfr_common(
+    G,
+    data,
+    *,
+    x,
+    y,
+    epi_sum,
+    vf_sum,
+    count,
+    deg_sum=None,
+    degs=None,
+):
+    """Compute neighbour means and apply ΔNFR gradients."""
+    np_module = get_numpy()
+    if np_module is not None and isinstance(count, getattr(np_module, "ndarray", tuple)):
+        np_arg = np_module
     else:
-        x, y, epi_sum, vf_sum, count, deg_sum, degs_list = _init_neighbor_sums(
-            data
+        np_arg = None
+    th_bar, epi_bar, vf_bar, deg_bar = _compute_neighbor_means(
+        G,
+        data,
+        x=x,
+        y=y,
+        epi_sum=epi_sum,
+        vf_sum=vf_sum,
+        count=count,
+        deg_sum=deg_sum,
+        degs=degs,
+        np=np_arg,
+    )
+    _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
+
+
+def _reset_numpy_buffer(buffer, size, np):
+    if buffer is None or getattr(buffer, "shape", None) is None or buffer.shape[0] != size:
+        return np.zeros(size, dtype=float)
+    buffer.fill(0.0)
+    return buffer
+
+
+def _init_neighbor_sums(data, *, np=None):
+    """Initialise containers for neighbour sums."""
+    nodes = data["nodes"]
+    n = len(nodes)
+    w_topo = data["w_topo"]
+    cache: DnfrCache | None = data.get("cache")
+
+    def _reset_list(buffer, value=0.0):
+        if buffer is None or len(buffer) != n:
+            return [value] * n
+        for i in range(n):
+            buffer[i] = value
+        return buffer
+
+    if np is not None:
+        if cache is not None:
+            x = cache.neighbor_x_np
+            y = cache.neighbor_y_np
+            epi_sum = cache.neighbor_epi_sum_np
+            vf_sum = cache.neighbor_vf_sum_np
+            count = cache.neighbor_count_np
+            x = _reset_numpy_buffer(x, n, np)
+            y = _reset_numpy_buffer(y, n, np)
+            epi_sum = _reset_numpy_buffer(epi_sum, n, np)
+            vf_sum = _reset_numpy_buffer(vf_sum, n, np)
+            count = _reset_numpy_buffer(count, n, np)
+            cache.neighbor_x_np = x
+            cache.neighbor_y_np = y
+            cache.neighbor_epi_sum_np = epi_sum
+            cache.neighbor_vf_sum_np = vf_sum
+            cache.neighbor_count_np = count
+            cache.neighbor_x = _reset_list(cache.neighbor_x)
+            cache.neighbor_y = _reset_list(cache.neighbor_y)
+            cache.neighbor_epi_sum = _reset_list(cache.neighbor_epi_sum)
+            cache.neighbor_vf_sum = _reset_list(cache.neighbor_vf_sum)
+            cache.neighbor_count = _reset_list(cache.neighbor_count)
+            if w_topo != 0.0:
+                deg_sum = _reset_numpy_buffer(cache.neighbor_deg_sum_np, n, np)
+                cache.neighbor_deg_sum_np = deg_sum
+                cache.neighbor_deg_sum = _reset_list(cache.neighbor_deg_sum)
+            else:
+                cache.neighbor_deg_sum_np = None
+                cache.neighbor_deg_sum = None
+                deg_sum = None
+        else:
+            x = np.zeros(n, dtype=float)
+            y = np.zeros(n, dtype=float)
+            epi_sum = np.zeros(n, dtype=float)
+            vf_sum = np.zeros(n, dtype=float)
+            count = np.zeros(n, dtype=float)
+            deg_sum = np.zeros(n, dtype=float) if w_topo != 0.0 else None
+        degs = None
+    else:
+        if cache is not None:
+            x = _reset_list(cache.neighbor_x)
+            y = _reset_list(cache.neighbor_y)
+            epi_sum = _reset_list(cache.neighbor_epi_sum)
+            vf_sum = _reset_list(cache.neighbor_vf_sum)
+            count = _reset_list(cache.neighbor_count)
+            cache.neighbor_x = x
+            cache.neighbor_y = y
+            cache.neighbor_epi_sum = epi_sum
+            cache.neighbor_vf_sum = vf_sum
+            cache.neighbor_count = count
+            if w_topo != 0.0:
+                deg_sum = _reset_list(cache.neighbor_deg_sum)
+                cache.neighbor_deg_sum = deg_sum
+            else:
+                cache.neighbor_deg_sum = None
+                deg_sum = None
+        else:
+            x = [0.0] * n
+            y = [0.0] * n
+            epi_sum = [0.0] * n
+            vf_sum = [0.0] * n
+            count = [0.0] * n
+            deg_sum = [0.0] * n if w_topo != 0.0 else None
+        deg_list = data.get("deg_list")
+        if w_topo != 0.0 and deg_list is not None:
+            degs = deg_list
+        else:
+            degs = None
+    return x, y, epi_sum, vf_sum, count, deg_sum, degs
+
+
+def _prefer_sparse_accumulation(n: int, edge_count: int | None) -> bool:
+    """Return ``True`` when neighbour sums should use edge accumulation."""
+
+    if n <= 1 or not edge_count:
+        return False
+    possible_edges = n * (n - 1)
+    if possible_edges <= 0:
+        return False
+    density = edge_count / possible_edges
+    return density <= _SPARSE_DENSITY_THRESHOLD
+
+
+def _accumulate_neighbors_dense(
+    G,
+    data,
+    *,
+    x,
+    y,
+    epi_sum,
+    vf_sum,
+    count,
+    deg_sum,
+    np,
+):
+    """Vectorised neighbour accumulation using a dense adjacency matrix."""
+
+    nodes = data["nodes"]
+    if not nodes:
+        return x, y, epi_sum, vf_sum, count, deg_sum, None
+
+    A = data.get("A")
+    if A is None:
+        return _accumulate_neighbors_numpy(
+            G,
+            data,
+            x=x,
+            y=y,
+            epi_sum=epi_sum,
+            vf_sum=vf_sum,
+            count=count,
+            deg_sum=deg_sum,
+            np=np,
         )
-        if not nodes:
-            return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
 
-        if np is not None:
-            cache: DnfrCache | None = data.get("cache")
-            edge_src = data.get("edge_src")
-            edge_dst = data.get("edge_dst")
-            if edge_src is None or edge_dst is None:
-                edge_src, edge_dst = _build_edge_index_arrays(
-                    G, nodes, data["idx"], np
-                )
-                data["edge_src"] = edge_src
-                data["edge_dst"] = edge_dst
-                if cache is not None:
-                    cache.edge_src = edge_src
-                    cache.edge_dst = edge_dst
+    cache: DnfrCache | None = data.get("cache")
+    n = len(nodes)
 
-            if edge_src is not None and edge_dst is not None:
-                edge_src = np.asarray(edge_src, dtype=np.intp)
-                edge_dst = np.asarray(edge_dst, dtype=np.intp)
+    vectors = []
+    for key_np, key_src in (
+        ("cos_theta_np", "cos_theta"),
+        ("sin_theta_np", "sin_theta"),
+        ("epi_np", "epi"),
+        ("vf_np", "vf"),
+    ):
+        arr = data.get(key_np)
+        if arr is None:
+            arr = np.array(data[key_src], dtype=float)
+            data[key_np] = arr
+            if cache is not None:
+                setattr(cache, key_np, arr)
+        vectors.append(arr)
 
-                cos_th = data.get("cos_theta_np")
-                sin_th = data.get("sin_theta_np")
-                epi = data.get("epi_np")
-                vf = data.get("vf_np")
-                if cos_th is None or sin_th is None or epi is None or vf is None:
-                    cos_th = np.asarray(data["cos_theta"], dtype=float)
-                    sin_th = np.asarray(data["sin_theta"], dtype=float)
-                    epi = np.asarray(data["epi"], dtype=float)
-                    vf = np.asarray(data["vf"], dtype=float)
-                    data["cos_theta_np"] = cos_th
-                    data["sin_theta_np"] = sin_th
-                    data["epi_np"] = epi
-                    data["vf_np"] = vf
-                    if cache is not None:
-                        cache.cos_theta_np = cos_th
-                        cache.sin_theta_np = sin_th
-                        cache.epi_np = epi
-                        cache.vf_np = vf
+    components = _ensure_cached_array(cache, "dense_components_np", (n, 4), np)
+    for col, src_vec in enumerate(vectors):
+        np.copyto(components[:, col], src_vec, casting="unsafe")
 
-                if edge_src.size:
-                    counts = np.bincount(
-                        edge_src, minlength=len(nodes)
-                    ).astype(float, copy=False)
-                    cos_vals = np.take(cos_th, edge_dst)
-                    sin_vals = np.take(sin_th, edge_dst)
-                    epi_vals = np.take(epi, edge_dst)
-                    vf_vals = np.take(vf, edge_dst)
-                    cos_acc = np.bincount(
-                        edge_src, weights=cos_vals, minlength=len(nodes)
-                    )
-                    sin_acc = np.bincount(
-                        edge_src, weights=sin_vals, minlength=len(nodes)
-                    )
-                    epi_acc = np.bincount(
-                        edge_src, weights=epi_vals, minlength=len(nodes)
-                    )
-                    vf_acc = np.bincount(
-                        edge_src, weights=vf_vals, minlength=len(nodes)
-                    )
-                else:
-                    counts = np.zeros(len(nodes), dtype=float)
-                    cos_acc = np.zeros(len(nodes), dtype=float)
-                    sin_acc = np.zeros(len(nodes), dtype=float)
-                    epi_acc = np.zeros(len(nodes), dtype=float)
-                    vf_acc = np.zeros(len(nodes), dtype=float)
+    accum = _ensure_cached_array(cache, "dense_accum_np", (n, 4), np)
+    np.matmul(A, components, out=accum)
 
-                x[:] = cos_acc.tolist()
-                y[:] = sin_acc.tolist()
-                epi_sum[:] = epi_acc.tolist()
-                vf_sum[:] = vf_acc.tolist()
-                count[:] = counts.tolist()
+    np.copyto(x, accum[:, 0], casting="unsafe")
+    np.copyto(y, accum[:, 1], casting="unsafe")
+    np.copyto(epi_sum, accum[:, 2], casting="unsafe")
+    np.copyto(vf_sum, accum[:, 3], casting="unsafe")
 
-                if deg_sum is not None:
-                    deg_list = data.get("deg_list")
-                    if deg_list is not None:
-                        deg_array = data.get("deg_array")
-                        if deg_array is None or len(deg_array) != len(deg_list):
-                            deg_array = np.asarray(deg_list, dtype=float)
-                            data["deg_array"] = deg_array
-                            if cache is not None:
-                                cache.deg_array = deg_array
-                        deg_vals = np.take(deg_array, edge_dst)
-                        deg_acc = np.bincount(
-                            edge_src, weights=deg_vals, minlength=len(nodes)
-                        )
-                    else:
-                        deg_acc = np.zeros(len(nodes), dtype=float)
-                    deg_sum[:] = deg_acc.tolist()
-                return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
+    degree_counts = data.get("dense_degree_np")
+    if degree_counts is None or getattr(degree_counts, "shape", (0,))[0] != n:
+        degree_counts = None
+    if degree_counts is None and cache is not None:
+        cached_counts = cache.dense_degree_np
+        if cached_counts is not None and getattr(cached_counts, "shape", (0,))[0] == n:
+            degree_counts = cached_counts
+    if degree_counts is None:
+        degree_counts = A.sum(axis=1)
+        if cache is not None:
+            cache.dense_degree_np = degree_counts
+    data["dense_degree_np"] = degree_counts
+    np.copyto(count, degree_counts, casting="unsafe")
 
-        if np is None:
-            idx = data["idx"]
-            epi = data["epi"]
-            vf = data["vf"]
-            cos_th = data["cos_theta"]
-            sin_th = data["sin_theta"]
-            deg_list = data.get("deg_list")
-            for i, node in enumerate(nodes):
-                deg_i = degs_list[i] if degs_list is not None else 0.0
-                x_i = x[i]
-                y_i = y[i]
-                epi_i = epi_sum[i]
-                vf_i = vf_sum[i]
-                count_i = count[i]
-                deg_acc = deg_sum[i] if deg_sum is not None else 0.0
-                for v in G.neighbors(node):
-                    j = idx[v]
-                    cos_j = cos_th[j]
-                    sin_j = sin_th[j]
-                    epi_j = epi[j]
-                    vf_j = vf[j]
-                    x_i += cos_j
-                    y_i += sin_j
-                    epi_i += epi_j
-                    vf_i += vf_j
-                    count_i += 1
-                    if deg_sum is not None:
-                        deg_acc += deg_list[j] if deg_list is not None else deg_i
-                x[i] = x_i
-                y[i] = y_i
-                epi_sum[i] = epi_i
-                vf_sum[i] = vf_i
-                count[i] = count_i
-                if deg_sum is not None:
-                    deg_sum[i] = deg_acc
-        return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
+    degs = None
+    if deg_sum is not None:
+        deg_array = data.get("deg_array")
+        if deg_array is None:
+            deg_array = _resolve_numpy_degree_array(
+                data,
+                count,
+                cache=cache,
+                np=np,
+            )
+        if deg_array is None:
+            deg_sum.fill(0.0)
+        else:
+            np.matmul(A, deg_array, out=deg_sum)
+            degs = deg_array
+
+    return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
 
-def _compute_dnfr(G, data, *, use_numpy: bool = False) -> None:
+def _accumulate_neighbors_numpy(
+    G,
+    data,
+    *,
+    x,
+    y,
+    epi_sum,
+    vf_sum,
+    count,
+    deg_sum,
+    np,
+):
+    """Vectorised neighbour accumulation reusing cached NumPy buffers."""
+
+    nodes = data["nodes"]
+    if not nodes:
+        return x, y, epi_sum, vf_sum, count, deg_sum, None
+
+    cache: DnfrCache | None = data.get("cache")
+    prefer_sparse = data.get("prefer_sparse")
+    if prefer_sparse is None:
+        prefer_sparse = _prefer_sparse_accumulation(len(nodes), data.get("edge_count"))
+
+    epi = data.get("epi_np")
+    vf = data.get("vf_np")
+    cos_th = data.get("cos_theta_np")
+    sin_th = data.get("sin_theta_np")
+    if epi is None or vf is None or cos_th is None or sin_th is None:
+        epi = np.array(data["epi"], dtype=float)
+        vf = np.array(data["vf"], dtype=float)
+        cos_th = np.array(data["cos_theta"], dtype=float)
+        sin_th = np.array(data["sin_theta"], dtype=float)
+        data["epi_np"] = epi
+        data["vf_np"] = vf
+        data["cos_theta_np"] = cos_th
+        data["sin_theta_np"] = sin_th
+        if cache is not None:
+            cache.epi_np = epi
+            cache.vf_np = vf
+            cache.cos_theta_np = cos_th
+            cache.sin_theta_np = sin_th
+
+    edge_src = data.get("edge_src")
+    edge_dst = data.get("edge_dst")
+    if edge_src is None or edge_dst is None:
+        edge_src, edge_dst = _build_edge_index_arrays(G, nodes, data["idx"], np)
+        data["edge_src"] = edge_src
+        data["edge_dst"] = edge_dst
+        if cache is not None:
+            cache.edge_src = edge_src
+            cache.edge_dst = edge_dst
+
+    x.fill(0.0)
+    y.fill(0.0)
+    epi_sum.fill(0.0)
+    vf_sum.fill(0.0)
+
+    edge_count = int(edge_src.size)
+    deg_array_cached = data.get("deg_array")
+    if (
+        deg_array_cached is not None
+        and getattr(deg_array_cached, "shape", None) is not None
+        and deg_array_cached.shape[0] == len(nodes)
+    ):
+        np.copyto(count, deg_array_cached, casting="unsafe")
+    else:
+        count.fill(0.0)
+        if edge_count:
+            np.add.at(count, edge_src, 1.0)
+    deg_array = None
+    if deg_sum is not None:
+        deg_sum.fill(0.0)
+        deg_array = _resolve_numpy_degree_array(
+            data, count, cache=cache, np=np
+        )
+
+    if edge_count:
+        contrib_shape = (edge_count, 4)
+        contrib = None
+        if cache is not None:
+            contrib = cache.neighbor_contrib_np
+            if contrib is None or getattr(contrib, "shape", None) != contrib_shape:
+                contrib = np.empty(contrib_shape, dtype=float)
+                cache.neighbor_contrib_np = contrib
+            data["neighbor_contrib_np"] = contrib
+        else:
+            contrib = data.get("neighbor_contrib_np")
+            if contrib is None or getattr(contrib, "shape", None) != contrib_shape:
+                contrib = np.empty(contrib_shape, dtype=float)
+            data["neighbor_contrib_np"] = contrib
+
+        np.copyto(contrib[:, 0], cos_th[edge_dst], casting="unsafe")
+        np.copyto(contrib[:, 1], sin_th[edge_dst], casting="unsafe")
+        np.copyto(contrib[:, 2], epi[edge_dst], casting="unsafe")
+        np.copyto(contrib[:, 3], vf[edge_dst], casting="unsafe")
+
+        workspace_shape = (len(nodes), 4)
+        if cache is not None:
+            workspace = cache.neighbor_workspace_np
+            if workspace is None or getattr(workspace, "shape", None) != workspace_shape:
+                workspace = np.zeros(workspace_shape, dtype=float)
+                cache.neighbor_workspace_np = workspace
+            else:
+                workspace.fill(0.0)
+            data["neighbor_workspace_np"] = workspace
+        else:
+            workspace = data.get("neighbor_workspace_np")
+            if workspace is None or getattr(workspace, "shape", None) != workspace_shape:
+                workspace = np.zeros(workspace_shape, dtype=float)
+            else:
+                workspace.fill(0.0)
+            data["neighbor_workspace_np"] = workspace
+
+        np.add.at(workspace, edge_src, contrib)
+
+        np.copyto(x, workspace[:, 0], casting="unsafe")
+        np.copyto(y, workspace[:, 1], casting="unsafe")
+        np.copyto(epi_sum, workspace[:, 2], casting="unsafe")
+        np.copyto(vf_sum, workspace[:, 3], casting="unsafe")
+
+        if deg_array is not None and deg_sum is not None:
+            np.add.at(deg_sum, edge_src, deg_array[edge_dst])
+
+    if deg_array is None:
+        deg_array = deg_array_cached if deg_array_cached is not None else None
+    degs = deg_array if deg_array is not None else None
+    return x, y, epi_sum, vf_sum, count, deg_sum, degs
+
+
+def _compute_dnfr(G, data, *, use_numpy: bool | None = None) -> None:
     """Compute ΔNFR using neighbour sums.
 
     Parameters
@@ -1315,11 +1633,25 @@ def _compute_dnfr(G, data, *, use_numpy: bool = False) -> None:
         Graph on which the computation is performed.
     data : dict
         Precomputed ΔNFR data as returned by :func:`_prepare_dnfr_data`.
-    use_numpy : bool, optional
-        When ``True`` the vectorised ``numpy`` strategy is used. Defaults to
-        ``False`` to fall back to the loop-based implementation.
+    use_numpy : bool | None, optional
+        When ``True`` the vectorised ``numpy`` strategy is forced. When ``False``
+        the function requests the loop-based fallback. The default ``None``
+        enables auto-detection so cached NumPy buffers trigger the vector path
+        whenever the graph does not explicitly disable it.
     """
-    res = _build_neighbor_sums_common(G, data, use_numpy=use_numpy)
+    np_module = get_numpy()
+    cache: DnfrCache | None = data.get("cache")
+    vector_flag = False
+    graph_pref = G.graph.get("vectorized_dnfr")
+    if np_module is not None and graph_pref is not False:
+        if use_numpy is None:
+            vector_flag = _should_vectorize(G, np_module)
+        else:
+            vector_flag = bool(use_numpy)
+        if not vector_flag and _has_cached_numpy_buffers(data, cache):
+            vector_flag = True
+
+    res = _build_neighbor_sums_common(G, data, use_numpy=vector_flag)
     if res is None:
         return
     x, y, epi_sum, vf_sum, count, deg_sum, degs = res
@@ -1334,7 +1666,6 @@ def _compute_dnfr(G, data, *, use_numpy: bool = False) -> None:
         deg_sum=deg_sum,
         degs=degs,
     )
-
 
 def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
     """Compute ΔNFR by mixing phase, EPI, νf and a topological term.
@@ -1354,9 +1685,7 @@ def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
         weights=data["weights"],
         hook_name="default_compute_delta_nfr",
     )
-    np_module = get_numpy()
-    use_numpy = _should_vectorize(G, np_module)
-    _compute_dnfr(G, data, use_numpy=use_numpy)
+    _compute_dnfr(G, data)
 
 
 def set_delta_nfr_hook(
