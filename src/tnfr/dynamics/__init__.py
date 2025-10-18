@@ -556,7 +556,12 @@ def _update_nodes(
         _apply_glyphs(G, selector, hist)
     _dt = get_graph_param(G, "DT") if dt is None else float(dt)
     method = get_graph_param(G, "INTEGRATOR_METHOD", str)
-    update_epi_via_nodal_equation(G, dt=_dt, method=method)
+    raw_jobs = G.graph.get("INTEGRATOR_N_JOBS")
+    try:
+        n_jobs = None if raw_jobs is None else int(raw_jobs)
+    except (TypeError, ValueError):
+        n_jobs = None
+    update_epi_via_nodal_equation(G, dt=_dt, method=method, n_jobs=n_jobs)
     for n, nd in G.nodes(data=True):
         apply_canonical_clamps(nd, G, n)
     coordinate_global_local_phase(G, None, None)

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 from typing import Any, Literal
 
 import networkx as nx  # type: ignore[import-untyped]
@@ -24,6 +26,79 @@ __all__ = (
     "prepare_integration_params",
     "update_epi_via_nodal_equation",
 )
+
+
+_PARALLEL_GRAPH: Any | None = None
+
+
+def _gamma_worker_init(graph: Any) -> None:
+    """Initialise process-local graph reference for Γ evaluation."""
+
+    global _PARALLEL_GRAPH
+    _PARALLEL_GRAPH = graph
+
+
+def _gamma_worker(task: tuple[list[Any], float]) -> list[tuple[Any, float]]:
+    """Evaluate Γ for ``task`` chunk using process-local graph."""
+
+    chunk, t = task
+    if _PARALLEL_GRAPH is None:
+        raise RuntimeError("Parallel Γ worker initialised without graph reference")
+    return [
+        (node, float(eval_gamma(_PARALLEL_GRAPH, node, t))) for node in chunk
+    ]
+
+
+def _normalise_jobs(n_jobs: int | None, total: int) -> int | None:
+    """Return an effective worker count respecting serial fallbacks."""
+
+    if n_jobs is None:
+        return None
+    try:
+        workers = int(n_jobs)
+    except (TypeError, ValueError):
+        return None
+    if workers <= 1 or total <= 1:
+        return None
+    return max(1, min(workers, total))
+
+
+def _chunk_nodes(nodes: list[Any], chunk_size: int) -> Iterable[list[Any]]:
+    """Yield deterministic chunks from ``nodes`` respecting insertion order."""
+
+    for idx in range(0, len(nodes), chunk_size):
+        yield nodes[idx : idx + chunk_size]
+
+
+def _evaluate_gamma_map(
+    G: Any,
+    nodes: list[Any],
+    t: float,
+    *,
+    n_jobs: int | None = None,
+) -> dict[Any, float]:
+    """Return Γ evaluations for ``nodes`` at time ``t`` respecting parallelism."""
+
+    workers = _normalise_jobs(n_jobs, len(nodes))
+    if workers is None:
+        return {n: float(eval_gamma(G, n, t)) for n in nodes}
+
+    chunk_size = max(1, math.ceil(len(nodes) / (workers * 4)))
+    mp_ctx = get_context("spawn")
+    tasks = ((chunk, t) for chunk in _chunk_nodes(nodes, chunk_size))
+
+    results: dict[Any, float] = {}
+    with ProcessPoolExecutor(
+        max_workers=workers,
+        mp_context=mp_ctx,
+        initializer=_gamma_worker_init,
+        initargs=(G,),
+    ) as executor:
+        futures = [executor.submit(_gamma_worker, task) for task in tasks]
+        for fut in futures:
+            for node, value in fut.result():
+                results[node] = value
+    return results
 
 
 def prepare_integration_params(
@@ -78,6 +153,7 @@ def _apply_increments(
     increments: dict[Any, tuple[float, ...]],
     *,
     method: str,
+    n_jobs: int | None = None,
 ) -> dict[Any, tuple[float, float, float]]:
     """Combine precomputed increments to update node states."""
 
@@ -144,6 +220,7 @@ def _build_gamma_increments(
     t_local: float,
     *,
     method: str,
+    n_jobs: int | None = None,
 ) -> dict[Any, tuple[float, ...]]:
     """Evaluate Γ contributions and merge them with ``νf·ΔNFR`` base terms."""
 
@@ -166,39 +243,72 @@ def _build_gamma_increments(
         gamma_maps = tuple({} for _ in range(gamma_count))
         return _collect_nodal_increments(G, gamma_maps, method=method)
 
+    nodes = list(G.nodes)
+    if not nodes:
+        gamma_maps = tuple({} for _ in range(gamma_count))
+        return _collect_nodal_increments(G, gamma_maps, method=method)
+
     if method == "rk4":
         t_mid = t_local + dt_step / 2.0
         t_end = t_local + dt_step
-        g1_map = {n: eval_gamma(G, n, t_local) for n in G.nodes}
-        g_mid_map = {n: eval_gamma(G, n, t_mid) for n in G.nodes}
-        g4_map = {n: eval_gamma(G, n, t_end) for n in G.nodes}
+        g1_map = _evaluate_gamma_map(G, nodes, t_local, n_jobs=n_jobs)
+        g_mid_map = _evaluate_gamma_map(G, nodes, t_mid, n_jobs=n_jobs)
+        g4_map = _evaluate_gamma_map(G, nodes, t_end, n_jobs=n_jobs)
         gamma_maps = (g1_map, g_mid_map, g_mid_map, g4_map)
     else:  # method == "euler"
-        gamma_maps = ({n: eval_gamma(G, n, t_local) for n in G.nodes},)
+        gamma_maps = (
+            _evaluate_gamma_map(G, nodes, t_local, n_jobs=n_jobs),
+        )
 
     return _collect_nodal_increments(G, gamma_maps, method=method)
 
 
-def _integrate_euler(G, dt_step: float, t_local: float):
+def _integrate_euler(
+    G,
+    dt_step: float,
+    t_local: float,
+    *,
+    n_jobs: int | None = None,
+):
     """One explicit Euler integration step."""
     increments = _build_gamma_increments(
         G,
         dt_step,
         t_local,
         method="euler",
+        n_jobs=n_jobs,
     )
-    return _apply_increments(G, dt_step, increments, method="euler")
+    return _apply_increments(
+        G,
+        dt_step,
+        increments,
+        method="euler",
+        n_jobs=n_jobs,
+    )
 
 
-def _integrate_rk4(G, dt_step: float, t_local: float):
+def _integrate_rk4(
+    G,
+    dt_step: float,
+    t_local: float,
+    *,
+    n_jobs: int | None = None,
+):
     """One Runge–Kutta order-4 integration step."""
     increments = _build_gamma_increments(
         G,
         dt_step,
         t_local,
         method="rk4",
+        n_jobs=n_jobs,
     )
-    return _apply_increments(G, dt_step, increments, method="rk4")
+    return _apply_increments(
+        G,
+        dt_step,
+        increments,
+        method="rk4",
+        n_jobs=n_jobs,
+    )
 
 
 def update_epi_via_nodal_equation(
@@ -207,6 +317,7 @@ def update_epi_via_nodal_equation(
     dt: float | None = None,
     t: float | None = None,
     method: Literal["euler", "rk4"] | None = None,
+    n_jobs: int | None = None,
 ) -> None:
     """TNFR nodal equation.
 
@@ -234,9 +345,9 @@ def update_epi_via_nodal_equation(
     t_local = t0
     for _ in range(steps):
         if method == "rk4":
-            updates = _integrate_rk4(G, dt_step, t_local)
+            updates = _integrate_rk4(G, dt_step, t_local, n_jobs=n_jobs)
         else:
-            updates = _integrate_euler(G, dt_step, t_local)
+            updates = _integrate_euler(G, dt_step, t_local, n_jobs=n_jobs)
 
         for n, (epi, dEPI_dt, d2epi) in updates.items():
             nd = G.nodes[n]
