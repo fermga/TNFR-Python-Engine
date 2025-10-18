@@ -42,6 +42,28 @@ def test_default_compute_delta_nfr_paths(vectorized):
     assert len(dnfr) == 5
 
 
+def test_default_vectorization_auto_enabled_when_numpy_available():
+    np = pytest.importorskip("numpy")
+    G = _setup_graph()
+    default_compute_delta_nfr(G)
+    cache = G.graph.get("_dnfr_prep_cache")
+    assert cache is not None
+    assert cache.theta_np is not None
+    assert cache.edge_src is not None and isinstance(cache.edge_src, np.ndarray)
+
+
+def test_vectorization_can_be_disabled_explicitamente():
+    pytest.importorskip("numpy")
+    G = _setup_graph()
+    # Para desactivar la ruta vectorizada basta con fijar este marcador a ``False``.
+    G.graph["vectorized_dnfr"] = False
+    default_compute_delta_nfr(G)
+    cache = G.graph.get("_dnfr_prep_cache")
+    assert cache is not None
+    assert cache.theta_np is None
+    assert cache.edge_src is None
+
+
 def _build_weighted_graph(factory, n_nodes: int, topo_weight: float):
     G = factory(n_nodes)
     for idx, node in enumerate(G.nodes):
@@ -64,11 +86,11 @@ def test_vectorized_matches_reference(factory, topo_weight):
     del np  # only needed to guarantee NumPy availability
 
     G_list = _build_weighted_graph(factory, 6, topo_weight)
+    G_list.graph["vectorized_dnfr"] = False
     G_vec = _build_weighted_graph(factory, 6, topo_weight)
 
     default_compute_delta_nfr(G_list)
 
-    G_vec.graph["vectorized_dnfr"] = True
     default_compute_delta_nfr(G_vec)
 
     dnfr_list = collect_attr(G_list, G_list.nodes, ALIAS_DNFR, 0.0)
@@ -165,6 +187,7 @@ def test_dense_graph_dnfr_modes_stable():
     expected = _manual_dense_dnfr_expected(template)
 
     G_fallback = template.copy()
+    G_fallback.graph["vectorized_dnfr"] = False
     default_compute_delta_nfr(G_fallback)
     fallback_dnfr = collect_attr(G_fallback, G_fallback.nodes, ALIAS_DNFR, 0.0)
     assert fallback_dnfr == pytest.approx(expected)
@@ -175,7 +198,6 @@ def test_dense_graph_dnfr_modes_stable():
         return
 
     G_vectorized = template.copy()
-    G_vectorized.graph["vectorized_dnfr"] = True
     default_compute_delta_nfr(G_vectorized)
     vector_dnfr = collect_attr(
         G_vectorized, G_vectorized.nodes, ALIAS_DNFR, 0.0

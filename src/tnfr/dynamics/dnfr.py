@@ -30,6 +30,18 @@ _MEAN_VECTOR_EPS = 1e-12
 
 
 
+def _should_vectorize(G, np_module) -> bool:
+    """Return ``True`` when NumPy is available unless the graph disables it."""
+
+    if np_module is None:
+        return False
+    flag = G.graph.get("vectorized_dnfr")
+    if flag is None:
+        return True
+    return bool(flag)
+
+
+
 
 @dataclass
 class DnfrCache:
@@ -219,9 +231,9 @@ def _build_edge_index_arrays(G, nodes, idx, np):
 
 def _refresh_dnfr_vectors(G, nodes, cache: DnfrCache):
     """Update cached angle and state vectors for ΔNFR."""
-    np = get_numpy()
-    trig = compute_theta_trig(((n, G.nodes[n]) for n in nodes), np=np)
-    use_numpy = np is not None and G.graph.get("vectorized_dnfr")
+    np_module = get_numpy()
+    trig = compute_theta_trig(((n, G.nodes[n]) for n in nodes), np=np_module)
+    use_numpy = _should_vectorize(G, np_module)
     for i, n in enumerate(nodes):
         nd = G.nodes[n]
         cache.theta[i] = trig.theta[n]
@@ -229,8 +241,8 @@ def _refresh_dnfr_vectors(G, nodes, cache: DnfrCache):
         cache.vf[i] = get_attr(nd, ALIAS_VF, 0.0)
         cache.cos_theta[i] = trig.cos[n]
         cache.sin_theta[i] = trig.sin[n]
-    if use_numpy and np is not None:
-        _ensure_numpy_vectors(cache, np)
+    if use_numpy:
+        _ensure_numpy_vectors(cache, np_module)
     else:
         cache.theta_np = None
         cache.epi_np = None
@@ -245,8 +257,8 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     if weights is None:
         weights = _configure_dnfr_weights(G)
 
-    np = get_numpy()
-    use_numpy = np is not None and G.graph.get("vectorized_dnfr")
+    np_module = get_numpy()
+    use_numpy = _should_vectorize(G, np_module)
 
     nodes = cached_node_list(G)
     checksum = G.graph.get("_node_list_checksum")
@@ -284,22 +296,24 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     else:
         cache.deg_list = None
 
-    if use_numpy and np is not None:
+    if use_numpy:
         theta_np, epi_np, vf_np, cos_theta_np, sin_theta_np = _ensure_numpy_vectors(
-            cache, np
+            cache, np_module
         )
-        deg_array = _ensure_numpy_degrees(cache, deg_list, np)
+        deg_array = _ensure_numpy_degrees(cache, deg_list, np_module)
         edge_src = None
         edge_dst = None
         if cache is not None:
             edge_src = cache.edge_src
             edge_dst = cache.edge_dst
             if edge_src is None or edge_dst is None or dirty:
-                edge_src, edge_dst = _build_edge_index_arrays(G, nodes, idx, np)
+                edge_src, edge_dst = _build_edge_index_arrays(
+                    G, nodes, idx, np_module
+                )
                 cache.edge_src = edge_src
                 cache.edge_dst = edge_dst
         else:
-            edge_src, edge_dst = _build_edge_index_arrays(G, nodes, idx, np)
+            edge_src, edge_dst = _build_edge_index_arrays(G, nodes, idx, np_module)
     else:
         theta_np = None
         epi_np = None
@@ -672,8 +686,8 @@ def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
         weights=data["weights"],
         hook_name="default_compute_delta_nfr",
     )
-    np = get_numpy()
-    use_numpy = np is not None and G.graph.get("vectorized_dnfr")
+    np_module = get_numpy()
+    use_numpy = _should_vectorize(G, np_module)
     _compute_dnfr(G, data, use_numpy=use_numpy)
 
 
