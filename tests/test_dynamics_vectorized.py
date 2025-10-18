@@ -7,10 +7,14 @@ import pytest
 import networkx as nx
 
 from tnfr.dynamics.dnfr import (
+    _accumulate_neighbors_numpy,
+    _build_edge_index_arrays,
     _build_neighbor_sums_common,
     _compute_dnfr,
+    _init_neighbor_sums,
     _prepare_dnfr_data,
     _prefer_sparse_accumulation,
+    _resolve_numpy_degree_array,
 )
 
 from tnfr.dynamics import default_compute_delta_nfr
@@ -213,6 +217,98 @@ def _manual_dense_dnfr_expected(G):
     return expected
 
 
+def _legacy_numpy_stack_accumulation(
+    G,
+    data,
+    *,
+    x,
+    y,
+    epi_sum,
+    vf_sum,
+    count,
+    deg_sum,
+    np,
+):
+    nodes = data["nodes"]
+    if not nodes:
+        return x, y, epi_sum, vf_sum, count, deg_sum, None
+
+    cache = data.get("cache")
+    epi = data.get("epi_np")
+    if epi is None:
+        epi = np.array(data["epi"], dtype=float)
+        data["epi_np"] = epi
+        if cache is not None:
+            cache.epi_np = epi
+    cos_th = data.get("cos_theta_np")
+    if cos_th is None:
+        cos_th = np.array(data["cos_theta"], dtype=float)
+        data["cos_theta_np"] = cos_th
+        if cache is not None:
+            cache.cos_theta_np = cos_th
+    sin_th = data.get("sin_theta_np")
+    if sin_th is None:
+        sin_th = np.array(data["sin_theta"], dtype=float)
+        data["sin_theta_np"] = sin_th
+        if cache is not None:
+            cache.sin_theta_np = sin_th
+    vf = data.get("vf_np")
+    if vf is None:
+        vf = np.array(data["vf"], dtype=float)
+        data["vf_np"] = vf
+        if cache is not None:
+            cache.vf_np = vf
+
+    edge_src = data.get("edge_src")
+    edge_dst = data.get("edge_dst")
+    if edge_src is None or edge_dst is None:
+        edge_src, edge_dst = _build_edge_index_arrays(
+            G, nodes, data["idx"], np
+        )
+        data["edge_src"] = edge_src
+        data["edge_dst"] = edge_dst
+        if cache is not None:
+            cache.edge_src = edge_src
+            cache.edge_dst = edge_dst
+
+    count.fill(0.0)
+    if edge_src.size:
+        np.add.at(count, edge_src, 1.0)
+
+    component_sources = [cos_th, sin_th, epi, vf]
+    deg_column = None
+    deg_array = None
+    if deg_sum is not None:
+        deg_sum.fill(0.0)
+        deg_array = _resolve_numpy_degree_array(
+            data, count, cache=cache, np=np
+        )
+        if deg_array is not None:
+            deg_column = len(component_sources)
+            component_sources.append(deg_array)
+
+    stacked = np.empty((len(nodes), len(component_sources)), dtype=float)
+    for col, src_vec in enumerate(component_sources):
+        np.copyto(stacked[:, col], src_vec, casting="unsafe")
+
+    accum = np.zeros_like(stacked)
+    if edge_src.size:
+        edge_values = np.empty((edge_src.size, len(component_sources)), dtype=float)
+        np.copyto(edge_values, stacked[edge_dst], casting="unsafe")
+        np.add.at(accum, edge_src, edge_values)
+
+    np.copyto(x, accum[:, 0], casting="unsafe")
+    np.copyto(y, accum[:, 1], casting="unsafe")
+    np.copyto(epi_sum, accum[:, 2], casting="unsafe")
+    np.copyto(vf_sum, accum[:, 3], casting="unsafe")
+    degs = None
+    if deg_column is not None and deg_sum is not None:
+        np.copyto(deg_sum, accum[:, deg_column], casting="unsafe")
+        degs = deg_array
+
+    return x, y, epi_sum, vf_sum, count, deg_sum, degs
+
+
 def test_sparse_graph_prefers_edge_accumulation_and_matches_dnfr():
     np = pytest.importorskip("numpy")
     del np  # only needed to guarantee NumPy availability for the heuristic
@@ -288,6 +384,57 @@ def test_edge_accumulation_neighbor_sums_match_loop(factory, topo_weight):
         assert vec_degs is loop_degs is None
     else:
         np.testing.assert_allclose(vec_degs, loop_degs, rtol=1e-9, atol=1e-9)
+
+
+@pytest.mark.parametrize("factory", [nx.path_graph, nx.complete_graph])
+@pytest.mark.parametrize("topo_weight", [0.0, 0.45])
+def test_edge_accumulation_matches_legacy_stack(factory, topo_weight):
+    np = pytest.importorskip("numpy")
+
+    base = _build_weighted_graph(factory, 20, topo_weight)
+
+    G_current = base.copy()
+    data_current = _prepare_dnfr_data(G_current)
+    current_buffers = _init_neighbor_sums(data_current, np=np)
+    vec = _accumulate_neighbors_numpy(
+        G_current,
+        data_current,
+        x=current_buffers[0],
+        y=current_buffers[1],
+        epi_sum=current_buffers[2],
+        vf_sum=current_buffers[3],
+        count=current_buffers[4],
+        deg_sum=current_buffers[5],
+        np=np,
+    )
+
+    G_legacy = base.copy()
+    data_legacy = _prepare_dnfr_data(G_legacy)
+    legacy_buffers = _init_neighbor_sums(data_legacy, np=np)
+    legacy = _legacy_numpy_stack_accumulation(
+        G_legacy,
+        data_legacy,
+        x=legacy_buffers[0],
+        y=legacy_buffers[1],
+        epi_sum=legacy_buffers[2],
+        vf_sum=legacy_buffers[3],
+        count=legacy_buffers[4],
+        deg_sum=legacy_buffers[5],
+        np=np,
+    )
+
+    for new_arr, old_arr in zip(vec[:-1], legacy[:-1]):
+        if new_arr is None or old_arr is None:
+            assert new_arr is old_arr is None
+        else:
+            np.testing.assert_allclose(new_arr, old_arr, rtol=1e-9, atol=1e-9)
+
+    vec_degs = vec[-1]
+    legacy_degs = legacy[-1]
+    if vec_degs is None or legacy_degs is None:
+        assert vec_degs is legacy_degs is None
+    else:
+        np.testing.assert_allclose(vec_degs, legacy_degs, rtol=1e-9, atol=1e-9)
 
 
 def test_dense_graph_prefers_edge_accumulation():

@@ -78,9 +78,6 @@ class DnfrCache:
     neighbor_vf_sum_np: Any | None = None
     neighbor_count_np: Any | None = None
     neighbor_deg_sum_np: Any | None = None
-    neighbor_component_stack_np: Any | None = None
-    neighbor_component_accum_np: Any | None = None
-    edge_component_values_np: Any | None = None
     th_bar_np: Any | None = None
     epi_bar_np: Any | None = None
     vf_bar_np: Any | None = None
@@ -931,49 +928,29 @@ def _accumulate_neighbors_numpy(
             cache.edge_dst = edge_dst
 
     count.fill(0.0)
+    x.fill(0.0)
+    y.fill(0.0)
+    epi_sum.fill(0.0)
+    vf_sum.fill(0.0)
+
     if edge_src.size:
         np.add.at(count, edge_src, 1.0)
-
-    component_sources = [cos_th, sin_th, epi, vf]
-    deg_column = None
     deg_array = None
     if deg_sum is not None:
+        deg_sum.fill(0.0)
         deg_array = _resolve_numpy_degree_array(
             data, count, cache=cache, np=np
         )
-        if deg_array is not None:
-            deg_column = len(component_sources)
-            component_sources.append(deg_array)
-
-    stack_shape = (len(nodes), len(component_sources))
-    stacked = _ensure_cached_array(
-        cache, "neighbor_component_stack_np", stack_shape, np
-    )
-    for col, src_vec in enumerate(component_sources):
-        np.copyto(stacked[:, col], src_vec, casting="unsafe")
-
-    accum = _ensure_cached_array(
-        cache, "neighbor_component_accum_np", stack_shape, np
-    )
-    accum.fill(0.0)
 
     if edge_src.size:
-        edge_shape = (edge_src.size, len(component_sources))
-        edge_values = _ensure_cached_array(
-            cache, "edge_component_values_np", edge_shape, np
-        )
-        if edge_values.size:
-            np.copyto(edge_values, stacked[edge_dst], casting="unsafe")
-            np.add.at(accum, edge_src, edge_values)
+        np.add.at(x, edge_src, cos_th[edge_dst])
+        np.add.at(y, edge_src, sin_th[edge_dst])
+        np.add.at(epi_sum, edge_src, epi[edge_dst])
+        np.add.at(vf_sum, edge_src, vf[edge_dst])
+        if deg_array is not None and deg_sum is not None:
+            np.add.at(deg_sum, edge_src, deg_array[edge_dst])
 
-    np.copyto(x, accum[:, 0], casting="unsafe")
-    np.copyto(y, accum[:, 1], casting="unsafe")
-    np.copyto(epi_sum, accum[:, 2], casting="unsafe")
-    np.copyto(vf_sum, accum[:, 3], casting="unsafe")
-    degs = None
-    if deg_column is not None and deg_sum is not None:
-        np.copyto(deg_sum, accum[:, deg_column], casting="unsafe")
-        degs = deg_array
+    degs = deg_array if deg_array is not None else None
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
 
