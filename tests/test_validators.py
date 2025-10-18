@@ -7,7 +7,7 @@ from tnfr.constants import (
     get_aliases,
 )
 from tnfr.initialization import init_node_attrs
-from tnfr.utils.validators import run_validators
+from tnfr.utils import run_validators
 from tnfr.alias import set_attr, set_attr_str
 from tnfr.io import read_structured_file, StructuredFileError
 from tnfr.config import load_config
@@ -72,7 +72,9 @@ def test_validator_sigma_norm(monkeypatch):
     def fake_sigma(G):
         return {"mag": 1.5}
 
-    monkeypatch.setattr("tnfr.utils.validators.sigma_vector_from_graph", fake_sigma)
+    monkeypatch.setitem(
+        run_validators.__globals__, "sigma_vector_from_graph", fake_sigma
+    )
     with pytest.raises(ValueError):
         run_validators(G)
 

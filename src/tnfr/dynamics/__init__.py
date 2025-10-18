@@ -582,7 +582,7 @@ def _maybe_remesh(G) -> None:
 
 
 def _run_validators(G) -> None:
-    from ..utils.validators import run_validators
+    from ..utils import run_validators
 
     run_validators(G)
 
