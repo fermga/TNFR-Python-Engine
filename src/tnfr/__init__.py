@@ -90,7 +90,8 @@ def _is_internal_import_error(exc: ImportError) -> bool:
 
     message = str(exc)
     lowered = message.lower()
-    if "tnfr." in message and (
+    mentions_base_package = "module 'tnfr'" in lowered or 'module "tnfr"' in lowered
+    if ("tnfr." in message or mentions_base_package) and (
         "circular import" in lowered or "partially initialized module" in lowered
     ):
         return True
