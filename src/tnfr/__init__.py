@@ -43,8 +43,6 @@ from importlib import import_module, metadata
 from importlib.metadata import PackageNotFoundError
 from typing import Any
 
-from .ontosim import preparar_red
-
 
 EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
     "step": {
@@ -167,6 +165,9 @@ def _assign_exports(module: str, names: tuple[str, ...]) -> bool:
 
 
 _assign_exports("dynamics", ("step", "run"))
+
+
+_HAS_PREPARAR_RED = _assign_exports("ontosim", ("preparar_red",))
 
 
 _HAS_RUN_SEQUENCE = _assign_exports("structural", ("create_nfr", "run_sequence"))
