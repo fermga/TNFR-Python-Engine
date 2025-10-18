@@ -98,6 +98,36 @@ def test_vectorized_gradients_cached_and_reused():
     assert after.shape == before.shape
 
 
+def test_compute_dnfr_auto_vectorizes_when_numpy_present(monkeypatch):
+    np = pytest.importorskip("numpy")
+    del np
+
+    graph = _build_weighted_graph(nx.path_graph, 6, 0.25)
+    data = _prepare_dnfr_data(graph)
+
+    import tnfr.dynamics.dnfr as dnfr_module
+
+    calls = []
+
+    original = dnfr_module._build_neighbor_sums_common
+
+    def _spy(G_inner, data_inner, *, use_numpy):
+        calls.append(use_numpy)
+        return original(G_inner, data_inner, use_numpy=use_numpy)
+
+    monkeypatch.setattr(dnfr_module, "_build_neighbor_sums_common", _spy)
+
+    _compute_dnfr(graph, data)
+    assert calls and calls[-1] is True
+
+    graph.graph["vectorized_dnfr"] = False
+    calls.clear()
+    _compute_dnfr(graph, data)
+    assert calls and calls[-1] is False
+
+
+
+
 def _build_weighted_graph(factory, n_nodes: int, topo_weight: float):
     G = factory(n_nodes)
     for idx, node in enumerate(G.nodes):
@@ -322,7 +352,7 @@ def test_sparse_graph_prefers_edge_accumulation_and_matches_dnfr():
     assert _prefer_sparse_accumulation(len(data["nodes"]), data["edge_count"])
 
     # Vector ΔNFR must match the fallback computation while using cached edges.
-    _compute_dnfr(G_vector, data, use_numpy=True)
+    _compute_dnfr(G_vector, data)
     dnfr_vector = collect_attr(G_vector, G_vector.nodes, ALIAS_DNFR, 0.0)
 
     G_fallback = template.copy()
@@ -348,6 +378,7 @@ def test_sparse_graph_prefers_edge_accumulation_and_matches_dnfr():
     assert len(workspace_ids) <= 1
     assert cache.deg_array is not None
 
+    G_vector.graph["vectorized_dnfr"] = False
     loop_data = data.copy()
     x_id = id(cache.neighbor_x)
     y_id = id(cache.neighbor_y)
@@ -381,6 +412,7 @@ def test_edge_accumulation_neighbor_sums_match_loop(factory, topo_weight):
     vec = _build_neighbor_sums_common(G_vec, data_vec, use_numpy=True)
 
     data_loop = _prepare_dnfr_data(G_loop)
+    G_loop.graph["vectorized_dnfr"] = False
     loop = _build_neighbor_sums_common(G_loop, data_loop, use_numpy=False)
 
     assert vec is not None and loop is not None
@@ -479,6 +511,7 @@ def test_edge_accumulation_workspace_cached_and_stable(topo_weight):
 
     loop_graph = base.copy()
     loop_data = _prepare_dnfr_data(loop_graph)
+    loop_graph.graph["vectorized_dnfr"] = False
     expected_loop = _build_neighbor_sums_common(
         loop_graph,
         loop_data,
@@ -576,7 +609,7 @@ def test_dense_graph_uses_dense_accumulation_by_default():
     assert not _prefer_sparse_accumulation(len(data["nodes"]), data["edge_count"])
 
     # Dense computation still matches the fallback path.
-    _compute_dnfr(G_dense, data, use_numpy=True)
+    _compute_dnfr(G_dense, data)
     dnfr_dense = collect_attr(G_dense, G_dense.nodes, ALIAS_DNFR, 0.0)
 
     G_fallback = G_dense.copy()
@@ -622,7 +655,7 @@ def test_sparse_graph_can_force_dense_mode():
     assert data["prefer_sparse"] is False
     assert data["A"] is not None
 
-    _compute_dnfr(G_sparse, data, use_numpy=True)
+    _compute_dnfr(G_sparse, data)
 
     fallback = G_sparse.copy()
     fallback.graph["vectorized_dnfr"] = False
@@ -655,7 +688,7 @@ def test_dense_adjacency_accumulation_matches_loop(topo_weight):
     dense_dnfr_graph = base.copy()
     dense_data = data_dense.copy()
     dense_data["cache"] = cache
-    _compute_dnfr(dense_dnfr_graph, dense_data, use_numpy=True)
+    _compute_dnfr(dense_dnfr_graph, dense_data)
     dnfr_dense = collect_attr(dense_dnfr_graph, dense_dnfr_graph.nodes, ALIAS_DNFR, 0.0)
 
     fallback_graph = base.copy()
