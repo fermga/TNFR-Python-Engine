@@ -37,7 +37,7 @@ def _assert_loop_state(data):
     if cache is not None:
         assert cache.edge_src is None
         assert cache.neighbor_workspace_np is None
-        assert cache.neighbor_contrib_np is None
+        assert cache.neighbor_edge_weights_np is None
 
 
 def _assert_vector_state(data, np):
@@ -48,6 +48,10 @@ def _assert_vector_state(data, np):
     if cache is not None:
         assert cache.neighbor_workspace_np is workspace
         assert cache.edge_src is not None
+        weights = cache.neighbor_edge_weights_np
+        if data.get("edge_count", 0):
+            assert isinstance(weights, np.ndarray)
+            assert weights.shape[0] == data["edge_count"]
 
 
 def test_compute_dnfr_uses_numpy_even_when_graph_disables_vectorization():
