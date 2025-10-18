@@ -14,10 +14,10 @@ from tnfr.constants import (
     VF_PRIMARY,
     DNFR_PRIMARY,
 )
-from tnfr.utils.cache import (
-    increment_edge_version,
+from tnfr.utils import (
     cached_node_list,
     cached_nodes_and_A,
+    increment_edge_version,
 )
 
 

@@ -15,13 +15,12 @@ from ..alias import (
     get_attr,
     set_dnfr,
 )
-from ..utils.cache import cached_nodes_and_A
 from ..constants import DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import angle_diff
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import _phase_mean_from_iter, neighbor_phase_mean
 from ..metrics.trig_cache import compute_theta_trig
-from ..utils import get_numpy, normalize_weights
+from ..utils import cached_nodes_and_A, get_numpy, normalize_weights
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")

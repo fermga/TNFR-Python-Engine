@@ -2,13 +2,13 @@ import hashlib
 import timeit
 from unittest.mock import patch
 
-from tnfr.utils.cache import (
+from tnfr.utils import (
     NODE_SET_CHECKSUM_KEY,
     clear_node_repr_cache,
     node_set_checksum,
     stable_json,
 )
-from tnfr.utils.cache import increment_edge_version
+from tnfr.utils import increment_edge_version
 
 
 def build_graph(graph_canon):

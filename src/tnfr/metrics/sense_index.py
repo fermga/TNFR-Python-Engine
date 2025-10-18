@@ -7,11 +7,15 @@ from functools import partial
 from typing import Any
 
 from ..alias import get_attr, set_attr
-from ..utils.cache import edge_version_cache, stable_json
 from ..constants import get_aliases
 from ..helpers.numeric import angle_diff, clamp01
 from ..types import GraphLike
-from ..utils import get_numpy, normalize_weights
+from ..utils import (
+    edge_version_cache,
+    get_numpy,
+    normalize_weights,
+    stable_json,
+)
 from .trig import neighbor_phase_mean_list
 
 from .common import (

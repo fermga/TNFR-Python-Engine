@@ -3,7 +3,6 @@ from typing import Any, TYPE_CHECKING
 
 from cachetools import LRUCache
 
-from ..utils.cache import ensure_node_offset_map
 from ..rng import (
     ScopedCounterCache,
     make_rng,
@@ -12,7 +11,7 @@ from ..rng import (
     clear_rng_cache as _clear_rng_cache,
     seed_hash,
 )
-from ..utils import get_nodonx
+from ..utils import ensure_node_offset_map, get_nodonx
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodoProtocol

@@ -8,14 +8,13 @@ from io import StringIO
 from collections import deque
 from statistics import fmean, StatisticsError
 
-from ..utils.cache import edge_version_update
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import kahan_sum_nd
 from ..alias import get_attr, set_attr
 from ..rng import make_rng
 from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import append_metric, ensure_history, current_step_idx
-from ..utils import cached_import
+from ..utils import cached_import, edge_version_update
 
 ALIAS_EPI = get_aliases("EPI")
 

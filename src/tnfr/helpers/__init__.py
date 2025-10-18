@@ -7,18 +7,8 @@ cache invalidation.
 
 from __future__ import annotations
 
-from ..utils.cache import (
-    EdgeCacheManager,
-    cached_node_list,
-    cached_nodes_and_A,
-    edge_version_cache,
-    edge_version_update,
-    ensure_node_index_map,
-    ensure_node_offset_map,
-    increment_edge_version,
-    node_set_checksum,
-    stable_json,
-)
+from typing import TYPE_CHECKING
+
 from ..utils.graph import get_graph, get_graph_mapping, mark_dnfr_prep_dirty
 from .numeric import (
     angle_diff,
@@ -27,8 +17,28 @@ from .numeric import (
     kahan_sum_nd,
 )
 
+if TYPE_CHECKING:  # pragma: no cover - import only for static analysis
+    from ..utils import (
+        EdgeCacheManager,
+        cached_node_list,
+        cached_nodes_and_A,
+        edge_version_cache,
+        edge_version_update,
+        ensure_node_index_map,
+        ensure_node_offset_map,
+        increment_edge_version,
+        node_set_checksum,
+        stable_json,
+    )
+
 
 def __getattr__(name: str):
+    if name in _CACHE_EXPORTS:
+        from .. import utils as _utils
+
+        value = getattr(_utils, name)
+        globals()[name] = value
+        return value
     if name in _GLYPH_HISTORY_EXPORTS:
         from .. import glyph_history as _glyph_history
 
@@ -62,6 +72,18 @@ __all__ = (
     "recent_glyph",
 )
 
+_CACHE_EXPORTS = (
+    "EdgeCacheManager",
+    "cached_node_list",
+    "cached_nodes_and_A",
+    "edge_version_cache",
+    "edge_version_update",
+    "ensure_node_index_map",
+    "ensure_node_offset_map",
+    "increment_edge_version",
+    "node_set_checksum",
+    "stable_json",
+)
 _GLYPH_HISTORY_EXPORTS = (
     "count_glyphs",
     "ensure_history",

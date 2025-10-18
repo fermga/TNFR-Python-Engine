@@ -16,12 +16,12 @@ from .alias import (
     set_dnfr,
     set_theta,
 )
-from .utils.cache import (
+from .utils import (
     cached_node_list,
     ensure_node_offset_map,
     increment_edge_version,
+    supports_add_edge,
 )
-from .utils import supports_add_edge
 from .locking import get_lock
 
 ALIAS_EPI = get_aliases("EPI")

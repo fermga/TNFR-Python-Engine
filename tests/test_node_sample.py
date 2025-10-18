@@ -5,7 +5,7 @@ import pytest
 from tnfr.dynamics import step, _update_node_sample
 from tnfr.rng import clear_rng_cache
 from tnfr.constants import inject_defaults
-from tnfr.utils.cache import cached_nodes_and_A, increment_edge_version
+from tnfr.utils import cached_nodes_and_A, increment_edge_version
 import networkx as nx
 import json
 import os

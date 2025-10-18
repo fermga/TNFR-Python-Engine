@@ -1,7 +1,7 @@
 import pytest
 from concurrent.futures import ThreadPoolExecutor
 
-from tnfr.utils.cache import (
+from tnfr.utils import (
     EdgeCacheManager,
     edge_version_cache,
     increment_edge_version,

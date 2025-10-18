@@ -90,7 +90,7 @@ Key utilities (`tnfr.utils`)
 - **Structural history** (`tnfr.helpers.glyph_history`): `push_glyph`,
   `recent_glyph`, `ensure_history`, `last_glyph`, `count_glyphs` to track applied
   operators and observation windows.
-- **Caches and ΔNFR** (`tnfr.utils.cache` / `tnfr.utils.graph`):
+- **Caches and ΔNFR** (`tnfr.utils` / `tnfr.utils.graph`):
   `cached_node_list`, `ensure_node_index_map`, `ensure_node_offset_map`,
   `node_set_checksum`, `stable_json`, `get_graph_mapping`, `EdgeCacheManager`,
   `cached_nodes_and_A`, `edge_version_update`, `mark_dnfr_prep_dirty` to keep
