@@ -21,6 +21,7 @@ from typing import Any, TypeVar
 from cachetools import LRUCache
 import networkx as nx  # type: ignore[import-untyped]
 
+from ..cache import CacheManager
 from .graph import get_graph, mark_dnfr_prep_dirty
 from .init import get_logger, get_numpy
 from .io import json_dumps
@@ -66,38 +67,6 @@ class LockAwareLRUCache(LRUCache[Hashable, Any]):
         key, value = super().popitem()
         self._locks.pop(key, None)
         return key, value
-
-
-def _ensure_graph_entry(
-    graph: Any,
-    key: str,
-    factory: Callable[[], T],
-    validator: Callable[[Any], bool],
-) -> T:
-    """Return a validated entry from ``graph`` or create one when missing."""
-
-    value = graph.get(key)
-    if not validator(value):
-        value = factory()
-        graph[key] = value
-    return value
-
-
-def _ensure_lock_mapping(
-    graph: Any,
-    key: str,
-    *,
-    lock_factory: Callable[[], threading.RLock] = threading.RLock,
-) -> defaultdict[Hashable, threading.RLock]:
-    """Ensure ``graph`` holds a ``defaultdict`` of locks under ``key``."""
-
-    return _ensure_graph_entry(
-        graph,
-        key,
-        factory=lambda: defaultdict(lock_factory),
-        validator=lambda value: isinstance(value, defaultdict)
-        and value.default_factory is lock_factory,
-    )
 
 
 def _prune_locks(
@@ -407,30 +376,70 @@ def ensure_node_offset_map(G) -> dict[Any, int]:
     return _ensure_node_map(G, attrs=("offset",), sort=sort)
 
 
+@dataclass
+class EdgeCacheState:
+    cache: dict[Hashable, Any] | LRUCache[Hashable, Any]
+    locks: defaultdict[Hashable, threading.RLock]
+    max_entries: int | None
+
+
+_GRAPH_CACHE_MANAGER_KEY = "_tnfr_cache_manager"
+
+
+def _graph_cache_manager(graph: Any) -> CacheManager:
+    manager = graph.get(_GRAPH_CACHE_MANAGER_KEY)
+    if not isinstance(manager, CacheManager):
+        manager = CacheManager()
+        graph[_GRAPH_CACHE_MANAGER_KEY] = manager
+    return manager
+
+
 class EdgeCacheManager:
     """Coordinate cache storage and per-key locks for edge version caches."""
 
-    _LOCK = threading.RLock()
+    _STATE_KEY = "_edge_version_state"
 
     def __init__(self, graph: Any) -> None:
         self.graph = graph
-        self.cache_key = "_edge_version_cache"
-        self.locks_key = "_edge_version_cache_locks"
+        self._manager = _graph_cache_manager(graph)
+        self._manager.register(
+            self._STATE_KEY,
+            self._default_state,
+            reset=self._reset_state,
+        )
 
-    def _validator(self, max_entries: int | None) -> Callable[[Any], bool]:
+    def _default_state(self) -> EdgeCacheState:
+        return self._build_state(None)
+
+    def _build_state(self, max_entries: int | None) -> EdgeCacheState:
+        locks: defaultdict[Hashable, threading.RLock] = defaultdict(threading.RLock)
         if max_entries is None:
-            return lambda value: value is not None and not isinstance(value, LRUCache)
-        return lambda value: isinstance(value, LRUCache) and value.maxsize == max_entries
+            cache: dict[Hashable, Any] | LRUCache[Hashable, Any] = {}
+        else:
+            cache = LockAwareLRUCache(max_entries, locks)  # type: ignore[arg-type]
+        return EdgeCacheState(cache=cache, locks=locks, max_entries=max_entries)
 
-    def _factory(
-        self,
-        max_entries: int | None,
-        locks: dict[Hashable, threading.RLock]
-        | defaultdict[Hashable, threading.RLock],
-    ) -> dict[Hashable, Any] | LRUCache[Hashable, Any]:
-        if max_entries:
-            return LockAwareLRUCache(max_entries, locks)  # type: ignore[arg-type]
-        return {}
+    def _ensure_state(
+        self, state: EdgeCacheState | None, max_entries: int | None
+    ) -> EdgeCacheState:
+        if max_entries is None:
+            target = None
+        else:
+            target = int(max_entries)
+            if target < 0:
+                raise ValueError("max_entries must be non-negative or None")
+        if not isinstance(state, EdgeCacheState) or state.max_entries != target:
+            return self._build_state(target)
+        if target is None:
+            _prune_locks(state.cache, state.locks)
+        return state
+
+    def _reset_state(self, state: EdgeCacheState | None) -> EdgeCacheState:
+        if isinstance(state, EdgeCacheState):
+            state.cache.clear()
+            state.locks.clear()
+            return state
+        return self._build_state(None)
 
     def get_cache(
         self,
@@ -445,22 +454,22 @@ class EdgeCacheManager:
     ]:
         """Return the cache and lock mapping for the manager's graph."""
 
-        with self._LOCK:
-            if not create:
-                cache = self.graph.get(self.cache_key)
-                locks = self.graph.get(self.locks_key)
-                return cache, locks
+        if not create:
+            state = self._manager.peek(self._STATE_KEY)
+            if isinstance(state, EdgeCacheState):
+                return state.cache, state.locks
+            return None, None
 
-            locks = _ensure_lock_mapping(self.graph, self.locks_key)
-            cache = _ensure_graph_entry(
-                self.graph,
-                self.cache_key,
-                factory=lambda: self._factory(max_entries, locks),
-                validator=self._validator(max_entries),
-            )
-            if max_entries is None:
-                _prune_locks(cache, locks)
-            return cache, locks
+        state = self._manager.update(
+            self._STATE_KEY,
+            lambda current: self._ensure_state(current, max_entries),
+        )
+        return state.cache, state.locks
+
+    def clear(self) -> None:
+        """Reset cached data managed by this instance."""
+
+        self._manager.clear(self._STATE_KEY)
 
 
 def edge_version_cache(
@@ -560,11 +569,7 @@ def cached_nodes_and_A(
 def _reset_edge_caches(graph: Any, G: Any) -> None:
     """Clear caches affected by edge updates."""
 
-    cache, locks = EdgeCacheManager(graph).get_cache(None, create=False)
-    if isinstance(cache, (dict, LRUCache)):
-        cache.clear()
-    if isinstance(locks, dict):
-        locks.clear()
+    EdgeCacheManager(graph).clear()
     mark_dnfr_prep_dirty(G)
     clear_node_repr_cache()
     for key in EDGE_VERSION_CACHE_KEYS:
