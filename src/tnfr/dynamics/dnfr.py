@@ -74,6 +74,11 @@ class DnfrCache:
     neighbor_vf_sum_np: Any | None = None
     neighbor_count_np: Any | None = None
     neighbor_deg_sum_np: Any | None = None
+    grad_phase_np: Any | None = None
+    grad_epi_np: Any | None = None
+    grad_vf_np: Any | None = None
+    grad_topo_np: Any | None = None
+    grad_total_np: Any | None = None
 
 
 __all__ = (
@@ -219,6 +224,19 @@ def _ensure_numpy_degrees(cache: DnfrCache, deg_list, np):
     else:
         np.copyto(arr, deg_list, casting="unsafe")
     cache.deg_array = arr
+    return arr
+
+
+def _ensure_cached_array(cache: DnfrCache | None, attr: str, shape, np):
+    """Return a cached NumPy buffer with ``shape`` creating/reusing it."""
+
+    if np is None:
+        raise RuntimeError("NumPy is required to build cached arrays")
+    arr = getattr(cache, attr) if cache is not None else None
+    if arr is None or getattr(arr, "shape", None) != shape:
+        arr = np.empty(shape, dtype=float)
+        if cache is not None:
+            setattr(cache, attr, arr)
     return arr
 
 
@@ -390,6 +408,7 @@ def _apply_dnfr_gradients(
     degs=None,
 ):
     """Combine precomputed gradients and write ΔNFR to each node."""
+    np = get_numpy()
     nodes = data["nodes"]
     theta = data["theta"]
     epi = data["epi"]
@@ -401,22 +420,102 @@ def _apply_dnfr_gradients(
     if degs is None:
         degs = data.get("degs")
 
-    for i, n in enumerate(nodes):
-        g_phase = -angle_diff(theta[i], th_bar[i]) / math.pi
-        g_epi = epi_bar[i] - epi[i]
-        g_vf = vf_bar[i] - vf[i]
-        if w_topo != 0.0 and deg_bar is not None and degs is not None:
-            if isinstance(degs, dict):
-                deg_i = float(degs.get(n, 0))
-            else:
-                deg_i = float(degs[i])
-            g_topo = deg_bar[i] - deg_i
-        else:
-            g_topo = 0.0
-        dnfr = (
-            w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
+    cache: DnfrCache | None = data.get("cache")
+
+    theta_np = data.get("theta_np")
+    epi_np = data.get("epi_np")
+    vf_np = data.get("vf_np")
+    deg_array = data.get("deg_array") if w_topo != 0.0 else None
+
+    use_vector = (
+        np is not None
+        and theta_np is not None
+        and epi_np is not None
+        and vf_np is not None
+        and isinstance(th_bar, np.ndarray)
+        and isinstance(epi_bar, np.ndarray)
+        and isinstance(vf_bar, np.ndarray)
+    )
+    if use_vector and w_topo != 0.0:
+        use_vector = (
+            deg_bar is not None
+            and isinstance(deg_bar, np.ndarray)
+            and isinstance(deg_array, np.ndarray)
         )
-        set_dnfr(G, n, float(dnfr))
+
+    if use_vector:
+        grad_phase = _ensure_cached_array(cache, "grad_phase_np", theta_np.shape, np)
+        grad_epi = _ensure_cached_array(cache, "grad_epi_np", epi_np.shape, np)
+        grad_vf = _ensure_cached_array(cache, "grad_vf_np", vf_np.shape, np)
+        grad_total = _ensure_cached_array(cache, "grad_total_np", theta_np.shape, np)
+        grad_topo = None
+        if w_topo != 0.0:
+            grad_topo = _ensure_cached_array(
+                cache, "grad_topo_np", deg_array.shape, np
+            )
+
+        np.copyto(grad_phase, theta_np, casting="unsafe")
+        grad_phase -= th_bar
+        grad_phase += math.pi
+        np.mod(grad_phase, math.tau, out=grad_phase)
+        grad_phase -= math.pi
+        grad_phase *= -1.0 / math.pi
+
+        np.copyto(grad_epi, epi_bar, casting="unsafe")
+        grad_epi -= epi_np
+
+        np.copyto(grad_vf, vf_bar, casting="unsafe")
+        grad_vf -= vf_np
+
+        if grad_topo is not None and deg_bar is not None:
+            np.copyto(grad_topo, deg_bar, casting="unsafe")
+            grad_topo -= deg_array
+
+        if w_phase != 0.0:
+            np.multiply(grad_phase, w_phase, out=grad_total)
+        else:
+            grad_total.fill(0.0)
+        if w_epi != 0.0:
+            if w_epi != 1.0:
+                np.multiply(grad_epi, w_epi, out=grad_epi)
+            np.add(grad_total, grad_epi, out=grad_total)
+        if w_vf != 0.0:
+            if w_vf != 1.0:
+                np.multiply(grad_vf, w_vf, out=grad_vf)
+            np.add(grad_total, grad_vf, out=grad_total)
+        if w_topo != 0.0 and grad_topo is not None:
+            if w_topo != 1.0:
+                np.multiply(grad_topo, w_topo, out=grad_topo)
+            np.add(grad_total, grad_topo, out=grad_total)
+
+        dnfr_values = grad_total
+    else:
+        dnfr_values = []
+        for i, n in enumerate(nodes):
+            g_phase = -angle_diff(theta[i], th_bar[i]) / math.pi
+            g_epi = epi_bar[i] - epi[i]
+            g_vf = vf_bar[i] - vf[i]
+            if w_topo != 0.0 and deg_bar is not None and degs is not None:
+                if isinstance(degs, dict):
+                    deg_i = float(degs.get(n, 0))
+                else:
+                    deg_i = float(degs[i])
+                g_topo = deg_bar[i] - deg_i
+            else:
+                g_topo = 0.0
+            dnfr_values.append(
+                w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
+            )
+
+        if cache is not None:
+            cache.grad_phase_np = None
+            cache.grad_epi_np = None
+            cache.grad_vf_np = None
+            cache.grad_topo_np = None
+            cache.grad_total_np = None
+
+    for i, n in enumerate(nodes):
+        set_dnfr(G, n, float(dnfr_values[i]))
 
 
 def _init_bar_arrays(data, *, degs=None, np=None):

@@ -50,6 +50,8 @@ def test_default_vectorization_auto_enabled_when_numpy_available():
     assert cache is not None
     assert cache.theta_np is not None
     assert cache.edge_src is not None and isinstance(cache.edge_src, np.ndarray)
+    assert isinstance(cache.grad_total_np, np.ndarray)
+    assert isinstance(cache.grad_phase_np, np.ndarray)
 
 
 def test_vectorization_can_be_disabled_explicitamente():
@@ -62,6 +64,27 @@ def test_vectorization_can_be_disabled_explicitamente():
     assert cache is not None
     assert cache.theta_np is None
     assert cache.edge_src is None
+    assert cache.grad_total_np is None
+    assert cache.grad_phase_np is None
+
+
+def test_vectorized_gradients_cached_and_reused():
+    np = pytest.importorskip("numpy")
+    G = _build_weighted_graph(nx.path_graph, 4, 0.3)
+    default_compute_delta_nfr(G)
+    cache = G.graph.get("_dnfr_prep_cache")
+    assert isinstance(cache.grad_total_np, np.ndarray)
+    assert isinstance(cache.grad_phase_np, np.ndarray)
+    before = cache.grad_total_np.copy()
+
+    # Ejecutar de nuevo para comprobar que los buffers se reutilizan
+    default_compute_delta_nfr(G)
+    cache2 = G.graph.get("_dnfr_prep_cache")
+    assert cache2 is cache
+    assert cache2.grad_total_np is cache.grad_total_np
+    assert cache2.grad_phase_np is cache.grad_phase_np
+    after = cache2.grad_total_np
+    assert after.shape == before.shape
 
 
 def _build_weighted_graph(factory, n_nodes: int, topo_weight: float):
