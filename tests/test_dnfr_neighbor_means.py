@@ -88,3 +88,28 @@ def test_neighbor_mean_workspaces_reused(monkeypatch):
     assert cache_after.neighbor_mean_tmp_np is tmp_first
     assert cache_after.neighbor_mean_length_np is length_first
 
+
+def test_pure_python_parallel_matches_serial(monkeypatch):
+    G_serial = _build_graph()
+    G_parallel = _build_graph()
+
+    with numpy_disabled(monkeypatch):
+        default_compute_delta_nfr(G_serial, n_jobs=1)
+        default_compute_delta_nfr(G_parallel, n_jobs=3)
+
+    assert _collect_dnfr(G_parallel) == pytest.approx(_collect_dnfr(G_serial))
+
+
+def test_vectorized_n_jobs_argument():
+    pytest.importorskip("numpy")
+
+    G_reference = _build_graph()
+    G_vectorized = _build_graph()
+
+    default_compute_delta_nfr(G_reference)
+    default_compute_delta_nfr(G_vectorized, n_jobs=4)
+
+    assert _collect_dnfr(G_vectorized) == pytest.approx(
+        _collect_dnfr(G_reference)
+    )
+
