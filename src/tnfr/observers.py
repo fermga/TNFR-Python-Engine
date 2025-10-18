@@ -19,7 +19,7 @@ from .config.constants import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 from .utils import get_logger, get_numpy
 from .metrics.common import compute_coherence
-from .validators import validate_window
+from .utils.validators import validate_window
 
 ALIAS_THETA = get_aliases("THETA")
 

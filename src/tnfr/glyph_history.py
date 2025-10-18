@@ -27,7 +27,7 @@ __all__ = (
 
 @lru_cache(maxsize=1)
 def _resolve_validate_window():
-    from .validators import validate_window
+    from .utils.validators import validate_window
 
     return validate_window
 

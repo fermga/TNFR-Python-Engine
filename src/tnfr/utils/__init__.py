@@ -89,6 +89,8 @@ __all__ = (
     "DEFAULT_PARAMS",
     "json_dumps",
     "clear_orjson_param_warnings",
+    "validate_window",
+    "run_validators",
     "_configure_root",
     "_LOGGING_CONFIGURED",
     "_reset_logging_state",
@@ -116,13 +118,20 @@ _DEFAULT_CACHE_SIZE = _init._DEFAULT_CACHE_SIZE
 EMIT_MAP = _init.EMIT_MAP
 
 _DYNAMIC_EXPORTS = {"IMPORT_LOG", "_IMPORT_STATE", "_LOGGING_CONFIGURED"}
+_VALIDATOR_EXPORTS = {"validate_window", "run_validators"}
 
 
 def __getattr__(name: str):  # pragma: no cover - trivial delegation
     if name in _DYNAMIC_EXPORTS:
         return getattr(_init, name)
+    if name in _VALIDATOR_EXPORTS:
+        from .validators import run_validators, validate_window
+
+        if name == "validate_window":
+            return validate_window
+        return run_validators
     raise AttributeError(name)
 
 
 def __dir__() -> list[str]:  # pragma: no cover - trivial delegation
-    return sorted(set(globals()) | _DYNAMIC_EXPORTS)
+    return sorted(set(globals()) | _DYNAMIC_EXPORTS | _VALIDATOR_EXPORTS)
