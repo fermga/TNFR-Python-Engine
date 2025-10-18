@@ -3,7 +3,7 @@
 import pytest
 import numpy as np
 
-from tnfr.validators import validate_window
+from tnfr.utils.validators import validate_window
 
 
 @pytest.mark.parametrize("value", [True, False])
