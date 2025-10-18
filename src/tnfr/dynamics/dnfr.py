@@ -78,6 +78,9 @@ class DnfrCache:
     neighbor_vf_sum_np: Any | None = None
     neighbor_count_np: Any | None = None
     neighbor_deg_sum_np: Any | None = None
+    neighbor_component_stack_np: Any | None = None
+    neighbor_component_accum_np: Any | None = None
+    edge_component_values_np: Any | None = None
     th_bar_np: Any | None = None
     epi_bar_np: Any | None = None
     vf_bar_np: Any | None = None
@@ -233,6 +236,24 @@ def _ensure_numpy_degrees(cache: DnfrCache, deg_list, np):
         np.copyto(arr, deg_list, casting="unsafe")
     cache.deg_array = arr
     return arr
+
+
+def _resolve_numpy_degree_array(data, count, *, cache: DnfrCache | None, np):
+    """Return the vector of node degrees required for topology gradients."""
+
+    if data["w_topo"] == 0.0:
+        return None
+    deg_array = data.get("deg_array")
+    if deg_array is not None:
+        return deg_array
+    deg_list = data.get("deg_list")
+    if deg_list is not None:
+        deg_array = np.array(deg_list, dtype=float)
+        data["deg_array"] = deg_array
+        if cache is not None:
+            cache.deg_array = deg_array
+        return deg_array
+    return count
 
 
 def _ensure_cached_array(cache: DnfrCache | None, attr: str, shape, np):
@@ -915,53 +936,39 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
                 )
                 data["A"] = A
             if A is not None and getattr(A, "size", 0):
-                np.dot(A, cos_th, out=x)
-                np.dot(A, sin_th, out=y)
-                np.dot(A, epi, out=epi_sum)
-                np.dot(A, vf, out=vf_sum)
                 np.sum(A, axis=1, out=count)
+                component_sources = [cos_th, sin_th, epi, vf]
+                deg_column = None
+                deg_array = None
+                if deg_sum is not None:
+                    deg_array = _resolve_numpy_degree_array(
+                        data, count, cache=cache, np=np
+                    )
+                    if deg_array is not None:
+                        deg_column = len(component_sources)
+                        component_sources.append(deg_array)
+
+                stack_shape = (len(nodes), len(component_sources))
+                stacked = _ensure_cached_array(
+                    cache, "neighbor_component_stack_np", stack_shape, np
+                )
+                for col, src_vec in enumerate(component_sources):
+                    np.copyto(stacked[:, col], src_vec, casting="unsafe")
+
+                accum = _ensure_cached_array(
+                    cache, "neighbor_component_accum_np", stack_shape, np
+                )
+                np.dot(A, stacked, out=accum)
+
+                np.copyto(x, accum[:, 0], casting="unsafe")
+                np.copyto(y, accum[:, 1], casting="unsafe")
+                np.copyto(epi_sum, accum[:, 2], casting="unsafe")
+                np.copyto(vf_sum, accum[:, 3], casting="unsafe")
                 degs = None
-                if w_topo != 0.0:
-                    deg_array = data.get("deg_array")
-                    if deg_array is None:
-                        deg_list = data.get("deg_list")
-                        if deg_list is not None:
-                            deg_array = np.array(deg_list, dtype=float)
-                            data["deg_array"] = deg_array
-                            if cache is not None:
-                                cache.deg_array = deg_array
-                        else:
-                            deg_array = count
-                    if deg_sum is not None:
-                        np.dot(A, deg_array, out=deg_sum)
+                if deg_column is not None and deg_sum is not None:
+                    np.copyto(deg_sum, accum[:, deg_column], casting="unsafe")
                     degs = deg_array
                 return x, y, epi_sum, vf_sum, count, deg_sum, degs
-
-        A = data.get("A")
-        if A is not None and not prefer_sparse and getattr(A, "size", 0):
-            # ``prefer_sparse`` might have been toggled after the matrix was
-            # computed; if so we already returned above.
-            np.dot(A, cos_th, out=x)
-            np.dot(A, sin_th, out=y)
-            np.dot(A, epi, out=epi_sum)
-            np.dot(A, vf, out=vf_sum)
-            np.sum(A, axis=1, out=count)
-            degs = None
-            if w_topo != 0.0:
-                deg_array = data.get("deg_array")
-                if deg_array is None:
-                    deg_list = data.get("deg_list")
-                    if deg_list is not None:
-                        deg_array = np.array(deg_list, dtype=float)
-                        data["deg_array"] = deg_array
-                        if cache is not None:
-                            cache.deg_array = deg_array
-                    else:
-                        deg_array = count
-                if deg_sum is not None:
-                    np.dot(A, deg_array, out=deg_sum)
-                degs = deg_array
-            return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
         edge_src = data.get("edge_src")
         edge_dst = data.get("edge_dst")
@@ -975,24 +982,48 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
                 cache.edge_src = edge_src
                 cache.edge_dst = edge_dst
         if edge_src.size:
-            np.add.at(x, edge_src, np.take(cos_th, edge_dst))
-            np.add.at(y, edge_src, np.take(sin_th, edge_dst))
-            np.add.at(epi_sum, edge_src, np.take(epi, edge_dst))
-            np.add.at(vf_sum, edge_src, np.take(vf, edge_dst))
             np.add.at(count, edge_src, 1.0)
-        if w_topo != 0.0:
-            deg_array = data.get("deg_array")
-            if deg_array is None:
-                deg_list = data.get("deg_list")
-                if deg_list is not None:
-                    deg_array = np.array(deg_list, dtype=float)
-                    data["deg_array"] = deg_array
-                    if cache is not None:
-                        cache.deg_array = deg_array
-                else:
-                    deg_array = count
-            if deg_sum is not None and edge_src.size:
-                np.add.at(deg_sum, edge_src, np.take(deg_array, edge_dst))
+
+        component_sources = [cos_th, sin_th, epi, vf]
+        deg_column = None
+        deg_array = None
+        if deg_sum is not None:
+            deg_array = _resolve_numpy_degree_array(
+                data, count, cache=cache, np=np
+            )
+            if deg_array is not None:
+                deg_column = len(component_sources)
+                component_sources.append(deg_array)
+
+        stack_shape = (len(nodes), len(component_sources))
+        stacked = _ensure_cached_array(
+            cache, "neighbor_component_stack_np", stack_shape, np
+        )
+        for col, src_vec in enumerate(component_sources):
+            np.copyto(stacked[:, col], src_vec, casting="unsafe")
+
+        edge_shape = (edge_src.size, len(component_sources))
+        edge_values = _ensure_cached_array(
+            cache, "edge_component_values_np", edge_shape, np
+        )
+        if edge_values.size:
+            for col in range(len(component_sources)):
+                np.take(stacked[:, col], edge_dst, out=edge_values[:, col])
+
+        accum = _ensure_cached_array(
+            cache, "neighbor_component_accum_np", stack_shape, np
+        )
+        accum.fill(0.0)
+        if edge_values.size:
+            np.add.at(accum, edge_src, edge_values)
+
+        np.copyto(x, accum[:, 0], casting="unsafe")
+        np.copyto(y, accum[:, 1], casting="unsafe")
+        np.copyto(epi_sum, accum[:, 2], casting="unsafe")
+        np.copyto(vf_sum, accum[:, 3], casting="unsafe")
+        degs = None
+        if deg_column is not None and deg_sum is not None:
+            np.copyto(deg_sum, accum[:, deg_column], casting="unsafe")
             degs = deg_array
         return x, y, epi_sum, vf_sum, count, deg_sum, degs
     else:
@@ -1007,15 +1038,32 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
         deg_list = data.get("deg_list")
         for i, node in enumerate(nodes):
             deg_i = degs_list[i] if degs_list is not None else 0.0
+            x_i = x[i]
+            y_i = y[i]
+            epi_i = epi_sum[i]
+            vf_i = vf_sum[i]
+            count_i = count[i]
+            deg_acc = deg_sum[i] if deg_sum is not None else 0.0
             for v in G.neighbors(node):
                 j = idx[v]
-                x[i] += cos_th[j]
-                y[i] += sin_th[j]
-                epi_sum[i] += epi[j]
-                vf_sum[i] += vf[j]
-                count[i] += 1
+                cos_j = cos_th[j]
+                sin_j = sin_th[j]
+                epi_j = epi[j]
+                vf_j = vf[j]
+                x_i += cos_j
+                y_i += sin_j
+                epi_i += epi_j
+                vf_i += vf_j
+                count_i += 1
                 if deg_sum is not None:
-                    deg_sum[i] += deg_list[j] if deg_list is not None else deg_i
+                    deg_acc += deg_list[j] if deg_list is not None else deg_i
+            x[i] = x_i
+            y[i] = y_i
+            epi_sum[i] = epi_i
+            vf_sum[i] = vf_i
+            count[i] = count_i
+            if deg_sum is not None:
+                deg_sum[i] = deg_acc
         return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
 
 
