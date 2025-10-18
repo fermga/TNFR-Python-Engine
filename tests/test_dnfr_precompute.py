@@ -131,7 +131,7 @@ def test_prepare_reuses_neighbor_workspace_vectorized():
 
     reused = _prepare_dnfr_data(G)
     assert reused["neighbor_workspace_np"] is workspace_first
-    assert reused["neighbor_contrib_np"] is data["neighbor_contrib_np"]
+    assert reused["neighbor_edge_weights_np"] is data["neighbor_edge_weights_np"]
 
     _compute_dnfr(G, reused)
     assert reused["neighbor_workspace_np"] is cache.neighbor_workspace_np
