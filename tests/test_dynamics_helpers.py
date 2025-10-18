@@ -127,3 +127,43 @@ def test_default_selector_refreshes_norms(graph_canon):
     accel_norm = abs(get_attr(nd, accel_alias, 0.0)) / norms_updated["accel_max"]
     assert dnfr_norm == pytest.approx(1.0)
     assert accel_norm == pytest.approx(1.0)
+
+
+def test_prepare_dnfr_passes_configured_jobs(monkeypatch, graph_canon):
+    G = graph_canon()
+    dnfr_alias = get_aliases("DNFR")
+    for node in range(2):
+        G.add_node(node)
+    G.add_edge(0, 1)
+    captured = {}
+
+    def fake_compute(graph, data, *, use_numpy=None, n_jobs=None):
+        captured["n_jobs"] = n_jobs
+        # emulate ΔNFR assignment to keep downstream expectations stable
+        for node in graph.nodes:
+            set_attr(graph.nodes[node], dnfr_alias, 0.0)
+
+    monkeypatch.setattr("tnfr.dynamics.dnfr._compute_dnfr", fake_compute)
+    G.graph["DNFR_N_JOBS"] = "4"
+    _prepare_dnfr(G, use_Si=False)
+    assert captured["n_jobs"] == 4
+
+
+def test_prepare_dnfr_supports_hooks_without_jobs_kw(graph_canon):
+    G = graph_canon()
+    dnfr_alias = get_aliases("DNFR")
+    for node in range(2):
+        G.add_node(node)
+    G.add_edge(0, 1)
+    G.graph["DNFR_N_JOBS"] = 3
+
+    calls = {"count": 0}
+
+    def hook(graph):
+        calls["count"] += 1
+        for node in graph.nodes:
+            set_attr(graph.nodes[node], dnfr_alias, 0.0)
+
+    G.graph["compute_delta_nfr"] = hook
+    _prepare_dnfr(G, use_Si=False)
+    assert calls["count"] == 1

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import math
 from collections import deque
 from operator import itemgetter
@@ -499,7 +500,43 @@ def _prepare_dnfr(G, *, use_Si: bool) -> None:
     compute_dnfr_cb = G.graph.get(
         "compute_delta_nfr", default_compute_delta_nfr
     )
-    compute_dnfr_cb(G)
+    raw_jobs = G.graph.get("DNFR_N_JOBS")
+    try:
+        n_jobs = None if raw_jobs is None else int(raw_jobs)
+    except (TypeError, ValueError):
+        n_jobs = None
+    else:
+        if n_jobs is not None and n_jobs <= 0:
+            n_jobs = None
+
+    supports_n_jobs = False
+    try:
+        signature = inspect.signature(compute_dnfr_cb)
+    except (TypeError, ValueError):
+        signature = None
+    if signature is not None:
+        params = signature.parameters
+        if "n_jobs" in params:
+            kind = params["n_jobs"].kind
+            supports_n_jobs = kind in (
+                inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                inspect.Parameter.KEYWORD_ONLY,
+            )
+        elif any(
+            p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()
+        ):
+            supports_n_jobs = True
+
+    if supports_n_jobs:
+        compute_dnfr_cb(G, n_jobs=n_jobs)
+    else:
+        try:
+            compute_dnfr_cb(G, n_jobs=n_jobs)
+        except TypeError as exc:
+            if "n_jobs" in str(exc):
+                compute_dnfr_cb(G)
+            else:
+                raise
     G.graph.pop("_sel_norms", None)
     if use_Si:
         compute_Si(G, inplace=True)
