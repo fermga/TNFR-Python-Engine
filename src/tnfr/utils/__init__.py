@@ -125,11 +125,13 @@ def __getattr__(name: str):  # pragma: no cover - trivial delegation
     if name in _DYNAMIC_EXPORTS:
         return getattr(_init, name)
     if name in _VALIDATOR_EXPORTS:
-        from .validators import run_validators, validate_window
-
         if name == "validate_window":
-            return validate_window
-        return run_validators
+            from .validators import validate_window as _validate_window
+
+            return _validate_window
+        from .validators import run_validators as _run_validators
+
+        return _run_validators
     raise AttributeError(name)
 
 
