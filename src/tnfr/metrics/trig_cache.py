@@ -11,10 +11,9 @@ from dataclasses import dataclass
 from typing import Any, Iterable, Mapping
 
 from ..alias import get_attr
-from ..utils.cache import edge_version_cache
 from ..constants import get_aliases
 from ..types import GraphLike
-from ..utils import get_numpy
+from ..utils import edge_version_cache, get_numpy
 
 ALIAS_THETA = get_aliases("THETA")
 

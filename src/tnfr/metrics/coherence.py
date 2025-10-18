@@ -15,7 +15,6 @@ from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import ensure_history, append_metric
 from ..alias import collect_attr, get_attr, set_attr
 from ..helpers.numeric import clamp01
-from ..utils.cache import ensure_node_index_map
 from .common import compute_coherence, min_max_range
 from .trig_cache import compute_theta_trig, get_trig_cache
 from ..observers import (
@@ -26,7 +25,12 @@ from ..observers import (
     phase_sync,
 )
 from ..sense import sigma_vector
-from ..utils import get_logger, get_numpy, normalize_weights
+from ..utils import (
+    ensure_node_index_map,
+    get_logger,
+    get_numpy,
+    normalize_weights,
+)
 
 logger = get_logger(__name__)
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..utils.cache import cached_node_list
+from ..utils import cached_node_list
 from ..rng import _rng_for_step, base_seed
 
 __all__ = ("update_node_sample",)
@@ -12,8 +12,8 @@ def update_node_sample(G, *, step: int) -> None:
     The sample is limited by ``UM_CANDIDATE_COUNT`` and refreshed every
     simulation step. When the network is small (``< 50`` nodes) or the limit
     is non‑positive, the full node set is used and sampling is effectively
-    disabled. A snapshot of nodes is cached via a
-    :class:`~tnfr.utils.cache.NodeCache` instance stored in
+    disabled. A snapshot of nodes is cached via the NodeCache helper from
+    ``tnfr.utils`` stored in
     ``G.graph['_node_list_cache']`` and reused across steps; it is only refreshed
     when the graph size changes. Sampling operates directly on the cached
     tuple of nodes.
