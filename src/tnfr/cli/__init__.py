@@ -23,7 +23,7 @@ from .execution import (
     resolve_program,
 )
 from .. import __version__
-from ..utils import get_logger
+from ..utils import _configure_root, get_logger
 
 logger = get_logger(__name__)
 
@@ -43,9 +43,19 @@ __all__ = (
 
 
 def main(argv: Optional[list[str]] = None) -> int:
-    logging.basicConfig(
-        level=logging.INFO, format="%(message)s", stream=sys.stdout, force=True
-    )
+    _configure_root()
+
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+
+    formatter = logging.Formatter("%(message)s")
+    for handler in list(root.handlers):
+        root.removeHandler(handler)
+
+    handler = logging.StreamHandler(stream=sys.stdout)
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(formatter)
+    root.addHandler(handler)
 
     p = argparse.ArgumentParser(
         prog="tnfr",
