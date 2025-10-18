@@ -744,12 +744,10 @@ def test_broadcast_accumulation_dense_graph_equivalence():
 
     cache = data_vec.get("cache")
     assert cache is not None
-    flat = cache.neighbor_flat_index_np
-    offsets = cache.neighbor_offsets_np
+    contrib = cache.neighbor_contrib_np
     workspace = cache.neighbor_workspace_np
     signature = cache.neighbor_accum_signature
-    assert isinstance(flat, np.ndarray)
-    assert isinstance(offsets, np.ndarray)
+    assert isinstance(contrib, np.ndarray)
     assert isinstance(workspace, np.ndarray)
 
     for idx, node in enumerate(dense_graph.nodes):
@@ -761,8 +759,7 @@ def test_broadcast_accumulation_dense_graph_equivalence():
     data_vec["A"] = None
     _compute_dnfr(dense_graph, data_vec)
 
-    assert id(cache.neighbor_flat_index_np) == id(flat)
-    assert id(cache.neighbor_offsets_np) == id(offsets)
+    assert id(cache.neighbor_contrib_np) == id(contrib)
     assert id(cache.neighbor_workspace_np) == id(workspace)
     assert cache.neighbor_accum_signature == signature
 
@@ -786,7 +783,7 @@ def test_broadcast_accumulation_invalidation_on_edge_change():
     cache = data_vec.get("cache")
     assert cache is not None
     old_signature = cache.neighbor_accum_signature
-    old_flat = cache.neighbor_flat_index_np.copy()
+    old_contrib_shape = cache.neighbor_contrib_np.shape
 
     base.add_edge(0, len(base) - 1)
     mark_dnfr_prep_dirty(base)
@@ -798,9 +795,7 @@ def test_broadcast_accumulation_invalidation_on_edge_change():
 
     new_signature = cache.neighbor_accum_signature
     assert new_signature != old_signature
-    assert cache.neighbor_flat_index_np.shape[0] != old_flat.shape[0] or not np.array_equal(
-        cache.neighbor_flat_index_np, old_flat
-    )
+    assert cache.neighbor_contrib_np.shape != old_contrib_shape
 
     loop_graph = base.copy()
     loop_graph.graph["vectorized_dnfr"] = False
