@@ -72,6 +72,40 @@ def test_public_api_missing_optional_dependency(monkeypatch):
     globals()["tnfr"] = importlib.import_module("tnfr")
 
 
+def test_public_api_missing_preparar_red_dependency(monkeypatch):
+    real_import_module = importlib.import_module
+
+    def fail_ontosim(name, package=None):
+        if package == "tnfr" and name == ".ontosim":
+            raise ImportError("No module named 'networkx'", name="networkx")
+        if package is None and name == "tnfr.ontosim":
+            raise ImportError("No module named 'networkx'", name="networkx")
+        return real_import_module(name, package)
+
+    with monkeypatch.context() as m:
+        _clear_tnfr_modules()
+        m.setattr(importlib, "import_module", fail_ontosim)
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            module = importlib.import_module("tnfr")
+        missing = [w for w in caught if issubclass(w.category, ImportWarning)]
+        assert missing
+        assert any(
+            "preparar_red" in str(w.message) and "networkx" in str(w.message)
+            for w in missing
+        )
+        assert "preparar_red" in module.__all__
+        assert not getattr(module, "_HAS_PREPARAR_RED", True)
+        with pytest.raises(ImportError) as excinfo:
+            module.preparar_red(None)
+        assert "networkx" in str(excinfo.value)
+        info = getattr(module.preparar_red, "__tnfr_missing_dependency__", {})
+        assert info.get("export") == "preparar_red"
+        assert info.get("missing") == "networkx"
+    _clear_tnfr_modules()
+    globals()["tnfr"] = importlib.import_module("tnfr")
+
+
 def test_public_api_internal_import_error(monkeypatch):
     real_import_module = importlib.import_module
 
