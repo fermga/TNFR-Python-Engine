@@ -8,9 +8,7 @@ from itertools import islice
 from collections.abc import Iterable, Mapping
 
 from .constants import get_param
-from .utils import validate_window
-from .utils.data import ensure_collection
-from .utils.init import get_logger
+from .utils import ensure_collection, get_logger, validate_window
 
 logger = get_logger(__name__)
 
