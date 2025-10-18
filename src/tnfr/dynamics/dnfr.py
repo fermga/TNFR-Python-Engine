@@ -20,7 +20,7 @@ from ..helpers.numeric import angle_diff
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import neighbor_phase_mean
 from ..metrics.trig_cache import compute_theta_trig
-from ..utils import cached_node_list, get_numpy, normalize_weights
+from ..utils import cached_nodes_and_A, get_numpy, normalize_weights
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
@@ -310,10 +310,11 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     np_module = get_numpy()
     use_numpy = _should_vectorize(G, np_module)
 
-    nodes = cached_node_list(G)
-    checksum = G.graph.get("_node_list_checksum")
-    if checksum is not None:
-        G.graph["_dnfr_nodes_checksum"] = checksum
+    nodes, A = cached_nodes_and_A(
+        G,
+        cache_size=cache_size,
+        require_numpy=False,
+    )
     cache: DnfrCache | None = G.graph.get("_dnfr_prep_cache")
     checksum = G.graph.get("_dnfr_nodes_checksum")
     dirty = bool(G.graph.pop("_dnfr_prep_dirty", False))
@@ -401,6 +402,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         "deg_array": deg_array,
         "edge_src": edge_src,
         "edge_dst": edge_dst,
+        "A": A,
         "cache_size": cache_size,
         "cache": cache,
     }
@@ -852,18 +854,7 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
         x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(
             data, np=np
         )
-        edge_src = data.get("edge_src")
-        edge_dst = data.get("edge_dst")
         cache = data.get("cache")
-        if edge_src is None or edge_dst is None:
-            edge_src, edge_dst = _build_edge_index_arrays(
-                G, nodes, data["idx"], np
-            )
-            data["edge_src"] = edge_src
-            data["edge_dst"] = edge_dst
-            if cache is not None:
-                cache.edge_src = edge_src
-                cache.edge_dst = edge_dst
         epi = data.get("epi_np")
         vf = data.get("vf_np")
         cos_th = data.get("cos_theta_np")
@@ -882,6 +873,41 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
                 cache.vf_np = vf
                 cache.cos_theta_np = cos_th
                 cache.sin_theta_np = sin_th
+        A = data.get("A")
+        if A is not None and getattr(A, "size", 0):
+            np.dot(A, cos_th, out=x)
+            np.dot(A, sin_th, out=y)
+            np.dot(A, epi, out=epi_sum)
+            np.dot(A, vf, out=vf_sum)
+            np.sum(A, axis=1, out=count)
+            degs = None
+            if w_topo != 0.0:
+                deg_array = data.get("deg_array")
+                if deg_array is None:
+                    deg_list = data.get("deg_list")
+                    if deg_list is not None:
+                        deg_array = np.array(deg_list, dtype=float)
+                        data["deg_array"] = deg_array
+                        if cache is not None:
+                            cache.deg_array = deg_array
+                    else:
+                        deg_array = count
+                if deg_sum is not None:
+                    np.dot(A, deg_array, out=deg_sum)
+                degs = deg_array
+            return x, y, epi_sum, vf_sum, count, deg_sum, degs
+
+        edge_src = data.get("edge_src")
+        edge_dst = data.get("edge_dst")
+        if edge_src is None or edge_dst is None:
+            edge_src, edge_dst = _build_edge_index_arrays(
+                G, nodes, data["idx"], np
+            )
+            data["edge_src"] = edge_src
+            data["edge_dst"] = edge_dst
+            if cache is not None:
+                cache.edge_src = edge_src
+                cache.edge_dst = edge_dst
         if edge_src.size:
             np.add.at(x, edge_src, np.take(cos_th, edge_dst))
             np.add.at(y, edge_src, np.take(sin_th, edge_dst))
