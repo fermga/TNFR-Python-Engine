@@ -18,12 +18,15 @@ from ..alias import (
 from ..constants import DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import angle_diff
 from ..metrics.common import merge_and_normalize_weights
-from ..metrics.trig import _phase_mean_from_iter, neighbor_phase_mean
+from ..metrics.trig import neighbor_phase_mean
 from ..metrics.trig_cache import compute_theta_trig
 from ..utils import cached_node_list, get_numpy, normalize_weights
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
+
+
+_MEAN_VECTOR_EPS = 1e-12
 
 
 
@@ -433,33 +436,44 @@ def _compute_neighbor_means(
     if is_numpy:
         mask = count > 0
         if np.any(mask):
-            th_bar[mask] = np.arctan2(
-                y[mask] / count[mask], x[mask] / count[mask]
-            )
-            epi_bar[mask] = epi_sum[mask] / count[mask]
-            vf_bar[mask] = vf_sum[mask] / count[mask]
+            idxs = np.nonzero(mask)[0]
+            inv = 1.0 / count[idxs]
+            cos_avg = x[idxs] * inv
+            sin_avg = y[idxs] * inv
+            lengths = np.hypot(cos_avg, sin_avg)
+            th_vals = np.arctan2(sin_avg, cos_avg)
+            if np.any(lengths <= _MEAN_VECTOR_EPS):
+                theta_src = data.get("theta_np")
+                if theta_src is None:
+                    theta_src = np.asarray(theta, dtype=float)
+                th_vals = np.where(
+                    lengths <= _MEAN_VECTOR_EPS,
+                    theta_src[idxs],
+                    th_vals,
+                )
+            th_bar[idxs] = th_vals
+            epi_bar[idxs] = epi_sum[idxs] * inv
+            vf_bar[idxs] = vf_sum[idxs] * inv
             if w_topo != 0.0 and deg_bar is not None and deg_sum is not None:
-                deg_bar[mask] = deg_sum[mask] / count[mask]
+                deg_bar[idxs] = deg_sum[idxs] * inv
         return th_bar, epi_bar, vf_bar, deg_bar
 
     n = len(theta)
-    cos_th = data["cos_theta"]
-    sin_th = data["sin_theta"]
-    idx = data["idx"]
-    nodes = data["nodes"]
-    deg_list = data.get("deg_list")
     for i in range(n):
         c = count[i]
-        if c:
-            node = nodes[i]
-            th_bar[i] = _phase_mean_from_iter(
-                ((cos_th[idx[v]], sin_th[idx[v]]) for v in G.neighbors(node)),
-                theta[i],
-            )
-            epi_bar[i] = epi_sum[i] / c
-            vf_bar[i] = vf_sum[i] / c
-            if w_topo != 0.0 and deg_bar is not None and deg_sum is not None:
-                deg_bar[i] = deg_sum[i] / c
+        if not c:
+            continue
+        inv = 1.0 / float(c)
+        cos_avg = x[i] * inv
+        sin_avg = y[i] * inv
+        if math.hypot(cos_avg, sin_avg) <= _MEAN_VECTOR_EPS:
+            th_bar[i] = theta[i]
+        else:
+            th_bar[i] = math.atan2(sin_avg, cos_avg)
+        epi_bar[i] = epi_sum[i] * inv
+        vf_bar[i] = vf_sum[i] * inv
+        if w_topo != 0.0 and deg_bar is not None and deg_sum is not None:
+            deg_bar[i] = deg_sum[i] * inv
     return th_bar, epi_bar, vf_bar, deg_bar
 
 
