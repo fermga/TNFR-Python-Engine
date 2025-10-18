@@ -57,6 +57,10 @@ class DnfrCache:
     neighbor_vf_sum: list[float]
     neighbor_count: list[float]
     neighbor_deg_sum: list[float] | None
+    th_bar: list[float] | None = None
+    epi_bar: list[float] | None = None
+    vf_bar: list[float] | None = None
+    deg_bar: list[float] | None = None
     degs: dict[Any, float] | None = None
     deg_list: list[float] | None = None
     theta_np: Any | None = None
@@ -74,6 +78,10 @@ class DnfrCache:
     neighbor_vf_sum_np: Any | None = None
     neighbor_count_np: Any | None = None
     neighbor_deg_sum_np: Any | None = None
+    th_bar_np: Any | None = None
+    epi_bar_np: Any | None = None
+    vf_bar_np: Any | None = None
+    deg_bar_np: Any | None = None
     grad_phase_np: Any | None = None
     grad_epi_np: Any | None = None
     grad_vf_np: Any | None = None
@@ -526,26 +534,121 @@ def _init_bar_arrays(data, *, degs=None, np=None):
     active.
     """
 
+    nodes = data["nodes"]
     theta = data["theta"]
     epi = data["epi"]
     vf = data["vf"]
     w_topo = data["w_topo"]
+    cache: DnfrCache | None = data.get("cache")
     if np is None:
         np = get_numpy()
     if np is not None:
-        th_bar = np.array(theta, dtype=float)
-        epi_bar = np.array(epi, dtype=float)
-        vf_bar = np.array(vf, dtype=float)
-        deg_bar = (
-            np.array(degs, dtype=float)
-            if w_topo != 0.0 and degs is not None
-            else None
-        )
+        size = len(theta)
+        if cache is not None:
+            th_bar = cache.th_bar_np
+            if th_bar is None or getattr(th_bar, "shape", None) != (size,):
+                th_bar = np.array(theta, dtype=float)
+            else:
+                np.copyto(th_bar, theta, casting="unsafe")
+            cache.th_bar_np = th_bar
+
+            epi_bar = cache.epi_bar_np
+            if epi_bar is None or getattr(epi_bar, "shape", None) != (size,):
+                epi_bar = np.array(epi, dtype=float)
+            else:
+                np.copyto(epi_bar, epi, casting="unsafe")
+            cache.epi_bar_np = epi_bar
+
+            vf_bar = cache.vf_bar_np
+            if vf_bar is None or getattr(vf_bar, "shape", None) != (size,):
+                vf_bar = np.array(vf, dtype=float)
+            else:
+                np.copyto(vf_bar, vf, casting="unsafe")
+            cache.vf_bar_np = vf_bar
+
+            if w_topo != 0.0 and degs is not None:
+                if isinstance(degs, dict):
+                    deg_size = len(nodes)
+                else:
+                    deg_size = len(degs)
+                deg_bar = cache.deg_bar_np
+                if (
+                    deg_bar is None
+                    or getattr(deg_bar, "shape", None) != (deg_size,)
+                ):
+                    if isinstance(degs, dict):
+                        deg_bar = np.array(
+                            [float(degs.get(node, 0.0)) for node in nodes],
+                            dtype=float,
+                        )
+                    else:
+                        deg_bar = np.array(degs, dtype=float)
+                else:
+                    if isinstance(degs, dict):
+                        for i, node in enumerate(nodes):
+                            deg_bar[i] = float(degs.get(node, 0.0))
+                    else:
+                        np.copyto(deg_bar, degs, casting="unsafe")
+                cache.deg_bar_np = deg_bar
+            else:
+                deg_bar = None
+                if cache is not None:
+                    cache.deg_bar_np = None
+        else:
+            th_bar = np.array(theta, dtype=float)
+            epi_bar = np.array(epi, dtype=float)
+            vf_bar = np.array(vf, dtype=float)
+            deg_bar = (
+                np.array(degs, dtype=float)
+                if w_topo != 0.0 and degs is not None
+                else None
+            )
     else:
-        th_bar = list(theta)
-        epi_bar = list(epi)
-        vf_bar = list(vf)
-        deg_bar = list(degs) if w_topo != 0.0 and degs is not None else None
+        size = len(theta)
+        if cache is not None:
+            th_bar = cache.th_bar
+            if th_bar is None or len(th_bar) != size:
+                th_bar = [0.0] * size
+            th_bar[:] = theta
+            cache.th_bar = th_bar
+
+            epi_bar = cache.epi_bar
+            if epi_bar is None or len(epi_bar) != size:
+                epi_bar = [0.0] * size
+            epi_bar[:] = epi
+            cache.epi_bar = epi_bar
+
+            vf_bar = cache.vf_bar
+            if vf_bar is None or len(vf_bar) != size:
+                vf_bar = [0.0] * size
+            vf_bar[:] = vf
+            cache.vf_bar = vf_bar
+
+            if w_topo != 0.0 and degs is not None:
+                if isinstance(degs, dict):
+                    deg_size = len(nodes)
+                else:
+                    deg_size = len(degs)
+                deg_bar = cache.deg_bar
+                if deg_bar is None or len(deg_bar) != deg_size:
+                    deg_bar = [0.0] * deg_size
+                if isinstance(degs, dict):
+                    for i, node in enumerate(nodes):
+                        deg_bar[i] = float(degs.get(node, 0.0))
+                else:
+                    for i, value in enumerate(degs):
+                        deg_bar[i] = float(value)
+                cache.deg_bar = deg_bar
+            else:
+                deg_bar = None
+                cache.deg_bar = None
+        else:
+            th_bar = list(theta)
+            epi_bar = list(epi)
+            vf_bar = list(vf)
+            deg_bar = (
+                list(degs) if w_topo != 0.0 and degs is not None else None
+            )
     return th_bar, epi_bar, vf_bar, deg_bar
 
 

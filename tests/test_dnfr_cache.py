@@ -131,11 +131,25 @@ def test_neighbor_sum_buffers_reused_and_results_stable(vectorized):
         cache.neighbor_count,
         cache.neighbor_deg_sum,
     )
+    bar_list_buffers = (
+        cache.th_bar,
+        cache.epi_bar,
+        cache.vf_bar,
+        cache.deg_bar,
+    )
     for buf in list_buffers[:-1]:
         assert isinstance(buf, list)
         assert len(buf) == len(G)
     if list_buffers[-1] is not None:
         assert len(list_buffers[-1]) == len(G)
+    if vectorized:
+        assert all(buf is None for buf in bar_list_buffers)
+    else:
+        for buf in bar_list_buffers[:-1]:
+            assert isinstance(buf, list)
+            assert len(buf) == len(G)
+        if bar_list_buffers[-1] is not None:
+            assert len(bar_list_buffers[-1]) == len(G)
 
     if vectorized:
         arr_buffers = (
@@ -146,23 +160,41 @@ def test_neighbor_sum_buffers_reused_and_results_stable(vectorized):
             cache.neighbor_count_np,
             cache.neighbor_deg_sum_np,
         )
+        bar_arr_buffers = (
+            cache.th_bar_np,
+            cache.epi_bar_np,
+            cache.vf_bar_np,
+            cache.deg_bar_np,
+        )
         for arr in arr_buffers[:-1]:
             assert arr is not None
             assert arr.shape == (len(G),)
         if arr_buffers[-1] is not None:
             assert arr_buffers[-1].shape == (len(G),)
+        for arr in bar_arr_buffers[:-1]:
+            assert arr is not None
+            assert arr.shape == (len(G),)
+        if bar_arr_buffers[-1] is not None:
+            assert bar_arr_buffers[-1].shape == (len(G),)
     else:
         assert cache.neighbor_x_np is None
         assert cache.neighbor_y_np is None
+        bar_arr_buffers = (None, None, None, None)
 
     # Corrupt buffers to ensure they are cleaned instead of recreated.
     for buf in list_buffers:
         if buf is not None and buf:
             buf[0] = 999.0
+    for buf in bar_list_buffers:
+        if buf is not None and buf:
+            buf[0] = 555.0
     if vectorized:
         for arr in arr_buffers:
             if arr is not None and arr.size:
                 arr.fill(777.0)
+        for arr in bar_arr_buffers:
+            if arr is not None and arr.size:
+                arr.fill(333.0)
 
     default_compute_delta_nfr(G)
     second = _collect_dnfr(G)
@@ -175,6 +207,12 @@ def test_neighbor_sum_buffers_reused_and_results_stable(vectorized):
     assert cache.neighbor_count is list_buffers[4]
     if list_buffers[5] is not None:
         assert cache.neighbor_deg_sum is list_buffers[5]
+    if cache.th_bar is not None:
+        assert cache.th_bar is bar_list_buffers[0]
+        assert cache.epi_bar is bar_list_buffers[1]
+        assert cache.vf_bar is bar_list_buffers[2]
+        if bar_list_buffers[3] is not None:
+            assert cache.deg_bar is bar_list_buffers[3]
     if vectorized:
         assert cache.neighbor_x_np is arr_buffers[0]
         assert cache.neighbor_y_np is arr_buffers[1]
@@ -183,6 +221,11 @@ def test_neighbor_sum_buffers_reused_and_results_stable(vectorized):
         assert cache.neighbor_count_np is arr_buffers[4]
         if arr_buffers[5] is not None:
             assert cache.neighbor_deg_sum_np is arr_buffers[5]
+        assert cache.th_bar_np is bar_arr_buffers[0]
+        assert cache.epi_bar_np is bar_arr_buffers[1]
+        assert cache.vf_bar_np is bar_arr_buffers[2]
+        if bar_arr_buffers[3] is not None:
+            assert cache.deg_bar_np is bar_arr_buffers[3]
 
     # Los resultados deben permanecer invariantes tras recomputar.
     for before, after in zip(first, second):
