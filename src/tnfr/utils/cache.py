@@ -509,11 +509,24 @@ def edge_version_cache(
 
 
 def cached_nodes_and_A(
-    G: nx.Graph, *, cache_size: int | None = 1, require_numpy: bool = False
+    G: nx.Graph,
+    *,
+    cache_size: int | None = 1,
+    require_numpy: bool = False,
+    prefer_sparse: bool = False,
+    nodes: tuple[Any, ...] | None = None,
 ) -> tuple[tuple[Any, ...], Any]:
-    """Return cached nodes tuple and adjacency matrix for ``G``."""
+    """Return cached nodes tuple and adjacency matrix for ``G``.
 
-    nodes = cached_node_list(G)
+    When ``prefer_sparse`` is true the adjacency matrix construction is skipped
+    unless a caller later requests it explicitly.  This lets ΔNFR reuse the
+    edge-index buffers stored on :class:`~tnfr.dynamics.dnfr.DnfrCache` without
+    paying for ``nx.to_numpy_array`` on sparse graphs while keeping the
+    canonical cache interface unchanged.
+    """
+
+    if nodes is None:
+        nodes = cached_node_list(G)
     graph = G.graph
 
     checksum = getattr(graph.get("_node_list_cache"), "checksum", None)
@@ -531,7 +544,7 @@ def cached_nodes_and_A(
 
     def builder() -> tuple[tuple[Any, ...], Any]:
         np = get_numpy()
-        if np is None:
+        if np is None or prefer_sparse:
             return nodes, None
         A = nx.to_numpy_array(G, nodelist=nodes, weight=None, dtype=float)
         return nodes, A
