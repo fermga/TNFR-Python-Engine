@@ -1,4 +1,4 @@
-"""Tests for ``value_utils`` module."""
+"""Tests for ``tnfr.utils.data`` helpers."""
 
 import logging
 
