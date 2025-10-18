@@ -487,6 +487,10 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         cache.degs = None
         cache.deg_list = None
         cache.deg_array = None
+        cache.edge_src = None
+        cache.edge_dst = None
+        cache.edge_signature = None
+        cache.neighbor_accum_signature = None
         degree_map = None
     if degree_map is None or len(degree_map) != len(G):
         degree_map = dict(G.degree())
@@ -533,6 +537,22 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
                 cache.edge_dst = edge_dst
         else:
             edge_src, edge_dst = _build_edge_index_arrays(G, nodes, idx, np_module)
+
+        if cache is not None:
+            for attr in (
+                "neighbor_workspace_np",
+                "neighbor_contrib_np",
+                "neighbor_offsets_np",
+                "neighbor_flat_index_np",
+            ):
+                arr = getattr(cache, attr, None)
+                if arr is not None:
+                    data[attr] = arr
+        if edge_src is not None and edge_dst is not None:
+            signature = (id(edge_src), id(edge_dst), len(nodes))
+            data["edge_signature"] = signature
+            if cache is not None:
+                cache.edge_signature = signature
     else:
         theta_np = None
         epi_np = None
@@ -1139,13 +1159,13 @@ def _accumulate_neighbors_broadcasted(
 
     contrib = _ensure_cached_array(cache, "neighbor_contrib_np", (edge_count, columns), np)
     if edge_count:
-        np.copyto(contrib[:, 0], cos[edge_dst], casting="unsafe")
-        np.copyto(contrib[:, 1], sin[edge_dst], casting="unsafe")
-        np.copyto(contrib[:, 2], epi[edge_dst], casting="unsafe")
-        np.copyto(contrib[:, 3], vf[edge_dst], casting="unsafe")
+        np.take(cos, edge_dst, out=contrib[:, 0])
+        np.take(sin, edge_dst, out=contrib[:, 1])
+        np.take(epi, edge_dst, out=contrib[:, 2])
+        np.take(vf, edge_dst, out=contrib[:, 3])
         contrib[:, 4].fill(1.0)
         if deg_column is not None:
-            np.copyto(contrib[:, deg_column], deg_array[edge_dst], casting="unsafe")
+            np.take(deg_array, edge_dst, out=contrib[:, deg_column])
     elif getattr(contrib, "size", 0):
         contrib.fill(0.0)
 
@@ -1213,16 +1233,18 @@ def _accumulate_neighbors_broadcasted(
 
 
 def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
-    np_module = get_numpy()
-    if np_module is not None and G.graph.get("vectorized_dnfr") is False:
-        np_module = None
+    """Build neighbour accumulators honouring the requested NumPy path."""
+
     nodes = data["nodes"]
-    if not nodes:
-        if np_module is not None:
-            return _init_neighbor_sums(data, np=np_module)
-        return _init_neighbor_sums(data)
+    np_module = get_numpy() if use_numpy else None
+    if np_module is None:
+        if not nodes:
+            return _init_neighbor_sums(data)
 
     if np_module is not None:
+        if not nodes:
+            return _init_neighbor_sums(data, np=np_module)
+
         x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(
             data, np=np_module
         )
@@ -1266,6 +1288,9 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
             deg_sum=deg_sum,
             np=np_module,
         )
+
+    if not nodes:
+        return _init_neighbor_sums(data)
 
     x, y, epi_sum, vf_sum, count, deg_sum, degs_list = _init_neighbor_sums(data)
     idx = data["idx"]
