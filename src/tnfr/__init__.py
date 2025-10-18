@@ -14,16 +14,16 @@ The imports are grouped as follows:
 ``step`` / ``run``
     Provided by :mod:`tnfr.dynamics`.  These helpers rely on the
     machinery defined within the :mod:`tnfr.dynamics` package (operator
-    orchestration, validation hooks and metrics integration) and do not
-    require additional third-party packages.
+    orchestration, validation hooks and metrics integration) and require
+    the ``networkx`` package for graph handling.
 
 ``preparar_red``
     Defined in :mod:`tnfr.ontosim`.  Besides :mod:`tnfr.ontosim`
     itself, the helper imports :mod:`tnfr.callback_utils`,
     :mod:`tnfr.constants`, :mod:`tnfr.dynamics`, :mod:`tnfr.glyph_history`,
     :mod:`tnfr.initialization` and :mod:`tnfr.utils` to assemble the
-    graph preparation pipeline.  No third-party packages are required at
-    import time.
+    graph preparation pipeline.  It also requires ``networkx`` at import
+    time.
 
 ``create_nfr`` / ``run_sequence``
     Re-exported from :mod:`tnfr.structural`.  They depend on
@@ -49,11 +49,11 @@ from .ontosim import preparar_red
 EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
     "step": {
         "submodules": ("tnfr.dynamics",),
-        "third_party": (),
+        "third_party": ("networkx",),
     },
     "run": {
         "submodules": ("tnfr.dynamics",),
-        "third_party": (),
+        "third_party": ("networkx",),
     },
     "preparar_red": {
         "submodules": (
@@ -65,7 +65,7 @@ EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
             "tnfr.initialization",
             "tnfr.utils",
         ),
-        "third_party": (),
+        "third_party": ("networkx",),
     },
     "create_nfr": {
         "submodules": (

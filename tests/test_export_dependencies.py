@@ -18,7 +18,19 @@ def test_preparar_red_dependencies():
 
     preparar = EXPORT_DEPENDENCIES["preparar_red"]
     assert set(preparar["submodules"]) == expected
-    assert preparar["third_party"] == ()
+    assert preparar["third_party"] == ("networkx",)
+
+
+def test_dynamics_helpers_dependencies():
+    from tnfr import EXPORT_DEPENDENCIES
+
+    expected_submodules = {"tnfr.dynamics"}
+    expected_third_party = ("networkx",)
+
+    for helper in ("step", "run"):
+        deps = EXPORT_DEPENDENCIES[helper]
+        assert set(deps["submodules"]) == expected_submodules
+        assert deps["third_party"] == expected_third_party
 
 
 def test_structural_helpers_dependencies():
