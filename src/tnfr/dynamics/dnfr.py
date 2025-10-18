@@ -1168,83 +1168,61 @@ def _accumulate_neighbors_broadcasted(
     n = x.shape[0]
     edge_count = int(edge_src.size)
 
-    columns = 5  # cos, sin, epi, vf, count
-    deg_column = None
-    if deg_sum is not None and deg_array is not None:
-        deg_column = columns
-        columns += 1
-
-    workspace = _ensure_cached_array(cache, "neighbor_workspace_np", (n, columns), np)
-    weights = None
-    if cache is not None:
-        weights = cache.neighbor_edge_weights_np
-        if weights is None or getattr(weights, "shape", None) != (edge_count,):
-            weights = np.empty((edge_count,), dtype=float)
-            cache.neighbor_edge_weights_np = weights
-    elif edge_count:
-        weights = np.empty((edge_count,), dtype=float)
-    else:
-        weights = None
-
-    workspace.fill(0.0)
+    base_columns = 4  # cos, sin, epi, vf
+    use_topology = deg_sum is not None and deg_array is not None
+    workspace_columns = base_columns + (1 if use_topology else 0)
 
     if cache is not None:
         base_signature = (id(edge_src), id(edge_dst), n)
         cache.edge_signature = base_signature
-        cache.neighbor_accum_signature = (base_signature, columns)
+        cache.neighbor_accum_signature = (base_signature, workspace_columns, edge_count)
+        workspace = cache.neighbor_workspace_np
+        if (
+            workspace is None
+            or getattr(workspace, "shape", None) != (edge_count, workspace_columns)
+        ):
+            workspace = np.empty((edge_count, workspace_columns), dtype=float)
+            cache.neighbor_workspace_np = workspace
+        weights = cache.neighbor_edge_weights_np
+        if weights is None or getattr(weights, "shape", None) != (edge_count,):
+            weights = np.empty((edge_count,), dtype=float)
+            cache.neighbor_edge_weights_np = weights
+    else:
+        workspace = np.empty((edge_count, workspace_columns), dtype=float)
+        weights = (
+            np.empty((edge_count,), dtype=float)
+            if edge_count
+            else np.empty((0,), dtype=float)
+        )
 
     if not edge_count:
-        # No edges means all accumulations remain zero.
         if count is not None:
             count.fill(0.0)
-        if deg_column is not None and deg_sum is not None:
+        if deg_sum is not None:
             deg_sum.fill(0.0)
-        np.copyto(x, workspace[:, 0], casting="unsafe")
-        np.copyto(y, workspace[:, 1], casting="unsafe")
-        np.copyto(epi_sum, workspace[:, 2], casting="unsafe")
-        np.copyto(vf_sum, workspace[:, 3], casting="unsafe")
-        if count is None:
-            workspace[:, 4].fill(0.0)
-        else:
-            np.copyto(count, workspace[:, 4], casting="unsafe")
         return {
             "workspace": workspace,
             "weights": weights,
         }
 
-    feature_columns: list[Any] = [
-        np.take(cos, edge_dst),
-        np.take(sin, edge_dst),
-        np.take(epi, edge_dst),
-        np.take(vf, edge_dst),
-    ]
+    # Gather neighbour features into cached edge-wise buffers and accumulate.
+    np.take(cos, edge_dst, out=workspace[:, 0])
+    np.take(sin, edge_dst, out=workspace[:, 1])
+    np.take(epi, edge_dst, out=workspace[:, 2])
+    np.take(vf, edge_dst, out=workspace[:, 3])
 
-    if weights is None:
-        ones = np.ones((edge_count,), dtype=float)
-        weights = ones
-    else:
-        weights.fill(1.0)
-        ones = weights
+    np.add.at(x, edge_src, workspace[:, 0])
+    np.add.at(y, edge_src, workspace[:, 1])
+    np.add.at(epi_sum, edge_src, workspace[:, 2])
+    np.add.at(vf_sum, edge_src, workspace[:, 3])
 
-    feature_columns.append(ones)
-
-    if deg_column is not None and deg_array is not None:
-        feature_columns.append(np.take(deg_array, edge_dst))
-
-    stacked = np.column_stack(feature_columns)
-
-    np.add.at(workspace, edge_src, stacked)
-
-    np.copyto(x, workspace[:, 0], casting="unsafe")
-    np.copyto(y, workspace[:, 1], casting="unsafe")
-    np.copyto(epi_sum, workspace[:, 2], casting="unsafe")
-    np.copyto(vf_sum, workspace[:, 3], casting="unsafe")
     if count is not None:
-        np.copyto(count, workspace[:, 4], casting="unsafe")
-    else:
-        workspace[:, 4].fill(0.0)
-    if deg_column is not None and deg_sum is not None:
-        np.copyto(deg_sum, workspace[:, deg_column], casting="unsafe")
+        weights.fill(1.0)
+        np.add.at(count, edge_src, weights)
+
+    if use_topology:
+        np.take(deg_array, edge_dst, out=workspace[:, -1])
+        np.add.at(deg_sum, edge_src, workspace[:, -1])
 
     return {
         "workspace": workspace,
