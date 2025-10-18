@@ -228,10 +228,12 @@ def _ensure_numpy_vectors(cache: DnfrCache, np):
 def _ensure_numpy_degrees(cache: DnfrCache, deg_list, np):
     """Initialise/update NumPy array mirroring ``deg_list``."""
 
-    if cache is None or deg_list is None:
+    if deg_list is None:
         if cache is not None:
             cache.deg_array = None
         return None
+    if cache is None:
+        return np.array(deg_list, dtype=float)
     arr = cache.deg_array
     if arr is None or len(arr) != len(deg_list):
         arr = np.array(deg_list, dtype=float)
@@ -369,30 +371,44 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     w_epi = float(weights.get("epi", 0.0))
     w_vf = float(weights.get("vf", 0.0))
     w_topo = float(weights.get("topo", 0.0))
-    degs = cache.degs if cache else None
-    if w_topo != 0 and (dirty or degs is None):
-        degs = dict(G.degree())
-        cache.degs = degs
-    elif w_topo == 0:
-        degs = None
+    degree_map: dict[Any, float] | None = cache.degs if cache else None
+    if cache is not None and dirty:
+        cache.degs = None
+        cache.deg_list = None
+        cache.deg_array = None
+        degree_map = None
+    if degree_map is None or len(degree_map) != len(G):
+        degree_map = dict(G.degree())
         if cache is not None:
-            cache.degs = None
+            cache.degs = degree_map
 
     G.graph["_dnfr_prep_dirty"] = False
 
-    deg_list: list[float] | None = None
-    if w_topo != 0.0 and degs is not None:
-        if cache.deg_list is None or dirty or len(cache.deg_list) != len(nodes):
-            cache.deg_list = [float(degs.get(node, 0.0)) for node in nodes]
-        deg_list = cache.deg_list
+    if cache is not None and cache.deg_list is not None and not dirty and len(cache.deg_list) == len(nodes):
+        deg_list: list[float] | None = cache.deg_list
     else:
-        cache.deg_list = None
+        deg_list = [float(degree_map.get(node, 0.0)) for node in nodes]
+        if cache is not None:
+            cache.deg_list = deg_list
+
+    if w_topo != 0.0:
+        degs = degree_map
+    else:
+        degs = None
+
+    deg_array = None
+    if np_module is not None and deg_list is not None:
+        if cache is not None:
+            deg_array = _ensure_numpy_degrees(cache, deg_list, np_module)
+        else:
+            deg_array = np_module.array(deg_list, dtype=float)
+    elif cache is not None:
+        cache.deg_array = None
 
     if use_numpy:
         theta_np, epi_np, vf_np, cos_theta_np, sin_theta_np = _ensure_numpy_vectors(
             cache, np_module
         )
-        deg_array = _ensure_numpy_degrees(cache, deg_list, np_module)
         edge_src = None
         edge_dst = None
         if cache is not None:
@@ -412,8 +428,6 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         vf_np = None
         cos_theta_np = None
         sin_theta_np = None
-        deg_array = None
-        cache.deg_array = None
         edge_src = None
         edge_dst = None
         if cache is not None:
@@ -1047,15 +1061,23 @@ def _accumulate_neighbors_numpy(
             cache.edge_src = edge_src
             cache.edge_dst = edge_dst
 
-    count.fill(0.0)
     x.fill(0.0)
     y.fill(0.0)
     epi_sum.fill(0.0)
     vf_sum.fill(0.0)
 
     edge_count = int(edge_src.size)
-    if edge_count:
-        np.add.at(count, edge_src, 1.0)
+    deg_array_cached = data.get("deg_array")
+    if (
+        deg_array_cached is not None
+        and getattr(deg_array_cached, "shape", None) is not None
+        and deg_array_cached.shape[0] == len(nodes)
+    ):
+        np.copyto(count, deg_array_cached, casting="unsafe")
+    else:
+        count.fill(0.0)
+        if edge_count:
+            np.add.at(count, edge_src, 1.0)
     deg_array = None
     if deg_sum is not None:
         deg_sum.fill(0.0)
@@ -1110,6 +1132,8 @@ def _accumulate_neighbors_numpy(
         if deg_array is not None and deg_sum is not None:
             np.add.at(deg_sum, edge_src, deg_array[edge_dst])
 
+    if deg_array is None:
+        deg_array = deg_array_cached if deg_array_cached is not None else None
     degs = deg_array if deg_array is not None else None
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 

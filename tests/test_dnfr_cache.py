@@ -8,6 +8,7 @@ import networkx as nx
 import tnfr.utils.init as utils_init
 
 from tnfr.dynamics import default_compute_delta_nfr
+from tnfr.dynamics.dnfr import _accumulate_neighbors_numpy, _prepare_dnfr_data
 from tnfr.constants import (
     THETA_PRIMARY,
     EPI_PRIMARY,
@@ -59,6 +60,155 @@ def _setup_graph():
 
 def _collect_dnfr(G):
     return [float(G.nodes[n].get(DNFR_PRIMARY, 0.0)) for n in G.nodes]
+
+
+def test_prepare_dnfr_data_populates_degree_cache_without_topology_weight():
+    np = pytest.importorskip("numpy")
+
+    G = _setup_graph()
+    G.graph["vectorized_dnfr"] = True
+
+    data = _prepare_dnfr_data(G)
+
+    deg_list = data["deg_list"]
+    assert isinstance(deg_list, list)
+    assert deg_list == pytest.approx([1.0, 2.0, 1.0])
+
+    deg_array = data["deg_array"]
+    assert deg_array is not None
+    assert getattr(deg_array, "shape", None) == (len(deg_list),)
+    np.testing.assert_allclose(deg_array, np.array([1.0, 2.0, 1.0]))
+
+    cache = data["cache"]
+    assert cache is not None
+    assert cache.deg_list is deg_list
+    assert cache.deg_array is deg_array
+
+
+def test_accumulate_neighbors_numpy_prefers_degree_cache():
+    np = pytest.importorskip("numpy")
+
+    G = _setup_graph()
+    G.graph["vectorized_dnfr"] = True
+
+    data = _prepare_dnfr_data(G)
+    cache = data["cache"]
+
+    fake_deg = np.array([10.0, 20.0, 30.0])
+    data["deg_array"] = fake_deg
+    if cache is not None:
+        cache.deg_array = fake_deg
+
+    n = len(data["nodes"])
+    x = np.zeros(n, dtype=float)
+    y = np.zeros(n, dtype=float)
+    epi_sum = np.zeros(n, dtype=float)
+    vf_sum = np.zeros(n, dtype=float)
+    count = np.zeros(n, dtype=float)
+
+    _accumulate_neighbors_numpy(
+        G,
+        data,
+        x=x,
+        y=y,
+        epi_sum=epi_sum,
+        vf_sum=vf_sum,
+        count=count,
+        deg_sum=None,
+        np=np,
+    )
+    np.testing.assert_allclose(count, fake_deg)
+
+    data["deg_array"] = None
+    if cache is not None:
+        cache.deg_array = None
+
+    x2 = np.zeros(n, dtype=float)
+    y2 = np.zeros(n, dtype=float)
+    epi_sum2 = np.zeros(n, dtype=float)
+    vf_sum2 = np.zeros(n, dtype=float)
+    count2 = np.zeros(n, dtype=float)
+
+    _accumulate_neighbors_numpy(
+        G,
+        data,
+        x=x2,
+        y=y2,
+        epi_sum=epi_sum2,
+        vf_sum=vf_sum2,
+        count=count2,
+        deg_sum=None,
+        np=np,
+    )
+    np.testing.assert_allclose(count2, np.array([1.0, 2.0, 1.0]))
+
+
+def test_degree_cache_refreshes_after_graph_mutation():
+    np = pytest.importorskip("numpy")
+
+    G = _setup_graph()
+    G.graph["vectorized_dnfr"] = True
+
+    data_before = _prepare_dnfr_data(G)
+    cache_before = data_before["cache"]
+    assert cache_before is not None
+
+    deg_array_before = np.array(data_before["deg_array"], copy=True)
+    np.testing.assert_allclose(deg_array_before, np.array([1.0, 2.0, 1.0]))
+
+    n = len(data_before["nodes"])
+    x = np.zeros(n, dtype=float)
+    y = np.zeros(n, dtype=float)
+    epi_sum = np.zeros(n, dtype=float)
+    vf_sum = np.zeros(n, dtype=float)
+    count = np.zeros(n, dtype=float)
+
+    _accumulate_neighbors_numpy(
+        G,
+        data_before,
+        x=x,
+        y=y,
+        epi_sum=epi_sum,
+        vf_sum=vf_sum,
+        count=count,
+        deg_sum=None,
+        np=np,
+    )
+    np.testing.assert_allclose(count, deg_array_before)
+
+    G.add_edge(0, 2)
+    increment_edge_version(G)
+
+    data_after = _prepare_dnfr_data(G)
+    cache_after = data_after["cache"]
+    assert cache_after is not None
+    assert cache_after is not cache_before
+
+    expected_deg = np.array([2.0, 2.0, 2.0])
+    np.testing.assert_allclose(data_after["deg_array"], expected_deg)
+    assert data_after["deg_list"] == pytest.approx(expected_deg.tolist())
+    assert cache_after.deg_array is data_after["deg_array"]
+    assert cache_after.deg_list is data_after["deg_list"]
+
+    x_new = np.zeros(len(data_after["nodes"]), dtype=float)
+    y_new = np.zeros(len(data_after["nodes"]), dtype=float)
+    epi_sum_new = np.zeros(len(data_after["nodes"]), dtype=float)
+    vf_sum_new = np.zeros(len(data_after["nodes"]), dtype=float)
+    count_new = np.zeros(len(data_after["nodes"]), dtype=float)
+
+    _accumulate_neighbors_numpy(
+        G,
+        data_after,
+        x=x_new,
+        y=y_new,
+        epi_sum=epi_sum_new,
+        vf_sum=vf_sum_new,
+        count=count_new,
+        deg_sum=None,
+        np=np,
+    )
+    np.testing.assert_allclose(count_new, expected_deg)
+    np.testing.assert_allclose(deg_array_before, np.array([1.0, 2.0, 1.0]))
 
 
 @pytest.mark.parametrize("vectorized", [False, True])
