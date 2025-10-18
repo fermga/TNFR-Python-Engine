@@ -1,14 +1,23 @@
 """Pruebas de dynamics vectorized."""
 
 import math
+import time
 
 import pytest
 import networkx as nx
+
+from tnfr.dynamics.dnfr import (
+    _build_neighbor_sums_common,
+    _compute_dnfr,
+    _prepare_dnfr_data,
+    _prefer_sparse_accumulation,
+)
 
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.constants import get_aliases
 from tnfr.alias import collect_attr, get_attr, set_attr
 from tnfr.helpers.numeric import angle_diff
+from tnfr.utils import cached_nodes_and_A
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
@@ -203,6 +212,82 @@ def _manual_dense_dnfr_expected(G):
         )
         expected.append(dnfr_value)
     return expected
+
+
+def test_sparse_graph_prefers_edge_accumulation_and_matches_dnfr():
+    np = pytest.importorskip("numpy")
+    del np  # only needed to guarantee NumPy availability for the heuristic
+
+    template = _build_weighted_graph(nx.path_graph, 96, 0.35)
+
+    G_vector = template.copy()
+    data = _prepare_dnfr_data(G_vector)
+    assert data["prefer_sparse"] is True
+    assert data["A"] is None
+    assert data["edge_count"] == G_vector.number_of_edges()
+    assert _prefer_sparse_accumulation(len(data["nodes"]), data["edge_count"])
+
+    # Vector ΔNFR must match the fallback computation while using cached edges.
+    _compute_dnfr(G_vector, data, use_numpy=True)
+    dnfr_vector = collect_attr(G_vector, G_vector.nodes, ALIAS_DNFR, 0.0)
+
+    G_fallback = template.copy()
+    G_fallback.graph["vectorized_dnfr"] = False
+    default_compute_delta_nfr(G_fallback)
+    dnfr_fallback = collect_attr(G_fallback, G_fallback.nodes, ALIAS_DNFR, 0.0)
+    assert dnfr_vector == pytest.approx(dnfr_fallback)
+
+    cache = data["cache"]
+    assert cache is not None
+    assert cache.edge_src is not None and cache.edge_dst is not None
+
+    # Compare runtimes between the sparse accumulation and a forced dense path.
+    loops = 10
+    sparse_data = data.copy()
+    sparse_data["prefer_sparse"] = True
+    sparse_data["A"] = None
+    start = time.perf_counter()
+    for _ in range(loops):
+        _build_neighbor_sums_common(G_vector, sparse_data, use_numpy=True)
+    sparse_time = time.perf_counter() - start
+
+    dense_data = data.copy()
+    dense_data["prefer_sparse"] = False
+    _, forced_A = cached_nodes_and_A(
+        G_vector,
+        cache_size=data["cache_size"],
+        require_numpy=True,
+        nodes=data["nodes"],
+        prefer_sparse=False,
+    )
+    dense_data["A"] = forced_A
+    start = time.perf_counter()
+    for _ in range(loops):
+        _build_neighbor_sums_common(G_vector, dense_data, use_numpy=True)
+    dense_time = time.perf_counter() - start
+
+    assert sparse_time * 2 < dense_time
+
+
+def test_dense_graph_keeps_dense_accumulation():
+    np = pytest.importorskip("numpy")
+    del np
+
+    G_dense = _build_weighted_graph(nx.complete_graph, 32, 0.2)
+    data = _prepare_dnfr_data(G_dense)
+    assert data["prefer_sparse"] is False
+    assert data["A"] is not None
+    assert not _prefer_sparse_accumulation(len(data["nodes"]), data["edge_count"])
+
+    # Dense computation still matches the fallback path.
+    _compute_dnfr(G_dense, data, use_numpy=True)
+    dnfr_dense = collect_attr(G_dense, G_dense.nodes, ALIAS_DNFR, 0.0)
+
+    G_fallback = G_dense.copy()
+    G_fallback.graph["vectorized_dnfr"] = False
+    default_compute_delta_nfr(G_fallback)
+    dnfr_fallback = collect_attr(G_fallback, G_fallback.nodes, ALIAS_DNFR, 0.0)
+    assert dnfr_dense == pytest.approx(dnfr_fallback)
 
 
 def test_dense_graph_dnfr_modes_stable():

@@ -20,7 +20,7 @@ from ..helpers.numeric import angle_diff
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import neighbor_phase_mean
 from ..metrics.trig_cache import compute_theta_trig
-from ..utils import cached_nodes_and_A, get_numpy, normalize_weights
+from ..utils import cached_node_list, cached_nodes_and_A, get_numpy, normalize_weights
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
@@ -310,10 +310,17 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     np_module = get_numpy()
     use_numpy = _should_vectorize(G, np_module)
 
+    nodes = cached_node_list(G)
+    edge_count = G.number_of_edges()
+    prefer_sparse = False
+    if use_numpy:
+        prefer_sparse = _prefer_sparse_accumulation(len(nodes), edge_count)
     nodes, A = cached_nodes_and_A(
         G,
         cache_size=cache_size,
         require_numpy=False,
+        prefer_sparse=prefer_sparse,
+        nodes=nodes,
     )
     cache: DnfrCache | None = G.graph.get("_dnfr_prep_cache")
     checksum = G.graph.get("_dnfr_nodes_checksum")
@@ -405,6 +412,8 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         "A": A,
         "cache_size": cache_size,
         "cache": cache,
+        "edge_count": edge_count,
+        "prefer_sparse": prefer_sparse,
     }
 
 
@@ -840,6 +849,23 @@ def _init_neighbor_sums(data, *, np=None):
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
 
+def _prefer_sparse_accumulation(n: int, edge_count: int | None) -> bool:
+    """Return ``True`` when edge accumulation is expected to be cheaper.
+
+    We compare the number of edges against ``n²`` because the dense matrix
+    multiplication used for neighbour sums costs Θ(n²) per component, while the
+    ``np.add.at`` path scales with Θ(n + m).  Using a 0.25 density cut keeps the
+    heuristic conservative while documenting the trade-off for TNFR traces.
+    """
+
+    if n == 0 or edge_count is None:
+        return False
+    # ``density`` is ``m / n²`` without double-counting edges since both
+    # strategies already account for undirected pairs.  Empirically the dense
+    # path wins for densities above 0.25 while sparse addition dominates below.
+    return edge_count * 4 < n * n
+
+
 def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
     np = get_numpy()
     nodes = data["nodes"]
@@ -851,6 +877,11 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
             )
         if not nodes:
             return None
+        prefer_sparse = data.get("prefer_sparse")
+        if prefer_sparse is None:
+            prefer_sparse = _prefer_sparse_accumulation(
+                len(nodes), data.get("edge_count")
+            )
         x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(
             data, np=np
         )
@@ -873,8 +904,43 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
                 cache.vf_np = vf
                 cache.cos_theta_np = cos_th
                 cache.sin_theta_np = sin_th
+        if not prefer_sparse:
+            A = data.get("A")
+            if A is None:
+                _, A = cached_nodes_and_A(
+                    G,
+                    cache_size=data.get("cache_size"),
+                    require_numpy=True,
+                    nodes=nodes,
+                )
+                data["A"] = A
+            if A is not None and getattr(A, "size", 0):
+                np.dot(A, cos_th, out=x)
+                np.dot(A, sin_th, out=y)
+                np.dot(A, epi, out=epi_sum)
+                np.dot(A, vf, out=vf_sum)
+                np.sum(A, axis=1, out=count)
+                degs = None
+                if w_topo != 0.0:
+                    deg_array = data.get("deg_array")
+                    if deg_array is None:
+                        deg_list = data.get("deg_list")
+                        if deg_list is not None:
+                            deg_array = np.array(deg_list, dtype=float)
+                            data["deg_array"] = deg_array
+                            if cache is not None:
+                                cache.deg_array = deg_array
+                        else:
+                            deg_array = count
+                    if deg_sum is not None:
+                        np.dot(A, deg_array, out=deg_sum)
+                    degs = deg_array
+                return x, y, epi_sum, vf_sum, count, deg_sum, degs
+
         A = data.get("A")
-        if A is not None and getattr(A, "size", 0):
+        if A is not None and not prefer_sparse and getattr(A, "size", 0):
+            # ``prefer_sparse`` might have been toggled after the matrix was
+            # computed; if so we already returned above.
             np.dot(A, cos_th, out=x)
             np.dot(A, sin_th, out=y)
             np.dot(A, epi, out=epi_sum)
