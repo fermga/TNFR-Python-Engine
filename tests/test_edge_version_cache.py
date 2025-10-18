@@ -120,3 +120,21 @@ def test_edge_version_cache_thread_safety(graph_and_manager):
     assert all(r is second for r in results2)
     assert second is not first
     assert calls > calls_after_first
+
+
+def test_edge_version_cache_metrics(graph_and_manager):
+    G, manager = graph_and_manager()
+    calls = 0
+
+    def builder():
+        nonlocal calls
+        calls += 1
+        return calls
+
+    assert edge_version_cache(G, "k", builder) == 1
+    assert edge_version_cache(G, "k", builder) == 1
+
+    stats = manager._manager.get_metrics(manager._STATE_KEY)
+    assert stats.misses == 1
+    assert stats.hits == 1
+    assert stats.evictions == 0

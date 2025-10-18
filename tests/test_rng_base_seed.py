@@ -124,3 +124,26 @@ def test_manual_disable_blocks_graph_override(graph_canon):
         set_cache_maxsize(original_size)
         rng_module._CACHE_LOCKED = original_locked
         clear_rng_cache()
+
+
+def test_seed_hash_metrics():
+    import tnfr.rng as rng_module
+
+    original_size = rng_module._CACHE_MAXSIZE
+    original_locked = rng_module._CACHE_LOCKED
+    try:
+        set_cache_maxsize(4)
+        seed_hash.cache_clear()
+        manager = rng_module._RNG_CACHE_MANAGER
+        before = manager.get_metrics("seed_hash_cache")
+
+        seed_hash(1, 1)
+        seed_hash(1, 1)
+
+        after = manager.get_metrics("seed_hash_cache")
+        assert after.misses - before.misses == 1
+        assert after.hits - before.hits == 1
+    finally:
+        set_cache_maxsize(original_size)
+        rng_module._CACHE_LOCKED = original_locked
+        clear_rng_cache()

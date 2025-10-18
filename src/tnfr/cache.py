@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 import threading
-from dataclasses import dataclass
+from contextlib import contextmanager
+from dataclasses import dataclass, field
+from time import perf_counter
 from typing import Any, Callable, Iterator, Mapping, MutableMapping
 
-__all__ = ["CacheManager", "CacheCapacityConfig"]
+__all__ = ["CacheManager", "CacheCapacityConfig", "CacheStatistics"]
 
 
 @dataclass(frozen=True)
@@ -15,6 +18,47 @@ class CacheCapacityConfig:
 
     default_capacity: int | None
     overrides: dict[str, int | None]
+
+
+@dataclass(frozen=True)
+class CacheStatistics:
+    """Immutable snapshot of cache telemetry counters."""
+
+    hits: int = 0
+    misses: int = 0
+    evictions: int = 0
+    total_time: float = 0.0
+    timings: int = 0
+
+    def merge(self, other: CacheStatistics) -> CacheStatistics:
+        """Return aggregated metrics combining ``self`` and ``other``."""
+
+        return CacheStatistics(
+            hits=self.hits + other.hits,
+            misses=self.misses + other.misses,
+            evictions=self.evictions + other.evictions,
+            total_time=self.total_time + other.total_time,
+            timings=self.timings + other.timings,
+        )
+
+
+@dataclass
+class _CacheMetrics:
+    hits: int = 0
+    misses: int = 0
+    evictions: int = 0
+    total_time: float = 0.0
+    timings: int = 0
+    lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
+
+    def snapshot(self) -> CacheStatistics:
+        return CacheStatistics(
+            hits=self.hits,
+            misses=self.misses,
+            evictions=self.evictions,
+            total_time=self.total_time,
+            timings=self.timings,
+        )
 
 
 @dataclass
@@ -45,6 +89,8 @@ class CacheManager:
         self._registry_lock = threading.RLock()
         self._default_capacity = self._normalise_capacity(default_capacity)
         self._capacity_overrides: dict[str, int | None] = {}
+        self._metrics: dict[str, _CacheMetrics] = {}
+        self._metrics_publishers: list[Callable[[str, CacheStatistics], None]] = []
         if overrides:
             self.configure(overrides=overrides)
 
@@ -79,6 +125,7 @@ class CacheManager:
                 # Update hooks when re-registering the same cache name.
                 entry.factory = factory
                 entry.reset = reset
+            self._ensure_metrics(name)
         if create:
             self.get(name)
 
@@ -225,3 +272,128 @@ class CacheManager:
                         self._storage.pop(cache_name, None)
                         continue
                 self._storage[cache_name] = new_value
+
+    # ------------------------------------------------------------------
+    # Metrics helpers
+
+    def _ensure_metrics(self, name: str) -> _CacheMetrics:
+        metrics = self._metrics.get(name)
+        if metrics is None:
+            with self._registry_lock:
+                metrics = self._metrics.get(name)
+                if metrics is None:
+                    metrics = _CacheMetrics()
+                    self._metrics[name] = metrics
+        return metrics
+
+    def increment_hit(
+        self,
+        name: str,
+        *,
+        amount: int = 1,
+        duration: float | None = None,
+    ) -> None:
+        metrics = self._ensure_metrics(name)
+        with metrics.lock:
+            metrics.hits += int(amount)
+            if duration is not None:
+                metrics.total_time += float(duration)
+                metrics.timings += 1
+
+    def increment_miss(
+        self,
+        name: str,
+        *,
+        amount: int = 1,
+        duration: float | None = None,
+    ) -> None:
+        metrics = self._ensure_metrics(name)
+        with metrics.lock:
+            metrics.misses += int(amount)
+            if duration is not None:
+                metrics.total_time += float(duration)
+                metrics.timings += 1
+
+    def increment_eviction(self, name: str, *, amount: int = 1) -> None:
+        metrics = self._ensure_metrics(name)
+        with metrics.lock:
+            metrics.evictions += int(amount)
+
+    def record_timing(self, name: str, duration: float) -> None:
+        metrics = self._ensure_metrics(name)
+        with metrics.lock:
+            metrics.total_time += float(duration)
+            metrics.timings += 1
+
+    @contextmanager
+    def timer(self, name: str):
+        """Context manager recording execution time for ``name``."""
+
+        start = perf_counter()
+        try:
+            yield
+        finally:
+            self.record_timing(name, perf_counter() - start)
+
+    def get_metrics(self, name: str) -> CacheStatistics:
+        metrics = self._metrics.get(name)
+        if metrics is None:
+            return CacheStatistics()
+        with metrics.lock:
+            return metrics.snapshot()
+
+    def iter_metrics(self) -> Iterator[tuple[str, CacheStatistics]]:
+        with self._registry_lock:
+            items = tuple(self._metrics.items())
+        for name, metrics in items:
+            with metrics.lock:
+                yield name, metrics.snapshot()
+
+    def aggregate_metrics(self) -> CacheStatistics:
+        aggregate = CacheStatistics()
+        for _, stats in self.iter_metrics():
+            aggregate = aggregate.merge(stats)
+        return aggregate
+
+    def register_metrics_publisher(
+        self, publisher: Callable[[str, CacheStatistics], None]
+    ) -> None:
+        with self._registry_lock:
+            self._metrics_publishers.append(publisher)
+
+    def publish_metrics(
+        self,
+        *,
+        publisher: Callable[[str, CacheStatistics], None] | None = None,
+    ) -> None:
+        if publisher is None:
+            with self._registry_lock:
+                publishers = tuple(self._metrics_publishers)
+        else:
+            publishers = (publisher,)
+        if not publishers:
+            return
+        snapshot = tuple(self.iter_metrics())
+        for emit in publishers:
+            for name, stats in snapshot:
+                try:
+                    emit(name, stats)
+                except Exception:  # pragma: no cover - defensive logging
+                    logging.getLogger(__name__).exception(
+                        "Cache metrics publisher failed for %s", name
+                    )
+
+    def log_metrics(self, logger: logging.Logger, *, level: int = logging.INFO) -> None:
+        """Emit cache metrics using ``logger`` for telemetry hooks."""
+
+        for name, stats in self.iter_metrics():
+            logger.log(
+                level,
+                "cache=%s hits=%d misses=%d evictions=%d timings=%d total_time=%.6f",
+                name,
+                stats.hits,
+                stats.misses,
+                stats.evictions,
+                stats.timings,
+                stats.total_time,
+            )

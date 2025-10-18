@@ -24,6 +24,21 @@ _CACHE_MAXSIZE = _DEFAULT_CACHE_MAXSIZE
 _CACHE_LOCKED = False
 
 K = TypeVar("K", bound=Hashable)
+V = TypeVar("V")
+
+
+class _TelemetryLRUCache(LRUCache[K, V], Generic[K, V]):
+    """LRU cache that reports evictions through the shared manager."""
+
+    def __init__(self, maxsize: int, *, manager: CacheManager, metrics_key: str) -> None:
+        super().__init__(maxsize)
+        self._manager = manager
+        self._metrics_key = metrics_key
+
+    def popitem(self) -> tuple[K, V]:  # type: ignore[override]
+        key, value = super().popitem()
+        self._manager.increment_eviction(self._metrics_key)
+        return key, value
 
 
 @dataclass
@@ -79,7 +94,14 @@ class _SeedHashCache(MutableMapping[tuple[int, int], int]):
         size = self._resolved_size()
         if size <= 0:
             return _SeedCacheState(cache=None, maxsize=0)
-        return _SeedCacheState(cache=LRUCache(maxsize=size), maxsize=size)
+        return _SeedCacheState(
+            cache=_TelemetryLRUCache(
+                maxsize=size,
+                manager=self._manager,
+                metrics_key=self._state_key,
+            ),
+            maxsize=size,
+        )
 
     def _reset_state(self, state: _SeedCacheState | None) -> _SeedCacheState:
         return self._create_state()
@@ -104,12 +126,15 @@ class _SeedHashCache(MutableMapping[tuple[int, int], int]):
         state = self._get_state()
         if state is None or state.cache is None:
             raise KeyError(key)
-        return state.cache[key]
+        value = state.cache[key]
+        self._manager.increment_hit(self._state_key)
+        return value
 
     def __setitem__(self, key: tuple[int, int], value: int) -> None:
         state = self._get_state()
         if state is not None and state.cache is not None:
             state.cache[key] = value
+            self._manager.increment_miss(self._state_key)
 
     def __delitem__(self, key: tuple[int, int]) -> None:
         state = self._get_state()
@@ -192,9 +217,16 @@ class ScopedCounterCache(Generic[K]):
             return 0
         return int(size)
 
-    def _create_state(self) -> _CounterState[K]:
-        size = self._resolved_entries()
-        return _CounterState(cache=LRUCache(maxsize=size), max_entries=size)
+    def _create_state(self, requested: int | None = None) -> _CounterState[K]:
+        size = self._resolved_entries(requested)
+        return _CounterState(
+            cache=_TelemetryLRUCache(
+                maxsize=size,
+                manager=self._manager,
+                metrics_key=self._state_key,
+            ),
+            max_entries=size,
+        )
 
     def _reset_state(self, state: _CounterState[K] | None) -> _CounterState[K]:
         return self._create_state()
@@ -241,7 +273,11 @@ class ScopedCounterCache(Generic[K]):
         def _update(state: _CounterState[K] | None) -> _CounterState[K]:
             if not isinstance(state, _CounterState) or force or state.max_entries != size:
                 return _CounterState(
-                    cache=LRUCache(maxsize=size),
+                    cache=_TelemetryLRUCache(
+                        maxsize=size,
+                        manager=self._manager,
+                        metrics_key=self._state_key,
+                    ),
                     max_entries=size,
                 )
             return cast(_CounterState[K], state)
@@ -258,19 +294,25 @@ class ScopedCounterCache(Generic[K]):
     def bump(self, key: K) -> int:
         """Return current counter for ``key`` and increment it atomically."""
 
-        result: dict[str, int] = {}
+        result: dict[str, Any] = {}
 
         def _update(state: _CounterState[K] | None) -> _CounterState[K]:
             if not isinstance(state, _CounterState):
                 state = self._create_state(0)
             cache = state.cache
+            present = key in cache
             value = int(cache.get(key, 0))
             cache[key] = value + 1
             result["value"] = value
+            result["hit"] = present
             return state
 
         self._manager.update(self._state_key, _update)
-        return result.get("value", 0)
+        if result.get("hit"):
+            self._manager.increment_hit(self._state_key)
+        else:
+            self._manager.increment_miss(self._state_key)
+        return int(result.get("value", 0))
 
     def __len__(self) -> int:
         return len(self.cache)
