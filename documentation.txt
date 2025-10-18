@@ -82,17 +82,22 @@ Official metrics and telemetry
 - **Topology**: coupling maps (useful with `tnfr.operators` such as
   `apply_topological_remesh`).
 
-Key utilities (`tnfr.helpers`)
-------------------------------
-- **Collections and numerics**: `ensure_collection`, `clamp`, `clamp01`,
+Key utilities (`tnfr.utils`)
+----------------------------
+- **Collections and numerics** (`tnfr.utils.data`): `ensure_collection`,
+  `normalize_weights`, `normalize_counter`, `convert_value`,
   `kahan_sum_nd`, `angle_diff` for safe data preparation and stable accumulators.
-- **Structural history**: `push_glyph`, `recent_glyph`, `ensure_history`,
-  `last_glyph`, `count_glyphs` to track applied operators and observation windows.
-- **Caches and ΔNFR**: `cached_node_list`, `ensure_node_index_map`,
-  `ensure_node_offset_map`, `node_set_checksum`, `stable_json`,
-  `get_graph_mapping`, `EdgeCacheManager`, `cached_nodes_and_A`,
-  `edge_version_update`, `mark_dnfr_prep_dirty` to keep indexes, topology
-  detectors, and computations coherent.
+- **Structural history** (`tnfr.helpers.glyph_history`): `push_glyph`,
+  `recent_glyph`, `ensure_history`, `last_glyph`, `count_glyphs` to track applied
+  operators and observation windows.
+- **Caches and ΔNFR** (`tnfr.utils.cache` / `tnfr.utils.graph`):
+  `cached_node_list`, `ensure_node_index_map`, `ensure_node_offset_map`,
+  `node_set_checksum`, `stable_json`, `get_graph_mapping`, `EdgeCacheManager`,
+  `cached_nodes_and_A`, `edge_version_update`, `mark_dnfr_prep_dirty` to keep
+  indexes, topology detectors, and computations coherent.
+- **I/O and validators** (`tnfr.utils.io`, `tnfr.utils.validators`):
+  `json_dumps`, `JsonDumpsParams`, `clear_orjson_param_warnings`, `validate_window`,
+  `run_validators` keep serialization consistent and enforce invariants.
 
 Simulation best practices
 -------------------------
