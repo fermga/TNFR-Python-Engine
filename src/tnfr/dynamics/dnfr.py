@@ -51,6 +51,12 @@ class DnfrCache:
     vf: list[float]
     cos_theta: list[float]
     sin_theta: list[float]
+    neighbor_x: list[float]
+    neighbor_y: list[float]
+    neighbor_epi_sum: list[float]
+    neighbor_vf_sum: list[float]
+    neighbor_count: list[float]
+    neighbor_deg_sum: list[float] | None
     degs: dict[Any, float] | None = None
     deg_list: list[float] | None = None
     theta_np: Any | None = None
@@ -62,6 +68,12 @@ class DnfrCache:
     edge_src: Any | None = None
     edge_dst: Any | None = None
     checksum: Any | None = None
+    neighbor_x_np: Any | None = None
+    neighbor_y_np: Any | None = None
+    neighbor_epi_sum_np: Any | None = None
+    neighbor_vf_sum_np: Any | None = None
+    neighbor_count_np: Any | None = None
+    neighbor_deg_sum_np: Any | None = None
 
 
 __all__ = (
@@ -128,6 +140,12 @@ def _init_dnfr_cache(G, nodes, prev_cache: DnfrCache | None, checksum, dirty):
     vf = [0.0] * len(nodes)
     cos_theta = [1.0] * len(nodes)
     sin_theta = [0.0] * len(nodes)
+    neighbor_x = [0.0] * len(nodes)
+    neighbor_y = [0.0] * len(nodes)
+    neighbor_epi_sum = [0.0] * len(nodes)
+    neighbor_vf_sum = [0.0] * len(nodes)
+    neighbor_count = [0.0] * len(nodes)
+    neighbor_deg_sum = [0.0] * len(nodes) if len(nodes) else []
     cache = DnfrCache(
         idx=idx,
         theta=theta,
@@ -135,6 +153,12 @@ def _init_dnfr_cache(G, nodes, prev_cache: DnfrCache | None, checksum, dirty):
         vf=vf,
         cos_theta=cos_theta,
         sin_theta=sin_theta,
+        neighbor_x=neighbor_x,
+        neighbor_y=neighbor_y,
+        neighbor_epi_sum=neighbor_epi_sum,
+        neighbor_vf_sum=neighbor_vf_sum,
+        neighbor_count=neighbor_count,
+        neighbor_deg_sum=neighbor_deg_sum,
         degs=prev_cache.degs if prev_cache else None,
         edge_src=None,
         edge_dst=None,
@@ -520,31 +544,94 @@ def _compute_dnfr_common(
     _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
 
 
+def _reset_numpy_buffer(buffer, size, np):
+    if buffer is None or getattr(buffer, "shape", None) is None or buffer.shape[0] != size:
+        return np.zeros(size, dtype=float)
+    buffer.fill(0.0)
+    return buffer
+
+
 def _init_neighbor_sums(data, *, np=None):
     """Initialise containers for neighbour sums."""
     nodes = data["nodes"]
     n = len(nodes)
     w_topo = data["w_topo"]
+    cache: DnfrCache | None = data.get("cache")
+
+    def _reset_list(buffer, value=0.0):
+        if buffer is None or len(buffer) != n:
+            return [value] * n
+        for i in range(n):
+            buffer[i] = value
+        return buffer
+
     if np is not None:
-        x = np.zeros(n, dtype=float)
-        y = np.zeros(n, dtype=float)
-        epi_sum = np.zeros(n, dtype=float)
-        vf_sum = np.zeros(n, dtype=float)
-        count = np.zeros(n, dtype=float)
-        deg_sum = np.zeros(n, dtype=float) if w_topo != 0.0 else None
+        if cache is not None:
+            x = cache.neighbor_x_np
+            y = cache.neighbor_y_np
+            epi_sum = cache.neighbor_epi_sum_np
+            vf_sum = cache.neighbor_vf_sum_np
+            count = cache.neighbor_count_np
+            x = _reset_numpy_buffer(x, n, np)
+            y = _reset_numpy_buffer(y, n, np)
+            epi_sum = _reset_numpy_buffer(epi_sum, n, np)
+            vf_sum = _reset_numpy_buffer(vf_sum, n, np)
+            count = _reset_numpy_buffer(count, n, np)
+            cache.neighbor_x_np = x
+            cache.neighbor_y_np = y
+            cache.neighbor_epi_sum_np = epi_sum
+            cache.neighbor_vf_sum_np = vf_sum
+            cache.neighbor_count_np = count
+            cache.neighbor_x = _reset_list(cache.neighbor_x)
+            cache.neighbor_y = _reset_list(cache.neighbor_y)
+            cache.neighbor_epi_sum = _reset_list(cache.neighbor_epi_sum)
+            cache.neighbor_vf_sum = _reset_list(cache.neighbor_vf_sum)
+            cache.neighbor_count = _reset_list(cache.neighbor_count)
+            if w_topo != 0.0:
+                deg_sum = _reset_numpy_buffer(cache.neighbor_deg_sum_np, n, np)
+                cache.neighbor_deg_sum_np = deg_sum
+                cache.neighbor_deg_sum = _reset_list(cache.neighbor_deg_sum)
+            else:
+                cache.neighbor_deg_sum_np = None
+                cache.neighbor_deg_sum = None
+                deg_sum = None
+        else:
+            x = np.zeros(n, dtype=float)
+            y = np.zeros(n, dtype=float)
+            epi_sum = np.zeros(n, dtype=float)
+            vf_sum = np.zeros(n, dtype=float)
+            count = np.zeros(n, dtype=float)
+            deg_sum = np.zeros(n, dtype=float) if w_topo != 0.0 else None
         degs = None
     else:
-        x = [0.0] * n
-        y = [0.0] * n
-        epi_sum = [0.0] * n
-        vf_sum = [0.0] * n
-        count = [0] * n
-        deg_list = data.get("deg_list")
-        if w_topo != 0 and deg_list is not None:
-            deg_sum = [0.0] * n
-            degs = list(deg_list)
+        if cache is not None:
+            x = _reset_list(cache.neighbor_x)
+            y = _reset_list(cache.neighbor_y)
+            epi_sum = _reset_list(cache.neighbor_epi_sum)
+            vf_sum = _reset_list(cache.neighbor_vf_sum)
+            count = _reset_list(cache.neighbor_count)
+            cache.neighbor_x = x
+            cache.neighbor_y = y
+            cache.neighbor_epi_sum = epi_sum
+            cache.neighbor_vf_sum = vf_sum
+            cache.neighbor_count = count
+            if w_topo != 0.0:
+                deg_sum = _reset_list(cache.neighbor_deg_sum)
+                cache.neighbor_deg_sum = deg_sum
+            else:
+                cache.neighbor_deg_sum = None
+                deg_sum = None
         else:
-            deg_sum = None
+            x = [0.0] * n
+            y = [0.0] * n
+            epi_sum = [0.0] * n
+            vf_sum = [0.0] * n
+            count = [0.0] * n
+            deg_sum = [0.0] * n if w_topo != 0.0 else None
+        deg_list = data.get("deg_list")
+        if w_topo != 0.0 and deg_list is not None:
+            degs = deg_list
+        else:
             degs = None
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
