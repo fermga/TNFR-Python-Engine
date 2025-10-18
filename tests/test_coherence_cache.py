@@ -1,7 +1,12 @@
-import pytest
 import networkx as nx
+import pytest
 
-from tnfr.constants import THETA_PRIMARY
+from tnfr.constants import (
+    EPI_PRIMARY,
+    SI_PRIMARY,
+    THETA_PRIMARY,
+    VF_PRIMARY,
+)
 from tnfr.metrics import coherence_matrix, local_phase_sync_weighted
 from tnfr.utils import ensure_node_index_map
 
@@ -61,5 +66,39 @@ def test_use_numpy_parameter_matches_loops():
         G.nodes[n][THETA_PRIMARY] = 0.0
     nodes_l, W_l = coherence_matrix(G, use_numpy=False)
     nodes_v, W_v = coherence_matrix(G, use_numpy=True)
+    nodes_p, W_p = coherence_matrix(G, use_numpy=False, n_jobs=2)
     assert nodes_l == nodes_v
     assert W_l == W_v
+    assert nodes_p == nodes_l
+    assert W_p == W_l
+
+
+def test_coherence_parallel_consistency_neighbors_and_all(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from(range(6))
+    G.add_edges_from((i, (i + 1) % 6) for i in range(6))
+
+    for n in G.nodes:
+        node = G.nodes[n]
+        node[THETA_PRIMARY] = n * 0.15
+        node[EPI_PRIMARY] = float(n) / 5.0
+        node[VF_PRIMARY] = float(n) / 10.0
+        node[SI_PRIMARY] = min(1.0, max(0.0, (n % 3) / 2.0))
+
+    nodes_serial, W_serial = coherence_matrix(G, use_numpy=False, n_jobs=1)
+    nodes_parallel, W_parallel = coherence_matrix(G, use_numpy=False, n_jobs=3)
+
+    assert nodes_serial == nodes_parallel
+    assert W_serial == W_parallel
+
+    cfg = G.graph["COHERENCE"]
+    cfg["scope"] = "all"
+    cfg["n_jobs"] = 3
+
+    nodes_serial_all, W_serial_all = coherence_matrix(
+        G, use_numpy=False, n_jobs=1
+    )
+    nodes_parallel_all, W_parallel_all = coherence_matrix(G, use_numpy=False)
+
+    assert nodes_serial_all == nodes_parallel_all
+    assert W_serial_all == W_parallel_all

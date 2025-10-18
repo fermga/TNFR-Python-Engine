@@ -76,6 +76,7 @@ class MetricDefaults:
             "self_on_diag": True,
             "store_mode": "sparse",
             "threshold": 0.0,
+            "n_jobs": 1,
             "history_key": "W_sparse",
             "Wi_history_key": "W_i",
             "stats_history_key": "W_stats",

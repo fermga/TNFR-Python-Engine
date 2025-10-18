@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from typing import Any, Sequence
 
@@ -253,40 +254,81 @@ def _wij_vectorized(
     return wij
 
 
-def _assign_wij(
-    wij: list[list[float]],
+def _compute_wij_value_raw(
     i: int,
     j: int,
-    G: Any,
-    nodes: Sequence[Any],
-    inputs: SimilarityInputs,
+    epi_vals: Sequence[float],
+    vf_vals: Sequence[float],
+    si_vals: Sequence[float],
+    cos_vals: Sequence[float],
+    sin_vals: Sequence[float],
+    weights: tuple[float, float, float, float],
     epi_range: float,
     vf_range: float,
-    wnorm: dict[str, float],
-) -> None:
-    (
-        s_phase,
-        s_epi,
-        s_vf,
-        s_si,
-        phase_w,
-        epi_w,
-        vf_w,
-        si_w,
-    ) = _wij_components_weights(
-        G,
-        nodes,
-        inputs,
-        wnorm,
-        i,
-        j,
-        epi_range,
-        vf_range,
-    )
-    wij_ij = _combine_similarity(
-        s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w
-    )
-    wij[i][j] = wij[j][i] = wij_ij
+) -> float:
+    epi_range = epi_range if epi_range > 0 else 1.0
+    vf_range = vf_range if vf_range > 0 else 1.0
+    phase_w, epi_w, vf_w, si_w = weights
+    cos_i = cos_vals[i]
+    sin_i = sin_vals[i]
+    cos_j = cos_vals[j]
+    sin_j = sin_vals[j]
+    s_phase = 0.5 * (1.0 + (cos_i * cos_j + sin_i * sin_j))
+    s_epi = 1.0 - abs(epi_vals[i] - epi_vals[j]) / epi_range
+    s_vf = 1.0 - abs(vf_vals[i] - vf_vals[j]) / vf_range
+    s_si = 1.0 - abs(si_vals[i] - si_vals[j])
+    wij = phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
+    return clamp01(wij)
+
+
+_PARALLEL_WIJ_DATA: dict[str, Any] | None = None
+
+
+def _init_parallel_wij(data: dict[str, Any]) -> None:
+    """Store immutable state for parallel ``wij`` computation."""
+
+    global _PARALLEL_WIJ_DATA
+    _PARALLEL_WIJ_DATA = data
+
+
+def _parallel_wij_worker(
+    pairs: Sequence[tuple[int, int]]
+) -> list[tuple[int, int, float]]:
+    """Compute coherence weights for ``pairs`` using shared state."""
+
+    if _PARALLEL_WIJ_DATA is None:
+        raise RuntimeError("Parallel coherence data not initialized")
+
+    data = _PARALLEL_WIJ_DATA
+    epi_vals: Sequence[float] = data["epi_vals"]
+    vf_vals: Sequence[float] = data["vf_vals"]
+    si_vals: Sequence[float] = data["si_vals"]
+    cos_vals: Sequence[float] = data["cos_vals"]
+    sin_vals: Sequence[float] = data["sin_vals"]
+    weights: tuple[float, float, float, float] = data["weights"]
+    epi_range: float = data["epi_range"]
+    vf_range: float = data["vf_range"]
+
+    compute = _compute_wij_value_raw
+    return [
+        (
+            i,
+            j,
+            compute(
+                i,
+                j,
+                epi_vals,
+                vf_vals,
+                si_vals,
+                cos_vals,
+                sin_vals,
+                weights,
+                epi_range,
+                vf_range,
+            ),
+        )
+        for i, j in pairs
+    ]
 
 
 def _wij_loops(
@@ -301,6 +343,7 @@ def _wij_loops(
     vf_max: float,
     neighbors_only: bool,
     self_diag: bool,
+    n_jobs: int = 1,
 ) -> list[list[float]]:
     n = len(nodes)
     cos_vals = inputs.cos_vals
@@ -312,43 +355,94 @@ def _wij_loops(
         sin_vals = [trig_local.sin[n] for n in nodes]
         inputs.cos_vals = cos_vals
         inputs.sin_vals = sin_vals
+    epi_vals = list(inputs.epi_vals)
+    vf_vals = list(inputs.vf_vals)
+    si_vals = list(inputs.si_vals)
+    cos_vals = list(inputs.cos_vals)
+    sin_vals = list(inputs.sin_vals)
+    inputs.epi_vals = epi_vals
+    inputs.vf_vals = vf_vals
+    inputs.si_vals = si_vals
+    inputs.cos_vals = cos_vals
+    inputs.sin_vals = sin_vals
     wij = [
         [1.0 if (self_diag and i == j) else 0.0 for j in range(n)]
         for i in range(n)
     ]
     epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
     vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
+    weights = (
+        float(wnorm["phase"]),
+        float(wnorm["epi"]),
+        float(wnorm["vf"]),
+        float(wnorm["si"]),
+    )
+    pair_list: list[tuple[int, int]] = []
     if neighbors_only:
+        seen: set[tuple[int, int]] = set()
         for u, v in G.edges():
             i = node_to_index[u]
             j = node_to_index[v]
             if i == j:
                 continue
-            _assign_wij(
-                wij,
-                i,
-                j,
-                G,
-                nodes,
-                inputs,
-                epi_range,
-                vf_range,
-                wnorm,
-            )
+            pair = (i, j) if i < j else (j, i)
+            if pair in seen:
+                continue
+            seen.add(pair)
+            pair_list.append(pair)
     else:
         for i in range(n):
             for j in range(i + 1, n):
-                _assign_wij(
-                    wij,
-                    i,
-                    j,
-                    G,
-                    nodes,
-                    inputs,
-                    epi_range,
-                    vf_range,
-                    wnorm,
-                )
+                pair_list.append((i, j))
+
+    total_pairs = len(pair_list)
+    max_workers = 1
+    if n_jobs is not None:
+        try:
+            max_workers = int(n_jobs)
+        except (TypeError, ValueError):
+            max_workers = 1
+    if max_workers <= 1 or total_pairs == 0:
+        for i, j in pair_list:
+            wij_ij = _compute_wij_value_raw(
+                i,
+                j,
+                epi_vals,
+                vf_vals,
+                si_vals,
+                cos_vals,
+                sin_vals,
+                weights,
+                epi_range,
+                vf_range,
+            )
+            wij[i][j] = wij[j][i] = wij_ij
+        return wij
+
+    chunk_size = max(1, math.ceil(total_pairs / max_workers))
+    data = {
+        "epi_vals": tuple(epi_vals),
+        "vf_vals": tuple(vf_vals),
+        "si_vals": tuple(si_vals),
+        "cos_vals": tuple(cos_vals),
+        "sin_vals": tuple(sin_vals),
+        "weights": weights,
+        "epi_range": float(epi_range),
+        "vf_range": float(vf_range),
+    }
+
+    with ProcessPoolExecutor(
+        max_workers=max_workers,
+        initializer=_init_parallel_wij,
+        initargs=(data,),
+    ) as executor:
+        futures = []
+        for start in range(0, total_pairs, chunk_size):
+            chunk = pair_list[start : start + chunk_size]
+            futures.append(executor.submit(_parallel_wij_worker, chunk))
+        for future in futures:
+            for i, j, value in future.result():
+                wij[i][j] = wij[j][i] = value
     return wij
 
 
@@ -439,35 +533,105 @@ def _coherence_numpy(wij, mode, thr, np):
     return n, values, row_sum, W
 
 
-def _coherence_python(wij, mode, thr):
+def _coherence_python_worker(args):
+    rows, start, mode, thr = args
+    values: list[float] = []
+    row_sum: list[float] = []
+    sparse: list[tuple[int, int, float]] = []
+    dense_mode = mode == "dense"
+
+    for offset, row in enumerate(rows):
+        i = start + offset
+        total = 0.0
+        for j, w in enumerate(row):
+            total += w
+            if i != j:
+                values.append(w)
+                if not dense_mode and w >= thr:
+                    sparse.append((i, j, w))
+        row_sum.append(total)
+
+    return start, values, row_sum, sparse
+
+
+def _coherence_python(wij, mode, thr, n_jobs: int = 1):
     """Aggregate coherence weights using pure Python loops."""
 
     n = len(wij)
     values: list[float] = []
     row_sum = [0.0] * n
+
+    if n_jobs is not None:
+        try:
+            max_workers = int(n_jobs)
+        except (TypeError, ValueError):
+            max_workers = 1
+    else:
+        max_workers = 1
+
+    if max_workers <= 1:
+        if mode == "dense":
+            W = [row[:] for row in wij]
+            for i in range(n):
+                for j in range(n):
+                    w = W[i][j]
+                    if i != j:
+                        values.append(w)
+                    row_sum[i] += w
+        else:
+            W = []
+            for i in range(n):
+                row_i = wij[i]
+                for j in range(n):
+                    w = row_i[j]
+                    if i != j:
+                        values.append(w)
+                        if w >= thr:
+                            W.append((i, j, w))
+                    row_sum[i] += w
+        return n, values, row_sum, W
+
+    chunk_size = max(1, math.ceil(n / max_workers))
+    tasks = []
+    with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        for start in range(0, n, chunk_size):
+            rows = wij[start : start + chunk_size]
+            tasks.append(
+                executor.submit(
+                    _coherence_python_worker,
+                    (tuple(tuple(row) for row in rows), start, mode, thr),
+                )
+            )
+        results = [task.result() for task in tasks]
+
+    results.sort(key=lambda item: item[0])
+    sparse_entries: list[tuple[int, int, float]] | None = [] if mode != "dense" else None
+    for start, chunk_values, chunk_row_sum, chunk_sparse in results:
+        values.extend(chunk_values)
+        for offset, total in enumerate(chunk_row_sum):
+            row_sum[start + offset] = total
+        if sparse_entries is not None:
+            sparse_entries.extend(chunk_sparse)
+
     if mode == "dense":
         W = [row[:] for row in wij]
-        for i in range(n):
-            for j in range(n):
-                w = W[i][j]
-                if i != j:
-                    values.append(w)
-                row_sum[i] += w
     else:
-        W: list[tuple[int, int, float]] = []
-        for i in range(n):
-            row_i = wij[i]
-            for j in range(n):
-                w = row_i[j]
-                if i != j:
-                    values.append(w)
-                    if w >= thr:
-                        W.append((i, j, w))
-                row_sum[i] += w
+        W = sparse_entries if sparse_entries is not None else []
     return n, values, row_sum, W
 
 
-def _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np=None):
+def _finalize_wij(
+    G,
+    nodes,
+    wij,
+    mode,
+    thr,
+    scope,
+    self_diag,
+    np=None,
+    *,
+    n_jobs: int = 1,
+):
     """Finalize the coherence matrix ``wij`` and store results in history.
 
     When ``np`` is provided and ``wij`` is a NumPy array, the computation is
@@ -479,7 +643,7 @@ def _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np=None):
     n, values, row_sum, W = (
         _coherence_numpy(wij, mode, thr, np)
         if use_np
-        else _coherence_python(wij, mode, thr)
+        else _coherence_python(wij, mode, thr, n_jobs=n_jobs)
     )
 
     min_val, max_val, mean_val, Wi, count_val = _compute_stats(
@@ -502,7 +666,27 @@ def _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np=None):
     return nodes, W
 
 
-def coherence_matrix(G, use_numpy: bool | None = None):
+def coherence_matrix(
+    G,
+    use_numpy: bool | None = None,
+    *,
+    n_jobs: int | None = None,
+):
+    """Compute the coherence weight matrix for ``G``.
+
+    Parameters
+    ----------
+    G:
+        Graph whose nodes encode the structural attributes.
+    use_numpy:
+        When ``True`` the vectorised NumPy implementation is forced. When
+        ``False`` the pure Python fallback is used. ``None`` selects NumPy
+        automatically when available.
+    n_jobs:
+        Maximum worker processes to use for the Python fallback. ``None`` or
+        values less than or equal to one preserve the serial behaviour.
+    """
+
     cfg = get_param(G, "COHERENCE")
     if not cfg.get("enabled", True):
         return None, None
@@ -518,6 +702,9 @@ def coherence_matrix(G, use_numpy: bool | None = None):
     use_np = (
         np is not None if use_numpy is None else (use_numpy and np is not None)
     )
+
+    cfg_jobs = cfg.get("n_jobs")
+    parallel_jobs = n_jobs if n_jobs is not None else cfg_jobs
 
     # Precompute indices to avoid repeated list.index calls within loops
 
@@ -592,9 +779,20 @@ def coherence_matrix(G, use_numpy: bool | None = None):
             vf_max,
             neighbors_only,
             self_diag,
+            n_jobs=parallel_jobs,
         )
 
-    return _finalize_wij(G, nodes, wij, mode, thr, scope, self_diag, np)
+    return _finalize_wij(
+        G,
+        nodes,
+        wij,
+        mode,
+        thr,
+        scope,
+        self_diag,
+        np,
+        n_jobs=parallel_jobs if not use_np else 1,
+    )
 
 
 def local_phase_sync_weighted(
