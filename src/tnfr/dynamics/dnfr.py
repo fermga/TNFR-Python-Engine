@@ -97,6 +97,7 @@ class DnfrCache:
     dense_degree_np: Any | None = None
     neighbor_workspace_np: Any | None = None
     neighbor_edge_weights_np: Any | None = None
+    neighbor_accum_np: Any | None = None
     neighbor_inv_count_np: Any | None = None
     neighbor_cos_avg_np: Any | None = None
     neighbor_sin_avg_np: Any | None = None
@@ -126,6 +127,7 @@ _NUMPY_CACHE_ATTRS = (
     "neighbor_mean_length_np",
     "neighbor_workspace_np",
     "neighbor_edge_weights_np",
+    "neighbor_accum_np",
     "dense_components_np",
     "dense_accum_np",
     "dense_degree_np",
@@ -222,7 +224,7 @@ def _init_dnfr_cache(G, nodes, prev_cache: DnfrCache | None, checksum, dirty):
     neighbor_vf_sum = [0.0] * len(nodes)
     neighbor_count = [0.0] * len(nodes)
     neighbor_deg_sum = [0.0] * len(nodes) if len(nodes) else []
-    cache = DnfrCache(
+    cache_new = DnfrCache(
         idx=idx,
         theta=theta,
         epi=epi,
@@ -240,6 +242,11 @@ def _init_dnfr_cache(G, nodes, prev_cache: DnfrCache | None, checksum, dirty):
         edge_dst=None,
         checksum=checksum,
     )
+    if prev_cache is not None:
+        prev_cache.__dict__.update(cache_new.__dict__)
+        cache = prev_cache
+    else:
+        cache = cache_new
     G.graph["_dnfr_prep_cache"] = cache
     return (
         cache,
@@ -503,6 +510,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         cache.edge_dst = None
         cache.edge_signature = None
         cache.neighbor_accum_signature = None
+        cache.neighbor_accum_np = None
         degree_map = None
     if degree_map is None or len(degree_map) != len(G):
         degree_map = dict(G.degree())
@@ -561,6 +569,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
             for attr in (
                 "neighbor_workspace_np",
                 "neighbor_edge_weights_np",
+                "neighbor_accum_np",
             ):
                 arr = getattr(cache, attr, None)
                 if arr is not None:
@@ -598,6 +607,8 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     result["edge_count"] = edge_count
     result["prefer_sparse"] = prefer_sparse
     result["dense_override"] = dense_override
+    result.setdefault("neighbor_accum_np", None)
+    result.setdefault("neighbor_accum_signature", None)
 
     return result
 
@@ -897,7 +908,8 @@ def _compute_neighbor_means(
         theta_src = data.get("theta_np")
         if theta_src is None:
             theta_src = np.asarray(theta, dtype=float)
-        np.where(lengths <= _MEAN_VECTOR_EPS, theta_src, temp, out=temp)
+        zero_mask = lengths <= _MEAN_VECTOR_EPS
+        np.copyto(temp, theta_src, where=zero_mask)
         np.copyto(th_bar, temp, where=mask, casting="unsafe")
 
         np.divide(epi_sum, count, out=epi_bar, where=mask)
@@ -1169,13 +1181,24 @@ def _accumulate_neighbors_broadcasted(
     edge_count = int(edge_src.size)
 
     base_columns = 4  # cos, sin, epi, vf
+    include_count = count is not None
     use_topology = deg_sum is not None and deg_array is not None
-    workspace_columns = base_columns + (1 if use_topology else 0)
+
+    workspace_columns = base_columns
+    count_column = None
+    if include_count:
+        count_column = workspace_columns
+        workspace_columns += 1
+    deg_column = None
+    if use_topology:
+        deg_column = workspace_columns
+        workspace_columns += 1
 
     if cache is not None:
         base_signature = (id(edge_src), id(edge_dst), n)
         cache.edge_signature = base_signature
-        cache.neighbor_accum_signature = (base_signature, workspace_columns, edge_count)
+        signature = (base_signature, workspace_columns, edge_count)
+        previous_signature = cache.neighbor_accum_signature
         workspace = cache.neighbor_workspace_np
         if (
             workspace is None
@@ -1187,6 +1210,17 @@ def _accumulate_neighbors_broadcasted(
         if weights is None or getattr(weights, "shape", None) != (edge_count,):
             weights = np.empty((edge_count,), dtype=float)
             cache.neighbor_edge_weights_np = weights
+        accum = cache.neighbor_accum_np
+        if (
+            accum is None
+            or getattr(accum, "shape", None) != (n, workspace_columns)
+            or previous_signature != signature
+        ):
+            accum = np.zeros((n, workspace_columns), dtype=float)
+            cache.neighbor_accum_np = accum
+        else:
+            accum.fill(0.0)
+        cache.neighbor_accum_signature = signature
     else:
         workspace = np.empty((edge_count, workspace_columns), dtype=float)
         weights = (
@@ -1194,39 +1228,46 @@ def _accumulate_neighbors_broadcasted(
             if edge_count
             else np.empty((0,), dtype=float)
         )
+        accum = np.zeros((n, workspace_columns), dtype=float)
 
-    if not edge_count:
-        if count is not None:
-            count.fill(0.0)
-        if deg_sum is not None:
-            deg_sum.fill(0.0)
-        return {
-            "workspace": workspace,
-            "weights": weights,
-        }
+    if edge_count:
+        np.take(cos, edge_dst, out=workspace[:, 0])
+        np.take(sin, edge_dst, out=workspace[:, 1])
+        np.take(epi, edge_dst, out=workspace[:, 2])
+        np.take(vf, edge_dst, out=workspace[:, 3])
 
-    # Gather neighbour features into cached edge-wise buffers and accumulate.
-    np.take(cos, edge_dst, out=workspace[:, 0])
-    np.take(sin, edge_dst, out=workspace[:, 1])
-    np.take(epi, edge_dst, out=workspace[:, 2])
-    np.take(vf, edge_dst, out=workspace[:, 3])
+        if include_count:
+            workspace[:, count_column].fill(1.0)
+            weights.fill(1.0)
+        else:
+            weights.fill(0.0)
 
-    np.add.at(x, edge_src, workspace[:, 0])
-    np.add.at(y, edge_src, workspace[:, 1])
-    np.add.at(epi_sum, edge_src, workspace[:, 2])
-    np.add.at(vf_sum, edge_src, workspace[:, 3])
+        if use_topology and deg_column is not None:
+            np.take(deg_array, edge_dst, out=workspace[:, deg_column])
 
-    if count is not None:
-        weights.fill(1.0)
-        np.add.at(count, edge_src, weights)
+        np.add.at(accum, edge_src, workspace)
+    else:
+        accum.fill(0.0)
+        if include_count:
+            weights.fill(0.0)
+        else:
+            weights.fill(0.0)
 
-    if use_topology:
-        np.take(deg_array, edge_dst, out=workspace[:, -1])
-        np.add.at(deg_sum, edge_src, workspace[:, -1])
+    np.copyto(x, accum[:, 0], casting="unsafe")
+    np.copyto(y, accum[:, 1], casting="unsafe")
+    np.copyto(epi_sum, accum[:, 2], casting="unsafe")
+    np.copyto(vf_sum, accum[:, 3], casting="unsafe")
+
+    if include_count and count_column is not None and count is not None:
+        np.copyto(count, accum[:, count_column], casting="unsafe")
+
+    if use_topology and deg_column is not None and deg_sum is not None:
+        np.copyto(deg_sum, accum[:, deg_column], casting="unsafe")
 
     return {
         "workspace": workspace,
         "weights": weights,
+        "accumulator": accum,
     }
 
 
@@ -1237,7 +1278,7 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
     cache: DnfrCache | None = data.get("cache")
     np_module = get_numpy()
     has_numpy_buffers = _has_cached_numpy_buffers(data, cache)
-    if np_module is None and has_numpy_buffers:
+    if use_numpy and np_module is None and has_numpy_buffers:
         np_module = sys.modules.get("numpy")
 
     if np_module is not None:
@@ -1610,6 +1651,9 @@ def _accumulate_neighbors_numpy(
 
     data["neighbor_workspace_np"] = accum["workspace"]
     data["neighbor_edge_weights_np"] = accum["weights"]
+    data["neighbor_accum_np"] = accum.get("accumulator")
+    if cache is not None:
+        data["neighbor_accum_signature"] = cache.neighbor_accum_signature
     degs = deg_array if deg_sum is not None and deg_array is not None else None
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 

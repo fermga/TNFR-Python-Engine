@@ -547,8 +547,10 @@ def test_edge_accumulation_workspace_cached_and_stable(topo_weight, monkeypatch)
     assert cache is not None
     workspace = cache.neighbor_workspace_np
     weights = cache.neighbor_edge_weights_np
+    accumulator = cache.neighbor_accum_np
     assert workspace is not None
     assert weights is not None
+    assert accumulator is not None
 
     with numpy_disabled(monkeypatch):
         loop_graph = base.copy()
@@ -609,6 +611,7 @@ def test_edge_accumulation_workspace_cached_and_stable(topo_weight, monkeypatch)
 
     assert cache.neighbor_workspace_np is workspace
     assert cache.neighbor_edge_weights_np is weights
+    assert cache.neighbor_accum_np is accumulator
 
     for arr, snapshot in zip(result_second[:-1], snapshots):
         if arr is None or snapshot is None:
@@ -774,6 +777,8 @@ def test_broadcast_accumulation_dense_graph_equivalence():
     assert isinstance(workspace, np.ndarray)
     weights = cache.neighbor_edge_weights_np
     assert isinstance(weights, np.ndarray)
+    accumulator = cache.neighbor_accum_np
+    assert isinstance(accumulator, np.ndarray)
 
     for idx, node in enumerate(dense_graph.nodes):
         set_attr(dense_graph.nodes[node], ALIAS_EPI, 0.17 * (idx + 5))
@@ -787,6 +792,7 @@ def test_broadcast_accumulation_dense_graph_equivalence():
     assert id(cache.neighbor_edge_weights_np) == id(weights)
     assert id(cache.neighbor_workspace_np) == id(workspace)
     assert cache.neighbor_accum_signature == signature
+    assert id(cache.neighbor_accum_np) == id(accumulator)
 
     loop_after = dense_graph.copy()
     loop_after.graph["vectorized_dnfr"] = False
@@ -809,6 +815,8 @@ def test_broadcast_accumulation_invalidation_on_edge_change():
     assert cache is not None
     old_signature = cache.neighbor_accum_signature
     old_weights_shape = cache.neighbor_edge_weights_np.shape
+    old_accum = cache.neighbor_accum_np
+    assert isinstance(old_accum, np.ndarray)
 
     base.add_edge(0, len(base) - 1)
     mark_dnfr_prep_dirty(base)
@@ -821,6 +829,7 @@ def test_broadcast_accumulation_invalidation_on_edge_change():
     new_signature = cache.neighbor_accum_signature
     assert new_signature != old_signature
     assert cache.neighbor_edge_weights_np.shape != old_weights_shape
+    assert cache.neighbor_accum_np is not old_accum
 
     loop_graph = base.copy()
     loop_graph.graph["vectorized_dnfr"] = False
