@@ -3,6 +3,8 @@
 import math
 
 import pytest
+from contextlib import contextmanager, nullcontext
+
 import networkx as nx
 
 import tnfr.utils.init as utils_init
@@ -20,6 +22,15 @@ from tnfr.utils import (
     cached_nodes_and_A,
     increment_edge_version,
 )
+
+
+@contextmanager
+def numpy_disabled(monkeypatch):
+    import tnfr.dynamics.dnfr as dnfr_module
+
+    with monkeypatch.context() as ctx:
+        ctx.setattr(dnfr_module, "get_numpy", lambda: None)
+        yield
 
 
 def _counting_trig(monkeypatch):
@@ -66,7 +77,6 @@ def test_prepare_dnfr_data_populates_degree_cache_without_topology_weight():
     np = pytest.importorskip("numpy")
 
     G = _setup_graph()
-    G.graph["vectorized_dnfr"] = True
 
     data = _prepare_dnfr_data(G)
 
@@ -89,7 +99,6 @@ def test_accumulate_neighbors_numpy_prefers_degree_cache():
     np = pytest.importorskip("numpy")
 
     G = _setup_graph()
-    G.graph["vectorized_dnfr"] = True
 
     data = _prepare_dnfr_data(G)
     cache = data["cache"]
@@ -147,7 +156,6 @@ def test_degree_cache_refreshes_after_graph_mutation():
     np = pytest.importorskip("numpy")
 
     G = _setup_graph()
-    G.graph["vectorized_dnfr"] = True
 
     data_before = _prepare_dnfr_data(G)
     cache_before = data_before["cache"]
@@ -212,32 +220,33 @@ def test_degree_cache_refreshes_after_graph_mutation():
 
 
 @pytest.mark.parametrize("vectorized", [False, True])
-def test_cache_invalidated_on_graph_change(vectorized):
+def test_cache_invalidated_on_graph_change(vectorized, monkeypatch):
     if vectorized:
         pytest.importorskip("numpy")
+        context_factory = nullcontext
+    else:
+        context_factory = lambda: numpy_disabled(monkeypatch)
 
     G = _setup_graph()
-    G.graph["vectorized_dnfr"] = vectorized
-    default_compute_delta_nfr(G, cache_size=2)
-    nodes1, _ = cached_nodes_and_A(G, cache_size=2)
+    with context_factory():
+        default_compute_delta_nfr(G, cache_size=2)
+        nodes1, _ = cached_nodes_and_A(G, cache_size=2)
 
-    G.add_edge(2, 3)  # Cambia número de nodos y aristas
-    for attr, scale in ((THETA_PRIMARY, 0.1), (EPI_PRIMARY, 0.2), (VF_PRIMARY, 0.3)):
-        G.nodes[3][attr] = scale * 4
-    increment_edge_version(G)
-    G.graph["vectorized_dnfr"] = vectorized
-    default_compute_delta_nfr(G, cache_size=2)
-    nodes2, _ = cached_nodes_and_A(G, cache_size=2)
+        G.add_edge(2, 3)  # Cambia número de nodos y aristas
+        for attr, scale in ((THETA_PRIMARY, 0.1), (EPI_PRIMARY, 0.2), (VF_PRIMARY, 0.3)):
+            G.nodes[3][attr] = scale * 4
+        increment_edge_version(G)
+        default_compute_delta_nfr(G, cache_size=2)
+        nodes2, _ = cached_nodes_and_A(G, cache_size=2)
 
-    assert len(nodes2) == 4
-    assert nodes1 is not nodes2
+        assert len(nodes2) == 4
+        assert nodes1 is not nodes2
 
-    G.add_edge(3, 4)
-    increment_edge_version(G)
-    G.graph["vectorized_dnfr"] = vectorized
-    default_compute_delta_nfr(G, cache_size=2)
-    nodes3, _ = cached_nodes_and_A(G, cache_size=2)
-    assert nodes3 is not nodes2
+        G.add_edge(3, 4)
+        increment_edge_version(G)
+        default_compute_delta_nfr(G, cache_size=2)
+        nodes3, _ = cached_nodes_and_A(G, cache_size=2)
+        assert nodes3 is not nodes2
 
 
 def test_cache_is_per_graph():
@@ -251,9 +260,12 @@ def test_cache_is_per_graph():
 
 
 @pytest.mark.parametrize("vectorized", [False, True])
-def test_neighbor_sum_buffers_reused_and_results_stable(vectorized):
+def test_neighbor_sum_buffers_reused_and_results_stable(vectorized, monkeypatch):
     if vectorized:
         pytest.importorskip("numpy")
+        context_factory = nullcontext
+    else:
+        context_factory = lambda: numpy_disabled(monkeypatch)
 
     G = nx.path_graph(5)
     for idx, node in enumerate(G.nodes):
@@ -266,9 +278,8 @@ def test_neighbor_sum_buffers_reused_and_results_stable(vectorized):
         "vf": 0.2,
         "topo": 0.1,
     }
-    G.graph["vectorized_dnfr"] = vectorized
-
-    default_compute_delta_nfr(G)
+    with context_factory():
+        default_compute_delta_nfr(G)
     first = _collect_dnfr(G)
     cache = G.graph.get("_dnfr_prep_cache")
     assert cache is not None
@@ -369,7 +380,8 @@ def test_neighbor_sum_buffers_reused_and_results_stable(vectorized):
             if arr is not None and arr.size:
                 arr.fill(333.0)
 
-    default_compute_delta_nfr(G)
+    with context_factory():
+        default_compute_delta_nfr(G)
     second = _collect_dnfr(G)
 
     assert second == pytest.approx(first)
@@ -441,9 +453,12 @@ def test_prepare_dnfr_data_refreshes_cached_vectors(monkeypatch):
 
 
 @pytest.mark.parametrize("vectorized", [False, True])
-def test_default_compute_delta_nfr_updates_on_state_change(vectorized):
+def test_default_compute_delta_nfr_updates_on_state_change(vectorized, monkeypatch):
     if vectorized:
         pytest.importorskip("numpy")
+        context = nullcontext()
+    else:
+        context = numpy_disabled(monkeypatch)
 
     G = _setup_graph()
     G.graph["DNFR_WEIGHTS"] = {
@@ -452,19 +467,18 @@ def test_default_compute_delta_nfr_updates_on_state_change(vectorized):
         "vf": 1.0,
         "topo": 0.0,
     }
-    G.graph["vectorized_dnfr"] = vectorized
+    with context:
+        default_compute_delta_nfr(G, cache_size=2)
+        before = {n: G.nodes[n].get(DNFR_PRIMARY, 0.0) for n in G.nodes}
 
-    default_compute_delta_nfr(G, cache_size=2)
-    before = {n: G.nodes[n].get(DNFR_PRIMARY, 0.0) for n in G.nodes}
+        # Modify only the central node without touching topology
+        target = 1
+        G.nodes[target][THETA_PRIMARY] += 0.5
+        G.nodes[target][EPI_PRIMARY] += 1.2
+        G.nodes[target][VF_PRIMARY] -= 0.8
 
-    # Modify only the central node without touching topology
-    target = 1
-    G.nodes[target][THETA_PRIMARY] += 0.5
-    G.nodes[target][EPI_PRIMARY] += 1.2
-    G.nodes[target][VF_PRIMARY] -= 0.8
-
-    default_compute_delta_nfr(G, cache_size=2)
-    after = {n: G.nodes[n].get(DNFR_PRIMARY, 0.0) for n in G.nodes}
+        default_compute_delta_nfr(G, cache_size=2)
+        after = {n: G.nodes[n].get(DNFR_PRIMARY, 0.0) for n in G.nodes}
 
     assert not math.isclose(before[target], after[target])
     assert any(not math.isclose(before[n], after[n]) for n in G.nodes)
