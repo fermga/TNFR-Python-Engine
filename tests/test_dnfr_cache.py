@@ -145,11 +145,34 @@ def test_neighbor_sum_buffers_reused_and_results_stable(vectorized):
     if vectorized:
         assert all(buf is None for buf in bar_list_buffers)
     else:
-        for buf in bar_list_buffers[:-1]:
-            assert isinstance(buf, list)
-            assert len(buf) == len(G)
-        if bar_list_buffers[-1] is not None:
-            assert len(bar_list_buffers[-1]) == len(G)
+        try:
+            import numpy as np
+        except ModuleNotFoundError:  # pragma: no cover - optional dependency
+            np = None
+
+        np_bar_buffers = (
+            cache.th_bar_np,
+            cache.epi_bar_np,
+            cache.vf_bar_np,
+            cache.deg_bar_np,
+        )
+
+        for idx, buf in enumerate(bar_list_buffers[:-1]):
+            if buf is not None:
+                assert isinstance(buf, list)
+                assert len(buf) == len(G)
+            elif np is not None:
+                arr = np_bar_buffers[idx]
+                assert arr is not None
+                assert arr.shape == (len(G),)
+            else:
+                pytest.fail("Expected list buffers when NumPy is unavailable")
+
+        last_buf = bar_list_buffers[-1]
+        if last_buf is not None:
+            assert len(last_buf) == len(G)
+        elif np is not None and np_bar_buffers[-1] is not None:
+            assert np_bar_buffers[-1].shape == (len(G),)
 
     if vectorized:
         arr_buffers = (
