@@ -22,6 +22,7 @@ from ..config.operator_names import (
     TRANSICION,
     RECURSIVIDAD,
 )
+from .registry import register_operator
 
 __all__ = (
     "Operador",
@@ -62,6 +63,7 @@ class Operador:
         apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
 
 
+@register_operator
 class Emision(Operador):
     """Aplicación del operador de emisión (símbolo ``AL``)."""
 
@@ -70,6 +72,7 @@ class Emision(Operador):
     glyph = Glyph.AL.value
 
 
+@register_operator
 class Recepcion(Operador):
     """Operador de recepción (símbolo ``EN``)."""
 
@@ -78,6 +81,7 @@ class Recepcion(Operador):
     glyph = Glyph.EN.value
 
 
+@register_operator
 class Coherencia(Operador):
     """Operador de coherencia (símbolo ``IL``)."""
 
@@ -86,6 +90,7 @@ class Coherencia(Operador):
     glyph = Glyph.IL.value
 
 
+@register_operator
 class Disonancia(Operador):
     """Operador de disonancia (símbolo ``OZ``)."""
 
@@ -94,6 +99,7 @@ class Disonancia(Operador):
     glyph = Glyph.OZ.value
 
 
+@register_operator
 class Acoplamiento(Operador):
     """Operador de acoplamiento (símbolo ``UM``)."""
 
@@ -102,6 +108,7 @@ class Acoplamiento(Operador):
     glyph = Glyph.UM.value
 
 
+@register_operator
 class Resonancia(Operador):
     """Operador de resonancia (símbolo ``RA``)."""
 
@@ -110,6 +117,7 @@ class Resonancia(Operador):
     glyph = Glyph.RA.value
 
 
+@register_operator
 class Silencio(Operador):
     """Operador de silencio (símbolo ``SHA``)."""
 
@@ -118,6 +126,7 @@ class Silencio(Operador):
     glyph = Glyph.SHA.value
 
 
+@register_operator
 class Expansion(Operador):
     """Operador de expansión (símbolo ``VAL``)."""
 
@@ -126,6 +135,7 @@ class Expansion(Operador):
     glyph = Glyph.VAL.value
 
 
+@register_operator
 class Contraccion(Operador):
     """Operador de contracción (símbolo ``NUL``)."""
 
@@ -134,6 +144,7 @@ class Contraccion(Operador):
     glyph = Glyph.NUL.value
 
 
+@register_operator
 class Autoorganizacion(Operador):
     """Operador de autoorganización (símbolo ``THOL``)."""
 
@@ -142,6 +153,7 @@ class Autoorganizacion(Operador):
     glyph = Glyph.THOL.value
 
 
+@register_operator
 class Mutacion(Operador):
     """Operador de mutación (símbolo ``ZHIR``)."""
 
@@ -150,6 +162,7 @@ class Mutacion(Operador):
     glyph = Glyph.ZHIR.value
 
 
+@register_operator
 class Transicion(Operador):
     """Operador de transición (símbolo ``NAV``)."""
 
@@ -158,6 +171,7 @@ class Transicion(Operador):
     glyph = Glyph.NAV.value
 
 
+@register_operator
 class Recursividad(Operador):
     """Operador de recursividad (símbolo ``REMESH``)."""
 

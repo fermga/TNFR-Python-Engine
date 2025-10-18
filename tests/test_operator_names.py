@@ -1,10 +1,11 @@
 """Tests ensuring operator name constants stay aligned with registry."""
 
 from tnfr.config import operator_names as names
-from tnfr.operators.registry import OPERADORES
+from tnfr.operators.registry import OPERADORES, discover_operators
 
 
 def test_registry_matches_operator_constants() -> None:
+    discover_operators()
     assert set(OPERADORES.keys()) == names.ALL_OPERATOR_NAMES
 
 

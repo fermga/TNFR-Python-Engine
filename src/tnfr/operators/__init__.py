@@ -17,22 +17,6 @@ from ..rng import make_rng
 from tnfr import glyph_history
 from ..types import Glyph
 
-from .definitions import (
-    Operador,
-    Emision,
-    Recepcion,
-    Coherencia,
-    Disonancia,
-    Acoplamiento,
-    Resonancia,
-    Silencio,
-    Expansion,
-    Contraccion,
-    Autoorganizacion,
-    Mutacion,
-    Transicion,
-    Recursividad,
-)
 from .jitter import (
     JitterCache,
     JitterCacheManager,
@@ -40,12 +24,22 @@ from .jitter import (
     reset_jitter_manager,
     random_jitter,
 )
-from .registry import OPERADORES
+from .registry import OPERADORES, discover_operators
 from .remesh import (
     apply_network_remesh,
     apply_topological_remesh,
     apply_remesh_if_globally_stable,
 )
+
+discover_operators()
+
+from . import definitions as _definitions
+
+_DEFINITION_EXPORTS = {
+    name: getattr(_definitions, name)
+    for name in getattr(_definitions, "__all__", ())
+}
+globals().update(_DEFINITION_EXPORTS)
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodoProtocol
@@ -66,22 +60,11 @@ __all__ = [
     "apply_network_remesh",
     "apply_topological_remesh",
     "apply_remesh_if_globally_stable",
-    "Operador",
-    "Emision",
-    "Recepcion",
-    "Coherencia",
-    "Disonancia",
-    "Acoplamiento",
-    "Resonancia",
-    "Silencio",
-    "Expansion",
-    "Contraccion",
-    "Autoorganizacion",
-    "Mutacion",
-    "Transicion",
-    "Recursividad",
     "OPERADORES",
+    "discover_operators",
 ]
+
+__all__.extend(_DEFINITION_EXPORTS.keys())
 
 
 def get_glyph_factors(node: NodoProtocol) -> dict[str, Any]:
