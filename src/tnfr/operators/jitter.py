@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, cast
 
 from cachetools import LRUCache
 
@@ -11,6 +11,7 @@ from ..rng import (
     clear_rng_cache as _clear_rng_cache,
     seed_hash,
 )
+from ..cache import CacheManager
 from ..utils import ensure_node_offset_map, get_nodonx
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
@@ -22,12 +23,39 @@ if TYPE_CHECKING:  # pragma: no cover - type checking only
 _JITTER_MAX_ENTRIES = 1024
 
 
+
 class JitterCache:
     """Container for jitter-related caches."""
 
-    def __init__(self, max_entries: int = _JITTER_MAX_ENTRIES) -> None:
-        self._sequence = ScopedCounterCache("jitter", max_entries)
-        self.settings: dict[str, Any] = {"max_entries": self._sequence.max_entries}
+    def __init__(
+        self,
+        max_entries: int = _JITTER_MAX_ENTRIES,
+        *,
+        manager: CacheManager | None = None,
+    ) -> None:
+        self._manager = manager or CacheManager()
+        self._sequence = ScopedCounterCache("jitter", max_entries, manager=self._manager)
+        self._settings_key = "jitter_settings"
+        self._manager.register(
+            self._settings_key,
+            lambda: {"max_entries": self._sequence.max_entries},
+            reset=self._reset_settings,
+        )
+
+    def _reset_settings(self, settings: dict[str, Any] | None) -> dict[str, Any]:
+        return {"max_entries": self._sequence.max_entries}
+
+    def _refresh_settings(self) -> None:
+        self._manager.update(
+            self._settings_key,
+            lambda _: {"max_entries": self._sequence.max_entries},
+        )
+
+    @property
+    def manager(self) -> CacheManager:
+        """Expose the cache manager backing this cache."""
+
+        return self._manager
 
     @property
     def seq(self) -> LRUCache[tuple[int, int], int]:
@@ -52,7 +80,13 @@ class JitterCache:
         """Set the maximum number of cached jitter sequences."""
 
         self._sequence.configure(max_entries=int(value))
-        self.settings["max_entries"] = self._sequence.max_entries
+        self._refresh_settings()
+
+    @property
+    def settings(self) -> dict[str, Any]:
+        """Return jitter cache settings stored on the manager."""
+
+        return cast(dict[str, Any], self._manager.get(self._settings_key))
 
     def setup(
         self, force: bool = False, max_entries: int | None = None
@@ -60,13 +94,14 @@ class JitterCache:
         """Ensure jitter cache matches the configured size."""
 
         self._sequence.configure(force=force, max_entries=max_entries)
-        self.settings["max_entries"] = self._sequence.max_entries
+        self._refresh_settings()
 
     def clear(self) -> None:
         """Clear cached RNGs and jitter state."""
 
         _clear_rng_cache()
         self._sequence.clear()
+        self._manager.clear(self._settings_key)
 
     def bump(self, key: tuple[int, int]) -> int:
         """Return current jitter sequence counter for ``key`` and increment it."""
@@ -77,8 +112,18 @@ class JitterCache:
 class JitterCacheManager:
     """Manager exposing the jitter cache without global reassignment."""
 
-    def __init__(self, cache: JitterCache | None = None) -> None:
-        self.cache = cache or JitterCache()
+    def __init__(
+        self,
+        cache: JitterCache | None = None,
+        *,
+        manager: CacheManager | None = None,
+    ) -> None:
+        if cache is not None:
+            self.cache = cache
+            self._manager = cache.manager
+        else:
+            self._manager = manager or CacheManager()
+            self.cache = JitterCache(manager=self._manager)
 
     # Convenience passthrough properties
     @property
@@ -96,11 +141,13 @@ class JitterCacheManager:
     @property
     def max_entries(self) -> int:
         """Return the maximum number of cached jitter entries."""
+
         return self.cache.max_entries
 
     @max_entries.setter
     def max_entries(self, value: int) -> None:
         """Set the maximum number of cached jitter entries."""
+
         self.cache.max_entries = value
 
     def setup(
@@ -111,6 +158,7 @@ class JitterCacheManager:
         ``max_entries`` may be provided to explicitly resize the cache.
         When omitted the existing ``cache.max_entries`` is preserved.
         """
+
         if max_entries is not None:
             self.cache.setup(force=True, max_entries=max_entries)
         else:
@@ -118,14 +166,13 @@ class JitterCacheManager:
 
     def clear(self) -> None:
         """Clear cached RNGs and jitter state."""
+
         self.cache.clear()
 
     def bump(self, key: tuple[int, int]) -> int:
         """Return and increment the jitter sequence counter for ``key``."""
 
         return self.cache.bump(key)
-
-
 # Lazy manager instance
 _JITTER_MANAGER: JitterCacheManager | None = None
 

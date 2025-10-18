@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from . import init as _init
+from ..cache import CacheManager
 from .data import (
     MAX_MATERIALIZE_DEFAULT,
     STRING_TYPES,
@@ -66,6 +67,7 @@ __all__ = (
     "MAX_MATERIALIZE_DEFAULT",
     "negative_weights_warn_once",
     "mix_groups",
+    "CacheManager",
     "EdgeCacheManager",
     "LockAwareLRUCache",
     "NODE_SET_CHECKSUM_KEY",

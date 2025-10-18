@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 if TYPE_CHECKING:  # pragma: no cover - import-time only for typing
     from ..utils import (
+        CacheManager,
         EdgeCacheManager,
         cached_node_list,
         cached_nodes_and_A,
@@ -33,6 +34,7 @@ from .numeric import (
 )
 
 __all__ = (
+    "CacheManager",
     "EdgeCacheManager",
     "angle_diff",
     "cached_node_list",
@@ -59,6 +61,7 @@ __all__ = (
 
 
 _UTIL_EXPORTS = {
+    "CacheManager",
     "EdgeCacheManager",
     "cached_node_list",
     "cached_nodes_and_A",
