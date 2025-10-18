@@ -1214,7 +1214,7 @@ def _accumulate_neighbors_numpy(
 
 
 def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
-    np_module = get_numpy()
+    np_module = get_numpy() if use_numpy else None
     nodes = data["nodes"]
     if not nodes:
         if np_module is not None:
@@ -1647,7 +1647,11 @@ def _compute_dnfr(G, data, *, use_numpy: bool | None = None) -> None:
     """
     np_module = get_numpy()
     cache: DnfrCache | None = data.get("cache")
-    vector_flag = np_module is not None
+
+    if use_numpy is None:
+        vector_flag = _should_vectorize(G, np_module)
+    else:
+        vector_flag = bool(use_numpy) and np_module is not None
 
     if vector_flag:
         _ensure_numpy_state_vectors(data, np_module)
