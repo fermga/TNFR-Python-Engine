@@ -22,6 +22,7 @@ from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.constants import get_aliases
 from tnfr.alias import collect_attr, get_attr, set_attr
 from tnfr.helpers.numeric import angle_diff
+from tnfr.utils import mark_dnfr_prep_dirty
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
@@ -719,3 +720,93 @@ def test_dense_adjacency_accumulation_matches_loop(topo_weight, monkeypatch):
     assert repeated is not None
     assert data_dense.get("dense_degree_np") is degree_vector
     assert cache.dense_degree_np is degree_vector
+
+
+def test_broadcast_accumulation_dense_graph_equivalence():
+    np = pytest.importorskip("numpy")
+
+    dense_graph = _build_weighted_graph(nx.complete_graph, 36, 0.4)
+    data_vec = _prepare_dnfr_data(dense_graph)
+    data_vec["prefer_sparse"] = True
+    data_vec["A"] = None
+    _compute_dnfr(dense_graph, data_vec)
+
+    vector_dnfr = collect_attr(dense_graph, dense_graph.nodes, ALIAS_DNFR, 0.0)
+
+    loop_graph = dense_graph.copy()
+    loop_graph.graph["vectorized_dnfr"] = False
+    loop_data = _prepare_dnfr_data(loop_graph)
+    _compute_dnfr(loop_graph, loop_data)
+    loop_dnfr = collect_attr(loop_graph, loop_graph.nodes, ALIAS_DNFR, 0.0)
+
+    np.testing.assert_allclose(vector_dnfr, loop_dnfr, rtol=1e-9, atol=1e-9)
+
+    cache = data_vec.get("cache")
+    assert cache is not None
+    flat = cache.neighbor_flat_index_np
+    offsets = cache.neighbor_offsets_np
+    workspace = cache.neighbor_workspace_np
+    signature = cache.neighbor_accum_signature
+    assert isinstance(flat, np.ndarray)
+    assert isinstance(offsets, np.ndarray)
+    assert isinstance(workspace, np.ndarray)
+
+    for idx, node in enumerate(dense_graph.nodes):
+        set_attr(dense_graph.nodes[node], ALIAS_EPI, 0.17 * (idx + 5))
+        set_attr(dense_graph.nodes[node], ALIAS_VF, 0.11 * (idx + 7))
+
+    data_vec = _prepare_dnfr_data(dense_graph)
+    data_vec["prefer_sparse"] = True
+    data_vec["A"] = None
+    _compute_dnfr(dense_graph, data_vec)
+
+    assert id(cache.neighbor_flat_index_np) == id(flat)
+    assert id(cache.neighbor_offsets_np) == id(offsets)
+    assert id(cache.neighbor_workspace_np) == id(workspace)
+    assert cache.neighbor_accum_signature == signature
+
+    loop_after = dense_graph.copy()
+    loop_after.graph["vectorized_dnfr"] = False
+    loop_after_data = _prepare_dnfr_data(loop_after)
+    _compute_dnfr(loop_after, loop_after_data)
+    updated_vector = collect_attr(dense_graph, dense_graph.nodes, ALIAS_DNFR, 0.0)
+    updated_loop = collect_attr(loop_after, loop_after.nodes, ALIAS_DNFR, 0.0)
+
+    np.testing.assert_allclose(updated_vector, updated_loop, rtol=1e-9, atol=1e-9)
+
+
+def test_broadcast_accumulation_invalidation_on_edge_change():
+    np = pytest.importorskip("numpy")
+
+    base = _build_weighted_graph(nx.path_graph, 24, 0.25)
+    data_vec = _prepare_dnfr_data(base)
+    _compute_dnfr(base, data_vec)
+
+    cache = data_vec.get("cache")
+    assert cache is not None
+    old_signature = cache.neighbor_accum_signature
+    old_flat = cache.neighbor_flat_index_np.copy()
+
+    base.add_edge(0, len(base) - 1)
+    mark_dnfr_prep_dirty(base)
+
+    refreshed = _prepare_dnfr_data(base)
+    refreshed["prefer_sparse"] = True
+    refreshed["A"] = None
+    _compute_dnfr(base, refreshed)
+
+    new_signature = cache.neighbor_accum_signature
+    assert new_signature != old_signature
+    assert cache.neighbor_flat_index_np.shape[0] != old_flat.shape[0] or not np.array_equal(
+        cache.neighbor_flat_index_np, old_flat
+    )
+
+    loop_graph = base.copy()
+    loop_graph.graph["vectorized_dnfr"] = False
+    loop_data = _prepare_dnfr_data(loop_graph)
+    _compute_dnfr(loop_graph, loop_data)
+
+    vector_dnfr = collect_attr(base, base.nodes, ALIAS_DNFR, 0.0)
+    loop_dnfr = collect_attr(loop_graph, loop_graph.nodes, ALIAS_DNFR, 0.0)
+
+    np.testing.assert_allclose(vector_dnfr, loop_dnfr, rtol=1e-9, atol=1e-9)

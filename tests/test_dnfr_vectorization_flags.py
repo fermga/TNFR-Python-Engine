@@ -88,7 +88,7 @@ def test_compute_dnfr_loop_path_when_graph_disables_numpy(monkeypatch):
     assert all(isinstance(val, float) for val in dnfr_values)
 
 
-def test_compute_dnfr_explicit_numpy_overrides_graph_flag(monkeypatch):
+def test_compute_dnfr_explicit_numpy_respects_disable_flag(monkeypatch):
     np = pytest.importorskip("numpy")
 
     G = _graph_fixture()
@@ -99,25 +99,37 @@ def test_compute_dnfr_explicit_numpy_overrides_graph_flag(monkeypatch):
     data["prefer_sparse"] = True
     data["A"] = None
 
-    calls = {"numpy": 0, "dense": 0}
+    _compute_dnfr(G, data, use_numpy=True)
+
+    _assert_loop_state(data)
+    dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
+    assert all(isinstance(val, float) for val in dnfr_values)
+
+
+def test_compute_dnfr_prefers_numpy_even_when_requested_off(monkeypatch):
+    np = pytest.importorskip("numpy")
+
+    G = _graph_fixture()
+    data = _prepare_dnfr_data(G)
+
+    # NumPy should be used even if callers request ``use_numpy=False`` as long
+    # as the graph does not force the loop fallback.
+    data["prefer_sparse"] = True
+    data["A"] = None
+
+    calls = {"numpy": 0}
 
     original_numpy = dnfr_module._accumulate_neighbors_numpy
-    original_dense = dnfr_module._accumulate_neighbors_dense
 
     def _spy_numpy(*args, **kwargs):
         calls["numpy"] += 1
         return original_numpy(*args, **kwargs)
 
-    def _spy_dense(*args, **kwargs):
-        calls["dense"] += 1
-        return original_dense(*args, **kwargs)
-
     monkeypatch.setattr(dnfr_module, "_accumulate_neighbors_numpy", _spy_numpy)
-    monkeypatch.setattr(dnfr_module, "_accumulate_neighbors_dense", _spy_dense)
 
-    _compute_dnfr(G, data, use_numpy=True)
+    _compute_dnfr(G, data, use_numpy=False)
 
-    assert calls["numpy"] + calls["dense"] >= 1
+    assert calls["numpy"] >= 1
     _assert_vector_state(data, np)
     dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert all(isinstance(val, float) for val in dnfr_values)

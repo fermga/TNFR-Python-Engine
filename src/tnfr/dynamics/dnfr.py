@@ -98,6 +98,8 @@ class DnfrCache:
     neighbor_workspace_np: Any | None = None
     neighbor_flat_index_np: Any | None = None
     neighbor_offsets_np: Any | None = None
+    edge_signature: Any | None = None
+    neighbor_accum_signature: Any | None = None
 
 
 _NUMPY_CACHE_ATTRS = (
@@ -1106,59 +1108,28 @@ def _accumulate_neighbors_dense(
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
 
-def _accumulate_neighbors_numpy(
-    G,
-    data,
+def _accumulate_neighbors_broadcasted(
     *,
+    edge_src,
+    edge_dst,
+    cos,
+    sin,
+    epi,
+    vf,
     x,
     y,
     epi_sum,
     vf_sum,
     count,
     deg_sum,
+    deg_array,
+    cache: DnfrCache | None,
     np,
 ):
-    """Vectorised neighbour accumulation reusing cached NumPy buffers."""
+    """Accumulate neighbour contributions across all columns in one pass."""
 
-    nodes = data["nodes"]
-    n = len(nodes)
-    if not nodes:
-        return x, y, epi_sum, vf_sum, count, deg_sum, None
-
-    cache: DnfrCache | None = data.get("cache")
-
-    state = _ensure_numpy_state_vectors(data, np)
-    cos_th = state["cos"]
-    sin_th = state["sin"]
-    epi = state["epi"]
-    vf = state["vf"]
-
-    edge_src = data.get("edge_src")
-    edge_dst = data.get("edge_dst")
-    if edge_src is None or edge_dst is None:
-        edge_src, edge_dst = _build_edge_index_arrays(G, nodes, data["idx"], np)
-        data["edge_src"] = edge_src
-        data["edge_dst"] = edge_dst
-        if cache is not None:
-            cache.edge_src = edge_src
-            cache.edge_dst = edge_dst
-
+    n = x.shape[0]
     edge_count = int(edge_src.size)
-
-    if count is not None:
-        count.fill(0.0)
-        if edge_count:
-            preview = np.bincount(edge_src, minlength=n)
-            if preview.dtype != float:
-                preview = preview.astype(float, copy=False)
-            np.copyto(count, preview, casting="unsafe")
-
-    deg_array = None
-    if deg_sum is not None:
-        deg_sum.fill(0.0)
-        deg_array = _resolve_numpy_degree_array(
-            data, count if count is not None else None, cache=cache, np=np
-        )
 
     columns = 5  # cos, sin, epi, vf, count
     deg_column = None
@@ -1167,54 +1138,84 @@ def _accumulate_neighbors_numpy(
         columns += 1
 
     contrib = _ensure_cached_array(cache, "neighbor_contrib_np", (edge_count, columns), np)
-    data["neighbor_contrib_np"] = contrib
     if edge_count:
-        np.copyto(contrib[:, 0], cos_th[edge_dst], casting="unsafe")
-        np.copyto(contrib[:, 1], sin_th[edge_dst], casting="unsafe")
+        np.copyto(contrib[:, 0], cos[edge_dst], casting="unsafe")
+        np.copyto(contrib[:, 1], sin[edge_dst], casting="unsafe")
         np.copyto(contrib[:, 2], epi[edge_dst], casting="unsafe")
         np.copyto(contrib[:, 3], vf[edge_dst], casting="unsafe")
         contrib[:, 4].fill(1.0)
         if deg_column is not None:
             np.copyto(contrib[:, deg_column], deg_array[edge_dst], casting="unsafe")
+    elif getattr(contrib, "size", 0):
+        contrib.fill(0.0)
+
+    workspace = _ensure_cached_array(cache, "neighbor_workspace_np", (n, columns), np)
+    workspace.fill(0.0)
+
+    rebuild_layout = True
+    base_signature = None
+    if cache is not None:
+        base_signature = (id(edge_src), id(edge_dst), n)
+        if cache.edge_signature != base_signature:
+            cache.edge_signature = base_signature
+            cache.neighbor_accum_signature = None
+        desired_signature = (base_signature, columns)
+        if cache.neighbor_accum_signature == desired_signature:
+            rebuild_layout = False
+        else:
+            cache.neighbor_accum_signature = desired_signature
+    else:
+        desired_signature = None
 
     offsets = _ensure_cached_int_array(cache, "neighbor_offsets_np", (columns,), np)
-    offsets[:] = np.arange(columns, dtype=np.intp) * n
+    if rebuild_layout:
+        offsets[:] = np.arange(columns, dtype=np.intp) * n
 
     flat_indices = _ensure_cached_int_array(
         cache, "neighbor_flat_index_np", (edge_count * columns,), np
     )
-    flat_view = flat_indices.reshape(edge_count, columns)
-    if edge_count:
+    if rebuild_layout and edge_count:
+        flat_view = flat_indices.reshape(edge_count, columns)
         flat_view[...] = edge_src[:, None]
         flat_view += offsets
-
-    workspace = _ensure_cached_array(cache, "neighbor_workspace_np", (n, columns), np)
-    workspace.fill(0.0)
-    data["neighbor_workspace_np"] = workspace
+    elif edge_count == 0:
+        flat_indices.fill(0)
 
     weights_flat = contrib.reshape(-1)
-    accum_flat = np.bincount(flat_indices, weights=weights_flat, minlength=n * columns)
-    if accum_flat.dtype != float:
-        accum_flat = accum_flat.astype(float, copy=False)
-    accum = accum_flat.reshape(columns, n).T
-    np.copyto(workspace, accum, casting="unsafe")
+    if edge_count:
+        accum_flat = np.bincount(
+            flat_indices,
+            weights=weights_flat,
+            minlength=n * columns,
+        )
+        if accum_flat.dtype != float:
+            accum_flat = accum_flat.astype(float, copy=False)
+        accum = accum_flat.reshape(columns, n).T
+        np.copyto(workspace, accum, casting="unsafe")
+    else:
+        workspace.fill(0.0)
 
     np.copyto(x, workspace[:, 0], casting="unsafe")
     np.copyto(y, workspace[:, 1], casting="unsafe")
     np.copyto(epi_sum, workspace[:, 2], casting="unsafe")
     np.copyto(vf_sum, workspace[:, 3], casting="unsafe")
-    np.copyto(count, workspace[:, 4], casting="unsafe")
-
-    degs = None
+    if count is not None:
+        np.copyto(count, workspace[:, 4], casting="unsafe")
     if deg_column is not None and deg_sum is not None:
         np.copyto(deg_sum, workspace[:, deg_column], casting="unsafe")
-        degs = deg_array
 
-    return x, y, epi_sum, vf_sum, count, deg_sum, degs
+    return {
+        "workspace": workspace,
+        "contrib": contrib,
+        "offsets": offsets,
+        "flat_indices": flat_indices,
+    }
 
 
 def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
-    np_module = get_numpy() if use_numpy else None
+    np_module = get_numpy()
+    if np_module is not None and G.graph.get("vectorized_dnfr") is False:
+        np_module = None
     nodes = data["nodes"]
     if not nodes:
         if np_module is not None:
@@ -1564,11 +1565,6 @@ def _accumulate_neighbors_numpy(
 
     if count is not None:
         count.fill(0.0)
-        if edge_count:
-            preview = np.bincount(edge_src, minlength=n)
-            if preview.dtype != float:
-                preview = preview.astype(float, copy=False)
-            np.copyto(count, preview, casting="unsafe")
 
     deg_array = None
     if deg_sum is not None:
@@ -1577,56 +1573,30 @@ def _accumulate_neighbors_numpy(
             data, count if count is not None else None, cache=cache, np=np
         )
 
-    columns = 5  # cos, sin, epi, vf, count
-    deg_column = None
-    if deg_sum is not None and deg_array is not None:
-        deg_column = columns
-        columns += 1
-
-    contrib = _ensure_cached_array(cache, "neighbor_contrib_np", (edge_count, columns), np)
-    data["neighbor_contrib_np"] = contrib
-    if edge_count:
-        np.copyto(contrib[:, 0], cos_th[edge_dst], casting="unsafe")
-        np.copyto(contrib[:, 1], sin_th[edge_dst], casting="unsafe")
-        np.copyto(contrib[:, 2], epi[edge_dst], casting="unsafe")
-        np.copyto(contrib[:, 3], vf[edge_dst], casting="unsafe")
-        contrib[:, 4].fill(1.0)
-        if deg_column is not None:
-            np.copyto(contrib[:, deg_column], deg_array[edge_dst], casting="unsafe")
-
-    offsets = _ensure_cached_int_array(cache, "neighbor_offsets_np", (columns,), np)
-    offsets[:] = np.arange(columns, dtype=np.intp) * n
-
-    flat_indices = _ensure_cached_int_array(
-        cache, "neighbor_flat_index_np", (edge_count * columns,), np
+    accum = _accumulate_neighbors_broadcasted(
+        edge_src=edge_src,
+        edge_dst=edge_dst,
+        cos=cos_th,
+        sin=sin_th,
+        epi=epi,
+        vf=vf,
+        x=x,
+        y=y,
+        epi_sum=epi_sum,
+        vf_sum=vf_sum,
+        count=count,
+        deg_sum=deg_sum,
+        deg_array=deg_array,
+        cache=cache,
+        np=np,
     )
-    flat_view = flat_indices.reshape(edge_count, columns)
-    if edge_count:
-        flat_view[...] = edge_src[:, None]
-        flat_view += offsets
 
-    workspace = _ensure_cached_array(cache, "neighbor_workspace_np", (n, columns), np)
-    workspace.fill(0.0)
-    data["neighbor_workspace_np"] = workspace
+    data["neighbor_workspace_np"] = accum["workspace"]
+    data["neighbor_contrib_np"] = accum["contrib"]
+    data["neighbor_offsets_np"] = accum["offsets"]
+    data["neighbor_flat_index_np"] = accum["flat_indices"]
 
-    weights_flat = contrib.reshape(-1)
-    accum_flat = np.bincount(flat_indices, weights=weights_flat, minlength=n * columns)
-    if accum_flat.dtype != float:
-        accum_flat = accum_flat.astype(float, copy=False)
-    accum = accum_flat.reshape(columns, n).T
-    np.copyto(workspace, accum, casting="unsafe")
-
-    np.copyto(x, workspace[:, 0], casting="unsafe")
-    np.copyto(y, workspace[:, 1], casting="unsafe")
-    np.copyto(epi_sum, workspace[:, 2], casting="unsafe")
-    np.copyto(vf_sum, workspace[:, 3], casting="unsafe")
-    np.copyto(count, workspace[:, 4], casting="unsafe")
-
-    degs = None
-    if deg_column is not None and deg_sum is not None:
-        np.copyto(deg_sum, workspace[:, deg_column], casting="unsafe")
-        degs = deg_array
-
+    degs = deg_array if deg_sum is not None and deg_array is not None else None
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
 
@@ -1640,18 +1610,18 @@ def _compute_dnfr(G, data, *, use_numpy: bool | None = None) -> None:
     data : dict
         Precomputed ΔNFR data as returned by :func:`_prepare_dnfr_data`.
     use_numpy : bool | None, optional
-        When ``True`` the vectorised ``numpy`` strategy is forced. When ``False``
-        the function requests the loop-based fallback. The default ``None``
-        enables auto-detection so cached NumPy buffers trigger the vector path
-        whenever the graph does not explicitly disable it.
+        Backwards compatibility flag. When ``True`` the function eagerly
+        prepares NumPy buffers (if available). When ``False`` the engine still
+        prefers the vectorised path whenever :func:`get_numpy` returns a module
+        and the graph does not set ``vectorized_dnfr`` to ``False``.
     """
     np_module = get_numpy()
     cache: DnfrCache | None = data.get("cache")
 
-    if use_numpy is None:
-        vector_flag = _should_vectorize(G, np_module)
-    else:
-        vector_flag = bool(use_numpy) and np_module is not None
+    vector_disabled = G.graph.get("vectorized_dnfr") is False
+    vector_flag = np_module is not None and not vector_disabled
+    if use_numpy is True and np_module is not None and not vector_disabled:
+        vector_flag = True
 
     if vector_flag:
         _ensure_numpy_state_vectors(data, np_module)
