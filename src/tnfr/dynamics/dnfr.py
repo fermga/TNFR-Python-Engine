@@ -15,7 +15,7 @@ from ..alias import (
     get_attr,
     set_dnfr,
 )
-from ..cache import cached_nodes_and_A
+from ..utils.cache import cached_nodes_and_A
 from ..constants import DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import angle_diff
 from ..metrics.common import merge_and_normalize_weights

@@ -1,6 +1,6 @@
 """Pruebas enfocadas en los helpers públicos de cache."""
 
-from tnfr.cache import edge_version_update, ensure_node_index_map, ensure_node_offset_map
+from tnfr.utils.cache import edge_version_update, ensure_node_index_map, ensure_node_offset_map
 
 
 def test_edge_version_update_scopes_mutations(graph_canon):

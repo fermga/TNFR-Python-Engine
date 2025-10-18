@@ -22,7 +22,7 @@ from .metric import (
 from ..immutable import _is_immutable
 
 try:  # pragma: no cover - optional dependency
-    from ..cache import ensure_node_offset_map
+    from ..utils.cache import ensure_node_offset_map
 except ImportError:  # noqa: BLE001 - allow any import error
     ensure_node_offset_map = None
 

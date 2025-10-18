@@ -6,7 +6,7 @@ from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Sequence
 
 from ..alias import collect_attr, get_attr, multi_recompute_abs_max
-from ..cache import edge_version_cache
+from ..utils.cache import edge_version_cache
 from ..constants import DEFAULTS, get_aliases
 from ..helpers.numeric import clamp01, kahan_sum_nd
 from ..types import GraphLike

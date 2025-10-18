@@ -14,7 +14,7 @@ from tnfr.constants import (
     VF_PRIMARY,
     DNFR_PRIMARY,
 )
-from tnfr.cache import (
+from tnfr.utils.cache import (
     increment_edge_version,
     cached_node_list,
     cached_nodes_and_A,
