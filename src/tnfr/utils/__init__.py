@@ -2,16 +2,7 @@
 
 from __future__ import annotations
 
-from .init import (
-    IMPORT_LOG,
-    WarnOnce,
-    cached_import,
-    get_logger,
-    get_nodonx,
-    get_numpy,
-    prune_failed_imports,
-    warn_once,
-)
+from . import init as _init
 from .data import (
     MAX_MATERIALIZE_DEFAULT,
     STRING_TYPES,
@@ -66,4 +57,40 @@ __all__ = (
     "DEFAULT_PARAMS",
     "json_dumps",
     "clear_orjson_param_warnings",
+    "_configure_root",
+    "_LOGGING_CONFIGURED",
+    "_reset_logging_state",
+    "_reset_import_state",
+    "_IMPORT_STATE",
+    "_warn_failure",
+    "_FAILED_IMPORT_LIMIT",
+    "_DEFAULT_CACHE_SIZE",
+    "EMIT_MAP",
 )
+
+WarnOnce = _init.WarnOnce
+cached_import = _init.cached_import
+get_logger = _init.get_logger
+get_nodonx = _init.get_nodonx
+get_numpy = _init.get_numpy
+prune_failed_imports = _init.prune_failed_imports
+warn_once = _init.warn_once
+_configure_root = _init._configure_root
+_reset_logging_state = _init._reset_logging_state
+_reset_import_state = _init._reset_import_state
+_warn_failure = _init._warn_failure
+_FAILED_IMPORT_LIMIT = _init._FAILED_IMPORT_LIMIT
+_DEFAULT_CACHE_SIZE = _init._DEFAULT_CACHE_SIZE
+EMIT_MAP = _init.EMIT_MAP
+
+_DYNAMIC_EXPORTS = {"IMPORT_LOG", "_IMPORT_STATE", "_LOGGING_CONFIGURED"}
+
+
+def __getattr__(name: str):  # pragma: no cover - trivial delegation
+    if name in _DYNAMIC_EXPORTS:
+        return getattr(_init, name)
+    raise AttributeError(name)
+
+
+def __dir__() -> list[str]:  # pragma: no cover - trivial delegation
+    return sorted(set(globals()) | _DYNAMIC_EXPORTS)

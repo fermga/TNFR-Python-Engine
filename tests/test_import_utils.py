@@ -4,22 +4,23 @@ import types
 
 import pytest
 
-import tnfr.import_utils as legacy_import_utils
+import tnfr.utils as utils_pkg
 import tnfr.utils.init as import_utils
-from tnfr.utils.init import _IMPORT_STATE, cached_import, prune_failed_imports
+from tnfr.utils import cached_import, prune_failed_imports
 
 
 pytestmark = pytest.mark.usefixtures("reset_cached_import")
 
 
-# -- Compatibility layer --------------------------------------------------------------------
+# -- Package re-export checks ---------------------------------------------------------------
 
 
-def test_legacy_import_utils_exposes_same_objects():
-    assert legacy_import_utils.IMPORT_LOG is import_utils.IMPORT_LOG
-    assert legacy_import_utils._IMPORT_STATE is import_utils._IMPORT_STATE
-    assert legacy_import_utils.cached_import is import_utils.cached_import
-    assert legacy_import_utils.prune_failed_imports is import_utils.prune_failed_imports
+def test_utils_package_shares_import_state(reset_cached_import):
+    reset_cached_import()
+    assert utils_pkg._IMPORT_STATE is import_utils._IMPORT_STATE
+    assert utils_pkg.IMPORT_LOG is import_utils.IMPORT_LOG
+    utils_pkg.prune_failed_imports()
+    assert utils_pkg._IMPORT_STATE is import_utils._IMPORT_STATE
 
 
 # -- Attribute and fallback handling ---------------------------------------------------------
@@ -75,14 +76,14 @@ def test_cache_clear_and_prune_reset_all(monkeypatch, reset_cached_import):
 
     monkeypatch.setattr(importlib, "import_module", fake_import)
     cached_import("fake_mod")
-    with _IMPORT_STATE.lock:
-        assert "fake_mod" in _IMPORT_STATE.failed
-        assert "fake_mod" in _IMPORT_STATE.warned
+    with import_utils._IMPORT_STATE.lock:
+        assert "fake_mod" in import_utils._IMPORT_STATE.failed
+        assert "fake_mod" in import_utils._IMPORT_STATE.warned
 
     prune_failed_imports()
-    with _IMPORT_STATE.lock:
-        assert not _IMPORT_STATE.failed
-        assert not _IMPORT_STATE.warned
+    with import_utils._IMPORT_STATE.lock:
+        assert not import_utils._IMPORT_STATE.failed
+        assert not import_utils._IMPORT_STATE.warned
 
     calls = {"n": 0}
 
@@ -112,15 +113,15 @@ def test_cached_import_clears_failures(monkeypatch, reset_cached_import):
     monkeypatch.setattr(importlib, "import_module", fake_import)
     reset_cached_import()
     assert cached_import("fake_mod") is None
-    with _IMPORT_STATE.lock:
-        assert "fake_mod" in _IMPORT_STATE.failed
-        assert "fake_mod" in _IMPORT_STATE.warned
+    with import_utils._IMPORT_STATE.lock:
+        assert "fake_mod" in import_utils._IMPORT_STATE.failed
+        assert "fake_mod" in import_utils._IMPORT_STATE.warned
     reset_cached_import()
     result = cached_import("fake_mod")
     assert result is not None
-    with _IMPORT_STATE.lock:
-        assert "fake_mod" not in _IMPORT_STATE.failed
-        assert "fake_mod" not in _IMPORT_STATE.warned
+    with import_utils._IMPORT_STATE.lock:
+        assert "fake_mod" not in import_utils._IMPORT_STATE.failed
+        assert "fake_mod" not in import_utils._IMPORT_STATE.warned
 
 
 def test_warns_once_then_debug(monkeypatch, reset_cached_import):
