@@ -1,26 +1,17 @@
-import importlib
 import logging
 
-
-def reload_logging_modules():
-    import tnfr.logging_utils as logging_proxy
+def test_utils_module_reflects_logging_configured_flag():
+    import tnfr.utils as utils_pkg
     import tnfr.utils.init as logging_core
 
     logging.getLogger().handlers.clear()
     logging.getLogger().setLevel(logging.NOTSET)
+    logging_core._reset_logging_state()
 
-    logging_core = importlib.reload(logging_core)
-    logging_proxy = importlib.reload(logging_proxy)
-    return logging_proxy, logging_core
+    assert logging_core._LOGGING_CONFIGURED is False
+    assert utils_pkg._LOGGING_CONFIGURED is False
 
+    utils_pkg.get_logger("tnfr.test.logging_proxy_state")
 
-def test_logging_utils_reflects_logging_configured_flag():
-    proxy, core = reload_logging_modules()
-
-    assert core._LOGGING_CONFIGURED is False
-    assert proxy._LOGGING_CONFIGURED is False
-
-    proxy.get_logger("tnfr.test.logging_proxy_state")
-
-    assert core._LOGGING_CONFIGURED is True
-    assert proxy._LOGGING_CONFIGURED is True
+    assert logging_core._LOGGING_CONFIGURED is True
+    assert utils_pkg._LOGGING_CONFIGURED is True
