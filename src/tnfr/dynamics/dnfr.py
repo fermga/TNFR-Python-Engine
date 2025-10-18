@@ -1202,12 +1202,8 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
     """Build neighbour accumulators honouring the requested NumPy path."""
 
     nodes = data["nodes"]
-    np_module = get_numpy() if use_numpy else None
-    if np_module is None:
-        if not nodes:
-            return _init_neighbor_sums(data)
-
-    if np_module is not None:
+    np_module = get_numpy()
+    if use_numpy and np_module is not None:
         if not nodes:
             return _init_neighbor_sums(data, np=np_module)
 
@@ -1235,6 +1231,26 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
             _accumulate_neighbors_dense if use_dense else _accumulate_neighbors_numpy
         )
         return accumulator(
+            G,
+            data,
+            x=x,
+            y=y,
+            epi_sum=epi_sum,
+            vf_sum=vf_sum,
+            count=count,
+            deg_sum=deg_sum,
+            np=np_module,
+        )
+
+    if np_module is not None:
+        if not nodes:
+            return _init_neighbor_sums(data, np=np_module)
+
+        x, y, epi_sum, vf_sum, count, deg_sum, _ = _init_neighbor_sums(
+            data, np=np_module
+        )
+        _ensure_numpy_state_vectors(data, np_module)
+        return _accumulate_neighbors_numpy(
             G,
             data,
             x=x,
