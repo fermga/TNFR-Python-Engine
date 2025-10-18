@@ -11,6 +11,7 @@ allocations.
 from __future__ import annotations
 
 import math
+import sys
 from dataclasses import dataclass
 from typing import Any, Callable
 
@@ -1199,11 +1200,16 @@ def _accumulate_neighbors_broadcasted(
 
 
 def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
-    """Build neighbour accumulators honouring the requested NumPy path."""
+    """Build neighbour accumulators honouring cached NumPy buffers when possible."""
 
     nodes = data["nodes"]
+    cache: DnfrCache | None = data.get("cache")
     np_module = get_numpy()
-    if use_numpy and np_module is not None:
+    has_numpy_buffers = _has_cached_numpy_buffers(data, cache)
+    if np_module is None and has_numpy_buffers:
+        np_module = sys.modules.get("numpy")
+
+    if np_module is not None:
         if not nodes:
             return _init_neighbor_sums(data, np=np_module)
 
@@ -1219,38 +1225,20 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
 
         use_dense = False
         A = data.get("A")
-        if not prefer_sparse and A is not None:
+        if use_numpy and not prefer_sparse and A is not None:
             shape = getattr(A, "shape", (0, 0))
             use_dense = shape[0] == len(nodes) and shape[1] == len(nodes)
-        if data.get("dense_override") and A is not None:
+        if use_numpy and data.get("dense_override") and A is not None:
             shape = getattr(A, "shape", (0, 0))
             if shape[0] == len(nodes) and shape[1] == len(nodes):
                 use_dense = True
 
-        accumulator = (
-            _accumulate_neighbors_dense if use_dense else _accumulate_neighbors_numpy
-        )
+        if use_dense:
+            accumulator = _accumulate_neighbors_dense
+        else:
+            _ensure_numpy_state_vectors(data, np_module)
+            accumulator = _accumulate_neighbors_numpy
         return accumulator(
-            G,
-            data,
-            x=x,
-            y=y,
-            epi_sum=epi_sum,
-            vf_sum=vf_sum,
-            count=count,
-            deg_sum=deg_sum,
-            np=np_module,
-        )
-
-    if np_module is not None:
-        if not nodes:
-            return _init_neighbor_sums(data, np=np_module)
-
-        x, y, epi_sum, vf_sum, count, deg_sum, _ = _init_neighbor_sums(
-            data, np=np_module
-        )
-        _ensure_numpy_state_vectors(data, np_module)
-        return _accumulate_neighbors_numpy(
             G,
             data,
             x=x,
@@ -1614,14 +1602,13 @@ def _compute_dnfr(G, data, *, use_numpy: bool | None = None) -> None:
     cache: DnfrCache | None = data.get("cache")
 
     vector_disabled = G.graph.get("vectorized_dnfr") is False
-    vector_flag = np_module is not None and not vector_disabled
-    if use_numpy is True and np_module is not None and not vector_disabled:
-        vector_flag = True
+    prefer_dense = np_module is not None and not vector_disabled
+    if use_numpy is True and np_module is not None:
+        prefer_dense = True
+    if use_numpy is False or vector_disabled:
+        prefer_dense = False
 
-    if vector_flag:
-        _ensure_numpy_state_vectors(data, np_module)
-
-    res = _build_neighbor_sums_common(G, data, use_numpy=vector_flag)
+    res = _build_neighbor_sums_common(G, data, use_numpy=prefer_dense)
     if res is None:
         return
     x, y, epi_sum, vf_sum, count, deg_sum, degs = res
