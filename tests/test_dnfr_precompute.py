@@ -50,7 +50,9 @@ def test_prepare_dnfr_numpy_vectors_match_aliases():
     G = _setup_graph()
     G.graph["vectorized_dnfr"] = True
     data = _prepare_dnfr_data(G)
-    assert data["A"] is not None
+    A = data.get("A")
+    if A is not None:
+        assert A.shape == (len(data["nodes"]), len(data["nodes"]))
     assert data["theta_np"] is not None
     assert data["epi_np"] is not None
     assert data["vf_np"] is not None

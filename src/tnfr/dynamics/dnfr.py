@@ -87,6 +87,9 @@ class DnfrCache:
     grad_vf_np: Any | None = None
     grad_topo_np: Any | None = None
     grad_total_np: Any | None = None
+    dense_components_np: Any | None = None
+    dense_accum_np: Any | None = None
+    dense_degree_np: Any | None = None
 
 
 __all__ = (
@@ -759,7 +762,11 @@ def _compute_dnfr_common(
     degs=None,
 ):
     """Compute neighbour means and apply ΔNFR gradients."""
-    np = get_numpy()
+    np_module = get_numpy()
+    if np_module is not None and isinstance(count, getattr(np_module, "ndarray", tuple)):
+        np_arg = np_module
+    else:
+        np_arg = None
     th_bar, epi_bar, vf_bar, deg_bar = _compute_neighbor_means(
         G,
         data,
@@ -770,7 +777,7 @@ def _compute_dnfr_common(
         count=count,
         deg_sum=deg_sum,
         degs=degs,
-        np=np,
+        np=np_arg,
     )
     _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
 
@@ -875,6 +882,101 @@ def _prefer_sparse_accumulation(n: int, edge_count: int | None) -> bool:
     return edge_count > 0
 
 
+def _accumulate_neighbors_dense(
+    G,
+    data,
+    *,
+    x,
+    y,
+    epi_sum,
+    vf_sum,
+    count,
+    deg_sum,
+    np,
+):
+    """Vectorised neighbour accumulation using a dense adjacency matrix."""
+
+    nodes = data["nodes"]
+    if not nodes:
+        return x, y, epi_sum, vf_sum, count, deg_sum, None
+
+    A = data.get("A")
+    if A is None:
+        return _accumulate_neighbors_numpy(
+            G,
+            data,
+            x=x,
+            y=y,
+            epi_sum=epi_sum,
+            vf_sum=vf_sum,
+            count=count,
+            deg_sum=deg_sum,
+            np=np,
+        )
+
+    cache: DnfrCache | None = data.get("cache")
+    n = len(nodes)
+
+    vectors = []
+    for key_np, key_src in (
+        ("cos_theta_np", "cos_theta"),
+        ("sin_theta_np", "sin_theta"),
+        ("epi_np", "epi"),
+        ("vf_np", "vf"),
+    ):
+        arr = data.get(key_np)
+        if arr is None:
+            arr = np.array(data[key_src], dtype=float)
+            data[key_np] = arr
+            if cache is not None:
+                setattr(cache, key_np, arr)
+        vectors.append(arr)
+
+    components = _ensure_cached_array(cache, "dense_components_np", (n, 4), np)
+    for col, src_vec in enumerate(vectors):
+        np.copyto(components[:, col], src_vec, casting="unsafe")
+
+    accum = _ensure_cached_array(cache, "dense_accum_np", (n, 4), np)
+    np.matmul(A, components, out=accum)
+
+    np.copyto(x, accum[:, 0], casting="unsafe")
+    np.copyto(y, accum[:, 1], casting="unsafe")
+    np.copyto(epi_sum, accum[:, 2], casting="unsafe")
+    np.copyto(vf_sum, accum[:, 3], casting="unsafe")
+
+    degree_counts = data.get("dense_degree_np")
+    if degree_counts is None or getattr(degree_counts, "shape", (0,))[0] != n:
+        degree_counts = None
+    if degree_counts is None and cache is not None:
+        cached_counts = cache.dense_degree_np
+        if cached_counts is not None and getattr(cached_counts, "shape", (0,))[0] == n:
+            degree_counts = cached_counts
+    if degree_counts is None:
+        degree_counts = A.sum(axis=1)
+        if cache is not None:
+            cache.dense_degree_np = degree_counts
+    data["dense_degree_np"] = degree_counts
+    np.copyto(count, degree_counts, casting="unsafe")
+
+    degs = None
+    if deg_sum is not None:
+        deg_array = data.get("deg_array")
+        if deg_array is None:
+            deg_array = _resolve_numpy_degree_array(
+                data,
+                count,
+                cache=cache,
+                np=np,
+            )
+        if deg_array is None:
+            deg_sum.fill(0.0)
+        else:
+            np.matmul(A, deg_array, out=deg_sum)
+            degs = deg_array
+
+    return x, y, epi_sum, vf_sum, count, deg_sum, degs
+
+
 def _accumulate_neighbors_numpy(
     G,
     data,
@@ -962,6 +1064,19 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
         x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(
             data, np=np
         )
+        A = data.get("A")
+        if A is not None and getattr(A, "shape", (None, None))[0] == len(nodes):
+            return _accumulate_neighbors_dense(
+                G,
+                data,
+                x=x,
+                y=y,
+                epi_sum=epi_sum,
+                vf_sum=vf_sum,
+                count=count,
+                deg_sum=deg_sum,
+                np=np,
+            )
         return _accumulate_neighbors_numpy(
             G,
             data,

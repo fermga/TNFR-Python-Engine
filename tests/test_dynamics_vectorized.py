@@ -480,3 +480,44 @@ def test_dense_graph_dnfr_modes_stable():
     )
     assert vector_dnfr == pytest.approx(expected)
     assert vector_dnfr == pytest.approx(fallback_dnfr)
+
+
+@pytest.mark.parametrize("topo_weight", [0.0, 0.45])
+def test_dense_adjacency_accumulation_matches_loop(topo_weight):
+    np = pytest.importorskip("numpy")
+
+    base = _build_weighted_graph(nx.complete_graph, 10, topo_weight)
+    data_dense = _prepare_dnfr_data(base)
+    nodes = data_dense["nodes"]
+    data_dense["A"] = nx.to_numpy_array(base, nodelist=nodes, dtype=float)
+    data_dense["prefer_sparse"] = False
+
+    dense_neighbor_sums = _build_neighbor_sums_common(base, data_dense, use_numpy=True)
+    assert dense_neighbor_sums is not None
+
+    cache = data_dense["cache"]
+    assert cache is not None
+    degree_vector = data_dense.get("dense_degree_np")
+    assert degree_vector is not None
+    assert cache.dense_degree_np is degree_vector
+
+    dense_dnfr_graph = base.copy()
+    dense_data = data_dense.copy()
+    dense_data["cache"] = cache
+    _compute_dnfr(dense_dnfr_graph, dense_data, use_numpy=True)
+    dnfr_dense = collect_attr(dense_dnfr_graph, dense_dnfr_graph.nodes, ALIAS_DNFR, 0.0)
+
+    fallback_graph = base.copy()
+    fallback_graph.graph["vectorized_dnfr"] = False
+    default_compute_delta_nfr(fallback_graph)
+    dnfr_fallback = collect_attr(
+        fallback_graph, fallback_graph.nodes, ALIAS_DNFR, 0.0
+    )
+
+    np.testing.assert_allclose(dnfr_dense, dnfr_fallback, rtol=1e-9, atol=1e-9)
+
+    # Ensure repeated dense accumulation reuses cached degree buffers.
+    repeated = _build_neighbor_sums_common(base, data_dense, use_numpy=True)
+    assert repeated is not None
+    assert data_dense.get("dense_degree_np") is degree_vector
+    assert cache.dense_degree_np is degree_vector
