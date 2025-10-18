@@ -14,7 +14,7 @@ from tnfr.selector import (
     _apply_selector_hysteresis,
 )
 from tnfr.constants import DEFAULTS, get_aliases
-from tnfr.collections_utils import normalize_weights
+from tnfr.utils import normalize_weights
 from tnfr.dynamics import _configure_selector_weights
 
 ALIAS_DNFR = get_aliases("DNFR")

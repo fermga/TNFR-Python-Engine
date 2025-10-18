@@ -1,6 +1,6 @@
 import pytest
 
-from tnfr.collections_utils import flatten_structure
+from tnfr.utils import flatten_structure
 
 
 def _make_set() -> set[int]:

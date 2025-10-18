@@ -161,7 +161,7 @@ def test_gamma_spec_normalized_once(graph_canon, monkeypatch):
     def fake_warn(message, *_args, **_kwargs):
         emitted.append(message)
 
-    monkeypatch.setattr("tnfr.graph_utils.warnings.warn", fake_warn)
+    monkeypatch.setattr("tnfr.utils.graph.warnings.warn", fake_warn)
     eval_gamma(G, 0, t=0.0)
     eval_gamma(G, 0, t=0.0)
     assert len(emitted) == 1
