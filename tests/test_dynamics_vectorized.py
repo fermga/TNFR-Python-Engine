@@ -1,11 +1,14 @@
 """Pruebas de dynamics vectorized."""
 
+import math
+
 import pytest
 import networkx as nx
 
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.constants import get_aliases
-from tnfr.alias import set_attr, collect_attr
+from tnfr.alias import collect_attr, get_attr, set_attr
+from tnfr.helpers.numeric import angle_diff
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
@@ -73,3 +76,109 @@ def test_vectorized_matches_reference(factory, topo_weight):
     assert dnfr_vec == pytest.approx(dnfr_list)
     assert G_vec.graph.get("_DNFR_META") == G_list.graph.get("_DNFR_META")
     assert G_vec.graph.get("_dnfr_hook_name") == G_list.graph.get("_dnfr_hook_name")
+
+
+def _build_dense_graph_regression():
+    G = nx.complete_graph(5)
+    G.remove_edge(1, 2)
+    angles = [
+        0.0,
+        math.pi / 4.0,
+        -math.pi / 4.0,
+        3.0 * math.pi / 4.0,
+        -3.0 * math.pi / 4.0,
+    ]
+    epi_values = [0.25 * (idx + 1) for idx in range(len(angles))]
+    vf_values = [0.1 * (idx + 2) for idx in range(len(angles))]
+    for idx, node in enumerate(G.nodes):
+        set_attr(G.nodes[node], ALIAS_THETA, angles[idx])
+        set_attr(G.nodes[node], ALIAS_EPI, epi_values[idx])
+        set_attr(G.nodes[node], ALIAS_VF, vf_values[idx])
+    G.graph["DNFR_WEIGHTS"] = {
+        "phase": 0.4,
+        "epi": 0.3,
+        "vf": 0.2,
+        "topo": 0.1,
+    }
+    return G
+
+
+def _manual_dense_dnfr_expected(G):
+    weights = G.graph["DNFR_WEIGHTS"]
+    degs = {node: float(deg) for node, deg in G.degree()}
+    expected = []
+    nodes = list(G.nodes)
+    for node in nodes:
+        nd = G.nodes[node]
+        th_i = float(get_attr(nd, ALIAS_THETA, 0.0))
+        epi_i = float(get_attr(nd, ALIAS_EPI, 0.0))
+        vf_i = float(get_attr(nd, ALIAS_VF, 0.0))
+        neighbors = list(G.neighbors(node))
+        count = len(neighbors)
+        if count:
+            cos_sum = 0.0
+            sin_sum = 0.0
+            epi_sum = 0.0
+            vf_sum = 0.0
+            deg_sum = 0.0
+            for v in neighbors:
+                th_v = float(get_attr(G.nodes[v], ALIAS_THETA, th_i))
+                cos_sum += math.cos(th_v)
+                sin_sum += math.sin(th_v)
+                epi_sum += float(get_attr(G.nodes[v], ALIAS_EPI, epi_i))
+                vf_sum += float(get_attr(G.nodes[v], ALIAS_VF, vf_i))
+                deg_sum += degs[v]
+            inv = 1.0 / count
+            cos_avg = cos_sum * inv
+            sin_avg = sin_sum * inv
+            if math.hypot(cos_avg, sin_avg) <= 1e-12:
+                th_bar = th_i
+            else:
+                th_bar = math.atan2(sin_avg, cos_avg)
+            epi_bar = epi_sum * inv
+            vf_bar = vf_sum * inv
+            deg_bar = deg_sum * inv if weights.get("topo", 0.0) else 0.0
+        else:
+            th_bar = th_i
+            epi_bar = epi_i
+            vf_bar = vf_i
+            deg_bar = degs[node]
+        g_phase = -angle_diff(th_i, th_bar) / math.pi
+        g_epi = epi_bar - epi_i
+        g_vf = vf_bar - vf_i
+        if weights.get("topo", 0.0) and count:
+            g_topo = deg_bar - degs[node]
+        else:
+            g_topo = 0.0
+        dnfr_value = (
+            weights.get("phase", 0.0) * g_phase
+            + weights.get("epi", 0.0) * g_epi
+            + weights.get("vf", 0.0) * g_vf
+            + weights.get("topo", 0.0) * g_topo
+        )
+        expected.append(dnfr_value)
+    return expected
+
+
+def test_dense_graph_dnfr_modes_stable():
+    template = _build_dense_graph_regression()
+    expected = _manual_dense_dnfr_expected(template)
+
+    G_fallback = template.copy()
+    default_compute_delta_nfr(G_fallback)
+    fallback_dnfr = collect_attr(G_fallback, G_fallback.nodes, ALIAS_DNFR, 0.0)
+    assert fallback_dnfr == pytest.approx(expected)
+
+    try:
+        import numpy  # noqa: F401
+    except ModuleNotFoundError:
+        return
+
+    G_vectorized = template.copy()
+    G_vectorized.graph["vectorized_dnfr"] = True
+    default_compute_delta_nfr(G_vectorized)
+    vector_dnfr = collect_attr(
+        G_vectorized, G_vectorized.nodes, ALIAS_DNFR, 0.0
+    )
+    assert vector_dnfr == pytest.approx(expected)
+    assert vector_dnfr == pytest.approx(fallback_dnfr)
