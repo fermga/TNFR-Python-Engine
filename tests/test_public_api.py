@@ -90,3 +90,33 @@ def test_public_api_internal_import_error(monkeypatch):
         assert excinfo.value.name == "tnfr.dynamics"
         _clear_tnfr_modules()
     globals()["tnfr"] = importlib.import_module("tnfr")
+
+
+def test_public_api_circular_import_from_message(monkeypatch):
+    real_import_module = importlib.import_module
+
+    def fail_structural(name, package=None):
+        if package == "tnfr" and name == ".structural":
+            err = ImportError(
+                "cannot import name 'create_nfr' from partially initialized module "
+                "'tnfr.structural' (most likely due to a circular import)"
+            )
+            err.name = "create_nfr"
+            raise err
+        if package is None and name == "tnfr.structural":
+            err = ImportError(
+                "cannot import name 'create_nfr' from partially initialized module "
+                "'tnfr.structural' (most likely due to a circular import)"
+            )
+            err.name = "create_nfr"
+            raise err
+        return real_import_module(name, package)
+
+    with monkeypatch.context() as m:
+        _clear_tnfr_modules()
+        m.setattr(importlib, "import_module", fail_structural)
+        with pytest.raises(ImportError) as excinfo:
+            importlib.import_module("tnfr")
+        assert "partially initialized module 'tnfr.structural'" in str(excinfo.value)
+        _clear_tnfr_modules()
+    globals()["tnfr"] = importlib.import_module("tnfr")

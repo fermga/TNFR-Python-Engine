@@ -77,11 +77,24 @@ def _is_internal_import_error(exc: ImportError) -> bool:
     missing_name = getattr(exc, "name", None) or ""
     if missing_name.startswith("tnfr"):
         return True
+
+    module_name = getattr(exc, "module", None) or ""
+    if module_name.startswith("tnfr"):
+        return True
+
     missing_path = getattr(exc, "path", None) or ""
     if missing_path:
         normalized = missing_path.replace("\\", "/")
         if "/tnfr/" in normalized or normalized.endswith("/tnfr"):
             return True
+
+    message = str(exc)
+    lowered = message.lower()
+    if "tnfr." in message and (
+        "circular import" in lowered or "partially initialized module" in lowered
+    ):
+        return True
+
     return False
 
 
