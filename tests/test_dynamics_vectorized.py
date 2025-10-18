@@ -17,7 +17,6 @@ from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.constants import get_aliases
 from tnfr.alias import collect_attr, get_attr, set_attr
 from tnfr.helpers.numeric import angle_diff
-from tnfr.utils import cached_nodes_and_A
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
@@ -241,7 +240,7 @@ def test_sparse_graph_prefers_edge_accumulation_and_matches_dnfr():
     assert cache is not None
     assert cache.edge_src is not None and cache.edge_dst is not None
 
-    # Compare runtimes between the sparse accumulation and a forced dense path.
+    # Compare runtimes between vectorised edge accumulation and the fallback loop.
     loops = 10
     sparse_data = data.copy()
     sparse_data["prefer_sparse"] = True
@@ -251,35 +250,57 @@ def test_sparse_graph_prefers_edge_accumulation_and_matches_dnfr():
         _build_neighbor_sums_common(G_vector, sparse_data, use_numpy=True)
     sparse_time = time.perf_counter() - start
 
-    dense_data = data.copy()
-    dense_data["prefer_sparse"] = False
-    _, forced_A = cached_nodes_and_A(
-        G_vector,
-        cache_size=data["cache_size"],
-        require_numpy=True,
-        nodes=data["nodes"],
-        prefer_sparse=False,
-    )
-    dense_data["A"] = forced_A
+    loop_data = data.copy()
     start = time.perf_counter()
     for _ in range(loops):
-        _build_neighbor_sums_common(G_vector, dense_data, use_numpy=True)
-    dense_time = time.perf_counter() - start
+        _build_neighbor_sums_common(G_vector, loop_data, use_numpy=False)
+    loop_time = time.perf_counter() - start
 
-    assert sparse_time * 2 < dense_time
+    assert sparse_time * 2 < loop_time
 
 
-def test_dense_graph_keeps_dense_accumulation():
+@pytest.mark.parametrize("factory", [nx.path_graph, nx.complete_graph])
+@pytest.mark.parametrize("topo_weight", [0.0, 0.35])
+def test_edge_accumulation_neighbor_sums_match_loop(factory, topo_weight):
+    np = pytest.importorskip("numpy")
+
+    base = _build_weighted_graph(factory, 12, topo_weight)
+    G_vec = base.copy()
+    G_loop = base.copy()
+
+    data_vec = _prepare_dnfr_data(G_vec)
+    vec = _build_neighbor_sums_common(G_vec, data_vec, use_numpy=True)
+
+    data_loop = _prepare_dnfr_data(G_loop)
+    loop = _build_neighbor_sums_common(G_loop, data_loop, use_numpy=False)
+
+    assert vec is not None and loop is not None
+    for a, b in zip(vec[:-1], loop[:-1]):
+        if a is None or b is None:
+            assert a is b is None
+        else:
+            np.testing.assert_allclose(a, b, rtol=1e-9, atol=1e-9)
+
+    # ``degs`` output can be numpy array or list depending on branch.
+    vec_degs = vec[-1]
+    loop_degs = loop[-1]
+    if vec_degs is None or loop_degs is None:
+        assert vec_degs is loop_degs is None
+    else:
+        np.testing.assert_allclose(vec_degs, loop_degs, rtol=1e-9, atol=1e-9)
+
+
+def test_dense_graph_prefers_edge_accumulation():
     np = pytest.importorskip("numpy")
     del np
 
     G_dense = _build_weighted_graph(nx.complete_graph, 32, 0.2)
     data = _prepare_dnfr_data(G_dense)
-    assert data["prefer_sparse"] is False
-    assert data["A"] is not None
-    assert not _prefer_sparse_accumulation(len(data["nodes"]), data["edge_count"])
+    assert data["prefer_sparse"] is True
+    assert data["A"] is None
+    assert _prefer_sparse_accumulation(len(data["nodes"]), data["edge_count"])
 
-    # Dense computation still matches the fallback path.
+    # Edge-based computation still matches the fallback path.
     _compute_dnfr(G_dense, data, use_numpy=True)
     dnfr_dense = collect_attr(G_dense, G_dense.nodes, ALIAS_DNFR, 0.0)
 
