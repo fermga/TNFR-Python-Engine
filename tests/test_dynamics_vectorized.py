@@ -93,6 +93,30 @@ def test_vectorization_falls_back_without_numpy(monkeypatch):
     assert cache.grad_phase_np is None
 
 
+def test_numpy_available_when_vectorized_disabled(monkeypatch):
+    np = pytest.importorskip("numpy")
+
+    baseline = _build_weighted_graph(nx.path_graph, 5, 0.2)
+    baseline.graph["vectorized_dnfr"] = False
+    accelerated = _build_weighted_graph(nx.path_graph, 5, 0.2)
+    accelerated.graph["vectorized_dnfr"] = False
+
+    with numpy_disabled(monkeypatch):
+        default_compute_delta_nfr(baseline)
+
+    default_compute_delta_nfr(accelerated)
+
+    dnfr_baseline = collect_attr(baseline, baseline.nodes, ALIAS_DNFR, 0.0)
+    dnfr_accelerated = collect_attr(accelerated, accelerated.nodes, ALIAS_DNFR, 0.0)
+
+    assert dnfr_accelerated == pytest.approx(dnfr_baseline)
+
+    cache = accelerated.graph.get("_dnfr_prep_cache")
+    assert cache is not None
+    assert isinstance(cache.edge_src, np.ndarray)
+    assert isinstance(cache.neighbor_x_np, np.ndarray)
+
+
 def test_vectorized_gradients_cached_and_reused():
     np = pytest.importorskip("numpy")
     G = _build_weighted_graph(nx.path_graph, 4, 0.3)
