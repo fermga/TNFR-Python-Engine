@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import math
 import sys
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from typing import Any, Callable
 
@@ -130,6 +131,146 @@ _NUMPY_CACHE_ATTRS = (
     "dense_accum_np",
     "dense_degree_np",
 )
+
+
+def _iter_chunk_offsets(total: int, jobs: int):
+    """Yield ``(start, end)`` offsets splitting ``total`` items across ``jobs``."""
+
+    if total <= 0 or jobs <= 1:
+        return
+
+    jobs = max(1, min(int(jobs), total))
+    base, extra = divmod(total, jobs)
+    start = 0
+    for i in range(jobs):
+        size = base + (1 if i < extra else 0)
+        if size <= 0:
+            continue
+        end = start + size
+        yield start, end
+        start = end
+
+
+def _neighbor_sums_worker(
+    start: int,
+    end: int,
+    neighbor_indices: list[list[int]],
+    cos_th: list[float],
+    sin_th: list[float],
+    epi: list[float],
+    vf: list[float],
+    x_base: list[float],
+    y_base: list[float],
+    epi_base: list[float],
+    vf_base: list[float],
+    count_base: list[float],
+    deg_base: list[float] | None,
+    deg_list: list[float] | None,
+    degs_list: list[float] | None,
+) -> tuple[int, list[float], list[float], list[float], list[float], list[float], list[float] | None]:
+    """Return partial neighbour sums for the ``[start, end)`` range."""
+
+    chunk_x: list[float] = []
+    chunk_y: list[float] = []
+    chunk_epi: list[float] = []
+    chunk_vf: list[float] = []
+    chunk_count: list[float] = []
+    chunk_deg: list[float] | None = [] if deg_base is not None else None
+
+    for offset, idx in enumerate(range(start, end)):
+        neighbors = neighbor_indices[idx]
+        x_i = float(x_base[offset])
+        y_i = float(y_base[offset])
+        epi_i = float(epi_base[offset])
+        vf_i = float(vf_base[offset])
+        count_i = float(count_base[offset])
+        if deg_base is not None and chunk_deg is not None:
+            deg_i_acc = float(deg_base[offset])
+        else:
+            deg_i_acc = 0.0
+        deg_i = float(degs_list[idx]) if degs_list is not None else 0.0
+
+        for neighbor_idx in neighbors:
+            x_i += float(cos_th[neighbor_idx])
+            y_i += float(sin_th[neighbor_idx])
+            epi_i += float(epi[neighbor_idx])
+            vf_i += float(vf[neighbor_idx])
+            count_i += 1.0
+            if chunk_deg is not None:
+                if deg_list is not None:
+                    deg_i_acc += float(deg_list[neighbor_idx])
+                else:
+                    deg_i_acc += deg_i
+
+        chunk_x.append(x_i)
+        chunk_y.append(y_i)
+        chunk_epi.append(epi_i)
+        chunk_vf.append(vf_i)
+        chunk_count.append(count_i)
+        if chunk_deg is not None:
+            chunk_deg.append(deg_i_acc)
+
+    return (
+        start,
+        chunk_x,
+        chunk_y,
+        chunk_epi,
+        chunk_vf,
+        chunk_count,
+        chunk_deg,
+    )
+
+
+def _dnfr_gradients_worker(
+    start: int,
+    end: int,
+    nodes: list[Any],
+    theta: list[float],
+    epi: list[float],
+    vf: list[float],
+    th_bar: list[float],
+    epi_bar: list[float],
+    vf_bar: list[float],
+    deg_bar: list[float] | None,
+    degs: dict[Any, float] | list[float] | None,
+    w_phase: float,
+    w_epi: float,
+    w_vf: float,
+    w_topo: float,
+) -> tuple[int, list[float]]:
+    """Return partial ΔNFR gradients for the ``[start, end)`` range."""
+
+    chunk: list[float] = []
+    for idx in range(start, end):
+        n = nodes[idx]
+        g_phase = -angle_diff(theta[idx], th_bar[idx]) / math.pi
+        g_epi = epi_bar[idx] - epi[idx]
+        g_vf = vf_bar[idx] - vf[idx]
+        if w_topo != 0.0 and deg_bar is not None and degs is not None:
+            if isinstance(degs, dict):
+                deg_i = float(degs.get(n, 0))
+            else:
+                deg_i = float(degs[idx])
+            g_topo = deg_bar[idx] - deg_i
+        else:
+            g_topo = 0.0
+        chunk.append(w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo)
+    return start, chunk
+
+
+def _resolve_parallel_jobs(n_jobs: int | None, total: int) -> int | None:
+    """Return an effective worker count for ``total`` items or ``None``."""
+
+    if n_jobs is None:
+        return None
+    try:
+        jobs = int(n_jobs)
+    except (TypeError, ValueError):
+        return None
+    if jobs <= 1 or total <= 1:
+        return None
+    return max(1, min(jobs, total))
+
 
 def _is_numpy_like(obj) -> bool:
     return getattr(obj, "dtype", None) is not None and getattr(obj, "shape", None) is not None
@@ -615,6 +756,8 @@ def _apply_dnfr_gradients(
     vf_bar,
     deg_bar=None,
     degs=None,
+    *,
+    n_jobs: int | None = None,
 ):
     """Combine precomputed gradients and write ΔNFR to each node."""
     np = get_numpy()
@@ -699,22 +842,58 @@ def _apply_dnfr_gradients(
 
         dnfr_values = grad_total
     else:
-        dnfr_values = []
-        for i, n in enumerate(nodes):
-            g_phase = -angle_diff(theta[i], th_bar[i]) / math.pi
-            g_epi = epi_bar[i] - epi[i]
-            g_vf = vf_bar[i] - vf[i]
-            if w_topo != 0.0 and deg_bar is not None and degs is not None:
-                if isinstance(degs, dict):
-                    deg_i = float(degs.get(n, 0))
+        effective_jobs = _resolve_parallel_jobs(n_jobs, len(nodes))
+        if effective_jobs:
+            chunk_results = []
+            with ProcessPoolExecutor(max_workers=effective_jobs) as executor:
+                futures = []
+                for start, end in _iter_chunk_offsets(len(nodes), effective_jobs):
+                    if start == end:
+                        continue
+                    futures.append(
+                        executor.submit(
+                            _dnfr_gradients_worker,
+                            start,
+                            end,
+                            nodes,
+                            theta,
+                            epi,
+                            vf,
+                            th_bar,
+                            epi_bar,
+                            vf_bar,
+                            deg_bar,
+                            degs,
+                            w_phase,
+                            w_epi,
+                            w_vf,
+                            w_topo,
+                        )
+                    )
+                for future in futures:
+                    chunk_results.append(future.result())
+
+            dnfr_values = [0.0] * len(nodes)
+            for start, chunk in sorted(chunk_results, key=lambda item: item[0]):
+                end = start + len(chunk)
+                dnfr_values[start:end] = chunk
+        else:
+            dnfr_values = []
+            for i, n in enumerate(nodes):
+                g_phase = -angle_diff(theta[i], th_bar[i]) / math.pi
+                g_epi = epi_bar[i] - epi[i]
+                g_vf = vf_bar[i] - vf[i]
+                if w_topo != 0.0 and deg_bar is not None and degs is not None:
+                    if isinstance(degs, dict):
+                        deg_i = float(degs.get(n, 0))
+                    else:
+                        deg_i = float(degs[i])
+                    g_topo = deg_bar[i] - deg_i
                 else:
-                    deg_i = float(degs[i])
-                g_topo = deg_bar[i] - deg_i
-            else:
-                g_topo = 0.0
-            dnfr_values.append(
-                w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
-            )
+                    g_topo = 0.0
+                dnfr_values.append(
+                    w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo
+                )
 
         if cache is not None:
             cache.grad_phase_np = None
@@ -942,6 +1121,7 @@ def _compute_dnfr_common(
     count,
     deg_sum=None,
     degs=None,
+    n_jobs: int | None = None,
 ):
     """Compute neighbour means and apply ΔNFR gradients."""
     np_module = get_numpy()
@@ -961,7 +1141,16 @@ def _compute_dnfr_common(
         degs=degs,
         np=np_arg,
     )
-    _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
+    _apply_dnfr_gradients(
+        G,
+        data,
+        th_bar,
+        epi_bar,
+        vf_bar,
+        deg_bar,
+        degs,
+        n_jobs=n_jobs,
+    )
 
 
 def _reset_numpy_buffer(buffer, size, np):
@@ -1266,7 +1455,9 @@ def _accumulate_neighbors_broadcasted(
     }
 
 
-def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
+def _build_neighbor_sums_common(
+    G, data, *, use_numpy: bool, n_jobs: int | None = None
+):
     """Build neighbour accumulators honouring cached NumPy buffers when possible."""
 
     nodes = data["nodes"]
@@ -1327,6 +1518,58 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
     cos_th = data["cos_theta"]
     sin_th = data["sin_theta"]
     deg_list = data.get("deg_list")
+
+    effective_jobs = _resolve_parallel_jobs(n_jobs, len(nodes))
+    if effective_jobs:
+        neighbor_indices: list[list[int]] = []
+        for node in nodes:
+            indices: list[int] = []
+            for v in G.neighbors(node):
+                indices.append(idx[v])
+            neighbor_indices.append(indices)
+
+        chunk_results = []
+        with ProcessPoolExecutor(max_workers=effective_jobs) as executor:
+            futures = []
+            for start, end in _iter_chunk_offsets(len(nodes), effective_jobs):
+                if start == end:
+                    continue
+                futures.append(
+                    executor.submit(
+                        _neighbor_sums_worker,
+                        start,
+                        end,
+                        neighbor_indices,
+                        cos_th,
+                        sin_th,
+                        epi,
+                        vf,
+                        x[start:end],
+                        y[start:end],
+                        epi_sum[start:end],
+                        vf_sum[start:end],
+                        count[start:end],
+                        deg_sum[start:end] if deg_sum is not None else None,
+                        deg_list,
+                        degs_list,
+                    )
+                )
+            for future in futures:
+                chunk_results.append(future.result())
+
+        for start, chunk_x, chunk_y, chunk_epi, chunk_vf, chunk_count, chunk_deg in sorted(
+            chunk_results, key=lambda item: item[0]
+        ):
+            end = start + len(chunk_x)
+            x[start:end] = chunk_x
+            y[start:end] = chunk_y
+            epi_sum[start:end] = chunk_epi
+            vf_sum[start:end] = chunk_vf
+            count[start:end] = chunk_count
+            if deg_sum is not None and chunk_deg is not None:
+                deg_sum[start:end] = chunk_deg
+        return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
+
     for i, node in enumerate(nodes):
         deg_i = degs_list[i] if degs_list is not None else 0.0
         x_i = x[i]
@@ -1368,6 +1611,7 @@ def _compute_dnfr_common(
     count,
     deg_sum=None,
     degs=None,
+    n_jobs: int | None = None,
 ):
     """Compute neighbour means and apply ΔNFR gradients."""
     np_module = get_numpy()
@@ -1387,7 +1631,16 @@ def _compute_dnfr_common(
         degs=degs,
         np=np_arg,
     )
-    _apply_dnfr_gradients(G, data, th_bar, epi_bar, vf_bar, deg_bar, degs)
+    _apply_dnfr_gradients(
+        G,
+        data,
+        th_bar,
+        epi_bar,
+        vf_bar,
+        deg_bar,
+        degs,
+        n_jobs=n_jobs,
+    )
 
 
 def _reset_numpy_buffer(buffer, size, np):
@@ -1652,7 +1905,9 @@ def _accumulate_neighbors_numpy(
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
 
-def _compute_dnfr(G, data, *, use_numpy: bool | None = None) -> None:
+def _compute_dnfr(
+    G, data, *, use_numpy: bool | None = None, n_jobs: int | None = None
+) -> None:
     """Compute ΔNFR using neighbour sums.
 
     Parameters
@@ -1677,7 +1932,13 @@ def _compute_dnfr(G, data, *, use_numpy: bool | None = None) -> None:
     if use_numpy is False or vector_disabled:
         prefer_dense = False
 
-    res = _build_neighbor_sums_common(G, data, use_numpy=prefer_dense)
+    data["n_jobs"] = n_jobs
+    res = _build_neighbor_sums_common(
+        G,
+        data,
+        use_numpy=prefer_dense,
+        n_jobs=n_jobs,
+    )
     if res is None:
         return
     x, y, epi_sum, vf_sum, count, deg_sum, degs = res
@@ -1691,9 +1952,12 @@ def _compute_dnfr(G, data, *, use_numpy: bool | None = None) -> None:
         count=count,
         deg_sum=deg_sum,
         degs=degs,
+        n_jobs=n_jobs,
     )
 
-def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
+def default_compute_delta_nfr(
+    G, *, cache_size: int | None = 1, n_jobs: int | None = None
+) -> None:
     """Compute ΔNFR by mixing phase, EPI, νf and a topological term.
 
     Parameters
@@ -1704,6 +1968,10 @@ def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
         Maximum number of edge configurations cached in ``G.graph``. Values
         ``None`` or <= 0 imply unlimited cache. Defaults to ``1`` to keep the
         previous behaviour.
+    n_jobs : int | None, optional
+        Parallel worker count for the pure-Python accumulation path. ``None``
+        or values <= 1 preserve the serial behaviour. The vectorised NumPy
+        branch ignores this parameter as it already operates in bulk.
     """
     data = _prepare_dnfr_data(G, cache_size=cache_size)
     _write_dnfr_metadata(
@@ -1711,7 +1979,7 @@ def default_compute_delta_nfr(G, *, cache_size: int | None = 1) -> None:
         weights=data["weights"],
         hook_name="default_compute_delta_nfr",
     )
-    _compute_dnfr(G, data)
+    _compute_dnfr(G, data, n_jobs=n_jobs)
 
 
 def set_delta_nfr_hook(
