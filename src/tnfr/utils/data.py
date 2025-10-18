@@ -13,8 +13,8 @@ from .init import get_logger, warn_once as _warn_once_factory
 
 T = TypeVar("T")
 
-_collections_logger = get_logger("tnfr.collections_utils")
-_value_logger = get_logger("tnfr.value_utils")
+_collections_logger = get_logger("tnfr.utils.data.collections")
+_value_logger = get_logger("tnfr.utils.data")
 
 STRING_TYPES = (str, bytes, bytearray)
 

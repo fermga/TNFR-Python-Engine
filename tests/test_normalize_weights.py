@@ -4,8 +4,8 @@ import math
 from types import MappingProxyType
 
 import pytest
-from tnfr.collections_utils import negative_weights_warn_once
-from tnfr.collections_utils import normalize_weights
+from tnfr.utils import negative_weights_warn_once
+from tnfr.utils import normalize_weights
 
 
 def test_normalize_weights_warns_on_negative_value(caplog):

@@ -2,7 +2,7 @@
 
 from collections import Counter
 
-from tnfr.collections_utils import normalize_counter, mix_groups
+from tnfr.utils import normalize_counter, mix_groups
 
 
 def test_normalize_counter():

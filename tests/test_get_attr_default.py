@@ -48,7 +48,7 @@ def test_get_attr_default_is_converted():
 def test_get_attr_default_logs_on_failure(caplog):
     d = {}
     acc = AliasAccessor(int)
-    with caplog.at_level(logging.DEBUG, logger="tnfr.value_utils"):
+    with caplog.at_level(logging.DEBUG, logger="tnfr.utils.data"):
         result = acc.get(d, ("x",), default="bad")
     assert result is None
     assert len(caplog.records) == 1
