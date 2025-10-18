@@ -37,6 +37,7 @@ from .cache import (
     get_graph_version,
     increment_edge_version,
     increment_graph_version,
+    configure_graph_cache_limits,
     node_set_checksum,
     stable_json,
 )
@@ -81,6 +82,7 @@ __all__ = (
     "get_graph_version",
     "increment_edge_version",
     "increment_graph_version",
+    "configure_graph_cache_limits",
     "node_set_checksum",
     "stable_json",
     "get_graph",
