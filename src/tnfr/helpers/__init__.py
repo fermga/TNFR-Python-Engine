@@ -7,21 +7,24 @@ cache invalidation.
 
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
-from ..utils.cache import (
-    EdgeCacheManager,
-    cached_node_list,
-    cached_nodes_and_A,
-    edge_version_cache,
-    edge_version_update,
-    ensure_node_index_map,
-    ensure_node_offset_map,
-    increment_edge_version,
-    node_set_checksum,
-    stable_json,
-)
-from ..utils.graph import get_graph, get_graph_mapping, mark_dnfr_prep_dirty
+if TYPE_CHECKING:  # pragma: no cover - import-time only for typing
+    from ..utils import (
+        EdgeCacheManager,
+        cached_node_list,
+        cached_nodes_and_A,
+        edge_version_cache,
+        edge_version_update,
+        ensure_node_index_map,
+        ensure_node_offset_map,
+        get_graph,
+        get_graph_mapping,
+        increment_edge_version,
+        mark_dnfr_prep_dirty,
+        node_set_checksum,
+        stable_json,
+    )
 from .numeric import (
     angle_diff,
     clamp,
@@ -53,6 +56,37 @@ __all__ = (
     "push_glyph",
     "recent_glyph",
 )
+
+
+_UTIL_EXPORTS = {
+    "EdgeCacheManager",
+    "cached_node_list",
+    "cached_nodes_and_A",
+    "edge_version_cache",
+    "edge_version_update",
+    "ensure_node_index_map",
+    "ensure_node_offset_map",
+    "get_graph",
+    "get_graph_mapping",
+    "increment_edge_version",
+    "mark_dnfr_prep_dirty",
+    "node_set_checksum",
+    "stable_json",
+}
+
+
+def __getattr__(name: str):  # pragma: no cover - simple delegation
+    if name in _UTIL_EXPORTS:
+        from .. import utils as _utils
+
+        value = getattr(_utils, name)
+        globals()[name] = value
+        return value
+    raise AttributeError(name)
+
+
+def __dir__() -> list[str]:  # pragma: no cover - simple reflection
+    return sorted(set(__all__))
 
 
 def _glyph_history_proxy(name: str) -> Callable[..., Any]:
