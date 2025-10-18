@@ -1,9 +1,11 @@
+import sys
+
 import networkx as nx
 import pytest
 
 from tnfr.alias import collect_attr, set_attr
 from tnfr.constants import get_aliases
-from tnfr.dynamics import _compute_dnfr, _prepare_dnfr_data
+from tnfr.dynamics.dnfr import _compute_dnfr, _prepare_dnfr_data
 import tnfr.dynamics.dnfr as dnfr_module
 
 
@@ -48,60 +50,41 @@ def _assert_vector_state(data, np):
         assert cache.edge_src is not None
 
 
-def test_compute_dnfr_loop_path_when_use_numpy_false(monkeypatch):
-    pytest.importorskip("numpy")
-
-    G = _graph_fixture()
-    G.graph["vectorized_dnfr"] = False
-    data = _prepare_dnfr_data(G)
-
-    def _forbid_vector(*_, **__):
-        raise AssertionError("vector accumulation should be disabled")
-
-    monkeypatch.setattr(dnfr_module, "_accumulate_neighbors_numpy", _forbid_vector)
-    monkeypatch.setattr(dnfr_module, "_accumulate_neighbors_dense", _forbid_vector)
-
-    _compute_dnfr(G, data, use_numpy=False)
-
-    _assert_loop_state(data)
-    dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
-    assert all(isinstance(val, float) for val in dnfr_values)
-
-
-def test_compute_dnfr_loop_path_when_graph_disables_numpy(monkeypatch):
-    pytest.importorskip("numpy")
-
-    G = _graph_fixture()
-    G.graph["vectorized_dnfr"] = False
-    data = _prepare_dnfr_data(G)
-
-    def _forbid_vector(*_, **__):
-        raise AssertionError("vector accumulation should be disabled")
-
-    monkeypatch.setattr(dnfr_module, "_accumulate_neighbors_numpy", _forbid_vector)
-    monkeypatch.setattr(dnfr_module, "_accumulate_neighbors_dense", _forbid_vector)
-
-    _compute_dnfr(G, data)
-
-    _assert_loop_state(data)
-    dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
-    assert all(isinstance(val, float) for val in dnfr_values)
-
-
-def test_compute_dnfr_explicit_numpy_respects_disable_flag(monkeypatch):
+def test_compute_dnfr_uses_numpy_even_when_graph_disables_vectorization():
     np = pytest.importorskip("numpy")
 
     G = _graph_fixture()
     G.graph["vectorized_dnfr"] = False
     data = _prepare_dnfr_data(G)
 
-    # Force the sparse accumulation path so NumPy buffers are used explicitly.
     data["prefer_sparse"] = True
     data["A"] = None
 
-    _compute_dnfr(G, data, use_numpy=True)
+    _compute_dnfr(G, data)
 
-    _assert_loop_state(data)
+    _assert_vector_state(data, np)
+    dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
+    assert all(isinstance(val, float) for val in dnfr_values)
+
+
+def test_compute_dnfr_reuses_cached_numpy_when_flag_disabled_again():
+    np = pytest.importorskip("numpy")
+
+    G = _graph_fixture()
+    data = _prepare_dnfr_data(G)
+
+    data["prefer_sparse"] = True
+    data["A"] = None
+
+    _compute_dnfr(G, data)
+    cached_workspace = data.get("neighbor_workspace_np")
+    assert cached_workspace is not None
+
+    G.graph["vectorized_dnfr"] = False
+    _compute_dnfr(G, data)
+
+    _assert_vector_state(data, np)
+    assert data.get("neighbor_workspace_np") is cached_workspace
     dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert all(isinstance(val, float) for val in dnfr_values)
 
@@ -112,8 +95,6 @@ def test_compute_dnfr_prefers_numpy_even_when_requested_off(monkeypatch):
     G = _graph_fixture()
     data = _prepare_dnfr_data(G)
 
-    # NumPy should be used even if callers request ``use_numpy=False`` as long
-    # as the graph does not force the loop fallback.
     data["prefer_sparse"] = True
     data["A"] = None
 
@@ -131,5 +112,22 @@ def test_compute_dnfr_prefers_numpy_even_when_requested_off(monkeypatch):
 
     assert calls["numpy"] >= 1
     _assert_vector_state(data, np)
+    dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
+    assert all(isinstance(val, float) for val in dnfr_values)
+
+
+def test_compute_dnfr_loop_path_without_numpy_module(monkeypatch):
+    pytest.importorskip("numpy")
+
+    monkeypatch.delitem(sys.modules, "numpy", raising=False)
+    monkeypatch.setattr(dnfr_module, "get_numpy", lambda: None)
+    monkeypatch.setattr(dnfr_module, "_has_cached_numpy_buffers", lambda *_, **__: False)
+
+    G = _graph_fixture()
+    data = _prepare_dnfr_data(G)
+
+    _compute_dnfr(G, data)
+
+    _assert_loop_state(data)
     dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert all(isinstance(val, float) for val in dnfr_values)
