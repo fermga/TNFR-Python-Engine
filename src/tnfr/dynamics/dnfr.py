@@ -91,6 +91,8 @@ class DnfrCache:
     dense_components_np: Any | None = None
     dense_accum_np: Any | None = None
     dense_degree_np: Any | None = None
+    neighbor_contrib_np: Any | None = None
+    neighbor_workspace_np: Any | None = None
 
 
 __all__ = (
@@ -1051,7 +1053,8 @@ def _accumulate_neighbors_numpy(
     epi_sum.fill(0.0)
     vf_sum.fill(0.0)
 
-    if edge_src.size:
+    edge_count = int(edge_src.size)
+    if edge_count:
         np.add.at(count, edge_src, 1.0)
     deg_array = None
     if deg_sum is not None:
@@ -1060,11 +1063,50 @@ def _accumulate_neighbors_numpy(
             data, count, cache=cache, np=np
         )
 
-    if edge_src.size:
-        np.add.at(x, edge_src, cos_th[edge_dst])
-        np.add.at(y, edge_src, sin_th[edge_dst])
-        np.add.at(epi_sum, edge_src, epi[edge_dst])
-        np.add.at(vf_sum, edge_src, vf[edge_dst])
+    if edge_count:
+        contrib_shape = (edge_count, 4)
+        contrib = None
+        if cache is not None:
+            contrib = cache.neighbor_contrib_np
+            if contrib is None or getattr(contrib, "shape", None) != contrib_shape:
+                contrib = np.empty(contrib_shape, dtype=float)
+                cache.neighbor_contrib_np = contrib
+            data["neighbor_contrib_np"] = contrib
+        else:
+            contrib = data.get("neighbor_contrib_np")
+            if contrib is None or getattr(contrib, "shape", None) != contrib_shape:
+                contrib = np.empty(contrib_shape, dtype=float)
+            data["neighbor_contrib_np"] = contrib
+
+        np.copyto(contrib[:, 0], cos_th[edge_dst], casting="unsafe")
+        np.copyto(contrib[:, 1], sin_th[edge_dst], casting="unsafe")
+        np.copyto(contrib[:, 2], epi[edge_dst], casting="unsafe")
+        np.copyto(contrib[:, 3], vf[edge_dst], casting="unsafe")
+
+        workspace_shape = (len(nodes), 4)
+        if cache is not None:
+            workspace = cache.neighbor_workspace_np
+            if workspace is None or getattr(workspace, "shape", None) != workspace_shape:
+                workspace = np.zeros(workspace_shape, dtype=float)
+                cache.neighbor_workspace_np = workspace
+            else:
+                workspace.fill(0.0)
+            data["neighbor_workspace_np"] = workspace
+        else:
+            workspace = data.get("neighbor_workspace_np")
+            if workspace is None or getattr(workspace, "shape", None) != workspace_shape:
+                workspace = np.zeros(workspace_shape, dtype=float)
+            else:
+                workspace.fill(0.0)
+            data["neighbor_workspace_np"] = workspace
+
+        np.add.at(workspace, edge_src, contrib)
+
+        np.copyto(x, workspace[:, 0], casting="unsafe")
+        np.copyto(y, workspace[:, 1], casting="unsafe")
+        np.copyto(epi_sum, workspace[:, 2], casting="unsafe")
+        np.copyto(vf_sum, workspace[:, 3], casting="unsafe")
+
         if deg_array is not None and deg_sum is not None:
             np.add.at(deg_sum, edge_src, deg_array[edge_dst])
 

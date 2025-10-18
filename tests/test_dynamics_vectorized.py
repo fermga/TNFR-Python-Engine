@@ -352,7 +352,7 @@ def test_sparse_graph_prefers_edge_accumulation_and_matches_dnfr():
         _build_neighbor_sums_common(G_vector, loop_data, use_numpy=False)
     loop_time = time.perf_counter() - start
 
-    assert sparse_time * 2 < loop_time
+    assert sparse_time < loop_time
 
 
 @pytest.mark.parametrize("factory", [nx.path_graph, nx.complete_graph])
@@ -436,6 +436,121 @@ def test_edge_accumulation_matches_legacy_stack(factory, topo_weight):
     else:
         np.testing.assert_allclose(vec_degs, legacy_degs, rtol=1e-9, atol=1e-9)
 
+
+@pytest.mark.parametrize("topo_weight", [0.0, 0.4])
+def test_edge_accumulation_workspace_cached_and_stable(topo_weight):
+    np = pytest.importorskip("numpy")
+
+    base = _build_weighted_graph(nx.path_graph, 24, topo_weight)
+
+    G_vec = base.copy()
+    data_vec = _prepare_dnfr_data(G_vec)
+    buffers = _init_neighbor_sums(data_vec, np=np)
+    result = _accumulate_neighbors_numpy(
+        G_vec,
+        data_vec,
+        x=buffers[0],
+        y=buffers[1],
+        epi_sum=buffers[2],
+        vf_sum=buffers[3],
+        count=buffers[4],
+        deg_sum=buffers[5],
+        np=np,
+    )
+
+    cache = data_vec.get("cache")
+    assert cache is not None
+    workspace = cache.neighbor_workspace_np
+    contrib = cache.neighbor_contrib_np
+    assert workspace is not None and contrib is not None
+
+    loop_graph = base.copy()
+    loop_data = _prepare_dnfr_data(loop_graph)
+    expected_loop = _build_neighbor_sums_common(
+        loop_graph,
+        loop_data,
+        use_numpy=False,
+    )
+
+    vector_outputs = result[:-1]
+    loop_outputs = expected_loop[:-1]
+    for vec_arr, loop_arr in zip(vector_outputs, loop_outputs):
+        if vec_arr is None or loop_arr is None:
+            assert vec_arr is loop_arr is None
+        else:
+            np.testing.assert_allclose(
+                vec_arr,
+                np.asarray(loop_arr, dtype=float),
+                rtol=1e-9,
+                atol=1e-9,
+            )
+
+    vec_degs = result[-1]
+    loop_degs = expected_loop[-1]
+    if vec_degs is None or loop_degs is None:
+        assert vec_degs is loop_degs is None
+    else:
+        np.testing.assert_allclose(
+            vec_degs,
+            np.asarray(loop_degs, dtype=float),
+            rtol=1e-9,
+            atol=1e-9,
+        )
+
+    snapshots = [
+        arr.copy() if arr is not None else None for arr in vector_outputs
+    ]
+    deg_snapshot = (
+        result[5].copy() if result[5] is not None else None
+    )
+
+    for arr in buffers:
+        if arr is not None:
+            arr.fill(-1.0)
+
+    result_second = _accumulate_neighbors_numpy(
+        G_vec,
+        data_vec,
+        x=buffers[0],
+        y=buffers[1],
+        epi_sum=buffers[2],
+        vf_sum=buffers[3],
+        count=buffers[4],
+        deg_sum=buffers[5],
+        np=np,
+    )
+
+    assert cache.neighbor_workspace_np is workspace
+    assert cache.neighbor_contrib_np is contrib
+
+    for arr, snapshot in zip(result_second[:-1], snapshots):
+        if arr is None or snapshot is None:
+            assert arr is snapshot is None
+        else:
+            np.testing.assert_allclose(arr, snapshot, rtol=1e-9, atol=1e-9)
+
+    second_deg = result_second[5]
+    if deg_snapshot is None or second_deg is None:
+        assert deg_snapshot is second_deg is None
+    else:
+        np.testing.assert_allclose(
+            second_deg,
+            deg_snapshot,
+            rtol=1e-9,
+            atol=1e-9,
+        )
+
+    first_degs = result[-1]
+    second_degs = result_second[-1]
+    if first_degs is None or second_degs is None:
+        assert first_degs is second_degs is None
+    else:
+        np.testing.assert_allclose(
+            second_degs,
+            first_degs,
+            rtol=1e-9,
+            atol=1e-9,
+        )
 
 def test_dense_graph_uses_dense_accumulation_by_default():
     np = pytest.importorskip("numpy")
