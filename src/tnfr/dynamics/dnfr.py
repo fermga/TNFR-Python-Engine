@@ -96,6 +96,11 @@ class DnfrCache:
     dense_degree_np: Any | None = None
     neighbor_contrib_np: Any | None = None
     neighbor_workspace_np: Any | None = None
+    neighbor_inv_count_np: Any | None = None
+    neighbor_cos_avg_np: Any | None = None
+    neighbor_sin_avg_np: Any | None = None
+    neighbor_mean_tmp_np: Any | None = None
+    neighbor_mean_length_np: Any | None = None
     edge_signature: Any | None = None
     neighbor_accum_signature: Any | None = None
 
@@ -113,6 +118,11 @@ _NUMPY_CACHE_ATTRS = (
     "neighbor_vf_sum_np",
     "neighbor_count_np",
     "neighbor_deg_sum_np",
+    "neighbor_inv_count_np",
+    "neighbor_cos_avg_np",
+    "neighbor_sin_avg_np",
+    "neighbor_mean_tmp_np",
+    "neighbor_mean_length_np",
     "neighbor_contrib_np",
     "neighbor_workspace_np",
     "dense_components_np",
@@ -840,34 +850,46 @@ def _compute_neighbor_means(
     """Return neighbour mean arrays for ΔNFR."""
     w_topo = data["w_topo"]
     theta = data["theta"]
+    cache: DnfrCache | None = data.get("cache")
     is_numpy = np is not None and isinstance(count, np.ndarray)
     th_bar, epi_bar, vf_bar, deg_bar = _init_bar_arrays(
         data, degs=degs, np=np if is_numpy else None
     )
 
     if is_numpy:
+        n = count.shape[0]
         mask = count > 0
-        if np.any(mask):
-            idxs = np.nonzero(mask)[0]
-            inv = 1.0 / count[idxs]
-            cos_avg = x[idxs] * inv
-            sin_avg = y[idxs] * inv
-            lengths = np.hypot(cos_avg, sin_avg)
-            th_vals = np.arctan2(sin_avg, cos_avg)
-            if np.any(lengths <= _MEAN_VECTOR_EPS):
-                theta_src = data.get("theta_np")
-                if theta_src is None:
-                    theta_src = np.asarray(theta, dtype=float)
-                th_vals = np.where(
-                    lengths <= _MEAN_VECTOR_EPS,
-                    theta_src[idxs],
-                    th_vals,
-                )
-            th_bar[idxs] = th_vals
-            epi_bar[idxs] = epi_sum[idxs] * inv
-            vf_bar[idxs] = vf_sum[idxs] * inv
-            if w_topo != 0.0 and deg_bar is not None and deg_sum is not None:
-                deg_bar[idxs] = deg_sum[idxs] * inv
+        if not np.any(mask):
+            return th_bar, epi_bar, vf_bar, deg_bar
+
+        inv = _ensure_cached_array(cache, "neighbor_inv_count_np", (n,), np)
+        inv.fill(0.0)
+        np.divide(1.0, count, out=inv, where=mask)
+
+        cos_avg = _ensure_cached_array(cache, "neighbor_cos_avg_np", (n,), np)
+        cos_avg.fill(0.0)
+        np.multiply(x, inv, out=cos_avg, where=mask)
+
+        sin_avg = _ensure_cached_array(cache, "neighbor_sin_avg_np", (n,), np)
+        sin_avg.fill(0.0)
+        np.multiply(y, inv, out=sin_avg, where=mask)
+
+        lengths = _ensure_cached_array(cache, "neighbor_mean_length_np", (n,), np)
+        np.hypot(cos_avg, sin_avg, out=lengths)
+
+        temp = _ensure_cached_array(cache, "neighbor_mean_tmp_np", (n,), np)
+        np.arctan2(sin_avg, cos_avg, out=temp)
+
+        theta_src = data.get("theta_np")
+        if theta_src is None:
+            theta_src = np.asarray(theta, dtype=float)
+        np.where(lengths <= _MEAN_VECTOR_EPS, theta_src, temp, out=temp)
+        np.copyto(th_bar, temp, where=mask, casting="unsafe")
+
+        np.divide(epi_sum, count, out=epi_bar, where=mask)
+        np.divide(vf_sum, count, out=vf_bar, where=mask)
+        if w_topo != 0.0 and deg_bar is not None and deg_sum is not None:
+            np.divide(deg_sum, count, out=deg_bar, where=mask)
         return th_bar, epi_bar, vf_bar, deg_bar
 
     n = len(theta)
@@ -1209,19 +1231,10 @@ def _build_neighbor_sums_common(G, data, *, use_numpy: bool):
             if shape[0] == len(nodes) and shape[1] == len(nodes):
                 use_dense = True
 
-        if use_dense:
-            return _accumulate_neighbors_dense(
-                G,
-                data,
-                x=x,
-                y=y,
-                epi_sum=epi_sum,
-                vf_sum=vf_sum,
-                count=count,
-                deg_sum=deg_sum,
-                np=np_module,
-            )
-        return _accumulate_neighbors_numpy(
+        accumulator = (
+            _accumulate_neighbors_dense if use_dense else _accumulate_neighbors_numpy
+        )
+        return accumulator(
             G,
             data,
             x=x,
