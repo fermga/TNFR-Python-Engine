@@ -3,7 +3,7 @@ from typing import Any, TYPE_CHECKING
 
 from cachetools import LRUCache
 
-from ..cache import ensure_node_offset_map
+from ..utils.cache import ensure_node_offset_map
 from ..rng import (
     ScopedCounterCache,
     make_rng,

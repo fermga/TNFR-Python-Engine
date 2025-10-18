@@ -1,6 +1,6 @@
 import networkx as nx
 
-from tnfr.cache import ensure_node_offset_map
+from tnfr.utils.cache import ensure_node_offset_map
 from tnfr.node import NodoNX
 
 

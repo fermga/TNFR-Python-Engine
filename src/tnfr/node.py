@@ -16,7 +16,7 @@ from .alias import (
     set_dnfr,
     set_theta,
 )
-from .cache import (
+from .utils.cache import (
     cached_node_list,
     ensure_node_offset_map,
     increment_edge_version,

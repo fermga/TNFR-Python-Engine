@@ -8,7 +8,7 @@ from io import StringIO
 from collections import deque
 from statistics import fmean, StatisticsError
 
-from ..cache import edge_version_update
+from ..utils.cache import edge_version_update
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import kahan_sum_nd
 from ..alias import get_attr, set_attr

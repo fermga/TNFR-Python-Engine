@@ -3,7 +3,7 @@ import networkx as nx
 
 from tnfr.constants import THETA_PRIMARY
 from tnfr.metrics import coherence_matrix, local_phase_sync_weighted
-from tnfr.cache import ensure_node_index_map
+from tnfr.utils.cache import ensure_node_index_map
 
 
 def make_graph(graph_canon, offset=0):

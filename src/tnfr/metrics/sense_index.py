@@ -7,7 +7,7 @@ from functools import partial
 from typing import Any
 
 from ..alias import get_attr, set_attr
-from ..cache import edge_version_cache, stable_json
+from ..utils.cache import edge_version_cache, stable_json
 from ..constants import get_aliases
 from ..helpers.numeric import angle_diff, clamp01
 from ..types import GraphLike

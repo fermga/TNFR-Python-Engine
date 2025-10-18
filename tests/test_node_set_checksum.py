@@ -2,13 +2,13 @@ import hashlib
 import timeit
 from unittest.mock import patch
 
-from tnfr.cache import (
+from tnfr.utils.cache import (
     NODE_SET_CHECKSUM_KEY,
     clear_node_repr_cache,
     node_set_checksum,
     stable_json,
 )
-from tnfr.cache import increment_edge_version
+from tnfr.utils.cache import increment_edge_version
 
 
 def build_graph(graph_canon):
@@ -89,7 +89,7 @@ def test_node_set_checksum_uses_cached_result_without_rehash(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2])
     node_set_checksum(G)
-    with patch("tnfr.cache._node_repr_digest") as mock_digest:
+    with patch("tnfr.utils.cache._node_repr_digest") as mock_digest:
         assert node_set_checksum(G) == G.graph[NODE_SET_CHECKSUM_KEY][1]
         mock_digest.assert_not_called()
 
@@ -97,7 +97,7 @@ def test_node_set_checksum_uses_cached_result_without_rehash(graph_canon):
 def test_increment_edge_version_clears_node_repr_cache(graph_canon):
     nxG = graph_canon()
     nxG.add_nodes_from([1, 2, 3])
-    with patch("tnfr.cache.stable_json", wraps=stable_json) as mock_stable_json:
+    with patch("tnfr.utils.cache.stable_json", wraps=stable_json) as mock_stable_json:
         clear_node_repr_cache()
         node_set_checksum(nxG, store=False)
         first_call_count = mock_stable_json.call_count

@@ -7,7 +7,7 @@ cache invalidation.
 
 from __future__ import annotations
 
-from ..cache import (
+from ..utils.cache import (
     EdgeCacheManager,
     cached_node_list,
     cached_nodes_and_A,
