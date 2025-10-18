@@ -437,17 +437,17 @@ def test_edge_accumulation_matches_legacy_stack(factory, topo_weight):
         np.testing.assert_allclose(vec_degs, legacy_degs, rtol=1e-9, atol=1e-9)
 
 
-def test_dense_graph_prefers_edge_accumulation():
+def test_dense_graph_uses_dense_accumulation_by_default():
     np = pytest.importorskip("numpy")
     del np
 
     G_dense = _build_weighted_graph(nx.complete_graph, 32, 0.2)
     data = _prepare_dnfr_data(G_dense)
-    assert data["prefer_sparse"] is True
-    assert data["A"] is None
-    assert _prefer_sparse_accumulation(len(data["nodes"]), data["edge_count"])
+    assert data["prefer_sparse"] is False
+    assert data["A"] is not None
+    assert not _prefer_sparse_accumulation(len(data["nodes"]), data["edge_count"])
 
-    # Edge-based computation still matches the fallback path.
+    # Dense computation still matches the fallback path.
     _compute_dnfr(G_dense, data, use_numpy=True)
     dnfr_dense = collect_attr(G_dense, G_dense.nodes, ALIAS_DNFR, 0.0)
 
@@ -480,6 +480,29 @@ def test_dense_graph_dnfr_modes_stable():
     )
     assert vector_dnfr == pytest.approx(expected)
     assert vector_dnfr == pytest.approx(fallback_dnfr)
+
+
+def test_sparse_graph_can_force_dense_mode():
+    np = pytest.importorskip("numpy")
+    del np
+
+    G_sparse = _build_weighted_graph(nx.path_graph, 16, 0.25)
+    G_sparse.graph["dnfr_force_dense"] = True
+
+    data = _prepare_dnfr_data(G_sparse)
+    assert data["dense_override"] is True
+    assert data["prefer_sparse"] is False
+    assert data["A"] is not None
+
+    _compute_dnfr(G_sparse, data, use_numpy=True)
+
+    fallback = G_sparse.copy()
+    fallback.graph["vectorized_dnfr"] = False
+    default_compute_delta_nfr(fallback)
+
+    dnfr_dense = collect_attr(G_sparse, G_sparse.nodes, ALIAS_DNFR, 0.0)
+    dnfr_fallback = collect_attr(fallback, fallback.nodes, ALIAS_DNFR, 0.0)
+    assert dnfr_dense == pytest.approx(dnfr_fallback)
 
 
 @pytest.mark.parametrize("topo_weight", [0.0, 0.45])

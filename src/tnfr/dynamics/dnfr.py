@@ -27,6 +27,7 @@ ALIAS_VF = get_aliases("VF")
 
 
 _MEAN_VECTOR_EPS = 1e-12
+_SPARSE_DENSITY_THRESHOLD = 0.25
 
 
 
@@ -323,7 +324,14 @@ def _refresh_dnfr_vectors(G, nodes, cache: DnfrCache):
 
 
 def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
-    """Precompute common data for ΔNFR strategies."""
+    """Precompute common data for ΔNFR strategies.
+
+    The helper decides between edge-wise and dense adjacency accumulation
+    heuristically.  Graphs whose edge density exceeds
+    ``_SPARSE_DENSITY_THRESHOLD`` receive a cached adjacency matrix so the
+    dense path can be exercised; callers may also force the dense mode by
+    setting ``G.graph['dnfr_force_dense']`` to a truthy value.
+    """
     weights = G.graph.get("_dnfr_weights")
     if weights is None:
         weights = _configure_dnfr_weights(G)
@@ -334,8 +342,11 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     nodes = cached_node_list(G)
     edge_count = G.number_of_edges()
     prefer_sparse = False
+    dense_override = bool(G.graph.get("dnfr_force_dense"))
     if use_numpy:
         prefer_sparse = _prefer_sparse_accumulation(len(nodes), edge_count)
+        if dense_override:
+            prefer_sparse = False
     nodes, A = cached_nodes_and_A(
         G,
         cache_size=cache_size,
@@ -435,6 +446,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         "cache": cache,
         "edge_count": edge_count,
         "prefer_sparse": prefer_sparse,
+        "dense_override": dense_override,
     }
 
 
@@ -877,9 +889,13 @@ def _init_neighbor_sums(data, *, np=None):
 def _prefer_sparse_accumulation(n: int, edge_count: int | None) -> bool:
     """Return ``True`` when neighbour sums should use edge accumulation."""
 
-    if n == 0 or edge_count is None:
+    if n <= 1 or not edge_count:
         return False
-    return edge_count > 0
+    possible_edges = n * (n - 1)
+    if possible_edges <= 0:
+        return False
+    density = edge_count / possible_edges
+    return density <= _SPARSE_DENSITY_THRESHOLD
 
 
 def _accumulate_neighbors_dense(
