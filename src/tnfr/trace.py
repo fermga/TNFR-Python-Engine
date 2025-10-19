@@ -14,6 +14,7 @@ from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs, append_metric
 from .utils import cached_import, get_graph_mapping, is_non_string_sequence
 from .types import (
+    SigmaVector,
     TNFRGraph,
     TraceCallback,
     TraceFieldFn,
@@ -29,7 +30,7 @@ class _KuramotoFn(Protocol):
 class _SigmaVectorFn(Protocol):
     def __call__(
         self, G: TNFRGraph, weight_mode: str | None = None
-    ) -> Mapping[str, float]: ...
+    ) -> SigmaVector: ...
 
 
 class CallbackSpec(NamedTuple):
@@ -74,7 +75,7 @@ kuramoto_R_psi: _KuramotoFn = cast(
 
 def _sigma_fallback(
     G: TNFRGraph, _weight_mode: str | None = None
-) -> dict[str, float]:
+) -> SigmaVector:
     """Return a null sigma vector regardless of ``_weight_mode``."""
 
     return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}

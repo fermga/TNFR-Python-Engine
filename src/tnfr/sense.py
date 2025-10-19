@@ -24,7 +24,7 @@ from .config.constants import (
     ANGLE_MAP,
     GLYPHS_CANONICAL,
 )
-from .types import NodeId, TNFRGraph
+from .types import NodeId, SigmaVector, TNFRGraph
 # -------------------------
 # Canon: orden circular de glyphs y ángulos
 # -------------------------
@@ -113,7 +113,7 @@ def _to_complex(val: complex | float | int) -> complex:
     raise TypeError("values must be an iterable of real or complex numbers")
 
 
-def _empty_sigma(fallback_angle: float) -> dict[str, float]:
+def _empty_sigma(fallback_angle: float) -> SigmaVector:
     """Return an empty σ-vector with ``fallback_angle``.
 
     Helps centralise the default structure returned when no values are
@@ -137,7 +137,7 @@ def _empty_sigma(fallback_angle: float) -> dict[str, float]:
 def _sigma_from_iterable(
     values: Iterable[complex | float | int] | complex | float | int,
     fallback_angle: float = 0.0,
-) -> dict[str, float]:
+) -> SigmaVector:
     """Normalise vectors in the σ-plane.
 
     ``values`` may contain complex or real numbers; real inputs are promoted to
@@ -162,11 +162,11 @@ def _sigma_from_iterable(
         mag = float(np.hypot(x, y))
         ang = float(np.arctan2(y, x)) if mag > 0 else float(fallback_angle)
         return {
-            "x": x,
-            "y": y,
-            "mag": mag,
-            "angle": ang,
-            "n": cnt,
+            "x": float(x),
+            "y": float(y),
+            "mag": float(mag),
+            "angle": float(ang),
+            "n": int(cnt),
         }
     cnt = 0
 
@@ -191,26 +191,32 @@ def _sigma_from_iterable(
         "y": float(y),
         "mag": float(mag),
         "angle": float(ang),
-        "n": cnt,
+        "n": int(cnt),
     }
 
 
 def _ema_update(
-    prev: dict[str, float], current: dict[str, float], alpha: float
-) -> dict[str, float]:
+    prev: SigmaVector, current: SigmaVector, alpha: float
+) -> SigmaVector:
     """Exponential moving average update for σ vectors."""
     x = (1 - alpha) * prev["x"] + alpha * current["x"]
     y = (1 - alpha) * prev["y"] + alpha * current["y"]
     mag = math.hypot(x, y)
     ang = math.atan2(y, x)
-    return {"x": x, "y": y, "mag": mag, "angle": ang, "n": current.get("n", 0)}
+    return {
+        "x": float(x),
+        "y": float(y),
+        "mag": float(mag),
+        "angle": float(ang),
+        "n": int(current["n"]),
+    }
 
 
 def _sigma_from_nodes(
     nodes: Iterable[Mapping[str, Any]],
     weight_mode: str,
     fallback_angle: float = 0.0,
-) -> tuple[dict[str, float], list[tuple[str, float, complex]]]:
+) -> tuple[SigmaVector, list[tuple[str, float, complex]]]:
     """Aggregate weighted glyph vectors for ``nodes``.
 
     Returns the aggregated σ vector and the list of ``(glyph, weight, vector)``
@@ -224,7 +230,7 @@ def _sigma_from_nodes(
 
 def sigma_vector_node(
     G: TNFRGraph, n: NodeId, weight_mode: str | None = None
-) -> dict[str, float] | None:
+) -> SigmaVector | None:
     cfg = _sigma_cfg(G)
     nd = G.nodes[n]
     weight_mode = weight_mode or cfg.get("weight", "Si")
@@ -234,11 +240,12 @@ def sigma_vector_node(
     g, w, _ = nws[0]
     if sv["mag"] == 0:
         sv["angle"] = glyph_angle(g)
-    sv.update({"glyph": g, "w": float(w)})
+    sv["glyph"] = g
+    sv["w"] = float(w)
     return sv
 
 
-def sigma_vector(dist: Mapping[str, float]) -> dict[str, float]:
+def sigma_vector(dist: Mapping[str, float]) -> SigmaVector:
     """Compute Σ⃗ from a glyph distribution.
 
     ``dist`` may contain raw counts or proportions. All ``(glyph, weight)``
@@ -252,7 +259,7 @@ def sigma_vector(dist: Mapping[str, float]) -> dict[str, float]:
 
 def sigma_vector_from_graph(
     G: TNFRGraph, weight_mode: str | None = None
-) -> dict[str, float]:
+) -> SigmaVector:
     """Global vector in the σ sense plane for a graph.
 
     Parameters
