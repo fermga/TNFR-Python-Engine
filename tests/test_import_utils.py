@@ -1,6 +1,8 @@
+import gc
 import importlib
 import sys
 import types
+import weakref
 
 import pytest
 
@@ -65,6 +67,24 @@ def test_cached_import_uses_cache(monkeypatch, reset_cached_import):
     assert calls["n"] == 1
 
 
+def test_cached_import_failure_is_cached(monkeypatch, reset_cached_import):
+    reset_cached_import()
+    calls = {"n": 0}
+
+    def fake_import(_name):
+        calls["n"] += 1
+        raise ImportError("boom")
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+    cached_import("fake_mod")
+    cached_import("fake_mod")
+    assert calls["n"] == 1
+
+    prune_failed_imports()
+    cached_import("fake_mod")
+    assert calls["n"] == 2
+
+
 # -- Lazy import handling -------------------------------------------------------------------
 
 
@@ -86,6 +106,31 @@ def test_cached_import_lazy_defers_until_used(monkeypatch, reset_cached_import):
     again = cached_import("fake_mod", lazy=True)
     assert again is module
     assert cached_import("fake_mod") is module
+
+
+def test_cached_import_allows_garbage_collection(monkeypatch, reset_cached_import):
+    reset_cached_import()
+
+    class Token:
+        pass
+
+    module = types.ModuleType("gc_mod")
+    module.target = Token()
+    monkeypatch.setitem(sys.modules, "gc_mod", module)
+
+    result = cached_import("gc_mod", attr="target")
+    ref = weakref.ref(result)
+    assert ref() is module.target
+
+    again = cached_import("gc_mod", attr="target")
+    assert again is result
+
+    del module.target
+    monkeypatch.delitem(sys.modules, "gc_mod")
+    del result, again
+    gc.collect()
+
+    assert ref() is None
 
 
 def test_cached_import_lazy_records_failure_on_use(monkeypatch, reset_cached_import):
