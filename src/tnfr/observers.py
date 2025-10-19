@@ -1,6 +1,8 @@
 """Observer management."""
 
 from __future__ import annotations
+
+from collections.abc import Mapping
 from functools import partial
 import statistics
 from statistics import StatisticsError, pvariance
@@ -14,6 +16,7 @@ from .glyph_history import (
     count_glyphs,
     append_metric,
 )
+from .types import Glyph, GlyphLoadDistribution, TNFRGraph
 from .utils import (
     get_logger,
     get_numpy,
@@ -49,7 +52,7 @@ DEFAULT_WBAR_SPAN = 25
 # -------------------------
 # Observador estándar Γ(R)
 # -------------------------
-def _std_log(kind: str, G, ctx: dict):
+def _std_log(kind: str, G: TNFRGraph, ctx: Mapping[str, object]) -> None:
     """Store compact events in ``history['events']``."""
     h = ensure_history(G)
     append_metric(h, "events", (kind, dict(ctx)))
@@ -62,7 +65,7 @@ _STD_CALLBACKS = {
 }
 
 
-def attach_standard_observer(G):
+def attach_standard_observer(G: TNFRGraph) -> TNFRGraph:
     """Register standard callbacks: before_step, after_step, on_remesh."""
     if G.graph.get("_STD_OBSERVER"):
         return G
@@ -72,12 +75,12 @@ def attach_standard_observer(G):
     return G
 
 
-def _ensure_nodes(G) -> bool:
+def _ensure_nodes(G: TNFRGraph) -> bool:
     """Return ``True`` when the graph has nodes."""
     return bool(G.number_of_nodes())
 
 
-def kuramoto_metrics(G) -> tuple[float, float]:
+def kuramoto_metrics(G: TNFRGraph) -> tuple[float, float]:
     """Return Kuramoto order ``R`` and mean phase ``ψ``.
 
     Delegates to :func:`kuramoto_R_psi` and performs the computation exactly
@@ -86,7 +89,11 @@ def kuramoto_metrics(G) -> tuple[float, float]:
     return kuramoto_R_psi(G)
 
 
-def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
+def phase_sync(
+    G: TNFRGraph,
+    R: float | None = None,
+    psi: float | None = None,
+) -> float:
     if not _ensure_nodes(G):
         return 1.0
     if R is None or psi is None:
@@ -113,7 +120,7 @@ def phase_sync(G, R: float | None = None, psi: float | None = None) -> float:
 
 
 def kuramoto_order(
-    G, R: float | None = None, psi: float | None = None
+    G: TNFRGraph, R: float | None = None, psi: float | None = None
 ) -> float:
     """R in [0,1], 1 means perfectly aligned phases."""
     if not _ensure_nodes(G):
@@ -123,7 +130,7 @@ def kuramoto_order(
     return float(R)
 
 
-def glyph_load(G, window: int | None = None) -> dict:
+def glyph_load(G: TNFRGraph, window: int | None = None) -> GlyphLoadDistribution:
     """Return distribution of glyphs applied in the network.
 
     - ``window``: if provided, count only the last ``window`` events per node;
@@ -131,21 +138,28 @@ def glyph_load(G, window: int | None = None) -> dict:
     Returns a dict with proportions per glyph and useful aggregates.
     """
     if window == 0:
-        return {"_count": 0}
+        return {"_count": 0.0}
     if window is None:
         window_int = DEFAULT_GLYPH_LOAD_SPAN
     else:
         window_int = validate_window(window, positive=True)
     total = count_glyphs(G, window=window_int, last_only=(window_int == 1))
-    dist, count = normalize_counter(total)
+    dist_raw, count = normalize_counter(total)
     if count == 0:
-        return {"_count": 0}
-    dist = mix_groups(dist, GLYPH_GROUPS)
-    dist["_count"] = count
-    return dist
+        return {"_count": 0.0}
+    dist = mix_groups(dist_raw, GLYPH_GROUPS)
+    glyph_dist: GlyphLoadDistribution = {}
+    for key, value in dist.items():
+        try:
+            glyph_key: Glyph | str = Glyph(key)
+        except ValueError:
+            glyph_key = key
+        glyph_dist[glyph_key] = value
+    glyph_dist["_count"] = float(count)
+    return glyph_dist
 
 
-def wbar(G, window: int | None = None) -> float:
+def wbar(G: TNFRGraph, window: int | None = None) -> float:
     """Return W̄ = mean of ``C(t)`` over a recent window.
 
     Uses :func:`ensure_history` to obtain ``G.graph['history']`` and falls back

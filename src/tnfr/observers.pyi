@@ -1,14 +1,46 @@
-from typing import Any
+from __future__ import annotations
 
-__all__: Any
+from collections.abc import Mapping
+from typing import Final
 
-def __getattr__(name: str) -> Any: ...
+from .types import GlyphLoadDistribution, TNFRGraph
 
-DEFAULT_GLYPH_LOAD_SPAN: Any
-DEFAULT_WBAR_SPAN: Any
-attach_standard_observer: Any
-glyph_load: Any
-kuramoto_metrics: Any
-kuramoto_order: Any
-phase_sync: Any
-wbar: Any
+__all__: tuple[str, ...]
+
+DEFAULT_GLYPH_LOAD_SPAN: Final[int]
+DEFAULT_WBAR_SPAN: Final[int]
+
+
+def _std_log(kind: str, G: TNFRGraph, ctx: Mapping[str, object]) -> None: ...
+
+
+def attach_standard_observer(G: TNFRGraph) -> TNFRGraph: ...
+
+
+def _ensure_nodes(G: TNFRGraph) -> bool: ...
+
+
+def kuramoto_metrics(G: TNFRGraph) -> tuple[float, float]: ...
+
+
+def phase_sync(
+    G: TNFRGraph,
+    R: float | None = ...,
+    psi: float | None = ...,
+) -> float: ...
+
+
+def kuramoto_order(
+    G: TNFRGraph,
+    R: float | None = ...,
+    psi: float | None = ...,
+) -> float: ...
+
+
+def glyph_load(
+    G: TNFRGraph,
+    window: int | None = ...,
+) -> GlyphLoadDistribution: ...
+
+
+def wbar(G: TNFRGraph, window: int | None = ...) -> float: ...

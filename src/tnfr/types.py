@@ -22,6 +22,7 @@ __all__ = (
     "DeltaNFRHook",
     "GraphLike",
     "Glyph",
+    "GlyphLoadDistribution",
 )
 
 
@@ -125,3 +126,7 @@ class Glyph(str, Enum):
     ZHIR = "ZHIR"
     NAV = "NAV"
     REMESH = "REMESH"
+
+
+GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
+#: Normalised glyph load proportions keyed by :class:`Glyph` or aggregate labels.
