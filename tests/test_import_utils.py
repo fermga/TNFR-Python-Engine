@@ -161,9 +161,13 @@ def test_cached_import_lazy_honours_fallback(monkeypatch, reset_cached_import):
 
     monkeypatch.setattr(importlib, "import_module", fake_import)
     fallback = object()
-    result = cached_import("fake_mod", fallback=fallback, lazy=True)
-    assert result is fallback
+    proxy = cached_import("fake_mod", fallback=fallback, lazy=True)
+    assert isinstance(proxy, import_utils.LazyImportProxy)
+    assert calls["n"] == 0
+    assert proxy.resolve() is fallback
     assert calls["n"] == 1
+    with import_utils._IMPORT_STATE.lock:
+        assert "fake_mod" in import_utils._IMPORT_STATE.failed
 
 
 # -- Failure recovery and logging -----------------------------------------------------------
@@ -302,6 +306,30 @@ def test_warm_cached_import_lazy_defers_until_used(monkeypatch, reset_cached_imp
     assert calls["n"] == 1
     assert cached_import("lazy_mod") is module
     assert calls["n"] == 1
+
+
+def test_warm_cached_import_can_resolve_lazy(monkeypatch, reset_cached_import):
+    reset_cached_import()
+    calls = {"n": 0}
+    module = types.SimpleNamespace(value=99)
+
+    def fake_import(_name):
+        calls["n"] += 1
+        return module
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+
+    result = warm_cached_import("lazy_mod", lazy=True, resolve=True)
+    assert result is module
+    assert calls["n"] == 1
+    assert cached_import("lazy_mod") is module
+    assert calls["n"] == 1
+
+
+def test_warm_cached_import_rejects_resolve_without_lazy(reset_cached_import):
+    reset_cached_import()
+    with pytest.raises(ValueError):
+        warm_cached_import("fake_mod", resolve=True)
 
 
 def test_warm_cached_import_failure_is_idempotent(monkeypatch, reset_cached_import):

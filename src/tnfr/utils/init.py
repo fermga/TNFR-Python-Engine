@@ -395,7 +395,17 @@ def _warn_failure(
 class LazyImportProxy:
     """Descriptor that defers imports until first use."""
 
-    __slots__ = ("_module", "_attr", "_emit", "_target", "_lock", "_key")
+    __slots__ = (
+        "_module",
+        "_attr",
+        "_emit",
+        "_fallback",
+        "_target_ref",
+        "_strong_target",
+        "_lock",
+        "_key",
+        "__weakref__",
+    )
 
     _UNRESOLVED = object()
 
@@ -404,24 +414,68 @@ class LazyImportProxy:
         module_name: str,
         attr: str | None,
         emit: Literal["warn", "log", "both"],
+        fallback: Any | None,
     ) -> None:
         self._module = module_name
         self._attr = attr
         self._emit = emit
-        self._target: Any = self._UNRESOLVED
+        self._fallback = fallback
+        self._target_ref: weakref.ReferenceType[Any] | None = None
+        self._strong_target: Any = self._UNRESOLVED
         self._lock = threading.Lock()
         self._key = _import_key(module_name, attr)
 
+    def _store_target(self, target: Any) -> None:
+        try:
+            self_ref = weakref.ref(self)
+
+            def _cleanup(ref: weakref.ReferenceType[Any]) -> None:
+                proxy = self_ref()
+                if proxy is None:
+                    return
+                with proxy._lock:
+                    if proxy._target_ref is ref:
+                        proxy._target_ref = None
+
+            self._target_ref = weakref.ref(target, _cleanup)
+        except TypeError:
+            self._strong_target = target
+            self._target_ref = None
+        else:
+            self._strong_target = self._UNRESOLVED
+
+    def _resolved_target(self) -> Any:
+        if self._strong_target is not self._UNRESOLVED:
+            return self._strong_target
+        if self._target_ref is None:
+            return self._UNRESOLVED
+        target = self._target_ref()
+        if target is None:
+            self._target_ref = None
+            return self._UNRESOLVED
+        return target
+
     def _resolve(self) -> Any:
-        target = self._target
+        target = self._resolved_target()
         if target is not self._UNRESOLVED:
             return target
+
         with self._lock:
-            target = self._target
+            target = self._resolved_target()
             if target is self._UNRESOLVED:
-                target = _resolve_import(self._module, self._attr, self._emit, None)
-                self._target = target
+                target = _resolve_import(
+                    self._module,
+                    self._attr,
+                    self._emit,
+                    self._fallback,
+                )
+                self._store_target(target)
         return target
+
+    def resolve(self) -> Any:
+        """Eagerly resolve and return the proxied object."""
+
+        return self._resolve()
 
     def __getattr__(self, item: str) -> Any:
         return getattr(self._resolve(), item)
@@ -433,7 +487,7 @@ class LazyImportProxy:
         return bool(self._resolve())
 
     def __repr__(self) -> str:  # pragma: no cover - representation helper
-        target = self._target
+        target = self._resolved_target()
         if target is self._UNRESOLVED:
             return f"<LazyImportProxy pending={self._key!r}>"
         return repr(target)
@@ -478,18 +532,16 @@ def cached_import(
 
     When ``lazy`` is ``True`` the import is deferred until the returned proxy is
     first used. The proxy integrates with the shared cache so subsequent calls
-    return the resolved object directly. Passing ``fallback`` disables lazy
-    importing because a concrete success or failure value must be returned
-    immediately.
+    return the resolved object directly.
     """
 
     key = _import_key(module_name, attr)
 
-    if lazy and fallback is None:
+    if lazy:
         cached_obj = _get_success(key)
         if cached_obj is not None:
             return cached_obj
-        return LazyImportProxy(module_name, attr, emit)
+        return LazyImportProxy(module_name, attr, emit, fallback)
 
     return _resolve_import(module_name, attr, emit, fallback)
 
@@ -549,8 +601,17 @@ def warm_cached_import(
     fallback: Any | None = None,
     emit: Literal["warn", "log", "both"] = "warn",
     lazy: bool = False,
+    resolve: bool = False,
 ) -> Any | dict[str, Any | None]:
-    """Pre-populate the import cache for the provided module specifications."""
+    """Pre-populate the import cache for the provided module specifications.
+
+    When ``lazy`` is ``True`` the cached objects are returned as proxies by
+    default. Setting ``resolve`` forces those proxies to resolve immediately
+    during the warm-up phase while still sharing the same cache entries.
+    """
+
+    if resolve and not lazy:
+        raise ValueError("'resolve' can only be used when 'lazy' is True")
 
     specs = _normalise_warm_specs(module, extra, attr)
     results: dict[str, Any | None] = {}
@@ -563,6 +624,8 @@ def warm_cached_import(
             emit=emit,
             lazy=lazy,
         )
+        if resolve and isinstance(results[key], LazyImportProxy):
+            results[key] = results[key].resolve()
 
     if len(results) == 1:
         return next(iter(results.values()))
