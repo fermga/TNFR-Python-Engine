@@ -46,5 +46,6 @@ artifacts (e.g., `node_modules/` or `dist/`) are not committed.
   and `tnfr.locking.get_lock` when extending RNG, ΔNFR, or metric pipelines so
   that instrumentation stays consistent.【F:src/tnfr/helpers/__init__.py†L1-L74】【F:src/tnfr/cache.py†L1-L120】【F:src/tnfr/locking.py†L1-L36】
 - **Reference the [Architecture Overview](README.md#architecture-overview)**
-  for diagrams showing the structural data flow, invariant enforcement map,
-  and telemetry hooks before touching the orchestration layers.
+  for quick diagrams, then deep-dive in the
+  [TNFR Architecture Guide](ARCHITECTURE.md) to understand orchestration,
+  telemetry paths, and invariant enforcement before touching the core layers.
