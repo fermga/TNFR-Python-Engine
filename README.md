@@ -6,7 +6,7 @@ Engine for **modeling, simulation and measurement** of multiscale structural coh
 
 ## What is `tnfr`?
 
-`tnfr` is a Python library to **operate with form**: build nodes, couple them into networks, and **modulate their coherence** over time using structural operators. It does not describe “things”; it **activates processes**. Its theoretical basis is the *Teoria de la Naturaleza Fractal Resonante (TNFR)*, which understands reality as **networks of coherence** that persist because they **resonate**.
+`tnfr` is a Python library to **operate with form**: build nodes, couple them into networks, and **modulate their coherence** over time using structural operators. It does not describe “things”; it **activates processes**. Its theoretical foundation is the *Resonant Fractal Nature Theory (TNFR)*, which understands reality as **networks of coherence** that persist because they **resonate**.
 
 In practical terms, `tnfr` lets you:
 
@@ -34,13 +34,13 @@ from tnfr.structural import (
 from tnfr.metrics.common import compute_coherence
 from tnfr.metrics.sense_index import compute_Si
 
-G, nodo = create_nfr("A", epi=0.2, vf=1.0, theta=0.0)
+G, node = create_nfr("A", epi=0.2, vf=1.0, theta=0.0)
 ops = [Emision(), Recepcion(), Coherencia(), Resonancia(), Silencio()]
-run_sequence(G, nodo, ops)
+run_sequence(G, node, ops)
 
-C, delta_nfr_medio, depi_medio = compute_coherence(G, return_means=True)
-si_por_nodo = compute_Si(G)
-print(f"C(t)={C:.3f}, ΔNFR̄={delta_nfr_medio:.3f}, dEPI/dt̄={depi_medio:.3f}, Si={si_por_nodo[nodo]:.3f}")
+C, mean_delta_nfr, mean_depi = compute_coherence(G, return_means=True)
+si_per_node = compute_Si(G)
+print(f"C(t)={C:.3f}, ΔNFR̄={mean_delta_nfr:.3f}, dEPI/dt̄={mean_depi:.3f}, Si={si_per_node[node]:.3f}")
 ```
 
 The sequence preserves the nodal equation because `create_nfr` seeds the node with its **νf** and phase, and `run_sequence` validates the TNFR grammar before applying the operators in the requested order. After each operator it triggers the graph hook `compute_delta_nfr` to recompute only **ΔNFR** (by default using `dnfr_epi_vf_mixed`, which blends EPI and νf without altering phase). The phase changes only when operators mutate it or when you execute later dynamic steps (for example `tnfr.dynamics.step` or `coordinate_global_local_phase`). When you require automatic phase coordination, run the complete dynamics cycle (`tnfr.dynamics.step`/`tnfr.dynamics.run`) or call the phase coordinators explicitly after `run_sequence`. That telemetry exposes **C(t)** and **Si**, anticipating the material covered in [Key concepts (operational summary)](#key-concepts-operational-summary) and [Main metrics](#main-metrics).
