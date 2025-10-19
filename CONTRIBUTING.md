@@ -70,6 +70,17 @@ Fill out each field with concise, review-ready information:
 
 ## Testing
 
+### Before opening a pull request
+
+Run `python -m mypy src/tnfr` (or the consolidated `./scripts/run_tests.sh`
+helper described below) from the project root before filing a pull request.
+The **Type Check** GitHub Action (`.github/workflows/type-check.yml`) validates
+the same invocation on every PR and will block the merge if local changes skip
+the type-checking gate, so matching its behaviour locally keeps CI green on the
+first try.
+
+### Quality gate script
+
 Run the full quality gate from the project root with:
 
 ```bash
@@ -77,16 +88,24 @@ Run the full quality gate from the project root with:
 ```
 
 The helper sets up `PYTHONPATH` and orchestrates the tooling invoked by the
-continuous integration workflow:
+continuous integration workflow. Each tool inherits the strict configuration
+captured in `pyproject.toml`, so local runs match CI expectations:
 
-- `python -m pip install ".[typecheck]"` ensures local type-checking
-  dependencies such as `mypy` and `networkx-stubs` are available.
-- `pydocstyle` for targeted docstring style checks.
-- `python -m mypy src/tnfr` to enforce TNFR-aware typing contracts.
-- `coverage run --source=src -m pytest` to execute the test suite under
-  coverage.
-- `coverage report -m` to display the aggregate coverage summary.
-- `vulture --min-confidence 80 src tests` to detect unused code paths.
+- `python -m pip install --quiet ".[test,typecheck]"` ensures the combined test
+  and type-checking extras are present before validations begin, just like CI.
+- `python -m pydocstyle --add-ignore=D202 src/tnfr/selector.py src/tnfr/utils/data.py src/tnfr/utils/graph.py`
+  applies the docstring linter with the single extra ignore used in automation,
+  keeping the docstring style gate aligned with the workflow.
+- `python -m mypy src/tnfr` enforces the TNFR-aware typing contracts with
+  `allow_untyped_defs = false`, `allow_untyped_globals = false`,
+  `allow_untyped_calls = false`, and `show_error_codes = true` so every
+  structural operator stays explicitly typed.
+- `python -m coverage run --source=src -m pytest` runs the test suite under
+  coverage to confirm behavioural and invariant expectations.
+- `python -m coverage report -m` surfaces the aggregated coverage summary to
+  monitor drift during development.
+- `python -m vulture --min-confidence 80 src tests` hunts for unused paths with
+  the same confidence threshold enforced in CI.
 
 To install the tooling once for iterative local work, run
 `pip install -e .[test,typecheck]`. After that, the quality gate can be run
