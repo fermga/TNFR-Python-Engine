@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
-from typing import Any, Sequence
+from types import ModuleType
+from typing import Any, MutableMapping, TypedDict, cast
 
 
 from ..constants import (
@@ -58,16 +60,57 @@ class SimilarityInputs:
     sin_vals: Sequence[float] | None = None
 
 
+CoherenceMatrixDense = list[list[float]]
+CoherenceMatrixSparse = list[tuple[int, int, float]]
+CoherenceMatrixPayload = CoherenceMatrixDense | CoherenceMatrixSparse
+
+SimilarityComponents = tuple[float, float, float, float]
+VectorizedComponents = tuple[Any, Any, Any, Any]
+ScalarOrArray = Any
+StabilityChunkArgs = tuple[
+    Sequence[float],
+    Sequence[float],
+    Sequence[float],
+    Sequence[float | None],
+    Sequence[float],
+    Sequence[float | None],
+    Sequence[float | None],
+    float,
+    float,
+    float,
+]
+StabilityChunkResult = tuple[
+    int,
+    int,
+    float,
+    float,
+    list[float],
+    list[float],
+    list[float],
+]
+
+
+class ParallelWijPayload(TypedDict):
+    epi_vals: Sequence[float]
+    vf_vals: Sequence[float]
+    si_vals: Sequence[float]
+    cos_vals: Sequence[float]
+    sin_vals: Sequence[float]
+    weights: tuple[float, float, float, float]
+    epi_range: float
+    vf_range: float
+
+
 def _compute_wij_phase_epi_vf_si_vectorized(
-    epi,
-    vf,
-    si,
-    cos_th,
-    sin_th,
-    epi_range,
-    vf_range,
-    np,
-):
+    epi: Any,
+    vf: Any,
+    si: Any,
+    cos_th: Any,
+    sin_th: Any,
+    epi_range: float,
+    vf_range: float,
+    np: ModuleType,
+) -> VectorizedComponents:
     """Vectorized computation of similarity components.
 
     All parameters are expected to be NumPy arrays already cast to ``float``
@@ -93,13 +136,13 @@ def compute_wij_phase_epi_vf_si(
     i: int | None = None,
     j: int | None = None,
     *,
-    trig=None,
+    trig: Any | None = None,
     G: Any | None = None,
     nodes: Sequence[Any] | None = None,
     epi_range: float = 1.0,
     vf_range: float = 1.0,
-    np=None,
-):
+    np: ModuleType | None = None,
+) -> SimilarityComponents | VectorizedComponents:
     """Return similarity components for nodes ``i`` and ``j``.
 
     When ``np`` is provided and ``i`` and ``j`` are ``None`` the computation is
@@ -161,16 +204,16 @@ def compute_wij_phase_epi_vf_si(
 
 
 def _combine_similarity(
-    s_phase,
-    s_epi,
-    s_vf,
-    s_si,
-    phase_w,
-    epi_w,
-    vf_w,
-    si_w,
-    np=None,
-):
+    s_phase: ScalarOrArray,
+    s_epi: ScalarOrArray,
+    s_vf: ScalarOrArray,
+    s_si: ScalarOrArray,
+    phase_w: float,
+    epi_w: float,
+    vf_w: float,
+    si_w: float,
+    np: ModuleType | None = None,
+) -> ScalarOrArray:
     wij = phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
     if np is not None:
         return np.clip(wij, 0.0, 1.0)
@@ -178,16 +221,25 @@ def _combine_similarity(
 
 
 def _wij_components_weights(
-    G,
-    nodes,
+    G: Any,
+    nodes: Sequence[Any] | None,
     inputs: SimilarityInputs,
-    wnorm,
+    wnorm: Mapping[str, float],
     i: int | None = None,
     j: int | None = None,
     epi_range: float = 1.0,
     vf_range: float = 1.0,
-    np=None,
-):
+    np: ModuleType | None = None,
+) -> tuple[
+    ScalarOrArray,
+    ScalarOrArray,
+    ScalarOrArray,
+    ScalarOrArray,
+    float,
+    float,
+    float,
+    float,
+]:
     """Return similarity components together with their weights.
 
     This consolidates repeated computations ensuring that both the
@@ -213,17 +265,17 @@ def _wij_components_weights(
 
 
 def _wij_vectorized(
-    G,
-    nodes,
+    G: Any,
+    nodes: Sequence[Any],
     inputs: SimilarityInputs,
-    wnorm,
-    epi_min,
-    epi_max,
-    vf_min,
-    vf_max,
-    self_diag,
-    np,
-):
+    wnorm: Mapping[str, float],
+    epi_min: float,
+    epi_max: float,
+    vf_min: float,
+    vf_max: float,
+    self_diag: bool,
+    np: ModuleType,
+) -> Any:
     epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
     vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
     (
@@ -281,10 +333,10 @@ def _compute_wij_value_raw(
     return clamp01(wij)
 
 
-_PARALLEL_WIJ_DATA: dict[str, Any] | None = None
+_PARALLEL_WIJ_DATA: ParallelWijPayload | None = None
 
 
-def _init_parallel_wij(data: dict[str, Any]) -> None:
+def _init_parallel_wij(data: ParallelWijPayload) -> None:
     """Store immutable state for parallel ``wij`` computation."""
 
     global _PARALLEL_WIJ_DATA
@@ -332,19 +384,19 @@ def _parallel_wij_worker(
 
 
 def _wij_loops(
-    G,
+    G: Any,
     nodes: Sequence[Any],
-    node_to_index: dict[Any, int],
+    node_to_index: Mapping[Any, int],
     inputs: SimilarityInputs,
-    wnorm: dict[str, float],
+    wnorm: Mapping[str, float],
     epi_min: float,
     epi_max: float,
     vf_min: float,
     vf_max: float,
     neighbors_only: bool,
     self_diag: bool,
-    n_jobs: int = 1,
-) -> list[list[float]]:
+    n_jobs: int | None = 1,
+) -> CoherenceMatrixDense:
     n = len(nodes)
     cos_vals = inputs.cos_vals
     sin_vals = inputs.sin_vals
@@ -355,16 +407,18 @@ def _wij_loops(
         sin_vals = [trig_local.sin[n] for n in nodes]
         inputs.cos_vals = cos_vals
         inputs.sin_vals = sin_vals
+    assert cos_vals is not None
+    assert sin_vals is not None
     epi_vals = list(inputs.epi_vals)
     vf_vals = list(inputs.vf_vals)
     si_vals = list(inputs.si_vals)
-    cos_vals = list(inputs.cos_vals)
-    sin_vals = list(inputs.sin_vals)
+    cos_vals_list = list(cos_vals)
+    sin_vals_list = list(sin_vals)
     inputs.epi_vals = epi_vals
     inputs.vf_vals = vf_vals
     inputs.si_vals = si_vals
-    inputs.cos_vals = cos_vals
-    inputs.sin_vals = sin_vals
+    inputs.cos_vals = cos_vals_list
+    inputs.sin_vals = sin_vals_list
     wij = [
         [1.0 if (self_diag and i == j) else 0.0 for j in range(n)]
         for i in range(n)
@@ -420,7 +474,7 @@ def _wij_loops(
         return wij
 
     chunk_size = max(1, math.ceil(total_pairs / max_workers))
-    data = {
+    payload: ParallelWijPayload = {
         "epi_vals": tuple(epi_vals),
         "vf_vals": tuple(vf_vals),
         "si_vals": tuple(si_vals),
@@ -431,11 +485,10 @@ def _wij_loops(
         "vf_range": float(vf_range),
     }
 
-    with ProcessPoolExecutor(
-        max_workers=max_workers,
-        initializer=_init_parallel_wij,
-        initargs=(data,),
-    ) as executor:
+    def _init() -> None:
+        _init_parallel_wij(payload)
+
+    with ProcessPoolExecutor(max_workers=max_workers, initializer=_init) as executor:
         futures = []
         for start in range(0, total_pairs, chunk_size):
             chunk = pair_list[start : start + chunk_size]
@@ -446,7 +499,13 @@ def _wij_loops(
     return wij
 
 
-def _compute_stats(values, row_sum, n, self_diag, np=None):
+def _compute_stats(
+    values: Iterable[float] | Any,
+    row_sum: Iterable[float] | Any,
+    n: int,
+    self_diag: bool,
+    np: ModuleType | None = None,
+) -> tuple[float, float, float, list[float], int]:
     """Return aggregate statistics for ``values`` and normalized row sums.
 
     ``values`` and ``row_sum`` can be any iterables. They are normalized to
@@ -456,62 +515,41 @@ def _compute_stats(values, row_sum, n, self_diag, np=None):
     """
 
     if np is not None:
-        # Normalize inputs to NumPy arrays
         if not isinstance(values, np.ndarray):
-            values = np.asarray(list(values), dtype=float)
+            values_arr = np.asarray(list(values), dtype=float)
         else:
-            values = values.astype(float)
+            values_arr = cast(Any, values.astype(float))
         if not isinstance(row_sum, np.ndarray):
-            row_sum = np.asarray(list(row_sum), dtype=float)
+            row_arr = np.asarray(list(row_sum), dtype=float)
         else:
-            row_sum = row_sum.astype(float)
-
-        def size_fn(v):
-            return int(v.size)
-
-        def min_fn(v):
-            return float(v.min()) if v.size else 0.0
-
-        def max_fn(v):
-            return float(v.max()) if v.size else 0.0
-
-        def mean_fn(v):
-            return float(v.mean()) if v.size else 0.0
-
-        def wi_fn(r, d):
-            return (r / d).astype(float).tolist()
-
+            row_arr = cast(Any, row_sum.astype(float))
+        count_val = int(values_arr.size)
+        min_val = float(values_arr.min()) if values_arr.size else 0.0
+        max_val = float(values_arr.max()) if values_arr.size else 0.0
+        mean_val = float(values_arr.mean()) if values_arr.size else 0.0
     else:
-        # Fall back to pure Python lists
-        values = list(values)
-        row_sum = list(row_sum)
+        values_list = list(values)
+        row_arr = list(row_sum)
+        count_val = len(values_list)
+        min_val = min(values_list) if values_list else 0.0
+        max_val = max(values_list) if values_list else 0.0
+        mean_val = sum(values_list) / len(values_list) if values_list else 0.0
 
-        def size_fn(v):
-            return len(v)
-
-        def min_fn(v):
-            return min(v) if v else 0.0
-
-        def max_fn(v):
-            return max(v) if v else 0.0
-
-        def mean_fn(v):
-            return sum(v) / len(v) if v else 0.0
-
-        def wi_fn(r, d):
-            return [float(r[i]) / d for i in range(n)]
-
-    count_val = size_fn(values)
-    min_val = min_fn(values)
-    max_val = max_fn(values)
-    mean_val = mean_fn(values)
     row_count = n if self_diag else n - 1
     denom = max(1, row_count)
-    Wi = wi_fn(row_sum, denom)
+    if np is not None:
+        Wi = (row_arr / denom).astype(float).tolist()  # type: ignore[operator]
+    else:
+        Wi = [float(row_arr[i]) / denom for i in range(n)]
     return min_val, max_val, mean_val, Wi, count_val
 
 
-def _coherence_numpy(wij, mode, thr, np):
+def _coherence_numpy(
+    wij: Any,
+    mode: str,
+    thr: float,
+    np: ModuleType,
+) -> tuple[int, Any, Any, CoherenceMatrixPayload]:
     """Aggregate coherence weights using vectorized operations.
 
     Produces the structural weight matrix ``W`` along with the list of off
@@ -533,7 +571,9 @@ def _coherence_numpy(wij, mode, thr, np):
     return n, values, row_sum, W
 
 
-def _coherence_python_worker(args):
+def _coherence_python_worker(
+    args: tuple[Sequence[Sequence[float]], int, str, float]
+) -> tuple[int, list[float], list[float], CoherenceMatrixSparse]:
     rows, start, mode, thr = args
     values: list[float] = []
     row_sum: list[float] = []
@@ -554,7 +594,12 @@ def _coherence_python_worker(args):
     return start, values, row_sum, sparse
 
 
-def _coherence_python(wij, mode, thr, n_jobs: int = 1):
+def _coherence_python(
+    wij: Sequence[Sequence[float]],
+    mode: str,
+    thr: float,
+    n_jobs: int | None = 1,
+) -> tuple[int, list[float], list[float], CoherenceMatrixPayload]:
     """Aggregate coherence weights using pure Python loops."""
 
     n = len(wij)
@@ -571,7 +616,7 @@ def _coherence_python(wij, mode, thr, n_jobs: int = 1):
 
     if max_workers <= 1:
         if mode == "dense":
-            W = [row[:] for row in wij]
+            W: CoherenceMatrixDense = [list(row) for row in wij]
             for i in range(n):
                 for j in range(n):
                     w = W[i][j]
@@ -579,7 +624,7 @@ def _coherence_python(wij, mode, thr, n_jobs: int = 1):
                         values.append(w)
                     row_sum[i] += w
         else:
-            W = []
+            W_sparse: CoherenceMatrixSparse = []
             for i in range(n):
                 row_i = wij[i]
                 for j in range(n):
@@ -587,9 +632,9 @@ def _coherence_python(wij, mode, thr, n_jobs: int = 1):
                     if i != j:
                         values.append(w)
                         if w >= thr:
-                            W.append((i, j, w))
+                            W_sparse.append((i, j, w))
                     row_sum[i] += w
-        return n, values, row_sum, W
+        return n, values, row_sum, W if mode == "dense" else W_sparse
 
     chunk_size = max(1, math.ceil(n / max_workers))
     tasks = []
@@ -614,24 +659,26 @@ def _coherence_python(wij, mode, thr, n_jobs: int = 1):
             sparse_entries.extend(chunk_sparse)
 
     if mode == "dense":
-        W = [row[:] for row in wij]
-    else:
-        W = sparse_entries if sparse_entries is not None else []
-    return n, values, row_sum, W
+        W_dense: CoherenceMatrixDense = [list(row) for row in wij]
+        return n, values, row_sum, W_dense
+    sparse_result: CoherenceMatrixSparse = (
+        sparse_entries if sparse_entries is not None else []
+    )
+    return n, values, row_sum, sparse_result
 
 
 def _finalize_wij(
-    G,
-    nodes,
-    wij,
-    mode,
-    thr,
-    scope,
-    self_diag,
-    np=None,
+    G: Any,
+    nodes: Sequence[Any],
+    wij: Any | Sequence[Sequence[float]],
+    mode: str,
+    thr: float,
+    scope: str,
+    self_diag: bool,
+    np: ModuleType | None = None,
     *,
     n_jobs: int = 1,
-):
+) -> tuple[list[Any], CoherenceMatrixPayload]:
     """Finalize the coherence matrix ``wij`` and store results in history.
 
     When ``np`` is provided and ``wij`` is a NumPy array, the computation is
@@ -640,11 +687,11 @@ def _finalize_wij(
     """
 
     use_np = np is not None and isinstance(wij, np.ndarray)
-    n, values, row_sum, W = (
-        _coherence_numpy(wij, mode, thr, np)
-        if use_np
-        else _coherence_python(wij, mode, thr, n_jobs=n_jobs)
-    )
+    if use_np:
+        assert np is not None
+        n, values, row_sum, W = _coherence_numpy(wij, mode, thr, np)
+    else:
+        n, values, row_sum, W = _coherence_python(wij, mode, thr, n_jobs=n_jobs)
 
     min_val, max_val, mean_val, Wi, count_val = _compute_stats(
         values, row_sum, n, self_diag, np if use_np else None
@@ -663,15 +710,15 @@ def _finalize_wij(
     append_metric(hist, cfg.get("history_key", "W_sparse"), W)
     append_metric(hist, cfg.get("Wi_history_key", "W_i"), Wi)
     append_metric(hist, cfg.get("stats_history_key", "W_stats"), stats)
-    return nodes, W
+    return list(nodes), W
 
 
 def coherence_matrix(
-    G,
+    G: Any,
     use_numpy: bool | None = None,
     *,
     n_jobs: int | None = None,
-):
+) -> tuple[list[Any] | None, CoherenceMatrixPayload | None]:
     """Compute the coherence weight matrix for ``G``.
 
     Parameters
@@ -746,6 +793,7 @@ def coherence_matrix(
         sin_vals=sin_vals,
     )
     if use_np:
+        assert np is not None
         wij = _wij_vectorized(
             G,
             nodes,
@@ -796,8 +844,15 @@ def coherence_matrix(
 
 
 def local_phase_sync_weighted(
-    G, n, nodes_order=None, W_row=None, node_to_index=None
-):
+    G: Any,
+    n: Any,
+    nodes_order: Sequence[Any] | None = None,
+    W_row: Sequence[float]
+    | CoherenceMatrixSparse
+    | Sequence[Sequence[float]]
+    | None = None,
+    node_to_index: Mapping[Any, int] | None = None,
+) -> float:
     """Compute local phase synchrony using explicit weights.
 
     ``nodes_order`` is the node ordering used to build the coherence matrix
@@ -822,11 +877,12 @@ def local_phase_sync_weighted(
     cos_map, sin_map = trig.cos, trig.sin
 
     if (
-        isinstance(W_row, list)
+        isinstance(W_row, Sequence)
         and W_row
         and isinstance(W_row[0], (int, float))
     ):
-        for w, nj in zip(W_row, nodes_order):
+        row_vals = cast(Sequence[float], W_row)
+        for w, nj in zip(row_vals, nodes_order):
             if nj == n:
                 continue
             den += w
@@ -838,7 +894,8 @@ def local_phase_sync_weighted(
                 sin_j = trig_j.sin[nj]
             num += w * complex(cos_j, sin_j)
     else:
-        for ii, jj, w in W_row:
+        sparse_entries = cast(CoherenceMatrixSparse, W_row)
+        for ii, jj, w in sparse_entries:
             if ii != i:
                 continue
             nj = nodes_order[jj]
@@ -856,7 +913,7 @@ def local_phase_sync_weighted(
     return abs(num / den) if den else 0.0
 
 
-def local_phase_sync(G, n):
+def local_phase_sync(G: Any, n: Any) -> float:
     """Compute unweighted local phase synchronization for node ``n``."""
     nodes, W = coherence_matrix(G)
     if nodes is None:
@@ -864,7 +921,7 @@ def local_phase_sync(G, n):
     return local_phase_sync_weighted(G, n, nodes_order=nodes, W_row=W)
 
 
-def _coherence_step(G, ctx: dict[str, Any] | None = None):
+def _coherence_step(G: Any, ctx: dict[str, Any] | None = None) -> None:
     del ctx
 
     if not get_param(G, "COHERENCE").get("enabled", True):
@@ -872,7 +929,7 @@ def _coherence_step(G, ctx: dict[str, Any] | None = None):
     coherence_matrix(G)
 
 
-def register_coherence_callbacks(G) -> None:
+def register_coherence_callbacks(G: Any) -> None:
     callback_manager.register_callback(
         G,
         event=CallbackEvent.AFTER_STEP.value,
@@ -887,7 +944,9 @@ def register_coherence_callbacks(G) -> None:
 
 
 def _record_metrics(
-    hist: dict[str, Any], *pairs: tuple[Any, str], evaluate: bool = False
+    hist: MutableMapping[str, Any],
+    *pairs: tuple[Any, str],
+    evaluate: bool = False,
 ) -> None:
     """Generic recorder for metric values."""
 
@@ -895,7 +954,7 @@ def _record_metrics(
         append_metric(hist, key, value() if evaluate else value)
 
 
-def _update_coherence(G, hist) -> None:
+def _update_coherence(G: Any, hist: MutableMapping[str, Any]) -> None:
     """Update network coherence and related means."""
 
     C, dnfr_mean, depi_mean = compute_coherence(G, return_means=True)
@@ -914,7 +973,7 @@ def _update_coherence(G, hist) -> None:
         _record_metrics(hist, (wbar, "W_bar"))
 
 
-def _update_phase_sync(G, hist) -> None:
+def _update_phase_sync(G: Any, hist: MutableMapping[str, Any]) -> None:
     """Capture phase synchrony and Kuramoto order."""
 
     ps = phase_sync(G)
@@ -926,7 +985,7 @@ def _update_phase_sync(G, hist) -> None:
     )
 
 
-def _update_sigma(G, hist) -> None:
+def _update_sigma(G: Any, hist: MutableMapping[str, Any]) -> None:
     """Record glyph load and associated Σ⃗ vector."""
 
     gl = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
@@ -947,7 +1006,7 @@ def _update_sigma(G, hist) -> None:
     )
 
 
-def _stability_chunk_worker(args):
+def _stability_chunk_worker(args: StabilityChunkArgs) -> StabilityChunkResult:
     """Compute stability aggregates for a chunk of nodes."""
 
     (
@@ -1005,7 +1064,15 @@ def _stability_chunk_worker(args):
     )
 
 
-def _track_stability(G, hist, dt, eps_dnfr, eps_depi, *, n_jobs: int | None = None):
+def _track_stability(
+    G: Any,
+    hist: MutableMapping[str, Any],
+    dt: float,
+    eps_dnfr: float,
+    eps_depi: float,
+    *,
+    n_jobs: int | None = None,
+) -> None:
     """Track per-node stability and derivative metrics."""
 
     nodes = tuple(G.nodes)
@@ -1219,7 +1286,9 @@ def _track_stability(G, hist, dt, eps_dnfr, eps_depi, *, n_jobs: int | None = No
         set_attr(nd, ALIAS_D2VF, float(B_vals_all[idx]))
 
 
-def _si_chunk_stats(values: Sequence[float], si_hi: float, si_lo: float):
+def _si_chunk_stats(
+    values: Sequence[float], si_hi: float, si_lo: float
+) -> tuple[float, int, int, int]:
     """Compute partial Si aggregates for ``values``.
 
     The helper keeps the logic shared between the sequential and parallel
@@ -1242,7 +1311,12 @@ def _si_chunk_stats(values: Sequence[float], si_hi: float, si_lo: float):
     return total, count, hi_count, lo_count
 
 
-def _aggregate_si(G, hist, *, n_jobs: int | None = None):
+def _aggregate_si(
+    G: Any,
+    hist: MutableMapping[str, list[float]],
+    *,
+    n_jobs: int | None = None,
+) -> None:
     """Aggregate Si statistics across nodes."""
 
     try:
