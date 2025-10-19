@@ -33,6 +33,41 @@ Autoorganizacion (`Self-organization`) step”. The canonical mapping is:
 | `Transicion` | Transition |
 | `Recursividad` | Recursivity |
 
+## Commit message format
+
+Every commit **must** follow the `AGENT_COMMIT_TEMPLATE` documented for this
+repository. Copy the header exactly and fill in each field before writing the
+rest of the commit body so human maintainers can audit how the change aligns
+with the TNFR invariants. Refer to [AGENTS.md](AGENTS.md) for the authoritative
+source of this template and any future adjustments.
+
+```text
+Intent: (which coherence is improved)
+Operators involved: [Emission|Reception|...]
+Affected invariants: [#1, #4, ...]
+Key changes: (bullet list)
+Expected risks/dissonances: (and how they’re contained)
+Metrics: (C(t), Si, νf, phase) before/after expectations
+Equivalence map: (if you renamed APIs)
+```
+
+Fill out each field with concise, review-ready information:
+
+- **Intent** — Summarize the structural coherence or capability the commit
+  reorganizes.
+- **Operators involved** — List every structural operator touched so reviewers
+  can verify closure and semantics.
+- **Affected invariants** — Reference the numbered canonical invariants that
+  change or require revalidation.
+- **Key changes** — Provide the high-level bullet list that mirrors the diff’s
+  structural impact.
+- **Expected risks/dissonances** — Note possible regressions or dissonant
+  dynamics and describe the containment strategy.
+- **Metrics** — Describe anticipated shifts in C(t), Si, νf, or phase to align
+  expectations with telemetry.
+- **Equivalence map** — Document any renamed APIs or reorganized entry points
+  so downstream integrations can adjust.
+
 ## Testing
 
 Run the full quality gate from the project root with:
