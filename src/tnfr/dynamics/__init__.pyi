@@ -1,6 +1,8 @@
-from typing import Any
+from typing import Any, Literal
 
-__all__: Any
+from tnfr.types import TNFRGraph
+
+__all__: tuple[str, ...]
 
 def __getattr__(name: str) -> Any: ...
 
@@ -18,9 +20,21 @@ dnfr_epi_vf_mixed: Any
 dnfr_laplacian: Any
 dnfr_phase_only: Any
 parametric_glyph_selector: Any
-prepare_integration_params: Any
+def prepare_integration_params(
+    G: TNFRGraph,
+    dt: float | None = ...,
+    t: float | None = ...,
+    method: Literal["euler", "rk4"] | None = ...,
+) -> tuple[float, int, float, Literal["euler", "rk4"]]: ...
 run: Any
 set_delta_nfr_hook: Any
 step: Any
-update_epi_via_nodal_equation: Any
+def update_epi_via_nodal_equation(
+    G: TNFRGraph,
+    *,
+    dt: float | None = ...,
+    t: float | None = ...,
+    method: Literal["euler", "rk4"] | None = ...,
+    n_jobs: int | None = ...,
+) -> None: ...
 validate_canon: Any
