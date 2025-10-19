@@ -206,14 +206,14 @@ C(t)=0.961, ΔNFR̄=0.022, dEPI/dt̄=0.018
 {'A': 0.95, 'B': 0.60, 'C': 0.674}
 {'min': 0.4595, 'max': 0.7067, 'mean': 0.6153, 'n_edges': 6, 'mode': 'sparse', 'scope': 'neighbors'}
 [
-  ('A', {'node': 'A', 'Si': 0.956, 'dnfr_norm': 0.054, 'state': 'estable', ...}),
-  ('B', {'node': 'B', 'Si': 0.598, 'dnfr_norm': 1.000, 'state': 'transicion', ...})
+  ('A', {'node': 'A', 'Si': 0.956, 'dnfr_norm': 0.054, 'state': 'stable', ...}),
+  ('B', {'node': 'B', 'Si': 0.598, 'dnfr_norm': 1.000, 'state': 'transition', ...})
 ]
 ```
 
-* **Node A** rides the UM coupling boost and lands in the stable diagnosis bucket once Silencio clamps νf while C(t) increases—see the stabilisation criteria in [Main metrics](#main-metrics).
+* **Node A** rides the UM coupling boost and lands in the `'stable'` diagnosis bucket once Silencio clamps νf while C(t) increases—see the stabilisation criteria in [Main metrics](#main-metrics).
 * **Node C** crosses the OZ→ZHIR path, spikes |ΔNFR|, and returns to IL, showing a controlled bifurcation that preserves operator closure.
-* **Node B** inherits the dissonance (dnfr_norm → 1.0) and remains in transition, signalling a pending coherence push or resonance balancing before the network can converge again.
+* **Node B** inherits the dissonance (dnfr_norm → 1.0) and remains in the `'transition'` bucket, signalling a pending coherence push or resonance balancing before the network can converge again.
 
 Explore the data stored in `history` (glyph traces, diagnosis rows, Tg curves) to correlate glyph usage with the coherence span reported in `W_stats`.
 
@@ -256,9 +256,9 @@ The command reuses the canonical grammar and ΔNFR hooks from [`tnfr.dynamics`](
 ```json
 "W_stats": {"min": 0.423, "max": 0.736, "mean": 0.609, "n_edges": 6, "mode": "sparse", "scope": "neighbors"},
 "nodal_diag": {
-  "0": {"Si": 0.723, "νf": 0.716, "dnfr_norm": 0.785, "state": "transicion"},
-  "1": {"Si": 0.363, "νf": 0.075, "dnfr_norm": 1.000, "state": "transicion"},
-  "2": {"Si": 0.797, "νf": 0.463, "dnfr_norm": 0.215, "state": "transicion"}
+  "0": {"Si": 0.723, "νf": 0.716, "dnfr_norm": 0.785, "state": "transition"},
+  "1": {"Si": 0.363, "νf": 0.075, "dnfr_norm": 1.000, "state": "transition"},
+  "2": {"Si": 0.797, "νf": 0.463, "dnfr_norm": 0.215, "state": "transition"}
 }
 ```
 
