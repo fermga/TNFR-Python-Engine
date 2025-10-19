@@ -1,0 +1,48 @@
+name: Type Check
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  lint-test:
+    name: Python ${{ matrix.python-version }} checks
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[test,typecheck]
+
+      - name: Run pydocstyle
+        run: python -m pydocstyle --add-ignore=D202 src/tnfr/selector.py src/tnfr/utils/data.py src/tnfr/utils/graph.py
+
+      - name: Run mypy
+        run: python -m mypy src/tnfr
+
+      - name: Run tests with coverage
+        run: |
+          python -m coverage run --source=src -m pytest
+          python -m coverage report -m
+
+      - name: Run vulture
+        run: python -m vulture --min-confidence 80 src tests
