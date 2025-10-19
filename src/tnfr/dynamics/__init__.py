@@ -4,6 +4,7 @@ import inspect
 import math
 from collections import deque
 from concurrent.futures import ProcessPoolExecutor
+from dataclasses import dataclass
 from operator import itemgetter
 from typing import Any
 
@@ -860,6 +861,182 @@ def _apply_selector(G):
     return selector
 
 
+@dataclass(slots=True)
+class _SelectorPreselection:
+    kind: str
+    metrics: dict[Any, tuple[float, float, float]]
+    base_choices: dict[Any, str]
+    thresholds: dict[str, float] | None = None
+    margin: float | None = None
+
+
+def _selector_parallel_jobs(G) -> int | None:
+    """Return number of parallel jobs for glyph selection if enabled."""
+    raw_jobs = G.graph.get("GLYPH_SELECTOR_N_JOBS")
+    try:
+        n_jobs = None if raw_jobs is None else int(raw_jobs)
+    except (TypeError, ValueError):
+        return None
+    if n_jobs is None or n_jobs <= 1:
+        return None
+    return n_jobs
+
+
+def _collect_selector_metrics(
+    G, nodes: list[Any], norms: dict[str, float]
+) -> dict[Any, tuple[float, float, float]]:
+    """Collect normalised Si, |ΔNFR| and |d²EPI/dt²| for ``nodes``."""
+    if not nodes:
+        return {}
+
+    np_mod = get_numpy()
+    dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
+    accel_max = float(norms.get("accel_max", 1.0)) or 1.0
+
+    si_values = []
+    dnfr_values = []
+    accel_values = []
+    for node in nodes:
+        nd = G.nodes[node]
+        si_values.append(clamp01(get_attr(nd, ALIAS_SI, 0.5)))
+        dnfr_values.append(abs(get_attr(nd, ALIAS_DNFR, 0.0)))
+        accel_values.append(abs(get_attr(nd, ALIAS_D2EPI, 0.0)))
+
+    if np_mod is not None and nodes:
+        si_seq = np_mod.asarray(si_values, dtype=float).tolist()
+        dnfr_seq = (np_mod.asarray(dnfr_values, dtype=float) / dnfr_max).tolist()
+        accel_seq = (np_mod.asarray(accel_values, dtype=float) / accel_max).tolist()
+    else:
+        si_seq = [float(v) for v in si_values]
+        dnfr_seq = [float(v) / dnfr_max for v in dnfr_values]
+        accel_seq = [float(v) / accel_max for v in accel_values]
+
+    return {
+        node: (si_seq[idx], dnfr_seq[idx], accel_seq[idx])
+        for idx, node in enumerate(nodes)
+    }
+
+
+def _compute_default_base_choices(
+    metrics: dict[Any, tuple[float, float, float]],
+    thresholds: dict[str, float],
+) -> dict[Any, str]:
+    """Return base glyph decisions for the default selector."""
+    si_hi = float(thresholds.get("si_hi", 0.66))
+    si_lo = float(thresholds.get("si_lo", 0.33))
+    dnfr_hi = float(thresholds.get("dnfr_hi", 0.50))
+
+    base: dict[Any, str] = {}
+    for node, (Si, dnfr, _) in metrics.items():
+        if Si >= si_hi:
+            base[node] = "IL"
+        elif Si <= si_lo:
+            base[node] = "OZ" if dnfr > dnfr_hi else "ZHIR"
+        else:
+            base[node] = "NAV" if dnfr > dnfr_hi else "RA"
+    return base
+
+
+def _param_base_worker(args: tuple[dict[str, float], list[tuple[Any, tuple[float, float, float]]]]):
+    """Worker used to evaluate base rules for the parametric selector."""
+    thresholds, chunk = args
+    return [
+        (node, _selector_base_choice(Si, dnfr, accel, thresholds))
+        for node, (Si, dnfr, accel) in chunk
+    ]
+
+
+def _compute_param_base_choices(
+    metrics: dict[Any, tuple[float, float, float]],
+    thresholds: dict[str, float],
+    n_jobs: int | None,
+) -> dict[Any, str]:
+    """Evaluate base rules for the parametric selector, optionally in parallel."""
+    if not metrics:
+        return {}
+
+    items = list(metrics.items())
+    if n_jobs is None:
+        return {
+            node: _selector_base_choice(Si, dnfr, accel, thresholds)
+            for node, (Si, dnfr, accel) in items
+        }
+
+    chunk_size = max(1, math.ceil(len(items) / n_jobs))
+    base: dict[Any, str] = {}
+    args = (
+        (thresholds, items[idx : idx + chunk_size])
+        for idx in range(0, len(items), chunk_size)
+    )
+    with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+        for result in executor.map(_param_base_worker, args):
+            for node, cand in result:
+                base[node] = cand
+    return base
+
+
+def _prepare_selector_preselection(G, selector, nodes):
+    """Return preselection data for recognised selectors."""
+    if selector is default_glyph_selector:
+        norms = G.graph.get("_sel_norms") or _norms_para_selector(G)
+        thresholds = _selector_thresholds(G)
+        metrics = _collect_selector_metrics(G, nodes, norms)
+        base_choices = _compute_default_base_choices(metrics, thresholds)
+        return _SelectorPreselection(
+            "default", metrics, base_choices, thresholds=thresholds
+        )
+    if selector is parametric_glyph_selector:
+        norms = G.graph.get("_sel_norms") or _norms_para_selector(G)
+        thresholds = _selector_thresholds(G)
+        metrics = _collect_selector_metrics(G, nodes, norms)
+        margin = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
+        base_choices = _compute_param_base_choices(
+            metrics, thresholds, _selector_parallel_jobs(G)
+        )
+        return _SelectorPreselection(
+            "param", metrics, base_choices, thresholds=thresholds, margin=margin
+        )
+    return None
+
+
+def _resolve_preselected_glyph(G, n, selector, preselection):
+    """Return glyph for node ``n`` using ``preselection`` when available."""
+    if preselection is None:
+        return selector(G, n)
+
+    metrics = preselection.metrics.get(n)
+    if metrics is None:
+        return selector(G, n)
+
+    if preselection.kind == "default":
+        cand = preselection.base_choices.get(n)
+        return cand if cand is not None else selector(G, n)
+
+    if preselection.kind == "param":
+        Si, dnfr, accel = metrics
+        thresholds = preselection.thresholds or _selector_thresholds(G)
+        margin = preselection.margin
+        if margin is None:
+            margin = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
+
+        cand = preselection.base_choices.get(n)
+        if cand is None:
+            cand = _selector_base_choice(Si, dnfr, accel, thresholds)
+
+        nd = G.nodes[n]
+        hist_cand = _apply_selector_hysteresis(
+            nd, Si, dnfr, accel, thresholds, margin
+        )
+        if hist_cand is not None:
+            return hist_cand
+
+        score = _compute_selector_score(G, nd, Si, dnfr, accel, cand)
+        cand = _apply_score_override(cand, score, dnfr, thresholds["dnfr_lo"])
+        return _soft_grammar_prefilter(G, n, cand, dnfr, accel)
+
+    return selector(G, n)
+
+
 def _apply_glyphs(G, selector, hist) -> None:
     """Apply glyphs to nodes using ``selector`` and update history."""
     window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
@@ -868,14 +1045,26 @@ def _apply_glyphs(G, selector, hist) -> None:
     )
     al_max = get_graph_param(G, "AL_MAX_LAG", int)
     en_max = get_graph_param(G, "EN_MAX_LAG", int)
+
+    nodes_data = list(G.nodes(data=True))
+    nodes = [n for n, _ in nodes_data]
+    preselection = _prepare_selector_preselection(G, selector, nodes)
+
     h_al = hist.setdefault("since_AL", {})
     h_en = hist.setdefault("since_EN", {})
-    for n, _ in G.nodes(data=True):
+    for n, _ in nodes_data:
         h_al[n] = int(h_al.get(n, 0)) + 1
         h_en[n] = int(h_en.get(n, 0)) + 1
-        g = _choose_glyph(
-            G, n, selector, use_canon, h_al, h_en, al_max, en_max
-        )
+
+        if h_al[n] > al_max:
+            g = Glyph.AL
+        elif h_en[n] > en_max:
+            g = Glyph.EN
+        else:
+            g = _resolve_preselected_glyph(G, n, selector, preselection)
+            if use_canon:
+                g = enforce_canonical_grammar(G, n, g)
+
         apply_glyph(G, n, g, window=window)
         if use_canon:
             on_applied_glyph(G, n, g)
