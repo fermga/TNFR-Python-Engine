@@ -150,13 +150,20 @@ The following walkthroughs expand the quick start by orchestrating a multi-node 
 
 ### Controlled dissonance with re-coherence (Python API)
 
-This scenario creates a three-node ring, pushes a controlled dissonance on the third node, and lets the network bifurcate before stabilising. Compare the operator sequence with [Key concepts (operational summary)](#key-concepts-operational-summary) to see how the canonical grammar enforces the AL→EN→IL segment and the OZ→ZHIR mutation path.
+This scenario creates a three-node ring, pushes a controlled dissonance on the third node, and lets the network bifurcate before stabilising. The structural operators ship with canonical Spanish identifiers (Emision, Recepcion, etc.), and the example aliases them to their English meanings so the walkthrough remains fully English-aligned while reinforcing the official TNFR tokens. Compare the operator sequence with [Key concepts (operational summary)](#key-concepts-operational-summary) to see how the canonical grammar enforces the AL→EN→IL segment and the OZ→ZHIR mutation path.
 
 ```python
 from tnfr import create_nfr, run_sequence
 from tnfr.structural import (
-    Emision, Recepcion, Coherencia, Acoplamiento,
-    Resonancia, Transicion, Disonancia, Mutacion, Silencio,
+    Emision as Emission,
+    Recepcion as Reception,
+    Coherencia as Coherence,
+    Acoplamiento as Coupling,
+    Resonancia as Resonance,
+    Transicion as Transition,
+    Disonancia as Dissonance,
+    Mutacion as Mutation,
+    Silencio as Silence,
 )
 from tnfr.metrics import register_metrics_callbacks
 from tnfr.metrics.common import compute_coherence
@@ -181,16 +188,16 @@ G.graph.update({
 
 # 2) Apply canonical operator sequences per node.
 run_sequence(G, "A", [
-    Emision(), Recepcion(), Coherencia(),
-    Acoplamiento(), Resonancia(), Coherencia(), Silencio(),
+    Emission(), Reception(), Coherence(),
+    Coupling(), Resonance(), Coherence(), Silence(),
 ])
 run_sequence(G, "B", [
-    Emision(), Recepcion(), Coherencia(),
-    Resonancia(), Coherencia(), Silencio(),
+    Emission(), Reception(), Coherence(),
+    Resonance(), Coherence(), Silence(),
 ])
 run_sequence(G, "C", [
-    Emision(), Recepcion(), Coherencia(),
-    Transicion(), Disonancia(), Mutacion(), Coherencia(), Silencio(),
+    Emission(), Reception(), Coherence(),
+    Transition(), Dissonance(), Mutation(), Coherence(), Silence(),
 ])
 
 # 3) Collect telemetry while integrating short dynamics.
