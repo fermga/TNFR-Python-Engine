@@ -1,5 +1,6 @@
 """Pruebas de metrics."""
 
+import builtins
 import pytest
 from typing import Any
 
@@ -15,6 +16,7 @@ from tnfr.metrics.glyph_timing import (
     _update_latency_index,
     _update_epi_support,
     _compute_advanced_metrics,
+    np as glyph_numpy,
 )
 from tnfr.metrics.glyph_timing import DEFAULT_EPI_SUPPORT_LIMIT
 from tnfr.metrics.reporting import build_metrics_summary
@@ -308,3 +310,154 @@ def test_update_epi_support_matches_manual(graph_canon):
     rec = hist["EPI_support"][0]
     assert rec["size"] == expected_size
     assert rec["epi_norm"] == pytest.approx(expected_norm)
+
+
+def test_advanced_metrics_vectorized_path(monkeypatch, graph_canon):
+    """Vectorised accumulation avoids spawning process pools when NumPy is present."""
+
+    if glyph_numpy is None:
+        class FakeBoolArray(list):
+            def sum(self):  # noqa: D401 - emulate numpy boolean vector
+                return builtins.sum(1 for value in self if value)
+
+        class FakeArray(list):
+            def __ge__(self, other):
+                return FakeBoolArray(value >= other for value in self)
+
+            def sum(self):  # noqa: D401 - emulate numpy vector sum
+                return builtins.sum(self)
+
+            def __getitem__(self, item):
+                if isinstance(item, FakeBoolArray):
+                    return FakeArray(value for value, flag in zip(self, item) if flag)
+                result = super().__getitem__(item)
+                if isinstance(item, slice):
+                    return FakeArray(result)
+                return result
+
+        class FakeNumpy:
+            int64 = int
+
+            @staticmethod
+            def fromiter(iterable, dtype=float, count=-1):  # noqa: D401 - numpy compatible signature
+                del dtype, count
+                return FakeArray(list(iterable))
+
+            @staticmethod
+            def bincount(array, minlength=0):  # noqa: D401 - numpy compatible signature
+                freq = [0] * max(minlength, (max(array) + 1 if array else 0))
+                for value in array:
+                    freq[value] += 1
+                return FakeArray(freq)
+
+        monkeypatch.setattr("tnfr.metrics.glyph_timing.np", FakeNumpy())
+
+    class FailExecutor:  # noqa: D401 - helper for test assertions
+        """Placeholder that fails if instantiated."""
+
+        def __init__(self, *args, **kwargs):  # noqa: D401 - signature enforced by ProcessPoolExecutor
+            raise AssertionError("ProcessPoolExecutor should not be used with NumPy available")
+
+    monkeypatch.setattr("tnfr.metrics.glyph_timing.ProcessPoolExecutor", FailExecutor)
+
+    G = graph_canon()
+    inject_defaults(G)
+    hist: dict[str, Any] = {}
+    cfg = dict(G.graph["METRICS"])
+    cfg["n_jobs"] = 4
+
+    samples = [
+        ("AL", 0.06),
+        ("RA", 0.10),
+        (LATENT_GLYPH, 0.02),
+        ("AL", 0.20),
+        ("OZ", 0.07),
+    ]
+    for idx, (glyph, epi) in enumerate(samples):
+        G.add_node(idx)
+        nd = G.nodes[idx]
+        nd["glyph_history"] = [glyph]
+        set_attr(nd, ALIAS_EPI, epi)
+
+    _compute_advanced_metrics(G, hist, t=1.0, dt=0.5, cfg=cfg, n_jobs=cfg["n_jobs"])
+
+    glyphogram = hist["glyphogram"][0]
+    assert glyphogram["AL"] == 2
+    assert glyphogram["RA"] == 1
+    assert glyphogram[LATENT_GLYPH] == 1
+
+    latency = hist["latency_index"][0]["value"]
+    assert latency == pytest.approx(1 / 5)
+
+    epi_support = hist["EPI_support"][0]
+    assert epi_support["size"] == 4
+    assert epi_support["epi_norm"] == pytest.approx((0.06 + 0.10 + 0.20 + 0.07) / 4)
+
+
+def test_advanced_metrics_process_pool_fallback(monkeypatch, graph_canon):
+    """When NumPy is unavailable the implementation falls back to multiprocessing."""
+
+    monkeypatch.setattr("tnfr.metrics.glyph_timing.np", None)
+
+    submissions: list[list[tuple[Any, tuple[Any, ...], Any]]] = []
+
+    class DummyFuture:
+        def __init__(self, value):
+            self._value = value
+
+        def result(self):
+            return self._value
+
+    class DummyExecutor:
+        def __init__(self, *args, **kwargs):
+            self._entries: list[tuple[Any, tuple[Any, ...], Any]] = []
+            submissions.append(self._entries)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def submit(self, fn, *args):
+            result = fn(*args)
+            self._entries.append((fn, args, result))
+            return DummyFuture(result)
+
+    monkeypatch.setattr("tnfr.metrics.glyph_timing.ProcessPoolExecutor", DummyExecutor)
+
+    G = graph_canon()
+    inject_defaults(G)
+    hist: dict[str, Any] = {}
+    cfg = dict(G.graph["METRICS"])
+    cfg["n_jobs"] = 3
+
+    samples = [
+        ("AL", 0.06),
+        ("RA", 0.10),
+        (LATENT_GLYPH, 0.02),
+        ("AL", 0.20),
+        ("OZ", 0.07),
+    ]
+    for idx, (glyph, epi) in enumerate(samples):
+        G.add_node(idx)
+        nd = G.nodes[idx]
+        nd["glyph_history"] = [glyph]
+        set_attr(nd, ALIAS_EPI, epi)
+
+    _compute_advanced_metrics(G, hist, t=2.0, dt=0.5, cfg=cfg, n_jobs=cfg["n_jobs"])
+
+    assert len(submissions) == 2  # glyph counts + EPI support
+    assert all(entries for entries in submissions)
+
+    glyphogram = hist["glyphogram"][0]
+    assert glyphogram["AL"] == 2
+    assert glyphogram["RA"] == 1
+    assert glyphogram[LATENT_GLYPH] == 1
+
+    latency = hist["latency_index"][0]["value"]
+    assert latency == pytest.approx(1 / 5)
+
+    epi_support = hist["EPI_support"][0]
+    assert epi_support["size"] == 4
+    assert epi_support["epi_norm"] == pytest.approx((0.06 + 0.10 + 0.20 + 0.07) / 4)

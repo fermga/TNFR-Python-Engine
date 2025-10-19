@@ -55,6 +55,7 @@ class MetricDefaults:
             "enabled": True,
             "save_by_node": True,
             "normalize_series": False,
+            "n_jobs": 1,
         }
     )
     GRAMMAR_CANON: dict[str, Any] = field(
