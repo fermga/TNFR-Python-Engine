@@ -11,6 +11,7 @@ from types import MappingProxyType
 
 from .constants import DEFAULTS, get_aliases
 from .alias import get_attr
+from .types import GammaSpec, NodeId, TNFRGraph
 from .utils import (
     edge_version_cache,
     get_graph_mapping,
@@ -47,7 +48,7 @@ def _default_gamma_spec() -> tuple[bytes, str]:
     return dumped, hash_
 
 
-def _ensure_kuramoto_cache(G, t) -> None:
+def _ensure_kuramoto_cache(G: TNFRGraph, t: float | int) -> None:
     """Cache ``(R, ψ)`` for the current step ``t`` using
     ``edge_version_cache``."""
     checksum = G.graph.get("_dnfr_nodes_checksum")
@@ -66,7 +67,7 @@ def _ensure_kuramoto_cache(G, t) -> None:
     G.graph["_kuramoto_cache"] = entry
 
 
-def kuramoto_R_psi(G) -> tuple[float, float]:
+def kuramoto_R_psi(G: TNFRGraph) -> tuple[float, float]:
     """Return ``(R, ψ)`` for Kuramoto order using θ from all nodes."""
     max_steps = int(G.graph.get("KURAMOTO_CACHE_STEPS", 1))
     trig = get_trig_cache(G, cache_size=max_steps)
@@ -81,7 +82,9 @@ def kuramoto_R_psi(G) -> tuple[float, float]:
     return R, psi
 
 
-def _kuramoto_common(G, node, _cfg):
+def _kuramoto_common(
+    G: TNFRGraph, node: NodeId, _cfg: GammaSpec
+) -> tuple[float, float, float]:
     """Return ``(θ_i, R, ψ)`` for Kuramoto-based Γ functions.
 
     Reads cached global order ``R`` and mean phase ``ψ`` and obtains node
@@ -95,7 +98,7 @@ def _kuramoto_common(G, node, _cfg):
     return th_i, R, psi
 
 
-def _read_gamma_raw(G) -> Mapping[str, Any] | None:
+def _read_gamma_raw(G: TNFRGraph) -> GammaSpec | None:
     """Return raw Γ specification from ``G.graph['GAMMA']``.
 
     The returned value is the direct contents of ``G.graph['GAMMA']`` when
@@ -111,7 +114,7 @@ def _read_gamma_raw(G) -> Mapping[str, Any] | None:
     )
 
 
-def _get_gamma_spec(G) -> Mapping[str, Any]:
+def _get_gamma_spec(G: TNFRGraph) -> GammaSpec:
     """Return validated Γ specification caching results.
 
     The raw value from ``G.graph['GAMMA']`` is cached together with the
@@ -125,7 +128,7 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
     cached_spec = G.graph.get("_gamma_spec")
     cached_hash = G.graph.get("_gamma_spec_hash")
 
-    def _hash_mapping(mapping: Mapping[str, Any]) -> str:
+    def _hash_mapping(mapping: GammaSpec) -> str:
         dumped = json_dumps(mapping, sort_keys=True, to_bytes=True)
         return hashlib.blake2b(dumped, digest_size=16).hexdigest()
 
@@ -169,7 +172,7 @@ def _get_gamma_spec(G) -> Mapping[str, Any]:
 
 
 def _gamma_params(
-    cfg: Mapping[str, Any], **defaults: float
+    cfg: GammaSpec, **defaults: float
 ) -> tuple[float, ...]:
     """Return normalized Γ parameters from ``cfg``.
 
@@ -192,14 +195,16 @@ def _gamma_params(
 # -----------------
 
 
-def gamma_none(G, node, t, cfg: dict[str, Any]) -> float:
+def gamma_none(
+    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
+) -> float:
     return 0.0
 
 
 def _gamma_kuramoto(
-    G,
-    node,
-    cfg: Mapping[str, Any],
+    G: TNFRGraph,
+    node: NodeId,
+    cfg: GammaSpec,
     builder: Callable[..., float],
     **defaults: float,
 ) -> float:
@@ -227,7 +232,9 @@ def _builder_tanh(th_i: float, R: float, psi: float, beta: float, k: float, R0: 
     return beta * math.tanh(k * (R - R0)) * math.cos(th_i - psi)
 
 
-def gamma_kuramoto_linear(G, node, t, cfg: dict[str, Any]) -> float:
+def gamma_kuramoto_linear(
+    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
+) -> float:
     """Linear Kuramoto coupling for Γi(R).
 
     Formula: Γ = β · (R - R0) · cos(θ_i - ψ)
@@ -242,13 +249,17 @@ def gamma_kuramoto_linear(G, node, t, cfg: dict[str, Any]) -> float:
     return _gamma_kuramoto(G, node, cfg, _builder_linear, beta=0.0, R0=0.0)
 
 
-def gamma_kuramoto_bandpass(G, node, t, cfg: dict[str, Any]) -> float:
+def gamma_kuramoto_bandpass(
+    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
+) -> float:
     """Γ = β · R(1-R) · sign(cos(θ_i - ψ))"""
 
     return _gamma_kuramoto(G, node, cfg, _builder_bandpass, beta=0.0)
 
 
-def gamma_kuramoto_tanh(G, node, t, cfg: dict[str, Any]) -> float:
+def gamma_kuramoto_tanh(
+    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
+) -> float:
     """Saturating tanh coupling for Γi(R).
 
     Formula: Γ = β · tanh(k·(R - R0)) · cos(θ_i - ψ)
@@ -260,7 +271,9 @@ def gamma_kuramoto_tanh(G, node, t, cfg: dict[str, Any]) -> float:
     return _gamma_kuramoto(G, node, cfg, _builder_tanh, beta=0.0, k=1.0, R0=0.0)
 
 
-def gamma_harmonic(G, node, t, cfg: dict[str, Any]) -> float:
+def gamma_harmonic(
+    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
+) -> float:
     """Harmonic forcing aligned with the global phase field.
 
     Formula: Γ = β · sin(ω·t + φ) · cos(θ_i - ψ)
@@ -274,7 +287,7 @@ def gamma_harmonic(G, node, t, cfg: dict[str, Any]) -> float:
 
 
 class GammaEntry(NamedTuple):
-    fn: Callable[[Any, Any, Any, dict[str, Any]], float]
+    fn: Callable[[TNFRGraph, NodeId, float | int, GammaSpec], float]
     needs_kuramoto: bool
 
 
@@ -291,9 +304,9 @@ GAMMA_REGISTRY: dict[str, GammaEntry] = {
 
 
 def eval_gamma(
-    G,
-    node,
-    t,
+    G: TNFRGraph,
+    node: NodeId,
+    t: float | int,
     *,
     strict: bool = False,
     log_level: int | None = None,
