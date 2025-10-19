@@ -4,17 +4,25 @@ from __future__ import annotations
 
 import csv
 import math
+from collections.abc import Iterable, Iterator, Sequence
 from itertools import zip_longest, tee
+from typing import Mapping, TextIO
 
 from ..config.constants import GLYPHS_CANONICAL
 from ..glyph_history import ensure_history
 from ..io import safe_write
 from ..utils import json_dumps
 from .core import glyphogram_series
+from .glyph_timing import GlyphogramRow, SigmaTrace
 
 
-def _write_csv(path, headers, rows):
-    def _write(f):
+
+def _write_csv(
+    path: str,
+    headers: Sequence[str],
+    rows: Iterable[Sequence[object]],
+) -> None:
+    def _write(f: TextIO) -> None:
         writer = csv.writer(f)
         writer.writerow(headers)
         for row in rows:
@@ -23,7 +31,9 @@ def _write_csv(path, headers, rows):
     safe_write(path, _write, newline="")
 
 
-def _iter_glif_rows(glyph):
+def _iter_glif_rows(
+    glyph: Mapping[str, Sequence[float]],
+) -> Iterator[list[float]]:
     ts = glyph.get("t", [])
     # Precompute columns for each glyph to avoid repeated lookups.
     # ``default_col`` is shared by reference for missing glyphs to prevent
@@ -34,7 +44,7 @@ def _iter_glif_rows(glyph):
         yield [t] + [col[i] for col in cols]
 
 
-def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
+def export_metrics(G: object, base_path: str, fmt: str = "csv") -> None:
     """Dump glyphogram and σ(t) trace to compact CSV or JSON files."""
     hist = ensure_history(G)
     glyph = glyphogram_series(G)
@@ -53,7 +63,7 @@ def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
             return 0
         return value
 
-    def _gen_rows():
+    def _gen_rows() -> Iterator[tuple[float, float, float, float, float]]:
         for i, (t, x, y, m, a) in enumerate(rows_raw):
             yield (
                 i if t is None else t,
@@ -65,7 +75,7 @@ def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
 
     rows_csv, rows_sigma = tee(_gen_rows())
 
-    sigma: dict[str, list[float]] = {
+    sigma: SigmaTrace = {
         "t": [],
         "sigma_x": [],
         "sigma_y": [],
@@ -78,13 +88,13 @@ def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
         sigma["sigma_y"].append(y)
         sigma["mag"].append(m)
         sigma["angle"].append(a)
-    morph = hist.get("morph", [])
-    epi_supp = hist.get("EPI_support", [])
+    morph: Sequence[Mapping[str, float]] = hist.get("morph", [])
+    epi_supp: Sequence[Mapping[str, float]] = hist.get("EPI_support", [])
     fmt = fmt.lower()
     if fmt not in {"csv", "json"}:
         raise ValueError(f"Formato de exportación no soportado: {fmt}")
     if fmt == "csv":
-        specs = [
+        specs: list[tuple[str, Sequence[str], Iterable[Sequence[object]]]] = [
             (
                 "_glyphogram.csv",
                 ["t", *GLYPHS_CANONICAL],
@@ -134,4 +144,7 @@ def export_metrics(G, base_path: str, fmt: str = "csv") -> None:
             "epi_support": epi_supp,
         }
         json_path = base_path + ".json"
-        safe_write(json_path, lambda f: f.write(json_dumps(data)))
+        def _write_json(f: TextIO) -> None:
+            f.write(json_dumps(data))
+
+        safe_write(json_path, _write_json)

@@ -6,7 +6,8 @@ from collections import Counter, defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 import math
-from typing import Any, Callable
+from types import ModuleType
+from typing import Any, Callable, Mapping, MutableMapping, MutableSequence, Sequence, TypedDict, cast
 
 from ..alias import get_attr
 from ..constants import get_aliases, get_param
@@ -16,15 +17,39 @@ from ..types import Glyph
 
 ALIAS_EPI = get_aliases("EPI")
 
-LATENT_GLYPH = Glyph.SHA.value
+LATENT_GLYPH: str = "SHA"
 DEFAULT_EPI_SUPPORT_LIMIT = 0.05
 
 try:  # pragma: no cover - import guard exercised via tests
-    import numpy as np
+    import numpy as np  # type: ignore[import-not-found]
 except Exception:  # pragma: no cover - numpy optional dependency
     np = None
 
+
+class SigmaTrace(TypedDict):
+    """Time-aligned σ(t) trace exported alongside glyphograms."""
+
+    t: list[float]
+    sigma_x: list[float]
+    sigma_y: list[float]
+    mag: list[float]
+    angle: list[float]
+
+
+GlyphogramRow = MutableMapping[str, float]
+GlyphTimingTotals = MutableMapping[str, float]
+GlyphTimingByNode = MutableMapping[Any, MutableMapping[str, MutableSequence[float]]]
+
 _GLYPH_TO_INDEX = {glyph: idx for idx, glyph in enumerate(GLYPHS_CANONICAL)}
+
+
+def _coerce_float(value: Any) -> float:
+    """Attempt to coerce ``value`` to ``float`` returning ``0.0`` on failure."""
+
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
 
 
 @dataclass
@@ -36,6 +61,10 @@ class GlyphTiming:
 __all__ = [
     "LATENT_GLYPH",
     "GlyphTiming",
+    "SigmaTrace",
+    "GlyphogramRow",
+    "GlyphTimingTotals",
+    "GlyphTimingByNode",
     "_tg_state",
     "for_each_glyph",
     "_update_tg_node",
@@ -53,7 +82,7 @@ __all__ = [
 # ---------------------------------------------------------------------------
 
 
-def _count_glyphs_chunk(chunk: list[str]) -> Counter:
+def _count_glyphs_chunk(chunk: Sequence[str]) -> Counter[str]:
     """Count glyph occurrences within a chunk (multiprocessing helper)."""
 
     counter: Counter[str] = Counter()
@@ -62,7 +91,7 @@ def _count_glyphs_chunk(chunk: list[str]) -> Counter:
     return counter
 
 
-def _epi_support_chunk(values: list[float], threshold: float) -> tuple[float, int]:
+def _epi_support_chunk(values: Sequence[float], threshold: float) -> tuple[float, int]:
     """Compute EPI support contribution for a chunk."""
 
     total = 0.0
@@ -74,13 +103,13 @@ def _epi_support_chunk(values: list[float], threshold: float) -> tuple[float, in
     return total, count
 
 
-def _tg_state(nd: dict[str, Any]) -> GlyphTiming:
+def _tg_state(nd: MutableMapping[str, Any]) -> GlyphTiming:
     """Expose per-node glyph timing state."""
 
     return nd.setdefault("_Tg", GlyphTiming())
 
 
-def for_each_glyph(fn: Callable[[str], Any]) -> None:
+def for_each_glyph(fn: Callable[[str], None]) -> None:
     """Apply ``fn`` to each canonical structural operator."""
 
     for g in GLYPHS_CANONICAL:
@@ -92,7 +121,13 @@ def for_each_glyph(fn: Callable[[str], Any]) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _update_tg_node(n, nd, dt, tg_total, tg_by_node):
+def _update_tg_node(
+    n: Any,
+    nd: MutableMapping[str, Any],
+    dt: float,
+    tg_total: GlyphTimingTotals,
+    tg_by_node: GlyphTimingByNode | None,
+) -> tuple[str | None, bool]:
     """Track a node's glyph transition and accumulate run time."""
 
     g = last_glyph(nd)
@@ -115,12 +150,24 @@ def _update_tg_node(n, nd, dt, tg_total, tg_by_node):
     return g, g == LATENT_GLYPH
 
 
-def _update_tg(G, hist, dt, save_by_node: bool, n_jobs: int | None = None):
+def _update_tg(
+    G: Any,
+    hist: MutableMapping[str, Any],
+    dt: float,
+    save_by_node: bool,
+    n_jobs: int | None = None,
+) -> tuple[Counter[str], int, int]:
     """Accumulate glyph dwell times for the entire graph."""
 
-    tg_total = hist.setdefault("Tg_total", defaultdict(float))
+    tg_total = cast(GlyphTimingTotals, hist.setdefault("Tg_total", defaultdict(float)))
     tg_by_node = (
-        hist.setdefault("Tg_by_node", defaultdict(lambda: defaultdict(list)))
+        cast(
+            GlyphTimingByNode,
+            hist.setdefault(
+                "Tg_by_node",
+                defaultdict(lambda: defaultdict(list)),
+            ),
+        )
         if save_by_node
         else None
     )
@@ -141,7 +188,7 @@ def _update_tg(G, hist, dt, save_by_node: bool, n_jobs: int | None = None):
     if not glyph_sequence:
         return counts, n_total, n_latent
 
-    if np is not None:
+    if isinstance(np, ModuleType):
         glyph_idx = np.fromiter(
             (_GLYPH_TO_INDEX[glyph] for glyph in glyph_sequence),
             dtype=np.int64,
@@ -170,11 +217,17 @@ def _update_tg(G, hist, dt, save_by_node: bool, n_jobs: int | None = None):
     return counts, n_total, n_latent
 
 
-def _update_glyphogram(G, hist, counts, t, n_total):
+def _update_glyphogram(
+    G: Any,
+    hist: MutableMapping[str, Any],
+    counts: Mapping[str, int],
+    t: float,
+    n_total: int,
+) -> None:
     """Record glyphogram row from glyph counts."""
 
     normalize_series = bool(get_param(G, "METRICS").get("normalize_series", False))
-    row = {"t": t}
+    row: GlyphogramRow = {"t": t}
     total = max(1, n_total)
     for g in GLYPHS_CANONICAL:
         c = counts.get(g, 0)
@@ -182,7 +235,13 @@ def _update_glyphogram(G, hist, counts, t, n_total):
     append_metric(hist, "glyphogram", row)
 
 
-def _update_latency_index(G, hist, n_total, n_latent, t):
+def _update_latency_index(
+    G: Any,
+    hist: MutableMapping[str, Any],
+    n_total: int,
+    n_latent: int,
+    t: float,
+) -> None:
     """Record latency index for the current step."""
 
     li = n_latent / max(1, n_total)
@@ -190,21 +249,24 @@ def _update_latency_index(G, hist, n_total, n_latent, t):
 
 
 def _update_epi_support(
-    G,
-    hist,
-    t,
+    G: Any,
+    hist: MutableMapping[str, Any],
+    t: float,
     threshold: float = DEFAULT_EPI_SUPPORT_LIMIT,
     n_jobs: int | None = None,
-):
+) -> None:
     """Measure EPI support and normalized magnitude."""
 
     node_count = G.number_of_nodes()
     total = 0.0
     count = 0
 
-    if np is not None and node_count:
+    if isinstance(np, ModuleType) and node_count:
         epi_values = np.fromiter(
-            (abs(get_attr(nd, ALIAS_EPI, 0.0)) for _, nd in G.nodes(data=True)),
+            (
+                abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0)))
+                for _, nd in G.nodes(data=True)
+            ),
             dtype=float,
             count=node_count,
         )
@@ -213,7 +275,10 @@ def _update_epi_support(
         if count:
             total = float(epi_values[mask].sum())
     elif n_jobs is not None and n_jobs > 1 and node_count > 1:
-        values = [abs(get_attr(nd, ALIAS_EPI, 0.0)) for _, nd in G.nodes(data=True)]
+        values = [
+            abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0)))
+            for _, nd in G.nodes(data=True)
+        ]
         chunk_size = max(1, math.ceil(len(values) / n_jobs))
         totals: list[tuple[float, int]] = []
         with ProcessPoolExecutor(max_workers=n_jobs) as executor:
@@ -228,7 +293,7 @@ def _update_epi_support(
             count += part_count
     else:
         for _, nd in G.nodes(data=True):
-            epi_val = abs(get_attr(nd, ALIAS_EPI, 0.0))
+            epi_val = abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0)))
             if epi_val >= threshold:
                 total += epi_val
                 count += 1
@@ -240,10 +305,15 @@ def _update_epi_support(
     )
 
 
-def _update_morph_metrics(G, hist, counts, t):
+def _update_morph_metrics(
+    G: Any,
+    hist: MutableMapping[str, Any],
+    counts: Mapping[str, int],
+    t: float,
+) -> None:
     """Capture morphosyntactic distribution of glyphs."""
 
-    def get_count(keys):
+    def get_count(keys: Sequence[str]) -> int:
         return sum(counts.get(k, 0) for k in keys)
 
     total = max(1, sum(counts.values()))
@@ -261,14 +331,14 @@ def _update_morph_metrics(G, hist, counts, t):
 
 
 def _compute_advanced_metrics(
-    G,
-    hist,
-    t,
-    dt,
-    cfg,
+    G: Any,
+    hist: MutableMapping[str, Any],
+    t: float,
+    dt: float,
+    cfg: Mapping[str, Any],
     threshold: float = DEFAULT_EPI_SUPPORT_LIMIT,
     n_jobs: int | None = None,
-):
+) -> None:
     """Compute glyph timing derived metrics."""
 
     save_by_node = bool(cfg.get("save_by_node", True))
