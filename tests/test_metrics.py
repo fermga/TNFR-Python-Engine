@@ -209,20 +209,85 @@ def test_update_sigma_uses_default_window(monkeypatch, graph_canon):
     assert hist["sense_sigma_angle"] == [sigma["angle"]]
 
 
-def test_aggregate_si_computes_stats(graph_canon):
-    """_aggregate_si computes mean and fractions."""
-
+def _si_graph(graph_canon):
     G = graph_canon()
     inject_defaults(G)
     hist = {"Si_mean": [], "Si_hi_frac": [], "Si_lo_frac": []}
-    G.add_node(0)
-    G.add_node(1)
-    G.add_node(2)
-    set_attr(G.nodes[0], ALIAS_SI, 0.2)
-    set_attr(G.nodes[1], ALIAS_SI, 0.5)
-    set_attr(G.nodes[2], ALIAS_SI, 0.8)
+    for idx, value in enumerate((0.2, 0.5, 0.8)):
+        G.add_node(idx)
+        set_attr(G.nodes[idx], ALIAS_SI, value)
+    # Include a node without Si to ensure NaN entries are ignored.
+    G.add_node(3)
+    return G, hist
 
-    _aggregate_si(G, hist)
+
+def test_aggregate_si_numpy_vectorized(monkeypatch, graph_canon):
+    """NumPy path aggregates Si statistics with vector operations."""
+
+    np_mod = pytest.importorskip("numpy")
+    monkeypatch.setattr("tnfr.metrics.coherence.get_numpy", lambda: np_mod)
+
+    G, hist = _si_graph(graph_canon)
+
+    _aggregate_si(G, hist, n_jobs=4)
+
+    assert hist["Si_mean"][0] == pytest.approx(0.5)
+    assert hist["Si_hi_frac"][0] == pytest.approx(1 / 3)
+    assert hist["Si_lo_frac"][0] == pytest.approx(1 / 3)
+
+
+def test_aggregate_si_python_sequential(monkeypatch, graph_canon):
+    """Sequential fallback keeps the same Si statistics."""
+
+    monkeypatch.setattr("tnfr.metrics.coherence.get_numpy", lambda: None)
+
+    G, hist = _si_graph(graph_canon)
+
+    _aggregate_si(G, hist, n_jobs=None)
+
+    assert hist["Si_mean"][0] == pytest.approx(0.5)
+    assert hist["Si_hi_frac"][0] == pytest.approx(1 / 3)
+    assert hist["Si_lo_frac"][0] == pytest.approx(1 / 3)
+
+
+def test_aggregate_si_python_parallel(monkeypatch, graph_canon):
+    """Parallel fallback distributes the counting across chunks."""
+
+    monkeypatch.setattr("tnfr.metrics.coherence.get_numpy", lambda: None)
+
+    created: list[Any] = []
+
+    class _FakeFuture:
+        def __init__(self, value: Any):
+            self._value = value
+
+        def result(self) -> Any:
+            return self._value
+
+    class _RecorderExecutor:
+        def __init__(self, max_workers: int):
+            self.max_workers = max_workers
+            self.submissions: list[tuple[Any, tuple[Any, ...], dict[str, Any]]] = []
+
+        def __enter__(self):
+            created.append(self)
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def submit(self, fn, *args, **kwargs):  # noqa: ANN001 - testing stub
+            self.submissions.append((fn, args, kwargs))
+            return _FakeFuture(fn(*args, **kwargs))
+
+    monkeypatch.setattr("tnfr.metrics.coherence.ProcessPoolExecutor", _RecorderExecutor)
+
+    G, hist = _si_graph(graph_canon)
+
+    _aggregate_si(G, hist, n_jobs=2)
+
+    assert created and created[0].max_workers == 2
+    assert created[0].submissions, "parallel path must submit work chunks"
 
     assert hist["Si_mean"][0] == pytest.approx(0.5)
     assert hist["Si_hi_frac"][0] == pytest.approx(1 / 3)
