@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import math
 from collections import deque
+from concurrent.futures import ProcessPoolExecutor
 from operator import itemgetter
 from typing import Any
 
@@ -26,7 +27,7 @@ from ..helpers.numeric import (
     clamp01,
     angle_diff,
 )
-from ..metrics.trig import neighbor_phase_mean
+from ..metrics.trig import neighbor_phase_mean_list
 from ..alias import (
     get_attr,
     set_vf,
@@ -35,8 +36,12 @@ from ..alias import (
     multi_recompute_abs_max,
 )
 from ..metrics.sense_index import compute_Si
-from ..metrics.common import compute_dnfr_accel_max, merge_and_normalize_weights
-from ..metrics.trig_cache import compute_theta_trig
+from ..metrics.common import (
+    compute_dnfr_accel_max,
+    ensure_neighbors_map,
+    merge_and_normalize_weights,
+)
+from ..metrics.trig_cache import get_trig_cache
 from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import recent_glyph, ensure_history, append_metric
 from ..selector import (
@@ -46,6 +51,7 @@ from ..selector import (
     _apply_selector_hysteresis,
 )
 from ..config.operator_names import TRANSICION
+from ..utils import get_numpy
 
 from .sampling import update_node_sample as _update_node_sample
 from .dnfr import (
@@ -221,14 +227,66 @@ def _ensure_hist_deque(hist: dict[str, Any], key: str, maxlen: int) -> deque:
     return dq
 
 
+def _phase_adjust_chunk(
+    args: tuple[
+        list[Any],
+        dict[Any, float],
+        dict[Any, float],
+        dict[Any, float],
+        dict[Any, tuple[Any, ...]],
+        float,
+        float,
+        float,
+    ]
+) -> list[tuple[Any, float]]:
+    """Return coordinated phase updates for the provided chunk."""
+
+    (
+        nodes,
+        theta_map,
+        cos_map,
+        sin_map,
+        neighbors_map,
+        thG,
+        kG,
+        kL,
+    ) = args
+    updates: list[tuple[Any, float]] = []
+    for node in nodes:
+        th = theta_map.get(node, 0.0)
+        neigh = neighbors_map.get(node, ())
+        if neigh:
+            thL = neighbor_phase_mean_list(
+                neigh,
+                cos_map,
+                sin_map,
+                np=None,
+                fallback=th,
+            )
+        else:
+            thL = th
+        dG = angle_diff(thG, th)
+        dL = angle_diff(thL, th)
+        updates.append((node, th + kG * dG + kL * dL))
+    return updates
+
+
 def coordinate_global_local_phase(
-    G, global_force: float | None = None, local_force: float | None = None
+    G,
+    global_force: float | None = None,
+    local_force: float | None = None,
+    *,
+    n_jobs: int | None = None,
 ) -> None:
     """
     Ajusta fase con mezcla GLOBAL+VECINAL.
     Si no se pasan fuerzas explícitas, adapta kG/kL según estado
     (disonante / transición / estable).
     Estado se decide por R (Kuramoto) y carga glífica disruptiva reciente.
+
+    ``n_jobs`` controla el uso opcional de evaluación paralela cuando NumPy
+    no está disponible; un valor ``None`` o ``<= 1`` mantiene el recorrido
+    secuencial clásico.
     """
     g = G.graph
     defaults = DEFAULTS
@@ -267,23 +325,116 @@ def coordinate_global_local_phase(
     append_metric(hist, "phase_kG", float(kG))
     append_metric(hist, "phase_kL", float(kL))
 
-    # 6) Fase GLOBAL (centroide) para empuje
-    trig = compute_theta_trig(G.nodes(data=True))
-    num_nodes = G.number_of_nodes()
-    if num_nodes:
-        mean_cos = sum(trig.cos.values()) / num_nodes
-        mean_sin = sum(trig.sin.values()) / num_nodes
-        thG = math.atan2(mean_sin, mean_cos)
-    else:
-        thG = 0.0
+    try:
+        jobs = None if n_jobs is None else int(n_jobs)
+    except (TypeError, ValueError):
+        jobs = None
+    if jobs is not None and jobs <= 1:
+        jobs = None
 
-    # 7) Aplicar corrección global+vecinal
-    for n, nd in G.nodes(data=True):
-        th = get_attr(nd, ALIAS_THETA, 0.0)
-        thL = neighbor_phase_mean(G, n)
-        dG = angle_diff(thG, th)
-        dL = angle_diff(thL, th)
-        set_theta(G, n, th + kG * dG + kL * dL)
+    np = get_numpy()
+    if np is not None:
+        jobs = None
+
+    nodes = list(G.nodes())
+    num_nodes = len(nodes)
+    if not num_nodes:
+        return
+
+    trig = get_trig_cache(G, np=np)
+    theta_map = trig.theta
+    cos_map = trig.cos
+    sin_map = trig.sin
+
+    neighbors_proxy = ensure_neighbors_map(G)
+    neighbors_map: dict[Any, tuple[Any, ...]] = {}
+    for n in nodes:
+        try:
+            neighbors_map[n] = tuple(neighbors_proxy[n])
+        except KeyError:
+            neighbors_map[n] = ()
+
+    theta_vals = [
+        theta_map.get(n, get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in nodes
+    ]
+    cos_vals = [cos_map.get(n, math.cos(theta_vals[idx])) for idx, n in enumerate(nodes)]
+    sin_vals = [sin_map.get(n, math.sin(theta_vals[idx])) for idx, n in enumerate(nodes)]
+
+    if np is not None:
+        theta_arr = np.fromiter(theta_vals, dtype=float)
+        cos_arr = np.fromiter(cos_vals, dtype=float)
+        sin_arr = np.fromiter(sin_vals, dtype=float)
+        if cos_arr.size:
+            mean_cos = float(np.mean(cos_arr))
+            mean_sin = float(np.mean(sin_arr))
+            thG = float(np.arctan2(mean_sin, mean_cos))
+        else:
+            thG = 0.0
+        neighbor_means = [
+            neighbor_phase_mean_list(
+                neighbors_map.get(n, ()),
+                cos_map,
+                sin_map,
+                np=np,
+                fallback=theta_vals[idx],
+            )
+            if neighbors_map.get(n)
+            else theta_vals[idx]
+            for idx, n in enumerate(nodes)
+        ]
+        neighbor_arr = np.fromiter(neighbor_means, dtype=float)
+        two_pi = 2.0 * math.pi
+        diff_global = np.mod(thG - theta_arr + math.pi, two_pi) - math.pi
+        diff_local = np.mod(neighbor_arr - theta_arr + math.pi, two_pi) - math.pi
+        updated = theta_arr + kG * diff_global + kL * diff_local
+        for node, new_th in zip(nodes, updated):
+            set_theta(G, node, float(new_th))
+        return
+
+    mean_cos = sum(cos_vals) / num_nodes if num_nodes else 0.0
+    mean_sin = sum(sin_vals) / num_nodes if num_nodes else 0.0
+    thG = math.atan2(mean_sin, mean_cos) if num_nodes else 0.0
+
+    if jobs is None:
+        for idx, (node, th) in enumerate(zip(nodes, theta_vals)):
+            neigh = neighbors_map.get(node, ())
+            if neigh:
+                thL = neighbor_phase_mean_list(
+                    neigh,
+                    cos_map,
+                    sin_map,
+                    np=None,
+                    fallback=th,
+                )
+            else:
+                thL = th
+            dG = angle_diff(thG, th)
+            dL = angle_diff(thL, th)
+            set_theta(G, node, th + kG * dG + kL * dL)
+        return
+
+    chunk_size = max(1, (num_nodes + jobs - 1) // jobs)
+    chunks = [nodes[i : i + chunk_size] for i in range(0, num_nodes, chunk_size)]
+    args = [
+        (
+            chunk,
+            theta_map,
+            cos_map,
+            sin_map,
+            neighbors_map,
+            thG,
+            kG,
+            kL,
+        )
+        for chunk in chunks
+    ]
+    results: dict[Any, float] = {}
+    with ProcessPoolExecutor(max_workers=jobs) as executor:
+        for res in executor.map(_phase_adjust_chunk, args):
+            for node, value in res:
+                results[node] = value
+    for node in nodes:
+        set_theta(G, node, results.get(node, theta_map.get(node, 0.0)))
 
 
 # -------------------------
@@ -609,7 +760,12 @@ def _update_nodes(
     update_epi_via_nodal_equation(G, dt=_dt, method=method, n_jobs=n_jobs)
     for n, nd in G.nodes(data=True):
         apply_canonical_clamps(nd, G, n)
-    coordinate_global_local_phase(G, None, None)
+    raw_phase_jobs = G.graph.get("PHASE_N_JOBS")
+    try:
+        phase_jobs = None if raw_phase_jobs is None else int(raw_phase_jobs)
+    except (TypeError, ValueError):
+        phase_jobs = None
+    coordinate_global_local_phase(G, None, None, n_jobs=phase_jobs)
     adapt_vf_by_coherence(G)
 
 
