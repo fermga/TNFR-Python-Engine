@@ -1149,6 +1149,18 @@ def _resolve_preselected_glyph(G, n, selector, preselection):
     return selector(G, n)
 
 
+def _glyph_proposal_worker(
+    args: tuple[list[Any], Any, Any, _SelectorPreselection | None]
+) -> list[tuple[Any, str | Glyph]]:
+    """Return glyph proposals for ``args[0]`` using ``_resolve_preselected_glyph``."""
+
+    nodes, G, selector, preselection = args
+    return [
+        (n, _resolve_preselected_glyph(G, n, selector, preselection))
+        for n in nodes
+    ]
+
+
 def _apply_glyphs(G, selector, hist) -> None:
     """Apply glyphs to nodes using ``selector`` and update history."""
     window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
@@ -1164,22 +1176,54 @@ def _apply_glyphs(G, selector, hist) -> None:
 
     h_al = hist.setdefault("since_AL", {})
     h_en = hist.setdefault("since_EN", {})
+    forced: dict[Any, str | Glyph] = {}
+    to_select: list[Any] = []
+
     for n, _ in nodes_data:
         h_al[n] = int(h_al.get(n, 0)) + 1
         h_en[n] = int(h_en.get(n, 0)) + 1
 
         if h_al[n] > al_max:
-            g = Glyph.AL
+            forced[n] = Glyph.AL
         elif h_en[n] > en_max:
-            g = Glyph.EN
+            forced[n] = Glyph.EN
         else:
-            g = _resolve_preselected_glyph(G, n, selector, preselection)
-            if use_canon:
-                g = enforce_canonical_grammar(G, n, g)
+            to_select.append(n)
+
+    decisions: dict[Any, str | Glyph] = dict(forced)
+    if to_select:
+        n_jobs = _selector_parallel_jobs(G)
+        if n_jobs is None:
+            for n in to_select:
+                decisions[n] = _resolve_preselected_glyph(
+                    G, n, selector, preselection
+                )
+        else:
+            chunk_size = max(1, math.ceil(len(to_select) / n_jobs))
+            chunks = [
+                to_select[idx : idx + chunk_size]
+                for idx in range(0, len(to_select), chunk_size)
+            ]
+            with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+                args_iter = (
+                    (chunk, G, selector, preselection) for chunk in chunks
+                )
+                for results in executor.map(_glyph_proposal_worker, args_iter):
+                    for node, glyph in results:
+                        decisions[node] = glyph
+
+    for n, _ in nodes_data:
+        g = decisions.get(n)
+        if g is None:
+            continue
+
+        if use_canon:
+            g = enforce_canonical_grammar(G, n, g)
 
         apply_glyph(G, n, g, window=window)
         if use_canon:
             on_applied_glyph(G, n, g)
+
         if g == Glyph.AL:
             h_al[n] = 0
             h_en[n] = min(h_en[n], en_max)

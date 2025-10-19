@@ -57,20 +57,57 @@ def _make_param_graph(graph_canon):
     return G
 
 
-def _run_selector(G, monkeypatch):
+def _run_selector(
+    G,
+    monkeypatch,
+    *,
+    since_al: dict[int, int] | None = None,
+    since_en: dict[int, int] | None = None,
+    apply_hook=None,
+    enforce_hook=None,
+    on_applied_hook=None,
+):
     history = ensure_history(G)
-    history["since_AL"] = {n: 0 for n in G.nodes}
-    history["since_EN"] = {n: 0 for n in G.nodes}
+    if since_al is None:
+        history["since_AL"] = {n: 0 for n in G.nodes}
+    else:
+        history["since_AL"] = dict(since_al)
+    if since_en is None:
+        history["since_EN"] = {n: 0 for n in G.nodes}
+    else:
+        history["since_EN"] = dict(since_en)
 
     applied: list[tuple[int, str]] = []
 
     def fake_apply_glyph(G_local, node, glyph, *, window=None):
         value = getattr(glyph, "value", glyph)
         applied.append((node, value))
+        if apply_hook is not None:
+            apply_hook(G_local, node, value, window=window)
 
     monkeypatch.setattr(dynamics, "apply_glyph", fake_apply_glyph)
-    monkeypatch.setattr(dynamics, "on_applied_glyph", lambda *args, **kwargs: None)
-    monkeypatch.setattr(dynamics, "enforce_canonical_grammar", lambda G_local, node, glyph: glyph)
+
+    if on_applied_hook is None:
+        monkeypatch.setattr(
+            dynamics, "on_applied_glyph", lambda *args, **kwargs: None
+        )
+    else:
+        def wrapped_on_applied(G_local, node, glyph, *args, **kwargs):
+            value = getattr(glyph, "value", glyph)
+            on_applied_hook(G_local, node, value)
+
+        monkeypatch.setattr(dynamics, "on_applied_glyph", wrapped_on_applied)
+
+    if enforce_hook is None:
+        monkeypatch.setattr(
+            dynamics, "enforce_canonical_grammar", lambda G_local, node, glyph: glyph
+        )
+    else:
+        def wrapped_enforce(G_local, node, glyph):
+            value = getattr(glyph, "value", glyph)
+            return enforce_hook(G_local, node, value)
+
+        monkeypatch.setattr(dynamics, "enforce_canonical_grammar", wrapped_enforce)
 
     selector = dynamics._apply_selector(G)
     dynamics._apply_glyphs(G, selector, history)
@@ -114,3 +151,97 @@ def test_selector_n_jobs_one_is_sequential(monkeypatch, graph_canon):
     monkeypatch.setattr(dynamics, "ProcessPoolExecutor", FailExecutor)
 
     _run_selector(G, monkeypatch)
+
+
+def test_parallel_selector_is_deterministic(monkeypatch, graph_canon):
+    G_first = _make_param_graph(graph_canon)
+    G_first.graph["GLYPH_SELECTOR_N_JOBS"] = 3
+    first_applied, first_hist = _run_selector(G_first, monkeypatch)
+
+    G_second = _make_param_graph(graph_canon)
+    G_second.graph["GLYPH_SELECTOR_N_JOBS"] = 3
+    second_applied, second_hist = _run_selector(G_second, monkeypatch)
+
+    assert first_applied == second_applied
+    assert first_hist["since_AL"] == second_hist["since_AL"]
+    assert first_hist["since_EN"] == second_hist["since_EN"]
+
+
+def test_parallel_respects_since_counters(monkeypatch, graph_canon):
+    G_seq = _make_default_graph(graph_canon)
+    G_seq.graph["AL_MAX_LAG"] = 1
+    G_seq.graph["EN_MAX_LAG"] = 1
+
+    since_al = {0: 1, 1: 0, 2: 0}
+    since_en = {0: 0, 1: 2, 2: 0}
+
+    applied_seq, hist_seq = _run_selector(
+        G_seq,
+        monkeypatch,
+        since_al=since_al,
+        since_en=since_en,
+    )
+
+    G_par = _make_default_graph(graph_canon)
+    G_par.graph["AL_MAX_LAG"] = 1
+    G_par.graph["EN_MAX_LAG"] = 1
+    G_par.graph["GLYPH_SELECTOR_N_JOBS"] = 2
+
+    applied_par, hist_par = _run_selector(
+        G_par,
+        monkeypatch,
+        since_al=since_al,
+        since_en=since_en,
+    )
+
+    assert applied_seq == applied_par
+    assert hist_seq["since_AL"] == hist_par["since_AL"]
+    assert hist_seq["since_EN"] == hist_par["since_EN"]
+
+
+def test_parallel_canonical_hooks_order(monkeypatch, graph_canon):
+    def make_graph():
+        G = _make_param_graph(graph_canon)
+        G.graph["GRAMMAR_CANON"] = {"enabled": True}
+        return G
+
+    log_seq: list[tuple[str, int, str]] = []
+
+    def enforce_hook_seq(G_local, node, glyph):
+        log_seq.append(("enforce", node, glyph))
+        if node % 2 == 0:
+            return glyph
+        return dynamics.Glyph.NAV
+
+    def on_applied_seq(G_local, node, glyph):
+        log_seq.append(("on_applied", node, glyph))
+
+    applied_seq, _ = _run_selector(
+        make_graph(),
+        monkeypatch,
+        enforce_hook=enforce_hook_seq,
+        on_applied_hook=on_applied_seq,
+    )
+
+    log_par: list[tuple[str, int, str]] = []
+
+    def enforce_hook_par(G_local, node, glyph):
+        log_par.append(("enforce", node, glyph))
+        if node % 2 == 0:
+            return glyph
+        return dynamics.Glyph.NAV
+
+    def on_applied_par(G_local, node, glyph):
+        log_par.append(("on_applied", node, glyph))
+
+    G_parallel = make_graph()
+    G_parallel.graph["GLYPH_SELECTOR_N_JOBS"] = 3
+    applied_par, _ = _run_selector(
+        G_parallel,
+        monkeypatch,
+        enforce_hook=enforce_hook_par,
+        on_applied_hook=on_applied_par,
+    )
+
+    assert applied_seq == applied_par
+    assert log_seq == log_par
