@@ -1,37 +1,92 @@
-from typing import Any
+from __future__ import annotations
 
-__all__: Any
+from collections.abc import Mapping
+from typing import Any, Callable, TypeVar
 
-def __getattr__(name: str) -> Any: ...
+from .core import CORE_DEFAULTS as CORE_DEFAULTS, REMESH_DEFAULTS as REMESH_DEFAULTS
+from .init import INIT_DEFAULTS as INIT_DEFAULTS
+from .metric import (
+    COHERENCE as COHERENCE,
+    DIAGNOSIS as DIAGNOSIS,
+    GRAMMAR_CANON as GRAMMAR_CANON,
+    METRICS as METRICS,
+    METRIC_DEFAULTS as METRIC_DEFAULTS,
+    SIGMA as SIGMA,
+    TRACE as TRACE,
+)
+from ..types import GraphLike
 
-ALIASES: Any
-COHERENCE: Any
-CORE_DEFAULTS: Any
-D2EPI_PRIMARY: Any
-D2VF_PRIMARY: Any
-DEFAULTS: Any
-DEFAULT_SECTIONS: Any
-DIAGNOSIS: Any
-DNFR_PRIMARY: Any
-EPI_KIND_PRIMARY: Any
-EPI_PRIMARY: Any
-GRAMMAR_CANON: Any
-INIT_DEFAULTS: Any
-METRICS: Any
-METRIC_DEFAULTS: Any
-REMESH_DEFAULTS: Any
-SIGMA: Any
-SI_PRIMARY: Any
-THETA_KEY: Any
-THETA_PRIMARY: Any
-TRACE: Any
-VF_KEY: Any
-VF_PRIMARY: Any
-dEPI_PRIMARY: Any
-dSI_PRIMARY: Any
-dVF_PRIMARY: Any
-get_aliases: Any
-get_graph_param: Any
-get_param: Any
-inject_defaults: Any
-merge_overrides: Any
+T = TypeVar("T")
+
+__all__ = (
+    "CORE_DEFAULTS",
+    "INIT_DEFAULTS",
+    "REMESH_DEFAULTS",
+    "METRIC_DEFAULTS",
+    "SIGMA",
+    "TRACE",
+    "METRICS",
+    "GRAMMAR_CANON",
+    "COHERENCE",
+    "DIAGNOSIS",
+    "DEFAULTS",
+    "DEFAULT_SECTIONS",
+    "ALIASES",
+    "inject_defaults",
+    "merge_overrides",
+    "get_param",
+    "get_graph_param",
+    "get_aliases",
+    "VF_KEY",
+    "THETA_KEY",
+    "VF_PRIMARY",
+    "THETA_PRIMARY",
+    "DNFR_PRIMARY",
+    "EPI_PRIMARY",
+    "EPI_KIND_PRIMARY",
+    "SI_PRIMARY",
+    "dEPI_PRIMARY",
+    "D2EPI_PRIMARY",
+    "dVF_PRIMARY",
+    "D2VF_PRIMARY",
+    "dSI_PRIMARY",
+)
+
+ensure_node_offset_map: Callable[[GraphLike], None] | None
+DEFAULT_SECTIONS: Mapping[str, Mapping[str, Any]]
+DEFAULTS: Mapping[str, Any]
+ALIASES: dict[str, tuple[str, ...]]
+VF_KEY: str
+THETA_KEY: str
+VF_PRIMARY: str
+THETA_PRIMARY: str
+DNFR_PRIMARY: str
+EPI_PRIMARY: str
+EPI_KIND_PRIMARY: str
+SI_PRIMARY: str
+dEPI_PRIMARY: str
+D2EPI_PRIMARY: str
+dVF_PRIMARY: str
+D2VF_PRIMARY: str
+dSI_PRIMARY: str
+
+
+def inject_defaults(
+    G: GraphLike,
+    defaults: Mapping[str, Any] = ...,
+    override: bool = ...,
+) -> None: ...
+
+
+def merge_overrides(G: GraphLike, **overrides: Any) -> None: ...
+
+
+def get_param(G: GraphLike, key: str) -> Any: ...
+
+
+def get_graph_param(
+    G: GraphLike, key: str, cast: Callable[[Any], T] = ...
+) -> T | None: ...
+
+
+def get_aliases(key: str) -> tuple[str, ...]: ...
