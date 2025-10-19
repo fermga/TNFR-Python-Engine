@@ -57,6 +57,7 @@ __all__ = (
     "PresetTokens",
     "ProgramTokens",
     "ArgSpec",
+    "TNFRConfigValue",
     "SigmaVector",
 )
 
@@ -121,6 +122,24 @@ PresetTokens: TypeAlias = Sequence[_Token]
 
 ArgSpec: TypeAlias = tuple[str, Mapping[str, Any]]
 #: CLI argument specification pairing an option flag with keyword arguments.
+
+
+TNFRConfigScalar: TypeAlias = bool | int | float | str | None
+"""Primitive value allowed within TNFR configuration stores."""
+
+TNFRConfigSequence: TypeAlias = Sequence[TNFRConfigScalar]
+"""Homogeneous sequence of scalar TNFR configuration values."""
+
+TNFRConfigValue: TypeAlias = (
+    TNFRConfigScalar | TNFRConfigSequence | Mapping[str, "TNFRConfigValue"]
+)
+"""Permissible configuration entry for TNFR coherence defaults.
+
+The alias captures the recursive structure used by TNFR defaults: scalars
+express structural thresholds, booleans toggle operators, and nested mappings
+or sequences describe coherent parameter bundles such as γ grammars,
+selector advice or trace capture lists.
+"""
 
 
 class _SigmaVectorRequired(TypedDict):
