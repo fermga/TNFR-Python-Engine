@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any, Iterable, Optional
+from typing import Any, Optional, TYPE_CHECKING, cast
 
 from ..constants import DEFAULTS, get_param
 from ..operators import apply_glyph
-from ..types import Glyph
+from ..types import Glyph, NodeId, TNFRGraph
 from .compatibility import CANON_COMPAT
 from . import rules as _rules
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from ..node import NodoProtocol
 
 __all__ = [
     "GrammarContext",
@@ -28,13 +32,13 @@ class GrammarContext:
     helper functions.
     """
 
-    G: Any
+    G: TNFRGraph
     cfg_soft: dict[str, Any]
     cfg_canon: dict[str, Any]
     norms: dict[str, Any]
 
     @classmethod
-    def from_graph(cls, G: Any) -> "GrammarContext":
+    def from_graph(cls, G: TNFRGraph) -> "GrammarContext":
         """Create a :class:`GrammarContext` for ``G``."""
 
         return cls(
@@ -62,7 +66,10 @@ def _gram_state(nd: dict[str, Any]) -> dict[str, Any]:
 # -------------------------
 
 def enforce_canonical_grammar(
-    G, n, cand: Glyph | str, ctx: Optional[GrammarContext] = None
+    G: TNFRGraph,
+    n: NodeId,
+    cand: Glyph | str,
+    ctx: Optional[GrammarContext] = None,
 ) -> Glyph | str:
     """Validate and adjust a candidate glyph according to canonical grammar."""
 
@@ -101,13 +108,18 @@ def enforce_canonical_grammar(
 # Post-selection: update grammar state
 # -------------------------
 
-def on_applied_glyph(G, n, applied: str) -> None:
+def on_applied_glyph(G: TNFRGraph, n: NodeId, applied: Glyph | str) -> None:
     nd = G.nodes[n]
     st = _gram_state(nd)
-    if applied == Glyph.THOL:
+    try:
+        glyph = applied if isinstance(applied, Glyph) else Glyph(str(applied))
+    except ValueError:
+        glyph = None
+
+    if glyph is Glyph.THOL:
         st["thol_open"] = True
         st["thol_len"] = 0
-    elif applied in (Glyph.SHA, Glyph.NUL):
+    elif glyph in (Glyph.SHA, Glyph.NUL):
         st["thol_open"] = False
         st["thol_len"] = 0
 
@@ -117,8 +129,8 @@ def on_applied_glyph(G, n, applied: str) -> None:
 # -------------------------
 
 def apply_glyph_with_grammar(
-    G,
-    nodes: Optional[Iterable[Any]],
+    G: TNFRGraph,
+    nodes: Optional[Iterable[NodeId | "NodoProtocol"]],
     glyph: Glyph | str,
     window: Optional[int] = None,
 ) -> None:
@@ -130,7 +142,8 @@ def apply_glyph_with_grammar(
     g_str = glyph.value if isinstance(glyph, Glyph) else str(glyph)
     iter_nodes = G.nodes() if nodes is None else nodes
     ctx = GrammarContext.from_graph(G)
-    for n in iter_nodes:
-        g_eff = enforce_canonical_grammar(G, n, g_str, ctx)
-        apply_glyph(G, n, g_eff, window=window)
-        on_applied_glyph(G, n, g_eff)
+    for node_ref in iter_nodes:
+        node_id = cast(NodeId, getattr(node_ref, "n", node_ref))
+        g_eff = enforce_canonical_grammar(G, node_id, g_str, ctx)
+        apply_glyph(G, node_id, g_eff, window=window)
+        on_applied_glyph(G, node_id, g_eff)

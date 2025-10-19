@@ -1,7 +1,9 @@
 """Network operators."""
 
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, Callable
+
+from collections.abc import Callable, Iterator
+from typing import Any, TYPE_CHECKING
 import math
 import heapq
 from itertools import islice
@@ -44,6 +46,9 @@ globals().update(_DEFINITION_EXPORTS)
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodoProtocol
 
+GlyphFactors = dict[str, Any]
+GlyphOperation = Callable[["NodoProtocol", GlyphFactors], None]
+
 ALIAS_EPI = get_aliases("EPI")
 
 __all__ = [
@@ -67,12 +72,12 @@ __all__ = [
 __all__.extend(_DEFINITION_EXPORTS.keys())
 
 
-def get_glyph_factors(node: NodoProtocol) -> dict[str, Any]:
+def get_glyph_factors(node: NodoProtocol) -> GlyphFactors:
     """Return glyph factors for ``node`` with defaults."""
     return node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"].copy())
 
 
-def get_factor(gf: dict[str, Any], key: str, default: float) -> float:
+def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
     """Return ``gf[key]`` as ``float`` with ``default`` fallback."""
     return float(gf.get(key, default))
 
@@ -171,22 +176,22 @@ def _mix_epi_with_neighbors(
     return epi_bar, final
 
 
-def _op_AL(node: NodoProtocol, gf: dict[str, Any]) -> None:  # AL — Emisión
+def _op_AL(node: NodoProtocol, gf: GlyphFactors) -> None:  # AL — Emisión
     f = get_factor(gf, "AL_boost", 0.05)
     node.EPI = node.EPI + f
 
 
-def _op_EN(node: NodoProtocol, gf: dict[str, Any]) -> None:  # EN — Recepción
+def _op_EN(node: NodoProtocol, gf: GlyphFactors) -> None:  # EN — Recepción
     mix = get_factor(gf, "EN_mix", 0.25)
     _mix_epi_with_neighbors(node, mix, Glyph.EN)
 
 
-def _op_IL(node: NodoProtocol, gf: dict[str, Any]) -> None:  # IL — Coherencia
+def _op_IL(node: NodoProtocol, gf: GlyphFactors) -> None:  # IL — Coherencia
     factor = get_factor(gf, "IL_dnfr_factor", 0.7)
     node.dnfr = factor * getattr(node, "dnfr", 0.0)
 
 
-def _op_OZ(node: NodoProtocol, gf: dict[str, Any]) -> None:  # OZ — Disonancia
+def _op_OZ(node: NodoProtocol, gf: GlyphFactors) -> None:  # OZ — Disonancia
     factor = get_factor(gf, "OZ_dnfr_factor", 1.3)
     dnfr = getattr(node, "dnfr", 0.0)
     if bool(node.graph.get("OZ_NOISE_MODE", False)):
@@ -199,7 +204,7 @@ def _op_OZ(node: NodoProtocol, gf: dict[str, Any]) -> None:  # OZ — Disonancia
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
 
 
-def _um_candidate_iter(node: NodoProtocol):
+def _um_candidate_iter(node: NodoProtocol) -> Iterator[NodoProtocol]:
     sample_ids = node.graph.get("_node_sample")
     if sample_ids is not None and hasattr(node, "G"):
         NodoNX = get_nodonx()
@@ -219,11 +224,11 @@ def _um_candidate_iter(node: NodoProtocol):
 
 def _um_select_candidates(
     node: NodoProtocol,
-    candidates,
+    candidates: Iterator[NodoProtocol],
     limit: int,
     mode: str,
     th: float,
-):
+) -> list[NodoProtocol]:
     """Select a subset of ``candidates`` for UM coupling."""
     rng = make_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset(), node.G)
 
@@ -247,7 +252,7 @@ def _um_select_candidates(
     return reservoir
 
 
-def _op_UM(node: NodoProtocol, gf: dict[str, Any]) -> None:  # UM — Coupling
+def _op_UM(node: NodoProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     k = get_factor(gf, "UM_theta_push", 0.25)
     th = node.theta
     thL = neighbor_phase_mean(node)
@@ -284,12 +289,12 @@ def _op_UM(node: NodoProtocol, gf: dict[str, Any]) -> None:  # UM — Coupling
                 node.add_edge(j, compat)
 
 
-def _op_RA(node: NodoProtocol, gf: dict[str, Any]) -> None:  # RA — Resonancia
+def _op_RA(node: NodoProtocol, gf: GlyphFactors) -> None:  # RA — Resonancia
     diff = get_factor(gf, "RA_epi_diff", 0.15)
     _mix_epi_with_neighbors(node, diff, Glyph.RA)
 
 
-def _op_SHA(node: NodoProtocol, gf: dict[str, Any]) -> None:  # SHA — Silencio
+def _op_SHA(node: NodoProtocol, gf: GlyphFactors) -> None:  # SHA — Silencio
     factor = get_factor(gf, "SHA_vf_factor", 0.85)
     node.vf = factor * node.vf
 
@@ -303,8 +308,8 @@ def _op_scale(node: NodoProtocol, factor: float) -> None:
     node.vf *= factor
 
 
-def _make_scale_op(glyph: Glyph):
-    def _op(node: NodoProtocol, gf: dict[str, Any]) -> None:
+def _make_scale_op(glyph: Glyph) -> GlyphOperation:
+    def _op(node: NodoProtocol, gf: GlyphFactors) -> None:
         key = "VAL_scale" if glyph is Glyph.VAL else "NUL_scale"
         default = _SCALE_FACTORS[glyph]
         factor = get_factor(gf, key, default)
@@ -314,21 +319,21 @@ def _make_scale_op(glyph: Glyph):
 
 
 def _op_THOL(
-    node: NodoProtocol, gf: dict[str, Any]
+    node: NodoProtocol, gf: GlyphFactors
 ) -> None:  # THOL — Autoorganización
     a = get_factor(gf, "THOL_accel", 0.10)
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
 def _op_ZHIR(
-    node: NodoProtocol, gf: dict[str, Any]
+    node: NodoProtocol, gf: GlyphFactors
 ) -> None:  # ZHIR — Mutación
     shift = get_factor(gf, "ZHIR_theta_shift", math.pi / 2)
     node.theta = node.theta + shift
 
 
 def _op_NAV(
-    node: NodoProtocol, gf: dict[str, Any]
+    node: NodoProtocol, gf: GlyphFactors
 ) -> None:  # NAV — Transición
     dnfr = node.dnfr
     vf = node.vf
@@ -349,7 +354,7 @@ def _op_NAV(
 
 
 def _op_REMESH(
-    node: NodoProtocol, gf: dict[str, Any] | None = None
+    node: NodoProtocol, gf: GlyphFactors | None = None
 ) -> None:  # REMESH — aviso
     step_idx = glyph_history.current_step_idx(node)
     last_warn = node.graph.get("_remesh_warn_step", None)
@@ -372,7 +377,7 @@ def _op_REMESH(
 # Dispatcher
 # -------------------------
 
-GLYPH_OPERATIONS: dict[Glyph, Callable[["NodoProtocol", dict[str, Any]], None]] = {
+GLYPH_OPERATIONS: dict[Glyph, GlyphOperation] = {
     Glyph.AL: _op_AL,
     Glyph.EN: _op_EN,
     Glyph.IL: _op_IL,
