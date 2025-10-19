@@ -1,14 +1,53 @@
+from __future__ import annotations
+
+from collections import Counter
+from collections.abc import Mapping, MutableMapping
 from typing import Any
 
-__all__: Any
+from .types import TNFRGraph
 
-def __getattr__(name: str) -> Any: ...
+__all__: tuple[str, ...]
 
-HistoryDict: Any
-append_metric: Any
-count_glyphs: Any
-current_step_idx: Any
-ensure_history: Any
-last_glyph: Any
-push_glyph: Any
-recent_glyph: Any
+
+class HistoryDict(dict[str, Any]):
+    _maxlen: int
+    _counts: Counter[str]
+
+    def __init__(
+        self, data: Mapping[str, Any] | None = ..., *, maxlen: int = ...
+    ) -> None: ...
+
+    def get_increment(self, key: str, default: Any = ...) -> Any: ...
+    def __getitem__(self, key: str) -> Any: ...
+    def get(self, key: str, default: Any | None = ...) -> Any: ...
+    def __setitem__(self, key: str, value: Any) -> None: ...
+    def setdefault(self, key: str, default: Any | None = ...) -> Any: ...
+    def pop_least_used(self) -> Any: ...
+    def pop_least_used_batch(self, k: int) -> None: ...
+
+
+def push_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> None: ...
+
+
+def recent_glyph(
+    nd: MutableMapping[str, Any], glyph: str, window: int
+) -> bool: ...
+
+
+def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]: ...
+
+
+def current_step_idx(G: TNFRGraph | Mapping[str, Any]) -> int: ...
+
+
+def append_metric(
+    hist: MutableMapping[str, list[Any]], key: str, value: Any
+) -> None: ...
+
+
+def last_glyph(nd: Mapping[str, Any]) -> str | None: ...
+
+
+def count_glyphs(
+    G: TNFRGraph, window: int | None = ..., *, last_only: bool = ...
+) -> Counter[str]: ...

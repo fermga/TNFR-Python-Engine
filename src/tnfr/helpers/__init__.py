@@ -7,7 +7,10 @@ cache invalidation.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from collections import Counter
+from typing import TYPE_CHECKING, Any, Callable, Mapping, MutableMapping, Protocol, cast
+
+from ..types import TNFRGraph
 
 if TYPE_CHECKING:  # pragma: no cover - import-time only for typing
     from ..utils import (
@@ -32,6 +35,7 @@ from .numeric import (
     clamp01,
     kahan_sum_nd,
 )
+    from ..glyph_history import HistoryDict
 
 __all__ = (
     "CacheManager",
@@ -92,6 +96,33 @@ def __dir__() -> list[str]:  # pragma: no cover - simple reflection
     return sorted(set(__all__))
 
 
+class _PushGlyphCallable(Protocol):
+    def __call__(self, nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
+        ...
+
+
+class _RecentGlyphCallable(Protocol):
+    def __call__(self, nd: MutableMapping[str, Any], glyph: str, window: int) -> bool:
+        ...
+
+
+class _EnsureHistoryCallable(Protocol):
+    def __call__(self, G: TNFRGraph) -> "HistoryDict | dict[str, Any]":
+        ...
+
+
+class _LastGlyphCallable(Protocol):
+    def __call__(self, nd: Mapping[str, Any]) -> str | None:
+        ...
+
+
+class _CountGlyphsCallable(Protocol):
+    def __call__(
+        self, G: TNFRGraph, window: int | None = ..., *, last_only: bool = ...
+    ) -> Counter[str]:
+        ...
+
+
 def _glyph_history_proxy(name: str) -> Callable[..., Any]:
     """Return a wrapper that delegates to :mod:`tnfr.glyph_history` lazily."""
 
@@ -112,8 +143,8 @@ def _glyph_history_proxy(name: str) -> Callable[..., Any]:
     return _call
 
 
-count_glyphs = _glyph_history_proxy("count_glyphs")
-ensure_history = _glyph_history_proxy("ensure_history")
-last_glyph = _glyph_history_proxy("last_glyph")
-push_glyph = _glyph_history_proxy("push_glyph")
-recent_glyph = _glyph_history_proxy("recent_glyph")
+count_glyphs = cast(_CountGlyphsCallable, _glyph_history_proxy("count_glyphs"))
+ensure_history = cast(_EnsureHistoryCallable, _glyph_history_proxy("ensure_history"))
+last_glyph = cast(_LastGlyphCallable, _glyph_history_proxy("last_glyph"))
+push_glyph = cast(_PushGlyphCallable, _glyph_history_proxy("push_glyph"))
+recent_glyph = cast(_RecentGlyphCallable, _glyph_history_proxy("recent_glyph"))

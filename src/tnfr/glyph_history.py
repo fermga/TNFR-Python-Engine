@@ -5,10 +5,11 @@ from __future__ import annotations
 from typing import Any
 from collections import deque, Counter
 from itertools import islice
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, MutableMapping
 
 from .constants import get_param
 from .utils import ensure_collection, get_logger, validate_window
+from .types import TNFRGraph
 
 logger = get_logger(__name__)
 
@@ -25,8 +26,8 @@ __all__ = (
 
 
 def _ensure_history(
-    nd: dict[str, Any], window: int, *, create_zero: bool = False
-) -> tuple[int, deque | None]:
+    nd: MutableMapping[str, Any], window: int, *, create_zero: bool = False
+) -> tuple[int, deque[str] | None]:
     """Validate ``window`` and ensure ``nd['glyph_history']`` deque."""
 
     v_window = validate_window(window)
@@ -45,12 +46,12 @@ def _ensure_history(
                     "Discarding non-iterable glyph history value %r", hist
                 )
                 items = ()
-        hist = deque(items, maxlen=v_window)
+        hist = deque((str(item) for item in items), maxlen=v_window)
         nd["glyph_history"] = hist
     return v_window, hist
 
 
-def push_glyph(nd: dict[str, Any], glyph: str, window: int) -> None:
+def push_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
     """Add ``glyph`` to node history with maximum size ``window``.
 
     ``window`` validation and deque creation are handled by
@@ -61,7 +62,9 @@ def push_glyph(nd: dict[str, Any], glyph: str, window: int) -> None:
     hist.append(str(glyph))
 
 
-def recent_glyph(nd: dict[str, Any], glyph: str, window: int) -> bool:
+def recent_glyph(
+    nd: MutableMapping[str, Any], glyph: str, window: int
+) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions.
 
     ``window`` validation and deque creation are handled by
@@ -76,7 +79,7 @@ def recent_glyph(nd: dict[str, Any], glyph: str, window: int) -> bool:
     return gl in hist
 
 
-class HistoryDict(dict):
+class HistoryDict(dict[str, Any]):
     """Dict specialized for bounded history series and usage counts.
 
     Usage counts are tracked explicitly via :meth:`get_increment`. Accessing
@@ -95,7 +98,7 @@ class HistoryDict(dict):
 
     def __init__(
         self,
-        data: dict[str, Any] | None = None,
+        data: Mapping[str, Any] | None = None,
         *,
         maxlen: int = 0,
     ) -> None:
@@ -116,7 +119,7 @@ class HistoryDict(dict):
         """Increase usage count for ``key``."""
         self._counts[key] += 1
 
-    def _to_deque(self, val: Any) -> deque:
+    def _to_deque(self, val: Any) -> deque[Any]:
         """Coerce ``val`` to a deque respecting ``self._maxlen``.
 
         ``Iterable`` inputs (excluding ``str`` and ``bytes``) are expanded into
@@ -147,21 +150,21 @@ class HistoryDict(dict):
         self._increment(key)
         return val
 
-    def __getitem__(self, key):  # type: ignore[override]
+    def __getitem__(self, key: str) -> Any:  # type: ignore[override]
         return self._resolve_value(key, None, insert=False)
 
-    def get(self, key, default=None):  # type: ignore[override]
+    def get(self, key: str, default: Any | None = None) -> Any:  # type: ignore[override]
         try:
             return self._resolve_value(key, None, insert=False)
         except KeyError:
             return default
 
-    def __setitem__(self, key, value):  # type: ignore[override]
+    def __setitem__(self, key: str, value: Any) -> None:  # type: ignore[override]
         super().__setitem__(key, value)
         if key not in self._counts:
             self._counts[key] = 0
 
-    def setdefault(self, key, default=None):  # type: ignore[override]
+    def setdefault(self, key: str, default: Any | None = None) -> Any:  # type: ignore[override]
         insert = key not in self
         val = self._resolve_value(key, default, insert=insert)
         if insert:
@@ -185,7 +188,7 @@ class HistoryDict(dict):
                 break
 
 
-def ensure_history(G) -> dict[str, Any]:
+def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]:
     """Ensure ``G.graph['history']`` exists and return it.
 
     ``HISTORY_MAXLEN`` must be non-negative; otherwise a
@@ -223,7 +226,7 @@ def ensure_history(G) -> dict[str, Any]:
     return hist
 
 
-def current_step_idx(G) -> int:
+def current_step_idx(G: TNFRGraph | Mapping[str, Any]) -> int:
     """Return the current step index from ``G`` history."""
 
     graph = getattr(G, "graph", G)
@@ -231,20 +234,22 @@ def current_step_idx(G) -> int:
 
     
 
-def append_metric(hist: dict[str, Any], key: str, value: Any) -> None:
+def append_metric(
+    hist: MutableMapping[str, list[Any]], key: str, value: Any
+) -> None:
     """Append ``value`` to ``hist[key]`` list, creating it if missing."""
     hist.setdefault(key, []).append(value)
 
 
-def last_glyph(nd: dict[str, Any]) -> str | None:
+def last_glyph(nd: Mapping[str, Any]) -> str | None:
     """Return the most recent glyph for node or ``None``."""
     hist = nd.get("glyph_history")
     return hist[-1] if hist else None
 
 
 def count_glyphs(
-    G, window: int | None = None, *, last_only: bool = False
-) -> Counter:
+    G: TNFRGraph, window: int | None = None, *, last_only: bool = False
+) -> Counter[str]:
     """Count recent glyphs in the network.
 
     If ``window`` is ``None``, the full history for each node is used. A
