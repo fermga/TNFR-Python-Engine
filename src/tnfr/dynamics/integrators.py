@@ -13,7 +13,8 @@ from ..constants import (
     get_aliases,
 )
 from ..gamma import _get_gamma_spec, eval_gamma
-from ..alias import get_attr, get_attr_str, set_attr, set_attr_str
+from ..alias import collect_attr, get_attr, get_attr_str, set_attr, set_attr_str
+from ..utils import get_numpy
 
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
@@ -189,27 +190,59 @@ def _collect_nodal_increments(
     with the supplied Γ evaluations.
     """
 
+    nodes = list(G.nodes())
+    if not nodes:
+        return {}
+
+    if method == "rk4":
+        expected_maps = 4
+    elif method == "euler":
+        expected_maps = 1
+    else:
+        raise ValueError("method must be 'euler' or 'rk4'")
+
+    if len(gamma_maps) != expected_maps:
+        raise ValueError(f"{method} integration requires {expected_maps} gamma maps")
+
+    np = get_numpy()
+    if np is not None:
+        vf = collect_attr(G, nodes, ALIAS_VF, 0.0, np=np)
+        dnfr = collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np)
+        base = vf * dnfr
+
+        gamma_arrays = [
+            np.fromiter((gm.get(n, 0.0) for n in nodes), float, count=len(nodes))
+            for gm in gamma_maps
+        ]
+        if gamma_arrays:
+            gamma_stack = np.stack(gamma_arrays, axis=1)
+            combined = base[:, None] + gamma_stack
+        else:
+            combined = base[:, None]
+
+        return {
+            node: tuple(float(value) for value in combined[idx])
+            for idx, node in enumerate(nodes)
+        }
+
     increments: dict[Any, tuple[float, ...]] = {}
-    for n, nd in G.nodes(data=True):
+    for node in nodes:
+        nd = G.nodes[node]
         vf, dnfr, *_ = _node_state(nd)
         base = vf * dnfr
-        gammas = [gm.get(n, 0.0) for gm in gamma_maps]
+        gammas = [gm.get(node, 0.0) for gm in gamma_maps]
 
         if method == "rk4":
-            if len(gammas) != 4:
-                raise ValueError("rk4 integration requires four gamma maps")
             k1, k2, k3, k4 = gammas
-            increments[n] = (
+            increments[node] = (
                 base + k1,
                 base + k2,
                 base + k3,
                 base + k4,
             )
         else:
-            if len(gammas) != 1:
-                raise ValueError("euler integration requires one gamma map")
             (k1,) = gammas
-            increments[n] = (base + k1,)
+            increments[node] = (base + k1,)
 
     return increments
 
