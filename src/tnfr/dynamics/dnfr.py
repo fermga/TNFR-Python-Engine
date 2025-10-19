@@ -1194,7 +1194,11 @@ def _compute_dnfr_common(
     )
 
 
-def _reset_numpy_buffer(buffer, size, np):
+def _reset_numpy_buffer(
+    buffer: np.ndarray | None,
+    size: int,
+    np: ModuleType,
+) -> np.ndarray:
     if buffer is None or getattr(buffer, "shape", None) is None or buffer.shape[0] != size:
         return np.zeros(size, dtype=float)
     buffer.fill(0.0)
@@ -1692,7 +1696,11 @@ def _compute_dnfr_common(
     )
 
 
-def _reset_numpy_buffer(buffer, size, np):
+def _reset_numpy_buffer(
+    buffer: np.ndarray | None,
+    size: int,
+    np: ModuleType,
+) -> np.ndarray:
     if buffer is None or getattr(buffer, "shape", None) is None or buffer.shape[0] != size:
         return np.zeros(size, dtype=float)
     buffer.fill(0.0)
@@ -2225,11 +2233,20 @@ class _PhaseGradient:
 
     __slots__ = ("cos", "sin")
 
-    def __init__(self, cos_map: dict[Any, float], sin_map: dict[Any, float]):
-        self.cos = cos_map
-        self.sin = sin_map
+    def __init__(
+        self,
+        cos_map: Mapping[NodeId, float],
+        sin_map: Mapping[NodeId, float],
+    ) -> None:
+        self.cos: Mapping[NodeId, float] = cos_map
+        self.sin: Mapping[NodeId, float] = sin_map
 
-    def __call__(self, G, n, nd):
+    def __call__(
+        self,
+        G: TNFRGraph,
+        n: NodeId,
+        nd: Mapping[str, Any],
+    ) -> float:
         th_i = get_attr(nd, ALIAS_THETA, 0.0)
         neighbors = list(G.neighbors(n))
         if neighbors:
@@ -2249,11 +2266,20 @@ class _NeighborAverageGradient:
 
     __slots__ = ("alias", "values")
 
-    def __init__(self, alias: tuple[str, ...], values: dict[Any, float]):
-        self.alias = alias
-        self.values = values
+    def __init__(
+        self,
+        alias: tuple[str, ...],
+        values: MutableMapping[NodeId, float],
+    ) -> None:
+        self.alias: tuple[str, ...] = alias
+        self.values: MutableMapping[NodeId, float] = values
 
-    def __call__(self, G, n, nd):
+    def __call__(
+        self,
+        G: TNFRGraph,
+        n: NodeId,
+        nd: Mapping[str, Any],
+    ) -> float:
         val = self.values.get(n)
         if val is None:
             val = float(get_attr(nd, self.alias, 0.0))

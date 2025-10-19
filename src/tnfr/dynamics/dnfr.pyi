@@ -1,11 +1,33 @@
 from typing import Any
 
-__all__: Any
+from tnfr.types import DeltaNFRHook, TNFRGraph
+
+__all__: tuple[str, ...]
+
+def default_compute_delta_nfr(
+    G: TNFRGraph,
+    *,
+    cache_size: int | None = ...,
+    n_jobs: int | None = ...,
+) -> None: ...
+
+
+def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = ...) -> None: ...
+
+
+def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = ...) -> None: ...
+
+
+def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = ...) -> None: ...
+
+
+def set_delta_nfr_hook(
+    G: TNFRGraph,
+    func: DeltaNFRHook,
+    *,
+    name: str | None = ...,
+    note: str | None = ...,
+) -> None: ...
+
 
 def __getattr__(name: str) -> Any: ...
-
-default_compute_delta_nfr: Any
-dnfr_epi_vf_mixed: Any
-dnfr_laplacian: Any
-dnfr_phase_only: Any
-set_delta_nfr_hook: Any
