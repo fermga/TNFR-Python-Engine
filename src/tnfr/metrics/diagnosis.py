@@ -42,6 +42,174 @@ def _coerce_jobs(raw_jobs: Any | None) -> int | None:
     return jobs
 
 
+def _coherence_matrix_to_numpy(
+    weight_matrix: Any,
+    size: int,
+    np_mod,
+):
+    """Convert stored coherence weights into a dense NumPy array."""
+
+    if weight_matrix is None or np_mod is None or size <= 0:
+        return None
+
+    ndarray_type = getattr(np_mod, "ndarray", tuple())
+    if ndarray_type and isinstance(weight_matrix, ndarray_type):
+        matrix = weight_matrix.astype(float, copy=True)
+    elif isinstance(weight_matrix, (list, tuple)):
+        weight_seq = list(weight_matrix)
+        if not weight_seq:
+            matrix = np_mod.zeros((size, size), dtype=float)
+        else:
+            first = weight_seq[0]
+            if isinstance(first, (list, tuple)) and len(first) == size:
+                matrix = np_mod.array(weight_seq, dtype=float)
+            elif (
+                isinstance(first, (list, tuple))
+                and len(first) == 3
+                and not isinstance(first[0], (list, tuple))
+            ):
+                matrix = np_mod.zeros((size, size), dtype=float)
+                for i, j, weight in weight_seq:
+                    matrix[int(i), int(j)] = float(weight)
+            else:
+                return None
+    else:
+        return None
+
+    if matrix.shape != (size, size):
+        return None
+    np_mod.fill_diagonal(matrix, 0.0)
+    return matrix
+
+
+def _weighted_phase_sync_vectorized(
+    matrix,
+    cos_vals,
+    sin_vals,
+    np_mod,
+):
+    """Vectorised computation of weighted local phase synchrony."""
+
+    denom = np_mod.sum(matrix, axis=1)
+    if np_mod.all(denom == 0.0):
+        return np_mod.zeros_like(denom, dtype=float)
+    real = matrix @ cos_vals
+    imag = matrix @ sin_vals
+    magnitude = np_mod.hypot(real, imag)
+    safe_denom = np_mod.where(denom == 0.0, 1.0, denom)
+    return magnitude / safe_denom
+
+
+def _unweighted_phase_sync_vectorized(
+    nodes: list[Any],
+    neighbors_map: dict[Any, tuple[Any, ...]],
+    cos_arr,
+    sin_arr,
+    index_map: dict[Any, int],
+    np_mod,
+):
+    """Compute unweighted phase synchrony using NumPy helpers."""
+
+    results: list[float] = []
+    for node in nodes:
+        neighbors = neighbors_map.get(node, ())
+        if not neighbors:
+            results.append(0.0)
+            continue
+        indices = [index_map[nb] for nb in neighbors if nb in index_map]
+        if not indices:
+            results.append(0.0)
+            continue
+        cos_vals = np_mod.take(cos_arr, indices)
+        sin_vals = np_mod.take(sin_arr, indices)
+        real = np_mod.sum(cos_vals)
+        imag = np_mod.sum(sin_vals)
+        denom = float(len(indices))
+        if denom == 0.0:
+            results.append(0.0)
+        else:
+            results.append(float(np_mod.hypot(real, imag) / denom))
+    return results
+
+
+def _neighbor_means_vectorized(
+    nodes: list[Any],
+    neighbors_map: dict[Any, tuple[Any, ...]],
+    epi_arr,
+    index_map: dict[Any, int],
+    np_mod,
+):
+    """Vectorized helper to compute neighbour EPI means."""
+
+    results: list[float | None] = []
+    for node in nodes:
+        neighbors = neighbors_map.get(node, ())
+        if not neighbors:
+            results.append(None)
+            continue
+        indices = [index_map[nb] for nb in neighbors if nb in index_map]
+        if not indices:
+            results.append(None)
+            continue
+        values = np_mod.take(epi_arr, indices)
+        results.append(float(np_mod.mean(values)))
+    return results
+
+
+def _rlocal_worker(args):
+    """Worker used to compute ``R_local`` in Python fallbacks."""
+
+    (
+        chunk,
+        coherence_nodes,
+        weight_matrix,
+        weight_index,
+        neighbors_map,
+        cos_map,
+        sin_map,
+    ) = args
+    results: list[float] = []
+    for node in chunk:
+        if coherence_nodes and weight_matrix is not None:
+            idx = weight_index.get(node)
+            if idx is None:
+                rloc = 0.0
+            else:
+                rloc = _weighted_phase_sync_from_matrix(
+                    idx,
+                    node,
+                    coherence_nodes,
+                    weight_matrix,
+                    cos_map,
+                    sin_map,
+                )
+        else:
+            rloc = _local_phase_sync_unweighted(
+                neighbors_map.get(node, ()),
+                cos_map,
+                sin_map,
+            )
+        results.append(float(rloc))
+    return results
+
+
+def _neighbor_mean_worker(args):
+    """Worker used to compute neighbour EPI means in Python mode."""
+
+    chunk, neighbors_map, epi_map = args
+    results: list[float | None] = []
+    for node in chunk:
+        neighbors = neighbors_map.get(node, ())
+        if not neighbors:
+            results.append(None)
+            continue
+        try:
+            results.append(fmean(epi_map[nb] for nb in neighbors))
+        except StatisticsError:
+            results.append(None)
+    return results
+
+
 def _weighted_phase_sync_from_matrix(
     node_index: int,
     node: Any,
@@ -243,7 +411,23 @@ def _diagnosis_step(
         np_mod is not None
         and all(
             hasattr(np_mod, attr)
-            for attr in ("fromiter", "clip", "abs", "maximum", "minimum")
+            for attr in (
+                "fromiter",
+                "clip",
+                "abs",
+                "maximum",
+                "minimum",
+                "array",
+                "zeros",
+                "zeros_like",
+                "sum",
+                "hypot",
+                "where",
+                "take",
+                "mean",
+                "fill_diagonal",
+                "all",
+            )
         )
     )
 
@@ -323,32 +507,101 @@ def _diagnosis_step(
             coherence_nodes = []
             weight_matrix = None
     else:
-        coherence_nodes = nodes
+        coherence_nodes = list(nodes)
         weight_matrix = Wm_last
 
-    if coherence_nodes:
-        weight_index = {node: idx for idx, node in enumerate(coherence_nodes)}
-    else:
-        weight_index = {}
+    coherence_nodes = list(coherence_nodes)
+    weight_index = {node: idx for idx, node in enumerate(coherence_nodes)}
 
-    rloc_values: list[float] = []
-    for node in nodes:
-        if coherence_nodes and weight_matrix is not None:
-            idx = weight_index.get(node)
-            if idx is None:
-                rloc = 0.0
-            else:
-                rloc = _weighted_phase_sync_from_matrix(
-                    idx,
-                    node,
+    node_index_map: dict[Any, int] | None = None
+
+    if supports_vector:
+        size = len(coherence_nodes)
+        matrix_np = (
+            _coherence_matrix_to_numpy(weight_matrix, size, np_mod)
+            if size
+            else None
+        )
+        if matrix_np is not None and size:
+            cos_weight = np_mod.fromiter(
+                (float(cos_map.get(node, 0.0)) for node in coherence_nodes),
+                dtype=float,
+                count=size,
+            )
+            sin_weight = np_mod.fromiter(
+                (float(sin_map.get(node, 0.0)) for node in coherence_nodes),
+                dtype=float,
+                count=size,
+            )
+            weighted_sync = _weighted_phase_sync_vectorized(
+                matrix_np,
+                cos_weight,
+                sin_weight,
+                np_mod,
+            )
+            rloc_map = {
+                coherence_nodes[idx]: float(weighted_sync[idx])
+                for idx in range(size)
+            }
+        else:
+            rloc_map = {}
+
+        node_index_map = {node: idx for idx, node in enumerate(nodes)}
+        if not rloc_map:
+            cos_arr = np_mod.fromiter(
+                (float(cos_map.get(node, 0.0)) for node in nodes),
+                dtype=float,
+                count=len(nodes),
+            )
+            sin_arr = np_mod.fromiter(
+                (float(sin_map.get(node, 0.0)) for node in nodes),
+                dtype=float,
+                count=len(nodes),
+            )
+            rloc_values = _unweighted_phase_sync_vectorized(
+                nodes,
+                neighbors_map,
+                cos_arr,
+                sin_arr,
+                node_index_map,
+                np_mod,
+            )
+        else:
+            rloc_values = [rloc_map.get(node, 0.0) for node in nodes]
+    else:
+        if n_jobs and n_jobs > 1 and len(nodes) > 1:
+            chunk_size = max(1, math.ceil(len(nodes) / n_jobs))
+            rloc_values: list[float] = []
+            with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+                futures = [
+                    executor.submit(
+                        _rlocal_worker,
+                        (
+                            nodes[idx : idx + chunk_size],
+                            coherence_nodes,
+                            weight_matrix,
+                            weight_index,
+                            neighbors_map,
+                            cos_map,
+                            sin_map,
+                        ),
+                    )
+                    for idx in range(0, len(nodes), chunk_size)
+                ]
+                for fut in futures:
+                    rloc_values.extend(fut.result())
+        else:
+            rloc_values = _rlocal_worker(
+                (
+                    nodes,
                     coherence_nodes,
                     weight_matrix,
+                    weight_index,
+                    neighbors_map,
                     cos_map,
                     sin_map,
                 )
-        else:
-            rloc = _local_phase_sync_unweighted(neighbors_map[node], cos_map, sin_map)
-        rloc_values.append(float(rloc))
+            )
 
     if isinstance(Wi_last, (list, tuple)) and Wi_last:
         wi_values = [Wi_last[i] if i < len(Wi_last) else None for i in range(len(nodes))]
@@ -357,24 +610,29 @@ def _diagnosis_step(
 
     compute_symmetry = bool(dcfg.get("compute_symmetry", True))
     if compute_symmetry:
-        neighbor_means: list[float | None] = []
-        for node in nodes:
-            neighbors = neighbors_map[node]
-            if not neighbors:
-                neighbor_means.append(None)
-                continue
-            if supports_vector:
-                arr = np_mod.fromiter(
-                    (epi_map[nb] for nb in neighbors),
-                    dtype=float,
-                    count=len(neighbors),
-                )
-                neighbor_means.append(float(arr.mean()) if len(neighbors) else None)
-            else:
-                try:
-                    neighbor_means.append(fmean(epi_map[nb] for nb in neighbors))
-                except StatisticsError:
-                    neighbor_means.append(None)
+        if supports_vector and node_index_map is not None and len(nodes):
+            neighbor_means = _neighbor_means_vectorized(
+                nodes,
+                neighbors_map,
+                epi_arr,
+                node_index_map,
+                np_mod,
+            )
+        elif n_jobs and n_jobs > 1 and len(nodes) > 1:
+            chunk_size = max(1, math.ceil(len(nodes) / n_jobs))
+            neighbor_means = []
+            with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+                futures = [
+                    executor.submit(
+                        _neighbor_mean_worker,
+                        (nodes[idx : idx + chunk_size], neighbors_map, epi_map),
+                    )
+                    for idx in range(0, len(nodes), chunk_size)
+                ]
+                for fut in futures:
+                    neighbor_means.extend(fut.result())
+        else:
+            neighbor_means = _neighbor_mean_worker((nodes, neighbors_map, epi_map))
     else:
         neighbor_means = [None] * len(nodes)
 

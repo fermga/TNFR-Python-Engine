@@ -1,6 +1,7 @@
 """Regression tests for deterministic diagnosis computations."""
 
 import math
+from contextlib import contextmanager
 
 import pytest
 
@@ -38,6 +39,15 @@ def _capture_diagnostics(G, *, jobs: int | None) -> dict:
     return hist[key][-1]
 
 
+@contextmanager
+def numpy_disabled(monkeypatch):
+    from tnfr.metrics import diagnosis as diagnosis_module
+
+    with monkeypatch.context() as ctx:
+        ctx.setattr(diagnosis_module, "get_numpy", lambda: None)
+        yield
+
+
 @pytest.mark.parametrize("workers", [None, 3])
 def test_parallel_diagnosis_matches_serial(graph_canon, workers):
     serial_graph = _build_ring_graph(graph_canon)
@@ -45,5 +55,30 @@ def test_parallel_diagnosis_matches_serial(graph_canon, workers):
 
     baseline = _capture_diagnostics(serial_graph, jobs=1)
     parallel = _capture_diagnostics(parallel_graph, jobs=workers)
+
+    assert parallel == baseline
+
+
+def test_diagnosis_vectorized_matches_python(graph_canon, monkeypatch):
+    pytest.importorskip("numpy")
+
+    python_graph = _build_ring_graph(graph_canon)
+    vector_graph = _build_ring_graph(graph_canon)
+
+    with numpy_disabled(monkeypatch):
+        baseline = _capture_diagnostics(python_graph, jobs=1)
+
+    vectorized = _capture_diagnostics(vector_graph, jobs=4)
+
+    assert vectorized == baseline
+
+
+def test_diagnosis_python_parallel_without_numpy(graph_canon, monkeypatch):
+    serial_graph = _build_ring_graph(graph_canon)
+    parallel_graph = _build_ring_graph(graph_canon)
+
+    with numpy_disabled(monkeypatch):
+        baseline = _capture_diagnostics(serial_graph, jobs=1)
+        parallel = _capture_diagnostics(parallel_graph, jobs=3)
 
     assert parallel == baseline
