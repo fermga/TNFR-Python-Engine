@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any
 
 from heapq import nlargest
 from statistics import mean, fmean, StatisticsError
 
 from ..glyph_history import ensure_history
+from ..types import NodeId, TNFRGraph
 from ..sense import sigma_rose
 from .glyph_timing import for_each_glyph
 
@@ -26,7 +28,7 @@ __all__ = [
 # ---------------------------------------------------------------------------
 
 
-def Tg_global(G, normalize: bool = True) -> dict[str, float]:
+def Tg_global(G: TNFRGraph, normalize: bool = True) -> dict[str, float]:
     """Total glyph dwell time per class."""
 
     hist = ensure_history(G)
@@ -42,7 +44,9 @@ def Tg_global(G, normalize: bool = True) -> dict[str, float]:
     return out
 
 
-def Tg_by_node(G, n, normalize: bool = False) -> dict[str, float | list[float]]:
+def Tg_by_node(
+    G: TNFRGraph, n: NodeId, normalize: bool = False
+) -> dict[str, float] | dict[str, list[float]]:
     """Per-node glyph dwell summary."""
 
     hist = ensure_history(G)
@@ -65,7 +69,7 @@ def Tg_by_node(G, n, normalize: bool = False) -> dict[str, float | list[float]]:
     return out
 
 
-def latency_series(G) -> dict[str, list[float]]:
+def latency_series(G: TNFRGraph) -> dict[str, list[float]]:
     hist = ensure_history(G)
     xs = hist.get("latency_index", [])
     return {
@@ -74,7 +78,7 @@ def latency_series(G) -> dict[str, list[float]]:
     }
 
 
-def glyphogram_series(G) -> dict[str, list[float]]:
+def glyphogram_series(G: TNFRGraph) -> dict[str, list[float]]:
     hist = ensure_history(G)
     xs = hist.get("glyphogram", [])
     if not xs:
@@ -88,7 +92,7 @@ def glyphogram_series(G) -> dict[str, list[float]]:
     return out
 
 
-def glyph_top(G, k: int = 3) -> list[tuple[str, float]]:
+def glyph_top(G: TNFRGraph, k: int = 3) -> list[tuple[str, float]]:
     """Top-k structural operators by ``Tg_global`` fraction."""
 
     k = int(k)
@@ -99,8 +103,8 @@ def glyph_top(G, k: int = 3) -> list[tuple[str, float]]:
 
 
 def build_metrics_summary(
-    G, *, series_limit: int | None = None
-) -> tuple[dict[str, Any], bool]:
+    G: TNFRGraph, *, series_limit: int | None = None
+) -> tuple[dict[str, float | dict[str, float] | dict[str, list[float]] | dict[str, int]], bool]:
     """Collect a compact metrics summary for CLI reporting.
 
     Parameters
@@ -131,7 +135,7 @@ def build_metrics_summary(
         if limit <= 0:
             limit = None
 
-    def _trim(values: list[Any]) -> list[Any]:
+    def _trim(values: Sequence[Any]) -> list[Any]:
         seq = list(values)
         if limit is None:
             return seq
