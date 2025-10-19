@@ -2,9 +2,16 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Hashable, Mapping
+from collections.abc import Callable, Hashable, Mapping, Sequence
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Iterable, Protocol, TypeAlias
+
+try:  # pragma: no cover - optional dependency for typing only
+    import numpy as np
+except Exception:  # pragma: no cover - graceful fallback when NumPy is missing
+    from types import SimpleNamespace
+
+    np = SimpleNamespace(ndarray=Any)  # type: ignore[assignment]
 
 __all__ = (
     "TNFRGraph",
@@ -34,6 +41,9 @@ __all__ = (
     "DiagnosisResult",
     "DiagnosisPayloadChunk",
     "DiagnosisResultList",
+    "DnfrCacheVectors",
+    "DnfrVectorMap",
+    "NeighborStats",
 )
 
 
@@ -175,3 +185,26 @@ DiagnosisPayloadChunk: TypeAlias = list[DiagnosisNodeData]
 
 DiagnosisResultList: TypeAlias = list[DiagnosisResult]
 #: Collection of diagnosis results matching worker output shape.
+
+DnfrCacheVectors: TypeAlias = tuple[
+    np.ndarray | None,
+    np.ndarray | None,
+    np.ndarray | None,
+    np.ndarray | None,
+    np.ndarray | None,
+]
+"""Tuple grouping cached NumPy vectors for θ, EPI, νf and trigonometric projections."""
+
+DnfrVectorMap: TypeAlias = dict[str, np.ndarray | None]
+"""Mapping of TNFR state aliases to their NumPy buffers synchronized from lists."""
+
+NeighborStats: TypeAlias = tuple[
+    Sequence[float],
+    Sequence[float],
+    Sequence[float],
+    Sequence[float],
+    Sequence[float] | None,
+    Sequence[float] | None,
+    Sequence[float] | None,
+]
+"""Bundle of neighbour accumulators for cosine, sine, EPI, νf and topology totals."""
