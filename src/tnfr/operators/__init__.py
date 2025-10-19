@@ -15,7 +15,7 @@ from ..metrics.trig import neighbor_phase_mean
 from ..utils import get_nodonx
 from ..rng import make_rng
 from tnfr import glyph_history
-from ..types import Glyph
+from ..types import EPIValue, Glyph, NodeId, TNFRGraph
 
 from .jitter import (
     JitterCache,
@@ -82,7 +82,7 @@ def get_factor(gf: dict[str, Any], key: str, default: float) -> float:
 # -------------------------
 
 
-def get_neighbor_epi(node: NodoProtocol) -> tuple[list[NodoProtocol], float]:
+def get_neighbor_epi(node: NodoProtocol) -> tuple[list[NodoProtocol], EPIValue]:
     """Return neighbour list and their mean ``EPI`` without mutating ``node``."""
 
     epi = node.EPI
@@ -425,7 +425,7 @@ def apply_glyph_obj(
 
 
 def apply_glyph(
-    G, n, glyph: Glyph | str, *, window: int | None = None
+    G: TNFRGraph, n: NodeId, glyph: Glyph | str, *, window: int | None = None
 ) -> None:
     """Adapter to operate on ``networkx`` graphs."""
     NodoNX = get_nodonx()

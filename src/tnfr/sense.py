@@ -1,8 +1,8 @@
 """Sense calculations."""
 
 from __future__ import annotations
-from typing import TypeVar
-from collections.abc import Iterable, Mapping
+from typing import Any, Callable, TypeVar
+from collections.abc import Iterable, Iterator, Mapping
 import math
 from collections import Counter
 from itertools import tee
@@ -24,6 +24,7 @@ from .config.constants import (
     ANGLE_MAP,
     GLYPHS_CANONICAL,
 )
+from .types import NodeId, TNFRGraph
 # -------------------------
 # Canon: orden circular de glyphs y ángulos
 # -------------------------
@@ -76,17 +77,19 @@ def glyph_unit(g: str) -> complex:
 ALIAS_SI = get_aliases("SI")
 ALIAS_EPI = get_aliases("EPI")
 
-MODE_FUNCS = {
+MODE_FUNCS: dict[str, Callable[[Mapping[str, Any]], float]] = {
     "Si": lambda nd: clamp01(get_attr(nd, ALIAS_SI, 0.5)),
     "EPI": lambda nd: max(0.0, get_attr(nd, ALIAS_EPI, 0.0)),
 }
 
 
-def _weight(nd, mode: str) -> float:
+def _weight(nd: Mapping[str, Any], mode: str) -> float:
     return MODE_FUNCS.get(mode, lambda _: 1.0)(nd)
 
 
-def _node_weight(nd, weight_mode: str) -> tuple[str, float, complex] | None:
+def _node_weight(
+    nd: Mapping[str, Any], weight_mode: str
+) -> tuple[str, float, complex] | None:
     """Return ``(glyph, weight, weighted_unit)`` or ``None`` if no glyph."""
     g = last_glyph(nd)
     if not g:
@@ -96,7 +99,7 @@ def _node_weight(nd, weight_mode: str) -> tuple[str, float, complex] | None:
     return g, w, z
 
 
-def _sigma_cfg(G):
+def _sigma_cfg(G: TNFRGraph) -> dict[str, Any]:
     return get_graph_param(G, "SIGMA", dict)
 
 
@@ -167,7 +170,7 @@ def _sigma_from_iterable(
         }
     cnt = 0
 
-    def pair_iter():
+    def pair_iter() -> Iterator[tuple[float, float]]:
         nonlocal cnt
         for val in iterator:
             z = _to_complex(val)
@@ -204,7 +207,9 @@ def _ema_update(
 
 
 def _sigma_from_nodes(
-    nodes: Iterable[dict], weight_mode: str, fallback_angle: float = 0.0
+    nodes: Iterable[Mapping[str, Any]],
+    weight_mode: str,
+    fallback_angle: float = 0.0,
 ) -> tuple[dict[str, float], list[tuple[str, float, complex]]]:
     """Aggregate weighted glyph vectors for ``nodes``.
 
@@ -218,7 +223,7 @@ def _sigma_from_nodes(
 
 
 def sigma_vector_node(
-    G, n, weight_mode: str | None = None
+    G: TNFRGraph, n: NodeId, weight_mode: str | None = None
 ) -> dict[str, float] | None:
     cfg = _sigma_cfg(G)
     nd = G.nodes[n]
@@ -233,7 +238,7 @@ def sigma_vector_node(
     return sv
 
 
-def sigma_vector(dist: dict[str, float]) -> dict[str, float]:
+def sigma_vector(dist: Mapping[str, float]) -> dict[str, float]:
     """Compute Σ⃗ from a glyph distribution.
 
     ``dist`` may contain raw counts or proportions. All ``(glyph, weight)``
@@ -246,7 +251,7 @@ def sigma_vector(dist: dict[str, float]) -> dict[str, float]:
 
 
 def sigma_vector_from_graph(
-    G: nx.Graph, weight_mode: str | None = None
+    G: TNFRGraph, weight_mode: str | None = None
 ) -> dict[str, float]:
     """Global vector in the σ sense plane for a graph.
 
@@ -279,7 +284,7 @@ def sigma_vector_from_graph(
 # -------------------------
 
 
-def push_sigma_snapshot(G, t: float | None = None) -> None:
+def push_sigma_snapshot(G: TNFRGraph, t: float | None = None) -> None:
     cfg = _sigma_cfg(G)
     if not cfg.get("enabled", True):
         return
@@ -321,7 +326,7 @@ def push_sigma_snapshot(G, t: float | None = None) -> None:
 # -------------------------
 
 
-def register_sigma_callback(G) -> None:
+def register_sigma_callback(G: TNFRGraph) -> None:
     callback_manager.register_callback(
         G,
         event=CallbackEvent.AFTER_STEP.value,
@@ -330,7 +335,7 @@ def register_sigma_callback(G) -> None:
     )
 
 
-def sigma_rose(G, steps: int | None = None) -> dict[str, int]:
+def sigma_rose(G: TNFRGraph, steps: int | None = None) -> dict[str, int]:
     """Histogram of glyphs in the last ``steps`` steps (or all)."""
     hist = ensure_history(G)
     counts = hist.get("sigma_counts", [])

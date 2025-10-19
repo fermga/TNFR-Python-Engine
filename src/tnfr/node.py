@@ -25,7 +25,17 @@ from .alias import (
     set_dnfr,
     set_theta,
 )
-from .types import CoherenceMetric, NodeId, TNFRGraph
+from .types import (
+    CouplingWeight,
+    DeltaNFR,
+    EPIValue,
+    NodeId,
+    Phase,
+    SecondDerivativeEPI,
+    SenseIndex,
+    StructuralFrequency,
+    TNFRGraph,
+)
 from .utils import (
     cached_node_list,
     ensure_node_offset_map,
@@ -106,8 +116,8 @@ ATTR_SPECS: dict[str, AttrSpec] = {
 def _add_edge_common(
     n1: NodeId,
     n2: NodeId,
-    weight: SupportsFloat | str,
-) -> Optional[CoherenceMetric]:
+    weight: CouplingWeight | SupportsFloat | str,
+) -> Optional[CouplingWeight]:
     """Validate basic edge constraints.
 
     Returns the parsed weight if the edge can be added. ``None`` is returned
@@ -130,7 +140,7 @@ def add_edge(
     graph: TNFRGraph,
     n1: NodeId,
     n2: NodeId,
-    weight: SupportsFloat | str,
+    weight: CouplingWeight | SupportsFloat | str,
     overwrite: bool = False,
 ) -> None:
     """Add an edge between ``n1`` and ``n2`` in a ``networkx`` graph."""
@@ -152,14 +162,14 @@ def add_edge(
 class NodoProtocol(Protocol):
     """Minimal protocol for TNFR nodes."""
 
-    EPI: float
-    vf: float
-    theta: float
-    Si: float
+    EPI: EPIValue
+    vf: StructuralFrequency
+    theta: Phase
+    Si: SenseIndex
     epi_kind: str
-    dnfr: float
-    d2EPI: float
-    graph: dict[str, object]
+    dnfr: DeltaNFR
+    d2EPI: SecondDerivativeEPI
+    graph: MutableMapping[str, Any]
 
     def neighbors(self) -> Iterable[NodoProtocol | Hashable]: ...
 
@@ -168,7 +178,7 @@ class NodoProtocol(Protocol):
     def has_edge(self, other: "NodoProtocol") -> bool: ...
 
     def add_edge(
-        self, other: "NodoProtocol", weight: float, *, overwrite: bool = False
+        self, other: "NodoProtocol", weight: CouplingWeight, *, overwrite: bool = False
     ) -> None: ...
 
     def offset(self) -> int: ...
@@ -182,25 +192,25 @@ class NodoNX(NodoProtocol):
     # Statically defined property descriptors for ``NodoNX`` attributes.
     # Declaring them here makes the attributes discoverable by type checkers
     # and IDEs, avoiding the previous runtime ``setattr`` loop.
-    EPI: float = ATTR_SPECS["EPI"].build_property()
-    vf: float = ATTR_SPECS["vf"].build_property()
-    theta: float = ATTR_SPECS["theta"].build_property()
-    Si: float = ATTR_SPECS["Si"].build_property()
+    EPI: EPIValue = ATTR_SPECS["EPI"].build_property()
+    vf: StructuralFrequency = ATTR_SPECS["vf"].build_property()
+    theta: Phase = ATTR_SPECS["theta"].build_property()
+    Si: SenseIndex = ATTR_SPECS["Si"].build_property()
     epi_kind: str = ATTR_SPECS["epi_kind"].build_property()
-    dnfr: float = ATTR_SPECS["dnfr"].build_property()
-    d2EPI: float = ATTR_SPECS["d2EPI"].build_property()
+    dnfr: DeltaNFR = ATTR_SPECS["dnfr"].build_property()
+    d2EPI: SecondDerivativeEPI = ATTR_SPECS["d2EPI"].build_property()
 
-    def __init__(self, G, n):
-        self.G = G
-        self.n = n
-        self.graph = G.graph
+    def __init__(self, G: TNFRGraph, n: NodeId) -> None:
+        self.G: TNFRGraph = G
+        self.n: NodeId = n
+        self.graph: MutableMapping[str, Any] = G.graph
         G.graph.setdefault("_node_cache", {})[n] = self
 
-    def _glyph_storage(self):
+    def _glyph_storage(self) -> MutableMapping[str, Any]:
         return self.G.nodes[self.n]
 
     @classmethod
-    def from_graph(cls, G, n):
+    def from_graph(cls, G: TNFRGraph, n: NodeId) -> "NodoNX":
         """Return cached ``NodoNX`` for ``(G, n)`` with thread safety."""
         lock = get_lock(f"nodonx_cache_{id(G)}")
         with lock:
@@ -210,7 +220,7 @@ class NodoNX(NodoProtocol):
                 node = cls(G, n)
             return node
 
-    def neighbors(self) -> Iterable[Hashable]:
+    def neighbors(self) -> Iterable[NodeId]:
         """Iterate neighbour identifiers (IDs).
 
         Wrap each resulting ID with :meth:`from_graph` to obtain the cached
@@ -224,7 +234,7 @@ class NodoNX(NodoProtocol):
         raise NotImplementedError
 
     def add_edge(
-        self, other: NodoProtocol, weight: float, *, overwrite: bool = False
+        self, other: NodoProtocol, weight: CouplingWeight, *, overwrite: bool = False
     ) -> None:
         if isinstance(other, NodoNX):
             add_edge(
