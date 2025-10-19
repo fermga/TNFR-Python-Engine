@@ -6,9 +6,10 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Any, Iterable, Optional, Sequence, Union
 
-from .types import Glyph
+from .types import Glyph, NodeId
 
-Node = Any
+Node = NodeId
+#: Alias maintained for backwards compatibility with historical token helpers.
 
 
 @dataclass(slots=True)

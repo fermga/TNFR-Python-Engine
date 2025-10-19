@@ -6,17 +6,48 @@ from collections.abc import Hashable
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Iterable, Protocol, TypeAlias
 
-__all__ = ("Graph", "Node", "GraphLike", "Glyph")
+__all__ = (
+    "TNFRGraph",
+    "Graph",
+    "NodeId",
+    "Node",
+    "EPIValue",
+    "DeltaNFR",
+    "Phase",
+    "CoherenceMetric",
+    "GraphLike",
+    "Glyph",
+)
 
 
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
     import networkx as nx  # type: ignore[import-untyped]
 
-    Graph: TypeAlias = nx.Graph
+    TNFRGraph: TypeAlias = nx.Graph
 else:  # pragma: no cover - runtime fallback without networkx
-    Graph: TypeAlias = Any
+    TNFRGraph: TypeAlias = Any
+#: Graph container storing TNFR nodes, edges and their coherence telemetry.
 
-Node: TypeAlias = Hashable
+Graph: TypeAlias = TNFRGraph
+#: Backwards-compatible alias for :data:`TNFRGraph`.
+
+NodeId: TypeAlias = Hashable
+#: Hashable identifier for a coherent TNFR node.
+
+Node: TypeAlias = NodeId
+#: Backwards-compatible alias for :data:`NodeId`.
+
+EPIValue: TypeAlias = float
+#: Scalar Primary Information Structure value carried by a node.
+
+DeltaNFR: TypeAlias = float
+#: Scalar internal reorganisation driver ΔNFR applied to a node.
+
+Phase: TypeAlias = float
+#: Phase (φ) describing a node's synchrony relative to its neighbors.
+
+CoherenceMetric: TypeAlias = float
+#: Aggregated measure of coherence such as C(t) or Si.
 
 
 class GraphLike(Protocol):

@@ -20,7 +20,15 @@ if TYPE_CHECKING:  # pragma: no cover - typing imports only
 else:  # pragma: no cover - runtime without numpy typing
     FloatArray: TypeAlias = Any
 
-from ..types import Glyph, Graph, Node
+from ..types import (
+    CoherenceMetric,
+    DeltaNFR,
+    EPIValue,
+    Glyph,
+    NodeId,
+    Phase,
+    TNFRGraph,
+)
 
 # Importar compute_Si y apply_glyph a nivel de módulo evita el coste de
 # realizar la importación en cada paso de la dinámica. Como los módulos de
@@ -121,11 +129,11 @@ __all__ = (
 HistoryLog = MutableSequence[MutableMapping[str, object]]
 _DequeT = TypeVar("_DequeT")
 ChunkArgs = tuple[
-    Sequence[Node],
-    Mapping[Node, float],
-    Mapping[Node, float],
-    Mapping[Node, float],
-    Mapping[Node, Sequence[Node]],
+    Sequence[NodeId],
+    Mapping[NodeId, Phase],
+    Mapping[NodeId, float],
+    Mapping[NodeId, float],
+    Mapping[NodeId, Sequence[NodeId]],
     float,
     float,
     float,
@@ -134,7 +142,7 @@ ChunkArgs = tuple[
 
 def _log_clamp(
     hist: HistoryLog,
-    node: Node | None,
+    node: NodeId | None,
     attr: str,
     value: float,
     lo: float,
@@ -204,8 +212,8 @@ def _resolve_jobs_override(
 
 def apply_canonical_clamps(
     nd: dict[str, Any],
-    G: Graph | None = None,
-    node: Node | None = None,
+    G: TNFRGraph | None = None,
+    node: NodeId | None = None,
 ) -> None:
     if G is not None:
         graph_dict = cast(dict[str, Any], G.graph)
@@ -219,9 +227,9 @@ def apply_canonical_clamps(
     vf_max = float(graph_data.get("VF_MAX", DEFAULTS["VF_MAX"]))
     theta_wrap = bool(graph_data.get("THETA_WRAP", DEFAULTS["THETA_WRAP"]))
 
-    epi = get_attr(nd, ALIAS_EPI, 0.0)
+    epi = cast(EPIValue, get_attr(nd, ALIAS_EPI, 0.0))
     vf = get_attr(nd, ALIAS_VF, 0.0)
-    th = get_attr(nd, ALIAS_THETA, 0.0)
+    th = cast(Phase, get_attr(nd, ALIAS_THETA, 0.0))
 
     strict = bool(
         graph_data.get("VALIDATORS_STRICT", DEFAULTS.get("VALIDATORS_STRICT", False))
@@ -251,14 +259,14 @@ def apply_canonical_clamps(
             set_attr(nd, ALIAS_THETA, new_th)
 
 
-def validate_canon(G: Graph) -> Graph:
+def validate_canon(G: TNFRGraph) -> TNFRGraph:
     """Apply canonical clamps to all nodes of ``G``.
 
     Wrap phase and constrain ``EPI`` and ``νf`` to the ranges in ``G.graph``.
     If ``VALIDATORS_STRICT`` is active, alerts are logged in ``history``.
     """
     for n, nd in G.nodes(data=True):
-        apply_canonical_clamps(cast(dict[str, Any], nd), G, n)
+        apply_canonical_clamps(cast(dict[str, Any], nd), G, cast(NodeId, n))
     maxes = multi_recompute_abs_max(G, {"_vfmax": ALIAS_VF})
     G.graph.update(maxes)
     return G
@@ -338,7 +346,7 @@ def _ensure_hist_deque(
 
 def _phase_adjust_chunk(
     args: ChunkArgs,
-) -> list[tuple[Node, float]]:
+) -> list[tuple[NodeId, Phase]]:
     """Return coordinated phase updates for the provided chunk."""
 
     (
@@ -351,7 +359,7 @@ def _phase_adjust_chunk(
         kG,
         kL,
     ) = args
-    updates: list[tuple[Node, float]] = []
+    updates: list[tuple[NodeId, Phase]] = []
     for node in nodes:
         th = float(theta_map.get(node, 0.0))
         neigh = neighbors_map.get(node, ())
@@ -367,12 +375,12 @@ def _phase_adjust_chunk(
             thL = th
         dG = angle_diff(thG, th)
         dL = angle_diff(thL, th)
-        updates.append((node, th + kG * dG + kL * dL))
+        updates.append((node, cast(Phase, th + kG * dG + kL * dL)))
     return updates
 
 
 def coordinate_global_local_phase(
-    G: Graph,
+    G: TNFRGraph,
     global_force: float | None = None,
     local_force: float | None = None,
     *,
@@ -437,21 +445,21 @@ def coordinate_global_local_phase(
     if np is not None:
         jobs = None
 
-    nodes = list(G.nodes())
+    nodes: list[NodeId] = [cast(NodeId, node) for node in G.nodes()]
     num_nodes = len(nodes)
     if not num_nodes:
         return
 
     trig = get_trig_cache(G, np=np)
-    theta_map = cast(dict[Node, float], trig.theta)
-    cos_map = cast(dict[Node, float], trig.cos)
-    sin_map = cast(dict[Node, float], trig.sin)
+    theta_map = cast(dict[NodeId, Phase], trig.theta)
+    cos_map = cast(dict[NodeId, float], trig.cos)
+    sin_map = cast(dict[NodeId, float], trig.sin)
 
     neighbors_proxy = ensure_neighbors_map(G)
-    neighbors_map: dict[Node, tuple[Node, ...]] = {}
+    neighbors_map: dict[NodeId, tuple[NodeId, ...]] = {}
     for n in nodes:
         try:
-            neighbors_map[n] = tuple(cast(Sequence[Node], neighbors_proxy[n]))
+            neighbors_map[n] = tuple(cast(Sequence[NodeId], neighbors_proxy[n]))
         except KeyError:
             neighbors_map[n] = ()
 
@@ -536,11 +544,11 @@ def coordinate_global_local_phase(
         )
         for chunk in chunks
     ]
-    results: dict[Node, float] = {}
+    results: dict[NodeId, Phase] = {}
     with ProcessPoolExecutor(max_workers=jobs) as executor:
         for res in executor.map(_phase_adjust_chunk, args):
             for node, value in res:
-                results[node] = float(value)
+                results[node] = value
     for node in nodes:
         new_theta = results.get(node)
         base_theta = theta_map.get(node, 0.0)
@@ -579,10 +587,12 @@ def adapt_vf_by_coherence(G, n_jobs: int | None = None) -> None:
 
     tau = get_graph_param(G, "VF_ADAPT_TAU", int)
     mu = float(get_graph_param(G, "VF_ADAPT_MU"))
-    eps_dnfr = float(get_graph_param(G, "EPS_DNFR_STABLE"))
+    eps_dnfr: DeltaNFR = cast(DeltaNFR, float(get_graph_param(G, "EPS_DNFR_STABLE")))
     thr_sel = get_graph_param(G, "SELECTOR_THRESHOLDS", dict)
     thr_def = get_graph_param(G, "GLYPH_THRESHOLDS", dict)
-    si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
+    si_hi: CoherenceMetric = cast(
+        CoherenceMetric, float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
+    )
     vf_min = float(get_graph_param(G, "VF_MIN"))
     vf_max = float(get_graph_param(G, "VF_MAX"))
 
