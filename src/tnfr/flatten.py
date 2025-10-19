@@ -126,7 +126,7 @@ class THOLEvaluator:
     def __iter__(self) -> "THOLEvaluator":
         return self
 
-    def __next__(self):
+    def __next__(self) -> Token | object:
         if not self._started:
             self._started = True
             return THOL_SENTINEL
@@ -235,7 +235,7 @@ def parse_program_tokens(
 
     sequence = _iter_source(obj, max_materialize=max_materialize)
 
-    def _expand(item: Any):
+    def _expand(item: Any) -> Iterable[Any] | None:
         if isinstance(item, Mapping):
             return (_coerce_mapping_token(item, max_materialize=max_materialize),)
         return None
@@ -259,7 +259,7 @@ def _flatten(
     ops: list[tuple[OpTag, Any]] = []
     sequence = _iter_source(seq, max_materialize=max_materialize)
 
-    def _expand(item: Any):
+    def _expand(item: Any) -> Iterable[Any] | None:
         if isinstance(item, THOL):
             return THOLEvaluator(item, max_materialize=max_materialize)
         if isinstance(item, Mapping):
