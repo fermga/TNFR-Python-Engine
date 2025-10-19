@@ -947,48 +947,276 @@ def _update_sigma(G, hist) -> None:
     )
 
 
-def _track_stability(G, hist, dt, eps_dnfr, eps_depi):
+def _stability_chunk_worker(args):
+    """Compute stability aggregates for a chunk of nodes."""
+
+    (
+        dnfr_vals,
+        depi_vals,
+        si_curr_vals,
+        si_prev_vals,
+        vf_curr_vals,
+        vf_prev_vals,
+        dvf_prev_vals,
+        dt,
+        eps_dnfr,
+        eps_depi,
+    ) = args
+
+    inv_dt = (1.0 / dt) if dt else 0.0
+    stable = 0
+    delta_sum = 0.0
+    B_sum = 0.0
+    delta_vals: list[float] = []
+    dvf_dt_vals: list[float] = []
+    B_vals: list[float] = []
+
+    for idx in range(len(si_curr_vals)):
+        curr_si = float(si_curr_vals[idx])
+        prev_si_raw = si_prev_vals[idx]
+        prev_si = float(prev_si_raw) if prev_si_raw is not None else curr_si
+        delta = curr_si - prev_si
+        delta_vals.append(delta)
+        delta_sum += delta
+
+        curr_vf = float(vf_curr_vals[idx])
+        prev_vf_raw = vf_prev_vals[idx]
+        prev_vf = float(prev_vf_raw) if prev_vf_raw is not None else curr_vf
+        dvf_dt = (curr_vf - prev_vf) * inv_dt if dt else 0.0
+        prev_dvf_raw = dvf_prev_vals[idx]
+        prev_dvf = float(prev_dvf_raw) if prev_dvf_raw is not None else dvf_dt
+        B = (dvf_dt - prev_dvf) * inv_dt if dt else 0.0
+        dvf_dt_vals.append(dvf_dt)
+        B_vals.append(B)
+        B_sum += B
+
+        if abs(float(dnfr_vals[idx])) <= eps_dnfr and abs(float(depi_vals[idx])) <= eps_depi:
+            stable += 1
+
+    chunk_len = len(si_curr_vals)
+    return (
+        stable,
+        chunk_len,
+        delta_sum,
+        B_sum,
+        delta_vals,
+        dvf_dt_vals,
+        B_vals,
+    )
+
+
+def _track_stability(G, hist, dt, eps_dnfr, eps_depi, *, n_jobs: int | None = None):
     """Track per-node stability and derivative metrics."""
 
-    stables = 0
-    total = max(1, G.number_of_nodes())
-    delta_si_sum = 0.0
-    delta_si_count = 0
-    B_sum = 0.0
-    B_count = 0
+    nodes = tuple(G.nodes)
+    total_nodes = len(nodes)
+    if not total_nodes:
+        hist.setdefault("stable_frac", []).append(0.0)
+        hist.setdefault("delta_Si", []).append(0.0)
+        hist.setdefault("B", []).append(0.0)
+        return
 
-    for _, nd in G.nodes(data=True):
-        if (
-            abs(get_attr(nd, ALIAS_DNFR, 0.0)) <= eps_dnfr
-            and abs(get_attr(nd, ALIAS_DEPI, 0.0)) <= eps_depi
-        ):
-            stables += 1
+    np_mod = get_numpy()
 
-        Si_curr = get_attr(nd, ALIAS_SI, 0.0)
-        Si_prev = nd.get("_prev_Si", Si_curr)
-        dSi = Si_curr - Si_prev
-        nd["_prev_Si"] = Si_curr
-        set_attr(nd, ALIAS_DSI, dSi)
-        delta_si_sum += dSi
-        delta_si_count += 1
+    dnfr_vals = collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np_mod)
+    depi_vals = collect_attr(G, nodes, ALIAS_DEPI, 0.0, np=np_mod)
+    si_curr_vals = collect_attr(G, nodes, ALIAS_SI, 0.0, np=np_mod)
+    vf_curr_vals = collect_attr(G, nodes, ALIAS_VF, 0.0, np=np_mod)
 
-        vf_curr = get_attr(nd, ALIAS_VF, 0.0)
-        vf_prev = nd.get("_prev_vf", vf_curr)
-        dvf_dt = (vf_curr - vf_prev) / dt
-        dvf_prev = nd.get("_prev_dvf", dvf_dt)
-        B = (dvf_dt - dvf_prev) / dt
-        nd["_prev_vf"] = vf_curr
-        nd["_prev_dvf"] = dvf_dt
-        set_attr(nd, ALIAS_DVF, dvf_dt)
-        set_attr(nd, ALIAS_D2VF, B)
-        B_sum += B
-        B_count += 1
+    prev_si_data = [G.nodes[n].get("_prev_Si") for n in nodes]
+    prev_vf_data = [G.nodes[n].get("_prev_vf") for n in nodes]
+    prev_dvf_data = [G.nodes[n].get("_prev_dvf") for n in nodes]
 
-    hist["stable_frac"].append(stables / total)
-    hist["delta_Si"].append(
-        delta_si_sum / delta_si_count if delta_si_count else 0.0
-    )
-    hist["B"].append(B_sum / B_count if B_count else 0.0)
+    inv_dt = (1.0 / dt) if dt else 0.0
+
+    if np_mod is not None:
+        np = np_mod
+        dnfr_arr = dnfr_vals
+        depi_arr = depi_vals
+        si_curr_arr = si_curr_vals
+        vf_curr_arr = vf_curr_vals
+
+        si_prev_arr = np.asarray(
+            [
+                float(prev_si_data[idx])
+                if prev_si_data[idx] is not None
+                else float(si_curr_arr[idx])
+                for idx in range(total_nodes)
+            ],
+            dtype=float,
+        )
+        vf_prev_arr = np.asarray(
+            [
+                float(prev_vf_data[idx])
+                if prev_vf_data[idx] is not None
+                else float(vf_curr_arr[idx])
+                for idx in range(total_nodes)
+            ],
+            dtype=float,
+        )
+
+        if dt:
+            dvf_dt_arr = (vf_curr_arr - vf_prev_arr) * inv_dt
+        else:
+            dvf_dt_arr = np.zeros_like(vf_curr_arr, dtype=float)
+
+        dvf_prev_arr = np.asarray(
+            [
+                float(prev_dvf_data[idx])
+                if prev_dvf_data[idx] is not None
+                else float(dvf_dt_arr[idx])
+                for idx in range(total_nodes)
+            ],
+            dtype=float,
+        )
+
+        if dt:
+            B_arr = (dvf_dt_arr - dvf_prev_arr) * inv_dt
+        else:
+            B_arr = np.zeros_like(dvf_dt_arr, dtype=float)
+
+        stable_mask = (np.abs(dnfr_arr) <= eps_dnfr) & (np.abs(depi_arr) <= eps_depi)
+        stable_frac = float(stable_mask.mean()) if total_nodes else 0.0
+
+        delta_si_arr = si_curr_arr - si_prev_arr
+        delta_si_mean = float(delta_si_arr.mean()) if total_nodes else 0.0
+        B_mean = float(B_arr.mean()) if total_nodes else 0.0
+
+        hist.setdefault("stable_frac", []).append(stable_frac)
+        hist.setdefault("delta_Si", []).append(delta_si_mean)
+        hist.setdefault("B", []).append(B_mean)
+
+        for idx, node in enumerate(nodes):
+            nd = G.nodes[node]
+            curr_si = float(si_curr_arr[idx])
+            delta_val = float(delta_si_arr[idx])
+            nd["_prev_Si"] = curr_si
+            set_attr(nd, ALIAS_DSI, delta_val)
+
+            curr_vf = float(vf_curr_arr[idx])
+            nd["_prev_vf"] = curr_vf
+
+            dvf_dt_val = float(dvf_dt_arr[idx])
+            nd["_prev_dvf"] = dvf_dt_val
+            set_attr(nd, ALIAS_DVF, dvf_dt_val)
+            set_attr(nd, ALIAS_D2VF, float(B_arr[idx]))
+
+        return
+
+    # NumPy not available: optionally parallel fallback or sequential computation.
+    dnfr_list = list(dnfr_vals)
+    depi_list = list(depi_vals)
+    si_curr_list = list(si_curr_vals)
+    vf_curr_list = list(vf_curr_vals)
+
+    if n_jobs and n_jobs > 1:
+        chunk_size = max(1, math.ceil(total_nodes / n_jobs))
+        chunk_results: list[tuple[int, tuple[int, int, float, float, list[float], list[float], list[float]]]] = []
+        with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+            futures: list[tuple[int, Any]] = []
+            for start in range(0, total_nodes, chunk_size):
+                end = min(start + chunk_size, total_nodes)
+                chunk_args = (
+                    dnfr_list[start:end],
+                    depi_list[start:end],
+                    si_curr_list[start:end],
+                    prev_si_data[start:end],
+                    vf_curr_list[start:end],
+                    prev_vf_data[start:end],
+                    prev_dvf_data[start:end],
+                    dt,
+                    eps_dnfr,
+                    eps_depi,
+                )
+                futures.append((start, executor.submit(_stability_chunk_worker, chunk_args)))
+
+            for start, fut in futures:
+                chunk_results.append((start, fut.result()))
+
+        chunk_results.sort(key=lambda item: item[0])
+
+        stable_total = 0
+        delta_sum = 0.0
+        B_sum = 0.0
+        delta_vals_all: list[float] = []
+        dvf_dt_all: list[float] = []
+        B_vals_all: list[float] = []
+
+        for _, result in chunk_results:
+            (
+                stable_count,
+                chunk_len,
+                chunk_delta_sum,
+                chunk_B_sum,
+                delta_vals,
+                dvf_vals,
+                B_vals,
+            ) = result
+            stable_total += stable_count
+            delta_sum += chunk_delta_sum
+            B_sum += chunk_B_sum
+            delta_vals_all.extend(delta_vals)
+            dvf_dt_all.extend(dvf_vals)
+            B_vals_all.extend(B_vals)
+
+        total = len(delta_vals_all)
+        stable_frac = stable_total / total if total else 0.0
+        delta_si_mean = delta_sum / total if total else 0.0
+        B_mean = B_sum / total if total else 0.0
+
+    else:
+        stable_total = 0
+        delta_sum = 0.0
+        B_sum = 0.0
+        delta_vals_all = []
+        dvf_dt_all = []
+        B_vals_all = []
+
+        for idx in range(total_nodes):
+            curr_si = float(si_curr_list[idx])
+            prev_si_raw = prev_si_data[idx]
+            prev_si = float(prev_si_raw) if prev_si_raw is not None else curr_si
+            delta = curr_si - prev_si
+            delta_vals_all.append(delta)
+            delta_sum += delta
+
+            curr_vf = float(vf_curr_list[idx])
+            prev_vf_raw = prev_vf_data[idx]
+            prev_vf = float(prev_vf_raw) if prev_vf_raw is not None else curr_vf
+            dvf_dt_val = (curr_vf - prev_vf) * inv_dt if dt else 0.0
+            prev_dvf_raw = prev_dvf_data[idx]
+            prev_dvf = float(prev_dvf_raw) if prev_dvf_raw is not None else dvf_dt_val
+            B_val = (dvf_dt_val - prev_dvf) * inv_dt if dt else 0.0
+            dvf_dt_all.append(dvf_dt_val)
+            B_vals_all.append(B_val)
+            B_sum += B_val
+
+            if abs(float(dnfr_list[idx])) <= eps_dnfr and abs(float(depi_list[idx])) <= eps_depi:
+                stable_total += 1
+
+        total = len(delta_vals_all)
+        stable_frac = stable_total / total if total else 0.0
+        delta_si_mean = delta_sum / total if total else 0.0
+        B_mean = B_sum / total if total else 0.0
+
+    hist.setdefault("stable_frac", []).append(stable_frac)
+    hist.setdefault("delta_Si", []).append(delta_si_mean)
+    hist.setdefault("B", []).append(B_mean)
+
+    for idx, node in enumerate(nodes):
+        nd = G.nodes[node]
+        curr_si = float(si_curr_list[idx])
+        delta_val = float(delta_vals_all[idx])
+        nd["_prev_Si"] = curr_si
+        set_attr(nd, ALIAS_DSI, delta_val)
+
+        curr_vf = float(vf_curr_list[idx])
+        nd["_prev_vf"] = curr_vf
+
+        dvf_dt_val = float(dvf_dt_all[idx])
+        nd["_prev_dvf"] = dvf_dt_val
+        set_attr(nd, ALIAS_DVF, dvf_dt_val)
+        set_attr(nd, ALIAS_D2VF, float(B_vals_all[idx]))
 
 
 def _aggregate_si(G, hist):

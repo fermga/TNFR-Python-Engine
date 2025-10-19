@@ -73,7 +73,25 @@ def _metrics_step(G, ctx: dict[str, Any] | None = None):
     t = float(G.graph.get("_t", 0.0))
 
     _update_coherence(G, hist)
-    _track_stability(G, hist, dt, eps_dnfr, eps_depi)
+
+    raw_jobs = cfg.get("n_jobs")
+    metrics_jobs: int | None
+    try:
+        metrics_jobs = None if raw_jobs is None else int(raw_jobs)
+    except (TypeError, ValueError):
+        metrics_jobs = None
+    else:
+        if metrics_jobs <= 0:
+            metrics_jobs = None
+
+    _track_stability(
+        G,
+        hist,
+        dt,
+        eps_dnfr,
+        eps_depi,
+        n_jobs=metrics_jobs,
+    )
     try:
         _update_phase_sync(G, hist)
         _update_sigma(G, hist)
@@ -87,16 +105,6 @@ def _metrics_step(G, ctx: dict[str, Any] | None = None):
         logger.debug("observer update failed: %s", exc)
 
     _aggregate_si(G, hist)
-
-    raw_jobs = cfg.get("n_jobs")
-    metrics_jobs: int | None
-    try:
-        metrics_jobs = None if raw_jobs is None else int(raw_jobs)
-    except (TypeError, ValueError):
-        metrics_jobs = None
-    else:
-        if metrics_jobs <= 0:
-            metrics_jobs = None
 
     _compute_advanced_metrics(G, hist, t, dt, cfg, n_jobs=metrics_jobs)
 
