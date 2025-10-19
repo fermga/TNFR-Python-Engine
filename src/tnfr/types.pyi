@@ -1,9 +1,8 @@
-from typing import Any, Callable, ContextManager, Iterable, Protocol, TypeAlias
+from typing import Any, Callable, ContextManager, Iterable, Protocol, TypeAlias, cast
 from collections.abc import Hashable, Mapping, Sequence
 from enum import Enum
 from typing import TypedDict
 
-nx: Any
 try:
     import networkx as nx  # type: ignore[import-not-found]
 except Exception:
@@ -12,9 +11,8 @@ except Exception:
     class _FallbackNetworkX:
         Graph = _FallbackGraph
 
-    nx = _FallbackNetworkX()
+    nx = cast(Any, _FallbackNetworkX())
 
-np: Any
 try:
     import numpy as np  # type: ignore[import-not-found]
 except Exception:
@@ -23,7 +21,7 @@ except Exception:
     class _FallbackNumpy:
         ndarray = _FallbackNdArray
 
-    np = _FallbackNumpy()
+    np = cast(Any, _FallbackNumpy())
 
 from .tokens import Token
 from .trace import TraceMetadata

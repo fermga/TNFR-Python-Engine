@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Any, MutableMapping, TypedDict, cast
+from typing import Any, MutableMapping, TypedDict, TypeAlias, cast
 
 
 from ..constants import (
@@ -15,9 +15,17 @@ from ..constants import (
     get_param,
 )
 from ..callback_utils import CallbackEvent, callback_manager
-from ..glyph_history import ensure_history, append_metric
+from ..glyph_history import append_metric, ensure_history
 from ..alias import collect_attr, set_attr
 from ..helpers.numeric import clamp01
+from ..types import (
+    CoherenceMetric,
+    GlyphLoadDistribution,
+    HistoryState,
+    NodeId,
+    SigmaVector,
+    TNFRGraph,
+)
 from .common import compute_coherence, min_max_range
 from .trig_cache import compute_theta_trig, get_trig_cache
 from ..observers import (
@@ -63,6 +71,9 @@ class SimilarityInputs:
 CoherenceMatrixDense = list[list[float]]
 CoherenceMatrixSparse = list[tuple[int, int, float]]
 CoherenceMatrixPayload = CoherenceMatrixDense | CoherenceMatrixSparse
+PhaseSyncWeights: TypeAlias = (
+    Sequence[float] | CoherenceMatrixSparse | CoherenceMatrixDense
+)
 
 SimilarityComponents = tuple[float, float, float, float]
 VectorizedComponents = tuple[Any, Any, Any, Any]
@@ -88,6 +99,10 @@ StabilityChunkResult = tuple[
     list[float],
     list[float],
 ]
+
+MetricValue: TypeAlias = CoherenceMetric
+MetricProvider = Callable[[], MetricValue]
+MetricRecord: TypeAlias = tuple[MetricValue | MetricProvider, str]
 
 
 class ParallelWijPayload(TypedDict):
@@ -844,14 +859,11 @@ def coherence_matrix(
 
 
 def local_phase_sync_weighted(
-    G: Any,
-    n: Any,
-    nodes_order: Sequence[Any] | None = None,
-    W_row: Sequence[float]
-    | CoherenceMatrixSparse
-    | Sequence[Sequence[float]]
-    | None = None,
-    node_to_index: Mapping[Any, int] | None = None,
+    G: TNFRGraph,
+    n: NodeId,
+    nodes_order: Sequence[NodeId] | None = None,
+    W_row: PhaseSyncWeights | None = None,
+    node_to_index: Mapping[NodeId, int] | None = None,
 ) -> float:
     """Compute local phase synchrony using explicit weights.
 
@@ -876,12 +888,51 @@ def local_phase_sync_weighted(
     trig = get_trig_cache(G)
     cos_map, sin_map = trig.cos, trig.sin
 
-    if (
-        isinstance(W_row, Sequence)
-        and W_row
-        and isinstance(W_row[0], (int, float))
-    ):
-        row_vals = cast(Sequence[float], W_row)
+    if isinstance(W_row, Sequence) and W_row:
+        first = W_row[0]
+        if isinstance(first, (int, float)):
+            row_vals = cast(Sequence[float], W_row)
+            for w, nj in zip(row_vals, nodes_order):
+                if nj == n:
+                    continue
+                den += w
+                cos_j = cos_map.get(nj)
+                sin_j = sin_map.get(nj)
+                if cos_j is None or sin_j is None:
+                    trig_j = compute_theta_trig(((nj, G.nodes[nj]),))
+                    cos_j = trig_j.cos[nj]
+                    sin_j = trig_j.sin[nj]
+                num += w * complex(cos_j, sin_j)
+            return abs(num / den) if den else 0.0
+
+        if (
+            isinstance(first, Sequence)
+            and len(first) == 3
+            and isinstance(first[0], int)
+            and isinstance(first[1], int)
+            and isinstance(first[2], (int, float))
+        ):
+            sparse_entries = cast(CoherenceMatrixSparse, W_row)
+            for ii, jj, w in sparse_entries:
+                if ii != i:
+                    continue
+                nj = nodes_order[jj]
+                if nj == n:
+                    continue
+                den += w
+                cos_j = cos_map.get(nj)
+                sin_j = sin_map.get(nj)
+                if cos_j is None or sin_j is None:
+                    trig_j = compute_theta_trig(((nj, G.nodes[nj]),))
+                    cos_j = trig_j.cos[nj]
+                    sin_j = trig_j.sin[nj]
+                num += w * complex(cos_j, sin_j)
+            return abs(num / den) if den else 0.0
+
+        dense_matrix = cast(CoherenceMatrixDense, W_row)
+        if i is None:
+            raise ValueError("node index resolution failed for dense weights")
+        row_vals = cast(Sequence[float], dense_matrix[i])
         for w, nj in zip(row_vals, nodes_order):
             if nj == n:
                 continue
@@ -893,27 +944,28 @@ def local_phase_sync_weighted(
                 cos_j = trig_j.cos[nj]
                 sin_j = trig_j.sin[nj]
             num += w * complex(cos_j, sin_j)
-    else:
-        sparse_entries = cast(CoherenceMatrixSparse, W_row)
-        for ii, jj, w in sparse_entries:
-            if ii != i:
-                continue
-            nj = nodes_order[jj]
-            if nj == n:
-                continue
-            den += w
-            cos_j = cos_map.get(nj)
-            sin_j = sin_map.get(nj)
-            if cos_j is None or sin_j is None:
-                trig_j = compute_theta_trig(((nj, G.nodes[nj]),))
-                cos_j = trig_j.cos[nj]
-                sin_j = trig_j.sin[nj]
-            num += w * complex(cos_j, sin_j)
+        return abs(num / den) if den else 0.0
+
+    sparse_entries = cast(CoherenceMatrixSparse, W_row)
+    for ii, jj, w in sparse_entries:
+        if ii != i:
+            continue
+        nj = nodes_order[jj]
+        if nj == n:
+            continue
+        den += w
+        cos_j = cos_map.get(nj)
+        sin_j = sin_map.get(nj)
+        if cos_j is None or sin_j is None:
+            trig_j = compute_theta_trig(((nj, G.nodes[nj]),))
+            cos_j = trig_j.cos[nj]
+            sin_j = trig_j.sin[nj]
+        num += w * complex(cos_j, sin_j)
 
     return abs(num / den) if den else 0.0
 
 
-def local_phase_sync(G: Any, n: Any) -> float:
+def local_phase_sync(G: TNFRGraph, n: NodeId) -> float:
     """Compute unweighted local phase synchronization for node ``n``."""
     nodes, W = coherence_matrix(G)
     if nodes is None:
@@ -921,7 +973,7 @@ def local_phase_sync(G: Any, n: Any) -> float:
     return local_phase_sync_weighted(G, n, nodes_order=nodes, W_row=W)
 
 
-def _coherence_step(G: Any, ctx: dict[str, Any] | None = None) -> None:
+def _coherence_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
     del ctx
 
     if not get_param(G, "COHERENCE").get("enabled", True):
@@ -929,7 +981,7 @@ def _coherence_step(G: Any, ctx: dict[str, Any] | None = None) -> None:
     coherence_matrix(G)
 
 
-def register_coherence_callbacks(G: Any) -> None:
+def register_coherence_callbacks(G: TNFRGraph) -> None:
     callback_manager.register_callback(
         G,
         event=CallbackEvent.AFTER_STEP.value,
@@ -944,20 +996,29 @@ def register_coherence_callbacks(G: Any) -> None:
 
 
 def _record_metrics(
-    hist: MutableMapping[str, Any],
-    *pairs: tuple[Any, str],
+    hist: HistoryState,
+    *pairs: MetricRecord,
     evaluate: bool = False,
 ) -> None:
     """Generic recorder for metric values."""
 
-    for value, key in pairs:
-        append_metric(hist, key, value() if evaluate else value)
+    metrics = cast(MutableMapping[str, list[Any]], hist)
+    for payload, key in pairs:
+        if evaluate:
+            provider = cast(MetricProvider, payload)
+            append_metric(metrics, key, provider())
+        else:
+            append_metric(metrics, key, payload)
 
 
-def _update_coherence(G: Any, hist: MutableMapping[str, Any]) -> None:
+def _update_coherence(G: TNFRGraph, hist: HistoryState) -> None:
     """Update network coherence and related means."""
 
-    C, dnfr_mean, depi_mean = compute_coherence(G, return_means=True)
+    coherence_payload = cast(
+        tuple[CoherenceMetric, float, float],
+        compute_coherence(G, return_means=True),
+    )
+    C, dnfr_mean, depi_mean = coherence_payload
     _record_metrics(
         hist,
         (C, "C_steps"),
@@ -973,7 +1034,7 @@ def _update_coherence(G: Any, hist: MutableMapping[str, Any]) -> None:
         _record_metrics(hist, (wbar, "W_bar"))
 
 
-def _update_phase_sync(G: Any, hist: MutableMapping[str, Any]) -> None:
+def _update_phase_sync(G: TNFRGraph, hist: HistoryState) -> None:
     """Capture phase synchrony and Kuramoto order."""
 
     ps = phase_sync(G)
@@ -985,18 +1046,20 @@ def _update_phase_sync(G: Any, hist: MutableMapping[str, Any]) -> None:
     )
 
 
-def _update_sigma(G: Any, hist: MutableMapping[str, Any]) -> None:
+def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
     """Record glyph load and associated Σ⃗ vector."""
 
-    gl = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
+    gl: GlyphLoadDistribution = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
     _record_metrics(
         hist,
         (gl.get("_estabilizadores", 0.0), "glyph_load_estab"),
         (gl.get("_disruptivos", 0.0), "glyph_load_disr"),
     )
 
-    dist = {k: v for k, v in gl.items() if not k.startswith("_")}
-    sig = sigma_vector(dist)
+    dist: GlyphLoadDistribution = {
+        k: v for k, v in gl.items() if not k.startswith("_")
+    }
+    sig: SigmaVector = sigma_vector(dist)
     _record_metrics(
         hist,
         (sig.get("x", 0.0), "sense_sigma_x"),
