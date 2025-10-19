@@ -45,6 +45,11 @@ print(f"C(t)={C:.3f}, ΔNFR̄={delta_nfr_medio:.3f}, dEPI/dt̄={depi_medio:.3f},
 
 La secuencia respeta la ecuación nodal porque `create_nfr` inicializa el nodo con su **νf** y fase, y `run_sequence` valida la gramática TNFR antes de aplicar los operadores en el orden provisto. Tras cada operador invoca el gancho `compute_delta_nfr` del grafo para recalcular únicamente **ΔNFR** (por defecto usa `dnfr_epi_vf_mixed`, que mezcla EPI y νf sin alterar la fase). La fase solo cambiará si los propios operadores la modifican o si se ejecutan pasos dinámicos posteriores (por ejemplo `tnfr.dynamics.step` o `coordinate_global_local_phase`). Cuando necesites sincronización de fase automática, utiliza el ciclo de dinámica completo (`tnfr.dynamics.step`/`tnfr.dynamics.run`) o invoca explícitamente los coordinadores de fase después de `run_sequence`. Esa telemetría permite medir **C(t)** y **Si**, adelantando lo que se desarrolla en [Key concepts (operational summary)](#key-concepts-operational-summary) y [Main metrics](#main-metrics).
 
+Tanto `step` como `run` aceptan un argumento opcional `n_jobs` (diccionario) para
+forzar el número de procesos/hilos a usar en cada etapa paralelizable (ΔNFR,
+Si, integradores, coordinación de fase, adaptación de νf) sin tener que
+persistir esos overrides en `G.graph`.
+
 ### Desde la línea de comandos
 
 Archivo `secuencia.json`:

@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import math
 from collections import deque
+from collections.abc import Mapping
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from operator import itemgetter
@@ -108,6 +109,64 @@ __all__ = (
 def _log_clamp(hist, node, attr, value, lo, hi):
     if value < lo or value > hi:
         hist.append({"node": node, "attr": attr, "value": float(value)})
+
+
+def _normalize_job_overrides(
+    job_overrides: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    """Return a dict with canonical override keys (uppercase without suffix)."""
+    if not job_overrides:
+        return {}
+
+    normalized: dict[str, Any] = {}
+    for key, value in job_overrides.items():
+        if key is None:
+            continue
+        key_str = str(key).upper()
+        if key_str.endswith("_N_JOBS"):
+            key_str = key_str[: -len("_N_JOBS")]
+        normalized[key_str] = value
+    return normalized
+
+
+def _coerce_jobs_value(raw: Any) -> int | None:
+    """Best-effort conversion of ``raw`` to an integer ``n_jobs`` value."""
+    if raw is None:
+        return None
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return None
+
+
+def _sanitize_jobs(value: int | None, *, allow_non_positive: bool) -> int | None:
+    if value is None:
+        return None
+    if not allow_non_positive and value <= 0:
+        return None
+    return value
+
+
+def _resolve_jobs_override(
+    overrides: Mapping[str, Any],
+    key: str,
+    graph_value: Any,
+    *,
+    allow_non_positive: bool,
+) -> int | None:
+    """Resolve ``n_jobs`` using overrides before consulting ``graph_value``."""
+
+    norm_key = key.upper()
+    if overrides and norm_key in overrides:
+        return _sanitize_jobs(
+            _coerce_jobs_value(overrides.get(norm_key)),
+            allow_non_positive=allow_non_positive,
+        )
+
+    return _sanitize_jobs(
+        _coerce_jobs_value(graph_value),
+        allow_non_positive=allow_non_positive,
+    )
 
 
 def apply_canonical_clamps(nd: dict[str, Any], G=None, node=None) -> None:
@@ -797,19 +856,23 @@ def _run_before_callbacks(
     )
 
 
-def _prepare_dnfr(G, *, use_Si: bool) -> None:
+def _prepare_dnfr(
+    G,
+    *,
+    use_Si: bool,
+    job_overrides: Mapping[str, Any] | None = None,
+) -> None:
     """Compute ΔNFR and optionally Si for the current graph state."""
     compute_dnfr_cb = G.graph.get(
         "compute_delta_nfr", default_compute_delta_nfr
     )
-    raw_jobs = G.graph.get("DNFR_N_JOBS")
-    try:
-        n_jobs = None if raw_jobs is None else int(raw_jobs)
-    except (TypeError, ValueError):
-        n_jobs = None
-    else:
-        if n_jobs is not None and n_jobs <= 0:
-            n_jobs = None
+    overrides = job_overrides or {}
+    n_jobs = _resolve_jobs_override(
+        overrides,
+        "DNFR",
+        G.graph.get("DNFR_N_JOBS"),
+        allow_non_positive=False,
+    )
 
     supports_n_jobs = False
     try:
@@ -841,14 +904,12 @@ def _prepare_dnfr(G, *, use_Si: bool) -> None:
                 raise
     G.graph.pop("_sel_norms", None)
     if use_Si:
-        raw_si_jobs = G.graph.get("SI_N_JOBS")
-        try:
-            si_jobs = None if raw_si_jobs is None else int(raw_si_jobs)
-        except (TypeError, ValueError):
-            si_jobs = None
-        else:
-            if si_jobs is not None and si_jobs <= 0:
-                si_jobs = None
+        si_jobs = _resolve_jobs_override(
+            overrides,
+            "SI",
+            G.graph.get("SI_N_JOBS"),
+            allow_non_positive=False,
+        )
         compute_Si(G, inplace=True, n_jobs=si_jobs)
 
 
@@ -1134,36 +1195,38 @@ def _update_nodes(
     apply_glyphs: bool,
     step_idx: int,
     hist,
+    job_overrides: Mapping[str, Any] | None = None,
 ) -> None:
     _update_node_sample(G, step=step_idx)
-    _prepare_dnfr(G, use_Si=use_Si)
+    overrides = job_overrides or {}
+    _prepare_dnfr(G, use_Si=use_Si, job_overrides=overrides)
     selector = _apply_selector(G)
     if apply_glyphs:
         _apply_glyphs(G, selector, hist)
     _dt = get_graph_param(G, "DT") if dt is None else float(dt)
     method = get_graph_param(G, "INTEGRATOR_METHOD", str)
-    raw_jobs = G.graph.get("INTEGRATOR_N_JOBS")
-    try:
-        n_jobs = None if raw_jobs is None else int(raw_jobs)
-    except (TypeError, ValueError):
-        n_jobs = None
+    n_jobs = _resolve_jobs_override(
+        overrides,
+        "INTEGRATOR",
+        G.graph.get("INTEGRATOR_N_JOBS"),
+        allow_non_positive=True,
+    )
     update_epi_via_nodal_equation(G, dt=_dt, method=method, n_jobs=n_jobs)
     for n, nd in G.nodes(data=True):
         apply_canonical_clamps(nd, G, n)
-    raw_phase_jobs = G.graph.get("PHASE_N_JOBS")
-    try:
-        phase_jobs = None if raw_phase_jobs is None else int(raw_phase_jobs)
-    except (TypeError, ValueError):
-        phase_jobs = None
+    phase_jobs = _resolve_jobs_override(
+        overrides,
+        "PHASE",
+        G.graph.get("PHASE_N_JOBS"),
+        allow_non_positive=True,
+    )
     coordinate_global_local_phase(G, None, None, n_jobs=phase_jobs)
-    raw_vf_jobs = G.graph.get("VF_ADAPT_N_JOBS")
-    try:
-        vf_jobs = None if raw_vf_jobs is None else int(raw_vf_jobs)
-    except (TypeError, ValueError):
-        vf_jobs = None
-    else:
-        if vf_jobs is not None and vf_jobs <= 0:
-            vf_jobs = None
+    vf_jobs = _resolve_jobs_override(
+        overrides,
+        "VF_ADAPT",
+        G.graph.get("VF_ADAPT_N_JOBS"),
+        allow_non_positive=False,
+    )
     adapt_vf_by_coherence(G, n_jobs=vf_jobs)
 
 
@@ -1214,7 +1277,10 @@ def step(
     dt: float | None = None,
     use_Si: bool = True,
     apply_glyphs: bool = True,
+    n_jobs: Mapping[str, Any] | None = None,
 ) -> None:
+    """Advance the dynamic state of ``G`` one step using optional job overrides."""
+    job_overrides = _normalize_job_overrides(n_jobs)
     hist = ensure_history(G)
     step_idx = len(hist.setdefault("C_steps", []))
     _run_before_callbacks(
@@ -1227,6 +1293,7 @@ def step(
         apply_glyphs=apply_glyphs,
         step_idx=step_idx,
         hist=hist,
+        job_overrides=job_overrides,
     )
     _update_epi_hist(G)
     _maybe_remesh(G)
@@ -1241,6 +1308,7 @@ def run(
     dt: float | None = None,
     use_Si: bool = True,
     apply_glyphs: bool = True,
+    n_jobs: Mapping[str, Any] | None = None,
 ) -> None:
     steps_int = int(steps)
     if steps_int < 0:
@@ -1251,8 +1319,15 @@ def run(
         w = int(stop_cfg.get("window", 25))
         frac = float(stop_cfg.get("fraction", 0.90))
         stop_enabled = True
+    job_overrides = _normalize_job_overrides(n_jobs)
     for _ in range(steps_int):
-        step(G, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)
+        step(
+            G,
+            dt=dt,
+            use_Si=use_Si,
+            apply_glyphs=apply_glyphs,
+            n_jobs=job_overrides,
+        )
         # Early-stop opcional
         if stop_enabled:
             history = ensure_history(G)
