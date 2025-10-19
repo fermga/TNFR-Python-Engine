@@ -11,7 +11,7 @@ from .helpers.numeric import clamp
 from .rng import make_rng
 
 if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx  # type: ignore[import-untyped]
+    import networkx as nx
 
 __all__ = ("InitParams", "init_node_attrs")
 

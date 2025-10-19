@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from typing import Any, TypeVar
 
 from cachetools import LRUCache
-import networkx as nx  # type: ignore[import-untyped]
+import networkx as nx
 
 from ..cache import CacheCapacityConfig, CacheManager
 from .graph import get_graph, mark_dnfr_prep_dirty

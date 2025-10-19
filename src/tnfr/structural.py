@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Iterable
 
-import networkx as nx  # type: ignore[import-untyped]
+import networkx as nx
 
 from .constants import EPI_PRIMARY, VF_PRIMARY, THETA_PRIMARY
 from .dynamics import (

@@ -5,7 +5,7 @@ import argparse
 from pathlib import Path
 from typing import Any, Optional
 
-import networkx as nx  # type: ignore[import-untyped]
+import networkx as nx
 
 from ..constants import METRIC_DEFAULTS
 from ..sense import register_sigma_callback

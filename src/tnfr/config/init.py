@@ -10,7 +10,7 @@ from ..constants import inject_defaults
 from ..io import read_structured_file
 
 if TYPE_CHECKING:  # pragma: no cover - only for type checkers
-    import networkx as nx  # type: ignore[import-untyped]
+    import networkx as nx
 
 __all__ = ("load_config", "apply_config")
 

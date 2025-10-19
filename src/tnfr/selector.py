@@ -12,7 +12,7 @@ from typing import Any, Mapping, TYPE_CHECKING
 from weakref import WeakKeyDictionary
 
 if TYPE_CHECKING:  # pragma: no cover
-    import networkx as nx  # type: ignore[import-untyped]
+    import networkx as nx
 
 from .constants import DEFAULTS
 from .constants.core import SELECTOR_THRESHOLD_DEFAULTS

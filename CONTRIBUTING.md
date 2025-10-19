@@ -79,11 +79,18 @@ Run the full quality gate from the project root with:
 The helper sets up `PYTHONPATH` and orchestrates the tooling invoked by the
 continuous integration workflow:
 
+- `python -m pip install ".[typecheck]"` ensures local type-checking
+  dependencies such as `mypy` and `networkx-stubs` are available.
 - `pydocstyle` for targeted docstring style checks.
+- `python -m mypy src/tnfr` to enforce TNFR-aware typing contracts.
 - `coverage run --source=src -m pytest` to execute the test suite under
   coverage.
 - `coverage report -m` to display the aggregate coverage summary.
 - `vulture --min-confidence 80 src tests` to detect unused code paths.
+
+To install the tooling once for iterative local work, run
+`pip install -e .[test,typecheck]`. After that, the quality gate can be run
+without the bootstrap step needing to reinstall dependencies.
 
 To forward additional flags to `pytest`, append them after `--`, e.g.
 `./scripts/run_tests.sh -- -k coherence`.

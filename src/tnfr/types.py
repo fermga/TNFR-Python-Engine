@@ -21,7 +21,7 @@ __all__ = (
 
 
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
-    import networkx as nx  # type: ignore[import-untyped]
+    import networkx as nx
 
     TNFRGraph: TypeAlias = nx.Graph
 else:  # pragma: no cover - runtime fallback without networkx
