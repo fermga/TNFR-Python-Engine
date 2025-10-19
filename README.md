@@ -92,15 +92,20 @@ pip install tnfr
 Use ``tnfr.utils.cached_import`` to load optional dependencies and cache the
 result via a process-wide LRU cache. Missing modules (or attributes) yield
 ``None`` without triggering repeated imports. The helper records failures and
-emits a single warning per module to keep logs tidy. When optional packages are
-installed at runtime call ``tnfr.utils.prune_failed_imports`` to clear the
-consolidated failure/warning registry before retrying:
+emits a single warning per module to keep logs tidy. Set ``lazy=True`` to obtain
+a lightweight proxy that postpones the real import until the object is first
+used—handy when optional dependencies are rarely touched. When optional
+packages are installed at runtime call ``tnfr.utils.prune_failed_imports`` to
+clear the consolidated failure/warning registry before retrying:
 
 ```python
 from tnfr.utils import cached_import, prune_failed_imports
 
 np = cached_import("numpy")
 safe_load = cached_import("yaml", "safe_load")
+
+# postpone work until the symbol is first accessed
+safe_lazy = cached_import("yaml", "safe_load", lazy=True)
 
 # provide a shared cache with an explicit lock
 from cachetools import TTLCache
