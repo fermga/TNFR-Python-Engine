@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Hashable, Mapping, Sequence
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Iterable, Protocol, TypeAlias, TypedDict
+from typing import TYPE_CHECKING, Any, ContextManager, Iterable, Protocol, TypeAlias, TypedDict
 
 try:  # pragma: no cover - optional dependency for typing only
     import numpy as np
@@ -48,6 +48,7 @@ __all__ = (
     "DnfrCacheVectors",
     "DnfrVectorMap",
     "NeighborStats",
+    "TimingContext",
 )
 
 
@@ -95,6 +96,9 @@ CouplingWeight: TypeAlias = float
 
 CoherenceMetric: TypeAlias = float
 #: Aggregated measure of coherence such as C(t) or Si.
+
+TimingContext: TypeAlias = ContextManager[None]
+#: Context manager used to measure execution time for cache operations.
 
 
 class SelectorThresholds(TypedDict):

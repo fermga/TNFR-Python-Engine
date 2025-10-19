@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import random
 import hashlib
+import random
 import struct
+import threading
 from collections.abc import Iterator, MutableMapping
 from dataclasses import dataclass
 from typing import Any, Generic, Hashable, TypeVar, cast
@@ -239,7 +240,7 @@ class ScopedCounterCache(Generic[K]):
         return state
 
     @property
-    def lock(self):
+    def lock(self) -> threading.Lock | threading.RLock:
         """Return the lock guarding access to the underlying cache."""
 
         return self._manager.get_lock(self._state_key)

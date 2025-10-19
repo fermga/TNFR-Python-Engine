@@ -22,6 +22,7 @@ from cachetools import LRUCache
 import networkx as nx
 
 from ..cache import CacheCapacityConfig, CacheManager
+from ..types import TimingContext
 from .graph import get_graph, mark_dnfr_prep_dirty
 from .init import get_logger, get_numpy
 from .io import json_dumps
@@ -464,7 +465,7 @@ class EdgeCacheManager:
 
         self._manager.increment_eviction(self._STATE_KEY)
 
-    def timer(self):
+    def timer(self) -> TimingContext:
         """Return a timing context linked to this cache."""
 
         return self._manager.timer(self._STATE_KEY)

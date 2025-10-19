@@ -9,6 +9,8 @@ from dataclasses import dataclass, field
 from time import perf_counter
 from typing import Any, Callable, Iterator, Mapping, MutableMapping
 
+from .types import TimingContext
+
 __all__ = ["CacheManager", "CacheCapacityConfig", "CacheStatistics"]
 
 
@@ -326,7 +328,7 @@ class CacheManager:
             metrics.timings += 1
 
     @contextmanager
-    def timer(self, name: str):
+    def timer(self, name: str) -> TimingContext:
         """Context manager recording execution time for ``name``."""
 
         start = perf_counter()
