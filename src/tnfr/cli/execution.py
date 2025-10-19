@@ -29,7 +29,7 @@ from ..config import apply_config
 from ..io import read_structured_file, safe_write, StructuredFileError
 from ..glyph_history import ensure_history
 from ..ontosim import preparar_red
-from ..types import Glyph
+from ..types import Glyph, ProgramTokens
 from ..utils import get_logger, json_dumps
 from ..flatten import parse_program_tokens
 
@@ -148,7 +148,7 @@ def _build_graph_from_args(args: argparse.Namespace) -> "nx.Graph":
     return G
 
 
-def _load_sequence(path: Path) -> list[Any]:
+def _load_sequence(path: Path) -> ProgramTokens:
     try:
         data = read_structured_file(path)
     except (StructuredFileError, OSError) as exc:
@@ -162,8 +162,8 @@ def _load_sequence(path: Path) -> list[Any]:
 
 
 def resolve_program(
-    args: argparse.Namespace, default: Optional[Any] = None
-) -> Optional[Any]:
+    args: argparse.Namespace, default: Optional[ProgramTokens] = None
+) -> Optional[ProgramTokens]:
     if getattr(args, "preset", None):
         try:
             return get_preset(args.preset)
@@ -179,7 +179,9 @@ def resolve_program(
 
 
 def run_program(
-    G: Optional["nx.Graph"], program: Optional[Any], args: argparse.Namespace
+    G: Optional["nx.Graph"],
+    program: Optional[ProgramTokens],
+    args: argparse.Namespace,
 ) -> "nx.Graph":
     if G is None:
         G = _build_graph_from_args(args)
@@ -207,7 +209,7 @@ def run_program(
 def _run_cli_program(
     args: argparse.Namespace,
     *,
-    default_program: Optional[Any] = None,
+    default_program: Optional[ProgramTokens] = None,
     graph: Optional["nx.Graph"] = None,
 ) -> tuple[int, Optional["nx.Graph"]]:
     try:
