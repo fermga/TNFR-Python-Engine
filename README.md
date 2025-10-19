@@ -69,6 +69,8 @@ The `sequence` subcommand loads the canonical trajectory from the JSON file, exe
 
 ## Architecture Overview
 
+For a detailed breakdown of orchestration layers, data paths, and invariant enforcement, consult the [TNFR Architecture Guide](ARCHITECTURE.md).
+
 ### Core packages (`src/tnfr/...`)
 
 ```
