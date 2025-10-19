@@ -29,6 +29,7 @@ from ..helpers.numeric import (
 )
 from ..metrics.trig import neighbor_phase_mean_list
 from ..alias import (
+    collect_attr,
     get_attr,
     set_vf,
     set_attr,
@@ -442,41 +443,190 @@ def coordinate_global_local_phase(
 # -------------------------
 
 
-def adapt_vf_by_coherence(G) -> None:
-    """Adjust νf toward neighbour mean in nodes with sustained stability."""
+def _vf_adapt_chunk(
+    args: tuple[list[tuple[Any, int, tuple[int, ...]]], tuple[float, ...], float]
+) -> list[tuple[Any, float]]:
+    """Return proposed νf updates for ``chunk`` of stable nodes."""
+
+    chunk, vf_values, mu = args
+    updates: list[tuple[Any, float]] = []
+    for node, idx, neighbor_idx in chunk:
+        vf = vf_values[idx]
+        if neighbor_idx:
+            mean = math.fsum(vf_values[j] for j in neighbor_idx) / len(neighbor_idx)
+        else:
+            mean = vf
+        updates.append((node, vf + mu * (mean - vf)))
+    return updates
+
+
+def adapt_vf_by_coherence(G, n_jobs: int | None = None) -> None:
+    """Adjust νf toward neighbour mean in nodes with sustained stability.
+
+    When ``n_jobs`` is greater than one and NumPy is unavailable the stable-node
+    updates are computed in worker processes. The returned proposals are then
+    clamped and applied in the caller to preserve determinism.
+    """
+
     tau = get_graph_param(G, "VF_ADAPT_TAU", int)
-    mu = get_graph_param(G, "VF_ADAPT_MU")
-    eps_dnfr = get_graph_param(G, "EPS_DNFR_STABLE")
+    mu = float(get_graph_param(G, "VF_ADAPT_MU"))
+    eps_dnfr = float(get_graph_param(G, "EPS_DNFR_STABLE"))
     thr_sel = get_graph_param(G, "SELECTOR_THRESHOLDS", dict)
     thr_def = get_graph_param(G, "GLYPH_THRESHOLDS", dict)
     si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
-    vf_min = get_graph_param(G, "VF_MIN")
-    vf_max = get_graph_param(G, "VF_MAX")
+    vf_min = float(get_graph_param(G, "VF_MIN"))
+    vf_max = float(get_graph_param(G, "VF_MAX"))
 
-    updates = {}
-    for n, nd in G.nodes(data=True):
-        Si = get_attr(nd, ALIAS_SI, 0.0)
-        dnfr = abs(get_attr(nd, ALIAS_DNFR, 0.0))
-        if Si >= si_hi and dnfr <= eps_dnfr:
-            nd["stable_count"] = nd.get("stable_count", 0) + 1
+    nodes = list(G.nodes)
+    if not nodes:
+        return
+
+    neighbors_map = ensure_neighbors_map(G)
+    node_count = len(nodes)
+    node_index = {node: idx for idx, node in enumerate(nodes)}
+
+    jobs: int | None
+    if n_jobs is None:
+        jobs = None
+    else:
+        try:
+            jobs = int(n_jobs)
+        except (TypeError, ValueError):
+            jobs = None
         else:
-            nd["stable_count"] = 0
-            continue
+            if jobs <= 1:
+                jobs = None
 
-        if nd["stable_count"] >= tau:
-            vf = get_attr(nd, ALIAS_VF, 0.0)
-            neigh = list(G.neighbors(n))
-            if neigh:
-                total = 0.0
-                for v in neigh:
-                    total += float(get_attr(G.nodes[v], ALIAS_VF, vf))
-                vf_bar = total / len(neigh)
+    np_mod = get_numpy()
+    use_np = np_mod is not None
+
+    si_values = collect_attr(G, nodes, ALIAS_SI, 0.0, np=np_mod if use_np else None)
+    dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np_mod if use_np else None)
+    vf_values = collect_attr(G, nodes, ALIAS_VF, 0.0, np=np_mod if use_np else None)
+
+    if use_np:
+        np = np_mod  # type: ignore[assignment]
+        assert np is not None
+        si_arr = si_values.astype(float, copy=False)
+        dnfr_arr = np.abs(dnfr_values.astype(float, copy=False))
+        vf_arr = vf_values.astype(float, copy=False)
+
+        prev_counts = np.fromiter(
+            (int(G.nodes[node].get("stable_count", 0)) for node in nodes),
+            dtype=int,
+            count=node_count,
+        )
+        stable_mask = (si_arr >= si_hi) & (dnfr_arr <= eps_dnfr)
+        new_counts = np.where(stable_mask, prev_counts + 1, 0)
+
+        for node, count in zip(nodes, new_counts.tolist()):
+            G.nodes[node]["stable_count"] = int(count)
+
+        eligible_mask = new_counts >= tau
+        if not bool(eligible_mask.any()):
+            return
+
+        max_degree = 0
+        if node_count:
+            degree_counts = np.fromiter(
+                (len(neighbors_map.get(node, ())) for node in nodes),
+                dtype=int,
+                count=node_count,
+            )
+            if degree_counts.size:
+                max_degree = int(degree_counts.max())
+
+        if max_degree > 0:
+            neighbor_indices = np.zeros((node_count, max_degree), dtype=int)
+            mask = np.zeros((node_count, max_degree), dtype=bool)
+            for idx, node in enumerate(nodes):
+                neigh = neighbors_map.get(node, ())
+                if not neigh:
+                    continue
+                idxs = [node_index[nbr] for nbr in neigh if nbr in node_index]
+                if not idxs:
+                    continue
+                length = len(idxs)
+                neighbor_indices[idx, :length] = idxs
+                mask[idx, :length] = True
+            neighbor_values = vf_arr[neighbor_indices]
+            sums = (neighbor_values * mask).sum(axis=1)
+            counts = mask.sum(axis=1)
+            neighbor_means = np.where(counts > 0, sums / counts, vf_arr)
+        else:
+            neighbor_means = vf_arr
+
+        vf_updates = vf_arr + mu * (neighbor_means - vf_arr)
+        for idx in np.nonzero(eligible_mask)[0]:
+            node = nodes[int(idx)]
+            vf_new = clamp(float(vf_updates[int(idx)]), vf_min, vf_max)
+            set_vf(G, node, vf_new)
+        return
+
+    # Pure-Python fallback
+    si_list = [float(val) for val in si_values]
+    dnfr_list = [abs(float(val)) for val in dnfr_values]
+    vf_list = [float(val) for val in vf_values]
+
+    prev_counts = [int(G.nodes[node].get("stable_count", 0)) for node in nodes]
+    stable_flags = [
+        si >= si_hi and dnfr <= eps_dnfr
+        for si, dnfr in zip(si_list, dnfr_list)
+    ]
+    new_counts = [prev + 1 if flag else 0 for prev, flag in zip(prev_counts, stable_flags)]
+
+    for node, count in zip(nodes, new_counts):
+        G.nodes[node]["stable_count"] = int(count)
+
+    eligible_nodes = [node for node, count in zip(nodes, new_counts) if count >= tau]
+    if not eligible_nodes:
+        return
+
+    if jobs is None:
+        for node in eligible_nodes:
+            idx = node_index[node]
+            neigh_indices = [
+                node_index[nbr]
+                for nbr in neighbors_map.get(node, ())
+                if nbr in node_index
+            ]
+            if neigh_indices:
+                total = math.fsum(vf_list[i] for i in neigh_indices)
+                mean = total / len(neigh_indices)
             else:
-                vf_bar = float(vf)
-            updates[n] = vf + mu * (vf_bar - vf)
+                mean = vf_list[idx]
+            vf_new = vf_list[idx] + mu * (mean - vf_list[idx])
+            set_vf(G, node, clamp(float(vf_new), vf_min, vf_max))
+        return
 
-    for n, vf_new in updates.items():
-        set_vf(G, n, clamp(vf_new, vf_min, vf_max))
+    work_items: list[tuple[Any, int, tuple[int, ...]]] = []
+    for node in eligible_nodes:
+        idx = node_index[node]
+        neigh_indices = tuple(
+            node_index[nbr]
+            for nbr in neighbors_map.get(node, ())
+            if nbr in node_index
+        )
+        work_items.append((node, idx, neigh_indices))
+
+    chunk_size = max(1, math.ceil(len(work_items) / jobs))
+    chunks = [
+        work_items[i : i + chunk_size]
+        for i in range(0, len(work_items), chunk_size)
+    ]
+    vf_tuple = tuple(vf_list)
+    updates: dict[Any, float] = {}
+    with ProcessPoolExecutor(max_workers=jobs) as executor:
+        args = ((chunk, vf_tuple, mu) for chunk in chunks)
+        for chunk_updates in executor.map(_vf_adapt_chunk, args):
+            for node, value in chunk_updates:
+                updates[node] = float(value)
+
+    for node in eligible_nodes:
+        vf_new = updates.get(node)
+        if vf_new is None:
+            continue
+        set_vf(G, node, clamp(float(vf_new), vf_min, vf_max))
 
 
 # -------------------------
@@ -766,7 +916,15 @@ def _update_nodes(
     except (TypeError, ValueError):
         phase_jobs = None
     coordinate_global_local_phase(G, None, None, n_jobs=phase_jobs)
-    adapt_vf_by_coherence(G)
+    raw_vf_jobs = G.graph.get("VF_ADAPT_N_JOBS")
+    try:
+        vf_jobs = None if raw_vf_jobs is None else int(raw_vf_jobs)
+    except (TypeError, ValueError):
+        vf_jobs = None
+    else:
+        if vf_jobs is not None and vf_jobs <= 0:
+            vf_jobs = None
+    adapt_vf_by_coherence(G, n_jobs=vf_jobs)
 
 
 def _update_epi_hist(G) -> None:
