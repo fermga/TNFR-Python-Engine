@@ -12,6 +12,7 @@ from ..config.constants import GLYPHS_CANONICAL
 from ..glyph_history import ensure_history
 from ..io import safe_write
 from ..utils import json_dumps
+from ..types import Graph
 from .core import glyphogram_series
 from .glyph_timing import GlyphogramRow, SigmaTrace
 
@@ -44,7 +45,7 @@ def _iter_glif_rows(
         yield [t] + [col[i] for col in cols]
 
 
-def export_metrics(G: object, base_path: str, fmt: str = "csv") -> None:
+def export_metrics(G: Graph, base_path: str, fmt: str = "csv") -> None:
     """Dump glyphogram and σ(t) trace to compact CSV or JSON files."""
     hist = ensure_history(G)
     glyph = glyphogram_series(G)
