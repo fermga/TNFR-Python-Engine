@@ -25,17 +25,17 @@ A form emerges and persists when **internal reorganization** (ΔNFR) **resonates
 ```python
 from tnfr import create_nfr, run_sequence
 from tnfr.structural import (
-    Emision,
-    Recepcion,
-    Coherencia,
-    Resonancia,
-    Silencio,
+    Emision as Emission,
+    Recepcion as Reception,
+    Coherencia as Coherence,
+    Resonancia as Resonance,
+    Silencio as Silence,
 )
 from tnfr.metrics.common import compute_coherence
 from tnfr.metrics.sense_index import compute_Si
 
 G, node = create_nfr("A", epi=0.2, vf=1.0, theta=0.0)
-ops = [Emision(), Recepcion(), Coherencia(), Resonancia(), Silencio()]
+ops = [Emission(), Reception(), Coherence(), Resonance(), Silence()]
 run_sequence(G, node, ops)
 
 C, mean_delta_nfr, mean_depi = compute_coherence(G, return_means=True)
@@ -43,13 +43,13 @@ si_per_node = compute_Si(G)
 print(f"C(t)={C:.3f}, ΔNFR̄={mean_delta_nfr:.3f}, dEPI/dt̄={mean_depi:.3f}, Si={si_per_node[node]:.3f}")
 ```
 
-The sequence preserves the nodal equation because `create_nfr` seeds the node with its **νf** and phase, and `run_sequence` validates the TNFR grammar before applying the operators in the requested order. After each operator it triggers the graph hook `compute_delta_nfr` to recompute only **ΔNFR** (by default using `dnfr_epi_vf_mixed`, which blends EPI and νf without altering phase). The phase changes only when operators mutate it or when you execute later dynamic steps (for example `tnfr.dynamics.step` or `coordinate_global_local_phase`). When you require automatic phase coordination, run the complete dynamics cycle (`tnfr.dynamics.step`/`tnfr.dynamics.run`) or call the phase coordinators explicitly after `run_sequence`. That telemetry exposes **C(t)** and **Si**, anticipating the material covered in [Key concepts (operational summary)](#key-concepts-operational-summary) and [Main metrics](#main-metrics).
+The sequence preserves the nodal equation because `create_nfr` seeds the node with its **νf** and phase, and `run_sequence` validates the TNFR grammar before applying the operators in the requested order. The Emission→Reception→Coherence→Resonance→Silence chain keeps the structural grammar aligned with the canonical tokens listed in the table below. After each operator it triggers the graph hook `compute_delta_nfr` to recompute only **ΔNFR** (by default using `dnfr_epi_vf_mixed`, which blends EPI and νf without altering phase). The phase changes only when operators mutate it or when you execute later dynamic steps (for example `tnfr.dynamics.step` or `coordinate_global_local_phase`). When you require automatic phase coordination, run the complete dynamics cycle (`tnfr.dynamics.step`/`tnfr.dynamics.run`) or call the phase coordinators explicitly after `run_sequence`. That telemetry exposes **C(t)** and **Si**, anticipating the material covered in [Key concepts (operational summary)](#key-concepts-operational-summary) and [Main metrics](#main-metrics). Refer to the table below for the mapping between the canonical operator tokens and their English names used in this narrative.
 
 Both `step` and `run` accept an optional `n_jobs` dictionary to pin the number of processes or threads used in each parallel stage (ΔNFR, Si, integrators, phase coordination, νf adaptation) without persisting those overrides into `G.graph`.
 
 ### From the command line
 
-File `sequence.json`:
+File `sequence.json` (tokens match the Emission→Reception→Coherence→Resonance→Silence order):
 
 ```json
 [
@@ -65,7 +65,15 @@ File `sequence.json`:
 tnfr sequence --nodes 1 --sequence-file sequence.json --save-history history.json
 ```
 
-The `sequence` subcommand loads the canonical trajectory from the JSON file, executes the operators with the official grammar, and updates **νf**, **ΔNFR**, and phase using the same hooks as the Python API. When it finishes it writes the series for **C(t)**, mean **ΔNFR**, and **Si** to `history.json`, complementing the sections on [structural operators](#key-concepts-operational-summary) and [metrics](#main-metrics).
+| Canonical token | English operator name |
+| ---------------- | --------------------- |
+| `emision`        | Emission              |
+| `recepcion`      | Reception             |
+| `coherencia`     | Coherence             |
+| `resonancia`     | Resonance             |
+| `silencio`       | Silence               |
+
+The `sequence` subcommand loads the canonical trajectory from the JSON file, executes the operators with the official grammar, and updates **νf**, **ΔNFR**, and phase using the same hooks as the Python API. The table above keeps the canonical lowercase tokens aligned with the English operator names so the CLI command remains exact while the explanation stays in technical English. When it finishes it writes the series for **C(t)**, mean **ΔNFR**, and **Si** to `history.json`, complementing the sections on [structural operators](#key-concepts-operational-summary) and [metrics](#main-metrics).
 
 ## Architecture Overview
 
