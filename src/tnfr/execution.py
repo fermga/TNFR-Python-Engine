@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
-from typing import Any, Optional
+from typing import Any, Optional, TypeAlias, cast
 
 import networkx as nx  # networkx is used at runtime
 
@@ -14,14 +14,18 @@ from .dynamics import step
 from .flatten import _flatten
 from .glyph_history import ensure_history
 from .validation.grammar import apply_glyph_with_grammar
+from .tokens import Node as TokenNode
 from .tokens import OpTag, TARGET, THOL, WAIT, Token
 from .types import Glyph
 
-Node = Any
-AdvanceFn = Callable[[Any], None]
+Graph: TypeAlias = nx.Graph
+Node: TypeAlias = TokenNode
+AdvanceFn = Callable[[Graph], None]
+TraceEntry = dict[str, Any]
+ProgramTrace: TypeAlias = deque[TraceEntry]
 HandlerFn = Callable[
-    [nx.Graph, Any, Optional[list[Node]], deque, AdvanceFn],
-    Optional[list[Node]],
+    [Graph, Any, Optional[Sequence[Node]], ProgramTrace, AdvanceFn],
+    Optional[Sequence[Node]],
 ]
 
 __all__ = [
@@ -52,13 +56,13 @@ CANONICAL_PROGRAM_TOKENS: tuple[Token, ...] = (
 )
 
 
-def _window(G) -> int:
+def _window(G: Graph) -> int:
     return int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
 
 
 def _apply_glyph_to_targets(
-    G, g: Glyph | str, nodes: Optional[Iterable[Node]] = None
-):
+    G: Graph, g: Glyph | str, nodes: Optional[Iterable[Node]] = None
+) -> None:
     """Apply ``g`` to ``nodes`` (or all nodes) respecting the grammar."""
 
     nodes_iter = G.nodes() if nodes is None else nodes
@@ -66,22 +70,22 @@ def _apply_glyph_to_targets(
     apply_glyph_with_grammar(G, nodes_iter, g, w)
 
 
-def _advance(G, step_fn: AdvanceFn):
+def _advance(G: Graph, step_fn: AdvanceFn) -> None:
     step_fn(G)
 
 
-def _record_trace(trace: deque, G, op: OpTag, **data) -> None:
+def _record_trace(trace: ProgramTrace, G: Graph, op: OpTag, **data: Any) -> None:
     trace.append({"t": float(G.graph.get("_t", 0.0)), "op": op.name, **data})
 
 
 def _advance_and_record(
-    G,
-    trace: deque,
+    G: Graph,
+    trace: ProgramTrace,
     label: OpTag,
     step_fn: AdvanceFn,
     *,
     times: int = 1,
-    **data,
+    **data: Any,
 ) -> None:
     for _ in range(times):
         _advance(G, step_fn)
@@ -89,40 +93,55 @@ def _advance_and_record(
 
 
 def _handle_target(
-    G, payload: TARGET, _curr_target, trace: deque, _step_fn: AdvanceFn
-):
+    G: Graph,
+    payload: TARGET,
+    _curr_target: Optional[Sequence[Node]],
+    trace: ProgramTrace,
+    _step_fn: AdvanceFn,
+) -> Sequence[Node]:
     """Handle a ``TARGET`` token and return the active node set."""
 
     nodes_src = G.nodes() if payload.nodes is None else payload.nodes
     nodes = ensure_collection(nodes_src, max_materialize=None)
-    curr_target = nodes if is_non_string_sequence(nodes) else tuple(nodes)
+    if is_non_string_sequence(nodes):
+        curr_target = cast(Sequence[Node], nodes)
+    else:
+        curr_target = tuple(nodes)
     _record_trace(trace, G, OpTag.TARGET, n=len(curr_target))
     return curr_target
 
 
 def _handle_wait(
-    G, steps: int, curr_target, trace: deque, step_fn: AdvanceFn
-):
+    G: Graph,
+    steps: int,
+    curr_target: Optional[Sequence[Node]],
+    trace: ProgramTrace,
+    step_fn: AdvanceFn,
+) -> Optional[Sequence[Node]]:
     _advance_and_record(G, trace, OpTag.WAIT, step_fn, times=steps, k=steps)
     return curr_target
 
 
 def _handle_glyph(
-    G,
-    g: str,
-    curr_target,
-    trace: deque,
+    G: Graph,
+    g: Glyph | str,
+    curr_target: Optional[Sequence[Node]],
+    trace: ProgramTrace,
     step_fn: AdvanceFn,
     label: OpTag = OpTag.GLYPH,
-):
+) -> Optional[Sequence[Node]]:
     _apply_glyph_to_targets(G, g, curr_target)
     _advance_and_record(G, trace, label, step_fn, g=g)
     return curr_target
 
 
 def _handle_thol(
-    G, g, curr_target, trace: deque, step_fn: AdvanceFn
-):
+    G: Graph,
+    g: Glyph | str | None,
+    curr_target: Optional[Sequence[Node]],
+    trace: ProgramTrace,
+    step_fn: AdvanceFn,
+) -> Optional[Sequence[Node]]:
     return _handle_glyph(
         G, g or Glyph.THOL.value, curr_target, trace, step_fn, label=OpTag.THOL
     )
@@ -137,20 +156,23 @@ HANDLERS: dict[OpTag, HandlerFn] = {
 
 
 def play(
-    G, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None
+    G: Graph, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None
 ) -> None:
     """Execute a canonical sequence on graph ``G``."""
 
     step_fn = step_fn or step
 
-    curr_target: Optional[list[Node]] = None
+    curr_target: Optional[Sequence[Node]] = None
 
     history = ensure_history(G)
     maxlen = int(get_param(G, "PROGRAM_TRACE_MAXLEN"))
-    trace = history.get("program_trace")
-    if not isinstance(trace, deque) or trace.maxlen != maxlen:
-        trace = deque(trace or [], maxlen=maxlen)
+    trace_obj = history.get("program_trace")
+    trace: ProgramTrace
+    if not isinstance(trace_obj, deque) or trace_obj.maxlen != maxlen:
+        trace = cast(ProgramTrace, deque(trace_obj or [], maxlen=maxlen))
         history["program_trace"] = trace
+    else:
+        trace = cast(ProgramTrace, trace_obj)
 
     for op, payload in _flatten(sequence):
         handler: HandlerFn | None = HANDLERS.get(op)
