@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Mapping, Sequence
 
 __all__: Any
 
@@ -38,3 +38,47 @@ normalize_dnfr: Any
 partial: Any
 register_diagnosis_callbacks: Any
 similarity_abs: Any
+
+class RLocalWorkerArgs:
+    chunk: Sequence[Any]
+    coherence_nodes: Sequence[Any]
+    weight_matrix: Any
+    weight_index: Mapping[Any, int]
+    neighbors_map: Mapping[Any, tuple[Any, ...]]
+    cos_map: Mapping[Any, float]
+    sin_map: Mapping[Any, float]
+
+    def __init__(
+        self,
+        chunk: Sequence[Any],
+        coherence_nodes: Sequence[Any],
+        weight_matrix: Any,
+        weight_index: Mapping[Any, int],
+        neighbors_map: Mapping[Any, tuple[Any, ...]],
+        cos_map: Mapping[Any, float],
+        sin_map: Mapping[Any, float],
+    ) -> None: ...
+
+
+class NeighborMeanWorkerArgs:
+    chunk: Sequence[Any]
+    neighbors_map: Mapping[Any, tuple[Any, ...]]
+    epi_map: Mapping[Any, float]
+
+    def __init__(
+        self,
+        chunk: Sequence[Any],
+        neighbors_map: Mapping[Any, tuple[Any, ...]],
+        epi_map: Mapping[Any, float],
+    ) -> None: ...
+
+
+def _rlocal_worker(args: RLocalWorkerArgs) -> list[float]: ...
+
+def _neighbor_mean_worker(args: NeighborMeanWorkerArgs) -> list[float | None]: ...
+
+def _state_from_thresholds(Rloc: float, dnfr_n: float, cfg: Mapping[str, Any]) -> str: ...
+
+def _recommendation(state: str, cfg: Mapping[str, Any]) -> list[Any]: ...
+
+def _get_last_weights(G: Any, hist: Mapping[str, Sequence[Any]]) -> tuple[Any | None, Any | None]: ...

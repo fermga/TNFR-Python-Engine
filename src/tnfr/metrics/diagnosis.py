@@ -1,13 +1,17 @@
 """Diagnostic metrics."""
 
+# mypy: allow-untyped-defs
+
 from __future__ import annotations
 
 import math
 from concurrent.futures import ProcessPoolExecutor
+from dataclasses import dataclass
 from functools import partial
 from operator import ge, le
 from statistics import StatisticsError, fmean
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable, cast
+from collections.abc import Mapping, Sequence
 
 from ..constants import (
     VF_KEY,
@@ -45,14 +49,14 @@ def _coerce_jobs(raw_jobs: Any | None) -> int | None:
 def _coherence_matrix_to_numpy(
     weight_matrix: Any,
     size: int,
-    np_mod,
-):
+    np_mod: Any,
+) -> Any:
     """Convert stored coherence weights into a dense NumPy array."""
 
     if weight_matrix is None or np_mod is None or size <= 0:
         return None
 
-    ndarray_type = getattr(np_mod, "ndarray", tuple())
+    ndarray_type: Any = getattr(np_mod, "ndarray", tuple())
     if ndarray_type and isinstance(weight_matrix, ndarray_type):
         matrix = weight_matrix.astype(float, copy=True)
     elif isinstance(weight_matrix, (list, tuple)):
@@ -83,11 +87,11 @@ def _coherence_matrix_to_numpy(
 
 
 def _weighted_phase_sync_vectorized(
-    matrix,
-    cos_vals,
-    sin_vals,
-    np_mod,
-):
+    matrix: Any,
+    cos_vals: Any,
+    sin_vals: Any,
+    np_mod: Any,
+) -> Any:
     """Vectorised computation of weighted local phase synchrony."""
 
     denom = np_mod.sum(matrix, axis=1)
@@ -101,13 +105,13 @@ def _weighted_phase_sync_vectorized(
 
 
 def _unweighted_phase_sync_vectorized(
-    nodes: list[Any],
-    neighbors_map: dict[Any, tuple[Any, ...]],
-    cos_arr,
-    sin_arr,
-    index_map: dict[Any, int],
-    np_mod,
-):
+    nodes: Sequence[Any],
+    neighbors_map: Mapping[Any, tuple[Any, ...]],
+    cos_arr: Any,
+    sin_arr: Any,
+    index_map: Mapping[Any, int],
+    np_mod: Any,
+) -> list[float]:
     """Compute unweighted phase synchrony using NumPy helpers."""
 
     results: list[float] = []
@@ -133,12 +137,12 @@ def _unweighted_phase_sync_vectorized(
 
 
 def _neighbor_means_vectorized(
-    nodes: list[Any],
-    neighbors_map: dict[Any, tuple[Any, ...]],
-    epi_arr,
-    index_map: dict[Any, int],
-    np_mod,
-):
+    nodes: Sequence[Any],
+    neighbors_map: Mapping[Any, tuple[Any, ...]],
+    epi_arr: Any,
+    index_map: Mapping[Any, int],
+    np_mod: Any,
+) -> list[float | None]:
     """Vectorized helper to compute neighbour EPI means."""
 
     results: list[float | None] = []
@@ -156,55 +160,67 @@ def _neighbor_means_vectorized(
     return results
 
 
-def _rlocal_worker(args):
+@dataclass(frozen=True)
+class RLocalWorkerArgs:
+    """Typed payload passed to :func:`_rlocal_worker`."""
+
+    chunk: Sequence[Any]
+    coherence_nodes: Sequence[Any]
+    weight_matrix: Any
+    weight_index: Mapping[Any, int]
+    neighbors_map: Mapping[Any, tuple[Any, ...]]
+    cos_map: Mapping[Any, float]
+    sin_map: Mapping[Any, float]
+
+
+@dataclass(frozen=True)
+class NeighborMeanWorkerArgs:
+    """Typed payload passed to :func:`_neighbor_mean_worker`."""
+
+    chunk: Sequence[Any]
+    neighbors_map: Mapping[Any, tuple[Any, ...]]
+    epi_map: Mapping[Any, float]
+
+
+def _rlocal_worker(args: RLocalWorkerArgs) -> list[float]:
     """Worker used to compute ``R_local`` in Python fallbacks."""
 
-    (
-        chunk,
-        coherence_nodes,
-        weight_matrix,
-        weight_index,
-        neighbors_map,
-        cos_map,
-        sin_map,
-    ) = args
     results: list[float] = []
-    for node in chunk:
-        if coherence_nodes and weight_matrix is not None:
-            idx = weight_index.get(node)
+    for node in args.chunk:
+        if args.coherence_nodes and args.weight_matrix is not None:
+            idx = args.weight_index.get(node)
             if idx is None:
                 rloc = 0.0
             else:
                 rloc = _weighted_phase_sync_from_matrix(
                     idx,
                     node,
-                    coherence_nodes,
-                    weight_matrix,
-                    cos_map,
-                    sin_map,
+                    args.coherence_nodes,
+                    args.weight_matrix,
+                    args.cos_map,
+                    args.sin_map,
                 )
         else:
             rloc = _local_phase_sync_unweighted(
-                neighbors_map.get(node, ()),
-                cos_map,
-                sin_map,
+                args.neighbors_map.get(node, ()),
+                args.cos_map,
+                args.sin_map,
             )
         results.append(float(rloc))
     return results
 
 
-def _neighbor_mean_worker(args):
+def _neighbor_mean_worker(args: NeighborMeanWorkerArgs) -> list[float | None]:
     """Worker used to compute neighbour EPI means in Python mode."""
 
-    chunk, neighbors_map, epi_map = args
     results: list[float | None] = []
-    for node in chunk:
-        neighbors = neighbors_map.get(node, ())
+    for node in args.chunk:
+        neighbors = args.neighbors_map.get(node, ())
         if not neighbors:
             results.append(None)
             continue
         try:
-            results.append(fmean(epi_map[nb] for nb in neighbors))
+            results.append(fmean(args.epi_map[nb] for nb in neighbors))
         except StatisticsError:
             results.append(None)
     return results
@@ -213,10 +229,10 @@ def _neighbor_mean_worker(args):
 def _weighted_phase_sync_from_matrix(
     node_index: int,
     node: Any,
-    nodes_order: list[Any],
+    nodes_order: Sequence[Any],
     matrix: Any,
-    cos_map: dict[Any, float],
-    sin_map: dict[Any, float],
+    cos_map: Mapping[Any, float],
+    sin_map: Mapping[Any, float],
 ) -> float:
     """Compute weighted phase synchrony using a cached matrix."""
 
@@ -262,8 +278,8 @@ def _weighted_phase_sync_from_matrix(
 
 def _local_phase_sync_unweighted(
     neighbors: Iterable[Any],
-    cos_map: dict[Any, float],
-    sin_map: dict[Any, float],
+    cos_map: Mapping[Any, float],
+    sin_map: Mapping[Any, float],
 ) -> float:
     """Fallback unweighted phase synchrony based on neighbours."""
 
@@ -279,7 +295,11 @@ def _local_phase_sync_unweighted(
     return abs(num / den) if den else 0.0
 
 
-def _state_from_thresholds(Rloc, dnfr_n, cfg):
+def _state_from_thresholds(
+    Rloc: float,
+    dnfr_n: float,
+    cfg: Mapping[str, Any],
+) -> str:
     stb = cfg.get("stable", {"Rloc_hi": 0.8, "dnfr_lo": 0.2, "persist": 3})
     dsr = cfg.get("dissonance", {"Rloc_lo": 0.4, "dnfr_hi": 0.5, "persist": 3})
 
@@ -300,7 +320,7 @@ def _state_from_thresholds(Rloc, dnfr_n, cfg):
     return TRANSICION
 
 
-def _recommendation(state, cfg):
+def _recommendation(state: str, cfg: Mapping[str, Any]) -> list[Any]:
     adv = cfg.get("advice", {})
     key = {
         "estable": "stable",
@@ -310,7 +330,10 @@ def _recommendation(state, cfg):
     return list(adv.get(key, []))
 
 
-def _get_last_weights(G, hist):
+def _get_last_weights(
+    G: Any,
+    hist: Mapping[str, Sequence[Any]],
+) -> tuple[Any | None, Any | None]:
     """Return last Wi and Wm matrices from history."""
     CfgW = get_param(G, "COHERENCE")
     Wkey = CfgW.get("Wi_history_key", "W_i")
@@ -435,9 +458,14 @@ def _diagnosis_step(
         append_metric(hist, key, {})
         return
 
+    rloc_values: list[float]
+
     if supports_vector:
         epi_arr = np_mod.fromiter(
-            (float(get_attr(nd, ALIAS_EPI, 0.0)) for _, nd in nodes_data),
+            (
+                cast(float, get_attr(nd, ALIAS_EPI, 0.0))
+                for _, nd in nodes_data
+            ),
             dtype=float,
             count=len(nodes_data),
         )
@@ -447,7 +475,10 @@ def _diagnosis_step(
 
         si_arr = np_mod.clip(
             np_mod.fromiter(
-                (float(get_attr(nd, ALIAS_SI, 0.0)) for _, nd in nodes_data),
+                (
+                    cast(float, get_attr(nd, ALIAS_SI, 0.0))
+                    for _, nd in nodes_data
+                ),
                 dtype=float,
                 count=len(nodes_data),
             ),
@@ -457,7 +488,10 @@ def _diagnosis_step(
         si_vals = si_arr.tolist()
 
         vf_arr = np_mod.fromiter(
-            (float(get_attr(nd, ALIAS_VF, 0.0)) for _, nd in nodes_data),
+            (
+                cast(float, get_attr(nd, ALIAS_VF, 0.0))
+                for _, nd in nodes_data
+            ),
             dtype=float,
             count=len(nodes_data),
         )
@@ -467,7 +501,7 @@ def _diagnosis_step(
             dnfr_arr = np_mod.clip(
                 np_mod.fromiter(
                     (
-                        abs(float(get_attr(nd, ALIAS_DNFR, 0.0)))
+                        abs(cast(float, get_attr(nd, ALIAS_DNFR, 0.0)))
                         for _, nd in nodes_data
                     ),
                     dtype=float,
@@ -481,10 +515,10 @@ def _diagnosis_step(
         else:
             dnfr_norms = [0.0] * len(nodes)
     else:
-        epi_vals = [float(get_attr(nd, ALIAS_EPI, 0.0)) for _, nd in nodes_data]
+        epi_vals = [cast(float, get_attr(nd, ALIAS_EPI, 0.0)) for _, nd in nodes_data]
         epi_min, epi_max = min_max_range(epi_vals, default=(0.0, 1.0))
         si_vals = [clamp01(get_attr(nd, ALIAS_SI, 0.0)) for _, nd in nodes_data]
-        vf_vals = [float(get_attr(nd, ALIAS_VF, 0.0)) for _, nd in nodes_data]
+        vf_vals = [cast(float, get_attr(nd, ALIAS_VF, 0.0)) for _, nd in nodes_data]
         dnfr_norms = [
             normalize_dnfr(nd, dnfr_max) if dnfr_max > 0 else 0.0
             for _, nd in nodes_data
@@ -571,19 +605,19 @@ def _diagnosis_step(
     else:
         if n_jobs and n_jobs > 1 and len(nodes) > 1:
             chunk_size = max(1, math.ceil(len(nodes) / n_jobs))
-            rloc_values: list[float] = []
+            rloc_values = []
             with ProcessPoolExecutor(max_workers=n_jobs) as executor:
                 futures = [
                     executor.submit(
                         _rlocal_worker,
-                        (
-                            nodes[idx : idx + chunk_size],
-                            coherence_nodes,
-                            weight_matrix,
-                            weight_index,
-                            neighbors_map,
-                            cos_map,
-                            sin_map,
+                        RLocalWorkerArgs(
+                            chunk=nodes[idx : idx + chunk_size],
+                            coherence_nodes=coherence_nodes,
+                            weight_matrix=weight_matrix,
+                            weight_index=weight_index,
+                            neighbors_map=neighbors_map,
+                            cos_map=cos_map,
+                            sin_map=sin_map,
                         ),
                     )
                     for idx in range(0, len(nodes), chunk_size)
@@ -592,14 +626,14 @@ def _diagnosis_step(
                     rloc_values.extend(fut.result())
         else:
             rloc_values = _rlocal_worker(
-                (
-                    nodes,
-                    coherence_nodes,
-                    weight_matrix,
-                    weight_index,
-                    neighbors_map,
-                    cos_map,
-                    sin_map,
+                RLocalWorkerArgs(
+                    chunk=nodes,
+                    coherence_nodes=coherence_nodes,
+                    weight_matrix=weight_matrix,
+                    weight_index=weight_index,
+                    neighbors_map=neighbors_map,
+                    cos_map=cos_map,
+                    sin_map=sin_map,
                 )
             )
 
@@ -609,6 +643,7 @@ def _diagnosis_step(
         wi_values = [None] * len(nodes)
 
     compute_symmetry = bool(dcfg.get("compute_symmetry", True))
+    neighbor_means: list[float | None]
     if compute_symmetry:
         if supports_vector and node_index_map is not None and len(nodes):
             neighbor_means = _neighbor_means_vectorized(
@@ -620,19 +655,35 @@ def _diagnosis_step(
             )
         elif n_jobs and n_jobs > 1 and len(nodes) > 1:
             chunk_size = max(1, math.ceil(len(nodes) / n_jobs))
-            neighbor_means = []
+            neighbor_means = cast(list[float | None], [])
             with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+                submit = cast(Callable[..., Any], executor.submit)
                 futures = [
-                    executor.submit(
-                        _neighbor_mean_worker,
-                        (nodes[idx : idx + chunk_size], neighbors_map, epi_map),
+                    submit(
+                        cast(
+                            Callable[[NeighborMeanWorkerArgs], list[float | None]],
+                            _neighbor_mean_worker,
+                        ),
+                        NeighborMeanWorkerArgs(
+                            chunk=nodes[idx : idx + chunk_size],
+                            neighbors_map=neighbors_map,
+                            epi_map=epi_map,
+                        ),
                     )
                     for idx in range(0, len(nodes), chunk_size)
                 ]
                 for fut in futures:
-                    neighbor_means.extend(fut.result())
+                    neighbor_means.extend(
+                        cast(list[float | None], fut.result())
+                    )
         else:
-            neighbor_means = _neighbor_mean_worker((nodes, neighbors_map, epi_map))
+            neighbor_means = _neighbor_mean_worker(
+                NeighborMeanWorkerArgs(
+                    chunk=nodes,
+                    neighbors_map=neighbors_map,
+                    epi_map=epi_map,
+                )
+            )
     else:
         neighbor_means = [None] * len(nodes)
 
@@ -663,16 +714,25 @@ def _diagnosis_step(
         chunk_size = max(1, math.ceil(len(node_payload) / n_jobs))
         diag_pairs: list[tuple[Any, dict[str, Any]]] = []
         with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+            submit = cast(Callable[..., Any], executor.submit)
             futures = [
-                executor.submit(
-                    _diagnosis_worker_chunk,
+                submit(
+                    cast(
+                        Callable[
+                            [list[dict[str, Any]], dict[str, Any]],
+                            list[tuple[Any, dict[str, Any]]],
+                        ],
+                        _diagnosis_worker_chunk,
+                    ),
                     node_payload[idx : idx + chunk_size],
                     shared,
                 )
                 for idx in range(0, len(node_payload), chunk_size)
             ]
             for fut in futures:
-                diag_pairs.extend(fut.result())
+                diag_pairs.extend(
+                    cast(Iterable[tuple[Any, dict[str, Any]]], fut.result())
+                )
     else:
         diag_pairs = [_node_diagnostics(item, shared) for item in node_payload]
 
