@@ -129,7 +129,7 @@ def _glyph_history_proxy(name: str) -> Callable[..., Any]:
 
     target: dict[str, Callable[..., Any] | None] = {"func": None}
 
-    def _call(*args: Any, **kwargs: Any):
+    def _call(*args: Any, **kwargs: Any) -> Any:
         func = target["func"]
         if func is None:
             from .. import glyph_history as _glyph_history
