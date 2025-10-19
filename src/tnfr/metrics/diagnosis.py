@@ -1,7 +1,5 @@
 """Diagnostic metrics."""
 
-# mypy: allow-untyped-defs
-
 from __future__ import annotations
 
 import math
@@ -23,6 +21,16 @@ from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import append_metric, ensure_history
 from ..alias import get_attr
 from ..helpers.numeric import clamp01, similarity_abs
+from ..types import (
+    DiagnosisNodeData,
+    DiagnosisPayload,
+    DiagnosisPayloadChunk,
+    DiagnosisResult,
+    DiagnosisResultList,
+    DiagnosisSharedState,
+    NodeId,
+    TNFRGraph,
+)
 from ..utils import get_numpy
 from .common import compute_dnfr_accel_max, min_max_range, normalize_dnfr
 from .coherence import coherence_matrix, local_phase_sync
@@ -345,7 +353,10 @@ def _get_last_weights(
     return Wi_last, Wm_last
 
 
-def _node_diagnostics(node_data: dict[str, Any], shared: dict[str, Any]):
+def _node_diagnostics(
+    node_data: DiagnosisNodeData,
+    shared: DiagnosisSharedState,
+) -> DiagnosisResult:
     """Compute diagnostic payload for a single node."""
 
     dcfg = shared["dcfg"]
@@ -374,38 +385,38 @@ def _node_diagnostics(node_data: dict[str, Any], shared: dict[str, Any]):
 
     advice = _recommendation(state, dcfg)
 
-    return (
-        node,
-        {
-            "node": node,
-            "Si": Si,
-            "EPI": EPI,
-            VF_KEY: vf,
-            "dnfr_norm": dnfr_n,
-            "W_i": node_data.get("W_i"),
-            "R_local": Rloc,
-            "symmetry": symm,
-            "state": state,
-            "advice": advice,
-            "alerts": alerts,
-        },
-    )
+    payload: DiagnosisPayload = {
+        "node": node,
+        "Si": Si,
+        "EPI": EPI,
+        VF_KEY: vf,
+        "dnfr_norm": dnfr_n,
+        "W_i": node_data.get("W_i"),
+        "R_local": Rloc,
+        "symmetry": symm,
+        "state": state,
+        "advice": advice,
+        "alerts": alerts,
+    }
+
+    return node, payload
 
 
 def _diagnosis_worker_chunk(
-    chunk: list[dict[str, Any]], shared: dict[str, Any]
-) -> list[tuple[Any, dict[str, Any]]]:
+    chunk: DiagnosisPayloadChunk,
+    shared: DiagnosisSharedState,
+) -> DiagnosisResultList:
     """Evaluate diagnostics for a chunk of nodes."""
 
     return [_node_diagnostics(item, shared) for item in chunk]
 
 
 def _diagnosis_step(
-    G,
-    ctx: dict[str, Any] | None = None,
+    G: TNFRGraph,
+    ctx: DiagnosisSharedState | None = None,
     *,
     n_jobs: int | None = None,
-):
+) -> None:
     del ctx
 
     if n_jobs is None:
@@ -424,8 +435,8 @@ def _diagnosis_step(
     G.graph["_sel_norms"] = norms
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
 
-    nodes_data = list(G.nodes(data=True))
-    nodes = [n for n, _ in nodes_data]
+    nodes_data: list[tuple[NodeId, dict[str, Any]]] = list(G.nodes(data=True))
+    nodes: list[NodeId] = [n for n, _ in nodes_data]
 
     Wi_last, Wm_last = _get_last_weights(G, hist)
 
@@ -687,7 +698,7 @@ def _diagnosis_step(
     else:
         neighbor_means = [None] * len(nodes)
 
-    node_payload: list[dict[str, Any]] = []
+    node_payload: DiagnosisPayloadChunk = []
     for idx, node in enumerate(nodes):
         node_payload.append(
             {
@@ -712,7 +723,7 @@ def _diagnosis_step(
 
     if n_jobs and n_jobs > 1 and len(node_payload) > 1:
         chunk_size = max(1, math.ceil(len(node_payload) / n_jobs))
-        diag_pairs: list[tuple[Any, dict[str, Any]]] = []
+        diag_pairs: DiagnosisResultList = []
         with ProcessPoolExecutor(max_workers=n_jobs) as executor:
             submit = cast(Callable[..., Any], executor.submit)
             futures = [
@@ -730,19 +741,21 @@ def _diagnosis_step(
                 for idx in range(0, len(node_payload), chunk_size)
             ]
             for fut in futures:
-                diag_pairs.extend(
-                    cast(Iterable[tuple[Any, dict[str, Any]]], fut.result())
-                )
+                diag_pairs.extend(cast(DiagnosisResultList, fut.result()))
     else:
         diag_pairs = [_node_diagnostics(item, shared) for item in node_payload]
 
     diag_map = dict(diag_pairs)
-    diag = {node: diag_map.get(node, {}) for node in nodes}
+    diag: dict[NodeId, DiagnosisPayload] = {
+        node: diag_map.get(node, {}) for node in nodes
+    }
 
     append_metric(hist, key, diag)
 
 
-def dissonance_events(G, ctx: dict[str, Any] | None = None):
+def dissonance_events(
+    G: TNFRGraph, ctx: DiagnosisSharedState | None = None
+) -> None:
     """Emit per-node structural dissonance start/end events.
 
     Events are recorded as ``"dissonance_start"`` and ``"dissonance_end"``.
@@ -755,7 +768,7 @@ def dissonance_events(G, ctx: dict[str, Any] | None = None):
     norms = G.graph.get("_sel_norms", {})
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     step_idx = len(hist.get("C_steps", []))
-    nodes = list(G.nodes())
+    nodes: list[NodeId] = list(G.nodes())
     for n in nodes:
         nd = G.nodes[n]
         dn = normalize_dnfr(nd, dnfr_max)
@@ -777,7 +790,7 @@ def dissonance_events(G, ctx: dict[str, Any] | None = None):
             )
 
 
-def register_diagnosis_callbacks(G) -> None:
+def register_diagnosis_callbacks(G: TNFRGraph) -> None:
     raw_jobs = G.graph.get("DIAGNOSIS_N_JOBS")
     n_jobs = _coerce_jobs(raw_jobs)
 

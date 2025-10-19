@@ -28,6 +28,12 @@ __all__ = (
     "TraceFieldFn",
     "TraceFieldMap",
     "TraceFieldRegistry",
+    "DiagnosisNodeData",
+    "DiagnosisSharedState",
+    "DiagnosisPayload",
+    "DiagnosisResult",
+    "DiagnosisPayloadChunk",
+    "DiagnosisResultList",
 )
 
 
@@ -151,3 +157,21 @@ TraceFieldRegistry: TypeAlias = dict[str, dict[str, "TraceFieldFn"]]
 
 TraceCallback: TypeAlias = Callable[[TNFRGraph, dict[str, Any]], None]
 #: Callback signature used by :func:`tnfr.trace.register_trace`.
+
+DiagnosisNodeData: TypeAlias = Mapping[str, Any]
+#: Raw nodal measurement payload used prior to computing diagnostics.
+
+DiagnosisSharedState: TypeAlias = Mapping[str, Any]
+#: Shared read-only state propagated to diagnosis workers.
+
+DiagnosisPayload: TypeAlias = dict[str, Any]
+#: Structured diagnostics exported for a single node.
+
+DiagnosisResult: TypeAlias = tuple[NodeId, DiagnosisPayload]
+#: Node identifier paired with its :data:`DiagnosisPayload`.
+
+DiagnosisPayloadChunk: TypeAlias = list[DiagnosisNodeData]
+#: Chunk of nodal payloads processed together by diagnosis workers.
+
+DiagnosisResultList: TypeAlias = list[DiagnosisResult]
+#: Collection of diagnosis results matching worker output shape.
