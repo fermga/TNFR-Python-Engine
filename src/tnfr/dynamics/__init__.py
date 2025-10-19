@@ -27,6 +27,10 @@ from ..types import (
     Glyph,
     NodeId,
     Phase,
+    SelectorMetrics,
+    SelectorNorms,
+    SelectorThresholds,
+    SelectorWeights,
     TNFRGraph,
 )
 
@@ -101,6 +105,8 @@ ALIAS_EPI = get_aliases("EPI")
 ALIAS_SI = get_aliases("SI")
 ALIAS_D2EPI = get_aliases("D2EPI")
 ALIAS_DSI = get_aliases("DSI")
+
+GlyphCode: TypeAlias = Glyph | str
 
 __all__ = (
     "default_compute_delta_nfr",
@@ -751,7 +757,7 @@ def adapt_vf_by_coherence(G, n_jobs: int | None = None) -> None:
 # -------------------------
 # Selector glífico por defecto
 # -------------------------
-def default_glyph_selector(G, n) -> str:
+def default_glyph_selector(G: TNFRGraph, n: NodeId) -> GlyphCode:
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
     hi, lo, dnfr_hi = itemgetter("si_hi", "si_lo", "dnfr_hi")(thr)
@@ -776,22 +782,31 @@ def default_glyph_selector(G, n) -> str:
 # -------------------------
 # Selector glífico multiobjetivo (paramétrico)
 # -------------------------
-def _soft_grammar_prefilter(G, n, cand, dnfr, accel):
+def _soft_grammar_prefilter(
+    G: TNFRGraph,
+    n: NodeId,
+    cand: GlyphCode,
+    dnfr: float,
+    accel: float,
+) -> GlyphCode:
     """Soft grammar: avoid repetitions before the canonical one."""
     gram = get_graph_param(G, "GRAMMAR", dict)
     gwin = int(gram.get("window", 3))
-    avoid = set(gram.get("avoid_repeats", []))
+    avoid = {str(item) for item in gram.get("avoid_repeats", [])}
     force_dn = float(gram.get("force_dnfr", 0.60))
     force_ac = float(gram.get("force_accel", 0.60))
-    fallbacks = gram.get("fallbacks", {})
+    fallbacks = cast(Mapping[str, GlyphCode], gram.get("fallbacks", {}))
     nd = G.nodes[n]
-    if cand in avoid and recent_glyph(nd, cand, gwin):
+    cand_key = str(cand)
+    if cand_key in avoid and recent_glyph(nd, cand_key, gwin):
         if not (dnfr >= force_dn or accel >= force_ac):
-            cand = fallbacks.get(cand, cand)
+            cand = fallbacks.get(cand_key, cand)
     return cand
 
 
-def _selector_normalized_metrics(nd, norms):
+def _selector_normalized_metrics(
+    nd: Mapping[str, Any], norms: SelectorNorms
+) -> SelectorMetrics:
     """Extract and normalise Si, ΔNFR and acceleration for the selector."""
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     acc_max = float(norms.get("accel_max", 1.0)) or 1.0
@@ -801,7 +816,9 @@ def _selector_normalized_metrics(nd, norms):
     return Si, dnfr, accel
 
 
-def _selector_base_choice(Si, dnfr, accel, thr):
+def _selector_base_choice(
+    Si: float, dnfr: float, accel: float, thr: SelectorThresholds
+) -> GlyphCode:
     """Base decision according to thresholds of Si, ΔNFR and acceleration."""
     si_hi, si_lo, dnfr_hi, acc_hi = itemgetter(
         "si_hi", "si_lo", "dnfr_hi", "accel_hi"
@@ -817,21 +834,29 @@ def _selector_base_choice(Si, dnfr, accel, thr):
     return "RA"
 
 
-def _configure_selector_weights(G) -> dict:
+def _configure_selector_weights(G: TNFRGraph) -> SelectorWeights:
     """Normalise and store selector weights in ``G.graph``."""
     weights = merge_and_normalize_weights(
         G, "SELECTOR_WEIGHTS", ("w_si", "w_dnfr", "w_accel")
     )
-    G.graph["_selector_weights"] = weights
-    return weights
+    cast_weights = cast(SelectorWeights, weights)
+    G.graph["_selector_weights"] = cast_weights
+    return cast_weights
 
 
-def _compute_selector_score(G, nd, Si, dnfr, accel, cand):
+def _compute_selector_score(
+    G: TNFRGraph,
+    nd: Mapping[str, Any],
+    Si: float,
+    dnfr: float,
+    accel: float,
+    cand: GlyphCode,
+) -> float:
     """Compute score and apply stagnation penalties."""
     W = G.graph.get("_selector_weights")
     if W is None:
         W = _configure_selector_weights(G)
-    score = _calc_selector_score(Si, dnfr, accel, W)
+    score = _calc_selector_score(Si, dnfr, accel, cast(SelectorWeights, W))
     hist_prev = nd.get("glyph_history")
     if hist_prev and hist_prev[-1] == cand:
         delta_si = get_attr(nd, ALIAS_DSI, 0.0)
@@ -840,19 +865,22 @@ def _compute_selector_score(G, nd, Si, dnfr, accel, cand):
         delta_sigma = sig[-1] - sig[-2] if len(sig) >= 2 else 0.0
         if delta_si <= 0.0 and delta_sigma <= 0.0:
             score -= 0.05
-    return score
+    return float(score)
 
 
-def _apply_score_override(cand, score, dnfr, dnfr_lo):
+def _apply_score_override(
+    cand: GlyphCode, score: float, dnfr: float, dnfr_lo: float
+) -> GlyphCode:
     """Adjust final candidate smoothly according to the score."""
-    if score >= 0.66 and cand in ("NAV", "RA", "ZHIR", "OZ"):
-        cand = "IL"
-    elif score <= 0.33 and cand in ("NAV", "RA", "IL"):
-        cand = "OZ" if dnfr >= dnfr_lo else "ZHIR"
+    cand_key = str(cand)
+    if score >= 0.66 and cand_key in ("NAV", "RA", "ZHIR", "OZ"):
+        return "IL"
+    if score <= 0.33 and cand_key in ("NAV", "RA", "IL"):
+        return "OZ" if dnfr >= dnfr_lo else "ZHIR"
     return cand
 
 
-def parametric_glyph_selector(G, n) -> str:
+def parametric_glyph_selector(G: TNFRGraph, n: NodeId) -> GlyphCode:
     """Multiobjective: combine Si, |ΔNFR|_norm and |accel|_norm with
     hysteresis.
 
@@ -867,7 +895,9 @@ def parametric_glyph_selector(G, n) -> str:
     thr = _selector_thresholds(G)
     margin = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
 
-    norms = G.graph.get("_sel_norms") or _norms_para_selector(G)
+    norms = cast(SelectorNorms | None, G.graph.get("_sel_norms"))
+    if norms is None:
+        norms = _norms_para_selector(G)
     Si, dnfr, accel = _selector_normalized_metrics(nd, norms)
 
     cand = _selector_base_choice(Si, dnfr, accel, thr)

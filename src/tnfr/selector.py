@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import threading
 from operator import itemgetter
-from typing import Any, Mapping, TYPE_CHECKING
+from typing import Any, Mapping, TYPE_CHECKING, cast
 from weakref import WeakKeyDictionary
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -19,6 +19,7 @@ from .constants.core import SELECTOR_THRESHOLD_DEFAULTS
 from .helpers.numeric import clamp01
 from .metrics.common import compute_dnfr_accel_max
 from .utils import is_non_string_sequence
+from .types import SelectorNorms, SelectorThresholds, SelectorWeights
 
 
 HYSTERESIS_GLYPHS: set[str] = {"IL", "OZ", "ZHIR", "THOL", "NAV", "RA"}
@@ -31,9 +32,10 @@ __all__ = (
 )
 
 
+_SelectorThresholdItems = tuple[tuple[str, float], ...]
 _SelectorThresholdCacheEntry = tuple[
-    tuple[tuple[str, float], ...],
-    dict[str, float],
+    _SelectorThresholdItems,
+    SelectorThresholds,
 ]
 _SELECTOR_THRESHOLD_CACHE: WeakKeyDictionary[
     "nx.Graph",
@@ -42,7 +44,7 @@ _SELECTOR_THRESHOLD_CACHE: WeakKeyDictionary[
 _SELECTOR_THRESHOLD_CACHE_LOCK = threading.Lock()
 
 
-def _sorted_items(mapping: Mapping[str, float]) -> tuple[tuple[str, float], ...]:
+def _sorted_items(mapping: Mapping[str, float]) -> _SelectorThresholdItems:
     """Return mapping items sorted by key.
 
     Parameters
@@ -59,8 +61,8 @@ def _sorted_items(mapping: Mapping[str, float]) -> tuple[tuple[str, float], ...]
 
 
 def _compute_selector_thresholds(
-    thr_sel_items: tuple[tuple[str, float], ...],
-) -> dict[str, float]:
+    thr_sel_items: _SelectorThresholdItems,
+) -> SelectorThresholds:
     """Construct selector thresholds for a graph.
 
     Parameters
@@ -79,10 +81,10 @@ def _compute_selector_thresholds(
     for key, default in SELECTOR_THRESHOLD_DEFAULTS.items():
         val = thr_sel.get(key, default)
         out[key] = clamp01(float(val))
-    return out
+    return cast(SelectorThresholds, out)
 
 
-def _selector_thresholds(G: "nx.Graph") -> dict[str, float]:
+def _selector_thresholds(G: "nx.Graph") -> SelectorThresholds:
     """Return normalised thresholds for Si, ΔNFR and acceleration.
 
     Parameters
@@ -114,7 +116,7 @@ def _selector_thresholds(G: "nx.Graph") -> dict[str, float]:
     return thresholds
 
 
-def _norms_para_selector(G: "nx.Graph") -> dict:
+def _norms_para_selector(G: "nx.Graph") -> SelectorNorms:
     """Compute and cache norms for ΔNFR and acceleration.
 
     Parameters
@@ -134,7 +136,7 @@ def _norms_para_selector(G: "nx.Graph") -> dict:
 
 
 def _calc_selector_score(
-    Si: float, dnfr: float, accel: float, weights: dict[str, float]
+    Si: float, dnfr: float, accel: float, weights: SelectorWeights
 ) -> float:
     """Compute weighted selector score.
 
