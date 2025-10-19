@@ -107,6 +107,11 @@ safe_load = cached_import("yaml", "safe_load")
 # postpone work until the symbol is first accessed
 safe_lazy = cached_import("yaml", "safe_load", lazy=True)
 
+# warm optional dependencies during application bootstrap
+from tnfr.utils import warm_cached_import
+
+warm_cached_import("numpy", ("yaml", "safe_load"))
+
 # provide a shared cache with an explicit lock
 from cachetools import TTLCache
 import threading

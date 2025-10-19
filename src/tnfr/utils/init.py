@@ -15,11 +15,12 @@ import warnings
 import weakref
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import Any, Callable, Hashable, Literal, Mapping
+from typing import Any, Callable, Hashable, Iterable, Literal, Mapping
 
 __all__ = (
     "_configure_root",
     "cached_import",
+    "warm_cached_import",
     "LazyImportProxy",
     "get_logger",
     "get_numpy",
@@ -491,6 +492,81 @@ def cached_import(
         return LazyImportProxy(module_name, attr, emit)
 
     return _resolve_import(module_name, attr, emit, fallback)
+
+
+_ModuleSpec = str | tuple[str, str | None]
+
+
+def _normalise_warm_specs(
+    module: _ModuleSpec | Iterable[_ModuleSpec],
+    extra: tuple[_ModuleSpec, ...],
+    attr: str | None,
+) -> list[tuple[str, str | None]]:
+    if attr is not None:
+        if extra:
+            raise ValueError("'attr' can only be combined with a single module name")
+        if not isinstance(module, str):
+            raise TypeError("'attr' requires the first argument to be a module name string")
+        return [(module, attr)]
+
+    specs: list[_ModuleSpec]
+    if extra:
+        specs = [module, *extra]
+    elif isinstance(module, tuple) and len(module) == 2:
+        specs = [module]
+    elif isinstance(module, str):
+        specs = [module]
+    else:
+        if isinstance(module, Iterable):
+            specs = list(module)
+            if not specs:
+                raise ValueError("At least one module specification is required")
+        else:
+            raise TypeError("Unsupported module specification for warm_cached_import")
+
+    normalised: list[tuple[str, str | None]] = []
+    for spec in specs:
+        if isinstance(spec, str):
+            normalised.append((spec, None))
+            continue
+        if isinstance(spec, tuple) and len(spec) == 2:
+            module_name, module_attr = spec
+            if not isinstance(module_name, str) or (
+                module_attr is not None and not isinstance(module_attr, str)
+            ):
+                raise TypeError("Invalid module specification for warm_cached_import")
+            normalised.append((module_name, module_attr))
+            continue
+        raise TypeError("Module specifications must be strings or (module, attr) tuples")
+
+    return normalised
+
+
+def warm_cached_import(
+    module: _ModuleSpec | Iterable[_ModuleSpec],
+    *extra: _ModuleSpec,
+    attr: str | None = None,
+    fallback: Any | None = None,
+    emit: Literal["warn", "log", "both"] = "warn",
+    lazy: bool = False,
+) -> Any | dict[str, Any | None]:
+    """Pre-populate the import cache for the provided module specifications."""
+
+    specs = _normalise_warm_specs(module, extra, attr)
+    results: dict[str, Any | None] = {}
+    for module_name, module_attr in specs:
+        key = _import_key(module_name, module_attr)
+        results[key] = cached_import(
+            module_name,
+            module_attr,
+            fallback=fallback,
+            emit=emit,
+            lazy=lazy,
+        )
+
+    if len(results) == 1:
+        return next(iter(results.values()))
+    return results
 
 
 def _clear_default_cache() -> None:

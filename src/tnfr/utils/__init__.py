@@ -52,6 +52,7 @@ __all__ = (
     "IMPORT_LOG",
     "WarnOnce",
     "cached_import",
+    "warm_cached_import",
     "get_logger",
     "get_nodonx",
     "get_numpy",
@@ -108,6 +109,7 @@ __all__ = (
 
 WarnOnce = _init.WarnOnce
 cached_import = _init.cached_import
+warm_cached_import = _init.warm_cached_import
 get_logger = _init.get_logger
 get_nodonx = _init.get_nodonx
 get_numpy = _init.get_numpy
