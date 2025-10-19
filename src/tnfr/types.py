@@ -15,6 +15,7 @@ __all__ = (
     "DeltaNFR",
     "Phase",
     "CoherenceMetric",
+    "DeltaNFRHook",
     "GraphLike",
     "Glyph",
 )
@@ -48,6 +49,30 @@ Phase: TypeAlias = float
 
 CoherenceMetric: TypeAlias = float
 #: Aggregated measure of coherence such as C(t) or Si.
+
+
+class _DeltaNFRHookProtocol(Protocol):
+    """Callable signature expected for ΔNFR update hooks.
+
+    Hooks receive the graph instance and may expose optional keyword
+    arguments such as ``n_jobs`` or cache controls. Additional positional
+    arguments are reserved for future extensions and ignored by the core
+    engine, keeping compatibility with user-provided hooks that only need the
+    graph reference.
+    """
+
+    def __call__(
+        self,
+        graph: TNFRGraph,
+        /,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        ...
+
+
+DeltaNFRHook: TypeAlias = _DeltaNFRHookProtocol
+#: Callable hook invoked to compute ΔNFR for a :data:`TNFRGraph`.
 
 
 class GraphLike(Protocol):
