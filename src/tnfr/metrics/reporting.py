@@ -36,7 +36,7 @@ def Tg_global(G: TNFRGraph, normalize: bool = True) -> dict[str, float]:
     total = sum(tg_total.values()) or 1.0
     out: dict[str, float] = {}
 
-    def add(g):
+    def add(g: str) -> None:
         val = float(tg_total.get(g, 0.0))
         out[g] = val / total if normalize else val
 
@@ -52,21 +52,21 @@ def Tg_by_node(
     hist = ensure_history(G)
     rec = hist.get("Tg_by_node", {}).get(n, {})
     if not normalize:
-        out: dict[str, list[float]] = {}
+        runs_out: dict[str, list[float]] = {}
 
-        def copy_runs(g):
-            out[g] = list(rec.get(g, []))
+        def copy_runs(g: str) -> None:
+            runs_out[g] = list(rec.get(g, []))
 
         for_each_glyph(copy_runs)
-        return out
-    out: dict[str, float] = {}
+        return runs_out
+    mean_out: dict[str, float] = {}
 
-    def add(g):
+    def add(g: str) -> None:
         runs = rec.get(g, [])
-        out[g] = float(mean(runs)) if runs else 0.0
+        mean_out[g] = float(mean(runs)) if runs else 0.0
 
     for_each_glyph(add)
-    return out
+    return mean_out
 
 
 def latency_series(G: TNFRGraph) -> dict[str, list[float]]:
@@ -85,7 +85,7 @@ def glyphogram_series(G: TNFRGraph) -> dict[str, list[float]]:
         return {"t": []}
     out: dict[str, list[float]] = {"t": [float(x.get("t", i)) for i, x in enumerate(xs)]}
 
-    def add(g):
+    def add(g: str) -> None:
         out[g] = [float(x.get(g, 0.0)) for x in xs]
 
     for_each_glyph(add)
