@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import math
+from concurrent.futures import ProcessPoolExecutor
 from functools import partial
-from typing import Any
+from typing import Any, Iterable
 
 from ..alias import get_attr, set_attr
 from ..constants import get_aliases
@@ -89,7 +90,50 @@ def compute_Si_node(
     return Si
 
 
-def compute_Si(G: GraphLike, *, inplace: bool = True) -> dict[Any, float]:
+def _coerce_jobs(raw_jobs: Any | None) -> int | None:
+    """Normalise ``n_jobs`` values coming from user configuration."""
+
+    try:
+        jobs = None if raw_jobs is None else int(raw_jobs)
+    except (TypeError, ValueError):
+        return None
+    if jobs is not None and jobs <= 0:
+        return None
+    return jobs
+
+
+def _compute_si_python_chunk(
+    chunk: Iterable[tuple[Any, tuple[Any, ...], float, float, float]],
+    *,
+    cos_th: dict[Any, float],
+    sin_th: dict[Any, float],
+    alpha: float,
+    beta: float,
+    gamma: float,
+    vfmax: float,
+    dnfrmax: float,
+) -> dict[Any, float]:
+    """Compute Si values for a chunk of nodes using pure Python math."""
+
+    results: dict[Any, float] = {}
+    for n, neigh, theta, vf, dnfr in chunk:
+        th_bar = neighbor_phase_mean_list(
+            neigh, cos_th=cos_th, sin_th=sin_th, np=None, fallback=theta
+        )
+        disp_fase = abs(angle_diff(theta, th_bar)) / math.pi
+        vf_norm = clamp01(abs(vf) / vfmax)
+        dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
+        Si = alpha * vf_norm + beta * (1.0 - disp_fase) + gamma * (1.0 - dnfr_norm)
+        results[n] = clamp01(Si)
+    return results
+
+
+def compute_Si(
+    G: GraphLike,
+    *,
+    inplace: bool = True,
+    n_jobs: int | None = None,
+) -> dict[Any, float]:
     """Compute ``Si`` per node and optionally store it on the graph."""
 
     neighbors = ensure_neighbors_map(G)
@@ -104,20 +148,104 @@ def compute_Si(G: GraphLike, *, inplace: bool = True) -> dict[Any, float]:
         neighbor_phase_mean_list, cos_th=cos_th, sin_th=sin_th, np=np
     )
 
-    out: dict[Any, float] = {}
-    for n, nd in G.nodes(data=True):
-        neigh = neighbors[n]
-        th_bar = pm_fn(neigh, fallback=thetas[n])
-        disp_fase = abs(angle_diff(thetas[n], th_bar)) / math.pi
-        out[n] = compute_Si_node(
-            n,
-            nd,
-            alpha=alpha,
-            beta=beta,
-            gamma=gamma,
-            vfmax=vfmax,
-            dnfrmax=dnfrmax,
-            disp_fase=disp_fase,
-            inplace=inplace,
+    if n_jobs is None:
+        n_jobs = _coerce_jobs(G.graph.get("SI_N_JOBS"))
+    else:
+        n_jobs = _coerce_jobs(n_jobs)
+
+    supports_vector = (
+        np is not None
+        and hasattr(np, "ndarray")
+        and all(hasattr(np, attr) for attr in ("fromiter", "abs", "clip", "remainder"))
+    )
+
+    nodes_data = list(G.nodes(data=True))
+    if not nodes_data:
+        return {}
+
+    if supports_vector:
+        node_ids: list[Any] = []
+        theta_vals: list[float] = []
+        mean_vals: list[float] = []
+        vf_vals: list[float] = []
+        dnfr_vals: list[float] = []
+        for n, nd in nodes_data:
+            theta = thetas.get(n, 0.0)
+            neigh = neighbors[n]
+            node_ids.append(n)
+            theta_vals.append(theta)
+            mean_vals.append(pm_fn(neigh, fallback=theta))
+            vf_vals.append(get_attr(nd, ALIAS_VF, 0.0))
+            dnfr_vals.append(get_attr(nd, ALIAS_DNFR, 0.0))
+
+        count = len(node_ids)
+        theta_arr = np.fromiter(theta_vals, dtype=float, count=count)
+        mean_arr = np.fromiter(mean_vals, dtype=float, count=count)
+        diff = np.remainder(theta_arr - mean_arr + math.pi, math.tau) - math.pi
+        disp_fase_arr = np.abs(diff) / math.pi
+
+        vf_arr = np.fromiter(vf_vals, dtype=float, count=count)
+        dnfr_arr = np.fromiter(dnfr_vals, dtype=float, count=count)
+        vf_norm = np.clip(np.abs(vf_arr) / vfmax, 0.0, 1.0)
+        dnfr_norm = np.clip(np.abs(dnfr_arr) / dnfrmax, 0.0, 1.0)
+
+        si_arr = np.clip(
+            alpha * vf_norm + beta * (1.0 - disp_fase_arr)
+            + gamma * (1.0 - dnfr_norm),
+            0.0,
+            1.0,
         )
+
+        out = {node_ids[i]: float(si_arr[i]) for i in range(count)}
+    else:
+        out: dict[Any, float] = {}
+        if n_jobs is not None and n_jobs > 1:
+            node_payload: list[tuple[Any, tuple[Any, ...], float, float, float]] = []
+            for n, nd in nodes_data:
+                theta = thetas.get(n, 0.0)
+                vf = float(get_attr(nd, ALIAS_VF, 0.0))
+                dnfr = float(get_attr(nd, ALIAS_DNFR, 0.0))
+                neigh = neighbors[n]
+                node_payload.append((n, tuple(neigh), theta, vf, dnfr))
+
+            if node_payload:
+                chunk_size = math.ceil(len(node_payload) / n_jobs)
+                with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+                    futures = [
+                        executor.submit(
+                            _compute_si_python_chunk,
+                            node_payload[idx : idx + chunk_size],
+                            cos_th=cos_th,
+                            sin_th=sin_th,
+                            alpha=alpha,
+                            beta=beta,
+                            gamma=gamma,
+                            vfmax=vfmax,
+                            dnfrmax=dnfrmax,
+                        )
+                        for idx in range(0, len(node_payload), chunk_size)
+                    ]
+                    for future in futures:
+                        out.update(future.result())
+        else:
+            for n, nd in nodes_data:
+                theta = thetas.get(n, 0.0)
+                neigh = neighbors[n]
+                th_bar = pm_fn(neigh, fallback=theta)
+                disp_fase = abs(angle_diff(theta, th_bar)) / math.pi
+                out[n] = compute_Si_node(
+                    n,
+                    nd,
+                    alpha=alpha,
+                    beta=beta,
+                    gamma=gamma,
+                    vfmax=vfmax,
+                    dnfrmax=dnfrmax,
+                    disp_fase=disp_fase,
+                    inplace=False,
+                )
+
+    if inplace:
+        for n, value in out.items():
+            set_attr(G.nodes[n], ALIAS_SI, value)
     return out
