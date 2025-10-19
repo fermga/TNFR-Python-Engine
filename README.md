@@ -525,14 +525,6 @@ when orchestrating TNFR experiments.
 
 ---
 
-## Why TNFR (in 60 seconds)
-
-* **From objects to coherences:** you model **processes** that hold, not fixed entities.
-* **Operators instead of rules:** you compose **structural operators** (e.g., *emission*, *coherence*, *dissonance*) to **build trajectories**.
-* **Operational fractality:** the same pattern works for **ideas, teams, tissues, narratives**; the scales change, **the logic doesn’t**.
-
----
-
 ## Key concepts (operational summary)
 
 * **Node (NFR):** a unit that persists because it **resonates**. Parameterized by **νf** (frequency), **θ** (phase), and **EPI** (coherent form).
@@ -577,60 +569,6 @@ graph connectivity. Modes:
   similarity.
 
 All modes ensure connectivity by adding a base MST.
-
----
-
-## History configuration
-
-Recorded series are stored under `G.graph['history']`. Set `HISTORY_MAXLEN` in
-the graph (or override the default) to keep only the most recent entries. The
-value must be non‑negative; negative values raise ``ValueError``. When the
-limit is positive the library uses bounded `deque` objects and removes the
-least populated series when the number of history keys grows beyond the limit.
-
-### Random node sampling
-
-To reduce costly comparisons the engine stores a per‑step random subset of
-node ids under `G.graph['_node_sample']`. Operators may use this to avoid
-scanning the whole network. Sampling is skipped automatically when the graph
-has fewer than **50 nodes**, in which case all nodes are included.
-
-### Jitter RNG cache
-
-`random_jitter` uses an LRU cache of `random.Random` instances keyed by `(seed, node)`.
-`JITTER_CACHE_SIZE` controls the maximum number of cached generators (default: `256`);
-when the limit is exceeded the least‑recently used entry is discarded. Increase it for
-large graphs or heavy jitter usage, or lower it to save memory.
-
-To adjust the number of cached jitter sequences used for deterministic noise,
-obtain the manager with ``get_jitter_manager`` before calling ``setup``:
-
-```python
-from tnfr.operators import get_jitter_manager
-
-manager = get_jitter_manager()
-# Resize cache to keep only 512 entries
-manager.max_entries = 512
-
-# or in a single call that also clears previous counters
-manager.setup(max_entries=512)
-```
-
-``setup`` preserves the current size unless a new ``max_entries`` value is
-supplied. Custom sizes persist across subsequent ``setup`` calls, and
-``max_entries`` assignments take effect immediately.
-
-### Edge version tracking
-
-Wrap sequences of edge mutations with `edge_version_update(G)` so the edge
-version increments on entry and exit. This keeps caches and structural logs
-aligned with the network's evolution.
-
-### Defaults injection performance
-
-`inject_defaults` avoids deep copies when values are immutable (numbers,
-strings, tuples). It resorts to `copy.deepcopy` only for mutable structures,
-which reduces the cost of initializing graphs with default parameters.
 
 ---
 
