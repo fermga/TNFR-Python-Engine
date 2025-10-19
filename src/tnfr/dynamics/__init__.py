@@ -24,9 +24,13 @@ from ..types import (
     CoherenceMetric,
     DeltaNFR,
     EPIValue,
+    GlyphSelector,
     Glyph,
+    HistoryState,
     NodeId,
     Phase,
+    SelectorPreselectionChoices,
+    SelectorPreselectionMetrics,
     SelectorMetrics,
     SelectorNorms,
     SelectorThresholds,
@@ -288,7 +292,7 @@ def _read_adaptive_params(
     return cfg, kG, kL
 
 
-def _compute_state(G, cfg: dict[str, Any]) -> tuple[str, float, float]:
+def _compute_state(G: TNFRGraph, cfg: Mapping[str, Any]) -> tuple[str, float, float]:
     """Return current state (stable/dissonant/transition) and metrics."""
     R = kuramoto_order(G)
     dist = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
@@ -583,7 +587,7 @@ def _vf_adapt_chunk(
     return updates
 
 
-def adapt_vf_by_coherence(G, n_jobs: int | None = None) -> None:
+def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
     """Adjust νf toward neighbour mean in nodes with sustained stability.
 
     When ``n_jobs`` is greater than one and NumPy is unavailable the stable-node
@@ -913,7 +917,16 @@ def parametric_glyph_selector(G: TNFRGraph, n: NodeId) -> GlyphCode:
     return _soft_grammar_prefilter(G, n, cand, dnfr, accel)
 
 
-def _choose_glyph(G, n, selector, use_canon, h_al, h_en, al_max, en_max):
+def _choose_glyph(
+    G: TNFRGraph,
+    n: NodeId,
+    selector: GlyphSelector,
+    use_canon: bool,
+    h_al: MutableMapping[Any, int],
+    h_en: MutableMapping[Any, int],
+    al_max: int,
+    en_max: int,
+) -> GlyphCode:
     """Select the glyph to apply on node ``n``."""
     if h_al[n] > al_max:
         return Glyph.AL
@@ -931,7 +944,12 @@ def _choose_glyph(G, n, selector, use_canon, h_al, h_en, al_max, en_max):
 
 
 def _run_before_callbacks(
-    G, *, step_idx: int, dt: float | None, use_Si: bool, apply_glyphs: bool
+    G: TNFRGraph,
+    *,
+    step_idx: int,
+    dt: float | None,
+    use_Si: bool,
+    apply_glyphs: bool,
 ) -> None:
     callback_manager.invoke_callbacks(
         G,
@@ -946,7 +964,7 @@ def _run_before_callbacks(
 
 
 def _prepare_dnfr(
-    G,
+    G: TNFRGraph,
     *,
     use_Si: bool,
     job_overrides: Mapping[str, Any] | None = None,
@@ -1002,9 +1020,12 @@ def _prepare_dnfr(
         compute_Si(G, inplace=True, n_jobs=si_jobs)
 
 
-def _apply_selector(G):
+def _apply_selector(G: TNFRGraph) -> GlyphSelector:
     """Configure and return the glyph selector for this step."""
-    selector = G.graph.get("glyph_selector", default_glyph_selector)
+    selector = cast(
+        GlyphSelector,
+        G.graph.get("glyph_selector", default_glyph_selector),
+    )
     if selector is parametric_glyph_selector:
         _norms_para_selector(G)
         _configure_selector_weights(G)
@@ -1014,13 +1035,13 @@ def _apply_selector(G):
 @dataclass(slots=True)
 class _SelectorPreselection:
     kind: str
-    metrics: dict[Any, tuple[float, float, float]]
-    base_choices: dict[Any, str]
-    thresholds: dict[str, float] | None = None
+    metrics: SelectorPreselectionMetrics
+    base_choices: SelectorPreselectionChoices
+    thresholds: Mapping[str, float] | None = None
     margin: float | None = None
 
 
-def _selector_parallel_jobs(G) -> int | None:
+def _selector_parallel_jobs(G: TNFRGraph) -> int | None:
     """Return number of parallel jobs for glyph selection if enabled."""
     raw_jobs = G.graph.get("GLYPH_SELECTOR_N_JOBS")
     try:
@@ -1174,7 +1195,11 @@ def _compute_param_base_choices(
     return base
 
 
-def _prepare_selector_preselection(G, selector, nodes):
+def _prepare_selector_preselection(
+    G: TNFRGraph,
+    selector: GlyphSelector,
+    nodes: Sequence[NodeId],
+) -> _SelectorPreselection | None:
     """Return preselection data for recognised selectors."""
     if selector is default_glyph_selector:
         norms = G.graph.get("_sel_norms") or _norms_para_selector(G)
@@ -1200,7 +1225,12 @@ def _prepare_selector_preselection(G, selector, nodes):
     return None
 
 
-def _resolve_preselected_glyph(G, n, selector, preselection):
+def _resolve_preselected_glyph(
+    G: TNFRGraph,
+    n: NodeId,
+    selector: GlyphSelector,
+    preselection: _SelectorPreselection | None,
+) -> GlyphCode:
     """Return glyph for node ``n`` using ``preselection`` when available."""
     if preselection is None:
         return selector(G, n)
@@ -1239,8 +1269,13 @@ def _resolve_preselected_glyph(G, n, selector, preselection):
 
 
 def _glyph_proposal_worker(
-    args: tuple[list[Any], Any, Any, _SelectorPreselection | None]
-) -> list[tuple[Any, str | Glyph]]:
+    args: tuple[
+        list[NodeId],
+        TNFRGraph,
+        GlyphSelector,
+        _SelectorPreselection | None,
+    ]
+) -> list[tuple[NodeId, GlyphCode]]:
     """Return glyph proposals for ``args[0]`` using ``_resolve_preselected_glyph``."""
 
     nodes, G, selector, preselection = args
@@ -1250,7 +1285,7 @@ def _glyph_proposal_worker(
     ]
 
 
-def _apply_glyphs(G, selector, hist) -> None:
+def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> None:
     """Apply glyphs to nodes using ``selector`` and update history."""
     window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
     use_canon = bool(
@@ -1321,13 +1356,13 @@ def _apply_glyphs(G, selector, hist) -> None:
 
 
 def _update_nodes(
-    G,
+    G: TNFRGraph,
     *,
     dt: float | None,
     use_Si: bool,
     apply_glyphs: bool,
     step_idx: int,
-    hist,
+    hist: HistoryState,
     job_overrides: Mapping[str, Any] | None = None,
 ) -> None:
     _update_node_sample(G, step=step_idx)
@@ -1405,7 +1440,7 @@ def _run_after_callbacks(G, *, step_idx: int) -> None:
 
 
 def step(
-    G,
+    G: TNFRGraph,
     *,
     dt: float | None = None,
     use_Si: bool = True,
@@ -1435,7 +1470,7 @@ def step(
 
 
 def run(
-    G,
+    G: TNFRGraph,
     steps: int,
     *,
     dt: float | None = None,
