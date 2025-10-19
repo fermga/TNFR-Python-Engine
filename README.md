@@ -150,7 +150,7 @@ The following walkthroughs expand the quick start by orchestrating a multi-node 
 
 ### Controlled dissonance with re-coherence (Python API)
 
-This scenario creates a three-node ring, pushes a controlled dissonance on the third node, and lets the network bifurcate before stabilising. The structural operators ship with canonical Spanish identifiers (Emision, Recepcion, etc.), and the example aliases them to their English meanings so the walkthrough remains fully English-aligned while reinforcing the official TNFR tokens. Compare the operator sequence with [Key concepts (operational summary)](#key-concepts-operational-summary) to see how the canonical grammar enforces the AL→EN→IL segment and the OZ→ZHIR mutation path.
+This scenario creates a three-node ring, pushes a controlled dissonance on the third node, and lets the network bifurcate before stabilising. The structural operators ship with canonical Spanish identifiers (Emision, Recepcion, etc.), and the example aliases them to their English meanings so the walkthrough remains fully English-aligned while reinforcing the official TNFR tokens. Compare the operator sequence with [Key concepts (operational summary)](#key-concepts-operational-summary) to see how the canonical grammar enforces the AL→EN→IL segment and the OZ→ZHIR mutation path; the [CLI token legend](#reproducing-the-scenario-from-the-cli) below keeps those abbreviations aligned with their English operator names.
 
 ```python
 from tnfr import create_nfr, run_sequence
@@ -324,6 +324,22 @@ The same workflow can be executed with the `tnfr` CLI. Create the sequence and c
 ]
 ```
 
+Use the legend below to read each canonical token in English without changing the JSON payload passed to the CLI:
+
+| Token | English operator name |
+| ----- | --------------------- |
+| `AL`  | Emission              |
+| `EN`  | Reception             |
+| `IL`  | Coherence             |
+| `UM`  | Coupling              |
+| `RA`  | Resonance             |
+| `SHA` | Silence               |
+| `NAV` | Transition            |
+| `OZ`  | Dissonance            |
+| `ZHIR` | Mutation             |
+
+Read the sequence as three contiguous blocks separated by the `TARGET` directives: node 0 (LaserHead) runs Emission → Reception → Coherence → Coupling → Resonance → Coherence → Silence, node 1 (MirrorStage) follows Emission → Reception → Coherence → Transition → Dissonance → Mutation → Coherence → Resonance → Coherence → Silence, and node 2 (DetectorArray) executes Emission → Reception → Coherence → Transition → Resonance → Coherence → Silence. Keeping the canonical tokens intact ensures the CLI validates the grammar, while the English descriptions clarify the workflow for readers who are new to the abbreviations.
+
 ```jsonc
 // config.json
 {
@@ -356,7 +372,7 @@ The command reuses the canonical grammar and ΔNFR hooks from [`tnfr.dynamics`](
 }
 ```
 
-Interpreting the telemetry against [Main metrics](#main-metrics) reveals the same story as the Python run: the detector array (`node 2`) expands ΔNFR while validating the lock, the laser head (`node 0`) absorbs part of the gradient through coupling, and the mirror stage (`node 1`) anchors the resonance with the highest Si until the detector finishes its transition. Use the [metrics helpers](src/tnfr/metrics/reporting.py) to extract Tg summaries or glyphogram series when exploring longer trajectories or more aggressive drift injections.
+Interpreting the telemetry against [Main metrics](#main-metrics) reveals the same story as the Python run: the detector array (`node 2`) expands ΔNFR while validating the lock, the laser head (`node 0`) absorbs part of the gradient through coupling, and the mirror stage (`node 1`) anchors the resonance with the highest Si until the detector finishes its transition. Use the [metrics helpers](src/tnfr/metrics/reporting.py) to extract Tg summaries or glyphogram series when exploring longer trajectories or more aggressive drift injections, keeping the token legend above handy whenever you cross-reference the CLI walkthrough from elsewhere in this guide.
 
 ---
 
