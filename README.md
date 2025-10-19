@@ -640,17 +640,6 @@ https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-teoria-de-la-natur
 
 ---
 
-## Changelog
-
-* Removed compatibility layers ``tnfr.logging_utils`` and ``tnfr.import_utils``;
-  import logging and import helpers from ``tnfr.utils`` instead.
-* Removed deprecated alias `sigma_vector_global`; use `sigma_vector_from_graph` instead.
-* Removed legacy `tnfr.program` alias; import programming helpers from `tnfr.execution`.
-* Stopped re-exporting ``CallbackSpec`` and ``apply_topological_remesh`` at the
-  package root; import them via ``tnfr.trace`` and ``tnfr.operators``.
-
----
-
 ## MIT License
 
 Copyright (c) 2025 TNFR - Resonant Fractal Nature Theory
