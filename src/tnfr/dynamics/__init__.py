@@ -3,18 +3,30 @@ from __future__ import annotations
 import inspect
 import math
 from collections import deque
-from collections.abc import Mapping
+from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from operator import itemgetter
-from typing import Any
+from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar, cast
+
+if TYPE_CHECKING:  # pragma: no cover - typing imports only
+    try:
+        import numpy as np_typing
+        import numpy.typing as npt
+    except ImportError:  # pragma: no cover - optional typing dependency
+        FloatArray: TypeAlias = Any
+    else:
+        FloatArray: TypeAlias = npt.NDArray[np_typing.float_]
+else:  # pragma: no cover - runtime without numpy typing
+    FloatArray: TypeAlias = Any
+
+from ..types import Glyph, Graph, Node
 
 # Importar compute_Si y apply_glyph a nivel de módulo evita el coste de
 # realizar la importación en cada paso de la dinámica. Como los módulos de
 # origen no dependen de ``dynamics``, no se introducen ciclos.
 from ..operators import apply_remesh_if_globally_stable, apply_glyph
 from ..validation.grammar import enforce_canonical_grammar, on_applied_glyph
-from ..types import Glyph
 from ..constants import (
     DEFAULTS,
     METRIC_DEFAULTS,
@@ -106,7 +118,28 @@ __all__ = (
 )
 
 
-def _log_clamp(hist, node, attr, value, lo, hi):
+HistoryLog = MutableSequence[MutableMapping[str, object]]
+_DequeT = TypeVar("_DequeT")
+ChunkArgs = tuple[
+    Sequence[Node],
+    Mapping[Node, float],
+    Mapping[Node, float],
+    Mapping[Node, float],
+    Mapping[Node, Sequence[Node]],
+    float,
+    float,
+    float,
+]
+
+
+def _log_clamp(
+    hist: HistoryLog,
+    node: Node | None,
+    attr: str,
+    value: float,
+    lo: float,
+    hi: float,
+) -> None:
     if value < lo or value > hi:
         hist.append({"node": node, "attr": attr, "value": float(value)})
 
@@ -169,29 +202,42 @@ def _resolve_jobs_override(
     )
 
 
-def apply_canonical_clamps(nd: dict[str, Any], G=None, node=None) -> None:
-    g = G.graph if G is not None else DEFAULTS
-    eps_min = float(g.get("EPI_MIN", DEFAULTS["EPI_MIN"]))
-    eps_max = float(g.get("EPI_MAX", DEFAULTS["EPI_MAX"]))
-    vf_min = float(g.get("VF_MIN", DEFAULTS["VF_MIN"]))
-    vf_max = float(g.get("VF_MAX", DEFAULTS["VF_MAX"]))
-    theta_wrap = bool(g.get("THETA_WRAP", DEFAULTS["THETA_WRAP"]))
+def apply_canonical_clamps(
+    nd: dict[str, Any],
+    G: Graph | None = None,
+    node: Node | None = None,
+) -> None:
+    if G is not None:
+        graph_dict = cast(dict[str, Any], G.graph)
+        graph_data: Mapping[str, Any] = graph_dict
+    else:
+        graph_dict = None
+        graph_data = DEFAULTS
+    eps_min = float(graph_data.get("EPI_MIN", DEFAULTS["EPI_MIN"]))
+    eps_max = float(graph_data.get("EPI_MAX", DEFAULTS["EPI_MAX"]))
+    vf_min = float(graph_data.get("VF_MIN", DEFAULTS["VF_MIN"]))
+    vf_max = float(graph_data.get("VF_MAX", DEFAULTS["VF_MAX"]))
+    theta_wrap = bool(graph_data.get("THETA_WRAP", DEFAULTS["THETA_WRAP"]))
 
     epi = get_attr(nd, ALIAS_EPI, 0.0)
     vf = get_attr(nd, ALIAS_VF, 0.0)
     th = get_attr(nd, ALIAS_THETA, 0.0)
 
     strict = bool(
-        g.get("VALIDATORS_STRICT", DEFAULTS.get("VALIDATORS_STRICT", False))
+        graph_data.get("VALIDATORS_STRICT", DEFAULTS.get("VALIDATORS_STRICT", False))
     )
-    if strict and G is not None:
-        hist = g.setdefault("history", {}).setdefault("clamp_alerts", [])
-        _log_clamp(hist, node, "EPI", epi, eps_min, eps_max)
-        _log_clamp(hist, node, "VF", vf, vf_min, vf_max)
+    if strict and graph_dict is not None:
+        history = cast(dict[str, Any], graph_dict.setdefault("history", {}))
+        hist = cast(
+            HistoryLog,
+            history.setdefault("clamp_alerts", []),
+        )
+        _log_clamp(hist, node, "EPI", float(epi), eps_min, eps_max)
+        _log_clamp(hist, node, "VF", float(vf), vf_min, vf_max)
 
     set_attr(nd, ALIAS_EPI, clamp(epi, eps_min, eps_max))
 
-    vf_val = clamp(vf, vf_min, vf_max)
+    vf_val = float(clamp(vf, vf_min, vf_max))
     if G is not None and node is not None:
         set_vf(G, node, vf_val, update_max=False)
     else:
@@ -205,14 +251,14 @@ def apply_canonical_clamps(nd: dict[str, Any], G=None, node=None) -> None:
             set_attr(nd, ALIAS_THETA, new_th)
 
 
-def validate_canon(G) -> None:
+def validate_canon(G: Graph) -> Graph:
     """Apply canonical clamps to all nodes of ``G``.
 
     Wrap phase and constrain ``EPI`` and ``νf`` to the ranges in ``G.graph``.
     If ``VALIDATORS_STRICT`` is active, alerts are logged in ``history``.
     """
     for n, nd in G.nodes(data=True):
-        apply_canonical_clamps(nd, G, n)
+        apply_canonical_clamps(cast(dict[str, Any], nd), G, n)
     maxes = multi_recompute_abs_max(G, {"_vfmax": ALIAS_VF})
     G.graph.update(maxes)
     return G
@@ -279,27 +325,20 @@ def _smooth_adjust_k(
     return _step(kG, kG_t, kG_min, kG_max), _step(kL, kL_t, kL_min, kL_max)
 
 
-def _ensure_hist_deque(hist: dict[str, Any], key: str, maxlen: int) -> deque:
+def _ensure_hist_deque(
+    hist: dict[str, Any], key: str, maxlen: int
+) -> deque[_DequeT]:
     """Ensure history entry ``key`` is a deque with ``maxlen``."""
     dq = hist.setdefault(key, deque(maxlen=maxlen))
     if not isinstance(dq, deque):
         dq = deque(dq, maxlen=maxlen)
         hist[key] = dq
-    return dq
+    return cast("deque[_DequeT]", dq)
 
 
 def _phase_adjust_chunk(
-    args: tuple[
-        list[Any],
-        dict[Any, float],
-        dict[Any, float],
-        dict[Any, float],
-        dict[Any, tuple[Any, ...]],
-        float,
-        float,
-        float,
-    ]
-) -> list[tuple[Any, float]]:
+    args: ChunkArgs,
+) -> list[tuple[Node, float]]:
     """Return coordinated phase updates for the provided chunk."""
 
     (
@@ -312,9 +351,9 @@ def _phase_adjust_chunk(
         kG,
         kL,
     ) = args
-    updates: list[tuple[Any, float]] = []
+    updates: list[tuple[Node, float]] = []
     for node in nodes:
-        th = theta_map.get(node, 0.0)
+        th = float(theta_map.get(node, 0.0))
         neigh = neighbors_map.get(node, ())
         if neigh:
             thL = neighbor_phase_mean_list(
@@ -333,7 +372,7 @@ def _phase_adjust_chunk(
 
 
 def coordinate_global_local_phase(
-    G,
+    G: Graph,
     global_force: float | None = None,
     local_force: float | None = None,
     *,
@@ -349,15 +388,15 @@ def coordinate_global_local_phase(
     no está disponible; un valor ``None`` o ``<= 1`` mantiene el recorrido
     secuencial clásico.
     """
-    g = G.graph
+    g = cast(dict[str, Any], G.graph)
     defaults = DEFAULTS
-    hist = g.setdefault("history", {})
+    hist = cast(dict[str, Any], g.setdefault("history", {}))
     maxlen = int(
         g.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"])
     )
-    hist_state = _ensure_hist_deque(hist, "phase_state", maxlen)
-    hist_R = _ensure_hist_deque(hist, "phase_R", maxlen)
-    hist_disr = _ensure_hist_deque(hist, "phase_disr", maxlen)
+    hist_state = cast(deque[str], _ensure_hist_deque(hist, "phase_state", maxlen))
+    hist_R = cast(deque[float], _ensure_hist_deque(hist, "phase_R", maxlen))
+    hist_disr = cast(deque[float], _ensure_hist_deque(hist, "phase_disr", maxlen))
     # 0) Si hay fuerzas explícitas, usar y salir del modo adaptativo
     if (global_force is not None) or (local_force is not None):
         kG = float(
@@ -386,6 +425,7 @@ def coordinate_global_local_phase(
     append_metric(hist, "phase_kG", float(kG))
     append_metric(hist, "phase_kL", float(kL))
 
+    jobs: int | None
     try:
         jobs = None if n_jobs is None else int(n_jobs)
     except (TypeError, ValueError):
@@ -403,28 +443,35 @@ def coordinate_global_local_phase(
         return
 
     trig = get_trig_cache(G, np=np)
-    theta_map = trig.theta
-    cos_map = trig.cos
-    sin_map = trig.sin
+    theta_map = cast(dict[Node, float], trig.theta)
+    cos_map = cast(dict[Node, float], trig.cos)
+    sin_map = cast(dict[Node, float], trig.sin)
 
     neighbors_proxy = ensure_neighbors_map(G)
-    neighbors_map: dict[Any, tuple[Any, ...]] = {}
+    neighbors_map: dict[Node, tuple[Node, ...]] = {}
     for n in nodes:
         try:
-            neighbors_map[n] = tuple(neighbors_proxy[n])
+            neighbors_map[n] = tuple(cast(Sequence[Node], neighbors_proxy[n]))
         except KeyError:
             neighbors_map[n] = ()
 
     theta_vals = [
-        theta_map.get(n, get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in nodes
+        float(theta_map.get(n, get_attr(G.nodes[n], ALIAS_THETA, 0.0)))
+        for n in nodes
     ]
-    cos_vals = [cos_map.get(n, math.cos(theta_vals[idx])) for idx, n in enumerate(nodes)]
-    sin_vals = [sin_map.get(n, math.sin(theta_vals[idx])) for idx, n in enumerate(nodes)]
+    cos_vals = [
+        float(cos_map.get(n, math.cos(theta_vals[idx])))
+        for idx, n in enumerate(nodes)
+    ]
+    sin_vals = [
+        float(sin_map.get(n, math.sin(theta_vals[idx])))
+        for idx, n in enumerate(nodes)
+    ]
 
     if np is not None:
-        theta_arr = np.fromiter(theta_vals, dtype=float)
-        cos_arr = np.fromiter(cos_vals, dtype=float)
-        sin_arr = np.fromiter(sin_vals, dtype=float)
+        theta_arr = cast(FloatArray, np.fromiter(theta_vals, dtype=float))
+        cos_arr = cast(FloatArray, np.fromiter(cos_vals, dtype=float))
+        sin_arr = cast(FloatArray, np.fromiter(sin_vals, dtype=float))
         if cos_arr.size:
             mean_cos = float(np.mean(cos_arr))
             mean_sin = float(np.mean(sin_arr))
@@ -443,7 +490,7 @@ def coordinate_global_local_phase(
             else theta_vals[idx]
             for idx, n in enumerate(nodes)
         ]
-        neighbor_arr = np.fromiter(neighbor_means, dtype=float)
+        neighbor_arr = cast(FloatArray, np.fromiter(neighbor_means, dtype=float))
         two_pi = 2.0 * math.pi
         diff_global = np.mod(thG - theta_arr + math.pi, two_pi) - math.pi
         diff_local = np.mod(neighbor_arr - theta_arr + math.pi, two_pi) - math.pi
@@ -471,12 +518,12 @@ def coordinate_global_local_phase(
                 thL = th
             dG = angle_diff(thG, th)
             dL = angle_diff(thL, th)
-            set_theta(G, node, th + kG * dG + kL * dL)
+            set_theta(G, node, float(th + kG * dG + kL * dL))
         return
 
     chunk_size = max(1, (num_nodes + jobs - 1) // jobs)
     chunks = [nodes[i : i + chunk_size] for i in range(0, num_nodes, chunk_size)]
-    args = [
+    args: list[ChunkArgs] = [
         (
             chunk,
             theta_map,
@@ -489,13 +536,15 @@ def coordinate_global_local_phase(
         )
         for chunk in chunks
     ]
-    results: dict[Any, float] = {}
+    results: dict[Node, float] = {}
     with ProcessPoolExecutor(max_workers=jobs) as executor:
         for res in executor.map(_phase_adjust_chunk, args):
             for node, value in res:
-                results[node] = value
+                results[node] = float(value)
     for node in nodes:
-        set_theta(G, node, results.get(node, theta_map.get(node, 0.0)))
+        new_theta = results.get(node)
+        base_theta = theta_map.get(node, 0.0)
+        set_theta(G, node, float(new_theta if new_theta is not None else base_theta))
 
 
 # -------------------------
