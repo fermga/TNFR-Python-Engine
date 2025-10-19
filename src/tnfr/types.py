@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Hashable, Mapping
+from collections.abc import Callable, Hashable, Mapping
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Iterable, Protocol, TypeAlias
 
@@ -24,11 +24,16 @@ __all__ = (
     "GraphLike",
     "Glyph",
     "GlyphLoadDistribution",
+    "TraceCallback",
+    "TraceFieldFn",
+    "TraceFieldMap",
+    "TraceFieldRegistry",
 )
 
 
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
     import networkx as nx
+    from .trace import TraceMetadata
 
     TNFRGraph: TypeAlias = nx.Graph
 else:  # pragma: no cover - runtime fallback without networkx
@@ -134,3 +139,15 @@ class Glyph(str, Enum):
 
 GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
 #: Normalised glyph load proportions keyed by :class:`Glyph` or aggregate labels.
+
+TraceFieldFn: TypeAlias = Callable[[TNFRGraph], "TraceMetadata"]
+#: Callable producing :class:`tnfr.trace.TraceMetadata` from a :data:`TNFRGraph`.
+
+TraceFieldMap: TypeAlias = Mapping[str, "TraceFieldFn"]
+#: Mapping of trace field names to their producers for a given phase.
+
+TraceFieldRegistry: TypeAlias = dict[str, dict[str, "TraceFieldFn"]]
+#: Registry grouping trace field producers by capture phase.
+
+TraceCallback: TypeAlias = Callable[[TNFRGraph, dict[str, Any]], None]
+#: Callback signature used by :func:`tnfr.trace.register_trace`.
