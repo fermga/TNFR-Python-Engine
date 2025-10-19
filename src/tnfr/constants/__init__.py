@@ -5,7 +5,7 @@ from __future__ import annotations
 import copy
 from collections.abc import Mapping
 from types import MappingProxyType
-from typing import Any, Callable, TypeVar
+from typing import Callable, TypeVar, cast
 
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
 from .init import INIT_DEFAULTS
@@ -20,7 +20,7 @@ from .metric import (
 )
 
 from ..immutable import _is_immutable
-from ..types import GraphLike
+from ..types import GraphLike, TNFRConfigValue
 
 T = TypeVar("T")
 
@@ -32,7 +32,7 @@ except ImportError:  # noqa: BLE001 - allow any import error
 ensure_node_offset_map: Callable[[GraphLike], None] | None = _ensure_node_offset_map
 
 # Secciones individuales exportadas
-DEFAULT_SECTIONS: Mapping[str, Mapping[str, Any]] = MappingProxyType(
+DEFAULT_SECTIONS: Mapping[str, Mapping[str, TNFRConfigValue]] = MappingProxyType(
     {
         "core": CORE_DEFAULTS,
         "init": INIT_DEFAULTS,
@@ -45,7 +45,7 @@ DEFAULT_SECTIONS: Mapping[str, Mapping[str, Any]] = MappingProxyType(
 # Unimos los diccionarios en orden de menor a mayor prioridad para que los
 # valores de ``METRIC_DEFAULTS`` sobrescriban al resto, como hacía
 # ``ChainMap``.
-DEFAULTS: Mapping[str, Any] = MappingProxyType(
+DEFAULTS: Mapping[str, TNFRConfigValue] = MappingProxyType(
     CORE_DEFAULTS | INIT_DEFAULTS | REMESH_DEFAULTS | METRIC_DEFAULTS
 )
 
@@ -55,7 +55,9 @@ DEFAULTS: Mapping[str, Any] = MappingProxyType(
 
 
 def inject_defaults(
-    G: GraphLike, defaults: Mapping[str, Any] = DEFAULTS, override: bool = False
+    G: GraphLike,
+    defaults: Mapping[str, TNFRConfigValue] = DEFAULTS,
+    override: bool = False,
 ) -> None:
     """Inject ``defaults`` into ``G.graph``.
 
@@ -68,13 +70,17 @@ def inject_defaults(
     G.graph.setdefault("_tnfr_defaults_attached", False)
     for k, v in defaults.items():
         if override or k not in G.graph:
-            G.graph[k] = v if _is_immutable(v) else copy.deepcopy(v)
+            G.graph[k] = (
+                v
+                if _is_immutable(v)
+                else cast(TNFRConfigValue, copy.deepcopy(v))
+            )
     G.graph["_tnfr_defaults_attached"] = True
     if ensure_node_offset_map is not None:
         ensure_node_offset_map(G)
 
 
-def merge_overrides(G: GraphLike, **overrides: Any) -> None:
+def merge_overrides(G: GraphLike, **overrides: TNFRConfigValue) -> None:
     """Apply specific changes to ``G.graph``.
 
     Non-immutable values are deep-copied to avoid shared state with
@@ -83,10 +89,14 @@ def merge_overrides(G: GraphLike, **overrides: Any) -> None:
     for key, value in overrides.items():
         if key not in DEFAULTS:
             raise KeyError(f"Parámetro desconocido: '{key}'")
-        G.graph[key] = value if _is_immutable(value) else copy.deepcopy(value)
+        G.graph[key] = (
+            value
+            if _is_immutable(value)
+            else cast(TNFRConfigValue, copy.deepcopy(value))
+        )
 
 
-def get_param(G: GraphLike, key: str) -> Any:
+def get_param(G: GraphLike, key: str) -> TNFRConfigValue:
     """Retrieve a parameter from ``G.graph`` or fall back to defaults."""
     if key in G.graph:
         return G.graph[key]
@@ -96,7 +106,7 @@ def get_param(G: GraphLike, key: str) -> Any:
 
 
 def get_graph_param(
-    G: GraphLike, key: str, cast: Callable[[Any], T] = float
+    G: GraphLike, key: str, cast: Callable[[object], T] = float
 ) -> T | None:
     """Return ``key`` from ``G.graph`` applying ``cast``.
 

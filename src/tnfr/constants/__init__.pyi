@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, Callable, TypeVar
+from typing import Callable, TypeVar
 
 from .core import CORE_DEFAULTS as CORE_DEFAULTS, REMESH_DEFAULTS as REMESH_DEFAULTS
 from .init import INIT_DEFAULTS as INIT_DEFAULTS
@@ -14,7 +14,7 @@ from .metric import (
     SIGMA as SIGMA,
     TRACE as TRACE,
 )
-from ..types import GraphLike
+from ..types import GraphLike, TNFRConfigValue
 
 T = TypeVar("T")
 
@@ -53,8 +53,8 @@ __all__ = (
 )
 
 ensure_node_offset_map: Callable[[GraphLike], None] | None
-DEFAULT_SECTIONS: Mapping[str, Mapping[str, Any]]
-DEFAULTS: Mapping[str, Any]
+DEFAULT_SECTIONS: Mapping[str, Mapping[str, TNFRConfigValue]]
+DEFAULTS: Mapping[str, TNFRConfigValue]
 ALIASES: dict[str, tuple[str, ...]]
 VF_KEY: str
 THETA_KEY: str
@@ -73,19 +73,19 @@ dSI_PRIMARY: str
 
 def inject_defaults(
     G: GraphLike,
-    defaults: Mapping[str, Any] = ...,
+    defaults: Mapping[str, TNFRConfigValue] = ...,
     override: bool = ...,
 ) -> None: ...
 
 
-def merge_overrides(G: GraphLike, **overrides: Any) -> None: ...
+def merge_overrides(G: GraphLike, **overrides: TNFRConfigValue) -> None: ...
 
 
-def get_param(G: GraphLike, key: str) -> Any: ...
+def get_param(G: GraphLike, key: str) -> TNFRConfigValue: ...
 
 
 def get_graph_param(
-    G: GraphLike, key: str, cast: Callable[[Any], T] = ...
+    G: GraphLike, key: str, cast: Callable[[object], T] = ...
 ) -> T | None: ...
 
 
