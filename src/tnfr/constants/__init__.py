@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable
-from collections.abc import Mapping
 import copy
+from collections.abc import Mapping
 from types import MappingProxyType
+from typing import Any, Callable, TypeVar
 
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
 from .init import INIT_DEFAULTS
@@ -20,11 +20,16 @@ from .metric import (
 )
 
 from ..immutable import _is_immutable
+from ..types import GraphLike
+
+T = TypeVar("T")
 
 try:  # pragma: no cover - optional dependency
-    from ..utils import ensure_node_offset_map
+    from ..utils import ensure_node_offset_map as _ensure_node_offset_map
 except ImportError:  # noqa: BLE001 - allow any import error
-    ensure_node_offset_map = None
+    _ensure_node_offset_map = None
+
+ensure_node_offset_map: Callable[[GraphLike], None] | None = _ensure_node_offset_map
 
 # Secciones individuales exportadas
 DEFAULT_SECTIONS: Mapping[str, Mapping[str, Any]] = MappingProxyType(
@@ -50,7 +55,7 @@ DEFAULTS: Mapping[str, Any] = MappingProxyType(
 
 
 def inject_defaults(
-    G, defaults: Mapping[str, Any] = DEFAULTS, override: bool = False
+    G: GraphLike, defaults: Mapping[str, Any] = DEFAULTS, override: bool = False
 ) -> None:
     """Inject ``defaults`` into ``G.graph``.
 
@@ -69,7 +74,7 @@ def inject_defaults(
         ensure_node_offset_map(G)
 
 
-def merge_overrides(G, **overrides) -> None:
+def merge_overrides(G: GraphLike, **overrides: Any) -> None:
     """Apply specific changes to ``G.graph``.
 
     Non-immutable values are deep-copied to avoid shared state with
@@ -81,7 +86,7 @@ def merge_overrides(G, **overrides) -> None:
         G.graph[key] = value if _is_immutable(value) else copy.deepcopy(value)
 
 
-def get_param(G, key: str):
+def get_param(G: GraphLike, key: str) -> Any:
     """Retrieve a parameter from ``G.graph`` or fall back to defaults."""
     if key in G.graph:
         return G.graph[key]
@@ -90,7 +95,9 @@ def get_param(G, key: str):
     return DEFAULTS[key]
 
 
-def get_graph_param(G, key: str, cast: Callable[[Any], Any] = float):
+def get_graph_param(
+    G: GraphLike, key: str, cast: Callable[[Any], T] = float
+) -> T | None:
     """Return ``key`` from ``G.graph`` applying ``cast``.
 
     The ``cast`` argument must be a function (e.g. ``float``, ``int``,

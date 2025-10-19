@@ -1,7 +1,16 @@
 """Node utilities and structures for TNFR graphs."""
 
 from __future__ import annotations
-from typing import Iterable, MutableMapping, Optional, Protocol, TypeVar, Callable, Any
+from typing import (
+    Any,
+    Callable,
+    Iterable,
+    MutableMapping,
+    Optional,
+    Protocol,
+    SupportsFloat,
+    TypeVar,
+)
 from collections.abc import Hashable
 import math
 from dataclasses import dataclass
@@ -16,6 +25,7 @@ from .alias import (
     set_dnfr,
     set_theta,
 )
+from .types import CoherenceMetric, NodeId, TNFRGraph
 from .utils import (
     cached_node_list,
     ensure_node_offset_map,
@@ -57,12 +67,12 @@ class AttrSpec:
     def build_property(self) -> property:
         """Create the property descriptor for ``NodoNX`` attributes."""
 
-        def fget(instance) -> T:
+        def fget(instance: "NodoNX") -> T:
             return self.to_python(
                 self.getter(instance.G.nodes[instance.n], self.aliases, self.default)
             )
 
-        def fset(instance, value: T) -> None:
+        def fset(instance: "NodoNX", value: T) -> None:
             value = self.to_storage(value)
             if self.use_graph_setter:
                 self.setter(instance.G, instance.n, value)
@@ -93,7 +103,11 @@ ATTR_SPECS: dict[str, AttrSpec] = {
 }
 
 
-def _add_edge_common(n1, n2, weight) -> Optional[float]:
+def _add_edge_common(
+    n1: NodeId,
+    n2: NodeId,
+    weight: SupportsFloat | str,
+) -> Optional[CoherenceMetric]:
     """Validate basic edge constraints.
 
     Returns the parsed weight if the edge can be added. ``None`` is returned
@@ -113,12 +127,12 @@ def _add_edge_common(n1, n2, weight) -> Optional[float]:
 
 
 def add_edge(
-    graph,
-    n1,
-    n2,
-    weight,
+    graph: TNFRGraph,
+    n1: NodeId,
+    n2: NodeId,
+    weight: SupportsFloat | str,
     overwrite: bool = False,
-):
+) -> None:
     """Add an edge between ``n1`` and ``n2`` in a ``networkx`` graph."""
 
     weight = _add_edge_common(n1, n2, weight)
