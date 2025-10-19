@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import asdict, is_dataclass
-from functools import lru_cache, singledispatch, wraps, partial
-from typing import Any, Callable
+from functools import lru_cache, partial, singledispatch, wraps
+from typing import Any, Callable, Iterable, Iterator, TypeAlias, cast
 from collections.abc import Mapping
 from types import MappingProxyType
 import threading
@@ -22,8 +22,29 @@ IMMUTABLE_SIMPLE = frozenset(
 )
 
 
+FrozenPrimitive: TypeAlias = int | float | complex | str | bool | bytes | None
+"""Primitive immutable values handled directly by :func:`_freeze`."""
+
+FrozenCollectionItems: TypeAlias = tuple["FrozenSnapshot", ...]
+"""Frozen representation for generic iterables."""
+
+FrozenMappingItems: TypeAlias = tuple[tuple[Any, "FrozenSnapshot"], ...]
+"""Frozen representation for mapping ``items()`` snapshots."""
+
+FrozenTaggedCollection: TypeAlias = tuple[str, FrozenCollectionItems]
+"""Tagged iterable snapshot identifying the original container type."""
+
+FrozenTaggedMapping: TypeAlias = tuple[str, FrozenMappingItems]
+"""Tagged mapping snapshot identifying the original mapping flavour."""
+
+FrozenSnapshot: TypeAlias = (
+    FrozenPrimitive | FrozenCollectionItems | FrozenTaggedCollection | FrozenTaggedMapping
+)
+"""Union describing the immutable snapshot returned by :func:`_freeze`."""
+
+
 @contextmanager
-def _cycle_guard(value: Any, seen: set[int] | None = None):
+def _cycle_guard(value: Any, seen: set[int] | None = None) -> Iterator[set[int]]:
     """Context manager that detects reference cycles during freezing."""
     if seen is None:
         seen = set()
@@ -37,18 +58,20 @@ def _cycle_guard(value: Any, seen: set[int] | None = None):
         seen.remove(obj_id)
 
 
-def _check_cycle(func: Callable[[Any, set[int] | None], Any]):
+def _check_cycle(
+    func: Callable[[Any, set[int] | None], FrozenSnapshot]
+) -> Callable[[Any, set[int] | None], FrozenSnapshot]:
     """Decorator applying :func:`_cycle_guard` to ``func``."""
 
     @wraps(func)
-    def wrapper(value: Any, seen: set[int] | None = None):
-        with _cycle_guard(value, seen) as seen:
-            return func(value, seen)
+    def wrapper(value: Any, seen: set[int] | None = None) -> FrozenSnapshot:
+        with _cycle_guard(value, seen) as guard_seen:
+            return func(value, guard_seen)
 
     return wrapper
 
 
-def _freeze_dataclass(value: Any, seen: set[int]):
+def _freeze_dataclass(value: Any, seen: set[int]) -> FrozenTaggedMapping:
     params = getattr(type(value), "__dataclass_params__", None)
     frozen = bool(params and params.frozen)
     data = asdict(value)
@@ -58,9 +81,10 @@ def _freeze_dataclass(value: Any, seen: set[int]):
 
 @singledispatch
 @_check_cycle
-def _freeze(value: Any, seen: set[int] | None = None):
+def _freeze(value: Any, seen: set[int] | None = None) -> FrozenSnapshot:
     """Recursively convert ``value`` into an immutable representation."""
     if is_dataclass(value) and not isinstance(value, type):
+        assert seen is not None
         return _freeze_dataclass(value, seen)
     if type(value) in IMMUTABLE_SIMPLE:
         return value
@@ -69,22 +93,27 @@ def _freeze(value: Any, seen: set[int] | None = None):
 
 @_freeze.register(tuple)
 @_check_cycle
-def _freeze_tuple(value: tuple, seen: set[int] | None = None):  # noqa: F401
+def _freeze_tuple(value: tuple[Any, ...], seen: set[int] | None = None) -> FrozenCollectionItems:  # noqa: F401
+    assert seen is not None
     return tuple(_freeze(v, seen) for v in value)
 
 
-def _freeze_iterable(container: Any, tag: str, seen: set[int] | None) -> tuple[str, tuple]:
+def _freeze_iterable(
+    container: Iterable[Any], tag: str, seen: set[int]
+) -> FrozenTaggedCollection:
     return (tag, tuple(_freeze(v, seen) for v in container))
 
 
 def _freeze_iterable_with_tag(
-    value: Any, seen: set[int] | None = None, *, tag: str
-) -> tuple[str, tuple]:
+    value: Iterable[Any], seen: set[int] | None = None, *, tag: str
+) -> FrozenTaggedCollection:
+    assert seen is not None
     return _freeze_iterable(value, tag, seen)
 
 
 def _register_iterable(cls: type, tag: str) -> None:
-    _freeze.register(cls)(_check_cycle(partial(_freeze_iterable_with_tag, tag=tag)))
+    handler = _check_cycle(partial(_freeze_iterable_with_tag, tag=tag))
+    _freeze.register(cls)(cast(Callable[[Any, set[int] | None], FrozenSnapshot], handler))
 
 
 for _cls, _tag in (
@@ -98,17 +127,22 @@ for _cls, _tag in (
 
 @_freeze.register(Mapping)
 @_check_cycle
-def _freeze_mapping(value: Mapping, seen: set[int] | None = None):  # noqa: F401
+def _freeze_mapping(
+    value: Mapping[Any, Any], seen: set[int] | None = None
+) -> FrozenTaggedMapping:  # noqa: F401
+    assert seen is not None
     tag = "dict" if hasattr(value, "__setitem__") else "mapping"
     return (tag, tuple((k, _freeze(v, seen)) for k, v in value.items()))
 
 
-def _all_immutable(iterable) -> bool:
+def _all_immutable(iterable: Iterable[Any]) -> bool:
     return all(_is_immutable_inner(v) for v in iterable)
 
 
 # Dispatch table kept immutable to avoid accidental mutation.
-_IMMUTABLE_TAG_DISPATCH: Mapping[str, Callable[[tuple], bool]] = MappingProxyType(
+ImmutableTagHandler: TypeAlias = Callable[[tuple[Any, ...]], bool]
+
+_IMMUTABLE_TAG_DISPATCH: Mapping[str, ImmutableTagHandler] = MappingProxyType(
     {
         "mapping": lambda v: _all_immutable(v[1]),
         "frozenset": lambda v: _all_immutable(v[1]),
@@ -127,7 +161,7 @@ def _is_immutable_inner(value: Any) -> bool:
 
 
 @_is_immutable_inner.register(tuple)
-def _is_immutable_inner_tuple(value: tuple) -> bool:  # noqa: F401
+def _is_immutable_inner_tuple(value: tuple[Any, ...]) -> bool:  # noqa: F401
     if value and isinstance(value[0], str):
         handler = _IMMUTABLE_TAG_DISPATCH.get(value[0])
         if handler is not None:
@@ -136,7 +170,7 @@ def _is_immutable_inner_tuple(value: tuple) -> bool:  # noqa: F401
 
 
 @_is_immutable_inner.register(frozenset)
-def _is_immutable_inner_frozenset(value: frozenset) -> bool:  # noqa: F401
+def _is_immutable_inner_frozenset(value: frozenset[Any]) -> bool:  # noqa: F401
     return _all_immutable(value)
 
 

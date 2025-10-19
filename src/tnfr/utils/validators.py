@@ -5,12 +5,30 @@ from __future__ import annotations
 import numbers
 import sys
 
+from collections.abc import Mapping
+from typing import Callable, Sequence, TypeAlias
+
 from ..alias import get_attr
 from ..config.constants import GLYPHS_CANONICAL_SET
 from ..constants import get_aliases, get_param
 from ..helpers.numeric import within_range
+from ..types import (
+    EPIValue,
+    NodeId,
+    StructuralFrequency,
+    TNFRGraph,
+)
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
+
+ValidatorFunc: TypeAlias = Callable[[TNFRGraph], None]
+"""Callable signature expected for validation routines."""
+
+NodeData = Mapping[str, object]
+"""Read-only node attribute mapping used by validators."""
+
+AliasSequence = Sequence[str]
+"""Sequence of accepted attribute aliases."""
 
 __all__ = ("validate_window", "run_validators")
 
@@ -31,54 +49,80 @@ def validate_window(window: int, *, positive: bool = False) -> int:
     return int(window)
 
 
-def _require_attr(data, alias, node, name):
+def _require_attr(data: NodeData, alias: AliasSequence, node: NodeId, name: str) -> float:
     """Return attribute value or raise if missing."""
-    val = get_attr(data, alias, None)
+
+    mapping: dict[str, object]
+    if isinstance(data, dict):
+        mapping = data
+    else:
+        mapping = dict(data)
+    val = get_attr(mapping, alias, None)
     if val is None:
         raise ValueError(f"Missing {name} attribute in node {node}")
-    return val
+    return float(val)
 
 
-def _validate_sigma(G) -> None:
+def _validate_sigma(graph: TNFRGraph) -> None:
     from ..sense import sigma_vector_from_graph
 
-    sv = sigma_vector_from_graph(G)
+    sv = sigma_vector_from_graph(graph)
     if sv.get("mag", 0.0) > 1.0 + sys.float_info.epsilon:
         raise ValueError("σ norm exceeds 1")
 
 
-def _check_epi_vf(epi, vf, epi_min, epi_max, vf_min, vf_max, n):
-    _check_range(epi, epi_min, epi_max, "EPI", n)
-    _check_range(vf, vf_min, vf_max, "VF", n)
+GRAPH_VALIDATORS: tuple[ValidatorFunc, ...] = (_validate_sigma,)
+"""Ordered collection of graph-level validators."""
 
 
-def _out_of_range_msg(name, node, val):
+def _check_epi_vf(
+    epi: EPIValue,
+    vf: StructuralFrequency,
+    epi_min: float,
+    epi_max: float,
+    vf_min: float,
+    vf_max: float,
+    node: NodeId,
+) -> None:
+    _check_range(epi, epi_min, epi_max, "EPI", node)
+    _check_range(vf, vf_min, vf_max, "VF", node)
+
+
+def _out_of_range_msg(name: str, node: NodeId, val: float) -> str:
     return f"{name} out of range in node {node}: {val}"
 
 
-def _check_range(val, lower, upper, name, node, tol: float = 1e-9):
+def _check_range(
+    val: float,
+    lower: float,
+    upper: float,
+    name: str,
+    node: NodeId,
+    tol: float = 1e-9,
+) -> None:
     if not within_range(val, lower, upper, tol):
         raise ValueError(_out_of_range_msg(name, node, val))
 
 
-def _check_glyph(g, n):
-    if g and g not in GLYPHS_CANONICAL_SET:
-        raise KeyError(f"Invalid glyph {g} in node {n}")
+def _check_glyph(glyph: str | None, node: NodeId) -> None:
+    if glyph and glyph not in GLYPHS_CANONICAL_SET:
+        raise KeyError(f"Invalid glyph {glyph} in node {node}")
 
 
-def run_validators(G) -> None:
+def run_validators(graph: TNFRGraph) -> None:
     """Run all invariant validators on ``G`` with a single node pass."""
     from ..glyph_history import last_glyph
 
-    epi_min = float(get_param(G, "EPI_MIN"))
-    epi_max = float(get_param(G, "EPI_MAX"))
-    vf_min = float(get_param(G, "VF_MIN"))
-    vf_max = float(get_param(G, "VF_MAX"))
+    epi_min = float(get_param(graph, "EPI_MIN"))
+    epi_max = float(get_param(graph, "EPI_MAX"))
+    vf_min = float(get_param(graph, "VF_MIN"))
+    vf_max = float(get_param(graph, "VF_MAX"))
 
-    for n, data in G.nodes(data=True):
-        epi = _require_attr(data, ALIAS_EPI, n, "EPI")
-        vf = _require_attr(data, ALIAS_VF, n, "VF")
-        _check_epi_vf(epi, vf, epi_min, epi_max, vf_min, vf_max, n)
-        _check_glyph(last_glyph(data), n)
+    for node, data in graph.nodes(data=True):
+        epi = EPIValue(_require_attr(data, ALIAS_EPI, node, "EPI"))
+        vf = StructuralFrequency(_require_attr(data, ALIAS_VF, node, "VF"))
+        _check_epi_vf(epi, vf, epi_min, epi_max, vf_min, vf_max, node)
+        _check_glyph(last_glyph(data), node)
 
-    _validate_sigma(G)
+    for validator in GRAPH_VALIDATORS:
+        validator(graph)
