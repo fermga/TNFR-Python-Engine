@@ -13,7 +13,11 @@ __all__ = (
     "Node",
     "EPIValue",
     "DeltaNFR",
+    "SecondDerivativeEPI",
     "Phase",
+    "StructuralFrequency",
+    "SenseIndex",
+    "CouplingWeight",
     "CoherenceMetric",
     "DeltaNFRHook",
     "GraphLike",
@@ -44,8 +48,20 @@ EPIValue: TypeAlias = float
 DeltaNFR: TypeAlias = float
 #: Scalar internal reorganisation driver ΔNFR applied to a node.
 
+SecondDerivativeEPI: TypeAlias = float
+#: Second derivative ∂²EPI/∂t² tracking bifurcation pressure.
+
 Phase: TypeAlias = float
 #: Phase (φ) describing a node's synchrony relative to its neighbors.
+
+StructuralFrequency: TypeAlias = float
+#: Structural frequency νf expressed in Hz_str.
+
+SenseIndex: TypeAlias = float
+#: Sense index Si capturing a node's reorganising capacity.
+
+CouplingWeight: TypeAlias = float
+#: Weight attached to edges describing coupling coherence strength.
 
 CoherenceMetric: TypeAlias = float
 #: Aggregated measure of coherence such as C(t) or Si.
