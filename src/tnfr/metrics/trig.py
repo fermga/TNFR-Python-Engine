@@ -7,9 +7,9 @@ Caching of cosine/sine values lives in :mod:`tnfr.metrics.trig_cache`.
 from __future__ import annotations
 
 import math
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from itertools import tee
-from typing import TYPE_CHECKING, Any, overload
+from typing import TYPE_CHECKING, Any, overload, cast
 
 from ..helpers.numeric import kahan_sum_nd
 from ..utils import cached_import, get_numpy
@@ -41,7 +41,7 @@ def accumulate_cos_sin(
 
     processed = False
 
-    def iter_real_pairs():
+    def iter_real_pairs() -> Iterator[tuple[float, float]]:
         nonlocal processed
         for cs in it:
             if cs is None:
@@ -86,12 +86,12 @@ def _neighbor_phase_mean_core(
     neigh: Sequence[Any],
     cos_map: dict[Any, float],
     sin_map: dict[Any, float],
-    np,
+    np: Any | None,
     fallback: float,
 ) -> float:
     """Return circular mean of neighbour phases given trig mappings."""
 
-    def _iter_pairs():
+    def _iter_pairs() -> Iterator[tuple[float, float]]:
         for v in neigh:
             c = cos_map.get(v)
             s = sin_map.get(v)
@@ -117,10 +117,10 @@ def _neighbor_phase_mean_core(
 
 
 def _neighbor_phase_mean_generic(
-    obj,
+    obj: "NodoProtocol" | Sequence[Any],
     cos_map: dict[Any, float] | None = None,
     sin_map: dict[Any, float] | None = None,
-    np=None,
+    np: Any | None = None,
     fallback: float = 0.0,
 ) -> float:
     """Internal helper delegating to :func:`_neighbor_phase_mean_core`.
@@ -136,7 +136,7 @@ def _neighbor_phase_mean_generic(
         np = get_numpy()
 
     if cos_map is None or sin_map is None:
-        node = obj
+        node = cast("NodoProtocol", obj)
         if getattr(node, "G", None) is None:
             raise TypeError(
                 "neighbor_phase_mean requires nodes bound to a graph"
@@ -149,7 +149,7 @@ def _neighbor_phase_mean_generic(
         sin_map = trig.sin
         neigh = node.G[node.n]
     else:
-        neigh = obj
+        neigh = cast(Sequence[Any], obj)
 
     return _neighbor_phase_mean_core(neigh, cos_map, sin_map, np, fallback)
 
@@ -158,7 +158,7 @@ def neighbor_phase_mean_list(
     neigh: Sequence[Any],
     cos_th: dict[Any, float],
     sin_th: dict[Any, float],
-    np=None,
+    np: Any | None = None,
     fallback: float = 0.0,
 ) -> float:
     """Return circular mean of neighbour phases from cosine/sine mappings.
@@ -174,10 +174,6 @@ def neighbor_phase_mean_list(
 
 @overload
 def neighbor_phase_mean(obj: "NodoProtocol", n: None = ...) -> Phase: ...
-
-
-@overload
-def neighbor_phase_mean(obj: "NodoProtocol", n: NodeId) -> Phase: ...
 
 
 @overload
