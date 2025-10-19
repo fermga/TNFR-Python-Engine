@@ -41,7 +41,7 @@ from __future__ import annotations
 import warnings
 from importlib import import_module, metadata
 from importlib.metadata import PackageNotFoundError
-from typing import Any
+from typing import Any, Callable, NoReturn
 
 
 EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
@@ -124,10 +124,12 @@ def _is_internal_import_error(exc: ImportError) -> bool:
     return False
 
 
-def _missing_dependency(name: str, exc: ImportError, *, module: str | None = None):
+def _missing_dependency(
+    name: str, exc: ImportError, *, module: str | None = None
+) -> Callable[..., NoReturn]:
     missing_name = getattr(exc, "name", None)
 
-    def _stub(*args: Any, **kwargs: Any):
+    def _stub(*args: Any, **kwargs: Any) -> NoReturn:
         raise ImportError(
             f"{name} is unavailable because required dependencies could not be imported. "
             f"Original error ({exc.__class__.__name__}): {exc}. "

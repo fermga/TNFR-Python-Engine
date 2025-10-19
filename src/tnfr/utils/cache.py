@@ -12,17 +12,17 @@ from __future__ import annotations
 import hashlib
 import threading
 from collections import defaultdict
-from collections.abc import Callable, Hashable, Iterable, Mapping
+from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping
 from contextlib import contextmanager
 from functools import lru_cache
 from dataclasses import dataclass
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from cachetools import LRUCache
 import networkx as nx
 
 from ..cache import CacheCapacityConfig, CacheManager
-from ..types import TimingContext
+from ..types import NodeId, TNFRGraph, TimingContext
 from .graph import get_graph, mark_dnfr_prep_dirty
 from .init import get_logger, get_numpy
 from .io import json_dumps
@@ -347,11 +347,11 @@ def cached_node_list(G: nx.Graph) -> tuple[Any, ...]:
 
 
 def _ensure_node_map(
-    G,
+    G: TNFRGraph,
     *,
     attrs: tuple[str, ...],
     sort: bool = False,
-) -> dict[Any, int]:
+) -> dict[NodeId, int]:
     """Return cached node-to-index/offset mappings stored on ``NodeCache``."""
 
     graph = G.graph
@@ -361,29 +361,30 @@ def _ensure_node_map(
     missing = [attr for attr in attrs if getattr(cache, attr) is None]
     if missing:
         if sort:
-            nodes = cache.sorted_nodes
-            if nodes is None:
-                nodes = cache.sorted_nodes = tuple(
-                    sorted(cache.nodes, key=_node_repr)
-                )
+            nodes_opt = cache.sorted_nodes
+            if nodes_opt is None:
+                nodes_opt = tuple(sorted(cache.nodes, key=_node_repr))
+                cache.sorted_nodes = nodes_opt
+            nodes_seq = nodes_opt
         else:
-            nodes = cache.nodes
-        mappings: dict[str, dict[Any, int]] = {attr: {} for attr in missing}
-        for idx, node in enumerate(nodes):
+            nodes_seq = cache.nodes
+        node_ids = cast(tuple[NodeId, ...], nodes_seq)
+        mappings: dict[str, dict[NodeId, int]] = {attr: {} for attr in missing}
+        for idx, node in enumerate(node_ids):
             for attr in missing:
                 mappings[attr][node] = idx
         for attr in missing:
             setattr(cache, attr, mappings[attr])
-    return getattr(cache, attrs[0])
+    return cast(dict[NodeId, int], getattr(cache, attrs[0]))
 
 
-def ensure_node_index_map(G) -> dict[Any, int]:
+def ensure_node_index_map(G: TNFRGraph) -> dict[NodeId, int]:
     """Return cached node-to-index mapping for ``G``."""
 
     return _ensure_node_map(G, attrs=("idx",), sort=False)
 
 
-def ensure_node_offset_map(G) -> dict[Any, int]:
+def ensure_node_offset_map(G: TNFRGraph) -> dict[NodeId, int]:
     """Return cached node-to-offset mapping for ``G``."""
 
     sort = bool(G.graph.get("SORT_NODES", False))
@@ -662,7 +663,7 @@ def increment_edge_version(G: Any) -> None:
 
 
 @contextmanager
-def edge_version_update(G: Any):
+def edge_version_update(G: TNFRGraph) -> Iterator[None]:
     """Scope a batch of edge mutations."""
 
     increment_edge_version(G)

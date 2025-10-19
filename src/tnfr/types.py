@@ -54,6 +54,7 @@ __all__ = (
     "DnfrVectorMap",
     "NeighborStats",
     "TimingContext",
+    "PresetTokens",
 )
 
 
@@ -61,11 +62,13 @@ if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
     import networkx as nx
     from .trace import TraceMetadata
     from .glyph_history import HistoryDict as _HistoryDict
+    from .tokens import Token as _Token
 
     TNFRGraph: TypeAlias = nx.Graph
 else:  # pragma: no cover - runtime fallback without networkx
     TNFRGraph: TypeAlias = Any
     _HistoryDict = Any  # type: ignore[assignment]
+    _Token = Any  # type: ignore[assignment]
 #: Graph container storing TNFR nodes, edges and their coherence telemetry.
 
 Graph: TypeAlias = TNFRGraph
@@ -106,6 +109,9 @@ CoherenceMetric: TypeAlias = float
 
 TimingContext: TypeAlias = ContextManager[None]
 #: Context manager used to measure execution time for cache operations.
+
+PresetTokens: TypeAlias = Sequence[_Token]
+#: Sequence of execution tokens composing a preset program.
 
 
 class SelectorThresholds(TypedDict):

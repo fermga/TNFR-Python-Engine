@@ -9,12 +9,13 @@ from ..execution import (
     seq,
     wait,
 )
-from ..types import Glyph
+from ..tokens import Token
+from ..types import Glyph, PresetTokens
 
 __all__ = ("get_preset",)
 
 
-_PRESETS = {
+_PRESETS: dict[str, PresetTokens] = {
     "arranque_resonante": seq(
         Glyph.AL,
         Glyph.EN,
@@ -55,7 +56,8 @@ _PRESETS = {
 }
 
 
-def get_preset(name: str):
-    if name not in _PRESETS:
-        raise KeyError(f"Preset no encontrado: {name}")
-    return _PRESETS[name]
+def get_preset(name: str) -> PresetTokens:
+    try:
+        return _PRESETS[name]
+    except KeyError:
+        raise KeyError(f"Preset no encontrado: {name}") from None
