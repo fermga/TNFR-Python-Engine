@@ -1229,7 +1229,7 @@ def _init_neighbor_sums(
     w_topo = data["w_topo"]
     cache: DnfrCache | None = data.get("cache")
 
-    def _reset_list(buffer, value=0.0):
+    def _reset_list(buffer: list[float] | None, value: float = 0.0) -> list[float]:
         if buffer is None or len(buffer) != n:
             return [value] * n
         for i in range(n):
@@ -1731,7 +1731,7 @@ def _init_neighbor_sums(
     w_topo = data["w_topo"]
     cache: DnfrCache | None = data.get("cache")
 
-    def _reset_list(buffer, value=0.0):
+    def _reset_list(buffer: list[float] | None, value: float = 0.0) -> list[float]:
         if buffer is None or len(buffer) != n:
             return [value] * n
         for i in range(n):
