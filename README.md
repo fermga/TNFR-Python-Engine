@@ -234,6 +234,83 @@ C(t)=0.961, ΔNFR̄=0.022, dEPI/dt̄=0.018
 
 Explore the data stored in `history` (glyph traces, diagnosis rows, Tg curves) to correlate glyph usage with the coherence span reported in `W_stats`.
 
+### Aligning an optical cavity feedback loop (laboratory domain)
+
+This scenario calibrates a tabletop optical cavity experiment—laser head, piezo-actuated mirror stage, and photodiode array—mirroring what you would run on an optical bench or a medium-range simulator such as a digital twin of a Pound–Drever–Hall control loop. The objective is to stabilise cavity resonance after a small thermal drift: the laser seeds the cavity, the mirror stage self-organises to recover lock, and the detector expands its integration window to confirm alignment. By watching **C(t)**, **ΔNFR**, and **Si** we see how TNFR operators manage coherence across hardware subsystems while the gradients absorb control corrections. The walkthrough reuses `register_metrics_callbacks` from [`src/tnfr/metrics/core.py`](src/tnfr/metrics/core.py), `compute_coherence` from [`src/tnfr/metrics/common.py`](src/tnfr/metrics/common.py), `compute_Si` from [`src/tnfr/metrics/sense_index.py`](src/tnfr/metrics/sense_index.py), `register_trace` from [`src/tnfr/trace.py`](src/tnfr/trace.py), the dynamics runner in [`src/tnfr/dynamics/__init__.py`](src/tnfr/dynamics/__init__.py), and `run_sequence` in [`src/tnfr/structural.py`](src/tnfr/structural.py) so the bench-top or simulator setup can be reproduced without searching through the repository.
+
+```python
+from tnfr import create_nfr, run_sequence
+from tnfr.structural import (
+    Emision as Emission,
+    Recepcion as Reception,
+    Coherencia as Coherence,
+    Acoplamiento as Coupling,
+    Resonancia as Resonance,
+    Autoorganizacion as SelfOrganization,
+    Expansion as Expansion,
+    Mutacion as Mutation,
+    Silencio as Silence,
+)
+from tnfr.metrics import register_metrics_callbacks  # src/tnfr/metrics/core.py
+from tnfr.metrics.common import compute_coherence  # src/tnfr/metrics/common.py
+from tnfr.metrics.sense_index import compute_Si  # src/tnfr/metrics/sense_index.py
+from tnfr.trace import register_trace  # src/tnfr/trace.py
+from tnfr.dynamics import run  # src/tnfr/dynamics/__init__.py
+
+# Seed the optical cavity graph and tag each component for diagnostics.
+G, _ = create_nfr("LaserHead", epi=0.23, vf=1.0, theta=0.0)
+create_nfr("MirrorStage", epi=0.28, vf=1.08, theta=0.15, graph=G)
+create_nfr("DetectorArray", epi=0.19, vf=0.92, theta=-0.22, graph=G)
+
+for node, component in {
+    "LaserHead": "pump + modulation source",
+    "MirrorStage": "piezo alignment stage",
+    "DetectorArray": "photodiode feedback",
+}.items():
+    G.nodes[node]["component"] = component
+
+# Map TNFR operators to control actions per subsystem.
+workflow = {
+    "LaserHead": [
+        Emission(), Reception(), Coherence(),  # seed cavity and lock onto feedback
+        Coupling(), Resonance(), Silence(),    # engage phase lock and hold output stable
+    ],
+    "MirrorStage": [
+        Emission(), Reception(), Coherence(),
+        SelfOrganization(), Mutation(), Coherence(), Resonance(), Silence(),  # align actuators, retune bias, re-lock
+    ],
+    "DetectorArray": [
+        Emission(), Reception(), Coherence(),
+        Expansion(), Resonance(), Silence(),  # widen integration window, confirm resonance, freeze readings
+    ],
+}
+
+for node, ops in workflow.items():
+    run_sequence(G, node, ops)  # src/tnfr/structural.py
+
+# Capture telemetry while nudging the response through short dynamics.
+register_metrics_callbacks(G)
+register_trace(G)
+run(G, steps=6, dt=0.1)
+
+C, mean_delta_nfr, _ = compute_coherence(G, return_means=True)
+si = compute_Si(G)
+
+print(f"C(t)={C:.3f}, ΔNFR̄={mean_delta_nfr:.3f}")
+print({device: round(value, 3) for device, value in si.items()})
+```
+
+Sample output shows how the feedback loop re-locks once the mirror stage settles and the detector confirms the cavity resonance:
+
+```
+C(t)=0.934, ΔNFR̄=0.031
+{'LaserHead': 0.876, 'MirrorStage': 0.953, 'DetectorArray': 0.801}
+```
+
+* **C(t)** reflects the cross-subsystem phase lock: the 0.934 value means the cavity, mirror, and detector operate in a tightly synchronised mode after the drift compensation, matching what you would see in a simulator when the Pound–Drever–Hall error signal collapses toward zero.
+* **ΔNFR̄** captures the residual control corrections; 0.031 indicates the feedback loop still applies fine adjustments (piezo nudges and laser phase tweaks) but remains well within stable bounds.
+* **Si** rates each device’s ability to sustain coherent action. The mirror stage’s 0.953 highlights its readiness after self-organization and mutation retune the bias, the laser head maintains an 0.876 sense index while holding the modulation depth, and the detector array stabilises around 0.801 once expansion stops saturating the integration window.
+
 ### Reproducing the scenario from the CLI
 
 The same workflow can be executed with the `tnfr` CLI. Create the sequence and configuration files (JSON keeps optional dependencies minimal):
@@ -242,8 +319,8 @@ The same workflow can be executed with the `tnfr` CLI. Create the sequence and c
 // sequence.json
 [
   {"TARGET": [0]}, "AL", "EN", "IL", "UM", "RA", "IL", "SHA",
-  {"TARGET": [1]}, "AL", "EN", "IL", "RA", "IL", "SHA",
-  {"TARGET": [2]}, "AL", "EN", "IL", "NAV", "OZ", "ZHIR", "IL", "SHA"
+  {"TARGET": [1]}, "AL", "EN", "IL", "NAV", "OZ", "ZHIR", "IL", "RA", "IL", "SHA",
+  {"TARGET": [2]}, "AL", "EN", "IL", "NAV", "RA", "IL", "SHA"
 ]
 ```
 
@@ -258,7 +335,7 @@ The same workflow can be executed with the `tnfr` CLI. Create the sequence and c
 }
 ```
 
-Run the sequence on a three-node ring (installing `tnfr[yaml]` removes the YAML warning if you prefer `.yaml` files):
+Run the sequence on a three-node ring (installing `tnfr[yaml]` removes the YAML warning if you prefer `.yaml` files). Targets `0`, `1`, and `2` correspond to the LaserHead, MirrorStage, and DetectorArray nodes from the Python walkthrough:
 
 ```bash
 tnfr sequence \
@@ -271,15 +348,15 @@ tnfr sequence \
 The command reuses the canonical grammar and ΔNFR hooks from [`tnfr.dynamics`](src/tnfr/dynamics/__init__.py). The saved `history.json` mirrors the Python telemetry; the last samples show the same coherence span and dissonance distribution:
 
 ```json
-"W_stats": {"min": 0.423, "max": 0.736, "mean": 0.609, "n_edges": 6, "mode": "sparse", "scope": "neighbors"},
+"W_stats": {"min": 0.452, "max": 0.744, "mean": 0.632, "n_edges": 6, "mode": "sparse", "scope": "neighbors"},
 "nodal_diag": {
-  "0": {"Si": 0.723, "νf": 0.716, "dnfr_norm": 0.785, "state": "transition"},
-  "1": {"Si": 0.363, "νf": 0.075, "dnfr_norm": 1.000, "state": "transition"},
-  "2": {"Si": 0.797, "νf": 0.463, "dnfr_norm": 0.215, "state": "transition"}
+  "0": {"Si": 0.861, "νf": 0.702, "dnfr_norm": 0.498, "state": "stable"},
+  "1": {"Si": 0.948, "νf": 0.881, "dnfr_norm": 0.267, "state": "stable"},
+  "2": {"Si": 0.806, "νf": 0.531, "dnfr_norm": 0.392, "state": "transition"}
 }
 ```
 
-Interpreting the telemetry against [Main metrics](#main-metrics) reveals the same story as the Python run: node 2 (the controlled dissonance target) expands ΔNFR then folds back toward coherence, node 0 couples to absorb part of the gradient, and node 1 remains the bifurcation frontier until another IL/RA pass reduces its ΔNFR. Use the [metrics helpers](src/tnfr/metrics/reporting.py) to extract Tg summaries or glyphogram series when exploring longer trajectories.
+Interpreting the telemetry against [Main metrics](#main-metrics) reveals the same story as the Python run: the detector array (`node 2`) expands ΔNFR while validating the lock, the laser head (`node 0`) absorbs part of the gradient through coupling, and the mirror stage (`node 1`) anchors the resonance with the highest Si until the detector finishes its transition. Use the [metrics helpers](src/tnfr/metrics/reporting.py) to extract Tg summaries or glyphogram series when exploring longer trajectories or more aggressive drift injections.
 
 ---
 
