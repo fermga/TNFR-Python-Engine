@@ -15,6 +15,7 @@ from ..rng import (
 )
 from ..cache import CacheManager
 from ..utils import ensure_node_offset_map, get_nodonx
+from ..types import NodeId, TNFRGraph
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodoProtocol
@@ -205,23 +206,27 @@ def reset_jitter_manager() -> None:
     _JITTER_MANAGER = None
 
 
-def _node_offset(G, n) -> int:
+def _node_offset(G: TNFRGraph, n: NodeId) -> int:
     """Deterministic node index used for jitter seeds."""
     mapping = ensure_node_offset_map(G)
     return int(mapping.get(n, 0))
 
 
 def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
-    NodoNX = get_nodonx()
-    if NodoNX is None:
+    nodo_nx_type = get_nodonx()
+    if nodo_nx_type is None:
         raise ImportError("NodoNX is unavailable")
-    if isinstance(node, NodoNX):
-        return _node_offset(node.G, node.n), id(node.G)
+    if isinstance(node, nodo_nx_type):
+        graph = cast(TNFRGraph, getattr(node, "G"))
+        node_id = cast(NodeId, getattr(node, "n"))
+        return _node_offset(graph, node_id), id(graph)
     uid = getattr(node, "_noise_uid", None)
     if uid is None:
         uid = id(node)
         setattr(node, "_noise_uid", uid)
-    return int(uid), id(node)
+    graph = cast(TNFRGraph | None, getattr(node, "G", None))
+    scope = graph if graph is not None else node
+    return int(uid), id(scope)
 
 
 def random_jitter(
