@@ -1,14 +1,40 @@
-from typing import Any
+from __future__ import annotations
 
-__all__: Any
+from collections.abc import Callable
+from typing import Any, NoReturn
 
-def __getattr__(name: str) -> Any: ...
+from .dynamics import run, step
+from .ontosim import preparar_red
+from .structural import create_nfr, run_sequence
 
-ExportDependencyError: Any
-Names: Any
-__version__: Any
-create_nfr: Any
-preparar_red: Any
-run: Any
-run_sequence: Any
-step: Any
+EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]]
+"""Manifest describing required submodules and third-party packages."""
+
+_MISSING_EXPORTS: dict[str, dict[str, Any]]
+
+__version__: str
+__all__: list[str]
+
+
+class ExportDependencyError(RuntimeError):
+    """Raised when the export dependency manifest is inconsistent."""
+
+
+def _is_internal_import_error(exc: ImportError) -> bool: ...
+
+def _missing_dependency(
+    name: str,
+    exc: ImportError,
+    *,
+    module: str | None = ...,
+) -> Callable[..., NoReturn]: ...
+
+
+def _validate_export_dependencies() -> None: ...
+
+def _assign_exports(module: str, names: tuple[str, ...]) -> bool: ...
+
+def _emit_missing_dependency_warning() -> None: ...
+
+_HAS_PREPARAR_RED: bool
+_HAS_RUN_SEQUENCE: bool
