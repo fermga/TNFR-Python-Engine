@@ -31,6 +31,10 @@ __all__ = (
     "GraphLike",
     "Glyph",
     "GlyphLoadDistribution",
+    "GlyphSelector",
+    "SelectorPreselectionMetrics",
+    "SelectorPreselectionChoices",
+    "SelectorPreselectionPayload",
     "SelectorMetrics",
     "SelectorNorms",
     "SelectorThresholds",
@@ -39,6 +43,7 @@ __all__ = (
     "TraceFieldFn",
     "TraceFieldMap",
     "TraceFieldRegistry",
+    "HistoryState",
     "DiagnosisNodeData",
     "DiagnosisSharedState",
     "DiagnosisPayload",
@@ -55,10 +60,12 @@ __all__ = (
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
     import networkx as nx
     from .trace import TraceMetadata
+    from .glyph_history import HistoryDict as _HistoryDict
 
     TNFRGraph: TypeAlias = nx.Graph
 else:  # pragma: no cover - runtime fallback without networkx
     TNFRGraph: TypeAlias = Any
+    _HistoryDict = Any  # type: ignore[assignment]
 #: Graph container storing TNFR nodes, edges and their coherence telemetry.
 
 Graph: TypeAlias = TNFRGraph
@@ -190,6 +197,21 @@ class Glyph(str, Enum):
 GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
 #: Normalised glyph load proportions keyed by :class:`Glyph` or aggregate labels.
 
+GlyphSelector: TypeAlias = Callable[[TNFRGraph, NodeId], Glyph | str]
+#: Callable returning the glyph to apply for ``NodeId`` within a graph.
+
+SelectorPreselectionMetrics: TypeAlias = Mapping[Any, SelectorMetrics]
+#: Mapping of nodes to their normalised selector metrics.
+
+SelectorPreselectionChoices: TypeAlias = Mapping[Any, Glyph | str]
+#: Mapping of nodes to their preferred glyph choices prior to grammar filters.
+
+SelectorPreselectionPayload: TypeAlias = tuple[
+    SelectorPreselectionMetrics,
+    SelectorPreselectionChoices,
+]
+#: Tuple grouping selector metrics and base decisions for preselection steps.
+
 TraceFieldFn: TypeAlias = Callable[[TNFRGraph], "TraceMetadata"]
 #: Callable producing :class:`tnfr.trace.TraceMetadata` from a :data:`TNFRGraph`.
 
@@ -198,6 +220,9 @@ TraceFieldMap: TypeAlias = Mapping[str, "TraceFieldFn"]
 
 TraceFieldRegistry: TypeAlias = dict[str, dict[str, "TraceFieldFn"]]
 #: Registry grouping trace field producers by capture phase.
+
+HistoryState: TypeAlias = _HistoryDict | dict[str, Any]
+#: History container used to accumulate glyph metrics and logs for the graph.
 
 TraceCallback: TypeAlias = Callable[[TNFRGraph, dict[str, Any]], None]
 #: Callback signature used by :func:`tnfr.trace.register_trace`.
