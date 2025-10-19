@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any, Final
+
 from . import init as _init
 from ..cache import CacheManager
 from .data import (
@@ -125,11 +127,22 @@ _FAILED_IMPORT_LIMIT = _init._FAILED_IMPORT_LIMIT
 _DEFAULT_CACHE_SIZE = _init._DEFAULT_CACHE_SIZE
 EMIT_MAP = _init.EMIT_MAP
 
-_DYNAMIC_EXPORTS = {"IMPORT_LOG", "_IMPORT_STATE", "_LOGGING_CONFIGURED"}
+#: Mapping of dynamically proxied names to the runtime types they expose.
+#:
+#: ``IMPORT_LOG`` and ``_IMPORT_STATE`` refer to the
+#: :class:`~tnfr.utils.init.ImportRegistry` instance that tracks cached import
+#: metadata, while ``_LOGGING_CONFIGURED`` is the module-level flag guarding the
+#: lazy logging bootstrap performed in :mod:`tnfr.utils.init`.
+_DYNAMIC_EXPORT_TYPES: Final[dict[str, type[object]]] = {
+    "IMPORT_LOG": _init.ImportRegistry,
+    "_IMPORT_STATE": _init.ImportRegistry,
+    "_LOGGING_CONFIGURED": bool,
+}
+_DYNAMIC_EXPORTS: Final[frozenset[str]] = frozenset(_DYNAMIC_EXPORT_TYPES)
 _VALIDATOR_EXPORTS = {"validate_window", "run_validators"}
 
 
-def __getattr__(name: str):  # pragma: no cover - trivial delegation
+def __getattr__(name: str) -> Any:  # pragma: no cover - trivial delegation
     if name in _DYNAMIC_EXPORTS:
         return getattr(_init, name)
     if name in _VALIDATOR_EXPORTS:

@@ -1,63 +1,135 @@
-from typing import Any
+from __future__ import annotations
 
-__all__: Any
+from typing import Any, Final
+
+from ..cache import CacheManager
+from .cache import (
+    EdgeCacheManager,
+    LockAwareLRUCache,
+    NODE_SET_CHECKSUM_KEY,
+    cached_node_list,
+    cached_nodes_and_A,
+    clear_node_repr_cache,
+    configure_graph_cache_limits,
+    edge_version_cache,
+    edge_version_update,
+    ensure_node_index_map,
+    ensure_node_offset_map,
+    get_graph_version,
+    increment_edge_version,
+    increment_graph_version,
+    node_set_checksum,
+    stable_json,
+)
+from .data import (
+    MAX_MATERIALIZE_DEFAULT,
+    STRING_TYPES,
+    convert_value,
+    ensure_collection,
+    flatten_structure,
+    is_non_string_sequence,
+    mix_groups,
+    negative_weights_warn_once,
+    normalize_counter,
+    normalize_materialize_limit,
+    normalize_weights,
+)
+from .graph import (
+    get_graph,
+    get_graph_mapping,
+    mark_dnfr_prep_dirty,
+    supports_add_edge,
+)
+from .init import (
+    EMIT_MAP,
+    IMPORT_LOG,
+    LazyImportProxy,
+    WarnOnce,
+    _DEFAULT_CACHE_SIZE,
+    _FAILED_IMPORT_LIMIT,
+    _IMPORT_STATE,
+    _LOGGING_CONFIGURED,
+    _configure_root,
+    _reset_import_state,
+    _reset_logging_state,
+    _warn_failure,
+    cached_import,
+    get_logger,
+    get_nodonx,
+    get_numpy,
+    prune_failed_imports,
+    warm_cached_import,
+    warn_once,
+)
+from .io import (
+    DEFAULT_PARAMS,
+    JsonDumpsParams,
+    clear_orjson_param_warnings,
+    json_dumps,
+)
+from .validators import run_validators, validate_window
+
+__all__ = (
+    "IMPORT_LOG",
+    "WarnOnce",
+    "cached_import",
+    "warm_cached_import",
+    "LazyImportProxy",
+    "get_logger",
+    "get_nodonx",
+    "get_numpy",
+    "prune_failed_imports",
+    "warn_once",
+    "convert_value",
+    "normalize_weights",
+    "normalize_counter",
+    "normalize_materialize_limit",
+    "ensure_collection",
+    "flatten_structure",
+    "is_non_string_sequence",
+    "STRING_TYPES",
+    "MAX_MATERIALIZE_DEFAULT",
+    "negative_weights_warn_once",
+    "mix_groups",
+    "CacheManager",
+    "EdgeCacheManager",
+    "LockAwareLRUCache",
+    "NODE_SET_CHECKSUM_KEY",
+    "cached_node_list",
+    "cached_nodes_and_A",
+    "clear_node_repr_cache",
+    "edge_version_cache",
+    "edge_version_update",
+    "ensure_node_index_map",
+    "ensure_node_offset_map",
+    "get_graph_version",
+    "increment_edge_version",
+    "increment_graph_version",
+    "configure_graph_cache_limits",
+    "node_set_checksum",
+    "stable_json",
+    "get_graph",
+    "get_graph_mapping",
+    "mark_dnfr_prep_dirty",
+    "supports_add_edge",
+    "JsonDumpsParams",
+    "DEFAULT_PARAMS",
+    "json_dumps",
+    "clear_orjson_param_warnings",
+    "validate_window",
+    "run_validators",
+    "_configure_root",
+    "_LOGGING_CONFIGURED",
+    "_reset_logging_state",
+    "_reset_import_state",
+    "_IMPORT_STATE",
+    "_warn_failure",
+    "_FAILED_IMPORT_LIMIT",
+    "_DEFAULT_CACHE_SIZE",
+    "EMIT_MAP",
+)
+
+_DYNAMIC_EXPORTS: Final[frozenset[str]]
+
 
 def __getattr__(name: str) -> Any: ...
-
-CacheManager: Any
-DEFAULT_PARAMS: Any
-EMIT_MAP: Any
-EdgeCacheManager: Any
-IMPORT_LOG: Any
-JsonDumpsParams: Any
-LazyImportProxy: Any
-LockAwareLRUCache: Any
-MAX_MATERIALIZE_DEFAULT: Any
-NODE_SET_CHECKSUM_KEY: Any
-STRING_TYPES: Any
-WarnOnce: Any
-_DEFAULT_CACHE_SIZE: Any
-_FAILED_IMPORT_LIMIT: Any
-_IMPORT_STATE: Any
-_LOGGING_CONFIGURED: Any
-_configure_root: Any
-_reset_import_state: Any
-_reset_logging_state: Any
-_warn_failure: Any
-cached_import: Any
-cached_node_list: Any
-cached_nodes_and_A: Any
-clear_node_repr_cache: Any
-clear_orjson_param_warnings: Any
-configure_graph_cache_limits: Any
-convert_value: Any
-edge_version_cache: Any
-edge_version_update: Any
-ensure_collection: Any
-ensure_node_index_map: Any
-ensure_node_offset_map: Any
-flatten_structure: Any
-get_graph: Any
-get_graph_mapping: Any
-get_graph_version: Any
-get_logger: Any
-get_nodonx: Any
-get_numpy: Any
-increment_edge_version: Any
-increment_graph_version: Any
-is_non_string_sequence: Any
-json_dumps: Any
-mark_dnfr_prep_dirty: Any
-mix_groups: Any
-negative_weights_warn_once: Any
-node_set_checksum: Any
-normalize_counter: Any
-normalize_materialize_limit: Any
-normalize_weights: Any
-prune_failed_imports: Any
-run_validators: Any
-stable_json: Any
-supports_add_edge: Any
-validate_window: Any
-warm_cached_import: Any
-warn_once: Any
