@@ -40,9 +40,10 @@ The symbols re-exported by `tnfr.__init__` provide the standard entryway into th
   recomputing ΔNFR after each step.
 - `tnfr.ontosim.preparar_red`: prepares topologies and parameters for multiscale
   simulations.
-- `tnfr.utils.cached_import` / `prune_failed_imports`: manage optional
-  dependencies, obtain lazy proxies (`lazy=True`) when deferring work is useful,
-  and clean shared import caches.
+- `tnfr.utils.cached_import` / `tnfr.utils.warm_cached_import` /
+  `prune_failed_imports`: manage optional dependencies, obtain lazy proxies
+  (`lazy=True`) when deferring work is useful, warm specific modules during
+  bootstrap, and clean shared import caches.
 
 Structural operator map
 -----------------------

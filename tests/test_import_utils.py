@@ -8,7 +8,7 @@ import pytest
 
 import tnfr.utils as utils_pkg
 import tnfr.utils.init as import_utils
-from tnfr.utils import cached_import, prune_failed_imports
+from tnfr.utils import cached_import, prune_failed_imports, warm_cached_import
 
 
 pytestmark = pytest.mark.usefixtures("reset_cached_import")
@@ -260,3 +260,85 @@ def test_failure_log_respects_limit(monkeypatch, reset_cached_import):
         assert len(state.failed) <= 3
 
     reset_cached_import()
+# -- Warm import helper ----------------------------------------------------------------------
+
+
+def test_warm_cached_import_populates_cache(monkeypatch, reset_cached_import):
+    reset_cached_import()
+    calls = {"n": 0}
+    module = types.SimpleNamespace(token=object())
+
+    def fake_import(_name):
+        calls["n"] += 1
+        return module
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+
+    result = import_utils.warm_cached_import("fake_mod")
+    assert result is module
+    assert calls["n"] == 1
+
+    cached = cached_import("fake_mod")
+    assert cached is module
+    assert calls["n"] == 1
+
+
+def test_warm_cached_import_lazy_defers_until_used(monkeypatch, reset_cached_import):
+    reset_cached_import()
+    calls = {"n": 0}
+    module = types.SimpleNamespace(value=42)
+
+    def fake_import(_name):
+        calls["n"] += 1
+        return module
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+
+    proxy = warm_cached_import("lazy_mod", lazy=True)
+    assert isinstance(proxy, import_utils.LazyImportProxy)
+    assert calls["n"] == 0
+
+    assert proxy.value == 42
+    assert calls["n"] == 1
+    assert cached_import("lazy_mod") is module
+    assert calls["n"] == 1
+
+
+def test_warm_cached_import_failure_is_idempotent(monkeypatch, reset_cached_import):
+    reset_cached_import()
+    calls = {"n": 0}
+
+    def fake_import(_name):
+        calls["n"] += 1
+        raise ImportError("boom")
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+
+    assert import_utils.warm_cached_import("missing_mod") is None
+    assert calls["n"] == 1
+
+    with import_utils._IMPORT_STATE.lock:
+        assert "missing_mod" in import_utils._IMPORT_STATE.failed
+
+    again = warm_cached_import("missing_mod")
+    assert again is None
+    assert calls["n"] == 1
+
+
+def test_warm_cached_import_handles_multiple_specs(monkeypatch, reset_cached_import):
+    reset_cached_import()
+    modules = {
+        "pkg_a": types.SimpleNamespace(value=1),
+        "pkg_b": types.SimpleNamespace(value=2),
+    }
+
+    def fake_import(name):
+        return modules[name]
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+
+    results = warm_cached_import("pkg_a", ("pkg_b", "value"))
+    assert results == {
+        "pkg_a": modules["pkg_a"],
+        "pkg_b.value": 2,
+    }
