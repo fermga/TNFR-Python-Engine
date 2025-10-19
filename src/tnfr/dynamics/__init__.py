@@ -882,8 +882,23 @@ def _selector_parallel_jobs(G) -> int | None:
     return n_jobs
 
 
+def _selector_metrics_chunk(
+    args: tuple[list[float], list[float], list[float], float, float]
+) -> tuple[list[float], list[float], list[float]]:
+    """Normalize selector metrics for a chunk of nodes."""
+
+    si_values, dnfr_values, accel_values, dnfr_max, accel_max = args
+    si_seq = [clamp01(float(v)) for v in si_values]
+    dnfr_seq = [abs(float(v)) / dnfr_max for v in dnfr_values]
+    accel_seq = [abs(float(v)) / accel_max for v in accel_values]
+    return si_seq, dnfr_seq, accel_seq
+
+
 def _collect_selector_metrics(
-    G, nodes: list[Any], norms: dict[str, float]
+    G,
+    nodes: list[Any],
+    norms: dict[str, float],
+    n_jobs: int | None = None,
 ) -> dict[Any, tuple[float, float, float]]:
     """Collect normalised Si, |ΔNFR| and |d²EPI/dt²| for ``nodes``."""
     if not nodes:
@@ -893,23 +908,57 @@ def _collect_selector_metrics(
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     accel_max = float(norms.get("accel_max", 1.0)) or 1.0
 
-    si_values = []
-    dnfr_values = []
-    accel_values = []
-    for node in nodes:
-        nd = G.nodes[node]
-        si_values.append(clamp01(get_attr(nd, ALIAS_SI, 0.5)))
-        dnfr_values.append(abs(get_attr(nd, ALIAS_DNFR, 0.0)))
-        accel_values.append(abs(get_attr(nd, ALIAS_D2EPI, 0.0)))
+    if np_mod is not None:
+        si_seq_np = collect_attr(G, nodes, ALIAS_SI, 0.5, np=np_mod).astype(float)
+        si_seq_np = np_mod.clip(si_seq_np, 0.0, 1.0)
+        dnfr_seq_np = np_mod.abs(
+            collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np_mod).astype(float)
+        ) / dnfr_max
+        accel_seq_np = np_mod.abs(
+            collect_attr(G, nodes, ALIAS_D2EPI, 0.0, np=np_mod).astype(float)
+        ) / accel_max
 
-    if np_mod is not None and nodes:
-        si_seq = np_mod.asarray(si_values, dtype=float).tolist()
-        dnfr_seq = (np_mod.asarray(dnfr_values, dtype=float) / dnfr_max).tolist()
-        accel_seq = (np_mod.asarray(accel_values, dtype=float) / accel_max).tolist()
+        si_seq = si_seq_np.tolist()
+        dnfr_seq = dnfr_seq_np.tolist()
+        accel_seq = accel_seq_np.tolist()
     else:
-        si_seq = [float(v) for v in si_values]
-        dnfr_seq = [float(v) / dnfr_max for v in dnfr_values]
-        accel_seq = [float(v) / accel_max for v in accel_values]
+        si_values = collect_attr(G, nodes, ALIAS_SI, 0.5)
+        dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0)
+        accel_values = collect_attr(G, nodes, ALIAS_D2EPI, 0.0)
+
+        worker_count = n_jobs if n_jobs is not None and n_jobs > 1 else None
+        if worker_count is None:
+            si_seq = [clamp01(float(v)) for v in si_values]
+            dnfr_seq = [abs(float(v)) / dnfr_max for v in dnfr_values]
+            accel_seq = [abs(float(v)) / accel_max for v in accel_values]
+        else:
+            chunk_size = max(1, math.ceil(len(nodes) / worker_count))
+            chunk_bounds = [
+                (start, min(start + chunk_size, len(nodes)))
+                for start in range(0, len(nodes), chunk_size)
+            ]
+
+            si_seq: list[float] = []
+            dnfr_seq: list[float] = []
+            accel_seq: list[float] = []
+
+            def _args_iter():
+                for start, end in chunk_bounds:
+                    yield (
+                        si_values[start:end],
+                        dnfr_values[start:end],
+                        accel_values[start:end],
+                        dnfr_max,
+                        accel_max,
+                    )
+
+            with ProcessPoolExecutor(max_workers=worker_count) as executor:
+                for si_chunk, dnfr_chunk, accel_chunk in executor.map(
+                    _selector_metrics_chunk, _args_iter()
+                ):
+                    si_seq.extend(si_chunk)
+                    dnfr_seq.extend(dnfr_chunk)
+                    accel_seq.extend(accel_chunk)
 
     return {
         node: (si_seq[idx], dnfr_seq[idx], accel_seq[idx])
@@ -980,7 +1029,8 @@ def _prepare_selector_preselection(G, selector, nodes):
     if selector is default_glyph_selector:
         norms = G.graph.get("_sel_norms") or _norms_para_selector(G)
         thresholds = _selector_thresholds(G)
-        metrics = _collect_selector_metrics(G, nodes, norms)
+        n_jobs = _selector_parallel_jobs(G)
+        metrics = _collect_selector_metrics(G, nodes, norms, n_jobs=n_jobs)
         base_choices = _compute_default_base_choices(metrics, thresholds)
         return _SelectorPreselection(
             "default", metrics, base_choices, thresholds=thresholds
@@ -988,10 +1038,11 @@ def _prepare_selector_preselection(G, selector, nodes):
     if selector is parametric_glyph_selector:
         norms = G.graph.get("_sel_norms") or _norms_para_selector(G)
         thresholds = _selector_thresholds(G)
-        metrics = _collect_selector_metrics(G, nodes, norms)
+        n_jobs = _selector_parallel_jobs(G)
+        metrics = _collect_selector_metrics(G, nodes, norms, n_jobs=n_jobs)
         margin = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
         base_choices = _compute_param_base_choices(
-            metrics, thresholds, _selector_parallel_jobs(G)
+            metrics, thresholds, n_jobs
         )
         return _SelectorPreselection(
             "param", metrics, base_choices, thresholds=thresholds, margin=margin
