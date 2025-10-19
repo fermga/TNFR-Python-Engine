@@ -9,10 +9,14 @@ from __future__ import annotations
 import math
 from collections.abc import Iterable, Sequence
 from itertools import tee
-from typing import Any
+from typing import TYPE_CHECKING, Any, overload
 
 from ..helpers.numeric import kahan_sum_nd
 from ..utils import cached_import, get_numpy
+from ..types import NodeId, Phase, TNFRGraph
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from ..node import NodoProtocol
 
 __all__ = (
     "accumulate_cos_sin",
@@ -168,14 +172,47 @@ def neighbor_phase_mean_list(
     )
 
 
-def neighbor_phase_mean(obj, n=None) -> float:
-    """Circular mean of neighbour phases.
+@overload
+def neighbor_phase_mean(obj: "NodoProtocol", n: None = ...) -> Phase: ...
 
-    The :class:`NodoNX` import is cached after the first call.
+
+@overload
+def neighbor_phase_mean(obj: "NodoProtocol", n: NodeId) -> Phase: ...
+
+
+@overload
+def neighbor_phase_mean(obj: TNFRGraph, n: NodeId) -> Phase: ...
+
+
+def neighbor_phase_mean(
+    obj: "NodoProtocol" | TNFRGraph, n: NodeId | None = None
+) -> Phase:
+    """Circular mean of neighbour phases for ``obj``.
+
+    Parameters
+    ----------
+    obj:
+        Either a :class:`~tnfr.node.NodoProtocol` instance bound to a graph or a
+        :class:`~tnfr.types.TNFRGraph` from which the node ``n`` will be wrapped.
+    n:
+        Optional node identifier. Required when ``obj`` is a graph. Providing a
+        node identifier for a node object raises :class:`TypeError`.
     """
 
     NodoNX = cached_import("tnfr.node", "NodoNX")
     if NodoNX is None:
         raise ImportError("NodoNX is unavailable")
-    node = NodoNX(obj, n) if n is not None else obj
+    if n is None:
+        if hasattr(obj, "nodes"):
+            raise TypeError(
+                "neighbor_phase_mean requires a node identifier when passing a graph"
+            )
+        node = obj
+    else:
+        if hasattr(obj, "nodes"):
+            node = NodoNX(obj, n)
+        else:
+            raise TypeError(
+                "neighbor_phase_mean received a node and an explicit identifier"
+            )
     return _neighbor_phase_mean_generic(node)

@@ -4,6 +4,19 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..types import (
+    GlyphSelector,
+    NodeId,
+    SelectorPreselectionChoices,
+    SelectorPreselectionMetrics,
+    SelectorPreselectionPayload,
+    TNFRGraph,
+    TraceCallback,
+    TraceFieldFn,
+    TraceFieldMap,
+    TraceFieldRegistry,
+)
+
 from ..callback_utils import CallbackEvent, callback_manager
 from ..constants import get_param
 from ..glyph_history import append_metric, ensure_history
@@ -29,6 +42,16 @@ from .reporting import (
 logger = get_logger(__name__)
 
 __all__ = [
+    "TNFRGraph",
+    "NodeId",
+    "GlyphSelector",
+    "SelectorPreselectionMetrics",
+    "SelectorPreselectionChoices",
+    "SelectorPreselectionPayload",
+    "TraceCallback",
+    "TraceFieldFn",
+    "TraceFieldMap",
+    "TraceFieldRegistry",
     "_metrics_step",
     "register_metrics_callbacks",
     "Tg_global",
@@ -39,7 +62,7 @@ __all__ = [
 ]
 
 
-def _metrics_step(G, ctx: dict[str, Any] | None = None):
+def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
     """Update operational TNFR metrics per step."""
 
     del ctx
@@ -109,7 +132,7 @@ def _metrics_step(G, ctx: dict[str, Any] | None = None):
     _compute_advanced_metrics(G, hist, t, dt, cfg, n_jobs=metrics_jobs)
 
 
-def register_metrics_callbacks(G) -> None:
+def register_metrics_callbacks(G: TNFRGraph) -> None:
     callback_manager.register_callback(
         G,
         event=CallbackEvent.AFTER_STEP.value,
