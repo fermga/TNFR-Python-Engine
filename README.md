@@ -18,6 +18,62 @@ In practical terms, `tnfr` lets you:
 
 A form emerges and persists when **internal reorganization** (ΔNFR) **resonates** with the node’s **frequency** (νf).
 
+## Installation
+
+Install the engine from PyPI before running the Python or CLI walkthroughs that follow.
+
+```bash
+pip install tnfr
+```
+
+* https://pypi.org/project/tnfr/
+* Requires **Python ≥ 3.9**.
+* Install extras:
+  * NumPy: `pip install tnfr[numpy]`
+  * YAML: `pip install tnfr[yaml]`
+  * orjson (faster JSON serialization): `pip install tnfr[orjson]`
+  * All: `pip install tnfr[numpy,yaml,orjson]`
+* When `orjson` is unavailable the engine falls back to Python's built-in
+  `json` module.
+
+### Optional imports with cache
+
+Use ``tnfr.utils.cached_import`` to load optional dependencies and cache the
+result via a process-wide LRU cache. Missing modules (or attributes) yield
+``None`` without triggering repeated imports. The helper records failures and
+emits a single warning per module to keep logs tidy. Set ``lazy=True`` to obtain
+a lightweight proxy that postpones the real import until the object is first
+used—handy when optional dependencies are rarely touched. When optional
+packages are installed at runtime call ``tnfr.utils.prune_failed_imports`` to
+clear the consolidated failure/warning registry before retrying:
+
+```python
+from tnfr.utils import cached_import, prune_failed_imports
+
+np = cached_import("numpy")
+safe_load = cached_import("yaml", "safe_load")
+
+# postpone work until the symbol is first accessed
+safe_lazy = cached_import("yaml", "safe_load", lazy=True)
+
+# warm optional dependencies during application bootstrap
+from tnfr.utils import warm_cached_import
+
+warm_cached_import("numpy", ("yaml", "safe_load"))
+
+# provide a shared cache with an explicit lock
+from cachetools import TTLCache
+import threading
+
+cache = TTLCache(32, 60)
+lock = threading.Lock()
+cached_import("numpy", cache=cache, lock=lock)
+
+# clear caches after installing a dependency at runtime
+cached_import.cache_clear()
+prune_failed_imports()
+```
+
 ## Quick start
 
 ### From Python
@@ -373,61 +429,6 @@ The command reuses the canonical grammar and ΔNFR hooks from [`tnfr.dynamics`](
 ```
 
 Interpreting the telemetry against [Main metrics](#main-metrics) reveals the same story as the Python run: the detector array (`node 2`) expands ΔNFR while validating the lock, the laser head (`node 0`) absorbs part of the gradient through coupling, and the mirror stage (`node 1`) anchors the resonance with the highest Si until the detector finishes its transition. Use the [metrics helpers](src/tnfr/metrics/reporting.py) to extract Tg summaries or glyphogram series when exploring longer trajectories or more aggressive drift injections, keeping the token legend above handy whenever you cross-reference the CLI walkthrough from elsewhere in this guide.
-
----
-
-## Installation
-
-```bash
-pip install tnfr
-```
-* https://pypi.org/project/tnfr/
-* Requires **Python ≥ 3.9**.
-* Install extras:
-  * NumPy: `pip install tnfr[numpy]`
-  * YAML: `pip install tnfr[yaml]`
-  * orjson (faster JSON serialization): `pip install tnfr[orjson]`
-  * All: `pip install tnfr[numpy,yaml,orjson]`
-* When `orjson` is unavailable the engine falls back to Python's built-in
-  `json` module.
-
-### Optional imports with cache
-
-Use ``tnfr.utils.cached_import`` to load optional dependencies and cache the
-result via a process-wide LRU cache. Missing modules (or attributes) yield
-``None`` without triggering repeated imports. The helper records failures and
-emits a single warning per module to keep logs tidy. Set ``lazy=True`` to obtain
-a lightweight proxy that postpones the real import until the object is first
-used—handy when optional dependencies are rarely touched. When optional
-packages are installed at runtime call ``tnfr.utils.prune_failed_imports`` to
-clear the consolidated failure/warning registry before retrying:
-
-```python
-from tnfr.utils import cached_import, prune_failed_imports
-
-np = cached_import("numpy")
-safe_load = cached_import("yaml", "safe_load")
-
-# postpone work until the symbol is first accessed
-safe_lazy = cached_import("yaml", "safe_load", lazy=True)
-
-# warm optional dependencies during application bootstrap
-from tnfr.utils import warm_cached_import
-
-warm_cached_import("numpy", ("yaml", "safe_load"))
-
-# provide a shared cache with an explicit lock
-from cachetools import TTLCache
-import threading
-
-cache = TTLCache(32, 60)
-lock = threading.Lock()
-cached_import("numpy", cache=cache, lock=lock)
-
-# clear caches after installing a dependency at runtime
-cached_import.cache_clear()
-prune_failed_imports()
-```
 
 ## Tests
 
