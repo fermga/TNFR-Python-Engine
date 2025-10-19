@@ -31,6 +31,9 @@ Primary entry points
 The symbols re-exported by `tnfr.__init__` provide the standard entryway into the engine:
 - `tnfr.dynamics.step` / `tnfr.dynamics.run`: integrators to evolve the network
   stepwise or across full runs, automatically coordinating phase.
+  Both accept an optional ``n_jobs`` mapping to override per-component
+  parallelism (ΔNFR, Si, integrator, phase coordination, VF adaptation) without
+  mutating the graph configuration.
 - `tnfr.structural.create_nfr`: bootstraps resonant nodes with νf, phase, and EPI
   values that comply with the TNFR grammar.
 - `tnfr.structural.run_sequence`: validates and executes operator trajectories,
