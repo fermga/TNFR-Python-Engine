@@ -67,6 +67,73 @@ tnfr sequence --nodes 1 --sequence-file sequence.json --save-history history.jso
 
 The `sequence` subcommand loads the canonical trajectory from the JSON file, executes the operators with the official grammar, and updates **νf**, **ΔNFR**, and phase using the same hooks as the Python API. When it finishes it writes the series for **C(t)**, mean **ΔNFR**, and **Si** to `history.json`, complementing the sections on [structural operators](#key-concepts-operational-summary) and [metrics](#main-metrics).
 
+## Architecture Overview
+
+### Core packages (`src/tnfr/...`)
+
+```
+tnfr.structural    — canonical node factory and operator orchestration
+tnfr.operators     — operator classes + registry discovery
+tnfr.dynamics      — ΔNFR hooks, nodal equation, phase/νf adaptation
+tnfr.metrics       — coherence, ΔNFR, Si, telemetry helpers
+tnfr.trace         — structured history/trace capture via callbacks
+tnfr.helpers       — stable facade for caches, glyph history, numerics
+tnfr.locking       — process-wide named locks (shared by RNG/caches)
+tnfr.cache         — cache managers exposing shared metrics/evictions
+```
+
+`tnfr.structural` exposes `create_nfr` and `run_sequence`, wiring node creation to ΔNFR hooks so every operator pass recomputes the gradient canonically.【F:src/tnfr/structural.py†L12-L70】 Operator implementations register themselves through `tnfr.operators.registry`, enabling automatic discovery while guarding name collisions.【F:src/tnfr/operators/registry.py†L12-L49】 Dynamics modules maintain the nodal equation, phase coordination, and ΔNFR plumbing, keeping νf/phase adjustments consistent with the operator grammar.【F:src/tnfr/dynamics/__init__.py†L1-L120】【F:src/tnfr/dynamics/__init__.py†L320-L408】 Metrics, trace capture, helpers, locks, and cache managers provide the shared utilities that every structural pipeline relies on.【F:src/tnfr/metrics/common.py†L1-L66】【F:src/tnfr/trace.py†L1-L170】【F:src/tnfr/helpers/__init__.py†L1-L74】【F:src/tnfr/locking.py†L1-L36】【F:src/tnfr/cache.py†L1-L120】
+
+### Data flow between structural operators
+
+```mermaid
+flowchart LR
+    subgraph Registry
+        R[tnfr.operators.registry]
+    end
+    subgraph Structural Loop
+        V[tnfr.validation.syntax.validate_sequence]
+        S[tnfr.structural.run_sequence]
+        D[tnfr.dynamics.set_delta_nfr_hook]
+    end
+    subgraph Dynamics
+        N[tnfr.dynamics.default_compute_delta_nfr]
+        E[tnfr.dynamics.update_epi_via_nodal_equation]
+        P[tnfr.dynamics.coordinate_global_local_phase]
+    end
+    subgraph Telemetry
+        M[tnfr.metrics.common.compute_coherence]
+        T[tnfr.trace.register_trace]
+    end
+    R --> V --> S --> D
+    D --> N --> E --> P
+    P --> M
+    N --> M
+    M --> T
+```
+
+1. Operators self-register once `tnfr.operators.registry.discover_operators()` walks the package tree.【F:src/tnfr/operators/registry.py†L28-L45】
+2. `run_sequence` validates canonical order, executes each operator, and triggers the configured ΔNFR hook after every call.【F:src/tnfr/structural.py†L72-L109】
+3. Dynamics hooks compute ΔNFR mixes, update EPI via the nodal equation, and coordinate phase/global coupling before publishing metrics.【F:src/tnfr/dynamics/dnfr.py†L1958-L1993】【F:src/tnfr/dynamics/integrators.py†L420-L476】【F:src/tnfr/dynamics/__init__.py†L320-L408】
+4. Telemetry layers accumulate coherence/Si, register trace callbacks, and persist structured history snapshots for diagnostics.【F:src/tnfr/metrics/common.py†L1-L66】【F:src/tnfr/trace.py†L170-L277】
+
+### Telemetry, logging, and shared services
+
+`tnfr.trace.register_trace` attaches before/after callbacks via the shared callback manager, capturing Γ specs, selector state, ΔNFR weights, Kuramoto metrics, and glyph counts in the graph history so every simulation leaves an auditable trail.【F:src/tnfr/trace.py†L170-L277】 Named locks from `tnfr.locking.get_lock` synchronise shared caches such as the RNG seed tables, ensuring deterministic jitter across processes without duplicating lock definitions.【F:src/tnfr/locking.py†L1-L36】【F:src/tnfr/rng.py†L1-L88】 The helper facade re-exports cache utilities so higher layers depend on a stable API while telemetry-aware caches in `tnfr.cache` expose capacity controls and per-entry metrics for debugging coherence regressions.【F:src/tnfr/helpers/__init__.py†L1-L74】【F:src/tnfr/cache.py†L1-L120】【F:src/tnfr/rng.py†L1-L120】
+
+### Structural invariants → enforcing modules
+
+- **Invariant 1 — EPI changes only through structural operators.** `run_sequence` validates canonical order and delegates EPI updates to the nodal equation so operators never mutate EPI ad-hoc, while `update_epi_via_nodal_equation` integrates ∂EPI/∂t = νf·ΔNFR + Γi(R).【F:src/tnfr/structural.py†L72-L109】【F:src/tnfr/dynamics/integrators.py†L420-L476】
+- **Invariant 2 — νf stays in Hz_str.** The nodal equation documentation reiterates the structural unit and updates νf/EPI together, preventing stray unit conversions.【F:src/tnfr/dynamics/integrators.py†L432-L464】
+- **Invariant 3 — ΔNFR preserves canonical semantics.** `default_compute_delta_nfr` mixes phase, EPI, νf, and topology via the configured hook, ensuring ΔNFR remains the structural gradient rather than an ML loss proxy.【F:src/tnfr/dynamics/dnfr.py†L1958-L1993】
+- **Invariant 4 — Operator closure.** Syntax validation enforces the RECEPCION→COHERENCIA segment, checks THOL closure, and rejects unknown tokens before execution.【F:src/tnfr/validation/syntax.py†L1-L86】
+- **Invariant 5 — Explicit phase checks.** `coordinate_global_local_phase` adapts kG/kL and records Kuramoto history so coupling never proceeds without synchrony analysis.【F:src/tnfr/dynamics/__init__.py†L320-L408】
+- **Invariant 6 — Node birth/collapse boundaries.** `create_nfr` seeds νf, θ, and EPI together and installs the ΔNFR hook, guaranteeing nodes meet minimum coherence bookkeeping from the first step.【F:src/tnfr/structural.py†L12-L70】
+- **Invariant 7 — Operational fractality.** THOL evaluation recursively expands nested operator blocks while preserving closure tokens, allowing sub-EPIs to run without flattening the grammar.【F:src/tnfr/flatten.py†L1-L120】
+- **Invariant 8 — Controlled determinism.** RNG scaffolding routes every seed through telemetry-aware caches guarded by named locks so stochastic paths remain reproducible.【F:src/tnfr/rng.py†L1-L120】
+- **Invariant 9 — Structural metrics transparency.** Coherence utilities compute C(t), ΔNFR, and dEPI aggregates with deterministic accumulation and cache neighbor maps for reuse.【F:src/tnfr/metrics/common.py†L1-L86】
+- **Invariant 10 — Domain neutrality.** Grammar enforcement coerces glyphs against canonical compatibility tables, preventing domain-specific operator drift and keeping the alphabet canonical.【F:src/tnfr/validation/grammar.py†L1-L90】
+
 ## Practical TNFR Examples
 
 The following walkthroughs expand the quick start by orchestrating a multi-node workflow twice: first from the Python API and then from the CLI. Each example highlights how canonical operators combine to steer coherence, how telemetry exposes **C(t)**, **ΔNFR**, and **Si**, and where to dig deeper into the APIs ([`tnfr.structural`](src/tnfr/structural.py), [`tnfr.operators`](src/tnfr/operators/definitions.py), [`tnfr.metrics`](src/tnfr/metrics/common.py), [`tnfr.dynamics`](src/tnfr/dynamics/__init__.py)).

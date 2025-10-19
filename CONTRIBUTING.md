@@ -31,3 +31,20 @@ contributors can find them quickly while browsing the project overview.
 
 Make sure to honor the patterns in `.gitignore` so that dependency and build
 artifacts (e.g., `node_modules/` or `dist/`) are not committed.
+
+## Architectural conventions
+
+- **Add new structural operators** under `src/tnfr/operators/` and register
+  them with `tnfr.operators.registry.register_operator` so canonical discovery
+  and validation continue to work without manual wiring.【F:src/tnfr/operators/registry.py†L12-L49】
+- **Keep operator closure intact** by updating grammar/syntax rules alongside
+  new operator sequences. Start with `tnfr.validation.syntax.validate_sequence`
+  and `tnfr.validation.grammar.enforce_canonical_grammar`, then add any THOL
+  handling you need in `tnfr.flatten`.【F:src/tnfr/validation/syntax.py†L1-L86】【F:src/tnfr/validation/grammar.py†L1-L90】【F:src/tnfr/flatten.py†L1-L120】
+- **Share caches, locks, and telemetry** through the provided helpers instead
+  of ad-hoc globals. Reuse `tnfr.helpers` exports, `tnfr.cache.CacheManager`,
+  and `tnfr.locking.get_lock` when extending RNG, ΔNFR, or metric pipelines so
+  that instrumentation stays consistent.【F:src/tnfr/helpers/__init__.py†L1-L74】【F:src/tnfr/cache.py†L1-L120】【F:src/tnfr/locking.py†L1-L36】
+- **Reference the [Architecture Overview](README.md#architecture-overview)**
+  for diagrams showing the structural data flow, invariant enforcement map,
+  and telemetry hooks before touching the orchestration layers.
