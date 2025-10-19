@@ -759,11 +759,11 @@ def coherence_matrix(
     epi_vals = collect_attr(G, nodes, ALIAS_EPI, 0.0, np=np if use_np else None)
     vf_vals = collect_attr(G, nodes, ALIAS_VF, 0.0, np=np if use_np else None)
     si_vals = collect_attr(G, nodes, ALIAS_SI, 0.0, np=np if use_np else None)
-    si_vals = (
-        np.clip(si_vals, 0.0, 1.0)
-        if use_np
-        else [clamp01(v) for v in si_vals]
-    )
+    if use_np:
+        assert np is not None
+        si_vals = np.clip(si_vals, 0.0, 1.0)
+    else:
+        si_vals = [clamp01(v) for v in si_vals]
     epi_min, epi_max = min_max_range(epi_vals)
     vf_min, vf_max = min_max_range(vf_vals)
 
