@@ -20,6 +20,7 @@ ALIAS_EPI = get_aliases("EPI")
 LATENT_GLYPH: str = "SHA"
 DEFAULT_EPI_SUPPORT_LIMIT = 0.05
 
+np: ModuleType | None
 try:  # pragma: no cover - import guard exercised via tests
     import numpy as np  # type: ignore[import-not-found]
 except Exception:  # pragma: no cover - numpy optional dependency

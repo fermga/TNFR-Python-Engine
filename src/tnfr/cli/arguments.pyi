@@ -1,19 +1,33 @@
-from typing import Any
+from __future__ import annotations
 
-__all__: Any
+import argparse
+from typing import Any, Iterable
 
-def __getattr__(name: str) -> Any: ...
+from ..gamma import GAMMA_REGISTRY
+from ..types import ArgSpec
+from .utils import spec
 
-COMMON_ARG_SPECS: Any
-GAMMA_REGISTRY: Any
-GRAMMAR_ARG_SPECS: Any
-HISTORY_ARG_SPECS: Any
-add_arg_specs: Any
-add_canon_toggle: Any
-add_common_args: Any
-add_grammar_args: Any
-add_grammar_selector_args: Any
-add_history_export_args: Any
-annotations: Any
-argparse: Any
-spec: Any
+GRAMMAR_ARG_SPECS: tuple[ArgSpec, ...]
+HISTORY_ARG_SPECS: tuple[ArgSpec, ...]
+COMMON_ARG_SPECS: tuple[ArgSpec, ...]
+
+
+def add_arg_specs(parser: argparse._ActionsContainer, specs: Iterable[ArgSpec]) -> None: ...
+
+def _args_to_dict(args: argparse.Namespace, prefix: str) -> dict[str, Any]: ...
+
+def add_common_args(parser: argparse.ArgumentParser) -> None: ...
+
+def add_grammar_args(parser: argparse.ArgumentParser) -> None: ...
+
+def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None: ...
+
+def add_history_export_args(parser: argparse.ArgumentParser) -> None: ...
+
+def add_canon_toggle(parser: argparse.ArgumentParser) -> None: ...
+
+def _add_run_parser(sub: argparse._SubParsersAction) -> None: ...
+
+def _add_sequence_parser(sub: argparse._SubParsersAction) -> None: ...
+
+def _add_metrics_parser(sub: argparse._SubParsersAction) -> None: ...

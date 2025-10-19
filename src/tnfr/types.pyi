@@ -3,6 +3,7 @@ from collections.abc import Hashable, Mapping, Sequence
 from enum import Enum
 from typing import TypedDict
 
+nx: Any
 try:
     import networkx as nx  # type: ignore[import-not-found]
 except Exception:
@@ -13,6 +14,7 @@ except Exception:
 
     nx = _FallbackNetworkX()
 
+np: Any
 try:
     import numpy as np  # type: ignore[import-not-found]
 except Exception:
