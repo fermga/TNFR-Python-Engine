@@ -1,8 +1,21 @@
-from typing import Any
+from typing import Literal
 
-__all__: Any
+from tnfr.types import TNFRGraph
 
-def __getattr__(name: str) -> Any: ...
+__all__: tuple[str, ...]
 
-prepare_integration_params: Any
-update_epi_via_nodal_equation: Any
+def prepare_integration_params(
+    G: TNFRGraph,
+    dt: float | None = ...,
+    t: float | None = ...,
+    method: Literal["euler", "rk4"] | None = ...,
+) -> tuple[float, int, float, Literal["euler", "rk4"]]: ...
+
+def update_epi_via_nodal_equation(
+    G: TNFRGraph,
+    *,
+    dt: float | None = ...,
+    t: float | None = ...,
+    method: Literal["euler", "rk4"] | None = ...,
+    n_jobs: int | None = ...,
+) -> None: ...
