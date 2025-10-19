@@ -14,7 +14,7 @@ from ..constants import (
 )
 from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import ensure_history, append_metric
-from ..alias import collect_attr, get_attr, set_attr
+from ..alias import collect_attr, set_attr
 from ..helpers.numeric import clamp01
 from .common import compute_coherence, min_max_range
 from .trig_cache import compute_theta_trig, get_trig_cache
@@ -1219,7 +1219,30 @@ def _track_stability(G, hist, dt, eps_dnfr, eps_depi, *, n_jobs: int | None = No
         set_attr(nd, ALIAS_D2VF, float(B_vals_all[idx]))
 
 
-def _aggregate_si(G, hist):
+def _si_chunk_stats(values: Sequence[float], si_hi: float, si_lo: float):
+    """Compute partial Si aggregates for ``values``.
+
+    The helper keeps the logic shared between the sequential and parallel
+    fallbacks when NumPy is unavailable.
+    """
+
+    total = 0.0
+    count = 0
+    hi_count = 0
+    lo_count = 0
+    for s in values:
+        if math.isnan(s):
+            continue
+        total += s
+        count += 1
+        if s >= si_hi:
+            hi_count += 1
+        if s <= si_lo:
+            lo_count += 1
+    return total, count, hi_count, lo_count
+
+
+def _aggregate_si(G, hist, *, n_jobs: int | None = None):
     """Aggregate Si statistics across nodes."""
 
     try:
@@ -1228,27 +1251,51 @@ def _aggregate_si(G, hist):
         si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
         si_lo = float(thr_sel.get("si_lo", thr_def.get("lo", 0.33)))
 
-        sis = [
-            s
-            for _, nd in G.nodes(data=True)
-            if not math.isnan(s := get_attr(nd, ALIAS_SI, float("nan")))
-        ]
+        np_mod = get_numpy()
+        if np_mod is not None:
+            sis = collect_attr(G, G.nodes, ALIAS_SI, float("nan"), np=np_mod)
+            valid = sis[~np_mod.isnan(sis)]
+            n = int(valid.size)
+            if n:
+                hist["Si_mean"].append(float(valid.mean()))
+                hi_frac = np_mod.count_nonzero(valid >= si_hi) / n
+                lo_frac = np_mod.count_nonzero(valid <= si_lo) / n
+                hist["Si_hi_frac"].append(float(hi_frac))
+                hist["Si_lo_frac"].append(float(lo_frac))
+            else:
+                hist["Si_mean"].append(0.0)
+                hist["Si_hi_frac"].append(0.0)
+                hist["Si_lo_frac"].append(0.0)
+            return
 
-        total = 0.0
-        hi_count = 0
-        lo_count = 0
-        for s in sis:
-            total += s
-            if s >= si_hi:
-                hi_count += 1
-            if s <= si_lo:
-                lo_count += 1
+        sis = collect_attr(G, G.nodes, ALIAS_SI, float("nan"))
+        if not sis:
+            hist["Si_mean"].append(0.0)
+            hist["Si_hi_frac"].append(0.0)
+            hist["Si_lo_frac"].append(0.0)
+            return
 
-        n = len(sis)
-        if n:
-            hist["Si_mean"].append(total / n)
-            hist["Si_hi_frac"].append(hi_count / n)
-            hist["Si_lo_frac"].append(lo_count / n)
+        if n_jobs is not None and n_jobs > 1:
+            chunk_size = max(1, math.ceil(len(sis) / n_jobs))
+            futures = []
+            with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+                for idx in range(0, len(sis), chunk_size):
+                    chunk = sis[idx : idx + chunk_size]
+                    futures.append(
+                        executor.submit(_si_chunk_stats, chunk, si_hi, si_lo)
+                    )
+            totals = [future.result() for future in futures]
+            total = sum(part[0] for part in totals)
+            count = sum(part[1] for part in totals)
+            hi_count = sum(part[2] for part in totals)
+            lo_count = sum(part[3] for part in totals)
+        else:
+            total, count, hi_count, lo_count = _si_chunk_stats(sis, si_hi, si_lo)
+
+        if count:
+            hist["Si_mean"].append(total / count)
+            hist["Si_hi_frac"].append(hi_count / count)
+            hist["Si_lo_frac"].append(lo_count / count)
         else:
             hist["Si_mean"].append(0.0)
             hist["Si_hi_frac"].append(0.0)

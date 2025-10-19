@@ -104,7 +104,7 @@ def _metrics_step(G, ctx: dict[str, Any] | None = None):
     except (KeyError, AttributeError, TypeError) as exc:
         logger.debug("observer update failed: %s", exc)
 
-    _aggregate_si(G, hist)
+    _aggregate_si(G, hist, n_jobs=metrics_jobs)
 
     _compute_advanced_metrics(G, hist, t, dt, cfg, n_jobs=metrics_jobs)
 
