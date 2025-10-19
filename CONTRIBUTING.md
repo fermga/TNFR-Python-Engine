@@ -1,10 +1,37 @@
 # Contributing
 
-This project uses English exclusively for code identifiers and docstrings. When contributing:
+This project uses English for code identifiers and docstrings **except** for the
+canonical Spanish operator names exported by `tnfr.operators`. Those operator
+identifiers (for example `Emision`, `Resonancia`, `Autoorganizacion`) are part
+of the TNFR grammar and **must stay in Spanish** even when the surrounding
+documentation or prose is written in English. When contributing:
 
-- Use descriptive English names for all variables, functions, classes and modules.
-- Write docstrings and comments in English.
+- Use descriptive English names for all variables, functions, classes and modules
+  aside from the canonical operator identifiers listed below.
+- Write docstrings and comments in English while preserving the canonical
+  operator names verbatim.
 - Update existing code to maintain this convention when modifying files.
+
+When documenting operators in English prose, pair the canonical identifier with
+its English descriptor so readers can follow along without altering the API.
+For example, write “apply the Emision operator (Emission)” or “the
+Autoorganizacion (`Auto-organization`) step”. The canonical mapping is:
+
+| Canonical identifier | English descriptor |
+| --- | --- |
+| `Emision` | Emission |
+| `Recepcion` | Reception |
+| `Coherencia` | Coherence |
+| `Disonancia` | Dissonance |
+| `Acoplamiento` | Coupling |
+| `Resonancia` | Resonance |
+| `Silencio` | Silence |
+| `Expansion` | Expansion |
+| `Contraccion` | Contraction |
+| `Autoorganizacion` | Self-organization |
+| `Mutacion` | Mutation |
+| `Transicion` | Transition |
+| `Recursividad` | Recursivity |
 
 ## Testing
 
