@@ -55,6 +55,7 @@ __all__ = (
     "NeighborStats",
     "TimingContext",
     "PresetTokens",
+    "SigmaVector",
 )
 
 
@@ -112,6 +113,28 @@ TimingContext: TypeAlias = ContextManager[None]
 
 PresetTokens: TypeAlias = Sequence[_Token]
 #: Sequence of execution tokens composing a preset program.
+
+
+class _SigmaVectorRequired(TypedDict):
+    """Mandatory components for a σ-vector in the sense plane."""
+
+    x: float
+    y: float
+    mag: float
+    angle: float
+    n: int
+
+
+class _SigmaVectorOptional(TypedDict, total=False):
+    """Optional metadata captured when tracking σ-vectors."""
+
+    glyph: str
+    w: float
+    t: float
+
+
+class SigmaVector(_SigmaVectorRequired, _SigmaVectorOptional):
+    """Typed dictionary describing σ-vector telemetry."""
 
 
 class SelectorThresholds(TypedDict):
