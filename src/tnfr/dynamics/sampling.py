@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from ..utils import cached_node_list
+from typing import cast
+
 from ..rng import _rng_for_step, base_seed
+from ..types import NodeId, TNFRGraph
+from ..utils import cached_node_list
 
 __all__ = ("update_node_sample",)
 
 
-def update_node_sample(G, *, step: int) -> None:
+def update_node_sample(G: TNFRGraph, *, step: int) -> None:
     """Refresh ``G.graph['_node_sample']`` with a random subset of nodes.
 
     The sample is limited by ``UM_CANDIDATE_COUNT`` and refreshed every
@@ -20,7 +23,7 @@ def update_node_sample(G, *, step: int) -> None:
     """
     graph = G.graph
     limit = int(graph.get("UM_CANDIDATE_COUNT", 0))
-    nodes = cached_node_list(G)
+    nodes = cast(tuple[NodeId, ...], cached_node_list(G))
     current_n = len(nodes)
     if limit <= 0 or current_n < 50 or limit >= current_n:
         graph["_node_sample"] = nodes

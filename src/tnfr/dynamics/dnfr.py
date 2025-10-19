@@ -592,18 +592,22 @@ def _build_edge_index_arrays(
     return edge_src, edge_dst
 
 
-def _refresh_dnfr_vectors(G, nodes, cache: DnfrCache):
+def _refresh_dnfr_vectors(
+    G: TNFRGraph, nodes: Sequence[NodeId], cache: DnfrCache
+) -> None:
     """Update cached angle and state vectors for ΔNFR."""
     np_module = get_numpy()
     trig = compute_theta_trig(((n, G.nodes[n]) for n in nodes), np=np_module)
     use_numpy = _should_vectorize(G, np_module)
-    for i, n in enumerate(nodes):
-        nd = G.nodes[n]
-        cache.theta[i] = trig.theta[n]
+    for index, node in enumerate(nodes):
+        i: int = int(index)
+        node_id: NodeId = node
+        nd = G.nodes[node_id]
+        cache.theta[i] = trig.theta[node_id]
         cache.epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
         cache.vf[i] = get_attr(nd, ALIAS_VF, 0.0)
-        cache.cos_theta[i] = trig.cos[n]
-        cache.sin_theta[i] = trig.sin[n]
+        cache.cos_theta[i] = trig.cos[node_id]
+        cache.sin_theta[i] = trig.sin[node_id]
     if use_numpy:
         _ensure_numpy_vectors(cache, np_module)
     else:
@@ -614,7 +618,7 @@ def _refresh_dnfr_vectors(G, nodes, cache: DnfrCache):
         cache.sin_theta_np = None
 
 
-def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
+def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[str, Any]:
     """Precompute common data for ΔNFR strategies.
 
     The helper decides between edge-wise and dense adjacency accumulation
@@ -635,7 +639,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     np_module = get_numpy()
     use_numpy = _should_vectorize(G, np_module)
 
-    nodes = cached_node_list(G)
+    nodes = cast(tuple[NodeId, ...], cached_node_list(G))
     edge_count = G.number_of_edges()
     prefer_sparse = False
     dense_override = bool(G.graph.get("dnfr_force_dense"))
@@ -643,13 +647,15 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         prefer_sparse = _prefer_sparse_accumulation(len(nodes), edge_count)
         if dense_override:
             prefer_sparse = False
-    nodes, A = cached_nodes_and_A(
+    nodes_cached, A_untyped = cached_nodes_and_A(
         G,
         cache_size=cache_size,
         require_numpy=False,
         prefer_sparse=prefer_sparse,
         nodes=nodes,
     )
+    nodes = cast(tuple[NodeId, ...], nodes_cached)
+    A: np.ndarray | None = A_untyped
     result["nodes"] = nodes
     result["A"] = A
     cache: DnfrCache | None = G.graph.get("_dnfr_prep_cache")
@@ -676,7 +682,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     result["w_epi"] = w_epi
     result["w_vf"] = w_vf
     result["w_topo"] = w_topo
-    degree_map: dict[Any, float] | None = cache.degs if cache else None
+    degree_map = cast(dict[NodeId, float] | None, cache.degs if cache else None)
     if cache is not None and dirty:
         cache.degs = None
         cache.deg_list = None
@@ -689,7 +695,7 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         cache.neighbor_edge_values_np = None
         degree_map = None
     if degree_map is None or len(degree_map) != len(G):
-        degree_map = dict(G.degree())
+        degree_map = {cast(NodeId, node): float(deg) for node, deg in G.degree()}
         if cache is not None:
             cache.degs = degree_map
 
@@ -701,20 +707,20 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
         and not dirty
         and len(cache.deg_list) == len(nodes)
     ):
-        deg_list: list[float] | None = cache.deg_list
+        deg_list = cache.deg_list
     else:
         deg_list = [float(degree_map.get(node, 0.0)) for node in nodes]
         if cache is not None:
             cache.deg_list = deg_list
 
     if w_topo != 0.0:
-        degs = degree_map
+        degs: dict[NodeId, float] | None = degree_map
     else:
         degs = None
     result["degs"] = degs
     result["deg_list"] = deg_list
 
-    deg_array = None
+    deg_array: np.ndarray | None = None
     if np_module is not None and deg_list is not None:
         if cache is not None:
             deg_array = _ensure_numpy_degrees(cache, deg_list, np_module)
@@ -723,6 +729,13 @@ def _prepare_dnfr_data(G, *, cache_size: int | None = 128) -> dict:
     elif cache is not None:
         cache.deg_array = None
 
+    theta_np: np.ndarray | None
+    epi_np: np.ndarray | None
+    vf_np: np.ndarray | None
+    cos_theta_np: np.ndarray | None
+    sin_theta_np: np.ndarray | None
+    edge_src: np.ndarray | None
+    edge_dst: np.ndarray | None
     if use_numpy:
         theta_np, epi_np, vf_np, cos_theta_np, sin_theta_np = _ensure_numpy_vectors(
             cache, np_module
