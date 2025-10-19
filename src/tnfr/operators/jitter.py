@@ -1,4 +1,6 @@
 from __future__ import annotations
+import threading
+
 from typing import Any, TYPE_CHECKING, cast
 
 from cachetools import LRUCache
@@ -73,7 +75,7 @@ class JitterCache:
         return self._sequence.cache
 
     @property
-    def lock(self):
+    def lock(self) -> threading.Lock | threading.RLock:
         """Return the lock protecting the sequence cache."""
 
         return self._sequence.lock
@@ -144,7 +146,7 @@ class JitterCacheManager:
         return self.cache.settings
 
     @property
-    def lock(self):
+    def lock(self) -> threading.Lock | threading.RLock:
         return self.cache.lock
 
     @property
