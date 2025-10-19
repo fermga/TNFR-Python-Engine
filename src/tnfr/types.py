@@ -2,10 +2,21 @@
 
 from __future__ import annotations
 
+from collections.abc import Hashable
 from enum import Enum
-from typing import Any, Iterable, Protocol
+from typing import TYPE_CHECKING, Any, Iterable, Protocol, TypeAlias
 
-__all__ = ("GraphLike", "Glyph")
+__all__ = ("Graph", "Node", "GraphLike", "Glyph")
+
+
+if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
+    import networkx as nx  # type: ignore[import-untyped]
+
+    Graph: TypeAlias = nx.Graph
+else:  # pragma: no cover - runtime fallback without networkx
+    Graph: TypeAlias = Any
+
+Node: TypeAlias = Hashable
 
 
 class GraphLike(Protocol):
