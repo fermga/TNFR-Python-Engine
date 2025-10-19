@@ -14,6 +14,7 @@ from ..constants import (
 )
 from ..gamma import _get_gamma_spec, eval_gamma
 from ..alias import get_attr, get_attr_str, set_attr, set_attr_str
+from ..utils import get_numpy
 
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
@@ -68,6 +69,31 @@ def _chunk_nodes(nodes: list[Any], chunk_size: int) -> Iterable[list[Any]]:
 
     for idx in range(0, len(nodes), chunk_size):
         yield nodes[idx : idx + chunk_size]
+
+
+def _apply_increment_chunk(
+    chunk: list[tuple[Any, float, float, tuple[float, ...]]],
+    dt_step: float,
+    method: str,
+) -> list[tuple[Any, tuple[float, float, float]]]:
+    """Compute updated states for ``chunk`` using scalar arithmetic."""
+
+    results: list[tuple[Any, tuple[float, float, float]]] = []
+    dt_nonzero = dt_step != 0
+
+    for node, epi_i, dEPI_prev, ks in chunk:
+        if method == "rk4":
+            k1, k2, k3, k4 = ks
+            epi = epi_i + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
+            dEPI_dt = k4
+        else:
+            (k1,) = ks
+            epi = epi_i + dt_step * k1
+            dEPI_dt = k1
+        d2epi = (dEPI_dt - dEPI_prev) / dt_step if dt_nonzero else 0.0
+        results.append((node, (float(epi), float(dEPI_dt), float(d2epi))))
+
+    return results
 
 
 def _evaluate_gamma_map(
@@ -157,23 +183,85 @@ def _apply_increments(
 ) -> dict[Any, tuple[float, float, float]]:
     """Combine precomputed increments to update node states."""
 
-    new_states: dict[Any, tuple[float, float, float]] = {}
-    for n, nd in G.nodes(data=True):
-        vf, dnfr, dEPI_dt_prev, epi_i = _node_state(nd)
-        ks = increments[n]
+    nodes = list(G.nodes)
+    if not nodes:
+        return {}
+
+    np = get_numpy()
+
+    epi_initial: list[float] = []
+    dEPI_prev: list[float] = []
+    ordered_increments: list[tuple[float, ...]] = []
+
+    for node in nodes:
+        nd = G.nodes[node]
+        _, _, dEPI_dt_prev, epi_i = _node_state(nd)
+        epi_initial.append(float(epi_i))
+        dEPI_prev.append(float(dEPI_dt_prev))
+        ordered_increments.append(increments[node])
+
+    if np is not None:
+        epi_arr = np.asarray(epi_initial, dtype=float)
+        dEPI_prev_arr = np.asarray(dEPI_prev, dtype=float)
+        k_arr = np.asarray(ordered_increments, dtype=float)
+
         if method == "rk4":
-            k1, k2, k3, k4 = ks
-            # RK4: EPIₙ₊₁ = EPIᵢ + Δt/6·(k1 + 2k2 + 2k3 + k4)
-            epi = epi_i + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
+            if k_arr.ndim != 2 or k_arr.shape[1] != 4:
+                raise ValueError("rk4 increments require four staged values")
+            dt_factor = dt_step / 6.0
+            k1 = k_arr[:, 0]
+            k2 = k_arr[:, 1]
+            k3 = k_arr[:, 2]
+            k4 = k_arr[:, 3]
+            epi = epi_arr + dt_factor * (k1 + 2 * k2 + 2 * k3 + k4)
             dEPI_dt = k4
         else:
-            (k1,) = ks
-            # Euler: EPIₙ₊₁ = EPIᵢ + Δt·k1 where k1 = νf·ΔNFR + Γ
-            epi = epi_i + dt_step * k1
+            if k_arr.ndim == 1:
+                k1 = k_arr
+            else:
+                k1 = k_arr[:, 0]
+            epi = epi_arr + dt_step * k1
             dEPI_dt = k1
-        d2epi = (dEPI_dt - dEPI_dt_prev) / dt_step if dt_step != 0 else 0.0
-        new_states[n] = (epi, dEPI_dt, d2epi)
-    return new_states
+
+        if dt_step != 0:
+            d2epi = (dEPI_dt - dEPI_prev_arr) / dt_step
+        else:
+            d2epi = np.zeros_like(dEPI_dt)
+
+        results = {}
+        for idx, node in enumerate(nodes):
+            results[node] = (
+                float(epi[idx]),
+                float(dEPI_dt[idx]),
+                float(d2epi[idx]),
+            )
+        return results
+
+    payload = list(zip(nodes, epi_initial, dEPI_prev, ordered_increments))
+
+    workers = _normalise_jobs(n_jobs, len(nodes))
+    if workers is None:
+        return dict(_apply_increment_chunk(payload, dt_step, method))
+
+    chunk_size = max(1, math.ceil(len(nodes) / (workers * 4)))
+    mp_ctx = get_context("spawn")
+
+    results: dict[Any, tuple[float, float, float]] = {}
+    with ProcessPoolExecutor(max_workers=workers, mp_context=mp_ctx) as executor:
+        futures = [
+            executor.submit(
+                _apply_increment_chunk,
+                chunk,
+                dt_step,
+                method,
+            )
+            for chunk in _chunk_nodes(payload, chunk_size)
+        ]
+        for fut in futures:
+            for node, value in fut.result():
+                results[node] = value
+
+    return {node: results[node] for node in nodes}
 
 
 def _collect_nodal_increments(

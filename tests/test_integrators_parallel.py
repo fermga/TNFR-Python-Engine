@@ -6,6 +6,7 @@ import pytest
 
 from tnfr.alias import get_attr
 from tnfr.constants import get_aliases
+from tnfr.dynamics import integrators as integrators_mod
 from tnfr.dynamics.integrators import update_epi_via_nodal_equation
 
 ALIAS_EPI = get_aliases("EPI")
@@ -58,6 +59,34 @@ def test_parallel_integrator_matches_serial(method: str) -> None:
     update_epi_via_nodal_equation(parallel, **kwargs, n_jobs=3)
 
     assert parallel.graph["_t"] == pytest.approx(serial.graph["_t"])
+    serial_snapshot = _snapshot(serial)
+    parallel_snapshot = _snapshot(parallel)
+    for node in serial_snapshot:
+        assert parallel_snapshot[node] == pytest.approx(serial_snapshot[node])
+
+
+@pytest.mark.parametrize("method", ["euler", "rk4"])
+def test_parallel_fallback_without_numpy(method: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    base = _build_sample_graph()
+    base.graph["INTEGRATOR_METHOD"] = method
+
+    np_missing_calls = 0
+
+    def fake_get_numpy() -> None:
+        nonlocal np_missing_calls
+        np_missing_calls += 1
+        return None
+
+    monkeypatch.setattr(integrators_mod, "get_numpy", fake_get_numpy)
+
+    serial = copy.deepcopy(base)
+    parallel = copy.deepcopy(base)
+
+    kwargs = {"dt": base.graph["DT"], "t": base.graph["_t"], "method": method}
+    update_epi_via_nodal_equation(serial, **kwargs, n_jobs=None)
+    update_epi_via_nodal_equation(parallel, **kwargs, n_jobs=3)
+
+    assert np_missing_calls > 0
     serial_snapshot = _snapshot(serial)
     parallel_snapshot = _snapshot(parallel)
     for node in serial_snapshot:
