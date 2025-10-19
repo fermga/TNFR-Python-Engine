@@ -26,6 +26,8 @@ ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_DEPI = get_aliases("DEPI")
 ALIAS_SI = get_aliases("SI")
 ALIAS_VF = get_aliases("VF")
+ALIAS_DVF = get_aliases("DVF")
+ALIAS_D2VF = get_aliases("D2VF")
 
 
 def test_track_stability_updates_hist(graph_canon):
@@ -55,12 +57,125 @@ def test_track_stability_updates_hist(graph_canon):
     G.nodes[1]["_prev_vf"] = 1.0
     G.nodes[1]["_prev_dvf"] = 0.0
 
-    _track_stability(G, hist, dt=1.0, eps_dnfr=1.0, eps_depi=1.0)
+    _track_stability(G, hist, dt=1.0, eps_dnfr=1.0, eps_depi=1.0, n_jobs=None)
 
     assert hist["stable_frac"] == [0.5]
     assert hist["delta_Si"] == [pytest.approx(1.5)]
     assert hist["B"] == [pytest.approx(0.15)]
 
+
+def test_track_stability_vectorized_updates_graph(monkeypatch, graph_canon):
+    """Vectorized tracking updates history and nodal derivatives."""
+
+    np_mod = pytest.importorskip("numpy")
+    monkeypatch.setattr("tnfr.metrics.coherence.get_numpy", lambda: np_mod)
+
+    G = graph_canon()
+    hist = {"stable_frac": [], "delta_Si": [], "B": []}
+
+    G.add_node(0)
+    G.add_node(1)
+
+    set_attr(G.nodes[0], ALIAS_DNFR, 0.0)
+    set_attr(G.nodes[0], ALIAS_DEPI, 0.0)
+    set_attr(G.nodes[0], ALIAS_SI, 2.0)
+    G.nodes[0]["_prev_Si"] = 1.0
+    set_attr(G.nodes[0], ALIAS_VF, 1.0)
+    G.nodes[0]["_prev_vf"] = 0.5
+    G.nodes[0]["_prev_dvf"] = 0.2
+
+    set_attr(G.nodes[1], ALIAS_DNFR, 10.0)
+    set_attr(G.nodes[1], ALIAS_DEPI, 10.0)
+    set_attr(G.nodes[1], ALIAS_SI, 3.0)
+    G.nodes[1]["_prev_Si"] = 1.0
+    set_attr(G.nodes[1], ALIAS_VF, 1.0)
+    G.nodes[1]["_prev_vf"] = 1.0
+    G.nodes[1]["_prev_dvf"] = 0.0
+
+    _track_stability(G, hist, dt=1.0, eps_dnfr=1.0, eps_depi=1.0, n_jobs=None)
+
+    assert hist["stable_frac"][-1] == pytest.approx(0.5)
+    assert hist["delta_Si"][-1] == pytest.approx(1.5)
+    assert hist["B"][-1] == pytest.approx(0.15)
+
+    assert G.nodes[0]["_prev_Si"] == pytest.approx(2.0)
+    assert get_attr(G.nodes[0], ALIAS_DSI) == pytest.approx(1.0)
+    assert G.nodes[0]["_prev_vf"] == pytest.approx(1.0)
+    assert get_attr(G.nodes[0], ALIAS_DVF) == pytest.approx(0.5)
+    assert get_attr(G.nodes[0], ALIAS_D2VF) == pytest.approx(0.3)
+
+    assert G.nodes[1]["_prev_Si"] == pytest.approx(3.0)
+    assert get_attr(G.nodes[1], ALIAS_DSI) == pytest.approx(2.0)
+    assert G.nodes[1]["_prev_vf"] == pytest.approx(1.0)
+    assert get_attr(G.nodes[1], ALIAS_DVF) == pytest.approx(0.0)
+    assert get_attr(G.nodes[1], ALIAS_D2VF) == pytest.approx(0.0)
+
+
+def test_track_stability_parallel_fallback(monkeypatch, graph_canon):
+    """Fallback path splits work across processes when NumPy is absent."""
+
+    monkeypatch.setattr("tnfr.metrics.coherence.get_numpy", lambda: None)
+
+    created: list[Any] = []
+
+    class _FakeFuture:
+        def __init__(self, value: Any):
+            self._value = value
+
+        def result(self) -> Any:
+            return self._value
+
+    class _RecorderExecutor:
+        def __init__(self, max_workers: int):
+            self.max_workers = max_workers
+            self.submissions: list[tuple[Any, tuple[Any, ...], dict[str, Any]]] = []
+
+        def __enter__(self):
+            created.append(self)
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def submit(self, fn, *args, **kwargs):  # noqa: ANN001 - testing stub
+            self.submissions.append((fn, args, kwargs))
+            return _FakeFuture(fn(*args, **kwargs))
+
+    monkeypatch.setattr("tnfr.metrics.coherence.ProcessPoolExecutor", _RecorderExecutor)
+
+    G = graph_canon()
+    hist = {"stable_frac": [], "delta_Si": [], "B": []}
+
+    G.add_node(0)
+    G.add_node(1)
+
+    set_attr(G.nodes[0], ALIAS_DNFR, 0.0)
+    set_attr(G.nodes[0], ALIAS_DEPI, 0.0)
+    set_attr(G.nodes[0], ALIAS_SI, 2.0)
+    G.nodes[0]["_prev_Si"] = 1.0
+    set_attr(G.nodes[0], ALIAS_VF, 1.0)
+    G.nodes[0]["_prev_vf"] = 0.5
+    G.nodes[0]["_prev_dvf"] = 0.2
+
+    set_attr(G.nodes[1], ALIAS_DNFR, 10.0)
+    set_attr(G.nodes[1], ALIAS_DEPI, 10.0)
+    set_attr(G.nodes[1], ALIAS_SI, 3.0)
+    G.nodes[1]["_prev_Si"] = 1.0
+    set_attr(G.nodes[1], ALIAS_VF, 1.0)
+    G.nodes[1]["_prev_vf"] = 1.0
+    G.nodes[1]["_prev_dvf"] = 0.0
+
+    _track_stability(G, hist, dt=1.0, eps_dnfr=1.0, eps_depi=1.0, n_jobs=2)
+
+    assert created and created[0].max_workers == 2
+    assert created[0].submissions, "fallback should submit work chunks"
+
+    assert hist["stable_frac"][-1] == pytest.approx(0.5)
+    assert hist["delta_Si"][-1] == pytest.approx(1.5)
+    assert hist["B"][-1] == pytest.approx(0.15)
+
+    assert get_attr(G.nodes[0], ALIAS_D2VF) == pytest.approx(0.3)
+    assert get_attr(G.nodes[1], ALIAS_D2VF) == pytest.approx(0.0)
 
 def test_update_sigma_uses_default_window(monkeypatch, graph_canon):
     G = graph_canon()
