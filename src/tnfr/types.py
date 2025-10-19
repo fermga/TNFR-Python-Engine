@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Hashable, Mapping, Sequence
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Iterable, Protocol, TypeAlias
+from typing import TYPE_CHECKING, Any, Iterable, Protocol, TypeAlias, TypedDict
 
 try:  # pragma: no cover - optional dependency for typing only
     import numpy as np
@@ -31,6 +31,10 @@ __all__ = (
     "GraphLike",
     "Glyph",
     "GlyphLoadDistribution",
+    "SelectorMetrics",
+    "SelectorNorms",
+    "SelectorThresholds",
+    "SelectorWeights",
     "TraceCallback",
     "TraceFieldFn",
     "TraceFieldMap",
@@ -91,6 +95,32 @@ CouplingWeight: TypeAlias = float
 
 CoherenceMetric: TypeAlias = float
 #: Aggregated measure of coherence such as C(t) or Si.
+
+
+class SelectorThresholds(TypedDict):
+    """Normalised thresholds applied by the glyph selector."""
+
+    si_hi: float
+    si_lo: float
+    dnfr_hi: float
+    dnfr_lo: float
+    accel_hi: float
+    accel_lo: float
+
+
+class SelectorWeights(TypedDict):
+    """Normalised weights controlling selector scoring."""
+
+    w_si: float
+    w_dnfr: float
+    w_accel: float
+
+
+SelectorMetrics: TypeAlias = tuple[float, float, float]
+"""Tuple grouping normalised Si, |ΔNFR| and acceleration values."""
+
+SelectorNorms: TypeAlias = Mapping[str, float]
+"""Mapping storing maxima used to normalise selector metrics."""
 
 
 class _DeltaNFRHookProtocol(Protocol):
