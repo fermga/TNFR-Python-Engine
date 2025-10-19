@@ -7,7 +7,7 @@ import math
 from collections import Counter
 from itertools import tee
 
-import networkx as nx  # type: ignore[import-untyped]
+import networkx as nx
 
 from .constants import get_aliases, get_graph_param
 from .alias import get_attr

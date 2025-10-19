@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-import networkx as nx  # type: ignore[import-untyped]
+import networkx as nx
 
 from ..types import Glyph
 from ..config.operator_names import (

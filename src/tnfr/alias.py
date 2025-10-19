@@ -32,7 +32,7 @@ ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_THETA = get_aliases("THETA")
 
 if TYPE_CHECKING:  # pragma: no cover
-    import networkx  # type: ignore[import-untyped]
+    import networkx
 
 T = TypeVar("T")
 

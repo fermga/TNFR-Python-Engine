@@ -6,7 +6,7 @@ from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import get_context
 from typing import Any, Literal
 
-import networkx as nx  # type: ignore[import-untyped]
+import networkx as nx
 
 from ..constants import (
     DEFAULTS,

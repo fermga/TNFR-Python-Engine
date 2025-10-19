@@ -23,7 +23,7 @@ from .locking import get_lock
 
 from .trace import CallbackSpec
 
-import networkx as nx  # type: ignore[import-untyped]
+import networkx as nx
 
 __all__ = (
     "CallbackEvent",
