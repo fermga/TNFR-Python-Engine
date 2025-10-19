@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
-import networkx as nx
-
-from ..types import Glyph
+from ..types import Glyph, TNFRGraph
 from ..config.operator_names import (
     EMISION,
     RECEPCION,
@@ -50,10 +48,10 @@ class Operador:
     symbol to the node.
     """
 
-    name = "operador"
-    glyph = None  # tipo: str
+    name: ClassVar[str] = "operador"
+    glyph: ClassVar[Glyph | None] = None
 
-    def __call__(self, G: nx.Graph, node: Any, **kw: Any) -> None:
+    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         if self.glyph is None:
             raise NotImplementedError("Operador sin glyph asignado")
         from ..validation.grammar import (
@@ -68,8 +66,8 @@ class Emision(Operador):
     """Aplicación del operador de emisión (símbolo ``AL``)."""
 
     __slots__ = ()
-    name = EMISION
-    glyph = Glyph.AL.value
+    name: ClassVar[str] = EMISION
+    glyph: ClassVar[Glyph] = Glyph.AL
 
 
 @register_operator
@@ -77,8 +75,8 @@ class Recepcion(Operador):
     """Operador de recepción (símbolo ``EN``)."""
 
     __slots__ = ()
-    name = RECEPCION
-    glyph = Glyph.EN.value
+    name: ClassVar[str] = RECEPCION
+    glyph: ClassVar[Glyph] = Glyph.EN
 
 
 @register_operator
@@ -86,8 +84,8 @@ class Coherencia(Operador):
     """Operador de coherencia (símbolo ``IL``)."""
 
     __slots__ = ()
-    name = COHERENCIA
-    glyph = Glyph.IL.value
+    name: ClassVar[str] = COHERENCIA
+    glyph: ClassVar[Glyph] = Glyph.IL
 
 
 @register_operator
@@ -95,8 +93,8 @@ class Disonancia(Operador):
     """Operador de disonancia (símbolo ``OZ``)."""
 
     __slots__ = ()
-    name = DISONANCIA
-    glyph = Glyph.OZ.value
+    name: ClassVar[str] = DISONANCIA
+    glyph: ClassVar[Glyph] = Glyph.OZ
 
 
 @register_operator
@@ -104,8 +102,8 @@ class Acoplamiento(Operador):
     """Operador de acoplamiento (símbolo ``UM``)."""
 
     __slots__ = ()
-    name = ACOPLAMIENTO
-    glyph = Glyph.UM.value
+    name: ClassVar[str] = ACOPLAMIENTO
+    glyph: ClassVar[Glyph] = Glyph.UM
 
 
 @register_operator
@@ -113,8 +111,8 @@ class Resonancia(Operador):
     """Operador de resonancia (símbolo ``RA``)."""
 
     __slots__ = ()
-    name = RESONANCIA
-    glyph = Glyph.RA.value
+    name: ClassVar[str] = RESONANCIA
+    glyph: ClassVar[Glyph] = Glyph.RA
 
 
 @register_operator
@@ -122,8 +120,8 @@ class Silencio(Operador):
     """Operador de silencio (símbolo ``SHA``)."""
 
     __slots__ = ()
-    name = SILENCIO
-    glyph = Glyph.SHA.value
+    name: ClassVar[str] = SILENCIO
+    glyph: ClassVar[Glyph] = Glyph.SHA
 
 
 @register_operator
@@ -131,8 +129,8 @@ class Expansion(Operador):
     """Operador de expansión (símbolo ``VAL``)."""
 
     __slots__ = ()
-    name = EXPANSION
-    glyph = Glyph.VAL.value
+    name: ClassVar[str] = EXPANSION
+    glyph: ClassVar[Glyph] = Glyph.VAL
 
 
 @register_operator
@@ -140,8 +138,8 @@ class Contraccion(Operador):
     """Operador de contracción (símbolo ``NUL``)."""
 
     __slots__ = ()
-    name = CONTRACCION
-    glyph = Glyph.NUL.value
+    name: ClassVar[str] = CONTRACCION
+    glyph: ClassVar[Glyph] = Glyph.NUL
 
 
 @register_operator
@@ -149,8 +147,8 @@ class Autoorganizacion(Operador):
     """Operador de autoorganización (símbolo ``THOL``)."""
 
     __slots__ = ()
-    name = AUTOORGANIZACION
-    glyph = Glyph.THOL.value
+    name: ClassVar[str] = AUTOORGANIZACION
+    glyph: ClassVar[Glyph] = Glyph.THOL
 
 
 @register_operator
@@ -158,8 +156,8 @@ class Mutacion(Operador):
     """Operador de mutación (símbolo ``ZHIR``)."""
 
     __slots__ = ()
-    name = MUTACION
-    glyph = Glyph.ZHIR.value
+    name: ClassVar[str] = MUTACION
+    glyph: ClassVar[Glyph] = Glyph.ZHIR
 
 
 @register_operator
@@ -167,8 +165,8 @@ class Transicion(Operador):
     """Operador de transición (símbolo ``NAV``)."""
 
     __slots__ = ()
-    name = TRANSICION
-    glyph = Glyph.NAV.value
+    name: ClassVar[str] = TRANSICION
+    glyph: ClassVar[Glyph] = Glyph.NAV
 
 
 @register_operator
@@ -176,5 +174,5 @@ class Recursividad(Operador):
     """Operador de recursividad (símbolo ``REMESH``)."""
 
     __slots__ = ()
-    name = RECURSIVIDAD
-    glyph = Glyph.REMESH.value
+    name: ClassVar[str] = RECURSIVIDAD
+    glyph: ClassVar[Glyph] = Glyph.REMESH
