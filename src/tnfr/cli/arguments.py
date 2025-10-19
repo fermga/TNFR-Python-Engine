@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import argparse
-from typing import Any
+from typing import Any, Iterable
 
 from ..gamma import GAMMA_REGISTRY
+from ..types import ArgSpec
 from .utils import spec
 
 
-GRAMMAR_ARG_SPECS = (
+GRAMMAR_ARG_SPECS: tuple[ArgSpec, ...] = (
     spec("--grammar.enabled", action=argparse.BooleanOptionalAction),
     spec("--grammar.zhir_requires_oz_window", type=int),
     spec("--grammar.zhir_dnfr_min", type=float),
@@ -20,7 +21,7 @@ GRAMMAR_ARG_SPECS = (
 
 
 # Especificaciones para opciones relacionadas con el histórico
-HISTORY_ARG_SPECS = (
+HISTORY_ARG_SPECS: tuple[ArgSpec, ...] = (
     spec("--save-history", type=str),
     spec("--export-history-base", type=str),
     spec("--export-format", choices=["csv", "json"], default="json"),
@@ -28,7 +29,7 @@ HISTORY_ARG_SPECS = (
 
 
 # Argumentos comunes a los subcomandos
-COMMON_ARG_SPECS = (
+COMMON_ARG_SPECS: tuple[ArgSpec, ...] = (
     spec("--nodes", type=int, default=24),
     spec("--topology", choices=["ring", "complete", "erdos"], default="ring"),
     spec("--seed", type=int, default=1),
@@ -48,7 +49,9 @@ COMMON_ARG_SPECS = (
 )
 
 
-def add_arg_specs(parser: argparse._ActionsContainer, specs) -> None:
+def add_arg_specs(
+    parser: argparse._ActionsContainer, specs: Iterable[ArgSpec]
+) -> None:
     """Register arguments from ``specs`` on ``parser``."""
     for opt, kwargs in specs:
         parser.add_argument(opt, **kwargs)

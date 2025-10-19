@@ -55,6 +55,8 @@ __all__ = (
     "NeighborStats",
     "TimingContext",
     "PresetTokens",
+    "ProgramTokens",
+    "ArgSpec",
     "SigmaVector",
 )
 
@@ -111,8 +113,14 @@ CoherenceMetric: TypeAlias = float
 TimingContext: TypeAlias = ContextManager[None]
 #: Context manager used to measure execution time for cache operations.
 
+ProgramTokens: TypeAlias = Sequence[_Token]
+#: Sequence of execution tokens composing a TNFR program.
+
 PresetTokens: TypeAlias = Sequence[_Token]
 #: Sequence of execution tokens composing a preset program.
+
+ArgSpec: TypeAlias = tuple[str, Mapping[str, Any]]
+#: CLI argument specification pairing an option flag with keyword arguments.
 
 
 class _SigmaVectorRequired(TypedDict):
