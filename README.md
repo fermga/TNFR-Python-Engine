@@ -20,7 +20,7 @@ A form emerges and persists when **internal reorganization** (ΔNFR) **resonates
 
 ## Quick start
 
-### Desde Python
+### From Python
 
 ```python
 from tnfr import create_nfr, run_sequence
@@ -43,16 +43,13 @@ si_por_nodo = compute_Si(G)
 print(f"C(t)={C:.3f}, ΔNFR̄={delta_nfr_medio:.3f}, dEPI/dt̄={depi_medio:.3f}, Si={si_por_nodo[nodo]:.3f}")
 ```
 
-La secuencia respeta la ecuación nodal porque `create_nfr` inicializa el nodo con su **νf** y fase, y `run_sequence` valida la gramática TNFR antes de aplicar los operadores en el orden provisto. Tras cada operador invoca el gancho `compute_delta_nfr` del grafo para recalcular únicamente **ΔNFR** (por defecto usa `dnfr_epi_vf_mixed`, que mezcla EPI y νf sin alterar la fase). La fase solo cambiará si los propios operadores la modifican o si se ejecutan pasos dinámicos posteriores (por ejemplo `tnfr.dynamics.step` o `coordinate_global_local_phase`). Cuando necesites sincronización de fase automática, utiliza el ciclo de dinámica completo (`tnfr.dynamics.step`/`tnfr.dynamics.run`) o invoca explícitamente los coordinadores de fase después de `run_sequence`. Esa telemetría permite medir **C(t)** y **Si**, adelantando lo que se desarrolla en [Key concepts (operational summary)](#key-concepts-operational-summary) y [Main metrics](#main-metrics).
+The sequence preserves the nodal equation because `create_nfr` seeds the node with its **νf** and phase, and `run_sequence` validates the TNFR grammar before applying the operators in the requested order. After each operator it triggers the graph hook `compute_delta_nfr` to recompute only **ΔNFR** (by default using `dnfr_epi_vf_mixed`, which blends EPI and νf without altering phase). The phase changes only when operators mutate it or when you execute later dynamic steps (for example `tnfr.dynamics.step` or `coordinate_global_local_phase`). When you require automatic phase coordination, run the complete dynamics cycle (`tnfr.dynamics.step`/`tnfr.dynamics.run`) or call the phase coordinators explicitly after `run_sequence`. That telemetry exposes **C(t)** and **Si**, anticipating the material covered in [Key concepts (operational summary)](#key-concepts-operational-summary) and [Main metrics](#main-metrics).
 
-Tanto `step` como `run` aceptan un argumento opcional `n_jobs` (diccionario) para
-forzar el número de procesos/hilos a usar en cada etapa paralelizable (ΔNFR,
-Si, integradores, coordinación de fase, adaptación de νf) sin tener que
-persistir esos overrides en `G.graph`.
+Both `step` and `run` accept an optional `n_jobs` dictionary to pin the number of processes or threads used in each parallel stage (ΔNFR, Si, integrators, phase coordination, νf adaptation) without persisting those overrides into `G.graph`.
 
-### Desde la línea de comandos
+### From the command line
 
-Archivo `secuencia.json`:
+File `sequence.json`:
 
 ```json
 [
@@ -65,10 +62,10 @@ Archivo `secuencia.json`:
 ```
 
 ```bash
-tnfr sequence --nodes 1 --sequence-file secuencia.json --save-history historia.json
+tnfr sequence --nodes 1 --sequence-file sequence.json --save-history history.json
 ```
 
-El subcomando `sequence` carga la trayectoria canónica del archivo JSON, ejecuta los operadores con la gramática oficial y actualiza **νf**, **ΔNFR** y fase usando los mismos ganchos que la API de Python. Al finalizar se vuelcan en `historia.json` las series de **C(t)**, **ΔNFR** medio y **Si**, que amplían las secciones sobre [operadores estructurales](#key-concepts-operational-summary) y [métricas](#main-metrics).
+The `sequence` subcommand loads the canonical trajectory from the JSON file, executes the operators with the official grammar, and updates **νf**, **ΔNFR**, and phase using the same hooks as the Python API. When it finishes it writes the series for **C(t)**, mean **ΔNFR**, and **Si** to `history.json`, complementing the sections on [structural operators](#key-concepts-operational-summary) and [metrics](#main-metrics).
 
 ---
 
@@ -186,18 +183,18 @@ when orchestrating TNFR experiments.
 * ``angle_diff(a, b)`` — compute minimal angular differences (radians) to
   compare structural phases.
 
-### Historial de operadores estructurales
+### Structural operator history
 
-* ``push_glyph(nd, glyph, window)`` — registra la aplicación de un operador en el
-  historial del nodo respetando la ventana configurada.
-* ``recent_glyph(nd, glyph, window)`` — comprueba si un operador específico
-  aparece en el historial reciente de un nodo.
+* ``push_glyph(nd, glyph, window)`` — record the application of an operator in the
+  node history while honoring the configured window.
+* ``recent_glyph(nd, glyph, window)`` — check whether a specific operator appears
+  in a node's recent history.
 * ``ensure_history(G)`` — prepare the graph-level history container with the
   appropriate bounds.
-* ``last_glyph(nd)`` — inspecciona el último operador emitido por un nodo.
-* ``count_glyphs(G, window=None, *, last_only=False)`` — agrega el uso de
-  operadores estructurales en la red ya sea desde todo el historial o una
-  ventana limitada.
+* ``last_glyph(nd)`` — inspect the last operator emitted by a node.
+* ``count_glyphs(G, window=None, *, last_only=False)`` — aggregate the usage of
+  structural operators across the network using the full history or a bounded
+  window.
 
 ### Graph caches and ΔNFR invalidation
 
@@ -323,9 +320,9 @@ aligned with the network's evolution.
 
 ### Defaults injection performance
 
-`inject_defaults` evita copias profundas cuando los valores son inmutables (números,
-cadenas, tuplas). Solo se usa `copy.deepcopy` para estructuras mutables, reduciendo
-el costo de inicializar grafos con parámetros por defecto.
+`inject_defaults` avoids deep copies when values are immutable (numbers,
+strings, tuples). It resorts to `copy.deepcopy` only for mutable structures,
+which reduces the cost of initializing graphs with default parameters.
 
 ---
 
@@ -348,7 +345,7 @@ https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-teoria-de-la-natur
 
 ## MIT License
 
-Copyright (c) 2025 TNFR - Teoría de la naturaleza fractral resonante
+Copyright (c) 2025 TNFR - Resonant Fractal Nature Theory
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
