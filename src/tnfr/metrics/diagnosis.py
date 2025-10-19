@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
-from statistics import fmean, StatisticsError
+import math
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 from operator import ge, le
-from typing import Any
+from statistics import StatisticsError, fmean
+from typing import Any, Iterable
 
 from ..constants import (
     VF_KEY,
@@ -13,34 +16,99 @@ from ..constants import (
 )
 from ..config.operator_names import TRANSICION
 from ..callback_utils import CallbackEvent, callback_manager
-from ..glyph_history import ensure_history, append_metric
+from ..glyph_history import append_metric, ensure_history
 from ..alias import get_attr
 from ..helpers.numeric import clamp01, similarity_abs
+from ..utils import get_numpy
 from .common import compute_dnfr_accel_max, min_max_range, normalize_dnfr
-from .coherence import (
-    local_phase_sync,
-    local_phase_sync_weighted,
-)
+from .coherence import coherence_matrix, local_phase_sync
+from .trig_cache import compute_theta_trig, get_trig_cache
 
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_SI = get_aliases("SI")
+ALIAS_DNFR = get_aliases("DNFR")
 
-def _symmetry_index(
-    G, n, epi_min: float | None = None, epi_max: float | None = None
-):
-    """Compute the symmetry index for node ``n`` based on EPI values."""
-    nd = G.nodes[n]
-    epi_i = get_attr(nd, ALIAS_EPI, 0.0)
-    vec = G.neighbors(n)
+
+def _coerce_jobs(raw_jobs: Any | None) -> int | None:
+    """Normalise ``n_jobs`` values coming from user configuration."""
+
     try:
-        epi_bar = fmean(get_attr(G.nodes[v], ALIAS_EPI, epi_i) for v in vec)
-    except StatisticsError:
-        return 1.0
-    if epi_min is None or epi_max is None:
-        epi_iter = (get_attr(G.nodes[v], ALIAS_EPI, 0.0) for v in G.nodes())
-        epi_min, epi_max = min_max_range(epi_iter, default=(0.0, 1.0))
-    return similarity_abs(epi_i, epi_bar, epi_min, epi_max)
+        jobs = None if raw_jobs is None else int(raw_jobs)
+    except (TypeError, ValueError):
+        return None
+    if jobs is not None and jobs <= 0:
+        return None
+    return jobs
+
+
+def _weighted_phase_sync_from_matrix(
+    node_index: int,
+    node: Any,
+    nodes_order: list[Any],
+    matrix: Any,
+    cos_map: dict[Any, float],
+    sin_map: dict[Any, float],
+) -> float:
+    """Compute weighted phase synchrony using a cached matrix."""
+
+    if matrix is None or not nodes_order:
+        return 0.0
+
+    num = 0.0 + 0.0j
+    den = 0.0
+
+    if isinstance(matrix, list) and matrix and isinstance(matrix[0], list):
+        row = matrix[node_index]
+        for weight, neighbor in zip(row, nodes_order):
+            if neighbor == node:
+                continue
+            w = float(weight)
+            if w == 0.0:
+                continue
+            cos_j = cos_map.get(neighbor)
+            sin_j = sin_map.get(neighbor)
+            if cos_j is None or sin_j is None:
+                continue
+            den += w
+            num += w * complex(cos_j, sin_j)
+    else:
+        for ii, jj, weight in matrix:
+            if ii != node_index:
+                continue
+            neighbor = nodes_order[jj]
+            if neighbor == node:
+                continue
+            w = float(weight)
+            if w == 0.0:
+                continue
+            cos_j = cos_map.get(neighbor)
+            sin_j = sin_map.get(neighbor)
+            if cos_j is None or sin_j is None:
+                continue
+            den += w
+            num += w * complex(cos_j, sin_j)
+
+    return abs(num / den) if den else 0.0
+
+
+def _local_phase_sync_unweighted(
+    neighbors: Iterable[Any],
+    cos_map: dict[Any, float],
+    sin_map: dict[Any, float],
+) -> float:
+    """Fallback unweighted phase synchrony based on neighbours."""
+
+    num = 0.0 + 0.0j
+    den = 0.0
+    for neighbor in neighbors:
+        cos_j = cos_map.get(neighbor)
+        sin_j = sin_map.get(neighbor)
+        if cos_j is None or sin_j is None:
+            continue
+        num += complex(cos_j, sin_j)
+        den += 1.0
+    return abs(num / den) if den else 0.0
 
 
 def _state_from_thresholds(Rloc, dnfr_n, cfg):
@@ -86,68 +154,73 @@ def _get_last_weights(G, hist):
     return Wi_last, Wm_last
 
 
-def _node_diagnostics(
-    G,
-    n,
-    i,
-    nodes,
-    node_to_index,
-    Wi_last,
-    Wm_last,
-    epi_min,
-    epi_max,
-    dnfr_max,
-    dcfg,
-):
-    nd = G.nodes[n]
-    Si = clamp01(get_attr(nd, ALIAS_SI, 0.0))
-    EPI = get_attr(nd, ALIAS_EPI, 0.0)
-    vf = get_attr(nd, ALIAS_VF, 0.0)
-    dnfr_n = normalize_dnfr(nd, dnfr_max)
+def _node_diagnostics(node_data: dict[str, Any], shared: dict[str, Any]):
+    """Compute diagnostic payload for a single node."""
 
-    if Wm_last is not None:
-        if Wm_last and isinstance(Wm_last[0], list):
-            row = Wm_last[i]
-        else:
-            row = Wm_last
-        Rloc = local_phase_sync_weighted(
-            G, n, nodes_order=nodes, W_row=row, node_to_index=node_to_index
-        )
+    dcfg = shared["dcfg"]
+    compute_symmetry = shared["compute_symmetry"]
+    epi_min = shared["epi_min"]
+    epi_max = shared["epi_max"]
+
+    node = node_data["node"]
+    Si = clamp01(float(node_data["Si"]))
+    EPI = float(node_data["EPI"])
+    vf = float(node_data["VF"])
+    dnfr_n = clamp01(float(node_data["dnfr_norm"]))
+    Rloc = float(node_data["R_local"])
+
+    if compute_symmetry:
+        epi_bar = node_data.get("neighbor_epi_mean")
+        symm = 1.0 if epi_bar is None else similarity_abs(EPI, epi_bar, epi_min, epi_max)
     else:
-        Rloc = local_phase_sync(G, n)
+        symm = None
 
-    symm = (
-        _symmetry_index(G, n, epi_min=epi_min, epi_max=epi_max)
-        if dcfg.get("compute_symmetry", True)
-        else None
-    )
     state = _state_from_thresholds(Rloc, dnfr_n, dcfg)
 
     alerts = []
-    if state == "disonante" and dnfr_n >= float(
-        dcfg.get("dissonance", {}).get("dnfr_hi", 0.5)
-    ):
+    if state == "disonante" and dnfr_n >= shared["dissonance_hi"]:
         alerts.append("high structural tension")
 
     advice = _recommendation(state, dcfg)
 
-    return {
-        "node": n,
-        "Si": Si,
-        "EPI": EPI,
-        VF_KEY: vf,
-        "dnfr_norm": dnfr_n,
-        "W_i": (Wi_last[i] if (Wi_last and i < len(Wi_last)) else None),
-        "R_local": Rloc,
-        "symmetry": symm,
-        "state": state,
-        "advice": advice,
-        "alerts": alerts,
-    }
+    return (
+        node,
+        {
+            "node": node,
+            "Si": Si,
+            "EPI": EPI,
+            VF_KEY: vf,
+            "dnfr_norm": dnfr_n,
+            "W_i": node_data.get("W_i"),
+            "R_local": Rloc,
+            "symmetry": symm,
+            "state": state,
+            "advice": advice,
+            "alerts": alerts,
+        },
+    )
 
 
-def _diagnosis_step(G, ctx: dict[str, Any] | None = None):
+def _diagnosis_worker_chunk(
+    chunk: list[dict[str, Any]], shared: dict[str, Any]
+) -> list[tuple[Any, dict[str, Any]]]:
+    """Evaluate diagnostics for a chunk of nodes."""
+
+    return [_node_diagnostics(item, shared) for item in chunk]
+
+
+def _diagnosis_step(
+    G,
+    ctx: dict[str, Any] | None = None,
+    *,
+    n_jobs: int | None = None,
+):
     del ctx
+
+    if n_jobs is None:
+        n_jobs = _coerce_jobs(G.graph.get("DIAGNOSIS_N_JOBS"))
+    else:
+        n_jobs = _coerce_jobs(n_jobs)
 
     dcfg = get_param(G, "DIAGNOSIS")
     if not dcfg.get("enabled", True):
@@ -159,28 +232,194 @@ def _diagnosis_step(G, ctx: dict[str, Any] | None = None):
     norms = compute_dnfr_accel_max(G)
     G.graph["_sel_norms"] = norms
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
-    epi_iter = (get_attr(nd, ALIAS_EPI, 0.0) for _, nd in G.nodes(data=True))
-    epi_min, epi_max = min_max_range(epi_iter, default=(0.0, 1.0))
+
+    nodes_data = list(G.nodes(data=True))
+    nodes = [n for n, _ in nodes_data]
 
     Wi_last, Wm_last = _get_last_weights(G, hist)
 
-    nodes = list(G.nodes())
-    node_to_index = {v: i for i, v in enumerate(nodes)}
-    diag = {}
-    for i, n in enumerate(nodes):
-        diag[n] = _node_diagnostics(
-            G,
-            n,
-            i,
-            nodes,
-            node_to_index,
-            Wi_last,
-            Wm_last,
-            epi_min,
-            epi_max,
-            dnfr_max,
-            dcfg,
+    np_mod = get_numpy()
+    supports_vector = bool(
+        np_mod is not None
+        and all(
+            hasattr(np_mod, attr)
+            for attr in ("fromiter", "clip", "abs", "maximum", "minimum")
         )
+    )
+
+    if not nodes:
+        append_metric(hist, key, {})
+        return
+
+    if supports_vector:
+        epi_arr = np_mod.fromiter(
+            (float(get_attr(nd, ALIAS_EPI, 0.0)) for _, nd in nodes_data),
+            dtype=float,
+            count=len(nodes_data),
+        )
+        epi_min = float(np_mod.min(epi_arr))
+        epi_max = float(np_mod.max(epi_arr))
+        epi_vals = epi_arr.tolist()
+
+        si_arr = np_mod.clip(
+            np_mod.fromiter(
+                (float(get_attr(nd, ALIAS_SI, 0.0)) for _, nd in nodes_data),
+                dtype=float,
+                count=len(nodes_data),
+            ),
+            0.0,
+            1.0,
+        )
+        si_vals = si_arr.tolist()
+
+        vf_arr = np_mod.fromiter(
+            (float(get_attr(nd, ALIAS_VF, 0.0)) for _, nd in nodes_data),
+            dtype=float,
+            count=len(nodes_data),
+        )
+        vf_vals = vf_arr.tolist()
+
+        if dnfr_max > 0:
+            dnfr_arr = np_mod.clip(
+                np_mod.fromiter(
+                    (
+                        abs(float(get_attr(nd, ALIAS_DNFR, 0.0)))
+                        for _, nd in nodes_data
+                    ),
+                    dtype=float,
+                    count=len(nodes_data),
+                )
+                / dnfr_max,
+                0.0,
+                1.0,
+            )
+            dnfr_norms = dnfr_arr.tolist()
+        else:
+            dnfr_norms = [0.0] * len(nodes)
+    else:
+        epi_vals = [float(get_attr(nd, ALIAS_EPI, 0.0)) for _, nd in nodes_data]
+        epi_min, epi_max = min_max_range(epi_vals, default=(0.0, 1.0))
+        si_vals = [clamp01(get_attr(nd, ALIAS_SI, 0.0)) for _, nd in nodes_data]
+        vf_vals = [float(get_attr(nd, ALIAS_VF, 0.0)) for _, nd in nodes_data]
+        dnfr_norms = [
+            normalize_dnfr(nd, dnfr_max) if dnfr_max > 0 else 0.0
+            for _, nd in nodes_data
+        ]
+
+    epi_map = {node: epi_vals[idx] for idx, node in enumerate(nodes)}
+
+    trig_cache = get_trig_cache(G, np=np_mod)
+    trig_local = compute_theta_trig(nodes_data, np=np_mod)
+    cos_map = dict(trig_cache.cos)
+    sin_map = dict(trig_cache.sin)
+    cos_map.update(trig_local.cos)
+    sin_map.update(trig_local.sin)
+
+    neighbors_map = {n: tuple(G.neighbors(n)) for n in nodes}
+
+    if Wm_last is None:
+        coherence_nodes, weight_matrix = coherence_matrix(G)
+        if coherence_nodes is None:
+            coherence_nodes = []
+            weight_matrix = None
+    else:
+        coherence_nodes = nodes
+        weight_matrix = Wm_last
+
+    if coherence_nodes:
+        weight_index = {node: idx for idx, node in enumerate(coherence_nodes)}
+    else:
+        weight_index = {}
+
+    rloc_values: list[float] = []
+    for node in nodes:
+        if coherence_nodes and weight_matrix is not None:
+            idx = weight_index.get(node)
+            if idx is None:
+                rloc = 0.0
+            else:
+                rloc = _weighted_phase_sync_from_matrix(
+                    idx,
+                    node,
+                    coherence_nodes,
+                    weight_matrix,
+                    cos_map,
+                    sin_map,
+                )
+        else:
+            rloc = _local_phase_sync_unweighted(neighbors_map[node], cos_map, sin_map)
+        rloc_values.append(float(rloc))
+
+    if isinstance(Wi_last, (list, tuple)) and Wi_last:
+        wi_values = [Wi_last[i] if i < len(Wi_last) else None for i in range(len(nodes))]
+    else:
+        wi_values = [None] * len(nodes)
+
+    compute_symmetry = bool(dcfg.get("compute_symmetry", True))
+    if compute_symmetry:
+        neighbor_means: list[float | None] = []
+        for node in nodes:
+            neighbors = neighbors_map[node]
+            if not neighbors:
+                neighbor_means.append(None)
+                continue
+            if supports_vector:
+                arr = np_mod.fromiter(
+                    (epi_map[nb] for nb in neighbors),
+                    dtype=float,
+                    count=len(neighbors),
+                )
+                neighbor_means.append(float(arr.mean()) if len(neighbors) else None)
+            else:
+                try:
+                    neighbor_means.append(fmean(epi_map[nb] for nb in neighbors))
+                except StatisticsError:
+                    neighbor_means.append(None)
+    else:
+        neighbor_means = [None] * len(nodes)
+
+    node_payload: list[dict[str, Any]] = []
+    for idx, node in enumerate(nodes):
+        node_payload.append(
+            {
+                "node": node,
+                "Si": si_vals[idx],
+                "EPI": epi_vals[idx],
+                "VF": vf_vals[idx],
+                "dnfr_norm": dnfr_norms[idx],
+                "R_local": rloc_values[idx],
+                "W_i": wi_values[idx],
+                "neighbor_epi_mean": neighbor_means[idx],
+            }
+        )
+
+    shared = {
+        "dcfg": dcfg,
+        "compute_symmetry": compute_symmetry,
+        "epi_min": float(epi_min),
+        "epi_max": float(epi_max),
+        "dissonance_hi": float(dcfg.get("dissonance", {}).get("dnfr_hi", 0.5)),
+    }
+
+    if n_jobs and n_jobs > 1 and len(node_payload) > 1:
+        chunk_size = max(1, math.ceil(len(node_payload) / n_jobs))
+        diag_pairs: list[tuple[Any, dict[str, Any]]] = []
+        with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+            futures = [
+                executor.submit(
+                    _diagnosis_worker_chunk,
+                    node_payload[idx : idx + chunk_size],
+                    shared,
+                )
+                for idx in range(0, len(node_payload), chunk_size)
+            ]
+            for fut in futures:
+                diag_pairs.extend(fut.result())
+    else:
+        diag_pairs = [_node_diagnostics(item, shared) for item in node_payload]
+
+    diag_map = dict(diag_pairs)
+    diag = {node: diag_map.get(node, {}) for node in nodes}
 
     append_metric(hist, key, diag)
 
@@ -221,10 +460,13 @@ def dissonance_events(G, ctx: dict[str, Any] | None = None):
 
 
 def register_diagnosis_callbacks(G) -> None:
+    raw_jobs = G.graph.get("DIAGNOSIS_N_JOBS")
+    n_jobs = _coerce_jobs(raw_jobs)
+
     callback_manager.register_callback(
         G,
         event=CallbackEvent.AFTER_STEP.value,
-        func=_diagnosis_step,
+        func=partial(_diagnosis_step, n_jobs=n_jobs),
         name="diagnosis_step",
     )
     callback_manager.register_callback(
