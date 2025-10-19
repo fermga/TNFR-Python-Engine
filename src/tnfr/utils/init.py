@@ -15,7 +15,7 @@ import warnings
 import weakref
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import Any, Callable, Hashable, Iterable, Literal, Mapping
+from typing import Any, Callable, Hashable, Iterable, Iterator, Literal, Mapping
 
 __all__ = (
     "_configure_root",
@@ -495,7 +495,7 @@ class LazyImportProxy:
     def __str__(self) -> str:  # pragma: no cover - representation helper
         return str(self._resolve())
 
-    def __iter__(self):  # pragma: no cover - passthrough helper
+    def __iter__(self) -> Iterator[Any]:  # pragma: no cover - passthrough helper
         return iter(self._resolve())
 
 

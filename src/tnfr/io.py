@@ -206,7 +206,7 @@ def _format_structured_file_error(path: Path, e: Exception) -> str:
 class StructuredFileError(Exception):
     """Error while reading or parsing a structured file."""
 
-    def __init__(self, path: Path, original: Exception):
+    def __init__(self, path: Path, original: Exception) -> None:
         super().__init__(_format_structured_file_error(path, original))
         self.path = path
 
