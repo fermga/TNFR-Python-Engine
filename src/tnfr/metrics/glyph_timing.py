@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
+import math
 from typing import Any, Callable
 
 from ..alias import get_attr
@@ -16,6 +18,13 @@ ALIAS_EPI = get_aliases("EPI")
 
 LATENT_GLYPH = Glyph.SHA.value
 DEFAULT_EPI_SUPPORT_LIMIT = 0.05
+
+try:  # pragma: no cover - import guard exercised via tests
+    import numpy as np
+except Exception:  # pragma: no cover - numpy optional dependency
+    np = None
+
+_GLYPH_TO_INDEX = {glyph: idx for idx, glyph in enumerate(GLYPHS_CANONICAL)}
 
 
 @dataclass
@@ -42,6 +51,27 @@ __all__ = [
 # ---------------------------------------------------------------------------
 # Internal utilities
 # ---------------------------------------------------------------------------
+
+
+def _count_glyphs_chunk(chunk: list[str]) -> Counter:
+    """Count glyph occurrences within a chunk (multiprocessing helper)."""
+
+    counter: Counter[str] = Counter()
+    for glyph in chunk:
+        counter[glyph] += 1
+    return counter
+
+
+def _epi_support_chunk(values: list[float], threshold: float) -> tuple[float, int]:
+    """Compute EPI support contribution for a chunk."""
+
+    total = 0.0
+    count = 0
+    for value in values:
+        if value >= threshold:
+            total += value
+            count += 1
+    return total, count
 
 
 def _tg_state(nd: dict[str, Any]) -> GlyphTiming:
@@ -85,10 +115,9 @@ def _update_tg_node(n, nd, dt, tg_total, tg_by_node):
     return g, g == LATENT_GLYPH
 
 
-def _update_tg(G, hist, dt, save_by_node: bool):
+def _update_tg(G, hist, dt, save_by_node: bool, n_jobs: int | None = None):
     """Accumulate glyph dwell times for the entire graph."""
 
-    counts = Counter()
     tg_total = hist.setdefault("Tg_total", defaultdict(float))
     tg_by_node = (
         hist.setdefault("Tg_by_node", defaultdict(lambda: defaultdict(list)))
@@ -98,6 +127,7 @@ def _update_tg(G, hist, dt, save_by_node: bool):
 
     n_total = 0
     n_latent = 0
+    glyph_sequence: list[str] = []
     for n, nd in G.nodes(data=True):
         g, is_latent = _update_tg_node(n, nd, dt, tg_total, tg_by_node)
         if g is None:
@@ -105,7 +135,38 @@ def _update_tg(G, hist, dt, save_by_node: bool):
         n_total += 1
         if is_latent:
             n_latent += 1
-        counts[g] += 1
+        glyph_sequence.append(g)
+
+    counts: Counter[str] = Counter()
+    if not glyph_sequence:
+        return counts, n_total, n_latent
+
+    if np is not None:
+        glyph_idx = np.fromiter(
+            (_GLYPH_TO_INDEX[glyph] for glyph in glyph_sequence),
+            dtype=np.int64,
+            count=len(glyph_sequence),
+        )
+        freq = np.bincount(glyph_idx, minlength=len(GLYPHS_CANONICAL))
+        counts.update(
+            {
+                glyph: int(freq[_GLYPH_TO_INDEX[glyph]])
+                for glyph in GLYPHS_CANONICAL
+                if freq[_GLYPH_TO_INDEX[glyph]]
+            }
+        )
+    elif n_jobs is not None and n_jobs > 1 and len(glyph_sequence) > 1:
+        chunk_size = max(1, math.ceil(len(glyph_sequence) / n_jobs))
+        futures = []
+        with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+            for start in range(0, len(glyph_sequence), chunk_size):
+                chunk = glyph_sequence[start : start + chunk_size]
+                futures.append(executor.submit(_count_glyphs_chunk, chunk))
+            for future in futures:
+                counts.update(future.result())
+    else:
+        counts.update(glyph_sequence)
+
     return counts, n_total, n_latent
 
 
@@ -133,16 +194,44 @@ def _update_epi_support(
     hist,
     t,
     threshold: float = DEFAULT_EPI_SUPPORT_LIMIT,
+    n_jobs: int | None = None,
 ):
     """Measure EPI support and normalized magnitude."""
 
+    node_count = G.number_of_nodes()
     total = 0.0
     count = 0
-    for _, nd in G.nodes(data=True):
-        epi_val = abs(get_attr(nd, ALIAS_EPI, 0.0))
-        if epi_val >= threshold:
-            total += epi_val
-            count += 1
+
+    if np is not None and node_count:
+        epi_values = np.fromiter(
+            (abs(get_attr(nd, ALIAS_EPI, 0.0)) for _, nd in G.nodes(data=True)),
+            dtype=float,
+            count=node_count,
+        )
+        mask = epi_values >= threshold
+        count = int(mask.sum())
+        if count:
+            total = float(epi_values[mask].sum())
+    elif n_jobs is not None and n_jobs > 1 and node_count > 1:
+        values = [abs(get_attr(nd, ALIAS_EPI, 0.0)) for _, nd in G.nodes(data=True)]
+        chunk_size = max(1, math.ceil(len(values) / n_jobs))
+        totals: list[tuple[float, int]] = []
+        with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+            futures = []
+            for start in range(0, len(values), chunk_size):
+                chunk = values[start : start + chunk_size]
+                futures.append(executor.submit(_epi_support_chunk, chunk, threshold))
+            for future in futures:
+                totals.append(future.result())
+        for part_total, part_count in totals:
+            total += part_total
+            count += part_count
+    else:
+        for _, nd in G.nodes(data=True):
+            epi_val = abs(get_attr(nd, ALIAS_EPI, 0.0))
+            if epi_val >= threshold:
+                total += epi_val
+                count += 1
     epi_norm = (total / count) if count else 0.0
     append_metric(
         hist,
@@ -178,12 +267,13 @@ def _compute_advanced_metrics(
     dt,
     cfg,
     threshold: float = DEFAULT_EPI_SUPPORT_LIMIT,
+    n_jobs: int | None = None,
 ):
     """Compute glyph timing derived metrics."""
 
     save_by_node = bool(cfg.get("save_by_node", True))
-    counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node)
+    counts, n_total, n_latent = _update_tg(G, hist, dt, save_by_node, n_jobs=n_jobs)
     _update_glyphogram(G, hist, counts, t, n_total)
     _update_latency_index(G, hist, n_total, n_latent, t)
-    _update_epi_support(G, hist, t, threshold)
+    _update_epi_support(G, hist, t, threshold, n_jobs=n_jobs)
     _update_morph_metrics(G, hist, counts, t)
