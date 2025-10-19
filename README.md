@@ -67,6 +67,136 @@ tnfr sequence --nodes 1 --sequence-file sequence.json --save-history history.jso
 
 The `sequence` subcommand loads the canonical trajectory from the JSON file, executes the operators with the official grammar, and updates **νf**, **ΔNFR**, and phase using the same hooks as the Python API. When it finishes it writes the series for **C(t)**, mean **ΔNFR**, and **Si** to `history.json`, complementing the sections on [structural operators](#key-concepts-operational-summary) and [metrics](#main-metrics).
 
+## Practical TNFR Examples
+
+The following walkthroughs expand the quick start by orchestrating a multi-node workflow twice: first from the Python API and then from the CLI. Each example highlights how canonical operators combine to steer coherence, how telemetry exposes **C(t)**, **ΔNFR**, and **Si**, and where to dig deeper into the APIs ([`tnfr.structural`](src/tnfr/structural.py), [`tnfr.operators`](src/tnfr/operators/definitions.py), [`tnfr.metrics`](src/tnfr/metrics/common.py), [`tnfr.dynamics`](src/tnfr/dynamics/__init__.py)).
+
+### Controlled dissonance with re-coherence (Python API)
+
+This scenario creates a three-node ring, pushes a controlled dissonance on the third node, and lets the network bifurcate before stabilising. Compare the operator sequence with [Key concepts (operational summary)](#key-concepts-operational-summary) to see how the canonical grammar enforces the AL→EN→IL segment and the OZ→ZHIR mutation path.
+
+```python
+from tnfr import create_nfr, run_sequence
+from tnfr.structural import (
+    Emision, Recepcion, Coherencia, Acoplamiento,
+    Resonancia, Transicion, Disonancia, Mutacion, Silencio,
+)
+from tnfr.metrics import register_metrics_callbacks
+from tnfr.metrics.common import compute_coherence
+from tnfr.metrics.sense_index import compute_Si
+from tnfr.trace import register_trace
+from tnfr.dynamics import run
+from tnfr.glyph_history import ensure_history
+
+# 1) Seed a shared graph and wire a minimal ring for neighbour-aware operators.
+G, _ = create_nfr("A", epi=0.24, vf=1.0, theta=0.0)
+_, _ = create_nfr("B", epi=0.18, vf=0.9, theta=0.45, graph=G)
+_, _ = create_nfr("C", epi=0.27, vf=1.1, theta=-0.35, graph=G)
+G.add_edge("A", "B")
+G.add_edge("B", "C")
+
+# Activate functional coupling so UM can forge edges when phases align.
+G.graph.update({
+    "UM_FUNCTIONAL_LINKS": True,
+    "UM_CANDIDATE_COUNT": 2,
+    "UM_CANDIDATE_MODE": "proximity",
+})
+
+# 2) Apply canonical operator sequences per node.
+run_sequence(G, "A", [
+    Emision(), Recepcion(), Coherencia(),
+    Acoplamiento(), Resonancia(), Coherencia(), Silencio(),
+])
+run_sequence(G, "B", [
+    Emision(), Recepcion(), Coherencia(),
+    Resonancia(), Coherencia(), Silencio(),
+])
+run_sequence(G, "C", [
+    Emision(), Recepcion(), Coherencia(),
+    Transicion(), Disonancia(), Mutacion(), Coherencia(), Silencio(),
+])
+
+# 3) Collect telemetry while integrating short dynamics.
+register_metrics_callbacks(G)
+register_trace(G)
+run(G, steps=8, dt=0.1)
+
+# 4) Inspect global coherence and node-wise Sense Index.
+C, dnfr_mean, depi_mean = compute_coherence(G, return_means=True)
+Si = compute_Si(G)
+history = ensure_history(G)
+
+print(f"C(t)={C:.3f}, ΔNFR̄={dnfr_mean:.3f}, dEPI/dt̄={depi_mean:.3f}")
+print({node: round(val, 3) for node, val in Si.items()})
+print(history["W_stats"][-1])          # neighbourhood coherence span
+print(list(history["nodal_diag"][-1].items())[:2])  # node-level diagnosis
+```
+
+Sample output (with optional dependencies disabled) illustrates the bifurcation and recovery loop:
+
+```
+C(t)=0.961, ΔNFR̄=0.022, dEPI/dt̄=0.018
+{'A': 0.95, 'B': 0.60, 'C': 0.674}
+{'min': 0.4595, 'max': 0.7067, 'mean': 0.6153, 'n_edges': 6, 'mode': 'sparse', 'scope': 'neighbors'}
+[
+  ('A', {'node': 'A', 'Si': 0.956, 'dnfr_norm': 0.054, 'state': 'estable', ...}),
+  ('B', {'node': 'B', 'Si': 0.598, 'dnfr_norm': 1.000, 'state': 'transicion', ...})
+]
+```
+
+* **Node A** rides the UM coupling boost and lands in the stable diagnosis bucket once Silencio clamps νf while C(t) increases—see the stabilisation criteria in [Main metrics](#main-metrics).
+* **Node C** crosses the OZ→ZHIR path, spikes |ΔNFR|, and returns to IL, showing a controlled bifurcation that preserves operator closure.
+* **Node B** inherits the dissonance (dnfr_norm → 1.0) and remains in transition, signalling a pending coherence push or resonance balancing before the network can converge again.
+
+Explore the data stored in `history` (glyph traces, diagnosis rows, Tg curves) to correlate glyph usage with the coherence span reported in `W_stats`.
+
+### Reproducing the scenario from the CLI
+
+The same workflow can be executed with the `tnfr` CLI. Create the sequence and configuration files (JSON keeps optional dependencies minimal):
+
+```jsonc
+// sequence.json
+[
+  {"TARGET": [0]}, "AL", "EN", "IL", "UM", "RA", "IL", "SHA",
+  {"TARGET": [1]}, "AL", "EN", "IL", "RA", "IL", "SHA",
+  {"TARGET": [2]}, "AL", "EN", "IL", "NAV", "OZ", "ZHIR", "IL", "SHA"
+]
+```
+
+```jsonc
+// config.json
+{
+  "UM_FUNCTIONAL_LINKS": true,
+  "UM_CANDIDATE_COUNT": 2,
+  "UM_CANDIDATE_MODE": "proximity",
+  "OZ_NOISE_MODE": false,
+  "SIGMA": {"enabled": false}
+}
+```
+
+Run the sequence on a three-node ring (installing `tnfr[yaml]` removes the YAML warning if you prefer `.yaml` files):
+
+```bash
+tnfr sequence \
+  --nodes 3 --topology ring --seed 1 \
+  --sequence-file sequence.json \
+  --config config.json \
+  --save-history history.json
+```
+
+The command reuses the canonical grammar and ΔNFR hooks from [`tnfr.dynamics`](src/tnfr/dynamics/__init__.py). The saved `history.json` mirrors the Python telemetry; the last samples show the same coherence span and dissonance distribution:
+
+```json
+"W_stats": {"min": 0.423, "max": 0.736, "mean": 0.609, "n_edges": 6, "mode": "sparse", "scope": "neighbors"},
+"nodal_diag": {
+  "0": {"Si": 0.723, "νf": 0.716, "dnfr_norm": 0.785, "state": "transicion"},
+  "1": {"Si": 0.363, "νf": 0.075, "dnfr_norm": 1.000, "state": "transicion"},
+  "2": {"Si": 0.797, "νf": 0.463, "dnfr_norm": 0.215, "state": "transicion"}
+}
+```
+
+Interpreting the telemetry against [Main metrics](#main-metrics) reveals the same story as the Python run: node 2 (the controlled dissonance target) expands ΔNFR then folds back toward coherence, node 0 couples to absorb part of the gradient, and node 1 remains the bifurcation frontier until another IL/RA pass reduces its ΔNFR. Use the [metrics helpers](src/tnfr/metrics/reporting.py) to extract Tg summaries or glyphogram series when exploring longer trajectories.
+
 ---
 
 ## Installation
