@@ -167,3 +167,28 @@ def test_prepare_dnfr_supports_hooks_without_jobs_kw(graph_canon):
     G.graph["compute_delta_nfr"] = hook
     _prepare_dnfr(G, use_Si=False)
     assert calls["count"] == 1
+
+
+def test_prepare_dnfr_passes_si_jobs_to_compute_si(monkeypatch, graph_canon):
+    G = graph_canon()
+    dnfr_alias = get_aliases("DNFR")
+    for node in range(3):
+        G.add_node(node)
+    G.add_edges_from(((0, 1), (1, 2)))
+
+    def fake_compute_delta(graph, n_jobs=None):
+        for node in graph.nodes:
+            set_attr(graph.nodes[node], dnfr_alias, 0.0)
+
+    captured = {}
+
+    def fake_compute_si(graph, *, inplace=True, n_jobs=None):
+        captured["n_jobs"] = n_jobs
+
+    G.graph["compute_delta_nfr"] = fake_compute_delta
+    G.graph["SI_N_JOBS"] = "5"
+    monkeypatch.setattr("tnfr.dynamics.compute_Si", fake_compute_si)
+
+    _prepare_dnfr(G, use_Si=True)
+
+    assert captured["n_jobs"] == 5

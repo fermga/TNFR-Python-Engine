@@ -539,7 +539,15 @@ def _prepare_dnfr(G, *, use_Si: bool) -> None:
                 raise
     G.graph.pop("_sel_norms", None)
     if use_Si:
-        compute_Si(G, inplace=True)
+        raw_si_jobs = G.graph.get("SI_N_JOBS")
+        try:
+            si_jobs = None if raw_si_jobs is None else int(raw_si_jobs)
+        except (TypeError, ValueError):
+            si_jobs = None
+        else:
+            if si_jobs is not None and si_jobs <= 0:
+                si_jobs = None
+        compute_Si(G, inplace=True, n_jobs=si_jobs)
 
 
 def _apply_selector(G):
