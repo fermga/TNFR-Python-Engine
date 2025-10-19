@@ -14,18 +14,17 @@ import math
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
-from typing import Any, Callable
+from types import ModuleType
+from typing import Any, Callable, Mapping, MutableMapping, Sequence, cast
 
-from ..alias import (
-    get_attr,
-    set_dnfr,
-)
+from ..alias import get_attr, set_dnfr
 from ..constants import DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import angle_diff
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import compute_theta_trig
 from ..utils import cached_node_list, cached_nodes_and_A, get_numpy, normalize_weights
+from ..types import DeltaNFRHook, NodeId, TNFRGraph
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
@@ -36,7 +35,7 @@ _SPARSE_DENSITY_THRESHOLD = 0.25
 
 
 
-def _should_vectorize(G, np_module) -> bool:
+def _should_vectorize(G: TNFRGraph, np_module: ModuleType | None) -> bool:
     """Return ``True`` when NumPy is available unless the graph disables it."""
 
     if np_module is None:
@@ -1906,7 +1905,11 @@ def _accumulate_neighbors_numpy(
 
 
 def _compute_dnfr(
-    G, data, *, use_numpy: bool | None = None, n_jobs: int | None = None
+    G: TNFRGraph,
+    data: MutableMapping[str, Any],
+    *,
+    use_numpy: bool | None = None,
+    n_jobs: int | None = None,
 ) -> None:
     """Compute ΔNFR using neighbour sums.
 
@@ -1956,7 +1959,10 @@ def _compute_dnfr(
     )
 
 def default_compute_delta_nfr(
-    G, *, cache_size: int | None = 1, n_jobs: int | None = None
+    G: TNFRGraph,
+    *,
+    cache_size: int | None = 1,
+    n_jobs: int | None = None,
 ) -> None:
     """Compute ΔNFR by mixing phase, EPI, νf and a topological term.
 
@@ -1983,7 +1989,11 @@ def default_compute_delta_nfr(
 
 
 def set_delta_nfr_hook(
-    G, func, *, name: str | None = None, note: str | None = None
+    G: TNFRGraph,
+    func: DeltaNFRHook,
+    *,
+    name: str | None = None,
+    note: str | None = None,
 ) -> None:
     """Set a stable hook to compute ΔNFR.
 
@@ -1993,17 +2003,19 @@ def set_delta_nfr_hook(
     ``G.graph`` is updated accordingly.
     """
 
-    def _wrapped(graph, *args, **kwargs):
+    def _wrapped(graph: TNFRGraph, *args: Any, **kwargs: Any) -> None:
         if "n_jobs" in kwargs:
             try:
-                return func(graph, *args, **kwargs)
+                func(graph, *args, **kwargs)
+                return
             except TypeError as exc:
                 if "n_jobs" not in str(exc):
                     raise
                 kwargs = dict(kwargs)
                 kwargs.pop("n_jobs", None)
-                return func(graph, *args, **kwargs)
-        return func(graph, *args, **kwargs)
+                func(graph, *args, **kwargs)
+                return
+        func(graph, *args, **kwargs)
 
     _wrapped.__name__ = getattr(func, "__name__", "custom_dnfr")
     _wrapped.__doc__ = getattr(func, "__doc__", _wrapped.__doc__)
@@ -2021,18 +2033,21 @@ def set_delta_nfr_hook(
 
 
 def _dnfr_hook_chunk_worker(
-    G,
-    node_ids: list[Any],
-    grad_items: tuple[tuple[str, Callable[[Any, Any, Any], float]], ...],
-    weights: dict[str, float],
-):
+    G: TNFRGraph,
+    node_ids: Sequence[NodeId],
+    grad_items: tuple[
+        tuple[str, Callable[[TNFRGraph, NodeId, Mapping[str, Any]], float]],
+        ...,
+    ],
+    weights: Mapping[str, float],
+) -> list[tuple[NodeId, float]]:
     """Compute weighted gradients for ``node_ids``.
 
     The helper is defined at module level so it can be pickled by
     :class:`concurrent.futures.ProcessPoolExecutor`.
     """
 
-    results: list[tuple[Any, float]] = []
+    results: list[tuple[NodeId, float]] = []
     for node in node_ids:
         nd = G.nodes[node]
         total = 0.0
@@ -2045,10 +2060,10 @@ def _dnfr_hook_chunk_worker(
 
 
 def _apply_dnfr_hook(
-    G,
-    grads: dict[str, Callable[[Any, Any, Any], float]],
+    G: TNFRGraph,
+    grads: Mapping[str, Callable[[TNFRGraph, NodeId, Mapping[str, Any]], float]],
     *,
-    weights: dict[str, float],
+    weights: Mapping[str, float],
     hook_name: str,
     note: str | None = None,
     n_jobs: int | None = None,
@@ -2075,12 +2090,12 @@ def _apply_dnfr_hook(
         bulk.
     """
 
-    nodes_data = list(G.nodes(data=True))
+    nodes_data: list[tuple[NodeId, Mapping[str, Any]]] = list(G.nodes(data=True))
     if not nodes_data:
         _write_dnfr_metadata(G, weights=weights, hook_name=hook_name, note=note)
         return
 
-    np_module = get_numpy()
+    np_module = cast(ModuleType | None, get_numpy())
     if np_module is not None:
         totals = np_module.zeros(len(nodes_data), dtype=float)
         for name, func in grads.items():
@@ -2102,7 +2117,7 @@ def _apply_dnfr_hook(
         return
 
     effective_jobs = _resolve_parallel_jobs(n_jobs, len(nodes_data))
-    results: list[tuple[Any, float]] | None = None
+    results: list[tuple[NodeId, float]] | None = None
     if effective_jobs:
         grad_items = tuple(grads.items())
         try:
@@ -2112,10 +2127,10 @@ def _apply_dnfr_hook(
         except Exception:
             effective_jobs = None
         else:
-            chunk_results: list[tuple[Any, float]] = []
+            chunk_results: list[tuple[NodeId, float]] = []
             with ProcessPoolExecutor(max_workers=effective_jobs) as executor:
                 futures = []
-                node_ids = [n for n, _ in nodes_data]
+                node_ids: list[NodeId] = [n for n, _ in nodes_data]
                 for start, end in _iter_chunk_offsets(len(node_ids), effective_jobs):
                     if start == end:
                         continue
@@ -2142,8 +2157,8 @@ def _apply_dnfr_hook(
                     total += w * float(func(G, n, nd))
             results.append((n, total))
 
-    for node, value in results:
-        set_dnfr(G, node, float(value))
+        for node, value in results:
+            set_dnfr(G, node, float(value))
 
     _write_dnfr_metadata(G, weights=weights, hook_name=hook_name, note=note)
 
@@ -2202,7 +2217,7 @@ class _NeighborAverageGradient:
         return total / len(neighbors) - val
 
 
-def dnfr_phase_only(G, *, n_jobs: int | None = None) -> None:
+def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     """Example: ΔNFR from phase only (Kuramoto-like).
 
     Parameters
@@ -2226,7 +2241,7 @@ def dnfr_phase_only(G, *, n_jobs: int | None = None) -> None:
     )
 
 
-def dnfr_epi_vf_mixed(G, *, n_jobs: int | None = None) -> None:
+def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     """Example: ΔNFR without phase, mixing EPI and νf.
 
     Parameters
@@ -2254,7 +2269,7 @@ def dnfr_epi_vf_mixed(G, *, n_jobs: int | None = None) -> None:
     )
 
 
-def dnfr_laplacian(G, *, n_jobs: int | None = None) -> None:
+def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     """Explicit topological gradient using Laplacian over EPI and νf.
 
     Parameters

@@ -11,6 +11,7 @@ from .dynamics import (
     set_delta_nfr_hook,
     dnfr_epi_vf_mixed,
 )
+from .types import DeltaNFRHook, NodeId, TNFRGraph
 from .operators.definitions import (
     Operador,
     Emision,
@@ -42,9 +43,9 @@ def create_nfr(
     epi: float = 0.0,
     vf: float = 1.0,
     theta: float = 0.0,
-    graph: nx.Graph | None = None,
-    dnfr_hook=dnfr_epi_vf_mixed,
-) -> tuple[nx.Graph, str]:
+    graph: TNFRGraph | None = None,
+    dnfr_hook: DeltaNFRHook = dnfr_epi_vf_mixed,
+) -> tuple[TNFRGraph, str]:
     """Create a graph with an initialised NFR node.
 
     Returns the tuple ``(G, name)`` for convenience.
@@ -84,7 +85,7 @@ __all__ = (
 )
 
 
-def run_sequence(G: nx.Graph, node, ops: Iterable[Operador]) -> None:
+def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operador]) -> None:
     """Execute a sequence of operators on ``node`` after validation."""
 
     compute = G.graph.get("compute_delta_nfr")
