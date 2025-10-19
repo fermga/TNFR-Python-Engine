@@ -4,6 +4,7 @@ from __future__ import annotations
 import pytest
 
 import networkx as nx
+from tnfr.alias import set_attr
 from tnfr.constants import inject_defaults
 from tnfr.initialization import init_node_attrs
 from tnfr.dynamics import update_epi_via_nodal_equation, validate_canon
@@ -59,10 +60,21 @@ def test_update_epi_uses_shared_gamma_builder(method, monkeypatch):
     original_builder = integrators_mod._build_gamma_increments
     calls: list[tuple[float, float, str]] = []
 
-    def spy_builder(G_arg, dt_step_arg, t_local_arg, *, method: str, **kwargs):
+    def spy_builder(
+        G_arg,
+        dt_step_arg,
+        t_local_arg,
+        *,
+        method: str,
+        n_jobs: int | None = None,
+    ):
         calls.append((dt_step_arg, t_local_arg, method))
         return original_builder(
-            G_arg, dt_step_arg, t_local_arg, method=method, **kwargs
+            G_arg,
+            dt_step_arg,
+            t_local_arg,
+            method=method,
+            n_jobs=n_jobs,
         )
 
     monkeypatch.setattr(
@@ -104,56 +116,61 @@ def test_update_epi_skips_eval_gamma_when_none(method, monkeypatch):
     assert calls == 0
 
 
-def _build_increment_graph():
-    G = nx.Graph()
-    node_data = {
-        "b": (1.0, 0.5),
-        "a": (1.5, -0.2),
-        "c": (2.0, 1.1),
-    }
-    for node, (vf, dnfr) in node_data.items():
-        G.add_node(node)
-        nd = G.nodes[node]
-        nd["νf"] = vf
-        nd["ΔNFR"] = dnfr
-    return G, node_data
-
-
 @pytest.mark.parametrize("method", ["euler", "rk4"])
-@pytest.mark.parametrize("use_numpy", [True, False])
-def test_collect_nodal_increments_matches_expected(method, use_numpy, monkeypatch):
-    if use_numpy:
-        np = pytest.importorskip("numpy")
+def test_apply_increments_vectorised(monkeypatch, method):
+    np_mod = pytest.importorskip("numpy")
+
+    G = nx.path_graph(3)
+    epi_start = [0.5, -0.2, 1.3]
+    dEPI_prev = [0.1, -0.05, 0.2]
+    for idx, node in enumerate(G.nodes):
+        nd = G.nodes[node]
+        set_attr(nd, integrators_mod.ALIAS_EPI, epi_start[idx])
+        set_attr(nd, integrators_mod.ALIAS_DEPI, dEPI_prev[idx])
+
+    dt_step = 0.25
+    if method == "rk4":
+        staged = {
+            0: (0.1, 0.2, 0.3, 0.4),
+            1: (0.0, 0.1, 0.2, 0.3),
+            2: (-0.2, -0.1, 0.0, 0.1),
+        }
     else:
-        np = None
+        staged = {
+            0: (0.4,),
+            1: (-0.2,),
+            2: (0.1,),
+        }
 
-    G, node_data = _build_increment_graph()
-    nodes = list(G.nodes())
+    def fail_if_called(*args, **kwargs):
+        raise AssertionError("chunk helper should not run when numpy is available")
 
-    if method == "euler":
-        gamma_maps = ({"b": 0.1, "c": -0.4},)
-    else:
-        gamma_maps = (
-            {"b": 0.1, "a": -0.2, "c": 0.3},
-            {"a": 0.5, "c": 0.2},
-            {"b": -0.3},
-            {"b": 0.4, "c": -0.1},
-        )
+    monkeypatch.setattr(integrators_mod, "get_numpy", lambda: np_mod)
+    monkeypatch.setattr(integrators_mod, "_apply_increment_chunk", fail_if_called)
 
-    base = {n: vf * dnfr for n, (vf, dnfr) in node_data.items()}
-    expected = {}
-    for node in nodes:
-        contributions = []
-        for gm in gamma_maps:
-            contributions.append(base[node] + gm.get(node, 0.0))
-        expected[node] = tuple(contributions)
+    results = integrators_mod._apply_increments(
+        G,
+        dt_step,
+        staged,
+        method=method,
+        n_jobs=4,
+    )
 
-    with monkeypatch.context() as ctx:
-        ctx.setattr(integrators_mod, "get_numpy", lambda: np)
-        result = integrators_mod._collect_nodal_increments(
-            G, gamma_maps, method=method
-        )
+    expected: dict[int, tuple[float, float, float]] = {}
+    for idx, node in enumerate(G.nodes):
+        ks = staged[node]
+        prev = dEPI_prev[idx]
+        base = epi_start[idx]
+        if method == "rk4":
+            k1, k2, k3, k4 = ks
+            epi = base + (dt_step / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
+            dEPI_dt = k4
+        else:
+            (k1,) = ks
+            epi = base + dt_step * k1
+            dEPI_dt = k1
+        d2epi = (dEPI_dt - prev) / dt_step if dt_step != 0 else 0.0
+        expected[node] = (epi, dEPI_dt, d2epi)
 
-    assert list(result.keys()) == nodes
-    for node, values in result.items():
-        assert values == pytest.approx(expected[node])
+    for node, values in expected.items():
+        assert results[node] == pytest.approx(values)
