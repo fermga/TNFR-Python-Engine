@@ -12,9 +12,9 @@ import importlib
 import logging
 import threading
 import warnings
+import weakref
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from functools import lru_cache
 from typing import Any, Callable, Hashable, Literal, Mapping
 
 __all__ = (
@@ -212,10 +212,101 @@ class ImportRegistry:
 
 
 # Successful imports are cached so lazy proxies can resolve once and later
-# requests return the concrete object without recreating the proxy. ``dict`` is
-# sufficient because the size is naturally bounded by ``_import_cached``'s LRU
-# cache and ``cached_import.cache_clear`` resets both structures in sync.
-_RESOLVED_IMPORTS: dict[str, Any] = {}
+# requests return the concrete object without recreating the proxy. The cache
+# stores weak references whenever possible so unused imports can be collected
+# after external references disappear.
+
+
+class _CacheEntry:
+    """Container storing either a weak or strong reference to a value."""
+
+    __slots__ = ("_kind", "_value")
+
+    def __init__(
+        self,
+        value: Any,
+        *,
+        key: str,
+        remover: Callable[[str, weakref.ReferenceType[Any]], None],
+    ) -> None:
+        try:
+            reference = weakref.ref(value, lambda ref, key=key: remover(key, ref))
+        except TypeError:
+            self._kind = "strong"
+            self._value = value
+        else:
+            self._kind = "weak"
+            self._value = reference
+
+    def get(self) -> Any | None:
+        if self._kind == "weak":
+            return self._value()
+        return self._value
+
+    def matches(self, ref: weakref.ReferenceType[Any]) -> bool:
+        return self._kind == "weak" and self._value is ref
+
+
+_CACHE_LOCK = threading.Lock()
+_SUCCESS_CACHE: OrderedDict[str, _CacheEntry] = OrderedDict()
+_FAILURE_CACHE: OrderedDict[str, Exception] = OrderedDict()
+
+
+def _remove_success_entry(key: str, ref: weakref.ReferenceType[Any]) -> None:
+    with _CACHE_LOCK:
+        entry = _SUCCESS_CACHE.get(key)
+        if entry is not None and entry.matches(ref):
+            _SUCCESS_CACHE.pop(key, None)
+
+
+def _trim_cache(cache: OrderedDict[str, Any]) -> None:
+    while len(cache) > _DEFAULT_CACHE_SIZE:
+        cache.popitem(last=False)
+
+
+def _get_success(key: str) -> Any | None:
+    with _CACHE_LOCK:
+        entry = _SUCCESS_CACHE.get(key)
+        if entry is None:
+            return None
+        value = entry.get()
+        if value is None:
+            _SUCCESS_CACHE.pop(key, None)
+            return None
+        _SUCCESS_CACHE.move_to_end(key)
+        return value
+
+
+def _store_success(key: str, value: Any) -> None:
+    entry = _CacheEntry(value, key=key, remover=_remove_success_entry)
+    with _CACHE_LOCK:
+        _SUCCESS_CACHE[key] = entry
+        _SUCCESS_CACHE.move_to_end(key)
+        _FAILURE_CACHE.pop(key, None)
+        _trim_cache(_SUCCESS_CACHE)
+
+
+def _get_failure(key: str) -> Exception | None:
+    with _CACHE_LOCK:
+        exc = _FAILURE_CACHE.get(key)
+        if exc is None:
+            return None
+        _FAILURE_CACHE.move_to_end(key)
+        return exc
+
+
+def _store_failure(key: str, exc: Exception) -> None:
+    with _CACHE_LOCK:
+        _FAILURE_CACHE[key] = exc
+        _FAILURE_CACHE.move_to_end(key)
+        _SUCCESS_CACHE.pop(key, None)
+        _trim_cache(_FAILURE_CACHE)
+
+
+def _clear_import_cache() -> None:
+    with _CACHE_LOCK:
+        _SUCCESS_CACHE.clear()
+        _FAILURE_CACHE.clear()
 
 
 _IMPORT_STATE = ImportRegistry()
@@ -229,18 +320,29 @@ def _reset_import_state() -> None:
     global _IMPORT_STATE, IMPORT_LOG
     _IMPORT_STATE = ImportRegistry()
     IMPORT_LOG = _IMPORT_STATE
-    _RESOLVED_IMPORTS.clear()
+    _clear_import_cache()
 
 
-@lru_cache(maxsize=_DEFAULT_CACHE_SIZE)
 def _import_cached(module_name: str, attr: str | None) -> tuple[bool, Any]:
     """Import ``module_name`` (and optional ``attr``) capturing failures."""
+
+    key = _import_key(module_name, attr)
+    cached_value = _get_success(key)
+    if cached_value is not None:
+        return True, cached_value
+
+    cached_failure = _get_failure(key)
+    if cached_failure is not None:
+        return False, cached_failure
 
     try:
         module = importlib.import_module(module_name)
         obj = getattr(module, attr) if attr else module
     except (ImportError, AttributeError) as exc:
+        _store_failure(key, exc)
         return False, exc
+
+    _store_success(key, obj)
     return True, obj
 
 
@@ -354,10 +456,8 @@ def _resolve_import(
         _IMPORT_STATE.discard(key)
         if attr is not None:
             _IMPORT_STATE.discard(module_name)
-        _RESOLVED_IMPORTS[key] = result
         return result
 
-    _RESOLVED_IMPORTS.pop(key, None)
     exc: Exception = result
     include_module = isinstance(exc, ImportError)
     _warn_failure(module_name, attr, exc, emit=emit)
@@ -385,8 +485,9 @@ def cached_import(
     key = _import_key(module_name, attr)
 
     if lazy and fallback is None:
-        if key in _RESOLVED_IMPORTS:
-            return _RESOLVED_IMPORTS[key]
+        cached_obj = _get_success(key)
+        if cached_obj is not None:
+            return cached_obj
         return LazyImportProxy(module_name, attr, emit)
 
     return _resolve_import(module_name, attr, emit, fallback)
@@ -395,8 +496,7 @@ def cached_import(
 def _clear_default_cache() -> None:
     global _NP_MISSING_LOGGED
 
-    _import_cached.cache_clear()
-    _RESOLVED_IMPORTS.clear()
+    _clear_import_cache()
     _NP_MISSING_LOGGED = False
 
 
@@ -433,3 +533,5 @@ def prune_failed_imports() -> None:
     """Clear the registry of recorded import failures and warnings."""
 
     _IMPORT_STATE.clear()
+    with _CACHE_LOCK:
+        _FAILURE_CACHE.clear()
