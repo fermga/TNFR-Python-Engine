@@ -3,7 +3,7 @@ from __future__ import annotations
 import inspect
 import math
 from collections import deque
-from collections.abc import Mapping, MutableMapping, MutableSequence, Sequence
+from collections.abc import Iterator, Mapping, MutableMapping, MutableSequence, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from operator import itemgetter
@@ -1113,7 +1113,9 @@ def _collect_selector_metrics(
             dnfr_seq: list[float] = []
             accel_seq: list[float] = []
 
-            def _args_iter():
+            def _args_iter() -> Iterator[
+                tuple[list[float], list[float], list[float], float, float]
+            ]:
                 for start, end in chunk_bounds:
                     yield (
                         si_values[start:end],
@@ -1157,7 +1159,9 @@ def _compute_default_base_choices(
     return base
 
 
-def _param_base_worker(args: tuple[dict[str, float], list[tuple[Any, tuple[float, float, float]]]]):
+def _param_base_worker(
+    args: tuple[dict[str, float], list[tuple[Any, tuple[float, float, float]]]]
+) -> list[tuple[Any, str]]:
     """Worker used to evaluate base rules for the parametric selector."""
     thresholds, chunk = args
     return [
