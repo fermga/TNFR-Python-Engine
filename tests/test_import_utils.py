@@ -65,6 +65,62 @@ def test_cached_import_uses_cache(monkeypatch, reset_cached_import):
     assert calls["n"] == 1
 
 
+# -- Lazy import handling -------------------------------------------------------------------
+
+
+def test_cached_import_lazy_defers_until_used(monkeypatch, reset_cached_import):
+    reset_cached_import()
+    calls = {"n": 0}
+    module = types.SimpleNamespace(value=42)
+
+    def fake_import(_name):
+        calls["n"] += 1
+        return module
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+    proxy = cached_import("fake_mod", lazy=True)
+    assert isinstance(proxy, import_utils.LazyImportProxy)
+    assert calls["n"] == 0
+    assert proxy.value == 42
+    assert calls["n"] == 1
+    again = cached_import("fake_mod", lazy=True)
+    assert again is module
+    assert cached_import("fake_mod") is module
+
+
+def test_cached_import_lazy_records_failure_on_use(monkeypatch, reset_cached_import):
+    reset_cached_import()
+    calls = {"n": 0}
+
+    def fake_import(_name):
+        calls["n"] += 1
+        raise ImportError("boom")
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+    proxy = cached_import("fake_mod", lazy=True)
+    assert calls["n"] == 0
+    assert isinstance(proxy, import_utils.LazyImportProxy)
+    assert bool(proxy) is False
+    assert calls["n"] == 1
+    with import_utils._IMPORT_STATE.lock:
+        assert "fake_mod" in import_utils._IMPORT_STATE.failed
+
+
+def test_cached_import_lazy_honours_fallback(monkeypatch, reset_cached_import):
+    reset_cached_import()
+    calls = {"n": 0}
+
+    def fake_import(_name):
+        calls["n"] += 1
+        raise ImportError("boom")
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+    fallback = object()
+    result = cached_import("fake_mod", fallback=fallback, lazy=True)
+    assert result is fallback
+    assert calls["n"] == 1
+
+
 # -- Failure recovery and logging -----------------------------------------------------------
 
 

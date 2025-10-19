@@ -20,6 +20,7 @@ from typing import Any, Callable, Hashable, Literal, Mapping
 __all__ = (
     "_configure_root",
     "cached_import",
+    "LazyImportProxy",
     "get_logger",
     "get_numpy",
     "get_nodonx",
@@ -155,6 +156,10 @@ _FAILED_IMPORT_LIMIT = 128
 _DEFAULT_CACHE_SIZE = 128
 
 
+def _import_key(module_name: str, attr: str | None) -> str:
+    return module_name if attr is None else f"{module_name}.{attr}"
+
+
 @dataclass(slots=True)
 class ImportRegistry:
     """Process-wide registry tracking failed imports and emitted warnings."""
@@ -206,6 +211,13 @@ class ImportRegistry:
             return key in self.failed
 
 
+# Successful imports are cached so lazy proxies can resolve once and later
+# requests return the concrete object without recreating the proxy. ``dict`` is
+# sufficient because the size is naturally bounded by ``_import_cached``'s LRU
+# cache and ``cached_import.cache_clear`` resets both structures in sync.
+_RESOLVED_IMPORTS: dict[str, Any] = {}
+
+
 _IMPORT_STATE = ImportRegistry()
 # Public alias to ease direct introspection in tests and diagnostics.
 IMPORT_LOG = _IMPORT_STATE
@@ -217,6 +229,7 @@ def _reset_import_state() -> None:
     global _IMPORT_STATE, IMPORT_LOG
     _IMPORT_STATE = ImportRegistry()
     IMPORT_LOG = _IMPORT_STATE
+    _RESOLVED_IMPORTS.clear()
 
 
 @lru_cache(maxsize=_DEFAULT_CACHE_SIZE)
@@ -276,33 +289,114 @@ def _warn_failure(
         logger.debug(msg)
 
 
-def cached_import(
-    module_name: str,
-    attr: str | None = None,
-    *,
-    fallback: Any | None = None,
-    emit: Literal["warn", "log", "both"] = "warn",
-) -> Any | None:
-    """Import ``module_name`` (and optional ``attr``) with caching and fallback."""
+class LazyImportProxy:
+    """Descriptor that defers imports until first use."""
 
-    key = module_name if attr is None else f"{module_name}.{attr}"
+    __slots__ = ("_module", "_attr", "_emit", "_target", "_lock", "_key")
+
+    _UNRESOLVED = object()
+
+    def __init__(
+        self,
+        module_name: str,
+        attr: str | None,
+        emit: Literal["warn", "log", "both"],
+    ) -> None:
+        self._module = module_name
+        self._attr = attr
+        self._emit = emit
+        self._target: Any = self._UNRESOLVED
+        self._lock = threading.Lock()
+        self._key = _import_key(module_name, attr)
+
+    def _resolve(self) -> Any:
+        target = self._target
+        if target is not self._UNRESOLVED:
+            return target
+        with self._lock:
+            target = self._target
+            if target is self._UNRESOLVED:
+                target = _resolve_import(self._module, self._attr, self._emit, None)
+                self._target = target
+        return target
+
+    def __getattr__(self, item: str) -> Any:
+        return getattr(self._resolve(), item)
+
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        return self._resolve()(*args, **kwargs)
+
+    def __bool__(self) -> bool:
+        return bool(self._resolve())
+
+    def __repr__(self) -> str:  # pragma: no cover - representation helper
+        target = self._target
+        if target is self._UNRESOLVED:
+            return f"<LazyImportProxy pending={self._key!r}>"
+        return repr(target)
+
+    def __str__(self) -> str:  # pragma: no cover - representation helper
+        return str(self._resolve())
+
+    def __iter__(self):  # pragma: no cover - passthrough helper
+        return iter(self._resolve())
+
+
+def _resolve_import(
+    module_name: str,
+    attr: str | None,
+    emit: Literal["warn", "log", "both"],
+    fallback: Any | None,
+) -> Any | None:
+    key = _import_key(module_name, attr)
     success, result = _import_cached(module_name, attr)
     if success:
         _IMPORT_STATE.discard(key)
         if attr is not None:
             _IMPORT_STATE.discard(module_name)
+        _RESOLVED_IMPORTS[key] = result
         return result
-    exc = result
+
+    _RESOLVED_IMPORTS.pop(key, None)
+    exc: Exception = result
     include_module = isinstance(exc, ImportError)
     _warn_failure(module_name, attr, exc, emit=emit)
     _IMPORT_STATE.record_failure(key, module=module_name if include_module else None)
     return fallback
 
 
+def cached_import(
+    module_name: str,
+    attr: str | None = None,
+    *,
+    fallback: Any | None = None,
+    emit: Literal["warn", "log", "both"] = "warn",
+    lazy: bool = False,
+) -> Any | None:
+    """Import ``module_name`` (and optional ``attr``) with caching and fallback.
+
+    When ``lazy`` is ``True`` the import is deferred until the returned proxy is
+    first used. The proxy integrates with the shared cache so subsequent calls
+    return the resolved object directly. Passing ``fallback`` disables lazy
+    importing because a concrete success or failure value must be returned
+    immediately.
+    """
+
+    key = _import_key(module_name, attr)
+
+    if lazy and fallback is None:
+        if key in _RESOLVED_IMPORTS:
+            return _RESOLVED_IMPORTS[key]
+        return LazyImportProxy(module_name, attr, emit)
+
+    return _resolve_import(module_name, attr, emit, fallback)
+
+
 def _clear_default_cache() -> None:
     global _NP_MISSING_LOGGED
 
     _import_cached.cache_clear()
+    _RESOLVED_IMPORTS.clear()
     _NP_MISSING_LOGGED = False
 
 
