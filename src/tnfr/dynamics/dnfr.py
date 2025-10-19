@@ -23,7 +23,7 @@ from ..alias import (
 from ..constants import DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import angle_diff
 from ..metrics.common import merge_and_normalize_weights
-from ..metrics.trig import neighbor_phase_mean
+from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import compute_theta_trig
 from ..utils import cached_node_list, cached_nodes_and_A, get_numpy, normalize_weights
 ALIAS_THETA = get_aliases("THETA")
@@ -1986,10 +1986,29 @@ def set_delta_nfr_hook(
     G, func, *, name: str | None = None, note: str | None = None
 ) -> None:
     """Set a stable hook to compute ΔNFR.
-    Required signature: ``func(G) -> None`` and it must write ``ALIAS_DNFR``
-    in each node. Basic metadata in ``G.graph`` is updated accordingly.
+
+    The callable should accept ``(G, *[, n_jobs])`` and is responsible for
+    writing ``ALIAS_DNFR`` in each node. ``n_jobs`` is optional and ignored by
+    hooks that do not support parallel execution. Basic metadata in
+    ``G.graph`` is updated accordingly.
     """
-    G.graph["compute_delta_nfr"] = func
+
+    def _wrapped(graph, *args, **kwargs):
+        if "n_jobs" in kwargs:
+            try:
+                return func(graph, *args, **kwargs)
+            except TypeError as exc:
+                if "n_jobs" not in str(exc):
+                    raise
+                kwargs = dict(kwargs)
+                kwargs.pop("n_jobs", None)
+                return func(graph, *args, **kwargs)
+        return func(graph, *args, **kwargs)
+
+    _wrapped.__name__ = getattr(func, "__name__", "custom_dnfr")
+    _wrapped.__doc__ = getattr(func, "__doc__", _wrapped.__doc__)
+
+    G.graph["compute_delta_nfr"] = _wrapped
     G.graph["_dnfr_hook_name"] = str(
         name or getattr(func, "__name__", "custom_dnfr")
     )
@@ -2001,114 +2020,269 @@ def set_delta_nfr_hook(
         G.graph["_DNFR_META"] = meta
 
 
+def _dnfr_hook_chunk_worker(
+    G,
+    node_ids: list[Any],
+    grad_items: tuple[tuple[str, Callable[[Any, Any, Any], float]], ...],
+    weights: dict[str, float],
+):
+    """Compute weighted gradients for ``node_ids``.
+
+    The helper is defined at module level so it can be pickled by
+    :class:`concurrent.futures.ProcessPoolExecutor`.
+    """
+
+    results: list[tuple[Any, float]] = []
+    for node in node_ids:
+        nd = G.nodes[node]
+        total = 0.0
+        for name, func in grad_items:
+            w = weights.get(name, 0.0)
+            if w:
+                total += w * float(func(G, node, nd))
+        results.append((node, total))
+    return results
+
+
 def _apply_dnfr_hook(
     G,
-    grads: dict[str, Callable[[Any, Any], float]],
+    grads: dict[str, Callable[[Any, Any, Any], float]],
     *,
     weights: dict[str, float],
     hook_name: str,
     note: str | None = None,
+    n_jobs: int | None = None,
 ) -> None:
     """Generic helper to compute and store ΔNFR using ``grads``.
 
-    ``grads`` maps component names to functions ``(G, n, nd) -> float``.
-    Each gradient is multiplied by its corresponding weight from ``weights``.
-    Metadata is recorded through :func:`_write_dnfr_metadata`.
+    Parameters
+    ----------
+    G : nx.Graph
+        Graph whose nodes will receive the ΔNFR update.
+    grads : dict
+        Mapping from component names to callables with signature
+        ``(G, node, data) -> float`` returning the gradient contribution.
+    weights : dict
+        Weight per component; missing entries default to ``0``.
+    hook_name : str
+        Friendly identifier stored in ``G.graph`` metadata.
+    note : str | None, optional
+        Additional documentation recorded next to the hook metadata.
+    n_jobs : int | None, optional
+        Optional worker count for the pure-Python execution path. When NumPy
+        is available the helper always prefers the vectorised implementation
+        and ignores ``n_jobs`` because the computation already happens in
+        bulk.
     """
 
-    for n, nd in G.nodes(data=True):
-        total = 0.0
+    nodes_data = list(G.nodes(data=True))
+    if not nodes_data:
+        _write_dnfr_metadata(G, weights=weights, hook_name=hook_name, note=note)
+        return
+
+    np_module = get_numpy()
+    if np_module is not None:
+        totals = np_module.zeros(len(nodes_data), dtype=float)
         for name, func in grads.items():
-            w = weights.get(name, 0.0)
-            if w:
-                total += w * func(G, n, nd)
-        set_dnfr(G, n, total)
+            w = float(weights.get(name, 0.0))
+            if w == 0.0:
+                continue
+            values = np_module.fromiter(
+                (float(func(G, n, nd)) for n, nd in nodes_data),
+                dtype=float,
+                count=len(nodes_data),
+            )
+            if w == 1.0:
+                np_module.add(totals, values, out=totals)
+            else:
+                np_module.add(totals, values * w, out=totals)
+        for idx, (n, _) in enumerate(nodes_data):
+            set_dnfr(G, n, float(totals[idx]))
+        _write_dnfr_metadata(G, weights=weights, hook_name=hook_name, note=note)
+        return
+
+    effective_jobs = _resolve_parallel_jobs(n_jobs, len(nodes_data))
+    results: list[tuple[Any, float]] | None = None
+    if effective_jobs:
+        grad_items = tuple(grads.items())
+        try:
+            import pickle
+
+            pickle.dumps((grad_items, weights, G), protocol=pickle.HIGHEST_PROTOCOL)
+        except Exception:
+            effective_jobs = None
+        else:
+            chunk_results: list[tuple[Any, float]] = []
+            with ProcessPoolExecutor(max_workers=effective_jobs) as executor:
+                futures = []
+                node_ids = [n for n, _ in nodes_data]
+                for start, end in _iter_chunk_offsets(len(node_ids), effective_jobs):
+                    if start == end:
+                        continue
+                    futures.append(
+                        executor.submit(
+                            _dnfr_hook_chunk_worker,
+                            G,
+                            node_ids[start:end],
+                            grad_items,
+                            weights,
+                        )
+                    )
+                for future in futures:
+                    chunk_results.extend(future.result())
+            results = chunk_results
+
+    if results is None:
+        results = []
+        for n, nd in nodes_data:
+            total = 0.0
+            for name, func in grads.items():
+                w = weights.get(name, 0.0)
+                if w:
+                    total += w * float(func(G, n, nd))
+            results.append((n, total))
+
+    for node, value in results:
+        set_dnfr(G, node, float(value))
 
     _write_dnfr_metadata(G, weights=weights, hook_name=hook_name, note=note)
 
 
 # --- Hooks de ejemplo (opcionales) ---
-def dnfr_phase_only(G) -> None:
-    """Example: ΔNFR from phase only (Kuramoto-like)."""
 
-    def g_phase(G, n, nd):
+
+class _PhaseGradient:
+    """Callable computing the phase contribution using cached trig values."""
+
+    __slots__ = ("cos", "sin")
+
+    def __init__(self, cos_map: dict[Any, float], sin_map: dict[Any, float]):
+        self.cos = cos_map
+        self.sin = sin_map
+
+    def __call__(self, G, n, nd):
         th_i = get_attr(nd, ALIAS_THETA, 0.0)
-        th_bar = neighbor_phase_mean(G, n)
+        neighbors = list(G.neighbors(n))
+        if neighbors:
+            th_bar = neighbor_phase_mean_list(
+                neighbors,
+                cos_th=self.cos,
+                sin_th=self.sin,
+                fallback=th_i,
+            )
+        else:
+            th_bar = th_i
         return -angle_diff(th_i, th_bar) / math.pi
 
+
+class _NeighborAverageGradient:
+    """Callable computing neighbour averages for scalar attributes."""
+
+    __slots__ = ("alias", "values")
+
+    def __init__(self, alias: tuple[str, ...], values: dict[Any, float]):
+        self.alias = alias
+        self.values = values
+
+    def __call__(self, G, n, nd):
+        val = self.values.get(n)
+        if val is None:
+            val = float(get_attr(nd, self.alias, 0.0))
+            self.values[n] = val
+        neighbors = list(G.neighbors(n))
+        if not neighbors:
+            return 0.0
+        total = 0.0
+        for neigh in neighbors:
+            neigh_val = self.values.get(neigh)
+            if neigh_val is None:
+                neigh_val = float(get_attr(G.nodes[neigh], self.alias, val))
+                self.values[neigh] = neigh_val
+            total += neigh_val
+        return total / len(neighbors) - val
+
+
+def dnfr_phase_only(G, *, n_jobs: int | None = None) -> None:
+    """Example: ΔNFR from phase only (Kuramoto-like).
+
+    Parameters
+    ----------
+    G : nx.Graph
+        Graph whose nodes receive the ΔNFR assignment.
+    n_jobs : int | None, optional
+        Parallel worker hint used when NumPy is unavailable. Defaults to
+        serial execution.
+    """
+
+    trig = compute_theta_trig(G.nodes(data=True))
+    g_phase = _PhaseGradient(trig.cos, trig.sin)
     _apply_dnfr_hook(
         G,
         {"phase": g_phase},
         weights={"phase": 1.0},
         hook_name="dnfr_phase_only",
         note="Hook de ejemplo.",
+        n_jobs=n_jobs,
     )
 
 
-def dnfr_epi_vf_mixed(G) -> None:
-    """Example: ΔNFR without phase, mixing EPI and νf."""
+def dnfr_epi_vf_mixed(G, *, n_jobs: int | None = None) -> None:
+    """Example: ΔNFR without phase, mixing EPI and νf.
 
-    def g_epi(G, n, nd):
-        epi_i = get_attr(nd, ALIAS_EPI, 0.0)
-        neighbors = list(G.neighbors(n))
-        if neighbors:
-            total = 0.0
-            for v in neighbors:
-                total += float(get_attr(G.nodes[v], ALIAS_EPI, epi_i))
-            epi_bar = total / len(neighbors)
-        else:
-            epi_bar = float(epi_i)
-        return epi_bar - epi_i
+    Parameters
+    ----------
+    G : nx.Graph
+        Graph whose nodes receive the ΔNFR assignment.
+    n_jobs : int | None, optional
+        Parallel worker hint used when NumPy is unavailable. Defaults to
+        serial execution.
+    """
 
-    def g_vf(G, n, nd):
-        vf_i = get_attr(nd, ALIAS_VF, 0.0)
-        neighbors = list(G.neighbors(n))
-        if neighbors:
-            total = 0.0
-            for v in neighbors:
-                total += float(get_attr(G.nodes[v], ALIAS_VF, vf_i))
-            vf_bar = total / len(neighbors)
-        else:
-            vf_bar = float(vf_i)
-        return vf_bar - vf_i
-
+    epi_values = {n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)}
+    vf_values = {n: float(get_attr(nd, ALIAS_VF, 0.0)) for n, nd in G.nodes(data=True)}
+    grads = {
+        "epi": _NeighborAverageGradient(ALIAS_EPI, epi_values),
+        "vf": _NeighborAverageGradient(ALIAS_VF, vf_values),
+    }
     _apply_dnfr_hook(
         G,
-        {"epi": g_epi, "vf": g_vf},
+        grads,
         weights={"phase": 0.0, "epi": 0.5, "vf": 0.5},
         hook_name="dnfr_epi_vf_mixed",
         note="Hook de ejemplo.",
+        n_jobs=n_jobs,
     )
 
 
-def dnfr_laplacian(G) -> None:
-    """Explicit topological gradient using Laplacian over EPI and νf."""
+def dnfr_laplacian(G, *, n_jobs: int | None = None) -> None:
+    """Explicit topological gradient using Laplacian over EPI and νf.
+
+    Parameters
+    ----------
+    G : nx.Graph
+        Graph whose nodes receive the ΔNFR assignment.
+    n_jobs : int | None, optional
+        Parallel worker hint used when NumPy is unavailable. Defaults to
+        serial execution.
+    """
+
     weights_cfg = get_param(G, "DNFR_WEIGHTS")
     wE = float(weights_cfg.get("epi", DEFAULTS["DNFR_WEIGHTS"]["epi"]))
     wV = float(weights_cfg.get("vf", DEFAULTS["DNFR_WEIGHTS"]["vf"]))
 
-    def g_epi(G, n, nd):
-        epi = get_attr(nd, ALIAS_EPI, 0.0)
-        neigh = list(G.neighbors(n))
-        deg = len(neigh) or 1
-        epi_bar = (
-            sum(get_attr(G.nodes[v], ALIAS_EPI, epi) for v in neigh) / deg
-        )
-        return epi_bar - epi
-
-    def g_vf(G, n, nd):
-        vf = get_attr(nd, ALIAS_VF, 0.0)
-        neigh = list(G.neighbors(n))
-        deg = len(neigh) or 1
-        vf_bar = sum(get_attr(G.nodes[v], ALIAS_VF, vf) for v in neigh) / deg
-        return vf_bar - vf
-
+    epi_values = {n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)}
+    vf_values = {n: float(get_attr(nd, ALIAS_VF, 0.0)) for n, nd in G.nodes(data=True)}
+    grads = {
+        "epi": _NeighborAverageGradient(ALIAS_EPI, epi_values),
+        "vf": _NeighborAverageGradient(ALIAS_VF, vf_values),
+    }
     _apply_dnfr_hook(
         G,
-        {"epi": g_epi, "vf": g_vf},
+        grads,
         weights={"epi": wE, "vf": wV},
         hook_name="dnfr_laplacian",
         note="Gradiente topológico",
+        n_jobs=n_jobs,
     )
 
 
