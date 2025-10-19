@@ -15,7 +15,7 @@ documentation or prose is written in English. When contributing:
 When documenting operators in English prose, pair the canonical identifier with
 its English descriptor so readers can follow along without altering the API.
 For example, write “apply the Emision operator (Emission)” or “the
-Autoorganizacion (`Auto-organization`) step”. The canonical mapping is:
+Autoorganizacion (`Self-organization`) step”. The canonical mapping is:
 
 | Canonical identifier | English descriptor |
 | --- | --- |
