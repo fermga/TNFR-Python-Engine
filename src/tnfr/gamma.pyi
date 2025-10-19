@@ -1,15 +1,40 @@
-from typing import Any
+from typing import Callable, NamedTuple
 
-__all__: Any
+from .types import GammaSpec, NodeId, TNFRGraph
 
-def __getattr__(name: str) -> Any: ...
+__all__: tuple[str, ...]
 
-GAMMA_REGISTRY: Any
-GammaEntry: Any
-eval_gamma: Any
-gamma_harmonic: Any
-gamma_kuramoto_bandpass: Any
-gamma_kuramoto_linear: Any
-gamma_kuramoto_tanh: Any
-gamma_none: Any
-kuramoto_R_psi: Any
+class GammaEntry(NamedTuple):
+    fn: Callable[[TNFRGraph, NodeId, float | int, GammaSpec], float]
+    needs_kuramoto: bool
+
+GAMMA_REGISTRY: dict[str, GammaEntry]
+
+def kuramoto_R_psi(G: TNFRGraph) -> tuple[float, float]: ...
+
+def gamma_none(G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec) -> float: ...
+
+def gamma_kuramoto_linear(
+    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
+) -> float: ...
+
+def gamma_kuramoto_bandpass(
+    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
+) -> float: ...
+
+def gamma_kuramoto_tanh(
+    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
+) -> float: ...
+
+def gamma_harmonic(
+    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
+) -> float: ...
+
+def eval_gamma(
+    G: TNFRGraph,
+    node: NodeId,
+    t: float | int,
+    *,
+    strict: bool = ...,
+    log_level: int | None = ...,
+) -> float: ...

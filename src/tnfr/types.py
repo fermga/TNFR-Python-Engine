@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Hashable
+from collections.abc import Hashable, Mapping
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Iterable, Protocol, TypeAlias
 
@@ -11,6 +11,7 @@ __all__ = (
     "Graph",
     "NodeId",
     "Node",
+    "GammaSpec",
     "EPIValue",
     "DeltaNFR",
     "SecondDerivativeEPI",
@@ -42,6 +43,9 @@ NodeId: TypeAlias = Hashable
 
 Node: TypeAlias = NodeId
 #: Backwards-compatible alias for :data:`NodeId`.
+
+GammaSpec: TypeAlias = Mapping[str, Any]
+#: Mapping describing Γ evaluation parameters for a node or graph.
 
 EPIValue: TypeAlias = float
 #: Scalar Primary Information Structure value carried by a node.
