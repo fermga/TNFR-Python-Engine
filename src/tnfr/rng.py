@@ -11,11 +11,12 @@ from dataclasses import dataclass
 from typing import Any, Generic, Hashable, TypeVar, cast
 
 
-from cachetools import LRUCache, cached
+from cachetools import LRUCache, cached  # type: ignore[import-untyped]
 from .constants import DEFAULTS, get_param
 from .cache import CacheManager
 from .utils import get_graph
 from .locking import get_lock
+from .types import GraphLike, TNFRGraph
 
 MASK64 = 0xFFFFFFFFFFFFFFFF
 
@@ -344,11 +345,11 @@ def seed_hash(seed_int: int, key_int: int) -> int:
     return _cached_seed_hash(seed_int, key_int)
 
 
-seed_hash.cache_clear = _cached_seed_hash.cache_clear  # type: ignore[attr-defined]
+seed_hash.cache_clear = cast(Any, _cached_seed_hash).cache_clear  # type: ignore[attr-defined]
 seed_hash.cache = _seed_hash_cache  # type: ignore[attr-defined]
 
 
-def _sync_cache_size(G: Any | None) -> None:
+def _sync_cache_size(G: TNFRGraph | GraphLike | None) -> None:
     """Synchronise cache size with ``G`` when needed."""
 
     global _CACHE_MAXSIZE
@@ -361,7 +362,9 @@ def _sync_cache_size(G: Any | None) -> None:
             _CACHE_MAXSIZE = _seed_hash_cache.maxsize
 
 
-def make_rng(seed: int, key: int, G: Any | None = None) -> random.Random:
+def make_rng(
+    seed: int, key: int, G: TNFRGraph | GraphLike | None = None
+) -> random.Random:
     """Return a ``random.Random`` for ``seed`` and ``key``.
 
     When ``G`` is provided, ``JITTER_CACHE_SIZE`` is read from ``G`` and the
@@ -377,15 +380,15 @@ def clear_rng_cache() -> None:
     """Clear cached seed hashes."""
     if _seed_hash_cache.maxsize <= 0 or not _seed_hash_cache.enabled:
         return
-    seed_hash.cache_clear()
+    seed_hash.cache_clear()  # type: ignore[attr-defined]
 
 
-def get_cache_maxsize(G: Any) -> int:
+def get_cache_maxsize(G: TNFRGraph | GraphLike) -> int:
     """Return RNG cache maximum size for ``G``."""
     return int(get_param(G, "JITTER_CACHE_SIZE"))
 
 
-def cache_enabled(G: Any | None = None) -> bool:
+def cache_enabled(G: TNFRGraph | GraphLike | None = None) -> bool:
     """Return ``True`` if RNG caching is enabled.
 
     When ``G`` is provided, the cache size is synchronised with
@@ -399,7 +402,7 @@ def cache_enabled(G: Any | None = None) -> bool:
     return _seed_hash_cache.maxsize > 0
 
 
-def base_seed(G: Any) -> int:
+def base_seed(G: TNFRGraph | GraphLike) -> int:
     """Return base RNG seed stored in ``G.graph``."""
     graph = get_graph(G)
     return int(graph.get("RANDOM_SEED", 0))
