@@ -29,13 +29,13 @@ if TYPE_CHECKING:  # pragma: no cover - import-time only for typing
         node_set_checksum,
         stable_json,
     )
+    from ..glyph_history import HistoryDict
 from .numeric import (
     angle_diff,
     clamp,
     clamp01,
     kahan_sum_nd,
 )
-    from ..glyph_history import HistoryDict
 
 __all__ = (
     "CacheManager",
@@ -61,6 +61,7 @@ __all__ = (
     "last_glyph",
     "push_glyph",
     "recent_glyph",
+    "__getattr__",
 )
 
 
@@ -82,7 +83,7 @@ _UTIL_EXPORTS = {
 }
 
 
-def __getattr__(name: str):  # pragma: no cover - simple delegation
+def __getattr__(name: str) -> Any:  # pragma: no cover - simple delegation
     if name in _UTIL_EXPORTS:
         from .. import utils as _utils
 

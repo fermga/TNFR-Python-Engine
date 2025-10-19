@@ -1,5 +1,7 @@
 from typing import Any, Callable, Iterable, Protocol, TypeAlias
-from collections.abc import Hashable, Mapping
+from collections.abc import Hashable, Mapping, Sequence
+
+from .tokens import Token
 
 __all__: tuple[str, ...]
 
@@ -39,3 +41,4 @@ TraceFieldFn: TypeAlias = Callable[[TNFRGraph], Any]
 TraceFieldMap: TypeAlias = Mapping[str, TraceFieldFn]
 TraceFieldRegistry: TypeAlias = dict[str, dict[str, TraceFieldFn]]
 TraceCallback: TypeAlias = Callable[[TNFRGraph, dict[str, Any]], None]
+PresetTokens: TypeAlias = Sequence[Token]
