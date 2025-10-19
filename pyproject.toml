@@ -63,9 +63,9 @@ disallow_any_unimported = false
 show_error_codes = true
 follow_imports = "skip"
 allow_redefinition = true
-allow_untyped_defs = true
-allow_untyped_calls = true
-allow_untyped_globals = true
+allow_untyped_defs = false
+allow_untyped_calls = false
+allow_untyped_globals = false
 
 [[tool.mypy.overrides]]
 module = ["networkx", "networkx.*"]
@@ -75,40 +75,6 @@ ignore_missing_imports = true
 module = ["yaml", "yaml.*"]
 ignore_missing_imports = true
 
-[[tool.mypy.overrides]]
-module = [
-  "tnfr.alias",
-  "tnfr.callback_utils",
-  "tnfr.cache",
-  "tnfr.constants",
-  "tnfr.gamma",
-  "tnfr.glyph_history",
-  "tnfr.io",
-  "tnfr",
-  "tnfr.node",
-  "tnfr.rng",
-  "tnfr.sense",
-  "tnfr.structural",
-  "tnfr.ontosim",
-  "tnfr.immutable",
-  "tnfr.initialization",
-  "tnfr.execution",
-  "tnfr.selector",
-  "tnfr.trace",
-  "tnfr.flatten",
-  "tnfr.validation.*",
-  "tnfr.config.*",
-  "tnfr.cli.*",
-  "tnfr.dynamics.*",
-  "tnfr.metrics.*",
-  "tnfr.operators.*",
-  "tnfr.observers.*",
-  "tnfr.utils.cache",
-  "tnfr.utils.init",
-  "tnfr.utils.io",
-  "tnfr.utils.validators",
-]
-ignore_errors = true
 
 [build-system]
 requires = ["setuptools>=61", "wheel"]

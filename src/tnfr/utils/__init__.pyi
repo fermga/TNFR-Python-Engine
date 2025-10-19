@@ -1,0 +1,63 @@
+from typing import Any
+
+__all__: Any
+
+def __getattr__(name: str) -> Any: ...
+
+CacheManager: Any
+DEFAULT_PARAMS: Any
+EMIT_MAP: Any
+EdgeCacheManager: Any
+IMPORT_LOG: Any
+JsonDumpsParams: Any
+LazyImportProxy: Any
+LockAwareLRUCache: Any
+MAX_MATERIALIZE_DEFAULT: Any
+NODE_SET_CHECKSUM_KEY: Any
+STRING_TYPES: Any
+WarnOnce: Any
+_DEFAULT_CACHE_SIZE: Any
+_FAILED_IMPORT_LIMIT: Any
+_IMPORT_STATE: Any
+_LOGGING_CONFIGURED: Any
+_configure_root: Any
+_reset_import_state: Any
+_reset_logging_state: Any
+_warn_failure: Any
+cached_import: Any
+cached_node_list: Any
+cached_nodes_and_A: Any
+clear_node_repr_cache: Any
+clear_orjson_param_warnings: Any
+configure_graph_cache_limits: Any
+convert_value: Any
+edge_version_cache: Any
+edge_version_update: Any
+ensure_collection: Any
+ensure_node_index_map: Any
+ensure_node_offset_map: Any
+flatten_structure: Any
+get_graph: Any
+get_graph_mapping: Any
+get_graph_version: Any
+get_logger: Any
+get_nodonx: Any
+get_numpy: Any
+increment_edge_version: Any
+increment_graph_version: Any
+is_non_string_sequence: Any
+json_dumps: Any
+mark_dnfr_prep_dirty: Any
+mix_groups: Any
+negative_weights_warn_once: Any
+node_set_checksum: Any
+normalize_counter: Any
+normalize_materialize_limit: Any
+normalize_weights: Any
+prune_failed_imports: Any
+run_validators: Any
+stable_json: Any
+supports_add_edge: Any
+validate_window: Any
+warm_cached_import: Any
+warn_once: Any
