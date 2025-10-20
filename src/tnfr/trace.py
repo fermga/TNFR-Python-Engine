@@ -241,7 +241,29 @@ def _si_weights_field(G: TNFRGraph) -> TraceMetadata:
 
 
 def _si_sensitivity_field(G: TNFRGraph) -> TraceMetadata:
-    return mapping_field(G, "_Si_sensitivity", "si_sensitivity")
+    mapping = get_graph_mapping(
+        G,
+        "_Si_sensitivity",
+        "G.graph['_Si_sensitivity'] no es un mapeo; se ignora",
+    )
+    if mapping is None:
+        return {}
+
+    legacy_key = "dSi_ddisp_fase"
+    english_key = "dSi_dphase_disp"
+
+    normalised = dict(mapping)
+
+    english_value = normalised.get(english_key)
+    legacy_value = normalised.get(legacy_key)
+
+    if english_value is None and legacy_value is not None:
+        english_value = legacy_value
+        normalised[english_key] = legacy_value
+    if legacy_value is None and english_value is not None:
+        normalised[legacy_key] = english_value
+
+    return {"si_sensitivity": normalised}
 
 
 def si_weights_field(G: TNFRGraph) -> TraceMetadata:
