@@ -28,7 +28,7 @@ from ..config.presets import get_preset
 from ..config import apply_config
 from ..io import read_structured_file, safe_write, StructuredFileError
 from ..glyph_history import ensure_history
-from ..ontosim import preparar_red
+from ..ontosim import prepare_network
 from ..types import ProgramTokens
 from ..utils import get_logger, json_dumps
 from ..flatten import parse_program_tokens
@@ -143,7 +143,7 @@ def _build_graph_from_args(args: argparse.Namespace) -> "nx.Graph":
     apply_cli_config(G, args)
     if getattr(args, "observer", False):
         G.graph["ATTACH_STD_OBSERVER"] = True
-    preparar_red(G)
+    prepare_network(G)
     register_callbacks_and_observer(G)
     return G
 

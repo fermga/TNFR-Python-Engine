@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 from collections import deque
 from typing import Any
@@ -19,13 +20,8 @@ from tnfr.cli.arguments import (
     add_grammar_selector_args,
     add_history_export_args,
 )
-from tnfr.cli.execution import (
-    _build_graph_from_args,
-    _save_json,
-    _run_cli_program,
-    run_program,
-    resolve_program,
-)
+def _cli_execution():
+    return importlib.import_module("tnfr.cli.execution")
 from tnfr.constants import METRIC_DEFAULTS
 from tnfr import __version__
 from tnfr.execution import CANONICAL_PRESET_NAME, basic_canonical_example
@@ -192,7 +188,7 @@ def test_run_cli_program_handles_system_exit(monkeypatch):
 
     monkeypatch.setattr("tnfr.cli.execution.resolve_program", boom)
 
-    code, graph = _run_cli_program(args)
+    code, graph = _cli_execution()._run_cli_program(args)
 
     assert code == 5
     assert graph is None
@@ -218,7 +214,7 @@ def test_run_cli_program_runs_and_returns_graph(monkeypatch):
     monkeypatch.setattr("tnfr.cli.execution.resolve_program", fake_resolve)
     monkeypatch.setattr("tnfr.cli.execution.run_program", fake_run_program)
 
-    code, graph = _run_cli_program(
+    code, graph = _cli_execution()._run_cli_program(
         args, default_program=expected_default, graph=provided_graph
     )
 
@@ -235,7 +231,7 @@ def test_resolve_program_prefers_preset(monkeypatch):
 
     monkeypatch.setattr("tnfr.cli.execution.get_preset", lambda name: sentinel)
 
-    result = resolve_program(args, default=[])
+    result = _cli_execution().resolve_program(args, default=[])
     assert result is sentinel
 
 
@@ -246,7 +242,7 @@ def test_resolve_program_prefers_sequence_file(monkeypatch, tmp_path):
 
     monkeypatch.setattr("tnfr.cli.execution._load_sequence", lambda path: sentinel)
 
-    result = resolve_program(args, default=[])
+    result = _cli_execution().resolve_program(args, default=[])
     assert result is sentinel
 
 
@@ -254,7 +250,7 @@ def test_resolve_program_uses_default_when_missing_inputs():
     args = argparse.Namespace(preset=None, sequence_file=None)
     default = basic_canonical_example()
 
-    result = resolve_program(args, default=default)
+    result = _cli_execution().resolve_program(args, default=default)
     assert result == default
 
 
@@ -334,7 +330,7 @@ def test_run_program_delegates_to_dynamics_run(monkeypatch):
     args.use_Si = False
     args.apply_glyphs = False
 
-    G = run_program(None, None, args)
+    G = _cli_execution().run_program(None, None, args)
 
     assert recorded["graph"] is G
     assert recorded["steps"] == 0  # negative steps are clamped to preserve CLI behaviour
@@ -346,7 +342,7 @@ def test_run_program_delegates_to_dynamics_run(monkeypatch):
 def test_save_json_serializes_iterables(tmp_path):
     path = tmp_path / "data.json"
     data = {"set": {1, 2}, "tuple": (1, 2), "deque": deque([1, 2])}
-    _save_json(str(path), data)
+    _cli_execution()._save_json(str(path), data)
     loaded = json.loads(path.read_text())
     assert sorted(loaded["set"]) == [1, 2]
     assert loaded["tuple"] == [1, 2]
@@ -375,20 +371,20 @@ def test_args_to_dict_nested_options():
             "7",
         ]
     )
-    G = _build_graph_from_args(args)
+    G = _cli_execution()._build_graph_from_args(args)
     canon = G.graph["GRAMMAR_CANON"]
     assert canon["enabled"] is True
     assert canon["thol_min_len"] == 7
     assert METRIC_DEFAULTS["GRAMMAR_CANON"]["thol_min_len"] == 2
 
 
-def test_build_graph_uses_preparar_red_defaults():
+def test_build_graph_uses_prepare_network_defaults():
     parser = argparse.ArgumentParser()
     add_common_args(parser)
     add_grammar_args(parser)
     args = parser.parse_args(["--nodes", "4"])
 
-    G = _build_graph_from_args(args)
+    G = _cli_execution()._build_graph_from_args(args)
 
     assert G.graph.get("_tnfr_defaults_attached") is True
     history = G.graph["history"]
@@ -397,13 +393,13 @@ def test_build_graph_uses_preparar_red_defaults():
     assert G.graph.get("_dnfr_hook_name") == "default_compute_delta_nfr"
 
 
-def test_build_graph_attaches_observer_via_preparar_red():
+def test_build_graph_attaches_observer_via_prepare_network():
     parser = argparse.ArgumentParser()
     add_common_args(parser)
     add_grammar_args(parser)
     args = parser.parse_args(["--nodes", "4", "--observer"])
 
-    G = _build_graph_from_args(args)
+    G = _cli_execution()._build_graph_from_args(args)
 
     assert G.graph.get("_STD_OBSERVER") == "attached"
 

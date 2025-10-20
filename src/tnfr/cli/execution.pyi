@@ -24,7 +24,7 @@ from ..metrics import (
     build_metrics_summary,
 )
 from ..metrics.core import _metrics_step
-from ..ontosim import preparar_red
+from ..ontosim import prepare_network
 from ..sense import register_sigma_callback
 from ..trace import register_trace
 from ..types import Glyph, ProgramTokens

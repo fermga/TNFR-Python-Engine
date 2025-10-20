@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 
-def test_preparar_red_dependencies():
+def test_prepare_network_dependencies():
     from tnfr import EXPORT_DEPENDENCIES
 
     expected = {
@@ -18,9 +18,15 @@ def test_preparar_red_dependencies():
         "tnfr.utils",
     }
 
-    preparar = EXPORT_DEPENDENCIES["preparar_red"]
+    preparar = EXPORT_DEPENDENCIES["prepare_network"]
     assert set(preparar["submodules"]) == expected
     assert preparar["third_party"] == ("networkx",)
+
+
+def test_preparar_red_alias_dependencies():
+    from tnfr import EXPORT_DEPENDENCIES
+
+    assert EXPORT_DEPENDENCIES["preparar_red"] == EXPORT_DEPENDENCIES["prepare_network"]
 
 
 def test_dynamics_helpers_dependencies():

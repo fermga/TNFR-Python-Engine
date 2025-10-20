@@ -16,10 +16,10 @@ if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
 
 # API de alto nivel
-__all__ = ("preparar_red", "step", "run")
+__all__ = ("prepare_network", "preparar_red", "step", "run")
 
 
-def preparar_red(
+def prepare_network(
     G: "nx.Graph",
     *,
     init_attrs: bool = True,
@@ -27,6 +27,12 @@ def preparar_red(
     **overrides,
 ) -> "nx.Graph":
     """Prepare ``G`` for simulation.
+
+    Notes
+    -----
+    ``preparar_red`` remains available as a legacy alias for codebases that
+    still rely on the previous Spanish helper name. The alias will be kept
+    until the 1.x compatibility window closes.
 
     Parameters
     ----------
@@ -117,6 +123,14 @@ def preparar_red(
     if init_attrs:
         init_node_attrs(G, override=True)
     return G
+
+
+# Alias legado conservado por compatibilidad externa.
+preparar_red = prepare_network
+preparar_red.__doc__ = (
+    "Alias legado de :func:`prepare_network`. Preferir el nuevo nombre en"
+    " integraciones y código nuevo."
+)
 
 
 def step(
