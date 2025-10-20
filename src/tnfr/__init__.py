@@ -23,9 +23,7 @@ The imports are grouped as follows:
     :mod:`tnfr.constants`, :mod:`tnfr.dynamics`, :mod:`tnfr.glyph_history`,
     :mod:`tnfr.initialization` and :mod:`tnfr.utils` to assemble the
     graph preparation pipeline.  It also requires ``networkx`` at import
-    time.  A temporary bridge alias :func:`tnfr.preparar_red` is still
-    provided for external callers but is no longer exported from
-    ``__all__``.
+    time.
 
 ``create_nfr`` / ``run_sequence``
     Re-exported from :mod:`tnfr.structural`.  They depend on
@@ -234,10 +232,7 @@ def _assign_exports(module: str, names: tuple[str, ...]) -> bool:
 _assign_exports("dynamics", ("step", "run"))
 
 
-_HAS_PREPARAR_RED = _assign_exports(
-    "ontosim", ("prepare_network", "preparar_red")
-)
-_HAS_PREPARE_NETWORK = _HAS_PREPARAR_RED
+_HAS_PREPARE_NETWORK = _assign_exports("ontosim", ("prepare_network",))
 
 
 _HAS_RUN_SEQUENCE = _assign_exports("structural", ("create_nfr", "run_sequence"))

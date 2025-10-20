@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from collections import deque
 from typing import TYPE_CHECKING
 
@@ -21,9 +20,6 @@ if TYPE_CHECKING:  # pragma: no cover
 __all__ = ("prepare_network", "step", "run")
 
 
-_PREPARAR_RED_REMOVAL_DATE = "2025-06-01"
-
-
 def prepare_network(
     G: "nx.Graph",
     *,
@@ -31,14 +27,7 @@ def prepare_network(
     override_defaults: bool = False,
     **overrides,
 ) -> "nx.Graph":
-    f"""Prepare ``G`` for simulation.
-
-    Notes
-    -----
-    :func:`preparar_red` remains temporarily available for callers that
-    still rely on the Spanish helper name.  The alias now emits a
-    :class:`DeprecationWarning` and will be removed on
-    ``{_PREPARAR_RED_REMOVAL_DATE}``.
+    """Prepare ``G`` for simulation.
 
     Parameters
     ----------
@@ -129,36 +118,6 @@ def prepare_network(
     if init_attrs:
         init_node_attrs(G, override=True)
     return G
-
-
-def preparar_red(
-    G: "nx.Graph",
-    *,
-    init_attrs: bool = True,
-    override_defaults: bool = False,
-    **overrides,
-):
-    f"""Alias en desuso de :func:`prepare_network`.
-
-    El nombre español se retirará definitivamente el
-    ``{_PREPARAR_RED_REMOVAL_DATE}``.  Llama a :func:`prepare_network`
-    directamente en nuevo código.
-    """
-
-    warnings.warn(
-        (
-            "tnfr.preparar_red está en desuso y se retirará el "
-            f"{_PREPARAR_RED_REMOVAL_DATE}. Utiliza tnfr.prepare_network."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return prepare_network(
-        G,
-        init_attrs=init_attrs,
-        override_defaults=override_defaults,
-        **overrides,
-    )
 
 
 def step(
