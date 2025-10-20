@@ -59,7 +59,7 @@ def _resolve_glyph(g: str, mapping: Mapping[str, T]) -> T:
     try:
         return mapping[g]
     except KeyError as e:  # pragma: no cover - small helper
-        raise KeyError(f"Glyph desconocido: {g}") from e
+        raise KeyError(f"Unknown glyph: {g}") from e
 
 
 def glyph_angle(g: str) -> float:
