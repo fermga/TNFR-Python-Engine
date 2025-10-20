@@ -1,55 +1,40 @@
-"""Pruebas de structural."""
+"""Structural tests covering canonical operator wiring."""
 
 import networkx as nx
 import pytest
 
 from tnfr import run_sequence
-from tnfr.structural import (
-    create_nfr,
-    Operator,
-    Emission,
-    Reception,
-    Coherence,
-    Dissonance,
-    Coupling,
-    Resonance,
-    Silence,
-    Expansion,
-    Contraction,
-    SelfOrganization,
-    Mutation,
-    Transition,
-    Recursivity,
-    validate_sequence,
-)
-from tnfr.operators.compat import (
-    Emision,
-    Recepcion,
-    Coherencia,
-    Resonancia,
-    Silencio,
-    Autoorganizacion,
-)
 from tnfr.constants import EPI_PRIMARY
 from tnfr.config.operator_names import (
-    EMISION,
-    RECEPCION,
-    COHERENCIA,
-    RESONANCIA,
-    SILENCIO,
-    AUTOORGANIZACION,
-    TRANSICION,
+    COHERENCE,
     EMISSION,
     RECEPTION,
-    COHERENCE,
     RESONANCE,
-    SILENCE,
     SELF_ORGANIZATION,
+    SILENCE,
     TRANSITION,
+)
+from tnfr.structural import (
+    Coupling,
+    Coherence,
+    Contraction,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Operator,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
+    create_nfr,
+    validate_sequence,
 )
 
 
-def test_create_nfr_basic():
+def test_create_nfr_basic() -> None:
     G, n = create_nfr("nodo", epi=0.1, vf=2.0, theta=0.3)
     assert isinstance(G, nx.Graph)
     assert n in G
@@ -57,57 +42,27 @@ def test_create_nfr_basic():
     assert nd[EPI_PRIMARY] == 0.1
 
 
-def test_sequence_validation_and_run():
+def test_sequence_validation_and_run() -> None:
     G, n = create_nfr("x")
     ops = [Emission(), Reception(), Coherence(), Resonance(), Silence()]
     names = [op.name for op in ops]
     ok, msg = validate_sequence(names)
     assert ok, msg
     run_sequence(G, n, ops)
-    # después de la secuencia la EPI se actualiza (no necesariamente cero)
     assert EPI_PRIMARY in G.nodes[n]
 
 
-def test_legacy_sequence_validation_and_run_warns():
-    G, n = create_nfr("x_es")
-    with pytest.warns(DeprecationWarning):
-        ops = [Emision(), Recepcion(), Coherencia(), Resonancia(), Silencio()]
-    names = [op.name for op in ops]
-    ok, msg = validate_sequence(names)
-    assert ok, msg
-    run_sequence(G, n, ops)
-    assert EPI_PRIMARY in G.nodes[n]
-
-
-def test_invalid_sequence():
-    with pytest.warns(DeprecationWarning):
-        ops = [Recepcion(), Coherencia(), Silencio()]
+def test_invalid_sequence() -> None:
+    ops = [Reception(), Coherence(), Silence()]
     names = [op.name for op in ops]
     ok, msg = validate_sequence(names)
     assert not ok
     G, n = create_nfr("y")
-    try:
+    with pytest.raises(ValueError):
         run_sequence(G, n, ops)
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("Se esperaba ValueError por secuencia no válida")
 
 
-def test_thol_requires_closure():
-    names = [
-        EMISION,
-        RECEPCION,
-        COHERENCIA,
-        AUTOORGANIZACION,
-        RESONANCIA,
-        TRANSICION,
-    ]
-    ok, msg = validate_sequence(names)
-    assert not ok
-
-
-def test_thol_requires_closure_english_tokens():
+def test_thol_requires_closure() -> None:
     names = [
         EMISSION,
         RECEPTION,
@@ -120,35 +75,20 @@ def test_thol_requires_closure_english_tokens():
     assert not ok
 
 
-def test_validate_sequence_rejects_unknown_tokens():
+def test_validate_sequence_rejects_unknown_tokens() -> None:
     names = [
-        EMISION,
-        RECEPCION,
-        COHERENCIA,
-        RESONANCIA,
-        SILENCIO,
+        EMISSION,
+        RECEPTION,
+        COHERENCE,
+        RESONANCE,
+        SILENCE,
         "desconocido",
     ]
     ok, msg = validate_sequence(names)
     assert not ok and "unknown tokens" in msg
 
 
-def test_thol_closed_by_silencio():
-    with pytest.warns(DeprecationWarning):
-        ops = [
-            Emision(),
-            Recepcion(),
-            Coherencia(),
-            Autoorganizacion(),
-            Resonancia(),
-            Silencio(),
-        ]
-    names = [op.name for op in ops]
-    ok, msg = validate_sequence(names)
-    assert ok, msg
-
-
-def test_thol_closed_by_silence_alias():
+def test_thol_closed_by_silence() -> None:
     ops = [
         Emission(),
         Reception(),
@@ -162,20 +102,20 @@ def test_thol_closed_by_silence_alias():
     assert ok, msg
 
 
-def test_sequence_rejects_trailing_tokens():
+def test_sequence_rejects_trailing_tokens() -> None:
     names = [
-        EMISION,
-        RECEPCION,
-        COHERENCIA,
-        RESONANCIA,
-        SILENCIO,
-        EMISION,
+        EMISSION,
+        RECEPTION,
+        COHERENCE,
+        RESONANCE,
+        SILENCE,
+        EMISSION,
     ]
     ok, msg = validate_sequence(names)
     assert not ok
 
 
-def test_sequence_accepts_english_tokens():
+def test_sequence_accepts_english_tokens() -> None:
     names = [
         EMISSION,
         RECEPTION,
@@ -187,7 +127,7 @@ def test_sequence_accepts_english_tokens():
     assert ok, msg
 
 
-def test_operator_base_types_exposed():
+def test_operator_base_types_exposed() -> None:
     for cls in (
         Emission,
         Reception,
@@ -204,6 +144,3 @@ def test_operator_base_types_exposed():
         Recursivity,
     ):
         assert issubclass(cls, Operator)
-    with pytest.warns(DeprecationWarning):
-        legacy = Autoorganizacion()
-    assert isinstance(legacy, Operator)

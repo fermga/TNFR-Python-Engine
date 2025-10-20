@@ -1,9 +1,5 @@
 from typing import Any
 
-__all__: Any
-
-def __getattr__(name: str) -> Any: ...
-
 Operator: Any
 Emission: Any
 Reception: Any
@@ -18,19 +14,6 @@ SelfOrganization: Any
 Mutation: Any
 Transition: Any
 Recursivity: Any
-Operador: Any
-Emision: Any
-Recepcion: Any
-Coherencia: Any
-Disonancia: Any
-Acoplamiento: Any
-Resonancia: Any
-Silencio: Any
-Contraccion: Any
-Autoorganizacion: Any
-Mutacion: Any
-Transicion: Any
-Recursividad: Any
 GLYPH_OPERATIONS: Any
 JitterCache: Any
 JitterCacheManager: Any

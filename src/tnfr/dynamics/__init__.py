@@ -81,7 +81,7 @@ from ..selector import (
     _calc_selector_score,
     _apply_selector_hysteresis,
 )
-from ..config.operator_names import TRANSICION
+from ..config.operator_names import TRANSITION
 from ..utils import get_numpy
 
 from .sampling import update_node_sample as _update_node_sample
@@ -307,7 +307,7 @@ def _compute_state(G: TNFRGraph, cfg: Mapping[str, Any]) -> tuple[str, float, fl
     elif (R <= R_lo) or (disr >= disr_hi):
         state = "disonante"
     else:
-        state = TRANSICION
+        state = TRANSITION
     return state, float(R), disr
 
 

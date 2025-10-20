@@ -176,22 +176,22 @@ def _mix_epi_with_neighbors(
     return epi_bar, final
 
 
-def _op_AL(node: NodeProtocol, gf: GlyphFactors) -> None:  # AL — Emisión
+def _op_AL(node: NodeProtocol, gf: GlyphFactors) -> None:  # AL — Emission
     f = get_factor(gf, "AL_boost", 0.05)
     node.EPI = node.EPI + f
 
 
-def _op_EN(node: NodeProtocol, gf: GlyphFactors) -> None:  # EN — Recepción
+def _op_EN(node: NodeProtocol, gf: GlyphFactors) -> None:  # EN — Reception
     mix = get_factor(gf, "EN_mix", 0.25)
     _mix_epi_with_neighbors(node, mix, Glyph.EN)
 
 
-def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherencia
+def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherence
     factor = get_factor(gf, "IL_dnfr_factor", 0.7)
     node.dnfr = factor * getattr(node, "dnfr", 0.0)
 
 
-def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Disonancia
+def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Dissonance
     factor = get_factor(gf, "OZ_dnfr_factor", 1.3)
     dnfr = getattr(node, "dnfr", 0.0)
     if bool(node.graph.get("OZ_NOISE_MODE", False)):
@@ -289,12 +289,12 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
                 node.add_edge(j, compat)
 
 
-def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonancia
+def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     diff = get_factor(gf, "RA_epi_diff", 0.15)
     _mix_epi_with_neighbors(node, diff, Glyph.RA)
 
 
-def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silencio
+def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     factor = get_factor(gf, "SHA_vf_factor", 0.85)
     node.vf = factor * node.vf
 
@@ -320,21 +320,21 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
 
 def _op_THOL(
     node: NodeProtocol, gf: GlyphFactors
-) -> None:  # THOL — Autoorganización
+) -> None:  # THOL — Self-organization
     a = get_factor(gf, "THOL_accel", 0.10)
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
 def _op_ZHIR(
     node: NodeProtocol, gf: GlyphFactors
-) -> None:  # ZHIR — Mutación
+) -> None:  # ZHIR — Mutation
     shift = get_factor(gf, "ZHIR_theta_shift", math.pi / 2)
     node.theta = node.theta + shift
 
 
 def _op_NAV(
     node: NodeProtocol, gf: GlyphFactors
-) -> None:  # NAV — Transición
+) -> None:  # NAV — Transition
     dnfr = node.dnfr
     vf = node.vf
     eta = get_factor(gf, "NAV_eta", 0.5)
@@ -355,13 +355,13 @@ def _op_NAV(
 
 def _op_REMESH(
     node: NodeProtocol, gf: GlyphFactors | None = None
-) -> None:  # REMESH — aviso
+) -> None:  # REMESH — advisory
     step_idx = glyph_history.current_step_idx(node)
     last_warn = node.graph.get("_remesh_warn_step", None)
     if last_warn != step_idx:
         msg = (
-            "REMESH es a escala de red. Usa apply_remesh_if_globally_"
-            "stable(G) o apply_network_remesh(G)."
+            "REMESH operates at network scale. Use apply_remesh_if_globally_"
+            "stable(G) or apply_network_remesh(G)."
         )
         hist = glyph_history.ensure_history(node)
         glyph_history.append_metric(

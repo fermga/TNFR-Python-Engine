@@ -7,15 +7,15 @@ from tnfr.metrics import register_metrics_callbacks
 from tnfr.metrics.common import compute_coherence
 from tnfr.metrics.sense_index import compute_Si
 from tnfr.structural import (
-    Acoplamiento as Coupling,
-    Coherencia as Coherence,
-    Disonancia as Dissonance,
-    Emision as Emission,
-    Mutacion as Mutation,
-    Recepcion as Reception,
-    Resonancia as Resonance,
-    Silencio as Silence,
-    Transicion as Transition,
+    Coupling,
+    Coherence,
+    Dissonance,
+    Emission,
+    Mutation,
+    Reception,
+    Resonance,
+    Silence,
+    Transition,
 )
 from tnfr.trace import register_trace
 from tnfr.glyph_history import ensure_history

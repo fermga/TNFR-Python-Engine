@@ -7,15 +7,15 @@ from tnfr.metrics import register_metrics_callbacks
 from tnfr.metrics.common import compute_coherence
 from tnfr.metrics.sense_index import compute_Si
 from tnfr.structural import (
-    Acoplamiento as Coupling,
-    Autoorganizacion as SelfOrganization,
-    Coherencia as Coherence,
-    Emision as Emission,
-    Expansion as Expansion,
-    Mutacion as Mutation,
-    Recepcion as Reception,
-    Resonancia as Resonance,
-    Silencio as Silence,
+    Coupling,
+    Coherence,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Resonance,
+    SelfOrganization,
+    Silence,
 )
 from tnfr.trace import register_trace
 
