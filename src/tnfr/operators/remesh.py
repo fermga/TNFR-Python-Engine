@@ -63,6 +63,7 @@ def _ordered_edge(u: Hashable, v: Hashable) -> RemeshEdge:
 
     return (u, v) if repr(u) <= repr(v) else (v, u)
 
+
 ALIAS_EPI = get_aliases("EPI")
 
 

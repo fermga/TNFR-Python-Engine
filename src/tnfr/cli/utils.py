@@ -32,5 +32,3 @@ def spec(opt: str, /, **kwargs: Any) -> tuple[str, dict[str, Any]]:
     )
     kwargs.setdefault("default", None)
     return opt, kwargs
-
-

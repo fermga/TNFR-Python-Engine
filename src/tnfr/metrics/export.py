@@ -14,8 +14,7 @@ from ..io import safe_write
 from ..utils import json_dumps
 from ..types import Graph
 from .core import glyphogram_series
-from .glyph_timing import GlyphogramRow, SigmaTrace
-
+from .glyph_timing import SigmaTrace
 
 
 def _write_csv(
@@ -145,6 +144,7 @@ def export_metrics(G: Graph, base_path: str, fmt: str = "csv") -> None:
             "epi_support": epi_supp,
         }
         json_path = base_path + ".json"
+
         def _write_json(f: TextIO) -> None:
             f.write(json_dumps(data))
 

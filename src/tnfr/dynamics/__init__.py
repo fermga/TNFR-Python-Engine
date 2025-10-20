@@ -540,7 +540,7 @@ def coordinate_global_local_phase(
         return
 
     chunk_size = max(1, (num_nodes + jobs - 1) // jobs)
-    chunks = [nodes[i : i + chunk_size] for i in range(0, num_nodes, chunk_size)]
+    chunks = [nodes[i:i + chunk_size] for i in range(0, num_nodes, chunk_size)]
     args: list[ChunkArgs] = [
         (
             chunk,
@@ -740,7 +740,7 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
 
     chunk_size = max(1, math.ceil(len(work_items) / jobs))
     chunks = [
-        work_items[i : i + chunk_size]
+        work_items[i:i + chunk_size]
         for i in range(0, len(work_items), chunk_size)
     ]
     vf_tuple = tuple(vf_list)
@@ -1189,7 +1189,7 @@ def _compute_param_base_choices(
     chunk_size = max(1, math.ceil(len(items) / n_jobs))
     base: dict[Any, str] = {}
     args = (
-        (thresholds, items[idx : idx + chunk_size])
+        (thresholds, items[idx:idx + chunk_size])
         for idx in range(0, len(items), chunk_size)
     )
     with ProcessPoolExecutor(max_workers=n_jobs) as executor:
@@ -1329,7 +1329,7 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
         else:
             chunk_size = max(1, math.ceil(len(to_select) / n_jobs))
             chunks = [
-                to_select[idx : idx + chunk_size]
+                to_select[idx:idx + chunk_size]
                 for idx in range(0, len(to_select), chunk_size)
             ]
             with ProcessPoolExecutor(max_workers=n_jobs) as executor:

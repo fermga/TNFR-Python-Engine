@@ -245,8 +245,6 @@ def _validate_registry(
     return cbs
 
 
-
-
 def _normalize_callbacks(entries: Any) -> dict[str, CallbackSpec]:
     """Return ``entries`` normalised into a callback mapping."""
     if isinstance(entries, Mapping):
@@ -327,7 +325,6 @@ def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
         return None
 
 
-
 def _reconcile_callback(
     event: str,
     existing_map: dict[str, CallbackSpec],
@@ -382,6 +379,3 @@ def _reconcile_callback(
 # ---------------------------------------------------------------------------
 
 callback_manager = CallbackManager()
-
-
-

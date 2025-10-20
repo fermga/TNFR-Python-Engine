@@ -626,7 +626,7 @@ def _diagnosis_step(
                     executor.submit(
                         _rlocal_worker,
                         RLocalWorkerArgs(
-                            chunk=nodes[idx : idx + chunk_size],
+                            chunk=nodes[idx:idx + chunk_size],
                             coherence_nodes=coherence_nodes,
                             weight_matrix=weight_matrix,
                             weight_index=weight_index,
@@ -680,7 +680,7 @@ def _diagnosis_step(
                             _neighbor_mean_worker,
                         ),
                         NeighborMeanWorkerArgs(
-                            chunk=nodes[idx : idx + chunk_size],
+                            chunk=nodes[idx:idx + chunk_size],
                             neighbors_map=neighbors_map,
                             epi_map=epi_map,
                         ),
@@ -739,7 +739,7 @@ def _diagnosis_step(
                         ],
                         _diagnosis_worker_chunk,
                     ),
-                    node_payload[idx : idx + chunk_size],
+                    node_payload[idx:idx + chunk_size],
                     shared,
                 )
                 for idx in range(0, len(node_payload), chunk_size)
@@ -810,4 +810,3 @@ def register_diagnosis_callbacks(G: TNFRGraph) -> None:
         func=dissonance_events,
         name="dissonance_events",
     )
-

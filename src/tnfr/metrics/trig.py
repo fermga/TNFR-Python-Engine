@@ -173,11 +173,13 @@ def neighbor_phase_mean_list(
 
 
 @overload
-def neighbor_phase_mean(obj: "NodoProtocol", n: None = ...) -> Phase: ...
+def neighbor_phase_mean(obj: "NodoProtocol", n: None = ...) -> Phase:
+    ...
 
 
 @overload
-def neighbor_phase_mean(obj: TNFRGraph, n: NodeId) -> Phase: ...
+def neighbor_phase_mean(obj: TNFRGraph, n: NodeId) -> Phase:
+    ...
 
 
 def neighbor_phase_mean(

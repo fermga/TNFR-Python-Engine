@@ -19,6 +19,7 @@ from ..rng import make_rng
 from tnfr import glyph_history
 from ..types import EPIValue, Glyph, NodeId, TNFRGraph
 
+from . import definitions as _definitions
 from .jitter import (
     JitterCache,
     JitterCacheManager,
@@ -34,8 +35,6 @@ from .remesh import (
 )
 
 discover_operators()
-
-from . import definitions as _definitions
 
 _DEFINITION_EXPORTS = {
     name: getattr(_definitions, name)

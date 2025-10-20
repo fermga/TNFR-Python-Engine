@@ -14,7 +14,6 @@ from ..config.operator_names import (
     ACOPLAMIENTO,
     RESONANCIA,
     SILENCIO,
-    CONTRACCION,
     AUTOORGANIZACION_CIERRES,
     EMISION,
     RECURSIVIDAD,

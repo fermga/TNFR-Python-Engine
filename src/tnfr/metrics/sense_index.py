@@ -214,7 +214,7 @@ def compute_Si(
                     futures = [
                         executor.submit(
                             _compute_si_python_chunk,
-                            node_payload[idx : idx + chunk_size],
+                            node_payload[idx:idx + chunk_size],
                             cos_th=cos_th,
                             sin_th=sin_th,
                             alpha=alpha,

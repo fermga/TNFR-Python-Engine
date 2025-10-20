@@ -13,7 +13,7 @@ from ..alias import get_attr
 from ..constants import get_aliases, get_param
 from ..config.constants import GLYPH_GROUPS, GLYPHS_CANONICAL
 from ..glyph_history import append_metric, last_glyph
-from ..types import Glyph, GraphLike
+from ..types import GraphLike
 
 ALIAS_EPI = get_aliases("EPI")
 
@@ -213,7 +213,7 @@ def _update_tg(
         futures = []
         with ProcessPoolExecutor(max_workers=n_jobs) as executor:
             for start in range(0, len(glyph_sequence), chunk_size):
-                chunk = glyph_sequence[start : start + chunk_size]
+                chunk = glyph_sequence[start:start + chunk_size]
                 futures.append(executor.submit(_count_glyphs_chunk, chunk))
             for future in futures:
                 counts.update(future.result())
@@ -294,7 +294,7 @@ def _update_epi_support(
         with ProcessPoolExecutor(max_workers=n_jobs) as executor:
             futures = []
             for start in range(0, len(values), chunk_size):
-                chunk = values[start : start + chunk_size]
+                chunk = values[start:start + chunk_size]
                 futures.append(executor.submit(_epi_support_chunk, chunk, threshold))
             for future in futures:
                 totals.append(future.result())

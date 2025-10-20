@@ -58,6 +58,7 @@ def similarity_abs(a: float, b: float, lo: float, hi: float) -> float:
 
     return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, hi - lo)
 
+
 def kahan_sum_nd(
     values: Iterable[Sequence[float]], dims: int
 ) -> tuple[float, ...]:
