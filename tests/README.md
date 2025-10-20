@@ -1,6 +1,6 @@
 # Test suite overview
 
-This document describes the purpose of tests in the suite that monitor internal debugging, diagnostic features, and performance regressions.
+This document describes the purpose of tests in the suite that monitor internal debugging, diagnostic features, and performance regressions. Default `pytest` options (such as marker selection and benchmark skipping) are configured in the `[tool.pytest.ini_options]` section of `pyproject.toml`, so invocations without extra flags automatically inherit that configuration.
 
 ## Debugging and diagnostic tests
 
@@ -21,3 +21,11 @@ Tests that previously covered warning cache pruning and warn-once limits were re
   ```
 
   The suite requires NumPy for the vectorized branches; `pytest` will skip the affected checks automatically when the dependency is missing.
+
+Benchmark helpers remain available behind the `benchmarks` marker. To run them explicitly use:
+
+```bash
+pytest benchmarks --benchmark-only
+```
+
+This command complements the default `--benchmark-skip` flag defined in `pyproject.toml`.
