@@ -109,7 +109,9 @@ def _read_gamma_raw(G: TNFRGraph) -> GammaSpec | None:
     if raw is None or isinstance(raw, Mapping):
         return raw
     return get_graph_mapping(
-        G, "GAMMA", "G.graph['GAMMA'] no es un mapeo; se usa {'type': 'none'}"
+        G,
+        "GAMMA",
+        "G.graph['GAMMA'] is not a mapping; using {'type': 'none'}",
     )
 
 
