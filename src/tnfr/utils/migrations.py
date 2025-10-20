@@ -1,4 +1,12 @@
-"""Utilities for migrating legacy payloads to the English-only contract."""
+"""Utilities for migrating legacy payloads to the English-only contract.
+
+.. important::
+
+    Graphs serialized before the cooldown renaming **must** be processed with
+    :func:`migrate_legacy_remesh_cooldown` prior to upgrading. The runtime no
+    longer inspects ``"REMESH_COOLDOWN_VENTANA"`` and will ignore the legacy
+    value unless the migration has been executed.
+"""
 
 from __future__ import annotations
 
@@ -10,7 +18,6 @@ from ..types import GraphLike
 __all__ = ("migrate_legacy_phase_attributes", "migrate_legacy_remesh_cooldown")
 
 
-LEGACY_REMESH_COOLDOWN_KEY = "REMESH_COOLDOWN_VENTANA"
 REMESH_COOLDOWN_KEY = "REMESH_COOLDOWN_WINDOW"
 
 
@@ -78,13 +85,19 @@ def _get_graph_mapping(obj: GraphLike | MutableMapping[str, Any]) -> MutableMapp
 def migrate_legacy_remesh_cooldown(
     obj: GraphLike | MutableMapping[str, Any]
 ) -> int:
-    """Remove ``REMESH_COOLDOWN_VENTANA`` and promote the English key."""
+    """Promote legacy cooldown metadata to the English ``REMESH_COOLDOWN_WINDOW``.
+
+    This migration is intentionally side-effect free when invoked against
+    already-migrated graphs so it can be executed as a one-off step before
+    rolling out a version that dropped runtime awareness of the Spanish key.
+    """
 
     graph_data = _get_graph_mapping(obj)
-    if LEGACY_REMESH_COOLDOWN_KEY not in graph_data:
+    legacy_key = "REMESH_COOLDOWN_VENTANA"
+    if legacy_key not in graph_data:
         return 0
 
-    legacy_value = graph_data.pop(LEGACY_REMESH_COOLDOWN_KEY)
+    legacy_value = graph_data.pop(legacy_key)
     try:
         canonical_value = int(legacy_value)
     except (TypeError, ValueError) as exc:  # pragma: no cover - defensive

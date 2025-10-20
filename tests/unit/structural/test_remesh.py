@@ -1,4 +1,9 @@
-"""Pruebas de remesh."""
+"""Pruebas de remesh.
+
+Advertencia: las gráficas serializadas antes del cambio de ``REMESH_COOLDOWN``
+deben ejecutarse por ``tnfr.utils.migrations.migrate_legacy_remesh_cooldown``
+antes de actualizar, ya que el motor ignora ``REMESH_COOLDOWN_VENTANA``.
+"""
 
 from collections import deque
 
@@ -10,7 +15,6 @@ from tnfr.constants import get_aliases, get_param, inject_defaults
 from tnfr.glyph_history import ensure_history
 from tnfr.operators import apply_remesh_if_globally_stable
 from tnfr.operators.remesh import apply_network_remesh
-from tnfr.utils import migrate_legacy_remesh_cooldown
 
 
 def _prepare_graph_for_remesh(graph_canon, stable_steps: int = 3):
@@ -117,16 +121,6 @@ def test_injected_defaults_include_cooldown_window_only(graph_canon):
     assert "REMESH_COOLDOWN_VENTANA" not in G.graph
 
 
-def test_legacy_cooldown_value_raises_with_guidance(graph_canon):
-    G, _ = _prepare_graph_for_remesh(graph_canon)
-    legacy_value = 11
-    G.graph.pop("REMESH_COOLDOWN_WINDOW", None)
-    G.graph["REMESH_COOLDOWN_VENTANA"] = legacy_value
-
-    with pytest.raises(ValueError, match="migrate_legacy_remesh_cooldown"):
-        apply_remesh_if_globally_stable(G)
-
-
 def test_configured_cooldown_window_is_respected(graph_canon):
     G, hist = _prepare_graph_for_remesh(graph_canon)
     preferred_value = 1
@@ -139,16 +133,3 @@ def test_configured_cooldown_window_is_respected(graph_canon):
 
     events = ensure_history(G).get("remesh_events", [])
     assert len(events) == 2
-
-
-def test_migration_promotes_legacy_cooldown(graph_canon):
-    G, _ = _prepare_graph_for_remesh(graph_canon)
-    legacy_value = 17
-    G.graph.pop("REMESH_COOLDOWN_WINDOW", None)
-    G.graph["REMESH_COOLDOWN_VENTANA"] = str(legacy_value)
-
-    updated = migrate_legacy_remesh_cooldown(G)
-
-    assert updated == 1
-    assert "REMESH_COOLDOWN_VENTANA" not in G.graph
-    assert G.graph["REMESH_COOLDOWN_WINDOW"] == legacy_value

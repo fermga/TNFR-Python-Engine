@@ -68,38 +68,6 @@ ALIAS_EPI = get_aliases("EPI")
 
 
 COOLDOWN_KEY = "REMESH_COOLDOWN_WINDOW"
-COOLDOWN_LEGACY_KEYS: tuple[str, ...] = ("REMESH_COOLDOWN_VENTANA",)
-
-
-def _get_config_with_aliases(
-    G: CommunityGraph,
-    primary: str,
-    aliases: Sequence[str],
-    default: RemeshConfigValue,
-) -> RemeshConfigValue:
-    """Return ``primary`` value enforcing the English identifier.
-
-    If a legacy alias is present in ``G.graph`` a :class:`ValueError` is raised
-    instructing the caller to migrate persisted data.
-    """
-
-    for alias in aliases:
-        if alias in G.graph:
-            raise ValueError(
-                (
-                    f"Legacy remesh cooldown key detected: '{alias}'. "
-                    "Run tnfr.utils.migrate_legacy_remesh_cooldown() to "
-                    "promote persisted graphs to the English key."
-                )
-            )
-
-    if primary in G.graph:
-        return get_param(G, primary)
-
-    if primary in REMESH_DEFAULTS:
-        return REMESH_DEFAULTS[primary]
-
-    return default
 
 
 @cache
@@ -555,21 +523,12 @@ def apply_remesh_if_globally_stable(
             float,
             REMESH_DEFAULTS["REMESH_MIN_SI_HI_FRAC"],
         ),
-        (
-            (COOLDOWN_KEY, *COOLDOWN_LEGACY_KEYS),
-            int,
-            REMESH_DEFAULTS[COOLDOWN_KEY],
-        ),
+        (COOLDOWN_KEY, int, REMESH_DEFAULTS[COOLDOWN_KEY]),
         ("REMESH_COOLDOWN_TS", float, REMESH_DEFAULTS["REMESH_COOLDOWN_TS"]),
     ]
     cfg = {}
     for key, conv, _default in params:
-        if isinstance(key, tuple):
-            primary, *aliases = key
-            raw_value = _get_config_with_aliases(G, primary, aliases, _default)
-            cfg[primary] = conv(raw_value)
-        else:
-            cfg[key] = conv(get_param(G, key))
+        cfg[key] = conv(get_param(G, key))
     frac_req = _as_float(get_param(G, "FRACTION_STABLE_REMESH"))
     w_estab = (
         stable_step_window
