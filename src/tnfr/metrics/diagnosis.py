@@ -9,14 +9,18 @@ from functools import partial
 from operator import ge, le
 from statistics import StatisticsError, fmean
 from typing import Any, Callable, Iterable, cast
-from collections.abc import Mapping, Sequence
+from collections import deque
+from collections.abc import Mapping, MutableMapping, Sequence
 
 from ..constants import (
+    STATE_DISSONANT,
+    STATE_STABLE,
+    STATE_TRANSITION,
     VF_KEY,
     get_aliases,
     get_param,
+    normalise_state_token,
 )
-from ..config.operator_names import TRANSITION
 from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import append_metric, ensure_history
 from ..alias import get_attr
@@ -319,26 +323,22 @@ def _state_from_thresholds(
         "dnfr": (dnfr_n, float(stb["dnfr_lo"]), le),
     }
     if all(comp(val, thr) for val, thr, comp in stable_checks.values()):
-        return "estable"
+        return STATE_STABLE
 
     dissonant_checks = {
         "Rloc": (Rloc, float(dsr["Rloc_lo"]), le),
         "dnfr": (dnfr_n, float(dsr["dnfr_hi"]), ge),
     }
     if all(comp(val, thr) for val, thr, comp in dissonant_checks.values()):
-        return "disonante"
+        return STATE_DISSONANT
 
-        return TRANSITION
+    return STATE_TRANSITION
 
 
 def _recommendation(state: str, cfg: Mapping[str, Any]) -> list[Any]:
     adv = cfg.get("advice", {})
-    key = {
-        "estable": "stable",
-        TRANSITION: "transition",
-        "disonante": "dissonant",
-    }[state]
-    return list(adv.get(key, []))
+    canonical_state = normalise_state_token(state)
+    return list(adv.get(canonical_state, []))
 
 
 def _get_last_weights(
@@ -381,12 +381,13 @@ def _node_diagnostics(
         symm = None
 
     state = _state_from_thresholds(Rloc, dnfr_n, dcfg)
+    canonical_state = normalise_state_token(state)
 
     alerts = []
-    if state == "disonante" and dnfr_n >= shared["dissonance_hi"]:
+    if canonical_state == STATE_DISSONANT and dnfr_n >= shared["dissonance_hi"]:
         alerts.append("high structural tension")
 
-    advice = _recommendation(state, dcfg)
+    advice = _recommendation(canonical_state, dcfg)
 
     payload: DiagnosisPayload = {
         "node": node,
@@ -397,7 +398,7 @@ def _node_diagnostics(
         "W_i": node_data.get("W_i"),
         "R_local": Rloc,
         "symmetry": symm,
-        "state": state,
+        "state": canonical_state,
         "advice": advice,
         "alerts": alerts,
     }
@@ -434,6 +435,33 @@ def _diagnosis_step(
     hist = ensure_history(G)
     coherence_hist = cast(CoherenceHistory, hist)
     key = dcfg.get("history_key", "nodal_diag")
+
+    existing_diag_history = hist.get(key, [])
+    if isinstance(existing_diag_history, deque):
+        snapshots = list(existing_diag_history)
+    elif isinstance(existing_diag_history, list):
+        snapshots = existing_diag_history
+    else:
+        snapshots = []
+
+    for snapshot in snapshots:
+        if not isinstance(snapshot, Mapping):
+            continue
+        for node, payload in snapshot.items():
+            if not isinstance(payload, Mapping):
+                continue
+            state_value = payload.get("state")
+            if not isinstance(state_value, str):
+                continue
+            canonical = normalise_state_token(state_value)
+            if canonical == state_value:
+                continue
+            if isinstance(payload, MutableMapping):
+                payload["state"] = canonical
+            elif isinstance(snapshot, MutableMapping):
+                new_payload = dict(payload)
+                new_payload["state"] = canonical
+                snapshot[node] = new_payload
 
     norms = compute_dnfr_accel_max(G)
     G.graph["_sel_norms"] = norms

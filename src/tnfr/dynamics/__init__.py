@@ -46,9 +46,13 @@ from ..validation.grammar import enforce_canonical_grammar, on_applied_glyph
 from ..constants import (
     DEFAULTS,
     METRIC_DEFAULTS,
+    STATE_DISSONANT,
+    STATE_STABLE,
+    STATE_TRANSITION,
     get_aliases,
     get_param,
     get_graph_param,
+    normalise_state_token,
 )
 from ..observers import DEFAULT_GLYPH_LOAD_SPAN, glyph_load, kuramoto_order
 
@@ -83,7 +87,6 @@ from ..selector import (
     _calc_selector_score,
     _apply_selector_hysteresis,
 )
-from ..config.operator_names import TRANSITION
 from ..utils import get_numpy
 
 from .sampling import update_node_sample as _update_node_sample
@@ -295,7 +298,7 @@ def _read_adaptive_params(
 
 
 def _compute_state(G: TNFRGraph, cfg: Mapping[str, Any]) -> tuple[str, float, float]:
-    """Return current state (stable/dissonant/transition) and metrics."""
+    """Return the canonical network state and supporting metrics."""
     R = kuramoto_order(G)
     dist = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
     disr = (
@@ -309,11 +312,11 @@ def _compute_state(G: TNFRGraph, cfg: Mapping[str, Any]) -> tuple[str, float, fl
     disr_hi = float(cfg.get("disr_hi", 0.50))
     disr_lo = float(cfg.get("disr_lo", 0.25))
     if (R >= R_hi) and (disr <= disr_lo):
-        state = "estable"
+        state = STATE_STABLE
     elif (R <= R_lo) or (disr >= disr_hi):
-        state = "disonante"
+        state = STATE_DISSONANT
     else:
-        state = TRANSITION
+        state = STATE_TRANSITION
     return state, float(R), disr
 
 
@@ -326,12 +329,14 @@ def _smooth_adjust_k(
     kL_min = float(cfg.get("kL_min", 0.05))
     kL_max = float(cfg.get("kL_max", 0.25))
 
-    if state == "disonante":
+    state = normalise_state_token(state)
+
+    if state == STATE_DISSONANT:
         kG_t = kG_max
         kL_t = 0.5 * (
             kL_min + kL_max
         )  # local medio para no perder plasticidad
-    elif state == "estable":
+    elif state == STATE_STABLE:
         kG_t = kG_min
         kL_t = kL_min
     else:
@@ -419,6 +424,11 @@ def coordinate_global_local_phase(
         g.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"])
     )
     hist_state = cast(deque[str], _ensure_hist_deque(hist, "phase_state", maxlen))
+    if hist_state:
+        normalised_states = [normalise_state_token(item) for item in hist_state]
+        if normalised_states != list(hist_state):
+            hist_state.clear()
+            hist_state.extend(normalised_states)
     hist_R = cast(deque[float], _ensure_hist_deque(hist, "phase_R", maxlen))
     hist_disr = cast(deque[float], _ensure_hist_deque(hist, "phase_disr", maxlen))
     # 0) Si hay fuerzas explícitas, usar y salir del modo adaptativo

@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 from collections import deque, Counter
 from itertools import islice
 from collections.abc import Iterable, Mapping, MutableMapping
 
-from .constants import get_param
+from .constants import get_param, normalise_state_token
 from .utils import ensure_collection, get_logger, validate_window
 from .types import TNFRGraph
 
@@ -210,6 +210,8 @@ def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]:
             replaced = True
         if replaced:
             G.graph.pop(sentinel_key, None)
+        if isinstance(hist, MutableMapping):
+            _normalise_state_streams(hist)
         return hist
     if (
         not isinstance(hist, HistoryDict)
@@ -223,6 +225,7 @@ def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]:
         hist.pop_least_used_batch(excess)
     if replaced:
         G.graph.pop(sentinel_key, None)
+    _normalise_state_streams(cast(MutableMapping[str, Any], hist))
     return hist
 
 
@@ -237,6 +240,25 @@ def append_metric(
     hist: MutableMapping[str, list[Any]], key: str, value: Any
 ) -> None:
     """Append ``value`` to ``hist[key]`` list, creating it if missing."""
+    if key == "phase_state" and isinstance(value, str):
+        value = normalise_state_token(value)
+    elif key == "nodal_diag" and isinstance(value, Mapping):
+        snapshot: dict[Any, Any] = {}
+        for node, payload in value.items():
+            if isinstance(payload, Mapping):
+                state_value = payload.get("state")
+                if isinstance(payload, MutableMapping):
+                    updated = payload
+                else:
+                    updated = dict(payload)
+                if isinstance(state_value, str):
+                    updated["state"] = normalise_state_token(state_value)
+                snapshot[node] = updated
+            else:
+                snapshot[node] = payload
+        hist.setdefault(key, []).append(snapshot)
+        return
+
     hist.setdefault(key, []).append(value)
 
 
@@ -279,3 +301,37 @@ def count_glyphs(
         counts.update(seq)
 
     return counts
+
+
+def _normalise_state_streams(hist: MutableMapping[str, Any]) -> None:
+    """Normalise legacy state tokens stored in telemetry history."""
+
+    phase_state = hist.get("phase_state")
+    if isinstance(phase_state, deque):
+        canonical = [normalise_state_token(str(item)) for item in phase_state]
+        if canonical != list(phase_state):
+            phase_state.clear()
+            phase_state.extend(canonical)
+    elif isinstance(phase_state, list):
+        canonical = [normalise_state_token(str(item)) for item in phase_state]
+        if canonical != phase_state:
+            hist["phase_state"] = canonical
+
+    diag_history = hist.get("nodal_diag")
+    if isinstance(diag_history, list):
+        for snapshot in diag_history:
+            if not isinstance(snapshot, Mapping):
+                continue
+            for node, payload in snapshot.items():
+                if not isinstance(payload, Mapping):
+                    continue
+                state_value = payload.get("state")
+                if not isinstance(state_value, str):
+                    continue
+                canonical = normalise_state_token(state_value)
+                if canonical == state_value:
+                    continue
+                if isinstance(payload, MutableMapping):
+                    payload["state"] = canonical
+                else:
+                    snapshot[node] = {**payload, "state": canonical}
