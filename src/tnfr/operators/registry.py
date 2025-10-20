@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import importlib
 import pkgutil
-from warnings import warn
 from typing import TYPE_CHECKING
 
 from ..config.operator_names import canonical_operator_name
@@ -70,12 +69,10 @@ def discover_operators() -> None:
 
 def __getattr__(name: str):
     if name == "OPERADORES":
-        warn(
-            "'OPERADORES' is deprecated; use 'OPERATORS' instead.",
-            DeprecationWarning,
-            stacklevel=2,
+        raise AttributeError(
+            "Spanish operator registry alias 'OPERADORES' has been removed. "
+            "Use 'OPERATORS' instead."
         )
-        return OPERATORS
     raise AttributeError(name)
 
 

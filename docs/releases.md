@@ -1,5 +1,16 @@
 # Release notes
 
+## 11.2.0 (operator collections English-only)
+
+- Removed the Spanish compatibility aliases from
+  :mod:`tnfr.config.operator_names`. Accessing the retired names now raises
+  :class:`AttributeError` pointing to the canonical English constant.
+- Dropped the ``OPERADORES`` alias from :mod:`tnfr.operators.registry`; only the
+  English :data:`OPERATORS` registry is exported.
+- Updated tests and helpers to enforce the English-only contract for operator
+  collections, reflecting the final step in the migration announced in earlier
+  releases.
+
 ## 11.1.0 (glyph load Spanish aggregates removed)
 
 - :func:`tnfr.observers.glyph_load` now reports only the English aggregate

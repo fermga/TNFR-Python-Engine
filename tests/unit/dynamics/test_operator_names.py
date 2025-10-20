@@ -3,6 +3,7 @@
 import pytest
 
 from tnfr.config import operator_names as names
+from tnfr.operators import registry as registry_module
 from tnfr.operators.registry import OPERATORS, discover_operators, get_operator_class
 
 
@@ -28,11 +29,12 @@ def test_validation_sets_are_subsets() -> None:
         ("AUTOORGANIZACION_CIERRES", "SELF_ORGANIZATION_CLOSURES"),
     ),
 )
-def test_legacy_aliases_emit_deprecation_and_match(legacy_name: str, preferred_name: str) -> None:
-    preferred = getattr(names, preferred_name)
-    with pytest.warns(DeprecationWarning):
-        legacy = getattr(names, legacy_name)
-    assert legacy is preferred
+def test_spanish_aliases_raise_attribute_error(legacy_name: str, preferred_name: str) -> None:
+    with pytest.raises(AttributeError) as exc_info:
+        getattr(names, legacy_name)
+    message = str(exc_info.value)
+    assert legacy_name in message
+    assert preferred_name in message
 
 
 def test_canonical_lookup_is_passthrough_for_english_tokens() -> None:
@@ -49,3 +51,9 @@ def test_get_operator_class_rejects_spanish_tokens() -> None:
     discover_operators()
     with pytest.raises(KeyError):
         get_operator_class("emision")
+
+
+def test_registry_exposes_only_english_collection_name() -> None:
+    with pytest.raises(AttributeError) as exc_info:
+        getattr(registry_module, "OPERADORES")
+    assert "OPERADORES" in str(exc_info.value)

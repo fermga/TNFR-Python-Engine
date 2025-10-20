@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-import sys
-from warnings import warn
-
 
 # Canonical operator identifiers (English tokens)
 EMISSION = "emission"
@@ -50,15 +47,6 @@ INTERMEDIATE_OPERATORS = frozenset({DISSONANCE, COUPLING, RESONANCE})
 VALID_END_OPERATORS = frozenset({SILENCE, TRANSITION, RECURSIVITY})
 SELF_ORGANIZATION_CLOSURES = frozenset({SILENCE, CONTRACTION})
 
-
-_LEGACY_ALIAS_MAP = {
-    "INICIO_VALIDOS": "VALID_START_OPERATORS",
-    "TRAMO_INTERMEDIO": "INTERMEDIATE_OPERATORS",
-    "CIERRE_VALIDO": "VALID_END_OPERATORS",
-    "AUTOORGANIZACION_CIERRES": "SELF_ORGANIZATION_CLOSURES",
-}
-
-
 def canonical_operator_name(name: str) -> str:
     """Return the canonical operator token for ``name``."""
 
@@ -72,22 +60,24 @@ def operator_display_name(name: str) -> str:
 
 
 def __getattr__(name: str):
-    """Provide compatibility aliases that emit deprecation warnings."""
+    """Reject requests for removed Spanish aliases with a clear error."""
 
-    if name in _LEGACY_ALIAS_MAP:
-        replacement = _LEGACY_ALIAS_MAP[name]
-        warn(
+    removed_aliases = {
+        "INICIO_VALIDOS": "VALID_START_OPERATORS",
+        "TRAMO_INTERMEDIO": "INTERMEDIATE_OPERATORS",
+        "CIERRE_VALIDO": "VALID_END_OPERATORS",
+        "AUTOORGANIZACION_CIERRES": "SELF_ORGANIZATION_CLOSURES",
+    }
+    if name in removed_aliases:
+        raise AttributeError(
             (
-                "`tnfr.config.operator_names.{name}` is deprecated; "
-                "use `{replacement}` instead."
-            ).format(name=name, replacement=replacement),
-            DeprecationWarning,
-            stacklevel=2,
+                "Spanish operator alias '{name}' has been removed. "
+                "Use the English '{replacement}' constant instead."
+            ).format(name=name, replacement=removed_aliases[name])
         )
-        value = getattr(sys.modules[__name__], replacement)
-        setattr(sys.modules[__name__], name, value)
-        return value
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    raise AttributeError(
+        f"module {__name__!r} has no attribute {name!r}"
+    )
 
 
 __all__ = [
@@ -111,10 +101,6 @@ __all__ = [
     "INTERMEDIATE_OPERATORS",
     "VALID_END_OPERATORS",
     "SELF_ORGANIZATION_CLOSURES",
-    "INICIO_VALIDOS",
-    "TRAMO_INTERMEDIO",
-    "CIERRE_VALIDO",
-    "AUTOORGANIZACION_CIERRES",
     "canonical_operator_name",
     "operator_display_name",
 ]
