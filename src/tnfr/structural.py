@@ -28,7 +28,7 @@ from .operators.definitions import (
     Transition,
     Recursivity,
 )
-from .operators.registry import OPERADORES
+from .operators.registry import OPERATORS
 from .validation import validate_sequence
 
 
@@ -79,7 +79,7 @@ __all__ = (
     "Mutation",
     "Transition",
     "Recursivity",
-    "OPERADORES",
+    "OPERATORS",
     "validate_sequence",
     "run_sequence",
 )

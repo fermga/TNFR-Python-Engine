@@ -3,12 +3,12 @@
 import pytest
 
 from tnfr.config import operator_names as names
-from tnfr.operators.registry import OPERADORES, discover_operators, get_operator_class
+from tnfr.operators.registry import OPERATORS, discover_operators, get_operator_class
 
 
 def test_registry_matches_operator_constants() -> None:
     discover_operators()
-    assert set(OPERADORES.keys()) == names.ALL_OPERATOR_NAMES
+    assert set(OPERATORS.keys()) == names.ALL_OPERATOR_NAMES
 
 
 def test_validation_sets_are_subsets() -> None:

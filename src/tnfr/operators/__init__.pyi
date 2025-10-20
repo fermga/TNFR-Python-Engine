@@ -17,7 +17,7 @@ Recursivity: Any
 GLYPH_OPERATIONS: Any
 JitterCache: Any
 JitterCacheManager: Any
-OPERADORES: Any
+OPERATORS: Any
 apply_glyph: Any
 apply_glyph_obj: Any
 apply_network_remesh: Any
