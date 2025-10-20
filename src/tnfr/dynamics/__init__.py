@@ -83,7 +83,7 @@ from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import recent_glyph, ensure_history, append_metric
 from ..selector import (
     _selector_thresholds,
-    _norms_para_selector,
+    _selector_norms,
     _calc_selector_score,
     _apply_selector_hysteresis,
 )
@@ -917,7 +917,7 @@ def parametric_glyph_selector(G: TNFRGraph, n: NodeId) -> GlyphCode:
 
     norms = cast(SelectorNorms | None, G.graph.get("_sel_norms"))
     if norms is None:
-        norms = _norms_para_selector(G)
+        norms = _selector_norms(G)
     Si, dnfr, accel = _selector_normalized_metrics(nd, norms)
 
     cand = _selector_base_choice(Si, dnfr, accel, thr)
@@ -1043,7 +1043,7 @@ def _apply_selector(G: TNFRGraph) -> GlyphSelector:
         G.graph.get("glyph_selector", default_glyph_selector),
     )
     if selector is parametric_glyph_selector:
-        _norms_para_selector(G)
+        _selector_norms(G)
         _configure_selector_weights(G)
     return selector
 
@@ -1222,7 +1222,7 @@ def _prepare_selector_preselection(
 ) -> _SelectorPreselection | None:
     """Return preselection data for recognised selectors."""
     if selector is default_glyph_selector:
-        norms = G.graph.get("_sel_norms") or _norms_para_selector(G)
+        norms = G.graph.get("_sel_norms") or _selector_norms(G)
         thresholds = _selector_thresholds(G)
         n_jobs = _selector_parallel_jobs(G)
         metrics = _collect_selector_metrics(G, nodes, norms, n_jobs=n_jobs)
@@ -1231,7 +1231,7 @@ def _prepare_selector_preselection(
             "default", metrics, base_choices, thresholds=thresholds
         )
     if selector is parametric_glyph_selector:
-        norms = G.graph.get("_sel_norms") or _norms_para_selector(G)
+        norms = G.graph.get("_sel_norms") or _selector_norms(G)
         thresholds = _selector_thresholds(G)
         n_jobs = _selector_parallel_jobs(G)
         metrics = _collect_selector_metrics(G, nodes, norms, n_jobs=n_jobs)

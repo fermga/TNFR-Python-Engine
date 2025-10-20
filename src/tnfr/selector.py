@@ -7,6 +7,7 @@ hysteresis when assigning glyphs to nodes.
 from __future__ import annotations
 
 import threading
+import warnings
 from operator import itemgetter
 from typing import Any, Mapping, TYPE_CHECKING, cast
 from weakref import WeakKeyDictionary
@@ -26,7 +27,7 @@ HYSTERESIS_GLYPHS: set[str] = {"IL", "OZ", "ZHIR", "THOL", "NAV", "RA"}
 
 __all__ = (
     "_selector_thresholds",
-    "_norms_para_selector",
+    "_selector_norms",
     "_calc_selector_score",
     "_apply_selector_hysteresis",
 )
@@ -116,8 +117,8 @@ def _selector_thresholds(G: "nx.Graph") -> SelectorThresholds:
     return thresholds
 
 
-def _norms_para_selector(G: "nx.Graph") -> SelectorNorms:
-    """Compute and cache norms for ΔNFR and acceleration.
+def _selector_norms(G: "nx.Graph") -> SelectorNorms:
+    """Compute and cache selector norms for ΔNFR and acceleration.
 
     Parameters
     ----------
@@ -133,6 +134,22 @@ def _norms_para_selector(G: "nx.Graph") -> SelectorNorms:
     norms = compute_dnfr_accel_max(G)
     G.graph["_sel_norms"] = norms
     return norms
+
+
+def _norms_para_selector(G: "nx.Graph") -> SelectorNorms:
+    """Compatibility alias for :func:`_selector_norms`.
+
+    Emits :class:`DeprecationWarning` advising callers to adopt the English
+    helper name while keeping behaviour identical.
+    """
+
+    warnings.warn(
+        "_norms_para_selector is deprecated and will be removed in a future "
+        "release; use _selector_norms instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return _selector_norms(G)
 
 
 def _calc_selector_score(
