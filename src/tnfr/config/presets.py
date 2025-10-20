@@ -11,11 +11,16 @@ from ..execution import (
 )
 from ..types import Glyph, PresetTokens
 
-__all__ = ("get_preset",)
+__all__ = (
+    "get_preset",
+    "PREFERRED_PRESET_NAMES",
+    "LEGACY_PRESET_NAMES",
+    "PRESET_NAME_ALIASES",
+)
 
 
-_PRESETS: dict[str, PresetTokens] = {
-    "arranque_resonante": seq(
+_PRIMARY_PRESETS: dict[str, PresetTokens] = {
+    "resonant_bootstrap": seq(
         Glyph.AL,
         Glyph.EN,
         Glyph.IL,
@@ -25,14 +30,14 @@ _PRESETS: dict[str, PresetTokens] = {
         wait(3),
         Glyph.SHA,
     ),
-    "mutacion_contenida": seq(
+    "contained_mutation": seq(
         Glyph.AL,
         Glyph.EN,
         block(Glyph.OZ, Glyph.ZHIR, Glyph.IL, repeat=2),
         Glyph.RA,
         Glyph.SHA,
     ),
-    "exploracion_acople": seq(
+    "coupling_exploration": seq(
         Glyph.AL,
         Glyph.EN,
         Glyph.IL,
@@ -42,8 +47,6 @@ _PRESETS: dict[str, PresetTokens] = {
         Glyph.RA,
         Glyph.SHA,
     ),
-    CANONICAL_PRESET_NAME: list(CANONICAL_PROGRAM_TOKENS),
-    # Topologías fractales: expansión/contracción modular
     "fractal_expand": seq(
         block(Glyph.THOL, Glyph.VAL, Glyph.UM, repeat=2, close=Glyph.NUL),
         Glyph.RA,
@@ -52,7 +55,23 @@ _PRESETS: dict[str, PresetTokens] = {
         block(Glyph.THOL, Glyph.NUL, Glyph.UM, repeat=2, close=Glyph.SHA),
         Glyph.RA,
     ),
+    "canonical_example": list(CANONICAL_PROGRAM_TOKENS),
 }
+
+_LEGACY_PRESET_ALIASES: dict[str, str] = {
+    "arranque_resonante": "resonant_bootstrap",
+    "mutacion_contenida": "contained_mutation",
+    "exploracion_acople": "coupling_exploration",
+    CANONICAL_PRESET_NAME: "canonical_example",
+}
+
+PREFERRED_PRESET_NAMES: tuple[str, ...] = tuple(_PRIMARY_PRESETS.keys())
+LEGACY_PRESET_NAMES: tuple[str, ...] = tuple(_LEGACY_PRESET_ALIASES.keys())
+PRESET_NAME_ALIASES: dict[str, str] = dict(_LEGACY_PRESET_ALIASES)
+
+_PRESETS: dict[str, PresetTokens] = {**_PRIMARY_PRESETS}
+for alias, target in _LEGACY_PRESET_ALIASES.items():
+    _PRESETS[alias] = _PRIMARY_PRESETS[target]
 
 
 def get_preset(name: str) -> PresetTokens:

@@ -24,7 +24,11 @@ from ..dynamics import (
     parametric_glyph_selector,
     validate_canon,
 )
-from ..config.presets import get_preset
+from ..config.presets import (
+    LEGACY_PRESET_NAMES,
+    PREFERRED_PRESET_NAMES,
+    get_preset,
+)
 from ..config import apply_config
 from ..io import read_structured_file, safe_write, StructuredFileError
 from ..glyph_history import ensure_history
@@ -41,6 +45,9 @@ logger = get_logger(__name__)
 # CLI summaries should remain concise by default while allowing callers to
 # inspect the full glyphogram series when needed.
 DEFAULT_SUMMARY_SERIES_LIMIT = 10
+
+_PREFERRED_PRESETS_DISPLAY = ", ".join(PREFERRED_PRESET_NAMES)
+_LEGACY_PRESETS_DISPLAY = ", ".join(LEGACY_PRESET_NAMES)
 
 
 def _save_json(path: str, data: Any) -> None:
@@ -169,8 +176,14 @@ def resolve_program(
             return get_preset(args.preset)
         except KeyError as exc:
             logger.error(
-                "Preset desconocido '%s'. Usa --sequence-file para cargar secuencias personalizadas",
+                (
+                    "Preset desconocido '%s'. Nombres preferidos: %s. "
+                    "Claves heredadas: %s. Usa --sequence-file para cargar "
+                    "secuencias personalizadas"
+                ),
                 args.preset,
+                _PREFERRED_PRESETS_DISPLAY,
+                _LEGACY_PRESETS_DISPLAY,
             )
             raise SystemExit(1) from exc
     if getattr(args, "sequence_file", None):

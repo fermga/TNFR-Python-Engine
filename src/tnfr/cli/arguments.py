@@ -3,9 +3,19 @@ from __future__ import annotations
 import argparse
 from typing import Any, Iterable
 
+from ..config.presets import (
+    LEGACY_PRESET_NAMES,
+    PREFERRED_PRESET_NAMES,
+)
 from ..gamma import GAMMA_REGISTRY
 from ..types import ArgSpec
 from .utils import spec
+
+
+_PRESET_HELP = "Nombres preferidos: {}. Claves heredadas: {}.".format(
+    ", ".join(PREFERRED_PRESET_NAMES),
+    ", ".join(LEGACY_PRESET_NAMES),
+)
 
 
 GRAMMAR_ARG_SPECS: tuple[ArgSpec, ...] = (
@@ -116,7 +126,7 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
     add_canon_toggle(p_run)
     add_grammar_selector_args(p_run)
     add_history_export_args(p_run)
-    p_run.add_argument("--preset", type=str, default=None)
+    p_run.add_argument("--preset", type=str, default=None, help=_PRESET_HELP)
     p_run.add_argument("--sequence-file", type=str, default=None)
     p_run.add_argument("--summary", action="store_true")
     p_run.add_argument(
@@ -149,7 +159,7 @@ def _add_sequence_parser(sub: argparse._SubParsersAction) -> None:
         ),
     )
     add_common_args(p_seq)
-    p_seq.add_argument("--preset", type=str, default=None)
+    p_seq.add_argument("--preset", type=str, default=None, help=_PRESET_HELP)
     p_seq.add_argument("--sequence-file", type=str, default=None)
     add_history_export_args(p_seq)
     add_grammar_args(p_seq)
