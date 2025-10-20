@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import math
+import warnings
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 from ..alias import get_attr, set_attr
 from ..constants import get_aliases
@@ -29,7 +30,28 @@ from .trig_cache import get_trig_cache
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_SI = get_aliases("SI")
+
+PHASE_DISPERSION_KEY = "dSi_dphase_disp"
+LEGACY_PHASE_DISPERSION_KEY = "dSi_ddisp_fase"
 __all__ = ("get_Si_weights", "compute_Si_node", "compute_Si")
+
+
+def _normalise_si_sensitivity_mapping(
+    mapping: Mapping[str, float], *, warn: bool
+) -> dict[str, float]:
+    """Return a mapping that only exposes the English Si sensitivity keys."""
+
+    normalised = dict(mapping)
+    legacy_value = normalised.pop(LEGACY_PHASE_DISPERSION_KEY, None)
+    if legacy_value is not None:
+        if warn:
+            warnings.warn(
+                "'dSi_ddisp_fase' is deprecated; use 'dSi_dphase_disp' instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+        normalised.setdefault(PHASE_DISPERSION_KEY, legacy_value)
+    return normalised
 
 
 def _cache_weights(G: GraphLike) -> tuple[float, float, float]:
@@ -37,6 +59,12 @@ def _cache_weights(G: GraphLike) -> tuple[float, float, float]:
 
     w = merge_graph_weights(G, "SI_WEIGHTS")
     cfg_key = stable_json(w)
+
+    existing = G.graph.get("_Si_sensitivity")
+    if isinstance(existing, Mapping):
+        migrated = _normalise_si_sensitivity_mapping(existing, warn=True)
+        if migrated != existing:
+            G.graph["_Si_sensitivity"] = migrated
 
     def builder() -> tuple[float, float, float]:
         weights = normalize_weights(w, ("alpha", "beta", "gamma"), default=0.0)
@@ -47,10 +75,7 @@ def _cache_weights(G: GraphLike) -> tuple[float, float, float]:
         G.graph["_Si_weights_key"] = cfg_key
         G.graph["_Si_sensitivity"] = {
             "dSi_dvf_norm": alpha,
-            "dSi_dphase_disp": -beta,
-            # ``dSi_ddisp_fase`` is kept temporarily for legacy consumers.
-            # Remove once downstream callers have migrated to the English key.
-            "dSi_ddisp_fase": -beta,
+            PHASE_DISPERSION_KEY: -beta,
             "dSi_ddnfr_norm": -gamma,
         }
         return alpha, beta, gamma
@@ -73,10 +98,31 @@ def compute_Si_node(
     gamma: float,
     vfmax: float,
     dnfrmax: float,
-    disp_fase: float,
+    phase_dispersion: float | None = None,
     inplace: bool,
+    **kwargs: Any,
 ) -> float:
     """Compute ``Si`` for a single node."""
+
+    legacy_dispersion = kwargs.pop("disp_fase", None)
+    if legacy_dispersion is not None:
+        warnings.warn(
+            "The 'disp_fase' keyword is deprecated; use 'phase_dispersion' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        if phase_dispersion is not None:
+            raise TypeError(
+                "Both 'phase_dispersion' and legacy 'disp_fase' were provided."
+            )
+        phase_dispersion = float(legacy_dispersion)
+
+    if kwargs:
+        unexpected = ", ".join(sorted(kwargs))
+        raise TypeError(f"Unexpected keyword argument(s): {unexpected}")
+
+    if phase_dispersion is None:
+        raise TypeError("Missing required keyword-only argument: 'phase_dispersion'")
 
     vf = get_attr(nd, ALIAS_VF, 0.0)
     vf_norm = clamp01(abs(vf) / vfmax)
@@ -84,7 +130,11 @@ def compute_Si_node(
     dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
     dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
 
-    Si = alpha * vf_norm + beta * (1.0 - disp_fase) + gamma * (1.0 - dnfr_norm)
+    Si = (
+        alpha * vf_norm
+        + beta * (1.0 - phase_dispersion)
+        + gamma * (1.0 - dnfr_norm)
+    )
     Si = clamp01(Si)
     if inplace:
         set_attr(nd, ALIAS_SI, Si)
@@ -121,10 +171,14 @@ def _compute_si_python_chunk(
         th_bar = neighbor_phase_mean_list(
             neigh, cos_th=cos_th, sin_th=sin_th, np=None, fallback=theta
         )
-        disp_fase = abs(angle_diff(theta, th_bar)) / math.pi
+        phase_dispersion = abs(angle_diff(theta, th_bar)) / math.pi
         vf_norm = clamp01(abs(vf) / vfmax)
         dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
-        Si = alpha * vf_norm + beta * (1.0 - disp_fase) + gamma * (1.0 - dnfr_norm)
+        Si = (
+            alpha * vf_norm
+            + beta * (1.0 - phase_dispersion)
+            + gamma * (1.0 - dnfr_norm)
+        )
         results[n] = clamp01(Si)
     return results
 
@@ -183,7 +237,7 @@ def compute_Si(
         theta_arr = np.fromiter(theta_vals, dtype=float, count=count)
         mean_arr = np.fromiter(mean_vals, dtype=float, count=count)
         diff = np.remainder(theta_arr - mean_arr + math.pi, math.tau) - math.pi
-        disp_fase_arr = np.abs(diff) / math.pi
+        phase_dispersion_arr = np.abs(diff) / math.pi
 
         vf_arr = np.fromiter(vf_vals, dtype=float, count=count)
         dnfr_arr = np.fromiter(dnfr_vals, dtype=float, count=count)
@@ -191,7 +245,7 @@ def compute_Si(
         dnfr_norm = np.clip(np.abs(dnfr_arr) / dnfrmax, 0.0, 1.0)
 
         si_arr = np.clip(
-            alpha * vf_norm + beta * (1.0 - disp_fase_arr)
+            alpha * vf_norm + beta * (1.0 - phase_dispersion_arr)
             + gamma * (1.0 - dnfr_norm),
             0.0,
             1.0,
@@ -233,7 +287,7 @@ def compute_Si(
                 theta = thetas.get(n, 0.0)
                 neigh = neighbors[n]
                 th_bar = pm_fn(neigh, fallback=theta)
-                disp_fase = abs(angle_diff(theta, th_bar)) / math.pi
+                phase_dispersion = abs(angle_diff(theta, th_bar)) / math.pi
                 out[n] = compute_Si_node(
                     n,
                     nd,
@@ -242,7 +296,7 @@ def compute_Si(
                     gamma=gamma,
                     vfmax=vfmax,
                     dnfrmax=dnfrmax,
-                    disp_fase=disp_fase,
+                    phase_dispersion=phase_dispersion,
                     inplace=False,
                 )
 

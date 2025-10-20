@@ -29,9 +29,23 @@ def test_get_si_weights_normalization(graph_canon):
     assert G.graph["_Si_sensitivity"] == {
         "dSi_dvf_norm": alpha,
         "dSi_dphase_disp": -beta,
-        "dSi_ddisp_fase": -beta,
         "dSi_ddnfr_norm": -gamma,
     }
+
+
+def test_get_si_weights_migrates_legacy_sensitivity(graph_canon):
+    G = graph_canon()
+    G.graph["_Si_sensitivity"] = {
+        "dSi_ddisp_fase": -0.5,
+        "dSi_dvf_norm": 0.1,
+    }
+
+    with pytest.deprecated_call():
+        get_Si_weights(G)
+
+    sensitivity = G.graph["_Si_sensitivity"]
+    assert "dSi_dphase_disp" in sensitivity
+    assert "dSi_ddisp_fase" not in sensitivity
 
 
 def test_si_sensitivity_field_handles_legacy_key(graph_canon):
@@ -40,13 +54,11 @@ def test_si_sensitivity_field_handles_legacy_key(graph_canon):
         "dSi_ddisp_fase": -0.25,
     }
 
-    data = _si_sensitivity_field(G)
-    assert data == {
-        "si_sensitivity": {
-            "dSi_dphase_disp": -0.25,
-            "dSi_ddisp_fase": -0.25,
-        }
-    }
+    with pytest.deprecated_call():
+        data = _si_sensitivity_field(G)
+
+    assert data == {"si_sensitivity": {"dSi_dphase_disp": -0.25}}
+    assert G.graph["_Si_sensitivity"] == {"dSi_dphase_disp": -0.25}
 
 
 def test_si_sensitivity_field_handles_new_key(graph_canon):
@@ -56,12 +68,7 @@ def test_si_sensitivity_field_handles_new_key(graph_canon):
     }
 
     data = _si_sensitivity_field(G)
-    assert data == {
-        "si_sensitivity": {
-            "dSi_dphase_disp": -0.75,
-            "dSi_ddisp_fase": -0.75,
-        }
-    }
+    assert data == {"si_sensitivity": {"dSi_dphase_disp": -0.75}}
 
 
 def test_get_trig_cache(graph_canon):
@@ -126,7 +133,7 @@ def test_compute_Si_node(graph_canon):
     set_attr(G.nodes[1], ALIAS_DNFR, 0.2)
     set_attr(G.nodes[1], ALIAS_THETA, 0.0)
     set_attr(G.nodes[2], ALIAS_THETA, 0.0)
-    disp_fase = 0.0
+    phase_dispersion = 0.0
     Si = compute_Si_node(
         1,
         G.nodes[1],
@@ -135,8 +142,28 @@ def test_compute_Si_node(graph_canon):
         gamma=0.25,
         vfmax=1.0,
         dnfrmax=1.0,
-        disp_fase=disp_fase,
+        phase_dispersion=phase_dispersion,
         inplace=True,
     )
     assert Si == pytest.approx(0.7)
     assert get_attr(G.nodes[1], ALIAS_SI, 0.0) == pytest.approx(0.7)
+
+
+def test_compute_Si_node_legacy_keyword(graph_canon):
+    G = graph_canon()
+    nd = {ALIAS_VF[0]: 0.5, ALIAS_DNFR[0]: 0.2}
+
+    with pytest.deprecated_call():
+        result = compute_Si_node(
+            1,
+            nd,
+            alpha=0.5,
+            beta=0.25,
+            gamma=0.25,
+            vfmax=1.0,
+            dnfrmax=1.0,
+            disp_fase=0.0,
+            inplace=False,
+        )
+
+    assert result == pytest.approx(0.7)

@@ -13,6 +13,7 @@ from collections.abc import Iterable, Mapping
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs, append_metric
 from .utils import cached_import, get_graph_mapping, is_non_string_sequence
+from .metrics.sense_index import _normalise_si_sensitivity_mapping
 from .types import (
     SigmaVector,
     TNFRGraph,
@@ -249,19 +250,10 @@ def _si_sensitivity_field(G: TNFRGraph) -> TraceMetadata:
     if mapping is None:
         return {}
 
-    legacy_key = "dSi_ddisp_fase"
-    english_key = "dSi_dphase_disp"
+    normalised = _normalise_si_sensitivity_mapping(mapping, warn=True)
 
-    normalised = dict(mapping)
-
-    english_value = normalised.get(english_key)
-    legacy_value = normalised.get(legacy_key)
-
-    if english_value is None and legacy_value is not None:
-        english_value = legacy_value
-        normalised[english_key] = legacy_value
-    if legacy_value is None and english_value is not None:
-        normalised[legacy_key] = english_value
+    if normalised != mapping:
+        G.graph["_Si_sensitivity"] = normalised
 
     return {"si_sensitivity": normalised}
 
