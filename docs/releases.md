@@ -1,5 +1,16 @@
 # Release notes
 
+## 12.1.0 (selector norms helper renamed)
+
+- Renamed :func:`tnfr.selector._norms_para_selector` to the English
+  :func:`tnfr.selector._selector_norms` helper to align selector internals with
+  the ongoing terminology migration.
+- Added a temporary :func:`tnfr.selector._norms_para_selector` compatibility
+  wrapper that emits :class:`DeprecationWarning` so downstream integrations can
+  migrate before the legacy identifier is removed.
+- Updated :mod:`tnfr.dynamics` and the selector unit tests to consume the new
+  helper, keeping the cached norms behaviour unchanged.
+
 ## 12.0.0 (diagnosis state Spanish shim removed)
 
 - Removed the :func:`tnfr.constants.enable_spanish_state_tokens` and

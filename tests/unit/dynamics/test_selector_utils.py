@@ -9,6 +9,7 @@ import tnfr.selector as selector
 
 from tnfr.selector import (
     _selector_thresholds,
+    _selector_norms,
     _norms_para_selector,
     _calc_selector_score,
     _apply_selector_hysteresis,
@@ -96,14 +97,21 @@ def test_selector_thresholds_cache_releases_graph(graph_canon):
     assert len(selector._SELECTOR_THRESHOLD_CACHE) == 0
 
 
-def test_norms_para_selector_computes_max(graph_canon):
+def test_selector_norms_computes_max(graph_canon):
     G = graph_canon()
     G.add_node(0, **{ALIAS_DNFR[-1]: 2.0, ALIAS_D2EPI[-2]: 1.0})
     G.add_node(1, **{ALIAS_DNFR[-1]: -3.0, ALIAS_D2EPI[-2]: 0.5})
-    norms = _norms_para_selector(G)
+    norms = _selector_norms(G)
     assert norms == G.graph["_sel_norms"]
     assert norms["dnfr_max"] == 3.0
     assert norms["accel_max"] == 1.0
+
+
+def test_norms_para_selector_alias_warns(graph_canon):
+    G = graph_canon()
+    with pytest.deprecated_call():
+        norms = _norms_para_selector(G)
+    assert norms is G.graph["_sel_norms"]
 
 
 def test_calc_selector_score_assumes_normalized_weights():
