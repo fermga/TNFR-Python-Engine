@@ -1,5 +1,16 @@
 # Release notes
 
+## 5.0.0 (prepare_network alias retired)
+
+- Removed the Spanish helper alias ``tnfr.preparar_red``. The network
+  preparation pipeline now ships exclusively under the English
+  :func:`tnfr.prepare_network` name. Codebases that still relied on the
+  alias must update their imports before upgrading.
+- Updated the typing stubs, integration tests, and documentation to
+  reflect the canonical helper set.
+- Bumped the package version to **5.0.0** to flag the
+  backward-incompatible API change.
+
 ## 2.0.0 (Spanish alias removal)
 
 - Removed the Spanish compatibility tables from :mod:`tnfr.config.operator_names`.
@@ -41,9 +52,9 @@
 
 - Renamed the network preparation helper to `prepare_network` for
   consistency with the English-facing API. The previous Spanish name
-  `preparar_red` now emits a :class:`DeprecationWarning`, is no longer
-  exported via ``__all__`` and will be removed on **2025-06-01**. Use
-  the English helper directly to stay within the supported contract.
+  `preparar_red` emitted a :class:`DeprecationWarning` and has now been
+  removed in **TNFR 5.0**. Use the English helper directly to stay
+  within the supported contract.
 
 - Unified the node wrappers under the English identifiers
   :class:`tnfr.node.NodeNX` and :class:`tnfr.node.NodeProtocol`. Their

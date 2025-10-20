@@ -30,8 +30,7 @@ def test_public_exports():
 def test_basic_flow():
     G, n = tnfr.create_nfr("n1")
     tnfr.prepare_network(G)
-    with pytest.deprecated_call():
-        tnfr.preparar_red(G)
+    G.graph.setdefault("DIAGNOSIS", {})["enabled"] = False
     register_metrics_callbacks(G)
     tnfr.step(G)
     tnfr.run(G, steps=2)
@@ -98,17 +97,11 @@ def test_public_api_missing_prepare_network_dependency(monkeypatch):
             for message in warning_messages
         )
         assert "prepare_network" in module.__all__
-        assert not getattr(module, "_HAS_PREPARAR_RED", True)
         assert not getattr(module, "_HAS_PREPARE_NETWORK", True)
-        with pytest.raises(ImportError) as excinfo:
-            module.preparar_red(None)
-        assert "networkx" in str(excinfo.value)
+        assert not hasattr(module, "preparar_red")
         with pytest.raises(ImportError) as excinfo:
             module.prepare_network(None)
         assert "networkx" in str(excinfo.value)
-        info = getattr(module.preparar_red, "__tnfr_missing_dependency__", {})
-        assert info.get("export") == "preparar_red"
-        assert info.get("missing") == "networkx"
         prepare_info = getattr(module.prepare_network, "__tnfr_missing_dependency__", {})
         assert prepare_info.get("export") == "prepare_network"
         assert prepare_info.get("missing") == "networkx"
