@@ -63,7 +63,7 @@ except ImportError:  # noqa: BLE001 - allow any import error
 
 ensure_node_offset_map: Callable[[GraphLike], None] | None = _ensure_node_offset_map
 
-# Secciones individuales exportadas
+# Exported sections
 DEFAULT_SECTIONS: Mapping[str, Mapping[str, TNFRConfigValue]] = MappingProxyType(
     {
         "core": CORE_DEFAULTS,
@@ -73,16 +73,16 @@ DEFAULT_SECTIONS: Mapping[str, Mapping[str, TNFRConfigValue]] = MappingProxyType
     }
 )
 
-# Diccionario combinado exportado
-# Unimos los diccionarios en orden de menor a mayor prioridad para que los
-# valores de ``METRIC_DEFAULTS`` sobrescriban al resto, como hacía
-# ``ChainMap``.
+# Combined exported dictionary
+# Merge the dictionaries from lowest to highest priority so that
+# ``METRIC_DEFAULTS`` overrides the rest, mirroring the previous ``ChainMap``
+# behaviour.
 DEFAULTS: Mapping[str, TNFRConfigValue] = MappingProxyType(
     CORE_DEFAULTS | INIT_DEFAULTS | REMESH_DEFAULTS | METRIC_DEFAULTS
 )
 
 # -------------------------
-# Utilidades
+# Utilities
 # -------------------------
 
 
@@ -150,11 +150,11 @@ def get_graph_param(
     return None if val is None else cast(val)
 
 
-# Claves canónicas con nombres ASCII
+# Canonical keys with ASCII spellings
 VF_KEY = "νf"
 THETA_KEY = "theta"
 
-# Mapa de aliases para atributos nodales
+# Alias map for node attributes
 ALIASES: dict[str, tuple[str, ...]] = {
     "VF": (VF_KEY, "nu_f", "nu-f", "nu", "freq", "frequency"),
     "THETA": (THETA_KEY, "phase"),

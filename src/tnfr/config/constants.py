@@ -10,7 +10,7 @@ from typing import Mapping
 from ..types import Glyph
 
 # -------------------------
-# Orden canónico y clasificaciones funcionales
+# Canonical order and functional classifications
 # -------------------------
 
 GLYPHS_CANONICAL: tuple[str, ...] = (
@@ -45,7 +45,7 @@ DISRUPTORS: tuple[str, ...] = (
     Glyph.THOL.value,
 )
 
-# Mapa general de agrupaciones glíficas para referencia cruzada.
+# General map of glyph groupings for cross-reference.
 #
 # Spanish keys (``estabilizadores`` / ``disruptivos``) were removed in TNFR 7.0
 # to keep the public surface English-only. Code that still referenced those
@@ -55,7 +55,7 @@ GLYPH_GROUPS: Mapping[str, tuple[str, ...]] = MappingProxyType(
     {
         "stabilizers": STABILIZERS,
         "disruptors": DISRUPTORS,
-        # Grupos auxiliares para métricas morfosintácticas
+        # Auxiliary groups for morphosyntactic metrics
         "ID": (Glyph.OZ.value,),
         "CM": (Glyph.ZHIR.value, Glyph.NAV.value),
         "NE": (Glyph.IL.value, Glyph.THOL.value),
@@ -65,28 +65,28 @@ GLYPH_GROUPS: Mapping[str, tuple[str, ...]] = MappingProxyType(
 )
 
 # -------------------------
-# Mapa de ángulos glíficos
+# Glyph angle map
 # -------------------------
 
-# Ángulos canónicos para todos los glyphs reconocidos. Se calculan a partir
-# del orden canónico y reglas de orientación para las categorías
-# "estabilizadores" y "disruptivos".
+# Canonical angles for all recognised glyphs. They are computed from the
+# canonical order and orientation rules for the "stabilizers" and
+# "disruptors" categories.
 
 
 def _build_angle_map() -> dict[str, float]:
-    """Construir el mapa de ángulos en el plano σ."""
+    """Build the angle map in the σ-plane."""
 
     step = 2 * math.pi / len(GLYPHS_CANONICAL)
     canonical = {g: i * step for i, g in enumerate(GLYPHS_CANONICAL)}
     angles = dict(canonical)
 
-    # Reglas específicas de orientación
+    # Orientation rules
     for idx, g in enumerate(STABILIZERS):
         angles[g] = idx * math.pi / 4
     for idx, g in enumerate(DISRUPTORS):
         angles[g] = math.pi + idx * math.pi / 4
 
-    # Excepciones manuales
+    # Manual exceptions
     angles[Glyph.VAL.value] = canonical[Glyph.RA.value]
     angles[Glyph.NUL.value] = canonical[Glyph.ZHIR.value]
     angles[Glyph.AL.value] = 0.0

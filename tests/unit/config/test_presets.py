@@ -8,7 +8,7 @@ from tnfr.config.presets import PREFERRED_PRESET_NAMES, get_preset
 @pytest.mark.parametrize("name", PREFERRED_PRESET_NAMES)
 def test_get_preset_accepts_preferred_names(name: str) -> None:
     tokens = get_preset(name)
-    assert tokens, f"El preset '{name}' no debería estar vacío"
+    assert tokens, f"Preset '{name}' should not be empty"
 
 
 @pytest.mark.parametrize(

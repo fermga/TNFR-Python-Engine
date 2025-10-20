@@ -38,9 +38,9 @@ from ..types import (
     TNFRGraph,
 )
 
-# Importar compute_Si y apply_glyph a nivel de módulo evita el coste de
-# realizar la importación en cada paso de la dinámica. Como los módulos de
-# origen no dependen de ``dynamics``, no se introducen ciclos.
+# Importing ``compute_Si`` and ``apply_glyph`` at module level avoids paying the
+# import cost on every dynamics step. As the source modules do not depend on
+# ``dynamics`` this does not introduce cycles.
 from ..operators import apply_remesh_if_globally_stable, apply_glyph
 from ..validation.grammar import enforce_canonical_grammar, on_applied_glyph
 from ..constants import (
@@ -403,15 +403,17 @@ def coordinate_global_local_phase(
     *,
     n_jobs: int | None = None,
 ) -> None:
-    """
-    Ajusta fase con mezcla GLOBAL+VECINAL.
-    Si no se pasan fuerzas explícitas, adapta kG/kL según estado
-    (disonante / transición / estable).
-    Estado se decide por R (Kuramoto) y carga glífica disruptiva reciente.
+    """Coordinate phase using a blend of global and neighbour coupling.
 
-    ``n_jobs`` controla el uso opcional de evaluación paralela cuando NumPy
-    no está disponible; un valor ``None`` o ``<= 1`` mantiene el recorrido
-    secuencial clásico.
+    When ``global_force`` or ``local_force`` is provided the function applies
+    those overrides directly and skips adaptive tuning. Otherwise it consults
+    the adaptive phase configuration stored in ``G.graph``, classifies the
+    network state (dissonant, transition, stable) from the Kuramoto order and
+    the recent disruptive glyph load, and smoothly adjusts ``kG``/``kL`` before
+    storing them in the graph history.
+
+    ``n_jobs`` enables optional parallel evaluation when NumPy is unavailable;
+    ``None`` or ``<= 1`` keeps the classical sequential traversal.
     """
     g = cast(dict[str, Any], G.graph)
     defaults = DEFAULTS
@@ -427,7 +429,7 @@ def coordinate_global_local_phase(
             hist_state.extend(normalised_states)
     hist_R = cast(deque[float], _ensure_hist_deque(hist, "phase_R", maxlen))
     hist_disr = cast(deque[float], _ensure_hist_deque(hist, "phase_disr", maxlen))
-    # 0) Si hay fuerzas explícitas, usar y salir del modo adaptativo
+    # 0) If explicit forces are provided, use them and exit adaptive mode
     if (global_force is not None) or (local_force is not None):
         kG = float(
             global_force
@@ -582,7 +584,7 @@ def coordinate_global_local_phase(
 
 
 # -------------------------
-# Adaptación de νf por coherencia
+# νf adaptation driven by coherence
 # -------------------------
 
 
@@ -775,7 +777,7 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
 
 
 # -------------------------
-# Selector glífico por defecto
+# Default glyph selector
 # -------------------------
 def default_glyph_selector(G: TNFRGraph, n: NodeId) -> GlyphCode:
     nd = G.nodes[n]
@@ -800,7 +802,7 @@ def default_glyph_selector(G: TNFRGraph, n: NodeId) -> GlyphCode:
 
 
 # -------------------------
-# Selector glífico multiobjetivo (paramétrico)
+# Multi-objective (parametric) glyph selector
 # -------------------------
 def _soft_grammar_prefilter(
     G: TNFRGraph,

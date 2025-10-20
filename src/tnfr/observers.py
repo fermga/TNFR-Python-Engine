@@ -46,7 +46,7 @@ DEFAULT_WBAR_SPAN = 25
 
 
 # -------------------------
-# Observador estándar Γ(R)
+# Standard Γ(R) observer
 # -------------------------
 def _std_log(kind: str, G: TNFRGraph, ctx: Mapping[str, object]) -> None:
     """Store compact events in ``history['events']``."""
@@ -165,7 +165,7 @@ def wbar(G: TNFRGraph, window: int | None = None) -> float:
     hist = ensure_history(G)
     cs = list(hist.get("C_steps", []))
     if not cs:
-        # fallback: coherencia instantánea
+        # fallback: instantaneous coherence
         return compute_coherence(G)
     w_param = DEFAULT_WBAR_SPAN if window is None else window
     w = validate_window(w_param, positive=True)

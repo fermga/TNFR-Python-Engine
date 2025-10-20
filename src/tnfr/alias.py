@@ -347,7 +347,7 @@ def set_theta_attr(d: MutableMapping[str, Any], value: Any) -> float:
 
 
 # -------------------------
-# Máximos globales con caché
+# Cached global maxima
 # -------------------------
 
 

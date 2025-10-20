@@ -19,7 +19,7 @@ __all__ = ("InitParams", "init_node_attrs")
 
 @dataclass
 class InitParams:
-    """Parametros de inicialización nodal."""
+    """Parameters governing node initialisation."""
 
     seed: int | None
     init_rand_phase: bool
@@ -39,7 +39,7 @@ class InitParams:
 
     @classmethod
     def from_graph(cls, G: "nx.Graph") -> "InitParams":
-        """Construir ``InitParams`` desde ``G.graph``."""
+        """Construct ``InitParams`` from ``G.graph`` configuration."""
 
         return cls(
             seed=get_graph_param(G, "RANDOM_SEED", int),
