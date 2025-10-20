@@ -23,12 +23,6 @@ def test_prepare_network_dependencies():
     assert preparar["third_party"] == ("networkx",)
 
 
-def test_preparar_red_alias_dependencies():
-    from tnfr import EXPORT_DEPENDENCIES
-
-    assert EXPORT_DEPENDENCIES["preparar_red"] == EXPORT_DEPENDENCIES["prepare_network"]
-
-
 def test_dynamics_helpers_dependencies():
     from tnfr import EXPORT_DEPENDENCIES
 

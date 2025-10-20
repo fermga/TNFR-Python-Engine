@@ -1,4 +1,5 @@
 import networkx as nx
+import pytest
 
 from tnfr.ontosim import prepare_network, preparar_red
 
@@ -15,8 +16,8 @@ def test_prepare_network_sin_init_attrs():
     assert all("θ" not in d for _, d in G.nodes(data=True))
 
 
-def test_preparar_red_alias_sigue_activo():
+def test_preparar_red_alias_emite_deprecated_call():
     G = nx.path_graph(2)
-    preparar_red(G)
+    with pytest.deprecated_call():
+        preparar_red(G)
     assert all("θ" in d for _, d in G.nodes(data=True))
-    assert preparar_red is prepare_network

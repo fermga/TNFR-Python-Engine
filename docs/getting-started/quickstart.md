@@ -93,8 +93,8 @@ without mutating `G.graph`.
 When you build a NetworkX graph outside of `create_nfr`, normalise its configuration with
 `tnfr.prepare_network` before stepping the dynamics. The helper attaches the default
 configuration, telemetry history, ΔNFR hook, and optional observer wiring. The legacy name
-`tnfr.preparar_red` remains available throughout the 1.x releases but will be removed in the
-next major version.
+`tnfr.preparar_red` now emits a :class:`DeprecationWarning`, remains available only as a
+bridge, and is scheduled for removal on **2025-06-01**.
 
 ```python
 import networkx as nx

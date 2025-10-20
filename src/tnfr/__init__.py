@@ -17,14 +17,15 @@ The imports are grouped as follows:
     orchestration, validation hooks and metrics integration) and require
     the ``networkx`` package for graph handling.
 
-``prepare_network`` (``preparar_red`` legacy alias)
+``prepare_network``
     Defined in :mod:`tnfr.ontosim`.  Besides :mod:`tnfr.ontosim`
     itself, the helper imports :mod:`tnfr.callback_utils`,
     :mod:`tnfr.constants`, :mod:`tnfr.dynamics`, :mod:`tnfr.glyph_history`,
     :mod:`tnfr.initialization` and :mod:`tnfr.utils` to assemble the
     graph preparation pipeline.  It also requires ``networkx`` at import
-    time.  ``preparar_red`` remains available for backwards compatibility
-    during the 1.x series and forwards to :func:`prepare_network`.
+    time.  A temporary bridge alias :func:`tnfr.preparar_red` is still
+    provided for external callers but is no longer exported from
+    ``__all__``.
 
 ``create_nfr`` / ``run_sequence``
     Re-exported from :mod:`tnfr.structural`.  They depend on
@@ -55,18 +56,6 @@ EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
         "third_party": ("networkx",),
     },
     "prepare_network": {
-        "submodules": (
-            "tnfr.ontosim",
-            "tnfr.callback_utils",
-            "tnfr.constants",
-            "tnfr.dynamics",
-            "tnfr.glyph_history",
-            "tnfr.initialization",
-            "tnfr.utils",
-        ),
-        "third_party": ("networkx",),
-    },
-    "preparar_red": {
         "submodules": (
             "tnfr.ontosim",
             "tnfr.callback_utils",
@@ -276,7 +265,6 @@ __all__ = [
     "step",
     "run",
     "prepare_network",
-    "preparar_red",
     "create_nfr",
 ]
 
