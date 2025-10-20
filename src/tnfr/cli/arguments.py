@@ -3,18 +3,14 @@ from __future__ import annotations
 import argparse
 from typing import Any, Iterable
 
-from ..config.presets import (
-    LEGACY_PRESET_NAMES,
-    PREFERRED_PRESET_NAMES,
-)
+from ..config.presets import PREFERRED_PRESET_NAMES
 from ..gamma import GAMMA_REGISTRY
 from ..types import ArgSpec
 from .utils import spec
 
 
-_PRESET_HELP = "Preferred names: {}. Legacy keys: {}.".format(
+_PRESET_HELP = "Available presets: {}.".format(
     ", ".join(PREFERRED_PRESET_NAMES),
-    ", ".join(LEGACY_PRESET_NAMES),
 )
 
 

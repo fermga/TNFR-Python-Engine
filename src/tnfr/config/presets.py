@@ -1,8 +1,8 @@
 """Predefined TNFR configuration sequences.
 
-Spanish preset identifiers were removed in TNFR 7.0. Only the English names
-remain available; attempting to resolve a legacy Spanish identifier will raise
-an explicit :class:`KeyError` pointing to the correct replacement.
+Legacy preset identifiers are no longer accepted. Requests for Spanish or
+otherwise retired names raise :class:`KeyError` with guidance pointing to the
+canonical English identifier.
 """
 
 from __future__ import annotations
@@ -19,8 +19,7 @@ from ..types import Glyph, PresetTokens
 __all__ = (
     "get_preset",
     "PREFERRED_PRESET_NAMES",
-    "LEGACY_PRESET_NAMES",
-    "PRESET_NAME_ALIASES",
+    "REMOVED_PRESET_NAMES",
 )
 
 
@@ -60,40 +59,33 @@ _PRIMARY_PRESETS: dict[str, PresetTokens] = {
         block(Glyph.THOL, Glyph.NUL, Glyph.UM, repeat=2, close=Glyph.SHA),
         Glyph.RA,
     ),
-    "canonical_example": list(CANONICAL_PROGRAM_TOKENS),
+    CANONICAL_PRESET_NAME: list(CANONICAL_PROGRAM_TOKENS),
 }
 
-_REMOVED_SPANISH_PRESETS: dict[str, str] = {
-    "arranque_resonante": "resonant_bootstrap",
-    "mutacion_contenida": "contained_mutation",
-    "exploracion_acople": "coupling_exploration",
-}
-
-_LEGACY_PRESET_ALIASES: dict[str, str] = {
-    CANONICAL_PRESET_NAME: "canonical_example",
+_REMOVED_PRESETS: dict[str, tuple[str, str]] = {
+    "arranque_resonante": ("resonant_bootstrap", "TNFR 7.0"),
+    "mutacion_contenida": ("contained_mutation", "TNFR 7.0"),
+    "exploracion_acople": ("coupling_exploration", "TNFR 7.0"),
+    "ejemplo_canonico": (CANONICAL_PRESET_NAME, "TNFR 9.0"),
 }
 
 PREFERRED_PRESET_NAMES: tuple[str, ...] = tuple(_PRIMARY_PRESETS.keys())
-LEGACY_PRESET_NAMES: tuple[str, ...] = tuple(_LEGACY_PRESET_ALIASES.keys())
-PRESET_NAME_ALIASES: dict[str, str] = dict(_LEGACY_PRESET_ALIASES)
+REMOVED_PRESET_NAMES: tuple[str, ...] = tuple(_REMOVED_PRESETS.keys())
 
 _PRESETS: dict[str, PresetTokens] = {**_PRIMARY_PRESETS}
-for alias, target in _LEGACY_PRESET_ALIASES.items():
-    _PRESETS[alias] = _PRIMARY_PRESETS[target]
 
 
 def get_preset(name: str) -> PresetTokens:
-    preferred = _REMOVED_SPANISH_PRESETS.get(name)
-    if preferred is not None:
+    removed = _REMOVED_PRESETS.get(name)
+    if removed is not None:
+        replacement, version = removed
         raise KeyError(
             (
-                "Spanish preset identifier '%s' was removed in TNFR 7.0. "
+                "Legacy preset identifier '%s' was removed in %s. "
                 "Use '%s' instead."
             )
-            % (name, preferred)
+            % (name, version, replacement)
         )
-
-    name = _LEGACY_PRESET_ALIASES.get(name, name)
 
     try:
         return _PRESETS[name]

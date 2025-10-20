@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import pytest
 
+from tnfr.execution import CANONICAL_PRESET_NAME
 from tnfr.config.presets import (
-    LEGACY_PRESET_NAMES,
     PREFERRED_PRESET_NAMES,
-    PRESET_NAME_ALIASES,
     get_preset,
 )
 
@@ -16,26 +15,23 @@ def test_get_preset_accepts_preferred_names(name: str) -> None:
     assert tokens, f"El preset '{name}' no debería estar vacío"
 
 
-@pytest.mark.parametrize("legacy", LEGACY_PRESET_NAMES)
-def test_legacy_aliases_resolve_to_preferred_names(legacy: str) -> None:
-    preferred = PRESET_NAME_ALIASES[legacy]
-    assert get_preset(legacy) == get_preset(preferred)
-
-
 @pytest.mark.parametrize(
-    ("legacy", "preferred"),
+    ("legacy", "preferred", "version"),
     (
-        ("arranque_resonante", "resonant_bootstrap"),
-        ("mutacion_contenida", "contained_mutation"),
-        ("exploracion_acople", "coupling_exploration"),
+        ("arranque_resonante", "resonant_bootstrap", "TNFR 7.0"),
+        ("mutacion_contenida", "contained_mutation", "TNFR 7.0"),
+        ("exploracion_acople", "coupling_exploration", "TNFR 7.0"),
+        ("ejemplo_canonico", CANONICAL_PRESET_NAME, "TNFR 9.0"),
     ),
 )
-def test_spanish_aliases_are_removed(legacy: str, preferred: str) -> None:
+def test_removed_presets_raise_with_guidance(
+    legacy: str, preferred: str, version: str
+) -> None:
     with pytest.raises(KeyError) as excinfo:
         get_preset(legacy)
 
     message = excinfo.value.args[0]
     assert message == (
-        f"Spanish preset identifier '{legacy}' was removed in TNFR 7.0. "
+        f"Legacy preset identifier '{legacy}' was removed in {version}. "
         f"Use '{preferred}' instead."
     )

@@ -74,8 +74,26 @@ def test_cli_invalid_preset_exits_gracefully(capsys, command):
     captured = capsys.readouterr()
 
     assert rc == 1
-    assert "Preset desconocido" in captured.out
-    assert "nope" in captured.out
+    assert "Unknown preset 'nope'." in captured.out
+    assert "Available presets" in captured.out
+    assert "Use --sequence-file" in captured.out
+
+
+@pytest.mark.parametrize("command", ["run", "sequence"])
+def test_cli_legacy_preset_rejected_with_guidance(capsys, command):
+    legacy = "ejemplo_canonico"
+    args = [command, "--preset", legacy]
+    if command == "run":
+        args.extend(["--steps", "0"])
+
+    rc = main(args)
+    captured = capsys.readouterr()
+
+    assert rc == 1
+    assert (
+        "Legacy preset identifier 'ejemplo_canonico' was removed in TNFR 9.0. "
+        "Use 'canonical_example' instead."
+    ) in captured.out
 
 
 def test_cli_sequence_file_missing(tmp_path, capsys):
