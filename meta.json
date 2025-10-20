@@ -20,7 +20,7 @@
         "EPI": "Primary Structure of Information (aka PSI): an active coherent form.",
         "νf": "Structural frequency: the node's internal rhythm (unit: Hz_str).",
         "ΔNFR": "Nodal reorganization operator/gradient over time.",
-        "θ": "Structural phase: relative synchrony with the network.",
+        "theta": "Structural phase: relative synchrony with the network.",
         "C(t)": "Total coherence at structural time t."
       }
     },
@@ -44,8 +44,8 @@
     "coherence": "‖EPI‖ or C(t): stability over structural time.",
     "frequency": "νf: internal rhythm (Hz_str).",
     "nodalGradient": "ΔNFR: need for reorganization relative to environment.",
-    "senseIndex": "Si = f(νf, θ, topology): capacity to generate stable, meaningful reorganization.",
-    "phase": "θ: relative synchrony with the network.",
+    "senseIndex": "Si = f(νf, theta, topology): capacity to generate stable, meaningful reorganization.",
+    "phase": "theta: relative synchrony with the network.",
     "topology": "Connection pattern among nodes that influences coupling and propagation."
   },
   "install": {"pip": "pip install tnfr"},

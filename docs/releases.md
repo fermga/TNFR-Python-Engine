@@ -1,5 +1,18 @@
 # Release notes
 
+## 8.0.0 (phase alias enforcement)
+
+- Finalised the phase attribute migration by rejecting the Spanish ``"fase"``
+  node key. Access helpers in :mod:`tnfr.alias` now operate strictly on the
+  English ``"theta"``/``"phase"`` attributes and raise
+  :class:`ValueError` when the legacy key is encountered.
+- Added :func:`tnfr.utils.migrate_legacy_phase_attributes` to help upgrade
+  stored graphs. The helper rewrites ``"fase"`` and ``"θ"`` payloads in place,
+  populating the canonical English keys before interacting with the alias
+  layer.
+- Updated documentation and tests to reflect the English-only phase contract
+  and removed the automatic ``"fase"`` rewrite shims.
+
 ## 7.0.1 (English deprecation messaging)
 
 - Reworded the remaining deprecation warnings and validation errors that still

@@ -51,8 +51,8 @@ def test_op_oz_uses_factor():
 
 def test_op_um_uses_theta_push(graph_canon):
     G = graph_canon()
-    G.add_node(0, **{"θ": 0.0, "EPI": 0.0, "Si": 0.0})
-    G.add_node(1, **{"θ": 1.0, "EPI": 0.0, "Si": 0.0})
+    G.add_node(0, **{"theta": 0.0, "EPI": 0.0, "Si": 0.0})
+    G.add_node(1, **{"theta": 1.0, "EPI": 0.0, "Si": 0.0})
     G.add_edge(0, 1)
     node = NodeNX(G, 0)
     gf = {"UM_theta_push": "0.5"}

@@ -42,7 +42,7 @@ def test_vf_converge_to_neighbor_average_when_stable(graph_canon):
     G.graph["VF_ADAPT_MU"] = 0.5
     for n in G.nodes():
         nd = G.nodes[n]
-        nd["θ"] = 0.0
+        nd["theta"] = 0.0
         nd["EPI"] = 0.0
     G.nodes[0]["νf"] = 0.2
     G.nodes[1]["νf"] = 1.0

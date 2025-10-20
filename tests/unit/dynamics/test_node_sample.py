@@ -17,7 +17,7 @@ def _build_graph(n, graph_canon=None):
     G = graph_canon() if graph_canon is not None else nx.Graph()
     inject_defaults(G)
     for i in range(n):
-        G.add_node(i, θ=0.0, EPI=0.0)
+        G.add_node(i, theta=0.0, EPI=0.0)
     return G
 
 
@@ -108,7 +108,7 @@ from tnfr.dynamics import _update_node_sample
 G = nx.Graph()
 inject_defaults(G)
 for i in range(80):
-    G.add_node(i, θ=0.0, EPI=0.0)
+    G.add_node(i, theta=0.0, EPI=0.0)
 G.graph["UM_CANDIDATE_COUNT"] = 10
 G.graph["RANDOM_SEED"] = 123
 _update_node_sample(G, step=5)
