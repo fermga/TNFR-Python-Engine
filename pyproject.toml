@@ -53,6 +53,9 @@ GPT = "https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-teoria-de-l
 [tool.setuptools.dynamic]
 version = { attr = "tnfr._version.__version__" }
 
+[tool.setuptools.package-data]
+tnfr = ["py.typed"]
+
 [tool.mypy]
 python_version = "3.10"
 warn_unused_configs = true
