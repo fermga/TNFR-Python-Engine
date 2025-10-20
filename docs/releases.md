@@ -1,5 +1,25 @@
 # Release notes
 
+## 11.0.0 (Si dispersion legacy keys removed)
+
+- Removed the Spanish ``dSi_ddisp_fase`` attribute from the sense index
+  sensitivity cache. Loading graphs or configuration payloads that still
+  define the legacy key now raises :class:`ValueError` with guidance to use the
+  English ``dSi_dphase_disp`` identifier.
+- Updated :func:`tnfr.metrics.sense_index.compute_Si_node` so the Spanish
+  ``disp_fase`` keyword argument is rejected with :class:`TypeError`. Callers
+  must provide the ``phase_dispersion`` keyword when invoking the helper.
+- Added migration guidance to the README for rewriting stored Si sensitivity
+  mappings and configuration files that still carry the legacy identifiers.
+- Migration snippet for historical graphs::
+
+      sensitivity = G.graph.get("_Si_sensitivity") or {}
+      if "dSi_ddisp_fase" in sensitivity:
+          value = sensitivity.pop("dSi_ddisp_fase")
+          sensitivity.setdefault("dSi_dphase_disp", value)
+
+      # Persist the updated graph payload before upgrading the engine
+
 ## 10.0.0 (remesh stability window keyword removal)
 
 - Removed the Spanish ``pasos_estables_consecutivos`` keyword from

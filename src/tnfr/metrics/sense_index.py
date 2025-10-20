@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import math
-import warnings
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
 from typing import Any, Iterable, Mapping
@@ -42,15 +41,11 @@ def _normalise_si_sensitivity_mapping(
     """Return a mapping that only exposes the English Si sensitivity keys."""
 
     normalised = dict(mapping)
-    legacy_value = normalised.pop(LEGACY_PHASE_DISPERSION_KEY, None)
-    if legacy_value is not None:
-        if warn:
-            warnings.warn(
-                "'dSi_ddisp_fase' is deprecated; use 'dSi_dphase_disp' instead.",
-                DeprecationWarning,
-                stacklevel=3,
-            )
-        normalised.setdefault(PHASE_DISPERSION_KEY, legacy_value)
+    if LEGACY_PHASE_DISPERSION_KEY in normalised:
+        raise ValueError(
+            "Si sensitivity mappings must use the English 'dSi_dphase_disp' key; "
+            "found legacy 'dSi_ddisp_fase'."
+        )
     return normalised
 
 
@@ -104,18 +99,11 @@ def compute_Si_node(
 ) -> float:
     """Compute ``Si`` for a single node."""
 
-    legacy_dispersion = kwargs.pop("disp_fase", None)
-    if legacy_dispersion is not None:
-        warnings.warn(
-            "The 'disp_fase' keyword is deprecated; use 'phase_dispersion' instead.",
-            DeprecationWarning,
-            stacklevel=2,
+    if "disp_fase" in kwargs:
+        raise TypeError(
+            "'disp_fase' is no longer supported; use the English 'phase_dispersion' "
+            "keyword."
         )
-        if phase_dispersion is not None:
-            raise TypeError(
-                "Both 'phase_dispersion' and legacy 'disp_fase' were provided."
-            )
-        phase_dispersion = float(legacy_dispersion)
 
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))
