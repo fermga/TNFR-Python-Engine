@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping, MutableMapping
 from types import ModuleType
 from typing import TYPE_CHECKING, Any, Hashable, TypeVar
 
@@ -35,10 +35,29 @@ def get_attr(
 ) -> T | None: ...
 
 
+def get_theta_attr(
+    d: Mapping[str, Any],
+    default: T | None = ...,
+    *,
+    strict: bool = ...,
+    log_level: int | None = ...,
+    conv: Callable[[Any], T] = ...,
+) -> T | None: ...
+
+
 def collect_attr(
     G: "nx.Graph",
     nodes: Iterable[NodeId],
     aliases: Iterable[str],
+    default: float = ...,
+    *,
+    np: ModuleType | None = ...,
+) -> FloatArray | list[float]: ...
+
+
+def collect_theta_attr(
+    G: "nx.Graph",
+    nodes: Iterable[NodeId],
     default: float = ...,
     *,
     np: ModuleType | None = ...,
@@ -71,6 +90,9 @@ def get_attr_str(
 
 
 def set_attr_str(d: dict[str, Any], aliases: Iterable[str], value: Any) -> str: ...
+
+
+def set_theta_attr(d: MutableMapping[str, Any], value: Any) -> float: ...
 
 
 def multi_recompute_abs_max(

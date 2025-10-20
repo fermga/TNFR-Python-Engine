@@ -7,8 +7,7 @@ from functools import partial
 import statistics
 from statistics import StatisticsError, pvariance
 
-from .constants import get_aliases
-from .alias import get_attr
+from .alias import get_theta_attr
 from .helpers.numeric import angle_diff
 from .callback_utils import CallbackEvent, callback_manager
 from .glyph_history import (
@@ -27,8 +26,6 @@ from .utils import (
 from .config.constants import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 from .metrics.common import compute_coherence
-
-ALIAS_THETA = get_aliases("THETA")
 
 __all__ = (
     "attach_standard_observer",
@@ -101,10 +98,11 @@ def phase_sync(
             R = R_calc
         if psi is None:
             psi = psi_calc
-    diffs = (
-        angle_diff(get_attr(data, ALIAS_THETA, 0.0), psi)
-        for _, data in G.nodes(data=True)
-    )
+    def _theta(nd: Mapping[str, object]) -> float:
+        value = get_theta_attr(nd, 0.0)
+        return float(value) if value is not None else 0.0
+
+    diffs = (angle_diff(_theta(data), psi) for _, data in G.nodes(data=True))
     # Try NumPy for a vectorised population variance
     np = get_numpy()
     if np is not None:

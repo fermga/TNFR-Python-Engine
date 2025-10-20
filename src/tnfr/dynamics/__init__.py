@@ -61,9 +61,11 @@ from ..metrics.trig import neighbor_phase_mean_list
 from ..alias import (
     collect_attr,
     get_attr,
+    get_theta_attr,
     set_vf,
     set_attr,
     set_theta,
+    set_theta_attr,
     multi_recompute_abs_max,
 )
 from ..metrics.sense_index import compute_Si
@@ -103,7 +105,6 @@ from .integrators import (
 )
 
 ALIAS_VF = get_aliases("VF")
-ALIAS_THETA = get_aliases("THETA")
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_SI = get_aliases("SI")
@@ -239,7 +240,8 @@ def apply_canonical_clamps(
 
     epi = cast(EPIValue, get_attr(nd, ALIAS_EPI, 0.0))
     vf = get_attr(nd, ALIAS_VF, 0.0)
-    th = cast(Phase, get_attr(nd, ALIAS_THETA, 0.0))
+    th_val = get_theta_attr(nd, 0.0)
+    th = cast(Phase, 0.0 if th_val is None else th_val)
 
     strict = bool(
         graph_data.get("VALIDATORS_STRICT", DEFAULTS.get("VALIDATORS_STRICT", False))
@@ -266,7 +268,7 @@ def apply_canonical_clamps(
         if G is not None and node is not None:
             set_theta(G, node, new_th)
         else:
-            set_attr(nd, ALIAS_THETA, new_th)
+            set_theta_attr(nd, new_th)
 
 
 def validate_canon(G: TNFRGraph) -> TNFRGraph:
@@ -473,10 +475,14 @@ def coordinate_global_local_phase(
         except KeyError:
             neighbors_map[n] = ()
 
-    theta_vals = [
-        float(theta_map.get(n, get_attr(G.nodes[n], ALIAS_THETA, 0.0)))
-        for n in nodes
-    ]
+    def _theta_value(node: NodeId) -> float:
+        cached = theta_map.get(node)
+        if cached is not None:
+            return float(cached)
+        attr_val = get_theta_attr(G.nodes[node], 0.0)
+        return float(attr_val if attr_val is not None else 0.0)
+
+    theta_vals = [_theta_value(n) for n in nodes]
     cos_vals = [
         float(cos_map.get(n, math.cos(theta_vals[idx])))
         for idx, n in enumerate(nodes)
