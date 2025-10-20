@@ -226,12 +226,12 @@ def get_graph_param(
 
 # Claves canónicas con nombres ASCII
 VF_KEY = "νf"
-THETA_KEY = "θ"
+THETA_KEY = "theta"
 
 # Mapa de aliases para atributos nodales
 ALIASES: dict[str, tuple[str, ...]] = {
     "VF": (VF_KEY, "nu_f", "nu-f", "nu", "freq", "frequency"),
-    "THETA": (THETA_KEY, "theta", "phi", "phase"),
+    "THETA": (THETA_KEY, "phase"),
     "DNFR": ("ΔNFR", "delta_nfr", "dnfr"),
     "EPI": ("EPI", "psi", "PSI", "value"),
     "EPI_KIND": ("EPI_kind", "epi_kind", "source_glyph"),

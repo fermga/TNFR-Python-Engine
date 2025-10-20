@@ -189,7 +189,7 @@ def test_um_candidate_subset_proximity(graph_canon):
     G = graph_canon()
     inject_defaults(G)
     for i, th in enumerate([0.0, 0.1, 0.2, 1.0]):
-        G.add_node(i, **{"θ": th, "EPI": 0.5, "Si": 0.5})
+        G.add_node(i, **{"theta": th, "EPI": 0.5, "Si": 0.5})
 
     G.graph["UM_FUNCTIONAL_LINKS"] = True
     G.graph["UM_COMPAT_THRESHOLD"] = -1.0

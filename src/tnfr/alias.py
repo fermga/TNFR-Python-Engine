@@ -12,7 +12,6 @@ from collections.abc import Iterable, Mapping, MutableMapping, Sized
 from dataclasses import dataclass
 from functools import lru_cache, partial
 from threading import Lock
-import warnings
 from types import ModuleType
 from typing import (
     TYPE_CHECKING,
@@ -186,30 +185,16 @@ class AliasAccessor(Generic[T]):
 _generic_accessor: AliasAccessor[Any] = AliasAccessor()
 
 
-LEGACY_THETA_KEY = "fase"
-_THETA_DEPRECATION = (
-    'The "fase" node attribute is deprecated; use "theta" or "phase" instead.'
+_LEGACY_PHASE_ERROR = (
+    'Legacy node attribute "fase" detected. Migrate data to use "theta" or "phase".'
 )
 
 
-def _normalize_theta_aliases(
-    mapping: Mapping[str, Any], *, warn: bool = True
-) -> Mapping[str, Any]:
-    """Replace legacy ``"fase"`` keys with English equivalents."""
+def _ensure_no_legacy_theta(mapping: Mapping[str, Any]) -> None:
+    """Raise a clear error when the legacy ``"fase"`` key is present."""
 
-    if LEGACY_THETA_KEY not in mapping:
-        return mapping
-    if warn:
-        warnings.warn(_THETA_DEPRECATION, DeprecationWarning, stacklevel=3)
-    target: MutableMapping[str, Any]
-    if isinstance(mapping, MutableMapping):
-        target = mapping
-    else:
-        target = dict(mapping)
-    value = target.pop(LEGACY_THETA_KEY, mapping[LEGACY_THETA_KEY])
-    theta_value = target.setdefault("theta", value)
-    target.setdefault("phase", theta_value)
-    return target
+    if "fase" in mapping:
+        raise ValueError(_LEGACY_PHASE_ERROR)
 
 
 def get_theta_attr(
@@ -220,11 +205,11 @@ def get_theta_attr(
     log_level: int | None = None,
     conv: Callable[[Any], T] = float,
 ) -> T | None:
-    """Return phase using the compatibility shim for legacy ``"fase"``."""
+    """Return ``theta``/``phase`` ensuring legacy keys are rejected."""
 
-    normalized = _normalize_theta_aliases(d)
+    _ensure_no_legacy_theta(d)
     return _generic_accessor.get(
-        cast(dict[str, Any], normalized),
+        cast(dict[str, Any], d),
         ALIAS_THETA,
         default,
         strict=strict,
@@ -310,7 +295,7 @@ def collect_theta_attr(
     *,
     np: ModuleType | None = None,
 ) -> FloatArray | list[float]:
-    """Collect ``θ`` values using the compatibility shim for legacy keys."""
+    """Collect ``theta`` values honouring the English-only attribute contract."""
 
     def _nodes_iter_and_size(nodes: Iterable[NodeId]) -> tuple[Iterable[NodeId], int]:
         if nodes is G.nodes:
@@ -352,11 +337,12 @@ set_attr_str = partial(set_attr_generic, conv=str)
 
 
 def set_theta_attr(d: MutableMapping[str, Any], value: Any) -> float:
-    """Assign phase ensuring legacy keys are normalised."""
+    """Assign ``theta``/``phase`` ensuring legacy keys are rejected."""
 
-    normalized = _normalize_theta_aliases(d, warn=False)
-    result = float(set_attr(cast(dict[str, Any], normalized), ALIAS_THETA, value))
-    normalized["phase"] = result
+    _ensure_no_legacy_theta(d)
+    result = float(value)
+    d["theta"] = result
+    d["phase"] = result
     return result
 
 
@@ -571,7 +557,7 @@ SCALAR_SETTERS: dict[str, dict[str, Any]] = {
     "theta": {
         "alias": ALIAS_THETA,
         "extra": _increment_trig_version,
-        "doc": "Set ``θ`` for node ``n`` and invalidate trig caches.",
+        "doc": "Set ``theta`` for node ``n`` and invalidate trig caches.",
     },
 }
 
@@ -626,11 +612,13 @@ def _set_theta_with_compat(
     G: "networkx.Graph", n: Hashable, value: float
 ) -> AbsMaxResult | None:
     nd = cast(MutableMapping[str, Any], G.nodes[n])
-    _normalize_theta_aliases(nd, warn=False)
+    _ensure_no_legacy_theta(nd)
     result = _set_theta_impl(G, n, value)
     theta_val = get_theta_attr(nd, value)
     if theta_val is not None:
-        nd["phase"] = float(theta_val)
+        float_theta = float(theta_val)
+        nd["theta"] = float_theta
+        nd["phase"] = float_theta
     return result
 
 

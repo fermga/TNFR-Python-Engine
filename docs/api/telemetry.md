@@ -14,8 +14,10 @@ facades.
 - **Si** — `tnfr.metrics.sense_index.compute_Si`: ability to produce meaningful reorganisation
   combining νf, phase, and topology.
 - **Phase θ** — `tnfr.dynamics.coordinate_global_local_phase` and related helpers.
-- **Compatibility** — legacy node payloads using `"fase"` emit a `DeprecationWarning`
-  and are rewritten to the English `"theta"`/`"phase"` aliases during access.
+- **Compatibility** — legacy node payloads using `"fase"` now raise a
+  :class:`ValueError`. Migrate graphs upfront with
+  :func:`tnfr.utils.migrate_legacy_phase_attributes` so node data stores
+  `"theta"`/`"phase"` exclusively.
 - **Topology** — coupling maps available through operator utilities like
   `tnfr.operators.apply_topological_remesh`.
 

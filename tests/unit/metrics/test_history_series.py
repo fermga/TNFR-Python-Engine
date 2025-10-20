@@ -9,7 +9,7 @@ from tnfr.glyph_history import HistoryDict, ensure_history
 
 def test_history_delta_si_and_B(graph_canon):
     G = graph_canon()
-    G.add_node(0, EPI=0.0, νf=0.5, θ=0.0)
+    G.add_node(0, EPI=0.0, νf=0.5, theta=0.0)
     inject_defaults(G)
     register_metrics_callbacks(G)
     step(G, apply_glyphs=False)
@@ -23,8 +23,8 @@ def test_gamma_kuramoto_tanh_registry(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
     inject_defaults(G)
-    G.nodes[0]["θ"] = 0.0
-    G.nodes[1]["θ"] = 0.0
+    G.nodes[0]["theta"] = 0.0
+    G.nodes[1]["theta"] = 0.0
     cfg = {"type": "kuramoto_tanh", "beta": 0.5, "k": 2.0, "R0": 0.0}
     gamma_fn = GAMMA_REGISTRY["kuramoto_tanh"].fn
     val = gamma_fn(G, 0, 0.0, cfg)
