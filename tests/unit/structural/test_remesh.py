@@ -107,3 +107,40 @@ def test_apply_network_remesh_triggers_callback(graph_canon):
     assert ctx["tau_global"] == tau_g
     assert ctx["tau_local"] == tau_l
     assert "alpha" in ctx
+
+
+def test_injected_defaults_include_cooldown_alias(graph_canon):
+    G, _ = _prepare_graph_for_remesh(graph_canon)
+
+    assert "REMESH_COOLDOWN_WINDOW" in G.graph
+    assert (
+        G.graph["REMESH_COOLDOWN_WINDOW"]
+        == G.graph["REMESH_COOLDOWN_VENTANA"]
+    )
+
+
+def test_legacy_cooldown_value_promotes_to_english(graph_canon):
+    G, _ = _prepare_graph_for_remesh(graph_canon)
+    legacy_value = 11
+    G.graph.pop("REMESH_COOLDOWN_WINDOW", None)
+    G.graph["REMESH_COOLDOWN_VENTANA"] = legacy_value
+
+    apply_remesh_if_globally_stable(G)
+
+    assert G.graph["REMESH_COOLDOWN_WINDOW"] == legacy_value
+
+
+def test_prefers_english_cooldown_when_both_present(graph_canon):
+    G, hist = _prepare_graph_for_remesh(graph_canon)
+    preferred_value = 1
+    legacy_value = 99
+    G.graph["REMESH_COOLDOWN_WINDOW"] = preferred_value
+    G.graph["REMESH_COOLDOWN_VENTANA"] = legacy_value
+
+    apply_remesh_if_globally_stable(G, stable_step_window=3)
+
+    hist["stable_frac"].append(1.0)
+    apply_remesh_if_globally_stable(G, stable_step_window=3)
+
+    events = ensure_history(G).get("remesh_events", [])
+    assert len(events) == 2
