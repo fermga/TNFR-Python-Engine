@@ -34,7 +34,15 @@ dependencies = [
 numpy = ["numpy>=1.24"]
 yaml = ["pyyaml>=6.0"]
 orjson = ["orjson>=3"]
-test = ["pytest>=7", "pytest-benchmark>=4", "pydocstyle>=6", "coverage>=7", "vulture>=2"]
+test = [
+  "pytest>=7",
+  "pytest-benchmark>=4",
+  "pydocstyle>=6",
+  "coverage>=7",
+  "flake8>=5",
+  "flake8-pyproject>=1.2",
+  "vulture>=2",
+]
 typecheck = [
   "mypy>=1.8",
   "networkx-stubs>=0.0.1",
@@ -55,6 +63,11 @@ version = { attr = "tnfr._version.__version__" }
 
 [tool.setuptools.package-data]
 tnfr = ["py.typed"]
+
+[tool.flake8]
+max-line-length = 79
+ignore = ["E501", "W503"]
+exclude = ["benchmarks/"]
 
 [tool.mypy]
 python_version = "3.10"
