@@ -20,6 +20,8 @@ from ..alias import collect_attr, set_attr
 from ..helpers.numeric import clamp01
 from ..types import (
     CoherenceMetric,
+    FloatArray,
+    FloatMatrix,
     GlyphLoadDistribution,
     HistoryState,
     NodeId,
@@ -76,8 +78,10 @@ PhaseSyncWeights: TypeAlias = (
 )
 
 SimilarityComponents = tuple[float, float, float, float]
-VectorizedComponents = tuple[Any, Any, Any, Any]
-ScalarOrArray = Any
+VectorizedComponents: TypeAlias = (
+    tuple[FloatMatrix, FloatMatrix, FloatMatrix, FloatMatrix]
+)
+ScalarOrArray: TypeAlias = float | FloatArray
 StabilityChunkArgs = tuple[
     Sequence[float],
     Sequence[float],
@@ -117,11 +121,11 @@ class ParallelWijPayload(TypedDict):
 
 
 def _compute_wij_phase_epi_vf_si_vectorized(
-    epi: Any,
-    vf: Any,
-    si: Any,
-    cos_th: Any,
-    sin_th: Any,
+    epi: FloatArray,
+    vf: FloatArray,
+    si: FloatArray,
+    cos_th: FloatArray,
+    sin_th: FloatArray,
     epi_range: float,
     vf_range: float,
     np: ModuleType,
@@ -152,8 +156,8 @@ def compute_wij_phase_epi_vf_si(
     j: int | None = None,
     *,
     trig: Any | None = None,
-    G: Any | None = None,
-    nodes: Sequence[Any] | None = None,
+    G: TNFRGraph | None = None,
+    nodes: Sequence[NodeId] | None = None,
     epi_range: float = 1.0,
     vf_range: float = 1.0,
     np: ModuleType | None = None,
@@ -187,11 +191,11 @@ def compute_wij_phase_epi_vf_si(
     si_vals = inputs.si_vals
 
     if np is not None and i is None and j is None:
-        epi = np.asarray(epi_vals)
-        vf = np.asarray(vf_vals)
-        si = np.asarray(si_vals)
-        cos_th = np.asarray(cos_vals, dtype=float)
-        sin_th = np.asarray(sin_vals, dtype=float)
+        epi = cast(FloatArray, np.asarray(epi_vals, dtype=float))
+        vf = cast(FloatArray, np.asarray(vf_vals, dtype=float))
+        si = cast(FloatArray, np.asarray(si_vals, dtype=float))
+        cos_th = cast(FloatArray, np.asarray(cos_vals, dtype=float))
+        sin_th = cast(FloatArray, np.asarray(sin_vals, dtype=float))
         return _compute_wij_phase_epi_vf_si_vectorized(
             epi,
             vf,
@@ -231,13 +235,13 @@ def _combine_similarity(
 ) -> ScalarOrArray:
     wij = phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
     if np is not None:
-        return np.clip(wij, 0.0, 1.0)
+        return cast(FloatArray, np.clip(wij, 0.0, 1.0))
     return clamp01(wij)
 
 
 def _wij_components_weights(
-    G: Any,
-    nodes: Sequence[Any] | None,
+    G: TNFRGraph,
+    nodes: Sequence[NodeId] | None,
     inputs: SimilarityInputs,
     wnorm: Mapping[str, float],
     i: int | None = None,
@@ -280,8 +284,8 @@ def _wij_components_weights(
 
 
 def _wij_vectorized(
-    G: Any,
-    nodes: Sequence[Any],
+    G: TNFRGraph,
+    nodes: Sequence[NodeId],
     inputs: SimilarityInputs,
     wnorm: Mapping[str, float],
     epi_min: float,
@@ -290,7 +294,7 @@ def _wij_vectorized(
     vf_max: float,
     self_diag: bool,
     np: ModuleType,
-) -> Any:
+) -> FloatMatrix:
     epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
     vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
     (
@@ -311,14 +315,17 @@ def _wij_vectorized(
         vf_range=vf_range,
         np=np,
     )
-    wij = _combine_similarity(
-        s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w, np=np
+    wij_matrix = cast(
+        FloatMatrix,
+        _combine_similarity(
+            s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w, np=np
+        ),
     )
     if self_diag:
-        np.fill_diagonal(wij, 1.0)
+        np.fill_diagonal(wij_matrix, 1.0)
     else:
-        np.fill_diagonal(wij, 0.0)
-    return wij
+        np.fill_diagonal(wij_matrix, 0.0)
+    return wij_matrix
 
 
 def _compute_wij_value_raw(
@@ -399,9 +406,9 @@ def _parallel_wij_worker(
 
 
 def _wij_loops(
-    G: Any,
-    nodes: Sequence[Any],
-    node_to_index: Mapping[Any, int],
+    G: TNFRGraph,
+    nodes: Sequence[NodeId],
+    node_to_index: Mapping[NodeId, int],
     inputs: SimilarityInputs,
     wnorm: Mapping[str, float],
     epi_min: float,
@@ -683,9 +690,9 @@ def _coherence_python(
 
 
 def _finalize_wij(
-    G: Any,
-    nodes: Sequence[Any],
-    wij: Any | Sequence[Sequence[float]],
+    G: TNFRGraph,
+    nodes: Sequence[NodeId],
+    wij: FloatMatrix | Sequence[Sequence[float]],
     mode: str,
     thr: float,
     scope: str,
@@ -693,7 +700,7 @@ def _finalize_wij(
     np: ModuleType | None = None,
     *,
     n_jobs: int = 1,
-) -> tuple[list[Any], CoherenceMatrixPayload]:
+) -> tuple[list[NodeId], CoherenceMatrixPayload]:
     """Finalize the coherence matrix ``wij`` and store results in history.
 
     When ``np`` is provided and ``wij`` is a NumPy array, the computation is
@@ -729,11 +736,11 @@ def _finalize_wij(
 
 
 def coherence_matrix(
-    G: Any,
+    G: TNFRGraph,
     use_numpy: bool | None = None,
     *,
     n_jobs: int | None = None,
-) -> tuple[list[Any] | None, CoherenceMatrixPayload | None]:
+) -> tuple[list[NodeId] | None, CoherenceMatrixPayload | None]:
     """Compute the coherence weight matrix for ``G``.
 
     Parameters
@@ -753,8 +760,8 @@ def coherence_matrix(
     if not cfg.get("enabled", True):
         return None, None
 
-    node_to_index = ensure_node_index_map(G)
-    nodes = list(node_to_index.keys())
+    node_to_index: Mapping[NodeId, int] = ensure_node_index_map(G)
+    nodes: list[NodeId] = list(node_to_index.keys())
     n = len(nodes)
     if n == 0:
         return nodes, []
@@ -809,7 +816,7 @@ def coherence_matrix(
     )
     if use_np:
         assert np is not None
-        wij = _wij_vectorized(
+        wij_matrix = _wij_vectorized(
             G,
             nodes,
             inputs,
@@ -828,7 +835,8 @@ def coherence_matrix(
                 j = node_to_index[v]
                 adj[i, j] = True
                 adj[j, i] = True
-            wij = np.where(adj, wij, 0.0)
+            wij_matrix = cast(FloatMatrix, np.where(adj, wij_matrix, 0.0))
+        wij: FloatMatrix | CoherenceMatrixDense = wij_matrix
     else:
         wij = _wij_loops(
             G,
@@ -1128,7 +1136,7 @@ def _stability_chunk_worker(args: StabilityChunkArgs) -> StabilityChunkResult:
 
 
 def _track_stability(
-    G: Any,
+    G: TNFRGraph,
     hist: MutableMapping[str, Any],
     dt: float,
     eps_dnfr: float,
@@ -1138,7 +1146,7 @@ def _track_stability(
 ) -> None:
     """Track per-node stability and derivative metrics."""
 
-    nodes = tuple(G.nodes)
+    nodes: tuple[NodeId, ...] = tuple(G.nodes)
     total_nodes = len(nodes)
     if not total_nodes:
         hist.setdefault("stable_frac", []).append(0.0)
@@ -1375,7 +1383,7 @@ def _si_chunk_stats(
 
 
 def _aggregate_si(
-    G: Any,
+    G: TNFRGraph,
     hist: MutableMapping[str, list[float]],
     *,
     n_jobs: int | None = None,

@@ -4,14 +4,29 @@ from __future__ import annotations
 
 from collections.abc import Callable, Hashable, Mapping, Sequence
 from enum import Enum
-from typing import TYPE_CHECKING, Any, ContextManager, Iterable, Protocol, TypeAlias, TypedDict
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ContextManager,
+    Iterable,
+    Protocol,
+    TypeAlias,
+    TypedDict,
+)
+from types import SimpleNamespace
 
 try:  # pragma: no cover - optional dependency for typing only
     import numpy as np
 except Exception:  # pragma: no cover - graceful fallback when NumPy is missing
-    from types import SimpleNamespace
+    np = SimpleNamespace(ndarray=Any, float_=float)  # type: ignore[assignment]
 
-    np = SimpleNamespace(ndarray=Any)  # type: ignore[assignment]
+if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
+    try:
+        import numpy.typing as npt
+    except Exception:  # pragma: no cover - fallback when NumPy typing is missing
+        npt = SimpleNamespace(NDArray=Any)  # type: ignore[assignment]
+else:  # pragma: no cover - runtime fallback without numpy.typing
+    npt = SimpleNamespace(NDArray=Any)  # type: ignore[assignment]
 
 __all__ = (
     "TNFRGraph",
@@ -59,6 +74,8 @@ __all__ = (
     "ArgSpec",
     "TNFRConfigValue",
     "SigmaVector",
+    "FloatArray",
+    "FloatMatrix",
 )
 
 
@@ -74,6 +91,13 @@ else:  # pragma: no cover - runtime fallback without networkx
     _HistoryDict = Any  # type: ignore[assignment]
     _Token = Any  # type: ignore[assignment]
 #: Graph container storing TNFR nodes, edges and their coherence telemetry.
+
+if TYPE_CHECKING:
+    FloatArray: TypeAlias = npt.NDArray[np.float_]
+    FloatMatrix: TypeAlias = npt.NDArray[np.float_]
+else:  # pragma: no cover - runtime fallback without NumPy
+    FloatArray: TypeAlias = Any
+    FloatMatrix: TypeAlias = Any
 
 Graph: TypeAlias = TNFRGraph
 #: Backwards-compatible alias for :data:`TNFRGraph`.
