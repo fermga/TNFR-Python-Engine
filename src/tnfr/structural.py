@@ -13,6 +13,22 @@ from .dynamics import (
 )
 from .types import DeltaNFRHook, NodeId, TNFRGraph
 from .operators.definitions import (
+    Operator,
+    Emission,
+    Reception,
+    Coherence,
+    Dissonance,
+    Coupling,
+    Resonance,
+    Silence,
+    Expansion,
+    Contraction,
+    SelfOrganization,
+    Mutation,
+    Transition,
+    Recursivity,
+)
+from .operators.compat import (
     Operador,
     Emision,
     Recepcion,
@@ -21,25 +37,14 @@ from .operators.definitions import (
     Acoplamiento,
     Resonancia,
     Silencio,
-    Expansion,
     Contraccion,
     Autoorganizacion,
     Mutacion,
     Transicion,
-    Recursividad,
-    Emission,
-    Reception,
-    Coherence,
-    Dissonance,
-    Coupling,
-    Resonance,
-    Silence,
-    Contraction,
-    SelfOrganization,
-    Mutation,
-    Transition,
-    Recursivity,
+    Recursividad as RecursividadLegacy,
 )
+
+Recursividad = RecursividadLegacy
 from .operators.registry import OPERADORES
 from .validation import validate_sequence
 
@@ -77,6 +82,20 @@ def create_nfr(
 
 __all__ = (
     "create_nfr",
+    "Operator",
+    "Emission",
+    "Reception",
+    "Coherence",
+    "Dissonance",
+    "Coupling",
+    "Resonance",
+    "Silence",
+    "Expansion",
+    "Contraction",
+    "SelfOrganization",
+    "Mutation",
+    "Transition",
+    "Recursivity",
     "Operador",
     "Emision",
     "Recepcion",
@@ -85,31 +104,18 @@ __all__ = (
     "Acoplamiento",
     "Resonancia",
     "Silencio",
-    "Expansion",
     "Contraccion",
     "Autoorganizacion",
     "Mutacion",
     "Transicion",
     "Recursividad",
-    "Emission",
-    "Reception",
-    "Coherence",
-    "Dissonance",
-    "Coupling",
-    "Resonance",
-    "Silence",
-    "Contraction",
-    "SelfOrganization",
-    "Mutation",
-    "Transition",
-    "Recursivity",
     "OPERADORES",
     "validate_sequence",
     "run_sequence",
 )
 
 
-def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operador]) -> None:
+def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
     """Execute a sequence of operators on ``node`` after validation."""
 
     compute = G.graph.get("compute_delta_nfr")

@@ -63,11 +63,11 @@ preserves the nodal equation because `create_nfr` seeds the node with its νf an
 ```python
 from tnfr import create_nfr, run_sequence
 from tnfr.structural import (
-    Emision as Emission,
-    Recepcion as Reception,
-    Coherencia as Coherence,
-    Resonancia as Resonance,
-    Silencio as Silence,
+    Emission,
+    Reception,
+    Coherence,
+    Resonance,
+    Silence,
 )
 from tnfr.metrics.common import compute_coherence
 from tnfr.metrics.sense_index import compute_Si
@@ -112,13 +112,18 @@ sequence file matching the Emission → Reception → Coherence → Resonance �
 
 ```json
 [
-  "emision",
-  "recepcion",
-  "coherencia",
-  "resonancia",
-  "silencio"
+  "emission",
+  "reception",
+  "coherence",
+  "resonance",
+  "silence"
 ]
 ```
+
+> Legacy Spanish tokens (``"emision"``, ``"recepcion"``, …) are still accepted
+> by the parser but now emit :class:`DeprecationWarning` and will be removed in a
+> future release. Migrate automation scripts to the English identifiers to stay
+> within the supported contract.
 
 Run the sequence on a single node and persist telemetry to `history.json`:
 

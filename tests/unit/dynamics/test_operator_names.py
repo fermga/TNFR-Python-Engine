@@ -1,7 +1,5 @@
 """Tests ensuring operator name constants stay aligned with registry."""
 
-import warnings
-
 import pytest
 
 from tnfr.config import operator_names as names
@@ -35,10 +33,12 @@ def test_operator_display_names_include_aliases() -> None:
     assert names.EMISION in label and names.EMISSION in label
 
 
-def test_spanish_names_remain_warning_free() -> None:
+def test_spanish_tokens_raise_deprecation_warning() -> None:
+    with pytest.warns(DeprecationWarning):
+        assert names.canonical_operator_name(names.EMISION) == names.EMISSION
+
+
+def test_registry_accepts_spanish_aliases_via_canonical_lookup() -> None:
     discover_operators()
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
-        OPERADORES[names.EMISION]
-    if caught:  # pragma: no cover - update expectation if deprecation planned
-        pytest.fail("Spanish operator names emitted warnings; adjust policy if deprecating")
+    cls = OPERADORES[names.canonical_operator_name(names.RECEPCION)]
+    assert cls.__name__ == "Reception"
