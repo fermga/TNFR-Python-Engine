@@ -33,13 +33,16 @@ from ..types import (
 )
 from ..utils import get_numpy
 from .common import compute_dnfr_accel_max, min_max_range, normalize_dnfr
-from .coherence import coherence_matrix, local_phase_sync
+from .coherence import CoherenceMatrixPayload, coherence_matrix, local_phase_sync
 from .trig_cache import compute_theta_trig, get_trig_cache
 
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_SI = get_aliases("SI")
 ALIAS_DNFR = get_aliases("DNFR")
+
+CoherenceSeries = Sequence[CoherenceMatrixPayload | None]
+CoherenceHistory = Mapping[str, CoherenceSeries]
 
 
 def _coerce_jobs(raw_jobs: Any | None) -> int | None:
@@ -339,9 +342,9 @@ def _recommendation(state: str, cfg: Mapping[str, Any]) -> list[Any]:
 
 
 def _get_last_weights(
-    G: Any,
-    hist: Mapping[str, Sequence[Any]],
-) -> tuple[Any | None, Any | None]:
+    G: TNFRGraph,
+    hist: CoherenceHistory,
+) -> tuple[CoherenceMatrixPayload | None, CoherenceMatrixPayload | None]:
     """Return last Wi and Wm matrices from history."""
     CfgW = get_param(G, "COHERENCE")
     Wkey = CfgW.get("Wi_history_key", "W_i")
@@ -429,6 +432,7 @@ def _diagnosis_step(
         return
 
     hist = ensure_history(G)
+    coherence_hist = cast(CoherenceHistory, hist)
     key = dcfg.get("history_key", "nodal_diag")
 
     norms = compute_dnfr_accel_max(G)
@@ -438,7 +442,7 @@ def _diagnosis_step(
     nodes_data: list[tuple[NodeId, dict[str, Any]]] = list(G.nodes(data=True))
     nodes: list[NodeId] = [n for n, _ in nodes_data]
 
-    Wi_last, Wm_last = _get_last_weights(G, hist)
+    Wi_last, Wm_last = _get_last_weights(G, coherence_hist)
 
     np_mod = get_numpy()
     supports_vector = bool(
@@ -806,3 +810,4 @@ def register_diagnosis_callbacks(G: TNFRGraph) -> None:
         func=dissonance_events,
         name="dissonance_events",
     )
+

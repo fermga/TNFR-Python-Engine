@@ -13,7 +13,7 @@ from ..alias import get_attr
 from ..constants import get_aliases, get_param
 from ..config.constants import GLYPH_GROUPS, GLYPHS_CANONICAL
 from ..glyph_history import append_metric, last_glyph
-from ..types import Glyph
+from ..types import Glyph, GraphLike
 
 ALIAS_EPI = get_aliases("EPI")
 
@@ -41,6 +41,10 @@ class SigmaTrace(TypedDict):
 GlyphogramRow = MutableMapping[str, float]
 GlyphTimingTotals = MutableMapping[str, float]
 GlyphTimingByNode = MutableMapping[Any, MutableMapping[str, MutableSequence[float]]]
+GlyphCounts = Mapping[str, int]
+GlyphMetricsHistoryValue = MutableMapping[Any, Any] | MutableSequence[Any]
+GlyphMetricsHistory = MutableMapping[str, GlyphMetricsHistoryValue]
+MetricsListHistory = MutableMapping[str, list[Any]]
 
 _GLYPH_TO_INDEX = {glyph: idx for idx, glyph in enumerate(GLYPHS_CANONICAL)}
 
@@ -153,8 +157,8 @@ def _update_tg_node(
 
 
 def _update_tg(
-    G: Any,
-    hist: MutableMapping[str, Any],
+    G: GraphLike,
+    hist: GlyphMetricsHistory,
     dt: float,
     save_by_node: bool,
     n_jobs: int | None = None,
@@ -220,9 +224,9 @@ def _update_tg(
 
 
 def _update_glyphogram(
-    G: Any,
-    hist: MutableMapping[str, Any],
-    counts: Mapping[str, int],
+    G: GraphLike,
+    hist: GlyphMetricsHistory,
+    counts: GlyphCounts,
     t: float,
     n_total: int,
 ) -> None:
@@ -234,12 +238,12 @@ def _update_glyphogram(
     for g in GLYPHS_CANONICAL:
         c = counts.get(g, 0)
         row[g] = (c / total) if normalize_series else c
-    append_metric(hist, "glyphogram", row)
+    append_metric(cast(MetricsListHistory, hist), "glyphogram", row)
 
 
 def _update_latency_index(
-    G: Any,
-    hist: MutableMapping[str, Any],
+    G: GraphLike,
+    hist: GlyphMetricsHistory,
     n_total: int,
     n_latent: int,
     t: float,
@@ -247,12 +251,16 @@ def _update_latency_index(
     """Record latency index for the current step."""
 
     li = n_latent / max(1, n_total)
-    append_metric(hist, "latency_index", {"t": t, "value": li})
+    append_metric(
+        cast(MetricsListHistory, hist),
+        "latency_index",
+        {"t": t, "value": li},
+    )
 
 
 def _update_epi_support(
-    G: Any,
-    hist: MutableMapping[str, Any],
+    G: GraphLike,
+    hist: GlyphMetricsHistory,
     t: float,
     threshold: float = DEFAULT_EPI_SUPPORT_LIMIT,
     n_jobs: int | None = None,
@@ -301,16 +309,16 @@ def _update_epi_support(
                 count += 1
     epi_norm = (total / count) if count else 0.0
     append_metric(
-        hist,
+        cast(MetricsListHistory, hist),
         "EPI_support",
         {"t": t, "size": count, "epi_norm": float(epi_norm)},
     )
 
 
 def _update_morph_metrics(
-    G: Any,
-    hist: MutableMapping[str, Any],
-    counts: Mapping[str, int],
+    G: GraphLike,
+    hist: GlyphMetricsHistory,
+    counts: GlyphCounts,
     t: float,
 ) -> None:
     """Capture morphosyntactic distribution of glyphs."""
@@ -326,15 +334,15 @@ def _update_morph_metrics(
     den = get_count(GLYPH_GROUPS.get("PP_den", ()))
     pp_val = 0.0 if den == 0 else num / den
     append_metric(
-        hist,
+        cast(MetricsListHistory, hist),
         "morph",
         {"t": t, "ID": id_val, "CM": cm_val, "NE": ne_val, "PP": pp_val},
     )
 
 
 def _compute_advanced_metrics(
-    G: Any,
-    hist: MutableMapping[str, Any],
+    G: GraphLike,
+    hist: GlyphMetricsHistory,
     t: float,
     dt: float,
     cfg: Mapping[str, Any],
