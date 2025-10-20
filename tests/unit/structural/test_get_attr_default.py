@@ -10,14 +10,14 @@ import pytest
 
 # Import ``AliasAccessor`` without triggering package-level side effects.
 pkg = types.ModuleType("tnfr")
-pkg.__path__ = [str(Path(__file__).resolve().parents[1] / "src" / "tnfr")]
+pkg.__path__ = [str(Path(__file__).resolve().parents[3] / "src" / "tnfr")]
 assert pkg.__path__  # ensure attribute is used for package resolution
 
 _orig = sys.modules.get("tnfr")
 
 sys.modules["tnfr"] = pkg
 spec = importlib.util.spec_from_file_location(
-    "tnfr.alias", Path(__file__).resolve().parents[1] / "src" / "tnfr" / "alias.py"
+    "tnfr.alias", Path(__file__).resolve().parents[3] / "src" / "tnfr" / "alias.py"
 )
 alias = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(alias)  # type: ignore[union-attr]
