@@ -1,33 +1,25 @@
-"""Ensure legacy node aliases remain available with deprecation warnings."""
+"""Validate that Spanish node aliases and helpers have been removed."""
 
 from __future__ import annotations
 
 import importlib
-import warnings
 
 import pytest
 
 
-@pytest.mark.parametrize(
-    ("alias", "new_name"),
-    [
-        ("NodoNX", "NodeNX"),
-        ("NodoProtocol", "NodeProtocol"),
-    ],
-)
-def test_node_alias_warns(alias: str, new_name: str) -> None:
+def test_spanish_node_aliases_removed() -> None:
     module = importlib.import_module("tnfr.node")
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always", DeprecationWarning)
-        value = getattr(module, alias)
-    assert value is getattr(module, new_name)
-    assert any(issubclass(w.category, DeprecationWarning) for w in caught)
+    assert "NodoNX" not in getattr(module, "__all__", ())
+    assert "NodoProtocol" not in getattr(module, "__all__", ())
+    with pytest.raises(AttributeError):
+        getattr(module, "NodoNX")
+    with pytest.raises(AttributeError):
+        getattr(module, "NodoProtocol")
 
 
-def test_get_nodonx_warns_and_matches() -> None:
+def test_utils_spanish_helper_removed() -> None:
     utils = importlib.import_module("tnfr.utils")
-    with pytest.warns(DeprecationWarning):
-        alias_value = utils.get_nodonx()
-    canonical_value = utils.get_nodenx()
-    assert alias_value is canonical_value
-    assert canonical_value is not None
+    assert "get_nodonx" not in getattr(utils, "__all__", ())
+    with pytest.raises(AttributeError):
+        getattr(utils, "get_nodonx")
+    assert utils.get_nodenx() is not None

@@ -15,8 +15,6 @@ from collections.abc import Hashable
 import math
 from dataclasses import dataclass
 
-import warnings
-
 from .constants import get_aliases
 from .alias import (
     get_attr,
@@ -56,7 +54,7 @@ ALIAS_D2EPI = get_aliases("D2EPI")
 
 T = TypeVar("T")
 
-__all__ = ("NodeNX", "NodeProtocol", "add_edge", "NodoNX", "NodoProtocol")
+__all__ = ("NodeNX", "NodeProtocol", "add_edge")
 
 
 @dataclass(frozen=True)
@@ -274,24 +272,3 @@ class NodeNX(NodeProtocol):
 
         nodes = cached_node_list(self.G)
         return tuple(NodeNX.from_graph(self.G, v) for v in nodes)
-
-
-_DEPRECATED_ALIASES = {
-    "NodoNX": "NodeNX",
-    "NodoProtocol": "NodeProtocol",
-}
-
-
-def __getattr__(name: str) -> Any:
-    if name in _DEPRECATED_ALIASES:
-        new_name = _DEPRECATED_ALIASES[name]
-        warnings.warn(
-            (
-                f"`tnfr.node.{name}` is deprecated and will be removed in a future release. "
-                f"Use `{new_name}` instead."
-            ),
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return globals()[new_name]
-    raise AttributeError(f"module 'tnfr.node' has no attribute {name!r}")
