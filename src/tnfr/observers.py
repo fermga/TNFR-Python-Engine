@@ -48,7 +48,6 @@ DEFAULT_GLYPH_LOAD_SPAN = 50
 DEFAULT_WBAR_SPAN = 25
 
 
-
 # -------------------------
 # Observador estándar Γ(R)
 # -------------------------

@@ -513,7 +513,7 @@ def _wij_loops(
     with ProcessPoolExecutor(max_workers=max_workers, initializer=_init) as executor:
         futures = []
         for start in range(0, total_pairs, chunk_size):
-            chunk = pair_list[start : start + chunk_size]
+            chunk = pair_list[start:start + chunk_size]
             futures.append(executor.submit(_parallel_wij_worker, chunk))
         for future in futures:
             for i, j, value in future.result():
@@ -662,7 +662,7 @@ def _coherence_python(
     tasks = []
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         for start in range(0, n, chunk_size):
-            rows = wij[start : start + chunk_size]
+            rows = wij[start:start + chunk_size]
             tasks.append(
                 executor.submit(
                     _coherence_python_worker,
@@ -1425,7 +1425,7 @@ def _aggregate_si(
             futures = []
             with ProcessPoolExecutor(max_workers=n_jobs) as executor:
                 for idx in range(0, len(sis), chunk_size):
-                    chunk = sis[idx : idx + chunk_size]
+                    chunk = sis[idx:idx + chunk_size]
                     futures.append(
                         executor.submit(_si_chunk_stats, chunk, si_hi, si_lo)
                     )

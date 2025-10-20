@@ -232,7 +232,6 @@ def current_step_idx(G: TNFRGraph | Mapping[str, Any]) -> int:
     graph = getattr(G, "graph", G)
     return len(graph.get("history", {}).get("C_steps", []))
 
-    
 
 def append_metric(
     hist: MutableMapping[str, list[Any]], key: str, value: Any

@@ -79,7 +79,7 @@ def _chunk_nodes(nodes: list[NodeId], chunk_size: int) -> Iterable[list[NodeId]]
     """Yield deterministic chunks from ``nodes`` respecting insertion order."""
 
     for idx in range(0, len(nodes), chunk_size):
-        yield nodes[idx : idx + chunk_size]
+        yield nodes[idx:idx + chunk_size]
 
 
 def _apply_increment_chunk(
@@ -239,7 +239,7 @@ def _apply_increments(
         else:
             d2epi = np.zeros_like(dEPI_dt)
 
-    results: NodalUpdate = {}
+        results: NodalUpdate = {}
         for idx, node in enumerate(nodes):
             results[node] = (
                 float(epi[idx]),

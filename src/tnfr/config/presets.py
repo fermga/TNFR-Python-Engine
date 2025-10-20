@@ -9,7 +9,6 @@ from ..execution import (
     seq,
     wait,
 )
-from ..tokens import Token
 from ..types import Glyph, PresetTokens
 
 __all__ = ("get_preset",)

@@ -45,7 +45,6 @@ _MEAN_VECTOR_EPS = 1e-12
 _SPARSE_DENSITY_THRESHOLD = 0.25
 
 
-
 def _should_vectorize(G: TNFRGraph, np_module: ModuleType | None) -> bool:
     """Return ``True`` when NumPy is available unless the graph disables it."""
 
@@ -55,8 +54,6 @@ def _should_vectorize(G: TNFRGraph, np_module: ModuleType | None) -> bool:
     if flag is None:
         return True
     return bool(flag)
-
-
 
 
 @dataclass
@@ -300,7 +297,6 @@ def _has_cached_numpy_buffers(data: dict, cache: DnfrCache | None) -> bool:
     if _is_numpy_like(A):
         return True
     return False
-
 
 
 __all__ = (
@@ -1666,6 +1662,7 @@ def _build_neighbor_sums_common(
             deg_sum[i] = deg_acc
     return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
 
+
 def _accumulate_neighbors_numpy(
     G: TNFRGraph,
     data: MutableMapping[str, Any],
@@ -1681,7 +1678,6 @@ def _accumulate_neighbors_numpy(
     """Vectorised neighbour accumulation reusing cached NumPy buffers."""
 
     nodes = data["nodes"]
-    n = len(nodes)
     if not nodes:
         return x, y, epi_sum, vf_sum, count, deg_sum, None
 
@@ -1702,8 +1698,6 @@ def _accumulate_neighbors_numpy(
         if cache is not None:
             cache.edge_src = edge_src
             cache.edge_dst = edge_dst
-
-    edge_count = int(edge_src.size)
 
     if count is not None:
         count.fill(0.0)
@@ -1763,8 +1757,6 @@ def _compute_dnfr(
         and the graph does not set ``vectorized_dnfr`` to ``False``.
     """
     np_module = get_numpy()
-    cache: DnfrCache | None = data.get("cache")
-
     vector_disabled = G.graph.get("vectorized_dnfr") is False
     prefer_dense = np_module is not None and not vector_disabled
     if use_numpy is True and np_module is not None:
@@ -1794,6 +1786,7 @@ def _compute_dnfr(
         degs=degs,
         n_jobs=n_jobs,
     )
+
 
 def default_compute_delta_nfr(
     G: TNFRGraph,
@@ -2154,5 +2147,3 @@ def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         note="Gradiente topológico",
         n_jobs=n_jobs,
     )
-
-

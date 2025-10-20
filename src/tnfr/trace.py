@@ -24,13 +24,15 @@ from .types import (
 
 
 class _KuramotoFn(Protocol):
-    def __call__(self, G: TNFRGraph) -> tuple[float, float]: ...
+    def __call__(self, G: TNFRGraph) -> tuple[float, float]:
+        ...
 
 
 class _SigmaVectorFn(Protocol):
     def __call__(
         self, G: TNFRGraph, weight_mode: str | None = None
-    ) -> SigmaVector: ...
+    ) -> SigmaVector:
+        ...
 
 
 class CallbackSpec(NamedTuple):

@@ -26,7 +26,6 @@ if TYPE_CHECKING:  # pragma: no cover - type checking only
 _JITTER_MAX_ENTRIES = 1024
 
 
-
 class JitterCache:
     """Container for jitter-related caches."""
 
@@ -185,6 +184,8 @@ class JitterCacheManager:
         """Return and increment the jitter sequence counter for ``key``."""
 
         return self.cache.bump(key)
+
+
 # Lazy manager instance
 _JITTER_MANAGER: JitterCacheManager | None = None
 

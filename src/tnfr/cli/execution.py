@@ -17,7 +17,7 @@ from ..metrics import (
 )
 from ..metrics.core import _metrics_step
 from ..trace import register_trace
-from ..execution import CANONICAL_PRESET_NAME, play, seq
+from ..execution import CANONICAL_PRESET_NAME, play
 from ..dynamics import (
     run,
     default_glyph_selector,
@@ -29,7 +29,7 @@ from ..config import apply_config
 from ..io import read_structured_file, safe_write, StructuredFileError
 from ..glyph_history import ensure_history
 from ..ontosim import preparar_red
-from ..types import Glyph, ProgramTokens
+from ..types import ProgramTokens
 from ..utils import get_logger, json_dumps
 from ..flatten import parse_program_tokens
 

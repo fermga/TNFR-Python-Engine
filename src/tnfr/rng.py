@@ -58,7 +58,6 @@ class _CounterState(Generic[K]):
 _RNG_CACHE_MANAGER = CacheManager(default_capacity=_DEFAULT_CACHE_MAXSIZE)
 
 
-
 class _SeedHashCache(MutableMapping[tuple[int, int], int]):
     """Mutable mapping proxy exposing a configurable LRU cache."""
 
@@ -318,6 +317,8 @@ class ScopedCounterCache(Generic[K]):
 
     def __len__(self) -> int:
         return len(self.cache)
+
+
 _seed_hash_cache = _SeedHashCache()
 
 
