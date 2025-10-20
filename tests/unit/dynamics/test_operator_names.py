@@ -56,4 +56,6 @@ def test_get_operator_class_rejects_spanish_tokens() -> None:
 def test_registry_exposes_only_english_collection_name() -> None:
     with pytest.raises(AttributeError) as exc_info:
         getattr(registry_module, "OPERADORES")
-    assert "OPERADORES" in str(exc_info.value)
+    message = str(exc_info.value)
+    assert "OPERADORES" in message
+    assert "OPERATORS" in message

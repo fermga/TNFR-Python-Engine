@@ -1,13 +1,15 @@
-from typing import Any, Literal
+from typing import Any
 
-from .definitions import Operador
+from .definitions import Operator
 
 __all__: Any
 
-def __getattr__(name: Literal["OPERADORES"]) -> dict[str, type[Operador]]: ...
 def __getattr__(name: str) -> Any: ...
 
-OPERATORS: dict[str, type[Operador]]
-discover_operators: Any
-register_operator: Any
-get_operator_class: Any
+OPERATORS: dict[str, type[Operator]]
+
+def discover_operators() -> None: ...
+
+def register_operator(cls: type[Operator]) -> type[Operator]: ...
+
+def get_operator_class(name: str) -> type[Operator]: ...
