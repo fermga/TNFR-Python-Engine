@@ -1,13 +1,40 @@
-from typing import Any
+from __future__ import annotations
 
-__all__: Any
+from dataclasses import dataclass
+from enum import Enum
+from typing import Iterable, Optional, Sequence, TypeAlias
 
-def __getattr__(name: str) -> Any: ...
+from .types import Glyph, NodeId
 
-Node: Any
-OpTag: Any
-TARGET: Any
-THOL: Any
-THOL_SENTINEL: Any
-Token: Any
-WAIT: Any
+__all__: tuple[str, ...]
+
+Node: TypeAlias = NodeId
+
+
+@dataclass(slots=True)
+class WAIT:
+    steps: int = 1
+
+
+@dataclass(slots=True)
+class TARGET:
+    nodes: Optional[Iterable[Node]] = None
+
+
+@dataclass(slots=True)
+class THOL:
+    body: Sequence["Token"]
+    repeat: int = 1
+    force_close: Optional[Glyph] = None
+
+
+Token: TypeAlias = Glyph | WAIT | TARGET | THOL | str
+
+THOL_SENTINEL: object
+
+
+class OpTag(Enum):
+    TARGET = ...
+    WAIT = ...
+    GLYPH = ...
+    THOL = ...
