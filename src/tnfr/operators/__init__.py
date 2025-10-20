@@ -34,6 +34,19 @@ from .remesh import (
     apply_remesh_if_globally_stable,
 )
 
+_remesh_doc = (
+    "Trigger a remesh once the stability window is satisfied.\n\n"
+    "Parameters\n----------\n"
+    "stable_step_window : int | None\n"
+    "    Number of consecutive stable steps required before remeshing.\n"
+    "    The legacy keyword 'pasos_estables_consecutivos' is still accepted\n"
+    "    but will be removed after the transition period."
+)
+if apply_remesh_if_globally_stable.__doc__:
+    apply_remesh_if_globally_stable.__doc__ += "\n\n" + _remesh_doc
+else:
+    apply_remesh_if_globally_stable.__doc__ = _remesh_doc
+
 discover_operators()
 
 _DEFINITION_EXPORTS = {

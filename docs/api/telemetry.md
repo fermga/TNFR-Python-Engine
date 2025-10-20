@@ -102,7 +102,11 @@ instantiate ad-hoc locks when they are not shared.
 
 Use `tnfr.operators.apply_topological_remesh` (`from tnfr.operators import
 apply_topological_remesh`) to reorganise connectivity based on nodal EPI similarity while
-preserving graph connectivity. Modes:
+preserving graph connectivity. Pair it with
+`tnfr.operators.apply_remesh_if_globally_stable(G, stable_step_window=...)` to gate
+remeshing on a minimum window of stable steps. The legacy keyword
+`pasos_estables_consecutivos` remains as a deprecated alias during the transition.
+Modes:
 
 - `"knn"` — connect each node to its `k` nearest neighbours (with optional rewiring).
 - `"mst"` — retain only a minimum spanning tree.
