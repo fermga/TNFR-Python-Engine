@@ -72,27 +72,31 @@ When introducing new operators:
 - Update grammar/syntax tables if the operator alters the canonical sequence, ensuring THOL blocks and closure sets remain valid.【F:src/tnfr/validation/syntax.py†L27-L121】【F:src/tnfr/validation/grammar.py†L1-L90】
 - Supply trace fields or telemetry hooks if the operator produces novel metrics, keeping the coherence log consistent.【F:src/tnfr/trace.py†L169-L319】
 
-### Multilingual operator aliases
+### Operator vocabulary (English only)
 
-The engine now recognises bilingual operator identifiers so orchestration code can operate in Spanish (canonical) or English (alias) without sacrificing backwards compatibility. Each token maps to the same glyph binding, and the registry keeps both spellings synchronised:
+TNFR 2.0 completes the transition to **English-only** operator identifiers. The registry,
+validation helpers, CLI, and documentation all use the same canonical ASCII tokens:
 
-| Canonical (ES) | Alias (EN) |
-| --- | --- |
-| `emision` | `emission` |
-| `recepcion` | `reception` |
-| `coherencia` | `coherence` |
-| `disonancia` | `dissonance` |
-| `acoplamiento` | `coupling` |
-| `resonancia` | `resonance` |
-| `silencio` | `silence` |
-| `expansion` | `expansion` |
-| `contraccion` | `contraction` |
-| `autoorganizacion` | `self_organization` |
-| `mutacion` | `mutation` |
-| `transicion` | `transition` |
-| `recursividad` | `recursivity` |
+| Token         | Role summary            |
+| ------------- | ----------------------- |
+| `emission`    | Initiates resonance     |
+| `reception`   | Captures information    |
+| `coherence`   | Stabilises the form     |
+| `dissonance`  | Introduces controlled Δ |
+| `coupling`    | Synchronises nodes      |
+| `resonance`   | Propagates coherence    |
+| `silence`     | Freezes evolution       |
+| `expansion`   | Scales the structure    |
+| `contraction` | Densifies the form      |
+| `self_organization` | Guides self-order |
+| `mutation`    | Adjusts phase safely    |
+| `transition`  | Crosses thresholds      |
+| `recursivity` | Maintains memory        |
 
-Spanish tokens remain the canonical keys for invariants and documentation; English aliases are opt-in helpers for multilingual teams. The validation layer canonicalises input before applying grammar rules, while the registry exposes both spellings via `OPERADORES` and the helper `get_operator_class()` so dispatch works with either vocabulary.【F:src/tnfr/config/operator_names.py†L1-L135】【F:src/tnfr/operators/registry.py†L13-L62】【F:src/tnfr/validation/syntax.py†L1-L121】 Should we ever plan to deprecate the Spanish spellings, emit explicit warnings and update the compatibility tests that currently assert the legacy names remain warning-free.【F:tests/unit/dynamics/test_operator_names.py†L1-L53】
+Legacy Spanish spellings (``emision``, ``recepcion``, …) have been removed from the public
+API, the exported ``__all__`` bindings, and the validation layer. Downstream callers must use
+the canonical names shown above; the registry no longer performs alias canonicalisation and
+``get_operator_class()`` raises :class:`KeyError` for Spanish identifiers.【F:src/tnfr/config/operator_names.py†L1-L77】【F:src/tnfr/operators/registry.py†L13-L45】
 
 ## Enforcing TNFR invariants in runtime orchestration
 

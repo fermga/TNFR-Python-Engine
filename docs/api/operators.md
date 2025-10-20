@@ -6,8 +6,8 @@ reference to plan trajectories for simulations, experiments, or CLI runs.
 ## Canonical operator map
 
 Every trajectory must be composed from the 13 canonical operators and their resonant role.
-Operator tokens remain in Spanish to match the canonical grammar while the descriptions stay
-in technical English.
+Starting in TNFR 2.0 the canonical tokens and class names are aligned on the English
+vocabulary; use the identifiers below when orchestrating pipelines or configuring the CLI.
 
 - **Emission** — initiates a resonant pattern (φ(νf, θ)).
 - **Reception** — captures incoming information (∫ ψ(x, t) dx).

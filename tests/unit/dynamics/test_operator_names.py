@@ -1,7 +1,9 @@
 """Tests ensuring operator name constants stay aligned with registry."""
 
+import pytest
+
 from tnfr.config import operator_names as names
-from tnfr.operators.registry import OPERADORES, discover_operators
+from tnfr.operators.registry import OPERADORES, discover_operators, get_operator_class
 
 
 def test_registry_matches_operator_constants() -> None:
@@ -25,3 +27,9 @@ def test_canonical_lookup_is_passthrough_for_english_tokens() -> None:
 def test_operator_display_name_returns_canonical_token() -> None:
     assert names.operator_display_name(names.EMISSION) == names.EMISSION
     assert names.operator_display_name("unknown") == "unknown"
+
+
+def test_get_operator_class_rejects_spanish_tokens() -> None:
+    discover_operators()
+    with pytest.raises(KeyError):
+        get_operator_class("emision")
