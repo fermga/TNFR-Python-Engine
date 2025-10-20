@@ -211,7 +211,7 @@ def _coerce_mapping_token(
     if isinstance(close, str):
         close_enum = Glyph.__members__.get(close)
         if close_enum is None:
-            raise ValueError(f"Glyph de cierre desconocido: {close!r}")
+            raise ValueError(f"Unknown closing glyph: {close!r}")
         close = close_enum
     elif close is not None and not isinstance(close, Glyph):
         raise TypeError("THOL close glyph must be a Glyph or string name")

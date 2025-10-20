@@ -425,15 +425,15 @@ def apply_glyph_obj(
                 {
                     "step": step_idx,
                     "node": getattr(node, "n", None),
-                    "msg": f"glyph desconocido: {glyph}",
+                    "msg": f"unknown glyph: {glyph}",
                 },
             ),
         )
-        raise ValueError(f"glyph desconocido: {glyph}")
+        raise ValueError(f"unknown glyph: {glyph}")
 
     op = GLYPH_OPERATIONS.get(g)
     if op is None:
-        raise ValueError(f"glyph sin operador: {g}")
+        raise ValueError(f"glyph has no registered operator: {g}")
     if window is None:
         window = int(get_param(node, "GLYPH_HYSTERESIS_WINDOW"))
     gf = get_glyph_factors(node)

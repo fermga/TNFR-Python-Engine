@@ -194,7 +194,7 @@ def merge_overrides(G: GraphLike, **overrides: TNFRConfigValue) -> None:
     """
     for key, value in overrides.items():
         if key not in DEFAULTS:
-            raise KeyError(f"Parámetro desconocido: '{key}'")
+            raise KeyError(f"Unknown parameter: '{key}'")
         G.graph[key] = (
             value
             if _is_immutable(value)
@@ -207,7 +207,7 @@ def get_param(G: GraphLike, key: str) -> TNFRConfigValue:
     if key in G.graph:
         return G.graph[key]
     if key not in DEFAULTS:
-        raise KeyError(f"Parámetro desconocido: '{key}'")
+        raise KeyError(f"Unknown parameter: '{key}'")
     return DEFAULTS[key]
 
 

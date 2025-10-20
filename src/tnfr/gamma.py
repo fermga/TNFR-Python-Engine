@@ -315,8 +315,8 @@ def eval_gamma(
 
     If ``strict`` is ``True`` exceptions raised during evaluation are
     propagated instead of returning ``0.0``. Likewise, if the specified
-    Γ type is not registered a warning is emitted (o ``ValueError`` en
-    modo estricto) y se usa ``gamma_none``.
+    Γ type is not registered a warning is emitted (or ``ValueError`` in
+    strict mode) and ``gamma_none`` is used.
 
     ``log_level`` controls the logging level for captured errors when
     ``strict`` is ``False``. If omitted, ``logging.ERROR`` is used in
@@ -326,7 +326,7 @@ def eval_gamma(
     spec_type = spec.get("type", "none")
     reg_entry = GAMMA_REGISTRY.get(spec_type)
     if reg_entry is None:
-        msg = f"Tipo GAMMA desconocido: {spec_type}"
+        msg = f"Unknown GAMMA type: {spec_type}"
         if strict:
             raise ValueError(msg)
         logger.warning(msg)
@@ -345,7 +345,7 @@ def eval_gamma(
         )
         logger.log(
             level,
-            "Fallo al evaluar Γi para nodo %s en t=%s: %s: %s",
+            "Failed to evaluate Γi for node %s at t=%s: %s: %s",
             node,
             t,
             exc.__class__.__name__,

@@ -241,23 +241,23 @@ def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
     if cfg_coh.get("enabled", True):
         Wstats = hist.get(cfg_coh.get("stats_history_key", "W_stats"), [])
         if Wstats:
-            logger.info("[COHERENCE] último paso: %s", Wstats[-1])
+            logger.info("[COHERENCE] last step: %s", Wstats[-1])
 
     if cfg_diag.get("enabled", True):
         last_diag = hist.get(cfg_diag.get("history_key", "nodal_diag"), [])
         if last_diag:
             sample = list(last_diag[-1].values())[:3]
-            logger.info("[DIAGNOSIS] ejemplo: %s", sample)
+            logger.info("[DIAGNOSIS] sample: %s", sample)
 
     if args.summary:
         summary_limit = getattr(args, "summary_limit", DEFAULT_SUMMARY_SERIES_LIMIT)
         summary, has_latency_values = build_metrics_summary(
             G, series_limit=summary_limit
         )
-        logger.info("Tg global: %s", summary["Tg_global"])
-        logger.info("Top operadores por Tg: %s", glyph_top(G, k=5))
+        logger.info("Global Tg: %s", summary["Tg_global"])
+        logger.info("Top operators by Tg: %s", glyph_top(G, k=5))
         if has_latency_values:
-            logger.info("Latencia media: %s", summary["latency_mean"])
+            logger.info("Average latency: %s", summary["latency_mean"])
 
 
 def cmd_run(args: argparse.Namespace) -> int:
@@ -273,7 +273,7 @@ def cmd_run(args: argparse.Namespace) -> int:
 def cmd_sequence(args: argparse.Namespace) -> int:
     if args.preset and args.sequence_file:
         logger.error(
-            "No se puede usar --preset y --sequence-file al mismo tiempo"
+            "Cannot use --preset and --sequence-file at the same time"
         )
         return 1
     code, _ = _run_cli_program(

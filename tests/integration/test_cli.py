@@ -300,9 +300,9 @@ def test_cli_history_roundtrip(tmp_path, capsys, command):
     assert glyphogram["t"]
 
     if command == "run":
-        assert "Tg global" in out
+        assert "Global Tg" in out
     else:
-        assert "Tg global" not in out
+        assert "Global Tg" not in out
 
 
 @pytest.mark.parametrize("command", ["run", "sequence"])

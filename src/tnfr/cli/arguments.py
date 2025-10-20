@@ -26,7 +26,7 @@ GRAMMAR_ARG_SPECS: tuple[ArgSpec, ...] = (
 )
 
 
-# Especificaciones para opciones relacionadas con el histórico
+# History export/save specifications
 HISTORY_ARG_SPECS: tuple[ArgSpec, ...] = (
     spec("--save-history", type=str),
     spec("--export-history-base", type=str),
@@ -34,7 +34,7 @@ HISTORY_ARG_SPECS: tuple[ArgSpec, ...] = (
 )
 
 
-# Argumentos comunes a los subcomandos
+# Arguments shared by CLI subcommands
 COMMON_ARG_SPECS: tuple[ArgSpec, ...] = (
     spec("--nodes", type=int, default=24),
     spec("--topology", choices=["ring", "complete", "erdos"], default="ring"),
