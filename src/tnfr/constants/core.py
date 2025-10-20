@@ -134,7 +134,8 @@ class RemeshDefaults:
     EPS_DNFR_STABLE: float = 1e-3
     EPS_DEPI_STABLE: float = 1e-3
     FRACTION_STABLE_REMESH: float = 0.80
-    REMESH_COOLDOWN_VENTANA: int = 20
+    REMESH_COOLDOWN_WINDOW: int = 20
+    REMESH_COOLDOWN_VENTANA: int = field(init=False)
     REMESH_COOLDOWN_TS: float = 0.0
     REMESH_REQUIRE_STABILITY: bool = True
     REMESH_STABILITY_WINDOW: int = 25
@@ -150,6 +151,9 @@ class RemeshDefaults:
     REMESH_TAU_LOCAL: int = 4
     REMESH_ALPHA: float = 0.5
     REMESH_ALPHA_HARD: bool = False
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "REMESH_COOLDOWN_VENTANA", self.REMESH_COOLDOWN_WINDOW)
 
 
 _core_defaults = asdict(CoreDefaults())
