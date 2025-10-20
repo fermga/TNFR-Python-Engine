@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import warnings
 from types import MappingProxyType
 from typing import Mapping
 
@@ -44,17 +45,16 @@ DISRUPTORS: tuple[str, ...] = (
     Glyph.THOL.value,
 )
 
-# Spanish aliases kept for a deprecation window.
-ESTABILIZADORES = STABILIZERS
-DISRUPTIVOS = DISRUPTORS
-
 # Mapa general de agrupaciones glíficas para referencia cruzada.
+#
+# Spanish keys (``estabilizadores`` / ``disruptivos``) were removed in TNFR 7.0
+# to keep the public surface English-only. Code that still referenced those
+# identifiers must switch to the canonical ``stabilizers`` / ``disruptors``
+# entries or maintain a private compatibility layer.
 GLYPH_GROUPS: Mapping[str, tuple[str, ...]] = MappingProxyType(
     {
         "stabilizers": STABILIZERS,
         "disruptors": DISRUPTORS,
-        "estabilizadores": ESTABILIZADORES,
-        "disruptivos": DISRUPTIVOS,
         # Grupos auxiliares para métricas morfosintácticas
         "ID": (Glyph.OZ.value,),
         "CM": (Glyph.ZHIR.value, Glyph.NAV.value),
@@ -100,8 +100,32 @@ __all__ = (
     "GLYPHS_CANONICAL_SET",
     "STABILIZERS",
     "DISRUPTORS",
-    "ESTABILIZADORES",
-    "DISRUPTIVOS",
     "GLYPH_GROUPS",
     "ANGLE_MAP",
 )
+
+
+def __getattr__(name: str) -> object:
+    """Provide guidance for removed Spanish glyph aliases."""
+
+    legacy_aliases = {
+        "ESTABILIZADORES": "STABILIZERS",
+        "DISRUPTIVOS": "DISRUPTORS",
+    }
+    try:
+        replacement = legacy_aliases[name]
+    except KeyError as exc:  # pragma: no cover - mirrors default behaviour
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}") from exc
+
+    warnings.warn(
+        (
+            "Spanish glyph alias '%s' was removed from tnfr.config.constants; "
+            "import '%s' instead. This compatibility warning will be removed in TNFR 8.0."
+        )
+        % (name.lower(), replacement),
+        FutureWarning,
+        stacklevel=2,
+    )
+    raise AttributeError(
+        f"Spanish glyph alias '{name}' was removed; use '{replacement}' instead."
+    )

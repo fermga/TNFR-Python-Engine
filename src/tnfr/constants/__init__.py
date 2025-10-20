@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import os
 import warnings
 from collections.abc import Mapping
 from types import MappingProxyType
@@ -33,7 +34,9 @@ CANONICAL_STATE_TOKENS = frozenset(
     {STATE_STABLE, STATE_TRANSITION, STATE_DISSONANT}
 )
 
-LEGACY_STATE_TOKENS = MappingProxyType(
+SPANISH_STATE_TOKENS_ENV_VAR = "TNFR_ENABLE_SPANISH_STATE_TOKENS"
+
+_SPANISH_STATE_TOKEN_MAP = MappingProxyType(
     {
         "estable": STATE_STABLE,
         "disonante": STATE_DISSONANT,
@@ -42,7 +45,41 @@ LEGACY_STATE_TOKENS = MappingProxyType(
     }
 )
 
-_WARNED_LEGACY_STATE_TOKENS: set[str] = set()
+_SPANISH_STATE_TOKENS_ENABLED = False
+_WARNED_SPANISH_STATE_TOKENS: set[str] = set()
+
+
+def enable_spanish_state_tokens(*, warn: bool = True) -> Mapping[str, str]:
+    """Allow the legacy Spanish state tokens for a final migration window."""
+
+    global _SPANISH_STATE_TOKENS_ENABLED
+    if not _SPANISH_STATE_TOKENS_ENABLED:
+        _SPANISH_STATE_TOKENS_ENABLED = True
+        if warn:
+            warnings.warn(
+                (
+                    "Spanish state tokens require explicit opt-in and will be "
+                    "removed in TNFR 8.0. Update configurations to use the English "
+                    "identifiers ('stable', 'transition', 'dissonant')."
+                ),
+                FutureWarning,
+                stacklevel=2,
+            )
+    return _SPANISH_STATE_TOKEN_MAP
+
+
+def disable_spanish_state_tokens() -> None:
+    """Disable the legacy Spanish state tokens compatibility shim."""
+
+    global _SPANISH_STATE_TOKENS_ENABLED
+    _SPANISH_STATE_TOKENS_ENABLED = False
+    _WARNED_SPANISH_STATE_TOKENS.clear()
+
+
+def spanish_state_tokens_enabled() -> bool:
+    """Return ``True`` if the Spanish compatibility shim is active."""
+
+    return _SPANISH_STATE_TOKENS_ENABLED
 
 
 def normalise_state_token(token: str, *, warn: bool = True) -> str:
@@ -66,21 +103,32 @@ def normalise_state_token(token: str, *, warn: bool = True) -> str:
     if lowered in CANONICAL_STATE_TOKENS:
         return lowered
 
-    legacy = LEGACY_STATE_TOKENS.get(lowered)
-    if legacy is not None:
-        if warn and lowered not in _WARNED_LEGACY_STATE_TOKENS:
-            warnings.warn(
-                (
-                    "Legacy state token '%s' encountered; using canonical '%s'"
-                    % (token, legacy)
-                ),
-                UserWarning,
-                stacklevel=2,
-            )
-            _WARNED_LEGACY_STATE_TOKENS.add(lowered)
-        return legacy
+    if _SPANISH_STATE_TOKENS_ENABLED:
+        legacy = _SPANISH_STATE_TOKEN_MAP.get(lowered)
+        if legacy is not None:
+            if warn and lowered not in _WARNED_SPANISH_STATE_TOKENS:
+                warnings.warn(
+                    (
+                        "Spanish state token '%s' is enabled via the migration shim; "
+                        "switch to '%s'."
+                    )
+                    % (token, legacy),
+                    FutureWarning,
+                    stacklevel=2,
+                )
+                _WARNED_SPANISH_STATE_TOKENS.add(lowered)
+            return legacy
 
     return stripped
+
+
+if os.environ.get(SPANISH_STATE_TOKENS_ENV_VAR, "").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}:
+    enable_spanish_state_tokens(warn=False)
 
 try:  # pragma: no cover - optional dependency
     from ..utils import ensure_node_offset_map as _ensure_node_offset_map
@@ -250,6 +298,9 @@ __all__ = (
     "STATE_TRANSITION",
     "STATE_DISSONANT",
     "CANONICAL_STATE_TOKENS",
-    "LEGACY_STATE_TOKENS",
+    "SPANISH_STATE_TOKENS_ENV_VAR",
+    "enable_spanish_state_tokens",
+    "disable_spanish_state_tokens",
+    "spanish_state_tokens_enabled",
     "normalise_state_token",
 )

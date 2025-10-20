@@ -1,5 +1,24 @@
 # Release notes
 
+## 7.0.0 (Spanish identifiers removed)
+
+- Removed the Spanish glyph constants ``ESTABILIZADORES`` and ``DISRUPTIVOS``
+  from :mod:`tnfr.config.constants`. Import the English
+  :data:`tnfr.config.constants.STABILIZERS` and
+  :data:`tnfr.config.constants.DISRUPTORS` names instead. Accessing the old
+  identifiers now raises :class:`AttributeError` after emitting a final
+  :class:`FutureWarning` explaining the required substitution.
+- Finalised the state token migration. Spanish literals now require an explicit
+  opt-in via :func:`tnfr.constants.enable_spanish_state_tokens` or by setting
+  the :envvar:`TNFR_ENABLE_SPANISH_STATE_TOKENS` environment variable. The shim
+  warns with :class:`FutureWarning` and is scheduled for removal in TNFR 8.0.
+- Removed the ``SPANISH_PRESET_ALIASES`` helper and the runtime resolution of
+  Spanish preset identifiers. Calls such as ``get_preset('arranque_resonante')``
+  now raise :class:`KeyError` indicating the English replacement. Only English
+  preset names remain in the public API.
+- Updated tests and documentation to reflect the English-only contract across
+  glyph constants, preset helpers, and diagnostic state utilities.
+
 ## 6.1.0 (preset alias deprecation window)
 
 - Announced the removal of the Spanish preset identifiers
@@ -9,12 +28,18 @@
 - Added the ``tnfr.config.presets.SPANISH_PRESET_ALIASES`` mapping to help
   audit configurations. Existing presets should switch to the English
   equivalents (``resonant_bootstrap``, ``contained_mutation``,
-  ``coupling_exploration``) before upgrading to 7.0.
+  ``coupling_exploration``) before upgrading to 7.0. The helper was removed in
+  TNFR 7.0 once the migration period ended; downstream projects should now keep
+  a local mapping during the final substitution pass.
 - Migration helper: update YAML/JSON payloads or CLI arguments with a simple
-  substitution pass. For example, the following Python snippet rewrites a
-  user configuration dictionary in-place::
+  substitution pass. The following snippet illustrates how to migrate data once
+  the mapping is defined locally::
 
-      from tnfr.config.presets import SPANISH_PRESET_ALIASES
+      SPANISH_PRESET_ALIASES = {
+          "arranque_resonante": "resonant_bootstrap",
+          "mutacion_contenida": "contained_mutation",
+          "exploracion_acople": "coupling_exploration",
+      }
 
       def normalize_preset_name(name: str) -> str:
           return SPANISH_PRESET_ALIASES.get(name, name)

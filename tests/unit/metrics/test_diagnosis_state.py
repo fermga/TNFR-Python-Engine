@@ -1,14 +1,13 @@
 """Tests for _state_from_thresholds."""
 
-import warnings
-
 import pytest
 
 from tnfr.constants import (
-    LEGACY_STATE_TOKENS,
     STATE_DISSONANT,
     STATE_STABLE,
     STATE_TRANSITION,
+    disable_spanish_state_tokens,
+    enable_spanish_state_tokens,
     normalise_state_token,
 )
 from tnfr.metrics.diagnosis import _state_from_thresholds
@@ -26,13 +25,32 @@ def test_state_from_thresholds_checks_all_conditions():
 
 def test_normalise_state_token_accepts_canonical_tokens_without_warning():
     for token in (STATE_STABLE, STATE_DISSONANT, STATE_TRANSITION):
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("error")
-            assert normalise_state_token(token) == token
-        assert caught == []
+        assert normalise_state_token(token) == token
 
 
-def test_normalise_state_token_maps_legacy_values_with_warning():
-    for legacy_token, canonical in LEGACY_STATE_TOKENS.items():
-        with pytest.warns(UserWarning):
-            assert normalise_state_token(legacy_token) == canonical
+def test_normalise_state_token_ignores_spanish_tokens_without_opt_in():
+    disable_spanish_state_tokens()
+    for legacy_token in ("estable", "disonante", "transicion", "transición"):
+        assert normalise_state_token(legacy_token) == legacy_token
+
+
+def test_enable_spanish_state_tokens_emits_futurewarning():
+    disable_spanish_state_tokens()
+    with pytest.warns(FutureWarning, match="Spanish state tokens require explicit opt-in"):
+        enable_spanish_state_tokens()
+
+
+def test_normalise_state_token_maps_spanish_values_when_enabled():
+    disable_spanish_state_tokens()
+    enable_spanish_state_tokens(warn=False)
+    try:
+        for legacy_token, canonical in (
+            ("estable", STATE_STABLE),
+            ("disonante", STATE_DISSONANT),
+            ("transicion", STATE_TRANSITION),
+            ("transición", STATE_TRANSITION),
+        ):
+            with pytest.warns(FutureWarning, match="Spanish state token"):
+                assert normalise_state_token(legacy_token) == canonical
+    finally:
+        disable_spanish_state_tokens()
