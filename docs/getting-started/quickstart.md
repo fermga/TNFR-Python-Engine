@@ -129,6 +129,9 @@ Run the sequence on a single node and persist telemetry to `history.json`:
 tnfr sequence --nodes 1 --sequence-file sequence.json --save-history history.json
 ```
 
+Use `--summary-limit` to bound the number of samples per series in CLI summaries.
+Pass `0` or a negative value to disable trimming altogether when exporting metrics.
+
 | Canonical token | Operator role        |
 | --------------- | -------------------- |
 | `emission`      | Initiates resonance  |
