@@ -1,27 +1,17 @@
-"""Definitions for canonical TNFR structural operators."""
+"""Definitions for canonical TNFR structural operators.
+
+English identifiers are now the primary public API. Legacy Spanish
+wrappers live in :mod:`tnfr.operators.compat` and emit deprecation
+warnings on use.
+"""
 
 from __future__ import annotations
 
 from typing import Any, ClassVar
 
-from ..types import Glyph, TNFRGraph
 from ..config.operator_names import (
-    ACOPLAMIENTO,
-    AUTOORGANIZACION,
-    COHERENCIA,
-    CONTRACCION,
-    DISONANCIA,
-    EMISION,
-    EXPANSION,
-    MUTACION,
-    RECEPCION,
-    RECURSIVIDAD,
-    RESONANCIA,
-    SILENCIO,
-    TRANSICION,
-    COUPLING,
     COHERENCE,
-    CONTRACTION,
+    COUPLING,
     DISSONANCE,
     EMISSION,
     MUTATION,
@@ -31,24 +21,14 @@ from ..config.operator_names import (
     SELF_ORGANIZATION,
     SILENCE,
     TRANSITION,
+    CONTRACTION,
+    EXPANSION,
 )
+from ..types import Glyph, TNFRGraph
 from .registry import register_operator
 
 __all__ = (
-    "Operador",
-    "Emision",
-    "Recepcion",
-    "Coherencia",
-    "Disonancia",
-    "Acoplamiento",
-    "Resonancia",
-    "Silencio",
-    "Expansion",
-    "Contraccion",
-    "Autoorganizacion",
-    "Mutacion",
-    "Transicion",
-    "Recursividad",
+    "Operator",
     "Emission",
     "Reception",
     "Coherence",
@@ -56,6 +36,7 @@ __all__ = (
     "Coupling",
     "Resonance",
     "Silence",
+    "Expansion",
     "Contraction",
     "SelfOrganization",
     "Mutation",
@@ -64,93 +45,92 @@ __all__ = (
 )
 
 
-class Operador:
+class Operator:
     """Base class for TNFR operators.
 
-    Each operator defines ``name`` (ASCII identifier) and ``glyph``
-    (símbolo TNFR canónico). Calling an instance applies the corresponding
-    symbol to the node.
+    Each operator defines ``name`` (ASCII identifier) and ``glyph``. Calling an
+    instance applies the corresponding glyph to the node.
     """
 
-    name: ClassVar[str] = "operador"
+    name: ClassVar[str] = "operator"
     glyph: ClassVar[Glyph | None] = None
 
     def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         if self.glyph is None:
-            raise NotImplementedError("Operador sin glyph asignado")
-        from ..validation.grammar import (
+            raise NotImplementedError("Operator without assigned glyph")
+        from ..validation.grammar import (  # local import to avoid cycles
             apply_glyph_with_grammar,
-        )  # local import to avoid cycles
+        )
 
         apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
 
 
 @register_operator
-class Emision(Operador):
-    """Aplicación del operador de emisión (símbolo ``AL``)."""
+class Emission(Operator):
+    """Emission operator (glyph ``AL``)."""
 
     __slots__ = ()
-    name: ClassVar[str] = EMISION
+    name: ClassVar[str] = EMISSION
     glyph: ClassVar[Glyph] = Glyph.AL
 
 
 @register_operator
-class Recepcion(Operador):
-    """Operador de recepción (símbolo ``EN``)."""
+class Reception(Operator):
+    """Reception operator (glyph ``EN``)."""
 
     __slots__ = ()
-    name: ClassVar[str] = RECEPCION
+    name: ClassVar[str] = RECEPTION
     glyph: ClassVar[Glyph] = Glyph.EN
 
 
 @register_operator
-class Coherencia(Operador):
-    """Operador de coherencia (símbolo ``IL``)."""
+class Coherence(Operator):
+    """Coherence operator (glyph ``IL``)."""
 
     __slots__ = ()
-    name: ClassVar[str] = COHERENCIA
+    name: ClassVar[str] = COHERENCE
     glyph: ClassVar[Glyph] = Glyph.IL
 
 
 @register_operator
-class Disonancia(Operador):
-    """Operador de disonancia (símbolo ``OZ``)."""
+class Dissonance(Operator):
+    """Dissonance operator (glyph ``OZ``)."""
 
     __slots__ = ()
-    name: ClassVar[str] = DISONANCIA
+    name: ClassVar[str] = DISSONANCE
     glyph: ClassVar[Glyph] = Glyph.OZ
 
 
 @register_operator
-class Acoplamiento(Operador):
-    """Operador de acoplamiento (símbolo ``UM``)."""
+class Coupling(Operator):
+    """Coupling operator (glyph ``UM``)."""
 
     __slots__ = ()
-    name: ClassVar[str] = ACOPLAMIENTO
+    name: ClassVar[str] = COUPLING
     glyph: ClassVar[Glyph] = Glyph.UM
 
 
 @register_operator
-class Resonancia(Operador):
-    """Operador de resonancia (símbolo ``RA``)."""
+class Resonance(Operator):
+    """Resonance operator (glyph ``RA``)."""
 
     __slots__ = ()
-    name: ClassVar[str] = RESONANCIA
+    name: ClassVar[str] = RESONANCE
     glyph: ClassVar[Glyph] = Glyph.RA
 
 
 @register_operator
-class Silencio(Operador):
-    """Operador de silencio (símbolo ``SHA``)."""
+class Silence(Operator):
+    """Silence operator (glyph ``SHA``)."""
 
     __slots__ = ()
-    name: ClassVar[str] = SILENCIO
+    name: ClassVar[str] = SILENCE
     glyph: ClassVar[Glyph] = Glyph.SHA
 
 
 @register_operator
-class Expansion(Operador):
-    """Operador de expansión (símbolo ``VAL``)."""
+class Expansion(Operator):
+    """Expansion operator (glyph ``VAL``)."""
 
     __slots__ = ()
     name: ClassVar[str] = EXPANSION
@@ -158,141 +138,80 @@ class Expansion(Operador):
 
 
 @register_operator
-class Contraccion(Operador):
-    """Operador de contracción (símbolo ``NUL``)."""
+class Contraction(Operator):
+    """Contraction operator (glyph ``NUL``)."""
 
     __slots__ = ()
-    name: ClassVar[str] = CONTRACCION
+    name: ClassVar[str] = CONTRACTION
     glyph: ClassVar[Glyph] = Glyph.NUL
 
 
 @register_operator
-class Autoorganizacion(Operador):
-    """Operador de autoorganización (símbolo ``THOL``)."""
+class SelfOrganization(Operator):
+    """Self-organization operator (glyph ``THOL``)."""
 
     __slots__ = ()
-    name: ClassVar[str] = AUTOORGANIZACION
+    name: ClassVar[str] = SELF_ORGANIZATION
     glyph: ClassVar[Glyph] = Glyph.THOL
 
 
 @register_operator
-class Mutacion(Operador):
-    """Operador de mutación (símbolo ``ZHIR``)."""
+class Mutation(Operator):
+    """Mutation operator (glyph ``ZHIR``)."""
 
     __slots__ = ()
-    name: ClassVar[str] = MUTACION
+    name: ClassVar[str] = MUTATION
     glyph: ClassVar[Glyph] = Glyph.ZHIR
 
 
 @register_operator
-class Transicion(Operador):
-    """Operador de transición (símbolo ``NAV``)."""
+class Transition(Operator):
+    """Transition operator (glyph ``NAV``)."""
 
     __slots__ = ()
-    name: ClassVar[str] = TRANSICION
+    name: ClassVar[str] = TRANSITION
     glyph: ClassVar[Glyph] = Glyph.NAV
 
 
 @register_operator
-class Recursividad(Operador):
-    """Operador de recursividad (símbolo ``REMESH``)."""
-
-    __slots__ = ()
-    name: ClassVar[str] = RECURSIVIDAD
-    glyph: ClassVar[Glyph] = Glyph.REMESH
-
-
-@register_operator
-class Emission(Emision):
-    """English alias for :class:`Emision` (glyph ``AL``)."""
-
-    __slots__ = ()
-    name: ClassVar[str] = EMISSION
-
-
-@register_operator
-class Reception(Recepcion):
-    """English alias for :class:`Recepcion` (glyph ``EN``)."""
-
-    __slots__ = ()
-    name: ClassVar[str] = RECEPTION
-
-
-@register_operator
-class Coherence(Coherencia):
-    """English alias for :class:`Coherencia` (glyph ``IL``)."""
-
-    __slots__ = ()
-    name: ClassVar[str] = COHERENCE
-
-
-@register_operator
-class Dissonance(Disonancia):
-    """English alias for :class:`Disonancia` (glyph ``OZ``)."""
-
-    __slots__ = ()
-    name: ClassVar[str] = DISSONANCE
-
-
-@register_operator
-class Coupling(Acoplamiento):
-    """English alias for :class:`Acoplamiento` (glyph ``UM``)."""
-
-    __slots__ = ()
-    name: ClassVar[str] = COUPLING
-
-
-@register_operator
-class Resonance(Resonancia):
-    """English alias for :class:`Resonancia` (glyph ``RA``)."""
-
-    __slots__ = ()
-    name: ClassVar[str] = RESONANCE
-
-
-@register_operator
-class Silence(Silencio):
-    """English alias for :class:`Silencio` (glyph ``SHA``)."""
-
-    __slots__ = ()
-    name: ClassVar[str] = SILENCE
-
-
-@register_operator
-class Contraction(Contraccion):
-    """English alias for :class:`Contraccion` (glyph ``NUL``)."""
-
-    __slots__ = ()
-    name: ClassVar[str] = CONTRACTION
-
-
-@register_operator
-class SelfOrganization(Autoorganizacion):
-    """English alias for :class:`Autoorganizacion` (glyph ``THOL``)."""
-
-    __slots__ = ()
-    name: ClassVar[str] = SELF_ORGANIZATION
-
-
-@register_operator
-class Mutation(Mutacion):
-    """English alias for :class:`Mutacion` (glyph ``ZHIR``)."""
-
-    __slots__ = ()
-    name: ClassVar[str] = MUTATION
-
-
-@register_operator
-class Transition(Transicion):
-    """English alias for :class:`Transicion` (glyph ``NAV``)."""
-
-    __slots__ = ()
-    name: ClassVar[str] = TRANSITION
-
-
-@register_operator
-class Recursivity(Recursividad):
-    """English alias for :class:`Recursividad` (glyph ``REMESH``)."""
+class Recursivity(Operator):
+    """Recursivity operator (glyph ``REMESH``)."""
 
     __slots__ = ()
     name: ClassVar[str] = RECURSIVITY
+    glyph: ClassVar[Glyph] = Glyph.REMESH
+
+
+# Import legacy wrappers for backward compatibility -------------------------
+
+from .compat import (  # noqa: E402  (imported late to avoid cycles)
+    Operador,
+    Emision,
+    Recepcion,
+    Coherencia,
+    Disonancia,
+    Acoplamiento,
+    Resonancia,
+    Silencio,
+    Contraccion,
+    Autoorganizacion,
+    Mutacion,
+    Transicion,
+    Recursividad,
+)
+
+__all__ = __all__ + (
+    "Operador",
+    "Emision",
+    "Recepcion",
+    "Coherencia",
+    "Disonancia",
+    "Acoplamiento",
+    "Resonancia",
+    "Silencio",
+    "Contraccion",
+    "Autoorganizacion",
+    "Mutacion",
+    "Transicion",
+    "Recursividad",
+)

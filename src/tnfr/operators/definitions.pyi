@@ -1,79 +1,126 @@
-from __future__ import annotations
-
-from typing import Any, ClassVar, Tuple
+from typing import Any, ClassVar
 
 from ..types import Glyph, TNFRGraph
 
-__all__: Tuple[str, ...]
-
-
-class Operador:
+class Operator:
     name: ClassVar[str]
     glyph: ClassVar[Glyph | None]
 
     def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None: ...
 
 
-class Emision(Operador):
+class Emission(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
 
 
-class Recepcion(Operador):
+class Reception(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
 
 
-class Coherencia(Operador):
+class Coherence(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
 
 
-class Disonancia(Operador):
+class Dissonance(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
 
 
-class Acoplamiento(Operador):
+class Coupling(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
 
 
-class Resonancia(Operador):
+class Resonance(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
 
 
-class Silencio(Operador):
+class Silence(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
 
 
-class Expansion(Operador):
+class Expansion(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
 
 
-class Contraccion(Operador):
+class Contraction(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
 
 
-class Autoorganizacion(Operador):
+class SelfOrganization(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
 
 
-class Mutacion(Operador):
+class Mutation(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
 
 
-class Transicion(Operador):
+class Transition(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
 
 
-class Recursividad(Operador):
+class Recursivity(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
+
+
+class Operador(Operator):
+    legacy_name: ClassVar[str]
+
+
+class Emision(Emission):
+    legacy_name: ClassVar[str]
+
+
+class Recepcion(Reception):
+    legacy_name: ClassVar[str]
+
+
+class Coherencia(Coherence):
+    legacy_name: ClassVar[str]
+
+
+class Disonancia(Dissonance):
+    legacy_name: ClassVar[str]
+
+
+class Acoplamiento(Coupling):
+    legacy_name: ClassVar[str]
+
+
+class Resonancia(Resonance):
+    legacy_name: ClassVar[str]
+
+
+class Silencio(Silence):
+    legacy_name: ClassVar[str]
+
+
+class Contraccion(Contraction):
+    legacy_name: ClassVar[str]
+
+
+class Autoorganizacion(SelfOrganization):
+    legacy_name: ClassVar[str]
+
+
+class Mutacion(Mutation):
+    legacy_name: ClassVar[str]
+
+
+class Transicion(Transition):
+    legacy_name: ClassVar[str]
+
+
+class Recursividad(Recursivity):
+    legacy_name: ClassVar[str]

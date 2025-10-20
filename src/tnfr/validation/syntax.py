@@ -4,19 +4,19 @@ from __future__ import annotations
 
 from ..operators.registry import OPERADORES
 from ..config.operator_names import (
-    ACOPLAMIENTO,
-    AUTOORGANIZACION,
     CIERRE_VALIDO,
-    COHERENCIA,
-    CONTRACCION,
-    DISONANCIA,
-    EMISION,
+    COHERENCE,
+    CONTRACTION,
+    COUPLING,
+    DISSONANCE,
+    EMISSION,
     INICIO_VALIDOS,
-    RECURSIVIDAD,
-    RECEPCION,
-    RESONANCIA,
-    SILENCIO,
-    TRANSICION,
+    RECEPTION,
+    RECURSIVITY,
+    RESONANCE,
+    SELF_ORGANIZATION,
+    SILENCE,
+    TRANSITION,
     canonical_operator_name,
     operator_display_name,
 )
@@ -24,10 +24,10 @@ from ..config.operator_names import (
 __all__ = ("validate_sequence",)
 
 
-_CANONICAL_START = (EMISION, RECURSIVIDAD)
-_CANONICAL_INTERMEDIATE = (DISONANCIA, ACOPLAMIENTO, RESONANCIA)
-_CANONICAL_END = (SILENCIO, TRANSICION, RECURSIVIDAD)
-_AUTO_CLOSURES = (SILENCIO, CONTRACCION)
+_CANONICAL_START = (EMISSION, RECURSIVITY)
+_CANONICAL_INTERMEDIATE = (DISSONANCE, COUPLING, RESONANCE)
+_CANONICAL_END = (SILENCE, TRANSITION, RECURSIVITY)
+_AUTO_CLOSURES = (SILENCE, CONTRACTION)
 
 
 def _format_token_group(tokens: tuple[str, ...]) -> str:
@@ -51,7 +51,7 @@ def _validate_intermediate(
     """Check that the central TNFR segment is present."""
 
     if not (found_recepcion and found_coherencia):
-        return False, f"missing {RECEPCION}→{COHERENCIA} segment"
+        return False, f"missing {RECEPTION}→{COHERENCE} segment"
     if not seen_intermedio:
         intermedio_tokens = _format_token_group(_CANONICAL_INTERMEDIATE)
         return False, f"missing {intermedio_tokens} segment"
@@ -69,11 +69,16 @@ def _validate_end(last_token: str, open_thol: bool) -> tuple[bool, str]:
     return True, ""
 
 
-def _validate_known_tokens(nombres_set: set[str]) -> tuple[bool, str]:
+def _validate_known_tokens(
+    alias_to_canonical: dict[str, str]
+) -> tuple[bool, str]:
     """Ensure all tokens map to canonical operators."""
 
-    operadores_canonicos = set(OPERADORES.keys())
-    desconocidos = nombres_set - operadores_canonicos
+    desconocidos = {
+        alias
+        for alias, canonical in alias_to_canonical.items()
+        if canonical not in OPERADORES
+    }
     if desconocidos:
         tokens_ordenados = ", ".join(sorted(desconocidos))
         return False, f"unknown tokens: {tokens_ordenados}"
@@ -90,39 +95,38 @@ def _validate_token_sequence(nombres: list[str]) -> tuple[bool, str]:
     if not ok:
         return False, msg
 
-    nombres_set: set[str] = set()
-    found_recepcion = False
-    found_coherencia = False
+    alias_to_canonical: dict[str, str] = {}
+    found_reception = False
+    found_coherence = False
     seen_intermedio = False
     open_thol = False
 
     for n in nombres:
         if not isinstance(n, str):
             return False, "tokens must be str"
-        nombres_set.add(n)
-
         canonical = canonical_operator_name(n)
+        alias_to_canonical[n] = canonical
 
-        if canonical == RECEPCION and not found_recepcion:
-            found_recepcion = True
-        elif found_recepcion and canonical == COHERENCIA and not found_coherencia:
-            found_coherencia = True
+        if canonical == RECEPTION and not found_reception:
+            found_reception = True
+        elif found_reception and canonical == COHERENCE and not found_coherence:
+            found_coherence = True
         elif (
-            found_coherencia
+            found_coherence
             and not seen_intermedio
             and canonical in _CANONICAL_INTERMEDIATE
         ):
             seen_intermedio = True
 
-        if canonical == AUTOORGANIZACION:
+        if canonical == SELF_ORGANIZATION:
             open_thol = True
         elif open_thol and canonical in _AUTO_CLOSURES:
             open_thol = False
 
-    ok, msg = _validate_known_tokens(nombres_set)
+    ok, msg = _validate_known_tokens(alias_to_canonical)
     if not ok:
         return False, msg
-    ok, msg = _validate_intermediate(found_recepcion, found_coherencia, seen_intermedio)
+    ok, msg = _validate_intermediate(found_reception, found_coherence, seen_intermedio)
     if not ok:
         return False, msg
     ok, msg = _validate_end(nombres[-1], open_thol)

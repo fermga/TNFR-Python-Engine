@@ -1,23 +1,34 @@
 """Pruebas de structural."""
 
 import networkx as nx
+import pytest
 
 from tnfr import run_sequence
 from tnfr.structural import (
     create_nfr,
+    Operator,
+    Emission,
+    Reception,
+    Coherence,
+    Dissonance,
+    Coupling,
+    Resonance,
+    Silence,
+    Expansion,
+    Contraction,
+    SelfOrganization,
+    Mutation,
+    Transition,
+    Recursivity,
+    validate_sequence,
+)
+from tnfr.operators.compat import (
     Emision,
     Recepcion,
     Coherencia,
     Resonancia,
     Silencio,
     Autoorganizacion,
-    Emission,
-    Reception,
-    Coherence,
-    Resonance,
-    Silence,
-    SelfOrganization,
-    validate_sequence,
 )
 from tnfr.constants import EPI_PRIMARY
 from tnfr.config.operator_names import (
@@ -48,7 +59,7 @@ def test_create_nfr_basic():
 
 def test_sequence_validation_and_run():
     G, n = create_nfr("x")
-    ops = [Emision(), Recepcion(), Coherencia(), Resonancia(), Silencio()]
+    ops = [Emission(), Reception(), Coherence(), Resonance(), Silence()]
     names = [op.name for op in ops]
     ok, msg = validate_sequence(names)
     assert ok, msg
@@ -57,9 +68,10 @@ def test_sequence_validation_and_run():
     assert EPI_PRIMARY in G.nodes[n]
 
 
-def test_sequence_validation_and_run_english_aliases():
-    G, n = create_nfr("x_en")
-    ops = [Emission(), Reception(), Coherence(), Resonance(), Silence()]
+def test_legacy_sequence_validation_and_run_warns():
+    G, n = create_nfr("x_es")
+    with pytest.warns(DeprecationWarning):
+        ops = [Emision(), Recepcion(), Coherencia(), Resonancia(), Silencio()]
     names = [op.name for op in ops]
     ok, msg = validate_sequence(names)
     assert ok, msg
@@ -68,7 +80,8 @@ def test_sequence_validation_and_run_english_aliases():
 
 
 def test_invalid_sequence():
-    ops = [Recepcion(), Coherencia(), Silencio()]
+    with pytest.warns(DeprecationWarning):
+        ops = [Recepcion(), Coherencia(), Silencio()]
     names = [op.name for op in ops]
     ok, msg = validate_sequence(names)
     assert not ok
@@ -121,14 +134,15 @@ def test_validate_sequence_rejects_unknown_tokens():
 
 
 def test_thol_closed_by_silencio():
-    ops = [
-        Emision(),
-        Recepcion(),
-        Coherencia(),
-        Autoorganizacion(),
-        Resonancia(),
-        Silencio(),
-    ]
+    with pytest.warns(DeprecationWarning):
+        ops = [
+            Emision(),
+            Recepcion(),
+            Coherencia(),
+            Autoorganizacion(),
+            Resonancia(),
+            Silencio(),
+        ]
     names = [op.name for op in ops]
     ok, msg = validate_sequence(names)
     assert ok, msg
@@ -171,3 +185,25 @@ def test_sequence_accepts_english_tokens():
     ]
     ok, msg = validate_sequence(names)
     assert ok, msg
+
+
+def test_operator_base_types_exposed():
+    for cls in (
+        Emission,
+        Reception,
+        Coherence,
+        Dissonance,
+        Coupling,
+        Resonance,
+        Silence,
+        Expansion,
+        Contraction,
+        SelfOrganization,
+        Mutation,
+        Transition,
+        Recursivity,
+    ):
+        assert issubclass(cls, Operator)
+    with pytest.warns(DeprecationWarning):
+        legacy = Autoorganizacion()
+    assert isinstance(legacy, Operator)

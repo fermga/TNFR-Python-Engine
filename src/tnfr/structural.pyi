@@ -4,21 +4,38 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Callable, Hashable
 
 from .operators.definitions import (
-    Acoplamiento,
-    Autoorganizacion,
-    Coherencia,
-    Contraccion,
-    Disonancia,
-    Emision,
+    Operator,
+    Emission,
+    Reception,
+    Coherence,
+    Dissonance,
+    Coupling,
+    Resonance,
+    Silence,
     Expansion,
-    Mutacion,
+    Contraction,
+    SelfOrganization,
+    Mutation,
+    Transition,
+    Recursivity,
+)
+from .operators.compat import (
     Operador,
+    Emision,
     Recepcion,
-    Recursividad,
+    Coherencia,
+    Disonancia,
+    Acoplamiento,
     Resonancia,
     Silencio,
+    Contraccion,
+    Autoorganizacion,
+    Mutacion,
     Transicion,
+    Recursividad as RecursividadLegacy,
 )
+
+Recursividad = RecursividadLegacy
 
 if TYPE_CHECKING:
     import networkx as nx
@@ -40,10 +57,10 @@ def create_nfr(
 ) -> tuple["nx.Graph", str]: ...
 
 
-OPERADORES: dict[str, Operador]
+OPERADORES: dict[str, Operator]
 
 
 def validate_sequence(names: Iterable[str]) -> tuple[bool, str]: ...
 
 
-def run_sequence(G: "nx.Graph", node: Hashable, ops: Iterable[Operador]) -> None: ...
+def run_sequence(G: "nx.Graph", node: Hashable, ops: Iterable[Operator]) -> None: ...

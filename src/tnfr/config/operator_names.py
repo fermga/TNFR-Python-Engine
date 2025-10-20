@@ -1,25 +1,16 @@
-"""Canonical operator name constants and reusable sets."""
+"""Canonical operator name constants and reusable sets.
+
+Starting with TNFR 0.12 the engine uses **English** identifiers as the
+canonical operator tokens. Spanish identifiers remain available as
+compatibility aliases and will be removed in a future release.
+"""
 
 from __future__ import annotations
 
 from itertools import chain
+import warnings
 
-# Individual operator identifiers (Spanish canonical tokens)
-EMISION = "emision"
-RECEPCION = "recepcion"
-COHERENCIA = "coherencia"
-DISONANCIA = "disonancia"
-ACOPLAMIENTO = "acoplamiento"
-RESONANCIA = "resonancia"
-SILENCIO = "silencio"
-EXPANSION = "expansion"
-CONTRACCION = "contraccion"
-AUTOORGANIZACION = "autoorganizacion"
-MUTACION = "mutacion"
-TRANSICION = "transicion"
-RECURSIVIDAD = "recursividad"
-
-# English equivalents used for multilingual dispatch
+# Canonical operator identifiers (English tokens)
 EMISSION = "emission"
 RECEPTION = "reception"
 COHERENCE = "coherence"
@@ -27,16 +18,31 @@ DISSONANCE = "dissonance"
 COUPLING = "coupling"
 RESONANCE = "resonance"
 SILENCE = "silence"
-EXPANSION_EN = "expansion"
+EXPANSION = "expansion"
 CONTRACTION = "contraction"
 SELF_ORGANIZATION = "self_organization"
 MUTATION = "mutation"
 TRANSITION = "transition"
 RECURSIVITY = "recursivity"
 
-# Bidirectional alias tables -------------------------------------------------
 
-ENGLISH_NAME_BY_CANONICAL = {
+# Legacy Spanish aliases (scheduled for removal) -----------------------------
+
+EMISION = "emision"
+RECEPCION = "recepcion"
+COHERENCIA = "coherencia"
+DISONANCIA = "disonancia"
+ACOPLAMIENTO = "acoplamiento"
+RESONANCIA = "resonancia"
+SILENCIO = "silencio"
+EXPANSION_ES = "expansion"
+CONTRACCION = "contraccion"
+AUTOORGANIZACION = "autoorganizacion"
+MUTACION = "mutacion"
+TRANSICION = "transicion"
+RECURSIVIDAD = "recursividad"
+
+SPANISH_TO_ENGLISH = {
     EMISION: EMISSION,
     RECEPCION: RECEPTION,
     COHERENCIA: COHERENCE,
@@ -44,7 +50,7 @@ ENGLISH_NAME_BY_CANONICAL = {
     ACOPLAMIENTO: COUPLING,
     RESONANCIA: RESONANCE,
     SILENCIO: SILENCE,
-    EXPANSION: EXPANSION_EN,
+    EXPANSION_ES: EXPANSION,
     CONTRACCION: CONTRACTION,
     AUTOORGANIZACION: SELF_ORGANIZATION,
     MUTACION: MUTATION,
@@ -52,30 +58,67 @@ ENGLISH_NAME_BY_CANONICAL = {
     RECURSIVIDAD: RECURSIVITY,
 }
 
+
+# Bidirectional alias tables -------------------------------------------------
+
+CANONICAL_OPERATOR_NAMES = frozenset(
+    {
+        EMISSION,
+        RECEPTION,
+        COHERENCE,
+        DISSONANCE,
+        COUPLING,
+        RESONANCE,
+        SILENCE,
+        EXPANSION,
+        CONTRACTION,
+        SELF_ORGANIZATION,
+        MUTATION,
+        TRANSITION,
+        RECURSIVITY,
+    }
+)
+ENGLISH_OPERATOR_NAMES = CANONICAL_OPERATOR_NAMES
+SPANISH_OPERATOR_NAMES = frozenset(SPANISH_TO_ENGLISH.keys())
+
 ALIASES_BY_CANONICAL = {
-    canonical: frozenset({canonical, english})
-    for canonical, english in ENGLISH_NAME_BY_CANONICAL.items()
+    canonical: frozenset(
+        chain([canonical], (alias for alias, mapped in SPANISH_TO_ENGLISH.items() if mapped == canonical))
+    )
+    for canonical in CANONICAL_OPERATOR_NAMES
 }
 
-CANONICAL_OPERATOR_NAMES = frozenset(ALIASES_BY_CANONICAL.keys())
-SPANISH_OPERATOR_NAMES = CANONICAL_OPERATOR_NAMES
-ENGLISH_OPERATOR_NAMES = frozenset(ENGLISH_NAME_BY_CANONICAL.values())
 CANONICAL_NAME_BY_ALIAS = {
-    alias: canonical
-    for canonical, aliases in ALIASES_BY_CANONICAL.items()
-    for alias in aliases
+    **{name: name for name in CANONICAL_OPERATOR_NAMES},
+    **SPANISH_TO_ENGLISH,
 }
 
 
 def canonical_operator_name(name: str) -> str:
-    """Return the canonical (Spanish) operator token for ``name``."""
+    """Return the canonical (English) operator token for ``name``.
 
-    return CANONICAL_NAME_BY_ALIAS.get(name, name)
+    Using a legacy Spanish token triggers a :class:`DeprecationWarning` and
+    returns the corresponding English identifier.
+    """
+
+    canonical = CANONICAL_NAME_BY_ALIAS.get(name, name)
+    if name in SPANISH_TO_ENGLISH and canonical != name:
+        warnings.warn(
+            (
+                "Spanish operator token '%s' is deprecated; use the English "
+                "identifier '%s' instead"
+            )
+            % (name, canonical),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    return canonical
 
 
-def operator_display_name(canonical: str) -> str:
-    """Return a slash-joined label listing aliases for ``canonical``."""
+def operator_display_name(name: str) -> str:
+    """Return a slash-joined label listing aliases for ``name``."""
 
+    canonical = canonical_operator_name(name)
     aliases = ALIASES_BY_CANONICAL.get(canonical)
     if not aliases:
         return canonical
@@ -86,15 +129,15 @@ def operator_display_name(canonical: str) -> str:
 ALL_OPERATOR_NAMES = frozenset(chain.from_iterable(ALIASES_BY_CANONICAL.values()))
 
 INICIO_VALIDOS = frozenset(
-    chain.from_iterable(ALIASES_BY_CANONICAL[name] for name in (EMISION, RECURSIVIDAD))
+    chain.from_iterable(ALIASES_BY_CANONICAL[name] for name in (EMISSION, RECURSIVITY))
 )
 TRAMO_INTERMEDIO = frozenset(
     chain.from_iterable(
         ALIASES_BY_CANONICAL[name]
         for name in (
-            DISONANCIA,
-            ACOPLAMIENTO,
-            RESONANCIA,
+            DISSONANCE,
+            COUPLING,
+            RESONANCE,
         )
     )
 )
@@ -102,34 +145,20 @@ CIERRE_VALIDO = frozenset(
     chain.from_iterable(
         ALIASES_BY_CANONICAL[name]
         for name in (
-            SILENCIO,
-            TRANSICION,
-            RECURSIVIDAD,
+            SILENCE,
+            TRANSITION,
+            RECURSIVITY,
         )
     )
 )
 AUTOORGANIZACION_CIERRES = frozenset(
     chain.from_iterable(
-        ALIASES_BY_CANONICAL[name] for name in (SILENCIO, CONTRACCION)
+        ALIASES_BY_CANONICAL[name] for name in (SILENCE, CONTRACTION)
     )
 )
 
 __all__ = [
-    # Canonical Spanish tokens
-    "EMISION",
-    "RECEPCION",
-    "COHERENCIA",
-    "DISONANCIA",
-    "ACOPLAMIENTO",
-    "RESONANCIA",
-    "SILENCIO",
-    "EXPANSION",
-    "CONTRACCION",
-    "AUTOORGANIZACION",
-    "MUTACION",
-    "TRANSICION",
-    "RECURSIVIDAD",
-    # English aliases
+    # Canonical English tokens
     "EMISSION",
     "RECEPTION",
     "COHERENCE",
@@ -137,17 +166,31 @@ __all__ = [
     "COUPLING",
     "RESONANCE",
     "SILENCE",
-    "EXPANSION_EN",
+    "EXPANSION",
     "CONTRACTION",
     "SELF_ORGANIZATION",
     "MUTATION",
     "TRANSITION",
     "RECURSIVITY",
+    # Legacy Spanish tokens
+    "EMISION",
+    "RECEPCION",
+    "COHERENCIA",
+    "DISONANCIA",
+    "ACOPLAMIENTO",
+    "RESONANCIA",
+    "SILENCIO",
+    "EXPANSION_ES",
+    "CONTRACCION",
+    "AUTOORGANIZACION",
+    "MUTACION",
+    "TRANSICION",
+    "RECURSIVIDAD",
     # Collections and helpers
+    "SPANISH_TO_ENGLISH",
     "CANONICAL_OPERATOR_NAMES",
     "SPANISH_OPERATOR_NAMES",
     "ENGLISH_OPERATOR_NAMES",
-    "ENGLISH_NAME_BY_CANONICAL",
     "ALL_OPERATOR_NAMES",
     "INICIO_VALIDOS",
     "TRAMO_INTERMEDIO",
