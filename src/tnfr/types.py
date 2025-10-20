@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Hashable, Mapping, Sequence
+from collections.abc import Callable, Hashable, Mapping, MutableMapping, Sequence
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
@@ -76,6 +76,7 @@ __all__ = (
     "SigmaVector",
     "FloatArray",
     "FloatMatrix",
+    "NodeInitAttrMap",
 )
 
 
@@ -107,6 +108,9 @@ NodeId: TypeAlias = Hashable
 
 Node: TypeAlias = NodeId
 #: Backwards-compatible alias for :data:`NodeId`.
+
+NodeInitAttrMap: TypeAlias = MutableMapping[str, float]
+#: Mutable mapping storing scalar node attributes during initialization.
 
 GammaSpec: TypeAlias = Mapping[str, Any]
 #: Mapping describing Γ evaluation parameters for a node or graph.

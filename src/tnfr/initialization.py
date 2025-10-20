@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 import random
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from dataclasses import dataclass
 
 from .constants import VF_KEY, THETA_KEY, get_graph_param
 from .helpers.numeric import clamp
 from .rng import make_rng
+from .types import NodeInitAttrMap
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
@@ -62,7 +63,7 @@ class InitParams:
 
 
 def _init_phase(
-    nd: dict,
+    nd: NodeInitAttrMap,
     rng: random.Random,
     *,
     override: bool,
@@ -82,7 +83,7 @@ def _init_phase(
 
 
 def _init_vf(
-    nd: dict,
+    nd: NodeInitAttrMap,
     rng: random.Random,
     *,
     override: bool,
@@ -118,7 +119,7 @@ def _init_vf(
 
 
 def _init_si_epi(
-    nd: dict,
+    nd: NodeInitAttrMap,
     rng: random.Random,
     *,
     override: bool,
@@ -163,9 +164,10 @@ def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
 
     rng = make_rng(params.seed, -1, G)
     for _, nd in G.nodes(data=True):
+        node_attrs = cast(NodeInitAttrMap, nd)
 
         _init_phase(
-            nd,
+            node_attrs,
             rng,
             override=override,
             random_phase=params.init_rand_phase,
@@ -173,7 +175,7 @@ def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
             th_max=params.th_max,
         )
         _init_vf(
-            nd,
+            node_attrs,
             rng,
             override=override,
             mode=params.vf_mode,
@@ -186,7 +188,7 @@ def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
             clamp_to_limits=params.clamp_to_limits,
         )
         _init_si_epi(
-            nd,
+            node_attrs,
             rng,
             override=override,
             si_min=params.si_min,
