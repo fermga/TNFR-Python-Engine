@@ -11,6 +11,12 @@ from tnfr.structural import (
     Resonancia,
     Silencio,
     Autoorganizacion,
+    Emission,
+    Reception,
+    Coherence,
+    Resonance,
+    Silence,
+    SelfOrganization,
     validate_sequence,
 )
 from tnfr.constants import EPI_PRIMARY
@@ -22,6 +28,13 @@ from tnfr.config.operator_names import (
     SILENCIO,
     AUTOORGANIZACION,
     TRANSICION,
+    EMISSION,
+    RECEPTION,
+    COHERENCE,
+    RESONANCE,
+    SILENCE,
+    SELF_ORGANIZATION,
+    TRANSITION,
 )
 
 
@@ -41,6 +54,16 @@ def test_sequence_validation_and_run():
     assert ok, msg
     run_sequence(G, n, ops)
     # después de la secuencia la EPI se actualiza (no necesariamente cero)
+    assert EPI_PRIMARY in G.nodes[n]
+
+
+def test_sequence_validation_and_run_english_aliases():
+    G, n = create_nfr("x_en")
+    ops = [Emission(), Reception(), Coherence(), Resonance(), Silence()]
+    names = [op.name for op in ops]
+    ok, msg = validate_sequence(names)
+    assert ok, msg
+    run_sequence(G, n, ops)
     assert EPI_PRIMARY in G.nodes[n]
 
 
@@ -66,6 +89,19 @@ def test_thol_requires_closure():
         AUTOORGANIZACION,
         RESONANCIA,
         TRANSICION,
+    ]
+    ok, msg = validate_sequence(names)
+    assert not ok
+
+
+def test_thol_requires_closure_english_tokens():
+    names = [
+        EMISSION,
+        RECEPTION,
+        COHERENCE,
+        SELF_ORGANIZATION,
+        RESONANCE,
+        TRANSITION,
     ]
     ok, msg = validate_sequence(names)
     assert not ok
@@ -98,6 +134,20 @@ def test_thol_closed_by_silencio():
     assert ok, msg
 
 
+def test_thol_closed_by_silence_alias():
+    ops = [
+        Emission(),
+        Reception(),
+        Coherence(),
+        SelfOrganization(),
+        Resonance(),
+        Silence(),
+    ]
+    names = [op.name for op in ops]
+    ok, msg = validate_sequence(names)
+    assert ok, msg
+
+
 def test_sequence_rejects_trailing_tokens():
     names = [
         EMISION,
@@ -109,3 +159,15 @@ def test_sequence_rejects_trailing_tokens():
     ]
     ok, msg = validate_sequence(names)
     assert not ok
+
+
+def test_sequence_accepts_english_tokens():
+    names = [
+        EMISSION,
+        RECEPTION,
+        COHERENCE,
+        RESONANCE,
+        SILENCE,
+    ]
+    ok, msg = validate_sequence(names)
+    assert ok, msg

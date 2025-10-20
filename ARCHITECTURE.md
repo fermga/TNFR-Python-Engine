@@ -72,6 +72,28 @@ When introducing new operators:
 - Update grammar/syntax tables if the operator alters the canonical sequence, ensuring THOL blocks and closure sets remain valid.【F:src/tnfr/validation/syntax.py†L27-L121】【F:src/tnfr/validation/grammar.py†L1-L90】
 - Supply trace fields or telemetry hooks if the operator produces novel metrics, keeping the coherence log consistent.【F:src/tnfr/trace.py†L169-L319】
 
+### Multilingual operator aliases
+
+The engine now recognises bilingual operator identifiers so orchestration code can operate in Spanish (canonical) or English (alias) without sacrificing backwards compatibility. Each token maps to the same glyph binding, and the registry keeps both spellings synchronised:
+
+| Canonical (ES) | Alias (EN) |
+| --- | --- |
+| `emision` | `emission` |
+| `recepcion` | `reception` |
+| `coherencia` | `coherence` |
+| `disonancia` | `dissonance` |
+| `acoplamiento` | `coupling` |
+| `resonancia` | `resonance` |
+| `silencio` | `silence` |
+| `expansion` | `expansion` |
+| `contraccion` | `contraction` |
+| `autoorganizacion` | `self_organization` |
+| `mutacion` | `mutation` |
+| `transicion` | `transition` |
+| `recursividad` | `recursivity` |
+
+Spanish tokens remain the canonical keys for invariants and documentation; English aliases are opt-in helpers for multilingual teams. The validation layer canonicalises input before applying grammar rules, while the registry exposes both spellings via `OPERADORES` and the helper `get_operator_class()` so dispatch works with either vocabulary.【F:src/tnfr/config/operator_names.py†L1-L135】【F:src/tnfr/operators/registry.py†L13-L62】【F:src/tnfr/validation/syntax.py†L1-L121】 Should we ever plan to deprecate the Spanish spellings, emit explicit warnings and update the compatibility tests that currently assert the legacy names remain warning-free.【F:tests/unit/dynamics/test_operator_names.py†L1-L53】
+
 ## Enforcing TNFR invariants in runtime orchestration
 
 Runtime functions coordinate clamps, selectors, and job overrides to keep simulations reproducible without sacrificing performance:
