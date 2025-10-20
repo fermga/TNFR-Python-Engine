@@ -25,6 +25,7 @@ ALIAS_EPI = get_aliases("EPI")
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_DEPI = get_aliases("DEPI")
 ALIAS_SI = get_aliases("SI")
+ALIAS_DSI = get_aliases("DSI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_DVF = get_aliases("DVF")
 ALIAS_D2VF = get_aliases("D2VF")
@@ -186,8 +187,10 @@ def test_update_sigma_uses_default_window(monkeypatch, graph_canon):
     def fake_glyph_load(G, window=None):  # noqa: ANN001 - test double
         captured["window"] = window
         return {
-            "_estabilizadores": 0.25,
-            "_disruptivos": 0.75,
+            "_stabilizers": 0.25,
+            "_estabilizadores": 0.5,
+            "_disruptors": 0.75,
+            "_disruptivos": 0.6,
             "AL": 0.25,
             "RA": 0.75,
         }
