@@ -1,6 +1,14 @@
-"""Predefined TNFR configuration sequences."""
+"""Predefined TNFR configuration sequences.
+
+The module now exposes **English-only** preset identifiers as the canonical
+surface. Spanish identifiers remain available through
+``SPANISH_PRESET_ALIASES`` during the transition period so existing
+configurations can migrate gradually.
+"""
 
 from __future__ import annotations
+
+import warnings
 
 from ..execution import (
     CANONICAL_PRESET_NAME,
@@ -16,6 +24,7 @@ __all__ = (
     "PREFERRED_PRESET_NAMES",
     "LEGACY_PRESET_NAMES",
     "PRESET_NAME_ALIASES",
+    "SPANISH_PRESET_ALIASES",
 )
 
 
@@ -58,10 +67,14 @@ _PRIMARY_PRESETS: dict[str, PresetTokens] = {
     "canonical_example": list(CANONICAL_PROGRAM_TOKENS),
 }
 
-_LEGACY_PRESET_ALIASES: dict[str, str] = {
+SPANISH_PRESET_ALIASES: dict[str, str] = {
     "arranque_resonante": "resonant_bootstrap",
     "mutacion_contenida": "contained_mutation",
     "exploracion_acople": "coupling_exploration",
+}
+
+_LEGACY_PRESET_ALIASES: dict[str, str] = {
+    **SPANISH_PRESET_ALIASES,
     CANONICAL_PRESET_NAME: "canonical_example",
 }
 
@@ -75,7 +88,22 @@ for alias, target in _LEGACY_PRESET_ALIASES.items():
 
 
 def get_preset(name: str) -> PresetTokens:
+    if name in SPANISH_PRESET_ALIASES:
+        preferred = SPANISH_PRESET_ALIASES[name]
+        warnings.warn(
+            (
+                "Spanish preset identifier '%s' is deprecated and will be removed "
+                "in TNFR 7.0. Use '%s' instead."
+            )
+            % (name, preferred),
+            FutureWarning,
+            stacklevel=2,
+        )
+        name = preferred
+    else:
+        name = _LEGACY_PRESET_ALIASES.get(name, name)
+
     try:
         return _PRESETS[name]
     except KeyError:
-        raise KeyError(f"Preset no encontrado: {name}") from None
+        raise KeyError(f"Preset not found: {name}") from None
