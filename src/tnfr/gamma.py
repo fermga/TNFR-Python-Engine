@@ -192,7 +192,7 @@ def _gamma_params(
 
 
 # -----------------
-# Γi(R) canónicos
+# Canonical Γi(R)
 # -----------------
 
 
@@ -292,9 +292,9 @@ class GammaEntry(NamedTuple):
     needs_kuramoto: bool
 
 
-# ``GAMMA_REGISTRY`` asocia el nombre del acoplamiento con un
-# ``GammaEntry`` donde ``fn`` es la función evaluadora y
-# ``needs_kuramoto`` indica si requiere precomputar el orden global de fase.
+# ``GAMMA_REGISTRY`` associates each coupling name with a ``GammaEntry`` where
+# ``fn`` is the evaluation function and ``needs_kuramoto`` indicates whether
+# the global phase order must be precomputed.
 GAMMA_REGISTRY: dict[str, GammaEntry] = {
     "none": GammaEntry(gamma_none, False),
     "kuramoto_linear": GammaEntry(gamma_kuramoto_linear, True),

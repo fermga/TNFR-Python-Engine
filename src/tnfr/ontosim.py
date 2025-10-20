@@ -78,11 +78,11 @@ def prepare_network(
         }
     )
     G.graph.setdefault("history", history)
-    # Memoria global de REMESH
+    # Global REMESH memory
     tau = int(get_param(G, "REMESH_TAU_GLOBAL"))
     maxlen = max(2 * tau + 5, 64)
     G.graph.setdefault("_epi_hist", deque(maxlen=maxlen))
-    # Auto-attach del observador estándar si se pide
+    # Auto-attach the standard observer when requested
     if G.graph.get("ATTACH_STD_OBSERVER", False):
         attach_standard_observer = cached_import(
             "tnfr.observers",
@@ -96,7 +96,7 @@ def prepare_network(
                 "_callback_errors",
                 {"event": "attach_std_observer", "error": "ImportError"},
             )
-    # Hook explícito para ΔNFR (se puede sustituir luego con
+    # Explicit hook for ΔNFR (can later be replaced with
     # dynamics.set_delta_nfr_hook)
     G.graph.setdefault("compute_delta_nfr", default_compute_delta_nfr)
     G.graph.setdefault("_dnfr_hook_name", "default_compute_delta_nfr")

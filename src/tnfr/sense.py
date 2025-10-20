@@ -26,7 +26,7 @@ from .config.constants import (
 )
 from .types import NodeId, SigmaVector, TNFRGraph
 # -------------------------
-# Canon: orden circular de glyphs y ángulos
+# Canon: circular glyph order and angles
 # -------------------------
 
 GLYPH_UNITS: dict[str, complex] = {
@@ -46,7 +46,7 @@ __all__ = (
 )
 
 # -------------------------
-# Utilidades básicas
+# Basic utilities
 # -------------------------
 
 
@@ -303,7 +303,7 @@ def push_sigma_snapshot(G: TNFRGraph, t: float | None = None) -> None:
     weight_mode = cfg.get("weight", "Si")
     sv = sigma_vector_from_graph(G, weight_mode)
 
-    # Suavizado exponencial (EMA) opcional
+    # Optional exponential smoothing (EMA)
     alpha = float(cfg.get("smooth", 0.0))
     if alpha > 0 and hist.get(key):
         sv = _ema_update(hist[key][-1], sv, alpha)
@@ -313,11 +313,11 @@ def push_sigma_snapshot(G: TNFRGraph, t: float | None = None) -> None:
 
     append_metric(hist, key, sv)
 
-    # Conteo de glyphs por paso (útil para rosa glífica)
+    # Glyph count per step (useful for the glyph rose)
     counts = count_glyphs(G, last_only=True)
     append_metric(hist, "sigma_counts", {"t": current_t, **counts})
 
-    # Trayectoria por nodo (opcional)
+    # Optional per-node trajectory
     if cfg.get("per_node", False):
         per = hist.setdefault("sigma_per_node", {})
         for n, nd in G.nodes(data=True):
@@ -329,7 +329,7 @@ def push_sigma_snapshot(G: TNFRGraph, t: float | None = None) -> None:
 
 
 # -------------------------
-# Registro como callback automático (after_step)
+# Register as an automatic callback (after_step)
 # -------------------------
 
 

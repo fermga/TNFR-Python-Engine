@@ -107,7 +107,7 @@ def test_apply_network_remesh_triggers_callback(graph_canon):
 
     apply_network_remesh(G)
 
-    assert triggered, "El callback ON_REMESH debería ejecutarse"
+    assert triggered, "The ON_REMESH callback should run"
     ctx = triggered[-1]
     assert ctx["tau_global"] == tau_g
     assert ctx["tau_local"] == tau_l
