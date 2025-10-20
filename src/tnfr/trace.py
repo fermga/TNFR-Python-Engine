@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import Any, Callable, Protocol, NamedTuple, TypedDict, cast
 from collections.abc import Iterable, Mapping
+from types import MappingProxyType
 
 from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs, append_metric
@@ -141,10 +142,13 @@ def _callback_names(
     ]
 
 
+EMPTY_MAPPING: Mapping[str, Any] = MappingProxyType({})
+
+
 def mapping_field(G: TNFRGraph, graph_key: str, out_key: str) -> TraceMetadata:
     """Helper to copy mappings from ``G.graph`` into trace output."""
     mapping = get_graph_mapping(
-        G, graph_key, f"G.graph[{graph_key!r}] no es un mapeo; se ignora"
+        G, graph_key, f"G.graph[{graph_key!r}] is not a mapping; ignoring"
     )
     if mapping is None:
         return {}
@@ -238,24 +242,27 @@ def selector_field(G: TNFRGraph) -> TraceMetadata:
 
 
 def _si_weights_field(G: TNFRGraph) -> TraceMetadata:
-    return mapping_field(G, "_Si_weights", "si_weights")
+    weights = mapping_field(G, "_Si_weights", "si_weights")
+    if weights:
+        return weights
+    return {"si_weights": EMPTY_MAPPING}
 
 
 def _si_sensitivity_field(G: TNFRGraph) -> TraceMetadata:
     mapping = get_graph_mapping(
         G,
         "_Si_sensitivity",
-        "G.graph['_Si_sensitivity'] no es un mapeo; se ignora",
+        "G.graph['_Si_sensitivity'] is not a mapping; ignoring",
     )
     if mapping is None:
-        return {}
+        return {"si_sensitivity": EMPTY_MAPPING}
 
     normalised = _normalise_si_sensitivity_mapping(mapping, warn=True)
 
     if normalised != mapping:
         G.graph["_Si_sensitivity"] = normalised
 
-    return {"si_sensitivity": normalised}
+    return {"si_sensitivity": MappingProxyType(normalised)}
 
 
 def si_weights_field(G: TNFRGraph) -> TraceMetadata:

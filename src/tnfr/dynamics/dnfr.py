@@ -1986,8 +1986,8 @@ def _apply_dnfr_hook(
                     total += w * float(func(G, n, nd))
             results.append((n, total))
 
-        for node, value in results:
-            set_dnfr(G, node, float(value))
+    for node, value in results:
+        set_dnfr(G, node, float(value))
 
     _write_dnfr_metadata(G, weights=weights, hook_name=hook_name, note=note)
 
@@ -2084,7 +2084,7 @@ def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         {"phase": g_phase},
         weights={"phase": 1.0},
         hook_name="dnfr_phase_only",
-        note="Hook de ejemplo.",
+        note="Example hook.",
         n_jobs=n_jobs,
     )
 
@@ -2112,7 +2112,7 @@ def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         grads,
         weights={"phase": 0.0, "epi": 0.5, "vf": 0.5},
         hook_name="dnfr_epi_vf_mixed",
-        note="Hook de ejemplo.",
+        note="Example hook.",
         n_jobs=n_jobs,
     )
 
@@ -2144,6 +2144,6 @@ def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         grads,
         weights={"epi": wE, "vf": wV},
         hook_name="dnfr_laplacian",
-        note="Gradiente topológico",
+        note="Topological gradient",
         n_jobs=n_jobs,
     )
