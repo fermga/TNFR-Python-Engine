@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ..operators.registry import OPERADORES
+from ..operators.registry import OPERATORS
 from ..config.operator_names import (
     CIERRE_VALIDO,
     COHERENCE,
@@ -77,7 +77,7 @@ def _validate_known_tokens(
     unknown_tokens = {
         alias
         for alias, canonical in token_to_canonical.items()
-        if canonical not in OPERADORES
+        if canonical not in OPERATORS
     }
     if unknown_tokens:
         ordered = ", ".join(sorted(unknown_tokens))

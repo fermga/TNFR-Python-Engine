@@ -27,7 +27,7 @@ from .jitter import (
     reset_jitter_manager,
     random_jitter,
 )
-from .registry import OPERADORES, discover_operators, get_operator_class
+from .registry import OPERATORS, discover_operators, get_operator_class
 from .remesh import (
     apply_network_remesh,
     apply_topological_remesh,
@@ -64,7 +64,7 @@ __all__ = [
     "apply_network_remesh",
     "apply_topological_remesh",
     "apply_remesh_if_globally_stable",
-    "OPERADORES",
+    "OPERATORS",
     "discover_operators",
     "get_operator_class",
 ]

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import pkgutil
+from warnings import warn
 from typing import TYPE_CHECKING
 
 from ..config.operator_names import canonical_operator_name
@@ -12,11 +13,11 @@ if TYPE_CHECKING:  # pragma: no cover - type checking only
     from .definitions import Operador
 
 
-OPERADORES: dict[str, type["Operador"]] = {}
+OPERATORS: dict[str, type["Operador"]] = {}
 
 
 def register_operator(cls: type["Operador"]) -> type["Operador"]:
-    """Register ``cls`` under its declared ``name`` in :data:`OPERADORES`."""
+    """Register ``cls`` under its declared ``name`` in :data:`OPERATORS`."""
 
     name = getattr(cls, "name", None)
     if not isinstance(name, str) or not name:
@@ -24,11 +25,11 @@ def register_operator(cls: type["Operador"]) -> type["Operador"]:
             f"El operador {cls.__name__} debe declarar un atributo 'name' no vacío"
         )
 
-    existing = OPERADORES.get(name)
+    existing = OPERATORS.get(name)
     if existing is not None and existing is not cls:
         raise ValueError(f"El operador '{name}' ya está registrado")
 
-    OPERADORES[name] = cls
+    OPERATORS[name] = cls
     return cls
 
 
@@ -36,13 +37,13 @@ def get_operator_class(name: str) -> type["Operador"]:
     """Return the operator class registered for ``name`` or its canonical alias."""
 
     try:
-        return OPERADORES[name]
+        return OPERATORS[name]
     except KeyError:
         canonical = canonical_operator_name(name)
         if canonical == name:
             raise
         try:
-            return OPERADORES[canonical]
+            return OPERATORS[canonical]
         except KeyError as exc:  # pragma: no cover - defensive branch
             raise KeyError(name) from exc
 
@@ -67,4 +68,15 @@ def discover_operators() -> None:
     setattr(package, "_operators_discovered", True)
 
 
-__all__ = ("OPERADORES", "register_operator", "discover_operators", "get_operator_class")
+def __getattr__(name: str):
+    if name == "OPERADORES":
+        warn(
+            "'OPERADORES' is deprecated; use 'OPERATORS' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return OPERATORS
+    raise AttributeError(name)
+
+
+__all__ = ("OPERATORS", "register_operator", "discover_operators", "get_operator_class")

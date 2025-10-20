@@ -37,7 +37,7 @@ def create_nfr(
 ) -> tuple["nx.Graph", str]: ...
 
 
-OPERADORES: dict[str, Operator]
+OPERATORS: dict[str, Operator]
 
 
 def validate_sequence(names: Iterable[str]) -> tuple[bool, str]: ...
