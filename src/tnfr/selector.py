@@ -7,7 +7,6 @@ hysteresis when assigning glyphs to nodes.
 from __future__ import annotations
 
 import threading
-import warnings
 from operator import itemgetter
 from typing import Any, Mapping, TYPE_CHECKING, cast
 from weakref import WeakKeyDictionary
@@ -134,22 +133,6 @@ def _selector_norms(G: "nx.Graph") -> SelectorNorms:
     norms = compute_dnfr_accel_max(G)
     G.graph["_sel_norms"] = norms
     return norms
-
-
-def _norms_para_selector(G: "nx.Graph") -> SelectorNorms:
-    """Compatibility alias for :func:`_selector_norms`.
-
-    Emits :class:`DeprecationWarning` advising callers to adopt the English
-    helper name while keeping behaviour identical.
-    """
-
-    warnings.warn(
-        "_norms_para_selector is deprecated and will be removed in a future "
-        "release; use _selector_norms instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _selector_norms(G)
 
 
 def _calc_selector_score(
