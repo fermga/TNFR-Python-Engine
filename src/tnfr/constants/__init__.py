@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import copy
-import os
-import warnings
 from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Callable, TypeVar, cast
@@ -34,61 +32,12 @@ CANONICAL_STATE_TOKENS = frozenset(
     {STATE_STABLE, STATE_TRANSITION, STATE_DISSONANT}
 )
 
-SPANISH_STATE_TOKENS_ENV_VAR = "TNFR_ENABLE_SPANISH_STATE_TOKENS"
+def normalise_state_token(token: str) -> str:
+    """Return the canonical English token for ``token``.
 
-_SPANISH_STATE_TOKEN_MAP = MappingProxyType(
-    {
-        "estable": STATE_STABLE,
-        "disonante": STATE_DISSONANT,
-        "transicion": STATE_TRANSITION,
-        "transición": STATE_TRANSITION,
-    }
-)
-
-_SPANISH_STATE_TOKENS_ENABLED = False
-_WARNED_SPANISH_STATE_TOKENS: set[str] = set()
-
-
-def enable_spanish_state_tokens(*, warn: bool = True) -> Mapping[str, str]:
-    """Allow the legacy Spanish state tokens for a final migration window."""
-
-    global _SPANISH_STATE_TOKENS_ENABLED
-    if not _SPANISH_STATE_TOKENS_ENABLED:
-        _SPANISH_STATE_TOKENS_ENABLED = True
-        if warn:
-            warnings.warn(
-                (
-                    "Spanish state tokens require explicit opt-in and will be "
-                    "removed in TNFR 8.0. Update configurations to use the English "
-                    "identifiers ('stable', 'transition', 'dissonant')."
-                ),
-                FutureWarning,
-                stacklevel=2,
-            )
-    return _SPANISH_STATE_TOKEN_MAP
-
-
-def disable_spanish_state_tokens() -> None:
-    """Disable the legacy Spanish state tokens compatibility shim."""
-
-    global _SPANISH_STATE_TOKENS_ENABLED
-    _SPANISH_STATE_TOKENS_ENABLED = False
-    _WARNED_SPANISH_STATE_TOKENS.clear()
-
-
-def spanish_state_tokens_enabled() -> bool:
-    """Return ``True`` if the Spanish compatibility shim is active."""
-
-    return _SPANISH_STATE_TOKENS_ENABLED
-
-
-def normalise_state_token(token: str, *, warn: bool = True) -> str:
-    """Return the canonical state token for ``token``.
-
-    Legacy Spanish tokens are mapped to the corresponding English constant.
-    A warning is emitted the first time a given legacy token is encountered
-    unless ``warn`` is ``False``. Canonical tokens are returned unchanged and
-    unnormalised values fall back to the stripped input.
+    The helper now enforces the English identifiers exclusively. Values that
+    do not match the canonical set raise :class:`ValueError` so callers can
+    surface explicit migration errors when legacy payloads are encountered.
     """
 
     if not isinstance(token, str):
@@ -103,32 +52,9 @@ def normalise_state_token(token: str, *, warn: bool = True) -> str:
     if lowered in CANONICAL_STATE_TOKENS:
         return lowered
 
-    if _SPANISH_STATE_TOKENS_ENABLED:
-        legacy = _SPANISH_STATE_TOKEN_MAP.get(lowered)
-        if legacy is not None:
-            if warn and lowered not in _WARNED_SPANISH_STATE_TOKENS:
-                warnings.warn(
-                    (
-                        "Spanish state token '%s' is enabled via the migration shim; "
-                        "switch to '%s'."
-                    )
-                    % (token, legacy),
-                    FutureWarning,
-                    stacklevel=2,
-                )
-                _WARNED_SPANISH_STATE_TOKENS.add(lowered)
-            return legacy
-
-    return stripped
-
-
-if os.environ.get(SPANISH_STATE_TOKENS_ENV_VAR, "").strip().lower() in {
-    "1",
-    "true",
-    "yes",
-    "on",
-}:
-    enable_spanish_state_tokens(warn=False)
+    raise ValueError(
+        "state token must be one of 'stable', 'transition', or 'dissonant'"
+    )
 
 try:  # pragma: no cover - optional dependency
     from ..utils import ensure_node_offset_map as _ensure_node_offset_map
@@ -298,9 +224,5 @@ __all__ = (
     "STATE_TRANSITION",
     "STATE_DISSONANT",
     "CANONICAL_STATE_TOKENS",
-    "SPANISH_STATE_TOKENS_ENV_VAR",
-    "enable_spanish_state_tokens",
-    "disable_spanish_state_tokens",
-    "spanish_state_tokens_enabled",
     "normalise_state_token",
 )

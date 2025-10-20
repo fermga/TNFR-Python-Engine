@@ -54,10 +54,6 @@ __all__ = (
     "STATE_TRANSITION",
     "STATE_DISSONANT",
     "CANONICAL_STATE_TOKENS",
-    "SPANISH_STATE_TOKENS_ENV_VAR",
-    "enable_spanish_state_tokens",
-    "disable_spanish_state_tokens",
-    "spanish_state_tokens_enabled",
     "normalise_state_token",
 )
 
@@ -82,7 +78,6 @@ STATE_STABLE: str
 STATE_TRANSITION: str
 STATE_DISSONANT: str
 CANONICAL_STATE_TOKENS: frozenset[str]
-SPANISH_STATE_TOKENS_ENV_VAR: str
 
 
 def inject_defaults(
@@ -106,13 +101,4 @@ def get_graph_param(
 def get_aliases(key: str) -> tuple[str, ...]: ...
 
 
-def enable_spanish_state_tokens(*, warn: bool = ...) -> Mapping[str, str]: ...
-
-
-def disable_spanish_state_tokens() -> None: ...
-
-
-def spanish_state_tokens_enabled() -> bool: ...
-
-
-def normalise_state_token(token: str, *, warn: bool = ...) -> str: ...
+def normalise_state_token(token: str) -> str: ...
