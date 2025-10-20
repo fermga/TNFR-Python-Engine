@@ -6,6 +6,7 @@ from tnfr.metrics.sense_index import compute_Si_node, get_Si_weights
 from tnfr.metrics.trig_cache import get_trig_cache
 from tnfr.alias import get_attr, set_attr, set_theta
 from tnfr.utils import increment_edge_version
+from tnfr.trace import _si_sensitivity_field
 
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_SI = get_aliases("SI")
@@ -27,8 +28,39 @@ def test_get_si_weights_normalization(graph_canon):
     }
     assert G.graph["_Si_sensitivity"] == {
         "dSi_dvf_norm": alpha,
+        "dSi_dphase_disp": -beta,
         "dSi_ddisp_fase": -beta,
         "dSi_ddnfr_norm": -gamma,
+    }
+
+
+def test_si_sensitivity_field_handles_legacy_key(graph_canon):
+    G = graph_canon()
+    G.graph["_Si_sensitivity"] = {
+        "dSi_ddisp_fase": -0.25,
+    }
+
+    data = _si_sensitivity_field(G)
+    assert data == {
+        "si_sensitivity": {
+            "dSi_dphase_disp": -0.25,
+            "dSi_ddisp_fase": -0.25,
+        }
+    }
+
+
+def test_si_sensitivity_field_handles_new_key(graph_canon):
+    G = graph_canon()
+    G.graph["_Si_sensitivity"] = {
+        "dSi_dphase_disp": -0.75,
+    }
+
+    data = _si_sensitivity_field(G)
+    assert data == {
+        "si_sensitivity": {
+            "dSi_dphase_disp": -0.75,
+            "dSi_ddisp_fase": -0.75,
+        }
     }
 
 

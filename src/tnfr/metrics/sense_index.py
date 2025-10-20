@@ -47,6 +47,9 @@ def _cache_weights(G: GraphLike) -> tuple[float, float, float]:
         G.graph["_Si_weights_key"] = cfg_key
         G.graph["_Si_sensitivity"] = {
             "dSi_dvf_norm": alpha,
+            "dSi_dphase_disp": -beta,
+            # ``dSi_ddisp_fase`` is kept temporarily for legacy consumers.
+            # Remove once downstream callers have migrated to the English key.
             "dSi_ddisp_fase": -beta,
             "dSi_ddnfr_norm": -gamma,
         }
