@@ -14,7 +14,7 @@ import numpy.testing as npt
 from tnfr.alias import set_attr
 from tnfr.constants import get_aliases
 from tnfr.metrics.trig import neighbor_phase_mean
-from tnfr.node import NodoNX
+from tnfr.node import NodeNX
 
 pytestmark = pytest.mark.slow
 
@@ -29,11 +29,11 @@ def _seed_graph(num_nodes: int = 220, edge_probability: float = 0.25, *, seed: i
 
 
 def _naive_neighbor_phase_mean(G: nx.Graph, node) -> float:
-    wrapper = NodoNX(G, node)
+    wrapper = NodeNX(G, node)
     x = y = 0.0
     count = 0
     for neighbor in wrapper.neighbors():
-        th = NodoNX.from_graph(wrapper.G, neighbor).theta
+        th = NodeNX.from_graph(wrapper.G, neighbor).theta
         x += math.cos(th)
         y += math.sin(th)
         count += 1

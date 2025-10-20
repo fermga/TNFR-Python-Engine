@@ -14,11 +14,11 @@ from ..rng import (
     seed_hash,
 )
 from ..cache import CacheManager
-from ..utils import ensure_node_offset_map, get_nodonx
+from ..utils import ensure_node_offset_map, get_nodenx
 from ..types import NodeId, TNFRGraph
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
-    from ..node import NodoProtocol
+    from ..node import NodeProtocol
 
 # Guarded by the cache lock to ensure thread-safe access. ``seq`` stores
 # per-scope jitter sequence counters in an LRU cache bounded to avoid
@@ -213,10 +213,10 @@ def _node_offset(G: TNFRGraph, n: NodeId) -> int:
     return int(mapping.get(n, 0))
 
 
-def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
-    nodo_nx_type = get_nodonx()
+def _resolve_jitter_seed(node: NodeProtocol) -> tuple[int, int]:
+    nodo_nx_type = get_nodenx()
     if nodo_nx_type is None:
-        raise ImportError("NodoNX is unavailable")
+        raise ImportError("NodeNX is unavailable")
     if isinstance(node, nodo_nx_type):
         graph = cast(TNFRGraph, getattr(node, "G"))
         node_id = cast(NodeId, getattr(node, "n"))
@@ -231,7 +231,7 @@ def _resolve_jitter_seed(node: NodoProtocol) -> tuple[int, int]:
 
 
 def random_jitter(
-    node: NodoProtocol,
+    node: NodeProtocol,
     amplitude: float,
 ) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.

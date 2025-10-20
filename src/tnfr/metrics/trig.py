@@ -16,7 +16,7 @@ from ..utils import cached_import, get_numpy
 from ..types import NodeId, Phase, TNFRGraph
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
-    from ..node import NodoProtocol
+    from ..node import NodeProtocol
 
 __all__ = (
     "accumulate_cos_sin",
@@ -117,7 +117,7 @@ def _neighbor_phase_mean_core(
 
 
 def _neighbor_phase_mean_generic(
-    obj: "NodoProtocol" | Sequence[Any],
+    obj: "NodeProtocol" | Sequence[Any],
     cos_map: dict[Any, float] | None = None,
     sin_map: dict[Any, float] | None = None,
     np: Any | None = None,
@@ -136,7 +136,7 @@ def _neighbor_phase_mean_generic(
         np = get_numpy()
 
     if cos_map is None or sin_map is None:
-        node = cast("NodoProtocol", obj)
+        node = cast("NodeProtocol", obj)
         if getattr(node, "G", None) is None:
             raise TypeError(
                 "neighbor_phase_mean requires nodes bound to a graph"
@@ -173,7 +173,7 @@ def neighbor_phase_mean_list(
 
 
 @overload
-def neighbor_phase_mean(obj: "NodoProtocol", n: None = ...) -> Phase:
+def neighbor_phase_mean(obj: "NodeProtocol", n: None = ...) -> Phase:
     ...
 
 
@@ -183,23 +183,23 @@ def neighbor_phase_mean(obj: TNFRGraph, n: NodeId) -> Phase:
 
 
 def neighbor_phase_mean(
-    obj: "NodoProtocol" | TNFRGraph, n: NodeId | None = None
+    obj: "NodeProtocol" | TNFRGraph, n: NodeId | None = None
 ) -> Phase:
     """Circular mean of neighbour phases for ``obj``.
 
     Parameters
     ----------
     obj:
-        Either a :class:`~tnfr.node.NodoProtocol` instance bound to a graph or a
+        Either a :class:`~tnfr.node.NodeProtocol` instance bound to a graph or a
         :class:`~tnfr.types.TNFRGraph` from which the node ``n`` will be wrapped.
     n:
         Optional node identifier. Required when ``obj`` is a graph. Providing a
         node identifier for a node object raises :class:`TypeError`.
     """
 
-    NodoNX = cached_import("tnfr.node", "NodoNX")
-    if NodoNX is None:
-        raise ImportError("NodoNX is unavailable")
+    NodeNX = cached_import("tnfr.node", "NodeNX")
+    if NodeNX is None:
+        raise ImportError("NodeNX is unavailable")
     if n is None:
         if hasattr(obj, "nodes"):
             raise TypeError(
@@ -208,7 +208,7 @@ def neighbor_phase_mean(
         node = obj
     else:
         if hasattr(obj, "nodes"):
-            node = NodoNX(obj, n)
+            node = NodeNX(obj, n)
         else:
             raise TypeError(
                 "neighbor_phase_mean received a node and an explicit identifier"

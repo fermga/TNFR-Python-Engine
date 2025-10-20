@@ -17,7 +17,7 @@ from .types import (
 
 T = TypeVar("T")
 
-__all__ = ("NodoNX", "NodoProtocol", "add_edge")
+__all__ = ("NodeNX", "NodeProtocol", "add_edge", "NodoNX", "NodoProtocol")
 
 
 class AttrSpec:
@@ -59,7 +59,7 @@ def add_edge(
 ) -> None: ...
 
 
-class NodoProtocol(Protocol):
+class NodeProtocol(Protocol):
     EPI: EPIValue
     vf: StructuralFrequency
     theta: Phase
@@ -69,15 +69,15 @@ class NodoProtocol(Protocol):
     d2EPI: SecondDerivativeEPI
     graph: MutableMapping[str, Any]
 
-    def neighbors(self) -> Iterable["NodoProtocol" | Hashable]: ...
+    def neighbors(self) -> Iterable[NodeProtocol | Hashable]: ...
 
     def _glyph_storage(self) -> MutableMapping[str, object]: ...
 
-    def has_edge(self, other: "NodoProtocol") -> bool: ...
+    def has_edge(self, other: NodeProtocol) -> bool: ...
 
     def add_edge(
         self,
-        other: "NodoProtocol",
+        other: NodeProtocol,
         weight: CouplingWeight,
         *,
         overwrite: bool = ...,
@@ -85,10 +85,10 @@ class NodoProtocol(Protocol):
 
     def offset(self) -> int: ...
 
-    def all_nodes(self) -> Iterable["NodoProtocol"]: ...
+    def all_nodes(self) -> Iterable[NodeProtocol]: ...
 
 
-class NodoNX(NodoProtocol):
+class NodeNX(NodeProtocol):
     G: TNFRGraph
     n: NodeId
     graph: MutableMapping[str, Any]
@@ -96,7 +96,7 @@ class NodoNX(NodoProtocol):
     def __init__(self, G: TNFRGraph, n: NodeId) -> None: ...
 
     @classmethod
-    def from_graph(cls, G: TNFRGraph, n: NodeId) -> "NodoNX": ...
+    def from_graph(cls, G: TNFRGraph, n: NodeId) -> "NodeNX": ...
 
     def _glyph_storage(self) -> MutableMapping[str, Any]: ...
 
@@ -144,11 +144,11 @@ class NodoNX(NodoProtocol):
 
     def neighbors(self) -> Iterable[NodeId]: ...
 
-    def has_edge(self, other: NodoProtocol) -> bool: ...
+    def has_edge(self, other: NodeProtocol) -> bool: ...
 
     def add_edge(
         self,
-        other: NodoProtocol,
+        other: NodeProtocol,
         weight: CouplingWeight,
         *,
         overwrite: bool = ...,
@@ -156,4 +156,11 @@ class NodoNX(NodoProtocol):
 
     def offset(self) -> int: ...
 
-    def all_nodes(self) -> Iterable[NodoProtocol]: ...
+    def all_nodes(self) -> Iterable[NodeProtocol]: ...
+
+
+NodoProtocol = NodeProtocol
+NodoNX = NodeNX
+
+
+def __getattr__(name: str) -> Any: ...

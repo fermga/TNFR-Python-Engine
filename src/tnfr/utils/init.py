@@ -24,6 +24,7 @@ __all__ = (
     "LazyImportProxy",
     "get_logger",
     "get_numpy",
+    "get_nodenx",
     "get_nodonx",
     "prune_failed_imports",
     "WarnOnce",
@@ -662,10 +663,22 @@ def get_numpy() -> Any | None:
     return np
 
 
-def get_nodonx() -> type | None:
-    """Return :class:`tnfr.node.NodoNX` using import caching."""
+def get_nodenx() -> type | None:
+    """Return :class:`tnfr.node.NodeNX` using import caching."""
 
-    return cached_import("tnfr.node", "NodoNX")
+    return cached_import("tnfr.node", "NodeNX")
+
+
+def get_nodonx() -> type | None:
+    """Deprecated compatibility wrapper for :func:`get_nodenx`."""
+
+    warnings.warn(
+        "get_nodonx is deprecated and will be removed in a future release; "
+        "use get_nodenx instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return get_nodenx()
 
 
 def prune_failed_imports() -> None:

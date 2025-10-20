@@ -13,7 +13,7 @@ from .compatibility import CANON_COMPAT
 from . import rules as _rules
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
-    from ..node import NodoProtocol
+    from ..node import NodeProtocol
 
 __all__ = [
     "GrammarContext",
@@ -130,7 +130,7 @@ def on_applied_glyph(G: TNFRGraph, n: NodeId, applied: Glyph | str) -> None:
 
 def apply_glyph_with_grammar(
     G: TNFRGraph,
-    nodes: Optional[Iterable[NodeId | "NodoProtocol"]],
+    nodes: Optional[Iterable[NodeId | "NodeProtocol"]],
     glyph: Glyph | str,
     window: Optional[int] = None,
 ) -> None:

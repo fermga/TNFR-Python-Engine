@@ -6,18 +6,18 @@ import networkx as nx
 
 from tnfr.metrics.trig import neighbor_phase_mean
 from tnfr.constants import get_aliases
-from tnfr.node import NodoNX
+from tnfr.node import NodeNX
 
 ALIAS_THETA = get_aliases("THETA")
 
 
 def _naive_neighbor_phase_mean(G, n):
-    """Reference implementation using NodoNX wrappers for each neighbour."""
-    node = NodoNX(G, n)
+    """Reference implementation using NodeNX wrappers for each neighbour."""
+    node = NodeNX(G, n)
     x = y = 0.0
     count = 0
     for v in node.neighbors():
-        th = NodoNX.from_graph(node.G, v).theta
+        th = NodeNX.from_graph(node.G, v).theta
         x += math.cos(th)
         y += math.sin(th)
         count += 1

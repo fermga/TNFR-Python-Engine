@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import pytest
 
 from tnfr.types import Glyph
-from tnfr.node import NodoNX
+from tnfr.node import NodeNX
 import tnfr.operators as operators
 
 
@@ -54,7 +54,7 @@ def test_op_um_uses_theta_push(graph_canon):
     G.add_node(0, **{"θ": 0.0, "EPI": 0.0, "Si": 0.0})
     G.add_node(1, **{"θ": 1.0, "EPI": 0.0, "Si": 0.0})
     G.add_edge(0, 1)
-    node = NodoNX(G, 0)
+    node = NodeNX(G, 0)
     gf = {"UM_theta_push": "0.5"}
     operators._op_UM(node, gf)
     assert node.theta == pytest.approx(0.5)

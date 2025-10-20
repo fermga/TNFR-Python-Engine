@@ -17,5 +17,12 @@
   exported via ``__all__`` and will be removed on **2025-06-01**. Use
   the English helper directly to stay within the supported contract.
 
+- Unified the node wrappers under the English identifiers
+  :class:`tnfr.node.NodeNX` and :class:`tnfr.node.NodeProtocol`. Their
+  Spanish counterparts (`NodoNX`, `NodoProtocol`) remain available as
+  compatibility aliases that raise :class:`DeprecationWarning` and will
+  be removed on **2025-12-01**. Migrate imports and type annotations to
+  the English names to avoid churn when the compatibility window closes.
+
 All other helpers continue to honour the existing dependency manifest
 and import semantics.

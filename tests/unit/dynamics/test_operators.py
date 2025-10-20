@@ -1,6 +1,6 @@
 """Pruebas de operators."""
 
-from tnfr.node import NodoNX
+from tnfr.node import NodeNX
 from tnfr.operators import (
     get_jitter_manager,
     reset_jitter_manager,
@@ -24,7 +24,7 @@ def test_random_jitter_deterministic(graph_canon):
     reset_jitter_manager()
     G = graph_canon()
     G.add_node(0)
-    n0 = NodoNX(G, 0)
+    n0 = NodeNX(G, 0)
 
     j1 = random_jitter(n0, 0.5)
     j2 = random_jitter(n0, 0.5)
@@ -41,7 +41,7 @@ def test_jitter_cache_metrics(graph_canon):
     reset_jitter_manager()
     G = graph_canon()
     G.add_node(0)
-    node = NodoNX(G, 0)
+    node = NodeNX(G, 0)
 
     manager = get_jitter_manager()
     telemetry = manager.cache.manager
@@ -58,14 +58,14 @@ def test_jitter_cache_metrics(graph_canon):
 def test_random_jitter_zero_amplitude(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    n0 = NodoNX(G, 0)
+    n0 = NodeNX(G, 0)
     assert random_jitter(n0, 0.0) == 0.0
 
 
 def test_random_jitter_negative_amplitude(graph_canon):
     G = graph_canon()
     G.add_node(0)
-    n0 = NodoNX(G, 0)
+    n0 = NodeNX(G, 0)
     with pytest.raises(ValueError):
         random_jitter(n0, -0.1)
 
@@ -78,7 +78,7 @@ def test_rng_cache_disabled_with_size_zero(graph_canon):
     set_cache_maxsize(0)
     G = graph_canon()
     G.add_node(0)
-    n0 = NodoNX(G, 0)
+    n0 = NodeNX(G, 0)
     j1 = random_jitter(n0, 0.5)
     j2 = random_jitter(n0, 0.5)
     assert j1 == j2
@@ -150,7 +150,7 @@ def test_get_neighbor_epi_with_graph_returns_wrapped_nodes(graph_canon):
     G.add_edge(0, 1)
     G.add_edge(0, 2)
 
-    node = NodoNX(G, 0)
+    node = NodeNX(G, 0)
     neighbors, epi_bar = get_neighbor_epi(node)
 
     assert {n.n for n in neighbors} == {1, 2}
@@ -163,7 +163,7 @@ def test_get_neighbor_epi_no_neighbors_returns_defaults(graph_canon):
     G = graph_canon()
     G.add_node(0, EPI=1.5)
 
-    node = NodoNX(G, 0)
+    node = NodeNX(G, 0)
     neighbors, epi_bar = get_neighbor_epi(node)
 
     assert neighbors == []
@@ -177,7 +177,7 @@ def test_get_neighbor_epi_without_epi_alias_returns_empty(graph_canon):
     G.add_node(1)
     G.add_edge(0, 1)
 
-    node = NodoNX(G, 0)
+    node = NodeNX(G, 0)
     neighbors, epi_bar = get_neighbor_epi(node)
 
     assert neighbors == []

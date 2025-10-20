@@ -3,7 +3,7 @@
 import networkx as nx
 import pytest
 
-from tnfr.node import NodoNX
+from tnfr.node import NodeNX
 from tnfr.operators import apply_glyph_obj
 from tnfr.types import Glyph
 
@@ -49,10 +49,10 @@ def test_dnfr_weights_normalization(graph_canon):
     assert cache == weights
 
 
-def _build_isolated_node(value: float = 0.0) -> NodoNX:
+def _build_isolated_node(value: float = 0.0) -> NodeNX:
     graph = nx.Graph()
     graph.add_node(0)
-    node = NodoNX(graph, 0)
+    node = NodeNX(graph, 0)
     node.EPI = value
     return node
 
