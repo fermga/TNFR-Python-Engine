@@ -1,5 +1,26 @@
 # Release notes
 
+## 6.1.0 (preset alias deprecation window)
+
+- Announced the removal of the Spanish preset identifiers
+  (``arranque_resonante``, ``mutacion_contenida``, ``exploracion_acople``) in
+  **TNFR 7.0**. The engine now emits :class:`FutureWarning` when the legacy
+  names are resolved so pipelines can surface the upcoming breakage.
+- Added the ``tnfr.config.presets.SPANISH_PRESET_ALIASES`` mapping to help
+  audit configurations. Existing presets should switch to the English
+  equivalents (``resonant_bootstrap``, ``contained_mutation``,
+  ``coupling_exploration``) before upgrading to 7.0.
+- Migration helper: update YAML/JSON payloads or CLI arguments with a simple
+  substitution pass. For example, the following Python snippet rewrites a
+  user configuration dictionary in-place::
+
+      from tnfr.config.presets import SPANISH_PRESET_ALIASES
+
+      def normalize_preset_name(name: str) -> str:
+          return SPANISH_PRESET_ALIASES.get(name, name)
+
+      user_config["preset"] = normalize_preset_name(user_config["preset"])
+
 ## 6.0.0 (Nodo aliases removed)
 
 - Removed the Spanish module-level aliases ``tnfr.node.NodoNX`` and
