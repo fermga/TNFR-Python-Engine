@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import heapq
 import random
+import warnings
 from operator import ge, le
 from functools import cache
 from itertools import combinations
@@ -468,8 +469,32 @@ def _extra_gating_ok(
 
 
 def apply_remesh_if_globally_stable(
-    G: CommunityGraph, pasos_estables_consecutivos: int | None = None
+    G: CommunityGraph,
+    stable_step_window: int | None = None,
+    **kwargs: Any,
 ) -> None:
+    legacy_window = kwargs.pop("pasos_estables_consecutivos", None)
+    if kwargs:
+        unexpected = ", ".join(sorted(kwargs))
+        raise TypeError(
+            "apply_remesh_if_globally_stable() got unexpected keyword argument(s): "
+            f"{unexpected}"
+        )
+
+    if legacy_window is not None:
+        if stable_step_window is not None and stable_step_window != legacy_window:
+            raise TypeError(
+                "stable_step_window and pasos_estables_consecutivos provide conflicting "
+                "values; use only stable_step_window."
+            )
+        warnings.warn(
+            "'pasos_estables_consecutivos' is deprecated; use 'stable_step_window' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        if stable_step_window is None:
+            stable_step_window = legacy_window
+
     params = [
         (
             "REMESH_STABILITY_WINDOW",
@@ -518,8 +543,8 @@ def apply_remesh_if_globally_stable(
         cfg[key] = conv(get_param(G, key))
     frac_req = _as_float(get_param(G, "FRACTION_STABLE_REMESH"))
     w_estab = (
-        pasos_estables_consecutivos
-        if pasos_estables_consecutivos is not None
+        stable_step_window
+        if stable_step_window is not None
         else cfg["REMESH_STABILITY_WINDOW"]
     )
 
