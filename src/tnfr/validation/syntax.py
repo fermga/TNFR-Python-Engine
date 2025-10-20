@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from ..operators.registry import OPERATORS
 from ..config.operator_names import (
     COHERENCE,
@@ -16,6 +18,9 @@ from ..config.operator_names import (
 )
 
 __all__ = ("validate_sequence",)
+
+
+_MISSING = object()
 
 
 _CANONICAL_START = tuple(sorted(VALID_START_OPERATORS))
@@ -78,13 +83,13 @@ def _validate_known_tokens(
     return True, ""
 
 
-def _validate_token_sequence(nombres: list[str]) -> tuple[bool, str]:
+def _validate_token_sequence(names: list[str]) -> tuple[bool, str]:
     """Validate token format and logical coherence in one pass."""
 
-    if not nombres:
+    if not names:
         return False, "empty sequence"
 
-    ok, msg = _validate_start(nombres[0])
+    ok, msg = _validate_start(names[0])
     if not ok:
         return False, msg
 
@@ -94,11 +99,11 @@ def _validate_token_sequence(nombres: list[str]) -> tuple[bool, str]:
     seen_intermediate = False
     open_thol = False
 
-    for n in nombres:
-        if not isinstance(n, str):
+    for name in names:
+        if not isinstance(name, str):
             return False, "tokens must be str"
-        canonical = canonical_operator_name(n)
-        token_to_canonical[n] = canonical
+        canonical = canonical_operator_name(name)
+        token_to_canonical[name] = canonical
 
         if canonical == RECEPTION and not found_reception:
             found_reception = True
@@ -122,13 +127,30 @@ def _validate_token_sequence(nombres: list[str]) -> tuple[bool, str]:
     ok, msg = _validate_intermediate(found_reception, found_coherence, seen_intermediate)
     if not ok:
         return False, msg
-    ok, msg = _validate_end(nombres[-1], open_thol)
+    ok, msg = _validate_end(names[-1], open_thol)
     if not ok:
         return False, msg
     return True, "ok"
 
 
-def validate_sequence(nombres: list[str]) -> tuple[bool, str]:
+def validate_sequence(
+    names: Iterable[str] | object = _MISSING, **kwargs: object
+) -> tuple[bool, str]:
     """Validate minimal TNFR syntax rules."""
 
-    return _validate_token_sequence(nombres)
+    if "nombres" in kwargs:
+        raise TypeError(
+            "validate_sequence() no longer accepts 'nombres'; use the English 'names' instead"
+        )
+
+    if kwargs:
+        unexpected = ", ".join(sorted(kwargs))
+        raise TypeError(
+            f"validate_sequence() got unexpected keyword argument(s): {unexpected}"
+        )
+
+    if names is _MISSING:
+        raise TypeError("validate_sequence() missing required argument: 'names'")
+
+    sequence = list(names)
+    return _validate_token_sequence(sequence)
