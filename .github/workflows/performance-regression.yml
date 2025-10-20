@@ -1,0 +1,31 @@
+name: Performance Regression Guard
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  performance:
+    name: Performance regression tests
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[test,numpy,yaml,orjson]
+
+      - name: Run performance regression suite
+        run: python -m pytest --override-ini="addopts=" -m slow tests/performance
