@@ -8,7 +8,7 @@ from .config.constants import *  # noqa: F401,F403 - re-export legacy API
 from .config.constants import __all__ as _CONFIG_ALL
 
 warnings.warn(
-    "'tnfr.constants_glyphs' está en desuso; usa 'tnfr.config.constants'",
+    "'tnfr.constants_glyphs' is deprecated; use 'tnfr.config.constants' instead",
     DeprecationWarning,
     stacklevel=2,
 )

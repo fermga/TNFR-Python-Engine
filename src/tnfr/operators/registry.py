@@ -22,12 +22,12 @@ def register_operator(cls: type["Operador"]) -> type["Operador"]:
     name = getattr(cls, "name", None)
     if not isinstance(name, str) or not name:
         raise ValueError(
-            f"El operador {cls.__name__} debe declarar un atributo 'name' no vacío"
+            f"Operator {cls.__name__} must declare a non-empty 'name' attribute"
         )
 
     existing = OPERATORS.get(name)
     if existing is not None and existing is not cls:
-        raise ValueError(f"El operador '{name}' ya está registrado")
+        raise ValueError(f"Operator '{name}' is already registered")
 
     OPERATORS[name] = cls
     return cls
