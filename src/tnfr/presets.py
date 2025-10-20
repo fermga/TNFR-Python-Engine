@@ -7,7 +7,7 @@ import warnings
 from .config.presets import get_preset
 
 warnings.warn(
-    "'tnfr.presets' está en desuso; usa 'tnfr.config.presets'",
+    "'tnfr.presets' is deprecated; use 'tnfr.config.presets' instead",
     DeprecationWarning,
     stacklevel=2,
 )

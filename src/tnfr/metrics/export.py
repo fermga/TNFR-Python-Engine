@@ -92,7 +92,7 @@ def export_metrics(G: Graph, base_path: str, fmt: str = "csv") -> None:
     epi_supp: Sequence[Mapping[str, float]] = hist.get("EPI_support", [])
     fmt = fmt.lower()
     if fmt not in {"csv", "json"}:
-        raise ValueError(f"Formato de exportación no soportado: {fmt}")
+        raise ValueError(f"Unsupported export format: {fmt}")
     if fmt == "csv":
         specs: list[tuple[str, Sequence[str], Iterable[Sequence[object]]]] = [
             (
