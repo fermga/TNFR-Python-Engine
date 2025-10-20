@@ -75,10 +75,7 @@ def test_conservation_under_IL_SHA(G_small):
 def test_remesh_cooldown_if_present(G_small):
     cooldown = G_small.graph.get(
         "REMESH_COOLDOWN",
-        G_small.graph.get(
-            "REMESH_COOLDOWN_WINDOW",
-            G_small.graph.get("REMESH_COOLDOWN_VENTANA", None),
-        ),
+        G_small.graph.get("REMESH_COOLDOWN_WINDOW", None),
     )
     if cooldown is None:
         pytest.skip("No hay REMESH_COOLDOWN definido en el motor")

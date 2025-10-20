@@ -69,7 +69,7 @@ ALIAS_EPI = get_aliases("EPI")
 
 
 COOLDOWN_KEY = "REMESH_COOLDOWN_WINDOW"
-COOLDOWN_LEGACY_KEY = "REMESH_COOLDOWN_VENTANA"
+COOLDOWN_LEGACY_KEYS: tuple[str, ...] = ("REMESH_COOLDOWN_VENTANA",)
 
 
 def _get_config_with_aliases(
@@ -78,25 +78,27 @@ def _get_config_with_aliases(
     aliases: Sequence[str],
     default: RemeshConfigValue,
 ) -> RemeshConfigValue:
-    """Return ``primary`` value preferring English identifiers.
+    """Return ``primary`` value enforcing the English identifier.
 
-    If one of ``aliases`` is present in ``G.graph`` the value is promoted to
-    ``primary`` so future serializations emit the preferred key.
+    If a legacy alias is present in ``G.graph`` a :class:`ValueError` is raised
+    instructing the caller to migrate persisted data.
     """
 
-    for key in (primary, *aliases):
-        if key in G.graph:
-            value = get_param(G, key)
-            if key != primary:
-                G.graph.setdefault(primary, value)
-            return value
+    for alias in aliases:
+        if alias in G.graph:
+            raise ValueError(
+                (
+                    f"Legacy remesh cooldown key detected: '{alias}'. "
+                    "Run tnfr.utils.migrate_legacy_remesh_cooldown() to "
+                    "promote persisted graphs to the English key."
+                )
+            )
+
+    if primary in G.graph:
+        return get_param(G, primary)
 
     if primary in REMESH_DEFAULTS:
         return REMESH_DEFAULTS[primary]
-
-    for alias in aliases:
-        if alias in REMESH_DEFAULTS:
-            return REMESH_DEFAULTS[alias]
 
     return default
 
@@ -565,7 +567,7 @@ def apply_remesh_if_globally_stable(
             REMESH_DEFAULTS["REMESH_MIN_SI_HI_FRAC"],
         ),
         (
-            (COOLDOWN_KEY, COOLDOWN_LEGACY_KEY),
+            (COOLDOWN_KEY, *COOLDOWN_LEGACY_KEYS),
             int,
             REMESH_DEFAULTS[COOLDOWN_KEY],
         ),

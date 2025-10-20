@@ -40,7 +40,10 @@ from .graph import (
     mark_dnfr_prep_dirty,
     supports_add_edge,
 )
-from .migrations import migrate_legacy_phase_attributes
+from .migrations import (
+    migrate_legacy_phase_attributes,
+    migrate_legacy_remesh_cooldown,
+)
 from .init import (
     EMIT_MAP,
     IMPORT_LOG,
@@ -114,6 +117,7 @@ __all__ = (
     "mark_dnfr_prep_dirty",
     "supports_add_edge",
     "migrate_legacy_phase_attributes",
+    "migrate_legacy_remesh_cooldown",
     "JsonDumpsParams",
     "DEFAULT_PARAMS",
     "json_dumps",
