@@ -2,13 +2,13 @@ import math
 import networkx as nx
 import pytest
 
-from tnfr.node import NodoNX
+from tnfr.node import NodeNX
 
 
 def _build_nodes():
     graph = nx.Graph()
     graph.add_nodes_from([0, 1])
-    return graph, NodoNX(graph, 0), NodoNX(graph, 1)
+    return graph, NodeNX(graph, 0), NodeNX(graph, 1)
 
 
 def test_add_edge_stores_weight():

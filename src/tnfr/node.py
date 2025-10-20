@@ -15,6 +15,8 @@ from collections.abc import Hashable
 import math
 from dataclasses import dataclass
 
+import warnings
+
 from .constants import get_aliases
 from .alias import (
     get_attr,
@@ -54,7 +56,7 @@ ALIAS_D2EPI = get_aliases("D2EPI")
 
 T = TypeVar("T")
 
-__all__ = ("NodoNX", "NodoProtocol", "add_edge")
+__all__ = ("NodeNX", "NodeProtocol", "add_edge", "NodoNX", "NodoProtocol")
 
 
 @dataclass(frozen=True)
@@ -63,7 +65,7 @@ class AttrSpec:
 
     ``AttrSpec`` mirrors the defaults previously used by
     :func:`_nx_attr_property` and centralises the descriptor generation
-    logic to keep a single source of truth for NodoNX attribute access.
+    logic to keep a single source of truth for NodeNX attribute access.
     """
 
     aliases: tuple[str, ...]
@@ -75,14 +77,14 @@ class AttrSpec:
     use_graph_setter: bool = False
 
     def build_property(self) -> property:
-        """Create the property descriptor for ``NodoNX`` attributes."""
+        """Create the property descriptor for ``NodeNX`` attributes."""
 
-        def fget(instance: "NodoNX") -> T:
+        def fget(instance: "NodeNX") -> T:
             return self.to_python(
                 self.getter(instance.G.nodes[instance.n], self.aliases, self.default)
             )
 
-        def fset(instance: "NodoNX", value: T) -> None:
+        def fset(instance: "NodeNX", value: T) -> None:
             value = self.to_storage(value)
             if self.use_graph_setter:
                 self.setter(instance.G, instance.n, value)
@@ -92,7 +94,7 @@ class AttrSpec:
         return property(fget, fset)
 
 
-# Mapping of NodoNX attribute specifications used to generate property
+# Mapping of NodeNX attribute specifications used to generate property
 # descriptors. Each entry defines the keyword arguments passed to
 # ``AttrSpec.build_property`` for a given attribute name.
 ATTR_SPECS: dict[str, AttrSpec] = {
@@ -159,7 +161,7 @@ def add_edge(
     increment_edge_version(graph)
 
 
-class NodoProtocol(Protocol):
+class NodeProtocol(Protocol):
     """Minimal protocol for TNFR nodes."""
 
     EPI: EPIValue
@@ -171,31 +173,35 @@ class NodoProtocol(Protocol):
     d2EPI: SecondDerivativeEPI
     graph: MutableMapping[str, Any]
 
-    def neighbors(self) -> Iterable[NodoProtocol | Hashable]:
+    def neighbors(self) -> Iterable[NodeProtocol | Hashable]:
         ...
 
     def _glyph_storage(self) -> MutableMapping[str, object]:
         ...
 
-    def has_edge(self, other: "NodoProtocol") -> bool:
+    def has_edge(self, other: "NodeProtocol") -> bool:
         ...
 
     def add_edge(
-        self, other: "NodoProtocol", weight: CouplingWeight, *, overwrite: bool = False
+        self,
+        other: NodeProtocol,
+        weight: CouplingWeight,
+        *,
+        overwrite: bool = False,
     ) -> None:
         ...
 
     def offset(self) -> int:
         ...
 
-    def all_nodes(self) -> Iterable["NodoProtocol"]:
+    def all_nodes(self) -> Iterable[NodeProtocol]:
         ...
 
 
-class NodoNX(NodoProtocol):
+class NodeNX(NodeProtocol):
     """Adapter for ``networkx`` nodes."""
 
-    # Statically defined property descriptors for ``NodoNX`` attributes.
+    # Statically defined property descriptors for ``NodeNX`` attributes.
     # Declaring them here makes the attributes discoverable by type checkers
     # and IDEs, avoiding the previous runtime ``setattr`` loop.
     EPI: EPIValue = ATTR_SPECS["EPI"].build_property()
@@ -216,8 +222,8 @@ class NodoNX(NodoProtocol):
         return self.G.nodes[self.n]
 
     @classmethod
-    def from_graph(cls, G: TNFRGraph, n: NodeId) -> "NodoNX":
-        """Return cached ``NodoNX`` for ``(G, n)`` with thread safety."""
+    def from_graph(cls, G: TNFRGraph, n: NodeId) -> "NodeNX":
+        """Return cached ``NodeNX`` for ``(G, n)`` with thread safety."""
         lock = get_lock(f"nodonx_cache_{id(G)}")
         with lock:
             cache = G.graph.setdefault("_node_cache", {})
@@ -230,19 +236,23 @@ class NodoNX(NodoProtocol):
         """Iterate neighbour identifiers (IDs).
 
         Wrap each resulting ID with :meth:`from_graph` to obtain the cached
-        ``NodoNX`` instance when actual node objects are required.
+        ``NodeNX`` instance when actual node objects are required.
         """
         return self.G.neighbors(self.n)
 
-    def has_edge(self, other: NodoProtocol) -> bool:
-        if isinstance(other, NodoNX):
+    def has_edge(self, other: NodeProtocol) -> bool:
+        if isinstance(other, NodeNX):
             return self.G.has_edge(self.n, other.n)
         raise NotImplementedError
 
     def add_edge(
-        self, other: NodoProtocol, weight: CouplingWeight, *, overwrite: bool = False
+        self,
+        other: NodeProtocol,
+        weight: CouplingWeight,
+        *,
+        overwrite: bool = False,
     ) -> None:
-        if isinstance(other, NodoNX):
+        if isinstance(other, NodeNX):
             add_edge(
                 self.G,
                 self.n,
@@ -257,10 +267,31 @@ class NodoNX(NodoProtocol):
         mapping = ensure_node_offset_map(self.G)
         return mapping.get(self.n, 0)
 
-    def all_nodes(self) -> Iterable[NodoProtocol]:
+    def all_nodes(self) -> Iterable[NodeProtocol]:
         override = self.graph.get("_all_nodes")
         if override is not None:
             return override
 
         nodes = cached_node_list(self.G)
-        return tuple(NodoNX.from_graph(self.G, v) for v in nodes)
+        return tuple(NodeNX.from_graph(self.G, v) for v in nodes)
+
+
+_DEPRECATED_ALIASES = {
+    "NodoNX": "NodeNX",
+    "NodoProtocol": "NodeProtocol",
+}
+
+
+def __getattr__(name: str) -> Any:
+    if name in _DEPRECATED_ALIASES:
+        new_name = _DEPRECATED_ALIASES[name]
+        warnings.warn(
+            (
+                f"`tnfr.node.{name}` is deprecated and will be removed in a future release. "
+                f"Use `{new_name}` instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return globals()[new_name]
+    raise AttributeError(f"module 'tnfr.node' has no attribute {name!r}")

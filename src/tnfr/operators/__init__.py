@@ -14,7 +14,7 @@ from ..constants import DEFAULTS, get_aliases, get_param
 
 from ..helpers.numeric import angle_diff
 from ..metrics.trig import neighbor_phase_mean
-from ..utils import get_nodonx
+from ..utils import get_nodenx
 from ..rng import make_rng
 from tnfr import glyph_history
 from ..types import EPIValue, Glyph, NodeId, TNFRGraph
@@ -43,10 +43,10 @@ _DEFINITION_EXPORTS = {
 globals().update(_DEFINITION_EXPORTS)
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
-    from ..node import NodoProtocol
+    from ..node import NodeProtocol
 
 GlyphFactors = dict[str, Any]
-GlyphOperation = Callable[["NodoProtocol", GlyphFactors], None]
+GlyphOperation = Callable[["NodeProtocol", GlyphFactors], None]
 
 ALIAS_EPI = get_aliases("EPI")
 
@@ -72,7 +72,7 @@ __all__ = [
 __all__.extend(_DEFINITION_EXPORTS.keys())
 
 
-def get_glyph_factors(node: NodoProtocol) -> GlyphFactors:
+def get_glyph_factors(node: NodeProtocol) -> GlyphFactors:
     """Return glyph factors for ``node`` with defaults."""
     return node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"].copy())
 
@@ -87,7 +87,7 @@ def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
 # -------------------------
 
 
-def get_neighbor_epi(node: NodoProtocol) -> tuple[list[NodoProtocol], EPIValue]:
+def get_neighbor_epi(node: NodeProtocol) -> tuple[list[NodeProtocol], EPIValue]:
     """Return neighbour list and their mean ``EPI`` without mutating ``node``."""
 
     epi = node.EPI
@@ -118,11 +118,11 @@ def get_neighbor_epi(node: NodoProtocol) -> tuple[list[NodoProtocol], EPIValue]:
             return [], epi
         epi_bar = total / count if count else float(epi)
         if needs_conversion:
-            NodoNX = get_nodonx()
-            if NodoNX is None:
-                raise ImportError("NodoNX is unavailable")
+            NodeNX = get_nodenx()
+            if NodeNX is None:
+                raise ImportError("NodeNX is unavailable")
             neigh = [
-                v if hasattr(v, "EPI") else NodoNX.from_graph(node.G, v)
+                v if hasattr(v, "EPI") else NodeNX.from_graph(node.G, v)
                 for v in neigh
             ]
     else:
@@ -135,7 +135,7 @@ def get_neighbor_epi(node: NodoProtocol) -> tuple[list[NodoProtocol], EPIValue]:
 
 
 def _determine_dominant(
-    neigh: list[NodoProtocol], default_kind: str
+    neigh: list[NodeProtocol], default_kind: str
 ) -> tuple[str, float]:
     """Return dominant ``epi_kind`` among ``neigh`` and its absolute ``EPI``."""
     best_kind: str | None = None
@@ -151,7 +151,7 @@ def _determine_dominant(
 
 
 def _mix_epi_with_neighbors(
-    node: NodoProtocol, mix: float, default_glyph: Glyph | str
+    node: NodeProtocol, mix: float, default_glyph: Glyph | str
 ) -> tuple[float, str]:
     """Mix ``EPI`` of ``node`` with the mean of its neighbours."""
     default_kind = (
@@ -176,22 +176,22 @@ def _mix_epi_with_neighbors(
     return epi_bar, final
 
 
-def _op_AL(node: NodoProtocol, gf: GlyphFactors) -> None:  # AL — Emisión
+def _op_AL(node: NodeProtocol, gf: GlyphFactors) -> None:  # AL — Emisión
     f = get_factor(gf, "AL_boost", 0.05)
     node.EPI = node.EPI + f
 
 
-def _op_EN(node: NodoProtocol, gf: GlyphFactors) -> None:  # EN — Recepción
+def _op_EN(node: NodeProtocol, gf: GlyphFactors) -> None:  # EN — Recepción
     mix = get_factor(gf, "EN_mix", 0.25)
     _mix_epi_with_neighbors(node, mix, Glyph.EN)
 
 
-def _op_IL(node: NodoProtocol, gf: GlyphFactors) -> None:  # IL — Coherencia
+def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherencia
     factor = get_factor(gf, "IL_dnfr_factor", 0.7)
     node.dnfr = factor * getattr(node, "dnfr", 0.0)
 
 
-def _op_OZ(node: NodoProtocol, gf: GlyphFactors) -> None:  # OZ — Disonancia
+def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Disonancia
     factor = get_factor(gf, "OZ_dnfr_factor", 1.3)
     dnfr = getattr(node, "dnfr", 0.0)
     if bool(node.graph.get("OZ_NOISE_MODE", False)):
@@ -204,13 +204,13 @@ def _op_OZ(node: NodoProtocol, gf: GlyphFactors) -> None:  # OZ — Disonancia
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
 
 
-def _um_candidate_iter(node: NodoProtocol) -> Iterator[NodoProtocol]:
+def _um_candidate_iter(node: NodeProtocol) -> Iterator[NodeProtocol]:
     sample_ids = node.graph.get("_node_sample")
     if sample_ids is not None and hasattr(node, "G"):
-        NodoNX = get_nodonx()
-        if NodoNX is None:
-            raise ImportError("NodoNX is unavailable")
-        base = (NodoNX.from_graph(node.G, j) for j in sample_ids)
+        NodeNX = get_nodenx()
+        if NodeNX is None:
+            raise ImportError("NodeNX is unavailable")
+        base = (NodeNX.from_graph(node.G, j) for j in sample_ids)
     else:
         base = node.all_nodes()
     for j in base:
@@ -223,12 +223,12 @@ def _um_candidate_iter(node: NodoProtocol) -> Iterator[NodoProtocol]:
 
 
 def _um_select_candidates(
-    node: NodoProtocol,
-    candidates: Iterator[NodoProtocol],
+    node: NodeProtocol,
+    candidates: Iterator[NodeProtocol],
     limit: int,
     mode: str,
     th: float,
-) -> list[NodoProtocol]:
+) -> list[NodeProtocol]:
     """Select a subset of ``candidates`` for UM coupling."""
     rng = make_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset(), node.G)
 
@@ -252,7 +252,7 @@ def _um_select_candidates(
     return reservoir
 
 
-def _op_UM(node: NodoProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
+def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     k = get_factor(gf, "UM_theta_push", 0.25)
     th = node.theta
     thL = neighbor_phase_mean(node)
@@ -289,12 +289,12 @@ def _op_UM(node: NodoProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
                 node.add_edge(j, compat)
 
 
-def _op_RA(node: NodoProtocol, gf: GlyphFactors) -> None:  # RA — Resonancia
+def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonancia
     diff = get_factor(gf, "RA_epi_diff", 0.15)
     _mix_epi_with_neighbors(node, diff, Glyph.RA)
 
 
-def _op_SHA(node: NodoProtocol, gf: GlyphFactors) -> None:  # SHA — Silencio
+def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silencio
     factor = get_factor(gf, "SHA_vf_factor", 0.85)
     node.vf = factor * node.vf
 
@@ -304,12 +304,12 @@ factor_nul = 0.85
 _SCALE_FACTORS = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
 
 
-def _op_scale(node: NodoProtocol, factor: float) -> None:
+def _op_scale(node: NodeProtocol, factor: float) -> None:
     node.vf *= factor
 
 
 def _make_scale_op(glyph: Glyph) -> GlyphOperation:
-    def _op(node: NodoProtocol, gf: GlyphFactors) -> None:
+    def _op(node: NodeProtocol, gf: GlyphFactors) -> None:
         key = "VAL_scale" if glyph is Glyph.VAL else "NUL_scale"
         default = _SCALE_FACTORS[glyph]
         factor = get_factor(gf, key, default)
@@ -319,21 +319,21 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
 
 
 def _op_THOL(
-    node: NodoProtocol, gf: GlyphFactors
+    node: NodeProtocol, gf: GlyphFactors
 ) -> None:  # THOL — Autoorganización
     a = get_factor(gf, "THOL_accel", 0.10)
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
 def _op_ZHIR(
-    node: NodoProtocol, gf: GlyphFactors
+    node: NodeProtocol, gf: GlyphFactors
 ) -> None:  # ZHIR — Mutación
     shift = get_factor(gf, "ZHIR_theta_shift", math.pi / 2)
     node.theta = node.theta + shift
 
 
 def _op_NAV(
-    node: NodoProtocol, gf: GlyphFactors
+    node: NodeProtocol, gf: GlyphFactors
 ) -> None:  # NAV — Transición
     dnfr = node.dnfr
     vf = node.vf
@@ -354,7 +354,7 @@ def _op_NAV(
 
 
 def _op_REMESH(
-    node: NodoProtocol, gf: GlyphFactors | None = None
+    node: NodeProtocol, gf: GlyphFactors | None = None
 ) -> None:  # REMESH — aviso
     step_idx = glyph_history.current_step_idx(node)
     last_warn = node.graph.get("_remesh_warn_step", None)
@@ -395,9 +395,9 @@ GLYPH_OPERATIONS: dict[Glyph, GlyphOperation] = {
 
 
 def apply_glyph_obj(
-    node: NodoProtocol, glyph: Glyph | str, *, window: int | None = None
+    node: NodeProtocol, glyph: Glyph | str, *, window: int | None = None
 ) -> None:
-    """Apply ``glyph`` to an object satisfying :class:`NodoProtocol`."""
+    """Apply ``glyph`` to an object satisfying :class:`NodeProtocol`."""
 
     try:
         g = glyph if isinstance(glyph, Glyph) else Glyph(str(glyph))
@@ -433,8 +433,8 @@ def apply_glyph(
     G: TNFRGraph, n: NodeId, glyph: Glyph | str, *, window: int | None = None
 ) -> None:
     """Adapter to operate on ``networkx`` graphs."""
-    NodoNX = get_nodonx()
-    if NodoNX is None:
-        raise ImportError("NodoNX is unavailable")
-    node = NodoNX(G, n)
+    NodeNX = get_nodenx()
+    if NodeNX is None:
+        raise ImportError("NodeNX is unavailable")
+    node = NodeNX(G, n)
     apply_glyph_obj(node, glyph, window=window)
