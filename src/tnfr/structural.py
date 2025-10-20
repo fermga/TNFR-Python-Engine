@@ -90,9 +90,9 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
 
     compute = G.graph.get("compute_delta_nfr")
     ops_list = list(ops)
-    nombres = [op.name for op in ops_list]
+    names = [op.name for op in ops_list]
 
-    ok, msg = validate_sequence(nombres)
+    ok, msg = validate_sequence(names)
     if not ok:
         raise ValueError(f"Invalid sequence: {msg}")
 
