@@ -3,6 +3,7 @@ from __future__ import annotations
 from .types import TNFRConfigValue, TNFRGraph
 
 __all__: tuple[str, ...]
+_PREPARAR_RED_REMOVAL_DATE: str
 
 
 def prepare_network(

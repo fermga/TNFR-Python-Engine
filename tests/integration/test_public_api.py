@@ -20,7 +20,6 @@ def test_public_exports():
         "step",
         "run",
         "prepare_network",
-        "preparar_red",
         "create_nfr",
     }
     if getattr(tnfr, "_HAS_RUN_SEQUENCE", False):
@@ -31,7 +30,8 @@ def test_public_exports():
 def test_basic_flow():
     G, n = tnfr.create_nfr("n1")
     tnfr.prepare_network(G)
-    assert tnfr.preparar_red is tnfr.prepare_network
+    with pytest.deprecated_call():
+        tnfr.preparar_red(G)
     register_metrics_callbacks(G)
     tnfr.step(G)
     tnfr.run(G, steps=2)
@@ -97,12 +97,7 @@ def test_public_api_missing_prepare_network_dependency(monkeypatch):
             "prepare_network" in message and "networkx" in message
             for message in warning_messages
         )
-        assert any(
-            "preparar_red" in message and "networkx" in message
-            for message in warning_messages
-        )
         assert "prepare_network" in module.__all__
-        assert "preparar_red" in module.__all__
         assert not getattr(module, "_HAS_PREPARAR_RED", True)
         assert not getattr(module, "_HAS_PREPARE_NETWORK", True)
         with pytest.raises(ImportError) as excinfo:

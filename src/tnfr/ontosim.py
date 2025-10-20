@@ -1,6 +1,8 @@
 """Orchestrate the canonical simulation."""
 
 from __future__ import annotations
+
+import warnings
 from collections import deque
 from typing import TYPE_CHECKING
 
@@ -16,7 +18,10 @@ if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
 
 # API de alto nivel
-__all__ = ("prepare_network", "preparar_red", "step", "run")
+__all__ = ("prepare_network", "step", "run")
+
+
+_PREPARAR_RED_REMOVAL_DATE = "2025-06-01"
 
 
 def prepare_network(
@@ -26,13 +31,14 @@ def prepare_network(
     override_defaults: bool = False,
     **overrides,
 ) -> "nx.Graph":
-    """Prepare ``G`` for simulation.
+    f"""Prepare ``G`` for simulation.
 
     Notes
     -----
-    ``preparar_red`` remains available as a legacy alias for codebases that
-    still rely on the previous Spanish helper name. The alias will be kept
-    until the 1.x compatibility window closes.
+    :func:`preparar_red` remains temporarily available for callers that
+    still rely on the Spanish helper name.  The alias now emits a
+    :class:`DeprecationWarning` and will be removed on
+    ``{_PREPARAR_RED_REMOVAL_DATE}``.
 
     Parameters
     ----------
@@ -125,12 +131,34 @@ def prepare_network(
     return G
 
 
-# Alias legado conservado por compatibilidad externa.
-preparar_red = prepare_network
-preparar_red.__doc__ = (
-    "Alias legado de :func:`prepare_network`. Preferir el nuevo nombre en"
-    " integraciones y código nuevo."
-)
+def preparar_red(
+    G: "nx.Graph",
+    *,
+    init_attrs: bool = True,
+    override_defaults: bool = False,
+    **overrides,
+):
+    f"""Alias en desuso de :func:`prepare_network`.
+
+    El nombre español se retirará definitivamente el
+    ``{_PREPARAR_RED_REMOVAL_DATE}``.  Llama a :func:`prepare_network`
+    directamente en nuevo código.
+    """
+
+    warnings.warn(
+        (
+            "tnfr.preparar_red está en desuso y se retirará el "
+            f"{_PREPARAR_RED_REMOVAL_DATE}. Utiliza tnfr.prepare_network."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return prepare_network(
+        G,
+        init_attrs=init_attrs,
+        override_defaults=override_defaults,
+        **overrides,
+    )
 
 
 def step(
