@@ -1057,8 +1057,8 @@ def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
     """Record glyph load and associated Σ⃗ vector."""
 
     gl: GlyphLoadDistribution = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
-    stabilizers = gl.get("_stabilizers", gl.get("_estabilizadores", 0.0))
-    disruptors = gl.get("_disruptors", gl.get("_disruptivos", 0.0))
+    stabilizers = float(gl.get("_stabilizers", 0.0))
+    disruptors = float(gl.get("_disruptors", 0.0))
     _record_metrics(
         hist,
         (stabilizers, "glyph_load_estab"),

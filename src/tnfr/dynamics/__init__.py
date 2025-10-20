@@ -301,11 +301,7 @@ def _compute_state(G: TNFRGraph, cfg: Mapping[str, Any]) -> tuple[str, float, fl
     """Return the canonical network state and supporting metrics."""
     R = kuramoto_order(G)
     dist = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
-    disr = (
-        float(dist.get("_disruptors", dist.get("_disruptivos", 0.0)))
-        if dist
-        else 0.0
-    )
+    disr = float(dist.get("_disruptors", 0.0)) if dist else 0.0
 
     R_hi = float(cfg.get("R_hi", 0.90))
     R_lo = float(cfg.get("R_lo", 0.60))
