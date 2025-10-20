@@ -18,6 +18,7 @@ $\partial EPI/\partial t = \nu_f \cdot \Delta NFR(t)$.
   helper facades for reproducible experiments.
 - [Examples library](examples/README.md): runnable scenarios (controlled dissonance loop and
   optical cavity feedback) with CLI counterparts.
+- [Release notes](releases.md): API transitions, compatibility windows, and deprecation timelines.
 
 ## Canonical references
 

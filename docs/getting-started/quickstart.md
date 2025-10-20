@@ -88,6 +88,23 @@ Both `tnfr.dynamics.step` and `tnfr.dynamics.run` accept an optional `n_jobs` di
 pin process/thread counts for ΔNFR, Si, integrators, phase coordination, and νf adaptation
 without mutating `G.graph`.
 
+### Preparing existing graphs
+
+When you build a NetworkX graph outside of `create_nfr`, normalise its configuration with
+`tnfr.prepare_network` before stepping the dynamics. The helper attaches the default
+configuration, telemetry history, ΔNFR hook, and optional observer wiring. The legacy name
+`tnfr.preparar_red` remains available throughout the 1.x releases but will be removed in the
+next major version.
+
+```python
+import networkx as nx
+from tnfr import prepare_network
+
+G = nx.path_graph(4)
+G.graph["ATTACH_STD_OBSERVER"] = True
+prepare_network(G)
+```
+
 ## CLI quickstart
 
 The CLI mirrors the Python API while enforcing the canonical operator tokens. Create a

@@ -5,6 +5,15 @@ from .types import TNFRConfigValue, TNFRGraph
 __all__: tuple[str, ...]
 
 
+def prepare_network(
+    G: TNFRGraph,
+    *,
+    init_attrs: bool = True,
+    override_defaults: bool = False,
+    **overrides: TNFRConfigValue,
+) -> TNFRGraph: ...
+
+
 def preparar_red(
     G: TNFRGraph,
     *,

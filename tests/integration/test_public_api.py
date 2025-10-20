@@ -19,6 +19,7 @@ def test_public_exports():
         "__version__",
         "step",
         "run",
+        "prepare_network",
         "preparar_red",
         "create_nfr",
     }
@@ -29,7 +30,8 @@ def test_public_exports():
 
 def test_basic_flow():
     G, n = tnfr.create_nfr("n1")
-    tnfr.preparar_red(G)
+    tnfr.prepare_network(G)
+    assert tnfr.preparar_red is tnfr.prepare_network
     register_metrics_callbacks(G)
     tnfr.step(G)
     tnfr.run(G, steps=2)
@@ -72,7 +74,7 @@ def test_public_api_missing_optional_dependency(monkeypatch):
     globals()["tnfr"] = importlib.import_module("tnfr")
 
 
-def test_public_api_missing_preparar_red_dependency(monkeypatch):
+def test_public_api_missing_prepare_network_dependency(monkeypatch):
     real_import_module = importlib.import_module
 
     def fail_ontosim(name, package=None):
@@ -90,18 +92,31 @@ def test_public_api_missing_preparar_red_dependency(monkeypatch):
             module = importlib.import_module("tnfr")
         missing = [w for w in caught if issubclass(w.category, ImportWarning)]
         assert missing
+        warning_messages = [str(w.message) for w in missing]
         assert any(
-            "preparar_red" in str(w.message) and "networkx" in str(w.message)
-            for w in missing
+            "prepare_network" in message and "networkx" in message
+            for message in warning_messages
         )
+        assert any(
+            "preparar_red" in message and "networkx" in message
+            for message in warning_messages
+        )
+        assert "prepare_network" in module.__all__
         assert "preparar_red" in module.__all__
         assert not getattr(module, "_HAS_PREPARAR_RED", True)
+        assert not getattr(module, "_HAS_PREPARE_NETWORK", True)
         with pytest.raises(ImportError) as excinfo:
             module.preparar_red(None)
+        assert "networkx" in str(excinfo.value)
+        with pytest.raises(ImportError) as excinfo:
+            module.prepare_network(None)
         assert "networkx" in str(excinfo.value)
         info = getattr(module.preparar_red, "__tnfr_missing_dependency__", {})
         assert info.get("export") == "preparar_red"
         assert info.get("missing") == "networkx"
+        prepare_info = getattr(module.prepare_network, "__tnfr_missing_dependency__", {})
+        assert prepare_info.get("export") == "prepare_network"
+        assert prepare_info.get("missing") == "networkx"
     _clear_tnfr_modules()
     globals()["tnfr"] = importlib.import_module("tnfr")
 
