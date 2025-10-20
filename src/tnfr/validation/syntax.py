@@ -4,19 +4,13 @@ from __future__ import annotations
 
 from ..operators.registry import OPERATORS
 from ..config.operator_names import (
-    CIERRE_VALIDO,
     COHERENCE,
-    CONTRACTION,
-    COUPLING,
-    DISSONANCE,
-    EMISSION,
-    INICIO_VALIDOS,
+    INTERMEDIATE_OPERATORS,
     RECEPTION,
-    RECURSIVITY,
-    RESONANCE,
     SELF_ORGANIZATION,
-    SILENCE,
-    TRANSITION,
+    SELF_ORGANIZATION_CLOSURES,
+    VALID_END_OPERATORS,
+    VALID_START_OPERATORS,
     canonical_operator_name,
     operator_display_name,
 )
@@ -24,10 +18,9 @@ from ..config.operator_names import (
 __all__ = ("validate_sequence",)
 
 
-_CANONICAL_START = (EMISSION, RECURSIVITY)
-_CANONICAL_INTERMEDIATE = (DISSONANCE, COUPLING, RESONANCE)
-_CANONICAL_END = (SILENCE, TRANSITION, RECURSIVITY)
-_AUTO_CLOSURES = (SILENCE, CONTRACTION)
+_CANONICAL_START = tuple(sorted(VALID_START_OPERATORS))
+_CANONICAL_INTERMEDIATE = tuple(sorted(INTERMEDIATE_OPERATORS))
+_CANONICAL_END = tuple(sorted(VALID_END_OPERATORS))
 
 
 def _format_token_group(tokens: tuple[str, ...]) -> str:
@@ -39,7 +32,7 @@ def _validate_start(token: str) -> tuple[bool, str]:
 
     if not isinstance(token, str):
         return False, "tokens must be str"
-    if token not in INICIO_VALIDOS:
+    if token not in VALID_START_OPERATORS:
         valid_tokens = _format_token_group(_CANONICAL_START)
         return False, f"must start with {valid_tokens}"
     return True, ""
@@ -61,7 +54,7 @@ def _validate_intermediate(
 def _validate_end(last_token: str, open_thol: bool) -> tuple[bool, str]:
     """Validate closing operator and any pending THOL blocks."""
 
-    if last_token not in CIERRE_VALIDO:
+    if last_token not in VALID_END_OPERATORS:
         cierre_tokens = _format_token_group(_CANONICAL_END)
         return False, f"sequence must end with {cierre_tokens}"
     if open_thol:
@@ -114,13 +107,13 @@ def _validate_token_sequence(nombres: list[str]) -> tuple[bool, str]:
         elif (
             found_coherence
             and not seen_intermediate
-            and canonical in _CANONICAL_INTERMEDIATE
+            and canonical in INTERMEDIATE_OPERATORS
         ):
             seen_intermediate = True
 
         if canonical == SELF_ORGANIZATION:
             open_thol = True
-        elif open_thol and canonical in _AUTO_CLOSURES:
+        elif open_thol and canonical in SELF_ORGANIZATION_CLOSURES:
             open_thol = False
 
     ok, msg = _validate_known_tokens(token_to_canonical)

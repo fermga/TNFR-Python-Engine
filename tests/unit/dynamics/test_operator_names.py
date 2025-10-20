@@ -12,11 +12,27 @@ def test_registry_matches_operator_constants() -> None:
 
 
 def test_validation_sets_are_subsets() -> None:
-    assert names.INICIO_VALIDOS <= names.ALL_OPERATOR_NAMES
-    assert names.TRAMO_INTERMEDIO <= names.ALL_OPERATOR_NAMES
-    assert names.CIERRE_VALIDO <= names.ALL_OPERATOR_NAMES
+    assert names.VALID_START_OPERATORS <= names.ALL_OPERATOR_NAMES
+    assert names.INTERMEDIATE_OPERATORS <= names.ALL_OPERATOR_NAMES
+    assert names.VALID_END_OPERATORS <= names.ALL_OPERATOR_NAMES
     assert names.SELF_ORGANIZATION in names.ALL_OPERATOR_NAMES
-    assert names.AUTOORGANIZACION_CIERRES <= names.ALL_OPERATOR_NAMES
+    assert names.SELF_ORGANIZATION_CLOSURES <= names.ALL_OPERATOR_NAMES
+
+
+@pytest.mark.parametrize(
+    ("legacy_name", "preferred_name"),
+    (
+        ("INICIO_VALIDOS", "VALID_START_OPERATORS"),
+        ("TRAMO_INTERMEDIO", "INTERMEDIATE_OPERATORS"),
+        ("CIERRE_VALIDO", "VALID_END_OPERATORS"),
+        ("AUTOORGANIZACION_CIERRES", "SELF_ORGANIZATION_CLOSURES"),
+    ),
+)
+def test_legacy_aliases_emit_deprecation_and_match(legacy_name: str, preferred_name: str) -> None:
+    preferred = getattr(names, preferred_name)
+    with pytest.warns(DeprecationWarning):
+        legacy = getattr(names, legacy_name)
+    assert legacy is preferred
 
 
 def test_canonical_lookup_is_passthrough_for_english_tokens() -> None:
