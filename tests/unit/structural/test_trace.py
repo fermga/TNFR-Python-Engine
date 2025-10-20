@@ -1,4 +1,6 @@
-"""Pruebas de trace."""
+"""Unit tests for trace registration and associated callback fields."""
+
+
 
 import pytest
 

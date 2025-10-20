@@ -1,4 +1,6 @@
-"""Pruebas de `NodeNX.from_graph` en entornos multihilo."""
+"""Unit tests for ``NodeNX.from_graph`` in multi-threaded contexts."""
+
+
 
 from concurrent.futures import ThreadPoolExecutor
 import networkx as nx

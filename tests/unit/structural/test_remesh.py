@@ -1,9 +1,8 @@
-"""Pruebas de remesh.
+"""Remeshing tests.
 
-Advertencia: las gráficas serializadas antes del cambio de ``REMESH_COOLDOWN``
-deben ejecutarse por ``tnfr.utils.migrations.migrate_legacy_remesh_cooldown``
-antes de actualizar, ya que el motor ignora ``REMESH_COOLDOWN_VENTANA``.
-"""
+Warning: graphs serialized before the ``REMESH_COOLDOWN`` change must be migrated via ``tnfr.utils.migrations.migrate_legacy_remesh_cooldown`` before upgrading, because the engine ignores ``REMESH_COOLDOWN_VENTANA``."""
+
+
 
 from collections import deque
 

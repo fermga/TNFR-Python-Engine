@@ -1,15 +1,13 @@
-"""Pruebas centralizadas para ``HistoryDict``.
+"""Centralized tests for ``HistoryDict``.
 
-Las historias de glyphs manejan tres conceptos distintos:
-* **Series**: las secuencias de eventos almacenadas por clave (listas o ``deque``).
-* **Contadores**: el mapa ``_counts`` que mide la frecuencia de uso de cada serie.
-* **Ventanas**: los límites de tamaño (``maxlen``) aplicados a cada serie; se validan
-  en ``test_glyph_history_windowing.py``.
+Glyph histories revolve around three concepts:
+* **Series**: sequences of events stored per key (lists or ``deque``).
+* **Counters**: the ``_counts`` map measuring how often each series is used.
+* **Windows**: size limits (``maxlen``) validated in ``test_glyph_history_windowing.py``.
 
-Este módulo se concentra en la interacción entre series y contadores para asegurar
-que cada responsabilidad se mantenga separada antes de que las ventanas entren en
-juego.
-"""
+This module focuses on the interaction between series and counters to ensure each responsibility remains isolated before window policies are applied."""
+
+
 
 from collections import deque
 import timeit

@@ -1,4 +1,6 @@
-"""Pruebas de sense."""
+"""Unit tests for sense utilities computing sigma vectors and glyph metrics."""
+
+
 
 import time
 import pytest

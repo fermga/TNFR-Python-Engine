@@ -1,4 +1,6 @@
-"""Pruebas de selector norms."""
+"""Unit tests for selector normalization metrics applied during dynamics."""
+
+
 
 from tnfr.dynamics import (
     step,

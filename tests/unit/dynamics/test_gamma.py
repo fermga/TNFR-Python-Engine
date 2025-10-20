@@ -1,4 +1,6 @@
-"""Pruebas de gamma."""
+"""Unit tests for gamma dynamics utilities and stability thresholds."""
+
+
 
 import math
 import logging

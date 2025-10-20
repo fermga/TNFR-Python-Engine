@@ -1,4 +1,6 @@
-"""Pruebas de observers."""
+"""Unit tests for observer metrics such as phase synchrony and glyph load."""
+
+
 
 import math
 import statistics as st

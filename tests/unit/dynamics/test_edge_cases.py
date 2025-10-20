@@ -1,4 +1,6 @@
-"""Pruebas de edge cases."""
+"""Unit tests covering edge cases in dynamics operations and glyph application."""
+
+
 
 import networkx as nx
 import pytest

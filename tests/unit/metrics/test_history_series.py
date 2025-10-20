@@ -1,4 +1,6 @@
-"""Pruebas de history series."""
+"""Unit tests ensuring metric history series are registered and populated during dynamics steps."""
+
+
 
 from tnfr.constants import inject_defaults
 from tnfr.dynamics import step

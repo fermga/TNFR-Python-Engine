@@ -1,4 +1,6 @@
-"""Pruebas de canon."""
+"""Unit tests validating canonical configuration checks for dynamics graphs."""
+
+
 
 import networkx as nx
 from tnfr.dynamics import validate_canon

@@ -1,4 +1,6 @@
-"""Pruebas de count glyphs."""
+"""Unit tests for glyph counting helpers across history windows."""
+
+
 
 from collections import deque, Counter
 import pytest

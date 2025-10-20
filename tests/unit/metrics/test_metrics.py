@@ -1,4 +1,6 @@
-"""Pruebas de metrics."""
+"""Unit tests for metric evaluation plumbing and configuration."""
+
+
 
 import builtins
 import pytest

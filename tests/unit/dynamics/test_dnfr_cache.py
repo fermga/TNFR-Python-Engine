@@ -1,4 +1,6 @@
-"""Pruebas de dnfr cache."""
+"""Unit tests for DNFR cache management and numerical consistency."""
+
+
 
 import math
 

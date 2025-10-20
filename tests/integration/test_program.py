@@ -1,4 +1,6 @@
-"""Pruebas de program."""
+"""Integration tests exercising program sequencing, flattening, and execution traces."""
+
+
 
 import json
 from collections import deque

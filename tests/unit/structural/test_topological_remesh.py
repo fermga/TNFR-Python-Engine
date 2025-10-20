@@ -1,4 +1,5 @@
-"""Pruebas de remeshing topológico."""
+"""Unit tests for topological remeshing operations."""
+
 from itertools import combinations
 
 import networkx as nx
