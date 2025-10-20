@@ -9,13 +9,13 @@ from typing import TYPE_CHECKING
 from ..config.operator_names import canonical_operator_name
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
-    from .definitions import Operador
+    from .definitions import Operator
 
 
-OPERATORS: dict[str, type["Operador"]] = {}
+OPERATORS: dict[str, type["Operator"]] = {}
 
 
-def register_operator(cls: type["Operador"]) -> type["Operador"]:
+def register_operator(cls: type["Operator"]) -> type["Operator"]:
     """Register ``cls`` under its declared ``name`` in :data:`OPERATORS`."""
 
     name = getattr(cls, "name", None)
@@ -32,7 +32,7 @@ def register_operator(cls: type["Operador"]) -> type["Operador"]:
     return cls
 
 
-def get_operator_class(name: str) -> type["Operador"]:
+def get_operator_class(name: str) -> type["Operator"]:
     """Return the operator class registered for ``name`` or its canonical alias."""
 
     try:
