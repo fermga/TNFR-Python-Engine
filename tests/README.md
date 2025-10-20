@@ -14,7 +14,7 @@ Tests that previously covered warning cache pruning and warn-once limits were re
 
 ## Performance regression tests
 
-- **performance/** – covers the NumPy-accelerated ΔNFR pipeline, alias caches, and trigonometric metrics to guard against performance regressions. The tests are marked `slow` and are excluded by default via `pytest.ini`.
+- **performance/** – covers the NumPy-accelerated ΔNFR pipeline, alias caches, and trigonometric metrics to guard against performance regressions. The tests are marked `slow` and are excluded by default via the `addopts` setting in `pyproject.toml`.
 
   ```bash
   pytest -m slow tests/performance
