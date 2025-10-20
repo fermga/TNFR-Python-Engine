@@ -4,6 +4,8 @@ from collections.abc import Callable, Iterable, Mapping
 from types import ModuleType
 from typing import TYPE_CHECKING, Any, Hashable, TypeVar
 
+from .types import FloatArray, NodeId
+
 if TYPE_CHECKING:
     import networkx as nx
 
@@ -35,12 +37,12 @@ def get_attr(
 
 def collect_attr(
     G: "nx.Graph",
-    nodes: Iterable[Any],
+    nodes: Iterable[NodeId],
     aliases: Iterable[str],
     default: float = ...,
     *,
     np: ModuleType | None = ...,
-) -> list[float] | Any: ...
+) -> FloatArray | list[float]: ...
 
 
 def set_attr_generic(

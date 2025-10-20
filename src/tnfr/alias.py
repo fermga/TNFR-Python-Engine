@@ -10,21 +10,22 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Iterable, Sized
 from dataclasses import dataclass
+from functools import lru_cache, partial
+from threading import Lock
+from types import ModuleType
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
-    TypeVar,
-    Optional,
     Generic,
     Hashable,
-    TYPE_CHECKING,
+    Optional,
+    TypeVar,
     cast,
 )
 
-from functools import lru_cache, partial
-from threading import Lock
-
 from .constants import get_aliases
+from .types import FloatArray, NodeId
 from .utils import convert_value
 
 ALIAS_VF = get_aliases("VF")
@@ -207,12 +208,12 @@ def get_attr(
 
 def collect_attr(
     G: "networkx.Graph",
-    nodes: Iterable[Any],
+    nodes: Iterable[NodeId],
     aliases: Iterable[str],
     default: float = 0.0,
     *,
-    np=None,
-):
+    np: ModuleType | None = None,
+) -> FloatArray | list[float]:
     """Collect attribute values for ``nodes`` from ``G`` using ``aliases``.
 
     Parameters
@@ -235,7 +236,7 @@ def collect_attr(
         Collected attribute values in the same order as ``nodes``.
     """
 
-    def _nodes_iter_and_size(nodes: Iterable[Any]) -> tuple[Iterable[Any], int]:
+    def _nodes_iter_and_size(nodes: Iterable[NodeId]) -> tuple[Iterable[NodeId], int]:
         if nodes is G.nodes:
             return G.nodes, G.number_of_nodes()
         if isinstance(nodes, Sized):
@@ -245,13 +246,13 @@ def collect_attr(
 
     nodes_iter, size = _nodes_iter_and_size(nodes)
 
+    def _value(node: NodeId) -> float:
+        return float(get_attr(G.nodes[node], aliases, default))
+
     if np is not None:
-        return np.fromiter(
-            (get_attr(G.nodes[n], aliases, default) for n in nodes_iter),
-            float,
-            count=size,
-        )
-    return [get_attr(G.nodes[n], aliases, default) for n in nodes_iter]
+        values: FloatArray = np.fromiter((_value(n) for n in nodes_iter), float, count=size)
+        return values
+    return [_value(n) for n in nodes_iter]
 
 
 def set_attr_generic(
