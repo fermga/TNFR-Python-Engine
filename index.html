@@ -45,21 +45,6 @@
       margin: 0 auto;
     }
 
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
-    .brand {
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--accent);
-      font-size: 0.98rem;
-    }
-
     .tagline {
       margin: 0;
       font-size: clamp(2.4rem, 5vw, 3.2rem);
@@ -99,110 +84,6 @@
     .hero > * {
       position: relative;
       z-index: 1;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.85rem;
-      align-items: center;
-      margin-top: 2rem;
-    }
-
-    .hero-actions .btn {
-      flex: 0 1 auto;
-    }
-
-    .metrics {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 1.75rem;
-    }
-
-    @media (min-width: 720px) {
-      .metrics {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 0.9rem;
-      }
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.75rem 1.55rem;
-      border-radius: 999px;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      text-decoration: none;
-      color: var(--fg);
-      border: 1px solid transparent;
-      position: relative;
-      transition: transform 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease,
-        border-color 0.22s ease;
-      box-shadow: 0 18px 32px rgba(0, 0, 0, 0.35);
-    }
-
-    .btn::after {
-      content: "";
-      position: absolute;
-      inset: -2px;
-      border-radius: 999px;
-      border: 1px solid rgba(90, 216, 255, 0.22);
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.22s ease;
-    }
-
-    .btn:hover,
-    .btn:focus-visible {
-      transform: translateY(-2px);
-      box-shadow: 0 26px 36px rgba(0, 0, 0, 0.4);
-    }
-
-    .btn:focus-visible::after {
-      opacity: 1;
-    }
-
-    .btn.primary {
-      background: linear-gradient(135deg, var(--accent-strong), var(--accent));
-      border-color: rgba(90, 216, 255, 0.32);
-      color: #05060d;
-    }
-
-    .btn.primary:hover,
-    .btn.primary:focus-visible {
-      background: linear-gradient(135deg, #7d76ff, #74e2ff);
-    }
-
-    .btn.secondary {
-      background: rgba(15, 20, 44, 0.78);
-      border-color: rgba(90, 216, 255, 0.28);
-      color: var(--fg);
-    }
-
-    .btn.secondary:hover,
-    .btn.secondary:focus-visible {
-      background: rgba(27, 35, 68, 0.9);
-      border-color: rgba(90, 216, 255, 0.45);
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.45rem 0.9rem;
-      border-radius: 999px;
-      background: rgba(90, 216, 255, 0.12);
-      border: 1px solid rgba(90, 216, 255, 0.3);
-      color: var(--fg);
-      font-size: 0.85rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      box-shadow: 0 0 16px rgba(90, 216, 255, 0.18);
-      backdrop-filter: blur(6px);
     }
 
     .hero-visual {
@@ -279,28 +160,14 @@
 <body id="top">
   <header>
     <div class="frame">
-      <nav>
-        <span class="brand">TNFR · Python Engine</span>
-        <span class="brand" style="opacity: 0.6">Theory · Resonance · Simulation</span>
-      </nav>
       <div class="hero">
         <div>
           <h1 class="tagline">TNFR-Python-Engine</h1>
           <p class="lead">
             TNFR explores nonlinear resonance patterns to describe how complex systems self-organize across quantum and macroscopic domains. This repository is the experimental Python engine that turns those hypotheses into reproducible simulations.
           </p>
-          <div class="hero-actions">
-            <a class="btn primary" href="#paquete">Install the package</a>
-            <a class="btn secondary" href="#innovaciones">Explore recent work</a>
-          </div>
-          <div class="metrics">
-            <span class="pill">C(t) · Global coherence</span>
-            <span class="pill">ΔNFR · Structural dynamics</span>
-            <span class="pill">Si · Nodal sense index</span>
-            <span class="pill">φ · Phase control</span>
-          </div>
         </div>
-        
+
       </div>
     </div>
   </header>
