@@ -1,6 +1,6 @@
 # Test suite overview
 
-This document describes the purpose of tests in the suite that monitor internal debugging and diagnostic features.
+This document describes the purpose of tests in the suite that monitor internal debugging, diagnostic features, and performance regressions.
 
 ## Debugging and diagnostic tests
 
@@ -11,3 +11,13 @@ This document describes the purpose of tests in the suite that monitor internal 
 - **test_diagnosis_state.py** – validates mapping of coherence metrics into diagnostic states.
 
 Tests that previously covered warning cache pruning and warn-once limits were removed to reduce maintenance overhead.
+
+## Performance regression tests
+
+- **performance/** – covers the NumPy-accelerated ΔNFR pipeline, alias caches, and trigonometric metrics to guard against performance regressions. The tests are marked `slow` and are excluded by default via `pytest.ini`.
+
+  ```bash
+  pytest -m slow tests/performance
+  ```
+
+  The suite requires NumPy for the vectorized branches; `pytest` will skip the affected checks automatically when the dependency is missing.
