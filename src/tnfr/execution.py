@@ -40,7 +40,7 @@ __all__ = [
 ]
 
 
-CANONICAL_PRESET_NAME = "ejemplo_canonico"
+CANONICAL_PRESET_NAME = "canonical_example"
 CANONICAL_PROGRAM_TOKENS: tuple[Token, ...] = (
     Glyph.SHA,
     Glyph.AL,

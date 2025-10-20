@@ -25,7 +25,6 @@ from ..dynamics import (
     validate_canon,
 )
 from ..config.presets import (
-    LEGACY_PRESET_NAMES,
     PREFERRED_PRESET_NAMES,
     get_preset,
 )
@@ -47,7 +46,6 @@ logger = get_logger(__name__)
 DEFAULT_SUMMARY_SERIES_LIMIT = 10
 
 _PREFERRED_PRESETS_DISPLAY = ", ".join(PREFERRED_PRESET_NAMES)
-_LEGACY_PRESETS_DISPLAY = ", ".join(LEGACY_PRESET_NAMES)
 
 
 def _save_json(path: str, data: Any) -> None:
@@ -175,15 +173,15 @@ def resolve_program(
         try:
             return get_preset(args.preset)
         except KeyError as exc:
+            details = exc.args[0] if exc.args else "Legacy preset identifier rejected."
             logger.error(
                 (
-                    "Preset desconocido '%s'. Nombres preferidos: %s. "
-                    "Claves heredadas: %s. Usa --sequence-file para cargar "
-                    "secuencias personalizadas"
+                    "Unknown preset '%s'. Available presets: %s. %s "
+                    "Use --sequence-file to execute custom sequences."
                 ),
                 args.preset,
                 _PREFERRED_PRESETS_DISPLAY,
-                _LEGACY_PRESETS_DISPLAY,
+                details,
             )
             raise SystemExit(1) from exc
     if getattr(args, "sequence_file", None):

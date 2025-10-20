@@ -1,5 +1,21 @@
 # Release notes
 
+## 9.0.0 (canonical preset rename)
+
+- Renamed the canonical tutorial preset to the English-only identifier
+  ``"canonical_example"``. The Spanish ``"ejemplo_canonico"`` alias now raises a
+  :class:`KeyError` pointing to the supported name instead of being silently
+  resolved.
+- Updated :mod:`tnfr.execution` so :data:`tnfr.execution.CANONICAL_PRESET_NAME`
+  exposes the English identifier, aligning the helper with
+  :mod:`tnfr.config.presets`.
+- Simplified the preset resolution layer by removing the remaining runtime
+  aliases. ``get_preset()`` now rejects the retired identifiers with explicit
+  guidance and the CLI surfaces the same migration message.
+- Revised the CLI help strings, error handling, and documentation to mention
+  only the English preset names. Downstream automation should update any stored
+  configuration that still references ``"ejemplo_canonico"``.
+
 ## 8.1.0 (remesh cooldown alias removal)
 
 - Removed the Spanish ``"REMESH_COOLDOWN_VENTANA"`` alias from
