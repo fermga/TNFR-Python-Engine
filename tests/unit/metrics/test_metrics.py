@@ -188,9 +188,7 @@ def test_update_sigma_uses_default_window(monkeypatch, graph_canon):
         captured["window"] = window
         return {
             "_stabilizers": 0.25,
-            "_estabilizadores": 0.5,
             "_disruptors": 0.75,
-            "_disruptivos": 0.6,
             "AL": 0.25,
             "RA": 0.75,
         }

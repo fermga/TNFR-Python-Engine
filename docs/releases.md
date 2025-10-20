@@ -1,5 +1,17 @@
 # Release notes
 
+## 11.1.0 (glyph load Spanish aggregates removed)
+
+- :func:`tnfr.observers.glyph_load` now reports only the English aggregate
+  keys ``"_stabilizers"`` and ``"_disruptors"``. The Spanish compatibility
+  aliases were removed along with the runtime mirroring logic.
+- Consumers in :mod:`tnfr.metrics.coherence` and :mod:`tnfr.dynamics` now read
+  the English keys exclusively. Custom integrations should update any
+  post-processing code that still expected ``"_estabilizadores"`` or
+  ``"_disruptivos"`` entries.
+- Updated the structural and metrics unit tests to enforce the English-only
+  contract and removed the fixtures that patched Spanish aggregate labels.
+
 ## 11.0.0 (Si dispersion legacy keys removed)
 
 - Removed the Spanish ``dSi_ddisp_fase`` attribute from the sense index
