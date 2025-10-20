@@ -7,7 +7,7 @@ from typing import Any, ContextManager, Generic, TypeVar
 import networkx as nx
 
 from ..cache import CacheCapacityConfig, CacheManager
-from ..types import NodeId, TNFRGraph, TimingContext
+from ..types import GraphLike, NodeId, TNFRGraph, TimingContext
 
 K = TypeVar("K", bound=Hashable)
 V = TypeVar("V")
@@ -70,7 +70,7 @@ class EdgeCacheState:
 class EdgeCacheManager:
     _STATE_KEY: str
 
-    def __init__(self, graph: Any) -> None: ...
+    def __init__(self, graph: MutableMapping[str, Any]) -> None: ...
 
     def record_hit(self) -> None: ...
 
@@ -136,7 +136,7 @@ def ensure_node_offset_map(G: TNFRGraph) -> dict[NodeId, int]: ...
 
 
 def configure_graph_cache_limits(
-    G: Any,
+    G: GraphLike | TNFRGraph | MutableMapping[str, Any],
     *,
     default_capacity: int | None | object = CacheManager._MISSING,
     overrides: Mapping[str, int | None] | None = ...,

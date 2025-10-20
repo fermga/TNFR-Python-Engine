@@ -12,7 +12,14 @@ from __future__ import annotations
 import hashlib
 import threading
 from collections import defaultdict
-from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping
+from collections.abc import (
+    Callable,
+    Hashable,
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+)
 from contextlib import contextmanager
 from functools import lru_cache
 from dataclasses import dataclass
@@ -22,7 +29,7 @@ from cachetools import LRUCache
 import networkx as nx
 
 from ..cache import CacheCapacityConfig, CacheManager
-from ..types import NodeId, TNFRGraph, TimingContext
+from ..types import GraphLike, NodeId, TNFRGraph, TimingContext
 from .graph import get_graph, mark_dnfr_prep_dirty
 from .init import get_logger, get_numpy
 from .io import json_dumps
@@ -402,7 +409,7 @@ _GRAPH_CACHE_MANAGER_KEY = "_tnfr_cache_manager"
 _GRAPH_CACHE_CONFIG_KEY = "_tnfr_cache_config"
 
 
-def _graph_cache_manager(graph: Any) -> CacheManager:
+def _graph_cache_manager(graph: MutableMapping[str, Any]) -> CacheManager:
     manager = graph.get(_GRAPH_CACHE_MANAGER_KEY)
     if not isinstance(manager, CacheManager):
         manager = CacheManager(default_capacity=128)
@@ -414,7 +421,7 @@ def _graph_cache_manager(graph: Any) -> CacheManager:
 
 
 def configure_graph_cache_limits(
-    G: Any,
+    G: GraphLike | TNFRGraph | MutableMapping[str, Any],
     *,
     default_capacity: int | None | object = CacheManager._MISSING,
     overrides: Mapping[str, int | None] | None = None,
@@ -442,8 +449,8 @@ class EdgeCacheManager:
 
     _STATE_KEY = "_edge_version_state"
 
-    def __init__(self, graph: Any) -> None:
-        self.graph = graph
+    def __init__(self, graph: MutableMapping[str, Any]) -> None:
+        self.graph: MutableMapping[str, Any] = graph
         self._manager = _graph_cache_manager(graph)
         self._manager.register(
             self._STATE_KEY,
