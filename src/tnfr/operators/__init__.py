@@ -39,8 +39,7 @@ _remesh_doc = (
     "Parameters\n----------\n"
     "stable_step_window : int | None\n"
     "    Number of consecutive stable steps required before remeshing.\n"
-    "    The legacy keyword 'pasos_estables_consecutivos' is still accepted\n"
-    "    but will be removed after the transition period."
+    "    Only the English keyword 'stable_step_window' is supported."
 )
 if apply_remesh_if_globally_stable.__doc__:
     apply_remesh_if_globally_stable.__doc__ += "\n\n" + _remesh_doc
