@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from ..types import (
     GlyphSelector,
@@ -30,7 +30,7 @@ from .coherence import (
     register_coherence_callbacks,
 )
 from .diagnosis import register_diagnosis_callbacks
-from .glyph_timing import _compute_advanced_metrics
+from .glyph_timing import _compute_advanced_metrics, GlyphMetricsHistory
 from .reporting import (
     Tg_by_node,
     Tg_global,
@@ -129,7 +129,14 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
 
     _aggregate_si(G, hist, n_jobs=metrics_jobs)
 
-    _compute_advanced_metrics(G, hist, t, dt, cfg, n_jobs=metrics_jobs)
+    _compute_advanced_metrics(
+        G,
+        cast(GlyphMetricsHistory, hist),
+        t,
+        dt,
+        cfg,
+        n_jobs=metrics_jobs,
+    )
 
 
 def register_metrics_callbacks(G: TNFRGraph) -> None:

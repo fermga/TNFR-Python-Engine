@@ -9,9 +9,11 @@ ALIAS_EPI: Any
 ALIAS_SI: Any
 ALIAS_VF: Any
 CallbackEvent: Any
+CoherenceMatrixPayload: Any
 Iterable: Any
 ProcessPoolExecutor: Any
 StatisticsError: Any
+TNFRGraph: Any
 TRANSICION: Any
 VF_KEY: Any
 annotations: Any
@@ -81,4 +83,7 @@ def _state_from_thresholds(Rloc: float, dnfr_n: float, cfg: Mapping[str, Any]) -
 
 def _recommendation(state: str, cfg: Mapping[str, Any]) -> list[Any]: ...
 
-def _get_last_weights(G: Any, hist: Mapping[str, Sequence[Any]]) -> tuple[Any | None, Any | None]: ...
+def _get_last_weights(
+    G: TNFRGraph,
+    hist: Mapping[str, Sequence[CoherenceMatrixPayload | None]],
+) -> tuple[CoherenceMatrixPayload | None, CoherenceMatrixPayload | None]: ...
