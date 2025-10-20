@@ -1,5 +1,16 @@
 # Release notes
 
+## 13.1.0 (preset legacy tuple removed)
+
+- **Breaking change**: Removed the exported
+  :data:`tnfr.config.presets.REMOVED_PRESET_NAMES` tuple now that Spanish preset
+  identifiers are no longer recognised. Downstream tooling that introspected the
+  tuple for migration support should ship its own static mapping.
+- The :func:`tnfr.config.presets.get_preset` helper only consults canonical
+  English identifiers. Legacy Spanish inputs (for example,
+  ``get_preset('arranque_resonante')``) now raise ``KeyError('Preset not found: …')``
+  without additional guidance, matching the behaviour for any unknown preset.
+
 ## 13.0.0 (selector norms alias removed)
 
 - **Breaking change**: Removed the deprecated
