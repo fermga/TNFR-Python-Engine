@@ -16,7 +16,7 @@ from ..constants import (
 )
 from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import append_metric, ensure_history
-from ..alias import collect_attr, set_attr
+from ..alias import collect_attr, collect_theta_attr, set_attr
 from ..helpers.numeric import clamp01
 from ..types import (
     CoherenceMetric,
@@ -47,7 +47,6 @@ from ..utils import (
 
 logger = get_logger(__name__)
 
-ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_SI = get_aliases("SI")
@@ -777,7 +776,7 @@ def coherence_matrix(
 
     # Precompute indices to avoid repeated list.index calls within loops
 
-    th_vals = collect_attr(G, nodes, ALIAS_THETA, 0.0, np=np if use_np else None)
+    th_vals = collect_theta_attr(G, nodes, 0.0, np=np if use_np else None)
     epi_vals = collect_attr(G, nodes, ALIAS_EPI, 0.0, np=np if use_np else None)
     vf_vals = collect_attr(G, nodes, ALIAS_VF, 0.0, np=np if use_np else None)
     si_vals = collect_attr(G, nodes, ALIAS_SI, 0.0, np=np if use_np else None)

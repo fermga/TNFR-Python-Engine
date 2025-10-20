@@ -9,8 +9,8 @@ from collections.abc import Mapping
 from functools import lru_cache
 from types import MappingProxyType
 
-from .constants import DEFAULTS, get_aliases
-from .alias import get_attr
+from .constants import DEFAULTS
+from .alias import get_theta_attr
 from .types import GammaSpec, NodeId, TNFRGraph
 from .utils import (
     edge_version_cache,
@@ -20,8 +20,6 @@ from .utils import (
     node_set_checksum,
 )
 from .metrics.trig_cache import get_trig_cache
-
-ALIAS_THETA = get_aliases("THETA")
 
 
 logger = get_logger(__name__)
@@ -94,7 +92,8 @@ def _kuramoto_common(
     cache = G.graph.get("_kuramoto_cache", {})
     R = float(cache.get("R", 0.0))
     psi = float(cache.get("psi", 0.0))
-    th_i = get_attr(G.nodes[node], ALIAS_THETA, 0.0)
+    th_val = get_theta_attr(G.nodes[node], 0.0)
+    th_i = float(th_val if th_val is not None else 0.0)
     return th_i, R, psi
 
 

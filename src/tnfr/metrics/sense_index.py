@@ -29,8 +29,6 @@ from .trig_cache import get_trig_cache
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_SI = get_aliases("SI")
-ALIAS_THETA = get_aliases("THETA")
-
 __all__ = ("get_Si_weights", "compute_Si_node", "compute_Si")
 
 

@@ -10,12 +10,9 @@ import math
 from dataclasses import dataclass
 from typing import Any, Iterable, Mapping
 
-from ..alias import get_attr
-from ..constants import get_aliases
+from ..alias import get_theta_attr
 from ..types import GraphLike
 from ..utils import edge_version_cache, get_numpy
-
-ALIAS_THETA = get_aliases("THETA")
 
 __all__ = ("TrigCache", "compute_theta_trig", "get_trig_cache", "_compute_trig_python")
 
@@ -36,7 +33,7 @@ def _iter_theta_pairs(
 
     for n, data in nodes:
         if isinstance(data, Mapping):
-            yield n, get_attr(data, ALIAS_THETA, 0.0)
+            yield n, get_theta_attr(data, 0.0) or 0.0
         else:
             yield n, float(data)
 

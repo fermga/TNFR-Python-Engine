@@ -8,10 +8,11 @@ alias-based attribute access. Legacy wrappers ``alias_get`` and
 
 from __future__ import annotations
 from collections import defaultdict
-from collections.abc import Iterable, Sized
+from collections.abc import Iterable, Mapping, MutableMapping, Sized
 from dataclasses import dataclass
 from functools import lru_cache, partial
 from threading import Lock
+import warnings
 from types import ModuleType
 from typing import (
     TYPE_CHECKING,
@@ -185,6 +186,53 @@ class AliasAccessor(Generic[T]):
 _generic_accessor: AliasAccessor[Any] = AliasAccessor()
 
 
+LEGACY_THETA_KEY = "fase"
+_THETA_DEPRECATION = (
+    'The "fase" node attribute is deprecated; use "theta" or "phase" instead.'
+)
+
+
+def _normalize_theta_aliases(
+    mapping: Mapping[str, Any], *, warn: bool = True
+) -> Mapping[str, Any]:
+    """Replace legacy ``"fase"`` keys with English equivalents."""
+
+    if LEGACY_THETA_KEY not in mapping:
+        return mapping
+    if warn:
+        warnings.warn(_THETA_DEPRECATION, DeprecationWarning, stacklevel=3)
+    target: MutableMapping[str, Any]
+    if isinstance(mapping, MutableMapping):
+        target = mapping
+    else:
+        target = dict(mapping)
+    value = target.pop(LEGACY_THETA_KEY, mapping[LEGACY_THETA_KEY])
+    theta_value = target.setdefault("theta", value)
+    target.setdefault("phase", theta_value)
+    return target
+
+
+def get_theta_attr(
+    d: Mapping[str, Any],
+    default: T | None = None,
+    *,
+    strict: bool = False,
+    log_level: int | None = None,
+    conv: Callable[[Any], T] = float,
+) -> T | None:
+    """Return phase using the compatibility shim for legacy ``"fase"``."""
+
+    normalized = _normalize_theta_aliases(d)
+    return _generic_accessor.get(
+        cast(dict[str, Any], normalized),
+        ALIAS_THETA,
+        default,
+        strict=strict,
+        log_level=log_level,
+        conv=conv,
+    )
+
+
 def get_attr(
     d: dict[str, Any],
     aliases: Iterable[str],
@@ -255,6 +303,35 @@ def collect_attr(
     return [_value(n) for n in nodes_iter]
 
 
+def collect_theta_attr(
+    G: "networkx.Graph",
+    nodes: Iterable[NodeId],
+    default: float = 0.0,
+    *,
+    np: ModuleType | None = None,
+) -> FloatArray | list[float]:
+    """Collect ``θ`` values using the compatibility shim for legacy keys."""
+
+    def _nodes_iter_and_size(nodes: Iterable[NodeId]) -> tuple[Iterable[NodeId], int]:
+        if nodes is G.nodes:
+            return G.nodes, G.number_of_nodes()
+        if isinstance(nodes, Sized):
+            return nodes, len(nodes)  # type: ignore[arg-type]
+        nodes_list = list(nodes)
+        return nodes_list, len(nodes_list)
+
+    nodes_iter, size = _nodes_iter_and_size(nodes)
+
+    def _value(node: NodeId) -> float:
+        return float(get_theta_attr(G.nodes[node], default))
+
+    if np is not None:
+        values: FloatArray = np.fromiter((_value(n) for n in nodes_iter), float, count=size)
+        return values
+
+    return [_value(n) for n in nodes_iter]
+
+
 def set_attr_generic(
     d: dict[str, Any],
     aliases: Iterable[str],
@@ -272,6 +349,15 @@ set_attr = partial(set_attr_generic, conv=float)
 
 get_attr_str = partial(get_attr, conv=str)
 set_attr_str = partial(set_attr_generic, conv=str)
+
+
+def set_theta_attr(d: MutableMapping[str, Any], value: Any) -> float:
+    """Assign phase ensuring legacy keys are normalised."""
+
+    normalized = _normalize_theta_aliases(d, warn=False)
+    result = float(set_attr(cast(dict[str, Any], normalized), ALIAS_THETA, value))
+    normalized["phase"] = result
+    return result
 
 
 # -------------------------
@@ -530,14 +616,41 @@ for _name, _spec in SCALAR_SETTERS.items():
 del _name, _spec, _make_scalar_setter
 
 
+_set_theta_impl = cast(
+    Callable[["networkx.Graph", Hashable, float], AbsMaxResult | None],
+    globals()["set_theta"],
+)
+
+
+def _set_theta_with_compat(
+    G: "networkx.Graph", n: Hashable, value: float
+) -> AbsMaxResult | None:
+    nd = cast(MutableMapping[str, Any], G.nodes[n])
+    _normalize_theta_aliases(nd, warn=False)
+    result = _set_theta_impl(G, n, value)
+    theta_val = get_theta_attr(nd, value)
+    if theta_val is not None:
+        nd["phase"] = float(theta_val)
+    return result
+
+
+_set_theta_with_compat.__name__ = "set_theta"
+_set_theta_with_compat.__qualname__ = "set_theta"
+_set_theta_with_compat.__doc__ = _set_theta_impl.__doc__
+globals()["set_theta"] = _set_theta_with_compat
+
+
 __all__ = [
     "AbsMaxResult",
     "set_attr_generic",
     "get_attr",
+    "get_theta_attr",
     "collect_attr",
+    "collect_theta_attr",
     "set_attr",
     "get_attr_str",
     "set_attr_str",
+    "set_theta_attr",
     "set_attr_and_cache",
     "set_attr_with_max",
     "set_scalar",

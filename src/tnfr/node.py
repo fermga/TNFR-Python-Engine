@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from .constants import get_aliases
 from .alias import (
     get_attr,
+    get_theta_attr,
     get_attr_str,
     set_attr,
     set_attr_str,
@@ -98,7 +99,12 @@ class AttrSpec:
 ATTR_SPECS: dict[str, AttrSpec] = {
     "EPI": AttrSpec(aliases=ALIAS_EPI),
     "vf": AttrSpec(aliases=ALIAS_VF, setter=set_vf, use_graph_setter=True),
-    "theta": AttrSpec(aliases=ALIAS_THETA, setter=set_theta, use_graph_setter=True),
+    "theta": AttrSpec(
+        aliases=ALIAS_THETA,
+        getter=get_theta_attr,
+        setter=set_theta,
+        use_graph_setter=True,
+    ),
     "Si": AttrSpec(aliases=ALIAS_SI),
     "epi_kind": AttrSpec(
         aliases=ALIAS_EPI_KIND,

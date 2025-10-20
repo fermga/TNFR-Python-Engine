@@ -18,7 +18,7 @@ from types import ModuleType
 from collections.abc import Callable, Iterator, Mapping, MutableMapping, Sequence
 from typing import TYPE_CHECKING, Any, cast
 
-from ..alias import get_attr, set_dnfr
+from ..alias import get_attr, get_theta_attr, set_dnfr
 from ..constants import DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import angle_diff
 from ..metrics.common import merge_and_normalize_weights
@@ -36,7 +36,6 @@ from ..types import (
 
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
     import numpy as np
-ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 
@@ -2015,7 +2014,8 @@ class _PhaseGradient:
         n: NodeId,
         nd: Mapping[str, Any],
     ) -> float:
-        th_i = get_attr(nd, ALIAS_THETA, 0.0)
+        theta_val = get_theta_attr(nd, 0.0)
+        th_i = float(theta_val if theta_val is not None else 0.0)
         neighbors = list(G.neighbors(n))
         if neighbors:
             th_bar = neighbor_phase_mean_list(
