@@ -67,13 +67,4 @@ def discover_operators() -> None:
     setattr(package, "_operators_discovered", True)
 
 
-def __getattr__(name: str):
-    if name == "OPERADORES":
-        raise AttributeError(
-            "Spanish operator registry alias 'OPERADORES' has been removed. "
-            "Use 'OPERATORS' instead."
-        )
-    raise AttributeError(name)
-
-
 __all__ = ("OPERATORS", "register_operator", "discover_operators", "get_operator_class")

@@ -7,6 +7,10 @@ accepts only the English ``stable_step_window`` parameter. Calls that still use
 or forward the Spanish keyword raise :class:`TypeError` immediately so the
 deprecated configuration cannot silently slip through pipelines.
 
+Legacy graphs that still expose the Spanish cooldown metadata can be upgraded
+with :func:`tnfr.utils.migrations.migrate_legacy_remesh_cooldown`. The helper is
+kept solely for archival upgrades and will be removed in ``tnfr`` 15.0.0.
+
 ## Who is affected?
 
 - Applications that invoked

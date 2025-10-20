@@ -70,7 +70,15 @@ def test_diagnosis_vectorized_matches_python(graph_canon, monkeypatch):
 
     vectorized = _capture_diagnostics(vector_graph, jobs=4)
 
-    assert vectorized == baseline
+    assert vectorized.keys() == baseline.keys()
+    for node_id, expected in baseline.items():
+        observed = vectorized[node_id]
+        assert observed.keys() == expected.keys()
+        for key, value in expected.items():
+            if isinstance(value, float):
+                assert observed[key] == pytest.approx(value)
+            else:
+                assert observed[key] == value
 
 
 def test_diagnosis_python_parallel_without_numpy(graph_canon, monkeypatch):

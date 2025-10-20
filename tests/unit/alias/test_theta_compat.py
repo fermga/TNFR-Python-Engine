@@ -7,11 +7,14 @@ from tnfr.alias import get_theta_attr, set_theta, set_theta_attr
 from tnfr.utils import migrate_legacy_phase_attributes
 
 
-def test_get_theta_attr_rejects_legacy_key() -> None:
+def test_get_theta_attr_ignores_legacy_key() -> None:
     data = {"fase": math.pi / 3}
 
-    with pytest.raises(ValueError, match="Legacy node attribute \"fase\""):
-        get_theta_attr(data, 0.0)
+    value = get_theta_attr(data, 0.0)
+
+    assert value == 0.0
+    assert "theta" not in data
+    assert "phase" not in data
 
 
 def test_migration_restores_theta_access() -> None:

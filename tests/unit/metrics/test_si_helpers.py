@@ -1,5 +1,6 @@
-import pytest
 import math
+
+import pytest
 
 from tnfr.constants import get_aliases
 from tnfr.metrics.sense_index import compute_Si_node, get_Si_weights
@@ -33,7 +34,7 @@ def test_get_si_weights_normalization(graph_canon):
     }
 
 
-def test_get_si_weights_rejects_legacy_sensitivity(graph_canon):
+def test_get_si_weights_rejects_unknown_sensitivity_keys(graph_canon):
     G = graph_canon()
     G.graph["_Si_sensitivity"] = {
         "dSi_ddisp_fase": -0.5,
@@ -43,10 +44,10 @@ def test_get_si_weights_rejects_legacy_sensitivity(graph_canon):
     with pytest.raises(ValueError) as excinfo:
         get_Si_weights(G)
 
-    assert "dSi_ddisp_fase" in str(excinfo.value)
+    assert "unexpected key(s): dSi_ddisp_fase" in str(excinfo.value)
 
 
-def test_si_sensitivity_field_rejects_legacy_key(graph_canon):
+def test_si_sensitivity_field_rejects_unknown_key(graph_canon):
     G = graph_canon()
     G.graph["_Si_sensitivity"] = {
         "dSi_ddisp_fase": -0.25,
@@ -55,7 +56,7 @@ def test_si_sensitivity_field_rejects_legacy_key(graph_canon):
     with pytest.raises(ValueError) as excinfo:
         _si_sensitivity_field(G)
 
-    assert "dSi_ddisp_fase" in str(excinfo.value)
+    assert "unexpected key(s): dSi_ddisp_fase" in str(excinfo.value)
 
 
 def test_si_sensitivity_field_handles_new_key(graph_canon):
@@ -146,7 +147,7 @@ def test_compute_Si_node(graph_canon):
     assert get_attr(G.nodes[1], ALIAS_SI, 0.0) == pytest.approx(0.7)
 
 
-def test_compute_Si_node_legacy_keyword(graph_canon):
+def test_compute_Si_node_unknown_keyword(graph_canon):
     G = graph_canon()
     nd = {ALIAS_VF[0]: 0.5, ALIAS_DNFR[0]: 0.2}
 
@@ -163,4 +164,4 @@ def test_compute_Si_node_legacy_keyword(graph_canon):
             inplace=False,
         )
 
-    assert "disp_fase" in str(excinfo.value)
+    assert "Unexpected keyword argument(s): disp_fase" in str(excinfo.value)

@@ -185,18 +185,6 @@ class AliasAccessor(Generic[T]):
 _generic_accessor: AliasAccessor[Any] = AliasAccessor()
 
 
-_LEGACY_PHASE_ERROR = (
-    'Legacy node attribute "fase" detected. Migrate data to use "theta" or "phase".'
-)
-
-
-def _ensure_no_legacy_theta(mapping: Mapping[str, Any]) -> None:
-    """Raise a clear error when the legacy ``"fase"`` key is present."""
-
-    if "fase" in mapping:
-        raise ValueError(_LEGACY_PHASE_ERROR)
-
-
 def get_theta_attr(
     d: Mapping[str, Any],
     default: T | None = None,
@@ -205,9 +193,7 @@ def get_theta_attr(
     log_level: int | None = None,
     conv: Callable[[Any], T] = float,
 ) -> T | None:
-    """Return ``theta``/``phase`` ensuring legacy keys are rejected."""
-
-    _ensure_no_legacy_theta(d)
+    """Return ``theta``/``phase`` using the English alias set."""
     return _generic_accessor.get(
         cast(dict[str, Any], d),
         ALIAS_THETA,
@@ -337,9 +323,7 @@ set_attr_str = partial(set_attr_generic, conv=str)
 
 
 def set_theta_attr(d: MutableMapping[str, Any], value: Any) -> float:
-    """Assign ``theta``/``phase`` ensuring legacy keys are rejected."""
-
-    _ensure_no_legacy_theta(d)
+    """Assign ``theta``/``phase`` using the English attribute names."""
     result = float(value)
     d["theta"] = result
     d["phase"] = result
@@ -612,7 +596,6 @@ def _set_theta_with_compat(
     G: "networkx.Graph", n: Hashable, value: float
 ) -> AbsMaxResult | None:
     nd = cast(MutableMapping[str, Any], G.nodes[n])
-    _ensure_no_legacy_theta(nd)
     result = _set_theta_impl(G, n, value)
     theta_val = get_theta_attr(nd, value)
     if theta_val is not None:
