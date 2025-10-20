@@ -12,7 +12,7 @@ from ..types import ArgSpec
 from .utils import spec
 
 
-_PRESET_HELP = "Nombres preferidos: {}. Claves heredadas: {}.".format(
+_PRESET_HELP = "Preferred names: {}. Legacy keys: {}.".format(
     ", ".join(PREFERRED_PRESET_NAMES),
     ", ".join(LEGACY_PRESET_NAMES),
 )
@@ -46,9 +46,9 @@ COMMON_ARG_SPECS: tuple[ArgSpec, ...] = (
     spec(
         "--p",
         type=float,
-        help="Probabilidad de arista si topology=erdos",
+        help="Edge probability when topology=erdos",
     ),
-    spec("--observer", action="store_true", help="Adjunta observador estándar"),
+    spec("--observer", action="store_true", help="Attach standard observer"),
     spec("--config", type=str),
     spec("--dt", type=float),
     spec("--integrator", choices=["euler", "rk4"]),
@@ -107,7 +107,7 @@ def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
         dest="grammar_canon",
         action="store_false",
         default=True,
-        help="Desactiva gramática canónica",
+        help="Disable canonical grammar",
     )
 
 
@@ -118,7 +118,7 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
     p_run = sub.add_parser(
         "run",
         help=(
-            "Correr escenario libre o preset y opcionalmente exportar history"
+            "Run a free scenario or preset and optionally export history"
         ),
     )
     add_common_args(p_run)
@@ -134,8 +134,8 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
         type=int,
         default=DEFAULT_SUMMARY_SERIES_LIMIT,
         help=(
-            "Número máximo de muestras por serie en el resumen (<=0 para"
-            " desactivar el recorte)"
+            "Maximum number of samples per series in the summary (<=0 to"
+            " disable trimming)"
         ),
     )
     p_run.set_defaults(func=cmd_run)
@@ -147,10 +147,10 @@ def _add_sequence_parser(sub: argparse._SubParsersAction) -> None:
 
     p_seq = sub.add_parser(
         "sequence",
-        help="Ejecutar una secuencia (preset o YAML/JSON)",
+        help="Execute a sequence (preset or YAML/JSON)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
-            "Ejemplo de secuencia JSON:\n"
+            "JSON sequence example:\n"
             "[\n"
             '  "A",\n'
             '  {"WAIT": 1},\n'
@@ -171,7 +171,7 @@ def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
     from .execution import cmd_metrics
 
     p_met = sub.add_parser(
-        "metrics", help="Correr breve y volcar métricas clave"
+        "metrics", help="Run briefly and export key metrics"
     )
     add_common_args(p_met)
     p_met.add_argument("--steps", type=int, default=None)
@@ -183,8 +183,8 @@ def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
         type=int,
         default=None,
         help=(
-            "Número máximo de muestras por serie en el resumen (<=0 para"
-            " desactivar el recorte)"
+            "Maximum number of samples per series in the summary (<=0 to"
+            " disable trimming)"
         ),
     )
     p_met.set_defaults(func=cmd_metrics)

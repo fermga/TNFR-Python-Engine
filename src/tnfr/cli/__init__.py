@@ -61,8 +61,8 @@ def main(argv: Optional[list[str]] = None) -> int:
         prog="tnfr",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
-            "Ejemplo: tnfr sequence --sequence-file secuencia.json\n"
-            "secuencia.json:\n"
+            "Example: tnfr sequence --sequence-file sequence.json\n"
+            "sequence.json:\n"
             '[\n  {"WAIT": 1},\n  {"TARGET": "A"}\n]'
         ),
     )
@@ -70,7 +70,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         "--version",
         action="store_true",
         help=(
-            "muestra versión real y sale (lee pyproject.toml en desarrollo)"
+            "show the actual version and exit (reads pyproject.toml in development)"
         ),
     )
     sub = p.add_subparsers(dest="cmd")
