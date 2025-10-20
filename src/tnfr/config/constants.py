@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import math
-import warnings
 from types import MappingProxyType
 from typing import Mapping
 
@@ -103,29 +102,3 @@ __all__ = (
     "GLYPH_GROUPS",
     "ANGLE_MAP",
 )
-
-
-def __getattr__(name: str) -> object:
-    """Provide guidance for removed Spanish glyph aliases."""
-
-    legacy_aliases = {
-        "ESTABILIZADORES": "STABILIZERS",
-        "DISRUPTIVOS": "DISRUPTORS",
-    }
-    try:
-        replacement = legacy_aliases[name]
-    except KeyError as exc:  # pragma: no cover - mirrors default behaviour
-        raise AttributeError(f"module {__name__!r} has no attribute {name!r}") from exc
-
-    warnings.warn(
-        (
-            "Spanish glyph alias '%s' was removed from tnfr.config.constants; "
-            "import '%s' instead. This compatibility warning will be removed in TNFR 8.0."
-        )
-        % (name.lower(), replacement),
-        FutureWarning,
-        stacklevel=2,
-    )
-    raise AttributeError(
-        f"Spanish glyph alias '{name}' was removed; use '{replacement}' instead."
-    )

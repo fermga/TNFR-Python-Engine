@@ -59,27 +59,6 @@ def operator_display_name(name: str) -> str:
     return canonical_operator_name(name)
 
 
-def __getattr__(name: str):
-    """Reject requests for removed Spanish aliases with a clear error."""
-
-    removed_aliases = {
-        "INICIO_VALIDOS": "VALID_START_OPERATORS",
-        "TRAMO_INTERMEDIO": "INTERMEDIATE_OPERATORS",
-        "CIERRE_VALIDO": "VALID_END_OPERATORS",
-        "AUTOORGANIZACION_CIERRES": "SELF_ORGANIZATION_CLOSURES",
-    }
-    if name in removed_aliases:
-        raise AttributeError(
-            (
-                "Spanish operator alias '{name}' has been removed. "
-                "Use the English '{replacement}' constant instead."
-            ).format(name=name, replacement=removed_aliases[name])
-        )
-    raise AttributeError(
-        f"module {__name__!r} has no attribute {name!r}"
-    )
-
-
 __all__ = [
     "EMISSION",
     "RECEPTION",

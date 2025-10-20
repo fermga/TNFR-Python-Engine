@@ -9,7 +9,7 @@ from tnfr.constants import (
 from tnfr.initialization import init_node_attrs
 from tnfr.utils import run_validators
 from tnfr.alias import set_attr, set_attr_str
-from tnfr.io import read_structured_file, StructuredFileError
+from tnfr import io as io_mod
 from tnfr.config import load_config
 
 ALIAS_EPI_KIND = get_aliases("EPI_KIND")
@@ -96,7 +96,7 @@ def test_validator_valid_glyph():
 def test_read_structured_file_json(tmp_path):
     path = tmp_path / "cfg.json"
     path.write_text('{"x": 1}', encoding="utf-8")
-    data = read_structured_file(path)
+    data = io_mod.read_structured_file(path)
     assert data == {"x": 1}
 
 
@@ -104,15 +104,15 @@ def test_read_structured_file_json(tmp_path):
 def test_read_structured_file_toml(tmp_path):
     path = tmp_path / "cfg.toml"
     path.write_text("x = 1", encoding="utf-8")
-    data = read_structured_file(path)
+    data = io_mod.read_structured_file(path)
     assert data == {"x": 1}
 
 
 def test_read_structured_file_invalid_extension(tmp_path):
     path = tmp_path / "cfg.txt"
     path.write_text("{}", encoding="utf-8")
-    with pytest.raises(StructuredFileError):
-        read_structured_file(path)
+    with pytest.raises(io_mod.StructuredFileError):
+        io_mod.read_structured_file(path)
 
 
 def test_load_config_json(tmp_path):

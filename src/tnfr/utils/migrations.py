@@ -1,4 +1,4 @@
-"""Utilities for migrating legacy payloads to the English-only contract.
+"""Compatibility helpers for migrating legacy payloads to the English-only contract.
 
 .. important::
 
@@ -6,6 +6,9 @@
     :func:`migrate_legacy_remesh_cooldown` prior to upgrading. The runtime no
     longer inspects ``"REMESH_COOLDOWN_VENTANA"`` and will ignore the legacy
     value unless the migration has been executed.
+
+These helpers exist solely for archival upgrades and will be removed in
+``tnfr`` 15.0.0 once the Spanish payload migration window closes.
 """
 
 from __future__ import annotations

@@ -31,20 +31,26 @@ ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_SI = get_aliases("SI")
 
 PHASE_DISPERSION_KEY = "dSi_dphase_disp"
-LEGACY_PHASE_DISPERSION_KEY = "dSi_ddisp_fase"
+_VALID_SENSITIVITY_KEYS = frozenset(
+    {"dSi_dvf_norm", PHASE_DISPERSION_KEY, "dSi_ddnfr_norm"}
+)
 __all__ = ("get_Si_weights", "compute_Si_node", "compute_Si")
 
 
 def _normalise_si_sensitivity_mapping(
     mapping: Mapping[str, float], *, warn: bool
 ) -> dict[str, float]:
-    """Return a mapping that only exposes the English Si sensitivity keys."""
+    """Return a mapping containing only supported Si sensitivity keys."""
 
     normalised = dict(mapping)
-    if LEGACY_PHASE_DISPERSION_KEY in normalised:
+    _ = warn  # kept for API compatibility with trace helpers
+    unexpected = sorted(k for k in normalised if k not in _VALID_SENSITIVITY_KEYS)
+    if unexpected:
+        allowed = ", ".join(sorted(_VALID_SENSITIVITY_KEYS))
+        received = ", ".join(unexpected)
         raise ValueError(
-            "Si sensitivity mappings must use the English 'dSi_dphase_disp' key; "
-            "found legacy 'dSi_ddisp_fase'."
+            "Si sensitivity mappings accept only {%s}; unexpected key(s): %s"
+            % (allowed, received)
         )
     return normalised
 
@@ -98,12 +104,6 @@ def compute_Si_node(
     **kwargs: Any,
 ) -> float:
     """Compute ``Si`` for a single node."""
-
-    if "disp_fase" in kwargs:
-        raise TypeError(
-            "'disp_fase' is no longer supported; use the English 'phase_dispersion' "
-            "keyword."
-        )
 
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))

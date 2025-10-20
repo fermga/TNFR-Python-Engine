@@ -1,5 +1,22 @@
 # Release notes
 
+## 14.0.0 (Spanish compatibility messaging retired)
+
+- Finalised the English-only surface by removing Spanish-specific guidance from
+  :mod:`tnfr.alias`, :mod:`tnfr.metrics.sense_index`, and the operator registry
+  modules. Alias helpers now ignore untranslated payloads instead of raising
+  bespoke errors and the sense index validates sensitivity mappings using
+  generic key checks.
+- Dropped the compatibility accessors in
+  :mod:`tnfr.config.constants`, :mod:`tnfr.config.operator_names`, and
+  :mod:`tnfr.operators.registry`. Accessing retired identifiers now surfaces the
+  standard :class:`AttributeError` without custom wording.
+- Documented the retirement timeline for
+  :mod:`tnfr.utils.migrations`, which remains available for archival upgrades
+  until ``tnfr`` 15.0.0 completes the migration window.
+- Updated guides and release notes to describe the final English-only contract
+  and the requirement to normalise archives with the compatibility helpers.
+
 ## 13.1.0 (preset legacy tuple removed)
 
 - **Breaking change**: Removed the exported

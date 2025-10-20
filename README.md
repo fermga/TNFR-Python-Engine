@@ -47,9 +47,8 @@ walkthroughs plus optional dependency caching helpers.
 
 - **Si dispersion keys:** Replace any remaining ``dSi_ddisp_fase`` entries in graph payloads
   or configuration files with the English ``dSi_dphase_disp`` key before upgrading. The
-  runtime now raises :class:`ValueError` when the legacy attribute is encountered and
-  rejects the Spanish ``disp_fase`` keyword argument in
-  :func:`tnfr.metrics.sense_index.compute_Si_node`.
+  runtime now raises :class:`ValueError` listing any unexpected sensitivity keys, and
+  :func:`tnfr.metrics.sense_index.compute_Si_node` rejects unknown keyword arguments.
 - Refer to the [release notes](docs/releases.md#1100-si-dispersion-legacy-keys-removed) for
   a migration snippet that rewrites stored graphs in place prior to running the new version.
 

@@ -101,7 +101,7 @@ ATTR_SPECS: dict[str, AttrSpec] = {
     "vf": AttrSpec(aliases=ALIAS_VF, setter=set_vf, use_graph_setter=True),
     "theta": AttrSpec(
         aliases=ALIAS_THETA,
-        getter=get_theta_attr,
+        getter=lambda mapping, _aliases, default: get_theta_attr(mapping, default),
         setter=set_theta,
         use_graph_setter=True,
     ),
