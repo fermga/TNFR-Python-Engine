@@ -1,5 +1,42 @@
 # Release notes
 
+## 12.0.0 (diagnosis state Spanish shim removed)
+
+- Removed the :func:`tnfr.constants.enable_spanish_state_tokens` and
+  :func:`tnfr.constants.disable_spanish_state_tokens` compatibility helpers along
+  with the ``TNFR_ENABLE_SPANISH_STATE_TOKENS`` environment flag. The diagnosis
+  pipeline now rejects legacy Spanish literals instead of silently rewriting
+  them at runtime.
+- :func:`tnfr.constants.normalise_state_token` accepts only the canonical English
+  tokens (``"stable"``, ``"transition"``, ``"dissonant"``) and raises
+  :class:`ValueError` when historical payloads still carry Spanish values. The
+  stricter contract propagates to
+  :mod:`tnfr.metrics.diagnosis`, :mod:`tnfr.dynamics`, and
+  :mod:`tnfr.glyph_history`, allowing integrations to surface explicit
+  migrations instead of implicit rewrites.
+- **Breaking change migration guidance**: run a preprocessing pass that rewrites
+  stored states before upgrading, for example::
+
+      SPANISH_STATE_TOKEN_MAP = {
+          "estable": "stable",
+          "transicion": "transition",
+          "transición": "transition",
+          "disonante": "dissonant",
+      }
+
+      def upgrade_state_token(value: str) -> str:
+          token = value.strip().lower()
+          if token in SPANISH_STATE_TOKEN_MAP:
+              return SPANISH_STATE_TOKEN_MAP[token]
+          if token in {"stable", "transition", "dissonant"}:
+              return token
+          raise ValueError(f"Unsupported diagnosis state: {value!r}")
+
+      payload["state"] = upgrade_state_token(payload["state"])
+
+  Persist the rewritten payloads before installing **TNFR 12.0.0** to avoid the
+  new ``ValueError`` exceptions when loading historical archives.
+
 ## 11.2.0 (operator collections English-only)
 
 - Removed the Spanish compatibility aliases from
