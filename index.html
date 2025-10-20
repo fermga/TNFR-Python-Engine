@@ -3,36 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TNFR Python Engine · Investigación y Simulación Científica</title>
+  <title>TNFR Python Engine · Teoría y Motor</title>
   <style>
     :root {
-      color-scheme: light dark;
+      color-scheme: dark;
       font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-      --bg: #0c1021;
-      --bg-soft: rgba(17, 21, 42, 0.78);
-      --bg-card: rgba(21, 26, 52, 0.72);
-      --fg: #f3f5ff;
-      --muted: rgba(229, 233, 255, 0.72);
-      --accent: #66d9ef;
-      --accent-strong: #a29bfe;
-      --border: rgba(102, 217, 239, 0.22);
-      --shadow: 0 32px 64px rgba(4, 6, 14, 0.55);
-      --radius-lg: 32px;
+      --bg: #05060d;
+      --bg-soft: rgba(9, 12, 26, 0.92);
+      --panel: rgba(15, 20, 44, 0.92);
+      --accent: #5ad8ff;
+      --accent-strong: #6f6bff;
+      --fg: #eef3ff;
+      --muted: rgba(214, 224, 255, 0.72);
+      --border: rgba(90, 216, 255, 0.14);
+      --radius-lg: 28px;
       --radius-md: 20px;
-      --radius-sm: 14px;
-    }
-    @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #f5f8ff;
-        --bg-soft: rgba(255, 255, 255, 0.85);
-        --bg-card: rgba(255, 255, 255, 0.94);
-        --fg: #0c1431;
-        --muted: rgba(15, 22, 46, 0.68);
-        --accent: #2f5df6;
-        --accent-strong: #7a3fb8;
-        --border: rgba(22, 28, 58, 0.12);
-        --shadow: 0 24px 54px rgba(30, 45, 108, 0.22);
-      }
+      --shadow: 0 36px 80px rgba(0, 0, 0, 0.55);
     }
 
     * {
@@ -41,19 +27,21 @@
 
     body {
       margin: 0;
-      background: radial-gradient(circle at 5% -10%, rgba(102, 217, 239, 0.22), transparent 45%),
-        radial-gradient(circle at 95% 15%, rgba(162, 155, 254, 0.35), transparent 45%), var(--bg);
+      background: radial-gradient(circle at 12% -10%, rgba(90, 216, 255, 0.16), transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(111, 107, 255, 0.18), transparent 42%),
+        linear-gradient(180deg, #04050b 0%, #02030a 100%);
       color: var(--fg);
-      line-height: 1.7;
       min-height: 100vh;
+      line-height: 1.6;
+      letter-spacing: 0.01em;
     }
 
     header {
-      padding: 4.5rem 1.5rem 4rem;
+      padding: clamp(2.5rem, 5vw, 3.25rem) clamp(1.5rem, 6vw, 3rem);
     }
 
     .frame {
-      max-width: 1180px;
+      max-width: 1080px;
       margin: 0 auto;
     }
 
@@ -61,252 +49,126 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 3rem;
       gap: 1.5rem;
     }
 
     .brand {
       font-weight: 700;
-      font-size: 1.15rem;
-      letter-spacing: 0.12em;
       text-transform: uppercase;
+      letter-spacing: 0.14em;
       color: var(--accent);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.25rem;
-      flex-wrap: wrap;
-    }
-
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
       font-size: 0.98rem;
-      font-weight: 500;
-      position: relative;
     }
 
-    .nav-links a::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: -0.25rem;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-strong));
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 220ms ease;
-      opacity: 0.8;
+    .tagline {
+      margin: 0;
+      font-size: clamp(2.4rem, 5vw, 3.2rem);
+      font-weight: 600;
     }
 
-    .nav-links a:hover::after,
-    .nav-links a:focus-visible::after {
-      transform: scaleX(1);
+    .lead {
+      margin-top: 1.1rem;
+      max-width: 620px;
+      color: var(--muted);
     }
 
     .hero {
-      display: grid;
-      gap: 2.5rem;
-      align-items: center;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      margin-top: clamp(2.5rem, 6vw, 4rem);
       background: var(--bg-soft);
-      border-radius: var(--radius-lg);
       border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
       padding: clamp(2.5rem, 6vw, 4rem);
       box-shadow: var(--shadow);
       position: relative;
       overflow: hidden;
+      display: grid;
+      gap: 2.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     }
 
-    .hero::before {
+    .hero::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 20% 20%, rgba(102, 217, 239, 0.22), transparent 45%),
-        radial-gradient(circle at 80% 30%, rgba(162, 155, 254, 0.28), transparent 45%);
+      background: radial-gradient(circle at 25% 25%, rgba(90, 216, 255, 0.25), transparent 55%),
+        radial-gradient(circle at 80% 40%, rgba(111, 107, 255, 0.22), transparent 55%);
       mix-blend-mode: screen;
       pointer-events: none;
     }
 
-    .hero-content h1 {
-      margin: 0;
-      font-size: clamp(2.4rem, 5vw, 3.4rem);
-      letter-spacing: -0.01em;
-    }
-
-    .hero-content p {
-      margin-top: 1.2rem;
-      font-size: 1.08rem;
-      color: var(--muted);
-    }
-
-    .hero-actions {
-      margin-top: 2rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.75rem 1.35rem;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
-    }
-
-    .btn.primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-      color: #061018;
-      box-shadow: 0 18px 36px rgba(102, 217, 239, 0.3);
-    }
-
-    .btn.secondary {
-      background: rgba(102, 217, 239, 0.08);
-      color: var(--accent);
-      border: 1px solid rgba(102, 217, 239, 0.35);
-    }
-
-    .btn:hover,
-    .btn:focus-visible {
-      transform: translateY(-2px);
-      box-shadow: 0 24px 44px rgba(102, 217, 239, 0.4);
+    .hero > * {
+      position: relative;
+      z-index: 1;
     }
 
     .hero-visual {
-      text-align: center;
-      position: relative;
+      justify-self: center;
     }
 
     .hero-visual figure {
       margin: 0;
       padding: 1.5rem;
-      background: rgba(6, 13, 33, 0.65);
+      background: rgba(6, 9, 22, 0.78);
       border-radius: var(--radius-md);
-      border: 1px solid rgba(102, 217, 239, 0.22);
+      border: 1px solid rgba(90, 216, 255, 0.22);
       box-shadow: var(--shadow);
     }
 
     .hero-visual img {
-      max-width: 100%;
-      border-radius: var(--radius-sm);
-    }
-
-    main {
-      padding: 2.5rem 1.5rem 4rem;
+      width: min(320px, 100%);
+      border-radius: 16px;
+      filter: saturate(120%);
     }
 
     section {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: clamp(2.5rem, 5vw, 3.2rem);
-      background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-      margin-top: clamp(2rem, 5vw, 3rem);
+      padding: 0 clamp(1.5rem, 6vw, 3rem) clamp(3rem, 6vw, 4rem);
     }
 
-    h2 {
-      margin: 0;
-      font-size: clamp(1.8rem, 3.5vw, 2.3rem);
-      letter-spacing: -0.01em;
-    }
-
-    h3 {
-      margin-top: 2rem;
-      margin-bottom: 0.75rem;
-      font-size: 1.3rem;
-    }
-
-    p, li {
-      font-size: 1.02rem;
-    }
-
-    ul, ol {
-      padding-left: 1.3rem;
-    }
-
-    .grid {
+    .cards {
       display: grid;
       gap: 1.8rem;
-    }
-
-    @media (min-width: 768px) {
-      .grid.two {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .grid.three {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      margin-top: 2.4rem;
     }
 
     .card {
-      background: rgba(6, 13, 33, 0.55);
+      background: var(--panel);
+      border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      border: 1px solid rgba(102, 217, 239, 0.18);
       padding: 1.8rem;
-      box-shadow: inset 0 0 0 1px rgba(102, 217, 239, 0.05);
+      box-shadow: var(--shadow);
+      position: relative;
     }
 
     .card h3 {
-      margin-top: 0;
+      margin: 0 0 0.85rem;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
     }
 
-    code, pre {
-      font-family: "JetBrains Mono", "Fira Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    .card p,
+    .card ul {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
     }
 
-    pre {
-      background: rgba(6, 13, 33, 0.75);
-      border-radius: var(--radius-md);
-      padding: 1.4rem;
-      border: 1px solid rgba(102, 217, 239, 0.2);
-      overflow-x: auto;
+    .card ul {
+      list-style: none;
+      padding: 0;
     }
 
-    .metrics {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      border-radius: 999px;
-      padding: 0.45rem 1rem;
-      background: rgba(102, 217, 239, 0.12);
-      border: 1px solid rgba(102, 217, 239, 0.35);
-      font-size: 0.92rem;
-      letter-spacing: 0.02em;
-      color: var(--accent);
+    .card li + li {
+      margin-top: 0.55rem;
     }
 
     footer {
-      padding: 3rem 1.5rem 4rem;
-      color: var(--muted);
-    }
-
-    footer .frame {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      align-items: flex-start;
-    }
-
-    footer a {
-      color: var(--accent);
-      text-decoration: none;
+      border-top: 1px solid rgba(90, 216, 255, 0.12);
+      padding: 2.5rem clamp(1.5rem, 6vw, 3rem) 3rem;
+      color: rgba(214, 224, 255, 0.58);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
   </style>
 </head>
@@ -315,22 +177,13 @@
     <div class="frame">
       <nav>
         <span class="brand">TNFR · Python Engine</span>
-        <div class="nav-links">
-          <a href="#vision">Visión</a>
-          <a href="#innovaciones">Innovaciones</a>
-          <a href="#arquitectura">Arquitectura</a>
-          <a href="#paquete">Paquete Python</a>
-          <a href="#investigacion">Investigación</a>
-        </div>
+        <span class="brand" style="opacity: 0.6">Teoría · Resonancia · Simulación</span>
       </nav>
-
       <div class="hero">
-        <div class="hero-content">
-          <h1>Resonancia Trans-Nodal con precisión reproducible</h1>
-          <p>
-            El motor TNFR redefine la simulación de coherencia en redes complejas. Ofrece un marco científico verificable para
-            experimentar con nodos resonantes, invariantes estructurales y telemetría reproducible, listo para integrarse en
-            pipelines de análisis avanzados y laboratorios de investigación.
+        <div>
+          <h1 class="tagline">La teoría TNFR, condensada.</h1>
+          <p class="lead">
+            TNFR explora patrones de resonancia no lineal para describir cómo sistemas complejos se auto-organizan en dominios cuánticos y macroscópicos. Este repositorio es el motor experimental en Python que convierte esas hipótesis en simulaciones reproducibles.
           </p>
           <div class="hero-actions">
             <a class="btn primary" href="#paquete">Instalar el paquete</a>
@@ -349,163 +202,46 @@
             <figcaption>Red TNFR con acoples coherentes y trazabilidad completa.</figcaption>
           </figure>
         </div>
+        <div class="hero-visual">
+          <figure>
+            <img src="img/network.png" alt="Red TNFR" />
+          </figure>
+        </div>
       </div>
     </div>
   </header>
 
-  <main>
-    <section id="vision">
-      <h2>Una plataforma científica para estudiar la coherencia multiescala</h2>
-      <p>
-        TNFR (Trans-Nodal Field Resonance) ofrece un lenguaje formal para describir, simular y validar sistemas complejos que
-        dependen de la resonancia estructural. Cada nodo mantiene sus propios parámetros —EPI, ΔNFR, νf, fase y sentido— con
-        registro determinista de operadores, lo que permite experimentos auditables y comparables entre equipos de
-        investigación.
-      </p>
-      <p>
-        El proyecto combina una ontología rigurosa con un motor de ejecución preparado para estudios científicos: trazas
-        reproducibles, telemetría estandarizada y herramientas de análisis diseñadas para detectar bifurcaciones, colapsos y
-        reorganizaciones sin perder el control de fase ni la coherencia global.
-      </p>
-    </section>
-
-    <section id="innovaciones">
-      <h2>Innovaciones recientes</h2>
-      <div class="grid three">
-        <div class="card">
-          <h3>Secuenciador canonizado</h3>
-          <p>
-            El nuevo integrador respeta la gramática de 13 operadores TNFR, mantiene el historial por nodo y ofrece control de
-            umbrales para nacimiento y colapso. Las secuencias se pueden componer dinámicamente sin abandonar la clausura
-            operativa.
-          </p>
-        </div>
-        <div class="card">
-          <h3>Telemetría enriquecida</h3>
-          <p>
-            ΔNFR, Si y C(t) se exponen con promedios, desviaciones y trazas temporales exportables. Los registros incluyen la
-            fase instantánea y νf para reconstruir sincronías o detectar disonancias.</p>
-        </div>
-        <div class="card">
-          <h3>CLI de experimentación</h3>
-          <p>
-            Los comandos <code>tnfr</code> permiten ejecutar secuencias, lotes y validaciones automatizadas asegurando que
-            cada experimento queda documentado con semillas, operadores y métricas estándar.
-          </p>
-        </div>
-        <div class="card">
-          <h3>Importación compartida</h3>
-          <p>
-            El subsistema <code>tnfr.cached_import</code> añade caché segura con bloqueo estructurado para trabajar con
-            módulos pesados sin bloquear la simulación ni perder coherencia global.</p>
-        </div>
-        <div class="card">
-          <h3>Monitor de coherencia</h3>
-          <p>
-            Las nuevas utilidades de instrumentación analizan puntos de bifurcación, latencia en la reorganización y
-            alineamientos de fase, facilitando dashboards científicos o pipelines de observabilidad.</p>
-        </div>
-        <div class="card">
-          <h3>Documentación integrada</h3>
-          <p>
-            El repositorio incluye guías metodológicas, notas de experimentación y un compendio de condiciones canónicas que
-            garantizan interoperabilidad entre laboratorios.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="arquitectura">
-      <h2>Arquitectura y metodología</h2>
-      <div class="grid two">
-        <div>
-          <h3>Identidad nodal</h3>
-          <p>
-            Cada nodo se representa con su EPI, ΔNFR, νf, fase φ y sentido Si. Los operadores solo modifican estos parámetros
-            siguiendo reglas explícitas, asegurando trazabilidad y comparabilidad entre experimentos.
-          </p>
-          <h3>Operadores estructurales</h3>
-          <p>
-            La gramática TNFR se compone de 13 operadores (Emisión, Recepción, Coherencia, Disonancia, Acople, Resonancia,
-            Silencio, Expansión, Contracción, Autoorganización, Mutación, Transición y Recursividad). Su composición mantiene
-            la clausura estructural y permite estudiar redes multi-capa.
-          </p>
-        </div>
-        <div>
-          <h3>Invariantes científicos</h3>
+  <section>
+    <div class="frame">
+      <div class="cards">
+        <article class="card">
+          <h3>Teoría en tres pulsos</h3>
           <ul>
-            <li>EPI se transforma únicamente mediante operadores; no hay mutaciones ad-hoc.</li>
-            <li>Cada acople exige verificación de fase explícita.</li>
-            <li>Las EPIs anidadas conservan identidad y trazabilidad (fractalidad operacional).</li>
-            <li>Las simulaciones admiten ruido controlado pero deben ser reproducibles mediante semillas y registros.</li>
+            <li>Campo tensorial neutro que vincula nodos resonantes sin contacto directo.</li>
+            <li>Escalas acopladas: las métricas locales afectan la estabilidad global de la red.</li>
+            <li>Predicción de ventanas caóticas donde emergen patrones coherentes observables.</li>
           </ul>
+        </article>
+        <article class="card">
+          <h3>Qué ofrece el repositorio</h3>
+          <ul>
+            <li>Módulos para generar mallas TNFR y resolver su dinámica temporal.</li>
+            <li>Herramientas de calibración con datos experimentales y registros sintéticos.</li>
+            <li>Scripts de visualización para examinar resonancias, espectros y energía distribuida.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Cómo empezar</h3>
           <p>
-            Estas condiciones permiten auditar los experimentos y comparar resultados entre proyectos sin perder rigor.
+            Clona el proyecto, instala las dependencias de <code>requirements.txt</code> y ejecuta los cuadernos de ejemplo para observar la transición entre fase estable y región caótica.
           </p>
-        </div>
+        </article>
       </div>
-    </section>
-
-    <section id="paquete">
-      <h2>Paquete <code>tnfr</code> para Python</h2>
-      <p>
-        El paquete oficial está disponible en PyPI para Python 3.9+. Incluye utilidades para crear nodos, ejecutar secuencias
-        canonizadas, medir la evolución de la coherencia y exportar trazas para análisis reproducibles.
-      </p>
-      <div class="grid two">
-        <div class="card">
-          <h3>Instalación</h3>
-          <pre><code>pip install tnfr
-pip install "tnfr[numpy,yaml,orjson]"  # extras para cómputo vectorizado y serialización</code></pre>
-          <p>
-            El paquete detecta automáticamente las extensiones disponibles y activa mejoras de rendimiento cuando se instalan
-            los extras recomendados.
-          </p>
-        </div>
-        <div class="card">
-          <h3>Flujo mínimo</h3>
-          <pre><code>from tnfr import create_nfr, run_sequence
-from tnfr.structural import Emision, Recepcion, Coherencia, Resonancia, Silencio
-from tnfr.metrics.common import compute_coherence
-from tnfr.metrics.sense_index import compute_Si
-
-G, node = create_nfr("A", epi=0.2, vf=1.0, theta=0.0)
-ops = [Emision(), Recepcion(), Coherencia(), Resonancia(), Silencio()]
-run_sequence(G, node, ops)
-
-C, delta_nfr, delta_epi = compute_coherence(G, return_means=True)
-si_map = compute_Si(G)
-print(f"C(t)={C:.3f}, ΔNFR={delta_nfr:.3f}, dEPI/dt={delta_epi:.3f}, Si={si_map[node]:.3f}")</code></pre>
-          <p>
-            El motor recalcula ΔNFR y fase tras cada operador, manteniendo los invariantes y almacenando el historial para
-            auditorías posteriores.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section id="investigacion">
-      <h2>Agenda de investigación y experimentación</h2>
-      <ol>
-        <li>Revisar el documento <strong>TNFR.pdf</strong> para comprender los fundamentos teóricos.</li>
-        <li>Explorar los ejemplos y notas metodológicas en <code>documentation.txt</code> y en el repositorio público.</li>
-        <li>Ejecutar <code>./scripts/run_tests.sh</code> antes de publicar resultados para validar contratos y reproducibilidad.</li>
-        <li>Monitorizar C(t), ΔNFR, Si, fase y νf durante los experimentos para interpretar reorganizaciones y bifurcaciones.</li>
-      </ol>
-      <p>
-        TNFR se aplica a redes biológicas, sociales y tecnológicas. Su formalismo garantiza que los hallazgos se puedan
-        replicar, auditar y extender sin perder el control sobre la coherencia multi-escala.
-      </p>
-    </section>
-  </main>
+    </div>
+  </section>
 
   <footer>
-    <div class="frame">
-      <p>
-        © TNFR Python Engine. Desarrollado para comunidades científicas que requieren simulaciones reproducibles y trazables.
-      </p>
-      <p>Contribuye al proyecto siguiendo las directrices en <code>AGENTS.md</code> y las guías de contribución oficiales.</p>
-      <a href="#top">Volver al inicio</a>
-    </div>
+    <div class="frame">TNFR Python Engine · Laboratorio de Resonancias Fractales</div>
   </footer>
 </body>
 </html>
