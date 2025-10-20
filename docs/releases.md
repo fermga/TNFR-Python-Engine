@@ -1,13 +1,21 @@
 # Release notes
 
+## 13.0.0 (selector norms alias removed)
+
+- **Breaking change**: Removed the deprecated
+  :func:`tnfr.selector._norms_para_selector` alias. Callers must import and use
+  :func:`tnfr.selector._selector_norms` directly to fetch ΔNFR and acceleration
+  maxima.
+- Updated selector utilities documentation and tests to reference only the
+  English helper so downstream projects surface the rename during upgrades.
+
 ## 12.1.0 (selector norms helper renamed)
 
-- Renamed :func:`tnfr.selector._norms_para_selector` to the English
-  :func:`tnfr.selector._selector_norms` helper to align selector internals with
-  the ongoing terminology migration.
-- Added a temporary :func:`tnfr.selector._norms_para_selector` compatibility
-  wrapper that emits :class:`DeprecationWarning` so downstream integrations can
-  migrate before the legacy identifier is removed.
+- Renamed the selector norms helper to the English-only
+  :func:`tnfr.selector._selector_norms` identifier to align selector internals
+  with the ongoing terminology migration.
+- Added a temporary compatibility shim for the legacy Spanish helper name that
+  emitted :class:`DeprecationWarning` ahead of its removal in version 13.0.0.
 - Updated :mod:`tnfr.dynamics` and the selector unit tests to consume the new
   helper, keeping the cached norms behaviour unchanged.
 
