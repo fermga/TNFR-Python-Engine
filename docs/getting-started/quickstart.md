@@ -120,10 +120,8 @@ sequence file matching the Emission → Reception → Coherence → Resonance �
 ]
 ```
 
-> Legacy Spanish tokens (``"emision"``, ``"recepcion"``, …) are still accepted
-> by the parser but now emit :class:`DeprecationWarning` and will be removed in a
-> future release. Migrate automation scripts to the English identifiers to stay
-> within the supported contract.
+Starting with **TNFR 2.0** the CLI accepts **only** the English operator tokens.
+Rewrite existing automation to match the canonical identifiers before upgrading.
 
 Run the sequence on a single node and persist telemetry to `history.json`:
 
@@ -131,13 +129,13 @@ Run the sequence on a single node and persist telemetry to `history.json`:
 tnfr sequence --nodes 1 --sequence-file sequence.json --save-history history.json
 ```
 
-| Canonical token | English operator name |
-| --------------- | --------------------- |
-| `emision`       | Emission              |
-| `recepcion`     | Reception             |
-| `coherencia`    | Coherence             |
-| `resonancia`    | Resonance             |
-| `silencio`      | Silence               |
+| Canonical token | Operator role        |
+| --------------- | -------------------- |
+| `emission`      | Initiates resonance  |
+| `reception`     | Captures information |
+| `coherence`     | Stabilises the form  |
+| `resonance`     | Propagates coherence |
+| `silence`       | Freezes evolution    |
 
 The command updates νf, ΔNFR, and phase using the same hooks as the Python API. Inspect the
 saved history for the series of C(t), mean ΔNFR, and Si.
@@ -146,15 +144,12 @@ saved history for the series of C(t), mean ΔNFR, and Si.
 
 Use the English preset identifiers when invoking `--preset` from the CLI:
 
-| Preferred name         | Legacy alias             |
-| ---------------------- | ------------------------ |
-| `resonant_bootstrap`   | `arranque_resonante`     |
-| `contained_mutation`   | `mutacion_contenida`     |
-| `coupling_exploration` | `exploracion_acople`     |
-| `canonical_example`    | `ejemplo_canonico`       |
-
-The legacy Spanish aliases remain available for backward compatibility throughout the 1.x
-series, but scripts and documentation should migrate to the English identifiers.
+| Preset identifier     | Description (summary)      |
+| --------------------- | -------------------------- |
+| `resonant_bootstrap`  | Balanced start-up profile  |
+| `contained_mutation`  | Mutation with guard rails  |
+| `coupling_exploration` | Coupling sweep for studies |
+| `canonical_example`   | Minimal tutorial sequence  |
 
 ## Next steps
 

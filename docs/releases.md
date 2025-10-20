@@ -9,6 +9,8 @@
   previously emitted :class:`DeprecationWarning`. All structural orchestration
   must now import the English operator classes from
   :mod:`tnfr.operators.definitions` or :mod:`tnfr.structural`.
+- Trimmed Spanish re-exports from :mod:`tnfr.structural` and its typing stubs so
+  only the English operator classes remain in the public ``__all__``.
 - Impacted entry points:
   * Stored operator sequences (YAML/JSON fixtures, CLI configs) must be rewritten
     to use the English identifiers.
@@ -16,11 +18,16 @@
     :func:`tnfr.validation.syntax.validate_sequence`, and
     :func:`tnfr.operators.registry.get_operator_class` will now reject Spanish
     tokens.
+  * Import sites that referenced ``tnfr.operators.compat`` or the Spanish class
+    names exported from :mod:`tnfr.structural` must update their imports to the
+    English equivalents.
   * Diagnostics relying on ``TRANSICION`` should switch to the English
     ``TRANSITION`` constant from :mod:`tnfr.config.operator_names`.
 - Versioning and communication plan:
   * Publish this change as **TNFR 2.0.0** and note the breaking removal in the
     release announcement.
+  * No transition shims remain—migrating to the English tokens is mandatory
+    before adopting 2.0.
   * Ship an upgrade checklist highlighting the required token substitutions and
     the removal of ``tnfr.operators.compat``.
   * Update API docs, tutorials, and CLI references to show only English tokens.
