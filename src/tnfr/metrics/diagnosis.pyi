@@ -14,7 +14,7 @@ Iterable: Any
 ProcessPoolExecutor: Any
 StatisticsError: Any
 TNFRGraph: Any
-TRANSICION: Any
+TRANSITION: Any
 VF_KEY: Any
 annotations: Any
 append_metric: Any

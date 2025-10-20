@@ -2,6 +2,7 @@ from typing import Any, ClassVar
 
 from ..types import Glyph, TNFRGraph
 
+
 class Operator:
     name: ClassVar[str]
     glyph: ClassVar[Glyph | None]
@@ -72,55 +73,3 @@ class Transition(Operator):
 class Recursivity(Operator):
     name: ClassVar[str]
     glyph: ClassVar[Glyph]
-
-
-class Operador(Operator):
-    legacy_name: ClassVar[str]
-
-
-class Emision(Emission):
-    legacy_name: ClassVar[str]
-
-
-class Recepcion(Reception):
-    legacy_name: ClassVar[str]
-
-
-class Coherencia(Coherence):
-    legacy_name: ClassVar[str]
-
-
-class Disonancia(Dissonance):
-    legacy_name: ClassVar[str]
-
-
-class Acoplamiento(Coupling):
-    legacy_name: ClassVar[str]
-
-
-class Resonancia(Resonance):
-    legacy_name: ClassVar[str]
-
-
-class Silencio(Silence):
-    legacy_name: ClassVar[str]
-
-
-class Contraccion(Contraction):
-    legacy_name: ClassVar[str]
-
-
-class Autoorganizacion(SelfOrganization):
-    legacy_name: ClassVar[str]
-
-
-class Mutacion(Mutation):
-    legacy_name: ClassVar[str]
-
-
-class Transicion(Transition):
-    legacy_name: ClassVar[str]
-
-
-class Recursividad(Recursivity):
-    legacy_name: ClassVar[str]

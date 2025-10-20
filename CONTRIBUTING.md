@@ -1,37 +1,36 @@
 # Contributing
 
-This project uses English for code identifiers and docstrings **except** for the
-canonical Spanish operator names exported by `tnfr.operators`. Those operator
-identifiers (for example `Emision`, `Resonancia`, `Autoorganizacion`) are part
-of the TNFR grammar and **must stay in Spanish** even when the surrounding
-documentation or prose is written in English. When contributing:
+This project now uses English for **all** code identifiers and docstrings. The
+legacy Spanish operator names were removed in TNFR 2.0 as part of the language
+consolidation. New contributions must reference the English operator tokens and
+descriptors exclusively.
 
-- Use descriptive English names for all variables, functions, classes and modules
-  aside from the canonical operator identifiers listed below.
-- Write docstrings and comments in English while preserving the canonical
-  operator names verbatim.
-- Update existing code to maintain this convention when modifying files.
+When contributing:
 
-When documenting operators in English prose, pair the canonical identifier with
-its English descriptor so readers can follow along without altering the API.
-For example, write “apply the Emision operator (Emission)” or “the
-Autoorganizacion (`Self-organization`) step”. The canonical mapping is:
+- Use descriptive English names for every variable, function, class, and
+  module.
+- Write docstrings and comments in English and reference operators by their
+  canonical English identifiers.
+- Update existing code to migrate any remaining legacy strings to the English
+  tokens.
 
-| Canonical identifier | English descriptor |
+The canonical operator identifiers are:
+
+| Identifier | Description |
 | --- | --- |
-| `Emision` | Emission |
-| `Recepcion` | Reception |
-| `Coherencia` | Coherence |
-| `Disonancia` | Dissonance |
-| `Acoplamiento` | Coupling |
-| `Resonancia` | Resonance |
-| `Silencio` | Silence |
-| `Expansion` | Expansion |
-| `Contraccion` | Contraction |
-| `Autoorganizacion` | Self-organization |
-| `Mutacion` | Mutation |
-| `Transicion` | Transition |
-| `Recursividad` | Recursivity |
+| `emission` | Emission |
+| `reception` | Reception |
+| `coherence` | Coherence |
+| `dissonance` | Dissonance |
+| `coupling` | Coupling |
+| `resonance` | Resonance |
+| `silence` | Silence |
+| `expansion` | Expansion |
+| `contraction` | Contraction |
+| `self_organization` | Self-organization |
+| `mutation` | Mutation |
+| `transition` | Transition |
+| `recursivity` | Recursivity |
 
 ## Commit message format
 

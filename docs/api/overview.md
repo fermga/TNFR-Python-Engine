@@ -75,7 +75,7 @@ flowchart LR
 - **Invariant 3 — ΔNFR preserves canonical semantics.** `default_compute_delta_nfr` mixes
   phase, EPI, νf, and topology through the configured hook so ΔNFR remains the structural
   gradient rather than an ML loss proxy.
-- **Invariant 4 — Operator closure.** Syntax validation enforces the RECEPCION → COHERENCIA
+- **Invariant 4 — Operator closure.** Syntax validation enforces the RECEPTION → COHERENCE
   segment, checks THOL closure, and rejects unknown tokens before execution.
 - **Invariant 5 — Explicit phase checks.** `coordinate_global_local_phase` adapts kG/kL and
   records Kuramoto history so coupling never proceeds without synchrony analysis.

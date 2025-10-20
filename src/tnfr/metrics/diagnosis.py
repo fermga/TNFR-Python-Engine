@@ -16,7 +16,7 @@ from ..constants import (
     get_aliases,
     get_param,
 )
-from ..config.operator_names import TRANSICION
+from ..config.operator_names import TRANSITION
 from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import append_metric, ensure_history
 from ..alias import get_attr
@@ -328,14 +328,14 @@ def _state_from_thresholds(
     if all(comp(val, thr) for val, thr, comp in dissonant_checks.values()):
         return "disonante"
 
-    return TRANSICION
+        return TRANSITION
 
 
 def _recommendation(state: str, cfg: Mapping[str, Any]) -> list[Any]:
     adv = cfg.get("advice", {})
     key = {
         "estable": "stable",
-        TRANSICION: "transition",
+        TRANSITION: "transition",
         "disonante": "dissonant",
     }[state]
     return list(adv.get(key, []))

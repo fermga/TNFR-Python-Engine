@@ -1,8 +1,7 @@
 """Definitions for canonical TNFR structural operators.
 
-English identifiers are now the primary public API. Legacy Spanish
-wrappers live in :mod:`tnfr.operators.compat` and emit deprecation
-warnings on use.
+English identifiers are the public API. Spanish wrappers were removed in
+TNFR 2.0, so downstream code must import these classes directly.
 """
 
 from __future__ import annotations
@@ -27,7 +26,7 @@ from ..config.operator_names import (
 from ..types import Glyph, TNFRGraph
 from .registry import register_operator
 
-__all__ = (
+__all__ = [
     "Operator",
     "Emission",
     "Reception",
@@ -42,7 +41,7 @@ __all__ = (
     "Mutation",
     "Transition",
     "Recursivity",
-)
+]
 
 
 class Operator:
@@ -180,38 +179,3 @@ class Recursivity(Operator):
     __slots__ = ()
     name: ClassVar[str] = RECURSIVITY
     glyph: ClassVar[Glyph] = Glyph.REMESH
-
-
-# Import legacy wrappers for backward compatibility -------------------------
-
-from .compat import (  # noqa: E402  (imported late to avoid cycles)
-    Operador,
-    Emision,
-    Recepcion,
-    Coherencia,
-    Disonancia,
-    Acoplamiento,
-    Resonancia,
-    Silencio,
-    Contraccion,
-    Autoorganizacion,
-    Mutacion,
-    Transicion,
-    Recursividad,
-)
-
-__all__ = __all__ + (
-    "Operador",
-    "Emision",
-    "Recepcion",
-    "Coherencia",
-    "Disonancia",
-    "Acoplamiento",
-    "Resonancia",
-    "Silencio",
-    "Contraccion",
-    "Autoorganizacion",
-    "Mutacion",
-    "Transicion",
-    "Recursividad",
-)

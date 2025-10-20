@@ -28,23 +28,6 @@ from .operators.definitions import (
     Transition,
     Recursivity,
 )
-from .operators.compat import (
-    Operador,
-    Emision,
-    Recepcion,
-    Coherencia,
-    Disonancia,
-    Acoplamiento,
-    Resonancia,
-    Silencio,
-    Contraccion,
-    Autoorganizacion,
-    Mutacion,
-    Transicion,
-    Recursividad as RecursividadLegacy,
-)
-
-Recursividad = RecursividadLegacy
 from .operators.registry import OPERADORES
 from .validation import validate_sequence
 
@@ -96,19 +79,6 @@ __all__ = (
     "Mutation",
     "Transition",
     "Recursivity",
-    "Operador",
-    "Emision",
-    "Recepcion",
-    "Coherencia",
-    "Disonancia",
-    "Acoplamiento",
-    "Resonancia",
-    "Silencio",
-    "Contraccion",
-    "Autoorganizacion",
-    "Mutacion",
-    "Transicion",
-    "Recursividad",
     "OPERADORES",
     "validate_sequence",
     "run_sequence",

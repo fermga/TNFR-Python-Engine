@@ -1,7 +1,4 @@
-from __future__ import annotations
-
-from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any, Callable, Hashable
+from typing import TYPE_CHECKING, Any, Callable, Hashable, Iterable
 
 from .operators.definitions import (
     Operator,
@@ -19,23 +16,6 @@ from .operators.definitions import (
     Transition,
     Recursivity,
 )
-from .operators.compat import (
-    Operador,
-    Emision,
-    Recepcion,
-    Coherencia,
-    Disonancia,
-    Acoplamiento,
-    Resonancia,
-    Silencio,
-    Contraccion,
-    Autoorganizacion,
-    Mutacion,
-    Transicion,
-    Recursividad as RecursividadLegacy,
-)
-
-Recursividad = RecursividadLegacy
 
 if TYPE_CHECKING:
     import networkx as nx
