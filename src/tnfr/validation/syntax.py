@@ -4,23 +4,34 @@ from __future__ import annotations
 
 from ..operators.registry import OPERADORES
 from ..config.operator_names import (
-    INICIO_VALIDOS,
-    TRAMO_INTERMEDIO,
-    CIERRE_VALIDO,
-    AUTOORGANIZACION,
-    RECEPCION,
-    COHERENCIA,
-    DISONANCIA,
     ACOPLAMIENTO,
+    AUTOORGANIZACION,
+    CIERRE_VALIDO,
+    COHERENCIA,
+    CONTRACCION,
+    DISONANCIA,
+    EMISION,
+    INICIO_VALIDOS,
+    RECURSIVIDAD,
+    RECEPCION,
     RESONANCIA,
     SILENCIO,
-    AUTOORGANIZACION_CIERRES,
-    EMISION,
-    RECURSIVIDAD,
     TRANSICION,
+    canonical_operator_name,
+    operator_display_name,
 )
 
 __all__ = ("validate_sequence",)
+
+
+_CANONICAL_START = (EMISION, RECURSIVIDAD)
+_CANONICAL_INTERMEDIATE = (DISONANCIA, ACOPLAMIENTO, RESONANCIA)
+_CANONICAL_END = (SILENCIO, TRANSICION, RECURSIVIDAD)
+_AUTO_CLOSURES = (SILENCIO, CONTRACCION)
+
+
+def _format_token_group(tokens: tuple[str, ...]) -> str:
+    return ", ".join(operator_display_name(token) for token in tokens)
 
 
 def _validate_start(token: str) -> tuple[bool, str]:
@@ -29,7 +40,7 @@ def _validate_start(token: str) -> tuple[bool, str]:
     if not isinstance(token, str):
         return False, "tokens must be str"
     if token not in INICIO_VALIDOS:
-        valid_tokens = ", ".join((EMISION, RECURSIVIDAD))
+        valid_tokens = _format_token_group(_CANONICAL_START)
         return False, f"must start with {valid_tokens}"
     return True, ""
 
@@ -42,7 +53,7 @@ def _validate_intermediate(
     if not (found_recepcion and found_coherencia):
         return False, f"missing {RECEPCION}→{COHERENCIA} segment"
     if not seen_intermedio:
-        intermedio_tokens = ", ".join((DISONANCIA, ACOPLAMIENTO, RESONANCIA))
+        intermedio_tokens = _format_token_group(_CANONICAL_INTERMEDIATE)
         return False, f"missing {intermedio_tokens} segment"
     return True, ""
 
@@ -51,7 +62,7 @@ def _validate_end(last_token: str, open_thol: bool) -> tuple[bool, str]:
     """Validate closing operator and any pending THOL blocks."""
 
     if last_token not in CIERRE_VALIDO:
-        cierre_tokens = ", ".join((SILENCIO, TRANSICION, RECURSIVIDAD))
+        cierre_tokens = _format_token_group(_CANONICAL_END)
         return False, f"sequence must end with {cierre_tokens}"
     if open_thol:
         return False, "THOL block without closure"
@@ -90,16 +101,22 @@ def _validate_token_sequence(nombres: list[str]) -> tuple[bool, str]:
             return False, "tokens must be str"
         nombres_set.add(n)
 
-        if n == RECEPCION and not found_recepcion:
+        canonical = canonical_operator_name(n)
+
+        if canonical == RECEPCION and not found_recepcion:
             found_recepcion = True
-        elif found_recepcion and n == COHERENCIA and not found_coherencia:
+        elif found_recepcion and canonical == COHERENCIA and not found_coherencia:
             found_coherencia = True
-        elif found_coherencia and not seen_intermedio and n in TRAMO_INTERMEDIO:
+        elif (
+            found_coherencia
+            and not seen_intermedio
+            and canonical in _CANONICAL_INTERMEDIATE
+        ):
             seen_intermedio = True
 
-        if n == AUTOORGANIZACION:
+        if canonical == AUTOORGANIZACION:
             open_thol = True
-        elif open_thol and n in AUTOORGANIZACION_CIERRES:
+        elif open_thol and canonical in _AUTO_CLOSURES:
             open_thol = False
 
     ok, msg = _validate_known_tokens(nombres_set)

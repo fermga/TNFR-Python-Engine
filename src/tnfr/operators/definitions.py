@@ -6,19 +6,31 @@ from typing import Any, ClassVar
 
 from ..types import Glyph, TNFRGraph
 from ..config.operator_names import (
-    EMISION,
-    RECEPCION,
-    COHERENCIA,
-    DISONANCIA,
     ACOPLAMIENTO,
+    AUTOORGANIZACION,
+    COHERENCIA,
+    CONTRACCION,
+    DISONANCIA,
+    EMISION,
+    EXPANSION,
+    MUTACION,
+    RECEPCION,
+    RECURSIVIDAD,
     RESONANCIA,
     SILENCIO,
-    EXPANSION,
-    CONTRACCION,
-    AUTOORGANIZACION,
-    MUTACION,
     TRANSICION,
-    RECURSIVIDAD,
+    COUPLING,
+    COHERENCE,
+    CONTRACTION,
+    DISSONANCE,
+    EMISSION,
+    MUTATION,
+    RECEPTION,
+    RECURSIVITY,
+    RESONANCE,
+    SELF_ORGANIZATION,
+    SILENCE,
+    TRANSITION,
 )
 from .registry import register_operator
 
@@ -37,6 +49,18 @@ __all__ = (
     "Mutacion",
     "Transicion",
     "Recursividad",
+    "Emission",
+    "Reception",
+    "Coherence",
+    "Dissonance",
+    "Coupling",
+    "Resonance",
+    "Silence",
+    "Contraction",
+    "SelfOrganization",
+    "Mutation",
+    "Transition",
+    "Recursivity",
 )
 
 
@@ -176,3 +200,99 @@ class Recursividad(Operador):
     __slots__ = ()
     name: ClassVar[str] = RECURSIVIDAD
     glyph: ClassVar[Glyph] = Glyph.REMESH
+
+
+@register_operator
+class Emission(Emision):
+    """English alias for :class:`Emision` (glyph ``AL``)."""
+
+    __slots__ = ()
+    name: ClassVar[str] = EMISSION
+
+
+@register_operator
+class Reception(Recepcion):
+    """English alias for :class:`Recepcion` (glyph ``EN``)."""
+
+    __slots__ = ()
+    name: ClassVar[str] = RECEPTION
+
+
+@register_operator
+class Coherence(Coherencia):
+    """English alias for :class:`Coherencia` (glyph ``IL``)."""
+
+    __slots__ = ()
+    name: ClassVar[str] = COHERENCE
+
+
+@register_operator
+class Dissonance(Disonancia):
+    """English alias for :class:`Disonancia` (glyph ``OZ``)."""
+
+    __slots__ = ()
+    name: ClassVar[str] = DISSONANCE
+
+
+@register_operator
+class Coupling(Acoplamiento):
+    """English alias for :class:`Acoplamiento` (glyph ``UM``)."""
+
+    __slots__ = ()
+    name: ClassVar[str] = COUPLING
+
+
+@register_operator
+class Resonance(Resonancia):
+    """English alias for :class:`Resonancia` (glyph ``RA``)."""
+
+    __slots__ = ()
+    name: ClassVar[str] = RESONANCE
+
+
+@register_operator
+class Silence(Silencio):
+    """English alias for :class:`Silencio` (glyph ``SHA``)."""
+
+    __slots__ = ()
+    name: ClassVar[str] = SILENCE
+
+
+@register_operator
+class Contraction(Contraccion):
+    """English alias for :class:`Contraccion` (glyph ``NUL``)."""
+
+    __slots__ = ()
+    name: ClassVar[str] = CONTRACTION
+
+
+@register_operator
+class SelfOrganization(Autoorganizacion):
+    """English alias for :class:`Autoorganizacion` (glyph ``THOL``)."""
+
+    __slots__ = ()
+    name: ClassVar[str] = SELF_ORGANIZATION
+
+
+@register_operator
+class Mutation(Mutacion):
+    """English alias for :class:`Mutacion` (glyph ``ZHIR``)."""
+
+    __slots__ = ()
+    name: ClassVar[str] = MUTATION
+
+
+@register_operator
+class Transition(Transicion):
+    """English alias for :class:`Transicion` (glyph ``NAV``)."""
+
+    __slots__ = ()
+    name: ClassVar[str] = TRANSITION
+
+
+@register_operator
+class Recursivity(Recursividad):
+    """English alias for :class:`Recursividad` (glyph ``REMESH``)."""
+
+    __slots__ = ()
+    name: ClassVar[str] = RECURSIVITY
