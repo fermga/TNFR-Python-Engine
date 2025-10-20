@@ -43,6 +43,16 @@ walkthroughs plus optional dependency caching helpers.
   expectations.
 - [TNFR.pdf](TNFR.pdf) — theoretical background, structural operators, and paradigm glossary.
 
+## Migration notes
+
+- **Si dispersion keys:** Replace any remaining ``dSi_ddisp_fase`` entries in graph payloads
+  or configuration files with the English ``dSi_dphase_disp`` key before upgrading. The
+  runtime now raises :class:`ValueError` when the legacy attribute is encountered and
+  rejects the Spanish ``disp_fase`` keyword argument in
+  :func:`tnfr.metrics.sense_index.compute_Si_node`.
+- Refer to the [release notes](docs/releases.md#1100-si-dispersion-legacy-keys-removed) for
+  a migration snippet that rewrites stored graphs in place prior to running the new version.
+
 ## Licensing
 
 Released under the [MIT License](LICENSE.md). Cite the TNFR paradigm when publishing research

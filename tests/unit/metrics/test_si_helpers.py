@@ -33,32 +33,29 @@ def test_get_si_weights_normalization(graph_canon):
     }
 
 
-def test_get_si_weights_migrates_legacy_sensitivity(graph_canon):
+def test_get_si_weights_rejects_legacy_sensitivity(graph_canon):
     G = graph_canon()
     G.graph["_Si_sensitivity"] = {
         "dSi_ddisp_fase": -0.5,
         "dSi_dvf_norm": 0.1,
     }
 
-    with pytest.deprecated_call():
+    with pytest.raises(ValueError) as excinfo:
         get_Si_weights(G)
 
-    sensitivity = G.graph["_Si_sensitivity"]
-    assert "dSi_dphase_disp" in sensitivity
-    assert "dSi_ddisp_fase" not in sensitivity
+    assert "dSi_ddisp_fase" in str(excinfo.value)
 
 
-def test_si_sensitivity_field_handles_legacy_key(graph_canon):
+def test_si_sensitivity_field_rejects_legacy_key(graph_canon):
     G = graph_canon()
     G.graph["_Si_sensitivity"] = {
         "dSi_ddisp_fase": -0.25,
     }
 
-    with pytest.deprecated_call():
-        data = _si_sensitivity_field(G)
+    with pytest.raises(ValueError) as excinfo:
+        _si_sensitivity_field(G)
 
-    assert data == {"si_sensitivity": {"dSi_dphase_disp": -0.25}}
-    assert G.graph["_Si_sensitivity"] == {"dSi_dphase_disp": -0.25}
+    assert "dSi_ddisp_fase" in str(excinfo.value)
 
 
 def test_si_sensitivity_field_handles_new_key(graph_canon):
@@ -153,8 +150,8 @@ def test_compute_Si_node_legacy_keyword(graph_canon):
     G = graph_canon()
     nd = {ALIAS_VF[0]: 0.5, ALIAS_DNFR[0]: 0.2}
 
-    with pytest.deprecated_call():
-        result = compute_Si_node(
+    with pytest.raises(TypeError) as excinfo:
+        compute_Si_node(
             1,
             nd,
             alpha=0.5,
@@ -166,4 +163,4 @@ def test_compute_Si_node_legacy_keyword(graph_canon):
             inplace=False,
         )
 
-    assert result == pytest.approx(0.7)
+    assert "disp_fase" in str(excinfo.value)
