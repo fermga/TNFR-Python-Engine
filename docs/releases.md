@@ -1,5 +1,27 @@
 # Release notes
 
+## 8.1.0 (remesh cooldown alias removal)
+
+- Removed the Spanish ``"REMESH_COOLDOWN_VENTANA"`` alias from
+  :mod:`tnfr.constants.core.RemeshDefaults` and from the remesh operator
+  pipeline. Configuration loaders and runtime helpers now require the English
+  ``"REMESH_COOLDOWN_WINDOW"`` key and raise :class:`ValueError` when the
+  legacy attribute is encountered, pointing to the migration utility below.
+- Added :func:`tnfr.utils.migrate_legacy_remesh_cooldown` to rewrite persisted
+  graphs in place. The helper removes the legacy key and promotes its value to
+  the English attribute when necessary so stored payloads can be upgraded
+  before running the new release.
+- Updated tests and documentation to reflect the English-only remesh cooldown
+  contract.
+
+  Migration snippet::
+
+      from tnfr.utils import migrate_legacy_remesh_cooldown
+
+      G = load_graph()  # application-specific loader
+      migrate_legacy_remesh_cooldown(G)
+      inject_defaults(G)  # optional, keeps defaults in sync
+
 ## 8.0.0 (phase alias enforcement)
 
 - Finalised the phase attribute migration by rejecting the Spanish ``"fase"``
