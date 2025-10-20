@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import warnings
 from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Callable, TypeVar, cast
@@ -23,6 +24,63 @@ from ..immutable import _is_immutable
 from ..types import GraphLike, TNFRConfigValue
 
 T = TypeVar("T")
+
+STATE_STABLE = "stable"
+STATE_TRANSITION = "transition"
+STATE_DISSONANT = "dissonant"
+
+CANONICAL_STATE_TOKENS = frozenset(
+    {STATE_STABLE, STATE_TRANSITION, STATE_DISSONANT}
+)
+
+LEGACY_STATE_TOKENS = MappingProxyType(
+    {
+        "estable": STATE_STABLE,
+        "disonante": STATE_DISSONANT,
+        "transicion": STATE_TRANSITION,
+        "transición": STATE_TRANSITION,
+    }
+)
+
+_WARNED_LEGACY_STATE_TOKENS: set[str] = set()
+
+
+def normalise_state_token(token: str, *, warn: bool = True) -> str:
+    """Return the canonical state token for ``token``.
+
+    Legacy Spanish tokens are mapped to the corresponding English constant.
+    A warning is emitted the first time a given legacy token is encountered
+    unless ``warn`` is ``False``. Canonical tokens are returned unchanged and
+    unnormalised values fall back to the stripped input.
+    """
+
+    if not isinstance(token, str):
+        raise TypeError("state token must be a string")
+
+    stripped = token.strip()
+    lowered = stripped.lower()
+
+    if stripped in CANONICAL_STATE_TOKENS:
+        return stripped
+
+    if lowered in CANONICAL_STATE_TOKENS:
+        return lowered
+
+    legacy = LEGACY_STATE_TOKENS.get(lowered)
+    if legacy is not None:
+        if warn and lowered not in _WARNED_LEGACY_STATE_TOKENS:
+            warnings.warn(
+                (
+                    "Legacy state token '%s' encountered; using canonical '%s'"
+                    % (token, legacy)
+                ),
+                UserWarning,
+                stacklevel=2,
+            )
+            _WARNED_LEGACY_STATE_TOKENS.add(lowered)
+        return legacy
+
+    return stripped
 
 try:  # pragma: no cover - optional dependency
     from ..utils import ensure_node_offset_map as _ensure_node_offset_map
@@ -188,4 +246,10 @@ __all__ = (
     "dVF_PRIMARY",
     "D2VF_PRIMARY",
     "dSI_PRIMARY",
+    "STATE_STABLE",
+    "STATE_TRANSITION",
+    "STATE_DISSONANT",
+    "CANONICAL_STATE_TOKENS",
+    "LEGACY_STATE_TOKENS",
+    "normalise_state_token",
 )
