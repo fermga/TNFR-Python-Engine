@@ -1,4 +1,6 @@
-"""Pruebas de operators."""
+"""Unit tests for operator application helpers and jitter management."""
+
+
 
 from tnfr.node import NodeNX
 from tnfr.operators import (

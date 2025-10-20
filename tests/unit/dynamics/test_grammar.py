@@ -1,4 +1,6 @@
-"""Pruebas de grammar."""
+"""Unit tests for grammar utilities that manage glyph selection sequences."""
+
+
 
 from collections import deque, defaultdict
 

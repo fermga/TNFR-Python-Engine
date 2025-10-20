@@ -1,4 +1,6 @@
-"""Pruebas de node sample."""
+"""Unit tests for node sampling updates during dynamics steps."""
+
+
 
 import pytest
 

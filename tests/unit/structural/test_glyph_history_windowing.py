@@ -1,12 +1,6 @@
-"""Pruebas integradas de ``glyph_history`` centradas en las ventanas.
+"""Integration tests for ``glyph_history`` window handling, ensuring series limits and usage counters stay consistent."""
 
-Terminología clave empleada por los helpers:
-- **Series**: las secuencias de glyphs o métricas almacenadas como listas/deques.
-- **Contadores**: ``_counts`` en ``HistoryDict`` que registran la frecuencia de uso de
-  cada serie para decidir expulsiones.
-- **Ventanas**: los límites (``maxlen``) que definen cuántos elementos conserva cada
-  serie; aquí verificamos que las ventanas no alteran indebidamente series ni contadores.
-"""
+
 
 from collections import deque
 

@@ -1,4 +1,6 @@
-"""Pruebas de initialization."""
+"""Unit tests for initialization routines ensuring reproducible node attributes."""
+
+
 
 import networkx as nx
 

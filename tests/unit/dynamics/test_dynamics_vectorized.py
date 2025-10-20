@@ -1,4 +1,6 @@
-"""Pruebas de dynamics vectorized."""
+"""Unit tests for vectorized dynamics evolution and performance boundaries."""
+
+
 
 import math
 import time

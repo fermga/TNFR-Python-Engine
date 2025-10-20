@@ -1,4 +1,6 @@
-"""Pruebas de register callback."""
+"""Unit tests for callback registration and replacement behavior."""
+
+
 
 import pytest
 

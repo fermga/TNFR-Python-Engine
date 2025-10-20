@@ -1,4 +1,6 @@
-"""Pruebas de helpers de alias con iterables genéricos."""
+"""Unit tests for alias helpers handling generic iterables."""
+
+
 
 import pytest
 from tnfr.alias import AliasAccessor

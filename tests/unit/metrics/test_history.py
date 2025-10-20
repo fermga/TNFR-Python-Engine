@@ -1,4 +1,6 @@
-"""Pruebas de history."""
+"""Unit tests for metric history recording and retrieval."""
+
+
 
 import pytest
 

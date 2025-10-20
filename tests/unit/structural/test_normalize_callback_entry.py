@@ -1,4 +1,6 @@
-"""Pruebas de `_normalize_callback_entry` con secuencias."""
+"""Unit tests for ``_normalize_callback_entry`` handling of sequence inputs."""
+
+
 
 from tnfr.callback_utils import _normalize_callback_entry, CallbackSpec
 

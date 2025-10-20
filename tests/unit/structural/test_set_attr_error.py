@@ -1,4 +1,6 @@
-"""Pruebas de ``set_attr_generic`` para conversiones nulas."""
+"""Unit test for ``set_attr_generic`` ensuring ``None`` conversions are accepted."""
+
+
 
 from tnfr.alias import set_attr_generic
 

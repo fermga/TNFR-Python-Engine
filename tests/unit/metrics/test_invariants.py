@@ -1,4 +1,6 @@
-"""Pruebas de invariants."""
+"""Unit tests verifying invariants reported by the metrics subsystem."""
+
+
 
 from __future__ import annotations
 import math

@@ -1,4 +1,6 @@
-"""Pruebas para normalización y mezcla de conteos glíficos."""
+"""Unit tests for glyph count normalization and grouping helpers."""
+
+
 
 from collections import Counter
 

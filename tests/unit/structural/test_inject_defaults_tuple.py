@@ -1,4 +1,6 @@
-"""Pruebas para ``inject_defaults`` con tuplas mutables."""
+"""Unit tests ensuring ``inject_defaults`` copies mutable tuple defaults."""
+
+
 
 
 from tnfr.constants import inject_defaults, DEFAULTS

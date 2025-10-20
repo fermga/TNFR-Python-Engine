@@ -1,4 +1,6 @@
-"""Pruebas de ``AliasAccessor.get`` con valores por defecto."""
+"""Unit tests for ``AliasAccessor.get`` default handling without package side effects."""
+
+
 
 import logging
 from pathlib import Path

@@ -1,4 +1,6 @@
-"""Pruebas de alias helpers threadsafe."""
+"""Unit tests verifying thread-safe behavior of alias helpers."""
+
+
 
 from concurrent.futures import ThreadPoolExecutor
 

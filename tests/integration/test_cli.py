@@ -1,4 +1,6 @@
-"""Pruebas enfocadas para los flujos de la CLI y utilidades de argumentos."""
+"""Integration tests covering CLI flows and argument utilities."""
+
+
 
 from __future__ import annotations
 

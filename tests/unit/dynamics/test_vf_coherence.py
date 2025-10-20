@@ -1,4 +1,6 @@
-"""Pruebas de vf coherencia."""
+"""Unit tests for adapting VF through coherence measurements."""
+
+
 
 from __future__ import annotations
 

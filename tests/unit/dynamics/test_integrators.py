@@ -1,4 +1,6 @@
-"""Pruebas de integrators."""
+"""Unit tests for integrator routines driving node evolution."""
+
+
 
 from __future__ import annotations
 import pytest

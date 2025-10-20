@@ -1,4 +1,6 @@
-"""Pruebas de consistencia del contador en HistoryDict."""
+"""Unit tests validating the HistoryDict usage counter behavior."""
+
+
 
 from tnfr.glyph_history import HistoryDict
 import pytest

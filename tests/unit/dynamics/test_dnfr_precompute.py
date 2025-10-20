@@ -1,4 +1,6 @@
-"""Pruebas de dnfr precompute."""
+"""Unit tests for DNFR precomputation helpers and caching."""
+
+
 
 import pytest
 from contextlib import contextmanager

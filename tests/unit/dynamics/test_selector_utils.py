@@ -1,4 +1,6 @@
-"""Pruebas de selector utils."""
+"""Unit tests for glyph selector utility helpers and resource handling."""
+
+
 
 import gc
 import weakref

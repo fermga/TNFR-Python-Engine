@@ -1,4 +1,6 @@
-"""Pruebas de defaults integrity."""
+"""Unit tests that guard the integrity and immutability of default parameter collections."""
+
+
 
 from collections import ChainMap
 import pytest
