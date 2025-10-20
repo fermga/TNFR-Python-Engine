@@ -3,7 +3,6 @@ from __future__ import annotations
 import hashlib
 import heapq
 import random
-import warnings
 from operator import ge, le
 from functools import cache
 from itertools import combinations
@@ -508,27 +507,17 @@ def apply_remesh_if_globally_stable(
     stable_step_window: int | None = None,
     **kwargs: Any,
 ) -> None:
-    legacy_window = kwargs.pop("pasos_estables_consecutivos", None)
+    if "pasos_estables_consecutivos" in kwargs:
+        raise TypeError(
+            "apply_remesh_if_globally_stable() no longer accepts "
+            "'pasos_estables_consecutivos'; use 'stable_step_window'."
+        )
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))
         raise TypeError(
             "apply_remesh_if_globally_stable() got unexpected keyword argument(s): "
             f"{unexpected}"
         )
-
-    if legacy_window is not None:
-        if stable_step_window is not None and stable_step_window != legacy_window:
-            raise TypeError(
-                "stable_step_window and pasos_estables_consecutivos provide conflicting "
-                "values; use only stable_step_window."
-            )
-        warnings.warn(
-            "'pasos_estables_consecutivos' is deprecated; use 'stable_step_window' instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        if stable_step_window is None:
-            stable_step_window = legacy_window
 
     params = [
         (

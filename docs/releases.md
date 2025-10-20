@@ -1,5 +1,17 @@
 # Release notes
 
+## 10.0.0 (remesh stability window keyword removal)
+
+- Removed the Spanish ``pasos_estables_consecutivos`` keyword from
+  :func:`tnfr.operators.apply_remesh_if_globally_stable`. Passing the legacy
+  identifier now raises :class:`TypeError` with guidance to use the English
+  ``stable_step_window`` parameter.
+- Updated :mod:`tnfr.operators` documentation, telemetry guidance, and
+  structural tests to reference only ``stable_step_window``.
+- Published a migration guide covering the required code updates and how to
+  audit stored configurations. See :doc:`getting-started/migrating-remesh-window`
+  for detailed steps.
+
 ## 9.0.0 (canonical preset rename)
 
 - Renamed the canonical tutorial preset to the English-only identifier

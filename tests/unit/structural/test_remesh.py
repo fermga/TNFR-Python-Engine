@@ -43,13 +43,13 @@ def test_aplicar_remesh_usa_parametro_personalizado(graph_canon):
     assert G.graph["_last_remesh_step"] == len(hist["stable_frac"])
 
 
-def test_aplicar_remesh_legacy_keyword_emite_advertencia(graph_canon):
-    G, hist = _prepare_graph_for_remesh(graph_canon)
+def test_aplicar_remesh_legacy_keyword_lanza_typeerror(graph_canon):
+    G, _ = _prepare_graph_for_remesh(graph_canon)
 
-    with pytest.warns(DeprecationWarning):
+    with pytest.raises(TypeError, match="pasos_estables_consecutivos"):
         apply_remesh_if_globally_stable(G, pasos_estables_consecutivos=3)
 
-    assert G.graph["_last_remesh_step"] == len(hist["stable_frac"])
+    assert "_last_remesh_step" not in G.graph
 
 
 def test_remesh_alpha_hard_ignores_glyph_factor(graph_canon):
