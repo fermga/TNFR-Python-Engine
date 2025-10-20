@@ -137,6 +137,20 @@ tnfr sequence --nodes 1 --sequence-file sequence.json --save-history history.jso
 The command updates νf, ΔNFR, and phase using the same hooks as the Python API. Inspect the
 saved history for the series of C(t), mean ΔNFR, and Si.
 
+### Presets
+
+Use the English preset identifiers when invoking `--preset` from the CLI:
+
+| Preferred name         | Legacy alias             |
+| ---------------------- | ------------------------ |
+| `resonant_bootstrap`   | `arranque_resonante`     |
+| `contained_mutation`   | `mutacion_contenida`     |
+| `coupling_exploration` | `exploracion_acople`     |
+| `canonical_example`    | `ejemplo_canonico`       |
+
+The legacy Spanish aliases remain available for backward compatibility throughout the 1.x
+series, but scripts and documentation should migrate to the English identifiers.
+
 ## Next steps
 
 - Explore the [examples](../examples/README.md) for multi-node scenarios and CLI workflows.
