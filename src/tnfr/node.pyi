@@ -17,7 +17,7 @@ from .types import (
 
 T = TypeVar("T")
 
-__all__ = ("NodeNX", "NodeProtocol", "add_edge", "NodoNX", "NodoProtocol")
+__all__ = ("NodeNX", "NodeProtocol", "add_edge")
 
 
 class AttrSpec:
@@ -159,8 +159,3 @@ class NodeNX(NodeProtocol):
     def all_nodes(self) -> Iterable[NodeProtocol]: ...
 
 
-NodoProtocol = NodeProtocol
-NodoNX = NodeNX
-
-
-def __getattr__(name: str) -> Any: ...

@@ -1,5 +1,20 @@
 # Release notes
 
+## 6.0.0 (Nodo aliases removed)
+
+- Removed the Spanish module-level aliases ``tnfr.node.NodoNX`` and
+  ``tnfr.node.NodoProtocol``. Code importing those symbols must switch to the
+  canonical :class:`tnfr.node.NodeNX` and :class:`tnfr.node.NodeProtocol`
+  definitions immediately.
+- Deleted :func:`tnfr.utils.get_nodonx`. Downstream helpers should import and
+  call :func:`tnfr.utils.get_nodenx`, which keeps returning
+  :class:`tnfr.node.NodeNX` through the cached import layer.
+- Pruned the typing stubs, tests, and utilities that referenced the Spanish
+  names so static analysis and runtime behaviour now agree on the English-only
+  surface area.
+- Published the backward-incompatible change as **TNFR 6.0.0** to honour the
+  semantic versioning contract and flag the immediate API removal.
+
 ## 5.0.0 (prepare_network alias retired)
 
 - Removed the Spanish helper alias ``tnfr.preparar_red``. The network
@@ -57,11 +72,10 @@
   within the supported contract.
 
 - Unified the node wrappers under the English identifiers
-  :class:`tnfr.node.NodeNX` and :class:`tnfr.node.NodeProtocol`. Their
-  Spanish counterparts (`NodoNX`, `NodoProtocol`) remain available as
-  compatibility aliases that raise :class:`DeprecationWarning` and will
-  be removed on **2025-12-01**. Migrate imports and type annotations to
-  the English names to avoid churn when the compatibility window closes.
+  :class:`tnfr.node.NodeNX` and :class:`tnfr.node.NodeProtocol`. The Spanish
+  counterparts (`NodoNX`, `NodoProtocol`) were deprecated in the 1.x cycle and
+  have now been removed in **TNFR 6.0**. Import the English names directly to
+  remain within the supported contract.
 
 All other helpers continue to honour the existing dependency manifest
 and import semantics.
