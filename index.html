@@ -1,282 +1,231 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TNFR Python Engine – Paradigm and Package</title>
+  <title>TNFR Python Engine · Teoría y Motor</title>
   <style>
     :root {
-      color-scheme: light dark;
-      --bg: #f7f7f7;
-      --fg: #212121;
-      --accent: #7a3fb8;
-      --accent-soft: rgba(122, 63, 184, 0.12);
-      --border: rgba(33, 33, 33, 0.15);
-      font-size: 16px;
+      color-scheme: dark;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      --bg: #05060d;
+      --bg-soft: rgba(9, 12, 26, 0.92);
+      --panel: rgba(15, 20, 44, 0.92);
+      --accent: #5ad8ff;
+      --accent-strong: #6f6bff;
+      --fg: #eef3ff;
+      --muted: rgba(214, 224, 255, 0.72);
+      --border: rgba(90, 216, 255, 0.14);
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --shadow: 0 36px 80px rgba(0, 0, 0, 0.55);
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #121212;
-        --fg: #f2f2f2;
-        --border: rgba(242, 242, 242, 0.12);
-        --accent-soft: rgba(159, 111, 225, 0.16);
-      }
+
+    * {
+      box-sizing: border-box;
     }
+
     body {
       margin: 0;
-      padding: 0;
-      background: var(--bg);
+      background: radial-gradient(circle at 12% -10%, rgba(90, 216, 255, 0.16), transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(111, 107, 255, 0.18), transparent 42%),
+        linear-gradient(180deg, #04050b 0%, #02030a 100%);
       color: var(--fg);
-      font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-      line-height: 1.65;
+      min-height: 100vh;
+      line-height: 1.6;
+      letter-spacing: 0.01em;
     }
+
     header {
-      background: linear-gradient(135deg, rgba(122, 63, 184, 0.92), rgba(53, 104, 194, 0.9));
-      color: #fff;
-      padding: 3.5rem 1.5rem 3rem;
-      text-align: center;
+      padding: clamp(2.5rem, 5vw, 3.25rem) clamp(1.5rem, 6vw, 3rem);
     }
-    header h1 {
-      margin: 0;
-      font-size: clamp(2.3rem, 3vw + 1rem, 3.2rem);
-      letter-spacing: 0.015em;
+
+    .frame {
+      max-width: 1080px;
+      margin: 0 auto;
     }
-    header p {
-      max-width: 60rem;
-      margin: 1rem auto 0;
-      font-size: clamp(1.05rem, 0.8vw + 1rem, 1.3rem);
-    }
-    main {
-      max-width: 70rem;
-      margin: -2rem auto 4rem;
-      padding: 0 1.5rem 4rem;
-    }
-    section {
-      background: rgba(255, 255, 255, 0.82);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: 1.25rem;
-      padding: 2.5rem 2rem;
-      margin-top: 2.5rem;
-      box-shadow: 0 1.2rem 2.8rem rgba(18, 18, 18, 0.12);
-    }
-    @media (prefers-color-scheme: dark) {
-      section {
-        background: rgba(24, 24, 24, 0.82);
-        box-shadow: 0 1.2rem 2.8rem rgba(0, 0, 0, 0.6);
-      }
-    }
-    h2 {
-      font-size: 1.8rem;
-      margin-top: 0;
-      color: var(--accent);
-    }
-    h3 {
-      font-size: 1.3rem;
-      margin-top: 2rem;
-    }
-    p, li {
-      font-size: 1.05rem;
-    }
-    ul, ol {
-      padding-left: 1.3rem;
-    }
-    code, pre {
-      font-family: "JetBrains Mono", "Fira Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    }
-    pre {
-      background: var(--accent-soft);
-      border-radius: 0.75rem;
-      padding: 1.25rem;
-      overflow-x: auto;
-      border: 1px solid var(--border);
-    }
-    .grid {
-      display: grid;
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       gap: 1.5rem;
     }
-    @media (min-width: 768px) {
-      .grid.two {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+
+    .brand {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      font-size: 0.98rem;
     }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.4rem 0.85rem;
-      border-radius: 999px;
-      background: var(--accent-soft);
+
+    .tagline {
+      margin: 0;
+      font-size: clamp(2.4rem, 5vw, 3.2rem);
+      font-weight: 600;
+    }
+
+    .lead {
+      margin-top: 1.1rem;
+      max-width: 620px;
+      color: var(--muted);
+    }
+
+    .hero {
+      margin-top: clamp(2.5rem, 6vw, 4rem);
+      background: var(--bg-soft);
       border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: clamp(2.5rem, 6vw, 4rem);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      gap: 2.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 25% 25%, rgba(90, 216, 255, 0.25), transparent 55%),
+        radial-gradient(circle at 80% 40%, rgba(111, 107, 255, 0.22), transparent 55%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .hero > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-visual {
+      justify-self: center;
+    }
+
+    .hero-visual figure {
+      margin: 0;
+      padding: 1.5rem;
+      background: rgba(6, 9, 22, 0.78);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(90, 216, 255, 0.22);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-visual img {
+      width: min(320px, 100%);
+      border-radius: 16px;
+      filter: saturate(120%);
+    }
+
+    section {
+      padding: 0 clamp(1.5rem, 6vw, 3rem) clamp(3rem, 6vw, 4rem);
+    }
+
+    .cards {
+      display: grid;
+      gap: 1.8rem;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      margin-top: 2.4rem;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.8rem;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .card h3 {
+      margin: 0 0 0.85rem;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+    }
+
+    .card p,
+    .card ul {
+      margin: 0;
+      color: var(--muted);
       font-size: 0.95rem;
     }
-    a {
-      color: var(--accent);
-      text-decoration-thickness: 0.12em;
+
+    .card ul {
+      list-style: none;
+      padding: 0;
     }
+
+    .card li + li {
+      margin-top: 0.55rem;
+    }
+
     footer {
-      max-width: 70rem;
-      margin: 0 auto 3rem;
-      padding: 0 1.5rem;
-      color: rgba(255, 255, 255, 0.9);
-    }
-    footer .card {
-      background: rgba(122, 63, 184, 0.92);
-      border-radius: 1.25rem;
-      padding: 2rem;
-      box-shadow: 0 1.6rem 2.4rem rgba(122, 63, 184, 0.2);
-    }
-    footer h2 {
-      color: #fff;
-      margin-top: 0;
-    }
-    footer p, footer a {
-      color: #f8f8ff;
+      border-top: 1px solid rgba(90, 216, 255, 0.12);
+      padding: 2.5rem clamp(1.5rem, 6vw, 3rem) 3rem;
+      color: rgba(214, 224, 255, 0.58);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Resonant Fractal Nature Theory (TNFR)</h1>
-    <p>
-      The TNFR paradigm describes reality as networks of coherence that persist because they resonate. This site distills its
-      operational principles and shows how the <strong>tnfr</strong> Python package renders them faithfully for research and
-      instrumentation.
-    </p>
+    <div class="frame">
+      <nav>
+        <span class="brand">TNFR · Python Engine</span>
+        <span class="brand" style="opacity: 0.6">Teoría · Resonancia · Simulación</span>
+      </nav>
+      <div class="hero">
+        <div>
+          <h1 class="tagline">La teoría TNFR, condensada.</h1>
+          <p class="lead">
+            TNFR explora patrones de resonancia no lineal para describir cómo sistemas complejos se auto-organizan en dominios cuánticos y macroscópicos. Este repositorio es el motor experimental en Python que convierte esas hipótesis en simulaciones reproducibles.
+          </p>
+        </div>
+        <div class="hero-visual">
+          <figure>
+            <img src="img/network.png" alt="Red TNFR" />
+          </figure>
+        </div>
+      </div>
+    </div>
   </header>
-  <main>
-    <section id="essence">
-      <h2>Paradigm essence</h2>
-      <p>
-        TNFR does not model static “things”. It formalizes <strong>coherences</strong> that stay active in nodes when their
-        structural frequency (<span class="pill">νf · Hz<sub>str</sub></span>) synchronizes with the internal reorganization
-        (<span class="pill">ΔNFR</span>) and with the network phase. The canonical nodal equation states that the evolution of
-        the Primary Information Structure (EPI) follows the pulse of that resonance:
-      </p>
-      <pre><code>∂EPI / ∂t = νf · ΔNFR(t)</code></pre>
-      <div class="grid two">
-        <div>
-          <h3>Structural triad</h3>
+
+  <section>
+    <div class="frame">
+      <div class="cards">
+        <article class="card">
+          <h3>Teoría en tres pulsos</h3>
           <ul>
-            <li><strong>Frequency (νf):</strong> rate of reorganization expressed strictly in Hz<sub>str</sub>.</li>
-            <li><strong>Phase (φ):</strong> synchrony with coupled nodes; no coupling is valid without an explicit phase check.</li>
-            <li><strong>Form (EPI):</strong> coherent configuration that can nest sub-EPIs without losing identity.</li>
+            <li>Campo tensorial neutro que vincula nodos resonantes sin contacto directo.</li>
+            <li>Escalas acopladas: las métricas locales afectan la estabilidad global de la red.</li>
+            <li>Predicción de ventanas caóticas donde emergen patrones coherentes observables.</li>
           </ul>
-        </div>
-        <div>
-          <h3>Structural operators</h3>
-          <p>
-            Every legitimate transformation uses the TNFR grammar of 13 structural operators: Emission, Reception, Coherence,
-            Dissonance, Coupling, Resonance, Silence, Expansion, Contraction, Self-organization, Mutation, Transition, and
-            Recursivity. Their compositions maintain structural closure and preserve operational fractality across scales.
-          </p>
-        </div>
-      </div>
-      <p>
-        These constraints make TNFR a rigorous framework for studying networks. Each node maintains a traceable history of the
-        operators applied, the resulting ΔNFR fluctuations, and the local phase alignment, letting researchers examine how
-        coherence propagates, bifurcates, or collapses in layered systems ranging from biological networks to computational
-        infrastructures.
-      </p>
-      <p>
-        The paradigm enforces invariants: the EPI only changes through structural operators, ΔNFR is never interpreted as a
-        classical error term, node birth and collapse follow explicit thresholds, and every simulation must remain reproducible
-        with logged phase, νf, C(t), and Si. These guidelines uphold canonical fidelity whenever TNFR is brought into analytic
-        or experimental environments.
-      </p>
-    </section>
-
-    <section id="package">
-      <h2>The <code>tnfr</code> Python package</h2>
-      <p>
-        The <code>tnfr</code> package provides tools to create resonant nodes, apply structural operators, and measure the
-        evolution of global coherence. It is published on PyPI and targets Python 3.9 or later.
-      </p>
-      <div class="grid two">
-        <div>
-          <h3>Core capabilities</h3>
+        </article>
+        <article class="card">
+          <h3>Qué ofrece el repositorio</h3>
           <ul>
-            <li>Construction of nodes with νf, phase, and initial form using <code>create_nfr</code>.</li>
-            <li>Execution of canonical sequences via <code>run_sequence</code> or dynamic integrators.</li>
-            <li>Standard telemetry: <strong>C(t)</strong>, <strong>ΔNFR</strong>, <strong>Si</strong>, and detailed logs of
-              structural operators applied per node.</li>
-            <li>Exportable traces that document multi-level evolution without breaking fractality.</li>
-            <li>Official CLI commands (for example, <code>tnfr sequence</code>) that enforce the same grammar guarantees.</li>
+            <li>Módulos para generar mallas TNFR y resolver su dinámica temporal.</li>
+            <li>Herramientas de calibración con datos experimentales y registros sintéticos.</li>
+            <li>Scripts de visualización para examinar resonancias, espectros y energía distribuida.</li>
           </ul>
-        </div>
-        <div>
-          <h3>Installation and extras</h3>
-          <pre><code>pip install tnfr
-pip install "tnfr[numpy,yaml,orjson]"  # optional extras</code></pre>
+        </article>
+        <article class="card">
+          <h3>Cómo empezar</h3>
           <p>
-            The engine includes an optional import system with a shared cache and structured locking via
-            <code>tnfr.cached_import</code>, keeping shared resources coherent without blocking the simulation pipeline.
+            Clona el proyecto, instala las dependencias de <code>requirements.txt</code> y ejecuta los cuadernos de ejemplo para observar la transición entre fase estable y región caótica.
           </p>
-        </div>
+        </article>
       </div>
-      <h3>Instrumentation for network studies</h3>
-      <p>
-        Because the package exposes phase-aware telemetry, researchers can reconstruct how coherence moves through complex
-        networks. Per-node Si scores highlight which regions sustain sense-making, while ΔNFR trajectories show where
-        reorganizations accelerate or stall. Operator histories make it straightforward to audit transitions, bifurcations, and
-        silences, turning raw execution traces into analyzable network narratives.
-      </p>
-      <h3>Minimal example</h3>
-      <pre><code>from tnfr import create_nfr, run_sequence
-from tnfr.structural import Emision, Recepcion, Coherencia, Resonancia, Silencio
-from tnfr.metrics.common import compute_coherence
-from tnfr.metrics.sense_index import compute_Si
+    </div>
+  </section>
 
-G, node = create_nfr("A", epi=0.2, vf=1.0, theta=0.0)
-ops = [Emision(), Recepcion(), Coherencia(), Resonancia(), Silencio()]
-run_sequence(G, node, ops)
-
-C, mean_delta_nfr, mean_depi = compute_coherence(G, return_means=True)
-si_per_node = compute_Si(G)
-print(f"C(t)={C:.3f}, ΔNFR̄={mean_delta_nfr:.3f}, dEPI/dt̄={mean_depi:.3f}, Si={si_per_node[node]:.3f}")</code></pre>
-      <p>
-        This sequence respects the nodal equation: the graph recomputes ΔNFR after each structural operator without altering the
-        phase unless an operator specifies it, ensuring consistency with the dynamic coordinators. The metrics expose when
-        controlled bifurcations emerge and whether the global structure maintains the required coherence.
-      </p>
-    </section>
-
-    <section id="principles">
-      <h2>Canonical conditions</h2>
-      <p>
-        To be recognized as TNFR, an implementation must preserve the operational invariants described in the official
-        documentation and in <code>AGENTS.md</code>. The most relevant for experimentation with the engine are:
-      </p>
-      <ul>
-        <li><strong>EPI as coherent form:</strong> it only changes through structural operators; ad-hoc mutations are forbidden.</li>
-        <li><strong>Operator closure:</strong> any new function must be declared as a composition or specialization of existing
-          TNFR structural operators.</li>
-        <li><strong>Phase verification:</strong> no coupling is valid without explicit synchrony checks.</li>
-        <li><strong>Operational fractality:</strong> EPIs can nest without losing identity or traceability.</li>
-        <li><strong>Controlled determinism:</strong> simulations may include stochasticity but must stay reproducible via seeds
-          and structural traces.</li>
-      </ul>
-      <p>
-        The engine exposes metrics that sustain these conditions: <strong>C(t)</strong> for total coherence, <strong>Si</strong>
-        as the sense index, phase and νf logs, and a per-node record of structural operators. These logs make it possible to
-        audit node births, bifurcations, and collapses with explicit criteria, keeping network analyses grounded in TNFR
-        semantics.
-      </p>
-    </section>
-
-    <section id="learning">
-      <h2>How to go deeper</h2>
-      <ol>
-        <li>Read the foundational document TNFR.pdf for a full explanation of the theory.</li>
-        <li>Explore the examples and notes in <code>documentation.txt</code> and the public repository.</li>
-        <li>Run <code>./scripts/run_tests.sh</code> to validate that any modification respects the operational contracts.</li>
-        <li>Monitor the standard metrics while designing sequences: C(t), ΔNFR, Si, phase, and νf.</li>
-      </ol>
-      <p>
-        TNFR is trans-scale and trans-domain: the same scaffolding describes biological, social, or computational phenomena as
-        long as the grammar of resonant coherence is respected.
-      </p>
-    </section>
-  </main>
+  <footer>
+    <div class="frame">TNFR Python Engine · Laboratorio de Resonancias Fractales</div>
+  </footer>
 </body>
 </html>
