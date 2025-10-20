@@ -30,23 +30,29 @@ GLYPHS_CANONICAL: tuple[str, ...] = (
 
 GLYPHS_CANONICAL_SET: frozenset[str] = frozenset(GLYPHS_CANONICAL)
 
-ESTABILIZADORES = (
+STABILIZERS: tuple[str, ...] = (
     Glyph.IL.value,
     Glyph.RA.value,
     Glyph.UM.value,
     Glyph.SHA.value,
 )
 
-DISRUPTIVOS = (
+DISRUPTORS: tuple[str, ...] = (
     Glyph.OZ.value,
     Glyph.ZHIR.value,
     Glyph.NAV.value,
     Glyph.THOL.value,
 )
 
+# Spanish aliases kept for a deprecation window.
+ESTABILIZADORES = STABILIZERS
+DISRUPTIVOS = DISRUPTORS
+
 # Mapa general de agrupaciones glíficas para referencia cruzada.
 GLYPH_GROUPS: Mapping[str, tuple[str, ...]] = MappingProxyType(
     {
+        "stabilizers": STABILIZERS,
+        "disruptors": DISRUPTORS,
         "estabilizadores": ESTABILIZADORES,
         "disruptivos": DISRUPTIVOS,
         # Grupos auxiliares para métricas morfosintácticas
@@ -75,9 +81,9 @@ def _build_angle_map() -> dict[str, float]:
     angles = dict(canonical)
 
     # Reglas específicas de orientación
-    for idx, g in enumerate(ESTABILIZADORES):
+    for idx, g in enumerate(STABILIZERS):
         angles[g] = idx * math.pi / 4
-    for idx, g in enumerate(DISRUPTIVOS):
+    for idx, g in enumerate(DISRUPTORS):
         angles[g] = math.pi + idx * math.pi / 4
 
     # Excepciones manuales
@@ -92,6 +98,8 @@ ANGLE_MAP: Mapping[str, float] = MappingProxyType(_build_angle_map())
 __all__ = (
     "GLYPHS_CANONICAL",
     "GLYPHS_CANONICAL_SET",
+    "STABILIZERS",
+    "DISRUPTORS",
     "ESTABILIZADORES",
     "DISRUPTIVOS",
     "GLYPH_GROUPS",

@@ -150,6 +150,8 @@ def test_glyph_load_uses_module_constants(monkeypatch, graph_canon):
 
     dist = glyph_load(G)
 
+    assert dist["_stabilizers"] == pytest.approx(0.5)
+    assert dist["_disruptors"] == pytest.approx(0.5)
     assert dist["_estabilizadores"] == pytest.approx(0.5)
     assert dist["_disruptivos"] == pytest.approx(0.5)
 

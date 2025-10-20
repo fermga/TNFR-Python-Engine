@@ -44,6 +44,11 @@ logger = get_logger(__name__)
 DEFAULT_GLYPH_LOAD_SPAN = 50
 DEFAULT_WBAR_SPAN = 25
 
+_GLYPH_GROUP_COMPAT_KEYS: tuple[tuple[str, str], ...] = (
+    ("_stabilizers", "_estabilizadores"),
+    ("_disruptors", "_disruptivos"),
+)
+
 
 # -------------------------
 # Observador estándar Γ(R)
@@ -145,6 +150,11 @@ def glyph_load(G: TNFRGraph, window: int | None = None) -> GlyphLoadDistribution
     if count == 0:
         return {"_count": 0.0}
     dist = mix_groups(dist_raw, GLYPH_GROUPS)
+    for primary, legacy in _GLYPH_GROUP_COMPAT_KEYS:
+        if primary in dist and legacy not in dist:
+            dist[legacy] = dist[primary]
+        elif legacy in dist and primary not in dist:
+            dist[primary] = dist[legacy]
     glyph_dist: GlyphLoadDistribution = {}
     for key, value in dist.items():
         try:
