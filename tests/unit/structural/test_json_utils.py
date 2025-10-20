@@ -2,7 +2,7 @@ import logging
 
 import tnfr.utils.init as import_utils
 import tnfr.utils.io as json_utils
-from .utils import clear_orjson_cache
+from ...utils import clear_orjson_cache
 
 
 class DummyOrjson:

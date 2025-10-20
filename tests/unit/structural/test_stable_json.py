@@ -4,7 +4,7 @@ import json
 import pytest
 
 from tnfr.utils import stable_json
-from .utils import clear_orjson_cache
+from ...utils import clear_orjson_cache
 
 
 def test_stable_json_dict_order_deterministic():
