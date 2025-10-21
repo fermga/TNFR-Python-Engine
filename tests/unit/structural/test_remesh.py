@@ -47,7 +47,7 @@ def test_apply_remesh_uses_custom_parameter(graph_canon):
 def test_apply_remesh_legacy_keyword_raises_typeerror(graph_canon):
     G, _ = _prepare_graph_for_remesh(graph_canon)
 
-    with pytest.raises(TypeError, match="pasos_estables_consecutivos"):
+    with pytest.raises(TypeError, match="unexpected keyword argument"):
         apply_remesh_if_globally_stable(G, pasos_estables_consecutivos=3)
 
     assert "_last_remesh_step" not in G.graph

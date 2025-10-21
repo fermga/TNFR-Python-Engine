@@ -475,11 +475,6 @@ def apply_remesh_if_globally_stable(
     stable_step_window: int | None = None,
     **kwargs: Any,
 ) -> None:
-    if "pasos_estables_consecutivos" in kwargs:
-        raise TypeError(
-            "apply_remesh_if_globally_stable() no longer accepts "
-            "'pasos_estables_consecutivos'; use 'stable_step_window'."
-        )
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))
         raise TypeError(
