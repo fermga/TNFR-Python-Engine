@@ -159,13 +159,13 @@ def test_glyph_load_uses_module_constants(monkeypatch, graph_canon):
 
 
 def test_sigma_vector_consistency():
-    # Distribución ficticia de glyphs
+    # Fictional glyph distribution
     dist = {"IL": 0.4, "RA": 0.3, "ZHIR": 0.1, "AL": 0.2}
 
     res = sigma_vector(dist)
     n = res["n"]
 
-    # Cálculo esperado con el mapa de ángulos canónico
+    # Expected calculation using the canonical angle map
     keys = list(dist.keys())
     angles = {k: ANGLE_MAP[k] for k in keys}
     x = sum(dist[k] * math.cos(angles[k]) for k in keys) / len(keys)
