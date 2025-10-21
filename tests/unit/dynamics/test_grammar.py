@@ -152,14 +152,14 @@ def test_apply_glyph_with_grammar_equivalence(graph_canon):
     G_func.add_node(0)
     inject_defaults(G_func)
 
-    # Aplicación manual
+    # Manual application
     g_eff = enforce_canonical_grammar(G_manual, 0, Glyph.ZHIR)
     from tnfr.operators import apply_glyph
 
     apply_glyph(G_manual, 0, g_eff, window=1)
     on_applied_glyph(G_manual, 0, g_eff)
 
-    # Aplicación mediante helper
+    # Application via helper
     apply_glyph_with_grammar(G_func, [0], Glyph.ZHIR, 1)
 
     assert G_manual.nodes[0] == G_func.nodes[0]

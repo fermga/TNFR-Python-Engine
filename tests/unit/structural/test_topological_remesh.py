@@ -67,9 +67,9 @@ def test_remesh_community_adds_exact_k_connections_per_cluster(graph_canon):
     apply_topological_remesh(G, mode="community", k=2, p_rewire=0.0, seed=7)
 
     events = ensure_history(G).get("remesh_events", [])
-    assert events, "Se esperaba evento de remesh en modo comunidad"
+    assert events, "Expected a remesh event in community mode"
     extra_attempts = events[-1].get("extra_edge_attempts")
-    assert extra_attempts, "La telemetría debe registrar intentos por comunidad"
+    assert extra_attempts, "Telemetry should record attempts for each community"
     assert set(extra_attempts.values()) == {2}
 
 
@@ -90,7 +90,7 @@ def test_remesh_community_rewire_changes_destinations(graph_canon):
 
     assert events_no[-1].get("rewired_edges") == []
     rewired_edges = events_yes[-1].get("rewired_edges")
-    assert rewired_edges, "Con p_rewire=1.0 deben registrarse aristas reubicadas"
+    assert rewired_edges, "With p_rewire=1.0 there must be rewired edges recorded"
     assert any(edge["from"] != edge["to"] for edge in rewired_edges)
 
 

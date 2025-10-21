@@ -45,7 +45,7 @@ def test_sigma_vector_from_graph_paths(graph_canon):
 
 
 def _sigma_vector_from_graph_naive(G, weight_mode: str = "Si"):
-    """Referencia que recalcula ``glyph_unit(g) * w`` en cada paso."""
+    """Reference implementation recomputing ``glyph_unit(g) * w`` at each step."""
     pairs = []
     for _, nd in G.nodes(data=True):
         nw = _node_weight(nd, weight_mode)
@@ -59,8 +59,7 @@ def _sigma_vector_from_graph_naive(G, weight_mode: str = "Si"):
 
 
 def test_sigma_vector_from_graph_matches_naive(graph_canon):
-    """La versión optimizada coincide con el cálculo ingenuo y no es
-    más lenta."""
+    """The optimized version matches the naive computation and is not slower."""
     G_opt = graph_canon()
     glyphs = list(Glyph)
     for i in range(1000):

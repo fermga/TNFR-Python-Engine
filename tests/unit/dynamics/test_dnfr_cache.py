@@ -234,7 +234,7 @@ def test_cache_invalidated_on_graph_change(vectorized, monkeypatch):
         default_compute_delta_nfr(G, cache_size=2)
         nodes1, _ = cached_nodes_and_A(G, cache_size=2)
 
-        G.add_edge(2, 3)  # Cambia número de nodos y aristas
+        G.add_edge(2, 3)  # Changes the number of nodes and edges
         for attr, scale in ((THETA_PRIMARY, 0.1), (EPI_PRIMARY, 0.2), (VF_PRIMARY, 0.3)):
             G.nodes[3][attr] = scale * 4
         increment_edge_version(G)

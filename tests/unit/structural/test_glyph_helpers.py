@@ -23,5 +23,5 @@ def test_mix_groups():
     groups = {"ab": ("A", "B")}
     mixed = mix_groups(dist, groups)
     assert mixed["_ab"] == 1.0
-    # se conserva la distribución original
+    # The original distribution is preserved
     assert mixed["A"] == 0.5

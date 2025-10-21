@@ -32,19 +32,19 @@ def _prepare_graph_for_remesh(graph_canon, stable_steps: int = 3):
     return G, hist
 
 
-def test_aplicar_remesh_usa_parametro_personalizado(graph_canon):
+def test_apply_remesh_uses_custom_parameter(graph_canon):
     G, hist = _prepare_graph_for_remesh(graph_canon)
 
-    # Sin parámetro personalizado no se debería activar
+    # Without a custom parameter it should not trigger
     apply_remesh_if_globally_stable(G)
     assert "_last_remesh_step" not in G.graph
 
-    # Con parámetro personalizado se activa con 3 pasos estables
+    # With the custom parameter it triggers after 3 stable steps
     apply_remesh_if_globally_stable(G, stable_step_window=3)
     assert G.graph["_last_remesh_step"] == len(hist["stable_frac"])
 
 
-def test_aplicar_remesh_legacy_keyword_lanza_typeerror(graph_canon):
+def test_apply_remesh_legacy_keyword_raises_typeerror(graph_canon):
     G, _ = _prepare_graph_for_remesh(graph_canon)
 
     with pytest.raises(TypeError, match="pasos_estables_consecutivos"):
