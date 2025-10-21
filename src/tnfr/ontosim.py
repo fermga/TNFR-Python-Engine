@@ -111,8 +111,8 @@ def prepare_network(
     )
     G.graph.setdefault(
         "_CALLBACKS_DOC",
-        "Interfaz Γ(R): registrar pares (name, func) con firma (G, ctx) "
-        "en callbacks['before_step'|'after_step'|'on_remesh']",
+        "Γ(R) interface: register (name, func) pairs with signature (G, ctx) "
+        "in callbacks['before_step'|'after_step'|'on_remesh']",
     )
 
     if init_attrs:
