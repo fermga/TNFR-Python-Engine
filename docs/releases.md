@@ -139,6 +139,38 @@
   audit stored configurations. See :doc:`getting-started/migrating-remesh-window`
   for detailed steps.
 
+## 15.0.0 (legacy migration helpers removed)
+
+- Finalised the English-only payload contract by removing
+  :func:`tnfr.utils.migrations.migrate_legacy_phase_attributes` and
+  :func:`tnfr.utils.migrations.migrate_legacy_remesh_cooldown`. Projects must now
+  persist ``"theta"``, ``"phase"`` and ``"REMESH_COOLDOWN_WINDOW"`` directly
+  because the helpers no longer rewrite ``"fase"``, ``"θ"`` or
+  ``"REMESH_COOLDOWN_VENTANA"``.
+- The archival migration window announced in TNFR 14.x expired on 2025-03-31.
+  Upgrade pipelines should refuse to import graphs that still contain the
+  Spanish keys instead of attempting a best-effort rewrite.
+- Recommended pre-upgrade step::
+
+      def migrate_payload(node_data: dict[str, float]) -> dict[str, float]:
+          if "fase" in node_data:
+              node_data["theta"] = float(node_data.pop("fase"))
+          if "θ" in node_data:
+              node_data["theta"] = float(node_data.pop("θ"))
+          node_data["phase"] = float(node_data.get("theta", 0.0))
+          return node_data
+
+      def migrate_graph(G):
+          if "REMESH_COOLDOWN_VENTANA" in G.graph:
+              G.graph["REMESH_COOLDOWN_WINDOW"] = int(
+                  G.graph.pop("REMESH_COOLDOWN_VENTANA")
+              )
+          for _, data in G.nodes(data=True):
+              migrate_payload(data)
+
+- Added documentation in :doc:`getting-started/migrating-remesh-window` that
+  summarises the deadline and required checks before adopting this release.
+
 ## 9.0.0 (canonical preset rename)
 
 - Renamed the canonical tutorial preset to the English-only identifier

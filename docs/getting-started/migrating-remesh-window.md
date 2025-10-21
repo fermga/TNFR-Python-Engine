@@ -7,9 +7,12 @@ accepts only the English ``stable_step_window`` parameter. Calls that still use
 or forward the Spanish keyword raise :class:`TypeError` immediately so the
 deprecated configuration cannot silently slip through pipelines.
 
-Legacy graphs that still expose the Spanish cooldown metadata can be upgraded
-with :func:`tnfr.utils.migrations.migrate_legacy_remesh_cooldown`. The helper is
-kept solely for archival upgrades and will be removed in ``tnfr`` 15.0.0.
+Legacy graphs that still expose the Spanish cooldown metadata **had to be
+migrated before 2025-03-31**. That date marked the end of the archival
+compatibility window communicated in TNFR 14.x. Starting with ``tnfr`` 15.0.0
+the runtime no longer ships :func:`tnfr.utils.migrations.migrate_legacy_remesh_cooldown`
+or the phase attribute shim, so persisted payloads must already use the English
+keys.
 
 ## Who is affected?
 
@@ -42,9 +45,15 @@ kept solely for archival upgrades and will be removed in ``tnfr`` 15.0.0.
 
        apply_remesh_if_globally_stable(G, **normalize_remesh_kwargs(user_kwargs))
 
-3. Audit persisted graphs or configs that reference the Spanish name. Since the
-   operator no longer rewrites the value at runtime, the update must happen in
-   the stored artifact before executing TNFR 10.0.0.
+3. Audit persisted graphs or configs that reference the Spanish names **before
+   upgrading to ``tnfr`` 15.0.0**. Without the helper, the update must happen in
+   the stored artifact (for example by running a one-off script on the graph
+   metadata) prior to importing the new release.
+
+4. Verify that serialized graphs expose only ``"theta"``, ``"phase"`` and
+   ``"REMESH_COOLDOWN_WINDOW"``. Any remaining ``"fase"``, ``"θ"`` or
+   ``"REMESH_COOLDOWN_VENTANA"`` entries indicate the artifact still targets an
+   unsupported contract.
 
 ## Verification checklist
 
@@ -54,6 +63,9 @@ kept solely for archival upgrades and will be removed in ``tnfr`` 15.0.0.
   ``stable_step_window`` parameter.
 - Downstream logs or telemetry that templated the Spanish name should be
   updated to keep observability messages aligned with the supported API.
+- Graph validation pipelines must fail fast if a payload still contains the
+  deprecated Spanish keys after the deadline, because the helpers are no longer
+  available to rewrite them.
 
 Following these steps ensures remesh orchestration remains stable while the
 engine enforces the English-only parameter surface.
