@@ -4,7 +4,6 @@ import networkx as nx
 import pytest
 
 from tnfr.alias import get_theta_attr, set_theta, set_theta_attr
-from tnfr.utils import migrate_legacy_phase_attributes
 
 
 def test_get_theta_attr_ignores_legacy_key() -> None:
@@ -15,25 +14,6 @@ def test_get_theta_attr_ignores_legacy_key() -> None:
     assert value == 0.0
     assert "theta" not in data
     assert "phase" not in data
-
-
-def test_migration_restores_theta_access() -> None:
-    data = {"fase": math.pi / 3}
-
-    assert migrate_legacy_phase_attributes({0: data}) == 1
-    value = get_theta_attr(data, 0.0)
-
-    assert value == pytest.approx(math.pi / 3)
-    assert data["theta"] == pytest.approx(math.pi / 3)
-    assert data["phase"] == pytest.approx(math.pi / 3)
-
-
-def test_migration_converts_symbol_key() -> None:
-    data = {"θ": math.pi / 6}
-
-    assert migrate_legacy_phase_attributes({0: data}) == 1
-    assert data["theta"] == pytest.approx(math.pi / 6)
-    assert data["phase"] == pytest.approx(math.pi / 6)
 
 
 def test_set_theta_keeps_only_english_aliases() -> None:

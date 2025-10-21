@@ -1,6 +1,4 @@
-"""Remeshing tests.
-
-Warning: graphs serialized before the ``REMESH_COOLDOWN`` change must be migrated via ``tnfr.utils.migrations.migrate_legacy_remesh_cooldown`` before upgrading, because the engine ignores ``REMESH_COOLDOWN_VENTANA``."""
+"""Remeshing tests."""
 
 
 
