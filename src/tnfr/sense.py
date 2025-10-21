@@ -276,7 +276,7 @@ def sigma_vector_from_graph(
     """
 
     if not isinstance(G, nx.Graph):
-        raise TypeError("sigma_vector_from_graph requiere un networkx.Graph")
+        raise TypeError("sigma_vector_from_graph requires a networkx.Graph")
 
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
