@@ -32,6 +32,22 @@ The canonical operator identifiers are:
 | `transition` | Transition |
 | `recursivity` | Recursivity |
 
+## Pre-commit hooks
+
+Run the repository's pre-commit hooks to keep formatting aligned with the
+canonical configuration:
+
+```bash
+python -m pip install --upgrade pre-commit
+pre-commit install
+```
+
+The hooks execute [Black](https://github.com/psf/black) and
+[isort](https://github.com/PyCQA/isort) using the shared settings in
+`pyproject.toml`. They run automatically on each commit after installation, but
+you can also trigger them manually with `pre-commit run --all-files` before
+submitting changes.
+
 ## Commit message format
 
 Every commit **must** follow the `AGENT_COMMIT_TEMPLATE` documented for this
