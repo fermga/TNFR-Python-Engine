@@ -34,6 +34,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install .[test,numpy,yaml,orjson]
 
+      - name: Enforce English-only language policy
+        run: python scripts/check_language.py
+
       - name: Run unit tests
         if: matrix.python-version != '3.11'
         run: python -m pytest
