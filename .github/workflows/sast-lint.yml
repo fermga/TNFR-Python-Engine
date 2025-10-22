@@ -71,6 +71,9 @@ jobs:
           name: ${{ env.TOOLS_ARTIFACT }}
           path: ${{ env.VENV_PATH }}
 
+      - name: Fix Bandit permissions
+        run: chmod +x ${{ env.VENV_PATH }}/bin/bandit
+
       - name: Run Bandit
         run: |
           source ${{ env.VENV_PATH }}/bin/activate
