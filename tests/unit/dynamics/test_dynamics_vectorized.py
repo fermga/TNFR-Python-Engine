@@ -136,7 +136,7 @@ def test_vectorized_gradients_cached_and_reused():
     assert isinstance(cache.grad_phase_np, np.ndarray)
     before = cache.grad_total_np.copy()
 
-    # Ejecutar de nuevo para comprobar que los buffers se reutilizan
+    # Run again to confirm the buffers are reused
     default_compute_delta_nfr(G)
     _, state_after = _get_prep_state(G)
     cache2 = state_after.cache

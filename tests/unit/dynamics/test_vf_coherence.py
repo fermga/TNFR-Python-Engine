@@ -31,7 +31,7 @@ def test_vf_converge_to_neighbor_average_when_stable(graph_canon):
     G = graph_canon()
     G.add_edge(0, 1)
     inject_defaults(G)
-    # configuraciones para estabilidad
+    # Configure the weights so the dynamics stay in the stable regime
     G.graph["DNFR_WEIGHTS"] = {
         "phase": 1.0,
         "epi": 0.0,

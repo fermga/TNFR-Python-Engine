@@ -111,7 +111,7 @@ def _smooth_adjust_k(
 
     if state == STATE_DISSONANT:
         kG_t = kG_max
-        kL_t = 0.5 * (kL_min + kL_max)  # local medio para no perder plasticidad
+        kL_t = 0.5 * (kL_min + kL_max)  # keep kL mid-range to preserve local plasticity
     elif state == STATE_STABLE:
         kG_t = kG_min
         kL_t = kL_min
