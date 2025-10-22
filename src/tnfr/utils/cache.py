@@ -23,7 +23,7 @@ from collections.abc import (
 from contextlib import contextmanager
 from functools import lru_cache
 from dataclasses import dataclass
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from cachetools import LRUCache
 import networkx as nx
@@ -57,7 +57,12 @@ __all__ = (
     "node_set_checksum",
     "stable_json",
     "configure_graph_cache_limits",
+    "DNFR_PREP_STATE_KEY",
+    "DnfrPrepState",
 )
+
+if TYPE_CHECKING:  # pragma: no cover - typing aide
+    from ..dynamics.dnfr import DnfrCache
 
 # Key used to store the node set checksum in a graph's ``graph`` attribute.
 NODE_SET_CHECKSUM_KEY = "_node_set_checksum_cache"
@@ -370,6 +375,84 @@ class EdgeCacheState:
 
 _GRAPH_CACHE_MANAGER_KEY = "_tnfr_cache_manager"
 _GRAPH_CACHE_CONFIG_KEY = "_tnfr_cache_config"
+DNFR_PREP_STATE_KEY = "_dnfr_prep_state"
+
+
+@dataclass(slots=True)
+class DnfrPrepState:
+    """State container coordinating ΔNFR preparation caches."""
+
+    cache: "DnfrCache"
+    cache_lock: threading.RLock
+    vector_lock: threading.RLock
+
+
+def _new_dnfr_cache() -> "DnfrCache":
+    """Return an empty :class:`~tnfr.dynamics.dnfr.DnfrCache` instance."""
+
+    from ..dynamics.dnfr import DnfrCache
+
+    return DnfrCache(
+        idx={},
+        theta=[],
+        epi=[],
+        vf=[],
+        cos_theta=[],
+        sin_theta=[],
+        neighbor_x=[],
+        neighbor_y=[],
+        neighbor_epi_sum=[],
+        neighbor_vf_sum=[],
+        neighbor_count=[],
+        neighbor_deg_sum=[],
+    )
+
+
+def _build_dnfr_prep_state(
+    graph: MutableMapping[str, Any],
+    previous: DnfrPrepState | None = None,
+) -> DnfrPrepState:
+    """Construct a :class:`DnfrPrepState` and mirror it on ``graph``."""
+
+    cache_lock: threading.RLock
+    vector_lock: threading.RLock
+    if isinstance(previous, DnfrPrepState):
+        cache_lock = previous.cache_lock
+        vector_lock = previous.vector_lock
+    else:
+        cache_lock = threading.RLock()
+        vector_lock = threading.RLock()
+    state = DnfrPrepState(
+        cache=_new_dnfr_cache(),
+        cache_lock=cache_lock,
+        vector_lock=vector_lock,
+    )
+    graph["_dnfr_prep_cache"] = state.cache
+    return state
+
+
+def _coerce_dnfr_state(
+    graph: MutableMapping[str, Any],
+    current: Any,
+) -> DnfrPrepState:
+    """Return ``current`` normalised into :class:`DnfrPrepState`."""
+
+    if isinstance(current, DnfrPrepState):
+        graph["_dnfr_prep_cache"] = current.cache
+        return current
+    try:
+        from ..dynamics.dnfr import DnfrCache
+    except Exception:  # pragma: no cover - defensive import
+        DnfrCache = None  # type: ignore[assignment]
+    if DnfrCache is not None and isinstance(current, DnfrCache):
+        state = DnfrPrepState(
+            cache=current,
+            cache_lock=threading.RLock(),
+            vector_lock=threading.RLock(),
+        )
+        graph["_dnfr_prep_cache"] = current
+        return state
+    return _build_dnfr_prep_state(graph)
 
 
 def _graph_cache_manager(graph: MutableMapping[str, Any]) -> CacheManager:
@@ -380,6 +463,23 @@ def _graph_cache_manager(graph: MutableMapping[str, Any]) -> CacheManager:
     config = graph.get(_GRAPH_CACHE_CONFIG_KEY)
     if isinstance(config, dict):
         manager.configure_from_mapping(config)
+    def _dnfr_factory() -> DnfrPrepState:
+        return _build_dnfr_prep_state(graph)
+
+    def _dnfr_reset(current: Any) -> DnfrPrepState:
+        if isinstance(current, DnfrPrepState):
+            return _build_dnfr_prep_state(graph, current)
+        return _build_dnfr_prep_state(graph)
+
+    manager.register(
+        DNFR_PREP_STATE_KEY,
+        _dnfr_factory,
+        reset=_dnfr_reset,
+    )
+    manager.update(
+        DNFR_PREP_STATE_KEY,
+        lambda current: _coerce_dnfr_state(graph, current),
+    )
     return manager
 
 
@@ -618,6 +718,7 @@ def _reset_edge_caches(graph: Any, G: Any) -> None:
     """Clear caches affected by edge updates."""
 
     EdgeCacheManager(graph).clear()
+    _graph_cache_manager(graph).clear(DNFR_PREP_STATE_KEY)
     mark_dnfr_prep_dirty(G)
     clear_node_repr_cache()
     for key in EDGE_VERSION_CACHE_KEYS:

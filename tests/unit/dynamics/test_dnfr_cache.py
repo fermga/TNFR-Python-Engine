@@ -24,6 +24,7 @@ from tnfr.utils import (
     cached_nodes_and_A,
     increment_edge_version,
 )
+from tnfr.utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 
 
 @contextmanager
@@ -75,6 +76,13 @@ def _collect_dnfr(G):
     return [float(G.nodes[n].get(DNFR_PRIMARY, 0.0)) for n in G.nodes]
 
 
+def _get_prep_state(G):
+    manager = _graph_cache_manager(G.graph)
+    state = manager.get(DNFR_PREP_STATE_KEY)
+    assert isinstance(state, DnfrPrepState)
+    return manager, state
+
+
 def test_prepare_dnfr_data_populates_degree_cache_without_topology_weight():
     np = pytest.importorskip("numpy")
 
@@ -91,10 +99,14 @@ def test_prepare_dnfr_data_populates_degree_cache_without_topology_weight():
     assert getattr(deg_array, "shape", None) == (len(deg_list),)
     np.testing.assert_allclose(deg_array, np.array([1.0, 2.0, 1.0]))
 
+    manager, state = _get_prep_state(G)
     cache = data["cache"]
     assert cache is not None
     assert cache.deg_list is deg_list
     assert cache.deg_array is deg_array
+    stats = manager.get_metrics(DNFR_PREP_STATE_KEY)
+    assert stats.misses == 1
+    assert stats.hits == 0
 
 
 def test_accumulate_neighbors_numpy_prefers_degree_cache():
@@ -103,7 +115,9 @@ def test_accumulate_neighbors_numpy_prefers_degree_cache():
     G = _setup_graph()
 
     data = _prepare_dnfr_data(G)
+    manager, state = _get_prep_state(G)
     cache = data["cache"]
+    assert state.cache is cache
 
     fake_deg = np.array([10.0, 20.0, 30.0])
     data["deg_array"] = fake_deg
@@ -152,6 +166,8 @@ def test_accumulate_neighbors_numpy_prefers_degree_cache():
         np=np,
     )
     np.testing.assert_allclose(count2, np.array([1.0, 2.0, 1.0]))
+    stats = manager.get_metrics(DNFR_PREP_STATE_KEY)
+    assert stats.misses == 1
 
 
 def test_degree_cache_refreshes_after_graph_mutation():
@@ -160,8 +176,13 @@ def test_degree_cache_refreshes_after_graph_mutation():
     G = _setup_graph()
 
     data_before = _prepare_dnfr_data(G)
+    manager, state_before = _get_prep_state(G)
     cache_before = data_before["cache"]
     assert cache_before is not None
+    assert state_before.cache is cache_before
+    stats = manager.get_metrics(DNFR_PREP_STATE_KEY)
+    assert stats.misses == 1
+    assert stats.hits == 0
 
     deg_array_before = np.array(data_before["deg_array"], copy=True)
     np.testing.assert_allclose(deg_array_before, np.array([1.0, 2.0, 1.0]))
@@ -190,9 +211,11 @@ def test_degree_cache_refreshes_after_graph_mutation():
     increment_edge_version(G)
 
     data_after = _prepare_dnfr_data(G)
+    _, state_after = _get_prep_state(G)
     cache_after = data_after["cache"]
     assert cache_after is not None
     assert cache_after is not cache_before
+    assert state_after.cache is cache_after
 
     expected_deg = np.array([2.0, 2.0, 2.0])
     np.testing.assert_allclose(data_after["deg_array"], expected_deg)
@@ -219,6 +242,16 @@ def test_degree_cache_refreshes_after_graph_mutation():
     )
     np.testing.assert_allclose(count_new, expected_deg)
     np.testing.assert_allclose(deg_array_before, np.array([1.0, 2.0, 1.0]))
+    stats_after = manager.get_metrics(DNFR_PREP_STATE_KEY)
+    assert stats_after.misses == 2
+    assert stats_after.hits == 0
+
+    data_third = _prepare_dnfr_data(G)
+    cache_third = data_third["cache"]
+    assert cache_third is cache_after
+    stats_final = manager.get_metrics(DNFR_PREP_STATE_KEY)
+    assert stats_final.misses == 2
+    assert stats_final.hits == 1
 
 
 @pytest.mark.parametrize("vectorized", [False, True])
@@ -283,7 +316,8 @@ def test_neighbor_sum_buffers_reused_and_results_stable(vectorized, monkeypatch)
     with context_factory():
         default_compute_delta_nfr(G)
     first = _collect_dnfr(G)
-    cache = G.graph.get("_dnfr_prep_cache")
+    manager, state = _get_prep_state(G)
+    cache = state.cache
     assert cache is not None
 
     list_buffers = (
@@ -418,6 +452,10 @@ def test_neighbor_sum_buffers_reused_and_results_stable(vectorized, monkeypatch)
     for before, after in zip(first, second):
         assert math.isfinite(after)
         assert before == pytest.approx(after)
+
+    stats = manager.get_metrics(DNFR_PREP_STATE_KEY)
+    assert stats.misses >= 1
+    assert stats.hits >= 1
 
 
 def test_cache_invalidated_on_node_rename():

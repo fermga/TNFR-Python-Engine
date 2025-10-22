@@ -6,6 +6,7 @@ import pytest
 from tnfr.alias import collect_attr, set_attr
 from tnfr.constants import get_aliases
 from tnfr.dynamics import default_compute_delta_nfr
+from tnfr.utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 
 
 ALIAS_THETA = get_aliases("THETA")
@@ -44,6 +45,13 @@ def _collect_dnfr(G):
     return collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
 
 
+def _get_prep_state(G):
+    manager = _graph_cache_manager(G.graph)
+    state = manager.get(DNFR_PREP_STATE_KEY)
+    assert isinstance(state, DnfrPrepState)
+    return manager, state
+
+
 def test_neighbor_means_vectorized_matches_python(monkeypatch):
     pytest.importorskip("numpy")
 
@@ -63,7 +71,8 @@ def test_neighbor_mean_workspaces_reused(monkeypatch):
 
     G = _build_graph()
     default_compute_delta_nfr(G)
-    cache = G.graph.get("_dnfr_prep_cache")
+    manager, state = _get_prep_state(G)
+    cache = state.cache
     assert cache is not None
 
     inv_first = cache.neighbor_inv_count_np
@@ -80,13 +89,16 @@ def test_neighbor_mean_workspaces_reused(monkeypatch):
         default_compute_delta_nfr(G)
     default_compute_delta_nfr(G)
 
-    cache_after = G.graph.get("_dnfr_prep_cache")
+    _, state_after = _get_prep_state(G)
+    cache_after = state_after.cache
     assert cache_after is cache
     assert cache_after.neighbor_inv_count_np is inv_first
     assert cache_after.neighbor_cos_avg_np is cos_first
     assert cache_after.neighbor_sin_avg_np is sin_first
     assert cache_after.neighbor_mean_tmp_np is tmp_first
     assert cache_after.neighbor_mean_length_np is length_first
+    stats = manager.get_metrics(DNFR_PREP_STATE_KEY)
+    assert stats.hits >= 1
 
 
 def test_pure_python_parallel_matches_serial(monkeypatch):

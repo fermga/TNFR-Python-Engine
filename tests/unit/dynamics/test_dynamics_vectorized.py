@@ -26,6 +26,7 @@ from tnfr.constants import get_aliases
 from tnfr.alias import collect_attr, get_attr, set_attr
 from tnfr.helpers.numeric import angle_diff
 from tnfr.utils import mark_dnfr_prep_dirty
+from tnfr.utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
@@ -57,6 +58,13 @@ def _setup_graph():
     return G
 
 
+def _get_prep_state(G):
+    manager = _graph_cache_manager(G.graph)
+    state = manager.get(DNFR_PREP_STATE_KEY)
+    assert isinstance(state, DnfrPrepState)
+    return manager, state
+
+
 @pytest.mark.parametrize("disable_numpy", [False, True])
 def test_default_compute_delta_nfr_paths(disable_numpy, monkeypatch):
     if not disable_numpy:
@@ -75,7 +83,8 @@ def test_default_vectorization_auto_enabled_when_numpy_available():
     np = pytest.importorskip("numpy")
     G = _setup_graph()
     default_compute_delta_nfr(G)
-    cache = G.graph.get("_dnfr_prep_cache")
+    _, state = _get_prep_state(G)
+    cache = state.cache
     assert cache is not None
     assert cache.theta_np is not None
     assert cache.edge_src is not None and isinstance(cache.edge_src, np.ndarray)
@@ -87,7 +96,8 @@ def test_vectorization_falls_back_without_numpy(monkeypatch):
     G = _setup_graph()
     with numpy_disabled(monkeypatch):
         default_compute_delta_nfr(G)
-    cache = G.graph.get("_dnfr_prep_cache")
+    _, state = _get_prep_state(G)
+    cache = state.cache
     assert cache is not None
     assert cache.theta_np is None
     assert cache.edge_src is None
@@ -113,7 +123,8 @@ def test_numpy_available_when_vectorized_disabled(monkeypatch):
 
     assert dnfr_accelerated == pytest.approx(dnfr_baseline)
 
-    cache = accelerated.graph.get("_dnfr_prep_cache")
+    _, state = _get_prep_state(accelerated)
+    cache = state.cache
     assert cache is not None
     assert isinstance(cache.edge_src, np.ndarray)
     assert isinstance(cache.neighbor_x_np, np.ndarray)
@@ -123,19 +134,23 @@ def test_vectorized_gradients_cached_and_reused():
     np = pytest.importorskip("numpy")
     G = _build_weighted_graph(nx.path_graph, 4, 0.3)
     default_compute_delta_nfr(G)
-    cache = G.graph.get("_dnfr_prep_cache")
+    manager, state = _get_prep_state(G)
+    cache = state.cache
     assert isinstance(cache.grad_total_np, np.ndarray)
     assert isinstance(cache.grad_phase_np, np.ndarray)
     before = cache.grad_total_np.copy()
 
     # Ejecutar de nuevo para comprobar que los buffers se reutilizan
     default_compute_delta_nfr(G)
-    cache2 = G.graph.get("_dnfr_prep_cache")
+    _, state_after = _get_prep_state(G)
+    cache2 = state_after.cache
     assert cache2 is cache
     assert cache2.grad_total_np is cache.grad_total_np
     assert cache2.grad_phase_np is cache.grad_phase_np
     after = cache2.grad_total_np
     assert after.shape == before.shape
+    stats = manager.get_metrics(DNFR_PREP_STATE_KEY)
+    assert stats.hits >= 1
 
 
 def test_compute_dnfr_auto_vectorizes_when_numpy_present(monkeypatch):
