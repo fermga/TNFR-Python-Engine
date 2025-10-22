@@ -5,6 +5,7 @@ from typing import Any, Iterable
 
 from ..config.presets import PREFERRED_PRESET_NAMES
 from ..gamma import GAMMA_REGISTRY
+from ..telemetry.verbosity import TELEMETRY_VERBOSITY_LEVELS
 from ..types import ArgSpec
 from .utils import spec
 
@@ -13,7 +14,7 @@ _PRESET_HELP = "Available presets: {}.".format(
     ", ".join(PREFERRED_PRESET_NAMES),
 )
 
-TELEMETRY_VERBOSITY_CHOICES = ("basic", "detailed", "debug")
+TELEMETRY_VERBOSITY_CHOICES = TELEMETRY_VERBOSITY_LEVELS
 
 
 GRAMMAR_ARG_SPECS: tuple[ArgSpec, ...] = (
