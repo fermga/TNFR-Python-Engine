@@ -98,16 +98,22 @@ _register_metrics_preset(
 )
 
 _detailed_spec = MetricsVerbositySpec(
-    name="debug",
+    name="detailed",
     enable_phase_sync=True,
     enable_sigma=True,
     enable_aggregate_si=True,
-    enable_advanced=True,
+    enable_advanced=False,
     attach_coherence_hooks=True,
-    attach_diagnosis_hooks=True,
+    attach_diagnosis_hooks=False,
 )
 _register_metrics_preset(_detailed_spec)
-_register_metrics_preset(_detailed_spec._replace(name="detailed"))
+_register_metrics_preset(
+    _detailed_spec._replace(
+        name="debug",
+        enable_advanced=True,
+        attach_diagnosis_hooks=True,
+    )
+)
 
 
 _METRICS_BASE_HISTORY_KEYS = ("C_steps", "stable_frac", "delta_Si", "B")

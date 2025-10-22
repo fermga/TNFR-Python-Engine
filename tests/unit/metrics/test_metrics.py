@@ -289,11 +289,46 @@ def test_metrics_detailed_verbosity_runs_collectors(monkeypatch, graph_canon):
     G.graph["METRICS"]["verbosity"] = "detailed"
     _metrics_step(G)
 
-    assert calls == ["phase", "sigma", "aggregate", "advanced"]
+    assert calls == ["phase", "sigma", "aggregate"]
     hist = G.graph["history"]
     assert GLYPH_LOAD_STABILIZERS_KEY in hist
     assert "phase_sync" in hist
     assert "Si_mean" in hist
+
+    calls_debug: list[str] = []
+
+    def record_debug(name: str):
+        def _rec(*_args, **_kwargs):
+            calls_debug.append(name)
+
+        return _rec
+
+    monkeypatch.setattr(
+        "tnfr.metrics.core._update_phase_sync",
+        record_debug("phase"),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        "tnfr.metrics.core._update_sigma",
+        record_debug("sigma"),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        "tnfr.metrics.core._aggregate_si",
+        record_debug("aggregate"),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        "tnfr.metrics.core._compute_advanced_metrics",
+        record_debug("advanced"),
+        raising=False,
+    )
+
+    G_debug = graph_canon()
+    G_debug.graph["METRICS"]["verbosity"] = "debug"
+    _metrics_step(G_debug)
+
+    assert calls_debug == ["phase", "sigma", "aggregate", "advanced"]
 
 
 def test_register_metrics_callbacks_respects_verbosity(monkeypatch, graph_canon):
@@ -318,6 +353,30 @@ def test_register_metrics_callbacks_respects_verbosity(monkeypatch, graph_canon)
     G.graph["METRICS"]["verbosity"] = "basic"
     register_metrics_callbacks(G)
     assert recorded == []
+
+    recorded_detailed: list[str] = []
+
+    def _recorder_detailed(tag: str):
+        def _inner(_G):
+            recorded_detailed.append(tag)
+
+        return _inner
+
+    monkeypatch.setattr(
+        "tnfr.metrics.core.register_coherence_callbacks",
+        _recorder_detailed("coherence"),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        "tnfr.metrics.core.register_diagnosis_callbacks",
+        _recorder_detailed("diagnosis"),
+        raising=False,
+    )
+
+    G_detailed = graph_canon()
+    G_detailed.graph["METRICS"]["verbosity"] = "detailed"
+    register_metrics_callbacks(G_detailed)
+    assert recorded_detailed == ["coherence"]
 
     recorded_high: list[str] = []
 

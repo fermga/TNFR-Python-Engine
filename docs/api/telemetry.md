@@ -67,10 +67,12 @@ The metrics orchestrator follows the same pattern via `G.graph["METRICS"]["verbo
 - `"basic"` keeps the coherence and stability core (C(t), ΔSi, B) while skipping phase sync,
   Σ⃗ statistics, Si aggregates, glyph timing, and the coherence/diagnosis callback hooks. This is
   useful for lightweight runs or smoke tests.
-- `"detailed"` and `"debug"` execute the full collector suite (`_update_phase_sync`,
-  `_update_sigma`, `_aggregate_si`, `_compute_advanced_metrics`) and register the auxiliary
-  coherence/diagnosis observers. `"debug"` is the default so existing deployments continue to emit
-  the rich telemetry payloads.
+- `"detailed"` enables `_update_phase_sync`, `_update_sigma`, and `_aggregate_si` while attaching
+  the coherence observers. It deliberately skips `_compute_advanced_metrics` and the diagnosis
+  callbacks so you get richer stability traces without the most expensive glyph timing jobs.
+- `"debug"` retains the entire collector suite, including `_compute_advanced_metrics` and the
+  diagnosis callbacks, to mirror the legacy payload. This remains the default verbosity for
+  investigations that require a full glyph and diagnosis audit trail.
 
 As with traces, an explicit override of `METRICS` parameters (for example `save_by_node` or
 `normalize_series`) still applies regardless of the verbosity preset.
