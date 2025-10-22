@@ -159,7 +159,7 @@ def test_append_metric_respects_historydict_counters():
 
 
 # ---------------------------------------------------------------------------
-# ensure_history integration (ventanas)
+# ensure_history integration (window handling)
 # ---------------------------------------------------------------------------
 
 def test_history_maxlen_and_cleanup(graph_canon):
@@ -173,7 +173,7 @@ def test_history_maxlen_and_cleanup(graph_canon):
     append_metric(hist, "b", 2)
     append_metric(hist, "c", 3)
 
-    ensure_history(G)  # fuerza limpieza
+    ensure_history(G)  # force cleanup
     assert len(hist) == 2
 
     series = hist.setdefault("series", [])
@@ -190,7 +190,7 @@ def test_history_least_used_is_preserved(graph_canon):
     G.graph["HISTORY_MAXLEN"] = 2
 
     hist = ensure_history(G)
-    hist.setdefault("a", [])  # longitud 0 pero se usa
+    hist.setdefault("a", [])  # zero length but still in use
     hist.setdefault("b", []).append(1)
     hist.setdefault("c", []).append(1)
     _ = hist.get_increment("a")
