@@ -1,0 +1,103 @@
+name: Security Dashboard
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - CodeQL Analysis
+      - Dependency Vulnerability Audit
+      - SAST Lint
+    types:
+      - completed
+
+permissions:
+  contents: read
+  actions: read
+  security-events: read
+  dependabot: read
+
+jobs:
+  build-dashboard:
+    name: Consolidate security signals
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Create artifact workspace
+        run: mkdir -p artifacts
+
+      - name: Download CodeQL SARIF
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: codeql-analysis.yml
+          name: codeql-python-results
+          path: artifacts/codeql
+          if_no_artifact_found: warn
+
+      - name: Download pip-audit report
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: pip-audit.yml
+          name: pip-audit-report
+          path: artifacts/pip-audit
+          if_no_artifact_found: warn
+
+      - name: Download Bandit SARIF
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: sast-lint.yml
+          name: bandit-sarif
+          path: artifacts/bandit
+          if_no_artifact_found: warn
+
+      - name: Download Semgrep SARIF
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: sast-lint.yml
+          name: semgrep-sarif
+          path: artifacts/semgrep
+          if_no_artifact_found: warn
+
+      - name: Generate security dashboard
+        id: generate
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          REPORT_DIR="docs/security/reports"
+          REPORT_BASENAME="security-dashboard-$(date -u +%Y%m%dT%H%M%SZ)"
+          REPORT_PATH="$REPORT_DIR/$REPORT_BASENAME.md"
+          JSON_PATH="$REPORT_DIR/$REPORT_BASENAME.json"
+          python scripts/generate_security_dashboard.py \
+            --artifact-root artifacts \
+            --output "$REPORT_PATH" \
+            --json-output "$JSON_PATH" \
+            --run-url "$RUN_URL"
+          echo "report=$REPORT_PATH" >> "$GITHUB_OUTPUT"
+          echo "json=$JSON_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Upload dashboard artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-dashboard
+          path: |
+            ${{ steps.generate.outputs.report }}
+            ${{ steps.generate.outputs.json }}
+
+      - name: Publish notification
+        env:
+          SECURITY_WEBHOOK_URL: ${{ secrets.SECURITY_WEBHOOK_URL }}
+        run: |
+          python scripts/post_security_summary.py \
+            --summary-json "${{ steps.generate.outputs.json }}" \
+            --summary-md "${{ steps.generate.outputs.report }}"
