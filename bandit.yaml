@@ -1,0 +1,9 @@
+# Bandit configuration capturing documented exceptions for TNFR.
+#
+# B610 warns about Django's ``QuerySet.extra`` usage, but ``tnfr.alias.set_attr_and_cache``
+# only accepts internal callables used for telemetry hooks; it never builds SQL strings.
+# B324 warns about SHA1 usage; in ``tnfr.operators.remesh`` the hash creates short,
+# deterministic topology fingerprints for logging/caching and is not security-sensitive.
+skips:
+  - B610
+  - B324
