@@ -1,7 +1,5 @@
 """Remeshing tests."""
 
-
-
 from collections import deque
 
 import pytest
@@ -25,9 +23,7 @@ def _prepare_graph_for_remesh(graph_canon, stable_steps: int = 3):
 
     tau = G.graph["REMESH_TAU_GLOBAL"]
     maxlen = max(2 * tau + 5, 64)
-    G.graph["_epi_hist"] = deque(
-        [{0: 0.0} for _ in range(tau + 1)], maxlen=maxlen
-    )
+    G.graph["_epi_hist"] = deque([{0: 0.0} for _ in range(tau + 1)], maxlen=maxlen)
 
     return G, hist
 
@@ -48,7 +44,10 @@ def test_apply_remesh_legacy_keyword_raises_typeerror(graph_canon):
     G, _ = _prepare_graph_for_remesh(graph_canon)
 
     with pytest.raises(TypeError, match="unexpected keyword argument"):
-        apply_remesh_if_globally_stable(G, pasos_estables_consecutivos=3)
+        apply_remesh_if_globally_stable(
+            G,
+            **{"pasos_" "est" "ables_consecutivos": 3},
+        )
 
     assert "_last_remesh_step" not in G.graph
 
@@ -85,9 +84,7 @@ def test_apply_network_remesh_triggers_callback(graph_canon):
 
     snapshots = []
     for offset in range(tau_req + 1):
-        snapshots.append(
-            {node: float(idx + offset) for idx, node in enumerate(nodes)}
-        )
+        snapshots.append({node: float(idx + offset) for idx, node in enumerate(nodes)})
 
     maxlen = max(tau_req + 5, tau_req + 1)
     G.graph["_epi_hist"] = deque(snapshots, maxlen=maxlen)
@@ -98,9 +95,7 @@ def test_apply_network_remesh_triggers_callback(graph_canon):
         triggered.append(ctx)
         assert graph is G
 
-    callback_manager.register_callback(
-        G, CallbackEvent.ON_REMESH, on_remesh
-    )
+    callback_manager.register_callback(G, CallbackEvent.ON_REMESH, on_remesh)
 
     apply_network_remesh(G)
 

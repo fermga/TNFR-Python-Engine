@@ -111,6 +111,9 @@ captured in `pyproject.toml`, so local runs match CI expectations:
 - `python -m pydocstyle --add-ignore=D202 src/tnfr/selector.py src/tnfr/utils/data.py src/tnfr/utils/graph.py`
   applies the docstring linter with the single extra ignore used in automation,
   keeping the docstring style gate aligned with the workflow.
+- `python scripts/check_language.py` enforces the English-only policy by
+  flagging tracked files that contain the retired Spanish compatibility tokens
+  or accented characters.
 - `python -m mypy src/tnfr` enforces the TNFR-aware typing contracts with
   `allow_untyped_defs = false`, `allow_untyped_globals = false`,
   `allow_untyped_calls = false`, and `show_error_codes = true` so every
@@ -131,6 +134,23 @@ To forward additional flags to `pytest`, append them after `--`, e.g.
 
 The [README Tests section](README.md#tests) repeats these instructions so that
 contributors can find them quickly while browsing the project overview.
+
+### English-only lint
+
+The `scripts/check_language.py` helper powers the Spanish language guard that
+CI now runs alongside Flake8 and the other quality gates. It scans the tracked
+files for a configurable set of disallowed Spanish keywords and accented
+characters, exiting with a non-zero status when any matches are found. The
+default list targets the legacy compatibility tokens (`est<span></span>able`, `trans<span></span>icion`,
+`transici&oacute;n`, `diso<span></span>nante`, etc.) that must never re-enter the codebase. You
+can extend or override the defaults by editing the
+`[tool.tnfr.language_check]` table in `pyproject.toml`.
+
+When the guard reports violations, rewrite the offending strings to their
+English equivalents before committing. For documentation or tests that need to
+mention the historical tokens for migration guidance, use escaped sequences
+(`\u00f3`, HTML entities, or string literal concatenation) so the underlying
+files stay ASCII-only.
 
 Make sure to honor the patterns in `.gitignore` so that dependency and build
 artifacts (e.g., `node_modules/` or `dist/`) are not committed.

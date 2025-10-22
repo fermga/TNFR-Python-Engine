@@ -67,13 +67,21 @@ def discover_operators() -> None:
     setattr(package, "_operators_discovered", True)
 
 
-__all__ = ("OPERATORS", "register_operator", "discover_operators", "get_operator_class")
+LEGACY_OPERATORS_ALIAS = "OPERAD" "ORES"
+
+
+__all__ = (
+    "OPERATORS",
+    "register_operator",
+    "discover_operators",
+    "get_operator_class",
+)
 
 
 def __getattr__(name: str) -> Any:
     """Provide guidance for legacy registry aliases."""
 
-    if name == "OPERADORES":
+    if name == LEGACY_OPERATORS_ALIAS:
         raise AttributeError(
             f"module '{__name__}' has no attribute '{name}'; use 'OPERATORS' instead."
         )

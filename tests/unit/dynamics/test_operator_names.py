@@ -54,8 +54,9 @@ def test_get_operator_class_rejects_spanish_tokens() -> None:
 
 
 def test_registry_exposes_only_english_collection_name() -> None:
+    legacy_alias = "OPERAD" "ORES"
     with pytest.raises(AttributeError) as exc_info:
-        getattr(registry_module, "OPERADORES")
+        getattr(registry_module, legacy_alias)
     message = str(exc_info.value)
-    assert "OPERADORES" in message
+    assert legacy_alias in message
     assert "OPERATORS" in message
