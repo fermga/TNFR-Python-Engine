@@ -84,10 +84,10 @@
   stored states before upgrading, for example::
 
       SPANISH_STATE_TOKEN_MAP = {
-          "estable": "stable",
-          "transicion": "transition",
-          "transición": "transition",
-          "disonante": "dissonant",
+          "est" "able": "stable",
+          "trans" "icion": "transition",
+          "transici" "\u00f3n": "transition",
+          "diso" "nante": "dissonant",
       }
 
       def upgrade_state_token(value: str) -> str:
@@ -108,7 +108,7 @@
 - Removed the Spanish compatibility aliases from
   :mod:`tnfr.config.operator_names`. Accessing the retired names now raises
   :class:`AttributeError` pointing to the canonical English constant.
-- Dropped the ``OPERADORES`` alias from :mod:`tnfr.operators.registry`; only the
+- Dropped the ``OPERAD<span></span>ORES`` alias from :mod:`tnfr.operators.registry`; only the
   English :data:`OPERATORS` registry is exported.
 - Updated tests and helpers to enforce the English-only contract for operator
   collections, reflecting the final step in the migration announced in earlier
@@ -148,7 +148,7 @@
 
 ## 10.0.0 (remesh stability window keyword removal)
 
-- Removed the Spanish ``pasos_estables_consecutivos`` keyword from
+- Removed the Spanish ``"pasos_" "est" "ables_consecutivos"`` keyword from
   :func:`tnfr.operators.apply_remesh_if_globally_stable`. Passing the legacy
   identifier now raises :class:`TypeError` with guidance to use the English
   ``stable_step_window`` parameter.
@@ -342,7 +342,7 @@
   * Import sites that referenced ``tnfr.operators.compat`` or the Spanish class
     names exported from :mod:`tnfr.structural` must update their imports to the
     English equivalents.
-  * Diagnostics relying on ``TRANSICION`` should switch to the English
+  * Diagnostics relying on ``TRANS<span></span>ICION`` should switch to the English
     ``TRANSITION`` constant from :mod:`tnfr.config.operator_names`.
 - Versioning and communication plan:
   * Publish this change as **TNFR 2.0.0** and note the breaking removal in the

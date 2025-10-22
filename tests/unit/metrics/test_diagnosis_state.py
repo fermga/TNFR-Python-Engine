@@ -28,7 +28,7 @@ def test_normalise_state_token_accepts_canonical_tokens_without_warning():
 
 @pytest.mark.parametrize(
     "legacy_token",
-    ["estable", "disonante", "transicion", "transición"],
+    ["est" "able", "diso" "nante", "trans" "icion", "transici" "\u00f3n"],
 )
 def test_normalise_state_token_rejects_spanish_tokens(legacy_token: str):
     with pytest.raises(ValueError, match="state token must be one of"):

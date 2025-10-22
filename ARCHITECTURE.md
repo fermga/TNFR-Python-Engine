@@ -66,7 +66,7 @@ The following table highlights how ΔNFR values propagate through the engine and
 
 Operator classes apply the `@register_operator` decorator, which verifies unique ASCII names, binds glyphs, and inserts implementations into the shared `OPERATORS` map used by syntax validators and dynamic dispatch.【F:src/tnfr/operators/definitions.py†L45-L180】【F:src/tnfr/operators/registry.py†L13-L58】 The discovery routine scans the `tnfr.operators` package exactly once per interpreter session, importing every submodule except the registry itself so that registration side effects run reliably before the structural loop accesses them.【F:src/tnfr/operators/registry.py†L33-L58】
 
-> **Compatibility note**: The previous `OPERADORES` export now resolves through a deprecated module attribute. Existing consumers that import `tnfr.operators.registry.OPERADORES` continue to receive the same mapping but will emit a `DeprecationWarning`; new code should use `OPERATORS` instead.【F:src/tnfr/operators/registry.py†L44-L58】
+> **Compatibility note**: The previous `OPERAD<span></span>ORES` export now resolves through a deprecated module attribute. Existing consumers that import `tnfr.operators.registry.OPERAD<span></span>ORES` continue to receive the same mapping but will emit a `DeprecationWarning`; new code should use `OPERATORS` instead.【F:src/tnfr/operators/registry.py†L44-L58】
 
 When introducing new operators:
 

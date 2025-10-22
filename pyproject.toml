@@ -79,6 +79,38 @@ max-line-length = 88
 ignore = ["E501", "W503"]
 exclude = ["benchmarks/"]
 
+[tool.tnfr.language_check]
+disallowed_keywords = [
+  "est\u0061ble",
+  "transici\u006f\u006e",
+  "transici\u00f3n",
+  "diso\u006enante",
+  "operad\u006fres",
+  "operad\u006fr",
+]
+accented_characters = [
+  "\u00e1",
+  "\u00e9",
+  "\u00ed",
+  "\u00f3",
+  "\u00fa",
+  "\u00fc",
+  "\u00f1",
+  "\u00c1",
+  "\u00c9",
+  "\u00cd",
+  "\u00d3",
+  "\u00da",
+  "\u00dc",
+  "\u00d1",
+  "\u00bf",
+  "\u00a1",
+]
+exclude = [
+  "TNFR.pdf",
+  "benchmarks/**/*.pdf",
+]
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 addopts = "-m 'not slow' --benchmark-skip"

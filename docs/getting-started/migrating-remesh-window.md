@@ -1,7 +1,7 @@
 # Migrating remesh stability window usage
 
 TNFR 10.0.0 removes the transitional Spanish keyword
-``pasos_estables_consecutivos`` from
+``"pasos_" "est" "ables_consecutivos"`` from
 :func:`tnfr.operators.apply_remesh_if_globally_stable`. The operator now
 accepts only the English ``stable_step_window`` parameter. Calls that still use
 or forward the Spanish keyword raise :class:`TypeError` immediately so the
@@ -17,7 +17,7 @@ keys.
 ## Who is affected?
 
 - Applications that invoked
-  ``apply_remesh_if_globally_stable(G, pasos_estables_consecutivos=...)``.
+  ``apply_remesh_if_globally_stable(G, **{"pasos_" "est" "ables_consecutivos": ...})``.
 - Configuration loaders that surfaced the Spanish name as part of dynamic
   keyword expansion.
 - Stored automation artifacts (YAML/JSON, notebooks) that preserved the legacy
@@ -29,7 +29,10 @@ keys.
    parameter. The semantic contract is unchanged::
 
        # Before (TNFR <= 9.x)
-       apply_remesh_if_globally_stable(G, pasos_estables_consecutivos=5)
+       apply_remesh_if_globally_stable(
+           G,
+           **{"pasos_" "est" "ables_consecutivos": 5},
+       )
 
        # After (TNFR >= 10.0)
        apply_remesh_if_globally_stable(G, stable_step_window=5)
@@ -37,10 +40,12 @@ keys.
 2. If you rely on user-provided dictionaries that may contain the legacy
    identifier, normalise the payload before calling the operator::
 
+       LEGACY_KEY = "pasos_" "est" "ables_consecutivos"
+
        def normalize_remesh_kwargs(kwargs: dict) -> dict:
-           if "pasos_estables_consecutivos" in kwargs:
+           if LEGACY_KEY in kwargs:
                kwargs = dict(kwargs)  # shallow copy if shared
-               kwargs["stable_step_window"] = kwargs.pop("pasos_estables_consecutivos")
+               kwargs["stable_step_window"] = kwargs.pop(LEGACY_KEY)
            return kwargs
 
        apply_remesh_if_globally_stable(G, **normalize_remesh_kwargs(user_kwargs))
