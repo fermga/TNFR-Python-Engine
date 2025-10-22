@@ -36,6 +36,19 @@ walkthroughs plus optional dependency caching helpers.
   and helper facades.
 - [Examples](docs/examples/README.md) — runnable scenarios, CLI artefacts, and token legend.
 
+## Documentation build workflow
+
+Netlify publishes the documentation with [MkDocs](https://www.mkdocs.org/) so the generated
+site preserves the canonical TNFR structure. The same steps can be executed locally:
+
+1. Create and activate a virtual environment (e.g. `python -m venv .venv && source .venv/bin/activate`).
+2. Install the documentation toolchain: `python -m pip install -r docs/requirements.txt`.
+3. Preview changes live with `mkdocs serve` or reproduce the Netlify pipeline with
+   `mkdocs build`, which writes the static site to the `site/` directory.
+
+The Netlify build (`netlify.toml`) runs `python -m pip install -r docs/requirements.txt && mkdocs build`
+and publishes the resulting `site/` directory, ensuring the hosted documentation matches local builds.
+
 ## Additional resources
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — orchestration layers and invariant enforcement.

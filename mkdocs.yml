@@ -1,0 +1,42 @@
+site_name: TNFR Python Engine
+site_description: Canonical TNFR structural dynamics engine documentation
+repo_url: https://github.com/fermga/TNFR-Python-Engine
+repo_name: TNFR Python Engine
+docs_dir: docs
+site_dir: site
+nav:
+  - Home: index.md
+  - Getting started:
+      - Quickstart: getting-started/quickstart.md
+      - Migrating from Remesh Window: getting-started/migrating-remesh-window.md
+  - API:
+      - Overview: api/overview.md
+      - Structural operators: api/operators.md
+      - Telemetry & utilities: api/telemetry.md
+  - Examples: examples/README.md
+  - Security:
+      - Monitoring: security/monitoring.md
+      - Dependency auditing: security/dependency-auditing.md
+      - CodeQL: security/codeql.md
+      - Dependabot: security/dependabot.md
+  - Releases: releases.md
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - toc.integrate
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+plugins:
+  - search

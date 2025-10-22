@@ -22,9 +22,9 @@ $\partial EPI/\partial t = \nu_f \cdot \Delta NFR(t)$.
 
 ## Canonical references
 
-- [Architecture guide](../ARCHITECTURE.md) for orchestration layers and invariants.
-- [Contribution guidelines](../CONTRIBUTING.md) with the structural test suite contract.
-- [TNFR paradigm PDF](../TNFR.pdf) detailing the theoretical background and operator grammar.
+- [Architecture guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md) for orchestration layers and invariants.
+- [Contribution guidelines](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md) with the structural test suite contract.
+- [TNFR paradigm PDF](https://github.com/fermga/TNFR-Python-Engine/raw/main/TNFR.pdf) detailing the theoretical background and operator grammar.
 
 ## Navigating the docs
 
