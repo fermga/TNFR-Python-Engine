@@ -111,6 +111,9 @@ jobs:
           name: ${{ env.TOOLS_ARTIFACT }}
           path: ${{ env.VENV_PATH }}
 
+      - name: Install PyYAML
+        run: pip install pyyaml
+
       - name: Resolve Semgrep configuration
         id: semgrep-config
         run: |
