@@ -60,7 +60,19 @@ manual API configuration. The presets are:
   hunts where complete operator coverage matters more than runtime.
 
 If you still need a custom field mix, set `TRACE["capture"]` explicitly; the resolver will honour
-that list (or mapping) and ignore the verbosity preset.
+that list (or mapping) and ignore the verbosity preset. Identifiers are case-sensitive and the
+following capture names are recognised:
+
+- `"gamma"` — canonical Γ specification snapshot.
+- `"grammar"` — canonical grammar configuration.
+- `"selector"` — active glyph selector name.
+- `"dnfr_weights"` — ΔNFR mixing weights.
+- `"si_weights"` — Si weighting and sensitivity payload.
+- `"callbacks"` — registered callback names per phase.
+- `"thol_open_nodes"` — count of nodes with an open THOL block.
+- `"kuramoto"` — network Kuramoto order parameters.
+- `"sigma"` — global sense-plane vector Σ⃗.
+- `"glyph_counts"` (alias `"glyphs"`) — per-step glyph/operator count audit.
 
 ### Metrics verbosity tiers
 
