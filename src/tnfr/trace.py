@@ -73,40 +73,22 @@ class TraceSnapshot(TraceMetadata, total=False):
     phase: str
 
 
+class TraceFieldSpec(NamedTuple):
+    """Declarative specification for a trace field producer."""
+
+    name: str
+    phase: str
+    producer: TraceFieldFn
+    tiers: tuple[TelemetryVerbosity, ...]
+
+
 TRACE_VERBOSITY_DEFAULT = TELEMETRY_VERBOSITY_DEFAULT
-_TRACE_ALL_FIELDS = (
-    "gamma",
-    "grammar",
-    "selector",
-    "dnfr_weights",
-    "si_weights",
-    "callbacks",
-    "thol_open_nodes",
-    "kuramoto",
-    "sigma",
-    "glyph_counts",
-)
-_TRACE_DETAILED_FIELDS = tuple(
-    field for field in _TRACE_ALL_FIELDS if field != "glyph_counts"
-)
+TRACE_VERBOSITY_PRESETS: dict[str, tuple[str, ...]] = {}
 _TRACE_CAPTURE_ALIASES: Mapping[str, str] = MappingProxyType(
     {
         "glyphs": "glyph_counts",
     }
 )
-TRACE_VERBOSITY_PRESETS: Mapping[str, tuple[str, ...]] = {
-    TelemetryVerbosity.BASIC.value: (
-        "gamma",
-        "grammar",
-        "selector",
-        "dnfr_weights",
-        "si_weights",
-        "callbacks",
-        "thol_open_nodes",
-    ),
-    TelemetryVerbosity.DETAILED.value: _TRACE_DETAILED_FIELDS,
-    TelemetryVerbosity.DEBUG.value: _TRACE_ALL_FIELDS,
-}
 
 
 def _canonical_capture_name(name: str) -> str:
@@ -182,6 +164,7 @@ def _sigma_fallback(
 # Public exports for this module
 __all__ = (
     "CallbackSpec",
+    "TraceFieldSpec",
     "TraceMetadata",
     "TraceSnapshot",
     "register_trace",
@@ -425,18 +408,106 @@ def glyph_counts_field(G: TNFRGraph) -> TraceMetadata:
     return {"glyphs": cnt}
 
 
-# Pre-register default fields
-register_trace_field("before", "gamma", gamma_field)
-register_trace_field("before", "grammar", grammar_field)
-register_trace_field("before", "selector", selector_field)
-register_trace_field("before", "dnfr_weights", dnfr_weights_field)
-register_trace_field("before", "si_weights", si_weights_field)
-register_trace_field("before", "callbacks", callbacks_field)
-register_trace_field("before", "thol_open_nodes", thol_state_field)
+TRACE_FIELD_SPECS: tuple[TraceFieldSpec, ...] = (
+    TraceFieldSpec(
+        name="gamma",
+        phase="before",
+        producer=gamma_field,
+        tiers=(
+            TelemetryVerbosity.BASIC,
+            TelemetryVerbosity.DETAILED,
+            TelemetryVerbosity.DEBUG,
+        ),
+    ),
+    TraceFieldSpec(
+        name="grammar",
+        phase="before",
+        producer=grammar_field,
+        tiers=(
+            TelemetryVerbosity.BASIC,
+            TelemetryVerbosity.DETAILED,
+            TelemetryVerbosity.DEBUG,
+        ),
+    ),
+    TraceFieldSpec(
+        name="selector",
+        phase="before",
+        producer=selector_field,
+        tiers=(
+            TelemetryVerbosity.BASIC,
+            TelemetryVerbosity.DETAILED,
+            TelemetryVerbosity.DEBUG,
+        ),
+    ),
+    TraceFieldSpec(
+        name="dnfr_weights",
+        phase="before",
+        producer=dnfr_weights_field,
+        tiers=(
+            TelemetryVerbosity.BASIC,
+            TelemetryVerbosity.DETAILED,
+            TelemetryVerbosity.DEBUG,
+        ),
+    ),
+    TraceFieldSpec(
+        name="si_weights",
+        phase="before",
+        producer=si_weights_field,
+        tiers=(
+            TelemetryVerbosity.BASIC,
+            TelemetryVerbosity.DETAILED,
+            TelemetryVerbosity.DEBUG,
+        ),
+    ),
+    TraceFieldSpec(
+        name="callbacks",
+        phase="before",
+        producer=callbacks_field,
+        tiers=(
+            TelemetryVerbosity.BASIC,
+            TelemetryVerbosity.DETAILED,
+            TelemetryVerbosity.DEBUG,
+        ),
+    ),
+    TraceFieldSpec(
+        name="thol_open_nodes",
+        phase="before",
+        producer=thol_state_field,
+        tiers=(
+            TelemetryVerbosity.BASIC,
+            TelemetryVerbosity.DETAILED,
+            TelemetryVerbosity.DEBUG,
+        ),
+    ),
+    TraceFieldSpec(
+        name="kuramoto",
+        phase="after",
+        producer=kuramoto_field,
+        tiers=(TelemetryVerbosity.DETAILED, TelemetryVerbosity.DEBUG),
+    ),
+    TraceFieldSpec(
+        name="sigma",
+        phase="after",
+        producer=sigma_field,
+        tiers=(TelemetryVerbosity.DETAILED, TelemetryVerbosity.DEBUG),
+    ),
+    TraceFieldSpec(
+        name="glyph_counts",
+        phase="after",
+        producer=glyph_counts_field,
+        tiers=(TelemetryVerbosity.DEBUG,),
+    ),
+)
 
-register_trace_field("after", "kuramoto", kuramoto_field)
-register_trace_field("after", "sigma", sigma_field)
-register_trace_field("after", "glyph_counts", glyph_counts_field)
+TRACE_VERBOSITY_PRESETS = {
+    level.value: tuple(
+        spec.name for spec in TRACE_FIELD_SPECS if level in spec.tiers
+    )
+    for level in TelemetryVerbosity
+}
+
+for spec in TRACE_FIELD_SPECS:
+    register_trace_field(spec.phase, spec.name, spec.producer)
 
 
 # -------------------------

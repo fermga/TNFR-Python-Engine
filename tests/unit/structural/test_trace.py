@@ -17,6 +17,7 @@ from tnfr.trace import (
     grammar_field,
     mapping_field,
     CallbackSpec,
+    TraceFieldSpec,
 )
 from tnfr import trace
 from tnfr.utils import get_graph_mapping
@@ -27,8 +28,27 @@ from types import MappingProxyType
 def test_trace_verbosity_presets_align_with_shared_levels():
     assert trace.TRACE_VERBOSITY_DEFAULT == TELEMETRY_VERBOSITY_DEFAULT
     assert set(trace.TRACE_VERBOSITY_PRESETS) == set(TELEMETRY_VERBOSITY_LEVELS)
-    for level in TelemetryVerbosity:
-        assert trace.TRACE_VERBOSITY_PRESETS[level.value]
+    expected = {
+        level.value: tuple(
+            spec.name
+            for spec in trace.TRACE_FIELD_SPECS
+            if level in spec.tiers
+        )
+        for level in TelemetryVerbosity
+    }
+    assert trace.TRACE_VERBOSITY_PRESETS == expected
+    for spec in trace.TRACE_FIELD_SPECS:
+        assert isinstance(spec, TraceFieldSpec)
+
+
+def test_trace_field_specs_register_all_fields():
+    registered = {
+        (phase, name)
+        for phase, phase_fields in trace.TRACE_FIELDS.items()
+        for name in phase_fields
+    }
+    expected = {(spec.phase, spec.name) for spec in trace.TRACE_FIELD_SPECS}
+    assert registered == expected
 
 
 def test_register_trace_idempotent(graph_canon):
