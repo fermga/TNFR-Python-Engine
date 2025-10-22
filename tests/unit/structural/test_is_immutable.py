@@ -1,9 +1,11 @@
 """Tests for _is_immutable helper."""
 
+import gc
+from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any
-from collections.abc import Mapping
+
 import pytest
 
 from tnfr.immutable import (
@@ -13,7 +15,6 @@ from tnfr.immutable import (
     _is_immutable,
     _is_immutable_inner,
 )
-import gc
 
 
 def test_is_immutable_nested_structures():

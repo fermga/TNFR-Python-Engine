@@ -1,9 +1,11 @@
 """Tests for ``load_config`` and ``apply_config``."""
 
 import json
-import pytest
-from tnfr.config import load_config, apply_config
 from collections import UserDict
+
+import pytest
+
+from tnfr.config import apply_config, load_config
 from tnfr.constants import DEFAULTS, merge_overrides
 
 try:  # pragma: no cover - dependencia opcional
@@ -19,9 +21,7 @@ except ImportError:  # pragma: no cover - skip if not installed
         pytest.param(
             ".yaml",
             lambda data: yaml.safe_dump(data),
-            marks=pytest.mark.skipif(
-                yaml is None, reason="pyyaml not installed"
-            ),
+            marks=pytest.mark.skipif(yaml is None, reason="pyyaml not installed"),
         ),
     ],
 )

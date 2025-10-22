@@ -1,11 +1,12 @@
 """Tests for glyph factor retrieval helper."""
 
 from types import SimpleNamespace
+
 import pytest
 
-from tnfr.types import Glyph
-from tnfr.node import NodeNX
 import tnfr.operators as operators
+from tnfr.node import NodeNX
+from tnfr.types import Glyph
 
 
 def test_get_factor_returns_float():

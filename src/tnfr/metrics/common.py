@@ -135,9 +135,7 @@ def _get_vf_dnfr_max(G: GraphLike) -> tuple[float, float]:
     vfmax = G.graph.get("_vfmax")
     dnfrmax = G.graph.get("_dnfrmax")
     if vfmax is None or dnfrmax is None:
-        maxes = multi_recompute_abs_max(
-            G, {"_vfmax": ALIAS_VF, "_dnfrmax": ALIAS_DNFR}
-        )
+        maxes = multi_recompute_abs_max(G, {"_vfmax": ALIAS_VF, "_dnfrmax": ALIAS_DNFR})
         if vfmax is None:
             vfmax = maxes["_vfmax"]
         if dnfrmax is None:

@@ -8,7 +8,6 @@ from tnfr.constants import get_aliases
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 
-
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
@@ -121,7 +120,4 @@ def test_vectorized_n_jobs_argument():
     default_compute_delta_nfr(G_reference)
     default_compute_delta_nfr(G_vectorized, n_jobs=4)
 
-    assert _collect_dnfr(G_vectorized) == pytest.approx(
-        _collect_dnfr(G_reference)
-    )
-
+    assert _collect_dnfr(G_vectorized) == pytest.approx(_collect_dnfr(G_reference))

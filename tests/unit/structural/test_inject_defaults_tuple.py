@@ -1,9 +1,6 @@
 """Unit tests ensuring ``inject_defaults`` copies mutable tuple defaults."""
 
-
-
-
-from tnfr.constants import inject_defaults, DEFAULTS
+from tnfr.constants import DEFAULTS, inject_defaults
 
 
 def test_mutating_graph_tuple_does_not_affect_defaults(monkeypatch, graph_canon):

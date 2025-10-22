@@ -8,6 +8,7 @@ from collections.abc import Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
+from .._compat import TypeAlias
 from ..alias import get_theta_attr, set_theta
 from ..constants import (
     DEFAULTS,
@@ -25,7 +26,6 @@ from ..metrics.trig_cache import get_trig_cache
 from ..observers import DEFAULT_GLYPH_LOAD_SPAN, glyph_load, kuramoto_order
 from ..types import NodeId, Phase, TNFRGraph
 from ..utils import get_numpy
-from .._compat import TypeAlias
 
 if TYPE_CHECKING:  # pragma: no cover - typing imports only
     try:
@@ -111,9 +111,7 @@ def _smooth_adjust_k(
 
     if state == STATE_DISSONANT:
         kG_t = kG_max
-        kL_t = 0.5 * (
-            kL_min + kL_max
-        )  # local medio para no perder plasticidad
+        kL_t = 0.5 * (kL_min + kL_max)  # local medio para no perder plasticidad
     elif state == STATE_STABLE:
         kG_t = kG_min
         kL_t = kL_min
@@ -176,9 +174,7 @@ def coordinate_global_local_phase(
 
     g = cast(dict[str, Any], G.graph)
     hist = cast(dict[str, Any], g.setdefault("history", {}))
-    maxlen = int(
-        g.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"])
-    )
+    maxlen = int(g.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]))
     hist_state = cast(deque[str], _ensure_hist_deque(hist, "phase_state", maxlen))
     if hist_state:
         normalised_states = [normalise_state_token(item) for item in hist_state]
@@ -254,12 +250,10 @@ def coordinate_global_local_phase(
 
     theta_vals = [_theta_value(n) for n in nodes]
     cos_vals = [
-        float(cos_map.get(n, math.cos(theta_vals[idx])))
-        for idx, n in enumerate(nodes)
+        float(cos_map.get(n, math.cos(theta_vals[idx]))) for idx, n in enumerate(nodes)
     ]
     sin_vals = [
-        float(sin_map.get(n, math.sin(theta_vals[idx])))
-        for idx, n in enumerate(nodes)
+        float(sin_map.get(n, math.sin(theta_vals[idx]))) for idx, n in enumerate(nodes)
     ]
 
     if np is not None:
@@ -283,8 +277,8 @@ def coordinate_global_local_phase(
             for idx, n in enumerate(nodes)
         ]
         neighbor_arr = cast(FloatArray, np.fromiter(neighbor_means, dtype=float))
-        theta_updates = theta_arr + kG * (thG - theta_arr) + kL * (
-            neighbor_arr - theta_arr
+        theta_updates = (
+            theta_arr + kG * (thG - theta_arr) + kL * (neighbor_arr - theta_arr)
         )
         for idx, node in enumerate(nodes):
             set_theta(G, node, float(theta_updates[int(idx)]))
@@ -314,10 +308,7 @@ def coordinate_global_local_phase(
         return
 
     chunk_size = max(1, math.ceil(len(nodes) / jobs))
-    chunks = [
-        nodes[idx : idx + chunk_size]
-        for idx in range(0, len(nodes), chunk_size)
-    ]
+    chunks = [nodes[idx : idx + chunk_size] for idx in range(0, len(nodes), chunk_size)]
     args: list[ChunkArgs] = [
         (
             chunk,
@@ -340,4 +331,3 @@ def coordinate_global_local_phase(
         new_theta = results.get(node)
         base_theta = theta_map.get(node, 0.0)
         set_theta(G, node, float(new_theta if new_theta is not None else base_theta))
-

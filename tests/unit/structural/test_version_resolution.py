@@ -12,7 +12,9 @@ from importlib.metadata import PackageNotFoundError
 def _clear_tnfr_modules() -> None:
     """Remove cached :mod:`tnfr` modules so import side effects re-trigger."""
 
-    for name in [key for key in sys.modules if key == "tnfr" or key.startswith("tnfr.")]:
+    for name in [
+        key for key in sys.modules if key == "tnfr" or key.startswith("tnfr.")
+    ]:
         sys.modules.pop(name)
 
 

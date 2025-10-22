@@ -2,12 +2,12 @@ import math
 
 import pytest
 
+from tnfr.alias import get_attr, set_attr, set_theta
 from tnfr.constants import get_aliases
 from tnfr.metrics.sense_index import compute_Si_node, get_Si_weights
 from tnfr.metrics.trig_cache import get_trig_cache
-from tnfr.alias import get_attr, set_attr, set_theta
-from tnfr.utils import increment_edge_version
 from tnfr.trace import _si_sensitivity_field
+from tnfr.utils import increment_edge_version
 
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_SI = get_aliases("SI")

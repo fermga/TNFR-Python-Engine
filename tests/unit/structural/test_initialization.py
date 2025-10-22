@@ -1,17 +1,15 @@
 """Unit tests for initialization routines ensuring reproducible node attributes."""
 
-
-
 import networkx as nx
 
-from tnfr.initialization import init_node_attrs
-from tnfr.constants import (
-    inject_defaults,
-    VF_KEY,
-    THETA_KEY,
-    get_aliases,
-)
 from tnfr.alias import get_attr
+from tnfr.constants import (
+    THETA_KEY,
+    VF_KEY,
+    get_aliases,
+    inject_defaults,
+)
+from tnfr.initialization import init_node_attrs
 
 ALIAS_VF = get_aliases("VF")
 ALIAS_THETA = get_aliases("THETA")
@@ -24,8 +22,7 @@ def test_init_node_attrs_reproducible():
     G1.graph["RANDOM_SEED"] = seed
     init_node_attrs(G1)
     attrs1 = {
-        n: (d["EPI"], d[THETA_KEY], d[VF_KEY], d["Si"])
-        for n, d in G1.nodes(data=True)
+        n: (d["EPI"], d[THETA_KEY], d[VF_KEY], d["Si"]) for n, d in G1.nodes(data=True)
     }
 
     G2 = nx.path_graph(5)
@@ -33,8 +30,7 @@ def test_init_node_attrs_reproducible():
     G2.graph["RANDOM_SEED"] = seed
     init_node_attrs(G2)
     attrs2 = {
-        n: (d["EPI"], d[THETA_KEY], d[VF_KEY], d["Si"])
-        for n, d in G2.nodes(data=True)
+        n: (d["EPI"], d[THETA_KEY], d[VF_KEY], d["Si"]) for n, d in G2.nodes(data=True)
     }
 
     assert attrs1 == attrs2

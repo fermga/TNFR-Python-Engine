@@ -1,12 +1,13 @@
 import math
+
 import pytest
 
+import tnfr.utils.init as utils_init
 from tnfr.alias import set_attr
 from tnfr.constants import get_aliases
 from tnfr.metrics.sense_index import compute_Si
 from tnfr.metrics.trig import neighbor_phase_mean
 from tnfr.metrics.trig_cache import get_trig_cache
-import tnfr.utils.init as utils_init
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_VF = get_aliases("VF")

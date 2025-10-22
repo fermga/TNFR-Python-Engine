@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from typing import Any, cast
-from collections import deque, Counter
-from itertools import islice
+from collections import Counter, deque
 from collections.abc import Iterable, Mapping, MutableMapping
+from itertools import islice
+from typing import Any, cast
 
 from .constants import get_param, normalise_state_token
-from .utils import ensure_collection, get_logger, validate_window
 from .types import TNFRGraph
+from .utils import ensure_collection, get_logger, validate_window
 
 logger = get_logger(__name__)
 
@@ -42,9 +42,7 @@ def _ensure_history(
             try:
                 items = ensure_collection(hist, max_materialize=None)
             except TypeError:
-                logger.debug(
-                    "Discarding non-iterable glyph history value %r", hist
-                )
+                logger.debug("Discarding non-iterable glyph history value %r", hist)
                 items = ()
         hist = deque((str(item) for item in items), maxlen=v_window)
         nd["glyph_history"] = hist
@@ -62,9 +60,7 @@ def push_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
     hist.append(str(glyph))
 
 
-def recent_glyph(
-    nd: MutableMapping[str, Any], glyph: str, window: int
-) -> bool:
+def recent_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions.
 
     ``window`` validation and deque creation are handled by
@@ -213,10 +209,7 @@ def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]:
         if isinstance(hist, MutableMapping):
             _normalise_state_streams(hist)
         return hist
-    if (
-        not isinstance(hist, HistoryDict)
-        or hist._maxlen != maxlen
-    ):
+    if not isinstance(hist, HistoryDict) or hist._maxlen != maxlen:
         hist = HistoryDict(hist, maxlen=maxlen)
         G.graph["history"] = hist
         replaced = True
@@ -236,9 +229,7 @@ def current_step_idx(G: TNFRGraph | Mapping[str, Any]) -> int:
     return len(graph.get("history", {}).get("C_steps", []))
 
 
-def append_metric(
-    hist: MutableMapping[str, list[Any]], key: str, value: Any
-) -> None:
+def append_metric(hist: MutableMapping[str, list[Any]], key: str, value: Any) -> None:
     """Append ``value`` to ``hist[key]`` list, creating it if missing."""
     if key == "phase_state" and isinstance(value, str):
         value = normalise_state_token(value)

@@ -1,9 +1,9 @@
-import threading
 import random
+import threading
 
 from tnfr import rng as rng_mod
-from tnfr.rng import make_rng, clear_rng_cache
 from tnfr.constants import DEFAULTS
+from tnfr.rng import clear_rng_cache, make_rng
 
 
 def test_make_rng_thread_safety(monkeypatch):

@@ -1,9 +1,11 @@
 """Tests for ``read_structured_file`` error handling."""
 
-import pytest
 import importlib.util
-from pathlib import Path
 from json import JSONDecodeError
+from pathlib import Path
+
+import pytest
+
 import tnfr.io as io_mod
 
 
@@ -31,9 +33,7 @@ def test_read_structured_file_permission_error(
     path = tmp_path / "forbidden.json"
     original_open = Path.open
 
-    def fake_open(
-        self, *args, **kwargs
-    ):  # pragma: no cover - monkeypatch helper
+    def fake_open(self, *args, **kwargs):  # pragma: no cover - monkeypatch helper
         if self == path:
             raise PermissionError("denied")
         return original_open(self, *args, **kwargs)
@@ -162,6 +162,7 @@ def test_read_structured_file_ignores_missing_yaml_when_parsing_json(
 ):
     path = tmp_path / "data.json"
     path.write_text('{"a": 1}', encoding="utf-8")
+
     def missing_yaml(*_: object, **__: object) -> None:
         raise ImportError("pyyaml is not installed")
 

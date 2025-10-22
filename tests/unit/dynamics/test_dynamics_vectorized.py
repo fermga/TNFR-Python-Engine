@@ -1,29 +1,25 @@
 """Unit tests for vectorized dynamics evolution and performance boundaries."""
 
-
-
 import math
 import time
+from contextlib import contextmanager
 
-import pytest
 import networkx as nx
+import pytest
 
+from tnfr.alias import collect_attr, get_attr, set_attr
+from tnfr.constants import get_aliases
+from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.dynamics.dnfr import (
     _accumulate_neighbors_numpy,
     _build_edge_index_arrays,
     _build_neighbor_sums_common,
     _compute_dnfr,
     _init_neighbor_sums,
-    _prepare_dnfr_data,
     _prefer_sparse_accumulation,
+    _prepare_dnfr_data,
     _resolve_numpy_degree_array,
 )
-
-from contextlib import contextmanager
-
-from tnfr.dynamics import default_compute_delta_nfr
-from tnfr.constants import get_aliases
-from tnfr.alias import collect_attr, get_attr, set_attr
 from tnfr.helpers.numeric import angle_diff
 from tnfr.utils import mark_dnfr_prep_dirty
 from tnfr.utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
@@ -181,8 +177,6 @@ def test_compute_dnfr_auto_vectorizes_when_numpy_present(monkeypatch):
         fallback_data = _prepare_dnfr_data(fallback_graph)
         _compute_dnfr(fallback_graph, fallback_data)
     assert calls and calls[-1] is False
-
-
 
 
 def _build_weighted_graph(factory, n_nodes: int, topo_weight: float):
@@ -348,9 +342,7 @@ def _legacy_numpy_stack_accumulation(
     edge_src = data.get("edge_src")
     edge_dst = data.get("edge_dst")
     if edge_src is None or edge_dst is None:
-        edge_src, edge_dst = _build_edge_index_arrays(
-            G, nodes, data["idx"], np
-        )
+        edge_src, edge_dst = _build_edge_index_arrays(G, nodes, data["idx"], np)
         data["edge_src"] = edge_src
         data["edge_dst"] = edge_dst
         if cache is not None:
@@ -366,9 +358,7 @@ def _legacy_numpy_stack_accumulation(
     deg_array = None
     if deg_sum is not None:
         deg_sum.fill(0.0)
-        deg_array = _resolve_numpy_degree_array(
-            data, count, cache=cache, np=np
-        )
+        deg_array = _resolve_numpy_degree_array(data, count, cache=cache, np=np)
         if deg_array is not None:
             deg_column = len(component_sources)
             component_sources.append(deg_array)
@@ -606,12 +596,8 @@ def test_edge_accumulation_buffers_cached_and_stable(topo_weight, monkeypatch):
             atol=1e-9,
         )
 
-    snapshots = [
-        arr.copy() if arr is not None else None for arr in vector_outputs
-    ]
-    deg_snapshot = (
-        result[5].copy() if result[5] is not None else None
-    )
+    snapshots = [arr.copy() if arr is not None else None for arr in vector_outputs]
+    deg_snapshot = result[5].copy() if result[5] is not None else None
 
     for arr in buffers:
         if arr is not None:
@@ -661,6 +647,7 @@ def test_edge_accumulation_buffers_cached_and_stable(topo_weight, monkeypatch):
             atol=1e-9,
         )
 
+
 def test_dense_graph_uses_dense_accumulation_by_default(monkeypatch):
     np = pytest.importorskip("numpy")
     del np
@@ -699,9 +686,7 @@ def test_dense_graph_dnfr_modes_stable(monkeypatch):
 
     G_vectorized = template.copy()
     default_compute_delta_nfr(G_vectorized)
-    vector_dnfr = collect_attr(
-        G_vectorized, G_vectorized.nodes, ALIAS_DNFR, 0.0
-    )
+    vector_dnfr = collect_attr(G_vectorized, G_vectorized.nodes, ALIAS_DNFR, 0.0)
     assert vector_dnfr == pytest.approx(expected)
     assert vector_dnfr == pytest.approx(fallback_dnfr)
 
@@ -757,9 +742,7 @@ def test_dense_adjacency_accumulation_matches_loop(topo_weight, monkeypatch):
     with numpy_disabled(monkeypatch):
         fallback_graph = base.copy()
         default_compute_delta_nfr(fallback_graph)
-    dnfr_fallback = collect_attr(
-        fallback_graph, fallback_graph.nodes, ALIAS_DNFR, 0.0
-    )
+    dnfr_fallback = collect_attr(fallback_graph, fallback_graph.nodes, ALIAS_DNFR, 0.0)
 
     np.testing.assert_allclose(dnfr_dense, dnfr_fallback, rtol=1e-9, atol=1e-9)
 

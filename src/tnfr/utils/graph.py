@@ -18,7 +18,7 @@ __all__ = (
 
 
 def get_graph(
-    obj: GraphLike | TNFRGraph | MutableMapping[str, Any]
+    obj: GraphLike | TNFRGraph | MutableMapping[str, Any],
 ) -> MutableMapping[str, Any]:
     """Return the graph-level metadata mapping for ``obj``.
 
@@ -62,9 +62,7 @@ def get_graph_mapping(
     return MappingProxyType(data)
 
 
-def mark_dnfr_prep_dirty(
-    G: GraphLike | TNFRGraph | MutableMapping[str, Any]
-) -> None:
+def mark_dnfr_prep_dirty(G: GraphLike | TNFRGraph | MutableMapping[str, Any]) -> None:
     """Flag ΔNFR preparation data as stale by marking ``G.graph``.
 
     ``G`` is constrained to the :class:`~tnfr.types.GraphLike` protocol, a

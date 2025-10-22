@@ -104,9 +104,7 @@ def _legacy_numpy_stack_accumulation(G, data, *, buffers):
     deg_array = None
     if deg_sum is not None:
         deg_sum.fill(0.0)
-        deg_array = _resolve_numpy_degree_array(
-            data, count, cache=cache, np=np
-        )
+        deg_array = _resolve_numpy_degree_array(data, count, cache=cache, np=np)
         if deg_array is not None:
             deg_column = len(component_sources)
             component_sources.append(deg_array)

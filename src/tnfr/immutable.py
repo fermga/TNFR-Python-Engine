@@ -7,21 +7,19 @@ encountered.
 
 from __future__ import annotations
 
+import threading
+import weakref
+from collections.abc import Mapping
 from contextlib import contextmanager
 from dataclasses import asdict, is_dataclass
 from functools import lru_cache, partial, singledispatch, wraps
-from typing import Any, Callable, Iterable, Iterator, cast
-from collections.abc import Mapping
 from types import MappingProxyType
-import threading
-import weakref
+from typing import Any, Callable, Iterable, Iterator, cast
 
 from ._compat import TypeAlias
 
 # Types considered immutable without further inspection
-IMMUTABLE_SIMPLE = frozenset(
-    {int, float, complex, str, bool, bytes, type(None)}
-)
+IMMUTABLE_SIMPLE = frozenset({int, float, complex, str, bool, bytes, type(None)})
 
 
 FrozenPrimitive: TypeAlias = int | float | complex | str | bool | bytes | None
@@ -40,7 +38,10 @@ FrozenTaggedMapping: TypeAlias = tuple[str, FrozenMappingItems]
 """Tagged mapping snapshot identifying the original mapping flavour."""
 
 FrozenSnapshot: TypeAlias = (
-    FrozenPrimitive | FrozenCollectionItems | FrozenTaggedCollection | FrozenTaggedMapping
+    FrozenPrimitive
+    | FrozenCollectionItems
+    | FrozenTaggedCollection
+    | FrozenTaggedMapping
 )
 """Union describing the immutable snapshot returned by :func:`_freeze`."""
 
@@ -61,7 +62,7 @@ def _cycle_guard(value: Any, seen: set[int] | None = None) -> Iterator[set[int]]
 
 
 def _check_cycle(
-    func: Callable[[Any, set[int] | None], FrozenSnapshot]
+    func: Callable[[Any, set[int] | None], FrozenSnapshot],
 ) -> Callable[[Any, set[int] | None], FrozenSnapshot]:
     """Decorator applying :func:`_cycle_guard` to ``func``."""
 
@@ -95,7 +96,9 @@ def _freeze(value: Any, seen: set[int] | None = None) -> FrozenSnapshot:
 
 @_freeze.register(tuple)
 @_check_cycle
-def _freeze_tuple(value: tuple[Any, ...], seen: set[int] | None = None) -> FrozenCollectionItems:  # noqa: F401
+def _freeze_tuple(
+    value: tuple[Any, ...], seen: set[int] | None = None
+) -> FrozenCollectionItems:  # noqa: F401
     assert seen is not None
     return tuple(_freeze(v, seen) for v in value)
 
@@ -115,7 +118,9 @@ def _freeze_iterable_with_tag(
 
 def _register_iterable(cls: type, tag: str) -> None:
     handler = _check_cycle(partial(_freeze_iterable_with_tag, tag=tag))
-    _freeze.register(cls)(cast(Callable[[Any, set[int] | None], FrozenSnapshot], handler))
+    _freeze.register(cls)(
+        cast(Callable[[Any, set[int] | None], FrozenSnapshot], handler)
+    )
 
 
 for _cls, _tag in (
@@ -176,9 +181,7 @@ def _is_immutable_inner_frozenset(value: frozenset[Any]) -> bool:  # noqa: F401
     return _all_immutable(value)
 
 
-_IMMUTABLE_CACHE: weakref.WeakKeyDictionary[Any, bool] = (
-    weakref.WeakKeyDictionary()
-)
+_IMMUTABLE_CACHE: weakref.WeakKeyDictionary[Any, bool] = weakref.WeakKeyDictionary()
 _IMMUTABLE_CACHE_LOCK = threading.Lock()
 
 

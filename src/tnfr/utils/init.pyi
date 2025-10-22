@@ -1,21 +1,21 @@
-from collections.abc import Callable, Iterable, Iterator, Mapping
 import logging
+from collections.abc import Callable, Iterable, Iterator, Mapping
 from typing import Any, Hashable, Literal
 
 __all__: tuple[str, ...]
 
 def __getattr__(name: str) -> Any: ...
 
-
 class WarnOnce:
-    def __init__(self, logger: logging.Logger, msg: str, *, maxsize: int = ...) -> None: ...
+    def __init__(
+        self, logger: logging.Logger, msg: str, *, maxsize: int = ...
+    ) -> None: ...
     def __call__(
         self,
         data: Mapping[Hashable, Any] | Hashable,
         value: Any | None = ...,
     ) -> None: ...
     def clear(self) -> None: ...
-
 
 class LazyImportProxy:
     def __init__(
@@ -31,7 +31,6 @@ class LazyImportProxy:
     def __iter__(self) -> Iterator[Any]: ...
     def resolve(self) -> Any: ...
 
-
 class ImportRegistry:
     limit: int
     failed: Mapping[str, None]
@@ -44,7 +43,6 @@ class ImportRegistry:
     def clear(self) -> None: ...
     def __contains__(self, key: str) -> bool: ...
 
-
 EMIT_MAP: Mapping[str, Callable[[str], None]]
 IMPORT_LOG: ImportRegistry
 _IMPORT_STATE: ImportRegistry
@@ -52,13 +50,10 @@ _LOGGING_CONFIGURED: bool
 _DEFAULT_CACHE_SIZE: int
 _FAILED_IMPORT_LIMIT: int
 
-
 def _configure_root() -> None: ...
 def _reset_import_state() -> None: ...
 def _reset_logging_state() -> None: ...
 def _warn_failure(module: str, attr: str | None, err: Exception) -> None: ...
-
-
 def cached_import(
     module_name: str,
     attr: str | None = ...,
@@ -67,8 +62,6 @@ def cached_import(
     emit: Literal["warn", "log", "both"] = ...,
     lazy: bool = ...,
 ) -> Any | None: ...
-
-
 def warm_cached_import(
     module: str | tuple[str, str | None] | Iterable[str | tuple[str, str | None]],
     *extra: str | tuple[str, str | None],

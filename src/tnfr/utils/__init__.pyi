@@ -4,8 +4,8 @@ from typing import Any, Final
 
 from ..cache import CacheManager
 from .cache import (
-    EdgeCacheManager,
     NODE_SET_CHECKSUM_KEY,
+    EdgeCacheManager,
     cached_node_list,
     cached_nodes_and_A,
     clear_node_repr_cache,
@@ -40,14 +40,14 @@ from .graph import (
     supports_add_edge,
 )
 from .init import (
-    EMIT_MAP,
-    IMPORT_LOG,
-    LazyImportProxy,
-    WarnOnce,
     _DEFAULT_CACHE_SIZE,
     _FAILED_IMPORT_LIMIT,
     _IMPORT_STATE,
     _LOGGING_CONFIGURED,
+    EMIT_MAP,
+    IMPORT_LOG,
+    LazyImportProxy,
+    WarnOnce,
     _configure_root,
     _reset_import_state,
     _reset_logging_state,
@@ -128,6 +128,5 @@ __all__ = (
 )
 
 _DYNAMIC_EXPORTS: Final[frozenset[str]]
-
 
 def __getattr__(name: str) -> Any: ...

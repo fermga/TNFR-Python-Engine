@@ -2,10 +2,10 @@ import math
 
 import pytest
 
+import tnfr.utils.init as utils_init
 from tnfr.alias import set_attr
 from tnfr.constants import get_aliases
 from tnfr.metrics.sense_index import compute_Si
-import tnfr.utils.init as utils_init
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_VF = get_aliases("VF")
@@ -28,9 +28,7 @@ def test_compute_Si_uses_module_numpy_and_propagates(monkeypatch, graph_canon):
 
     captured = []
 
-    def fake_neighbor_phase_mean_list(
-        _neigh, cos_th, sin_th, np=None, fallback=0.0
-    ):
+    def fake_neighbor_phase_mean_list(_neigh, cos_th, sin_th, np=None, fallback=0.0):
         captured.append(np)
         return 0.0
 
@@ -124,9 +122,7 @@ def test_compute_Si_reads_jobs_from_graph(monkeypatch, graph_canon):
 
             return DummyFuture()
 
-    monkeypatch.setattr(
-        "tnfr.metrics.sense_index.ProcessPoolExecutor", DummyExecutor
-    )
+    monkeypatch.setattr("tnfr.metrics.sense_index.ProcessPoolExecutor", DummyExecutor)
 
     G = graph_canon()
     _configure_graph(G)

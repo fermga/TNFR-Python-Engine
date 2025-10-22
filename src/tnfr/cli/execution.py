@@ -1,42 +1,40 @@
 from __future__ import annotations
 
 import argparse
-
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Optional
 
 import networkx as nx
 
-from ..constants import METRIC_DEFAULTS
-from ..sense import register_sigma_callback
-from ..metrics import (
-    register_metrics_callbacks,
-    glyph_top,
-    export_metrics,
-    build_metrics_summary,
-)
-from ..metrics.core import _metrics_step
-from ..trace import register_trace
-from ..execution import CANONICAL_PRESET_NAME, play
-from ..dynamics import (
-    run,
-    default_glyph_selector,
-    parametric_glyph_selector,
-    validate_canon,
-)
+from ..config import apply_config
 from ..config.presets import (
     PREFERRED_PRESET_NAMES,
     get_preset,
 )
-from ..config import apply_config
-from ..io import read_structured_file, safe_write, StructuredFileError
+from ..constants import METRIC_DEFAULTS
+from ..dynamics import (
+    default_glyph_selector,
+    parametric_glyph_selector,
+    run,
+    validate_canon,
+)
+from ..execution import CANONICAL_PRESET_NAME, play
+from ..flatten import parse_program_tokens
 from ..glyph_history import ensure_history
+from ..io import StructuredFileError, read_structured_file, safe_write
+from ..metrics import (
+    build_metrics_summary,
+    export_metrics,
+    glyph_top,
+    register_metrics_callbacks,
+)
+from ..metrics.core import _metrics_step
 from ..ontosim import prepare_network
+from ..sense import register_sigma_callback
+from ..trace import register_trace
 from ..types import ProgramTokens
 from ..utils import get_logger, json_dumps
-from ..flatten import parse_program_tokens
-
 from .arguments import _args_to_dict
 
 logger = get_logger(__name__)
@@ -62,7 +60,9 @@ def _attach_callbacks(G: "nx.Graph") -> None:
 
 
 def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
-    if getattr(args, "save_history", None) or getattr(args, "export_history_base", None):
+    if getattr(args, "save_history", None) or getattr(
+        args, "export_history_base", None
+    ):
         history = ensure_history(G)
         if getattr(args, "save_history", None):
             _save_json(args.save_history, history)
@@ -127,9 +127,7 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
             "basic": default_glyph_selector,
             "param": parametric_glyph_selector,
         }
-        G.graph["glyph_selector"] = sel_map.get(
-            selector, default_glyph_selector
-        )
+        G.graph["glyph_selector"] = sel_map.get(selector, default_glyph_selector)
 
     if hasattr(args, "gamma_type"):
         G.graph["GAMMA"] = {
@@ -285,13 +283,9 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 def cmd_sequence(args: argparse.Namespace) -> int:
     if args.preset and args.sequence_file:
-        logger.error(
-            "Cannot use --preset and --sequence-file at the same time"
-        )
+        logger.error("Cannot use --preset and --sequence-file at the same time")
         return 1
-    code, _ = _run_cli_program(
-        args, default_program=get_preset(CANONICAL_PRESET_NAME)
-    )
+    code, _ = _run_cli_program(args, default_program=get_preset(CANONICAL_PRESET_NAME))
     return code
 
 

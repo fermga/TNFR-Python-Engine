@@ -29,7 +29,9 @@ class _EventRecorder:
 
 
 @pytest.fixture()
-def cache_state() -> tuple[InstrumentedLRUCache[str, int], CacheManager, dict[str, str], _EventRecorder]:
+def cache_state() -> (
+    tuple[InstrumentedLRUCache[str, int], CacheManager, dict[str, str], _EventRecorder]
+):
     manager = CacheManager()
     locks: dict[str, str] = {}
     recorder = _EventRecorder()
@@ -47,7 +49,11 @@ def cache_state() -> tuple[InstrumentedLRUCache[str, int], CacheManager, dict[st
     return cache, manager, locks, recorder
 
 
-def test_eviction_updates_metrics_and_callbacks(cache_state: tuple[InstrumentedLRUCache[str, int], CacheManager, dict[str, str], _EventRecorder]) -> None:
+def test_eviction_updates_metrics_and_callbacks(
+    cache_state: tuple[
+        InstrumentedLRUCache[str, int], CacheManager, dict[str, str], _EventRecorder
+    ],
+) -> None:
     cache, manager, locks, recorder = cache_state
     locks["a"] = "lock-a"
     locks["b"] = "lock-b"
@@ -78,7 +84,11 @@ def test_eviction_updates_metrics_and_callbacks(cache_state: tuple[InstrumentedL
     assert "b" in locks
 
 
-def test_pop_records_hits_misses_and_lock_cleanup(cache_state: tuple[InstrumentedLRUCache[str, int], CacheManager, dict[str, str], _EventRecorder]) -> None:
+def test_pop_records_hits_misses_and_lock_cleanup(
+    cache_state: tuple[
+        InstrumentedLRUCache[str, int], CacheManager, dict[str, str], _EventRecorder
+    ],
+) -> None:
     cache, manager, locks, recorder = cache_state
     recorder.events.clear()
 
@@ -118,7 +128,11 @@ def test_pop_records_hits_misses_and_lock_cleanup(cache_state: tuple[Instrumente
     assert final_stats.evictions == 1
 
 
-def test_clear_flushes_cache_and_metrics(cache_state: tuple[InstrumentedLRUCache[str, int], CacheManager, dict[str, str], _EventRecorder]) -> None:
+def test_clear_flushes_cache_and_metrics(
+    cache_state: tuple[
+        InstrumentedLRUCache[str, int], CacheManager, dict[str, str], _EventRecorder
+    ],
+) -> None:
     cache, manager, locks, recorder = cache_state
     recorder.events.clear()
 

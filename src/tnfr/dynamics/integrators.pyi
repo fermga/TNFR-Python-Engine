@@ -24,7 +24,6 @@ def prepare_integration_params(
     t: float | None = ...,
     method: Literal["euler", "rk4"] | None = ...,
 ) -> tuple[float, int, float, Literal["euler", "rk4"]]: ...
-
 def update_epi_via_nodal_equation(
     G: TNFRGraph,
     *,

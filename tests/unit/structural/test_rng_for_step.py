@@ -17,9 +17,7 @@ def test_rng_for_step_changes_with_step():
     clear_rng_cache()
     rng1 = _rng_for_step(123, 4)
     rng2 = _rng_for_step(123, 5)
-    assert [rng1.random() for _ in range(3)] != [
-        rng2.random() for _ in range(3)
-    ]
+    assert [rng1.random() for _ in range(3)] != [rng2.random() for _ in range(3)]
 
 
 def test_rng_for_step_thread_independence():

@@ -102,7 +102,9 @@ def test_public_api_missing_prepare_network_dependency(monkeypatch):
         with pytest.raises(ImportError) as excinfo:
             module.prepare_network(None)
         assert "networkx" in str(excinfo.value)
-        prepare_info = getattr(module.prepare_network, "__tnfr_missing_dependency__", {})
+        prepare_info = getattr(
+            module.prepare_network, "__tnfr_missing_dependency__", {}
+        )
         assert prepare_info.get("export") == "prepare_network"
         assert prepare_info.get("missing") == "networkx"
     _clear_tnfr_modules()

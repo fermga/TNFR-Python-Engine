@@ -17,13 +17,12 @@ from ..utils import (
     normalize_weights,
     stable_json,
 )
-from .trig import neighbor_phase_mean_list
-
 from .common import (
+    _get_vf_dnfr_max,
     ensure_neighbors_map,
     merge_graph_weights,
-    _get_vf_dnfr_max,
 )
+from .trig import neighbor_phase_mean_list
 from .trig_cache import get_trig_cache
 
 ALIAS_VF = get_aliases("VF")
@@ -118,11 +117,7 @@ def compute_Si_node(
     dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
     dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
 
-    Si = (
-        alpha * vf_norm
-        + beta * (1.0 - phase_dispersion)
-        + gamma * (1.0 - dnfr_norm)
-    )
+    Si = alpha * vf_norm + beta * (1.0 - phase_dispersion) + gamma * (1.0 - dnfr_norm)
     Si = clamp01(Si)
     if inplace:
         set_attr(nd, ALIAS_SI, Si)
@@ -187,9 +182,7 @@ def compute_Si(
     trig = get_trig_cache(G, np=np)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
 
-    pm_fn = partial(
-        neighbor_phase_mean_list, cos_th=cos_th, sin_th=sin_th, np=np
-    )
+    pm_fn = partial(neighbor_phase_mean_list, cos_th=cos_th, sin_th=sin_th, np=np)
 
     if n_jobs is None:
         n_jobs = _coerce_jobs(G.graph.get("SI_N_JOBS"))
@@ -233,7 +226,8 @@ def compute_Si(
         dnfr_norm = np.clip(np.abs(dnfr_arr) / dnfrmax, 0.0, 1.0)
 
         si_arr = np.clip(
-            alpha * vf_norm + beta * (1.0 - phase_dispersion_arr)
+            alpha * vf_norm
+            + beta * (1.0 - phase_dispersion_arr)
             + gamma * (1.0 - dnfr_norm),
             0.0,
             1.0,
@@ -257,7 +251,7 @@ def compute_Si(
                     futures = [
                         executor.submit(
                             _compute_si_python_chunk,
-                            node_payload[idx:idx + chunk_size],
+                            node_payload[idx : idx + chunk_size],
                             cos_th=cos_th,
                             sin_th=sin_th,
                             alpha=alpha,

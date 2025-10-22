@@ -21,7 +21,9 @@ pytestmark = pytest.mark.slow
 ALIAS_THETA = get_aliases("THETA")
 
 
-def _seed_graph(num_nodes: int = 220, edge_probability: float = 0.25, *, seed: int = 21) -> nx.Graph:
+def _seed_graph(
+    num_nodes: int = 220, edge_probability: float = 0.25, *, seed: int = 21
+) -> nx.Graph:
     graph = nx.gnp_random_graph(num_nodes, edge_probability, seed=seed)
     for node in graph.nodes:
         set_attr(graph.nodes[node], ALIAS_THETA, 0.1 * (node + 1))
@@ -73,5 +75,7 @@ def test_neighbor_phase_mean_vectorized_outperforms_naive_wrapper():
     assert fast_time <= slow_time * 0.5
 
     fast_angles = [neighbor_phase_mean(graph_fast, node) for node in graph_fast.nodes]
-    slow_angles = [_naive_neighbor_phase_mean(graph_slow, node) for node in graph_slow.nodes]
+    slow_angles = [
+        _naive_neighbor_phase_mean(graph_slow, node) for node in graph_slow.nodes
+    ]
     npt.assert_allclose(fast_angles, slow_angles, rtol=1e-9, atol=1e-9)

@@ -1,8 +1,8 @@
 import pytest
 
-from tnfr.metrics.trig import neighbor_phase_mean
-from tnfr.constants import get_aliases
 from tnfr.alias import set_attr
+from tnfr.constants import get_aliases
+from tnfr.metrics.trig import neighbor_phase_mean
 
 
 class DummyNeighbor:

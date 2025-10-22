@@ -5,25 +5,25 @@ import logging
 import sys
 from typing import Optional
 
+from .. import __version__
+from ..utils import _configure_root, get_logger
 from .arguments import (
+    _add_metrics_parser,
+    _add_run_parser,
+    _add_sequence_parser,
+    add_canon_toggle,
     add_common_args,
     add_grammar_args,
     add_grammar_selector_args,
     add_history_export_args,
-    add_canon_toggle,
-    _add_run_parser,
-    _add_sequence_parser,
-    _add_metrics_parser,
 )
 from .execution import (
-    build_basic_graph,
     apply_cli_config,
+    build_basic_graph,
     register_callbacks_and_observer,
-    run_program,
     resolve_program,
+    run_program,
 )
-from .. import __version__
-from ..utils import _configure_root, get_logger
 
 logger = get_logger(__name__)
 
@@ -69,9 +69,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     p.add_argument(
         "--version",
         action="store_true",
-        help=(
-            "show the actual version and exit (reads pyproject.toml in development)"
-        ),
+        help=("show the actual version and exit (reads pyproject.toml in development)"),
     )
     sub = p.add_subparsers(dest="cmd")
 

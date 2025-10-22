@@ -1,16 +1,15 @@
 """Unit tests for integrator routines driving node evolution."""
 
-
-
 from __future__ import annotations
-import pytest
 
 import networkx as nx
+import pytest
+
 from tnfr.alias import set_attr
 from tnfr.constants import inject_defaults
-from tnfr.initialization import init_node_attrs
-from tnfr.dynamics import update_epi_via_nodal_equation, validate_canon
 from tnfr.dynamics import integrators as integrators_mod
+from tnfr.dynamics import update_epi_via_nodal_equation, validate_canon
+from tnfr.initialization import init_node_attrs
 
 
 @pytest.mark.parametrize("method", ["euler", "rk4"])

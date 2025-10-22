@@ -4,8 +4,8 @@ import math
 from types import MappingProxyType
 
 import pytest
-from tnfr.utils import negative_weights_warn_once
-from tnfr.utils import normalize_weights
+
+from tnfr.utils import negative_weights_warn_once, normalize_weights
 
 
 def test_normalize_weights_warns_on_negative_value(caplog):
@@ -28,7 +28,9 @@ def test_normalize_weights_raises_on_negative_value():
 
 def test_normalize_weights_warns_on_negative_default(caplog):
     with caplog.at_level("WARNING"):
-        normalize_weights({}, ("warn-negative-default-a", "warn-negative-default-b"), default=-0.5)
+        normalize_weights(
+            {}, ("warn-negative-default-a", "warn-negative-default-b"), default=-0.5
+        )
     assert any("Negative weights" in m for m in caplog.messages)
 
 
@@ -82,7 +84,9 @@ def test_normalize_weights_error_on_negative_does_not_raise_conversion(caplog):
     """error_on_negative should not affect conversion errors."""
     weights = {"a": "not-a-number", "b": 2.0}
     with caplog.at_level("WARNING"):
-        norm = normalize_weights(weights, ("a", "b"), error_on_negative=True, default=1.0)
+        norm = normalize_weights(
+            weights, ("a", "b"), error_on_negative=True, default=1.0
+        )
     assert any("Could not convert" in m for m in caplog.messages)
     assert math.isclose(math.fsum(norm.values()), 1.0)
 

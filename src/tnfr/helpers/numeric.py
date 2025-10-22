@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
 import math
+from collections.abc import Iterable, Sequence
 
 __all__ = (
     "clamp",
@@ -59,9 +59,7 @@ def similarity_abs(a: float, b: float, lo: float, hi: float) -> float:
     return 1.0 - _norm01(abs(float(a) - float(b)), 0.0, hi - lo)
 
 
-def kahan_sum_nd(
-    values: Iterable[Sequence[float]], dims: int
-) -> tuple[float, ...]:
+def kahan_sum_nd(values: Iterable[Sequence[float]], dims: int) -> tuple[float, ...]:
     """Return compensated sums of ``values`` with ``dims`` components.
 
     Each component of the tuples in ``values`` is summed independently using the

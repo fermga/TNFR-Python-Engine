@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pytest
+
 import tnfr.io as io_mod
 from tnfr.io import read_structured_file
 

@@ -1,9 +1,8 @@
 """Unit tests for exporting collected metrics to CSV and JSON."""
 
-
-
-import json
 import csv
+import json
+
 import pytest
 
 from tnfr.metrics import export_metrics

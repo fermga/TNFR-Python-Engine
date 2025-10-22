@@ -9,7 +9,6 @@ from ..telemetry.verbosity import TELEMETRY_VERBOSITY_LEVELS
 from ..types import ArgSpec
 from .utils import spec
 
-
 _PRESET_HELP = "Available presets: {}.".format(
     ", ".join(PREFERRED_PRESET_NAMES),
 )
@@ -68,9 +67,7 @@ COMMON_ARG_SPECS: tuple[ArgSpec, ...] = (
 )
 
 
-def add_arg_specs(
-    parser: argparse._ActionsContainer, specs: Iterable[ArgSpec]
-) -> None:
+def add_arg_specs(parser: argparse._ActionsContainer, specs: Iterable[ArgSpec]) -> None:
     """Register arguments from ``specs`` on ``parser``."""
     for opt, kwargs in specs:
         parser.add_argument(opt, **kwargs)
@@ -99,9 +96,7 @@ def add_grammar_args(parser: argparse.ArgumentParser) -> None:
 def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
     """Add grammar options and glyph selector."""
     add_grammar_args(parser)
-    parser.add_argument(
-        "--selector", choices=["basic", "param"], default="basic"
-    )
+    parser.add_argument("--selector", choices=["basic", "param"], default="basic")
 
 
 def add_history_export_args(parser: argparse.ArgumentParser) -> None:
@@ -122,13 +117,11 @@ def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
 
 def _add_run_parser(sub: argparse._SubParsersAction) -> None:
     """Configure the ``run`` subcommand."""
-    from .execution import cmd_run, DEFAULT_SUMMARY_SERIES_LIMIT
+    from .execution import DEFAULT_SUMMARY_SERIES_LIMIT, cmd_run
 
     p_run = sub.add_parser(
         "run",
-        help=(
-            "Run a free scenario or preset and optionally export history"
-        ),
+        help=("Run a free scenario or preset and optionally export history"),
     )
     add_common_args(p_run)
     p_run.add_argument("--steps", type=int, default=100)
@@ -179,9 +172,7 @@ def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
     """Configure the ``metrics`` subcommand."""
     from .execution import cmd_metrics
 
-    p_met = sub.add_parser(
-        "metrics", help="Run briefly and export key metrics"
-    )
+    p_met = sub.add_parser("metrics", help="Run briefly and export key metrics")
     add_common_args(p_met)
     p_met.add_argument("--steps", type=int, default=None)
     add_canon_toggle(p_met)

@@ -8,4 +8,3 @@ except (ImportError, AttributeError):  # pragma: no cover - Python < 3.10
     from typing_extensions import TypeAlias  # type: ignore[assignment]
 
 __all__ = ["TypeAlias"]
-

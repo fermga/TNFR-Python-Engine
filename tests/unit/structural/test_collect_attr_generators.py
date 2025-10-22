@@ -1,7 +1,7 @@
 import networkx as nx
 import numpy as np
 
-from tnfr.alias import set_attr, collect_attr
+from tnfr.alias import collect_attr, set_attr
 from tnfr.constants import get_aliases
 
 ALIAS_THETA = get_aliases("THETA")

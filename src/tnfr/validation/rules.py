@@ -8,7 +8,7 @@ compatibility or stabilisation thresholds.
 
 from __future__ import annotations
 
-from typing import Any, Callable, Mapping, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Mapping
 
 from ..alias import get_attr
 from ..constants import get_aliases
@@ -66,6 +66,7 @@ def glyph_fallback(cand_key: str, fallbacks: Mapping[str, Any]) -> Glyph | str:
 # Normalisation helpers
 # -------------------------
 
+
 def get_norm(ctx: "GrammarContext", key: str) -> float:
     """Retrieve a global normalisation value from ``ctx.norms``."""
 
@@ -100,6 +101,7 @@ def normalized_dnfr(ctx: "GrammarContext", nd) -> float:
 # -------------------------
 # Validation rules
 # -------------------------
+
 
 def _check_repeats(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | str:
     """Avoid recent repetitions according to ``ctx.cfg_soft``."""
@@ -142,10 +144,7 @@ def _check_oz_to_zhir(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | st
         cfg = ctx.cfg_canon
         win = int(cfg.get("zhir_requires_oz_window", 3))
         dn_min = float(cfg.get("zhir_dnfr_min", 0.05))
-        if (
-            not recent_glyph(nd, Glyph.OZ, win)
-            and normalized_dnfr(ctx, nd) < dn_min
-        ):
+        if not recent_glyph(nd, Glyph.OZ, win) and normalized_dnfr(ctx, nd) < dn_min:
             return Glyph.OZ
     return cand
 
@@ -163,13 +162,10 @@ def _check_thol_closure(
         maxlen = int(cfg.get("thol_max_len", 6))
         close_dn = float(cfg.get("thol_close_dnfr", 0.15))
         if st["thol_len"] >= maxlen or (
-            st["thol_len"] >= minlen
-            and normalized_dnfr(ctx, nd) <= close_dn
+            st["thol_len"] >= minlen and normalized_dnfr(ctx, nd) <= close_dn
         ):
             return (
-                Glyph.NUL
-                if _si(nd) >= float(cfg.get("si_high", 0.66))
-                else Glyph.SHA
+                Glyph.NUL if _si(nd) >= float(cfg.get("si_high", 0.66)) else Glyph.SHA
             )
     return cand
 

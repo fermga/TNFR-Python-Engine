@@ -1,7 +1,7 @@
 """Tests for validate_window parameter handling."""
 
-import pytest
 import numpy as np
+import pytest
 
 from tnfr.utils import validate_window
 

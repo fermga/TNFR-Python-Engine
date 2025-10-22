@@ -1,18 +1,15 @@
 """Unit tests covering edge cases in dynamics operations and glyph application."""
 
-
-
 import networkx as nx
 import pytest
-
-from tnfr.node import NodeNX
-from tnfr.operators import apply_glyph_obj
-from tnfr.types import Glyph
 
 from tnfr.dynamics import (
     default_compute_delta_nfr,
     update_epi_via_nodal_equation,
 )
+from tnfr.node import NodeNX
+from tnfr.operators import apply_glyph_obj
+from tnfr.types import Glyph
 
 
 def test_empty_graph_handling(graph_canon):

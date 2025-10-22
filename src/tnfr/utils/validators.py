@@ -4,12 +4,10 @@ from __future__ import annotations
 
 import numbers
 import sys
-
 from collections.abc import Mapping
 from typing import Callable, Sequence
 
 from .._compat import TypeAlias
-
 from ..alias import get_attr
 from ..config.constants import GLYPHS_CANONICAL_SET
 from ..constants import get_aliases, get_param
@@ -20,6 +18,7 @@ from ..types import (
     StructuralFrequency,
     TNFRGraph,
 )
+
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 
@@ -51,7 +50,9 @@ def validate_window(window: int, *, positive: bool = False) -> int:
     return int(window)
 
 
-def _require_attr(data: NodeData, alias: AliasSequence, node: NodeId, name: str) -> float:
+def _require_attr(
+    data: NodeData, alias: AliasSequence, node: NodeId, name: str
+) -> float:
     """Return attribute value or raise if missing."""
 
     mapping: dict[str, object]

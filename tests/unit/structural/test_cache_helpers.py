@@ -1,7 +1,5 @@
 """Unit tests for public cache helpers that track node and edge metadata."""
 
-
-
 from tnfr.utils import (
     edge_version_update,
     ensure_node_index_map,

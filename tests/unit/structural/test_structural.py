@@ -4,7 +4,6 @@ import networkx as nx
 import pytest
 
 from tnfr import run_sequence
-from tnfr.constants import EPI_PRIMARY
 from tnfr.config.operator_names import (
     COHERENCE,
     EMISSION,
@@ -14,10 +13,11 @@ from tnfr.config.operator_names import (
     SILENCE,
     TRANSITION,
 )
+from tnfr.constants import EPI_PRIMARY
 from tnfr.structural import (
-    Coupling,
     Coherence,
     Contraction,
+    Coupling,
     Dissonance,
     Emission,
     Expansion,

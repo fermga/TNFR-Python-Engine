@@ -36,7 +36,9 @@ def accessor() -> AliasAccessor[int]:
 
 
 @pytest.mark.parametrize("use_instance", [False, True])
-def test_accessor_get_and_set_work_with_functions_and_object(use_instance: bool) -> None:
+def test_accessor_get_and_set_work_with_functions_and_object(
+    use_instance: bool,
+) -> None:
     if use_instance:
         accessor = AliasAccessor(int)
 
@@ -47,10 +49,14 @@ def test_accessor_get_and_set_work_with_functions_and_object(use_instance: bool)
             return accessor.set(d, aliases, value)
 
     else:
-        getter = lambda d, aliases, *, default=None: AliasAccessor(int).get(  # noqa: E731
+        getter = lambda d, aliases, *, default=None: AliasAccessor(
+            int
+        ).get(  # noqa: E731
             d, aliases, default=default
         )
-        setter = lambda d, aliases, value: AliasAccessor(int).set(d, aliases, value)  # noqa: E731
+        setter = lambda d, aliases, value: AliasAccessor(int).set(
+            d, aliases, value
+        )  # noqa: E731
 
     data = {"a": "1"}
     assert getter(data, ("a", "b"), default=None) == 1
@@ -64,7 +70,9 @@ def test_accessor_get_uses_default_value() -> None:
 
 
 @pytest.mark.parametrize("operation", ["get", "set"])
-def test_alias_tuple_cache_reuses_validated_aliases(accessor: AliasAccessor[int], operation: str) -> None:
+def test_alias_tuple_cache_reuses_validated_aliases(
+    accessor: AliasAccessor[int], operation: str
+) -> None:
     if operation == "get":
         data = {"b": "1"}
         aliases = ("a", "b")

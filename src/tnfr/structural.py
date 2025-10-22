@@ -6,31 +6,30 @@ from typing import Iterable
 
 import networkx as nx
 
-from .constants import EPI_PRIMARY, VF_PRIMARY, THETA_PRIMARY
+from .constants import EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
 from .dynamics import (
-    set_delta_nfr_hook,
     dnfr_epi_vf_mixed,
+    set_delta_nfr_hook,
 )
-from .types import DeltaNFRHook, NodeId, TNFRGraph
 from .operators.definitions import (
-    Operator,
-    Emission,
-    Reception,
     Coherence,
-    Dissonance,
-    Coupling,
-    Resonance,
-    Silence,
-    Expansion,
     Contraction,
-    SelfOrganization,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
     Mutation,
-    Transition,
+    Operator,
+    Reception,
     Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
 )
 from .operators.registry import OPERATORS
+from .types import DeltaNFRHook, NodeId, TNFRGraph
 from .validation import validate_sequence
-
 
 # ---------------------------------------------------------------------------
 # 1) NFR factory

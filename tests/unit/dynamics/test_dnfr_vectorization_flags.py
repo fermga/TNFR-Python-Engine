@@ -3,11 +3,10 @@ import sys
 import networkx as nx
 import pytest
 
+import tnfr.dynamics.dnfr as dnfr_module
 from tnfr.alias import collect_attr, set_attr
 from tnfr.constants import get_aliases
 from tnfr.dynamics.dnfr import _compute_dnfr, _prepare_dnfr_data
-import tnfr.dynamics.dnfr as dnfr_module
-
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
@@ -127,7 +126,9 @@ def test_compute_dnfr_loop_path_without_numpy_module(monkeypatch):
 
     monkeypatch.delitem(sys.modules, "numpy", raising=False)
     monkeypatch.setattr(dnfr_module, "get_numpy", lambda: None)
-    monkeypatch.setattr(dnfr_module, "_has_cached_numpy_buffers", lambda *_, **__: False)
+    monkeypatch.setattr(
+        dnfr_module, "_has_cached_numpy_buffers", lambda *_, **__: False
+    )
 
     G = _graph_fixture()
     data = _prepare_dnfr_data(G)

@@ -1,14 +1,13 @@
 """Unit tests for gamma dynamics utilities and stability thresholds."""
 
-
-
-import math
 import logging
+import math
+
 import pytest
 
 from tnfr.constants import inject_defaults, merge_overrides
 from tnfr.dynamics import update_epi_via_nodal_equation
-from tnfr.gamma import eval_gamma, GAMMA_REGISTRY, GammaEntry
+from tnfr.gamma import GAMMA_REGISTRY, GammaEntry, eval_gamma
 from tnfr.utils import EdgeCacheManager, increment_edge_version
 
 
@@ -16,9 +15,7 @@ def test_gamma_linear_integration(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
     inject_defaults(G)
-    merge_overrides(
-        G, GAMMA={"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0}
-    )
+    merge_overrides(G, GAMMA={"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0})
     for n in G.nodes():
         G.nodes[n]["νf"] = 1.0
         G.nodes[n]["ΔNFR"] = 0.0
@@ -56,9 +53,7 @@ def test_gamma_linear_string_params(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
     inject_defaults(G)
-    merge_overrides(
-        G, GAMMA={"type": "kuramoto_linear", "beta": "1.0", "R0": "0.0"}
-    )
+    merge_overrides(G, GAMMA={"type": "kuramoto_linear", "beta": "1.0", "R0": "0.0"})
     for n in G.nodes():
         G.nodes[n]["theta"] = 0.0
     g0 = eval_gamma(G, 0, t=0.0)
@@ -258,9 +253,7 @@ def test_kuramoto_cache_invalidation_on_version(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
     inject_defaults(G)
-    merge_overrides(
-        G, GAMMA={"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0}
-    )
+    merge_overrides(G, GAMMA={"type": "kuramoto_linear", "beta": 1.0, "R0": 0.0})
     for n in G.nodes():
         G.nodes[n]["theta"] = 0.0
     g_before = eval_gamma(G, 0, t=0.0)
@@ -335,9 +328,7 @@ def test_eval_gamma_unknown_type_warning_and_strict(graph_canon, caplog):
     with caplog.at_level(logging.WARNING):
         g = eval_gamma(G, 0, t=0.0)
     assert g == 0.0
-    assert any(
-        "Unknown GAMMA type" in rec.message for rec in caplog.records
-    )
+    assert any("Unknown GAMMA type" in rec.message for rec in caplog.records)
 
     with pytest.raises(ValueError):
         eval_gamma(G, 0, t=0.0, strict=True)

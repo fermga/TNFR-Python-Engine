@@ -9,7 +9,8 @@ from itertools import islice
 from typing import Any, Callable, Iterator, TypeVar, cast
 
 from ..helpers.numeric import kahan_sum_nd
-from .init import get_logger, warn_once as _warn_once_factory
+from .init import get_logger
+from .init import warn_once as _warn_once_factory
 
 T = TypeVar("T")
 
@@ -65,7 +66,9 @@ def negative_weights_warn_once(
 ) -> Callable[[Mapping[str, float]], None]:
     """Return a ``WarnOnce`` callable for negative weight warnings."""
 
-    return _warn_once_factory(_collections_logger, NEGATIVE_WEIGHTS_MSG, maxsize=maxsize)
+    return _warn_once_factory(
+        _collections_logger, NEGATIVE_WEIGHTS_MSG, maxsize=maxsize
+    )
 
 
 def _log_negative_weights(negatives: Mapping[str, float]) -> None:
@@ -75,7 +78,7 @@ def _log_negative_weights(negatives: Mapping[str, float]) -> None:
 
 
 def _resolve_negative_warn_handler(
-    warn_once: bool | Callable[[Mapping[str, float]], None]
+    warn_once: bool | Callable[[Mapping[str, float]], None],
 ) -> Callable[[Mapping[str, float]], None]:
     """Return a callable that logs negative weight warnings."""
 

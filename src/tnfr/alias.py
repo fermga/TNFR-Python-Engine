@@ -7,6 +7,7 @@ alias-based attribute access. Legacy wrappers ``alias_get`` and
 """
 
 from __future__ import annotations
+
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, MutableMapping, Sized
 from dataclasses import dataclass
@@ -269,7 +270,9 @@ def collect_attr(
         return float(get_attr(G.nodes[node], aliases, default))
 
     if np is not None:
-        values: FloatArray = np.fromiter((_value(n) for n in nodes_iter), float, count=size)
+        values: FloatArray = np.fromiter(
+            (_value(n) for n in nodes_iter), float, count=size
+        )
         return values
     return [_value(n) for n in nodes_iter]
 
@@ -297,7 +300,9 @@ def collect_theta_attr(
         return float(get_theta_attr(G.nodes[node], default))
 
     if np is not None:
-        values: FloatArray = np.fromiter((_value(n) for n in nodes_iter), float, count=size)
+        values: FloatArray = np.fromiter(
+            (_value(n) for n in nodes_iter), float, count=size
+        )
         return values
 
     return [_value(n) for n in nodes_iter]
@@ -445,9 +450,7 @@ def _update_cached_abs_max(
     cur_node = cast(Hashable | None, G.graph.get(node_key))
 
     if val >= cur:
-        return _compute_abs_max_result(
-            G, aliases, key=key, candidate=(n, val)
-        )
+        return _compute_abs_max_result(G, aliases, key=key, candidate=(n, val))
     if cur_node == n:
         return _compute_abs_max_result(G, aliases, key=key)
     return AbsMaxResult(max_value=cur, node=cur_node)
@@ -518,9 +521,7 @@ def set_scalar(
     return set_attr_and_cache(G, n, alias, value, cache=cache, extra=extra)
 
 
-def _increment_trig_version(
-    G: "networkx.Graph", _: Hashable, __: float
-) -> None:
+def _increment_trig_version(G: "networkx.Graph", _: Hashable, __: float) -> None:
     """Increment cached trig version to invalidate trig caches."""
     g = G.graph
     g["_trig_version"] = int(g.get("_trig_version", 0)) + 1

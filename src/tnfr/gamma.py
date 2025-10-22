@@ -1,16 +1,18 @@
 """Gamma registry."""
 
 from __future__ import annotations
-from typing import Any, Callable, NamedTuple
-import math
-import logging
+
 import hashlib
+import logging
+import math
 from collections.abc import Mapping
 from functools import lru_cache
 from types import MappingProxyType
+from typing import Any, Callable, NamedTuple
 
-from .constants import DEFAULTS
 from .alias import get_theta_attr
+from .constants import DEFAULTS
+from .metrics.trig_cache import get_trig_cache
 from .types import GammaSpec, NodeId, TNFRGraph
 from .utils import (
     edge_version_cache,
@@ -19,8 +21,6 @@ from .utils import (
     json_dumps,
     node_set_checksum,
 )
-from .metrics.trig_cache import get_trig_cache
-
 
 logger = get_logger(__name__)
 
@@ -172,9 +172,7 @@ def _get_gamma_spec(G: TNFRGraph) -> GammaSpec:
 # -----------------
 
 
-def _gamma_params(
-    cfg: GammaSpec, **defaults: float
-) -> tuple[float, ...]:
+def _gamma_params(cfg: GammaSpec, **defaults: float) -> tuple[float, ...]:
     """Return normalized Γ parameters from ``cfg``.
 
     Parameters are retrieved from ``cfg`` using the keys in ``defaults`` and
@@ -186,9 +184,7 @@ def _gamma_params(
     >>> beta, R0 = _gamma_params(cfg, beta=0.0, R0=0.0)
     """
 
-    return tuple(
-        float(cfg.get(name, default)) for name, default in defaults.items()
-    )
+    return tuple(float(cfg.get(name, default)) for name, default in defaults.items())
 
 
 # -----------------
@@ -196,9 +192,7 @@ def _gamma_params(
 # -----------------
 
 
-def gamma_none(
-    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
-) -> float:
+def gamma_none(G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec) -> float:
     return 0.0
 
 
@@ -229,7 +223,9 @@ def _builder_bandpass(th_i: float, R: float, psi: float, beta: float) -> float:
     return beta * R * (1.0 - R) * sgn
 
 
-def _builder_tanh(th_i: float, R: float, psi: float, beta: float, k: float, R0: float) -> float:
+def _builder_tanh(
+    th_i: float, R: float, psi: float, beta: float, k: float, R0: float
+) -> float:
     return beta * math.tanh(k * (R - R0)) * math.cos(th_i - psi)
 
 
@@ -272,9 +268,7 @@ def gamma_kuramoto_tanh(
     return _gamma_kuramoto(G, node, cfg, _builder_tanh, beta=0.0, k=1.0, R0=0.0)
 
 
-def gamma_harmonic(
-    G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
-) -> float:
+def gamma_harmonic(G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec) -> float:
     """Harmonic forcing aligned with the global phase field.
 
     Formula: Γ = β · sin(ω·t + φ) · cos(θ_i - ψ)

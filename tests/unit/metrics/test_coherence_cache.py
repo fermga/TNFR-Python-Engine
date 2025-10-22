@@ -40,9 +40,7 @@ def test_local_phase_sync_independent_graphs(graph_canon):
     assert set(map1.keys()) == set(nodes1)
     assert set(map2.keys()) == set(nodes2)
 
-    r1_again = local_phase_sync_weighted(
-        G1, nodes1[0], nodes_order=nodes1, W_row=W1
-    )
+    r1_again = local_phase_sync_weighted(G1, nodes1[0], nodes_order=nodes1, W_row=W1)
     assert r1_again == pytest.approx(r1)
     assert ensure_node_index_map(G1) is map1
 
@@ -95,9 +93,7 @@ def test_coherence_parallel_consistency_neighbors_and_all(graph_canon):
     cfg["scope"] = "all"
     cfg["n_jobs"] = 3
 
-    nodes_serial_all, W_serial_all = coherence_matrix(
-        G, use_numpy=False, n_jobs=1
-    )
+    nodes_serial_all, W_serial_all = coherence_matrix(G, use_numpy=False, n_jobs=1)
     nodes_parallel_all, W_parallel_all = coherence_matrix(G, use_numpy=False)
 
     assert nodes_serial_all == nodes_parallel_all

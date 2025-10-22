@@ -5,10 +5,10 @@ from unittest.mock import patch
 from tnfr.utils import (
     NODE_SET_CHECKSUM_KEY,
     clear_node_repr_cache,
+    increment_edge_version,
     node_set_checksum,
     stable_json,
 )
-from tnfr.utils import increment_edge_version
 
 
 def build_graph(graph_canon):
@@ -35,9 +35,7 @@ def _reference_checksum(G):
     nodes = sorted(G.nodes(), key=_sorting_key)
     hasher = hashlib.blake2b(digest_size=16)
     for n in nodes:
-        d = hashlib.blake2b(
-            stable_json(n).encode("utf-8"), digest_size=16
-        ).digest()
+        d = hashlib.blake2b(stable_json(n).encode("utf-8"), digest_size=16).digest()
         hasher.update(d)
     return hasher.hexdigest()
 

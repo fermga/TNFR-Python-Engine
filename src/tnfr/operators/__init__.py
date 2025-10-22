@@ -2,36 +2,35 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator
-from typing import Any, TYPE_CHECKING
-import math
 import heapq
+import math
+from collections.abc import Callable, Iterator
 from itertools import islice
-from statistics import fmean, StatisticsError
+from statistics import StatisticsError, fmean
+from typing import TYPE_CHECKING, Any
+
+from tnfr import glyph_history
 
 from ..alias import get_attr
 from ..constants import DEFAULTS, get_aliases, get_param
-
 from ..helpers.numeric import angle_diff
 from ..metrics.trig import neighbor_phase_mean
-from ..utils import get_nodenx
 from ..rng import make_rng
-from tnfr import glyph_history
 from ..types import EPIValue, Glyph, NodeId, TNFRGraph
-
+from ..utils import get_nodenx
 from . import definitions as _definitions
 from .jitter import (
     JitterCache,
     JitterCacheManager,
     get_jitter_manager,
-    reset_jitter_manager,
     random_jitter,
+    reset_jitter_manager,
 )
 from .registry import OPERATORS, discover_operators, get_operator_class
 from .remesh import (
     apply_network_remesh,
-    apply_topological_remesh,
     apply_remesh_if_globally_stable,
+    apply_topological_remesh,
 )
 
 _remesh_doc = (
@@ -49,8 +48,7 @@ else:
 discover_operators()
 
 _DEFINITION_EXPORTS = {
-    name: getattr(_definitions, name)
-    for name in getattr(_definitions, "__all__", ())
+    name: getattr(_definitions, name) for name in getattr(_definitions, "__all__", ())
 }
 globals().update(_DEFINITION_EXPORTS)
 
@@ -134,8 +132,7 @@ def get_neighbor_epi(node: NodeProtocol) -> tuple[list[NodeProtocol], EPIValue]:
             if NodeNX is None:
                 raise ImportError("NodeNX is unavailable")
             neigh = [
-                v if hasattr(v, "EPI") else NodeNX.from_graph(node.G, v)
-                for v in neigh
+                v if hasattr(v, "EPI") else NodeNX.from_graph(node.G, v) for v in neigh
             ]
     else:
         try:
@@ -167,9 +164,7 @@ def _mix_epi_with_neighbors(
 ) -> tuple[float, str]:
     """Mix ``EPI`` of ``node`` with the mean of its neighbours."""
     default_kind = (
-        default_glyph.value
-        if isinstance(default_glyph, Glyph)
-        else str(default_glyph)
+        default_glyph.value if isinstance(default_glyph, Glyph) else str(default_glyph)
     )
     epi = node.EPI
     neigh, epi_bar = get_neighbor_epi(node)
@@ -226,9 +221,7 @@ def _um_candidate_iter(node: NodeProtocol) -> Iterator[NodeProtocol]:
     else:
         base = node.all_nodes()
     for j in base:
-        same = (j is node) or (
-            getattr(node, "n", None) == getattr(j, "n", None)
-        )
+        same = (j is node) or (getattr(node, "n", None) == getattr(j, "n", None))
         if same or node.has_edge(j):
             continue
         yield j
@@ -292,9 +285,7 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
             dphi = abs(angle_diff(th_j, th)) / math.pi
             epi_j = j.EPI
             si_j = j.Si
-            epi_sim = 1.0 - abs(epi_i - epi_j) / (
-                abs(epi_i) + abs(epi_j) + 1e-9
-            )
+            epi_sim = 1.0 - abs(epi_i - epi_j) / (abs(epi_i) + abs(epi_j) + 1e-9)
             si_sim = 1.0 - abs(si_i - si_j)
             compat = (1 - dphi) * 0.5 + 0.25 * epi_sim + 0.25 * si_sim
             if compat >= thr:
@@ -330,23 +321,17 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
     return _op
 
 
-def _op_THOL(
-    node: NodeProtocol, gf: GlyphFactors
-) -> None:  # THOL — Self-organization
+def _op_THOL(node: NodeProtocol, gf: GlyphFactors) -> None:  # THOL — Self-organization
     a = get_factor(gf, "THOL_accel", 0.10)
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
-def _op_ZHIR(
-    node: NodeProtocol, gf: GlyphFactors
-) -> None:  # ZHIR — Mutation
+def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
     shift = get_factor(gf, "ZHIR_theta_shift", math.pi / 2)
     node.theta = node.theta + shift
 
 
-def _op_NAV(
-    node: NodeProtocol, gf: GlyphFactors
-) -> None:  # NAV — Transition
+def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
     dnfr = node.dnfr
     vf = node.vf
     eta = get_factor(gf, "NAV_eta", 0.5)

@@ -7,20 +7,19 @@ from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Callable, TypeVar, cast
 
+from ..immutable import _is_immutable
+from ..types import GraphLike, TNFRConfigValue
 from .core import CORE_DEFAULTS, REMESH_DEFAULTS
 from .init import INIT_DEFAULTS
 from .metric import (
-    METRIC_DEFAULTS,
-    SIGMA,
-    TRACE,
-    METRICS,
-    GRAMMAR_CANON,
     COHERENCE,
     DIAGNOSIS,
+    GRAMMAR_CANON,
+    METRIC_DEFAULTS,
+    METRICS,
+    SIGMA,
+    TRACE,
 )
-
-from ..immutable import _is_immutable
-from ..types import GraphLike, TNFRConfigValue
 
 T = TypeVar("T")
 
@@ -28,9 +27,8 @@ STATE_STABLE = "stable"
 STATE_TRANSITION = "transition"
 STATE_DISSONANT = "dissonant"
 
-CANONICAL_STATE_TOKENS = frozenset(
-    {STATE_STABLE, STATE_TRANSITION, STATE_DISSONANT}
-)
+CANONICAL_STATE_TOKENS = frozenset({STATE_STABLE, STATE_TRANSITION, STATE_DISSONANT})
+
 
 def normalise_state_token(token: str) -> str:
     """Return the canonical English token for ``token``.
@@ -55,6 +53,7 @@ def normalise_state_token(token: str) -> str:
     raise ValueError(
         "state token must be one of 'stable', 'transition', or 'dissonant'"
     )
+
 
 try:  # pragma: no cover - optional dependency
     from ..utils import ensure_node_offset_map as _ensure_node_offset_map
@@ -103,9 +102,7 @@ def inject_defaults(
     for k, v in defaults.items():
         if override or k not in G.graph:
             G.graph[k] = (
-                v
-                if _is_immutable(v)
-                else cast(TNFRConfigValue, copy.deepcopy(v))
+                v if _is_immutable(v) else cast(TNFRConfigValue, copy.deepcopy(v))
             )
     G.graph["_tnfr_defaults_attached"] = True
     if ensure_node_offset_map is not None:

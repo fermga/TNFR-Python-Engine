@@ -22,9 +22,7 @@ def test_convert_value_logs_custom_level(caplog):
         raise ValueError("bad")
 
     with caplog.at_level(logging.INFO, logger="tnfr.utils.data"):
-        ok, result = convert_value(
-            "x", conv, key="foo", log_level=logging.INFO
-        )
+        ok, result = convert_value("x", conv, key="foo", log_level=logging.INFO)
 
     assert not ok and result is None
     assert len(caplog.records) == 1

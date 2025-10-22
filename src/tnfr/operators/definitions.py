@@ -10,9 +10,11 @@ from typing import Any, ClassVar
 
 from ..config.operator_names import (
     COHERENCE,
+    CONTRACTION,
     COUPLING,
     DISSONANCE,
     EMISSION,
+    EXPANSION,
     MUTATION,
     RECEPTION,
     RECURSIVITY,
@@ -20,8 +22,6 @@ from ..config.operator_names import (
     SELF_ORGANIZATION,
     SILENCE,
     TRANSITION,
-    CONTRACTION,
-    EXPANSION,
 )
 from ..types import Glyph, TNFRGraph
 from .registry import register_operator

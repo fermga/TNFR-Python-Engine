@@ -1,6 +1,10 @@
 """Node utilities and structures for TNFR graphs."""
 
 from __future__ import annotations
+
+import math
+from collections.abc import Hashable
+from dataclasses import dataclass
 from typing import (
     Any,
     Callable,
@@ -11,21 +15,19 @@ from typing import (
     SupportsFloat,
     TypeVar,
 )
-from collections.abc import Hashable
-import math
-from dataclasses import dataclass
 
-from .constants import get_aliases
 from .alias import (
     get_attr,
-    get_theta_attr,
     get_attr_str,
+    get_theta_attr,
     set_attr,
     set_attr_str,
-    set_vf,
     set_dnfr,
     set_theta,
+    set_vf,
 )
+from .constants import get_aliases
+from .locking import get_lock
 from .types import (
     CouplingWeight,
     DeltaNFR,
@@ -43,7 +45,6 @@ from .utils import (
     increment_edge_version,
     supports_add_edge,
 )
-from .locking import get_lock
 
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
@@ -177,14 +178,11 @@ class NodeProtocol(Protocol):
     d2EPI: SecondDerivativeEPI
     graph: MutableMapping[str, Any]
 
-    def neighbors(self) -> Iterable[NodeProtocol | Hashable]:
-        ...
+    def neighbors(self) -> Iterable[NodeProtocol | Hashable]: ...
 
-    def _glyph_storage(self) -> MutableMapping[str, object]:
-        ...
+    def _glyph_storage(self) -> MutableMapping[str, object]: ...
 
-    def has_edge(self, other: "NodeProtocol") -> bool:
-        ...
+    def has_edge(self, other: "NodeProtocol") -> bool: ...
 
     def add_edge(
         self,
@@ -192,14 +190,11 @@ class NodeProtocol(Protocol):
         weight: CouplingWeight,
         *,
         overwrite: bool = False,
-    ) -> None:
-        ...
+    ) -> None: ...
 
-    def offset(self) -> int:
-        ...
+    def offset(self) -> int: ...
 
-    def all_nodes(self) -> Iterable[NodeProtocol]:
-        ...
+    def all_nodes(self) -> Iterable[NodeProtocol]: ...
 
 
 class NodeNX(NodeProtocol):

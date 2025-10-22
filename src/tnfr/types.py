@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Callable, Hashable, Mapping, MutableMapping, Sequence
 from enum import Enum
-from typing import TYPE_CHECKING, Any, ContextManager, Iterable, Protocol, TypedDict
 from types import SimpleNamespace
+from typing import TYPE_CHECKING, Any, ContextManager, Iterable, Protocol, TypedDict
 
 from ._compat import TypeAlias
 
@@ -77,9 +77,10 @@ __all__ = (
 
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
     import networkx as nx
-    from .trace import TraceMetadata
+
     from .glyph_history import HistoryDict as _HistoryDict
     from .tokens import Token as _Token
+    from .trace import TraceMetadata
 
     TNFRGraph: TypeAlias = nx.Graph
 else:  # pragma: no cover - runtime fallback without networkx
@@ -229,8 +230,7 @@ class _DeltaNFRHookProtocol(Protocol):
         /,
         *args: Any,
         **kwargs: Any,
-    ) -> None:
-        ...
+    ) -> None: ...
 
 
 DeltaNFRHook: TypeAlias = _DeltaNFRHookProtocol
@@ -247,17 +247,13 @@ class GraphLike(Protocol):
 
     graph: dict[str, Any]
 
-    def nodes(self, data: bool = ...) -> Iterable[Any]:
-        ...
+    def nodes(self, data: bool = ...) -> Iterable[Any]: ...
 
-    def number_of_nodes(self) -> int:
-        ...
+    def number_of_nodes(self) -> int: ...
 
-    def neighbors(self, n: Any) -> Iterable[Any]:
-        ...
+    def neighbors(self, n: Any) -> Iterable[Any]: ...
 
-    def __iter__(self) -> Iterable[Any]:
-        ...
+    def __iter__(self) -> Iterable[Any]: ...
 
 
 class IntegratorProtocol(Protocol):
@@ -271,8 +267,7 @@ class IntegratorProtocol(Protocol):
         t: float | None,
         method: str | None,
         n_jobs: int | None,
-    ) -> None:
-        ...
+    ) -> None: ...
 
 
 class Glyph(str, Enum):
@@ -296,17 +291,15 @@ class Glyph(str, Enum):
 GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
 #: Normalised glyph load proportions keyed by :class:`Glyph` or aggregate labels.
 
+
 class _SelectorLifecycle(Protocol):
     """Protocol describing the selector lifecycle supported by the runtime."""
 
-    def __call__(self, graph: TNFRGraph, node: NodeId) -> Glyph | str:
-        ...
+    def __call__(self, graph: TNFRGraph, node: NodeId) -> Glyph | str: ...
 
-    def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None:
-        ...
+    def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None: ...
 
-    def select(self, graph: TNFRGraph, node: NodeId) -> Glyph | str:
-        ...
+    def select(self, graph: TNFRGraph, node: NodeId) -> Glyph | str: ...
 
 
 GlyphSelector: TypeAlias = (

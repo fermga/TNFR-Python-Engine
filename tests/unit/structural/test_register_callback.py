@@ -1,15 +1,14 @@
 """Unit tests for callback registration and replacement behavior."""
 
-
+import logging
 
 import pytest
 
 from tnfr.callback_utils import (
-    callback_manager,
     CallbackEvent,
     CallbackSpec,
+    callback_manager,
 )
-import logging
 
 
 def test_register_callback_replaces_existing(graph_canon):
@@ -22,13 +21,17 @@ def test_register_callback_replaces_existing(graph_canon):
         pass
 
     # initial registration
-    callback_manager.register_callback(G, event=CallbackEvent.BEFORE_STEP, func=cb1, name="cb")
+    callback_manager.register_callback(
+        G, event=CallbackEvent.BEFORE_STEP, func=cb1, name="cb"
+    )
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
         "cb": CallbackSpec("cb", cb1)
     }
 
     # same name should replace existing
-    callback_manager.register_callback(G, event=CallbackEvent.BEFORE_STEP, func=cb2, name="cb")
+    callback_manager.register_callback(
+        G, event=CallbackEvent.BEFORE_STEP, func=cb2, name="cb"
+    )
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {
         "cb": CallbackSpec("cb", cb2)
     }
@@ -62,7 +65,9 @@ def test_register_callback_rejects_tuple(graph_canon):
         pass
 
     with pytest.raises(TypeError, match="must be callable"):
-        callback_manager.register_callback(G, event=CallbackEvent.BEFORE_STEP, func=("cb", cb))
+        callback_manager.register_callback(
+            G, event=CallbackEvent.BEFORE_STEP, func=("cb", cb)
+        )
 
 
 def test_enum_registration_and_invocation(graph_canon):

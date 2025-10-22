@@ -1,4 +1,5 @@
 import pytest
+
 from tnfr.utils import ensure_collection
 
 

@@ -1,8 +1,8 @@
-from collections import defaultdict
 import builtins
+from collections import defaultdict
 
-from tnfr.metrics.glyph_timing import _update_tg_node, GlyphTiming
 from tnfr.glyph_history import push_glyph
+from tnfr.metrics.glyph_timing import GlyphTiming, _update_tg_node
 
 
 def test_update_tg_node_accumulates_and_resets():

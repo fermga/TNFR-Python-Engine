@@ -5,7 +5,6 @@ from typing import Any, Mapping
 __all__: Any
 
 def __getattr__(name: str) -> Any: ...
-
 def _apply_selector_hysteresis(
     nd: dict[str, Any],
     Si: float,
@@ -14,6 +13,7 @@ def _apply_selector_hysteresis(
     thr: Mapping[str, float],
     margin: float | None,
 ) -> str | None: ...
+
 _calc_selector_score: Any
 _selector_norms: Any
 _selector_thresholds: Any

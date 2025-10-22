@@ -2,6 +2,7 @@ import logging
 
 import tnfr.utils.init as import_utils
 import tnfr.utils.io as json_utils
+
 from ...utils import clear_orjson_cache
 
 
@@ -39,9 +40,7 @@ def test_lazy_orjson_import(monkeypatch):
 
 
 def test_warns_once_per_combo(monkeypatch, caplog):
-    monkeypatch.setattr(
-        json_utils, "cached_import", lambda *a, **k: DummyOrjson()
-    )
+    monkeypatch.setattr(json_utils, "cached_import", lambda *a, **k: DummyOrjson())
     clear_orjson_cache()
 
     with caplog.at_level(logging.WARNING):
@@ -52,9 +51,7 @@ def test_warns_once_per_combo(monkeypatch, caplog):
 
 
 def test_warns_for_each_combo(monkeypatch, caplog):
-    monkeypatch.setattr(
-        json_utils, "cached_import", lambda *a, **k: DummyOrjson()
-    )
+    monkeypatch.setattr(json_utils, "cached_import", lambda *a, **k: DummyOrjson())
     clear_orjson_cache()
 
     with caplog.at_level(logging.WARNING):
@@ -89,9 +86,7 @@ def test_json_dumps_without_orjson(monkeypatch, caplog):
         result = json_utils.json_dumps({"a": 1}, ensure_ascii=False, to_bytes=True)
 
     assert result == b'{"a":1}'
-    assert any(
-        "Failed to import module 'orjson'" in r.message for r in caplog.records
-    )
+    assert any("Failed to import module 'orjson'" in r.message for r in caplog.records)
 
 
 def test_json_dumps_with_orjson_warns(monkeypatch, caplog):

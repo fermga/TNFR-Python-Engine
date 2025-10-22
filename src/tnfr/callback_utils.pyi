@@ -23,16 +23,13 @@ __all__ = (
 
 logger: Any
 
-
 class CallbackEvent(str, Enum):
     BEFORE_STEP = "before_step"
     AFTER_STEP = "after_step"
     ON_REMESH = "on_remesh"
 
-
 Callback = Callable[[nx.Graph, dict[str, Any]], None]
 CallbackRegistry = dict[str, dict[str, CallbackSpec]]
-
 
 class CallbackError(TypedDict):
     event: str
@@ -42,14 +39,10 @@ class CallbackError(TypedDict):
     fn: str
     name: str | None
 
-
 class CallbackManager:
     def __init__(self) -> None: ...
-
     def get_callback_error_limit(self) -> int: ...
-
     def set_callback_error_limit(self, limit: int) -> int: ...
-
     def register_callback(
         self,
         G: nx.Graph,
@@ -58,14 +51,12 @@ class CallbackManager:
         *,
         name: str | None = ...,
     ) -> Callback: ...
-
     def invoke_callbacks(
         self,
         G: nx.Graph,
         event: CallbackEvent | str,
         ctx: dict[str, Any] | None = ...,
     ) -> None: ...
-
     def _record_callback_error(
         self,
         G: nx.Graph,
@@ -74,29 +65,18 @@ class CallbackManager:
         spec: CallbackSpec,
         err: Exception,
     ) -> None: ...
-
     def _ensure_callbacks_nolock(self, G: nx.Graph) -> CallbackRegistry: ...
-
     def _ensure_callbacks(self, G: nx.Graph) -> CallbackRegistry: ...
-
 
 callback_manager: CallbackManager
 
-
 def _func_id(fn: Callable[..., Any]) -> str: ...
-
 def _validate_registry(G: nx.Graph, cbs: Any, dirty: set[str]) -> CallbackRegistry: ...
-
 def _normalize_callbacks(entries: Any) -> dict[str, CallbackSpec]: ...
-
 def _normalize_event(event: CallbackEvent | str) -> str: ...
-
 def _is_known_event(event: str) -> bool: ...
-
 def _ensure_known_event(event: str) -> None: ...
-
 def _normalize_callback_entry(entry: Any) -> CallbackSpec | None: ...
-
 def _reconcile_callback(
     event: str,
     existing_map: dict[str, CallbackSpec],

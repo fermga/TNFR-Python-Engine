@@ -19,7 +19,6 @@ T = TypeVar("T")
 
 __all__ = ("NodeNX", "NodeProtocol", "add_edge")
 
-
 class AttrSpec:
     aliases: tuple[str, ...]
     default: Any
@@ -31,7 +30,6 @@ class AttrSpec:
 
     def build_property(self) -> property: ...
 
-
 ALIAS_EPI: tuple[str, ...]
 ALIAS_VF: tuple[str, ...]
 ALIAS_THETA: tuple[str, ...]
@@ -42,14 +40,11 @@ ALIAS_D2EPI: tuple[str, ...]
 
 ATTR_SPECS: dict[str, AttrSpec]
 
-
 def _add_edge_common(
     n1: NodeId,
     n2: NodeId,
     weight: CouplingWeight | SupportsFloat | str,
 ) -> Optional[CouplingWeight]: ...
-
-
 def add_edge(
     graph: TNFRGraph,
     n1: NodeId,
@@ -57,7 +52,6 @@ def add_edge(
     weight: CouplingWeight | SupportsFloat | str,
     overwrite: bool = ...,
 ) -> None: ...
-
 
 class NodeProtocol(Protocol):
     EPI: EPIValue
@@ -70,11 +64,8 @@ class NodeProtocol(Protocol):
     graph: MutableMapping[str, Any]
 
     def neighbors(self) -> Iterable[NodeProtocol | Hashable]: ...
-
     def _glyph_storage(self) -> MutableMapping[str, object]: ...
-
     def has_edge(self, other: NodeProtocol) -> bool: ...
-
     def add_edge(
         self,
         other: NodeProtocol,
@@ -82,11 +73,8 @@ class NodeProtocol(Protocol):
         *,
         overwrite: bool = ...,
     ) -> None: ...
-
     def offset(self) -> int: ...
-
     def all_nodes(self) -> Iterable[NodeProtocol]: ...
-
 
 class NodeNX(NodeProtocol):
     G: TNFRGraph
@@ -94,58 +82,39 @@ class NodeNX(NodeProtocol):
     graph: MutableMapping[str, Any]
 
     def __init__(self, G: TNFRGraph, n: NodeId) -> None: ...
-
     @classmethod
     def from_graph(cls, G: TNFRGraph, n: NodeId) -> "NodeNX": ...
-
     def _glyph_storage(self) -> MutableMapping[str, Any]: ...
-
     @property
     def EPI(self) -> EPIValue: ...
-
     @EPI.setter
     def EPI(self, value: EPIValue) -> None: ...
-
     @property
     def vf(self) -> StructuralFrequency: ...
-
     @vf.setter
     def vf(self, value: StructuralFrequency) -> None: ...
-
     @property
     def theta(self) -> Phase: ...
-
     @theta.setter
     def theta(self, value: Phase) -> None: ...
-
     @property
     def Si(self) -> SenseIndex: ...
-
     @Si.setter
     def Si(self, value: SenseIndex) -> None: ...
-
     @property
     def epi_kind(self) -> str: ...
-
     @epi_kind.setter
     def epi_kind(self, value: str) -> None: ...
-
     @property
     def dnfr(self) -> DeltaNFR: ...
-
     @dnfr.setter
     def dnfr(self, value: DeltaNFR) -> None: ...
-
     @property
     def d2EPI(self) -> SecondDerivativeEPI: ...
-
     @d2EPI.setter
     def d2EPI(self, value: SecondDerivativeEPI) -> None: ...
-
     def neighbors(self) -> Iterable[NodeId]: ...
-
     def has_edge(self, other: NodeProtocol) -> bool: ...
-
     def add_edge(
         self,
         other: NodeProtocol,
@@ -153,9 +122,5 @@ class NodeNX(NodeProtocol):
         *,
         overwrite: bool = ...,
     ) -> None: ...
-
     def offset(self) -> int: ...
-
     def all_nodes(self) -> Iterable[NodeProtocol]: ...
-
-

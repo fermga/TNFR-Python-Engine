@@ -1,8 +1,7 @@
 """Unit tests for glyph counting helpers across history windows."""
 
+from collections import Counter, deque
 
-
-from collections import deque, Counter
 import pytest
 
 from tnfr.glyph_history import count_glyphs

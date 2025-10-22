@@ -1,24 +1,20 @@
 """Unit tests for DNFR cache management and numerical consistency."""
 
-
-
 import math
-
-import pytest
 from contextlib import contextmanager, nullcontext
 
 import networkx as nx
+import pytest
 
 import tnfr.utils.init as utils_init
-
+from tnfr.constants import (
+    DNFR_PRIMARY,
+    EPI_PRIMARY,
+    THETA_PRIMARY,
+    VF_PRIMARY,
+)
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.dynamics.dnfr import _accumulate_neighbors_numpy, _prepare_dnfr_data
-from tnfr.constants import (
-    THETA_PRIMARY,
-    EPI_PRIMARY,
-    VF_PRIMARY,
-    DNFR_PRIMARY,
-)
 from tnfr.utils import (
     cached_node_list,
     cached_nodes_and_A,
@@ -268,7 +264,11 @@ def test_cache_invalidated_on_graph_change(vectorized, monkeypatch):
         nodes1, _ = cached_nodes_and_A(G, cache_size=2)
 
         G.add_edge(2, 3)  # Changes the number of nodes and edges
-        for attr, scale in ((THETA_PRIMARY, 0.1), (EPI_PRIMARY, 0.2), (VF_PRIMARY, 0.3)):
+        for attr, scale in (
+            (THETA_PRIMARY, 0.1),
+            (EPI_PRIMARY, 0.2),
+            (VF_PRIMARY, 0.3),
+        ):
             G.nodes[3][attr] = scale * 4
         increment_edge_version(G)
         default_compute_delta_nfr(G, cache_size=2)

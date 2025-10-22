@@ -10,13 +10,13 @@ from collections.abc import Iterator, MutableMapping
 from dataclasses import dataclass
 from typing import Any, Generic, Hashable, TypeVar, cast
 
-
 from cachetools import cached  # type: ignore[import-untyped]
-from .constants import DEFAULTS, get_param
+
 from .cache import CacheManager, InstrumentedLRUCache
-from .utils import get_graph
+from .constants import DEFAULTS, get_param
 from .locking import get_lock
 from .types import GraphLike, TNFRGraph
+from .utils import get_graph
 
 MASK64 = 0xFFFFFFFFFFFFFFFF
 
@@ -59,9 +59,7 @@ class _SeedHashCache(MutableMapping[tuple[int, int], int]):
         self._state_key = state_key
         self._default_maxsize = int(default_maxsize)
         if not self._manager.has_override(self._state_key):
-            self._manager.configure(
-                overrides={self._state_key: self._default_maxsize}
-            )
+            self._manager.configure(overrides={self._state_key: self._default_maxsize})
         self._manager.register(
             self._state_key,
             self._create_state,
@@ -252,9 +250,7 @@ class ScopedCounterCache(Generic[K]):
 
         return self._get_state().locks
 
-    def configure(
-        self, *, force: bool = False, max_entries: int | None = None
-    ) -> None:
+    def configure(self, *, force: bool = False, max_entries: int | None = None) -> None:
         """Resize or reset the cache keeping previous settings."""
 
         if max_entries is None:
@@ -267,7 +263,11 @@ class ScopedCounterCache(Generic[K]):
             update_policy = True
 
         def _update(state: _CounterState[K] | None) -> _CounterState[K]:
-            if not isinstance(state, _CounterState) or force or state.max_entries != size:
+            if (
+                not isinstance(state, _CounterState)
+                or force
+                or state.max_entries != size
+            ):
                 locks: dict[K, threading.RLock] = {}
                 return _CounterState(
                     cache=InstrumentedLRUCache(
@@ -323,9 +323,7 @@ def _compute_seed_hash(seed_int: int, key_int: int) -> int:
         seed_int & MASK64,
         key_int & MASK64,
     )
-    return int.from_bytes(
-        hashlib.blake2b(seed_bytes, digest_size=8).digest(), "big"
-    )
+    return int.from_bytes(hashlib.blake2b(seed_bytes, digest_size=8).digest(), "big")
 
 
 @cached(cache=_seed_hash_cache, lock=_RNG_LOCK)

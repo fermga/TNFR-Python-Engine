@@ -1,29 +1,27 @@
 """Unit tests for observer metrics such as phase synchrony and glyph load."""
 
-
-
 import math
 import statistics as st
 from collections import deque
+
 import pytest
 
 import tnfr.utils.init as utils_init
-
-from tnfr.constants import get_aliases
-from tnfr.observers import (
-    phase_sync,
-    kuramoto_order,
-    kuramoto_metrics,
-    glyph_load,
-    wbar,
-)
-from tnfr.gamma import kuramoto_R_psi
-from tnfr.sense import sigma_vector
-from tnfr.config.constants import ANGLE_MAP
-from tnfr.helpers.numeric import angle_diff
 from tnfr.alias import set_attr
 from tnfr.callback_utils import CallbackEvent
-from tnfr.observers import attach_standard_observer
+from tnfr.config.constants import ANGLE_MAP
+from tnfr.constants import get_aliases
+from tnfr.gamma import kuramoto_R_psi
+from tnfr.helpers.numeric import angle_diff
+from tnfr.observers import (
+    attach_standard_observer,
+    glyph_load,
+    kuramoto_metrics,
+    kuramoto_order,
+    phase_sync,
+    wbar,
+)
+from tnfr.sense import sigma_vector
 
 ALIAS_THETA = get_aliases("THETA")
 
@@ -239,6 +237,4 @@ def test_attach_standard_observer_idempotent(graph_canon):
     attach_standard_observer(G)
     callbacks = {ev: dict(cbs) for ev, cbs in G.graph["callbacks"].items()}
     attach_standard_observer(G)
-    assert {
-        ev: dict(cbs) for ev, cbs in G.graph["callbacks"].items()
-    } == callbacks
+    assert {ev: dict(cbs) for ev, cbs in G.graph["callbacks"].items()} == callbacks

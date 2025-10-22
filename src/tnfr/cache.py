@@ -8,7 +8,17 @@ from collections.abc import Iterable
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from time import perf_counter
-from typing import Any, Callable, Generic, Hashable, Iterator, Mapping, MutableMapping, TypeVar, cast
+from typing import (
+    Any,
+    Callable,
+    Generic,
+    Hashable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    TypeVar,
+    cast,
+)
 
 from cachetools import LRUCache
 
@@ -469,12 +479,12 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
         *,
         manager: CacheManager | None = None,
         metrics_key: str | None = None,
-        telemetry_callbacks: Iterable[Callable[[K, V], None]]
-        | Callable[[K, V], None]
-        | None = None,
-        eviction_callbacks: Iterable[Callable[[K, V], None]]
-        | Callable[[K, V], None]
-        | None = None,
+        telemetry_callbacks: (
+            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
+        ) = None,
+        eviction_callbacks: (
+            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
+        ) = None,
         locks: MutableMapping[K, Any] | None = None,
         getsizeof: Callable[[V], int] | None = None,
         count_overwrite_hit: bool = True,
@@ -514,9 +524,7 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
 
     def set_telemetry_callbacks(
         self,
-        callbacks: Iterable[Callable[[K, V], None]]
-        | Callable[[K, V], None]
-        | None,
+        callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None,
         *,
         append: bool = False,
     ) -> None:
@@ -535,9 +543,7 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
 
     def set_eviction_callbacks(
         self,
-        callbacks: Iterable[Callable[[K, V], None]]
-        | Callable[[K, V], None]
-        | None,
+        callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None,
         *,
         append: bool = False,
     ) -> None:
@@ -686,6 +692,7 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
         except Exception:  # pragma: no cover - defensive logging
             _logger.exception("lock cleanup failed for %r", key)
 
+
 class ManagedLRUCache(LRUCache[K, V]):
     """LRU cache wrapper with telemetry hooks and lock synchronisation."""
 
@@ -695,12 +702,12 @@ class ManagedLRUCache(LRUCache[K, V]):
         *,
         manager: CacheManager | None = None,
         metrics_key: str | None = None,
-        eviction_callbacks: Iterable[Callable[[K, V], None]]
-        | Callable[[K, V], None]
-        | None = None,
-        telemetry_callbacks: Iterable[Callable[[K, V], None]]
-        | Callable[[K, V], None]
-        | None = None,
+        eviction_callbacks: (
+            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
+        ) = None,
+        telemetry_callbacks: (
+            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
+        ) = None,
         locks: MutableMapping[K, Any] | None = None,
     ) -> None:
         super().__init__(maxsize)

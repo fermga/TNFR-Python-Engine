@@ -42,8 +42,7 @@ def run(num_nodes: int = 200, edge_probability: float = 0.1, repeats: int = 5) -
         f"{repeats} runs on {num_nodes} nodes (p={edge_probability}):"
     )
     print(
-        f"best={best:.6f}s median={median:.6f}s "
-        f"mean={mean:.6f}s worst={worst:.6f}s"
+        f"best={best:.6f}s median={median:.6f}s " f"mean={mean:.6f}s worst={worst:.6f}s"
     )
 
 

@@ -1,7 +1,9 @@
 """Tests for ``get_attr`` in strict mode."""
 
 import logging
+
 import pytest
+
 from tnfr.alias import AliasAccessor
 
 

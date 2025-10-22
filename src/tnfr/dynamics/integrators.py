@@ -9,15 +9,15 @@ from typing import Any, Literal, cast
 
 import networkx as nx
 
+from .._compat import TypeAlias
+from ..alias import collect_attr, get_attr, get_attr_str, set_attr, set_attr_str
 from ..constants import (
     DEFAULTS,
     get_aliases,
 )
 from ..gamma import _get_gamma_spec, eval_gamma
-from ..alias import collect_attr, get_attr, get_attr_str, set_attr, set_attr_str
-from ..utils import get_numpy
 from ..types import NodeId, TNFRGraph
-from .._compat import TypeAlias
+from ..utils import get_numpy
 
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
@@ -63,9 +63,7 @@ def _gamma_worker(task: tuple[list[NodeId], float]) -> list[tuple[NodeId, float]
     chunk, t = task
     if _PARALLEL_GRAPH is None:
         raise RuntimeError("Parallel Γ worker initialised without graph reference")
-    return [
-        (node, float(eval_gamma(_PARALLEL_GRAPH, node, t))) for node in chunk
-    ]
+    return [(node, float(eval_gamma(_PARALLEL_GRAPH, node, t))) for node in chunk]
 
 
 def _normalise_jobs(n_jobs: int | None, total: int) -> int | None:
@@ -86,7 +84,7 @@ def _chunk_nodes(nodes: list[NodeId], chunk_size: int) -> Iterable[list[NodeId]]
     """Yield deterministic chunks from ``nodes`` respecting insertion order."""
 
     for idx in range(0, len(nodes), chunk_size):
-        yield nodes[idx:idx + chunk_size]
+        yield nodes[idx : idx + chunk_size]
 
 
 def _apply_increment_chunk(
@@ -173,9 +171,7 @@ def prepare_integration_params(
 
     method_value = (
         method
-        or G.graph.get(
-            "INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler")
-        )
+        or G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))
     ).lower()
     if method_value not in ("euler", "rk4"):
         raise ValueError("method must be 'euler' or 'rk4'")
@@ -398,9 +394,7 @@ def _build_gamma_increments(
         g4_map = _evaluate_gamma_map(G, nodes, t_end, n_jobs=n_jobs)
         gamma_maps = (g1_map, g_mid_map, g_mid_map, g4_map)
     else:  # method == "euler"
-        gamma_maps = (
-            _evaluate_gamma_map(G, nodes, t_local, n_jobs=n_jobs),
-        )
+        gamma_maps = (_evaluate_gamma_map(G, nodes, t_local, n_jobs=n_jobs),)
 
     return _collect_nodal_increments(G, gamma_maps, method=method)
 

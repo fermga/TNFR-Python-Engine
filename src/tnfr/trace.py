@@ -8,18 +8,16 @@ structures as immutable snapshots.
 from __future__ import annotations
 
 import warnings
-
-from typing import Any, Callable, Protocol, NamedTuple, TypedDict, cast
 from collections.abc import Iterable, Mapping
 from types import MappingProxyType
+from typing import Any, Callable, NamedTuple, Protocol, TypedDict, cast
 
 from .constants import TRACE
-from .glyph_history import ensure_history, count_glyphs, append_metric
-from .utils import cached_import, get_graph_mapping, is_non_string_sequence
+from .glyph_history import append_metric, count_glyphs, ensure_history
 from .metrics.sense_index import _normalise_si_sensitivity_mapping
 from .telemetry.verbosity import (
-    TelemetryVerbosity,
     TELEMETRY_VERBOSITY_DEFAULT,
+    TelemetryVerbosity,
 )
 from .types import (
     SigmaVector,
@@ -29,18 +27,15 @@ from .types import (
     TraceFieldMap,
     TraceFieldRegistry,
 )
+from .utils import cached_import, get_graph_mapping, is_non_string_sequence
 
 
 class _KuramotoFn(Protocol):
-    def __call__(self, G: TNFRGraph) -> tuple[float, float]:
-        ...
+    def __call__(self, G: TNFRGraph) -> tuple[float, float]: ...
 
 
 class _SigmaVectorFn(Protocol):
-    def __call__(
-        self, G: TNFRGraph, weight_mode: str | None = None
-    ) -> SigmaVector:
-        ...
+    def __call__(self, G: TNFRGraph, weight_mode: str | None = None) -> SigmaVector: ...
 
 
 class CallbackSpec(NamedTuple):
@@ -153,9 +148,7 @@ kuramoto_R_psi: _KuramotoFn = cast(
 )
 
 
-def _sigma_fallback(
-    G: TNFRGraph, _weight_mode: str | None = None
-) -> SigmaVector:
+def _sigma_fallback(G: TNFRGraph, _weight_mode: str | None = None) -> SigmaVector:
     """Return a null sigma vector regardless of ``_weight_mode``."""
 
     return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
@@ -212,9 +205,7 @@ def _callback_names(
     if isinstance(callbacks, Mapping):
         callbacks = callbacks.values()
     return [
-        cb.name
-        if cb.name is not None
-        else str(getattr(cb.func, "__name__", "fn"))
+        cb.name if cb.name is not None else str(getattr(cb.func, "__name__", "fn"))
         for cb in callbacks
     ]
 
@@ -259,9 +250,7 @@ def _new_trace_meta(
 # -------------------------
 
 
-def _trace_capture(
-    G: TNFRGraph, phase: str, fields: TraceFieldMap
-) -> None:
+def _trace_capture(G: TNFRGraph, phase: str, fields: TraceFieldMap) -> None:
     """Capture ``fields`` for ``phase`` and store the snapshot.
 
     A :class:`TraceSnapshot` is appended to the configured history when
@@ -292,9 +281,7 @@ def _trace_capture(
 TRACE_FIELDS: TraceFieldRegistry = {}
 
 
-def register_trace_field(
-    phase: str, name: str, func: TraceFieldFn
-) -> None:
+def register_trace_field(phase: str, name: str, func: TraceFieldFn) -> None:
     """Register ``func`` to populate trace field ``name`` during ``phase``."""
 
     TRACE_FIELDS.setdefault(phase, {})[name] = func
@@ -500,9 +487,7 @@ TRACE_FIELD_SPECS: tuple[TraceFieldSpec, ...] = (
 )
 
 TRACE_VERBOSITY_PRESETS = {
-    level.value: tuple(
-        spec.name for spec in TRACE_FIELD_SPECS if level in spec.tiers
-    )
+    level.value: tuple(spec.name for spec in TRACE_FIELD_SPECS if level in spec.tiers)
     for level in TelemetryVerbosity
 }
 

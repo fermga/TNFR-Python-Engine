@@ -1,18 +1,17 @@
 """Unit tests for sense utilities computing sigma vectors and glyph metrics."""
 
-
-
 import time
+
 import pytest
 
 from tnfr.sense import (
-    sigma_vector_node,
-    sigma_vector_from_graph,
     _node_weight,
     _sigma_from_iterable,
-    glyph_unit,
     glyph_angle,
+    glyph_unit,
     sigma_rose,
+    sigma_vector_from_graph,
+    sigma_vector_node,
 )
 from tnfr.types import Glyph
 

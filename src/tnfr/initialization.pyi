@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 import random
+from dataclasses import dataclass
 
 import networkx as nx
 
 from .types import NodeInitAttrMap
 
 __all__: tuple[str, str] = ("InitParams", "init_node_attrs")
-
 
 @dataclass
 class InitParams:
@@ -31,7 +30,6 @@ class InitParams:
     @classmethod
     def from_graph(cls, G: nx.Graph) -> InitParams: ...
 
-
 def _init_phase(
     nd: NodeInitAttrMap,
     rng: random.Random,
@@ -41,8 +39,6 @@ def _init_phase(
     th_min: float,
     th_max: float,
 ) -> None: ...
-
-
 def _init_vf(
     nd: NodeInitAttrMap,
     rng: random.Random,
@@ -57,8 +53,6 @@ def _init_vf(
     vf_max_lim: float,
     clamp_to_limits: bool,
 ) -> None: ...
-
-
 def _init_si_epi(
     nd: NodeInitAttrMap,
     rng: random.Random,
@@ -68,6 +62,4 @@ def _init_si_epi(
     si_max: float,
     epi_val: float,
 ) -> None: ...
-
-
 def init_node_attrs(G: nx.Graph, *, override: bool = True) -> nx.Graph: ...

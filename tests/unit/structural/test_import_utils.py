@@ -11,7 +11,6 @@ import tnfr.utils as utils_pkg
 import tnfr.utils.init as import_utils
 from tnfr.utils import cached_import, prune_failed_imports, warm_cached_import
 
-
 pytestmark = pytest.mark.usefixtures("reset_cached_import")
 
 
@@ -270,7 +269,9 @@ def test_failure_log_respects_limit(monkeypatch, reset_cached_import):
 # -- Cache manager integration ---------------------------------------------------------------
 
 
-def test_import_cache_capacity_respects_manager_config(monkeypatch, reset_cached_import):
+def test_import_cache_capacity_respects_manager_config(
+    monkeypatch, reset_cached_import
+):
     manager = import_utils._IMPORT_CACHE_MANAGER
     previous_config = manager.export_config()
     reset_cached_import()
@@ -303,7 +304,9 @@ def test_import_cache_capacity_respects_manager_config(monkeypatch, reset_cached
         reset_cached_import()
 
 
-def test_import_cache_telemetry_records_hits_and_misses(monkeypatch, reset_cached_import):
+def test_import_cache_telemetry_records_hits_and_misses(
+    monkeypatch, reset_cached_import
+):
     manager = import_utils._IMPORT_CACHE_MANAGER
     reset_cached_import()
 
@@ -350,6 +353,8 @@ def test_import_cache_telemetry_records_hits_and_misses(monkeypatch, reset_cache
     assert failure_after.timings - before_failure.timings == 2
 
     reset_cached_import()
+
+
 # -- Warm import helper ----------------------------------------------------------------------
 
 

@@ -1,19 +1,24 @@
 """Integration tests for ``glyph_history`` window handling, ensuring series limits and usage counters stay consistent."""
 
-
-
 from collections import deque
 
 import pytest
 
 import tnfr.glyph_history as glyph_history
 from tnfr.constants import get_aliases, inject_defaults
-from tnfr.glyph_history import HistoryDict, append_metric, ensure_history, _ensure_history
+from tnfr.glyph_history import (
+    HistoryDict,
+    _ensure_history,
+    append_metric,
+    ensure_history,
+)
 
 ALIAS_EPI_KIND = get_aliases("EPI_KIND")
 
 
-def _make_node(history: list[str], current: str | None = None, window: int = 10) -> dict[str, object]:
+def _make_node(
+    history: list[str], current: str | None = None, window: int = 10
+) -> dict[str, object]:
     nd: dict[str, object] = {}
     for glyph in history:
         glyph_history.push_glyph(nd, glyph, window)
@@ -25,6 +30,7 @@ def _make_node(history: list[str], current: str | None = None, window: int = 10)
 # ---------------------------------------------------------------------------
 # _ensure_history helpers
 # ---------------------------------------------------------------------------
+
 
 def test_ensure_history_skips_zero_window():
     nd: dict[str, object] = {}
@@ -70,6 +76,7 @@ def test_ensure_history_accepts_iterable_input():
 # push_glyph
 # ---------------------------------------------------------------------------
 
+
 def test_push_glyph_negative_window_raises():
     nd: dict[str, object] = {}
     with pytest.raises(ValueError):
@@ -102,6 +109,7 @@ def test_push_glyph_accepts_existing_list_history():
 # ---------------------------------------------------------------------------
 # recent_glyph
 # ---------------------------------------------------------------------------
+
 
 def test_recent_glyph_window_one_prefers_history_over_current():
     nd = _make_node(["Y"], current="X")
@@ -143,6 +151,7 @@ def test_recent_glyph_discards_non_iterable_history():
 # append_metric
 # ---------------------------------------------------------------------------
 
+
 def test_append_metric_updates_plain_dict_series():
     hist: dict[str, list[int]] = {}
     append_metric(hist, "a", 1)
@@ -161,6 +170,7 @@ def test_append_metric_respects_historydict_counters():
 # ---------------------------------------------------------------------------
 # ensure_history integration (window handling)
 # ---------------------------------------------------------------------------
+
 
 def test_history_maxlen_and_cleanup(graph_canon):
     G = graph_canon()

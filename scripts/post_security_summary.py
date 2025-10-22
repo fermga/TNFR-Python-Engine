@@ -98,7 +98,9 @@ def post_message(webhook: str, message: str) -> None:
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with urllib.request.urlopen(request, timeout=15) as response:  # pragma: no cover - network
+    with urllib.request.urlopen(
+        request, timeout=15
+    ) as response:  # pragma: no cover - network
         response.read()
 
 

@@ -1,24 +1,21 @@
 """Unit tests for glyph selector utility helpers and resource handling."""
 
-
-
 import gc
 import weakref
 
 import pytest
 
 import tnfr.selector as selector
-
-from tnfr.selector import (
-    _selector_thresholds,
-    _selector_norms,
-    _calc_selector_score,
-    _apply_selector_hysteresis,
-)
 from tnfr.constants import DEFAULTS, get_aliases
-from tnfr.utils import normalize_weights
 from tnfr.dynamics import _configure_selector_weights
 from tnfr.dynamics.selectors import ParametricGlyphSelector
+from tnfr.selector import (
+    _apply_selector_hysteresis,
+    _calc_selector_score,
+    _selector_norms,
+    _selector_thresholds,
+)
+from tnfr.utils import normalize_weights
 
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_D2EPI = get_aliases("D2EPI")
@@ -121,9 +118,7 @@ def test_configure_selector_weights_normalizes(graph_canon):
     G = graph_canon()
     G.graph["SELECTOR_WEIGHTS"] = {"w_si": 2.0, "w_dnfr": 1.0, "w_accel": 1.0}
     weights = _configure_selector_weights(G)
-    assert weights == pytest.approx(
-        {"w_si": 0.5, "w_dnfr": 0.25, "w_accel": 0.25}
-    )
+    assert weights == pytest.approx({"w_si": 0.5, "w_dnfr": 0.25, "w_accel": 0.25})
     assert G.graph["_selector_weights"] == weights
 
 
@@ -131,9 +126,7 @@ def test_apply_selector_hysteresis_returns_prev():
     thr = DEFAULTS["SELECTOR_THRESHOLDS"]
     nd = {"glyph_history": ["RA"]}
     # near si_hi threshold
-    prev = _apply_selector_hysteresis(
-        nd, thr["si_hi"] - 0.01, 0.2, 0.2, thr, 0.05
-    )
+    prev = _apply_selector_hysteresis(nd, thr["si_hi"] - 0.01, 0.2, 0.2, thr, 0.05)
     assert prev == "RA"
     # far from thresholds
     none = _apply_selector_hysteresis(nd, 0.5, 0.2, 0.2, thr, 0.05)

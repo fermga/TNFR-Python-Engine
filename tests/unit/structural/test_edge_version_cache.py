@@ -1,6 +1,7 @@
-import pytest
 from concurrent.futures import ThreadPoolExecutor
 from unittest import mock
+
+import pytest
 
 from tnfr.utils import (
     EdgeCacheManager,
@@ -131,7 +132,9 @@ def test_edge_version_cache_thread_safety(graph_and_manager):
 
     increment_edge_version(G)
     with ThreadPoolExecutor(max_workers=16) as ex:
-        results2 = list(ex.map(lambda _: edge_version_cache(G, "k", builder), range(32)))
+        results2 = list(
+            ex.map(lambda _: edge_version_cache(G, "k", builder), range(32))
+        )
     second = results2[0]
     assert all(r is second for r in results2)
     assert second is not first

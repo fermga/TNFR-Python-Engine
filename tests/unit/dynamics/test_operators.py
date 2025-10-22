@@ -1,20 +1,20 @@
 """Unit tests for operator application helpers and jitter management."""
 
+from types import SimpleNamespace
 
+import pytest
 
+import tnfr.operators as operators
+from tnfr.constants import inject_defaults
 from tnfr.node import NodeNX
 from tnfr.operators import (
-    get_jitter_manager,
-    reset_jitter_manager,
-    random_jitter,
-    apply_glyph,
-    get_neighbor_epi,
     _mix_epi_with_neighbors,
+    apply_glyph,
+    get_jitter_manager,
+    get_neighbor_epi,
+    random_jitter,
+    reset_jitter_manager,
 )
-import tnfr.operators as operators
-from types import SimpleNamespace
-from tnfr.constants import inject_defaults
-import pytest
 from tnfr.types import Glyph
 
 
@@ -73,8 +73,8 @@ def test_random_jitter_negative_amplitude(graph_canon):
 
 
 def test_rng_cache_disabled_with_size_zero(graph_canon):
-    from tnfr.rng import set_cache_maxsize
     from tnfr.constants import DEFAULTS
+    from tnfr.rng import set_cache_maxsize
 
     reset_jitter_manager()
     set_cache_maxsize(0)

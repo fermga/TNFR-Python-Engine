@@ -1,12 +1,12 @@
 """Node initialization."""
 
 from __future__ import annotations
+
 import random
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
-from dataclasses import dataclass
-
-from .constants import VF_KEY, THETA_KEY, get_graph_param
+from .constants import THETA_KEY, VF_KEY, get_graph_param
 from .helpers.numeric import clamp
 from .rng import make_rng
 from .types import NodeInitAttrMap
@@ -53,9 +53,7 @@ class InitParams:
             vf_uniform_max=get_graph_param(G, "INIT_VF_MAX"),
             vf_mean=get_graph_param(G, "INIT_VF_MEAN"),
             vf_std=get_graph_param(G, "INIT_VF_STD"),
-            clamp_to_limits=get_graph_param(
-                G, "INIT_VF_CLAMP_TO_LIMITS", bool
-            ),
+            clamp_to_limits=get_graph_param(G, "INIT_VF_CLAMP_TO_LIMITS", bool),
             si_min=get_graph_param(G, "INIT_SI_MIN"),
             si_max=get_graph_param(G, "INIT_SI_MAX"),
             epi_val=get_graph_param(G, "INIT_EPI_VALUE"),

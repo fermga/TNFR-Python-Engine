@@ -4,8 +4,25 @@ from __future__ import annotations
 
 from typing import Any, Final
 
-from . import init as _init
 from ..cache import CacheManager
+from . import init as _init
+from .cache import (
+    NODE_SET_CHECKSUM_KEY,
+    EdgeCacheManager,
+    cached_node_list,
+    cached_nodes_and_A,
+    clear_node_repr_cache,
+    configure_graph_cache_limits,
+    edge_version_cache,
+    edge_version_update,
+    ensure_node_index_map,
+    ensure_node_offset_map,
+    get_graph_version,
+    increment_edge_version,
+    increment_graph_version,
+    node_set_checksum,
+    stable_json,
+)
 from .data import (
     MAX_MATERIALIZE_DEFAULT,
     STRING_TYPES,
@@ -24,23 +41,6 @@ from .graph import (
     get_graph_mapping,
     mark_dnfr_prep_dirty,
     supports_add_edge,
-)
-from .cache import (
-    EdgeCacheManager,
-    NODE_SET_CHECKSUM_KEY,
-    cached_node_list,
-    cached_nodes_and_A,
-    clear_node_repr_cache,
-    edge_version_cache,
-    edge_version_update,
-    ensure_node_index_map,
-    ensure_node_offset_map,
-    get_graph_version,
-    increment_edge_version,
-    increment_graph_version,
-    configure_graph_cache_limits,
-    node_set_checksum,
-    stable_json,
 )
 from .io import (
     DEFAULT_PARAMS,

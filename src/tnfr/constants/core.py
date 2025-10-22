@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict, field
-from typing import Any, Mapping
+from dataclasses import asdict, dataclass, field
 from types import MappingProxyType
-
+from typing import Any, Mapping
 
 SELECTOR_THRESHOLD_DEFAULTS: Mapping[str, float] = MappingProxyType(
     {
@@ -150,6 +149,7 @@ class RemeshDefaults:
     REMESH_TAU_LOCAL: int = 4
     REMESH_ALPHA: float = 0.5
     REMESH_ALPHA_HARD: bool = False
+
 
 _core_defaults = asdict(CoreDefaults())
 _remesh_defaults = asdict(RemeshDefaults())

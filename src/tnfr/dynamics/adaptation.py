@@ -18,7 +18,7 @@ __all__ = ("adapt_vf_by_coherence",)
 
 
 def _vf_adapt_chunk(
-    args: tuple[list[tuple[Any, int, tuple[int, ...]]], tuple[float, ...], float]
+    args: tuple[list[tuple[Any, int, tuple[int, ...]]], tuple[float, ...], float],
 ) -> list[tuple[Any, float]]:
     """Return proposed νf updates for ``chunk`` of stable nodes."""
 
@@ -141,10 +141,11 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
 
     prev_counts = [int(G.nodes[node].get("stable_count", 0)) for node in nodes]
     stable_flags = [
-        si >= si_hi and dnfr <= eps_dnfr
-        for si, dnfr in zip(si_list, dnfr_list)
+        si >= si_hi and dnfr <= eps_dnfr for si, dnfr in zip(si_list, dnfr_list)
     ]
-    new_counts = [prev + 1 if flag else 0 for prev, flag in zip(prev_counts, stable_flags)]
+    new_counts = [
+        prev + 1 if flag else 0 for prev, flag in zip(prev_counts, stable_flags)
+    ]
 
     for node, count in zip(nodes, new_counts):
         G.nodes[node]["stable_count"] = int(count)
@@ -174,16 +175,13 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
     for node in eligible_nodes:
         idx = node_index[node]
         neigh_indices = tuple(
-            node_index[nbr]
-            for nbr in neighbors_map.get(node, ())
-            if nbr in node_index
+            node_index[nbr] for nbr in neighbors_map.get(node, ()) if nbr in node_index
         )
         work_items.append((node, idx, neigh_indices))
 
     chunk_size = max(1, math.ceil(len(work_items) / jobs))
     chunks = [
-        work_items[i : i + chunk_size]
-        for i in range(0, len(work_items), chunk_size)
+        work_items[i : i + chunk_size] for i in range(0, len(work_items), chunk_size)
     ]
     vf_tuple = tuple(vf_list)
     updates: dict[Any, float] = {}
@@ -198,4 +196,3 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
         if vf_new is None:
             continue
         set_vf(G, node, clamp(float(vf_new), vf_min, vf_max))
-

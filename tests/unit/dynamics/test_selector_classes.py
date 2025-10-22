@@ -15,7 +15,11 @@ def _configure_basic_graph(graph_canon) -> tuple:
     return G, (selectors.ALIAS_SI, selectors.ALIAS_DNFR, selectors.ALIAS_D2EPI)
 
 
-def _inject_nodes(G, alias_triplet: Sequence[Sequence[str]], samples: Sequence[tuple[float, float, float]]) -> None:
+def _inject_nodes(
+    G,
+    alias_triplet: Sequence[Sequence[str]],
+    samples: Sequence[tuple[float, float, float]],
+) -> None:
     si_alias, dnfr_alias, accel_alias = alias_triplet
     for idx, (si, dnfr, accel) in enumerate(samples):
         G.add_node(idx)

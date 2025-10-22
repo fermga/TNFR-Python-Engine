@@ -3,18 +3,17 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Callable, TypeVar
 
-from .core import CORE_DEFAULTS as CORE_DEFAULTS, REMESH_DEFAULTS as REMESH_DEFAULTS
-from .init import INIT_DEFAULTS as INIT_DEFAULTS
-from .metric import (
-    COHERENCE as COHERENCE,
-    DIAGNOSIS as DIAGNOSIS,
-    GRAMMAR_CANON as GRAMMAR_CANON,
-    METRICS as METRICS,
-    METRIC_DEFAULTS as METRIC_DEFAULTS,
-    SIGMA as SIGMA,
-    TRACE as TRACE,
-)
 from ..types import GraphLike, TNFRConfigValue
+from .core import CORE_DEFAULTS as CORE_DEFAULTS
+from .core import REMESH_DEFAULTS as REMESH_DEFAULTS
+from .init import INIT_DEFAULTS as INIT_DEFAULTS
+from .metric import COHERENCE as COHERENCE
+from .metric import DIAGNOSIS as DIAGNOSIS
+from .metric import GRAMMAR_CANON as GRAMMAR_CANON
+from .metric import METRIC_DEFAULTS as METRIC_DEFAULTS
+from .metric import METRICS as METRICS
+from .metric import SIGMA as SIGMA
+from .metric import TRACE as TRACE
 
 T = TypeVar("T")
 
@@ -79,26 +78,15 @@ STATE_TRANSITION: str
 STATE_DISSONANT: str
 CANONICAL_STATE_TOKENS: frozenset[str]
 
-
 def inject_defaults(
     G: GraphLike,
     defaults: Mapping[str, TNFRConfigValue] = ...,
     override: bool = ...,
 ) -> None: ...
-
-
 def merge_overrides(G: GraphLike, **overrides: TNFRConfigValue) -> None: ...
-
-
 def get_param(G: GraphLike, key: str) -> TNFRConfigValue: ...
-
-
 def get_graph_param(
     G: GraphLike, key: str, cast: Callable[[object], T] = ...
 ) -> T | None: ...
-
-
 def get_aliases(key: str) -> tuple[str, ...]: ...
-
-
 def normalise_state_token(token: str) -> str: ...
