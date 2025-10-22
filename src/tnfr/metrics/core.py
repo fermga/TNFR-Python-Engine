@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import warnings
+
 from typing import Any, cast
 
 from ..types import (
@@ -29,7 +31,6 @@ from .coherence import (
     _update_sigma,
     register_coherence_callbacks,
     GLYPH_LOAD_STABILIZERS_KEY,
-    LEGACY_GLYPH_LOAD_KEY,
 )
 from .diagnosis import register_diagnosis_callbacks
 from .glyph_timing import _compute_advanced_metrics, GlyphMetricsHistory
@@ -77,14 +78,32 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
     metrics_sentinel_key = "_metrics_history_id"
     history_id = id(hist)
     if G.graph.get(metrics_sentinel_key) != history_id:
+        legacy_series = hist.pop("glyph_load_estab", None)
         glyph_series = hist.get(GLYPH_LOAD_STABILIZERS_KEY)
-        legacy_series = hist.get(LEGACY_GLYPH_LOAD_KEY)
-        if glyph_series is None and isinstance(legacy_series, list):
-            glyph_series = list(legacy_series)
-            hist[GLYPH_LOAD_STABILIZERS_KEY] = glyph_series
+        if glyph_series is None:
+            if isinstance(legacy_series, list):
+                hist[GLYPH_LOAD_STABILIZERS_KEY] = glyph_series = legacy_series
+                warnings.warn(
+                    "'glyph_load_estab' history key is deprecated; use "
+                    "'glyph_load_stabilizers' instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+            else:
+                glyph_series = cast(
+                    list[Any], hist.setdefault(GLYPH_LOAD_STABILIZERS_KEY, [])
+                )
         else:
-            glyph_series = cast(list[Any], hist.setdefault(GLYPH_LOAD_STABILIZERS_KEY, []))
-        hist[LEGACY_GLYPH_LOAD_KEY] = glyph_series
+            glyph_series = cast(list[Any], glyph_series)
+            if isinstance(legacy_series, list):
+                if legacy_series is not glyph_series:
+                    glyph_series[0:0] = legacy_series
+                warnings.warn(
+                    "'glyph_load_estab' history key is deprecated; use "
+                    "'glyph_load_stabilizers' instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
 
         for k in (
             "C_steps",

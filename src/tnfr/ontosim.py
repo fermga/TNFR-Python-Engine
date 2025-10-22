@@ -70,7 +70,6 @@ def prepare_network(
         "phase_kL",
     ]
     history = {k: [] for k in hist_keys}
-    history["glyph_load_estab"] = history["glyph_load_stabilizers"]
     history.update(
         {
             "phase_state": deque(maxlen=ph_len),
@@ -78,7 +77,14 @@ def prepare_network(
             "phase_disr": deque(maxlen=ph_len),
         }
     )
-    G.graph.setdefault("history", history)
+    history_ref = G.graph.setdefault("history", history)
+    if isinstance(history_ref, dict):
+        legacy_series = history_ref.pop("glyph_load_estab", None)
+        if (
+            isinstance(legacy_series, list)
+            and "glyph_load_stabilizers" not in history_ref
+        ):
+            history_ref["glyph_load_stabilizers"] = legacy_series
     # Global REMESH memory
     tau = int(get_param(G, "REMESH_TAU_GLOBAL"))
     maxlen = max(2 * tau + 5, 64)
