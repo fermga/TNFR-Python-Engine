@@ -49,6 +49,7 @@ jobs:
         with:
           name: ${{ env.TOOLS_ARTIFACT }}
           path: ${{ env.VENV_PATH }}
+          include-hidden-files: true
           if-no-files-found: error
 
   bandit:
