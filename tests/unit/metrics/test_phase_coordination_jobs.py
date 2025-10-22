@@ -4,7 +4,11 @@ import random
 import pytest
 
 import tnfr.dynamics as dynamics
+import tnfr.dynamics.adaptation as adaptation
 import tnfr.dynamics.coordination as coordination
+import tnfr.dynamics.integrators as integrators
+import tnfr.dynamics.runtime as runtime
+import tnfr.dynamics.selectors as selectors
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants import get_aliases
 
@@ -39,14 +43,15 @@ def test_update_nodes_forwards_phase_jobs(monkeypatch, graph_canon):
     )
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *a, **k: None)
     monkeypatch.setattr(dynamics, "_prepare_dnfr", lambda *a, **k: None)
-    monkeypatch.setattr(dynamics, "_apply_selector", lambda *a, **k: None)
+    monkeypatch.setattr(selectors, "_apply_selector", lambda *a, **k: None)
     monkeypatch.setattr(
-        dynamics,
+        integrators,
         "update_epi_via_nodal_equation",
         lambda *a, **k: None,
     )
-    monkeypatch.setattr(dynamics, "adapt_vf_by_coherence", lambda *a, **k: None)
+    monkeypatch.setattr(adaptation, "adapt_vf_by_coherence", lambda *a, **k: None)
     monkeypatch.setattr(dynamics, "apply_canonical_clamps", lambda *a, **k: None)
+    monkeypatch.setattr(runtime, "apply_canonical_clamps", lambda *a, **k: None)
 
     dynamics._update_nodes(
         G,

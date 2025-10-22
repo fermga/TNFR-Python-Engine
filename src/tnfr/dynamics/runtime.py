@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import inspect
 import math
-import sys
 from collections import deque
 from collections.abc import Mapping, MutableMapping, MutableSequence
 from typing import Any, cast
@@ -25,10 +24,10 @@ from ..helpers.numeric import clamp
 from ..metrics.sense_index import compute_Si
 from ..types import HistoryState, NodeId, TNFRGraph
 from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
+from . import adaptation, coordination, integrators, selectors
 from .dnfr import default_compute_delta_nfr
 from .sampling import update_node_sample as _update_node_sample
 from ..operators import apply_remesh_if_globally_stable
-from . import coordination
 
 HistoryLog = MutableSequence[MutableMapping[str, object]]
 
@@ -117,10 +116,6 @@ def _resolve_jobs_override(
         _coerce_jobs_value(graph_value),
         allow_non_positive=allow_non_positive,
     )
-
-
-def _facade() -> Any:
-    return sys.modules[__name__.rsplit(".", 1)[0]]
 
 
 def apply_canonical_clamps(
@@ -267,13 +262,12 @@ def _update_nodes(
     hist: HistoryState,
     job_overrides: Mapping[str, Any] | None = None,
 ) -> None:
-    facade = _facade()
-    facade._update_node_sample(G, step=step_idx)
+    _update_node_sample(G, step=step_idx)
     overrides = job_overrides or {}
-    facade._prepare_dnfr(G, use_Si=use_Si, job_overrides=overrides)
-    selector = facade._apply_selector(G)
+    _prepare_dnfr(G, use_Si=use_Si, job_overrides=overrides)
+    selector = selectors._apply_selector(G)
     if apply_glyphs:
-        facade._apply_glyphs(G, selector, hist)
+        selectors._apply_glyphs(G, selector, hist)
     _dt = get_graph_param(G, "DT") if dt is None else float(dt)
     method = get_graph_param(G, "INTEGRATOR_METHOD", str)
     n_jobs = _resolve_jobs_override(
@@ -282,9 +276,11 @@ def _update_nodes(
         G.graph.get("INTEGRATOR_N_JOBS"),
         allow_non_positive=True,
     )
-    facade.update_epi_via_nodal_equation(G, dt=_dt, method=method, n_jobs=n_jobs)
+    integrators.update_epi_via_nodal_equation(
+        G, dt=_dt, method=method, n_jobs=n_jobs
+    )
     for n, nd in G.nodes(data=True):
-        facade.apply_canonical_clamps(
+        apply_canonical_clamps(
             cast(MutableMapping[str, Any], nd), G, cast(NodeId, n)
         )
     phase_jobs = _resolve_jobs_override(
@@ -300,7 +296,7 @@ def _update_nodes(
         G.graph.get("VF_ADAPT_N_JOBS"),
         allow_non_positive=False,
     )
-    facade.adapt_vf_by_coherence(G, n_jobs=vf_jobs)
+    adaptation.adapt_vf_by_coherence(G, n_jobs=vf_jobs)
 
 
 def _update_epi_hist(G: TNFRGraph) -> None:
