@@ -8,7 +8,7 @@ from collections.abc import Iterable
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from time import perf_counter
-from typing import Any, Callable, Hashable, Iterator, Mapping, MutableMapping, TypeVar
+from typing import Any, Callable, Generic, Hashable, Iterator, Mapping, MutableMapping, TypeVar, cast
 
 from cachetools import LRUCache
 
@@ -18,6 +18,7 @@ __all__ = [
     "CacheManager",
     "CacheCapacityConfig",
     "CacheStatistics",
+    "InstrumentedLRUCache",
     "ManagedLRUCache",
     "prune_lock_mapping",
 ]
@@ -442,6 +443,245 @@ def prune_lock_mapping(
         if key not in cache_keys:
             locks.pop(key, None)
 
+
+class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
+    """LRU cache wrapper that synchronises telemetry, callbacks and locks.
+
+    The wrapper owns an internal :class:`cachetools.LRUCache` instance and
+    forwards all read operations to it. Mutating operations are instrumented to
+    update :class:`CacheManager` metrics, execute registered callbacks and keep
+    an optional lock mapping aligned with the stored keys. Telemetry callbacks
+    always execute before eviction callbacks, preserving the registration order
+    for deterministic side effects.
+
+    Callbacks can be extended or replaced after construction via
+    :meth:`set_telemetry_callbacks` and :meth:`set_eviction_callbacks`. When
+    ``append`` is ``False`` (default) the provided callbacks replace the
+    existing sequence; otherwise they are appended at the end while keeping the
+    previous ordering intact.
+    """
+
+    _MISSING = object()
+
+    def __init__(
+        self,
+        maxsize: int,
+        *,
+        manager: CacheManager | None = None,
+        metrics_key: str | None = None,
+        telemetry_callbacks: Iterable[Callable[[K, V], None]]
+        | Callable[[K, V], None]
+        | None = None,
+        eviction_callbacks: Iterable[Callable[[K, V], None]]
+        | Callable[[K, V], None]
+        | None = None,
+        locks: MutableMapping[K, Any] | None = None,
+        getsizeof: Callable[[V], int] | None = None,
+    ) -> None:
+        self._cache: LRUCache[K, V] = LRUCache(maxsize, getsizeof=getsizeof)
+        original_popitem = self._cache.popitem
+
+        def _instrumented_popitem() -> tuple[K, V]:
+            key, value = original_popitem()
+            self._dispatch_removal(key, value)
+            return key, value
+
+        self._cache.popitem = _instrumented_popitem  # type: ignore[assignment]
+        self._manager = manager
+        self._metrics_key = metrics_key
+        self._locks = locks
+        self._telemetry_callbacks: list[Callable[[K, V], None]]
+        self._telemetry_callbacks = list(_normalise_callbacks(telemetry_callbacks))
+        self._eviction_callbacks: list[Callable[[K, V], None]]
+        self._eviction_callbacks = list(_normalise_callbacks(eviction_callbacks))
+
+    # ------------------------------------------------------------------
+    # Callback registration helpers
+
+    @property
+    def telemetry_callbacks(self) -> tuple[Callable[[K, V], None], ...]:
+        """Return currently registered telemetry callbacks."""
+
+        return tuple(self._telemetry_callbacks)
+
+    @property
+    def eviction_callbacks(self) -> tuple[Callable[[K, V], None], ...]:
+        """Return currently registered eviction callbacks."""
+
+        return tuple(self._eviction_callbacks)
+
+    def set_telemetry_callbacks(
+        self,
+        callbacks: Iterable[Callable[[K, V], None]]
+        | Callable[[K, V], None]
+        | None,
+        *,
+        append: bool = False,
+    ) -> None:
+        """Update telemetry callbacks executed on removals.
+
+        When ``append`` is ``True`` the provided callbacks are added to the end
+        of the execution chain while preserving relative order. Otherwise, the
+        previous callbacks are replaced.
+        """
+
+        new_callbacks = list(_normalise_callbacks(callbacks))
+        if append:
+            self._telemetry_callbacks.extend(new_callbacks)
+        else:
+            self._telemetry_callbacks = new_callbacks
+
+    def set_eviction_callbacks(
+        self,
+        callbacks: Iterable[Callable[[K, V], None]]
+        | Callable[[K, V], None]
+        | None,
+        *,
+        append: bool = False,
+    ) -> None:
+        """Update eviction callbacks executed on removals.
+
+        Behaviour matches :meth:`set_telemetry_callbacks`.
+        """
+
+        new_callbacks = list(_normalise_callbacks(callbacks))
+        if append:
+            self._eviction_callbacks.extend(new_callbacks)
+        else:
+            self._eviction_callbacks = new_callbacks
+
+    # ------------------------------------------------------------------
+    # MutableMapping interface
+
+    def __getitem__(self, key: K) -> V:
+        return self._cache[key]
+
+    def __setitem__(self, key: K, value: V) -> None:
+        exists = key in self._cache
+        self._cache[key] = value
+        if exists:
+            self._record_hit(1)
+        else:
+            self._record_miss(1)
+
+    def __delitem__(self, key: K) -> None:
+        try:
+            value = self._cache[key]
+        except KeyError:
+            self._record_miss(1)
+            raise
+        del self._cache[key]
+        self._dispatch_removal(key, value, hits=1)
+
+    def __iter__(self) -> Iterator[K]:
+        return iter(self._cache)
+
+    def __len__(self) -> int:
+        return len(self._cache)
+
+    def __contains__(self, key: object) -> bool:
+        return key in self._cache
+
+    def __repr__(self) -> str:  # pragma: no cover - debugging helper
+        return f"{self.__class__.__name__}({self._cache!r})"
+
+    # ------------------------------------------------------------------
+    # Cache helpers
+
+    @property
+    def maxsize(self) -> int:
+        return self._cache.maxsize
+
+    @property
+    def currsize(self) -> int:
+        return self._cache.currsize
+
+    def get(self, key: K, default: V | None = None) -> V | None:
+        return self._cache.get(key, default)
+
+    def pop(self, key: K, default: Any = _MISSING) -> V:
+        try:
+            value = self._cache[key]
+        except KeyError:
+            self._record_miss(1)
+            if default is self._MISSING:
+                raise
+            return cast(V, default)
+        del self._cache[key]
+        self._dispatch_removal(key, value, hits=1)
+        return value
+
+    def popitem(self) -> tuple[K, V]:
+        return self._cache.popitem()
+
+    def clear(self) -> None:  # type: ignore[override]
+        while True:
+            try:
+                self.popitem()
+            except KeyError:
+                break
+        if self._locks is not None:
+            try:
+                self._locks.clear()
+            except Exception:  # pragma: no cover - defensive logging
+                _logger.exception("lock cleanup failed during cache clear")
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+
+    def _record_hit(self, amount: int) -> None:
+        if amount and self._manager is not None and self._metrics_key is not None:
+            self._manager.increment_hit(self._metrics_key, amount=amount)
+
+    def _record_miss(self, amount: int) -> None:
+        if amount and self._manager is not None and self._metrics_key is not None:
+            self._manager.increment_miss(self._metrics_key, amount=amount)
+
+    def _record_eviction(self, amount: int) -> None:
+        if amount and self._manager is not None and self._metrics_key is not None:
+            self._manager.increment_eviction(self._metrics_key, amount=amount)
+
+    def _dispatch_removal(
+        self,
+        key: K,
+        value: V,
+        *,
+        hits: int = 0,
+        misses: int = 0,
+        eviction_amount: int = 1,
+        purge_lock: bool = True,
+    ) -> None:
+        if hits:
+            self._record_hit(hits)
+        if misses:
+            self._record_miss(misses)
+        if eviction_amount:
+            self._record_eviction(eviction_amount)
+        self._emit_callbacks(self._telemetry_callbacks, key, value, "telemetry")
+        self._emit_callbacks(self._eviction_callbacks, key, value, "eviction")
+        if purge_lock:
+            self._purge_lock(key)
+
+    def _emit_callbacks(
+        self,
+        callbacks: Iterable[Callable[[K, V], None]],
+        key: K,
+        value: V,
+        kind: str,
+    ) -> None:
+        for callback in callbacks:
+            try:
+                callback(key, value)
+            except Exception:  # pragma: no cover - defensive logging
+                _logger.exception("%s callback failed for %r", kind, key)
+
+    def _purge_lock(self, key: K) -> None:
+        if self._locks is None:
+            return
+        try:
+            self._locks.pop(key, None)
+        except Exception:  # pragma: no cover - defensive logging
+            _logger.exception("lock cleanup failed for %r", key)
 
 class ManagedLRUCache(LRUCache[K, V]):
     """LRU cache wrapper with telemetry hooks and lock synchronisation."""
