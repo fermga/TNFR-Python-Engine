@@ -4,16 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Callable, Hashable, Mapping, MutableMapping, Sequence
 from enum import Enum
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    ContextManager,
-    Iterable,
-    Protocol,
-    TypeAlias,
-    TypedDict,
-)
+from typing import TYPE_CHECKING, Any, ContextManager, Iterable, Protocol, TypedDict
 from types import SimpleNamespace
+
+from ._compat import TypeAlias
 
 try:  # pragma: no cover - optional dependency for typing only
     import numpy as np

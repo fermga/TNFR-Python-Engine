@@ -1,7 +1,9 @@
-from typing import Any, Callable, ContextManager, Iterable, Protocol, TypeAlias, cast
+from typing import Any, Callable, ContextManager, Iterable, Protocol, cast
 from collections.abc import Hashable, Mapping, Sequence
 from enum import Enum
 from typing import TypedDict
+
+from ._compat import TypeAlias
 
 try:
     import networkx as nx  # type: ignore[import-not-found]

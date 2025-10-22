@@ -7,7 +7,9 @@ from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Any, MutableMapping, TypedDict, TypeAlias, cast
+from typing import Any, MutableMapping, TypedDict, cast
+
+from .._compat import TypeAlias
 
 
 from ..constants import (

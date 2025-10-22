@@ -10,11 +10,13 @@ from __future__ import annotations
 from contextlib import contextmanager
 from dataclasses import asdict, is_dataclass
 from functools import lru_cache, partial, singledispatch, wraps
-from typing import Any, Callable, Iterable, Iterator, TypeAlias, cast
+from typing import Any, Callable, Iterable, Iterator, cast
 from collections.abc import Mapping
 from types import MappingProxyType
 import threading
 import weakref
+
+from ._compat import TypeAlias
 
 # Types considered immutable without further inspection
 IMMUTABLE_SIMPLE = frozenset(

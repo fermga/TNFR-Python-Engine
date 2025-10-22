@@ -6,7 +6,7 @@ import math
 from collections import deque
 from collections.abc import Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
-from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from ..alias import get_theta_attr, set_theta
 from ..constants import (
@@ -25,6 +25,7 @@ from ..metrics.trig_cache import get_trig_cache
 from ..observers import DEFAULT_GLYPH_LOAD_SPAN, glyph_load, kuramoto_order
 from ..types import NodeId, Phase, TNFRGraph
 from ..utils import get_numpy
+from .._compat import TypeAlias
 
 if TYPE_CHECKING:  # pragma: no cover - typing imports only
     try:

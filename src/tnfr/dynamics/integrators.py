@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterable, Mapping
 from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import get_context
-from typing import Any, Literal, TypeAlias, cast
+from typing import Any, Literal, cast
 
 import networkx as nx
 
@@ -17,6 +17,7 @@ from ..gamma import _get_gamma_spec, eval_gamma
 from ..alias import collect_attr, get_attr, get_attr_str, set_attr, set_attr_str
 from ..utils import get_numpy
 from ..types import NodeId, TNFRGraph
+from .._compat import TypeAlias
 
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")

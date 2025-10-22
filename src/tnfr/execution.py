@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from collections import deque
 from collections.abc import Callable, Iterable, Sequence
-from typing import Any, Optional, TypeAlias, cast
+from typing import Any, Optional, cast
+
+from ._compat import TypeAlias
 
 from .utils import MAX_MATERIALIZE_DEFAULT, ensure_collection, is_non_string_sequence
 from .constants import get_param
