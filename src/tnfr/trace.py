@@ -82,6 +82,9 @@ _TRACE_ALL_FIELDS = (
     "sigma",
     "glyph_counts",
 )
+_TRACE_DETAILED_FIELDS = tuple(
+    field for field in _TRACE_ALL_FIELDS if field != "glyph_counts"
+)
 TRACE_VERBOSITY_PRESETS: Mapping[str, tuple[str, ...]] = {
     "basic": (
         "gamma",
@@ -92,7 +95,7 @@ TRACE_VERBOSITY_PRESETS: Mapping[str, tuple[str, ...]] = {
         "callbacks",
         "thol_open_nodes",
     ),
-    "detailed": _TRACE_ALL_FIELDS,
+    "detailed": _TRACE_DETAILED_FIELDS,
     "debug": _TRACE_ALL_FIELDS,
 }
 

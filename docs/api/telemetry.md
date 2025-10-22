@@ -48,9 +48,14 @@ the graph (default length 100). Adjust or inspect the buffer at runtime with
 no explicit `capture` list is provided. The presets are:
 
 - `"basic"` — captures the structural configuration (`gamma`, grammar, selector, ΔNFR/SI weights,
-  callback map, THOL state) while skipping the heavier collectors.
-- `"detailed"` and `"debug"` — include all default collectors (Kuramoto order, Σ⃗ snapshot, glyph
-  counts) to preserve the legacy trace payloads. `"debug"` remains the default level.
+  callback map, THOL state) while skipping the heavier collectors. Use this for smoke tests or
+  performance-sensitive runs where topology snapshots are enough.
+- `"detailed"` — extends the basic payload with the Kuramoto order parameters and Σ⃗ snapshot while
+  omitting glyph counts, avoiding the most expensive history walk. Pick this tier when you need
+  coherence metrics without paying the full glyph audit cost.
+- `"debug"` — executes the full collector suite, including glyph counts, to preserve the legacy
+  trace payload. This remains the default level and is intended for investigations and regression
+  hunts where complete operator coverage matters more than runtime.
 
 If you still need a custom field mix, set `TRACE["capture"]` explicitly; the resolver will honour
 that list (or mapping) and ignore the verbosity preset.
