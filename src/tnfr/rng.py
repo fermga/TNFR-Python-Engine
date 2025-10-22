@@ -11,9 +11,9 @@ from dataclasses import dataclass
 from typing import Any, Generic, Hashable, TypeVar, cast
 
 
-from cachetools import LRUCache, cached  # type: ignore[import-untyped]
+from cachetools import cached  # type: ignore[import-untyped]
 from .constants import DEFAULTS, get_param
-from .cache import CacheManager
+from .cache import CacheManager, InstrumentedLRUCache
 from .utils import get_graph
 from .locking import get_lock
 from .types import GraphLike, TNFRGraph
@@ -29,29 +29,15 @@ K = TypeVar("K", bound=Hashable)
 V = TypeVar("V")
 
 
-class _TelemetryLRUCache(LRUCache[K, V], Generic[K, V]):
-    """LRU cache that reports evictions through the shared manager."""
-
-    def __init__(self, maxsize: int, *, manager: CacheManager, metrics_key: str) -> None:
-        super().__init__(maxsize)
-        self._manager = manager
-        self._metrics_key = metrics_key
-
-    def popitem(self) -> tuple[K, V]:  # type: ignore[override]
-        key, value = super().popitem()
-        self._manager.increment_eviction(self._metrics_key)
-        return key, value
-
-
 @dataclass
 class _SeedCacheState:
-    cache: LRUCache[tuple[int, int], int] | None
+    cache: InstrumentedLRUCache[tuple[int, int], int] | None
     maxsize: int
 
 
 @dataclass
 class _CounterState(Generic[K]):
-    cache: LRUCache[K, int]
+    cache: InstrumentedLRUCache[K, int]
     max_entries: int
 
 
@@ -96,10 +82,9 @@ class _SeedHashCache(MutableMapping[tuple[int, int], int]):
         if size <= 0:
             return _SeedCacheState(cache=None, maxsize=0)
         return _SeedCacheState(
-            cache=_TelemetryLRUCache(
-                maxsize=size,
-                manager=self._manager,
-                metrics_key=self._state_key,
+            cache=InstrumentedLRUCache(
+                size,
+                telemetry=(self._manager, self._state_key),
             ),
             maxsize=size,
         )
@@ -169,7 +154,7 @@ class _SeedHashCache(MutableMapping[tuple[int, int], int]):
         return bool(state and state.cache is not None)
 
     @property
-    def data(self) -> LRUCache[tuple[int, int], int] | None:
+    def data(self) -> InstrumentedLRUCache[tuple[int, int], int] | None:
         """Expose the underlying cache for diagnostics/tests."""
 
         state = self._get_state(create=False)
@@ -221,10 +206,9 @@ class ScopedCounterCache(Generic[K]):
     def _create_state(self, requested: int | None = None) -> _CounterState[K]:
         size = self._resolved_entries(requested)
         return _CounterState(
-            cache=_TelemetryLRUCache(
-                maxsize=size,
-                manager=self._manager,
-                metrics_key=self._state_key,
+            cache=InstrumentedLRUCache(
+                size,
+                telemetry=(self._manager, self._state_key),
             ),
             max_entries=size,
         )
@@ -252,7 +236,7 @@ class ScopedCounterCache(Generic[K]):
         return self._get_state().max_entries
 
     @property
-    def cache(self) -> LRUCache[K, int]:
+    def cache(self) -> InstrumentedLRUCache[K, int]:
         """Expose the underlying ``LRUCache`` for inspection."""
 
         return self._get_state().cache
@@ -274,10 +258,9 @@ class ScopedCounterCache(Generic[K]):
         def _update(state: _CounterState[K] | None) -> _CounterState[K]:
             if not isinstance(state, _CounterState) or force or state.max_entries != size:
                 return _CounterState(
-                    cache=_TelemetryLRUCache(
-                        maxsize=size,
-                        manager=self._manager,
-                        metrics_key=self._state_key,
+                    cache=InstrumentedLRUCache(
+                        size,
+                        telemetry=(self._manager, self._state_key),
                     ),
                     max_entries=size,
                 )

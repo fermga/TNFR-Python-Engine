@@ -131,10 +131,20 @@ def test_edge_version_cache_metrics(graph_and_manager):
         calls += 1
         return calls
 
-    assert edge_version_cache(G, "k", builder) == 1
-    assert edge_version_cache(G, "k", builder) == 1
+    stats_before = manager._manager.get_metrics(manager._STATE_KEY)
+
+    assert edge_version_cache(G, "k", builder, max_entries=2) == 1
+    assert edge_version_cache(G, "k", builder, max_entries=2) == 1
+    edge_version_cache(G, "a", lambda: "a", max_entries=2)
+    edge_version_cache(G, "b", lambda: "b", max_entries=2)
+    edge_version_cache(G, "c", lambda: "c", max_entries=2)
 
     stats = manager._manager.get_metrics(manager._STATE_KEY)
-    assert stats.misses == 1
-    assert stats.hits == 1
-    assert stats.evictions == 0
+    assert stats.misses - stats_before.misses == 4
+    assert stats.hits - stats_before.hits == 1
+    assert stats.evictions - stats_before.evictions == 2
+
+    cache, locks = manager.get_cache(2)
+    assert set(cache) == {"b", "c"}
+    assert set(locks) == set(cache)
+    assert "k" not in locks

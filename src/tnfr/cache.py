@@ -4,14 +4,27 @@ from __future__ import annotations
 
 import logging
 import threading
+from collections.abc import Collection, Iterable, Iterator, Mapping, MutableMapping
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from time import perf_counter
-from typing import Any, Callable, Iterator, Mapping, MutableMapping
+from typing import Any, Callable, Generic, Hashable, Sequence, TypeVar, cast
+
+from cachetools import LRUCache  # type: ignore[import-untyped]
 
 from .types import TimingContext
 
-__all__ = ["CacheManager", "CacheCapacityConfig", "CacheStatistics"]
+__all__ = [
+    "CacheManager",
+    "CacheCapacityConfig",
+    "CacheStatistics",
+    "InstrumentedLRUCache",
+    "LockMapCleaner",
+]
+
+
+K = TypeVar("K", bound=Hashable)
+V = TypeVar("V")
 
 
 @dataclass(frozen=True)
@@ -399,3 +412,128 @@ class CacheManager:
                 stats.timings,
                 stats.total_time,
             )
+
+
+class LockMapCleaner(Generic[K]):
+    """Utility coordinating lock lifecycle with cache events."""
+
+    def __init__(self, locks: MutableMapping[K, Any]) -> None:
+        self._locks = locks
+
+    @property
+    def locks(self) -> MutableMapping[K, Any]:
+        """Return the mutable mapping storing per-entry locks."""
+
+        return self._locks
+
+    def on_remove(self, key: K, _value: Any | None = None) -> None:
+        """Drop the lock associated with ``key`` if present."""
+
+        self._locks.pop(key, None)
+
+    def prune(self, keys: Iterable[K]) -> None:
+        """Remove locks for keys no longer present in ``keys``."""
+
+        if isinstance(keys, Collection):
+            candidates: Collection[K] = keys
+        else:
+            candidates = tuple(keys)
+        for lock_key in list(self._locks.keys()):
+            if lock_key not in candidates:
+                self._locks.pop(lock_key, None)
+
+    def clear(self) -> None:
+        """Drop all tracked locks."""
+
+        self._locks.clear()
+
+
+class InstrumentedLRUCache(LRUCache[K, V], Generic[K, V]):
+    """``LRUCache`` variant instrumented with telemetry and lock hooks."""
+
+    _MISSING = object()
+
+    def __init__(
+        self,
+        maxsize: int,
+        *,
+        lock_cleaner: LockMapCleaner[K] | None = None,
+        telemetry: Sequence[tuple[CacheManager, str]] | tuple[CacheManager, str] | None = None,
+        on_evict: Iterable[Callable[[K, V], None]] | None = None,
+        logger: logging.Logger | None = None,
+    ) -> None:
+        super().__init__(maxsize)
+        self._lock_cleaner = lock_cleaner
+        self._logger = logger or logging.getLogger(__name__)
+        self._evict_callbacks: list[Callable[[K, V], None]] = []
+
+        if telemetry is not None:
+            if isinstance(telemetry, tuple) and len(telemetry) == 2 and isinstance(
+                telemetry[0], CacheManager
+            ):
+                items: Sequence[tuple[CacheManager, str]] = (telemetry,)
+            else:
+                items = tuple(telemetry)
+            for manager, metrics_key in items:
+                self.register_telemetry(manager, metrics_key)
+
+        if on_evict is not None:
+            for callback in on_evict:
+                self.register_evict_callback(callback)
+
+    def register_evict_callback(self, callback: Callable[[K, V], None]) -> None:
+        """Register ``callback`` to be invoked on cache evictions."""
+
+        self._evict_callbacks.append(callback)
+
+    def register_telemetry(self, manager: CacheManager, metrics_key: str) -> None:
+        """Register telemetry hook incrementing ``metrics_key`` on ``manager``."""
+
+        def _emit(_key: K, _value: V) -> None:
+            manager.increment_eviction(metrics_key)
+
+        self._evict_callbacks.append(_emit)
+
+    def _cleanup_lock(self, key: K) -> None:
+        if self._lock_cleaner is None:
+            return
+        try:
+            self._lock_cleaner.on_remove(key)
+        except Exception:  # pragma: no cover - defensive logging
+            self._logger.exception("lock cleanup failed for %r", key)
+
+    def _emit_eviction(self, key: K, value: V) -> None:
+        self._cleanup_lock(key)
+        for callback in self._evict_callbacks:
+            try:
+                callback(key, value)
+            except Exception:  # pragma: no cover - defensive logging
+                self._logger.exception("LRU eviction callback failed for %r", key)
+
+    def popitem(self) -> tuple[K, V]:  # type: ignore[override]
+        key, value = super().popitem()
+        self._emit_eviction(key, value)
+        return key, value
+
+    def pop(self, key: K, default: V | object = _MISSING) -> V:  # type: ignore[override]
+        if default is self._MISSING:
+            value = super().pop(key)
+        else:
+            sentinel = object()
+            value = super().pop(key, sentinel)
+            if value is sentinel:
+                return cast(V, default)
+        self._cleanup_lock(key)
+        return cast(V, value)
+
+    def __delitem__(self, key: K) -> None:  # type: ignore[override]
+        super().__delitem__(key)
+        self._cleanup_lock(key)
+
+    def clear(self) -> None:  # type: ignore[override]
+        super().clear()
+        if self._lock_cleaner is not None:
+            try:
+                self._lock_cleaner.clear()
+            except Exception:  # pragma: no cover - defensive logging
+                self._logger.exception("lock cleanup failed during clear")

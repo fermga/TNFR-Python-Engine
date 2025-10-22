@@ -132,17 +132,20 @@ def test_seed_hash_metrics():
     original_size = rng_module._CACHE_MAXSIZE
     original_locked = rng_module._CACHE_LOCKED
     try:
-        set_cache_maxsize(4)
+        set_cache_maxsize(2)
         seed_hash.cache_clear()
         manager = rng_module._RNG_CACHE_MANAGER
         before = manager.get_metrics("seed_hash_cache")
 
         seed_hash(1, 1)
         seed_hash(1, 1)
+        seed_hash(2, 2)
+        seed_hash(3, 3)
 
         after = manager.get_metrics("seed_hash_cache")
-        assert after.misses - before.misses == 1
+        assert after.misses - before.misses == 3
         assert after.hits - before.hits == 1
+        assert after.evictions - before.evictions == 1
     finally:
         set_cache_maxsize(original_size)
         rng_module._CACHE_LOCKED = original_locked

@@ -2,13 +2,24 @@ from __future__ import annotations
 
 import logging
 import threading
-from collections.abc import Callable, Iterator, Mapping, MutableMapping
+from collections.abc import Callable, Iterable, Iterator, Mapping, MutableMapping, Sequence
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Generic, Hashable, TypeVar
+
+from cachetools import LRUCache
 
 from .types import TimingContext
 
-__all__ = ["CacheManager", "CacheCapacityConfig", "CacheStatistics"]
+__all__ = [
+    "CacheManager",
+    "CacheCapacityConfig",
+    "CacheStatistics",
+    "InstrumentedLRUCache",
+    "LockMapCleaner",
+]
+
+K = TypeVar("K", bound=Hashable)
+V = TypeVar("V")
 
 
 @dataclass(frozen=True)
@@ -136,3 +147,42 @@ class CacheManager:
     def log_metrics(
         self, logger: logging.Logger, *, level: int = ...
     ) -> None: ...
+
+
+class LockMapCleaner(Generic[K]):
+    def __init__(self, locks: MutableMapping[K, Any]) -> None: ...
+
+    @property
+    def locks(self) -> MutableMapping[K, Any]: ...
+
+    def on_remove(self, key: K, _value: Any | None = ...) -> None: ...
+
+    def prune(self, keys: Iterable[K]) -> None: ...
+
+    def clear(self) -> None: ...
+
+
+class InstrumentedLRUCache(LRUCache[K, V], Generic[K, V]):
+    _MISSING: ClassVar[object]
+
+    def __init__(
+        self,
+        maxsize: int,
+        *,
+        lock_cleaner: LockMapCleaner[K] | None = ...,
+        telemetry: Sequence[tuple[CacheManager, str]] | tuple[CacheManager, str] | None = ...,
+        on_evict: Iterable[Callable[[K, V], None]] | None = ...,
+        logger: logging.Logger | None = ...,
+    ) -> None: ...
+
+    def register_evict_callback(self, callback: Callable[[K, V], None]) -> None: ...
+
+    def register_telemetry(self, manager: CacheManager, metrics_key: str) -> None: ...
+
+    def popitem(self) -> tuple[K, V]: ...
+
+    def pop(self, key: K, default: V | object = ...) -> V: ...
+
+    def __delitem__(self, key: K) -> None: ...
+
+    def clear(self) -> None: ...

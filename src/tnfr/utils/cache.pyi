@@ -6,7 +6,7 @@ from typing import Any, ContextManager, Generic, TypeVar
 
 import networkx as nx
 
-from ..cache import CacheCapacityConfig, CacheManager
+from ..cache import CacheCapacityConfig, CacheManager, InstrumentedLRUCache, LockMapCleaner
 from ..types import GraphLike, NodeId, TNFRGraph, TimingContext
 
 K = TypeVar("K", bound=Hashable)
@@ -15,6 +15,7 @@ T = TypeVar("T")
 
 __all__ = (
     "EdgeCacheManager",
+    "InstrumentedLRUCache",
     "LockAwareLRUCache",
     "NODE_SET_CHECKSUM_KEY",
     "cached_node_list",
@@ -34,36 +35,13 @@ __all__ = (
 
 NODE_SET_CHECKSUM_KEY: str
 
-
-class LRUCache(MutableMapping[K, V], Generic[K, V]):
-    def __init__(self, maxsize: int = ...) -> None: ...
-
-    def __getitem__(self, __key: K) -> V: ...
-
-    def __setitem__(self, __key: K, __value: V) -> None: ...
-
-    def __delitem__(self, __key: K) -> None: ...
-
-    def __iter__(self) -> Iterator[K]: ...
-
-    def __len__(self) -> int: ...
-
-
-class LockAwareLRUCache(LRUCache[Hashable, Any]):
-    def __init__(
-        self,
-        maxsize: int,
-        locks: dict[Hashable, threading.RLock],
-        *,
-        on_evict: Callable[[Hashable, Any], None] | None = ...,
-    ) -> None: ...
-
-    def popitem(self) -> tuple[Hashable, Any]: ...
+LockAwareLRUCache = InstrumentedLRUCache
 
 
 class EdgeCacheState:
     cache: MutableMapping[Hashable, Any]
     locks: MutableMapping[Hashable, threading.RLock]
+    lock_cleaner: LockMapCleaner[Hashable]
     max_entries: int | None
 
 

@@ -5,6 +5,7 @@ from typing import Any, Final
 from ..cache import CacheManager
 from .cache import (
     EdgeCacheManager,
+    InstrumentedLRUCache,
     LockAwareLRUCache,
     NODE_SET_CHECKSUM_KEY,
     cached_node_list,
@@ -93,6 +94,7 @@ __all__ = (
     "mix_groups",
     "CacheManager",
     "EdgeCacheManager",
+    "InstrumentedLRUCache",
     "LockAwareLRUCache",
     "NODE_SET_CHECKSUM_KEY",
     "cached_node_list",

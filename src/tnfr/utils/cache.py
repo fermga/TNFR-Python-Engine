@@ -25,10 +25,9 @@ from functools import lru_cache
 from dataclasses import dataclass
 from typing import Any, TypeVar, cast
 
-from cachetools import LRUCache
 import networkx as nx
 
-from ..cache import CacheCapacityConfig, CacheManager
+from ..cache import CacheCapacityConfig, CacheManager, InstrumentedLRUCache, LockMapCleaner
 from ..types import GraphLike, NodeId, TNFRGraph, TimingContext
 from .graph import get_graph, mark_dnfr_prep_dirty
 from .init import get_logger, get_numpy
@@ -38,6 +37,7 @@ T = TypeVar("T")
 
 __all__ = (
     "EdgeCacheManager",
+    "InstrumentedLRUCache",
     "LockAwareLRUCache",
     "NODE_SET_CHECKSUM_KEY",
     "cached_node_list",
@@ -60,50 +60,12 @@ NODE_SET_CHECKSUM_KEY = "_node_set_checksum_cache"
 
 logger = get_logger(__name__)
 
+# Backwards compatible alias for callers still importing from ``tnfr.utils``.
+LockAwareLRUCache = InstrumentedLRUCache
+
 # Keys of cache entries dependent on the edge version. Any change to the edge
 # set requires these to be dropped to avoid stale data.
 EDGE_VERSION_CACHE_KEYS = ("_trig_version",)
-
-
-class LockAwareLRUCache(LRUCache[Hashable, Any]):
-    """``LRUCache`` that drops per-key locks when evicting items."""
-
-    def __init__(
-        self,
-        maxsize: int,
-        locks: dict[Hashable, threading.RLock],
-        *,
-        on_evict: Callable[[Hashable, Any], None] | None = None,
-    ) -> None:
-        super().__init__(maxsize)
-        self._locks: dict[Hashable, threading.RLock] = locks
-        self._on_evict = on_evict
-
-    def popitem(self) -> tuple[Hashable, Any]:  # type: ignore[override]
-        key, value = super().popitem()
-        self._locks.pop(key, None)
-        if self._on_evict is not None:
-            try:
-                self._on_evict(key, value)
-            except Exception:  # pragma: no cover - defensive logging
-                logger.exception("edge cache eviction callback failed for %r", key)
-        return key, value
-
-
-def _prune_locks(
-    cache: dict[Hashable, Any] | LRUCache[Hashable, Any] | None,
-    locks: dict[Hashable, threading.RLock]
-    | defaultdict[Hashable, threading.RLock]
-    | None,
-) -> None:
-    """Drop locks with no corresponding cache entry."""
-
-    if not isinstance(locks, dict):
-        return
-    cache_keys = cache.keys() if isinstance(cache, dict) else ()
-    for key in list(locks.keys()):
-        if key not in cache_keys:
-            locks.pop(key, None)
 
 
 def get_graph_version(graph: Any, key: str, default: int = 0) -> int:
@@ -400,8 +362,9 @@ def ensure_node_offset_map(G: TNFRGraph) -> dict[NodeId, int]:
 
 @dataclass
 class EdgeCacheState:
-    cache: dict[Hashable, Any] | LRUCache[Hashable, Any]
+    cache: MutableMapping[Hashable, Any]
     locks: defaultdict[Hashable, threading.RLock]
+    lock_cleaner: LockMapCleaner[Hashable]
     max_entries: int | None
 
 
@@ -494,15 +457,21 @@ class EdgeCacheManager:
 
     def _build_state(self, max_entries: int | None) -> EdgeCacheState:
         locks: defaultdict[Hashable, threading.RLock] = defaultdict(threading.RLock)
+        lock_cleaner = LockMapCleaner(locks)
         if max_entries is None:
-            cache: dict[Hashable, Any] | LRUCache[Hashable, Any] = {}
+            cache: MutableMapping[Hashable, Any] = {}
         else:
-            cache = LockAwareLRUCache(
+            cache = InstrumentedLRUCache(
                 max_entries,
-                locks,
-                on_evict=lambda _key, _value: self.record_eviction(),
-            )  # type: ignore[arg-type]
-        return EdgeCacheState(cache=cache, locks=locks, max_entries=max_entries)
+                lock_cleaner=lock_cleaner,
+                telemetry=(self._manager, self._STATE_KEY),
+            )
+        return EdgeCacheState(
+            cache=cache,
+            locks=locks,
+            lock_cleaner=lock_cleaner,
+            max_entries=max_entries,
+        )
 
     def _ensure_state(
         self, state: EdgeCacheState | None, max_entries: int | None | object
@@ -515,13 +484,13 @@ class EdgeCacheManager:
         if not isinstance(state, EdgeCacheState) or state.max_entries != target:
             return self._build_state(target)
         if target is None:
-            _prune_locks(state.cache, state.locks)
+            state.lock_cleaner.prune(state.cache.keys())
         return state
 
     def _reset_state(self, state: EdgeCacheState | None) -> EdgeCacheState:
         if isinstance(state, EdgeCacheState):
             state.cache.clear()
-            state.locks.clear()
+            state.lock_cleaner.clear()
             return state
         return self._build_state(None)
 
@@ -531,10 +500,8 @@ class EdgeCacheManager:
         *,
         create: bool = True,
     ) -> tuple[
-        dict[Hashable, Any] | LRUCache[Hashable, Any] | None,
-        dict[Hashable, threading.RLock]
-        | defaultdict[Hashable, threading.RLock]
-        | None,
+        MutableMapping[Hashable, Any] | None,
+        MutableMapping[Hashable, threading.RLock] | None,
     ]:
         """Return the cache and lock mapping for the manager's graph."""
 
