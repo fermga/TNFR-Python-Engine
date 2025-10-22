@@ -21,6 +21,22 @@ def test_history_delta_si_and_B(graph_canon):
     assert "B" in hist and len(hist["B"]) >= 2
 
 
+def test_history_basic_metrics_skips_heavy_series(graph_canon):
+    G = graph_canon()
+    G.add_node(0, EPI=0.0, νf=0.5, theta=0.0)
+    inject_defaults(G)
+    G.graph["METRICS"]["verbosity"] = "basic"
+    register_metrics_callbacks(G)
+    step(G, apply_glyphs=False)
+    step(G, apply_glyphs=False)
+    hist = ensure_history(G)
+    assert "delta_Si" in hist
+    assert "B" in hist
+    assert "phase_sync" not in hist
+    assert "glyph_load_stabilizers" not in hist
+    assert "Si_mean" not in hist
+
+
 def test_gamma_kuramoto_tanh_registry(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])

@@ -35,18 +35,7 @@ class MetricDefaults:
     TRACE: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": True,
-            "capture": [
-                "gamma",
-                "grammar",
-                "selector",
-                "dnfr_weights",
-                "si_weights",
-                "callbacks",
-                "thol_open_nodes",
-                "sigma",
-                "kuramoto",
-                "glyph_counts",
-            ],
+            "verbosity": "debug",
             "history_key": "trace_meta",
         }
     )
@@ -56,6 +45,7 @@ class MetricDefaults:
             "save_by_node": True,
             "normalize_series": False,
             "n_jobs": 1,
+            "verbosity": "debug",
         }
     )
     GRAMMAR_CANON: dict[str, Any] = field(
