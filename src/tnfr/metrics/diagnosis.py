@@ -796,7 +796,7 @@ def dissonance_events(
     del ctx
 
     hist = ensure_history(G)
-    # eventos de disonancia se registran en ``history['events']``
+    # Dissonance events are recorded in ``history['events']``
     norms = G.graph.get("_sel_norms", {})
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     step_idx = len(hist.get("C_steps", []))

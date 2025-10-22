@@ -130,7 +130,7 @@ def _empty_sigma(fallback_angle: float) -> SigmaVector:
 
 
 # -------------------------
-# σ por nodo y σ global
+# σ per node and global σ
 # -------------------------
 
 
@@ -287,7 +287,7 @@ def sigma_vector_from_graph(
 
 
 # -------------------------
-# Historia / series
+# History / series
 # -------------------------
 
 
@@ -296,7 +296,7 @@ def push_sigma_snapshot(G: TNFRGraph, t: float | None = None) -> None:
     if not cfg.get("enabled", True):
         return
 
-    # Cache local de la historia para evitar llamadas repetidas
+    # Local history cache to avoid repeated lookups
     hist = ensure_history(G)
     key = cfg.get("history_key", "sigma_global")
 
