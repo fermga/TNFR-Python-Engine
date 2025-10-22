@@ -214,10 +214,10 @@ def _node_offset(G: TNFRGraph, n: NodeId) -> int:
 
 
 def _resolve_jitter_seed(node: NodeProtocol) -> tuple[int, int]:
-    nodo_nx_type = get_nodenx()
-    if nodo_nx_type is None:
+    node_nx_type = get_nodenx()
+    if node_nx_type is None:
         raise ImportError("NodeNX is unavailable")
-    if isinstance(node, nodo_nx_type):
+    if isinstance(node, node_nx_type):
         graph = cast(TNFRGraph, getattr(node, "G"))
         node_id = cast(NodeId, getattr(node, "n"))
         return _node_offset(graph, node_id), id(graph)
