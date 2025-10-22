@@ -49,6 +49,21 @@ site preserves the canonical TNFR structure. The same steps can be executed loca
 The Netlify build (`netlify.toml`) runs `python -m pip install -r docs/requirements.txt && mkdocs build`
 and publishes the resulting `site/` directory, ensuring the hosted documentation matches local builds.
 
+## Local development
+
+Use the helper scripts to keep formatting aligned with the canonical configuration and to reproduce
+the quality gate locally:
+
+```bash
+./scripts/format.sh           # Apply Black and isort across src/, tests/, scripts/, and benchmarks/
+./scripts/format.sh --check   # Validate formatting without modifying files
+./scripts/run_tests.sh        # Execute the full QA battery (type checks, tests, coverage, linting)
+```
+
+The formatting helper automatically prefers `poetry run` when a Poetry environment is available and
+falls back to `python -m` invocations so local runs mirror the tooling invoked in continuous
+integration.
+
 ## Additional resources
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — orchestration layers and invariant enforcement.
