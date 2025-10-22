@@ -1,14 +1,23 @@
-from __future__ import annotations
-
 import logging
 import threading
-from collections.abc import Callable, Iterator, Mapping, MutableMapping
+from collections.abc import Callable, Iterable, Iterator, Mapping, MutableMapping
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Generic, Hashable, TypeVar
+
+from cachetools import LRUCache
 
 from .types import TimingContext
 
-__all__ = ["CacheManager", "CacheCapacityConfig", "CacheStatistics"]
+__all__ = [
+    "CacheManager",
+    "CacheCapacityConfig",
+    "CacheStatistics",
+    "ManagedLRUCache",
+    "prune_lock_mapping",
+]
+
+K = TypeVar("K", bound=Hashable)
+V = TypeVar("V")
 
 
 @dataclass(frozen=True)
@@ -136,3 +145,28 @@ class CacheManager:
     def log_metrics(
         self, logger: logging.Logger, *, level: int = ...
     ) -> None: ...
+
+
+class ManagedLRUCache(LRUCache[K, V], Generic[K, V]):
+    def __init__(
+        self,
+        maxsize: int,
+        *,
+        manager: CacheManager | None = ...,
+        metrics_key: str | None = ...,
+        eviction_callbacks: Iterable[Callable[[K, V], None]]
+        | Callable[[K, V], None]
+        | None = ...,
+        telemetry_callbacks: Iterable[Callable[[K, V], None]]
+        | Callable[[K, V], None]
+        | None = ...,
+        locks: MutableMapping[K, Any] | None = ...,
+    ) -> None: ...
+
+    def popitem(self) -> tuple[K, V]: ...
+
+
+def prune_lock_mapping(
+    cache: Mapping[K, Any] | MutableMapping[K, Any] | None,
+    locks: MutableMapping[K, Any] | None,
+) -> None: ...

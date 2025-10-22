@@ -15,7 +15,6 @@ T = TypeVar("T")
 
 __all__ = (
     "EdgeCacheManager",
-    "LockAwareLRUCache",
     "NODE_SET_CHECKSUM_KEY",
     "cached_node_list",
     "cached_nodes_and_A",
@@ -47,18 +46,6 @@ class LRUCache(MutableMapping[K, V], Generic[K, V]):
     def __iter__(self) -> Iterator[K]: ...
 
     def __len__(self) -> int: ...
-
-
-class LockAwareLRUCache(LRUCache[Hashable, Any]):
-    def __init__(
-        self,
-        maxsize: int,
-        locks: dict[Hashable, threading.RLock],
-        *,
-        on_evict: Callable[[Hashable, Any], None] | None = ...,
-    ) -> None: ...
-
-    def popitem(self) -> tuple[Hashable, Any]: ...
 
 
 class EdgeCacheState:
