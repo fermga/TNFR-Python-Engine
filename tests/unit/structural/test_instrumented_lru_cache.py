@@ -175,3 +175,23 @@ def test_callback_registration_runtime_updates() -> None:
     cache["p"] = 5
     cache.pop("p")
     assert recorder.events == [("telemetry:gamma", "p", 5)]
+
+
+def test_overwrite_hit_tracking_can_be_disabled() -> None:
+    manager = CacheManager()
+    cache = InstrumentedLRUCache[str, int](
+        4,
+        manager=manager,
+        metrics_key="instrumented",
+        count_overwrite_hit=False,
+    )
+
+    cache["k"] = 1
+    stats_after_insert = manager.get_metrics("instrumented")
+    assert stats_after_insert.misses == 1
+    assert stats_after_insert.hits == 0
+
+    cache["k"] = 2
+    stats_after_overwrite = manager.get_metrics("instrumented")
+    assert stats_after_overwrite.misses == 1
+    assert stats_after_overwrite.hits == 0

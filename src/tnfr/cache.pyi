@@ -165,6 +165,7 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
         | None = ...,
         locks: MutableMapping[K, Any] | None = ...,
         getsizeof: Callable[[V], int] | None = ...,
+        count_overwrite_hit: bool = ...,
     ) -> None: ...
 
     @property

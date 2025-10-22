@@ -154,3 +154,22 @@ def test_edge_version_cache_metrics(graph_and_manager):
     assert stats.misses == 1
     assert stats.hits == 1
     assert stats.evictions == 0
+
+
+def test_edge_version_cache_version_bump_metrics(graph_and_manager):
+    G, manager = graph_and_manager()
+
+    def builder() -> str:
+        return "payload"
+
+    edge_version_cache(G, "k", builder)
+    edge_version_cache(G, "k", builder)
+
+    stats_before = manager._manager.get_metrics(manager._STATE_KEY)
+
+    increment_edge_version(G)
+    edge_version_cache(G, "k", builder)
+
+    stats_after = manager._manager.get_metrics(manager._STATE_KEY)
+    assert stats_after.misses == stats_before.misses + 1
+    assert stats_after.hits == stats_before.hits
