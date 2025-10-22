@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tnfr.dynamics as dynamics
+import tnfr.dynamics.selectors as selectors
 from tnfr.alias import set_attr
 from tnfr.glyph_history import ensure_history
 
@@ -85,32 +86,32 @@ def _run_selector(
         if apply_hook is not None:
             apply_hook(G_local, node, value, window=window)
 
-    monkeypatch.setattr(dynamics, "apply_glyph", fake_apply_glyph)
+    monkeypatch.setattr(selectors, "apply_glyph", fake_apply_glyph)
 
     if on_applied_hook is None:
         monkeypatch.setattr(
-            dynamics, "on_applied_glyph", lambda *args, **kwargs: None
+            selectors, "on_applied_glyph", lambda *args, **kwargs: None
         )
     else:
         def wrapped_on_applied(G_local, node, glyph, *args, **kwargs):
             value = getattr(glyph, "value", glyph)
             on_applied_hook(G_local, node, value)
 
-        monkeypatch.setattr(dynamics, "on_applied_glyph", wrapped_on_applied)
+        monkeypatch.setattr(selectors, "on_applied_glyph", wrapped_on_applied)
 
     if enforce_hook is None:
         monkeypatch.setattr(
-            dynamics, "enforce_canonical_grammar", lambda G_local, node, glyph: glyph
+            selectors, "enforce_canonical_grammar", lambda G_local, node, glyph: glyph
         )
     else:
         def wrapped_enforce(G_local, node, glyph):
             value = getattr(glyph, "value", glyph)
             return enforce_hook(G_local, node, value)
 
-        monkeypatch.setattr(dynamics, "enforce_canonical_grammar", wrapped_enforce)
+        monkeypatch.setattr(selectors, "enforce_canonical_grammar", wrapped_enforce)
 
-    selector = dynamics._apply_selector(G)
-    dynamics._apply_glyphs(G, selector, history)
+    selector = selectors._apply_selector(G)
+    selectors._apply_glyphs(G, selector, history)
     return applied, history
 
 
@@ -148,7 +149,7 @@ def test_selector_n_jobs_one_is_sequential(monkeypatch, graph_canon):
         def __init__(self, *args, **kwargs):
             raise AssertionError("ProcessPoolExecutor should not be used when n_jobs == 1")
 
-    monkeypatch.setattr(dynamics, "ProcessPoolExecutor", FailExecutor)
+    monkeypatch.setattr(selectors, "ProcessPoolExecutor", FailExecutor)
 
     _run_selector(G, monkeypatch)
 
@@ -211,7 +212,7 @@ def test_parallel_canonical_hooks_order(monkeypatch, graph_canon):
         log_seq.append(("enforce", node, glyph))
         if node % 2 == 0:
             return glyph
-        return dynamics.Glyph.NAV
+        return selectors.Glyph.NAV
 
     def on_applied_seq(G_local, node, glyph):
         log_seq.append(("on_applied", node, glyph))
@@ -229,7 +230,7 @@ def test_parallel_canonical_hooks_order(monkeypatch, graph_canon):
         log_par.append(("enforce", node, glyph))
         if node % 2 == 0:
             return glyph
-        return dynamics.Glyph.NAV
+        return selectors.Glyph.NAV
 
     def on_applied_par(G_local, node, glyph):
         log_par.append(("on_applied", node, glyph))

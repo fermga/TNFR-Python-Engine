@@ -5,8 +5,11 @@ from __future__ import annotations
 from collections import deque
 
 import tnfr.dynamics as dynamics
-import tnfr.dynamics.runtime as runtime
+import tnfr.dynamics.adaptation as adaptation
 import tnfr.dynamics.coordination as coordination
+import tnfr.dynamics.integrators as integrators
+import tnfr.dynamics.runtime as runtime
+import tnfr.dynamics.selectors as selectors
 from tnfr.glyph_history import ensure_history
 
 
@@ -108,16 +111,21 @@ def test_step_respects_n_jobs_overrides(monkeypatch, graph_canon):
     monkeypatch.setattr(dynamics, "compute_Si", fake_compute_si)
     monkeypatch.setattr(runtime, "compute_Si", fake_compute_si)
     monkeypatch.setattr(
-        dynamics, "update_epi_via_nodal_equation", fake_update_epi_via_nodal_equation
+        integrators,
+        "update_epi_via_nodal_equation",
+        fake_update_epi_via_nodal_equation,
     )
     monkeypatch.setattr(
         coordination,
         "coordinate_global_local_phase",
         fake_coordinate_global_local_phase,
     )
-    monkeypatch.setattr(dynamics, "adapt_vf_by_coherence", fake_adapt_vf_by_coherence)
-    monkeypatch.setattr(dynamics, "_apply_glyphs", lambda G, selector, hist: None)
+    monkeypatch.setattr(adaptation, "adapt_vf_by_coherence", fake_adapt_vf_by_coherence)
+    monkeypatch.setattr(selectors, "_apply_glyphs", lambda G, selector, hist: None)
     monkeypatch.setattr(dynamics, "apply_canonical_clamps", lambda *args, **kwargs: None)
+    monkeypatch.setattr(
+        runtime, "apply_canonical_clamps", lambda *args, **kwargs: None
+    )
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *args, **kwargs: None)
     monkeypatch.setattr(runtime, "_update_node_sample", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_epi_hist", lambda G: None)
@@ -184,16 +192,21 @@ def test_step_defaults_to_graph_jobs(monkeypatch, graph_canon):
     monkeypatch.setattr(dynamics, "compute_Si", fake_compute_si)
     monkeypatch.setattr(runtime, "compute_Si", fake_compute_si)
     monkeypatch.setattr(
-        dynamics, "update_epi_via_nodal_equation", fake_update_epi_via_nodal_equation
+        integrators,
+        "update_epi_via_nodal_equation",
+        fake_update_epi_via_nodal_equation,
     )
     monkeypatch.setattr(
         coordination,
         "coordinate_global_local_phase",
         fake_coordinate_global_local_phase,
     )
-    monkeypatch.setattr(dynamics, "adapt_vf_by_coherence", fake_adapt_vf_by_coherence)
-    monkeypatch.setattr(dynamics, "_apply_glyphs", lambda G, selector, hist: None)
+    monkeypatch.setattr(adaptation, "adapt_vf_by_coherence", fake_adapt_vf_by_coherence)
+    monkeypatch.setattr(selectors, "_apply_glyphs", lambda G, selector, hist: None)
     monkeypatch.setattr(dynamics, "apply_canonical_clamps", lambda *args, **kwargs: None)
+    monkeypatch.setattr(
+        runtime, "apply_canonical_clamps", lambda *args, **kwargs: None
+    )
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *args, **kwargs: None)
     monkeypatch.setattr(runtime, "_update_node_sample", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_epi_hist", lambda G: None)
