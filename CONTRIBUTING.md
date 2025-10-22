@@ -138,8 +138,12 @@ contributors can find them quickly while browsing the project overview.
 ### English-only lint
 
 The `scripts/check_language.py` helper powers the Spanish language guard that
-CI now runs alongside Flake8 and the other quality gates. It scans the tracked
-files for a configurable set of disallowed Spanish keywords and accented
+CI now runs alongside Flake8 and the other quality gates. Both the "Test Suite"
+(`.github/workflows/test-suite.yml`) and "Type Check"
+(`.github/workflows/type-check.yml`) workflows invoke the script immediately
+after installing dependencies, so any violation will fail continuous
+integration before the remaining linters or tests execute. The guard scans the
+tracked files for a configurable set of disallowed Spanish keywords and accented
 characters, exiting with a non-zero status when any matches are found. The
 default list targets the legacy compatibility tokens (`est<span></span>able`, `trans<span></span>icion`,
 `transici&oacute;n`, `diso<span></span>nante`, etc.) that must never re-enter the codebase. You

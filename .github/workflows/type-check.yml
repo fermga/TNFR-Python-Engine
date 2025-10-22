@@ -30,6 +30,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install .[test,typecheck]
 
+      - name: Enforce English-only language policy
+        run: python scripts/check_language.py
+
       - name: Run flake8
         run: python -m flake8 src
 
