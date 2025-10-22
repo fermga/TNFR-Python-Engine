@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from abc import ABC, abstractmethod
 from collections.abc import Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
@@ -30,6 +31,9 @@ GlyphCode: TypeAlias = Glyph | str
 
 __all__ = (
     "GlyphCode",
+    "AbstractSelector",
+    "DefaultGlyphSelector",
+    "ParametricGlyphSelector",
     "default_glyph_selector",
     "parametric_glyph_selector",
     "_SelectorPreselection",
@@ -43,7 +47,25 @@ __all__ = (
 )
 
 
-def default_glyph_selector(G: TNFRGraph, n: NodeId) -> GlyphCode:
+class AbstractSelector(ABC):
+    """Interface describing glyph selector lifecycle hooks."""
+
+    def prepare(
+        self, graph: TNFRGraph, nodes: Sequence[NodeId]
+    ) -> None:  # pragma: no cover - default no-op
+        """Prepare selector state before evaluating a glyph batch."""
+
+    @abstractmethod
+    def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode:
+        """Return the glyph to apply for ``node`` within ``graph``."""
+
+    def __call__(self, graph: TNFRGraph, node: NodeId) -> GlyphCode:
+        """Allow selectors to be used as legacy callables."""
+
+        return self.select(graph, node)
+
+
+def _default_selector_logic(G: TNFRGraph, n: NodeId) -> GlyphCode:
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
     hi, lo, dnfr_hi = itemgetter("si_hi", "si_lo", "dnfr_hi")(thr)
@@ -158,7 +180,7 @@ def _apply_score_override(
     return cand
 
 
-def parametric_glyph_selector(G: TNFRGraph, n: NodeId) -> GlyphCode:
+def _parametric_selector_logic(G: TNFRGraph, n: NodeId) -> GlyphCode:
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
     margin = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
@@ -181,6 +203,108 @@ def parametric_glyph_selector(G: TNFRGraph, n: NodeId) -> GlyphCode:
     return _soft_grammar_prefilter(G, n, cand, dnfr, accel)
 
 
+@dataclass(slots=True)
+class _SelectorPreselection:
+    kind: str
+    metrics: Mapping[Any, tuple[float, float, float]]
+    base_choices: Mapping[Any, GlyphCode]
+    thresholds: Mapping[str, float] | None = None
+    margin: float | None = None
+
+
+def _build_default_preselection(
+    G: TNFRGraph, nodes: Sequence[NodeId]
+) -> _SelectorPreselection:
+    node_list = list(nodes)
+    thresholds = _selector_thresholds(G)
+    if not node_list:
+        return _SelectorPreselection("default", {}, {}, thresholds=thresholds)
+
+    norms = G.graph.get("_sel_norms") or _selector_norms(G)
+    n_jobs = _selector_parallel_jobs(G)
+    metrics = _collect_selector_metrics(G, node_list, norms, n_jobs=n_jobs)
+    base_choices = _compute_default_base_choices(metrics, thresholds)
+    return _SelectorPreselection(
+        "default", metrics, base_choices, thresholds=thresholds
+    )
+
+
+def _build_param_preselection(
+    G: TNFRGraph, nodes: Sequence[NodeId]
+) -> _SelectorPreselection:
+    node_list = list(nodes)
+    thresholds = _selector_thresholds(G)
+    margin = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
+    if not node_list:
+        return _SelectorPreselection(
+            "param", {}, {}, thresholds=thresholds, margin=margin
+        )
+
+    norms = G.graph.get("_sel_norms") or _selector_norms(G)
+    n_jobs = _selector_parallel_jobs(G)
+    metrics = _collect_selector_metrics(G, node_list, norms, n_jobs=n_jobs)
+    base_choices = _compute_param_base_choices(metrics, thresholds, n_jobs)
+    return _SelectorPreselection(
+        "param",
+        metrics,
+        base_choices,
+        thresholds=thresholds,
+        margin=margin,
+    )
+
+
+class DefaultGlyphSelector(AbstractSelector):
+    """Selector implementing the legacy default glyph heuristic."""
+
+    __slots__ = ("_preselection", "_prepared_graph_id")
+
+    def __init__(self) -> None:
+        self._preselection: _SelectorPreselection | None = None
+        self._prepared_graph_id: int | None = None
+
+    def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None:
+        self._preselection = _build_default_preselection(graph, nodes)
+        self._prepared_graph_id = id(graph)
+
+    def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode:
+        if self._prepared_graph_id == id(graph):
+            preselection = self._preselection
+        else:
+            preselection = None
+        return _resolve_preselected_glyph(
+            graph, node, _default_selector_logic, preselection
+        )
+
+
+class ParametricGlyphSelector(AbstractSelector):
+    """Selector exposing the parametric scoring pipeline."""
+
+    __slots__ = ("_preselection", "_prepared_graph_id")
+
+    def __init__(self) -> None:
+        self._preselection: _SelectorPreselection | None = None
+        self._prepared_graph_id: int | None = None
+
+    def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None:
+        _selector_norms(graph)
+        _configure_selector_weights(graph)
+        self._preselection = _build_param_preselection(graph, nodes)
+        self._prepared_graph_id = id(graph)
+
+    def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode:
+        if self._prepared_graph_id == id(graph):
+            preselection = self._preselection
+        else:
+            preselection = None
+        return _resolve_preselected_glyph(
+            graph, node, _parametric_selector_logic, preselection
+        )
+
+
+default_glyph_selector = DefaultGlyphSelector()
+parametric_glyph_selector = ParametricGlyphSelector()
+
+
 def _choose_glyph(
     G: TNFRGraph,
     n: NodeId,
@@ -199,15 +323,6 @@ def _choose_glyph(
     if use_canon:
         g = enforce_canonical_grammar(G, n, g)
     return g
-
-
-@dataclass(slots=True)
-class _SelectorPreselection:
-    kind: str
-    metrics: Mapping[Any, tuple[float, float, float]]
-    base_choices: Mapping[Any, GlyphCode]
-    thresholds: Mapping[str, float] | None = None
-    margin: float | None = None
 
 
 def _selector_parallel_jobs(G: TNFRGraph) -> int | None:
@@ -366,26 +481,9 @@ def _prepare_selector_preselection(
     nodes: Sequence[NodeId],
 ) -> _SelectorPreselection | None:
     if selector is default_glyph_selector:
-        norms = G.graph.get("_sel_norms") or _selector_norms(G)
-        thresholds = _selector_thresholds(G)
-        n_jobs = _selector_parallel_jobs(G)
-        metrics = _collect_selector_metrics(G, list(nodes), norms, n_jobs=n_jobs)
-        base_choices = _compute_default_base_choices(metrics, thresholds)
-        return _SelectorPreselection(
-            "default", metrics, base_choices, thresholds=thresholds
-        )
+        return _build_default_preselection(G, nodes)
     if selector is parametric_glyph_selector:
-        norms = G.graph.get("_sel_norms") or _selector_norms(G)
-        thresholds = _selector_thresholds(G)
-        n_jobs = _selector_parallel_jobs(G)
-        metrics = _collect_selector_metrics(G, list(nodes), norms, n_jobs=n_jobs)
-        margin = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
-        base_choices = _compute_param_base_choices(
-            metrics, thresholds, n_jobs
-        )
-        return _SelectorPreselection(
-            "param", metrics, base_choices, thresholds=thresholds, margin=margin
-        )
+        return _build_param_preselection(G, nodes)
     return None
 
 
@@ -456,7 +554,11 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
 
     nodes_data = list(G.nodes(data=True))
     nodes = [n for n, _ in nodes_data]
-    preselection = _prepare_selector_preselection(G, selector, nodes)
+    if isinstance(selector, AbstractSelector):
+        selector.prepare(G, nodes)
+        preselection: _SelectorPreselection | None = None
+    else:
+        preselection = _prepare_selector_preselection(G, selector, nodes)
 
     h_al = hist.setdefault("since_AL", {})
     h_en = hist.setdefault("since_EN", {})
@@ -516,11 +618,23 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
 
 
 def _apply_selector(G: TNFRGraph) -> GlyphSelector:
-    selector = cast(
-        GlyphSelector,
-        G.graph.get("glyph_selector", default_glyph_selector),
-    )
-    if selector is parametric_glyph_selector:
+    raw_selector = G.graph.get("glyph_selector")
+
+    selector: GlyphSelector
+    if isinstance(raw_selector, AbstractSelector):
+        selector = raw_selector
+    elif isinstance(raw_selector, type) and issubclass(raw_selector, AbstractSelector):
+        selector_obj = cast(AbstractSelector, raw_selector())
+        G.graph["glyph_selector"] = selector_obj
+        selector = selector_obj
+    elif raw_selector is None:
+        selector = default_glyph_selector
+    elif callable(raw_selector):
+        selector = cast(GlyphSelector, raw_selector)
+    else:
+        selector = default_glyph_selector
+
+    if isinstance(selector, ParametricGlyphSelector) or selector is parametric_glyph_selector:
         _selector_norms(G)
         _configure_selector_weights(G)
     return selector

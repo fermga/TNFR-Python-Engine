@@ -45,7 +45,10 @@ from .runtime import (
 )
 from .sampling import update_node_sample as _update_node_sample
 from .selectors import (
+    AbstractSelector,
+    DefaultGlyphSelector,
     GlyphCode,
+    ParametricGlyphSelector,
     _SelectorPreselection,
     _apply_glyphs,
     _apply_selector,
@@ -72,6 +75,9 @@ __all__ = (
     "ALIAS_EPI",
     "ALIAS_SI",
     "ALIAS_VF",
+    "AbstractSelector",
+    "DefaultGlyphSelector",
+    "ParametricGlyphSelector",
     "GlyphCode",
     "_SelectorPreselection",
     "_apply_glyphs",
