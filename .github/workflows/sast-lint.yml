@@ -76,7 +76,7 @@ jobs:
           bandit -r src -ll -f sarif -o bandit.sarif -c bandit.yaml --exit-zero
 
       - name: Upload Bandit SARIF to GitHub
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: bandit.sarif
           category: bandit
@@ -138,7 +138,7 @@ jobs:
           semgrep --config auto src --sarif --output semgrep.sarif --no-error ${{ steps.semgrep-config.outputs.exclude_args }}
 
       - name: Upload Semgrep SARIF to GitHub
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: semgrep.sarif
           category: semgrep
