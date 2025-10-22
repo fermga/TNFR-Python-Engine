@@ -28,6 +28,7 @@ from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
 from .dnfr import default_compute_delta_nfr
 from .sampling import update_node_sample as _update_node_sample
 from ..operators import apply_remesh_if_globally_stable
+from . import coordination
 
 HistoryLog = MutableSequence[MutableMapping[str, object]]
 
@@ -292,7 +293,7 @@ def _update_nodes(
         G.graph.get("PHASE_N_JOBS"),
         allow_non_positive=True,
     )
-    facade.coordinate_global_local_phase(G, None, None, n_jobs=phase_jobs)
+    coordination.coordinate_global_local_phase(G, None, None, n_jobs=phase_jobs)
     vf_jobs = _resolve_jobs_override(
         overrides,
         "VF_ADAPT",

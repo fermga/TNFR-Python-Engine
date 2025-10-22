@@ -4,6 +4,7 @@ import random
 import pytest
 
 import tnfr.dynamics as dynamics
+import tnfr.dynamics.coordination as coordination
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants import get_aliases
 
@@ -33,7 +34,9 @@ def test_update_nodes_forwards_phase_jobs(monkeypatch, graph_canon):
     def fake_coordinate(G_inner, global_force, local_force, *, n_jobs=None):
         captured["n_jobs"] = n_jobs
 
-    monkeypatch.setattr(dynamics, "coordinate_global_local_phase", fake_coordinate)
+    monkeypatch.setattr(
+        coordination, "coordinate_global_local_phase", fake_coordinate
+    )
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *a, **k: None)
     monkeypatch.setattr(dynamics, "_prepare_dnfr", lambda *a, **k: None)
     monkeypatch.setattr(dynamics, "_apply_selector", lambda *a, **k: None)
@@ -70,8 +73,8 @@ def test_coordinate_phase_parallel_matches_serial(
     baseline = _build_ring_graph(graph_factory, seed=42, size=10)
     parallel = _build_ring_graph(graph_factory, seed=42, size=10)
 
-    dynamics.coordinate_global_local_phase(baseline, n_jobs=None)
-    dynamics.coordinate_global_local_phase(parallel, n_jobs=phase_jobs)
+    coordination.coordinate_global_local_phase(baseline, n_jobs=None)
+    coordination.coordinate_global_local_phase(parallel, n_jobs=phase_jobs)
 
     for node in baseline.nodes:
         th_serial = get_attr(baseline.nodes[node], ALIAS_THETA, 0.0)

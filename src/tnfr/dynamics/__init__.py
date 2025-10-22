@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor
 
-from . import dnfr, integrators
+from . import coordination, dnfr, integrators
 from .adaptation import adapt_vf_by_coherence
 from .aliases import (
     ALIAS_D2EPI,
@@ -58,10 +58,12 @@ from .selectors import (
     parametric_glyph_selector,
 )
 from ..operators import apply_glyph
+from ..metrics.sense_index import compute_Si
 from ..utils import get_numpy
 from ..validation.grammar import enforce_canonical_grammar, on_applied_glyph
 
 __all__ = (
+    "coordination",
     "dnfr",
     "integrators",
     "ALIAS_D2EPI",
@@ -98,6 +100,7 @@ __all__ = (
     "adapt_vf_by_coherence",
     "apply_canonical_clamps",
     "coordinate_global_local_phase",
+    "compute_Si",
     "default_compute_delta_nfr",
     "default_glyph_selector",
     "dnfr_epi_vf_mixed",

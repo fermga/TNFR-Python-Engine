@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections import deque
 
 import tnfr.dynamics as dynamics
+import tnfr.dynamics.runtime as runtime
+import tnfr.dynamics.coordination as coordination
 from tnfr.glyph_history import ensure_history
 
 
@@ -27,6 +29,7 @@ def test_run_stops_early_with_historydict(monkeypatch, graph_canon):
         series.append(0.95)
 
     monkeypatch.setattr(dynamics, "step", fake_step)
+    monkeypatch.setattr(runtime, "step", fake_step)
 
     dynamics.run(G, steps=5)
 
@@ -60,9 +63,13 @@ def test_step_preserves_since_mappings(monkeypatch, graph_canon):
         h_en[0] = h_en.get(0, 0) + 1
 
     monkeypatch.setattr(dynamics, "_update_nodes", fake_update_nodes)
+    monkeypatch.setattr(runtime, "_update_nodes", fake_update_nodes)
     monkeypatch.setattr(dynamics, "_update_epi_hist", lambda G: None)
+    monkeypatch.setattr(runtime, "_update_epi_hist", lambda G: None)
     monkeypatch.setattr(dynamics, "_maybe_remesh", lambda G: None)
+    monkeypatch.setattr(runtime, "_maybe_remesh", lambda G: None)
     monkeypatch.setattr(dynamics, "_run_validators", lambda G: None)
+    monkeypatch.setattr(runtime, "_run_validators", lambda G: None)
 
     dynamics.step(G)
 
@@ -99,20 +106,28 @@ def test_step_respects_n_jobs_overrides(monkeypatch, graph_canon):
         recorded["vf"] = n_jobs
 
     monkeypatch.setattr(dynamics, "compute_Si", fake_compute_si)
+    monkeypatch.setattr(runtime, "compute_Si", fake_compute_si)
     monkeypatch.setattr(
         dynamics, "update_epi_via_nodal_equation", fake_update_epi_via_nodal_equation
     )
     monkeypatch.setattr(
-        dynamics, "coordinate_global_local_phase", fake_coordinate_global_local_phase
+        coordination,
+        "coordinate_global_local_phase",
+        fake_coordinate_global_local_phase,
     )
     monkeypatch.setattr(dynamics, "adapt_vf_by_coherence", fake_adapt_vf_by_coherence)
     monkeypatch.setattr(dynamics, "_apply_glyphs", lambda G, selector, hist: None)
     monkeypatch.setattr(dynamics, "apply_canonical_clamps", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *args, **kwargs: None)
+    monkeypatch.setattr(runtime, "_update_node_sample", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_epi_hist", lambda G: None)
+    monkeypatch.setattr(runtime, "_update_epi_hist", lambda G: None)
     monkeypatch.setattr(dynamics, "_maybe_remesh", lambda G: None)
+    monkeypatch.setattr(runtime, "_maybe_remesh", lambda G: None)
     monkeypatch.setattr(dynamics, "_run_validators", lambda G: None)
+    monkeypatch.setattr(runtime, "_run_validators", lambda G: None)
     monkeypatch.setattr(dynamics, "_run_after_callbacks", lambda G, step_idx: None)
+    monkeypatch.setattr(runtime, "_run_after_callbacks", lambda G, step_idx: None)
 
     overrides = {
         "dnfr": "3",
@@ -167,20 +182,28 @@ def test_step_defaults_to_graph_jobs(monkeypatch, graph_canon):
         recorded["vf"] = n_jobs
 
     monkeypatch.setattr(dynamics, "compute_Si", fake_compute_si)
+    monkeypatch.setattr(runtime, "compute_Si", fake_compute_si)
     monkeypatch.setattr(
         dynamics, "update_epi_via_nodal_equation", fake_update_epi_via_nodal_equation
     )
     monkeypatch.setattr(
-        dynamics, "coordinate_global_local_phase", fake_coordinate_global_local_phase
+        coordination,
+        "coordinate_global_local_phase",
+        fake_coordinate_global_local_phase,
     )
     monkeypatch.setattr(dynamics, "adapt_vf_by_coherence", fake_adapt_vf_by_coherence)
     monkeypatch.setattr(dynamics, "_apply_glyphs", lambda G, selector, hist: None)
     monkeypatch.setattr(dynamics, "apply_canonical_clamps", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *args, **kwargs: None)
+    monkeypatch.setattr(runtime, "_update_node_sample", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_epi_hist", lambda G: None)
+    monkeypatch.setattr(runtime, "_update_epi_hist", lambda G: None)
     monkeypatch.setattr(dynamics, "_maybe_remesh", lambda G: None)
+    monkeypatch.setattr(runtime, "_maybe_remesh", lambda G: None)
     monkeypatch.setattr(dynamics, "_run_validators", lambda G: None)
+    monkeypatch.setattr(runtime, "_run_validators", lambda G: None)
     monkeypatch.setattr(dynamics, "_run_after_callbacks", lambda G, step_idx: None)
+    monkeypatch.setattr(runtime, "_run_after_callbacks", lambda G, step_idx: None)
 
     dynamics.step(G)
 
@@ -210,6 +233,7 @@ def test_run_reuses_normalized_n_jobs(monkeypatch, graph_canon):
         seen.append(n_jobs)
 
     monkeypatch.setattr(dynamics, "step", fake_step)
+    monkeypatch.setattr(runtime, "step", fake_step)
 
     overrides = {"dnfr": "2", "vf_adapt_n_jobs": 3}
 
