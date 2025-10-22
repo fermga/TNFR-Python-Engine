@@ -1,7 +1,5 @@
 """Unit tests verifying thread-safe behavior of alias helpers."""
 
-
-
 from concurrent.futures import ThreadPoolExecutor
 
 from tnfr.alias import AliasAccessor

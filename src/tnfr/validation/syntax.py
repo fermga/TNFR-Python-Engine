@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from ..operators.registry import OPERATORS
 from ..config.operator_names import (
     COHERENCE,
     INTERMEDIATE_OPERATORS,
@@ -16,6 +15,7 @@ from ..config.operator_names import (
     canonical_operator_name,
     operator_display_name,
 )
+from ..operators.registry import OPERATORS
 
 __all__ = ("validate_sequence",)
 
@@ -67,9 +67,7 @@ def _validate_end(last_token: str, open_thol: bool) -> tuple[bool, str]:
     return True, ""
 
 
-def _validate_known_tokens(
-    token_to_canonical: dict[str, str]
-) -> tuple[bool, str]:
+def _validate_known_tokens(token_to_canonical: dict[str, str]) -> tuple[bool, str]:
     """Ensure all tokens map to canonical operators."""
 
     unknown_tokens = {
@@ -124,7 +122,9 @@ def _validate_token_sequence(names: list[str]) -> tuple[bool, str]:
     ok, msg = _validate_known_tokens(token_to_canonical)
     if not ok:
         return False, msg
-    ok, msg = _validate_intermediate(found_reception, found_coherence, seen_intermediate)
+    ok, msg = _validate_intermediate(
+        found_reception, found_coherence, seen_intermediate
+    )
     if not ok:
         return False, msg
     ok, msg = _validate_end(names[-1], open_thol)

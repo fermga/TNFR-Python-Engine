@@ -1,5 +1,5 @@
-import pytest
 import numpy as np
+import pytest
 
 from tnfr.metrics.trig_cache import _compute_trig_python, compute_theta_trig
 
@@ -19,4 +19,3 @@ def test_compute_theta_trig_numpy_matches_python():
         assert trig_py.theta[n] == pytest.approx(trig_np.theta[n])
         assert trig_py.cos[n] == pytest.approx(trig_np.cos[n])
         assert trig_py.sin[n] == pytest.approx(trig_np.sin[n])
-

@@ -4,6 +4,7 @@ import json
 import pytest
 
 from tnfr.utils import stable_json
+
 from ...utils import clear_orjson_cache
 
 

@@ -1,12 +1,10 @@
 """Unit tests ensuring metric history series are registered and populated during dynamics steps."""
 
-
-
 from tnfr.constants import inject_defaults
 from tnfr.dynamics import step
-from tnfr.metrics import register_metrics_callbacks
 from tnfr.gamma import GAMMA_REGISTRY
 from tnfr.glyph_history import HistoryDict, ensure_history
+from tnfr.metrics import register_metrics_callbacks
 
 
 def test_history_delta_si_and_B(graph_canon):

@@ -51,9 +51,7 @@ def test_update_nodes_forwards_phase_jobs(monkeypatch, graph_canon):
     def fake_coordinate(G_inner, global_force, local_force, *, n_jobs=None):
         captured["n_jobs"] = n_jobs
 
-    monkeypatch.setattr(
-        coordination, "coordinate_global_local_phase", fake_coordinate
-    )
+    monkeypatch.setattr(coordination, "coordinate_global_local_phase", fake_coordinate)
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *a, **k: None)
     monkeypatch.setattr(dynamics, "_prepare_dnfr", lambda *a, **k: None)
     monkeypatch.setattr(selectors, "_apply_selector", lambda *a, **k: None)
@@ -75,9 +73,7 @@ def test_update_nodes_forwards_phase_jobs(monkeypatch, graph_canon):
 
 
 @pytest.mark.parametrize("phase_jobs", [None, 3])
-def test_coordinate_phase_parallel_matches_serial(
-    monkeypatch, graph_canon, phase_jobs
-):
+def test_coordinate_phase_parallel_matches_serial(monkeypatch, graph_canon, phase_jobs):
     graph_factory = graph_canon
 
     monkeypatch.setattr("tnfr.dynamics.get_numpy", lambda: None)
@@ -94,4 +90,3 @@ def test_coordinate_phase_parallel_matches_serial(
         th_serial = get_attr(baseline.nodes[node], ALIAS_THETA, 0.0)
         th_parallel = get_attr(parallel.nodes[node], ALIAS_THETA, 0.0)
         assert th_parallel == pytest.approx(th_serial)
-

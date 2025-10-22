@@ -150,11 +150,7 @@ def gather_sarif(root: pathlib.Path, repo_root: pathlib.Path) -> dict[str, ToolS
             summary["missing"] = False
             continue
         for run in runs:
-            raw_name = (
-                run.get("tool", {})
-                .get("driver", {})
-                .get("name")
-            )
+            raw_name = run.get("tool", {}).get("driver", {}).get("name")
             tool = _canonical_tool_name(raw_name, f"SARIF ({sarif_path.stem})")
             summary = results.setdefault(tool, _blank_tool(tool))
             summary["name"] = tool
@@ -197,7 +193,9 @@ def gather_pip_audit(report_path: pathlib.Path, repo_root: pathlib.Path) -> Tool
         summary["missing"] = False
         summary["artifacts"].append(_relativise(report_path, repo_root))
         return summary
-    entries: list = data if isinstance(data, list) else data.get("dependencies", []) or []
+    entries: list = (
+        data if isinstance(data, list) else data.get("dependencies", []) or []
+    )
     for entry in entries:
         vulns = entry.get("vulns") or entry.get("vulnerabilities") or []
         for vuln in vulns:
@@ -245,12 +243,9 @@ def fetch_dependabot(repo: str, token: str | None) -> DependabotSummary:
                 base_summary["error"] = "Unexpected response from the Dependabot API"
                 break
             for alert in payload:
-                severity = (
-                    (alert.get("security_advisory") or {}).get("severity")
-                    or (alert.get("security_vulnerability") or {}).get(
-                        "severity"
-                    )
-                )
+                severity = (alert.get("security_advisory") or {}).get("severity") or (
+                    alert.get("security_vulnerability") or {}
+                ).get("severity")
                 level = _normalise_severity(severity)
                 if level not in base_summary:
                     level = "low"
@@ -316,9 +311,11 @@ def render_markdown(
     lines.append("## Dependabot alerts")
     lines.append("")
     if dependabot.get("total") is None:
-        lines.append("- Unable to query Dependabot: {}".format(
-            dependabot.get("error", "unknown reason")
-        ))
+        lines.append(
+            "- Unable to query Dependabot: {}".format(
+                dependabot.get("error", "unknown reason")
+            )
+        )
     else:
         total = dependabot.get("total", 0)
         lines.append(f"- Open alerts: **{total}**")

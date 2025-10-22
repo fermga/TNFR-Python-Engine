@@ -1,5 +1,6 @@
 import logging
 
+
 def test_utils_module_reflects_logging_configured_flag():
     import tnfr.utils as utils_pkg
     import tnfr.utils.init as logging_core

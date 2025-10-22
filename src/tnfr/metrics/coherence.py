@@ -10,16 +10,22 @@ from types import ModuleType
 from typing import Any, MutableMapping, TypedDict, cast
 
 from .._compat import TypeAlias
-
-
+from ..alias import collect_attr, collect_theta_attr, set_attr
+from ..callback_utils import CallbackEvent, callback_manager
 from ..constants import (
     get_aliases,
     get_param,
 )
-from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import append_metric, ensure_history
-from ..alias import collect_attr, collect_theta_attr, set_attr
 from ..helpers.numeric import clamp01
+from ..observers import (
+    DEFAULT_GLYPH_LOAD_SPAN,
+    DEFAULT_WBAR_SPAN,
+    glyph_load,
+    kuramoto_order,
+    phase_sync,
+)
+from ..sense import sigma_vector
 from ..types import (
     CoherenceMetric,
     FloatArray,
@@ -30,22 +36,14 @@ from ..types import (
     SigmaVector,
     TNFRGraph,
 )
-from .common import compute_coherence, min_max_range
-from .trig_cache import compute_theta_trig, get_trig_cache
-from ..observers import (
-    DEFAULT_GLYPH_LOAD_SPAN,
-    DEFAULT_WBAR_SPAN,
-    glyph_load,
-    kuramoto_order,
-    phase_sync,
-)
-from ..sense import sigma_vector
 from ..utils import (
     ensure_node_index_map,
     get_logger,
     get_numpy,
     normalize_weights,
 )
+from .common import compute_coherence, min_max_range
+from .trig_cache import compute_theta_trig, get_trig_cache
 
 logger = get_logger(__name__)
 
@@ -81,9 +79,9 @@ PhaseSyncWeights: TypeAlias = (
 )
 
 SimilarityComponents = tuple[float, float, float, float]
-VectorizedComponents: TypeAlias = (
-    tuple[FloatMatrix, FloatMatrix, FloatMatrix, FloatMatrix]
-)
+VectorizedComponents: TypeAlias = tuple[
+    FloatMatrix, FloatMatrix, FloatMatrix, FloatMatrix
+]
 ScalarOrArray: TypeAlias = float | FloatArray
 StabilityChunkArgs = tuple[
     Sequence[float],
@@ -143,9 +141,7 @@ def _compute_wij_phase_epi_vf_si_vectorized(
     epi_range = epi_range if epi_range > 0 else 1.0
     vf_range = vf_range if vf_range > 0 else 1.0
     s_phase = 0.5 * (
-        1.0
-        + cos_th[:, None] * cos_th[None, :]
-        + sin_th[:, None] * sin_th[None, :]
+        1.0 + cos_th[:, None] * cos_th[None, :] + sin_th[:, None] * sin_th[None, :]
     )
     s_epi = 1.0 - np.abs(epi[:, None] - epi[None, :]) / epi_range
     s_vf = 1.0 - np.abs(vf[:, None] - vf[None, :]) / vf_range
@@ -369,7 +365,7 @@ def _init_parallel_wij(data: ParallelWijPayload) -> None:
 
 
 def _parallel_wij_worker(
-    pairs: Sequence[tuple[int, int]]
+    pairs: Sequence[tuple[int, int]],
 ) -> list[tuple[int, int, float]]:
     """Compute coherence weights for ``pairs`` using shared state."""
 
@@ -444,10 +440,7 @@ def _wij_loops(
     inputs.si_vals = si_vals
     inputs.cos_vals = cos_vals_list
     inputs.sin_vals = sin_vals_list
-    wij = [
-        [1.0 if (self_diag and i == j) else 0.0 for j in range(n)]
-        for i in range(n)
-    ]
+    wij = [[1.0 if (self_diag and i == j) else 0.0 for j in range(n)] for i in range(n)]
     epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
     vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
     weights = (
@@ -516,7 +509,7 @@ def _wij_loops(
     with ProcessPoolExecutor(max_workers=max_workers, initializer=_init) as executor:
         futures = []
         for start in range(0, total_pairs, chunk_size):
-            chunk = pair_list[start:start + chunk_size]
+            chunk = pair_list[start : start + chunk_size]
             futures.append(executor.submit(_parallel_wij_worker, chunk))
         for future in futures:
             for i, j, value in future.result():
@@ -589,15 +582,12 @@ def _coherence_numpy(
         W = wij.tolist()
     else:
         idx = np.where((wij >= thr) & mask)
-        W = [
-            (int(i), int(j), float(wij[i, j]))
-            for i, j in zip(idx[0], idx[1])
-        ]
+        W = [(int(i), int(j), float(wij[i, j])) for i, j in zip(idx[0], idx[1])]
     return n, values, row_sum, W
 
 
 def _coherence_python_worker(
-    args: tuple[Sequence[Sequence[float]], int, str, float]
+    args: tuple[Sequence[Sequence[float]], int, str, float],
 ) -> tuple[int, list[float], list[float], CoherenceMatrixSparse]:
     rows, start, mode, thr = args
     values: list[float] = []
@@ -665,7 +655,7 @@ def _coherence_python(
     tasks = []
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         for start in range(0, n, chunk_size):
-            rows = wij[start:start + chunk_size]
+            rows = wij[start : start + chunk_size]
             tasks.append(
                 executor.submit(
                     _coherence_python_worker,
@@ -675,7 +665,9 @@ def _coherence_python(
         results = [task.result() for task in tasks]
 
     results.sort(key=lambda item: item[0])
-    sparse_entries: list[tuple[int, int, float]] | None = [] if mode != "dense" else None
+    sparse_entries: list[tuple[int, int, float]] | None = (
+        [] if mode != "dense" else None
+    )
     for start, chunk_values, chunk_row_sum, chunk_sparse in results:
         values.extend(chunk_values)
         for offset, total in enumerate(chunk_row_sum):
@@ -771,9 +763,7 @@ def coherence_matrix(
 
     # NumPy handling for optional vectorized operations
     np = get_numpy()
-    use_np = (
-        np is not None if use_numpy is None else (use_numpy and np is not None)
-    )
+    use_np = np is not None if use_numpy is None else (use_numpy and np is not None)
 
     cfg_jobs = cfg.get("n_jobs")
     parallel_jobs = n_jobs if n_jobs is not None else cfg_jobs
@@ -1084,9 +1074,7 @@ def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
         (disruptors, "glyph_load_disr"),
     )
 
-    dist: GlyphLoadDistribution = {
-        k: v for k, v in gl.items() if not k.startswith("_")
-    }
+    dist: GlyphLoadDistribution = {k: v for k, v in gl.items() if not k.startswith("_")}
     sig: SigmaVector = sigma_vector(dist)
     _record_metrics(
         hist,
@@ -1140,7 +1128,10 @@ def _stability_chunk_worker(args: StabilityChunkArgs) -> StabilityChunkResult:
         B_vals.append(B)
         B_sum += B
 
-        if abs(float(dnfr_vals[idx])) <= eps_dnfr and abs(float(depi_vals[idx])) <= eps_depi:
+        if (
+            abs(float(dnfr_vals[idx])) <= eps_dnfr
+            and abs(float(depi_vals[idx])) <= eps_depi
+        ):
             stable += 1
 
     chunk_len = len(si_curr_vals)
@@ -1196,18 +1187,22 @@ def _track_stability(
 
         si_prev_arr = np.asarray(
             [
-                float(prev_si_data[idx])
-                if prev_si_data[idx] is not None
-                else float(si_curr_arr[idx])
+                (
+                    float(prev_si_data[idx])
+                    if prev_si_data[idx] is not None
+                    else float(si_curr_arr[idx])
+                )
                 for idx in range(total_nodes)
             ],
             dtype=float,
         )
         vf_prev_arr = np.asarray(
             [
-                float(prev_vf_data[idx])
-                if prev_vf_data[idx] is not None
-                else float(vf_curr_arr[idx])
+                (
+                    float(prev_vf_data[idx])
+                    if prev_vf_data[idx] is not None
+                    else float(vf_curr_arr[idx])
+                )
                 for idx in range(total_nodes)
             ],
             dtype=float,
@@ -1220,9 +1215,11 @@ def _track_stability(
 
         dvf_prev_arr = np.asarray(
             [
-                float(prev_dvf_data[idx])
-                if prev_dvf_data[idx] is not None
-                else float(dvf_dt_arr[idx])
+                (
+                    float(prev_dvf_data[idx])
+                    if prev_dvf_data[idx] is not None
+                    else float(dvf_dt_arr[idx])
+                )
                 for idx in range(total_nodes)
             ],
             dtype=float,
@@ -1269,7 +1266,12 @@ def _track_stability(
 
     if n_jobs and n_jobs > 1:
         chunk_size = max(1, math.ceil(total_nodes / n_jobs))
-        chunk_results: list[tuple[int, tuple[int, int, float, float, list[float], list[float], list[float]]]] = []
+        chunk_results: list[
+            tuple[
+                int,
+                tuple[int, int, float, float, list[float], list[float], list[float]],
+            ]
+        ] = []
         with ProcessPoolExecutor(max_workers=n_jobs) as executor:
             futures: list[tuple[int, Any]] = []
             for start in range(0, total_nodes, chunk_size):
@@ -1286,7 +1288,9 @@ def _track_stability(
                     eps_dnfr,
                     eps_depi,
                 )
-                futures.append((start, executor.submit(_stability_chunk_worker, chunk_args)))
+                futures.append(
+                    (start, executor.submit(_stability_chunk_worker, chunk_args))
+                )
 
             for start, fut in futures:
                 chunk_results.append((start, fut.result()))
@@ -1349,7 +1353,10 @@ def _track_stability(
             B_vals_all.append(B_val)
             B_sum += B_val
 
-            if abs(float(dnfr_list[idx])) <= eps_dnfr and abs(float(depi_list[idx])) <= eps_depi:
+            if (
+                abs(float(dnfr_list[idx])) <= eps_dnfr
+                and abs(float(depi_list[idx])) <= eps_depi
+            ):
                 stable_total += 1
 
         total = len(delta_vals_all)
@@ -1445,7 +1452,7 @@ def _aggregate_si(
             futures = []
             with ProcessPoolExecutor(max_workers=n_jobs) as executor:
                 for idx in range(0, len(sis), chunk_size):
-                    chunk = sis[idx:idx + chunk_size]
+                    chunk = sis[idx : idx + chunk_size]
                     futures.append(
                         executor.submit(_si_chunk_stats, chunk, si_hi, si_lo)
                     )

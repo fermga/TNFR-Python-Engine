@@ -1,7 +1,5 @@
 """Unit tests for navigation helpers managing neighbor selection and glyph choices."""
 
-
-
 import pytest
 
 from tnfr.constants import inject_defaults

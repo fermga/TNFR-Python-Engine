@@ -7,7 +7,7 @@ from .grammar import (
     enforce_canonical_grammar,
     on_applied_glyph,
 )
-from .rules import coerce_glyph, glyph_fallback, normalized_dnfr, get_norm
+from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr
 from .syntax import validate_sequence
 
 __all__ = (

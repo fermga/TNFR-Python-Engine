@@ -12,21 +12,19 @@ from __future__ import annotations
 
 import math
 import sys
+from collections.abc import Callable, Iterator, Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from types import ModuleType
-from collections.abc import Callable, Iterator, Mapping, MutableMapping, Sequence
 from typing import TYPE_CHECKING, Any, cast
 
 from ..alias import get_attr, get_theta_attr, set_dnfr
+from ..cache import CacheManager
 from ..constants import DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import angle_diff
-from ..cache import CacheManager
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import compute_theta_trig
-from ..utils import cached_node_list, cached_nodes_and_A, get_numpy, normalize_weights
-from ..utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 from ..types import (
     DeltaNFRHook,
     DnfrCacheVectors,
@@ -35,6 +33,8 @@ from ..types import (
     NodeId,
     TNFRGraph,
 )
+from ..utils import cached_node_list, cached_nodes_and_A, get_numpy, normalize_weights
+from ..utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
     import numpy as np
@@ -175,7 +175,15 @@ def _neighbor_sums_worker(
     deg_base: Sequence[float] | None,
     deg_list: Sequence[float] | None,
     degs_list: Sequence[float] | None,
-) -> tuple[int, list[float], list[float], list[float], list[float], list[float], list[float] | None]:
+) -> tuple[
+    int,
+    list[float],
+    list[float],
+    list[float],
+    list[float],
+    list[float],
+    list[float] | None,
+]:
     """Return partial neighbour sums for the ``[start, end)`` range."""
 
     chunk_x: list[float] = []
@@ -281,7 +289,10 @@ def _resolve_parallel_jobs(n_jobs: int | None, total: int) -> int | None:
 
 
 def _is_numpy_like(obj) -> bool:
-    return getattr(obj, "dtype", None) is not None and getattr(obj, "shape", None) is not None
+    return (
+        getattr(obj, "dtype", None) is not None
+        and getattr(obj, "shape", None) is not None
+    )
 
 
 def _has_cached_numpy_buffers(data: dict, cache: DnfrCache | None) -> bool:
@@ -588,7 +599,9 @@ def _ensure_cached_array(
     return arr
 
 
-def _ensure_numpy_state_vectors(data: MutableMapping[str, Any], np: ModuleType) -> DnfrVectorMap:
+def _ensure_numpy_state_vectors(
+    data: MutableMapping[str, Any], np: ModuleType
+) -> DnfrVectorMap:
     """Synchronise list-based state vectors with their NumPy counterparts."""
 
     nodes = data.get("nodes") or ()
@@ -864,9 +877,7 @@ def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[st
             edge_src = cache.edge_src
             edge_dst = cache.edge_dst
             if edge_src is None or edge_dst is None or dirty:
-                edge_src, edge_dst = _build_edge_index_arrays(
-                    G, nodes, idx, np_module
-                )
+                edge_src, edge_dst = _build_edge_index_arrays(G, nodes, idx, np_module)
                 cache.edge_src = edge_src
                 cache.edge_dst = edge_dst
         else:
@@ -969,9 +980,7 @@ def _apply_dnfr_gradients(
         grad_total = _ensure_cached_array(cache, "grad_total_np", theta_np.shape, np)
         grad_topo = None
         if w_topo != 0.0:
-            grad_topo = _ensure_cached_array(
-                cache, "grad_topo_np", deg_array.shape, np
-            )
+            grad_topo = _ensure_cached_array(cache, "grad_topo_np", deg_array.shape, np)
 
         np.copyto(grad_phase, theta_np, casting="unsafe")
         grad_phase -= th_bar
@@ -1124,10 +1133,7 @@ def _init_bar_arrays(
                 else:
                     deg_size = len(degs)
                 deg_bar = cache.deg_bar_np
-                if (
-                    deg_bar is None
-                    or getattr(deg_bar, "shape", None) != (deg_size,)
-                ):
+                if deg_bar is None or getattr(deg_bar, "shape", None) != (deg_size,):
                     if isinstance(degs, dict):
                         deg_bar = np.array(
                             [float(degs.get(node, 0.0)) for node in nodes],
@@ -1198,9 +1204,7 @@ def _init_bar_arrays(
             th_bar = list(theta)
             epi_bar = list(epi)
             vf_bar = list(vf)
-            deg_bar = (
-                list(degs) if w_topo != 0.0 and degs is not None else None
-            )
+            deg_bar = list(degs) if w_topo != 0.0 and degs is not None else None
     return th_bar, epi_bar, vf_bar, deg_bar
 
 
@@ -1297,7 +1301,9 @@ def _compute_dnfr_common(
 ) -> None:
     """Compute neighbour means and apply ΔNFR gradients."""
     np_module = get_numpy()
-    if np_module is not None and isinstance(count, getattr(np_module, "ndarray", tuple)):
+    if np_module is not None and isinstance(
+        count, getattr(np_module, "ndarray", tuple)
+    ):
         np_arg = np_module
     else:
         np_arg = None
@@ -1330,7 +1336,11 @@ def _reset_numpy_buffer(
     size: int,
     np: ModuleType,
 ) -> np.ndarray:
-    if buffer is None or getattr(buffer, "shape", None) is None or buffer.shape[0] != size:
+    if (
+        buffer is None
+        or getattr(buffer, "shape", None) is None
+        or buffer.shape[0] != size
+    ):
         return np.zeros(size, dtype=float)
     buffer.fill(0.0)
     return buffer
@@ -1566,10 +1576,7 @@ def _accumulate_neighbors_broadcasted(
             accum.fill(0.0)
 
         edge_values = cache.neighbor_edge_values_np
-        if (
-            edge_values is None
-            or getattr(edge_values, "shape", None) != (edge_count,)
-        ):
+        if edge_values is None or getattr(edge_values, "shape", None) != (edge_count,):
             edge_values = np.empty((edge_count,), dtype=float)
             cache.neighbor_edge_values_np = edge_values
 
@@ -1741,9 +1748,15 @@ def _build_neighbor_sums_common(
             for future in futures:
                 chunk_results.append(future.result())
 
-        for start, chunk_x, chunk_y, chunk_epi, chunk_vf, chunk_count, chunk_deg in sorted(
-            chunk_results, key=lambda item: item[0]
-        ):
+        for (
+            start,
+            chunk_x,
+            chunk_y,
+            chunk_epi,
+            chunk_vf,
+            chunk_count,
+            chunk_deg,
+        ) in sorted(chunk_results, key=lambda item: item[0]):
             end = start + len(chunk_x)
             x[start:end] = chunk_x
             y[start:end] = chunk_y
@@ -2016,9 +2029,7 @@ def set_delta_nfr_hook(
     _wrapped.__doc__ = getattr(func, "__doc__", _wrapped.__doc__)
 
     G.graph["compute_delta_nfr"] = _wrapped
-    G.graph["_dnfr_hook_name"] = str(
-        name or getattr(func, "__name__", "custom_dnfr")
-    )
+    G.graph["_dnfr_hook_name"] = str(name or getattr(func, "__name__", "custom_dnfr"))
     if "_dnfr_weights" not in G.graph:
         _configure_dnfr_weights(G)
     if note:
@@ -2267,7 +2278,9 @@ def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         serial execution.
     """
 
-    epi_values = {n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)}
+    epi_values = {
+        n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)
+    }
     vf_values = {n: float(get_attr(nd, ALIAS_VF, 0.0)) for n, nd in G.nodes(data=True)}
     grads = {
         "epi": _NeighborAverageGradient(ALIAS_EPI, epi_values),
@@ -2299,7 +2312,9 @@ def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     wE = float(weights_cfg.get("epi", DEFAULTS["DNFR_WEIGHTS"]["epi"]))
     wV = float(weights_cfg.get("vf", DEFAULTS["DNFR_WEIGHTS"]["vf"]))
 
-    epi_values = {n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)}
+    epi_values = {
+        n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)
+    }
     vf_values = {n: float(get_attr(nd, ALIAS_VF, 0.0)) for n, nd in G.nodes(data=True)}
     grads = {
         "epi": _NeighborAverageGradient(ALIAS_EPI, epi_values),

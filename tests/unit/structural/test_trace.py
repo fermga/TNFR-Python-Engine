@@ -1,28 +1,27 @@
 """Unit tests for trace registration and associated callback fields."""
 
-
+from types import MappingProxyType
 
 import pytest
 
+from tnfr import trace
+from tnfr.callback_utils import CallbackEvent, callback_manager
 from tnfr.telemetry.verbosity import (
-    TelemetryVerbosity,
     TELEMETRY_VERBOSITY_DEFAULT,
     TELEMETRY_VERBOSITY_LEVELS,
+    TelemetryVerbosity,
 )
 from tnfr.trace import (
-    register_trace,
-    register_trace_field,
+    CallbackSpec,
+    TraceFieldSpec,
     _callback_names,
     gamma_field,
     grammar_field,
     mapping_field,
-    CallbackSpec,
-    TraceFieldSpec,
+    register_trace,
+    register_trace_field,
 )
-from tnfr import trace
 from tnfr.utils import get_graph_mapping
-from tnfr.callback_utils import CallbackEvent, callback_manager
-from types import MappingProxyType
 
 
 def test_trace_verbosity_presets_align_with_shared_levels():
@@ -30,9 +29,7 @@ def test_trace_verbosity_presets_align_with_shared_levels():
     assert set(trace.TRACE_VERBOSITY_PRESETS) == set(TELEMETRY_VERBOSITY_LEVELS)
     expected = {
         level.value: tuple(
-            spec.name
-            for spec in trace.TRACE_FIELD_SPECS
-            if level in spec.tiers
+            spec.name for spec in trace.TRACE_FIELD_SPECS if level in spec.tiers
         )
         for level in TelemetryVerbosity
     }
@@ -160,9 +157,7 @@ def test_callback_names_spec():
     def foo():
         pass
 
-    names = _callback_names(
-        [CallbackSpec("bar", foo), CallbackSpec(None, foo)]
-    )
+    names = _callback_names([CallbackSpec("bar", foo), CallbackSpec(None, foo)])
     assert names == ["bar", "foo"]
 
 
@@ -221,7 +216,11 @@ def test_get_graph_mapping_returns_proxy(graph_canon):
 
 def test_register_trace_field_runtime(graph_canon):
     G = graph_canon()
-    G.graph["TRACE"] = {"enabled": True, "capture": ["custom"], "history_key": "trace_meta"}
+    G.graph["TRACE"] = {
+        "enabled": True,
+        "capture": ["custom"],
+        "history_key": "trace_meta",
+    }
     register_trace(G)
 
     def custom_field(G):

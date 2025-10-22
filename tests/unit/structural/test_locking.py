@@ -22,4 +22,3 @@ def test_lock_registry_shrinks_after_release():
 
     assert len(locking._locks) == start
     assert name not in locking._locks
-

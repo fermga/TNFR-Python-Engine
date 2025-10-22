@@ -7,15 +7,14 @@ from collections.abc import Callable, Iterable, Sequence
 from typing import Any, Optional, cast
 
 from ._compat import TypeAlias
-
-from .utils import MAX_MATERIALIZE_DEFAULT, ensure_collection, is_non_string_sequence
 from .constants import get_param
 from .dynamics import step
 from .flatten import _flatten
 from .glyph_history import ensure_history
-from .validation.grammar import apply_glyph_with_grammar
-from .tokens import OpTag, TARGET, THOL, WAIT, Token
+from .tokens import TARGET, THOL, WAIT, OpTag, Token
 from .types import Glyph, NodeId, TNFRGraph
+from .utils import MAX_MATERIALIZE_DEFAULT, ensure_collection, is_non_string_sequence
+from .validation.grammar import apply_glyph_with_grammar
 
 AdvanceFn = Callable[[TNFRGraph], None]
 TraceEntry = dict[str, Any]
@@ -192,9 +191,7 @@ def seq(*tokens: Token) -> list[Token]:
     return list(tokens)
 
 
-def block(
-    *tokens: Token, repeat: int = 1, close: Optional[Glyph] = None
-) -> THOL:
+def block(*tokens: Token, repeat: int = 1, close: Optional[Glyph] = None) -> THOL:
     return THOL(body=list(tokens), repeat=repeat, force_close=close)
 
 

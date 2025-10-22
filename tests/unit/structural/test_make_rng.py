@@ -1,10 +1,11 @@
-import random
 import hashlib
+import random
 import struct
+
 import networkx as nx
 
 from tnfr import rng as rng_mod
-from tnfr.rng import make_rng, clear_rng_cache, cache_enabled
+from tnfr.rng import cache_enabled, clear_rng_cache, make_rng
 
 
 def _derive_seed(seed: int, key: int) -> int:
@@ -13,9 +14,7 @@ def _derive_seed(seed: int, key: int) -> int:
         int(seed) & 0xFFFFFFFFFFFFFFFF,
         int(key) & 0xFFFFFFFFFFFFFFFF,
     )
-    return int.from_bytes(
-        hashlib.blake2b(seed_bytes, digest_size=8).digest(), "big"
-    )
+    return int.from_bytes(hashlib.blake2b(seed_bytes, digest_size=8).digest(), "big")
 
 
 def test_make_rng_reproducible_sequence():

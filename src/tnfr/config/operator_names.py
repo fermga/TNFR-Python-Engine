@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 # Canonical operator identifiers (English tokens)
 EMISSION = "emission"
 RECEPTION = "reception"
@@ -48,6 +47,7 @@ VALID_START_OPERATORS = frozenset({EMISSION, RECURSIVITY})
 INTERMEDIATE_OPERATORS = frozenset({DISSONANCE, COUPLING, RESONANCE})
 VALID_END_OPERATORS = frozenset({SILENCE, TRANSITION, RECURSIVITY})
 SELF_ORGANIZATION_CLOSURES = frozenset({SILENCE, CONTRACTION})
+
 
 def canonical_operator_name(name: str) -> str:
     """Return the canonical operator token for ``name``."""

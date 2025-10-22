@@ -1,16 +1,17 @@
 """Tests for validators."""
 
-import pytest
 import networkx as nx
+import pytest
+
+from tnfr import io as io_mod
+from tnfr.alias import set_attr, set_attr_str
+from tnfr.config import load_config
 from tnfr.constants import (
-    inject_defaults,
     get_aliases,
+    inject_defaults,
 )
 from tnfr.initialization import init_node_attrs
 from tnfr.utils import run_validators
-from tnfr.alias import set_attr, set_attr_str
-from tnfr import io as io_mod
-from tnfr.config import load_config
 
 ALIAS_EPI_KIND = get_aliases("EPI_KIND")
 ALIAS_EPI = get_aliases("EPI")

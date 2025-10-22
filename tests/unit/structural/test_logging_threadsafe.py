@@ -1,6 +1,6 @@
-from concurrent.futures import ThreadPoolExecutor
 import importlib
 import logging
+from concurrent.futures import ThreadPoolExecutor
 
 import tnfr.utils.init as logging_utils
 

@@ -12,23 +12,23 @@ from typing import Any, cast
 from ..alias import (
     get_attr,
     get_theta_attr,
+    multi_recompute_abs_max,
     set_attr,
     set_theta,
     set_theta_attr,
     set_vf,
-    multi_recompute_abs_max,
 )
 from ..callback_utils import CallbackEvent, callback_manager
 from ..constants import DEFAULTS, get_graph_param, get_param
 from ..glyph_history import ensure_history
 from ..helpers.numeric import clamp
 from ..metrics.sense_index import compute_Si
+from ..operators import apply_remesh_if_globally_stable
 from ..types import HistoryState, NodeId, TNFRGraph
-from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
 from . import adaptation, coordination, integrators, selectors
+from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
 from .dnfr import default_compute_delta_nfr
 from .sampling import update_node_sample as _update_node_sample
-from ..operators import apply_remesh_if_globally_stable
 
 HistoryLog = MutableSequence[MutableMapping[str, object]]
 
@@ -304,9 +304,7 @@ def _prepare_dnfr(
     use_Si: bool,
     job_overrides: Mapping[str, Any] | None = None,
 ) -> None:
-    compute_dnfr_cb = G.graph.get(
-        "compute_delta_nfr", default_compute_delta_nfr
-    )
+    compute_dnfr_cb = G.graph.get("compute_delta_nfr", default_compute_delta_nfr)
     overrides = job_overrides or {}
     n_jobs = _resolve_jobs_override(
         overrides,
@@ -328,9 +326,7 @@ def _prepare_dnfr(
                 inspect.Parameter.POSITIONAL_OR_KEYWORD,
                 inspect.Parameter.KEYWORD_ONLY,
             )
-        elif any(
-            p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()
-        ):
+        elif any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()):
             supports_n_jobs = True
 
     if supports_n_jobs:
@@ -395,9 +391,7 @@ def _update_nodes(
         n_jobs=n_jobs,
     )
     for n, nd in G.nodes(data=True):
-        apply_canonical_clamps(
-            cast(MutableMapping[str, Any], nd), G, cast(NodeId, n)
-        )
+        apply_canonical_clamps(cast(MutableMapping[str, Any], nd), G, cast(NodeId, n))
     phase_jobs = _resolve_jobs_override(
         overrides,
         "PHASE",
@@ -423,9 +417,7 @@ def _update_epi_hist(G: TNFRGraph) -> None:
     if not isinstance(epi_hist, deque) or epi_hist.maxlen != maxlen:
         epi_hist = deque(list(epi_hist or [])[-maxlen:], maxlen=maxlen)
         G.graph["_epi_hist"] = epi_hist
-    epi_hist.append(
-        {n: get_attr(nd, ALIAS_EPI, 0.0) for n, nd in G.nodes(data=True)}
-    )
+    epi_hist.append({n: get_attr(nd, ALIAS_EPI, 0.0) for n, nd in G.nodes(data=True)})
 
 
 def _maybe_remesh(G: TNFRGraph) -> None:
@@ -518,4 +510,3 @@ def run(
                 series = list(series)
             if len(series) >= w and all(v >= frac for v in series[-w:]):
                 break
-

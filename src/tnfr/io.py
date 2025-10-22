@@ -12,9 +12,9 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+from functools import partial
 from pathlib import Path
 from typing import Any, Callable
-from functools import partial
 
 from .utils import LazyImportProxy, cached_import, get_logger
 
@@ -159,8 +159,14 @@ _OPTIONAL_ERROR_MESSAGE_FACTORIES: tuple[
     tuple[Callable[[], type[BaseException] | None], str],
     ...,
 ] = (
-    (lambda: _resolve_exception_type(YAMLError), "Error parsing YAML file at {path}: {e}"),
-    (lambda: _resolve_exception_type(TOMLDecodeError), "Error parsing TOML file at {path}: {e}"),
+    (
+        lambda: _resolve_exception_type(YAMLError),
+        "Error parsing YAML file at {path}: {e}",
+    ),
+    (
+        lambda: _resolve_exception_type(TOMLDecodeError),
+        "Error parsing TOML file at {path}: {e}",
+    ),
 )
 
 

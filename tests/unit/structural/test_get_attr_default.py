@@ -1,12 +1,10 @@
 """Unit tests for ``AliasAccessor.get`` default handling without package side effects."""
 
-
-
-import logging
-from pathlib import Path
 import importlib.util
-import types
+import logging
 import sys
+import types
+from pathlib import Path
 
 import pytest
 

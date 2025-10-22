@@ -40,10 +40,7 @@ def _build_graph_and_increments(
 
     if method == "rk4":
         offsets = numpy.stack(
-            [
-                numpy.sin(phase + shift)
-                for shift in (0.0, 0.35, 0.7, 1.05)
-            ],
+            [numpy.sin(phase + shift) for shift in (0.0, 0.35, 0.7, 1.05)],
             axis=1,
         )
         staged = base_rate[:, None] + 0.08 * offsets

@@ -61,7 +61,6 @@ class RLocalWorkerArgs:
         sin_map: Mapping[Any, float],
     ) -> None: ...
 
-
 class NeighborMeanWorkerArgs:
     chunk: Sequence[Any]
     neighbors_map: Mapping[Any, tuple[Any, ...]]
@@ -74,15 +73,12 @@ class NeighborMeanWorkerArgs:
         epi_map: Mapping[Any, float],
     ) -> None: ...
 
-
 def _rlocal_worker(args: RLocalWorkerArgs) -> list[float]: ...
-
 def _neighbor_mean_worker(args: NeighborMeanWorkerArgs) -> list[float | None]: ...
-
-def _state_from_thresholds(Rloc: float, dnfr_n: float, cfg: Mapping[str, Any]) -> str: ...
-
+def _state_from_thresholds(
+    Rloc: float, dnfr_n: float, cfg: Mapping[str, Any]
+) -> str: ...
 def _recommendation(state: str, cfg: Mapping[str, Any]) -> list[Any]: ...
-
 def _get_last_weights(
     G: TNFRGraph,
     hist: Mapping[str, Sequence[CoherenceMatrixPayload | None]],

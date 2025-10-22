@@ -86,7 +86,9 @@ class WarnOnce:
     every invocation.
     """
 
-    def __init__(self, logger: logging.Logger, msg: str, *, maxsize: int = 1024) -> None:
+    def __init__(
+        self, logger: logging.Logger, msg: str, *, maxsize: int = 1024
+    ) -> None:
         self._logger = logger
         self._msg = msg
         self._maxsize = maxsize
@@ -295,7 +297,9 @@ def _get_success(key: str) -> Any | None:
 
     with _IMPORT_CACHE_MANAGER.timer(_SUCCESS_CACHE_NAME):
 
-        def _lookup(cache: OrderedDict[str, _CacheEntry]) -> OrderedDict[str, _CacheEntry]:
+        def _lookup(
+            cache: OrderedDict[str, _CacheEntry],
+        ) -> OrderedDict[str, _CacheEntry]:
             nonlocal result, hit
             entry = cache.get(key)
             if entry is None:
@@ -327,7 +331,9 @@ def _store_success(key: str, value: Any) -> None:
         _trim_cache(_SUCCESS_CACHE_NAME, cache)
         return cache
 
-    def _purge_failure(cache: OrderedDict[str, Exception]) -> OrderedDict[str, Exception]:
+    def _purge_failure(
+        cache: OrderedDict[str, Exception],
+    ) -> OrderedDict[str, Exception]:
         if cache.pop(key, None) is not None:
             _IMPORT_CACHE_MANAGER.increment_eviction(_FAILURE_CACHE_NAME)
         return cache
@@ -368,7 +374,9 @@ def _store_failure(key: str, exc: Exception) -> None:
         _trim_cache(_FAILURE_CACHE_NAME, cache)
         return cache
 
-    def _purge_success(cache: OrderedDict[str, _CacheEntry]) -> OrderedDict[str, _CacheEntry]:
+    def _purge_success(
+        cache: OrderedDict[str, _CacheEntry],
+    ) -> OrderedDict[str, _CacheEntry]:
         if cache.pop(key, None) is not None:
             _IMPORT_CACHE_MANAGER.increment_eviction(_SUCCESS_CACHE_NAME)
         return cache
@@ -629,7 +637,9 @@ def _normalise_warm_specs(
         if extra:
             raise ValueError("'attr' can only be combined with a single module name")
         if not isinstance(module, str):
-            raise TypeError("'attr' requires the first argument to be a module name string")
+            raise TypeError(
+                "'attr' requires the first argument to be a module name string"
+            )
         return [(module, attr)]
 
     specs: list[_ModuleSpec]
@@ -660,7 +670,9 @@ def _normalise_warm_specs(
                 raise TypeError("Invalid module specification for warm_cached_import")
             normalised.append((module_name, module_attr))
             continue
-        raise TypeError("Module specifications must be strings or (module, attr) tuples")
+        raise TypeError(
+            "Module specifications must be strings or (module, attr) tuples"
+        )
 
     return normalised
 

@@ -35,9 +35,7 @@ def test_collect_selector_metrics_numpy_vectorized(monkeypatch, graph_canon):
 
         @staticmethod
         def clip(array, a_min, a_max):
-            return _FakeArray(
-                max(a_min, min(a_max, float(value))) for value in array
-            )
+            return _FakeArray(max(a_min, min(a_max, float(value))) for value in array)
 
         @staticmethod
         def abs(array):
@@ -77,7 +75,9 @@ def test_collect_selector_metrics_process_pool(monkeypatch, graph_canon):
 
     class StubExecutor:
         def __init__(self, *args, **kwargs):
-            captured["max_workers"] = kwargs.get("max_workers") or (args[0] if args else None)
+            captured["max_workers"] = kwargs.get("max_workers") or (
+                args[0] if args else None
+            )
 
         def __enter__(self):
             return self

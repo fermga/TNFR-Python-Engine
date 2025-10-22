@@ -5,6 +5,14 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any, NamedTuple, cast
 
+from ..callback_utils import CallbackEvent, callback_manager
+from ..constants import get_param
+from ..glyph_history import append_metric, ensure_history
+from ..telemetry.verbosity import (
+    TELEMETRY_VERBOSITY_DEFAULT,
+    TELEMETRY_VERBOSITY_LEVELS,
+    TelemetryVerbosity,
+)
 from ..types import (
     GlyphSelector,
     NodeId,
@@ -17,32 +25,23 @@ from ..types import (
     TraceFieldMap,
     TraceFieldRegistry,
 )
-
-from ..callback_utils import CallbackEvent, callback_manager
-from ..constants import get_param
-from ..glyph_history import append_metric, ensure_history
 from ..utils import get_logger
-from ..telemetry.verbosity import (
-    TelemetryVerbosity,
-    TELEMETRY_VERBOSITY_DEFAULT,
-    TELEMETRY_VERBOSITY_LEVELS,
-)
 from .coherence import (
+    GLYPH_LOAD_STABILIZERS_KEY,
     _aggregate_si,
     _track_stability,
     _update_coherence,
     _update_phase_sync,
     _update_sigma,
     register_coherence_callbacks,
-    GLYPH_LOAD_STABILIZERS_KEY,
 )
 from .diagnosis import register_diagnosis_callbacks
-from .glyph_timing import _compute_advanced_metrics, GlyphMetricsHistory
+from .glyph_timing import GlyphMetricsHistory, _compute_advanced_metrics
 from .reporting import (
     Tg_by_node,
     Tg_global,
-    glyphogram_series,
     glyph_top,
+    glyphogram_series,
     latency_series,
 )
 
@@ -89,7 +88,8 @@ _METRICS_VERBOSITY_PRESETS: dict[str, MetricsVerbositySpec] = {}
 def _register_metrics_preset(spec: MetricsVerbositySpec) -> None:
     if spec.name not in TELEMETRY_VERBOSITY_LEVELS:
         raise ValueError(
-            "Unknown metrics verbosity '%s'; use %s" % (
+            "Unknown metrics verbosity '%s'; use %s"
+            % (
                 spec.name,
                 ", ".join(TELEMETRY_VERBOSITY_LEVELS),
             )

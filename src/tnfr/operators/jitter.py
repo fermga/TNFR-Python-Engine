@@ -1,21 +1,23 @@
 from __future__ import annotations
-import threading
 
-from typing import Any, TYPE_CHECKING, cast
+import threading
+from typing import TYPE_CHECKING, Any, cast
 
 from cachetools import LRUCache
 
+from ..cache import CacheManager
 from ..rng import (
     ScopedCounterCache,
-    make_rng,
     base_seed,
     cache_enabled,
-    clear_rng_cache as _clear_rng_cache,
+)
+from ..rng import clear_rng_cache as _clear_rng_cache
+from ..rng import (
+    make_rng,
     seed_hash,
 )
-from ..cache import CacheManager
-from ..utils import ensure_node_offset_map, get_nodenx
 from ..types import NodeId, TNFRGraph
+from ..utils import ensure_node_offset_map, get_nodenx
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodeProtocol
@@ -99,9 +101,7 @@ class JitterCache:
 
         return cast(dict[str, Any], self._manager.get(self._settings_key))
 
-    def setup(
-        self, force: bool = False, max_entries: int | None = None
-    ) -> None:
+    def setup(self, force: bool = False, max_entries: int | None = None) -> None:
         """Ensure jitter cache matches the configured size."""
 
         self._sequence.configure(force=force, max_entries=max_entries)
@@ -161,9 +161,7 @@ class JitterCacheManager:
 
         self.cache.max_entries = value
 
-    def setup(
-        self, force: bool = False, max_entries: int | None = None
-    ) -> None:
+    def setup(self, force: bool = False, max_entries: int | None = None) -> None:
         """Ensure jitter cache matches the configured size.
 
         ``max_entries`` may be provided to explicitly resize the cache.

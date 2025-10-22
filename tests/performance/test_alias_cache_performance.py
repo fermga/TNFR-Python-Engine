@@ -5,9 +5,8 @@ from __future__ import annotations
 import time
 
 import networkx as nx
-import pytest
-
 import numpy.testing as npt
+import pytest
 
 from tnfr.alias import (
     collect_attr,
@@ -25,7 +24,9 @@ ALIAS_VF = get_aliases("VF")
 ALIAS_MAP = {"_vfmax": ALIAS_VF}
 
 
-def _seed_graph(num_nodes: int = 280, edge_probability: float = 0.2, *, seed: int = 33) -> nx.Graph:
+def _seed_graph(
+    num_nodes: int = 280, edge_probability: float = 0.2, *, seed: int = 33
+) -> nx.Graph:
     graph = nx.gnp_random_graph(num_nodes, edge_probability, seed=seed)
     for node in graph.nodes:
         set_attr(graph.nodes[node], ALIAS_THETA, float(node % 7))
@@ -50,7 +51,10 @@ def test_collect_attr_numpy_vectorization_is_significantly_faster():
         collect_attr(graph_fast, graph_fast.nodes, ALIAS_THETA, 0.0, np=np)
 
     def run_slow() -> None:
-        [collect_attr(graph_slow, [node], ALIAS_THETA, 0.0)[0] for node in graph_slow.nodes]
+        [
+            collect_attr(graph_slow, [node], ALIAS_THETA, 0.0)[0]
+            for node in graph_slow.nodes
+        ]
 
     run_fast()
     run_slow()
@@ -64,7 +68,10 @@ def test_collect_attr_numpy_vectorization_is_significantly_faster():
 
     fast_values = collect_attr(graph_fast, graph_fast.nodes, ALIAS_THETA, 0.0, np=np)
     slow_values = np.array(
-        [collect_attr(graph_fast, [node], ALIAS_THETA, 0.0)[0] for node in graph_fast.nodes],
+        [
+            collect_attr(graph_fast, [node], ALIAS_THETA, 0.0)[0]
+            for node in graph_fast.nodes
+        ],
         dtype=float,
     )
     npt.assert_allclose(fast_values, slow_values, rtol=0.0, atol=0.0)

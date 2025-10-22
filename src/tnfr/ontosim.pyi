@@ -4,7 +4,6 @@ from .types import TNFRConfigValue, TNFRGraph
 
 __all__: tuple[str, ...]
 
-
 def prepare_network(
     G: TNFRGraph,
     *,
@@ -12,8 +11,6 @@ def prepare_network(
     override_defaults: bool = False,
     **overrides: TNFRConfigValue,
 ) -> TNFRGraph: ...
-
-
 def step(
     G: TNFRGraph,
     *,
@@ -21,8 +18,6 @@ def step(
     use_Si: bool = True,
     apply_glyphs: bool = True,
 ) -> None: ...
-
-
 def run(
     G: TNFRGraph,
     steps: int,

@@ -13,7 +13,7 @@ import numpy.testing as npt
 
 from tnfr.alias import collect_attr, set_attr
 from tnfr.constants import get_aliases
-from tnfr.dynamics import default_compute_delta_nfr, _prepare_dnfr_data
+from tnfr.dynamics import _prepare_dnfr_data, default_compute_delta_nfr
 from tnfr.dynamics.dnfr import (
     _accumulate_neighbors_numpy,
     _build_edge_index_arrays,
@@ -37,7 +37,9 @@ DNFR_WEIGHTS = {
 }
 
 
-def _seed_graph(num_nodes: int = 160, edge_probability: float = 0.35, *, seed: int = 42) -> nx.Graph:
+def _seed_graph(
+    num_nodes: int = 160, edge_probability: float = 0.35, *, seed: int = 42
+) -> nx.Graph:
     graph = nx.gnp_random_graph(num_nodes, edge_probability, seed=seed)
     for node in graph.nodes:
         set_attr(graph.nodes[node], ALIAS_THETA, 0.1 * (node + 1))
@@ -175,7 +177,9 @@ def test_default_compute_delta_nfr_vectorized_is_faster_and_equivalent():
     assert vector_time < fallback_time
     assert vector_time <= fallback_time * 0.85
 
-    vector_dnfr = [vectorized_graph.nodes[n][ALIAS_DNFR] for n in vectorized_graph.nodes]
+    vector_dnfr = [
+        vectorized_graph.nodes[n][ALIAS_DNFR] for n in vectorized_graph.nodes
+    ]
     fallback_dnfr = [fallback_graph.nodes[n][ALIAS_DNFR] for n in fallback_graph.nodes]
     npt.assert_allclose(vector_dnfr, fallback_dnfr, rtol=1e-9, atol=1e-9)
 
@@ -214,14 +218,19 @@ def test_neighbor_accumulation_numpy_outperforms_stack_strategy():
     legacy_buffers = _init_neighbor_sums(legacy_data, np=np)
 
     # Warm up buffers before timing.
-    _accumulate_neighbors_numpy(graph_modern, modern_data, np=np, **{
-        "x": modern_buffers[0],
-        "y": modern_buffers[1],
-        "epi_sum": modern_buffers[2],
-        "vf_sum": modern_buffers[3],
-        "count": modern_buffers[4],
-        "deg_sum": modern_buffers[5],
-    })
+    _accumulate_neighbors_numpy(
+        graph_modern,
+        modern_data,
+        np=np,
+        **{
+            "x": modern_buffers[0],
+            "y": modern_buffers[1],
+            "epi_sum": modern_buffers[2],
+            "vf_sum": modern_buffers[3],
+            "count": modern_buffers[4],
+            "deg_sum": modern_buffers[5],
+        },
+    )
     _legacy_numpy_stack_accumulation(graph_legacy, legacy_data, buffers=legacy_buffers)
 
     loops = 5

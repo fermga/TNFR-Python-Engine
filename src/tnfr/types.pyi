@@ -1,7 +1,6 @@
-from typing import Any, Callable, ContextManager, Iterable, Protocol, cast
 from collections.abc import Hashable, Mapping, Sequence
 from enum import Enum
-from typing import TypedDict
+from typing import Any, Callable, ContextManager, Iterable, Protocol, TypedDict, cast
 
 from ._compat import TypeAlias
 
@@ -25,9 +24,9 @@ except Exception:
 
     np = cast(Any, _FallbackNumpy())
 
+from .glyph_history import HistoryDict as _HistoryDict
 from .tokens import Token
 from .trace import TraceMetadata
-from .glyph_history import HistoryDict as _HistoryDict
 
 __all__: tuple[str, ...]
 
@@ -49,7 +48,6 @@ CoherenceMetric: TypeAlias = float
 TimingContext: TypeAlias = ContextManager[None]
 PresetTokens: TypeAlias = Sequence[Token]
 
-
 class SelectorThresholds(TypedDict):
     si_hi: float
     si_lo: float
@@ -58,12 +56,10 @@ class SelectorThresholds(TypedDict):
     accel_hi: float
     accel_lo: float
 
-
 class SelectorWeights(TypedDict):
     w_si: float
     w_dnfr: float
     w_accel: float
-
 
 SelectorMetrics: TypeAlias = tuple[float, float, float]
 SelectorNorms: TypeAlias = Mapping[str, float]

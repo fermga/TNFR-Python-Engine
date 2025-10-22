@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
 import math
+from dataclasses import asdict, dataclass
 
 
 @dataclass(frozen=True, slots=True)

@@ -89,10 +89,9 @@ def _run_selector(
     monkeypatch.setattr(selectors, "apply_glyph", fake_apply_glyph)
 
     if on_applied_hook is None:
-        monkeypatch.setattr(
-            selectors, "on_applied_glyph", lambda *args, **kwargs: None
-        )
+        monkeypatch.setattr(selectors, "on_applied_glyph", lambda *args, **kwargs: None)
     else:
+
         def wrapped_on_applied(G_local, node, glyph, *args, **kwargs):
             value = getattr(glyph, "value", glyph)
             on_applied_hook(G_local, node, value)
@@ -104,6 +103,7 @@ def _run_selector(
             selectors, "enforce_canonical_grammar", lambda G_local, node, glyph: glyph
         )
     else:
+
         def wrapped_enforce(G_local, node, glyph):
             value = getattr(glyph, "value", glyph)
             return enforce_hook(G_local, node, value)
@@ -147,7 +147,9 @@ def test_selector_n_jobs_one_is_sequential(monkeypatch, graph_canon):
 
     class FailExecutor:
         def __init__(self, *args, **kwargs):
-            raise AssertionError("ProcessPoolExecutor should not be used when n_jobs == 1")
+            raise AssertionError(
+                "ProcessPoolExecutor should not be used when n_jobs == 1"
+            )
 
     monkeypatch.setattr(selectors, "ProcessPoolExecutor", FailExecutor)
 

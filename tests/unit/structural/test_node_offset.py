@@ -1,7 +1,7 @@
 import networkx as nx
 
-from tnfr.utils import ensure_node_offset_map
 from tnfr.node import NodeNX
+from tnfr.utils import ensure_node_offset_map
 
 
 def test_node_nx_offset_uses_cached_mapping(graph_canon):

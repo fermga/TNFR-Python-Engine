@@ -8,10 +8,10 @@ new import paths are fully adopted.
 from .validation.compatibility import CANON_COMPAT, CANON_FALLBACK
 from .validation.grammar import (
     GrammarContext,
+    _gram_state,
     apply_glyph_with_grammar,
     enforce_canonical_grammar,
     on_applied_glyph,
-    _gram_state,
 )
 
 __all__ = [

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any, Optional, TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 from ..constants import DEFAULTS, get_param
 from ..operators import apply_glyph
 from ..types import Glyph, NodeId, TNFRGraph
-from .compatibility import CANON_COMPAT
 from . import rules as _rules
+from .compatibility import CANON_COMPAT
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from ..node import NodeProtocol
@@ -44,9 +44,7 @@ class GrammarContext:
         return cls(
             G=G,
             cfg_soft=G.graph.get("GRAMMAR", DEFAULTS.get("GRAMMAR", {})),
-            cfg_canon=G.graph.get(
-                "GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})
-            ),
+            cfg_canon=G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})),
             norms=G.graph.get("_sel_norms") or {},
         )
 
@@ -54,6 +52,7 @@ class GrammarContext:
 # -------------------------
 # Per-node grammar state
 # -------------------------
+
 
 def _gram_state(nd: dict[str, Any]) -> dict[str, Any]:
     """Create or return the node grammar state."""
@@ -64,6 +63,7 @@ def _gram_state(nd: dict[str, Any]) -> dict[str, Any]:
 # -------------------------
 # Core: enforce grammar on a candidate
 # -------------------------
+
 
 def enforce_canonical_grammar(
     G: TNFRGraph,
@@ -90,8 +90,12 @@ def enforce_canonical_grammar(
     original = cand
     cand = _rules._check_repeats(ctx, n, cand)
 
-    cand = _rules._maybe_force(ctx, n, cand, original, _rules.normalized_dnfr, "force_dnfr")
-    cand = _rules._maybe_force(ctx, n, cand, original, _rules._accel_norm, "force_accel")
+    cand = _rules._maybe_force(
+        ctx, n, cand, original, _rules.normalized_dnfr, "force_dnfr"
+    )
+    cand = _rules._maybe_force(
+        ctx, n, cand, original, _rules._accel_norm, "force_accel"
+    )
     cand = _rules._check_oz_to_zhir(ctx, n, cand)
     cand = _rules._check_thol_closure(ctx, n, cand, st)
     cand = _rules._check_compatibility(ctx, n, cand)
@@ -107,6 +111,7 @@ def enforce_canonical_grammar(
 # -------------------------
 # Post-selection: update grammar state
 # -------------------------
+
 
 def on_applied_glyph(G: TNFRGraph, n: NodeId, applied: Glyph | str) -> None:
     nd = G.nodes[n]
@@ -127,6 +132,7 @@ def on_applied_glyph(G: TNFRGraph, n: NodeId, applied: Glyph | str) -> None:
 # -------------------------
 # Direct application with canonical grammar
 # -------------------------
+
 
 def apply_glyph_with_grammar(
     G: TNFRGraph,

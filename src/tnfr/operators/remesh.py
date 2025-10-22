@@ -3,24 +3,23 @@ from __future__ import annotations
 import hashlib
 import heapq
 import random
-from operator import ge, le
-from functools import cache
-from itertools import combinations
-from io import StringIO
 from collections import deque
 from collections.abc import Hashable, Iterable, Mapping, MutableMapping, Sequence
-from statistics import fmean, StatisticsError
+from functools import cache
+from io import StringIO
+from itertools import combinations
+from operator import ge, le
+from statistics import StatisticsError, fmean
 from types import ModuleType
 from typing import Any, TypedDict, cast
 
 from .._compat import TypeAlias
-
-from ..constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
-from ..helpers.numeric import kahan_sum_nd
 from ..alias import get_attr, set_attr
-from ..rng import make_rng
 from ..callback_utils import CallbackEvent, callback_manager
-from ..glyph_history import append_metric, ensure_history, current_step_idx
+from ..constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
+from ..glyph_history import append_metric, current_step_idx, ensure_history
+from ..helpers.numeric import kahan_sum_nd
+from ..rng import make_rng
 from ..utils import cached_import, edge_version_update
 
 CommunityGraph: TypeAlias = Any
@@ -91,9 +90,7 @@ def _get_networkx_modules() -> NetworkxModules:
 
 def _remesh_alpha_info(G: CommunityGraph) -> tuple[float, str]:
     """Return ``(alpha, source)`` with explicit precedence."""
-    if bool(
-        G.graph.get("REMESH_ALPHA_HARD", REMESH_DEFAULTS["REMESH_ALPHA_HARD"])
-    ):
+    if bool(G.graph.get("REMESH_ALPHA_HARD", REMESH_DEFAULTS["REMESH_ALPHA_HARD"])):
         val = _as_float(
             G.graph.get("REMESH_ALPHA", REMESH_DEFAULTS["REMESH_ALPHA"]),
             float(REMESH_DEFAULTS["REMESH_ALPHA"]),
@@ -142,9 +139,7 @@ def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
     if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
         hist = G.graph.setdefault("history", {})
         append_metric(hist, "remesh_events", dict(meta))
-    callback_manager.invoke_callbacks(
-        G, CallbackEvent.ON_REMESH.value, dict(meta)
-    )
+    callback_manager.invoke_callbacks(G, CallbackEvent.ON_REMESH.value, dict(meta))
 
 
 def apply_network_remesh(G: CommunityGraph) -> None:
@@ -167,8 +162,12 @@ def apply_network_remesh(G: CommunityGraph) -> None:
 
     for n, nd in G.nodes(data=True):
         epi_now = _as_float(get_attr(nd, ALIAS_EPI, 0.0))
-        epi_old_l = _as_float(past_l.get(n) if isinstance(past_l, Mapping) else None, epi_now)
-        epi_old_g = _as_float(past_g.get(n) if isinstance(past_g, Mapping) else None, epi_now)
+        epi_old_l = _as_float(
+            past_l.get(n) if isinstance(past_l, Mapping) else None, epi_now
+        )
+        epi_old_g = _as_float(
+            past_g.get(n) if isinstance(past_g, Mapping) else None, epi_now
+        )
         mixed = (1 - alpha) * epi_now + alpha * epi_old_l
         mixed = (1 - alpha) * mixed + alpha * epi_old_g
         set_attr(nd, ALIAS_EPI, mixed)
@@ -212,10 +211,7 @@ def _mst_edges_from_epi(
     H.add_weighted_edges_from(
         (u, v, abs(epi[u] - epi[v])) for u, v in combinations(nodes, 2)
     )
-    return {
-        _ordered_edge(u, v)
-        for u, v in nx.minimum_spanning_edges(H, data=False)
-    }
+    return {_ordered_edge(u, v) for u, v in nx.minimum_spanning_edges(H, data=False)}
 
 
 def _knn_edges(
@@ -340,9 +336,7 @@ def _community_remesh(
         return
     C = _community_graph(comms, epi, nx)
     mst_c = nx.minimum_spanning_tree(C, weight="weight")
-    new_edges: set[RemeshEdge] = {
-        _ordered_edge(u, v) for u, v in mst_c.edges()
-    }
+    new_edges: set[RemeshEdge] = {_ordered_edge(u, v) for u, v in mst_c.edges()}
     extra_edges, attempts, rewired_edges = _community_k_neighbor_edges(
         C, k_val, p_rewire, rnd
     )
@@ -410,18 +404,14 @@ def apply_topological_remesh(
 
     if mode is None:
         mode = str(
-            G.graph.get(
-                "REMESH_MODE", REMESH_DEFAULTS.get("REMESH_MODE", "knn")
-            )
+            G.graph.get("REMESH_MODE", REMESH_DEFAULTS.get("REMESH_MODE", "knn"))
         )
     mode = str(mode)
     nx, nx_comm = _get_networkx_modules()
     epi = {n: _as_float(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes}
     mst_edges = _mst_edges_from_epi(nx, nodes, epi)
     default_k = int(
-        G.graph.get(
-            "REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2)
-        )
+        G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2))
     )
     k_val = max(1, int(k) if k is not None else default_k)
 
@@ -540,9 +530,7 @@ def apply_remesh_if_globally_stable(
     win_sf = sf[-w_estab:]
     if not all(v >= frac_req for v in win_sf):
         return
-    if cfg["REMESH_REQUIRE_STABILITY"] and not _extra_gating_ok(
-        hist, cfg, w_estab
-    ):
+    if cfg["REMESH_REQUIRE_STABILITY"] and not _extra_gating_ok(hist, cfg, w_estab):
         return
 
     last = G.graph.get("_last_remesh_step", -(10**9))
@@ -551,10 +539,7 @@ def apply_remesh_if_globally_stable(
         return
     t_now = _as_float(G.graph.get("_t", 0.0))
     last_ts = _as_float(G.graph.get("_last_remesh_ts", -1e12))
-    if (
-        cfg["REMESH_COOLDOWN_TS"] > 0
-        and (t_now - last_ts) < cfg["REMESH_COOLDOWN_TS"]
-    ):
+    if cfg["REMESH_COOLDOWN_TS"] > 0 and (t_now - last_ts) < cfg["REMESH_COOLDOWN_TS"]:
         return
 
     apply_network_remesh(G)

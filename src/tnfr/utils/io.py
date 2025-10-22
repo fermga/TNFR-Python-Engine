@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
+from dataclasses import dataclass
 from typing import Any, Callable
 
 from .init import cached_import, get_logger, warn_once
@@ -15,9 +15,7 @@ __all__ = (
     "clear_orjson_param_warnings",
 )
 
-_ORJSON_PARAMS_MSG = (
-    "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
-)
+_ORJSON_PARAMS_MSG = "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
 
 logger = get_logger(__name__)
 

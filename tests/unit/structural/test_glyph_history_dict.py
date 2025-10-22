@@ -5,12 +5,11 @@ Glyph histories revolve around three concepts:
 * **Counters**: the ``_counts`` map measuring how often each series is used.
 * **Windows**: size limits (``maxlen``) validated in ``test_glyph_history_windowing.py``.
 
-This module focuses on the interaction between series and counters to ensure each responsibility remains isolated before window policies are applied."""
+This module focuses on the interaction between series and counters to ensure each responsibility remains isolated before window policies are applied.
+"""
 
-
-
-from collections import deque
 import timeit
+from collections import deque
 
 from tnfr.glyph_history import HistoryDict
 

@@ -1,17 +1,15 @@
 """Unit tests for grammar utilities that manage glyph selection sequences."""
 
-
-
-from collections import deque, defaultdict
+from collections import defaultdict, deque
 
 from tnfr.constants import inject_defaults
+from tnfr.dynamics import _choose_glyph
+from tnfr.types import Glyph
 from tnfr.validation.grammar import (
+    apply_glyph_with_grammar,
     enforce_canonical_grammar,
     on_applied_glyph,
-    apply_glyph_with_grammar,
 )
-from tnfr.types import Glyph
-from tnfr.dynamics import _choose_glyph
 
 
 def test_compatibility_fallback(graph_canon):

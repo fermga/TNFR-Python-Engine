@@ -73,24 +73,29 @@ def run(node_count: int = 2000, repeats: int = 5, n_jobs: int = 4) -> None:
     print(f"Benchmarking with {node_count} nodes, repeats={repeats}")
 
     if np_module is not None:
-        vectorized = sum(
-            _run_once(node_count, np_module=np_module, n_jobs=None)
-            for _ in range(repeats)
-        ) / repeats
+        vectorized = (
+            sum(
+                _run_once(node_count, np_module=np_module, n_jobs=None)
+                for _ in range(repeats)
+            )
+            / repeats
+        )
         print(f"vectorized (NumPy): {vectorized:.6f}s")
     else:
         print("NumPy not available; skipping vectorized measurement.")
 
-    fallback_seq = sum(
-        _run_once(node_count, np_module=None, n_jobs=None)
-        for _ in range(repeats)
-    ) / repeats
+    fallback_seq = (
+        sum(_run_once(node_count, np_module=None, n_jobs=None) for _ in range(repeats))
+        / repeats
+    )
     print(f"fallback (sequential): {fallback_seq:.6f}s")
 
-    fallback_parallel = sum(
-        _run_once(node_count, np_module=None, n_jobs=n_jobs)
-        for _ in range(repeats)
-    ) / repeats
+    fallback_parallel = (
+        sum(
+            _run_once(node_count, np_module=None, n_jobs=n_jobs) for _ in range(repeats)
+        )
+        / repeats
+    )
     print(f"fallback (parallel, n_jobs={n_jobs}): {fallback_parallel:.6f}s")
 
 

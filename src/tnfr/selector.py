@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import threading
 from operator import itemgetter
-from typing import Any, Mapping, TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, Mapping, cast
 from weakref import WeakKeyDictionary
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -18,9 +18,8 @@ from .constants import DEFAULTS
 from .constants.core import SELECTOR_THRESHOLD_DEFAULTS
 from .helpers.numeric import clamp01
 from .metrics.common import compute_dnfr_accel_max
-from .utils import is_non_string_sequence
 from .types import SelectorNorms, SelectorThresholds, SelectorWeights
-
+from .utils import is_non_string_sequence
 
 HYSTERESIS_GLYPHS: set[str] = {"IL", "OZ", "ZHIR", "THOL", "NAV", "RA"}
 

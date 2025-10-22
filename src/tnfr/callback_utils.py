@@ -9,21 +9,19 @@ modify shared state.
 
 from __future__ import annotations
 
-
-from typing import Any, TypedDict
-from enum import Enum
-from collections import defaultdict, deque
-from collections.abc import Callable, Mapping, Iterable
-
-import traceback
 import threading
-from .utils import get_logger, is_non_string_sequence
-from .constants import DEFAULTS
-from .locking import get_lock
-
-from .trace import CallbackSpec
+import traceback
+from collections import defaultdict, deque
+from collections.abc import Callable, Iterable, Mapping
+from enum import Enum
+from typing import Any, TypedDict
 
 import networkx as nx
+
+from .constants import DEFAULTS
+from .locking import get_lock
+from .trace import CallbackSpec
+from .utils import get_logger, is_non_string_sequence
 
 __all__ = (
     "CallbackEvent",
@@ -130,9 +128,7 @@ class CallbackManager:
             cb_name = name or getattr(func, "__name__", None)
             spec = CallbackSpec(cb_name, func)
             existing_map = cbs[event]
-            strict = bool(
-                G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
-            )
+            strict = bool(G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"]))
             key = _reconcile_callback(event, existing_map, spec, strict)
 
             existing_map[key] = spec
@@ -151,9 +147,7 @@ class CallbackManager:
         event = _normalize_event(event)
         with self._lock:
             cbs = dict(self._ensure_callbacks_nolock(G).get(event, {}))
-            strict = bool(
-                G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"])
-            )
+            strict = bool(G.graph.get("CALLBACKS_STRICT", DEFAULTS["CALLBACKS_STRICT"]))
         if ctx is None:
             ctx = {}
         for spec in cbs.values():
@@ -210,9 +204,7 @@ def _func_id(fn: Callable[..., Any]) -> str:
     return f"{module}.{qualname}"
 
 
-def _validate_registry(
-    G: "nx.Graph", cbs: Any, dirty: set[str]
-) -> CallbackRegistry:
+def _validate_registry(G: "nx.Graph", cbs: Any, dirty: set[str]) -> CallbackRegistry:
     """Validate and normalise the callback registry.
 
     ``cbs`` is coerced to a ``defaultdict(dict)`` and any events listed in
@@ -249,7 +241,9 @@ def _normalize_callbacks(entries: Any) -> dict[str, CallbackSpec]:
     """Return ``entries`` normalised into a callback mapping."""
     if isinstance(entries, Mapping):
         entries_iter = entries.values()
-    elif isinstance(entries, Iterable) and not isinstance(entries, (str, bytes, bytearray)):
+    elif isinstance(entries, Iterable) and not isinstance(
+        entries, (str, bytes, bytearray)
+    ):
         entries_iter = entries
     else:
         return {}

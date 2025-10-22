@@ -1,11 +1,10 @@
 """Unit tests that guard the integrity and immutability of default parameter collections."""
 
-
-
 from collections import ChainMap
+
 import pytest
 
-from tnfr.constants import DEFAULTS, DEFAULT_SECTIONS
+from tnfr.constants import DEFAULT_SECTIONS, DEFAULTS
 
 
 def test_defaults_is_union_of_parts():

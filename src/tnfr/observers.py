@@ -2,19 +2,22 @@
 
 from __future__ import annotations
 
+import statistics
 from collections.abc import Mapping
 from functools import partial
-import statistics
 from statistics import StatisticsError, pvariance
 
 from .alias import get_theta_attr
-from .helpers.numeric import angle_diff
 from .callback_utils import CallbackEvent, callback_manager
+from .config.constants import GLYPH_GROUPS
+from .gamma import kuramoto_R_psi
 from .glyph_history import (
-    ensure_history,
-    count_glyphs,
     append_metric,
+    count_glyphs,
+    ensure_history,
 )
+from .helpers.numeric import angle_diff
+from .metrics.common import compute_coherence
 from .types import Glyph, GlyphLoadDistribution, TNFRGraph
 from .utils import (
     get_logger,
@@ -23,9 +26,6 @@ from .utils import (
     normalize_counter,
     validate_window,
 )
-from .config.constants import GLYPH_GROUPS
-from .gamma import kuramoto_R_psi
-from .metrics.common import compute_coherence
 
 __all__ = (
     "attach_standard_observer",
@@ -98,6 +98,7 @@ def phase_sync(
             R = R_calc
         if psi is None:
             psi = psi_calc
+
     def _theta(nd: Mapping[str, object]) -> float:
         value = get_theta_attr(nd, 0.0)
         return float(value) if value is not None else 0.0

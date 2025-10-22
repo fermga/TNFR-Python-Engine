@@ -9,11 +9,11 @@ from __future__ import annotations
 import math
 from collections.abc import Iterable, Iterator, Sequence
 from itertools import tee
-from typing import TYPE_CHECKING, Any, overload, cast
+from typing import TYPE_CHECKING, Any, cast, overload
 
 from ..helpers.numeric import kahan_sum_nd
-from ..utils import cached_import, get_numpy
 from ..types import NodeId, Phase, TNFRGraph
+from ..utils import cached_import, get_numpy
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from ..node import NodeProtocol
@@ -138,9 +138,7 @@ def _neighbor_phase_mean_generic(
     if cos_map is None or sin_map is None:
         node = cast("NodeProtocol", obj)
         if getattr(node, "G", None) is None:
-            raise TypeError(
-                "neighbor_phase_mean requires nodes bound to a graph"
-            )
+            raise TypeError("neighbor_phase_mean requires nodes bound to a graph")
         from .trig_cache import get_trig_cache
 
         trig = get_trig_cache(node.G)
@@ -173,13 +171,11 @@ def neighbor_phase_mean_list(
 
 
 @overload
-def neighbor_phase_mean(obj: "NodeProtocol", n: None = ...) -> Phase:
-    ...
+def neighbor_phase_mean(obj: "NodeProtocol", n: None = ...) -> Phase: ...
 
 
 @overload
-def neighbor_phase_mean(obj: TNFRGraph, n: NodeId) -> Phase:
-    ...
+def neighbor_phase_mean(obj: TNFRGraph, n: NodeId) -> Phase: ...
 
 
 def neighbor_phase_mean(

@@ -43,7 +43,6 @@ from importlib import import_module, metadata
 from importlib.metadata import PackageNotFoundError
 from typing import Any, Callable, NoReturn
 
-
 EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
     "step": {
         "submodules": ("tnfr.dynamics",),
@@ -184,7 +183,9 @@ def _validate_export_dependencies() -> None:
                     f"helper '{export_name}' is missing '{key}' dependencies in EXPORT_DEPENDENCIES"
                 )
 
-    missing_exports = manifest_names.difference(export_names).difference(_MISSING_EXPORTS)
+    missing_exports = manifest_names.difference(export_names).difference(
+        _MISSING_EXPORTS
+    )
     for manifest_only in sorted(missing_exports):
         entry = manifest[manifest_only]
         if not isinstance(entry, dict):

@@ -11,25 +11,19 @@ class GammaEntry(NamedTuple):
 GAMMA_REGISTRY: dict[str, GammaEntry]
 
 def kuramoto_R_psi(G: TNFRGraph) -> tuple[float, float]: ...
-
 def gamma_none(G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec) -> float: ...
-
 def gamma_kuramoto_linear(
     G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
 ) -> float: ...
-
 def gamma_kuramoto_bandpass(
     G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
 ) -> float: ...
-
 def gamma_kuramoto_tanh(
     G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
 ) -> float: ...
-
 def gamma_harmonic(
     G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
 ) -> float: ...
-
 def eval_gamma(
     G: TNFRGraph,
     node: NodeId,

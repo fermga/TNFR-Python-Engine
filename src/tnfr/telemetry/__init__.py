@@ -1,9 +1,9 @@
 """Telemetry helpers for shared observability settings."""
 
 from .verbosity import (
-    TelemetryVerbosity,
     TELEMETRY_VERBOSITY_DEFAULT,
     TELEMETRY_VERBOSITY_LEVELS,
+    TelemetryVerbosity,
 )
 
 __all__ = [

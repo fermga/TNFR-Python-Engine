@@ -91,7 +91,9 @@ def _legacy_add_at_accumulation(G, data, *, buffers):
         deg_array = _resolve_numpy_degree_array(data, count, cache=cache, np=np)
 
     if edge_src.size:
-        stacked = np.empty((edge_src.size, 4 + (1 if deg_array is not None else 0)), dtype=float)
+        stacked = np.empty(
+            (edge_src.size, 4 + (1 if deg_array is not None else 0)), dtype=float
+        )
         np.take(state["cos_theta_np"], edge_dst, out=stacked[:, 0])
         np.take(state["sin_theta_np"], edge_dst, out=stacked[:, 1])
         np.take(state["epi_np"], edge_dst, out=stacked[:, 2])
@@ -137,7 +139,9 @@ def run(
     add_at_times: list[float] = []
 
     for rep in range(repeats):
-        base = _build_dense_graph(num_nodes, seed=rep + 42, probability=edge_probability)
+        base = _build_dense_graph(
+            num_nodes, seed=rep + 42, probability=edge_probability
+        )
 
         modern_graph = base.copy()
         modern_data = _prepare_dnfr_data(modern_graph)
@@ -154,7 +158,9 @@ def run(
 
         start = time.perf_counter()
         for _ in range(loops):
-            _legacy_add_at_accumulation(legacy_graph, legacy_data, buffers=legacy_buffers)
+            _legacy_add_at_accumulation(
+                legacy_graph, legacy_data, buffers=legacy_buffers
+            )
         add_at_times.append(time.perf_counter() - start)
 
         modern_result = _run_bincount(modern_graph, modern_data, modern_buffers)
@@ -201,4 +207,3 @@ def run(
 
 if __name__ == "__main__":
     run()
-

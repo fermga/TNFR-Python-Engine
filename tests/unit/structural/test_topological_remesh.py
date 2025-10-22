@@ -5,8 +5,8 @@ from itertools import combinations
 import networkx as nx
 
 from tnfr.constants import inject_defaults
-from tnfr.operators import apply_topological_remesh
 from tnfr.glyph_history import ensure_history
+from tnfr.operators import apply_topological_remesh
 
 
 def _graph_with_epi(graph_canon, n=6):
@@ -77,12 +77,8 @@ def test_remesh_community_rewire_changes_destinations(graph_canon):
     G_no_rewire = _clustered_graph(graph_canon, [3, 3, 3])
     G_rewire = _clustered_graph(graph_canon, [3, 3, 3])
 
-    apply_topological_remesh(
-        G_no_rewire, mode="community", k=2, p_rewire=0.0, seed=11
-    )
-    apply_topological_remesh(
-        G_rewire, mode="community", k=2, p_rewire=1.0, seed=11
-    )
+    apply_topological_remesh(G_no_rewire, mode="community", k=2, p_rewire=0.0, seed=11)
+    apply_topological_remesh(G_rewire, mode="community", k=2, p_rewire=1.0, seed=11)
 
     events_no = ensure_history(G_no_rewire).get("remesh_events", [])
     events_yes = ensure_history(G_rewire).get("remesh_events", [])

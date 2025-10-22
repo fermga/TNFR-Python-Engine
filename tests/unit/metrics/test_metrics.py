@@ -1,41 +1,41 @@
 """Unit tests for metric evaluation plumbing and configuration."""
 
-
-
 import builtins
-import pytest
 from typing import Any
 
-from tnfr.constants import (
-    inject_defaults,
-    get_aliases,
-)
+import pytest
+
 from tnfr.alias import get_attr, set_attr
+from tnfr.constants import (
+    get_aliases,
+    inject_defaults,
+)
 from tnfr.metrics.coherence import (
     GLYPH_LOAD_STABILIZERS_KEY,
-    _track_stability,
     _aggregate_si,
+    _track_stability,
     _update_sigma,
 )
-from tnfr.metrics.core import _metrics_step, register_metrics_callbacks
-from tnfr.metrics.glyph_timing import (
-    LATENT_GLYPH,
-    _update_latency_index,
-    _update_epi_support,
-    _compute_advanced_metrics,
-    np as glyph_numpy,
+from tnfr.metrics.core import (
+    _METRICS_VERBOSITY_PRESETS,
+    METRICS_VERBOSITY_DEFAULT,
+    MetricsVerbositySpec,
+    _metrics_step,
+    _register_metrics_preset,
+    register_metrics_callbacks,
 )
-from tnfr.metrics.glyph_timing import DEFAULT_EPI_SUPPORT_LIMIT
+from tnfr.metrics.glyph_timing import (
+    DEFAULT_EPI_SUPPORT_LIMIT,
+    LATENT_GLYPH,
+    _compute_advanced_metrics,
+    _update_epi_support,
+    _update_latency_index,
+)
+from tnfr.metrics.glyph_timing import np as glyph_numpy
 from tnfr.metrics.reporting import build_metrics_summary
 from tnfr.telemetry.verbosity import (
     TELEMETRY_VERBOSITY_DEFAULT,
     TELEMETRY_VERBOSITY_LEVELS,
-)
-from tnfr.metrics.core import (
-    METRICS_VERBOSITY_DEFAULT,
-    _METRICS_VERBOSITY_PRESETS,
-    MetricsVerbositySpec,
-    _register_metrics_preset,
 )
 
 ALIAS_EPI = get_aliases("EPI")
@@ -214,6 +214,7 @@ def test_track_stability_parallel_fallback(monkeypatch, graph_canon):
     assert get_attr(G.nodes[0], ALIAS_D2VF) == pytest.approx(0.3)
     assert get_attr(G.nodes[1], ALIAS_D2VF) == pytest.approx(0.0)
 
+
 def test_update_sigma_uses_default_window(monkeypatch, graph_canon):
     G = graph_canon()
     captured: dict[str, int | None] = {}
@@ -259,9 +260,7 @@ def test_update_sigma_rejects_legacy_history(monkeypatch, graph_canon):
         }
 
     monkeypatch.setattr("tnfr.metrics.coherence.glyph_load", fake_glyph_load)
-    monkeypatch.setattr(
-        "tnfr.metrics.coherence.sigma_vector", lambda dist: {}
-    )
+    monkeypatch.setattr("tnfr.metrics.coherence.sigma_vector", lambda dist: {})
 
     hist: dict[str, list] = {"glyph_load_estab": [0.5]}
 
@@ -658,9 +657,15 @@ def test_build_metrics_summary_reuses_metrics_helpers(monkeypatch):
 def test_build_metrics_summary_handles_empty_latency(monkeypatch):
     G = object()
 
-    monkeypatch.setattr("tnfr.metrics.reporting.Tg_global", lambda *_args, **_kwargs: {})
-    monkeypatch.setattr("tnfr.metrics.reporting.latency_series", lambda *_: {"value": []})
-    monkeypatch.setattr("tnfr.metrics.reporting.glyphogram_series", lambda *_: {"t": []})
+    monkeypatch.setattr(
+        "tnfr.metrics.reporting.Tg_global", lambda *_args, **_kwargs: {}
+    )
+    monkeypatch.setattr(
+        "tnfr.metrics.reporting.latency_series", lambda *_: {"value": []}
+    )
+    monkeypatch.setattr(
+        "tnfr.metrics.reporting.glyphogram_series", lambda *_: {"t": []}
+    )
     monkeypatch.setattr("tnfr.metrics.reporting.sigma_rose", lambda *_: {})
 
     summary, has_latency = build_metrics_summary(G)
@@ -672,7 +677,9 @@ def test_build_metrics_summary_handles_empty_latency(monkeypatch):
 def test_build_metrics_summary_accepts_unbounded_limit(monkeypatch):
     G = object()
 
-    monkeypatch.setattr("tnfr.metrics.reporting.Tg_global", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(
+        "tnfr.metrics.reporting.Tg_global", lambda *_args, **_kwargs: {}
+    )
     monkeypatch.setattr(
         "tnfr.metrics.reporting.latency_series", lambda *_: {"value": [1.0]}
     )
@@ -716,9 +723,7 @@ def test_update_epi_support_matches_manual(graph_canon):
         if abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) >= threshold
     ]
     expected_size = len(expected_vals)
-    expected_norm = (
-        sum(expected_vals) / expected_size if expected_size else 0.0
-    )
+    expected_norm = sum(expected_vals) / expected_size if expected_size else 0.0
 
     rec = hist["EPI_support"][0]
     assert rec["size"] == expected_size
@@ -729,6 +734,7 @@ def test_advanced_metrics_vectorized_path(monkeypatch, graph_canon):
     """Vectorised accumulation avoids spawning process pools when NumPy is present."""
 
     if glyph_numpy is None:
+
         class FakeBoolArray(list):
             def sum(self):  # noqa: D401 - emulate numpy boolean vector
                 return builtins.sum(1 for value in self if value)
@@ -752,7 +758,9 @@ def test_advanced_metrics_vectorized_path(monkeypatch, graph_canon):
             int64 = int
 
             @staticmethod
-            def fromiter(iterable, dtype=float, count=-1):  # noqa: D401 - numpy compatible signature
+            def fromiter(
+                iterable, dtype=float, count=-1
+            ):  # noqa: D401 - numpy compatible signature
                 del dtype, count
                 return FakeArray(list(iterable))
 
@@ -768,8 +776,12 @@ def test_advanced_metrics_vectorized_path(monkeypatch, graph_canon):
     class FailExecutor:  # noqa: D401 - helper for test assertions
         """Placeholder that fails if instantiated."""
 
-        def __init__(self, *args, **kwargs):  # noqa: D401 - signature enforced by ProcessPoolExecutor
-            raise AssertionError("ProcessPoolExecutor should not be used with NumPy available")
+        def __init__(
+            self, *args, **kwargs
+        ):  # noqa: D401 - signature enforced by ProcessPoolExecutor
+            raise AssertionError(
+                "ProcessPoolExecutor should not be used with NumPy available"
+            )
 
     monkeypatch.setattr("tnfr.metrics.glyph_timing.ProcessPoolExecutor", FailExecutor)
 

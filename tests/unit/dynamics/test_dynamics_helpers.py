@@ -2,17 +2,17 @@
 
 import pytest
 
+from tnfr.alias import get_attr, set_attr
+from tnfr.constants import get_aliases
 from tnfr.dynamics import (
-    _init_dnfr_cache,
-    _refresh_dnfr_vectors,
-    _compute_neighbor_means,
     _choose_glyph,
+    _compute_neighbor_means,
+    _init_dnfr_cache,
     _prepare_dnfr,
+    _refresh_dnfr_vectors,
     default_glyph_selector,
     run,
 )
-from tnfr.alias import get_attr, set_attr
-from tnfr.constants import get_aliases
 from tnfr.types import Glyph
 
 

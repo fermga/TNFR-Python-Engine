@@ -1,7 +1,7 @@
 """Test utilities."""
 
-import pytest
 import networkx as nx
+import pytest
 
 from tnfr.constants import inject_defaults
 from tnfr.utils import cached_import, prune_failed_imports

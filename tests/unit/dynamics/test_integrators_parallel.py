@@ -66,7 +66,9 @@ def test_parallel_integrator_matches_serial(method: str) -> None:
 
 
 @pytest.mark.parametrize("method", ["euler", "rk4"])
-def test_parallel_fallback_without_numpy(method: str, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parallel_fallback_without_numpy(
+    method: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
     base = _build_sample_graph()
     base.graph["INTEGRATOR_METHOD"] = method
 

@@ -1,8 +1,6 @@
 """Unit tests for ``_normalize_callback_entry`` handling of sequence inputs."""
 
-
-
-from tnfr.callback_utils import _normalize_callback_entry, CallbackSpec
+from tnfr.callback_utils import CallbackSpec, _normalize_callback_entry
 
 
 def dummy_cb(G, ctx):
@@ -29,4 +27,3 @@ def test_iterable_conversion_type_error_returns_none():
 
     entry = BadIter()
     assert _normalize_callback_entry(entry) is None
-

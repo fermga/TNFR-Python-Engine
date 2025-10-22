@@ -21,15 +21,15 @@ from collections.abc import (
     MutableMapping,
 )
 from contextlib import contextmanager
-from functools import lru_cache
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
-from cachetools import LRUCache
 import networkx as nx
+from cachetools import LRUCache
 
 from ..cache import CacheCapacityConfig, CacheManager, InstrumentedLRUCache
-from ..types import GraphLike, NodeId, TNFRGraph, TimingContext
+from ..types import GraphLike, NodeId, TimingContext, TNFRGraph
 from .graph import get_graph, mark_dnfr_prep_dirty
 from .init import get_logger, get_numpy
 from .io import json_dumps
@@ -118,9 +118,7 @@ def _node_repr(n: Any) -> str:
     return _node_repr_digest(n)[0]
 
 
-def _iter_node_digests(
-    nodes: Iterable[Any], *, presorted: bool
-) -> Iterable[bytes]:
+def _iter_node_digests(nodes: Iterable[Any], *, presorted: bool) -> Iterable[bytes]:
     """Yield node digests in a deterministic order."""
 
     if presorted:
@@ -174,9 +172,7 @@ def node_set_checksum(
 
     graph = get_graph(G)
     if nodes is None:
-        return _node_set_checksum_no_nodes(
-            G, graph, presorted=presorted, store=store
-        )
+        return _node_set_checksum_no_nodes(G, graph, presorted=presorted, store=store)
 
     hasher = hashlib.blake2b(digest_size=16)
     for digest in _iter_node_digests(nodes, presorted=presorted):
@@ -458,6 +454,7 @@ def _graph_cache_manager(graph: MutableMapping[str, Any]) -> CacheManager:
     config = graph.get(_GRAPH_CACHE_CONFIG_KEY)
     if isinstance(config, dict):
         manager.configure_from_mapping(config)
+
     def _dnfr_factory() -> DnfrPrepState:
         return _build_dnfr_prep_state(graph)
 
@@ -603,9 +600,7 @@ class EdgeCacheManager:
         create: bool = True,
     ) -> tuple[
         MutableMapping[Hashable, Any] | None,
-        dict[Hashable, threading.RLock]
-        | defaultdict[Hashable, threading.RLock]
-        | None,
+        dict[Hashable, threading.RLock] | defaultdict[Hashable, threading.RLock] | None,
     ]:
         """Return the cache and lock mapping for the manager's graph."""
 

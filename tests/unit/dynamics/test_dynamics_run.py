@@ -144,10 +144,10 @@ def test_step_respects_n_jobs_overrides(monkeypatch, graph_canon):
     )
     monkeypatch.setattr(adaptation, "adapt_vf_by_coherence", fake_adapt_vf_by_coherence)
     monkeypatch.setattr(selectors, "_apply_glyphs", lambda G, selector, hist: None)
-    monkeypatch.setattr(dynamics, "apply_canonical_clamps", lambda *args, **kwargs: None)
     monkeypatch.setattr(
-        runtime, "apply_canonical_clamps", lambda *args, **kwargs: None
+        dynamics, "apply_canonical_clamps", lambda *args, **kwargs: None
     )
+    monkeypatch.setattr(runtime, "apply_canonical_clamps", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *args, **kwargs: None)
     monkeypatch.setattr(runtime, "_update_node_sample", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_epi_hist", lambda G: None)
@@ -210,7 +210,7 @@ def test_step_defaults_to_graph_jobs(monkeypatch, graph_canon):
 
     monkeypatch.setattr(dynamics, "compute_Si", fake_compute_si)
     monkeypatch.setattr(runtime, "compute_Si", fake_compute_si)
-    G.graph["integrator"] = (lambda graph: _RecordingIntegrator(recorded))
+    G.graph["integrator"] = lambda graph: _RecordingIntegrator(recorded)
     monkeypatch.setattr(
         coordination,
         "coordinate_global_local_phase",
@@ -218,10 +218,10 @@ def test_step_defaults_to_graph_jobs(monkeypatch, graph_canon):
     )
     monkeypatch.setattr(adaptation, "adapt_vf_by_coherence", fake_adapt_vf_by_coherence)
     monkeypatch.setattr(selectors, "_apply_glyphs", lambda G, selector, hist: None)
-    monkeypatch.setattr(dynamics, "apply_canonical_clamps", lambda *args, **kwargs: None)
     monkeypatch.setattr(
-        runtime, "apply_canonical_clamps", lambda *args, **kwargs: None
+        dynamics, "apply_canonical_clamps", lambda *args, **kwargs: None
     )
+    monkeypatch.setattr(runtime, "apply_canonical_clamps", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *args, **kwargs: None)
     monkeypatch.setattr(runtime, "_update_node_sample", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_epi_hist", lambda G: None)

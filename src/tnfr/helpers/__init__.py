@@ -98,30 +98,29 @@ def __dir__() -> list[str]:  # pragma: no cover - simple reflection
 
 
 class _PushGlyphCallable(Protocol):
-    def __call__(self, nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
-        ...
+    def __call__(
+        self, nd: MutableMapping[str, Any], glyph: str, window: int
+    ) -> None: ...
 
 
 class _RecentGlyphCallable(Protocol):
-    def __call__(self, nd: MutableMapping[str, Any], glyph: str, window: int) -> bool:
-        ...
+    def __call__(
+        self, nd: MutableMapping[str, Any], glyph: str, window: int
+    ) -> bool: ...
 
 
 class _EnsureHistoryCallable(Protocol):
-    def __call__(self, G: TNFRGraph) -> "HistoryDict | dict[str, Any]":
-        ...
+    def __call__(self, G: TNFRGraph) -> "HistoryDict | dict[str, Any]": ...
 
 
 class _LastGlyphCallable(Protocol):
-    def __call__(self, nd: Mapping[str, Any]) -> str | None:
-        ...
+    def __call__(self, nd: Mapping[str, Any]) -> str | None: ...
 
 
 class _CountGlyphsCallable(Protocol):
     def __call__(
         self, G: TNFRGraph, window: int | None = ..., *, last_only: bool = ...
-    ) -> Counter[str]:
-        ...
+    ) -> Counter[str]: ...
 
 
 def _glyph_history_proxy(name: str) -> Callable[..., Any]:

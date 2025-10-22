@@ -1,7 +1,5 @@
 """Unit tests for adapting VF through coherence measurements."""
 
-
-
 from __future__ import annotations
 
 import copy

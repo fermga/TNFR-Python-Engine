@@ -1,18 +1,16 @@
 """Unit tests for DNFR precomputation helpers and caching."""
 
-
-
-import pytest
 from contextlib import contextmanager
 
 import networkx as nx
+import pytest
 
-from tnfr.dynamics import (
-    _prepare_dnfr_data,
-    _compute_dnfr,
-)
+from tnfr.alias import collect_attr, get_attr, set_attr
 from tnfr.constants import get_aliases
-from tnfr.alias import set_attr, collect_attr, get_attr
+from tnfr.dynamics import (
+    _compute_dnfr,
+    _prepare_dnfr_data,
+)
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")

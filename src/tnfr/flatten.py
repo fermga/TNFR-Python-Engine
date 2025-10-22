@@ -7,6 +7,9 @@ from dataclasses import dataclass
 from itertools import chain
 from typing import Any, Callable
 
+from .config.constants import GLYPHS_CANONICAL_SET
+from .tokens import TARGET, THOL, THOL_SENTINEL, WAIT, OpTag, Token
+from .types import Glyph
 from .utils import (
     MAX_MATERIALIZE_DEFAULT,
     STRING_TYPES,
@@ -14,9 +17,6 @@ from .utils import (
     flatten_structure,
     normalize_materialize_limit,
 )
-from .config.constants import GLYPHS_CANONICAL_SET
-from .tokens import THOL, TARGET, WAIT, OpTag, THOL_SENTINEL, Token
-from .types import Glyph
 
 __all__ = [
     "THOLEvaluator",

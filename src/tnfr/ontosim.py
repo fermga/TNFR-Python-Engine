@@ -6,11 +6,12 @@ from collections import deque
 from typing import TYPE_CHECKING
 
 from .callback_utils import CallbackEvent
-from .constants import METRIC_DEFAULTS, inject_defaults, get_param
-from .dynamics import step as _step, run as _run
+from .constants import METRIC_DEFAULTS, get_param, inject_defaults
 from .dynamics import default_compute_delta_nfr
-from .initialization import init_node_attrs
+from .dynamics import run as _run
+from .dynamics import step as _step
 from .glyph_history import append_metric
+from .initialization import init_node_attrs
 from .utils import cached_import
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -46,9 +47,7 @@ def prepare_network(
         merge_overrides(G, **overrides)
     # Initialize history buffers
     ph_len = int(
-        G.graph.get(
-            "PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]
-        )
+        G.graph.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"])
     )
     hist_keys = [
         "C_steps",

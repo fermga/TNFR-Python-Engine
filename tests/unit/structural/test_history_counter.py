@@ -1,9 +1,8 @@
 """Unit tests validating the HistoryDict usage counter behavior."""
 
-
+import pytest
 
 from tnfr.glyph_history import HistoryDict
-import pytest
 
 
 def test_counter_single_key():
@@ -50,7 +49,5 @@ def test_counts_after_deletions():
 
 def test_pop_least_used_empty_message():
     hist = HistoryDict()
-    with pytest.raises(
-        KeyError, match="HistoryDict is empty; cannot pop least used"
-    ):
+    with pytest.raises(KeyError, match="HistoryDict is empty; cannot pop least used"):
         hist.pop_least_used()

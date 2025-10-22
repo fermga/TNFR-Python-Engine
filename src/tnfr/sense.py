@@ -1,30 +1,32 @@
 """Sense calculations."""
 
 from __future__ import annotations
-from typing import Any, Callable, TypeVar
-from collections.abc import Iterable, Iterator, Mapping
+
 import math
 from collections import Counter
+from collections.abc import Iterable, Iterator, Mapping
 from itertools import tee
+from typing import Any, Callable, TypeVar
 
 import networkx as nx
 
-from .constants import get_aliases, get_graph_param
 from .alias import get_attr
-from .helpers.numeric import clamp01, kahan_sum_nd
-from .utils import get_numpy
 from .callback_utils import CallbackEvent, callback_manager
-from .glyph_history import (
-    ensure_history,
-    last_glyph,
-    count_glyphs,
-    append_metric,
-)
 from .config.constants import (
     ANGLE_MAP,
     GLYPHS_CANONICAL,
 )
+from .constants import get_aliases, get_graph_param
+from .glyph_history import (
+    append_metric,
+    count_glyphs,
+    ensure_history,
+    last_glyph,
+)
+from .helpers.numeric import clamp01, kahan_sum_nd
 from .types import NodeId, SigmaVector, TNFRGraph
+from .utils import get_numpy
+
 # -------------------------
 # Canon: circular glyph order and angles
 # -------------------------
@@ -145,7 +147,9 @@ def _sigma_from_iterable(
     number of processed values under the ``"n"`` key.
     """
 
-    if isinstance(values, Iterable) and not isinstance(values, (str, bytes, bytearray, Mapping)):
+    if isinstance(values, Iterable) and not isinstance(
+        values, (str, bytes, bytearray, Mapping)
+    ):
         iterator = iter(values)
     else:
         iterator = iter((values,))
@@ -195,9 +199,7 @@ def _sigma_from_iterable(
     }
 
 
-def _ema_update(
-    prev: SigmaVector, current: SigmaVector, alpha: float
-) -> SigmaVector:
+def _ema_update(prev: SigmaVector, current: SigmaVector, alpha: float) -> SigmaVector:
     """Exponential moving average update for σ vectors."""
     x = (1 - alpha) * prev["x"] + alpha * current["x"]
     y = (1 - alpha) * prev["y"] + alpha * current["y"]
@@ -280,9 +282,7 @@ def sigma_vector_from_graph(
 
     cfg = _sigma_cfg(G)
     weight_mode = weight_mode or cfg.get("weight", "Si")
-    sv, _ = _sigma_from_nodes(
-        (nd for _, nd in G.nodes(data=True)), weight_mode
-    )
+    sv, _ = _sigma_from_nodes((nd for _, nd in G.nodes(data=True)), weight_mode)
     return sv
 
 
@@ -352,9 +352,7 @@ def sigma_rose(G: TNFRGraph, steps: int | None = None) -> dict[str, int]:
         steps = int(steps)
         if steps < 0:
             raise ValueError("steps must be non-negative")
-        rows = (
-            counts if steps >= len(counts) else counts[-steps:]
-        )  # noqa: E203
+        rows = counts if steps >= len(counts) else counts[-steps:]  # noqa: E203
     else:
         rows = counts
     counter = Counter()

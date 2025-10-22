@@ -1,7 +1,5 @@
 """Integration tests covering CLI flows and argument utilities."""
 
-
-
 from __future__ import annotations
 
 import argparse
@@ -10,24 +8,28 @@ import json
 from collections import deque
 from typing import Any
 
-import pytest
 import networkx as nx  # type: ignore[import-untyped]
+import pytest
 
 from tnfr.cli import main
 from tnfr.cli.arguments import (
     _args_to_dict,
+    add_canon_toggle,
     add_common_args,
     add_grammar_args,
-    add_canon_toggle,
     add_grammar_selector_args,
     add_history_export_args,
 )
+
+
 def _cli_execution():
     return importlib.import_module("tnfr.cli.execution")
-from tnfr.constants import METRIC_DEFAULTS
+
+
 from tnfr import __version__
-from tnfr.execution import CANONICAL_PRESET_NAME, basic_canonical_example
 from tnfr.config.presets import get_preset
+from tnfr.constants import METRIC_DEFAULTS
+from tnfr.execution import CANONICAL_PRESET_NAME, basic_canonical_example
 
 
 def test_cli_version(capsys):
@@ -285,7 +287,9 @@ def test_cli_history_roundtrip(tmp_path, capsys, command):
         seq_file.write_text('[{"WAIT": 1}]', encoding="utf-8")
         args.extend(["--sequence-file", str(seq_file)])
 
-    args.extend(["--save-history", str(save_path), "--export-history-base", str(export_base)])
+    args.extend(
+        ["--save-history", str(save_path), "--export-history-base", str(export_base)]
+    )
 
     rc = main(args)
     assert rc == 0
@@ -320,7 +324,12 @@ def test_run_program_delegates_to_dynamics_run(monkeypatch):
     recorded: dict[str, Any] = {}
 
     def fake_run(
-        G, *, steps: int, dt: float | None = None, use_Si: bool = True, apply_glyphs: bool = True
+        G,
+        *,
+        steps: int,
+        dt: float | None = None,
+        use_Si: bool = True,
+        apply_glyphs: bool = True,
     ) -> None:
         recorded.update(
             {
@@ -351,7 +360,9 @@ def test_run_program_delegates_to_dynamics_run(monkeypatch):
     G = _cli_execution().run_program(None, None, args)
 
     assert recorded["graph"] is G
-    assert recorded["steps"] == 0  # negative steps are clamped to preserve CLI behaviour
+    assert (
+        recorded["steps"] == 0
+    )  # negative steps are clamped to preserve CLI behaviour
     assert recorded["dt"] == pytest.approx(0.25)
     assert recorded["use_Si"] is False
     assert recorded["apply_glyphs"] is False
@@ -428,5 +439,3 @@ def test_args_to_dict_filters_none_values():
     args = parser.parse_args(["--grammar.enabled"])
     result = _args_to_dict(args, "grammar_")
     assert result == {"enabled": True}
-
-

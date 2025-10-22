@@ -1,13 +1,11 @@
 """Unit tests for selector normalization metrics applied during dynamics."""
 
-
-
+from tnfr.constants.core import SELECTOR_THRESHOLD_DEFAULTS
 from tnfr.dynamics import (
-    step,
     default_glyph_selector,
     parametric_glyph_selector,
+    step,
 )
-from tnfr.constants.core import SELECTOR_THRESHOLD_DEFAULTS
 
 
 def _make_graph(graph_canon):

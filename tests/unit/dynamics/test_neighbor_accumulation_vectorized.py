@@ -71,12 +71,16 @@ def test_vectorized_neighbor_sums_match_loop(topo_weight, monkeypatch):
 
     vector_graph = _dense_weighted_graph(np_module, nodes=32, topo_weight=topo_weight)
     vector_data = _prepare_dnfr_data(vector_graph)
-    vector_result = _build_neighbor_sums_common(vector_graph, vector_data, use_numpy=True)
+    vector_result = _build_neighbor_sums_common(
+        vector_graph, vector_data, use_numpy=True
+    )
 
     loop_graph = _dense_weighted_graph(np_module, nodes=32, topo_weight=topo_weight)
     with numpy_disabled(monkeypatch):
         loop_data = _prepare_dnfr_data(loop_graph)
-        loop_result = _build_neighbor_sums_common(loop_graph, loop_data, use_numpy=False)
+        loop_result = _build_neighbor_sums_common(
+            loop_graph, loop_data, use_numpy=False
+        )
 
     for vector_arr, loop_arr in zip(vector_result[:-1], loop_result[:-1]):
         if vector_arr is None or loop_arr is None:
@@ -90,7 +94,9 @@ def test_vectorized_neighbor_sums_match_loop(topo_weight, monkeypatch):
     if vec_degrees is None or loop_degrees is None:
         assert vec_degrees is loop_degrees is None
     else:
-        np_module.testing.assert_allclose(vec_degrees, loop_degrees, rtol=1e-9, atol=1e-9)
+        np_module.testing.assert_allclose(
+            vec_degrees, loop_degrees, rtol=1e-9, atol=1e-9
+        )
 
 
 @pytest.mark.parametrize("topo_weight", [0.0, 0.5])
@@ -101,21 +107,23 @@ def test_sparse_broadcast_neighbor_sums_match_loop(topo_weight, monkeypatch):
     vector_data = _prepare_dnfr_data(vector_graph)
     vector_data["prefer_sparse"] = True
     vector_data["A"] = None
-    vector_result = _build_neighbor_sums_common(vector_graph, vector_data, use_numpy=True)
+    vector_result = _build_neighbor_sums_common(
+        vector_graph, vector_data, use_numpy=True
+    )
 
     loop_graph = _sparse_weighted_graph(np_module, nodes=48, topo_weight=topo_weight)
     with numpy_disabled(monkeypatch):
         loop_data = _prepare_dnfr_data(loop_graph)
-        loop_result = _build_neighbor_sums_common(loop_graph, loop_data, use_numpy=False)
+        loop_result = _build_neighbor_sums_common(
+            loop_graph, loop_data, use_numpy=False
+        )
 
     for vector_arr, loop_arr in zip(vector_result[:-1], loop_result[:-1]):
         if vector_arr is None or loop_arr is None:
             assert vector_arr is loop_arr is None
         else:
             loop_np = np_module.asarray(loop_arr, dtype=float)
-            np_module.testing.assert_allclose(
-                vector_arr, loop_np, rtol=1e-9, atol=1e-9
-            )
+            np_module.testing.assert_allclose(vector_arr, loop_np, rtol=1e-9, atol=1e-9)
 
     vec_degrees = vector_result[-1]
     loop_degrees = loop_result[-1]

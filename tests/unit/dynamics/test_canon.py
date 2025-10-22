@@ -1,10 +1,9 @@
 """Unit tests validating canonical configuration checks for dynamics graphs."""
 
-
-
 import networkx as nx
+
+from tnfr.constants import THETA_KEY, VF_KEY, inject_defaults
 from tnfr.dynamics import validate_canon
-from tnfr.constants import VF_KEY, THETA_KEY, inject_defaults
 from tnfr.initialization import init_node_attrs
 
 

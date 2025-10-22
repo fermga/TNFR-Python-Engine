@@ -3,15 +3,17 @@
 from __future__ import annotations
 
 import math
+from collections import deque
+from collections.abc import Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from functools import partial
 from operator import ge, le
 from statistics import StatisticsError, fmean
 from typing import Any, Callable, Iterable, cast
-from collections import deque
-from collections.abc import Mapping, MutableMapping, Sequence
 
+from ..alias import get_attr
+from ..callback_utils import CallbackEvent, callback_manager
 from ..constants import (
     STATE_DISSONANT,
     STATE_STABLE,
@@ -21,9 +23,7 @@ from ..constants import (
     get_param,
     normalise_state_token,
 )
-from ..callback_utils import CallbackEvent, callback_manager
 from ..glyph_history import append_metric, ensure_history
-from ..alias import get_attr
 from ..helpers.numeric import clamp01, similarity_abs
 from ..types import (
     DiagnosisNodeData,
@@ -36,8 +36,8 @@ from ..types import (
     TNFRGraph,
 )
 from ..utils import get_numpy
-from .common import compute_dnfr_accel_max, min_max_range, normalize_dnfr
 from .coherence import CoherenceMatrixPayload, coherence_matrix, local_phase_sync
+from .common import compute_dnfr_accel_max, min_max_range, normalize_dnfr
 from .trig_cache import compute_theta_trig, get_trig_cache
 
 ALIAS_EPI = get_aliases("EPI")
@@ -376,7 +376,9 @@ def _node_diagnostics(
 
     if compute_symmetry:
         epi_bar = node_data.get("neighbor_epi_mean")
-        symm = 1.0 if epi_bar is None else similarity_abs(EPI, epi_bar, epi_min, epi_max)
+        symm = (
+            1.0 if epi_bar is None else similarity_abs(EPI, epi_bar, epi_min, epi_max)
+        )
     else:
         symm = None
 
@@ -505,10 +507,7 @@ def _diagnosis_step(
 
     if supports_vector:
         epi_arr = np_mod.fromiter(
-            (
-                cast(float, get_attr(nd, ALIAS_EPI, 0.0))
-                for _, nd in nodes_data
-            ),
+            (cast(float, get_attr(nd, ALIAS_EPI, 0.0)) for _, nd in nodes_data),
             dtype=float,
             count=len(nodes_data),
         )
@@ -518,10 +517,7 @@ def _diagnosis_step(
 
         si_arr = np_mod.clip(
             np_mod.fromiter(
-                (
-                    cast(float, get_attr(nd, ALIAS_SI, 0.0))
-                    for _, nd in nodes_data
-                ),
+                (cast(float, get_attr(nd, ALIAS_SI, 0.0)) for _, nd in nodes_data),
                 dtype=float,
                 count=len(nodes_data),
             ),
@@ -531,10 +527,7 @@ def _diagnosis_step(
         si_vals = si_arr.tolist()
 
         vf_arr = np_mod.fromiter(
-            (
-                cast(float, get_attr(nd, ALIAS_VF, 0.0))
-                for _, nd in nodes_data
-            ),
+            (cast(float, get_attr(nd, ALIAS_VF, 0.0)) for _, nd in nodes_data),
             dtype=float,
             count=len(nodes_data),
         )
@@ -595,9 +588,7 @@ def _diagnosis_step(
     if supports_vector:
         size = len(coherence_nodes)
         matrix_np = (
-            _coherence_matrix_to_numpy(weight_matrix, size, np_mod)
-            if size
-            else None
+            _coherence_matrix_to_numpy(weight_matrix, size, np_mod) if size else None
         )
         if matrix_np is not None and size:
             cos_weight = np_mod.fromiter(
@@ -617,8 +608,7 @@ def _diagnosis_step(
                 np_mod,
             )
             rloc_map = {
-                coherence_nodes[idx]: float(weighted_sync[idx])
-                for idx in range(size)
+                coherence_nodes[idx]: float(weighted_sync[idx]) for idx in range(size)
             }
         else:
             rloc_map = {}
@@ -654,7 +644,7 @@ def _diagnosis_step(
                     executor.submit(
                         _rlocal_worker,
                         RLocalWorkerArgs(
-                            chunk=nodes[idx:idx + chunk_size],
+                            chunk=nodes[idx : idx + chunk_size],
                             coherence_nodes=coherence_nodes,
                             weight_matrix=weight_matrix,
                             weight_index=weight_index,
@@ -681,7 +671,9 @@ def _diagnosis_step(
             )
 
     if isinstance(Wi_last, (list, tuple)) and Wi_last:
-        wi_values = [Wi_last[i] if i < len(Wi_last) else None for i in range(len(nodes))]
+        wi_values = [
+            Wi_last[i] if i < len(Wi_last) else None for i in range(len(nodes))
+        ]
     else:
         wi_values = [None] * len(nodes)
 
@@ -708,7 +700,7 @@ def _diagnosis_step(
                             _neighbor_mean_worker,
                         ),
                         NeighborMeanWorkerArgs(
-                            chunk=nodes[idx:idx + chunk_size],
+                            chunk=nodes[idx : idx + chunk_size],
                             neighbors_map=neighbors_map,
                             epi_map=epi_map,
                         ),
@@ -716,9 +708,7 @@ def _diagnosis_step(
                     for idx in range(0, len(nodes), chunk_size)
                 ]
                 for fut in futures:
-                    neighbor_means.extend(
-                        cast(list[float | None], fut.result())
-                    )
+                    neighbor_means.extend(cast(list[float | None], fut.result()))
         else:
             neighbor_means = _neighbor_mean_worker(
                 NeighborMeanWorkerArgs(
@@ -767,7 +757,7 @@ def _diagnosis_step(
                         ],
                         _diagnosis_worker_chunk,
                     ),
-                    node_payload[idx:idx + chunk_size],
+                    node_payload[idx : idx + chunk_size],
                     shared,
                 )
                 for idx in range(0, len(node_payload), chunk_size)
@@ -785,9 +775,7 @@ def _diagnosis_step(
     append_metric(hist, key, diag)
 
 
-def dissonance_events(
-    G: TNFRGraph, ctx: DiagnosisSharedState | None = None
-) -> None:
+def dissonance_events(G: TNFRGraph, ctx: DiagnosisSharedState | None = None) -> None:
     """Emit per-node structural dissonance start/end events.
 
     Events are recorded as ``"dissonance_start"`` and ``"dissonance_end"``.

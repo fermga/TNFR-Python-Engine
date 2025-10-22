@@ -1,5 +1,6 @@
-from pathlib import Path
 import os
+from pathlib import Path
+
 import pytest
 
 from tnfr.io import safe_write
@@ -56,9 +57,7 @@ def test_safe_write_non_atomic(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     assert dest.read_text() == "hi"
 
 
-def test_safe_write_sync_non_atomic(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-):
+def test_safe_write_sync_non_atomic(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     dest = tmp_path / "out.txt"
 
     fsynced = False

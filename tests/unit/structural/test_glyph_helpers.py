@@ -1,10 +1,8 @@
 """Unit tests for glyph count normalization and grouping helpers."""
 
-
-
 from collections import Counter
 
-from tnfr.utils import normalize_counter, mix_groups
+from tnfr.utils import mix_groups, normalize_counter
 
 
 def test_normalize_counter():

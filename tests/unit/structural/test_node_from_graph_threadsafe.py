@@ -1,8 +1,7 @@
 """Unit tests for ``NodeNX.from_graph`` in multi-threaded contexts."""
 
-
-
 from concurrent.futures import ThreadPoolExecutor
+
 import networkx as nx
 
 from tnfr.node import NodeNX

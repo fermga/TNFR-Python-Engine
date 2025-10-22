@@ -1,11 +1,9 @@
 """Unit tests for metric history recording and retrieval."""
 
-
-
 import pytest
 
+from tnfr.glyph_history import ensure_history, push_glyph
 from tnfr.metrics.core import _metrics_step
-from tnfr.glyph_history import push_glyph, ensure_history
 
 
 def test_phase_sync_and_kuramoto_recorded(graph_canon):
