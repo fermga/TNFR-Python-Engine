@@ -347,18 +347,47 @@ def _configure_dnfr_weights(G) -> dict:
 def _init_dnfr_cache(
     G: TNFRGraph,
     nodes: Sequence[NodeId],
-    *,
-    manager: CacheManager,
-    checksum: Any,
+    cache_or_manager: CacheManager | DnfrCache | None = None,
+    checksum: Any | None = None,
     force_refresh: bool = False,
-) -> tuple[DnfrCache, dict[NodeId, int], list[float], list[float], list[float], list[float], list[float], bool]:
-    """Initialise or reuse cached ΔNFR arrays using ``manager`` telemetry."""
+    *,
+    manager: CacheManager | None = None,
+) -> tuple[
+    DnfrCache,
+    dict[NodeId, int],
+    list[float],
+    list[float],
+    list[float],
+    list[float],
+    list[float],
+    bool,
+]:
+    """Initialise or reuse cached ΔNFR arrays.
+
+    ``manager`` telemetry became mandatory in TNFR 9.0 to expose cache hits,
+    misses and timings. Older callers still pass a ``cache`` instance as the
+    third positional argument; this helper supports both signatures by seeding
+    the manager-backed state with the provided cache when necessary.
+    """
+
+    if manager is None and isinstance(cache_or_manager, CacheManager):
+        manager = cache_or_manager
+        cache_or_manager = None
+
+    if manager is None:
+        manager = _graph_cache_manager(G.graph)
 
     graph = G.graph
     state = manager.get(DNFR_PREP_STATE_KEY)
     if not isinstance(state, DnfrPrepState):
         manager.clear(DNFR_PREP_STATE_KEY)
         state = manager.get(DNFR_PREP_STATE_KEY)
+
+    if isinstance(cache_or_manager, DnfrCache):
+        state.cache = cache_or_manager
+        if checksum is None:
+            checksum = cache_or_manager.checksum
+
     cache = state.cache
     reuse = (
         not force_refresh
@@ -387,24 +416,63 @@ def _init_dnfr_cache(
         idx_local = {n: i for i, n in enumerate(nodes)}
         size = len(nodes)
         zeros = [0.0] * size
-        cache_new = DnfrCache(
-            idx=idx_local,
-            theta=zeros.copy(),
-            epi=zeros.copy(),
-            vf=zeros.copy(),
-            cos_theta=[1.0] * size,
-            sin_theta=[0.0] * size,
-            neighbor_x=zeros.copy(),
-            neighbor_y=zeros.copy(),
-            neighbor_epi_sum=zeros.copy(),
-            neighbor_vf_sum=zeros.copy(),
-            neighbor_count=zeros.copy(),
-            neighbor_deg_sum=zeros.copy() if size else [],
-            degs=prev_cache.degs if prev_cache else None,
-            edge_src=None,
-            edge_dst=None,
-            checksum=checksum,
-        )
+        if prev_cache is None:
+            cache_new = DnfrCache(
+                idx=idx_local,
+                theta=zeros.copy(),
+                epi=zeros.copy(),
+                vf=zeros.copy(),
+                cos_theta=[1.0] * size,
+                sin_theta=[0.0] * size,
+                neighbor_x=zeros.copy(),
+                neighbor_y=zeros.copy(),
+                neighbor_epi_sum=zeros.copy(),
+                neighbor_vf_sum=zeros.copy(),
+                neighbor_count=zeros.copy(),
+                neighbor_deg_sum=zeros.copy() if size else [],
+                degs=None,
+                edge_src=None,
+                edge_dst=None,
+                checksum=checksum,
+            )
+        else:
+            cache_new = prev_cache
+            cache_new.idx = idx_local
+            cache_new.theta = zeros.copy()
+            cache_new.epi = zeros.copy()
+            cache_new.vf = zeros.copy()
+            cache_new.cos_theta = [1.0] * size
+            cache_new.sin_theta = [0.0] * size
+            cache_new.neighbor_x = zeros.copy()
+            cache_new.neighbor_y = zeros.copy()
+            cache_new.neighbor_epi_sum = zeros.copy()
+            cache_new.neighbor_vf_sum = zeros.copy()
+            cache_new.neighbor_count = zeros.copy()
+            cache_new.neighbor_deg_sum = zeros.copy() if size else []
+
+            # Reset any numpy mirrors or aggregated buffers to avoid leaking
+            # state across refresh cycles (e.g. switching between vectorised
+            # and Python paths or reusing legacy caches).
+            for attr in _NUMPY_CACHE_ATTRS:
+                setattr(cache_new, attr, None)
+            for attr in (
+                "th_bar_np",
+                "epi_bar_np",
+                "vf_bar_np",
+                "deg_bar_np",
+                "grad_phase_np",
+                "grad_epi_np",
+                "grad_vf_np",
+                "grad_topo_np",
+                "grad_total_np",
+            ):
+                setattr(cache_new, attr, None)
+            cache_new.edge_src = None
+            cache_new.edge_dst = None
+            cache_new.edge_signature = None
+            cache_new.neighbor_accum_signature = None
+        cache_new.degs = prev_cache.degs if prev_cache else None
+        cache_new.checksum = checksum
         current.cache = cache_new
         graph["_dnfr_prep_cache"] = cache_new
         return current
@@ -639,7 +707,8 @@ def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[st
     dense path can be exercised; callers may also force the dense mode by
     setting ``G.graph['dnfr_force_dense']`` to a truthy value.
     """
-    weights = G.graph.get("_dnfr_weights")
+    graph = G.graph
+    weights = graph.get("_dnfr_weights")
     if weights is None:
         weights = _configure_dnfr_weights(G)
 
@@ -673,14 +742,14 @@ def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[st
     manager = _graph_cache_manager(G.graph)
     checksum = G.graph.get("_dnfr_nodes_checksum")
     dirty_flag = bool(G.graph.pop("_dnfr_prep_dirty", False))
-    if dirty_flag:
-        manager.clear(DNFR_PREP_STATE_KEY)
+    existing_cache = cast(DnfrCache | None, graph.get("_dnfr_prep_cache"))
     cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = _init_dnfr_cache(
         G,
         nodes,
-        manager=manager,
-        checksum=checksum,
+        existing_cache,
+        checksum,
         force_refresh=dirty_flag,
+        manager=manager,
     )
     dirty = dirty_flag or refreshed
     result["cache"] = cache
@@ -692,6 +761,36 @@ def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[st
     result["sin_theta"] = sin_theta
     if cache is not None:
         _refresh_dnfr_vectors(G, nodes, cache)
+        if np_module is None:
+            for attr in (
+                "neighbor_x_np",
+                "neighbor_y_np",
+                "neighbor_epi_sum_np",
+                "neighbor_vf_sum_np",
+                "neighbor_count_np",
+                "neighbor_deg_sum_np",
+                "neighbor_inv_count_np",
+                "neighbor_cos_avg_np",
+                "neighbor_sin_avg_np",
+                "neighbor_mean_tmp_np",
+                "neighbor_mean_length_np",
+                "neighbor_accum_np",
+                "neighbor_edge_values_np",
+            ):
+                setattr(cache, attr, None)
+            cache.neighbor_accum_signature = None
+            for attr in (
+                "th_bar_np",
+                "epi_bar_np",
+                "vf_bar_np",
+                "deg_bar_np",
+                "grad_phase_np",
+                "grad_epi_np",
+                "grad_vf_np",
+                "grad_topo_np",
+                "grad_total_np",
+            ):
+                setattr(cache, attr, None)
 
     w_phase = float(weights.get("phase", 0.0))
     w_epi = float(weights.get("epi", 0.0))
@@ -1450,7 +1549,7 @@ def _accumulate_neighbors_broadcasted(
     component_rows = 4 + (1 if include_count else 0) + (1 if use_topology else 0)
 
     if cache is not None:
-        base_signature = (id(edge_src), id(edge_dst), n)
+        base_signature = (id(edge_src), id(edge_dst), n, edge_count)
         cache.edge_signature = base_signature
         signature = (base_signature, component_rows)
         previous_signature = cache.neighbor_accum_signature
@@ -1721,9 +1820,17 @@ def _accumulate_neighbors_numpy(
         if cache is not None:
             cache.edge_src = edge_src
             cache.edge_dst = edge_dst
+    if edge_src is not None:
+        data["edge_count"] = int(edge_src.size)
 
+    cached_deg_array = data.get("deg_array")
+    reuse_count_from_deg = False
     if count is not None:
-        count.fill(0.0)
+        if cached_deg_array is not None:
+            np.copyto(count, cached_deg_array, casting="unsafe")
+            reuse_count_from_deg = True
+        else:
+            count.fill(0.0)
 
     deg_array = None
     if deg_sum is not None:
@@ -1731,6 +1838,8 @@ def _accumulate_neighbors_numpy(
         deg_array = _resolve_numpy_degree_array(
             data, count if count is not None else None, cache=cache, np=np
         )
+    elif cached_deg_array is not None:
+        deg_array = cached_deg_array
 
     accum = _accumulate_neighbors_broadcasted(
         edge_src=edge_src,
@@ -1754,6 +1863,8 @@ def _accumulate_neighbors_numpy(
     data["neighbor_edge_values_np"] = accum.get("edge_values")
     if cache is not None:
         data["neighbor_accum_signature"] = cache.neighbor_accum_signature
+    if reuse_count_from_deg and count is not None and cached_deg_array is not None:
+        np.copyto(count, cached_deg_array, casting="unsafe")
     degs = deg_array if deg_sum is not None and deg_array is not None else None
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
@@ -1780,20 +1891,31 @@ def _compute_dnfr(
         and the graph does not set ``vectorized_dnfr`` to ``False``.
     """
     np_module = get_numpy()
+    data["dnfr_numpy_available"] = bool(np_module)
     vector_disabled = G.graph.get("vectorized_dnfr") is False
     prefer_dense = np_module is not None and not vector_disabled
     if use_numpy is True and np_module is not None:
         prefer_dense = True
     if use_numpy is False or vector_disabled:
         prefer_dense = False
+    data["dnfr_used_numpy"] = bool(prefer_dense and np_module is not None)
 
     data["n_jobs"] = n_jobs
-    res = _build_neighbor_sums_common(
-        G,
-        data,
-        use_numpy=prefer_dense,
-        n_jobs=n_jobs,
-    )
+    try:
+        res = _build_neighbor_sums_common(
+            G,
+            data,
+            use_numpy=prefer_dense,
+            n_jobs=n_jobs,
+        )
+    except TypeError as exc:
+        if "n_jobs" not in str(exc):
+            raise
+        res = _build_neighbor_sums_common(
+            G,
+            data,
+            use_numpy=prefer_dense,
+        )
     if res is None:
         return
     x, y, epi_sum, vf_sum, count, deg_sum, degs = res
@@ -1839,6 +1961,26 @@ def default_compute_delta_nfr(
         hook_name="default_compute_delta_nfr",
     )
     _compute_dnfr(G, data, n_jobs=n_jobs)
+    if not data.get("dnfr_numpy_available"):
+        cache = data.get("cache")
+        if isinstance(cache, DnfrCache):
+            for attr in (
+                "neighbor_x_np",
+                "neighbor_y_np",
+                "neighbor_epi_sum_np",
+                "neighbor_vf_sum_np",
+                "neighbor_count_np",
+                "neighbor_deg_sum_np",
+                "neighbor_inv_count_np",
+                "neighbor_cos_avg_np",
+                "neighbor_sin_avg_np",
+                "neighbor_mean_tmp_np",
+                "neighbor_mean_length_np",
+                "neighbor_accum_np",
+                "neighbor_edge_values_np",
+            ):
+                setattr(cache, attr, None)
+            cache.neighbor_accum_signature = None
 
 
 def set_delta_nfr_hook(
