@@ -7,6 +7,8 @@ structures as immutable snapshots.
 
 from __future__ import annotations
 
+import warnings
+
 from typing import Any, Callable, Protocol, NamedTuple, TypedDict, cast
 from collections.abc import Iterable, Mapping
 from types import MappingProxyType
@@ -67,6 +69,70 @@ class TraceSnapshot(TraceMetadata, total=False):
     phase: str
 
 
+TRACE_VERBOSITY_DEFAULT = "debug"
+_TRACE_ALL_FIELDS = (
+    "gamma",
+    "grammar",
+    "selector",
+    "dnfr_weights",
+    "si_weights",
+    "callbacks",
+    "thol_open_nodes",
+    "kuramoto",
+    "sigma",
+    "glyph_counts",
+)
+TRACE_VERBOSITY_PRESETS: Mapping[str, tuple[str, ...]] = {
+    "basic": (
+        "gamma",
+        "grammar",
+        "selector",
+        "dnfr_weights",
+        "si_weights",
+        "callbacks",
+        "thol_open_nodes",
+    ),
+    "detailed": _TRACE_ALL_FIELDS,
+    "debug": _TRACE_ALL_FIELDS,
+}
+
+
+def _normalise_capture_spec(raw: Any) -> set[str]:
+    """Coerce custom capture payloads to a ``set`` of field names."""
+
+    if raw is None:
+        return set()
+    if isinstance(raw, Mapping):
+        return {str(name) for name in raw.keys()}
+    if isinstance(raw, str):
+        return {raw}
+    if isinstance(raw, Iterable):
+        return {str(name) for name in raw}
+    return {str(raw)}
+
+
+def _resolve_trace_capture(cfg: Mapping[str, Any]) -> set[str]:
+    """Return the capture set declared by ``cfg`` respecting verbosity."""
+
+    if "capture" in cfg:
+        return _normalise_capture_spec(cfg.get("capture"))
+
+    raw_verbosity = cfg.get("verbosity", TRACE_VERBOSITY_DEFAULT)
+    verbosity = str(raw_verbosity).lower()
+    fields = TRACE_VERBOSITY_PRESETS.get(verbosity)
+    if fields is None:
+        warnings.warn(
+            (
+                "Unknown TRACE verbosity %r; falling back to %s"
+                % (raw_verbosity, TRACE_VERBOSITY_DEFAULT)
+            ),
+            UserWarning,
+            stacklevel=3,
+        )
+        fields = TRACE_VERBOSITY_PRESETS[TRACE_VERBOSITY_DEFAULT]
+    return set(fields)
+
+
 def _kuramoto_fallback(G: TNFRGraph) -> tuple[float, float]:
     return 0.0, 0.0
 
@@ -122,7 +188,7 @@ def _trace_setup(
     if not cfg.get("enabled", True):
         return None, set(), None, None
 
-    capture: set[str] = set(cfg.get("capture", []))
+    capture = _resolve_trace_capture(cfg)
     hist = ensure_history(G)
     key = cast(str | None, cfg.get("history_key", "trace_meta"))
     return cfg, capture, hist, key

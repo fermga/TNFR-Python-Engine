@@ -28,6 +28,16 @@ except Exception:  # pragma: no cover - numpy optional dependency
 np: ModuleType | None = cast(ModuleType | None, _np)
 
 
+def _has_numpy_support(np_obj: object) -> bool:
+    """Return ``True`` when ``np_obj`` exposes the required NumPy API."""
+
+    return isinstance(np_obj, ModuleType) or (
+        np_obj is not None
+        and hasattr(np_obj, "fromiter")
+        and hasattr(np_obj, "bincount")
+    )
+
+
 class SigmaTrace(TypedDict):
     """Time-aligned σ(t) trace exported alongside glyphograms."""
 
@@ -194,7 +204,7 @@ def _update_tg(
     if not glyph_sequence:
         return counts, n_total, n_latent
 
-    if isinstance(np, ModuleType):
+    if _has_numpy_support(np):
         glyph_idx = np.fromiter(
             (_GLYPH_TO_INDEX[glyph] for glyph in glyph_sequence),
             dtype=np.int64,
@@ -271,7 +281,7 @@ def _update_epi_support(
     total = 0.0
     count = 0
 
-    if isinstance(np, ModuleType) and node_count:
+    if _has_numpy_support(np) and node_count:
         epi_values = np.fromiter(
             (
                 abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0)))

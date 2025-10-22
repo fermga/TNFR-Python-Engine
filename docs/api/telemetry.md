@@ -42,6 +42,34 @@ the graph (default length 100). Adjust or inspect the buffer at runtime with
 `tnfr.callback_utils.callback_manager.set_callback_error_limit` and
 `get_callback_error_limit`.
 
+### Trace verbosity presets
+
+`G.graph["TRACE"]` accepts a `verbosity` knob that determines which field producers execute when
+no explicit `capture` list is provided. The presets are:
+
+- `"basic"` — captures the structural configuration (`gamma`, grammar, selector, ΔNFR/SI weights,
+  callback map, THOL state) while skipping the heavier collectors.
+- `"detailed"` and `"debug"` — include all default collectors (Kuramoto order, Σ⃗ snapshot, glyph
+  counts) to preserve the legacy trace payloads. `"debug"` remains the default level.
+
+If you still need a custom field mix, set `TRACE["capture"]` explicitly; the resolver will honour
+that list (or mapping) and ignore the verbosity preset.
+
+### Metrics verbosity tiers
+
+The metrics orchestrator follows the same pattern via `G.graph["METRICS"]["verbosity"]`:
+
+- `"basic"` keeps the coherence and stability core (C(t), ΔSi, B) while skipping phase sync,
+  Σ⃗ statistics, Si aggregates, glyph timing, and the coherence/diagnosis callback hooks. This is
+  useful for lightweight runs or smoke tests.
+- `"detailed"` and `"debug"` execute the full collector suite (`_update_phase_sync`,
+  `_update_sigma`, `_aggregate_si`, `_compute_advanced_metrics`) and register the auxiliary
+  coherence/diagnosis observers. `"debug"` is the default so existing deployments continue to emit
+  the rich telemetry payloads.
+
+As with traces, an explicit override of `METRICS` parameters (for example `save_by_node` or
+`normalize_series`) still applies regardless of the verbosity preset.
+
 ## Locking policy
 
 The engine centralises reusable process-wide locks in `tnfr.locking`. Obtain named locks with

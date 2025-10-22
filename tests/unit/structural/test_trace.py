@@ -70,6 +70,42 @@ def test_trace_sigma_no_glyphs(graph_canon):
     }
 
 
+def test_trace_basic_verbosity_skips_heavy_fields(graph_canon):
+    G = graph_canon()
+    G.graph["TRACE"]["verbosity"] = "basic"
+    register_trace(G)
+    callback_manager.invoke_callbacks(G, CallbackEvent.BEFORE_STEP.value)
+    callback_manager.invoke_callbacks(G, CallbackEvent.AFTER_STEP.value)
+
+    hist = G.graph["history"]["trace_meta"]
+    before, after = hist
+
+    assert before["phase"] == "before"
+    assert "gamma" in before and "dnfr_weights" in before
+    assert "kuramoto" not in before and "sigma" not in before
+
+    assert after["phase"] == "after"
+    assert "kuramoto" not in after
+    assert "sigma" not in after
+    assert "glyphs" not in after
+
+
+def test_trace_detailed_verbosity_preserves_heavy_fields(graph_canon):
+    G = graph_canon()
+    G.graph["TRACE"]["verbosity"] = "detailed"
+    register_trace(G)
+    callback_manager.invoke_callbacks(G, CallbackEvent.BEFORE_STEP.value)
+    callback_manager.invoke_callbacks(G, CallbackEvent.AFTER_STEP.value)
+
+    hist = G.graph["history"]["trace_meta"]
+    after = hist[1]
+
+    assert after["phase"] == "after"
+    assert "kuramoto" in after
+    assert "sigma" in after
+    assert "glyphs" in after
+
+
 def test_callback_names_spec():
     """CallbackSpec entries are handled correctly."""
 
@@ -149,3 +185,20 @@ def test_register_trace_field_runtime(graph_canon):
     meta = G.graph["history"]["trace_meta"][0]
     assert meta["custom"] == 42
     del trace.TRACE_FIELDS["before"]["custom"]
+
+
+def test_trace_capture_override_takes_priority(graph_canon):
+    G = graph_canon()
+    G.graph["TRACE"] = {
+        "enabled": True,
+        "verbosity": "basic",
+        "capture": ["kuramoto"],
+        "history_key": "trace_meta",
+    }
+    register_trace(G)
+    callback_manager.invoke_callbacks(G, CallbackEvent.AFTER_STEP.value)
+
+    meta = G.graph["history"]["trace_meta"][0]
+    assert "kuramoto" in meta
+    assert "sigma" not in meta
+    assert "glyphs" not in meta

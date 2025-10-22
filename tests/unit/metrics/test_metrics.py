@@ -11,8 +11,13 @@ from tnfr.constants import (
     get_aliases,
 )
 from tnfr.alias import get_attr, set_attr
-from tnfr.metrics.coherence import _track_stability, _aggregate_si, _update_sigma
-from tnfr.metrics.core import _metrics_step
+from tnfr.metrics.coherence import (
+    GLYPH_LOAD_STABILIZERS_KEY,
+    _track_stability,
+    _aggregate_si,
+    _update_sigma,
+)
+from tnfr.metrics.core import _metrics_step, register_metrics_callbacks
 from tnfr.metrics.glyph_timing import (
     LATENT_GLYPH,
     _update_latency_index,
@@ -233,6 +238,109 @@ def test_update_sigma_rejects_legacy_history(monkeypatch, graph_canon):
 
     with pytest.raises(ValueError, match="glyph_load_estab"):
         _update_sigma(G, hist)
+
+
+def test_metrics_basic_verbosity_skips_collectors(monkeypatch, graph_canon):
+    G = graph_canon()
+    calls: list[str] = []
+
+    def record(name: str):
+        def _rec(*_args, **_kwargs):
+            calls.append(name)
+
+        return _rec
+
+    monkeypatch.setattr("tnfr.metrics.core._update_phase_sync", record("phase"))
+    monkeypatch.setattr("tnfr.metrics.core._update_sigma", record("sigma"))
+    monkeypatch.setattr("tnfr.metrics.core._aggregate_si", record("aggregate"))
+    monkeypatch.setattr(
+        "tnfr.metrics.core._compute_advanced_metrics",
+        record("advanced"),
+    )
+
+    G.graph["METRICS"]["verbosity"] = "basic"
+    _metrics_step(G)
+
+    assert calls == []
+    hist = G.graph["history"]
+    assert GLYPH_LOAD_STABILIZERS_KEY not in hist
+    assert "phase_sync" not in hist
+    assert "Si_mean" not in hist
+
+
+def test_metrics_detailed_verbosity_runs_collectors(monkeypatch, graph_canon):
+    G = graph_canon()
+    calls: list[str] = []
+
+    def record(name: str):
+        def _rec(*_args, **_kwargs):
+            calls.append(name)
+
+        return _rec
+
+    monkeypatch.setattr("tnfr.metrics.core._update_phase_sync", record("phase"))
+    monkeypatch.setattr("tnfr.metrics.core._update_sigma", record("sigma"))
+    monkeypatch.setattr("tnfr.metrics.core._aggregate_si", record("aggregate"))
+    monkeypatch.setattr(
+        "tnfr.metrics.core._compute_advanced_metrics",
+        record("advanced"),
+    )
+
+    G.graph["METRICS"]["verbosity"] = "detailed"
+    _metrics_step(G)
+
+    assert calls == ["phase", "sigma", "aggregate", "advanced"]
+    hist = G.graph["history"]
+    assert GLYPH_LOAD_STABILIZERS_KEY in hist
+    assert "phase_sync" in hist
+    assert "Si_mean" in hist
+
+
+def test_register_metrics_callbacks_respects_verbosity(monkeypatch, graph_canon):
+    recorded: list[str] = []
+
+    def _recorder(tag: str):
+        def _inner(_G):
+            recorded.append(tag)
+
+        return _inner
+
+    monkeypatch.setattr(
+        "tnfr.metrics.core.register_coherence_callbacks",
+        _recorder("coherence"),
+    )
+    monkeypatch.setattr(
+        "tnfr.metrics.core.register_diagnosis_callbacks",
+        _recorder("diagnosis"),
+    )
+
+    G = graph_canon()
+    G.graph["METRICS"]["verbosity"] = "basic"
+    register_metrics_callbacks(G)
+    assert recorded == []
+
+    recorded_high: list[str] = []
+
+    def _recorder_high(tag: str):
+        def _inner(_G):
+            recorded_high.append(tag)
+
+        return _inner
+
+    monkeypatch.setattr(
+        "tnfr.metrics.core.register_coherence_callbacks",
+        _recorder_high("coherence"),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        "tnfr.metrics.core.register_diagnosis_callbacks",
+        _recorder_high("diagnosis"),
+        raising=False,
+    )
+
+    G_high = graph_canon()
+    register_metrics_callbacks(G_high)
+    assert recorded_high == ["coherence", "diagnosis"]
 
 
 def _si_graph(graph_canon):
