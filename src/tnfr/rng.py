@@ -11,9 +11,9 @@ from dataclasses import dataclass
 from typing import Any, Generic, Hashable, TypeVar, cast
 
 
-from cachetools import LRUCache, cached  # type: ignore[import-untyped]
+from cachetools import cached  # type: ignore[import-untyped]
 from .constants import DEFAULTS, get_param
-from .cache import CacheManager, ManagedLRUCache
+from .cache import CacheManager, InstrumentedLRUCache
 from .utils import get_graph
 from .locking import get_lock
 from .types import GraphLike, TNFRGraph
@@ -31,13 +31,14 @@ V = TypeVar("V")
 
 @dataclass
 class _SeedCacheState:
-    cache: ManagedLRUCache[tuple[int, int], int] | None
+    cache: InstrumentedLRUCache[tuple[int, int], int] | None
     maxsize: int
 
 
 @dataclass
 class _CounterState(Generic[K]):
-    cache: ManagedLRUCache[K, int]
+    cache: InstrumentedLRUCache[K, int]
+    locks: dict[K, threading.RLock]
     max_entries: int
 
 
@@ -82,7 +83,7 @@ class _SeedHashCache(MutableMapping[tuple[int, int], int]):
         if size <= 0:
             return _SeedCacheState(cache=None, maxsize=0)
         return _SeedCacheState(
-            cache=ManagedLRUCache(
+            cache=InstrumentedLRUCache(
                 size,
                 manager=self._manager,
                 metrics_key=self._state_key,
@@ -121,7 +122,6 @@ class _SeedHashCache(MutableMapping[tuple[int, int], int]):
         state = self._get_state()
         if state is not None and state.cache is not None:
             state.cache[key] = value
-            self._manager.increment_miss(self._state_key)
 
     def __delitem__(self, key: tuple[int, int]) -> None:
         state = self._get_state()
@@ -155,7 +155,7 @@ class _SeedHashCache(MutableMapping[tuple[int, int], int]):
         return bool(state and state.cache is not None)
 
     @property
-    def data(self) -> LRUCache[tuple[int, int], int] | None:
+    def data(self) -> InstrumentedLRUCache[tuple[int, int], int] | None:
         """Expose the underlying cache for diagnostics/tests."""
 
         state = self._get_state(create=False)
@@ -206,12 +206,15 @@ class ScopedCounterCache(Generic[K]):
 
     def _create_state(self, requested: int | None = None) -> _CounterState[K]:
         size = self._resolved_entries(requested)
+        locks: dict[K, threading.RLock] = {}
         return _CounterState(
-            cache=ManagedLRUCache(
+            cache=InstrumentedLRUCache(
                 size,
                 manager=self._manager,
                 metrics_key=self._state_key,
+                locks=locks,
             ),
+            locks=locks,
             max_entries=size,
         )
 
@@ -238,10 +241,16 @@ class ScopedCounterCache(Generic[K]):
         return self._get_state().max_entries
 
     @property
-    def cache(self) -> LRUCache[K, int]:
-        """Expose the underlying ``LRUCache`` for inspection."""
+    def cache(self) -> InstrumentedLRUCache[K, int]:
+        """Expose the instrumented cache for inspection."""
 
         return self._get_state().cache
+
+    @property
+    def locks(self) -> dict[K, threading.RLock]:
+        """Return the mapping of per-key locks tracked by the cache."""
+
+        return self._get_state().locks
 
     def configure(
         self, *, force: bool = False, max_entries: int | None = None
@@ -259,12 +268,15 @@ class ScopedCounterCache(Generic[K]):
 
         def _update(state: _CounterState[K] | None) -> _CounterState[K]:
             if not isinstance(state, _CounterState) or force or state.max_entries != size:
+                locks: dict[K, threading.RLock] = {}
                 return _CounterState(
-                    cache=ManagedLRUCache(
+                    cache=InstrumentedLRUCache(
                         size,
                         manager=self._manager,
                         metrics_key=self._state_key,
+                        locks=locks,
                     ),
+                    locks=locks,
                     max_entries=size,
                 )
             return cast(_CounterState[K], state)
@@ -287,18 +299,15 @@ class ScopedCounterCache(Generic[K]):
             if not isinstance(state, _CounterState):
                 state = self._create_state(0)
             cache = state.cache
-            present = key in cache
+            locks = state.locks
+            if key not in locks:
+                locks[key] = threading.RLock()
             value = int(cache.get(key, 0))
             cache[key] = value + 1
             result["value"] = value
-            result["hit"] = present
             return state
 
         self._manager.update(self._state_key, _update)
-        if result.get("hit"):
-            self._manager.increment_hit(self._state_key)
-        else:
-            self._manager.increment_miss(self._state_key)
         return int(result.get("value", 0))
 
     def __len__(self) -> int:

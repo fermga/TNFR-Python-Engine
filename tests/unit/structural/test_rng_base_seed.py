@@ -181,10 +181,15 @@ def test_scoped_counter_cache_evictions():
     try:
         before = manager.get_metrics(cache._state_key)  # type: ignore[attr-defined]
         cache.bump("a")
+        cache.bump("a")
         cache.bump("b")
         cache.bump("c")
         after = manager.get_metrics(cache._state_key)  # type: ignore[attr-defined]
         assert after.evictions - before.evictions == 1
+        assert after.misses - before.misses == 3
+        assert after.hits - before.hits == 1
+        assert set(cache.cache.keys()) == {"b", "c"}
+        assert set(cache.locks.keys()) == {"b", "c"}
     finally:
         cache.configure(force=True, max_entries=rng_module._DEFAULT_CACHE_MAXSIZE)
         cache.clear()
