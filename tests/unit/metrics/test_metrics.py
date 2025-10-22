@@ -327,7 +327,7 @@ def test_compute_advanced_metrics_populates_history(graph_canon):
 def test_pp_val_zero_when_no_remesh(graph_canon):
     """PP metric should be 0.0 when no REMESH events occur."""
     G = graph_canon()
-    # Nodo en estado SHA, pero sin eventos REMESH
+    # Node in SHA state, but without any REMESH events
     G.add_node(0, EPI_kind=LATENT_GLYPH)
     inject_defaults(G)
 
@@ -340,7 +340,7 @@ def test_pp_val_zero_when_no_remesh(graph_canon):
 def test_pp_val_handles_missing_sha(graph_canon):
     """PP metric handles absence of SHA counts gracefully."""
     G = graph_canon()
-    # Nodo en estado REMESH pero sin nodos SHA
+    # Node in REMESH state but without SHA nodes
     G.add_node(0, EPI_kind="REMESH")
     inject_defaults(G)
 

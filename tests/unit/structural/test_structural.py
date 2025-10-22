@@ -35,7 +35,7 @@ from tnfr.structural import (
 
 
 def test_create_nfr_basic() -> None:
-    G, n = create_nfr("nodo", epi=0.1, vf=2.0, theta=0.3)
+    G, n = create_nfr("node", epi=0.1, vf=2.0, theta=0.3)
     assert isinstance(G, nx.Graph)
     assert n in G
     nd = G.nodes[n]
@@ -82,7 +82,7 @@ def test_validate_sequence_rejects_unknown_tokens() -> None:
         COHERENCE,
         RESONANCE,
         SILENCE,
-        "desconocido",
+        "unknown",
     ]
     ok, msg = validate_sequence(names)
     assert not ok and "unknown tokens" in msg

@@ -4,7 +4,7 @@ from tnfr.utils import ensure_node_offset_map
 from tnfr.node import NodeNX
 
 
-def test_nodonx_offset_uses_cached_mapping(graph_canon):
+def test_node_nx_offset_uses_cached_mapping(graph_canon):
     graph = graph_canon()
     graph.add_nodes_from([0, 1, 2])
     ensure_node_offset_map(graph)
@@ -15,7 +15,7 @@ def test_nodonx_offset_uses_cached_mapping(graph_canon):
     assert node.offset() == expected_offset
 
 
-def test_nodonx_offset_defaults_to_zero():
+def test_node_nx_offset_defaults_to_zero():
     graph = nx.Graph()
     graph.add_node(0)
 
