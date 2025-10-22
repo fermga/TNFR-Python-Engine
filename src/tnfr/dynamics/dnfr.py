@@ -21,10 +21,12 @@ from typing import TYPE_CHECKING, Any, cast
 from ..alias import get_attr, get_theta_attr, set_dnfr
 from ..constants import DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import angle_diff
+from ..cache import CacheManager
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import compute_theta_trig
 from ..utils import cached_node_list, cached_nodes_and_A, get_numpy, normalize_weights
+from ..utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 from ..types import (
     DeltaNFRHook,
     DnfrCacheVectors,
@@ -345,59 +347,74 @@ def _configure_dnfr_weights(G) -> dict:
 def _init_dnfr_cache(
     G: TNFRGraph,
     nodes: Sequence[NodeId],
-    prev_cache: DnfrCache | None,
+    *,
+    manager: CacheManager,
     checksum: Any,
-    dirty: bool,
+    force_refresh: bool = False,
 ) -> tuple[DnfrCache, dict[NodeId, int], list[float], list[float], list[float], list[float], list[float], bool]:
-    """Initialise or reuse cached ΔNFR arrays."""
-    if prev_cache and prev_cache.checksum == checksum and not dirty:
+    """Initialise or reuse cached ΔNFR arrays using ``manager`` telemetry."""
+
+    graph = G.graph
+    state = manager.get(DNFR_PREP_STATE_KEY)
+    if not isinstance(state, DnfrPrepState):
+        manager.clear(DNFR_PREP_STATE_KEY)
+        state = manager.get(DNFR_PREP_STATE_KEY)
+    cache = state.cache
+    reuse = (
+        not force_refresh
+        and isinstance(cache, DnfrCache)
+        and cache.checksum == checksum
+        and len(cache.theta) == len(nodes)
+    )
+    if reuse:
+        manager.increment_hit(DNFR_PREP_STATE_KEY)
+        graph["_dnfr_prep_cache"] = cache
         return (
-            prev_cache,
-            prev_cache.idx,
-            prev_cache.theta,
-            prev_cache.epi,
-            prev_cache.vf,
-            prev_cache.cos_theta,
-            prev_cache.sin_theta,
+            cache,
+            cache.idx,
+            cache.theta,
+            cache.epi,
+            cache.vf,
+            cache.cos_theta,
+            cache.sin_theta,
             False,
         )
 
-    idx = {n: i for i, n in enumerate(nodes)}
-    theta = [0.0] * len(nodes)
-    epi = [0.0] * len(nodes)
-    vf = [0.0] * len(nodes)
-    cos_theta = [1.0] * len(nodes)
-    sin_theta = [0.0] * len(nodes)
-    neighbor_x = [0.0] * len(nodes)
-    neighbor_y = [0.0] * len(nodes)
-    neighbor_epi_sum = [0.0] * len(nodes)
-    neighbor_vf_sum = [0.0] * len(nodes)
-    neighbor_count = [0.0] * len(nodes)
-    neighbor_deg_sum = [0.0] * len(nodes) if len(nodes) else []
-    cache_new = DnfrCache(
-        idx=idx,
-        theta=theta,
-        epi=epi,
-        vf=vf,
-        cos_theta=cos_theta,
-        sin_theta=sin_theta,
-        neighbor_x=neighbor_x,
-        neighbor_y=neighbor_y,
-        neighbor_epi_sum=neighbor_epi_sum,
-        neighbor_vf_sum=neighbor_vf_sum,
-        neighbor_count=neighbor_count,
-        neighbor_deg_sum=neighbor_deg_sum,
-        degs=prev_cache.degs if prev_cache else None,
-        edge_src=None,
-        edge_dst=None,
-        checksum=checksum,
-    )
-    if prev_cache is not None:
-        prev_cache.__dict__.update(cache_new.__dict__)
-        cache = prev_cache
-    else:
-        cache = cache_new
-    G.graph["_dnfr_prep_cache"] = cache
+    def _rebuild(current: DnfrPrepState | Any) -> DnfrPrepState:
+        if not isinstance(current, DnfrPrepState):
+            raise RuntimeError("ΔNFR prep state unavailable during rebuild")
+        prev_cache = current.cache if isinstance(current.cache, DnfrCache) else None
+        idx_local = {n: i for i, n in enumerate(nodes)}
+        size = len(nodes)
+        zeros = [0.0] * size
+        cache_new = DnfrCache(
+            idx=idx_local,
+            theta=zeros.copy(),
+            epi=zeros.copy(),
+            vf=zeros.copy(),
+            cos_theta=[1.0] * size,
+            sin_theta=[0.0] * size,
+            neighbor_x=zeros.copy(),
+            neighbor_y=zeros.copy(),
+            neighbor_epi_sum=zeros.copy(),
+            neighbor_vf_sum=zeros.copy(),
+            neighbor_count=zeros.copy(),
+            neighbor_deg_sum=zeros.copy() if size else [],
+            degs=prev_cache.degs if prev_cache else None,
+            edge_src=None,
+            edge_dst=None,
+            checksum=checksum,
+        )
+        current.cache = cache_new
+        graph["_dnfr_prep_cache"] = cache_new
+        return current
+
+    with manager.timer(DNFR_PREP_STATE_KEY):
+        state = manager.update(DNFR_PREP_STATE_KEY, _rebuild)
+    manager.increment_miss(DNFR_PREP_STATE_KEY)
+    cache = state.cache
+    if not isinstance(cache, DnfrCache):  # pragma: no cover - defensive guard
+        raise RuntimeError("ΔNFR cache initialisation failed")
     return (
         cache,
         cache.idx,
@@ -653,12 +670,19 @@ def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[st
     A: np.ndarray | None = A_untyped
     result["nodes"] = nodes
     result["A"] = A
-    cache: DnfrCache | None = G.graph.get("_dnfr_prep_cache")
+    manager = _graph_cache_manager(G.graph)
     checksum = G.graph.get("_dnfr_nodes_checksum")
-    dirty = bool(G.graph.pop("_dnfr_prep_dirty", False))
-    cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = (
-        _init_dnfr_cache(G, nodes, cache, checksum, dirty)
+    dirty_flag = bool(G.graph.pop("_dnfr_prep_dirty", False))
+    if dirty_flag:
+        manager.clear(DNFR_PREP_STATE_KEY)
+    cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = _init_dnfr_cache(
+        G,
+        nodes,
+        manager=manager,
+        checksum=checksum,
+        force_refresh=dirty_flag,
     )
+    dirty = dirty_flag or refreshed
     result["cache"] = cache
     result["idx"] = idx
     result["theta"] = theta
