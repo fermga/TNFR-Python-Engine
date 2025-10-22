@@ -17,6 +17,10 @@ from .constants import TRACE
 from .glyph_history import ensure_history, count_glyphs, append_metric
 from .utils import cached_import, get_graph_mapping, is_non_string_sequence
 from .metrics.sense_index import _normalise_si_sensitivity_mapping
+from .telemetry.verbosity import (
+    TelemetryVerbosity,
+    TELEMETRY_VERBOSITY_DEFAULT,
+)
 from .types import (
     SigmaVector,
     TNFRGraph,
@@ -69,7 +73,7 @@ class TraceSnapshot(TraceMetadata, total=False):
     phase: str
 
 
-TRACE_VERBOSITY_DEFAULT = "debug"
+TRACE_VERBOSITY_DEFAULT = TELEMETRY_VERBOSITY_DEFAULT
 _TRACE_ALL_FIELDS = (
     "gamma",
     "grammar",
@@ -91,7 +95,7 @@ _TRACE_CAPTURE_ALIASES: Mapping[str, str] = MappingProxyType(
     }
 )
 TRACE_VERBOSITY_PRESETS: Mapping[str, tuple[str, ...]] = {
-    "basic": (
+    TelemetryVerbosity.BASIC.value: (
         "gamma",
         "grammar",
         "selector",
@@ -100,8 +104,8 @@ TRACE_VERBOSITY_PRESETS: Mapping[str, tuple[str, ...]] = {
         "callbacks",
         "thol_open_nodes",
     ),
-    "detailed": _TRACE_DETAILED_FIELDS,
-    "debug": _TRACE_ALL_FIELDS,
+    TelemetryVerbosity.DETAILED.value: _TRACE_DETAILED_FIELDS,
+    TelemetryVerbosity.DEBUG.value: _TRACE_ALL_FIELDS,
 }
 
 

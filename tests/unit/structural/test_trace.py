@@ -4,6 +4,11 @@
 
 import pytest
 
+from tnfr.telemetry.verbosity import (
+    TelemetryVerbosity,
+    TELEMETRY_VERBOSITY_DEFAULT,
+    TELEMETRY_VERBOSITY_LEVELS,
+)
 from tnfr.trace import (
     register_trace,
     register_trace_field,
@@ -17,6 +22,13 @@ from tnfr import trace
 from tnfr.utils import get_graph_mapping
 from tnfr.callback_utils import CallbackEvent, callback_manager
 from types import MappingProxyType
+
+
+def test_trace_verbosity_presets_align_with_shared_levels():
+    assert trace.TRACE_VERBOSITY_DEFAULT == TELEMETRY_VERBOSITY_DEFAULT
+    assert set(trace.TRACE_VERBOSITY_PRESETS) == set(TELEMETRY_VERBOSITY_LEVELS)
+    for level in TelemetryVerbosity:
+        assert trace.TRACE_VERBOSITY_PRESETS[level.value]
 
 
 def test_register_trace_idempotent(graph_canon):

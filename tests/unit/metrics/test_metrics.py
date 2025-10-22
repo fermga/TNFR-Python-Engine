@@ -27,6 +27,16 @@ from tnfr.metrics.glyph_timing import (
 )
 from tnfr.metrics.glyph_timing import DEFAULT_EPI_SUPPORT_LIMIT
 from tnfr.metrics.reporting import build_metrics_summary
+from tnfr.telemetry.verbosity import (
+    TELEMETRY_VERBOSITY_DEFAULT,
+    TELEMETRY_VERBOSITY_LEVELS,
+)
+from tnfr.metrics.core import (
+    METRICS_VERBOSITY_DEFAULT,
+    _METRICS_VERBOSITY_PRESETS,
+    MetricsVerbositySpec,
+    _register_metrics_preset,
+)
 
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_DNFR = get_aliases("DNFR")
@@ -36,6 +46,25 @@ ALIAS_DSI = get_aliases("DSI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_DVF = get_aliases("DVF")
 ALIAS_D2VF = get_aliases("D2VF")
+
+
+def test_metrics_verbosity_presets_match_shared_levels():
+    assert METRICS_VERBOSITY_DEFAULT == TELEMETRY_VERBOSITY_DEFAULT
+    assert set(_METRICS_VERBOSITY_PRESETS) == set(TELEMETRY_VERBOSITY_LEVELS)
+
+
+def test_register_metrics_preset_rejects_unknown_levels():
+    spec = MetricsVerbositySpec(
+        name="custom",
+        enable_phase_sync=False,
+        enable_sigma=False,
+        enable_aggregate_si=False,
+        enable_advanced=False,
+        attach_coherence_hooks=False,
+        attach_diagnosis_hooks=False,
+    )
+    with pytest.raises(ValueError):
+        _register_metrics_preset(spec)
 
 
 def test_track_stability_updates_hist(graph_canon):

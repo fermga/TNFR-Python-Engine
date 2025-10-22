@@ -22,6 +22,11 @@ from ..callback_utils import CallbackEvent, callback_manager
 from ..constants import get_param
 from ..glyph_history import append_metric, ensure_history
 from ..utils import get_logger
+from ..telemetry.verbosity import (
+    TelemetryVerbosity,
+    TELEMETRY_VERBOSITY_DEFAULT,
+    TELEMETRY_VERBOSITY_LEVELS,
+)
 from .coherence import (
     _aggregate_si,
     _track_stability,
@@ -76,18 +81,25 @@ class MetricsVerbositySpec(NamedTuple):
     attach_diagnosis_hooks: bool
 
 
-METRICS_VERBOSITY_DEFAULT = "debug"
+METRICS_VERBOSITY_DEFAULT = TELEMETRY_VERBOSITY_DEFAULT
 
 _METRICS_VERBOSITY_PRESETS: dict[str, MetricsVerbositySpec] = {}
 
 
 def _register_metrics_preset(spec: MetricsVerbositySpec) -> None:
+    if spec.name not in TELEMETRY_VERBOSITY_LEVELS:
+        raise ValueError(
+            "Unknown metrics verbosity '%s'; use %s" % (
+                spec.name,
+                ", ".join(TELEMETRY_VERBOSITY_LEVELS),
+            )
+        )
     _METRICS_VERBOSITY_PRESETS[spec.name] = spec
 
 
 _register_metrics_preset(
     MetricsVerbositySpec(
-        name="basic",
+        name=TelemetryVerbosity.BASIC.value,
         enable_phase_sync=False,
         enable_sigma=False,
         enable_aggregate_si=False,
@@ -98,7 +110,7 @@ _register_metrics_preset(
 )
 
 _detailed_spec = MetricsVerbositySpec(
-    name="detailed",
+    name=TelemetryVerbosity.DETAILED.value,
     enable_phase_sync=True,
     enable_sigma=True,
     enable_aggregate_si=True,
@@ -109,7 +121,7 @@ _detailed_spec = MetricsVerbositySpec(
 _register_metrics_preset(_detailed_spec)
 _register_metrics_preset(
     _detailed_spec._replace(
-        name="debug",
+        name=TelemetryVerbosity.DEBUG.value,
         enable_advanced=True,
         attach_diagnosis_hooks=True,
     )
