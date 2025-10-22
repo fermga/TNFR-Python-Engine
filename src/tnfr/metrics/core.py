@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
-
 from typing import Any, cast
 
 from ..types import (
@@ -75,35 +73,15 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
         return
 
     hist = ensure_history(G)
+    if "glyph_load_estab" in hist:
+        raise ValueError(
+            "History payloads using 'glyph_load_estab' are no longer supported. "
+            "Rename the series to 'glyph_load_stabilizers' before loading the graph."
+        )
     metrics_sentinel_key = "_metrics_history_id"
     history_id = id(hist)
     if G.graph.get(metrics_sentinel_key) != history_id:
-        legacy_series = hist.pop("glyph_load_estab", None)
-        glyph_series = hist.get(GLYPH_LOAD_STABILIZERS_KEY)
-        if glyph_series is None:
-            if isinstance(legacy_series, list):
-                hist[GLYPH_LOAD_STABILIZERS_KEY] = glyph_series = legacy_series
-                warnings.warn(
-                    "'glyph_load_estab' history key is deprecated; use "
-                    "'glyph_load_stabilizers' instead.",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
-            else:
-                glyph_series = cast(
-                    list[Any], hist.setdefault(GLYPH_LOAD_STABILIZERS_KEY, [])
-                )
-        else:
-            glyph_series = cast(list[Any], glyph_series)
-            if isinstance(legacy_series, list):
-                if legacy_series is not glyph_series:
-                    glyph_series[0:0] = legacy_series
-                warnings.warn(
-                    "'glyph_load_estab' history key is deprecated; use "
-                    "'glyph_load_stabilizers' instead.",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
+        hist.setdefault(GLYPH_LOAD_STABILIZERS_KEY, [])
 
         for k in (
             "C_steps",

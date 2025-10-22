@@ -213,7 +213,7 @@ def test_update_sigma_uses_default_window(monkeypatch, graph_canon):
     assert hist["sense_sigma_angle"] == [sigma["angle"]]
 
 
-def test_update_sigma_migrates_legacy_history(monkeypatch, graph_canon):
+def test_update_sigma_rejects_legacy_history(monkeypatch, graph_canon):
     G = graph_canon()
 
     monkeypatch.setattr("tnfr.metrics.coherence.DEFAULT_GLYPH_LOAD_SPAN", 5)
@@ -231,12 +231,8 @@ def test_update_sigma_migrates_legacy_history(monkeypatch, graph_canon):
 
     hist: dict[str, list] = {"glyph_load_estab": [0.5]}
 
-    with pytest.warns(DeprecationWarning):
+    with pytest.raises(ValueError, match="glyph_load_estab"):
         _update_sigma(G, hist)
-
-    assert hist["glyph_load_stabilizers"] == [0.5, 0.25]
-    assert "glyph_load_estab" not in hist
-    assert hist["glyph_load_disr"] == [0.75]
 
 
 def _si_graph(graph_canon):
@@ -375,6 +371,17 @@ def test_pp_val_handles_missing_sha(graph_canon):
 
     morph = G.graph["history"]["morph"][0]
     assert morph["PP"] == 0.0
+
+
+def test_metrics_step_rejects_legacy_history(graph_canon):
+    """Legacy glyph load history keys abort metrics setup."""
+
+    G = graph_canon()
+    inject_defaults(G)
+    G.graph["history"] = {"glyph_load_estab": [0.1]}
+
+    with pytest.raises(ValueError, match="glyph_load_estab"):
+        _metrics_step(G, ctx=None)
 
 
 def test_save_by_node_flag_keeps_metrics_equal(graph_canon):
