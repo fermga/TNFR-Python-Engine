@@ -92,10 +92,8 @@ def test_cli_legacy_preset_rejected_with_guidance(capsys, command):
     captured = capsys.readouterr()
 
     assert rc == 1
-    assert (
-        "Legacy preset identifier 'ejemplo_canonico' was removed in TNFR 9.0. "
-        "Use 'canonical_example' instead."
-    ) in captured.out
+    assert "Preset not found: ejemplo_canonico" in captured.out
+    assert "Legacy preset identifier" not in captured.out
 
 
 def test_cli_sequence_file_missing(tmp_path, capsys):

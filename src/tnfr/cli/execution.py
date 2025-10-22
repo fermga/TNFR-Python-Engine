@@ -28,7 +28,6 @@ from ..dynamics import (
 from ..config.presets import (
     PREFERRED_PRESET_NAMES,
     get_preset,
-    legacy_preset_guidance,
 )
 from ..config import apply_config
 from ..io import read_structured_file, safe_write, StructuredFileError
@@ -187,15 +186,7 @@ def resolve_program(
         try:
             return get_preset(args.preset)
         except KeyError as exc:
-            guidance = legacy_preset_guidance(args.preset)
-            if guidance is not None:
-                details = guidance
-            else:
-                details = (
-                    exc.args[0]
-                    if exc.args
-                    else "Legacy preset identifier rejected."
-                )
+            details = exc.args[0] if exc.args else "Preset lookup failed."
             logger.error(
                 (
                     "Unknown preset '%s'. Available presets: %s. %s "

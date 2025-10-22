@@ -21,20 +21,20 @@ def test_validation_sets_are_subsets() -> None:
 
 
 @pytest.mark.parametrize(
-    ("legacy_name", "preferred_name"),
+    "legacy_name",
     (
-        ("INICIO_VALIDOS", "VALID_START_OPERATORS"),
-        ("TRAMO_INTERMEDIO", "INTERMEDIATE_OPERATORS"),
-        ("CIERRE_VALIDO", "VALID_END_OPERATORS"),
-        ("AUTOORGANIZACION_CIERRES", "SELF_ORGANIZATION_CLOSURES"),
+        "INICIO_VALIDOS",
+        "TRAMO_INTERMEDIO",
+        "CIERRE_VALIDO",
+        "AUTOORGANIZACION_CIERRES",
     ),
 )
-def test_spanish_aliases_raise_attribute_error(legacy_name: str, preferred_name: str) -> None:
+def test_spanish_aliases_raise_plain_attribute_error(legacy_name: str) -> None:
     with pytest.raises(AttributeError) as exc_info:
         getattr(names, legacy_name)
     message = str(exc_info.value)
     assert legacy_name in message
-    assert preferred_name in message
+    assert "VALID_" not in message
 
 
 def test_canonical_lookup_is_passthrough_for_english_tokens() -> None:
