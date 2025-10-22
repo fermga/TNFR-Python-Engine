@@ -35,4 +35,11 @@ jobs:
           python -m pip install .[test,numpy,yaml,orjson]
 
       - name: Run unit tests
+        if: matrix.python-version != '3.11'
         run: python -m pytest
+
+      - name: Run unit tests with coverage
+        if: matrix.python-version == '3.11'
+        run: |
+          python -m coverage run --source=src -m pytest
+          python -m coverage report -m
