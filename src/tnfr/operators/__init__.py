@@ -95,7 +95,7 @@ def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
 
 
 # -------------------------
-# Glyphs (operadores locales)
+# Glyphs (local operators)
 # -------------------------
 
 
