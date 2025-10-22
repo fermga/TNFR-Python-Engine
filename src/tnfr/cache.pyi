@@ -12,6 +12,7 @@ __all__ = [
     "CacheManager",
     "CacheCapacityConfig",
     "CacheStatistics",
+    "InstrumentedLRUCache",
     "ManagedLRUCache",
     "prune_lock_mapping",
 ]
@@ -145,6 +146,64 @@ class CacheManager:
     def log_metrics(
         self, logger: logging.Logger, *, level: int = ...
     ) -> None: ...
+
+
+class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
+    _MISSING: ClassVar[object]
+
+    def __init__(
+        self,
+        maxsize: int,
+        *,
+        manager: CacheManager | None = ...,
+        metrics_key: str | None = ...,
+        telemetry_callbacks: Iterable[Callable[[K, V], None]]
+        | Callable[[K, V], None]
+        | None = ...,
+        eviction_callbacks: Iterable[Callable[[K, V], None]]
+        | Callable[[K, V], None]
+        | None = ...,
+        locks: MutableMapping[K, Any] | None = ...,
+        getsizeof: Callable[[V], int] | None = ...,
+    ) -> None: ...
+
+    @property
+    def telemetry_callbacks(self) -> tuple[Callable[[K, V], None], ...]: ...
+
+    @property
+    def eviction_callbacks(self) -> tuple[Callable[[K, V], None], ...]: ...
+
+    def set_telemetry_callbacks(
+        self,
+        callbacks: Iterable[Callable[[K, V], None]]
+        | Callable[[K, V], None]
+        | None,
+        *,
+        append: bool = ...,
+    ) -> None: ...
+
+    def set_eviction_callbacks(
+        self,
+        callbacks: Iterable[Callable[[K, V], None]]
+        | Callable[[K, V], None]
+        | None,
+        *,
+        append: bool = ...,
+    ) -> None: ...
+
+    def pop(self, key: K, default: Any = ...) -> V: ...
+
+    def popitem(self) -> tuple[K, V]: ...
+
+    def clear(self) -> None: ...
+
+    @property
+    def maxsize(self) -> int: ...
+
+    @property
+    def currsize(self) -> int: ...
+
+    def get(self, key: K, default: V | None = ...) -> V | None: ...
 
 
 class ManagedLRUCache(LRUCache[K, V], Generic[K, V]):
