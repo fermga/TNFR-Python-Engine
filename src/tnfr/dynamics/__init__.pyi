@@ -14,7 +14,10 @@ ALIAS_EPI: Sequence[str]
 ALIAS_SI: Sequence[str]
 ALIAS_VF: Sequence[str]
 
+AbstractSelector: Any
+DefaultGlyphSelector: Any
 GlyphCode: Any
+ParametricGlyphSelector: Any
 _SelectorPreselection: Any
 _apply_glyphs: Any
 _apply_selector: Any

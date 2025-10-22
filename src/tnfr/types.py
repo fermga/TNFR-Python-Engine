@@ -286,8 +286,23 @@ class Glyph(str, Enum):
 GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
 #: Normalised glyph load proportions keyed by :class:`Glyph` or aggregate labels.
 
-GlyphSelector: TypeAlias = Callable[[TNFRGraph, NodeId], Glyph | str]
-#: Callable returning the glyph to apply for ``NodeId`` within a graph.
+class _SelectorLifecycle(Protocol):
+    """Protocol describing the selector lifecycle supported by the runtime."""
+
+    def __call__(self, graph: TNFRGraph, node: NodeId) -> Glyph | str:
+        ...
+
+    def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None:
+        ...
+
+    def select(self, graph: TNFRGraph, node: NodeId) -> Glyph | str:
+        ...
+
+
+GlyphSelector: TypeAlias = (
+    Callable[[TNFRGraph, NodeId], Glyph | str] | _SelectorLifecycle
+)
+#: Selector callable or object returning the glyph to apply for ``NodeId``.
 
 SelectorPreselectionMetrics: TypeAlias = Mapping[Any, SelectorMetrics]
 #: Mapping of nodes to their normalised selector metrics.
