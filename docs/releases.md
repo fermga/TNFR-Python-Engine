@@ -3,11 +3,11 @@
 ## 16.0.0 (glyph load Spanish history key removed)
 
 - **Breaking change**: Removed the deprecated ``"glyph_load_estab"`` history
-  key. Metrics initialisation and the coherence observers now migrate any
-  persisted payloads by promoting the list to ``"glyph_load_stabilizers"`` once
-  and deleting the Spanish alias instead of keeping both identifiers in sync.
-- Migration guidance: audit stored histories and rename the key before
-  upgrading, for example::
+  key. Metrics initialisation and the coherence observers now raise
+  :class:`ValueError` as soon as the legacy identifier appears in a payload,
+  preventing silent mirroring into ``"glyph_load_stabilizers"``.
+- Migration guidance: audit stored histories and rename the key **before**
+  loading a graph into this release. A minimal preprocessing snippet::
 
       history = payload.get("history", {})
       legacy = history.pop("glyph_load_estab", None)
@@ -15,7 +15,9 @@
           history["glyph_load_stabilizers"] = legacy
 
   Persist the rewritten payloads so downstream tooling only reads the English
-  identifier.
+  identifier. The project does not ship an automated helper for this upgrade;
+  integrators should run the snippet (or an equivalent data migration) on any
+  archived graphs prior to installing version 16.0.0.
 
 ## 14.0.0 (Spanish compatibility messaging retired)
 

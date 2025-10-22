@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import math
-import warnings
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
@@ -1060,34 +1059,19 @@ def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
     """Record glyph load and associated Σ⃗ vector."""
 
     metrics = cast(MutableMapping[str, list[Any]], hist)
-    legacy_series = metrics.pop("glyph_load_estab", None)
+    if "glyph_load_estab" in metrics:
+        raise ValueError(
+            "History payloads using 'glyph_load_estab' are no longer supported. "
+            "Rename the series to 'glyph_load_stabilizers' before loading the graph."
+        )
     stabilizer_series = metrics.get(GLYPH_LOAD_STABILIZERS_KEY)
 
     if stabilizer_series is None:
-        if isinstance(legacy_series, list):
-            metrics[GLYPH_LOAD_STABILIZERS_KEY] = legacy_series
-            stabilizer_series = legacy_series
-            warnings.warn(
-                "'glyph_load_estab' history key is deprecated; use "
-                "'glyph_load_stabilizers' instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-        else:
-            stabilizer_series = cast(
-                list[Any], metrics.setdefault(GLYPH_LOAD_STABILIZERS_KEY, [])
-            )
+        stabilizer_series = cast(
+            list[Any], metrics.setdefault(GLYPH_LOAD_STABILIZERS_KEY, [])
+        )
     else:
         stabilizer_series = cast(list[Any], stabilizer_series)
-        if isinstance(legacy_series, list):
-            if legacy_series is not stabilizer_series:
-                stabilizer_series[0:0] = legacy_series
-            warnings.warn(
-                "'glyph_load_estab' history key is deprecated; use "
-                "'glyph_load_stabilizers' instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
     gl: GlyphLoadDistribution = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
     stabilizers = float(gl.get("_stabilizers", 0.0))
