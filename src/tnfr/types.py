@@ -44,6 +44,7 @@ __all__ = (
     "CoherenceMetric",
     "DeltaNFRHook",
     "GraphLike",
+    "IntegratorProtocol",
     "Glyph",
     "GlyphLoadDistribution",
     "GlyphSelector",
@@ -262,6 +263,21 @@ class GraphLike(Protocol):
         ...
 
     def __iter__(self) -> Iterable[Any]:
+        ...
+
+
+class IntegratorProtocol(Protocol):
+    """Interface describing configurable nodal equation integrators."""
+
+    def integrate(
+        self,
+        graph: TNFRGraph,
+        *,
+        dt: float | None,
+        t: float | None,
+        method: str | None,
+        n_jobs: int | None,
+    ) -> None:
         ...
 
 

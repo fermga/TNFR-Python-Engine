@@ -27,7 +27,12 @@ from .dnfr import (
     dnfr_phase_only,
     set_delta_nfr_hook,
 )
-from .integrators import prepare_integration_params, update_epi_via_nodal_equation
+from .integrators import (
+    AbstractIntegrator,
+    DefaultIntegrator,
+    prepare_integration_params,
+    update_epi_via_nodal_equation,
+)
 from .runtime import (
     _maybe_remesh,
     _normalize_job_overrides,
@@ -117,6 +122,8 @@ __all__ = (
     "on_applied_glyph",
     "apply_glyph",
     "parametric_glyph_selector",
+    "AbstractIntegrator",
+    "DefaultIntegrator",
     "prepare_integration_params",
     "run",
     "set_delta_nfr_hook",

@@ -15,6 +15,19 @@ from tnfr.constants import get_aliases
 ALIAS_THETA = get_aliases("THETA")
 
 
+class _NoOpIntegrator(integrators.AbstractIntegrator):
+    def integrate(
+        self,
+        graph,
+        *,
+        dt=None,
+        t=None,
+        method=None,
+        n_jobs=None,
+    ) -> None:
+        return None
+
+
 def _build_ring_graph(graph_factory, *, seed: int = 0, size: int = 8):
     rng = random.Random(seed)
     G = graph_factory()
@@ -44,11 +57,7 @@ def test_update_nodes_forwards_phase_jobs(monkeypatch, graph_canon):
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *a, **k: None)
     monkeypatch.setattr(dynamics, "_prepare_dnfr", lambda *a, **k: None)
     monkeypatch.setattr(selectors, "_apply_selector", lambda *a, **k: None)
-    monkeypatch.setattr(
-        integrators,
-        "update_epi_via_nodal_equation",
-        lambda *a, **k: None,
-    )
+    G.graph["integrator"] = _NoOpIntegrator()
     monkeypatch.setattr(adaptation, "adapt_vf_by_coherence", lambda *a, **k: None)
     monkeypatch.setattr(dynamics, "apply_canonical_clamps", lambda *a, **k: None)
     monkeypatch.setattr(runtime, "apply_canonical_clamps", lambda *a, **k: None)

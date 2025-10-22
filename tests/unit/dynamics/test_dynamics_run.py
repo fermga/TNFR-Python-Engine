@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import deque
+from typing import Any
 
 import tnfr.dynamics as dynamics
 import tnfr.dynamics.adaptation as adaptation
@@ -11,6 +12,22 @@ import tnfr.dynamics.integrators as integrators
 import tnfr.dynamics.runtime as runtime
 import tnfr.dynamics.selectors as selectors
 from tnfr.glyph_history import ensure_history
+
+
+class _RecordingIntegrator(integrators.AbstractIntegrator):
+    def __init__(self, recorded: dict[str, Any]):
+        self._recorded = recorded
+
+    def integrate(
+        self,
+        graph,
+        *,
+        dt=None,
+        t=None,
+        method=None,
+        n_jobs=None,
+    ) -> None:
+        self._recorded["integrator"] = n_jobs
 
 
 def test_run_stops_early_with_historydict(monkeypatch, graph_canon):
@@ -91,6 +108,18 @@ def test_step_respects_n_jobs_overrides(monkeypatch, graph_canon):
     G = graph_canon()
     recorded = {}
 
+    class _ClassRecordingIntegrator(integrators.AbstractIntegrator):
+        def integrate(
+            self,
+            graph,
+            *,
+            dt=None,
+            t=None,
+            method=None,
+            n_jobs=None,
+        ) -> None:
+            recorded["integrator"] = n_jobs
+
     def fake_compute_delta_nfr(G, *, n_jobs=None):
         recorded["dnfr"] = n_jobs
 
@@ -98,9 +127,6 @@ def test_step_respects_n_jobs_overrides(monkeypatch, graph_canon):
 
     def fake_compute_si(G, *, inplace=True, n_jobs=None):
         recorded["si"] = n_jobs
-
-    def fake_update_epi_via_nodal_equation(G, *, dt=None, method=None, n_jobs=None):
-        recorded["integrator"] = n_jobs
 
     def fake_coordinate_global_local_phase(G, *_args, n_jobs=None, **_kwargs):
         recorded["phase"] = n_jobs
@@ -110,11 +136,7 @@ def test_step_respects_n_jobs_overrides(monkeypatch, graph_canon):
 
     monkeypatch.setattr(dynamics, "compute_Si", fake_compute_si)
     monkeypatch.setattr(runtime, "compute_Si", fake_compute_si)
-    monkeypatch.setattr(
-        integrators,
-        "update_epi_via_nodal_equation",
-        fake_update_epi_via_nodal_equation,
-    )
+    G.graph["integrator"] = _ClassRecordingIntegrator
     monkeypatch.setattr(
         coordination,
         "coordinate_global_local_phase",
@@ -180,9 +202,6 @@ def test_step_defaults_to_graph_jobs(monkeypatch, graph_canon):
     def fake_compute_si(G, *, inplace=True, n_jobs=None):
         recorded["si"] = n_jobs
 
-    def fake_update_epi_via_nodal_equation(G, *, dt=None, method=None, n_jobs=None):
-        recorded["integrator"] = n_jobs
-
     def fake_coordinate_global_local_phase(G, *_args, n_jobs=None, **_kwargs):
         recorded["phase"] = n_jobs
 
@@ -191,11 +210,7 @@ def test_step_defaults_to_graph_jobs(monkeypatch, graph_canon):
 
     monkeypatch.setattr(dynamics, "compute_Si", fake_compute_si)
     monkeypatch.setattr(runtime, "compute_Si", fake_compute_si)
-    monkeypatch.setattr(
-        integrators,
-        "update_epi_via_nodal_equation",
-        fake_update_epi_via_nodal_equation,
-    )
+    G.graph["integrator"] = (lambda graph: _RecordingIntegrator(recorded))
     monkeypatch.setattr(
         coordination,
         "coordinate_global_local_phase",

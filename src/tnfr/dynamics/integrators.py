@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from abc import ABC, abstractmethod
 from collections.abc import Iterable, Mapping
 from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import get_context
@@ -25,6 +26,8 @@ ALIAS_EPI_KIND = get_aliases("EPI_KIND")
 ALIAS_D2EPI = get_aliases("D2EPI")
 
 __all__ = (
+    "AbstractIntegrator",
+    "DefaultIntegrator",
     "prepare_integration_params",
     "update_epi_via_nodal_equation",
 )
@@ -38,6 +41,9 @@ NodeIncrements: TypeAlias = dict[NodeId, tuple[float, ...]]
 
 NodalUpdate: TypeAlias = dict[NodeId, tuple[float, float, float]]
 """Mapping of nodes to ``(EPI, dEPI/dt, ∂²EPI/∂t²)`` tuples."""
+
+IntegratorMethod: TypeAlias = Literal["euler", "rk4"]
+"""Supported explicit integration schemes for nodal updates."""
 
 
 _PARALLEL_GRAPH: TNFRGraph | None = None
@@ -446,6 +452,66 @@ def _integrate_rk4(
     )
 
 
+class AbstractIntegrator(ABC):
+    """Abstract base class encapsulating nodal equation integration."""
+
+    @abstractmethod
+    def integrate(
+        self,
+        graph: TNFRGraph,
+        *,
+        dt: float | None,
+        t: float | None,
+        method: str | None,
+        n_jobs: int | None,
+    ) -> None:
+        """Advance ``graph`` coherence states according to the nodal equation."""
+
+
+class DefaultIntegrator(AbstractIntegrator):
+    """Explicit integrator combining Euler and RK4 step implementations."""
+
+    def integrate(
+        self,
+        graph: TNFRGraph,
+        *,
+        dt: float | None,
+        t: float | None,
+        method: str | None,
+        n_jobs: int | None,
+    ) -> None:
+        if not isinstance(
+            graph, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+        ):
+            raise TypeError("G must be a networkx graph instance")
+
+        dt_step, steps, t0, resolved_method = prepare_integration_params(
+            graph, dt, t, cast(IntegratorMethod | None, method)
+        )
+
+        t_local = t0
+        for _ in range(steps):
+            if resolved_method == "rk4":
+                updates: NodalUpdate = _integrate_rk4(
+                    graph, dt_step, t_local, n_jobs=n_jobs
+                )
+            else:
+                updates = _integrate_euler(graph, dt_step, t_local, n_jobs=n_jobs)
+
+            for n, (epi, dEPI_dt, d2epi) in updates.items():
+                nd = graph.nodes[n]
+                epi_kind = get_attr_str(nd, ALIAS_EPI_KIND, "")
+                set_attr(nd, ALIAS_EPI, epi)
+                if epi_kind:
+                    set_attr_str(nd, ALIAS_EPI_KIND, epi_kind)
+                set_attr(nd, ALIAS_DEPI, dEPI_dt)
+                set_attr(nd, ALIAS_D2EPI, d2epi)
+
+            t_local += dt_step
+
+        graph.graph["_t"] = t_local
+
+
 def update_epi_via_nodal_equation(
     G: TNFRGraph,
     *,
@@ -470,34 +536,13 @@ def update_epi_via_nodal_equation(
     TNFR references: nodal equation (manual), νf/ΔNFR/EPI glossary, Γ operator.
     Side effects: caches dEPI and updates EPI via explicit integration.
     """
-    if not isinstance(
-        G, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
-    ):
-        raise TypeError("G must be a networkx graph instance")
-
-    dt_step, steps, t0, method = prepare_integration_params(G, dt, t, method)
-
-    t_local = t0
-    for _ in range(steps):
-        if method == "rk4":
-            updates: NodalUpdate = _integrate_rk4(
-                G, dt_step, t_local, n_jobs=n_jobs
-            )
-        else:
-            updates = _integrate_euler(G, dt_step, t_local, n_jobs=n_jobs)
-
-        for n, (epi, dEPI_dt, d2epi) in updates.items():
-            nd = G.nodes[n]
-            epi_kind = get_attr_str(nd, ALIAS_EPI_KIND, "")
-            set_attr(nd, ALIAS_EPI, epi)
-            if epi_kind:
-                set_attr_str(nd, ALIAS_EPI_KIND, epi_kind)
-            set_attr(nd, ALIAS_DEPI, dEPI_dt)
-            set_attr(nd, ALIAS_D2EPI, d2epi)
-
-        t_local += dt_step
-
-    G.graph["_t"] = t_local
+    DefaultIntegrator().integrate(
+        G,
+        dt=dt,
+        t=t,
+        method=method,
+        n_jobs=n_jobs,
+    )
 
 
 def _node_state(nd: dict[str, Any]) -> tuple[float, float, float, float]:
