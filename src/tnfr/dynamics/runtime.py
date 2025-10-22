@@ -118,6 +118,107 @@ def _resolve_jobs_override(
     )
 
 
+_INTEGRATOR_CACHE_KEY = "_integrator_cache"
+
+
+def _call_integrator_factory(factory: Any, G: TNFRGraph) -> Any:
+    """Invoke an integrator factory respecting optional graph injection."""
+
+    try:
+        signature = inspect.signature(factory)
+    except (TypeError, ValueError):
+        return factory()
+
+    params = list(signature.parameters.values())
+    required = [
+        p
+        for p in params
+        if p.default is inspect._empty
+        and p.kind
+        in (
+            inspect.Parameter.POSITIONAL_ONLY,
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            inspect.Parameter.KEYWORD_ONLY,
+        )
+    ]
+
+    if any(p.kind is inspect.Parameter.KEYWORD_ONLY for p in required):
+        raise TypeError(
+            "Integrator factory cannot require keyword-only arguments",
+        )
+
+    positional_required = [
+        p
+        for p in required
+        if p.kind
+        in (
+            inspect.Parameter.POSITIONAL_ONLY,
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        )
+    ]
+    if len(positional_required) > 1:
+        raise TypeError(
+            "Integrator factory must accept at most one positional argument",
+        )
+
+    if positional_required:
+        return factory(G)
+
+    positional = [
+        p
+        for p in params
+        if p.kind
+        in (
+            inspect.Parameter.POSITIONAL_ONLY,
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        )
+    ]
+    if positional:
+        return factory(G)
+
+    return factory()
+
+
+def _resolve_integrator_instance(G: TNFRGraph) -> integrators.AbstractIntegrator:
+    """Return an integrator instance configured on ``G`` or a default."""
+
+    cache_entry = G.graph.get(_INTEGRATOR_CACHE_KEY)
+    candidate = G.graph.get("integrator")
+    if (
+        isinstance(cache_entry, tuple)
+        and len(cache_entry) == 2
+        and cache_entry[0] is candidate
+        and isinstance(cache_entry[1], integrators.AbstractIntegrator)
+    ):
+        return cache_entry[1]
+
+    if isinstance(candidate, integrators.AbstractIntegrator):
+        instance = candidate
+    elif inspect.isclass(candidate) and issubclass(
+        candidate, integrators.AbstractIntegrator
+    ):
+        instance = candidate()
+    elif callable(candidate):
+        instance = cast(
+            integrators.AbstractIntegrator,
+            _call_integrator_factory(candidate, G),
+        )
+    elif candidate is None:
+        instance = integrators.DefaultIntegrator()
+    else:
+        raise TypeError(
+            "Graph integrator must be an AbstractIntegrator, subclass or callable",
+        )
+
+    if not isinstance(instance, integrators.AbstractIntegrator):
+        raise TypeError(
+            "Configured integrator must implement AbstractIntegrator.integrate",
+        )
+
+    G.graph[_INTEGRATOR_CACHE_KEY] = (candidate, instance)
+    return instance
+
+
 def apply_canonical_clamps(
     nd: MutableMapping[str, Any],
     G: TNFRGraph | None = None,
@@ -276,8 +377,13 @@ def _update_nodes(
         G.graph.get("INTEGRATOR_N_JOBS"),
         allow_non_positive=True,
     )
-    integrators.update_epi_via_nodal_equation(
-        G, dt=_dt, method=method, n_jobs=n_jobs
+    integrator = _resolve_integrator_instance(G)
+    integrator.integrate(
+        G,
+        dt=_dt,
+        t=None,
+        method=cast(str | None, method),
+        n_jobs=n_jobs,
     )
     for n, nd in G.nodes(data=True):
         apply_canonical_clamps(

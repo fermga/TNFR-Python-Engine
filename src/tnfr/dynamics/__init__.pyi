@@ -56,6 +56,9 @@ on_applied_glyph: Any
 apply_glyph: Any
 parametric_glyph_selector: Any
 
+AbstractIntegrator: Any
+DefaultIntegrator: Any
+
 def prepare_integration_params(
     G: TNFRGraph,
     dt: float | None = ...,

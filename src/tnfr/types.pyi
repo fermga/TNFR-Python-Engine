@@ -79,6 +79,17 @@ class GraphLike(Protocol):
     def neighbors(self, n: Any) -> Iterable[Any]: ...
     def __iter__(self) -> Iterable[Any]: ...
 
+class IntegratorProtocol(Protocol):
+    def integrate(
+        self,
+        graph: TNFRGraph,
+        *,
+        dt: float | None = ...,
+        t: float | None = ...,
+        method: str | None = ...,
+        n_jobs: int | None = ...,
+    ) -> None: ...
+
 class Glyph(str, Enum):
     AL = "AL"
     EN = "EN"
