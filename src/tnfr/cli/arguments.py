@@ -13,6 +13,8 @@ _PRESET_HELP = "Available presets: {}.".format(
     ", ".join(PREFERRED_PRESET_NAMES),
 )
 
+TELEMETRY_VERBOSITY_CHOICES = ("basic", "detailed", "debug")
+
 
 GRAMMAR_ARG_SPECS: tuple[ArgSpec, ...] = (
     spec("--grammar.enabled", action=argparse.BooleanOptionalAction),
@@ -45,6 +47,16 @@ COMMON_ARG_SPECS: tuple[ArgSpec, ...] = (
         help="Edge probability when topology=erdos",
     ),
     spec("--observer", action="store_true", help="Attach standard observer"),
+    spec(
+        "--trace-verbosity",
+        choices=TELEMETRY_VERBOSITY_CHOICES,
+        help="Select the trace capture preset",
+    ),
+    spec(
+        "--metrics-verbosity",
+        choices=TELEMETRY_VERBOSITY_CHOICES,
+        help="Select the metrics capture preset",
+    ),
     spec("--config", type=str),
     spec("--dt", type=float),
     spec("--integrator", choices=["euler", "rk4"]),

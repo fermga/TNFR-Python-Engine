@@ -45,7 +45,9 @@ the graph (default length 100). Adjust or inspect the buffer at runtime with
 ### Trace verbosity presets
 
 `G.graph["TRACE"]` accepts a `verbosity` knob that determines which field producers execute when
-no explicit `capture` list is provided. The presets are:
+no explicit `capture` list is provided. The CLI mirrors these presets through the
+`--trace-verbosity {basic,detailed,debug}` switch so scripted runs can stay in sync with
+manual API configuration. The presets are:
 
 - `"basic"` — captures the structural configuration (`gamma`, grammar, selector, ΔNFR/SI weights,
   callback map, THOL state) while skipping the heavier collectors. Use this for smoke tests or
@@ -62,7 +64,8 @@ that list (or mapping) and ignore the verbosity preset.
 
 ### Metrics verbosity tiers
 
-The metrics orchestrator follows the same pattern via `G.graph["METRICS"]["verbosity"]`:
+The metrics orchestrator follows the same pattern via `G.graph["METRICS"]["verbosity"]`,
+which is exposed on the CLI as `--metrics-verbosity {basic,detailed,debug}`:
 
 - `"basic"` keeps the coherence and stability core (C(t), ΔSi, B) while skipping phase sync,
   Σ⃗ statistics, Si aggregates, glyph timing, and the coherence/diagnosis callback hooks. This is
