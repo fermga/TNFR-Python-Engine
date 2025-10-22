@@ -3,6 +3,7 @@ import importlib
 import sys
 import types
 import weakref
+from collections import OrderedDict
 
 import pytest
 
@@ -262,6 +263,91 @@ def test_failure_log_respects_limit(monkeypatch, reset_cached_import):
 
     with state.lock:
         assert len(state.failed) <= 3
+
+    reset_cached_import()
+
+
+# -- Cache manager integration ---------------------------------------------------------------
+
+
+def test_import_cache_capacity_respects_manager_config(monkeypatch, reset_cached_import):
+    manager = import_utils._IMPORT_CACHE_MANAGER
+    previous_config = manager.export_config()
+    reset_cached_import()
+    before_stats = manager.get_metrics(import_utils._SUCCESS_CACHE_NAME)
+
+    manager.configure(default_capacity=1, overrides={}, replace_overrides=True)
+    try:
+        modules: list[str] = []
+        for idx in range(3):
+            name = f"cap_mod{idx}"
+            modules.append(name)
+            module = types.SimpleNamespace(value=idx)
+            monkeypatch.setitem(sys.modules, name, module)
+            cached_import(name)
+
+        cache = manager.get(import_utils._SUCCESS_CACHE_NAME)
+        assert isinstance(cache, OrderedDict)
+        assert list(cache) == [modules[-1]]
+
+        after_stats = manager.get_metrics(import_utils._SUCCESS_CACHE_NAME)
+        assert after_stats.evictions - before_stats.evictions == 2
+    finally:
+        manager.configure(
+            default_capacity=previous_config.default_capacity,
+            overrides=previous_config.overrides,
+            replace_overrides=True,
+        )
+        for name in modules:
+            sys.modules.pop(name, None)
+        reset_cached_import()
+
+
+def test_import_cache_telemetry_records_hits_and_misses(monkeypatch, reset_cached_import):
+    manager = import_utils._IMPORT_CACHE_MANAGER
+    reset_cached_import()
+
+    success_name = import_utils._SUCCESS_CACHE_NAME
+    failure_name = import_utils._FAILURE_CACHE_NAME
+
+    before_success = manager.get_metrics(success_name)
+    before_failure = manager.get_metrics(failure_name)
+
+    module = types.SimpleNamespace(value=1)
+    monkeypatch.setitem(sys.modules, "telemetry_mod", module)
+    cached_import("telemetry_mod")
+    cached_import("telemetry_mod")
+    monkeypatch.delitem(sys.modules, "telemetry_mod", raising=False)
+
+    success_after = manager.get_metrics(success_name)
+    failure_after = manager.get_metrics(failure_name)
+
+    assert success_after.hits - before_success.hits == 1
+    assert success_after.misses - before_success.misses == 1
+    assert success_after.timings - before_success.timings == 2
+    assert failure_after.hits - before_failure.hits == 0
+    assert failure_after.misses - before_failure.misses == 1
+
+    before_success = success_after
+    before_failure = failure_after
+
+    def failing_import(_name: str) -> None:
+        raise ImportError("boom")
+
+    monkeypatch.setattr(importlib, "import_module", failing_import)
+    cached_import("telemetry_fail")
+    cached_import("telemetry_fail")
+
+    success_after = manager.get_metrics(success_name)
+    failure_after = manager.get_metrics(failure_name)
+
+    assert success_after.hits - before_success.hits == 0
+    assert success_after.misses - before_success.misses == 2
+    assert success_after.timings - before_success.timings == 2
+
+    assert failure_after.hits - before_failure.hits == 1
+    assert failure_after.misses - before_failure.misses == 1
+    assert failure_after.timings - before_failure.timings == 2
 
     reset_cached_import()
 # -- Warm import helper ----------------------------------------------------------------------
