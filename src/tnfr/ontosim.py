@@ -16,7 +16,7 @@ from .utils import cached_import
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
 
-# API de alto nivel
+# High-level API exports
 __all__ = ("prepare_network", "step", "run")
 
 
@@ -44,7 +44,7 @@ def prepare_network(
         from .constants import merge_overrides
 
         merge_overrides(G, **overrides)
-    # Inicializaciones blandas
+    # Initialize history buffers
     ph_len = int(
         G.graph.get(
             "PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]
