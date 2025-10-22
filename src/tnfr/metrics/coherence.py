@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import warnings
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
@@ -55,6 +56,9 @@ ALIAS_DEPI = get_aliases("DEPI")
 ALIAS_DSI = get_aliases("DSI")
 ALIAS_DVF = get_aliases("DVF")
 ALIAS_D2VF = get_aliases("D2VF")
+
+GLYPH_LOAD_STABILIZERS_KEY = "glyph_load_stabilizers"
+LEGACY_GLYPH_LOAD_KEY = "glyph_load_estab"
 
 
 @dataclass
@@ -1056,12 +1060,43 @@ def _update_phase_sync(G: TNFRGraph, hist: HistoryState) -> None:
 def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
     """Record glyph load and associated Σ⃗ vector."""
 
+    metrics = cast(MutableMapping[str, list[Any]], hist)
+    legacy_series = metrics.get(LEGACY_GLYPH_LOAD_KEY)
+    stabilizer_series = metrics.get(GLYPH_LOAD_STABILIZERS_KEY)
+
+    if stabilizer_series is None:
+        if isinstance(legacy_series, list):
+            metrics[GLYPH_LOAD_STABILIZERS_KEY] = list(legacy_series)
+            stabilizer_series = metrics[GLYPH_LOAD_STABILIZERS_KEY]
+            warnings.warn(
+                "'glyph_load_estab' history key is deprecated; use "
+                "'glyph_load_stabilizers' instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        else:
+            stabilizer_series = metrics.setdefault(
+                GLYPH_LOAD_STABILIZERS_KEY, []
+            )
+    elif (
+        isinstance(legacy_series, list)
+        and legacy_series is not stabilizer_series
+    ):
+        warnings.warn(
+            "'glyph_load_estab' history key is deprecated; use "
+            "'glyph_load_stabilizers' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+    metrics[LEGACY_GLYPH_LOAD_KEY] = stabilizer_series
+
     gl: GlyphLoadDistribution = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
     stabilizers = float(gl.get("_stabilizers", 0.0))
     disruptors = float(gl.get("_disruptors", 0.0))
     _record_metrics(
         hist,
-        (stabilizers, "glyph_load_estab"),
+        (stabilizers, GLYPH_LOAD_STABILIZERS_KEY),
         (disruptors, "glyph_load_disr"),
     )
 

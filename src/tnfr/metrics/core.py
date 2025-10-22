@@ -28,6 +28,8 @@ from .coherence import (
     _update_phase_sync,
     _update_sigma,
     register_coherence_callbacks,
+    GLYPH_LOAD_STABILIZERS_KEY,
+    LEGACY_GLYPH_LOAD_KEY,
 )
 from .diagnosis import register_diagnosis_callbacks
 from .glyph_timing import _compute_advanced_metrics, GlyphMetricsHistory
@@ -75,11 +77,19 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
     metrics_sentinel_key = "_metrics_history_id"
     history_id = id(hist)
     if G.graph.get(metrics_sentinel_key) != history_id:
+        glyph_series = hist.get(GLYPH_LOAD_STABILIZERS_KEY)
+        legacy_series = hist.get(LEGACY_GLYPH_LOAD_KEY)
+        if glyph_series is None and isinstance(legacy_series, list):
+            glyph_series = list(legacy_series)
+            hist[GLYPH_LOAD_STABILIZERS_KEY] = glyph_series
+        else:
+            glyph_series = cast(list[Any], hist.setdefault(GLYPH_LOAD_STABILIZERS_KEY, []))
+        hist[LEGACY_GLYPH_LOAD_KEY] = glyph_series
+
         for k in (
             "C_steps",
             "stable_frac",
             "phase_sync",
-            "glyph_load_estab",
             "glyph_load_disr",
             "Si_mean",
             "Si_hi_frac",

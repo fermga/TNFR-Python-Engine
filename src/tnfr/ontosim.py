@@ -60,7 +60,7 @@ def prepare_network(
         "sense_sigma_mag",
         "sense_sigma_angle",
         "iota",
-        "glyph_load_estab",
+        "glyph_load_stabilizers",
         "glyph_load_disr",
         "Si_mean",
         "Si_hi_frac",
@@ -70,6 +70,7 @@ def prepare_network(
         "phase_kL",
     ]
     history = {k: [] for k in hist_keys}
+    history["glyph_load_estab"] = history["glyph_load_stabilizers"]
     history.update(
         {
             "phase_state": deque(maxlen=ph_len),

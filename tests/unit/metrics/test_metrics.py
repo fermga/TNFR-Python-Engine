@@ -204,12 +204,39 @@ def test_update_sigma_uses_default_window(monkeypatch, graph_canon):
     _update_sigma(G, hist)
 
     assert captured["window"] == 7
-    assert hist["glyph_load_estab"] == [0.25]
+    assert hist["glyph_load_stabilizers"] == [0.25]
+    assert hist["glyph_load_estab"] is hist["glyph_load_stabilizers"]
     assert hist["glyph_load_disr"] == [0.75]
     assert hist["sense_sigma_x"] == [sigma["x"]]
     assert hist["sense_sigma_y"] == [sigma["y"]]
     assert hist["sense_sigma_mag"] == [sigma["mag"]]
     assert hist["sense_sigma_angle"] == [sigma["angle"]]
+
+
+def test_update_sigma_migrates_legacy_history(monkeypatch, graph_canon):
+    G = graph_canon()
+
+    monkeypatch.setattr("tnfr.metrics.coherence.DEFAULT_GLYPH_LOAD_SPAN", 5)
+
+    def fake_glyph_load(G, window=None):  # noqa: ANN001 - test double
+        return {
+            "_stabilizers": 0.25,
+            "_disruptors": 0.75,
+        }
+
+    monkeypatch.setattr("tnfr.metrics.coherence.glyph_load", fake_glyph_load)
+    monkeypatch.setattr(
+        "tnfr.metrics.coherence.sigma_vector", lambda dist: {}
+    )
+
+    hist: dict[str, list] = {"glyph_load_estab": [0.5]}
+
+    with pytest.warns(DeprecationWarning):
+        _update_sigma(G, hist)
+
+    assert hist["glyph_load_stabilizers"] == [0.5, 0.25]
+    assert hist["glyph_load_estab"] is hist["glyph_load_stabilizers"]
+    assert hist["glyph_load_disr"] == [0.75]
 
 
 def _si_graph(graph_canon):
