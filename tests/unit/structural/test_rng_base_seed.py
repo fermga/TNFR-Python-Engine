@@ -5,6 +5,7 @@ from tnfr.rng import (
     cache_enabled,
     clear_rng_cache,
     make_rng,
+    ScopedCounterCache,
     seed_hash,
     set_cache_maxsize,
 )
@@ -147,3 +148,43 @@ def test_seed_hash_metrics():
         set_cache_maxsize(original_size)
         rng_module._CACHE_LOCKED = original_locked
         clear_rng_cache()
+
+
+def test_seed_hash_evictions_recorded():
+    import tnfr.rng as rng_module
+
+    original_size = rng_module._CACHE_MAXSIZE
+    original_locked = rng_module._CACHE_LOCKED
+    try:
+        set_cache_maxsize(1)
+        seed_hash.cache_clear()
+        manager = rng_module._RNG_CACHE_MANAGER
+        before = manager.get_metrics("seed_hash_cache")
+
+        seed_hash(1, 1)
+        seed_hash(2, 2)
+
+        after = manager.get_metrics("seed_hash_cache")
+        assert after.evictions - before.evictions == 1
+        assert len(seed_hash.cache) == 1
+    finally:
+        set_cache_maxsize(original_size)
+        rng_module._CACHE_LOCKED = original_locked
+        clear_rng_cache()
+
+
+def test_scoped_counter_cache_evictions():
+    import tnfr.rng as rng_module
+
+    cache = ScopedCounterCache("test", max_entries=2, manager=rng_module._RNG_CACHE_MANAGER)
+    manager = rng_module._RNG_CACHE_MANAGER
+    try:
+        before = manager.get_metrics(cache._state_key)  # type: ignore[attr-defined]
+        cache.bump("a")
+        cache.bump("b")
+        cache.bump("c")
+        after = manager.get_metrics(cache._state_key)  # type: ignore[attr-defined]
+        assert after.evictions - before.evictions == 1
+    finally:
+        cache.configure(force=True, max_entries=rng_module._DEFAULT_CACHE_MAXSIZE)
+        cache.clear()

@@ -4,14 +4,29 @@ from __future__ import annotations
 
 import logging
 import threading
+from collections.abc import Iterable
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from time import perf_counter
-from typing import Any, Callable, Iterator, Mapping, MutableMapping
+from typing import Any, Callable, Hashable, Iterator, Mapping, MutableMapping, TypeVar
+
+from cachetools import LRUCache
 
 from .types import TimingContext
 
-__all__ = ["CacheManager", "CacheCapacityConfig", "CacheStatistics"]
+__all__ = [
+    "CacheManager",
+    "CacheCapacityConfig",
+    "CacheStatistics",
+    "ManagedLRUCache",
+    "prune_lock_mapping",
+]
+
+
+K = TypeVar("K", bound=Hashable)
+V = TypeVar("V")
+
+_logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -399,3 +414,76 @@ class CacheManager:
                 stats.timings,
                 stats.total_time,
             )
+
+
+def _normalise_callbacks(
+    callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None,
+) -> tuple[Callable[[K, V], None], ...]:
+    if callbacks is None:
+        return ()
+    if callable(callbacks):
+        return (callbacks,)
+    return tuple(callbacks)
+
+
+def prune_lock_mapping(
+    cache: Mapping[K, Any] | MutableMapping[K, Any] | None,
+    locks: MutableMapping[K, Any] | None,
+) -> None:
+    """Drop lock entries not present in ``cache``."""
+
+    if locks is None:
+        return
+    if cache is None:
+        cache_keys: set[K] = set()
+    else:
+        cache_keys = set(cache.keys())
+    for key in list(locks.keys()):
+        if key not in cache_keys:
+            locks.pop(key, None)
+
+
+class ManagedLRUCache(LRUCache[K, V]):
+    """LRU cache wrapper with telemetry hooks and lock synchronisation."""
+
+    def __init__(
+        self,
+        maxsize: int,
+        *,
+        manager: CacheManager | None = None,
+        metrics_key: str | None = None,
+        eviction_callbacks: Iterable[Callable[[K, V], None]]
+        | Callable[[K, V], None]
+        | None = None,
+        telemetry_callbacks: Iterable[Callable[[K, V], None]]
+        | Callable[[K, V], None]
+        | None = None,
+        locks: MutableMapping[K, Any] | None = None,
+    ) -> None:
+        super().__init__(maxsize)
+        self._manager = manager
+        self._metrics_key = metrics_key
+        self._locks = locks
+        self._eviction_callbacks = _normalise_callbacks(eviction_callbacks)
+        self._telemetry_callbacks = _normalise_callbacks(telemetry_callbacks)
+
+    def popitem(self) -> tuple[K, V]:  # type: ignore[override]
+        key, value = super().popitem()
+        if self._locks is not None:
+            try:
+                self._locks.pop(key, None)
+            except Exception:  # pragma: no cover - defensive logging
+                _logger.exception("lock cleanup failed for %r", key)
+        if self._manager is not None and self._metrics_key is not None:
+            self._manager.increment_eviction(self._metrics_key)
+        for callback in self._telemetry_callbacks:
+            try:
+                callback(key, value)
+            except Exception:  # pragma: no cover - defensive logging
+                _logger.exception("telemetry callback failed for %r", key)
+        for callback in self._eviction_callbacks:
+            try:
+                callback(key, value)
+            except Exception:  # pragma: no cover - defensive logging
+                _logger.exception("eviction callback failed for %r", key)
+        return key, value

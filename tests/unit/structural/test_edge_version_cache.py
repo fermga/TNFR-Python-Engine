@@ -38,13 +38,18 @@ def test_edge_version_cache_disable(graph_and_manager):
 
 
 def test_edge_version_cache_limit(graph_and_manager):
-    G, _ = graph_and_manager()
+    G, manager = graph_and_manager()
+    baseline = manager._manager.get_metrics(manager._STATE_KEY)
     edge_version_cache(G, "a", lambda: 1, max_entries=2)
     edge_version_cache(G, "b", lambda: 2, max_entries=2)
     edge_version_cache(G, "c", lambda: 3, max_entries=2)
-    cache, _ = EdgeCacheManager(G.graph).get_cache(2)
+    cache, locks = EdgeCacheManager(G.graph).get_cache(2)
     assert "a" not in cache
     assert "b" in cache and "c" in cache
+    assert set(locks) == set(cache)
+
+    stats = manager._manager.get_metrics(manager._STATE_KEY)
+    assert stats.evictions - baseline.evictions == 1
 
 
 @pytest.mark.parametrize("max_entries", [2, None])
