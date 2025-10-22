@@ -102,5 +102,5 @@ ignore_missing_imports = true
 
 
 [build-system]
-requires = ["setuptools>=61", "wheel"]
+requires = ["setuptools>=78.1.1", "wheel"]
 build-backend = "setuptools.build_meta"
