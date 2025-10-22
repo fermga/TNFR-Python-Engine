@@ -6,7 +6,9 @@ import numbers
 import sys
 
 from collections.abc import Mapping
-from typing import Callable, Sequence, TypeAlias
+from typing import Callable, Sequence
+
+from .._compat import TypeAlias
 
 from ..alias import get_attr
 from ..config.constants import GLYPHS_CANONICAL_SET

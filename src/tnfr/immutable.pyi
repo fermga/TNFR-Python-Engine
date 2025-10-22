@@ -1,4 +1,6 @@
-from typing import Any, Callable, Iterator, Mapping, TypeAlias
+from typing import Any, Callable, Iterator, Mapping
+
+from ._compat import TypeAlias
 
 FrozenPrimitive: TypeAlias = int | float | complex | str | bool | bytes | None
 FrozenCollectionItems: TypeAlias = tuple["FrozenSnapshot", ...]

@@ -11,7 +11,9 @@ from collections import deque
 from collections.abc import Hashable, Iterable, Mapping, MutableMapping, Sequence
 from statistics import fmean, StatisticsError
 from types import ModuleType
-from typing import Any, TypedDict, TypeAlias, cast
+from typing import Any, TypedDict, cast
+
+from .._compat import TypeAlias
 
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
 from ..helpers.numeric import kahan_sum_nd

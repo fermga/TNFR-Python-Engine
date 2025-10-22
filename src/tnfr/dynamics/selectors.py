@@ -8,7 +8,7 @@ from collections.abc import Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from operator import itemgetter
-from typing import Any, TypeAlias, cast
+from typing import Any, cast
 
 from ..alias import collect_attr, get_attr
 from ..constants import get_graph_param, get_param
@@ -26,6 +26,7 @@ from ..types import Glyph, GlyphSelector, HistoryState, NodeId, TNFRGraph
 from ..utils import get_numpy
 from ..validation.grammar import enforce_canonical_grammar, on_applied_glyph
 from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_SI
+from .._compat import TypeAlias
 
 GlyphCode: TypeAlias = Glyph | str
 

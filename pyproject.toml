@@ -27,7 +27,8 @@ classifiers = [
 ]
 dependencies = [
   "networkx>=2.6",
-  "cachetools>=5"
+  "cachetools>=5",
+  "typing-extensions>=4.4; python_version < \"3.10\"",
 ]
 
 [project.optional-dependencies]

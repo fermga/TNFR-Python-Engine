@@ -1,7 +1,8 @@
 from collections.abc import Mapping
-from typing import Callable, Sequence, TypeAlias
+from typing import Callable, Sequence
 
 from ..types import TNFRGraph
+from .._compat import TypeAlias
 
 ValidatorFunc: TypeAlias = Callable[[TNFRGraph], None]
 NodeData: TypeAlias = Mapping[str, object]
