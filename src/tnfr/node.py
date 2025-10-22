@@ -228,7 +228,7 @@ class NodeNX(NodeProtocol):
     @classmethod
     def from_graph(cls, G: TNFRGraph, n: NodeId) -> "NodeNX":
         """Return cached ``NodeNX`` for ``(G, n)`` with thread safety."""
-        lock = get_lock(f"nodonx_cache_{id(G)}")
+        lock = get_lock(f"node_nx_cache_{id(G)}")
         with lock:
             cache = G.graph.setdefault("_node_cache", {})
             node = cache.get(n)
