@@ -65,8 +65,17 @@ version = { attr = "tnfr._version.__version__" }
 [tool.setuptools.package-data]
 tnfr = ["py.typed"]
 
+[tool.black]
+line-length = 88
+target-version = ["py39", "py310", "py311", "py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip = ["benchmarks"]
+
 [tool.flake8]
-max-line-length = 79
+max-line-length = 88
 ignore = ["E501", "W503"]
 exclude = ["benchmarks/"]
 
