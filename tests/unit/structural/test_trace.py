@@ -90,9 +90,25 @@ def test_trace_basic_verbosity_skips_heavy_fields(graph_canon):
     assert "glyphs" not in after
 
 
-def test_trace_detailed_verbosity_preserves_heavy_fields(graph_canon):
+def test_trace_detailed_verbosity_skips_glyph_counts(graph_canon):
     G = graph_canon()
     G.graph["TRACE"]["verbosity"] = "detailed"
+    register_trace(G)
+    callback_manager.invoke_callbacks(G, CallbackEvent.BEFORE_STEP.value)
+    callback_manager.invoke_callbacks(G, CallbackEvent.AFTER_STEP.value)
+
+    hist = G.graph["history"]["trace_meta"]
+    after = hist[1]
+
+    assert after["phase"] == "after"
+    assert "kuramoto" in after
+    assert "sigma" in after
+    assert "glyphs" not in after
+
+
+def test_trace_debug_verbosity_includes_all_fields(graph_canon):
+    G = graph_canon()
+    # Debug is the default verbosity; ensure the full capture set executes.
     register_trace(G)
     callback_manager.invoke_callbacks(G, CallbackEvent.BEFORE_STEP.value)
     callback_manager.invoke_callbacks(G, CallbackEvent.AFTER_STEP.value)
