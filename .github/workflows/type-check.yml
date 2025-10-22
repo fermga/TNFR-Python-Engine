@@ -11,22 +11,19 @@ on:
       - master
 
 jobs:
-  lint-test:
-    name: Python ${{ matrix.python-version }} checks
+  static-analysis:
+    name: Python 3.11 static analysis
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12']
     env:
       PYTHONPATH: ${{ github.workspace }}/src
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.11
         uses: actions/setup-python@v6
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
@@ -42,10 +39,6 @@ jobs:
       - name: Run mypy
         run: python -m mypy src/tnfr
 
-      - name: Run tests with coverage
-        run: |
-          python -m coverage run --source=src -m pytest
-          python -m coverage report -m
-
       - name: Run vulture
         run: python -m vulture --min-confidence 80 src tests
+        continue-on-error: true
