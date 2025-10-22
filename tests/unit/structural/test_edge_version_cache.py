@@ -1,5 +1,6 @@
 import pytest
 from concurrent.futures import ThreadPoolExecutor
+from unittest import mock
 
 from tnfr.utils import (
     EdgeCacheManager,
@@ -41,15 +42,22 @@ def test_edge_version_cache_limit(graph_and_manager):
     G, manager = graph_and_manager()
     baseline = manager._manager.get_metrics(manager._STATE_KEY)
     edge_version_cache(G, "a", lambda: 1, max_entries=2)
-    edge_version_cache(G, "b", lambda: 2, max_entries=2)
-    edge_version_cache(G, "c", lambda: 3, max_entries=2)
-    cache, locks = EdgeCacheManager(G.graph).get_cache(2)
+    manager_in_graph = G.graph.get("_edge_cache_manager")
+    assert isinstance(manager_in_graph, EdgeCacheManager)
+    with mock.patch.object(
+        manager_in_graph, "record_eviction", wraps=manager_in_graph.record_eviction
+    ) as record_eviction:
+        edge_version_cache(G, "b", lambda: 2, max_entries=2)
+        edge_version_cache(G, "c", lambda: 3, max_entries=2)
+    cache, locks = manager_in_graph.get_cache(2)
     assert "a" not in cache
     assert "b" in cache and "c" in cache
     assert set(locks) == set(cache)
 
     stats = manager._manager.get_metrics(manager._STATE_KEY)
     assert stats.evictions - baseline.evictions == 1
+    assert record_eviction.call_count == 1
+    assert record_eviction.call_args.kwargs == {"track_metrics": False}
 
 
 @pytest.mark.parametrize("max_entries", [2, None])
@@ -58,11 +66,14 @@ def test_edge_version_cache_lock_cleanup(graph_and_manager, max_entries):
     if max_entries is None:
         edge_version_cache(G, "a", lambda: 1, max_entries=None)
         edge_version_cache(G, "b", lambda: 2, max_entries=None)
-        cache, locks = EdgeCacheManager(G.graph).get_cache(None)
+        manager_in_graph = G.graph.get("_edge_cache_manager")
+        assert isinstance(manager_in_graph, EdgeCacheManager)
+        cache, locks = manager_in_graph.get_cache(None)
         cache.pop("a")
-        assert "a" in locks
+        assert "a" not in locks
+        assert set(locks) == set(cache)
         edge_version_cache(G, "c", lambda: 3, max_entries=None)
-        cache, locks = EdgeCacheManager(G.graph).get_cache(None)
+        cache, locks = manager_in_graph.get_cache(None)
         assert "a" not in locks
         assert set(locks) == set(cache)
     else:
