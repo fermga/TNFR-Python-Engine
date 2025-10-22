@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, Optional
 
@@ -136,6 +137,18 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
             "beta": args.gamma_beta,
             "R0": args.gamma_R0,
         }
+
+    for attr, key in (
+        ("trace_verbosity", "TRACE"),
+        ("metrics_verbosity", "METRICS"),
+    ):
+        cfg = G.graph.get(key)
+        if not isinstance(cfg, dict):
+            cfg = deepcopy(METRIC_DEFAULTS[key])
+            G.graph[key] = cfg
+        value = getattr(args, attr, None)
+        if value is not None:
+            cfg["verbosity"] = value
 
 
 def register_callbacks_and_observer(G: "nx.Graph") -> None:
