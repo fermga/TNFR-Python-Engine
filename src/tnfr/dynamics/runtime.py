@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import inspect
 import math
+import sys
 from collections import deque
 from collections.abc import Mapping, MutableMapping, MutableSequence
 from typing import Any, cast
@@ -350,7 +351,15 @@ def _prepare_dnfr(
             G.graph.get("SI_N_JOBS"),
             allow_non_positive=False,
         )
-        compute_Si(G, inplace=True, n_jobs=si_jobs)
+        dynamics_module = sys.modules.get("tnfr.dynamics")
+        compute_si_fn = (
+            getattr(dynamics_module, "compute_Si", None)
+            if dynamics_module is not None
+            else None
+        )
+        if compute_si_fn is None:
+            compute_si_fn = compute_Si
+        compute_si_fn(G, inplace=True, n_jobs=si_jobs)
 
 
 def _update_nodes(

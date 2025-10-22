@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import importlib
 import pkgutil
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from ..config.operator_names import canonical_operator_name
 
@@ -68,3 +68,13 @@ def discover_operators() -> None:
 
 
 __all__ = ("OPERATORS", "register_operator", "discover_operators", "get_operator_class")
+
+
+def __getattr__(name: str) -> Any:
+    """Provide guidance for legacy registry aliases."""
+
+    if name == "OPERADORES":
+        raise AttributeError(
+            f"module '{__name__}' has no attribute '{name}'; use 'OPERATORS' instead."
+        )
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")

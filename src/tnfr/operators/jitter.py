@@ -247,7 +247,7 @@ def random_jitter(
     seed_root = base_seed(node.G)
     seed_key, scope_id = _resolve_jitter_seed(node)
 
-    cache_key = (seed_root, scope_id)
+    cache_key = (seed_root, scope_id, seed_key)
     seq = 0
     if cache_enabled(node.G):
         manager = get_jitter_manager()

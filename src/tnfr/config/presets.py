@@ -17,6 +17,7 @@ from ..types import Glyph, PresetTokens
 __all__ = (
     "get_preset",
     "PREFERRED_PRESET_NAMES",
+    "legacy_preset_guidance",
 )
 
 
@@ -62,6 +63,38 @@ _PRIMARY_PRESETS: dict[str, PresetTokens] = {
 PREFERRED_PRESET_NAMES: tuple[str, ...] = tuple(_PRIMARY_PRESETS.keys())
 
 _PRESETS: dict[str, PresetTokens] = {**_PRIMARY_PRESETS}
+
+
+_LEGACY_PRESET_ALIASES: dict[str, str] = {
+    "arranque_resonante": "resonant_bootstrap",
+    "mutacion_contenida": "contained_mutation",
+    "exploracion_acople": "coupling_exploration",
+    "ejemplo_canonico": CANONICAL_PRESET_NAME,
+}
+
+
+def legacy_preset_guidance(name: str) -> str | None:
+    """Return CLI guidance for historical preset aliases.
+
+    Parameters
+    ----------
+    name:
+        Identifier received from the CLI.
+
+    Returns
+    -------
+    str | None
+        A human readable guidance string when ``name`` matches a removed
+        alias. ``None`` when no dedicated guidance is available.
+    """
+
+    canonical = _LEGACY_PRESET_ALIASES.get(name)
+    if canonical is None:
+        return None
+    return (
+        f"Legacy preset identifier '{name}' was removed in TNFR 9.0. "
+        f"Use '{canonical}' instead."
+    )
 
 
 def get_preset(name: str) -> PresetTokens:

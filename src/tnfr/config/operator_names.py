@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 
 # Canonical operator identifiers (English tokens)
 EMISSION = "emission"
@@ -47,6 +49,14 @@ INTERMEDIATE_OPERATORS = frozenset({DISSONANCE, COUPLING, RESONANCE})
 VALID_END_OPERATORS = frozenset({SILENCE, TRANSITION, RECURSIVITY})
 SELF_ORGANIZATION_CLOSURES = frozenset({SILENCE, CONTRACTION})
 
+
+_LEGACY_COLLECTION_ALIASES: dict[str, str] = {
+    "INICIO_VALIDOS": "VALID_START_OPERATORS",
+    "TRAMO_INTERMEDIO": "INTERMEDIATE_OPERATORS",
+    "CIERRE_VALIDO": "VALID_END_OPERATORS",
+    "AUTOORGANIZACION_CIERRES": "SELF_ORGANIZATION_CLOSURES",
+}
+
 def canonical_operator_name(name: str) -> str:
     """Return the canonical operator token for ``name``."""
 
@@ -83,3 +93,14 @@ __all__ = [
     "canonical_operator_name",
     "operator_display_name",
 ]
+
+
+def __getattr__(name: str) -> Any:
+    """Provide guidance for legacy operator collection aliases."""
+
+    canonical = _LEGACY_COLLECTION_ALIASES.get(name)
+    if canonical is not None:
+        raise AttributeError(
+            f"module '{__name__}' has no attribute '{name}'; use '{canonical}' instead."
+        )
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")

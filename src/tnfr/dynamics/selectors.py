@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
+import sys
 from collections.abc import Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
@@ -356,7 +357,12 @@ def _collect_selector_metrics(
     if not nodes:
         return {}
 
-    np_mod = get_numpy()
+    dynamics_module = sys.modules.get("tnfr.dynamics")
+    get_numpy_fn = get_numpy
+    if dynamics_module is not None:
+        get_numpy_fn = getattr(dynamics_module, "get_numpy", get_numpy)
+
+    np_mod = get_numpy_fn()
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     accel_max = float(norms.get("accel_max", 1.0)) or 1.0
 
@@ -404,7 +410,12 @@ def _collect_selector_metrics(
                         accel_max,
                     )
 
-            with ProcessPoolExecutor(max_workers=worker_count) as executor:
+            executor_cls = ProcessPoolExecutor
+            if dynamics_module is not None:
+                executor_cls = getattr(
+                    dynamics_module, "ProcessPoolExecutor", ProcessPoolExecutor
+                )
+            with executor_cls(max_workers=worker_count) as executor:
                 for si_chunk, dnfr_chunk, accel_chunk in executor.map(
                     _selector_metrics_chunk, _args_iter()
                 ):
@@ -469,7 +480,13 @@ def _compute_param_base_choices(
     ]
     base: dict[Any, str] = {}
     args = ((thresholds, chunk) for chunk in chunks)
-    with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+    executor_cls = ProcessPoolExecutor
+    dynamics_module = sys.modules.get("tnfr.dynamics")
+    if dynamics_module is not None:
+        executor_cls = getattr(
+            dynamics_module, "ProcessPoolExecutor", ProcessPoolExecutor
+        )
+    with executor_cls(max_workers=n_jobs) as executor:
         for result in executor.map(_param_base_worker, args):
             for node, cand in result:
                 base[node] = cand
@@ -578,6 +595,8 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
             to_select.append(n)
 
     decisions: dict[Any, str | Glyph] = dict(forced)
+    forced_al_nodes = {n for n, choice in forced.items() if choice == Glyph.AL}
+    forced_en_nodes = {n for n, choice in forced.items() if choice == Glyph.EN}
     if to_select:
         n_jobs = _selector_parallel_jobs(G)
         if n_jobs is None:
@@ -591,7 +610,13 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
                 to_select[idx : idx + chunk_size]
                 for idx in range(0, len(to_select), chunk_size)
             ]
-            with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+            dynamics_module = sys.modules.get("tnfr.dynamics")
+            executor_cls = ProcessPoolExecutor
+            if dynamics_module is not None:
+                executor_cls = getattr(
+                    dynamics_module, "ProcessPoolExecutor", ProcessPoolExecutor
+                )
+            with executor_cls(max_workers=n_jobs) as executor:
                 args_iter = (
                     (chunk, G, selector, preselection) for chunk in chunks
                 )
@@ -611,10 +636,23 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
         if use_canon:
             on_applied_glyph(G, n, g)
 
-        if g == Glyph.AL:
+        if n in forced_al_nodes:
             h_al[n] = 0
             h_en[n] = min(h_en[n], en_max)
-        elif g == Glyph.EN:
+            continue
+        if n in forced_en_nodes:
+            h_en[n] = 0
+            continue
+
+        try:
+            glyph_enum = g if isinstance(g, Glyph) else Glyph(str(g))
+        except ValueError:
+            glyph_enum = None
+
+        if glyph_enum is Glyph.AL:
+            h_al[n] = 0
+            h_en[n] = min(h_en[n], en_max)
+        elif glyph_enum is Glyph.EN:
             h_en[n] = 0
 
 
