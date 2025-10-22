@@ -28,12 +28,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 from cachetools import LRUCache
 import networkx as nx
 
-from ..cache import (
-    CacheCapacityConfig,
-    CacheManager,
-    ManagedLRUCache,
-    prune_lock_mapping,
-)
+from ..cache import CacheCapacityConfig, CacheManager, InstrumentedLRUCache
 from ..types import GraphLike, NodeId, TNFRGraph, TimingContext
 from .graph import get_graph, mark_dnfr_prep_dirty
 from .init import get_logger, get_numpy
@@ -368,7 +363,7 @@ def ensure_node_offset_map(G: TNFRGraph) -> dict[NodeId, int]:
 
 @dataclass
 class EdgeCacheState:
-    cache: dict[Hashable, Any] | LRUCache[Hashable, Any]
+    cache: MutableMapping[Hashable, Any]
     locks: defaultdict[Hashable, threading.RLock]
     max_entries: int | None
 
@@ -526,15 +521,25 @@ class EdgeCacheManager:
 
         self._manager.increment_hit(self._STATE_KEY)
 
-    def record_miss(self) -> None:
-        """Record a cache miss for telemetry."""
+    def record_miss(self, *, track_metrics: bool = True) -> None:
+        """Record a cache miss for telemetry.
 
-        self._manager.increment_miss(self._STATE_KEY)
+        When ``track_metrics`` is ``False`` the miss is acknowledged without
+        mutating the aggregated metrics.
+        """
 
-    def record_eviction(self) -> None:
-        """Record cache eviction events for telemetry."""
+        if track_metrics:
+            self._manager.increment_miss(self._STATE_KEY)
 
-        self._manager.increment_eviction(self._STATE_KEY)
+    def record_eviction(self, *, track_metrics: bool = True) -> None:
+        """Record cache eviction events for telemetry.
+
+        When ``track_metrics`` is ``False`` the underlying metrics counter is
+        left untouched while still signalling that an eviction occurred.
+        """
+
+        if track_metrics:
+            self._manager.increment_eviction(self._STATE_KEY)
 
     def timer(self) -> TimingContext:
         """Return a timing context linked to this cache."""
@@ -557,15 +562,19 @@ class EdgeCacheManager:
 
     def _build_state(self, max_entries: int | None) -> EdgeCacheState:
         locks: defaultdict[Hashable, threading.RLock] = defaultdict(threading.RLock)
-        if max_entries is None:
-            cache: dict[Hashable, Any] | LRUCache[Hashable, Any] = {}
-        else:
-            cache = ManagedLRUCache(
-                max_entries,
-                manager=self._manager,
-                metrics_key=self._STATE_KEY,
-                locks=locks,
-            )
+        capacity = float("inf") if max_entries is None else int(max_entries)
+        cache = InstrumentedLRUCache(
+            capacity,
+            manager=self._manager,
+            metrics_key=self._STATE_KEY,
+            locks=locks,
+        )
+
+        def _on_eviction(key: Hashable, _: Any) -> None:
+            self.record_eviction(track_metrics=False)
+            locks.pop(key, None)
+
+        cache.set_eviction_callbacks(_on_eviction)
         return EdgeCacheState(cache=cache, locks=locks, max_entries=max_entries)
 
     def _ensure_state(
@@ -578,13 +587,11 @@ class EdgeCacheManager:
                 raise ValueError("max_entries must be non-negative or None")
         if not isinstance(state, EdgeCacheState) or state.max_entries != target:
             return self._build_state(target)
-        prune_lock_mapping(state.cache, state.locks)
         return state
 
     def _reset_state(self, state: EdgeCacheState | None) -> EdgeCacheState:
         if isinstance(state, EdgeCacheState):
             state.cache.clear()
-            state.locks.clear()
             return state
         return self._build_state(None)
 
@@ -594,7 +601,7 @@ class EdgeCacheManager:
         *,
         create: bool = True,
     ) -> tuple[
-        dict[Hashable, Any] | LRUCache[Hashable, Any] | None,
+        MutableMapping[Hashable, Any] | None,
         dict[Hashable, threading.RLock]
         | defaultdict[Hashable, threading.RLock]
         | None,
@@ -655,9 +662,9 @@ def edge_version_cache(
         logger.exception("edge_version_cache builder failed for %r: %s", key, exc)
         raise
     else:
-        manager.record_miss()
         with lock:
             entry = cache.get(key)
+            manager.record_miss(track_metrics=entry is not None)
             if entry is not None and entry[0] == edge_version:
                 manager.record_hit()
                 return entry[1]
