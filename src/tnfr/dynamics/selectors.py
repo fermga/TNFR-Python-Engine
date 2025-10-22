@@ -183,7 +183,7 @@ def _apply_score_override(
 def _parametric_selector_logic(G: TNFRGraph, n: NodeId) -> GlyphCode:
     nd = G.nodes[n]
     thr = _selector_thresholds(G)
-    margin = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
+    margin: float | None = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
 
     norms = cast(Mapping[str, float] | None, G.graph.get("_sel_norms"))
     if norms is None:
@@ -234,7 +234,7 @@ def _build_param_preselection(
 ) -> _SelectorPreselection:
     node_list = list(nodes)
     thresholds = _selector_thresholds(G)
-    margin = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
+    margin: float | None = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
     if not node_list:
         return _SelectorPreselection(
             "param", {}, {}, thresholds=thresholds, margin=margin
@@ -507,7 +507,7 @@ def _resolve_preselected_glyph(
     if preselection.kind == "param":
         Si, dnfr, accel = metrics
         thresholds = preselection.thresholds or _selector_thresholds(G)
-        margin = preselection.margin
+        margin: float | None = preselection.margin
         if margin is None:
             margin = get_graph_param(G, "GLYPH_SELECTOR_MARGIN")
 

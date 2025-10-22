@@ -18,9 +18,11 @@ from tnfr.selector import (
 from tnfr.constants import DEFAULTS, get_aliases
 from tnfr.utils import normalize_weights
 from tnfr.dynamics import _configure_selector_weights
+from tnfr.dynamics.selectors import ParametricGlyphSelector
 
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_D2EPI = get_aliases("D2EPI")
+ALIAS_SI = get_aliases("SI")
 
 
 def test_selector_thresholds_defaults(graph_canon):
@@ -136,3 +138,25 @@ def test_apply_selector_hysteresis_returns_prev():
     # far from thresholds
     none = _apply_selector_hysteresis(nd, 0.5, 0.2, 0.2, thr, 0.05)
     assert none is None
+
+
+def test_parametric_selector_skips_hysteresis_with_none_margin(graph_canon):
+    G = graph_canon()
+    thr = DEFAULTS["SELECTOR_THRESHOLDS"]
+    node = 0
+    G.add_node(
+        node,
+        glyph_history=["IL"],
+        **{
+            ALIAS_SI[0]: thr["si_lo"],
+            ALIAS_DNFR[-1]: 0.9,
+            ALIAS_D2EPI[-1]: 0.0,
+        },
+    )
+    G.graph["GLYPH_SELECTOR_MARGIN"] = None
+    G.graph["_sel_norms"] = {"dnfr_max": 1.0, "accel_max": 1.0}
+
+    selector = ParametricGlyphSelector()
+    glyph = selector.select(G, node)
+
+    assert glyph == "OZ"

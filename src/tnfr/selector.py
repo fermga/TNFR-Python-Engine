@@ -169,7 +169,7 @@ def _apply_selector_hysteresis(
     dnfr: float,
     accel: float,
     thr: dict[str, float],
-    margin: float,
+    margin: float | None,
 ) -> str | None:
     """Apply hysteresis when values are near thresholds.
 
@@ -185,8 +185,10 @@ def _apply_selector_hysteresis(
         Normalised acceleration.
     thr : dict[str, float]
         Thresholds returned by :func:`_selector_thresholds`.
-    margin : float
-        Distance from thresholds below which the previous glyph is reused.
+    margin : float or None
+        When positive, distance from thresholds below which the previous
+        glyph is reused. Falsy margins disable hysteresis entirely, letting
+        selectors bypass the reuse logic.
 
     Returns
     -------
@@ -194,6 +196,9 @@ def _apply_selector_hysteresis(
         Previous glyph if hysteresis applies, otherwise ``None``.
     """
     # Batch extraction reduces dictionary lookups inside loops.
+    if not margin:
+        return None
+
     si_hi, si_lo, dnfr_hi, dnfr_lo, accel_hi, accel_lo = itemgetter(
         "si_hi", "si_lo", "dnfr_hi", "dnfr_lo", "accel_hi", "accel_lo"
     )(thr)
