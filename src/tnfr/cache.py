@@ -477,6 +477,7 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
         | None = None,
         locks: MutableMapping[K, Any] | None = None,
         getsizeof: Callable[[V], int] | None = None,
+        count_overwrite_hit: bool = True,
     ) -> None:
         self._cache: LRUCache[K, V] = LRUCache(maxsize, getsizeof=getsizeof)
         original_popitem = self._cache.popitem
@@ -490,6 +491,7 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
         self._manager = manager
         self._metrics_key = metrics_key
         self._locks = locks
+        self._count_overwrite_hit = bool(count_overwrite_hit)
         self._telemetry_callbacks: list[Callable[[K, V], None]]
         self._telemetry_callbacks = list(_normalise_callbacks(telemetry_callbacks))
         self._eviction_callbacks: list[Callable[[K, V], None]]
@@ -560,7 +562,8 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
         exists = key in self._cache
         self._cache[key] = value
         if exists:
-            self._record_hit(1)
+            if self._count_overwrite_hit:
+                self._record_hit(1)
         else:
             self._record_miss(1)
 

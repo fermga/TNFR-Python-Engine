@@ -568,6 +568,7 @@ class EdgeCacheManager:
             manager=self._manager,
             metrics_key=self._STATE_KEY,
             locks=locks,
+            count_overwrite_hit=False,
         )
 
         def _on_eviction(key: Hashable, _: Any) -> None:
@@ -664,10 +665,13 @@ def edge_version_cache(
     else:
         with lock:
             entry = cache.get(key)
-            manager.record_miss(track_metrics=entry is not None)
-            if entry is not None and entry[0] == edge_version:
-                manager.record_hit()
-                return entry[1]
+            if entry is not None:
+                cached_version, cached_value = entry
+                manager.record_miss()
+                if cached_version == edge_version:
+                    manager.record_hit()
+                    return cached_value
+                manager.record_eviction()
             cache[key] = (edge_version, value)
             return value
 
