@@ -58,7 +58,6 @@ ALIAS_DVF = get_aliases("DVF")
 ALIAS_D2VF = get_aliases("D2VF")
 
 GLYPH_LOAD_STABILIZERS_KEY = "glyph_load_stabilizers"
-LEGACY_GLYPH_LOAD_KEY = "glyph_load_estab"
 
 
 @dataclass
@@ -1061,13 +1060,13 @@ def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
     """Record glyph load and associated Σ⃗ vector."""
 
     metrics = cast(MutableMapping[str, list[Any]], hist)
-    legacy_series = metrics.get(LEGACY_GLYPH_LOAD_KEY)
+    legacy_series = metrics.pop("glyph_load_estab", None)
     stabilizer_series = metrics.get(GLYPH_LOAD_STABILIZERS_KEY)
 
     if stabilizer_series is None:
         if isinstance(legacy_series, list):
-            metrics[GLYPH_LOAD_STABILIZERS_KEY] = list(legacy_series)
-            stabilizer_series = metrics[GLYPH_LOAD_STABILIZERS_KEY]
+            metrics[GLYPH_LOAD_STABILIZERS_KEY] = legacy_series
+            stabilizer_series = legacy_series
             warnings.warn(
                 "'glyph_load_estab' history key is deprecated; use "
                 "'glyph_load_stabilizers' instead.",
@@ -1075,21 +1074,20 @@ def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
                 stacklevel=2,
             )
         else:
-            stabilizer_series = metrics.setdefault(
-                GLYPH_LOAD_STABILIZERS_KEY, []
+            stabilizer_series = cast(
+                list[Any], metrics.setdefault(GLYPH_LOAD_STABILIZERS_KEY, [])
             )
-    elif (
-        isinstance(legacy_series, list)
-        and legacy_series is not stabilizer_series
-    ):
-        warnings.warn(
-            "'glyph_load_estab' history key is deprecated; use "
-            "'glyph_load_stabilizers' instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-    metrics[LEGACY_GLYPH_LOAD_KEY] = stabilizer_series
+    else:
+        stabilizer_series = cast(list[Any], stabilizer_series)
+        if isinstance(legacy_series, list):
+            if legacy_series is not stabilizer_series:
+                stabilizer_series[0:0] = legacy_series
+            warnings.warn(
+                "'glyph_load_estab' history key is deprecated; use "
+                "'glyph_load_stabilizers' instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
     gl: GlyphLoadDistribution = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
     stabilizers = float(gl.get("_stabilizers", 0.0))

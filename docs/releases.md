@@ -1,5 +1,22 @@
 # Release notes
 
+## 16.0.0 (glyph load Spanish history key removed)
+
+- **Breaking change**: Removed the deprecated ``"glyph_load_estab"`` history
+  key. Metrics initialisation and the coherence observers now migrate any
+  persisted payloads by promoting the list to ``"glyph_load_stabilizers"`` once
+  and deleting the Spanish alias instead of keeping both identifiers in sync.
+- Migration guidance: audit stored histories and rename the key before
+  upgrading, for example::
+
+      history = payload.get("history", {})
+      legacy = history.pop("glyph_load_estab", None)
+      if isinstance(legacy, list) and "glyph_load_stabilizers" not in history:
+          history["glyph_load_stabilizers"] = legacy
+
+  Persist the rewritten payloads so downstream tooling only reads the English
+  identifier.
+
 ## 14.0.0 (Spanish compatibility messaging retired)
 
 - Finalised the English-only surface by removing Spanish-specific guidance from
