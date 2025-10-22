@@ -138,11 +138,6 @@ def validate_sequence(
 ) -> tuple[bool, str]:
     """Validate minimal TNFR syntax rules."""
 
-    if "nombres" in kwargs:
-        raise TypeError(
-            "validate_sequence() no longer accepts 'nombres'; use the English 'names' instead"
-        )
-
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))
         raise TypeError(
