@@ -218,3 +218,15 @@ def test_trace_capture_override_takes_priority(graph_canon):
     assert "kuramoto" in meta
     assert "sigma" not in meta
     assert "glyphs" not in meta
+
+
+def test_trace_capture_accepts_glyph_alias(graph_canon):
+    G = graph_canon()
+    G.graph["TRACE"] = {"capture": ["glyphs"]}
+
+    register_trace(G)
+    callback_manager.invoke_callbacks(G, CallbackEvent.AFTER_STEP.value)
+
+    meta = G.graph["history"]["trace_meta"][0]
+    assert "glyphs" in meta
+    assert isinstance(meta["glyphs"], dict)

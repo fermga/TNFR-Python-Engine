@@ -85,6 +85,11 @@ _TRACE_ALL_FIELDS = (
 _TRACE_DETAILED_FIELDS = tuple(
     field for field in _TRACE_ALL_FIELDS if field != "glyph_counts"
 )
+_TRACE_CAPTURE_ALIASES: Mapping[str, str] = MappingProxyType(
+    {
+        "glyphs": "glyph_counts",
+    }
+)
 TRACE_VERBOSITY_PRESETS: Mapping[str, tuple[str, ...]] = {
     "basic": (
         "gamma",
@@ -100,18 +105,34 @@ TRACE_VERBOSITY_PRESETS: Mapping[str, tuple[str, ...]] = {
 }
 
 
+def _canonical_capture_name(name: str) -> str:
+    """Return the canonical capture field name for ``name``."""
+
+    stripped = name.strip()
+    alias = _TRACE_CAPTURE_ALIASES.get(stripped)
+    if alias is not None:
+        return alias
+
+    lowered = stripped.lower()
+    alias = _TRACE_CAPTURE_ALIASES.get(lowered)
+    if alias is not None:
+        return alias
+
+    return stripped
+
+
 def _normalise_capture_spec(raw: Any) -> set[str]:
     """Coerce custom capture payloads to a ``set`` of field names."""
 
     if raw is None:
         return set()
     if isinstance(raw, Mapping):
-        return {str(name) for name in raw.keys()}
+        return {_canonical_capture_name(str(name)) for name in raw.keys()}
     if isinstance(raw, str):
-        return {raw}
+        return {_canonical_capture_name(raw)}
     if isinstance(raw, Iterable):
-        return {str(name) for name in raw}
-    return {str(raw)}
+        return {_canonical_capture_name(str(name)) for name in raw}
+    return {_canonical_capture_name(str(raw))}
 
 
 def _resolve_trace_capture(cfg: Mapping[str, Any]) -> set[str]:
