@@ -111,11 +111,14 @@ jobs:
           name: ${{ env.TOOLS_ARTIFACT }}
           path: ${{ env.VENV_PATH }}
 
-      - name: Fix virtual environment python permissions
-        run: chmod +x ${{ env.VENV_PATH }}/bin/python
-
       - name: Fix Semgrep permissions
         run: chmod +x ${{ env.VENV_PATH }}/bin/semgrep
+
+      - name: Fix virtual environment bin permissions
+        run: chmod -R +x ${{ env.VENV_PATH }}/bin
+
+      - name: Fix virtual environment python permissions
+        run: chmod +x ${{ env.VENV_PATH }}/bin/python
 
       - name: Install PyYAML
         run: pip install pyyaml
