@@ -141,26 +141,36 @@ class HistoryDict(dict[str, Any]):
         return val
 
     def get_increment(self, key: str, default: Any = None) -> Any:
+        """Return value for ``key`` and increment its usage counter."""
+
         insert = key not in self
         val = self._resolve_value(key, default, insert=insert)
         self._increment(key)
         return val
 
     def __getitem__(self, key: str) -> Any:  # type: ignore[override]
+        """Return the tracked value for ``key`` ensuring deque normalisation."""
+
         return self._resolve_value(key, None, insert=False)
 
     def get(self, key: str, default: Any | None = None) -> Any:  # type: ignore[override]
+        """Return ``key`` when present; otherwise fall back to ``default``."""
+
         try:
             return self._resolve_value(key, None, insert=False)
         except KeyError:
             return default
 
     def __setitem__(self, key: str, value: Any) -> None:  # type: ignore[override]
+        """Store ``value`` for ``key`` while initialising usage tracking."""
+
         super().__setitem__(key, value)
         if key not in self._counts:
             self._counts[key] = 0
 
     def setdefault(self, key: str, default: Any | None = None) -> Any:  # type: ignore[override]
+        """Return existing value for ``key`` or insert ``default`` when absent."""
+
         insert = key not in self
         val = self._resolve_value(key, default, insert=insert)
         if insert:
@@ -177,6 +187,8 @@ class HistoryDict(dict[str, Any]):
         raise KeyError("HistoryDict is empty; cannot pop least used")
 
     def pop_least_used_batch(self, k: int) -> None:
+        """Remove up to ``k`` least-used entries from the history."""
+
         for _ in range(max(0, int(k))):
             try:
                 self.pop_least_used()

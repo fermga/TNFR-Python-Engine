@@ -76,6 +76,8 @@ def legacy_preset_guidance(name: str) -> str | None:
 
 
 def get_preset(name: str) -> PresetTokens:
+    """Return the preset token sequence identified by ``name``."""
+
     try:
         return _PRESETS[name]
     except KeyError:

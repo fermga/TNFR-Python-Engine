@@ -557,24 +557,36 @@ class LazyImportProxy:
         return self._resolve()
 
     def __getattr__(self, item: str) -> Any:
+        """Proxy attribute access to the resolved target."""
+
         return getattr(self._resolve(), item)
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        """Invoke the resolved target with ``args``/``kwargs``."""
+
         return self._resolve()(*args, **kwargs)
 
     def __bool__(self) -> bool:
+        """Return truthiness of the resolved target."""
+
         return bool(self._resolve())
 
     def __repr__(self) -> str:  # pragma: no cover - representation helper
+        """Return representation showing resolution status."""
+
         target = self._resolved_target()
         if target is self._UNRESOLVED:
             return f"<LazyImportProxy pending={self._key!r}>"
         return repr(target)
 
     def __str__(self) -> str:  # pragma: no cover - representation helper
+        """Return string representation of the resolved target."""
+
         return str(self._resolve())
 
     def __iter__(self) -> Iterator[Any]:  # pragma: no cover - passthrough helper
+        """Yield iteration from the resolved target."""
+
         return iter(self._resolve())
 
 

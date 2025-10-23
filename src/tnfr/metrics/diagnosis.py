@@ -811,6 +811,8 @@ def dissonance_events(G: TNFRGraph, ctx: DiagnosisSharedState | None = None) -> 
 
 
 def register_diagnosis_callbacks(G: TNFRGraph) -> None:
+    """Attach diagnosis observers (Si/dissonance tracking) to ``G``."""
+
     raw_jobs = G.graph.get("DIAGNOSIS_N_JOBS")
     n_jobs = _coerce_jobs(raw_jobs)
 

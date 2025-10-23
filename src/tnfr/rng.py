@@ -311,6 +311,8 @@ class ScopedCounterCache(Generic[K]):
         return int(result.get("value", 0))
 
     def __len__(self) -> int:
+        """Return the number of tracked counters."""
+
         return len(self.cache)
 
 

@@ -126,6 +126,8 @@ def step(
     use_Si: bool = True,
     apply_glyphs: bool = True,
 ) -> None:
+    """Advance the ontosim runtime by a single step."""
+
     _step(G, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)
 
 
@@ -137,4 +139,6 @@ def run(
     use_Si: bool = True,
     apply_glyphs: bool = True,
 ) -> None:
+    """Advance the ontosim runtime ``steps`` times with optional overrides."""
+
     _run(G, steps=steps, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)

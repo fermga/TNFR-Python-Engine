@@ -111,6 +111,8 @@ MetricRecord: TypeAlias = tuple[MetricValue | MetricProvider, str]
 
 
 class ParallelWijPayload(TypedDict):
+    """Container for broadcasting Wij components across worker pools."""
+
     epi_vals: Sequence[float]
     vf_vals: Sequence[float]
     si_vals: Sequence[float]
@@ -983,6 +985,8 @@ def _coherence_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
 
 
 def register_coherence_callbacks(G: TNFRGraph) -> None:
+    """Attach coherence matrix maintenance to the ``AFTER_STEP`` event."""
+
     callback_manager.register_callback(
         G,
         event=CallbackEvent.AFTER_STEP.value,

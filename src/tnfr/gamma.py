@@ -192,6 +192,8 @@ def _gamma_params(cfg: GammaSpec, **defaults: float) -> tuple[float, ...]:
 
 
 def gamma_none(G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec) -> float:
+    """Return ``0.0`` to disable Γ forcing for the given node."""
+
     return 0.0
 
 
@@ -281,6 +283,8 @@ def gamma_harmonic(G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec) -
 
 
 class GammaEntry(NamedTuple):
+    """Lookup entry linking Γ evaluators with their preconditions."""
+
     fn: Callable[[TNFRGraph, NodeId, float | int, GammaSpec], float]
     needs_kuramoto: bool
 

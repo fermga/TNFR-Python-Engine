@@ -45,6 +45,8 @@ __all__ = (
 
 
 def main(argv: Optional[list[str]] = None) -> int:
+    """Entry point for the ``tnfr`` CLI returning the exit status."""
+
     _configure_root()
 
     root = logging.getLogger()

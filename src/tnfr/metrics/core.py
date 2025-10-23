@@ -245,6 +245,8 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
 
 
 def register_metrics_callbacks(G: TNFRGraph) -> None:
+    """Attach canonical metrics callbacks according to graph configuration."""
+
     cfg = cast(Mapping[str, Any], get_param(G, "METRICS"))
     spec = _resolve_metrics_verbosity(cfg)
     callback_manager.register_callback(

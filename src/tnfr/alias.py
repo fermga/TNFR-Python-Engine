@@ -134,6 +134,8 @@ class AliasAccessor(Generic[T]):
         log_level: int | None = None,
         conv: Callable[[Any], T] | None = None,
     ) -> Optional[T]:
+        """Return ``value`` for the first alias present in ``d``."""
+
         aliases, conv, default = self._prepare(aliases, conv, default)
         cache_key, key = self._resolve_cache_key(d, aliases)
         if key is not None:
@@ -170,6 +172,8 @@ class AliasAccessor(Generic[T]):
         value: Any,
         conv: Callable[[Any], T] | None = None,
     ) -> T:
+        """Write ``value`` under the first matching alias and cache the choice."""
+
         aliases, conv, _ = self._prepare(aliases, conv)
         cache_key, key = self._resolve_cache_key(d, aliases)
         if key is not None:

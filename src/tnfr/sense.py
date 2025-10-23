@@ -233,6 +233,8 @@ def _sigma_from_nodes(
 def sigma_vector_node(
     G: TNFRGraph, n: NodeId, weight_mode: str | None = None
 ) -> SigmaVector | None:
+    """Return the σ vector for node ``n`` using the configured weighting."""
+
     cfg = _sigma_cfg(G)
     nd = G.nodes[n]
     weight_mode = weight_mode or cfg.get("weight", "Si")
@@ -292,6 +294,8 @@ def sigma_vector_from_graph(
 
 
 def push_sigma_snapshot(G: TNFRGraph, t: float | None = None) -> None:
+    """Record a global σ snapshot (and optional per-node traces) for ``G``."""
+
     cfg = _sigma_cfg(G)
     if not cfg.get("enabled", True):
         return
@@ -334,6 +338,8 @@ def push_sigma_snapshot(G: TNFRGraph, t: float | None = None) -> None:
 
 
 def register_sigma_callback(G: TNFRGraph) -> None:
+    """Attach :func:`push_sigma_snapshot` to the ``AFTER_STEP`` callback bus."""
+
     callback_manager.register_callback(
         G,
         event=CallbackEvent.AFTER_STEP.value,

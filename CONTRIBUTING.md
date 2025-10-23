@@ -12,7 +12,10 @@ When contributing:
 - Write docstrings and comments in English and reference operators by their
   canonical English identifiers. Follow the
   [NumPy-style docstring guide](docs/api/docstring_style.md) so automated tools
-  and reviewers can track how each API reorganises EPI, νf, and ΔNFR.
+  and reviewers can track how each API reorganises EPI, νf, and ΔNFR. Module
+  headers, public classes, public methods/functions, and magic methods must now
+  include a docstring; targeted ``# noqa: Dxxx`` suppressions require a short
+  justification beside the directive.
 - Update existing code to migrate any remaining legacy strings to the English
   tokens.
 

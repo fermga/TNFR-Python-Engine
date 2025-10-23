@@ -1,3 +1,5 @@
+"""CLI execution helpers for running canonical TNFR programs."""
+
 from __future__ import annotations
 
 import argparse
@@ -71,6 +73,8 @@ def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
 
 
 def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
+    """Construct the base graph topology described by CLI ``args``."""
+
     n = args.nodes
     topology = getattr(args, "topology", "ring").lower()
     seed = getattr(args, "seed", None)
@@ -100,6 +104,8 @@ def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
 
 
 def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
+    """Apply CLI overrides from ``args`` to graph-level configuration."""
+
     if args.config:
         apply_config(G, Path(args.config))
     arg_map = {
@@ -150,6 +156,8 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
 
 
 def register_callbacks_and_observer(G: "nx.Graph") -> None:
+    """Attach callbacks and validators required for CLI runs."""
+
     _attach_callbacks(G)
     validate_canon(G)
 
@@ -180,6 +188,8 @@ def _load_sequence(path: Path) -> ProgramTokens:
 def resolve_program(
     args: argparse.Namespace, default: Optional[ProgramTokens] = None
 ) -> Optional[ProgramTokens]:
+    """Resolve preset/sequence inputs into program tokens."""
+
     if getattr(args, "preset", None):
         try:
             return get_preset(args.preset)
@@ -205,6 +215,8 @@ def run_program(
     program: Optional[ProgramTokens],
     args: argparse.Namespace,
 ) -> "nx.Graph":
+    """Execute ``program`` (or timed run) on ``G`` using CLI options."""
+
     if G is None:
         G = _build_graph_from_args(args)
 
@@ -272,6 +284,8 @@ def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
 
 
 def cmd_run(args: argparse.Namespace) -> int:
+    """Execute ``tnfr run`` returning the exit status."""
+
     code, graph = _run_cli_program(args)
     if code != 0:
         return code
@@ -282,6 +296,8 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 
 def cmd_sequence(args: argparse.Namespace) -> int:
+    """Execute ``tnfr sequence`` returning the exit status."""
+
     if args.preset and args.sequence_file:
         logger.error("Cannot use --preset and --sequence-file at the same time")
         return 1
@@ -290,6 +306,8 @@ def cmd_sequence(args: argparse.Namespace) -> int:
 
 
 def cmd_metrics(args: argparse.Namespace) -> int:
+    """Execute ``tnfr metrics`` returning the exit status."""
+
     if getattr(args, "steps", None) is None:
         # Default a longer run for metrics stability
         args.steps = 200

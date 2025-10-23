@@ -1,3 +1,5 @@
+"""Jitter operators for reproducible phase perturbations."""
+
 from __future__ import annotations
 
 import threading
@@ -139,14 +141,20 @@ class JitterCacheManager:
     # Convenience passthrough properties
     @property
     def seq(self) -> LRUCache[tuple[int, int], int]:
+        """Expose the underlying jitter sequence cache."""
+
         return self.cache.seq
 
     @property
     def settings(self) -> dict[str, Any]:
+        """Return persisted jitter cache configuration."""
+
         return self.cache.settings
 
     @property
     def lock(self) -> threading.Lock | threading.RLock:
+        """Return the lock associated with the jitter cache."""
+
         return self.cache.lock
 
     @property

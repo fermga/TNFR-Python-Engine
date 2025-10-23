@@ -247,13 +247,25 @@ class GraphLike(Protocol):
 
     graph: dict[str, Any]
 
-    def nodes(self, data: bool = ...) -> Iterable[Any]: ...
+    def nodes(self, data: bool = ...) -> Iterable[Any]:
+        """Return an iterable of nodes mirroring NetworkX semantics."""
 
-    def number_of_nodes(self) -> int: ...
+        ...
 
-    def neighbors(self, n: Any) -> Iterable[Any]: ...
+    def number_of_nodes(self) -> int:
+        """Return the total number of coherent nodes in the graph."""
 
-    def __iter__(self) -> Iterable[Any]: ...
+        ...
+
+    def neighbors(self, n: Any) -> Iterable[Any]:
+        """Yield adjacent nodes coupled to ``n`` within the structure."""
+
+        ...
+
+    def __iter__(self) -> Iterable[Any]:
+        """Iterate over nodes to allow direct structural traversals."""
+
+        ...
 
 
 class IntegratorProtocol(Protocol):
@@ -267,7 +279,10 @@ class IntegratorProtocol(Protocol):
         t: float | None,
         method: str | None,
         n_jobs: int | None,
-    ) -> None: ...
+    ) -> None:
+        """Advance the nodal equation for ``graph`` using integrator configuration."""
+
+        ...
 
 
 class Glyph(str, Enum):

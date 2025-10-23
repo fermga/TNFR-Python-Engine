@@ -114,6 +114,8 @@ def enforce_canonical_grammar(
 
 
 def on_applied_glyph(G: TNFRGraph, n: NodeId, applied: Glyph | str) -> None:
+    """Update grammar state after glyph ``applied`` touches node ``n``."""
+
     nd = G.nodes[n]
     st = _gram_state(nd)
     try:

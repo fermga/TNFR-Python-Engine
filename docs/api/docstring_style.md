@@ -1,16 +1,19 @@
-# Guía de docstrings para TNFR
+# TNFR docstring guide
 
-La documentación de las APIs del motor TNFR usa el formato de docstrings tipo
-NumPy. Este estilo es compatible con las herramientas automáticas que generan
-referencias, ejecutan pydocstyle y validan la semántica de operadores. Cada
-nueva función o clase debe describir explícitamente el efecto estructural sobre
-EPI, la frecuencia estructural (νf) y el reorganizador interno ΔNFR.
+TNFR engine APIs use NumPy-style docstrings. The format integrates with the
+automatic reference builders, pydocstyle, and the operator semantics linters
+that backstop the project. Every new function or class must describe the
+structural effect on the Primary Information Structure (EPI), the structural
+frequency (νf), and the internal reorganiser ΔNFR. Docstring linting now
+requires complete coverage: modules, classes, public functions, and magic
+methods must include an appropriate description or, in rare cases, a
+``# noqa: Dxxx`` with a clear justification.
 
-## Plantilla base
+## Base template
 
-Utiliza la siguiente estructura en cada docstring. Mantén la narrativa en
-inglés (siguiendo la política del repositorio) y enfócate en describir cómo la
-operación reorganiza coherencia y métricas TNFR.
+Follow this structure in each docstring. Keep the narrative in English (per the
+repository policy) and focus on how the callable reorganises coherence and TNFR
+metrics.
 
 ```python
 """Resume the structural effect in one sentence.
@@ -36,20 +39,19 @@ Examples
 """
 ```
 
-### Notas clave
+### Key notes
 
-- **Encabezado**: una línea que resuma el efecto estructural.
-- **Parameters**: lista cada argumento en orden, con tipo y contexto TNFR. Usa
-  oraciones en inglés y referencia explícita a EPI, νf, ΔNFR o la fase cuando
-  aplique.
-- **Returns**: describe qué recibe el llamador y cómo puede seguir midiendo
-  coherencia (por ejemplo, tuplas que contienen grafos TNFR o hooks ΔNFR).
-- **Raises**: sólo si hay validaciones o condiciones de disonancia relevantes.
-- **Examples**: incluye fragmentos ejecutables que muestren el flujo de trabajo
-  esperado. Anota los valores de EPI, νf y ΔNFR cuando sirva para resaltar la
-  semántica.
+- **Summary line**: one sentence that highlights the structural effect.
+- **Parameters**: list arguments in order with types and TNFR context. Use
+  English sentences and reference EPI, νf, ΔNFR, or phase explicitly when it
+  applies.
+- **Returns**: describe what the caller receives and how coherence can continue
+  to be measured (for example, tuples that include TNFR graphs or ΔNFR hooks).
+- **Raises**: only when validations or dissonance conditions are meaningful.
+- **Examples**: provide runnable fragments that show the expected workflow.
+  Annotate EPI, νf, and ΔNFR values when it clarifies semantics.
 
-## Ejemplos basados en `tnfr.structural`
+## Examples from `tnfr.structural`
 
 ### `create_nfr`
 
@@ -116,10 +118,10 @@ Examples
 """
 ```
 
-## Herramientas que dependen del estilo
+## Tooling that relies on this style
 
-- `pydocstyle` valida la presencia de estas secciones.
-- Generadores automáticos de documentación (MkDocs + plugins de autodoc) esperan
-  la forma NumPy para renderizar correctamente tablas y ejemplos.
-- Revisores humanos y asistentes automáticos usan el vocabulario TNFR descrito
-  aquí para verificar coherencia, ΔNFR y νf sin ambigüedades.
+- `pydocstyle` validates the presence of these sections.
+- Automated documentation builders (MkDocs plus autodoc plugins) expect the
+  NumPy shape to render tables and examples correctly.
+- Human reviewers and automated assistants use the TNFR vocabulary laid out
+  here to check coherence, ΔNFR, and νf without ambiguity.
