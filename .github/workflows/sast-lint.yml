@@ -111,6 +111,9 @@ jobs:
           name: ${{ env.TOOLS_ARTIFACT }}
           path: ${{ env.VENV_PATH }}
 
+      - name: Fix virtual environment python permissions
+        run: chmod +x ${{ env.VENV_PATH }}/bin/python
+
       - name: Fix Semgrep permissions
         run: chmod +x ${{ env.VENV_PATH }}/bin/semgrep
 
