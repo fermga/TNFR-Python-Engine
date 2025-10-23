@@ -2169,7 +2169,7 @@ def _apply_dnfr_hook(
     _write_dnfr_metadata(G, weights=weights, hook_name=hook_name, note=note)
 
 
-# --- Hooks de ejemplo (opcionales) ---
+# --- Example hooks (optional) ---
 
 
 class _PhaseGradient:
