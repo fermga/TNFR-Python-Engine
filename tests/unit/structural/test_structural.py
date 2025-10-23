@@ -127,9 +127,9 @@ def test_sequence_accepts_english_tokens() -> None:
     assert ok, msg
 
 
-def test_validate_sequence_rejects_spanish_keyword() -> None:
+def test_validate_sequence_rejects_legacy_keyword() -> None:
     with pytest.raises(TypeError) as excinfo:
-        validate_sequence(nombres=[EMISSION, RECEPTION, COHERENCE])
+        validate_sequence(legacy_names=[EMISSION, RECEPTION, COHERENCE])
 
     assert "unexpected keyword argument" in str(excinfo.value)
 
