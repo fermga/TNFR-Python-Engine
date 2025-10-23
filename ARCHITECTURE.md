@@ -66,8 +66,6 @@ The following table highlights how ΔNFR values propagate through the engine and
 
 Operator classes apply the `@register_operator` decorator, which verifies unique ASCII names, binds glyphs, and inserts implementations into the shared `OPERATORS` map used by syntax validators and dynamic dispatch.【F:src/tnfr/operators/definitions.py†L45-L180】【F:src/tnfr/operators/registry.py†L13-L58】 The discovery routine scans the `tnfr.operators` package exactly once per interpreter session, importing every submodule except the registry itself so that registration side effects run reliably before the structural loop accesses them.【F:src/tnfr/operators/registry.py†L33-L58】
 
-> **Compatibility note**: The previous `OPERAD<span></span>ORES` export now resolves through a deprecated module attribute. Existing consumers that import `tnfr.operators.registry.OPERAD<span></span>ORES` continue to receive the same mapping but will emit a `DeprecationWarning`; new code should use `OPERATORS` instead.【F:src/tnfr/operators/registry.py†L44-L58】
-
 When introducing new operators:
 
 - Provide ASCII `name` and canonical `Glyph` binding on the class definition.【F:src/tnfr/operators/definitions.py†L45-L180】
@@ -95,10 +93,10 @@ validation helpers, CLI, and documentation all use the same canonical ASCII toke
 | `transition`  | Crosses thresholds      |
 | `recursivity` | Maintains memory        |
 
-Legacy Spanish spellings (``emision``, ``recepcion``, …) have been removed from the public
-API, the exported ``__all__`` bindings, and the validation layer. Downstream callers must use
-the canonical names shown above; the registry no longer performs alias canonicalisation and
-``get_operator_class()`` raises :class:`KeyError` for Spanish identifiers.【F:src/tnfr/config/operator_names.py†L1-L77】【F:src/tnfr/operators/registry.py†L13-L45】
+Only the canonical English spellings remain in the public API, the exported ``__all__`` bindings,
+and the validation layer. Downstream callers must use the names shown above; the registry no
+longer performs alias canonicalisation and ``get_operator_class()`` raises :class:`KeyError` for
+non-English identifiers.【F:src/tnfr/config/operator_names.py†L1-L77】【F:src/tnfr/operators/registry.py†L13-L45】
 
 ## Enforcing TNFR invariants in runtime orchestration
 
