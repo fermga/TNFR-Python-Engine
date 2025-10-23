@@ -448,7 +448,7 @@ def test_neighbor_sum_buffers_reused_and_results_stable(vectorized, monkeypatch)
         if bar_arr_buffers[3] is not None:
             assert cache.deg_bar_np is bar_arr_buffers[3]
 
-    # Los resultados deben permanecer invariantes tras recomputar.
+    # The results must remain invariant after recomputation.
     for before, after in zip(first, second):
         assert math.isfinite(after)
         assert before == pytest.approx(after)

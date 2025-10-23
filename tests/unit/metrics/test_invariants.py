@@ -74,7 +74,7 @@ def test_remesh_cooldown_if_present(G_small):
         G_small.graph.get("REMESH_COOLDOWN_WINDOW", None),
     )
     if cooldown is None:
-        pytest.skip("No hay REMESH_COOLDOWN definido en el motor")
+        pytest.skip("REMESH_COOLDOWN is not configured in the engine")
 
     w_estab = int(G_small.graph.get("REMESH_STABILITY_WINDOW", 0))
     sf = G_small.graph.setdefault("history", {}).setdefault("stable_frac", [])
