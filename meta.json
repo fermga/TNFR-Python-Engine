@@ -1,5 +1,5 @@
 {
-  "name": "TNFR — Teoria de la Naturaleza Fractal Resonante",
+  "name": "TNFR — Resonant Fractal Nature Theory",
   "shortName": "TNFR",
   "language": "en",
   "license": "MIT",
@@ -51,7 +51,7 @@
   "install": {"pip": "pip install tnfr"},
   "compatibility": {"python": ">=3.9"},
   "links": {
-    "repository": "https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-",
+    "repository": "https://github.com/fermga/TNFR-Python-Engine",
     "package": "https://pypi.org/project/tnfr/",
     "documentation": "TNFR.pdf"
   },
