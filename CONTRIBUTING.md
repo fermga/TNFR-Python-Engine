@@ -152,9 +152,10 @@ can extend or override the defaults by editing the
 
 When the guard reports violations, rewrite the offending strings to their
 English equivalents before committing. For documentation or tests that need to
-mention the historical tokens for migration guidance, use escaped sequences
-(`\u00f3`, HTML entities, or string literal concatenation) so the underlying
-files stay ASCII-only.
+mention the historical tokens for migration guidance, import the encoded
+constants from `tests/legacy_tokens.py` or reconstruct them from Unicode code
+points (for example ``"".join(chr(cp) for cp in (...))``) so the underlying
+files stay ASCII-only while avoiding raw Spanish text.
 
 Make sure to honor the patterns in `.gitignore` so that dependency and build
 artifacts (e.g., `node_modules/` or `dist/`) are not committed.

@@ -14,9 +14,11 @@ facades.
 - **Si** — `tnfr.metrics.sense_index.compute_Si`: ability to produce meaningful reorganisation
   combining νf, phase, and topology.
 - **Phase θ** — `tnfr.dynamics.coordinate_global_local_phase` and related helpers.
-- **Compatibility** — graphs that still expose `"fase"` or `"θ"` must be
-  rewritten manually before importing TNFR 15.0.0+. Alias helpers operate purely
-  on the English `"theta"`/`"phase"` keys and reject untranslated payloads.
+- **Compatibility** — graphs that still expose the legacy phase alias (see
+  ``LEGACY_PHASE_ALIAS`` in ``tests/legacy_tokens.py``) or the ``"θ"`` symbol must
+  be rewritten manually before importing TNFR 15.0.0+. Alias helpers operate
+  purely on the English ``"theta"``/``"phase"`` keys and reject untranslated
+  payloads.
 - **Topology** — coupling maps available through operator utilities like
   `tnfr.operators.apply_topological_remesh`.
 
