@@ -37,7 +37,7 @@ jobs:
         run: mkdir -p artifacts
 
       - name: Download CodeQL SARIF
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v11
         with:
           workflow: codeql-analysis.yml
           name: codeql-python-results
@@ -45,7 +45,7 @@ jobs:
           if_no_artifact_found: warn
 
       - name: Download pip-audit report
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v11
         with:
           workflow: pip-audit.yml
           name: pip-audit-report
@@ -53,7 +53,7 @@ jobs:
           if_no_artifact_found: warn
 
       - name: Download Bandit SARIF
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v11
         with:
           workflow: sast-lint.yml
           name: bandit-sarif
@@ -61,7 +61,7 @@ jobs:
           if_no_artifact_found: warn
 
       - name: Download Semgrep SARIF
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v11
         with:
           workflow: sast-lint.yml
           name: semgrep-sarif
