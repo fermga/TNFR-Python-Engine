@@ -244,10 +244,12 @@
 ## 7.0.1 (English deprecation messaging)
 
 - Reworded the remaining deprecation warnings and validation errors that still
-  surfaced Spanish text. Deprecation shims in :mod:`tnfr.constants_glyphs` and
-  :mod:`tnfr.presets` now emit English guidance, and the operator registry plus
-  metrics export helpers raise English-only :class:`ValueError` messages for
-  unsupported usage.
+  surfaced Spanish text. Downstream tooling now emits English-only guidance
+  across the CLI, registry, and metrics helpers.
+- Retired the long-standing compatibility modules :mod:`tnfr.constants_glyphs`,
+  :mod:`tnfr.presets`, and :mod:`tnfr.grammar`. The deprecated shims have been
+  removed; import :mod:`tnfr.config.constants`, :mod:`tnfr.config.presets`, and
+  :mod:`tnfr.validation.grammar` instead.
 
 ## 7.0.0 (Spanish identifiers removed)
 
