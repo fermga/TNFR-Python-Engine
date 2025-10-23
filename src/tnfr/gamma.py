@@ -47,8 +47,7 @@ def _default_gamma_spec() -> tuple[bytes, str]:
 
 
 def _ensure_kuramoto_cache(G: TNFRGraph, t: float | int) -> None:
-    """Cache ``(R, ψ)`` for the current step ``t`` using
-    ``edge_version_cache``."""
+    """Cache ``(R, ψ)`` for the current step ``t`` using ``edge_version_cache``."""
     checksum = G.graph.get("_dnfr_nodes_checksum")
     if checksum is None:
         # reuse checksum from cached_nodes_and_A when available
@@ -203,7 +202,7 @@ def _gamma_kuramoto(
     builder: Callable[..., float],
     **defaults: float,
 ) -> float:
-    """Helper for Kuramoto-based Γ functions.
+    """Construct a Kuramoto-based Γ function.
 
     ``builder`` receives ``(θ_i, R, ψ, *params)`` where ``params`` are
     extracted from ``cfg`` according to ``defaults``.
@@ -249,7 +248,7 @@ def gamma_kuramoto_linear(
 def gamma_kuramoto_bandpass(
     G: TNFRGraph, node: NodeId, t: float | int, cfg: GammaSpec
 ) -> float:
-    """Γ = β · R(1-R) · sign(cos(θ_i - ψ))"""
+    """Compute Γ = β · R(1-R) · sign(cos(θ_i - ψ))."""
 
     return _gamma_kuramoto(G, node, cfg, _builder_bandpass, beta=0.0)
 
@@ -306,8 +305,7 @@ def eval_gamma(
     strict: bool = False,
     log_level: int | None = None,
 ) -> float:
-    """Evaluate Γi for ``node`` according to ``G.graph['GAMMA']``
-    specification.
+    """Evaluate Γi for ``node`` using ``G.graph['GAMMA']`` specification.
 
     If ``strict`` is ``True`` exceptions raised during evaluation are
     propagated instead of returning ``0.0``. Likewise, if the specified

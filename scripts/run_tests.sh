@@ -6,7 +6,7 @@ export PYTHONPATH="$PWD/src"
 python -m pip install --quiet ".[test,typecheck]"
 python -m flake8 src
 python scripts/check_language.py
-python -m pydocstyle --add-ignore=D202 src/tnfr/selector.py src/tnfr/utils/data.py src/tnfr/utils/graph.py
+python -m pydocstyle src/tnfr
 # Mirrors the mypy invocation in .github/workflows/type-check.yml.
 python -m mypy src/tnfr
 python -m coverage run --source=src -m pytest "$@"

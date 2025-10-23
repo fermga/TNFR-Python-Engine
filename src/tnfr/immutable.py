@@ -64,7 +64,7 @@ def _cycle_guard(value: Any, seen: set[int] | None = None) -> Iterator[set[int]]
 def _check_cycle(
     func: Callable[[Any, set[int] | None], FrozenSnapshot],
 ) -> Callable[[Any, set[int] | None], FrozenSnapshot]:
-    """Decorator applying :func:`_cycle_guard` to ``func``."""
+    """Apply :func:`_cycle_guard` to ``func``."""
 
     @wraps(func)
     def wrapper(value: Any, seen: set[int] | None = None) -> FrozenSnapshot:
