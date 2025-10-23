@@ -68,6 +68,33 @@ def _log_clamp(
 def _normalize_job_overrides(
     job_overrides: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
+    """Canonicalise job override keys for ΔNFR, νf and phase orchestration.
+
+    Parameters
+    ----------
+    job_overrides : Mapping[str, Any] | None
+        User-provided mapping whose keys may use legacy ``*_N_JOBS`` forms or
+        mixed casing. The values tune the parallel workloads that update ΔNFR,
+        νf adaptation and global phase coordination.
+
+    Returns
+    -------
+    dict[str, Any]
+        A dictionary where keys are upper-cased without the ``_N_JOBS`` suffix,
+        ready for downstream lookup in the runtime schedulers.
+
+    Raises
+    ------
+    None
+        The function silently skips ``None`` keys to preserve resiliency.
+
+    Examples
+    --------
+    >>> _normalize_job_overrides({"dnfr_n_jobs": 2, "vf_adapt": 4})
+    {'DNFR': 2, 'VF_ADAPT': 4}
+    >>> _normalize_job_overrides(None)
+    {}
+    """
     if not job_overrides:
         return {}
 
@@ -83,6 +110,33 @@ def _normalize_job_overrides(
 
 
 def _coerce_jobs_value(raw: Any) -> int | None:
+    """Convert override hints into integer job counts.
+
+    Parameters
+    ----------
+    raw : Any
+        Arbitrary value originating from configuration or hooks controlling the
+        ΔNFR, νf or phase pipelines. Strings and numerics are accepted when they
+        represent valid integers.
+
+    Returns
+    -------
+    int | None
+        Normalised integer count when ``raw`` can be coerced, otherwise
+        ``None`` to signal that the scheduler should fallback to graph defaults.
+
+    Raises
+    ------
+    None
+        Invalid types are ignored to keep runtime job resolution monotonic.
+
+    Examples
+    --------
+    >>> _coerce_jobs_value("3")
+    3
+    >>> _coerce_jobs_value(object()) is None
+    True
+    """
     if raw is None:
         return None
     try:
@@ -92,6 +146,34 @@ def _coerce_jobs_value(raw: Any) -> int | None:
 
 
 def _sanitize_jobs(value: int | None, *, allow_non_positive: bool) -> int | None:
+    """Clamp job hints according to νf and ΔNFR scheduler policies.
+
+    Parameters
+    ----------
+    value : int | None
+        Integer job count obtained from overrides or graph configuration.
+    allow_non_positive : bool
+        When ``True`` the runtime accepts non-positive counts for schedulers
+        such as phase stabilisation that interpret ``0`` as "disable".
+
+    Returns
+    -------
+    int | None
+        The sanitized job count or ``None`` when the override should be
+        ignored.
+
+    Raises
+    ------
+    None
+        Sanitisation is conservative and never throws.
+
+    Examples
+    --------
+    >>> _sanitize_jobs(-1, allow_non_positive=False) is None
+    True
+    >>> _sanitize_jobs(0, allow_non_positive=True)
+    0
+    """
     if value is None:
         return None
     if not allow_non_positive and value <= 0:
@@ -106,6 +188,40 @@ def _resolve_jobs_override(
     *,
     allow_non_positive: bool,
 ) -> int | None:
+    """Resolve job overrides prioritising user hints over graph defaults.
+
+    Parameters
+    ----------
+    overrides : Mapping[str, Any]
+        Normalised overrides produced by :func:`_normalize_job_overrides` that
+        steer the ΔNFR computation, νf adaptation or phase coupling workers.
+    key : str
+        Logical subsystem key such as ``"DNFR"`` or ``"VF_ADAPT"``.
+    graph_value : Any
+        Baseline job count stored in the graph configuration.
+    allow_non_positive : bool
+        Propagated policy describing whether zero or negative values are valid
+        for the subsystem.
+
+    Returns
+    -------
+    int | None
+        Final job count that each scheduler will use, or ``None`` when no
+        explicit override or valid fallback exists.
+
+    Raises
+    ------
+    None
+        Preference resolution is pure and never fails.
+
+    Examples
+    --------
+    >>> overrides = _normalize_job_overrides({"phase": 0})
+    >>> _resolve_jobs_override(overrides, "phase", 2, allow_non_positive=True)
+    0
+    >>> _resolve_jobs_override({}, "vf_adapt", 4, allow_non_positive=False)
+    4
+    """
     norm_key = key.upper()
     if overrides and norm_key in overrides:
         return _sanitize_jobs(
@@ -455,6 +571,60 @@ def step(
     apply_glyphs: bool = True,
     n_jobs: Mapping[str, Any] | None = None,
 ) -> None:
+    """Advance the runtime one ΔNFR step updating νf, phase and glyphs.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph whose nodes store EPI, νf and phase metadata. The graph must
+        expose a ΔNFR hook under ``G.graph['compute_delta_nfr']`` and optional
+        selector or callback registrations.
+    dt : float | None, optional
+        Time increment injected into the integrator. ``None`` falls back to the
+        ``DT`` attribute stored in ``G.graph`` which keeps ΔNFR integration
+        aligned with the nodal equation.
+    use_Si : bool, default True
+        When ``True`` the Sense Index (Si) is recomputed to modulate ΔNFR and
+        νf adaptation heuristics.
+    apply_glyphs : bool, default True
+        Enables canonical glyph selection so that phase and coherence glyphs
+        continue to modulate ΔNFR.
+    n_jobs : Mapping[str, Any] | None, optional
+        Optional overrides that tune the parallel workers used for ΔNFR, phase
+        coordination and νf adaptation. The mapping is processed by
+        :func:`_normalize_job_overrides`.
+
+    Returns
+    -------
+    None
+        Mutates ``G`` in place by recomputing ΔNFR, νf and phase metrics.
+
+    Raises
+    ------
+    None
+        Callback failures propagate according to the registry configuration,
+        but the step orchestration itself does not raise.
+
+    Examples
+    --------
+    Register a hook that records phase synchrony while using the parametric
+    selector to choose glyphs before advancing one runtime step.
+
+    >>> from tnfr.callback_utils import CallbackEvent, callback_manager
+    >>> from tnfr.dynamics import selectors
+    >>> from tnfr.dynamics.runtime import ALIAS_VF
+    >>> from tnfr.structural import create_nfr
+    >>> G, node = create_nfr("seed", epi=0.2, vf=1.5)
+    >>> callback_manager.register_callback(
+    ...     G,
+    ...     CallbackEvent.AFTER_STEP,
+    ...     lambda graph, ctx: graph.graph.setdefault("phase_log", []).append(ctx.get("phase_sync")),
+    ... )
+    >>> G.graph["glyph_selector"] = selectors.ParametricGlyphSelector()
+    >>> step(G, dt=0.05, n_jobs={"dnfr_n_jobs": 1})
+    >>> ALIAS_VF in G.nodes[node]
+    True
+    """
     job_overrides = _normalize_job_overrides(n_jobs)
     hist = ensure_history(G)
     step_idx = len(hist.setdefault("C_steps", []))
@@ -485,6 +655,56 @@ def run(
     apply_glyphs: bool = True,
     n_jobs: Mapping[str, Any] | None = None,
 ) -> None:
+    """Iterate :func:`step` to evolve ΔNFR, νf and phase trajectories.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph that stores the coherent structures. Callbacks and selectors
+        configured on ``G.graph`` orchestrate glyph application and telemetry.
+    steps : int
+        Number of times :func:`step` is invoked. Each iteration integrates ΔNFR
+        and νf according to ``dt`` and the configured selector.
+    dt : float | None, optional
+        Time increment for each step. ``None`` uses the graph's default ``DT``.
+    use_Si : bool, default True
+        Recompute the Sense Index during each iteration to keep ΔNFR feedback
+        loops tied to νf adjustments.
+    apply_glyphs : bool, default True
+        Enables glyph selection and application per step.
+    n_jobs : Mapping[str, Any] | None, optional
+        Shared overrides forwarded to each :func:`step` call.
+
+    Returns
+    -------
+    None
+        The graph ``G`` is updated in place.
+
+    Raises
+    ------
+    ValueError
+        Raised when ``steps`` is negative because the runtime cannot evolve a
+        negative number of ΔNFR updates.
+
+    Examples
+    --------
+    Install a before-step callback and use the default glyph selector while
+    running two iterations that synchronise phase and νf.
+
+    >>> from tnfr.callback_utils import CallbackEvent, callback_manager
+    >>> from tnfr.dynamics import selectors
+    >>> from tnfr.structural import create_nfr
+    >>> G, node = create_nfr("seed", epi=0.3, vf=1.2)
+    >>> callback_manager.register_callback(
+    ...     G,
+    ...     CallbackEvent.BEFORE_STEP,
+    ...     lambda graph, ctx: graph.graph.setdefault("dt_trace", []).append(ctx["dt"]),
+    ... )
+    >>> G.graph["glyph_selector"] = selectors.default_glyph_selector
+    >>> run(G, 2, dt=0.1)
+    >>> len(G.graph["dt_trace"])
+    2
+    """
     steps_int = int(steps)
     if steps_int < 0:
         raise ValueError("'steps' must be non-negative")
