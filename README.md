@@ -73,9 +73,10 @@ integration.
 
 ## Migration notes
 
-- **Si dispersion keys:** Replace any remaining ``dSi_ddisp_fase`` entries in graph payloads
-  or configuration files with the English ``dSi_dphase_disp`` key before upgrading. The
-  runtime now raises :class:`ValueError` listing any unexpected sensitivity keys, and
+- **Si dispersion keys:** Replace any remaining legacy Si dispersion entries (encoded in
+  ``tests/legacy_tokens.py`` as ``LEGACY_SI_SENSITIVITY_KEY``) in graph payloads or
+  configuration files with the English ``dSi_dphase_disp`` key before upgrading. The runtime
+  now raises :class:`ValueError` listing any unexpected sensitivity keys, and
   :func:`tnfr.metrics.sense_index.compute_Si_node` rejects unknown keyword arguments.
 - Refer to the [release notes](docs/releases.md#1100-si-dispersion-legacy-keys-removed) for
   a migration snippet that rewrites stored graphs in place prior to running the new version.

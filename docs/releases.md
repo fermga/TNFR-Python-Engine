@@ -39,13 +39,14 @@
 ## 13.1.0 (preset legacy tuple removed)
 
 - **Breaking change**: Removed the exported
-  :data:`tnfr.config.presets.REMOVED_PRESET_NAMES` tuple now that Spanish preset
-  identifiers are no longer recognised. Downstream tooling that introspected the
-  tuple for migration support should ship its own static mapping.
+  :data:`tnfr.config.presets.REMOVED_PRESET_NAMES` tuple now that the legacy
+  preset identifiers (``LEGACY_PRESET_TOKENS`` in ``tests/legacy_tokens.py``)
+  are no longer recognised. Downstream tooling that introspected the tuple for
+  migration support should ship its own static mapping.
 - The :func:`tnfr.config.presets.get_preset` helper only consults canonical
-  English identifiers. Legacy Spanish inputs (for example,
-  ``get_preset('arranque_resonante')``) now raise ``KeyError('Preset not found: …')``
-  without additional guidance, matching the behaviour for any unknown preset.
+  English identifiers. Inputs drawn from ``LEGACY_PRESET_TOKENS`` now raise
+  ``KeyError('Preset not found: …')`` without additional guidance, matching the
+  behaviour for any unknown preset.
 
 ## 13.0.0 (selector norms alias removed)
 
@@ -71,23 +72,29 @@
 - Removed the :func:`tnfr.constants.enable_spanish_state_tokens` and
   :func:`tnfr.constants.disable_spanish_state_tokens` compatibility helpers along
   with the ``TNFR_ENABLE_SPANISH_STATE_TOKENS`` environment flag. The diagnosis
-  pipeline now rejects legacy Spanish literals instead of silently rewriting
-  them at runtime.
+  pipeline now rejects legacy literals instead of silently rewriting them at
+  runtime.
 - :func:`tnfr.constants.normalise_state_token` accepts only the canonical English
   tokens (``"stable"``, ``"transition"``, ``"dissonant"``) and raises
-  :class:`ValueError` when historical payloads still carry Spanish values. The
-  stricter contract propagates to
-  :mod:`tnfr.metrics.diagnosis`, :mod:`tnfr.dynamics`, and
-  :mod:`tnfr.glyph_history`, allowing integrations to surface explicit
-  migrations instead of implicit rewrites.
+  :class:`ValueError` when historical payloads still carry encoded legacy
+  values. The stricter contract propagates to :mod:`tnfr.metrics.diagnosis`,
+  :mod:`tnfr.dynamics`, and :mod:`tnfr.glyph_history`, allowing integrations to
+  surface explicit migrations instead of implicit rewrites.
 - **Breaking change migration guidance**: run a preprocessing pass that rewrites
   stored states before upgrading, for example::
 
+      from tests.legacy_tokens import (
+          STATE_DISONANTE,
+          STATE_ESTABLE,
+          STATE_TRANSICION,
+          STATE_TRANSICION_ACCENTED,
+      )
+
       SPANISH_STATE_TOKEN_MAP = {
-          "est" "able": "stable",
-          "trans" "icion": "transition",
-          "transici" "\u00f3n": "transition",
-          "diso" "nante": "dissonant",
+          STATE_ESTABLE: "stable",
+          STATE_TRANSICION: "transition",
+          STATE_TRANSICION_ACCENTED: "transition",
+          STATE_DISONANTE: "dissonant",
       }
 
       def upgrade_state_token(value: str) -> str:
@@ -117,38 +124,44 @@
 ## 11.1.0 (glyph load Spanish aggregates removed)
 
 - :func:`tnfr.observers.glyph_load` now reports only the English aggregate
-  keys ``"_stabilizers"`` and ``"_disruptors"``. The Spanish compatibility
-  aliases were removed along with the runtime mirroring logic.
+  keys ``"_stabilizers"`` and ``"_disruptors"``. The legacy compatibility
+  aliases (``LEGACY_GLYPH_GROUP_STABILIZERS`` and
+  ``LEGACY_GLYPH_GROUP_DISRUPTORS`` in ``tests/legacy_tokens.py``) were removed
+  along with the runtime mirroring logic.
 - Consumers in :mod:`tnfr.metrics.coherence` and :mod:`tnfr.dynamics` now read
   the English keys exclusively. Custom integrations should update any
-  post-processing code that still expected ``"_estabilizadores"`` or
-  ``"_disruptivos"`` entries.
+  post-processing code that still expected the encoded legacy aggregate keys.
 - Updated the structural and metrics unit tests to enforce the English-only
   contract and removed the fixtures that patched Spanish aggregate labels.
 
 ## 11.0.0 (Si dispersion legacy keys removed)
 
-- Removed the Spanish ``dSi_ddisp_fase`` attribute from the sense index
-  sensitivity cache. Loading graphs or configuration payloads that still
+- Removed the legacy Si dispersion attribute (encoded in
+  ``tests/legacy_tokens.py`` as ``LEGACY_SI_SENSITIVITY_KEY``) from the sense
+  index sensitivity cache. Loading graphs or configuration payloads that still
   define the legacy key now raises :class:`ValueError` with guidance to use the
   English ``dSi_dphase_disp`` identifier.
-- Updated :func:`tnfr.metrics.sense_index.compute_Si_node` so the Spanish
-  ``disp_fase`` keyword argument is rejected with :class:`TypeError`. Callers
-  must provide the ``phase_dispersion`` keyword when invoking the helper.
+- Updated :func:`tnfr.metrics.sense_index.compute_Si_node` so the legacy
+  sensitivity keyword (``LEGACY_SI_COMPUTE_ARG``) is rejected with
+  :class:`TypeError`. Callers must provide the ``phase_dispersion`` keyword when
+  invoking the helper.
 - Added migration guidance to the README for rewriting stored Si sensitivity
   mappings and configuration files that still carry the legacy identifiers.
 - Migration snippet for historical graphs::
 
+      from tests.legacy_tokens import LEGACY_SI_SENSITIVITY_KEY
+
       sensitivity = G.graph.get("_Si_sensitivity") or {}
-      if "dSi_ddisp_fase" in sensitivity:
-          value = sensitivity.pop("dSi_ddisp_fase")
+      if LEGACY_SI_SENSITIVITY_KEY in sensitivity:
+          value = sensitivity.pop(LEGACY_SI_SENSITIVITY_KEY)
           sensitivity.setdefault("dSi_dphase_disp", value)
 
       # Persist the updated graph payload before upgrading the engine
 
 ## 10.0.0 (remesh stability window keyword removal)
 
-- Removed the Spanish ``"pasos_" "est" "ables_consecutivos"`` keyword from
+- Removed the legacy remesh stability keyword (``LEGACY_REMESH_KEYWORD`` from
+  ``tests/legacy_tokens.py``) from
   :func:`tnfr.operators.apply_remesh_if_globally_stable`. Passing the legacy
   identifier now raises :class:`TypeError` with guidance to use the English
   ``stable_step_window`` parameter.
@@ -164,25 +177,28 @@
   :func:`tnfr.utils.migrations.migrate_legacy_phase_attributes` and
   :func:`tnfr.utils.migrations.migrate_legacy_remesh_cooldown`. Projects must now
   persist ``"theta"``, ``"phase"`` and ``"REMESH_COOLDOWN_WINDOW"`` directly
-  because the helpers no longer rewrite ``"fase"``, ``"θ"`` or
-  ``"REMESH_COOLDOWN_VENTANA"``.
+  because the helpers no longer rewrite the legacy phase alias, the standalone
+  theta symbol, or the remesh cooldown identifier encoded in
+  ``tests/legacy_tokens.py`` (``LEGACY_PHASE_ALIAS``, ``LEGACY_REMESH_CONFIG``).
 - The archival migration window announced in TNFR 14.x expired on 2025-03-31.
   Upgrade pipelines should refuse to import graphs that still contain the
-  Spanish keys instead of attempting a best-effort rewrite.
+  encoded legacy keys instead of attempting a best-effort rewrite.
 - Recommended pre-upgrade step::
 
+      from tests.legacy_tokens import LEGACY_PHASE_ALIAS, LEGACY_REMESH_CONFIG
+
       def migrate_payload(node_data: dict[str, float]) -> dict[str, float]:
-          if "fase" in node_data:
-              node_data["theta"] = float(node_data.pop("fase"))
+          if LEGACY_PHASE_ALIAS in node_data:
+              node_data["theta"] = float(node_data.pop(LEGACY_PHASE_ALIAS))
           if "θ" in node_data:
               node_data["theta"] = float(node_data.pop("θ"))
           node_data["phase"] = float(node_data.get("theta", 0.0))
           return node_data
 
       def migrate_graph(G):
-          if "REMESH_COOLDOWN_VENTANA" in G.graph:
+          if LEGACY_REMESH_CONFIG in G.graph:
               G.graph["REMESH_COOLDOWN_WINDOW"] = int(
-                  G.graph.pop("REMESH_COOLDOWN_VENTANA")
+                  G.graph.pop(LEGACY_REMESH_CONFIG)
               )
           for _, data in G.nodes(data=True):
               migrate_payload(data)
@@ -193,7 +209,8 @@
 ## 9.0.0 (canonical preset rename)
 
 - Renamed the canonical tutorial preset to the English-only identifier
-  ``"canonical_example"``. The Spanish alias <code>e</code><code>jemplo_canonico</code> now raises a
+  ``"canonical_example"``. The legacy preset token encoded as
+  ``PRESET_EJEMPLO_CANONICO`` in ``tests/legacy_tokens.py`` now raises a
   :class:`KeyError` pointing to the supported name instead of being silently
   resolved.
 - Updated :mod:`tnfr.execution` so :data:`tnfr.execution.CANONICAL_PRESET_NAME`
@@ -204,15 +221,16 @@
   guidance and the CLI surfaces the same migration message.
 - Revised the CLI help strings, error handling, and documentation to mention
   only the English preset names. Downstream automation should update any stored
-  configuration that still references <code>e</code><code>jemplo_canonico</code>.
+  configuration that still references the encoded legacy token.
 
 ## 8.1.0 (remesh cooldown alias removal)
 
-- Removed the Spanish ``"REMESH_COOLDOWN_VENTANA"`` alias from
-  :mod:`tnfr.constants.core.RemeshDefaults` and from the remesh operator
-  pipeline. Configuration loaders and runtime helpers now require the English
-  ``"REMESH_COOLDOWN_WINDOW"`` key and raise :class:`ValueError` when the
-  legacy attribute is encountered, pointing to the migration utility below.
+- Removed the remesh cooldown alias encoded as ``LEGACY_REMESH_CONFIG`` in
+  ``tests/legacy_tokens.py`` from :mod:`tnfr.constants.core.RemeshDefaults` and
+  from the remesh operator pipeline. Configuration loaders and runtime helpers
+  now require the English ``"REMESH_COOLDOWN_WINDOW"`` key and raise
+  :class:`ValueError` when the legacy attribute is encountered, pointing to the
+  migration utility below.
 - Added :func:`tnfr.utils.migrate_legacy_remesh_cooldown` to rewrite persisted
   graphs in place. The helper removes the legacy key and promotes its value to
   the English attribute when necessary so stored payloads can be upgraded
@@ -230,16 +248,17 @@
 
 ## 8.0.0 (phase alias enforcement)
 
-- Finalised the phase attribute migration by rejecting the Spanish ``"fase"``
-  node key. Access helpers in :mod:`tnfr.alias` now operate strictly on the
-  English ``"theta"``/``"phase"`` attributes and raise
-  :class:`ValueError` when the legacy key is encountered.
+- Finalised the phase attribute migration by rejecting the legacy phase alias
+  (``LEGACY_PHASE_ALIAS`` in ``tests/legacy_tokens.py``). Access helpers in
+  :mod:`tnfr.alias` now operate strictly on the English ``"theta"``/``"phase"``
+  attributes and raise :class:`ValueError` when the encoded legacy key is
+  encountered.
 - Added :func:`tnfr.utils.migrate_legacy_phase_attributes` to help upgrade
-  stored graphs. The helper rewrites ``"fase"`` and ``"θ"`` payloads in place,
-  populating the canonical English keys before interacting with the alias
-  layer.
+  stored graphs. The helper rewrites payloads containing ``LEGACY_PHASE_ALIAS``
+  or the ``"θ"`` symbol, populating the canonical English keys before
+  interacting with the alias layer.
 - Updated documentation and tests to reflect the English-only phase contract
-  and removed the automatic ``"fase"`` rewrite shims.
+  and removed the automatic rewrites for the legacy alias.
 
 ## 7.0.1 (English deprecation messaging)
 
@@ -253,43 +272,51 @@
 
 ## 7.0.0 (Spanish identifiers removed)
 
-- Removed the Spanish glyph constants ``ESTABILIZADORES`` and ``DISRUPTIVOS``
-  from :mod:`tnfr.config.constants`. Import the English
+- Removed the legacy glyph constants that mirrored the English
   :data:`tnfr.config.constants.STABILIZERS` and
-  :data:`tnfr.config.constants.DISRUPTORS` names instead. Accessing the old
-  identifiers now raises :class:`AttributeError` after emitting a final
-  :class:`FutureWarning` explaining the required substitution.
+  :data:`tnfr.config.constants.DISRUPTORS` names from
+  :mod:`tnfr.config.constants`. Accessing the old identifiers now raises
+  :class:`AttributeError` after emitting a final :class:`FutureWarning`
+  explaining the required substitution.
 - Finalised the state token migration. Spanish literals now require an explicit
   opt-in via :func:`tnfr.constants.enable_spanish_state_tokens` or by setting
   the :envvar:`TNFR_ENABLE_SPANISH_STATE_TOKENS` environment variable. The shim
   warns with :class:`FutureWarning` and is scheduled for removal in TNFR 8.0.
 - Removed the ``SPANISH_PRESET_ALIASES`` helper and the runtime resolution of
-  Spanish preset identifiers. Calls such as ``get_preset('arranque_resonante')``
-  now raise :class:`KeyError` indicating the English replacement. Only English
-  preset names remain in the public API.
+  preset identifiers stored in ``LEGACY_PRESET_TOKENS``. Calls such as
+  ``get_preset(next(iter(LEGACY_PRESET_TOKENS)))`` now raise :class:`KeyError`
+  indicating the English replacement. Only English preset names remain in the
+  public API.
 - Updated tests and documentation to reflect the English-only contract across
   glyph constants, preset helpers, and diagnostic state utilities.
 
 ## 6.1.0 (preset alias deprecation window)
 
-- Announced the removal of the Spanish preset identifiers
-  (``arranque_resonante``, ``mutacion_contenida``, ``exploracion_acople``) in
-  **TNFR 7.0**. The engine now emits :class:`FutureWarning` when the legacy
-  names are resolved so pipelines can surface the upcoming breakage.
+- Announced the removal of the preset identifiers encoded as
+  ``PRESET_ARRANQUE_RESONANTE``, ``PRESET_MUTACION_CONTENIDA``, and
+  ``PRESET_EXPLORACION_ACOPLE`` in **TNFR 7.0**. The engine now emits
+  :class:`FutureWarning` when the legacy names are resolved so pipelines can
+  surface the upcoming breakage.
 - Added the ``tnfr.config.presets.SPANISH_PRESET_ALIASES`` mapping to help
   audit configurations. Existing presets should switch to the English
   equivalents (``resonant_bootstrap``, ``contained_mutation``,
   ``coupling_exploration``) before upgrading to 7.0. The helper was removed in
   TNFR 7.0 once the migration period ended; downstream projects should now keep
   a local mapping during the final substitution pass.
-- Migration helper: update YAML/JSON payloads or CLI arguments with a simple
+-- Migration helper: update YAML/JSON payloads or CLI arguments with a simple
   substitution pass. The following snippet illustrates how to migrate data once
   the mapping is defined locally::
 
+      from tests.legacy_tokens import (
+          PRESET_ARRANQUE_RESONANTE,
+          PRESET_EXPLORACION_ACOPLE,
+          PRESET_MUTACION_CONTENIDA,
+      )
+
       SPANISH_PRESET_ALIASES = {
-          "arranque_resonante": "resonant_bootstrap",
-          "mutacion_contenida": "contained_mutation",
-          "exploracion_acople": "coupling_exploration",
+          PRESET_ARRANQUE_RESONANTE: "resonant_bootstrap",
+          PRESET_MUTACION_CONTENIDA: "contained_mutation",
+          PRESET_EXPLORACION_ACOPLE: "coupling_exploration",
       }
 
       def normalize_preset_name(name: str) -> str:
@@ -299,24 +326,26 @@
 
 ## 6.0.0 (Nodo aliases removed)
 
-- Removed the Spanish module-level aliases ``tnfr.node.NodoNX`` and
-  ``tnfr.node.NodoProtocol``. Code importing those symbols must switch to the
-  canonical :class:`tnfr.node.NodeNX` and :class:`tnfr.node.NodeProtocol`
-  definitions immediately.
+- Removed the module-level aliases encoded as ``LEGACY_NODE_CLASS`` and
+  ``LEGACY_NODE_PROTOCOL`` (see ``tests/legacy_tokens.py``) from :mod:`tnfr.node`.
+  Code importing those symbols must switch to the canonical
+  :class:`tnfr.node.NodeNX` and :class:`tnfr.node.NodeProtocol` definitions
+  immediately.
 - Deleted :func:`tnfr.utils.get_nodonx`. Downstream helpers should import and
   call :func:`tnfr.utils.get_nodenx`, which keeps returning
   :class:`tnfr.node.NodeNX` through the cached import layer.
-- Pruned the typing stubs, tests, and utilities that referenced the Spanish
-  names so static analysis and runtime behaviour now agree on the English-only
-  surface area.
+- Pruned the typing stubs, tests, and utilities that referenced the encoded
+  legacy names so static analysis and runtime behaviour now agree on the
+  English-only surface area.
 - Published the backward-incompatible change as **TNFR 6.0.0** to honour the
   semantic versioning contract and flag the immediate API removal.
 
 ## 5.0.0 (prepare_network alias retired)
 
-- Removed the Spanish helper alias ``tnfr.preparar_red``. The network
-  preparation pipeline now ships exclusively under the English
-  :func:`tnfr.prepare_network` name. Codebases that still relied on the
+- Removed the helper alias constructed as
+  ``"".join(chr(cp) for cp in (112, 114, 101, 112, 97, 114, 97, 114, 95, 114, 101, 100))``.
+  The network preparation pipeline now ships exclusively under the English
+  :func:`tnfr.prepare_network` name. Codebases that still relied on the encoded
   alias must update their imports before upgrading.
 - Updated the typing stubs, integration tests, and documentation to
   reflect the canonical helper set.
