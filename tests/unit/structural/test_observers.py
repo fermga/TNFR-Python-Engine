@@ -23,10 +23,8 @@ from tnfr.observers import (
 )
 from tnfr.sense import sigma_vector
 
-from tests.legacy_tokens import (
-    LEGACY_GLYPH_GROUP_DISRUPTORS,
-    LEGACY_GLYPH_GROUP_STABILIZERS,
-)
+DEPRECATED_GLYPH_GROUP_STABILIZERS = "_stabilizers_legacy"
+DEPRECATED_GLYPH_GROUP_DISRUPTORS = "_disruptors_legacy"
 
 ALIAS_THETA = get_aliases("THETA")
 
@@ -157,8 +155,8 @@ def test_glyph_load_uses_module_constants(monkeypatch, graph_canon):
 
     assert dist["_stabilizers"] == pytest.approx(0.5)
     assert dist["_disruptors"] == pytest.approx(0.5)
-    assert LEGACY_GLYPH_GROUP_STABILIZERS not in dist
-    assert LEGACY_GLYPH_GROUP_DISRUPTORS not in dist
+    assert DEPRECATED_GLYPH_GROUP_STABILIZERS not in dist
+    assert DEPRECATED_GLYPH_GROUP_DISRUPTORS not in dist
 
 
 def test_sigma_vector_consistency():

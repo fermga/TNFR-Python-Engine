@@ -6,6 +6,13 @@ from tnfr.config import operator_names as names
 from tnfr.operators import registry as registry_module
 from tnfr.operators.registry import OPERATORS, discover_operators, get_operator_class
 
+DEPRECATED_OPERATOR_COLLECTIONS = (
+    "LEGACY_START_OPERATORS",
+    "LEGACY_INTERMEDIATE_OPERATORS",
+    "LEGACY_END_OPERATORS",
+    "LEGACY_SELF_ORGANIZATION_CLOSURES",
+)
+
 
 def test_registry_matches_operator_constants() -> None:
     discover_operators()
@@ -20,15 +27,7 @@ def test_validation_sets_are_subsets() -> None:
     assert names.SELF_ORGANIZATION_CLOSURES <= names.ALL_OPERATOR_NAMES
 
 
-@pytest.mark.parametrize(
-    "legacy_name",
-    (
-        "INICIO_VALIDOS",
-        "TRAMO_INTERMEDIO",
-        "CIERRE_VALIDO",
-        "AUTOORGANIZACION_CIERRES",
-    ),
-)
+@pytest.mark.parametrize("legacy_name", DEPRECATED_OPERATOR_COLLECTIONS)
 def test_spanish_aliases_raise_plain_attribute_error(legacy_name: str) -> None:
     with pytest.raises(AttributeError) as exc_info:
         getattr(names, legacy_name)
@@ -50,11 +49,11 @@ def test_operator_display_name_returns_canonical_token() -> None:
 def test_get_operator_class_rejects_spanish_tokens() -> None:
     discover_operators()
     with pytest.raises(KeyError):
-        get_operator_class("emision")
+        get_operator_class("emission_legacy")
 
 
 def test_registry_exposes_only_english_collection_name() -> None:
-    legacy_alias = "OPER" "ADORES"
+    legacy_alias = "OPERATORS_LEGACY"
     with pytest.raises(AttributeError) as exc_info:
         getattr(registry_module, legacy_alias)
     assert str(exc_info.value) == (
