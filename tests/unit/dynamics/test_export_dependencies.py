@@ -18,9 +18,9 @@ def test_prepare_network_dependencies():
         "tnfr.utils",
     }
 
-    preparar = EXPORT_DEPENDENCIES["prepare_network"]
-    assert set(preparar["submodules"]) == expected
-    assert preparar["third_party"] == ("networkx",)
+    prepare_manifest = EXPORT_DEPENDENCIES["prepare_network"]
+    assert set(prepare_manifest["submodules"]) == expected
+    assert prepare_manifest["third_party"] == ("networkx",)
 
 
 def test_dynamics_helpers_dependencies():
