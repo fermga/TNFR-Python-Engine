@@ -145,17 +145,24 @@ after installing dependencies, so any violation will fail continuous
 integration before the remaining linters or tests execute. The guard scans the
 tracked files for a configurable set of disallowed Spanish keywords and accented
 characters, exiting with a non-zero status when any matches are found. The
-default list targets the legacy compatibility tokens (`est<span></span>able`, `trans<span></span>icion`,
-`transici&oacute;n`, `diso<span></span>nante`, etc.) that must never re-enter the codebase. You
-can extend or override the defaults by editing the
-`[tool.tnfr.language_check]` table in `pyproject.toml`.
+encoded defaults live in `scripts/language_policy_data.py` as sequences of
+code points that reconstruct the retired compatibility tokens. Extend or
+override them from the `[tool.tnfr.language_check]` table in `pyproject.toml`
+by supplying numeric representations, e.g.
+
+```
+[tool.tnfr.language_check]
+disallowed_keyword_codes = [[101, 106, 101, 109, 112, 108, 111]]
+accent_codepoints = [225]
+```
 
 When the guard reports violations, rewrite the offending strings to their
 English equivalents before committing. For documentation or tests that need to
-mention the historical tokens for migration guidance, import the encoded
-constants from `tests/legacy_tokens.py` or reconstruct them from Unicode code
-points (for example ``"".join(chr(cp) for cp in (...))``) so the underlying
-files stay ASCII-only while avoiding raw Spanish text.
+reference the historical tokens, rely on the helpers in
+`scripts/language_policy_data.py` (for example
+`decode_keyword_codes(((101, 106, 101, 109, 112, 108, 111),))`) or the curated
+constants in `tests/legacy_tokens.py` so files stay ASCII-only while avoiding
+raw Spanish text.
 
 Make sure to honor the patterns in `.gitignore` so that dependency and build
 artifacts (e.g., `node_modules/` or `dist/`) are not committed.

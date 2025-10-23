@@ -34,6 +34,18 @@ except ModuleNotFoundError:  # pragma: no cover - fallback for <=3.10
         tomllib = None  # type: ignore[assignment]
 
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from language_policy_data import (  # noqa: E402  # pylint: disable=wrong-import-position
+    decode_accent_codepoints,
+    decode_keyword_codes,
+    default_accented_characters,
+    default_disallowed_keywords,
+)
+
+
 @dataclass(frozen=True)
 class LanguagePolicy:
     """Configuration for the English-only enforcement."""
@@ -44,46 +56,49 @@ class LanguagePolicy:
 
 
 DEFAULT_POLICY = LanguagePolicy(
-    disallowed_keywords=(
-        "est\u0061ble",
-        "transici\u006f\u006e",
-        "transici\u00f3n",
-        "diso\u006enante",
-        "operad\u006fres",
-        "operad\u006fr",
-        "e\u006aemplo",
-        "\u006fpcionales",
-        "\u0064ependencia",
-        "\u0063ompatibilidad",
-        "\u0076alores",
-        "\u0064ebe",
-        "\u0072ecomputar",
-        "\u006d\u006ftor",
-        "\u0070or_defecto",
-    ),
-    accented_characters=(
-        "\u00e1",
-        "\u00e9",
-        "\u00ed",
-        "\u00f3",
-        "\u00fa",
-        "\u00fc",
-        "\u00f1",
-        "\u00c1",
-        "\u00c9",
-        "\u00cd",
-        "\u00d3",
-        "\u00da",
-        "\u00dc",
-        "\u00d1",
-        "\u00bf",
-        "\u00a1",
-    ),
+    disallowed_keywords=default_disallowed_keywords(),
+    accented_characters=default_accented_characters(),
     excluded_globs=(
         "TNFR.pdf",
         "benchmarks/**/*.pdf",
     ),
 )
+
+
+def _coerce_string_iterable(candidate: object) -> tuple[str, ...]:
+    """Return the string entries from ``candidate`` if iterable."""
+
+    if isinstance(candidate, str):
+        return (candidate,)
+    if isinstance(candidate, (list, tuple, set)):
+        return tuple(item for item in candidate if isinstance(item, str))
+    return ()
+
+
+def _coerce_code_sequence_iterable(
+    candidate: object,
+) -> tuple[Iterable[int] | Sequence[int], ...]:
+    """Return iterable integer sequences from ``candidate`` when possible."""
+
+    if isinstance(candidate, (list, tuple, set)):
+        return tuple(candidate)  # type: ignore[return-value]
+    return ()
+
+
+def _coerce_int_iterable(candidate: object) -> tuple[int, ...]:
+    """Return the integer entries from ``candidate`` if iterable."""
+
+    if isinstance(candidate, int):
+        return (candidate,)
+    if isinstance(candidate, (list, tuple, set)):
+        integers: list[int] = []
+        for item in candidate:
+            try:
+                integers.append(int(item))
+            except (TypeError, ValueError):
+                continue
+        return tuple(integers)
+    return ()
 
 
 def _load_policy(repo_root: Path) -> LanguagePolicy:
@@ -105,23 +120,29 @@ def _load_policy(repo_root: Path) -> LanguagePolicy:
     if not isinstance(policy_section, dict):
         return DEFAULT_POLICY
 
-    keywords = policy_section.get("disallowed_keywords")
-    accented = policy_section.get("accented_characters")
-    excludes = policy_section.get("exclude")
+    keywords = _coerce_string_iterable(policy_section.get("disallowed_keywords"))
+    keyword_codes_iterable = _coerce_code_sequence_iterable(
+        policy_section.get("disallowed_keyword_codes")
+    )
+    accented = _coerce_string_iterable(policy_section.get("accented_characters"))
+    accent_codepoints = _coerce_int_iterable(policy_section.get("accent_codepoints"))
+    excludes = _coerce_string_iterable(policy_section.get("exclude"))
+
+    keyword_pool = set(DEFAULT_POLICY.disallowed_keywords)
+    keyword_pool.update(keywords)
+    keyword_pool.update(decode_keyword_codes(keyword_codes_iterable))
+
+    accent_pool = set(DEFAULT_POLICY.accented_characters)
+    accent_pool.update(accented)
+    accent_pool.update(decode_accent_codepoints(accent_codepoints))
+
+    exclude_pool = set(DEFAULT_POLICY.excluded_globs)
+    exclude_pool.update(excludes)
 
     return LanguagePolicy(
-        disallowed_keywords=tuple(
-            sorted(
-                {*(DEFAULT_POLICY.disallowed_keywords), *(keywords or [])},
-                key=str.lower,
-            )
-        ),
-        accented_characters=tuple(
-            sorted({*(DEFAULT_POLICY.accented_characters), *(accented or [])})
-        ),
-        excluded_globs=tuple(
-            sorted({*(DEFAULT_POLICY.excluded_globs), *(excludes or [])})
-        ),
+        disallowed_keywords=tuple(sorted(keyword_pool, key=str.lower)),
+        accented_characters=tuple(sorted(accent_pool)),
+        excluded_globs=tuple(sorted(exclude_pool)),
     )
 
 
