@@ -10,9 +10,38 @@ When contributing:
 - Use descriptive English names for every variable, function, class, and
   module.
 - Write docstrings and comments in English and reference operators by their
-  canonical English identifiers.
+  canonical English identifiers. Follow the
+  [NumPy-style docstring guide](docs/api/docstring_style.md) so automated tools
+  and reviewers can track how each API reorganises EPI, νf, and ΔNFR.
 - Update existing code to migrate any remaining legacy strings to the English
   tokens.
+
+Use the following summary as a quick reminder of the expected docstring
+sections when creating or updating public APIs:
+
+```python
+"""One-line summary of the structural effect.
+
+Parameters
+----------
+name : type
+    Describe how the argument influences EPI, νf, ΔNFR, or phase.
+
+Returns
+-------
+return_type
+    State the structural outcome exposed to callers.
+
+Raises
+------
+ExceptionType
+    Mention validation or dissonance guards when relevant.
+
+Examples
+--------
+>>> # Provide runnable snippets that respect TNFR invariants
+"""
+```
 
 The canonical operator identifiers are:
 

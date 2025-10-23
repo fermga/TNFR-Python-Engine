@@ -18,6 +18,8 @@ $\partial EPI/\partial t = \nu_f \cdot \Delta NFR(t)$.
   helper facades for reproducible experiments.
 - [Examples library](examples/README.md): runnable scenarios (controlled dissonance loop and
   optical cavity feedback) with CLI counterparts.
+- [Docstring style guide](api/docstring_style.md): NumPy template aligned with TNFR vocabulary
+  so contributors and automated tools describe EPI, νf, and ΔNFR consistently.
 - [Release notes](releases.md): API transitions, compatibility windows, and deprecation timelines.
 
 ## Canonical references
