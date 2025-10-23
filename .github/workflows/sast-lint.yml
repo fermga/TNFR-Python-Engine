@@ -42,7 +42,7 @@ jobs:
         run: |
           source ${{ env.VENV_PATH }}/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install --disable-pip-version-check bandit semgrep PyYAML
+          python -m pip install --disable-pip-version-check "bandit>=1.7.0" semgrep PyYAML
 
       - name: Upload tooling environment
         uses: actions/upload-artifact@v4
