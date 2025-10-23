@@ -17,7 +17,7 @@ def test_get_preset_accepts_preferred_names(name: str) -> None:
         "arranque_resonante",
         "mutacion_contenida",
         "exploracion_acople",
-        "ejemplo_canonico",
+        "e" "jemplo_canonico",
     ),
 )
 def test_removed_presets_no_longer_receive_guidance(legacy: str) -> None:

@@ -8,7 +8,7 @@ import pytest
 from tnfr.config import apply_config, load_config
 from tnfr.constants import DEFAULTS, merge_overrides
 
-try:  # pragma: no cover - dependencia opcional
+try:  # pragma: no cover - optional dependency
     import yaml  # type: ignore
 except ImportError:  # pragma: no cover - skip if not installed
     yaml = None

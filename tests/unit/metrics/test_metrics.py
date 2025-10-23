@@ -707,7 +707,7 @@ def test_latency_index_uses_max_denominator(graph_canon):
 def test_update_epi_support_matches_manual(graph_canon):
     """_update_epi_support computes size and norm as expected."""
     G = graph_canon()
-    # valores diversos de EPI
+    # assorted EPI values
     G.add_node(0, EPI=0.06)
     G.add_node(1, EPI=-0.1)
     G.add_node(2, EPI=0.01)

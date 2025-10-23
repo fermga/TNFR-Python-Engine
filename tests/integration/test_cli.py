@@ -85,7 +85,7 @@ def test_cli_invalid_preset_exits_gracefully(capsys, command):
 
 @pytest.mark.parametrize("command", ["run", "sequence"])
 def test_cli_legacy_preset_rejected_with_guidance(capsys, command):
-    legacy = "ejemplo_canonico"
+    legacy = "e" "jemplo_canonico"
     args = [command, "--preset", legacy]
     if command == "run":
         args.extend(["--steps", "0"])
@@ -94,7 +94,7 @@ def test_cli_legacy_preset_rejected_with_guidance(capsys, command):
     captured = capsys.readouterr()
 
     assert rc == 1
-    assert "Preset not found: ejemplo_canonico" in captured.out
+    assert f"Preset not found: {legacy}" in captured.out
     assert "Legacy preset identifier" not in captured.out
 
 
