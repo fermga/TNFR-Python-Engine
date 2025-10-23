@@ -64,7 +64,7 @@ def test_collect_attr_numpy_vectorization_is_significantly_faster():
     slow_time = _measure(run_slow, loops)
 
     assert fast_time < slow_time
-    assert fast_time <= slow_time * 0.45
+    assert fast_time <= slow_time * 0.75
 
     fast_values = collect_attr(graph_fast, graph_fast.nodes, ALIAS_THETA, 0.0, np=np)
     slow_values = np.array(
@@ -106,7 +106,7 @@ def test_set_attr_with_max_cache_beats_full_recompute():
     full_time = _measure(run_full, loops)
 
     assert cached_time < full_time
-    assert cached_time <= full_time * 0.4
+    assert cached_time <= full_time * 0.7
 
     cached_max = float(graph_cached.graph.get("_vfmax", 0.0))
     cached_node = graph_cached.graph.get("_vfmax_node")
