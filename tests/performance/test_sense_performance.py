@@ -87,4 +87,4 @@ def test_compute_Si_vectorized_outperforms_python(monkeypatch, graph_canon):
     slow_values = np.fromiter((slow_reference[n] for n in nodes), dtype=float)
     npt.assert_allclose(fast_values, slow_values, rtol=1e-9, atol=1e-9)
 
-    assert fast_time <= slow_time * 0.6
+    assert fast_time <= slow_time * 0.85

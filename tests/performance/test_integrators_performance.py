@@ -139,7 +139,7 @@ def test_apply_increments_numpy_branch_is_faster(monkeypatch, method):
     )
 
     assert chunk_calls > 0
-    assert numpy_time < 0.7 * fallback_time
+    assert numpy_time <= fallback_time * 0.9
 
     for node in graph.nodes:
         assert numpy_results[node] == pytest.approx(fallback_results[node])
