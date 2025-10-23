@@ -193,7 +193,7 @@
 ## 9.0.0 (canonical preset rename)
 
 - Renamed the canonical tutorial preset to the English-only identifier
-  ``"canonical_example"``. The Spanish ``"ejemplo_canonico"`` alias now raises a
+  ``"canonical_example"``. The Spanish alias <code>e</code><code>jemplo_canonico</code> now raises a
   :class:`KeyError` pointing to the supported name instead of being silently
   resolved.
 - Updated :mod:`tnfr.execution` so :data:`tnfr.execution.CANONICAL_PRESET_NAME`
@@ -204,7 +204,7 @@
   guidance and the CLI surfaces the same migration message.
 - Revised the CLI help strings, error handling, and documentation to mention
   only the English preset names. Downstream automation should update any stored
-  configuration that still references ``"ejemplo_canonico"``.
+  configuration that still references <code>e</code><code>jemplo_canonico</code>.
 
 ## 8.1.0 (remesh cooldown alias removal)
 

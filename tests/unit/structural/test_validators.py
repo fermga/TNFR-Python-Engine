@@ -17,7 +17,7 @@ ALIAS_EPI_KIND = get_aliases("EPI_KIND")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 
-try:  # pragma: no cover - compatibilidad Python
+try:  # pragma: no cover - Python compatibility
     import tomllib  # type: ignore[attr-defined]
 except ModuleNotFoundError:  # pragma: no cover
     try:
