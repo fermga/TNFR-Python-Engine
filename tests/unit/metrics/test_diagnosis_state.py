@@ -10,6 +10,8 @@ from tnfr.constants import (
 )
 from tnfr.metrics.diagnosis import _state_from_thresholds
 
+from tests.legacy_tokens import LEGACY_STATE_TOKENS
+
 
 def test_state_from_thresholds_checks_all_conditions():
     cfg = {
@@ -26,10 +28,7 @@ def test_normalise_state_token_accepts_canonical_tokens_without_warning():
         assert normalise_state_token(token) == token
 
 
-@pytest.mark.parametrize(
-    "legacy_token",
-    ["est" "able", "diso" "nante", "trans" "icion", "transici" "\u00f3n"],
-)
+@pytest.mark.parametrize("legacy_token", LEGACY_STATE_TOKENS)
 def test_normalise_state_token_rejects_spanish_tokens(legacy_token: str):
     with pytest.raises(ValueError, match="state token must be one of"):
         normalise_state_token(legacy_token)

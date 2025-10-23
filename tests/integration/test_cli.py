@@ -31,6 +31,8 @@ from tnfr.config.presets import get_preset
 from tnfr.constants import METRIC_DEFAULTS
 from tnfr.execution import CANONICAL_PRESET_NAME, basic_canonical_example
 
+from tests.legacy_tokens import PRESET_EJEMPLO_CANONICO
+
 
 def test_cli_version(capsys):
     rc = main(["--version"])
@@ -85,7 +87,7 @@ def test_cli_invalid_preset_exits_gracefully(capsys, command):
 
 @pytest.mark.parametrize("command", ["run", "sequence"])
 def test_cli_legacy_preset_rejected_with_guidance(capsys, command):
-    legacy = "e" "jemplo_canonico"
+    legacy = PRESET_EJEMPLO_CANONICO
     args = [command, "--preset", legacy]
     if command == "run":
         args.extend(["--steps", "0"])

@@ -9,6 +9,11 @@ from tnfr.metrics.trig_cache import get_trig_cache
 from tnfr.trace import _si_sensitivity_field
 from tnfr.utils import increment_edge_version
 
+from tests.legacy_tokens import (
+    LEGACY_SI_COMPUTE_ARG,
+    LEGACY_SI_SENSITIVITY_KEY,
+)
+
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_SI = get_aliases("SI")
 ALIAS_THETA = get_aliases("THETA")
@@ -37,26 +42,26 @@ def test_get_si_weights_normalization(graph_canon):
 def test_get_si_weights_rejects_unknown_sensitivity_keys(graph_canon):
     G = graph_canon()
     G.graph["_Si_sensitivity"] = {
-        "dSi_ddisp_fase": -0.5,
+        LEGACY_SI_SENSITIVITY_KEY: -0.5,
         "dSi_dvf_norm": 0.1,
     }
 
     with pytest.raises(ValueError) as excinfo:
         get_Si_weights(G)
 
-    assert "unexpected key(s): dSi_ddisp_fase" in str(excinfo.value)
+    assert f"unexpected key(s): {LEGACY_SI_SENSITIVITY_KEY}" in str(excinfo.value)
 
 
 def test_si_sensitivity_field_rejects_unknown_key(graph_canon):
     G = graph_canon()
     G.graph["_Si_sensitivity"] = {
-        "dSi_ddisp_fase": -0.25,
+        LEGACY_SI_SENSITIVITY_KEY: -0.25,
     }
 
     with pytest.raises(ValueError) as excinfo:
         _si_sensitivity_field(G)
 
-    assert "unexpected key(s): dSi_ddisp_fase" in str(excinfo.value)
+    assert f"unexpected key(s): {LEGACY_SI_SENSITIVITY_KEY}" in str(excinfo.value)
 
 
 def test_si_sensitivity_field_handles_new_key(graph_canon):
@@ -160,8 +165,8 @@ def test_compute_Si_node_unknown_keyword(graph_canon):
             gamma=0.25,
             vfmax=1.0,
             dnfrmax=1.0,
-            disp_fase=0.0,
+            **{LEGACY_SI_COMPUTE_ARG: 0.0},
             inplace=False,
         )
 
-    assert "Unexpected keyword argument(s): disp_fase" in str(excinfo.value)
+    assert f"Unexpected keyword argument(s): {LEGACY_SI_COMPUTE_ARG}" in str(excinfo.value)

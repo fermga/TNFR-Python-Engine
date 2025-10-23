@@ -11,6 +11,8 @@ from tnfr.glyph_history import ensure_history
 from tnfr.operators import apply_remesh_if_globally_stable
 from tnfr.operators.remesh import apply_network_remesh
 
+from tests.legacy_tokens import LEGACY_REMESH_CONFIG, LEGACY_REMESH_KEYWORD
+
 
 def _prepare_graph_for_remesh(graph_canon, stable_steps: int = 3):
     G = graph_canon()
@@ -46,7 +48,7 @@ def test_apply_remesh_legacy_keyword_raises_typeerror(graph_canon):
     with pytest.raises(TypeError, match="unexpected keyword argument"):
         apply_remesh_if_globally_stable(
             G,
-            **{"pasos_" "est" "ables_consecutivos": 3},
+            **{LEGACY_REMESH_KEYWORD: 3},
         )
 
     assert "_last_remesh_step" not in G.graph
@@ -110,7 +112,7 @@ def test_injected_defaults_include_cooldown_window_only(graph_canon):
     G, _ = _prepare_graph_for_remesh(graph_canon)
 
     assert "REMESH_COOLDOWN_WINDOW" in G.graph
-    assert "REMESH_COOLDOWN_VENTANA" not in G.graph
+    assert LEGACY_REMESH_CONFIG not in G.graph
 
 
 def test_configured_cooldown_window_is_respected(graph_canon):

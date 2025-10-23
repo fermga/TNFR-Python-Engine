@@ -7,6 +7,8 @@ import pytest
 import tnfr
 from tnfr.metrics import register_metrics_callbacks
 
+from tests.legacy_tokens import LEGACY_PUBLIC_EXPORT
+
 
 def _clear_tnfr_modules() -> None:
     for name in list(sys.modules):
@@ -98,7 +100,7 @@ def test_public_api_missing_prepare_network_dependency(monkeypatch):
         )
         assert "prepare_network" in module.__all__
         assert not getattr(module, "_HAS_PREPARE_NETWORK", True)
-        assert not hasattr(module, "preparar_red")
+        assert not hasattr(module, LEGACY_PUBLIC_EXPORT)
         with pytest.raises(ImportError) as excinfo:
             module.prepare_network(None)
         assert "networkx" in str(excinfo.value)
