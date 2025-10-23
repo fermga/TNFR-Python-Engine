@@ -123,7 +123,7 @@ def _neighbor_phase_mean_generic(
     np: Any | None = None,
     fallback: float = 0.0,
 ) -> float:
-    """Internal helper delegating to :func:`_neighbor_phase_mean_core`.
+    """Compute the neighbour phase mean via :func:`_neighbor_phase_mean_core`.
 
     ``obj`` may be either a node bound to a graph or a sequence of neighbours.
     When ``cos_map`` and ``sin_map`` are ``None`` the function assumes ``obj`` is

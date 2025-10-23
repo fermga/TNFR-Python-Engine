@@ -2074,7 +2074,7 @@ def _apply_dnfr_hook(
     note: str | None = None,
     n_jobs: int | None = None,
 ) -> None:
-    """Generic helper to compute and store ΔNFR using ``grads``.
+    """Compute and store ΔNFR using ``grads``.
 
     Parameters
     ----------
@@ -2243,7 +2243,7 @@ class _NeighborAverageGradient:
 
 
 def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
-    """Example: ΔNFR from phase only (Kuramoto-like).
+    """Compute ΔNFR from phase only (Kuramoto-like).
 
     Parameters
     ----------
@@ -2267,7 +2267,7 @@ def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
 
 
 def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
-    """Example: ΔNFR without phase, mixing EPI and νf.
+    """Compute ΔNFR without phase, mixing EPI and νf.
 
     Parameters
     ----------

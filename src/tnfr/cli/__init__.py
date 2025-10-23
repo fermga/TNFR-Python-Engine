@@ -1,3 +1,5 @@
+"""Command-line interface entry points for TNFR."""
+
 from __future__ import annotations
 
 import argparse

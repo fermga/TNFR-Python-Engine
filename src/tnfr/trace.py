@@ -180,7 +180,7 @@ def _trace_setup(
     dict[str, Any] | None,
     str | None,
 ]:
-    """Common configuration for trace snapshots.
+    """Prepare common configuration for trace snapshots.
 
     Returns the active configuration, capture set, history and key under
     which metadata will be stored. If tracing is disabled returns
@@ -214,7 +214,7 @@ EMPTY_MAPPING: Mapping[str, Any] = MappingProxyType({})
 
 
 def mapping_field(G: TNFRGraph, graph_key: str, out_key: str) -> TraceMetadata:
-    """Helper to copy mappings from ``G.graph`` into trace output."""
+    """Copy mappings from ``G.graph`` into trace output."""
     mapping = get_graph_mapping(
         G, graph_key, f"G.graph[{graph_key!r}] is not a mapping; ignoring"
     )
@@ -501,8 +501,7 @@ for spec in TRACE_FIELD_SPECS:
 
 
 def register_trace(G: TNFRGraph) -> None:
-    """Enable before/after-step snapshots and dump operational metadata
-    to history.
+    """Enable before/after-step snapshots and dump operational metadata to history.
 
     Trace snapshots are stored as :class:`TraceSnapshot` entries in
     ``G.graph['history'][TRACE.history_key]`` with:

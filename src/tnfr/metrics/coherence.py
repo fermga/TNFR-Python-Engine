@@ -1001,7 +1001,7 @@ def _record_metrics(
     *pairs: MetricRecord,
     evaluate: bool = False,
 ) -> None:
-    """Generic recorder for metric values."""
+    """Record metric values for the trace history."""
 
     metrics = cast(MutableMapping[str, list[Any]], hist)
     for payload, key in pairs:

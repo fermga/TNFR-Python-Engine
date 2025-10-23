@@ -204,7 +204,7 @@ def wait(steps: int = 1) -> WAIT:
 
 
 def basic_canonical_example() -> list[Token]:
-    """Reference canonical sequence.
+    """Return the canonical preset sequence.
 
     Returns a copy of the canonical preset tokens to keep CLI defaults aligned
     with :func:`tnfr.config.presets.get_preset`.
