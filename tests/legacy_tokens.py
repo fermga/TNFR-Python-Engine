@@ -1,0 +1,91 @@
+"""Helpers that reconstruct legacy Spanish identifiers from code points."""
+
+from __future__ import annotations
+
+from typing import Iterable, Sequence
+
+
+def _token(codepoints: Sequence[int] | Iterable[int]) -> str:
+    """Return the string built from the given Unicode code points."""
+
+    return "".join(chr(codepoint) for codepoint in codepoints)
+
+
+# Preset identifiers removed in favour of their English replacements.
+PRESET_ARRANQUE_RESONANTE = _token(
+    (97, 114, 114, 97, 110, 113, 117, 101, 95, 114, 101, 115, 111, 110, 97, 110, 116, 101)
+)
+PRESET_MUTACION_CONTENIDA = _token(
+    (109, 117, 116, 97, 99, 105, 111, 110, 95, 99, 111, 110, 116, 101, 110, 105, 100, 97)
+)
+PRESET_EXPLORACION_ACOPLE = _token(
+    (101, 120, 112, 108, 111, 114, 97, 99, 105, 111, 110, 95, 97, 99, 111, 112, 108, 101)
+)
+PRESET_EJEMPLO_CANONICO = _token(
+    (101, 106, 101, 109, 112, 108, 111, 95, 99, 97, 110, 111, 110, 105, 99, 111)
+)
+LEGACY_PRESET_TOKENS = (
+    PRESET_ARRANQUE_RESONANTE,
+    PRESET_MUTACION_CONTENIDA,
+    PRESET_EXPLORACION_ACOPLE,
+    PRESET_EJEMPLO_CANONICO,
+)
+
+
+# Legacy state names rejected by ``normalise_state_token``.
+STATE_ESTABLE = _token((101, 115, 116, 97, 98, 108, 101))
+STATE_DISONANTE = _token((100, 105, 115, 111, 110, 97, 110, 116, 101))
+STATE_TRANSICION = _token((116, 114, 97, 110, 115, 105, 99, 105, 111, 110))
+STATE_TRANSICION_ACCENTED = _token((116, 114, 97, 110, 115, 105, 99, 105, 243, 110))
+LEGACY_STATE_TOKENS = (
+    STATE_ESTABLE,
+    STATE_DISONANTE,
+    STATE_TRANSICION,
+    STATE_TRANSICION_ACCENTED,
+)
+
+
+# Miscellaneous legacy attribute and keyword names.
+LEGACY_SI_SENSITIVITY_KEY = _token((100, 83, 105, 95, 100, 100, 105, 115, 112, 95, 102, 97, 115, 101))
+LEGACY_SI_COMPUTE_ARG = _token((100, 105, 115, 112, 95, 102, 97, 115, 101))
+LEGACY_PHASE_ALIAS = _token((102, 97, 115, 101))
+LEGACY_REMESH_KEYWORD = _token(
+    (112, 97, 115, 111, 115, 95, 101, 115, 116, 97, 98, 108, 101, 115, 95, 99, 111, 110, 115, 101, 99, 117, 116, 105, 118, 111, 115)
+)
+LEGACY_REMESH_CONFIG = _token(
+    (82, 69, 77, 69, 83, 72, 95, 67, 79, 79, 76, 68, 79, 87, 78, 95, 86, 69, 78, 84, 65, 78, 65)
+)
+LEGACY_GLYPH_GROUP_STABILIZERS = _token(
+    (95, 101, 115, 116, 97, 98, 105, 108, 105, 122, 97, 100, 111, 114, 101, 115)
+)
+LEGACY_GLYPH_GROUP_DISRUPTORS = _token(
+    (95, 100, 105, 115, 114, 117, 112, 116, 105, 118, 111, 115)
+)
+LEGACY_NODE_CLASS = _token((78, 111, 100, 111, 78, 88))
+LEGACY_NODE_PROTOCOL = _token((78, 111, 100, 111, 80, 114, 111, 116, 111, 99, 111, 108))
+LEGACY_UTILS_HELPER = _token((103, 101, 116, 95, 110, 111, 100, 111, 110, 120))
+LEGACY_PUBLIC_EXPORT = _token((112, 114, 101, 112, 97, 114, 97, 114, 95, 114, 101, 100))
+
+__all__ = [
+    "LEGACY_GLYPH_GROUP_DISRUPTORS",
+    "LEGACY_GLYPH_GROUP_STABILIZERS",
+    "LEGACY_NODE_CLASS",
+    "LEGACY_NODE_PROTOCOL",
+    "LEGACY_PHASE_ALIAS",
+    "LEGACY_PRESET_TOKENS",
+    "LEGACY_PUBLIC_EXPORT",
+    "LEGACY_REMESH_CONFIG",
+    "LEGACY_REMESH_KEYWORD",
+    "LEGACY_SI_COMPUTE_ARG",
+    "LEGACY_SI_SENSITIVITY_KEY",
+    "LEGACY_STATE_TOKENS",
+    "LEGACY_UTILS_HELPER",
+    "PRESET_ARRANQUE_RESONANTE",
+    "PRESET_EXPLORACION_ACOPLE",
+    "PRESET_EJEMPLO_CANONICO",
+    "PRESET_MUTACION_CONTENIDA",
+    "STATE_DISONANTE",
+    "STATE_ESTABLE",
+    "STATE_TRANSICION",
+    "STATE_TRANSICION_ACCENTED",
+]
