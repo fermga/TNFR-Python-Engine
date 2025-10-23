@@ -71,6 +71,9 @@ jobs:
           name: ${{ env.TOOLS_ARTIFACT }}
           path: ${{ env.VENV_PATH }}
 
+      - name: Fix Python interpreter permissions
+        run: chmod +x ${{ env.VENV_PATH }}/bin/python
+
       - name: Fix Bandit permissions
         run: chmod +x ${{ env.VENV_PATH }}/bin/bandit
 
