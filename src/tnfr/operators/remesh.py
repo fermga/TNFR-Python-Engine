@@ -1,3 +1,5 @@
+"""Adaptive remeshing operators preserving TNFR structural coherence."""
+
 from __future__ import annotations
 
 import hashlib
@@ -467,6 +469,8 @@ def apply_remesh_if_globally_stable(
     stable_step_window: int | None = None,
     **kwargs: Any,
 ) -> None:
+    """Trigger remeshing when global stability indicators satisfy thresholds."""
+
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))
         raise TypeError(

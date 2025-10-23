@@ -69,6 +69,8 @@ def Tg_by_node(
 
 
 def latency_series(G: TNFRGraph) -> dict[str, list[float]]:
+    """Return latency samples as ``{"t": [...], "value": [...]}``."""
+
     hist = ensure_history(G)
     xs = hist.get("latency_index", [])
     return {
@@ -78,6 +80,8 @@ def latency_series(G: TNFRGraph) -> dict[str, list[float]]:
 
 
 def glyphogram_series(G: TNFRGraph) -> dict[str, list[float]]:
+    """Return glyphogram time series keyed by glyph label."""
+
     hist = ensure_history(G)
     xs = hist.get("glyphogram", [])
     if not xs:

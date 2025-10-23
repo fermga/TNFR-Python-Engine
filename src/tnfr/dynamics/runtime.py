@@ -341,6 +341,8 @@ def apply_canonical_clamps(
     G: TNFRGraph | None = None,
     node: NodeId | None = None,
 ) -> None:
+    """Clamp nodal EPI, νf and θ according to canonical bounds."""
+
     if G is not None:
         graph_dict = cast(MutableMapping[str, Any], G.graph)
         graph_data: Mapping[str, Any] = graph_dict
@@ -387,6 +389,8 @@ def apply_canonical_clamps(
 
 
 def validate_canon(G: TNFRGraph) -> TNFRGraph:
+    """Clamp all nodes and refresh cached νf maxima for ``G``."""
+
     for n, nd in G.nodes(data=True):
         apply_canonical_clamps(cast(MutableMapping[str, Any], nd), G, cast(NodeId, n))
     maxes = multi_recompute_abs_max(G, {"_vfmax": ALIAS_VF})
@@ -402,6 +406,8 @@ def _run_before_callbacks(
     use_Si: bool,
     apply_glyphs: bool,
 ) -> None:
+    """Notify ``BEFORE_STEP`` observers with execution context."""
+
     callback_manager.invoke_callbacks(
         G,
         CallbackEvent.BEFORE_STEP.value,
@@ -420,6 +426,8 @@ def _prepare_dnfr(
     use_Si: bool,
     job_overrides: Mapping[str, Any] | None = None,
 ) -> None:
+    """Recompute ΔNFR (and optionally Si) ahead of an integration step."""
+
     compute_dnfr_cb = G.graph.get("compute_delta_nfr", default_compute_delta_nfr)
     overrides = job_overrides or {}
     n_jobs = _resolve_jobs_override(
@@ -484,6 +492,8 @@ def _update_nodes(
     hist: HistoryState,
     job_overrides: Mapping[str, Any] | None = None,
 ) -> None:
+    """Apply glyphs, integrate ΔNFR and refresh derived nodal state."""
+
     _update_node_sample(G, step=step_idx)
     overrides = job_overrides or {}
     _prepare_dnfr(G, use_Si=use_Si, job_overrides=overrides)
@@ -525,6 +535,8 @@ def _update_nodes(
 
 
 def _update_epi_hist(G: TNFRGraph) -> None:
+    """Maintain the rolling EPI history used by remeshing heuristics."""
+
     tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
     tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
     tau = max(tau_g, tau_l)
@@ -537,16 +549,22 @@ def _update_epi_hist(G: TNFRGraph) -> None:
 
 
 def _maybe_remesh(G: TNFRGraph) -> None:
+    """Trigger remeshing when stability thresholds are satisfied."""
+
     apply_remesh_if_globally_stable(G)
 
 
 def _run_validators(G: TNFRGraph) -> None:
+    """Execute registered validators ensuring canonical invariants hold."""
+
     from ..utils import run_validators
 
     run_validators(G)
 
 
 def _run_after_callbacks(G, *, step_idx: int) -> None:
+    """Notify ``AFTER_STEP`` observers with the latest structural metrics."""
+
     h = ensure_history(G)
     ctx = {"step": step_idx}
     metric_pairs = [

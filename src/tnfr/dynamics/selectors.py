@@ -140,6 +140,8 @@ def _selector_base_choice(
 
 
 def _configure_selector_weights(G: TNFRGraph) -> Mapping[str, float]:
+    """Load and cache selector weight configuration from graph parameters."""
+
     weights = merge_and_normalize_weights(
         G, "SELECTOR_WEIGHTS", ("w_si", "w_dnfr", "w_accel")
     )
@@ -207,6 +209,8 @@ def _parametric_selector_logic(G: TNFRGraph, n: NodeId) -> GlyphCode:
 
 @dataclass(slots=True)
 class _SelectorPreselection:
+    """Precomputed selector context shared across glyph decisions."""
+
     kind: str
     metrics: Mapping[Any, tuple[float, float, float]]
     base_choices: Mapping[Any, GlyphCode]
@@ -265,10 +269,14 @@ class DefaultGlyphSelector(AbstractSelector):
         self._prepared_graph_id: int | None = None
 
     def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None:
+        """Precompute default selector metrics for ``nodes``."""
+
         self._preselection = _build_default_preselection(graph, nodes)
         self._prepared_graph_id = id(graph)
 
     def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode:
+        """Return the canonical glyph for ``node`` using cached metrics when available."""
+
         if self._prepared_graph_id == id(graph):
             preselection = self._preselection
         else:
@@ -288,12 +296,16 @@ class ParametricGlyphSelector(AbstractSelector):
         self._prepared_graph_id: int | None = None
 
     def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None:
+        """Precompute parametric selector metrics and hysteresis thresholds."""
+
         _selector_norms(graph)
         _configure_selector_weights(graph)
         self._preselection = _build_param_preselection(graph, nodes)
         self._prepared_graph_id = id(graph)
 
     def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode:
+        """Return the parametric glyph decision for ``node``."""
+
         if self._prepared_graph_id == id(graph):
             preselection = self._preselection
         else:
@@ -317,6 +329,8 @@ def _choose_glyph(
     al_max: int,
     en_max: int,
 ) -> GlyphCode:
+    """Return glyph for ``n`` considering forced lags and canonical grammar."""
+
     if h_al[n] > al_max:
         return Glyph.AL
     if h_en[n] > en_max:
@@ -328,6 +342,8 @@ def _choose_glyph(
 
 
 def _selector_parallel_jobs(G: TNFRGraph) -> int | None:
+    """Return worker count for selector helpers when parallelism is enabled."""
+
     raw_jobs = G.graph.get("GLYPH_SELECTOR_N_JOBS")
     try:
         n_jobs = None if raw_jobs is None else int(raw_jobs)
@@ -341,6 +357,8 @@ def _selector_parallel_jobs(G: TNFRGraph) -> int | None:
 def _selector_metrics_chunk(
     args: tuple[list[float], list[float], list[float], float, float],
 ) -> tuple[list[float], list[float], list[float]]:
+    """Normalise metric chunk values for multiprocessing execution."""
+
     si_values, dnfr_values, accel_values, dnfr_max, accel_max = args
     si_seq = [clamp01(float(v)) for v in si_values]
     dnfr_seq = [abs(float(v)) / dnfr_max for v in dnfr_values]
@@ -354,6 +372,8 @@ def _collect_selector_metrics(
     norms: Mapping[str, float],
     n_jobs: int | None = None,
 ) -> dict[Any, tuple[float, float, float]]:
+    """Return normalised (Si, ΔNFR, acceleration) triples for ``nodes``."""
+
     if not nodes:
         return {}
 
@@ -501,6 +521,8 @@ def _prepare_selector_preselection(
     selector: GlyphSelector,
     nodes: Sequence[NodeId],
 ) -> _SelectorPreselection | None:
+    """Build cached selector metrics when ``selector`` supports them."""
+
     if selector is default_glyph_selector:
         return _build_default_preselection(G, nodes)
     if selector is parametric_glyph_selector:
@@ -514,6 +536,8 @@ def _resolve_preselected_glyph(
     selector: GlyphSelector,
     preselection: _SelectorPreselection | None,
 ) -> GlyphCode:
+    """Return glyph for ``n`` using ``preselection`` shortcuts when possible."""
+
     if preselection is None:
         return selector(G, n)
 
@@ -563,6 +587,8 @@ def _glyph_proposal_worker(
 
 
 def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> None:
+    """Apply glyph decisions across the graph updating hysteresis trackers."""
+
     window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
     use_canon = bool(get_graph_param(G, "GRAMMAR_CANON", dict).get("enabled", False))
     al_max = get_graph_param(G, "AL_MAX_LAG", int)
@@ -651,6 +677,8 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
 
 
 def _apply_selector(G: TNFRGraph) -> GlyphSelector:
+    """Resolve the glyph selector callable configured on ``G``."""
+
     raw_selector = G.graph.get("glyph_selector")
 
     selector: GlyphSelector

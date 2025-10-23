@@ -82,11 +82,6 @@ exclude = ["benchmarks/"]
 [tool.pydocstyle]
 convention = "numpy"
 add-ignore = [
-  "D100",  # Legacy modules lack mandatory module docstrings.
-  "D101",  # Public classes inherit legacy docstring coverage.
-  "D102",  # Public methods lack docstrings in existing API surface.
-  "D103",  # Numerous public functions still require canonical docstrings.
-  "D105",  # Magic methods follow structural semantics without docstrings.
   "D202",  # Allow blank line after docstring where needed for readability.
 ]
 

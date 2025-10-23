@@ -230,16 +230,22 @@ class CacheManager:
             return name in self._capacity_overrides
 
     def get_lock(self, name: str) -> threading.Lock | threading.RLock:
+        """Return the lock guarding cache ``name`` for external coordination."""
+
         entry = self._entries.get(name)
         if entry is None:
             raise KeyError(name)
         return entry.lock
 
     def names(self) -> Iterator[str]:
+        """Iterate over registered cache names."""
+
         with self._registry_lock:
             return iter(tuple(self._entries))
 
     def get(self, name: str, *, create: bool = True) -> Any:
+        """Return cache ``name`` creating it on demand when ``create`` is true."""
+
         entry = self._entries.get(name)
         if entry is None:
             raise KeyError(name)
@@ -251,9 +257,13 @@ class CacheManager:
             return value
 
     def peek(self, name: str) -> Any:
+        """Return cache ``name`` without creating a missing entry."""
+
         return self.get(name, create=False)
 
     def store(self, name: str, value: Any) -> None:
+        """Replace the stored value for cache ``name`` with ``value``."""
+
         entry = self._entries.get(name)
         if entry is None:
             raise KeyError(name)
@@ -267,6 +277,8 @@ class CacheManager:
         *,
         create: bool = True,
     ) -> Any:
+        """Apply ``updater`` to cache ``name`` storing the resulting value."""
+
         entry = self._entries.get(name)
         if entry is None:
             raise KeyError(name)
@@ -279,6 +291,8 @@ class CacheManager:
             return new_value
 
     def clear(self, name: str | None = None) -> None:
+        """Reset caches either selectively or for every registered name."""
+
         if name is not None:
             names = (name,)
         else:
@@ -321,6 +335,8 @@ class CacheManager:
         amount: int = 1,
         duration: float | None = None,
     ) -> None:
+        """Increase cache hit counters for ``name`` (optionally logging latency)."""
+
         metrics = self._ensure_metrics(name)
         with metrics.lock:
             metrics.hits += int(amount)
@@ -335,6 +351,8 @@ class CacheManager:
         amount: int = 1,
         duration: float | None = None,
     ) -> None:
+        """Increase cache miss counters for ``name`` (optionally logging latency)."""
+
         metrics = self._ensure_metrics(name)
         with metrics.lock:
             metrics.misses += int(amount)
@@ -343,11 +361,15 @@ class CacheManager:
                 metrics.timings += 1
 
     def increment_eviction(self, name: str, *, amount: int = 1) -> None:
+        """Increase eviction count for cache ``name``."""
+
         metrics = self._ensure_metrics(name)
         with metrics.lock:
             metrics.evictions += int(amount)
 
     def record_timing(self, name: str, duration: float) -> None:
+        """Accumulate ``duration`` into latency telemetry for ``name``."""
+
         metrics = self._ensure_metrics(name)
         with metrics.lock:
             metrics.total_time += float(duration)
@@ -364,6 +386,8 @@ class CacheManager:
             self.record_timing(name, perf_counter() - start)
 
     def get_metrics(self, name: str) -> CacheStatistics:
+        """Return a snapshot of telemetry collected for cache ``name``."""
+
         metrics = self._metrics.get(name)
         if metrics is None:
             return CacheStatistics()
@@ -371,6 +395,8 @@ class CacheManager:
             return metrics.snapshot()
 
     def iter_metrics(self) -> Iterator[tuple[str, CacheStatistics]]:
+        """Yield ``(name, stats)`` pairs for every cache with telemetry."""
+
         with self._registry_lock:
             items = tuple(self._metrics.items())
         for name, metrics in items:
@@ -378,6 +404,8 @@ class CacheManager:
                 yield name, metrics.snapshot()
 
     def aggregate_metrics(self) -> CacheStatistics:
+        """Return aggregated telemetry statistics across all caches."""
+
         aggregate = CacheStatistics()
         for _, stats in self.iter_metrics():
             aggregate = aggregate.merge(stats)
@@ -386,6 +414,8 @@ class CacheManager:
     def register_metrics_publisher(
         self, publisher: Callable[[str, CacheStatistics], None]
     ) -> None:
+        """Register ``publisher`` to receive metrics snapshots on demand."""
+
         with self._registry_lock:
             self._metrics_publishers.append(publisher)
 
@@ -394,6 +424,8 @@ class CacheManager:
         *,
         publisher: Callable[[str, CacheStatistics], None] | None = None,
     ) -> None:
+        """Send cached telemetry to ``publisher`` or all registered publishers."""
+
         if publisher is None:
             with self._registry_lock:
                 publishers = tuple(self._metrics_publishers)
@@ -562,9 +594,13 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
     # MutableMapping interface
 
     def __getitem__(self, key: K) -> V:
+        """Return the cached value for ``key``."""
+
         return self._cache[key]
 
     def __setitem__(self, key: K, value: V) -> None:
+        """Store ``value`` under ``key`` updating telemetry accordingly."""
+
         exists = key in self._cache
         self._cache[key] = value
         if exists:
@@ -574,6 +610,8 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
             self._record_miss(1)
 
     def __delitem__(self, key: K) -> None:
+        """Remove ``key`` from the cache and dispatch removal callbacks."""
+
         try:
             value = self._cache[key]
         except KeyError:
@@ -583,15 +621,23 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
         self._dispatch_removal(key, value, hits=1)
 
     def __iter__(self) -> Iterator[K]:
+        """Iterate over cached keys in eviction order."""
+
         return iter(self._cache)
 
     def __len__(self) -> int:
+        """Return the number of cached entries."""
+
         return len(self._cache)
 
     def __contains__(self, key: object) -> bool:
+        """Return ``True`` when ``key`` is stored in the cache."""
+
         return key in self._cache
 
     def __repr__(self) -> str:  # pragma: no cover - debugging helper
+        """Return a debug representation including the underlying cache."""
+
         return f"{self.__class__.__name__}({self._cache!r})"
 
     # ------------------------------------------------------------------
@@ -599,16 +645,24 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
 
     @property
     def maxsize(self) -> int:
+        """Return the configured maximum cache size."""
+
         return self._cache.maxsize
 
     @property
     def currsize(self) -> int:
+        """Return the current weighted size reported by :mod:`cachetools`."""
+
         return self._cache.currsize
 
     def get(self, key: K, default: V | None = None) -> V | None:
+        """Return ``key`` if present, otherwise ``default``."""
+
         return self._cache.get(key, default)
 
     def pop(self, key: K, default: Any = _MISSING) -> V:
+        """Remove ``key`` returning its value or ``default`` when provided."""
+
         try:
             value = self._cache[key]
         except KeyError:
@@ -621,9 +675,13 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
         return value
 
     def popitem(self) -> tuple[K, V]:
+        """Remove and return the LRU entry ensuring instrumentation fires."""
+
         return self._cache.popitem()
 
     def clear(self) -> None:  # type: ignore[override]
+        """Evict every entry while keeping telemetry and locks consistent."""
+
         while True:
             try:
                 self.popitem()
@@ -718,6 +776,8 @@ class ManagedLRUCache(LRUCache[K, V]):
         self._telemetry_callbacks = _normalise_callbacks(telemetry_callbacks)
 
     def popitem(self) -> tuple[K, V]:  # type: ignore[override]
+        """Evict the LRU entry while updating telemetry and lock state."""
+
         key, value = super().popitem()
         if self._locks is not None:
             try:

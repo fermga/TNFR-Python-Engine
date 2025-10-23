@@ -124,9 +124,13 @@ class THOLEvaluator:
         self._started = False
 
     def __iter__(self) -> "THOLEvaluator":
+        """Return the evaluator itself to stream THOL expansion."""
+
         return self
 
     def __next__(self) -> Token | object:
+        """Yield the next token or :data:`THOL_SENTINEL` during evaluation."""
+
         if not self._started:
             self._started = True
             return THOL_SENTINEL

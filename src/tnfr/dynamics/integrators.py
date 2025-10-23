@@ -1,3 +1,5 @@
+"""Canonical ΔNFR integrators driving TNFR runtime evolution."""
+
 from __future__ import annotations
 
 import math
@@ -475,6 +477,8 @@ class DefaultIntegrator(AbstractIntegrator):
         method: str | None,
         n_jobs: int | None,
     ) -> None:
+        """Integrate the nodal equation updating EPI, ΔEPI and Δ²EPI."""
+
         if not isinstance(
             graph, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
         ):

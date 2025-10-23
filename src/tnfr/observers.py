@@ -90,6 +90,8 @@ def phase_sync(
     R: float | None = None,
     psi: float | None = None,
 ) -> float:
+    """Return a [0, 1] synchrony index derived from phase dispersion."""
+
     if not _ensure_nodes(G):
         return 1.0
     if R is None or psi is None:

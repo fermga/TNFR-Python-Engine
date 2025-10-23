@@ -1,3 +1,5 @@
+"""Sampling helpers used by runtime selectors and glyph application."""
+
 from __future__ import annotations
 
 from typing import cast

@@ -79,6 +79,8 @@ def _coerce_float(value: Any) -> float:
 
 @dataclass
 class GlyphTiming:
+    """Mutable accumulator tracking the active glyph and its dwell time."""
+
     curr: str | None = None
     run: float = 0.0
 

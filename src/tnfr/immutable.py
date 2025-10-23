@@ -164,6 +164,8 @@ _IMMUTABLE_TAG_DISPATCH: Mapping[str, ImmutableTagHandler] = MappingProxyType(
 @lru_cache(maxsize=1024)
 @singledispatch
 def _is_immutable_inner(value: Any) -> bool:
+    """Return ``True`` when ``value`` belongs to the canonical immutable set."""
+
     return type(value) in IMMUTABLE_SIMPLE
 
 

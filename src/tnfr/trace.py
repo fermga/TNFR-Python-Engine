@@ -288,10 +288,14 @@ def register_trace_field(phase: str, name: str, func: TraceFieldFn) -> None:
 
 
 def gamma_field(G: TNFRGraph) -> TraceMetadata:
+    """Expose γ-field metadata stored under ``G.graph['GAMMA']``."""
+
     return mapping_field(G, "GAMMA", "gamma")
 
 
 def grammar_field(G: TNFRGraph) -> TraceMetadata:
+    """Expose canonical grammar metadata for trace emission."""
+
     return mapping_field(G, "GRAMMAR_CANON", "grammar")
 
 

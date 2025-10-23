@@ -84,6 +84,8 @@ _UTIL_EXPORTS = {
 
 
 def __getattr__(name: str) -> Any:  # pragma: no cover - simple delegation
+    """Lazily expose helpers from :mod:`tnfr.utils` for backwards compatibility."""
+
     if name in _UTIL_EXPORTS:
         from .. import utils as _utils
 

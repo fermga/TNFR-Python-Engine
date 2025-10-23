@@ -71,6 +71,8 @@ def _advance(G: TNFRGraph, step_fn: AdvanceFn) -> None:
 
 
 def _record_trace(trace: ProgramTrace, G: TNFRGraph, op: OpTag, **data: Any) -> None:
+    """Append an operation snapshot to ``trace`` using graph time metadata."""
+
     trace.append({"t": float(G.graph.get("_t", 0.0)), "op": op.name, **data})
 
 
@@ -188,18 +190,26 @@ def compile_sequence(
 
 
 def seq(*tokens: Token) -> list[Token]:
+    """Return a mutable list of ``tokens`` for explicit sequence editing."""
+
     return list(tokens)
 
 
 def block(*tokens: Token, repeat: int = 1, close: Optional[Glyph] = None) -> THOL:
+    """Build a THOL block with optional repetition and forced closure."""
+
     return THOL(body=list(tokens), repeat=repeat, force_close=close)
 
 
 def target(nodes: Optional[Iterable[NodeId]] = None) -> TARGET:
+    """Return a TARGET token selecting ``nodes`` (defaults to all nodes)."""
+
     return TARGET(nodes=nodes)
 
 
 def wait(steps: int = 1) -> WAIT:
+    """Return a WAIT token forcing ``steps`` structural updates before resuming."""
+
     return WAIT(steps=max(1, int(steps)))
 
 

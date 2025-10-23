@@ -178,11 +178,20 @@ class NodeProtocol(Protocol):
     d2EPI: SecondDerivativeEPI
     graph: MutableMapping[str, Any]
 
-    def neighbors(self) -> Iterable[NodeProtocol | Hashable]: ...
+    def neighbors(self) -> Iterable[NodeProtocol | Hashable]:
+        """Iterate structural neighbours coupled to this node."""
 
-    def _glyph_storage(self) -> MutableMapping[str, object]: ...
+        ...
 
-    def has_edge(self, other: "NodeProtocol") -> bool: ...
+    def _glyph_storage(self) -> MutableMapping[str, object]:
+        """Return the mutable mapping storing glyph metadata."""
+
+        ...
+
+    def has_edge(self, other: "NodeProtocol") -> bool:
+        """Return ``True`` when an edge connects this node to ``other``."""
+
+        ...
 
     def add_edge(
         self,
@@ -190,11 +199,20 @@ class NodeProtocol(Protocol):
         weight: CouplingWeight,
         *,
         overwrite: bool = False,
-    ) -> None: ...
+    ) -> None:
+        """Couple ``other`` using ``weight`` optionally replacing existing links."""
 
-    def offset(self) -> int: ...
+        ...
 
-    def all_nodes(self) -> Iterable[NodeProtocol]: ...
+    def offset(self) -> int:
+        """Return the node offset index within the canonical ordering."""
+
+        ...
+
+    def all_nodes(self) -> Iterable[NodeProtocol]:
+        """Iterate all nodes of the attached graph as :class:`NodeProtocol` objects."""
+
+        ...
 
 
 class NodeNX(NodeProtocol):
@@ -240,6 +258,8 @@ class NodeNX(NodeProtocol):
         return self.G.neighbors(self.n)
 
     def has_edge(self, other: NodeProtocol) -> bool:
+        """Return ``True`` when an edge connects this node to ``other``."""
+
         if isinstance(other, NodeNX):
             return self.G.has_edge(self.n, other.n)
         raise NotImplementedError
@@ -251,6 +271,8 @@ class NodeNX(NodeProtocol):
         *,
         overwrite: bool = False,
     ) -> None:
+        """Couple ``other`` using ``weight`` optionally replacing existing links."""
+
         if isinstance(other, NodeNX):
             add_edge(
                 self.G,
@@ -263,10 +285,14 @@ class NodeNX(NodeProtocol):
             raise NotImplementedError
 
     def offset(self) -> int:
+        """Return the cached node offset within the canonical ordering."""
+
         mapping = ensure_node_offset_map(self.G)
         return mapping.get(self.n, 0)
 
     def all_nodes(self) -> Iterable[NodeProtocol]:
+        """Iterate all nodes of ``self.G`` as ``NodeNX`` adapters."""
+
         override = self.graph.get("_all_nodes")
         if override is not None:
             return override
