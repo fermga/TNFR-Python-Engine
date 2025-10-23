@@ -39,7 +39,35 @@ __all__ = ("get_Si_weights", "compute_Si_node", "compute_Si")
 def _normalise_si_sensitivity_mapping(
     mapping: Mapping[str, float], *, warn: bool
 ) -> dict[str, float]:
-    """Return a mapping containing only supported Si sensitivity keys."""
+    """Preserve structural sensitivities compatible with the Si operator.
+
+    Parameters
+    ----------
+    mapping : Mapping[str, float]
+        Mapping of raw sensitivity weights keyed by structural derivatives.
+    warn : bool
+        Compatibility flag kept for trace helpers. It is not used directly but
+        retained so upstream logging keeps a consistent signature.
+
+    Returns
+    -------
+    dict[str, float]
+        Sanitised mapping containing only the supported sensitivity keys.
+
+    Raises
+    ------
+    ValueError
+        If the mapping defines keys outside of the supported sensitivity set.
+
+    Examples
+    --------
+    >>> _normalise_si_sensitivity_mapping({"dSi_dvf_norm": 1.0}, warn=False)
+    {'dSi_dvf_norm': 1.0}
+    >>> _normalise_si_sensitivity_mapping({"unknown": 1.0}, warn=False)
+    Traceback (most recent call last):
+        ...
+    ValueError: Si sensitivity mappings accept only {dSi_ddnfr_norm, dSi_dphase_disp, dSi_dvf_norm}; unexpected key(s): unknown
+    """
 
     normalised = dict(mapping)
     _ = warn  # kept for API compatibility with trace helpers
@@ -55,7 +83,31 @@ def _normalise_si_sensitivity_mapping(
 
 
 def _cache_weights(G: GraphLike) -> tuple[float, float, float]:
-    """Normalise and cache Si weights, delegating persistence."""
+    """Normalise and persist Si weights attached to the graph coherence.
+
+    Parameters
+    ----------
+    G : GraphLike
+        Graph structure whose global Si sensitivities must be harmonised.
+
+    Returns
+    -------
+    tuple[float, float, float]
+        Ordered tuple ``(alpha, beta, gamma)`` with normalised Si weights.
+
+    Raises
+    ------
+    ValueError
+        Propagated if the graph stores unsupported sensitivity keys.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.Graph()
+    >>> G.graph["SI_WEIGHTS"] = {"alpha": 0.2, "beta": 0.5, "gamma": 0.3}
+    >>> tuple(round(v, 2) for v in _cache_weights(G))
+    (0.2, 0.5, 0.3)
+    """
 
     w = merge_graph_weights(G, "SI_WEIGHTS")
     cfg_key = stable_json(w)
@@ -84,7 +136,25 @@ def _cache_weights(G: GraphLike) -> tuple[float, float, float]:
 
 
 def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
-    """Obtain and normalise weights for the sense index."""
+    """Expose the normalised Si weights associated with ``G``.
+
+    Parameters
+    ----------
+    G : GraphLike
+        Graph that carries optional ``SI_WEIGHTS`` metadata.
+
+    Returns
+    -------
+    tuple[float, float, float]
+        The ``(alpha, beta, gamma)`` weights after normalisation.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.Graph()
+    >>> get_Si_weights(G)
+    (0.0, 0.0, 0.0)
+    """
 
     return _cache_weights(G)
 
@@ -102,7 +172,59 @@ def compute_Si_node(
     inplace: bool,
     **kwargs: Any,
 ) -> float:
-    """Compute ``Si`` for a single node."""
+    """Evaluate the Si contribution of a single node within its resonance.
+
+    Parameters
+    ----------
+    n : Any
+        Node identifier whose structural perception is computed.
+    nd : dict[str, Any]
+        Mutable node attributes containing cached structural magnitudes.
+    alpha : float
+        Normalised weight applied to the node's structural frequency.
+    beta : float
+        Normalised weight applied to the phase alignment term.
+    gamma : float
+        Normalised weight applied to the ΔNFR attenuation term.
+    vfmax : float
+        Maximum structural frequency used for normalisation.
+    dnfrmax : float
+        Maximum |ΔNFR| used for normalisation.
+    phase_dispersion : float, optional
+        Phase dispersion ratio in ``[0, 1]`` for the node against its
+        neighbours. The value must be supplied by the caller.
+    inplace : bool
+        Whether to write the resulting Si back to ``nd``.
+    **kwargs : Any
+        Additional keyword arguments are not accepted and will raise.
+
+    Returns
+    -------
+    float
+        The clamped Si value in ``[0, 1]``.
+
+    Raises
+    ------
+    TypeError
+        If ``phase_dispersion`` is missing or unsupported keyword arguments
+        are provided.
+
+    Examples
+    --------
+    >>> nd = {"nu_f": 1.0, "delta_nfr": 0.1}
+    >>> compute_Si_node(
+    ...     "n0",
+    ...     nd,
+    ...     alpha=0.4,
+    ...     beta=0.3,
+    ...     gamma=0.3,
+    ...     vfmax=1.0,
+    ...     dnfrmax=1.0,
+    ...     phase_dispersion=0.2,
+    ...     inplace=False,
+    ... )
+    0.91
+    """
 
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))
@@ -147,7 +269,46 @@ def _compute_si_python_chunk(
     vfmax: float,
     dnfrmax: float,
 ) -> dict[Any, float]:
-    """Compute Si values for a chunk of nodes using pure Python math."""
+    """Compute Si contributions for a chunk of nodes without NumPy.
+
+    Parameters
+    ----------
+    chunk : Iterable[tuple[Any, tuple[Any, ...], float, float, float]]
+        Iterable of node payloads ``(node, neighbors, theta, vf, dnfr)``.
+    cos_th : dict[Any, float]
+        Cached cosine values keyed by node identifiers.
+    sin_th : dict[Any, float]
+        Cached sine values keyed by node identifiers.
+    alpha : float
+        Normalised weight for structural frequency.
+    beta : float
+        Normalised weight for phase dispersion.
+    gamma : float
+        Normalised weight for ΔNFR dispersion.
+    vfmax : float
+        Maximum |νf| reference for normalisation.
+    dnfrmax : float
+        Maximum |ΔNFR| reference for normalisation.
+
+    Returns
+    -------
+    dict[Any, float]
+        Mapping of node identifiers to their clamped Si values.
+
+    Examples
+    --------
+    >>> _compute_si_python_chunk(
+    ...     [("n0", ("n1",), 0.0, 0.5, 0.1)],
+    ...     cos_th={"n1": 1.0},
+    ...     sin_th={"n1": 0.0},
+    ...     alpha=0.5,
+    ...     beta=0.3,
+    ...     gamma=0.2,
+    ...     vfmax=1.0,
+    ...     dnfrmax=1.0,
+    ... )
+    {'n0': 0.73}
+    """
 
     results: dict[Any, float] = {}
     for n, neigh, theta, vf, dnfr in chunk:
@@ -172,7 +333,53 @@ def compute_Si(
     inplace: bool = True,
     n_jobs: int | None = None,
 ) -> dict[Any, float]:
-    """Compute ``Si`` per node and optionally store it on the graph."""
+    """Compute the Si metric for each node and optionally persist it.
+
+    Si (sense index) quantifies how effectively a node sustains coherent
+    reorganisation within the TNFR triad. The metric aggregates three
+    structural contributions: the node's structural frequency (weighted by
+    ``alpha``), its phase alignment with neighbours (weighted by ``beta``),
+    and the attenuation of disruptive ΔNFR (weighted by ``gamma``). The
+    weights therefore bias Si towards faster reorganisation, tighter phase
+    coupling, or reduced dissonance respectively, depending on the scenario.
+
+    Parameters
+    ----------
+    G : GraphLike
+        Graph that exposes ``νf`` (structural frequency), ``ΔNFR`` and phase
+        attributes for each node.
+    inplace : bool, default: True
+        If ``True`` the resulting Si values are written back to ``G``.
+    n_jobs : int or None, optional
+        Maximum number of worker processes for the pure-Python fallback. Use
+        ``None`` to auto-detect the configuration.
+
+    Returns
+    -------
+    dict[Any, float]
+        Mapping from node identifiers to their Si scores.
+
+    Raises
+    ------
+    ValueError
+        Propagated if graph-level sensitivity settings include unsupported
+        keys or invalid weights.
+
+    Examples
+    --------
+    Build a minimal resonance graph with two nodes sharing a phase-locked
+    edge. The structural weights bias the result towards phase coherence.
+
+    >>> import networkx as nx
+    >>> from tnfr.metrics.sense_index import compute_Si
+    >>> G = nx.Graph()
+    >>> G.add_edge("a", "b")
+    >>> G.nodes["a"].update({"nu_f": 0.8, "delta_nfr": 0.2, "phase": 0.0})
+    >>> G.nodes["b"].update({"nu_f": 0.6, "delta_nfr": 0.1, "phase": 0.1})
+    >>> G.graph["SI_WEIGHTS"] = {"alpha": 0.3, "beta": 0.5, "gamma": 0.2}
+    >>> {k: round(v, 3) for k, v in compute_Si(G, inplace=False).items()}
+    {'a': 0.784, 'b': 0.809}
+    """
 
     neighbors = ensure_neighbors_map(G)
     alpha, beta, gamma = get_Si_weights(G)
