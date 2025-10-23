@@ -83,12 +83,66 @@ __all__.extend(_DEFINITION_EXPORTS.keys())
 
 
 def get_glyph_factors(node: NodeProtocol) -> GlyphFactors:
-    """Return glyph factors for ``node`` with defaults."""
+    """Fetch glyph tuning factors for a node.
+
+    The glyph factors expose per-operator coefficients that modulate how an
+    operator reorganizes a node's Primary Information Structure (EPI),
+    structural frequency (νf), internal reorganization differential (ΔNFR), and
+    phase. Missing factors fall back to the canonical defaults stored at the
+    graph level.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        TNFR node providing a ``graph`` mapping where glyph factors may be
+        cached under ``"GLYPH_FACTORS"``.
+
+    Returns
+    -------
+    GlyphFactors
+        Mapping with operator-specific coefficients merged with the canonical
+        defaults. Mutating the returned mapping does not affect the graph.
+
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self):
+    ...         self.graph = {"GLYPH_FACTORS": {"AL_boost": 0.2}}
+    >>> node = MockNode()
+    >>> factors = get_glyph_factors(node)
+    >>> factors["AL_boost"]
+    0.2
+    >>> factors["EN_mix"]  # Fallback to the default reception mix
+    0.25
+    """
     return node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"].copy())
 
 
 def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
-    """Return ``gf[key]`` as ``float`` with ``default`` fallback."""
+    """Return a glyph factor as ``float`` with a default fallback.
+
+    Parameters
+    ----------
+    gf : GlyphFactors
+        Mapping of glyph names to numeric factors.
+    key : str
+        Factor identifier to look up.
+    default : float
+        Value used when ``key`` is absent. This typically corresponds to the
+        canonical operator tuning and protects structural invariants.
+
+    Returns
+    -------
+    float
+        The resolved factor converted to ``float``.
+
+    Examples
+    --------
+    >>> get_factor({"AL_boost": 0.3}, "AL_boost", 0.05)
+    0.3
+    >>> get_factor({}, "IL_dnfr_factor", 0.7)
+    0.7
+    """
     return float(gf.get(key, default))
 
 
@@ -98,7 +152,42 @@ def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
 
 
 def get_neighbor_epi(node: NodeProtocol) -> tuple[list[NodeProtocol], EPIValue]:
-    """Return neighbour list and their mean ``EPI`` without mutating ``node``."""
+    """Collect neighbour nodes and their mean EPI.
+
+    The neighbour EPI is used by reception-like glyphs (e.g., EN, RA) to
+    harmonise the node's EPI with the surrounding field without mutating νf,
+    ΔNFR, or phase. When a neighbour lacks a direct ``EPI`` attribute the
+    function resolves it from NetworkX metadata using known aliases.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node whose neighbours participate in the averaging.
+
+    Returns
+    -------
+    list of NodeProtocol
+        Concrete neighbour objects that expose TNFR attributes.
+    EPIValue
+        Arithmetic mean of the neighbouring EPIs. Equals the node EPI when no
+        valid neighbours are found, allowing glyphs to preserve the node state.
+
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self, epi, neighbors):
+    ...         self.EPI = epi
+    ...         self._neighbors = neighbors
+    ...         self.graph = {}
+    ...     def neighbors(self):
+    ...         return self._neighbors
+    >>> neigh_a = MockNode(1.0, [])
+    >>> neigh_b = MockNode(2.0, [])
+    >>> node = MockNode(0.5, [neigh_a, neigh_b])
+    >>> neighbors, epi_bar = get_neighbor_epi(node)
+    >>> len(neighbors), round(epi_bar, 2)
+    (2, 1.5)
+    """
 
     epi = node.EPI
     neigh = list(node.neighbors())
@@ -146,7 +235,35 @@ def get_neighbor_epi(node: NodeProtocol) -> tuple[list[NodeProtocol], EPIValue]:
 def _determine_dominant(
     neigh: list[NodeProtocol], default_kind: str
 ) -> tuple[str, float]:
-    """Return dominant ``epi_kind`` among ``neigh`` and its absolute ``EPI``."""
+    """Resolve the dominant ``epi_kind`` across neighbours.
+
+    The dominant kind guides glyphs that synchronise EPI, ensuring that
+    reshaping a node's EPI also maintains a coherent semantic label for the
+    structural phase space.
+
+    Parameters
+    ----------
+    neigh : list of NodeProtocol
+        Neighbouring nodes providing EPI magnitude and semantic kind.
+    default_kind : str
+        Fallback label when no neighbour exposes an ``epi_kind``.
+
+    Returns
+    -------
+    tuple of (str, float)
+        The dominant ``epi_kind`` together with the maximum absolute EPI. The
+        amplitude assists downstream logic when choosing between the node's own
+        label and the neighbour-driven kind.
+
+    Examples
+    --------
+    >>> class Mock:
+    ...     def __init__(self, epi, kind):
+    ...         self.EPI = epi
+    ...         self.epi_kind = kind
+    >>> _determine_dominant([Mock(0.2, "seed"), Mock(-1.0, "pulse")], "seed")
+    ('pulse', 1.0)
+    """
     best_kind: str | None = None
     best_abs = 0.0
     for v in neigh:
@@ -162,7 +279,44 @@ def _determine_dominant(
 def _mix_epi_with_neighbors(
     node: NodeProtocol, mix: float, default_glyph: Glyph | str
 ) -> tuple[float, str]:
-    """Mix ``EPI`` of ``node`` with the mean of its neighbours."""
+    """Blend node EPI with the neighbour field and update its semantic label.
+
+    The routine is shared by reception-like glyphs. It interpolates between the
+    node EPI and the neighbour mean while selecting a dominant ``epi_kind``.
+    ΔNFR, νf, and phase remain untouched; the function focuses on reconciling
+    form.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node that exposes ``EPI`` and ``epi_kind`` attributes.
+    mix : float
+        Interpolation weight for the neighbour mean. ``mix = 0`` preserves the
+        current EPI, while ``mix = 1`` adopts the average neighbour field.
+    default_glyph : Glyph or str
+        Glyph driving the mix. Its value informs the fallback ``epi_kind``.
+
+    Returns
+    -------
+    tuple of (float, str)
+        The neighbour mean EPI and the resolved ``epi_kind`` after mixing.
+
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self, epi, kind, neighbors):
+    ...         self.EPI = epi
+    ...         self.epi_kind = kind
+    ...         self.graph = {}
+    ...         self._neighbors = neighbors
+    ...     def neighbors(self):
+    ...         return self._neighbors
+    >>> neigh = [MockNode(0.8, "wave", []), MockNode(1.2, "wave", [])]
+    >>> node = MockNode(0.0, "seed", neigh)
+    >>> _, kind = _mix_epi_with_neighbors(node, 0.5, Glyph.EN)
+    >>> round(node.EPI, 2), kind
+    (0.5, 'wave')
+    """
     default_kind = (
         default_glyph.value if isinstance(default_glyph, Glyph) else str(default_glyph)
     )
@@ -184,21 +338,119 @@ def _mix_epi_with_neighbors(
 
 
 def _op_AL(node: NodeProtocol, gf: GlyphFactors) -> None:  # AL — Emission
+    """Amplify the node EPI via the Emission glyph.
+
+    Emission injects additional coherence into the node by boosting its EPI
+    without touching νf, ΔNFR, or phase. The boost amplitude is controlled by
+    ``AL_boost``.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node whose EPI is increased.
+    gf : GlyphFactors
+        Factor mapping used to resolve ``AL_boost``.
+
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self, epi):
+    ...         self.EPI = epi
+    >>> node = MockNode(0.8)
+    >>> _op_AL(node, {"AL_boost": 0.2})
+    >>> node.EPI
+    1.0
+    """
     f = get_factor(gf, "AL_boost", 0.05)
     node.EPI = node.EPI + f
 
 
 def _op_EN(node: NodeProtocol, gf: GlyphFactors) -> None:  # EN — Reception
+    """Mix the node EPI with the neighbour field via Reception.
+
+    Reception reorganizes the node's EPI towards the neighbourhood mean while
+    choosing a coherent ``epi_kind``. νf, ΔNFR, and phase remain unchanged.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node whose EPI is being reconciled.
+    gf : GlyphFactors
+        Source of the ``EN_mix`` blending coefficient.
+
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self, epi, neighbors):
+    ...         self.EPI = epi
+    ...         self.epi_kind = "seed"
+    ...         self.graph = {}
+    ...         self._neighbors = neighbors
+    ...     def neighbors(self):
+    ...         return self._neighbors
+    >>> neigh = [MockNode(1.0, []), MockNode(0.0, [])]
+    >>> node = MockNode(0.4, neigh)
+    >>> _op_EN(node, {"EN_mix": 0.5})
+    >>> round(node.EPI, 2)
+    0.7
+    """
     mix = get_factor(gf, "EN_mix", 0.25)
     _mix_epi_with_neighbors(node, mix, Glyph.EN)
 
 
 def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherence
+    """Dampen ΔNFR magnitudes through the Coherence glyph.
+
+    Coherence contracts the internal reorganization differential (ΔNFR) while
+    leaving EPI, νf, and phase untouched. The contraction preserves the sign of
+    ΔNFR, increasing structural stability.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node whose ΔNFR is being scaled.
+    gf : GlyphFactors
+        Provides ``IL_dnfr_factor`` controlling the contraction strength.
+
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self, dnfr):
+    ...         self.dnfr = dnfr
+    >>> node = MockNode(0.5)
+    >>> _op_IL(node, {"IL_dnfr_factor": 0.2})
+    >>> node.dnfr
+    0.1
+    """
     factor = get_factor(gf, "IL_dnfr_factor", 0.7)
     node.dnfr = factor * getattr(node, "dnfr", 0.0)
 
 
 def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Dissonance
+    """Excite ΔNFR through the Dissonance glyph.
+
+    Dissonance amplifies ΔNFR or injects jitter, testing the node's stability.
+    EPI, νf, and phase remain unaffected while ΔNFR grows to trigger potential
+    bifurcations.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node whose ΔNFR is being stressed.
+    gf : GlyphFactors
+        Supplies ``OZ_dnfr_factor`` and optional noise parameters.
+
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self, dnfr):
+    ...         self.dnfr = dnfr
+    ...         self.graph = {}
+    >>> node = MockNode(0.2)
+    >>> _op_OZ(node, {"OZ_dnfr_factor": 2.0})
+    >>> node.dnfr
+    0.4
+    """
     factor = get_factor(gf, "OZ_dnfr_factor", 1.3)
     dnfr = getattr(node, "dnfr", 0.0)
     if bool(node.graph.get("OZ_NOISE_MODE", False)):
@@ -258,6 +510,45 @@ def _um_select_candidates(
 
 
 def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
+    """Align node phase with neighbours and optionally create links.
+
+    Coupling shifts the node phase ``theta`` towards the neighbour mean while
+    respecting νf and EPI. When functional links are enabled it may add edges
+    based on combined phase, EPI, and sense-index similarity.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node whose phase is being synchronised.
+    gf : GlyphFactors
+        Provides ``UM_theta_push`` and optional selection parameters.
+
+    Examples
+    --------
+    >>> import math
+    >>> class MockNode:
+    ...     def __init__(self, theta, neighbors):
+    ...         self.theta = theta
+    ...         self.EPI = 1.0
+    ...         self.Si = 0.5
+    ...         self.graph = {}
+    ...         self._neighbors = neighbors
+    ...     def neighbors(self):
+    ...         return self._neighbors
+    ...     def offset(self):
+    ...         return 0
+    ...     def all_nodes(self):
+    ...         return []
+    ...     def has_edge(self, _):
+    ...         return False
+    ...     def add_edge(self, *_):
+    ...         raise AssertionError("not used in example")
+    >>> neighbor = MockNode(math.pi / 2, [])
+    >>> node = MockNode(0.0, [neighbor])
+    >>> _op_UM(node, {"UM_theta_push": 0.5})
+    >>> round(node.theta, 2)
+    0.79
+    """
     k = get_factor(gf, "UM_theta_push", 0.25)
     th = node.theta
     thL = neighbor_phase_mean(node)
@@ -293,11 +584,63 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
 
 
 def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
+    """Diffuse EPI to the node through the Resonance glyph.
+
+    Resonance propagates EPI along existing couplings without affecting νf,
+    ΔNFR, or phase. The glyph nudges the node towards the neighbour mean using
+    ``RA_epi_diff``.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node harmonising with its neighbourhood.
+    gf : GlyphFactors
+        Provides ``RA_epi_diff`` as the mixing coefficient.
+
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self, epi, neighbors):
+    ...         self.EPI = epi
+    ...         self.epi_kind = "seed"
+    ...         self.graph = {}
+    ...         self._neighbors = neighbors
+    ...     def neighbors(self):
+    ...         return self._neighbors
+    >>> neighbor = MockNode(1.0, [])
+    >>> node = MockNode(0.2, [neighbor])
+    >>> _op_RA(node, {"RA_epi_diff": 0.25})
+    >>> round(node.EPI, 2)
+    0.4
+    """
     diff = get_factor(gf, "RA_epi_diff", 0.15)
     _mix_epi_with_neighbors(node, diff, Glyph.RA)
 
 
 def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
+    """Reduce νf while preserving EPI, ΔNFR, and phase.
+
+    Silence decelerates a node by scaling νf (structural frequency) towards
+    stillness. EPI, ΔNFR, and phase remain unchanged, signalling a temporary
+    suspension of structural evolution.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node whose νf is being attenuated.
+    gf : GlyphFactors
+        Provides ``SHA_vf_factor`` to scale νf.
+
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self, vf):
+    ...         self.vf = vf
+    >>> node = MockNode(1.0)
+    >>> _op_SHA(node, {"SHA_vf_factor": 0.5})
+    >>> node.vf
+    0.5
+    """
     factor = get_factor(gf, "SHA_vf_factor", 0.85)
     node.vf = factor * node.vf
 
@@ -308,6 +651,15 @@ _SCALE_FACTORS = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
 
 
 def _op_scale(node: NodeProtocol, factor: float) -> None:
+    """Scale νf with the provided factor.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node whose νf is being updated.
+    factor : float
+        Multiplicative change applied to νf.
+    """
     node.vf *= factor
 
 
@@ -318,20 +670,118 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
         factor = get_factor(gf, key, default)
         _op_scale(node, factor)
 
+    _op.__doc__ = (
+        """{} glyph scales νf to modulate expansion or contraction.
+
+        VAL (expansion) increases νf, whereas NUL (contraction) decreases it.
+        EPI, ΔNFR, and phase remain fixed, isolating the change to temporal
+        cadence.
+
+        Parameters
+        ----------
+        node : NodeProtocol
+            Node whose νf is updated.
+        gf : GlyphFactors
+            Provides the respective scale factor (``VAL_scale`` or
+            ``NUL_scale``).
+
+        Examples
+        --------
+        >>> class MockNode:
+        ...     def __init__(self, vf):
+        ...         self.vf = vf
+        >>> node = MockNode(1.0)
+        >>> op = _make_scale_op(Glyph.VAL)
+        >>> op(node, {"VAL_scale": 1.5})
+        >>> node.vf
+        1.5
+        """.format(glyph.name)
+    )
     return _op
 
 
 def _op_THOL(node: NodeProtocol, gf: GlyphFactors) -> None:  # THOL — Self-organization
+    """Inject curvature from ``d2EPI`` into ΔNFR to trigger self-organization.
+
+    The glyph keeps EPI, νf, and phase fixed while increasing ΔNFR according to
+    the second derivative of EPI, accelerating structural rearrangement.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node contributing ``d2EPI`` to ΔNFR.
+    gf : GlyphFactors
+        Source of the ``THOL_accel`` multiplier.
+
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self, dnfr, curvature):
+    ...         self.dnfr = dnfr
+    ...         self.d2EPI = curvature
+    >>> node = MockNode(0.1, 0.5)
+    >>> _op_THOL(node, {"THOL_accel": 0.2})
+    >>> node.dnfr
+    0.2
+    """
     a = get_factor(gf, "THOL_accel", 0.10)
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
 def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
+    """Shift phase by a fixed offset to enact mutation.
+
+    Mutation changes the node's phase (θ) while preserving EPI, νf, and ΔNFR.
+    The glyph encodes discrete structural transitions between coherent states.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node whose phase is rotated.
+    gf : GlyphFactors
+        Supplies ``ZHIR_theta_shift`` defining the rotation.
+
+    Examples
+    --------
+    >>> import math
+    >>> class MockNode:
+    ...     def __init__(self, theta):
+    ...         self.theta = theta
+    >>> node = MockNode(0.0)
+    >>> _op_ZHIR(node, {"ZHIR_theta_shift": math.pi / 2})
+    >>> round(node.theta, 2)
+    1.57
+    """
     shift = get_factor(gf, "ZHIR_theta_shift", math.pi / 2)
     node.theta = node.theta + shift
 
 
 def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
+    """Rebalance ΔNFR towards νf while permitting jitter.
+
+    Transition pulls ΔNFR towards a νf-aligned target, optionally adding jitter
+    to explore nearby states. EPI and phase remain untouched; νf may be used as
+    a reference but is not directly changed.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node whose ΔNFR is redirected.
+    gf : GlyphFactors
+        Supplies ``NAV_eta`` and ``NAV_jitter`` tuning parameters.
+
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self, dnfr, vf):
+    ...         self.dnfr = dnfr
+    ...         self.vf = vf
+    ...         self.graph = {"NAV_RANDOM": False}
+    >>> node = MockNode(-0.6, 0.4)
+    >>> _op_NAV(node, {"NAV_eta": 0.5, "NAV_jitter": 0.0})
+    >>> round(node.dnfr, 2)
+    -0.1
+    """
     dnfr = node.dnfr
     vf = node.vf
     eta = get_factor(gf, "NAV_eta", 0.5)
@@ -353,6 +803,29 @@ def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
 def _op_REMESH(
     node: NodeProtocol, gf: GlyphFactors | None = None
 ) -> None:  # REMESH — advisory
+    """Record an advisory requesting network-scale remeshing.
+
+    REMESH does not change node-level EPI, νf, ΔNFR, or phase. Instead it
+    annotates the glyph history so orchestrators can trigger global remesh
+    procedures once the stability conditions are met.
+
+    Parameters
+    ----------
+    node : NodeProtocol
+        Node whose history records the advisory.
+    gf : GlyphFactors, optional
+        Unused but accepted for API symmetry.
+
+    Examples
+    --------
+    >>> class MockNode:
+    ...     def __init__(self):
+    ...         self.graph = {}
+    >>> node = MockNode()
+    >>> _op_REMESH(node)
+    >>> "_remesh_warn_step" in node.graph
+    True
+    """
     step_idx = glyph_history.current_step_idx(node)
     last_warn = node.graph.get("_remesh_warn_step", None)
     if last_warn != step_idx:
