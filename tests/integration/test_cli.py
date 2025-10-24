@@ -198,6 +198,21 @@ def test_sequence_defaults_to_canonical(monkeypatch):
     assert recorded["program"] is sentinel
 
 
+def test_build_basic_graph_rejects_negative_probability():
+    args = argparse.Namespace(nodes=3, topology="erdos", p=-0.1, seed=None)
+    with pytest.raises(ValueError, match="p must be between 0 and 1; received -0.1"):
+        _cli_execution().build_basic_graph(args)
+
+
+def test_build_basic_graph_rejects_unknown_topology():
+    args = argparse.Namespace(nodes=3, topology="invalid", p=None, seed=None)
+    message = (
+        "Invalid topology 'invalid'. Accepted options are: ring, complete, erdos"
+    )
+    with pytest.raises(ValueError, match=message):
+        _cli_execution().build_basic_graph(args)
+
+
 def test_basic_canonical_example_matches_preset():
     assert basic_canonical_example() == get_preset(CANONICAL_PRESET_NAME)
 
