@@ -28,5 +28,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install pre-commit
 
-      - name: Run pre-commit hooks
-        run: pre-commit run --all-files
+      - name: Run formatting hooks (black, isort)
+        run: SKIP=pydocstyle pre-commit run --all-files
+
+      - name: Run docstring check (pydocstyle)
+        run: pre-commit run --all-files pydocstyle
