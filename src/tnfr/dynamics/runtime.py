@@ -83,10 +83,10 @@ def _normalize_job_overrides(
         A dictionary where keys are upper-cased without the ``_N_JOBS`` suffix,
         ready for downstream lookup in the runtime schedulers.
 
-    Raises
-    ------
-    None
-        The function silently skips ``None`` keys to preserve resiliency.
+    Notes
+    -----
+    ``None`` keys are silently skipped to preserve resiliency when
+    orchestrating ΔNFR workers.
 
     Examples
     --------
@@ -125,10 +125,10 @@ def _coerce_jobs_value(raw: Any) -> int | None:
         Normalised integer count when ``raw`` can be coerced, otherwise
         ``None`` to signal that the scheduler should fallback to graph defaults.
 
-    Raises
-    ------
-    None
-        Invalid types are ignored to keep runtime job resolution monotonic.
+    Notes
+    -----
+    Invalid types are ignored to keep runtime job resolution monotonic rather
+    than raising coercion errors.
 
     Examples
     --------
@@ -162,10 +162,10 @@ def _sanitize_jobs(value: int | None, *, allow_non_positive: bool) -> int | None
         The sanitized job count or ``None`` when the override should be
         ignored.
 
-    Raises
-    ------
-    None
-        Sanitisation is conservative and never throws.
+    Notes
+    -----
+    Sanitisation is conservative and returns ``None`` instead of raising when
+    the override is not acceptable.
 
     Examples
     --------
@@ -209,10 +209,10 @@ def _resolve_jobs_override(
         Final job count that each scheduler will use, or ``None`` when no
         explicit override or valid fallback exists.
 
-    Raises
-    ------
-    None
-        Preference resolution is pure and never fails.
+    Notes
+    -----
+    Preference resolution is pure and returns ``None`` instead of raising when
+    overrides cannot be coerced into valid integers.
 
     Examples
     --------
@@ -617,11 +617,10 @@ def step(
     None
         Mutates ``G`` in place by recomputing ΔNFR, νf and phase metrics.
 
-    Raises
-    ------
-    None
-        Callback failures propagate according to the registry configuration,
-        but the step orchestration itself does not raise.
+    Notes
+    -----
+    Registered callbacks execute within :func:`step` and any exceptions they
+    raise propagate according to the callback manager configuration.
 
     Examples
     --------
