@@ -692,7 +692,7 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
         ...         self.vf = vf
         >>> node = MockNode(1.0)
         >>> op = _make_scale_op(Glyph.VAL)
-        >>> op(node, {"VAL_scale": 1.5})
+        >>> op(node, {{"VAL_scale": 1.5}})
         >>> node.vf
         1.5
         """.format(glyph.name)
