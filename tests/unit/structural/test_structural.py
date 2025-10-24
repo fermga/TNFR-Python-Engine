@@ -151,3 +151,18 @@ def test_operator_base_types_exposed() -> None:
         Recursivity,
     ):
         assert issubclass(cls, Operator)
+
+
+def test_operator_requires_glyph_assignment(graph_canon) -> None:
+    class GlyphlessOperator(Operator):
+        glyph = None
+
+    op = GlyphlessOperator()
+    graph = graph_canon()
+    target = "node"
+    graph.add_node(target)
+
+    with pytest.raises(NotImplementedError) as excinfo:
+        op(graph, target)
+
+    assert str(excinfo.value) == "Operator without assigned glyph"
