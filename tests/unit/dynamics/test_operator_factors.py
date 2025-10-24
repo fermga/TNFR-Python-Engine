@@ -50,6 +50,27 @@ def test_op_oz_uses_factor():
     assert node.dnfr == pytest.approx(4.0)
 
 
+def test_op_oz_applies_noise_when_enabled(monkeypatch):
+    node = SimpleNamespace(dnfr=1.5, graph={"OZ_NOISE_MODE": True, "OZ_SIGMA": 0.25})
+    gf = {"OZ_dnfr_factor": "2.0"}
+    sentinel = 0.37
+
+    monkeypatch.setattr(operators, "random_jitter", lambda *args, **kwargs: sentinel)
+
+    operators._op_OZ(node, gf)
+
+    assert node.dnfr == pytest.approx(1.5 + sentinel)
+
+
+def test_op_oz_ignores_noise_with_non_positive_sigma():
+    node = SimpleNamespace(dnfr=1.5, graph={"OZ_NOISE_MODE": True, "OZ_SIGMA": 0.0})
+    gf = {"OZ_dnfr_factor": "3.0"}
+
+    operators._op_OZ(node, gf)
+
+    assert node.dnfr == pytest.approx(1.5)
+
+
 def test_op_um_uses_theta_push(graph_canon):
     G = graph_canon()
     G.add_node(0, **{"theta": 0.0, "EPI": 0.0, "Si": 0.0})
