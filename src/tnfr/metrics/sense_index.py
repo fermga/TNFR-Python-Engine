@@ -1,4 +1,35 @@
-"""Sense index helpers."""
+"""Sense index helpers for coherence monitoring.
+
+This module implements the Sense index (Si) as a structural telemetry channel
+that blends three signals: the node's structural frequency ``νf`` (how quickly
+it reorganises), its phase coupling with neighbours (whether it stays locked to
+their resonance), and the damping imposed by ``ΔNFR`` (internal reorganisation
+pressure). By combining these contributions we can monitor how each node
+maintains coherence inside a TNFR graph and surface whether the network is
+favouring rapid reorganisation, synchrony, or ΔNFR attenuation.
+
+Examples
+--------
+Build a minimal resonance graph where Si highlights how the structural weights
+steer the interpretation of coherence.
+
+>>> import networkx as nx
+>>> from tnfr.metrics.sense_index import compute_Si
+>>> G = nx.Graph()
+>>> G.add_edge("sensor", "relay")
+>>> G.nodes["sensor"].update({"nu_f": 0.9, "delta_nfr": 0.3, "phase": 0.0})
+>>> G.nodes["relay"].update({"nu_f": 0.4, "delta_nfr": 0.05, "phase": 0.1})
+>>> G.graph["SI_WEIGHTS"] = {"alpha": 0.5, "beta": 0.3, "gamma": 0.2}
+>>> result = compute_Si(G, inplace=False)
+>>> round(result["sensor"], 3), round(result["relay"], 3)
+(0.767, 0.857)
+
+The heavier ``alpha`` weight privileges the ``sensor`` node's fast ``νf`` even
+though it suffers a larger ``ΔNFR``. Conversely, the ``relay`` keeps Si high
+thanks to a calmer ``ΔNFR`` profile despite slower frequency, illustrating how
+Si exposes the trade-off between structural cadence, phase alignment, and
+internal reorganisation pressure.
+"""
 
 from __future__ import annotations
 
@@ -172,7 +203,7 @@ def compute_Si_node(
     inplace: bool,
     **kwargs: Any,
 ) -> float:
-    """Evaluate the Si contribution of a single node within its resonance.
+    """Evaluate how a node's structure tilts Si within its local resonance.
 
     Parameters
     ----------
@@ -181,11 +212,14 @@ def compute_Si_node(
     nd : dict[str, Any]
         Mutable node attributes containing cached structural magnitudes.
     alpha : float
-        Normalised weight applied to the node's structural frequency.
+        Normalised weight applied to the node's structural frequency, boosting
+        Si when the node reorganises faster than the network baseline.
     beta : float
-        Normalised weight applied to the phase alignment term.
+        Normalised weight applied to the phase alignment term so that tighter
+        synchrony raises the index.
     gamma : float
-        Normalised weight applied to the ΔNFR attenuation term.
+        Normalised weight applied to the ΔNFR attenuation term, rewarding nodes
+        that keep internal turbulence under control.
     vfmax : float
         Maximum structural frequency used for normalisation.
     dnfrmax : float
@@ -247,7 +281,10 @@ def compute_Si_node(
 
 
 def _coerce_jobs(raw_jobs: Any | None) -> int | None:
-    """Normalise ``n_jobs`` values coming from user configuration.
+    """Normalise ``n_jobs`` while preserving deterministic Si sampling.
+
+    By constraining invalid configurations we avoid parallel plans that could
+    reshuffle ΔNFR readings and blur the structural interpretation of Si.
 
     Parameters
     ----------
@@ -304,7 +341,10 @@ def _compute_si_python_chunk(
     vfmax: float,
     dnfrmax: float,
 ) -> dict[Any, float]:
-    """Compute Si contributions for a chunk of nodes without NumPy.
+    """Propagate Si contributions for a node chunk using pure Python.
+
+    The fallback keeps the νf/phase/ΔNFR balance explicit so that structural
+    effects remain traceable even without vectorised support.
 
     Parameters
     ----------
@@ -368,7 +408,7 @@ def compute_Si(
     inplace: bool = True,
     n_jobs: int | None = None,
 ) -> dict[Any, float]:
-    """Compute the Si metric for each node and optionally persist it.
+    """Compute the Si metric for each node by integrating structural drivers.
 
     Si (sense index) quantifies how effectively a node sustains coherent
     reorganisation within the TNFR triad. The metric aggregates three
