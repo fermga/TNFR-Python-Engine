@@ -103,12 +103,10 @@ def create_nfr(
         The graph that stores the node together with the node identifier. The
         tuple form allows immediate reuse with :func:`run_sequence`.
 
-    Raises
-    ------
-    None
-        The factory does not introduce additional TNFR-specific errors. Any
-        exceptions raised by :mod:`networkx` when adding nodes propagate
-        unchanged.
+    Notes
+    -----
+    The factory does not introduce additional TNFR-specific errors. Any
+    exceptions raised by :mod:`networkx` when adding nodes propagate unchanged.
 
     Examples
     --------
