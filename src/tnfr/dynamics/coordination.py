@@ -170,7 +170,67 @@ def coordinate_global_local_phase(
     *,
     n_jobs: int | None = None,
 ) -> None:
-    """Coordinate phase using a blend of global and neighbour coupling."""
+    """Coordinate phase using a blend of global and neighbour coupling.
+
+    This operator harmonises a TNFR graph by iteratively nudging each node's
+    phase toward the global Kuramoto mean while respecting the local
+    neighbourhood attractor. The global (``kG``) and local (``kL``) coupling
+    gains reshape phase coherence by modulating how strongly nodes follow the
+    network-wide synchrony versus immediate neighbours. When explicit coupling
+    overrides are not supplied, the gains adapt based on current ΔNFR telemetry
+    and the structural state recorded in the graph history. Adaptive updates
+    mutate the ``history`` buffers for phase state, order parameter, disruptor
+    load, and the stored coupling gains.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph whose nodes expose TNFR phase attributes and ΔNFR telemetry. The
+        graph's ``history`` mapping is updated in-place when adaptive gain
+        smoothing is active.
+    global_force : float, optional
+        Override for the global coupling gain ``kG``. When provided, adaptive
+        gain estimation is skipped and the global history buffers are left
+        untouched.
+    local_force : float, optional
+        Override for the local coupling gain ``kL``. Analogous to
+        ``global_force``, the adaptive pathway is bypassed when supplied.
+    n_jobs : int, optional
+        Maximum number of worker processes for distributing local updates.
+        Values of ``None`` or ``<=1`` perform updates sequentially. NumPy
+        availability forces sequential execution because vectorised updates are
+        faster than multiprocess handoffs.
+
+    Returns
+    -------
+    None
+        This operator updates node phases in-place and does not allocate a new
+        graph structure.
+
+    Examples
+    --------
+    Coordinate phase on a minimal TNFR network while inspecting ΔNFR telemetry
+    and history traces::
+
+        >>> import networkx as nx
+        >>> from tnfr.dynamics.coordination import coordinate_global_local_phase
+        >>> G = nx.Graph()
+        >>> G.add_nodes_from(("a", {"theta": 0.0, "ΔNFR": 0.08}),
+        ...                   ("b", {"theta": 1.2, "ΔNFR": -0.05}))
+        >>> G.add_edge("a", "b")
+        >>> G.graph["history"] = {}
+        >>> coordinate_global_local_phase(G)
+        >>> list(round(G.nodes[n]["theta"], 3) for n in G)
+        [0.578, 0.622]
+        >>> history = G.graph["history"]
+        >>> sorted(history)
+        ['phase_R', 'phase_disr', 'phase_kG', 'phase_kL', 'phase_state']
+        >>> history["phase_kG"][-1] <= history["phase_kL"][-1]
+        True
+
+    The resulting history buffers allow downstream observers to correlate
+    ΔNFR adjustments with phase telemetry snapshots.
+    """
 
     g = cast(dict[str, Any], G.graph)
     hist = cast(dict[str, Any], g.setdefault("history", {}))
