@@ -101,14 +101,23 @@ class Emission(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Emission
-    >>> G = nx.Graph()
-    >>> G.add_node("alpha", epi=0.42)
-    >>> Emission()(G, "alpha")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> Emission().glyph is Glyph.AL
-    True
+    >>> G, node = create_nfr("seed", epi=0.18, vf=1.0)
+    >>> increments = iter([(0.07, 0.02)])
+    >>> def scripted_delta(graph):
+    ...     d_epi, d_vf = next(increments)
+    ...     graph.nodes[node][DNFR_PRIMARY] = d_epi
+    ...     graph.nodes[node][EPI_PRIMARY] += d_epi
+    ...     graph.nodes[node][VF_PRIMARY] += d_vf
+    >>> set_delta_nfr_hook(G, scripted_delta)
+    >>> run_sequence(G, node, [Emission()])
+    >>> round(G.nodes[node][EPI_PRIMARY], 2)
+    0.25
+    >>> round(G.nodes[node][VF_PRIMARY], 2)
+    1.02
     """
 
     __slots__ = ()
@@ -124,14 +133,23 @@ class Reception(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Reception
-    >>> G = nx.Graph()
-    >>> G.add_node("beta", epi=0.37)
-    >>> Reception()(G, "beta")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> Reception().glyph is Glyph.EN
-    True
+    >>> G, node = create_nfr("receiver", epi=0.30)
+    >>> G.nodes[node][DNFR_PRIMARY] = 0.12
+    >>> increments = iter([(0.05,)])
+    >>> def stabilise(graph):
+    ...     (d_epi,) = next(increments)
+    ...     graph.nodes[node][EPI_PRIMARY] += d_epi
+    ...     graph.nodes[node][DNFR_PRIMARY] *= 0.5
+    >>> set_delta_nfr_hook(G, stabilise)
+    >>> run_sequence(G, node, [Reception()])
+    >>> round(G.nodes[node][EPI_PRIMARY], 2)
+    0.35
+    >>> round(G.nodes[node][DNFR_PRIMARY], 2)
+    0.06
     """
 
     __slots__ = ()
@@ -147,14 +165,26 @@ class Coherence(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Coherence
-    >>> G = nx.Graph()
-    >>> G.add_node("gamma", epi=0.58)
-    >>> Coherence()(G, "gamma")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> Coherence().glyph is Glyph.IL
-    True
+    >>> G, node = create_nfr("core", epi=0.50, vf=1.10)
+    >>> G.nodes[node][DNFR_PRIMARY] = 0.08
+    >>> adjustments = iter([(0.03, 0.04, -0.03)])
+    >>> def align(graph):
+    ...     d_epi, d_vf, d_dnfr = next(adjustments)
+    ...     graph.nodes[node][EPI_PRIMARY] += d_epi
+    ...     graph.nodes[node][VF_PRIMARY] += d_vf
+    ...     graph.nodes[node][DNFR_PRIMARY] += d_dnfr
+    >>> set_delta_nfr_hook(G, align)
+    >>> run_sequence(G, node, [Coherence()])
+    >>> round(G.nodes[node][EPI_PRIMARY], 2)
+    0.53
+    >>> round(G.nodes[node][VF_PRIMARY], 2)
+    1.14
+    >>> round(G.nodes[node][DNFR_PRIMARY], 2)
+    0.05
     """
 
     __slots__ = ()
@@ -170,14 +200,23 @@ class Dissonance(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import DNFR_PRIMARY, THETA_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Dissonance
-    >>> G = nx.Graph()
-    >>> G.add_node("delta", epi=0.23)
-    >>> Dissonance()(G, "delta")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> Dissonance().glyph is Glyph.OZ
-    True
+    >>> G, node = create_nfr("probe", theta=0.10)
+    >>> G.nodes[node][DNFR_PRIMARY] = 0.02
+    >>> shocks = iter([(0.09, 0.15)])
+    >>> def inject(graph):
+    ...     d_dnfr, d_theta = next(shocks)
+    ...     graph.nodes[node][DNFR_PRIMARY] += d_dnfr
+    ...     graph.nodes[node][THETA_PRIMARY] += d_theta
+    >>> set_delta_nfr_hook(G, inject)
+    >>> run_sequence(G, node, [Dissonance()])
+    >>> round(G.nodes[node][DNFR_PRIMARY], 2)
+    0.11
+    >>> round(G.nodes[node][THETA_PRIMARY], 2)
+    0.25
     """
 
     __slots__ = ()
@@ -193,14 +232,25 @@ class Coupling(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import DNFR_PRIMARY, THETA_PRIMARY, VF_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Coupling
-    >>> G = nx.Graph()
-    >>> G.add_node("epsilon", epi=0.45)
-    >>> Coupling()(G, "epsilon")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> Coupling().glyph is Glyph.UM
-    True
+    >>> G, node = create_nfr("pair", vf=1.20, theta=0.50)
+    >>> alignments = iter([(-0.18, 0.03, 0.02)])
+    >>> def synchronise(graph):
+    ...     d_theta, d_vf, residual_dnfr = next(alignments)
+    ...     graph.nodes[node][THETA_PRIMARY] += d_theta
+    ...     graph.nodes[node][VF_PRIMARY] += d_vf
+    ...     graph.nodes[node][DNFR_PRIMARY] = residual_dnfr
+    >>> set_delta_nfr_hook(G, synchronise)
+    >>> run_sequence(G, node, [Coupling()])
+    >>> round(G.nodes[node][THETA_PRIMARY], 2)
+    0.32
+    >>> round(G.nodes[node][VF_PRIMARY], 2)
+    1.23
+    >>> round(G.nodes[node][DNFR_PRIMARY], 2)
+    0.02
     """
 
     __slots__ = ()
@@ -217,14 +267,22 @@ class Resonance(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import DNFR_PRIMARY, VF_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Resonance
-    >>> G = nx.Graph()
-    >>> G.add_node("zeta", epi=0.61)
-    >>> Resonance()(G, "zeta")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> Resonance().glyph is Glyph.RA
-    True
+    >>> G, node = create_nfr("carrier", vf=0.90)
+    >>> pulses = iter([(0.05, 0.03)])
+    >>> def amplify(graph):
+    ...     d_vf, d_dnfr = next(pulses)
+    ...     graph.nodes[node][VF_PRIMARY] += d_vf
+    ...     graph.nodes[node][DNFR_PRIMARY] = d_dnfr
+    >>> set_delta_nfr_hook(G, amplify)
+    >>> run_sequence(G, node, [Resonance()])
+    >>> round(G.nodes[node][VF_PRIMARY], 2)
+    0.95
+    >>> round(G.nodes[node][DNFR_PRIMARY], 2)
+    0.03
     """
 
     __slots__ = ()
@@ -240,14 +298,21 @@ class Silence(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Silence
-    >>> G = nx.Graph()
-    >>> G.add_node("eta", epi=0.51)
-    >>> Silence()(G, "eta")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> Silence().glyph is Glyph.SHA
-    True
+    >>> G, node = create_nfr("rest", epi=0.51, vf=1.00)
+    >>> def freeze(graph):
+    ...     graph.nodes[node][DNFR_PRIMARY] = 0.0
+    ...     graph.nodes[node][VF_PRIMARY] = 0.02
+    ...     # EPI is intentionally left untouched to preserve the stored form.
+    >>> set_delta_nfr_hook(G, freeze)
+    >>> run_sequence(G, node, [Silence()])
+    >>> round(G.nodes[node][EPI_PRIMARY], 2)
+    0.51
+    >>> round(G.nodes[node][VF_PRIMARY], 2)
+    0.02
     """
 
     __slots__ = ()
@@ -264,14 +329,22 @@ class Expansion(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import EPI_PRIMARY, VF_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Expansion
-    >>> G = nx.Graph()
-    >>> G.add_node("theta", epi=0.47)
-    >>> Expansion()(G, "theta")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> Expansion().glyph is Glyph.VAL
-    True
+    >>> G, node = create_nfr("theta", epi=0.47, vf=0.95)
+    >>> spreads = iter([(0.06, 0.08)])
+    >>> def open_volume(graph):
+    ...     d_epi, d_vf = next(spreads)
+    ...     graph.nodes[node][EPI_PRIMARY] += d_epi
+    ...     graph.nodes[node][VF_PRIMARY] += d_vf
+    >>> set_delta_nfr_hook(G, open_volume)
+    >>> run_sequence(G, node, [Expansion()])
+    >>> round(G.nodes[node][EPI_PRIMARY], 2)
+    0.53
+    >>> round(G.nodes[node][VF_PRIMARY], 2)
+    1.03
     """
 
     __slots__ = ()
@@ -288,14 +361,25 @@ class Contraction(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Contraction
-    >>> G = nx.Graph()
-    >>> G.add_node("iota", epi=0.39)
-    >>> Contraction()(G, "iota")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> Contraction().glyph is Glyph.NUL
-    True
+    >>> G, node = create_nfr("iota", epi=0.39, vf=1.05)
+    >>> squeezes = iter([(-0.05, -0.03, 0.05)])
+    >>> def tighten(graph):
+    ...     d_epi, d_vf, stored_dnfr = next(squeezes)
+    ...     graph.nodes[node][EPI_PRIMARY] += d_epi
+    ...     graph.nodes[node][VF_PRIMARY] += d_vf
+    ...     graph.nodes[node][DNFR_PRIMARY] = stored_dnfr
+    >>> set_delta_nfr_hook(G, tighten)
+    >>> run_sequence(G, node, [Contraction()])
+    >>> round(G.nodes[node][EPI_PRIMARY], 2)
+    0.34
+    >>> round(G.nodes[node][VF_PRIMARY], 2)
+    1.02
+    >>> round(G.nodes[node][DNFR_PRIMARY], 2)
+    0.05
     """
 
     __slots__ = ()
@@ -312,14 +396,21 @@ class SelfOrganization(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import EPI_PRIMARY, VF_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import SelfOrganization
-    >>> G = nx.Graph()
-    >>> G.add_node("kappa", epi=0.66)
-    >>> SelfOrganization()(G, "kappa")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> SelfOrganization().glyph is Glyph.THOL
-    True
+    >>> G, node = create_nfr("kappa", epi=0.66, vf=1.10)
+    >>> cascades = iter([(0.04, 0.05)])
+    >>> def spawn(graph):
+    ...     d_epi, d_vf = next(cascades)
+    ...     graph.nodes[node][EPI_PRIMARY] += d_epi
+    ...     graph.nodes[node][VF_PRIMARY] += d_vf
+    ...     graph.graph.setdefault("sub_epi", []).append(round(graph.nodes[node][EPI_PRIMARY], 2))
+    >>> set_delta_nfr_hook(G, spawn)
+    >>> run_sequence(G, node, [SelfOrganization()])
+    >>> G.graph["sub_epi"]
+    [0.7]
     """
 
     __slots__ = ()
@@ -335,14 +426,22 @@ class Mutation(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import EPI_PRIMARY, THETA_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Mutation
-    >>> G = nx.Graph()
-    >>> G.add_node("lambda", epi=0.73)
-    >>> Mutation()(G, "lambda")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> Mutation().glyph is Glyph.ZHIR
-    True
+    >>> G, node = create_nfr("lambda", epi=0.73, theta=0.20)
+    >>> shifts = iter([(0.03, 0.40)])
+    >>> def mutate(graph):
+    ...     d_epi, d_theta = next(shifts)
+    ...     graph.nodes[node][EPI_PRIMARY] += d_epi
+    ...     graph.nodes[node][THETA_PRIMARY] += d_theta
+    >>> set_delta_nfr_hook(G, mutate)
+    >>> run_sequence(G, node, [Mutation()])
+    >>> round(G.nodes[node][EPI_PRIMARY], 2)
+    0.76
+    >>> round(G.nodes[node][THETA_PRIMARY], 2)
+    0.6
     """
 
     __slots__ = ()
@@ -358,14 +457,25 @@ class Transition(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import DNFR_PRIMARY, THETA_PRIMARY, VF_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Transition
-    >>> G = nx.Graph()
-    >>> G.add_node("mu", epi=0.34)
-    >>> Transition()(G, "mu")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> Transition().glyph is Glyph.NAV
-    True
+    >>> G, node = create_nfr("mu", vf=0.85, theta=0.40)
+    >>> ramps = iter([(0.12, -0.25)])
+    >>> def handoff(graph):
+    ...     d_vf, d_theta = next(ramps)
+    ...     graph.nodes[node][VF_PRIMARY] += d_vf
+    ...     graph.nodes[node][THETA_PRIMARY] += d_theta
+    ...     graph.nodes[node][DNFR_PRIMARY] = abs(d_vf) * 0.5
+    >>> set_delta_nfr_hook(G, handoff)
+    >>> run_sequence(G, node, [Transition()])
+    >>> round(G.nodes[node][VF_PRIMARY], 2)
+    0.97
+    >>> round(G.nodes[node][THETA_PRIMARY], 2)
+    0.15
+    >>> round(G.nodes[node][DNFR_PRIMARY], 2)
+    0.06
     """
 
     __slots__ = ()
@@ -381,14 +491,23 @@ class Recursivity(Operator):
 
     Examples
     --------
-    >>> import networkx as nx
+    >>> from tnfr.constants import EPI_PRIMARY, VF_PRIMARY
+    >>> from tnfr.dynamics import set_delta_nfr_hook
+    >>> from tnfr.structural import create_nfr, run_sequence
     >>> from tnfr.operators.definitions import Recursivity
-    >>> G = nx.Graph()
-    >>> G.add_node("nu", epi=0.52)
-    >>> Recursivity()(G, "nu")  # doctest: +SKIP
-    >>> from tnfr.types import Glyph
-    >>> Recursivity().glyph is Glyph.REMESH
-    True
+    >>> G, node = create_nfr("nu", epi=0.52, vf=0.92)
+    >>> echoes = iter([(0.02, 0.03)])
+    >>> def echo(graph):
+    ...     d_epi, d_vf = next(echoes)
+    ...     graph.nodes[node][EPI_PRIMARY] += d_epi
+    ...     graph.nodes[node][VF_PRIMARY] += d_vf
+    ...     graph.graph.setdefault("echo_trace", []).append(
+    ...         (round(graph.nodes[node][EPI_PRIMARY], 2), round(graph.nodes[node][VF_PRIMARY], 2))
+    ...     )
+    >>> set_delta_nfr_hook(G, echo)
+    >>> run_sequence(G, node, [Recursivity()])
+    >>> G.graph["echo_trace"]
+    [(0.54, 0.95)]
     """
 
     __slots__ = ()
