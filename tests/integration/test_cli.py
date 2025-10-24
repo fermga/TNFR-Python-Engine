@@ -28,6 +28,7 @@ def _cli_execution():
 
 from tnfr import __version__
 from tnfr.config.presets import get_preset
+from tnfr.config.constants import GLYPHS_CANONICAL
 from tnfr.constants import METRIC_DEFAULTS
 from tnfr.execution import CANONICAL_PRESET_NAME, basic_canonical_example
 
@@ -309,7 +310,8 @@ def test_resolve_program_uses_default_when_missing_inputs():
 
 
 @pytest.mark.parametrize("command", ["run", "sequence"])
-def test_cli_history_roundtrip(tmp_path, capsys, command):
+@pytest.mark.parametrize("export_format", [None, "csv"])
+def test_cli_history_roundtrip(tmp_path, capsys, command, export_format):
     save_path = tmp_path / f"{command}-history.json"
     export_base = tmp_path / f"{command}-history"
 
@@ -324,18 +326,33 @@ def test_cli_history_roundtrip(tmp_path, capsys, command):
     args.extend(
         ["--save-history", str(save_path), "--export-history-base", str(export_base)]
     )
+    if export_format is not None:
+        args.extend(["--export-format", export_format])
 
     rc = main(args)
     assert rc == 0
 
     out = capsys.readouterr().out
     data_save = json.loads(save_path.read_text())
-    data_export = json.loads(export_base.with_suffix(".json").read_text())
 
-    assert "epi_support" in data_save
-    assert data_save["epi_support"]
-    glyphogram = data_export["glyphogram"]
-    assert glyphogram["t"]
+    epi_support = data_save.get("epi_support") or data_save.get("EPI_support")
+    assert epi_support
+    if export_format == "csv":
+        glyph_path = export_base.parent / f"{export_base.name}_glyphogram.csv"
+        sigma_path = export_base.parent / f"{export_base.name}_sigma.csv"
+
+        assert glyph_path.exists()
+        assert sigma_path.exists()
+
+        glyph_header = glyph_path.read_text(encoding="utf-8").splitlines()[0].split(",")
+        sigma_header = sigma_path.read_text(encoding="utf-8").splitlines()[0].split(",")
+
+        assert glyph_header == ["t", *GLYPHS_CANONICAL]
+        assert sigma_header == ["t", "x", "y", "mag", "angle"]
+    else:
+        data_export = json.loads(export_base.with_suffix(".json").read_text())
+        glyphogram = data_export["glyphogram"]
+        assert glyphogram["t"]
 
     if command == "run":
         assert "Global Tg" in out
@@ -352,6 +369,35 @@ def test_cli_without_history_args(tmp_path, monkeypatch, command):
     rc = main(args)
     assert rc == 0
     assert not any(tmp_path.iterdir())
+
+
+def test_cli_history_export_uses_requested_format(monkeypatch, tmp_path):
+    recorded: dict[str, str] = {}
+
+    def fake_export_metrics(G, base_path, fmt="csv"):
+        recorded["fmt"] = fmt
+
+    monkeypatch.setattr("tnfr.cli.execution.export_metrics", fake_export_metrics)
+    monkeypatch.setattr("tnfr.cli.execution.ensure_history", lambda G: {})
+    monkeypatch.setattr("tnfr.cli.execution.run", lambda *args, **kwargs: None)
+
+    export_base = tmp_path / "history"
+    rc = main(
+        [
+            "run",
+            "--nodes",
+            "3",
+            "--steps",
+            "0",
+            "--export-history-base",
+            str(export_base),
+            "--export-format",
+            "csv",
+        ]
+    )
+
+    assert rc == 0
+    assert recorded["fmt"] == "csv"
 
 
 def test_run_program_delegates_to_dynamics_run(monkeypatch):
