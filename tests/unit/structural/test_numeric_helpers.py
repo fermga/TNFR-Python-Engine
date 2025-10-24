@@ -1,7 +1,9 @@
+import math
+
 import networkx as nx  # type: ignore[import-untyped]
 import pytest
 
-from tnfr.helpers.numeric import similarity_abs
+from tnfr.helpers.numeric import angle_diff, similarity_abs
 from tnfr.observers import phase_sync
 
 
@@ -37,3 +39,18 @@ def test_similarity_abs_scales_difference(a, b, lo, hi, expected):
 
 def test_similarity_abs_degenerate_range_returns_full_similarity():
     assert similarity_abs(1.0, 2.0, 1.0, 1.0) == pytest.approx(1.0)
+
+
+@pytest.mark.parametrize(
+    "a, b, expected",
+    [
+        (math.pi, 0.0, -math.pi),
+        (-math.pi, 0.0, -math.pi),
+        (math.pi - 1e-9, 0.0, math.pi - 1e-9),
+        (math.pi + 1e-9, 0.0, -math.pi + 1e-9),
+        (-math.pi + 1e-9, 0.0, -math.pi + 1e-9),
+        (-math.pi - 1e-9, 0.0, math.pi - 1e-9),
+    ],
+)
+def test_angle_diff_wraps_boundary_extremes(a, b, expected):
+    assert angle_diff(a, b) == pytest.approx(expected)

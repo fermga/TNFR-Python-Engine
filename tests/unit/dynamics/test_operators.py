@@ -1,5 +1,6 @@
 """Unit tests for operator application helpers and jitter management."""
 
+import math
 from types import SimpleNamespace
 
 import pytest
@@ -17,6 +18,7 @@ from tnfr.operators import (
     _um_candidate_iter,
 )
 from tnfr.types import Glyph
+from tnfr.helpers.numeric import angle_diff
 
 
 def test_glyph_operations_complete():
@@ -268,3 +270,33 @@ def test_mix_epi_with_neighbors_no_neighbors():
     assert node.EPI == pytest.approx(1.0)
     assert dominant == "EN"
     assert node.epi_kind == "EN"
+
+
+def test_um_coupling_wraps_phases_near_pi_boundary(graph_canon):
+    G = graph_canon()
+    base_theta = -math.pi + 0.01
+    neighbor_thetas = (math.pi - 0.03, -math.pi + 0.02)
+
+    G.add_node(0, theta=base_theta, EPI=1.0, Si=0.5)
+    for idx, theta in enumerate(neighbor_thetas, start=1):
+        G.add_node(idx, theta=theta, EPI=1.0, Si=0.5)
+        G.add_edge(0, idx)
+
+    theta_before = G.nodes[0]["theta"]
+    mean_cos = sum(math.cos(th) for th in neighbor_thetas) / len(neighbor_thetas)
+    mean_sin = sum(math.sin(th) for th in neighbor_thetas) / len(neighbor_thetas)
+    neighbor_mean = math.atan2(mean_sin, mean_cos)
+
+    # Ensure the naive difference spans the branch cut while angle_diff resolves it.
+    naive_diff = neighbor_mean - theta_before
+    expected_diff = angle_diff(neighbor_mean, theta_before)
+    assert naive_diff > math.pi
+    assert expected_diff == pytest.approx(-0.015)
+
+    expected_theta = theta_before + 0.25 * expected_diff
+
+    apply_glyph(G, 0, "UM")
+
+    new_theta = G.nodes[0]["theta"]
+    assert new_theta == pytest.approx(expected_theta)
+    assert -math.pi <= new_theta < math.pi
