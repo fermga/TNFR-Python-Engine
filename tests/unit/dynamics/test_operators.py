@@ -14,6 +14,7 @@ from tnfr.operators import (
     get_neighbor_epi,
     random_jitter,
     reset_jitter_manager,
+    _um_candidate_iter,
 )
 from tnfr.types import Glyph
 
@@ -37,6 +38,19 @@ def test_random_jitter_deterministic(graph_canon):
     j3 = random_jitter(n0, 0.5)
     j4 = random_jitter(n0, 0.5)
     assert [j3, j4] == [j1, j2]
+
+
+def test_random_jitter_missing_nodenx(monkeypatch):
+    reset_jitter_manager()
+    node = SimpleNamespace(G=SimpleNamespace(graph={}))
+    assert not hasattr(node, "_noise_uid")
+
+    monkeypatch.setattr("tnfr.operators.jitter.get_nodenx", lambda: None)
+
+    with pytest.raises(ImportError, match="NodeNX is unavailable"):
+        random_jitter(node, 0.1)
+
+    assert not hasattr(node, "_noise_uid")
 
 
 def test_jitter_cache_metrics(graph_canon):
@@ -203,6 +217,25 @@ def test_um_candidate_subset_proximity(graph_canon):
     assert G.has_edge(0, 1)
     assert G.has_edge(0, 2)
     assert not G.has_edge(0, 3)
+
+
+def test_um_candidate_iter_missing_nodenx(monkeypatch):
+    class DummyNode:
+        def __init__(self) -> None:
+            self.graph = {"_node_sample": [1]}
+            self.G = SimpleNamespace()
+
+        def has_edge(self, _):
+            return False
+
+        def all_nodes(self):
+            return iter(())
+
+    node = DummyNode()
+    monkeypatch.setattr(operators, "get_nodenx", lambda: None)
+
+    with pytest.raises(ImportError, match="NodeNX is unavailable"):
+        list(_um_candidate_iter(node))
 
 
 def test_mix_epi_with_neighbors_prefers_higher_epi():
