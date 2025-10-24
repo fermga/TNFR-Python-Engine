@@ -121,6 +121,23 @@ def test_cli_sequence_file_invalid_json(tmp_path, capsys):
     assert f"Error parsing JSON file at {seq_path}" in captured.out
 
 
+def test_sequence_conflicting_preset_and_sequence_file(tmp_path, capsys):
+    seq_path = tmp_path / "sequence.json"
+    seq_path.write_text("[]", encoding="utf-8")
+
+    rc = main([
+        "sequence",
+        "--preset",
+        "demo",
+        "--sequence-file",
+        str(seq_path),
+    ])
+    captured = capsys.readouterr()
+
+    assert rc == 1
+    assert "Cannot use --preset and --sequence-file at the same time" in captured.out
+
+
 def test_cli_metrics_generates_metrics_payload(monkeypatch, tmp_path):
     out = tmp_path / "metrics.json"
     sentinel_graph = object()
