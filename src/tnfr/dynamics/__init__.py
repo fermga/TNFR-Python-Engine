@@ -1,25 +1,29 @@
 """Facade that keeps ΔNFR, νf and phase orchestration coherent across TNFR dynamics.
 
-Parameters
+Attributes
 ----------
 run : callable
-    Fully managed evolution loop that integrates the nodal equation while
-    enforcing ΔNFR hooks, νf adaptation and phase coordination on every step.
+    Callable that fully manages the evolution loop, integrating the nodal
+    equation while enforcing ΔNFR hooks, νf adaptation and phase coordination
+    on every step.
 step : callable
-    Single-iteration entry point that exposes the same ΔNFR/νf/phase pipeline
-    but lets callers interleave bespoke telemetry or operator injections.
+    Callable entry point for a single iteration that reuses the
+    ΔNFR/νf/phase pipeline while letting callers interleave bespoke telemetry
+    or operator injections.
 set_delta_nfr_hook : callable
-    Installs custom ΔNFR supervision under ``G.graph['compute_delta_nfr']`` so
-    each operator reorganization stays coupled to νf drift and phase targets.
+    Callable used to install custom ΔNFR supervision under
+    ``G.graph['compute_delta_nfr']`` so each operator reorganization stays
+    coupled to νf drift and phase targets.
 default_glyph_selector, parametric_glyph_selector : AbstractSelector
-    Canonical selectors that choose glyphs according to ΔNFR trends, νf ranges
-    and phase synchrony, ensuring operator firing reinforces coherence.
+    Selector implementations that choose glyphs according to ΔNFR trends,
+    νf ranges and phase synchrony, ensuring operator firing reinforces
+    coherence.
 coordination, dnfr, integrators : module
-    Submodules providing explicit control over phase alignment, ΔNFR caches
-    and integrator lifecycles; re-exported here to centralize orchestration.
+    Re-exported modules providing explicit control over phase alignment,
+    ΔNFR caches and integrator lifecycles to centralize orchestration.
 ProcessPoolExecutor, apply_glyph, compute_Si : callable
-    Utilities for parallel selector evaluation, explicit glyph execution and
-    Si telemetry so ΔNFR, νf and phase traces remain observable.
+    Re-exported utilities for parallel selector evaluation, explicit glyph
+    execution and Si telemetry so ΔNFR, νf and phase traces remain observable.
 
 Notes
 -----
