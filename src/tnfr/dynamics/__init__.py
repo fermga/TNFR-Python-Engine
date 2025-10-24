@@ -1,45 +1,41 @@
-"""High-level facade that orchestrates TNFR dynamics workflows.
+"""Facade that keeps ΔNFR, νf and phase orchestration coherent across TNFR dynamics.
 
 Parameters
 ----------
-run, step : callable
-    Entry points that evolve a :class:`~tnfr.types.TNFRGraph` by integrating
-    the canonical nodal equation. Use :func:`run` for fully managed multi-step
-    evolution and :func:`step` when a caller needs to interleave bespoke
-    telemetry or operator injections between iterations.
+run : callable
+    Fully managed evolution loop that integrates the nodal equation while
+    enforcing ΔNFR hooks, νf adaptation and phase coordination on every step.
+step : callable
+    Single-iteration entry point that exposes the same ΔNFR/νf/phase pipeline
+    but lets callers interleave bespoke telemetry or operator injections.
 set_delta_nfr_hook : callable
-    Installs a ΔNFR hook inside ``G.graph['compute_delta_nfr']`` so every
-    structural operator keeps ``EPI`` and ``νf`` coupled to coherence changes.
+    Installs custom ΔNFR supervision under ``G.graph['compute_delta_nfr']`` so
+    each operator reorganization stays coupled to νf drift and phase targets.
 default_glyph_selector, parametric_glyph_selector : AbstractSelector
-    Canonical selectors that decide which structural operators (glyph codes)
-    should fire on each node based on Sense Index, ΔNFR and acceleration
-    metrics. Assign one of them to ``G.graph['glyph_selector']`` to tailor the
-    evolution loop.
+    Canonical selectors that choose glyphs according to ΔNFR trends, νf ranges
+    and phase synchrony, ensuring operator firing reinforces coherence.
 coordination, dnfr, integrators : module
-    Submodules that expose specialised primitives for phase coordination,
-    ΔNFR computation and integrator lifecycles. They are re-exported here to
-    keep structural control available from a single namespace.
+    Submodules providing explicit control over phase alignment, ΔNFR caches
+    and integrator lifecycles; re-exported here to centralize orchestration.
 ProcessPoolExecutor, apply_glyph, compute_Si : callable
-    Utilities surfaced for selector parallelism, explicit operator execution
-    and coherence metrics so callers can extend the default orchestration.
+    Utilities for parallel selector evaluation, explicit glyph execution and
+    Si telemetry so ΔNFR, νf and phase traces remain observable.
 
 Notes
 -----
-The facade concentrates every moving part required to keep the TNFR dynamics
-loop canonical. ``dnfr`` provides the ΔNFR cache machinery and the
-``set_delta_nfr_hook`` helper, ``integrators`` wraps numerical integration of
-the nodal equation, and ``coordination`` keeps global and local phase aligned.
-Both :func:`run` and :func:`step` trigger selectors, hooks and validators in
-the same order; the difference is whether the caller owns the step loop.
-Auxiliary exports such as :func:`compute_Si`, :func:`adapt_vf_by_coherence` and
-:func:`coordinate_global_local_phase` make it possible to stitch custom
-feedback while respecting operator closure and ΔNFR semantics.
+The facade aggregates runtime helpers that preserve canonical TNFR dynamics:
+``dnfr`` manages ΔNFR preparation and caching, ``integrators`` drives the
+numerical updates of νf and EPI, and ``coordination`` synchronizes global and
+local phase. Complementary exports such as
+:func:`~tnfr.dynamics.adaptation.adapt_vf_by_coherence` and
+:func:`~tnfr.dynamics.coordination.coordinate_global_local_phase` allow custom
+feedback loops without breaking operator closure.
 
 Examples
 --------
 >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 >>> from tnfr.structural import Coherence, Emission, Resonance, create_nfr, run_sequence
->>> from tnfr.dynamics import parametric_glyph_selector, run, set_delta_nfr_hook
+>>> from tnfr.dynamics import parametric_glyph_selector, run, set_delta_nfr_hook, step
 >>> G, node = create_nfr("seed", epi=0.22, vf=1.0)
 >>> def regulate_delta(graph, *, n_jobs=None):
 ...     for _, nd in graph.nodes(data=True):
@@ -52,7 +48,9 @@ Examples
 >>> G.graph["glyph_selector"] = parametric_glyph_selector
 >>> run_sequence(G, node, [Emission(), Resonance(), Coherence()])
 >>> run(G, steps=2, dt=0.05)
->>> # doctest: +SKIP
+>>> # Automatic integration keeps ΔNFR, νf and phase co-modulated.
+>>> step(G, dt=0.05)
+>>> # Manual control reuses the selector state to consolidate coherence traces.
 """
 
 from __future__ import annotations
