@@ -1,4 +1,25 @@
-"""Structural analysis."""
+"""Maintain TNFR structural coherence for nodes and operator sequences.
+
+This module exposes the canonical entry points used by the engine to
+instantiate coherent TNFR nodes and to orchestrate structural operator
+pipelines while keeping the nodal equation
+``∂EPI/∂t = νf · ΔNFR(t)`` balanced.
+
+Public API
+----------
+create_nfr
+    Initialise a node with canonical EPI, νf and phase attributes plus a
+    ΔNFR hook that propagates reorganisations through the graph.
+run_sequence
+    Validate and execute operator trajectories so that ΔNFR hooks can
+    update EPI, νf and phase coherently after each step.
+OPERATORS
+    Registry of canonical structural operators ready to be composed into
+    validated sequences.
+validate_sequence
+    Grammar guard that ensures operator trajectories stay within TNFR
+    closure rules before execution.
+"""
 
 from __future__ import annotations
 
@@ -45,7 +66,12 @@ def create_nfr(
     graph: TNFRGraph | None = None,
     dnfr_hook: DeltaNFRHook = dnfr_epi_vf_mixed,
 ) -> tuple[TNFRGraph, str]:
-    """Create a graph with an initialised NFR node.
+    """Anchor a TNFR node by seeding EPI, νf, phase and ΔNFR coupling.
+
+    The factory secures the structural state of a node: it stores canonical
+    values for the Primary Information Structure (EPI), structural frequency
+    (νf) and phase, then installs a ΔNFR hook so that later operator
+    sequences can reorganise the node without breaking the nodal equation.
 
     Parameters
     ----------
@@ -86,22 +112,34 @@ def create_nfr(
 
     Examples
     --------
-    Create a node whose ΔNFR hook keeps ``EPI`` and ``νf`` aligned with the
-    canonical nodal equation.
+    Create a node, connect a ΔNFR hook and launch a coherent operator
+    trajectory while tracking the evolving metrics.
 
-    >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
+    >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
-    >>> from tnfr.structural import create_nfr
-    >>> G, node = create_nfr("seed", epi=1.0, vf=2.0)
-    >>> def stabilise_delta(graph):
-    ...     delta = graph.nodes[node][VF_PRIMARY] * 0.1
+    >>> from tnfr.structural import (
+    ...     Coupling,
+    ...     Emission,
+    ...     Coherence,
+    ...     create_nfr,
+    ...     run_sequence,
+    ... )
+    >>> G, node = create_nfr("seed", epi=1.0, vf=2.0, theta=0.1)
+    >>> def synchronise_delta(graph):
+    ...     delta = graph.nodes[node][VF_PRIMARY] * 0.2
     ...     graph.nodes[node][DNFR_PRIMARY] = delta
     ...     graph.nodes[node][EPI_PRIMARY] += delta
     ...     graph.nodes[node][VF_PRIMARY] += delta * 0.05
-    >>> set_delta_nfr_hook(G, stabilise_delta)
-
-    The hook keeps the evolution of EPI and νf tied to ΔNFR, ready for
-    :func:`run_sequence` or other operator pipelines.
+    ...     graph.nodes[node][THETA_PRIMARY] += 0.01
+    >>> set_delta_nfr_hook(G, synchronise_delta)
+    >>> run_sequence(G, node, [Emission(), Coupling(), Coherence()])
+    >>> (
+    ...     G.nodes[node][EPI_PRIMARY],
+    ...     G.nodes[node][VF_PRIMARY],
+    ...     G.nodes[node][THETA_PRIMARY],
+    ...     G.nodes[node][DNFR_PRIMARY],
+    ... )  # doctest: +SKIP
+    (..., ..., ..., ...)
     """
 
     G = graph if graph is not None else nx.Graph()
@@ -140,7 +178,13 @@ __all__ = (
 
 
 def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
-    """Execute a sequence of operators on ``node`` after validation.
+    """Drive structural sequences that rebalance EPI, νf, phase and ΔNFR.
+
+    The function enforces the canonical operator grammar, then executes each
+    operator so that the configured ΔNFR hook can update the nodal equation in
+    place. Each step is expected to express the structural effect of the
+    operator, while the hook keeps EPI, νf and phase consistent with the
+    resulting ΔNFR variations.
 
     Parameters
     ----------
@@ -168,28 +212,34 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
 
     Examples
     --------
-    Apply three canonical operators while a ΔNFR hook updates EPI and νf after
-    each step.
+    Run a validated trajectory that highlights the ΔNFR-driven evolution of the
+    node metrics.
 
-    >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
+    >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import (
-    ...     Emission,
-    ...     Coherence,
     ...     Resonance,
+    ...     SelfOrganization,
+    ...     Transition,
     ...     create_nfr,
     ...     run_sequence,
     ... )
-    >>> G, node = create_nfr("seed", epi=1.0, vf=2.0)
-    >>> def stabilise_delta(graph):
-    ...     delta = graph.nodes[node][VF_PRIMARY] * 0.1
+    >>> G, node = create_nfr("seed", epi=0.8, vf=1.5, theta=0.0)
+    >>> def amplify_delta(graph):
+    ...     delta = graph.nodes[node][VF_PRIMARY] * 0.15
     ...     graph.nodes[node][DNFR_PRIMARY] = delta
-    ...     graph.nodes[node][EPI_PRIMARY] += delta
-    ...     graph.nodes[node][VF_PRIMARY] += delta * 0.05
-    >>> set_delta_nfr_hook(G, stabilise_delta)
-    >>> run_sequence(G, node, [Emission(), Resonance(), Coherence()])
-    After each operator the hook recomputes ΔNFR and adjusts EPI/νf, keeping the
-    canonical nodal equation stable.
+    ...     graph.nodes[node][EPI_PRIMARY] += delta * 0.8
+    ...     graph.nodes[node][VF_PRIMARY] += delta * 0.1
+    ...     graph.nodes[node][THETA_PRIMARY] += 0.02
+    >>> set_delta_nfr_hook(G, amplify_delta)
+    >>> run_sequence(G, node, [Resonance(), SelfOrganization(), Transition()])
+    >>> (
+    ...     G.nodes[node][EPI_PRIMARY],
+    ...     G.nodes[node][VF_PRIMARY],
+    ...     G.nodes[node][THETA_PRIMARY],
+    ...     G.nodes[node][DNFR_PRIMARY],
+    ... )  # doctest: +SKIP
+    (..., ..., ..., ...)
     """
 
     compute = G.graph.get("compute_delta_nfr")
