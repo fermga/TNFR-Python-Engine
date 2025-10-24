@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections import deque
 from typing import Any
 
+import pytest
+
 import tnfr.dynamics as dynamics
 import tnfr.dynamics.adaptation as adaptation
 import tnfr.dynamics.coordination as coordination
@@ -303,3 +305,12 @@ def test_run_reuses_normalized_n_jobs(monkeypatch, graph_canon):
     assert len(seen) == 2
     assert seen[0] is seen[1]
     assert seen[0] == {"DNFR": "2", "VF_ADAPT": 3}
+
+
+def test_run_rejects_negative_steps(graph_canon):
+    """Negative step counts should be rejected explicitly."""
+
+    G = graph_canon()
+
+    with pytest.raises(ValueError, match="must be non-negative"):
+        runtime.run(G, steps=-1)
