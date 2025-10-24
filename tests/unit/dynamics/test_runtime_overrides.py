@@ -134,6 +134,16 @@ def test_call_integrator_factory_supports_zero_or_one_positional_argument():
     assert received is G
 
 
+def test_call_integrator_factory_rejects_multiple_positionals():
+    G = nx.Graph()
+
+    def bad_factory(graph, extra):
+        raise AssertionError("should not be called")
+
+    with pytest.raises(TypeError, match="at most one positional"):
+        runtime._call_integrator_factory(bad_factory, G)
+
+
 def test_call_integrator_factory_handles_non_introspectable_callable(monkeypatch):
     G = nx.Graph()
     calls = []
