@@ -60,6 +60,39 @@ def test_run_stops_early_with_historydict(monkeypatch, graph_canon):
     assert list(series)[-2:] == [0.95, 0.95]
 
 
+def test_run_stops_early_with_seed_deque(monkeypatch, graph_canon):
+    """A seeded deque should remain intact when STOP_EARLY halts the loop."""
+
+    G = graph_canon()
+    G.graph["STOP_EARLY"] = {"enabled": True, "window": 2, "fraction": 0.8}
+    G.graph["HISTORY_MAXLEN"] = 5
+    seeded_series = deque([0.4, 0.5], maxlen=5)
+    G.graph["history"] = {"stable_frac": seeded_series}
+
+    call_count = 0
+
+    def fake_step(G, *, dt=None, use_Si=True, apply_glyphs=True, n_jobs=None):
+        nonlocal call_count
+        call_count += 1
+        hist = ensure_history(G)
+        series = hist["stable_frac"]
+        assert isinstance(series, deque)
+        series.append(0.95)
+
+    monkeypatch.setattr(dynamics, "step", fake_step)
+    monkeypatch.setattr(runtime, "step", fake_step)
+
+    dynamics.run(G, steps=5)
+
+    assert call_count == 2
+    hist = ensure_history(G)
+    series = hist["stable_frac"]
+    assert series is seeded_series
+    assert isinstance(series, deque)
+    assert len(series) == 4
+    assert list(series)[-2:] == [0.95, 0.95]
+
+
 def test_step_preserves_since_mappings(monkeypatch, graph_canon):
     """``since_*`` history entries should stay as mappings when bounded."""
 
