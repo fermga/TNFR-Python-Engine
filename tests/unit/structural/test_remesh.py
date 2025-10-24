@@ -9,7 +9,41 @@ from tnfr.callback_utils import CallbackEvent, callback_manager
 from tnfr.constants import get_aliases, get_param, inject_defaults
 from tnfr.glyph_history import ensure_history
 from tnfr.operators import apply_remesh_if_globally_stable
-from tnfr.operators.remesh import apply_network_remesh
+from tnfr.operators.remesh import (
+    _snapshot_epi,
+    _snapshot_topology,
+    apply_network_remesh,
+)
+
+
+class _MissingNumberOfNodesGraph:
+    def number_of_edges(self) -> int:
+        return 0
+
+    def degree(self):  # pragma: no cover - simple stub iterator
+        return []
+
+
+class _AttrErrorNumberOfNodesGraph:
+    def number_of_nodes(self) -> int:
+        raise AttributeError("number_of_nodes not available")
+
+    def number_of_edges(self) -> int:
+        return 0
+
+    def degree(self):  # pragma: no cover - simple stub iterator
+        return []
+
+
+class _NonNumericDegreesGraph:
+    def number_of_nodes(self) -> int:
+        return 2
+
+    def number_of_edges(self) -> int:
+        return 1
+
+    def degree(self):  # pragma: no cover - simple stub iterator
+        return [(0, 1 + 2j), (1, 1 - 2j)]
 
 DEPRECATED_REMESH_KEYWORD = "legacy_stable_window"
 DEPRECATED_REMESH_CONFIG = "REMESH_COOLDOWN_LEGACY"
@@ -29,6 +63,40 @@ def _prepare_graph_for_remesh(graph_canon, stable_steps: int = 3):
     G.graph["_epi_hist"] = deque([{0: 0.0} for _ in range(tau + 1)], maxlen=maxlen)
 
     return G, hist
+
+
+@pytest.mark.parametrize(
+    "graph_cls",
+    [
+        _MissingNumberOfNodesGraph,
+        _AttrErrorNumberOfNodesGraph,
+        _NonNumericDegreesGraph,
+    ],
+    ids=[
+        "missing_number_of_nodes",
+        "attrerror_number_of_nodes",
+        "non_numeric_degrees",
+    ],
+)
+def test_snapshot_topology_gracefully_handles_invalid_graphs(graph_cls):
+    nx = pytest.importorskip("networkx")
+    bad_graph = graph_cls()
+
+    assert _snapshot_topology(bad_graph, nx) is None
+
+
+def test_snapshot_epi_returns_checksum_for_non_numeric_node_values(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from(range(3))
+
+    alias_epi = get_aliases("EPI")
+    for node in G.nodes:
+        G.nodes[node][alias_epi[0]] = "non-float-epi"
+
+    mean_val, checksum = _snapshot_epi(G)
+
+    assert mean_val == 0.0
+    assert isinstance(checksum, str) and len(checksum) == 12
 
 
 def test_apply_remesh_uses_custom_parameter(graph_canon):
