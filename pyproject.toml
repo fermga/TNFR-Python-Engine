@@ -97,6 +97,7 @@ addopts = "-m 'not slow' --benchmark-skip"
 markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
   "benchmarks: run with 'pytest benchmarks --benchmark-only' to execute the benchmark suite",
+  "stress: high-load deterministic stress coverage (select with '-m \"stress\"')",
 ]
 
 [tool.mypy]
