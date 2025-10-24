@@ -9,3 +9,9 @@ repos:
     hooks:
       - id: isort
         args: ["--settings-path=pyproject.toml"]
+  - repo: https://github.com/PyCQA/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        args: ["--config=pyproject.toml"]
+        files: ^src/tnfr/
