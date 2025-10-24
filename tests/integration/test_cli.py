@@ -222,6 +222,12 @@ def test_build_basic_graph_rejects_negative_probability():
         _cli_execution().build_basic_graph(args)
 
 
+def test_build_basic_graph_rejects_probability_above_one():
+    args = argparse.Namespace(nodes=3, topology="erdos", p=1.5, seed=None)
+    with pytest.raises(ValueError, match="p must be between 0 and 1; received 1.5"):
+        _cli_execution().build_basic_graph(args)
+
+
 def test_build_basic_graph_rejects_unknown_topology():
     args = argparse.Namespace(nodes=3, topology="invalid", p=None, seed=None)
     message = (
