@@ -35,7 +35,61 @@ def _vf_adapt_chunk(
 
 
 def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
-    """Adjust νf toward neighbour mean in nodes with sustained stability."""
+    """Synchronise νf to the neighbour mean once ΔNFR and Si stay coherent.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph that stores the TNFR nodes and configuration required for
+        adaptation. The routine reads ``VF_ADAPT_TAU`` (τ) to decide how many
+        consecutive stable steps a node must accumulate in ``stable_count``
+        before updating. The adaptation weight ``VF_ADAPT_MU`` (μ) controls how
+        quickly νf moves toward the neighbour mean. Stability is detected when
+        the absolute ΔNFR stays below ``EPS_DNFR_STABLE`` and the sense index Si
+        exceeds the selector threshold ``SELECTOR_THRESHOLDS['si_hi']`` (falling
+        back to ``GLYPH_THRESHOLDS['hi']``). Only nodes that satisfy both
+        thresholds for τ successive evaluations are eligible for μ-weighted
+        averaging.
+    n_jobs : int or None, optional
+        Number of worker processes used for eligible nodes. ``None`` (the
+        default) keeps the adaptation serial, ``1`` disables parallelism, and
+        any value greater than one dispatches chunks of nodes to a
+        :class:`~concurrent.futures.ProcessPoolExecutor` so large graphs can
+        adjust νf without blocking the main dynamic loop.
+
+    Returns
+    -------
+    None
+        The graph is updated in place; no value is returned.
+
+    Raises
+    ------
+    KeyError
+        Raised when ``G.graph`` lacks the canonical adaptation parameters and
+        defaults have not been injected.
+
+    Examples
+    --------
+    >>> from tnfr.constants import inject_defaults
+    >>> from tnfr.dynamics import adapt_vf_by_coherence
+    >>> from tnfr.structural import create_nfr
+    >>> G, seed = create_nfr("seed", vf=0.2)
+    >>> _, anchor = create_nfr("anchor", graph=G, vf=1.0)
+    >>> G.add_edge(seed, anchor)
+    >>> inject_defaults(G)
+    >>> G.graph["VF_ADAPT_TAU"] = 2      # τ: consecutive stable steps
+    >>> G.graph["VF_ADAPT_MU"] = 0.5      # μ: neighbour coupling strength
+    >>> G.graph["SELECTOR_THRESHOLDS"] = {"si_hi": 0.8}
+    >>> for node in G.nodes:
+    ...     G.nodes[node]["Si"] = 0.9      # above ΔSi threshold
+    ...     G.nodes[node]["ΔNFR"] = 0.0    # within |ΔNFR| ≤ eps guard
+    ...     G.nodes[node]["stable_count"] = 1
+    >>> adapt_vf_by_coherence(G)
+    >>> round(G.nodes[seed]["νf"], 2), round(G.nodes[anchor]["νf"], 2)
+    (0.6, 0.6)
+    >>> G.nodes[seed]["stable_count"], G.nodes[anchor]["stable_count"] >= 2
+    (2, True)
+    """
 
     tau = get_graph_param(G, "VF_ADAPT_TAU", int)
     mu = float(get_graph_param(G, "VF_ADAPT_MU"))
