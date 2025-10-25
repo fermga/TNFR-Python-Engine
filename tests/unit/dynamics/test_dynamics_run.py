@@ -134,6 +134,35 @@ def test_run_stop_early_tolerates_non_iterable_history(monkeypatch, graph_canon)
     assert list(series)[-2:] == [0.95, 0.95]
 
 
+def test_run_stop_early_filters_non_numeric_series(monkeypatch, graph_canon):
+    """Non-numeric history entries should not satisfy STOP_EARLY thresholds."""
+
+    G = graph_canon()
+    G.graph["STOP_EARLY"] = {"enabled": True, "window": 2, "fraction": 0.9}
+    G.graph["HISTORY_MAXLEN"] = 6
+    seeded_series = [0.4, "pending", None]
+    G.graph["history"] = {"stable_frac": seeded_series}
+
+    call_count = 0
+
+    def fake_step(G, *, dt=None, use_Si=True, apply_glyphs=True, n_jobs=None):
+        nonlocal call_count
+        call_count += 1
+        hist = ensure_history(G)
+        series = hist.setdefault("stable_frac", [])
+        series.append(0.95)
+
+    monkeypatch.setattr(runtime, "step", fake_step)
+
+    runtime.run(G, steps=5)
+
+    assert call_count == 2
+    hist = ensure_history(G)
+    series = hist["stable_frac"]
+    assert list(series)[:3] == seeded_series
+    assert list(series)[-2:] == [0.95, 0.95]
+
+
 def test_step_preserves_since_mappings(monkeypatch, graph_canon):
     """``since_*`` history entries should stay as mappings when bounded."""
 
