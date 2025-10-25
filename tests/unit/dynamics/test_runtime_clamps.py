@@ -60,3 +60,33 @@ def test_apply_canonical_clamps_updates_mapping_without_graph():
     assert wrapped_theta == pytest.approx(expected_theta)
     assert node_data["theta"] == pytest.approx(expected_theta)
     assert node_data["phase"] == pytest.approx(expected_theta)
+
+
+def test_apply_canonical_clamps_respects_disabled_theta_wrap(graph_canon):
+    """θ remains unchanged when wrapping is disabled while other clamps persist."""
+
+    G = graph_canon()
+    node = 0
+    original_theta = 1.5 * math.pi
+    G.add_node(
+        node,
+        psi=5.0,
+        nu_f=-3.0,
+        theta=original_theta,
+        phase=original_theta,
+    )
+    G.graph["VALIDATORS_STRICT"] = True
+    G.graph["THETA_WRAP"] = False
+
+    apply_canonical_clamps(G.nodes[node], G, node)
+
+    nd = G.nodes[node]
+    assert get_attr(nd, ALIAS_EPI, 0.0) == pytest.approx(1.0)
+    assert get_attr(nd, ALIAS_VF, 0.0) == pytest.approx(0.0)
+    assert get_theta_attr(nd, 0.0) == pytest.approx(original_theta)
+    assert nd["theta"] == pytest.approx(original_theta)
+    assert nd["phase"] == pytest.approx(original_theta)
+
+    alerts = G.graph["history"]["clamp_alerts"]
+    assert len(alerts) == 2
+    assert all(alert["attr"] != "THETA" for alert in alerts)
