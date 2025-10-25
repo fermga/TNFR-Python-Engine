@@ -56,6 +56,18 @@ def test_load_config_accepts_mapping(monkeypatch, tmp_path):
     assert loaded == data
 
 
+def test_load_config_requires_object(monkeypatch, tmp_path):
+    def fake_reader(path):
+        return [("bad", "structure")]
+
+    monkeypatch.setattr("tnfr.config.init.read_structured_file", fake_reader)
+    path = tmp_path / "dummy.json"
+    path.write_text("{}", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="must contain an object"):
+        load_config(path)
+
+
 def test_load_config_accepts_str(tmp_path):
     cfg = {"RANDOM_SEED": 7}
     path = tmp_path / "cfg.json"
