@@ -195,6 +195,42 @@ def test_cli_metrics_accepts_summary_limit(monkeypatch):
     assert recorded["series_limit"] == 7
 
 
+def test_cli_run_saves_history_when_requested(monkeypatch, tmp_path):
+    sentinel_history = {"history": "sentinel"}
+    saved_calls: deque[tuple[str, Any]] = deque()
+
+    def fake_save_json(path: str, data: Any) -> None:  # noqa: ANN001 - test helper
+        saved_calls.append((path, data))
+
+    def fake_ensure_history(_graph: Any) -> dict[str, str]:  # noqa: ANN001 - test helper
+        return sentinel_history
+
+    def noop_run(*_args: Any, **_kwargs: Any) -> None:  # noqa: ANN001 - test helper
+        return None
+
+    monkeypatch.setattr("tnfr.cli.execution._save_json", fake_save_json)
+    monkeypatch.setattr("tnfr.cli.execution.ensure_history", fake_ensure_history)
+    monkeypatch.setattr("tnfr.cli.execution.run", noop_run)
+
+    history_path = tmp_path / "hist.json"
+
+    rc = main([
+        "run",
+        "--nodes",
+        "3",
+        "--steps",
+        "0",
+        "--save-history",
+        str(history_path),
+    ])
+
+    assert rc == 0
+    assert len(saved_calls) == 1
+    saved_path, saved_payload = saved_calls[0]
+    assert saved_path == str(history_path)
+    assert saved_payload is sentinel_history
+
+
 def test_cmd_metrics_aborts_without_summary_on_failure(monkeypatch):
     summary_called = False
 
