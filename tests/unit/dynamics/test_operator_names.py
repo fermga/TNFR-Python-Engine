@@ -4,7 +4,13 @@ import pytest
 
 from tnfr.config import operator_names as names
 from tnfr.operators import registry as registry_module
-from tnfr.operators.registry import OPERATORS, discover_operators, get_operator_class
+from tnfr.operators.definitions import Operator
+from tnfr.operators.registry import (
+    OPERATORS,
+    discover_operators,
+    get_operator_class,
+    register_operator,
+)
 
 DEPRECATED_OPERATOR_COLLECTIONS = (
     "LEGACY_START_OPERATORS",
@@ -59,3 +65,35 @@ def test_registry_exposes_only_english_collection_name() -> None:
     assert str(exc_info.value) == (
         f"module '{registry_module.__name__}' has no attribute '{legacy_alias}'"
     )
+
+
+def test_register_operator_requires_name() -> None:
+    class NamelessOperator(Operator):
+        """Dummy operator missing a valid ``name`` declaration."""
+
+        name = ""
+
+    with pytest.raises(ValueError) as exc_info:
+        register_operator(NamelessOperator)
+
+    assert "must declare a non-empty 'name'" in str(exc_info.value)
+
+
+def test_register_operator_rejects_duplicate_names() -> None:
+    class DummyOperator(Operator):
+        """Dummy operator registered for collision testing."""
+
+        name = "__pytest_dummy_operator__"
+
+    class DuplicateDummyOperator(Operator):
+        """Second dummy operator using the same ``name`` as ``DummyOperator``."""
+
+        name = DummyOperator.name
+
+    register_operator(DummyOperator)
+    try:
+        with pytest.raises(ValueError) as exc_info:
+            register_operator(DuplicateDummyOperator)
+        assert "already registered" in str(exc_info.value)
+    finally:
+        OPERATORS.pop(DummyOperator.name, None)
