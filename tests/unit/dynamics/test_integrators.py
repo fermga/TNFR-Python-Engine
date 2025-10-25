@@ -12,6 +12,25 @@ from tnfr.dynamics import update_epi_via_nodal_equation, validate_canon
 from tnfr.initialization import init_node_attrs
 
 
+def test_prepare_integration_params_validations_and_dt_min():
+    G = nx.path_graph(3)
+    inject_defaults(G)
+
+    with pytest.raises(TypeError):
+        integrators_mod.prepare_integration_params(G, dt="bad")
+
+    with pytest.raises(ValueError):
+        integrators_mod.prepare_integration_params(G, dt=-0.1)
+
+    G.graph["DT_MIN"] = 0.2
+    dt_step, steps, _, _ = integrators_mod.prepare_integration_params(G, dt=0.5)
+    assert steps > 1
+    assert dt_step == pytest.approx(0.25)
+
+    with pytest.raises(ValueError):
+        integrators_mod.prepare_integration_params(G, method="heun")
+
+
 @pytest.mark.parametrize("method", ["euler", "rk4"])
 def test_epi_limits_preserved(method):
     G = nx.cycle_graph(6)
