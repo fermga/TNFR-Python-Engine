@@ -5,6 +5,7 @@ import json
 
 import pytest
 
+from tnfr.config.constants import GLYPHS_CANONICAL
 from tnfr.metrics import export_metrics
 
 
@@ -39,6 +40,28 @@ def test_export_metrics_writes_optional_files(tmp_path, graph_canon):
     dir_path = base.parent
     assert (dir_path / (base.name + "_morph.csv")).is_file()
     assert (dir_path / (base.name + "_epi_support.csv")).is_file()
+
+
+def test_export_metrics_glyphogram_missing_glyphs(tmp_path, graph_canon):
+    base = tmp_path / "glyphs" / "run"
+    G = graph_canon()
+    hist = G.graph.setdefault("history", {})
+    present_glyph = GLYPHS_CANONICAL[0]
+    hist["glyphogram"] = [{"t": 0, present_glyph: 1.25}]
+
+    export_metrics(G, str(base), fmt="csv")
+
+    glyph_path = base.parent / (base.name + "_glyphogram.csv")
+    with open(glyph_path, newline="") as f:
+        rows = list(csv.reader(f))
+
+    assert rows[0] == ["t", *GLYPHS_CANONICAL]
+    assert len(rows) == 2
+
+    data = dict(zip(rows[0], rows[1]))
+    assert float(data[present_glyph]) == pytest.approx(1.25)
+    for glyph in GLYPHS_CANONICAL[1:]:
+        assert float(data[glyph]) == 0.0
 
 
 def test_export_metrics_json_contains_optional(tmp_path, graph_canon):
