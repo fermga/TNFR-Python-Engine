@@ -34,6 +34,14 @@ def _base_graph():
     return G
 
 
+def _pop_alias(node_data, aliases):
+    for alias in aliases:
+        if alias in node_data:
+            node_data.pop(alias)
+            return
+    pytest.fail(f"Expected to find one of aliases {aliases!r} in node data")
+
+
 def test_validator_epi_range():
     G = _base_graph()
     n0 = list(G.nodes())[0]
@@ -42,12 +50,30 @@ def test_validator_epi_range():
         run_validators(G)
 
 
+def test_validator_epi_missing_attr():
+    G = _base_graph()
+    n0 = min(G.nodes)
+    _pop_alias(G.nodes[n0], ALIAS_EPI)
+    with pytest.raises(ValueError) as excinfo:
+        run_validators(G)
+    assert str(excinfo.value) == f"Missing EPI attribute in node {n0}"
+
+
 def test_validator_vf_range():
     G = _base_graph()
     n0 = list(G.nodes())[0]
     set_attr(G.nodes[n0], ALIAS_VF, 2.0)
     with pytest.raises(ValueError):
         run_validators(G)
+
+
+def test_validator_vf_missing_attr():
+    G = _base_graph()
+    n0 = min(G.nodes)
+    _pop_alias(G.nodes[n0], ALIAS_VF)
+    with pytest.raises(ValueError) as excinfo:
+        run_validators(G)
+    assert str(excinfo.value) == f"Missing VF attribute in node {n0}"
 
 
 def test_validator_epi_range_tolerance():
