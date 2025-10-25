@@ -153,9 +153,16 @@ def prepare_integration_params(
 ) -> tuple[float, int, float, Literal["euler", "rk4"]]:
     """Validate and normalise ``dt``, ``t`` and ``method`` for integration.
 
-    Returns ``(dt_step, steps, t0, method)`` where ``dt_step`` is the
-    effective step, ``steps`` the number of substeps and ``t0`` the prepared
-    initial time.
+    The function raises :class:`TypeError` when ``dt`` cannot be coerced to a
+    number, :class:`ValueError` if ``dt`` is negative, and another
+    :class:`ValueError` when an unsupported method is requested.  When ``dt``
+    exceeds a positive ``DT_MIN`` stored on ``G`` the span is deterministically
+    subdivided into integer steps so that the resulting ``dt_step`` never falls
+    below that minimum threshold.
+
+    Returns ``(dt_step, steps, t0, method)`` where ``dt_step`` is the effective
+    step, ``steps`` the number of substeps and ``t0`` the prepared initial
+    time.
     """
     if dt is None:
         dt = float(G.graph.get("DT", DEFAULTS["DT"]))
@@ -179,12 +186,13 @@ def prepare_integration_params(
         raise ValueError("method must be 'euler' or 'rk4'")
 
     dt_min = float(G.graph.get("DT_MIN", DEFAULTS.get("DT_MIN", 0.0)))
+    steps = 1
     if dt_min > 0 and dt > dt_min:
-        steps = int(math.ceil(dt / dt_min))
-    else:
-        steps = 1
-    # ``steps`` is guaranteed to be ≥1 at this point
-    dt_step = dt / steps
+        ratio = dt / dt_min
+        steps = max(1, int(math.floor(ratio + 1e-12)))
+        if dt / steps < dt_min:
+            steps = int(math.ceil(ratio))
+    dt_step = dt / steps if steps else 0.0
 
     return dt_step, steps, t, cast(Literal["euler", "rk4"], method_value)
 
