@@ -15,6 +15,7 @@ from tnfr.trace import (
     CallbackSpec,
     TraceFieldSpec,
     _callback_names,
+    callbacks_field,
     gamma_field,
     grammar_field,
     mapping_field,
@@ -191,6 +192,20 @@ def test_grammar_field_non_mapping_warns(graph_canon):
     with pytest.warns(UserWarning):
         out = grammar_field(G)
     assert out == {}
+
+
+def test_callbacks_field_non_mapping_returns_empty(graph_canon):
+    G = graph_canon()
+    G.graph["callbacks"] = "not-a-mapping"
+
+    assert callbacks_field(G) == {}
+
+
+def test_callbacks_field_scalar_entries_are_sanitised(graph_canon):
+    G = graph_canon()
+    G.graph["callbacks"] = {"before_step": 42}
+
+    assert callbacks_field(G) == {"callbacks": {"before_step": None}}
 
 
 def test_mapping_field_returns_proxy(graph_canon):
