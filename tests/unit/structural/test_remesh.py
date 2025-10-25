@@ -5,12 +5,13 @@ from types import ModuleType
 
 import pytest
 
-from tnfr.alias import set_attr
+from tnfr.alias import get_attr, set_attr
 from tnfr.callback_utils import CallbackEvent, callback_manager
 from tnfr.constants import get_aliases, get_param, inject_defaults
 from tnfr.glyph_history import ensure_history
 from tnfr.operators import apply_remesh_if_globally_stable
 from tnfr.operators.remesh import (
+    _community_graph,
     _snapshot_epi,
     _snapshot_topology,
     apply_network_remesh,
@@ -129,6 +130,45 @@ def test_snapshot_topology_gracefully_handles_invalid_graphs(graph_cls):
     bad_graph = graph_cls()
 
     assert _snapshot_topology(bad_graph, nx) is None
+
+
+def test_community_graph_handles_empty_community_and_partial_epi():
+    nx = pytest.importorskip("networkx")
+
+    comms = [
+        (0, 1),
+        tuple(),
+        (2, 3),
+    ]
+    # Partial EPI mapping simulating corruption: missing entries for 1 and 3.
+    epi = {0: 1.0, 2: 4.0}
+
+    community_graph = _community_graph(comms, epi, nx)
+
+    alias_epi = get_aliases("EPI")
+
+    assert set(community_graph.nodes) == {0, 1, 2}
+    assert community_graph.nodes[1]["members"] == []
+    assert get_attr(community_graph.nodes[1], alias_epi, default=None) == pytest.approx(0.0)
+
+    expected_means = {
+        0: pytest.approx(0.5),
+        1: pytest.approx(0.0),
+        2: pytest.approx(2.0),
+    }
+    for node_id, expected in expected_means.items():
+        assert get_attr(community_graph.nodes[node_id], alias_epi, default=None) == expected
+
+    expected_edges = {frozenset(edge) for edge in [(0, 1), (0, 2), (1, 2)]}
+    actual_edges = {frozenset(edge) for edge in community_graph.edges}
+    assert actual_edges == expected_edges
+
+    for u, v, data in community_graph.edges(data=True):
+        expected_weight = abs(
+            get_attr(community_graph.nodes[u], alias_epi, default=None)
+            - get_attr(community_graph.nodes[v], alias_epi, default=None)
+        )
+        assert data["weight"] == pytest.approx(expected_weight)
 
 
 def test_snapshot_epi_returns_checksum_for_non_numeric_node_values(graph_canon):
