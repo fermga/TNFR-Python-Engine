@@ -305,6 +305,11 @@ def test_thol_recursive_expansion():
     ]
 
 
+def test_compile_sequence_rejects_noncanonical_glyph():
+    with pytest.raises(ValueError, match="Non-canonical glyph"):
+        compile_sequence(["NOT_CANON"])
+
+
 @pytest.mark.parametrize(
     "bad, message",
     [
