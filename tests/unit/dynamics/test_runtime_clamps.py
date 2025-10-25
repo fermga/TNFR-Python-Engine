@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import MutableSequence
 
 import pytest
 
@@ -90,3 +91,22 @@ def test_apply_canonical_clamps_respects_disabled_theta_wrap(graph_canon):
     alerts = G.graph["history"]["clamp_alerts"]
     assert len(alerts) == 2
     assert all(alert["attr"] != "THETA" for alert in alerts)
+
+
+def test_apply_canonical_clamps_rehydrates_tuple_alerts(graph_canon):
+    """Strict graphs convert tuple clamp alerts into mutable sequences."""
+
+    G = graph_canon()
+    node = 1
+    G.add_node(node, psi=2.5, nu_f=-1.5, theta=0.0)
+    G.graph["VALIDATORS_STRICT"] = True
+    history = G.graph.setdefault("history", {})
+    history["clamp_alerts"] = ()
+
+    apply_canonical_clamps(G.nodes[node], G, node)
+
+    alerts = history["clamp_alerts"]
+    assert isinstance(alerts, MutableSequence)
+    assert len(alerts) == 2
+    attrs = {alert["attr"] for alert in alerts}
+    assert attrs == {"EPI", "VF"}
