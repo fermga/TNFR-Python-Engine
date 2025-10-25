@@ -319,6 +319,32 @@ def test_build_basic_graph_rejects_negative_probability():
         _cli_execution().build_basic_graph(args)
 
 
+def test_build_basic_graph_erdos_default_probability(monkeypatch):
+    sentinel_graph = object()
+    recorded: list[float] = []
+
+    def fake_gnp_random_graph(n: int, prob: float, seed=None):  # noqa: ANN001 - test helper
+        recorded.append(prob)
+        return sentinel_graph
+
+    monkeypatch.setattr(
+        "tnfr.cli.execution.nx.gnp_random_graph",
+        fake_gnp_random_graph,
+    )
+
+    base_args = argparse.Namespace(nodes=2, topology="erdos", p=None, seed=None)
+    graph = _cli_execution().build_basic_graph(base_args)
+
+    assert graph is sentinel_graph
+    assert recorded[0] == pytest.approx(1.0)
+
+    zero_args = argparse.Namespace(nodes=0, topology="erdos", p=None, seed=None)
+    graph_zero = _cli_execution().build_basic_graph(zero_args)
+
+    assert graph_zero is sentinel_graph
+    assert recorded[1] == pytest.approx(0.0)
+
+
 def test_build_basic_graph_rejects_probability_above_one():
     args = argparse.Namespace(nodes=3, topology="erdos", p=1.5, seed=None)
     with pytest.raises(ValueError, match="p must be between 0 and 1; received 1.5"):
