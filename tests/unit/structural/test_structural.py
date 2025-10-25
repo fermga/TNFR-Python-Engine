@@ -42,6 +42,29 @@ def test_create_nfr_basic() -> None:
     assert nd[EPI_PRIMARY] == 0.1
 
 
+def test_create_nfr_installs_default_dnfr_hook() -> None:
+    G, _ = create_nfr("seed-default")
+    hook = G.graph.get("compute_delta_nfr")
+
+    assert callable(hook)
+    assert G.graph["_dnfr_hook_name"] == "dnfr_epi_vf_mixed"
+
+
+def test_create_nfr_accepts_custom_dnfr_hook() -> None:
+    calls: list[tuple[nx.Graph, int | None]] = []
+
+    def stub(graph: nx.Graph, *, n_jobs: int | None = None) -> None:  # pragma: no cover - signature only
+        calls.append((graph, n_jobs))
+
+    G, _ = create_nfr("seed-custom", dnfr_hook=stub)
+    hook = G.graph["compute_delta_nfr"]
+    hook(G, n_jobs=5)
+
+    assert calls == [(G, 5)]
+    assert hook.__name__ == stub.__name__
+    assert G.graph["_dnfr_hook_name"] == stub.__name__
+
+
 def test_sequence_validation_and_run() -> None:
     G, n = create_nfr("x")
     ops = [Emission(), Reception(), Coherence(), Resonance(), Silence()]
