@@ -49,6 +49,16 @@ def test_wait_logs_sanitized_steps(graph_canon):
     assert trace[0]["k"] == 1
 
 
+def test_wait_clamps_non_positive_steps():
+    zero_wait = wait(0)
+    negative_wait = wait(-3)
+    positive_wait = wait(2)
+
+    assert zero_wait.steps == 1
+    assert negative_wait.steps == 1
+    assert positive_wait.steps == 2
+
+
 def test_flatten_wait_sanitizes_steps(monkeypatch):
     program = seq(WAIT(-2.5), WAIT(2.4))
     expected = [(OpTag.WAIT, 1), (OpTag.WAIT, 2)]
