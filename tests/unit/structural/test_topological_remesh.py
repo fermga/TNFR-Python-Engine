@@ -3,10 +3,12 @@
 from itertools import combinations
 
 import networkx as nx
+import pytest
 
 from tnfr.constants import inject_defaults
 from tnfr.glyph_history import ensure_history
 from tnfr.operators import apply_topological_remesh
+from tnfr.operators.remesh import _mst_edges_from_epi
 
 
 def _graph_with_epi(graph_canon, n=6):
@@ -37,6 +39,30 @@ def _clustered_graph(graph_canon, cluster_sizes):
         previous_last = nodes[-1]
         start += size
     return G
+
+
+@pytest.fixture()
+def single_community_clique(graph_canon):
+    """Return a fully connected graph whose modularity has one community."""
+
+    G = _graph_with_epi(graph_canon, n=5)
+    for u, v in combinations(G.nodes(), 2):
+        G.add_edge(u, v)
+    return G
+
+
+def test_remesh_community_single_module_keeps_mst(single_community_clique):
+    G = single_community_clique
+    nodes = list(G.nodes())
+    epi = {n: G.nodes[n]["EPI"] for n in nodes}
+    expected_mst = _mst_edges_from_epi(nx, nodes, epi)
+
+    apply_topological_remesh(G, mode="community")
+
+    assert G.number_of_nodes() == len(nodes)
+    assert _edge_set(G) == expected_mst
+    history = ensure_history(G)
+    assert not history.get("remesh_events"), "No telemetry should be recorded"
 
 
 def test_remesh_community_reduces_nodes_and_preserves_connectivity(
