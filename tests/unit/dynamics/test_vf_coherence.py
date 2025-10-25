@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 
+import networkx as nx
 import pytest
 
 from tnfr.constants import inject_defaults
@@ -83,3 +84,45 @@ def test_adapt_vf_python_parallel_matches_serial(graph_canon, monkeypatch):
     for n in serial.nodes:
         assert parallel.nodes[n]["νf"] == pytest.approx(serial.nodes[n]["νf"])
         assert parallel.nodes[n]["stable_count"] == serial.nodes[n]["stable_count"]
+
+
+@pytest.mark.parametrize("numpy_mode", ["vectorised", "python"])
+def test_adapt_vf_invalid_jobs_fallback_to_serial(graph_canon, monkeypatch, numpy_mode):
+    if numpy_mode == "vectorised":
+        if get_numpy() is None:
+            pytest.skip("NumPy not available for vectorised branch")
+    else:
+        monkeypatch.setattr("tnfr.dynamics.adaptation.get_numpy", lambda: None)
+        monkeypatch.setattr("tnfr.dynamics.get_numpy", lambda: None)
+
+    base = _coherence_test_graph(graph_canon)
+    serial = copy.deepcopy(base)
+    invalid_hint = copy.deepcopy(base)
+    single_job = copy.deepcopy(base)
+
+    adapt_vf_by_coherence(serial, n_jobs=None)
+    adapt_vf_by_coherence(invalid_hint, n_jobs="not-an-int")
+    adapt_vf_by_coherence(single_job, n_jobs=1)
+
+    for node in serial.nodes:
+        assert invalid_hint.nodes[node]["νf"] == pytest.approx(
+            serial.nodes[node]["νf"]
+        )
+        assert single_job.nodes[node]["νf"] == pytest.approx(serial.nodes[node]["νf"])
+
+        assert (
+            invalid_hint.nodes[node]["stable_count"]
+            == serial.nodes[node]["stable_count"]
+        )
+        assert (
+            single_job.nodes[node]["stable_count"]
+            == serial.nodes[node]["stable_count"]
+        )
+
+
+def test_adapt_vf_noop_on_empty_graph():
+    empty = nx.Graph()
+    inject_defaults(empty)
+
+    # Should exit early without raising even when the graph is empty.
+    adapt_vf_by_coherence(empty)
