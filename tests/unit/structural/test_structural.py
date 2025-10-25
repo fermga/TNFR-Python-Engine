@@ -52,6 +52,25 @@ def test_sequence_validation_and_run() -> None:
     assert EPI_PRIMARY in G.nodes[n]
 
 
+def test_run_sequence_triggers_dnfr_hook_every_operator(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    G, node = create_nfr("dnfr")
+    ops = [Emission(), Reception(), Coherence()]
+    call_counter = {"count": 0}
+
+    def stub(graph: nx.Graph, *, n_jobs: int | None = None) -> None:  # pragma: no cover - signature only
+        del n_jobs
+        call_counter["count"] += 1
+
+    monkeypatch.setattr("tnfr.structural.validate_sequence", lambda names: (True, "ok"))
+    G.graph["compute_delta_nfr"] = stub
+
+    run_sequence(G, node, ops)
+
+    assert call_counter["count"] == len(ops)
+
+
 def test_invalid_sequence() -> None:
     ops = [Reception(), Coherence(), Silence()]
     names = [op.name for op in ops]
