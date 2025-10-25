@@ -98,6 +98,42 @@ def test_run_stops_early_with_seed_deque(monkeypatch, graph_canon):
     assert list(series)[-2:] == [0.95, 0.95]
 
 
+def test_run_stop_early_tolerates_non_iterable_history(monkeypatch, graph_canon):
+    """STOP_EARLY loop should handle non-iterable ``stable_frac`` seeds."""
+
+    G = graph_canon()
+    G.graph["STOP_EARLY"] = {"enabled": True, "window": 2, "fraction": 0.8}
+    G.graph["HISTORY_MAXLEN"] = 5
+    hist = ensure_history(G)
+    hist["stable_frac"] = None
+
+    call_count = 0
+
+    def fake_step(G, *, dt=None, use_Si=True, apply_glyphs=True, n_jobs=None):
+        nonlocal call_count
+        call_count += 1
+        hist = ensure_history(G)
+        series = hist.get("stable_frac")
+        if isinstance(series, list):
+            target = series
+        elif isinstance(series, deque):
+            target = list(series)
+        else:
+            target = []
+        target.append(0.95)
+        hist["stable_frac"] = target
+
+    monkeypatch.setattr(runtime, "step", fake_step)
+
+    runtime.run(G, steps=3)
+
+    assert call_count == 2
+    hist = ensure_history(G)
+    series = hist.get("stable_frac")
+    assert series is not None
+    assert list(series)[-2:] == [0.95, 0.95]
+
+
 def test_step_preserves_since_mappings(monkeypatch, graph_canon):
     """``since_*`` history entries should stay as mappings when bounded."""
 
