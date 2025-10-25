@@ -279,6 +279,18 @@ def test_build_basic_graph_rejects_unknown_topology():
         _cli_execution().build_basic_graph(args)
 
 
+def test_build_basic_graph_sets_random_seed():
+    seeded_args = argparse.Namespace(nodes=4, topology="ring", p=None, seed="123")
+    G_seeded = _cli_execution().build_basic_graph(seeded_args)
+
+    assert G_seeded.graph["RANDOM_SEED"] == 123
+
+    unseeded_args = argparse.Namespace(nodes=4, topology="ring", p=None, seed=None)
+    G_unseeded = _cli_execution().build_basic_graph(unseeded_args)
+
+    assert "RANDOM_SEED" not in G_unseeded.graph
+
+
 def test_basic_canonical_example_matches_preset():
     assert basic_canonical_example() == get_preset(CANONICAL_PRESET_NAME)
 
