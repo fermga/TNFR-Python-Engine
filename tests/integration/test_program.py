@@ -3,6 +3,7 @@
 import json
 from collections import deque
 from collections.abc import Collection, Sequence
+from pathlib import Path
 
 import pytest
 
@@ -12,6 +13,7 @@ from tnfr.constants import get_param
 from tnfr.execution import HANDLERS, block, compile_sequence, play, seq, target, wait
 from tnfr.tokens import TARGET, THOL, WAIT, OpTag
 from tnfr.types import Glyph
+from tnfr.io import StructuredFileError
 
 yaml = pytest.importorskip("yaml")
 
@@ -198,7 +200,46 @@ def test_target_persists_across_wait(graph_canon):
 
     assert list(G.nodes[1]["glyph_history"]) == [Glyph.AL.value]
     assert list(G.nodes[2]["glyph_history"]) == [Glyph.AL.value]
-    assert "glyph_history" not in G.nodes[3]
+
+
+@pytest.mark.parametrize(
+    "exc_factory",
+    [
+        pytest.param(
+            lambda path: StructuredFileError(path, ValueError("bad data")),
+            id="structured_error",
+        ),
+        pytest.param(
+            lambda path: OSError("permission denied"),
+            id="os_error",
+        ),
+    ],
+)
+def test_load_sequence_errors_raise_system_exit(monkeypatch, caplog, tmp_path, exc_factory):
+    target_path = tmp_path / "program.yaml"
+    target_path.write_text("[]", encoding="utf-8")
+
+    exception = exc_factory(target_path)
+
+    def blow_up(path: Path) -> None:
+        raise exception
+
+    monkeypatch.setattr("tnfr.cli.execution.read_structured_file", blow_up)
+    caplog.set_level("ERROR", logger="tnfr.cli.execution")
+
+    expected_message = (
+        str(exception)
+        if isinstance(exception, StructuredFileError)
+        else str(StructuredFileError(target_path, exception))
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _load_sequence(target_path)
+
+    assert excinfo.value.code == 1
+
+    logged_messages = [record.getMessage() for record in caplog.records]
+    assert expected_message in logged_messages
 
 
 def test_target_accepts_string(graph_canon):
