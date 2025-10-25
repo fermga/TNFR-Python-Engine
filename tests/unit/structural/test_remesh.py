@@ -1,6 +1,7 @@
 """Remeshing tests."""
 
 from collections import deque
+from types import ModuleType
 
 import pytest
 
@@ -63,6 +64,51 @@ def _prepare_graph_for_remesh(graph_canon, stable_steps: int = 3):
     G.graph["_epi_hist"] = deque([{0: 0.0} for _ in range(tau + 1)], maxlen=maxlen)
 
     return G, hist
+
+
+def test_get_networkx_modules_raises_without_networkx(monkeypatch):
+    import tnfr.operators.remesh as remesh
+
+    with monkeypatch.context() as mp:
+        original = remesh.cached_import
+
+        def fake_cached_import(name: str, *args, **kwargs):
+            if name == "networkx":
+                return None
+            return original(name, *args, **kwargs)
+
+        mp.setattr(remesh, "cached_import", fake_cached_import)
+
+        with pytest.raises(
+            ImportError,
+            match="networkx is required for network operators; install 'networkx'",
+        ):
+            remesh._get_networkx_modules()
+
+
+def test_get_networkx_modules_raises_without_networkx_community(monkeypatch):
+    import tnfr.operators.remesh as remesh
+
+    fake_networkx = ModuleType("networkx_stub")
+    setattr(fake_networkx, "NetworkXError", Exception)
+
+    with monkeypatch.context() as mp:
+        original = remesh.cached_import
+
+        def fake_cached_import(name: str, *args, **kwargs):
+            if name == "networkx":
+                return fake_networkx
+            if name == "networkx.algorithms":
+                return None
+            return original(name, *args, **kwargs)
+
+        mp.setattr(remesh, "cached_import", fake_cached_import)
+
+        with pytest.raises(
+            ImportError,
+            match="networkx.algorithms.community is required for community-based",
+        ):
+            remesh._get_networkx_modules()
 
 
 @pytest.mark.parametrize(
