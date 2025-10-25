@@ -19,6 +19,21 @@ from tnfr.dynamics import (
 from tnfr.types import Glyph
 
 
+@pytest.fixture
+def compute_delta_nfr_hook():
+    """Fixture that records DNFR hook invocations and populates ΔNFR values."""
+
+    dnfr_alias = get_aliases("DNFR")
+    recorded: dict[str, list[Any]] = {"n_jobs": []}
+
+    def hook(graph, **kwargs):
+        recorded["n_jobs"].append(kwargs.get("n_jobs"))
+        for node in graph.nodes:
+            set_attr(graph.nodes[node], dnfr_alias, 0.0)
+
+    return hook, recorded
+
+
 def test_init_and_refresh_dnfr_cache(graph_canon):
     G = graph_canon()
     for i in range(2):
@@ -170,6 +185,21 @@ def test_prepare_dnfr_supports_hooks_without_jobs_kw(graph_canon):
     G.graph["compute_delta_nfr"] = hook
     _prepare_dnfr(G, use_Si=False)
     assert calls["count"] == 1
+
+
+def test_prepare_dnfr_passes_jobs_kw_to_hook(graph_canon, compute_delta_nfr_hook):
+    G = graph_canon()
+    hook, recorded = compute_delta_nfr_hook
+    for node in range(2):
+        G.add_node(node)
+    G.add_edge(0, 1)
+
+    G.graph["compute_delta_nfr"] = hook
+    G.graph["DNFR_N_JOBS"] = 5
+
+    _prepare_dnfr(G, use_Si=False)
+
+    assert recorded["n_jobs"] == [5]
 
 
 def test_prepare_dnfr_falls_back_when_jobs_kw_rejected(graph_canon):
