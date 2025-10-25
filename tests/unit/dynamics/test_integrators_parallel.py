@@ -1,5 +1,6 @@
 import copy
 import math
+from typing import Any
 
 import networkx as nx
 import pytest
@@ -93,3 +94,115 @@ def test_parallel_fallback_without_numpy(
     parallel_snapshot = _snapshot(parallel)
     for node in serial_snapshot:
         assert parallel_snapshot[node] == pytest.approx(serial_snapshot[node])
+
+
+def test_evaluate_gamma_map_parallel_variants(monkeypatch: pytest.MonkeyPatch) -> None:
+    G = _build_sample_graph()
+    nodes = list(G.nodes)
+    t_val = 0.375
+
+    def fake_eval_gamma(graph: nx.DiGraph, node: int, t: float) -> float:
+        return float(graph.nodes[node]["VF"]) + t
+
+    monkeypatch.setattr(integrators_mod, "eval_gamma", fake_eval_gamma)
+    monkeypatch.setattr(integrators_mod, "_PARALLEL_GRAPH", None, raising=False)
+
+    class _ImmediateFuture:
+        def __init__(self, value: list[tuple[int, float]]):
+            self._value = value
+
+        def result(self) -> list[tuple[int, float]]:
+            return self._value
+
+    class SyncExecutor:
+        instances: list["SyncExecutor"] = []
+
+        def __init__(
+            self,
+            max_workers: int | None = None,
+            *,
+            mp_context: Any | None = None,
+            initializer: Any | None = None,
+            initargs: tuple[Any, ...] = (),
+        ) -> None:
+            self.max_workers = max_workers
+            self.mp_context = mp_context
+            self.initializer = initializer
+            self.initargs = initargs
+            self.tasks: list[tuple[list[int], float]] = []
+            if initializer is not None:
+                initializer(*initargs)
+            SyncExecutor.instances.append(self)
+
+        def __enter__(self) -> "SyncExecutor":
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> bool:
+            return False
+
+        def submit(self, fn, task: tuple[list[int], float]) -> _ImmediateFuture:
+            self.tasks.append(task)
+            return _ImmediateFuture(fn(task))
+
+    SyncExecutor.instances = []
+    monkeypatch.setattr(integrators_mod, "ProcessPoolExecutor", SyncExecutor)
+
+    baseline = integrators_mod._evaluate_gamma_map(G, nodes, t_val, n_jobs=None)
+
+    for node in nodes:
+        expected_value = float(G.nodes[node]["VF"]) + t_val
+        assert baseline[node] == pytest.approx(expected_value)
+
+    for jobs in (None, 1, len(nodes) + 5, str(len(nodes) + 3)):
+        prev_instances = len(SyncExecutor.instances)
+        result = integrators_mod._evaluate_gamma_map(G, nodes, t_val, n_jobs=jobs)
+        assert result == baseline
+        if jobs in (None, 1):
+            assert len(SyncExecutor.instances) == prev_instances
+
+    assert len(SyncExecutor.instances) == 2
+    for instance in SyncExecutor.instances:
+        assert instance.initargs == (G,)
+        assert instance.max_workers == len(nodes)
+        for chunk, t in instance.tasks:
+            assert t == t_val
+
+    for instance in SyncExecutor.instances:
+        chunked_nodes = [node for chunk, _ in instance.tasks for node in chunk]
+        assert chunked_nodes == nodes
+
+    assert integrators_mod._PARALLEL_GRAPH is G
+
+
+def test_evaluate_gamma_map_single_node_falls_back(monkeypatch: pytest.MonkeyPatch) -> None:
+    G = _build_sample_graph()
+    node = next(iter(G.nodes))
+    t_val = 1.125
+
+    def fake_eval_gamma(graph: nx.DiGraph, target: int, t: float) -> float:
+        return float(graph.nodes[target]["VF"]) - t
+
+    monkeypatch.setattr(integrators_mod, "eval_gamma", fake_eval_gamma)
+
+    calls = {"executor": 0}
+
+    class TrackingExecutor:
+        def __init__(self, *args, **kwargs) -> None:
+            calls["executor"] += 1
+
+        def __enter__(self) -> "TrackingExecutor":
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> bool:
+            return False
+
+        def submit(self, fn, task):
+            raise AssertionError("Executor should not be used for single node")
+
+    monkeypatch.setattr(integrators_mod, "ProcessPoolExecutor", TrackingExecutor)
+
+    expected = {node: float(G.nodes[node]["VF"]) - t_val}
+    result = integrators_mod._evaluate_gamma_map(G, [node], t_val, n_jobs=999)
+
+    assert result == expected
+    assert calls["executor"] == 0
