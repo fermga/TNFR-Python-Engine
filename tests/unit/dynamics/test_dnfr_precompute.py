@@ -1,6 +1,7 @@
 """Unit tests for DNFR precomputation helpers and caching."""
 
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
+from types import SimpleNamespace
 
 import networkx as nx
 import pytest
@@ -139,3 +140,43 @@ def test_prepare_reuses_neighbor_reduction_buffers_vectorized():
     _compute_dnfr(G, reused)
     assert reused["neighbor_edge_values_np"] is cache.neighbor_edge_values_np
     assert reused["neighbor_accum_np"] is cache.neighbor_accum_np
+
+
+def test_prepare_dnfr_raises_when_cache_state_missing(monkeypatch):
+    """Ensure rebuild failures bubble when the cache manager lacks state."""
+
+    class FakeManager:
+        def __init__(self) -> None:
+            self.rebuild_attempted = False
+
+        def get(self, key):  # pragma: no cover - simple namespace fallback
+            return SimpleNamespace(cache=None)
+
+        def clear(self, key):
+            return None
+
+        def timer(self, key):
+            return nullcontext()
+
+        def update(self, key, rebuild):
+            self.rebuild_attempted = True
+            return rebuild(object())
+
+        def increment_hit(self, key):
+            return None
+
+        def increment_miss(self, key):
+            return None
+
+    G = _setup_graph()
+    fake_manager = FakeManager()
+
+    from tnfr.dynamics import _prepare_dnfr_data as prepare_dnfr_data
+    import tnfr.dynamics.dnfr as dnfr_module
+
+    monkeypatch.setattr(dnfr_module, "_graph_cache_manager", lambda graph: fake_manager)
+
+    with pytest.raises(RuntimeError, match="prep state unavailable"):
+        prepare_dnfr_data(G)
+
+    assert fake_manager.rebuild_attempted
