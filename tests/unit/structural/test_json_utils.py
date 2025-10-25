@@ -1,5 +1,7 @@
 import logging
 
+import pytest
+
 import tnfr.utils.init as import_utils
 import tnfr.utils.io as json_utils
 
@@ -96,6 +98,26 @@ def test_json_dumps_with_orjson_warns(monkeypatch, caplog):
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
         json_utils.json_dumps({"a": 1}, ensure_ascii=False)
     assert sum("ignored" in r.message for r in caplog.records) == 1
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "message"),
+    [
+        ({"sort_keys": "yes"}, "sort_keys must be a boolean"),
+        ({"default": 42}, "default must be callable when provided"),
+        ({"ensure_ascii": "no"}, "ensure_ascii must be a boolean"),
+        ({"separators": ":,"}, "separators must be a tuple of two strings"),
+        ({"separators": (":", 1)}, "separators must be a tuple of two strings"),
+        ({"cls": object}, "cls must be a subclass of json.JSONEncoder"),
+        ({"to_bytes": "no"}, "to_bytes must be a boolean"),
+    ],
+)
+def test_json_dumps_invalid_params(monkeypatch, kwargs, message):
+    _reset_json_utils(monkeypatch, None)
+    json_utils.clear_orjson_param_warnings()
+
+    with pytest.raises(TypeError, match=message):
+        json_utils.json_dumps({}, **kwargs)
 
 
 def test_params_passed_to_std(monkeypatch):
