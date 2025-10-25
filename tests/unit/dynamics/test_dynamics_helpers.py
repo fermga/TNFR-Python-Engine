@@ -169,6 +169,27 @@ def test_prepare_dnfr_supports_hooks_without_jobs_kw(graph_canon):
     assert calls["count"] == 1
 
 
+def test_prepare_dnfr_reraises_hook_type_error_without_jobs_kw(graph_canon):
+    G = graph_canon()
+    for node in range(2):
+        G.add_node(node)
+    G.add_edge(0, 1)
+
+    mutated_key = "_boom_marker"
+
+    def boom_hook(graph):
+        graph.graph[mutated_key] = True
+        raise TypeError("boom")
+
+    G.graph["compute_delta_nfr"] = boom_hook
+
+    with pytest.raises(TypeError, match="boom"):
+        _prepare_dnfr(G, use_Si=False)
+
+    if mutated_key in G.graph:
+        del G.graph[mutated_key]
+
+
 def test_prepare_dnfr_passes_si_jobs_to_compute_si(monkeypatch, graph_canon):
     G = graph_canon()
     dnfr_alias = get_aliases("DNFR")
