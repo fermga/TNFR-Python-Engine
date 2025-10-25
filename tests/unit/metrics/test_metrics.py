@@ -359,6 +359,36 @@ def test_metrics_detailed_verbosity_runs_collectors(monkeypatch, graph_canon):
     assert calls_debug == ["phase", "sigma", "aggregate", "advanced"]
 
 
+def test_metrics_unknown_verbosity_warns_and_defaults(graph_canon, caplog):
+    G = graph_canon()
+    G.graph["METRICS"] = dict(G.graph["METRICS"])
+    G.graph["METRICS"]["verbosity"] = "unexpected"
+    before_presets = dict(_METRICS_VERBOSITY_PRESETS)
+
+    with caplog.at_level("WARNING"):
+        _metrics_step(G)
+
+    assert any(
+        "Unknown METRICS verbosity 'unexpected'" in message
+        and METRICS_VERBOSITY_DEFAULT in message
+        for message in caplog.messages
+    )
+
+    hist = G.graph["history"]
+    assert "phase_sync" in hist
+    assert GLYPH_LOAD_STABILIZERS_KEY in hist
+    assert "Si_mean" in hist
+    assert "glyphogram" in hist
+    assert "latency_index" in hist
+    assert "morph" in hist
+
+    assert before_presets == _METRICS_VERBOSITY_PRESETS
+    assert (
+        before_presets[METRICS_VERBOSITY_DEFAULT]
+        == _METRICS_VERBOSITY_PRESETS[METRICS_VERBOSITY_DEFAULT]
+    )
+
+
 def test_register_metrics_callbacks_respects_verbosity(monkeypatch, graph_canon):
     recorded: list[str] = []
 
