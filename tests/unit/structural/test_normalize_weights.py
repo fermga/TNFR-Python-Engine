@@ -74,6 +74,23 @@ def test_normalize_weights_warn_once(caplog):
     assert any("Negative weights" in m for m in caplog.messages)
 
 
+def test_normalize_weights_warns_each_time_when_dedup_disabled(caplog):
+    key = "warn-disabled-key"
+    weights = {key: -1.0}
+
+    with caplog.at_level("WARNING"):
+        normalize_weights(weights, (key,), warn_once=False)
+    first_messages = [m for m in caplog.messages if "Negative weights" in m]
+    assert first_messages, "First invocation should warn about negative weights"
+
+    caplog.clear()
+
+    with caplog.at_level("WARNING"):
+        normalize_weights(weights, (key,), warn_once=False)
+    second_messages = [m for m in caplog.messages if "Negative weights" in m]
+    assert second_messages, "Second invocation should warn when deduplication disabled"
+
+
 def test_normalize_weights_raises_on_non_numeric_value():
     weights = {"a": "not-a-number", "b": 2.0}
     with pytest.raises(ValueError):
