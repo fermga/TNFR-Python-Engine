@@ -5,7 +5,8 @@ from __future__ import annotations
 import inspect
 import math
 import sys
-from collections.abc import Mapping, MutableMapping, MutableSequence
+from collections.abc import Iterable, Mapping, MutableMapping, MutableSequence
+from numbers import Real
 from typing import Any, cast
 
 from ..alias import (
@@ -747,8 +748,15 @@ def run(
         )
         if stop_enabled:
             history = ensure_history(G)
-            series = history.get("stable_frac", [])
-            if not isinstance(series, list):
-                series = list(series)
-            if len(series) >= w and all(v >= frac for v in series[-w:]):
+            raw_series = dict.get(history, "stable_frac", [])
+            if not isinstance(raw_series, Iterable):
+                series = []
+            elif isinstance(raw_series, list):
+                series = raw_series
+            else:
+                series = list(raw_series)
+            numeric_series = [v for v in series if isinstance(v, Real)]
+            if len(numeric_series) >= w and all(
+                v >= frac for v in numeric_series[-w:]
+            ):
                 break
