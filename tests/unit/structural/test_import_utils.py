@@ -461,3 +461,35 @@ def test_warm_cached_import_handles_multiple_specs(monkeypatch, reset_cached_imp
         "pkg_a": modules["pkg_a"],
         "pkg_b.value": 2,
     }
+
+
+def test_warm_cached_import_attr_rejects_multiple_specs(reset_cached_import):
+    reset_cached_import()
+    with pytest.raises(
+        ValueError, match="'attr' can only be combined with a single module name"
+    ):
+        warm_cached_import("pkg", "other", attr="value")
+
+
+def test_warm_cached_import_attr_requires_string_module(reset_cached_import):
+    reset_cached_import()
+    with pytest.raises(
+        TypeError, match="'attr' requires the first argument to be a module name string"
+    ):
+        warm_cached_import(123, attr="value")
+
+
+def test_warm_cached_import_rejects_empty_iterable(reset_cached_import):
+    reset_cached_import()
+    with pytest.raises(
+        ValueError, match="At least one module specification is required"
+    ):
+        warm_cached_import([])
+
+
+def test_warm_cached_import_rejects_invalid_tuple(reset_cached_import):
+    reset_cached_import()
+    with pytest.raises(
+        TypeError, match="Invalid module specification for warm_cached_import"
+    ):
+        warm_cached_import((None, "attr"))
