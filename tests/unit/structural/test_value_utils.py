@@ -2,6 +2,8 @@
 
 import logging
 
+import pytest
+
 from tnfr.utils import convert_value
 
 
@@ -27,3 +29,14 @@ def test_convert_value_logs_custom_level(caplog):
     assert not ok and result is None
     assert len(caplog.records) == 1
     assert caplog.records[0].levelno == logging.INFO
+
+
+def test_convert_value_strict_propagates(caplog):
+    def conv(_):
+        raise ValueError("bad")
+
+    with caplog.at_level(logging.DEBUG, logger="tnfr.utils.data"):
+        with pytest.raises(ValueError):
+            convert_value("x", conv, strict=True)
+
+    assert not caplog.records
