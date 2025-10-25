@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import time
+from collections.abc import Mapping
 
 import networkx as nx
 import pytest
@@ -13,6 +14,7 @@ pytest.importorskip("numpy")
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants import DEFAULTS, get_aliases, inject_defaults
 from tnfr.dynamics import default_compute_delta_nfr
+from tnfr.dynamics.dnfr import _apply_dnfr_hook
 import tnfr.dynamics.runtime as runtime
 from tnfr.metrics import register_metrics_callbacks
 from tnfr.glyph_history import ensure_history
@@ -23,6 +25,26 @@ ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
 pytestmark = [pytest.mark.slow, pytest.mark.stress]
+
+
+def _bias_gradient(
+    G: nx.Graph,
+    node: int,
+    node_data: Mapping[str, object],
+) -> float:
+    """Return a constant contribution regardless of ``node``."""
+
+    return 1.0
+
+
+def _degree_gradient(
+    G: nx.Graph,
+    node: int,
+    node_data: Mapping[str, object],
+) -> float:
+    """Return the structural degree contribution for ``node``."""
+
+    return float(G.degree(node))
 
 
 def _seed_graph(
@@ -120,3 +142,63 @@ def test_runtime_run_long_trajectory_history_integrity() -> None:
 
     dnfr_total = _sum_dnfr(graph)
     assert math.isfinite(dnfr_total)
+
+
+@pytest.mark.slow
+@pytest.mark.timeout(30)
+def test_apply_dnfr_hook_parallel_python_matches_serial(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Parallel ΔNFR hook execution must match the serial reference assignments."""
+
+    node_count = 640
+    edge_probability = 0.15
+    seed = 8421
+
+    serial_graph = _seed_graph(
+        num_nodes=node_count,
+        edge_probability=edge_probability,
+        seed=seed,
+    )
+    parallel_graph = _seed_graph(
+        num_nodes=node_count,
+        edge_probability=edge_probability,
+        seed=seed,
+    )
+
+    grads = {"bias": _bias_gradient, "degree": _degree_gradient}
+    weights = {"bias": 0.5, "degree": 0.5}
+
+    import tnfr.dynamics.dnfr as dnfr
+
+    original_get_numpy = dnfr.get_numpy
+    monkeypatch.setattr(dnfr, "get_numpy", lambda: None, raising=False)
+    try:
+        _apply_dnfr_hook(
+            serial_graph,
+            grads,
+            weights=weights,
+            hook_name="serial_reference",
+            n_jobs=None,
+        )
+
+        start = time.perf_counter()
+        _apply_dnfr_hook(
+            parallel_graph,
+            grads,
+            weights=weights,
+            hook_name="parallel_reference",
+            n_jobs=8,
+        )
+        elapsed = time.perf_counter() - start
+    finally:
+        monkeypatch.setattr(dnfr, "get_numpy", original_get_numpy, raising=False)
+
+    assert elapsed < 30.0
+
+    for node in parallel_graph.nodes:
+        parallel_value = float(get_attr(parallel_graph.nodes[node], ALIAS_DNFR, 0.0))
+        serial_value = float(get_attr(serial_graph.nodes[node], ALIAS_DNFR, 0.0))
+        assert parallel_value == pytest.approx(serial_value, rel=0.0, abs=1e-9)
+
+    assert _sum_dnfr(parallel_graph) == pytest.approx(
+        _sum_dnfr(serial_graph), rel=0.0, abs=1e-9
+    )
