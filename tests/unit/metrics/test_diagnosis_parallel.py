@@ -114,3 +114,28 @@ def test_existing_history_states_are_canonicalised(graph_with_mixed_case_history
     assert snapshot[0]["state"] == "stable"
     assert snapshot[1]["state"] == "dissonant"
     assert snapshot[2] is placeholder
+
+
+@pytest.mark.parametrize("bad_jobs", ["not-int", 0, -3])
+def test_diagnosis_invalid_jobs_fall_back_to_serial(graph_canon, monkeypatch, bad_jobs):
+    graph = _build_ring_graph(graph_canon)
+    hist = ensure_history(graph)
+    key = get_param(graph, "DIAGNOSIS").get("history_key", "nodal_diag")
+    before = len(hist.get(key, []))
+
+    graph.graph["DIAGNOSIS_N_JOBS"] = bad_jobs
+
+    class _FailingExecutor:
+        def __init__(self, *args, **kwargs):  # noqa: D401 - context manager protocol
+            raise AssertionError("ProcessPoolExecutor should not be used for invalid n_jobs")
+
+    monkeypatch.setattr(
+        "tnfr.metrics.diagnosis.ProcessPoolExecutor",
+        _FailingExecutor,
+    )
+
+    _diagnosis_step(graph, n_jobs=bad_jobs)
+
+    after = hist.get(key, [])
+    assert len(after) == before + 1
+    assert isinstance(after[-1], dict)
