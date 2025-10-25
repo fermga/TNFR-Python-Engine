@@ -160,6 +160,19 @@ def test_clear_flushes_cache_and_metrics(
     assert stats.evictions == 2
 
 
+def test_configure_rejects_negative_capacity_and_preserves_state() -> None:
+    manager = CacheManager(default_capacity=8, overrides={"foo": 4})
+    baseline_config = manager.export_config()
+
+    with pytest.raises(ValueError):
+        manager.configure(default_capacity=-1)
+    assert manager.export_config() == baseline_config
+
+    with pytest.raises(ValueError):
+        manager.configure(overrides={"foo": -2})
+    assert manager.export_config() == baseline_config
+
+
 def test_callback_registration_runtime_updates() -> None:
     manager = CacheManager()
     recorder = _EventRecorder()
