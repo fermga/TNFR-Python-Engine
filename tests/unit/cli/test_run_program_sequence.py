@@ -107,3 +107,34 @@ def test_run_program_builds_graph_before_play(
     assert play_calls == [(built_graph, sample_program_tokens)]
     assert run_called is False
     assert persist_calls == [(built_graph, base_args)]
+
+
+def test_run_program_with_null_program_uses_run_mode(
+    simple_graph: nx.Graph,
+    base_args: argparse.Namespace,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    args = argparse.Namespace(**vars(base_args))
+    args.steps = -5
+    args.dt = 0.25
+    args.use_Si = False
+    args.apply_glyphs = False
+
+    run_calls: list[tuple[nx.Graph, int, dict[str, object]]] = []
+
+    def fake_run(graph: nx.Graph, *, steps: int, **overrides: object) -> None:
+        run_calls.append((graph, steps, overrides))
+
+    monkeypatch.setattr(execution, "run", fake_run)
+    monkeypatch.setattr(execution, "_persist_history", lambda *_: None)
+
+    result = execution.run_program(simple_graph, None, args)
+
+    assert result is simple_graph
+    assert run_calls == [
+        (
+            simple_graph,
+            0,
+            {"dt": 0.25, "use_Si": False, "apply_glyphs": False},
+        )
+    ]
