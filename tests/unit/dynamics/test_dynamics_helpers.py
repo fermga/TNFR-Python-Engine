@@ -1,5 +1,8 @@
 """Tests for dynamics helpers."""
 
+from inspect import Parameter, Signature
+from typing import Any
+
 import pytest
 
 from tnfr.alias import get_attr, set_attr
@@ -167,6 +170,39 @@ def test_prepare_dnfr_supports_hooks_without_jobs_kw(graph_canon):
     G.graph["compute_delta_nfr"] = hook
     _prepare_dnfr(G, use_Si=False)
     assert calls["count"] == 1
+
+
+def test_prepare_dnfr_falls_back_when_jobs_kw_rejected(graph_canon):
+    G = graph_canon()
+    dnfr_alias = get_aliases("DNFR")
+    for node in range(2):
+        G.add_node(node)
+    G.add_edge(0, 1)
+
+    calls: dict[str, Any] = {"count": 0, "kwargs": []}
+
+    def hook(graph, **kwargs):
+        calls["count"] += 1
+        calls["kwargs"].append(kwargs)
+        if "n_jobs" in kwargs:
+            raise TypeError("unexpected keyword argument 'n_jobs'")
+        for node in graph.nodes:
+            set_attr(graph.nodes[node], dnfr_alias, 0.0)
+
+    hook.__signature__ = Signature(  # type: ignore[attr-defined]
+        [Parameter("graph", Parameter.POSITIONAL_OR_KEYWORD)]
+    )
+
+    G.graph["compute_delta_nfr"] = hook
+    G.graph["DNFR_N_JOBS"] = 2
+    G.graph["_sel_norms"] = {"dnfr_max": 1.0}
+
+    _prepare_dnfr(G, use_Si=False)
+
+    assert calls["count"] == 2
+    assert calls["kwargs"][0] == {"n_jobs": 2}
+    assert calls["kwargs"][1] == {}
+    assert "_sel_norms" not in G.graph
 
 
 def test_prepare_dnfr_reraises_hook_type_error_without_jobs_kw(graph_canon):
