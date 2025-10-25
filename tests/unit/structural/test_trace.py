@@ -151,6 +151,22 @@ def test_trace_debug_verbosity_includes_all_fields(graph_canon):
     assert "glyphs" in after
 
 
+def test_trace_unknown_verbosity_warns_and_defaults(graph_canon):
+    G = graph_canon()
+    G.graph["TRACE"]["verbosity"] = "mystery"
+
+    with pytest.warns(UserWarning):
+        register_trace(G)
+        callback_manager.invoke_callbacks(G, CallbackEvent.BEFORE_STEP.value)
+        callback_manager.invoke_callbacks(G, CallbackEvent.AFTER_STEP.value)
+
+    hist = G.graph["history"]["trace_meta"]
+    after = hist[1]
+
+    assert after["phase"] == "after"
+    assert "glyphs" in after
+
+
 def test_callback_names_spec():
     """CallbackSpec entries are handled correctly."""
 
