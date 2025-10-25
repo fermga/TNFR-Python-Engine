@@ -40,6 +40,74 @@ def test_play_records_program_trace_with_block_and_wait(graph_canon):
     assert trace[2]["g"] == Glyph.THOL.value
 
 
+@pytest.mark.parametrize(
+    "seed",
+    [
+        lambda: [
+            {"op": "LEGACY", "idx": 0},
+            {"op": "LEGACY", "idx": 1},
+            {"op": "LEGACY", "idx": 2},
+        ],
+        lambda: deque(
+            [
+                {"op": "LEGACY", "idx": 99},
+            ],
+            maxlen=1,
+        ),
+    ],
+)
+def test_play_normalizes_program_trace_container(graph_canon, seed):
+    G = graph_canon()
+    G.add_node(1)
+    history = G.graph.setdefault("history", {})
+    legacy_entries = seed()
+    history["program_trace"] = legacy_entries
+
+    program = seq(Glyph.AL, wait(1))
+    play(G, program, step_fn=_step_noop)
+
+    maxlen = int(get_param(G, "PROGRAM_TRACE_MAXLEN"))
+    trace = history["program_trace"]
+    assert isinstance(trace, deque)
+    assert trace.maxlen == maxlen
+
+    trace_items = list(trace)
+    expected_ops = ["GLYPH", "WAIT"]
+    observed_ops = [item["op"] for item in trace_items]
+    suffix_length = min(len(observed_ops), len(expected_ops))
+    assert observed_ops[-suffix_length:] == expected_ops[-suffix_length:]
+
+    preserved = list(legacy_entries)
+    preserve_count = max(0, min(len(preserved), maxlen - suffix_length))
+    expected_legacy_tail = preserved[-preserve_count:]
+    assert trace_items[:preserve_count] == expected_legacy_tail
+
+
+def test_play_reuses_existing_program_trace(graph_canon):
+    G = graph_canon()
+    G.add_node(1)
+
+    maxlen = int(get_param(G, "PROGRAM_TRACE_MAXLEN"))
+    trace = deque(
+        [
+            {"op": "LEGACY", "idx": -1},
+        ],
+        maxlen=maxlen,
+    )
+
+    history = G.graph.setdefault("history", {})
+    history["program_trace"] = trace
+
+    program = seq(Glyph.AL, wait(1))
+    play(G, program, step_fn=_step_noop)
+
+    assert history["program_trace"] is trace
+    ops = [item["op"] for item in trace]
+    expected_ops = ["LEGACY", "GLYPH", "WAIT"]
+    suffix_length = min(len(ops), len(expected_ops))
+    assert ops[-suffix_length:] == expected_ops[-suffix_length:]
+
+
 def test_wait_logs_sanitized_steps(graph_canon):
     G = graph_canon()
     G.add_node(1)
