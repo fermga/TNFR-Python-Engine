@@ -71,6 +71,34 @@ def test_export_metrics_extends_sigma(tmp_path, graph_canon):
     assert len(rows) == 4
 
 
+def test_export_metrics_sanitises_sigma_nan_and_none(tmp_path, graph_canon):
+    base = tmp_path / "nan_none" / "run"
+    G = graph_canon()
+    hist = G.graph.setdefault("history", {})
+    hist["sense_sigma_t"] = [0, 1, 2]
+    hist["sense_sigma_x"] = [float("nan"), 1.5, None]
+    hist["sense_sigma_y"] = [None, float("nan"), 3.5]
+    hist["sense_sigma_mag"] = [float("nan"), None, 4.0]
+    hist["sense_sigma_angle"] = [None, float("nan"), None]
+
+    export_metrics(G, str(base), fmt="csv")
+
+    sigma_path = base.parent / (base.name + "_sigma.csv")
+    with open(sigma_path, newline="") as f:
+        rows = list(csv.reader(f))
+
+    assert rows[1] == ["0", "0", "0", "0", "0"]
+    assert rows[2] == ["1", "1.5", "0", "0", "0"]
+    assert rows[3] == ["2", "0", "3.5", "4.0", "0"]
+
+    export_metrics(G, str(base), fmt="json")
+    data = json.loads((base.with_suffix(".json")).read_text())
+    sigma = data["sigma"]
+    assert sigma["sigma_x"] == [0, 1.5, 0]
+    assert sigma["sigma_y"] == [0, 0, 3.5]
+    assert sigma["mag"] == [0, 0, 4.0]
+    assert sigma["angle"] == [0, 0, 0]
+
 def test_export_metrics_preserves_timestamps(tmp_path, graph_canon):
     base = tmp_path / "ts" / "run"
     G = graph_canon()
