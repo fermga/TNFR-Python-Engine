@@ -20,6 +20,16 @@ def _step_noop(G):
     G.graph["_t"] = G.graph.get("_t", 0.0) + 1.0
 
 
+def test_play_unknown_operation_raises(monkeypatch, graph_canon):
+    monkeypatch.delitem(HANDLERS, OpTag.GLYPH, raising=False)
+
+    G = graph_canon()
+    G.add_node(1)
+
+    with pytest.raises(ValueError, match="Unknown operation"):
+        play(G, seq(Glyph.AL), step_fn=_step_noop)
+
+
 def test_play_records_program_trace_with_block_and_wait(graph_canon):
     G = graph_canon()
     G.add_node(1)
