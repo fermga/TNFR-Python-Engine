@@ -285,6 +285,71 @@ def test_configured_cooldown_window_is_respected(graph_canon):
 
 
 @pytest.mark.parametrize(
+    "scenario",
+    [
+        "cooldown_window",
+        "cooldown_timestamp",
+    ],
+)
+def test_remesh_cooldown_gating_requires_ready_state(graph_canon, scenario):
+    pytest.importorskip("networkx")
+
+    G, hist = _prepare_graph_for_remesh(graph_canon)
+    hist["stable_frac"] = [1.0, 1.0, 1.0]
+    hist.pop("remesh_events", None)
+
+    if scenario == "cooldown_window":
+        G.graph["REMESH_COOLDOWN_WINDOW"] = 2
+        G.graph["REMESH_COOLDOWN_TS"] = 0.0
+        initial_time = 100.0
+    else:
+        G.graph["REMESH_COOLDOWN_WINDOW"] = 0
+        G.graph["REMESH_COOLDOWN_TS"] = 5.0
+        initial_time = 50.0
+
+    G.graph["_t"] = initial_time
+
+    apply_remesh_if_globally_stable(G, stable_step_window=3)
+
+    history = ensure_history(G)
+    events = history.get("remesh_events", [])
+    assert len(events) == 1
+    first_event = events[-1]
+    last_step = G.graph["_last_remesh_step"]
+    last_ts = G.graph["_last_remesh_ts"]
+
+    hist["stable_frac"].append(1.0)
+    if scenario == "cooldown_window":
+        G.graph["_t"] = initial_time + 1.0
+    else:
+        G.graph["_t"] = last_ts + 1.0
+
+    apply_remesh_if_globally_stable(G, stable_step_window=3)
+
+    history = ensure_history(G)
+    blocked_events = history.get("remesh_events", [])
+    assert blocked_events[-1] is first_event
+    assert len(blocked_events) == 1
+    assert G.graph["_last_remesh_step"] == last_step
+    assert G.graph["_last_remesh_ts"] == pytest.approx(last_ts)
+
+    hist["stable_frac"].append(1.0)
+    if scenario == "cooldown_window":
+        G.graph["_t"] = last_ts + 5.0
+    else:
+        G.graph["_t"] = last_ts + G.graph["REMESH_COOLDOWN_TS"] + 0.1
+
+    apply_remesh_if_globally_stable(G, stable_step_window=3)
+
+    history = ensure_history(G)
+    resumed_events = history.get("remesh_events", [])
+    assert len(resumed_events) == 2
+    assert resumed_events[-1] is not first_event
+    assert G.graph["_last_remesh_step"] == len(hist["stable_frac"])
+    assert G.graph["_last_remesh_ts"] == pytest.approx(G.graph["_t"])
+
+
+@pytest.mark.parametrize(
     ("metric_sequences", "should_remesh"),
     [
         pytest.param(
