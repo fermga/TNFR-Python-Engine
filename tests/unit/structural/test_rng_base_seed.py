@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from tnfr.rng import (
     ScopedCounterCache,
     base_seed,
@@ -192,6 +194,27 @@ def test_scoped_counter_cache_evictions():
         assert after.hits - before.hits == 1
         assert set(cache.cache.keys()) == {"b", "c"}
         assert set(cache.locks.keys()) == {"b", "c"}
+    finally:
+        cache.configure(force=True, max_entries=rng_module._DEFAULT_CACHE_MAXSIZE)
+        cache.clear()
+
+
+def test_scoped_counter_cache_rejects_negative_max_entries():
+    import tnfr.rng as rng_module
+
+    manager = rng_module._RNG_CACHE_MANAGER
+
+    with pytest.raises(ValueError, match="max_entries must be non-negative"):
+        ScopedCounterCache(
+            "negative-init", max_entries=-1, manager=manager
+        )
+
+    cache = ScopedCounterCache(
+        "negative-config", max_entries=1, manager=manager
+    )
+    try:
+        with pytest.raises(ValueError, match="max_entries must be non-negative"):
+            cache.configure(max_entries=-1)
     finally:
         cache.configure(force=True, max_entries=rng_module._DEFAULT_CACHE_MAXSIZE)
         cache.clear()
