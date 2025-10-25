@@ -8,7 +8,7 @@ import pytest
 import tnfr.selector as selector
 from tnfr.constants import DEFAULTS, get_aliases
 from tnfr.dynamics import _configure_selector_weights
-from tnfr.dynamics.selectors import ParametricGlyphSelector
+from tnfr.dynamics.selectors import ParametricGlyphSelector, _apply_score_override
 from tnfr.selector import (
     _apply_selector_hysteresis,
     _calc_selector_score,
@@ -131,6 +131,32 @@ def test_apply_selector_hysteresis_returns_prev():
     # far from thresholds
     none = _apply_selector_hysteresis(nd, 0.5, 0.2, 0.2, thr, 0.05)
     assert none is None
+
+
+def test_apply_score_override_promotes_high_score_candidates():
+    thr = DEFAULTS["SELECTOR_THRESHOLDS"]
+
+    glyph = _apply_score_override("NAV", 0.66, thr["dnfr_lo"], thr["dnfr_lo"])
+
+    assert glyph == "IL"
+
+
+def test_apply_score_override_routes_low_scores_by_dnfr():
+    thr = DEFAULTS["SELECTOR_THRESHOLDS"]
+
+    hi_dnfr = _apply_score_override("NAV", 0.33, thr["dnfr_lo"], thr["dnfr_lo"])
+    low_dnfr = _apply_score_override("NAV", 0.2, thr["dnfr_lo"] - 0.01, thr["dnfr_lo"])
+
+    assert hi_dnfr == "OZ"
+    assert low_dnfr == "ZHIR"
+
+
+def test_apply_score_override_preserves_candidate_in_neutral_band():
+    thr = DEFAULTS["SELECTOR_THRESHOLDS"]
+
+    glyph = _apply_score_override("NAV", 0.5, thr["dnfr_lo"], thr["dnfr_lo"])
+
+    assert glyph == "NAV"
 
 
 def test_parametric_selector_skips_hysteresis_with_none_margin(graph_canon):
