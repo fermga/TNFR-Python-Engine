@@ -14,6 +14,8 @@ import tnfr.dynamics.coordination as coordination
 import tnfr.dynamics.integrators as integrators
 import tnfr.dynamics.runtime as runtime
 import tnfr.dynamics.selectors as selectors
+from tnfr.alias import get_attr
+from tnfr.constants import DEFAULTS
 from tnfr.glyph_history import ensure_history
 
 
@@ -278,6 +280,60 @@ def test_step_defaults_to_graph_jobs(monkeypatch, graph_canon):
         "phase": 5,
         "vf": None,
     }
+
+
+def test_update_nodes_clamps_out_of_range_values(monkeypatch, graph_canon):
+    """Nodes are clamped to canonical EPI and νf bounds during updates."""
+
+    G = graph_canon()
+    node_id = 0
+    epi_hi = float(DEFAULTS["EPI_MAX"]) + 0.5
+    vf_lo = float(DEFAULTS["VF_MIN"]) - 0.25
+    G.add_node(node_id, EPI=epi_hi, nu_f=vf_lo)
+
+    monkeypatch.setattr(runtime, "_prepare_dnfr", lambda *args, **kwargs: None)
+    monkeypatch.setattr(selectors, "_apply_selector", lambda *_args, **_kwargs: object())
+    monkeypatch.setattr(selectors, "_apply_glyphs", lambda *_args, **_kwargs: None)
+
+    class _NoOpIntegrator(integrators.AbstractIntegrator):
+        def integrate(
+            self,
+            graph,
+            *,
+            dt=None,
+            t=None,
+            method=None,
+            n_jobs=None,
+        ) -> None:
+            return None
+
+    monkeypatch.setattr(
+        runtime, "_resolve_integrator_instance", lambda _graph: _NoOpIntegrator()
+    )
+    monkeypatch.setattr(
+        coordination,
+        "coordinate_global_local_phase",
+        lambda *_args, **_kwargs: None,
+    )
+    monkeypatch.setattr(
+        adaptation, "adapt_vf_by_coherence", lambda *_args, **_kwargs: None
+    )
+
+    runtime._update_nodes(
+        G,
+        dt=0.1,
+        use_Si=False,
+        apply_glyphs=False,
+        step_idx=0,
+        hist={},
+    )
+
+    node_data = G.nodes[node_id]
+    clamped_epi = get_attr(node_data, runtime.ALIAS_EPI, 0.0)
+    clamped_vf = get_attr(node_data, runtime.ALIAS_VF, 0.0)
+
+    assert clamped_epi == pytest.approx(float(DEFAULTS["EPI_MAX"]))
+    assert clamped_vf == pytest.approx(float(DEFAULTS["VF_MIN"]))
 
 
 def test_run_reuses_normalized_n_jobs(monkeypatch, graph_canon):
