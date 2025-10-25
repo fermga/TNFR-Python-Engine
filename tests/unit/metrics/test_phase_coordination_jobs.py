@@ -1,5 +1,6 @@
 import math
 import random
+from collections import deque
 
 import pytest
 
@@ -90,3 +91,139 @@ def test_coordinate_phase_parallel_matches_serial(monkeypatch, graph_canon, phas
         th_serial = get_attr(baseline.nodes[node], ALIAS_THETA, 0.0)
         th_parallel = get_attr(parallel.nodes[node], ALIAS_THETA, 0.0)
         assert th_parallel == pytest.approx(th_serial)
+
+
+class _FakeArray(list):
+    def __init__(self, iterable=()):
+        super().__init__(float(item) for item in iterable)
+
+    @property
+    def size(self) -> int:
+        return len(self)
+
+    def _binary_op(self, other, op):
+        if isinstance(other, _FakeArray):
+            return _FakeArray(op(a, b) for a, b in zip(self, other))
+        value = float(other)
+        return _FakeArray(op(a, value) for a in self)
+
+    def __add__(self, other):
+        return self._binary_op(other, lambda a, b: a + b)
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __sub__(self, other):
+        return self._binary_op(other, lambda a, b: a - b)
+
+    def __rsub__(self, other):
+        if isinstance(other, _FakeArray):
+            return other.__sub__(self)
+        value = float(other)
+        return _FakeArray(value - a for a in self)
+
+    def __mul__(self, other):
+        return self._binary_op(other, lambda a, b: a * b)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+
+class _FakeNumPy:
+    def fromiter(self, iterable, dtype=float):
+        return _FakeArray(iterable)
+
+    def mean(self, array):
+        seq = list(array)
+        return float(sum(seq) / len(seq)) if seq else 0.0
+
+    def arctan2(self, y, x):
+        return math.atan2(y, x)
+
+    def cos(self, array):
+        if isinstance(array, _FakeArray):
+            return _FakeArray(math.cos(item) for item in array)
+        return math.cos(array)
+
+    def sin(self, array):
+        if isinstance(array, _FakeArray):
+            return _FakeArray(math.sin(item) for item in array)
+        return math.sin(array)
+
+
+@pytest.mark.parametrize("numpy_present", [False, True])
+def test_coordinate_phase_overrides_and_adaptive_history(
+    monkeypatch, graph_canon, numpy_present
+):
+    def _fake_get_numpy():
+        return _FakeNumPy() if numpy_present else None
+
+    monkeypatch.setattr("tnfr.dynamics.get_numpy", _fake_get_numpy)
+    monkeypatch.setattr(coordination, "get_numpy", _fake_get_numpy)
+
+    graph = _build_ring_graph(graph_canon, seed=7, size=6)
+    history = {
+        "phase_state": ["Stable", "disSONANT"],
+        "phase_R": [0.21, 0.33],
+        "phase_disr": [0.12, 0.18],
+    }
+    graph.graph["history"] = history
+    graph.graph["PHASE_K_GLOBAL"] = 0.05
+    graph.graph["PHASE_K_LOCAL"] = 0.15
+
+    initial_state = list(history["phase_state"])
+    initial_R = list(history["phase_R"])
+    initial_disr = list(history["phase_disr"])
+    initial_kG_len = len(history.get("phase_kG", []))
+    initial_kL_len = len(history.get("phase_kL", []))
+
+    compute_calls: list[tuple[str, float, float]] = []
+
+    def _fake_compute_state(G, cfg):
+        compute_calls.append(("transition", 0.76, 0.22))
+        return "transition", 0.76, 0.22
+
+    monkeypatch.setattr(coordination, "_compute_state", _fake_compute_state)
+
+    coordination.coordinate_global_local_phase(
+        graph, global_force=0.42, local_force=0.27
+    )
+
+    assert compute_calls == []
+
+    hist_state = history["phase_state"]
+    assert isinstance(hist_state, deque)
+    assert list(hist_state) == ["stable", "dissonant"]
+    assert len(hist_state) == len(initial_state)
+
+    assert isinstance(history["phase_R"], deque)
+    assert list(history["phase_R"]) == initial_R
+    assert isinstance(history["phase_disr"], deque)
+    assert list(history["phase_disr"]) == initial_disr
+
+    assert graph.graph["PHASE_K_GLOBAL"] == pytest.approx(0.42)
+    assert graph.graph["PHASE_K_LOCAL"] == pytest.approx(0.27)
+
+    assert len(history["phase_kG"]) == initial_kG_len + 1
+    assert history["phase_kG"][initial_kG_len] == pytest.approx(0.42)
+    assert len(history["phase_kL"]) == initial_kL_len + 1
+    assert history["phase_kL"][initial_kL_len] == pytest.approx(0.27)
+
+    state_len_before = len(hist_state)
+    R_len_before = len(history["phase_R"])
+    disr_len_before = len(history["phase_disr"])
+
+    coordination.coordinate_global_local_phase(graph)
+
+    assert len(compute_calls) == 1
+    assert len(hist_state) == state_len_before + 1
+    assert hist_state[-1] == "transition"
+    assert len(history["phase_R"]) == R_len_before + 1
+    assert history["phase_R"][-1] == pytest.approx(0.76)
+    assert len(history["phase_disr"]) == disr_len_before + 1
+    assert history["phase_disr"][-1] == pytest.approx(0.22)
+
+    assert len(history["phase_kG"]) == initial_kG_len + 2
+    assert history["phase_kG"][-1] == pytest.approx(graph.graph["PHASE_K_GLOBAL"])
+    assert len(history["phase_kL"]) == initial_kL_len + 2
+    assert history["phase_kL"][-1] == pytest.approx(graph.graph["PHASE_K_LOCAL"])
