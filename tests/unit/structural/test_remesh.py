@@ -196,3 +196,77 @@ def test_configured_cooldown_window_is_respected(graph_canon):
 
     events = ensure_history(G).get("remesh_events", [])
     assert len(events) == 2
+
+
+@pytest.mark.parametrize(
+    ("metric_sequences", "should_remesh"),
+    [
+        pytest.param(
+            {
+                "phase_sync": [0.83, 0.84, 0.849],
+                "glyph_load_disr": deque([0.36, 0.355, 0.36], maxlen=3),
+                "sense_sigma_mag": [0.49, 0.485, 0.49],
+                "kuramoto_R": deque([0.79, 0.79, 0.795], maxlen=3),
+                "Si_hi_frac": [0.49, 0.495, 0.49],
+            },
+            False,
+            id="requires_stability_blocks_remesh",
+        ),
+        pytest.param(
+            {
+                "phase_sync": [0.86, 0.87, 0.88],
+                "glyph_load_disr": deque([0.34, 0.335, 0.33], maxlen=3),
+                "sense_sigma_mag": [0.5, 0.52, 0.53],
+                "kuramoto_R": deque([0.8, 0.81, 0.82], maxlen=3),
+                "Si_hi_frac": [0.51, 0.52, 0.53],
+            },
+            True,
+            id="requires_stability_allows_remesh",
+        ),
+    ],
+)
+def test_apply_remesh_respects_stability_gating(graph_canon, metric_sequences, should_remesh):
+    pytest.importorskip("networkx")
+
+    G, hist = _prepare_graph_for_remesh(graph_canon)
+
+    # Ensure a deterministic environment with ready-to-trigger stability window.
+    hist["stable_frac"] = [1.0, 1.0, 1.0]
+    hist.pop("remesh_events", None)
+    for key, seq in metric_sequences.items():
+        hist[key] = list(seq)
+
+    G.graph.update(
+        {
+            "REMESH_COOLDOWN_WINDOW": 0,
+            "REMESH_COOLDOWN_TS": 0.0,
+            "_t": 100.0,
+            "_last_remesh_ts": -1e6,
+        }
+    )
+    G.graph["REMESH_REQUIRE_STABILITY"] = True
+
+    apply_remesh_if_globally_stable(G, stable_step_window=3)
+
+    if should_remesh:
+        step_count = len(hist["stable_frac"])
+        assert G.graph["_last_remesh_step"] == step_count
+        assert G.graph["_last_remesh_ts"] == pytest.approx(G.graph["_t"])
+
+        meta = G.graph.get("_REMESH_META")
+        assert meta, "Remesh metadata should be recorded when gating passes"
+        assert meta["tau_global"] == int(get_param(G, "REMESH_TAU_GLOBAL"))
+        assert meta["tau_local"] == int(get_param(G, "REMESH_TAU_LOCAL"))
+        assert meta["phase_sync_last"] == pytest.approx(metric_sequences["phase_sync"][-1])
+        assert meta["glyph_disr_last"] == pytest.approx(
+            metric_sequences["glyph_load_disr"][-1]
+        )
+
+        events = hist.get("remesh_events")
+        assert events and events[-1]["tau_global"] == meta["tau_global"]
+        assert events[-1]["epi_checksum_after"] == meta["epi_checksum_after"]
+    else:
+        assert "_last_remesh_step" not in G.graph
+        assert "_REMESH_META" not in G.graph
+        events = hist.get("remesh_events")
+        assert not events
