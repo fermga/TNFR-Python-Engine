@@ -5,7 +5,6 @@ from __future__ import annotations
 import inspect
 import math
 import sys
-from collections import deque
 from collections.abc import Mapping, MutableMapping, MutableSequence
 from typing import Any, cast
 
@@ -25,6 +24,7 @@ from ..helpers.numeric import clamp
 from ..metrics.sense_index import compute_Si
 from ..operators import apply_remesh_if_globally_stable
 from ..types import HistoryState, NodeId, TNFRGraph
+from ..utils import ensure_collection
 from . import adaptation, coordination, integrators, selectors
 from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
 from .dnfr import default_compute_delta_nfr
@@ -365,10 +365,15 @@ def apply_canonical_clamps(
     )
     if strict and graph_dict is not None:
         history = cast(MutableMapping[str, Any], graph_dict.setdefault("history", {}))
-        hist = cast(
-            HistoryLog,
-            history.setdefault("clamp_alerts", []),
-        )
+        alerts = history.get("clamp_alerts")
+        if alerts is None:
+            hist = cast(HistoryLog, history.setdefault("clamp_alerts", []))
+        elif isinstance(alerts, MutableSequence):
+            hist = cast(HistoryLog, alerts)
+        else:
+            materialized = ensure_collection(alerts, max_materialize=None)
+            hist = cast(HistoryLog, list(materialized))
+            history["clamp_alerts"] = hist
         _log_clamp(hist, node, "EPI", float(epi), eps_min, eps_max)
         _log_clamp(hist, node, "VF", float(vf), vf_min, vf_max)
 
