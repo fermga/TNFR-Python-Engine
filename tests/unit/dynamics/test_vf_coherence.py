@@ -9,6 +9,7 @@ import pytest
 
 from tnfr.constants import inject_defaults
 from tnfr.dynamics import adapt_vf_by_coherence, step
+from tnfr.dynamics.adaptation import _vf_adapt_chunk
 from tnfr.utils import get_numpy
 
 
@@ -25,6 +26,35 @@ def _coherence_test_graph(graph_canon):
         nd["stable_count"] = 0
     G.nodes[0]["νf"] = 0.2
     G.nodes[1]["νf"] = 1.0
+    return G
+
+
+def _vf_clamp_test_graph(graph_canon):
+    G = graph_canon()
+    G.add_edge("clamp_high", "anchor_high")
+    G.add_edge("clamp_low", "anchor_low")
+    inject_defaults(G)
+    G.graph["VF_ADAPT_TAU"] = 1
+    G.graph["VF_ADAPT_MU"] = 1.5
+    G.graph["EPS_DNFR_STABLE"] = 1.0
+    selector_thresholds = dict(G.graph.get("SELECTOR_THRESHOLDS", {}))
+    selector_thresholds["si_hi"] = 0.8
+    G.graph["SELECTOR_THRESHOLDS"] = selector_thresholds
+
+    for node in G.nodes:
+        nd = G.nodes[node]
+        nd["ΔNFR"] = 0.0
+        nd["stable_count"] = 0
+        if node.startswith("clamp_"):
+            nd["Si"] = 0.9
+        else:
+            nd["Si"] = 0.2
+
+    G.nodes["clamp_high"]["νf"] = 0.2
+    G.nodes["anchor_high"]["νf"] = 2.5
+    G.nodes["clamp_low"]["νf"] = 0.8
+    G.nodes["anchor_low"]["νf"] = -1.5
+
     return G
 
 
@@ -126,3 +156,40 @@ def test_adapt_vf_noop_on_empty_graph():
 
     # Should exit early without raising even when the graph is empty.
     adapt_vf_by_coherence(empty)
+
+
+@pytest.mark.parametrize("mode", ["vectorised", "python"])
+def test_adapt_vf_clamps_to_bounds(graph_canon, monkeypatch, mode):
+    G = _vf_clamp_test_graph(graph_canon)
+    vf_min = float(G.graph["VF_MIN"])
+    vf_max = float(G.graph["VF_MAX"])
+
+    if mode == "vectorised":
+        if get_numpy() is None:
+            pytest.skip("NumPy not available for vectorised branch")
+        adapt_vf_by_coherence(G)
+    else:
+        monkeypatch.setattr("tnfr.dynamics.get_numpy", lambda: None)
+        monkeypatch.setattr("tnfr.dynamics.adaptation.get_numpy", lambda: None)
+
+        class _DummyExecutor:
+            def __init__(self, *args, **kwargs):
+                pass
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+            def map(self, func, iterable):
+                for item in iterable:
+                    yield _vf_adapt_chunk(item)
+
+        monkeypatch.setattr(
+            "tnfr.dynamics.adaptation.ProcessPoolExecutor", _DummyExecutor
+        )
+        adapt_vf_by_coherence(G, n_jobs=2)
+
+    assert G.nodes["clamp_high"]["νf"] == pytest.approx(vf_max)
+    assert G.nodes["clamp_low"]["νf"] == pytest.approx(vf_min)
