@@ -12,6 +12,7 @@ from tnfr.dynamics.selectors import ParametricGlyphSelector, _apply_score_overri
 from tnfr.selector import (
     _apply_selector_hysteresis,
     _calc_selector_score,
+    _selector_parallel_jobs,
     _selector_norms,
     _selector_thresholds,
 )
@@ -95,6 +96,21 @@ def test_selector_thresholds_cache_releases_graph(graph_canon):
 
     assert ref() is None
     assert len(selector._SELECTOR_THRESHOLD_CACHE) == 0
+
+
+@pytest.mark.parametrize("n_jobs", ["bad", -2, "0", None])
+def test_selector_parallel_jobs_returns_none_for_invalid_inputs(graph_canon, n_jobs):
+    G = graph_canon()
+    G.graph["GLYPH_SELECTOR_N_JOBS"] = n_jobs
+
+    assert _selector_parallel_jobs(G) is None
+
+
+def test_selector_parallel_jobs_converts_numeric_string(graph_canon):
+    G = graph_canon()
+    G.graph["GLYPH_SELECTOR_N_JOBS"] = "4"
+
+    assert _selector_parallel_jobs(G) == 4
 
 
 def test_selector_norms_computes_max(graph_canon):
