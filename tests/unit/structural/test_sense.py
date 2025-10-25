@@ -1,14 +1,19 @@
 """Unit tests for sense utilities computing sigma vectors and glyph metrics."""
 
+import math
 import time
 
 import pytest
 
+from tnfr.callback_utils import CallbackEvent, callback_manager
+from tnfr.glyph_history import ensure_history
 from tnfr.sense import (
     _node_weight,
     _sigma_from_iterable,
     glyph_angle,
     glyph_unit,
+    push_sigma_snapshot,
+    register_sigma_callback,
     sigma_rose,
     sigma_vector_from_graph,
     sigma_vector_node,
@@ -148,3 +153,103 @@ def test_sigma_rose_valid_and_invalid_steps(graph_canon):
     assert res[Glyph.EN.value] == 4
     with pytest.raises(ValueError):
         sigma_rose(G, steps=-1)
+
+
+def test_push_sigma_snapshot_disabled_skips_history(graph_canon):
+    G = _make_graph(graph_canon)
+    G.graph["SIGMA"] = dict(G.graph["SIGMA"], enabled=False)
+    sentinel_list = ["baseline"]
+    hist = {"untouched": sentinel_list}
+    G.graph["history"] = hist
+
+    push_sigma_snapshot(G)
+
+    assert G.graph["history"] is hist
+    assert list(hist) == ["untouched"]
+    assert hist["untouched"] is sentinel_list
+
+
+def test_push_sigma_snapshot_applies_smoothing(graph_canon):
+    G = _make_graph(graph_canon)
+    alpha = 0.4
+    G.graph["SIGMA"] = dict(G.graph["SIGMA"], enabled=True, smooth=alpha)
+    hist = ensure_history(G)
+    previous = {
+        "x": 0.5,
+        "y": -0.25,
+        "mag": math.hypot(0.5, -0.25),
+        "angle": math.atan2(-0.25, 0.5),
+        "n": 3,
+        "t": 1.0,
+    }
+    hist.setdefault("sigma_global", []).append(previous.copy())
+    original_counts_len = len(hist.get("sigma_counts", []))
+
+    current_vector = sigma_vector_from_graph(G)
+    current_time = 2.5
+    G.graph["_t"] = current_time
+
+    push_sigma_snapshot(G)
+
+    sigma_history = hist["sigma_global"]
+    assert len(sigma_history) == 2
+    new_entry = sigma_history[-1]
+
+    expected_x = (1 - alpha) * previous["x"] + alpha * current_vector["x"]
+    expected_y = (1 - alpha) * previous["y"] + alpha * current_vector["y"]
+    assert new_entry["x"] == pytest.approx(expected_x)
+    assert new_entry["y"] == pytest.approx(expected_y)
+    assert new_entry["mag"] == pytest.approx(math.hypot(expected_x, expected_y))
+    assert new_entry["angle"] == pytest.approx(math.atan2(expected_y, expected_x))
+    assert new_entry["n"] == current_vector["n"]
+    assert new_entry["t"] == pytest.approx(current_time)
+
+    counts = hist["sigma_counts"]
+    assert len(counts) == original_counts_len + 1
+    assert counts[-1]["t"] == pytest.approx(current_time)
+
+
+def test_push_sigma_snapshot_records_per_node_traces(graph_canon):
+    G = graph_canon()
+    G.graph["SIGMA"] = dict(G.graph["SIGMA"], enabled=True, per_node=True)
+    G.graph["_t"] = 7.0
+    G.add_node(0, glyph_history=[Glyph.AL.value, Glyph.EN.value], Si=1.0)
+    G.add_node(1, glyph_history=[Glyph.IL.value], Si=0.4)
+    G.add_node(2, Si=0.2)
+    hist = ensure_history(G)
+    original_counts_len = len(hist.get("sigma_counts", []))
+
+    push_sigma_snapshot(G)
+
+    per_node = hist["sigma_per_node"]
+    assert set(per_node) == {0, 1}
+
+    node0_entry = per_node[0][-1]
+    assert node0_entry["t"] == pytest.approx(7.0)
+    assert node0_entry["g"] == Glyph.EN.value
+    assert node0_entry["angle"] == pytest.approx(glyph_angle(Glyph.EN.value))
+
+    node1_entry = per_node[1][-1]
+    assert node1_entry["t"] == pytest.approx(7.0)
+    assert node1_entry["g"] == Glyph.IL.value
+    assert node1_entry["angle"] == pytest.approx(glyph_angle(Glyph.IL.value))
+
+    counts = hist["sigma_counts"]
+    assert len(counts) == original_counts_len + 1
+    counts_entry = counts[-1]
+    assert counts_entry["t"] == pytest.approx(7.0)
+    assert counts_entry[Glyph.EN.value] == 1
+    assert counts_entry[Glyph.IL.value] == 1
+
+
+def test_register_sigma_callback_attaches_after_step(graph_canon):
+    G = graph_canon()
+
+    register_sigma_callback(G)
+
+    registry = callback_manager._ensure_callbacks(G)
+    after_step = registry[CallbackEvent.AFTER_STEP.value]
+    spec = after_step["sigma_snapshot"]
+
+    assert spec.name == "sigma_snapshot"
+    assert spec.func is push_sigma_snapshot
