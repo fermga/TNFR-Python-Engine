@@ -205,6 +205,20 @@ def test_resolve_integrator_instance_rejects_non_integrator_returns():
         runtime._resolve_integrator_instance(G)
 
 
+def test_resolve_integrator_instance_rejects_non_callable_integrator():
+    G = nx.Graph()
+    G.graph["integrator"] = "not-a-callable"
+
+    with pytest.raises(
+        TypeError,
+        match="Graph integrator must be an AbstractIntegrator, subclass or callable",
+    ):
+        runtime._resolve_integrator_instance(G)
+
+    assert runtime._INTEGRATOR_CACHE_KEY not in G.graph
+    assert G.graph.pop(runtime._INTEGRATOR_CACHE_KEY, None) is None
+
+
 def test_resolve_integrator_instance_uses_cache(monkeypatch):
     G = nx.Graph()
 
