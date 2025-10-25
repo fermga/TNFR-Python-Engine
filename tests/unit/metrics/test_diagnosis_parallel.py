@@ -39,6 +39,20 @@ def _capture_diagnostics(G, *, jobs: int | None) -> dict:
     return hist[key][-1]
 
 
+@pytest.fixture
+def graph_with_mixed_case_history(graph_canon):
+    graph = _build_ring_graph(graph_canon)
+    key = get_param(graph, "DIAGNOSIS").get("history_key", "nodal_diag")
+    placeholder = object()
+    snapshot = {
+        0: {"state": "Stable", "note": "needs canonical form"},
+        1: {"state": "DISSONANT"},
+        2: placeholder,
+    }
+    graph.graph.setdefault("history", {})[key] = [snapshot]
+    return graph, key, snapshot, placeholder
+
+
 @contextmanager
 def numpy_disabled(monkeypatch):
     from tnfr.metrics import diagnosis as diagnosis_module
@@ -90,3 +104,13 @@ def test_diagnosis_python_parallel_without_numpy(graph_canon, monkeypatch):
         parallel = _capture_diagnostics(parallel_graph, jobs=3)
 
     assert parallel == baseline
+
+
+def test_existing_history_states_are_canonicalised(graph_with_mixed_case_history):
+    graph, key, snapshot, placeholder = graph_with_mixed_case_history
+
+    _capture_diagnostics(graph, jobs=1)
+
+    assert snapshot[0]["state"] == "stable"
+    assert snapshot[1]["state"] == "dissonant"
+    assert snapshot[2] is placeholder
