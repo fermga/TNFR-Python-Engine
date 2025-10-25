@@ -188,6 +188,108 @@ def test_gamma_worker_requires_parallel_graph(monkeypatch):
     integrators_mod._PARALLEL_GRAPH = original_graph
 
 
+class _FakeArray:
+    """Lightweight stand-in for numpy arrays used by increment tests."""
+
+    def __init__(self, data):
+        if isinstance(data, _FakeArray):
+            self._data = data._data
+            self.ndim = data.ndim
+            self.shape = data.shape
+            return
+
+        data = list(data)
+        if data and isinstance(data[0], (list, tuple)):
+            rows = [list(row) for row in data]
+            self._data = rows
+            self.ndim = 2
+            width = len(rows[0]) if rows else 0
+            self.shape = (len(rows), width)
+        else:
+            self._data = [float(x) for x in data]
+            self.ndim = 1
+            self.shape = (len(self._data),)
+
+    def __len__(self):
+        return len(self._data)
+
+    def __iter__(self):
+        if self.ndim == 1:
+            return iter(self._data)
+        return iter(self._data)
+
+    def __getitem__(self, key):
+        if self.ndim == 1:
+            return self._data[key]
+
+        if isinstance(key, tuple):
+            row_key, col_key = key
+            if isinstance(row_key, slice) and row_key == slice(None):
+                if isinstance(col_key, int):
+                    return _FakeArray(row[col_key] for row in self._data)
+            raise TypeError("unsupported slice for _FakeArray")
+
+        return self._data[key]
+
+    def _binary_op(self, other, op):
+        if isinstance(other, _FakeArray):
+            other_values = other._data
+        elif isinstance(other, (list, tuple)):
+            other_values = other
+        else:
+            return _FakeArray(op(value, other) for value in self._data)
+
+        return _FakeArray(op(a, b) for a, b in zip(self._data, other_values))
+
+    def __add__(self, other):
+        return self._binary_op(other, lambda a, b: a + b)
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __sub__(self, other):
+        return self._binary_op(other, lambda a, b: a - b)
+
+    def __rsub__(self, other):
+        if isinstance(other, _FakeArray):
+            return other.__sub__(self)
+        if isinstance(other, (int, float)):
+            return _FakeArray([other] * len(self._data)).__sub__(self)
+        return _FakeArray(other).__sub__(self)
+
+    def __mul__(self, other):
+        return self._binary_op(other, lambda a, b: a * b)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __truediv__(self, other):
+        return self._binary_op(other, lambda a, b: a / b)
+
+    def zeros_like(self):
+        return _FakeArray(0.0 for _ in self._data)
+
+
+class _FakeNumpy:
+    """Small shim exposing the subset of numpy used in the tests."""
+
+    @staticmethod
+    def asarray(data, dtype=float):  # noqa: ARG003 - dtype kept for API parity
+        return _FakeArray(data)
+
+    @staticmethod
+    def zeros_like(arr):
+        if not isinstance(arr, _FakeArray):
+            arr = _FakeArray(arr)
+        return arr.zeros_like()
+
+
+def _use_fake_numpy(monkeypatch):
+    """Force integrator helpers to rely on deterministic fake numpy arrays."""
+
+    monkeypatch.setattr(integrators_mod, "get_numpy", lambda: _FakeNumpy())
+
+
 @pytest.mark.parametrize("method", ["euler", "rk4"])
 def test_apply_increments_vectorised(monkeypatch, method):
     np_mod = pytest.importorskip("numpy")
@@ -246,3 +348,35 @@ def test_apply_increments_vectorised(monkeypatch, method):
 
     for node, values in expected.items():
         assert results[node] == pytest.approx(values)
+
+
+def test_apply_increments_rk4_rejects_incorrect_shape(monkeypatch):
+    _use_fake_numpy(monkeypatch)
+
+    G = nx.path_graph(1)
+    node = next(iter(G.nodes))
+    set_attr(G.nodes[node], integrators_mod.ALIAS_EPI, 0.3)
+    set_attr(G.nodes[node], integrators_mod.ALIAS_DEPI, 0.05)
+
+    increments = {node: (0.1, 0.2, 0.3)}
+
+    with pytest.raises(ValueError, match="rk4 increments require four staged values"):
+        integrators_mod._apply_increments(G, 0.1, increments, method="rk4")
+
+
+def test_apply_increments_zero_dt_preserves_second_derivative(monkeypatch):
+    _use_fake_numpy(monkeypatch)
+
+    G = nx.path_graph(1)
+    node = next(iter(G.nodes))
+    set_attr(G.nodes[node], integrators_mod.ALIAS_EPI, -0.4)
+    set_attr(G.nodes[node], integrators_mod.ALIAS_DEPI, 0.5)
+
+    increments = {node: (0.1, 0.2, 0.3, 0.4)}
+
+    results = integrators_mod._apply_increments(G, 0.0, increments, method="rk4")
+
+    epi, dEPI_dt, d2EPI = results[node]
+    assert epi == pytest.approx(-0.4 + (0.0 / 6.0) * (0.1 + 2 * 0.2 + 2 * 0.3 + 0.4))
+    assert dEPI_dt == pytest.approx(0.4)
+    assert d2EPI == pytest.approx(0.0)
