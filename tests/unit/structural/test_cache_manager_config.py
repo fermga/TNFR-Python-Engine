@@ -50,3 +50,13 @@ def test_configure_from_mapping_ignores_non_mapping_overrides(
     assert asdict(manager.export_config()) == asdict(previous)
     assert manager.get_capacity("alpha", requested=1) == 16
     assert manager.get_capacity("beta", requested=1) is None
+
+
+def test_configure_rejects_negative_capacity_values() -> None:
+    manager = CacheManager()
+
+    with pytest.raises(ValueError, match="capacity must be non-negative or None"):
+        manager.configure(default_capacity=-1)
+
+    with pytest.raises(ValueError, match="capacity must be non-negative or None"):
+        manager.configure(overrides={"bad": -2})
