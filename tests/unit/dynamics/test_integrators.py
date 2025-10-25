@@ -8,6 +8,7 @@ import pytest
 from tnfr.alias import set_attr
 from tnfr.constants import inject_defaults
 from tnfr.dynamics import integrators as integrators_mod
+from tnfr.dynamics.integrators import _apply_increment_chunk
 from tnfr.dynamics import update_epi_via_nodal_equation, validate_canon
 from tnfr.initialization import init_node_attrs
 
@@ -52,6 +53,28 @@ def test_chunk_nodes_preserves_order(nodes, chunk_size, expected):
 
     chunks = list(integrators_mod._chunk_nodes(nodes, chunk_size))
     assert chunks == expected
+
+
+@pytest.mark.parametrize(
+    "method, ks",
+    [
+        ("euler", (0.2,)),
+        ("rk4", (0.1, 0.2, 0.3, 0.4)),
+    ],
+)
+def test_apply_increment_chunk_zero_dt_preserves_second_derivative(method, ks):
+    """Scalar fallback should clamp the second derivative when the step is null."""
+
+    chunk = [(0, 1.0, 0.4, ks)]
+
+    results = _apply_increment_chunk(chunk, dt_step=0.0, method=method)
+
+    assert len(results) == 1
+    node, (epi, dEPI_dt, d2EPI) = results[0]
+    assert node == 0
+    assert epi == pytest.approx(1.0)
+    assert dEPI_dt == pytest.approx(ks[-1])
+    assert d2EPI == pytest.approx(0.0)
 
 
 def test_prepare_integration_params_validations_and_dt_min():
