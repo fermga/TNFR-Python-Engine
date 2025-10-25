@@ -7,12 +7,50 @@ import pytest
 
 from tnfr.alias import get_attr
 from tnfr.constants import get_aliases
-from tnfr.dynamics import integrators as integrators_mod
+import tnfr.dynamics.integrators as integrators
 from tnfr.dynamics.integrators import update_epi_via_nodal_equation
 
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_DEPI = get_aliases("DEPI")
 ALIAS_D2EPI = get_aliases("D2EPI")
+
+
+@pytest.fixture(autouse=True)
+def inline_process_executor(monkeypatch: pytest.MonkeyPatch) -> None:
+    class InlineExecutor:
+        def __init__(
+            self,
+            max_workers: int | None = None,
+            *,
+            mp_context: Any | None = None,
+            initializer: Any | None = None,
+            initargs: tuple[Any, ...] = (),
+        ) -> None:
+            self.max_workers = max_workers
+            self.mp_context = mp_context
+            self.initializer = initializer
+            self.initargs = initargs
+            if initializer is not None:
+                initializer(*initargs)
+
+        def __enter__(self) -> "InlineExecutor":
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> bool:
+            return False
+
+        @staticmethod
+        def submit(fn, *args, **kwargs):
+            class Result:
+                def __init__(self, value):
+                    self._value = value
+
+                def result(self):
+                    return self._value
+
+            return Result(fn(*args, **kwargs))
+
+    monkeypatch.setattr(integrators, "ProcessPoolExecutor", InlineExecutor)
 
 
 def _build_sample_graph() -> nx.DiGraph:
@@ -80,7 +118,7 @@ def test_parallel_fallback_without_numpy(
         np_missing_calls += 1
         return None
 
-    monkeypatch.setattr(integrators_mod, "get_numpy", fake_get_numpy)
+    monkeypatch.setattr(integrators, "get_numpy", fake_get_numpy)
 
     serial = copy.deepcopy(base)
     parallel = copy.deepcopy(base)
@@ -104,8 +142,8 @@ def test_evaluate_gamma_map_parallel_variants(monkeypatch: pytest.MonkeyPatch) -
     def fake_eval_gamma(graph: nx.DiGraph, node: int, t: float) -> float:
         return float(graph.nodes[node]["VF"]) + t
 
-    monkeypatch.setattr(integrators_mod, "eval_gamma", fake_eval_gamma)
-    monkeypatch.setattr(integrators_mod, "_PARALLEL_GRAPH", None, raising=False)
+    monkeypatch.setattr(integrators, "eval_gamma", fake_eval_gamma)
+    monkeypatch.setattr(integrators, "_PARALLEL_GRAPH", None, raising=False)
 
     class _ImmediateFuture:
         def __init__(self, value: list[tuple[int, float]]):
@@ -145,9 +183,9 @@ def test_evaluate_gamma_map_parallel_variants(monkeypatch: pytest.MonkeyPatch) -
             return _ImmediateFuture(fn(task))
 
     SyncExecutor.instances = []
-    monkeypatch.setattr(integrators_mod, "ProcessPoolExecutor", SyncExecutor)
+    monkeypatch.setattr(integrators, "ProcessPoolExecutor", SyncExecutor)
 
-    baseline = integrators_mod._evaluate_gamma_map(G, nodes, t_val, n_jobs=None)
+    baseline = integrators._evaluate_gamma_map(G, nodes, t_val, n_jobs=None)
 
     for node in nodes:
         expected_value = float(G.nodes[node]["VF"]) + t_val
@@ -155,7 +193,7 @@ def test_evaluate_gamma_map_parallel_variants(monkeypatch: pytest.MonkeyPatch) -
 
     for jobs in (None, 1, len(nodes) + 5, str(len(nodes) + 3)):
         prev_instances = len(SyncExecutor.instances)
-        result = integrators_mod._evaluate_gamma_map(G, nodes, t_val, n_jobs=jobs)
+        result = integrators._evaluate_gamma_map(G, nodes, t_val, n_jobs=jobs)
         assert result == baseline
         if jobs in (None, 1):
             assert len(SyncExecutor.instances) == prev_instances
@@ -171,7 +209,7 @@ def test_evaluate_gamma_map_parallel_variants(monkeypatch: pytest.MonkeyPatch) -
         chunked_nodes = [node for chunk, _ in instance.tasks for node in chunk]
         assert chunked_nodes == nodes
 
-    assert integrators_mod._PARALLEL_GRAPH is G
+    assert integrators._PARALLEL_GRAPH is G
 
 
 def test_evaluate_gamma_map_single_node_falls_back(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -182,7 +220,7 @@ def test_evaluate_gamma_map_single_node_falls_back(monkeypatch: pytest.MonkeyPat
     def fake_eval_gamma(graph: nx.DiGraph, target: int, t: float) -> float:
         return float(graph.nodes[target]["VF"]) - t
 
-    monkeypatch.setattr(integrators_mod, "eval_gamma", fake_eval_gamma)
+    monkeypatch.setattr(integrators, "eval_gamma", fake_eval_gamma)
 
     calls = {"executor": 0}
 
@@ -199,10 +237,36 @@ def test_evaluate_gamma_map_single_node_falls_back(monkeypatch: pytest.MonkeyPat
         def submit(self, fn, task):
             raise AssertionError("Executor should not be used for single node")
 
-    monkeypatch.setattr(integrators_mod, "ProcessPoolExecutor", TrackingExecutor)
+    monkeypatch.setattr(integrators, "ProcessPoolExecutor", TrackingExecutor)
 
     expected = {node: float(G.nodes[node]["VF"]) - t_val}
-    result = integrators_mod._evaluate_gamma_map(G, [node], t_val, n_jobs=999)
+    result = integrators._evaluate_gamma_map(G, [node], t_val, n_jobs=999)
 
     assert result == expected
     assert calls["executor"] == 0
+
+
+def test_gamma_worker_requires_initialisation(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(integrators, "_PARALLEL_GRAPH", None, raising=False)
+
+    with pytest.raises(RuntimeError):
+        integrators._gamma_worker(([0], 0.0))
+
+    graph = _build_sample_graph()
+    nodes = list(graph.nodes)[:2]
+    t_val = 0.125
+    calls: list[int] = []
+
+    def fake_eval_gamma(graph_obj: nx.DiGraph, node: int, t: float) -> float:
+        assert graph_obj is graph
+        assert t == t_val
+        calls.append(node)
+        return float(node) + t
+
+    monkeypatch.setattr(integrators, "eval_gamma", fake_eval_gamma)
+
+    integrators._gamma_worker_init(graph)
+    result = integrators._gamma_worker((nodes, t_val))
+
+    assert calls == nodes
+    assert result == [(node, pytest.approx(float(node) + t_val)) for node in nodes]
