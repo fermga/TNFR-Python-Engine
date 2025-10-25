@@ -27,3 +27,13 @@ def test_parse_program_tokens_requires_thol_close_glyph_type():
     payload = {"THOL": {"body": [], "close": 123}}
     with pytest.raises(TypeError, match="THOL close glyph must be"):
         parse_program_tokens([payload])
+
+
+def test_parse_program_tokens_rejects_non_iterable_source():
+    with pytest.raises(TypeError, match="123 is not iterable"):
+        parse_program_tokens(123)
+
+
+def test_parse_program_tokens_requires_thol_mapping():
+    with pytest.raises(TypeError, match="THOL specification must be a mapping"):
+        parse_program_tokens([{"THOL": "bad"}])
