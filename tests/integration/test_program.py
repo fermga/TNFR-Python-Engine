@@ -398,6 +398,18 @@ def test_thol_repeat_lt_one_raises():
         compile_sequence([THOL(body=[], repeat=0)])
 
 
+def test_flatten_rejects_unsupported_token_type():
+    class CustomTarget(TARGET):
+        pass
+
+    token = CustomTarget([1])
+    ops = compile_sequence([token])
+    assert ops == [(OpTag.TARGET, token)]
+
+    with pytest.raises(TypeError, match="Unsupported token"):
+        compile_sequence([object()])
+
+
 def test_thol_evaluator_multiple_repeats():
     ops = compile_sequence([THOL(body=[Glyph.AL, Glyph.RA], repeat=3)])
     assert ops == [
