@@ -194,3 +194,23 @@ def test_apply_glyph_with_grammar_accepts_iterables(graph_canon):
     apply_glyph_with_grammar(G2, (n for n in G2.nodes()), Glyph.ZHIR, 1)
     assert G2.nodes[0]["glyph_history"][-1] == Glyph.ZHIR
     assert G2.nodes[1]["glyph_history"][-1] == Glyph.ZHIR
+
+
+def test_apply_glyph_with_grammar_defaults_window_from_graph(graph_canon, monkeypatch):
+    G = graph_canon()
+    G.add_node(0)
+    inject_defaults(G)
+
+    sentinel = 5
+    G.graph["GLYPH_HYSTERESIS_WINDOW"] = sentinel
+
+    captured = {}
+
+    def fake_apply_glyph(graph, node_id, glyph, *, window=None):
+        captured["window"] = window
+
+    monkeypatch.setattr("tnfr.validation.grammar.apply_glyph", fake_apply_glyph)
+
+    apply_glyph_with_grammar(G, [0], Glyph.AL)
+
+    assert captured["window"] == sentinel
