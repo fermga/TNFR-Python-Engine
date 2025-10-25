@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 from collections import deque
 from typing import Any
 
@@ -314,3 +315,19 @@ def test_run_rejects_negative_steps(graph_canon):
 
     with pytest.raises(ValueError, match="must be non-negative"):
         runtime.run(G, steps=-1)
+
+
+def test_run_negative_steps_preserve_stop_state_and_history(graph_canon):
+    """Rejecting negative steps must leave STOP_EARLY state and history untouched."""
+
+    G = graph_canon()
+    stop_cfg_before = copy.deepcopy(G.graph.get("STOP_EARLY"))
+    assert stop_cfg_before is not None
+    # ``history`` should not be created or mutated when ``run`` aborts early.
+    G.graph.pop("history", None)
+
+    with pytest.raises(ValueError, match="must be non-negative"):
+        runtime.run(G, steps=-1)
+
+    assert G.graph.get("STOP_EARLY") == stop_cfg_before
+    assert "history" not in G.graph
