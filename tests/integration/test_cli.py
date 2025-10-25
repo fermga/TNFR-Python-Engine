@@ -195,6 +195,25 @@ def test_cli_metrics_accepts_summary_limit(monkeypatch):
     assert recorded["series_limit"] == 7
 
 
+def test_cli_metrics_uses_default_steps(monkeypatch):
+    recorded: dict[str, Any] = {}
+
+    def fake_run_cli_program(args):  # noqa: ANN001 - test helper
+        recorded["args_steps"] = getattr(args, "steps", None)
+        return 0, object()
+
+    def fake_build_summary(graph, *, series_limit=None):  # noqa: ANN001 - test helper
+        return {}, False
+
+    monkeypatch.setattr("tnfr.cli.execution._run_cli_program", fake_run_cli_program)
+    monkeypatch.setattr("tnfr.cli.execution.build_metrics_summary", fake_build_summary)
+
+    rc = main(["metrics"])
+
+    assert rc == 0
+    assert recorded["args_steps"] == 200
+
+
 def test_cli_run_saves_history_when_requested(monkeypatch, tmp_path):
     sentinel_history = {"history": "sentinel"}
     saved_calls: deque[tuple[str, Any]] = deque()
