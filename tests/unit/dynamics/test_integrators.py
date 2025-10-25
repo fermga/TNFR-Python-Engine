@@ -12,6 +12,48 @@ from tnfr.dynamics import update_epi_via_nodal_equation, validate_canon
 from tnfr.initialization import init_node_attrs
 
 
+@pytest.mark.parametrize(
+    "hint,total",
+    [
+        (None, 10),
+        ("invalid", 10),
+        (0, 10),
+        (-3, 10),
+        (1, 10),
+        (4, 1),
+    ],
+)
+def test_normalise_jobs_rejects_invalid_and_degenerate_inputs(hint, total):
+    """_normalise_jobs should fall back to serial execution when hints are unusable."""
+
+    assert integrators_mod._normalise_jobs(hint, total) is None
+
+
+def test_normalise_jobs_clamps_to_available_nodes():
+    """Large worker hints must be capped by the available node count."""
+
+    assert integrators_mod._normalise_jobs(32, 5) == 5
+    assert integrators_mod._normalise_jobs(2.9, 8) == 2
+
+
+@pytest.mark.parametrize(
+    "nodes,chunk_size,expected",
+    [
+        ([], 3, []),
+        (["a"], 5, [["a"]]),
+        (list(range(5)), 10, [list(range(5))]),
+        (list(range(5)), 2, [[0, 1], [2, 3], [4]]),
+        (list(range(6)), 4, [[0, 1, 2, 3], [4, 5]]),
+        (list(range(4)), 1, [[0], [1], [2], [3]]),
+    ],
+)
+def test_chunk_nodes_preserves_order(nodes, chunk_size, expected):
+    """Chunking helper should yield deterministic slices covering the full sequence."""
+
+    chunks = list(integrators_mod._chunk_nodes(nodes, chunk_size))
+    assert chunks == expected
+
+
 def test_prepare_integration_params_validations_and_dt_min():
     G = nx.path_graph(3)
     inject_defaults(G)
