@@ -195,6 +195,48 @@ def test_cli_metrics_accepts_summary_limit(monkeypatch):
     assert recorded["series_limit"] == 7
 
 
+def test_cmd_metrics_aborts_without_summary_on_failure(monkeypatch):
+    summary_called = False
+
+    def fake_run_cli_program(args):  # noqa: ANN001 - test helper
+        return 1, None
+
+    def fake_build_summary(*args, **kwargs):  # noqa: ANN001 - test helper
+        nonlocal summary_called
+        summary_called = True
+        return {}, False
+
+    monkeypatch.setattr("tnfr.cli.execution._run_cli_program", fake_run_cli_program)
+    monkeypatch.setattr("tnfr.cli.execution.build_metrics_summary", fake_build_summary)
+
+    rc = main(["metrics"])
+
+    assert rc == 1
+    assert summary_called is False
+
+
+def test_cmd_metrics_skips_summary_when_graph_missing(monkeypatch, capsys):
+    summary_called = False
+
+    def fake_run_cli_program(args):  # noqa: ANN001 - test helper
+        return 0, None
+
+    def fake_build_summary(*args, **kwargs):  # noqa: ANN001 - test helper
+        nonlocal summary_called
+        summary_called = True
+        return {}, False
+
+    monkeypatch.setattr("tnfr.cli.execution._run_cli_program", fake_run_cli_program)
+    monkeypatch.setattr("tnfr.cli.execution.build_metrics_summary", fake_build_summary)
+
+    rc = main(["metrics"])
+    captured = capsys.readouterr()
+
+    assert rc == 0
+    assert summary_called is False
+    assert captured.out == ""
+
+
 def test_sequence_defaults_to_canonical(monkeypatch):
     recorded: dict[str, Any] = {}
     sentinel = object()
