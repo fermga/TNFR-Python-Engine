@@ -153,3 +153,51 @@ def test_parametric_selector_skips_hysteresis_with_none_margin(graph_canon):
     glyph = selector.select(G, node)
 
     assert glyph == "OZ"
+
+
+def test_soft_grammar_prefilter_respects_avoid_repeats(graph_canon):
+    G = graph_canon()
+    thresholds = {
+        "si_hi": 0.9,
+        "si_lo": 0.1,
+        "dnfr_hi": 0.95,
+        "dnfr_lo": 0.05,
+        "accel_hi": 0.95,
+        "accel_lo": 0.05,
+    }
+    G.graph["SELECTOR_THRESHOLDS"] = thresholds
+    G.graph["_sel_norms"] = {"dnfr_max": 1.0, "accel_max": 1.0}
+    G.graph["GLYPH_SELECTOR_MARGIN"] = 0.0
+    G.graph["GRAMMAR"] = {
+        "window": 3,
+        "avoid_repeats": ["RA"],
+        "fallbacks": {"RA": "OZ"},
+        "force_dnfr": 0.8,
+        "force_accel": 0.7,
+    }
+
+    node = 0
+    G.add_node(
+        node,
+        glyph_history=["RA"],
+        **{
+            ALIAS_SI[0]: 0.5,
+            ALIAS_DNFR[-1]: 0.2,
+            ALIAS_D2EPI[-1]: 0.2,
+        },
+    )
+
+    selector = ParametricGlyphSelector()
+    fallback = selector.select(G, node)
+    assert fallback == "OZ"
+
+    G.nodes[node].update(
+        {
+            ALIAS_DNFR[-1]: 0.85,
+            ALIAS_D2EPI[-1]: 0.2,
+            "glyph_history": ["RA"],
+        }
+    )
+
+    forced = selector.select(G, node)
+    assert forced == "RA"
