@@ -136,6 +136,16 @@ def test_update_epi_skips_eval_gamma_when_none(method, monkeypatch):
     assert calls == 0
 
 
+def test_gamma_worker_requires_parallel_graph(monkeypatch):
+    original_graph = integrators_mod._PARALLEL_GRAPH
+    monkeypatch.setattr(integrators_mod, "_PARALLEL_GRAPH", None)
+
+    with pytest.raises(RuntimeError, match="Parallel Γ worker"):
+        integrators_mod._gamma_worker(([0], 0.0))
+
+    integrators_mod._PARALLEL_GRAPH = original_graph
+
+
 @pytest.mark.parametrize("method", ["euler", "rk4"])
 def test_apply_increments_vectorised(monkeypatch, method):
     np_mod = pytest.importorskip("numpy")
