@@ -43,6 +43,16 @@ def test_sigma_vector_from_graph_paths(graph_canon):
     assert sv_epi["mag"] == pytest.approx(2 * sv_si["mag"])
 
 
+def test_sigma_vector_from_graph_rejects_non_graph(graph_canon):
+    with pytest.raises(TypeError, match="requires a networkx.Graph"):
+        sigma_vector_from_graph(object())
+
+    # Positive path sanity check to ensure the canonical fixture still works.
+    G = _make_graph(graph_canon)
+    vec = sigma_vector_from_graph(G)
+    assert vec["n"] == 1
+
+
 def _sigma_vector_from_graph_naive(G, weight_mode: str = "Si"):
     """Reference implementation recomputing ``glyph_unit(g) * w`` at each step."""
     pairs = []
