@@ -7,9 +7,15 @@ from typing import Any
 
 import pickle
 
+import pytest
+
 from tnfr.alias import get_attr
 from tnfr.constants import get_aliases
-from tnfr.dynamics.dnfr import _apply_dnfr_hook
+from tnfr.dynamics.dnfr import (
+    _apply_dnfr_hook,
+    _iter_chunk_offsets,
+    _resolve_parallel_jobs,
+)
 
 ALIAS_DNFR = get_aliases("DNFR")
 
@@ -55,6 +61,35 @@ def _grad_bias(graph, node, data):
 
 def _grad_degree(graph, node, _data):
     return float(graph.degree(node))
+
+
+@pytest.mark.parametrize(
+    ("n_jobs", "total"),
+    [
+        (None, 5),
+        ("bad", 5),
+        (0, 5),
+        (2, 0),
+        (2, 1),
+    ],
+)
+def test_resolve_parallel_jobs_rejects_degenerate_inputs(n_jobs, total):
+    """Parallel worker resolution returns ``None`` for invalid combinations."""
+
+    assert _resolve_parallel_jobs(n_jobs, total) is None
+
+
+def test_iter_chunk_offsets_handles_small_inputs_and_partitions():
+    """Chunk iterator is inert for small totals and deterministic when active."""
+
+    for total, jobs in ((0, 4), (-2, 3), (4, 1), (4, 0)):
+        result = _iter_chunk_offsets(total, jobs)
+        if result is None:
+            assert result is None
+        else:
+            assert list(result) == []
+
+    assert list(_iter_chunk_offsets(5, 3)) == [(0, 2), (2, 4), (4, 5)]
 
 
 def test_parallel_chunks_cover_all_nodes_once(monkeypatch, graph_canon):
