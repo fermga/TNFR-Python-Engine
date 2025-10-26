@@ -6,7 +6,7 @@ import networkx as nx
 import pytest
 
 from tnfr.dynamics import integrators, runtime
-from tnfr.dynamics.types import TNFRGraph
+from tnfr.types import TNFRGraph
 
 
 class DummyIntegrator(integrators.AbstractIntegrator):
@@ -217,6 +217,25 @@ def test_resolve_integrator_instance_rejects_non_callable_integrator():
 
     assert runtime._INTEGRATOR_CACHE_KEY not in G.graph
     assert G.graph.pop(runtime._INTEGRATOR_CACHE_KEY, None) is None
+
+
+def test_resolve_integrator_instance_ignores_invalid_cache_entries():
+    G = nx.Graph()
+    candidate = DummyIntegrator
+    bogus_instance = object()
+
+    G.graph[runtime._INTEGRATOR_CACHE_KEY] = (candidate, bogus_instance)
+    G.graph["integrator"] = candidate
+
+    resolved = runtime._resolve_integrator_instance(G)
+
+    assert isinstance(resolved, DummyIntegrator)
+    assert resolved is not bogus_instance
+
+    cache_entry = G.graph[runtime._INTEGRATOR_CACHE_KEY]
+    assert cache_entry[0] is candidate
+    assert isinstance(cache_entry[1], DummyIntegrator)
+    assert cache_entry[1] is resolved
 
 
 def test_resolve_integrator_instance_uses_cache(monkeypatch):
