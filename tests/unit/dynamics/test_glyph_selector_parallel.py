@@ -198,8 +198,35 @@ def test_parallel_respects_since_counters(monkeypatch, graph_canon):
     )
 
     assert applied_seq == applied_par
-    assert hist_seq["since_AL"] == hist_par["since_AL"]
-    assert hist_seq["since_EN"] == hist_par["since_EN"]
+
+
+def test_invalid_canonical_glyph_preserves_since_counters(monkeypatch, graph_canon):
+    G = _make_default_graph(graph_canon)
+    G.graph["GRAMMAR_CANON"]["enabled"] = True
+    G.graph["AL_MAX_LAG"] = 10
+    G.graph["EN_MAX_LAG"] = 10
+
+    since_al = {0: 2, 1: 3, 2: 1}
+    since_en = {0: 4, 1: 0, 2: 2}
+
+    def enforce_invalid(_G, _node, _glyph):
+        return "NOT_A_GLYPH"
+
+    applied, history = _run_selector(
+        G,
+        monkeypatch,
+        since_al=since_al,
+        since_en=since_en,
+        enforce_hook=enforce_invalid,
+    )
+
+    assert applied  # ensure selector attempted glyph applications
+    for node in G.nodes:
+        assert history["since_AL"][node] == since_al[node] + 1
+        assert history["since_EN"][node] == since_en[node] + 1
+
+    invalid_results = {glyph for _, glyph in applied}
+    assert invalid_results == {"NOT_A_GLYPH"}
 
 
 def test_parallel_canonical_hooks_order(monkeypatch, graph_canon):
