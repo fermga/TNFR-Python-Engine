@@ -127,6 +127,26 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
     )
     add_common_args(p_run)
     p_run.add_argument("--steps", type=int, default=100)
+    p_run.add_argument(
+        "--use-Si",
+        dest="use_Si",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Recompute the Sense Index during the run (use --no-use-Si to disable)",
+    )
+    p_run.add_argument(
+        "--apply-glyphs",
+        dest="apply_glyphs",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Apply glyphs at every step (use --no-apply-glyphs to disable)",
+    )
+    p_run.add_argument(
+        "--dnfr-n-jobs",
+        dest="dnfr_n_jobs",
+        type=int,
+        help="Override ΔNFR parallel jobs forwarded to the runtime",
+    )
     add_canon_toggle(p_run)
     add_grammar_selector_args(p_run)
     add_history_export_args(p_run)
