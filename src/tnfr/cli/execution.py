@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Optional
@@ -107,7 +108,11 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
     """Apply CLI overrides from ``args`` to graph-level configuration."""
 
     if args.config:
-        apply_config(G, Path(args.config))
+        try:
+            apply_config(G, Path(args.config))
+        except (StructuredFileError, ValueError) as exc:
+            logger.error("%s", exc)
+            raise SystemExit(1) from exc
     arg_map = {
         "dt": ("DT", float),
         "integrator": ("INTEGRATOR_METHOD", str),
@@ -119,8 +124,18 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
         if val is not None:
             G.graph[key] = conv(val)
 
+    base_gcanon: dict[str, Any]
+    existing_gcanon = G.graph.get("GRAMMAR_CANON")
+    if isinstance(existing_gcanon, Mapping):
+        base_gcanon = {
+            **METRIC_DEFAULTS["GRAMMAR_CANON"],
+            **dict(existing_gcanon),
+        }
+    else:
+        base_gcanon = dict(METRIC_DEFAULTS["GRAMMAR_CANON"])
+
     gcanon = {
-        **METRIC_DEFAULTS["GRAMMAR_CANON"],
+        **base_gcanon,
         **_args_to_dict(args, prefix="grammar_"),
     }
     if getattr(args, "grammar_canon", None) is not None:
@@ -252,7 +267,11 @@ def _run_cli_program(
         code = exc.code if isinstance(exc.code, int) else 1
         return code or 1, None
 
-    result_graph = run_program(graph, program, args)
+    try:
+        result_graph = run_program(graph, program, args)
+    except SystemExit as exc:
+        code = exc.code if isinstance(exc.code, int) else 1
+        return code or 1, None
     return 0, result_graph
 
 
