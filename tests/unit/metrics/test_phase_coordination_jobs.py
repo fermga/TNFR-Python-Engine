@@ -290,6 +290,108 @@ def test_coordinate_phase_overrides_and_adaptive_history(
     assert history["phase_kL"][-1] == pytest.approx(graph.graph["PHASE_K_LOCAL"])
 
 
+def test_coordinate_phase_handles_desynced_trig_cache(monkeypatch, graph_canon):
+    graph = graph_canon()
+    target = "beta"
+    nodes = {"alpha": -0.4, target: 0.65, "gamma": 0.2}
+    graph.add_nodes_from(nodes)
+    for name, theta in nodes.items():
+        set_attr(graph.nodes[name], ALIAS_THETA, theta)
+    graph.add_edges_from([("alpha", target), (target, "gamma")])
+
+    graph.graph["PHASE_K_GLOBAL"] = 0.05
+    graph.graph["PHASE_K_LOCAL"] = 0.15
+    graph.graph["PHASE_ADAPT"] = {
+        "enabled": True,
+        "kG_min": 0.05,
+        "kG_max": 0.05,
+        "kL_min": 0.15,
+        "kL_max": 0.15,
+        "up": 1.0,
+        "down": 1.0,
+    }
+    history = {
+        "phase_state": deque(["stable"]),
+        "phase_R": deque([0.21]),
+        "phase_disr": deque([0.05]),
+        "phase_kG": [graph.graph["PHASE_K_GLOBAL"]],
+        "phase_kL": [graph.graph["PHASE_K_LOCAL"]],
+    }
+    graph.graph["history"] = history
+
+    fake_np = _FakeNumPy()
+    monkeypatch.setattr(coordination, "get_numpy", lambda: fake_np)
+
+    original_trig = coordination.get_trig_cache
+
+    def _corrupted_trig_cache(G, *, np=None, cache_size=None):
+        cache = original_trig(G, np=np, cache_size=cache_size)
+        cache.theta.pop(target, None)
+        cache.cos.pop(target, None)
+        cache.sin.pop(target, None)
+        return cache
+
+    monkeypatch.setattr(coordination, "get_trig_cache", _corrupted_trig_cache)
+
+    original_neighbors = coordination.ensure_neighbors_map
+
+    def _corrupted_neighbors(G):
+        mapping = dict(original_neighbors(G))
+        mapping.pop(target, None)
+        return mapping
+
+    monkeypatch.setattr(coordination, "ensure_neighbors_map", _corrupted_neighbors)
+
+    target_node_data = graph.nodes[target]
+    fallback_calls: list[float] = []
+    original_get_theta_attr = coordination.get_theta_attr
+
+    def _tracking_theta_attr(data, default=None, **kwargs):
+        value = original_get_theta_attr(data, default, **kwargs)
+        if data is target_node_data:
+            fallback_calls.append(float(value))
+        return value
+
+    monkeypatch.setattr(coordination, "get_theta_attr", _tracking_theta_attr)
+
+    computed_state = ("transition", 0.72, 0.08)
+
+    def _fake_compute_state(G, cfg):
+        return computed_state
+
+    monkeypatch.setattr(coordination, "_compute_state", _fake_compute_state)
+
+    kG = graph.graph["PHASE_K_GLOBAL"]
+    theta_values = list(nodes.values())
+    mean_cos = sum(math.cos(angle) for angle in theta_values) / len(theta_values)
+    mean_sin = sum(math.sin(angle) for angle in theta_values) / len(theta_values)
+    expected_global = math.atan2(mean_sin, mean_cos)
+    expected_target = nodes[target] + kG * (expected_global - nodes[target])
+
+    state_len = len(history["phase_state"])
+    R_len = len(history["phase_R"])
+    disr_len = len(history["phase_disr"])
+    kG_len = len(history["phase_kG"])
+    kL_len = len(history["phase_kL"])
+
+    coordination.coordinate_global_local_phase(graph)
+
+    assert fallback_calls and fallback_calls[0] == pytest.approx(nodes[target])
+
+    final_theta = get_attr(graph.nodes[target], ALIAS_THETA, 0.0)
+    assert final_theta == pytest.approx(expected_target)
+
+    assert len(history["phase_state"]) == state_len + 1
+    assert history["phase_state"][-1] == computed_state[0]
+    assert len(history["phase_R"]) == R_len + 1
+    assert history["phase_R"][-1] == pytest.approx(computed_state[1])
+    assert len(history["phase_disr"]) == disr_len + 1
+    assert history["phase_disr"][-1] == pytest.approx(computed_state[2])
+    assert len(history["phase_kG"]) == kG_len + 1
+    assert history["phase_kG"][-1] == pytest.approx(kG)
+    assert len(history["phase_kL"]) == kL_len + 1
+    assert history["phase_kL"][-1] == pytest.approx(graph.graph["PHASE_K_LOCAL"])
+
 @pytest.mark.parametrize(
     "state,kG_start,kL_start,expected_kG,expected_kL",
     [
