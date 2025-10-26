@@ -1,4 +1,5 @@
 import networkx as nx
+import pytest
 
 from tnfr.constants import METRIC_DEFAULTS
 from tnfr.ontosim import prepare_network
@@ -82,3 +83,20 @@ def test_prepare_network_reuses_existing_history_state():
     assert "phase_state" in history
     assert id(history["phase_state"]) == history_state_id_before
     assert list(history["phase_state"])[-2:] == [1.0, 2.0]
+
+
+@pytest.mark.parametrize(
+    "tau, expected",
+    (
+        (5, 64),
+        (130, 2 * 130 + 5),
+    ),
+)
+def test_prepare_network_scales_epi_hist_maxlen_with_tau(tau, expected):
+    G = nx.path_graph(2)
+    G.graph["REMESH_TAU_GLOBAL"] = tau
+
+    prepare_network(G)
+
+    epi_hist = G.graph["_epi_hist"]
+    assert epi_hist.maxlen == expected
