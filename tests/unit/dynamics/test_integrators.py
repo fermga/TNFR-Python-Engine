@@ -198,8 +198,26 @@ def test_update_epi_skips_eval_gamma_when_none(method, monkeypatch):
     monkeypatch.setattr(integrators_mod, "eval_gamma", fake_eval_gamma)
 
     update_epi_via_nodal_equation(G, dt=0.3, method=method)
-
     assert calls == 0
+
+
+def test_collect_nodal_increments_rejects_unsupported_method():
+    G = nx.path_graph(2)
+    inject_defaults(G)
+
+    with pytest.raises(ValueError, match="method must be 'euler' or 'rk4'"):
+        integrators_mod._collect_nodal_increments(G, tuple(), method="heun")
+
+
+def test_collect_nodal_increments_validates_rk4_gamma_maps_length():
+    G = nx.path_graph(2)
+    inject_defaults(G)
+
+    with pytest.raises(
+        ValueError,
+        match="rk4 integration requires 4 gamma maps",
+    ):
+        integrators_mod._collect_nodal_increments(G, ({},), method="rk4")
 
 
 def test_gamma_worker_requires_parallel_graph(monkeypatch):
