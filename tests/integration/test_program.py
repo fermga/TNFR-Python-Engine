@@ -246,6 +246,24 @@ def test_target_empty_selection_records_zero_count(graph_canon):
             assert list(history) == []
 
 
+def test_target_generator_materializes_selection(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from(["n1", "n2", "n3"])
+
+    nodes = (node for node in ["n1", "n2"])
+    play(G, seq(target(nodes), Glyph.AL), step_fn=_step_noop)
+
+    trace = list(G.graph["history"]["program_trace"])
+    assert trace[0]["op"] == OpTag.TARGET.name
+    assert trace[0]["n"] == 2
+    assert trace[1]["op"] == OpTag.GLYPH.name
+    assert trace[1]["g"] == Glyph.AL.value
+
+    assert list(G.nodes["n1"]["glyph_history"]) == [Glyph.AL.value]
+    assert list(G.nodes["n2"]["glyph_history"]) == [Glyph.AL.value]
+    assert "glyph_history" not in G.nodes["n3"]
+
+
 @pytest.mark.parametrize(
     "exc_factory",
     [
