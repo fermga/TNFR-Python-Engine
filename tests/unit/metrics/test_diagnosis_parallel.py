@@ -106,6 +106,32 @@ def test_diagnosis_python_parallel_without_numpy(graph_canon, monkeypatch):
     assert parallel == baseline
 
 
+def test_diagnosis_skips_symmetry_when_disabled(graph_canon, monkeypatch):
+    graph = _build_ring_graph(graph_canon, size=3)
+    get_param(graph, "DIAGNOSIS")["compute_symmetry"] = False
+
+    hist = ensure_history(graph)
+    key = get_param(graph, "DIAGNOSIS").get("history_key", "nodal_diag")
+
+    def _fail_vectorized(*args, **kwargs):  # pragma: no cover - should not be called
+        raise AssertionError("vectorized symmetry computation should be disabled")
+
+    def _fail_worker(*args, **kwargs):  # pragma: no cover - should not be called
+        raise AssertionError("worker symmetry computation should be disabled")
+
+    monkeypatch.setattr(
+        "tnfr.metrics.diagnosis._neighbor_means_vectorized", _fail_vectorized
+    )
+    monkeypatch.setattr("tnfr.metrics.diagnosis._neighbor_mean_worker", _fail_worker)
+
+    _diagnosis_step(graph, n_jobs=1)
+
+    snapshot = hist[key][-1]
+    assert snapshot
+    for payload in snapshot.values():
+        assert payload["symmetry"] is None
+
+
 def test_existing_history_states_are_canonicalised(graph_with_mixed_case_history):
     graph, key, snapshot, placeholder = graph_with_mixed_case_history
 
