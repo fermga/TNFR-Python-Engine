@@ -195,6 +195,15 @@ def test_cli_metrics_accepts_summary_limit(monkeypatch):
     assert recorded["series_limit"] == 7
 
 
+def test_build_basic_graph_invalid_probability_literal():
+    args = argparse.Namespace(nodes=3, topology="erdos", p="abc", seed=None)
+
+    with pytest.raises(ValueError) as exc_info:
+        _cli_execution().build_basic_graph(args)
+
+    assert "abc" in str(exc_info.value)
+
+
 def test_cli_metrics_uses_default_steps(monkeypatch):
     recorded: dict[str, Any] = {}
 
