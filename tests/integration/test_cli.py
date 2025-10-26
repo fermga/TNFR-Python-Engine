@@ -9,6 +9,14 @@ import sys
 from collections import deque
 from typing import Any
 
+try:  # pragma: no cover - Python compatibility
+    import tomllib  # type: ignore[attr-defined]
+except ModuleNotFoundError:  # pragma: no cover
+    try:
+        import tomli as tomllib  # type: ignore
+    except ModuleNotFoundError:  # pragma: no cover
+        tomllib = None  # type: ignore
+
 import networkx as nx  # type: ignore[import-untyped]
 import pytest
 
@@ -32,9 +40,32 @@ from tnfr.config.presets import get_preset
 from tnfr.config.constants import GLYPHS_CANONICAL
 from tnfr.constants import METRIC_DEFAULTS, get_param
 from tnfr.execution import CANONICAL_PRESET_NAME, basic_canonical_example
+from tnfr.flatten import parse_program_tokens
 from tnfr.types import Glyph
 
 DEPRECATED_PRESET_TOKEN = "deprecated_canonical_example"
+
+_TOML_SEQUENCE_PAYLOAD = [
+    "AL",
+    {"THOL": {"body": [["OZ", "EN"], "RA"], "repeat": 1}},
+    {"WAIT": 1},
+]
+
+
+@pytest.fixture
+def toml_sequence_path(tmp_path):
+    if tomllib is None:
+        pytest.skip("tomllib/tomli not installed")
+    content = (
+        "sequence = [\n"
+        '  "AL",\n'
+        '  { THOL.body = [["OZ", "EN"], "RA"], THOL.repeat = 1 },\n'
+        "  { WAIT = 1 },\n"
+        "]\n"
+    )
+    path = tmp_path / "program.toml"
+    path.write_text(content, encoding="utf-8")
+    return path
 
 
 def test_cli_version(capsys):
@@ -185,6 +216,23 @@ def test_cli_sequence_handles_deeply_nested_blocks(monkeypatch, tmp_path):
     assert len(trace) == maxlen
     assert trace[0]["g"] == Glyph.THOL.value
     assert trace[-1]["g"] == Glyph.AL.value
+
+
+def test_cli_sequence_toml(monkeypatch, toml_sequence_path):
+    execution_mod = _cli_execution()
+    recorded: dict[str, Any] = {}
+
+    def fake_run_program(graph, program, args):  # noqa: ANN001 - test helper
+        recorded["program"] = program
+        return object()
+
+    monkeypatch.setattr(execution_mod, "run_program", fake_run_program)
+
+    rc = main(["sequence", "--sequence-file", str(toml_sequence_path)])
+
+    assert rc == 0
+    expected = parse_program_tokens(_TOML_SEQUENCE_PAYLOAD)
+    assert recorded["program"] == expected
 
 
 def test_cli_metrics_generates_metrics_payload(monkeypatch, tmp_path):

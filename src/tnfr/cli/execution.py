@@ -197,6 +197,8 @@ def _load_sequence(path: Path) -> ProgramTokens:
             message = str(StructuredFileError(path, exc))
         logger.error("%s", message)
         raise SystemExit(1) from exc
+    if isinstance(data, Mapping) and "sequence" in data:
+        data = data["sequence"]
     return parse_program_tokens(data)
 
 
