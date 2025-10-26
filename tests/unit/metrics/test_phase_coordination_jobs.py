@@ -93,6 +93,67 @@ def test_coordinate_phase_parallel_matches_serial(monkeypatch, graph_canon, phas
         assert th_parallel == pytest.approx(th_serial)
 
 
+@pytest.mark.parametrize("bad_jobs", ["three", 1])
+def test_coordinate_phase_invalid_jobs_stay_sequential(monkeypatch, graph_canon, bad_jobs):
+    graph_factory = graph_canon
+
+    monkeypatch.setattr(coordination, "get_numpy", lambda: None)
+
+    baseline = _build_ring_graph(graph_factory, seed=11, size=4)
+    baseline.graph["PHASE_ADAPT"] = {"enabled": False}
+    baseline.graph["history"] = {}
+
+    expected_thetas: dict[int, float] = {}
+    coordination.coordinate_global_local_phase(baseline, n_jobs=None)
+    for node in baseline.nodes:
+        expected_thetas[node] = get_attr(baseline.nodes[node], ALIAS_THETA, 0.0)
+
+    class _ExplodingExecutor:
+        def __init__(self, *args, **kwargs):  # pragma: no cover - defensive
+            raise AssertionError("ProcessPoolExecutor should not be constructed")
+
+    monkeypatch.setattr(coordination, "ProcessPoolExecutor", _ExplodingExecutor)
+
+    target = _build_ring_graph(graph_factory, seed=11, size=4)
+    target.graph["PHASE_ADAPT"] = {"enabled": False}
+    target.graph["history"] = {}
+
+    coordination.coordinate_global_local_phase(target, n_jobs=bad_jobs)
+
+    for node, expected in expected_thetas.items():
+        assert get_attr(target.nodes[node], ALIAS_THETA, 0.0) == pytest.approx(expected)
+
+
+def test_coordinate_phase_empty_graph_keeps_history(monkeypatch, graph_canon):
+    monkeypatch.setattr(coordination, "get_numpy", lambda: None)
+
+    graph = graph_canon()
+    history = {
+        "phase_state": deque(["stable"]),
+        "phase_R": deque([0.25]),
+        "phase_disr": deque([0.05]),
+        "phase_kG": [0.2],
+        "phase_kL": [0.1],
+    }
+    graph.graph["history"] = history
+    graph.graph["PHASE_ADAPT"] = {"enabled": False}
+
+    inert_snapshots = {
+        key: list(value)
+        for key, value in history.items()
+        if key in {"phase_state", "phase_R", "phase_disr"}
+    }
+    k_lengths = {key: len(value) for key, value in history.items() if key.startswith("phase_k")}
+
+    coordination.coordinate_global_local_phase(graph)
+
+    assert graph.graph["history"] is history
+    for key, snapshot in inert_snapshots.items():
+        assert list(history[key]) == snapshot
+    for key, length in k_lengths.items():
+        assert len(history[key]) == length + 1
+
+
 class _FakeArray(list):
     def __init__(self, iterable=()):
         super().__init__(float(item) for item in iterable)
