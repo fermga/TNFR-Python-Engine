@@ -35,6 +35,31 @@ class _RecordingIntegrator(integrators.AbstractIntegrator):
         self._recorded["integrator"] = n_jobs
 
 
+def test_run_with_zero_steps_is_noop(monkeypatch, graph_canon):
+    """``steps=0`` should short-circuit without mutating state."""
+
+    G = graph_canon()
+    stop_cfg = {"enabled": True, "window": 3, "fraction": 0.75}
+    G.graph["STOP_EARLY"] = stop_cfg
+    history = ensure_history(G)
+    history["stable_frac"] = deque([0.1, 0.2], maxlen=4)
+    stable_series = history["stable_frac"]
+    initial_length = len(stable_series)
+    stop_cfg_before = copy.deepcopy(stop_cfg)
+
+    def fail_step(*_args, **_kwargs):
+        raise AssertionError("step should not run when steps=0")
+
+    monkeypatch.setattr(runtime, "step", fail_step)
+
+    runtime.run(G, steps=0)
+
+    assert len(stable_series) == initial_length
+    assert list(stable_series) == [0.1, 0.2]
+    assert G.graph["STOP_EARLY"] is stop_cfg
+    assert G.graph["STOP_EARLY"] == stop_cfg_before
+
+
 def test_run_stops_early_with_historydict(monkeypatch, graph_canon):
     """STOP_EARLY should break once the stability window stays above the limit."""
 
