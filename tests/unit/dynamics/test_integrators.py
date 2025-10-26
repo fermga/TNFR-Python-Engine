@@ -14,6 +14,14 @@ from tnfr.dynamics import update_epi_via_nodal_equation, validate_canon
 from tnfr.initialization import init_node_attrs
 
 
+@pytest.mark.parametrize("graph_like", [{}, object()])
+def test_update_epi_requires_networkx_graph_instance(graph_like):
+    """Non-networkx inputs should be rejected before integration runs."""
+
+    with pytest.raises(TypeError, match="networkx graph instance"):
+        update_epi_via_nodal_equation(graph_like)
+
+
 @pytest.mark.parametrize(
     "hint,total",
     [
