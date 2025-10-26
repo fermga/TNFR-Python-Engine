@@ -1,3 +1,4 @@
+import builtins
 import os
 from pathlib import Path
 
@@ -76,3 +77,27 @@ def test_safe_write_sync_non_atomic(tmp_path: Path, monkeypatch: pytest.MonkeyPa
 
     assert fsynced
     assert dest.read_text() == "hi"
+
+
+@pytest.mark.parametrize("atomic", [True, False])
+def test_safe_write_binary_mode(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, atomic: bool):
+    dest = tmp_path / ("binary_atomic.bin" if atomic else "binary_direct.bin")
+    payload = b"\x00TNFR\xff\x10"
+    original_open = builtins.open
+    binary_open_seen = False
+
+    def fake_open(file, *args, **kwargs):  # pragma: no cover - monkeypatch helper
+        nonlocal binary_open_seen
+        mode = kwargs.get("mode", args[0] if args else "r")
+        if isinstance(mode, str) and "b" in mode:
+            assert "encoding" not in kwargs
+            binary_open_seen = True
+        return original_open(file, *args, **kwargs)
+
+    monkeypatch.setattr("tnfr.io.open", fake_open, raising=False)
+
+    safe_write(dest, lambda f: f.write(payload), mode="wb", atomic=atomic)
+
+    assert binary_open_seen
+    assert dest.read_bytes() == payload
+    assert {p.name for p in tmp_path.iterdir()} == {dest.name}
