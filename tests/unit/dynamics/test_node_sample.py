@@ -41,6 +41,27 @@ def test_node_sample_small_graph(graph_canon):
     assert len(sample) == len(G.nodes())
 
 
+def test_node_sample_threshold_graph_uses_candidate_count(graph_canon):
+    clear_rng_cache()
+    G = _build_graph(50, graph_canon)
+    G.graph["UM_CANDIDATE_COUNT"] = 7
+    G.graph["RANDOM_SEED"] = 999
+    _update_node_sample(G, step=3)
+    sample1 = G.graph.get("_node_sample")
+    assert isinstance(sample1, list)
+    assert len(sample1) == 7
+    assert set(sample1).issubset(set(G.nodes()))
+
+    clear_rng_cache()
+    G_repeat = _build_graph(50, graph_canon)
+    G_repeat.graph["UM_CANDIDATE_COUNT"] = 7
+    G_repeat.graph["RANDOM_SEED"] = 999
+    _update_node_sample(G_repeat, step=3)
+    sample2 = G_repeat.graph.get("_node_sample")
+
+    assert sample1 == sample2
+
+
 def test_node_sample_immutable_after_graph_change(graph_canon):
     G = _build_graph(20, graph_canon)
     _update_node_sample(G, step=0)
