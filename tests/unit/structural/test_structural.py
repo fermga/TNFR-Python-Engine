@@ -130,6 +130,25 @@ def test_validate_sequence_rejects_unknown_tokens() -> None:
     assert not ok and "unknown tokens" in msg
 
 
+def test_validate_sequence_requires_names_argument() -> None:
+    with pytest.raises(TypeError) as excinfo:
+        validate_sequence()
+
+    assert "missing required argument" in str(excinfo.value)
+
+
+def test_validate_sequence_rejects_empty_sequence() -> None:
+    ok, msg = validate_sequence([])
+
+    assert (ok, msg) == (False, "empty sequence")
+
+
+def test_validate_sequence_requires_string_tokens() -> None:
+    ok, msg = validate_sequence([EMISSION, RECEPTION, 101])
+
+    assert (ok, msg) == (False, "tokens must be str")
+
+
 def test_thol_closed_by_silence() -> None:
     ops = [
         Emission(),
