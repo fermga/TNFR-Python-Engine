@@ -1,8 +1,9 @@
 """Unit tests for vectorized dynamics evolution and performance boundaries."""
 
+import logging
 import math
 import time
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 
 import networkx as nx
 import pytest
@@ -61,6 +62,39 @@ def _get_prep_state(G):
     return manager, state
 
 
+def _build_invalid_state_graph():
+    G = nx.path_graph(6)
+    for n in G.nodes:
+        set_attr(G.nodes[n], ALIAS_THETA, 0.0)
+        set_attr(G.nodes[n], ALIAS_EPI, 0.0)
+        set_attr(G.nodes[n], ALIAS_VF, 0.0)
+    G.graph["DNFR_WEIGHTS"] = {
+        "phase": 1.0,
+        "epi": 1.0,
+        "vf": 1.0,
+        "topo": 0.0,
+    }
+
+    noisy = G.nodes[1]
+    for alias in ALIAS_THETA:
+        noisy[alias] = "bad-phase"
+    for alias in ALIAS_EPI:
+        noisy[alias] = "bad-epi"
+    for alias in ALIAS_VF:
+        noisy[alias] = "bad-vf"
+
+    nan_value = float("nan")
+    unstable = G.nodes[3]
+    for alias in ALIAS_THETA:
+        unstable[alias] = nan_value
+    for alias in ALIAS_EPI:
+        unstable[alias] = nan_value
+    for alias in ALIAS_VF:
+        unstable[alias] = nan_value
+
+    return G, (1, 3)
+
+
 @pytest.mark.parametrize("disable_numpy", [False, True])
 def test_default_compute_delta_nfr_paths(disable_numpy, monkeypatch):
     if not disable_numpy:
@@ -73,6 +107,31 @@ def test_default_compute_delta_nfr_paths(disable_numpy, monkeypatch):
         default_compute_delta_nfr(G)
     dnfr = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert len(dnfr) == 5
+
+
+@pytest.mark.parametrize("numpy_mode", ["vectorized", "python"])
+def test_default_compute_delta_nfr_clamps_invalid_states(numpy_mode, caplog, monkeypatch):
+    if numpy_mode == "vectorized":
+        pytest.importorskip("numpy")
+        context = nullcontext()
+    else:
+        context = numpy_disabled(monkeypatch)
+
+    G, bad_nodes = _build_invalid_state_graph()
+
+    caplog.clear()
+    with caplog.at_level(logging.DEBUG, logger="tnfr.utils.data"):
+        with context:
+            default_compute_delta_nfr(G)
+
+    dnfr = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
+    for node in bad_nodes:
+        assert math.isfinite(dnfr[node])
+        assert dnfr[node] == pytest.approx(0.0)
+
+    messages = [record.getMessage() for record in caplog.records if record.name == "tnfr.utils.data"]
+    assert any("Could not convert value" in msg for msg in messages)
+    assert any("Non-finite value" in msg for msg in messages)
 
 
 def test_default_vectorization_auto_enabled_when_numpy_available():

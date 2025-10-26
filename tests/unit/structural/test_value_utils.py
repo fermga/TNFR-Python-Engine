@@ -40,3 +40,14 @@ def test_convert_value_strict_propagates(caplog):
             convert_value("x", conv, strict=True)
 
     assert not caplog.records
+
+
+def test_convert_value_rejects_non_finite(caplog):
+    def conv(_):
+        return float("nan")
+
+    with caplog.at_level(logging.DEBUG, logger="tnfr.utils.data"):
+        ok, result = convert_value("x", conv, key="foo")
+
+    assert not ok and result is None
+    assert any("Non-finite value for 'foo'" in record.getMessage() for record in caplog.records)

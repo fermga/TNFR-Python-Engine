@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from collections import deque
 from collections.abc import Collection, Iterable, Mapping, Sequence
 from itertools import islice
@@ -49,7 +50,7 @@ def convert_value(
     """Attempt to convert a value and report failures."""
 
     try:
-        return True, conv(value)
+        converted = conv(value)
     except (ValueError, TypeError) as exc:
         if strict:
             raise
@@ -59,6 +60,17 @@ def convert_value(
         else:
             _value_logger.log(level, "Could not convert value: %s", exc)
         return False, None
+    if isinstance(converted, float) and not math.isfinite(converted):
+        if strict:
+            target = f"{key!r}" if key is not None else "value"
+            raise ValueError(f"Non-finite value {converted!r} for {target}")
+        level = log_level if log_level is not None else logging.DEBUG
+        if key is not None:
+            _value_logger.log(level, "Non-finite value for %r: %s", key, converted)
+        else:
+            _value_logger.log(level, "Non-finite value: %s", converted)
+        return False, None
+    return True, converted
 
 
 def negative_weights_warn_once(
