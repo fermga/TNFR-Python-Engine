@@ -86,3 +86,58 @@ def test_neighbor_phase_mean_generic_uses_cached_numpy(monkeypatch):
     assert calls == 1
     assert captured_np == [fake_np]
     assert result == pytest.approx(math.pi / 4)
+
+
+def _build_branch_cut_trig_maps():
+    left_offset = 0.01
+    right_offset = 0.02
+    angles = {
+        "left": -math.pi - left_offset,
+        "right": math.pi + right_offset,
+    }
+    cos_map = {key: math.cos(angle) for key, angle in angles.items()}
+    sin_map = {key: math.sin(angle) for key, angle in angles.items()}
+    expected_midpoint = -math.pi + 0.5 * (right_offset - left_offset)
+    return ["left", "right"], cos_map, sin_map, expected_midpoint
+
+
+def test_neighbor_phase_mean_list_branch_cut_numpy(monkeypatch):
+    neigh, cos_map, sin_map, expected_midpoint = _build_branch_cut_trig_maps()
+
+    class FakeNumpy:
+        def fromiter(self, iterable, dtype=float):
+            data = list(iterable)
+
+            class _Array(list):
+                @property
+                def size(self):
+                    return len(self)
+
+            arr = _Array(data)
+            return arr
+
+        def mean(self, arr):
+            if not arr:
+                return 0.0
+            return sum(arr) / len(arr)
+
+        def arctan2(self, y, x):
+            return math.atan2(y, x)
+
+    monkeypatch.setattr(trig, "get_numpy", lambda: FakeNumpy())
+
+    result = neighbor_phase_mean_list(neigh, cos_map, sin_map)
+
+    assert abs(result) > math.pi / 2
+    assert result == pytest.approx(expected_midpoint)
+
+
+def test_neighbor_phase_mean_list_branch_cut_python(monkeypatch):
+    neigh, cos_map, sin_map, expected_midpoint = _build_branch_cut_trig_maps()
+
+    monkeypatch.setattr(trig, "get_numpy", lambda: None)
+
+    result = neighbor_phase_mean_list(neigh, cos_map, sin_map)
+
+    assert abs(result) > math.pi / 2
+    assert result == pytest.approx(expected_midpoint)
