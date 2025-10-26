@@ -161,6 +161,11 @@ def test_flatten_accepts_wait_subclass():
     assert ops == [(OpTag.WAIT, 3)]
 
 
+def test_compile_sequence_rejects_non_iterable():
+    with pytest.raises(TypeError, match="is not iterable"):
+        compile_sequence(object())
+
+
 def test_compile_sequence_emits_thol_force_close_sha():
     program = [THOL(body=[Glyph.AL], force_close=Glyph.SHA)]
     ops = compile_sequence(program)
