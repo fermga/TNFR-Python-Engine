@@ -247,6 +247,13 @@ def run_program(
             if value is not None:
                 run_kwargs[attr] = value
 
+        job_overrides: dict[str, Any] = {}
+        dnfr_jobs = getattr(args, "dnfr_n_jobs", None)
+        if dnfr_jobs is not None:
+            job_overrides["dnfr_n_jobs"] = int(dnfr_jobs)
+        if job_overrides:
+            run_kwargs["n_jobs"] = job_overrides
+
         run(G, steps=steps, **run_kwargs)
     else:
         play(G, program)
