@@ -10,6 +10,7 @@ import pytest
 from tnfr.constants import inject_defaults
 from tnfr.dynamics import adapt_vf_by_coherence, step
 from tnfr.dynamics.adaptation import _vf_adapt_chunk
+import tnfr.dynamics.adaptation as adaptation_module
 from tnfr.utils import get_numpy
 
 
@@ -214,3 +215,43 @@ def test_adapt_vf_clamps_to_bounds(graph_canon, monkeypatch, mode):
 
     assert G.nodes["clamp_high"]["νf"] == pytest.approx(vf_max)
     assert G.nodes["clamp_low"]["νf"] == pytest.approx(vf_min)
+
+
+def test_adapt_vf_python_resets_unstable_counts_with_missing_neighbors(
+    graph_canon, monkeypatch
+):
+    monkeypatch.setattr("tnfr.dynamics.get_numpy", lambda: None)
+    monkeypatch.setattr("tnfr.dynamics.adaptation.get_numpy", lambda: None)
+
+    original_thresholds = {"si_hi": 0.9}
+    G = graph_canon()
+    G.add_edge("seed", "anchor")
+    G.graph["VF_ADAPT_TAU"] = 3
+    G.graph["SELECTOR_THRESHOLDS"] = original_thresholds
+    G.graph["EPS_DNFR_STABLE"] = 0.01
+
+    nodes = list(G.nodes)
+    for idx, node in enumerate(nodes):
+        nd = G.nodes[node]
+        nd["νf"] = float(idx + 1)
+        nd["stable_count"] = 5 - idx
+        nd["Si"] = 0.05
+        nd["ΔNFR"] = 0.5
+
+    def _ensure_neighbors_with_ghost(graph):
+        mapping = {
+            node: tuple(list(graph.neighbors(node)) + ["ghost"]) for node in graph.nodes
+        }
+        mapping["ghost"] = tuple(nodes)
+        return mapping
+
+    monkeypatch.setattr(
+        adaptation_module, "ensure_neighbors_map", _ensure_neighbors_with_ghost
+    )
+
+    adapt_vf_by_coherence(G, n_jobs=None)
+
+    for node in nodes:
+        assert G.nodes[node]["stable_count"] == 0
+
+    assert "ghost" not in G
