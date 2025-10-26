@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
+import sys
 from collections import deque
 from typing import Any
 
@@ -29,8 +30,9 @@ def _cli_execution():
 from tnfr import __version__
 from tnfr.config.presets import get_preset
 from tnfr.config.constants import GLYPHS_CANONICAL
-from tnfr.constants import METRIC_DEFAULTS
+from tnfr.constants import METRIC_DEFAULTS, get_param
 from tnfr.execution import CANONICAL_PRESET_NAME, basic_canonical_example
+from tnfr.types import Glyph
 
 DEPRECATED_PRESET_TOKEN = "deprecated_canonical_example"
 
@@ -137,6 +139,52 @@ def test_sequence_conflicting_preset_and_sequence_file(tmp_path, capsys):
 
     assert rc == 1
     assert "Cannot use --preset and --sequence-file at the same time" in captured.out
+
+
+def test_cli_sequence_handles_deeply_nested_blocks(monkeypatch, tmp_path):
+    depth = 1500
+    inner = json.dumps(Glyph.AL.value)
+    for _ in range(depth):
+        inner = '{"THOL": {"body": [' + inner + ']}}'
+    payload = f"[{inner}]"
+
+    seq_path = tmp_path / "nested.json"
+    seq_path.write_text(payload, encoding="utf-8")
+
+    execution_mod = _cli_execution()
+    recorded: dict[str, Any] = {}
+    original_run_program = execution_mod.run_program
+
+    def spy_run_program(graph, program, args):  # noqa: ANN001 - test helper
+        result_graph = original_run_program(graph, program, args)
+        recorded["graph"] = result_graph
+        return result_graph
+
+    def tiny_graph(_args: argparse.Namespace) -> nx.Graph:  # noqa: ANN001 - test helper
+        G = nx.Graph()
+        G.add_node(0)
+        return G
+
+    monkeypatch.setattr(execution_mod, "run_program", spy_run_program)
+    monkeypatch.setattr(execution_mod, "build_basic_graph", tiny_graph)
+
+    original_limit = sys.getrecursionlimit()
+    new_limit = max(original_limit, depth * 10)
+    sys.setrecursionlimit(new_limit)
+    try:
+        rc = main(["sequence", "--sequence-file", str(seq_path)])
+    finally:
+        sys.setrecursionlimit(original_limit)
+
+    assert rc == 0
+    recorded_graph = recorded.get("graph")
+    assert recorded_graph is not None
+
+    trace = recorded_graph.graph["history"]["program_trace"]
+    maxlen = int(get_param(recorded_graph, "PROGRAM_TRACE_MAXLEN"))
+    assert len(trace) == maxlen
+    assert trace[0]["g"] == Glyph.THOL.value
+    assert trace[-1]["g"] == Glyph.AL.value
 
 
 def test_cli_metrics_generates_metrics_payload(monkeypatch, tmp_path):
