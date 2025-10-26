@@ -1,5 +1,6 @@
 """Tests for dynamics helpers."""
 
+import inspect
 import sys
 from inspect import Parameter, Signature
 from typing import Any
@@ -233,6 +234,38 @@ def test_prepare_dnfr_falls_back_when_jobs_kw_rejected(graph_canon):
     assert calls["count"] == 2
     assert calls["kwargs"][0] == {"n_jobs": 2}
     assert calls["kwargs"][1] == {}
+    assert "_sel_norms" not in G.graph
+
+
+def test_prepare_dnfr_handles_signature_errors(
+    monkeypatch, graph_canon, compute_delta_nfr_hook
+):
+    G = graph_canon()
+    dnfr_alias = get_aliases("DNFR")
+    hook, recorded = compute_delta_nfr_hook
+    for node in range(2):
+        G.add_node(node)
+        set_attr(G.nodes[node], dnfr_alias, 1.0)
+    G.add_edge(0, 1)
+
+    original_signature = inspect.signature
+
+    def failing_signature(obj, *args, **kwargs):
+        if obj is hook:
+            raise TypeError("signature boom")
+        return original_signature(obj, *args, **kwargs)
+
+    monkeypatch.setattr("tnfr.dynamics.runtime.inspect.signature", failing_signature)
+
+    G.graph["compute_delta_nfr"] = hook
+    G.graph["DNFR_N_JOBS"] = "7"
+    G.graph["_sel_norms"] = {"dnfr_max": 10.0, "accel_max": 5.0}
+
+    _prepare_dnfr(G, use_Si=False)
+
+    assert recorded["n_jobs"] == [7]
+    for node in G.nodes:
+        assert get_attr(G.nodes[node], dnfr_alias, None) == pytest.approx(0.0)
     assert "_sel_norms" not in G.graph
 
 
