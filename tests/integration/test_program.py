@@ -393,6 +393,19 @@ def test_flatten_enforces_limit_for_iterables():
         compile_sequence(token_stream(), max_materialize=3)
 
 
+def test_compile_sequence_zero_materialize_stops_iteration():
+    events: list[str] = []
+
+    def token_stream():
+        events.append("iterated")
+        yield Glyph.AL
+
+    ops = compile_sequence(token_stream(), max_materialize=0)
+
+    assert ops == []
+    assert events == []
+
+
 def test_thol_repeat_lt_one_raises():
     with pytest.raises(ValueError, match="repeat must be ≥1"):
         compile_sequence([THOL(body=[], repeat=0)])
