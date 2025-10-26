@@ -97,3 +97,21 @@ def test_set_delta_nfr_hook_ignores_jobs_when_missing(graph_canon):
     compute = G.graph["compute_delta_nfr"]
     compute(G, n_jobs=5)
     assert calls == [True]
+
+
+def test_set_delta_nfr_hook_records_note(graph_canon):
+    G = graph_canon()
+    note = "ΔNFR guided by νf"
+
+    def hook(graph, *, n_jobs=None):
+        for node_id in graph.nodes:
+            graph.nodes[node_id][ALIAS_DNFR[0]] = 0.0
+
+    set_delta_nfr_hook(G, hook, note=note)
+    compute = G.graph["compute_delta_nfr"]
+
+    try:
+        compute(G)
+        assert G.graph["_DNFR_META"]["note"] == note
+    finally:
+        G.graph.get("_DNFR_META", {}).pop("note", None)
