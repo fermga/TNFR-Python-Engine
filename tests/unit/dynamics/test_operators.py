@@ -6,7 +6,8 @@ from types import SimpleNamespace
 import pytest
 
 import tnfr.operators as operators
-from tnfr.constants import inject_defaults
+from tnfr.constants import DNFR_PRIMARY, THETA_PRIMARY, inject_defaults
+from tnfr.dynamics import set_delta_nfr_hook
 from tnfr.node import NodeNX
 from tnfr.operators import (
     _mix_epi_with_neighbors,
@@ -17,12 +18,57 @@ from tnfr.operators import (
     reset_jitter_manager,
     _um_candidate_iter,
 )
+from tnfr.structural import Dissonance, create_nfr, run_sequence
 from tnfr.types import Glyph
 from tnfr.helpers.numeric import angle_diff
 
 
 def test_glyph_operations_complete():
     assert set(operators.GLYPH_OPERATIONS) == set(Glyph)
+
+
+def test_dissonance_operator_increases_dnfr_and_tracks_phase(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Applying ``Dissonance`` widens |ΔNFR| and records glyph history."""
+
+    G, node = create_nfr("probe", theta=0.24)
+    G.graph["GLYPH_HYSTERESIS_WINDOW"] = 6
+    nd = G.nodes[node]
+    initial_dnfr = 0.05
+    nd[DNFR_PRIMARY] = initial_dnfr
+
+    base_theta = nd[THETA_PRIMARY]
+    captured: dict[str, tuple[float, float]] = {}
+    dnfr_increment = 0.11
+    theta_increment = -0.07
+
+    def scripted_delta(graph) -> None:
+        nd_local = graph.nodes[node]
+        before = (nd_local[DNFR_PRIMARY], nd_local[THETA_PRIMARY])
+        captured["before"] = before
+        nd_local[DNFR_PRIMARY] = before[0] + dnfr_increment
+        nd_local[THETA_PRIMARY] = before[1] + theta_increment
+        captured["after"] = (nd_local[DNFR_PRIMARY], nd_local[THETA_PRIMARY])
+
+    set_delta_nfr_hook(G, scripted_delta)
+    monkeypatch.setattr("tnfr.structural.validate_sequence", lambda names: (True, "ok"))
+
+    run_sequence(G, node, [Dissonance()])
+
+    assert set(captured) == {"before", "after"}
+    before_dnfr, before_theta = captured["before"]
+    after_dnfr, after_theta = captured["after"]
+
+    assert before_dnfr >= initial_dnfr
+    assert before_theta == pytest.approx(base_theta)
+    assert after_dnfr == pytest.approx(before_dnfr + dnfr_increment)
+    assert abs(after_dnfr) > abs(before_dnfr)
+    assert after_theta == pytest.approx(base_theta + theta_increment)
+
+    history = nd.get("glyph_history")
+    assert history is not None and history
+    assert Glyph(history[-1]) == Glyph.OZ
 
 
 def test_random_jitter_deterministic(graph_canon):
