@@ -58,6 +58,27 @@ def _vf_clamp_test_graph(graph_canon):
     return G
 
 
+def test_adapt_vf_requires_injected_defaults():
+    bare = nx.Graph()
+    bare.add_edge("seed", "anchor")
+
+    with pytest.raises(KeyError, match="inject_defaults"):
+        adapt_vf_by_coherence(bare)
+
+    inject_defaults(bare)
+
+
+def test_adapt_vf_rejects_non_numeric_tau(graph_canon):
+    G = graph_canon()
+    G.add_edge(0, 1)
+    G.graph["VF_ADAPT_TAU"] = "not-an-int"
+
+    with pytest.raises((TypeError, ValueError)):
+        adapt_vf_by_coherence(G)
+
+    inject_defaults(G, override=True)
+
+
 def test_vf_converge_to_neighbor_average_when_stable(graph_canon):
     G = graph_canon()
     G.add_edge(0, 1)
