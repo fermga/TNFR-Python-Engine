@@ -230,6 +230,22 @@ def test_target_persists_across_wait(graph_canon):
     assert list(G.nodes[2]["glyph_history"]) == [Glyph.AL.value]
 
 
+def test_target_empty_selection_records_zero_count(graph_canon):
+    G = graph_canon()
+    G.add_nodes_from([1, 2, 3])
+
+    play(G, seq(target([]), Glyph.AL), step_fn=_step_noop)
+
+    trace = list(G.graph["history"]["program_trace"])
+    assert trace[0]["op"] == OpTag.TARGET.name
+    assert trace[0]["n"] == 0
+
+    for node in G.nodes:
+        history = G.nodes[node].get("glyph_history")
+        if history is not None:
+            assert list(history) == []
+
+
 @pytest.mark.parametrize(
     "exc_factory",
     [
