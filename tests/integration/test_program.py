@@ -42,6 +42,29 @@ def test_play_records_program_trace_with_block_and_wait(graph_canon):
     assert trace[2]["g"] == Glyph.THOL.value
 
 
+def test_play_records_progressive_time_with_custom_step(graph_canon):
+    G = graph_canon()
+    G.add_node(1)
+
+    delta = 0.5
+    invocation_times: list[float] = []
+
+    def step_increment(graph):
+        new_t = graph.graph.get("_t", 0.0) + delta
+        graph.graph["_t"] = new_t
+        invocation_times.append(new_t)
+
+    program = seq(wait(3), Glyph.AL)
+    play(G, program, step_fn=step_increment)
+
+    trace = list(G.graph["history"]["program_trace"])
+    assert [entry["op"] for entry in trace] == ["WAIT", "GLYPH"]
+    assert [entry["t"] for entry in trace] == pytest.approx([delta * 3, delta * 4])
+
+    assert len(invocation_times) == 4
+    assert invocation_times == pytest.approx([delta, delta * 2, delta * 3, delta * 4])
+
+
 @pytest.mark.parametrize(
     "seed",
     [
