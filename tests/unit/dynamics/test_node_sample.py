@@ -11,7 +11,7 @@ import pytest
 from tnfr.constants import inject_defaults
 from tnfr.dynamics import _update_node_sample, step
 from tnfr.rng import clear_rng_cache
-from tnfr.utils import cached_nodes_and_A, increment_edge_version
+from tnfr.utils import cached_node_list, cached_nodes_and_A, increment_edge_version
 
 
 def _build_graph(n, graph_canon=None):
@@ -155,3 +155,36 @@ def test_node_sample_deterministic_across_hashseed():
     out1 = _run_sample_with_hashseed(1)
     out2 = _run_sample_with_hashseed(2)
     assert out1 == out2
+
+
+@pytest.mark.parametrize(
+    "candidate_count",
+    [
+        pytest.param(0, id="zero"),
+        pytest.param(-3, id="negative"),
+        pytest.param(80, id="equal-to-node-count"),
+        pytest.param(120, id="exceeds-node-count"),
+    ],
+)
+def test_node_sample_returns_cached_nodes_when_sampling_disabled(candidate_count, graph_canon):
+    clear_rng_cache()
+    G = _build_graph(80, graph_canon)
+    G.graph["RANDOM_SEED"] = 2024
+    G.graph["UM_CANDIDATE_COUNT"] = candidate_count
+
+    nodes_cache = cached_node_list(G)
+    assert isinstance(nodes_cache, tuple)
+
+    _update_node_sample(G, step=11)
+    sample1 = G.graph["_node_sample"]
+
+    assert sample1 is nodes_cache
+    assert isinstance(sample1, tuple)
+    assert sample1 == tuple(G.nodes())
+
+    clear_rng_cache()
+    _update_node_sample(G, step=11)
+    sample2 = G.graph["_node_sample"]
+
+    assert sample2 is sample1
+
