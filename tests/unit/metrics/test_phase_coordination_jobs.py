@@ -227,3 +227,45 @@ def test_coordinate_phase_overrides_and_adaptive_history(
     assert history["phase_kG"][-1] == pytest.approx(graph.graph["PHASE_K_GLOBAL"])
     assert len(history["phase_kL"]) == initial_kL_len + 2
     assert history["phase_kL"][-1] == pytest.approx(graph.graph["PHASE_K_LOCAL"])
+
+
+@pytest.mark.parametrize(
+    "state,kG_start,kL_start,expected_kG,expected_kL",
+    [
+        ("dissonant", 0.11, 0.05, 0.37, 0.14),
+        ("stable", 0.37, 0.23, 0.11, 0.05),
+        ("Stable", 0.37, 0.23, 0.11, 0.05),
+    ],
+)
+def test_smooth_adjust_k_tracks_state_targets(
+    state, kG_start, kL_start, expected_kG, expected_kL
+):
+    cfg = {
+        "kG_min": 0.11,
+        "kG_max": 0.37,
+        "kL_min": 0.05,
+        "kL_max": 0.23,
+        "up": 1.0,
+        "down": 1.5,
+    }
+
+    midpoint = 0.5 * (cfg["kL_min"] + cfg["kL_max"])
+
+    kG, kL = coordination._smooth_adjust_k(kG_start, kL_start, state, cfg)
+
+    assert cfg["kG_min"] <= kG <= cfg["kG_max"]
+    assert cfg["kL_min"] <= kL <= cfg["kL_max"]
+
+    if state == "dissonant":
+        assert kG == pytest.approx(expected_kG)
+        assert kG >= kG_start
+        assert kL == pytest.approx(midpoint)
+        assert kL >= kL_start
+    else:
+        assert kG_start > expected_kG
+        assert kL_start > expected_kL
+        assert kG == pytest.approx(expected_kG)
+        assert kL == pytest.approx(expected_kL)
+        assert kG <= kG_start
+        assert kL <= kL_start
+
