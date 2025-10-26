@@ -66,6 +66,9 @@ COMMON_ARG_SPECS: tuple[ArgSpec, ...] = (
     spec("--gamma-type", choices=list(GAMMA_REGISTRY.keys()), default="none"),
     spec("--gamma-beta", type=float, default=0.0),
     spec("--gamma-R0", type=float, default=0.0),
+    spec("--um-candidate-count", type=int),
+    spec("--stop-early-window", type=int),
+    spec("--stop-early-fraction", type=float),
 )
 
 

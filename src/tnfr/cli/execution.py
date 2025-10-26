@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import deque
 from collections.abc import Mapping
 from copy import deepcopy
 from pathlib import Path
@@ -15,7 +16,7 @@ from ..config.presets import (
     PREFERRED_PRESET_NAMES,
     get_preset,
 )
-from ..constants import METRIC_DEFAULTS
+from ..constants import METRIC_DEFAULTS, get_param
 from ..dynamics import (
     default_glyph_selector,
     parametric_glyph_selector,
@@ -59,6 +60,10 @@ def _attach_callbacks(G: "nx.Graph") -> None:
     register_sigma_callback(G)
     register_metrics_callbacks(G)
     register_trace(G)
+    history = ensure_history(G)
+    maxlen = int(get_param(G, "PROGRAM_TRACE_MAXLEN"))
+    history.setdefault("program_trace", deque(maxlen=maxlen))
+    history.setdefault("trace_meta", [])
     _metrics_step(G, ctx=None)
 
 
@@ -168,6 +173,25 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
         value = getattr(args, attr, None)
         if value is not None:
             cfg["verbosity"] = value
+
+    candidate_count = getattr(args, "um_candidate_count", None)
+    if candidate_count is not None:
+        G.graph["UM_CANDIDATE_COUNT"] = int(candidate_count)
+
+    stop_window = getattr(args, "stop_early_window", None)
+    stop_fraction = getattr(args, "stop_early_fraction", None)
+    if stop_window is not None or stop_fraction is not None:
+        stop_cfg = G.graph.get("STOP_EARLY")
+        if isinstance(stop_cfg, Mapping):
+            next_cfg = {**stop_cfg}
+        else:
+            next_cfg = deepcopy(METRIC_DEFAULTS["STOP_EARLY"])
+        if stop_window is not None:
+            next_cfg["window"] = int(stop_window)
+        if stop_fraction is not None:
+            next_cfg["fraction"] = float(stop_fraction)
+        next_cfg.setdefault("enabled", True)
+        G.graph["STOP_EARLY"] = next_cfg
 
 
 def register_callbacks_and_observer(G: "nx.Graph") -> None:
