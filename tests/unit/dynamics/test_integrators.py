@@ -8,6 +8,7 @@ import pytest
 from tnfr.alias import set_attr
 from tnfr.constants import inject_defaults
 from tnfr.dynamics import integrators as integrators_mod
+from tnfr.dynamics import runtime as runtime_mod
 from tnfr.dynamics.integrators import _apply_increment_chunk
 from tnfr.dynamics import update_epi_via_nodal_equation, validate_canon
 from tnfr.initialization import init_node_attrs
@@ -403,3 +404,23 @@ def test_apply_increments_zero_dt_preserves_second_derivative(monkeypatch):
     assert epi == pytest.approx(-0.4 + (0.0 / 6.0) * (0.1 + 2 * 0.2 + 2 * 0.3 + 0.4))
     assert dEPI_dt == pytest.approx(0.4)
     assert d2EPI == pytest.approx(0.0)
+
+
+def test_call_integrator_factory_rejects_keyword_only_arguments():
+    G = nx.Graph()
+
+    def kw_only_factory(*, graph):
+        raise AssertionError("should not be invoked")
+
+    with pytest.raises(TypeError, match="cannot require keyword-only arguments"):
+        runtime_mod._call_integrator_factory(kw_only_factory, G)
+
+
+def test_call_integrator_factory_rejects_multiple_positional_arguments():
+    G = nx.Graph()
+
+    def two_positional_factory(graph, extra):
+        raise AssertionError("should not be invoked")
+
+    with pytest.raises(TypeError, match="must accept at most one positional argument"):
+        runtime_mod._call_integrator_factory(two_positional_factory, G)
