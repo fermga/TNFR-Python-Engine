@@ -188,6 +188,30 @@ def test_run_stop_early_filters_non_numeric_series(monkeypatch, graph_canon):
     assert list(series)[-2:] == [0.95, 0.95]
 
 
+@pytest.mark.parametrize("window", [0, -1])
+def test_run_stop_early_min_window(monkeypatch, graph_canon, window):
+    """STOP_EARLY windows <= 0 should still require at least one iteration."""
+
+    G = graph_canon()
+    G.graph["STOP_EARLY"] = {"enabled": True, "window": window, "fraction": 0.75}
+
+    call_count = 0
+
+    def fake_step(G, *, dt=None, use_Si=True, apply_glyphs=True, n_jobs=None):
+        nonlocal call_count
+        call_count += 1
+        # Intentionally leave the ``stable_frac`` series empty to simulate
+        # missing stability readings for the window.
+
+    monkeypatch.setattr(runtime, "step", fake_step)
+
+    runtime.run(G, steps=3)
+
+    # The guard should prevent an empty window from triggering an early stop,
+    # so the loop executes all requested iterations (a full window's worth).
+    assert call_count == 3
+
+
 def test_step_preserves_since_mappings(monkeypatch, graph_canon):
     """``since_*`` history entries should stay as mappings when bounded."""
 

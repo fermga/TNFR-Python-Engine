@@ -735,7 +735,7 @@ def run(
     stop_cfg = get_graph_param(G, "STOP_EARLY", dict)
     stop_enabled = False
     if stop_cfg and stop_cfg.get("enabled", False):
-        w = int(stop_cfg.get("window", 25))
+        w = max(1, int(stop_cfg.get("window", 25)))
         frac = float(stop_cfg.get("fraction", 0.90))
         stop_enabled = True
     job_overrides = _normalize_job_overrides(n_jobs)
