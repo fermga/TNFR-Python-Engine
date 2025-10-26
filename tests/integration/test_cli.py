@@ -250,6 +250,68 @@ def test_cli_run_saves_history_when_requested(monkeypatch, tmp_path):
     assert saved_payload is sentinel_history
 
 
+def test_cli_run_applies_config_overrides(monkeypatch, tmp_path):
+    execution_mod = _cli_execution()
+    recorded: dict[str, Any] = {}
+    original_run_cli_program = execution_mod._run_cli_program
+
+    def stub_build_graph(args: argparse.Namespace) -> nx.Graph:
+        graph = nx.Graph()
+        execution_mod.apply_cli_config(graph, args)
+        return graph
+
+    def spy_run_cli_program(args: argparse.Namespace, **kwargs: Any) -> tuple[int, nx.Graph | None]:
+        code, graph = original_run_cli_program(args, **kwargs)
+        recorded["code"] = code
+        recorded["graph"] = graph
+        return code, graph
+
+    monkeypatch.setattr(execution_mod, "_build_graph_from_args", stub_build_graph)
+    monkeypatch.setattr(execution_mod, "run", lambda *_, **__: None)
+    monkeypatch.setattr(execution_mod, "_log_run_summaries", lambda *_, **__: None)
+    monkeypatch.setattr(execution_mod, "_persist_history", lambda *_, **__: None)
+    monkeypatch.setattr(execution_mod, "_run_cli_program", spy_run_cli_program)
+
+    config_path = tmp_path / "config.json"
+    config_path.write_text(
+        json.dumps({"RANDOM_SEED": 777, "TRACE": {"verbosity": 3}}),
+        encoding="utf-8",
+    )
+
+    rc = main(["run", "--steps", "0", "--config", str(config_path), "--no-canon"])
+
+    assert rc == 0
+    assert recorded["code"] == 0
+    graph = recorded["graph"]
+    assert isinstance(graph, nx.Graph)
+    assert graph.graph["RANDOM_SEED"] == 777
+    assert graph.graph["TRACE"]["verbosity"] == 3
+    assert graph.graph["GRAMMAR_CANON"]["enabled"] is False
+
+
+def test_cli_run_invalid_config_reports_error(monkeypatch, tmp_path, capsys):
+    execution_mod = _cli_execution()
+
+    def stub_build_graph(args: argparse.Namespace) -> nx.Graph:
+        graph = nx.Graph()
+        execution_mod.apply_cli_config(graph, args)
+        return graph
+
+    monkeypatch.setattr(execution_mod, "_build_graph_from_args", stub_build_graph)
+    monkeypatch.setattr(execution_mod, "run", lambda *_, **__: None)
+    monkeypatch.setattr(execution_mod, "_log_run_summaries", lambda *_, **__: None)
+    monkeypatch.setattr(execution_mod, "_persist_history", lambda *_, **__: None)
+
+    invalid_config = tmp_path / "invalid.json"
+    invalid_config.write_text("[1, 2, 3]", encoding="utf-8")
+
+    rc = main(["run", "--steps", "0", "--config", str(invalid_config)])
+    captured = capsys.readouterr()
+
+    assert rc == 1
+    assert "Configuration file must contain an object" in captured.out
+
+
 def test_cmd_metrics_aborts_without_summary_on_failure(monkeypatch):
     summary_called = False
 
