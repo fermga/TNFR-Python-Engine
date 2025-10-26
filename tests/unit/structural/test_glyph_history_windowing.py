@@ -167,6 +167,35 @@ def test_append_metric_respects_historydict_counters():
     assert hist._counts.get("a", 0) == 0
 
 
+def test_append_metric_normalises_phase_state_tokens():
+    hist = HistoryDict()
+
+    for token in ["Stable", "TrAnSiTiOn", "DISSONANT"]:
+        append_metric(hist, "phase_state", token)
+
+    assert hist["phase_state"] == ["stable", "transition", "dissonant"]
+
+
+def test_append_metric_normalises_nested_nodal_diag_states():
+    hist = HistoryDict()
+    nodal_diag_snapshot = {
+        "node-1": {"state": "Stable", "amplitude": 1.0, "details": {"note": "ok"}},
+        "node-2": {"state": "TRANSITION", "other": 2},
+        "node-3": {"other": 3},
+    }
+
+    append_metric(hist, "nodal_diag", nodal_diag_snapshot)
+
+    stored = hist["nodal_diag"]
+    assert isinstance(stored, list)
+    assert len(stored) == 1
+    snapshot = stored[0]
+    assert snapshot["node-1"]["state"] == "stable"
+    assert snapshot["node-2"]["state"] == "transition"
+    assert snapshot["node-3"] == {"other": 3}
+    assert snapshot["node-1"]["details"] == {"note": "ok"}
+
+
 # ---------------------------------------------------------------------------
 # ensure_history integration (window handling)
 # ---------------------------------------------------------------------------
