@@ -1,5 +1,6 @@
 """Tests for dynamics helpers."""
 
+import sys
 from inspect import Parameter, Signature
 from typing import Any
 
@@ -279,3 +280,40 @@ def test_prepare_dnfr_passes_si_jobs_to_compute_si(monkeypatch, graph_canon):
     _prepare_dnfr(G, use_Si=True)
 
     assert captured["n_jobs"] == 5
+
+
+def test_prepare_dnfr_falls_back_to_metrics_compute_si(monkeypatch, graph_canon):
+    G = graph_canon()
+    dnfr_alias = get_aliases("DNFR")
+    for node in range(2):
+        G.add_node(node)
+    G.add_edge(0, 1)
+
+    def fake_compute_delta(graph, *, n_jobs=None):
+        for node in graph.nodes:
+            set_attr(graph.nodes[node], dnfr_alias, 0.0)
+
+    recorded: dict[str, Any] = {}
+
+    def capture_compute_si(graph, *, inplace=True, n_jobs=None):
+        recorded["call"] = {"graph": graph, "inplace": inplace, "n_jobs": n_jobs}
+
+    monkeypatch.setattr(
+        "tnfr.metrics.sense_index.compute_Si",
+        capture_compute_si,
+    )
+    monkeypatch.setattr("tnfr.dynamics.runtime.compute_Si", capture_compute_si)
+
+    original_module = sys.modules.pop("tnfr.dynamics", None)
+    try:
+        G.graph["compute_delta_nfr"] = fake_compute_delta
+        G.graph["SI_N_JOBS"] = "6"
+
+        _prepare_dnfr(G, use_Si=True)
+    finally:
+        if original_module is not None:
+            sys.modules["tnfr.dynamics"] = original_module
+
+    assert recorded["call"]["graph"] is G
+    assert recorded["call"]["inplace"] is True
+    assert recorded["call"]["n_jobs"] == 6
