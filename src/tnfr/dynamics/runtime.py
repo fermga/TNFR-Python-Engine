@@ -5,6 +5,7 @@ from __future__ import annotations
 import inspect
 import math
 import sys
+from collections import deque
 from collections.abc import Iterable, Mapping, MutableMapping, MutableSequence
 from numbers import Real
 from typing import Any, cast
