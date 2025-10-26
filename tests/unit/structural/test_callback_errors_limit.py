@@ -1,5 +1,7 @@
 from collections import deque
 
+import pytest
+
 from tnfr.callback_utils import (
     CallbackEvent,
     callback_manager,
@@ -26,5 +28,16 @@ def test_callback_error_list_resets_limit(graph_canon):
         assert err_list is not original
         assert err_list.maxlen == callback_manager.get_callback_error_limit() == 7
         assert len(err_list) == 1
+    finally:
+        callback_manager.set_callback_error_limit(prev)
+
+
+def test_set_callback_error_limit_rejects_non_positive():
+    prev = callback_manager.get_callback_error_limit()
+    try:
+        with pytest.raises(ValueError, match="limit must be positive"):
+            callback_manager.set_callback_error_limit(0)
+        with pytest.raises(ValueError, match="limit must be positive"):
+            callback_manager.set_callback_error_limit(-1)
     finally:
         callback_manager.set_callback_error_limit(prev)
