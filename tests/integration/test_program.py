@@ -311,6 +311,21 @@ def test_handle_target_materializes_non_sequence(graph_canon):
     assert isinstance(curr, tuple)
 
 
+def test_handle_thol_none_payload_records_fallback(graph_canon):
+    G = graph_canon()
+    G.add_node(1)
+    trace = deque()
+    handler = HANDLERS[OpTag.THOL]
+
+    result = handler(G, None, None, trace, _step_noop)
+
+    assert result is None
+    assert len(trace) == 1
+    entry = trace[0]
+    assert entry["op"] == OpTag.THOL.name
+    assert entry["g"] == Glyph.THOL.value
+
+
 def test_load_sequence_json_yaml(tmp_path):
     data = [
         "AL",
