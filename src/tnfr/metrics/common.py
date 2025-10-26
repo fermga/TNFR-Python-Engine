@@ -70,7 +70,10 @@ def ensure_neighbors_map(G: GraphLike) -> Mapping[Any, Sequence[Any]]:
 def merge_graph_weights(G: GraphLike, key: str) -> dict[str, float]:
     """Merge default weights for ``key`` with any graph overrides."""
 
-    return {**DEFAULTS[key], **G.graph.get(key, {})}
+    overrides = G.graph.get(key, {})
+    if overrides is None or not isinstance(overrides, Mapping):
+        overrides = {}
+    return {**DEFAULTS[key], **overrides}
 
 
 def merge_and_normalize_weights(
