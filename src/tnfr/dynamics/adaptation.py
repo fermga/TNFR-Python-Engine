@@ -91,6 +91,16 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
     (2, True)
     """
 
+    required_keys = ("VF_ADAPT_TAU", "VF_ADAPT_MU")
+    missing_keys = [key for key in required_keys if key not in G.graph]
+    if missing_keys:
+        missing_list = ", ".join(sorted(missing_keys))
+        raise KeyError(
+            "adapt_vf_by_coherence requires graph parameters "
+            f"{missing_list}; call tnfr.constants.inject_defaults(G) "
+            "before adaptation."
+        )
+
     tau = get_graph_param(G, "VF_ADAPT_TAU", int)
     mu = float(get_graph_param(G, "VF_ADAPT_MU"))
     eps_dnfr = cast(DeltaNFR, get_graph_param(G, "EPS_DNFR_STABLE"))
