@@ -1,3 +1,4 @@
+import math
 from contextlib import contextmanager
 
 import networkx as nx
@@ -6,6 +7,7 @@ import pytest
 from tnfr.alias import collect_attr, set_attr
 from tnfr.constants import get_aliases
 from tnfr.dynamics import default_compute_delta_nfr
+from tnfr.dynamics.dnfr import _MEAN_VECTOR_EPS
 from tnfr.utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 
 ALIAS_THETA = get_aliases("THETA")
@@ -38,6 +40,26 @@ def _build_graph():
         "topo": 0.1,
     }
     return G
+
+
+def _build_cancelling_graph():
+    phases = {
+        0: math.pi / 2,
+        1: 0.789,
+        2: -math.pi / 2,
+    }
+    G = nx.path_graph(list(phases))
+    for idx, node in enumerate(G.nodes):
+        set_attr(G.nodes[node], ALIAS_THETA, phases[node])
+        set_attr(G.nodes[node], ALIAS_EPI, 0.2 + 0.1 * idx)
+        set_attr(G.nodes[node], ALIAS_VF, 0.3 + 0.05 * idx)
+    G.graph["DNFR_WEIGHTS"] = {
+        "phase": 0.6,
+        "epi": 0.2,
+        "vf": 0.2,
+        "topo": 0.0,
+    }
+    return G, phases
 
 
 def _collect_dnfr(G):
@@ -121,3 +143,39 @@ def test_vectorized_n_jobs_argument():
     default_compute_delta_nfr(G_vectorized, n_jobs=4)
 
     assert _collect_dnfr(G_vectorized) == pytest.approx(_collect_dnfr(G_reference))
+
+
+def test_neighbor_mean_zero_vector_length_preserves_theta(monkeypatch):
+    G_py, phases_py = _build_cancelling_graph()
+    with numpy_disabled(monkeypatch):
+        default_compute_delta_nfr(G_py)
+
+    _, state_py = _get_prep_state(G_py)
+    cache_py = state_py.cache
+    center_idx_py = cache_py.idx[1]
+    count_py = cache_py.neighbor_count[center_idx_py]
+    assert count_py > 0
+    cos_avg_py = cache_py.neighbor_x[center_idx_py] / count_py
+    sin_avg_py = cache_py.neighbor_y[center_idx_py] / count_py
+    assert math.hypot(cos_avg_py, sin_avg_py) <= _MEAN_VECTOR_EPS
+    th_bar_py = cache_py.th_bar
+    assert th_bar_py is not None
+    assert th_bar_py[center_idx_py] == pytest.approx(phases_py[1])
+
+    try:
+        pytest.importorskip("numpy")
+    except pytest.skip.Exception:
+        return
+
+    G_vec, phases_vec = _build_cancelling_graph()
+    default_compute_delta_nfr(G_vec)
+
+    _, state_vec = _get_prep_state(G_vec)
+    cache_vec = state_vec.cache
+    center_idx_vec = cache_vec.idx[1]
+    lengths_vec = cache_vec.neighbor_mean_length_np
+    assert lengths_vec is not None
+    assert lengths_vec[center_idx_vec] <= _MEAN_VECTOR_EPS
+    th_bar_vec = cache_vec.th_bar_np
+    assert th_bar_vec is not None
+    assert th_bar_vec[center_idx_vec] == pytest.approx(phases_vec[1])
