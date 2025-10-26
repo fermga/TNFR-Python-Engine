@@ -32,6 +32,34 @@ def test_play_unknown_operation_raises(monkeypatch, graph_canon):
         play(G, seq(Glyph.AL), step_fn=_step_noop)
 
 
+def test_play_uses_default_step(monkeypatch, graph_canon):
+    G = graph_canon()
+    G.add_node(1)
+
+    program = seq(Glyph.AL)
+    flattened = compile_sequence(program)
+
+    calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+
+    def spy(graph, *args, **kwargs):
+        calls.append((args, kwargs))
+        assert graph is G
+        return None
+
+    monkeypatch.setattr("tnfr.dynamics.step", spy)
+    # ``play`` captures the imported symbol at module import time, mirror the spy there.
+    monkeypatch.setattr("tnfr.execution.step", spy)
+
+    play(G, program)
+
+    expected_steps = sum(payload if op is OpTag.WAIT else 1 for op, payload in flattened)
+    assert len(calls) == expected_steps
+
+    trace = list(G.graph["history"]["program_trace"])
+    assert [entry["op"] for entry in trace] == [OpTag.GLYPH.name]
+    assert trace[0]["g"] == Glyph.AL.value
+
+
 def test_play_records_program_trace_with_block_and_wait(graph_canon):
     G = graph_canon()
     G.add_node(1)
