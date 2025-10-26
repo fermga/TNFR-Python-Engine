@@ -138,3 +138,28 @@ def test_run_program_with_null_program_uses_run_mode(
             {"dt": 0.25, "use_Si": False, "apply_glyphs": False},
         )
     ]
+
+
+def test_run_program_forwards_dnfr_jobs_override(
+    simple_graph: nx.Graph,
+    base_args: argparse.Namespace,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    args = argparse.Namespace(**vars(base_args), dnfr_n_jobs=3)
+
+    run_kwargs: dict[str, object] = {}
+
+    def fake_run(graph: nx.Graph, **kwargs: object) -> None:
+        run_kwargs.update(kwargs)
+        assert graph is simple_graph
+
+    monkeypatch.setattr(execution, "run", fake_run)
+    monkeypatch.setattr(execution, "_persist_history", lambda *_: None)
+
+    result = execution.run_program(simple_graph, None, args)
+
+    assert result is simple_graph
+    assert run_kwargs == {
+        "steps": 50,
+        "n_jobs": {"dnfr_n_jobs": 3},
+    }
