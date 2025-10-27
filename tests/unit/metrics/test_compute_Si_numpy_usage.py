@@ -2,7 +2,6 @@ import math
 
 import pytest
 
-import tnfr.utils.init as utils_init
 from tnfr.alias import set_attr
 from tnfr.constants import get_aliases
 from tnfr.metrics.sense_index import compute_Si
@@ -12,35 +11,19 @@ ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
 
-def test_compute_Si_uses_module_numpy_and_propagates(monkeypatch, graph_canon):
-    class DummyNP:
-        def fromiter(self, iterable, dtype=float, count=-1):
-            _ = dtype
-            return list(iterable)
+def test_compute_Si_vectorized_accumulates_neighbors(monkeypatch, graph_canon):
+    np = pytest.importorskip("numpy")
 
-        def cos(self, arr):
-            return [math.cos(x) for x in arr]
+    calls: list[np.ndarray] = []
 
-        def sin(self, arr):
-            return [math.sin(x) for x in arr]
+    original_bincount = np.bincount
 
-    sentinel = DummyNP()
+    def capture_bincount(*args, **kwargs):
+        calls.append(args[0])
+        return original_bincount(*args, **kwargs)
 
-    captured = []
-
-    def fake_neighbor_phase_mean_list(_neigh, cos_th, sin_th, np=None, fallback=0.0):
-        captured.append(np)
-        return 0.0
-
-    monkeypatch.setattr(
-        utils_init,
-        "cached_import",
-        lambda module, attr=None, **kwargs: sentinel if module == "numpy" else None,
-    )
-    monkeypatch.setattr(
-        "tnfr.metrics.sense_index.neighbor_phase_mean_list",
-        fake_neighbor_phase_mean_list,
-    )
+    monkeypatch.setattr(np, "bincount", capture_bincount)
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
 
     G = graph_canon()
     G.add_edge(1, 2)
@@ -51,7 +34,7 @@ def test_compute_Si_uses_module_numpy_and_propagates(monkeypatch, graph_canon):
 
     compute_Si(G, inplace=False)
 
-    assert captured == [sentinel] * G.number_of_nodes()
+    assert len(calls) == 1
 
 
 def _configure_graph(graph):
