@@ -135,6 +135,56 @@ def test_sparse_broadcast_neighbor_sums_match_loop(topo_weight, monkeypatch):
         )
 
 
+def test_neighbor_chunking_matches_unchunked():
+    np_module = pytest.importorskip("numpy")
+
+    nodes = 96
+    topo_weight = 0.35
+
+    chunk_graph = _dense_weighted_graph(np_module, nodes=nodes, topo_weight=topo_weight)
+    chunk_data = _prepare_dnfr_data(chunk_graph)
+    chunk_data["prefer_sparse"] = True
+    chunk_data["A"] = None
+    chunk_data["neighbor_chunk_hint"] = 8
+    chunk_result = _build_neighbor_sums_common(chunk_graph, chunk_data, use_numpy=True)
+
+    chunk_size = chunk_data.get("neighbor_chunk_size")
+    assert isinstance(chunk_size, int)
+    assert 1 <= chunk_size <= 8
+
+    edge_workspace = chunk_data.get("neighbor_edge_values_np")
+    assert edge_workspace is not None
+    assert getattr(edge_workspace, "shape", None) == (chunk_size,)
+
+    baseline_graph = _dense_weighted_graph(
+        np_module, nodes=nodes, topo_weight=topo_weight
+    )
+    baseline_data = _prepare_dnfr_data(baseline_graph)
+    baseline_data["prefer_sparse"] = True
+    baseline_data["A"] = None
+    baseline_data["neighbor_chunk_hint"] = baseline_graph.number_of_edges() * 2
+    baseline_result = _build_neighbor_sums_common(
+        baseline_graph, baseline_data, use_numpy=True
+    )
+
+    for chunk_arr, baseline_arr in zip(chunk_result[:-1], baseline_result[:-1]):
+        if chunk_arr is None or baseline_arr is None:
+            assert chunk_arr is baseline_arr is None
+        else:
+            np_module.testing.assert_allclose(
+                chunk_arr, baseline_arr, rtol=1e-9, atol=1e-9
+            )
+
+    chunk_degrees = chunk_result[-1]
+    baseline_degrees = baseline_result[-1]
+    if chunk_degrees is None or baseline_degrees is None:
+        assert chunk_degrees is baseline_degrees is None
+    else:
+        np_module.testing.assert_allclose(
+            chunk_degrees, baseline_degrees, rtol=1e-9, atol=1e-9
+        )
+
+
 def test_vectorized_neighbor_sums_outperform_loop(monkeypatch):
     np_module = pytest.importorskip("numpy")
 
