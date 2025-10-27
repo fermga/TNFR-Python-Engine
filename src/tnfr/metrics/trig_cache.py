@@ -24,6 +24,11 @@ class TrigCache:
     cos: dict[Any, float]
     sin: dict[Any, float]
     theta: dict[Any, float]
+    order: tuple[Any, ...]
+    cos_values: Any
+    sin_values: Any
+    theta_values: Any
+    index: dict[Any, int]
 
 
 def _iter_theta_pairs(
@@ -43,14 +48,35 @@ def _compute_trig_python(
 ) -> TrigCache:
     """Compute trigonometric mappings using pure Python."""
 
+    pairs = list(_iter_theta_pairs(nodes))
+
     cos_th: dict[Any, float] = {}
     sin_th: dict[Any, float] = {}
     thetas: dict[Any, float] = {}
-    for n, th in _iter_theta_pairs(nodes):
+    order_list: list[Any] = []
+
+    for n, th in pairs:
+        order_list.append(n)
         thetas[n] = th
         cos_th[n] = math.cos(th)
         sin_th[n] = math.sin(th)
-    return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
+
+    order = tuple(order_list)
+    cos_values = tuple(cos_th[n] for n in order)
+    sin_values = tuple(sin_th[n] for n in order)
+    theta_values = tuple(thetas[n] for n in order)
+    index = {n: i for i, n in enumerate(order)}
+
+    return TrigCache(
+        cos=cos_th,
+        sin=sin_th,
+        theta=thetas,
+        order=order,
+        cos_values=cos_values,
+        sin_values=sin_values,
+        theta_values=theta_values,
+        index=index,
+    )
 
 
 def compute_theta_trig(
@@ -66,9 +92,19 @@ def compute_theta_trig(
 
     pairs = list(_iter_theta_pairs(nodes))
     if not pairs:
-        return TrigCache(cos={}, sin={}, theta={})
+        return TrigCache(
+            cos={},
+            sin={},
+            theta={},
+            order=(),
+            cos_values=(),
+            sin_values=(),
+            theta_values=(),
+            index={},
+        )
 
     node_list, theta_vals = zip(*pairs)
+    node_list = tuple(node_list)
     theta_arr = np.fromiter(theta_vals, dtype=float)
     cos_arr = np.cos(theta_arr)
     sin_arr = np.sin(theta_arr)
@@ -76,7 +112,17 @@ def compute_theta_trig(
     cos_th = dict(zip(node_list, map(float, cos_arr)))
     sin_th = dict(zip(node_list, map(float, sin_arr)))
     thetas = dict(zip(node_list, map(float, theta_arr)))
-    return TrigCache(cos=cos_th, sin=sin_th, theta=thetas)
+    index = {n: i for i, n in enumerate(node_list)}
+    return TrigCache(
+        cos=cos_th,
+        sin=sin_th,
+        theta=thetas,
+        order=node_list,
+        cos_values=cos_arr,
+        sin_values=sin_arr,
+        theta_values=theta_arr,
+        index=index,
+    )
 
 
 def _build_trig_cache(G: GraphLike, np: Any | None = None) -> TrigCache:
