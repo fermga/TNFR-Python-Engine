@@ -23,6 +23,7 @@ PYTHONPATH=src python benchmarks/<script>.py
 | `cached_abs_max.py` | Cache-aware updates for absolute maxima (`tnfr.alias.set_attr_with_max`). | Demonstrates how cached maxima avoid scanning the graph via `multi_recompute_abs_max` on every assignment. |
 | `collect_attr.py` | Vectorised collection of nodal attributes (`tnfr.alias.collect_attr`). | Requires NumPy; the script exits gracefully when the module is unavailable. |
 | `default_compute_delta_nfr.py` | Core ΔNFR update speed (`tnfr.dynamics.default_compute_delta_nfr`). | Runs multiple passes on random graphs and reports best/median/mean/worst timings. Accepts `--profile` to dump per-function timings. |
+| `compute_dnfr_benchmark.py` | `_compute_dnfr` vectorised vs. fallback execution. | Explores how graph size/density impacts the NumPy and pure-Python paths, reporting summary stats and speed-up ratios. |
 | `compute_si_profile.py` | Sense Index profiling (`tnfr.metrics.sense_index.compute_Si`). | Captures cProfile stats for NumPy and pure-Python runs, exporting `.pstats` or JSON summaries. |
 | `full_pipeline_profile.py` | Full telemetry + ΔNFR pipeline profiling (`compute_Si`, `_prepare_dnfr_data`, `_compute_dnfr_common`, `default_compute_delta_nfr`). | Produces paired `.pstats` and JSON reports for vectorised and fallback runs with per-operator wall-clock summaries. |
 | `neighbor_phase_mean.py` | Fast phase averaging for neighbourhoods (`tnfr.metrics.trig.neighbor_phase_mean`). | Includes a `NodeNX`-based reference to highlight the benefit of the shared `trig_cache` module. |
@@ -105,6 +106,29 @@ most cumulative time from `_compute_dnfr_common` into array-based kernels and
 that `compute_Si` benefits from the same optimisation. Significant regressions
 should show up as higher `cumtime` values or inflated per-loop wall-clock
 figures.
+
+### `_compute_dnfr` vectorisation checks
+
+Use the microbenchmark to compare the NumPy and pure-Python branches directly
+across multiple graph sizes and densities:
+
+```bash
+PYTHONPATH=src python benchmarks/compute_dnfr_benchmark.py \
+  --nodes 192 384 768 --edge-probabilities 0.05 0.12 0.3 --repeats 8
+```
+
+The output prints a compact table per configuration with:
+
+* **Vectorised best/median/mean/worst** – summary timings in seconds when
+  NumPy is available.
+* **Fallback best/median/mean/worst** – the pure-Python execution statistics.
+* **Ratio (fallback ÷ vectorized)** – the average slow-down when vectorisation
+  is disabled. Ratios significantly above `1.00×` confirm that dense kernels are
+  exercised and provide a guardrail for regressions.
+
+Pass `--force-dense` to ensure the dense accumulator path is exercised when the
+automatic heuristics might prefer sparse accumulation. The script gracefully
+degrades to reporting only the fallback timings whenever NumPy is unavailable.
 
 ### Chunked execution switches
 
