@@ -1485,17 +1485,15 @@ def _accumulate_neighbors_dense(
     state = _ensure_numpy_state_vectors(data, np)
     vectors = [state["cos"], state["sin"], state["epi"], state["vf"]]
 
+    workspace = _ensure_cached_array(cache, "dense_accum_np", (n,), np)
     components = _ensure_cached_array(cache, "dense_components_np", (n, 4), np)
-    for col, src_vec in enumerate(vectors):
+
+    for col, (src_vec, target) in enumerate(zip(vectors, (x, y, epi_sum, vf_sum))):
+        # ``components`` retains the last source copies so callers relying on
+        # cached buffers (e.g. diagnostics) still observe meaningful values.
         np.copyto(components[:, col], src_vec, casting="unsafe")
-
-    accum = _ensure_cached_array(cache, "dense_accum_np", (n, 4), np)
-    np.matmul(A, components, out=accum)
-
-    np.copyto(x, accum[:, 0], casting="unsafe")
-    np.copyto(y, accum[:, 1], casting="unsafe")
-    np.copyto(epi_sum, accum[:, 2], casting="unsafe")
-    np.copyto(vf_sum, accum[:, 3], casting="unsafe")
+        np.matmul(A, src_vec, out=workspace)
+        np.copyto(target, workspace, casting="unsafe")
 
     degree_counts = data.get("dense_degree_np")
     if degree_counts is None or getattr(degree_counts, "shape", (0,))[0] != n:
@@ -1593,29 +1591,31 @@ def _accumulate_neighbors_broadcasted(
         row = 0
 
         np.take(cos, edge_dst, out=edge_values)
-        np.add.at(accum[row], edge_src, edge_values)
+        accum[row][:] = np.bincount(edge_src, weights=edge_values, minlength=n)
         row += 1
 
         np.take(sin, edge_dst, out=edge_values)
-        np.add.at(accum[row], edge_src, edge_values)
+        accum[row][:] = np.bincount(edge_src, weights=edge_values, minlength=n)
         row += 1
 
         np.take(epi, edge_dst, out=edge_values)
-        np.add.at(accum[row], edge_src, edge_values)
+        accum[row][:] = np.bincount(edge_src, weights=edge_values, minlength=n)
         row += 1
 
         np.take(vf, edge_dst, out=edge_values)
-        np.add.at(accum[row], edge_src, edge_values)
+        accum[row][:] = np.bincount(edge_src, weights=edge_values, minlength=n)
         row += 1
 
         if include_count and count is not None:
             edge_values.fill(1.0)
-            np.add.at(accum[row], edge_src, edge_values)
+            accum[row][:] = np.bincount(edge_src, weights=edge_values, minlength=n)
             row += 1
 
         if use_topology and deg_sum is not None and deg_array is not None:
             np.take(deg_array, edge_dst, out=edge_values)
-            np.add.at(accum[row], edge_src, edge_values)
+            accum[row][:] = np.bincount(
+                edge_src, weights=edge_values, minlength=n
+            )
     else:
         accum.fill(0.0)
 
