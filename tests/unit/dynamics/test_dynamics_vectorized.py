@@ -619,8 +619,9 @@ def test_edge_accumulation_buffers_cached_and_stable(topo_weight, monkeypatch):
     edge_values = cache.neighbor_edge_values_np
     accumulator = cache.neighbor_accum_np
     assert edge_values is not None
-    assert edge_values.shape == (data_vec["edge_count"],)
     assert accumulator is not None
+    chunk_size = data_vec.get("neighbor_chunk_size") or data_vec["edge_count"]
+    assert edge_values.shape == (chunk_size, accumulator.shape[0])
 
     with numpy_disabled(monkeypatch):
         loop_graph = base.copy()
@@ -842,7 +843,8 @@ def test_broadcast_accumulation_dense_graph_equivalence():
     expected_rows = 4 + 1  # cos, sin, epi, vf, count
     if data_vec["w_topo"] != 0.0:
         expected_rows += 1
-    assert edge_buffer.shape == (data_vec["edge_count"],)
+    chunk_size = data_vec.get("neighbor_chunk_size") or data_vec["edge_count"]
+    assert edge_buffer.shape == (chunk_size, expected_rows)
     assert accumulator.shape == (expected_rows, len(data_vec["nodes"]))
 
     for idx, node in enumerate(dense_graph.nodes):

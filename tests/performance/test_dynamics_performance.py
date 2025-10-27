@@ -11,13 +11,17 @@ import pytest
 np = pytest.importorskip("numpy")
 import numpy.testing as npt
 
+import tnfr.dynamics.dnfr as dnfr_module
+
 from tnfr.alias import collect_attr, get_attr, set_attr
 from tnfr.constants import get_aliases
 from tnfr.dynamics import _prepare_dnfr_data, default_compute_delta_nfr
 from tnfr.dynamics.dnfr import (
     _accumulate_neighbors_numpy,
+    _build_neighbor_sums_common,
     _build_edge_index_arrays,
     _init_neighbor_sums,
+    NeighborStats,
     _resolve_numpy_degree_array,
 )
 from tnfr.utils import cached_nodes_and_A
@@ -186,6 +190,63 @@ def test_default_compute_delta_nfr_vectorized_is_faster_and_equivalent():
         for n in fallback_graph.nodes
     ]
     npt.assert_allclose(vector_dnfr, fallback_dnfr, rtol=1e-9, atol=1e-9)
+
+
+def test_broadcast_neighbor_accumulator_stays_faster_and_correct(monkeypatch):
+    base_graph = _seed_graph(num_nodes=220, edge_probability=0.4, seed=20250217)
+
+    vector_graph = base_graph.copy()
+    vector_data = _prepare_dnfr_data(vector_graph)
+    vector_data["prefer_sparse"] = True
+    vector_data["A"] = None
+    _build_neighbor_sums_common(vector_graph, vector_data, use_numpy=True)
+
+    loop_graph = base_graph.copy()
+    loop_data = _prepare_dnfr_data(loop_graph)
+    loop_data["prefer_sparse"] = True
+    loop_data["A"] = None
+    with monkeypatch.context() as ctx:
+        ctx.setattr(dnfr_module, "get_numpy", lambda: None)
+        _build_neighbor_sums_common(loop_graph, loop_data, use_numpy=False)
+
+    loops = 3
+    vector_results: list[NeighborStats] = []
+
+    def _vector_run() -> None:
+        vector_results.append(
+            _build_neighbor_sums_common(vector_graph, vector_data, use_numpy=True)
+        )
+
+    vector_time = _measure(_vector_run, loops)
+    vector_result = vector_results[-1]
+
+    loop_results: list[NeighborStats] = []
+    with monkeypatch.context() as ctx:
+        ctx.setattr(dnfr_module, "get_numpy", lambda: None)
+
+        def _loop_run() -> None:
+            loop_results.append(
+                _build_neighbor_sums_common(loop_graph, loop_data, use_numpy=False)
+            )
+
+        loop_time = _measure(_loop_run, loops)
+    loop_result = loop_results[-1]
+
+    assert vector_time < loop_time
+    assert vector_time <= loop_time * 0.9
+
+    for vec_arr, loop_arr in zip(vector_result[:-1], loop_result[:-1]):
+        if vec_arr is None or loop_arr is None:
+            assert vec_arr is loop_arr is None
+        else:
+            npt.assert_allclose(vec_arr, np.asarray(loop_arr, dtype=float), rtol=1e-9, atol=1e-9)
+
+    vec_deg = vector_result[-1]
+    loop_deg = loop_result[-1]
+    if vec_deg is None or loop_deg is None:
+        assert vec_deg is loop_deg is None
+    else:
+        npt.assert_allclose(vec_deg, np.asarray(loop_deg, dtype=float), rtol=1e-9, atol=1e-9)
 
 
 def test_prepare_dnfr_data_stays_faster_than_naive_collector():
