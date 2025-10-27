@@ -1,5 +1,83 @@
 # Release notes
 
+## Rollback runbook
+
+### Activation criteria
+
+- **PyPI anomaly**: integrity regressions, mis-signed artefacts, or validation
+  gaps discovered after publication that compromise C(t), νf traces, or the
+  reproducibility contract.
+- **GitHub release mismatch**: the tagged source diverges from the validated
+  QA ledger or omits a structural fix that shipped with the previous version.
+- **Downstream instability**: partners report ΔNFR spikes or phase drifts that
+  reproduce on the freshly published build while the prior release stays
+  coherent.
+
+Triggering any of these conditions escalates to the release shepherd who owns
+the rollback decision.
+
+### Retrieval of signed assets and validation logs
+
+1. Navigate to the **Release** workflow run that produced the faulty build.
+2. Download the ``tnfr-<version>-dist`` artifact containing the wheels,
+   sdist, and detached signatures, plus the optional ``qa-validation-<version>``
+   validation log bundle uploaded by the pipeline.
+3. Store the artifacts in the incident folder before beginning remediation so
+   the structural history remains auditable.
+
+### PyPI yank procedure
+
+```bash
+python -m pip install --upgrade twine
+python -m twine yank tnfr <version> \
+  --repository $PYPI_REPOSITORY \
+  --username __token__ \
+  --password "$PYPI_API_TOKEN" \
+  --comment "Yanked due to <reason>"
+```
+
+- Use ``PYPI_REPOSITORY=pypi`` for production and ``testpypi`` for staging.
+- Share the yank rationale with the TNFR release list to keep the incident
+  traceable.
+
+### Git tag and GitHub release rollback
+
+```bash
+git fetch --tags origin
+git tag -d v<version>
+git push origin :refs/tags/v<version>
+gh release delete v<version> --cleanup-tag
+```
+
+- Deleting the GitHub release removes the public notes while the tag cleanup
+  prevents accidental reinstalls from source distributions.
+- When automation created a changelog commit, revert it or cherry-pick the
+  previous ``docs/releases.md`` state to keep the ledger aligned.
+
+### Restore TNFR to the last coherent version
+
+```bash
+PREVIOUS=$(git tag --list 'v*' --sort=-v:refname | sed -n '2p')
+git checkout "$PREVIOUS"
+python -m pip install dist/tnfr-"${PREVIOUS#v}"-py3-none-any.whl
+```
+
+- Coordinate with infrastructure owners to redeploy the prior container or
+  wheel so operational nodes remain on the coherent release.
+- Monitor C(t), Si, and phase telemetry for at least one observation window to
+  confirm stability after restoration.
+
+### Automation helper
+
+Invoke :mod:`scripts.rollback_release` to drive the full sequence, including
+PyPI yanks, tag deletion, and environment rewinds::
+
+    python scripts/rollback_release.py --version <version-to-revoke>
+
+The helper prints the planned actions, prompts for confirmation, and supports
+``--dry-run`` rehearsals. See :ref:`rollback-script` for parameters and
+authentication expectations.
+
 ## Semantic release workflow
 
 We manage versions with `python-semantic-release`, deriving release tags directly from the TNFR commit history so the ledger reflects actual structural reorganisations.
@@ -33,6 +111,38 @@ We manage versions with `python-semantic-release`, deriving release tags directl
 ## Historical ledger
 
 <!-- version history -->
+
+.. _rollback-script:
+
+## Rollback automation script
+
+The :mod:`scripts.rollback_release` helper coordinates the yank, tag cleanup,
+and restoration steps without bypassing TNFR safeguards.
+
+### Usage
+
+```bash
+python scripts/rollback_release.py --version 16.0.0 \
+  --pypi-repository pypi \
+  --username __token__ \
+  --password "$PYPI_API_TOKEN"
+```
+
+- ``--dry-run`` prints the planned actions without executing them.
+- ``--confirm`` skips the interactive prompt for automation contexts.
+- Credentials may be provided via ``PYPI_USERNAME``/``PYPI_PASSWORD`` or the
+  CLI flags; API tokens remain the preferred authentication method.
+
+### Behaviour
+
+- **PyPI yank**: performs ``twine yank`` with the provided version, capturing
+  the rationale in the package metadata when ``--reason`` is supplied.
+- **Tag rollback**: deletes ``v<version>`` locally and remotely to avoid stale
+  installs, then checks out the previous semantic-release tag.
+- **State restoration**: surfaces the prior version and offers to reinstall it
+  so local TNFR simulations match the redeployed environment.
+- Structured logging documents each operator invoked (yank, tag deletion,
+  checkout) to keep the rollback trace consistent with the TNFR audit ledger.
 
 ### 16.0.0 (glyph load history cleanup)
 
