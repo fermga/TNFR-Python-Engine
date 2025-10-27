@@ -1564,9 +1564,20 @@ def _accumulate_neighbors_broadcasted(
 
     component_rows = 4 + (1 if include_count else 0) + (1 if use_topology else 0)
 
-    if chunk_size is not None:
-        # Retained for API compatibility; accumulation is handled in one pass now.
-        _ = chunk_size
+    if edge_count:
+        if chunk_size is None:
+            resolved_chunk = edge_count
+        else:
+            try:
+                resolved_chunk = int(chunk_size)
+            except (TypeError, ValueError):
+                resolved_chunk = edge_count
+            else:
+                if resolved_chunk <= 0:
+                    resolved_chunk = edge_count
+        resolved_chunk = max(1, min(edge_count, resolved_chunk))
+    else:
+        resolved_chunk = 0
 
     if cache is not None:
         base_signature = (id(edge_src), id(edge_dst), n, edge_count)
@@ -1586,9 +1597,11 @@ def _accumulate_neighbors_broadcasted(
             accum.fill(0.0)
 
         workspace = cache.neighbor_edge_values_np
-        if edge_count:
-            if workspace is None or getattr(workspace, "shape", None) != (edge_count,):
-                workspace = np.empty(edge_count, dtype=float)
+        workspace_length = resolved_chunk
+        if workspace_length:
+            expected_shape = (workspace_length,)
+            if workspace is None or getattr(workspace, "shape", None) != expected_shape:
+                workspace = np.empty(workspace_length, dtype=float)
         else:
             workspace = None
         cache.neighbor_edge_values_np = workspace
@@ -1596,7 +1609,8 @@ def _accumulate_neighbors_broadcasted(
         cache.neighbor_accum_signature = signature
     else:
         accum = np.zeros((component_rows, n), dtype=float)
-        workspace = np.empty(edge_count, dtype=float) if edge_count else None
+        workspace_length = resolved_chunk
+        workspace = np.empty(workspace_length, dtype=float) if workspace_length else None
 
     if edge_count:
         row = 0
@@ -1616,23 +1630,36 @@ def _accumulate_neighbors_broadcasted(
         edge_src_int = edge_src.astype(np.intp, copy=False)
         edge_dst_int = edge_dst.astype(np.intp, copy=False)
 
-        def _accumulate_row(row_idx: int, values: np.ndarray) -> None:
-            if workspace is not None:
-                np.take(values, edge_dst_int, out=workspace)
-                np.add.at(accum[row_idx], edge_src_int, workspace)
-            else:
-                np.add.at(accum[row_idx], edge_src_int, np.take(values, edge_dst_int))
+        chunk_indices = range(0, edge_count, resolved_chunk if resolved_chunk else edge_count)
+        chunks = ((start, min(start + resolved_chunk, edge_count)) for start in chunk_indices)
 
-        _accumulate_row(cos_row, cos)
-        _accumulate_row(sin_row, sin)
-        _accumulate_row(epi_row, epi)
-        _accumulate_row(vf_row, vf)
+        for start, end in chunks:
+            src_slice = edge_src_int[start:end]
+            dst_slice = edge_dst_int[start:end]
+            slice_len = end - start
 
-        if count_row is not None:
-            np.add.at(accum[count_row], edge_src_int, 1.0)
+            def _accumulate_row(row_idx: int, values: np.ndarray) -> None:
+                if workspace is not None:
+                    target = workspace[:slice_len]
+                    np.take(values, dst_slice, out=target)
+                    np.add.at(accum[row_idx], src_slice, target)
+                else:
+                    np.add.at(
+                        accum[row_idx],
+                        src_slice,
+                        np.take(values, dst_slice),
+                    )
 
-        if deg_row is not None and deg_array is not None:
-            _accumulate_row(deg_row, deg_array)
+            _accumulate_row(cos_row, cos)
+            _accumulate_row(sin_row, sin)
+            _accumulate_row(epi_row, epi)
+            _accumulate_row(vf_row, vf)
+
+            if count_row is not None:
+                np.add.at(accum[count_row], src_slice, 1.0)
+
+            if deg_row is not None and deg_array is not None:
+                _accumulate_row(deg_row, deg_array)
     else:
         accum.fill(0.0)
         if workspace is not None:
