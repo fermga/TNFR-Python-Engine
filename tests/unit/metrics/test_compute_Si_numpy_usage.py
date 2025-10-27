@@ -1,4 +1,5 @@
 import math
+from typing import Any
 
 import pytest
 
@@ -11,18 +12,26 @@ ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
 
-def test_compute_Si_vectorized_accumulates_neighbors(monkeypatch, graph_canon):
+def test_compute_Si_vectorized_uses_bulk_helper(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
 
-    calls: list[np.ndarray] = []
+    calls: list[dict[str, Any]] = []
 
-    original_bincount = np.bincount
+    original_helper = compute_Si.__globals__["neighbor_phase_mean_bulk"]
 
-    def capture_bincount(*args, **kwargs):
-        calls.append(args[0])
-        return original_bincount(*args, **kwargs)
+    def capture_helper(edge_src, edge_dst, **kwargs):
+        calls.append(
+            {
+                "edge_src": np.asarray(edge_src, dtype=np.intp).copy(),
+                "edge_dst": np.asarray(edge_dst, dtype=np.intp).copy(),
+                "node_count": kwargs.get("node_count"),
+            }
+        )
+        return original_helper(edge_src, edge_dst, **kwargs)
 
-    monkeypatch.setattr(np, "bincount", capture_bincount)
+    monkeypatch.setattr(
+        "tnfr.metrics.sense_index.neighbor_phase_mean_bulk", capture_helper
+    )
     monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
 
     G = graph_canon()
@@ -35,6 +44,10 @@ def test_compute_Si_vectorized_accumulates_neighbors(monkeypatch, graph_canon):
     compute_Si(G, inplace=False)
 
     assert len(calls) == 1
+    recorded = calls[0]
+    assert recorded["node_count"] == G.number_of_nodes()
+    assert recorded["edge_src"].shape == recorded["edge_dst"].shape
+    assert recorded["edge_dst"].size > 0
 
 
 def _configure_graph(graph):

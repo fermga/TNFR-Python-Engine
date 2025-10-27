@@ -53,7 +53,7 @@ from .common import (
     ensure_neighbors_map,
     merge_graph_weights,
 )
-from .trig import neighbor_phase_mean_list
+from .trig import neighbor_phase_mean_bulk, neighbor_phase_mean_list
 from .trig_cache import get_trig_cache
 
 ALIAS_VF = get_aliases("VF")
@@ -496,25 +496,53 @@ def compute_Si(
     if not nodes_data:
         return {}
 
-    node_ids = [n for n, _ in nodes_data]
-    node_idx: dict[Any, int] = {n: i for i, n in enumerate(node_ids)}
+    data_by_node = {n: nd for n, nd in nodes_data}
+
+    trig_order = list(getattr(trig, "order", ()))
+    node_ids: list[Any]
+    node_idx: dict[Any, int]
+    using_cache_order = False
+    if trig_order and len(trig_order) == len(data_by_node):
+        node_ids = trig_order
+        node_idx = dict(getattr(trig, "index", {}))
+        using_cache_order = len(node_idx) == len(node_ids)
+        if not using_cache_order:
+            node_idx = {n: i for i, n in enumerate(node_ids)}
+    else:
+        node_ids = [n for n, _ in nodes_data]
+        node_idx = {n: i for i, n in enumerate(node_ids)}
 
     if supports_vector:
         count = len(node_ids)
 
-        theta_arr = np.fromiter(
-            (thetas.get(n, 0.0) for n in node_ids), dtype=float, count=count
-        )
-        cos_arr = np.fromiter(
-            (cos_th.get(n, math.cos(thetas.get(n, 0.0))) for n in node_ids),
-            dtype=float,
-            count=count,
-        )
-        sin_arr = np.fromiter(
-            (sin_th.get(n, math.sin(thetas.get(n, 0.0))) for n in node_ids),
-            dtype=float,
-            count=count,
-        )
+        cache_theta = getattr(trig, "theta_values", None)
+        cache_cos = getattr(trig, "cos_values", None)
+        cache_sin = getattr(trig, "sin_values", None)
+
+        if using_cache_order and cache_theta is not None:
+            theta_arr = np.asarray(cache_theta, dtype=float)
+        else:
+            theta_arr = np.fromiter(
+                (thetas.get(n, 0.0) for n in node_ids), dtype=float, count=count
+            )
+
+        if using_cache_order and cache_cos is not None:
+            cos_arr = np.asarray(cache_cos, dtype=float)
+        else:
+            cos_arr = np.fromiter(
+                (cos_th.get(n, math.cos(thetas.get(n, 0.0))) for n in node_ids),
+                dtype=float,
+                count=count,
+            )
+
+        if using_cache_order and cache_sin is not None:
+            sin_arr = np.asarray(cache_sin, dtype=float)
+        else:
+            sin_arr = np.fromiter(
+                (sin_th.get(n, math.sin(thetas.get(n, 0.0))) for n in node_ids),
+                dtype=float,
+                count=count,
+            )
 
         edge_src_list: list[int] = []
         edge_dst_list: list[int] = []
@@ -531,48 +559,25 @@ def compute_Si(
         edge_src = np.asarray(edge_src_list, dtype=np.intp)
         edge_dst = np.asarray(edge_dst_list, dtype=np.intp)
 
-        neighbor_cos_sum = np.zeros(count, dtype=float)
-        neighbor_sin_sum = np.zeros(count, dtype=float)
-        if edge_count:
-            np.add.at(neighbor_cos_sum, edge_dst, cos_arr[edge_src])
-            np.add.at(neighbor_sin_sum, edge_dst, sin_arr[edge_src])
-            neighbor_counts = np.bincount(edge_dst, minlength=count).astype(float)
-        else:
-            neighbor_counts = np.zeros(count, dtype=float)
-
-        has_neighbors = neighbor_counts > 0.0
-        mean_cos = np.zeros(count, dtype=float)
-        mean_sin = np.zeros(count, dtype=float)
-        if edge_count:
-            with np.errstate(divide="ignore", invalid="ignore"):
-                np.divide(
-                    neighbor_cos_sum,
-                    neighbor_counts,
-                    out=mean_cos,
-                    where=has_neighbors,
-                )
-                np.divide(
-                    neighbor_sin_sum,
-                    neighbor_counts,
-                    out=mean_sin,
-                    where=has_neighbors,
-                )
-
-        mean_theta = np.where(
-            has_neighbors,
-            np.arctan2(mean_sin, mean_cos),
-            theta_arr,
+        mean_theta, _has_neighbors = neighbor_phase_mean_bulk(
+            edge_src,
+            edge_dst,
+            cos_values=cos_arr,
+            sin_values=sin_arr,
+            theta_values=theta_arr,
+            node_count=count,
+            np=np,
         )
         diff = np.remainder(theta_arr - mean_theta + math.pi, math.tau) - math.pi
         phase_dispersion_arr = np.abs(diff) / math.pi
 
         vf_arr = np.fromiter(
-            (get_attr(nd, ALIAS_VF, 0.0) for _, nd in nodes_data),
+            (get_attr(data_by_node[n], ALIAS_VF, 0.0) for n in node_ids),
             dtype=float,
             count=count,
         )
         dnfr_arr = np.fromiter(
-            (get_attr(nd, ALIAS_DNFR, 0.0) for _, nd in nodes_data),
+            (get_attr(data_by_node[n], ALIAS_DNFR, 0.0) for n in node_ids),
             dtype=float,
             count=count,
         )

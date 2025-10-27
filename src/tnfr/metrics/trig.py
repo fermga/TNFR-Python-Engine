@@ -23,6 +23,7 @@ __all__ = (
     "_phase_mean_from_iter",
     "_neighbor_phase_mean_core",
     "_neighbor_phase_mean_generic",
+    "neighbor_phase_mean_bulk",
     "neighbor_phase_mean_list",
     "neighbor_phase_mean",
 )
@@ -168,6 +169,99 @@ def neighbor_phase_mean_list(
     return _neighbor_phase_mean_generic(
         neigh, cos_map=cos_th, sin_map=sin_th, np=np, fallback=fallback
     )
+
+
+def neighbor_phase_mean_bulk(
+    edge_src: Any,
+    edge_dst: Any,
+    *,
+    cos_values: Any,
+    sin_values: Any,
+    theta_values: Any,
+    node_count: int,
+    np: Any,
+) -> tuple[Any, Any]:
+    """Vectorised neighbour phase means for all nodes in a graph.
+
+    Parameters
+    ----------
+    edge_src, edge_dst:
+        Arrays describing the source (neighbour) and destination (node) indices
+        for each edge contribution. They must have matching shapes.
+    cos_values, sin_values:
+        Arrays containing the cosine and sine values of each node's phase. The
+        arrays must be indexed using the same positional indices referenced by
+        ``edge_src``.
+    theta_values:
+        Array with the baseline phase for each node. Positions that do not have
+        neighbours reuse this baseline as their mean phase.
+    node_count:
+        Total number of nodes represented in ``theta_values``.
+    np:
+        Numpy module used to materialise the vectorised operations.
+
+    Returns
+    -------
+    tuple[Any, Any]
+        Tuple ``(mean_theta, has_neighbors)`` where ``mean_theta`` contains the
+        circular mean of neighbour phases for every node and ``has_neighbors``
+        is a boolean mask identifying which nodes contributed at least one
+        neighbour sample.
+    """
+
+    if node_count <= 0:
+        empty_mean = np.zeros(0, dtype=float)
+        return empty_mean, empty_mean.astype(bool)
+
+    edge_src_arr = np.asarray(edge_src, dtype=np.intp)
+    edge_dst_arr = np.asarray(edge_dst, dtype=np.intp)
+
+    if edge_src_arr.shape != edge_dst_arr.shape:
+        raise ValueError("edge_src and edge_dst must share the same shape")
+
+    theta_arr = np.asarray(theta_values, dtype=float)
+    if theta_arr.ndim != 1 or theta_arr.size != node_count:
+        raise ValueError("theta_values must be a 1-D array matching node_count")
+
+    cos_arr = np.asarray(cos_values, dtype=float)
+    sin_arr = np.asarray(sin_values, dtype=float)
+    if cos_arr.ndim != 1 or cos_arr.size != node_count:
+        raise ValueError("cos_values must be a 1-D array matching node_count")
+    if sin_arr.ndim != 1 or sin_arr.size != node_count:
+        raise ValueError("sin_values must be a 1-D array matching node_count")
+
+    neighbor_cos_sum = np.zeros(node_count, dtype=float)
+    neighbor_sin_sum = np.zeros(node_count, dtype=float)
+
+    edge_count = edge_dst_arr.size
+    if edge_count:
+        np.add.at(neighbor_cos_sum, edge_dst_arr, cos_arr[edge_src_arr])
+        np.add.at(neighbor_sin_sum, edge_dst_arr, sin_arr[edge_src_arr])
+        neighbor_counts = np.bincount(edge_dst_arr, minlength=node_count).astype(float)
+    else:
+        neighbor_counts = np.zeros(node_count, dtype=float)
+
+    has_neighbors = neighbor_counts > 0.0
+    mean_cos = np.zeros(node_count, dtype=float)
+    mean_sin = np.zeros(node_count, dtype=float)
+
+    if edge_count:
+        with np.errstate(divide="ignore", invalid="ignore"):
+            np.divide(
+                neighbor_cos_sum,
+                neighbor_counts,
+                out=mean_cos,
+                where=has_neighbors,
+            )
+            np.divide(
+                neighbor_sin_sum,
+                neighbor_counts,
+                out=mean_sin,
+                where=has_neighbors,
+            )
+
+    mean_theta = np.where(has_neighbors, np.arctan2(mean_sin, mean_cos), theta_arr)
+    return mean_theta, has_neighbors
 
 
 @overload
