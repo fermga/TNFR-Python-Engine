@@ -838,6 +838,11 @@ def test_broadcast_accumulation_dense_graph_equivalence():
     assert isinstance(edge_buffer, np.ndarray)
     accumulator = cache.neighbor_accum_np
     assert isinstance(accumulator, np.ndarray)
+    expected_rows = 4 + 1  # cos, sin, epi, vf, count
+    if data_vec["w_topo"] != 0.0:
+        expected_rows += 1
+    assert edge_buffer.shape == (expected_rows, data_vec["edge_count"])
+    assert accumulator.shape == (expected_rows, len(data_vec["nodes"]))
 
     for idx, node in enumerate(dense_graph.nodes):
         set_attr(dense_graph.nodes[node], ALIAS_EPI, 0.17 * (idx + 5))
