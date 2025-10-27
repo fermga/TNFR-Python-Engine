@@ -1585,19 +1585,18 @@ def _accumulate_neighbors_broadcasted(
         else:
             accum.fill(0.0)
 
-        edge_values = cache.neighbor_edge_values_np
-        expected_shape = (component_rows, edge_count)
-        if (
-            edge_values is None
-            or getattr(edge_values, "shape", None) != expected_shape
-        ):
-            edge_values = np.empty(expected_shape, dtype=float)
-            cache.neighbor_edge_values_np = edge_values
+        workspace = cache.neighbor_edge_values_np
+        if edge_count:
+            if workspace is None or getattr(workspace, "shape", None) != (edge_count,):
+                workspace = np.empty(edge_count, dtype=float)
+        else:
+            workspace = None
+        cache.neighbor_edge_values_np = workspace
 
         cache.neighbor_accum_signature = signature
     else:
         accum = np.zeros((component_rows, n), dtype=float)
-        edge_values = np.empty((component_rows, edge_count), dtype=float)
+        workspace = np.empty(edge_count, dtype=float) if edge_count else None
 
     if edge_count:
         row = 0
@@ -1614,29 +1613,30 @@ def _accumulate_neighbors_broadcasted(
             row += 1
         deg_row = row if use_topology and deg_array is not None else None
 
-        features = [
-            cos,
-            sin,
-            epi,
-            vf,
-        ]
+        edge_src_int = edge_src.astype(np.intp, copy=False)
+        edge_dst_int = edge_dst.astype(np.intp, copy=False)
+
+        def _accumulate_row(row_idx: int, values: np.ndarray) -> None:
+            if workspace is not None:
+                np.take(values, edge_dst_int, out=workspace)
+                np.add.at(accum[row_idx], edge_src_int, workspace)
+            else:
+                np.add.at(accum[row_idx], edge_src_int, np.take(values, edge_dst_int))
+
+        _accumulate_row(cos_row, cos)
+        _accumulate_row(sin_row, sin)
+        _accumulate_row(epi_row, epi)
+        _accumulate_row(vf_row, vf)
+
         if count_row is not None:
-            features.append(np.ones_like(cos, dtype=float))
+            np.add.at(accum[count_row], edge_src_int, 1.0)
+
         if deg_row is not None and deg_array is not None:
-            features.append(deg_array)
-
-        feature_matrix = np.stack(features, axis=0)
-        np.take(feature_matrix, edge_dst, axis=1, out=edge_values)
-
-        flat_accum = accum.reshape(-1)
-        base_offsets = np.arange(component_rows, dtype=np.intp) * n
-        edge_indices = (
-            edge_src.astype(np.intp, copy=False)[None, :] + base_offsets[:, None]
-        ).reshape(-1)
-        np.add.at(flat_accum, edge_indices, edge_values.reshape(-1))
+            _accumulate_row(deg_row, deg_array)
     else:
         accum.fill(0.0)
-        edge_values.fill(0.0)
+        if workspace is not None:
+            workspace.fill(0.0)
 
     row = 0
     np.copyto(x, accum[row], casting="unsafe")
@@ -1657,7 +1657,7 @@ def _accumulate_neighbors_broadcasted(
 
     return {
         "accumulator": accum,
-        "edge_values": edge_values,
+        "edge_values": workspace,
     }
 
 

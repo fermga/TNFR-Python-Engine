@@ -5,6 +5,7 @@ import sys
 from inspect import Parameter, Signature
 from typing import Any
 
+import networkx as nx
 import pytest
 
 from tnfr.alias import get_attr, set_attr
@@ -202,6 +203,46 @@ def test_prepare_dnfr_passes_jobs_kw_to_hook(graph_canon, compute_delta_nfr_hook
     _prepare_dnfr(G, use_Si=False)
 
     assert recorded["n_jobs"] == [5]
+
+
+def test_compute_dnfr_common_numpy_matches_python(monkeypatch):
+    np = pytest.importorskip("numpy")
+    del np
+
+    import tnfr.dynamics.dnfr as dnfr_module
+
+    base = nx.path_graph(7)
+    theta_alias = get_aliases("THETA")
+    epi_alias = get_aliases("EPI")
+    vf_alias = get_aliases("VF")
+    for idx, node in enumerate(base.nodes):
+        set_attr(base.nodes[node], theta_alias, 0.2 * (idx + 1))
+        set_attr(base.nodes[node], epi_alias, 0.5 * (idx + 1))
+        set_attr(base.nodes[node], vf_alias, 0.1 * (idx + 1))
+    base.graph["DNFR_WEIGHTS"] = {"phase": 0.4, "epi": 0.3, "vf": 0.2, "topo": 0.1}
+
+    vector_graph = base.copy()
+    vector_data = dnfr_module._prepare_dnfr_data(vector_graph)
+    dnfr_module._compute_dnfr(vector_graph, vector_data)
+
+    dnfr_alias = get_aliases("DNFR")
+    vector_values = [
+        get_attr(vector_graph.nodes[node], dnfr_alias, 0.0)
+        for node in vector_graph.nodes
+    ]
+
+    with monkeypatch.context() as ctx:
+        ctx.setattr(dnfr_module, "get_numpy", lambda: None)
+        python_graph = base.copy()
+        python_data = dnfr_module._prepare_dnfr_data(python_graph)
+        dnfr_module._compute_dnfr(python_graph, python_data)
+
+    python_values = [
+        get_attr(python_graph.nodes[node], dnfr_alias, 0.0)
+        for node in python_graph.nodes
+    ]
+
+    assert vector_values == pytest.approx(python_values, rel=1e-9, abs=1e-9)
 
 
 def test_prepare_dnfr_falls_back_when_jobs_kw_rejected(graph_canon):

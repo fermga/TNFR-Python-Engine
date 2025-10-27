@@ -55,9 +55,12 @@ def _assert_vector_state(data, np):
         assert cache.edge_src is not None
         edge_values = cache.neighbor_edge_values_np
         assert data.get("neighbor_edge_values_np") is edge_values
-        if data.get("edge_count", 0):
+        edge_count = data.get("edge_count", 0)
+        if edge_count:
             assert isinstance(edge_values, np.ndarray)
-            assert edge_values.shape[0] == data["edge_count"]
+            assert edge_values.shape == (edge_count,)
+        else:
+            assert edge_values is None
 
 
 def test_compute_dnfr_uses_numpy_even_when_graph_disables_vectorization():
@@ -205,7 +208,13 @@ def test_build_neighbor_sums_uses_cached_numpy_when_get_numpy_none(monkeypatch):
     accum_after = data.get("neighbor_accum_np")
     assert isinstance(accum_after, np.ndarray)
     assert cache.neighbor_accum_np is accum_after
-    assert isinstance(data.get("neighbor_edge_values_np"), np.ndarray)
+    edge_workspace = data.get("neighbor_edge_values_np")
+    edge_count = data.get("edge_count", 0)
+    if edge_count:
+        assert isinstance(edge_workspace, np.ndarray)
+        assert edge_workspace.shape == (edge_count,)
+    else:
+        assert edge_workspace is None
 
     _compute_dnfr_common(
         G,
