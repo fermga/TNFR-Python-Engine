@@ -13,6 +13,15 @@
 {% if version.notes %}
 {{ version.notes }}
 {% endif %}
+
+#### Rollback readiness checklist
+
+- [ ] Signed distributions stored in ``tnfr-{{ version.version }}-dist``
+      artifact.
+- [ ] Validation logs archived as ``qa-validation-{{ version.version }}`` (or
+      justification recorded if omitted).
+- [ ] Rollback shepherd assigned and on-call window confirmed.
+- [ ] Previous coherent tag acknowledged (``{{ versions[loop.index].version if not loop.last else 'n/a' }}``).
 {% if not loop.last %}
 {% endif %}
 {% endfor %}

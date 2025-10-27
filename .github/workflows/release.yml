@@ -150,16 +150,51 @@ jobs:
           python -m pip install .[test,typecheck]
 
       - name: Run QA checks
-        run: ./scripts/run_tests.sh
+        id: qa
+        run: |
+          set -o pipefail
+          mkdir -p artifacts
+          ./scripts/run_tests.sh | tee artifacts/qa-validation.log
+
+      - name: Upload validation logs
+        if: ${{ always() && steps.qa.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-validation-${{ needs.prepare.outputs.version }}
+          path: artifacts/qa-validation.log
+          if-no-files-found: ignore
 
       - name: Install build tooling
         run: |
           python -m pip install build python-semantic-release
 
+      - name: Import PyPI signing key
+        if: ${{ secrets.PYPI_SIGNING_KEY != '' && secrets.PYPI_SIGNING_KEY_ID != '' }}
+        env:
+          PYPI_SIGNING_KEY: ${{ secrets.PYPI_SIGNING_KEY }}
+        run: |
+          printf '%s' "$PYPI_SIGNING_KEY" | gpg --batch --import
+
       - name: Build distributions
+        id: build
         env:
           TNFR_VERSION: ${{ needs.prepare.outputs.version }}
         run: python -m build
+
+      - name: Sign distributions
+        if: ${{ secrets.PYPI_SIGNING_KEY != '' && secrets.PYPI_SIGNING_KEY_ID != '' && steps.build.outcome == 'success' }}
+        env:
+          GPG_KEY_ID: ${{ secrets.PYPI_SIGNING_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.PYPI_SIGNING_KEY_PASSPHRASE }}
+        run: |
+          for artifact in dist/*; do
+            [ -f "$artifact" ] || continue
+            if [ -n "$GPG_PASSPHRASE" ]; then
+              gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user "$GPG_KEY_ID" --armor --detach-sign "$artifact"
+            else
+              gpg --batch --yes --local-user "$GPG_KEY_ID" --armor --detach-sign "$artifact"
+            fi
+          done
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -175,3 +210,10 @@ jobs:
           files: |
             dist/*
             docs/releases.md
+
+      - name: Upload signed distributions
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tnfr-${{ needs.prepare.outputs.version }}-dist
+          path: dist/*
