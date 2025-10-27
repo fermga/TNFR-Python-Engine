@@ -21,6 +21,8 @@ We manage versions with `python-semantic-release`, deriving release tags directl
 - Pushing to `main` triggers the `Release` workflow.
 - The `prepare` job runs `python -m semantic_release version --skip-build --no-vcs-release` to compute the next version, apply the TNFR-aware templates under `meta/semantic_release/templates`, and push the resulting `vX.Y.Z` tag.
 - The computed version is exposed as a workflow output and reused by the packaging job for builds, uploads, and GitHub releases.
+- The publishing job now performs the full QA suite (`python -m pip install .[test,typecheck]` followed by `./scripts/run_tests.sh`) before any build step. A failing lint, type check, or test aborts the job and blocks the PyPI/GitHub publication, keeping the release aligned with the TNFR invariants.
+- `actions/setup-python` caching for pip and a dedicated pytest cache keep runtime predictable without skipping any verification stages.
 
 ### TNFR safeguards during bumps
 
