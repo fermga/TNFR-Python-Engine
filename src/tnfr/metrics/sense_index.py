@@ -666,20 +666,34 @@ def compute_Si(
             resolved_chunk = count or 1
 
         si_values = np.empty(count, dtype=float)
-        for start in range(0, count, resolved_chunk):
-            end = min(start + resolved_chunk, count)
-            theta_slice = theta_arr[start:end]
-            mean_slice = mean_theta[start:end]
-            diff = np.remainder(theta_slice - mean_slice + math.pi, math.tau) - math.pi
+        if resolved_chunk >= count:
+            diff = np.remainder(theta_arr - mean_theta + math.pi, math.tau) - math.pi
             phase_dispersion = np.abs(diff) / math.pi
-            si_chunk = np.clip(
-                alpha * vf_norm[start:end]
+            raw_si = (
+                alpha * vf_norm
                 + beta * (1.0 - phase_dispersion)
-                + gamma * (1.0 - dnfr_norm[start:end]),
-                0.0,
-                1.0,
+                + gamma * (1.0 - dnfr_norm)
             )
-            si_values[start:end] = si_chunk
+            np.clip(raw_si, 0.0, 1.0, out=si_values)
+        else:
+            for start in range(0, count, resolved_chunk):
+                end = min(start + resolved_chunk, count)
+                diff = (
+                    np.remainder(
+                        theta_arr[start:end]
+                        - mean_theta[start:end]
+                        + math.pi,
+                        math.tau,
+                    )
+                    - math.pi
+                )
+                phase_dispersion = np.abs(diff) / math.pi
+                raw_chunk = (
+                    alpha * vf_norm[start:end]
+                    + beta * (1.0 - phase_dispersion)
+                    + gamma * (1.0 - dnfr_norm[start:end])
+                )
+                np.clip(raw_chunk, 0.0, 1.0, out=si_values[start:end])
 
         if inplace:
             for idx, node in enumerate(node_ids):
