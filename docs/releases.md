@@ -1,6 +1,31 @@
 # Release notes
 
-## 16.0.0 (glyph load history cleanup)
+## Semantic release workflow
+
+We manage versions with `python-semantic-release`, deriving release tags directly from the TNFR commit history so the ledger reflects actual structural reorganisations.
+
+### Commit taxonomy
+
+- `feat:` or `structure:` — publish a **minor** bump describing new coherence capabilities or structural monitoring.
+- `fix:`, `perf:`, `refactor:`, `docs:`, `test:`, `build:`, `ci:`, `style:`, or `chore:` — issue a **patch** bump covering stabilisation and instrumentation work.
+- Append `!` to the type or add a `BREAKING CHANGE:` footer to flag a **major** bump that requires downstream synchronisation.
+
+### Workflow orchestration
+
+- Pushing to `main` triggers the `Release` workflow.
+- The `prepare` job runs `python -m semantic_release version --skip-build --no-vcs-release` to compute the next version, apply the TNFR-aware templates under `meta/semantic_release/templates`, and push the resulting `vX.Y.Z` tag.
+- The computed version is exposed as a workflow output and reused by the packaging job for builds, uploads, and GitHub releases.
+
+### TNFR safeguards during bumps
+
+- Release notes generated from the custom templates reiterate the preservation of coherence C(t), phase synchrony, and structural frequency νf.
+- The build job exports the resolved version through the `TNFR_VERSION` environment variable so :mod:`tnfr._version` stays aligned with the freshly tagged metadata.
+- Semantic-release commits do not introduce new operators; they document validated reorganisations and keep ΔNFR semantics intact.
+
+## Historical ledger
+<!-- version history -->
+
+### 16.0.0 (glyph load history cleanup)
 
 - **Breaking change**: Removed the deprecated glyph load history identifier that
   predated the English rename. Metrics initialisation and the coherence
@@ -12,7 +37,7 @@
   graph into this release. Persist the rewritten payloads so downstream tooling
   reads the same identifiers.
 
-## 14.0.0 (Spanish compatibility messaging retired)
+### 14.0.0 (Spanish compatibility messaging retired)
 
 - Finalised the English-only surface by removing Spanish-specific guidance from
   :mod:`tnfr.alias`, :mod:`tnfr.metrics.sense_index`, and the operator registry
@@ -29,7 +54,7 @@
 - Updated guides and release notes to describe the final English-only contract
   and the requirement to normalise archives with the compatibility helpers.
 
-## 13.1.0 (preset legacy tuple removed)
+### 13.1.0 (preset legacy tuple removed)
 
 - **Breaking change**: Removed the exported
   :data:`tnfr.config.presets.REMOVED_PRESET_NAMES` tuple now that only the
@@ -41,7 +66,7 @@
   ``KeyError('Preset not found: …')`` without additional guidance, matching the
   behaviour for unknown presets.
 
-## 13.0.0 (selector norms alias removed)
+### 13.0.0 (selector norms alias removed)
 
 - **Breaking change**: Removed the deprecated
   :func:`tnfr.selector._norms_para_selector` alias. Callers must import and use
@@ -50,7 +75,7 @@
 - Updated selector utilities documentation and tests to reference only the
   English helper so downstream projects surface the rename during upgrades.
 
-## 12.1.0 (selector norms helper renamed)
+### 12.1.0 (selector norms helper renamed)
 
 - Renamed the selector norms helper to the English-only
   :func:`tnfr.selector._selector_norms` identifier to align selector internals
@@ -60,7 +85,7 @@
 - Updated :mod:`tnfr.dynamics` and the selector unit tests to consume the new
   helper, keeping the cached norms behaviour unchanged.
 
-## 12.0.0 (diagnosis state Spanish shim removed)
+### 12.0.0 (diagnosis state Spanish shim removed)
 
 - Removed the :func:`tnfr.constants.enable_spanish_state_tokens` and
   :func:`tnfr.constants.disable_spanish_state_tokens` compatibility helpers along
@@ -87,7 +112,7 @@
   Persist the rewritten payloads before installing **TNFR 12.0.0** to avoid the
   new ``ValueError`` exceptions when loading historical archives.
 
-## 11.2.0 (operator collections English-only)
+### 11.2.0 (operator collections English-only)
 
 - Removed the Spanish compatibility aliases from
   :mod:`tnfr.config.operator_names`. Accessing the retired names now raises
@@ -98,7 +123,7 @@
   collections, reflecting the final step in the migration announced in earlier
   releases.
 
-## 11.1.0 (glyph load Spanish aggregates removed)
+### 11.1.0 (glyph load Spanish aggregates removed)
 
 - :func:`tnfr.observers.glyph_load` now reports only the English aggregate
   keys ``"_stabilizers"`` and ``"_disruptors"``. The runtime no longer mirrors
@@ -109,7 +134,7 @@
 - Updated the structural and metrics unit tests to enforce the English-only
   contract and removed the fixtures that patched Spanish aggregate labels.
 
-## 11.0.0 (Si dispersion legacy keys removed)
+### 11.0.0 (Si dispersion legacy keys removed)
 
 - Removed the legacy Si dispersion attribute from the sense index sensitivity
   cache. Loading graphs or configuration payloads that still define the retired
@@ -125,7 +150,7 @@
   persist the rewritten payload so the runtime no longer encounters retired
   identifiers.
 
-## 10.0.0 (remesh stability window keyword removal)
+### 10.0.0 (remesh stability window keyword removal)
 
 - Removed the transitional remesh stability keyword alias from
   :func:`tnfr.operators.apply_remesh_if_globally_stable`. Passing any
@@ -137,7 +162,7 @@
   audit stored configurations. See :doc:`getting-started/migrating-remesh-window`
   for detailed steps.
 
-## 15.0.0 (legacy migration helpers removed)
+### 15.0.0 (legacy migration helpers removed)
 
 - Finalised the English-only payload contract by removing
   :func:`tnfr.utils.migrations.migrate_legacy_phase_attributes` and
@@ -155,7 +180,7 @@
 - Added documentation in :doc:`getting-started/migrating-remesh-window` that
   summarises the deadline and required checks before adopting this release.
 
-## 9.0.0 (canonical preset rename)
+### 9.0.0 (canonical preset rename)
 
 - Renamed the canonical tutorial preset to the English-only identifier
   ``"canonical_example"``. The previous tutorial alias now raises a
@@ -171,7 +196,7 @@
   only the English preset names. Downstream automation should update any stored
   configuration that still references the encoded legacy token.
 
-## 8.1.0 (remesh cooldown alias removal)
+### 8.1.0 (remesh cooldown alias removal)
 
 - Removed the remesh cooldown alias from :mod:`tnfr.constants.core.RemeshDefaults`
   and from the remesh operator pipeline. Configuration loaders and runtime
@@ -193,7 +218,7 @@
       migrate_legacy_remesh_cooldown(G)
       inject_defaults(G)  # optional, keeps defaults in sync
 
-## 8.0.0 (phase alias enforcement)
+### 8.0.0 (phase alias enforcement)
 
 - Finalised the phase attribute migration by rejecting the legacy phase alias.
   Access helpers in :mod:`tnfr.alias` now operate strictly on the English
@@ -206,7 +231,7 @@
 - Updated documentation and tests to reflect the English-only phase contract
   and removed the automatic rewrites for the legacy alias.
 
-## 7.0.1 (English deprecation messaging)
+### 7.0.1 (English deprecation messaging)
 
 - Reworded the remaining deprecation warnings and validation errors that still
   surfaced Spanish text. Downstream tooling now emits English-only guidance
@@ -216,7 +241,7 @@
   removed; import :mod:`tnfr.config.constants`, :mod:`tnfr.config.presets`, and
   :mod:`tnfr.validation.grammar` instead.
 
-## 7.0.0 (Spanish identifiers removed)
+### 7.0.0 (Spanish identifiers removed)
 
 - Removed the legacy glyph constants that mirrored the English
   :data:`tnfr.config.constants.STABILIZERS` and
@@ -235,7 +260,7 @@
 - Updated tests and documentation to reflect the English-only contract across
   glyph constants, preset helpers, and diagnostic state utilities.
 
-## 6.1.0 (preset alias deprecation window)
+### 6.1.0 (preset alias deprecation window)
 
 - Announced the removal of the non-English preset identifiers scheduled for
   **TNFR 7.0**. The engine now emits :class:`FutureWarning` when deprecated names
@@ -250,7 +275,7 @@
   substitution pass using the provided mapping so that persisted data stores
   only the English preset names.
 
-## 6.0.0 (node aliases removed)
+### 6.0.0 (node aliases removed)
 
 - Removed the module-level aliases that mirrored the node class names from
   :mod:`tnfr.node`. Code importing those symbols must switch to the canonical
@@ -265,7 +290,7 @@
 - Published the backward-incompatible change as **TNFR 6.0.0** to honour the
   semantic versioning contract and flag the immediate API removal.
 
-## 5.0.0 (prepare_network alias retired)
+### 5.0.0 (prepare_network alias retired)
 
 - Removed the helper alias constructed as
   ``"".join(chr(cp) for cp in (112, 114, 101, 112, 97, 114, 97, 114, 95, 114, 101, 100))``.
@@ -277,7 +302,7 @@
 - Bumped the package version to **5.0.0** to flag the
   backward-incompatible API change.
 
-## 2.0.0 (Spanish alias removal)
+### 2.0.0 (Spanish alias removal)
 
 - Removed the Spanish compatibility tables from :mod:`tnfr.config.operator_names`.
   Only the English tokens (``emission``, ``reception``, ``coherence``, etc.) are
@@ -310,7 +335,7 @@
     the removal of ``tnfr.operators.compat``.
   * Update API docs, tutorials, and CLI references to show only English tokens.
 
-## 1.x compatibility window (historical)
+### 1.x compatibility window (historical)
 
 - English operator identifiers became canonical in 1.x. The registry published
   the English tokens and the CLI expected the same literals while the Spanish

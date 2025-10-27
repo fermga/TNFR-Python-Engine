@@ -2,19 +2,90 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
+  prepare:
+    name: Plan semantic release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      released: ${{ steps.plan.outputs.released }}
+      version: ${{ steps.plan.outputs.version }}
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install semantic release tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install python-semantic-release build
+
+      - name: Detect next version
+        id: plan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
+        run: |
+          set +e
+          VERSION_OUTPUT=$(python -m semantic_release version --print 2>&1)
+          STATUS=$?
+          set -e
+          echo "$VERSION_OUTPUT"
+          if [ "$STATUS" -ne 0 ]; then
+            echo "released=false" >> "$GITHUB_OUTPUT"
+            echo "version=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          VERSION=$(echo "$VERSION_OUTPUT" | tail -n 1 | tr -d ' \n')
+          if [ -z "$VERSION" ]; then
+            echo "released=false" >> "$GITHUB_OUTPUT"
+            echo "version=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "released=true" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Apply release tag
+        if: steps.plan.outputs.released == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
+        run: python -m semantic_release version --skip-build --no-vcs-release
+
+      - name: Emit tag output
+        id: tag
+        if: steps.plan.outputs.released == 'true'
+        run: |
+          echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+
   publish:
     name: Build and publish release
+    needs: prepare
+    if: needs.prepare.outputs.released == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
     steps:
-      - name: Checkout repository
+      - name: Checkout release tag
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.prepare.outputs.tag }}
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -24,9 +95,11 @@ jobs:
       - name: Install build tooling
         run: |
           python -m pip install --upgrade pip
-          python -m pip install build
+          python -m pip install build python-semantic-release
 
       - name: Build distributions
+        env:
+          TNFR_VERSION: ${{ needs.prepare.outputs.version }}
         run: python -m build
 
       - name: Publish to PyPI
@@ -38,7 +111,11 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
           files: dist/*
-          generate_release_notes: true
+
+      - name: Inject TNFR release notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
+        run: python -m semantic_release changelog --post-to-release-tag ${{ needs.prepare.outputs.tag }}

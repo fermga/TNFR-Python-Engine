@@ -7,6 +7,8 @@ build/
 site/
 *.egg-info/
 *.egg
+.semantic_release/
+src/tnfr/_generated_version.py
 .venv/
 .env
 .pytest_cache/
