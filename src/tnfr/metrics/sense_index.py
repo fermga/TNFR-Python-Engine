@@ -410,7 +410,7 @@ def compute_Si(
     inplace: bool = True,
     n_jobs: int | None = None,
     chunk_size: int | None = None,
-) -> dict[Any, float]:
+) -> dict[Any, float] | Any:
     """Compute the Si metric for each node by integrating structural drivers.
 
     Si (sense index) quantifies how effectively a node sustains coherent
@@ -440,8 +440,12 @@ def compute_Si(
 
     Returns
     -------
-    dict[Any, float]
-        Mapping from node identifiers to their Si scores.
+    dict[Any, float] | numpy.ndarray
+        Mapping from node identifiers to their Si scores when ``inplace`` is
+        ``False``. When ``inplace`` is ``True`` and the NumPy accelerated path
+        is available the function updates the graph in place and returns the
+        vector of Si values as a :class:`numpy.ndarray`. The pure-Python
+        fallback always returns a mapping for compatibility.
 
     Raises
     ------
@@ -555,20 +559,47 @@ def compute_Si(
                 count=count,
             )
 
-        edge_src_list: list[int] = []
-        edge_dst_list: list[int] = []
-        for node in node_ids:
-            dst_idx = node_idx[node]
-            for neighbor in neighbors[node]:
-                src_idx = node_idx.get(neighbor)
-                if src_idx is None:
-                    continue
-                edge_src_list.append(src_idx)
-                edge_dst_list.append(dst_idx)
+        cached_edge_src = None
+        cached_edge_dst = None
+        if using_cache_order:
+            cached_edge_src = getattr(trig, "edge_src", None)
+            cached_edge_dst = getattr(trig, "edge_dst", None)
+            if cached_edge_src is not None and cached_edge_dst is not None:
+                cached_edge_src = np.asarray(cached_edge_src, dtype=np.intp)
+                cached_edge_dst = np.asarray(cached_edge_dst, dtype=np.intp)
+                if cached_edge_src.shape != cached_edge_dst.shape:
+                    cached_edge_src = None
+                    cached_edge_dst = None
 
-        edge_count = len(edge_dst_list)
-        edge_src = np.asarray(edge_src_list, dtype=np.intp)
-        edge_dst = np.asarray(edge_dst_list, dtype=np.intp)
+        if cached_edge_src is not None and cached_edge_dst is not None:
+            edge_src = cached_edge_src
+            edge_dst = cached_edge_dst
+        else:
+            node_key = tuple(node_ids)
+
+            def _build_edge_arrays() -> tuple[Any, Any]:
+                edge_src_list: list[int] = []
+                edge_dst_list: list[int] = []
+                for node in node_ids:
+                    dst_idx = node_idx[node]
+                    for neighbor in neighbors[node]:
+                        src_idx = node_idx.get(neighbor)
+                        if src_idx is None:
+                            continue
+                        edge_src_list.append(src_idx)
+                        edge_dst_list.append(dst_idx)
+                src_arr = np.asarray(edge_src_list, dtype=np.intp)
+                dst_arr = np.asarray(edge_dst_list, dtype=np.intp)
+                return src_arr, dst_arr
+
+            edge_src, edge_dst = edge_version_cache(
+                G,
+                ("_si_edges", node_key),
+                _build_edge_arrays,
+            )
+            if using_cache_order:
+                trig.edge_src = edge_src
+                trig.edge_dst = edge_dst
 
         mean_theta, _ = neighbor_phase_mean_bulk(
             edge_src,
@@ -600,7 +631,7 @@ def compute_Si(
         if resolved_chunk <= 0:
             resolved_chunk = count or 1
 
-        out: dict[Any, float] = {}
+        si_values = np.empty(count, dtype=float)
         for start in range(0, count, resolved_chunk):
             end = min(start + resolved_chunk, count)
             theta_slice = theta_arr[start:end]
@@ -614,61 +645,67 @@ def compute_Si(
                 0.0,
                 1.0,
             )
-            for offset, node in enumerate(node_ids[start:end]):
-                out[node] = float(si_chunk[offset])
-    else:
-        out: dict[Any, float] = {}
-        if n_jobs is not None and n_jobs > 1:
-            node_payload: list[tuple[Any, tuple[Any, ...], float, float, float]] = []
-            for n, nd in nodes_data:
-                theta = thetas.get(n, 0.0)
-                vf = float(get_attr(nd, ALIAS_VF, 0.0))
-                dnfr = float(get_attr(nd, ALIAS_DNFR, 0.0))
-                neigh = neighbors[n]
-                node_payload.append((n, tuple(neigh), theta, vf, dnfr))
+            si_values[start:end] = si_chunk
 
-            if node_payload:
-                effective_chunk = resolve_chunk_size(
-                    chunk_pref,
-                    len(node_payload),
-                    approx_bytes_per_item=_SI_APPROX_BYTES_PER_NODE,
-                )
-                if effective_chunk <= 0:
-                    effective_chunk = len(node_payload)
-                with ProcessPoolExecutor(max_workers=n_jobs) as executor:
-                    futures = [
-                        executor.submit(
-                            _compute_si_python_chunk,
-                            node_payload[idx : idx + effective_chunk],
-                            cos_th=cos_th,
-                            sin_th=sin_th,
-                            alpha=alpha,
-                            beta=beta,
-                            gamma=gamma,
-                            vfmax=vfmax,
-                            dnfrmax=dnfrmax,
-                        )
-                        for idx in range(0, len(node_payload), effective_chunk)
-                    ]
-                    for future in futures:
-                        out.update(future.result())
-        else:
-            for n, nd in nodes_data:
-                theta = thetas.get(n, 0.0)
-                neigh = neighbors[n]
-                th_bar = pm_fn(neigh, fallback=theta)
-                phase_dispersion = abs(angle_diff(theta, th_bar)) / math.pi
-                out[n] = compute_Si_node(
-                    n,
-                    nd,
-                    alpha=alpha,
-                    beta=beta,
-                    gamma=gamma,
-                    vfmax=vfmax,
-                    dnfrmax=dnfrmax,
-                    phase_dispersion=phase_dispersion,
-                    inplace=False,
-                )
+        if inplace:
+            for idx, node in enumerate(node_ids):
+                set_attr(G.nodes[node], ALIAS_SI, float(si_values[idx]))
+            return si_values
+
+        return {node: float(value) for node, value in zip(node_ids, si_values)}
+
+    out: dict[Any, float] = {}
+    if n_jobs is not None and n_jobs > 1:
+        node_payload: list[tuple[Any, tuple[Any, ...], float, float, float]] = []
+        for n, nd in nodes_data:
+            theta = thetas.get(n, 0.0)
+            vf = float(get_attr(nd, ALIAS_VF, 0.0))
+            dnfr = float(get_attr(nd, ALIAS_DNFR, 0.0))
+            neigh = neighbors[n]
+            node_payload.append((n, tuple(neigh), theta, vf, dnfr))
+
+        if node_payload:
+            effective_chunk = resolve_chunk_size(
+                chunk_pref,
+                len(node_payload),
+                approx_bytes_per_item=_SI_APPROX_BYTES_PER_NODE,
+            )
+            if effective_chunk <= 0:
+                effective_chunk = len(node_payload)
+            with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+                futures = [
+                    executor.submit(
+                        _compute_si_python_chunk,
+                        node_payload[idx : idx + effective_chunk],
+                        cos_th=cos_th,
+                        sin_th=sin_th,
+                        alpha=alpha,
+                        beta=beta,
+                        gamma=gamma,
+                        vfmax=vfmax,
+                        dnfrmax=dnfrmax,
+                    )
+                    for idx in range(0, len(node_payload), effective_chunk)
+                ]
+                for future in futures:
+                    out.update(future.result())
+    else:
+        for n, nd in nodes_data:
+            theta = thetas.get(n, 0.0)
+            neigh = neighbors[n]
+            th_bar = pm_fn(neigh, fallback=theta)
+            phase_dispersion = abs(angle_diff(theta, th_bar)) / math.pi
+            out[n] = compute_Si_node(
+                n,
+                nd,
+                alpha=alpha,
+                beta=beta,
+                gamma=gamma,
+                vfmax=vfmax,
+                dnfrmax=dnfrmax,
+                phase_dispersion=phase_dispersion,
+                inplace=False,
+            )
 
     if inplace:
         for n, value in out.items():
