@@ -45,7 +45,7 @@ jobs:
           python -m pip install --disable-pip-version-check "bandit>=1.7.0" semgrep PyYAML
 
       - name: Upload tooling environment
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ env.TOOLS_ARTIFACT }}
           path: ${{ env.VENV_PATH }}
@@ -89,7 +89,7 @@ jobs:
           category: bandit
 
       - name: Upload Bandit SARIF artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: bandit-sarif
           path: bandit.sarif
@@ -163,7 +163,7 @@ jobs:
           category: semgrep
 
       - name: Upload Semgrep SARIF artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: semgrep-sarif
           path: semgrep.sarif

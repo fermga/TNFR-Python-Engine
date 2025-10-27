@@ -48,7 +48,7 @@ jobs:
 
       - name: Upload pip-audit report
         if: always() && hashFiles('pip-audit.json') != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pip-audit-report
           path: pip-audit.json
