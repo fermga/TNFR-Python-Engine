@@ -200,6 +200,24 @@ To install the tooling once for iterative local work, run
 `pip install -e .[test,typecheck]`. After that, the quality gate can be run
 without the bootstrap step needing to reinstall dependencies.
 
+### Performance validation
+
+Changes that claim ΔNFR or Si speed-ups must ship evidence gathered with the
+shared benchmarking harness. Capture a baseline on `main`, then compare the
+current branch with the saved reference:
+
+```bash
+PYTHONPATH=src pytest --benchmark-only tests/performance --benchmark-save=main
+PYTHONPATH=src pytest --benchmark-only tests/performance --benchmark-compare=main
+```
+
+The [`pytest-benchmark`](https://pytest-benchmark.readthedocs.io/) plugin emits a
+summary table with per-test ratios so reviewers can verify the claimed speed-up
+and spot regressions. Include the relevant excerpt in the pull request
+description alongside targeted microbenchmark results (for example,
+`benchmarks/compute_dnfr_benchmark.py`) to document the impact on `_compute_dnfr`
+and the surrounding operators.
+
 To forward additional flags to `pytest`, append them after `--`, e.g.
 `./scripts/run_tests.sh -- -k coherence`.
 
