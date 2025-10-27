@@ -6,6 +6,8 @@ import pytest
 from tnfr.alias import set_attr
 from tnfr.constants import get_aliases
 from tnfr.metrics.sense_index import compute_Si
+from tnfr.metrics.trig_cache import get_trig_cache
+from tnfr.utils import increment_edge_version
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_VF = get_aliases("VF")
@@ -200,3 +202,61 @@ def test_compute_Si_python_parallel_chunk_size(monkeypatch, graph_canon):
 
     assert payload_lengths
     assert all(1 <= length <= 3 for length in payload_lengths)
+
+
+def test_compute_Si_edge_indices_cache_invalidation(monkeypatch, graph_canon):
+    np = pytest.importorskip("numpy")
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
+
+    builder_calls = 0
+    original_edge_cache = compute_Si.__globals__["edge_version_cache"]
+
+    def tracking_edge_cache(G, key, builder, **kwargs):
+        nonlocal builder_calls
+
+        def tracked_builder():
+            nonlocal builder_calls
+            builder_calls += 1
+            return builder()
+
+        return original_edge_cache(G, key, tracked_builder, **kwargs)
+
+    monkeypatch.setattr(
+        "tnfr.metrics.sense_index.edge_version_cache", tracking_edge_cache
+    )
+
+    G = graph_canon()
+    _configure_graph(G)
+
+    _ = compute_Si(G, inplace=False)
+    trig_cache = get_trig_cache(G, np=np)
+    assert trig_cache.edge_src is not None
+    assert trig_cache.edge_dst is not None
+    assert builder_calls == 1
+
+    compute_Si(G, inplace=False)
+    trig_again = get_trig_cache(G, np=np)
+    assert builder_calls == 1
+    assert trig_again.edge_src is trig_cache.edge_src
+    assert trig_again.edge_dst is trig_cache.edge_dst
+
+    G.add_edge(0, 3)
+    increment_edge_version(G)
+
+    vector_after = compute_Si(G, inplace=False)
+    trig_after = get_trig_cache(G, np=np)
+    assert builder_calls == 2
+    assert trig_after.edge_src is not None
+    assert trig_after.edge_dst is not None
+    assert (
+        trig_after.edge_src is not trig_again.edge_src
+        or trig_after.edge_dst is not trig_again.edge_dst
+    )
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: None)
+    python_after = compute_Si(G, inplace=False)
+
+    assert set(vector_after) == set(python_after)
+    for node in vector_after:
+        assert python_after[node] == pytest.approx(vector_after[node])

@@ -29,6 +29,8 @@ class TrigCache:
     sin_values: Any
     theta_values: Any
     index: dict[Any, int]
+    edge_src: Any | None = None
+    edge_dst: Any | None = None
 
 
 def _iter_theta_pairs(
@@ -76,6 +78,8 @@ def _compute_trig_python(
         sin_values=sin_values,
         theta_values=theta_values,
         index=index,
+        edge_src=None,
+        edge_dst=None,
     )
 
 
@@ -101,6 +105,8 @@ def compute_theta_trig(
             sin_values=(),
             theta_values=(),
             index={},
+            edge_src=None,
+            edge_dst=None,
         )
 
     node_list, theta_vals = zip(*pairs)
@@ -122,6 +128,8 @@ def compute_theta_trig(
         sin_values=sin_arr,
         theta_values=theta_arr,
         index=index,
+        edge_src=None,
+        edge_dst=None,
     )
 
 
