@@ -127,3 +127,76 @@ def test_compute_Si_reads_jobs_from_graph(monkeypatch, graph_canon):
     compute_Si(G, inplace=False)
 
     assert captured == [3]
+
+
+def test_compute_Si_vectorized_respects_chunk_size(monkeypatch, graph_canon):
+    np = pytest.importorskip("numpy")
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
+
+    G = graph_canon()
+    _configure_graph(G)
+
+    baseline = compute_Si(G, inplace=False)
+
+    captured: list[tuple[int | None, int]] = []
+
+    def fake_resolve(chunk, total, **kwargs):
+        captured.append((chunk, total))
+        return 1
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.resolve_chunk_size", fake_resolve)
+
+    chunked = compute_Si(G, inplace=False, chunk_size=5)
+
+    assert captured and captured[0][0] == 5
+    assert set(chunked) == set(baseline)
+    for node in baseline:
+        assert chunked[node] == pytest.approx(baseline[node])
+
+
+def test_compute_Si_python_parallel_chunk_size(monkeypatch, graph_canon):
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: None)
+
+    payload_lengths: list[int] = []
+
+    class DummyExecutor:
+        def __init__(self, max_workers):
+            self.max_workers = max_workers
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def submit(self, fn, chunk, **kwargs):
+            payload_lengths.append(len(chunk))
+            result = fn(chunk, **kwargs)
+
+            class DummyFuture:
+                def __init__(self_inner, value):
+                    self_inner.value = value
+
+                def result(self_inner):
+                    return self_inner.value
+
+            return DummyFuture(result)
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.ProcessPoolExecutor", DummyExecutor)
+
+    G = graph_canon()
+    _configure_graph(G)
+
+    compute_Si(G, inplace=False, n_jobs=3, chunk_size=2)
+
+    assert payload_lengths
+    assert all(1 <= length <= 2 for length in payload_lengths)
+
+    payload_lengths.clear()
+    G.graph["SI_CHUNK_SIZE"] = 3
+
+    compute_Si(G, inplace=False, n_jobs=3)
+
+    assert payload_lengths
+    assert all(1 <= length <= 3 for length in payload_lengths)

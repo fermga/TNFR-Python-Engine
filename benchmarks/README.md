@@ -72,3 +72,21 @@ The command writes two files:
 Inspect the top entries sorted by `cumtime` (cumulative time per function) to
 spot the phases consuming most wall-clock time. Compare both outputs to confirm
 that vectorisation shifts time into array primitives rather than Python loops.
+
+### Chunked execution switches
+
+Both benchmarks honour the new batching knobs exposed by the engine:
+
+* Set `graph.graph["SI_CHUNK_SIZE"] = 2048` (or pass
+  `chunk_size=2048` when calling `compute_Si`) inside
+  `compute_si_profile.py` to process nodes in deterministic batches. This is
+  helpful when profiling large (>10k nodes) graphs on memory-constrained
+  machines.
+* Set `graph.graph["DNFR_CHUNK_SIZE"] = 4096` before invoking
+  `default_compute_delta_nfr` to bound the accumulator size in the ΔNFR
+  benchmark. Larger chunks favour throughput, while smaller ones keep the
+  temporary buffers inside stricter memory budgets.
+
+Leave both settings unset for medium-sized runs; the automatic heuristics use
+CPU availability and a conservative memory estimate to choose a balanced chunk
+size.

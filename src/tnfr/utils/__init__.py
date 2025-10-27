@@ -36,6 +36,7 @@ from .data import (
     normalize_materialize_limit,
     normalize_weights,
 )
+from .chunks import auto_chunk_size, resolve_chunk_size
 from .graph import (
     get_graph,
     get_graph_mapping,
@@ -71,6 +72,8 @@ __all__ = (
     "MAX_MATERIALIZE_DEFAULT",
     "negative_weights_warn_once",
     "mix_groups",
+    "auto_chunk_size",
+    "resolve_chunk_size",
     "CacheManager",
     "EdgeCacheManager",
     "NODE_SET_CHECKSUM_KEY",

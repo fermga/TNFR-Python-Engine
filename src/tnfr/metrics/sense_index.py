@@ -46,6 +46,7 @@ from ..utils import (
     edge_version_cache,
     get_numpy,
     normalize_weights,
+    resolve_chunk_size,
     stable_json,
 )
 from .common import (
@@ -61,6 +62,7 @@ ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_SI = get_aliases("SI")
 
 PHASE_DISPERSION_KEY = "dSi_dphase_disp"
+_SI_APPROX_BYTES_PER_NODE = 64
 _VALID_SENSITIVITY_KEYS = frozenset(
     {"dSi_dvf_norm", PHASE_DISPERSION_KEY, "dSi_ddnfr_norm"}
 )
@@ -407,6 +409,7 @@ def compute_Si(
     *,
     inplace: bool = True,
     n_jobs: int | None = None,
+    chunk_size: int | None = None,
 ) -> dict[Any, float]:
     """Compute the Si metric for each node by integrating structural drivers.
 
@@ -428,6 +431,12 @@ def compute_Si(
     n_jobs : int or None, optional
         Maximum number of worker processes for the pure-Python fallback. Use
         ``None`` to auto-detect the configuration.
+    chunk_size : int or None, optional
+        Maximum number of nodes processed per batch when building the Si
+        mapping. ``None`` derives a safe value from the node count, the
+        available CPUs, and conservative memory heuristics. Non-positive values
+        fall back to the automatic mode. Graphs may also provide a default via
+        ``G.graph["SI_CHUNK_SIZE"]``.
 
     Returns
     -------
@@ -512,6 +521,8 @@ def compute_Si(
         node_ids = [n for n, _ in nodes_data]
         node_idx = {n: i for i, n in enumerate(node_ids)}
 
+    chunk_pref = chunk_size if chunk_size is not None else G.graph.get("SI_CHUNK_SIZE")
+
     if supports_vector:
         count = len(node_ids)
 
@@ -559,7 +570,7 @@ def compute_Si(
         edge_src = np.asarray(edge_src_list, dtype=np.intp)
         edge_dst = np.asarray(edge_dst_list, dtype=np.intp)
 
-        mean_theta, _has_neighbors = neighbor_phase_mean_bulk(
+        mean_theta, _ = neighbor_phase_mean_bulk(
             edge_src,
             edge_dst,
             cos_values=cos_arr,
@@ -568,9 +579,6 @@ def compute_Si(
             node_count=count,
             np=np,
         )
-        diff = np.remainder(theta_arr - mean_theta + math.pi, math.tau) - math.pi
-        phase_dispersion_arr = np.abs(diff) / math.pi
-
         vf_arr = np.fromiter(
             (get_attr(data_by_node[n], ALIAS_VF, 0.0) for n in node_ids),
             dtype=float,
@@ -584,15 +592,30 @@ def compute_Si(
         vf_norm = np.clip(np.abs(vf_arr) / vfmax, 0.0, 1.0)
         dnfr_norm = np.clip(np.abs(dnfr_arr) / dnfrmax, 0.0, 1.0)
 
-        si_arr = np.clip(
-            alpha * vf_norm
-            + beta * (1.0 - phase_dispersion_arr)
-            + gamma * (1.0 - dnfr_norm),
-            0.0,
-            1.0,
+        resolved_chunk = resolve_chunk_size(
+            chunk_pref,
+            count,
+            approx_bytes_per_item=_SI_APPROX_BYTES_PER_NODE,
         )
+        if resolved_chunk <= 0:
+            resolved_chunk = count or 1
 
-        out = {node_ids[i]: float(si_arr[i]) for i in range(count)}
+        out: dict[Any, float] = {}
+        for start in range(0, count, resolved_chunk):
+            end = min(start + resolved_chunk, count)
+            theta_slice = theta_arr[start:end]
+            mean_slice = mean_theta[start:end]
+            diff = np.remainder(theta_slice - mean_slice + math.pi, math.tau) - math.pi
+            phase_dispersion = np.abs(diff) / math.pi
+            si_chunk = np.clip(
+                alpha * vf_norm[start:end]
+                + beta * (1.0 - phase_dispersion)
+                + gamma * (1.0 - dnfr_norm[start:end]),
+                0.0,
+                1.0,
+            )
+            for offset, node in enumerate(node_ids[start:end]):
+                out[node] = float(si_chunk[offset])
     else:
         out: dict[Any, float] = {}
         if n_jobs is not None and n_jobs > 1:
@@ -605,12 +628,18 @@ def compute_Si(
                 node_payload.append((n, tuple(neigh), theta, vf, dnfr))
 
             if node_payload:
-                chunk_size = math.ceil(len(node_payload) / n_jobs)
+                effective_chunk = resolve_chunk_size(
+                    chunk_pref,
+                    len(node_payload),
+                    approx_bytes_per_item=_SI_APPROX_BYTES_PER_NODE,
+                )
+                if effective_chunk <= 0:
+                    effective_chunk = len(node_payload)
                 with ProcessPoolExecutor(max_workers=n_jobs) as executor:
                     futures = [
                         executor.submit(
                             _compute_si_python_chunk,
-                            node_payload[idx : idx + chunk_size],
+                            node_payload[idx : idx + effective_chunk],
                             cos_th=cos_th,
                             sin_th=sin_th,
                             alpha=alpha,
@@ -619,7 +648,7 @@ def compute_Si(
                             vfmax=vfmax,
                             dnfrmax=dnfrmax,
                         )
-                        for idx in range(0, len(node_payload), chunk_size)
+                        for idx in range(0, len(node_payload), effective_chunk)
                     ]
                     for future in futures:
                         out.update(future.result())

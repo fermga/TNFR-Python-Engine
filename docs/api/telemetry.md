@@ -9,10 +9,16 @@ facades.
 - **C(t)** — `tnfr.metrics.common.compute_coherence`: global stability with optional means for
   ΔNFR and dEPI/dt.
 - **ΔNFR** — computed via graph hooks such as `compute_delta_nfr`, blending phase, EPI, νf, and
-  topology.
+  topology. Set `G.graph["DNFR_CHUNK_SIZE"]` to constrain the NumPy accumulator
+  batches; otherwise the helper auto-tunes the chunk length using the same
+  heuristics as Si.
 - **νf** — structural frequency in Hz_str, maintained by dynamics modules.
 - **Si** — `tnfr.metrics.sense_index.compute_Si`: ability to produce meaningful reorganisation
-  combining νf, phase, and topology.
+  combining νf, phase, and topology. The routine accepts an optional
+  `chunk_size` parameter (or the graph-level knob `G.graph["SI_CHUNK_SIZE"]`)
+  to process nodes in deterministic batches. When omitted the engine derives a
+  safe chunk length from the node count, available CPUs, and conservative
+  memory heuristics so vectorised and Python fallbacks stay balanced.
 - **Phase θ** — `tnfr.dynamics.coordinate_global_local_phase` and related helpers.
 - **Compatibility** — graphs must expose only the English ``"theta"``/``"phase"``
   keys before importing TNFR 15.0.0+. Remove any deprecated aliases (including
@@ -20,6 +26,12 @@ facades.
   purely on the canonical names and reject untranslated payloads.
 - **Topology** — coupling maps available through operator utilities like
   `tnfr.operators.apply_topological_remesh`.
+
+Batching Si or ΔNFR is useful when the network contains tens of thousands of
+nodes or when simulations run on shared machines with strict memory caps. Set a
+smaller chunk size (for example 2048) to bound the temporary NumPy buffers and
+to balance the Python worker payload when NumPy is unavailable. Leave the value
+unset for medium graphs so the heuristics scale naturally with the workload.
 
 Register telemetry callbacks before running dynamics:
 
