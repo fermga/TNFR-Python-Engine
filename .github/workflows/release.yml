@@ -130,10 +130,30 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: |
+            pyproject.toml
+
+      - name: Cache pytest state
+        uses: actions/cache@v4
+        with:
+          path: |
+            .pytest_cache
+            ~/.cache/pytest
+          key: ${{ runner.os }}-pytest-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pytest-
+
+      - name: Install QA dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[test,typecheck]
+
+      - name: Run QA checks
+        run: ./scripts/run_tests.sh
 
       - name: Install build tooling
         run: |
-          python -m pip install --upgrade pip
           python -m pip install build python-semantic-release
 
       - name: Build distributions
