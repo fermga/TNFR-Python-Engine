@@ -36,7 +36,7 @@ from __future__ import annotations
 import math
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, Iterator, Mapping
 
 from ..alias import get_attr, set_attr
 from ..constants import get_aliases
@@ -404,6 +404,40 @@ def _compute_si_python_chunk(
     return results
 
 
+def _iter_python_payload_chunks(
+    nodes_data: Iterable[tuple[Any, Mapping[str, Any]]],
+    *,
+    neighbors: Mapping[Any, Iterable[Any]],
+    thetas: Mapping[Any, float],
+    chunk_size: int,
+    ) -> Iterator[tuple[tuple[Any, tuple[Any, ...], float, float, float], ...]]:
+    """Yield lazily constructed Si payload chunks for the Python fallback.
+
+    Each batch keeps the structural triad explicit—θ, νf, and ΔNFR—so that the
+    downstream worker preserves the coherence balance enforced by the Si
+    operator.  Streaming prevents a single monolithic buffer that would skew
+    memory pressure on dense graphs while still producing deterministic ΔNFR
+    sampling.
+    """
+
+    if chunk_size <= 0:
+        return
+
+    buffer: list[tuple[Any, tuple[Any, ...], float, float, float]] = []
+    for node, data in nodes_data:
+        theta = thetas.get(node, 0.0)
+        vf = float(get_attr(data, ALIAS_VF, 0.0))
+        dnfr = float(get_attr(data, ALIAS_DNFR, 0.0))
+        neigh = tuple(neighbors[node])
+        buffer.append((node, neigh, theta, vf, dnfr))
+        if len(buffer) >= chunk_size:
+            yield tuple(buffer)
+            buffer.clear()
+
+    if buffer:
+        yield tuple(buffer)
+
+
 def compute_Si(
     G: GraphLike,
     *,
@@ -656,27 +690,26 @@ def compute_Si(
 
     out: dict[Any, float] = {}
     if n_jobs is not None and n_jobs > 1:
-        node_payload: list[tuple[Any, tuple[Any, ...], float, float, float]] = []
-        for n, nd in nodes_data:
-            theta = thetas.get(n, 0.0)
-            vf = float(get_attr(nd, ALIAS_VF, 0.0))
-            dnfr = float(get_attr(nd, ALIAS_DNFR, 0.0))
-            neigh = neighbors[n]
-            node_payload.append((n, tuple(neigh), theta, vf, dnfr))
-
-        if node_payload:
+        node_count = len(nodes_data)
+        if node_count:
             effective_chunk = resolve_chunk_size(
                 chunk_pref,
-                len(node_payload),
+                node_count,
                 approx_bytes_per_item=_SI_APPROX_BYTES_PER_NODE,
             )
             if effective_chunk <= 0:
-                effective_chunk = len(node_payload)
+                effective_chunk = node_count
+            payload_chunks = _iter_python_payload_chunks(
+                nodes_data,
+                neighbors=neighbors,
+                thetas=thetas,
+                chunk_size=effective_chunk,
+            )
             with ProcessPoolExecutor(max_workers=n_jobs) as executor:
                 futures = [
                     executor.submit(
                         _compute_si_python_chunk,
-                        node_payload[idx : idx + effective_chunk],
+                        chunk,
                         cos_th=cos_th,
                         sin_th=sin_th,
                         alpha=alpha,
@@ -685,7 +718,7 @@ def compute_Si(
                         vfmax=vfmax,
                         dnfrmax=dnfrmax,
                     )
-                    for idx in range(0, len(node_payload), effective_chunk)
+                    for chunk in payload_chunks
                 ]
                 for future in futures:
                     out.update(future.result())
