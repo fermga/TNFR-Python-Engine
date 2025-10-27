@@ -33,7 +33,13 @@ from ..types import (
     NodeId,
     TNFRGraph,
 )
-from ..utils import cached_node_list, cached_nodes_and_A, get_numpy, normalize_weights
+from ..utils import (
+    cached_node_list,
+    cached_nodes_and_A,
+    get_numpy,
+    normalize_weights,
+    resolve_chunk_size,
+)
 from ..utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
@@ -44,6 +50,7 @@ ALIAS_VF = get_aliases("VF")
 
 _MEAN_VECTOR_EPS = 1e-12
 _SPARSE_DENSITY_THRESHOLD = 0.25
+_DNFR_APPROX_BYTES_PER_EDGE = 48
 
 
 def _should_vectorize(G: TNFRGraph, np_module: ModuleType | None) -> bool:
@@ -1545,6 +1552,7 @@ def _accumulate_neighbors_broadcasted(
     deg_array: np.ndarray | None,
     cache: DnfrCache | None,
     np: ModuleType,
+    chunk_size: int | None = None,
 ) -> dict[str, np.ndarray]:
     """Accumulate neighbour contributions using direct indexed reductions."""
 
@@ -1589,33 +1597,100 @@ def _accumulate_neighbors_broadcasted(
 
     if edge_count:
         row = 0
-
-        np.take(cos, edge_dst, out=edge_values)
-        accum[row][:] = np.bincount(edge_src, weights=edge_values, minlength=n)
+        cos_row = row
         row += 1
-
-        np.take(sin, edge_dst, out=edge_values)
-        accum[row][:] = np.bincount(edge_src, weights=edge_values, minlength=n)
+        sin_row = row
         row += 1
-
-        np.take(epi, edge_dst, out=edge_values)
-        accum[row][:] = np.bincount(edge_src, weights=edge_values, minlength=n)
+        epi_row = row
         row += 1
-
-        np.take(vf, edge_dst, out=edge_values)
-        accum[row][:] = np.bincount(edge_src, weights=edge_values, minlength=n)
+        vf_row = row
         row += 1
-
-        if include_count and count is not None:
-            edge_values.fill(1.0)
-            accum[row][:] = np.bincount(edge_src, weights=edge_values, minlength=n)
+        count_row = row if include_count and count is not None else None
+        if count_row is not None:
             row += 1
+        deg_row = row if use_topology and deg_array is not None else None
 
-        if use_topology and deg_sum is not None and deg_array is not None:
-            np.take(deg_array, edge_dst, out=edge_values)
-            accum[row][:] = np.bincount(
+        resolved_chunk = resolve_chunk_size(
+            chunk_size,
+            edge_count,
+            minimum=1,
+            approx_bytes_per_item=_DNFR_APPROX_BYTES_PER_EDGE,
+            clamp_to=None,
+        )
+
+        if resolved_chunk <= 0 or resolved_chunk >= edge_count:
+            np.take(cos, edge_dst, out=edge_values)
+            accum[cos_row][:] = np.bincount(
                 edge_src, weights=edge_values, minlength=n
             )
+
+            np.take(sin, edge_dst, out=edge_values)
+            accum[sin_row][:] = np.bincount(
+                edge_src, weights=edge_values, minlength=n
+            )
+
+            np.take(epi, edge_dst, out=edge_values)
+            accum[epi_row][:] = np.bincount(
+                edge_src, weights=edge_values, minlength=n
+            )
+
+            np.take(vf, edge_dst, out=edge_values)
+            accum[vf_row][:] = np.bincount(
+                edge_src, weights=edge_values, minlength=n
+            )
+
+            if count_row is not None:
+                edge_values.fill(1.0)
+                accum[count_row][:] = np.bincount(
+                    edge_src, weights=edge_values, minlength=n
+                )
+
+            if deg_row is not None and deg_array is not None:
+                np.take(deg_array, edge_dst, out=edge_values)
+                accum[deg_row][:] = np.bincount(
+                    edge_src, weights=edge_values, minlength=n
+                )
+        else:
+            for start in range(0, edge_count, resolved_chunk):
+                end = min(start + resolved_chunk, edge_count)
+                if end <= start:
+                    continue
+                src_chunk = edge_src[start:end]
+                dst_chunk = edge_dst[start:end]
+                chunk_len = end - start
+                buffer_view = edge_values[:chunk_len]
+
+                np.take(cos, dst_chunk, out=buffer_view)
+                accum[cos_row] += np.bincount(
+                    src_chunk, weights=buffer_view, minlength=n
+                )
+
+                np.take(sin, dst_chunk, out=buffer_view)
+                accum[sin_row] += np.bincount(
+                    src_chunk, weights=buffer_view, minlength=n
+                )
+
+                np.take(epi, dst_chunk, out=buffer_view)
+                accum[epi_row] += np.bincount(
+                    src_chunk, weights=buffer_view, minlength=n
+                )
+
+                np.take(vf, dst_chunk, out=buffer_view)
+                accum[vf_row] += np.bincount(
+                    src_chunk, weights=buffer_view, minlength=n
+                )
+
+                if count_row is not None:
+                    buffer_view.fill(1.0)
+                    accum[count_row] += np.bincount(
+                        src_chunk, weights=buffer_view, minlength=n
+                    )
+
+                if deg_row is not None and deg_array is not None:
+                    np.take(deg_array, dst_chunk, out=buffer_view)
+                    accum[deg_row] += np.bincount(
+                        src_chunk, weights=buffer_view, minlength=n
+                    )
     else:
         accum.fill(0.0)
 
@@ -1854,6 +1929,24 @@ def _accumulate_neighbors_numpy(
     elif cached_deg_array is not None:
         deg_array = cached_deg_array
 
+    edge_count = int(edge_src.size) if edge_src is not None else 0
+    chunk_hint = data.get("neighbor_chunk_hint")
+    if chunk_hint is None:
+        chunk_hint = G.graph.get("DNFR_CHUNK_SIZE")
+    resolved_neighbor_chunk = (
+        resolve_chunk_size(
+            chunk_hint,
+            edge_count,
+            minimum=1,
+            approx_bytes_per_item=_DNFR_APPROX_BYTES_PER_EDGE,
+            clamp_to=None,
+        )
+        if edge_count
+        else 0
+    )
+    data["neighbor_chunk_hint"] = chunk_hint
+    data["neighbor_chunk_size"] = resolved_neighbor_chunk
+
     accum = _accumulate_neighbors_broadcasted(
         edge_src=edge_src,
         edge_dst=edge_dst,
@@ -1870,6 +1963,7 @@ def _accumulate_neighbors_numpy(
         deg_array=deg_array,
         cache=cache,
         np=np,
+        chunk_size=resolved_neighbor_chunk,
     )
 
     data["neighbor_accum_np"] = accum.get("accumulator")
