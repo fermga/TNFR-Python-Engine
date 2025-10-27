@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 from typing import Any, Iterable
 
 from ..config.presets import PREFERRED_PRESET_NAMES
@@ -213,3 +214,21 @@ def _add_metrics_parser(sub: argparse._SubParsersAction) -> None:
         ),
     )
     p_met.set_defaults(func=cmd_metrics)
+
+
+def _add_profile_parser(sub: argparse._SubParsersAction) -> None:
+    """Configure the ``profile-si`` subcommand."""
+
+    from .execution import cmd_profile_si
+
+    p_prof = sub.add_parser(
+        "profile-si",
+        help="Profile compute_Si with and without NumPy",
+    )
+    p_prof.add_argument("--nodes", type=int, default=240)
+    p_prof.add_argument("--chord-step", type=int, default=7)
+    p_prof.add_argument("--loops", type=int, default=5)
+    p_prof.add_argument("--output-dir", type=Path, default=Path("profiles"))
+    p_prof.add_argument("--format", choices=("pstats", "json"), default="pstats")
+    p_prof.add_argument("--sort", choices=("cumtime", "tottime"), default="cumtime")
+    p_prof.set_defaults(func=cmd_profile_si)
