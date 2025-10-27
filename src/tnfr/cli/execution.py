@@ -375,3 +375,23 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     else:
         logger.info("%s", json_dumps(out))
     return 0
+
+
+def cmd_profile_si(args: argparse.Namespace) -> int:
+    """Execute ``tnfr profile-si`` returning the exit status."""
+
+    try:
+        from benchmarks.compute_si_profile import profile_compute_si
+    except ModuleNotFoundError as exc:  # pragma: no cover - optional dependency
+        logger.error("Sense Index profiling helpers unavailable: %s", exc)
+        return 1
+
+    profile_compute_si(
+        node_count=int(args.nodes),
+        chord_step=int(args.chord_step),
+        loops=int(args.loops),
+        output_dir=Path(args.output_dir),
+        fmt=str(args.format),
+        sort=str(args.sort),
+    )
+    return 0
