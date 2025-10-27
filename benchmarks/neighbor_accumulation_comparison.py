@@ -21,7 +21,7 @@ from tnfr.dynamics.dnfr import (
 This benchmark contrasts the modern single ``np.add.at`` accumulator with the
 legacy stack-and-add kernel. On the hosted x86\_64 container (Python 3.11,
 NumPy 2.3.4) using the defaults (320 nodes, p=0.65, 5×10 loops) the broadcast
-accumulator reached ~0.097 s median versus ~0.185 s for the legacy variant.
+accumulator reached ~0.115 s median versus ~0.166 s for the legacy variant.
 """
 
 try:

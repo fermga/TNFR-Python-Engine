@@ -1564,6 +1564,10 @@ def _accumulate_neighbors_broadcasted(
 
     component_rows = 4 + (1 if include_count else 0) + (1 if use_topology else 0)
 
+    if chunk_size is not None:
+        # Retained for API compatibility; accumulation is handled in one pass now.
+        _ = chunk_size
+
     if cache is not None:
         base_signature = (id(edge_src), id(edge_dst), n, edge_count)
         cache.edge_signature = base_signature
@@ -1582,18 +1586,18 @@ def _accumulate_neighbors_broadcasted(
             accum.fill(0.0)
 
         edge_values = cache.neighbor_edge_values_np
-        if edge_values is None or getattr(edge_values, "shape", None) != (edge_count,):
-            edge_values = np.empty((edge_count,), dtype=float)
+        expected_shape = (component_rows, edge_count)
+        if (
+            edge_values is None
+            or getattr(edge_values, "shape", None) != expected_shape
+        ):
+            edge_values = np.empty(expected_shape, dtype=float)
             cache.neighbor_edge_values_np = edge_values
 
         cache.neighbor_accum_signature = signature
     else:
         accum = np.zeros((component_rows, n), dtype=float)
-        edge_values = (
-            np.empty((edge_count,), dtype=float)
-            if edge_count
-            else np.empty((0,), dtype=float)
-        )
+        edge_values = np.empty((component_rows, edge_count), dtype=float)
 
     if edge_count:
         row = 0
@@ -1610,89 +1614,29 @@ def _accumulate_neighbors_broadcasted(
             row += 1
         deg_row = row if use_topology and deg_array is not None else None
 
-        resolved_chunk = resolve_chunk_size(
-            chunk_size,
-            edge_count,
-            minimum=1,
-            approx_bytes_per_item=_DNFR_APPROX_BYTES_PER_EDGE,
-            clamp_to=None,
-        )
+        features = [
+            cos,
+            sin,
+            epi,
+            vf,
+        ]
+        if count_row is not None:
+            features.append(np.ones_like(cos, dtype=float))
+        if deg_row is not None and deg_array is not None:
+            features.append(deg_array)
 
-        if resolved_chunk <= 0 or resolved_chunk >= edge_count:
-            np.take(cos, edge_dst, out=edge_values)
-            accum[cos_row][:] = np.bincount(
-                edge_src, weights=edge_values, minlength=n
-            )
+        feature_matrix = np.stack(features, axis=0)
+        np.take(feature_matrix, edge_dst, axis=1, out=edge_values)
 
-            np.take(sin, edge_dst, out=edge_values)
-            accum[sin_row][:] = np.bincount(
-                edge_src, weights=edge_values, minlength=n
-            )
-
-            np.take(epi, edge_dst, out=edge_values)
-            accum[epi_row][:] = np.bincount(
-                edge_src, weights=edge_values, minlength=n
-            )
-
-            np.take(vf, edge_dst, out=edge_values)
-            accum[vf_row][:] = np.bincount(
-                edge_src, weights=edge_values, minlength=n
-            )
-
-            if count_row is not None:
-                edge_values.fill(1.0)
-                accum[count_row][:] = np.bincount(
-                    edge_src, weights=edge_values, minlength=n
-                )
-
-            if deg_row is not None and deg_array is not None:
-                np.take(deg_array, edge_dst, out=edge_values)
-                accum[deg_row][:] = np.bincount(
-                    edge_src, weights=edge_values, minlength=n
-                )
-        else:
-            for start in range(0, edge_count, resolved_chunk):
-                end = min(start + resolved_chunk, edge_count)
-                if end <= start:
-                    continue
-                src_chunk = edge_src[start:end]
-                dst_chunk = edge_dst[start:end]
-                chunk_len = end - start
-                buffer_view = edge_values[:chunk_len]
-
-                np.take(cos, dst_chunk, out=buffer_view)
-                accum[cos_row] += np.bincount(
-                    src_chunk, weights=buffer_view, minlength=n
-                )
-
-                np.take(sin, dst_chunk, out=buffer_view)
-                accum[sin_row] += np.bincount(
-                    src_chunk, weights=buffer_view, minlength=n
-                )
-
-                np.take(epi, dst_chunk, out=buffer_view)
-                accum[epi_row] += np.bincount(
-                    src_chunk, weights=buffer_view, minlength=n
-                )
-
-                np.take(vf, dst_chunk, out=buffer_view)
-                accum[vf_row] += np.bincount(
-                    src_chunk, weights=buffer_view, minlength=n
-                )
-
-                if count_row is not None:
-                    buffer_view.fill(1.0)
-                    accum[count_row] += np.bincount(
-                        src_chunk, weights=buffer_view, minlength=n
-                    )
-
-                if deg_row is not None and deg_array is not None:
-                    np.take(deg_array, dst_chunk, out=buffer_view)
-                    accum[deg_row] += np.bincount(
-                        src_chunk, weights=buffer_view, minlength=n
-                    )
+        flat_accum = accum.reshape(-1)
+        base_offsets = np.arange(component_rows, dtype=np.intp) * n
+        edge_indices = (
+            edge_src.astype(np.intp, copy=False)[None, :] + base_offsets[:, None]
+        ).reshape(-1)
+        np.add.at(flat_accum, edge_indices, edge_values.reshape(-1))
     else:
         accum.fill(0.0)
+        edge_values.fill(0.0)
 
     row = 0
     np.copyto(x, accum[row], casting="unsafe")
