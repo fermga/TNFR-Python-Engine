@@ -130,6 +130,7 @@ def test_prepare_reuses_neighbor_reduction_buffers_vectorized():
     edge_values_first = data["neighbor_edge_values_np"]
     accum_first = data["neighbor_accum_np"]
     assert edge_values_first is not None
+    assert edge_values_first.shape == (data["edge_count"],)
     assert accum_first is not None
     assert cache.neighbor_edge_values_np is edge_values_first
     assert cache.neighbor_accum_np is accum_first
