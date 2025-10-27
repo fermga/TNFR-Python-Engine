@@ -7,7 +7,11 @@ import pytest
 from tnfr.alias import set_attr
 from tnfr.constants import get_aliases
 from tnfr.dynamics.dnfr import (
+    _accumulate_neighbors_broadcasted,
+    _build_edge_index_arrays,
     _build_neighbor_sums_common,
+    _ensure_numpy_state_vectors,
+    _init_neighbor_sums,
     _prepare_dnfr_data,
 )
 
@@ -154,7 +158,9 @@ def test_neighbor_chunking_matches_unchunked():
 
     edge_workspace = chunk_data.get("neighbor_edge_values_np")
     assert edge_workspace is not None
-    assert getattr(edge_workspace, "shape", None) == (chunk_size,)
+    accum = chunk_data.get("neighbor_accum_np")
+    assert accum is not None
+    assert getattr(edge_workspace, "shape", None) == (chunk_size, accum.shape[0])
 
     baseline_graph = _dense_weighted_graph(
         np_module, nodes=nodes, topo_weight=topo_weight
@@ -210,3 +216,131 @@ def test_vectorized_neighbor_sums_outperform_loop(monkeypatch):
 
     assert vector_elapsed < loop_elapsed
     assert vector_elapsed <= loop_elapsed * 0.9
+
+
+@pytest.mark.parametrize("topo_weight", [0.0, 0.35])
+def test_broadcast_accumulator_matches_without_cache(topo_weight):
+    np_module = pytest.importorskip("numpy")
+
+    graph = _sparse_weighted_graph(np_module, nodes=36, topo_weight=topo_weight)
+    data_cached = _prepare_dnfr_data(graph)
+    data_cached["prefer_sparse"] = True
+    data_cached["A"] = None
+
+    state = _ensure_numpy_state_vectors(data_cached, np_module)
+    cos = state["cos"]
+    sin = state["sin"]
+    epi = state["epi"]
+    vf = state["vf"]
+    assert cos is not None and sin is not None and epi is not None and vf is not None
+
+    nodes = data_cached["nodes"]
+    edge_src, edge_dst = _build_edge_index_arrays(
+        graph, nodes, data_cached["idx"], np_module
+    )
+    data_cached["edge_src"] = edge_src
+    data_cached["edge_dst"] = edge_dst
+
+    cache = data_cached.get("cache")
+    if cache is not None:
+        cache.edge_src = edge_src
+        cache.edge_dst = edge_dst
+
+    buffers_cached = _init_neighbor_sums(data_cached, np=np_module)
+    (
+        x_cached,
+        y_cached,
+        epi_cached,
+        vf_cached,
+        count_cached,
+        deg_sum_cached,
+        _,
+    ) = buffers_cached
+
+    deg_array = None
+    if deg_sum_cached is not None:
+        deg_array = np_module.asarray(
+            [graph.degree(node) for node in nodes], dtype=float
+        )
+
+    cached_result = _accumulate_neighbors_broadcasted(
+        edge_src=edge_src,
+        edge_dst=edge_dst,
+        cos=cos,
+        sin=sin,
+        epi=epi,
+        vf=vf,
+        x=x_cached,
+        y=y_cached,
+        epi_sum=epi_cached,
+        vf_sum=vf_cached,
+        count=count_cached,
+        deg_sum=deg_sum_cached,
+        deg_array=deg_array,
+        cache=cache,
+        np=np_module,
+        chunk_size=None,
+    )
+
+    data_no_cache = data_cached.copy()
+    data_no_cache["cache"] = None
+    data_no_cache["neighbor_accum_np"] = None
+    data_no_cache["neighbor_edge_values_np"] = None
+    data_no_cache["edge_src"] = edge_src
+    data_no_cache["edge_dst"] = edge_dst
+
+    (
+        x_plain,
+        y_plain,
+        epi_plain,
+        vf_plain,
+        count_plain,
+        deg_sum_plain,
+        _,
+    ) = _init_neighbor_sums(data_no_cache, np=np_module)
+
+    deg_array_plain = None
+    if deg_array is not None:
+        deg_array_plain = np_module.array(deg_array, copy=True)
+
+    plain_result = _accumulate_neighbors_broadcasted(
+        edge_src=edge_src,
+        edge_dst=edge_dst,
+        cos=cos,
+        sin=sin,
+        epi=epi,
+        vf=vf,
+        x=x_plain,
+        y=y_plain,
+        epi_sum=epi_plain,
+        vf_sum=vf_plain,
+        count=count_plain,
+        deg_sum=deg_sum_plain,
+        deg_array=deg_array_plain,
+        cache=None,
+        np=np_module,
+        chunk_size=None,
+    )
+
+    np_module.testing.assert_allclose(x_cached, x_plain, rtol=1e-12, atol=1e-12)
+    np_module.testing.assert_allclose(y_cached, y_plain, rtol=1e-12, atol=1e-12)
+    np_module.testing.assert_allclose(
+        epi_cached, epi_plain, rtol=1e-12, atol=1e-12
+    )
+    np_module.testing.assert_allclose(vf_cached, vf_plain, rtol=1e-12, atol=1e-12)
+
+    if count_cached is not None and count_plain is not None:
+        np_module.testing.assert_allclose(
+            count_cached, count_plain, rtol=1e-12, atol=1e-12
+        )
+
+    if deg_sum_cached is not None and deg_sum_plain is not None:
+        np_module.testing.assert_allclose(
+            deg_sum_cached, deg_sum_plain, rtol=1e-12, atol=1e-12
+        )
+
+    assert isinstance(cached_result.get("accumulator"), np_module.ndarray)
+    assert isinstance(plain_result.get("accumulator"), np_module.ndarray)
+    np_module.testing.assert_allclose(
+        cached_result["accumulator"], plain_result["accumulator"], rtol=1e-12, atol=1e-12
+    )

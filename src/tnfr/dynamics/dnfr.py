@@ -1599,9 +1599,9 @@ def _accumulate_neighbors_broadcasted(
         workspace = cache.neighbor_edge_values_np
         workspace_length = resolved_chunk
         if workspace_length:
-            expected_shape = (workspace_length,)
+            expected_shape = (workspace_length, component_rows)
             if workspace is None or getattr(workspace, "shape", None) != expected_shape:
-                workspace = np.empty(workspace_length, dtype=float)
+                workspace = np.empty(expected_shape, dtype=float)
         else:
             workspace = None
         cache.neighbor_edge_values_np = workspace
@@ -1610,7 +1610,11 @@ def _accumulate_neighbors_broadcasted(
     else:
         accum = np.zeros((component_rows, n), dtype=float)
         workspace_length = resolved_chunk
-        workspace = np.empty(workspace_length, dtype=float) if workspace_length else None
+        workspace = (
+            np.empty((workspace_length, component_rows), dtype=float)
+            if workspace_length
+            else None
+        )
 
     if edge_count:
         row = 0
@@ -1630,36 +1634,50 @@ def _accumulate_neighbors_broadcasted(
         edge_src_int = edge_src.astype(np.intp, copy=False)
         edge_dst_int = edge_dst.astype(np.intp, copy=False)
 
-        chunk_indices = range(0, edge_count, resolved_chunk if resolved_chunk else edge_count)
-        chunks = ((start, min(start + resolved_chunk, edge_count)) for start in chunk_indices)
+        chunk_step = resolved_chunk if resolved_chunk else edge_count
+        chunk_indices = range(0, edge_count, chunk_step)
+        component_indices = np.arange(component_rows, dtype=np.intp)
+        flat_length = component_rows * n
 
-        for start, end in chunks:
+        for start in chunk_indices:
+            end = min(start + chunk_step, edge_count)
+            if start >= end:
+                continue
             src_slice = edge_src_int[start:end]
             dst_slice = edge_dst_int[start:end]
             slice_len = end - start
 
-            def _accumulate_row(row_idx: int, values: np.ndarray) -> None:
-                if workspace is not None:
-                    target = workspace[:slice_len]
-                    np.take(values, dst_slice, out=target)
-                    np.add.at(accum[row_idx], src_slice, target)
-                else:
-                    np.add.at(
-                        accum[row_idx],
-                        src_slice,
-                        np.take(values, dst_slice),
-                    )
+            if workspace is not None:
+                chunk_values = workspace[:slice_len]
+            else:
+                chunk_values = np.empty((slice_len, component_rows), dtype=float)
 
-            _accumulate_row(cos_row, cos)
-            _accumulate_row(sin_row, sin)
-            _accumulate_row(epi_row, epi)
-            _accumulate_row(vf_row, vf)
+            np.take(cos, dst_slice, out=chunk_values[:, cos_row])
+            np.take(sin, dst_slice, out=chunk_values[:, sin_row])
+            np.take(epi, dst_slice, out=chunk_values[:, epi_row])
+            np.take(vf, dst_slice, out=chunk_values[:, vf_row])
 
             if count_row is not None:
-                np.add.at(accum[count_row], src_slice, 1.0)
+                chunk_values[:, count_row].fill(1.0)
 
             if deg_row is not None and deg_array is not None:
-                _accumulate_row(deg_row, deg_array)
+                np.take(deg_array, dst_slice, out=chunk_values[:, deg_row])
+
+            repeated_src = np.repeat(src_slice, component_rows)
+            repeated_components = np.tile(component_indices, slice_len)
+            combined_index = repeated_src * component_rows + repeated_components
+            weights = chunk_values.reshape(-1)
+
+            # Collapse every attribute in one pass by encoding ``(src, component)``
+            # into the flattened ``combined_index`` and letting ``np.bincount``
+            # perform the grouped sum. The reshape restores the "component × node"
+            # layout expected by the accumulator buffers.
+            chunk_accum = np.bincount(
+                combined_index,
+                weights=weights,
+                minlength=flat_length,
+            )
+            accum += chunk_accum.reshape(n, component_rows).T
     else:
         accum.fill(0.0)
         if workspace is not None:

@@ -30,6 +30,22 @@ PYTHONPATH=src python benchmarks/<script>.py
 | `prepare_dnfr_data.py` | ΔNFR data preparation reuse (`tnfr.dynamics._prepare_dnfr_data`). | Exercises cache reuse when assembling phase/EPI/νf arrays. |
 | `neighbor_accumulation_comparison.py` | Broadcast neighbour accumulation (`tnfr.dynamics.dnfr._accumulate_neighbors_numpy`). | Benchmarks the single `np.add.at` accumulator against the legacy stack kernel; on 320 random nodes (p=0.65) with Python 3.11/NumPy 2.3.4 it delivered ~1.9× lower median runtime (0.097 s vs 0.185 s). |
 
+### Broadcast accumulator regression check
+
+The performance test suite now covers the vectorised accumulator that relies on
+`numpy.bincount` to collapse neighbour contributions. Run the slow-marked test
+to validate both speed and numerical parity against the pure-Python path:
+
+```bash
+PYTHONPATH=src pytest tests/performance/test_dynamics_performance.py \
+  -k broadcast_neighbor_accumulator_stays_faster_and_correct -m slow
+```
+
+The command prints per-test timings; the assertion requires the NumPy path to
+complete at least 10 % faster while matching the fallback values within
+`1e-9` relative/absolute tolerance. Use it to capture before/after measurements
+when iterating on `_accumulate_neighbors_broadcasted` or related kernels.
+
 ## Retired scripts
 
 Older benchmarks covering glyph history trimming, usage counters, or glyph
