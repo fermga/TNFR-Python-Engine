@@ -6,7 +6,7 @@ import tnfr.utils.init as utils_init
 from tnfr.alias import set_attr
 from tnfr.constants import get_aliases
 from tnfr.metrics.sense_index import compute_Si
-from tnfr.metrics.trig import neighbor_phase_mean
+from tnfr.metrics.trig import neighbor_phase_mean, neighbor_phase_mean_bulk
 from tnfr.metrics.trig_cache import get_trig_cache
 
 ALIAS_THETA = get_aliases("THETA")
@@ -73,3 +73,30 @@ def test_trig_cache_reuse_between_modules(monkeypatch, graph_canon):
     assert G.graph.get("_trig_version") == version
     for key in TRIG_SENTINEL_KEYS:
         assert G.graph[key] is sentinel
+
+
+def test_neighbor_phase_mean_bulk_isolated_nodes():
+    np = pytest.importorskip("numpy")
+
+    theta = np.array([0.0, math.pi / 2, -math.pi / 2], dtype=float)
+    cos_values = np.cos(theta)
+    sin_values = np.sin(theta)
+
+    edge_src = np.array([0, 1], dtype=np.intp)
+    edge_dst = np.array([1, 0], dtype=np.intp)
+
+    mean_theta, has_neighbors = neighbor_phase_mean_bulk(
+        edge_src,
+        edge_dst,
+        cos_values=cos_values,
+        sin_values=sin_values,
+        theta_values=theta,
+        node_count=theta.size,
+        np=np,
+    )
+
+    assert has_neighbors.tolist() == [True, True, False]
+    assert mean_theta.dtype == theta.dtype
+    assert mean_theta[0] == pytest.approx(math.pi / 2)
+    assert mean_theta[1] == pytest.approx(0.0)
+    assert mean_theta[2] == pytest.approx(theta[2])

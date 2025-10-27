@@ -230,15 +230,22 @@ def neighbor_phase_mean_bulk(
     if sin_arr.ndim != 1 or sin_arr.size != node_count:
         raise ValueError("sin_values must be a 1-D array matching node_count")
 
-    neighbor_cos_sum = np.zeros(node_count, dtype=float)
-    neighbor_sin_sum = np.zeros(node_count, dtype=float)
-
     edge_count = edge_dst_arr.size
     if edge_count:
-        np.add.at(neighbor_cos_sum, edge_dst_arr, cos_arr[edge_src_arr])
-        np.add.at(neighbor_sin_sum, edge_dst_arr, sin_arr[edge_src_arr])
+        neighbor_cos_sum = np.bincount(
+            edge_dst_arr,
+            weights=cos_arr[edge_src_arr],
+            minlength=node_count,
+        )
+        neighbor_sin_sum = np.bincount(
+            edge_dst_arr,
+            weights=sin_arr[edge_src_arr],
+            minlength=node_count,
+        )
         neighbor_counts = np.bincount(edge_dst_arr, minlength=node_count).astype(float)
     else:
+        neighbor_cos_sum = np.zeros(node_count, dtype=float)
+        neighbor_sin_sum = np.zeros(node_count, dtype=float)
         neighbor_counts = np.zeros(node_count, dtype=float)
 
     has_neighbors = neighbor_counts > 0.0
