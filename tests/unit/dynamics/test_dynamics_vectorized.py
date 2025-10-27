@@ -862,6 +862,65 @@ def test_broadcast_accumulation_dense_graph_equivalence():
     np.testing.assert_allclose(updated_vector, updated_loop, rtol=1e-9, atol=1e-9)
 
 
+def test_sparse_bincount_accumulation_matches_manual():
+    np = pytest.importorskip("numpy")
+
+    base = _build_weighted_graph(nx.path_graph, 14, 0.25)
+    data_vec = _prepare_dnfr_data(base)
+    data_vec["prefer_sparse"] = True
+    data_vec["A"] = None
+
+    sums = _build_neighbor_sums_common(base, data_vec, use_numpy=True)
+    x_vec, y_vec, epi_vec, vf_vec, count_vec, deg_vec, degs = sums
+
+    nodes = data_vec["nodes"]
+    idx = data_vec["idx"]
+    cos = data_vec["cos_theta"]
+    sin = data_vec["sin_theta"]
+    epi = data_vec["epi"]
+    vf = data_vec["vf"]
+    deg_list = data_vec.get("deg_list")
+
+    size = len(nodes)
+    expected_x = np.zeros(size, dtype=float)
+    expected_y = np.zeros(size, dtype=float)
+    expected_epi = np.zeros(size, dtype=float)
+    expected_vf = np.zeros(size, dtype=float)
+    expected_count = np.zeros(size, dtype=float)
+    expected_deg = np.zeros(size, dtype=float)
+
+    for i, node in enumerate(nodes):
+        deg_i = degs[i] if degs is not None else 0.0
+        for neighbor in base.neighbors(node):
+            j = idx[neighbor]
+            expected_x[i] += cos[j]
+            expected_y[i] += sin[j]
+            expected_epi[i] += epi[j]
+            expected_vf[i] += vf[j]
+            if count_vec is not None:
+                expected_count[i] += 1.0
+            if deg_vec is not None:
+                expected_deg[i] += deg_list[j] if deg_list is not None else deg_i
+
+    np.testing.assert_allclose(np.asarray(x_vec, dtype=float), expected_x, rtol=1e-12, atol=1e-12)
+    np.testing.assert_allclose(np.asarray(y_vec, dtype=float), expected_y, rtol=1e-12, atol=1e-12)
+    np.testing.assert_allclose(
+        np.asarray(epi_vec, dtype=float), expected_epi, rtol=1e-12, atol=1e-12
+    )
+    np.testing.assert_allclose(
+        np.asarray(vf_vec, dtype=float), expected_vf, rtol=1e-12, atol=1e-12
+    )
+
+    if count_vec is not None:
+        np.testing.assert_allclose(
+            np.asarray(count_vec, dtype=float), expected_count, rtol=1e-12, atol=1e-12
+        )
+    if deg_vec is not None:
+        np.testing.assert_allclose(
+            np.asarray(deg_vec, dtype=float), expected_deg, rtol=1e-12, atol=1e-12
+        )
+
+
 def test_broadcast_accumulation_invalidation_on_edge_change():
     np = pytest.importorskip("numpy")
 
