@@ -474,36 +474,108 @@ def compute_Si(
     supports_vector = (
         np is not None
         and hasattr(np, "ndarray")
-        and all(hasattr(np, attr) for attr in ("fromiter", "abs", "clip", "remainder"))
+        and all(
+            hasattr(np, attr)
+            for attr in (
+                "fromiter",
+                "abs",
+                "clip",
+                "remainder",
+                "zeros",
+                "add",
+                "bincount",
+                "arctan2",
+                "where",
+                "divide",
+                "errstate",
+            )
+        )
     )
 
     nodes_data = list(G.nodes(data=True))
     if not nodes_data:
         return {}
 
-    if supports_vector:
-        node_ids: list[Any] = []
-        theta_vals: list[float] = []
-        mean_vals: list[float] = []
-        vf_vals: list[float] = []
-        dnfr_vals: list[float] = []
-        for n, nd in nodes_data:
-            theta = thetas.get(n, 0.0)
-            neigh = neighbors[n]
-            node_ids.append(n)
-            theta_vals.append(theta)
-            mean_vals.append(pm_fn(neigh, fallback=theta))
-            vf_vals.append(get_attr(nd, ALIAS_VF, 0.0))
-            dnfr_vals.append(get_attr(nd, ALIAS_DNFR, 0.0))
+    node_ids = [n for n, _ in nodes_data]
+    node_idx: dict[Any, int] = {n: i for i, n in enumerate(node_ids)}
 
+    if supports_vector:
         count = len(node_ids)
-        theta_arr = np.fromiter(theta_vals, dtype=float, count=count)
-        mean_arr = np.fromiter(mean_vals, dtype=float, count=count)
-        diff = np.remainder(theta_arr - mean_arr + math.pi, math.tau) - math.pi
+
+        theta_arr = np.fromiter(
+            (thetas.get(n, 0.0) for n in node_ids), dtype=float, count=count
+        )
+        cos_arr = np.fromiter(
+            (cos_th.get(n, math.cos(thetas.get(n, 0.0))) for n in node_ids),
+            dtype=float,
+            count=count,
+        )
+        sin_arr = np.fromiter(
+            (sin_th.get(n, math.sin(thetas.get(n, 0.0))) for n in node_ids),
+            dtype=float,
+            count=count,
+        )
+
+        edge_src_list: list[int] = []
+        edge_dst_list: list[int] = []
+        for node in node_ids:
+            dst_idx = node_idx[node]
+            for neighbor in neighbors[node]:
+                src_idx = node_idx.get(neighbor)
+                if src_idx is None:
+                    continue
+                edge_src_list.append(src_idx)
+                edge_dst_list.append(dst_idx)
+
+        edge_count = len(edge_dst_list)
+        edge_src = np.asarray(edge_src_list, dtype=np.intp)
+        edge_dst = np.asarray(edge_dst_list, dtype=np.intp)
+
+        neighbor_cos_sum = np.zeros(count, dtype=float)
+        neighbor_sin_sum = np.zeros(count, dtype=float)
+        if edge_count:
+            np.add.at(neighbor_cos_sum, edge_dst, cos_arr[edge_src])
+            np.add.at(neighbor_sin_sum, edge_dst, sin_arr[edge_src])
+            neighbor_counts = np.bincount(edge_dst, minlength=count).astype(float)
+        else:
+            neighbor_counts = np.zeros(count, dtype=float)
+
+        has_neighbors = neighbor_counts > 0.0
+        mean_cos = np.zeros(count, dtype=float)
+        mean_sin = np.zeros(count, dtype=float)
+        if edge_count:
+            with np.errstate(divide="ignore", invalid="ignore"):
+                np.divide(
+                    neighbor_cos_sum,
+                    neighbor_counts,
+                    out=mean_cos,
+                    where=has_neighbors,
+                )
+                np.divide(
+                    neighbor_sin_sum,
+                    neighbor_counts,
+                    out=mean_sin,
+                    where=has_neighbors,
+                )
+
+        mean_theta = np.where(
+            has_neighbors,
+            np.arctan2(mean_sin, mean_cos),
+            theta_arr,
+        )
+        diff = np.remainder(theta_arr - mean_theta + math.pi, math.tau) - math.pi
         phase_dispersion_arr = np.abs(diff) / math.pi
 
-        vf_arr = np.fromiter(vf_vals, dtype=float, count=count)
-        dnfr_arr = np.fromiter(dnfr_vals, dtype=float, count=count)
+        vf_arr = np.fromiter(
+            (get_attr(nd, ALIAS_VF, 0.0) for _, nd in nodes_data),
+            dtype=float,
+            count=count,
+        )
+        dnfr_arr = np.fromiter(
+            (get_attr(nd, ALIAS_DNFR, 0.0) for _, nd in nodes_data),
+            dtype=float,
+            count=count,
+        )
         vf_norm = np.clip(np.abs(vf_arr) / vfmax, 0.0, 1.0)
         dnfr_norm = np.clip(np.abs(dnfr_arr) / dnfrmax, 0.0, 1.0)
 
