@@ -9,6 +9,7 @@ from tnfr.callback_utils import CallbackEvent, callback_manager
 from tnfr.glyph_history import ensure_history
 from tnfr.sense import (
     _node_weight,
+    _empty_sigma,
     _sigma_from_iterable,
     glyph_angle,
     glyph_unit,
@@ -26,6 +27,47 @@ def _make_graph(graph_canon):
     G.add_node(0, glyph_history=[Glyph.AL.value], Si=1.0, EPI=2.0)
     G.add_node(1, Si=0.3, EPI=1.5)
     return G
+
+
+class FakeArray:
+    def __init__(self, values):
+        self._values = [complex(v) for v in values]
+
+    @property
+    def size(self):
+        return len(self._values)
+
+    @property
+    def real(self):
+        return [z.real for z in self._values]
+
+    @property
+    def imag(self):
+        return [z.imag for z in self._values]
+
+
+class FakeNumPy:
+    complex128 = "complex128"
+
+    def __init__(self):
+        self.calls = {"fromiter": 0, "mean": 0, "hypot": 0, "arctan2": 0}
+
+    def fromiter(self, iterable, dtype=None):
+        self.calls["fromiter"] += 1
+        return FakeArray(iterable)
+
+    def mean(self, data):
+        self.calls["mean"] += 1
+        seq = list(data)
+        return sum(seq) / len(seq)
+
+    def hypot(self, x, y):
+        self.calls["hypot"] += 1
+        return math.hypot(x, y)
+
+    def arctan2(self, y, x):
+        self.calls["arctan2"] += 1
+        return math.atan2(y, x)
 
 
 def test_sigma_vector_node_paths(graph_canon):
@@ -109,6 +151,44 @@ def test_sigma_from_iterable_accepts_reals():
     assert vec["n"] == 2
     assert vec["x"] == pytest.approx(2.0)
     assert vec["y"] == pytest.approx(0.0)
+
+
+def test_sigma_from_iterable_vectorized_complex(monkeypatch):
+    fake_np = FakeNumPy()
+    monkeypatch.setattr("tnfr.sense.get_numpy", lambda: fake_np)
+    values = [complex(3, 4), complex(-1, 2), 5.0]
+
+    vec = _sigma_from_iterable(values, fallback_angle=math.pi / 6)
+
+    expected_x = (3 + -1 + 5) / 3
+    expected_y = (4 + 2 + 0) / 3
+    expected_mag = math.hypot(expected_x, expected_y)
+    expected_angle = math.atan2(expected_y, expected_x)
+
+    assert vec["n"] == 3
+    assert vec["x"] == pytest.approx(expected_x)
+    assert vec["y"] == pytest.approx(expected_y)
+    assert vec["mag"] == pytest.approx(expected_mag)
+    assert vec["angle"] == pytest.approx(expected_angle)
+    assert fake_np.calls["fromiter"] == 1
+    assert fake_np.calls["mean"] == 2
+    assert fake_np.calls["hypot"] == 1
+    assert fake_np.calls["arctan2"] == 1
+
+
+def test_sigma_from_iterable_vectorized_empty(monkeypatch):
+    fake_np = FakeNumPy()
+    monkeypatch.setattr("tnfr.sense.get_numpy", lambda: fake_np)
+    fallback = math.pi / 3
+
+    vec = _sigma_from_iterable([], fallback_angle=fallback)
+
+    assert vec == _empty_sigma(fallback)
+    assert fake_np.calls["fromiter"] == 1
+    # ``mean`` and other operations should not run when the array is empty.
+    assert fake_np.calls["mean"] == 0
+    assert fake_np.calls["hypot"] == 0
+    assert fake_np.calls["arctan2"] == 0
 
 
 def test_sigma_from_iterable_large_generator_efficient():
