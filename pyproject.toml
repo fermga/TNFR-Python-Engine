@@ -54,6 +54,7 @@ release = [
   "python-semantic-release>=10.4,<11",
   "setuptools-scm>=8,<9",
   "build>=1",
+  "towncrier>=23",
 ]
 
 [project.scripts]

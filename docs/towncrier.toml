@@ -1,0 +1,27 @@
+[tool.towncrier]
+directory = "changelog.d"
+filename = "releases.md"
+start_string = "<!-- version history -->\n"
+template = "changelog-template.jinja"
+issue_format = "[#{issue}]"
+underlines = ["", ""]
+
+[[tool.towncrier.type]]
+directory = "coherence"
+name = "Structural expansions"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "stability"
+name = "Stability and fixes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "documentation"
+name = "Documentation"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "infrastructure"
+name = "Infrastructure and tooling"
+showcontent = true

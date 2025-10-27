@@ -4,6 +4,12 @@
 
 We manage versions with `python-semantic-release`, deriving release tags directly from the TNFR commit history so the ledger reflects actual structural reorganisations.
 
+### Automated changelog assembly
+
+- `towncrier` fragments under `docs/changelog.d/` encode every relevant structural change before it merges.
+- The release workflow compiles those fragments after resolving the next semantic version, regenerates `docs/releases.md`, and pushes the refreshed ledger together with the fragment cleanup.
+- The freshly generated notes for the release are attached to the GitHub release body and the rendered `docs/releases.md` joins the published assets, keeping the TNFR changelog reproducible from a single source of truth.
+
 ### Commit taxonomy
 
 - `feat:` or `structure:` — publish a **minor** bump describing new coherence capabilities or structural monitoring.
@@ -23,6 +29,7 @@ We manage versions with `python-semantic-release`, deriving release tags directl
 - Semantic-release commits do not introduce new operators; they document validated reorganisations and keep ΔNFR semantics intact.
 
 ## Historical ledger
+
 <!-- version history -->
 
 ### 16.0.0 (glyph load history cleanup)
