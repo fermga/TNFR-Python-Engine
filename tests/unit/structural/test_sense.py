@@ -81,6 +81,28 @@ def test_sigma_vector_node_paths(graph_canon):
     assert sv_epi["mag"] == pytest.approx(2 * sv_si["mag"])
 
 
+def test_sigma_vector_node_zero_si_preserves_phase(graph_canon):
+    G = _make_graph(graph_canon)
+    G.nodes[0]["Si"] = 0.0
+
+    sv = sigma_vector_node(G, 0)
+
+    assert sv["mag"] == pytest.approx(0.0)
+    expected_angle = glyph_angle(G.nodes[0]["glyph_history"][-1])
+    assert sv["angle"] == pytest.approx(expected_angle)
+    assert -math.pi <= sv["angle"] <= math.pi
+
+
+def test_sigma_vector_node_default_weight_for_unknown_mode(graph_canon):
+    G = _make_graph(graph_canon)
+
+    sv = sigma_vector_node(G, 0, weight_mode="unknown")
+
+    assert sv["w"] == pytest.approx(1.0)
+    assert sv["mag"] == pytest.approx(1.0)
+    assert -math.pi <= sv["angle"] <= math.pi
+
+
 def test_sigma_vector_from_graph_paths(graph_canon):
     G = _make_graph(graph_canon)
     sv_si = sigma_vector_from_graph(G)
