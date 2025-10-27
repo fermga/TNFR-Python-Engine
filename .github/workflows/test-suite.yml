@@ -11,6 +11,22 @@ on:
       - master
 
 jobs:
+  changelog:
+    name: Changelog fragments present
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+
+      - name: Enforce changelog fragments
+        run: python3 scripts/check_changelog.py --base origin/${{ github.event.pull_request.base.ref }}
+
   tests:
     name: Python ${{ matrix.python-version }} unit tests
     runs-on: ubuntu-latest

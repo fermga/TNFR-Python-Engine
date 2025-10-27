@@ -1,0 +1,19 @@
+{% if versions %}
+{% for version in versions %}
+### {{ version.version }}{% if version.date %} ({{ version.date.strftime("%Y-%m-%d") }}){% endif %}
+{% for section in version.sections %}
+{% if section.entries %}
+#### {{ section.name }}
+
+{% for entry in section.entries %}- {{ entry | trim }}
+{% endfor %}
+
+{% endif %}
+{% endfor %}
+{% if version.notes %}
+{{ version.notes }}
+{% endif %}
+{% if not loop.last %}
+{% endif %}
+{% endfor %}
+{% endif %}

@@ -117,6 +117,43 @@ Fill out each field with concise, review-ready information:
 - **Equivalence map** — Document any renamed APIs or reorganized entry points
   so downstream integrations can adjust.
 
+## Changelog fragments
+
+All pull requests that touch structural code paths must ship a changelog
+fragment so the release ledger stays synchronised with the TNFR invariants.
+Fragments live under `docs/changelog.d/` and follow the
+`<ticket-or-topic>.<type>.md` naming pattern. The supported fragment types are
+aligned with TNFR semantics:
+
+| Type directory | When to use it |
+| --- | --- |
+| `coherence` | New operators, public APIs, telemetry, or other capabilities that expand coherent behaviour. |
+| `stability` | Fixes, performance tuning, regression guards, or contract hardening. |
+| `documentation` | User-facing docs, tutorials, or narrative updates worth highlighting. |
+| `infrastructure` | CI, packaging, or build-system changes that affect downstream consumers. |
+
+Create a fragment with `towncrier` (installed via `pip install .[release]` or
+`pip install towncrier`) so filenames stay consistent:
+
+```bash
+towncrier --config docs/towncrier.toml create 451.coherence --edit
+```
+
+The command scaffolds `docs/changelog.d/451.coherence.md` and opens it in the
+default editor. Describe the structural effect in a short paragraph or a set of
+bullets; the release workflow will render the Markdown as-is. The CI gate
+(`scripts/check_changelog.py`) fails whenever a pull request modifies
+`src/`, `tests/`, `scripts/`, or `benchmarks/` without introducing at least one
+new fragment, preventing merges that would silently skip the release ledger.
+The shared configuration lives at `docs/towncrier.toml`, keeping the rendered
+ledger aligned with `docs/releases.md` and the fragment taxonomy above.
+
+During releases the automation compiles the pending fragments, regenerates
+`docs/releases.md`, and removes the consumed fragment files. The generated
+release notes feed both the GitHub release body and the versioned ledger under
+`docs/`, so maintainers only need to review the fragment text during code
+review.
+
 ## Testing
 
 ### Before opening a pull request
