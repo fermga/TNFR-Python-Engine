@@ -17,9 +17,11 @@ from tnfr.alias import collect_attr, get_attr, set_attr
 from tnfr.constants import get_aliases
 from tnfr.dynamics import _prepare_dnfr_data, default_compute_delta_nfr
 from tnfr.dynamics.dnfr import (
+    _accumulate_neighbors_broadcasted,
     _accumulate_neighbors_numpy,
     _build_neighbor_sums_common,
     _build_edge_index_arrays,
+    _ensure_numpy_state_vectors,
     _init_neighbor_sums,
     NeighborStats,
     _resolve_numpy_degree_array,
@@ -247,6 +249,112 @@ def test_broadcast_neighbor_accumulator_stays_faster_and_correct(monkeypatch):
         assert vec_deg is loop_deg is None
     else:
         npt.assert_allclose(vec_deg, np.asarray(loop_deg, dtype=float), rtol=1e-9, atol=1e-9)
+
+
+def test_broadcast_accumulator_bincount_fast_path_matches_python(monkeypatch):
+    graph = _seed_graph(num_nodes=180, edge_probability=0.45, seed=314159)
+
+    fast_graph = graph.copy()
+    fast_data = _prepare_dnfr_data(fast_graph)
+    fast_data["prefer_sparse"] = True
+
+    fast_buffers = _init_neighbor_sums(fast_data, np=np)
+    x_fast, y_fast, epi_fast, vf_fast, count_fast, deg_fast, _ = fast_buffers
+    cache = fast_data.get("cache")
+
+    state = _ensure_numpy_state_vectors(fast_data, np)
+    cos_th = state["cos"]
+    sin_th = state["sin"]
+    epi_vec = state["epi"]
+    vf_vec = state["vf"]
+    assert cos_th is not None and sin_th is not None
+    assert epi_vec is not None and vf_vec is not None
+
+    edge_src, edge_dst = fast_data.get("edge_src"), fast_data.get("edge_dst")
+    if edge_src is None or edge_dst is None:
+        nodes = fast_data["nodes"]
+        idx = fast_data["idx"]
+        edge_src, edge_dst = _build_edge_index_arrays(fast_graph, nodes, idx, np)
+        fast_data["edge_src"] = edge_src
+        fast_data["edge_dst"] = edge_dst
+        if cache is not None:
+            cache.edge_src = edge_src
+            cache.edge_dst = edge_dst
+    assert edge_src is not None and edge_dst is not None
+    assert int(edge_src.size) > 0
+
+    if count_fast is not None:
+        count_fast.fill(0.0)
+    if deg_fast is not None:
+        deg_fast.fill(0.0)
+
+    deg_array = _resolve_numpy_degree_array(
+        fast_data,
+        count_fast,
+        cache=cache,
+        np=np,
+    )
+
+    accum_info = _accumulate_neighbors_broadcasted(
+        edge_src=edge_src,
+        edge_dst=edge_dst,
+        cos=cos_th,
+        sin=sin_th,
+        epi=epi_vec,
+        vf=vf_vec,
+        x=x_fast,
+        y=y_fast,
+        epi_sum=epi_fast,
+        vf_sum=vf_fast,
+        count=count_fast,
+        deg_sum=deg_fast,
+        deg_array=deg_array,
+        cache=cache,
+        np=np,
+        chunk_size=int(edge_src.size) if edge_src is not None else None,
+    )
+
+    python_graph = graph.copy()
+    python_data = _prepare_dnfr_data(python_graph)
+    python_data["prefer_sparse"] = True
+
+    with monkeypatch.context() as ctx:
+        ctx.setattr(dnfr_module, "get_numpy", lambda: None)
+        python_result = _build_neighbor_sums_common(
+            python_graph,
+            python_data,
+            use_numpy=False,
+        )
+
+    for fast_arr, python_arr in zip(
+        (x_fast, y_fast, epi_fast, vf_fast, count_fast, deg_fast),
+        python_result[:6],
+    ):
+        if fast_arr is None or python_arr is None:
+            assert fast_arr is python_arr is None
+        else:
+            npt.assert_allclose(
+                fast_arr,
+                np.asarray(python_arr, dtype=float),
+                rtol=1e-9,
+                atol=1e-9,
+            )
+
+    fast_degs = deg_array if deg_array is not None and deg_fast is not None else None
+    python_degs = python_result[-1]
+    if fast_degs is None or python_degs is None:
+        assert fast_degs is python_degs is None
+    else:
+        npt.assert_allclose(
+            fast_degs,
+            np.asarray(python_degs, dtype=float),
+            rtol=1e-9,
+            atol=1e-9,
+        )
+
+    assert accum_info["edge_values"] is None
+    if cache is not None:
+        assert cache.neighbor_edge_values_np is None
 
 
 def test_prepare_dnfr_data_stays_faster_than_naive_collector():
