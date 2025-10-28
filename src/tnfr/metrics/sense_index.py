@@ -732,7 +732,7 @@ def compute_Si(
                 trig.edge_src = edge_src
                 trig.edge_dst = edge_dst
 
-        mean_theta, _ = neighbor_phase_mean_bulk(
+        mean_theta, has_neighbors = neighbor_phase_mean_bulk(
             edge_src,
             edge_dst,
             cos_values=cos_arr,
@@ -760,8 +760,17 @@ def compute_Si(
 
         si_values = np.empty(count, dtype=float)
         if resolved_chunk >= count:
-            diff = np.remainder(theta_arr - mean_theta + math.pi, math.tau) - math.pi
-            phase_dispersion = np.abs(diff) / math.pi
+            phase_dispersion = np.zeros(count, dtype=float)
+            neighbor_indices = np.nonzero(has_neighbors)[0]
+            if neighbor_indices.size:
+                diff = (
+                    np.remainder(
+                        theta_arr[neighbor_indices] - mean_theta[neighbor_indices] + math.pi,
+                        math.tau,
+                    )
+                    - math.pi
+                )
+                phase_dispersion[neighbor_indices] = np.abs(diff) / math.pi
             raw_si = (
                 alpha * vf_norm
                 + beta * (1.0 - phase_dispersion)
@@ -771,19 +780,25 @@ def compute_Si(
         else:
             for start in range(0, count, resolved_chunk):
                 end = min(start + resolved_chunk, count)
-                diff = (
-                    np.remainder(
-                        theta_arr[start:end]
-                        - mean_theta[start:end]
-                        + math.pi,
-                        math.tau,
+                span = end - start
+                chunk_dispersion = np.zeros(span, dtype=float)
+                chunk_mask = has_neighbors[start:end]
+                if np.any(chunk_mask):
+                    relative_idx = np.nonzero(chunk_mask)[0]
+                    absolute_idx = relative_idx + start
+                    diff = (
+                        np.remainder(
+                            theta_arr[absolute_idx]
+                            - mean_theta[absolute_idx]
+                            + math.pi,
+                            math.tau,
+                        )
+                        - math.pi
                     )
-                    - math.pi
-                )
-                phase_dispersion = np.abs(diff) / math.pi
+                    chunk_dispersion[relative_idx] = np.abs(diff) / math.pi
                 raw_chunk = (
                     alpha * vf_norm[start:end]
-                    + beta * (1.0 - phase_dispersion)
+                    + beta * (1.0 - chunk_dispersion)
                     + gamma * (1.0 - dnfr_norm[start:end])
                 )
                 np.clip(raw_chunk, 0.0, 1.0, out=si_values[start:end])
