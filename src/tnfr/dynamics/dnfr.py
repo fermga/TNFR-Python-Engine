@@ -2027,11 +2027,14 @@ def _accumulate_neighbors_numpy(
         data["edge_count"] = int(edge_src.size)
 
     cached_deg_array = data.get("deg_array")
-    reuse_count_from_deg = False
+    reuse_count_from_deg = bool(count is not None and cached_deg_array is not None)
+    count_for_accum = count
     if count is not None:
-        if cached_deg_array is not None:
+        if reuse_count_from_deg:
+            # Reuse the cached degree vector as neighbour counts to avoid
+            # allocating an extra accumulator row in the broadcast routine.
             np.copyto(count, cached_deg_array, casting="unsafe")
-            reuse_count_from_deg = True
+            count_for_accum = None
         else:
             count.fill(0.0)
 
@@ -2073,7 +2076,7 @@ def _accumulate_neighbors_numpy(
         y=y,
         epi_sum=epi_sum,
         vf_sum=vf_sum,
-        count=count,
+        count=count_for_accum,
         deg_sum=deg_sum,
         deg_array=deg_array,
         cache=cache,
@@ -2085,8 +2088,8 @@ def _accumulate_neighbors_numpy(
     data["neighbor_edge_values_np"] = accum.get("edge_values")
     if cache is not None:
         data["neighbor_accum_signature"] = cache.neighbor_accum_signature
-    if reuse_count_from_deg and count is not None and cached_deg_array is not None:
-        np.copyto(count, cached_deg_array, casting="unsafe")
+    if reuse_count_from_deg and cached_deg_array is not None:
+        count = cached_deg_array
     degs = deg_array if deg_sum is not None and deg_array is not None else None
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
