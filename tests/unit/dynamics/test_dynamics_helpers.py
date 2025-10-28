@@ -2,6 +2,7 @@
 
 import inspect
 import sys
+import time
 from inspect import Parameter, Signature
 from typing import Any
 
@@ -19,6 +20,7 @@ from tnfr.dynamics import (
     default_glyph_selector,
     run,
 )
+from tnfr.dynamics.dnfr import _accumulate_neighbors_broadcasted
 from tnfr.types import Glyph
 
 
@@ -391,3 +393,232 @@ def test_prepare_dnfr_falls_back_to_metrics_compute_si(monkeypatch, graph_canon)
     assert recorded["call"]["graph"] is G
     assert recorded["call"]["inplace"] is True
     assert recorded["call"]["n_jobs"] == 6
+
+
+def _legacy_broadcast_accumulate(
+    np_module,
+    *,
+    edge_src,
+    edge_dst,
+    cos,
+    sin,
+    epi,
+    vf,
+    x,
+    y,
+    epi_sum,
+    vf_sum,
+    count,
+    deg_sum,
+    deg_array,
+    chunk_size,
+):
+    n = x.shape[0]
+    include_count = count is not None
+    use_topology = deg_sum is not None and deg_array is not None
+    component_rows = 4 + (1 if include_count else 0) + (1 if use_topology else 0)
+    accum = np_module.zeros((component_rows, n), dtype=float)
+
+    edge_count = int(edge_src.size)
+    if edge_count:
+        edge_src_int = edge_src.astype(np_module.intp, copy=False)
+        edge_dst_int = edge_dst.astype(np_module.intp, copy=False)
+
+        if chunk_size is None:
+            resolved_chunk = edge_count
+        else:
+            try:
+                resolved_chunk = int(chunk_size)
+            except (TypeError, ValueError):
+                resolved_chunk = edge_count
+            else:
+                if resolved_chunk <= 0:
+                    resolved_chunk = edge_count
+        resolved_chunk = max(1, min(edge_count, resolved_chunk))
+        component_indices = np_module.arange(component_rows, dtype=np_module.intp)
+        flat_length = component_rows * n
+
+        row = 0
+        cos_row = row
+        row += 1
+        sin_row = row
+        row += 1
+        epi_row = row
+        row += 1
+        vf_row = row
+        row += 1
+        count_row = row if include_count else None
+        if count_row is not None:
+            row += 1
+        deg_row = row if use_topology else None
+
+        for start in range(0, edge_count, resolved_chunk):
+            end = min(start + resolved_chunk, edge_count)
+            if start >= end:
+                continue
+            src_slice = edge_src_int[start:end]
+            dst_slice = edge_dst_int[start:end]
+            slice_len = end - start
+
+            chunk_values = np_module.empty((slice_len, component_rows), dtype=float)
+
+            np_module.take(cos, dst_slice, out=chunk_values[:, cos_row])
+            np_module.take(sin, dst_slice, out=chunk_values[:, sin_row])
+            np_module.take(epi, dst_slice, out=chunk_values[:, epi_row])
+            np_module.take(vf, dst_slice, out=chunk_values[:, vf_row])
+
+            if count_row is not None:
+                chunk_values[:, count_row].fill(1.0)
+
+            if deg_row is not None and deg_array is not None:
+                np_module.take(deg_array, dst_slice, out=chunk_values[:, deg_row])
+
+            repeated_src = np_module.repeat(src_slice, component_rows)
+            repeated_components = np_module.tile(component_indices, slice_len)
+            combined_index = repeated_src * component_rows + repeated_components
+            weights = chunk_values.reshape(-1)
+
+            chunk_accum = np_module.bincount(
+                combined_index,
+                weights=weights,
+                minlength=flat_length,
+            )
+            accum += chunk_accum.reshape(n, component_rows).T
+
+    row = 0
+    np_module.copyto(x, accum[row], casting="unsafe")
+    row += 1
+    np_module.copyto(y, accum[row], casting="unsafe")
+    row += 1
+    np_module.copyto(epi_sum, accum[row], casting="unsafe")
+    row += 1
+    np_module.copyto(vf_sum, accum[row], casting="unsafe")
+    row += 1
+
+    if include_count and count is not None:
+        np_module.copyto(count, accum[row], casting="unsafe")
+        row += 1
+
+    if use_topology and deg_sum is not None:
+        np_module.copyto(deg_sum, accum[row], casting="unsafe")
+
+    return {
+        "accumulator": accum,
+        "edge_values": None,
+    }
+
+
+def test_broadcast_accumulator_matches_legacy_and_speed():
+    np_module = pytest.importorskip("numpy")
+    rng = np_module.random.default_rng(1337)
+
+    n = 96
+    edge_count = 720
+    edge_src = rng.integers(0, n, size=edge_count, dtype=np_module.int64)
+    edge_dst = rng.integers(0, n, size=edge_count, dtype=np_module.int64)
+
+    cos = rng.standard_normal(n)
+    sin = rng.standard_normal(n)
+    epi = rng.random(n)
+    vf = rng.standard_normal(n)
+    deg_array = rng.uniform(0.25, 3.0, size=n)
+
+    x_new = np_module.zeros(n, dtype=float)
+    y_new = np_module.zeros(n, dtype=float)
+    epi_new = np_module.zeros(n, dtype=float)
+    vf_new = np_module.zeros(n, dtype=float)
+    count_new = np_module.zeros(n, dtype=float)
+    deg_sum_new = np_module.zeros(n, dtype=float)
+
+    x_old = np_module.zeros_like(x_new)
+    y_old = np_module.zeros_like(y_new)
+    epi_old = np_module.zeros_like(epi_new)
+    vf_old = np_module.zeros_like(vf_new)
+    count_old = np_module.zeros_like(count_new)
+    deg_sum_old = np_module.zeros_like(deg_sum_new)
+
+    chunk_size = 128
+
+    def run_new():
+        x_new.fill(0.0)
+        y_new.fill(0.0)
+        epi_new.fill(0.0)
+        vf_new.fill(0.0)
+        count_new.fill(0.0)
+        deg_sum_new.fill(0.0)
+        return _accumulate_neighbors_broadcasted(
+            edge_src=edge_src,
+            edge_dst=edge_dst,
+            cos=cos,
+            sin=sin,
+            epi=epi,
+            vf=vf,
+            x=x_new,
+            y=y_new,
+            epi_sum=epi_new,
+            vf_sum=vf_new,
+            count=count_new,
+            deg_sum=deg_sum_new,
+            deg_array=deg_array,
+            cache=None,
+            np=np_module,
+            chunk_size=chunk_size,
+        )
+
+    def run_old():
+        x_old.fill(0.0)
+        y_old.fill(0.0)
+        epi_old.fill(0.0)
+        vf_old.fill(0.0)
+        count_old.fill(0.0)
+        deg_sum_old.fill(0.0)
+        return _legacy_broadcast_accumulate(
+            np_module,
+            edge_src=edge_src,
+            edge_dst=edge_dst,
+            cos=cos,
+            sin=sin,
+            epi=epi,
+            vf=vf,
+            x=x_old,
+            y=y_old,
+            epi_sum=epi_old,
+            vf_sum=vf_old,
+            count=count_old,
+            deg_sum=deg_sum_old,
+            deg_array=deg_array,
+            chunk_size=chunk_size,
+        )
+
+    legacy = run_old()
+    modern = run_new()
+
+    np_module.testing.assert_allclose(x_new, x_old, rtol=1e-12, atol=1e-12)
+    np_module.testing.assert_allclose(y_new, y_old, rtol=1e-12, atol=1e-12)
+    np_module.testing.assert_allclose(epi_new, epi_old, rtol=1e-12, atol=1e-12)
+    np_module.testing.assert_allclose(vf_new, vf_old, rtol=1e-12, atol=1e-12)
+    np_module.testing.assert_allclose(count_new, count_old, rtol=1e-12, atol=1e-12)
+    np_module.testing.assert_allclose(
+        deg_sum_new, deg_sum_old, rtol=1e-12, atol=1e-12
+    )
+
+    np_module.testing.assert_allclose(
+        modern["accumulator"], legacy["accumulator"], rtol=1e-12, atol=1e-12
+    )
+
+    repeats = 6
+    for _ in range(2):
+        run_new()
+        run_old()
+
+    start_new = time.perf_counter()
+    for _ in range(repeats):
+        run_new()
+    new_elapsed = time.perf_counter() - start_new
+
+    start_old = time.perf_counter()
+    for _ in range(repeats):
+        run_old()
+    old_elapsed = time.perf_counter() - start_old
+
+    assert new_elapsed <= old_elapsed * 1.1
