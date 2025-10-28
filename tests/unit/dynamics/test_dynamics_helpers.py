@@ -74,11 +74,11 @@ def test_refresh_dnfr_vectors_numpy_bulk(graph_canon):
     expected_cos = np.cos(expected_theta)
     expected_sin = np.sin(expected_theta)
 
-    np.testing.assert_allclose(np.array(cache.theta, dtype=float), expected_theta)
-    np.testing.assert_allclose(np.array(cache.epi, dtype=float), expected_epi)
-    np.testing.assert_allclose(np.array(cache.vf, dtype=float), expected_vf)
-    np.testing.assert_allclose(np.array(cache.cos_theta, dtype=float), expected_cos)
-    np.testing.assert_allclose(np.array(cache.sin_theta, dtype=float), expected_sin)
+    assert cache.theta == [0.0] * len(nodes)
+    assert cache.epi == [0.0] * len(nodes)
+    assert cache.vf == [0.0] * len(nodes)
+    assert cache.cos_theta == [1.0] * len(nodes)
+    assert cache.sin_theta == [0.0] * len(nodes)
 
     assert isinstance(cache.theta_np, np.ndarray)
     assert isinstance(cache.epi_np, np.ndarray)

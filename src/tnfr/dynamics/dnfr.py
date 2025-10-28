@@ -519,7 +519,8 @@ def _ensure_numpy_vectors(cache: DnfrCache, np: ModuleType) -> DnfrCacheVectors:
     if cache is None:
         return (None, None, None, None, None)
 
-    arrays = []
+    arrays: list[Any | None] = []
+    size = len(cache.theta)
     for attr_np, source_attr in (
         ("theta_np", "theta"),
         ("epi_np", "epi"),
@@ -527,16 +528,18 @@ def _ensure_numpy_vectors(cache: DnfrCache, np: ModuleType) -> DnfrCacheVectors:
         ("cos_theta_np", "cos_theta"),
         ("sin_theta_np", "sin_theta"),
     ):
-        src = getattr(cache, source_attr)
         arr = getattr(cache, attr_np)
+        if arr is not None and getattr(arr, "shape", None) == (size,):
+            arrays.append(arr)
+            continue
+        src = getattr(cache, source_attr)
         if src is None:
             setattr(cache, attr_np, None)
             arrays.append(None)
             continue
-        if arr is None or len(arr) != len(src):
+        arr = np.asarray(src, dtype=float)
+        if getattr(arr, "shape", None) != (size,):
             arr = np.array(src, dtype=float)
-        else:
-            np.copyto(arr, src, casting="unsafe")
         setattr(cache, attr_np, arr)
         arrays.append(arr)
     return tuple(arrays)
@@ -615,45 +618,41 @@ def _ensure_numpy_state_vectors(
     size = len(nodes)
     cache: DnfrCache | None = data.get("cache")
 
+    cache_arrays: DnfrCacheVectors = (None, None, None, None, None)
     if cache is not None:
-        theta_np, epi_np, vf_np, cos_np, sin_np = _ensure_numpy_vectors(cache, np)
-        for key, arr in (
-            ("theta_np", theta_np),
-            ("epi_np", epi_np),
-            ("vf_np", vf_np),
-            ("cos_theta_np", cos_np),
-            ("sin_theta_np", sin_np),
-        ):
-            if arr is not None and getattr(arr, "shape", None) == (size,):
-                data[key] = arr
+        cache_arrays = _ensure_numpy_vectors(cache, np)
 
-    mapping = (
-        ("theta_np", "theta"),
-        ("epi_np", "epi"),
-        ("vf_np", "vf"),
-        ("cos_theta_np", "cos_theta"),
-        ("sin_theta_np", "sin_theta"),
-    )
-    for np_key, src_key in mapping:
-        src = data.get(src_key)
-        if src is None:
-            continue
+    result: dict[str, Any | None] = {}
+    for (plain_key, np_key, cached_arr, result_key) in (
+        ("theta", "theta_np", cache_arrays[0], "theta"),
+        ("epi", "epi_np", cache_arrays[1], "epi"),
+        ("vf", "vf_np", cache_arrays[2], "vf"),
+        ("cos_theta", "cos_theta_np", cache_arrays[3], "cos"),
+        ("sin_theta", "sin_theta_np", cache_arrays[4], "sin"),
+    ):
         arr = data.get(np_key)
+        if arr is None:
+            arr = cached_arr
         if arr is None or getattr(arr, "shape", None) != (size,):
-            arr = np.array(src, dtype=float)
-        elif cache is None:
-            np.copyto(arr, src, casting="unsafe")
-        data[np_key] = arr
-        if cache is not None:
-            setattr(cache, np_key, arr)
+            src = data.get(plain_key)
+            if src is None and cache is not None:
+                src = getattr(cache, plain_key)
+            if src is None:
+                arr = None
+            else:
+                arr = np.asarray(src, dtype=float)
+                if getattr(arr, "shape", None) != (size,):
+                    arr = np.array(src, dtype=float)
+        if arr is not None:
+            data[np_key] = arr
+            data[plain_key] = arr
+            if cache is not None:
+                setattr(cache, np_key, arr)
+        else:
+            data[np_key] = None
+        result[result_key] = arr
 
-    return {
-        "theta": data.get("theta_np"),
-        "epi": data.get("epi_np"),
-        "vf": data.get("vf_np"),
-        "cos": data.get("cos_theta_np"),
-        "sin": data.get("sin_theta_np"),
-    }
+    return result
 
 
 def _build_edge_index_arrays(
@@ -734,25 +733,33 @@ def _refresh_dnfr_vectors(
         cos_arr = np_module.asarray(trig_cos, dtype=float)
         sin_arr = np_module.asarray(trig_sin, dtype=float)
 
-        cache.theta[:node_count] = theta_arr.tolist()
-        cache.epi[:node_count] = epi_arr.tolist()
-        cache.vf[:node_count] = vf_arr.tolist()
-        cache.cos_theta[:node_count] = cos_arr.tolist()
-        cache.sin_theta[:node_count] = sin_arr.tolist()
-
-        def _update_np(attr: str, source: Any) -> None:
+        def _sync_numpy(attr: str, source: Any) -> Any:
             dest = getattr(cache, attr)
             if dest is None or getattr(dest, "shape", None) != source.shape:
                 dest = np_module.array(source, dtype=float)
             else:
                 np_module.copyto(dest, source, casting="unsafe")
             setattr(cache, attr, dest)
+            return dest
 
-        _update_np("theta_np", theta_arr)
-        _update_np("epi_np", epi_arr)
-        _update_np("vf_np", vf_arr)
-        _update_np("cos_theta_np", cos_arr)
-        _update_np("sin_theta_np", sin_arr)
+        _sync_numpy("theta_np", theta_arr)
+        _sync_numpy("epi_np", epi_arr)
+        _sync_numpy("vf_np", vf_arr)
+        _sync_numpy("cos_theta_np", cos_arr)
+        _sync_numpy("sin_theta_np", sin_arr)
+
+        # Python mirrors remain untouched while the vectorised path is active.
+        # They will be rebuilt the next time the runtime falls back to lists.
+        if cache.theta is not None and len(cache.theta) != node_count:
+            cache.theta = [0.0] * node_count
+        if cache.epi is not None and len(cache.epi) != node_count:
+            cache.epi = [0.0] * node_count
+        if cache.vf is not None and len(cache.vf) != node_count:
+            cache.vf = [0.0] * node_count
+        if cache.cos_theta is not None and len(cache.cos_theta) != node_count:
+            cache.cos_theta = [1.0] * node_count
+        if cache.sin_theta is not None and len(cache.sin_theta) != node_count:
+            cache.sin_theta = [0.0] * node_count
     else:
         for index, node in enumerate(nodes):
             i: int = int(index)
@@ -976,6 +983,16 @@ def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[st
     result["vf_np"] = vf_np
     result["cos_theta_np"] = cos_theta_np
     result["sin_theta_np"] = sin_theta_np
+    if theta_np is not None and getattr(theta_np, "shape", None) == (len(nodes),):
+        result["theta"] = theta_np
+    if epi_np is not None and getattr(epi_np, "shape", None) == (len(nodes),):
+        result["epi"] = epi_np
+    if vf_np is not None and getattr(vf_np, "shape", None) == (len(nodes),):
+        result["vf"] = vf_np
+    if cos_theta_np is not None and getattr(cos_theta_np, "shape", None) == (len(nodes),):
+        result["cos_theta"] = cos_theta_np
+    if sin_theta_np is not None and getattr(sin_theta_np, "shape", None) == (len(nodes),):
+        result["sin_theta"] = sin_theta_np
     result["deg_array"] = deg_array
     result["edge_src"] = edge_src
     result["edge_dst"] = edge_dst
