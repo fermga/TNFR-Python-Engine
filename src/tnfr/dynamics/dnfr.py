@@ -699,23 +699,78 @@ def _refresh_dnfr_vectors(
     np_module = get_numpy()
     trig = compute_theta_trig(((n, G.nodes[n]) for n in nodes), np=np_module)
     use_numpy = _should_vectorize(G, np_module)
-    for index, node in enumerate(nodes):
-        i: int = int(index)
-        node_id: NodeId = node
-        nd = G.nodes[node_id]
-        cache.theta[i] = trig.theta[node_id]
-        cache.epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
-        cache.vf[i] = get_attr(nd, ALIAS_VF, 0.0)
-        cache.cos_theta[i] = trig.cos[node_id]
-        cache.sin_theta[i] = trig.sin[node_id]
-    if use_numpy:
-        _ensure_numpy_vectors(cache, np_module)
+    node_count = len(nodes)
+    trig_theta = getattr(trig, "theta_values", None)
+    trig_cos = getattr(trig, "cos_values", None)
+    trig_sin = getattr(trig, "sin_values", None)
+    np_ready = (
+        use_numpy
+        and np_module is not None
+        and isinstance(trig_theta, getattr(np_module, "ndarray", tuple()))
+        and isinstance(trig_cos, getattr(np_module, "ndarray", tuple()))
+        and isinstance(trig_sin, getattr(np_module, "ndarray", tuple()))
+        and getattr(trig_theta, "shape", None) == getattr(trig_cos, "shape", None)
+        and getattr(trig_theta, "shape", None) == getattr(trig_sin, "shape", None)
+        and (trig_theta.shape[0] if getattr(trig_theta, "ndim", 0) else 0) == node_count
+    )
+
+    if np_ready:
+        if node_count:
+            epi_arr = np_module.fromiter(
+                (get_attr(G.nodes[node], ALIAS_EPI, 0.0) for node in nodes),
+                dtype=float,
+                count=node_count,
+            )
+            vf_arr = np_module.fromiter(
+                (get_attr(G.nodes[node], ALIAS_VF, 0.0) for node in nodes),
+                dtype=float,
+                count=node_count,
+            )
+        else:
+            epi_arr = np_module.empty(0, dtype=float)
+            vf_arr = np_module.empty(0, dtype=float)
+
+        theta_arr = np_module.asarray(trig_theta, dtype=float)
+        cos_arr = np_module.asarray(trig_cos, dtype=float)
+        sin_arr = np_module.asarray(trig_sin, dtype=float)
+
+        cache.theta[:node_count] = theta_arr.tolist()
+        cache.epi[:node_count] = epi_arr.tolist()
+        cache.vf[:node_count] = vf_arr.tolist()
+        cache.cos_theta[:node_count] = cos_arr.tolist()
+        cache.sin_theta[:node_count] = sin_arr.tolist()
+
+        def _update_np(attr: str, source: Any) -> None:
+            dest = getattr(cache, attr)
+            if dest is None or getattr(dest, "shape", None) != source.shape:
+                dest = np_module.array(source, dtype=float)
+            else:
+                np_module.copyto(dest, source, casting="unsafe")
+            setattr(cache, attr, dest)
+
+        _update_np("theta_np", theta_arr)
+        _update_np("epi_np", epi_arr)
+        _update_np("vf_np", vf_arr)
+        _update_np("cos_theta_np", cos_arr)
+        _update_np("sin_theta_np", sin_arr)
     else:
-        cache.theta_np = None
-        cache.epi_np = None
-        cache.vf_np = None
-        cache.cos_theta_np = None
-        cache.sin_theta_np = None
+        for index, node in enumerate(nodes):
+            i: int = int(index)
+            node_id: NodeId = node
+            nd = G.nodes[node_id]
+            cache.theta[i] = trig.theta[node_id]
+            cache.epi[i] = get_attr(nd, ALIAS_EPI, 0.0)
+            cache.vf[i] = get_attr(nd, ALIAS_VF, 0.0)
+            cache.cos_theta[i] = trig.cos[node_id]
+            cache.sin_theta[i] = trig.sin[node_id]
+        if use_numpy and np_module is not None:
+            _ensure_numpy_vectors(cache, np_module)
+        else:
+            cache.theta_np = None
+            cache.epi_np = None
+            cache.vf_np = None
+            cache.cos_theta_np = None
+            cache.sin_theta_np = None
 
 
 def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[str, Any]:

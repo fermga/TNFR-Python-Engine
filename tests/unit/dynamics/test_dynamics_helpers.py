@@ -55,6 +55,73 @@ def test_init_and_refresh_dnfr_cache(graph_canon):
     assert cache2 is cache
 
 
+def test_refresh_dnfr_vectors_numpy_bulk(graph_canon):
+    np = pytest.importorskip("numpy")
+
+    G = graph_canon()
+    vf_aliases = get_aliases("VF")
+    for i in range(4):
+        G.add_node(i, theta=0.25 * i, EPI=1.5 * i)
+        set_attr(G.nodes[i], vf_aliases, -0.5 * i)
+
+    nodes = list(G.nodes())
+    cache, *_rest, _ = _init_dnfr_cache(G, nodes, None, 1, False)
+    _refresh_dnfr_vectors(G, nodes, cache)
+
+    expected_theta = np.array([0.25 * i for i in range(4)], dtype=float)
+    expected_epi = np.array([1.5 * i for i in range(4)], dtype=float)
+    expected_vf = np.array([-0.5 * i for i in range(4)], dtype=float)
+    expected_cos = np.cos(expected_theta)
+    expected_sin = np.sin(expected_theta)
+
+    np.testing.assert_allclose(np.array(cache.theta, dtype=float), expected_theta)
+    np.testing.assert_allclose(np.array(cache.epi, dtype=float), expected_epi)
+    np.testing.assert_allclose(np.array(cache.vf, dtype=float), expected_vf)
+    np.testing.assert_allclose(np.array(cache.cos_theta, dtype=float), expected_cos)
+    np.testing.assert_allclose(np.array(cache.sin_theta, dtype=float), expected_sin)
+
+    assert isinstance(cache.theta_np, np.ndarray)
+    assert isinstance(cache.epi_np, np.ndarray)
+    assert isinstance(cache.vf_np, np.ndarray)
+    assert isinstance(cache.cos_theta_np, np.ndarray)
+    assert isinstance(cache.sin_theta_np, np.ndarray)
+
+    np.testing.assert_allclose(cache.theta_np, expected_theta)
+    np.testing.assert_allclose(cache.epi_np, expected_epi)
+    np.testing.assert_allclose(cache.vf_np, expected_vf)
+    np.testing.assert_allclose(cache.cos_theta_np, expected_cos)
+    np.testing.assert_allclose(cache.sin_theta_np, expected_sin)
+
+
+def test_refresh_dnfr_vectors_python_fallback(monkeypatch, graph_canon):
+    monkeypatch.setattr("tnfr.dynamics.dnfr.get_numpy", lambda: None)
+    monkeypatch.setattr("tnfr.metrics.trig_cache.get_numpy", lambda: None)
+
+    G = graph_canon()
+    vf_aliases = get_aliases("VF")
+    for i in range(3):
+        G.add_node(i, theta=0.2 * i, EPI=float(i))
+        set_attr(G.nodes[i], vf_aliases, 2.0 - i)
+
+    nodes = list(G.nodes())
+    cache, *_rest, _ = _init_dnfr_cache(G, nodes, None, 1, False)
+    _refresh_dnfr_vectors(G, nodes, cache)
+
+    expected_theta = [0.2 * i for i in range(3)]
+    expected_epi = [float(i) for i in range(3)]
+    expected_vf = [2.0 - i for i in range(3)]
+
+    assert cache.theta == pytest.approx(expected_theta)
+    assert cache.epi == pytest.approx(expected_epi)
+    assert cache.vf == pytest.approx(expected_vf)
+
+    assert cache.theta_np is None
+    assert cache.epi_np is None
+    assert cache.vf_np is None
+    assert cache.cos_theta_np is None
+    assert cache.sin_theta_np is None
+
+
 def test_compute_neighbor_means_list(graph_canon):
     G = graph_canon()
     G.add_edge(0, 1)
