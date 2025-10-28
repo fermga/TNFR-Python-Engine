@@ -116,6 +116,11 @@ For every configuration + execution-mode pair the script writes matching
   the benchmark loop.
 * `operator_timings` – totals and per-loop averages per operator (mirrored under
   `manual_timings` for backwards compatibility).
+* `compute_Si_breakdown` – wall-clock totals, per-loop averages, and execution
+  path counts for the Sense Index sub-stages (cache rebuilds, vectorised
+  neighbour aggregation, normalisation/clamp, and in-place writes). Use the
+  `path_counts` entry to verify whether the NumPy kernels or the pure-Python
+  fallback handled the run.
 * `target_functions` – cumulative profiler statistics (`cumtime`, `totaltime`)
   for the four canonical operators. Use this section to compare how much time
   each function spends (including callees) in vectorised vs. fallback modes.
@@ -124,9 +129,13 @@ For every configuration + execution-mode pair the script writes matching
 
 Contrast the vectorised and fallback JSON summaries to confirm that NumPy shifts
 most cumulative time from `_compute_dnfr_common` into array-based kernels and
-that `compute_Si` benefits from the same optimisation. Significant regressions
-should show up as higher `cumtime` values or inflated per-loop wall-clock
-figures.
+that `compute_Si` benefits from the same optimisation. The console output now
+prints the same Sense Index breakdown, making it easier to spot whether cache
+reconstruction or neighbour aggregation dominates the runtime. Cross-check the
+`path_counts` field—vectorised runs should report NumPy activity while fallback
+profiles stay in the Python bucket. Significant regressions should surface as
+higher `cumtime` values or inflated per-loop wall-clock figures across both the
+top-level operator timings and the Si sub-stages.
 
 ### `_compute_dnfr` vectorisation checks
 

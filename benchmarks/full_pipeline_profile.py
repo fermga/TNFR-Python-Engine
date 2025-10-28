@@ -290,6 +290,7 @@ def _dump_profile_outputs(
     loops: int,
     timings: Mapping[str, float],
     operator_timings: Mapping[str, Mapping[str, float]],
+    si_breakdown: Mapping[str, Any],
     metadata: Mapping[str, Any],
     configuration: Mapping[str, Any],
     sort: str,
@@ -321,6 +322,18 @@ def _dump_profile_outputs(
         name: {"total": float(values["total"]), "per_loop": float(values["per_loop"])}
         for name, values in operator_timings.items()
     }
+    si_totals = {
+        name: float(total)
+        for name, total in si_breakdown.get("totals", {}).items()
+    }
+    si_per_loop = {
+        name: float(value)
+        for name, value in si_breakdown.get("per_loop", {}).items()
+    }
+    si_path_counts = {
+        name: int(count)
+        for name, count in si_breakdown.get("path_counts", {}).items()
+    }
 
     report = {
         "mode": mode,
@@ -330,6 +343,11 @@ def _dump_profile_outputs(
         "operator_totals": operator_totals,
         "operator_timings": operator_timings_dict,
         "manual_timings": operator_timings_dict,
+        "compute_Si_breakdown": {
+            "totals": si_totals,
+            "per_loop": si_per_loop,
+            "path_counts": si_path_counts,
+        },
         "target_functions": _extract_target_stats(stats),
         "rows": rows,
     }
@@ -345,7 +363,12 @@ def _run_pipeline(
     loops: int,
     dnfr_workers: int | None,
     configuration: Mapping[str, Any],
-) -> tuple[cProfile.Profile, dict[str, float], dict[str, Any]]:
+) -> tuple[
+    cProfile.Profile,
+    dict[str, float],
+    dict[str, Any],
+    dict[str, Any],
+]:
     """Execute the Sense Index + ΔNFR pipeline under ``vectorized`` conditions."""
 
     timings = {
@@ -354,6 +377,14 @@ def _run_pipeline(
         "_compute_dnfr_common": 0.0,
         "default_compute_delta_nfr": 0.0,
     }
+
+    si_sub_totals = {
+        "cache_rebuild": 0.0,
+        "neighbor_phase_mean_bulk": 0.0,
+        "normalize_clamp": 0.0,
+        "inplace_write": 0.0,
+    }
+    si_path_counts: dict[str, int] = {}
 
     metadata: dict[str, Any] = {
         "vectorized": vectorized,
@@ -412,9 +443,18 @@ def _run_pipeline(
             for _ in range(loops):
                 _invalidate_trig_cache(graph)
 
+                si_profile: dict[str, Any] = {}
                 start = perf_counter()
-                compute_Si(graph, inplace=True)
-                timings["compute_Si"] += perf_counter() - start
+                compute_Si(graph, inplace=True, profile=si_profile)
+                elapsed = perf_counter() - start
+                timings["compute_Si"] += elapsed
+                for key in si_sub_totals:
+                    value = si_profile.get(key)
+                    if isinstance(value, (int, float)):
+                        si_sub_totals[key] += float(value)
+                path = si_profile.get("path")
+                if isinstance(path, str):
+                    si_path_counts[path] = si_path_counts.get(path, 0) + 1
 
                 start = perf_counter()
                 data = _prepare_dnfr_data(graph)
@@ -458,7 +498,18 @@ def _run_pipeline(
     metadata.setdefault("numpy_available", False)
     if resolved_neighbor_chunk_size is not None:
         metadata["dnfr_neighbor_chunk_size"] = resolved_neighbor_chunk_size
-    return profile, timings, metadata
+    loops_for_avg = loops if loops else 1
+    metadata["si_vectorized_calls"] = si_path_counts.get("vectorized", 0)
+    metadata["si_fallback_calls"] = si_path_counts.get("fallback", 0)
+    si_details = {
+        "totals": {name: float(total) for name, total in si_sub_totals.items()},
+        "per_loop": {
+            name: float(total / loops_for_avg) if loops else 0.0
+            for name, total in si_sub_totals.items()
+        },
+        "path_counts": dict(sorted(si_path_counts.items())),
+    }
+    return profile, timings, metadata, si_details
 
 
 def profile_full_pipeline(
@@ -549,7 +600,7 @@ def profile_full_pipeline(
                 dnfr_workers=dnfr_jobs,
             )
 
-            profile, timings, metadata = _run_pipeline(
+            profile, timings, metadata, si_details = _run_pipeline(
                 graph=graph,
                 vectorized=vectorized,
                 loops=loops,
@@ -571,6 +622,7 @@ def profile_full_pipeline(
                 loops=loops,
                 timings=timings,
                 operator_timings=operator_timings,
+                si_breakdown=si_details,
                 metadata=metadata,
                 configuration=configuration,
                 sort=sort,
@@ -580,6 +632,14 @@ def profile_full_pipeline(
                 f"  {name}: total={values['total']:.6f}s per_loop={values['per_loop']:.6f}s"
                 for name, values in operator_timings.items()
             ]
+            si_lines = [
+                f"  {name}: total={si_details['totals'].get(name, 0.0):.6f}s "
+                f"per_loop={si_details['per_loop'].get(name, 0.0):.6f}s"
+                for name in sorted(si_details.get("totals", {}))
+            ]
+            path_summary = ", ".join(
+                f"{key}={value}" for key, value in si_details.get("path_counts", {}).items()
+            ) or "none"
             print(
                 "Stored {label} profiles for {config_label} at {pstats_path} and {json_path}".format(
                     label=label,
@@ -591,6 +651,10 @@ def profile_full_pipeline(
             print("Per-operator wall-clock timings:")
             for line in timing_lines:
                 print(line)
+            print("compute_Si breakdown:")
+            for line in si_lines:
+                print(line)
+            print(f"  paths: {path_summary}")
 
 
 def main(argv: list[str] | None = None) -> int:
