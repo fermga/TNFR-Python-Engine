@@ -798,7 +798,20 @@ def compute_Si(
         phase_dispersion = np.zeros(count, dtype=float)
         raw_si = np.empty(count, dtype=float)
         neighbor_mask = np.asarray(has_neighbors, dtype=bool)
-        if neighbor_mask.any():
+        neighbor_count = int(neighbor_mask.sum())
+        use_chunked = False
+        if neighbor_count:
+            effective_chunk = resolve_chunk_size(
+                chunk_pref,
+                neighbor_count,
+                approx_bytes_per_item=_SI_APPROX_BYTES_PER_NODE,
+            )
+            if effective_chunk <= 0 or effective_chunk >= neighbor_count:
+                effective_chunk = neighbor_count
+            else:
+                use_chunked = True
+
+        if neighbor_count and not use_chunked:
             phase_dispersion.fill(0.0)
             np.subtract(
                 theta_arr,
@@ -824,13 +837,64 @@ def compute_Si(
                 out=phase_dispersion,
                 where=neighbor_mask,
             )
-        np.abs(phase_dispersion, out=phase_dispersion)
-        np.divide(
-            phase_dispersion,
-            math.pi,
-            out=phase_dispersion,
-            where=neighbor_mask,
-        )
+            np.abs(phase_dispersion, out=phase_dispersion)
+            np.divide(
+                phase_dispersion,
+                math.pi,
+                out=phase_dispersion,
+                where=neighbor_mask,
+            )
+        elif neighbor_count and use_chunked:
+            phase_dispersion.fill(0.0)
+            neighbor_indices = np.nonzero(neighbor_mask)[0]
+            chunk_theta = np.empty(effective_chunk, dtype=float)
+            chunk_values = np.empty(effective_chunk, dtype=float)
+            for start in range(0, neighbor_count, effective_chunk):
+                stop = min(start + effective_chunk, neighbor_count)
+                idx_slice = neighbor_indices[start:stop]
+                chunk_len = idx_slice.size
+                if chunk_len == 0:
+                    continue
+                np.take(theta_arr, idx_slice, out=chunk_theta[:chunk_len])
+                np.take(mean_theta, idx_slice, out=chunk_values[:chunk_len])
+                np.subtract(
+                    chunk_theta[:chunk_len],
+                    chunk_values[:chunk_len],
+                    out=chunk_values[:chunk_len],
+                )
+                np.add(
+                    chunk_values[:chunk_len],
+                    math.pi,
+                    out=chunk_values[:chunk_len],
+                )
+                np.remainder(
+                    chunk_values[:chunk_len],
+                    math.tau,
+                    out=chunk_values[:chunk_len],
+                )
+                np.subtract(
+                    chunk_values[:chunk_len],
+                    math.pi,
+                    out=chunk_values[:chunk_len],
+                )
+                np.abs(
+                    chunk_values[:chunk_len],
+                    out=chunk_values[:chunk_len],
+                )
+                np.divide(
+                    chunk_values[:chunk_len],
+                    math.pi,
+                    out=chunk_values[:chunk_len],
+                )
+                phase_dispersion[idx_slice] = chunk_values[:chunk_len]
+        else:
+            np.abs(phase_dispersion, out=phase_dispersion)
+            np.divide(
+                phase_dispersion,
+                math.pi,
+                out=phase_dispersion,
+                where=neighbor_mask,
+            )
 
         np.multiply(vf_norm, alpha, out=raw_si)
         np.subtract(1.0, phase_dispersion, out=phase_dispersion)
