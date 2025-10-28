@@ -1719,16 +1719,7 @@ def _accumulate_neighbors_broadcasted(
             ) -> None:
                 if not src_indices.size:
                     return
-                component_accum = np.bincount(
-                    src_indices,
-                    weights=values,
-                    minlength=n,
-                )
-                size = component_accum.size
-                if size < n:
-                    target[:size] += component_accum
-                else:
-                    target += component_accum[:n]
+                np.add.at(target, src_indices, values)
 
             for start in chunk_indices:
                 end = min(start + chunk_step, edge_count)
