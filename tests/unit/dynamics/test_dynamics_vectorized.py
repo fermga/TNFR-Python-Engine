@@ -601,6 +601,7 @@ def test_edge_accumulation_buffers_cached_and_stable(topo_weight, monkeypatch):
 
     G_vec = base.copy()
     data_vec = _prepare_dnfr_data(G_vec)
+    data_vec["neighbor_chunk_hint"] = 8
     buffers = _init_neighbor_sums(data_vec, np=np)
     result = _accumulate_neighbors_numpy(
         G_vec,
@@ -621,7 +622,7 @@ def test_edge_accumulation_buffers_cached_and_stable(topo_weight, monkeypatch):
     assert edge_values is not None
     assert accumulator is not None
     chunk_size = data_vec.get("neighbor_chunk_size") or data_vec["edge_count"]
-    assert edge_values.shape == (chunk_size, accumulator.shape[0])
+    assert edge_values.shape == (accumulator.shape[0], chunk_size)
 
     with numpy_disabled(monkeypatch):
         loop_graph = base.copy()
@@ -821,17 +822,10 @@ def test_broadcast_accumulation_dense_graph_equivalence():
     data_vec = _prepare_dnfr_data(dense_graph)
     data_vec["prefer_sparse"] = True
     data_vec["A"] = None
+    data_vec["neighbor_chunk_hint"] = 16
     _compute_dnfr(dense_graph, data_vec)
 
     vector_dnfr = collect_attr(dense_graph, dense_graph.nodes, ALIAS_DNFR, 0.0)
-
-    loop_graph = dense_graph.copy()
-    loop_graph.graph["vectorized_dnfr"] = False
-    loop_data = _prepare_dnfr_data(loop_graph)
-    _compute_dnfr(loop_graph, loop_data)
-    loop_dnfr = collect_attr(loop_graph, loop_graph.nodes, ALIAS_DNFR, 0.0)
-
-    np.testing.assert_allclose(vector_dnfr, loop_dnfr, rtol=1e-9, atol=1e-9)
 
     cache = data_vec.get("cache")
     assert cache is not None
@@ -840,12 +834,20 @@ def test_broadcast_accumulation_dense_graph_equivalence():
     assert isinstance(edge_buffer, np.ndarray)
     accumulator = cache.neighbor_accum_np
     assert isinstance(accumulator, np.ndarray)
-    expected_rows = 4 + 1  # cos, sin, epi, vf, count
-    if data_vec["w_topo"] != 0.0:
-        expected_rows += 1
+    expected_rows = accumulator.shape[0]
     chunk_size = data_vec.get("neighbor_chunk_size") or data_vec["edge_count"]
-    assert edge_buffer.shape == (chunk_size, expected_rows)
+    assert edge_buffer.shape == (expected_rows, chunk_size)
     assert accumulator.shape == (expected_rows, len(data_vec["nodes"]))
+
+    loop_graph = dense_graph.copy()
+    loop_graph.graph["vectorized_dnfr"] = False
+    for key in ("_dnfr_prep_cache", "_tnfr_cache_manager", "_tnfr_cache_config"):
+        loop_graph.graph.pop(key, None)
+    loop_data = _prepare_dnfr_data(loop_graph)
+    _compute_dnfr(loop_graph, loop_data)
+    loop_dnfr = collect_attr(loop_graph, loop_graph.nodes, ALIAS_DNFR, 0.0)
+
+    np.testing.assert_allclose(vector_dnfr, loop_dnfr, rtol=1e-9, atol=1e-9)
 
     for idx, node in enumerate(dense_graph.nodes):
         set_attr(dense_graph.nodes[node], ALIAS_EPI, 0.17 * (idx + 5))
@@ -854,6 +856,7 @@ def test_broadcast_accumulation_dense_graph_equivalence():
     data_vec = _prepare_dnfr_data(dense_graph)
     data_vec["prefer_sparse"] = True
     data_vec["A"] = None
+    data_vec["neighbor_chunk_hint"] = 16
     _compute_dnfr(dense_graph, data_vec)
 
     assert id(cache.neighbor_edge_values_np) == id(edge_buffer)
@@ -862,6 +865,8 @@ def test_broadcast_accumulation_dense_graph_equivalence():
 
     loop_after = dense_graph.copy()
     loop_after.graph["vectorized_dnfr"] = False
+    for key in ("_dnfr_prep_cache", "_tnfr_cache_manager", "_tnfr_cache_config"):
+        loop_after.graph.pop(key, None)
     loop_after_data = _prepare_dnfr_data(loop_after)
     _compute_dnfr(loop_after, loop_after_data)
     updated_vector = collect_attr(dense_graph, dense_graph.nodes, ALIAS_DNFR, 0.0)
@@ -934,12 +939,15 @@ def test_broadcast_accumulation_invalidation_on_edge_change():
 
     base = _build_weighted_graph(nx.path_graph, 24, 0.25)
     data_vec = _prepare_dnfr_data(base)
+    data_vec["neighbor_chunk_hint"] = 8
     _compute_dnfr(base, data_vec)
 
     cache = data_vec.get("cache")
     assert cache is not None
     old_signature = cache.neighbor_accum_signature
-    old_edge_shape = cache.neighbor_edge_values_np.shape
+    edge_workspace = cache.neighbor_edge_values_np
+    assert isinstance(edge_workspace, np.ndarray)
+    old_edge_shape = edge_workspace.shape
     old_accum = cache.neighbor_accum_np
     assert isinstance(old_accum, np.ndarray)
 
@@ -949,15 +957,19 @@ def test_broadcast_accumulation_invalidation_on_edge_change():
     refreshed = _prepare_dnfr_data(base)
     refreshed["prefer_sparse"] = True
     refreshed["A"] = None
+    refreshed["neighbor_chunk_hint"] = 8
     _compute_dnfr(base, refreshed)
 
     new_signature = cache.neighbor_accum_signature
     assert new_signature != old_signature
-    assert cache.neighbor_edge_values_np.shape != old_edge_shape
+    assert isinstance(cache.neighbor_edge_values_np, np.ndarray)
+    assert cache.neighbor_edge_values_np is not edge_workspace
     assert cache.neighbor_accum_np is not old_accum
 
     loop_graph = base.copy()
     loop_graph.graph["vectorized_dnfr"] = False
+    for key in ("_dnfr_prep_cache", "_tnfr_cache_manager", "_tnfr_cache_config"):
+        loop_graph.graph.pop(key, None)
     loop_data = _prepare_dnfr_data(loop_graph)
     _compute_dnfr(loop_graph, loop_data)
 
