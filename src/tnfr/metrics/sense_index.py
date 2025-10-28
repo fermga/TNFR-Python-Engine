@@ -803,8 +803,9 @@ def compute_Si(
             resolved_chunk = count or 1
 
         si_values = np.empty(count, dtype=float)
+        phase_dispersion = np.zeros(count, dtype=float)
+        raw_si = np.empty(count, dtype=float)
         if resolved_chunk >= count:
-            phase_dispersion = np.zeros(count, dtype=float)
             neighbor_indices = np.nonzero(has_neighbors)[0]
             if neighbor_indices.size:
                 diff = (
@@ -815,7 +816,7 @@ def compute_Si(
                     - math.pi
                 )
                 phase_dispersion[neighbor_indices] = np.abs(diff) / math.pi
-            raw_si = (
+            raw_si[:] = (
                 alpha * vf_norm
                 + beta * (1.0 - phase_dispersion)
                 + gamma * (1.0 - dnfr_norm)
@@ -824,8 +825,7 @@ def compute_Si(
         else:
             for start in range(0, count, resolved_chunk):
                 end = min(start + resolved_chunk, count)
-                span = end - start
-                chunk_dispersion = np.zeros(span, dtype=float)
+                phase_view = phase_dispersion[start:end]
                 chunk_mask = has_neighbors[start:end]
                 if np.any(chunk_mask):
                     relative_idx = np.nonzero(chunk_mask)[0]
@@ -839,13 +839,14 @@ def compute_Si(
                         )
                         - math.pi
                     )
-                    chunk_dispersion[relative_idx] = np.abs(diff) / math.pi
-                raw_chunk = (
+                    phase_view[relative_idx] = np.abs(diff) / math.pi
+                raw_view = raw_si[start:end]
+                raw_view[:] = (
                     alpha * vf_norm[start:end]
-                    + beta * (1.0 - chunk_dispersion)
+                    + beta * (1.0 - phase_view)
                     + gamma * (1.0 - dnfr_norm[start:end])
                 )
-                np.clip(raw_chunk, 0.0, 1.0, out=si_values[start:end])
+            np.clip(raw_si, 0.0, 1.0, out=si_values)
 
         if inplace:
             for idx, node in enumerate(node_ids):

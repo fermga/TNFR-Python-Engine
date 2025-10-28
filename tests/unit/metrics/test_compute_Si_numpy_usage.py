@@ -176,6 +176,50 @@ def test_compute_Si_vectorized_respects_chunk_size(monkeypatch, graph_canon):
         assert chunked[node] == pytest.approx(baseline[node])
 
 
+def test_compute_Si_vectorized_chunked_results_match(monkeypatch, graph_canon):
+    np = pytest.importorskip("numpy")
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
+
+    node_count = 12
+
+    def populate(graph):
+        graph.remove_nodes_from(list(graph.nodes))
+        graph.add_nodes_from(range(node_count))
+        graph.add_edges_from((i, i + 1) for i in range(node_count - 1))
+        for node in graph.nodes:
+            set_attr(graph.nodes[node], ALIAS_THETA, (node + 1) * math.pi / (node_count + 2))
+            set_attr(graph.nodes[node], ALIAS_VF, 0.15 + 0.07 * node)
+            set_attr(graph.nodes[node], ALIAS_DNFR, 0.05 + 0.04 * node)
+
+    G_baseline = graph_canon()
+    G_chunked = graph_canon()
+    populate(G_baseline)
+    populate(G_chunked)
+
+    baseline = compute_Si(G_baseline, inplace=False)
+
+    original_resolve = sense_index_mod.resolve_chunk_size
+    captured: list[tuple[int | None, int, int]] = []
+
+    def tracking_resolve(chunk_pref, total, **kwargs):
+        result = original_resolve(chunk_pref, total, **kwargs)
+        captured.append((chunk_pref, total, result))
+        return result
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.resolve_chunk_size", tracking_resolve)
+
+    chunked = compute_Si(G_chunked, inplace=False, chunk_size=5)
+
+    assert captured and captured[-1][0] == 5
+    resolved_chunk = captured[-1][2]
+    assert resolved_chunk <= 5
+    assert resolved_chunk < node_count
+    assert set(chunked) == set(baseline)
+    for node in baseline:
+        assert chunked[node] == pytest.approx(baseline[node])
+
+
 def test_compute_Si_vectorized_skips_isolated_nodes(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
 
