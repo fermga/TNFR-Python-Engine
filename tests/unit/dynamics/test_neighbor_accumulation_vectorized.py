@@ -160,7 +160,7 @@ def test_neighbor_chunking_matches_unchunked():
     assert edge_workspace is not None
     accum = chunk_data.get("neighbor_accum_np")
     assert accum is not None
-    assert getattr(edge_workspace, "shape", None) == (chunk_size, accum.shape[0])
+    assert getattr(edge_workspace, "shape", None) == (accum.shape[0], chunk_size)
 
     baseline_graph = _dense_weighted_graph(
         np_module, nodes=nodes, topo_weight=topo_weight
@@ -215,7 +215,7 @@ def test_vectorized_neighbor_counts_use_cached_degrees():
 
     edge_workspace = data.get("neighbor_edge_values_np")
     if edge_workspace is not None:
-        assert getattr(edge_workspace, "shape", None)[1] == accum.shape[0]
+        assert getattr(edge_workspace, "shape", None)[0] == accum.shape[0]
 
 
 def test_vectorized_neighbor_counts_fallback_without_degrees():

@@ -1673,7 +1673,7 @@ def _accumulate_neighbors_broadcasted(
         workspace = cache.neighbor_edge_values_np if use_chunks else None
         workspace_length = resolved_chunk if use_chunks else 0
         if workspace_length:
-            expected_shape = (workspace_length, component_rows)
+            expected_shape = (component_rows, workspace_length)
             if workspace is None or getattr(workspace, "shape", None) != expected_shape:
                 workspace = np.empty(expected_shape, dtype=float)
         else:
@@ -1685,7 +1685,7 @@ def _accumulate_neighbors_broadcasted(
         accum = np.zeros((component_rows, n), dtype=float)
         workspace_length = resolved_chunk if use_chunks else 0
         workspace = (
-            np.empty((workspace_length, component_rows), dtype=float)
+            np.empty((component_rows, workspace_length), dtype=float)
             if workspace_length
             else None
         )
@@ -1712,14 +1712,16 @@ def _accumulate_neighbors_broadcasted(
             chunk_step = resolved_chunk if resolved_chunk else edge_count
             chunk_indices = range(0, edge_count, chunk_step)
 
-            def _accumulate_component(
-                target: np.ndarray,
-                src_indices: np.ndarray,
-                values: np.ndarray,
-            ) -> None:
-                if not src_indices.size:
-                    return
-                np.add.at(target, src_indices, values)
+            state_matrix = np.empty((component_rows, n), dtype=float)
+            np.copyto(state_matrix[cos_row], cos, casting="unsafe")
+            np.copyto(state_matrix[sin_row], sin, casting="unsafe")
+            np.copyto(state_matrix[epi_row], epi, casting="unsafe")
+            np.copyto(state_matrix[vf_row], vf, casting="unsafe")
+
+            if count_row is not None:
+                state_matrix[count_row].fill(1.0)
+            if deg_row is not None and deg_array is not None:
+                np.copyto(state_matrix[deg_row], deg_array, casting="unsafe")
 
             for start in chunk_indices:
                 end = min(start + chunk_step, edge_count)
@@ -1730,42 +1732,14 @@ def _accumulate_neighbors_broadcasted(
                 slice_len = end - start
 
                 if workspace is not None:
-                    chunk_values = workspace[:slice_len]
+                    chunk_matrix = workspace[:, :slice_len]
                 else:
-                    chunk_values = np.empty((slice_len, component_rows), dtype=float)
+                    chunk_matrix = np.empty((component_rows, slice_len), dtype=float)
 
-                cos_values = chunk_values[:, cos_row]
-                sin_values = chunk_values[:, sin_row]
-                epi_values = chunk_values[:, epi_row]
-                vf_values = chunk_values[:, vf_row]
+                np.take(state_matrix, dst_slice, axis=1, out=chunk_matrix)
 
-                np.take(cos, dst_slice, out=cos_values)
-                np.take(sin, dst_slice, out=sin_values)
-                np.take(epi, dst_slice, out=epi_values)
-                np.take(vf, dst_slice, out=vf_values)
-
-                if count_row is not None:
-                    count_values = chunk_values[:, count_row]
-                    count_values.fill(1.0)
-                else:
-                    count_values = None
-
-                if deg_row is not None and deg_array is not None:
-                    deg_values = chunk_values[:, deg_row]
-                    np.take(deg_array, dst_slice, out=deg_values)
-                else:
-                    deg_values = None
-
-                _accumulate_component(accum[cos_row], src_slice, cos_values)
-                _accumulate_component(accum[sin_row], src_slice, sin_values)
-                _accumulate_component(accum[epi_row], src_slice, epi_values)
-                _accumulate_component(accum[vf_row], src_slice, vf_values)
-
-                if count_row is not None and count_values is not None:
-                    _accumulate_component(accum[count_row], src_slice, count_values)
-
-                if deg_row is not None and deg_values is not None:
-                    _accumulate_component(accum[deg_row], src_slice, deg_values)
+                if src_slice.size:
+                    np.add.at(accum, (slice(None), src_slice), chunk_matrix)
         else:
             def _apply_full_bincount(
                 target_row: int | None,
