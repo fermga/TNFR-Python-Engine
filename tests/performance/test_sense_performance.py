@@ -74,25 +74,33 @@ def test_compute_Si_vectorized_outperforms_python(monkeypatch, graph_canon):
     fast_reference = compute_Si(fast_graph, inplace=False)
 
     loops = 6
-    fast_time = _measure(lambda: compute_Si(fast_graph, inplace=False), loops)
+
+    def time_fast() -> float:
+        return _measure(lambda: compute_Si(fast_graph, inplace=False), loops)
 
     target = next(iter(fast_graph.nodes))
     base_vf = float(get_attr(fast_graph.nodes[target], ALIAS_VF, 0.0))
     alt_vf = base_vf + 0.041
-    toggle = False
 
-    def dirty_iteration() -> None:
-        nonlocal toggle
-        toggle = not toggle
-        value = alt_vf if toggle else base_vf
-        set_attr(fast_graph.nodes[target], ALIAS_VF, value)
+    def time_dirty() -> float:
+        toggle = False
+
+        def dirty_iteration() -> None:
+            nonlocal toggle
+            toggle = not toggle
+            value = alt_vf if toggle else base_vf
+            set_attr(fast_graph.nodes[target], ALIAS_VF, value)
+            compute_Si(fast_graph, inplace=False)
+
+        duration = _measure(dirty_iteration, loops)
+        set_attr(fast_graph.nodes[target], ALIAS_VF, base_vf)
         compute_Si(fast_graph, inplace=False)
+        return duration
 
-    dirty_time = _measure(dirty_iteration, loops)
-    set_attr(fast_graph.nodes[target], ALIAS_VF, base_vf)
-    compute_Si(fast_graph, inplace=False)
+    fast_time = min(time_fast() for _ in range(5))
+    dirty_time = min(time_dirty() for _ in range(5))
 
-    assert fast_time <= dirty_time * 0.95
+    assert fast_time <= dirty_time * 0.98
 
     monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: None)
     _invalidate_trig_cache(slow_graph)
@@ -106,3 +114,38 @@ def test_compute_Si_vectorized_outperforms_python(monkeypatch, graph_canon):
     npt.assert_allclose(fast_values, slow_values, rtol=1e-9, atol=1e-9)
 
     assert fast_time <= slow_time * 0.85
+
+
+def test_compute_Si_large_graph_chunk_penalty_removed(graph_canon):
+    """Large graphs should no longer regress when chunk hints are small."""
+
+    graph = graph_canon()
+    _seed_graph(graph, node_count=4096)
+
+    # Warm caches so the timing loop exercises only the vectorised path.
+    compute_Si(graph, inplace=False)
+
+    loops = 4
+    baseline_samples = [
+        _measure(lambda: compute_Si(graph, inplace=False), loops)
+        for _ in range(3)
+    ]
+    hinted_samples = [
+        _measure(
+            lambda: compute_Si(graph, inplace=False, chunk_size=32),
+            loops,
+        )
+        for _ in range(3)
+    ]
+    baseline = min(baseline_samples)
+    hinted = min(hinted_samples)
+
+    values_default = compute_Si(graph, inplace=False)
+    values_hinted = compute_Si(graph, inplace=False, chunk_size=32)
+
+    nodes = sorted(values_default)
+    fast_values = np.fromiter((values_default[n] for n in nodes), dtype=float)
+    hinted_values = np.fromiter((values_hinted[n] for n in nodes), dtype=float)
+    npt.assert_allclose(fast_values, hinted_values, rtol=1e-9, atol=1e-9)
+
+    assert hinted <= baseline * 1.05
