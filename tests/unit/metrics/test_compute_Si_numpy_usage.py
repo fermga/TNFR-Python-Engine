@@ -158,6 +158,12 @@ def test_compute_Si_vectorized_respects_chunk_size(monkeypatch, graph_canon):
     G = graph_canon()
     _configure_graph(G)
 
+    isolated_node = "isolated"
+    G.add_node(isolated_node)
+    set_attr(G.nodes[isolated_node], ALIAS_THETA, 0.0)
+    set_attr(G.nodes[isolated_node], ALIAS_VF, 0.0)
+    set_attr(G.nodes[isolated_node], ALIAS_DNFR, 0.0)
+
     baseline = compute_Si(G, inplace=False)
 
     captured: list[tuple[int | None, int]] = []
@@ -168,9 +174,11 @@ def test_compute_Si_vectorized_respects_chunk_size(monkeypatch, graph_canon):
 
     monkeypatch.setattr("tnfr.metrics.sense_index.resolve_chunk_size", fake_resolve)
 
+    connected_nodes = sum(1 for node in G.nodes if G.degree(node) > 0)
     chunked = compute_Si(G, inplace=False, chunk_size=5)
 
     assert captured and captured[0][0] == 5
+    assert captured[0][1] == connected_nodes
     assert set(chunked) == set(baseline)
     for node in baseline:
         assert chunked[node] == pytest.approx(baseline[node])
@@ -215,6 +223,7 @@ def test_compute_Si_vectorized_chunked_results_match(monkeypatch, graph_canon):
     resolved_chunk = captured[-1][2]
     assert resolved_chunk <= 5
     assert resolved_chunk < node_count
+    assert captured[-1][1] == node_count
     assert set(chunked) == set(baseline)
     for node in baseline:
         assert chunked[node] == pytest.approx(baseline[node])
@@ -282,6 +291,7 @@ def test_compute_Si_vectorized_skips_isolated_nodes(monkeypatch, graph_canon):
     compute_Si(G, inplace=False)
 
     assert remainder_inputs
+    assert len(remainder_inputs) == connected
     assert sum(arr.size for arr in remainder_inputs) == connected
     assert all(arr.size > 0 for arr in remainder_inputs)
 
