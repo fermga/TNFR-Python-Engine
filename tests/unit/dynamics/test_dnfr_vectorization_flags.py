@@ -4,6 +4,7 @@ import networkx as nx
 import pytest
 
 import tnfr.dynamics.dnfr as dnfr_module
+import tnfr.metrics.trig_cache as trig_cache_module
 from tnfr.alias import collect_attr, set_attr
 from tnfr.constants import get_aliases
 from tnfr.dynamics.dnfr import (
@@ -63,6 +64,38 @@ def _assert_vector_state(data, np):
         else:
             assert edge_values is None
 
+
+def test_prepare_dnfr_data_prefers_numpy_vectors_and_matches_lists(monkeypatch):
+    np = pytest.importorskip("numpy")
+
+    vector_graph = _graph_fixture()
+    vector_data = _prepare_dnfr_data(vector_graph)
+
+    cache = vector_data.get("cache")
+    assert cache is not None
+    assert isinstance(vector_data["theta"], np.ndarray)
+    assert vector_data["theta"] is vector_data.get("theta_np")
+    assert vector_data["epi"] is vector_data.get("epi_np")
+    assert vector_data["vf"] is vector_data.get("vf_np")
+    assert cache.theta == [0.0] * len(vector_data["nodes"])
+    assert cache.epi == [0.0] * len(vector_data["nodes"])
+
+    python_graph = _graph_fixture()
+    monkeypatch.setattr(dnfr_module, "get_numpy", lambda: None)
+    monkeypatch.setattr(trig_cache_module, "get_numpy", lambda: None)
+
+    python_data = _prepare_dnfr_data(python_graph)
+
+    assert isinstance(python_data["theta"], list)
+    assert python_data.get("theta_np") is None
+    assert isinstance(python_data["epi"], list)
+    assert python_data.get("epi_np") is None
+    assert isinstance(python_data["vf"], list)
+    assert python_data.get("vf_np") is None
+
+    np.testing.assert_allclose(vector_data["theta"], python_data["theta"])
+    np.testing.assert_allclose(vector_data["epi"], python_data["epi"])
+    np.testing.assert_allclose(vector_data["vf"], python_data["vf"])
 
 def test_compute_dnfr_uses_numpy_even_when_graph_disables_vectorization():
     np = pytest.importorskip("numpy")
