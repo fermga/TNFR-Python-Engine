@@ -25,7 +25,7 @@ PYTHONPATH=src python benchmarks/<script>.py
 | `default_compute_delta_nfr.py` | Core ΔNFR update speed (`tnfr.dynamics.default_compute_delta_nfr`). | Runs multiple passes on random graphs and reports best/median/mean/worst timings. Accepts `--profile` to dump per-function timings. |
 | `compute_dnfr_benchmark.py` | `_compute_dnfr` vectorised vs. fallback execution. | Explores how graph size/density impacts the NumPy and pure-Python paths, reporting summary stats and speed-up ratios. |
 | `compute_si_profile.py` | Sense Index profiling (`tnfr.metrics.sense_index.compute_Si`). | Captures cProfile stats for NumPy and pure-Python runs, exporting `.pstats` or JSON summaries. |
-| `full_pipeline_profile.py` | Full telemetry + ΔNFR pipeline profiling (`compute_Si`, `_prepare_dnfr_data`, `_compute_dnfr_common`, `default_compute_delta_nfr`). | Produces paired `.pstats` and JSON reports for vectorised and fallback runs with per-operator wall-clock summaries. |
+| `full_pipeline_profile.py` | Full telemetry + ΔNFR pipeline profiling (`compute_Si`, `_prepare_dnfr_data`, `_compute_dnfr_common`, `default_compute_delta_nfr`). | Produces paired `.pstats` and JSON reports for vectorised and fallback runs, supports multi-configuration chunk/worker sweeps, and records per-operator wall-clock summaries. |
 | `neighbor_phase_mean.py` | Fast phase averaging for neighbourhoods (`tnfr.metrics.trig.neighbor_phase_mean`). | Includes a `NodeNX`-based reference to highlight the benefit of the shared `trig_cache` module. |
 | `prepare_dnfr_data.py` | ΔNFR data preparation reuse (`tnfr.dynamics._prepare_dnfr_data`). | Exercises cache reuse when assembling phase/EPI/νf arrays. |
 | `neighbor_accumulation_comparison.py` | Broadcast neighbour accumulation (`tnfr.dynamics.dnfr._accumulate_neighbors_numpy`). | Benchmarks the single `np.add.at` accumulator against the legacy stack kernel; on 320 random nodes (p=0.65) with Python 3.11/NumPy 2.3.4 it delivered ~1.9× lower median runtime (0.097 s vs 0.185 s). |
@@ -95,22 +95,27 @@ that vectorisation shifts time into array primitives rather than Python loops.
 
 ```
 PYTHONPATH=src python benchmarks/full_pipeline_profile.py \
-  --nodes 384 --edge-probability 0.28 --loops 6 --output-dir profiles
+  --nodes 384 --edge-probability 0.28 --loops 6 --output-dir profiles \
+  --si-chunk-sizes auto 2048 --dnfr-chunk-sizes auto 4096
 ```
 
-The command stores four artefacts:
+The profiler iterates over the Cartesian product of the requested Si and ΔNFR
+chunk sizes (and, when provided, worker counts via `--si-workers` and
+`--dnfr-workers`). Each combination is tagged as `cfgXX` and encoded in the
+artefact name, for example
+`full_pipeline_vectorized_cfg01_si_auto_dn_auto_siw_auto_dnw_auto.json`.
 
-* `full_pipeline_vectorized.pstats` and `.json` – captured with NumPy enabled
-  (skipped automatically when the dependency is unavailable).
-* `full_pipeline_fallback.pstats` and `.json` – captured with NumPy disabled
-  and `vectorized_dnfr=False`.
+For every configuration + execution-mode pair the script writes matching
+`.pstats` and `.json` files. The JSON schema now includes:
 
-Both JSON files expose three key blocks:
-
-* `manual_timings` – per-operator wall-clock totals and per-loop averages for
-  the explicit calls performed by the script (`compute_Si` → `_prepare_dnfr_data`
-  → `_compute_dnfr_common` → `default_compute_delta_nfr`). These numbers reflect
-  end-to-end time for each stage as orchestrated by the benchmark.
+* `configuration` – the label, ordinal, textual description, and raw knob
+  values (`SI_CHUNK_SIZE`, `DNFR_CHUNK_SIZE`, `SI_N_JOBS`, `DNFR_N_JOBS`).
+* `metadata` – runtime context covering vectorisation, graph size, and the
+  requested/resolved chunk sizes and worker counts applied to the seeded graph.
+* `operator_totals` – raw wall-clock totals for each explicit operator call in
+  the benchmark loop.
+* `operator_timings` – totals and per-loop averages per operator (mirrored under
+  `manual_timings` for backwards compatibility).
 * `target_functions` – cumulative profiler statistics (`cumtime`, `totaltime`)
   for the four canonical operators. Use this section to compare how much time
   each function spends (including callees) in vectorised vs. fallback modes.
