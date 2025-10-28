@@ -36,7 +36,7 @@ from __future__ import annotations
 import math
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
-from typing import Any, Iterable, Iterator, Mapping
+from typing import Any, Callable, Iterable, Iterator, Mapping
 
 from ..alias import get_attr, set_attr
 from ..constants import get_aliases
@@ -665,29 +665,73 @@ def compute_Si(
         cache_cos = getattr(trig, "cos_values", None)
         cache_sin = getattr(trig, "sin_values", None)
 
+        trig_index_map = dict(getattr(trig, "index", {}) or {})
+        index_arr: Any | None = None
+        cached_mask = None
+        if trig_index_map and count:
+            index_values: list[int] = []
+            mask_values: list[bool] = []
+            for node in node_ids:
+                cached_idx = trig_index_map.get(node)
+                if cached_idx is None:
+                    index_values.append(-1)
+                    mask_values.append(False)
+                else:
+                    index_values.append(int(cached_idx))
+                    mask_values.append(True)
+            cached_mask = np.asarray(mask_values, dtype=bool)
+            if cached_mask.any():
+                index_arr = np.asarray(index_values, dtype=np.intp)
+        if cached_mask is None:
+            cached_mask = np.zeros(count, dtype=bool)
+
+        def _gather_values(cache_values: Any | None, fallback_getter: Callable[[Any], float]) -> Any:
+            if (
+                index_arr is not None
+                and cache_values is not None
+                and cached_mask.size
+                and cached_mask.any()
+            ):
+                out = np.empty(count, dtype=float)
+                cached_indices = np.nonzero(cached_mask)[0]
+                if cached_indices.size:
+                    out[cached_indices] = np.take(
+                        np.asarray(cache_values, dtype=float), index_arr[cached_indices]
+                    )
+                missing_indices = np.nonzero(~cached_mask)[0]
+                if missing_indices.size:
+                    missing_nodes = [node_ids[i] for i in missing_indices]
+                    out[missing_indices] = np.fromiter(
+                        (fallback_getter(node) for node in missing_nodes),
+                        dtype=float,
+                        count=missing_indices.size,
+                    )
+                return out
+            return np.fromiter(
+                (fallback_getter(node) for node in node_ids),
+                dtype=float,
+                count=count,
+            )
+
         if using_cache_order and cache_theta is not None:
             theta_arr = np.asarray(cache_theta, dtype=float)
         else:
-            theta_arr = np.fromiter(
-                (thetas.get(n, 0.0) for n in node_ids), dtype=float, count=count
-            )
+            theta_arr = _gather_values(cache_theta, lambda node: thetas.get(node, 0.0))
 
         if using_cache_order and cache_cos is not None:
             cos_arr = np.asarray(cache_cos, dtype=float)
         else:
-            cos_arr = np.fromiter(
-                (cos_th.get(n, math.cos(thetas.get(n, 0.0))) for n in node_ids),
-                dtype=float,
-                count=count,
+            cos_arr = _gather_values(
+                cache_cos,
+                lambda node: cos_th.get(node, math.cos(thetas.get(node, 0.0))),
             )
 
         if using_cache_order and cache_sin is not None:
             sin_arr = np.asarray(cache_sin, dtype=float)
         else:
-            sin_arr = np.fromiter(
-                (sin_th.get(n, math.sin(thetas.get(n, 0.0))) for n in node_ids),
-                dtype=float,
-                count=count,
+            sin_arr = _gather_values(
+                cache_sin,
+                lambda node: sin_th.get(node, math.sin(thetas.get(node, 0.0))),
             )
 
         cached_edge_src = None

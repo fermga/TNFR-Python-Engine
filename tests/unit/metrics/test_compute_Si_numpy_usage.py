@@ -66,21 +66,39 @@ def _configure_graph(graph):
 
 
 def test_compute_Si_vectorized_matches_python(monkeypatch, graph_canon):
-    pytest.importorskip("numpy")
+    np = pytest.importorskip("numpy")
 
     G_vec = graph_canon()
     G_py = graph_canon()
     _configure_graph(G_vec)
     _configure_graph(G_py)
 
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
+    trig_cache = get_trig_cache(G_vec, np=np)
+
+    original_nodes = list(G_vec.nodes)
+    reversed_nodes = list(reversed(original_nodes))
+    edges = list(G_vec.edges())
+    vec_data = {node: dict(G_vec.nodes[node]) for node in original_nodes}
+    py_data = {node: dict(G_py.nodes[node]) for node in original_nodes}
+
+    for graph, data_map in ((G_vec, vec_data), (G_py, py_data)):
+        graph.remove_nodes_from(list(graph.nodes))
+        for node in reversed_nodes:
+            graph.add_node(node)
+            graph.nodes[node].update(data_map[node])
+        graph.add_edges_from(edges)
+
+    trig_cache.order = ()
     vectorized = compute_Si(G_vec, inplace=False)
 
     monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: None)
     python = compute_Si(G_py, inplace=False)
 
+    assert list(G_vec.nodes) == reversed_nodes
     assert set(vectorized) == set(python)
     for node in vectorized:
-        assert python[node] == pytest.approx(vectorized[node])
+        assert python[node] == vectorized[node]
 
 
 def test_compute_Si_python_parallel_matches(monkeypatch, graph_canon):
