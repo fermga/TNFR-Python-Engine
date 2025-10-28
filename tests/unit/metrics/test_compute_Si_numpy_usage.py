@@ -158,6 +158,72 @@ def test_compute_Si_vectorized_respects_chunk_size(monkeypatch, graph_canon):
         assert chunked[node] == pytest.approx(baseline[node])
 
 
+def test_compute_Si_vectorized_skips_isolated_nodes(monkeypatch, graph_canon):
+    np = pytest.importorskip("numpy")
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
+
+    captured_masks: list[Any] = []
+    original_bulk = sense_index_mod.neighbor_phase_mean_bulk
+
+    def tracking_bulk(*args, **kwargs):
+        mean_theta, mask = original_bulk(*args, **kwargs)
+        captured_masks.append(mask.copy())
+        return mean_theta, mask
+
+    monkeypatch.setattr(
+        "tnfr.metrics.sense_index.neighbor_phase_mean_bulk", tracking_bulk
+    )
+
+    remainder_inputs: list[Any] = []
+    original_remainder = np.remainder
+
+    def tracking_remainder(x1, x2, out=None, where=True, **kwargs):
+        remainder_inputs.append(np.asarray(x1).copy())
+        return original_remainder(x1, x2, out=out, where=where, **kwargs)
+
+    monkeypatch.setattr(np, "remainder", tracking_remainder)
+
+    G = graph_canon()
+    G.add_nodes_from(range(4))
+    G.add_edge(0, 1)
+
+    for node in G.nodes:
+        set_attr(G.nodes[node], ALIAS_THETA, float(node) * math.pi / 8)
+        set_attr(G.nodes[node], ALIAS_VF, 0.0)
+        set_attr(G.nodes[node], ALIAS_DNFR, 0.0)
+
+    monkeypatch.setattr(
+        "tnfr.metrics.sense_index.resolve_chunk_size",
+        lambda chunk_pref, total, **kwargs: total,
+    )
+
+    compute_Si(G, inplace=False)
+
+    assert captured_masks
+    mask = captured_masks[0]
+    assert mask.dtype == np.bool_
+    connected = int(mask.sum())
+    assert connected == 2
+    assert not mask[2]
+    assert not mask[3]
+    assert remainder_inputs
+    assert len(remainder_inputs) == 1
+    assert remainder_inputs[0].shape == (connected,)
+
+    remainder_inputs.clear()
+    monkeypatch.setattr(
+        "tnfr.metrics.sense_index.resolve_chunk_size",
+        lambda chunk_pref, total, **kwargs: 1,
+    )
+
+    compute_Si(G, inplace=False)
+
+    assert remainder_inputs
+    assert sum(arr.size for arr in remainder_inputs) == connected
+    assert all(arr.size > 0 for arr in remainder_inputs)
+
+
 def test_compute_Si_python_parallel_chunk_size(monkeypatch, graph_canon):
     monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: None)
 
