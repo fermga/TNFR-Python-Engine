@@ -166,6 +166,28 @@ def _ensure_structural_arrays(
     return cache.ensure_current(node_key, node_data, np=np)
 
 
+def _ensure_si_buffers(
+    G: GraphLike,
+    *,
+    count: int,
+    np: Any,
+) -> tuple[Any, Any, Any]:
+    """Return reusable NumPy buffers sized for ``count`` nodes."""
+
+    def builder() -> tuple[Any, Any, Any]:
+        return (
+            np.empty(count, dtype=float),
+            np.empty(count, dtype=float),
+            np.empty(count, dtype=float),
+        )
+
+    return edge_version_cache(
+        G,
+        ("_si_buffers", count),
+        builder,
+    )
+
+
 def _normalise_si_sensitivity_mapping(
     mapping: Mapping[str, float], *, warn: bool
 ) -> dict[str, float]:
@@ -661,7 +683,8 @@ def compute_Si(
     chunk_pref = chunk_size if chunk_size is not None else G.graph.get("SI_CHUNK_SIZE")
 
     if supports_vector:
-        count = len(node_ids)
+        node_key = tuple(node_ids)
+        count = len(node_key)
 
         cache_theta = getattr(trig, "theta_values", None)
         cache_cos = getattr(trig, "cos_values", None)
@@ -752,7 +775,6 @@ def compute_Si(
             edge_src = cached_edge_src
             edge_dst = cached_edge_dst
         else:
-            node_key = tuple(node_ids)
 
             def _build_edge_arrays() -> tuple[Any, Any]:
                 edge_src_list: list[int] = []
@@ -796,9 +818,14 @@ def compute_Si(
         vf_norm = np.clip(np.abs(vf_arr) / vfmax, 0.0, 1.0)
         dnfr_norm = np.clip(np.abs(dnfr_arr) / dnfrmax, 0.0, 1.0)
 
-        si_values = np.empty(count, dtype=float)
-        phase_dispersion = np.zeros(count, dtype=float)
-        raw_si = np.empty(count, dtype=float)
+        phase_dispersion, raw_si, si_values = _ensure_si_buffers(
+            G,
+            count=count,
+            np=np,
+        )
+        phase_dispersion.fill(0.0)
+        raw_si.fill(0.0)
+        si_values.fill(0.0)
         neighbor_mask = np.asarray(has_neighbors, dtype=bool)
         neighbor_count = int(neighbor_mask.sum())
         use_chunked = False
@@ -814,7 +841,6 @@ def compute_Si(
                 use_chunked = True
 
         if neighbor_count and not use_chunked:
-            phase_dispersion.fill(0.0)
             np.subtract(
                 theta_arr,
                 mean_theta,
@@ -847,7 +873,6 @@ def compute_Si(
                 where=neighbor_mask,
             )
         elif neighbor_count and use_chunked:
-            phase_dispersion.fill(0.0)
             neighbor_indices = np.nonzero(neighbor_mask)[0]
             chunk_theta = np.empty(effective_chunk, dtype=float)
             chunk_values = np.empty(effective_chunk, dtype=float)
@@ -910,7 +935,7 @@ def compute_Si(
         if inplace:
             for idx, node in enumerate(node_ids):
                 set_attr(G.nodes[node], ALIAS_SI, float(si_values[idx]))
-            return si_values
+            return np.copy(si_values)
 
         return {node: float(value) for node, value in zip(node_ids, si_values)}
 
