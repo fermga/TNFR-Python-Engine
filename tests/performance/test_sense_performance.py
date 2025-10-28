@@ -10,6 +10,7 @@ regressions to non-vectorized behaviour.
 from __future__ import annotations
 
 import math
+import statistics
 import time
 
 import pytest
@@ -137,8 +138,8 @@ def test_compute_Si_large_graph_chunk_penalty_removed(graph_canon):
         )
         for _ in range(3)
     ]
-    baseline = min(baseline_samples)
-    hinted = min(hinted_samples)
+    baseline = statistics.fmean(baseline_samples)
+    hinted = statistics.fmean(hinted_samples)
 
     values_default = compute_Si(graph, inplace=False)
     values_hinted = compute_Si(graph, inplace=False, chunk_size=32)
@@ -149,3 +150,22 @@ def test_compute_Si_large_graph_chunk_penalty_removed(graph_canon):
     npt.assert_allclose(fast_values, hinted_values, rtol=1e-9, atol=1e-9)
 
     assert hinted <= baseline * 1.05
+
+
+def test_compute_Si_buffer_cache_preserves_results(graph_canon):
+    """Repeated cache reuse must keep Si parity to the uncached baseline."""
+
+    graph = graph_canon()
+    _seed_graph(graph, node_count=512)
+
+    baseline = compute_Si(graph, inplace=False)
+    node_order = list(baseline)
+    reference = np.fromiter((baseline[n] for n in node_order), dtype=float)
+
+    inplace_values = compute_Si(graph, inplace=True)
+    npt.assert_allclose(inplace_values, reference, rtol=1e-9, atol=1e-9)
+
+    for _ in range(5):
+        cached = compute_Si(graph, inplace=False)
+        cached_values = np.fromiter((cached[n] for n in node_order), dtype=float)
+        npt.assert_allclose(cached_values, reference, rtol=1e-9, atol=1e-9)
