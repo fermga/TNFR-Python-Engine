@@ -1769,15 +1769,25 @@ def _accumulate_neighbors_broadcasted(
         else:
             def _apply_full_bincount(
                 target_row: int | None,
-                values: np.ndarray | None,
+                values: np.ndarray | None = None,
+                *,
+                unit_weight: bool = False,
             ) -> None:
-                if target_row is None or values is None:
+                if target_row is None:
                     return
-                component_accum = np.bincount(
-                    edge_src_int,
-                    weights=values,
-                    minlength=n,
-                )
+                if values is None and not unit_weight:
+                    return
+                if unit_weight:
+                    component_accum = np.bincount(
+                        edge_src_int,
+                        minlength=n,
+                    )
+                else:
+                    component_accum = np.bincount(
+                        edge_src_int,
+                        weights=values,
+                        minlength=n,
+                    )
                 np.copyto(
                     accum[target_row, : n],
                     component_accum[:n],
@@ -1790,8 +1800,7 @@ def _accumulate_neighbors_broadcasted(
             _apply_full_bincount(vf_row, np.take(vf, edge_dst_int))
 
             if count_row is not None:
-                count_values = np.ones(edge_count, dtype=float)
-                _apply_full_bincount(count_row, count_values)
+                _apply_full_bincount(count_row, unit_weight=True)
 
             if deg_row is not None and deg_array is not None:
                 _apply_full_bincount(deg_row, np.take(deg_array, edge_dst_int))

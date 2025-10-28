@@ -247,6 +247,56 @@ def test_vectorized_neighbor_counts_fallback_without_degrees():
     np_module.testing.assert_allclose(count, expected, rtol=1e-12, atol=1e-12)
 
 
+def test_broadcast_accumulator_degree_totals_without_chunking():
+    np_module = pytest.importorskip("numpy")
+
+    graph = _sparse_weighted_graph(np_module, nodes=18, topo_weight=0.5)
+    graph.graph["DNFR_CHUNK_SIZE"] = graph.number_of_edges() * 4
+
+    data = _prepare_dnfr_data(graph)
+    data["prefer_sparse"] = True
+    data["A"] = None
+    data["deg_array"] = None
+
+    cache = data.get("cache")
+    if cache is not None:
+        cache.deg_array = None
+
+    result = _build_neighbor_sums_common(graph, data, use_numpy=True)
+
+    neighbor_chunk_size = data.get("neighbor_chunk_size")
+    edge_count = int(data.get("edge_count", 0))
+    assert neighbor_chunk_size == edge_count
+
+    count = result[4]
+    assert isinstance(count, np_module.ndarray)
+    expected_count = np_module.asarray(
+        [graph.degree[node] for node in data["nodes"]], dtype=float
+    )
+    np_module.testing.assert_allclose(
+        count,
+        expected_count,
+        rtol=1e-12,
+        atol=1e-12,
+    )
+
+    deg_sum = result[5]
+    assert isinstance(deg_sum, np_module.ndarray)
+    expected_deg_sum = np_module.asarray(
+        [
+            sum(float(graph.degree(neigh)) for neigh in graph.neighbors(node))
+            for node in data["nodes"]
+        ],
+        dtype=float,
+    )
+    np_module.testing.assert_allclose(
+        deg_sum,
+        expected_deg_sum,
+        rtol=1e-12,
+        atol=1e-12,
+    )
+
+
 def test_vectorized_neighbor_sums_outperform_loop(monkeypatch):
     np_module = pytest.importorskip("numpy")
 
