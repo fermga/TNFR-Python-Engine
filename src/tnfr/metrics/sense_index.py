@@ -36,7 +36,8 @@ from __future__ import annotations
 import math
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
-from typing import Any, Callable, Iterable, Iterator, Mapping, cast
+from time import perf_counter
+from typing import Any, Callable, Iterable, Iterator, Mapping, MutableMapping, cast
 
 from ..alias import get_attr, set_attr
 from ..constants import get_aliases
@@ -587,6 +588,7 @@ def compute_Si(
     inplace: bool = True,
     n_jobs: int | None = None,
     chunk_size: int | None = None,
+    profile: MutableMapping[str, Any] | None = None,
 ) -> dict[Any, float] | Any:
     """Compute the Si metric for each node by integrating structural drivers.
 
@@ -614,6 +616,14 @@ def compute_Si(
         available CPUs, and conservative memory heuristics. Non-positive values
         fall back to the automatic mode. Graphs may also provide a default via
         ``G.graph["SI_CHUNK_SIZE"]``.
+    profile : MutableMapping[str, Any] or None, optional
+        Mutable mapping that aggregates wall-clock durations for the internal
+        stages of the computation. The mapping receives the keys
+        ``"cache_rebuild"``, ``"neighbor_phase_mean_bulk"``,
+        ``"normalize_clamp"`` and ``"inplace_write"`` accumulating seconds for
+        each step, plus ``"path"`` describing whether the vectorised (NumPy)
+        or fallback implementation executed the call. Reusing the mapping
+        across invocations accumulates the timings.
 
     Returns
     -------
@@ -645,6 +655,35 @@ def compute_Si(
     >>> {k: round(v, 3) for k, v in compute_Si(G, inplace=False).items()}
     {'a': 0.784, 'b': 0.809}
     """
+
+    if profile is not None:
+        for key in (
+            "cache_rebuild",
+            "neighbor_phase_mean_bulk",
+            "normalize_clamp",
+            "inplace_write",
+        ):
+            profile.setdefault(key, 0.0)
+
+        def _profile_start() -> float:
+            return perf_counter()
+
+        def _profile_stop(key: str, start: float) -> None:
+            profile[key] = float(profile.get(key, 0.0)) + (perf_counter() - start)
+
+        def _profile_mark_path(path: str) -> None:
+            profile["path"] = path
+
+    else:
+
+        def _profile_start() -> float:
+            return 0.0
+
+        def _profile_stop(key: str, start: float) -> None:
+            return None
+
+        def _profile_mark_path(path: str) -> None:
+            return None
 
     neighbors = ensure_neighbors_map(G)
     alpha, beta, gamma = get_Si_weights(G)
@@ -707,6 +746,7 @@ def compute_Si(
     chunk_pref = chunk_size if chunk_size is not None else G.graph.get("SI_CHUNK_SIZE")
 
     if supports_vector:
+        _profile_mark_path("vectorized")
         node_key = tuple(node_ids)
         count = len(node_key)
 
@@ -761,6 +801,8 @@ def compute_Si(
                 dtype=float,
                 count=count,
             )
+
+        cache_timer = _profile_start()
 
         if using_cache_order and cache_theta is not None:
             theta_arr = np.asarray(cache_theta, dtype=float)
@@ -836,6 +878,25 @@ def compute_Si(
             np=np,
         )
 
+        vf_arr, dnfr_arr = _ensure_structural_arrays(
+            G,
+            node_ids,
+            node_mapping,
+            np=np,
+        )
+        (
+            phase_dispersion,
+            raw_si,
+            si_values,
+        ) = _ensure_si_buffers(
+            G,
+            count=count,
+            np=np,
+        )
+
+        _profile_stop("cache_rebuild", cache_timer)
+
+        neighbor_timer = _profile_start()
         mean_theta, has_neighbors = neighbor_phase_mean_bulk(
             edge_src,
             edge_dst,
@@ -850,20 +911,10 @@ def compute_Si(
             mean_cos=mean_cos_buf,
             mean_sin=mean_sin_buf,
         )
-        vf_arr, dnfr_arr = _ensure_structural_arrays(
-            G,
-            node_ids,
-            node_mapping,
-            np=np,
-        )
+        _profile_stop("neighbor_phase_mean_bulk", neighbor_timer)
+        norm_timer = _profile_start()
         vf_norm = np.clip(np.abs(vf_arr) / vfmax, 0.0, 1.0)
         dnfr_norm = np.clip(np.abs(dnfr_arr) / dnfrmax, 0.0, 1.0)
-
-        phase_dispersion, raw_si, si_values = _ensure_si_buffers(
-            G,
-            count=count,
-            np=np,
-        )
         phase_dispersion.fill(0.0)
         raw_si.fill(0.0)
         si_values.fill(0.0)
@@ -973,14 +1024,19 @@ def compute_Si(
         np.add(raw_si, si_values, out=raw_si)
         np.clip(raw_si, 0.0, 1.0, out=si_values)
 
+        _profile_stop("normalize_clamp", norm_timer)
+
         if inplace:
+            write_timer = _profile_start()
             for idx, node in enumerate(node_ids):
                 set_attr(G.nodes[node], ALIAS_SI, float(si_values[idx]))
+            _profile_stop("inplace_write", write_timer)
             return np.copy(si_values)
 
         return {node: float(value) for node, value in zip(node_ids, si_values)}
 
     out: dict[Any, float] = {}
+    _profile_mark_path("fallback")
     if n_jobs is not None and n_jobs > 1:
         node_count = len(nodes_data)
         if node_count:
@@ -1020,6 +1076,7 @@ def compute_Si(
             neigh = neighbors[n]
             th_bar = pm_fn(neigh, fallback=theta)
             phase_dispersion = abs(angle_diff(theta, th_bar)) / math.pi
+            norm_timer = _profile_start()
             out[n] = compute_Si_node(
                 n,
                 nd,
@@ -1031,8 +1088,11 @@ def compute_Si(
                 phase_dispersion=phase_dispersion,
                 inplace=False,
             )
+            _profile_stop("normalize_clamp", norm_timer)
 
     if inplace:
+        write_timer = _profile_start()
         for n, value in out.items():
             set_attr(G.nodes[n], ALIAS_SI, value)
+        _profile_stop("inplace_write", write_timer)
     return out
