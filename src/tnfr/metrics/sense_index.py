@@ -36,7 +36,7 @@ from __future__ import annotations
 import math
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
-from typing import Any, Callable, Iterable, Iterator, Mapping
+from typing import Any, Callable, Iterable, Iterator, Mapping, cast
 
 from ..alias import get_attr, set_attr
 from ..constants import get_aliases
@@ -84,7 +84,7 @@ class _SiStructuralCache:
     def rebuild(
         self,
         node_ids: Iterable[Any],
-        data_by_node: Mapping[Any, Mapping[str, Any]],
+        node_data: Mapping[Any, Mapping[str, Any]],
         *,
         np: Any,
     ) -> tuple[Any, Any]:
@@ -99,12 +99,12 @@ class _SiStructuralCache:
             return self.vf_values, self.dnfr_values
 
         vf_arr = np.fromiter(
-            (float(get_attr(data_by_node[n], ALIAS_VF, 0.0)) for n in node_tuple),
+            (float(get_attr(node_data[n], ALIAS_VF, 0.0)) for n in node_tuple),
             dtype=float,
             count=count,
         )
         dnfr_arr = np.fromiter(
-            (float(get_attr(data_by_node[n], ALIAS_DNFR, 0.0)) for n in node_tuple),
+            (float(get_attr(node_data[n], ALIAS_DNFR, 0.0)) for n in node_tuple),
             dtype=float,
             count=count,
         )
@@ -119,51 +119,51 @@ class _SiStructuralCache:
     def ensure_current(
         self,
         node_ids: Iterable[Any],
-        data_by_node: Mapping[Any, Mapping[str, Any]],
+        node_data: Mapping[Any, Mapping[str, Any]],
         *,
         np: Any,
     ) -> tuple[Any, Any]:
         node_tuple = tuple(node_ids)
         if node_tuple != self.node_ids:
-            return self.rebuild(node_tuple, data_by_node, np=np)
+            return self.rebuild(node_tuple, node_data, np=np)
 
         for idx, node in enumerate(node_tuple):
-            nd = data_by_node[node]
+            nd = node_data[node]
             vf = float(get_attr(nd, ALIAS_VF, 0.0))
             if vf != self.vf_snapshot[idx]:
-                return self.rebuild(node_tuple, data_by_node, np=np)
+                return self.rebuild(node_tuple, node_data, np=np)
             dnfr = float(get_attr(nd, ALIAS_DNFR, 0.0))
             if dnfr != self.dnfr_snapshot[idx]:
-                return self.rebuild(node_tuple, data_by_node, np=np)
+                return self.rebuild(node_tuple, node_data, np=np)
 
         return self.vf_values, self.dnfr_values
 
 
 def _build_structural_cache(
     node_ids: Iterable[Any],
-    data_by_node: Mapping[Any, Mapping[str, Any]],
+    node_data: Mapping[Any, Mapping[str, Any]],
     *,
     np: Any,
 ) -> _SiStructuralCache:
     cache = _SiStructuralCache(tuple(node_ids))
-    cache.rebuild(node_ids, data_by_node, np=np)
+    cache.rebuild(node_ids, node_data, np=np)
     return cache
 
 
 def _ensure_structural_arrays(
     G: GraphLike,
     node_ids: Iterable[Any],
-    data_by_node: Mapping[Any, Mapping[str, Any]],
+    node_data: Mapping[Any, Mapping[str, Any]],
     *,
     np: Any,
 ) -> tuple[Any, Any]:
     node_key = tuple(node_ids)
 
     def builder() -> _SiStructuralCache:
-        return _build_structural_cache(node_key, data_by_node, np=np)
+        return _build_structural_cache(node_key, node_data, np=np)
 
     cache = edge_version_cache(G, ("_si_structural", node_key), builder)
-    return cache.ensure_current(node_key, data_by_node, np=np)
+    return cache.ensure_current(node_key, node_data, np=np)
 
 
 def _normalise_si_sensitivity_mapping(
@@ -636,17 +636,19 @@ def compute_Si(
         )
     )
 
-    nodes_data = list(G.nodes(data=True))
+    nodes_view = G.nodes
+    nodes_data = list(nodes_view(data=True))
     if not nodes_data:
         return {}
 
-    data_by_node = {n: nd for n, nd in nodes_data}
+    node_mapping = cast(Mapping[Any, Mapping[str, Any]], nodes_view)
+    node_count = len(nodes_data)
 
     trig_order = list(getattr(trig, "order", ()))
     node_ids: list[Any]
     node_idx: dict[Any, int]
     using_cache_order = False
-    if trig_order and len(trig_order) == len(data_by_node):
+    if trig_order and len(trig_order) == node_count:
         node_ids = trig_order
         node_idx = dict(getattr(trig, "index", {}))
         using_cache_order = len(node_idx) == len(node_ids)
@@ -788,7 +790,7 @@ def compute_Si(
         vf_arr, dnfr_arr = _ensure_structural_arrays(
             G,
             node_ids,
-            data_by_node,
+            node_mapping,
             np=np,
         )
         vf_norm = np.clip(np.abs(vf_arr) / vfmax, 0.0, 1.0)
