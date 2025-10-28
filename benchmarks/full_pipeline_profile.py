@@ -33,6 +33,7 @@ import math
 import pstats
 from collections.abc import Iterable
 from contextlib import contextmanager
+from itertools import product
 from pathlib import Path
 from time import perf_counter
 from typing import Any, Mapping
@@ -42,9 +43,19 @@ import networkx as nx
 from tnfr.alias import set_attr
 from tnfr.constants import get_aliases
 from tnfr.dynamics import _prepare_dnfr_data, default_compute_delta_nfr
-from tnfr.dynamics.dnfr import _build_neighbor_sums_common, _compute_dnfr_common
-from tnfr.metrics.sense_index import compute_Si
+from tnfr.dynamics.dnfr import (
+    _DNFR_APPROX_BYTES_PER_EDGE,
+    _build_neighbor_sums_common,
+    _compute_dnfr_common,
+    _resolve_parallel_jobs,
+)
+from tnfr.metrics.sense_index import (
+    _SI_APPROX_BYTES_PER_NODE,
+    _coerce_jobs as _coerce_si_jobs,
+    compute_Si,
+)
 import tnfr.utils as tnfr_utils
+from tnfr.utils.chunks import resolve_chunk_size
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
@@ -62,6 +73,118 @@ _TARGET_FUNCTIONS: Mapping[str, tuple[str, str]] = {
         "default_compute_delta_nfr",
     ),
 }
+
+
+def _coerce_optional_int(value: Any) -> int | None:
+    """Normalise CLI integers while honouring ``auto``/``none`` sentinels."""
+
+    if value is None:
+        return None
+    if isinstance(value, int):
+        return value
+    text = str(value).strip()
+    if not text:
+        raise ValueError("Empty value is not allowed for configuration options.")
+    lowered = text.lower()
+    if lowered in {"auto", "none", "null"}:
+        return None
+    try:
+        return int(text)
+    except ValueError as exc:
+        raise ValueError(f"Invalid integer value: {value!r}") from exc
+
+
+def _parse_cli_variants(values: Iterable[Any] | None) -> list[int | None]:
+    """Return a stable list of integer/``None`` variants for the CLI options."""
+
+    if values is None:
+        return [None]
+    parsed: list[int | None] = []
+    seen: set[int | None] = set()
+    for raw in values:
+        coerced = _coerce_optional_int(raw)
+        if coerced in seen:
+            continue
+        seen.add(coerced)
+        parsed.append(coerced)
+    return parsed or [None]
+
+
+def _format_config_value(value: int | None) -> str:
+    """Human-friendly rendering for configuration values."""
+
+    return "auto" if value is None else str(value)
+
+
+def _format_suffix_value(value: int | None) -> str:
+    """Make configuration values safe for file-name suffixes."""
+
+    if value is None:
+        return "auto"
+    if value < 0:
+        return f"m{abs(value)}"
+    return str(value)
+
+
+def _build_config_suffix(
+    label: str,
+    *,
+    si_chunk_size: int | None,
+    dnfr_chunk_size: int | None,
+    si_workers: int | None,
+    dnfr_workers: int | None,
+) -> str:
+    """Return a deterministic suffix that encodes the configuration knobs."""
+
+    return "_".join(
+        (
+            label,
+            f"si{_format_suffix_value(si_chunk_size)}",
+            f"dn{_format_suffix_value(dnfr_chunk_size)}",
+            f"siw{_format_suffix_value(si_workers)}",
+            f"dnw{_format_suffix_value(dnfr_workers)}",
+        )
+    )
+
+
+def _describe_configuration(
+    *,
+    si_chunk_size: int | None,
+    dnfr_chunk_size: int | None,
+    si_workers: int | None,
+    dnfr_workers: int | None,
+) -> str:
+    """Return a concise textual summary for console logs."""
+
+    parts = (
+        f"SI_CHUNK_SIZE={_format_config_value(si_chunk_size)}",
+        f"DNFR_CHUNK_SIZE={_format_config_value(dnfr_chunk_size)}",
+        f"SI_N_JOBS={_format_config_value(si_workers)}",
+        f"DNFR_N_JOBS={_format_config_value(dnfr_workers)}",
+    )
+    return ", ".join(parts)
+
+
+def _apply_configuration(
+    graph: nx.Graph,
+    *,
+    si_chunk_size: int | None,
+    dnfr_chunk_size: int | None,
+    si_workers: int | None,
+    dnfr_workers: int | None,
+) -> None:
+    """Seed graph-level knobs controlling batching and parallel workers."""
+
+    def _set(key: str, value: int | None) -> None:
+        if value is None:
+            graph.graph.pop(key, None)
+        else:
+            graph.graph[key] = value
+
+    _set("SI_CHUNK_SIZE", si_chunk_size)
+    _set("DNFR_CHUNK_SIZE", dnfr_chunk_size)
+    _set("SI_N_JOBS", si_workers)
+    _set("DNFR_N_JOBS", dnfr_workers)
 
 
 def _seed_graph(
@@ -144,12 +267,12 @@ def _extract_target_stats(stats: pstats.Stats) -> dict[str, dict[str, float | in
     return summary
 
 
-def _format_manual_timings(
+def _format_operator_timings(
     timings: Mapping[str, float],
     *,
     loops: int,
 ) -> dict[str, dict[str, float]]:
-    """Expose total and per-loop wall-clock timings for manual measurements."""
+    """Expose total and per-loop wall-clock timings for each operator."""
 
     if loops <= 0:
         loops = 1
@@ -166,7 +289,9 @@ def _dump_profile_outputs(
     mode: str,
     loops: int,
     timings: Mapping[str, float],
+    operator_timings: Mapping[str, Mapping[str, float]],
     metadata: Mapping[str, Any],
+    configuration: Mapping[str, Any],
     sort: str,
 ) -> None:
     """Persist profiling artefacts in ``.pstats`` and JSON formats."""
@@ -191,11 +316,20 @@ def _dump_profile_outputs(
         )
     rows.sort(key=lambda entry: entry[sort_key], reverse=True)
 
+    operator_totals = {name: float(total) for name, total in timings.items()}
+    operator_timings_dict = {
+        name: {"total": float(values["total"]), "per_loop": float(values["per_loop"])}
+        for name, values in operator_timings.items()
+    }
+
     report = {
         "mode": mode,
         "loops": loops,
+        "configuration": dict(configuration),
         "metadata": dict(metadata),
-        "manual_timings": _format_manual_timings(timings, loops=loops),
+        "operator_totals": operator_totals,
+        "operator_timings": operator_timings_dict,
+        "manual_timings": operator_timings_dict,
         "target_functions": _extract_target_stats(stats),
         "rows": rows,
     }
@@ -209,6 +343,8 @@ def _run_pipeline(
     graph: nx.Graph,
     vectorized: bool,
     loops: int,
+    dnfr_workers: int | None,
+    configuration: Mapping[str, Any],
 ) -> tuple[cProfile.Profile, dict[str, float], dict[str, Any]]:
     """Execute the Sense Index + ΔNFR pipeline under ``vectorized`` conditions."""
 
@@ -219,7 +355,39 @@ def _run_pipeline(
         "default_compute_delta_nfr": 0.0,
     }
 
-    metadata: dict[str, Any] = {"vectorized": vectorized}
+    metadata: dict[str, Any] = {
+        "vectorized": vectorized,
+        "configuration_label": configuration.get("label"),
+        "configuration_index": configuration.get("index"),
+        "si_chunk_size_requested": configuration.get("si_chunk_size"),
+        "dnfr_chunk_size_requested": configuration.get("dnfr_chunk_size"),
+        "si_workers_requested": configuration.get("si_workers"),
+        "dnfr_workers_requested": configuration.get("dnfr_workers"),
+    }
+
+    node_total = graph.number_of_nodes()
+    edge_total = graph.number_of_edges()
+
+    metadata["resolved_si_chunk_size"] = resolve_chunk_size(
+        configuration.get("si_chunk_size"),
+        node_total,
+        approx_bytes_per_item=_SI_APPROX_BYTES_PER_NODE,
+    )
+    metadata["resolved_dnfr_chunk_size"] = (
+        resolve_chunk_size(
+            configuration.get("dnfr_chunk_size"),
+            edge_total,
+            minimum=1,
+            approx_bytes_per_item=_DNFR_APPROX_BYTES_PER_EDGE,
+            clamp_to=None,
+        )
+        if edge_total
+        else 0
+    )
+    metadata["si_workers_effective"] = _coerce_si_jobs(configuration.get("si_workers"))
+    metadata["dnfr_workers_effective"] = _resolve_parallel_jobs(dnfr_workers, node_total)
+    metadata["node_count"] = node_total
+    metadata["edge_count"] = edge_total
 
     if not vectorized:
         graph.graph["vectorized_dnfr"] = False
@@ -227,6 +395,7 @@ def _run_pipeline(
         graph.graph.pop("vectorized_dnfr", None)
 
     profile = cProfile.Profile()
+    resolved_neighbor_chunk_size: int | None = None
 
     with _numpy_override(vectorized and tnfr_utils.get_numpy() is not None):
         np_module = tnfr_utils.get_numpy()
@@ -236,7 +405,7 @@ def _run_pipeline(
         # Warm caches for steady-state measurements.
         _invalidate_trig_cache(graph)
         compute_Si(graph, inplace=True)
-        default_compute_delta_nfr(graph)
+        default_compute_delta_nfr(graph, n_jobs=dnfr_workers)
 
         profile.enable()
         try:
@@ -256,8 +425,12 @@ def _run_pipeline(
                     graph,
                     data,
                     use_numpy=use_numpy,
-                    n_jobs=None,
+                    n_jobs=dnfr_workers,
                 )
+
+                if resolved_neighbor_chunk_size is None:
+                    resolved_neighbor_chunk_size = data.get("neighbor_chunk_size")
+                    metadata["dnfr_neighbor_chunk_hint"] = data.get("neighbor_chunk_hint")
 
                 start = perf_counter()
                 if neighbor_stats is not None:
@@ -272,17 +445,19 @@ def _run_pipeline(
                         count=count,
                         deg_sum=deg_sum,
                         degs=degs,
-                        n_jobs=None,
+                        n_jobs=dnfr_workers,
                     )
                 timings["_compute_dnfr_common"] += perf_counter() - start
 
                 start = perf_counter()
-                default_compute_delta_nfr(graph)
+                default_compute_delta_nfr(graph, n_jobs=dnfr_workers)
                 timings["default_compute_delta_nfr"] += perf_counter() - start
         finally:
             profile.disable()
 
     metadata.setdefault("numpy_available", False)
+    if resolved_neighbor_chunk_size is not None:
+        metadata["dnfr_neighbor_chunk_size"] = resolved_neighbor_chunk_size
     return profile, timings, metadata
 
 
@@ -294,6 +469,10 @@ def profile_full_pipeline(
     seed: int,
     output_dir: Path,
     sort: str,
+    si_chunk_sizes: Iterable[int | None] = (None,),
+    dnfr_chunk_sizes: Iterable[int | None] = (None,),
+    si_workers: Iterable[int | None] = (None,),
+    dnfr_workers: Iterable[int | None] = (None,),
 ) -> None:
     """Profile the Sense Index + ΔNFR pipeline under vectorised and fallback runs."""
 
@@ -313,51 +492,105 @@ def profile_full_pipeline(
         modes = []
     modes.append(("fallback", False))
 
-    for label, vectorized in modes:
-        graph = _seed_graph(
-            node_count=node_count,
-            edge_probability=edge_probability,
-            seed=seed,
-            si_weights=si_weights,
-            dnfr_weights=dnfr_weights,
-        )
+    si_chunk_options = tuple(si_chunk_sizes) if si_chunk_sizes is not None else (None,)
+    dnfr_chunk_options = tuple(dnfr_chunk_sizes) if dnfr_chunk_sizes is not None else (None,)
+    si_worker_options = tuple(si_workers) if si_workers is not None else (None,)
+    dnfr_worker_options = tuple(dnfr_workers) if dnfr_workers is not None else (None,)
 
-        profile, timings, metadata = _run_pipeline(
-            graph=graph,
-            vectorized=vectorized,
-            loops=loops,
-        )
+    configurations = list(
+        product(si_chunk_options, dnfr_chunk_options, si_worker_options, dnfr_worker_options)
+    )
+    if not configurations:
+        configurations = [(None, None, None, None)]
 
-        base = output_dir / f"full_pipeline_{label}"
-        _dump_profile_outputs(
-            profile,
-            base_path=base,
-            mode=label,
-            loops=loops,
-            timings=timings,
-            metadata={
-                **metadata,
-                "node_count": node_count,
-                "edge_probability": edge_probability,
-            },
-            sort=sort,
+    for config_index, (si_chunk, dnfr_chunk, si_jobs, dnfr_jobs) in enumerate(
+        configurations, start=1
+    ):
+        config_label = f"cfg{config_index:02d}"
+        config_description = _describe_configuration(
+            si_chunk_size=si_chunk,
+            dnfr_chunk_size=dnfr_chunk,
+            si_workers=si_jobs,
+            dnfr_workers=dnfr_jobs,
         )
+        print(f"\n== Configuration {config_label}: {config_description} ==")
 
-        formatted = _format_manual_timings(timings, loops=loops)
-        timing_lines = [
-            f"  {name}: total={values['total']:.6f}s per_loop={values['per_loop']:.6f}s"
-            for name, values in formatted.items()
-        ]
-        print(
-            "Stored {label} profiles at {pstats_path} and {json_path}".format(
-                label=label,
-                pstats_path=base.with_suffix(".pstats"),
-                json_path=base.with_suffix(".json"),
+        config_suffix = _build_config_suffix(
+            config_label,
+            si_chunk_size=si_chunk,
+            dnfr_chunk_size=dnfr_chunk,
+            si_workers=si_jobs,
+            dnfr_workers=dnfr_jobs,
+        )
+        configuration = {
+            "index": config_index,
+            "label": config_label,
+            "si_chunk_size": si_chunk,
+            "dnfr_chunk_size": dnfr_chunk,
+            "si_workers": si_jobs,
+            "dnfr_workers": dnfr_jobs,
+            "description": config_description,
+        }
+
+        for label, vectorized in modes:
+            graph = _seed_graph(
+                node_count=node_count,
+                edge_probability=edge_probability,
+                seed=seed,
+                si_weights=si_weights,
+                dnfr_weights=dnfr_weights,
             )
-        )
-        print("Manual wall-clock timings:")
-        for line in timing_lines:
-            print(line)
+
+            _apply_configuration(
+                graph,
+                si_chunk_size=si_chunk,
+                dnfr_chunk_size=dnfr_chunk,
+                si_workers=si_jobs,
+                dnfr_workers=dnfr_jobs,
+            )
+
+            profile, timings, metadata = _run_pipeline(
+                graph=graph,
+                vectorized=vectorized,
+                loops=loops,
+                dnfr_workers=dnfr_jobs,
+                configuration=configuration,
+            )
+
+            metadata = {
+                **metadata,
+                "edge_probability": edge_probability,
+            }
+
+            operator_timings = _format_operator_timings(timings, loops=loops)
+            base = output_dir / f"full_pipeline_{label}_{config_suffix}"
+            _dump_profile_outputs(
+                profile,
+                base_path=base,
+                mode=label,
+                loops=loops,
+                timings=timings,
+                operator_timings=operator_timings,
+                metadata=metadata,
+                configuration=configuration,
+                sort=sort,
+            )
+
+            timing_lines = [
+                f"  {name}: total={values['total']:.6f}s per_loop={values['per_loop']:.6f}s"
+                for name, values in operator_timings.items()
+            ]
+            print(
+                "Stored {label} profiles for {config_label} at {pstats_path} and {json_path}".format(
+                    label=label,
+                    config_label=config_label,
+                    pstats_path=base.with_suffix(".pstats"),
+                    json_path=base.with_suffix(".json"),
+                )
+            )
+            print("Per-operator wall-clock timings:")
+            for line in timing_lines:
+                print(line)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -400,8 +633,52 @@ def main(argv: list[str] | None = None) -> int:
         default="cumtime",
         help="Sort order applied when exporting profiling rows",
     )
+    parser.add_argument(
+        "--si-chunk-sizes",
+        nargs="+",
+        metavar="SIZE",
+        help=(
+            "One or more chunk sizes applied to G.graph['SI_CHUNK_SIZE']; "
+            "use 'auto' to rely on engine heuristics."
+        ),
+    )
+    parser.add_argument(
+        "--dnfr-chunk-sizes",
+        nargs="+",
+        metavar="SIZE",
+        help=(
+            "One or more chunk sizes applied to G.graph['DNFR_CHUNK_SIZE']; "
+            "use 'auto' to rely on engine heuristics."
+        ),
+    )
+    parser.add_argument(
+        "--si-workers",
+        nargs="+",
+        metavar="COUNT",
+        help=(
+            "Worker counts propagated to G.graph['SI_N_JOBS']; "
+            "use 'auto' to keep deterministic single-process execution."
+        ),
+    )
+    parser.add_argument(
+        "--dnfr-workers",
+        nargs="+",
+        metavar="COUNT",
+        help=(
+            "Worker counts propagated to G.graph['DNFR_N_JOBS'] and DNFR helpers; "
+            "use 'auto' to preserve the default behaviour."
+        ),
+    )
 
     args = parser.parse_args(argv)
+    try:
+        si_chunk_sizes = _parse_cli_variants(args.si_chunk_sizes)
+        dnfr_chunk_sizes = _parse_cli_variants(args.dnfr_chunk_sizes)
+        si_workers = _parse_cli_variants(args.si_workers)
+        dnfr_workers = _parse_cli_variants(args.dnfr_workers)
+    except ValueError as exc:
+        parser.error(str(exc))
+
     profile_full_pipeline(
         node_count=args.nodes,
         edge_probability=args.edge_probability,
@@ -409,6 +686,10 @@ def main(argv: list[str] | None = None) -> int:
         seed=args.seed,
         output_dir=args.output_dir,
         sort=args.sort,
+        si_chunk_sizes=si_chunk_sizes,
+        dnfr_chunk_sizes=dnfr_chunk_sizes,
+        si_workers=si_workers,
+        dnfr_workers=dnfr_workers,
     )
     return 0
 
