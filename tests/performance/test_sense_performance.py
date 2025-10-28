@@ -17,7 +17,7 @@ import pytest
 np = pytest.importorskip("numpy")
 import numpy.testing as npt
 
-from tnfr.alias import set_attr
+from tnfr.alias import get_attr, set_attr
 from tnfr.constants import get_aliases
 from tnfr.metrics.sense_index import compute_Si
 
@@ -75,6 +75,24 @@ def test_compute_Si_vectorized_outperforms_python(monkeypatch, graph_canon):
 
     loops = 6
     fast_time = _measure(lambda: compute_Si(fast_graph, inplace=False), loops)
+
+    target = next(iter(fast_graph.nodes))
+    base_vf = float(get_attr(fast_graph.nodes[target], ALIAS_VF, 0.0))
+    alt_vf = base_vf + 0.041
+    toggle = False
+
+    def dirty_iteration() -> None:
+        nonlocal toggle
+        toggle = not toggle
+        value = alt_vf if toggle else base_vf
+        set_attr(fast_graph.nodes[target], ALIAS_VF, value)
+        compute_Si(fast_graph, inplace=False)
+
+    dirty_time = _measure(dirty_iteration, loops)
+    set_attr(fast_graph.nodes[target], ALIAS_VF, base_vf)
+    compute_Si(fast_graph, inplace=False)
+
+    assert fast_time <= dirty_time * 0.95
 
     monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: None)
     _invalidate_trig_cache(slow_graph)
