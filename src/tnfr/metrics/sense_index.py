@@ -794,59 +794,52 @@ def compute_Si(
         vf_norm = np.clip(np.abs(vf_arr) / vfmax, 0.0, 1.0)
         dnfr_norm = np.clip(np.abs(dnfr_arr) / dnfrmax, 0.0, 1.0)
 
-        resolved_chunk = resolve_chunk_size(
-            chunk_pref,
-            count,
-            approx_bytes_per_item=_SI_APPROX_BYTES_PER_NODE,
-        )
-        if resolved_chunk <= 0:
-            resolved_chunk = count or 1
-
         si_values = np.empty(count, dtype=float)
         phase_dispersion = np.zeros(count, dtype=float)
         raw_si = np.empty(count, dtype=float)
-        if resolved_chunk >= count:
-            neighbor_indices = np.nonzero(has_neighbors)[0]
-            if neighbor_indices.size:
-                diff = (
-                    np.remainder(
-                        theta_arr[neighbor_indices] - mean_theta[neighbor_indices] + math.pi,
-                        math.tau,
-                    )
-                    - math.pi
-                )
-                phase_dispersion[neighbor_indices] = np.abs(diff) / math.pi
-            raw_si[:] = (
-                alpha * vf_norm
-                + beta * (1.0 - phase_dispersion)
-                + gamma * (1.0 - dnfr_norm)
+        neighbor_mask = np.asarray(has_neighbors, dtype=bool)
+        if neighbor_mask.any():
+            phase_dispersion.fill(0.0)
+            np.subtract(
+                theta_arr,
+                mean_theta,
+                out=phase_dispersion,
+                where=neighbor_mask,
             )
-            np.clip(raw_si, 0.0, 1.0, out=si_values)
-        else:
-            for start in range(0, count, resolved_chunk):
-                end = min(start + resolved_chunk, count)
-                phase_view = phase_dispersion[start:end]
-                chunk_mask = has_neighbors[start:end]
-                if np.any(chunk_mask):
-                    relative_idx = np.nonzero(chunk_mask)[0]
-                    absolute_idx = relative_idx + start
-                    diff = (
-                        np.remainder(
-                            theta_arr[absolute_idx]
-                            - mean_theta[absolute_idx]
-                            + math.pi,
-                            math.tau,
-                        )
-                        - math.pi
-                    )
-                    phase_view[relative_idx] = np.abs(diff) / math.pi
-                raw_view = raw_si[start:end]
-                raw_view[:] = (
-                    alpha * vf_norm[start:end]
-                    + beta * (1.0 - phase_view)
-                    + gamma * (1.0 - dnfr_norm[start:end])
-                )
-            np.clip(raw_si, 0.0, 1.0, out=si_values)
+            np.add(
+                phase_dispersion,
+                math.pi,
+                out=phase_dispersion,
+                where=neighbor_mask,
+            )
+            np.remainder(
+                phase_dispersion,
+                math.tau,
+                out=phase_dispersion,
+                where=neighbor_mask,
+            )
+            np.subtract(
+                phase_dispersion,
+                math.pi,
+                out=phase_dispersion,
+                where=neighbor_mask,
+            )
+        np.abs(phase_dispersion, out=phase_dispersion)
+        np.divide(
+            phase_dispersion,
+            math.pi,
+            out=phase_dispersion,
+            where=neighbor_mask,
+        )
+
+        np.multiply(vf_norm, alpha, out=raw_si)
+        np.subtract(1.0, phase_dispersion, out=phase_dispersion)
+        np.multiply(phase_dispersion, beta, out=phase_dispersion)
+        np.add(raw_si, phase_dispersion, out=raw_si)
+        np.subtract(1.0, dnfr_norm, out=si_values)
+        np.multiply(si_values, gamma, out=si_values)
+        np.add(raw_si, si_values, out=raw_si)
+        np.clip(raw_si, 0.0, 1.0, out=si_values)
 
         if inplace:
             for idx, node in enumerate(node_ids):
