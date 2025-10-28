@@ -180,6 +180,11 @@ def neighbor_phase_mean_bulk(
     theta_values: Any,
     node_count: int,
     np: Any,
+    neighbor_cos_sum: Any | None = None,
+    neighbor_sin_sum: Any | None = None,
+    neighbor_counts: Any | None = None,
+    mean_cos: Any | None = None,
+    mean_sin: Any | None = None,
 ) -> tuple[Any, Any]:
     """Vectorised neighbour phase means for all nodes in a graph.
 
@@ -199,6 +204,14 @@ def neighbor_phase_mean_bulk(
         Total number of nodes represented in ``theta_values``.
     np:
         Numpy module used to materialise the vectorised operations.
+
+    Optional buffers
+    -----------------
+    neighbor_cos_sum, neighbor_sin_sum, neighbor_counts, mean_cos, mean_sin:
+        Preallocated arrays sized ``node_count`` reused to accumulate the
+        neighbour cosine/sine sums, neighbour sample counts, and the averaged
+        cosine/sine vectors. When omitted, the helper materialises fresh
+        buffers that match the previous semantics.
 
     Returns
     -------
@@ -231,26 +244,67 @@ def neighbor_phase_mean_bulk(
         raise ValueError("sin_values must be a 1-D array matching node_count")
 
     edge_count = edge_dst_arr.size
+    def _coerce_buffer(buffer: Any | None, *, name: str) -> tuple[Any, bool]:
+        if buffer is None:
+            return None, False
+        arr = np.array(buffer, dtype=float, copy=False)
+        if arr.ndim != 1 or arr.size != node_count:
+            raise ValueError(f"{name} must be a 1-D array sized node_count")
+        arr.fill(0.0)
+        return arr, True
+
+    neighbor_cos_sum, has_cos_buffer = _coerce_buffer(
+        neighbor_cos_sum, name="neighbor_cos_sum"
+    )
+    neighbor_sin_sum, has_sin_buffer = _coerce_buffer(
+        neighbor_sin_sum, name="neighbor_sin_sum"
+    )
+    neighbor_counts, has_count_buffer = _coerce_buffer(
+        neighbor_counts, name="neighbor_counts"
+    )
+
     if edge_count:
-        neighbor_cos_sum = np.bincount(
-            edge_dst_arr,
-            weights=cos_arr[edge_src_arr],
-            minlength=node_count,
-        )
-        neighbor_sin_sum = np.bincount(
-            edge_dst_arr,
-            weights=sin_arr[edge_src_arr],
-            minlength=node_count,
-        )
-        neighbor_counts = np.bincount(edge_dst_arr, minlength=node_count).astype(float)
+        if not has_cos_buffer:
+            neighbor_cos_sum = np.bincount(
+                edge_dst_arr,
+                weights=cos_arr[edge_src_arr],
+                minlength=node_count,
+            )
+        else:
+            np.add.at(neighbor_cos_sum, edge_dst_arr, cos_arr[edge_src_arr])
+
+        if not has_sin_buffer:
+            neighbor_sin_sum = np.bincount(
+                edge_dst_arr,
+                weights=sin_arr[edge_src_arr],
+                minlength=node_count,
+            )
+        else:
+            np.add.at(neighbor_sin_sum, edge_dst_arr, sin_arr[edge_src_arr])
+
+        if not has_count_buffer:
+            neighbor_counts = np.bincount(
+                edge_dst_arr, minlength=node_count
+            ).astype(float)
+        else:
+            np.add.at(neighbor_counts, edge_dst_arr, 1.0)
     else:
-        neighbor_cos_sum = np.zeros(node_count, dtype=float)
-        neighbor_sin_sum = np.zeros(node_count, dtype=float)
-        neighbor_counts = np.zeros(node_count, dtype=float)
+        if neighbor_cos_sum is None:
+            neighbor_cos_sum = np.zeros(node_count, dtype=float)
+        if neighbor_sin_sum is None:
+            neighbor_sin_sum = np.zeros(node_count, dtype=float)
+        if neighbor_counts is None:
+            neighbor_counts = np.zeros(node_count, dtype=float)
 
     has_neighbors = neighbor_counts > 0.0
-    mean_cos = np.zeros(node_count, dtype=float)
-    mean_sin = np.zeros(node_count, dtype=float)
+
+    mean_cos, _ = _coerce_buffer(mean_cos, name="mean_cos")
+    mean_sin, _ = _coerce_buffer(mean_sin, name="mean_sin")
+
+    if mean_cos is None:
+        mean_cos = np.zeros(node_count, dtype=float)
+    if mean_sin is None:
+        mean_sin = np.zeros(node_count, dtype=float)
 
     if edge_count:
         with np.errstate(divide="ignore", invalid="ignore"):
