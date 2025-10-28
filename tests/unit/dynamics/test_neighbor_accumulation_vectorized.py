@@ -191,6 +191,62 @@ def test_neighbor_chunking_matches_unchunked():
         )
 
 
+def test_vectorized_neighbor_counts_use_cached_degrees():
+    np_module = pytest.importorskip("numpy")
+
+    graph = _dense_weighted_graph(np_module, nodes=24, topo_weight=0.0)
+    data = _prepare_dnfr_data(graph)
+    data["prefer_sparse"] = True
+    data["A"] = None
+
+    deg_array = data.get("deg_array")
+    assert deg_array is not None
+
+    result = _build_neighbor_sums_common(graph, data, use_numpy=True)
+
+    accum = data.get("neighbor_accum_np")
+    assert accum is not None
+    # Without a count accumulator row the layout only keeps the x/y/EPI/νf sums.
+    assert accum.shape[0] == 4
+
+    count = result[4]
+    assert isinstance(count, np_module.ndarray)
+    np_module.testing.assert_allclose(count, deg_array, rtol=1e-12, atol=1e-12)
+
+    edge_workspace = data.get("neighbor_edge_values_np")
+    if edge_workspace is not None:
+        assert getattr(edge_workspace, "shape", None)[1] == accum.shape[0]
+
+
+def test_vectorized_neighbor_counts_fallback_without_degrees():
+    np_module = pytest.importorskip("numpy")
+
+    graph = _dense_weighted_graph(np_module, nodes=20, topo_weight=0.0)
+    data = _prepare_dnfr_data(graph)
+    data["prefer_sparse"] = True
+    data["A"] = None
+
+    cache = data.get("cache")
+    data.pop("deg_array", None)
+    if cache is not None:
+        cache.deg_array = None
+
+    result = _build_neighbor_sums_common(graph, data, use_numpy=True)
+
+    accum = data.get("neighbor_accum_np")
+    assert accum is not None
+    # When cached degrees are missing the broadcast accumulator reinstates
+    # the count row.
+    assert accum.shape[0] == 5
+
+    count = result[4]
+    assert isinstance(count, np_module.ndarray)
+    expected = np_module.asarray(
+        [graph.degree[node] for node in data["nodes"]], dtype=float
+    )
+    np_module.testing.assert_allclose(count, expected, rtol=1e-12, atol=1e-12)
+
+
 def test_vectorized_neighbor_sums_outperform_loop(monkeypatch):
     np_module = pytest.importorskip("numpy")
 
