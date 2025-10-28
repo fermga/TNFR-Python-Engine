@@ -69,6 +69,103 @@ _VALID_SENSITIVITY_KEYS = frozenset(
 __all__ = ("get_Si_weights", "compute_Si_node", "compute_Si")
 
 
+class _SiStructuralCache:
+    """Cache aligned ``νf`` and ``ΔNFR`` arrays for vectorised Si."""
+
+    __slots__ = ("node_ids", "vf_values", "dnfr_values", "vf_snapshot", "dnfr_snapshot")
+
+    def __init__(self, node_ids: tuple[Any, ...]):
+        self.node_ids = node_ids
+        self.vf_values: Any | None = None
+        self.dnfr_values: Any | None = None
+        self.vf_snapshot: list[float] = []
+        self.dnfr_snapshot: list[float] = []
+
+    def rebuild(
+        self,
+        node_ids: Iterable[Any],
+        data_by_node: Mapping[Any, Mapping[str, Any]],
+        *,
+        np: Any,
+    ) -> tuple[Any, Any]:
+        node_tuple = tuple(node_ids)
+        count = len(node_tuple)
+        if count == 0:
+            self.node_ids = node_tuple
+            self.vf_values = np.zeros(0, dtype=float)
+            self.dnfr_values = np.zeros(0, dtype=float)
+            self.vf_snapshot = []
+            self.dnfr_snapshot = []
+            return self.vf_values, self.dnfr_values
+
+        vf_arr = np.fromiter(
+            (float(get_attr(data_by_node[n], ALIAS_VF, 0.0)) for n in node_tuple),
+            dtype=float,
+            count=count,
+        )
+        dnfr_arr = np.fromiter(
+            (float(get_attr(data_by_node[n], ALIAS_DNFR, 0.0)) for n in node_tuple),
+            dtype=float,
+            count=count,
+        )
+
+        self.node_ids = node_tuple
+        self.vf_values = vf_arr
+        self.dnfr_values = dnfr_arr
+        self.vf_snapshot = [float(value) for value in vf_arr]
+        self.dnfr_snapshot = [float(value) for value in dnfr_arr]
+        return self.vf_values, self.dnfr_values
+
+    def ensure_current(
+        self,
+        node_ids: Iterable[Any],
+        data_by_node: Mapping[Any, Mapping[str, Any]],
+        *,
+        np: Any,
+    ) -> tuple[Any, Any]:
+        node_tuple = tuple(node_ids)
+        if node_tuple != self.node_ids:
+            return self.rebuild(node_tuple, data_by_node, np=np)
+
+        for idx, node in enumerate(node_tuple):
+            nd = data_by_node[node]
+            vf = float(get_attr(nd, ALIAS_VF, 0.0))
+            if vf != self.vf_snapshot[idx]:
+                return self.rebuild(node_tuple, data_by_node, np=np)
+            dnfr = float(get_attr(nd, ALIAS_DNFR, 0.0))
+            if dnfr != self.dnfr_snapshot[idx]:
+                return self.rebuild(node_tuple, data_by_node, np=np)
+
+        return self.vf_values, self.dnfr_values
+
+
+def _build_structural_cache(
+    node_ids: Iterable[Any],
+    data_by_node: Mapping[Any, Mapping[str, Any]],
+    *,
+    np: Any,
+) -> _SiStructuralCache:
+    cache = _SiStructuralCache(tuple(node_ids))
+    cache.rebuild(node_ids, data_by_node, np=np)
+    return cache
+
+
+def _ensure_structural_arrays(
+    G: GraphLike,
+    node_ids: Iterable[Any],
+    data_by_node: Mapping[Any, Mapping[str, Any]],
+    *,
+    np: Any,
+) -> tuple[Any, Any]:
+    node_key = tuple(node_ids)
+
+    def builder() -> _SiStructuralCache:
+        return _build_structural_cache(node_key, data_by_node, np=np)
+
+    cache = edge_version_cache(G, ("_si_structural", node_key), builder)
+    return cache.ensure_current(node_key, data_by_node, np=np)
+
+
 def _normalise_si_sensitivity_mapping(
     mapping: Mapping[str, float], *, warn: bool
 ) -> dict[str, float]:
@@ -644,15 +741,11 @@ def compute_Si(
             node_count=count,
             np=np,
         )
-        vf_arr = np.fromiter(
-            (get_attr(data_by_node[n], ALIAS_VF, 0.0) for n in node_ids),
-            dtype=float,
-            count=count,
-        )
-        dnfr_arr = np.fromiter(
-            (get_attr(data_by_node[n], ALIAS_DNFR, 0.0) for n in node_ids),
-            dtype=float,
-            count=count,
+        vf_arr, dnfr_arr = _ensure_structural_arrays(
+            G,
+            node_ids,
+            data_by_node,
+            np=np,
         )
         vf_norm = np.clip(np.abs(vf_arr) / vfmax, 0.0, 1.0)
         dnfr_norm = np.clip(np.abs(dnfr_arr) / dnfrmax, 0.0, 1.0)

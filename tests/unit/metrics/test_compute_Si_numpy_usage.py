@@ -5,6 +5,7 @@ import pytest
 
 from tnfr.alias import set_attr
 from tnfr.constants import get_aliases
+import tnfr.metrics.sense_index as sense_index_mod
 from tnfr.metrics.sense_index import compute_Si
 from tnfr.metrics.trig_cache import get_trig_cache
 from tnfr.utils import increment_edge_version
@@ -209,15 +210,14 @@ def test_compute_Si_edge_indices_cache_invalidation(monkeypatch, graph_canon):
 
     monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
 
-    builder_calls = 0
+    from collections import Counter
+
+    builder_counts: Counter[Any] = Counter()
     original_edge_cache = compute_Si.__globals__["edge_version_cache"]
 
     def tracking_edge_cache(G, key, builder, **kwargs):
-        nonlocal builder_calls
-
         def tracked_builder():
-            nonlocal builder_calls
-            builder_calls += 1
+            builder_counts[key] += 1
             return builder()
 
         return original_edge_cache(G, key, tracked_builder, **kwargs)
@@ -233,11 +233,14 @@ def test_compute_Si_edge_indices_cache_invalidation(monkeypatch, graph_canon):
     trig_cache = get_trig_cache(G, np=np)
     assert trig_cache.edge_src is not None
     assert trig_cache.edge_dst is not None
-    assert builder_calls == 1
+    edge_keys = [
+        key for key in builder_counts if isinstance(key, tuple) and key and key[0] == "_si_edges"
+    ]
+    assert edge_keys and sum(builder_counts[key] for key in edge_keys) == 1
 
     compute_Si(G, inplace=False)
     trig_again = get_trig_cache(G, np=np)
-    assert builder_calls == 1
+    assert sum(builder_counts[key] for key in edge_keys) == 1
     assert trig_again.edge_src is trig_cache.edge_src
     assert trig_again.edge_dst is trig_cache.edge_dst
 
@@ -246,7 +249,7 @@ def test_compute_Si_edge_indices_cache_invalidation(monkeypatch, graph_canon):
 
     vector_after = compute_Si(G, inplace=False)
     trig_after = get_trig_cache(G, np=np)
-    assert builder_calls == 2
+    assert sum(builder_counts[key] for key in edge_keys) == 2
     assert trig_after.edge_src is not None
     assert trig_after.edge_dst is not None
     assert (
@@ -260,3 +263,68 @@ def test_compute_Si_edge_indices_cache_invalidation(monkeypatch, graph_canon):
     assert set(vector_after) == set(python_after)
     for node in vector_after:
         assert python_after[node] == pytest.approx(vector_after[node])
+
+
+def test_compute_Si_reuses_structural_arrays(monkeypatch, graph_canon):
+    np = pytest.importorskip("numpy")
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
+
+    rebuilds = 0
+
+    original_rebuild = sense_index_mod._SiStructuralCache.rebuild
+
+    def tracking_rebuild(self, node_ids, data_by_node, *, np):
+        nonlocal rebuilds
+        rebuilds += 1
+        return original_rebuild(self, node_ids, data_by_node, np=np)
+
+    monkeypatch.setattr(
+        sense_index_mod._SiStructuralCache, "rebuild", tracking_rebuild
+    )
+
+    G = graph_canon()
+    _configure_graph(G)
+
+    compute_Si(G, inplace=False)
+    assert rebuilds == 1
+
+    compute_Si(G, inplace=False)
+    assert rebuilds == 1
+
+
+def test_compute_Si_structural_cache_invalidated_on_attribute_change(
+    monkeypatch, graph_canon
+):
+    np = pytest.importorskip("numpy")
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
+
+    rebuilds = 0
+
+    original_rebuild = sense_index_mod._SiStructuralCache.rebuild
+
+    def tracking_rebuild(self, node_ids, data_by_node, *, np):
+        nonlocal rebuilds
+        rebuilds += 1
+        return original_rebuild(self, node_ids, data_by_node, np=np)
+
+    monkeypatch.setattr(
+        sense_index_mod._SiStructuralCache, "rebuild", tracking_rebuild
+    )
+
+    G = graph_canon()
+    _configure_graph(G)
+
+    compute_Si(G, inplace=False)
+    assert rebuilds == 1
+
+    set_attr(G.nodes[0], ALIAS_VF, 0.123)
+
+    compute_Si(G, inplace=False)
+    assert rebuilds == 2
+
+    set_attr(G.nodes[1], ALIAS_DNFR, 0.789)
+
+    compute_Si(G, inplace=False)
+    assert rebuilds == 3
