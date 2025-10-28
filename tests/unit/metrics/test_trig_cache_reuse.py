@@ -100,3 +100,84 @@ def test_neighbor_phase_mean_bulk_isolated_nodes():
     assert mean_theta[0] == pytest.approx(math.pi / 2)
     assert mean_theta[1] == pytest.approx(0.0)
     assert mean_theta[2] == pytest.approx(theta[2])
+
+
+def test_neighbor_phase_mean_bulk_reuses_buffers():
+    np = pytest.importorskip("numpy")
+
+    theta = np.array([0.0, math.pi / 3, -math.pi / 4, math.pi], dtype=float)
+    cos_values = np.cos(theta)
+    sin_values = np.sin(theta)
+
+    edge_src = np.array([0, 1, 2], dtype=np.intp)
+    edge_dst = np.array([1, 2, 1], dtype=np.intp)
+
+    cos_sum = np.empty(theta.size, dtype=float)
+    sin_sum = np.empty(theta.size, dtype=float)
+    counts = np.empty(theta.size, dtype=float)
+    mean_cos = np.empty(theta.size, dtype=float)
+    mean_sin = np.empty(theta.size, dtype=float)
+
+    cos_sum.fill(np.nan)
+    sin_sum.fill(np.nan)
+    counts.fill(np.nan)
+    mean_cos.fill(np.nan)
+    mean_sin.fill(np.nan)
+
+    mean_theta, mask = neighbor_phase_mean_bulk(
+        edge_src,
+        edge_dst,
+        cos_values=cos_values,
+        sin_values=sin_values,
+        theta_values=theta,
+        node_count=theta.size,
+        np=np,
+        neighbor_cos_sum=cos_sum,
+        neighbor_sin_sum=sin_sum,
+        neighbor_counts=counts,
+        mean_cos=mean_cos,
+        mean_sin=mean_sin,
+    )
+
+    assert mask.tolist() == [False, True, True, False]
+    assert cos_sum is not None and sin_sum is not None
+    assert counts is not None and mean_cos is not None and mean_sin is not None
+    assert np.all(np.isfinite(cos_sum))
+    assert np.all(np.isfinite(sin_sum))
+    assert np.all(np.isfinite(counts))
+    assert np.all(np.isfinite(mean_cos))
+    assert np.all(np.isfinite(mean_sin))
+    assert counts[0] == 0.0
+    assert counts[3] == 0.0
+    assert mean_cos[0] == 0.0
+    assert mean_sin[3] == 0.0
+
+    cos_sum.fill(np.nan)
+    sin_sum.fill(np.nan)
+    counts.fill(np.nan)
+    mean_cos.fill(np.nan)
+    mean_sin.fill(np.nan)
+
+    empty_theta, empty_mask = neighbor_phase_mean_bulk(
+        np.array([], dtype=np.intp),
+        np.array([], dtype=np.intp),
+        cos_values=cos_values,
+        sin_values=sin_values,
+        theta_values=theta,
+        node_count=theta.size,
+        np=np,
+        neighbor_cos_sum=cos_sum,
+        neighbor_sin_sum=sin_sum,
+        neighbor_counts=counts,
+        mean_cos=mean_cos,
+        mean_sin=mean_sin,
+    )
+
+    assert empty_theta.shape == theta.shape
+    assert np.allclose(empty_theta, theta)
+    assert not empty_mask.any()
+    assert np.all(cos_sum == 0.0)
+    assert np.all(sin_sum == 0.0)
+    assert np.all(counts == 0.0)
+    assert np.all(mean_cos == 0.0)
+    assert np.all(mean_sin == 0.0)

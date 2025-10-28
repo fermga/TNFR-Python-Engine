@@ -65,6 +65,62 @@ def _configure_graph(graph):
         set_attr(graph.nodes[node], ALIAS_DNFR, dnfr_values[node])
 
 
+def test_compute_Si_vectorized_buffer_reuse_matches_python(monkeypatch, graph_canon):
+    np = pytest.importorskip("numpy")
+
+    G_python = graph_canon()
+    _configure_graph(G_python)
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: None)
+    baseline = compute_Si(G_python, inplace=False)
+
+    G_vector = graph_canon()
+    _configure_graph(G_vector)
+
+    captured_buffers: list[dict[str, Any]] = []
+    original_bulk = sense_index_mod.neighbor_phase_mean_bulk
+
+    def tracking_bulk(*args, **kwargs):
+        captured_buffers.append(
+            {
+                name: kwargs.get(name)
+                for name in (
+                    "neighbor_cos_sum",
+                    "neighbor_sin_sum",
+                    "neighbor_counts",
+                    "mean_cos",
+                    "mean_sin",
+                )
+            }
+        )
+        return original_bulk(*args, **kwargs)
+
+    monkeypatch.setattr(
+        "tnfr.metrics.sense_index.neighbor_phase_mean_bulk",
+        tracking_bulk,
+    )
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
+
+    vector_first = compute_Si(G_vector, inplace=False)
+    vector_second = compute_Si(G_vector, inplace=False)
+
+    assert captured_buffers
+    first_buffers = captured_buffers[0]
+    last_buffers = captured_buffers[-1]
+    for name in first_buffers:
+        buf_first = first_buffers[name]
+        buf_last = last_buffers[name]
+        assert isinstance(buf_first, np.ndarray)
+        assert buf_first.shape == (G_vector.number_of_nodes(),)
+        assert np.issubdtype(buf_first.dtype, np.floating)
+        assert buf_first is buf_last
+
+    assert set(vector_first) == set(baseline)
+    for node in baseline:
+        assert vector_first[node] == pytest.approx(baseline[node])
+        assert vector_second[node] == pytest.approx(baseline[node])
+
+
 def test_compute_Si_vectorized_matches_python(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
 

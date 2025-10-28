@@ -188,6 +188,30 @@ def _ensure_si_buffers(
     )
 
 
+def _ensure_neighbor_bulk_buffers(
+    G: GraphLike,
+    *,
+    count: int,
+    np: Any,
+) -> tuple[Any, Any, Any, Any, Any]:
+    """Return reusable buffers for bulk neighbour phase aggregation."""
+
+    def builder() -> tuple[Any, Any, Any, Any, Any]:
+        return (
+            np.empty(count, dtype=float),
+            np.empty(count, dtype=float),
+            np.empty(count, dtype=float),
+            np.empty(count, dtype=float),
+            np.empty(count, dtype=float),
+        )
+
+    return edge_version_cache(
+        G,
+        ("_si_neighbor_buffers", count),
+        builder,
+    )
+
+
 def _normalise_si_sensitivity_mapping(
     mapping: Mapping[str, float], *, warn: bool
 ) -> dict[str, float]:
@@ -800,6 +824,18 @@ def compute_Si(
                 trig.edge_src = edge_src
                 trig.edge_dst = edge_dst
 
+        (
+            neighbor_cos_sum,
+            neighbor_sin_sum,
+            neighbor_counts,
+            mean_cos_buf,
+            mean_sin_buf,
+        ) = _ensure_neighbor_bulk_buffers(
+            G,
+            count=count,
+            np=np,
+        )
+
         mean_theta, has_neighbors = neighbor_phase_mean_bulk(
             edge_src,
             edge_dst,
@@ -808,6 +844,11 @@ def compute_Si(
             theta_values=theta_arr,
             node_count=count,
             np=np,
+            neighbor_cos_sum=neighbor_cos_sum,
+            neighbor_sin_sum=neighbor_sin_sum,
+            neighbor_counts=neighbor_counts,
+            mean_cos=mean_cos_buf,
+            mean_sin=mean_sin_buf,
         )
         vf_arr, dnfr_arr = _ensure_structural_arrays(
             G,
