@@ -1,3 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DOCS_DIR="$REPO_ROOT/docs"
+NOTEBOOK_DIR="$DOCS_DIR/notebooks/mathematical-foundations"
+
+mkdir -p "$NOTEBOOK_DIR"
+
+cat > "$DOCS_DIR/foundations.md" <<'DOC'
 # Foundations — Quick Start (Mathematics)
 
 This guide introduces the mathematical APIs that keep TNFR simulations canonical. It focuses on
@@ -108,3 +118,67 @@ Pair the call with active logging flags to capture structural frequency, ΔNFR, 
 
 Treat these costs as guidance for smoke tests and notebook demonstrations; production workflows
 should profile real ΔNFR sequences and telemetry loads.
+DOC
+
+NOTEBOOK_DIR="$NOTEBOOK_DIR" python <<'PY'
+from pathlib import Path
+import json
+import os
+import uuid
+
+notebooks = [
+    ("01-structural-frequency.ipynb", "Structural frequency primer", "Set up ΔNFR-friendly spectral scaffolds."),
+    ("02-phase-synchrony.ipynb", "Phase synchrony lattices", "Calibrate phase locks and coherence windows."),
+    ("03-delta-nfr-gradients.ipynb", "ΔNFR gradient fields", "Track ΔNFR modulation under canonical hooks."),
+    ("04-coherence-metrics.ipynb", "Coherence metrics walkthrough", "Compute C(t) and auxiliary metrics."),
+    ("05-sense-index.ipynb", "Sense index calibration", "Stabilise Si measurements across nodes."),
+    ("06-recursivity.ipynb", "Recursivity cascades", "Map nested EPIs without breaking fractality."),
+]
+
+output_dir = Path(os.environ["NOTEBOOK_DIR"])
+output_dir.mkdir(parents=True, exist_ok=True)
+
+kernelspec = {
+    "display_name": "Python 3",
+    "language": "python",
+    "name": "python3",
+}
+
+language_info = {
+    "name": "python",
+    "version": "3.11",
+    "mimetype": "text/x-python",
+    "codemirror_mode": {"name": "ipython", "version": 3},
+    "pygments_lexer": "ipython3",
+}
+
+for filename, title, summary in notebooks:
+    path = output_dir / filename
+    notebook = {
+        "cells": [
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "id": uuid.uuid4().hex,
+                "source": [f"# {title}\n", "\n", f"{summary}\n"],
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "id": uuid.uuid4().hex,
+                "outputs": [],
+                "source": ["# TODO: implement walkthrough cells\n"],
+            },
+        ],
+        "metadata": {
+            "kernelspec": kernelspec,
+            "language_info": language_info,
+        },
+        "nbformat": 4,
+        "nbformat_minor": 5,
+    }
+    with path.open("w", encoding="utf-8") as handle:
+        json.dump(notebook, handle, indent=2)
+        handle.write("\n")
+PY
