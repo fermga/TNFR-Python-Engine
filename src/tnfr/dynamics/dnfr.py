@@ -1751,22 +1751,21 @@ def _accumulate_neighbors_broadcasted(
                 ) -> None:
                     if target_row is None:
                         return
+                    row_view = accum[target_row]
                     if unit_weight:
-                        totals = np.bincount(src_slice, minlength=n)
-                    else:
-                        if values is None:
-                            return
-                        totals = np.bincount(
+                        np.add.at(
+                            row_view,
                             src_slice,
-                            weights=values,
-                            minlength=n,
+                            row_view.dtype.type(1.0),
                         )
-                    if totals.size:
-                        totals = totals.astype(accum.dtype, copy=False)
-                        limit = accum.shape[1]
-                        if totals.size > limit:
-                            totals = totals[:limit]
-                        accum[target_row, : totals.size] += totals
+                        return
+                    if values is None:
+                        return
+                    np.add.at(
+                        row_view,
+                        src_slice,
+                        values.astype(row_view.dtype, copy=False),
+                    )
 
                 _accumulate_chunk_row(
                     cos_row, chunk_matrix[cos_row, :slice_len]
