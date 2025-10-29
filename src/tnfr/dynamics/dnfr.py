@@ -21,7 +21,6 @@ from typing import TYPE_CHECKING, Any, cast
 from time import perf_counter
 
 from ..alias import get_attr, get_theta_attr, set_dnfr
-from ..cache import CacheManager
 from ..constants import DEFAULTS, get_aliases, get_param
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import neighbor_phase_mean_list
@@ -37,6 +36,7 @@ from ..types import (
 from ..utils import (
     DNFR_PREP_STATE_KEY,
     DnfrPrepState,
+    CacheManager,
     _graph_cache_manager,
     angle_diff,
     angle_diff_array,
