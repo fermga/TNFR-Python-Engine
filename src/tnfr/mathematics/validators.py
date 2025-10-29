@@ -69,8 +69,9 @@ class NFRValidator:
         normalized = bool(self.hilbert_space.is_normalized(vector, atol=self.atol))
         normalised_vector = self._normalise(vector)
 
-        expectation = self.coherence_operator.expectation(normalised_vector, normalise=False)
-        coherence_value = float(expectation.real)
+        coherence_value = self.coherence_operator.expectation(
+            normalised_vector, normalise=False, atol=self.atol
+        )
         coherence_ok = bool(coherence_value + self.atol >= self.coherence_threshold)
 
         frequency_summary: dict[str, Any] | None = None
@@ -86,7 +87,9 @@ class NFRValidator:
             min_frequency = float(np.min(spectrum)) if spectrum.size else float("inf")
 
             frequency_value = float(
-                self.frequency_operator.project_frequency(normalised_vector, normalise=False)
+                self.frequency_operator.project_frequency(
+                    normalised_vector, normalise=False, atol=self.atol
+                )
             )
             projection_non_negative = bool(frequency_value + self.atol >= 0.0)
 

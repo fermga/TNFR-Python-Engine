@@ -52,7 +52,8 @@ def test_coherence_operator_expectation(structural_rng: np.random.Generator) -> 
     state = structural_rng.normal(size=2) + 1j * structural_rng.normal(size=2)
     expectation = operator.expectation(state)
     manual = np.vdot(state / np.linalg.norm(state), matrix @ (state / np.linalg.norm(state)))
-    assert expectation == pytest.approx(manual)
+    assert isinstance(expectation, float)
+    assert expectation == pytest.approx(float(manual.real))
 
     with pytest.raises(ValueError):
         operator.expectation([1.0, 0.0, 0.0])
@@ -74,7 +75,7 @@ def test_frequency_operator_properties(structural_rng: np.random.Generator) -> N
     state = structural_rng.normal(size=3) + 1j * structural_rng.normal(size=3)
     projected = operator.project_frequency(state)
     assert isinstance(projected, float)
-    assert projected == pytest.approx(operator.expectation(state).real)
+    assert projected == pytest.approx(operator.expectation(state))
 
 
 def test_frequency_operator_negative_spectrum_detected() -> None:
