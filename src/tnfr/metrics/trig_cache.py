@@ -6,7 +6,9 @@ focused on pure mathematical utilities (phase means, compensated sums, etc.).
 
 from __future__ import annotations
 
+import hashlib
 import math
+import struct
 from dataclasses import dataclass
 from typing import Any, Iterable, Mapping
 
@@ -24,6 +26,7 @@ class TrigCache:
     cos: dict[Any, float]
     sin: dict[Any, float]
     theta: dict[Any, float]
+    theta_checksums: dict[Any, bytes]
     order: tuple[Any, ...]
     cos_values: Any
     sin_values: Any
@@ -55,6 +58,7 @@ def _compute_trig_python(
     cos_th: dict[Any, float] = {}
     sin_th: dict[Any, float] = {}
     thetas: dict[Any, float] = {}
+    theta_checksums: dict[Any, bytes] = {}
     order_list: list[Any] = []
 
     for n, th in pairs:
@@ -62,6 +66,7 @@ def _compute_trig_python(
         thetas[n] = th
         cos_th[n] = math.cos(th)
         sin_th[n] = math.sin(th)
+        theta_checksums[n] = _theta_checksum(th)
 
     order = tuple(order_list)
     cos_values = tuple(cos_th[n] for n in order)
@@ -73,6 +78,7 @@ def _compute_trig_python(
         cos=cos_th,
         sin=sin_th,
         theta=thetas,
+        theta_checksums=theta_checksums,
         order=order,
         cos_values=cos_values,
         sin_values=sin_values,
@@ -100,6 +106,7 @@ def compute_theta_trig(
             cos={},
             sin={},
             theta={},
+            theta_checksums={},
             order=(),
             cos_values=(),
             sin_values=(),
@@ -118,11 +125,13 @@ def compute_theta_trig(
     cos_th = dict(zip(node_list, map(float, cos_arr)))
     sin_th = dict(zip(node_list, map(float, sin_arr)))
     thetas = dict(zip(node_list, map(float, theta_arr)))
+    theta_checksums = {node: _theta_checksum(float(theta)) for node, theta in pairs}
     index = {n: i for i, n in enumerate(node_list)}
     return TrigCache(
         cos=cos_th,
         sin=sin_th,
         theta=thetas,
+        theta_checksums=theta_checksums,
         order=node_list,
         cos_values=cos_arr,
         sin_values=sin_arr,
@@ -149,11 +158,45 @@ def get_trig_cache(
 
     if np is None:
         np = get_numpy()
-    version = G.graph.setdefault("_trig_version", 0)
+    graph = G.graph
+    version = graph.setdefault("_trig_version", 0)
     key = ("_trig", version)
-    return edge_version_cache(
-        G,
-        key,
-        lambda: _build_trig_cache(G, np=np),
-        max_entries=cache_size,
-    )
+
+    def builder() -> TrigCache:
+        return _build_trig_cache(G, np=np)
+
+    trig = edge_version_cache(G, key, builder, max_entries=cache_size)
+    current_checksums = _graph_theta_checksums(G)
+    trig_checksums = getattr(trig, "theta_checksums", None)
+    if trig_checksums is None:
+        trig_checksums = {}
+
+    if trig_checksums != current_checksums:
+        version = version + 1
+        graph["_trig_version"] = version
+        key = ("_trig", version)
+        trig = edge_version_cache(G, key, builder, max_entries=cache_size)
+        trig_checksums = getattr(trig, "theta_checksums", None)
+        if trig_checksums is None:
+            trig_checksums = {}
+        if trig_checksums != current_checksums:
+            current_checksums = _graph_theta_checksums(G)
+            if trig_checksums != current_checksums:
+                return trig
+    return trig
+
+
+def _theta_checksum(theta: float) -> bytes:
+    """Return a deterministic checksum for ``theta``."""
+
+    packed = struct.pack("!d", float(theta))
+    return hashlib.blake2b(packed, digest_size=8).digest()
+
+
+def _graph_theta_checksums(G: GraphLike) -> dict[Any, bytes]:
+    """Return checksum snapshot of the graph's current ``θ`` values."""
+
+    checksums: dict[Any, bytes] = {}
+    for node, theta in _iter_theta_pairs(G.nodes(data=True)):
+        checksums[node] = _theta_checksum(theta)
+    return checksums
