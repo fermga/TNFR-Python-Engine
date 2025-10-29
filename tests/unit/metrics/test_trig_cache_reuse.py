@@ -75,6 +75,112 @@ def test_trig_cache_reuse_between_modules(monkeypatch, graph_canon):
         assert G.graph[key] is sentinel
 
 
+def test_trig_cache_rebuilds_after_direct_theta_mutation(monkeypatch, graph_canon):
+    cos_calls = 0
+    sin_calls = 0
+    orig_cos = math.cos
+    orig_sin = math.sin
+
+    def cos_wrapper(x):
+        nonlocal cos_calls
+        cos_calls += 1
+        return orig_cos(x)
+
+    def sin_wrapper(x):
+        nonlocal sin_calls
+        sin_calls += 1
+        return orig_sin(x)
+
+    monkeypatch.setattr(math, "cos", cos_wrapper)
+    monkeypatch.setattr(math, "sin", sin_wrapper)
+
+    original_cached_import = utils_init.cached_import
+
+    def fake_cached_import(module, attr=None, **kwargs):
+        if module == "numpy":
+            return None
+        return original_cached_import(module, attr=attr, **kwargs)
+
+    monkeypatch.setattr(utils_init, "cached_import", fake_cached_import)
+
+    G = graph_canon()
+    G.add_edge(1, 2)
+    set_attr(G.nodes[1], ALIAS_THETA, 0.0)
+    set_attr(G.nodes[2], ALIAS_THETA, math.pi / 2)
+    set_attr(G.nodes[1], ALIAS_VF, 0.0)
+    set_attr(G.nodes[2], ALIAS_VF, 0.0)
+    set_attr(G.nodes[1], ALIAS_DNFR, 0.0)
+    set_attr(G.nodes[2], ALIAS_DNFR, 0.0)
+
+    trig1 = get_trig_cache(G)
+    base_version = G.graph.get("_trig_version", 0)
+    assert trig1.theta[2] == pytest.approx(math.pi / 2)
+    assert cos_calls == 2
+    assert sin_calls == 2
+
+    assert neighbor_phase_mean(G, 1) == pytest.approx(math.pi / 2)
+    assert cos_calls == 2
+    assert sin_calls == 2
+
+    G.nodes[2][ALIAS_THETA[0]] = math.pi
+
+    updated_mean = neighbor_phase_mean(G, 1)
+    assert updated_mean == pytest.approx(math.pi)
+    assert cos_calls == 4
+    assert sin_calls == 4
+    assert G.graph.get("_trig_version") == base_version + 1
+
+    trig2 = get_trig_cache(G)
+    assert trig2 is not trig1
+    assert trig2.theta[2] == pytest.approx(math.pi)
+    assert cos_calls == 4
+    assert sin_calls == 4
+
+
+def test_trig_cache_rebuilds_after_direct_theta_mutation_numpy(monkeypatch, graph_canon):
+    np = pytest.importorskip("numpy")
+
+    cos_calls = 0
+    sin_calls = 0
+    orig_cos = np.cos
+    orig_sin = np.sin
+
+    def cos_wrapper(values, *args, **kwargs):
+        nonlocal cos_calls
+        cos_calls += 1
+        return orig_cos(values, *args, **kwargs)
+
+    def sin_wrapper(values, *args, **kwargs):
+        nonlocal sin_calls
+        sin_calls += 1
+        return orig_sin(values, *args, **kwargs)
+
+    monkeypatch.setattr(np, "cos", cos_wrapper)
+    monkeypatch.setattr(np, "sin", sin_wrapper)
+
+    G = graph_canon()
+    G.add_edge(1, 2)
+    set_attr(G.nodes[1], ALIAS_THETA, 0.0)
+    set_attr(G.nodes[2], ALIAS_THETA, math.pi / 2)
+    set_attr(G.nodes[1], ALIAS_VF, 0.0)
+    set_attr(G.nodes[2], ALIAS_VF, 0.0)
+    set_attr(G.nodes[1], ALIAS_DNFR, 0.0)
+    set_attr(G.nodes[2], ALIAS_DNFR, 0.0)
+
+    trig1 = get_trig_cache(G, np=np)
+    base_version = G.graph.get("_trig_version", 0)
+    assert trig1.theta[2] == pytest.approx(math.pi / 2)
+    assert cos_calls == 1
+    assert sin_calls == 1
+
+    G.nodes[2][ALIAS_THETA[0]] = math.pi
+
+    trig2 = get_trig_cache(G, np=np)
+    assert trig2 is not trig1
+    assert trig2.theta[2] == pytest.approx(math.pi)
+    assert cos_calls == 2
+    assert sin_calls == 2
+    assert G.graph.get("_trig_version") == base_version + 1
 def test_neighbor_phase_mean_bulk_isolated_nodes():
     np = pytest.importorskip("numpy")
 
