@@ -26,6 +26,7 @@ from .alias import (
     set_theta,
     set_vf,
 )
+from .config import get_flags
 from .constants import get_aliases
 from .locking import get_lock
 from .types import (
@@ -229,10 +230,15 @@ class NodeNX(NodeProtocol):
     dnfr: DeltaNFR = ATTR_SPECS["dnfr"].build_property()
     d2EPI: SecondDerivativeEPI = ATTR_SPECS["d2EPI"].build_property()
 
-    def __init__(self, G: TNFRGraph, n: NodeId) -> None:
+    def __init__(
+        self, G: TNFRGraph, n: NodeId, *, enable_math_validation: Optional[bool] = None
+    ) -> None:
         self.G: TNFRGraph = G
         self.n: NodeId = n
         self.graph: MutableMapping[str, Any] = G.graph
+        if enable_math_validation is None:
+            enable_math_validation = get_flags().enable_math_validation
+        self.enable_math_validation: bool = enable_math_validation
         G.graph.setdefault("_node_cache", {})[n] = self
 
     def _glyph_storage(self) -> MutableMapping[str, Any]:
