@@ -68,7 +68,7 @@ provide a lightweight smoke validation for the documentation itself.
 >>> from tnfr.constants import EPI_PRIMARY, VF_PRIMARY, THETA_PRIMARY
 >>> round(G.nodes[node][EPI_PRIMARY], 6)
 0.723125
->>> from tnfr.mathematics import BasicStateProjector, HilbertSpace, build_coherence_operator, build_delta_nfr
+>>> from tnfr.mathematics import BasicStateProjector, HilbertSpace, build_delta_nfr, make_coherence_operator
 >>> from tnfr.mathematics.runtime import normalized, coherence_expectation
 >>> import numpy as np
 >>> hilbert = HilbertSpace(2)
@@ -81,7 +81,7 @@ provide a lightweight smoke validation for the documentation itself.
 ... )
 >>> normalized(state, hilbert)[0]
 True
->>> coherence = build_coherence_operator(np.eye(hilbert.dimension) * 0.75)
+>>> coherence = make_coherence_operator(hilbert.dimension, spectrum=np.full(hilbert.dimension, 0.75))
 >>> round(coherence_expectation(state, coherence), 6)
 0.75
 >>> delta = build_delta_nfr(hilbert.dimension, topology="adjacency")

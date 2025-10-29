@@ -1,103 +1,65 @@
 """Factory helpers to assemble TNFR coherence and frequency operators."""
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
-from typing import Any
-
 import numpy as np
 
 from .operators import CoherenceOperator, FrequencyOperator
 
-__all__ = [
-    "build_coherence_operator",
-    "build_frequency_operator",
-    "as_coherence_operator",
-    "as_frequency_operator",
-]
+__all__ = ["make_coherence_operator", "make_frequency_operator"]
+
+_ATOL = 1e-9
 
 
-def _as_array(value: Any) -> np.ndarray:
-    array = np.asarray(value, dtype=np.complex128)
-    if array.ndim not in (1, 2):
-        raise ValueError("Operator specification must be 1D or 2D array-like.")
-    if array.ndim == 2 and array.shape[0] != array.shape[1]:
-        raise ValueError("Operator matrix must be square.")
-    return array
+def _validate_dimension(dim: int) -> int:
+    if int(dim) != dim:
+        raise ValueError("Operator dimension must be an integer.")
+    if dim <= 0:
+        raise ValueError("Operator dimension must be strictly positive.")
+    return int(dim)
 
 
-def _symmetrise(matrix: np.ndarray) -> np.ndarray:
-    return 0.5 * (matrix + matrix.conj().T)
-
-
-def build_coherence_operator(
-    operator: CoherenceOperator | Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray,
+def make_coherence_operator(
+    dim: int,
     *,
-    c_min: float | None = None,
-    ensure_hermitian: bool = True,
-    atol: float = 1e-9,
+    spectrum: np.ndarray | None = None,
+    c_min: float = 0.1,
 ) -> CoherenceOperator:
-    """Return a :class:`CoherenceOperator` from ``operator`` specification."""
+    """Return a Hermitian positive semidefinite :class:`CoherenceOperator`."""
 
-    if isinstance(operator, CoherenceOperator):
-        return operator
-    array = _as_array(operator)
-    if ensure_hermitian:
-        array = _symmetrise(array)
-    kwargs: dict[str, Any] = {"ensure_hermitian": ensure_hermitian, "atol": atol}
-    if c_min is not None:
-        kwargs["c_min"] = float(c_min)
-    return CoherenceOperator(array, **kwargs)
+    dimension = _validate_dimension(dim)
+    if not np.isfinite(c_min):
+        raise ValueError("Coherence threshold ``c_min`` must be finite.")
 
-
-def build_frequency_operator(
-    operator: FrequencyOperator | Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray,
-    *,
-    ensure_positive: bool = True,
-    ensure_hermitian: bool = True,
-    atol: float = 1e-9,
-) -> FrequencyOperator:
-    """Return a :class:`FrequencyOperator` ensuring Hermitian PSD behaviour."""
-
-    if isinstance(operator, FrequencyOperator):
-        return operator
-    array = _as_array(operator)
-    if ensure_hermitian:
-        array = _symmetrise(array)
-    if ensure_hermitian and not np.allclose(array, array.conj().T, atol=atol):
-        raise ValueError("Frequency operator must be Hermitian within tolerance.")
-    if ensure_hermitian:
-        eigenvalues = np.linalg.eigvalsh(array)
+    if spectrum is None:
+        eigenvalues = np.full(dimension, float(c_min), dtype=float)
     else:
-        eigenvalues = np.linalg.eigvals(array)
-    if ensure_positive:
-        if np.any(np.abs(eigenvalues.imag) > atol):
-            raise ValueError(
-                "Positive semidefinite frequency operators require real eigenvalues."
-            )
-        if np.any(eigenvalues.real < -atol):
-            raise ValueError("Frequency operator must be positive semidefinite.")
-    return FrequencyOperator(array, ensure_hermitian=ensure_hermitian, atol=atol)
+        eigenvalues = np.asarray(spectrum, dtype=np.complex128)
+        if eigenvalues.ndim != 1:
+            raise ValueError("Coherence spectrum must be one-dimensional.")
+        if eigenvalues.shape[0] != dimension:
+            raise ValueError("Coherence spectrum size must match operator dimension.")
+        if np.any(np.abs(eigenvalues.imag) > _ATOL):
+            raise ValueError("Coherence spectrum must be real-valued within tolerance.")
+        eigenvalues = eigenvalues.real.astype(float, copy=False)
+
+    operator = CoherenceOperator(eigenvalues, c_min=c_min)
+    if not operator.is_hermitian(atol=_ATOL):
+        raise ValueError("Coherence operator must be Hermitian.")
+    if not operator.is_positive_semidefinite(atol=_ATOL):
+        raise ValueError("Coherence operator must be positive semidefinite.")
+    return operator
 
 
-def as_coherence_operator(
-    operator: CoherenceOperator | Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray | None,
-    params: Mapping[str, Any] | None = None,
-) -> CoherenceOperator | None:
-    """Coerce ``operator`` into a :class:`CoherenceOperator` when provided."""
+def make_frequency_operator(matrix: np.ndarray) -> FrequencyOperator:
+    """Return a Hermitian PSD :class:`FrequencyOperator` from ``matrix``."""
 
-    if operator is None:
-        return None
-    params = dict(params or {})
-    return build_coherence_operator(operator, **params)
+    array = np.asarray(matrix, dtype=np.complex128)
+    if array.ndim != 2 or array.shape[0] != array.shape[1]:
+        raise ValueError("Frequency operator matrix must be square.")
+    if not np.allclose(array, array.conj().T, atol=_ATOL):
+        raise ValueError("Frequency operator must be Hermitian within tolerance.")
 
-
-def as_frequency_operator(
-    operator: FrequencyOperator | Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray | None,
-    params: Mapping[str, Any] | None = None,
-) -> FrequencyOperator | None:
-    """Coerce ``operator`` into a :class:`FrequencyOperator` when provided."""
-
-    if operator is None:
-        return None
-    params = dict(params or {})
-    return build_frequency_operator(operator, **params)
+    operator = FrequencyOperator(array)
+    if not operator.is_positive_semidefinite(atol=_ATOL):
+        raise ValueError("Frequency operator must be positive semidefinite.")
+    return operator

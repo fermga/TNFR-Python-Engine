@@ -3,12 +3,7 @@
 from .dynamics import MathematicalDynamicsEngine
 from .generators import build_delta_nfr
 from .operators import CoherenceOperator, FrequencyOperator
-from .operators_factory import (
-    as_coherence_operator,
-    as_frequency_operator,
-    build_coherence_operator,
-    build_frequency_operator,
-)
+from .operators_factory import make_coherence_operator, make_frequency_operator
 from .projection import BasicStateProjector, StateProjector
 from .runtime import (
     coherence,
@@ -34,10 +29,8 @@ __all__ = [
     "FrequencyOperator",
     "MathematicalDynamicsEngine",
     "build_delta_nfr",
-    "build_coherence_operator",
-    "build_frequency_operator",
-    "as_coherence_operator",
-    "as_frequency_operator",
+    "make_coherence_operator",
+    "make_frequency_operator",
     "NFRValidator",
     "IsometryFactory",
     "build_isometry_factory",

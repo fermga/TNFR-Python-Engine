@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Hashable, Iterable, Mapping, MutableMapping, Sequence
+from collections.abc import Hashable, Iterable, MutableMapping, Sequence
 from typing import Any, Callable, Optional, Protocol, SupportsFloat, TypeVar
 
 import numpy as np
@@ -105,10 +105,12 @@ class NodeNX(NodeProtocol):
         state_projector: StateProjector | None = ...,
         enable_math_validation: Optional[bool] = ...,
         hilbert_space: HilbertSpace | None = ...,
-        coherence_operator: CoherenceOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = ...,
-        coherence_operator_params: Mapping[str, Any] | None = ...,
-        frequency_operator: FrequencyOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = ...,
-        frequency_operator_params: Mapping[str, Any] | None = ...,
+        coherence_operator: CoherenceOperator | None = ...,
+        coherence_dim: int | None = ...,
+        coherence_spectrum: Sequence[float] | np.ndarray | None = ...,
+        coherence_c_min: float | None = ...,
+        frequency_operator: FrequencyOperator | None = ...,
+        frequency_matrix: Sequence[Sequence[complex]] | np.ndarray | None = ...,
         coherence_threshold: float | None = ...,
         validator: NFRValidator | None = ...,
         rng: np.random.Generator | None = ...,
@@ -161,11 +163,13 @@ class NodeNX(NodeProtocol):
         *,
         projector: StateProjector | None = ...,
         hilbert_space: HilbertSpace | None = ...,
-        coherence_operator: CoherenceOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = ...,
-        coherence_operator_params: Mapping[str, Any] | None = ...,
+        coherence_operator: CoherenceOperator | None = ...,
+        coherence_dim: int | None = ...,
+        coherence_spectrum: Sequence[float] | np.ndarray | None = ...,
+        coherence_c_min: float | None = ...,
         coherence_threshold: float | None = ...,
-        freq_op: FrequencyOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = ...,
-        frequency_operator_params: Mapping[str, Any] | None = ...,
+        frequency_operator: FrequencyOperator | None = ...,
+        frequency_matrix: Sequence[Sequence[complex]] | np.ndarray | None = ...,
         validator: NFRValidator | None = ...,
         enforce_frequency_positivity: bool | None = ...,
         enable_validation: bool | None = ...,

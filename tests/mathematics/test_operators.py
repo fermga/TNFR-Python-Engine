@@ -7,7 +7,10 @@ import pytest
 np = pytest.importorskip("numpy")
 
 from tnfr.mathematics.operators import DEFAULT_C_MIN, CoherenceOperator, FrequencyOperator
-from tnfr.mathematics.operators_factory import build_frequency_operator
+from tnfr.mathematics.operators_factory import (
+    make_coherence_operator,
+    make_frequency_operator,
+)
 
 
 def test_coherence_operator_from_matrix(structural_tolerances: dict[str, float]) -> None:
@@ -84,18 +87,33 @@ def test_frequency_operator_negative_spectrum_detected() -> None:
     assert not operator.is_positive_semidefinite()
 
 
-def test_build_frequency_operator_preserves_valid_matrix(
+def test_make_coherence_operator_from_spectrum() -> None:
+    operator = make_coherence_operator(3, spectrum=np.array([0.2, 0.3, 0.4]))
+
+    assert isinstance(operator, CoherenceOperator)
+    np.testing.assert_allclose(operator.matrix, np.diag([0.2, 0.3, 0.4]))
+    assert operator.is_positive_semidefinite()
+
+
+def test_make_coherence_operator_defaults_to_c_min() -> None:
+    operator = make_coherence_operator(2, c_min=0.6)
+
+    np.testing.assert_allclose(operator.matrix, np.diag([0.6, 0.6]))
+    assert operator.c_min == pytest.approx(0.6)
+
+
+def test_make_frequency_operator_preserves_valid_matrix(
     structural_tolerances: dict[str, float]
 ) -> None:
     matrix = np.array([[1.0, 0.2j], [-0.2j, 2.0]], dtype=np.complex128)
 
-    operator = build_frequency_operator(matrix)
+    operator = make_frequency_operator(matrix)
 
     np.testing.assert_allclose(operator.matrix, matrix, atol=structural_tolerances["atol"])
 
 
-def test_build_frequency_operator_rejects_negative_eigenvalues() -> None:
+def test_make_frequency_operator_rejects_negative_eigenvalues() -> None:
     matrix = np.array([[1.0, 0.0], [0.0, -0.5]], dtype=np.complex128)
 
     with pytest.raises(ValueError, match="positive semidefinite"):
-        build_frequency_operator(matrix)
+        make_frequency_operator(matrix)
