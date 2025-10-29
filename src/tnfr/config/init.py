@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from ..constants import inject_defaults
-from ..io import read_structured_file
+from ..utils import read_structured_file
 
 if TYPE_CHECKING:  # pragma: no cover - only for type checkers
     import networkx as nx

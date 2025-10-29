@@ -10,7 +10,7 @@ from typing import Mapping, TextIO
 
 from ..config.constants import GLYPHS_CANONICAL
 from ..glyph_history import ensure_history
-from ..io import json_dumps, safe_write
+from ..utils import json_dumps, safe_write
 from ..types import Graph
 from .core import glyphogram_series
 from .glyph_timing import SigmaTrace

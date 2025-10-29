@@ -78,8 +78,11 @@ from .init import (
 from ..io import (
     DEFAULT_PARAMS,
     JsonDumpsParams,
+    StructuredFileError,
     clear_orjson_param_warnings,
     json_dumps,
+    read_structured_file,
+    safe_write,
 )
 from ..validation import run_validators, validate_window
 
@@ -139,6 +142,9 @@ __all__ = (
     "DEFAULT_PARAMS",
     "json_dumps",
     "clear_orjson_param_warnings",
+    "read_structured_file",
+    "safe_write",
+    "StructuredFileError",
     "kahan_sum_nd",
     "similarity_abs",
     "within_range",

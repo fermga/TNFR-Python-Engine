@@ -12,7 +12,7 @@ from typing import Any, Callable, NamedTuple
 
 from .alias import get_theta_attr
 from .constants import DEFAULTS
-from .io import json_dumps
+from .utils import json_dumps
 from .metrics.trig_cache import get_trig_cache
 from .types import GammaSpec, NodeId, TNFRGraph
 from .utils import (
