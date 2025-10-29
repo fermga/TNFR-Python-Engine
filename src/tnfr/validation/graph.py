@@ -9,6 +9,7 @@ from typing import Callable, Sequence
 
 from .._compat import TypeAlias
 from ..alias import get_attr
+from ..glyph_runtime import last_glyph
 from ..config.constants import GLYPHS_CANONICAL_SET
 from ..constants import get_aliases, get_param
 from ..utils.numeric import within_range
@@ -113,8 +114,6 @@ def _check_glyph(glyph: str | None, node: NodeId) -> None:
 
 def run_validators(graph: TNFRGraph) -> None:
     """Run all invariant validators on ``graph`` with a single node pass."""
-
-    from ..glyph_history import last_glyph
 
     epi_min = float(get_param(graph, "EPI_MIN"))
     epi_max = float(get_param(graph, "EPI_MAX"))

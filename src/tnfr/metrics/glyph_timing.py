@@ -21,7 +21,8 @@ from typing import (
 from ..alias import get_attr
 from ..config.constants import GLYPH_GROUPS, GLYPHS_CANONICAL
 from ..constants import get_aliases, get_param
-from ..glyph_history import append_metric, last_glyph
+from ..glyph_history import append_metric
+from ..glyph_runtime import last_glyph
 from ..types import GraphLike
 
 ALIAS_EPI = get_aliases("EPI")
