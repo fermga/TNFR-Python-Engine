@@ -41,7 +41,7 @@ from typing import Any, Callable, Iterable, Iterator, Mapping, MutableMapping, c
 
 from ..alias import get_attr, set_attr
 from ..constants import get_aliases
-from ..helpers.numeric import angle_diff, clamp01
+from ..helpers.numeric import angle_diff, angle_diff_array, clamp01
 from ..types import GraphLike
 from ..utils import (
     edge_version_cache,
@@ -978,31 +978,14 @@ def compute_Si(
                 use_chunked = True
 
         if neighbor_count and not use_chunked:
-            np.subtract(
+            angle_diff_array(
                 theta_arr,
                 mean_theta,
+                np=np,
                 out=phase_dispersion,
                 where=neighbor_mask,
             )
-            np.add(
-                phase_dispersion,
-                math.pi,
-                out=phase_dispersion,
-                where=neighbor_mask,
-            )
-            np.remainder(
-                phase_dispersion,
-                math.tau,
-                out=phase_dispersion,
-                where=neighbor_mask,
-            )
-            np.subtract(
-                phase_dispersion,
-                math.pi,
-                out=phase_dispersion,
-                where=neighbor_mask,
-            )
-            np.abs(phase_dispersion, out=phase_dispersion)
+            np.abs(phase_dispersion, out=phase_dispersion, where=neighbor_mask)
             np.divide(
                 phase_dispersion,
                 math.pi,
@@ -1020,10 +1003,7 @@ def compute_Si(
             values_view = chunk_values[:neighbor_count]
             np.take(theta_arr, neighbor_indices, out=theta_view)
             np.take(mean_theta, neighbor_indices, out=values_view)
-            np.subtract(theta_view, values_view, out=values_view)
-            np.add(values_view, math.pi, out=values_view)
-            np.remainder(values_view, math.tau, out=values_view)
-            np.subtract(values_view, math.pi, out=values_view)
+            angle_diff_array(theta_view, values_view, np=np, out=values_view)
             np.abs(values_view, out=values_view)
             np.divide(values_view, math.pi, out=values_view)
             phase_dispersion[neighbor_indices] = values_view

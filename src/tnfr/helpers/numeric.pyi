@@ -5,6 +5,7 @@ __all__: Any
 def __getattr__(name: str) -> Any: ...
 
 angle_diff: Any
+angle_diff_array: Any
 clamp: Any
 clamp01: Any
 kahan_sum_nd: Any

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable, Sequence
+from typing import Any
 
 __all__ = (
     "clamp",
@@ -12,6 +13,7 @@ __all__ = (
     "similarity_abs",
     "kahan_sum_nd",
     "angle_diff",
+    "angle_diff_array",
 )
 
 
@@ -84,3 +86,59 @@ def kahan_sum_nd(values: Iterable[Sequence[float]], dims: int) -> tuple[float, .
 def angle_diff(a: float, b: float) -> float:
     """Return the minimal difference between two angles in radians."""
     return (float(a) - float(b) + math.pi) % math.tau - math.pi
+
+
+def angle_diff_array(
+    a: Sequence[float] | "np.ndarray",
+    b: Sequence[float] | "np.ndarray",
+    *,
+    np: Any,
+    out: "np.ndarray | None" = None,
+    where: "np.ndarray | None" = None,
+) -> "np.ndarray":
+    """Vectorised :func:`angle_diff` compatible with NumPy arrays.
+
+    Parameters
+    ----------
+    a, b:
+        Arrays or array-like sequences containing the minuend and subtrahend
+        angles respectively.
+    np:
+        NumPy module used to materialise the vectorised operations. Passing the
+        module explicitly keeps :mod:`tnfr.helpers.numeric` free from a hard
+        dependency on NumPy while still allowing accelerated paths to reuse the
+        canonical angular difference implementation.
+    out:
+        Optional buffer receiving the computed differences. When provided the
+        buffer is updated in-place; otherwise a new array is returned.
+    where:
+        Optional boolean mask restricting the positions that are updated. When
+        omitted all entries are processed.
+
+    Returns
+    -------
+    numpy.ndarray
+        Array containing the wrapped angle differences ``(a - b)`` normalised
+        to ``[-π, π]``. The result shares the provided output buffer when
+        ``out`` is supplied.
+    """
+
+    if np is None:
+        raise TypeError("angle_diff_array requires a NumPy module")
+
+    kwargs = {"where": where} if where is not None else {}
+    minuend = np.asarray(a, dtype=float)
+    subtrahend = np.asarray(b, dtype=float)
+    if out is None:
+        out = np.empty_like(minuend, dtype=float)
+        if where is not None:
+            out.fill(0.0)
+    else:
+        if getattr(out, "shape", None) != minuend.shape:
+            raise ValueError("out must match the broadcasted shape of inputs")
+
+    np.subtract(minuend, subtrahend, out=out, **kwargs)
+    np.add(out, math.pi, out=out, **kwargs)
+    np.mod(out, math.tau, out=out, **kwargs)
+    np.subtract(out, math.pi, out=out, **kwargs)
+    return out
