@@ -25,6 +25,8 @@ _DEFAULT_CACHE_SIZE = _init._DEFAULT_CACHE_SIZE
 EMIT_MAP = _init.EMIT_MAP
 
 from .cache import (
+    DNFR_PREP_STATE_KEY,
+    DnfrPrepState,
     NODE_SET_CHECKSUM_KEY,
     ScopedCounterCache,
     EdgeCacheManager,
@@ -38,6 +40,8 @@ from .cache import (
     ensure_node_index_map,
     ensure_node_offset_map,
     _SeedHashCache,
+    _GRAPH_CACHE_MANAGER_KEY,
+    _graph_cache_manager,
     build_cache_manager,
     get_graph_version,
     increment_edge_version,
@@ -113,6 +117,8 @@ __all__ = (
     "resolve_chunk_size",
     "CacheManager",
     "EdgeCacheManager",
+    "DNFR_PREP_STATE_KEY",
+    "DnfrPrepState",
     "NODE_SET_CHECKSUM_KEY",
     "ScopedCounterCache",
     "cached_node_list",
@@ -128,6 +134,8 @@ __all__ = (
     "increment_graph_version",
     "configure_graph_cache_limits",
     "build_cache_manager",
+    "_graph_cache_manager",
+    "_GRAPH_CACHE_MANAGER_KEY",
     "node_set_checksum",
     "stable_json",
     "reset_global_cache_manager",

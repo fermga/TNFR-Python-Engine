@@ -9,7 +9,7 @@ from typing import Any, MutableMapping, TYPE_CHECKING
 
 from ..cache import CacheManager, CacheStatistics
 from ..io import json_dumps
-from ..utils import get_logger
+from ..utils import _graph_cache_manager, get_logger
 
 if TYPE_CHECKING:  # pragma: no cover - typing helpers
     from networkx import Graph
@@ -212,8 +212,6 @@ def publish_graph_cache_metrics(
     """Publish cache metrics for ``graph`` using the shared manager."""
 
     if manager is None:
-        from ..utils.cache import _graph_cache_manager
-
         manager = _graph_cache_manager(getattr(graph, "graph", graph))
     ensure_cache_metrics_publisher(
         manager,
