@@ -40,7 +40,7 @@ from ..cache import (
 from ..types import GraphLike, NodeId, TimingContext, TNFRGraph
 from .graph import get_graph, mark_dnfr_prep_dirty
 from .init import get_logger, get_numpy
-from .io import json_dumps
+from ..io import json_dumps
 
 T = TypeVar("T")
 

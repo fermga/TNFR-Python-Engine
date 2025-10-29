@@ -56,7 +56,7 @@ from .numeric import (
     similarity_abs,
     within_range,
 )
-from .io import (
+from ..io import (
     DEFAULT_PARAMS,
     JsonDumpsParams,
     clear_orjson_param_warnings,

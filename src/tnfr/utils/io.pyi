@@ -1,8 +1,8 @@
+from __future__ import annotations
+
 from typing import Any
 
-__all__: Any
-
-def __getattr__(name: str) -> Any: ...
+__all__: tuple[str, ...]
 
 DEFAULT_PARAMS: Any
 JsonDumpsParams: Any

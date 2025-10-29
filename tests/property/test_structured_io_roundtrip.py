@@ -15,8 +15,12 @@ from tests.property.strategies import (
     PROPERTY_TEST_SETTINGS,
     nested_structured_mappings,
 )
-from tnfr.io import StructuredFileError, read_structured_file, safe_write
-from tnfr.utils import json_dumps
+from tnfr.io import (
+    StructuredFileError,
+    json_dumps,
+    read_structured_file,
+    safe_write,
+)
 
 
 def _sort_key(value: Any) -> tuple[str, str]:
