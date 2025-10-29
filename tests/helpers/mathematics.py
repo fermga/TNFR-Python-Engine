@@ -1,11 +1,14 @@
 """Helpers for assembling mathematical fixtures in integration tests."""
 from __future__ import annotations
 
+from typing import Sequence
+
 import numpy as np
 
 from tnfr.mathematics import (
     BasicStateProjector,
     HilbertSpace,
+    MathematicalDynamicsEngine,
     NFRValidator,
     build_coherence_operator,
     build_frequency_operator,
@@ -16,9 +19,12 @@ from tnfr.structural import create_nfr
 
 def build_node_with_operators(
     *,
+    epi: float = 0.9,
+    nu_f: float = 0.8,
+    theta: float = 0.1,
     dim: int = 3,
     coherence_value: float = 0.75,
-    frequency_value: float = 0.5,
+    frequency_value: float | None = 0.5,
     enable_validation: bool = True,
 ) -> tuple[
     NodeNX,
@@ -27,10 +33,14 @@ def build_node_with_operators(
 ]:
     """Return a ``NodeNX`` configured with canonical mathematical operators."""
 
-    G, node_id = create_nfr("math-node", epi=0.9, vf=0.8, theta=0.1)
+    G, node_id = create_nfr("math-node", epi=epi, vf=nu_f, theta=theta)
     hilbert = HilbertSpace(dim)
     coherence = build_coherence_operator(np.eye(dim) * coherence_value)
-    frequency = build_frequency_operator(np.eye(dim) * frequency_value)
+    frequency = (
+        build_frequency_operator(np.eye(dim) * frequency_value)
+        if frequency_value is not None
+        else None
+    )
     validator = NFRValidator(
         hilbert,
         coherence,
@@ -49,3 +59,23 @@ def build_node_with_operators(
         enable_math_validation=enable_validation,
     )
     return node, hilbert, validator
+
+
+def make_dynamics_engine(
+    generator: Sequence[Sequence[complex]] | np.ndarray,
+    hilbert_space: HilbertSpace,
+    *,
+    atol: float = 1e-9,
+    use_scipy: bool | None = None,
+) -> MathematicalDynamicsEngine:
+    """Instantiate ``MathematicalDynamicsEngine`` with slot-safe subclassing."""
+
+    class _SlotSafeDynamics(MathematicalDynamicsEngine):
+        __slots__ = MathematicalDynamicsEngine.__slots__ + ("_eigenvalues", "_eigenvectors")
+
+    return _SlotSafeDynamics(
+        generator,
+        hilbert_space=hilbert_space,
+        atol=atol,
+        use_scipy=use_scipy,
+    )
