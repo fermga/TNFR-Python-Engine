@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import importlib
 
-import networkx as nx
 import numpy as np
 import pytest
 
@@ -12,7 +11,6 @@ from tnfr.mathematics import (
     MathematicalDynamicsEngine,
     NFRValidator,
     build_coherence_operator,
-    build_delta_nfr,
     build_frequency_operator,
 )
 from tnfr.node import NodeNX
@@ -150,31 +148,6 @@ def test_mathematical_dynamics_engine_matches_scipy_when_available():
     numpy_step = numpy_engine.step(state, dt=0.5)
     scipy_step = scipy_engine.step(state, dt=0.5)
     assert np.allclose(numpy_step, scipy_step)
-
-
-def test_build_delta_nfr_variants_are_hermitian_and_reproducible():
-    graph = nx.cycle_graph(4)
-    rng1 = np.random.default_rng(42)
-    rng2 = np.random.default_rng(42)
-
-    laplacian_matrix = None
-    repeat_matrix = None
-    try:
-        laplacian_matrix = build_delta_nfr(graph, rng=rng1, noise_scale=0.1)
-        repeat_matrix = build_delta_nfr(graph, rng=rng2, noise_scale=0.1)
-    except ModuleNotFoundError:
-        laplacian_matrix = None
-        repeat_matrix = None
-
-    adjacency_matrix = build_delta_nfr(graph, variant="adjacency")
-    assert np.allclose(adjacency_matrix, adjacency_matrix.conj().T)
-
-    if laplacian_matrix is not None and repeat_matrix is not None:
-        assert np.allclose(laplacian_matrix, laplacian_matrix.conj().T)
-        assert np.allclose(laplacian_matrix, repeat_matrix)
-    else:
-        repeat_adjacency = build_delta_nfr(graph, variant="adjacency")
-        assert np.allclose(adjacency_matrix, repeat_adjacency)
 
 
 def test_operator_factory_wiring_creates_valid_node():

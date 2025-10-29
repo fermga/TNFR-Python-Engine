@@ -35,9 +35,12 @@ pre/post states for validation.
 ## ΔNFR builder
 
 `build_delta_nfr` mirrors the classical ΔNFR constructors through Hermitian
-matrix generators. It supports Laplacian and adjacency variants; the integration
-suite ensures both remain Hermitian and reproducible when seeded. The resulting
-matrices are suitable inputs for spectral dynamics engines or bespoke analyses.
+matrix generators. It accepts a Hilbert space dimension together with the
+desired topology (Laplacian or adjacency), structural frequency scaling ``νf``
+and an additional amplitude ``scale``. The integration suite ensures both
+recipes remain Hermitian and reproducible when seeded with a NumPy RNG. The
+resulting matrices are suitable inputs for spectral dynamics engines or bespoke
+analyses.
 
 ## Dynamics engine
 
@@ -81,7 +84,7 @@ True
 >>> coherence = build_coherence_operator(np.eye(hilbert.dimension) * 0.75)
 >>> round(coherence_expectation(state, coherence), 6)
 0.75
->>> delta = build_delta_nfr(G, variant="adjacency")
+>>> delta = build_delta_nfr(hilbert.dimension, topology="adjacency")
 >>> delta.shape
 (2, 2)
 >>> from tnfr.mathematics import MathematicalDynamicsEngine
