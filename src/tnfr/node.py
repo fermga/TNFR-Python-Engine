@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import logging
 import math
 from collections.abc import Hashable, Mapping
 from dataclasses import dataclass
@@ -30,7 +31,7 @@ from .alias import (
     set_theta,
     set_vf,
 )
-from .config import get_flags
+from .config import context_flags, get_flags
 from .constants import get_aliases
 from .mathematics import (
     BasicStateProjector,
@@ -77,6 +78,9 @@ ALIAS_D2EPI = get_aliases("D2EPI")
 T = TypeVar("T")
 
 __all__ = ("NodeNX", "NodeProtocol", "add_edge")
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -373,6 +377,7 @@ class NodeNX(NodeProtocol):
         enforce_frequency_positivity: bool | None = None,
         enable_validation: bool | None = None,
         rng: np.random.Generator | None = None,
+        log_metrics: bool = False,
     ) -> dict[str, Any]:
         """Run ``ops`` then return pre/post metrics with optional validation."""
 
@@ -425,37 +430,57 @@ class NodeNX(NodeProtocol):
             vector = projector(epi, vf, theta, hilbert.dimension, rng=local_rng)
             return np.asarray(vector, dtype=np.complex128)
 
+        active_flags = get_flags()
+        should_log_metrics = bool(log_metrics and active_flags.log_performance)
+
         def _metrics(state: np.ndarray, label: str) -> dict[str, Any]:
             metrics: dict[str, Any] = {}
-            norm_passed, norm_value = runtime_normalized(state, hilbert, label=label)
-            metrics["normalized"] = {"passed": norm_passed, "norm": norm_value}
-            if effective_coherence is not None and threshold is not None:
-                coh_passed, coh_value = runtime_coherence(
-                    state, effective_coherence, threshold, label=label
+            with context_flags(log_performance=False):
+                norm_passed, norm_value = runtime_normalized(state, hilbert, label=label)
+                metrics["normalized"] = bool(norm_passed)
+                metrics["norm"] = float(norm_value)
+                if effective_coherence is not None and threshold is not None:
+                    coh_passed, coh_value = runtime_coherence(
+                        state, effective_coherence, threshold, label=label
+                    )
+                    metrics["coherence"] = bool(coh_passed)
+                    metrics["coherence_expectation"] = float(coh_value)
+                    metrics["coherence_threshold"] = float(threshold)
+                if effective_freq is not None:
+                    freq_summary = runtime_frequency_positive(
+                        state,
+                        effective_freq,
+                        enforce=enforce_frequency,
+                        label=label,
+                    )
+                    metrics["frequency_positive"] = bool(freq_summary["passed"])
+                    metrics["frequency_expectation"] = float(freq_summary["value"])
+                    metrics["frequency_projection_passed"] = bool(
+                        freq_summary["projection_passed"]
+                    )
+                    metrics["frequency_spectrum_psd"] = bool(freq_summary["spectrum_psd"])
+                    metrics["frequency_spectrum_min"] = float(freq_summary["spectrum_min"])
+                    metrics["frequency_enforced"] = bool(freq_summary["enforce"])
+                if effective_coherence is not None:
+                    unitary_passed, unitary_norm = runtime_stable_unitary(
+                        state,
+                        effective_coherence,
+                        hilbert,
+                        label=label,
+                    )
+                    metrics["stable_unitary"] = bool(unitary_passed)
+                    metrics["stable_unitary_norm_after"] = float(unitary_norm)
+            if should_log_metrics:
+                LOGGER.debug(
+                    "node_metrics.%s normalized=%s coherence=%s frequency_positive=%s stable_unitary=%s coherence_expectation=%s frequency_expectation=%s",
+                    label,
+                    metrics.get("normalized"),
+                    metrics.get("coherence"),
+                    metrics.get("frequency_positive"),
+                    metrics.get("stable_unitary"),
+                    metrics.get("coherence_expectation"),
+                    metrics.get("frequency_expectation"),
                 )
-                metrics["coherence"] = {
-                    "passed": coh_passed,
-                    "value": coh_value,
-                    "threshold": threshold,
-                }
-            if effective_freq is not None:
-                metrics["frequency"] = runtime_frequency_positive(
-                    state,
-                    effective_freq,
-                    enforce=enforce_frequency,
-                    label=label,
-                )
-            if effective_coherence is not None:
-                unitary_passed, unitary_norm = runtime_stable_unitary(
-                    state,
-                    effective_coherence,
-                    hilbert,
-                    label=label,
-                )
-                metrics["unitary"] = {
-                    "passed": unitary_passed,
-                    "norm_after": unitary_norm,
-                }
             return metrics
 
         pre_state = _project(self.EPI, self.vf, self.theta)
@@ -488,8 +513,14 @@ class NodeNX(NodeProtocol):
                 "report": validator_instance.report(summary),
             }
 
-        return {
-            "pre": {"state": pre_state, "metrics": pre_metrics},
-            "post": {"state": post_state, "metrics": post_metrics},
+        result = {
+            "pre_state": pre_state,
+            "post_state": post_state,
+            "pre_metrics": pre_metrics,
+            "post_metrics": post_metrics,
             "validation": validation_summary,
         }
+        # Preserve legacy structure for downstream compatibility.
+        result["pre"] = {"state": pre_state, "metrics": pre_metrics}
+        result["post"] = {"state": post_state, "metrics": post_metrics}
+        return result

@@ -170,4 +170,5 @@ class NodeNX(NodeProtocol):
         enforce_frequency_positivity: bool | None = ...,
         enable_validation: bool | None = ...,
         rng: np.random.Generator | None = ...,
+        log_metrics: bool = ...,
     ) -> dict[str, Any]: ...

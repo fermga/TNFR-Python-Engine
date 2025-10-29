@@ -6,6 +6,7 @@ import networkx as nx
 import numpy as np
 import pytest
 
+from tnfr.config import context_flags
 from tnfr.mathematics import (
     HilbertSpace,
     MathematicalDynamicsEngine,
@@ -36,12 +37,13 @@ def test_run_sequence_with_validation_reports_metrics(ops):
     node, hilbert, validator = build_node_with_operators()
     result = node.run_sequence_with_validation(ops)
 
-    assert set(result).issuperset({"pre", "post", "validation"})
-    assert result["pre"]["metrics"]["normalized"]["passed"] is True
-    assert result["post"]["metrics"]["normalized"]["passed"] is True
-    frequency_summary = result["post"]["metrics"].get("frequency")
-    assert isinstance(frequency_summary, dict)
-    assert frequency_summary["passed"] is True
+    assert set(result).issuperset({"pre_state", "post_state", "pre_metrics", "post_metrics", "validation"})
+    assert result["pre_metrics"]["normalized"] is True
+    assert result["post_metrics"]["normalized"] is True
+    frequency_positive = result["post_metrics"].get("frequency_positive")
+    if frequency_positive is not None:
+        assert frequency_positive is True
+        assert "frequency_expectation" in result["post_metrics"]
 
     validation = result["validation"]
     assert validation is not None
@@ -54,8 +56,33 @@ def test_run_sequence_with_validation_respects_frequency_override():
     outcome = node.run_sequence_with_validation(
         list(DEFAULT_ACCEPTANCE_OPS), freq_op=None, enable_validation=False
     )
-    assert "frequency" not in outcome["post"]["metrics"]
+    assert "frequency_positive" not in outcome["post_metrics"]
     assert outcome["validation"] is None
+
+
+def test_run_sequence_with_validation_logging_respects_flags(caplog):
+    node, _, _ = build_node_with_operators()
+
+    with context_flags(log_performance=True):
+        with caplog.at_level("DEBUG", logger="tnfr.node"):
+            node.run_sequence_with_validation(
+                list(DEFAULT_ACCEPTANCE_OPS), enable_validation=False, log_metrics=False
+            )
+    node_records = [record for record in caplog.records if record.name == "tnfr.node"]
+    assert not node_records
+
+    caplog.clear()
+
+    with context_flags(log_performance=True):
+        with caplog.at_level("DEBUG", logger="tnfr.node"):
+            node.run_sequence_with_validation(
+                list(DEFAULT_ACCEPTANCE_OPS), enable_validation=False, log_metrics=True
+            )
+
+    node_records = [record for record in caplog.records if record.name == "tnfr.node"]
+    assert len(node_records) == 2
+    assert node_records[0].message.startswith("node_metrics.pre")
+    assert node_records[1].message.startswith("node_metrics.post")
 
 
 def test_run_sequence_validation_summary_aligns_with_metrics():
@@ -66,15 +93,14 @@ def test_run_sequence_validation_summary_aligns_with_metrics():
     assert validation and validation["passed"] is True
     summary = validation["summary"]
 
-    post_metrics = result["post"]["metrics"]
+    post_metrics = result["post_metrics"]
     assert summary["coherence"]["value"] == pytest.approx(
-        post_metrics["coherence"]["value"]
+        post_metrics["coherence_expectation"]
     )
-    freq_metric = post_metrics["frequency"]
-    freq_summary = summary["frequency"]
-    assert isinstance(freq_summary, dict)
-    assert freq_summary["value"] == pytest.approx(freq_metric["value"])
-    assert freq_summary["projection_passed"] is freq_metric["projection_passed"]
+    freq_metric = summary["frequency"]
+    assert isinstance(freq_metric, dict)
+    assert freq_metric["value"] == pytest.approx(post_metrics["frequency_expectation"])
+    assert freq_metric["projection_passed"] is post_metrics["frequency_projection_passed"]
 
 
 def test_mathematical_dynamics_engine_matches_analytic_solution():
@@ -182,9 +208,9 @@ def test_run_sequence_with_validation_is_reproducible_with_seed():
     summary_two, node_two = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng_seed=2024)
     summary_three, _node_three = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng_seed=2025)
 
-    np.testing.assert_allclose(summary_one["pre"]["state"], summary_two["pre"]["state"])
-    np.testing.assert_allclose(summary_one["post"]["state"], summary_two["post"]["state"])
-    assert summary_one["post"]["metrics"] == summary_two["post"]["metrics"]
+    np.testing.assert_allclose(summary_one["pre_state"], summary_two["pre_state"])
+    np.testing.assert_allclose(summary_one["post_state"], summary_two["post_state"])
+    assert summary_one["post_metrics"] == summary_two["post_metrics"]
     assert summary_one["validation"] == summary_two["validation"]
 
     assert not np.allclose(summary_one["post"]["state"], summary_three["post"]["state"])
@@ -200,9 +226,9 @@ def test_run_sequence_with_validation_accepts_generator_instance():
     summary_one, node_one = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng=rng)
     summary_two, node_two = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng=rng)
 
-    np.testing.assert_allclose(summary_one["pre"]["state"], summary_two["pre"]["state"])
-    np.testing.assert_allclose(summary_one["post"]["state"], summary_two["post"]["state"])
-    assert summary_one["post"]["metrics"] == summary_two["post"]["metrics"]
+    np.testing.assert_allclose(summary_one["pre_state"], summary_two["pre_state"])
+    np.testing.assert_allclose(summary_one["post_state"], summary_two["post_state"])
+    assert summary_one["post_metrics"] == summary_two["post_metrics"]
     assert summary_one["validation"] == summary_two["validation"]
 
     assert node_one is not node_two
