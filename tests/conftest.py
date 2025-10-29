@@ -10,8 +10,8 @@ np = pytest.importorskip("numpy")
 from tnfr.constants import inject_defaults
 from tnfr.utils import cached_import, prune_failed_imports
 
-STRUCTURAL_ATOL = 1e-9
-STRUCTURAL_RTOL = 1e-7
+STRUCTURAL_ATOL = 1e-12
+STRUCTURAL_RTOL = 1e-10
 
 
 @pytest.fixture(scope="session")
