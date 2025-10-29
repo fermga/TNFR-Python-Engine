@@ -23,7 +23,7 @@ from time import perf_counter
 from ..alias import get_attr, get_theta_attr, set_dnfr
 from ..cache import CacheManager
 from ..constants import DEFAULTS, get_aliases, get_param
-from ..helpers.numeric import angle_diff
+from ..helpers.numeric import angle_diff, angle_diff_array
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import compute_theta_trig
@@ -1133,12 +1133,8 @@ def _apply_dnfr_gradients(
         if w_topo != 0.0:
             grad_topo = _ensure_cached_array(cache, "grad_topo_np", deg_array.shape, np)
 
-        np.copyto(grad_phase, theta_np, casting="unsafe")
-        grad_phase -= th_bar
-        grad_phase += math.pi
-        np.mod(grad_phase, math.tau, out=grad_phase)
-        grad_phase -= math.pi
-        grad_phase *= -1.0 / math.pi
+        angle_diff_array(theta_np, th_bar, np=np, out=grad_phase)
+        np.multiply(grad_phase, -1.0 / math.pi, out=grad_phase)
 
         np.copyto(grad_epi, epi_bar, casting="unsafe")
         grad_epi -= epi_np

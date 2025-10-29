@@ -25,6 +25,7 @@ from ..utils.graph import get_graph_mapping as get_graph_mapping
 from ..utils.graph import increment_edge_version as increment_edge_version
 from ..utils.graph import mark_dnfr_prep_dirty as mark_dnfr_prep_dirty
 from .numeric import angle_diff as angle_diff
+from .numeric import angle_diff_array as angle_diff_array
 from .numeric import clamp as clamp
 from .numeric import clamp01 as clamp01
 from .numeric import kahan_sum_nd as kahan_sum_nd
@@ -33,6 +34,7 @@ __all__ = (
     "CacheManager",
     "EdgeCacheManager",
     "angle_diff",
+    "angle_diff_array",
     "cached_node_list",
     "cached_nodes_and_A",
     "clamp",

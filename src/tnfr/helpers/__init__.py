@@ -32,6 +32,7 @@ if TYPE_CHECKING:  # pragma: no cover - import-time only for typing
     from ..glyph_history import HistoryDict
 from .numeric import (
     angle_diff,
+    angle_diff_array,
     clamp,
     clamp01,
     kahan_sum_nd,
@@ -41,6 +42,7 @@ __all__ = (
     "CacheManager",
     "EdgeCacheManager",
     "angle_diff",
+    "angle_diff_array",
     "cached_node_list",
     "cached_nodes_and_A",
     "clamp",
