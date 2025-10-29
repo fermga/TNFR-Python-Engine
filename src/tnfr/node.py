@@ -521,7 +521,13 @@ class NodeNX(NodeProtocol):
                 local_bit_generator = type(bit_generator)()
                 local_bit_generator.state = cloned_state
                 local_rng = np.random.Generator(local_bit_generator)
-            vector = projector(epi, vf, theta, hilbert.dimension, rng=local_rng)
+            vector = projector(
+                epi=epi,
+                nu_f=vf,
+                theta=theta,
+                dim=hilbert.dimension,
+                rng=local_rng,
+            )
             return np.asarray(vector, dtype=np.complex128)
 
         active_flags = get_flags()
