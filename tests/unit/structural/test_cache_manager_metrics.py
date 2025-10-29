@@ -6,7 +6,7 @@ import logging
 
 import pytest
 
-from tnfr.cache import CacheManager, CacheStatistics, prune_lock_mapping
+from tnfr.utils import CacheManager, CacheStatistics, prune_lock_mapping
 
 
 def test_cache_manager_aggregate_metrics_combines_counters():

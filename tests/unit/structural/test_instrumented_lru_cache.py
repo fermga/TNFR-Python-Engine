@@ -6,7 +6,7 @@ from typing import Any, Callable
 
 import pytest
 
-from tnfr.cache import CacheManager, InstrumentedLRUCache
+from tnfr.utils import CacheManager, InstrumentedLRUCache
 
 
 class _EventRecorder:

@@ -7,7 +7,7 @@ from typing import Any
 
 import networkx as nx
 
-from tnfr.cache import CacheLayer, CacheManager, RedisCacheLayer, ShelveCacheLayer
+from tnfr.utils import CacheLayer, CacheManager, RedisCacheLayer, ShelveCacheLayer
 from tnfr.utils import (
     _GRAPH_CACHE_LAYERS_KEY,
     build_cache_manager,

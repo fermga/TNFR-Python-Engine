@@ -2,7 +2,18 @@ from __future__ import annotations
 
 from typing import Any, Final
 
-from ..cache import CacheManager
+from ..cache import (
+    CacheCapacityConfig,
+    CacheLayer,
+    CacheManager,
+    CacheStatistics,
+    InstrumentedLRUCache,
+    ManagedLRUCache,
+    MappingCacheLayer,
+    RedisCacheLayer,
+    ShelveCacheLayer,
+    prune_lock_mapping,
+)
 from .cache import (
     NODE_SET_CHECKSUM_KEY,
     ScopedCounterCache,
@@ -112,7 +123,16 @@ __all__ = (
     "angle_diff_array",
     "clamp",
     "clamp01",
+    "CacheCapacityConfig",
+    "CacheLayer",
     "CacheManager",
+    "CacheStatistics",
+    "InstrumentedLRUCache",
+    "ManagedLRUCache",
+    "MappingCacheLayer",
+    "RedisCacheLayer",
+    "ShelveCacheLayer",
+    "prune_lock_mapping",
     "EdgeCacheManager",
     "NODE_SET_CHECKSUM_KEY",
     "ScopedCounterCache",

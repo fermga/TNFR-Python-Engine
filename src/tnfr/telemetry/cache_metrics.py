@@ -7,8 +7,13 @@ import weakref
 from dataclasses import dataclass
 from typing import Any, MutableMapping, TYPE_CHECKING
 
-from ..cache import CacheManager, CacheStatistics
-from ..utils import _graph_cache_manager, get_logger, json_dumps
+from ..utils import (
+    _graph_cache_manager,
+    CacheManager,
+    CacheStatistics,
+    get_logger,
+    json_dumps,
+)
 
 if TYPE_CHECKING:  # pragma: no cover - typing helpers
     from networkx import Graph
