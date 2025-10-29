@@ -13,7 +13,7 @@ from typing import Any, ContextManager, Generic, TypeVar
 
 import networkx as nx
 
-from ..cache import CacheCapacityConfig, CacheManager
+from ..cache import CacheCapacityConfig, CacheManager, InstrumentedLRUCache
 from ..types import GraphLike, NodeId, TimingContext, TNFRGraph
 
 K = TypeVar("K", bound=Hashable)
@@ -40,6 +40,8 @@ __all__ = (
     "stable_json",
     "build_cache_manager",
     "_GRAPH_CACHE_LAYERS_KEY",
+    "_SeedHashCache",
+    "ScopedCounterCache",
 )
 
 NODE_SET_CHECKSUM_KEY: str
@@ -135,3 +137,64 @@ def cached_nodes_and_A(
     nodes: tuple[Any, ...] | None = ...,
 ) -> tuple[tuple[Any, ...], Any]: ...
 def edge_version_update(G: TNFRGraph) -> ContextManager[None]: ...
+
+
+class _SeedCacheState:
+    cache: InstrumentedLRUCache[tuple[int, int], int] | None
+    maxsize: int
+
+
+class _CounterState(Generic[K]):
+    cache: InstrumentedLRUCache[K, int]
+    locks: dict[K, threading.RLock]
+    max_entries: int
+
+
+class _SeedHashCache(MutableMapping[tuple[int, int], int]):
+    _state_key: str
+
+    def __init__(
+        self,
+        *,
+        manager: CacheManager | None = ...,
+        state_key: str = ...,
+        default_maxsize: int = ...,
+    ) -> None: ...
+    def configure(self, maxsize: int) -> None: ...
+    def __getitem__(self, key: tuple[int, int]) -> int: ...
+    def __setitem__(self, key: tuple[int, int], value: int) -> None: ...
+    def __delitem__(self, key: tuple[int, int]) -> None: ...
+    def __iter__(self) -> Iterator[tuple[int, int]]: ...
+    def __len__(self) -> int: ...
+    def clear(self) -> None: ...
+    @property
+    def maxsize(self) -> int: ...
+    @property
+    def enabled(self) -> bool: ...
+    @property
+    def data(self) -> InstrumentedLRUCache[tuple[int, int], int] | None: ...
+
+
+class ScopedCounterCache(Generic[K]):
+    _state_key: str
+
+    def __init__(
+        self,
+        name: str,
+        max_entries: int | None = ...,
+        *,
+        manager: CacheManager | None = ..., 
+        default_max_entries: int = ...,
+    ) -> None: ...
+    def configure(self, *, force: bool = ..., max_entries: int | None = ...) -> None: ...
+    def clear(self) -> None: ...
+    def bump(self, key: K) -> int: ...
+    def __len__(self) -> int: ...
+    @property
+    def lock(self) -> threading.Lock | threading.RLock: ...
+    @property
+    def max_entries(self) -> int: ...
+    @property
+    def cache(self) -> InstrumentedLRUCache[K, int]: ...
+    @property
+    def locks(self) -> dict[K, threading.RLock]: ...

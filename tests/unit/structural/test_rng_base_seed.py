@@ -3,7 +3,6 @@ from __future__ import annotations
 import pytest
 
 from tnfr.rng import (
-    ScopedCounterCache,
     base_seed,
     cache_enabled,
     clear_rng_cache,
@@ -11,6 +10,7 @@ from tnfr.rng import (
     seed_hash,
     set_cache_maxsize,
 )
+from tnfr.utils import ScopedCounterCache
 
 
 def test_base_seed_returns_value(graph_canon):
