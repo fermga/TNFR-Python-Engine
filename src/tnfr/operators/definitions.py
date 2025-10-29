@@ -85,7 +85,7 @@ class Operator:
         """
         if self.glyph is None:
             raise NotImplementedError("Operator without assigned glyph")
-        from ..validation.grammar import (  # local import to avoid cycles
+        from ..validation import (  # local import to avoid cycles
             apply_glyph_with_grammar,
         )
 

@@ -26,7 +26,7 @@ from ..selector import (
 )
 from ..types import Glyph, GlyphSelector, HistoryState, NodeId, TNFRGraph
 from ..utils import get_numpy
-from ..validation.grammar import enforce_canonical_grammar, on_applied_glyph
+from ..validation import enforce_canonical_grammar, on_applied_glyph
 from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_SI
 
 GlyphCode: TypeAlias = Glyph | str

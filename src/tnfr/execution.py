@@ -14,7 +14,7 @@ from .glyph_history import ensure_history
 from .tokens import TARGET, THOL, WAIT, OpTag, Token
 from .types import Glyph, NodeId, TNFRGraph
 from .utils import MAX_MATERIALIZE_DEFAULT, ensure_collection, is_non_string_sequence
-from .validation.grammar import apply_glyph_with_grammar
+from .validation import apply_glyph_with_grammar
 
 AdvanceFn = Callable[[TNFRGraph], None]
 TraceEntry = dict[str, Any]
