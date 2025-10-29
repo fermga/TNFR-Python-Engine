@@ -95,7 +95,7 @@ theory.
 - **Releases** – version-by-version summaries in the [release notes](releases.md).
 
 !!! important "Mathematical Foundations"
-    The [Mathematical Foundations overview](theory/00_tnfr_overview.ipynb) anchors the canonical
+    The [Mathematical Foundations overview](theory/00_overview.ipynb) anchors the canonical
     nodal equation and structural operators. Each primer (structural frequency, phase synchrony,
     ΔNFR gradient fields, coherence metrics, sense index, and recursivity cascades) expands the
     derivations used by the engine. Refer back here whenever you need to validate analytical
@@ -144,7 +144,7 @@ guards, and observe unitary stability before coupling into higher level operator
    :func:`~tnfr.mathematics.frequency_positive`, and :func:`~tnfr.mathematics.stable_unitary` to ensure
    ΔNFR preserves Hilbert norms while sustaining positive structural frequency.
 
-The notebooks [`theory/00_tnfr_overview.ipynb`](theory/00_tnfr_overview.ipynb) and
+The notebooks [`theory/00_overview.ipynb`](theory/00_overview.ipynb) and
 [`theory/02_phase_synchrony_lattices.ipynb`](theory/02_phase_synchrony_lattices.ipynb) replay these
 steps with expanded derivations and visual telemetry overlays.
 
@@ -235,7 +235,7 @@ control storage costs.
 
 * Load the lattice notebooks listed above to inspect full ΔNFR evolution traces.
 * Refer to [`api/telemetry.md`](api/telemetry.md) for downstream aggregation and to
-  [`theory/00_tnfr_overview.ipynb`](theory/00_tnfr_overview.ipynb) for the derivation that ties the Hilbert
+  [`theory/00_overview.ipynb`](theory/00_overview.ipynb) for the derivation that ties the Hilbert
   norms back to ΔNFR coherence envelopes.
 DOC
 fi
@@ -445,8 +445,8 @@ notebook_dir = Path(os.environ["NOTEBOOK_DIR"])
 refresh = os.environ["NOTEBOOK_REFRESH"] == "1"
 
 notebooks = {
-    "00_tnfr_overview.ipynb": {
-        "title": "TNFR overview",
+    "00_overview.ipynb": {
+        "title": "Overview",
         "summary": "Map the documentation surface and connect the nodal equation to Phase-3 notebooks.",
         "sections": [
             (
@@ -478,8 +478,8 @@ notebooks = {
                     "| 01_hilbert_space_h_nfr | Construct ℋ_NFR with reproducible spectra. |\n",
                     "| 02_coherence_operator_hatC | Track coherence envelopes and ΔNFR expectations. |\n",
                     "| 03_frequency_operator_hatJ | Maintain positive νf across operator chains. |\n",
-                    "| 04_validator_and_metrics_suite | Execute Phase-3 validator stack with logging budgets. |\n",
-                    "| 05_unitary_dynamics_delta_nfr | Study ΔNFR unitary propagation with controlled perturbations. |\n",
+                    "| 04_nfr_validator_and_metrics | Execute Phase-3 validator stack with logging budgets. |\n",
+                    "| 05_unitary_dynamics_and_delta_nfr | Study ΔNFR unitary propagation with controlled perturbations. |\n",
                 ],
             ),
         ],
@@ -594,14 +594,14 @@ notebooks = {
             "operator.frequency_positive(state)\n",
         ],
     },
-    "04_validator_and_metrics_suite.ipynb": {
-        "title": "Validator and metrics suite",
+    "04_nfr_validator_and_metrics.ipynb": {
+        "title": "NFR validator & metrics",
         "summary": "Execute the validator stack with logging budgets tuned for Phase-3 fieldwork.",
         "sections": [
             (
                 "Validator stack",
                 [
-                    "# Validator and metrics suite\n",
+                    "# NFR validator & metrics\n",
                     "\n",
                     "Phase-3 emphasises explicit logging of coherence, νf, and ΔNFR stability.\n",
                     "Use the suite to script repeatable validation sweeps across experiments.\n",
@@ -635,7 +635,7 @@ notebooks = {
         ],
     },
 
-    "05_unitary_dynamics_delta_nfr.ipynb": {
+    "05_unitary_dynamics_and_delta_nfr.ipynb": {
         "title": "Unitary dynamics & ΔNFR",
         "summary": "Trace ΔNFR propagation under controlled perturbations and confirm coherence recovery.",
         "sections": [
