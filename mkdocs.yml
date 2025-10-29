@@ -15,12 +15,20 @@ nav:
       - Structural operators: api/operators.md
       - Telemetry & utilities: api/telemetry.md
   - Mathematical Foundations:
-      - Overview: theory/00_overview.ipynb
-      - Hilbert space foundations: theory/01_hilbert_space.ipynb
-      - Coherence operator Ĉ: theory/02_coherence_operator_C_hat.ipynb
-      - Frequency operator Ĵ: theory/03_frequency_operator_J_hat.ipynb
-      - Validator and metrics: theory/04_validator_and_metrics.ipynb
-      - Unitary dynamics and ΔNFR: theory/05_unitary_dynamics_and_delta_nfr.ipynb
+      - Overview: theory/00_tnfr_overview.ipynb
+      - Primers:
+          - Structural frequency primer: theory/01_structural_frequency_primer.ipynb
+          - Phase synchrony lattices: theory/02_phase_synchrony_lattices.ipynb
+          - ΔNFR gradient fields: theory/03_delta_nfr_gradient_fields.ipynb
+          - Coherence metrics walkthrough: theory/04_coherence_metrics_walkthrough.ipynb
+          - Sense index calibration: theory/05_sense_index_calibration.ipynb
+          - Recursivity cascades: theory/06_recursivity_cascades.ipynb
+      - Operators & validators:
+          - Hilbert space ℋ_NFR: theory/01_hilbert_space_h_nfr.ipynb
+          - Coherence operator Ĉ: theory/02_coherence_operator_hatC.ipynb
+          - Frequency operator Ĵ: theory/03_frequency_operator_hatJ.ipynb
+          - Validator & metrics suite: theory/04_validator_and_metrics_suite.ipynb
+          - Unitary dynamics & ΔNFR: theory/05_unitary_dynamics_delta_nfr.ipynb
   - Examples: examples/README.md
   - Security:
       - Monitoring: security/monitoring.md

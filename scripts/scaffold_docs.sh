@@ -28,12 +28,12 @@ import os
 import uuid
 
 notebooks = [
-    ("01-structural-frequency.ipynb", "Structural frequency primer"),
-    ("02-phase-synchrony.ipynb", "Phase synchrony lattices"),
-    ("03-delta-nfr-gradients.ipynb", "ΔNFR gradient fields"),
-    ("04-coherence-metrics.ipynb", "Coherence metrics walkthrough"),
-    ("05-sense-index.ipynb", "Sense index calibration"),
-    ("06-recursivity.ipynb", "Recursivity cascades"),
+    ("01_structural_frequency_primer.ipynb", "Structural frequency primer"),
+    ("02_phase_synchrony_lattices.ipynb", "Phase synchrony lattices"),
+    ("03_delta_nfr_gradient_fields.ipynb", "ΔNFR gradient fields"),
+    ("04_coherence_metrics_walkthrough.ipynb", "Coherence metrics walkthrough"),
+    ("05_sense_index_calibration.ipynb", "Sense index calibration"),
+    ("06_recursivity_cascades.ipynb", "Recursivity cascades"),
 ]
 
 output_dir = Path(os.environ["NOTEBOOK_DIR"])
