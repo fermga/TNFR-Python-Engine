@@ -18,6 +18,8 @@ from dataclasses import dataclass
 from types import ModuleType
 from typing import TYPE_CHECKING, Any, cast
 
+from time import perf_counter
+
 from ..alias import get_attr, get_theta_attr, set_dnfr
 from ..cache import CacheManager
 from ..constants import DEFAULTS, get_aliases, get_param
@@ -146,6 +148,34 @@ _NUMPY_CACHE_ATTRS = (
     "dense_accum_np",
     "dense_degree_np",
 )
+
+
+def _profile_start_stop(
+    profile: MutableMapping[str, float] | None,
+    *,
+    keys: Sequence[str] = (),
+) -> tuple[Callable[[], float], Callable[[str, float], None]]:
+    """Return helpers to measure wall-clock durations for ``profile`` keys."""
+
+    if profile is not None:
+        for key in keys:
+            profile.setdefault(key, 0.0)
+
+        def _start() -> float:
+            return perf_counter()
+
+        def _stop(metric: str, start: float) -> None:
+            profile[metric] = float(profile.get(metric, 0.0)) + (perf_counter() - start)
+
+    else:
+
+        def _start() -> float:
+            return 0.0
+
+        def _stop(metric: str, start: float) -> None:  # noqa: ARG001 - uniform signature
+            return None
+
+    return _start, _stop
 
 
 def _iter_chunk_offsets(total: int, jobs: int) -> Iterator[tuple[int, int]]:
@@ -780,7 +810,12 @@ def _refresh_dnfr_vectors(
             cache.sin_theta_np = None
 
 
-def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[str, Any]:
+def _prepare_dnfr_data(
+    G: TNFRGraph,
+    *,
+    cache_size: int | None = 128,
+    profile: MutableMapping[str, float] | None = None,
+) -> dict[str, Any]:
     """Precompute common data for ΔNFR strategies.
 
     The helper decides between edge-wise and dense adjacency accumulation
@@ -788,7 +823,20 @@ def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[st
     ``_SPARSE_DENSITY_THRESHOLD`` receive a cached adjacency matrix so the
     dense path can be exercised; callers may also force the dense mode by
     setting ``G.graph['dnfr_force_dense']`` to a truthy value.
+
+    Parameters
+    ----------
+    profile : MutableMapping[str, float] or None, optional
+        Mutable mapping that accumulates wall-clock timings for ΔNFR
+        preparation. When provided the helper increases the
+        ``"dnfr_cache_rebuild"`` bucket with the time spent refreshing cached
+        node vectors and associated NumPy workspaces.
     """
+    start_timer, stop_timer = _profile_start_stop(
+        profile,
+        keys=("dnfr_cache_rebuild",),
+    )
+
     graph = G.graph
     weights = graph.get("_dnfr_weights")
     if weights is None:
@@ -825,6 +873,7 @@ def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[st
     checksum = G.graph.get("_dnfr_nodes_checksum")
     dirty_flag = bool(G.graph.pop("_dnfr_prep_dirty", False))
     existing_cache = cast(DnfrCache | None, graph.get("_dnfr_prep_cache"))
+    cache_timer = start_timer()
     cache, idx, theta, epi, vf, cos_theta, sin_theta, refreshed = _init_dnfr_cache(
         G,
         nodes,
@@ -833,6 +882,7 @@ def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[st
         force_refresh=dirty_flag,
         manager=manager,
     )
+    stop_timer("dnfr_cache_rebuild", cache_timer)
     dirty = dirty_flag or refreshed
     result["cache"] = cache
     result["idx"] = idx
@@ -1021,8 +1071,22 @@ def _apply_dnfr_gradients(
     degs: Mapping[Any, float] | Sequence[float] | np.ndarray | None = None,
     *,
     n_jobs: int | None = None,
+    profile: MutableMapping[str, float] | None = None,
 ) -> None:
-    """Combine precomputed gradients and write ΔNFR to each node."""
+    """Combine precomputed gradients and write ΔNFR to each node.
+
+    Parameters
+    ----------
+    profile : MutableMapping[str, float] or None, optional
+        Mutable mapping receiving aggregated timings for the gradient assembly
+        (``"dnfr_gradient_assembly"``) and in-place writes
+        (``"dnfr_inplace_write"``).
+    """
+    start_timer, stop_timer = _profile_start_stop(
+        profile,
+        keys=("dnfr_gradient_assembly", "dnfr_inplace_write"),
+    )
+
     np = get_numpy()
     nodes = data["nodes"]
     theta = data["theta"]
@@ -1057,6 +1121,8 @@ def _apply_dnfr_gradients(
             and isinstance(deg_bar, np.ndarray)
             and isinstance(deg_array, np.ndarray)
         )
+
+    grad_timer = start_timer()
 
     if use_vector:
         grad_phase = _ensure_cached_array(cache, "grad_phase_np", theta_np.shape, np)
@@ -1163,8 +1229,12 @@ def _apply_dnfr_gradients(
             cache.grad_topo_np = None
             cache.grad_total_np = None
 
+    stop_timer("dnfr_gradient_assembly", grad_timer)
+
+    write_timer = start_timer()
     for i, n in enumerate(nodes):
         set_dnfr(G, n, float(dnfr_values[i]))
+    stop_timer("dnfr_inplace_write", write_timer)
 
 
 def _init_bar_arrays(
@@ -1383,8 +1453,23 @@ def _compute_dnfr_common(
     deg_sum: Sequence[float] | None = None,
     degs: Sequence[float] | None = None,
     n_jobs: int | None = None,
+    profile: MutableMapping[str, float] | None = None,
 ) -> None:
-    """Compute neighbour means and apply ΔNFR gradients."""
+    """Compute neighbour means and apply ΔNFR gradients.
+
+    Parameters
+    ----------
+    profile : MutableMapping[str, float] or None, optional
+        Mutable mapping that records wall-clock durations for the neighbour
+        mean computation (``"dnfr_neighbor_means"``), the gradient assembly
+        (``"dnfr_gradient_assembly"``) and the final in-place writes to the
+        graph (``"dnfr_inplace_write"``).
+    """
+    start_timer, stop_timer = _profile_start_stop(
+        profile,
+        keys=("dnfr_neighbor_means", "dnfr_gradient_assembly", "dnfr_inplace_write"),
+    )
+
     np_module = get_numpy()
     if np_module is not None and isinstance(
         count, getattr(np_module, "ndarray", tuple)
@@ -1392,6 +1477,7 @@ def _compute_dnfr_common(
         np_arg = np_module
     else:
         np_arg = None
+    neighbor_timer = start_timer()
     th_bar, epi_bar, vf_bar, deg_bar = _compute_neighbor_means(
         G,
         data,
@@ -1404,6 +1490,7 @@ def _compute_dnfr_common(
         degs=degs,
         np=np_arg,
     )
+    stop_timer("dnfr_neighbor_means", neighbor_timer)
     _apply_dnfr_gradients(
         G,
         data,
@@ -1413,6 +1500,7 @@ def _compute_dnfr_common(
         deg_bar,
         degs,
         n_jobs=n_jobs,
+        profile=profile,
     )
 
 
@@ -2117,6 +2205,7 @@ def _compute_dnfr(
     *,
     use_numpy: bool | None = None,
     n_jobs: int | None = None,
+    profile: MutableMapping[str, float] | None = None,
 ) -> None:
     """Compute ΔNFR using neighbour sums.
 
@@ -2131,7 +2220,19 @@ def _compute_dnfr(
         prepares NumPy buffers (if available). When ``False`` the engine still
         prefers the vectorised path whenever :func:`get_numpy` returns a module
         and the graph does not set ``vectorized_dnfr`` to ``False``.
+    profile : MutableMapping[str, float] or None, optional
+        Mutable mapping that aggregates wall-clock durations for neighbour
+        accumulation and records which execution branch was used. The
+        ``"dnfr_neighbor_accumulation"`` bucket gathers the time spent inside
+        :func:`_build_neighbor_sums_common`, while ``"dnfr_path"`` stores the
+        string ``"vectorized"`` or ``"fallback"`` describing the active
+        implementation.
     """
+    start_timer, stop_timer = _profile_start_stop(
+        profile,
+        keys=("dnfr_neighbor_accumulation",),
+    )
+
     np_module = get_numpy()
     data["dnfr_numpy_available"] = bool(np_module)
     vector_disabled = G.graph.get("vectorized_dnfr") is False
@@ -2141,23 +2242,29 @@ def _compute_dnfr(
     if use_numpy is False or vector_disabled:
         prefer_dense = False
     data["dnfr_used_numpy"] = bool(prefer_dense and np_module is not None)
+    if profile is not None:
+        profile["dnfr_path"] = "vectorized" if data["dnfr_used_numpy"] else "fallback"
 
     data["n_jobs"] = n_jobs
     try:
+        neighbor_timer = start_timer()
         res = _build_neighbor_sums_common(
             G,
             data,
             use_numpy=prefer_dense,
             n_jobs=n_jobs,
         )
+        stop_timer("dnfr_neighbor_accumulation", neighbor_timer)
     except TypeError as exc:
         if "n_jobs" not in str(exc):
             raise
+        neighbor_timer = start_timer()
         res = _build_neighbor_sums_common(
             G,
             data,
             use_numpy=prefer_dense,
         )
+        stop_timer("dnfr_neighbor_accumulation", neighbor_timer)
     if res is None:
         return
     x, y, epi_sum, vf_sum, count, deg_sum, degs = res
@@ -2172,6 +2279,7 @@ def _compute_dnfr(
         deg_sum=deg_sum,
         degs=degs,
         n_jobs=n_jobs,
+        profile=profile,
     )
 
 
@@ -2180,6 +2288,7 @@ def default_compute_delta_nfr(
     *,
     cache_size: int | None = 1,
     n_jobs: int | None = None,
+    profile: MutableMapping[str, float] | None = None,
 ) -> None:
     """Compute ΔNFR by mixing phase, EPI, νf and a topological term.
 
@@ -2195,14 +2304,32 @@ def default_compute_delta_nfr(
         Parallel worker count for the pure-Python accumulation path. ``None``
         or values <= 1 preserve the serial behaviour. The vectorised NumPy
         branch ignores this parameter as it already operates in bulk.
+    profile : MutableMapping[str, float] or None, optional
+        Mutable mapping that aggregates the wall-clock timings captured during
+        the ΔNFR computation. The mapping receives the buckets documented in
+        :func:`_prepare_dnfr_data` and :func:`_compute_dnfr`, plus
+        ``"dnfr_neighbor_means"``, ``"dnfr_gradient_assembly"`` and
+        ``"dnfr_inplace_write"`` describing the internal stages of
+        :func:`_compute_dnfr_common`. ``"dnfr_path"`` reflects whether the
+        vectorised or fallback implementation executed the call.
     """
-    data = _prepare_dnfr_data(G, cache_size=cache_size)
+    if profile is not None:
+        for key in (
+            "dnfr_cache_rebuild",
+            "dnfr_neighbor_accumulation",
+            "dnfr_neighbor_means",
+            "dnfr_gradient_assembly",
+            "dnfr_inplace_write",
+        ):
+            profile.setdefault(key, 0.0)
+
+    data = _prepare_dnfr_data(G, cache_size=cache_size, profile=profile)
     _write_dnfr_metadata(
         G,
         weights=data["weights"],
         hook_name="default_compute_delta_nfr",
     )
-    _compute_dnfr(G, data, n_jobs=n_jobs)
+    _compute_dnfr(G, data, n_jobs=n_jobs, profile=profile)
     if not data.get("dnfr_numpy_available"):
         cache = data.get("cache")
         if isinstance(cache, DnfrCache):
