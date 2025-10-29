@@ -1,6 +1,7 @@
 """Mathematics primitives aligned with TNFR coherence modeling."""
 
 from .operators import CoherenceOperator, FrequencyOperator
+from .projection import BasicStateProjector, StateProjector
 from .spaces import BanachSpaceEPI, HilbertSpace
 from .transforms import (
     IsometryFactory,
@@ -20,4 +21,6 @@ __all__ = [
     "build_isometry_factory",
     "validate_norm_preservation",
     "ensure_coherence_monotonicity",
+    "StateProjector",
+    "BasicStateProjector",
 ]
