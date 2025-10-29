@@ -264,30 +264,35 @@ def neighbor_phase_mean_bulk(
     )
 
     if edge_count:
+        cos_bincount = np.bincount(
+            edge_dst_arr,
+            weights=cos_arr[edge_src_arr],
+            minlength=node_count,
+        )
+        sin_bincount = np.bincount(
+            edge_dst_arr,
+            weights=sin_arr[edge_src_arr],
+            minlength=node_count,
+        )
+        count_bincount = np.bincount(
+            edge_dst_arr,
+            minlength=node_count,
+        ).astype(float, copy=False)
+
         if not has_cos_buffer:
-            neighbor_cos_sum = np.bincount(
-                edge_dst_arr,
-                weights=cos_arr[edge_src_arr],
-                minlength=node_count,
-            )
+            neighbor_cos_sum = cos_bincount
         else:
-            np.add.at(neighbor_cos_sum, edge_dst_arr, cos_arr[edge_src_arr])
+            np.copyto(neighbor_cos_sum, cos_bincount)
 
         if not has_sin_buffer:
-            neighbor_sin_sum = np.bincount(
-                edge_dst_arr,
-                weights=sin_arr[edge_src_arr],
-                minlength=node_count,
-            )
+            neighbor_sin_sum = sin_bincount
         else:
-            np.add.at(neighbor_sin_sum, edge_dst_arr, sin_arr[edge_src_arr])
+            np.copyto(neighbor_sin_sum, sin_bincount)
 
         if not has_count_buffer:
-            neighbor_counts = np.bincount(
-                edge_dst_arr, minlength=node_count
-            ).astype(float)
+            neighbor_counts = count_bincount
         else:
-            np.add.at(neighbor_counts, edge_dst_arr, 1.0)
+            np.copyto(neighbor_counts, count_bincount)
     else:
         if neighbor_cos_sum is None:
             neighbor_cos_sum = np.zeros(node_count, dtype=float)
