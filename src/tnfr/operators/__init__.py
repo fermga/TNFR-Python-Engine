@@ -13,7 +13,7 @@ from tnfr import glyph_history
 
 from ..alias import get_attr
 from ..constants import DEFAULTS, get_aliases, get_param
-from ..helpers.numeric import angle_diff
+from ..utils.numeric import angle_diff
 from ..metrics.trig import neighbor_phase_mean
 from ..rng import make_rng
 from ..types import EPIValue, Glyph, NodeId, TNFRGraph

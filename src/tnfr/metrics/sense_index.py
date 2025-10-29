@@ -41,7 +41,7 @@ from typing import Any, Callable, Iterable, Iterator, Mapping, MutableMapping, c
 
 from ..alias import get_attr, set_attr
 from ..constants import get_aliases
-from ..helpers.numeric import angle_diff, angle_diff_array, clamp01
+from ..utils.numeric import angle_diff, angle_diff_array, clamp01
 from ..types import GraphLike
 from ..utils import (
     edge_version_cache,

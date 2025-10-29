@@ -16,7 +16,7 @@ from .glyph_history import (
     count_glyphs,
     ensure_history,
 )
-from .helpers.numeric import angle_diff
+from .utils.numeric import angle_diff
 from .metrics.common import compute_coherence
 from .types import Glyph, GlyphLoadDistribution, TNFRGraph
 from .utils import (

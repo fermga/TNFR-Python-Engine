@@ -43,6 +43,15 @@ from .graph import (
     mark_dnfr_prep_dirty,
     supports_add_edge,
 )
+from .numeric import (
+    angle_diff,
+    angle_diff_array,
+    clamp,
+    clamp01,
+    kahan_sum_nd,
+    similarity_abs,
+    within_range,
+)
 from .init import (
     _DEFAULT_CACHE_SIZE,
     _FAILED_IMPORT_LIMIT,
@@ -94,6 +103,10 @@ __all__ = (
     "MAX_MATERIALIZE_DEFAULT",
     "negative_weights_warn_once",
     "mix_groups",
+    "angle_diff",
+    "angle_diff_array",
+    "clamp",
+    "clamp01",
     "CacheManager",
     "EdgeCacheManager",
     "NODE_SET_CHECKSUM_KEY",
@@ -122,6 +135,9 @@ __all__ = (
     "DEFAULT_PARAMS",
     "json_dumps",
     "clear_orjson_param_warnings",
+    "kahan_sum_nd",
+    "similarity_abs",
+    "within_range",
     "validate_window",
     "run_validators",
     "_configure_root",

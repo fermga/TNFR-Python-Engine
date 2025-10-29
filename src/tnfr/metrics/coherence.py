@@ -17,7 +17,7 @@ from ..constants import (
     get_param,
 )
 from ..glyph_history import append_metric, ensure_history
-from ..helpers.numeric import clamp01
+from ..utils.numeric import clamp01
 from ..observers import (
     DEFAULT_GLYPH_LOAD_SPAN,
     DEFAULT_WBAR_SPAN,

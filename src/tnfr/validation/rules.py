@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping
 from ..alias import get_attr
 from ..constants import get_aliases
 from ..glyph_history import recent_glyph
-from ..helpers.numeric import clamp01
+from ..utils.numeric import clamp01
 from ..metrics.common import normalize_dnfr
 from ..types import Glyph
 from .compatibility import CANON_COMPAT, CANON_FALLBACK

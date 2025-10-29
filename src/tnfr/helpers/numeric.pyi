@@ -1,13 +1,4 @@
-from typing import Any
+from __future__ import annotations
 
-__all__: Any
-
-def __getattr__(name: str) -> Any: ...
-
-angle_diff: Any
-angle_diff_array: Any
-clamp: Any
-clamp01: Any
-kahan_sum_nd: Any
-similarity_abs: Any
-within_range: Any
+from ..utils.numeric import *  # type: ignore[misc]
+from ..utils.numeric import __all__

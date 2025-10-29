@@ -1,7 +1,8 @@
 """Core caching utilities shared across TNFR helpers.
 
 This module consolidates structural cache helpers that previously lived in
-``tnfr.helpers.cache_utils`` and ``tnfr.helpers.edge_cache``.  The functions
+``tnfr.helpers.cache_utils`` and ``tnfr.helpers.edge_cache`` and are now
+exposed under :mod:`tnfr.utils`. The functions
 exposed here are responsible for maintaining deterministic node digests,
 scoped graph caches guarded by locks, and version counters that keep edge
 artifacts in sync with ΔNFR driven updates.

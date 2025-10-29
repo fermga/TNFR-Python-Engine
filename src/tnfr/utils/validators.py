@@ -11,7 +11,7 @@ from .._compat import TypeAlias
 from ..alias import get_attr
 from ..config.constants import GLYPHS_CANONICAL_SET
 from ..constants import get_aliases, get_param
-from ..helpers.numeric import within_range
+from .numeric import within_range
 from ..types import (
     EPIValue,
     NodeId,

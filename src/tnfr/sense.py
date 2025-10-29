@@ -23,7 +23,7 @@ from .glyph_history import (
     ensure_history,
     last_glyph,
 )
-from .helpers.numeric import clamp01, kahan_sum_nd
+from .utils.numeric import clamp01, kahan_sum_nd
 from .types import NodeId, SigmaVector, TNFRGraph
 from .utils import get_numpy
 

@@ -24,7 +24,7 @@ from ..constants import (
     normalise_state_token,
 )
 from ..glyph_history import append_metric, ensure_history
-from ..helpers.numeric import clamp01, similarity_abs
+from ..utils.numeric import clamp01, similarity_abs
 from ..types import (
     DiagnosisNodeData,
     DiagnosisPayload,
