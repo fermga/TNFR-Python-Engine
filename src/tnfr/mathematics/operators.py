@@ -17,6 +17,8 @@ else:  # pragma: no cover - runtime alias
 
 __all__ = ["CoherenceOperator", "FrequencyOperator"]
 
+DEFAULT_C_MIN: float = 0.1
+
 
 def _as_complex_vector(vector: Sequence[complex] | np.ndarray) -> ComplexVector:
     arr = np.asarray(vector, dtype=np.complex128)
@@ -41,7 +43,10 @@ class CoherenceOperator:
     matrix expressed on the canonical basis or from a pre-computed list of
     eigenvalues (interpreted as already diagonalised).  The minimal eigenvalue
     ``c_min`` is tracked explicitly so structural stability thresholds are easy
-    to evaluate during simulations.
+    to evaluate during simulations.  The precedence for determining the stored
+    threshold is: an explicit ``c_min`` wins, otherwise the spectral floor
+    (minimum real eigenvalue) is used, with ``0.1`` acting as the canonical
+    fallback for callers that still wish to supply a fixed number.
     """
 
     matrix: ComplexMatrix
@@ -52,6 +57,7 @@ class CoherenceOperator:
         self,
         operator: Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray,
         *,
+        c_min: float = DEFAULT_C_MIN,
         ensure_hermitian: bool = True,
         atol: float = 1e-9,
     ) -> None:
@@ -70,7 +76,8 @@ class CoherenceOperator:
                 self.eigenvalues = np.linalg.eigvalsh(self.matrix)
             else:
                 self.eigenvalues = np.linalg.eigvals(self.matrix)
-        self.c_min = float(np.min(self.eigenvalues.real))
+        derived_c_min = float(np.min(self.eigenvalues.real))
+        self.c_min = float(c_min) if c_min is not DEFAULT_C_MIN else derived_c_min
 
     @staticmethod
     def _check_hermitian(matrix: ComplexMatrix, *, atol: float = 1e-9) -> bool:

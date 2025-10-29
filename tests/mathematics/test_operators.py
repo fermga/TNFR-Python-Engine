@@ -31,6 +31,13 @@ def test_coherence_operator_from_eigenvalues() -> None:
     np.testing.assert_array_equal(operator.spectrum(), np.array([1.0, 2.0, 3.0], dtype=np.complex128))
 
 
+def test_coherence_operator_allows_custom_c_min() -> None:
+    operator = CoherenceOperator([[1.0, 0.0], [0.0, 2.0]], c_min=0.25)
+
+    assert operator.c_min == pytest.approx(0.25)
+    assert min(operator.eigenvalues.real) != pytest.approx(operator.c_min)
+
+
 def test_coherence_operator_expectation(structural_rng: np.random.Generator) -> None:
     matrix = np.array([[1.0, 0.0], [0.0, 2.0]], dtype=np.complex128)
     operator = CoherenceOperator(matrix)
