@@ -15,12 +15,12 @@ from dataclasses import dataclass
 from typing import Any, Callable, Mapping, Sequence
 
 import networkx as nx
-from hypothesis import settings, strategies as st
+from hypothesis import assume, settings, strategies as st
 from hypothesis.strategies import SearchStrategy
 
 from hypothesis_networkx import graph_builder
 
-from tnfr.constants import DNFR_PRIMARY, inject_defaults
+from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY, inject_defaults
 from tnfr.dynamics import set_delta_nfr_hook
 from tnfr.initialization import init_node_attrs
 
@@ -28,8 +28,11 @@ __all__ = (
     "DEFAULT_PROPERTY_MAX_EXAMPLES",
     "PROPERTY_TEST_SETTINGS",
     "HookConfig",
+    "ClusteredGraph",
     "create_nfr",
     "prepare_network",
+    "homogeneous_graphs",
+    "two_cluster_graphs",
 )
 
 # Hypothesis guidance for CI runs.
@@ -211,3 +214,86 @@ def _finalise_graph(
         hook_cfg.install(graph)
 
     return graph
+
+
+@dataclass(frozen=True)
+class ClusteredGraph:
+    """Description of a graph partitioned into two clusters."""
+
+    graph: nx.Graph
+    clusters: tuple[tuple[Any, ...], tuple[Any, ...]]
+
+
+def _bounded_attr() -> st.SearchStrategy[float]:
+    return st.floats(
+        min_value=-2.0,
+        max_value=2.0,
+        allow_nan=False,
+        allow_infinity=False,
+    )
+
+
+@st.composite
+def homogeneous_graphs(
+    draw,
+    *,
+    min_nodes: int = 2,
+    max_nodes: int = 8,
+) -> nx.Graph:
+    """Graphs whose nodes share the same EPI and νf values."""
+
+    graph = draw(
+        prepare_network(
+            min_nodes=min_nodes,
+            max_nodes=max_nodes,
+            connected=True,
+        )
+    )
+    epi_value = draw(_bounded_attr())
+    vf_value = draw(_bounded_attr())
+    for _node, data in graph.nodes(data=True):
+        data[EPI_PRIMARY] = epi_value
+        data[VF_PRIMARY] = vf_value
+        data[DNFR_PRIMARY] = 0.0
+    return graph
+
+
+@st.composite
+def two_cluster_graphs(
+    draw,
+    *,
+    min_cluster: int = 2,
+    max_cluster: int = 4,
+) -> ClusteredGraph:
+    """Return a complete bi-cluster graph with contrasting EPI/νf."""
+
+    size_a = draw(st.integers(min_value=min_cluster, max_value=max_cluster))
+    size_b = size_a
+
+    graph = nx.complete_bipartite_graph(size_a, size_b)
+    inject_defaults(graph, override=False)
+    init_node_attrs(graph, override=True)
+
+    left_nodes = tuple(range(size_a))
+    right_nodes = tuple(range(size_a, size_a + size_b))
+
+    epi_left = draw(_bounded_attr())
+    epi_right = draw(_bounded_attr())
+    vf_left = draw(_bounded_attr())
+    vf_right = draw(_bounded_attr())
+
+    # Ensure the clusters are distinguishable to produce a gradient.
+    assume(abs(epi_left - epi_right) + abs(vf_left - vf_right) > 1e-6)
+
+    for node in left_nodes:
+        data = graph.nodes[node]
+        data[EPI_PRIMARY] = epi_left
+        data[VF_PRIMARY] = vf_left
+        data[DNFR_PRIMARY] = 0.0
+    for node in right_nodes:
+        data = graph.nodes[node]
+        data[EPI_PRIMARY] = epi_right
+        data[VF_PRIMARY] = vf_right
+        data[DNFR_PRIMARY] = 0.0
+
+    return ClusteredGraph(graph=graph, clusters=(left_nodes, right_nodes))
