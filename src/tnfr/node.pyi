@@ -1,8 +1,17 @@
 from __future__ import annotations
 
-from collections.abc import Hashable, Iterable, MutableMapping
+from collections.abc import Hashable, Iterable, Mapping, MutableMapping, Sequence
 from typing import Any, Callable, Optional, Protocol, SupportsFloat, TypeVar
 
+import numpy as np
+
+from .mathematics import (
+    CoherenceOperator,
+    FrequencyOperator,
+    HilbertSpace,
+    NFRValidator,
+    StateProjector,
+)
 from .types import (
     CouplingWeight,
     DeltaNFR,
@@ -80,8 +89,30 @@ class NodeNX(NodeProtocol):
     G: TNFRGraph
     n: NodeId
     graph: MutableMapping[str, Any]
+    state_projector: StateProjector
+    hilbert_space: HilbertSpace
+    coherence_operator: CoherenceOperator | None
+    frequency_operator: FrequencyOperator | None
+    coherence_threshold: float | None
+    validator: NFRValidator | None
+    rng: np.random.Generator | None
 
-    def __init__(self, G: TNFRGraph, n: NodeId) -> None: ...
+    def __init__(
+        self,
+        G: TNFRGraph,
+        n: NodeId,
+        *,
+        state_projector: StateProjector | None = ...,
+        enable_math_validation: Optional[bool] = ...,
+        hilbert_space: HilbertSpace | None = ...,
+        coherence_operator: CoherenceOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = ...,
+        coherence_operator_params: Mapping[str, Any] | None = ...,
+        frequency_operator: FrequencyOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = ...,
+        frequency_operator_params: Mapping[str, Any] | None = ...,
+        coherence_threshold: float | None = ...,
+        validator: NFRValidator | None = ...,
+        rng: np.random.Generator | None = ...,
+    ) -> None: ...
     @classmethod
     def from_graph(cls, G: TNFRGraph, n: NodeId) -> "NodeNX": ...
     def _glyph_storage(self) -> MutableMapping[str, Any]: ...
@@ -124,3 +155,19 @@ class NodeNX(NodeProtocol):
     ) -> None: ...
     def offset(self) -> int: ...
     def all_nodes(self) -> Iterable[NodeProtocol]: ...
+    def run_sequence_with_validation(
+        self,
+        ops: Iterable[Callable[[TNFRGraph, NodeId], None]],
+        *,
+        projector: StateProjector | None = ...,
+        hilbert_space: HilbertSpace | None = ...,
+        coherence_operator: CoherenceOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = ...,
+        coherence_operator_params: Mapping[str, Any] | None = ...,
+        coherence_threshold: float | None = ...,
+        freq_op: FrequencyOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = ...,
+        frequency_operator_params: Mapping[str, Any] | None = ...,
+        validator: NFRValidator | None = ...,
+        enforce_frequency_positivity: bool | None = ...,
+        enable_validation: bool | None = ...,
+        rng: np.random.Generator | None = ...,
+    ) -> dict[str, Any]: ...
