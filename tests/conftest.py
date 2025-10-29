@@ -25,7 +25,7 @@ def structural_tolerances() -> dict[str, float]:
 def structural_rng() -> np.random.Generator:
     """Provide a reproducible RNG aligned with TNFR structural conventions."""
 
-    return np.random.default_rng(seed=12345)
+    return np.random.default_rng(seed=0)
 
 
 @pytest.fixture
