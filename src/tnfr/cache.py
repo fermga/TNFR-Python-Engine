@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 import logging
+import pickle
+import shelve
 import threading
 from collections.abc import Iterable
 from contextlib import contextmanager
@@ -25,10 +28,14 @@ from cachetools import LRUCache
 from .types import TimingContext
 
 __all__ = [
+    "CacheLayer",
     "CacheManager",
     "CacheCapacityConfig",
     "CacheStatistics",
     "InstrumentedLRUCache",
+    "MappingCacheLayer",
+    "RedisCacheLayer",
+    "ShelveCacheLayer",
     "ManagedLRUCache",
     "prune_lock_mapping",
 ]
@@ -94,6 +101,162 @@ class _CacheEntry:
     factory: Callable[[], Any]
     lock: threading.Lock
     reset: Callable[[Any], Any] | None = None
+    encoder: Callable[[Any], Any] | None = None
+    decoder: Callable[[Any], Any] | None = None
+
+
+class CacheLayer(ABC):
+    """Abstract interface implemented by storage backends orchestrated by :class:`CacheManager`."""
+
+    @abstractmethod
+    def load(self, name: str) -> Any:
+        """Return the stored payload for ``name`` or raise :class:`KeyError`."""
+
+    @abstractmethod
+    def store(self, name: str, value: Any) -> None:
+        """Persist ``value`` under ``name``."""
+
+    @abstractmethod
+    def delete(self, name: str) -> None:
+        """Remove ``name`` from the backend if present."""
+
+    @abstractmethod
+    def clear(self) -> None:
+        """Remove every entry maintained by the layer."""
+
+    def close(self) -> None:  # pragma: no cover - optional hook
+        """Release resources held by the backend."""
+
+
+class MappingCacheLayer(CacheLayer):
+    """In-memory cache layer backed by a mutable mapping."""
+
+    def __init__(self, storage: MutableMapping[str, Any] | None = None) -> None:
+        self._storage: MutableMapping[str, Any] = {} if storage is None else storage
+        self._lock = threading.RLock()
+
+    @property
+    def storage(self) -> MutableMapping[str, Any]:
+        """Return the mapping used to store cache entries."""
+
+        return self._storage
+
+    def load(self, name: str) -> Any:
+        with self._lock:
+            if name not in self._storage:
+                raise KeyError(name)
+            return self._storage[name]
+
+    def store(self, name: str, value: Any) -> None:
+        with self._lock:
+            self._storage[name] = value
+
+    def delete(self, name: str) -> None:
+        with self._lock:
+            self._storage.pop(name, None)
+
+    def clear(self) -> None:
+        with self._lock:
+            self._storage.clear()
+
+
+class ShelveCacheLayer(CacheLayer):
+    """Persistent cache layer backed by :mod:`shelve`."""
+
+    def __init__(
+        self,
+        path: str,
+        *,
+        flag: str = "c",
+        protocol: int | None = None,
+        writeback: bool = False,
+    ) -> None:
+        self._path = path
+        self._flag = flag
+        self._protocol = pickle.HIGHEST_PROTOCOL if protocol is None else protocol
+        self._shelf = shelve.open(path, flag=flag, protocol=self._protocol, writeback=writeback)
+        self._lock = threading.RLock()
+
+    def load(self, name: str) -> Any:
+        with self._lock:
+            if name not in self._shelf:
+                raise KeyError(name)
+            return self._shelf[name]
+
+    def store(self, name: str, value: Any) -> None:
+        with self._lock:
+            self._shelf[name] = value
+            self._shelf.sync()
+
+    def delete(self, name: str) -> None:
+        with self._lock:
+            try:
+                del self._shelf[name]
+            except KeyError:
+                return
+            self._shelf.sync()
+
+    def clear(self) -> None:
+        with self._lock:
+            self._shelf.clear()
+            self._shelf.sync()
+
+    def close(self) -> None:  # pragma: no cover - exercised indirectly
+        with self._lock:
+            self._shelf.close()
+
+
+class RedisCacheLayer(CacheLayer):
+    """Distributed cache layer backed by a Redis client."""
+
+    def __init__(self, client: Any | None = None, *, namespace: str = "tnfr:cache") -> None:
+        if client is None:
+            try:  # pragma: no cover - import guarded for optional dependency
+                import redis  # type: ignore
+            except Exception as exc:  # pragma: no cover - defensive import
+                raise RuntimeError("redis-py is required to initialise RedisCacheLayer") from exc
+            client = redis.Redis()
+        self._client = client
+        self._namespace = namespace.rstrip(":") or "tnfr:cache"
+        self._lock = threading.RLock()
+
+    def _format_key(self, name: str) -> str:
+        return f"{self._namespace}:{name}"
+
+    def load(self, name: str) -> Any:
+        key = self._format_key(name)
+        with self._lock:
+            value = self._client.get(key)
+        if value is None:
+            raise KeyError(name)
+        if isinstance(value, (bytes, bytearray, memoryview)):
+            return pickle.loads(bytes(value))
+        return value
+
+    def store(self, name: str, value: Any) -> None:
+        key = self._format_key(name)
+        payload = value
+        if not isinstance(value, (bytes, bytearray, memoryview)):
+            payload = pickle.dumps(value, protocol=pickle.HIGHEST_PROTOCOL)
+        with self._lock:
+            self._client.set(key, payload)
+
+    def delete(self, name: str) -> None:
+        key = self._format_key(name)
+        with self._lock:
+            self._client.delete(key)
+
+    def clear(self) -> None:
+        pattern = f"{self._namespace}:*"
+        with self._lock:
+            if hasattr(self._client, "scan_iter"):
+                keys = list(self._client.scan_iter(match=pattern))
+            elif hasattr(self._client, "keys"):
+                keys = list(self._client.keys(pattern))
+            else:  # pragma: no cover - extremely defensive
+                keys = []
+            if keys:
+                self._client.delete(*keys)
 
 
 class CacheManager:
@@ -107,12 +270,20 @@ class CacheManager:
         *,
         default_capacity: int | None = None,
         overrides: Mapping[str, int | None] | None = None,
+        layers: Iterable[CacheLayer] | None = None,
     ) -> None:
-        self._storage: MutableMapping[str, Any]
-        if storage is None:
-            self._storage = {}
+        mapping_layer = MappingCacheLayer(storage)
+        extra_layers: tuple[CacheLayer, ...]
+        if layers is None:
+            extra_layers = ()
         else:
-            self._storage = storage
+            extra_layers = tuple(layers)
+            for layer in extra_layers:
+                if not isinstance(layer, CacheLayer):  # pragma: no cover - defensive typing
+                    raise TypeError(f"unsupported cache layer type: {type(layer)!r}")
+        self._layers: tuple[CacheLayer, ...] = (mapping_layer, *extra_layers)
+        self._storage_layer = mapping_layer
+        self._storage: MutableMapping[str, Any] = mapping_layer.storage
         self._entries: dict[str, _CacheEntry] = {}
         self._registry_lock = threading.RLock()
         self._default_capacity = self._normalise_capacity(default_capacity)
@@ -139,6 +310,8 @@ class CacheManager:
         lock_factory: Callable[[], threading.Lock | threading.RLock] | None = None,
         reset: Callable[[Any], Any] | None = None,
         create: bool = True,
+        encoder: Callable[[Any], Any] | None = None,
+        decoder: Callable[[Any], Any] | None = None,
     ) -> None:
         """Register ``name`` with ``factory`` and optional lifecycle hooks."""
 
@@ -147,12 +320,20 @@ class CacheManager:
         with self._registry_lock:
             entry = self._entries.get(name)
             if entry is None:
-                entry = _CacheEntry(factory=factory, lock=lock_factory(), reset=reset)
+                entry = _CacheEntry(
+                    factory=factory,
+                    lock=lock_factory(),
+                    reset=reset,
+                    encoder=encoder,
+                    decoder=decoder,
+                )
                 self._entries[name] = entry
             else:
                 # Update hooks when re-registering the same cache name.
                 entry.factory = factory
                 entry.reset = reset
+                entry.encoder = encoder
+                entry.decoder = decoder
             self._ensure_metrics(name)
         if create:
             self.get(name)
@@ -250,16 +431,20 @@ class CacheManager:
         if entry is None:
             raise KeyError(name)
         with entry.lock:
-            value = self._storage.get(name)
+            value = self._load_from_layers(name, entry)
             if create and value is None:
                 value = entry.factory()
-                self._storage[name] = value
+                self._persist_layers(name, entry, value)
             return value
 
     def peek(self, name: str) -> Any:
         """Return cache ``name`` without creating a missing entry."""
 
-        return self.get(name, create=False)
+        entry = self._entries.get(name)
+        if entry is None:
+            raise KeyError(name)
+        with entry.lock:
+            return self._load_from_layers(name, entry)
 
     def store(self, name: str, value: Any) -> None:
         """Replace the stored value for cache ``name`` with ``value``."""
@@ -268,7 +453,7 @@ class CacheManager:
         if entry is None:
             raise KeyError(name)
         with entry.lock:
-            self._storage[name] = value
+            self._persist_layers(name, entry, value)
 
     def update(
         self,
@@ -283,11 +468,11 @@ class CacheManager:
         if entry is None:
             raise KeyError(name)
         with entry.lock:
-            current = self._storage.get(name)
+            current = self._load_from_layers(name, entry)
             if create and current is None:
                 current = entry.factory()
             new_value = updater(current)
-            self._storage[name] = new_value
+            self._persist_layers(name, entry, new_value)
             return new_value
 
     def clear(self, name: str | None = None) -> None:
@@ -303,17 +488,105 @@ class CacheManager:
             if entry is None:
                 continue
             with entry.lock:
-                current = self._storage.get(cache_name)
+                current = self._load_from_layers(cache_name, entry)
                 new_value = None
                 if entry.reset is not None:
-                    new_value = entry.reset(current)
+                    try:
+                        new_value = entry.reset(current)
+                    except Exception:  # pragma: no cover - defensive logging
+                        _logger.exception("cache reset failed for %s", cache_name)
                 if new_value is None:
                     try:
                         new_value = entry.factory()
                     except Exception:
-                        self._storage.pop(cache_name, None)
+                        self._delete_from_layers(cache_name)
                         continue
-                self._storage[cache_name] = new_value
+                self._persist_layers(cache_name, entry, new_value)
+
+    # ------------------------------------------------------------------
+    # Layer orchestration helpers
+
+    def _encode_value(self, entry: _CacheEntry, value: Any) -> Any:
+        encoder = entry.encoder
+        if encoder is None:
+            return value
+        return encoder(value)
+
+    def _decode_value(self, entry: _CacheEntry, payload: Any) -> Any:
+        decoder = entry.decoder
+        if decoder is None:
+            return payload
+        return decoder(payload)
+
+    def _store_layer(self, name: str, entry: _CacheEntry, value: Any, *, layer_index: int) -> None:
+        layer = self._layers[layer_index]
+        if layer_index == 0:
+            payload = value
+        else:
+            try:
+                payload = self._encode_value(entry, value)
+            except Exception:  # pragma: no cover - defensive logging
+                _logger.exception("cache encoding failed for %s", name)
+                return
+        try:
+            layer.store(name, payload)
+        except Exception:  # pragma: no cover - defensive logging
+            _logger.exception(
+                "cache layer store failed for %s on %s", name, layer.__class__.__name__
+            )
+
+    def _persist_layers(self, name: str, entry: _CacheEntry, value: Any) -> None:
+        for index in range(len(self._layers)):
+            self._store_layer(name, entry, value, layer_index=index)
+
+    def _delete_from_layers(self, name: str) -> None:
+        for layer in self._layers:
+            try:
+                layer.delete(name)
+            except KeyError:
+                continue
+            except Exception:  # pragma: no cover - defensive logging
+                _logger.exception(
+                    "cache layer delete failed for %s on %s", name, layer.__class__.__name__
+                )
+
+    def _load_from_layers(self, name: str, entry: _CacheEntry) -> Any:
+        # Primary in-memory layer first for fast-path lookups.
+        try:
+            value = self._layers[0].load(name)
+        except KeyError:
+            value = None
+        except Exception:  # pragma: no cover - defensive logging
+            _logger.exception(
+                "cache layer load failed for %s on %s", name, self._layers[0].__class__.__name__
+            )
+            value = None
+        if value is not None:
+            return value
+
+        # Fall back to slower layers and hydrate preceding caches on success.
+        for index in range(1, len(self._layers)):
+            layer = self._layers[index]
+            try:
+                payload = layer.load(name)
+            except KeyError:
+                continue
+            except Exception:  # pragma: no cover - defensive logging
+                _logger.exception(
+                    "cache layer load failed for %s on %s", name, layer.__class__.__name__
+                )
+                continue
+            try:
+                value = self._decode_value(entry, payload)
+            except Exception:  # pragma: no cover - defensive logging
+                _logger.exception("cache decoding failed for %s", name)
+                continue
+            if value is None:
+                continue
+            for prev_index in range(index):
+                self._store_layer(name, entry, value, layer_index=prev_index)
+            return value
+        return None
 
     # ------------------------------------------------------------------
     # Metrics helpers

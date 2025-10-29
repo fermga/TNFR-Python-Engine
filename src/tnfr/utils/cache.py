@@ -362,6 +362,7 @@ class EdgeCacheState:
     cache: MutableMapping[Hashable, Any]
     locks: defaultdict[Hashable, threading.RLock]
     max_entries: int | None
+    dirty: bool = False
 
 
 _GRAPH_CACHE_MANAGER_KEY = "_tnfr_cache_manager"
@@ -507,10 +508,33 @@ class EdgeCacheManager:
     def __init__(self, graph: MutableMapping[str, Any]) -> None:
         self.graph: MutableMapping[str, Any] = graph
         self._manager = _graph_cache_manager(graph)
+
+        def _encode_state(state: EdgeCacheState) -> Mapping[str, Any]:
+            if not isinstance(state, EdgeCacheState):
+                raise TypeError("EdgeCacheState expected")
+            return {
+                "max_entries": state.max_entries,
+                "entries": list(state.cache.items()),
+            }
+
+        def _decode_state(payload: Any) -> EdgeCacheState:
+            if isinstance(payload, EdgeCacheState):
+                return payload
+            if not isinstance(payload, Mapping):
+                raise TypeError("invalid edge cache payload")
+            max_entries = payload.get("max_entries")
+            state = self._build_state(max_entries)
+            for key, value in payload.get("entries", []):
+                state.cache[key] = value
+            state.dirty = False
+            return state
+
         self._manager.register(
             self._STATE_KEY,
             self._default_state,
             reset=self._reset_state,
+            encoder=_encode_state,
+            decoder=_decode_state,
         )
 
     def record_hit(self) -> None:
@@ -567,13 +591,15 @@ class EdgeCacheManager:
             locks=locks,
             count_overwrite_hit=False,
         )
+        state = EdgeCacheState(cache=cache, locks=locks, max_entries=max_entries)
 
         def _on_eviction(key: Hashable, _: Any) -> None:
             self.record_eviction(track_metrics=False)
             locks.pop(key, None)
+            state.dirty = True
 
         cache.set_eviction_callbacks(_on_eviction)
-        return EdgeCacheState(cache=cache, locks=locks, max_entries=max_entries)
+        return state
 
     def _ensure_state(
         self, state: EdgeCacheState | None, max_entries: int | None | object
@@ -590,6 +616,7 @@ class EdgeCacheManager:
     def _reset_state(self, state: EdgeCacheState | None) -> EdgeCacheState:
         if isinstance(state, EdgeCacheState):
             state.cache.clear()
+            state.dirty = False
             return state
         return self._build_state(None)
 
@@ -598,23 +625,28 @@ class EdgeCacheManager:
         max_entries: int | None | object,
         *,
         create: bool = True,
-    ) -> tuple[
-        MutableMapping[Hashable, Any] | None,
-        dict[Hashable, threading.RLock] | defaultdict[Hashable, threading.RLock] | None,
-    ]:
-        """Return the cache and lock mapping for the manager's graph."""
+    ) -> EdgeCacheState | None:
+        """Return the cache state for the manager's graph."""
 
         if not create:
             state = self._manager.peek(self._STATE_KEY)
-            if isinstance(state, EdgeCacheState):
-                return state.cache, state.locks
-            return None, None
+            return state if isinstance(state, EdgeCacheState) else None
 
         state = self._manager.update(
             self._STATE_KEY,
             lambda current: self._ensure_state(current, max_entries),
         )
-        return state.cache, state.locks
+        if not isinstance(state, EdgeCacheState):
+            raise RuntimeError("edge cache state failed to initialise")
+        return state
+
+    def flush_state(self, state: EdgeCacheState) -> None:
+        """Persist ``state`` through the configured cache layers when dirty."""
+
+        if not isinstance(state, EdgeCacheState) or not state.dirty:
+            return
+        self._manager.store(self._STATE_KEY, state)
+        state.dirty = False
 
     def clear(self) -> None:
         """Reset cached data managed by this instance."""
@@ -641,7 +673,12 @@ def edge_version_cache(
     if resolved == 0:
         return builder()
 
-    cache, locks = manager.get_cache(resolved)
+    state = manager.get_cache(resolved)
+    if state is None:
+        return builder()
+
+    cache = state.cache
+    locks = state.locks
     edge_version = get_graph_version(graph, "_edge_version")
     lock = locks[key]
 
@@ -658,6 +695,7 @@ def edge_version_cache(
         logger.exception("edge_version_cache builder failed for %r: %s", key, exc)
         raise
     else:
+        result = value
         with lock:
             entry = cache.get(key)
             if entry is not None:
@@ -668,7 +706,11 @@ def edge_version_cache(
                     return cached_value
                 manager.record_eviction()
             cache[key] = (edge_version, value)
-            return value
+            state.dirty = True
+            result = value
+    if state.dirty:
+        manager.flush_state(state)
+    return result
 
 
 def cached_nodes_and_A(

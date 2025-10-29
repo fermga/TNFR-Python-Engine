@@ -9,10 +9,14 @@ from cachetools import LRUCache
 from .types import TimingContext
 
 __all__ = [
+    "CacheLayer",
     "CacheManager",
     "CacheCapacityConfig",
     "CacheStatistics",
     "InstrumentedLRUCache",
+    "MappingCacheLayer",
+    "RedisCacheLayer",
+    "ShelveCacheLayer",
     "ManagedLRUCache",
     "prune_lock_mapping",
 ]
@@ -35,6 +39,29 @@ class CacheStatistics:
 
     def merge(self, other: CacheStatistics) -> CacheStatistics: ...
 
+class CacheLayer:
+    def load(self, name: str) -> Any: ...
+    def store(self, name: str, value: Any) -> None: ...
+    def delete(self, name: str) -> None: ...
+    def clear(self) -> None: ...
+    def close(self) -> None: ...
+
+class MappingCacheLayer(CacheLayer):
+    def __init__(self, storage: MutableMapping[str, Any] | None = ...) -> None: ...
+
+class ShelveCacheLayer(CacheLayer):
+    def __init__(
+        self,
+        path: str,
+        *,
+        flag: str = ...,
+        protocol: int | None = ...,
+        writeback: bool = ...,
+    ) -> None: ...
+
+class RedisCacheLayer(CacheLayer):
+    def __init__(self, client: Any | None = ..., *, namespace: str = ...) -> None: ...
+
 class CacheManager:
     _MISSING: ClassVar[object]
 
@@ -44,6 +71,7 @@ class CacheManager:
         *,
         default_capacity: int | None = ...,
         overrides: Mapping[str, int | None] | None = ...,
+        layers: Iterable[CacheLayer] | None = ...,
     ) -> None: ...
     @staticmethod
     def _normalise_capacity(value: int | None) -> int | None: ...
@@ -52,9 +80,11 @@ class CacheManager:
         name: str,
         factory: Callable[[], Any],
         *,
-        lock_factory: Callable[[], threading.Lock | threading.RLock] | None = ...,
+        lock_factory: Callable[[], threading.Lock | threading.RLock] | None = ..., 
         reset: Callable[[Any], Any] | None = ...,
         create: bool = ...,
+        encoder: Callable[[Any], Any] | None = ...,
+        decoder: Callable[[Any], Any] | None = ...,
     ) -> None: ...
     def configure(
         self,
