@@ -8,8 +8,19 @@ from itertools import islice
 from typing import Any, cast
 
 from .constants import get_param, normalise_state_token
+from typing import TYPE_CHECKING
+
 from .types import TNFRGraph
-from .utils import ensure_collection, get_logger, validate_window
+from .utils import ensure_collection, get_logger
+
+if TYPE_CHECKING:  # pragma: no cover - typing convenience
+    from .validation import validate_window as _validate_window
+
+
+def _validate_window(window: int, *, positive: bool = False) -> int:
+    from .validation import validate_window as _validate_window
+
+    return _validate_window(window, positive=positive)
 
 logger = get_logger(__name__)
 
@@ -30,7 +41,7 @@ def _ensure_history(
 ) -> tuple[int, deque[str] | None]:
     """Validate ``window`` and ensure ``nd['glyph_history']`` deque."""
 
-    v_window = validate_window(window)
+    v_window = _validate_window(window)
     if v_window == 0 and not create_zero:
         return v_window, None
     hist = nd.setdefault("glyph_history", deque(maxlen=v_window))
@@ -282,7 +293,7 @@ def count_glyphs(
     """
 
     if window is not None:
-        window = validate_window(window)
+        window = _validate_window(window)
         if window == 0:
             return Counter()
 

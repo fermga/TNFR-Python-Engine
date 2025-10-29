@@ -95,3 +95,13 @@ flowchart LR
 
 Consult [telemetry and utilities](telemetry.md) for the metrics API and cache helpers, and
 [operators](operators.md) for the structural grammar.
+
+### Unified validation interface
+
+Use :mod:`tnfr.validation` as the single entry point for canonical validation. It
+re-exports the grammar helpers (``validate_sequence``,
+``apply_glyph_with_grammar``) alongside the graph invariants enforced by
+``run_validators`` and ``GRAPH_VALIDATORS``. Projects migrating from
+``tnfr.utils.validators`` should switch to ``tnfr.validation`` to ensure grammar
+checks and structural graph invariants run together before executing TNFR
+operators.

@@ -14,4 +14,7 @@ get_norm: Any
 glyph_fallback: Any
 normalized_dnfr: Any
 on_applied_glyph: Any
+run_validators: Any
 validate_sequence: Any
+validate_window: Any
+GRAPH_VALIDATORS: Any

@@ -6,7 +6,7 @@ from tnfr.dynamics import runtime
 
 
 def test_run_validators_invokes_utils(monkeypatch, graph_canon):
-    """Ensure ``_run_validators`` delegates to ``tnfr.utils.run_validators``."""
+    """Ensure ``_run_validators`` delegates to ``tnfr.validation.run_validators``."""
 
     G = graph_canon()
     called_with = {}
@@ -14,7 +14,7 @@ def test_run_validators_invokes_utils(monkeypatch, graph_canon):
     def recorder(graph):
         called_with["graph"] = graph
 
-    monkeypatch.setattr("tnfr.utils.run_validators", recorder)
+    monkeypatch.setattr("tnfr.validation.run_validators", recorder)
 
     runtime._run_validators(G)
 
@@ -30,7 +30,7 @@ def test_run_validators_propagates_exceptions(monkeypatch, graph_canon):
     def failing_validator(graph):  # pragma: no cover - raising stub
         raise sentinel
 
-    monkeypatch.setattr("tnfr.utils.run_validators", failing_validator)
+    monkeypatch.setattr("tnfr.validation.run_validators", failing_validator)
 
     with pytest.raises(RuntimeError) as excinfo:
         runtime._run_validators(G)

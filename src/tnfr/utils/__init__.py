@@ -6,6 +6,24 @@ from typing import Any, Final
 
 from ..cache import CacheManager
 from . import init as _init
+
+WarnOnce = _init.WarnOnce
+cached_import = _init.cached_import
+warm_cached_import = _init.warm_cached_import
+LazyImportProxy = _init.LazyImportProxy
+get_logger = _init.get_logger
+get_nodenx = _init.get_nodenx
+get_numpy = _init.get_numpy
+prune_failed_imports = _init.prune_failed_imports
+warn_once = _init.warn_once
+_configure_root = _init._configure_root
+_reset_logging_state = _init._reset_logging_state
+_reset_import_state = _init._reset_import_state
+_warn_failure = _init._warn_failure
+_FAILED_IMPORT_LIMIT = _init._FAILED_IMPORT_LIMIT
+_DEFAULT_CACHE_SIZE = _init._DEFAULT_CACHE_SIZE
+EMIT_MAP = _init.EMIT_MAP
+
 from .cache import (
     NODE_SET_CHECKSUM_KEY,
     EdgeCacheManager,
@@ -135,23 +153,6 @@ __all__ = (
     "EMIT_MAP",
 )
 
-WarnOnce = _init.WarnOnce
-cached_import = _init.cached_import
-warm_cached_import = _init.warm_cached_import
-LazyImportProxy = _init.LazyImportProxy
-get_logger = _init.get_logger
-get_nodenx = _init.get_nodenx
-get_numpy = _init.get_numpy
-prune_failed_imports = _init.prune_failed_imports
-warn_once = _init.warn_once
-_configure_root = _init._configure_root
-_reset_logging_state = _init._reset_logging_state
-_reset_import_state = _init._reset_import_state
-_warn_failure = _init._warn_failure
-_FAILED_IMPORT_LIMIT = _init._FAILED_IMPORT_LIMIT
-_DEFAULT_CACHE_SIZE = _init._DEFAULT_CACHE_SIZE
-EMIT_MAP = _init.EMIT_MAP
-
 #: Mapping of dynamically proxied names to the runtime types they expose.
 #:
 #: ``IMPORT_LOG`` and ``_IMPORT_STATE`` refer to the
@@ -172,10 +173,10 @@ def __getattr__(name: str) -> Any:  # pragma: no cover - trivial delegation
         return getattr(_init, name)
     if name in _VALIDATOR_EXPORTS:
         if name == "validate_window":
-            from .validators import validate_window as _validate_window
+            from ..validation import validate_window as _validate_window
 
             return _validate_window
-        from .validators import run_validators as _run_validators
+        from ..validation import run_validators as _run_validators
 
         return _run_validators
     raise AttributeError(name)
