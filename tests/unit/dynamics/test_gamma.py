@@ -244,8 +244,9 @@ def test_kuramoto_cache_step_limit(graph_canon):
     gamma_mod._ensure_kuramoto_cache(G, t=0)
     gamma_mod._ensure_kuramoto_cache(G, t=1)
     gamma_mod._ensure_kuramoto_cache(G, t=2)
-    cache, _ = EdgeCacheManager(G.graph).get_cache(2)
-    entries = [k for k in cache if isinstance(k, tuple)]
+    state = EdgeCacheManager(G.graph).get_cache(2)
+    assert state is not None
+    entries = [k for k in state.cache if isinstance(k, tuple)]
     assert len(entries) == 2
 
 

@@ -52,6 +52,7 @@ class EdgeCacheState:
     cache: MutableMapping[Hashable, Any]
     locks: MutableMapping[Hashable, threading.RLock]
     max_entries: int | None
+    dirty: bool
 
 class EdgeCacheManager:
     _STATE_KEY: str
@@ -73,10 +74,8 @@ class EdgeCacheManager:
         max_entries: int | None | object,
         *,
         create: bool = ...,
-    ) -> tuple[
-        MutableMapping[Hashable, Any] | None,
-        MutableMapping[Hashable, threading.RLock] | None,
-    ]: ...
+    ) -> EdgeCacheState | None: ...
+    def flush_state(self, state: EdgeCacheState) -> None: ...
     def clear(self) -> None: ...
 
 def get_graph_version(graph: Any, key: str, default: int = ...) -> int: ...
