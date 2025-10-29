@@ -37,3 +37,12 @@ def test_context_flags_restore_after_exception() -> None:
             raise RuntimeError("boom")
 
     assert get_flags() == original
+
+
+def test_context_flags_log_performance_restore() -> None:
+    original = get_flags()
+
+    with context_flags(log_performance=True):
+        assert get_flags().log_performance is True
+
+    assert get_flags() == original

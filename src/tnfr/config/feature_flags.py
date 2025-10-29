@@ -16,13 +16,7 @@ class MathFeatureFlags:
 
     enable_math_validation: bool = False
     enable_math_dynamics: bool = False
-    log_perf: bool = False
-
-    @property
-    def log_performance(self) -> bool:
-        """Backward compatible alias exposing performance logging flag."""
-
-        return self.log_perf
+    log_performance: bool = False
 
 
 _TRUE_VALUES = {"1", "true", "on", "yes", "y", "t"}
@@ -54,7 +48,7 @@ def _load_base_flags() -> MathFeatureFlags:
             enable_math_dynamics=_parse_env_flag(
                 "TNFR_ENABLE_MATH_DYNAMICS", False
             ),
-            log_perf=_parse_env_flag("TNFR_LOG_PERF", False),
+            log_performance=_parse_env_flag("TNFR_LOG_PERF", False),
         )
     return _BASE_FLAGS
 
