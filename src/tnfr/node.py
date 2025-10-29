@@ -28,6 +28,7 @@ from .alias import (
 )
 from .config import get_flags
 from .constants import get_aliases
+from .mathematics import BasicStateProjector, StateProjector
 from .locking import get_lock
 from .types import (
     CouplingWeight,
@@ -231,11 +232,17 @@ class NodeNX(NodeProtocol):
     d2EPI: SecondDerivativeEPI = ATTR_SPECS["d2EPI"].build_property()
 
     def __init__(
-        self, G: TNFRGraph, n: NodeId, *, enable_math_validation: Optional[bool] = None
+        self,
+        G: TNFRGraph,
+        n: NodeId,
+        *,
+        state_projector: StateProjector | None = None,
+        enable_math_validation: Optional[bool] = None,
     ) -> None:
         self.G: TNFRGraph = G
         self.n: NodeId = n
         self.graph: MutableMapping[str, Any] = G.graph
+        self.state_projector: StateProjector = state_projector or BasicStateProjector()
         if enable_math_validation is None:
             enable_math_validation = get_flags().enable_math_validation
         self.enable_math_validation: bool = enable_math_validation
