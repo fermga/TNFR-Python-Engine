@@ -68,12 +68,9 @@ def make_dynamics_engine(
     atol: float = 1e-9,
     use_scipy: bool | None = None,
 ) -> MathematicalDynamicsEngine:
-    """Instantiate ``MathematicalDynamicsEngine`` with slot-safe subclassing."""
+    """Instantiate ``MathematicalDynamicsEngine`` with canonical configuration."""
 
-    class _SlotSafeDynamics(MathematicalDynamicsEngine):
-        __slots__ = MathematicalDynamicsEngine.__slots__ + ("_eigenvalues", "_eigenvectors")
-
-    return _SlotSafeDynamics(
+    return MathematicalDynamicsEngine(
         generator,
         hilbert_space=hilbert_space,
         atol=atol,

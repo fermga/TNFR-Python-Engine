@@ -1,7 +1,7 @@
 """Spectral dynamics helpers driven by Hermitian ΔNFR generators."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Sequence
 
 import numpy as np
@@ -35,6 +35,8 @@ class MathematicalDynamicsEngine:
     hilbert_space: HilbertSpace
     atol: float = 1e-9
     _use_scipy: bool = False
+    _eigenvalues: np.ndarray = field(init=False, repr=False)
+    _eigenvectors: np.ndarray = field(init=False, repr=False)
 
     def __init__(
         self,

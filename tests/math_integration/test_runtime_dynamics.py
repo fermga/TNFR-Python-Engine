@@ -8,6 +8,7 @@ import pytest
 
 from tnfr.mathematics import (
     HilbertSpace,
+    MathematicalDynamicsEngine,
     NFRValidator,
     build_coherence_operator,
     build_delta_nfr,
@@ -87,6 +88,18 @@ def test_mathematical_dynamics_engine_matches_analytic_solution():
     trajectory = engine.evolve(state, steps=2, dt=np.pi / 2)
     assert trajectory.shape == (3, 2)
     assert np.allclose(trajectory[0], state)
+
+
+def test_mathematical_dynamics_engine_direct_instantiation_step():
+    hilbert = HilbertSpace(2)
+    generator = np.diag([1.0, -1.0])
+    engine = MathematicalDynamicsEngine(generator, hilbert, use_scipy=False)
+    state = np.array([1.0 + 0j, 0.0 + 0j])
+
+    evolved = engine.step(state, dt=np.pi / 2)
+
+    expected = np.array([-1.0j, 0.0 + 0j])
+    assert np.allclose(evolved, expected)
 
 
 def test_mathematical_dynamics_engine_reproducibility_without_rng():
