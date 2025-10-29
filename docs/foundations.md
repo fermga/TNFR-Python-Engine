@@ -26,7 +26,7 @@ level operators.
    norms while sustaining positive structural frequency.
 
 The notebooks
-[`theory/00_tnfr_overview.ipynb`](theory/00_tnfr_overview.ipynb) and
+[`theory/00_overview.ipynb`](theory/00_overview.ipynb) and
 [`theory/02_phase_synchrony_lattices.ipynb`](theory/02_phase_synchrony_lattices.ipynb)
 replay these steps with expanded derivations and visual telemetry overlays.
 
@@ -122,5 +122,5 @@ metric to control storage costs.
 * Load the lattice notebooks listed above to inspect full ΔNFR evolution
   traces.
 * Refer to [`api/telemetry.md`](api/telemetry.md) for downstream aggregation and
-  to [`theory/00_tnfr_overview.ipynb`](theory/00_tnfr_overview.ipynb) for the
+  to [`theory/00_overview.ipynb`](theory/00_overview.ipynb) for the
   derivation that ties the Hilbert norms back to ΔNFR coherence envelopes.
