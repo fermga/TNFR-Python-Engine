@@ -1743,7 +1743,7 @@ def _accumulate_neighbors_broadcasted(
                 if deg_row is not None and deg_array is not None:
                     np.take(deg_array, dst_slice, out=chunk_matrix[deg_row])
 
-                def _accumulate_chunk_row(
+                def _bincount_into(
                     target_row: int | None,
                     values: np.ndarray | None = None,
                     *,
@@ -1753,40 +1753,32 @@ def _accumulate_neighbors_broadcasted(
                         return
                     row_view = accum[target_row]
                     if unit_weight:
-                        np.add.at(
-                            row_view,
+                        chunk_accum = np.bincount(
                             src_slice,
-                            row_view.dtype.type(1.0),
+                            minlength=n,
                         )
-                        return
-                    if values is None:
-                        return
-                    np.add.at(
-                        row_view,
-                        src_slice,
-                        values.astype(row_view.dtype, copy=False),
+                    else:
+                        if values is None:
+                            return
+                        chunk_accum = np.bincount(
+                            src_slice,
+                            weights=values,
+                            minlength=n,
+                        )
+                    row_view[:n] += chunk_accum[:n].astype(
+                        row_view.dtype, copy=False
                     )
 
-                _accumulate_chunk_row(
-                    cos_row, chunk_matrix[cos_row, :slice_len]
-                )
-                _accumulate_chunk_row(
-                    sin_row, chunk_matrix[sin_row, :slice_len]
-                )
-                _accumulate_chunk_row(
-                    epi_row, chunk_matrix[epi_row, :slice_len]
-                )
-                _accumulate_chunk_row(
-                    vf_row, chunk_matrix[vf_row, :slice_len]
-                )
+                _bincount_into(cos_row, chunk_matrix[cos_row, :slice_len])
+                _bincount_into(sin_row, chunk_matrix[sin_row, :slice_len])
+                _bincount_into(epi_row, chunk_matrix[epi_row, :slice_len])
+                _bincount_into(vf_row, chunk_matrix[vf_row, :slice_len])
 
                 if count_row is not None:
-                    _accumulate_chunk_row(count_row, unit_weight=True)
+                    _bincount_into(count_row, unit_weight=True)
 
                 if deg_row is not None and deg_array is not None:
-                    _accumulate_chunk_row(
-                        deg_row, chunk_matrix[deg_row, :slice_len]
-                    )
+                    _bincount_into(deg_row, chunk_matrix[deg_row, :slice_len])
         else:
             def _apply_full_bincount(
                 target_row: int | None,
