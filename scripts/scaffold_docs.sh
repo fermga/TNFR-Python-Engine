@@ -95,7 +95,7 @@ theory.
 - **Releases** – version-by-version summaries in the [release notes](releases.md).
 
 !!! important "Mathematical Foundations"
-    The [Mathematical Foundations overview](theory/00_overview.ipynb) anchors the canonical
+    The [Mathematical Foundations overview](theory/00_tnfr_overview.ipynb) anchors the canonical
     nodal equation and structural operators. Each primer (structural frequency, phase synchrony,
     ΔNFR gradient fields, coherence metrics, sense index, and recursivity cascades) expands the
     derivations used by the engine. Refer back here whenever you need to validate analytical
@@ -144,7 +144,7 @@ guards, and observe unitary stability before coupling into higher level operator
    :func:`~tnfr.mathematics.frequency_positive`, and :func:`~tnfr.mathematics.stable_unitary` to ensure
    ΔNFR preserves Hilbert norms while sustaining positive structural frequency.
 
-The notebooks [`theory/00_overview.ipynb`](theory/00_overview.ipynb) and
+The notebooks [`theory/00_tnfr_overview.ipynb`](theory/00_tnfr_overview.ipynb) and
 [`theory/02_phase_synchrony_lattices.ipynb`](theory/02_phase_synchrony_lattices.ipynb) replay these
 steps with expanded derivations and visual telemetry overlays.
 
@@ -235,7 +235,7 @@ control storage costs.
 
 * Load the lattice notebooks listed above to inspect full ΔNFR evolution traces.
 * Refer to [`api/telemetry.md`](api/telemetry.md) for downstream aggregation and to
-  [`theory/00_overview.ipynb`](theory/00_overview.ipynb) for the derivation that ties the Hilbert
+  [`theory/00_tnfr_overview.ipynb`](theory/00_tnfr_overview.ipynb) for the derivation that ties the Hilbert
   norms back to ΔNFR coherence envelopes.
 DOC
 fi
@@ -445,7 +445,7 @@ notebook_dir = Path(os.environ["NOTEBOOK_DIR"])
 refresh = os.environ["NOTEBOOK_REFRESH"] == "1"
 
 notebooks = {
-    "00_overview.ipynb": {
+    "00_tnfr_overview.ipynb": {
         "title": "TNFR overview",
         "summary": "Map the documentation surface and connect the nodal equation to Phase-3 notebooks.",
         "sections": [
@@ -521,7 +521,8 @@ notebooks = {
             "from tnfr.mathematics import HilbertSpace, build_delta_nfr\n",
             "\n",
             "space = HilbertSpace(dimension=4)\n",
-            "delta = build_delta_nfr(4, topology='laplacian', nu_f=0.9, scale=0.2, seed=42)\n",
+            "rng = np.random.default_rng(42)\n",
+            "delta = build_delta_nfr(4, topology='laplacian', nu_f=0.9, scale=0.2, rng=rng)\n",
             "np.allclose(delta, delta.conj().T)\n",
         ],
     },
@@ -553,7 +554,8 @@ notebooks = {
             "import numpy as np\n",
             "from tnfr.mathematics import CoherenceOperator, build_delta_nfr\n",
             "\n",
-            "delta = build_delta_nfr(3, topology='adjacency', nu_f=0.75, scale=0.15, seed=12)\n",
+            "rng = np.random.default_rng(12)\n",
+            "delta = build_delta_nfr(3, topology='adjacency', nu_f=0.75, scale=0.15, rng=rng)\n",
             "operator = CoherenceOperator(delta)\n",
             "state = np.array([1.0, 0.0, 0.0], dtype=np.complex128)\n",
             "operator.coherence_expectation(state)\n",
@@ -667,7 +669,8 @@ notebooks = {
             ")\n",
             "\n",
             "space = HilbertSpace(dimension=3)\n",
-            "delta = build_delta_nfr(3, topology='laplacian', nu_f=0.8, scale=0.25, seed=7)\n",
+            "rng = np.random.default_rng(7)\n",
+            "delta = build_delta_nfr(3, topology='laplacian', nu_f=0.8, scale=0.25, rng=rng)\n",
             "operator = CoherenceOperator(delta)\n",
             "state = np.array([1.0, 0.0, 0.0], dtype=np.complex128)\n",
             "stable_unitary(state, operator, space)\n",
