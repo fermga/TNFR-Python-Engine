@@ -8,7 +8,7 @@ from typing import Any, cast
 
 from ..alias import collect_attr, set_vf
 from ..constants import get_graph_param
-from ..utils.numeric import clamp
+from ..utils import clamp
 from ..metrics.common import ensure_neighbors_map
 from ..types import CoherenceMetric, DeltaNFR, NodeId, TNFRGraph
 from ..utils import get_numpy

@@ -21,7 +21,7 @@ from tnfr.dynamics.dnfr import (
     _prepare_dnfr_data,
     _resolve_numpy_degree_array,
 )
-from tnfr.utils.numeric import angle_diff
+from tnfr.utils import angle_diff
 from tnfr.utils import mark_dnfr_prep_dirty
 from tnfr.utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 

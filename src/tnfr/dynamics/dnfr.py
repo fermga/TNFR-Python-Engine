@@ -23,7 +23,7 @@ from time import perf_counter
 from ..alias import get_attr, get_theta_attr, set_dnfr
 from ..cache import CacheManager
 from ..constants import DEFAULTS, get_aliases, get_param
-from ..utils.numeric import angle_diff, angle_diff_array
+from ..utils import angle_diff, angle_diff_array
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import compute_theta_trig

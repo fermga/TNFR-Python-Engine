@@ -19,7 +19,7 @@ from .config.constants import (
 from .constants import get_aliases, get_graph_param
 from .glyph_history import append_metric, count_glyphs, ensure_history
 from .glyph_runtime import last_glyph
-from .utils.numeric import clamp01, kahan_sum_nd
+from .utils import clamp01, kahan_sum_nd
 from .types import NodeId, SigmaVector, TNFRGraph
 from .utils import get_numpy
 

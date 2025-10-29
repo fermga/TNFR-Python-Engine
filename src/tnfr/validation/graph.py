@@ -11,7 +11,7 @@ from ..alias import get_attr
 from ..glyph_runtime import last_glyph
 from ..config.constants import GLYPHS_CANONICAL_SET
 from ..constants import get_aliases, get_param
-from ..utils.numeric import within_range
+from ..utils import within_range
 from ..types import (
     EPIValue,
     NodeAttrMap,

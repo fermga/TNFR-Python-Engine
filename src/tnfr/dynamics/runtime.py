@@ -22,7 +22,7 @@ from ..alias import (
 from ..callback_utils import CallbackEvent, callback_manager
 from ..constants import DEFAULTS, get_graph_param, get_param
 from ..glyph_history import ensure_history
-from ..utils.numeric import clamp
+from ..utils import clamp
 from ..metrics.sense_index import compute_Si
 from ..operators import apply_remesh_if_globally_stable
 from ..telemetry import publish_graph_cache_metrics

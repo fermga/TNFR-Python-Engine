@@ -10,14 +10,14 @@ from types import ModuleType
 from typing import Any, MutableMapping, TypedDict, cast
 
 from .._compat import TypeAlias
-from ..alias import collect_attr, collect_theta_attr, set_attr
+from ..alias import collect_attr, collect_theta_attr, get_attr, set_attr
 from ..callback_utils import CallbackEvent, callback_manager
 from ..constants import (
     get_aliases,
     get_param,
 )
 from ..glyph_history import append_metric, ensure_history
-from ..utils.numeric import clamp01
+from ..utils import clamp01
 from ..observers import (
     DEFAULT_GLYPH_LOAD_SPAN,
     DEFAULT_WBAR_SPAN,
@@ -1427,10 +1427,30 @@ def _aggregate_si(
         si_hi = float(thr_sel.get("si_hi", thr_def.get("hi", 0.66)))
         si_lo = float(thr_sel.get("si_lo", thr_def.get("lo", 0.33)))
 
+        node_ids = list(G.nodes)
+        if not node_ids:
+            hist["Si_mean"].append(0.0)
+            hist["Si_hi_frac"].append(0.0)
+            hist["Si_lo_frac"].append(0.0)
+            return
+
+        sis = []
+        for node in node_ids:
+            raw = get_attr(
+                G.nodes[node],
+                ALIAS_SI,
+                None,
+                conv=lambda value: value,  # Preserve NaN sentinels
+            )
+            try:
+                sis.append(float(raw) if raw is not None else math.nan)
+            except (TypeError, ValueError):
+                sis.append(math.nan)
+
         np_mod = get_numpy()
         if np_mod is not None:
-            sis = collect_attr(G, G.nodes, ALIAS_SI, float("nan"), np=np_mod)
-            valid = sis[~np_mod.isnan(sis)]
+            sis_array = np_mod.asarray(sis, dtype=float)
+            valid = sis_array[~np_mod.isnan(sis_array)]
             n = int(valid.size)
             if n:
                 hist["Si_mean"].append(float(valid.mean()))
@@ -1442,13 +1462,6 @@ def _aggregate_si(
                 hist["Si_mean"].append(0.0)
                 hist["Si_hi_frac"].append(0.0)
                 hist["Si_lo_frac"].append(0.0)
-            return
-
-        sis = collect_attr(G, G.nodes, ALIAS_SI, float("nan"))
-        if not sis:
-            hist["Si_mean"].append(0.0)
-            hist["Si_hi_frac"].append(0.0)
-            hist["Si_lo_frac"].append(0.0)
             return
 
         if n_jobs is not None and n_jobs > 1:
