@@ -4,7 +4,18 @@ from __future__ import annotations
 
 from typing import Any, Final
 
-from ..cache import CacheManager
+from ..cache import (
+    CacheCapacityConfig,
+    CacheLayer,
+    CacheManager,
+    CacheStatistics,
+    InstrumentedLRUCache,
+    ManagedLRUCache,
+    MappingCacheLayer,
+    RedisCacheLayer,
+    ShelveCacheLayer,
+    prune_lock_mapping,
+)
 from . import init as _init
 
 WarnOnce = _init.WarnOnce
@@ -118,7 +129,16 @@ __all__ = (
     "clamp01",
     "auto_chunk_size",
     "resolve_chunk_size",
+    "CacheCapacityConfig",
+    "CacheLayer",
     "CacheManager",
+    "CacheStatistics",
+    "InstrumentedLRUCache",
+    "ManagedLRUCache",
+    "MappingCacheLayer",
+    "RedisCacheLayer",
+    "ShelveCacheLayer",
+    "prune_lock_mapping",
     "EdgeCacheManager",
     "DNFR_PREP_STATE_KEY",
     "DnfrPrepState",

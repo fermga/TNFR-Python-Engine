@@ -6,7 +6,7 @@ from dataclasses import asdict
 
 import pytest
 
-from tnfr.cache import CacheManager
+from tnfr.utils import CacheManager
 
 
 @pytest.fixture()
