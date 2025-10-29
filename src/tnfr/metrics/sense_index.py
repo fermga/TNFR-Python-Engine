@@ -687,8 +687,6 @@ def compute_Si(
 
     neighbors = ensure_neighbors_map(G)
     alpha, beta, gamma = get_Si_weights(G)
-    vfmax, dnfrmax = _get_vf_dnfr_max(G)
-
     np = get_numpy()
     trig = get_trig_cache(G, np=np)
     cos_th, sin_th, thetas = trig.cos, trig.sin, trig.theta
@@ -717,6 +715,7 @@ def compute_Si(
                 "where",
                 "divide",
                 "errstate",
+                "max",
             )
         )
     )
@@ -884,6 +883,15 @@ def compute_Si(
             node_mapping,
             np=np,
         )
+        raw_vfmax = float(np.max(np.abs(vf_arr))) if getattr(vf_arr, "size", 0) else 0.0
+        raw_dnfrmax = (
+            float(np.max(np.abs(dnfr_arr))) if getattr(dnfr_arr, "size", 0) else 0.0
+        )
+        G.graph["_vfmax"] = raw_vfmax
+        G.graph["_dnfrmax"] = raw_dnfrmax
+        vfmax = 1.0 if raw_vfmax == 0.0 else raw_vfmax
+        dnfrmax = 1.0 if raw_dnfrmax == 0.0 else raw_dnfrmax
+
         (
             phase_dispersion,
             raw_si,
@@ -1034,6 +1042,8 @@ def compute_Si(
             return np.copy(si_values)
 
         return {node: float(value) for node, value in zip(node_ids, si_values)}
+
+    vfmax, dnfrmax = _get_vf_dnfr_max(G)
 
     out: dict[Any, float] = {}
     _profile_mark_path("fallback")
