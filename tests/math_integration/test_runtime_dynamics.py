@@ -7,11 +7,11 @@ import pytest
 
 from tnfr.config import context_flags
 from tnfr.mathematics import (
+    CoherenceOperator,
     HilbertSpace,
     MathematicalDynamicsEngine,
     NFRValidator,
-    build_coherence_operator,
-    build_frequency_operator,
+    make_frequency_operator,
 )
 from tnfr.node import NodeNX
 from tnfr.operators.definitions import Coherence, Emission, Reception, Resonance, Transition
@@ -52,7 +52,7 @@ def test_run_sequence_with_validation_reports_metrics(ops):
 def test_run_sequence_with_validation_respects_frequency_override():
     node, _, _ = build_node_with_operators(frequency_value=None)
     outcome = node.run_sequence_with_validation(
-        list(DEFAULT_ACCEPTANCE_OPS), freq_op=None, enable_validation=False
+        list(DEFAULT_ACCEPTANCE_OPS), frequency_operator=None, enable_validation=False
     )
     assert "frequency_positive" not in outcome["post_metrics"]
     assert outcome["validation"] is None
@@ -155,18 +155,20 @@ def test_operator_factory_wiring_creates_valid_node():
     coherence = np.array([[0.9, 0.1], [0.1, 0.8]])
     frequency = np.array([[0.5, 0.2], [0.2, 0.5]])
     hilbert = HilbertSpace(2)
+    coherence_operator = CoherenceOperator(coherence)
+    frequency_operator = make_frequency_operator(frequency)
     validator = NFRValidator(
         hilbert,
-        build_coherence_operator(coherence),
+        coherence_operator,
         coherence_threshold=0.0,
-        frequency_operator=build_frequency_operator(frequency),
+        frequency_operator=frequency_operator,
     )
     node = NodeNX(
         G,
         node_id,
         hilbert_space=hilbert,
-        coherence_operator=coherence,
-        frequency_operator=frequency,
+        coherence_operator=coherence_operator,
+        frequency_operator=frequency_operator,
         coherence_threshold=0.0,
         validator=validator,
         enable_math_validation=True,

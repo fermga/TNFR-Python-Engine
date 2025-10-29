@@ -10,8 +10,8 @@ from tnfr.mathematics import (
     HilbertSpace,
     MathematicalDynamicsEngine,
     NFRValidator,
-    build_coherence_operator,
-    build_frequency_operator,
+    make_coherence_operator,
+    make_frequency_operator,
 )
 from tnfr.node import NodeNX
 from tnfr.structural import create_nfr
@@ -35,9 +35,9 @@ def build_node_with_operators(
 
     G, node_id = create_nfr("math-node", epi=epi, vf=nu_f, theta=theta)
     hilbert = HilbertSpace(dim)
-    coherence = build_coherence_operator(np.eye(dim) * coherence_value)
+    coherence = make_coherence_operator(dim, spectrum=np.full(dim, coherence_value))
     frequency = (
-        build_frequency_operator(np.eye(dim) * frequency_value)
+        make_frequency_operator(np.eye(dim) * frequency_value)
         if frequency_value is not None
         else None
     )

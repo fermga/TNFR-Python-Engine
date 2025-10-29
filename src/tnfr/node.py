@@ -5,7 +5,7 @@ from __future__ import annotations
 import copy
 import logging
 import math
-from collections.abc import Hashable, Mapping
+from collections.abc import Hashable
 from dataclasses import dataclass
 from typing import (
     Any,
@@ -41,7 +41,7 @@ from .mathematics import (
     NFRValidator,
     StateProjector,
 )
-from .mathematics.operators_factory import as_coherence_operator, as_frequency_operator
+from .mathematics.operators_factory import make_coherence_operator, make_frequency_operator
 from .mathematics.runtime import (
     coherence as runtime_coherence,
     frequency_positive as runtime_frequency_positive,
@@ -253,6 +253,55 @@ class NodeNX(NodeProtocol):
     dnfr: DeltaNFR = ATTR_SPECS["dnfr"].build_property()
     d2EPI: SecondDerivativeEPI = ATTR_SPECS["d2EPI"].build_property()
 
+    @staticmethod
+    def _prepare_coherence_operator(
+        operator: CoherenceOperator | None,
+        *,
+        dim: int | None = None,
+        spectrum: Sequence[float] | np.ndarray | None = None,
+        c_min: float | None = None,
+    ) -> CoherenceOperator | None:
+        if operator is not None:
+            return operator
+
+        spectrum_array: np.ndarray | None
+        if spectrum is None:
+            spectrum_array = None
+        else:
+            spectrum_array = np.asarray(spectrum, dtype=np.complex128)
+            if spectrum_array.ndim != 1:
+                raise ValueError("Coherence spectrum must be one-dimensional.")
+
+        effective_dim = dim
+        if spectrum_array is not None:
+            spectrum_length = spectrum_array.shape[0]
+            if effective_dim is None:
+                effective_dim = int(spectrum_length)
+            elif spectrum_length != int(effective_dim):
+                raise ValueError("Coherence spectrum size mismatch with requested dimension.")
+
+        if effective_dim is None:
+            return None
+
+        kwargs: dict[str, Any] = {}
+        if spectrum_array is not None:
+            kwargs["spectrum"] = spectrum_array
+        if c_min is not None:
+            kwargs["c_min"] = float(c_min)
+        return make_coherence_operator(int(effective_dim), **kwargs)
+
+    @staticmethod
+    def _prepare_frequency_operator(
+        operator: FrequencyOperator | None,
+        *,
+        matrix: Sequence[Sequence[complex]] | np.ndarray | None = None,
+    ) -> FrequencyOperator | None:
+        if operator is not None:
+            return operator
+        if matrix is None:
+            return None
+        return make_frequency_operator(np.asarray(matrix, dtype=np.complex128))
+
     def __init__(
         self,
         G: TNFRGraph,
@@ -261,10 +310,12 @@ class NodeNX(NodeProtocol):
         state_projector: StateProjector | None = None,
         enable_math_validation: Optional[bool] = None,
         hilbert_space: HilbertSpace | None = None,
-        coherence_operator: CoherenceOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = None,
-        coherence_operator_params: Mapping[str, Any] | None = None,
-        frequency_operator: FrequencyOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = None,
-        frequency_operator_params: Mapping[str, Any] | None = None,
+        coherence_operator: CoherenceOperator | None = None,
+        coherence_dim: int | None = None,
+        coherence_spectrum: Sequence[float] | np.ndarray | None = None,
+        coherence_c_min: float | None = None,
+        frequency_operator: FrequencyOperator | None = None,
+        frequency_matrix: Sequence[Sequence[complex]] | np.ndarray | None = None,
         coherence_threshold: float | None = None,
         validator: NFRValidator | None = None,
         rng: np.random.Generator | None = None,
@@ -284,11 +335,28 @@ class NodeNX(NodeProtocol):
         )
         default_dimension = max(1, int(default_dimension))
         self.hilbert_space: HilbertSpace = hilbert_space or HilbertSpace(default_dimension)
-        self.coherence_operator: CoherenceOperator | None = as_coherence_operator(
-            coherence_operator, coherence_operator_params
+        if coherence_operator is not None and (
+            coherence_dim is not None
+            or coherence_spectrum is not None
+            or coherence_c_min is not None
+        ):
+            raise ValueError(
+                "Provide either a coherence operator or factory parameters, not both."
+            )
+        if frequency_operator is not None and frequency_matrix is not None:
+            raise ValueError(
+                "Provide either a frequency operator or frequency matrix, not both."
+            )
+
+        self.coherence_operator: CoherenceOperator | None = self._prepare_coherence_operator(
+            coherence_operator,
+            dim=coherence_dim,
+            spectrum=coherence_spectrum,
+            c_min=coherence_c_min,
         )
-        self.frequency_operator: FrequencyOperator | None = as_frequency_operator(
-            frequency_operator, frequency_operator_params
+        self.frequency_operator: FrequencyOperator | None = self._prepare_frequency_operator(
+            frequency_operator,
+            matrix=frequency_matrix,
         )
         self.coherence_threshold: float | None = (
             float(coherence_threshold) if coherence_threshold is not None else None
@@ -368,11 +436,13 @@ class NodeNX(NodeProtocol):
         *,
         projector: StateProjector | None = None,
         hilbert_space: HilbertSpace | None = None,
-        coherence_operator: CoherenceOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = None,
-        coherence_operator_params: Mapping[str, Any] | None = None,
+        coherence_operator: CoherenceOperator | None = None,
+        coherence_dim: int | None = None,
+        coherence_spectrum: Sequence[float] | np.ndarray | None = None,
+        coherence_c_min: float | None = None,
         coherence_threshold: float | None = None,
-        freq_op: FrequencyOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = None,
-        frequency_operator_params: Mapping[str, Any] | None = None,
+        frequency_operator: FrequencyOperator | None = None,
+        frequency_matrix: Sequence[Sequence[complex]] | np.ndarray | None = None,
         validator: NFRValidator | None = None,
         enforce_frequency_positivity: bool | None = None,
         enable_validation: bool | None = None,
@@ -387,13 +457,37 @@ class NodeNX(NodeProtocol):
         hilbert = hilbert_space or self.hilbert_space
 
         effective_coherence = (
-            as_coherence_operator(coherence_operator, coherence_operator_params)
-            if coherence_operator is not None
+            self._prepare_coherence_operator(
+                coherence_operator,
+                dim=coherence_dim,
+                spectrum=coherence_spectrum,
+                c_min=(
+                    coherence_c_min
+                    if coherence_c_min is not None
+                    else (
+                        self.coherence_operator.c_min
+                        if self.coherence_operator is not None
+                        else None
+                    )
+                ),
+            )
+            if any(
+                parameter is not None
+                for parameter in (
+                    coherence_operator,
+                    coherence_dim,
+                    coherence_spectrum,
+                    coherence_c_min,
+                )
+            )
             else self.coherence_operator
         )
         effective_freq = (
-            as_frequency_operator(freq_op, frequency_operator_params)
-            if freq_op is not None
+            self._prepare_frequency_operator(
+                frequency_operator,
+                matrix=frequency_matrix,
+            )
+            if frequency_operator is not None or frequency_matrix is not None
             else self.frequency_operator
         )
         threshold = (
