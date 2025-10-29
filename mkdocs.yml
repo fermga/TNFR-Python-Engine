@@ -16,10 +16,10 @@ nav:
       - Telemetry & utilities: api/telemetry.md
   - Mathematical Foundations:
       - Overview: theory/00_overview.ipynb
-      - Structural operators: theory/01_structural_operators.ipynb
-      - Phase and coupling: theory/02_phase_and_coupling.ipynb
-      - Coherence metrics: theory/03_coherence_metrics.ipynb
-      - Dissonance and bifurcation: theory/04_dissonance_and_bifurcation.ipynb
+      - Hilbert space foundations: theory/01_hilbert_space.ipynb
+      - Coherence operator Ĉ: theory/02_coherence_operator_C_hat.ipynb
+      - Frequency operator Ĵ: theory/03_frequency_operator_J_hat.ipynb
+      - Validator and metrics: theory/04_validator_and_metrics.ipynb
       - Unitary dynamics and ΔNFR: theory/05_unitary_dynamics_and_delta_nfr.ipynb
   - Examples: examples/README.md
   - Security:
