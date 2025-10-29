@@ -12,9 +12,11 @@ export PYTHONPATH="$REPO_ROOT/src:${PYTHONPATH:-}"
 
 python -m doctest -o ELLIPSIS docs/index.md docs/foundations.md
 
-if [ -d "docs/notebooks" ]; then
-  while IFS= read -r notebook; do
-    PYTHONWARNINGS="ignore:MissingIDFieldWarning" python -m jupyter nbconvert \
-      --to notebook --execute "$notebook" --stdout > /dev/null
-  done < <(find docs/notebooks -type f -name '*.ipynb' | sort)
-fi
+for notebook_dir in docs/theory docs/notebooks; do
+  if [ -d "$notebook_dir" ]; then
+    while IFS= read -r notebook; do
+      PYTHONWARNINGS="ignore:MissingIDFieldWarning" python -m jupyter nbconvert \
+        --to notebook --execute "$notebook" --stdout > /dev/null
+    done < <(find "$notebook_dir" -type f -name '*.ipynb' | sort)
+  fi
+done
