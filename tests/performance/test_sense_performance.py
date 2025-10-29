@@ -73,6 +73,11 @@ def test_compute_Si_vectorized_outperforms_python(monkeypatch, graph_canon):
     compute_Si(slow_graph, inplace=False)
 
     fast_reference = compute_Si(fast_graph, inplace=False)
+    chunk_reference = compute_Si(fast_graph, inplace=False, chunk_size=4)
+    nodes = sorted(fast_reference)
+    fast_vector = np.fromiter((fast_reference[n] for n in nodes), dtype=float)
+    chunk_vector = np.fromiter((chunk_reference[n] for n in nodes), dtype=float)
+    npt.assert_allclose(chunk_vector, fast_vector, rtol=1e-9, atol=1e-9)
 
     loops = 6
 
@@ -99,9 +104,14 @@ def test_compute_Si_vectorized_outperforms_python(monkeypatch, graph_canon):
         return duration
 
     fast_time = min(time_fast() for _ in range(5))
+    chunk_time = min(
+        _measure(lambda: compute_Si(fast_graph, inplace=False, chunk_size=4), loops)
+        for _ in range(5)
+    )
     dirty_time = min(time_dirty() for _ in range(5))
 
     assert fast_time <= dirty_time * 0.98
+    assert chunk_time <= fast_time * 1.05
 
     monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: None)
     _invalidate_trig_cache(slow_graph)
@@ -109,12 +119,12 @@ def test_compute_Si_vectorized_outperforms_python(monkeypatch, graph_canon):
     slow_reference = compute_Si(slow_graph, inplace=False)
     slow_time = _measure(lambda: compute_Si(slow_graph, inplace=False), loops)
 
-    nodes = sorted(fast_reference)
     fast_values = np.fromiter((fast_reference[n] for n in nodes), dtype=float)
     slow_values = np.fromiter((slow_reference[n] for n in nodes), dtype=float)
     npt.assert_allclose(fast_values, slow_values, rtol=1e-9, atol=1e-9)
 
     assert fast_time <= slow_time * 0.85
+    assert chunk_time <= slow_time * 0.85
 
 
 def test_compute_Si_large_graph_chunk_penalty_removed(graph_canon):
