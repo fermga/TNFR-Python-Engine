@@ -565,7 +565,7 @@ def _maybe_remesh(G: TNFRGraph) -> None:
 def _run_validators(G: TNFRGraph) -> None:
     """Execute registered validators ensuring canonical invariants hold."""
 
-    from ..utils import run_validators
+    from ..validation import run_validators
 
     run_validators(G)
 

@@ -11,7 +11,7 @@ from tnfr.constants import (
     inject_defaults,
 )
 from tnfr.initialization import init_node_attrs
-from tnfr.utils import run_validators
+from tnfr.validation import run_validators
 
 ALIAS_EPI_KIND = get_aliases("EPI_KIND")
 ALIAS_EPI = get_aliases("EPI")

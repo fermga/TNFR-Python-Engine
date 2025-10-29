@@ -24,8 +24,8 @@ from .utils import (
     get_numpy,
     mix_groups,
     normalize_counter,
-    validate_window,
 )
+from .validation import validate_window
 
 __all__ = (
     "attach_standard_observer",
@@ -58,6 +58,7 @@ _STD_CALLBACKS = {
     CallbackEvent.BEFORE_STEP.value: partial(_std_log, "before"),
     CallbackEvent.AFTER_STEP.value: partial(_std_log, "after"),
     CallbackEvent.ON_REMESH.value: partial(_std_log, "remesh"),
+    CallbackEvent.CACHE_METRICS.value: partial(_std_log, "cache"),
 }
 
 
