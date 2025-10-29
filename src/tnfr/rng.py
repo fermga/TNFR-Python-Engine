@@ -17,6 +17,7 @@ from .constants import DEFAULTS, get_param
 from .locking import get_lock
 from .types import GraphLike, TNFRGraph
 from .utils import get_graph
+from .utils.cache import build_cache_manager
 
 MASK64 = 0xFFFFFFFFFFFFFFFF
 
@@ -42,7 +43,7 @@ class _CounterState(Generic[K]):
     max_entries: int
 
 
-_RNG_CACHE_MANAGER = CacheManager(default_capacity=_DEFAULT_CACHE_MAXSIZE)
+_RNG_CACHE_MANAGER = build_cache_manager(default_capacity=_DEFAULT_CACHE_MAXSIZE)
 
 
 class _SeedHashCache(MutableMapping[tuple[int, int], int]):

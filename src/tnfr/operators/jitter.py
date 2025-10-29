@@ -20,6 +20,7 @@ from ..rng import (
 )
 from ..types import NodeId, TNFRGraph
 from ..utils import ensure_node_offset_map, get_nodenx
+from ..utils.cache import build_cache_manager
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodeProtocol
@@ -39,7 +40,7 @@ class JitterCache:
         *,
         manager: CacheManager | None = None,
     ) -> None:
-        self._manager = manager or CacheManager()
+        self._manager = manager or build_cache_manager()
         if not self._manager.has_override("scoped_counter:jitter"):
             self._manager.configure(
                 overrides={"scoped_counter:jitter": int(max_entries)}
@@ -135,7 +136,7 @@ class JitterCacheManager:
             self.cache = cache
             self._manager = cache.manager
         else:
-            self._manager = manager or CacheManager()
+            self._manager = manager or build_cache_manager()
             self.cache = JitterCache(manager=self._manager)
 
     # Convenience passthrough properties

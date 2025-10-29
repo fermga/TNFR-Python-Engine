@@ -28,7 +28,14 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 import networkx as nx
 from cachetools import LRUCache
 
-from ..cache import CacheCapacityConfig, CacheManager, InstrumentedLRUCache
+from ..cache import (
+    CacheCapacityConfig,
+    CacheLayer,
+    CacheManager,
+    InstrumentedLRUCache,
+    RedisCacheLayer,
+    ShelveCacheLayer,
+)
 from ..types import GraphLike, NodeId, TimingContext, TNFRGraph
 from .graph import get_graph, mark_dnfr_prep_dirty
 from .init import get_logger, get_numpy
@@ -54,6 +61,10 @@ __all__ = (
     "configure_graph_cache_limits",
     "DNFR_PREP_STATE_KEY",
     "DnfrPrepState",
+    "build_cache_manager",
+    "configure_global_cache_layers",
+    "reset_global_cache_manager",
+    "_GRAPH_CACHE_LAYERS_KEY",
 )
 
 if TYPE_CHECKING:  # pragma: no cover - typing aide
@@ -63,6 +74,14 @@ if TYPE_CHECKING:  # pragma: no cover - typing aide
 NODE_SET_CHECKSUM_KEY = "_node_set_checksum_cache"
 
 logger = get_logger(__name__)
+
+# Graph key storing per-graph layer configuration overrides.
+_GRAPH_CACHE_LAYERS_KEY = "_tnfr_cache_layers"
+
+# Process-wide configuration for shared cache layers (Shelve/Redis).
+_GLOBAL_CACHE_LAYER_CONFIG: dict[str, dict[str, Any]] = {}
+_GLOBAL_CACHE_LOCK = threading.RLock()
+_GLOBAL_CACHE_MANAGER: CacheManager | None = None
 
 # Keys of cache entries dependent on the edge version. Any change to the edge
 # set requires these to be dropped to avoid stale data.
@@ -110,6 +129,192 @@ def clear_node_repr_cache() -> None:
     """Clear cached node representations used for checksums."""
 
     _node_repr_digest.cache_clear()
+
+
+def configure_global_cache_layers(
+    *,
+    shelve: Mapping[str, Any] | None = None,
+    redis: Mapping[str, Any] | None = None,
+    replace: bool = False,
+) -> None:
+    """Update process-wide cache layer configuration.
+
+    Parameters mirror the per-layer specifications accepted via graph metadata.
+    Passing ``replace=True`` clears previous settings before applying new ones.
+    Providing ``None`` for a layer while ``replace`` is true removes that layer
+    from the configuration.
+    """
+
+    global _GLOBAL_CACHE_MANAGER
+    with _GLOBAL_CACHE_LOCK:
+        manager = _GLOBAL_CACHE_MANAGER
+        _GLOBAL_CACHE_MANAGER = None
+        if replace:
+            _GLOBAL_CACHE_LAYER_CONFIG.clear()
+        if shelve is not None:
+            _GLOBAL_CACHE_LAYER_CONFIG["shelve"] = dict(shelve)
+        elif replace:
+            _GLOBAL_CACHE_LAYER_CONFIG.pop("shelve", None)
+        if redis is not None:
+            _GLOBAL_CACHE_LAYER_CONFIG["redis"] = dict(redis)
+        elif replace:
+            _GLOBAL_CACHE_LAYER_CONFIG.pop("redis", None)
+    _close_cache_layers(manager)
+
+
+def _resolve_layer_config(
+    graph: MutableMapping[str, Any] | None,
+) -> dict[str, dict[str, Any]]:
+    resolved: dict[str, dict[str, Any]] = {}
+    with _GLOBAL_CACHE_LOCK:
+        for name, spec in _GLOBAL_CACHE_LAYER_CONFIG.items():
+            resolved[name] = dict(spec)
+    if graph is not None:
+        overrides = graph.get(_GRAPH_CACHE_LAYERS_KEY)
+        if isinstance(overrides, Mapping):
+            for name in ("shelve", "redis"):
+                layer_spec = overrides.get(name)
+                if isinstance(layer_spec, Mapping):
+                    resolved[name] = dict(layer_spec)
+                elif layer_spec is None:
+                    resolved.pop(name, None)
+    return resolved
+
+
+def _build_shelve_layer(spec: Mapping[str, Any]) -> ShelveCacheLayer | None:
+    path = spec.get("path")
+    if not path:
+        return None
+    flag = spec.get("flag", "c")
+    protocol = spec.get("protocol")
+    writeback = bool(spec.get("writeback", False))
+    try:
+        proto_arg = None if protocol is None else int(protocol)
+    except (TypeError, ValueError):
+        logger.warning("Invalid shelve protocol %r; falling back to default", protocol)
+        proto_arg = None
+    try:
+        return ShelveCacheLayer(
+            str(path),
+            flag=str(flag),
+            protocol=proto_arg,
+            writeback=writeback,
+        )
+    except Exception:  # pragma: no cover - defensive logging
+        logger.exception("Failed to initialise ShelveCacheLayer for path %r", path)
+        return None
+
+
+def _build_redis_layer(spec: Mapping[str, Any]) -> RedisCacheLayer | None:
+    enabled = spec.get("enabled", True)
+    if not enabled:
+        return None
+    namespace = spec.get("namespace")
+    client = spec.get("client")
+    if client is None:
+        factory = spec.get("client_factory")
+        if callable(factory):
+            try:
+                client = factory()
+            except Exception:  # pragma: no cover - defensive logging
+                logger.exception("Redis cache client factory failed")
+                return None
+        else:
+            kwargs = spec.get("client_kwargs")
+            if isinstance(kwargs, Mapping):
+                try:  # pragma: no cover - optional dependency
+                    import redis  # type: ignore
+                except Exception:  # pragma: no cover - defensive logging
+                    logger.exception("redis-py is required to build the configured Redis client")
+                    return None
+                try:
+                    client = redis.Redis(**dict(kwargs))
+                except Exception:  # pragma: no cover - defensive logging
+                    logger.exception("Failed to initialise redis client with %r", kwargs)
+                    return None
+    try:
+        if namespace is None:
+            return RedisCacheLayer(client=client)
+        return RedisCacheLayer(client=client, namespace=str(namespace))
+    except Exception:  # pragma: no cover - defensive logging
+        logger.exception("Failed to initialise RedisCacheLayer")
+        return None
+
+
+def _build_cache_layers(config: Mapping[str, dict[str, Any]]) -> tuple[CacheLayer, ...]:
+    layers: list[CacheLayer] = []
+    shelve_spec = config.get("shelve")
+    if isinstance(shelve_spec, Mapping):
+        layer = _build_shelve_layer(shelve_spec)
+        if layer is not None:
+            layers.append(layer)
+    redis_spec = config.get("redis")
+    if isinstance(redis_spec, Mapping):
+        layer = _build_redis_layer(redis_spec)
+        if layer is not None:
+            layers.append(layer)
+    return tuple(layers)
+
+
+def _close_cache_layers(manager: CacheManager | None) -> None:
+    if manager is None:
+        return
+    layers = getattr(manager, "_layers", ())
+    for layer in layers:
+        close = getattr(layer, "close", None)
+        if callable(close):
+            try:
+                close()
+            except Exception:  # pragma: no cover - defensive logging
+                logger.exception(
+                    "Cache layer close failed for %s", layer.__class__.__name__
+                )
+
+
+def reset_global_cache_manager() -> None:
+    """Dispose the shared cache manager and close attached layers."""
+
+    global _GLOBAL_CACHE_MANAGER
+    with _GLOBAL_CACHE_LOCK:
+        manager = _GLOBAL_CACHE_MANAGER
+        _GLOBAL_CACHE_MANAGER = None
+    _close_cache_layers(manager)
+
+
+def build_cache_manager(
+    *,
+    graph: MutableMapping[str, Any] | None = None,
+    storage: MutableMapping[str, Any] | None = None,
+    default_capacity: int | None = None,
+    overrides: Mapping[str, int | None] | None = None,
+) -> CacheManager:
+    """Construct a :class:`CacheManager` honouring configured cache layers."""
+
+    global _GLOBAL_CACHE_MANAGER
+    if graph is None:
+        with _GLOBAL_CACHE_LOCK:
+            manager = _GLOBAL_CACHE_MANAGER
+        if manager is not None:
+            return manager
+
+    layers = _build_cache_layers(_resolve_layer_config(graph))
+    manager = CacheManager(
+        storage,
+        default_capacity=default_capacity,
+        overrides=overrides,
+        layers=layers,
+    )
+
+    if graph is None:
+        with _GLOBAL_CACHE_LOCK:
+            global_manager = _GLOBAL_CACHE_MANAGER
+            if global_manager is None:
+                _GLOBAL_CACHE_MANAGER = manager
+                return manager
+        _close_cache_layers(manager)
+        return global_manager
+
+    return manager
 
 
 def _node_repr(n: Any) -> str:
@@ -450,7 +655,7 @@ def _coerce_dnfr_state(
 def _graph_cache_manager(graph: MutableMapping[str, Any]) -> CacheManager:
     manager = graph.get(_GRAPH_CACHE_MANAGER_KEY)
     if not isinstance(manager, CacheManager):
-        manager = CacheManager(default_capacity=128)
+        manager = build_cache_manager(graph=graph, default_capacity=128)
         graph[_GRAPH_CACHE_MANAGER_KEY] = manager
     config = graph.get(_GRAPH_CACHE_CONFIG_KEY)
     if isinstance(config, dict):

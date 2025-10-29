@@ -27,6 +27,7 @@ __all__ = (
     "cached_nodes_and_A",
     "clear_node_repr_cache",
     "configure_graph_cache_limits",
+    "configure_global_cache_layers",
     "edge_version_cache",
     "edge_version_update",
     "ensure_node_index_map",
@@ -35,10 +36,14 @@ __all__ = (
     "increment_edge_version",
     "increment_graph_version",
     "node_set_checksum",
+    "reset_global_cache_manager",
     "stable_json",
+    "build_cache_manager",
+    "_GRAPH_CACHE_LAYERS_KEY",
 )
 
 NODE_SET_CHECKSUM_KEY: str
+_GRAPH_CACHE_LAYERS_KEY: str
 
 class LRUCache(MutableMapping[K, V], Generic[K, V]):
     def __init__(self, maxsize: int = ...) -> None: ...
@@ -82,6 +87,12 @@ def get_graph_version(graph: Any, key: str, default: int = ...) -> int: ...
 def increment_graph_version(graph: Any, key: str) -> int: ...
 def stable_json(obj: Any) -> str: ...
 def clear_node_repr_cache() -> None: ...
+def configure_global_cache_layers(
+    *,
+    shelve: Mapping[str, Any] | None = ...,
+    redis: Mapping[str, Any] | None = ...,
+    replace: bool = ...,
+) -> None: ...
 def node_set_checksum(
     G: nx.Graph,
     nodes: Iterable[Any] | None = ...,
@@ -89,6 +100,14 @@ def node_set_checksum(
     presorted: bool = ...,
     store: bool = ...,
 ) -> str: ...
+def reset_global_cache_manager() -> None: ...
+def build_cache_manager(
+    *,
+    graph: MutableMapping[str, Any] | None = ...,
+    storage: MutableMapping[str, Any] | None = ...,
+    default_capacity: int | None = ...,
+    overrides: Mapping[str, int | None] | None = ...,
+) -> CacheManager: ...
 def cached_node_list(G: nx.Graph) -> tuple[Any, ...]: ...
 def ensure_node_index_map(G: TNFRGraph) -> dict[NodeId, int]: ...
 def ensure_node_offset_map(G: TNFRGraph) -> dict[NodeId, int]: ...

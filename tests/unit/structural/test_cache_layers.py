@@ -8,7 +8,13 @@ from typing import Any
 import networkx as nx
 
 from tnfr.cache import CacheLayer, CacheManager, RedisCacheLayer, ShelveCacheLayer
-from tnfr.utils.cache import edge_version_cache
+from tnfr.utils.cache import (
+    _GRAPH_CACHE_LAYERS_KEY,
+    build_cache_manager,
+    configure_global_cache_layers,
+    edge_version_cache,
+    reset_global_cache_manager,
+)
 
 
 class _FlakyLayer(CacheLayer):
@@ -64,6 +70,16 @@ class _FakeRedis:
         return [key for key in self._data if fnmatch.fnmatch(key, pattern)]
 
 
+def _close_manager(manager: CacheManager | None) -> None:
+    if manager is None:
+        return
+    layers = getattr(manager, "_layers", ())
+    for layer in layers:
+        close = getattr(layer, "close", None)
+        if callable(close):
+            close()
+
+
 def test_cache_manager_layer_failover(tmp_path):
     shelf_layer = ShelveCacheLayer(str(tmp_path / "cache.db"))
     failing = _FlakyLayer(fail_on_store=True)
@@ -84,6 +100,86 @@ def test_cache_manager_layer_failover(tmp_path):
     assert restored == {"value": 1}
 
     restored_shelf.close()
+
+
+def test_build_cache_manager_hydrates_from_persistent_layers(tmp_path):
+    fake_redis = _FakeRedis()
+    shelf_path = tmp_path / "global-cache.db"
+    manager: CacheManager | None = None
+    reloaded: CacheManager | None = None
+    configure_global_cache_layers(
+        shelve={"path": str(shelf_path)},
+        redis={"client": fake_redis, "namespace": "tests:cache"},
+        replace=True,
+    )
+    reset_global_cache_manager()
+    try:
+        manager = build_cache_manager()
+        manager.register("persistent", lambda: {"value": 0})
+        manager.store("persistent", {"value": 99})
+        with manager.timer("persistent"):
+            pass
+        manager.increment_hit("persistent")
+        assert fake_redis.get("tests:cache:persistent") is not None
+        stats = manager.get_metrics("persistent")
+        assert stats.hits == 1
+        assert stats.timings == 1
+
+        reset_global_cache_manager()
+        reloaded = build_cache_manager()
+        reloaded.register("persistent", lambda: {"value": -1})
+        assert reloaded.get("persistent") == {"value": 99}
+        reloaded.increment_hit("persistent")
+        with reloaded.timer("persistent"):
+            pass
+        reloaded_stats = reloaded.get_metrics("persistent")
+        assert reloaded_stats.hits == 1
+        assert reloaded_stats.timings == 1
+    finally:
+        configure_global_cache_layers(replace=True)
+        reset_global_cache_manager()
+        _close_manager(manager)
+        _close_manager(reloaded)
+
+
+def test_graph_cache_manager_uses_layer_overrides(tmp_path):
+    fake_redis = _FakeRedis()
+    shelf_path = tmp_path / "graph-cache.db"
+
+    G = nx.Graph()
+    G.add_nodes_from([0, 1])
+    G.graph[_GRAPH_CACHE_LAYERS_KEY] = {
+        "shelve": {"path": str(shelf_path)},
+        "redis": {"client": fake_redis, "namespace": "graph-cache"},
+    }
+
+    calls = 0
+
+    def builder() -> str:
+        nonlocal calls
+        calls += 1
+        return "persisted"
+
+    assert edge_version_cache(G, "alpha", builder) == "persisted"
+    assert calls == 1
+
+    first_manager = G.graph.get("_tnfr_cache_manager")
+    _close_manager(first_manager)
+    G.graph.pop("_edge_cache_manager", None)
+    G.graph.pop("_tnfr_cache_manager", None)
+
+    builder_called = False
+
+    def second_builder() -> str:
+        nonlocal builder_called
+        builder_called = True
+        return "should-not-run"
+
+    assert edge_version_cache(G, "alpha", second_builder) == "persisted"
+    assert builder_called is False
+
+    second_manager = G.graph.get("_tnfr_cache_manager")
+    _close_manager(second_manager)
 
 
 def test_edge_cache_persists_across_layers(tmp_path):
