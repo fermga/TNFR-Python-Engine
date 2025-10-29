@@ -20,7 +20,7 @@ from ..alias import get_attr, set_attr
 from ..callback_utils import CallbackEvent, callback_manager
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
 from ..glyph_history import append_metric, current_step_idx, ensure_history
-from ..helpers.numeric import kahan_sum_nd
+from ..utils.numeric import kahan_sum_nd
 from ..rng import make_rng
 from ..utils import cached_import, edge_version_update
 

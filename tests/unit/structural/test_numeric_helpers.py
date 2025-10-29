@@ -3,7 +3,7 @@ import math
 import networkx as nx  # type: ignore[import-untyped]
 import pytest
 
-from tnfr.helpers.numeric import angle_diff, angle_diff_array, similarity_abs
+from tnfr.utils.numeric import angle_diff, angle_diff_array, similarity_abs
 from tnfr.observers import phase_sync
 
 

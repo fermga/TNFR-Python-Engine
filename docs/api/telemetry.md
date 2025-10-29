@@ -141,7 +141,7 @@ The engine centralises reusable process-wide locks in `tnfr.locking`. Obtain nam
 Avoid scattering bare `threading.Lock` instances across modules; only short-lived objects may
 instantiate ad-hoc locks when they are not shared.
 
-## Helper utilities API (`tnfr.helpers` and `tnfr.utils`)
+## Helper utilities API (`tnfr.utils`; `tnfr.helpers` is deprecated)
 
 ### Collections and numeric helpers
 
@@ -213,5 +213,5 @@ All modes ensure connectivity by adding a base MST.
   and `vulture`).
 - The `tnfr` CLI exposes subcommands such as `sequence`, `metrics`, and more. Inspect `tnfr
   --help` for the full list.
-- Explore `tnfr.dynamics`, `tnfr.structural`, `tnfr.metrics`, `tnfr.operators`, `tnfr.helpers`,
+- Explore `tnfr.dynamics`, `tnfr.structural`, `tnfr.metrics`, `tnfr.operators`, `tnfr.utils`,
   and `tnfr.observers` for domain-specific extensions.

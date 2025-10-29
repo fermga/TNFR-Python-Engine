@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
 from .constants import THETA_KEY, VF_KEY, get_graph_param
-from .helpers.numeric import clamp
+from .utils.numeric import clamp
 from .rng import make_rng
 from .types import NodeInitAttrMap
 

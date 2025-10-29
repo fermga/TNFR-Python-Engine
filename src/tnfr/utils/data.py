@@ -9,7 +9,7 @@ from collections.abc import Collection, Iterable, Mapping, Sequence
 from itertools import islice
 from typing import Any, Callable, Iterator, TypeVar, cast
 
-from ..helpers.numeric import kahan_sum_nd
+from .numeric import kahan_sum_nd
 from .init import get_logger
 from .init import warn_once as _warn_once_factory
 
