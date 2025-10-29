@@ -189,6 +189,31 @@ def _ensure_si_buffers(
     )
 
 
+def _ensure_chunk_workspace(
+    G: GraphLike,
+    *,
+    effective_chunk: int,
+    count: int,
+    np: Any,
+) -> tuple[Any, Any]:
+    """Return reusable chunk scratch buffers for vectorised dispersion."""
+
+    if effective_chunk <= 0:
+        effective_chunk = 1
+
+    def builder() -> tuple[Any, Any]:
+        return (
+            np.empty(effective_chunk, dtype=float),
+            np.empty(effective_chunk, dtype=float),
+        )
+
+    return edge_version_cache(
+        G,
+        ("_si_chunk_workspace", effective_chunk, count),
+        builder,
+    )
+
+
 def _ensure_neighbor_bulk_buffers(
     G: GraphLike,
     *,
@@ -974,46 +999,56 @@ def compute_Si(
             )
         elif neighbor_count and use_chunked:
             neighbor_indices = np.nonzero(neighbor_mask)[0]
-            chunk_theta = np.empty(effective_chunk, dtype=float)
-            chunk_values = np.empty(effective_chunk, dtype=float)
+            chunk_theta, chunk_values = _ensure_chunk_workspace(
+                G,
+                effective_chunk=effective_chunk,
+                count=count,
+                np=np,
+            )
+            chunk_theta.fill(0.0)
+            chunk_values.fill(0.0)
             for start in range(0, neighbor_count, effective_chunk):
                 stop = min(start + effective_chunk, neighbor_count)
                 idx_slice = neighbor_indices[start:stop]
                 chunk_len = idx_slice.size
                 if chunk_len == 0:
                     continue
-                np.take(theta_arr, idx_slice, out=chunk_theta[:chunk_len])
-                np.take(mean_theta, idx_slice, out=chunk_values[:chunk_len])
+                theta_view = chunk_theta[:chunk_len]
+                values_view = chunk_values[:chunk_len]
+                theta_view.fill(0.0)
+                values_view.fill(0.0)
+                np.take(theta_arr, idx_slice, out=theta_view)
+                np.take(mean_theta, idx_slice, out=values_view)
                 np.subtract(
-                    chunk_theta[:chunk_len],
-                    chunk_values[:chunk_len],
-                    out=chunk_values[:chunk_len],
+                    theta_view,
+                    values_view,
+                    out=values_view,
                 )
                 np.add(
-                    chunk_values[:chunk_len],
+                    values_view,
                     math.pi,
-                    out=chunk_values[:chunk_len],
+                    out=values_view,
                 )
                 np.remainder(
-                    chunk_values[:chunk_len],
+                    values_view,
                     math.tau,
-                    out=chunk_values[:chunk_len],
+                    out=values_view,
                 )
                 np.subtract(
-                    chunk_values[:chunk_len],
+                    values_view,
                     math.pi,
-                    out=chunk_values[:chunk_len],
+                    out=values_view,
                 )
                 np.abs(
-                    chunk_values[:chunk_len],
-                    out=chunk_values[:chunk_len],
+                    values_view,
+                    out=values_view,
                 )
                 np.divide(
-                    chunk_values[:chunk_len],
+                    values_view,
                     math.pi,
-                    out=chunk_values[:chunk_len],
+                    out=values_view,
                 )
-                phase_dispersion[idx_slice] = chunk_values[:chunk_len]
+                phase_dispersion[idx_slice] = values_view
         else:
             np.abs(phase_dispersion, out=phase_dispersion)
             np.divide(

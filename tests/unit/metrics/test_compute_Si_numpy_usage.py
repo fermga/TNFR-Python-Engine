@@ -297,6 +297,7 @@ def test_compute_Si_vectorized_chunked_results_match(monkeypatch, graph_canon):
 
     original_resolve = sense_index_mod.resolve_chunk_size
     captured: list[tuple[int | None, int, int]] = []
+    workspace_calls: list[tuple[int, int]] = []
 
     def tracking_resolve(chunk_pref, total, **kwargs):
         result = original_resolve(chunk_pref, total, **kwargs)
@@ -305,6 +306,17 @@ def test_compute_Si_vectorized_chunked_results_match(monkeypatch, graph_canon):
 
     monkeypatch.setattr("tnfr.metrics.sense_index.resolve_chunk_size", tracking_resolve)
 
+    original_workspace = sense_index_mod._ensure_chunk_workspace
+
+    def tracking_workspace(G, *, effective_chunk, count, np):
+        workspace_calls.append((effective_chunk, count))
+        return original_workspace(G, effective_chunk=effective_chunk, count=count, np=np)
+
+    monkeypatch.setattr(
+        "tnfr.metrics.sense_index._ensure_chunk_workspace",
+        tracking_workspace,
+    )
+
     chunked = compute_Si(G_chunked, inplace=False, chunk_size=5)
 
     assert captured and captured[-1][0] == 5
@@ -312,6 +324,7 @@ def test_compute_Si_vectorized_chunked_results_match(monkeypatch, graph_canon):
     assert resolved_chunk <= 5
     assert resolved_chunk < node_count
     assert captured[-1][1] == node_count
+    assert workspace_calls == [(resolved_chunk, node_count)]
     assert set(chunked) == set(baseline)
     for node in baseline:
         assert chunked[node] == pytest.approx(baseline[node])
