@@ -8,19 +8,19 @@ nav:
   - Home: index.md
   - Getting started:
       - Quickstart: getting-started/quickstart.md
-      - Quick Start (Mathematics): getting-started/quickstart-mathematics.md
+      - Quick Start (Mathematics): foundations.md
       - Migrating from Remesh Window: getting-started/migrating-remesh-window.md
   - API:
       - Overview: api/overview.md
       - Structural operators: api/operators.md
       - Telemetry & utilities: api/telemetry.md
   - Mathematical Foundations:
-      - Structural frequency primer: notebooks/mathematical-foundations/01-structural-frequency.ipynb
-      - Phase synchrony lattices: notebooks/mathematical-foundations/02-phase-synchrony.ipynb
-      - ΔNFR gradient fields: notebooks/mathematical-foundations/03-delta-nfr-gradients.ipynb
-      - Coherence metrics walkthrough: notebooks/mathematical-foundations/04-coherence-metrics.ipynb
-      - Sense index calibration: notebooks/mathematical-foundations/05-sense-index.ipynb
-      - Recursivity cascades: notebooks/mathematical-foundations/06-recursivity.ipynb
+      - Overview: theory/00_overview.ipynb
+      - Structural operators: theory/01_structural_operators.ipynb
+      - Phase and coupling: theory/02_phase_and_coupling.ipynb
+      - Coherence metrics: theory/03_coherence_metrics.ipynb
+      - Dissonance and bifurcation: theory/04_dissonance_and_bifurcation.ipynb
+      - Unitary dynamics and ΔNFR: theory/05_unitary_dynamics_and_delta_nfr.ipynb
   - Examples: examples/README.md
   - Security:
       - Monitoring: security/monitoring.md
