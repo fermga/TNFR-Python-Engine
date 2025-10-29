@@ -4,11 +4,11 @@ export PYTHONPATH="$PWD/src"
 
 # Keep dependency extras aligned with .github/workflows/type-check.yml.
 python -m pip install --quiet ".[test,typecheck]"
-python -m flake8 src
+python -m flake8 src tests/mathematics
 python scripts/check_language.py
 python -m pydocstyle src/tnfr
 # Mirrors the mypy invocation in .github/workflows/type-check.yml.
-python -m mypy src/tnfr
+python -m mypy src/tnfr tests/mathematics
 python -m coverage run --source=src -m pytest "$@"
 python -m coverage report -m
 python -m vulture --min-confidence 80 src tests
