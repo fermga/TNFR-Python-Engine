@@ -8,14 +8,16 @@ from typing import Iterable
 
 from hypothesis import given, strategies as st
 
-from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY, dEPI_PRIMARY
-from tnfr.dynamics import dnfr_epi_vf_mixed
+from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_KEY, VF_PRIMARY, dEPI_PRIMARY
+from tnfr.dynamics import dnfr_epi_vf_mixed, dnfr_phase_only
 from tnfr.metrics.common import compute_coherence
 
 from .strategies import (
     PROPERTY_TEST_SETTINGS,
     ClusteredGraph,
+    PhaseGraph,
     homogeneous_graphs,
+    phase_graphs,
     prepare_network,
     two_cluster_graphs,
 )
@@ -150,3 +152,70 @@ def test_compute_coherence_decreases_with_noise(data, graph) -> None:
     assert large_depi + tol >= small_depi
     assert base_coherence + tol >= small_coherence
     assert small_coherence + tol >= large_coherence
+
+
+@PROPERTY_TEST_SETTINGS
+@given(
+    graph=prepare_network(min_nodes=2, max_nodes=8, connected=True),
+    phase=st.floats(
+        min_value=-4.0 * math.pi,
+        max_value=4.0 * math.pi,
+        allow_nan=False,
+        allow_infinity=False,
+    ),
+)
+def test_dnfr_phase_only_stable_on_synchronised(graph, phase) -> None:
+    """Synchronised phases should remain balanced under ΔNFR."""
+
+    for _node, data in graph.nodes(data=True):
+        data[THETA_KEY] = phase
+        data[DNFR_PRIMARY] = 0.0
+
+    dnfr_phase_only(graph)
+
+    for _node, data in graph.nodes(data=True):
+        delta = float(data.get(DNFR_PRIMARY, 0.0))
+        assert math.isclose(delta, 0.0, abs_tol=1e-9)
+
+
+@PROPERTY_TEST_SETTINGS
+@given(data=st.data())
+def test_dnfr_phase_only_rotation_invariant(data) -> None:
+    """Global phase rotations should not affect ΔNFR magnitudes."""
+
+    phased: PhaseGraph = data.draw(phase_graphs(), label="phase_graph")
+    rotation = data.draw(
+        st.floats(
+            min_value=-4.0 * math.pi,
+            max_value=4.0 * math.pi,
+            allow_nan=False,
+            allow_infinity=False,
+        ),
+        label="rotation_angle",
+    )
+
+    base_graph = copy.deepcopy(phased.graph)
+    rotated_graph = copy.deepcopy(phased.graph)
+    base_phases = dict(phased.base_phases)
+
+    for node in base_graph.nodes:
+        base_value = base_phases[node] + phased.offset
+        base_graph.nodes[node][THETA_KEY] = base_value
+        base_graph.nodes[node][DNFR_PRIMARY] = 0.0
+        rotated_graph.nodes[node][THETA_KEY] = base_value + rotation
+        rotated_graph.nodes[node][DNFR_PRIMARY] = 0.0
+
+    dnfr_phase_only(base_graph)
+    dnfr_phase_only(rotated_graph)
+
+    base_values = sorted(
+        float(data.get(DNFR_PRIMARY, 0.0)) for _node, data in base_graph.nodes(data=True)
+    )
+    rotated_values = sorted(
+        float(data.get(DNFR_PRIMARY, 0.0))
+        for _node, data in rotated_graph.nodes(data=True)
+    )
+
+    assert len(base_values) == len(rotated_values)
+    for left, right in zip(base_values, rotated_values):
+        assert math.isclose(left, right, rel_tol=1e-9, abs_tol=1e-9)
