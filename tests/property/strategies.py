@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass
+from types import MappingProxyType
 from typing import Any, Callable, Mapping, Sequence
 
 import math
@@ -23,7 +24,13 @@ from hypothesis.strategies import SearchStrategy
 
 from hypothesis_networkx import graph_builder
 
-from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY, inject_defaults
+from tnfr.constants import (
+    DNFR_PRIMARY,
+    EPI_PRIMARY,
+    THETA_KEY,
+    VF_PRIMARY,
+    inject_defaults,
+)
 from tnfr.dynamics import set_delta_nfr_hook
 from tnfr.initialization import init_node_attrs
 
@@ -32,12 +39,14 @@ __all__ = (
     "PROPERTY_TEST_SETTINGS",
     "HookConfig",
     "ClusteredGraph",
+    "PhaseGraph",
     "PhaseNeighbourhood",
     "PhaseBulkScenario",
     "create_nfr",
     "nested_structured_mappings",
     "prepare_network",
     "homogeneous_graphs",
+    "phase_graphs",
     "two_cluster_graphs",
     "phase_neighbourhoods",
     "phase_bulk_scenarios",
@@ -295,6 +304,15 @@ class ClusteredGraph:
 
 
 @dataclass(frozen=True)
+class PhaseGraph:
+    """Container combining a prepared graph with its phase baseline."""
+
+    graph: nx.Graph
+    base_phases: Mapping[Any, float]
+    offset: float
+
+
+@dataclass(frozen=True)
 class PhaseNeighbourhood:
     """Container with finite neighbour angles and derived trig mappings."""
 
@@ -475,6 +493,45 @@ def homogeneous_graphs(
         data[VF_PRIMARY] = vf_value
         data[DNFR_PRIMARY] = 0.0
     return graph
+
+
+@st.composite
+def phase_graphs(
+    draw,
+    *,
+    min_nodes: int = 2,
+    max_nodes: int = 8,
+    phase_strategy: SearchStrategy[float] | None = None,
+    offset: SearchStrategy[float] | None = None,
+    hook_options: Sequence[HookConfig | None] | None = None,
+    require_hook: bool = False,
+) -> PhaseGraph:
+    """Return graphs with explicit phase assignments and a shared offset."""
+
+    graph = draw(
+        prepare_network(
+            min_nodes=min_nodes,
+            max_nodes=max_nodes,
+            connected=True,
+            hook_options=hook_options,
+            require_hook=require_hook,
+        )
+    )
+    offset_value = draw(offset) if offset is not None else 0.0
+    base_phase_strategy = phase_strategy or _finite_angle()
+    base_phases: dict[Any, float] = {}
+
+    for node, data in graph.nodes(data=True):
+        base_value = draw(base_phase_strategy)
+        base_phases[node] = base_value
+        data[THETA_KEY] = base_value + offset_value
+        data[DNFR_PRIMARY] = 0.0
+
+    return PhaseGraph(
+        graph=graph,
+        base_phases=MappingProxyType(base_phases),
+        offset=offset_value,
+    )
 
 
 @st.composite
