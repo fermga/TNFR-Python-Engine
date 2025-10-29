@@ -253,6 +253,39 @@ def _build_weighted_graph(factory, n_nodes: int, topo_weight: float):
     return G
 
 
+def test_prepare_dnfr_data_skips_degree_when_topology_disabled(monkeypatch):
+    G = _build_weighted_graph(nx.path_graph, 5, 0.3)
+    baseline = _prepare_dnfr_data(G)
+    assert baseline.get("deg_list") is not None
+
+    G.graph["DNFR_WEIGHTS"]["topo"] = 0.0
+    G.graph.pop("_dnfr_weights", None)
+
+    with monkeypatch.context() as ctx:
+        original_degree = G.degree
+        calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+
+        def _spy_degree(*args, **kwargs):
+            calls.append((args, kwargs))
+            return original_degree(*args, **kwargs)
+
+        ctx.setattr(G, "degree", _spy_degree)
+        data = _prepare_dnfr_data(G)
+
+    assert calls
+    assert not any(len(args) == 0 and not kwargs for args, kwargs in calls)
+
+    assert data.get("degs") is None
+    assert data.get("deg_list") is None
+    assert data.get("deg_array") is None
+
+    G.graph["DNFR_WEIGHTS"]["topo"] = 0.2
+    G.graph.pop("_dnfr_weights", None)
+    restored = _prepare_dnfr_data(G)
+    assert restored.get("deg_list") is not None
+    assert restored.get("degs") is not None
+
+
 @pytest.mark.parametrize("factory", [nx.path_graph, nx.complete_graph])
 @pytest.mark.parametrize("topo_weight", [0.0, 0.4])
 def test_vectorized_matches_reference(factory, topo_weight, monkeypatch):
