@@ -23,7 +23,6 @@ from time import perf_counter
 from ..alias import get_attr, get_theta_attr, set_dnfr
 from ..cache import CacheManager
 from ..constants import DEFAULTS, get_aliases, get_param
-from ..utils import angle_diff, angle_diff_array
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import compute_theta_trig
@@ -36,13 +35,17 @@ from ..types import (
     TNFRGraph,
 )
 from ..utils import (
+    DNFR_PREP_STATE_KEY,
+    DnfrPrepState,
+    _graph_cache_manager,
+    angle_diff,
+    angle_diff_array,
     cached_node_list,
     cached_nodes_and_A,
     get_numpy,
     normalize_weights,
     resolve_chunk_size,
 )
-from ..utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
     import numpy as np
@@ -884,6 +887,7 @@ def _prepare_dnfr_data(
     )
     stop_timer("dnfr_cache_rebuild", cache_timer)
     dirty = dirty_flag or refreshed
+    caching_enabled = cache is not None and (cache_size is None or cache_size > 0)
     result["cache"] = cache
     result["idx"] = idx
     result["theta"] = theta
@@ -893,7 +897,7 @@ def _prepare_dnfr_data(
     result["sin_theta"] = sin_theta
     if cache is not None:
         _refresh_dnfr_vectors(G, nodes, cache)
-        if np_module is None:
+        if np_module is None and not caching_enabled:
             for attr in (
                 "neighbor_x_np",
                 "neighbor_y_np",
@@ -949,7 +953,7 @@ def _prepare_dnfr_data(
     degs: dict[NodeId, float] | None = None
     deg_array: np.ndarray | None = None
 
-    if w_topo != 0.0:
+    if w_topo != 0.0 or caching_enabled:
         if degree_map is None or len(degree_map) != len(G):
             degree_map = {cast(NodeId, node): float(deg) for node, deg in G.degree()}
             if cache is not None:
@@ -2318,7 +2322,12 @@ def default_compute_delta_nfr(
     _compute_dnfr(G, data, n_jobs=n_jobs, profile=profile)
     if not data.get("dnfr_numpy_available"):
         cache = data.get("cache")
-        if isinstance(cache, DnfrCache):
+        cache_size = data.get("cache_size")
+        caching_enabled = (
+            isinstance(cache, DnfrCache)
+            and (cache_size is None or int(cache_size) > 0)
+        )
+        if isinstance(cache, DnfrCache) and not caching_enabled:
             for attr in (
                 "neighbor_x_np",
                 "neighbor_y_np",

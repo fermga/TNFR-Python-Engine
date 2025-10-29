@@ -12,8 +12,12 @@ from cachetools import cached  # type: ignore[import-untyped]
 from .constants import DEFAULTS, get_param
 from .locking import get_lock
 from .types import GraphLike, TNFRGraph
-from .utils import get_graph
-from .utils.cache import ScopedCounterCache, _SeedHashCache, build_cache_manager
+from .utils import (
+    ScopedCounterCache,
+    _SeedHashCache,
+    build_cache_manager,
+    get_graph,
+)
 
 MASK64 = 0xFFFFFFFFFFFFFFFF
 

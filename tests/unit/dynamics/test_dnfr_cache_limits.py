@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from tnfr.cache import CacheCapacityConfig
-from tnfr.utils.cache import (
+from tnfr.utils import (
     DNFR_PREP_STATE_KEY,
     _GRAPH_CACHE_MANAGER_KEY,
     _graph_cache_manager,

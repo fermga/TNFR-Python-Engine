@@ -15,8 +15,12 @@ from ..rng import (
     seed_hash,
 )
 from ..types import NodeId, TNFRGraph
-from ..utils import ScopedCounterCache, ensure_node_offset_map, get_nodenx
-from ..utils.cache import build_cache_manager
+from ..utils import (
+    ScopedCounterCache,
+    build_cache_manager,
+    ensure_node_offset_map,
+    get_nodenx,
+)
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodeProtocol

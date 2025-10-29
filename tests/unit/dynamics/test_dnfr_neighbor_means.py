@@ -8,7 +8,7 @@ from tnfr.alias import collect_attr, set_attr
 from tnfr.constants import get_aliases
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.dynamics.dnfr import _MEAN_VECTOR_EPS
-from tnfr.utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
+from tnfr.utils import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")

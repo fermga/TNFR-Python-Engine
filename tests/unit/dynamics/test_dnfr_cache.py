@@ -16,11 +16,13 @@ from tnfr.constants import (
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.dynamics.dnfr import _accumulate_neighbors_numpy, _prepare_dnfr_data
 from tnfr.utils import (
+    DNFR_PREP_STATE_KEY,
+    DnfrPrepState,
+    _graph_cache_manager,
     cached_node_list,
     cached_nodes_and_A,
     increment_edge_version,
 )
-from tnfr.utils.cache import DNFR_PREP_STATE_KEY, DnfrPrepState, _graph_cache_manager
 
 
 @contextmanager
