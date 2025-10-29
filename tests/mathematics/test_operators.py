@@ -1,0 +1,68 @@
+"""Tests for TNFR mathematics operator contracts."""
+
+from __future__ import annotations
+
+import pytest
+
+np = pytest.importorskip("numpy")
+
+from tnfr.mathematics.operators import CoherenceOperator, FrequencyOperator
+
+
+def test_coherence_operator_from_matrix(structural_tolerances: dict[str, float]) -> None:
+    matrix = np.array([[2.0, 1.0 - 1.0j], [1.0 + 1.0j, 3.0]], dtype=np.complex128)
+    operator = CoherenceOperator(matrix)
+
+    assert operator.is_hermitian(atol=structural_tolerances["atol"])
+    assert operator.is_positive_semidefinite(atol=structural_tolerances["atol"])
+    assert operator.c_min == pytest.approx(min(operator.eigenvalues.real))
+
+    spectral_radius = operator.spectral_radius()
+    assert spectral_radius >= operator.c_min
+    assert operator.spectral_bandwidth() == pytest.approx(
+        operator.eigenvalues.real.max() - operator.eigenvalues.real.min()
+    )
+
+
+def test_coherence_operator_from_eigenvalues() -> None:
+    operator = CoherenceOperator([1.0, 2.0, 3.0])
+
+    np.testing.assert_array_equal(operator.matrix, np.diag([1.0, 2.0, 3.0]))
+    np.testing.assert_array_equal(operator.spectrum(), np.array([1.0, 2.0, 3.0], dtype=np.complex128))
+
+
+def test_coherence_operator_expectation(structural_rng: np.random.Generator) -> None:
+    matrix = np.array([[1.0, 0.0], [0.0, 2.0]], dtype=np.complex128)
+    operator = CoherenceOperator(matrix)
+
+    state = structural_rng.normal(size=2) + 1j * structural_rng.normal(size=2)
+    expectation = operator.expectation(state)
+    manual = np.vdot(state / np.linalg.norm(state), matrix @ (state / np.linalg.norm(state)))
+    assert expectation == pytest.approx(manual)
+
+    with pytest.raises(ValueError):
+        operator.expectation([1.0, 0.0, 0.0])
+
+
+def test_coherence_operator_non_hermitian_rejected() -> None:
+    matrix = np.array([[0.0, 1.0], [0.0, 0.0]], dtype=np.complex128)
+    with pytest.raises(ValueError):
+        CoherenceOperator(matrix)
+
+
+def test_frequency_operator_properties(structural_rng: np.random.Generator) -> None:
+    operator = FrequencyOperator([0.5, 1.5, 3.0])
+
+    spectrum = operator.spectrum()
+    assert spectrum.dtype == float
+    assert np.all(spectrum >= 0)
+
+    state = structural_rng.normal(size=3) + 1j * structural_rng.normal(size=3)
+    projected = operator.project_frequency(state)
+    assert isinstance(projected, float)
+    assert projected == pytest.approx(operator.expectation(state).real)
+
+
+def test_frequency_operator_negative_spectrum_detected() -> None:
+    operator = FrequencyOperator([-0.5, 0.5])
+    assert not operator.is_positive_semidefinite()

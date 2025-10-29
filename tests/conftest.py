@@ -1,10 +1,31 @@
 """Test utilities."""
 
+from __future__ import annotations
+
 import networkx as nx
 import pytest
 
+np = pytest.importorskip("numpy")
+
 from tnfr.constants import inject_defaults
 from tnfr.utils import cached_import, prune_failed_imports
+
+STRUCTURAL_ATOL = 1e-9
+STRUCTURAL_RTOL = 1e-7
+
+
+@pytest.fixture(scope="session")
+def structural_tolerances() -> dict[str, float]:
+    """Return the canonical absolute/relative tolerances used in tests."""
+
+    return {"atol": STRUCTURAL_ATOL, "rtol": STRUCTURAL_RTOL}
+
+
+@pytest.fixture
+def structural_rng() -> np.random.Generator:
+    """Provide a reproducible RNG aligned with TNFR structural conventions."""
+
+    return np.random.default_rng(seed=12345)
 
 
 @pytest.fixture
