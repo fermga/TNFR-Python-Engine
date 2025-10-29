@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 
-from tnfr.alias import set_attr
+from tnfr.alias import get_attr, set_attr
 from tnfr.constants import get_aliases
 import tnfr.metrics.sense_index as sense_index_mod
 from tnfr.metrics.sense_index import compute_Si
@@ -63,6 +63,38 @@ def _configure_graph(graph):
         set_attr(graph.nodes[node], ALIAS_THETA, phases[node])
         set_attr(graph.nodes[node], ALIAS_VF, vf_values[node])
         set_attr(graph.nodes[node], ALIAS_DNFR, dnfr_values[node])
+
+
+def test_compute_Si_vectorized_avoids_abs_max_recompute(monkeypatch, graph_canon):
+    np = pytest.importorskip("numpy")
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: np)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("vector path should not recompute cached maxima")
+
+    monkeypatch.setattr("tnfr.metrics.common.multi_recompute_abs_max", forbidden)
+
+    G = graph_canon()
+    _configure_graph(G)
+
+    expected_vfmax = max(abs(get_attr(G.nodes[node], ALIAS_VF, 0.0)) for node in G.nodes)
+    expected_dnfrmax = max(
+        abs(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)) for node in G.nodes
+    )
+
+    vectorized = compute_Si(G, inplace=False)
+
+    assert G.graph["_vfmax"] == pytest.approx(expected_vfmax)
+    assert G.graph["_dnfrmax"] == pytest.approx(expected_dnfrmax)
+
+    monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: None)
+
+    fallback = compute_Si(G, inplace=False)
+
+    assert set(vectorized) == set(fallback)
+    for node in vectorized:
+        assert fallback[node] == pytest.approx(vectorized[node])
 
 
 def test_compute_Si_vectorized_buffer_reuse_matches_python(monkeypatch, graph_canon):
