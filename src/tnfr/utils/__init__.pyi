@@ -73,7 +73,7 @@ from .init import (
     warm_cached_import,
     warn_once,
 )
-from .io import (
+from ..io import (
     DEFAULT_PARAMS,
     JsonDumpsParams,
     clear_orjson_param_warnings,

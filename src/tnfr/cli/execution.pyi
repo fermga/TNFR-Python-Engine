@@ -30,7 +30,8 @@ from ..ontosim import prepare_network
 from ..sense import register_sigma_callback
 from ..trace import register_trace
 from ..types import Glyph, ProgramTokens
-from ..utils import get_logger, json_dumps
+from ..io import json_dumps
+from ..utils import get_logger
 from .arguments import _args_to_dict
 
 DEFAULT_SUMMARY_SERIES_LIMIT: int

@@ -8,7 +8,8 @@ from dataclasses import dataclass
 from typing import Any, MutableMapping, TYPE_CHECKING
 
 from ..cache import CacheManager, CacheStatistics
-from ..utils import get_logger, json_dumps
+from ..io import json_dumps
+from ..utils import get_logger
 
 if TYPE_CHECKING:  # pragma: no cover - typing helpers
     from networkx import Graph
