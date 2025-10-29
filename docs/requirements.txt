@@ -1,2 +1,8 @@
 mkdocs>=1.5,<2.0
 mkdocs-material>=9.5,<10.0
+mkdocs>=1.5
+mkdocs-material>=9.5
+mkdocs-jupyter==0.24.8
+mkdocs-linkcheck==1.0.6
+nbconvert>=7.16
+pytest>=8.2
