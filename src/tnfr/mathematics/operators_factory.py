@@ -63,9 +63,20 @@ def build_frequency_operator(
     array = _as_array(operator)
     if ensure_hermitian:
         array = _symmetrise(array)
+    if ensure_hermitian and not np.allclose(array, array.conj().T, atol=atol):
+        raise ValueError("Frequency operator must be Hermitian within tolerance.")
+    if ensure_hermitian:
+        eigenvalues = np.linalg.eigvalsh(array)
+    else:
+        eigenvalues = np.linalg.eigvals(array)
     if ensure_positive:
-        array = array @ array.conj().T
-    return FrequencyOperator(array, ensure_hermitian=True, atol=atol)
+        if np.any(np.abs(eigenvalues.imag) > atol):
+            raise ValueError(
+                "Positive semidefinite frequency operators require real eigenvalues."
+            )
+        if np.any(eigenvalues.real < -atol):
+            raise ValueError("Frequency operator must be positive semidefinite.")
+    return FrequencyOperator(array, ensure_hermitian=ensure_hermitian, atol=atol)
 
 
 def as_coherence_operator(
