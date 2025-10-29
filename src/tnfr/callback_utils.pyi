@@ -27,6 +27,7 @@ class CallbackEvent(str, Enum):
     BEFORE_STEP = "before_step"
     AFTER_STEP = "after_step"
     ON_REMESH = "on_remesh"
+    CACHE_METRICS = "cache_metrics"
 
 Callback = Callable[[nx.Graph, dict[str, Any]], None]
 CallbackRegistry = dict[str, dict[str, CallbackSpec]]

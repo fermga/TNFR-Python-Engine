@@ -25,6 +25,7 @@ from ..glyph_history import ensure_history
 from ..helpers.numeric import clamp
 from ..metrics.sense_index import compute_Si
 from ..operators import apply_remesh_if_globally_stable
+from ..telemetry import publish_graph_cache_metrics
 from ..types import HistoryState, NodeId, TNFRGraph
 from ..utils import ensure_collection
 from . import adaptation, coordination, integrators, selectors
@@ -668,6 +669,7 @@ def step(
     _maybe_remesh(G)
     _run_validators(G)
     _run_after_callbacks(G, step_idx=step_idx)
+    publish_graph_cache_metrics(G)
 
 
 def run(
