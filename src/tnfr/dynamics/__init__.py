@@ -64,7 +64,7 @@ from concurrent.futures import ProcessPoolExecutor
 from ..metrics.sense_index import compute_Si
 from ..operators import apply_glyph
 from ..utils import get_numpy
-from ..validation.grammar import enforce_canonical_grammar, on_applied_glyph
+from ..validation import enforce_canonical_grammar, on_applied_glyph
 from . import coordination, dnfr, integrators
 from .adaptation import adapt_vf_by_coherence
 from .aliases import (
