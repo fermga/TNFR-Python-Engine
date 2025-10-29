@@ -15,6 +15,8 @@ from collections import deque
 from dataclasses import dataclass
 from typing import Any, Callable, Mapping, Sequence
 
+import math
+
 import networkx as nx
 from hypothesis import assume, settings, strategies as st
 from hypothesis.strategies import SearchStrategy
@@ -30,11 +32,15 @@ __all__ = (
     "PROPERTY_TEST_SETTINGS",
     "HookConfig",
     "ClusteredGraph",
+    "PhaseNeighbourhood",
+    "PhaseBulkScenario",
     "create_nfr",
     "nested_structured_mappings",
     "prepare_network",
     "homogeneous_graphs",
     "two_cluster_graphs",
+    "phase_neighbourhoods",
+    "phase_bulk_scenarios",
 )
 
 # Hypothesis guidance for CI runs.
@@ -288,12 +294,161 @@ class ClusteredGraph:
     clusters: tuple[tuple[Any, ...], tuple[Any, ...]]
 
 
+@dataclass(frozen=True)
+class PhaseNeighbourhood:
+    """Container with finite neighbour angles and derived trig mappings."""
+
+    neighbours: tuple[Any, ...]
+    angles: Mapping[Any, float]
+    weights: Mapping[Any, float]
+    cos_map: Mapping[Any, float]
+    sin_map: Mapping[Any, float]
+    fallback: float
+
+
+@dataclass(frozen=True)
+class PhaseBulkScenario:
+    """Description of graph-wide phase information for vectorised metrics."""
+
+    edge_src: tuple[int, ...]
+    edge_dst: tuple[int, ...]
+    cos_values: tuple[float, ...]
+    sin_values: tuple[float, ...]
+    theta_values: tuple[float, ...]
+    node_count: int
+    neighbour_counts: tuple[int, ...]
+
+
 def _bounded_attr() -> st.SearchStrategy[float]:
     return st.floats(
         min_value=-2.0,
         max_value=2.0,
         allow_nan=False,
         allow_infinity=False,
+    )
+
+
+def _finite_angle() -> st.SearchStrategy[float]:
+    return st.floats(
+        min_value=-4.0 * math.pi,
+        max_value=4.0 * math.pi,
+        allow_nan=False,
+        allow_infinity=False,
+    )
+
+
+def _finite_weight() -> st.SearchStrategy[float]:
+    return st.floats(
+        min_value=0.0,
+        max_value=5.0,
+        allow_nan=False,
+        allow_infinity=False,
+    )
+
+
+@st.composite
+def phase_neighbourhoods(
+    draw,
+    *,
+    min_neighbours: int = 0,
+    max_neighbours: int = 6,
+    fallback: st.SearchStrategy[float] | None = None,
+) -> PhaseNeighbourhood:
+    """Return finite neighbour lists together with cos/sin lookup tables."""
+
+    count = draw(
+        st.integers(min_value=min_neighbours, max_value=max_neighbours)
+    )
+    labels = draw(
+        st.lists(
+            st.text(alphabet=_KEY_ALPHABET, min_size=1, max_size=6),
+            min_size=count,
+            max_size=count,
+            unique=True,
+        )
+    )
+
+    angles = draw(
+        st.lists(_finite_angle(), min_size=count, max_size=count)
+    )
+    weights = draw(
+        st.lists(_finite_weight(), min_size=count, max_size=count)
+    )
+    fallback_strategy = fallback or _finite_angle()
+    fallback_value = draw(fallback_strategy)
+
+    angle_map = {label: angle for label, angle in zip(labels, angles)}
+    weight_map = {label: weight for label, weight in zip(labels, weights)}
+    cos_map = {label: math.cos(angle) for label, angle in angle_map.items()}
+    sin_map = {label: math.sin(angle) for label, angle in angle_map.items()}
+
+    return PhaseNeighbourhood(
+        neighbours=tuple(labels),
+        angles=angle_map,
+        weights=weight_map,
+        cos_map=cos_map,
+        sin_map=sin_map,
+        fallback=fallback_value,
+    )
+
+
+@st.composite
+def phase_bulk_scenarios(
+    draw,
+    *,
+    min_nodes: int = 0,
+    max_nodes: int = 6,
+    max_neighbours_per_node: int = 6,
+) -> PhaseBulkScenario:
+    """Return graph-scale phase descriptions for vectorised phase metrics."""
+
+    node_count = draw(
+        st.integers(min_value=min_nodes, max_value=max_nodes)
+    )
+    if node_count == 0:
+        return PhaseBulkScenario(
+            edge_src=(),
+            edge_dst=(),
+            cos_values=(),
+            sin_values=(),
+            theta_values=(),
+            node_count=0,
+            neighbour_counts=(),
+        )
+
+    theta_values = draw(
+        st.lists(_finite_angle(), min_size=node_count, max_size=node_count)
+    )
+    cos_values = [math.cos(theta) for theta in theta_values]
+    sin_values = [math.sin(theta) for theta in theta_values]
+
+    edge_src: list[int] = []
+    edge_dst: list[int] = []
+    neighbour_counts = [0] * node_count
+
+    index_strategy = st.integers(min_value=0, max_value=node_count - 1)
+
+    for dst in range(node_count):
+        neighbour_sample = draw(
+            st.lists(
+                index_strategy,
+                min_size=0,
+                max_size=max_neighbours_per_node,
+            )
+        )
+        for src in neighbour_sample:
+            edge_src.append(src)
+            edge_dst.append(dst)
+            neighbour_counts[dst] += 1
+
+    return PhaseBulkScenario(
+        edge_src=tuple(edge_src),
+        edge_dst=tuple(edge_dst),
+        cos_values=tuple(cos_values),
+        sin_values=tuple(sin_values),
+        theta_values=tuple(theta_values),
+        node_count=node_count,
+        neighbour_counts=tuple(neighbour_counts),
     )
 
 
