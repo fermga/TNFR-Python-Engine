@@ -11,6 +11,7 @@ runs aligned with CI expectations.
 
 from __future__ import annotations
 
+from collections import deque
 from dataclasses import dataclass
 from typing import Any, Callable, Mapping, Sequence
 
@@ -30,6 +31,7 @@ __all__ = (
     "HookConfig",
     "ClusteredGraph",
     "create_nfr",
+    "nested_structured_mappings",
     "prepare_network",
     "homogeneous_graphs",
     "two_cluster_graphs",
@@ -76,6 +78,68 @@ def _normalise_override(value: SearchStrategy[Any] | Any) -> SearchStrategy[Any]
     """Turn literal values into Hypothesis strategies when required."""
 
     return value if isinstance(value, SearchStrategy) else st.just(value)
+
+
+_KEY_ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+
+
+def _homogeneous_lists(strategy: SearchStrategy[Any]) -> SearchStrategy[list[Any]]:
+    return st.lists(strategy, max_size=4)
+
+
+def _list_variants(base: SearchStrategy[list[Any]]) -> SearchStrategy[Any]:
+    return st.one_of(
+        base,
+        st.builds(tuple, base),
+        st.builds(deque, base),
+        st.builds(lambda values: set(values), base),
+    )
+
+
+def _scalar_sequences() -> SearchStrategy[Any]:
+    integers = _homogeneous_lists(st.integers(min_value=-1_000, max_value=1_000))
+    floats = _homogeneous_lists(
+        st.floats(
+            min_value=-1_000.0,
+            max_value=1_000.0,
+            allow_nan=False,
+            allow_infinity=False,
+        )
+    )
+    text = _homogeneous_lists(
+        st.text(alphabet=_KEY_ALPHABET, min_size=0, max_size=8)
+    )
+    return _list_variants(st.one_of(integers, floats, text))
+
+
+def nested_structured_mappings() -> SearchStrategy[dict[str, Any]]:
+    """Return nested dictionaries using TNFR-compatible scalar collections."""
+
+    keys = st.text(alphabet=_KEY_ALPHABET, min_size=1, max_size=8)
+    scalars = st.one_of(
+        st.integers(min_value=-1_000, max_value=1_000),
+        st.floats(
+            min_value=-1_000.0,
+            max_value=1_000.0,
+            allow_nan=False,
+            allow_infinity=False,
+        ),
+        st.text(alphabet=_KEY_ALPHABET, min_size=0, max_size=12),
+    )
+    base_values = st.one_of(scalars, _scalar_sequences())
+
+    def extend(children: SearchStrategy[Any]) -> SearchStrategy[dict[str, Any]]:
+        return st.dictionaries(
+            keys,
+            st.one_of(base_values, children),
+            max_size=4,
+        )
+
+    return st.recursive(
+        st.dictionaries(keys, base_values, max_size=4),
+        extend,
+        max_leaves=10,
+    )
 
 
 def create_nfr(
