@@ -20,8 +20,12 @@ every run the script collects:
 * ``.pstats`` dumps that can be inspected with :mod:`pstats` or visualised in
   tools such as Snakeviz.
 * Structured JSON summaries including cumulative timings for the core
-  operators, manual wall-clock measurements per loop, and the full list of
-  profiling rows sorted by the requested key (``cumtime`` or ``tottime``).
+  operators, manual wall-clock measurements per loop, ΔNFR stage profiles
+  (``dnfr_cache_rebuild``, ``dnfr_neighbor_accumulation``,
+  ``dnfr_neighbor_means``, ``dnfr_gradient_assembly`` and
+  ``dnfr_inplace_write``) for both the manual and default hooks, and the full
+  list of profiling rows sorted by the requested key (``cumtime`` or
+  ``tottime``).
 """
 
 from __future__ import annotations
@@ -291,6 +295,7 @@ def _dump_profile_outputs(
     timings: Mapping[str, float],
     operator_timings: Mapping[str, Mapping[str, float]],
     si_breakdown: Mapping[str, Any],
+    dnfr_breakdown: Mapping[str, Any],
     metadata: Mapping[str, Any],
     configuration: Mapping[str, Any],
     sort: str,
@@ -335,6 +340,17 @@ def _dump_profile_outputs(
         for name, count in si_breakdown.get("path_counts", {}).items()
     }
 
+    dnfr_sections = {}
+    for label, section in dnfr_breakdown.items():
+        totals = section.get("totals", {})
+        per_loop = section.get("per_loop", {})
+        paths = section.get("path_counts", {})
+        dnfr_sections[label] = {
+            "totals": {name: float(value) for name, value in totals.items()},
+            "per_loop": {name: float(value) for name, value in per_loop.items()},
+            "path_counts": {name: int(count) for name, count in paths.items()},
+        }
+
     report = {
         "mode": mode,
         "loops": loops,
@@ -348,6 +364,7 @@ def _dump_profile_outputs(
             "per_loop": si_per_loop,
             "path_counts": si_path_counts,
         },
+        "dnfr_breakdown": dnfr_sections,
         "target_functions": _extract_target_stats(stats),
         "rows": rows,
     }
@@ -385,6 +402,24 @@ def _run_pipeline(
         "inplace_write": 0.0,
     }
     si_path_counts: dict[str, int] = {}
+
+    dnfr_manual_totals = {
+        "dnfr_cache_rebuild": 0.0,
+        "dnfr_neighbor_accumulation": 0.0,
+        "dnfr_neighbor_means": 0.0,
+        "dnfr_gradient_assembly": 0.0,
+        "dnfr_inplace_write": 0.0,
+    }
+    dnfr_manual_paths: dict[str, int] = {}
+
+    dnfr_default_totals = {
+        "dnfr_cache_rebuild": 0.0,
+        "dnfr_neighbor_accumulation": 0.0,
+        "dnfr_neighbor_means": 0.0,
+        "dnfr_gradient_assembly": 0.0,
+        "dnfr_inplace_write": 0.0,
+    }
+    dnfr_default_paths: dict[str, int] = {}
 
     metadata: dict[str, Any] = {
         "vectorized": vectorized,
@@ -456,17 +491,26 @@ def _run_pipeline(
                 if isinstance(path, str):
                     si_path_counts[path] = si_path_counts.get(path, 0) + 1
 
+                dnfr_profile_stage: dict[str, float | str] = {
+                    key: 0.0 for key in dnfr_manual_totals
+                }
                 start = perf_counter()
-                data = _prepare_dnfr_data(graph)
+                data = _prepare_dnfr_data(graph, profile=dnfr_profile_stage)
                 timings["_prepare_dnfr_data"] += perf_counter() - start
 
                 use_numpy = vectorized and tnfr_utils.get_numpy() is not None
+                neighbor_start = perf_counter()
                 neighbor_stats = _build_neighbor_sums_common(
                     graph,
                     data,
                     use_numpy=use_numpy,
                     n_jobs=dnfr_workers,
                 )
+                neighbor_elapsed = perf_counter() - neighbor_start
+                dnfr_profile_stage.setdefault("dnfr_neighbor_accumulation", 0.0)
+                dnfr_profile_stage["dnfr_neighbor_accumulation"] = float(
+                    dnfr_profile_stage.get("dnfr_neighbor_accumulation", 0.0)
+                ) + neighbor_elapsed
 
                 if resolved_neighbor_chunk_size is None:
                     resolved_neighbor_chunk_size = data.get("neighbor_chunk_size")
@@ -486,12 +530,37 @@ def _run_pipeline(
                         deg_sum=deg_sum,
                         degs=degs,
                         n_jobs=dnfr_workers,
+                        profile=dnfr_profile_stage,
                     )
                 timings["_compute_dnfr_common"] += perf_counter() - start
 
+                dnfr_profile_stage.setdefault(
+                    "dnfr_path", "vectorized" if use_numpy else "fallback"
+                )
+                for key in dnfr_manual_totals:
+                    value = dnfr_profile_stage.get(key)
+                    if isinstance(value, (int, float)):
+                        dnfr_manual_totals[key] += float(value)
+                path = dnfr_profile_stage.get("dnfr_path")
+                if isinstance(path, str):
+                    dnfr_manual_paths[path] = dnfr_manual_paths.get(path, 0) + 1
+
                 start = perf_counter()
-                default_compute_delta_nfr(graph, n_jobs=dnfr_workers)
+                dnfr_default_profile: dict[str, float | str] = {}
+                default_compute_delta_nfr(
+                    graph, n_jobs=dnfr_workers, profile=dnfr_default_profile
+                )
                 timings["default_compute_delta_nfr"] += perf_counter() - start
+
+                for key in dnfr_default_totals:
+                    value = dnfr_default_profile.get(key)
+                    if isinstance(value, (int, float)):
+                        dnfr_default_totals[key] += float(value)
+                default_path = dnfr_default_profile.get("dnfr_path")
+                if isinstance(default_path, str):
+                    dnfr_default_paths[default_path] = (
+                        dnfr_default_paths.get(default_path, 0) + 1
+                    )
         finally:
             profile.disable()
 
@@ -509,7 +578,28 @@ def _run_pipeline(
         },
         "path_counts": dict(sorted(si_path_counts.items())),
     }
-    return profile, timings, metadata, si_details
+
+    dnfr_manual_details = {
+        "totals": {name: float(total) for name, total in dnfr_manual_totals.items()},
+        "per_loop": {
+            name: float(total / loops_for_avg) if loops else 0.0
+            for name, total in dnfr_manual_totals.items()
+        },
+        "path_counts": dict(sorted(dnfr_manual_paths.items())),
+    }
+
+    dnfr_default_details = {
+        "totals": {name: float(total) for name, total in dnfr_default_totals.items()},
+        "per_loop": {
+            name: float(total / loops_for_avg) if loops else 0.0
+            for name, total in dnfr_default_totals.items()
+        },
+        "path_counts": dict(sorted(dnfr_default_paths.items())),
+    }
+
+    dnfr_details = {"manual": dnfr_manual_details, "default": dnfr_default_details}
+
+    return profile, timings, metadata, si_details, dnfr_details
 
 
 def profile_full_pipeline(
@@ -600,7 +690,7 @@ def profile_full_pipeline(
                 dnfr_workers=dnfr_jobs,
             )
 
-            profile, timings, metadata, si_details = _run_pipeline(
+            profile, timings, metadata, si_details, dnfr_details = _run_pipeline(
                 graph=graph,
                 vectorized=vectorized,
                 loops=loops,
@@ -623,6 +713,7 @@ def profile_full_pipeline(
                 timings=timings,
                 operator_timings=operator_timings,
                 si_breakdown=si_details,
+                dnfr_breakdown=dnfr_details,
                 metadata=metadata,
                 configuration=configuration,
                 sort=sort,
@@ -655,6 +746,37 @@ def profile_full_pipeline(
             for line in si_lines:
                 print(line)
             print(f"  paths: {path_summary}")
+
+            manual_dnfr = dnfr_details.get("manual", {})
+            default_dnfr = dnfr_details.get("default", {})
+
+            def _format_dnfr_lines(section: Mapping[str, Any]) -> list[str]:
+                totals = section.get("totals", {})
+                per_loop = section.get("per_loop", {})
+                return [
+                    f"  {name}: total={totals.get(name, 0.0):.6f}s "
+                    f"per_loop={per_loop.get(name, 0.0):.6f}s"
+                    for name in sorted(totals)
+                ]
+
+            manual_lines = _format_dnfr_lines(manual_dnfr)
+            default_lines = _format_dnfr_lines(default_dnfr)
+            manual_paths = ", ".join(
+                f"{key}={value}" for key, value in manual_dnfr.get("path_counts", {}).items()
+            ) or "none"
+            default_paths = ", ".join(
+                f"{key}={value}" for key, value in default_dnfr.get("path_counts", {}).items()
+            ) or "none"
+
+            print("ΔNFR manual stages breakdown:")
+            for line in manual_lines:
+                print(line)
+            print(f"  paths: {manual_paths}")
+
+            print("ΔNFR default hook breakdown:")
+            for line in default_lines:
+                print(line)
+            print(f"  paths: {default_paths}")
 
 
 def main(argv: list[str] | None = None) -> int:
