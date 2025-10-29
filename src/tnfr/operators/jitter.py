@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any, cast
 
 from cachetools import LRUCache
 
-from ..cache import CacheManager
 from ..rng import base_seed, cache_enabled
 from ..rng import clear_rng_cache as _clear_rng_cache
 from ..rng import (
@@ -16,6 +15,7 @@ from ..rng import (
 )
 from ..types import NodeId, TNFRGraph
 from ..utils import (
+    CacheManager,
     ScopedCounterCache,
     build_cache_manager,
     ensure_node_offset_map,
