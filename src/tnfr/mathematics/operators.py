@@ -118,7 +118,8 @@ class CoherenceOperator:
         state: Sequence[complex] | np.ndarray,
         *,
         normalise: bool = True,
-    ) -> complex:
+        atol: float = 1e-9,
+    ) -> float:
         vector = _as_complex_vector(state)
         if vector.shape != (self.matrix.shape[0],):
             raise ValueError("State vector dimension mismatch with operator.")
@@ -127,7 +128,17 @@ class CoherenceOperator:
             if np.isclose(norm, 0.0):
                 raise ValueError("Cannot normalise a null state vector.")
             vector = vector / norm
-        return vector.conj().T @ (self.matrix @ vector)
+        expectation = vector.conj().T @ (self.matrix @ vector)
+        if np.abs(expectation.imag) > atol:
+            raise ValueError(
+                "Expectation value carries an imaginary component beyond tolerance."
+            )
+        eps = np.finfo(float).eps
+        tol = max(1000.0, float(atol / eps)) if atol > 0 else 1000.0
+        real_expectation = np.real_if_close(expectation, tol=tol)
+        if np.iscomplexobj(real_expectation):
+            raise ValueError("Expectation remained complex after coercion.")
+        return float(real_expectation)
 
 
 class FrequencyOperator(CoherenceOperator):
@@ -163,6 +174,6 @@ class FrequencyOperator(CoherenceOperator):
         state: Sequence[complex] | np.ndarray,
         *,
         normalise: bool = True,
+        atol: float = 1e-9,
     ) -> float:
-        expectation = self.expectation(state, normalise=normalise)
-        return float(expectation.real)
+        return self.expectation(state, normalise=normalise, atol=atol)
