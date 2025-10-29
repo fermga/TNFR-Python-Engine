@@ -8,7 +8,7 @@ from typing import Any, Iterable, Mapping, Sequence
 from ..alias import collect_attr, get_attr, multi_recompute_abs_max
 from ..constants import DEFAULTS, get_aliases
 from ..utils.numeric import clamp01, kahan_sum_nd
-from ..types import GraphLike
+from ..types import GraphLike, NodeAttrMap
 from ..utils import edge_version_cache, get_numpy, normalize_weights
 
 ALIAS_DNFR = get_aliases("DNFR")
@@ -104,7 +104,7 @@ def compute_dnfr_accel_max(G: GraphLike) -> dict[str, float]:
     )
 
 
-def normalize_dnfr(nd: Mapping[str, Any], max_val: float) -> float:
+def normalize_dnfr(nd: NodeAttrMap, max_val: float) -> float:
     """Normalise ``|ΔNFR|`` using ``max_val``."""
 
     if max_val <= 0:
