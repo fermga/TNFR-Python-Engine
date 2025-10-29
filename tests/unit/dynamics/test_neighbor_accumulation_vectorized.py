@@ -191,6 +191,29 @@ def test_neighbor_chunking_matches_unchunked():
         )
 
 
+def test_chunked_broadcast_accumulator_avoids_bincount(monkeypatch):
+    np_module = pytest.importorskip("numpy")
+
+    graph = _sparse_weighted_graph(np_module, nodes=30, topo_weight=0.25)
+    data = _prepare_dnfr_data(graph)
+    data["prefer_sparse"] = True
+    data["A"] = None
+    data["neighbor_chunk_hint"] = 1
+
+    def _fail_bincount(*_args, **_kwargs):  # pragma: no cover - sanity hook
+        raise AssertionError("np.bincount should not run for chunked accumulation")
+
+    monkeypatch.setattr(np_module, "bincount", _fail_bincount)
+
+    _build_neighbor_sums_common(graph, data, use_numpy=True)
+
+    chunk_size = data.get("neighbor_chunk_size")
+    edge_count = data.get("edge_count")
+    assert isinstance(chunk_size, int)
+    assert isinstance(edge_count, int)
+    assert 0 < chunk_size < edge_count
+
+
 def test_vectorized_neighbor_counts_use_cached_degrees():
     np_module = pytest.importorskip("numpy")
 
