@@ -6,9 +6,7 @@ import math
 from collections import deque
 from collections.abc import Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
-from typing import TYPE_CHECKING, Any, TypeVar, cast
-
-from .._compat import TypeAlias
+from typing import Any, TypeVar, cast
 from ..alias import get_theta_attr, set_theta
 from ..constants import (
     DEFAULTS,
@@ -24,19 +22,8 @@ from ..metrics.common import ensure_neighbors_map
 from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import get_trig_cache
 from ..observers import DEFAULT_GLYPH_LOAD_SPAN, glyph_load, kuramoto_order
-from ..types import NodeId, Phase, TNFRGraph
+from ..types import FloatArray, NodeId, Phase, TNFRGraph
 from ..utils import get_numpy
-
-if TYPE_CHECKING:  # pragma: no cover - typing imports only
-    try:
-        import numpy as np_typing
-        import numpy.typing as npt
-    except ImportError:  # pragma: no cover - optional typing dependency
-        FloatArray: TypeAlias = Any
-    else:
-        FloatArray: TypeAlias = npt.NDArray[np_typing.float_]
-else:  # pragma: no cover - runtime without numpy typing
-    FloatArray: TypeAlias = Any
 
 _DequeT = TypeVar("_DequeT")
 
