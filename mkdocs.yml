@@ -8,11 +8,19 @@ nav:
   - Home: index.md
   - Getting started:
       - Quickstart: getting-started/quickstart.md
+      - Quick Start (Mathematics): getting-started/quickstart-mathematics.md
       - Migrating from Remesh Window: getting-started/migrating-remesh-window.md
   - API:
       - Overview: api/overview.md
       - Structural operators: api/operators.md
       - Telemetry & utilities: api/telemetry.md
+  - Mathematical Foundations:
+      - Structural frequency primer: notebooks/mathematical-foundations/01-structural-frequency.ipynb
+      - Phase synchrony lattices: notebooks/mathematical-foundations/02-phase-synchrony.ipynb
+      - ΔNFR gradient fields: notebooks/mathematical-foundations/03-delta-nfr-gradients.ipynb
+      - Coherence metrics walkthrough: notebooks/mathematical-foundations/04-coherence-metrics.ipynb
+      - Sense index calibration: notebooks/mathematical-foundations/05-sense-index.ipynb
+      - Recursivity cascades: notebooks/mathematical-foundations/06-recursivity.ipynb
   - Examples: examples/README.md
   - Security:
       - Monitoring: security/monitoring.md
@@ -37,6 +45,12 @@ markdown_extensions:
   - toc:
       permalink: true
   - pymdownx.highlight
+  - pymdownx.details
   - pymdownx.superfences
 plugins:
   - search
+  - mkdocs-jupyter:
+      execute: false
+      include_source: true
+  - linkcheck:
+      fail_on_warning: true
