@@ -6,6 +6,8 @@ import copy
 import math
 from typing import Iterable
 
+import networkx as nx
+
 from hypothesis import given, strategies as st
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_KEY, VF_PRIMARY, dEPI_PRIMARY
@@ -77,6 +79,46 @@ def test_dnfr_epi_vf_mixed_balances_clusters(clustered: ClusteredGraph) -> None:
     if len(cluster_signatures) == 2:
         # Cluster signatures should oppose or cancel depending on the gradient.
         assert cluster_signatures[0] * cluster_signatures[1] <= 0.0
+
+
+@PROPERTY_TEST_SETTINGS
+@given(
+    data=st.data(),
+    graph=prepare_network(min_nodes=2, connected=True),
+)
+def test_dnfr_epi_vf_mixed_invariant_under_relabel(data, graph) -> None:
+    """ΔNFR values should remain stable after node relabelling."""
+
+    base_graph = copy.deepcopy(graph)
+    permuted_graph = copy.deepcopy(graph)
+
+    nodes = list(base_graph.nodes())
+    permutation = data.draw(
+        st.permutations(nodes),
+        label="node_permutation",
+    )
+    mapping = dict(zip(nodes, permutation))
+    nx.relabel_nodes(permuted_graph, mapping, copy=False)
+
+    for _node, data_dict in permuted_graph.nodes(data=True):
+        for key in (EPI_PRIMARY, VF_PRIMARY, DNFR_PRIMARY):
+            assert key in data_dict
+
+    dnfr_epi_vf_mixed(base_graph)
+    dnfr_epi_vf_mixed(permuted_graph)
+
+    base_values = sorted(
+        float(data_dict.get(DNFR_PRIMARY, 0.0))
+        for _node, data_dict in base_graph.nodes(data=True)
+    )
+    permuted_values = sorted(
+        float(data_dict.get(DNFR_PRIMARY, 0.0))
+        for _node, data_dict in permuted_graph.nodes(data=True)
+    )
+
+    assert len(base_values) == len(permuted_values)
+    for left, right in zip(base_values, permuted_values):
+        assert math.isclose(left, right, rel_tol=1e-9, abs_tol=1e-9)
 
 
 def _apply_noise(
