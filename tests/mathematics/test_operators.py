@@ -6,7 +6,7 @@ import pytest
 
 np = pytest.importorskip("numpy")
 
-from tnfr.mathematics.operators import CoherenceOperator, FrequencyOperator
+from tnfr.mathematics.operators import DEFAULT_C_MIN, CoherenceOperator, FrequencyOperator
 
 
 def test_coherence_operator_from_matrix(structural_tolerances: dict[str, float]) -> None:
@@ -35,6 +35,13 @@ def test_coherence_operator_allows_custom_c_min() -> None:
     operator = CoherenceOperator([[1.0, 0.0], [0.0, 2.0]], c_min=0.25)
 
     assert operator.c_min == pytest.approx(0.25)
+    assert min(operator.eigenvalues.real) != pytest.approx(operator.c_min)
+
+
+def test_coherence_operator_respects_default_constant_when_explicit() -> None:
+    operator = CoherenceOperator([[1.0, 0.0], [0.0, 2.0]], c_min=DEFAULT_C_MIN)
+
+    assert operator.c_min == pytest.approx(DEFAULT_C_MIN)
     assert min(operator.eigenvalues.real) != pytest.approx(operator.c_min)
 
 

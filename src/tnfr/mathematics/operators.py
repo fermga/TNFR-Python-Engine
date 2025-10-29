@@ -18,6 +18,7 @@ else:  # pragma: no cover - runtime alias
 __all__ = ["CoherenceOperator", "FrequencyOperator"]
 
 DEFAULT_C_MIN: float = 0.1
+_C_MIN_UNSET = object()
 
 
 def _as_complex_vector(vector: Sequence[complex] | np.ndarray) -> ComplexVector:
@@ -57,7 +58,7 @@ class CoherenceOperator:
         self,
         operator: Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray,
         *,
-        c_min: float = DEFAULT_C_MIN,
+        c_min: float | object = _C_MIN_UNSET,
         ensure_hermitian: bool = True,
         atol: float = 1e-9,
     ) -> None:
@@ -77,7 +78,10 @@ class CoherenceOperator:
             else:
                 self.eigenvalues = np.linalg.eigvals(self.matrix)
         derived_c_min = float(np.min(self.eigenvalues.real))
-        self.c_min = float(c_min) if c_min is not DEFAULT_C_MIN else derived_c_min
+        if c_min is _C_MIN_UNSET:
+            self.c_min = derived_c_min
+        else:
+            self.c_min = float(c_min)
 
     @staticmethod
     def _check_hermitian(matrix: ComplexMatrix, *, atol: float = 1e-9) -> bool:
