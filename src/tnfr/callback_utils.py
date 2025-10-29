@@ -39,6 +39,7 @@ class CallbackEvent(str, Enum):
     BEFORE_STEP = "before_step"
     AFTER_STEP = "after_step"
     ON_REMESH = "on_remesh"
+    CACHE_METRICS = "cache_metrics"
 
 
 class CallbackManager:

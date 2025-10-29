@@ -46,6 +46,35 @@ register_trace(G)
 Histories are stored under `G.graph['history']` and can be prepared with the structural history
 helpers exposed by the `tnfr.glyph_history` module.
 
+### Cache telemetry publishers
+
+Cache usage is exported through :func:`tnfr.telemetry.publish_graph_cache_metrics` which iterates
+over the shared :class:`~tnfr.cache.CacheManager` and emits snapshots via the
+:class:`~tnfr.telemetry.cache_metrics.CacheTelemetryPublisher`. The publisher logs structured JSON
+records under the `tnfr.telemetry.cache` logger and invokes callbacks registered for
+``CallbackEvent.CACHE_METRICS`` so observers can react to hit ratio or latency regressions.
+
+Typical wiring attaches a recorder and lets :func:`~tnfr.dynamics.runtime.step` publish metrics at
+the end of each iteration:
+
+```python
+from tnfr.callback_utils import CallbackEvent, callback_manager
+from tnfr.telemetry import publish_graph_cache_metrics
+
+callback_manager.register_callback(
+    G,
+    CallbackEvent.CACHE_METRICS,
+    lambda graph, ctx: graph.graph.setdefault("cache_events", []).append(ctx),
+)
+
+# Manual snapshots are available when running imperative cache workloads.
+publish_graph_cache_metrics(G)
+```
+
+Snapshots include derived ratios (`hit_ratio`, `miss_ratio`) and a mean latency estimate so log
+pipelines or observability hooks can alert when the hit rate drifts below the default 50% threshold
+or when the average cache latency exceeds 100 ms.
+
 ## Trace capture and callback safety
 
 `tnfr.trace.register_trace` attaches before/after callbacks via the shared callback manager.
