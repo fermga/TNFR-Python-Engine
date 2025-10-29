@@ -11,6 +11,7 @@ from .._compat import TypeAlias
 from ..alias import get_attr
 from ..config.constants import GLYPHS_CANONICAL_SET
 from ..constants import get_aliases, get_param
+from ..utils.numeric import within_range
 from ..types import (
     EPIValue,
     NodeId,
@@ -30,15 +31,6 @@ AliasSequence = Sequence[str]
 """Sequence of accepted attribute aliases."""
 
 __all__ = ("validate_window", "run_validators", "GRAPH_VALIDATORS")
-
-
-def _within_range(val: float, lower: float, upper: float, tol: float) -> bool:
-    v = float(val)
-    return (
-        lower <= v <= upper
-        or abs(v - lower) <= tol
-        or abs(v - upper) <= tol
-    )
 
 
 def validate_window(window: int, *, positive: bool = False) -> int:
@@ -110,7 +102,7 @@ def _check_range(
     node: NodeId,
     tol: float = 1e-9,
 ) -> None:
-    if not _within_range(val, lower, upper, tol):
+    if not within_range(val, lower, upper, tol):
         raise ValueError(_out_of_range_msg(name, node, val))
 
 
