@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import math
 from collections.abc import Hashable, Mapping
 from dataclasses import dataclass
@@ -416,8 +417,11 @@ class NodeNX(NodeProtocol):
         def _project(epi: float, vf: float, theta: float) -> np.ndarray:
             local_rng = None
             if rng is not None:
-                state = rng.bit_generator.state
-                local_rng = np.random.default_rng(state)
+                bit_generator = rng.bit_generator
+                cloned_state = copy.deepcopy(bit_generator.state)
+                local_bit_generator = type(bit_generator)()
+                local_bit_generator.state = cloned_state
+                local_rng = np.random.Generator(local_bit_generator)
             vector = projector(epi, vf, theta, hilbert.dimension, rng=local_rng)
             return np.asarray(vector, dtype=np.complex128)
 
