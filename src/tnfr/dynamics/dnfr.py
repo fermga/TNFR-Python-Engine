@@ -1712,17 +1712,6 @@ def _accumulate_neighbors_broadcasted(
             chunk_step = resolved_chunk if resolved_chunk else edge_count
             chunk_indices = range(0, edge_count, chunk_step)
 
-            state_matrix = np.empty((component_rows, n), dtype=float)
-            np.copyto(state_matrix[cos_row], cos, casting="unsafe")
-            np.copyto(state_matrix[sin_row], sin, casting="unsafe")
-            np.copyto(state_matrix[epi_row], epi, casting="unsafe")
-            np.copyto(state_matrix[vf_row], vf, casting="unsafe")
-
-            if count_row is not None:
-                state_matrix[count_row].fill(1.0)
-            if deg_row is not None and deg_array is not None:
-                np.copyto(state_matrix[deg_row], deg_array, casting="unsafe")
-
             for start in chunk_indices:
                 end = min(start + chunk_step, edge_count)
                 if start >= end:
@@ -1730,16 +1719,69 @@ def _accumulate_neighbors_broadcasted(
                 src_slice = edge_src_int[start:end]
                 dst_slice = edge_dst_int[start:end]
                 slice_len = end - start
+                if slice_len <= 0:
+                    continue
 
                 if workspace is not None:
                     chunk_matrix = workspace[:, :slice_len]
                 else:
                     chunk_matrix = np.empty((component_rows, slice_len), dtype=float)
 
-                np.take(state_matrix, dst_slice, axis=1, out=chunk_matrix)
+                np.take(cos, dst_slice, out=chunk_matrix[cos_row])
+                np.take(sin, dst_slice, out=chunk_matrix[sin_row])
+                np.take(epi, dst_slice, out=chunk_matrix[epi_row])
+                np.take(vf, dst_slice, out=chunk_matrix[vf_row])
 
-                if src_slice.size:
-                    np.add.at(accum, (slice(None), src_slice), chunk_matrix)
+                if count_row is not None:
+                    chunk_matrix[count_row, :slice_len].fill(1.0)
+                if deg_row is not None and deg_array is not None:
+                    np.take(deg_array, dst_slice, out=chunk_matrix[deg_row])
+
+                def _accumulate_chunk_row(
+                    target_row: int | None,
+                    values: np.ndarray | None = None,
+                    *,
+                    unit_weight: bool = False,
+                ) -> None:
+                    if target_row is None:
+                        return
+                    if unit_weight:
+                        totals = np.bincount(src_slice, minlength=n)
+                    else:
+                        if values is None:
+                            return
+                        totals = np.bincount(
+                            src_slice,
+                            weights=values,
+                            minlength=n,
+                        )
+                    if totals.size:
+                        totals = totals.astype(accum.dtype, copy=False)
+                        limit = accum.shape[1]
+                        if totals.size > limit:
+                            totals = totals[:limit]
+                        accum[target_row, : totals.size] += totals
+
+                _accumulate_chunk_row(
+                    cos_row, chunk_matrix[cos_row, :slice_len]
+                )
+                _accumulate_chunk_row(
+                    sin_row, chunk_matrix[sin_row, :slice_len]
+                )
+                _accumulate_chunk_row(
+                    epi_row, chunk_matrix[epi_row, :slice_len]
+                )
+                _accumulate_chunk_row(
+                    vf_row, chunk_matrix[vf_row, :slice_len]
+                )
+
+                if count_row is not None:
+                    _accumulate_chunk_row(count_row, unit_weight=True)
+
+                if deg_row is not None and deg_array is not None:
+                    _accumulate_chunk_row(
+                        deg_row, chunk_matrix[deg_row, :slice_len]
+                    )
         else:
             def _apply_full_bincount(
                 target_row: int | None,
