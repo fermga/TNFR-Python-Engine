@@ -101,6 +101,14 @@ def angle_diff_array(
 
     np.subtract(minuend, subtrahend, out=out, **kwargs)
     np.add(out, math.pi, out=out, **kwargs)
-    np.mod(out, math.tau, out=out, **kwargs)
+    if where is not None:
+        mask = np.asarray(where, dtype=bool)
+        if mask.shape != out.shape:
+            raise ValueError("where mask must match the broadcasted shape of inputs")
+        selected = out[mask]
+        if selected.size:
+            out[mask] = np.remainder(selected, math.tau)
+    else:
+        np.remainder(out, math.tau, out=out)
     np.subtract(out, math.pi, out=out, **kwargs)
     return out

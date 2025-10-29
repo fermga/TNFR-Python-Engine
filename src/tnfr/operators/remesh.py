@@ -13,16 +13,17 @@ from itertools import combinations
 from operator import ge, le
 from statistics import StatisticsError, fmean
 from types import ModuleType
-from typing import Any, TypedDict, cast
+from typing import TYPE_CHECKING, Any, TypedDict, cast
 
 from .._compat import TypeAlias
 from ..alias import get_attr, set_attr
-from ..callback_utils import CallbackEvent, callback_manager
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
-from ..glyph_history import append_metric, current_step_idx, ensure_history
-from ..utils.numeric import kahan_sum_nd
+from ..utils import kahan_sum_nd
 from ..rng import make_rng
 from ..utils import cached_import, edge_version_update
+
+if TYPE_CHECKING:  # pragma: no cover - type checking only
+    from ..callback_utils import CallbackEvent, CallbackManager
 
 CommunityGraph: TypeAlias = Any
 NetworkxModule: TypeAlias = ModuleType
@@ -137,6 +138,9 @@ def _snapshot_epi(G: CommunityGraph) -> tuple[float, str]:
 
 def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
     """Store remesh metadata and optionally log and trigger callbacks."""
+    from ..callback_utils import CallbackEvent, callback_manager
+    from ..glyph_history import append_metric
+
     G.graph["_REMESH_META"] = meta
     if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
         hist = G.graph.setdefault("history", {})
@@ -146,6 +150,7 @@ def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
 
 def apply_network_remesh(G: CommunityGraph) -> None:
     """Network-scale REMESH using ``_epi_hist`` with multi-scale memory."""
+    from ..glyph_history import current_step_idx, ensure_history
     nx, _ = _get_networkx_modules()
     tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
     tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
@@ -330,6 +335,7 @@ def _community_remesh(
     n_before: int,
 ) -> None:
     """Remesh ``G`` replacing nodes by modular communities."""
+    from ..glyph_history import append_metric
     comms = list(nx_comm.greedy_modularity_communities(G))
     if len(comms) <= 1:
         with edge_version_update(G):
@@ -394,6 +400,7 @@ def apply_topological_remesh(
     When ``seed`` is ``None`` the RNG draws its base seed from
     ``G.graph['RANDOM_SEED']`` to keep runs reproducible.
     """
+    from ..glyph_history import append_metric
     nodes = list(G.nodes())
     n_before = len(nodes)
     if n_before <= 1:
@@ -471,6 +478,7 @@ def apply_remesh_if_globally_stable(
 ) -> None:
     """Trigger remeshing when global stability indicators satisfy thresholds."""
 
+    from ..glyph_history import ensure_history
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))
         raise TypeError(

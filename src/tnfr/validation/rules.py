@@ -12,8 +12,7 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping
 
 from ..alias import get_attr
 from ..constants import get_aliases
-from ..glyph_history import recent_glyph
-from ..utils.numeric import clamp01
+from ..utils import clamp01
 from ..metrics.common import normalize_dnfr
 from ..types import Glyph
 from .compatibility import CANON_COMPAT, CANON_FALLBACK
@@ -106,6 +105,7 @@ def normalized_dnfr(ctx: "GrammarContext", nd) -> float:
 def _check_repeats(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | str:
     """Avoid recent repetitions according to ``ctx.cfg_soft``."""
 
+    from ..glyph_history import recent_glyph
     nd = ctx.G.nodes[n]
     cfg = ctx.cfg_soft
     gwin = int(cfg.get("window", 0))
@@ -138,6 +138,7 @@ def _maybe_force(
 def _check_oz_to_zhir(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | str:
     """Enforce OZ precedents before allowing ZHIR mutations."""
 
+    from ..glyph_history import recent_glyph
     nd = ctx.G.nodes[n]
     cand_glyph = coerce_glyph(cand)
     if cand_glyph == Glyph.ZHIR:

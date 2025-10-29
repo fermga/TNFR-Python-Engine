@@ -11,7 +11,7 @@ from collections.abc import Iterable, Iterator, Sequence
 from itertools import tee
 from typing import TYPE_CHECKING, Any, cast, overload
 
-from ..utils.numeric import kahan_sum_nd
+from ..utils import kahan_sum_nd
 from ..types import NodeId, Phase, TNFRGraph
 from ..utils import cached_import, get_numpy
 

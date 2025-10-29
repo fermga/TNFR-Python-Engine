@@ -15,7 +15,7 @@ from .._compat import TypeAlias
 from ..alias import collect_attr, get_attr
 from ..constants import get_graph_param, get_param
 from ..glyph_history import ensure_history, recent_glyph
-from ..utils.numeric import clamp01
+from ..utils import clamp01
 from ..metrics.common import compute_dnfr_accel_max, merge_and_normalize_weights
 from ..operators import apply_glyph
 from ..selector import (

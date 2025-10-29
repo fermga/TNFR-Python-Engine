@@ -41,7 +41,7 @@ from typing import Any, Callable, Iterable, Iterator, Mapping, MutableMapping, c
 
 from ..alias import get_attr, set_attr
 from ..constants import get_aliases
-from ..utils.numeric import angle_diff, angle_diff_array, clamp01
+from ..utils import angle_diff, angle_diff_array, clamp01
 from ..types import GraphLike, NodeAttrMap
 from ..utils import (
     edge_version_cache,
@@ -999,14 +999,18 @@ def compute_Si(
                 mask_count=neighbor_count,
                 np=np,
             )
-            theta_view = chunk_theta[:neighbor_count]
-            values_view = chunk_values[:neighbor_count]
-            np.take(theta_arr, neighbor_indices, out=theta_view)
-            np.take(mean_theta, neighbor_indices, out=values_view)
-            angle_diff_array(theta_view, values_view, np=np, out=values_view)
-            np.abs(values_view, out=values_view)
-            np.divide(values_view, math.pi, out=values_view)
-            phase_dispersion[neighbor_indices] = values_view
+            for start in range(0, neighbor_count, effective_chunk):
+                end = min(start + effective_chunk, neighbor_count)
+                slice_indices = neighbor_indices[start:end]
+                chunk_len = end - start
+                theta_view = chunk_theta[:chunk_len]
+                values_view = chunk_values[:chunk_len]
+                np.take(theta_arr, slice_indices, out=theta_view)
+                np.take(mean_theta, slice_indices, out=values_view)
+                angle_diff_array(theta_view, values_view, np=np, out=values_view)
+                np.abs(values_view, out=values_view)
+                np.divide(values_view, math.pi, out=values_view)
+                phase_dispersion[slice_indices] = values_view
         else:
             np.abs(phase_dispersion, out=phase_dispersion)
             np.divide(

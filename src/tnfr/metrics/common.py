@@ -7,7 +7,7 @@ from typing import Any, Iterable, Mapping, Sequence
 
 from ..alias import collect_attr, get_attr, multi_recompute_abs_max
 from ..constants import DEFAULTS, get_aliases
-from ..utils.numeric import clamp01, kahan_sum_nd
+from ..utils import clamp01, kahan_sum_nd
 from ..types import GraphLike, NodeAttrMap
 from ..utils import edge_version_cache, get_numpy, normalize_weights
 

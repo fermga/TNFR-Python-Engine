@@ -12,7 +12,7 @@ from tnfr.callback_utils import CallbackEvent
 from tnfr.config.constants import ANGLE_MAP
 from tnfr.constants import get_aliases
 from tnfr.gamma import kuramoto_R_psi
-from tnfr.utils.numeric import angle_diff
+from tnfr.utils import angle_diff
 from tnfr.observers import (
     attach_standard_observer,
     glyph_load,

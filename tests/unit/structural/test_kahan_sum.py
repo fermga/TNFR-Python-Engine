@@ -2,7 +2,7 @@ import math
 
 import pytest
 
-from tnfr.utils.numeric import kahan_sum_nd
+from tnfr.utils import kahan_sum_nd
 
 
 def test_kahan_sum_nd_compensates_cancellation_1d():

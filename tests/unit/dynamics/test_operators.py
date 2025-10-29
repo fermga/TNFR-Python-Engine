@@ -20,7 +20,7 @@ from tnfr.operators import (
 )
 from tnfr.structural import Dissonance, create_nfr, run_sequence
 from tnfr.types import Glyph
-from tnfr.utils.numeric import angle_diff
+from tnfr.utils import angle_diff
 
 
 def test_glyph_operations_complete():

@@ -17,7 +17,7 @@ from ..constants import (
     normalise_state_token,
 )
 from ..glyph_history import append_metric
-from ..utils.numeric import angle_diff
+from ..utils import angle_diff
 from ..metrics.common import ensure_neighbors_map
 from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import get_trig_cache
