@@ -395,3 +395,39 @@ def cmd_profile_si(args: argparse.Namespace) -> int:
         sort=str(args.sort),
     )
     return 0
+
+
+def cmd_profile_pipeline(args: argparse.Namespace) -> int:
+    """Execute ``tnfr profile-pipeline`` returning the exit status."""
+
+    try:
+        from benchmarks.full_pipeline_profile import (
+            _parse_cli_variants,
+            profile_full_pipeline,
+        )
+    except ModuleNotFoundError as exc:  # pragma: no cover - optional dependency
+        logger.error("Full pipeline profiling helpers unavailable: %s", exc)
+        return 1
+
+    try:
+        si_chunk_sizes = _parse_cli_variants(getattr(args, "si_chunk_sizes", None))
+        dnfr_chunk_sizes = _parse_cli_variants(getattr(args, "dnfr_chunk_sizes", None))
+        si_workers = _parse_cli_variants(getattr(args, "si_workers", None))
+        dnfr_workers = _parse_cli_variants(getattr(args, "dnfr_workers", None))
+    except ValueError as exc:
+        logger.error("%s", exc)
+        return 2
+
+    profile_full_pipeline(
+        node_count=int(args.nodes),
+        edge_probability=float(args.edge_probability),
+        loops=int(args.loops),
+        seed=int(args.seed),
+        output_dir=Path(args.output_dir),
+        sort=str(args.sort),
+        si_chunk_sizes=si_chunk_sizes,
+        dnfr_chunk_sizes=dnfr_chunk_sizes,
+        si_workers=si_workers,
+        dnfr_workers=dnfr_workers,
+    )
+    return 0

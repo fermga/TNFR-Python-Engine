@@ -12,6 +12,7 @@ from ..utils import _configure_root, get_logger
 from .arguments import (
     _add_metrics_parser,
     _add_profile_parser,
+    _add_profile_pipeline_parser,
     _add_run_parser,
     _add_sequence_parser,
     add_canon_toggle,
@@ -82,6 +83,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     _add_sequence_parser(sub)
     _add_metrics_parser(sub)
     _add_profile_parser(sub)
+    _add_profile_pipeline_parser(sub)
 
     args = p.parse_args(argv)
     if args.version:

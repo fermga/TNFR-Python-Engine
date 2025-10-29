@@ -26,6 +26,23 @@ pip install tnfr
 Then follow the [quickstart guide](docs/getting-started/quickstart.md) for Python and CLI
 walkthroughs plus optional dependency caching helpers.
 
+## CLI profiling helpers
+
+Generate Sense Index and ΔNFR profiling artefacts directly from the CLI with the
+``profile-pipeline`` subcommand. The helper reproduces the performance benchmark that
+captures vectorised and fallback execution traces for the full pipeline:
+
+```bash
+tnfr profile-pipeline \
+  --nodes 120 --edge-probability 0.28 --loops 3 \
+  --si-chunk-sizes auto 48 --dnfr-chunk-sizes auto \
+  --si-workers auto --dnfr-workers auto \
+  --output-dir profiles/pipeline
+```
+
+The command writes ``.pstats`` and JSON summaries for each configuration/mode pair, making
+it easy to inspect hot paths with :mod:`pstats`, Snakeviz, or downstream tooling.
+
 ## Documentation map
 
 - [Documentation index](docs/index.md) — navigation hub for API chapters and examples.

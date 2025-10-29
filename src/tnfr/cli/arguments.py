@@ -232,3 +232,70 @@ def _add_profile_parser(sub: argparse._SubParsersAction) -> None:
     p_prof.add_argument("--format", choices=("pstats", "json"), default="pstats")
     p_prof.add_argument("--sort", choices=("cumtime", "tottime"), default="cumtime")
     p_prof.set_defaults(func=cmd_profile_si)
+
+
+def _add_profile_pipeline_parser(sub: argparse._SubParsersAction) -> None:
+    """Configure the ``profile-pipeline`` subcommand."""
+
+    from .execution import cmd_profile_pipeline
+
+    p_profile = sub.add_parser(
+        "profile-pipeline",
+        help="Profile the Sense Index + ΔNFR pipeline",
+    )
+    p_profile.add_argument("--nodes", type=int, default=240, help="Number of nodes")
+    p_profile.add_argument(
+        "--edge-probability",
+        type=float,
+        default=0.32,
+        help="Probability passed to the Erdos-Renyi generator",
+    )
+    p_profile.add_argument(
+        "--loops",
+        type=int,
+        default=5,
+        help="How many times to execute the pipeline inside the profiler",
+    )
+    p_profile.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Random seed used when generating the graph",
+    )
+    p_profile.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("profiles"),
+        help="Directory where profiling artefacts will be written",
+    )
+    p_profile.add_argument(
+        "--sort",
+        choices=("cumtime", "tottime"),
+        default="cumtime",
+        help="Sort order applied to profiling rows",
+    )
+    p_profile.add_argument(
+        "--si-chunk-sizes",
+        nargs="+",
+        metavar="SIZE",
+        help="Chunk sizes forwarded to G.graph['SI_CHUNK_SIZE']; use 'auto' for heuristics",
+    )
+    p_profile.add_argument(
+        "--dnfr-chunk-sizes",
+        nargs="+",
+        metavar="SIZE",
+        help="Chunk sizes forwarded to G.graph['DNFR_CHUNK_SIZE']; use 'auto' for heuristics",
+    )
+    p_profile.add_argument(
+        "--si-workers",
+        nargs="+",
+        metavar="COUNT",
+        help="Worker counts forwarded to G.graph['SI_N_JOBS']; use 'auto' for serial runs",
+    )
+    p_profile.add_argument(
+        "--dnfr-workers",
+        nargs="+",
+        metavar="COUNT",
+        help="Worker counts forwarded to G.graph['DNFR_N_JOBS']; use 'auto' for defaults",
+    )
+    p_profile.set_defaults(func=cmd_profile_pipeline)
