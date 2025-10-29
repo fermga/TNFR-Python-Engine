@@ -1570,15 +1570,19 @@ def _accumulate_neighbors_dense(
     state = _ensure_numpy_state_vectors(data, np)
     vectors = [state["cos"], state["sin"], state["epi"], state["vf"]]
 
-    workspace = _ensure_cached_array(cache, "dense_accum_np", (n,), np)
     components = _ensure_cached_array(cache, "dense_components_np", (n, 4), np)
+    accum = _ensure_cached_array(cache, "dense_accum_np", (n, 4), np)
 
-    for col, (src_vec, target) in enumerate(zip(vectors, (x, y, epi_sum, vf_sum))):
-        # ``components`` retains the last source copies so callers relying on
-        # cached buffers (e.g. diagnostics) still observe meaningful values.
-        np.copyto(components[:, col], src_vec, casting="unsafe")
-        np.matmul(A, src_vec, out=workspace)
-        np.copyto(target, workspace, casting="unsafe")
+    # ``components`` retains the last source copies so callers relying on
+    # cached buffers (e.g. diagnostics) still observe meaningful values.
+    np.copyto(components, np.column_stack(vectors), casting="unsafe")
+
+    np.matmul(A, components, out=accum)
+
+    np.copyto(x, accum[:, 0], casting="unsafe")
+    np.copyto(y, accum[:, 1], casting="unsafe")
+    np.copyto(epi_sum, accum[:, 2], casting="unsafe")
+    np.copyto(vf_sum, accum[:, 3], casting="unsafe")
 
     degree_counts = data.get("dense_degree_np")
     if degree_counts is None or getattr(degree_counts, "shape", (0,))[0] != n:
