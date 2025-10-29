@@ -946,11 +946,18 @@ def compute_Si(
         )
         _profile_stop("neighbor_phase_mean_bulk", neighbor_timer)
         norm_timer = _profile_start()
-        vf_norm = np.clip(np.abs(vf_arr) / vfmax, 0.0, 1.0)
-        dnfr_norm = np.clip(np.abs(dnfr_arr) / dnfrmax, 0.0, 1.0)
+        # Reuse the Si buffers as scratch space to avoid transient allocations during
+        # the normalization pass and keep the structural buffers coherent with the
+        # cached layout.
+        np.abs(vf_arr, out=raw_si)
+        np.divide(raw_si, vfmax, out=raw_si)
+        np.clip(raw_si, 0.0, 1.0, out=raw_si)
+        vf_norm = raw_si
+        np.abs(dnfr_arr, out=si_values)
+        np.divide(si_values, dnfrmax, out=si_values)
+        np.clip(si_values, 0.0, 1.0, out=si_values)
+        dnfr_norm = si_values
         phase_dispersion.fill(0.0)
-        raw_si.fill(0.0)
-        si_values.fill(0.0)
         neighbor_mask = np.asarray(has_neighbors, dtype=bool)
         neighbor_count = int(neighbor_mask.sum())
         use_chunked = False
