@@ -54,6 +54,33 @@ cached_import.cache_clear()
 prune_failed_imports()
 ```
 
+### Persistent cache layers
+
+`tnfr.utils.cache.build_cache_manager` now hydrates multi-layer caches from a
+global configuration or per-graph overrides. Use
+`tnfr.utils.cache.configure_global_cache_layers` to point the shared cache
+manager to a Shelve file (filesystem persistence) and/or a Redis namespace for
+distributed hydration. Calling `tnfr.utils.cache.reset_global_cache_manager`
+after updating the configuration rebuilds the shared manager with the new
+layers:
+
+```python
+from tnfr.utils.cache import configure_global_cache_layers, reset_global_cache_manager
+
+configure_global_cache_layers(
+    shelve={"path": "/tmp/tnfr-cache.db", "flag": "c", "writeback": False},
+    redis={"namespace": "tnfr:cache"},  # provide ``client`` or ``client_factory`` when needed
+    replace=True,
+)
+reset_global_cache_manager()
+```
+
+Graphs can override the global settings by storing a mapping under
+`tnfr.utils.cache._GRAPH_CACHE_LAYERS_KEY`. Supported keys match the global
+configuration (`"shelve"` and `"redis"`). Whenever the configuration is present,
+`build_cache_manager` automatically wires the extra layers for edge caches,
+jitter state, and RNG seeds while preserving cache hit/miss telemetry.
+
 ## Python quickstart
 
 Create a resonant node, apply structural operators, and read coherence metrics. The sequence
