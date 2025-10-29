@@ -141,7 +141,7 @@ The engine centralises reusable process-wide locks in `tnfr.locking`. Obtain nam
 Avoid scattering bare `threading.Lock` instances across modules; only short-lived objects may
 instantiate ad-hoc locks when they are not shared.
 
-## Helper utilities API (`tnfr.utils`; `tnfr.helpers` is deprecated)
+## Helper utilities API (`tnfr.utils`)
 
 ### Collections and numeric helpers
 

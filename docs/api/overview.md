@@ -12,7 +12,7 @@ tnfr.operators     — operator classes + registry discovery
 tnfr.dynamics      — ΔNFR hooks, nodal equation, phase/νf adaptation
 tnfr.metrics       — coherence, ΔNFR, Si, telemetry helpers
 tnfr.trace         — structured history/trace capture via callbacks
-tnfr.utils         — stable facade for caches, structural history, numerics (replaces `tnfr.helpers`)
+tnfr.utils         — stable facade for caches, structural history, numerics
 tnfr.locking       — process-wide named locks (shared by RNG/caches)
 tnfr.cache         — cache managers exposing shared metrics/evictions
 ```
