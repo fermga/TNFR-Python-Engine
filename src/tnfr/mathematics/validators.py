@@ -78,16 +78,30 @@ class NFRValidator:
         if self.frequency_operator is not None:
             if enforce_frequency_positivity is None:
                 enforce_frequency_positivity = True
+
+            spectrum = self.frequency_operator.spectrum()
+            spectrum_psd = bool(
+                self.frequency_operator.is_positive_semidefinite(atol=self.atol)
+            )
+            min_frequency = float(np.min(spectrum)) if spectrum.size else float("inf")
+
             frequency_value = float(
                 self.frequency_operator.project_frequency(normalised_vector, normalise=False)
             )
+            projection_non_negative = bool(frequency_value + self.atol >= 0.0)
+
             freq_ok = bool(
-                frequency_value + self.atol >= 0.0
-            ) if enforce_frequency_positivity else True
+                spectrum_psd
+                and (projection_non_negative or not enforce_frequency_positivity)
+            )
+
             frequency_summary = {
                 "passed": bool(freq_ok),
                 "value": frequency_value,
                 "enforced": enforce_frequency_positivity,
+                "spectrum_psd": spectrum_psd,
+                "spectrum_min": min_frequency,
+                "projection_passed": projection_non_negative,
             }
         elif enforce_frequency_positivity:
             raise ValueError("Frequency positivity enforcement requested without operator.")

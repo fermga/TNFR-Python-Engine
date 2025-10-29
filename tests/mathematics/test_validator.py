@@ -64,6 +64,8 @@ def test_validator_frequency_failure() -> None:
 
     assert overall is False
     assert summary["frequency"]["passed"] is False
+    assert summary["frequency"]["spectrum_psd"] is False
+    assert summary["frequency"]["projection_passed"] is False
     assert "frequency positivity" in validator.report(summary)
 
 
@@ -89,7 +91,36 @@ def test_validator_summary_structure(validator: NFRValidator) -> None:
     assert set(coherence.keys()) == {"passed", "value", "threshold"}
 
     frequency = summary["frequency"]
-    assert set(frequency.keys()) == {"passed", "value", "enforced"}
+    assert set(frequency.keys()) == {
+        "passed",
+        "value",
+        "enforced",
+        "spectrum_psd",
+        "spectrum_min",
+        "projection_passed",
+    }
 
     unitary = summary["unitary_stability"]
     assert set(unitary.keys()) == {"passed", "norm_after"}
+
+
+def test_validator_detects_non_psd_frequency_operator() -> None:
+    hilbert = HilbertSpace(dimension=2)
+    coherence = CoherenceOperator([[1.0, 0.0], [0.0, 1.0]])
+    frequency = FrequencyOperator([-0.2, 0.6])
+    validator = NFRValidator(
+        hilbert_space=hilbert,
+        coherence_operator=coherence,
+        coherence_threshold=-0.5,
+        frequency_operator=frequency,
+    )
+
+    state = np.array([0.0 + 0.0j, 1.0 + 0.0j])
+
+    overall, summary = validator.validate_state(state)
+
+    assert overall is False
+    assert summary["frequency"]["passed"] is False
+    assert summary["frequency"]["spectrum_psd"] is False
+    assert summary["frequency"]["projection_passed"] is True
+    assert summary["frequency"]["value"] > 0.0
