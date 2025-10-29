@@ -26,7 +26,6 @@ from ..dynamics import (
 from ..execution import CANONICAL_PRESET_NAME, play
 from ..flatten import parse_program_tokens
 from ..glyph_history import ensure_history
-from ..io import StructuredFileError, read_structured_file, safe_write
 from ..metrics import (
     build_metrics_summary,
     export_metrics,
@@ -38,8 +37,13 @@ from ..ontosim import prepare_network
 from ..sense import register_sigma_callback
 from ..trace import register_trace
 from ..types import ProgramTokens
-from ..io import json_dumps
-from ..utils import get_logger
+from ..utils import (
+    StructuredFileError,
+    get_logger,
+    json_dumps,
+    read_structured_file,
+    safe_write,
+)
 from .arguments import _args_to_dict
 
 logger = get_logger(__name__)
