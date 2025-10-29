@@ -586,7 +586,10 @@ def _iter_python_payload_chunks(
     downstream worker preserves the coherence balance enforced by the Si
     operator.  Streaming prevents a single monolithic buffer that would skew
     memory pressure on dense graphs while still producing deterministic ΔNFR
-    sampling.
+    sampling. The iterator is consumed lazily by :func:`compute_Si` so that the
+    Python fallback can submit and harvest chunk results incrementally, keeping
+    both memory usage and profiling telemetry representative of the streamed
+    execution.
     """
 
     if chunk_size <= 0:
@@ -647,8 +650,10 @@ def compute_Si(
         ``"cache_rebuild"``, ``"neighbor_phase_mean_bulk"``,
         ``"normalize_clamp"`` and ``"inplace_write"`` accumulating seconds for
         each step, plus ``"path"`` describing whether the vectorised (NumPy)
-        or fallback implementation executed the call. Reusing the mapping
-        across invocations accumulates the timings.
+        or fallback implementation executed the call. When the Python fallback
+        streams chunk execution, ``"fallback_chunks"`` records how many payload
+        batches completed. Reusing the mapping across invocations accumulates
+        the timings and chunk counts.
 
     Returns
     -------
@@ -687,6 +692,7 @@ def compute_Si(
             "neighbor_phase_mean_bulk",
             "normalize_clamp",
             "inplace_write",
+            "fallback_chunks",
         ):
             profile.setdefault(key, 0.0)
 
@@ -1105,23 +1111,35 @@ def compute_Si(
                 thetas=thetas,
                 chunk_size=effective_chunk,
             )
+            chunk_count = 0
             with ProcessPoolExecutor(max_workers=n_jobs) as executor:
-                futures = [
-                    executor.submit(
-                        _compute_si_python_chunk,
-                        chunk,
-                        cos_th=cos_th,
-                        sin_th=sin_th,
-                        alpha=alpha,
-                        beta=beta,
-                        gamma=gamma,
-                        vfmax=vfmax,
-                        dnfrmax=dnfrmax,
-                    )
-                    for chunk in payload_chunks
-                ]
+                worker = partial(
+                    _compute_si_python_chunk,
+                    cos_th=cos_th,
+                    sin_th=sin_th,
+                    alpha=alpha,
+                    beta=beta,
+                    gamma=gamma,
+                    vfmax=vfmax,
+                    dnfrmax=dnfrmax,
+                )
+                payload_iter = iter(payload_chunks)
+                futures: list[Any] = []
+                for chunk in payload_iter:
+                    futures.append(executor.submit(worker, chunk))
+                    if len(futures) >= n_jobs:
+                        future = futures.pop(0)
+                        chunk_result = future.result()
+                        chunk_count += 1
+                        out.update(chunk_result)
                 for future in futures:
-                    out.update(future.result())
+                    chunk_result = future.result()
+                    chunk_count += 1
+                    out.update(chunk_result)
+            if profile is not None:
+                profile["fallback_chunks"] = float(profile.get("fallback_chunks", 0.0)) + float(
+                    chunk_count
+                )
     else:
         for n, nd in nodes_data:
             theta = thetas.get(n, 0.0)
