@@ -97,7 +97,32 @@ both the pass/fail flag and the resulting norm so doctests can assert stability.
 
 Pair the call with active logging flags to capture structural frequency, ΔNFR, and phase telemetry.
 
-## 6. Cost reference
+## 6. Step ΔNFR-guided dynamics
+
+Combine the ΔNFR generator with the mathematical dynamics engine to evolve states while the
+protective flags are active. Keep `N ≤ 16` so doctests run quickly.
+
+    >>> import numpy as np
+    >>> from tnfr.config.feature_flags import context_flags, get_flags
+    >>> from tnfr.mathematics import HilbertSpace, MathematicalDynamicsEngine, build_delta_nfr
+    >>> hilbert = HilbertSpace(dimension=4)
+    >>> state = np.array([1.0 + 0j, 0.0 + 0j, 0.0 + 0j, 0.0 + 0j])
+    >>> np.allclose(np.linalg.norm(state), 1.0)
+    True
+    >>> with context_flags(enable_math_validation=True, enable_math_dynamics=True) as flags:
+    ...     delta_nfr = build_delta_nfr(hilbert.dimension, topology="laplacian", nu_f=0.2)
+    ...     engine = MathematicalDynamicsEngine(delta_nfr, hilbert, use_scipy=False)
+    ...     evolved = engine.step(state, dt=0.05)
+    ...     flags.enable_math_dynamics, flags.enable_math_validation
+    ...     np.allclose(np.linalg.norm(evolved), np.linalg.norm(state))
+    (True, True)
+    True
+    >>> get_flags().enable_math_dynamics, get_flags().enable_math_validation
+    (False, False)
+
+Leaving the context restores the defaults so later experiments start with a clean flag slate.
+
+## 7. Cost reference
 
 | Operation | Primary cost driver | ΔNFR impact | Notes |
 | --- | --- | --- | --- |
