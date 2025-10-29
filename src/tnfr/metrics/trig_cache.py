@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from typing import Any, Iterable, Mapping
 
 from ..alias import get_theta_attr
-from ..types import GraphLike
+from ..types import GraphLike, NodeAttrMap
 from ..utils import edge_version_cache, get_numpy
 
 __all__ = ("TrigCache", "compute_theta_trig", "get_trig_cache", "_compute_trig_python")
@@ -37,7 +37,7 @@ class TrigCache:
 
 
 def _iter_theta_pairs(
-    nodes: Iterable[tuple[Any, Mapping[str, Any] | float]],
+    nodes: Iterable[tuple[Any, NodeAttrMap | float]],
 ) -> Iterable[tuple[Any, float]]:
     """Yield ``(node, θ)`` pairs from ``nodes``."""
 
@@ -49,7 +49,7 @@ def _iter_theta_pairs(
 
 
 def _compute_trig_python(
-    nodes: Iterable[tuple[Any, Mapping[str, Any] | float]],
+    nodes: Iterable[tuple[Any, NodeAttrMap | float]],
 ) -> TrigCache:
     """Compute trigonometric mappings using pure Python."""
 
@@ -90,7 +90,7 @@ def _compute_trig_python(
 
 
 def compute_theta_trig(
-    nodes: Iterable[tuple[Any, Mapping[str, Any] | float]],
+    nodes: Iterable[tuple[Any, NodeAttrMap | float]],
     np: Any | None = None,
 ) -> TrigCache:
     """Return trigonometric mappings of ``θ`` per node."""

@@ -1,10 +1,10 @@
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from typing import Callable, Tuple
 
-from ..types import EPIValue, NodeId, StructuralFrequency, TNFRGraph
+from ..types import EPIValue, NodeAttrMap, NodeId, StructuralFrequency, TNFRGraph
 
 ValidatorFunc = Callable[[TNFRGraph], None]
-NodeData = Mapping[str, object]
+NodeData = NodeAttrMap
 AliasSequence = Sequence[str]
 
 GRAPH_VALIDATORS: Tuple[ValidatorFunc, ...]

@@ -72,6 +72,7 @@ __all__ = (
     "FloatArray",
     "FloatMatrix",
     "NodeInitAttrMap",
+    "NodeAttrMap",
 )
 
 
@@ -107,6 +108,9 @@ Node: TypeAlias = NodeId
 
 NodeInitAttrMap: TypeAlias = MutableMapping[str, float]
 #: Mutable mapping storing scalar node attributes during initialization.
+
+NodeAttrMap: TypeAlias = Mapping[str, Any]
+#: Read-only mapping exposing resolved node attributes during execution.
 
 GammaSpec: TypeAlias = Mapping[str, Any]
 #: Mapping describing Γ evaluation parameters for a node or graph.

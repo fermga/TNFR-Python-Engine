@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import numbers
 import sys
-from collections.abc import Mapping
 from typing import Callable, Sequence
 
 from .._compat import TypeAlias
@@ -15,6 +14,7 @@ from ..constants import get_aliases, get_param
 from ..utils.numeric import within_range
 from ..types import (
     EPIValue,
+    NodeAttrMap,
     NodeId,
     StructuralFrequency,
     TNFRGraph,
@@ -25,7 +25,7 @@ ALIAS_VF = get_aliases("VF")
 ValidatorFunc: TypeAlias = Callable[[TNFRGraph], None]
 """Callable signature expected for validation routines."""
 
-NodeData = Mapping[str, object]
+NodeData = NodeAttrMap
 """Read-only node attribute mapping used by validators."""
 
 AliasSequence = Sequence[str]

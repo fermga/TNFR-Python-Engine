@@ -42,7 +42,7 @@ from typing import Any, Callable, Iterable, Iterator, Mapping, MutableMapping, c
 from ..alias import get_attr, set_attr
 from ..constants import get_aliases
 from ..utils.numeric import angle_diff, angle_diff_array, clamp01
-from ..types import GraphLike
+from ..types import GraphLike, NodeAttrMap
 from ..utils import (
     edge_version_cache,
     get_numpy,
@@ -85,7 +85,7 @@ class _SiStructuralCache:
     def rebuild(
         self,
         node_ids: Iterable[Any],
-        node_data: Mapping[Any, Mapping[str, Any]],
+        node_data: Mapping[Any, NodeAttrMap],
         *,
         np: Any,
     ) -> tuple[Any, Any]:
@@ -120,7 +120,7 @@ class _SiStructuralCache:
     def ensure_current(
         self,
         node_ids: Iterable[Any],
-        node_data: Mapping[Any, Mapping[str, Any]],
+        node_data: Mapping[Any, NodeAttrMap],
         *,
         np: Any,
     ) -> tuple[Any, Any]:
@@ -142,7 +142,7 @@ class _SiStructuralCache:
 
 def _build_structural_cache(
     node_ids: Iterable[Any],
-    node_data: Mapping[Any, Mapping[str, Any]],
+    node_data: Mapping[Any, NodeAttrMap],
     *,
     np: Any,
 ) -> _SiStructuralCache:
@@ -154,7 +154,7 @@ def _build_structural_cache(
 def _ensure_structural_arrays(
     G: GraphLike,
     node_ids: Iterable[Any],
-    node_data: Mapping[Any, Mapping[str, Any]],
+    node_data: Mapping[Any, NodeAttrMap],
     *,
     np: Any,
 ) -> tuple[Any, Any]:
@@ -573,7 +573,7 @@ def _compute_si_python_chunk(
 
 
 def _iter_python_payload_chunks(
-    nodes_data: Iterable[tuple[Any, Mapping[str, Any]]],
+    nodes_data: Iterable[tuple[Any, NodeAttrMap]],
     *,
     neighbors: Mapping[Any, Iterable[Any]],
     thetas: Mapping[Any, float],
@@ -755,7 +755,7 @@ def compute_Si(
     if not nodes_data:
         return {}
 
-    node_mapping = cast(Mapping[Any, Mapping[str, Any]], nodes_view)
+    node_mapping = cast(Mapping[Any, NodeAttrMap], nodes_view)
     node_count = len(nodes_data)
 
     trig_order = list(getattr(trig, "order", ()))

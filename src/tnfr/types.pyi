@@ -1,4 +1,4 @@
-from collections.abc import Hashable, Mapping, Sequence
+from collections.abc import Hashable, Mapping, MutableMapping, Sequence
 from enum import Enum
 from typing import Any, Callable, ContextManager, Iterable, Protocol, TypedDict, cast
 
@@ -36,6 +36,8 @@ TNFRGraph: TypeAlias = nx.Graph
 Graph: TypeAlias = TNFRGraph
 NodeId: TypeAlias = Hashable
 Node: TypeAlias = NodeId
+NodeInitAttrMap: TypeAlias = MutableMapping[str, float]
+NodeAttrMap: TypeAlias = Mapping[str, Any]
 GammaSpec: TypeAlias = Mapping[str, Any]
 EPIValue: TypeAlias = float
 DeltaNFR: TypeAlias = float
