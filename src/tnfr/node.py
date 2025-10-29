@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Hashable
+from collections.abc import Hashable, Mapping
 from dataclasses import dataclass
 from typing import (
     Any,
@@ -12,9 +12,12 @@ from typing import (
     MutableMapping,
     Optional,
     Protocol,
+    Sequence,
     SupportsFloat,
     TypeVar,
 )
+
+import numpy as np
 
 from .alias import (
     get_attr,
@@ -28,7 +31,21 @@ from .alias import (
 )
 from .config import get_flags
 from .constants import get_aliases
-from .mathematics import BasicStateProjector, StateProjector
+from .mathematics import (
+    BasicStateProjector,
+    CoherenceOperator,
+    FrequencyOperator,
+    HilbertSpace,
+    NFRValidator,
+    StateProjector,
+)
+from .mathematics.operators_factory import as_coherence_operator, as_frequency_operator
+from .mathematics.runtime import (
+    coherence as runtime_coherence,
+    frequency_positive as runtime_frequency_positive,
+    normalized as runtime_normalized,
+    stable_unitary as runtime_stable_unitary,
+)
 from .locking import get_lock
 from .types import (
     CouplingWeight,
@@ -238,14 +255,41 @@ class NodeNX(NodeProtocol):
         *,
         state_projector: StateProjector | None = None,
         enable_math_validation: Optional[bool] = None,
+        hilbert_space: HilbertSpace | None = None,
+        coherence_operator: CoherenceOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = None,
+        coherence_operator_params: Mapping[str, Any] | None = None,
+        frequency_operator: FrequencyOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = None,
+        frequency_operator_params: Mapping[str, Any] | None = None,
+        coherence_threshold: float | None = None,
+        validator: NFRValidator | None = None,
+        rng: np.random.Generator | None = None,
     ) -> None:
         self.G: TNFRGraph = G
         self.n: NodeId = n
         self.graph: MutableMapping[str, Any] = G.graph
         self.state_projector: StateProjector = state_projector or BasicStateProjector()
+        self._math_validation_override: Optional[bool] = enable_math_validation
         if enable_math_validation is None:
-            enable_math_validation = get_flags().enable_math_validation
-        self.enable_math_validation: bool = enable_math_validation
+            effective_validation = get_flags().enable_math_validation
+        else:
+            effective_validation = bool(enable_math_validation)
+        self.enable_math_validation: bool = effective_validation
+        default_dimension = (
+            G.number_of_nodes() if hasattr(G, "number_of_nodes") else len(tuple(G.nodes))
+        )
+        default_dimension = max(1, int(default_dimension))
+        self.hilbert_space: HilbertSpace = hilbert_space or HilbertSpace(default_dimension)
+        self.coherence_operator: CoherenceOperator | None = as_coherence_operator(
+            coherence_operator, coherence_operator_params
+        )
+        self.frequency_operator: FrequencyOperator | None = as_frequency_operator(
+            frequency_operator, frequency_operator_params
+        )
+        self.coherence_threshold: float | None = (
+            float(coherence_threshold) if coherence_threshold is not None else None
+        )
+        self.validator: NFRValidator | None = validator
+        self.rng: np.random.Generator | None = rng
         G.graph.setdefault("_node_cache", {})[n] = self
 
     def _glyph_storage(self) -> MutableMapping[str, Any]:
@@ -312,3 +356,136 @@ class NodeNX(NodeProtocol):
 
         nodes = cached_node_list(self.G)
         return tuple(NodeNX.from_graph(self.G, v) for v in nodes)
+
+    def run_sequence_with_validation(
+        self,
+        ops: Iterable[Callable[[TNFRGraph, NodeId], None]],
+        *,
+        projector: StateProjector | None = None,
+        hilbert_space: HilbertSpace | None = None,
+        coherence_operator: CoherenceOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = None,
+        coherence_operator_params: Mapping[str, Any] | None = None,
+        coherence_threshold: float | None = None,
+        freq_op: FrequencyOperator | Iterable[Sequence[complex]] | Sequence[complex] | np.ndarray | None = None,
+        frequency_operator_params: Mapping[str, Any] | None = None,
+        validator: NFRValidator | None = None,
+        enforce_frequency_positivity: bool | None = None,
+        enable_validation: bool | None = None,
+        rng: np.random.Generator | None = None,
+    ) -> dict[str, Any]:
+        """Run ``ops`` then return pre/post metrics with optional validation."""
+
+        from .structural import run_sequence as structural_run_sequence
+
+        projector = projector or self.state_projector
+        hilbert = hilbert_space or self.hilbert_space
+
+        effective_coherence = (
+            as_coherence_operator(coherence_operator, coherence_operator_params)
+            if coherence_operator is not None
+            else self.coherence_operator
+        )
+        effective_freq = (
+            as_frequency_operator(freq_op, frequency_operator_params)
+            if freq_op is not None
+            else self.frequency_operator
+        )
+        threshold = (
+            float(coherence_threshold)
+            if coherence_threshold is not None
+            else self.coherence_threshold
+        )
+        validator = validator or self.validator
+        rng = rng or self.rng
+
+        if enable_validation is None:
+            if self._math_validation_override is not None:
+                should_validate = bool(self._math_validation_override)
+            else:
+                should_validate = bool(get_flags().enable_math_validation)
+        else:
+            should_validate = bool(enable_validation)
+        self.enable_math_validation = should_validate
+
+        enforce_frequency = (
+            bool(enforce_frequency_positivity)
+            if enforce_frequency_positivity is not None
+            else bool(effective_freq is not None)
+        )
+
+        def _project(epi: float, vf: float, theta: float) -> np.ndarray:
+            local_rng = None
+            if rng is not None:
+                state = rng.bit_generator.state
+                local_rng = np.random.default_rng(state)
+            vector = projector(epi, vf, theta, hilbert.dimension, rng=local_rng)
+            return np.asarray(vector, dtype=np.complex128)
+
+        def _metrics(state: np.ndarray, label: str) -> dict[str, Any]:
+            metrics: dict[str, Any] = {}
+            norm_passed, norm_value = runtime_normalized(state, hilbert, label=label)
+            metrics["normalized"] = {"passed": norm_passed, "norm": norm_value}
+            if effective_coherence is not None and threshold is not None:
+                coh_passed, coh_value = runtime_coherence(
+                    state, effective_coherence, threshold, label=label
+                )
+                metrics["coherence"] = {
+                    "passed": coh_passed,
+                    "value": coh_value,
+                    "threshold": threshold,
+                }
+            if effective_freq is not None:
+                metrics["frequency"] = runtime_frequency_positive(
+                    state,
+                    effective_freq,
+                    enforce=enforce_frequency,
+                    label=label,
+                )
+            if effective_coherence is not None:
+                unitary_passed, unitary_norm = runtime_stable_unitary(
+                    state,
+                    effective_coherence,
+                    hilbert,
+                    label=label,
+                )
+                metrics["unitary"] = {
+                    "passed": unitary_passed,
+                    "norm_after": unitary_norm,
+                }
+            return metrics
+
+        pre_state = _project(self.EPI, self.vf, self.theta)
+        pre_metrics = _metrics(pre_state, "pre")
+
+        structural_run_sequence(self.G, self.n, ops)
+
+        post_state = _project(self.EPI, self.vf, self.theta)
+        post_metrics = _metrics(post_state, "post")
+
+        validation_summary: dict[str, Any] | None = None
+        if should_validate:
+            validator_instance = validator
+            if validator_instance is None:
+                if effective_coherence is None:
+                    raise ValueError("Validation requires a coherence operator.")
+                validator_instance = NFRValidator(
+                    hilbert,
+                    effective_coherence,
+                    threshold if threshold is not None else 0.0,
+                    frequency_operator=effective_freq,
+                )
+            success, summary = validator_instance.validate_state(
+                post_state,
+                enforce_frequency_positivity=enforce_frequency,
+            )
+            validation_summary = {
+                "passed": bool(success),
+                "summary": summary,
+                "report": validator_instance.report(summary),
+            }
+
+        return {
+            "pre": {"state": pre_state, "metrics": pre_metrics},
+            "post": {"state": post_state, "metrics": post_metrics},
+            "validation": validation_summary,
+        }

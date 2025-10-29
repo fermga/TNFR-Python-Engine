@@ -18,6 +18,12 @@ class MathFeatureFlags:
     enable_math_dynamics: bool = False
     log_perf: bool = False
 
+    @property
+    def log_performance(self) -> bool:
+        """Backward compatible alias exposing performance logging flag."""
+
+        return self.log_perf
+
 
 _TRUE_VALUES = {"1", "true", "on", "yes", "y", "t"}
 _FALSE_VALUES = {"0", "false", "off", "no", "n", "f"}
