@@ -894,40 +894,46 @@ def _prepare_dnfr_data(G: TNFRGraph, *, cache_size: int | None = 128) -> dict[st
         cache.neighbor_accum_np = None
         cache.neighbor_edge_values_np = None
         degree_map = None
-    if degree_map is None or len(degree_map) != len(G):
-        degree_map = {cast(NodeId, node): float(deg) for node, deg in G.degree()}
-        if cache is not None:
-            cache.degs = degree_map
+
+    deg_list: list[float] | None = None
+    degs: dict[NodeId, float] | None = None
+    deg_array: np.ndarray | None = None
+
+    if w_topo != 0.0:
+        if degree_map is None or len(degree_map) != len(G):
+            degree_map = {cast(NodeId, node): float(deg) for node, deg in G.degree()}
+            if cache is not None:
+                cache.degs = degree_map
+
+        if (
+            cache is not None
+            and cache.deg_list is not None
+            and not dirty
+            and len(cache.deg_list) == len(nodes)
+        ):
+            deg_list = cache.deg_list
+        else:
+            deg_list = [float(degree_map.get(node, 0.0)) for node in nodes]
+            if cache is not None:
+                cache.deg_list = deg_list
+
+        degs = degree_map
+
+        if np_module is not None and deg_list is not None:
+            if cache is not None:
+                deg_array = _ensure_numpy_degrees(cache, deg_list, np_module)
+            else:
+                deg_array = np_module.array(deg_list, dtype=float)
+        elif cache is not None:
+            cache.deg_array = None
+    elif cache is not None and dirty:
+        cache.deg_list = None
+        cache.deg_array = None
 
     G.graph["_dnfr_prep_dirty"] = False
 
-    if (
-        cache is not None
-        and cache.deg_list is not None
-        and not dirty
-        and len(cache.deg_list) == len(nodes)
-    ):
-        deg_list = cache.deg_list
-    else:
-        deg_list = [float(degree_map.get(node, 0.0)) for node in nodes]
-        if cache is not None:
-            cache.deg_list = deg_list
-
-    if w_topo != 0.0:
-        degs: dict[NodeId, float] | None = degree_map
-    else:
-        degs = None
     result["degs"] = degs
     result["deg_list"] = deg_list
-
-    deg_array: np.ndarray | None = None
-    if np_module is not None and deg_list is not None:
-        if cache is not None:
-            deg_array = _ensure_numpy_degrees(cache, deg_list, np_module)
-        else:
-            deg_array = np_module.array(deg_list, dtype=float)
-    elif cache is not None:
-        cache.deg_array = None
 
     theta_np: np.ndarray | None
     epi_np: np.ndarray | None
