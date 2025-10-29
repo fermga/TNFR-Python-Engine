@@ -26,6 +26,7 @@ EMIT_MAP = _init.EMIT_MAP
 
 from .cache import (
     NODE_SET_CHECKSUM_KEY,
+    ScopedCounterCache,
     EdgeCacheManager,
     cached_node_list,
     cached_nodes_and_A,
@@ -36,6 +37,7 @@ from .cache import (
     edge_version_update,
     ensure_node_index_map,
     ensure_node_offset_map,
+    _SeedHashCache,
     build_cache_manager,
     get_graph_version,
     increment_edge_version,
@@ -112,6 +114,7 @@ __all__ = (
     "CacheManager",
     "EdgeCacheManager",
     "NODE_SET_CHECKSUM_KEY",
+    "ScopedCounterCache",
     "cached_node_list",
     "cached_nodes_and_A",
     "clear_node_repr_cache",
@@ -128,6 +131,7 @@ __all__ = (
     "node_set_checksum",
     "stable_json",
     "reset_global_cache_manager",
+    "_SeedHashCache",
     "_GRAPH_CACHE_LAYERS_KEY",
     "get_graph",
     "get_graph_mapping",

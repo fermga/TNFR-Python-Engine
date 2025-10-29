@@ -8,18 +8,14 @@ from typing import TYPE_CHECKING, Any, cast
 from cachetools import LRUCache
 
 from ..cache import CacheManager
-from ..rng import (
-    ScopedCounterCache,
-    base_seed,
-    cache_enabled,
-)
+from ..rng import base_seed, cache_enabled
 from ..rng import clear_rng_cache as _clear_rng_cache
 from ..rng import (
     make_rng,
     seed_hash,
 )
 from ..types import NodeId, TNFRGraph
-from ..utils import ensure_node_offset_map, get_nodenx
+from ..utils import ScopedCounterCache, ensure_node_offset_map, get_nodenx
 from ..utils.cache import build_cache_manager
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only

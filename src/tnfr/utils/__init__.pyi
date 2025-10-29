@@ -5,6 +5,7 @@ from typing import Any, Final
 from ..cache import CacheManager
 from .cache import (
     NODE_SET_CHECKSUM_KEY,
+    ScopedCounterCache,
     EdgeCacheManager,
     cached_node_list,
     cached_nodes_and_A,
@@ -23,6 +24,7 @@ from .cache import (
     reset_global_cache_manager,
     stable_json,
     _GRAPH_CACHE_LAYERS_KEY,
+    _SeedHashCache,
 )
 from .data import (
     MAX_MATERIALIZE_DEFAULT,
@@ -110,6 +112,7 @@ __all__ = (
     "CacheManager",
     "EdgeCacheManager",
     "NODE_SET_CHECKSUM_KEY",
+    "ScopedCounterCache",
     "cached_node_list",
     "cached_nodes_and_A",
     "clear_node_repr_cache",
@@ -126,6 +129,7 @@ __all__ = (
     "node_set_checksum",
     "stable_json",
     "reset_global_cache_manager",
+    "_SeedHashCache",
     "_GRAPH_CACHE_LAYERS_KEY",
     "get_graph",
     "get_graph_mapping",

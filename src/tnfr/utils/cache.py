@@ -23,7 +23,7 @@ from collections.abc import (
 from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 import networkx as nx
 from cachetools import LRUCache
@@ -36,12 +36,14 @@ from ..cache import (
     RedisCacheLayer,
     ShelveCacheLayer,
 )
+from ..locking import get_lock
 from ..types import GraphLike, NodeId, TimingContext, TNFRGraph
 from .graph import get_graph, mark_dnfr_prep_dirty
 from .init import get_logger, get_numpy
 from ..io import json_dumps
 
 T = TypeVar("T")
+K = TypeVar("K", bound=Hashable)
 
 __all__ = (
     "EdgeCacheManager",
@@ -65,10 +67,29 @@ __all__ = (
     "configure_global_cache_layers",
     "reset_global_cache_manager",
     "_GRAPH_CACHE_LAYERS_KEY",
+    "_SeedHashCache",
+    "ScopedCounterCache",
 )
 
 if TYPE_CHECKING:  # pragma: no cover - typing aide
     from ..dynamics.dnfr import DnfrCache
+
+
+@dataclass
+class _SeedCacheState:
+    """Container tracking the state for :class:`_SeedHashCache`."""
+
+    cache: InstrumentedLRUCache[tuple[int, int], int] | None
+    maxsize: int
+
+
+@dataclass
+class _CounterState(Generic[K]):
+    """State bundle used by :class:`ScopedCounterCache`."""
+
+    cache: InstrumentedLRUCache[K, int]
+    locks: dict[K, threading.RLock]
+    max_entries: int
 
 # Key used to store the node set checksum in a graph's ``graph`` attribute.
 NODE_SET_CHECKSUM_KEY = "_node_set_checksum_cache"
@@ -995,3 +1016,280 @@ def edge_version_update(G: TNFRGraph) -> Iterator[None]:
         yield
     finally:
         increment_edge_version(G)
+
+
+class _SeedHashCache(MutableMapping[tuple[int, int], int]):
+    """Mutable mapping proxy exposing a configurable LRU cache."""
+
+    def __init__(
+        self,
+        *,
+        manager: CacheManager | None = None,
+        state_key: str = "seed_hash_cache",
+        default_maxsize: int = 128,
+    ) -> None:
+        self._default_maxsize = int(default_maxsize)
+        self._manager = manager or build_cache_manager(
+            default_capacity=self._default_maxsize
+        )
+        self._state_key = state_key
+        if not self._manager.has_override(self._state_key):
+            self._manager.configure(
+                overrides={self._state_key: self._default_maxsize}
+            )
+        self._manager.register(
+            self._state_key,
+            self._create_state,
+            reset=self._reset_state,
+        )
+
+    def _resolved_size(self, requested: int | None = None) -> int:
+        size = self._manager.get_capacity(
+            self._state_key,
+            requested=requested,
+            fallback=self._default_maxsize,
+        )
+        if size is None:
+            return 0
+        return int(size)
+
+    def _create_state(self) -> _SeedCacheState:
+        size = self._resolved_size()
+        if size <= 0:
+            return _SeedCacheState(cache=None, maxsize=0)
+        return _SeedCacheState(
+            cache=InstrumentedLRUCache(
+                size,
+                manager=self._manager,
+                metrics_key=self._state_key,
+            ),
+            maxsize=size,
+        )
+
+    def _reset_state(self, state: _SeedCacheState | None) -> _SeedCacheState:
+        return self._create_state()
+
+    def _get_state(self, *, create: bool = True) -> _SeedCacheState | None:
+        state = self._manager.get(self._state_key, create=create)
+        if state is None:
+            return None
+        if not isinstance(state, _SeedCacheState):
+            state = self._create_state()
+            self._manager.store(self._state_key, state)
+        return state
+
+    def configure(self, maxsize: int) -> None:
+        size = int(maxsize)
+        if size < 0:
+            raise ValueError("maxsize must be non-negative")
+        self._manager.configure(overrides={self._state_key: size})
+        self._manager.update(self._state_key, lambda _: self._create_state())
+
+    def __getitem__(self, key: tuple[int, int]) -> int:
+        state = self._get_state()
+        if state is None or state.cache is None:
+            raise KeyError(key)
+        value = state.cache[key]
+        self._manager.increment_hit(self._state_key)
+        return value
+
+    def __setitem__(self, key: tuple[int, int], value: int) -> None:
+        state = self._get_state()
+        if state is not None and state.cache is not None:
+            state.cache[key] = value
+
+    def __delitem__(self, key: tuple[int, int]) -> None:
+        state = self._get_state()
+        if state is None or state.cache is None:
+            raise KeyError(key)
+        del state.cache[key]
+
+    def __iter__(self) -> Iterator[tuple[int, int]]:
+        state = self._get_state(create=False)
+        if state is None or state.cache is None:
+            return iter(())
+        return iter(state.cache)
+
+    def __len__(self) -> int:
+        state = self._get_state(create=False)
+        if state is None or state.cache is None:
+            return 0
+        return len(state.cache)
+
+    def clear(self) -> None:  # type: ignore[override]
+        self._manager.clear(self._state_key)
+
+    @property
+    def maxsize(self) -> int:
+        state = self._get_state()
+        return 0 if state is None else state.maxsize
+
+    @property
+    def enabled(self) -> bool:
+        state = self._get_state(create=False)
+        return bool(state and state.cache is not None)
+
+    @property
+    def data(self) -> InstrumentedLRUCache[tuple[int, int], int] | None:
+        """Expose the underlying cache for diagnostics/tests."""
+
+        state = self._get_state(create=False)
+        return None if state is None else state.cache
+
+
+class ScopedCounterCache(Generic[K]):
+    """Thread-safe LRU cache storing monotonic counters by ``key``."""
+
+    def __init__(
+        self,
+        name: str,
+        max_entries: int | None = None,
+        *,
+        manager: CacheManager | None = None,
+        default_max_entries: int = 128,
+    ) -> None:
+        self._name = name
+        self._state_key = f"scoped_counter:{name}"
+        self._default_max_entries = int(default_max_entries)
+        requested = None if max_entries is None else int(max_entries)
+        if requested is not None and requested < 0:
+            raise ValueError("max_entries must be non-negative")
+        self._manager = manager or build_cache_manager(
+            default_capacity=self._default_max_entries
+        )
+        if not self._manager.has_override(self._state_key):
+            fallback = requested
+            if fallback is None:
+                fallback = self._default_max_entries
+            self._manager.configure(overrides={self._state_key: fallback})
+        elif requested is not None:
+            self._manager.configure(overrides={self._state_key: requested})
+        self._manager.register(
+            self._state_key,
+            self._create_state,
+            lock_factory=lambda: get_lock(name),
+            reset=self._reset_state,
+        )
+
+    def _resolved_entries(self, requested: int | None = None) -> int:
+        size = self._manager.get_capacity(
+            self._state_key,
+            requested=requested,
+            fallback=self._default_max_entries,
+        )
+        if size is None:
+            return 0
+        return int(size)
+
+    def _create_state(self, requested: int | None = None) -> _CounterState[K]:
+        size = self._resolved_entries(requested)
+        locks: dict[K, threading.RLock] = {}
+        return _CounterState(
+            cache=InstrumentedLRUCache(
+                size,
+                manager=self._manager,
+                metrics_key=self._state_key,
+                locks=locks,
+            ),
+            locks=locks,
+            max_entries=size,
+        )
+
+    def _reset_state(self, state: _CounterState[K] | None) -> _CounterState[K]:
+        return self._create_state()
+
+    def _get_state(self) -> _CounterState[K]:
+        state = self._manager.get(self._state_key)
+        if not isinstance(state, _CounterState):
+            state = self._create_state(0)
+            self._manager.store(self._state_key, state)
+        return state
+
+    @property
+    def lock(self) -> threading.Lock | threading.RLock:
+        """Return the lock guarding access to the underlying cache."""
+
+        return self._manager.get_lock(self._state_key)
+
+    @property
+    def max_entries(self) -> int:
+        """Return the configured maximum number of cached entries."""
+
+        return self._get_state().max_entries
+
+    @property
+    def cache(self) -> InstrumentedLRUCache[K, int]:
+        """Expose the instrumented cache for inspection."""
+
+        return self._get_state().cache
+
+    @property
+    def locks(self) -> dict[K, threading.RLock]:
+        """Return the mapping of per-key locks tracked by the cache."""
+
+        return self._get_state().locks
+
+    def configure(self, *, force: bool = False, max_entries: int | None = None) -> None:
+        """Resize or reset the cache keeping previous settings."""
+
+        if max_entries is None:
+            size = self._resolved_entries()
+            update_policy = False
+        else:
+            size = int(max_entries)
+            if size < 0:
+                raise ValueError("max_entries must be non-negative")
+            update_policy = True
+
+        def _update(state: _CounterState[K] | None) -> _CounterState[K]:
+            if (
+                not isinstance(state, _CounterState)
+                or force
+                or state.max_entries != size
+            ):
+                locks: dict[K, threading.RLock] = {}
+                return _CounterState(
+                    cache=InstrumentedLRUCache(
+                        size,
+                        manager=self._manager,
+                        metrics_key=self._state_key,
+                        locks=locks,
+                    ),
+                    locks=locks,
+                    max_entries=size,
+                )
+            return cast(_CounterState[K], state)
+
+        if update_policy:
+            self._manager.configure(overrides={self._state_key: size})
+        self._manager.update(self._state_key, _update)
+
+    def clear(self) -> None:
+        """Clear stored counters preserving ``max_entries``."""
+
+        self.configure(force=True)
+
+    def bump(self, key: K) -> int:
+        """Return current counter for ``key`` and increment it atomically."""
+
+        result: dict[str, Any] = {}
+
+        def _update(state: _CounterState[K] | None) -> _CounterState[K]:
+            if not isinstance(state, _CounterState):
+                state = self._create_state(0)
+            cache = state.cache
+            locks = state.locks
+            if key not in locks:
+                locks[key] = threading.RLock()
+            value = int(cache.get(key, 0))
+            cache[key] = value + 1
+            result["value"] = value
+            return state
+
+        self._manager.update(self._state_key, _update)
+        return int(result.get("value", 0))
+
+    def __len__(self) -> int:
+        """Return the number of tracked counters."""
+
+        return len(self.cache)
