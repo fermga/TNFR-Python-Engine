@@ -195,6 +195,18 @@ def test_run_sequence_with_validation_is_reproducible_with_seed():
     assert set(graph_one.nodes) == set(graph_two.nodes)
 
 
+def test_run_sequence_with_validation_accepts_generator_instance():
+    rng = np.random.default_rng(1337)
+    summary_one, node_one = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng=rng)
+    summary_two, node_two = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng=rng)
+
+    np.testing.assert_allclose(summary_one["pre"]["state"], summary_two["pre"]["state"])
+    np.testing.assert_allclose(summary_one["post"]["state"], summary_two["post"]["state"])
+    assert summary_one["post"]["metrics"] == summary_two["post"]["metrics"]
+    assert summary_one["validation"] == summary_two["validation"]
+
+    assert node_one is not node_two
+
 def test_new_modules_import_without_cycles():
     for module in (
         "tnfr.mathematics.runtime",

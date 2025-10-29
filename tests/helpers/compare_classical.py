@@ -61,6 +61,7 @@ def math_sequence_summary(
     partner_theta: float = 0.0,
     coupling: float = 1.0,
     rng_seed: int | None = None,
+    rng: np.random.Generator | None = None,
 ) -> tuple[dict[str, Any], NodeNX]:
     """Run ``NodeNX.run_sequence_with_validation`` mirroring the classical layout."""
 
@@ -73,11 +74,19 @@ def math_sequence_summary(
         graph=node.G,
     )
     add_edge(node.G, node.n, "math-partner", coupling)
-    if rng_seed is None:
-        rng = None
+    effective_rng: np.random.Generator | None
+    if rng is not None and rng_seed is not None:
+        raise ValueError("Provide either rng or rng_seed, not both.")
+    if rng is not None:
+        effective_rng = rng
+    elif rng_seed is not None:
+        effective_rng = np.random.default_rng(rng_seed)
     else:
-        rng = _SeedProxy(rng_seed)
-    summary = node.run_sequence_with_validation(list(ops), enable_validation=True, rng=rng)
+        effective_rng = None
+
+    summary = node.run_sequence_with_validation(
+        list(ops), enable_validation=True, rng=effective_rng
+    )
     return summary, node
 
 
@@ -88,11 +97,3 @@ DEFAULT_ACCEPTANCE_OPS = (
     Resonance(),
     Transition(),
 )
-
-
-class _SeedProxy:
-    """Minimal adapter exposing a ``bit_generator.state`` integer."""
-
-    def __init__(self, seed: int) -> None:
-        self.bit_generator = type("_SeedCarrier", (), {"state": seed})()
-
