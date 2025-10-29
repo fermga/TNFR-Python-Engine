@@ -179,3 +179,21 @@ def test_compute_Si_buffer_cache_preserves_results(graph_canon):
         cached = compute_Si(graph, inplace=False)
         cached_values = np.fromiter((cached[n] for n in node_order), dtype=float)
         npt.assert_allclose(cached_values, reference, rtol=1e-9, atol=1e-9)
+
+    cached_loops = 3
+    cached_samples = [
+        _measure(lambda: compute_Si(graph, inplace=False), cached_loops)
+        for _ in range(3)
+    ]
+    cached_time = min(cached_samples) / cached_loops
+
+    rebuild_samples = []
+    for _ in range(3):
+        total = 0.0
+        for _ in range(cached_loops):
+            _invalidate_trig_cache(graph)
+            total += _measure(lambda: compute_Si(graph, inplace=False), 1)
+        rebuild_samples.append(total / cached_loops)
+
+    rebuild_time = min(rebuild_samples)
+    assert cached_time <= rebuild_time * 1.05

@@ -139,7 +139,18 @@ def test_neighbor_phase_mean_bulk_reuses_buffers():
         mean_sin=mean_sin,
     )
 
+    fresh_theta, fresh_mask = neighbor_phase_mean_bulk(
+        edge_src,
+        edge_dst,
+        cos_values=cos_values,
+        sin_values=sin_values,
+        theta_values=theta,
+        node_count=theta.size,
+        np=np,
+    )
+
     assert mask.tolist() == [False, True, True, False]
+    assert fresh_mask.tolist() == mask.tolist()
     assert cos_sum is not None and sin_sum is not None
     assert counts is not None and mean_cos is not None and mean_sin is not None
     assert np.all(np.isfinite(cos_sum))
@@ -151,6 +162,7 @@ def test_neighbor_phase_mean_bulk_reuses_buffers():
     assert counts[3] == 0.0
     assert mean_cos[0] == 0.0
     assert mean_sin[3] == 0.0
+    np.testing.assert_allclose(mean_theta, fresh_theta, rtol=1e-12, atol=1e-12)
 
     cos_sum.fill(np.nan)
     sin_sum.fill(np.nan)
