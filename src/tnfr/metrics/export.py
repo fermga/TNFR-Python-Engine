@@ -11,9 +11,8 @@ from typing import Mapping, TextIO
 from ..config.constants import GLYPHS_CANONICAL
 from ..glyph_history import ensure_history
 from ..utils import json_dumps, safe_write
-from ..types import Graph
+from ..types import Graph, SigmaTrace
 from .core import glyphogram_series
-from .glyph_timing import SigmaTrace
 
 
 def _write_csv(

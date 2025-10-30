@@ -12,9 +12,7 @@ from typing import (
     Callable,
     Mapping,
     MutableMapping,
-    MutableSequence,
     Sequence,
-    TypedDict,
     cast,
 )
 
@@ -23,7 +21,17 @@ from ..config.constants import GLYPH_GROUPS, GLYPHS_CANONICAL
 from ..constants import get_aliases, get_param
 from ..glyph_history import append_metric
 from ..glyph_runtime import last_glyph
-from ..types import GraphLike
+from ..types import (
+    GlyphCounts,
+    GlyphMetricsHistory,
+    GlyphMetricsHistoryValue,
+    GlyphTimingByNode,
+    GlyphTimingTotals,
+    GlyphogramRow,
+    GraphLike,
+    MetricsListHistory,
+    SigmaTrace,
+)
 
 ALIAS_EPI = get_aliases("EPI")
 
@@ -46,26 +54,6 @@ def _has_numpy_support(np_obj: object) -> bool:
         and hasattr(np_obj, "fromiter")
         and hasattr(np_obj, "bincount")
     )
-
-
-class SigmaTrace(TypedDict):
-    """Time-aligned σ(t) trace exported alongside glyphograms."""
-
-    t: list[float]
-    sigma_x: list[float]
-    sigma_y: list[float]
-    mag: list[float]
-    angle: list[float]
-
-
-GlyphogramRow = MutableMapping[str, float]
-GlyphTimingTotals = MutableMapping[str, float]
-GlyphTimingByNode = MutableMapping[Any, MutableMapping[str, MutableSequence[float]]]
-GlyphCounts = Mapping[str, int]
-GlyphMetricsHistoryValue = MutableMapping[Any, Any] | MutableSequence[Any]
-GlyphMetricsHistory = MutableMapping[str, GlyphMetricsHistoryValue]
-MetricsListHistory = MutableMapping[str, list[Any]]
-
 _GLYPH_TO_INDEX = {glyph: idx for idx, glyph in enumerate(GLYPHS_CANONICAL)}
 
 

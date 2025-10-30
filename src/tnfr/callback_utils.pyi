@@ -5,13 +5,14 @@ import traceback
 from collections import defaultdict, deque
 from collections.abc import Callable, Iterable, Mapping
 from enum import Enum
-from typing import Any, TypedDict
+from typing import Any
 
 import networkx as nx
 
 from .constants import DEFAULTS
 from .locking import get_lock
 from .trace import CallbackSpec
+from .types import CallbackError
 from .utils import get_logger, is_non_string_sequence
 
 __all__ = (
@@ -31,14 +32,6 @@ class CallbackEvent(str, Enum):
 
 Callback = Callable[[nx.Graph, dict[str, Any]], None]
 CallbackRegistry = dict[str, dict[str, CallbackSpec]]
-
-class CallbackError(TypedDict):
-    event: str
-    step: int | None
-    error: str
-    traceback: str
-    fn: str
-    name: str | None
 
 class CallbackManager:
     def __init__(self) -> None: ...
