@@ -8,7 +8,8 @@ np = pytest.importorskip("numpy")
 
 from tnfr.mathematics.operators import CoherenceOperator, FrequencyOperator
 from tnfr.mathematics.spaces import HilbertSpace
-from tnfr.mathematics.validators import NFRValidator
+from tnfr.validation import ValidationOutcome, Validator
+from tnfr.validation.spectral import NFRValidator
 
 
 @pytest.fixture
@@ -27,22 +28,27 @@ def validator() -> NFRValidator:
 def test_validator_accepts_structurally_sound_state(validator: NFRValidator) -> None:
     state = np.array([1.0 + 0.0j, 1.0 + 0.0j]) / np.sqrt(2.0)
 
-    overall, summary = validator.validate_state(state)
+    outcome = validator.validate(state)
 
-    assert overall is True
+    assert isinstance(outcome, ValidationOutcome)
+    assert outcome.passed is True
+    summary = outcome.summary
     assert summary["normalized"] is True
     assert summary["coherence"]["passed"] is True
     assert summary["frequency"]["passed"] is True
     assert summary["unitary_stability"]["passed"] is True
     assert validator.report(summary) == "All validation checks passed."
+    assert outcome.artifacts is not None
+    assert isinstance(outcome.artifacts["normalised_state"], np.ndarray)
 
 
 def test_validator_flags_non_normalised_state(validator: NFRValidator) -> None:
     state = np.array([2.0 + 0.0j, 0.0 + 0.0j])
 
-    overall, summary = validator.validate_state(state)
+    outcome = validator.validate(state)
 
-    assert overall is False
+    assert outcome.passed is False
+    summary = outcome.summary
     assert summary["normalized"] is False
     assert summary["coherence"]["passed"] is True
 
@@ -60,9 +66,10 @@ def test_validator_frequency_failure() -> None:
 
     state = np.array([1.0 + 0.0j, 0.0 + 0.0j])
 
-    overall, summary = validator.validate_state(state)
+    outcome = validator.validate(state)
 
-    assert overall is False
+    assert outcome.passed is False
+    summary = outcome.summary
     assert summary["frequency"]["passed"] is False
     assert summary["frequency"]["spectrum_psd"] is False
     assert summary["frequency"]["projection_passed"] is False
@@ -79,13 +86,14 @@ def test_validator_requires_frequency_operator_for_enforcement(validator: NFRVal
     state = np.array([1.0 + 0.0j, 0.0 + 0.0j])
 
     with pytest.raises(ValueError):
-        bare_validator.validate_state(state, enforce_frequency_positivity=True)
+        bare_validator.validate(state, enforce_frequency_positivity=True)
 
 
 def test_validator_summary_structure(validator: NFRValidator) -> None:
     state = np.array([1.0 + 0.0j, 1.0 + 0.0j]) / np.sqrt(2.0)
 
-    _, summary = validator.validate_state(state)
+    outcome = validator.validate(state)
+    summary = outcome.summary
     assert set(summary.keys()) == {"normalized", "coherence", "frequency", "unitary_stability"}
     coherence = summary["coherence"]
     assert set(coherence.keys()) == {"passed", "value", "threshold"}
@@ -117,10 +125,15 @@ def test_validator_detects_non_psd_frequency_operator() -> None:
 
     state = np.array([0.0 + 0.0j, 1.0 + 0.0j])
 
-    overall, summary = validator.validate_state(state)
+    outcome = validator.validate(state)
 
-    assert overall is False
+    assert outcome.passed is False
+    summary = outcome.summary
     assert summary["frequency"]["passed"] is False
     assert summary["frequency"]["spectrum_psd"] is False
     assert summary["frequency"]["projection_passed"] is True
     assert summary["frequency"]["value"] > 0.0
+
+
+def test_validator_conforms_to_protocol(validator: NFRValidator) -> None:
+    assert isinstance(validator, Validator)

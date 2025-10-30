@@ -10,7 +10,8 @@ from tnfr.constants import inject_defaults
 from tnfr.dynamics import integrators as integrators_mod
 from tnfr.dynamics import runtime as runtime_mod
 from tnfr.dynamics.integrators import _apply_increment_chunk
-from tnfr.dynamics import update_epi_via_nodal_equation, validate_canon
+from tnfr.dynamics import update_epi_via_nodal_equation
+from tnfr.validation.runtime import validate_canon
 from tnfr.initialization import init_node_attrs
 
 
@@ -123,7 +124,8 @@ def test_epi_limits_preserved(method):
 
     const_dnfr(G)
     update_epi_via_nodal_equation(G, dt=1.0, method=method)
-    validate_canon(G)
+    outcome = validate_canon(G)
+    assert outcome.passed is True
 
     e_min = G.graph["EPI_MIN"]
     e_max = G.graph["EPI_MAX"]

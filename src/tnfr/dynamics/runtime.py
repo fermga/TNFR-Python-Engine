@@ -3,37 +3,25 @@
 from __future__ import annotations
 
 import inspect
-import math
 import sys
 from collections import deque
-from collections.abc import Iterable, Mapping, MutableMapping, MutableSequence
+from collections.abc import Iterable, Mapping, MutableMapping
 from numbers import Real
 from typing import Any, cast
 
-from ..alias import (
-    get_attr,
-    get_theta_attr,
-    multi_recompute_abs_max,
-    set_attr,
-    set_theta,
-    set_theta_attr,
-    set_vf,
-)
+from ..alias import get_attr
 from ..callback_utils import CallbackEvent, callback_manager
-from ..constants import DEFAULTS, get_graph_param, get_param
+from ..constants import get_graph_param, get_param
 from ..glyph_history import ensure_history
-from ..utils import clamp
 from ..metrics.sense_index import compute_Si
 from ..operators import apply_remesh_if_globally_stable
 from ..telemetry import publish_graph_cache_metrics
 from ..types import HistoryState, NodeId, TNFRGraph
-from ..utils import ensure_collection
+from ..validation.runtime import apply_canonical_clamps, validate_canon
 from . import adaptation, coordination, integrators, selectors
 from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
 from .dnfr import default_compute_delta_nfr
 from .sampling import update_node_sample as _update_node_sample
-
-HistoryLog = MutableSequence[MutableMapping[str, object]]
 
 __all__ = (
     "ALIAS_VF",
@@ -54,20 +42,6 @@ __all__ = (
     "step",
     "run",
 )
-
-
-def _log_clamp(
-    hist: HistoryLog,
-    node: NodeId | None,
-    attr: str,
-    value: float,
-    lo: float,
-    hi: float,
-) -> None:
-    if value < lo or value > hi:
-        hist.append({"node": node, "attr": attr, "value": float(value)})
-
-
 def _normalize_job_overrides(
     job_overrides: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
@@ -337,73 +311,6 @@ def _resolve_integrator_instance(G: TNFRGraph) -> integrators.AbstractIntegrator
 
     G.graph[_INTEGRATOR_CACHE_KEY] = (candidate, instance)
     return instance
-
-
-def apply_canonical_clamps(
-    nd: MutableMapping[str, Any],
-    G: TNFRGraph | None = None,
-    node: NodeId | None = None,
-) -> None:
-    """Clamp nodal EPI, νf and θ according to canonical bounds."""
-
-    if G is not None:
-        graph_dict = cast(MutableMapping[str, Any], G.graph)
-        graph_data: Mapping[str, Any] = graph_dict
-    else:
-        graph_dict = None
-        graph_data = DEFAULTS
-    eps_min = float(graph_data.get("EPI_MIN", DEFAULTS["EPI_MIN"]))
-    eps_max = float(graph_data.get("EPI_MAX", DEFAULTS["EPI_MAX"]))
-    vf_min = float(graph_data.get("VF_MIN", DEFAULTS["VF_MIN"]))
-    vf_max = float(graph_data.get("VF_MAX", DEFAULTS["VF_MAX"]))
-    theta_wrap = bool(graph_data.get("THETA_WRAP", DEFAULTS["THETA_WRAP"]))
-
-    epi = cast(float, get_attr(nd, ALIAS_EPI, 0.0))
-    vf = get_attr(nd, ALIAS_VF, 0.0)
-    th_val = get_theta_attr(nd, 0.0)
-    th = 0.0 if th_val is None else float(th_val)
-
-    strict = bool(
-        graph_data.get("VALIDATORS_STRICT", DEFAULTS.get("VALIDATORS_STRICT", False))
-    )
-    if strict and graph_dict is not None:
-        history = cast(MutableMapping[str, Any], graph_dict.setdefault("history", {}))
-        alerts = history.get("clamp_alerts")
-        if alerts is None:
-            hist = cast(HistoryLog, history.setdefault("clamp_alerts", []))
-        elif isinstance(alerts, MutableSequence):
-            hist = cast(HistoryLog, alerts)
-        else:
-            materialized = ensure_collection(alerts, max_materialize=None)
-            hist = cast(HistoryLog, list(materialized))
-            history["clamp_alerts"] = hist
-        _log_clamp(hist, node, "EPI", float(epi), eps_min, eps_max)
-        _log_clamp(hist, node, "VF", float(vf), vf_min, vf_max)
-
-    set_attr(nd, ALIAS_EPI, clamp(epi, eps_min, eps_max))
-
-    vf_val = float(clamp(vf, vf_min, vf_max))
-    if G is not None and node is not None:
-        set_vf(G, node, vf_val, update_max=False)
-    else:
-        set_attr(nd, ALIAS_VF, vf_val)
-
-    if theta_wrap:
-        new_th = (th + math.pi) % (2 * math.pi) - math.pi
-        if G is not None and node is not None:
-            set_theta(G, node, new_th)
-        else:
-            set_theta_attr(nd, new_th)
-
-
-def validate_canon(G: TNFRGraph) -> TNFRGraph:
-    """Clamp all nodes and refresh cached νf maxima for ``G``."""
-
-    for n, nd in G.nodes(data=True):
-        apply_canonical_clamps(cast(MutableMapping[str, Any], nd), G, cast(NodeId, n))
-    maxes = multi_recompute_abs_max(G, {"_vfmax": ALIAS_VF})
-    G.graph.update(maxes)
-    return G
 
 
 def _run_before_callbacks(

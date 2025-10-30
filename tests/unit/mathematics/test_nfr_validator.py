@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import numpy as np
 
-from tnfr.mathematics import CoherenceOperator, FrequencyOperator, HilbertSpace, NFRValidator
+from tnfr.mathematics import CoherenceOperator, FrequencyOperator, HilbertSpace
+from tnfr.validation import ValidationOutcome
+from tnfr.validation.spectral import NFRValidator
 
 
 def _make_simple_validator(coherence_threshold: float = 0.25) -> NFRValidator:
@@ -21,36 +23,40 @@ def test_validator_successful_state_passes_all_checks() -> None:
     validator = _make_simple_validator(coherence_threshold=0.25)
     state = np.array([1.0 / np.sqrt(2.0), 1.0j / np.sqrt(2.0)], dtype=np.complex128)
 
-    passed, summary = validator.validate_state(state)
-
-    assert passed is True
+    outcome = validator.validate(state)
+    assert isinstance(outcome, ValidationOutcome)
+    assert outcome.passed is True
+    summary = outcome.summary
     assert summary["normalized"] is True
     assert summary["coherence"]["passed"] is True
     assert summary["frequency"]["passed"] is True
     assert summary["unitary_stability"]["passed"] is True
     assert validator.report(summary) == "All validation checks passed."
+    assert validator.validate_state(state) == (True, summary)
 
 
 def test_validator_detects_normalization_failure() -> None:
     validator = _make_simple_validator()
     state = np.array([2.0, 0.0], dtype=np.complex128)
 
-    passed, summary = validator.validate_state(state)
-
-    assert passed is False
+    outcome = validator.validate(state)
+    assert outcome.passed is False
+    summary = outcome.summary
     assert summary["normalized"] is False
     assert "normalization" in validator.report(summary)
+    assert validator.validate_state(state) == (False, summary)
 
 
 def test_validator_detects_coherence_threshold_breach() -> None:
     validator = _make_simple_validator(coherence_threshold=0.9)
     state = np.array([1.0, 0.0], dtype=np.complex128)
 
-    passed, summary = validator.validate_state(state)
-
-    assert passed is False
+    outcome = validator.validate(state)
+    assert outcome.passed is False
+    summary = outcome.summary
     assert summary["coherence"]["passed"] is False
     assert "coherence threshold" in validator.report(summary)
+    assert validator.validate_state(state) == (False, summary)
 
 
 def test_validator_frequency_positivity_optional() -> None:
@@ -63,10 +69,13 @@ def test_validator_frequency_positivity_optional() -> None:
     )
     state = np.array([1.0, 0.0], dtype=np.complex128)
 
-    passed, summary = validator.validate_state(state, enforce_frequency_positivity=False)
-
-    assert passed is True
-    assert summary["frequency"] is None
+    outcome = validator.validate(state, enforce_frequency_positivity=False)
+    assert outcome.passed is True
+    assert outcome.summary["frequency"] is None
+    assert validator.validate_state(state, enforce_frequency_positivity=False) == (
+        True,
+        outcome.summary,
+    )
 
 
 def test_validator_frequency_negativity_flagged() -> None:
@@ -75,8 +84,9 @@ def test_validator_frequency_negativity_flagged() -> None:
     validator.frequency_operator = negative_frequency
     state = np.array([1.0, 0.0], dtype=np.complex128)
 
-    passed, summary = validator.validate_state(state)
-
-    assert passed is False
+    outcome = validator.validate(state)
+    assert outcome.passed is False
+    summary = outcome.summary
     assert summary["frequency"]["passed"] is False
     assert "frequency positivity" in validator.report(summary)
+    assert validator.validate_state(state) == (False, summary)

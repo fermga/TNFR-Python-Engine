@@ -18,12 +18,7 @@ from ..config.presets import (
     get_preset,
 )
 from ..constants import METRIC_DEFAULTS, get_param
-from ..dynamics import (
-    default_glyph_selector,
-    parametric_glyph_selector,
-    run,
-    validate_canon,
-)
+from ..dynamics import default_glyph_selector, parametric_glyph_selector, run
 from ..execution import CANONICAL_PRESET_NAME, play
 from ..flatten import parse_program_tokens
 from ..glyph_history import ensure_history
@@ -47,6 +42,7 @@ from ..utils import (
 )
 from .arguments import _args_to_dict
 from .utils import _parse_cli_variants
+from ..validation.runtime import validate_canon
 
 logger = get_logger(__name__)
 

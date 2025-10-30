@@ -9,7 +9,7 @@ import pytest
 
 from tnfr.alias import get_attr, get_theta_attr
 from tnfr.dynamics.aliases import ALIAS_EPI, ALIAS_VF
-from tnfr.dynamics.runtime import apply_canonical_clamps
+from tnfr.validation.runtime import apply_canonical_clamps
 
 
 def test_apply_canonical_clamps_clamps_and_logs(graph_canon):
