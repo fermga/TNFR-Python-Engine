@@ -7,6 +7,14 @@ is kept as a thin facade to preserve the historical import path
 
 from __future__ import annotations
 
+import warnings
+
+warnings.warn(
+    "Importing 'tnfr.cache' is deprecated; use 'tnfr.utils' for the supported API.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 from .utils.cache import (
     CacheCapacityConfig,
     CacheLayer,
