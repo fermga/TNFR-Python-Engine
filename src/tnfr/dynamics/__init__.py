@@ -65,6 +65,7 @@ from ..metrics.sense_index import compute_Si
 from ..operators import apply_glyph
 from ..utils import get_numpy
 from ..validation import enforce_canonical_grammar, on_applied_glyph
+from ..validation.runtime import apply_canonical_clamps, validate_canon
 from . import coordination, dnfr, integrators
 from .adaptation import adapt_vf_by_coherence
 from .aliases import (
@@ -104,10 +105,8 @@ from .runtime import (
     _run_validators,
     _update_epi_hist,
     _update_nodes,
-    apply_canonical_clamps,
     run,
     step,
-    validate_canon,
 )
 from .sampling import update_node_sample as _update_node_sample
 from .selectors import (

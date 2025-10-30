@@ -102,7 +102,7 @@ non-English identifiers.【F:src/tnfr/config/operator_names.py†L1-L77】【F:s
 
 Runtime functions coordinate clamps, selectors, and job overrides to keep simulations reproducible without sacrificing performance:
 
-- `apply_canonical_clamps` enforces configured bounds for EPI, νf, and θ, optionally recording clamp alerts for strict graphs.【F:src/tnfr/dynamics/__init__.py†L172-L199】
+- `apply_canonical_clamps` enforces configured bounds for EPI, νf, and θ, optionally recording clamp alerts for strict graphs.【F:src/tnfr/validation/runtime.py†L46-L103】
 - `_normalize_job_overrides` and `_resolve_jobs_override` map user overrides to canonical keys, ensuring distributed execution honours reproducibility contracts.【F:src/tnfr/dynamics/__init__.py†L114-L169】
 - Trace helpers attach before/after callbacks through the central manager so that operator applications, glyph selectors, and Kuramoto order parameters remain auditable.【F:src/tnfr/trace.py†L169-L319】
 

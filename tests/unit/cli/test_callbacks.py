@@ -6,6 +6,7 @@ import networkx as nx
 import pytest
 
 from tnfr.cli import execution
+from tnfr.validation import ValidationOutcome
 
 
 @pytest.fixture(name="callback_names")
@@ -33,6 +34,8 @@ def test_register_callbacks_and_observer_invokes_all(
     def make_stub(func_name: str):
         def _stub(*args, **kwargs):
             calls[func_name] += 1
+            if func_name == "validate_canon":
+                return ValidationOutcome(subject=graph, passed=True, summary={})
             return None
 
         return _stub

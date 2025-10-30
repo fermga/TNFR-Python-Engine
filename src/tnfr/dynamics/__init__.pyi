@@ -1,6 +1,7 @@
 from typing import Any, Literal, Sequence
 
 from tnfr.types import TNFRGraph
+from tnfr.validation import ValidationOutcome
 
 __all__: tuple[str, ...]
 
@@ -79,4 +80,4 @@ def update_epi_via_nodal_equation(
     n_jobs: int | None = ...,
 ) -> None: ...
 
-validate_canon: Any
+def validate_canon(G: TNFRGraph) -> ValidationOutcome[TNFRGraph]: ...
