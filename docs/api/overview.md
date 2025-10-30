@@ -14,7 +14,7 @@ tnfr.metrics       — coherence, ΔNFR, Si, telemetry helpers
 tnfr.trace         — structured history/trace capture via callbacks
 tnfr.utils         — stable facade for caches, structural history, numerics
 tnfr.locking       — process-wide named locks (shared by RNG/caches)
-tnfr.cache         — cache managers exposing shared metrics/evictions
+tnfr.utils.cache   — cache managers exposing shared metrics/evictions
 ```
 
 - `tnfr.structural` exposes `create_nfr` and `run_sequence`, wiring node creation to ΔNFR
@@ -61,8 +61,8 @@ flowchart LR
   tables, ensuring deterministic jitter across processes without duplicating lock
   definitions.
 - Helper facades re-export cache utilities so higher layers depend on a stable API while
-  telemetry-aware caches in `tnfr.cache` expose capacity controls and per-entry metrics for
-  debugging coherence regressions.
+  telemetry-aware caches in `tnfr.utils.cache` expose capacity controls and per-entry
+  metrics for debugging coherence regressions.
 
 ## Canonical invariants → enforcing modules
 

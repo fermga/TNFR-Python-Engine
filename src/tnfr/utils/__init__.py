@@ -4,18 +4,6 @@ from __future__ import annotations
 
 from typing import Any, Final
 
-from ..cache import (
-    CacheCapacityConfig,
-    CacheLayer,
-    CacheManager,
-    CacheStatistics,
-    InstrumentedLRUCache,
-    ManagedLRUCache,
-    MappingCacheLayer,
-    RedisCacheLayer,
-    ShelveCacheLayer,
-    prune_lock_mapping,
-)
 from . import init as _init
 
 WarnOnce = _init.WarnOnce
@@ -36,6 +24,16 @@ _DEFAULT_CACHE_SIZE = _init._DEFAULT_CACHE_SIZE
 EMIT_MAP = _init.EMIT_MAP
 
 from .cache import (
+    CacheCapacityConfig,
+    CacheLayer,
+    CacheManager,
+    CacheStatistics,
+    InstrumentedLRUCache,
+    ManagedLRUCache,
+    MappingCacheLayer,
+    RedisCacheLayer,
+    ShelveCacheLayer,
+    prune_lock_mapping,
     DNFR_PREP_STATE_KEY,
     DnfrPrepState,
     NODE_SET_CHECKSUM_KEY,

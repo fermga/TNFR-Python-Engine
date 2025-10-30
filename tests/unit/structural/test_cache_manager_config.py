@@ -1,4 +1,4 @@
-"""Configuration tests for :class:`tnfr.cache.CacheManager`."""
+"""Configuration tests for :class:`tnfr.utils.cache.CacheManager`."""
 
 from __future__ import annotations
 

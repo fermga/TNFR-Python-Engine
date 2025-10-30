@@ -17,7 +17,7 @@ from collections import OrderedDict
 from dataclasses import dataclass, field
 from typing import Any, Callable, Hashable, Iterable, Iterator, Literal, Mapping
 
-from ..cache import CacheManager
+from .cache import CacheManager
 
 __all__ = (
     "_configure_root",

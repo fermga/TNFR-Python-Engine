@@ -1,4 +1,4 @@
-"""Unit tests for :class:`tnfr.cache.InstrumentedLRUCache`."""
+"""Unit tests for :class:`tnfr.utils.cache.InstrumentedLRUCache`."""
 
 from __future__ import annotations
 
