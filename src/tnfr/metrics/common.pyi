@@ -1,15 +1,46 @@
-from typing import Any
+from collections.abc import Iterable, Mapping, Sequence
+from typing import Any, Literal, overload
 
-__all__: Any
+from ..types import GraphLike, NodeAttrMap
+
+__all__: tuple[str, ...]
 
 def __getattr__(name: str) -> Any: ...
 
-GraphLike: Any
-_get_vf_dnfr_max: Any
-compute_coherence: Any
-compute_dnfr_accel_max: Any
-ensure_neighbors_map: Any
-merge_and_normalize_weights: Any
-merge_graph_weights: Any
-min_max_range: Any
-normalize_dnfr: Any
+@overload
+def compute_coherence(G: GraphLike, *, return_means: Literal[False] = ...) -> float: ...
+
+
+@overload
+def compute_coherence(
+    G: GraphLike, *, return_means: Literal[True]
+) -> tuple[float, float, float]: ...
+
+
+def compute_coherence(
+    G: GraphLike, *, return_means: bool = ...
+) -> float | tuple[float, float, float]: ...
+
+def ensure_neighbors_map(G: GraphLike) -> Mapping[Any, Sequence[Any]]: ...
+
+def merge_graph_weights(G: GraphLike, key: str) -> dict[str, float]: ...
+
+def merge_and_normalize_weights(
+    G: GraphLike,
+    key: str,
+    fields: Sequence[str],
+    *,
+    default: float = ...,
+) -> dict[str, float]: ...
+
+def compute_dnfr_accel_max(G: GraphLike) -> dict[str, float]: ...
+
+def normalize_dnfr(nd: NodeAttrMap, max_val: float) -> float: ...
+
+def min_max_range(
+    values: Iterable[float], *, default: tuple[float, float] = ...
+) -> tuple[float, float]: ...
+
+def _get_vf_dnfr_max(G: GraphLike) -> tuple[float, float]: ...
+
+def _coerce_jobs(raw_jobs: Any | None) -> int | None: ...
