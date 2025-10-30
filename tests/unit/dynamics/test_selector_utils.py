@@ -8,7 +8,11 @@ import pytest
 import tnfr.selector as selector
 from tnfr.constants import DEFAULTS, get_aliases
 from tnfr.dynamics import _configure_selector_weights
-from tnfr.dynamics.selectors import ParametricGlyphSelector, _apply_score_override
+from tnfr.dynamics.selectors import (
+    ParametricGlyphSelector,
+    _apply_score_override,
+    _soft_grammar_prefilter,
+)
 from tnfr.selector import (
     _apply_selector_hysteresis,
     _calc_selector_score,
@@ -231,6 +235,7 @@ def test_soft_grammar_prefilter_respects_avoid_repeats(graph_canon):
 
     selector = ParametricGlyphSelector()
     fallback = selector.select(G, node)
+    assert isinstance(fallback, str)
     assert fallback == "OZ"
 
     G.nodes[node].update(
@@ -243,3 +248,46 @@ def test_soft_grammar_prefilter_respects_avoid_repeats(graph_canon):
 
     forced = selector.select(G, node)
     assert forced == "RA"
+
+
+def test_soft_grammar_prefilter_uses_canonical_fallback(graph_canon):
+    G = graph_canon()
+    G.graph["GRAMMAR"] = {"window": 2, "avoid_repeats": ["ZHIR"]}
+
+    node = 1
+    G.add_node(
+        node,
+        glyph_history=["ZHIR"],
+        **{
+            ALIAS_SI[0]: 0.5,
+            ALIAS_DNFR[-1]: 0.2,
+            ALIAS_D2EPI[-1]: 0.2,
+        },
+    )
+
+    cand = _soft_grammar_prefilter(G, node, "ZHIR")
+    assert cand == "IL"
+
+
+def test_soft_grammar_prefilter_preserves_input_type(graph_canon):
+    G = graph_canon()
+    G.graph["GRAMMAR"] = {
+        "window": 3,
+        "avoid_repeats": ["RA"],
+        "fallbacks": {"RA": "OZ"},
+    }
+    G.graph["_sel_norms"] = {"dnfr_max": 1.0, "accel_max": 1.0}
+
+    node = 2
+    G.add_node(
+        node,
+        glyph_history=["RA"],
+        **{
+            ALIAS_SI[0]: 0.5,
+            ALIAS_DNFR[-1]: 0.2,
+            ALIAS_D2EPI[-1]: 0.2,
+        },
+    )
+
+    cand = _soft_grammar_prefilter(G, node, "RA")
+    assert isinstance(cand, str)
