@@ -6,6 +6,7 @@ import argparse
 from collections import deque
 from collections.abc import Mapping
 from copy import deepcopy
+from importlib import import_module
 from pathlib import Path
 from typing import Any, Optional
 
@@ -45,6 +46,7 @@ from ..utils import (
     safe_write,
 )
 from .arguments import _args_to_dict
+from .utils import _parse_cli_variants
 
 logger = get_logger(__name__)
 
@@ -386,10 +388,12 @@ def cmd_profile_si(args: argparse.Namespace) -> int:
     """Execute ``tnfr profile-si`` returning the exit status."""
 
     try:
-        from benchmarks.compute_si_profile import profile_compute_si
+        profile_module = import_module("benchmarks.compute_si_profile")
     except ModuleNotFoundError as exc:  # pragma: no cover - optional dependency
         logger.error("Sense Index profiling helpers unavailable: %s", exc)
         return 1
+
+    profile_compute_si = getattr(profile_module, "profile_compute_si")
 
     profile_compute_si(
         node_count=int(args.nodes),
@@ -406,13 +410,12 @@ def cmd_profile_pipeline(args: argparse.Namespace) -> int:
     """Execute ``tnfr profile-pipeline`` returning the exit status."""
 
     try:
-        from benchmarks.full_pipeline_profile import (
-            _parse_cli_variants,
-            profile_full_pipeline,
-        )
+        profile_module = import_module("benchmarks.full_pipeline_profile")
     except ModuleNotFoundError as exc:  # pragma: no cover - optional dependency
         logger.error("Full pipeline profiling helpers unavailable: %s", exc)
         return 1
+
+    profile_full_pipeline = getattr(profile_module, "profile_full_pipeline")
 
     try:
         si_chunk_sizes = _parse_cli_variants(getattr(args, "si_chunk_sizes", None))

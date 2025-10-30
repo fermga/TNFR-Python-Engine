@@ -1,8 +1,10 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
 from typing import Any
 
-__all__: Any
+def spec(opt: str, /, **kwargs: Any) -> tuple[str, dict[str, Any]]: ...
 
-def __getattr__(name: str) -> Any: ...
+def _coerce_optional_int(value: Any) -> int | None: ...
 
-annotations: Any
-spec: Any
+def _parse_cli_variants(values: Iterable[Any] | None) -> list[int | None]: ...

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from tnfr.cli import utils
 
 
@@ -23,3 +25,51 @@ def test_spec_respects_explicit_dest_and_default() -> None:
     assert opt == "--grammar-enabled"
     assert params["dest"] == "custom_dest"
     assert params["default"] is False
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        (None, None),
+        (0, 0),
+        ("0", 0),
+        (" 12 ", 12),
+        ("auto", None),
+        ("NONE", None),
+        ("Null", None),
+    ],
+)
+def test_coerce_optional_int_accepts_known_sentinels(raw: object, expected: int | None) -> None:
+    """The helper should normalise integers and reserved sentinel strings."""
+
+    assert utils._coerce_optional_int(raw) == expected
+
+
+@pytest.mark.parametrize("raw", ["", " ", "abc", "1.5"])
+def test_coerce_optional_int_rejects_invalid_values(raw: object) -> None:
+    """Non-integer inputs besides the sentinels must raise ``ValueError``."""
+
+    with pytest.raises(ValueError):
+        utils._coerce_optional_int(raw)
+
+
+def test_parse_cli_variants_defaults_to_auto_when_missing() -> None:
+    """Parsing ``None`` or empty iterables should default to the ``auto`` sentinel."""
+
+    assert utils._parse_cli_variants(None) == [None]
+    assert utils._parse_cli_variants([]) == [None]
+
+
+def test_parse_cli_variants_deduplicates_preserving_order() -> None:
+    """Order should be preserved while duplicates collapse to a single entry."""
+
+    variants = utils._parse_cli_variants(["auto", "1", "auto", "2", "1", -3])
+
+    assert variants == [None, 1, 2, -3]
+
+
+def test_parse_cli_variants_propagates_coercion_errors() -> None:
+    """Invalid entries should bubble coercion errors to the caller."""
+
+    with pytest.raises(ValueError):
+        utils._parse_cli_variants(["auto", "bad-value", "2"])
