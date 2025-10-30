@@ -25,6 +25,7 @@ __all__ = (
     "merge_graph_weights",
     "merge_and_normalize_weights",
     "min_max_range",
+    "_coerce_jobs",
     "_get_vf_dnfr_max",
 )
 
@@ -148,3 +149,15 @@ def _get_vf_dnfr_max(G: GraphLike) -> tuple[float, float]:
     vfmax = 1.0 if vfmax == 0 else vfmax
     dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
     return float(vfmax), float(dnfrmax)
+
+
+def _coerce_jobs(raw_jobs: Any | None) -> int | None:
+    """Normalise parallel job hints shared by metrics modules."""
+
+    try:
+        jobs = None if raw_jobs is None else int(raw_jobs)
+    except (TypeError, ValueError):
+        return None
+    if jobs is not None and jobs <= 0:
+        return None
+    return jobs
