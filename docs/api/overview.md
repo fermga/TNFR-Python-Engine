@@ -17,10 +17,9 @@ tnfr.locking       — process-wide named locks (shared by RNG/caches)
 tnfr.utils.cache   — cache managers exposing shared metrics/evictions
 ```
 
-- ``tnfr.cache`` and ``tnfr.io`` remain as thin compatibility shims that now emit
-  :class:`DeprecationWarning` at import time. Update any downstream references to
-  import from :mod:`tnfr.utils` (or :mod:`tnfr.utils.io`) to stay on the supported
-  API surface.
+- ``tnfr.cache`` and ``tnfr.io`` have been removed. Import cache helpers from
+  :mod:`tnfr.utils.cache` and IO helpers from :mod:`tnfr.utils.io` to stay on the
+  supported API surface.
 
 - `tnfr.structural` exposes `create_nfr` and `run_sequence`, wiring node creation to ΔNFR
   hooks so every operator pass recomputes the gradient canonically.
