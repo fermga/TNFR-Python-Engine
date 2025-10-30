@@ -2,7 +2,14 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Hashable, Mapping, MutableMapping, Sequence
+from collections.abc import (
+    Callable,
+    Hashable,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 from enum import Enum
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, ContextManager, Iterable, Protocol, TypedDict
@@ -41,6 +48,7 @@ __all__ = (
     "GraphLike",
     "IntegratorProtocol",
     "Glyph",
+    "GlyphCode",
     "GlyphLoadDistribution",
     "GlyphSelector",
     "SelectorPreselectionMetrics",
@@ -51,6 +59,7 @@ __all__ = (
     "SelectorThresholds",
     "SelectorWeights",
     "TraceCallback",
+    "CallbackError",
     "TraceFieldFn",
     "TraceFieldMap",
     "TraceFieldRegistry",
@@ -70,10 +79,18 @@ __all__ = (
     "ArgSpec",
     "TNFRConfigValue",
     "SigmaVector",
+    "SigmaTrace",
     "FloatArray",
     "FloatMatrix",
     "NodeInitAttrMap",
     "NodeAttrMap",
+    "GlyphogramRow",
+    "GlyphTimingTotals",
+    "GlyphTimingByNode",
+    "GlyphCounts",
+    "GlyphMetricsHistoryValue",
+    "GlyphMetricsHistory",
+    "MetricsListHistory",
 )
 
 
@@ -196,6 +213,16 @@ class SigmaVector(_SigmaVectorRequired, _SigmaVectorOptional):
     """Typed dictionary describing σ-vector telemetry."""
 
 
+class SigmaTrace(TypedDict):
+    """Time-aligned σ(t) trace exported alongside glyphograms."""
+
+    t: list[float]
+    sigma_x: list[float]
+    sigma_y: list[float]
+    mag: list[float]
+    angle: list[float]
+
+
 class SelectorThresholds(TypedDict):
     """Normalised thresholds applied by the glyph selector."""
 
@@ -311,6 +338,10 @@ class Glyph(str, Enum):
     REMESH = "REMESH"
 
 
+GlyphCode: TypeAlias = Glyph | str
+"""Glyph identifier accepted by selector pipelines and grammars."""
+
+
 GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
 #: Normalised glyph load proportions keyed by :class:`Glyph` or aggregate labels.
 
@@ -318,15 +349,15 @@ GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
 class _SelectorLifecycle(Protocol):
     """Protocol describing the selector lifecycle supported by the runtime."""
 
-    def __call__(self, graph: TNFRGraph, node: NodeId) -> Glyph | str: ...
+    def __call__(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
 
     def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None: ...
 
-    def select(self, graph: TNFRGraph, node: NodeId) -> Glyph | str: ...
+    def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
 
 
 GlyphSelector: TypeAlias = (
-    Callable[[TNFRGraph, NodeId], Glyph | str] | _SelectorLifecycle
+    Callable[[TNFRGraph, NodeId], GlyphCode] | _SelectorLifecycle
 )
 #: Selector callable or object returning the glyph to apply for ``NodeId``.
 
@@ -353,6 +384,18 @@ TraceFieldRegistry: TypeAlias = dict[str, dict[str, "TraceFieldFn"]]
 
 HistoryState: TypeAlias = _HistoryDict | dict[str, Any]
 #: History container used to accumulate glyph metrics and logs for the graph.
+
+
+class CallbackError(TypedDict):
+    """Metadata captured for a failed callback invocation."""
+
+    event: str
+    step: int | None
+    error: str
+    traceback: str
+    fn: str
+    name: str | None
+
 
 TraceCallback: TypeAlias = Callable[[TNFRGraph, dict[str, Any]], None]
 #: Callback signature used by :func:`tnfr.trace.register_trace`.
@@ -397,3 +440,26 @@ NeighborStats: TypeAlias = tuple[
     Sequence[float] | None,
 ]
 """Bundle of neighbour accumulators for cosine, sine, EPI, νf and topology totals."""
+
+GlyphogramRow: TypeAlias = MutableMapping[str, float]
+"""Row exported by glyph timing summaries."""
+
+GlyphTimingTotals: TypeAlias = MutableMapping[str, float]
+"""Aggregate glyph timing totals keyed by glyph code."""
+
+GlyphTimingByNode: TypeAlias = MutableMapping[
+    Any, MutableMapping[str, MutableSequence[float]]
+]
+"""Glyph timing segments stored per node during audits."""
+
+GlyphCounts: TypeAlias = Mapping[str, int]
+"""Glyph occurrence counters keyed by glyph code."""
+
+GlyphMetricsHistoryValue: TypeAlias = MutableMapping[Any, Any] | MutableSequence[Any]
+"""Flexible container used by glyph history accumulators."""
+
+GlyphMetricsHistory: TypeAlias = MutableMapping[str, GlyphMetricsHistoryValue]
+"""History map storing glyph metrics by identifier."""
+
+MetricsListHistory: TypeAlias = MutableMapping[str, list[Any]]
+"""Mapping associating glyph metric identifiers with time series."""

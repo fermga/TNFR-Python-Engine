@@ -82,7 +82,9 @@ It records Γ specs, selector state, ΔNFR weights, Kuramoto metrics, and operat
 simulation leaves an auditable trail. Callback errors are stored in a ring buffer attached to
 the graph (default length 100). Adjust or inspect the buffer at runtime with
 `tnfr.callback_utils.callback_manager.set_callback_error_limit` and
-`get_callback_error_limit`.
+`get_callback_error_limit`. The ring buffer exposes entries as
+`tnfr.types.CallbackError` mappings so typed consumers can rely on a stable
+schema when exporting diagnostics.
 
 ### Trace verbosity presets
 

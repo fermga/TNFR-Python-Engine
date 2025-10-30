@@ -1,6 +1,6 @@
 from typing import Any, Literal, Sequence
 
-from tnfr.types import TNFRGraph
+from tnfr.types import GlyphCode, TNFRGraph
 from tnfr.validation import ValidationOutcome
 
 __all__: tuple[str, ...]
@@ -17,7 +17,6 @@ ALIAS_VF: Sequence[str]
 
 AbstractSelector: Any
 DefaultGlyphSelector: Any
-GlyphCode: Any
 ParametricGlyphSelector: Any
 _SelectorPreselection: Any
 _apply_glyphs: Any

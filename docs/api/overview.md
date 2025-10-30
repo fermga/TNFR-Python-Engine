@@ -110,3 +110,9 @@ When extending the validation pipeline, reuse :data:`tnfr.types.ValidatorFunc`
 to type graph validators. The alias captures the canonical signature accepted
 by ``GRAPH_VALIDATORS`` and downstream tooling, letting new validators plug into
 the engine without redefining typing contracts.
+
+Selector helpers and glyph telemetry exporters reuse the shared
+:mod:`tnfr.types` module as well. Import :data:`tnfr.types.GlyphCode` for
+selector-compatible identifiers and :data:`tnfr.types.SigmaTrace` or the
+glyph timing aliases when consuming the metrics payloads, ensuring typed
+extensions stay in sync with the public API.

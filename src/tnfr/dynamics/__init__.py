@@ -63,6 +63,7 @@ from concurrent.futures import ProcessPoolExecutor
 
 from ..metrics.sense_index import compute_Si
 from ..operators import apply_glyph
+from ..types import GlyphCode
 from ..utils import get_numpy
 from ..validation import enforce_canonical_grammar, on_applied_glyph
 from ..validation.runtime import apply_canonical_clamps, validate_canon
@@ -112,7 +113,6 @@ from .sampling import update_node_sample as _update_node_sample
 from .selectors import (
     AbstractSelector,
     DefaultGlyphSelector,
-    GlyphCode,
     ParametricGlyphSelector,
     _apply_glyphs,
     _apply_selector,

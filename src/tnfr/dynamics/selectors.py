@@ -10,8 +10,6 @@ from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from operator import itemgetter
 from typing import Any, cast
-
-from .._compat import TypeAlias
 from ..alias import collect_attr, get_attr
 from ..constants import get_graph_param, get_param
 from ..glyph_history import ensure_history, recent_glyph
@@ -24,12 +22,10 @@ from ..selector import (
     _selector_norms,
     _selector_thresholds,
 )
-from ..types import Glyph, GlyphSelector, HistoryState, NodeId, TNFRGraph
+from ..types import Glyph, GlyphCode, GlyphSelector, HistoryState, NodeId, TNFRGraph
 from ..utils import get_numpy
 from ..validation import enforce_canonical_grammar, on_applied_glyph
 from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_SI
-
-GlyphCode: TypeAlias = Glyph | str
 
 __all__ = (
     "GlyphCode",
