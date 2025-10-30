@@ -31,6 +31,7 @@ from .trace import TraceMetadata
 __all__: tuple[str, ...] = (
     "TNFRGraph",
     "Graph",
+    "ValidatorFunc",
     "NodeId",
     "Node",
     "GammaSpec",
@@ -85,6 +86,7 @@ def __getattr__(name: str) -> Any: ...
 
 TNFRGraph: TypeAlias = nx.Graph
 Graph: TypeAlias = TNFRGraph
+ValidatorFunc: TypeAlias = Callable[[TNFRGraph], None]
 NodeId: TypeAlias = Hashable
 Node: TypeAlias = NodeId
 NodeInitAttrMap: TypeAlias = MutableMapping[str, float]

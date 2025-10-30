@@ -4,9 +4,7 @@ from __future__ import annotations
 
 import numbers
 import sys
-from typing import Callable, Sequence
-
-from .._compat import TypeAlias
+from collections.abc import Sequence
 from ..alias import get_attr
 from ..glyph_runtime import last_glyph
 from ..config.constants import GLYPHS_CANONICAL_SET
@@ -18,12 +16,10 @@ from ..types import (
     NodeId,
     StructuralFrequency,
     TNFRGraph,
+    ValidatorFunc,
 )
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
-
-ValidatorFunc: TypeAlias = Callable[[TNFRGraph], None]
-"""Callable signature expected for validation routines."""
 
 NodeData = NodeAttrMap
 """Read-only node attribute mapping used by validators."""

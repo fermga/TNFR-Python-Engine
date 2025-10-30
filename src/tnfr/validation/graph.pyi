@@ -1,9 +1,14 @@
 from collections.abc import Sequence
-from typing import Callable, Tuple
+from typing import Tuple
 
-from ..types import EPIValue, NodeAttrMap, NodeId, StructuralFrequency, TNFRGraph
-
-ValidatorFunc = Callable[[TNFRGraph], None]
+from ..types import (
+    EPIValue,
+    NodeAttrMap,
+    NodeId,
+    StructuralFrequency,
+    TNFRGraph,
+    ValidatorFunc,
+)
 NodeData = NodeAttrMap
 AliasSequence = Sequence[str]
 

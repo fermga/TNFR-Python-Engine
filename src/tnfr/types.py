@@ -25,6 +25,7 @@ else:  # pragma: no cover - runtime fallback without numpy.typing
 __all__ = (
     "TNFRGraph",
     "Graph",
+    "ValidatorFunc",
     "NodeId",
     "Node",
     "GammaSpec",
@@ -99,6 +100,9 @@ else:  # pragma: no cover - runtime fallback without NumPy
 
 Graph: TypeAlias = TNFRGraph
 #: Backwards-compatible alias for :data:`TNFRGraph`.
+
+ValidatorFunc: TypeAlias = Callable[[TNFRGraph], None]
+"""Callable signature enforced by graph validation hooks."""
 
 NodeId: TypeAlias = Hashable
 #: Hashable identifier for a coherent TNFR node.
