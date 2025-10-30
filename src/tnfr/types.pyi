@@ -28,7 +28,58 @@ from .glyph_history import HistoryDict as _HistoryDict
 from .tokens import Token
 from .trace import TraceMetadata
 
-__all__: tuple[str, ...]
+__all__: tuple[str, ...] = (
+    "TNFRGraph",
+    "Graph",
+    "NodeId",
+    "Node",
+    "GammaSpec",
+    "EPIValue",
+    "DeltaNFR",
+    "SecondDerivativeEPI",
+    "Phase",
+    "StructuralFrequency",
+    "SenseIndex",
+    "CouplingWeight",
+    "CoherenceMetric",
+    "DeltaNFRHook",
+    "GraphLike",
+    "IntegratorProtocol",
+    "Glyph",
+    "GlyphLoadDistribution",
+    "GlyphSelector",
+    "SelectorPreselectionMetrics",
+    "SelectorPreselectionChoices",
+    "SelectorPreselectionPayload",
+    "SelectorMetrics",
+    "SelectorNorms",
+    "SelectorThresholds",
+    "SelectorWeights",
+    "TraceCallback",
+    "TraceFieldFn",
+    "TraceFieldMap",
+    "TraceFieldRegistry",
+    "HistoryState",
+    "DiagnosisNodeData",
+    "DiagnosisSharedState",
+    "DiagnosisPayload",
+    "DiagnosisResult",
+    "DiagnosisPayloadChunk",
+    "DiagnosisResultList",
+    "DnfrCacheVectors",
+    "DnfrVectorMap",
+    "NeighborStats",
+    "TimingContext",
+    "PresetTokens",
+    "ProgramTokens",
+    "ArgSpec",
+    "TNFRConfigValue",
+    "SigmaVector",
+    "FloatArray",
+    "FloatMatrix",
+    "NodeInitAttrMap",
+    "NodeAttrMap",
+)
 
 def __getattr__(name: str) -> Any: ...
 
@@ -49,6 +100,34 @@ CouplingWeight: TypeAlias = float
 CoherenceMetric: TypeAlias = float
 TimingContext: TypeAlias = ContextManager[None]
 PresetTokens: TypeAlias = Sequence[Token]
+ProgramTokens: TypeAlias = Sequence[Token]
+ArgSpec: TypeAlias = tuple[str, Mapping[str, Any]]
+
+TNFRConfigScalar: TypeAlias = bool | int | float | str | None
+TNFRConfigSequence: TypeAlias = Sequence[TNFRConfigScalar]
+TNFRConfigValue: TypeAlias = (
+    TNFRConfigScalar | TNFRConfigSequence | Mapping[str, "TNFRConfigValue"]
+)
+
+class _SigmaVectorRequired(TypedDict):
+    x: float
+    y: float
+    mag: float
+    angle: float
+    n: int
+
+
+class _SigmaVectorOptional(TypedDict, total=False):
+    glyph: str
+    w: float
+    t: float
+
+
+class SigmaVector(_SigmaVectorRequired, _SigmaVectorOptional): ...
+
+
+FloatArray: TypeAlias = np.ndarray
+FloatMatrix: TypeAlias = np.ndarray
 
 class SelectorThresholds(TypedDict):
     si_hi: float
