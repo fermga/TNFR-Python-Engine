@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import threading
+from collections import defaultdict
 from collections.abc import (
     Callable,
     Hashable,
@@ -9,7 +10,7 @@ from collections.abc import (
     Mapping,
     MutableMapping,
 )
-from typing import Any, ContextManager, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, ContextManager, Generic, TypeVar
 
 import networkx as nx
 
@@ -17,8 +18,10 @@ from ..cache import CacheCapacityConfig, CacheManager, InstrumentedLRUCache
 from ..types import GraphLike, NodeId, TimingContext, TNFRGraph
 
 K = TypeVar("K", bound=Hashable)
-V = TypeVar("V")
 T = TypeVar("T")
+
+if TYPE_CHECKING:
+    from ..dynamics.dnfr import DnfrCache
 
 __all__ = (
     "EdgeCacheManager",
@@ -26,8 +29,6 @@ __all__ = (
     "cached_node_list",
     "cached_nodes_and_A",
     "clear_node_repr_cache",
-    "configure_graph_cache_limits",
-    "configure_global_cache_layers",
     "edge_version_cache",
     "edge_version_update",
     "ensure_node_index_map",
@@ -36,9 +37,13 @@ __all__ = (
     "increment_edge_version",
     "increment_graph_version",
     "node_set_checksum",
-    "reset_global_cache_manager",
     "stable_json",
+    "configure_graph_cache_limits",
+    "DNFR_PREP_STATE_KEY",
+    "DnfrPrepState",
     "build_cache_manager",
+    "configure_global_cache_layers",
+    "reset_global_cache_manager",
     "_GRAPH_CACHE_LAYERS_KEY",
     "_SeedHashCache",
     "ScopedCounterCache",
@@ -46,20 +51,20 @@ __all__ = (
 
 NODE_SET_CHECKSUM_KEY: str
 _GRAPH_CACHE_LAYERS_KEY: str
-
-class LRUCache(MutableMapping[K, V], Generic[K, V]):
-    def __init__(self, maxsize: int = ...) -> None: ...
-    def __getitem__(self, __key: K) -> V: ...
-    def __setitem__(self, __key: K, __value: V) -> None: ...
-    def __delitem__(self, __key: K) -> None: ...
-    def __iter__(self) -> Iterator[K]: ...
-    def __len__(self) -> int: ...
+DNFR_PREP_STATE_KEY: str
 
 class EdgeCacheState:
     cache: MutableMapping[Hashable, Any]
-    locks: MutableMapping[Hashable, threading.RLock]
+    locks: defaultdict[Hashable, threading.RLock]
     max_entries: int | None
     dirty: bool
+
+
+class DnfrPrepState:
+    cache: DnfrCache
+    cache_lock: threading.RLock
+    vector_lock: threading.RLock
+
 
 class EdgeCacheManager:
     _STATE_KEY: str
