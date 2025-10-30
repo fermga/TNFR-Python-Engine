@@ -3,7 +3,7 @@ import types
 
 import pytest
 
-from tnfr import io as io_mod
+import tnfr.utils.io as io_mod
 from tnfr.utils import LazyImportProxy, cached_import
 
 

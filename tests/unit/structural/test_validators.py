@@ -3,7 +3,7 @@
 import networkx as nx
 import pytest
 
-from tnfr import io as io_mod
+import tnfr.utils.io as io_mod
 from tnfr.alias import set_attr, set_attr_str
 from tnfr.config import load_config
 from tnfr.constants import (
