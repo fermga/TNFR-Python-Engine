@@ -20,7 +20,7 @@ from .transforms import (
     ensure_coherence_monotonicity,
     validate_norm_preservation,
 )
-from .validators import NFRValidator
+from ..validation import NFRValidator
 
 __all__ = [
     "HilbertSpace",

@@ -4,10 +4,10 @@ TNFR simulations require auditable telemetry, deterministic caches, and reproduc
 This guide consolidates the APIs that expose coherence data, structural histories, and helper
 facades.
 
-> **Migration note**: Historical imports such as ``tnfr.mathematics.validators`` now
-> raise :class:`DeprecationWarning`. Use ``tnfr.validation`` (preferred) or
-> ``tnfr.validation.spectral`` when wiring validators alongside the telemetry hooks
-> described in this guide so the engine stays aligned with the supported API surface.
+> **Migration note**: ``tnfr.mathematics.validators`` has been removed. Use
+> ``tnfr.validation`` (preferred) or ``tnfr.validation.spectral`` when wiring
+> validators alongside the telemetry hooks described in this guide so the engine
+> stays aligned with the supported API surface.
 
 ## Official metrics and telemetry
 

@@ -109,11 +109,10 @@ re-exports the grammar helpers (``validate_sequence``,
 ``run_validators`` and ``GRAPH_VALIDATORS``. Projects should import from
 ``tnfr.validation`` directly—``tnfr.utils`` no longer re-exports
 ``validate_window`` or ``run_validators``—so grammar checks and structural graph
-invariants run together before executing TNFR operators. The legacy
-``tnfr.mathematics.validators`` shim now emits a :class:`DeprecationWarning` and
-will be removed once downstream packages finish migrating; update any imports
-to ``tnfr.validation`` (preferred) or ``tnfr.validation.spectral`` to stay on
-the supported path.
+invariants run together before executing TNFR operators. ``NFRValidator`` is now
+exposed exclusively from :mod:`tnfr.validation` (or
+:mod:`tnfr.validation.spectral` for the concrete implementation); update any
+remaining imports that still target ``tnfr.mathematics.validators``.
 
 When extending the validation pipeline, reuse :data:`tnfr.types.ValidatorFunc`
 to type graph validators. The alias captures the canonical signature accepted
