@@ -107,9 +107,9 @@ Use :mod:`tnfr.validation` as the single entry point for canonical validation. I
 re-exports the grammar helpers (``validate_sequence``,
 ``apply_glyph_with_grammar``) alongside the graph invariants enforced by
 ``run_validators`` and ``GRAPH_VALIDATORS``. Projects should import from
-``tnfr.validation`` directly—the transitional ``tnfr.utils.validators`` module
-has been removed—so grammar checks and structural graph invariants run together
-before executing TNFR operators. The legacy
+``tnfr.validation`` directly—``tnfr.utils`` no longer re-exports
+``validate_window`` or ``run_validators``—so grammar checks and structural graph
+invariants run together before executing TNFR operators. The legacy
 ``tnfr.mathematics.validators`` shim now emits a :class:`DeprecationWarning` and
 will be removed once downstream packages finish migrating; update any imports
 to ``tnfr.validation`` (preferred) or ``tnfr.validation.spectral`` to stay on

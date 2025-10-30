@@ -176,8 +176,6 @@ __all__ = (
     "kahan_sum_nd",
     "similarity_abs",
     "within_range",
-    "validate_window",
-    "run_validators",
     "_configure_root",
     "_LOGGING_CONFIGURED",
     "_reset_logging_state",
@@ -201,22 +199,11 @@ _DYNAMIC_EXPORT_TYPES: Final[dict[str, type[object]]] = {
     "_LOGGING_CONFIGURED": bool,
 }
 _DYNAMIC_EXPORTS: Final[frozenset[str]] = frozenset(_DYNAMIC_EXPORT_TYPES)
-_VALIDATOR_EXPORTS = {"validate_window", "run_validators"}
-
-
 def __getattr__(name: str) -> Any:  # pragma: no cover - trivial delegation
     if name in _DYNAMIC_EXPORTS:
         return getattr(_init, name)
-    if name in _VALIDATOR_EXPORTS:
-        if name == "validate_window":
-            from ..validation import validate_window as _validate_window
-
-            return _validate_window
-        from ..validation import run_validators as _run_validators
-
-        return _run_validators
     raise AttributeError(name)
 
 
 def __dir__() -> list[str]:  # pragma: no cover - trivial delegation
-    return sorted(set(globals()) | _DYNAMIC_EXPORTS | _VALIDATOR_EXPORTS)
+    return sorted(set(globals()) | set(_DYNAMIC_EXPORTS))
