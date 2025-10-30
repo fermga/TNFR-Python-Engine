@@ -12,7 +12,7 @@ from operator import itemgetter
 from typing import Any, cast
 from ..alias import collect_attr, get_attr
 from ..constants import get_graph_param, get_param
-from ..glyph_history import ensure_history, recent_glyph
+from ..glyph_history import ensure_history
 from ..utils import clamp01
 from ..metrics.common import compute_dnfr_accel_max, merge_and_normalize_weights
 from ..operators import apply_glyph
@@ -24,7 +24,8 @@ from ..selector import (
 )
 from ..types import Glyph, GlyphCode, GlyphSelector, HistoryState, NodeId, TNFRGraph
 from ..utils import get_numpy
-from ..validation import enforce_canonical_grammar, on_applied_glyph
+from ..validation import GrammarContext, enforce_canonical_grammar, on_applied_glyph
+from ..validation.rules import _accel_norm, _check_repeats, _maybe_force, normalized_dnfr
 from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_SI
 
 __all__ = (
@@ -88,22 +89,22 @@ def _soft_grammar_prefilter(
     G: TNFRGraph,
     n: NodeId,
     cand: GlyphCode,
-    dnfr: float,
-    accel: float,
 ) -> GlyphCode:
     """Soft grammar: avoid repetitions before the canonical one."""
 
-    gram = get_graph_param(G, "GRAMMAR", dict)
-    gwin = int(gram.get("window", 3))
-    avoid = {str(item) for item in gram.get("avoid_repeats", [])}
-    force_dn = float(gram.get("force_dnfr", 0.60))
-    force_ac = float(gram.get("force_accel", 0.60))
-    fallbacks = cast(Mapping[str, GlyphCode], gram.get("fallbacks", {}))
-    nd = G.nodes[n]
-    cand_key = str(cand)
-    if cand_key in avoid and recent_glyph(nd, cand_key, gwin):
-        if not (dnfr >= force_dn or accel >= force_ac):
-            cand = fallbacks.get(cand_key, cand)
+    ctx = GrammarContext.from_graph(G)
+    original = cand
+    cand = _check_repeats(ctx, n, cand)
+    cand = _maybe_force(ctx, n, cand, original, normalized_dnfr, "force_dnfr")
+    cand = _maybe_force(ctx, n, cand, original, _accel_norm, "force_accel")
+
+    if isinstance(original, str) and isinstance(cand, Glyph):
+        return cand.value
+    if isinstance(original, Glyph) and isinstance(cand, str):
+        try:
+            return Glyph(cand)
+        except (TypeError, ValueError):
+            return cand
     return cand
 
 
@@ -200,7 +201,7 @@ def _parametric_selector_logic(G: TNFRGraph, n: NodeId) -> GlyphCode:
 
     cand = _apply_score_override(cand, score, dnfr, thr["dnfr_lo"])
 
-    return _soft_grammar_prefilter(G, n, cand, dnfr, accel)
+    return _soft_grammar_prefilter(G, n, cand)
 
 
 @dataclass(slots=True)
@@ -563,7 +564,7 @@ def _resolve_preselected_glyph(
 
         score = _compute_selector_score(G, nd, Si, dnfr, accel, cand)
         cand = _apply_score_override(cand, score, dnfr, thresholds["dnfr_lo"])
-        return _soft_grammar_prefilter(G, n, cand, dnfr, accel)
+        return _soft_grammar_prefilter(G, n, cand)
 
     return selector(G, n)
 
