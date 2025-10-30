@@ -7,8 +7,8 @@ scaffolding required to stand up a reproducible spectral experiment, turn on
 validation guards, and observe unitary stability before coupling into higher
 level operators.
 
-> **Migration note**: Legacy imports via ``tnfr.mathematics.validators`` now emit
-> :class:`DeprecationWarning`. Import :mod:`tnfr.validation` directly to access
+> **Migration note**: ``tnfr.mathematics.validators`` has been removed. Import
+> :mod:`tnfr.validation` directly to access
 > :class:`tnfr.validation.spectral.NFRValidator` when enabling the guards
 > described in this primer.
 
