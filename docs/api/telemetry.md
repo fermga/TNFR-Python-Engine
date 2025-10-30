@@ -49,7 +49,7 @@ helpers exposed by the `tnfr.glyph_history` module.
 ### Cache telemetry publishers
 
 Cache usage is exported through :func:`tnfr.telemetry.publish_graph_cache_metrics` which iterates
-over the shared :class:`~tnfr.cache.CacheManager` and emits snapshots via the
+over the shared :class:`~tnfr.utils.cache.CacheManager` and emits snapshots via the
 :class:`~tnfr.telemetry.cache_metrics.CacheTelemetryPublisher`. The publisher logs structured JSON
 records under the `tnfr.telemetry.cache` logger and invokes callbacks registered for
 ``CallbackEvent.CACHE_METRICS`` so observers can react to hit ratio or latency regressions.

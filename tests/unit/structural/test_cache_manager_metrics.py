@@ -1,4 +1,4 @@
-"""Telemetry tests for :class:`tnfr.cache.CacheManager`."""
+"""Telemetry tests for :class:`tnfr.utils.cache.CacheManager`."""
 
 from __future__ import annotations
 
@@ -46,7 +46,7 @@ def test_cache_manager_publish_metrics_dispatches_and_handles_errors(caplog: pyt
     manager.register_metrics_publisher(spy)
     manager.register_metrics_publisher(raiser)
 
-    with caplog.at_level(logging.ERROR, logger="tnfr.cache"):
+    with caplog.at_level(logging.ERROR, logger="tnfr.utils.cache"):
         manager.publish_metrics()
 
     assert received

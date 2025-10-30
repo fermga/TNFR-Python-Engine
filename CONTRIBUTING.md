@@ -266,9 +266,9 @@ artifacts (e.g., `node_modules/` or `dist/`) are not committed.
   and `tnfr.validation.grammar.enforce_canonical_grammar`, then add any THOL
   handling you need in `tnfr.flatten`.【F:src/tnfr/validation/syntax.py†L1-L86】【F:src/tnfr/validation/grammar.py†L1-L90】【F:src/tnfr/flatten.py†L1-L120】
 - **Share caches, locks, and telemetry** through the provided helpers instead
-  of ad-hoc globals. Reuse `tnfr.utils` exports, `tnfr.cache.CacheManager`,
+  of ad-hoc globals. Reuse `tnfr.utils` exports, `tnfr.utils.cache.CacheManager`,
   and `tnfr.locking.get_lock` when extending RNG, ΔNFR, or metric pipelines so
-  that instrumentation stays consistent.【F:src/tnfr/utils/__init__.py†L1-L153】【F:src/tnfr/cache.py†L1-L120】【F:src/tnfr/locking.py†L1-L36】
+  that instrumentation stays consistent.【F:src/tnfr/utils/__init__.py†L1-L160】【F:src/tnfr/utils/cache.py†L1-L220】【F:src/tnfr/locking.py†L1-L36】
 - **Reference the [Architecture Overview](README.md#architecture-overview)**
   for quick diagrams, then deep-dive in the
   [TNFR Architecture Guide](ARCHITECTURE.md) to understand orchestration,
@@ -297,9 +297,9 @@ telemetry contracts already documented.
   `tnfr.metrics.sense_index`, `tnfr.trace`, `tnfr.metrics.trig_cache`. They
   compute C(t), ΔNFR summaries, Si, and trace history so coherence metrics
   remain auditable.【F:src/tnfr/metrics/common.py†L32-L149】【F:src/tnfr/metrics/sense_index.py†L1-L200】【F:src/tnfr/trace.py†L169-L319】【F:src/tnfr/metrics/trig_cache.py†L1-L120】
-- **Shared services** — `tnfr.utils`, `tnfr.cache`, `tnfr.locking`,
+- **Shared services** — `tnfr.utils`, `tnfr.utils.cache`, `tnfr.locking`,
   `tnfr.rng`. These facades provide deterministic caches, locks, and RNG
-  orchestration for every layer that needs shared state.【F:src/tnfr/utils/__init__.py†L1-L153】【F:src/tnfr/cache.py†L1-L120】【F:src/tnfr/locking.py†L1-L36】【F:src/tnfr/rng.py†L1-L88】
+  orchestration for every layer that needs shared state.【F:src/tnfr/utils/__init__.py†L1-L160】【F:src/tnfr/utils/cache.py†L1-L220】【F:src/tnfr/locking.py†L1-L36】【F:src/tnfr/rng.py†L1-L88】
 
 **Checklist before merging changes**
 

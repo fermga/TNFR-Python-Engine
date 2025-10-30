@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Final
 
-from ..cache import (
+from .cache import (
     CacheCapacityConfig,
     CacheLayer,
     CacheManager,
@@ -13,8 +13,6 @@ from ..cache import (
     RedisCacheLayer,
     ShelveCacheLayer,
     prune_lock_mapping,
-)
-from .cache import (
     NODE_SET_CHECKSUM_KEY,
     ScopedCounterCache,
     EdgeCacheManager,
