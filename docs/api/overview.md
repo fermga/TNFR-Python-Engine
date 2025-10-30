@@ -105,3 +105,8 @@ re-exports the grammar helpers (``validate_sequence``,
 ``tnfr.validation`` directly—the transitional ``tnfr.utils.validators`` module
 has been removed—so grammar checks and structural graph invariants run together
 before executing TNFR operators.
+
+When extending the validation pipeline, reuse :data:`tnfr.types.ValidatorFunc`
+to type graph validators. The alias captures the canonical signature accepted
+by ``GRAPH_VALIDATORS`` and downstream tooling, letting new validators plug into
+the engine without redefining typing contracts.
