@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-import tnfr.io as io_mod
-from tnfr.io import read_structured_file
+import tnfr.utils.io as io_mod
+from tnfr.utils.io import read_structured_file
 
 
 def test_read_structured_file_invokes_toml_parser(

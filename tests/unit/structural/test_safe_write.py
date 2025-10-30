@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from tnfr.io import safe_write
+from tnfr.utils.io import safe_write
 
 
 def test_safe_write_atomic(tmp_path: Path):
@@ -94,7 +94,7 @@ def test_safe_write_binary_mode(tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
             binary_open_seen = True
         return original_open(file, *args, **kwargs)
 
-    monkeypatch.setattr("tnfr.io.open", fake_open, raising=False)
+    monkeypatch.setattr("tnfr.utils.io.open", fake_open, raising=False)
 
     safe_write(dest, lambda f: f.write(payload), mode="wb", atomic=atomic)
 

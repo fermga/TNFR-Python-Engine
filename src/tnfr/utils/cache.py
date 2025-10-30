@@ -33,7 +33,6 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 import networkx as nx
 from cachetools import LRUCache
 
-from ..io import json_dumps
 from ..locking import get_lock
 from ..types import GraphLike, NodeId, TimingContext, TNFRGraph
 from .graph import get_graph, mark_dnfr_prep_dirty
@@ -1167,6 +1166,8 @@ def increment_graph_version(graph: Any, key: str) -> int:
 
 def stable_json(obj: Any) -> str:
     """Return a JSON string with deterministic ordering for ``obj``."""
+
+    from .io import json_dumps
 
     return json_dumps(
         obj,

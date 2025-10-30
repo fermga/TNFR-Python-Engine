@@ -13,7 +13,7 @@ from tnfr.constants import get_param
 from tnfr.execution import HANDLERS, block, compile_sequence, play, seq, target, wait
 from tnfr.tokens import TARGET, THOL, WAIT, OpTag
 from tnfr.types import Glyph
-from tnfr.io import StructuredFileError
+from tnfr.utils.io import StructuredFileError
 
 yaml = pytest.importorskip("yaml")
 
