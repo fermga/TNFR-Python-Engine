@@ -15,7 +15,7 @@ from tests.property.strategies import (
     PROPERTY_TEST_SETTINGS,
     nested_structured_mappings,
 )
-from tnfr.io import (
+from tnfr.utils.io import (
     StructuredFileError,
     json_dumps,
     read_structured_file,

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-import tnfr.io as io_mod
+import tnfr.utils.io as io_mod
 
 
 def test_read_structured_file_missing_file(tmp_path: Path):

@@ -89,7 +89,7 @@ from .numeric import (
     similarity_abs,
     within_range,
 )
-from ..io import (
+from .io import (
     DEFAULT_PARAMS,
     JsonDumpsParams,
     StructuredFileError,

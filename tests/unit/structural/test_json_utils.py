@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-import tnfr.io as json_utils
+import tnfr.utils.io as json_utils
 import tnfr.utils.init as import_utils
 
 from ...utils import clear_orjson_cache
