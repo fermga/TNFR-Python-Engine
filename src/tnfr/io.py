@@ -2,8 +2,15 @@
 
 from __future__ import annotations
 
+import warnings
 from types import ModuleType
 from typing import Any
+
+warnings.warn(
+    "Importing 'tnfr.io' is deprecated; use 'tnfr.utils' for the supported API.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 from .utils import io as _io
 
