@@ -51,6 +51,7 @@ from ..utils import (
     stable_json,
 )
 from .common import (
+    _coerce_jobs,
     _get_vf_dnfr_max,
     ensure_neighbors_map,
     merge_graph_weights,
@@ -448,56 +449,6 @@ def compute_Si_node(
     if inplace:
         set_attr(nd, ALIAS_SI, Si)
     return Si
-
-
-def _coerce_jobs(raw_jobs: Any | None) -> int | None:
-    """Normalise ``n_jobs`` while preserving deterministic Si sampling.
-
-    By constraining invalid configurations we avoid parallel plans that could
-    reshuffle ΔNFR readings and blur the structural interpretation of Si.
-
-    Parameters
-    ----------
-    raw_jobs : Any or None
-        Raw configuration value that specifies how many worker processes
-        should participate in the Si computation. Values are accepted even
-        when provided as strings so long as they can be coerced to integers.
-
-    Returns
-    -------
-    int or None
-        A strictly positive integer describing the requested level of
-        parallelism, or ``None`` when the configuration is absent or
-        considered invalid. Returning ``None`` allows the caller to fall back
-        to the single-process implementation that preserves ΔNFR sampling
-        determinism.
-
-    Examples
-    --------
-    >>> _coerce_jobs("4")
-    4
-    >>> _coerce_jobs(-2) is None
-    True
-    >>> _coerce_jobs("not-an-int") is None
-    True
-    >>> _coerce_jobs(None) is None
-    True
-    
-    Notes
-    -----
-    Invalid inputs—such as non-integer values or non-positive integers—are
-    mapped to ``None`` so that Si calculations reuse the deterministic code
-    path. This guarantees reproducible ΔNFR sampling regardless of user
-    configuration quirks.
-    """
-
-    try:
-        jobs = None if raw_jobs is None else int(raw_jobs)
-    except (TypeError, ValueError):
-        return None
-    if jobs is not None and jobs <= 0:
-        return None
-    return jobs
 
 
 def _compute_si_python_chunk(

@@ -37,7 +37,12 @@ from ..types import (
 )
 from ..utils import get_numpy
 from .coherence import CoherenceMatrixPayload, coherence_matrix, local_phase_sync
-from .common import compute_dnfr_accel_max, min_max_range, normalize_dnfr
+from .common import (
+    _coerce_jobs,
+    compute_dnfr_accel_max,
+    min_max_range,
+    normalize_dnfr,
+)
 from .trig_cache import compute_theta_trig, get_trig_cache
 
 ALIAS_EPI = get_aliases("EPI")
@@ -47,20 +52,6 @@ ALIAS_DNFR = get_aliases("DNFR")
 
 CoherenceSeries = Sequence[CoherenceMatrixPayload | None]
 CoherenceHistory = Mapping[str, CoherenceSeries]
-
-
-def _coerce_jobs(raw_jobs: Any | None) -> int | None:
-    """Normalise ``n_jobs`` values coming from user configuration."""
-
-    try:
-        jobs = None if raw_jobs is None else int(raw_jobs)
-    except (TypeError, ValueError):
-        return None
-    if jobs is not None and jobs <= 0:
-        return None
-    return jobs
-
-
 def _coherence_matrix_to_numpy(
     weight_matrix: Any,
     size: int,
