@@ -5,8 +5,6 @@ from __future__ import annotations
 import threading
 from typing import TYPE_CHECKING, Any, cast
 
-from cachetools import LRUCache
-
 from ..rng import base_seed, cache_enabled
 from ..rng import clear_rng_cache as _clear_rng_cache
 from ..rng import (
@@ -16,6 +14,7 @@ from ..rng import (
 from ..types import NodeId, TNFRGraph
 from ..utils import (
     CacheManager,
+    InstrumentedLRUCache,
     ScopedCounterCache,
     build_cache_manager,
     ensure_node_offset_map,
@@ -26,7 +25,7 @@ if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodeProtocol
 
 # Guarded by the cache lock to ensure thread-safe access. ``seq`` stores
-# per-scope jitter sequence counters in an LRU cache bounded to avoid
+# per-scope jitter sequence counters in an instrumented LRU cache bounded to avoid
 # unbounded memory usage.
 _JITTER_MAX_ENTRIES = 1024
 
@@ -74,8 +73,8 @@ class JitterCache:
         return self._manager
 
     @property
-    def seq(self) -> LRUCache[tuple[int, int], int]:
-        """Expose the sequence cache for tests and diagnostics."""
+    def seq(self) -> InstrumentedLRUCache[tuple[int, int], int]:
+        """Expose the instrumented sequence cache for tests and diagnostics."""
 
         return self._sequence.cache
 
@@ -141,8 +140,8 @@ class JitterCacheManager:
 
     # Convenience passthrough properties
     @property
-    def seq(self) -> LRUCache[tuple[int, int], int]:
-        """Expose the underlying jitter sequence cache."""
+    def seq(self) -> InstrumentedLRUCache[tuple[int, int], int]:
+        """Expose the underlying instrumented jitter sequence cache."""
 
         return self.cache.seq
 
