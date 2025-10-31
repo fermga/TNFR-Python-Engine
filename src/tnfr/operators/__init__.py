@@ -22,6 +22,11 @@ from ..utils import get_nodenx
 from . import definitions as _definitions
 from .grammar import (
     GrammarContext,
+    StructuralGrammarError,
+    RepeatWindowError,
+    MutationPreconditionError,
+    TholClosureError,
+    TransitionCompatibilityError,
     SequenceSyntaxError,
     SequenceValidationResult,
     _gram_state,
@@ -77,6 +82,11 @@ __all__ = [
     "reset_jitter_manager",
     "random_jitter",
     "GrammarContext",
+    "StructuralGrammarError",
+    "RepeatWindowError",
+    "MutationPreconditionError",
+    "TholClosureError",
+    "TransitionCompatibilityError",
     "SequenceValidationResult",
     "SequenceSyntaxError",
     "_gram_state",

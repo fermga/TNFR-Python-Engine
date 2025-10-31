@@ -109,15 +109,40 @@ def _check_oz_to_zhir(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | st
     nd = ctx.G.nodes[n]
     cand_glyph = coerce_glyph(cand)
     glyph_to_name, name_to_glyph = _functional_translators()
-    if glyph_to_name(cand_glyph if isinstance(cand_glyph, Glyph) else cand) == MUTATION:
+    cand_name = glyph_to_name(cand_glyph if isinstance(cand_glyph, Glyph) else cand)
+    if cand_name == MUTATION:
         cfg = ctx.cfg_canon
         win = int(cfg.get("zhir_requires_oz_window", 3))
         dn_min = float(cfg.get("zhir_dnfr_min", 0.05))
         dissonance_glyph = name_to_glyph(DISSONANCE)
         if dissonance_glyph is None:
             return cand
-        if not recent_glyph(nd, dissonance_glyph.value, win) and normalized_dnfr(ctx, nd) < dn_min:
-            return dissonance_glyph
+        norm_dn = normalized_dnfr(ctx, nd)
+        if not recent_glyph(nd, dissonance_glyph.value, win) and norm_dn < dn_min:
+            history: list[str] = []
+            for item in nd.get("glyph_history", ()):
+                if isinstance(item, Glyph):
+                    history.append(item.value)
+                else:
+                    try:
+                        history.append(Glyph(str(item)).value)
+                    except (TypeError, ValueError):
+                        history.append(str(item))
+            cand_label = cand_name or (
+                cand_glyph.value if isinstance(cand_glyph, Glyph) else str(cand)
+            )
+            order = (*history[-win:], cand_label)
+            from ..operators import grammar as _grammar
+
+            raise _grammar.MutationPreconditionError(
+                rule="oz-before-zhir",
+                candidate=cand_label,
+                message=f"mutation {cand_label} requires {DISSONANCE} within window {win}",
+                window=win,
+                threshold=dn_min,
+                order=order,
+                context={"normalized_dnfr": norm_dn},
+            )
     return cand
 
 
@@ -133,14 +158,42 @@ def _check_thol_closure(
         minlen = int(cfg.get("thol_min_len", 2))
         maxlen = int(cfg.get("thol_max_len", 6))
         close_dn = float(cfg.get("thol_close_dnfr", 0.15))
-        if st["thol_len"] >= maxlen or (
+        requires_close = st["thol_len"] >= maxlen or (
             st["thol_len"] >= minlen and normalized_dnfr(ctx, nd) <= close_dn
-        ):
-            name_to_glyph = _functional_translators()[1]
-            high_si = _si(nd) >= float(cfg.get("si_high", 0.66))
-            target = CONTRACTION if high_si else SILENCE
-            glyph = name_to_glyph(target)
-            return glyph if glyph is not None else cand
+        )
+        if requires_close:
+            closers = {CONTRACTION, SILENCE}
+            glyph_to_name = _functional_translators()[0]
+            cand_name = glyph_to_name(coerce_glyph(cand) if isinstance(cand, Glyph) else cand)
+            if cand_name not in closers:
+                history: list[str] = []
+                for item in nd.get("glyph_history", ()):
+                    if isinstance(item, Glyph):
+                        history.append(item.value)
+                    else:
+                        try:
+                            history.append(Glyph(str(item)).value)
+                        except (TypeError, ValueError):
+                            history.append(str(item))
+                cand_label = cand_name or (
+                    coerce_glyph(cand).value if isinstance(coerce_glyph(cand), Glyph) else str(cand)
+                )
+                order = (*history[-st["thol_len"]:], cand_label)
+                from ..operators import grammar as _grammar
+
+                raise _grammar.TholClosureError(
+                    rule="thol-closure",
+                    candidate=cand_label,
+                    message="THOL block requires canonical closure",
+                    window=st["thol_len"],
+                    threshold=close_dn,
+                    order=order,
+                    context={
+                        "thol_min_len": minlen,
+                        "thol_max_len": maxlen,
+                        "si": _si(nd),
+                    },
+                )
     return cand
 
 
@@ -165,11 +218,19 @@ def _check_compatibility(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph |
         if cand_name in allowed:
             return cand
         fb_name = fallback.get(prev_name)
-        if fb_name is None:
-            return cand
-        fb_glyph = name_to_glyph(fb_name)
-        if fb_glyph is not None:
-            return fb_glyph
+        if fb_name is not None:
+            fb_glyph = name_to_glyph(fb_name)
+            if fb_glyph is not None:
+                return fb_glyph
+        order = (prev_name, cand_name or str(cand))
+        from ..operators import grammar as _grammar
+
+        raise _grammar.TransitionCompatibilityError(
+            rule="transition-compatibility",
+            candidate=cand_name or str(cand),
+            message=f"{cand_name or cand} incompatible after {prev_name}",
+            order=order,
+        )
     return cand
 
 

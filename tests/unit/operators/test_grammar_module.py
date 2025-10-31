@@ -17,6 +17,7 @@ from tnfr.config.operator_names import (
 from tnfr.constants import inject_defaults
 from tnfr.operators.grammar import (
     GrammarContext,
+    TholClosureError,
     SequenceSyntaxError,
     SequenceValidationResult,
     apply_glyph_with_grammar,
@@ -138,8 +139,10 @@ def test_enforce_canonical_grammar_respects_thol_state() -> None:
     ctx.cfg_canon.update({"thol_min_len": 0, "thol_max_len": 1, "thol_close_dnfr": 1.0})
     st = nd["_GRAM"]
     st["thol_len"] = 2
-    coerced = enforce_canonical_grammar(G, 0, Glyph.EN, ctx)
-    assert coerced in {Glyph.SHA, Glyph.NUL}
+    with pytest.raises(TholClosureError) as excinfo:
+        enforce_canonical_grammar(G, 0, Glyph.EN, ctx)
+    err = excinfo.value
+    assert err.order[-1] == RECEPTION
 
 
 def test_apply_glyph_with_grammar_invokes_apply(monkeypatch: pytest.MonkeyPatch) -> None:

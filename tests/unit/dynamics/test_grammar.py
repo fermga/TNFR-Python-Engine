@@ -2,6 +2,8 @@
 
 from collections import defaultdict, deque
 
+import pytest
+
 from tnfr.constants import inject_defaults
 from tnfr.config.operator_names import (
     CONTRACTION,
@@ -19,6 +21,9 @@ from tnfr.operators.grammar import (
     enforce_canonical_grammar,
     on_applied_glyph,
     glyph_function_name,
+    MutationPreconditionError,
+    TholClosureError,
+    RepeatWindowError,
 )
 
 
@@ -38,7 +43,13 @@ def test_precondition_oz_to_zhir(graph_canon):
     nd = G.nodes[0]
     nd["glyph_history"] = deque([Glyph.NAV])
     nd["ΔNFR"] = 0.0
-    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == DISSONANCE
+    with pytest.raises(MutationPreconditionError) as excinfo:
+        enforce_canonical_grammar(G, 0, Glyph.ZHIR)
+    err = excinfo.value
+    assert err.window == 3
+    assert err.threshold == pytest.approx(0.05)
+    assert err.order[-1] == MUTATION
+    assert err.candidate == MUTATION
     nd["glyph_history"] = deque([Glyph.OZ])
     assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == MUTATION
 
@@ -54,10 +65,16 @@ def test_thol_closure(graph_canon):
     st["thol_len"] = 2
     nd["ΔNFR"] = 0.0
     nd["Si"] = 0.7
-    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.EN)) == CONTRACTION
+    with pytest.raises(TholClosureError) as excinfo:
+        enforce_canonical_grammar(G, 0, Glyph.EN)
+    err = excinfo.value
+    assert err.window == st["thol_len"]
+    assert err.order[-1] == RECEPTION
+    assert err.candidate == RECEPTION
     nd["Si"] = 0.1
     st["thol_len"] = 2
-    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.EN)) == SILENCE
+    result = enforce_canonical_grammar(G, 0, Glyph.NUL)
+    assert result == Glyph.NUL
 
 
 def test_repeat_window_and_force(graph_canon):
@@ -98,7 +115,12 @@ def test_repeat_invalid_fallback_string(graph_canon):
         "avoid_repeats": ["ZHIR"],
         "fallbacks": {"ZHIR": "NOPE"},
     }
-    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == COHERENCE
+    with pytest.raises(RepeatWindowError) as excinfo:
+        enforce_canonical_grammar(G, 0, Glyph.ZHIR)
+    err = excinfo.value
+    assert err.window == 3
+    assert err.order[-1] == "ZHIR"
+    assert err.candidate == "ZHIR"
 
 
 def test_repeat_invalid_fallback_type(graph_canon):
@@ -113,7 +135,51 @@ def test_repeat_invalid_fallback_type(graph_canon):
         "avoid_repeats": ["ZHIR"],
         "fallbacks": {"ZHIR": obj},
     }
-    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == COHERENCE
+    with pytest.raises(RepeatWindowError):
+        enforce_canonical_grammar(G, 0, Glyph.ZHIR)
+
+
+def test_choose_glyph_records_violation(graph_canon):
+    G = graph_canon()
+    G.add_node(0)
+    inject_defaults(G)
+    nd = G.nodes[0]
+    nd["glyph_history"] = deque([Glyph.NAV])
+    nd["ΔNFR"] = 0.0
+
+    def selector(_, __):
+        return Glyph.ZHIR
+
+    h_al = defaultdict(int)
+    h_en = defaultdict(int)
+
+    with pytest.raises(MutationPreconditionError):
+        _choose_glyph(G, 0, selector, True, h_al, h_en, 10, 10)
+
+    telemetry = G.graph.get("telemetry", {})
+    entry = telemetry.get("grammar_errors", [])[-1]
+    assert entry["node"] == 0
+    assert entry["stage"] == "selector"
+    assert entry["rule"] == "oz-before-zhir"
+    assert entry["candidate"] == MUTATION
+
+
+def test_apply_glyph_with_grammar_records_violation(graph_canon):
+    G = graph_canon()
+    G.add_node(0)
+    inject_defaults(G)
+    nd = G.nodes[0]
+    nd["glyph_history"] = deque([Glyph.NAV])
+    nd["ΔNFR"] = 0.0
+
+    with pytest.raises(MutationPreconditionError):
+        apply_glyph_with_grammar(G, [0], Glyph.ZHIR, 1)
+
+    telemetry = G.graph.get("telemetry", {})
+    entry = telemetry.get("grammar_errors", [])[-1]
+    assert entry["node"] == 0
+    assert entry["stage"] == "apply_glyph"
+    assert entry["candidate"] == MUTATION
 
 
 def test_canonical_enforcement_with_string_history(graph_canon):
