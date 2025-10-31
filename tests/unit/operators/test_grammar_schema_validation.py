@@ -92,6 +92,17 @@ def test_context_invalid_soft_window_raises(monkeypatch):
     assert "window" in message
 
 
+def test_context_invalid_canon_type_raises(monkeypatch):
+    monkeypatch.setenv("TNFR_GRAMMAR_VALIDATE", "1")
+    cfg_soft = DEFAULTS.get("GRAMMAR", {})
+    cfg_canon = "not-a-mapping"
+    with pytest.raises(GrammarConfigurationError) as excinfo:
+        GrammarContext.from_graph(_graph_with_configs(cfg_soft, cfg_canon))
+    message = str(excinfo.value)
+    assert "cfg_canon" in message
+    assert "mapping" in message
+
+
 def test_validation_can_be_disabled(monkeypatch):
     monkeypatch.setenv("TNFR_GRAMMAR_VALIDATE", "0")
     cfg_soft = {"window": -3}
