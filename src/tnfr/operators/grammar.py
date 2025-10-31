@@ -20,7 +20,6 @@ from ..config.operator_names import (
 from ..constants import DEFAULTS, get_param
 from ..types import Glyph, NodeId, TNFRGraph
 from ..validation import rules as _rules
-from ..validation.compatibility import CANON_COMPAT
 from ..validation.soft_filters import soft_grammar_filters
 from .registry import OPERATORS
 
@@ -34,7 +33,75 @@ __all__ = [
     "on_applied_glyph",
     "parse_sequence",
     "validate_sequence",
+    "FUNCTION_TO_GLYPH",
+    "GLYPH_TO_FUNCTION",
+    "glyph_function_name",
+    "function_name_to_glyph",
 ]
+
+
+# Structural mapping ---------------------------------------------------------
+
+# NOTE: Glyph comments describe the structural function following TNFR canon
+# so downstream modules can reason in terms of operator semantics rather than
+# internal glyph codes. This mapping is the single source of truth for
+# translating between glyph identifiers and the structural operators defined
+# in :mod:`tnfr.config.operator_names`.
+GLYPH_TO_FUNCTION: dict[Glyph, str] = {
+    Glyph.AL: EMISSION,  # Emission — seeds coherence outward from the node.
+    Glyph.EN: RECEPTION,  # Reception — anchors inbound energy into the EPI.
+    Glyph.IL: COHERENCE,  # Coherence — compresses ΔNFR drift to stabilise C(t).
+    Glyph.OZ: DISSONANCE,  # Dissonance — injects controlled tension for probes.
+    Glyph.UM: COUPLING,  # Coupling — synchronises bidirectional coherence links.
+    Glyph.RA: RESONANCE,  # Resonance — amplifies aligned structural frequency.
+    Glyph.SHA: SILENCE,  # Silence — suspends reorganisation while preserving form.
+    Glyph.VAL: EXPANSION,  # Expansion — dilates the structure to explore volume.
+    Glyph.NUL: CONTRACTION,  # Contraction — concentrates trajectories into the core.
+    Glyph.THOL: SELF_ORGANIZATION,  # Self-organisation — spawns autonomous cascades.
+    Glyph.ZHIR: MUTATION,  # Mutation — pivots the node across structural thresholds.
+    Glyph.NAV: TRANSITION,  # Transition — guides controlled regime hand-offs.
+    Glyph.REMESH: RECURSIVITY,  # Recursivity — echoes patterns across nested EPIs.
+}
+
+FUNCTION_TO_GLYPH: dict[str, Glyph] = {name: glyph for glyph, name in GLYPH_TO_FUNCTION.items()}
+
+
+def glyph_function_name(val: Glyph | str | None, *, default: str | None = None) -> str | None:
+    """Return the structural operator name corresponding to ``val``.
+
+    Parameters
+    ----------
+    val:
+        Glyph enumeration, glyph code or structural operator identifier.
+    default:
+        Value returned when ``val`` cannot be translated.
+    """
+
+    if val is None:
+        return default
+    if isinstance(val, Glyph):
+        return GLYPH_TO_FUNCTION.get(val, default)
+    try:
+        glyph = Glyph(str(val))
+    except (TypeError, ValueError):
+        canon = canonical_operator_name(str(val))
+        return canon if canon in FUNCTION_TO_GLYPH else default
+    else:
+        return GLYPH_TO_FUNCTION.get(glyph, default)
+
+
+def function_name_to_glyph(val: str | Glyph | None, *, default: Glyph | None = None) -> Glyph | None:
+    """Return the :class:`Glyph` associated with the structural identifier ``val``."""
+
+    if val is None:
+        return default
+    if isinstance(val, Glyph):
+        return val
+    try:
+        return Glyph(str(val))
+    except (TypeError, ValueError):
+        canon = canonical_operator_name(str(val))
+        return FUNCTION_TO_GLYPH.get(canon, default)
 
 
 @dataclass(slots=True)
@@ -271,6 +338,8 @@ def enforce_canonical_grammar(
     raw_cand = cand
     cand = _rules.coerce_glyph(cand)
     input_was_str = isinstance(raw_cand, str)
+
+    from ..validation.compatibility import CANON_COMPAT
 
     if not isinstance(cand, Glyph) or cand not in CANON_COMPAT:
         return raw_cand if input_was_str else cand

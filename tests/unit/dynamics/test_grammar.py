@@ -3,12 +3,22 @@
 from collections import defaultdict, deque
 
 from tnfr.constants import inject_defaults
+from tnfr.config.operator_names import (
+    CONTRACTION,
+    DISSONANCE,
+    MUTATION,
+    RECEPTION,
+    SILENCE,
+    TRANSITION,
+    COHERENCE,
+)
 from tnfr.dynamics import _choose_glyph
 from tnfr.types import Glyph
 from tnfr.operators.grammar import (
     apply_glyph_with_grammar,
     enforce_canonical_grammar,
     on_applied_glyph,
+    glyph_function_name,
 )
 
 
@@ -18,7 +28,7 @@ def test_compatibility_fallback(graph_canon):
     inject_defaults(G)
     nd = G.nodes[0]
     nd["glyph_history"] = deque([Glyph.AL])
-    assert enforce_canonical_grammar(G, 0, Glyph.IL) == Glyph.EN
+    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.IL)) == RECEPTION
 
 
 def test_precondition_oz_to_zhir(graph_canon):
@@ -28,9 +38,9 @@ def test_precondition_oz_to_zhir(graph_canon):
     nd = G.nodes[0]
     nd["glyph_history"] = deque([Glyph.NAV])
     nd["ΔNFR"] = 0.0
-    assert enforce_canonical_grammar(G, 0, Glyph.ZHIR) == Glyph.OZ
+    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == DISSONANCE
     nd["glyph_history"] = deque([Glyph.OZ])
-    assert enforce_canonical_grammar(G, 0, Glyph.ZHIR) == Glyph.ZHIR
+    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == MUTATION
 
 
 def test_thol_closure(graph_canon):
@@ -44,10 +54,10 @@ def test_thol_closure(graph_canon):
     st["thol_len"] = 2
     nd["ΔNFR"] = 0.0
     nd["Si"] = 0.7
-    assert enforce_canonical_grammar(G, 0, Glyph.EN) == Glyph.NUL
+    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.EN)) == CONTRACTION
     nd["Si"] = 0.1
     st["thol_len"] = 2
-    assert enforce_canonical_grammar(G, 0, Glyph.EN) == Glyph.SHA
+    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.EN)) == SILENCE
 
 
 def test_repeat_window_and_force(graph_canon):
@@ -67,14 +77,14 @@ def test_repeat_window_and_force(graph_canon):
 
     nd["ΔNFR"] = 0.0
     nd["d2EPI_dt2"] = 0.0
-    assert enforce_canonical_grammar(G, 0, Glyph.ZHIR) == Glyph.NAV
+    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == TRANSITION
 
     nd["ΔNFR"] = 0.6
-    assert enforce_canonical_grammar(G, 0, Glyph.ZHIR) == Glyph.ZHIR
+    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == MUTATION
 
     nd["ΔNFR"] = 0.0
     nd["d2EPI_dt2"] = 0.9
-    assert enforce_canonical_grammar(G, 0, Glyph.ZHIR) == Glyph.ZHIR
+    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == MUTATION
 
 
 def test_repeat_invalid_fallback_string(graph_canon):
@@ -88,7 +98,7 @@ def test_repeat_invalid_fallback_string(graph_canon):
         "avoid_repeats": ["ZHIR"],
         "fallbacks": {"ZHIR": "NOPE"},
     }
-    assert enforce_canonical_grammar(G, 0, Glyph.ZHIR) == Glyph.IL
+    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == COHERENCE
 
 
 def test_repeat_invalid_fallback_type(graph_canon):
@@ -103,7 +113,7 @@ def test_repeat_invalid_fallback_type(graph_canon):
         "avoid_repeats": ["ZHIR"],
         "fallbacks": {"ZHIR": obj},
     }
-    assert enforce_canonical_grammar(G, 0, Glyph.ZHIR) == Glyph.IL
+    assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == COHERENCE
 
 
 def test_canonical_enforcement_with_string_history(graph_canon):
@@ -124,7 +134,7 @@ def test_canonical_enforcement_with_string_history(graph_canon):
     result = _choose_glyph(G, 0, selector, True, h_al, h_en, 10, 10)
 
     assert isinstance(result, str)
-    assert result == Glyph.EN.value
+    assert glyph_function_name(result) == RECEPTION
 
 
 def test_lag_counters_enforced(graph_canon):
@@ -172,8 +182,8 @@ def test_apply_glyph_with_grammar_multiple_nodes(graph_canon):
 
     apply_glyph_with_grammar(G, [0, 1], Glyph.ZHIR, 1)
 
-    assert G.nodes[0]["glyph_history"][-1] == Glyph.ZHIR
-    assert G.nodes[1]["glyph_history"][-1] == Glyph.OZ
+    assert glyph_function_name(G.nodes[0]["glyph_history"][-1]) == MUTATION
+    assert glyph_function_name(G.nodes[1]["glyph_history"][-1]) == DISSONANCE
 
 
 def test_apply_glyph_with_grammar_accepts_iterables(graph_canon):
@@ -183,8 +193,8 @@ def test_apply_glyph_with_grammar_accepts_iterables(graph_canon):
     G.nodes[0]["glyph_history"] = deque([Glyph.OZ])
     G.nodes[1]["glyph_history"] = deque([Glyph.OZ])
     apply_glyph_with_grammar(G, G.nodes(), Glyph.ZHIR, 1)
-    assert G.nodes[0]["glyph_history"][-1] == Glyph.ZHIR
-    assert G.nodes[1]["glyph_history"][-1] == Glyph.ZHIR
+    assert glyph_function_name(G.nodes[0]["glyph_history"][-1]) == MUTATION
+    assert glyph_function_name(G.nodes[1]["glyph_history"][-1]) == MUTATION
 
     G2 = graph_canon()
     G2.add_nodes_from([0, 1])
@@ -192,8 +202,8 @@ def test_apply_glyph_with_grammar_accepts_iterables(graph_canon):
     G2.nodes[0]["glyph_history"] = deque([Glyph.OZ])
     G2.nodes[1]["glyph_history"] = deque([Glyph.OZ])
     apply_glyph_with_grammar(G2, (n for n in G2.nodes()), Glyph.ZHIR, 1)
-    assert G2.nodes[0]["glyph_history"][-1] == Glyph.ZHIR
-    assert G2.nodes[1]["glyph_history"][-1] == Glyph.ZHIR
+    assert glyph_function_name(G2.nodes[0]["glyph_history"][-1]) == MUTATION
+    assert glyph_function_name(G2.nodes[1]["glyph_history"][-1]) == MUTATION
 
 
 def test_apply_glyph_with_grammar_defaults_window_from_graph(graph_canon, monkeypatch):

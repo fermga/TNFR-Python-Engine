@@ -7,11 +7,12 @@ from collections import deque
 import pytest
 
 from tnfr.constants import get_aliases
+from tnfr.config.operator_names import COHERENCE, EXPANSION
 from tnfr.types import Glyph
 from tnfr.validation import rules
 from tnfr.validation.soft_filters import acceleration_norm
 from tnfr.validation.compatibility import CANON_FALLBACK
-from tnfr.operators.grammar import GrammarContext
+from tnfr.operators.grammar import GrammarContext, glyph_function_name
 
 
 @pytest.fixture
@@ -75,7 +76,9 @@ def test_coerce_glyph_and_invalid_values():
 def test_glyph_fallback_prefers_custom_and_canon():
     fallbacks = {"OZ": "VAL", "RA": Glyph.IL, "??": "??"}
 
-    assert rules.glyph_fallback("OZ", fallbacks) == Glyph.VAL
-    assert rules.glyph_fallback("RA", fallbacks) == Glyph.IL
-    assert rules.glyph_fallback("SHA", fallbacks) == CANON_FALLBACK[Glyph.SHA]
+    assert glyph_function_name(rules.glyph_fallback("OZ", fallbacks)) == EXPANSION
+    assert glyph_function_name(rules.glyph_fallback("RA", fallbacks)) == COHERENCE
+    assert glyph_function_name(rules.glyph_fallback("SHA", fallbacks)) == glyph_function_name(
+        CANON_FALLBACK[Glyph.SHA]
+    )
     assert rules.glyph_fallback("??", fallbacks) == "??"

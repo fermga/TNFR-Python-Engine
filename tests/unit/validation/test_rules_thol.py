@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from tnfr.types import Glyph
-from tnfr.operators.grammar import GrammarContext
+from tnfr.config.operator_names import CONTRACTION, RESONANCE, SILENCE
+from tnfr.operators.grammar import GrammarContext, glyph_function_name
 from tnfr.validation import rules
 
 
@@ -51,7 +52,7 @@ def test_thol_closure_waits_until_min_length(graph_canon):
 
     cand = rules._check_thol_closure(ctx, node_id, Glyph.RA, state)
 
-    assert cand == Glyph.RA
+    assert glyph_function_name(cand) == RESONANCE
     assert state["thol_len"] == 1
 
 
@@ -71,7 +72,7 @@ def test_thol_closure_triggers_at_max_length_with_high_si(graph_canon):
 
     glyph = rules._check_thol_closure(ctx, node_id, Glyph.RA, state)
 
-    assert glyph == Glyph.NUL
+    assert glyph_function_name(glyph) == CONTRACTION
     assert state["thol_len"] == 5
 
 
@@ -91,7 +92,7 @@ def test_thol_closure_low_dnfr_uses_sha_when_si_below_threshold(graph_canon):
 
     glyph = rules._check_thol_closure(ctx, node_id, Glyph.RA, state)
 
-    assert glyph == Glyph.SHA
+    assert glyph_function_name(glyph) == SILENCE
     assert state["thol_len"] == 3
 
 
@@ -111,5 +112,5 @@ def test_thol_closure_low_dnfr_with_high_si_prefers_nul(graph_canon):
 
     glyph = rules._check_thol_closure(ctx, node_id, Glyph.RA, state)
 
-    assert glyph == Glyph.NUL
+    assert glyph_function_name(glyph) == CONTRACTION
     assert state["thol_len"] == 3
