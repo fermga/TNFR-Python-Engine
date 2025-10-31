@@ -17,7 +17,7 @@ from ..metrics.sense_index import compute_Si
 from ..operators import apply_remesh_if_globally_stable
 from ..telemetry import publish_graph_cache_metrics
 from ..types import HistoryState, NodeId, TNFRGraph
-from ..validation.runtime import apply_canonical_clamps, validate_canon
+from ..validation import apply_canonical_clamps, validate_canon
 from . import adaptation, coordination, integrators, selectors
 from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
 from .dnfr import default_compute_delta_nfr

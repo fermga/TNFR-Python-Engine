@@ -42,7 +42,7 @@ from ..utils import (
 )
 from .arguments import _args_to_dict
 from .utils import _parse_cli_variants
-from ..validation.runtime import validate_canon
+from ..validation import validate_canon
 
 logger = get_logger(__name__)
 

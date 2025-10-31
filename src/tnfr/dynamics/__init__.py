@@ -65,8 +65,12 @@ from ..metrics.sense_index import compute_Si
 from ..operators import apply_glyph
 from ..types import GlyphCode
 from ..utils import get_numpy
-from ..validation import enforce_canonical_grammar, on_applied_glyph
-from ..validation.runtime import apply_canonical_clamps, validate_canon
+from ..validation import (
+    apply_canonical_clamps,
+    enforce_canonical_grammar,
+    on_applied_glyph,
+    validate_canon,
+)
 from . import coordination, dnfr, integrators
 from .adaptation import adapt_vf_by_coherence
 from .aliases import (
