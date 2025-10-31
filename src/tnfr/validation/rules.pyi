@@ -1,6 +1,8 @@
 from collections.abc import Callable, Mapping
 from typing import Any, TypeVar
 
+from typing import Any, Mapping, TypeVar
+
 from ..types import Glyph, NodeId
 from .grammar import GrammarContext
 
@@ -11,9 +13,6 @@ __all__ = (
     "normalized_dnfr",
     "_norm_attr",
     "_si",
-    "_accel_norm",
-    "_check_repeats",
-    "_maybe_force",
     "_check_oz_to_zhir",
     "_check_thol_closure",
     "_check_compatibility",
@@ -39,23 +38,7 @@ def _norm_attr(
 def _si(nd: Mapping[str, Any]) -> float: ...
 
 
-def _accel_norm(ctx: GrammarContext, nd: Mapping[str, Any]) -> float: ...
-
-
 def normalized_dnfr(ctx: GrammarContext, nd: Mapping[str, Any]) -> float: ...
-
-
-def _check_repeats(ctx: GrammarContext, n: NodeId, cand: Glyph | str) -> Glyph | str: ...
-
-
-def _maybe_force(
-    ctx: GrammarContext,
-    n: NodeId,
-    cand: Glyph | str,
-    original: Glyph | str,
-    accessor: Callable[[GrammarContext, Mapping[str, Any]], float],
-    key: str,
-) -> Glyph | str: ...
 
 
 def _check_oz_to_zhir(ctx: GrammarContext, n: NodeId, cand: Glyph | str) -> Glyph | str: ...

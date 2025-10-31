@@ -7,6 +7,7 @@ import networkx as nx
 from tnfr.constants import inject_defaults
 from tnfr.types import Glyph
 from tnfr.validation import rules as rules_mod
+from tnfr.validation.soft_filters import maybe_force
 from tnfr.validation.compatibility import CANON_COMPAT, CANON_FALLBACK
 from tnfr.validation.grammar import GrammarContext
 
@@ -27,7 +28,7 @@ def test_maybe_force_recovers_original_when_dnfr_high():
     nd["ΔNFR"] = 0.6
     ctx = GrammarContext.from_graph(G)
 
-    forced = rules_mod._maybe_force(
+    forced = maybe_force(
         ctx,
         0,
         Glyph.NAV,

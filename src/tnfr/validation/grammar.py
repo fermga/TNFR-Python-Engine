@@ -10,6 +10,7 @@ from ..constants import DEFAULTS, get_param
 from ..operators import apply_glyph
 from ..types import Glyph, NodeId, TNFRGraph
 from . import rules as _rules
+from .soft_filters import soft_grammar_filters
 from .compatibility import CANON_COMPAT
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
@@ -87,15 +88,7 @@ def enforce_canonical_grammar(
     if not isinstance(cand, Glyph) or cand not in CANON_COMPAT:
         return raw_cand if input_was_str else cand
 
-    original = cand
-    cand = _rules._check_repeats(ctx, n, cand)
-
-    cand = _rules._maybe_force(
-        ctx, n, cand, original, _rules.normalized_dnfr, "force_dnfr"
-    )
-    cand = _rules._maybe_force(
-        ctx, n, cand, original, _rules._accel_norm, "force_accel"
-    )
+    cand = soft_grammar_filters(ctx, n, cand)
     cand = _rules._check_oz_to_zhir(ctx, n, cand)
     cand = _rules._check_thol_closure(ctx, n, cand, st)
     cand = _rules._check_compatibility(ctx, n, cand)

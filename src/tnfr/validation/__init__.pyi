@@ -11,6 +11,7 @@ from .grammar import (
 )
 from .graph import GRAPH_VALIDATORS, run_validators, validate_window
 from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr
+from .soft_filters import (acceleration_norm, check_repeats, maybe_force, soft_grammar_filters)
 from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon
 from .spectral import NFRValidator
 from .syntax import validate_sequence
@@ -46,6 +47,10 @@ __all__ = (
     "glyph_fallback",
     "normalized_dnfr",
     "get_norm",
+    "acceleration_norm",
+    "check_repeats",
+    "maybe_force",
+    "soft_grammar_filters",
     "CANON_COMPAT",
     "CANON_FALLBACK",
     "GraphCanonicalValidator",
