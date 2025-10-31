@@ -100,6 +100,36 @@ threshold compliance, and νf positivity via :mod:`tnfr.mathematics.runtime`, an
 publish the summary into ``G.graph['telemetry']['math_engine']`` as well as the
 rolling history.
 
+When metrics are enabled the runtime also records a νf telemetry snapshot that
+bridges canonical ``Hz_str`` estimates with the configured ``Hz`` scale factor.
+Override the conversion factor by setting ``HZ_STR_BRIDGE`` on the graph (or via
+:func:`tnfr.constants.merge_overrides`) to surface both structural and standard
+units in the emitted payload.  A representative telemetry entry emitted by the
+runtime looks like:
+
+```json
+{
+  "telemetry": {
+    "nu_f": {
+      "total_reorganisations": 12,
+      "total_duration": 2.0,
+      "rate_hz_str": 6.0,
+      "rate_hz": 10.5,
+      "variance_hz_str": 3.0,
+      "variance_hz": 9.1875,
+      "confidence_level": 0.95,
+      "ci_hz_str": {"lower": 3.6, "upper": 8.4},
+      "ci_hz": {"lower": 6.3, "upper": 14.7},
+      "bridge": 1.75
+    }
+  }
+}
+```
+
+The runtime keeps these snapshots synchronized with the metrics history so that
+tests and dashboards can assert both structural-frequency and bridged-frequency
+confidence intervals without recomputing the estimators.
+
 ## 3. Environment feature flags
 
 Mathematics diagnostics respect three environment variables.  They are read via
