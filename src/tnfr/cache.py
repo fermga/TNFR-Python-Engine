@@ -1,10 +1,12 @@
-"""Compatibility proxy that re-exports :mod:`tnfr.utils.cache`."""
+"""Legacy cache helpers module.
+
+This compatibility shim was removed in favour of :mod:`tnfr.utils.cache`.
+Importing :mod:`tnfr.cache` now fails with a clear message so that callers
+update their imports instead of relying on the removed re-export behaviour.
+"""
 
 from __future__ import annotations
 
-from tnfr.utils.cache import *  # noqa: F401,F403
-from tnfr.utils.cache import __all__ as _cache_all
-
-__all__ = tuple(_cache_all)
-
-del _cache_all
+raise ImportError(
+    "`tnfr.cache` was removed. Import helpers from `tnfr.utils.cache` instead."
+)

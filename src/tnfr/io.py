@@ -1,10 +1,12 @@
-"""Compatibility proxy that re-exports :mod:`tnfr.utils.io`."""
+"""Legacy JSON utilities module.
+
+The backwards-compatible re-export was removed; use :mod:`tnfr.utils.io`
+directly. Importing :mod:`tnfr.io` now raises an :class:`ImportError` with a
+clear migration hint.
+"""
 
 from __future__ import annotations
 
-from tnfr.utils.io import *  # noqa: F401,F403
-from tnfr.utils.io import __all__ as _io_all
-
-__all__ = tuple(_io_all)
-
-del _io_all
+raise ImportError(
+    "`tnfr.io` was removed. Import helpers from `tnfr.utils.io` instead."
+)
