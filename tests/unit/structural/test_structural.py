@@ -13,7 +13,16 @@ from tnfr.config.operator_names import (
     SILENCE,
     TRANSITION,
 )
-from tnfr.constants import EPI_PRIMARY
+from tnfr.constants import (
+    D2EPI_PRIMARY,
+    DNFR_PRIMARY,
+    EPI_KIND_PRIMARY,
+    EPI_PRIMARY,
+    THETA_PRIMARY,
+    VF_PRIMARY,
+    inject_defaults,
+)
+from tnfr.mathematics import BasicStateProjector, NFRValidator
 from tnfr.structural import (
     Coherence,
     Contraction,
@@ -29,6 +38,7 @@ from tnfr.structural import (
     SelfOrganization,
     Silence,
     Transition,
+    create_math_nfr,
     create_nfr,
     validate_sequence,
 )
@@ -241,3 +251,86 @@ def test_operator_requires_glyph_assignment(graph_canon) -> None:
         op(graph, target)
 
     assert str(excinfo.value) == "Operator without assigned glyph"
+
+
+def test_create_math_nfr_records_metrics(structural_tolerances: dict[str, float]) -> None:
+    G, node = create_math_nfr(
+        "math-node",
+        epi=0.42,
+        vf=1.15,
+        theta=0.12,
+        dimension=3,
+    )
+
+    math_cfg = G.graph["MATH_ENGINE"]
+    metrics = G.nodes[node]["math_metrics"]
+    summary = G.nodes[node]["math_summary"]
+    context = G.nodes[node]["math_context"]
+
+    assert math_cfg["enabled"] is True
+    assert isinstance(math_cfg["validator"], NFRValidator)
+    assert isinstance(math_cfg["state_projector"], BasicStateProjector)
+    assert metrics["normalized"] is True
+    assert metrics["coherence_passed"] is True
+    assert metrics["frequency_passed"] is True
+
+    hilbert_space = math_cfg["hilbert_space"]
+    state_projector = math_cfg["state_projector"]
+    state = state_projector(
+        epi=G.nodes[node][EPI_PRIMARY],
+        nu_f=G.nodes[node][VF_PRIMARY],
+        theta=G.nodes[node][THETA_PRIMARY],
+        dim=hilbert_space.dimension,
+    )
+    outcome = math_cfg["validator"].validate(
+        state,
+        enforce_frequency_positivity=True,
+    )
+
+    coherence_summary = outcome.summary["coherence"]
+    frequency_summary = outcome.summary["frequency"]
+    norm_expected = float(hilbert_space.norm(state))
+
+    assert metrics["norm"] == pytest.approx(
+        norm_expected,
+        rel=structural_tolerances["rtol"],
+        abs=structural_tolerances["atol"],
+    )
+    assert metrics["coherence_value"] == pytest.approx(
+        float(coherence_summary["value"]),
+        rel=structural_tolerances["rtol"],
+        abs=structural_tolerances["atol"],
+    )
+    assert metrics["coherence_threshold"] == pytest.approx(
+        float(coherence_summary["threshold"]),
+        rel=structural_tolerances["rtol"],
+        abs=structural_tolerances["atol"],
+    )
+    assert metrics["frequency_value"] == pytest.approx(
+        float(frequency_summary["value"]),
+        rel=structural_tolerances["rtol"],
+        abs=structural_tolerances["atol"],
+    )
+    assert metrics["frequency_spectrum_min"] == pytest.approx(
+        float(frequency_summary["spectrum_min"]),
+        rel=structural_tolerances["rtol"],
+        abs=structural_tolerances["atol"],
+    )
+    assert summary["coherence"]["passed"] is True
+    assert summary["frequency"]["passed"] is True
+    assert context["hilbert_space"] is hilbert_space
+    assert context["coherence_operator"] is math_cfg["coherence_operator"]
+    assert context["frequency_operator"] is math_cfg["frequency_operator"]
+    assert context["coherence_threshold"] == metrics["coherence_threshold"]
+
+
+def test_create_math_nfr_merges_existing_math_config() -> None:
+    base_graph = nx.Graph()
+    base_graph.graph["MATH_ENGINE"] = {"enabled": False, "custom": "keep"}
+
+    G, node = create_math_nfr("with-existing", graph=base_graph)
+
+    assert node in G
+    math_cfg = G.graph["MATH_ENGINE"]
+    assert math_cfg["enabled"] is True
+    assert math_cfg["custom"] == "keep"
