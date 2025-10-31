@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import numbers
 import sys
 from collections.abc import Sequence
 from ..alias import get_attr
@@ -27,23 +26,7 @@ NodeData = NodeAttrMap
 AliasSequence = Sequence[str]
 """Sequence of accepted attribute aliases."""
 
-__all__ = ("validate_window", "run_validators", "GRAPH_VALIDATORS")
-
-
-def validate_window(window: int, *, positive: bool = False) -> int:
-    """Validate ``window`` as an ``int`` and return it.
-
-    Non-integer values raise :class:`TypeError`. When ``positive`` is ``True``
-    the value must be strictly greater than zero; otherwise it may be zero.
-    Negative values always raise :class:`ValueError`.
-    """
-
-    if isinstance(window, bool) or not isinstance(window, numbers.Integral):
-        raise TypeError("'window' must be an integer")
-    if window < 0 or (positive and window == 0):
-        kind = "positive" if positive else "non-negative"
-        raise ValueError(f"'window'={window} must be {kind}")
-    return int(window)
+__all__ = ("run_validators", "GRAPH_VALIDATORS")
 
 
 def _require_attr(

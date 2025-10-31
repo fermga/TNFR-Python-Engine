@@ -11,10 +11,7 @@ from .constants import get_param, normalise_state_token
 from .glyph_runtime import last_glyph
 from .types import TNFRGraph
 from .utils import ensure_collection, get_logger
-def _validate_window(window: int) -> int:
-    from .validation import validate_window
-
-    return validate_window(window)
+from .validation.window import validate_window
 
 logger = get_logger(__name__)
 
@@ -34,7 +31,7 @@ def _ensure_history(
 ) -> tuple[int, deque[str] | None]:
     """Validate ``window`` and ensure ``nd['glyph_history']`` deque."""
 
-    v_window = _validate_window(window)
+    v_window = validate_window(window)
     if v_window == 0 and not create_zero:
         return v_window, None
     hist = nd.setdefault("glyph_history", deque(maxlen=v_window))

@@ -43,7 +43,8 @@ from .grammar import (
     enforce_canonical_grammar,
     on_applied_glyph,
 )
-from .graph import GRAPH_VALIDATORS, run_validators, validate_window
+from .graph import GRAPH_VALIDATORS, run_validators
+from .window import validate_window
 from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon
 from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr
 from .soft_filters import (
