@@ -10,6 +10,7 @@ import pytest
 np = pytest.importorskip("numpy")
 
 from tnfr.constants import merge_overrides
+from tnfr.dynamics.runtime import _run_after_callbacks
 from tnfr.telemetry.nu_f import ensure_nu_f_telemetry
 
 
@@ -78,3 +79,44 @@ def test_nu_f_zero_counts_retains_zero_rate(graph_canon) -> None:
     assert snapshot.rate_hz == pytest.approx(0.0)
     assert snapshot.ci_lower_hz == pytest.approx(0.0)
     assert snapshot.ci_upper_hz == pytest.approx(0.0)
+
+
+def test_nu_f_history_survives_runtime_summary(graph_canon) -> None:
+    """History snapshots must remain accessible alongside runtime summaries."""
+
+    G = graph_canon()
+    accumulator = ensure_nu_f_telemetry(G)
+
+    first_snapshot = accumulator.record_counts(3, 1.0, graph=G)
+    second_snapshot = accumulator.record_counts(5, 2.0, graph=G)
+
+    telemetry = G.graph.get("telemetry")
+    assert isinstance(telemetry, dict)
+
+    history = telemetry.get("nu_f_history")
+    assert isinstance(history, list)
+    assert history == [first_snapshot.as_payload(), second_snapshot.as_payload()]
+
+    telemetry["nu_f_snapshot"] = second_snapshot.as_payload()
+    telemetry["nu_f_bridge"] = 1.0
+
+    _run_after_callbacks(G, step_idx=2)
+
+    history_after_callbacks = telemetry.get("nu_f_history")
+    assert isinstance(history_after_callbacks, list)
+    assert history_after_callbacks == history
+
+    summary = telemetry.get("nu_f")
+    assert isinstance(summary, dict)
+    assert summary["total_reorganisations"] == second_snapshot.total_reorganisations
+    assert summary["total_duration"] == second_snapshot.total_duration
+    assert summary["rate_hz_str"] == second_snapshot.rate_hz_str
+
+    third_snapshot = accumulator.record_counts(2, 1.5, graph=G)
+
+    history_final = telemetry.get("nu_f_history")
+    assert isinstance(history_final, list)
+    assert history_final[-1] == third_snapshot.as_payload()
+    assert len(history_final) == 3
+
+    assert telemetry.get("nu_f") is summary

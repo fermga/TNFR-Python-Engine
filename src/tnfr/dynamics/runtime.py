@@ -451,6 +451,10 @@ def _run_after_callbacks(G, *, step_idx: int) -> None:
 
     telemetry = G.graph.get("telemetry")
     if isinstance(telemetry, MutableMapping):
+        history = telemetry.get("nu_f")
+        history_key = "nu_f_history"
+        if isinstance(history, list) and history_key not in telemetry:
+            telemetry[history_key] = history
         payload = telemetry.get("nu_f_snapshot")
         if isinstance(payload, Mapping):
             bridge_raw = telemetry.get("nu_f_bridge")

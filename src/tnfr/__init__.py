@@ -106,21 +106,21 @@ EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
             "tnfr.units",
             "tnfr.constants",
         ),
-        "third_party": (),
+        "third_party": ("networkx",),
     },
     "hz_str_to_hz": {
         "submodules": (
             "tnfr.units",
             "tnfr.constants",
         ),
-        "third_party": (),
+        "third_party": ("networkx",),
     },
     "hz_to_hz_str": {
         "submodules": (
             "tnfr.units",
             "tnfr.constants",
         ),
-        "third_party": (),
+        "third_party": ("networkx",),
     },
 }
 
