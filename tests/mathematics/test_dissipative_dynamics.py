@@ -59,6 +59,33 @@ def test_lindblad_generator_preserves_trace(hilbert_qubit: HilbertSpace) -> None
     assert np.max(eigenvalues.real) <= 1e-9
 
 
+def test_lindblad_generator_rejects_dim_mismatch_with_hamiltonian(
+    hilbert_qubit: HilbertSpace,
+) -> None:
+    dim = hilbert_qubit.dimension
+    hamiltonian = np.zeros((dim, dim), dtype=np.complex128)
+
+    with pytest.raises(ValueError, match="Provided dim is inconsistent"):
+        build_lindblad_delta_nfr(
+            hamiltonian=hamiltonian,
+            collapse_operators=[np.zeros_like(hamiltonian)],
+            dim=dim + 1,
+        )
+
+
+def test_lindblad_generator_rejects_dim_mismatch_with_collapse_operator(
+    hilbert_qubit: HilbertSpace,
+) -> None:
+    dim = hilbert_qubit.dimension
+    lowering = np.array([[0.0, 1.0], [0.0, 0.0]], dtype=np.complex128)
+
+    with pytest.raises(ValueError, match="Provided dim is inconsistent"):
+        build_lindblad_delta_nfr(
+            collapse_operators=[lowering],
+            dim=dim + 1,
+        )
+
+
 def test_contractive_engine_preserves_trace_and_contractivity(hilbert_qubit: HilbertSpace) -> None:
     gamma = 0.4
     lowering = np.array([[0.0, 1.0], [0.0, 0.0]], dtype=np.complex128)
