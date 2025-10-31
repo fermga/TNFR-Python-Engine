@@ -1,4 +1,7 @@
+import importlib
 import logging
+import sys
+import warnings
 
 import pytest
 
@@ -39,6 +42,18 @@ def test_lazy_orjson_import(monkeypatch):
     assert calls["n"] == 1
     json_utils.json_dumps({})
     assert calls["n"] == 2
+
+
+def test_legacy_io_module_proxy(monkeypatch):
+    module_name = "tnfr.io"
+    sys.modules.pop(module_name, None)
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        legacy = importlib.import_module(module_name)
+
+    assert not caught
+    assert legacy.json_dumps is json_utils.json_dumps
 
 
 def test_warns_once_per_combo(monkeypatch, caplog):

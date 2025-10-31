@@ -54,6 +54,11 @@ cached_import.cache_clear()
 prune_failed_imports()
 ```
 
+> **Compatibility note:** The legacy modules :mod:`tnfr.cache` and :mod:`tnfr.io` remain
+> importable as shims that re-export the helpers from :mod:`tnfr.utils.cache` and
+> :mod:`tnfr.utils.io`. Existing code keeps working, but new integrations should migrate to
+> the :mod:`tnfr.utils` entry points directly.
+
 ### Persistent cache layers
 
 `tnfr.utils.cache.build_cache_manager` now hydrates multi-layer caches from a
