@@ -6,17 +6,26 @@ import math
 from collections.abc import Mapping, MutableMapping, MutableSequence
 from typing import Any, cast
 
+import numpy as np
+
 from ..alias import (
     get_attr,
     get_theta_attr,
     multi_recompute_abs_max,
     set_attr,
+    set_attr_generic,
     set_theta,
     set_theta_attr,
     set_vf,
 )
 from ..constants import DEFAULTS
-from ..types import NodeId, TNFRGraph
+from ..types import (
+    NodeId,
+    TNFRGraph,
+    ZERO_BEPI_STORAGE,
+    ensure_bepi,
+    serialize_bepi,
+)
 from ..utils import clamp, ensure_collection
 from . import ValidationOutcome, Validator
 from .graph import run_validators
@@ -29,6 +38,40 @@ __all__ = (
     "apply_canonical_clamps",
     "validate_canon",
 )
+
+
+def _max_bepi_magnitude(value: Any) -> float:
+    element = ensure_bepi(value)
+    mags = [
+        float(np.max(np.abs(element.f_continuous))) if element.f_continuous.size else 0.0,
+        float(np.max(np.abs(element.a_discrete))) if element.a_discrete.size else 0.0,
+    ]
+    return float(max(mags)) if mags else 0.0
+
+
+def _clamp_component(values: Any, lower: float, upper: float) -> np.ndarray:
+    array = np.asarray(values, dtype=np.complex128)
+    if array.size == 0:
+        return array
+    magnitudes = np.abs(array)
+    result = array.copy()
+    above = magnitudes > upper
+    if np.any(above):
+        result[above] = array[above] * (upper / magnitudes[above])
+    if lower > 0.0:
+        below = (magnitudes < lower) & (magnitudes > 0.0)
+        if np.any(below):
+            result[below] = array[below] * (lower / magnitudes[below])
+    return result
+
+
+def _clamp_bepi(value: Any, lower: float, upper: float) -> Any:
+    element = ensure_bepi(value)
+    clamped_cont = _clamp_component(element.f_continuous, lower, upper)
+    clamped_disc = _clamp_component(element.a_discrete, lower, upper)
+    return ensure_bepi(
+        {"continuous": clamped_cont, "discrete": clamped_disc, "grid": element.x_grid}
+    )
 
 
 def _log_clamp(
@@ -64,7 +107,8 @@ def apply_canonical_clamps(
     vf_max = float(graph_data.get("VF_MAX", DEFAULTS["VF_MAX"]))
     theta_wrap = bool(graph_data.get("THETA_WRAP", DEFAULTS["THETA_WRAP"]))
 
-    epi = cast(float, get_attr(nd, ALIAS_EPI, 0.0))
+    raw_epi = get_attr(nd, ALIAS_EPI, ZERO_BEPI_STORAGE, conv=lambda obj: obj)
+    epi = ensure_bepi(raw_epi)
     vf = get_attr(nd, ALIAS_VF, 0.0)
     th_val = get_theta_attr(nd, 0.0)
     th = 0.0 if th_val is None else float(th_val)
@@ -83,10 +127,12 @@ def apply_canonical_clamps(
             materialized = ensure_collection(alerts, max_materialize=None)
             hist = cast(HistoryLog, list(materialized))
             history["clamp_alerts"] = hist
-        _log_clamp(hist, node, "EPI", float(epi), eps_min, eps_max)
+        epi_mag = _max_bepi_magnitude(epi)
+        _log_clamp(hist, node, "EPI", epi_mag, eps_min, eps_max)
         _log_clamp(hist, node, "VF", float(vf), vf_min, vf_max)
 
-    set_attr(nd, ALIAS_EPI, clamp(epi, eps_min, eps_max))
+    clamped_epi = _clamp_bepi(epi, eps_min, eps_max)
+    set_attr_generic(nd, ALIAS_EPI, serialize_bepi(clamped_epi), conv=lambda obj: obj)
 
     vf_val = float(clamp(vf, vf_min, vf_max))
     if G is not None and node is not None:
@@ -141,13 +187,17 @@ class GraphCanonicalValidator(Validator[TNFRGraph]):
         for node, data in subject.nodes(data=True):
             mapping = cast(MutableMapping[str, Any], data)
             before = {
-                "EPI": float(get_attr(mapping, ALIAS_EPI, 0.0)),
+                "EPI": _max_bepi_magnitude(
+                    get_attr(mapping, ALIAS_EPI, ZERO_BEPI_STORAGE, conv=lambda obj: obj)
+                ),
                 "VF": float(get_attr(mapping, ALIAS_VF, 0.0)),
                 "THETA": float(get_theta_attr(mapping, 0.0) or 0.0),
             }
             apply_canonical_clamps(mapping, subject, cast(NodeId, node))
             after = {
-                "EPI": float(get_attr(mapping, ALIAS_EPI, 0.0)),
+                "EPI": _max_bepi_magnitude(
+                    get_attr(mapping, ALIAS_EPI, ZERO_BEPI_STORAGE, conv=lambda obj: obj)
+                ),
                 "VF": float(get_attr(mapping, ALIAS_VF, 0.0)),
                 "THETA": float(get_theta_attr(mapping, 0.0) or 0.0),
             }

@@ -10,6 +10,7 @@ from typing import (
     Any,
     Callable,
     Iterable,
+    Mapping,
     MutableMapping,
     Optional,
     Protocol,
@@ -26,6 +27,7 @@ from .alias import (
     get_theta_attr,
     set_attr,
     set_attr_str,
+    set_attr_generic,
     set_dnfr,
     set_theta,
     set_vf,
@@ -66,6 +68,9 @@ from .types import (
     SenseIndex,
     StructuralFrequency,
     TNFRGraph,
+    ZERO_BEPI_STORAGE,
+    ensure_bepi,
+    serialize_bepi,
 )
 from .utils import (
     cached_node_list,
@@ -118,11 +123,43 @@ class AttrSpec:
         return property(fget, fset)
 
 
+# Canonical adapters for BEPI storage ------------------------------------
+
+
+def _epi_to_python(value: Any) -> EPIValue:
+    if value is None:
+        raise ValueError("EPI attribute is required for BEPI nodes")
+    return ensure_bepi(value)
+
+
+def _epi_to_storage(value: Any) -> Mapping[str, tuple[complex, ...] | tuple[float, ...]]:
+    return serialize_bepi(value)
+
+
+def _get_bepi_attr(
+    mapping: Mapping[str, Any], aliases: tuple[str, ...], default: Any
+) -> Any:
+    return get_attr(mapping, aliases, default, conv=lambda obj: obj)
+
+
+def _set_bepi_attr(
+    mapping: MutableMapping[str, Any], aliases: tuple[str, ...], value: Any
+) -> Mapping[str, tuple[complex, ...] | tuple[float, ...]]:
+    return set_attr_generic(mapping, aliases, value, conv=lambda obj: obj)
+
+
 # Mapping of NodeNX attribute specifications used to generate property
 # descriptors. Each entry defines the keyword arguments passed to
 # ``AttrSpec.build_property`` for a given attribute name.
 ATTR_SPECS: dict[str, AttrSpec] = {
-    "EPI": AttrSpec(aliases=ALIAS_EPI),
+    "EPI": AttrSpec(
+        aliases=ALIAS_EPI,
+        default=ZERO_BEPI_STORAGE,
+        getter=_get_bepi_attr,
+        to_python=_epi_to_python,
+        to_storage=_epi_to_storage,
+        setter=_set_bepi_attr,
+    ),
     "vf": AttrSpec(aliases=ALIAS_VF, setter=set_vf, use_graph_setter=True),
     "theta": AttrSpec(
         aliases=ALIAS_THETA,

@@ -1,4 +1,10 @@
-from collections.abc import Hashable, Mapping, MutableMapping, MutableSequence, Sequence
+from collections.abc import (
+    Hashable,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 from enum import Enum
 from typing import Any, Callable, ContextManager, Iterable, Protocol, TypedDict, cast
 
@@ -34,6 +40,10 @@ __all__: tuple[str, ...] = (
     "Node",
     "GammaSpec",
     "EPIValue",
+    "BEPIProtocol",
+    "ensure_bepi",
+    "serialize_bepi",
+    "ZERO_BEPI_STORAGE",
     "DeltaNFR",
     "SecondDerivativeEPI",
     "Phase",
@@ -104,7 +114,12 @@ Node: TypeAlias = NodeId
 NodeInitAttrMap: TypeAlias = MutableMapping[str, float]
 NodeAttrMap: TypeAlias = Mapping[str, Any]
 GammaSpec: TypeAlias = Mapping[str, Any]
-EPIValue: TypeAlias = float
+class BEPIProtocol(Protocol): ...
+
+EPIValue: TypeAlias = BEPIProtocol
+ZERO_BEPI_STORAGE: dict[str, tuple[complex, ...] | tuple[float, ...]]
+def ensure_bepi(value: Any) -> "BEPIElement": ...
+def serialize_bepi(value: Any) -> dict[str, tuple[complex, ...] | tuple[float, ...]]: ...
 DeltaNFR: TypeAlias = float
 SecondDerivativeEPI: TypeAlias = float
 Phase: TypeAlias = float
