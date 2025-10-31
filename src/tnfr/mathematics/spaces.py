@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Sequence
+from typing import Callable, Sequence
 
 import numpy as np
+
+from .epi import BEPIElement, _EPIValidators
 
 
 @dataclass(frozen=True)
@@ -91,7 +93,7 @@ class HilbertSpace:
         return coefficients.astype(self.dtype, copy=False)
 
 
-class BanachSpaceEPI:
+class BanachSpaceEPI(_EPIValidators):
     """Banach space for :math:`C^0([0, 1],\mathbb{C}) \oplus \ell^2(\mathbb{N})`.
 
     Elements are represented by a pair ``(f, a)`` where ``f`` samples the
@@ -101,44 +103,100 @@ class BanachSpaceEPI:
     the local stability of ``f``.
     """
 
-    @staticmethod
-    def _as_array(values: Sequence[complex] | np.ndarray, *, dtype: np.dtype) -> np.ndarray:
-        array = np.asarray(values, dtype=dtype)
-        if array.ndim != 1:
-            raise ValueError("Inputs must be one-dimensional arrays.")
-        if not np.all(np.isfinite(array)):
-            raise ValueError("Inputs must not contain NaNs or infinities.")
-        return array
-
-    def validate_domain(
+    def element(
         self,
         f_continuous: Sequence[complex] | np.ndarray,
         a_discrete: Sequence[complex] | np.ndarray,
+        *,
+        x_grid: Sequence[float] | np.ndarray,
+    ) -> BEPIElement:
+        """Create a :class:`~tnfr.mathematics.epi.BEPIElement` with validated data."""
+
+        self.validate_domain(f_continuous, a_discrete, x_grid)
+        return BEPIElement(f_continuous, a_discrete, x_grid)
+
+    def zero_element(
+        self,
+        *,
+        continuous_size: int,
+        discrete_size: int,
         x_grid: Sequence[float] | np.ndarray | None = None,
-    ) -> None:
-        """Validate dimensionality and sampling grid compatibility."""
+    ) -> BEPIElement:
+        """Return the neutral element for the direct sum."""
 
-        f_array = self._as_array(f_continuous, dtype=np.complex128)
-        self._as_array(a_discrete, dtype=np.complex128)
+        if continuous_size < 2:
+            raise ValueError("continuous_size must be at least two samples.")
+        grid = (
+            np.asarray(x_grid, dtype=float)
+            if x_grid is not None
+            else np.linspace(0.0, 1.0, continuous_size, dtype=float)
+        )
+        zeros_f = np.zeros(continuous_size, dtype=np.complex128)
+        zeros_a = np.zeros(discrete_size, dtype=np.complex128)
+        return self.element(zeros_f, zeros_a, x_grid=grid)
 
-        if x_grid is None:
-            return
+    def canonical_basis(
+        self,
+        *,
+        continuous_size: int,
+        discrete_size: int,
+        continuous_index: int = 0,
+        discrete_index: int = 0,
+        x_grid: Sequence[float] | np.ndarray | None = None,
+    ) -> BEPIElement:
+        """Generate a canonical basis element for the Banach space."""
 
-        grid = np.asarray(x_grid, dtype=float)
-        if grid.ndim != 1:
-            raise ValueError("x_grid must be one-dimensional.")
-        if grid.size != f_array.size:
-            raise ValueError("x_grid length must match continuous component.")
-        if grid.size < 2:
-            raise ValueError("x_grid must contain at least two points.")
-        if not np.all(np.isfinite(grid)):
-            raise ValueError("x_grid must not contain NaNs or infinities.")
+        if continuous_size < 2:
+            raise ValueError("continuous_size must be at least two samples.")
+        if not (0 <= continuous_index < continuous_size):
+            raise ValueError("continuous_index out of range.")
+        if not (0 <= discrete_index < discrete_size):
+            raise ValueError("discrete_index out of range.")
 
-        spacings = np.diff(grid)
-        if np.any(spacings <= 0):
-            raise ValueError("x_grid must be strictly increasing.")
-        if not np.allclose(spacings, spacings[0], rtol=1e-9, atol=1e-12):
-            raise ValueError("x_grid must be uniform for finite-difference stability.")
+        grid = (
+            np.asarray(x_grid, dtype=float)
+            if x_grid is not None
+            else np.linspace(0.0, 1.0, continuous_size, dtype=float)
+        )
+
+        f_vector = np.zeros(continuous_size, dtype=np.complex128)
+        a_vector = np.zeros(discrete_size, dtype=np.complex128)
+        f_vector[continuous_index] = 1.0 + 0.0j
+        a_vector[discrete_index] = 1.0 + 0.0j
+        return self.element(f_vector, a_vector, x_grid=grid)
+
+    def direct_sum(self, left: BEPIElement, right: BEPIElement) -> BEPIElement:
+        """Delegate direct sums to the underlying EPI element."""
+
+        return left.direct_sum(right)
+
+    def adjoint(self, element: BEPIElement) -> BEPIElement:
+        """Return the adjoint element of the supplied operand."""
+
+        return element.adjoint()
+
+    def compose(
+        self,
+        element: BEPIElement,
+        transform: Callable[[np.ndarray], np.ndarray],
+        *,
+        spectral_transform: Callable[[np.ndarray], np.ndarray] | None = None,
+    ) -> BEPIElement:
+        """Compose an element with the provided transforms."""
+
+        return element.compose(transform, spectral_transform=spectral_transform)
+
+    def tensor_with_hilbert(
+        self,
+        element: BEPIElement,
+        hilbert_space: HilbertSpace,
+        vector: Sequence[complex] | np.ndarray | None = None,
+    ) -> np.ndarray:
+        """Compute the tensor product against a :class:`HilbertSpace` vector."""
+
+        raw_vector = hilbert_space.basis[0] if vector is None else vector
+        hilbert_vector = hilbert_space._as_vector(raw_vector)  # pylint: disable=protected-access
+        return element.tensor(hilbert_vector)
 
     def compute_coherence_functional(
         self,
@@ -147,9 +205,9 @@ class BanachSpaceEPI:
     ) -> float:
         """Approximate :math:`\int |f'|^2 dx / (1 + \int |f|^2 dx)`."""
 
-        f_array = self._as_array(f_continuous, dtype=np.complex128)
-        grid = np.asarray(x_grid, dtype=float)
-        self.validate_domain(f_array, np.array([0.0], dtype=np.complex128), grid)
+        f_array, _, grid = self.validate_domain(f_continuous, np.array([0.0], dtype=np.complex128), x_grid)
+        if grid is None:
+            raise ValueError("x_grid must be provided for coherence evaluations.")
 
         derivative = np.gradient(
             f_array,
@@ -177,13 +235,13 @@ class BanachSpaceEPI:
         if alpha <= 0 or beta <= 0 or gamma <= 0:
             raise ValueError("alpha, beta and gamma must be strictly positive.")
 
-        f_array = self._as_array(f_continuous, dtype=np.complex128)
-        a_array = self._as_array(a_discrete, dtype=np.complex128)
-        self.validate_domain(f_array, a_array, x_grid)
+        f_array, a_array, grid = self.validate_domain(f_continuous, a_discrete, x_grid)
+        if grid is None:
+            raise ValueError("x_grid must be supplied when evaluating the norm.")
 
         sup_norm = float(np.max(np.abs(f_array))) if f_array.size else 0.0
         l2_norm = float(np.linalg.norm(a_array))
-        coherence_functional = self.compute_coherence_functional(f_array, x_grid)
+        coherence_functional = self.compute_coherence_functional(f_array, grid)
 
         value = alpha * sup_norm + beta * l2_norm + gamma * coherence_functional
         return float(np.real_if_close(value))

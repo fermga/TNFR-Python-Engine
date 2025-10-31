@@ -16,7 +16,16 @@ level operators.
 
 1. **Select a space** – use :class:`tnfr.mathematics.HilbertSpace` for discrete
    spectral experiments or :class:`tnfr.mathematics.BanachSpaceEPI` when mixing
-   the continuous EPI tail.
+   the continuous EPI tail.  The Banach constructor now ships with
+   :class:`tnfr.mathematics.BEPIElement`, a dataclass that keeps the trio
+   ``(f_continuous, a_discrete, x_grid)`` coherent and exposes the EPI algebra
+   ``⊕``/:meth:`~tnfr.mathematics.BEPIElement.direct_sum`, ``⊗``/
+   :meth:`~tnfr.mathematics.BEPIElement.tensor`, ``*``/
+   :meth:`~tnfr.mathematics.BEPIElement.adjoint` and ``∘``/
+   :meth:`~tnfr.mathematics.BEPIElement.compose`.  Factor helpers on
+   :class:`~tnfr.mathematics.BanachSpaceEPI` generate zero elements, canonical
+   basis vectors and Hilbert tensors so that ΔNFR operators always receive
+   validated inputs.
 2. **Construct ΔNFR** – call :func:`tnfr.mathematics.build_delta_nfr` with a
    topology (``"laplacian"`` or ``"adjacency"``) and νf scaling.  The helper
    guarantees a Hermitian generator so downstream coherence checks remain
