@@ -16,6 +16,7 @@ from .operators.definitions import (
     Silence,
     Transition,
 )
+from .validation import ValidationOutcome
 
 if TYPE_CHECKING:
     import networkx as nx
@@ -35,5 +36,5 @@ def create_nfr(
 
 OPERATORS: dict[str, Operator]
 
-def validate_sequence(names: Iterable[str]) -> tuple[bool, str]: ...
+def validate_sequence(names: Iterable[str]) -> ValidationOutcome[tuple[str, ...]]: ...
 def run_sequence(G: "nx.Graph", node: Hashable, ops: Iterable[Operator]) -> None: ...

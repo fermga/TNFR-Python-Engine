@@ -32,6 +32,13 @@ from tnfr.structural import (
     create_nfr,
     validate_sequence,
 )
+from tnfr.validation import ValidationOutcome
+
+
+def _outcome_stub(names: list[str] | tuple[str, ...]) -> ValidationOutcome[tuple[str, ...]]:
+    sequence = tuple(names)
+    summary = {"message": "ok", "passed": True, "tokens": sequence}
+    return ValidationOutcome(subject=sequence, passed=True, summary=summary)
 
 
 def test_create_nfr_basic() -> None:
@@ -69,8 +76,10 @@ def test_sequence_validation_and_run() -> None:
     G, n = create_nfr("x")
     ops = [Emission(), Reception(), Coherence(), Resonance(), Silence()]
     names = [op.name for op in ops]
-    ok, msg = validate_sequence(names)
-    assert ok, msg
+    outcome = validate_sequence(names)
+    assert isinstance(outcome, ValidationOutcome)
+    assert outcome.passed, outcome.summary["message"]
+    assert outcome.summary["tokens"] == tuple(names)
     run_sequence(G, n, ops)
     assert EPI_PRIMARY in G.nodes[n]
 
@@ -86,7 +95,7 @@ def test_run_sequence_triggers_dnfr_hook_every_operator(
         del n_jobs
         call_counter["count"] += 1
 
-    monkeypatch.setattr("tnfr.structural.validate_sequence", lambda names: (True, "ok"))
+    monkeypatch.setattr("tnfr.structural.validate_sequence", _outcome_stub)
     G.graph["compute_delta_nfr"] = stub
 
     run_sequence(G, node, ops)
@@ -97,8 +106,9 @@ def test_run_sequence_triggers_dnfr_hook_every_operator(
 def test_invalid_sequence() -> None:
     ops = [Reception(), Coherence(), Silence()]
     names = [op.name for op in ops]
-    ok, msg = validate_sequence(names)
-    assert not ok
+    outcome = validate_sequence(names)
+    assert not outcome.passed
+    assert "missing" in outcome.summary["message"]
     G, n = create_nfr("y")
     with pytest.raises(ValueError):
         run_sequence(G, n, ops)
@@ -113,8 +123,9 @@ def test_thol_requires_closure() -> None:
         RESONANCE,
         TRANSITION,
     ]
-    ok, msg = validate_sequence(names)
-    assert not ok
+    outcome = validate_sequence(names)
+    assert not outcome.passed
+    assert "THOL" in outcome.summary["message"]
 
 
 def test_validate_sequence_rejects_unknown_tokens() -> None:
@@ -126,8 +137,9 @@ def test_validate_sequence_rejects_unknown_tokens() -> None:
         SILENCE,
         "unknown",
     ]
-    ok, msg = validate_sequence(names)
-    assert not ok and "unknown tokens" in msg
+    outcome = validate_sequence(names)
+    assert not outcome.passed
+    assert "unknown tokens" in outcome.summary["message"]
 
 
 def test_validate_sequence_requires_names_argument() -> None:
@@ -138,15 +150,17 @@ def test_validate_sequence_requires_names_argument() -> None:
 
 
 def test_validate_sequence_rejects_empty_sequence() -> None:
-    ok, msg = validate_sequence([])
+    outcome = validate_sequence([])
 
-    assert (ok, msg) == (False, "empty sequence")
+    assert not outcome.passed
+    assert outcome.summary["message"] == "empty sequence"
 
 
 def test_validate_sequence_requires_string_tokens() -> None:
-    ok, msg = validate_sequence([EMISSION, RECEPTION, 101])
+    outcome = validate_sequence([EMISSION, RECEPTION, 101])
 
-    assert (ok, msg) == (False, "tokens must be str")
+    assert not outcome.passed
+    assert outcome.summary["message"] == "tokens must be str"
 
 
 def test_thol_closed_by_silence() -> None:
@@ -159,8 +173,8 @@ def test_thol_closed_by_silence() -> None:
         Silence(),
     ]
     names = [op.name for op in ops]
-    ok, msg = validate_sequence(names)
-    assert ok, msg
+    outcome = validate_sequence(names)
+    assert outcome.passed, outcome.summary["message"]
 
 
 def test_sequence_rejects_trailing_tokens() -> None:
@@ -172,8 +186,8 @@ def test_sequence_rejects_trailing_tokens() -> None:
         SILENCE,
         EMISSION,
     ]
-    ok, msg = validate_sequence(names)
-    assert not ok
+    outcome = validate_sequence(names)
+    assert not outcome.passed
 
 
 def test_sequence_accepts_english_tokens() -> None:
@@ -184,8 +198,8 @@ def test_sequence_accepts_english_tokens() -> None:
         RESONANCE,
         SILENCE,
     ]
-    ok, msg = validate_sequence(names)
-    assert ok, msg
+    outcome = validate_sequence(names)
+    assert outcome.passed, outcome.summary["message"]
 
 
 def test_validate_sequence_rejects_legacy_keyword() -> None:

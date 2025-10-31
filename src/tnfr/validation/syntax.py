@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
+from . import ValidationOutcome
+
 from ..config.operator_names import (
     COHERENCE,
     INTERMEDIATE_OPERATORS,
@@ -135,7 +137,7 @@ def _validate_token_sequence(names: list[str]) -> tuple[bool, str]:
 
 def validate_sequence(
     names: Iterable[str] | object = _MISSING, **kwargs: object
-) -> tuple[bool, str]:
+) -> ValidationOutcome[tuple[str, ...]]:
     """Validate minimal TNFR syntax rules."""
 
     if kwargs:
@@ -147,5 +149,17 @@ def validate_sequence(
     if names is _MISSING:
         raise TypeError("validate_sequence() missing required argument: 'names'")
 
-    sequence = list(names)
-    return _validate_token_sequence(sequence)
+    sequence_list = list(names)
+    passed, message = _validate_token_sequence(sequence_list)
+    canonical_sequence = tuple(sequence_list)
+    summary = {
+        "message": message,
+        "passed": passed,
+        "tokens": canonical_sequence,
+    }
+    return ValidationOutcome(
+        subject=canonical_sequence,
+        passed=passed,
+        summary=summary,
+        artifacts=None,
+    )

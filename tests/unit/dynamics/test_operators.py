@@ -21,6 +21,7 @@ from tnfr.operators import (
 from tnfr.structural import Dissonance, create_nfr, run_sequence
 from tnfr.types import Glyph
 from tnfr.utils import angle_diff
+from tnfr.validation import ValidationOutcome
 
 
 def test_glyph_operations_complete():
@@ -52,7 +53,13 @@ def test_dissonance_operator_increases_dnfr_and_tracks_phase(
         captured["after"] = (nd_local[DNFR_PRIMARY], nd_local[THETA_PRIMARY])
 
     set_delta_nfr_hook(G, scripted_delta)
-    monkeypatch.setattr("tnfr.structural.validate_sequence", lambda names: (True, "ok"))
+
+    def _ok_outcome(names: list[str] | tuple[str, ...]) -> ValidationOutcome[tuple[str, ...]]:
+        sequence = tuple(names)
+        summary = {"message": "ok", "passed": True, "tokens": sequence}
+        return ValidationOutcome(subject=sequence, passed=True, summary=summary)
+
+    monkeypatch.setattr("tnfr.structural.validate_sequence", _ok_outcome)
 
     run_sequence(G, node, [Dissonance()])
 
