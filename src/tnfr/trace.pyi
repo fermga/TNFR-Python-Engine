@@ -1,7 +1,14 @@
 from collections.abc import Iterable, Mapping
-from typing import Any, Callable, NamedTuple, TypedDict
+from typing import Any, Callable, NamedTuple
 
-from .types import TNFRGraph, TraceFieldFn, TraceFieldMap, TraceFieldRegistry
+from .types import (
+    TNFRGraph,
+    TraceFieldFn,
+    TraceFieldMap,
+    TraceFieldRegistry,
+    TraceMetadata,
+    TraceSnapshot,
+)
 
 __all__: tuple[str, ...]
 
@@ -10,23 +17,6 @@ def __getattr__(name: str) -> Any: ...
 class CallbackSpec(NamedTuple):
     name: str | None
     func: Callable[..., Any]
-
-class TraceMetadata(TypedDict, total=False):
-    gamma: Mapping[str, Any]
-    grammar: Mapping[str, Any]
-    selector: str | None
-    dnfr_weights: Mapping[str, Any]
-    si_weights: Mapping[str, Any]
-    si_sensitivity: Mapping[str, Any]
-    callbacks: Mapping[str, list[str] | None]
-    thol_open_nodes: int
-    kuramoto: Mapping[str, float]
-    sigma: Mapping[str, float]
-    glyphs: Mapping[str, int]
-
-class TraceSnapshot(TraceMetadata, total=False):
-    t: float
-    phase: str
 
 kuramoto_R_psi: Callable[[TNFRGraph], tuple[float, float]]
 TRACE_FIELDS: TraceFieldRegistry

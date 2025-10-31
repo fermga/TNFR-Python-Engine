@@ -7,7 +7,7 @@ from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Any, MutableMapping, TypedDict, cast
+from typing import Any, MutableMapping, cast
 
 from .._compat import TypeAlias
 from ..alias import collect_attr, collect_theta_attr, get_attr, set_attr
@@ -33,6 +33,7 @@ from ..types import (
     GlyphLoadDistribution,
     HistoryState,
     NodeId,
+    ParallelWijPayload,
     SigmaVector,
     TNFRGraph,
 )
@@ -108,21 +109,6 @@ StabilityChunkResult = tuple[
 MetricValue: TypeAlias = CoherenceMetric
 MetricProvider = Callable[[], MetricValue]
 MetricRecord: TypeAlias = tuple[MetricValue | MetricProvider, str]
-
-
-class ParallelWijPayload(TypedDict):
-    """Container for broadcasting Wij components across worker pools."""
-
-    epi_vals: Sequence[float]
-    vf_vals: Sequence[float]
-    si_vals: Sequence[float]
-    cos_vals: Sequence[float]
-    sin_vals: Sequence[float]
-    weights: tuple[float, float, float, float]
-    epi_range: float
-    vf_range: float
-
-
 def _compute_wij_phase_epi_vf_si_vectorized(
     epi: FloatArray,
     vf: FloatArray,

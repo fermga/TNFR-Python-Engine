@@ -26,8 +26,6 @@ except Exception:
 
 from .glyph_history import HistoryDict as _HistoryDict
 from .tokens import Token
-from .trace import TraceMetadata
-
 __all__: tuple[str, ...] = (
     "TNFRGraph",
     "Graph",
@@ -62,6 +60,8 @@ __all__: tuple[str, ...] = (
     "TraceFieldFn",
     "TraceFieldMap",
     "TraceFieldRegistry",
+    "TraceMetadata",
+    "TraceSnapshot",
     "HistoryState",
     "DiagnosisNodeData",
     "DiagnosisSharedState",
@@ -90,6 +90,8 @@ __all__: tuple[str, ...] = (
     "GlyphMetricsHistoryValue",
     "GlyphMetricsHistory",
     "MetricsListHistory",
+    "ParallelWijPayload",
+    "RemeshMeta",
 )
 
 def __getattr__(name: str) -> Any: ...
@@ -221,9 +223,26 @@ SelectorPreselectionPayload: TypeAlias = tuple[
     SelectorPreselectionMetrics,
     SelectorPreselectionChoices,
 ]
-TraceFieldFn: TypeAlias = Callable[[TNFRGraph], TraceMetadata]
-TraceFieldMap: TypeAlias = Mapping[str, TraceFieldFn]
-TraceFieldRegistry: TypeAlias = dict[str, dict[str, TraceFieldFn]]
+TraceFieldFn: TypeAlias = Callable[[TNFRGraph], "TraceMetadata"]
+TraceFieldMap: TypeAlias = Mapping[str, "TraceFieldFn"]
+TraceFieldRegistry: TypeAlias = dict[str, dict[str, "TraceFieldFn"]]
+
+class TraceMetadata(TypedDict, total=False):
+    gamma: Mapping[str, Any]
+    grammar: Mapping[str, Any]
+    selector: str | None
+    dnfr_weights: Mapping[str, Any]
+    si_weights: Mapping[str, Any]
+    si_sensitivity: Mapping[str, Any]
+    callbacks: Mapping[str, list[str] | None]
+    thol_open_nodes: int
+    kuramoto: Mapping[str, float]
+    sigma: Mapping[str, float]
+    glyphs: Mapping[str, int]
+
+class TraceSnapshot(TraceMetadata, total=False):
+    t: float
+    phase: str
 HistoryState: TypeAlias = _HistoryDict | dict[str, Any]
 TraceCallback: TypeAlias = Callable[[TNFRGraph, dict[str, Any]], None]
 
@@ -270,3 +289,28 @@ GlyphCounts: TypeAlias = Mapping[str, int]
 GlyphMetricsHistoryValue: TypeAlias = MutableMapping[Any, Any] | MutableSequence[Any]
 GlyphMetricsHistory: TypeAlias = MutableMapping[str, GlyphMetricsHistoryValue]
 MetricsListHistory: TypeAlias = MutableMapping[str, list[Any]]
+
+class RemeshMeta(TypedDict, total=False):
+    alpha: float
+    alpha_source: str
+    tau_global: int
+    tau_local: int
+    step: int | None
+    topo_hash: str | None
+    epi_mean_before: float
+    epi_mean_after: float
+    epi_checksum_before: str
+    epi_checksum_after: str
+    stable_frac_last: float
+    phase_sync_last: float
+    glyph_disr_last: float
+
+class ParallelWijPayload(TypedDict):
+    epi_vals: Sequence[float]
+    vf_vals: Sequence[float]
+    si_vals: Sequence[float]
+    cos_vals: Sequence[float]
+    sin_vals: Sequence[float]
+    weights: tuple[float, float, float, float]
+    epi_range: float
+    vf_range: float

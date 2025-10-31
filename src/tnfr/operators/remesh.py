@@ -13,14 +13,14 @@ from itertools import combinations
 from operator import ge, le
 from statistics import StatisticsError, fmean
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, TypedDict, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from .._compat import TypeAlias
 from ..alias import get_attr, set_attr
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
-from ..utils import kahan_sum_nd
 from ..rng import make_rng
-from ..utils import cached_import, edge_version_update
+from ..types import RemeshMeta
+from ..utils import cached_import, edge_version_update, kahan_sum_nd
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..callback_utils import CallbackEvent, CallbackManager
@@ -30,24 +30,6 @@ NetworkxModule: TypeAlias = ModuleType
 CommunityModule: TypeAlias = ModuleType
 RemeshEdge: TypeAlias = tuple[Hashable, Hashable]
 NetworkxModules: TypeAlias = tuple[NetworkxModule, CommunityModule]
-
-
-class RemeshMeta(TypedDict, total=False):
-    alpha: float
-    alpha_source: str
-    tau_global: int
-    tau_local: int
-    step: int | None
-    topo_hash: str | None
-    epi_mean_before: float
-    epi_mean_after: float
-    epi_checksum_before: str
-    epi_checksum_after: str
-    stable_frac_last: float
-    phase_sync_last: float
-    glyph_disr_last: float
-
-
 RemeshConfigValue: TypeAlias = bool | float | int
 
 
