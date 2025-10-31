@@ -35,6 +35,7 @@ from ..trace import register_trace
 from ..types import ProgramTokens
 from ..utils import (
     StructuredFileError,
+    clamp01,
     get_logger,
     json_dumps,
     read_structured_file,
@@ -99,7 +100,7 @@ def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
                 fallback = 0.0
             else:
                 fallback = 3.0 / n
-            prob = min(max(fallback, 0.0), 1.0)
+            prob = clamp01(fallback)
         if not 0.0 <= prob <= 1.0:
             raise ValueError(f"p must be between 0 and 1; received {prob}")
         G = nx.gnp_random_graph(n, prob, seed=seed)
