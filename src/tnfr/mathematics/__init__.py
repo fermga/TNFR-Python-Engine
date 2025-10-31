@@ -3,6 +3,7 @@
 from .dynamics import MathematicalDynamicsEngine
 from .epi import BEPIElement, CoherenceEvaluation, evaluate_coherence_transform
 from .generators import build_delta_nfr
+from .metrics import dcoh
 from .operators import CoherenceOperator, FrequencyOperator
 from .operators_factory import make_coherence_operator, make_frequency_operator
 from .projection import BasicStateProjector, StateProjector
@@ -50,6 +51,7 @@ __all__ = [
     "coherence",
     "frequency_positive",
     "stable_unitary",
+    "dcoh",
     "coherence_expectation",
     "frequency_expectation",
 ]
