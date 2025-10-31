@@ -150,6 +150,11 @@ instantiate ad-hoc locks when they are not shared.
 
 ## Helper utilities API (`tnfr.utils`)
 
+> **Compatibility note:** ``tnfr.cache`` and ``tnfr.io`` continue to exist as
+> compatibility shims that re-export the helpers in ``tnfr.utils.cache`` and
+> ``tnfr.utils.io``. Update new code to import from ``tnfr.utils`` directly so
+> the structural helpers stay aligned with the canonical namespace.
+
 ### Collections and numeric helpers
 
 - `ensure_collection(it, *, max_materialize=...)` — materialise potentially lazy iterables

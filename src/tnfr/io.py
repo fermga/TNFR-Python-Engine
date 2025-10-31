@@ -1,7 +1,10 @@
-"""Compatibility shim removed; direct users to :mod:`tnfr.utils.io`."""
+"""Compatibility proxy that re-exports :mod:`tnfr.utils.io`."""
 
 from __future__ import annotations
 
-raise ImportError(
-    "The 'tnfr.io' module has been removed. Import IO helpers from 'tnfr.utils.io'."
-)
+from tnfr.utils.io import *  # noqa: F401,F403
+from tnfr.utils.io import __all__ as _io_all
+
+__all__ = tuple(_io_all)
+
+del _io_all

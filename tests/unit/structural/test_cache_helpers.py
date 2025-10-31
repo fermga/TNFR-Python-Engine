@@ -1,5 +1,9 @@
 """Unit tests for public cache helpers that track node and edge metadata."""
 
+import importlib
+import sys
+import warnings
+
 from tnfr.utils import (
     edge_version_update,
     ensure_node_index_map,
@@ -48,3 +52,16 @@ def test_node_maps_order(graph_canon):
     offset_map = ensure_node_offset_map(G)
     assert offset_map == {0: 0, 1: 1, 2: 2}
     assert ensure_node_index_map(G) is idx_map
+
+
+def test_legacy_cache_module_proxy(monkeypatch):
+    module_name = "tnfr.cache"
+    sys.modules.pop(module_name, None)
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        legacy = importlib.import_module(module_name)
+
+    assert not caught
+    assert legacy.ensure_node_offset_map is ensure_node_offset_map
+    assert legacy.ensure_node_index_map is ensure_node_index_map
