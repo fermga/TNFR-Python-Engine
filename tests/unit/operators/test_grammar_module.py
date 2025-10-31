@@ -17,6 +17,7 @@ from tnfr.config.operator_names import (
 from tnfr.constants import inject_defaults
 from tnfr.operators.grammar import (
     GrammarContext,
+    RepeatWindowError,
     TholClosureError,
     SequenceSyntaxError,
     SequenceValidationResult,
@@ -164,3 +165,31 @@ def test_apply_glyph_with_grammar_invokes_apply(monkeypatch: pytest.MonkeyPatch)
     assert captured["args"][1] == 0
     assert captured["args"][2] == Glyph.AL
     assert captured["args"][3] == 7
+
+
+def test_repeat_window_error_uses_structural_names() -> None:
+    G = _make_graph()
+    nd = G.nodes[0]
+    nd["glyph_history"].extend([Glyph.AL.value])
+    grammar_cfg = G.graph.setdefault("GRAMMAR", {})
+    grammar_cfg.update({
+        "window": 2,
+        "avoid_repeats": [Glyph.AL.value],
+        "fallbacks": {Glyph.AL.value: Glyph.AL.value},
+    })
+
+    with pytest.raises(RepeatWindowError) as excinfo:
+        apply_glyph_with_grammar(G, [0], Glyph.AL)
+
+    err = excinfo.value
+    assert "emission" in str(err)
+    assert err.candidate == EMISSION
+    assert err.order is not None
+    assert err.order[-1] == EMISSION
+    assert err.context.get("fallback") == EMISSION
+
+    telemetry = G.graph["telemetry"]["grammar_errors"][-1]
+    assert telemetry["candidate"] == EMISSION
+    assert telemetry["order"][-1] == EMISSION
+    history = telemetry["context"]["history"]
+    assert tuple(history) == (EMISSION,)

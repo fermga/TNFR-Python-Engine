@@ -59,7 +59,7 @@ def check_repeats(
         if fallback_key != cand_key:
             return fallback
         history: list[str] = []
-        for item in nd.get("glyph_history", ()):
+        for item in nd.get("glyph_history", ()): 
             if isinstance(item, Glyph):
                 history.append(item.value)
             else:
@@ -70,12 +70,22 @@ def check_repeats(
         order = (*history[-gwin:], cand_key)
         from ..operators import grammar as _grammar
 
+        def to_structural(value: Glyph | str) -> str:
+            default = value.value if isinstance(value, Glyph) else str(value)
+            result = _grammar.glyph_function_name(value, default=default)
+            return default if result is None else result
+
+        cand_name = to_structural(cand_key)
+        fallback_name = to_structural(fallback_key)
+        order_names = tuple(to_structural(item) for item in order)
+
         raise _grammar.RepeatWindowError(
             rule="repeat-window",
-            candidate=cand_key,
-            message=f"{cand_key} repeats within window {gwin}",
+            candidate=cand_name,
+            message=f"{cand_name} repeats within window {gwin}",
             window=gwin,
-            order=order,
+            order=order_names,
+            context={"fallback": fallback_name},
         )
     return cand
 
