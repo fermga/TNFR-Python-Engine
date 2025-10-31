@@ -275,11 +275,27 @@ def _validate_grammar_configs(ctx: GrammarContext) -> None:
     if soft_validator is not None:
         for err in soft_validator.iter_errors(ctx.cfg_soft):  # type: ignore[union-attr]
             issues.append(("cfg_soft", _format_validation_error(err)))
+
+    canon_cfg: Mapping[str, Any] | None
+    if isinstance(ctx.cfg_canon, Mapping):
+        canon_cfg = ctx.cfg_canon
+    else:
+        canon_cfg = None
+        issues.append(
+            (
+                "cfg_canon",
+                "GRAMMAR_CANON must be a mapping"
+                f" (received {type(ctx.cfg_canon).__name__})",
+            )
+        )
+
     if canon_validator is not None:
         for err in canon_validator.iter_errors(ctx.cfg_canon):  # type: ignore[union-attr]
             issues.append(("cfg_canon", _format_validation_error(err)))
-    min_len = ctx.cfg_canon.get("thol_min_len")
-    max_len = ctx.cfg_canon.get("thol_max_len")
+
+    cfg_for_lengths: Mapping[str, Any] = canon_cfg or {}
+    min_len = cfg_for_lengths.get("thol_min_len")
+    max_len = cfg_for_lengths.get("thol_max_len")
     if isinstance(min_len, int) and isinstance(max_len, int) and max_len < min_len:
         issues.append(
             (
