@@ -13,6 +13,7 @@ import networkx as nx
 
 from tnfr.constants import get_aliases
 from tnfr.dynamics import default_compute_delta_nfr
+from tnfr.utils import json_dumps
 
 BenchmarkMode = Literal["auto", "force-dense", "python"]
 
@@ -96,9 +97,7 @@ def _profile(
 
     payload.sort(key=lambda entry: entry["totaltime"], reverse=True)
 
-    import json
-
-    output.write_text(json.dumps(payload, indent=2, ensure_ascii=False))
+    output.write_text(json_dumps(payload, indent=2, ensure_ascii=False))
     print(f"Stored ΔNFR profile at {output}")
 
 
