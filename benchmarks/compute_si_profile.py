@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import argparse
 import cProfile
-import json
 import math
 import pstats
 from contextlib import contextmanager
@@ -28,6 +27,7 @@ import networkx as nx
 from tnfr.alias import set_attr
 from tnfr.constants import get_aliases
 from tnfr.metrics.sense_index import compute_Si
+from tnfr.utils import json_dumps
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_VF = get_aliases("VF")
@@ -123,7 +123,7 @@ def _dump_stats(profile: cProfile.Profile, path: Path, *, fmt: str, sort: str) -
         )
 
     rows.sort(key=lambda entry: entry[sort_key], reverse=True)
-    path.write_text(json.dumps(rows, indent=2, ensure_ascii=False))
+    path.write_text(json_dumps(rows, indent=2, ensure_ascii=False))
 
 
 def profile_compute_si(

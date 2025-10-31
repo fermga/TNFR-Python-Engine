@@ -32,7 +32,6 @@ from __future__ import annotations
 
 import argparse
 import cProfile
-import json
 import math
 import pstats
 from collections.abc import Iterable
@@ -61,6 +60,7 @@ from tnfr.metrics.sense_index import (
 import tnfr.utils as tnfr_utils
 from tnfr.cli.utils import _coerce_optional_int, _parse_cli_variants
 from tnfr.utils.chunks import resolve_chunk_size
+from tnfr.utils import json_dumps
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
@@ -333,7 +333,7 @@ def _dump_profile_outputs(
         "rows": rows,
     }
     base_path.with_suffix(".json").write_text(
-        json.dumps(report, indent=2, ensure_ascii=False)
+        json_dumps(report, indent=2, ensure_ascii=False)
     )
 
 

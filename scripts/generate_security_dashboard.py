@@ -21,6 +21,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+from tnfr.utils import json_dumps
+
 SEVERITY_ORDER = ["critical", "high", "medium", "low", "info"]
 CANONICAL_TOOL_NAMES = {
     "codeql": "CodeQL",
@@ -442,7 +444,7 @@ def main(argv: list[str] | None = None) -> int:
             "dependabot": dependabot,
         }
         args.json_output.write_text(
-            json.dumps(json_payload, indent=2, ensure_ascii=False),
+            json_dumps(json_payload, indent=2, ensure_ascii=False),
             encoding="utf-8",
         )
     return 0

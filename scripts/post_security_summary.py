@@ -11,6 +11,8 @@ import sys
 import urllib.error
 import urllib.request
 
+from tnfr.utils import json_dumps
+
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -91,7 +93,7 @@ def build_message(payload: dict, markdown_path: pathlib.Path | None) -> str:
 
 
 def post_message(webhook: str, message: str) -> None:
-    data = json.dumps({"text": message}).encode("utf-8")
+    data = json_dumps({"text": message}, to_bytes=True)
     request = urllib.request.Request(
         webhook,
         data=data,
