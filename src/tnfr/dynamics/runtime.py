@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import inspect
 import sys
+from copy import deepcopy
 from collections import deque
 from collections.abc import Iterable, Mapping, MutableMapping
 from numbers import Real
@@ -20,7 +21,27 @@ from ..types import HistoryState, NodeId, TNFRGraph
 from ..utils import normalize_optional_int
 from ..validation import apply_canonical_clamps, validate_canon
 from . import adaptation, coordination, integrators, selectors
-from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
+from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
+
+try:  # pragma: no cover - optional NumPy dependency
+    import numpy as np
+except ImportError:  # pragma: no cover - optional dependency missing
+    np = None  # type: ignore[assignment]
+
+try:  # pragma: no cover - optional math extras
+    from ..mathematics.dynamics import MathematicalDynamicsEngine
+    from ..mathematics.projection import BasicStateProjector
+    from ..mathematics.runtime import (
+        coherence as runtime_coherence,
+        frequency_positive as runtime_frequency_positive,
+        normalized as runtime_normalized,
+    )
+except Exception:  # pragma: no cover - fallback when extras not available
+    MathematicalDynamicsEngine = None  # type: ignore[assignment]
+    BasicStateProjector = None  # type: ignore[assignment]
+    runtime_coherence = None  # type: ignore[assignment]
+    runtime_frequency_positive = None  # type: ignore[assignment]
+    runtime_normalized = None  # type: ignore[assignment]
 from .dnfr import default_compute_delta_nfr
 from .sampling import update_node_sample as _update_node_sample
 
@@ -429,6 +450,218 @@ def _run_after_callbacks(G, *, step_idx: int) -> None:
     callback_manager.invoke_callbacks(G, CallbackEvent.AFTER_STEP.value, ctx)
 
 
+def _get_math_engine_config(G: TNFRGraph) -> MutableMapping[str, Any] | None:
+    """Return the mutable math-engine configuration stored on ``G``."""
+
+    cfg_raw = G.graph.get("MATH_ENGINE")
+    if not isinstance(cfg_raw, Mapping) or not cfg_raw.get("enabled", False):
+        return None
+    if isinstance(cfg_raw, MutableMapping):
+        return cfg_raw
+    cfg_mutable: MutableMapping[str, Any] = dict(cfg_raw)
+    G.graph["MATH_ENGINE"] = cfg_mutable
+    return cfg_mutable
+
+
+def _initialise_math_state(
+    G: TNFRGraph,
+    cfg: MutableMapping[str, Any],
+    *,
+    hilbert_space: Any,
+    projector: BasicStateProjector,
+) -> np.ndarray | None:
+    """Project graph nodes into the Hilbert space to seed the math engine."""
+
+    dimension = getattr(hilbert_space, "dimension", None)
+    if dimension is None:
+        raise AttributeError("Hilbert space configuration is missing 'dimension'.")
+
+    vectors: list[np.ndarray] = []
+    for _, nd in G.nodes(data=True):
+        epi = float(get_attr(nd, ALIAS_EPI, 0.0) or 0.0)
+        nu_f = float(get_attr(nd, ALIAS_VF, 0.0) or 0.0)
+        theta_val = float(get_attr(nd, ALIAS_THETA, 0.0) or 0.0)
+        try:
+            vector = projector(epi=epi, nu_f=nu_f, theta=theta_val, dim=int(dimension))
+        except ValueError:
+            continue
+        vectors.append(np.asarray(vector, dtype=np.complex128))
+
+    if not vectors:
+        return None
+
+    stacked = np.vstack(vectors)
+    averaged = np.mean(stacked, axis=0)
+    atol = float(getattr(projector, "atol", 1e-9))
+    norm = float(getattr(hilbert_space, "norm")(averaged))
+    if np.isclose(norm, 0.0, atol=atol):
+        averaged = vectors[0]
+        norm = float(getattr(hilbert_space, "norm")(averaged))
+    if np.isclose(norm, 0.0, atol=atol):
+        return None
+    normalised = averaged / norm
+    cfg.setdefault("_state_origin", "projected")
+    return normalised
+
+
+def _advance_math_engine(
+    G: TNFRGraph,
+    *,
+    dt: float,
+    step_idx: int,
+    hist: HistoryState,
+) -> None:
+    """Advance the optional math engine and record spectral telemetry."""
+
+    cfg = _get_math_engine_config(G)
+    if cfg is None:
+        return
+
+    if (
+        np is None
+        or MathematicalDynamicsEngine is None
+        or runtime_normalized is None
+        or runtime_coherence is None
+    ):
+        raise RuntimeError(
+            "Mathematical dynamics require NumPy and tnfr.mathematics extras to be installed."
+        )
+
+    hilbert_space = cfg.get("hilbert_space")
+    coherence_operator = cfg.get("coherence_operator")
+    coherence_threshold = cfg.get("coherence_threshold")
+    if hilbert_space is None or coherence_operator is None or coherence_threshold is None:
+        raise ValueError(
+            "MATH_ENGINE requires 'hilbert_space', 'coherence_operator' and "
+            "'coherence_threshold' entries."
+        )
+
+    if BasicStateProjector is None:  # pragma: no cover - guarded by import above
+        raise RuntimeError("Mathematical dynamics require the BasicStateProjector helper.")
+
+    projector = cfg.get("state_projector")
+    if not isinstance(projector, BasicStateProjector):
+        projector = BasicStateProjector()
+        cfg["state_projector"] = projector
+
+    engine = cfg.get("dynamics_engine")
+    if not isinstance(engine, MathematicalDynamicsEngine):
+        generator = cfg.get("generator_matrix")
+        if generator is None:
+            raise ValueError(
+                "MATH_ENGINE requires either a 'dynamics_engine' instance or a "
+                "'generator_matrix'."
+            )
+        generator_matrix = np.asarray(generator, dtype=np.complex128)
+        engine = MathematicalDynamicsEngine(generator_matrix, hilbert_space=hilbert_space)
+        cfg["dynamics_engine"] = engine
+
+    state_vector = cfg.get("_state_vector")
+    if state_vector is None:
+        state_vector = _initialise_math_state(
+            G,
+            cfg,
+            hilbert_space=hilbert_space,
+            projector=projector,
+        )
+        if state_vector is None:
+            return
+    else:
+        state_vector = np.asarray(state_vector, dtype=np.complex128)
+        dimension = getattr(hilbert_space, "dimension", state_vector.shape[0])
+        if state_vector.shape != (int(dimension),):
+            state_vector = _initialise_math_state(
+                G,
+                cfg,
+                hilbert_space=hilbert_space,
+                projector=projector,
+            )
+            if state_vector is None:
+                return
+
+    advanced = engine.step(state_vector, dt=float(dt), normalize=True)
+    cfg["_state_vector"] = advanced
+
+    atol = float(cfg.get("atol", getattr(engine, "atol", 1e-9)))
+    label = f"step[{step_idx}]"
+
+    normalized_passed, norm_value = runtime_normalized(
+        advanced,
+        hilbert_space,
+        atol=atol,
+        label=label,
+    )
+    coherence_passed, coherence_value = runtime_coherence(
+        advanced,
+        coherence_operator,
+        float(coherence_threshold),
+        normalise=False,
+        atol=atol,
+        label=label,
+    )
+
+    frequency_operator = cfg.get("frequency_operator")
+    frequency_summary: dict[str, Any] | None = None
+    if frequency_operator is not None:
+        if runtime_frequency_positive is None:  # pragma: no cover - guarded above
+            raise RuntimeError(
+                "Frequency positivity checks require tnfr.mathematics extras."
+            )
+        freq_raw = runtime_frequency_positive(
+            advanced,
+            frequency_operator,
+            normalise=False,
+            enforce=True,
+            atol=atol,
+            label=label,
+        )
+        frequency_summary = {
+            "passed": bool(freq_raw.get("passed", False)),
+            "value": float(freq_raw.get("value", 0.0)),
+            "projection_passed": bool(freq_raw.get("projection_passed", False)),
+            "spectrum_psd": bool(freq_raw.get("spectrum_psd", False)),
+            "enforced": bool(freq_raw.get("enforce", True)),
+        }
+        if "spectrum_min" in freq_raw:
+            frequency_summary["spectrum_min"] = float(freq_raw.get("spectrum_min", 0.0))
+
+    summary = {
+        "step": step_idx,
+        "normalized": bool(normalized_passed),
+        "norm": float(norm_value),
+        "coherence": {
+            "passed": bool(coherence_passed),
+            "value": float(coherence_value),
+            "threshold": float(coherence_threshold),
+        },
+        "frequency": frequency_summary,
+    }
+
+    hist.setdefault("math_engine_summary", []).append(summary)
+    hist.setdefault("math_engine_norm", []).append(summary["norm"])
+    hist.setdefault("math_engine_normalized", []).append(summary["normalized"])
+    hist.setdefault("math_engine_coherence", []).append(summary["coherence"]["value"])
+    hist.setdefault("math_engine_coherence_passed", []).append(
+        summary["coherence"]["passed"]
+    )
+
+    if frequency_summary is None:
+        hist.setdefault("math_engine_frequency", []).append(None)
+        hist.setdefault("math_engine_frequency_passed", []).append(None)
+        hist.setdefault("math_engine_frequency_projection_passed", []).append(None)
+    else:
+        hist.setdefault("math_engine_frequency", []).append(frequency_summary["value"])
+        hist.setdefault("math_engine_frequency_passed", []).append(
+            frequency_summary["passed"]
+        )
+        hist.setdefault("math_engine_frequency_projection_passed", []).append(
+            frequency_summary["projection_passed"]
+        )
+
+    cfg["last_summary"] = summary
+    telemetry = G.graph.setdefault("telemetry", {})
+    telemetry["math_engine"] = deepcopy(summary)
+
 def step(
     G: TNFRGraph,
     *,
@@ -504,6 +737,13 @@ def step(
         step_idx=step_idx,
         hist=hist,
         job_overrides=job_overrides,
+    )
+    resolved_dt = get_graph_param(G, "DT") if dt is None else float(dt)
+    _advance_math_engine(
+        G,
+        dt=resolved_dt,
+        step_idx=step_idx,
+        hist=hist,
     )
     _update_epi_hist(G)
     _maybe_remesh(G)
