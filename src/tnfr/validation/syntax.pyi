@@ -1,10 +1,9 @@
-from typing import Any, Iterable
+from collections.abc import Iterable
 
 from . import ValidationOutcome
 
-__all__: Any
+__all__ = ("validate_sequence",)
 
-def __getattr__(name: str) -> Any: ...
 
 def validate_sequence(
     names: Iterable[str] | object = ..., **kwargs: object
