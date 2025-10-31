@@ -75,9 +75,9 @@ def dcoh(
         vector1_norm = vector1
         vector2_norm = vector2
 
-    cross = np.vdot(vector1_norm, operator.matrix @ vector2_norm)
+    cross = np.vdot(vector1_norm, vector2_norm)
     if not np.isfinite(cross):
-        raise ValueError("Operator-weighted overlap produced a non-finite value.")
+        raise ValueError("State overlap produced a non-finite value.")
 
     expect1 = float(operator.expectation(vector1, normalise=normalise, atol=atol))
     expect2 = float(operator.expectation(vector2, normalise=normalise, atol=atol))
