@@ -1,8 +1,8 @@
 """Mathematics primitives aligned with TNFR coherence modeling."""
 
-from .dynamics import MathematicalDynamicsEngine
+from .dynamics import ContractiveDynamicsEngine, MathematicalDynamicsEngine
 from .epi import BEPIElement, CoherenceEvaluation, evaluate_coherence_transform
-from .generators import build_delta_nfr
+from .generators import build_delta_nfr, build_lindblad_delta_nfr
 from .metrics import dcoh
 from .operators import CoherenceOperator, FrequencyOperator
 from .operators_factory import make_coherence_operator, make_frequency_operator
@@ -32,11 +32,13 @@ __all__ = [
     "BEPIElement",
     "CoherenceEvaluation",
     "CoherenceOperator",
+    "ContractiveDynamicsEngine",
     "CoherenceMonotonicityReport",
     "CoherenceViolation",
     "FrequencyOperator",
     "MathematicalDynamicsEngine",
     "build_delta_nfr",
+    "build_lindblad_delta_nfr",
     "make_coherence_operator",
     "make_frequency_operator",
     "NFRValidator",

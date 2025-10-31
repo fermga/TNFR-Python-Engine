@@ -27,9 +27,11 @@ level operators.
    basis vectors and Hilbert tensors so that ΔNFR operators always receive
    validated inputs.
 2. **Construct ΔNFR** – call :func:`tnfr.mathematics.build_delta_nfr` with a
-   topology (``"laplacian"`` or ``"adjacency"``) and νf scaling.  The helper
-   guarantees a Hermitian generator so downstream coherence checks remain
-   meaningful.
+   topology (``"laplacian"`` or ``"adjacency"``) and νf scaling for Hermitian
+   evolution, or :func:`tnfr.mathematics.build_lindblad_delta_nfr` to assemble a
+   Lindblad superoperator acting on density matrices.  Both helpers keep the
+   resulting generator aligned with TNFR semantics and enforce structural
+   frequency scaling.
 3. **Wrap operators** – initialise
    :class:`tnfr.mathematics.CoherenceOperator`/:class:`~tnfr.mathematics.FrequencyOperator`
    to project coherence and νf expectations.
@@ -129,7 +131,51 @@ False
 When running shell commands, export the variables directly, e.g.
 ``TNFR_ENABLE_MATH_VALIDATION=1 TNFR_LOG_PERF=1 python -m doctest docs/foundations.md``.
 
-## 4. Executable ΔNFR and unitary validation
+## 4. Dissipative ΔNFR semigroups
+
+Hermitian ΔNFR covers coherent evolution.  To model contractive reorganisations
+mixing emission/absorption the mathematics layer now exposes
+:func:`tnfr.mathematics.build_lindblad_delta_nfr`, which returns a Lindblad
+generator acting on vectorised density matrices, and
+:class:`tnfr.mathematics.ContractiveDynamicsEngine`, a semigroup integrator that
+keeps trace and Frobenius contractivity in check.  The helpers accept the same
+νf scaling used for the Hermitian constructors so coherent and dissipative runs
+share telemetry semantics.
+
+```pycon
+>>> import math
+>>> import numpy as np
+>>> from tnfr.mathematics import (
+...     ContractiveDynamicsEngine,
+...     HilbertSpace,
+...     build_lindblad_delta_nfr,
+... )
+>>> hilbert = HilbertSpace(dimension=2)
+>>> lowering = np.array([[0.0, 1.0], [0.0, 0.0]], dtype=np.complex128)
+>>> generator = build_lindblad_delta_nfr(
+...     collapse_operators=[math.sqrt(0.3) * lowering],
+...     dim=hilbert.dimension,
+... )
+>>> engine = ContractiveDynamicsEngine(generator, hilbert)
+>>> rho = np.array([[0.2, 0.3], [0.3, 0.8]], dtype=np.complex128)
+>>> rho /= np.trace(rho)
+>>> next_rho = engine.step(rho, dt=0.5)
+>>> float(np.trace(next_rho).real)
+1.0
+>>> engine.frobenius_norm(next_rho) <= engine.frobenius_norm(rho)
+True
+>>> engine.last_contractivity_gap > -1e-12
+True
+```
+
+Use :meth:`ContractiveDynamicsEngine.evolve` to capture semigroup trajectories
+with contractivity enforced at every step.  The engine symmetrises the state to
+counteract floating-point drift and raises whenever the trace leaves the unit
+simplex and reports the contractivity gap through
+:attr:`ContractiveDynamicsEngine.last_contractivity_gap`, keeping ΔNFR
+dissipation faithful to TNFR coherence invariants.
+
+## 5. Executable ΔNFR and unitary validation
 
 The following session builds a Laplacian ΔNFR generator, evaluates unitary
 stability, and asserts νf positivity.  All routines are deterministic when a
@@ -169,7 +215,7 @@ To integrate ΔNFR outputs into networkx graphs, see the migration recipe in
 [`getting-started/quickstart.md`](getting-started/quickstart.md) and the
 operator catalogue under [`api/operators.md`](api/operators.md).
 
-## 5. Telemetry cost and logging budget
+## 6. Telemetry cost and logging budget
 
 | Metric guard | Flag dependency | Dominant cost | Logging channel |
 | --- | --- | --- | --- |
@@ -185,7 +231,7 @@ The Phase 3 guideline is to sample the ``stable_unitary`` log at each
 integration step while only periodically recording the cheaper ``normalized``
 metric to control storage costs.
 
-## 6. Next steps
+## 7. Next steps
 
 * Load the lattice notebooks listed above to inspect full ΔNFR evolution
   traces.

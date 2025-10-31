@@ -22,6 +22,7 @@ PYTHONPATH=src python benchmarks/<script>.py
 | --- | --- | --- |
 | `cached_abs_max.py` | Cache-aware updates for absolute maxima (`tnfr.alias.set_attr_with_max`). | Demonstrates how cached maxima avoid scanning the graph via `multi_recompute_abs_max` on every assignment. |
 | `collect_attr.py` | Vectorised collection of nodal attributes (`tnfr.alias.collect_attr`). | Requires NumPy; the script exits gracefully when the module is unavailable. |
+| `contractive_vs_unitary.py` | Unitary vs. Lindblad ΔNFR evolution (`tnfr.mathematics.MathematicalDynamicsEngine` vs. `ContractiveDynamicsEngine`). | Compares wall-clock timings and Frobenius contractivity after repeated semigroup steps. |
 | `default_compute_delta_nfr.py` | Core ΔNFR update speed (`tnfr.dynamics.default_compute_delta_nfr`). | Runs multiple passes on random graphs and reports best/median/mean/worst timings. Accepts `--profile` to dump per-function timings. |
 | `compute_dnfr_benchmark.py` | `_compute_dnfr` vectorised vs. fallback execution. | Explores how graph size/density impacts the NumPy and pure-Python paths, reporting summary stats and speed-up ratios. |
 | `compute_si_profile.py` | Sense Index profiling (`tnfr.metrics.sense_index.compute_Si`). | Captures cProfile stats for NumPy and pure-Python runs, exporting `.pstats` or JSON summaries. |

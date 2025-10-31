@@ -1,4 +1,4 @@
-"""Spectral dynamics helpers driven by Hermitian ΔNFR generators."""
+"""Spectral dynamics helpers driven by ΔNFR generators."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -13,7 +13,7 @@ try:  # pragma: no cover - optional SciPy dependency
 except Exception:  # pragma: no cover - SciPy not installed
     _scipy_expm = None
 
-__all__ = ["MathematicalDynamicsEngine"]
+__all__ = ["MathematicalDynamicsEngine", "ContractiveDynamicsEngine"]
 
 
 def _as_matrix(matrix: Sequence[Sequence[complex]] | np.ndarray) -> np.ndarray:
@@ -25,6 +25,14 @@ def _as_matrix(matrix: Sequence[Sequence[complex]] | np.ndarray) -> np.ndarray:
 
 def _is_hermitian(matrix: np.ndarray, *, atol: float = 1e-9) -> bool:
     return bool(np.allclose(matrix, matrix.conj().T, atol=atol))
+
+
+def _vectorize_density(matrix: np.ndarray) -> np.ndarray:
+    return np.asarray(matrix, dtype=np.complex128).reshape(-1, order="F")
+
+
+def _devectorize_density(vector: np.ndarray, dim: int) -> np.ndarray:
+    return np.asarray(vector, dtype=np.complex128).reshape((dim, dim), order="F")
 
 
 @dataclass(slots=True)
@@ -115,3 +123,176 @@ class MathematicalDynamicsEngine:
             current = self.step(current, dt=dt, normalize=normalize)
             trajectory.append(current)
         return np.vstack(trajectory)
+
+
+@dataclass(slots=True)
+class ContractiveDynamicsEngine:
+    """Contractive semigroup evolution driven by Lindblad ΔNFR generators."""
+
+    generator: np.ndarray
+    hilbert_space: HilbertSpace
+    atol: float = 1e-9
+    _use_scipy: bool = False
+    _identity: np.ndarray = field(init=False, repr=False)
+    _last_contractivity_gap: float = field(init=False, repr=False)
+    _eigenvalues: np.ndarray = field(init=False, repr=False)
+    _eigenvectors: np.ndarray = field(init=False, repr=False)
+    _inverse_eigenvectors: np.ndarray = field(init=False, repr=False)
+
+    def __init__(
+        self,
+        generator: Sequence[Sequence[complex]] | np.ndarray,
+        hilbert_space: HilbertSpace,
+        *,
+        atol: float = 1e-9,
+        ensure_contractive: bool = True,
+        use_scipy: bool | None = None,
+    ) -> None:
+        matrix = _as_matrix(generator)
+        expected = hilbert_space.dimension * hilbert_space.dimension
+        if matrix.shape != (expected, expected):
+            raise ValueError(
+                "Generator must act on vectorised density operators with dimension "
+                f"{expected} × {expected}."
+            )
+        self.generator = matrix.astype(np.complex128, copy=False)
+        self.hilbert_space = hilbert_space
+        self.atol = float(atol)
+        if use_scipy is None:
+            self._use_scipy = bool(_scipy_expm is not None)
+        else:
+            if use_scipy and _scipy_expm is None:
+                raise RuntimeError("SciPy expm requested but SciPy is not available.")
+            self._use_scipy = bool(use_scipy and _scipy_expm is not None)
+
+        self._identity = np.eye(hilbert_space.dimension, dtype=np.complex128)
+        self._last_contractivity_gap = float("nan")
+        self._eigenvalues, self._eigenvectors = np.linalg.eig(self.generator)
+        self._inverse_eigenvectors = np.linalg.inv(self._eigenvectors)
+
+        if ensure_contractive and np.max(self._eigenvalues.real) > self.atol:
+            raise ValueError(
+                "ΔNFR generator is not contractive: positive real eigenvalues detected."
+            )
+
+    def _propagator(self, dt: float) -> np.ndarray:
+        if self._use_scipy and _scipy_expm is not None:
+            return _scipy_expm(dt * self.generator)
+        diag = np.exp(dt * self._eigenvalues)
+        return self._eigenvectors @ (diag[:, None] * self._inverse_eigenvectors)
+
+    def frobenius_norm(
+        self,
+        density: Sequence[Sequence[complex]] | np.ndarray,
+        *,
+        center: bool = False,
+    ) -> float:
+        """Return the Frobenius norm associated with the Hilbert space."""
+
+        matrix = np.asarray(density, dtype=np.complex128)
+        if matrix.shape != (self.hilbert_space.dimension, self.hilbert_space.dimension):
+            raise ValueError(
+                "Density operator dimension mismatch: "
+                f"expected {(self.hilbert_space.dimension, self.hilbert_space.dimension)}, "
+                f"received {matrix.shape!r}."
+            )
+        if center:
+            trace_value = np.trace(matrix) / self.hilbert_space.dimension
+            matrix = matrix - trace_value * self._identity
+        return float(np.linalg.norm(matrix, ord="fro"))
+
+    @property
+    def last_contractivity_gap(self) -> float:
+        """Return the latest monitored contractivity gap (NaN if unavailable)."""
+
+        return float(self._last_contractivity_gap)
+
+    def step(
+        self,
+        density: Sequence[Sequence[complex]] | np.ndarray,
+        *,
+        dt: float = 1.0,
+        normalize_trace: bool = True,
+        enforce_contractivity: bool = True,
+        raise_on_violation: bool = False,
+        symmetrize: bool = True,
+    ) -> np.ndarray:
+        """Advance ``density`` by ``dt`` enforcing trace and contractivity control."""
+
+        matrix = np.asarray(density, dtype=np.complex128)
+        dim = self.hilbert_space.dimension
+        if matrix.shape != (dim, dim):
+            raise ValueError(
+                "Density operator dimension mismatch: "
+                f"expected {(dim, dim)}, received {matrix.shape!r}."
+            )
+
+        initial_norm = None
+        if enforce_contractivity:
+            trace_value = np.trace(matrix) / dim
+            initial_norm = np.linalg.norm(matrix - trace_value * self._identity, ord="fro")
+
+        vector = _vectorize_density(matrix)
+        propagator = self._propagator(dt)
+        evolved_vec = propagator @ vector
+        evolved = _devectorize_density(evolved_vec, dim)
+
+        if symmetrize:
+            evolved = 0.5 * (evolved + evolved.conj().T)
+
+        if normalize_trace:
+            trace_value = np.trace(evolved)
+            if np.isclose(trace_value, 0.0, atol=self.atol):
+                raise ValueError("Trace collapsed below tolerance during evolution.")
+            if not np.isclose(trace_value, 1.0, atol=10 * self.atol):
+                evolved = evolved / trace_value
+
+        if enforce_contractivity and initial_norm is not None:
+            trace_value = np.trace(evolved) / dim
+            evolved_norm = np.linalg.norm(evolved - trace_value * self._identity, ord="fro")
+            self._last_contractivity_gap = initial_norm - evolved_norm
+            if raise_on_violation and self._last_contractivity_gap < -5 * self.atol:
+                raise ValueError(
+                    "Contractivity violated: Frobenius norm increased beyond tolerance."
+                )
+        else:
+            self._last_contractivity_gap = float("nan")
+
+        return evolved
+
+    def evolve(
+        self,
+        density: Sequence[Sequence[complex]] | np.ndarray,
+        *,
+        steps: int,
+        dt: float = 1.0,
+        normalize_trace: bool = True,
+        enforce_contractivity: bool = True,
+        raise_on_violation: bool = False,
+        symmetrize: bool = True,
+    ) -> np.ndarray:
+        """Return trajectory of density operators for the contractive semigroup."""
+
+        if steps < 0:
+            raise ValueError("steps must be non-negative.")
+
+        current = np.asarray(density, dtype=np.complex128)
+        dim = self.hilbert_space.dimension
+        if current.shape != (dim, dim):
+            raise ValueError(
+                "Density operator dimension mismatch: "
+                f"expected {(dim, dim)}, received {current.shape!r}."
+            )
+
+        trajectory = [current.copy()]
+        for _ in range(steps):
+            current = self.step(
+                current,
+                dt=dt,
+                normalize_trace=normalize_trace,
+                enforce_contractivity=enforce_contractivity,
+                raise_on_violation=raise_on_violation,
+                symmetrize=symmetrize,
+            )
+            trajectory.append(current)
+        return np.stack(trajectory)
