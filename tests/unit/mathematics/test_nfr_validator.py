@@ -31,7 +31,7 @@ def test_validator_successful_state_passes_all_checks() -> None:
     assert summary["coherence"]["passed"] is True
     assert summary["frequency"]["passed"] is True
     assert summary["unitary_stability"]["passed"] is True
-    assert validator.report(summary) == "All validation checks passed."
+    assert validator.report(outcome) == "All validation checks passed."
     assert validator.validate_state(state) == (True, summary)
 
 
@@ -43,7 +43,7 @@ def test_validator_detects_normalization_failure() -> None:
     assert outcome.passed is False
     summary = outcome.summary
     assert summary["normalized"] is False
-    assert "normalization" in validator.report(summary)
+    assert "normalization" in validator.report(outcome)
     assert validator.validate_state(state) == (False, summary)
 
 
@@ -55,7 +55,7 @@ def test_validator_detects_coherence_threshold_breach() -> None:
     assert outcome.passed is False
     summary = outcome.summary
     assert summary["coherence"]["passed"] is False
-    assert "coherence threshold" in validator.report(summary)
+    assert "coherence threshold" in validator.report(outcome)
     assert validator.validate_state(state) == (False, summary)
 
 
@@ -88,5 +88,5 @@ def test_validator_frequency_negativity_flagged() -> None:
     assert outcome.passed is False
     summary = outcome.summary
     assert summary["frequency"]["passed"] is False
-    assert "frequency positivity" in validator.report(summary)
+    assert "frequency positivity" in validator.report(outcome)
     assert validator.validate_state(state) == (False, summary)
