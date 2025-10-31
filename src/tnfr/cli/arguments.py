@@ -123,6 +123,7 @@ def add_canon_toggle(parser: argparse.ArgumentParser) -> None:
 
 def _add_run_parser(sub: argparse._SubParsersAction) -> None:
     """Configure the ``run`` subcommand."""
+
     from .execution import DEFAULT_SUMMARY_SERIES_LIMIT, cmd_run
 
     p_run = sub.add_parser(
@@ -166,6 +167,64 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
             " disable trimming)"
         ),
     )
+
+    math_group = p_run.add_argument_group("Mathematical dynamics")
+    math_group.add_argument(
+        "--math-engine",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Enable the spectral mathematical dynamics engine to project nodes"
+            " onto Hilbert space vectors and validate norm, coherence and"
+            " structural frequency invariants"
+        ),
+    )
+    math_group.add_argument(
+        "--math-dimension",
+        type=int,
+        help="Hilbert space dimension to use when the math engine is enabled",
+    )
+    math_group.add_argument(
+        "--math-coherence-spectrum",
+        type=float,
+        nargs="+",
+        metavar="λ",
+        help=(
+            "Eigenvalues for the coherence operator (defaults to a flat"
+            " spectrum when omitted)"
+        ),
+    )
+    math_group.add_argument(
+        "--math-coherence-c-min",
+        type=float,
+        help="Explicit coherence floor C_min for the operator",
+    )
+    math_group.add_argument(
+        "--math-coherence-threshold",
+        type=float,
+        help="Coherence expectation threshold enforced during validation",
+    )
+    math_group.add_argument(
+        "--math-frequency-diagonal",
+        type=float,
+        nargs="+",
+        metavar="ν",
+        help=(
+            "Diagonal entries for the structural frequency operator"
+            " (defaults to the identity spectrum)"
+        ),
+    )
+    math_group.add_argument(
+        "--math-generator-diagonal",
+        type=float,
+        nargs="+",
+        metavar="ω",
+        help=(
+            "Diagonal ΔNFR generator used by the mathematical dynamics"
+            " engine (defaults to the null generator)"
+        ),
+    )
+
     p_run.set_defaults(func=cmd_run)
 
 

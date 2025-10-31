@@ -8,9 +8,10 @@ from collections.abc import Mapping
 from copy import deepcopy
 from importlib import import_module
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 import networkx as nx
+import numpy as np
 
 from ..config import apply_config
 from ..config.presets import (
@@ -22,6 +23,16 @@ from ..dynamics import default_glyph_selector, parametric_glyph_selector, run
 from ..execution import CANONICAL_PRESET_NAME, play
 from ..flatten import parse_program_tokens
 from ..glyph_history import ensure_history
+from ..mathematics import (
+    BasicStateProjector,
+    CoherenceOperator,
+    FrequencyOperator,
+    HilbertSpace,
+    MathematicalDynamicsEngine,
+    NFRValidator,
+    make_coherence_operator,
+    make_frequency_operator,
+)
 from ..metrics import (
     build_metrics_summary,
     export_metrics,
@@ -80,6 +91,152 @@ def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
             _save_json(args.save_history, history)
         if getattr(args, "export_history_base", None):
             export_metrics(G, args.export_history_base, fmt=args.export_format)
+
+
+def _to_float_array(values: Sequence[float] | None, *, name: str) -> np.ndarray | None:
+    if values is None:
+        return None
+    array = np.asarray(list(values), dtype=float)
+    if array.ndim != 1:
+        raise ValueError(f"{name} must be a one-dimensional sequence of numbers")
+    return array
+
+
+def _resolve_math_dimension(
+    args: argparse.Namespace, fallback: int
+) -> int:
+    dimension = getattr(args, "math_dimension", None)
+    candidate_lengths: list[int] = []
+    for attr in (
+        "math_coherence_spectrum",
+        "math_frequency_diagonal",
+        "math_generator_diagonal",
+    ):
+        seq = getattr(args, attr, None)
+        if seq is not None:
+            candidate_lengths.append(len(seq))
+    if dimension is None:
+        if candidate_lengths:
+            unique = set(candidate_lengths)
+            if len(unique) > 1:
+                raise ValueError(
+                    "Math engine configuration requires matching sequence lengths"
+                )
+            dimension = unique.pop()
+        else:
+            dimension = fallback
+    else:
+        for length in candidate_lengths:
+            if length != dimension:
+                raise ValueError(
+                    "Math engine sequence lengths must match the requested dimension"
+                )
+    if dimension is None or dimension <= 0:
+        raise ValueError("Hilbert space dimension must be a positive integer")
+    return int(dimension)
+
+
+def _build_math_engine_config(
+    G: "nx.Graph", args: argparse.Namespace
+) -> dict[str, Any]:
+    node_count = G.number_of_nodes() if hasattr(G, "number_of_nodes") else len(list(G.nodes))
+    fallback_dim = max(1, int(node_count) if node_count is not None else 1)
+    dimension = _resolve_math_dimension(args, fallback=fallback_dim)
+
+    coherence_spectrum = _to_float_array(
+        getattr(args, "math_coherence_spectrum", None),
+        name="--math-coherence-spectrum",
+    )
+    if coherence_spectrum is not None and coherence_spectrum.size != dimension:
+        raise ValueError("Coherence spectrum length must equal the Hilbert dimension")
+
+    frequency_diagonal = _to_float_array(
+        getattr(args, "math_frequency_diagonal", None),
+        name="--math-frequency-diagonal",
+    )
+    if frequency_diagonal is not None and frequency_diagonal.size != dimension:
+        raise ValueError("Frequency diagonal length must equal the Hilbert dimension")
+
+    generator_diagonal = _to_float_array(
+        getattr(args, "math_generator_diagonal", None),
+        name="--math-generator-diagonal",
+    )
+    if generator_diagonal is not None and generator_diagonal.size != dimension:
+        raise ValueError("Generator diagonal length must equal the Hilbert dimension")
+
+    coherence_c_min = getattr(args, "math_coherence_c_min", None)
+    if coherence_spectrum is None:
+        coherence_operator = make_coherence_operator(
+            dimension,
+            c_min=float(coherence_c_min) if coherence_c_min is not None else 0.1,
+        )
+    else:
+        if coherence_c_min is not None:
+            coherence_operator = CoherenceOperator(
+                coherence_spectrum, c_min=float(coherence_c_min)
+            )
+        else:
+            coherence_operator = CoherenceOperator(coherence_spectrum)
+        if not coherence_operator.is_positive_semidefinite():
+            raise ValueError("Coherence spectrum must be positive semidefinite")
+
+    frequency_matrix: np.ndarray
+    if frequency_diagonal is None:
+        frequency_matrix = np.eye(dimension, dtype=float)
+    else:
+        frequency_matrix = np.diag(frequency_diagonal)
+    frequency_operator = make_frequency_operator(frequency_matrix)
+
+    generator_matrix: np.ndarray
+    if generator_diagonal is None:
+        generator_matrix = np.zeros((dimension, dimension), dtype=float)
+    else:
+        generator_matrix = np.diag(generator_diagonal)
+
+    hilbert_space = HilbertSpace(dimension)
+    dynamics_engine = MathematicalDynamicsEngine(
+        generator_matrix,
+        hilbert_space=hilbert_space,
+    )
+
+    coherence_threshold = getattr(args, "math_coherence_threshold", None)
+    if coherence_threshold is None:
+        coherence_threshold = float(coherence_operator.c_min)
+    else:
+        coherence_threshold = float(coherence_threshold)
+
+    state_projector = BasicStateProjector()
+    validator = NFRValidator(
+        hilbert_space,
+        coherence_operator,
+        coherence_threshold,
+        frequency_operator=frequency_operator,
+    )
+
+    return {
+        "enabled": True,
+        "dimension": dimension,
+        "hilbert_space": hilbert_space,
+        "coherence_operator": coherence_operator,
+        "frequency_operator": frequency_operator,
+        "coherence_threshold": coherence_threshold,
+        "state_projector": state_projector,
+        "validator": validator,
+        "dynamics_engine": dynamics_engine,
+        "generator_matrix": generator_matrix,
+    }
+
+
+def _configure_math_engine(G: "nx.Graph", args: argparse.Namespace) -> None:
+    if not getattr(args, "math_engine", False):
+        G.graph.pop("_math_engine", None)
+        return
+    try:
+        config = _build_math_engine_config(G, args)
+    except ValueError as exc:
+        logger.error("Math engine configuration error: %s", exc)
+        raise SystemExit(1) from exc
+    G.graph["_math_engine"] = config
 
 
 def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
@@ -212,6 +369,7 @@ def _build_graph_from_args(args: argparse.Namespace) -> "nx.Graph":
         G.graph["ATTACH_STD_OBSERVER"] = True
     prepare_network(G)
     register_callbacks_and_observer(G)
+    _configure_math_engine(G, args)
     return G
 
 
@@ -312,6 +470,104 @@ def _run_cli_program(
     return 0, result_graph
 
 
+def _log_math_engine_summary(G: "nx.Graph") -> None:
+    math_cfg = G.graph.get("_math_engine")
+    if not isinstance(math_cfg, Mapping) or not math_cfg.get("enabled"):
+        return
+
+    nodes = list(G.nodes)
+    if not nodes:
+        logger.info("[MATH] Math engine validation skipped: no nodes present")
+        return
+
+    hilbert_space: HilbertSpace = math_cfg["hilbert_space"]
+    coherence_operator: CoherenceOperator = math_cfg["coherence_operator"]
+    frequency_operator: FrequencyOperator | None = math_cfg.get("frequency_operator")
+    state_projector: BasicStateProjector = math_cfg.get(
+        "state_projector", BasicStateProjector()
+    )
+    validator: NFRValidator | None = math_cfg.get("validator")
+    if validator is None:
+        coherence_threshold = math_cfg.get("coherence_threshold")
+        validator = NFRValidator(
+            hilbert_space,
+            coherence_operator,
+            float(coherence_threshold) if coherence_threshold is not None else 0.0,
+            frequency_operator=frequency_operator,
+        )
+        math_cfg["validator"] = validator
+
+    enforce_frequency = bool(frequency_operator is not None)
+
+    norm_values: list[float] = []
+    normalized_flags: list[bool] = []
+    coherence_flags: list[bool] = []
+    coherence_values: list[float] = []
+    coherence_threshold: float | None = None
+    frequency_flags: list[bool] = []
+    frequency_values: list[float] = []
+    frequency_spectrum_min: float | None = None
+
+    for node_id in nodes:
+        data = G.nodes[node_id]
+        epi = float(data.get("EPI", 0.0))
+        nu_f = float(data.get("vf", 0.0))
+        theta = float(data.get("theta", 0.0))
+        state = state_projector(epi=epi, nu_f=nu_f, theta=theta, dim=hilbert_space.dimension)
+        norm_values.append(float(hilbert_space.norm(state)))
+        outcome = validator.validate(
+            state,
+            enforce_frequency_positivity=enforce_frequency,
+        )
+        summary = outcome.summary
+        normalized_flags.append(bool(summary.get("normalized", False)))
+
+        coherence_summary = summary.get("coherence")
+        if isinstance(coherence_summary, Mapping):
+            coherence_flags.append(bool(coherence_summary.get("passed", False)))
+            coherence_values.append(float(coherence_summary.get("value", 0.0)))
+            if coherence_threshold is None and "threshold" in coherence_summary:
+                coherence_threshold = float(coherence_summary.get("threshold", 0.0))
+
+        frequency_summary = summary.get("frequency")
+        if isinstance(frequency_summary, Mapping):
+            frequency_flags.append(bool(frequency_summary.get("passed", False)))
+            frequency_values.append(float(frequency_summary.get("value", 0.0)))
+            if frequency_spectrum_min is None and "spectrum_min" in frequency_summary:
+                frequency_spectrum_min = float(frequency_summary.get("spectrum_min", 0.0))
+
+    if norm_values:
+        logger.info(
+            "[MATH] Hilbert norm preserved=%s (min=%.6f, max=%.6f)",
+            all(normalized_flags),
+            min(norm_values),
+            max(norm_values),
+        )
+
+    if coherence_values and coherence_threshold is not None:
+        logger.info(
+            "[MATH] Coherence ≥ C_min=%s (C_min=%.6f, min=%.6f)",
+            all(coherence_flags),
+            float(coherence_threshold),
+            min(coherence_values),
+        )
+
+    if frequency_values:
+        if frequency_spectrum_min is not None:
+            logger.info(
+                "[MATH] νf positivity=%s (min=%.6f, spectrum_min=%.6f)",
+                all(frequency_flags),
+                min(frequency_values),
+                frequency_spectrum_min,
+            )
+        else:
+            logger.info(
+                "[MATH] νf positivity=%s (min=%.6f)",
+                all(frequency_flags),
+                min(frequency_values),
+            )
+
+
 def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
     cfg_coh = G.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"])
     cfg_diag = G.graph.get("DIAGNOSIS", METRIC_DEFAULTS["DIAGNOSIS"])
@@ -337,6 +593,8 @@ def _log_run_summaries(G: "nx.Graph", args: argparse.Namespace) -> None:
         logger.info("Top operators by Tg: %s", glyph_top(G, k=5))
         if has_latency_values:
             logger.info("Average latency: %s", summary["latency_mean"])
+
+    _log_math_engine_summary(G)
 
 
 def cmd_run(args: argparse.Namespace) -> int:
