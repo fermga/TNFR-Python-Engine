@@ -26,6 +26,7 @@ from .utils import (
     normalize_counter,
 )
 from .validation import validate_window
+from .telemetry import ensure_nu_f_telemetry, record_nu_f_window
 
 __all__ = (
     "attach_standard_observer",
@@ -62,12 +63,110 @@ _STD_CALLBACKS = {
 }
 
 
+_REORG_STATE_KEY = "_std_observer_reorg"
+
+
+def _resolve_reorg_state(G: TNFRGraph) -> dict[str, object]:
+    state = G.graph.get(_REORG_STATE_KEY)
+    if not isinstance(state, dict):
+        state = {}
+        G.graph[_REORG_STATE_KEY] = state
+    return state
+
+
+def _before_step_reorg(G: TNFRGraph, ctx: Mapping[str, object] | None) -> None:
+    """Capture structural time metadata before the step starts."""
+
+    ensure_nu_f_telemetry(G)
+    state = _resolve_reorg_state(G)
+    step_idx = ctx.get("step") if ctx else None
+    try:
+        state["step"] = int(step_idx) if step_idx is not None else None
+    except (TypeError, ValueError):
+        state["step"] = None
+    start_t = float(G.graph.get("_t", 0.0))
+    state["start_t"] = start_t
+    dt_raw = ctx.get("dt") if ctx else None
+    try:
+        state["dt"] = float(dt_raw) if dt_raw is not None else None
+    except (TypeError, ValueError):
+        state["dt"] = None
+
+
+def _after_step_reorg(G: TNFRGraph, ctx: Mapping[str, object] | None) -> None:
+    """Record the reorganisation window for νf telemetry."""
+
+    state = _resolve_reorg_state(G)
+    pending_step = state.get("step")
+    ctx_step = ctx.get("step") if ctx else None
+    if pending_step is not None and ctx_step is not None and pending_step != ctx_step:
+        # Ignore mismatched callbacks to avoid double counting.
+        return
+
+    try:
+        start_t = float(state.get("start_t", float(G.graph.get("_t", 0.0))))
+    except (TypeError, ValueError):
+        start_t = float(G.graph.get("_t", 0.0))
+    end_t = float(G.graph.get("_t", start_t))
+    dt_raw = state.get("dt")
+    try:
+        duration = float(dt_raw) if dt_raw is not None else end_t - start_t
+    except (TypeError, ValueError):
+        duration = end_t - start_t
+    if duration <= 0.0:
+        duration = end_t - start_t
+    if duration <= 0.0:
+        return
+
+    stable_frac = ctx.get("stable_frac") if ctx else None
+    if stable_frac is None:
+        hist = ensure_history(G)
+        series = hist.get("stable_frac", [])
+        stable_frac = series[-1] if series else None
+    try:
+        stable_frac_f = float(stable_frac) if stable_frac is not None else None
+    except (TypeError, ValueError):
+        stable_frac_f = None
+    total_nodes = G.number_of_nodes()
+    if stable_frac_f is None:
+        reorganisations = total_nodes
+    else:
+        frac = min(max(stable_frac_f, 0.0), 1.0)
+        stable_nodes = int(round(frac * total_nodes))
+        reorganisations = max(total_nodes - stable_nodes, 0)
+
+    record_nu_f_window(
+        G,
+        reorganisations,
+        duration,
+        start=start_t,
+        end=end_t,
+    )
+    state["last_duration"] = duration
+    state["last_reorganisations"] = reorganisations
+    state["last_end_t"] = end_t
+    state["step"] = None
+
+
 def attach_standard_observer(G: TNFRGraph) -> TNFRGraph:
     """Register standard callbacks: before_step, after_step, on_remesh."""
     if G.graph.get("_STD_OBSERVER"):
         return G
     for event, fn in _STD_CALLBACKS.items():
         callback_manager.register_callback(G, event, fn)
+    callback_manager.register_callback(
+        G,
+        CallbackEvent.BEFORE_STEP.value,
+        _before_step_reorg,
+        name="std_reorg_before",
+    )
+    callback_manager.register_callback(
+        G,
+        CallbackEvent.AFTER_STEP.value,
+        _after_step_reorg,
+        name="std_reorg_after",
+    )
+    ensure_nu_f_telemetry(G)
     G.graph["_STD_OBSERVER"] = "attached"
     return G
 

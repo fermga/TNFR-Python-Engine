@@ -25,6 +25,16 @@ __all__ = (
 )
 
 
+_NU_F_HISTORY_KEYS = (
+    "nu_f_rate_hz_str",
+    "nu_f_rate_hz",
+    "nu_f_ci_lower_hz_str",
+    "nu_f_ci_upper_hz_str",
+    "nu_f_ci_lower_hz",
+    "nu_f_ci_upper_hz",
+)
+
+
 def _ensure_history(
     nd: MutableMapping[str, Any], window: int, *, create_zero: bool = False
 ) -> tuple[int, deque[str] | None]:
@@ -233,6 +243,8 @@ def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]:
     if replaced:
         G.graph.pop(sentinel_key, None)
     _normalise_state_streams(cast(MutableMapping[str, Any], hist))
+    for key in _NU_F_HISTORY_KEYS:
+        hist.setdefault(key, [])
     return hist
 
 
