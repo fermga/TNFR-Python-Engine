@@ -101,6 +101,27 @@ EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
         ),
         "third_party": ("networkx",),
     },
+    "get_hz_bridge": {
+        "submodules": (
+            "tnfr.units",
+            "tnfr.constants",
+        ),
+        "third_party": (),
+    },
+    "hz_str_to_hz": {
+        "submodules": (
+            "tnfr.units",
+            "tnfr.constants",
+        ),
+        "third_party": (),
+    },
+    "hz_to_hz_str": {
+        "submodules": (
+            "tnfr.units",
+            "tnfr.constants",
+        ),
+        "third_party": (),
+    },
 }
 
 
@@ -256,6 +277,9 @@ _HAS_STRUCTURAL_EXPORTS = _assign_exports(
 )
 
 
+_assign_exports("units", ("get_hz_bridge", "hz_str_to_hz", "hz_to_hz_str"))
+
+
 def _emit_missing_dependency_warning() -> None:
     if not _MISSING_EXPORTS:
         return
@@ -279,6 +303,9 @@ __all__ = [
     "run",
     "prepare_network",
     "create_nfr",
+    "get_hz_bridge",
+    "hz_str_to_hz",
+    "hz_to_hz_str",
 ]
 
 if _HAS_STRUCTURAL_EXPORTS:
