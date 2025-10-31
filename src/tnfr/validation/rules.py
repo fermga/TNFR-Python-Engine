@@ -1,7 +1,7 @@
 """Validation helpers grouped by rule type.
 
 These utilities implement the canonical checks required by
-:mod:`tnfr.validation.grammar`.  They are organised here to make it
+:mod:`tnfr.operators.grammar`.  They are organised here to make it
 explicit which pieces enforce repetition control, transition
 compatibility or stabilisation thresholds.
 """
@@ -18,7 +18,7 @@ from ..types import Glyph
 from .compatibility import CANON_COMPAT, CANON_FALLBACK
 
 if TYPE_CHECKING:  # pragma: no cover - only for typing
-    from .grammar import GrammarContext
+    from ..operators.grammar import GrammarContext
 
 __all__ = [
     "coerce_glyph",

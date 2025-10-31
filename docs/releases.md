@@ -358,7 +358,7 @@ python scripts/rollback_release.py --version 16.0.0 \
 - Retired the long-standing compatibility modules :mod:`tnfr.constants_glyphs`,
   :mod:`tnfr.presets`, and :mod:`tnfr.grammar`. The deprecated shims have been
   removed; import :mod:`tnfr.config.constants`, :mod:`tnfr.config.presets`, and
-  :mod:`tnfr.validation.grammar` instead.
+  :mod:`tnfr.operators.grammar` instead.
 
 ### 7.0.0 (Spanish identifiers removed)
 

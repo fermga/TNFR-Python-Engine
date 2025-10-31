@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from tnfr.types import Glyph
-from tnfr.validation.grammar import GrammarContext
+from tnfr.operators.grammar import GrammarContext
 from tnfr.validation import rules
 
 

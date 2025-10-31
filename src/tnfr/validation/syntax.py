@@ -1,165 +1,39 @@
-"""Syntax validation for TNFR operator sequences."""
+"""Compatibility wrapper around :mod:`tnfr.operators.grammar` validators."""
 
 from __future__ import annotations
 
 from collections.abc import Iterable
 
 from . import ValidationOutcome
-
-from ..config.operator_names import (
-    COHERENCE,
-    INTERMEDIATE_OPERATORS,
-    RECEPTION,
-    SELF_ORGANIZATION,
-    SELF_ORGANIZATION_CLOSURES,
-    VALID_END_OPERATORS,
-    VALID_START_OPERATORS,
-    canonical_operator_name,
-    operator_display_name,
-)
-from ..operators.registry import OPERATORS
+from ..operators.grammar import SequenceValidationResult, validate_sequence as _validate
 
 __all__ = ("validate_sequence",)
 
 
-_MISSING = object()
-
-
-_CANONICAL_START = tuple(sorted(VALID_START_OPERATORS))
-_CANONICAL_INTERMEDIATE = tuple(sorted(INTERMEDIATE_OPERATORS))
-_CANONICAL_END = tuple(sorted(VALID_END_OPERATORS))
-
-
-def _format_token_group(tokens: tuple[str, ...]) -> str:
-    return ", ".join(operator_display_name(token) for token in sorted(tokens))
-
-
-def _validate_start(token: str) -> tuple[bool, str]:
-    """Ensure the sequence begins with a valid structural operator."""
-
-    if not isinstance(token, str):
-        return False, "tokens must be str"
-    if token not in VALID_START_OPERATORS:
-        valid_tokens = _format_token_group(_CANONICAL_START)
-        return False, f"must start with {valid_tokens}"
-    return True, ""
-
-
-def _validate_intermediate(
-    found_reception: bool, found_coherence: bool, seen_intermediate: bool
-) -> tuple[bool, str]:
-    """Check that the central TNFR segment is present."""
-
-    if not (found_reception and found_coherence):
-        return False, f"missing {RECEPTION}→{COHERENCE} segment"
-    if not seen_intermediate:
-        intermediate_tokens = _format_token_group(_CANONICAL_INTERMEDIATE)
-        return False, f"missing {intermediate_tokens} segment"
-    return True, ""
-
-
-def _validate_end(last_token: str, open_thol: bool) -> tuple[bool, str]:
-    """Validate closing operator and any pending THOL blocks."""
-
-    if last_token not in VALID_END_OPERATORS:
-        cierre_tokens = _format_token_group(_CANONICAL_END)
-        return False, f"sequence must end with {cierre_tokens}"
-    if open_thol:
-        return False, "THOL block without closure"
-    return True, ""
-
-
-def _validate_known_tokens(token_to_canonical: dict[str, str]) -> tuple[bool, str]:
-    """Ensure all tokens map to canonical operators."""
-
-    unknown_tokens = {
-        alias
-        for alias, canonical in token_to_canonical.items()
-        if canonical not in OPERATORS
+def _to_validation_outcome(result: SequenceValidationResult) -> ValidationOutcome[tuple[str, ...]]:
+    summary = dict(result.summary)
+    artifacts = {
+        "canonical_tokens": result.canonical_tokens,
+        "metadata": result.metadata,
     }
-    if unknown_tokens:
-        ordered = ", ".join(sorted(unknown_tokens))
-        return False, f"unknown tokens: {ordered}"
-    return True, ""
-
-
-def _validate_token_sequence(names: list[str]) -> tuple[bool, str]:
-    """Validate token format and logical coherence in one pass."""
-
-    if not names:
-        return False, "empty sequence"
-
-    ok, msg = _validate_start(names[0])
-    if not ok:
-        return False, msg
-
-    token_to_canonical: dict[str, str] = {}
-    found_reception = False
-    found_coherence = False
-    seen_intermediate = False
-    open_thol = False
-
-    for name in names:
-        if not isinstance(name, str):
-            return False, "tokens must be str"
-        canonical = canonical_operator_name(name)
-        token_to_canonical[name] = canonical
-
-        if canonical == RECEPTION and not found_reception:
-            found_reception = True
-        elif found_reception and canonical == COHERENCE and not found_coherence:
-            found_coherence = True
-        elif (
-            found_coherence
-            and not seen_intermediate
-            and canonical in INTERMEDIATE_OPERATORS
-        ):
-            seen_intermediate = True
-
-        if canonical == SELF_ORGANIZATION:
-            open_thol = True
-        elif open_thol and canonical in SELF_ORGANIZATION_CLOSURES:
-            open_thol = False
-
-    ok, msg = _validate_known_tokens(token_to_canonical)
-    if not ok:
-        return False, msg
-    ok, msg = _validate_intermediate(
-        found_reception, found_coherence, seen_intermediate
+    return ValidationOutcome(
+        subject=result.tokens,
+        passed=result.passed,
+        summary=summary,
+        artifacts=artifacts,
     )
-    if not ok:
-        return False, msg
-    ok, msg = _validate_end(names[-1], open_thol)
-    if not ok:
-        return False, msg
-    return True, "ok"
 
 
 def validate_sequence(
-    names: Iterable[str] | object = _MISSING, **kwargs: object
+    names: Iterable[str] | object = None, **kwargs: object
 ) -> ValidationOutcome[tuple[str, ...]]:
-    """Validate minimal TNFR syntax rules."""
+    """Validate minimal TNFR syntax rules returning a legacy :class:`ValidationOutcome`."""
 
-    if kwargs:
-        unexpected = ", ".join(sorted(kwargs))
-        raise TypeError(
-            f"validate_sequence() got unexpected keyword argument(s): {unexpected}"
-        )
-
-    if names is _MISSING:
+    if names is None and "names" not in kwargs:
         raise TypeError("validate_sequence() missing required argument: 'names'")
 
-    sequence_list = list(names)
-    passed, message = _validate_token_sequence(sequence_list)
-    canonical_sequence = tuple(sequence_list)
-    summary = {
-        "message": message,
-        "passed": passed,
-        "tokens": canonical_sequence,
-    }
-    return ValidationOutcome(
-        subject=canonical_sequence,
-        passed=passed,
-        summary=summary,
-        artifacts=None,
-    )
+    if names is None and "names" in kwargs:
+        names = kwargs.pop("names")
+
+    result = _validate(names, **kwargs)
+    return _to_validation_outcome(result)

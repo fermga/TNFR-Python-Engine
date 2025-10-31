@@ -2,7 +2,7 @@
 
 This module centralises the canonical transitions that keep TNFR
 coherence consistent across refactors.  It is intentionally lightweight
-so :mod:`tnfr.validation.grammar` can depend on it without introducing
+so :mod:`tnfr.operators.grammar` can depend on it without introducing
 cycles.
 """
 

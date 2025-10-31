@@ -43,6 +43,7 @@ from .mathematics import (
     make_coherence_operator,
     make_frequency_operator,
 )
+from .operators import validate_sequence
 from .operators.definitions import (
     Coherence,
     Contraction,
@@ -61,7 +62,6 @@ from .operators.definitions import (
 )
 from .operators.registry import OPERATORS
 from .types import DeltaNFRHook, NodeId, TNFRGraph
-from .validation import validate_sequence
 
 try:  # pragma: no cover - optional dependency path exercised in CI extras
     import numpy as np

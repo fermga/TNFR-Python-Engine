@@ -15,7 +15,12 @@ from ..constants import get_graph_param, get_param
 from ..glyph_history import ensure_history
 from ..utils import clamp01
 from ..metrics.common import compute_dnfr_accel_max, merge_and_normalize_weights
-from ..operators import apply_glyph
+from ..operators import (
+    apply_glyph,
+    enforce_canonical_grammar,
+    on_applied_glyph,
+    GrammarContext,
+)
 from ..selector import (
     _apply_selector_hysteresis,
     _calc_selector_score,
@@ -24,12 +29,7 @@ from ..selector import (
 )
 from ..types import Glyph, GlyphCode, GlyphSelector, HistoryState, NodeId, TNFRGraph
 from ..utils import get_numpy
-from ..validation import (
-    GrammarContext,
-    enforce_canonical_grammar,
-    on_applied_glyph,
-    soft_grammar_filters,
-)
+from ..validation import soft_grammar_filters
 from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_SI
 
 __all__ = (

@@ -62,15 +62,10 @@ from __future__ import annotations
 from concurrent.futures import ProcessPoolExecutor
 
 from ..metrics.sense_index import compute_Si
-from ..operators import apply_glyph
+from ..operators import apply_glyph, enforce_canonical_grammar, on_applied_glyph
 from ..types import GlyphCode
 from ..utils import get_numpy
-from ..validation import (
-    apply_canonical_clamps,
-    enforce_canonical_grammar,
-    on_applied_glyph,
-    validate_canon,
-)
+from ..validation import apply_canonical_clamps, validate_canon
 from . import coordination, dnfr, integrators
 from .adaptation import adapt_vf_by_coherence
 from .aliases import (

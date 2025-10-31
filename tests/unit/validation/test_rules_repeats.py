@@ -6,7 +6,7 @@ from collections import deque
 
 from tnfr.types import Glyph
 from tnfr.validation.soft_filters import check_repeats
-from tnfr.validation.grammar import GrammarContext
+from tnfr.operators.grammar import GrammarContext
 
 
 def _ctx_with_node(graph_canon, cfg_soft):
