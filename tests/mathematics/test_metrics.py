@@ -60,6 +60,18 @@ def test_dcoh_is_symmetric(
     assert forward == pytest.approx(backward, rel=1e-12, abs=1e-12)
 
 
+def test_dcoh_orthogonal_states_are_maximally_dissimilar(
+    hermitian_operator: CoherenceOperator, orthonormal_basis: tuple[np.ndarray, np.ndarray]
+) -> None:
+    """Orthogonal basis vectors must yield maximal coherence dissimilarity."""
+
+    psi1, psi2 = orthonormal_basis
+
+    result = dcoh(psi1, psi2, hermitian_operator)
+
+    assert result == pytest.approx(1.0, abs=1e-12)
+
+
 def test_dcoh_satisfies_triangle_inequality(
     hermitian_operator: CoherenceOperator, orthonormal_basis: tuple[np.ndarray, np.ndarray]
 ) -> None:
