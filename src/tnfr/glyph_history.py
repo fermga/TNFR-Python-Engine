@@ -11,7 +11,6 @@ from .constants import get_param, normalise_state_token
 from .glyph_runtime import last_glyph
 from .types import TNFRGraph
 from .utils import ensure_collection, get_logger
-from tnfr.validation import validate_window
 
 logger = get_logger(__name__)
 
@@ -30,6 +29,8 @@ def _ensure_history(
     nd: MutableMapping[str, Any], window: int, *, create_zero: bool = False
 ) -> tuple[int, deque[str] | None]:
     """Validate ``window`` and ensure ``nd['glyph_history']`` deque."""
+
+    from tnfr.validation.window import validate_window
 
     v_window = validate_window(window)
     if v_window == 0 and not create_zero:

@@ -81,6 +81,27 @@ def _get_prep_state(G):
     return manager, state
 
 
+def test_prepare_dnfr_data_uses_public_cache_factory(monkeypatch):
+    import tnfr.dynamics.dnfr as dnfr_module
+    import tnfr.utils.cache as cache_module
+
+    calls = {"count": 0}
+    original_factory = cache_module.new_dnfr_cache
+
+    def tracking_factory():
+        calls["count"] += 1
+        return original_factory()
+
+    monkeypatch.setattr(cache_module, "new_dnfr_cache", tracking_factory)
+    monkeypatch.setattr(dnfr_module, "new_dnfr_cache", tracking_factory)
+
+    G = _setup_graph()
+    data = _prepare_dnfr_data(G)
+
+    assert calls["count"] >= 1
+    assert isinstance(data["cache"], cache_module.DnfrCache)
+
+
 def test_prepare_dnfr_data_populates_degree_cache_without_topology_weight():
     np = pytest.importorskip("numpy")
 

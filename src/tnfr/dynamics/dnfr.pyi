@@ -1,6 +1,7 @@
 from typing import Any
 
 from tnfr.types import DeltaNFRHook, TNFRGraph
+from tnfr.utils.cache import DnfrCache as DnfrCache
 
 __all__: tuple[str, ...]
 

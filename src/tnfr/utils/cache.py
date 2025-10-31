@@ -75,10 +75,9 @@ __all__ = (
     "_GRAPH_CACHE_LAYERS_KEY",
     "_SeedHashCache",
     "ScopedCounterCache",
+    "DnfrCache",
+    "new_dnfr_cache",
 )
-
-if TYPE_CHECKING:  # pragma: no cover - typing aide
-    from ..dynamics.dnfr import DnfrCache
 
 @dataclass(frozen=True)
 class CacheCapacityConfig:
@@ -108,6 +107,83 @@ class CacheStatistics:
             total_time=self.total_time + other.total_time,
             timings=self.timings + other.timings,
         )
+
+
+@dataclass
+class DnfrCache:
+    idx: dict[Any, int]
+    theta: list[float]
+    epi: list[float]
+    vf: list[float]
+    cos_theta: list[float]
+    sin_theta: list[float]
+    neighbor_x: list[float]
+    neighbor_y: list[float]
+    neighbor_epi_sum: list[float]
+    neighbor_vf_sum: list[float]
+    neighbor_count: list[float]
+    neighbor_deg_sum: list[float] | None
+    th_bar: list[float] | None = None
+    epi_bar: list[float] | None = None
+    vf_bar: list[float] | None = None
+    deg_bar: list[float] | None = None
+    degs: dict[Any, float] | None = None
+    deg_list: list[float] | None = None
+    theta_np: Any | None = None
+    epi_np: Any | None = None
+    vf_np: Any | None = None
+    cos_theta_np: Any | None = None
+    sin_theta_np: Any | None = None
+    deg_array: Any | None = None
+    edge_src: Any | None = None
+    edge_dst: Any | None = None
+    checksum: Any | None = None
+    neighbor_x_np: Any | None = None
+    neighbor_y_np: Any | None = None
+    neighbor_epi_sum_np: Any | None = None
+    neighbor_vf_sum_np: Any | None = None
+    neighbor_count_np: Any | None = None
+    neighbor_deg_sum_np: Any | None = None
+    th_bar_np: Any | None = None
+    epi_bar_np: Any | None = None
+    vf_bar_np: Any | None = None
+    deg_bar_np: Any | None = None
+    grad_phase_np: Any | None = None
+    grad_epi_np: Any | None = None
+    grad_vf_np: Any | None = None
+    grad_topo_np: Any | None = None
+    grad_total_np: Any | None = None
+    dense_components_np: Any | None = None
+    dense_accum_np: Any | None = None
+    dense_degree_np: Any | None = None
+    neighbor_accum_np: Any | None = None
+    neighbor_inv_count_np: Any | None = None
+    neighbor_cos_avg_np: Any | None = None
+    neighbor_sin_avg_np: Any | None = None
+    neighbor_mean_tmp_np: Any | None = None
+    neighbor_mean_length_np: Any | None = None
+    edge_signature: Any | None = None
+    neighbor_accum_signature: Any | None = None
+    neighbor_edge_values_np: Any | None = None
+
+
+def new_dnfr_cache() -> DnfrCache:
+    """Return an empty :class:`DnfrCache` prepared for ΔNFR orchestration."""
+
+    return DnfrCache(
+        idx={},
+        theta=[],
+        epi=[],
+        vf=[],
+        cos_theta=[],
+        sin_theta=[],
+        neighbor_x=[],
+        neighbor_y=[],
+        neighbor_epi_sum=[],
+        neighbor_vf_sum=[],
+        neighbor_count=[],
+        neighbor_deg_sum=[],
+    )
 
 
 @dataclass
@@ -763,9 +839,15 @@ class CacheManager:
             )
 
 
-from .init import get_logger
+try:
+    from .init import get_logger as _get_logger
+except ImportError:  # pragma: no cover - circular bootstrap fallback
 
-_logger = get_logger(__name__)
+    def _get_logger(name: str) -> logging.Logger:
+        return logging.getLogger(name)
+
+_logger = _get_logger(__name__)
+get_logger = _get_logger
 
 
 def _normalise_callbacks(
@@ -1643,30 +1725,9 @@ DNFR_PREP_STATE_KEY = "_dnfr_prep_state"
 class DnfrPrepState:
     """State container coordinating ΔNFR preparation caches."""
 
-    cache: "DnfrCache"
+    cache: DnfrCache
     cache_lock: threading.RLock
     vector_lock: threading.RLock
-
-
-def _new_dnfr_cache() -> "DnfrCache":
-    """Return an empty :class:`~tnfr.dynamics.dnfr.DnfrCache` instance."""
-
-    from ..dynamics.dnfr import DnfrCache
-
-    return DnfrCache(
-        idx={},
-        theta=[],
-        epi=[],
-        vf=[],
-        cos_theta=[],
-        sin_theta=[],
-        neighbor_x=[],
-        neighbor_y=[],
-        neighbor_epi_sum=[],
-        neighbor_vf_sum=[],
-        neighbor_count=[],
-        neighbor_deg_sum=[],
-    )
 
 
 def _build_dnfr_prep_state(
@@ -1684,7 +1745,7 @@ def _build_dnfr_prep_state(
         cache_lock = threading.RLock()
         vector_lock = threading.RLock()
     state = DnfrPrepState(
-        cache=_new_dnfr_cache(),
+        cache=new_dnfr_cache(),
         cache_lock=cache_lock,
         vector_lock=vector_lock,
     )
@@ -1701,11 +1762,7 @@ def _coerce_dnfr_state(
     if isinstance(current, DnfrPrepState):
         graph["_dnfr_prep_cache"] = current.cache
         return current
-    try:
-        from ..dynamics.dnfr import DnfrCache
-    except Exception:  # pragma: no cover - defensive import
-        DnfrCache = None  # type: ignore[assignment]
-    if DnfrCache is not None and isinstance(current, DnfrCache):
+    if isinstance(current, DnfrCache):
         state = DnfrPrepState(
             cache=current,
             cache_lock=threading.RLock(),
