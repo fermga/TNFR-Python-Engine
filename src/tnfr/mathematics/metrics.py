@@ -75,7 +75,11 @@ def dcoh(
         vector1_norm = vector1
         vector2_norm = vector2
 
-    cross = np.vdot(vector1_norm, vector2_norm)
+    weighted_vector2 = operator.matrix @ vector2_norm
+    if weighted_vector2.shape != vector2_norm.shape:
+        raise ValueError("Operator application distorted coherence dimensionality.")
+
+    cross = np.vdot(vector1_norm, weighted_vector2)
     if not np.isfinite(cross):
         raise ValueError("State overlap produced a non-finite value.")
 

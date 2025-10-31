@@ -60,16 +60,21 @@ def test_dcoh_is_symmetric(
     assert forward == pytest.approx(backward, rel=1e-12, abs=1e-12)
 
 
-def test_dcoh_orthogonal_states_are_maximally_dissimilar(
+def test_dcoh_orthogonal_states_follow_operator_overlap(
     hermitian_operator: CoherenceOperator, orthonormal_basis: tuple[np.ndarray, np.ndarray]
 ) -> None:
-    """Orthogonal basis vectors must yield maximal coherence dissimilarity."""
+    """Orthogonal states inherit coherence from the operator's weighted overlap."""
 
     psi1, psi2 = orthonormal_basis
 
+    weighted_overlap = np.vdot(psi1, hermitian_operator.matrix @ psi2)
+    expect1 = hermitian_operator.expectation(psi1)
+    expect2 = hermitian_operator.expectation(psi2)
+    expected_dcoh = 1.0 - (np.abs(weighted_overlap) ** 2) / (expect1 * expect2)
+
     result = dcoh(psi1, psi2, hermitian_operator)
 
-    assert result == pytest.approx(1.0, abs=1e-12)
+    assert result == pytest.approx(expected_dcoh, abs=1e-12)
 
 
 def test_dcoh_satisfies_triangle_inequality(
