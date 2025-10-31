@@ -75,6 +75,21 @@ EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
         ),
         "third_party": ("networkx",),
     },
+    "create_math_nfr": {
+        "submodules": (
+            "tnfr.structural",
+            "tnfr.constants",
+            "tnfr.dynamics",
+            "tnfr.operators.definitions",
+            "tnfr.operators.registry",
+            "tnfr.validation",
+            "tnfr.mathematics",
+        ),
+        "third_party": (
+            "networkx",
+            "numpy",
+        ),
+    },
     "run_sequence": {
         "submodules": (
             "tnfr.structural",
@@ -236,7 +251,9 @@ _assign_exports("dynamics", ("step", "run"))
 _HAS_PREPARE_NETWORK = _assign_exports("ontosim", ("prepare_network",))
 
 
-_HAS_RUN_SEQUENCE = _assign_exports("structural", ("create_nfr", "run_sequence"))
+_HAS_STRUCTURAL_EXPORTS = _assign_exports(
+    "structural", ("create_nfr", "run_sequence", "create_math_nfr")
+)
 
 
 def _emit_missing_dependency_warning() -> None:
@@ -264,8 +281,8 @@ __all__ = [
     "create_nfr",
 ]
 
-if _HAS_RUN_SEQUENCE:
-    __all__.append("run_sequence")
+if _HAS_STRUCTURAL_EXPORTS:
+    __all__.extend(["run_sequence", "create_math_nfr"])
 
 
 _validate_export_dependencies()

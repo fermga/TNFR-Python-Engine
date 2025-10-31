@@ -23,7 +23,8 @@ validate_sequence
 
 from __future__ import annotations
 
-from typing import Iterable
+from copy import deepcopy
+from typing import Iterable, Mapping, Sequence
 
 import networkx as nx
 
@@ -31,6 +32,16 @@ from .constants import EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
 from .dynamics import (
     dnfr_epi_vf_mixed,
     set_delta_nfr_hook,
+)
+from .mathematics import (
+    BasicStateProjector,
+    CoherenceOperator,
+    FrequencyOperator,
+    HilbertSpace,
+    MathematicalDynamicsEngine,
+    NFRValidator,
+    make_coherence_operator,
+    make_frequency_operator,
 )
 from .operators.definitions import (
     Coherence,
@@ -51,6 +62,11 @@ from .operators.definitions import (
 from .operators.registry import OPERATORS
 from .types import DeltaNFRHook, NodeId, TNFRGraph
 from .validation import validate_sequence
+
+try:  # pragma: no cover - optional dependency path exercised in CI extras
+    import numpy as np
+except ImportError:  # pragma: no cover - optional dependency path exercised in CI extras
+    np = None  # type: ignore[assignment]
 
 # ---------------------------------------------------------------------------
 # 1) NFR factory
@@ -153,8 +169,318 @@ def create_nfr(
     return G, name
 
 
+def _resolve_dimension(
+    G: TNFRGraph,
+    *,
+    dimension: int | None,
+    hilbert_space: HilbertSpace | None,
+    existing_cfg: Mapping[str, object] | None,
+) -> int:
+    if hilbert_space is not None:
+        resolved = int(getattr(hilbert_space, "dimension", 0) or 0)
+        if resolved <= 0:
+            raise ValueError("Hilbert space dimension must be positive.")
+        return resolved
+
+    if dimension is None and existing_cfg:
+        candidate = existing_cfg.get("dimension")
+        if isinstance(candidate, int) and candidate > 0:
+            dimension = candidate
+
+    if dimension is None:
+        if hasattr(G, "number_of_nodes"):
+            count = int(G.number_of_nodes())
+        else:
+            count = len(tuple(G.nodes))
+        dimension = max(1, count)
+
+    resolved = int(dimension)
+    if resolved <= 0:
+        raise ValueError("Hilbert space dimension must be positive.")
+    return resolved
+
+
+def _ensure_coherence_operator(
+    *,
+    operator: CoherenceOperator | None,
+    dimension: int,
+    spectrum: Sequence[float] | None,
+    c_min: float | None,
+) -> CoherenceOperator:
+    if operator is not None:
+        return operator
+
+    kwargs: dict[str, object] = {}
+    if spectrum is not None:
+        spectrum_array = np.asarray(spectrum, dtype=np.complex128)
+        if spectrum_array.ndim != 1:
+            raise ValueError("Coherence spectrum must be one-dimensional.")
+        kwargs["spectrum"] = spectrum_array
+    if c_min is not None:
+        kwargs["c_min"] = float(c_min)
+    return make_coherence_operator(dimension, **kwargs)
+
+
+def _ensure_frequency_operator(
+    *,
+    operator: FrequencyOperator | None,
+    dimension: int,
+    diagonal: Sequence[float] | None,
+) -> FrequencyOperator:
+    if operator is not None:
+        return operator
+
+    if diagonal is None:
+        matrix = np.eye(dimension, dtype=float)
+    else:
+        diag_array = np.asarray(diagonal, dtype=float)
+        if diag_array.ndim != 1:
+            raise ValueError("Frequency diagonal must be one-dimensional.")
+        if diag_array.shape[0] != int(dimension):
+            raise ValueError("Frequency diagonal size must match Hilbert dimension.")
+        matrix = np.diag(diag_array)
+    return make_frequency_operator(np.asarray(matrix, dtype=np.complex128))
+
+
+def _ensure_generator_matrix(
+    *,
+    dimension: int,
+    diagonal: Sequence[float] | None,
+) -> "np.ndarray":
+    if diagonal is None:
+        return np.zeros((dimension, dimension), dtype=np.complex128)
+    diag_array = np.asarray(diagonal, dtype=np.complex128)
+    if diag_array.ndim != 1:
+        raise ValueError("Generator diagonal must be one-dimensional.")
+    if diag_array.shape[0] != int(dimension):
+        raise ValueError("Generator diagonal size must match Hilbert dimension.")
+    return np.diag(diag_array)
+
+
+def create_math_nfr(
+    name: str,
+    *,
+    epi: float = 0.0,
+    vf: float = 1.0,
+    theta: float = 0.0,
+    graph: TNFRGraph | None = None,
+    dnfr_hook: DeltaNFRHook = dnfr_epi_vf_mixed,
+    dimension: int | None = None,
+    hilbert_space: HilbertSpace | None = None,
+    coherence_operator: CoherenceOperator | None = None,
+    coherence_spectrum: Sequence[float] | None = None,
+    coherence_c_min: float | None = None,
+    coherence_threshold: float | None = None,
+    frequency_operator: FrequencyOperator | None = None,
+    frequency_diagonal: Sequence[float] | None = None,
+    generator_diagonal: Sequence[float] | None = None,
+    state_projector: BasicStateProjector | None = None,
+    dynamics_engine: MathematicalDynamicsEngine | None = None,
+    validator: NFRValidator | None = None,
+) -> tuple[TNFRGraph, str]:
+    """Create a TNFR node with canonical mathematical validation attached.
+
+    The helper wraps :func:`create_nfr` while projecting the structural state
+    into a Hilbert space so coherence, νf and norm invariants can be tracked via
+    the mathematical runtime.  It installs operators and validation metadata on
+    both the node and the hosting graph so that the
+    :class:`~tnfr.mathematics.MathematicalDynamicsEngine` can consume them
+    directly.
+
+    Parameters
+    ----------
+    name : str
+        Identifier for the new node.
+    epi, vf, theta : float, optional
+        Canonical TNFR scalars forwarded to :func:`create_nfr`.
+    dimension : int, optional
+        Hilbert space dimension. When omitted it is inferred from the graph size
+        (at least one).
+    hilbert_space : HilbertSpace, optional
+        Pre-built Hilbert space to reuse. Its dimension supersedes ``dimension``.
+    coherence_operator, frequency_operator : optional
+        Custom operators to install. When omitted they are derived from
+        ``coherence_spectrum``/``coherence_c_min`` and
+        ``frequency_diagonal`` respectively.
+    coherence_threshold : float, optional
+        Validation floor. Defaults to ``coherence_operator.c_min``.
+    generator_diagonal : sequence of float, optional
+        Diagonal entries for the unitary generator used by the mathematical
+        dynamics engine. Defaults to a null generator.
+    state_projector : BasicStateProjector, optional
+        Projector used to build the canonical spectral state for validation.
+
+    Returns
+    -------
+    tuple[TNFRGraph, str]
+        The graph and node identifier, mirroring :func:`create_nfr`.
+
+    Examples
+    --------
+    >>> G, node = create_math_nfr("math-seed", epi=0.4, vf=1.2, theta=0.05, dimension=3)
+    >>> metrics = G.nodes[node]["math_metrics"]
+    >>> round(metrics["norm"], 6)
+    1.0
+    >>> metrics["coherence_passed"], metrics["frequency_passed"]
+    (True, True)
+    >>> metrics["coherence_value"] >= metrics["coherence_threshold"]
+    True
+
+    Notes
+    -----
+    The helper mutates/extends ``G.graph['MATH_ENGINE']`` so subsequent calls to
+    :mod:`tnfr.dynamics.runtime` can advance the mathematical engine without
+    further configuration.
+    """
+
+    if np is None:
+        raise ImportError("create_math_nfr requires NumPy; install the 'tnfr[math]' extras.")
+
+    G, node = create_nfr(
+        name,
+        epi=epi,
+        vf=vf,
+        theta=theta,
+        graph=graph,
+        dnfr_hook=dnfr_hook,
+    )
+
+    existing_cfg = G.graph.get("MATH_ENGINE")
+    mapping_cfg: Mapping[str, object] | None
+    if isinstance(existing_cfg, Mapping):
+        mapping_cfg = existing_cfg
+    else:
+        mapping_cfg = None
+
+    resolved_dimension = _resolve_dimension(
+        G,
+        dimension=dimension,
+        hilbert_space=hilbert_space,
+        existing_cfg=mapping_cfg,
+    )
+
+    hilbert = hilbert_space or HilbertSpace(resolved_dimension)
+    resolved_dimension = int(getattr(hilbert, "dimension", resolved_dimension))
+
+    coherence = _ensure_coherence_operator(
+        operator=coherence_operator,
+        dimension=resolved_dimension,
+        spectrum=coherence_spectrum,
+        c_min=coherence_c_min,
+    )
+    threshold = float(
+        coherence_threshold if coherence_threshold is not None else coherence.c_min
+    )
+
+    frequency = _ensure_frequency_operator(
+        operator=frequency_operator,
+        dimension=resolved_dimension,
+        diagonal=frequency_diagonal,
+    )
+
+    projector = state_projector or BasicStateProjector()
+
+    generator_matrix = _ensure_generator_matrix(
+        dimension=resolved_dimension,
+        diagonal=generator_diagonal,
+    )
+    engine = dynamics_engine or MathematicalDynamicsEngine(
+        generator_matrix,
+        hilbert_space=hilbert,
+    )
+
+    enforce_frequency = frequency is not None
+    spectral_validator = validator or NFRValidator(
+        hilbert,
+        coherence,
+        threshold,
+        frequency_operator=frequency if enforce_frequency else None,
+    )
+
+    state = projector(
+        epi=float(epi),
+        nu_f=float(vf),
+        theta=float(theta),
+        dim=resolved_dimension,
+    )
+    norm_value = float(hilbert.norm(state))
+    outcome = spectral_validator.validate(
+        state,
+        enforce_frequency_positivity=enforce_frequency,
+    )
+    summary_raw = outcome.summary
+    summary = {key: deepcopy(value) for key, value in summary_raw.items()}
+
+    coherence_summary = summary.get("coherence")
+    frequency_summary = summary.get("frequency")
+
+    math_metrics = {
+        "norm": norm_value,
+        "normalized": bool(summary.get("normalized", False)),
+        "coherence_value": float(coherence_summary.get("value", 0.0))
+        if isinstance(coherence_summary, Mapping)
+        else 0.0,
+        "coherence_threshold": float(
+            coherence_summary.get("threshold", threshold)
+        )
+        if isinstance(coherence_summary, Mapping)
+        else threshold,
+        "coherence_passed": bool(coherence_summary.get("passed", False))
+        if isinstance(coherence_summary, Mapping)
+        else False,
+        "frequency_value": float(frequency_summary.get("value", 0.0))
+        if isinstance(frequency_summary, Mapping)
+        else 0.0,
+        "frequency_passed": bool(frequency_summary.get("passed", False))
+        if isinstance(frequency_summary, Mapping)
+        else True,
+        "frequency_spectrum_min": float(
+            frequency_summary.get("spectrum_min", 0.0)
+        )
+        if isinstance(frequency_summary, Mapping)
+        and "spectrum_min" in frequency_summary
+        else None,
+        "unitary_passed": bool(
+            summary.get("unitary_stability", {}).get("passed", False)
+        ),
+    }
+
+    node_context = {
+        "hilbert_space": hilbert,
+        "coherence_operator": coherence,
+        "frequency_operator": frequency,
+        "coherence_threshold": threshold,
+        "dimension": resolved_dimension,
+    }
+
+    node_data = G.nodes[node]
+    node_data["math_metrics"] = math_metrics
+    node_data["math_summary"] = summary
+    node_data["math_context"] = node_context
+
+    cfg = dict(mapping_cfg) if mapping_cfg is not None else {}
+    cfg.update(
+        {
+            "enabled": True,
+            "dimension": resolved_dimension,
+            "hilbert_space": hilbert,
+            "coherence_operator": coherence,
+            "coherence_threshold": threshold,
+            "frequency_operator": frequency,
+            "state_projector": projector,
+            "validator": spectral_validator,
+            "generator_matrix": generator_matrix,
+            "dynamics_engine": engine,
+        }
+    )
+    G.graph["MATH_ENGINE"] = cfg
+
+    return G, node
+
+
 __all__ = (
     "create_nfr",
+    "create_math_nfr",
     "Operator",
     "Emission",
     "Reception",
