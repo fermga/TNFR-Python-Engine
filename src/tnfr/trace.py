@@ -10,7 +10,7 @@ from __future__ import annotations
 import warnings
 from collections.abc import Iterable, Mapping
 from types import MappingProxyType
-from typing import Any, Callable, NamedTuple, Protocol, TypedDict, cast
+from typing import Any, Callable, NamedTuple, Protocol, cast
 
 from .constants import TRACE
 from .glyph_history import append_metric, count_glyphs, ensure_history
@@ -26,6 +26,8 @@ from .types import (
     TraceFieldFn,
     TraceFieldMap,
     TraceFieldRegistry,
+    TraceMetadata,
+    TraceSnapshot,
 )
 from .utils import cached_import, get_graph_mapping, is_non_string_sequence
 
@@ -43,29 +45,6 @@ class CallbackSpec(NamedTuple):
 
     name: str | None
     func: Callable[..., Any]
-
-
-class TraceMetadata(TypedDict, total=False):
-    """Metadata captured by trace field functions."""
-
-    gamma: Mapping[str, Any]
-    grammar: Mapping[str, Any]
-    selector: str | None
-    dnfr_weights: Mapping[str, Any]
-    si_weights: Mapping[str, Any]
-    si_sensitivity: Mapping[str, Any]
-    callbacks: Mapping[str, list[str] | None]
-    thol_open_nodes: int
-    kuramoto: Mapping[str, float]
-    sigma: Mapping[str, float]
-    glyphs: Mapping[str, int]
-
-
-class TraceSnapshot(TraceMetadata, total=False):
-    """Trace snapshot stored in the history."""
-
-    t: float
-    phase: str
 
 
 class TraceFieldSpec(NamedTuple):

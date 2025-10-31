@@ -63,6 +63,9 @@ __all__ = (
     "TraceFieldFn",
     "TraceFieldMap",
     "TraceFieldRegistry",
+    "TraceMetadata",
+    "TraceSnapshot",
+    "RemeshMeta",
     "HistoryState",
     "DiagnosisNodeData",
     "DiagnosisSharedState",
@@ -91,6 +94,7 @@ __all__ = (
     "GlyphMetricsHistoryValue",
     "GlyphMetricsHistory",
     "MetricsListHistory",
+    "ParallelWijPayload",
 )
 
 
@@ -99,8 +103,6 @@ if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
 
     from .glyph_history import HistoryDict as _HistoryDict
     from .tokens import Token as _Token
-    from .trace import TraceMetadata
-
     TNFRGraph: TypeAlias = nx.Graph
 else:  # pragma: no cover - runtime fallback without networkx
     TNFRGraph: TypeAlias = Any
@@ -382,6 +384,30 @@ TraceFieldMap: TypeAlias = Mapping[str, "TraceFieldFn"]
 TraceFieldRegistry: TypeAlias = dict[str, dict[str, "TraceFieldFn"]]
 #: Registry grouping trace field producers by capture phase.
 
+
+class TraceMetadata(TypedDict, total=False):
+    """Metadata captured by trace field producers across phases."""
+
+    gamma: Mapping[str, Any]
+    grammar: Mapping[str, Any]
+    selector: str | None
+    dnfr_weights: Mapping[str, Any]
+    si_weights: Mapping[str, Any]
+    si_sensitivity: Mapping[str, Any]
+    callbacks: Mapping[str, list[str] | None]
+    thol_open_nodes: int
+    kuramoto: Mapping[str, float]
+    sigma: Mapping[str, float]
+    glyphs: Mapping[str, int]
+
+
+class TraceSnapshot(TraceMetadata, total=False):
+    """Trace metadata snapshot recorded in TNFR history."""
+
+    t: float
+    phase: str
+
+
 HistoryState: TypeAlias = _HistoryDict | dict[str, Any]
 #: History container used to accumulate glyph metrics and logs for the graph.
 
@@ -463,3 +489,34 @@ GlyphMetricsHistory: TypeAlias = MutableMapping[str, GlyphMetricsHistoryValue]
 
 MetricsListHistory: TypeAlias = MutableMapping[str, list[Any]]
 """Mapping associating glyph metric identifiers with time series."""
+
+
+class RemeshMeta(TypedDict, total=False):
+    """Event metadata persisted after applying REMESH coherence operators."""
+
+    alpha: float
+    alpha_source: str
+    tau_global: int
+    tau_local: int
+    step: int | None
+    topo_hash: str | None
+    epi_mean_before: float
+    epi_mean_after: float
+    epi_checksum_before: str
+    epi_checksum_after: str
+    stable_frac_last: float
+    phase_sync_last: float
+    glyph_disr_last: float
+
+
+class ParallelWijPayload(TypedDict):
+    """Container for broadcasting Wij coherence components to worker pools."""
+
+    epi_vals: Sequence[float]
+    vf_vals: Sequence[float]
+    si_vals: Sequence[float]
+    cos_vals: Sequence[float]
+    sin_vals: Sequence[float]
+    weights: tuple[float, float, float, float]
+    epi_range: float
+    vf_range: float
