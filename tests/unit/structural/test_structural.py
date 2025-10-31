@@ -12,6 +12,7 @@ from tnfr.config.operator_names import (
     SELF_ORGANIZATION,
     SILENCE,
     TRANSITION,
+    operator_display_name,
 )
 from tnfr.constants import (
     D2EPI_PRIMARY,
@@ -140,7 +141,7 @@ def test_thol_requires_closure() -> None:
     ]
     outcome = validate_sequence(names)
     assert not outcome.passed
-    assert "THOL" in outcome.summary["message"]
+    assert operator_display_name(SELF_ORGANIZATION) in outcome.summary["message"]
 
 
 def test_validate_sequence_rejects_unknown_tokens() -> None:

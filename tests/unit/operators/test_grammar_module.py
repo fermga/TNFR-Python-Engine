@@ -13,6 +13,7 @@ from tnfr.config.operator_names import (
     SELF_ORGANIZATION,
     SILENCE,
     TRANSITION,
+    operator_display_name,
 )
 from tnfr.constants import inject_defaults
 from tnfr.operators.grammar import (
@@ -98,7 +99,7 @@ def test_validate_sequence_requires_thol_closure() -> None:
         [EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, RESONANCE, TRANSITION]
     )
     assert not result.passed
-    assert "THOL" in result.message
+    assert operator_display_name(SELF_ORGANIZATION) in result.message
 
 
 def test_parse_sequence_returns_result() -> None:

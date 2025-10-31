@@ -17,7 +17,9 @@ from ..config.operator_names import (
     CONTRACTION,
     DISSONANCE,
     MUTATION,
+    SELF_ORGANIZATION,
     SILENCE,
+    operator_display_name,
 )
 from ..utils import clamp01
 from ..metrics.common import normalize_dnfr
@@ -184,7 +186,9 @@ def _check_thol_closure(
                 raise _grammar.TholClosureError(
                     rule="thol-closure",
                     candidate=cand_label,
-                    message="THOL block requires canonical closure",
+                    message=(
+                        f"{operator_display_name(SELF_ORGANIZATION)} block requires canonical closure"
+                    ),
                     window=st["thol_len"],
                     threshold=close_dn,
                     order=order,
