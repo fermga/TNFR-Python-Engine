@@ -11,7 +11,7 @@ from .constants import get_param, normalise_state_token
 from .glyph_runtime import last_glyph
 from .types import TNFRGraph
 from .utils import ensure_collection, get_logger
-from .validation.window import validate_window
+from tnfr.validation import validate_window
 
 logger = get_logger(__name__)
 
