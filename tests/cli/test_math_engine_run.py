@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import copy
+import re
 
 import networkx as nx  # type: ignore[import-untyped]
 import pytest
 
 from tnfr.cli import main
+from tnfr.constants import VF_PRIMARY
 
 
 def test_math_engine_cli_preserves_classic_metrics(
@@ -17,8 +19,8 @@ def test_math_engine_cli_preserves_classic_metrics(
 
     def fake_build_basic_graph(args):  # noqa: ANN001 - test helper signature
         graph = nx.Graph()
-        graph.add_node(0, EPI=0.9, vf=0.8, theta=0.1)
-        graph.add_node(1, EPI=0.6, vf=0.7, theta=-0.2)
+        graph.add_node(0, EPI=0.9, theta=0.1, **{VF_PRIMARY: 0.8})
+        graph.add_node(1, EPI=0.6, theta=-0.2, **{VF_PRIMARY: 0.7})
         graph.graph["COHERENCE"] = {"enabled": False}
         graph.graph["DIAGNOSIS"] = {"enabled": False}
         graph.graph["history"] = {"W_stats": [], "nodal_diag": []}
@@ -36,7 +38,7 @@ def test_math_engine_cli_preserves_classic_metrics(
     def fake_run(graph, *, steps, dt=None, use_Si=True, apply_glyphs=True, n_jobs=None):
         for _, data in graph.nodes(data=True):
             data["EPI"] = float(data["EPI"]) * 0.95
-            data["vf"] = float(data["vf"]) + 0.02
+            data[VF_PRIMARY] = float(data[VF_PRIMARY]) + 0.02
             data["theta"] = float(data["theta"]) + 0.01
         history = graph.graph.setdefault("history", {"W_stats": [], "nodal_diag": []})
         history.setdefault("C_steps", []).append({"step": steps, "dt": dt})
@@ -51,6 +53,7 @@ def test_math_engine_cli_preserves_classic_metrics(
             {
                 "nodes": {n: dict(data) for n, data in result_graph.nodes(data=True)},
                 "history": copy.deepcopy(result_graph.graph.get("history", {})),
+                "math_cfg": result_graph.graph.get("MATH_ENGINE"),
             }
         )
         return result_graph
@@ -103,7 +106,42 @@ def test_math_engine_cli_preserves_classic_metrics(
     assert math_logs, "math engine summaries should be logged"
     assert any("Hilbert norm" in message for message in math_logs)
     assert any("C_min" in message for message in math_logs)
-    assert any("νf positivity" in message for message in math_logs)
+    nu_f_messages = [msg for msg in math_logs if "νf positivity" in msg]
+    assert nu_f_messages, "νf positivity metrics must be reported"
+    min_matches = [re.search(r"min=([-+]?\d*\.?\d+)", msg) for msg in nu_f_messages]
+    reported_mins = [float(match.group(1)) for match in min_matches if match]
+    assert reported_mins, "logged νf positivity metrics must expose a minimum value"
+
+    math_cfg = math_snapshot["math_cfg"]
+    assert math_cfg is not None and math_cfg.get("enabled")
+    hilbert_space = math_cfg["hilbert_space"]
+    state_projector = math_cfg.get("state_projector")
+    validator = math_cfg.get("validator")
+    frequency_operator = math_cfg.get("frequency_operator")
+
+    assert state_projector is not None
+    assert validator is not None
+
+    projected_freq_values = []
+    for node_data in math_snapshot["nodes"].values():
+        state = state_projector(
+            epi=float(node_data["EPI"]),
+            nu_f=float(node_data[VF_PRIMARY]),
+            theta=float(node_data["theta"]),
+            dim=hilbert_space.dimension,
+        )
+        outcome = validator.validate(
+            state,
+            enforce_frequency_positivity=bool(frequency_operator),
+        )
+        summary = outcome.summary.get("frequency")
+        if isinstance(summary, dict) and "value" in summary:
+            projected_freq_values.append(float(summary["value"]))
+
+    assert projected_freq_values, "validator should supply frequency values for comparison"
+    expected_min = min(projected_freq_values)
+    assert reported_mins[0] == pytest.approx(expected_min)
+    assert expected_min > 0.0
 
     assert classic_snapshot["nodes"] == math_snapshot["nodes"]
     assert classic_snapshot["history"] == math_snapshot["history"]

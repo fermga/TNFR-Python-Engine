@@ -18,7 +18,8 @@ from ..config.presets import (
     PREFERRED_PRESET_NAMES,
     get_preset,
 )
-from ..constants import METRIC_DEFAULTS, get_param
+from ..alias import get_attr
+from ..constants import METRIC_DEFAULTS, VF_PRIMARY, get_aliases, get_param
 from ..dynamics import default_glyph_selector, parametric_glyph_selector, run
 from ..execution import CANONICAL_PRESET_NAME, play
 from ..flatten import parse_program_tokens
@@ -57,6 +58,11 @@ from .utils import _parse_cli_variants
 from ..validation import validate_canon
 
 logger = get_logger(__name__)
+
+_VF_ALIASES = get_aliases("VF")
+VF_ALIAS_KEYS: tuple[str, ...] = (VF_PRIMARY,) + tuple(
+    alias for alias in _VF_ALIASES if alias != VF_PRIMARY
+)
 
 
 # CLI summaries should remain concise by default while allowing callers to
@@ -511,7 +517,13 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
     for node_id in nodes:
         data = G.nodes[node_id]
         epi = float(data.get("EPI", 0.0))
-        nu_f = float(data.get("vf", 0.0))
+        nu_f = float(
+            get_attr(
+                data,
+                VF_ALIAS_KEYS,
+                default=float(data.get(VF_PRIMARY, 0.0)),
+            )
+        )
         theta = float(data.get("theta", 0.0))
         state = state_projector(epi=epi, nu_f=nu_f, theta=theta, dim=hilbert_space.dimension)
         norm_values.append(float(hilbert_space.norm(state)))
