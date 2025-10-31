@@ -659,7 +659,15 @@ def apply_glyph_with_grammar(
             g_eff = enforce_canonical_grammar(G, node_id, g_str, ctx)
         except StructuralGrammarError as err:
             nd = G.nodes[node_id]
-            history = tuple(str(item) for item in nd.get("glyph_history", ()))
+
+            def _structural_history(value: Glyph | str) -> str:
+                default = value.value if isinstance(value, Glyph) else str(value)
+                resolved = glyph_function_name(value, default=default)
+                return default if resolved is None else resolved
+
+            history = tuple(
+                _structural_history(item) for item in nd.get("glyph_history", ())
+            )
             err.attach_context(node=node_id, stage="apply_glyph", history=history)
             _record_grammar_violation(G, node_id, err, stage="apply_glyph")
             raise
