@@ -54,7 +54,29 @@ def check_repeats(
     fallbacks = cfg.get("fallbacks", {})
     cand_key = cand.value if isinstance(cand, Glyph) else str(cand)
     if gwin > 0 and cand_key in avoid and recent_glyph(nd, cand_key, gwin):
-        return glyph_fallback(cand_key, fallbacks)
+        fallback = glyph_fallback(cand_key, fallbacks)
+        fallback_key = fallback.value if isinstance(fallback, Glyph) else str(fallback)
+        if fallback_key != cand_key:
+            return fallback
+        history: list[str] = []
+        for item in nd.get("glyph_history", ()):
+            if isinstance(item, Glyph):
+                history.append(item.value)
+            else:
+                try:
+                    history.append(Glyph(str(item)).value)
+                except (TypeError, ValueError):
+                    history.append(str(item))
+        order = (*history[-gwin:], cand_key)
+        from ..operators import grammar as _grammar
+
+        raise _grammar.RepeatWindowError(
+            rule="repeat-window",
+            candidate=cand_key,
+            message=f"{cand_key} repeats within window {gwin}",
+            window=gwin,
+            order=order,
+        )
     return cand
 
 

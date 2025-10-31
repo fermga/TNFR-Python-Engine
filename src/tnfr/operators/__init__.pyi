@@ -19,6 +19,11 @@ JitterCache: Any
 JitterCacheManager: Any
 OPERATORS: Any
 GrammarContext: Any
+StructuralGrammarError: Any
+RepeatWindowError: Any
+MutationPreconditionError: Any
+TholClosureError: Any
+TransitionCompatibilityError: Any
 SequenceValidationResult: Any
 SequenceSyntaxError: Any
 _gram_state: Any

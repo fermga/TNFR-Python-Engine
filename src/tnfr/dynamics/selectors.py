@@ -15,11 +15,11 @@ from ..constants import get_graph_param, get_param
 from ..glyph_history import ensure_history
 from ..utils import clamp01
 from ..metrics.common import compute_dnfr_accel_max, merge_and_normalize_weights
-from ..operators import (
-    apply_glyph,
+from ..operators import apply_glyph, on_applied_glyph, GrammarContext
+from ..operators.grammar import (
+    StructuralGrammarError,
+    _record_grammar_violation,
     enforce_canonical_grammar,
-    on_applied_glyph,
-    GrammarContext,
 )
 from ..selector import (
     _apply_selector_hysteresis,
@@ -327,7 +327,15 @@ def _choose_glyph(
         return Glyph.EN
     g = selector(G, n)
     if use_canon:
-        g = enforce_canonical_grammar(G, n, g)
+        try:
+            g = enforce_canonical_grammar(G, n, g)
+        except StructuralGrammarError as err:
+            nd = G.nodes[n]
+            history = tuple(str(item) for item in nd.get("glyph_history", ()))
+            selector_name = getattr(selector, "__name__", selector.__class__.__name__)
+            err.attach_context(node=n, selector=selector_name, history=history, stage="selector")
+            _record_grammar_violation(G, n, err, stage="selector")
+            raise
     return g
 
 

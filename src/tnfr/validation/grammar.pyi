@@ -1,5 +1,10 @@
 from ..operators.grammar import (
     GrammarContext,
+    StructuralGrammarError,
+    RepeatWindowError,
+    MutationPreconditionError,
+    TholClosureError,
+    TransitionCompatibilityError,
     SequenceSyntaxError,
     SequenceValidationResult,
     _gram_state,
@@ -12,6 +17,11 @@ from ..operators.grammar import (
 
 __all__ = (
     "GrammarContext",
+    "StructuralGrammarError",
+    "RepeatWindowError",
+    "MutationPreconditionError",
+    "TholClosureError",
+    "TransitionCompatibilityError",
     "SequenceSyntaxError",
     "SequenceValidationResult",
     "_gram_state",

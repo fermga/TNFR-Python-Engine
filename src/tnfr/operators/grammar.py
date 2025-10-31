@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, MutableMapping
 from dataclasses import dataclass
 from typing import Any, Mapping, Optional, Sequence
 
@@ -21,10 +21,16 @@ from ..constants import DEFAULTS, get_param
 from ..types import Glyph, NodeId, TNFRGraph
 from ..validation import rules as _rules
 from ..validation.soft_filters import soft_grammar_filters
+from ..utils import get_logger
 from .registry import OPERATORS
 
 __all__ = [
     "GrammarContext",
+    "StructuralGrammarError",
+    "RepeatWindowError",
+    "MutationPreconditionError",
+    "TholClosureError",
+    "TransitionCompatibilityError",
     "SequenceSyntaxError",
     "SequenceValidationResult",
     "_gram_state",
@@ -38,6 +44,9 @@ __all__ = [
     "glyph_function_name",
     "function_name_to_glyph",
 ]
+
+
+logger = get_logger(__name__)
 
 
 # Structural mapping ---------------------------------------------------------
@@ -283,6 +292,102 @@ class _SequenceAutomaton:
 _MISSING = object()
 
 
+class StructuralGrammarError(RuntimeError):
+    """Raised when canonical grammar invariants are violated."""
+
+    __slots__ = (
+        "rule",
+        "candidate",
+        "window",
+        "threshold",
+        "order",
+        "context",
+        "message",
+    )
+
+    def __init__(
+        self,
+        *,
+        rule: str,
+        candidate: str,
+        message: str,
+        window: int | None = None,
+        threshold: float | None = None,
+        order: Sequence[str] | None = None,
+        context: Mapping[str, object] | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.rule = rule
+        self.candidate = candidate
+        self.message = message
+        self.window = window
+        self.threshold = threshold
+        self.order = tuple(order) if order is not None else None
+        self.context: dict[str, object] = dict(context or {})
+
+    def attach_context(self, **context: object) -> "StructuralGrammarError":
+        """Return ``self`` after updating contextual metadata."""
+
+        for key, value in context.items():
+            if value is not None:
+                self.context[key] = value
+        return self
+
+    def to_payload(self) -> dict[str, object]:
+        """Return a structured payload suitable for telemetry sinks."""
+
+        payload: dict[str, object] = {
+            "rule": self.rule,
+            "candidate": self.candidate,
+            "message": self.message,
+        }
+        if self.window is not None:
+            payload["window"] = self.window
+        if self.threshold is not None:
+            payload["threshold"] = self.threshold
+        if self.order is not None:
+            payload["order"] = self.order
+        if self.context:
+            payload["context"] = dict(self.context)
+        return payload
+
+
+class RepeatWindowError(StructuralGrammarError):
+    """Repeated glyph within the configured hysteresis window."""
+
+
+class MutationPreconditionError(StructuralGrammarError):
+    """Mutation attempted without satisfying canonical dissonance requirements."""
+
+
+class TholClosureError(StructuralGrammarError):
+    """THOL block reached closure conditions without a canonical terminator."""
+
+
+class TransitionCompatibilityError(StructuralGrammarError):
+    """Transition attempted that violates canonical compatibility tables."""
+
+
+def _record_grammar_violation(
+    G: TNFRGraph, node: NodeId, error: StructuralGrammarError, *, stage: str
+) -> None:
+    """Store ``error`` telemetry on ``G`` and emit a structured log."""
+
+    telemetry = G.graph.setdefault("telemetry", {})
+    if not isinstance(telemetry, MutableMapping):
+        telemetry = {}
+        G.graph["telemetry"] = telemetry
+    channel = telemetry.setdefault("grammar_errors", [])
+    if not isinstance(channel, list):
+        channel = []
+        telemetry["grammar_errors"] = channel
+    payload = {"node": node, "stage": stage, **error.to_payload()}
+    channel.append(payload)
+    logger.warning(
+        "grammar violation on node %s during %s: %s", node, stage, payload, exc_info=error
+    )
+
+
 def _analyse_sequence(names: Iterable[str]) -> SequenceValidationResult:
     names_list = list(names)
     automaton = _SequenceAutomaton()
@@ -389,6 +494,13 @@ def apply_glyph_with_grammar(
 
     for node_ref in iter_nodes:
         node_id = node_ref.n if hasattr(node_ref, "n") else node_ref
-        g_eff = enforce_canonical_grammar(G, node_id, g_str, ctx)
+        try:
+            g_eff = enforce_canonical_grammar(G, node_id, g_str, ctx)
+        except StructuralGrammarError as err:
+            nd = G.nodes[node_id]
+            history = tuple(str(item) for item in nd.get("glyph_history", ()))
+            err.attach_context(node=node_id, stage="apply_glyph", history=history)
+            _record_grammar_violation(G, node_id, err, stage="apply_glyph")
+            raise
         _apply_glyph(G, node_id, g_eff, window=window)
         on_applied_glyph(G, node_id, g_eff)
