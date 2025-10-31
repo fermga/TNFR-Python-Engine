@@ -138,7 +138,9 @@ def build_lindblad_delta_nfr(
         Hamiltonian.  When ``None`` the generator reduces to the coherent part.
     dim:
         Explicit Hilbert-space dimension.  Only required if neither
-        ``hamiltonian`` nor ``collapse_operators`` are provided.
+        ``hamiltonian`` nor ``collapse_operators`` are provided.  When supplied,
+        it must match the dimension inferred from the Hamiltonian and collapse
+        operators.
     nu_f, scale:
         Structural frequency scaling applied uniformly to the final generator.
     ensure_trace_preserving:
@@ -167,6 +169,12 @@ def build_lindblad_delta_nfr(
         raise ValueError("ΔNFR generators require a positive dimension.")
 
     dimension = inferred_dim
+
+    if dim is not None and dim != dimension:
+        raise ValueError(
+            "Provided dim is inconsistent with the supplied operators: "
+            f"expected {dimension}, received {dim}."
+        )
 
     if hamiltonian is None:
         hermitian = np.zeros((dimension, dimension), dtype=np.complex128)
