@@ -8,6 +8,7 @@ from ..constants.aliases import (
     ALIAS_DSI,
     ALIAS_EPI,
     ALIAS_SI,
+    ALIAS_THETA,
     ALIAS_VF,
 )
 
@@ -16,6 +17,7 @@ __all__ = (
     "ALIAS_DNFR",
     "ALIAS_EPI",
     "ALIAS_SI",
+    "ALIAS_THETA",
     "ALIAS_D2EPI",
     "ALIAS_DSI",
 )

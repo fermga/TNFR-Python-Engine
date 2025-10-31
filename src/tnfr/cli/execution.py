@@ -229,14 +229,14 @@ def _build_math_engine_config(
 
 def _configure_math_engine(G: "nx.Graph", args: argparse.Namespace) -> None:
     if not getattr(args, "math_engine", False):
-        G.graph.pop("_math_engine", None)
+        G.graph.pop("MATH_ENGINE", None)
         return
     try:
         config = _build_math_engine_config(G, args)
     except ValueError as exc:
         logger.error("Math engine configuration error: %s", exc)
         raise SystemExit(1) from exc
-    G.graph["_math_engine"] = config
+    G.graph["MATH_ENGINE"] = config
 
 
 def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
@@ -471,7 +471,7 @@ def _run_cli_program(
 
 
 def _log_math_engine_summary(G: "nx.Graph") -> None:
-    math_cfg = G.graph.get("_math_engine")
+    math_cfg = G.graph.get("MATH_ENGINE")
     if not isinstance(math_cfg, Mapping) or not math_cfg.get("enabled"):
         return
 

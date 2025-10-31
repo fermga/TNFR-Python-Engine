@@ -44,7 +44,61 @@ The notebooks
 [`theory/02_phase_synchrony_lattices.ipynb`](theory/02_phase_synchrony_lattices.ipynb)
 replay these steps with expanded derivations and visual telemetry overlays.
 
-## 2. Environment feature flags
+## 2. Graph-level math engine configuration
+
+Runtime graphs can opt into spectral co-evolution by attaching a
+``G.graph["MATH_ENGINE"]`` dictionary.  When ``enabled`` the runtime will
+advance a :class:`tnfr.mathematics.dynamics.MathematicalDynamicsEngine` in lock
+step with the classical ΔNFR integrator and emit per-step telemetry into the
+graph history under ``"math_engine_*"`` keys.  The configuration expects the
+following entries:
+
+* ``enabled`` – boolean switch that activates the branch.
+* ``hilbert_space`` – :class:`tnfr.mathematics.HilbertSpace` instance matching
+  the generator dimension.
+* ``coherence_operator`` – :class:`tnfr.mathematics.CoherenceOperator` used to
+  evaluate ``C_min``.
+* ``coherence_threshold`` – scalar floor applied to the coherence expectation.
+* ``frequency_operator`` (optional) –
+  :class:`tnfr.mathematics.FrequencyOperator` validating νf positivity.
+* ``dynamics_engine`` – pre-built
+  :class:`~tnfr.mathematics.dynamics.MathematicalDynamicsEngine`; alternatively
+  supply ``generator_matrix`` so the runtime can construct one lazily.
+* ``state_projector`` (optional) – projector implementing
+  :class:`tnfr.mathematics.projection.StateProjector`.  Defaults to
+  :class:`~tnfr.mathematics.projection.BasicStateProjector`.
+
+```pycon
+>>> import numpy as np
+>>> from tnfr.mathematics import (
+...     BasicStateProjector,
+...     CoherenceOperator,
+...     HilbertSpace,
+...     MathematicalDynamicsEngine,
+...     make_frequency_operator,
+... )
+>>> hilbert = HilbertSpace(dimension=3)
+>>> generator = np.diag([0.1, -0.05, 0.02])
+>>> coherence_op = CoherenceOperator(np.eye(3))
+>>> frequency_op = make_frequency_operator(np.eye(3))
+>>> G.graph["MATH_ENGINE"] = {
+...     "enabled": True,
+...     "hilbert_space": hilbert,
+...     "coherence_operator": coherence_op,
+...     "coherence_threshold": coherence_op.c_min,
+...     "frequency_operator": frequency_op,
+...     "dynamics_engine": MathematicalDynamicsEngine(generator, hilbert),
+...     "state_projector": BasicStateProjector(),
+... }
+```
+
+Each call to :func:`tnfr.dynamics.runtime.step` (or :func:`~tnfr.dynamics.runtime.run`)
+will advance the stored Hilbert vector, verify normalization, coherence
+threshold compliance, and νf positivity via :mod:`tnfr.mathematics.runtime`, and
+publish the summary into ``G.graph['telemetry']['math_engine']`` as well as the
+rolling history.
+
+## 3. Environment feature flags
 
 Mathematics diagnostics respect three environment variables.  They are read via
 :func:`tnfr.config.get_flags` and can be temporarily overridden with
@@ -75,7 +129,7 @@ False
 When running shell commands, export the variables directly, e.g.
 ``TNFR_ENABLE_MATH_VALIDATION=1 TNFR_LOG_PERF=1 python -m doctest docs/foundations.md``.
 
-## 3. Executable ΔNFR and unitary validation
+## 4. Executable ΔNFR and unitary validation
 
 The following session builds a Laplacian ΔNFR generator, evaluates unitary
 stability, and asserts νf positivity.  All routines are deterministic when a
@@ -115,7 +169,7 @@ To integrate ΔNFR outputs into networkx graphs, see the migration recipe in
 [`getting-started/quickstart.md`](getting-started/quickstart.md) and the
 operator catalogue under [`api/operators.md`](api/operators.md).
 
-## 4. Telemetry cost and logging budget
+## 5. Telemetry cost and logging budget
 
 | Metric guard | Flag dependency | Dominant cost | Logging channel |
 | --- | --- | --- | --- |
@@ -131,7 +185,7 @@ The Phase 3 guideline is to sample the ``stable_unitary`` log at each
 integration step while only periodically recording the cheaper ``normalized``
 metric to control storage costs.
 
-## 5. Next steps
+## 6. Next steps
 
 * Load the lattice notebooks listed above to inspect full ΔNFR evolution
   traces.
