@@ -9,6 +9,7 @@ import pytest
 from tnfr.constants import get_aliases
 from tnfr.types import Glyph
 from tnfr.validation import rules
+from tnfr.validation.soft_filters import acceleration_norm
 from tnfr.validation.compatibility import CANON_FALLBACK
 from tnfr.validation.grammar import GrammarContext
 
@@ -42,7 +43,7 @@ def test_norm_helpers_handle_defaults_and_bounds(seeded_context):
     assert rules.get_norm(ctx_missing, "accel_max") == 1.0
     direct = rules._norm_attr(ctx_missing, nd, get_aliases("D2EPI"), "accel_max")
     assert direct == pytest.approx(0.25)
-    assert rules._accel_norm(ctx_missing, nd) == pytest.approx(0.25)
+    assert acceleration_norm(ctx_missing, nd) == pytest.approx(0.25)
 
     # Saturated SI values clamp to bounds.
     assert rules._si(nd) == 1.0
@@ -52,7 +53,7 @@ def test_norm_helpers_handle_defaults_and_bounds(seeded_context):
     # Tight maxima clamp the ratio to 1.0.
     G.graph["_sel_norms"] = {"accel_max": 0.1, "dnfr_max": 0.5}
     ctx_small = GrammarContext.from_graph(G)
-    assert rules._accel_norm(ctx_small, nd) == 1.0
+    assert acceleration_norm(ctx_small, nd) == 1.0
     nd[dnfr_key] = 1.0
     assert rules.normalized_dnfr(ctx_small, nd) == 1.0
 

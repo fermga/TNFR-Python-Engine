@@ -8,7 +8,7 @@ compatibility or stabilisation thresholds.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Mapping
+from typing import TYPE_CHECKING, Any, Mapping
 
 from ..alias import get_attr
 from ..constants import get_aliases
@@ -21,7 +21,6 @@ if TYPE_CHECKING:  # pragma: no cover - only for typing
     from .grammar import GrammarContext
 
 ALIAS_SI = get_aliases("SI")
-ALIAS_D2EPI = get_aliases("D2EPI")
 
 __all__ = [
     "coerce_glyph",
@@ -30,9 +29,6 @@ __all__ = [
     "normalized_dnfr",
     "_norm_attr",
     "_si",
-    "_accel_norm",
-    "_check_repeats",
-    "_maybe_force",
     "_check_oz_to_zhir",
     "_check_thol_closure",
     "_check_compatibility",
@@ -85,12 +81,6 @@ def _si(nd) -> float:
     return clamp01(get_attr(nd, ALIAS_SI, 0.5))
 
 
-def _accel_norm(ctx: "GrammarContext", nd) -> float:
-    """Normalise acceleration using the global maximum."""
-
-    return _norm_attr(ctx, nd, ALIAS_D2EPI, "accel_max")
-
-
 def normalized_dnfr(ctx: "GrammarContext", nd) -> float:
     """Normalise |ΔNFR| using the configured global maximum."""
 
@@ -100,40 +90,6 @@ def normalized_dnfr(ctx: "GrammarContext", nd) -> float:
 # -------------------------
 # Validation rules
 # -------------------------
-
-
-def _check_repeats(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | str:
-    """Avoid recent repetitions according to ``ctx.cfg_soft``."""
-
-    from ..glyph_history import recent_glyph
-    nd = ctx.G.nodes[n]
-    cfg = ctx.cfg_soft
-    gwin = int(cfg.get("window", 0))
-    avoid = set(cfg.get("avoid_repeats", []))
-    fallbacks = cfg.get("fallbacks", {})
-    cand_key = cand.value if isinstance(cand, Glyph) else str(cand)
-    if gwin > 0 and cand_key in avoid and recent_glyph(nd, cand_key, gwin):
-        return glyph_fallback(cand_key, fallbacks)
-    return cand
-
-
-def _maybe_force(
-    ctx: "GrammarContext",
-    n,
-    cand: Glyph | str,
-    original: Glyph | str,
-    accessor: Callable[["GrammarContext", dict[str, Any]], float],
-    key: str,
-) -> Glyph | str:
-    """Restore ``original`` if ``accessor`` exceeds ``key`` threshold."""
-
-    if cand == original:
-        return cand
-    force_th = float(ctx.cfg_soft.get(key, 0.60))
-    if accessor(ctx, ctx.G.nodes[n]) >= force_th:
-        return original
-    return cand
-
 
 def _check_oz_to_zhir(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | str:
     """Enforce OZ precedents before allowing ZHIR mutations."""

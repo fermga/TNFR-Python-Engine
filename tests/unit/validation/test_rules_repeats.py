@@ -1,11 +1,11 @@
-"""Tests for repetition avoidance in :mod:`tnfr.validation.rules`."""
+"""Tests for repetition avoidance in :mod:`tnfr.validation.soft_filters`."""
 
 from __future__ import annotations
 
 from collections import deque
 
 from tnfr.types import Glyph
-from tnfr.validation import rules
+from tnfr.validation.soft_filters import check_repeats
 from tnfr.validation.grammar import GrammarContext
 
 
@@ -29,7 +29,7 @@ def test_check_repeats_swaps_to_configured_fallback(graph_canon):
     nd = ctx.G.nodes[node_id]
     nd["glyph_history"] = deque([Glyph.IL.value, Glyph.RA.value], maxlen=3)
 
-    swapped = rules._check_repeats(ctx, node_id, Glyph.RA)
+    swapped = check_repeats(ctx, node_id, Glyph.RA)
 
     assert swapped == Glyph.SHA
 
@@ -44,7 +44,7 @@ def test_check_repeats_leaves_non_recent_candidate(graph_canon):
     nd = ctx.G.nodes[node_id]
     nd["glyph_history"] = deque([Glyph.OZ.value, Glyph.IL.value], maxlen=4)
 
-    cand = rules._check_repeats(ctx, node_id, Glyph.RA)
+    cand = check_repeats(ctx, node_id, Glyph.RA)
 
     assert cand == Glyph.RA
 
@@ -59,6 +59,6 @@ def test_check_repeats_with_zero_window_passthrough(graph_canon):
     nd = ctx.G.nodes[node_id]
     nd["glyph_history"] = deque([Glyph.RA.value], maxlen=1)
 
-    cand = rules._check_repeats(ctx, node_id, Glyph.RA)
+    cand = check_repeats(ctx, node_id, Glyph.RA)
 
     assert cand == Glyph.RA

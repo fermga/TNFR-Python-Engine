@@ -24,8 +24,12 @@ from ..selector import (
 )
 from ..types import Glyph, GlyphCode, GlyphSelector, HistoryState, NodeId, TNFRGraph
 from ..utils import get_numpy
-from ..validation import GrammarContext, enforce_canonical_grammar, on_applied_glyph
-from ..validation.rules import _accel_norm, _check_repeats, _maybe_force, normalized_dnfr
+from ..validation import (
+    GrammarContext,
+    enforce_canonical_grammar,
+    on_applied_glyph,
+    soft_grammar_filters,
+)
 from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_SI
 
 __all__ = (
@@ -93,19 +97,8 @@ def _soft_grammar_prefilter(
     """Soft grammar: avoid repetitions before the canonical one."""
 
     ctx = GrammarContext.from_graph(G)
-    original = cand
-    cand = _check_repeats(ctx, n, cand)
-    cand = _maybe_force(ctx, n, cand, original, normalized_dnfr, "force_dnfr")
-    cand = _maybe_force(ctx, n, cand, original, _accel_norm, "force_accel")
-
-    if isinstance(original, str) and isinstance(cand, Glyph):
-        return cand.value
-    if isinstance(original, Glyph) and isinstance(cand, str):
-        try:
-            return Glyph(cand)
-        except (TypeError, ValueError):
-            return cand
-    return cand
+    filtered = soft_grammar_filters(ctx, n, cand)
+    return cast(GlyphCode, filtered)
 
 
 def _selector_normalized_metrics(
