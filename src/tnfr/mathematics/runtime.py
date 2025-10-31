@@ -6,6 +6,7 @@ from typing import Sequence
 import numpy as np
 
 from ..config import get_flags
+from ..utils import get_logger
 from .operators import CoherenceOperator, FrequencyOperator
 from .spaces import HilbertSpace
 
@@ -17,6 +18,9 @@ __all__ = [
     "coherence_expectation",
     "frequency_expectation",
 ]
+
+
+LOGGER = get_logger(__name__)
 
 
 def _as_vector(state: Sequence[complex] | np.ndarray, *, dimension: int) -> np.ndarray:
@@ -32,9 +36,7 @@ def _as_vector(state: Sequence[complex] | np.ndarray, *, dimension: int) -> np.n
 def _maybe_log(metric: str, payload: dict[str, object]) -> None:
     if not get_flags().log_performance:
         return
-    import logging
-
-    logging.getLogger(__name__).debug("%s: %s", metric, payload)
+    LOGGER.debug("%s: %s", metric, payload)
 
 
 def normalized(

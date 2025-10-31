@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import copy
-import logging
 import math
 from collections.abc import Hashable
 from dataclasses import dataclass
@@ -63,6 +62,7 @@ from .types import (
 from .utils import (
     cached_node_list,
     ensure_node_offset_map,
+    get_logger,
     increment_edge_version,
     supports_add_edge,
 )
@@ -80,7 +80,7 @@ T = TypeVar("T")
 __all__ = ("NodeNX", "NodeProtocol", "add_edge")
 
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = get_logger(__name__)
 
 
 @dataclass(frozen=True)

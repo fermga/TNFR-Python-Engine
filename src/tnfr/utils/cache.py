@@ -80,9 +80,6 @@ __all__ = (
 if TYPE_CHECKING:  # pragma: no cover - typing aide
     from ..dynamics.dnfr import DnfrCache
 
-_logger = logging.getLogger(__name__)
-
-
 @dataclass(frozen=True)
 class CacheCapacityConfig:
     """Configuration snapshot for cache capacity policies."""
@@ -748,9 +745,7 @@ class CacheManager:
                 try:
                     emit(name, stats)
                 except Exception:  # pragma: no cover - defensive logging
-                    logging.getLogger(__name__).exception(
-                        "Cache metrics publisher failed for %s", name
-                    )
+                    _logger.exception("Cache metrics publisher failed for %s", name)
 
     def log_metrics(self, logger: logging.Logger, *, level: int = logging.INFO) -> None:
         """Emit cache metrics using ``logger`` for telemetry hooks."""
@@ -766,6 +761,11 @@ class CacheManager:
                 stats.timings,
                 stats.total_time,
             )
+
+
+from .init import get_logger
+
+_logger = get_logger(__name__)
 
 
 def _normalise_callbacks(
