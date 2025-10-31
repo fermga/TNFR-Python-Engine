@@ -32,8 +32,8 @@ class Validator(Protocol[SubjectT]):
     def validate(self, subject: SubjectT, /, **kwargs: Any) -> ValidationOutcome[SubjectT]:
         """Validate ``subject`` returning a :class:`ValidationOutcome`."""
 
-    def report(self, summary: Mapping[str, Any]) -> str:
-        """Produce a concise textual explanation for ``summary``."""
+    def report(self, outcome: "ValidationOutcome[SubjectT]") -> str:
+        """Produce a concise textual explanation for ``outcome``."""
 
 
 from .compatibility import CANON_COMPAT, CANON_FALLBACK

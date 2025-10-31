@@ -150,9 +150,10 @@ class NFRValidator(Validator[np.ndarray]):
         )
         return overall, summary
 
-    def report(self, summary: Mapping[str, Any]) -> str:
+    def report(self, outcome: ValidationOutcome[np.ndarray]) -> str:
         """Return a human-readable report naming failed conditions."""
 
+        summary = outcome.summary
         failed_checks: list[str] = []
         if not summary.get("normalized", False):
             failed_checks.append("normalization")

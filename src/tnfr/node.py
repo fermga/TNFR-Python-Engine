@@ -603,14 +603,14 @@ class NodeNX(NodeProtocol):
                     threshold if threshold is not None else 0.0,
                     frequency_operator=effective_freq,
                 )
-            success, summary = validator_instance.validate_state(
+            outcome = validator_instance.validate(
                 post_state,
                 enforce_frequency_positivity=enforce_frequency,
             )
             validation_summary = {
-                "passed": bool(success),
-                "summary": summary,
-                "report": validator_instance.report(summary),
+                "passed": bool(outcome.passed),
+                "summary": outcome.summary,
+                "report": validator_instance.report(outcome),
             }
 
         result = {

@@ -37,7 +37,7 @@ def test_validator_accepts_structurally_sound_state(validator: NFRValidator) -> 
     assert summary["coherence"]["passed"] is True
     assert summary["frequency"]["passed"] is True
     assert summary["unitary_stability"]["passed"] is True
-    assert validator.report(summary) == "All validation checks passed."
+    assert validator.report(outcome) == "All validation checks passed."
     assert outcome.artifacts is not None
     assert isinstance(outcome.artifacts["normalised_state"], np.ndarray)
 
@@ -73,7 +73,7 @@ def test_validator_frequency_failure() -> None:
     assert summary["frequency"]["passed"] is False
     assert summary["frequency"]["spectrum_psd"] is False
     assert summary["frequency"]["projection_passed"] is False
-    assert "frequency positivity" in validator.report(summary)
+    assert "frequency positivity" in validator.report(outcome)
 
 
 def test_validator_requires_frequency_operator_for_enforcement(validator: NFRValidator) -> None:
