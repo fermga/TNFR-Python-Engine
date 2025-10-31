@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, MutableMapping
 from typing import Any, NamedTuple, cast
 
 from ..callback_utils import CallbackEvent, callback_manager
 from ..constants import get_param
 from ..glyph_history import append_metric, ensure_history
+from ..telemetry import ensure_nu_f_telemetry
+from ..units import get_hz_bridge
 from ..telemetry.verbosity import (
     TELEMETRY_VERBOSITY_DEFAULT,
     TELEMETRY_VERBOSITY_LEVELS,
@@ -78,6 +80,7 @@ class MetricsVerbositySpec(NamedTuple):
     enable_advanced: bool
     attach_coherence_hooks: bool
     attach_diagnosis_hooks: bool
+    enable_nu_f: bool
 
 
 METRICS_VERBOSITY_DEFAULT = TELEMETRY_VERBOSITY_DEFAULT
@@ -106,6 +109,7 @@ _register_metrics_preset(
         enable_advanced=False,
         attach_coherence_hooks=False,
         attach_diagnosis_hooks=False,
+        enable_nu_f=False,
     )
 )
 
@@ -117,6 +121,7 @@ _detailed_spec = MetricsVerbositySpec(
     enable_advanced=False,
     attach_coherence_hooks=True,
     attach_diagnosis_hooks=False,
+    enable_nu_f=True,
 )
 _register_metrics_preset(_detailed_spec)
 _register_metrics_preset(
@@ -124,6 +129,7 @@ _register_metrics_preset(
         name=TelemetryVerbosity.DEBUG.value,
         enable_advanced=True,
         attach_diagnosis_hooks=True,
+        enable_nu_f=True,
     )
 )
 
@@ -139,6 +145,51 @@ _METRICS_SIGMA_HISTORY_KEYS = (
     "sense_sigma_angle",
 )
 _METRICS_SI_HISTORY_KEYS = ("Si_mean", "Si_hi_frac", "Si_lo_frac")
+_METRICS_NU_F_HISTORY_KEYS = (
+    "nu_f_rate_hz_str",
+    "nu_f_rate_hz",
+    "nu_f_ci_lower_hz_str",
+    "nu_f_ci_upper_hz_str",
+    "nu_f_ci_lower_hz",
+    "nu_f_ci_upper_hz",
+)
+
+
+def _update_nu_f_snapshot(
+    G: TNFRGraph,
+    hist: MutableMapping[str, Any],
+    *,
+    record_history: bool,
+) -> None:
+    """Refresh νf telemetry snapshot and optionally persist it in history."""
+
+    accumulator = ensure_nu_f_telemetry(G)
+    snapshot = accumulator.snapshot(graph=G)
+    payload = snapshot.as_payload()
+    bridge: float | None
+    try:
+        bridge = float(get_hz_bridge(G))
+    except (TypeError, ValueError, KeyError):
+        bridge = None
+    else:
+        payload["hz_bridge"] = bridge
+
+    telemetry = G.graph.setdefault("telemetry", {})
+    if not isinstance(telemetry, MutableMapping):
+        telemetry = {}
+        G.graph["telemetry"] = telemetry
+    telemetry["nu_f_snapshot"] = payload
+    telemetry["nu_f_bridge"] = bridge
+
+    if record_history:
+        append_metric(hist, "nu_f_rate_hz_str", snapshot.rate_hz_str)
+        append_metric(hist, "nu_f_rate_hz", snapshot.rate_hz)
+        append_metric(hist, "nu_f_ci_lower_hz_str", snapshot.ci_lower_hz_str)
+        append_metric(hist, "nu_f_ci_upper_hz_str", snapshot.ci_upper_hz_str)
+        append_metric(hist, "nu_f_ci_lower_hz", snapshot.ci_lower_hz)
+        append_metric(hist, "nu_f_ci_upper_hz", snapshot.ci_upper_hz)
+
+    G.graph["_nu_f_snapshot_payload"] = payload
 
 
 def _resolve_metrics_verbosity(cfg: Mapping[str, Any]) -> MetricsVerbositySpec:
@@ -187,6 +238,9 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
         if spec.enable_aggregate_si:
             for key in _METRICS_SI_HISTORY_KEYS:
                 hist.setdefault(key, [])
+        if spec.enable_nu_f:
+            for key in _METRICS_NU_F_HISTORY_KEYS:
+                hist.setdefault(key, [])
         G.graph[metrics_sentinel_key] = history_id
 
     dt = float(get_param(G, "DT"))
@@ -232,6 +286,8 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
 
     if spec.enable_aggregate_si:
         _aggregate_si(G, hist, n_jobs=metrics_jobs)
+
+    _update_nu_f_snapshot(G, hist, record_history=spec.enable_nu_f)
 
     if spec.enable_advanced:
         _compute_advanced_metrics(

@@ -449,6 +449,38 @@ def _run_after_callbacks(G, *, step_idx: int) -> None:
             ctx[dst] = values[-1]
     callback_manager.invoke_callbacks(G, CallbackEvent.AFTER_STEP.value, ctx)
 
+    telemetry = G.graph.get("telemetry")
+    if isinstance(telemetry, MutableMapping):
+        payload = telemetry.get("nu_f_snapshot")
+        if isinstance(payload, Mapping):
+            bridge_raw = telemetry.get("nu_f_bridge")
+            try:
+                bridge = float(bridge_raw) if bridge_raw is not None else None
+            except (TypeError, ValueError):
+                bridge = None
+            nu_f_summary = {
+                "total_reorganisations": payload.get("total_reorganisations"),
+                "total_duration": payload.get("total_duration"),
+                "rate_hz_str": payload.get("rate_hz_str"),
+                "rate_hz": payload.get("rate_hz"),
+                "variance_hz_str": payload.get("variance_hz_str"),
+                "variance_hz": payload.get("variance_hz"),
+                "confidence_level": payload.get("confidence_level"),
+                "ci_hz_str": {
+                    "lower": payload.get("ci_lower_hz_str"),
+                    "upper": payload.get("ci_upper_hz_str"),
+                },
+                "ci_hz": {
+                    "lower": payload.get("ci_lower_hz"),
+                    "upper": payload.get("ci_upper_hz"),
+                },
+                "bridge": bridge,
+            }
+            telemetry["nu_f"] = nu_f_summary
+            math_summary = telemetry.get("math_engine")
+            if isinstance(math_summary, MutableMapping):
+                math_summary["nu_f"] = dict(nu_f_summary)
+
 
 def _get_math_engine_config(G: TNFRGraph) -> MutableMapping[str, Any] | None:
     """Return the mutable math-engine configuration stored on ``G``."""
