@@ -168,3 +168,24 @@ def test_unitary_generator_remains_available(hilbert_qubit: HilbertSpace) -> Non
     generator = build_delta_nfr(hilbert_qubit.dimension)
     coherence = make_coherence_operator(hilbert_qubit.dimension, spectrum=np.ones(hilbert_qubit.dimension))
     assert coherence.matrix.shape == (hilbert_qubit.dimension, hilbert_qubit.dimension)
+
+
+def test_defective_generator_requires_scipy(hilbert_qubit: HilbertSpace) -> None:
+    pytest.importorskip("scipy.linalg")
+
+    dim = hilbert_qubit.dimension
+    size = dim * dim
+    generator = np.zeros((size, size), dtype=np.complex128)
+    generator[0, 0] = generator[1, 1] = generator[2, 2] = generator[3, 3] = -0.5
+    generator[0, 1] = 1.0
+    generator[2, 3] = 1.0
+
+    with pytest.raises(ValueError, match="not diagonalizable"):
+        ContractiveDynamicsEngine(generator, hilbert_qubit, use_scipy=False)
+
+    engine = ContractiveDynamicsEngine(generator, hilbert_qubit, use_scipy=True)
+    initial = np.eye(dim, dtype=np.complex128) / dim
+    evolved = engine.step(initial, dt=0.25)
+
+    assert evolved.shape == (dim, dim)
+    assert np.all(np.isfinite(evolved))

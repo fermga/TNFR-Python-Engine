@@ -137,7 +137,7 @@ class ContractiveDynamicsEngine:
     _last_contractivity_gap: float = field(init=False, repr=False)
     _eigenvalues: np.ndarray = field(init=False, repr=False)
     _eigenvectors: np.ndarray = field(init=False, repr=False)
-    _inverse_eigenvectors: np.ndarray = field(init=False, repr=False)
+    _inverse_eigenvectors: np.ndarray | None = field(init=False, repr=False)
 
     def __init__(
         self,
@@ -168,7 +168,16 @@ class ContractiveDynamicsEngine:
         self._identity = np.eye(hilbert_space.dimension, dtype=np.complex128)
         self._last_contractivity_gap = float("nan")
         self._eigenvalues, self._eigenvectors = np.linalg.eig(self.generator)
-        self._inverse_eigenvectors = np.linalg.inv(self._eigenvectors)
+        if self._use_scipy:
+            self._inverse_eigenvectors = None
+        else:
+            try:
+                self._inverse_eigenvectors = np.linalg.inv(self._eigenvectors)
+            except np.linalg.LinAlgError as exc:  # pragma: no cover - SciPy path recommended
+                raise ValueError(
+                    "ΔNFR generator is not diagonalizable; enable use_scipy=True to "
+                    "integrate defective generators via SciPy."
+                ) from exc
 
         if ensure_contractive and np.max(self._eigenvalues.real) > self.atol:
             raise ValueError(
@@ -176,6 +185,10 @@ class ContractiveDynamicsEngine:
             )
 
     def _propagator(self, dt: float) -> np.ndarray:
+        if self._inverse_eigenvectors is None:
+            if _scipy_expm is None:
+                raise RuntimeError("SciPy propagator requested but SciPy is not available.")
+            return _scipy_expm(dt * self.generator)
         if self._use_scipy and _scipy_expm is not None:
             return _scipy_expm(dt * self.generator)
         diag = np.exp(dt * self._eigenvalues)
