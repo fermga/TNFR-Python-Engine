@@ -123,3 +123,14 @@ Selector helpers and glyph telemetry exporters reuse the shared
 selector-compatible identifiers and :data:`tnfr.types.SigmaTrace` or the
 glyph timing aliases when consuming the metrics payloads, ensuring typed
 extensions stay in sync with the public API.
+
+### Grammar schema validation
+
+`tnfr.operators.grammar.GrammarContext` now validates the soft and canonical
+grammar dictionaries against the bundled JSON schema (`tnfr.schemas/grammar.json`)
+whenever the optional `jsonschema` dependency is available. Validation runs in
+``auto`` mode by default—if the dependency or resource cannot be loaded the
+engine keeps operating without raising. Set the environment variable
+``TNFR_GRAMMAR_VALIDATE=1`` to require validation (raising when the schema or
+dependency is missing) or ``TNFR_GRAMMAR_VALIDATE=0`` to skip schema checks when
+working with experimental configurations.

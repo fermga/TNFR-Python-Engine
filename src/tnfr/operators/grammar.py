@@ -2,16 +2,30 @@
 
 from __future__ import annotations
 
+import json
+import os
 from collections.abc import Iterable, MutableMapping
 from dataclasses import dataclass
+from importlib import resources
+from json import JSONDecodeError
 from typing import Any, Mapping, Optional, Sequence
 
 from ..config.operator_names import (
+    CONTRACTION,
     COHERENCE,
+    COUPLING,
+    DISSONANCE,
+    EMISSION,
     INTERMEDIATE_OPERATORS,
+    MUTATION,
     RECEPTION,
+    RECURSIVITY,
+    RESONANCE,
     SELF_ORGANIZATION,
     SELF_ORGANIZATION_CLOSURES,
+    SILENCE,
+    TRANSITION,
+    EXPANSION,
     VALID_END_OPERATORS,
     VALID_START_OPERATORS,
     canonical_operator_name,
@@ -24,8 +38,17 @@ from ..validation.soft_filters import soft_grammar_filters
 from ..utils import get_logger
 from .registry import OPERATORS
 
+try:  # pragma: no cover - optional dependency import
+    from jsonschema import Draft7Validator
+    from jsonschema import exceptions as _jsonschema_exceptions
+except Exception:  # pragma: no cover - jsonschema optional
+    Draft7Validator = None  # type: ignore[assignment]
+    _jsonschema_exceptions = None  # type: ignore[assignment]
+
+
 __all__ = [
     "GrammarContext",
+    "GrammarConfigurationError",
     "StructuralGrammarError",
     "RepeatWindowError",
     "MutationPreconditionError",
@@ -47,6 +70,11 @@ __all__ = [
 
 
 logger = get_logger(__name__)
+
+
+_SCHEMA_LOAD_ERROR: str | None = None
+_SOFT_VALIDATOR: Draft7Validator | None = None
+_CANON_VALIDATOR: Draft7Validator | None = None
 
 
 # Structural mapping ---------------------------------------------------------
@@ -122,6 +150,9 @@ class GrammarContext:
     cfg_canon: dict[str, Any]
     norms: dict[str, Any]
 
+    def __post_init__(self) -> None:
+        _validate_grammar_configs(self)
+
     @classmethod
     def from_graph(cls, G: TNFRGraph) -> "GrammarContext":
         return cls(
@@ -134,6 +165,136 @@ class GrammarContext:
 
 def _gram_state(nd: dict[str, Any]) -> dict[str, Any]:
     return nd.setdefault("_GRAM", {"thol_open": False, "thol_len": 0})
+
+
+class GrammarConfigurationError(ValueError):
+    """Raised when grammar configuration violates the bundled JSON schema."""
+
+    __slots__ = ("section", "messages", "details")
+
+    def __init__(
+        self,
+        section: str,
+        messages: Sequence[str],
+        *,
+        details: Sequence[tuple[str, str]] | None = None,
+    ) -> None:
+        msg = "; ".join(messages)
+        super().__init__(f"invalid {section} configuration: {msg}")
+        self.section = section
+        self.messages = tuple(messages)
+        self.details = tuple(details or ())
+
+
+def _validation_env_flag() -> bool | None:
+    flag = os.environ.get("TNFR_GRAMMAR_VALIDATE")
+    if flag is None:
+        return None
+    normalised = flag.strip().lower()
+    if normalised in {"0", "false", "off", "no"}:
+        return False
+    if normalised in {"1", "true", "on", "yes"}:
+        return True
+    return None
+
+
+def _ensure_schema_validators() -> tuple[Draft7Validator | None, Draft7Validator | None] | None:
+    global _SCHEMA_LOAD_ERROR, _SOFT_VALIDATOR, _CANON_VALIDATOR
+    if _SOFT_VALIDATOR is not None or _CANON_VALIDATOR is not None:
+        return _SOFT_VALIDATOR, _CANON_VALIDATOR
+    if _SCHEMA_LOAD_ERROR is not None:
+        return None
+    if Draft7Validator is None:
+        _SCHEMA_LOAD_ERROR = "jsonschema package is not installed"
+        return None
+    try:
+        schema_text = resources.files("tnfr.schemas").joinpath("grammar.json").read_text("utf-8")
+    except FileNotFoundError:
+        _SCHEMA_LOAD_ERROR = "grammar schema resource not found"
+        return None
+    try:
+        schema = json.loads(schema_text)
+    except JSONDecodeError as exc:
+        _SCHEMA_LOAD_ERROR = f"unable to decode grammar schema: {exc}"
+        return None
+    definitions = schema.get("definitions")
+    if not isinstance(definitions, Mapping):
+        _SCHEMA_LOAD_ERROR = "grammar schema missing definitions"
+        return None
+    soft_schema = definitions.get("cfg_soft")
+    canon_schema = definitions.get("cfg_canon")
+    if soft_schema is None or canon_schema is None:
+        _SCHEMA_LOAD_ERROR = "grammar schema missing cfg_soft/cfg_canon definitions"
+        return None
+    if not isinstance(soft_schema, Mapping) or not isinstance(canon_schema, Mapping):
+        _SCHEMA_LOAD_ERROR = "grammar schema definitions must be objects"
+        return None
+    soft_payload = dict(soft_schema)
+    canon_payload = dict(canon_schema)
+    soft_payload.setdefault("definitions", definitions)
+    canon_payload.setdefault("definitions", definitions)
+    try:
+        _SOFT_VALIDATOR = Draft7Validator(soft_payload)
+        _CANON_VALIDATOR = Draft7Validator(canon_payload)
+    except Exception as exc:  # pragma: no cover - delegated to jsonschema
+        if _jsonschema_exceptions is not None and isinstance(
+            exc, _jsonschema_exceptions.SchemaError
+        ):
+            _SCHEMA_LOAD_ERROR = f"invalid grammar schema: {exc.message}"
+        else:
+            _SCHEMA_LOAD_ERROR = f"unable to construct grammar validators: {exc}"
+        _SOFT_VALIDATOR = None
+        _CANON_VALIDATOR = None
+        return None
+    return _SOFT_VALIDATOR, _CANON_VALIDATOR
+
+
+def _format_validation_error(err: Any) -> str:
+    path = "".join(f"[{p}]" if isinstance(p, int) else f".{p}" for p in err.absolute_path)
+    path = path.lstrip(".") or "<root>"
+    return f"{path}: {err.message}"
+
+
+def _validate_grammar_configs(ctx: GrammarContext) -> None:
+    flag = _validation_env_flag()
+    if flag is False:
+        logger.debug("TNFR_GRAMMAR_VALIDATE=0 → skipping grammar schema validation")
+        return
+    validators = _ensure_schema_validators()
+    if validators is None:
+        if flag is True:
+            reason = _SCHEMA_LOAD_ERROR or "validators unavailable"
+            raise RuntimeError(
+                "grammar schema validation requested but unavailable: " f"{reason}"
+            )
+        if _SCHEMA_LOAD_ERROR is not None:
+            logger.debug("Skipping grammar schema validation: %s", _SCHEMA_LOAD_ERROR)
+        return
+    soft_validator, canon_validator = validators
+    issues: list[tuple[str, str]] = []
+    if soft_validator is not None:
+        for err in soft_validator.iter_errors(ctx.cfg_soft):  # type: ignore[union-attr]
+            issues.append(("cfg_soft", _format_validation_error(err)))
+    if canon_validator is not None:
+        for err in canon_validator.iter_errors(ctx.cfg_canon):  # type: ignore[union-attr]
+            issues.append(("cfg_canon", _format_validation_error(err)))
+    min_len = ctx.cfg_canon.get("thol_min_len")
+    max_len = ctx.cfg_canon.get("thol_max_len")
+    if isinstance(min_len, int) and isinstance(max_len, int) and max_len < min_len:
+        issues.append(
+            (
+                "cfg_canon",
+                "thol_max_len must be greater than or equal to thol_min_len",
+            )
+        )
+    if not issues:
+        return
+    section = issues[0][0]
+    raise GrammarConfigurationError(
+        section,
+        [msg for _, msg in issues],
+        details=issues,
+    )
 
 
 class SequenceSyntaxError(ValueError):
