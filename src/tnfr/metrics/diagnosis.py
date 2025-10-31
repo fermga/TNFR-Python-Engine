@@ -19,10 +19,10 @@ from ..constants import (
     STATE_STABLE,
     STATE_TRANSITION,
     VF_KEY,
-    get_aliases,
     get_param,
     normalise_state_token,
 )
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
 from ..glyph_history import append_metric, ensure_history
 from ..utils import clamp01, similarity_abs
 from ..types import (
@@ -44,11 +44,6 @@ from .common import (
     normalize_dnfr,
 )
 from .trig_cache import compute_theta_trig, get_trig_cache
-
-ALIAS_EPI = get_aliases("EPI")
-ALIAS_VF = get_aliases("VF")
-ALIAS_SI = get_aliases("SI")
-ALIAS_DNFR = get_aliases("DNFR")
 
 CoherenceSeries = Sequence[CoherenceMatrixPayload | None]
 CoherenceHistory = Mapping[str, CoherenceSeries]

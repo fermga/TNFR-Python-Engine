@@ -12,7 +12,8 @@ from typing import TYPE_CHECKING, Any
 from tnfr import glyph_history
 
 from ..alias import get_attr
-from ..constants import DEFAULTS, get_aliases, get_param
+from ..constants import DEFAULTS, get_param
+from ..constants.aliases import ALIAS_EPI
 from ..utils import angle_diff
 from ..metrics.trig import neighbor_phase_mean
 from ..rng import make_rng
@@ -57,8 +58,6 @@ if TYPE_CHECKING:  # pragma: no cover - type checking only
 
 GlyphFactors = dict[str, Any]
 GlyphOperation = Callable[["NodeProtocol", GlyphFactors], None]
-
-ALIAS_EPI = get_aliases("EPI")
 
 __all__ = [
     "JitterCache",

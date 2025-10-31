@@ -25,13 +25,9 @@ from typing import (
     cast,
 )
 
-from .constants import get_aliases
+from .constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 from .types import FloatArray, NodeId
 from .utils import convert_value
-
-ALIAS_VF = get_aliases("VF")
-ALIAS_DNFR = get_aliases("DNFR")
-ALIAS_THETA = get_aliases("THETA")
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx

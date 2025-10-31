@@ -20,7 +20,8 @@ from typing import TYPE_CHECKING, Any, cast
 from time import perf_counter
 
 from ..alias import get_attr, get_theta_attr, set_dnfr
-from ..constants import DEFAULTS, get_aliases, get_param
+from ..constants import DEFAULTS, get_param
+from ..constants.aliases import ALIAS_EPI, ALIAS_VF
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import compute_theta_trig
@@ -50,9 +51,6 @@ from ..utils import (
 
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
     import numpy as np
-ALIAS_EPI = get_aliases("EPI")
-ALIAS_VF = get_aliases("VF")
-
 
 _MEAN_VECTOR_EPS = 1e-12
 _SPARSE_DENSITY_THRESHOLD = 0.25

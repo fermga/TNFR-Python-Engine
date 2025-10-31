@@ -31,7 +31,15 @@ from .alias import (
     set_vf,
 )
 from .config import context_flags, get_flags
-from .constants import get_aliases
+from .constants.aliases import (
+    ALIAS_D2EPI,
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_EPI_KIND,
+    ALIAS_SI,
+    ALIAS_THETA,
+    ALIAS_VF,
+)
 from .mathematics import (
     BasicStateProjector,
     CoherenceOperator,
@@ -66,14 +74,6 @@ from .utils import (
     increment_edge_version,
     supports_add_edge,
 )
-
-ALIAS_EPI = get_aliases("EPI")
-ALIAS_VF = get_aliases("VF")
-ALIAS_THETA = get_aliases("THETA")
-ALIAS_SI = get_aliases("SI")
-ALIAS_EPI_KIND = get_aliases("EPI_KIND")
-ALIAS_DNFR = get_aliases("DNFR")
-ALIAS_D2EPI = get_aliases("D2EPI")
 
 T = TypeVar("T")
 

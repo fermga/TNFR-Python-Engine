@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable
 
 from ..alias import get_attr
-from ..constants import get_aliases
+from ..constants.aliases import ALIAS_D2EPI
 from ..glyph_history import recent_glyph
 from ..types import Glyph
 from ..utils import clamp01
@@ -14,8 +14,6 @@ from .rules import glyph_fallback, get_norm, normalized_dnfr
 if TYPE_CHECKING:  # pragma: no cover - import cycle guard
     from collections.abc import Mapping
     from .grammar import GrammarContext
-
-ALIAS_D2EPI = get_aliases("D2EPI")
 
 __all__ = (
     "acceleration_norm",
