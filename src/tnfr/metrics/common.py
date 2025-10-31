@@ -8,7 +8,7 @@ from typing import Any, Iterable, Mapping, Sequence
 from ..alias import collect_attr, get_attr, multi_recompute_abs_max
 from ..constants import DEFAULTS
 from ..constants.aliases import ALIAS_D2EPI, ALIAS_DEPI, ALIAS_DNFR, ALIAS_VF
-from ..utils import clamp01, kahan_sum_nd
+from ..utils import clamp01, kahan_sum_nd, normalize_optional_int
 from ..types import GraphLike, NodeAttrMap
 from ..utils import edge_version_cache, get_numpy, normalize_weights
 
@@ -150,10 +150,9 @@ def _get_vf_dnfr_max(G: GraphLike) -> tuple[float, float]:
 def _coerce_jobs(raw_jobs: Any | None) -> int | None:
     """Normalise parallel job hints shared by metrics modules."""
 
-    try:
-        jobs = None if raw_jobs is None else int(raw_jobs)
-    except (TypeError, ValueError):
-        return None
-    if jobs is not None and jobs <= 0:
-        return None
-    return jobs
+    return normalize_optional_int(
+        raw_jobs,
+        allow_non_positive=False,
+        strict=False,
+        sentinels=None,
+    )

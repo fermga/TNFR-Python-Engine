@@ -17,6 +17,7 @@ from ..metrics.sense_index import compute_Si
 from ..operators import apply_remesh_if_globally_stable
 from ..telemetry import publish_graph_cache_metrics
 from ..types import HistoryState, NodeId, TNFRGraph
+from ..utils import normalize_optional_int
 from ..validation import apply_canonical_clamps, validate_canon
 from . import adaptation, coordination, integrators, selectors
 from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
@@ -86,78 +87,6 @@ def _normalize_job_overrides(
     return normalized
 
 
-def _coerce_jobs_value(raw: Any) -> int | None:
-    """Convert override hints into integer job counts.
-
-    Parameters
-    ----------
-    raw : Any
-        Arbitrary value originating from configuration or hooks controlling the
-        ΔNFR, νf or phase pipelines. Strings and numerics are accepted when they
-        represent valid integers.
-
-    Returns
-    -------
-    int | None
-        Normalised integer count when ``raw`` can be coerced, otherwise
-        ``None`` to signal that the scheduler should fallback to graph defaults.
-
-    Notes
-    -----
-    Invalid types are ignored to keep runtime job resolution monotonic rather
-    than raising coercion errors.
-
-    Examples
-    --------
-    >>> _coerce_jobs_value("3")
-    3
-    >>> _coerce_jobs_value(object()) is None
-    True
-    """
-    if raw is None:
-        return None
-    try:
-        return int(raw)
-    except (TypeError, ValueError):
-        return None
-
-
-def _sanitize_jobs(value: int | None, *, allow_non_positive: bool) -> int | None:
-    """Clamp job hints according to νf and ΔNFR scheduler policies.
-
-    Parameters
-    ----------
-    value : int | None
-        Integer job count obtained from overrides or graph configuration.
-    allow_non_positive : bool
-        When ``True`` the runtime accepts non-positive counts for schedulers
-        such as phase stabilisation that interpret ``0`` as "disable".
-
-    Returns
-    -------
-    int | None
-        The sanitized job count or ``None`` when the override should be
-        ignored.
-
-    Notes
-    -----
-    Sanitisation is conservative and returns ``None`` instead of raising when
-    the override is not acceptable.
-
-    Examples
-    --------
-    >>> _sanitize_jobs(-1, allow_non_positive=False) is None
-    True
-    >>> _sanitize_jobs(0, allow_non_positive=True)
-    0
-    """
-    if value is None:
-        return None
-    if not allow_non_positive and value <= 0:
-        return None
-    return value
-
-
 def _resolve_jobs_override(
     overrides: Mapping[str, Any],
     key: str,
@@ -201,14 +130,18 @@ def _resolve_jobs_override(
     """
     norm_key = key.upper()
     if overrides and norm_key in overrides:
-        return _sanitize_jobs(
-            _coerce_jobs_value(overrides.get(norm_key)),
+        return normalize_optional_int(
+            overrides.get(norm_key),
             allow_non_positive=allow_non_positive,
+            strict=False,
+            sentinels=None,
         )
 
-    return _sanitize_jobs(
-        _coerce_jobs_value(graph_value),
+    return normalize_optional_int(
+        graph_value,
         allow_non_positive=allow_non_positive,
+        strict=False,
+        sentinels=None,
     )
 
 

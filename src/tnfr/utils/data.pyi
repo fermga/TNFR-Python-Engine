@@ -19,6 +19,14 @@ def convert_value(
     key: str | None = ...,
     log_level: int | None = ...,
 ) -> tuple[bool, T | None]: ...
+def normalize_optional_int(
+    value: Any,
+    *,
+    sentinels: Collection[str] | None = ...,
+    allow_non_positive: bool = ...,
+    strict: bool = ...,
+    error_message: str | None = ...,
+) -> int | None: ...
 def negative_weights_warn_once(
     *,
     maxsize: int = ...,

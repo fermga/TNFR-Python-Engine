@@ -7,6 +7,7 @@ import pytest
 
 from tnfr.dynamics import integrators, runtime
 from tnfr.types import TNFRGraph
+from tnfr.utils import normalize_optional_int
 
 
 class DummyIntegrator(integrators.AbstractIntegrator):
@@ -44,35 +45,29 @@ def test_normalize_job_overrides_handles_none_and_suffixes():
 
 
 @pytest.mark.parametrize(
-    "raw, expected",
-    [
-        ("4", 4),
-        (5, 5),
-        (None, None),
-        (object(), None),
-        ("not-a-number", None),
-    ],
-)
-def test_coerce_jobs_value_covers_strings_and_invalid_objects(raw, expected):
-    assert runtime._coerce_jobs_value(raw) == expected
-
-
-@pytest.mark.parametrize(
     "value, allow_non_positive, expected",
     [
+        ("4", False, 4),
         (5, False, 5),
+        (None, False, None),
+        (object(), False, None),
+        ("not-a-number", False, None),
         (0, False, None),
         (0, True, 0),
         (-3, False, None),
         (-3, True, -3),
-        (None, False, None),
     ],
 )
-def test_sanitize_jobs_enforces_policy(value, allow_non_positive, expected):
-    assert (
-        runtime._sanitize_jobs(value, allow_non_positive=allow_non_positive)
-        == expected
-    )
+def test_normalize_optional_int_matches_runtime_policy(
+    value, allow_non_positive, expected
+) -> None:
+    """Runtime job coercion should follow the shared helper semantics."""
+
+    assert normalize_optional_int(
+        value,
+        allow_non_positive=allow_non_positive,
+        sentinels=None,
+    ) == expected
 
 
 def test_resolve_jobs_override_prefers_normalised_override_over_graph_default():

@@ -6,6 +6,7 @@ import logging
 import math
 from collections import deque
 from collections.abc import Collection, Iterable, Mapping, Sequence
+from numbers import Real
 from itertools import islice
 from typing import Any, Callable, Iterator, TypeVar, cast
 
@@ -26,6 +27,7 @@ _MAX_NEGATIVE_WARN_ONCE = 1024
 
 __all__ = (
     "convert_value",
+    "normalize_optional_int",
     "MAX_MATERIALIZE_DEFAULT",
     "normalize_materialize_limit",
     "is_non_string_sequence",
@@ -71,6 +73,79 @@ def convert_value(
             _value_logger.log(level, "Non-finite value: %s", converted)
         return False, None
     return True, converted
+
+
+_DEFAULT_SENTINELS = frozenset({"auto", "none", "null"})
+
+
+def normalize_optional_int(
+    value: Any,
+    *,
+    sentinels: Collection[str] | None = _DEFAULT_SENTINELS,
+    allow_non_positive: bool = True,
+    strict: bool = False,
+    error_message: str | None = None,
+) -> int | None:
+    """Normalise optional integers shared by CLI and runtime helpers.
+
+    Parameters
+    ----------
+    value:
+        Arbitrary object obtained from configuration, CLI options or graph
+        metadata.
+    sentinels:
+        Collection of case-insensitive strings that should be interpreted as
+        ``None``. When ``None`` or empty, no sentinel mapping is applied.
+    allow_non_positive:
+        When ``False`` values ``<= 0`` are rejected and converted to ``None``.
+    strict:
+        When ``True`` invalid inputs raise :class:`ValueError` instead of
+        returning ``None``.
+    error_message:
+        Optional message used when ``strict`` mode raises due to invalid input
+        or disallowed non-positive values.
+    """
+
+    if value is None:
+        return None
+
+    if isinstance(value, int):
+        result = value
+    elif isinstance(value, Real):
+        result = int(value)
+    else:
+        text = str(value).strip()
+        if not text:
+            if strict:
+                raise ValueError(
+                    error_message
+                    or "Empty value is not allowed for configuration options."
+                )
+            return None
+        sentinel_set: set[str] | None = None
+        if sentinels:
+            sentinel_set = {s.lower() for s in sentinels}
+            lowered = text.lower()
+            if lowered in sentinel_set:
+                return None
+        try:
+            result = int(text)
+        except (TypeError, ValueError) as exc:
+            if strict:
+                raise ValueError(
+                    error_message or f"Invalid integer value: {value!r}"
+                ) from exc
+            return None
+
+    if not allow_non_positive and result <= 0:
+        if strict:
+            raise ValueError(
+                error_message
+                or "Non-positive values are not permitted for this option."
+            )
+        return None
+
+    return result
 
 
 def negative_weights_warn_once(
