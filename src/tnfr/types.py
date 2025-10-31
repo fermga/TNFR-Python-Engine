@@ -12,7 +12,17 @@ from collections.abc import (
 )
 from enum import Enum
 from types import SimpleNamespace
-from typing import TYPE_CHECKING, Any, ContextManager, Iterable, Protocol, TypedDict
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ContextManager,
+    Iterable,
+    Protocol,
+    TypedDict,
+    runtime_checkable,
+)
+
+from numbers import Real
 
 from ._compat import TypeAlias
 
@@ -37,6 +47,10 @@ __all__ = (
     "Node",
     "GammaSpec",
     "EPIValue",
+    "BEPIProtocol",
+    "ensure_bepi",
+    "serialize_bepi",
+    "ZERO_BEPI_STORAGE",
     "DeltaNFR",
     "SecondDerivativeEPI",
     "Phase",
@@ -138,8 +152,84 @@ NodeAttrMap: TypeAlias = Mapping[str, Any]
 GammaSpec: TypeAlias = Mapping[str, Any]
 #: Mapping describing Γ evaluation parameters for a node or graph.
 
-EPIValue: TypeAlias = float
-#: Scalar Primary Information Structure value carried by a node.
+@runtime_checkable
+class BEPIProtocol(Protocol):
+    """Structural contract describing BEPI-compatible values."""
+
+    f_continuous: Any
+    a_discrete: Any
+    x_grid: Any
+
+    def direct_sum(self, other: Any) -> Any: ...
+
+    def tensor(self, vector: Sequence[complex] | np.ndarray) -> np.ndarray: ...
+
+    def adjoint(self) -> Any: ...
+
+    def compose(
+        self,
+        transform: Callable[[np.ndarray], np.ndarray],
+        *,
+        spectral_transform: Callable[[np.ndarray], np.ndarray] | None = None,
+    ) -> Any: ...
+
+
+EPIValue: TypeAlias = BEPIProtocol
+#: BEPI Primary Information Structure carried by a node.
+
+ZERO_BEPI_STORAGE: dict[str, tuple[complex, ...] | tuple[float, ...]] = {
+    "continuous": (0j, 0j),
+    "discrete": (0j, 0j),
+    "grid": (0.0, 1.0),
+}
+"""Canonical zero element used as fallback when EPI data is missing."""
+
+
+def _is_scalar(value: Any) -> bool:
+    scalar_types: tuple[type[Any], ...]
+    np_scalar = getattr(np, "generic", None)
+    if np_scalar is None:
+        scalar_types = (int, float, complex, Real)
+    else:
+        scalar_types = (int, float, complex, Real, np_scalar)
+    return isinstance(value, scalar_types)
+
+
+def ensure_bepi(value: Any) -> "BEPIElement":
+    """Normalise arbitrary inputs into a :class:`~tnfr.mathematics.BEPIElement`."""
+
+    from .mathematics import BEPIElement as _BEPIElement
+
+    if isinstance(value, _BEPIElement):
+        return value
+    if _is_scalar(value):
+        scalar = complex(value)
+        return _BEPIElement((scalar, scalar), (scalar, scalar), (0.0, 1.0))
+    if isinstance(value, Mapping):
+        try:
+            continuous = value["continuous"]
+            discrete = value["discrete"]
+            grid = value["grid"]
+        except KeyError as exc:  # pragma: no cover - defensive
+            missing = exc.args[0]
+            raise ValueError(f"Missing '{missing}' key for BEPI serialization.") from exc
+        return _BEPIElement(continuous, discrete, grid)
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        if len(value) != 3:
+            raise ValueError("Sequential BEPI representations must contain 3 elements.")
+        continuous, discrete, grid = value
+        return _BEPIElement(continuous, discrete, grid)
+    raise TypeError(f"Unsupported BEPI value type: {type(value)!r}")
+
+
+def serialize_bepi(value: Any) -> dict[str, tuple[complex, ...] | tuple[float, ...]]:
+    """Serialise a BEPI element into canonical ``continuous/discrete/grid`` tuples."""
+
+    element = ensure_bepi(value)
+    continuous = tuple(complex(v) for v in element.f_continuous.tolist())
+    discrete = tuple(complex(v) for v in element.a_discrete.tolist())
+    grid = tuple(float(v) for v in element.x_grid.tolist())
+    return {"continuous": continuous, "discrete": discrete, "grid": grid}
 
 DeltaNFR: TypeAlias = float
 #: Scalar internal reorganisation driver ΔNFR applied to a node.

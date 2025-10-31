@@ -122,3 +122,17 @@ class BEPIElement(_EPIValidators):
         new_a = self._apply_transform(spectral_fn, self.a_discrete)
         return BEPIElement(new_f, new_a, self.x_grid)
 
+    def _max_magnitude(self) -> float:
+        mags = []
+        if self.f_continuous.size:
+            mags.append(float(np.max(np.abs(self.f_continuous))))
+        if self.a_discrete.size:
+            mags.append(float(np.max(np.abs(self.a_discrete))))
+        return float(max(mags)) if mags else 0.0
+
+    def __float__(self) -> float:
+        return self._max_magnitude()
+
+    def __abs__(self) -> float:
+        return self._max_magnitude()
+
