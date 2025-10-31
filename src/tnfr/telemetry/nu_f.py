@@ -7,9 +7,9 @@ the structural frequency νf.  Results are provided both in canonical
 to surface telemetry without duplicating conversion logic.
 
 Snapshots emitted by :class:`NuFTelemetryAccumulator` are appended to the
-``G.graph["telemetry"]["nu_f"]`` channel so downstream observers and
-structured logging hooks can consume them in a manner consistent with the
-existing cache telemetry publishers.
+``G.graph["telemetry"]["nu_f_history"]`` channel so downstream observers
+and structured logging hooks can consume them without interfering with
+runtime summaries stored under ``G.graph["telemetry"]["nu_f"]``.
 """
 
 from __future__ import annotations
@@ -332,12 +332,17 @@ class NuFTelemetryAccumulator:
         if not isinstance(telemetry, MutableMapping):
             telemetry = {}
             mapping["telemetry"] = telemetry
-        history = telemetry.get("nu_f")
-        if isinstance(history, list):
-            history.append(snapshot.as_payload())
-        else:
-            history = [snapshot.as_payload()]
-            telemetry["nu_f"] = history
+        payload = snapshot.as_payload()
+        history_key = "nu_f_history"
+        history = telemetry.get(history_key)
+        if not isinstance(history, list):
+            legacy_history = telemetry.get("nu_f")
+            if isinstance(legacy_history, list):
+                history = legacy_history
+            else:
+                history = []
+            telemetry[history_key] = history
+        history.append(payload)
         if self._history_limit is not None and len(history) > self._history_limit:
             del history[: len(history) - self._history_limit]
 
