@@ -1,8 +1,6 @@
-from typing import Any
+from ..types import Glyph
 
-__all__: Any
+__all__ = ("CANON_COMPAT", "CANON_FALLBACK")
 
-def __getattr__(name: str) -> Any: ...
-
-CANON_COMPAT: Any
-CANON_FALLBACK: Any
+CANON_COMPAT: dict[Glyph, set[Glyph]]
+CANON_FALLBACK: dict[Glyph, Glyph]

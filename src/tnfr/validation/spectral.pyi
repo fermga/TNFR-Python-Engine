@@ -30,7 +30,7 @@ class NFRValidator(Validator[np.ndarray]):
         /,
         *,
         enforce_frequency_positivity: bool | None = ...,
-    ) -> ValidationOutcome[np.ndarray]: ...
+    ) -> ValidationOutcome[np.ndarray]: ...  # type: ignore[override]
 
     def validate_state(
         self,
@@ -42,5 +42,5 @@ class NFRValidator(Validator[np.ndarray]):
     def report(self, summary: Mapping[str, Any]) -> str: ...
 
 
-__all__: tuple[str, ...]
+__all__ = ("NFRValidator",)
 
