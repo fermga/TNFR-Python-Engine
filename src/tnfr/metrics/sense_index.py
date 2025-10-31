@@ -40,7 +40,7 @@ from time import perf_counter
 from typing import Any, Callable, Iterable, Iterator, Mapping, MutableMapping, cast
 
 from ..alias import get_attr, set_attr
-from ..constants import get_aliases
+from ..constants.aliases import ALIAS_DNFR, ALIAS_SI, ALIAS_VF
 from ..utils import angle_diff, angle_diff_array, clamp01
 from ..types import GraphLike, NodeAttrMap
 from ..utils import (
@@ -58,10 +58,6 @@ from .common import (
 )
 from .trig import neighbor_phase_mean_bulk, neighbor_phase_mean_list
 from .trig_cache import get_trig_cache
-
-ALIAS_VF = get_aliases("VF")
-ALIAS_DNFR = get_aliases("DNFR")
-ALIAS_SI = get_aliases("SI")
 
 PHASE_DISPERSION_KEY = "dSi_dphase_disp"
 _SI_APPROX_BYTES_PER_NODE = 64

@@ -17,7 +17,8 @@ from typing import TYPE_CHECKING, Any, cast
 
 from .._compat import TypeAlias
 from ..alias import get_attr, set_attr
-from ..constants import DEFAULTS, REMESH_DEFAULTS, get_aliases, get_param
+from ..constants import DEFAULTS, REMESH_DEFAULTS, get_param
+from ..constants.aliases import ALIAS_EPI
 from ..rng import make_rng
 from ..types import RemeshMeta
 from ..utils import cached_import, edge_version_update, kahan_sum_nd
@@ -48,9 +49,6 @@ def _ordered_edge(u: Hashable, v: Hashable) -> RemeshEdge:
     """Return a deterministic ordering for an undirected edge."""
 
     return (u, v) if repr(u) <= repr(v) else (v, u)
-
-
-ALIAS_EPI = get_aliases("EPI")
 
 
 COOLDOWN_KEY = "REMESH_COOLDOWN_WINDOW"

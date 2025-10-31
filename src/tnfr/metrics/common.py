@@ -6,15 +6,11 @@ from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Sequence
 
 from ..alias import collect_attr, get_attr, multi_recompute_abs_max
-from ..constants import DEFAULTS, get_aliases
+from ..constants import DEFAULTS
+from ..constants.aliases import ALIAS_D2EPI, ALIAS_DEPI, ALIAS_DNFR, ALIAS_VF
 from ..utils import clamp01, kahan_sum_nd
 from ..types import GraphLike, NodeAttrMap
 from ..utils import edge_version_cache, get_numpy, normalize_weights
-
-ALIAS_DNFR = get_aliases("DNFR")
-ALIAS_D2EPI = get_aliases("D2EPI")
-ALIAS_DEPI = get_aliases("DEPI")
-ALIAS_VF = get_aliases("VF")
 
 __all__ = (
     "GraphLike",

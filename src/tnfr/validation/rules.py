@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Mapping
 
 from ..alias import get_attr
-from ..constants import get_aliases
+from ..constants.aliases import ALIAS_SI
 from ..utils import clamp01
 from ..metrics.common import normalize_dnfr
 from ..types import Glyph
@@ -19,8 +19,6 @@ from .compatibility import CANON_COMPAT, CANON_FALLBACK
 
 if TYPE_CHECKING:  # pragma: no cover - only for typing
     from .grammar import GrammarContext
-
-ALIAS_SI = get_aliases("SI")
 
 __all__ = [
     "coerce_glyph",

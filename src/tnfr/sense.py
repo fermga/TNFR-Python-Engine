@@ -16,7 +16,8 @@ from .config.constants import (
     ANGLE_MAP,
     GLYPHS_CANONICAL,
 )
-from .constants import get_aliases, get_graph_param
+from .constants import get_graph_param
+from .constants.aliases import ALIAS_EPI, ALIAS_SI
 from .glyph_history import append_metric, count_glyphs, ensure_history
 from .glyph_runtime import last_glyph
 from .utils import clamp01, kahan_sum_nd
@@ -71,9 +72,6 @@ def glyph_unit(g: str) -> complex:
 
     return _resolve_glyph(g, GLYPH_UNITS)
 
-
-ALIAS_SI = get_aliases("SI")
-ALIAS_EPI = get_aliases("EPI")
 
 MODE_FUNCS: dict[str, Callable[[Mapping[str, Any]], float]] = {
     "Si": lambda nd: clamp01(get_attr(nd, ALIAS_SI, 0.5)),

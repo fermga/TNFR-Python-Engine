@@ -12,9 +12,16 @@ from typing import Any, MutableMapping, cast
 from .._compat import TypeAlias
 from ..alias import collect_attr, collect_theta_attr, get_attr, set_attr
 from ..callback_utils import CallbackEvent, callback_manager
-from ..constants import (
-    get_aliases,
-    get_param,
+from ..constants import get_param
+from ..constants.aliases import (
+    ALIAS_D2VF,
+    ALIAS_DNFR,
+    ALIAS_DSI,
+    ALIAS_DVF,
+    ALIAS_DEPI,
+    ALIAS_EPI,
+    ALIAS_SI,
+    ALIAS_VF,
 )
 from ..glyph_history import append_metric, ensure_history
 from ..utils import clamp01
@@ -47,15 +54,6 @@ from .common import compute_coherence, min_max_range
 from .trig_cache import compute_theta_trig, get_trig_cache
 
 logger = get_logger(__name__)
-
-ALIAS_EPI = get_aliases("EPI")
-ALIAS_VF = get_aliases("VF")
-ALIAS_SI = get_aliases("SI")
-ALIAS_DNFR = get_aliases("DNFR")
-ALIAS_DEPI = get_aliases("DEPI")
-ALIAS_DSI = get_aliases("DSI")
-ALIAS_DVF = get_aliases("DVF")
-ALIAS_D2VF = get_aliases("D2VF")
 
 GLYPH_LOAD_STABILIZERS_KEY = "glyph_load_stabilizers"
 

@@ -18,7 +18,8 @@ from typing import (
 
 from ..alias import get_attr
 from ..config.constants import GLYPH_GROUPS, GLYPHS_CANONICAL
-from ..constants import get_aliases, get_param
+from ..constants import get_param
+from ..constants.aliases import ALIAS_EPI
 from ..glyph_history import append_metric
 from ..glyph_runtime import last_glyph
 from ..types import (
@@ -32,8 +33,6 @@ from ..types import (
     MetricsListHistory,
     SigmaTrace,
 )
-
-ALIAS_EPI = get_aliases("EPI")
 
 LATENT_GLYPH: str = "SHA"
 DEFAULT_EPI_SUPPORT_LIMIT = 0.05

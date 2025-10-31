@@ -7,7 +7,8 @@ from collections.abc import Sequence
 from ..alias import get_attr
 from ..glyph_runtime import last_glyph
 from ..config.constants import GLYPHS_CANONICAL_SET
-from ..constants import get_aliases, get_param
+from ..constants import get_param
+from ..constants.aliases import ALIAS_EPI, ALIAS_VF
 from ..utils import within_range
 from ..types import (
     EPIValue,
@@ -17,9 +18,6 @@ from ..types import (
     TNFRGraph,
     ValidatorFunc,
 )
-ALIAS_EPI = get_aliases("EPI")
-ALIAS_VF = get_aliases("VF")
-
 NodeData = NodeAttrMap
 """Read-only node attribute mapping used by validators."""
 
