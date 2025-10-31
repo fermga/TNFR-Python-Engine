@@ -353,11 +353,15 @@ _ACCUMULATOR_KEY = "_tnfr_nu_f_accumulator"
 def ensure_nu_f_telemetry(
     graph: GraphLike,
     *,
-    confidence_level: float = 0.95,
+    confidence_level: float | None = None,
     history_limit: int | None = 128,
     window_limit: int | None = None,
 ) -> NuFTelemetryAccumulator:
-    """Ensure ``graph`` exposes a :class:`NuFTelemetryAccumulator`."""
+    """Ensure ``graph`` exposes a :class:`NuFTelemetryAccumulator`.
+
+    When ``confidence_level`` is ``None`` the existing accumulator is preserved
+    and new accumulators default to ``0.95``.
+    """
 
     mapping = getattr(graph, "graph", None)
     if not isinstance(mapping, MutableMapping):
@@ -374,8 +378,9 @@ def ensure_nu_f_telemetry(
         ):
             replace = True
     if not isinstance(accumulator, NuFTelemetryAccumulator) or replace:
+        requested_confidence = 0.95 if confidence_level is None else confidence_level
         accumulator = NuFTelemetryAccumulator(
-            confidence_level=confidence_level,
+            confidence_level=requested_confidence,
             history_limit=history_limit,
             window_limit=window_limit,
             graph=graph,

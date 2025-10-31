@@ -11,7 +11,7 @@ np = pytest.importorskip("numpy")
 
 from tnfr.constants import merge_overrides
 from tnfr.dynamics.runtime import _run_after_callbacks
-from tnfr.telemetry.nu_f import ensure_nu_f_telemetry
+from tnfr.telemetry.nu_f import ensure_nu_f_telemetry, record_nu_f_window
 
 
 def _compute_expected_ci(rate: float, total_duration: float, confidence: float) -> tuple[float, float]:
@@ -120,3 +120,36 @@ def test_nu_f_history_survives_runtime_summary(graph_canon) -> None:
     assert len(history_final) == 3
 
     assert telemetry.get("nu_f") is summary
+
+
+def test_custom_confidence_level_survives_repeated_ensure(graph_canon) -> None:
+    """Custom νf confidence levels must persist across repeated ensures."""
+
+    G = graph_canon()
+    accumulator = ensure_nu_f_telemetry(G, confidence_level=0.82)
+    first_snapshot = accumulator.record_counts(4, 2.0, graph=G)
+
+    telemetry = G.graph.get("telemetry")
+    assert isinstance(telemetry, dict)
+
+    history = telemetry.get("nu_f_history")
+    assert isinstance(history, list)
+    assert history[-1] == first_snapshot.as_payload()
+
+    same_accumulator = ensure_nu_f_telemetry(G)
+    assert same_accumulator is accumulator
+    assert same_accumulator.confidence_level == pytest.approx(0.82)
+
+    second_snapshot = record_nu_f_window(G, 3, 1.5)
+    assert second_snapshot.confidence_level == pytest.approx(0.82)
+
+    another_reference = ensure_nu_f_telemetry(G)
+    assert another_reference is accumulator
+    assert another_reference.confidence_level == pytest.approx(0.82)
+
+    updated_history = telemetry.get("nu_f_history")
+    assert isinstance(updated_history, list)
+    assert updated_history[-2:] == [
+        first_snapshot.as_payload(),
+        second_snapshot.as_payload(),
+    ]

@@ -103,7 +103,7 @@ class NuFTelemetryAccumulator:
 def ensure_nu_f_telemetry(
     graph: GraphLike,
     *,
-    confidence_level: float = ...,
+    confidence_level: float | None = ...,
     history_limit: int | None = ...,
     window_limit: int | None = ...,
 ) -> NuFTelemetryAccumulator: ...

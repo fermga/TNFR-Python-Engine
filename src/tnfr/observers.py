@@ -77,7 +77,7 @@ def _resolve_reorg_state(G: TNFRGraph) -> dict[str, object]:
 def _before_step_reorg(G: TNFRGraph, ctx: Mapping[str, object] | None) -> None:
     """Capture structural time metadata before the step starts."""
 
-    ensure_nu_f_telemetry(G)
+    ensure_nu_f_telemetry(G, confidence_level=None)
     state = _resolve_reorg_state(G)
     step_idx = ctx.get("step") if ctx else None
     try:
@@ -166,7 +166,7 @@ def attach_standard_observer(G: TNFRGraph) -> TNFRGraph:
         _after_step_reorg,
         name="std_reorg_after",
     )
-    ensure_nu_f_telemetry(G)
+    ensure_nu_f_telemetry(G, confidence_level=None)
     G.graph["_STD_OBSERVER"] = "attached"
     return G
 

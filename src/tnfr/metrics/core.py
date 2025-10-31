@@ -163,7 +163,7 @@ def _update_nu_f_snapshot(
 ) -> None:
     """Refresh νf telemetry snapshot and optionally persist it in history."""
 
-    accumulator = ensure_nu_f_telemetry(G)
+    accumulator = ensure_nu_f_telemetry(G, confidence_level=None)
     snapshot = accumulator.snapshot(graph=G)
     payload = snapshot.as_payload()
     bridge: float | None
