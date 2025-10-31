@@ -8,14 +8,20 @@ compatibility or stabilisation thresholds.
 
 from __future__ import annotations
 
+from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Mapping
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_SI
+from ..config.operator_names import (
+    CONTRACTION,
+    DISSONANCE,
+    MUTATION,
+    SILENCE,
+)
 from ..utils import clamp01
 from ..metrics.common import normalize_dnfr
 from ..types import Glyph
-from .compatibility import CANON_COMPAT, CANON_FALLBACK
 
 if TYPE_CHECKING:  # pragma: no cover - only for typing
     from ..operators.grammar import GrammarContext
@@ -46,13 +52,20 @@ def glyph_fallback(cand_key: str, fallbacks: Mapping[str, Any]) -> Glyph | str:
     """Determine fallback glyph for ``cand_key`` considering canon tables."""
 
     glyph_key = coerce_glyph(cand_key)
-    canon_fb = (
-        CANON_FALLBACK.get(glyph_key, cand_key)
-        if isinstance(glyph_key, Glyph)
-        else cand_key
-    )
-    fb = fallbacks.get(cand_key, canon_fb)
-    return coerce_glyph(fb)
+    fb_override = fallbacks.get(cand_key)
+    if fb_override is not None:
+        return coerce_glyph(fb_override)
+
+    glyph_to_name, name_to_glyph = _functional_translators()
+    _, fallback_table = _structural_tables()
+    cand_name = glyph_to_name(glyph_key if isinstance(glyph_key, Glyph) else cand_key)
+    if cand_name is None:
+        return coerce_glyph(cand_key)
+    fb_name = fallback_table.get(cand_name)
+    if fb_name is None:
+        return coerce_glyph(cand_key)
+    fb_glyph = name_to_glyph(fb_name)
+    return fb_glyph if fb_glyph is not None else coerce_glyph(cand_key)
 
 
 # -------------------------
@@ -95,12 +108,16 @@ def _check_oz_to_zhir(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | st
     from ..glyph_history import recent_glyph
     nd = ctx.G.nodes[n]
     cand_glyph = coerce_glyph(cand)
-    if cand_glyph == Glyph.ZHIR:
+    glyph_to_name, name_to_glyph = _functional_translators()
+    if glyph_to_name(cand_glyph if isinstance(cand_glyph, Glyph) else cand) == MUTATION:
         cfg = ctx.cfg_canon
         win = int(cfg.get("zhir_requires_oz_window", 3))
         dn_min = float(cfg.get("zhir_dnfr_min", 0.05))
-        if not recent_glyph(nd, Glyph.OZ, win) and normalized_dnfr(ctx, nd) < dn_min:
-            return Glyph.OZ
+        dissonance_glyph = name_to_glyph(DISSONANCE)
+        if dissonance_glyph is None:
+            return cand
+        if not recent_glyph(nd, dissonance_glyph.value, win) and normalized_dnfr(ctx, nd) < dn_min:
+            return dissonance_glyph
     return cand
 
 
@@ -119,9 +136,11 @@ def _check_thol_closure(
         if st["thol_len"] >= maxlen or (
             st["thol_len"] >= minlen and normalized_dnfr(ctx, nd) <= close_dn
         ):
-            return (
-                Glyph.NUL if _si(nd) >= float(cfg.get("si_high", 0.66)) else Glyph.SHA
-            )
+            name_to_glyph = _functional_translators()[1]
+            high_si = _si(nd) >= float(cfg.get("si_high", 0.66))
+            target = CONTRACTION if high_si else SILENCE
+            glyph = name_to_glyph(target)
+            return glyph if glyph is not None else cand
     return cand
 
 
@@ -134,12 +153,35 @@ def _check_compatibility(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph |
     prev_glyph = coerce_glyph(prev)
     cand_glyph = coerce_glyph(cand)
     if isinstance(prev_glyph, Glyph):
-        allowed = CANON_COMPAT.get(prev_glyph)
+        glyph_to_name, name_to_glyph = _functional_translators()
+        compat, fallback = _structural_tables()
+        prev_name = glyph_to_name(prev_glyph)
+        if prev_name is None:
+            return cand
+        allowed = compat.get(prev_name)
         if allowed is None:
             return cand
-        if isinstance(cand_glyph, Glyph):
-            if cand_glyph not in allowed:
-                return CANON_FALLBACK.get(prev_glyph, cand_glyph)
-        else:
-            return CANON_FALLBACK.get(prev_glyph, cand)
+        cand_name = glyph_to_name(cand_glyph if isinstance(cand_glyph, Glyph) else cand)
+        if cand_name in allowed:
+            return cand
+        fb_name = fallback.get(prev_name)
+        if fb_name is None:
+            return cand
+        fb_glyph = name_to_glyph(fb_name)
+        if fb_glyph is not None:
+            return fb_glyph
     return cand
+
+
+@lru_cache(maxsize=1)
+def _functional_translators():
+    from ..operators import grammar as _grammar
+
+    return _grammar.glyph_function_name, _grammar.function_name_to_glyph
+
+
+@lru_cache(maxsize=1)
+def _structural_tables():
+    from . import compatibility as _compat
+
+    return _compat._STRUCTURAL_COMPAT_TABLE, _compat._STRUCTURAL_FALLBACK_TABLE

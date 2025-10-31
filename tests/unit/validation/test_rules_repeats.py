@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from collections import deque
 
+from tnfr.config.operator_names import RESONANCE, SILENCE
 from tnfr.types import Glyph
 from tnfr.validation.soft_filters import check_repeats
-from tnfr.operators.grammar import GrammarContext
+from tnfr.operators.grammar import GrammarContext, glyph_function_name
 
 
 def _ctx_with_node(graph_canon, cfg_soft):
@@ -31,7 +32,7 @@ def test_check_repeats_swaps_to_configured_fallback(graph_canon):
 
     swapped = check_repeats(ctx, node_id, Glyph.RA)
 
-    assert swapped == Glyph.SHA
+    assert glyph_function_name(swapped) == SILENCE
 
 
 def test_check_repeats_leaves_non_recent_candidate(graph_canon):
@@ -46,7 +47,7 @@ def test_check_repeats_leaves_non_recent_candidate(graph_canon):
 
     cand = check_repeats(ctx, node_id, Glyph.RA)
 
-    assert cand == Glyph.RA
+    assert glyph_function_name(cand) == RESONANCE
 
 
 def test_check_repeats_with_zero_window_passthrough(graph_canon):
@@ -61,4 +62,4 @@ def test_check_repeats_with_zero_window_passthrough(graph_canon):
 
     cand = check_repeats(ctx, node_id, Glyph.RA)
 
-    assert cand == Glyph.RA
+    assert glyph_function_name(cand) == RESONANCE

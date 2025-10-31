@@ -6,10 +6,11 @@ import networkx as nx
 
 from tnfr.constants import inject_defaults
 from tnfr.types import Glyph
+from tnfr.config.operator_names import DISSONANCE, MUTATION
 from tnfr.validation import rules as rules_mod
 from tnfr.validation.soft_filters import maybe_force
 from tnfr.validation.compatibility import CANON_COMPAT, CANON_FALLBACK
-from tnfr.operators.grammar import GrammarContext
+from tnfr.operators.grammar import GrammarContext, glyph_function_name
 
 
 def _graph_with_node():
@@ -37,7 +38,7 @@ def test_maybe_force_recovers_original_when_dnfr_high():
         "force_dnfr",
     )
 
-    assert forced == Glyph.ZHIR
+    assert glyph_function_name(forced) == MUTATION
 
 
 def test_check_compatibility_returns_fallback_glyph():
@@ -48,8 +49,9 @@ def test_check_compatibility_returns_fallback_glyph():
 
     result = rules_mod._check_compatibility(ctx, 0, Glyph.ZHIR)
 
-    assert Glyph.ZHIR not in CANON_COMPAT[Glyph.AL]
-    assert result == CANON_FALLBACK[Glyph.AL]
+    successors = {glyph_function_name(g) for g in CANON_COMPAT[Glyph.AL]}
+    assert MUTATION not in successors
+    assert glyph_function_name(result) == glyph_function_name(CANON_FALLBACK[Glyph.AL])
 
 
 def test_check_oz_to_zhir_requires_recent_oz():
@@ -62,4 +64,4 @@ def test_check_oz_to_zhir_requires_recent_oz():
 
     result = rules_mod._check_oz_to_zhir(ctx, 0, Glyph.ZHIR)
 
-    assert result == Glyph.OZ
+    assert glyph_function_name(result) == DISSONANCE
