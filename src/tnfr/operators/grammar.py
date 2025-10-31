@@ -433,7 +433,7 @@ class _SequenceAutomaton:
             raise SequenceSyntaxError(
                 index=len(names) - 1,
                 token=names[-1],
-                message="THOL block without closure",
+                message=f"{operator_display_name(SELF_ORGANIZATION)} block without closure",
             )
 
     @property
