@@ -1,7 +1,7 @@
 """Mathematics primitives aligned with TNFR coherence modeling."""
 
 from .dynamics import MathematicalDynamicsEngine
-from .epi import BEPIElement
+from .epi import BEPIElement, CoherenceEvaluation, evaluate_coherence_transform
 from .generators import build_delta_nfr
 from .operators import CoherenceOperator, FrequencyOperator
 from .operators_factory import make_coherence_operator, make_frequency_operator
@@ -16,6 +16,8 @@ from .runtime import (
 )
 from .spaces import BanachSpaceEPI, HilbertSpace
 from .transforms import (
+    CoherenceMonotonicityReport,
+    CoherenceViolation,
     IsometryFactory,
     build_isometry_factory,
     ensure_coherence_monotonicity,
@@ -27,7 +29,10 @@ __all__ = [
     "HilbertSpace",
     "BanachSpaceEPI",
     "BEPIElement",
+    "CoherenceEvaluation",
     "CoherenceOperator",
+    "CoherenceMonotonicityReport",
+    "CoherenceViolation",
     "FrequencyOperator",
     "MathematicalDynamicsEngine",
     "build_delta_nfr",
@@ -38,6 +43,7 @@ __all__ = [
     "build_isometry_factory",
     "validate_norm_preservation",
     "ensure_coherence_monotonicity",
+    "evaluate_coherence_transform",
     "StateProjector",
     "BasicStateProjector",
     "normalized",

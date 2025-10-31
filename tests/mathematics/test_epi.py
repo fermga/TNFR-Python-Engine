@@ -141,3 +141,53 @@ def test_zero_and_basis_factories(sample_grid: np.ndarray) -> None:
     combined = space.direct_sum(zero, basis)
     np.testing.assert_allclose(combined.f_continuous, basis.f_continuous)
     np.testing.assert_allclose(combined.a_discrete, basis.a_discrete)
+
+
+def test_bepi_sequence_forms_cauchy(sample_grid: np.ndarray) -> None:
+    space = BanachSpaceEPI()
+
+    def partial_weight(order: int) -> float:
+        return sum(0.5 ** k for k in range(order + 1))
+
+    def make_element(order: int) -> BEPIElement:
+        weight = partial_weight(order)
+        f_vector = np.zeros(4, dtype=np.complex128)
+        a_vector = np.zeros(3, dtype=np.complex128)
+        f_vector[1] = weight
+        a_vector[0] = weight
+        return BEPIElement(f_vector, a_vector, sample_grid)
+
+    sequence = [make_element(order) for order in range(6)]
+    limit_weight = 1.0 / (1.0 - 0.5)
+    limit_element = BEPIElement(
+        np.array([0.0, limit_weight, 0.0, 0.0], dtype=np.complex128),
+        np.array([limit_weight, 0.0, 0.0], dtype=np.complex128),
+        sample_grid,
+    )
+
+    distances_to_limit = [
+        space.coherence_norm(
+            limit_element.f_continuous - element.f_continuous,
+            limit_element.a_discrete - element.a_discrete,
+            x_grid=sample_grid,
+        )
+        for element in sequence
+    ]
+
+    assert distances_to_limit[-1] < 0.08
+    assert all(earlier >= later for earlier, later in zip(distances_to_limit, distances_to_limit[1:]))
+
+    tail_bounds = []
+    for start in range(4, len(sequence) - 1):
+        diffs = [
+            space.coherence_norm(
+                sequence[next_idx].f_continuous - sequence[start].f_continuous,
+                sequence[next_idx].a_discrete - sequence[start].a_discrete,
+                x_grid=sample_grid,
+            )
+            for next_idx in range(start + 1, len(sequence))
+        ]
+        tail_bounds.append(max(diffs))
+
+    assert tail_bounds
+    assert all(bound < 0.08 for bound in tail_bounds)

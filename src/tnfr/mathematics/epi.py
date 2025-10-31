@@ -2,9 +2,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Sequence
+from typing import Callable, Mapping, Sequence
 
 import numpy as np
+
+__all__ = [
+    "BEPIElement",
+    "CoherenceEvaluation",
+    "evaluate_coherence_transform",
+]
 
 
 class _EPIValidators:
@@ -135,4 +141,114 @@ class BEPIElement(_EPIValidators):
 
     def __abs__(self) -> float:
         return self._max_magnitude()
+
+
+@dataclass(frozen=True)
+class CoherenceEvaluation:
+    """Container describing the outcome of a coherence transform evaluation."""
+
+    element: BEPIElement
+    transformed: BEPIElement
+    coherence_before: float
+    coherence_after: float
+    kappa: float
+    tolerance: float
+    satisfied: bool
+    required: float
+    deficit: float
+    ratio: float
+
+
+def evaluate_coherence_transform(
+    element: BEPIElement,
+    transform: Callable[[BEPIElement], BEPIElement],
+    *,
+    kappa: float = 1.0,
+    tolerance: float = 1e-9,
+    space: "BanachSpaceEPI" | None = None,
+    norm_kwargs: Mapping[str, float] | None = None,
+) -> CoherenceEvaluation:
+    """Apply ``transform`` to ``element`` and verify a coherence inequality.
+
+    Parameters
+    ----------
+    element:
+        The :class:`BEPIElement` subject to the transformation.
+    transform:
+        Callable receiving ``element`` and returning the transformed
+        :class:`BEPIElement`.  The callable is expected to preserve the
+        structural sampling grid and dimensionality of the element.
+    kappa:
+        Factor on the right-hand side of the inequality ``C(T(EPI)) ≥ κ·C(EPI)``.
+    tolerance:
+        Non-negative slack applied to the inequality.  When
+        ``C(T(EPI)) + tolerance`` exceeds ``κ·C(EPI)`` the check succeeds.
+    space:
+        Optional :class:`~tnfr.mathematics.spaces.BanachSpaceEPI` instance used
+        to compute the coherence norm.  When omitted, a local instance is
+        constructed to avoid circular imports at module import time.
+    norm_kwargs:
+        Optional keyword arguments forwarded to
+        :meth:`BanachSpaceEPI.coherence_norm`.
+
+    Returns
+    -------
+    CoherenceEvaluation
+        Dataclass capturing the before/after coherence values together with the
+        inequality verdict.
+    """
+
+    if kappa < 0:
+        raise ValueError("kappa must be non-negative.")
+    if tolerance < 0:
+        raise ValueError("tolerance must be non-negative.")
+
+    if norm_kwargs is None:
+        norm_kwargs = {}
+
+    from .spaces import BanachSpaceEPI  # Local import to avoid circular dependency
+
+    working_space = space if space is not None else BanachSpaceEPI()
+
+    coherence_before = working_space.coherence_norm(
+        element.f_continuous,
+        element.a_discrete,
+        x_grid=element.x_grid,
+        **norm_kwargs,
+    )
+
+    transformed = transform(element)
+    if not isinstance(transformed, BEPIElement):
+        raise TypeError("transform must return a BEPIElement instance.")
+
+    coherence_after = working_space.coherence_norm(
+        transformed.f_continuous,
+        transformed.a_discrete,
+        x_grid=transformed.x_grid,
+        **norm_kwargs,
+    )
+
+    required = kappa * coherence_before
+    satisfied = coherence_after + tolerance >= required
+    deficit = max(0.0, required - coherence_after)
+
+    if coherence_before > 0:
+        ratio = coherence_after / coherence_before
+    elif coherence_after > tolerance:
+        ratio = float("inf")
+    else:
+        ratio = 1.0
+
+    return CoherenceEvaluation(
+        element=element,
+        transformed=transformed,
+        coherence_before=coherence_before,
+        coherence_after=coherence_after,
+        kappa=kappa,
+        tolerance=tolerance,
+        satisfied=satisfied,
+        required=required,
+        deficit=deficit,
+        ratio=ratio,
+    )
 
