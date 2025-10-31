@@ -9,6 +9,12 @@ import numpy as np
 
 from ..mathematics.operators import CoherenceOperator, FrequencyOperator
 from ..mathematics.spaces import HilbertSpace
+from ..mathematics.runtime import (
+    coherence as runtime_coherence,
+    frequency_positive as runtime_frequency_positive,
+    normalized as runtime_normalized,
+    stable_unitary as runtime_stable_unitary,
+)
 from . import ValidationOutcome, Validator
 
 __all__ = ("NFRValidator",)
@@ -24,42 +30,28 @@ class NFRValidator(Validator[np.ndarray]):
     frequency_operator: FrequencyOperator | None = None
     atol: float = 1e-9
 
-    def _as_vector(self, state: Sequence[complex] | np.ndarray) -> np.ndarray:
-        vector = np.asarray(state, dtype=self.hilbert_space.dtype)
-        expected_shape = (self.hilbert_space.dimension,)
-        if vector.shape != expected_shape:
-            raise ValueError(
-                "State vector dimension mismatch: "
-                f"expected {expected_shape}, received {vector.shape}."
-            )
-        return vector
-
-    def _normalise(self, vector: np.ndarray) -> np.ndarray:
-        norm = self.hilbert_space.norm(vector)
-        if np.isclose(norm, 0.0, atol=self.atol):
-            raise ValueError("Cannot normalise a null state vector.")
-        return vector / norm
-
-    def _unitary_step(self, vector: np.ndarray) -> np.ndarray:
-        eigenvalues, eigenvectors = np.linalg.eigh(self.coherence_operator.matrix)
-        phases = np.exp(-1j * eigenvalues)
-        unitary = (eigenvectors * phases) @ eigenvectors.conj().T
-        return unitary @ vector
-
     def _compute_summary(
         self,
         state: Sequence[complex] | np.ndarray,
         *,
         enforce_frequency_positivity: bool | None = None,
     ) -> tuple[bool, dict[str, Any], np.ndarray]:
-        vector = self._as_vector(state)
-        normalized = bool(self.hilbert_space.is_normalized(vector, atol=self.atol))
-        normalised_vector = self._normalise(vector)
+        vector = self.hilbert_space.project(state)
 
-        coherence_value = self.coherence_operator.expectation(
-            normalised_vector, normalise=False, atol=self.atol
+        normalized_passed, norm_value = runtime_normalized(
+            vector, self.hilbert_space, atol=self.atol
         )
-        coherence_ok = bool(coherence_value + self.atol >= self.coherence_threshold)
+        if np.isclose(norm_value, 0.0, atol=self.atol):
+            raise ValueError("Cannot normalise a null state vector.")
+        normalised_vector = vector / norm_value
+
+        coherence_passed, coherence_value = runtime_coherence(
+            normalised_vector,
+            self.coherence_operator,
+            self.coherence_threshold,
+            normalise=False,
+            atol=self.atol,
+        )
 
         frequency_summary: dict[str, Any] | None = None
         freq_ok = True
@@ -67,54 +59,45 @@ class NFRValidator(Validator[np.ndarray]):
             if enforce_frequency_positivity is None:
                 enforce_frequency_positivity = True
 
-            spectrum = self.frequency_operator.spectrum()
-            spectrum_psd = bool(
-                self.frequency_operator.is_positive_semidefinite(atol=self.atol)
+            runtime_summary = runtime_frequency_positive(
+                normalised_vector,
+                self.frequency_operator,
+                normalise=False,
+                enforce=enforce_frequency_positivity,
+                atol=self.atol,
             )
-            min_frequency = float(np.min(spectrum)) if spectrum.size else float("inf")
-
-            frequency_value = float(
-                self.frequency_operator.project_frequency(
-                    normalised_vector, normalise=False, atol=self.atol
-                )
-            )
-            projection_non_negative = bool(frequency_value + self.atol >= 0.0)
-
-            freq_ok = bool(
-                spectrum_psd
-                and (projection_non_negative or not enforce_frequency_positivity)
-            )
-
+            freq_ok = bool(runtime_summary["passed"])
             frequency_summary = {
-                "passed": bool(freq_ok),
-                "value": frequency_value,
-                "enforced": enforce_frequency_positivity,
-                "spectrum_psd": spectrum_psd,
-                "spectrum_min": min_frequency,
-                "projection_passed": projection_non_negative,
+                **runtime_summary,
+                "enforced": runtime_summary["enforce"],
             }
+            frequency_summary.pop("enforce", None)
         elif enforce_frequency_positivity:
             raise ValueError("Frequency positivity enforcement requested without operator.")
 
-        unitary_vector = self._unitary_step(normalised_vector)
-        unitary_norm = self.hilbert_space.norm(unitary_vector)
-        unitary_stable = bool(np.isclose(unitary_norm, 1.0, atol=self.atol))
+        unitary_passed, unitary_norm = runtime_stable_unitary(
+            normalised_vector,
+            self.coherence_operator,
+            self.hilbert_space,
+            normalise=False,
+            atol=self.atol,
+        )
 
         summary: dict[str, Any] = {
-            "normalized": bool(normalized),
+            "normalized": bool(normalized_passed),
             "coherence": {
-                "passed": bool(coherence_ok),
+                "passed": bool(coherence_passed),
                 "value": coherence_value,
                 "threshold": self.coherence_threshold,
             },
             "frequency": frequency_summary,
             "unitary_stability": {
-                "passed": bool(unitary_stable),
+                "passed": bool(unitary_passed),
                 "norm_after": unitary_norm,
             },
         }
 
-        overall = bool(normalized and coherence_ok and freq_ok and unitary_stable)
+        overall = bool(normalized_passed and coherence_passed and freq_ok and unitary_passed)
         return overall, summary, normalised_vector
 
     def validate(
