@@ -60,8 +60,9 @@ def dcoh(
 
     Parameters mirror the runtime helpers so callers can rely on the same
     tolerances.  Numerical overflow is contained by bounding intermediate ratios
-    within ``[0, 1]`` up to ``atol`` so the returned dissimilarity never leaks
-    outside the TNFR coherence interval.
+    within ``[0, 1]`` up to ``atol`` before applying the Bures-style angle
+    ``arccos(√ratio)``, ensuring the returned dissimilarity remains within the
+    TNFR coherence interval.
     """
 
     dimension = operator.matrix.shape[0]
@@ -115,4 +116,4 @@ def dcoh(
     if ratio > 1.0:
         ratio = 1.0
 
-    return float(1.0 - ratio)
+    return float(np.arccos(np.sqrt(ratio)))

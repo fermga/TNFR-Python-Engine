@@ -70,7 +70,9 @@ def test_dcoh_orthogonal_states_follow_operator_overlap(
     weighted_overlap = np.vdot(psi1, hermitian_operator.matrix @ psi2)
     expect1 = hermitian_operator.expectation(psi1)
     expect2 = hermitian_operator.expectation(psi2)
-    expected_dcoh = 1.0 - (np.abs(weighted_overlap) ** 2) / (expect1 * expect2)
+    expected_dcoh = np.arccos(
+        np.sqrt((np.abs(weighted_overlap) ** 2) / (expect1 * expect2))
+    )
 
     result = dcoh(psi1, psi2, hermitian_operator)
 
@@ -115,4 +117,4 @@ def test_dcoh_respects_tolerance_thresholds(
         dcoh(psi1, psi2, near_null_operator)
 
     result = dcoh(psi1, psi2, near_null_operator, atol=1e-13)
-    assert result == pytest.approx(1.0, abs=1e-12)
+    assert result == pytest.approx(np.pi / 2, abs=1e-12)
