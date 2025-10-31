@@ -34,6 +34,18 @@ def test_dcoh_identity_returns_zero(
     assert result == pytest.approx(0.0, abs=1e-12)
 
 
+def test_dcoh_identity_superposition(
+    hermitian_operator: CoherenceOperator, orthonormal_basis: tuple[np.ndarray, np.ndarray]
+) -> None:
+    """Non-eigenstates remain coherent with themselves under any operator."""
+
+    psi1, psi2 = orthonormal_basis
+    superposition = (psi1 + psi2) / np.sqrt(2.0)
+
+    result = dcoh(superposition, superposition, hermitian_operator)
+    assert result == pytest.approx(0.0, abs=1e-12)
+
+
 def test_dcoh_is_symmetric(
     hermitian_operator: CoherenceOperator, orthonormal_basis: tuple[np.ndarray, np.ndarray]
 ) -> None:
