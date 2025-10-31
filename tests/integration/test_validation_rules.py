@@ -9,7 +9,7 @@ from tnfr.types import Glyph
 from tnfr.validation import rules as rules_mod
 from tnfr.validation.soft_filters import maybe_force
 from tnfr.validation.compatibility import CANON_COMPAT, CANON_FALLBACK
-from tnfr.validation.grammar import GrammarContext
+from tnfr.operators.grammar import GrammarContext
 
 
 def _graph_with_node():

@@ -11,7 +11,7 @@ from tnfr.types import Glyph
 from tnfr.validation import rules
 from tnfr.validation.soft_filters import acceleration_norm
 from tnfr.validation.compatibility import CANON_FALLBACK
-from tnfr.validation.grammar import GrammarContext
+from tnfr.operators.grammar import GrammarContext
 
 
 @pytest.fixture

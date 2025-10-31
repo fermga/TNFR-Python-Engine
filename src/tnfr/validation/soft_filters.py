@@ -13,7 +13,7 @@ from .rules import glyph_fallback, get_norm, normalized_dnfr
 
 if TYPE_CHECKING:  # pragma: no cover - import cycle guard
     from collections.abc import Mapping
-    from .grammar import GrammarContext
+    from ..operators.grammar import GrammarContext
 
 __all__ = (
     "acceleration_norm",
@@ -27,7 +27,7 @@ def acceleration_norm(ctx: "GrammarContext", nd: "Mapping[str, Any]") -> float:
     """Return the node acceleration normalised to ``[0, 1]``.
 
     The computation uses the canonical ``accel_max`` bound stored in
-    :class:`~tnfr.validation.grammar.GrammarContext`.  Values beyond the bound are
+    :class:`~tnfr.operators.grammar.GrammarContext`.  Values beyond the bound are
     clamped to preserve structural comparability with ΔNFR-based heuristics.
     """
 

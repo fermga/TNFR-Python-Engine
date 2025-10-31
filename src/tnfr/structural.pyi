@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Any, Callable, Hashable, Iterable, Sequence
 
+from .operators.grammar import SequenceValidationResult
 from .operators.definitions import (
     Coherence,
     Contraction,
@@ -16,7 +17,6 @@ from .operators.definitions import (
     Silence,
     Transition,
 )
-from .validation import ValidationOutcome
 
 if TYPE_CHECKING:
     import networkx as nx
@@ -65,5 +65,5 @@ def create_math_nfr(
 
 OPERATORS: dict[str, Operator]
 
-def validate_sequence(names: Iterable[str]) -> ValidationOutcome[tuple[str, ...]]: ...
+def validate_sequence(names: Iterable[str]) -> SequenceValidationResult: ...
 def run_sequence(G: "nx.Graph", node: Hashable, ops: Iterable[Operator]) -> None: ...

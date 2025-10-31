@@ -5,7 +5,7 @@ from collections import defaultdict, deque
 from tnfr.constants import inject_defaults
 from tnfr.dynamics import _choose_glyph
 from tnfr.types import Glyph
-from tnfr.validation.grammar import (
+from tnfr.operators.grammar import (
     apply_glyph_with_grammar,
     enforce_canonical_grammar,
     on_applied_glyph,
@@ -209,7 +209,7 @@ def test_apply_glyph_with_grammar_defaults_window_from_graph(graph_canon, monkey
     def fake_apply_glyph(graph, node_id, glyph, *, window=None):
         captured["window"] = window
 
-    monkeypatch.setattr("tnfr.validation.grammar.apply_glyph", fake_apply_glyph)
+    monkeypatch.setattr("tnfr.operators", "apply_glyph", fake_apply_glyph)
 
     apply_glyph_with_grammar(G, [0], Glyph.AL)
 

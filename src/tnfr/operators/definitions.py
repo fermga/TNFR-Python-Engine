@@ -78,16 +78,14 @@ class Operator:
         Notes
         -----
         The invocation delegates to
-        :func:`tnfr.validation.grammar.apply_glyph_with_grammar`, which enforces
+        :func:`tnfr.operators.grammar.apply_glyph_with_grammar`, which enforces
         the TNFR grammar before activating the glyph. The grammar may expand,
         contract or stabilise the neighbourhood so that the operator preserves
         canonical closure and coherence.
         """
         if self.glyph is None:
             raise NotImplementedError("Operator without assigned glyph")
-        from ..validation import (  # local import to avoid cycles
-            apply_glyph_with_grammar,
-        )
+        from . import apply_glyph_with_grammar
 
         apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
 

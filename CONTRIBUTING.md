@@ -263,8 +263,8 @@ artifacts (e.g., `node_modules/` or `dist/`) are not committed.
   and validation continue to work without manual wiring.【F:src/tnfr/operators/registry.py†L12-L49】
 - **Keep operator closure intact** by updating grammar/syntax rules alongside
   new operator sequences. Start with `tnfr.validation.syntax.validate_sequence`
-  and `tnfr.validation.grammar.enforce_canonical_grammar`, then add any THOL
-  handling you need in `tnfr.flatten`.【F:src/tnfr/validation/syntax.py†L1-L86】【F:src/tnfr/validation/grammar.py†L1-L90】【F:src/tnfr/flatten.py†L1-L120】
+  and `tnfr.operators.grammar.enforce_canonical_grammar`, then add any THOL
+  handling you need in `tnfr.flatten`.【F:src/tnfr/validation/syntax.py†L1-L103】【F:src/tnfr/operators/grammar.py†L1-L318】【F:src/tnfr/flatten.py†L1-L120】
 - **Share caches, locks, and telemetry** through the provided helpers instead
   of ad-hoc globals. Reuse `tnfr.utils` exports, `tnfr.utils.cache.CacheManager`,
   and `tnfr.locking.get_lock` when extending RNG, ΔNFR, or metric pipelines so
@@ -282,10 +282,10 @@ core layers, where they live, and why edits must preserve the invariant and
 telemetry contracts already documented.
 
 - **Structural grammar** — `tnfr.structural`,
-  `tnfr.validation.syntax`, `tnfr.validation.grammar`, `tnfr.flatten`.
+  `tnfr.validation.syntax`, `tnfr.operators.grammar`, `tnfr.flatten`.
   These modules instantiate nodes, validate operator sequences, and expand
   THOL blocks so every execution path honours the canonical grammar before
-  mutating EPI.【F:src/tnfr/structural.py†L39-L109】【F:src/tnfr/validation/syntax.py†L27-L121】【F:src/tnfr/validation/grammar.py†L1-L90】【F:src/tnfr/flatten.py†L1-L120】
+  mutating EPI.【F:src/tnfr/structural.py†L39-L109】【F:src/tnfr/validation/syntax.py†L1-L103】【F:src/tnfr/operators/grammar.py†L1-L318】【F:src/tnfr/flatten.py†L1-L120】
 - **Operator registry** — `tnfr.operators.definitions`,
   `tnfr.operators.registry`. They bind glyphs to implementations and enforce
   closure so the structural layer never executes unknown tokens.【F:src/tnfr/operators/definitions.py†L45-L180】【F:src/tnfr/operators/registry.py†L13-L50】

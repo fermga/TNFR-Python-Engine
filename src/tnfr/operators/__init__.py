@@ -20,6 +20,17 @@ from ..rng import make_rng
 from ..types import EPIValue, Glyph, NodeId, TNFRGraph
 from ..utils import get_nodenx
 from . import definitions as _definitions
+from .grammar import (
+    GrammarContext,
+    SequenceSyntaxError,
+    SequenceValidationResult,
+    _gram_state,
+    apply_glyph_with_grammar,
+    enforce_canonical_grammar,
+    on_applied_glyph,
+    parse_sequence,
+    validate_sequence,
+)
 from .jitter import (
     JitterCache,
     JitterCacheManager,
@@ -65,6 +76,15 @@ __all__ = [
     "get_jitter_manager",
     "reset_jitter_manager",
     "random_jitter",
+    "GrammarContext",
+    "SequenceValidationResult",
+    "SequenceSyntaxError",
+    "_gram_state",
+    "apply_glyph_with_grammar",
+    "parse_sequence",
+    "validate_sequence",
+    "enforce_canonical_grammar",
+    "on_applied_glyph",
     "get_neighbor_epi",
     "get_glyph_factors",
     "GLYPH_OPERATIONS",

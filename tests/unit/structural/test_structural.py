@@ -23,6 +23,7 @@ from tnfr.constants import (
     inject_defaults,
 )
 from tnfr.mathematics import BasicStateProjector, NFRValidator
+from tnfr.operators.grammar import SequenceValidationResult
 from tnfr.structural import (
     Coherence,
     Contraction,
@@ -42,13 +43,17 @@ from tnfr.structural import (
     create_nfr,
     validate_sequence,
 )
-from tnfr.validation import ValidationOutcome
 
 
-def _outcome_stub(names: list[str] | tuple[str, ...]) -> ValidationOutcome[tuple[str, ...]]:
+def _outcome_stub(names: list[str] | tuple[str, ...]) -> SequenceValidationResult:
     sequence = tuple(names)
-    summary = {"message": "ok", "passed": True, "tokens": sequence}
-    return ValidationOutcome(subject=sequence, passed=True, summary=summary)
+    return SequenceValidationResult(
+        tokens=sequence,
+        canonical_tokens=sequence,
+        passed=True,
+        message="ok",
+        metadata={},
+    )
 
 
 def test_create_nfr_basic() -> None:
@@ -87,7 +92,7 @@ def test_sequence_validation_and_run() -> None:
     ops = [Emission(), Reception(), Coherence(), Resonance(), Silence()]
     names = [op.name for op in ops]
     outcome = validate_sequence(names)
-    assert isinstance(outcome, ValidationOutcome)
+    assert isinstance(outcome, SequenceValidationResult)
     assert outcome.passed, outcome.summary["message"]
     assert outcome.summary["tokens"] == tuple(names)
     run_sequence(G, n, ops)
