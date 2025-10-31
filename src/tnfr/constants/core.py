@@ -71,6 +71,7 @@ class CoreDefaults:
     GLYPH_SELECTOR_MARGIN: float = 0.05
     VF_ADAPT_TAU: int = 5
     VF_ADAPT_MU: float = 0.1
+    HZ_STR_BRIDGE: float = 1.0
     GLYPH_FACTORS: dict[str, float] = field(
         default_factory=lambda: {
             "AL_boost": 0.05,
