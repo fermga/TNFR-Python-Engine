@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 
 from tnfr.cli import utils
+from tnfr.utils import normalize_optional_int
 
 
 def test_spec_normalizes_dotted_option_to_dest_and_default_none() -> None:
@@ -39,18 +40,18 @@ def test_spec_respects_explicit_dest_and_default() -> None:
         ("Null", None),
     ],
 )
-def test_coerce_optional_int_accepts_known_sentinels(raw: object, expected: int | None) -> None:
-    """The helper should normalise integers and reserved sentinel strings."""
+def test_normalize_optional_int_accepts_known_sentinels(raw: object, expected: int | None) -> None:
+    """The shared helper should normalise integers and reserved sentinel strings."""
 
-    assert utils._coerce_optional_int(raw) == expected
+    assert normalize_optional_int(raw, strict=True) == expected
 
 
 @pytest.mark.parametrize("raw", ["", " ", "abc", "1.5"])
-def test_coerce_optional_int_rejects_invalid_values(raw: object) -> None:
+def test_normalize_optional_int_rejects_invalid_values(raw: object) -> None:
     """Non-integer inputs besides the sentinels must raise ``ValueError``."""
 
     with pytest.raises(ValueError):
-        utils._coerce_optional_int(raw)
+        normalize_optional_int(raw, strict=True)
 
 
 def test_parse_cli_variants_defaults_to_auto_when_missing() -> None:

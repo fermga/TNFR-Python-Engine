@@ -58,7 +58,7 @@ from tnfr.metrics.sense_index import (
     compute_Si,
 )
 import tnfr.utils as tnfr_utils
-from tnfr.cli.utils import _coerce_optional_int, _parse_cli_variants
+from tnfr.cli.utils import _parse_cli_variants
 from tnfr.utils.chunks import resolve_chunk_size
 from tnfr.utils import json_dumps
 
