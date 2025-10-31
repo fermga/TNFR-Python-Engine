@@ -12,7 +12,7 @@ from collections.abc import (
     MutableMapping,
 )
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, ContextManager, Generic, TypeVar
+from typing import Any, ClassVar, ContextManager, Generic, TypeVar
 
 import networkx as nx
 from cachetools import LRUCache
@@ -23,9 +23,6 @@ from ..types import GraphLike, NodeId, TimingContext, TNFRGraph
 K = TypeVar("K", bound=Hashable)
 V = TypeVar("V")
 T = TypeVar("T")
-
-if TYPE_CHECKING:
-    from ..dynamics.dnfr import DnfrCache
 
 @dataclass(frozen=True)
 class CacheCapacityConfig:
@@ -243,7 +240,9 @@ __all__ = (
     "stable_json",
     "configure_graph_cache_limits",
     "DNFR_PREP_STATE_KEY",
+    "DnfrCache",
     "DnfrPrepState",
+    "new_dnfr_cache",
     "build_cache_manager",
     "configure_global_cache_layers",
     "reset_global_cache_manager",
@@ -257,11 +256,71 @@ NODE_SET_CHECKSUM_KEY: str
 _GRAPH_CACHE_LAYERS_KEY: str
 DNFR_PREP_STATE_KEY: str
 
+class DnfrCache:
+    idx: dict[Any, int]
+    theta: list[float]
+    epi: list[float]
+    vf: list[float]
+    cos_theta: list[float]
+    sin_theta: list[float]
+    neighbor_x: list[float]
+    neighbor_y: list[float]
+    neighbor_epi_sum: list[float]
+    neighbor_vf_sum: list[float]
+    neighbor_count: list[float]
+    neighbor_deg_sum: list[float] | None
+    th_bar: list[float] | None
+    epi_bar: list[float] | None
+    vf_bar: list[float] | None
+    deg_bar: list[float] | None
+    degs: dict[Any, float] | None
+    deg_list: list[float] | None
+    theta_np: Any | None
+    epi_np: Any | None
+    vf_np: Any | None
+    cos_theta_np: Any | None
+    sin_theta_np: Any | None
+    deg_array: Any | None
+    edge_src: Any | None
+    edge_dst: Any | None
+    checksum: Any | None
+    neighbor_x_np: Any | None
+    neighbor_y_np: Any | None
+    neighbor_epi_sum_np: Any | None
+    neighbor_vf_sum_np: Any | None
+    neighbor_count_np: Any | None
+    neighbor_deg_sum_np: Any | None
+    th_bar_np: Any | None
+    epi_bar_np: Any | None
+    vf_bar_np: Any | None
+    deg_bar_np: Any | None
+    grad_phase_np: Any | None
+    grad_epi_np: Any | None
+    grad_vf_np: Any | None
+    grad_topo_np: Any | None
+    grad_total_np: Any | None
+    dense_components_np: Any | None
+    dense_accum_np: Any | None
+    dense_degree_np: Any | None
+    neighbor_accum_np: Any | None
+    neighbor_inv_count_np: Any | None
+    neighbor_cos_avg_np: Any | None
+    neighbor_sin_avg_np: Any | None
+    neighbor_mean_tmp_np: Any | None
+    neighbor_mean_length_np: Any | None
+    edge_signature: Any | None
+    neighbor_accum_signature: Any | None
+    neighbor_edge_values_np: Any | None
+
+
 class EdgeCacheState:
     cache: MutableMapping[Hashable, Any]
     locks: defaultdict[Hashable, threading.RLock]
     max_entries: int | None
     dirty: bool
+
+
+def new_dnfr_cache() -> DnfrCache: ...
 
 
 class DnfrPrepState:

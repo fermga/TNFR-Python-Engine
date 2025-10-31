@@ -12,7 +12,8 @@ from tnfr.dynamics import (
     _compute_dnfr,
     _prepare_dnfr_data,
 )
-from tnfr.dynamics.dnfr import DnfrCache, _ensure_cached_array
+from tnfr.dynamics.dnfr import _ensure_cached_array
+from tnfr.utils import new_dnfr_cache
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
@@ -186,20 +187,8 @@ def test_prepare_dnfr_raises_when_cache_state_missing(monkeypatch):
 
 
 def test_ensure_cached_array_requires_numpy():
-    cache = DnfrCache(
-        idx={},
-        theta=[],
-        epi=[],
-        vf=[],
-        cos_theta=[],
-        sin_theta=[],
-        neighbor_x=[],
-        neighbor_y=[],
-        neighbor_epi_sum=[],
-        neighbor_vf_sum=[],
-        neighbor_count=[],
-        neighbor_deg_sum=None,
-    )
+    cache = new_dnfr_cache()
+    cache.neighbor_deg_sum = None
 
     with pytest.raises(RuntimeError, match="NumPy is required"):
         _ensure_cached_array(cache, "dense_components_np", (4, 4), np=None)

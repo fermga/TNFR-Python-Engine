@@ -14,7 +14,6 @@ import math
 import sys
 from collections.abc import Callable, Iterator, Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import dataclass
 from types import ModuleType
 from typing import TYPE_CHECKING, Any, cast
 
@@ -36,6 +35,7 @@ from ..types import (
 from ..utils import (
     DNFR_PREP_STATE_KEY,
     DnfrPrepState,
+    DnfrCache,
     CacheManager,
     _graph_cache_manager,
     angle_diff,
@@ -45,6 +45,7 @@ from ..utils import (
     get_numpy,
     normalize_weights,
     resolve_chunk_size,
+    new_dnfr_cache,
 )
 
 if TYPE_CHECKING:  # pragma: no cover - import-time typing hook
@@ -67,64 +68,6 @@ def _should_vectorize(G: TNFRGraph, np_module: ModuleType | None) -> bool:
     if flag is None:
         return True
     return bool(flag)
-
-
-@dataclass
-class DnfrCache:
-    idx: dict[Any, int]
-    theta: list[float]
-    epi: list[float]
-    vf: list[float]
-    cos_theta: list[float]
-    sin_theta: list[float]
-    neighbor_x: list[float]
-    neighbor_y: list[float]
-    neighbor_epi_sum: list[float]
-    neighbor_vf_sum: list[float]
-    neighbor_count: list[float]
-    neighbor_deg_sum: list[float] | None
-    th_bar: list[float] | None = None
-    epi_bar: list[float] | None = None
-    vf_bar: list[float] | None = None
-    deg_bar: list[float] | None = None
-    degs: dict[Any, float] | None = None
-    deg_list: list[float] | None = None
-    theta_np: Any | None = None
-    epi_np: Any | None = None
-    vf_np: Any | None = None
-    cos_theta_np: Any | None = None
-    sin_theta_np: Any | None = None
-    deg_array: Any | None = None
-    edge_src: Any | None = None
-    edge_dst: Any | None = None
-    checksum: Any | None = None
-    neighbor_x_np: Any | None = None
-    neighbor_y_np: Any | None = None
-    neighbor_epi_sum_np: Any | None = None
-    neighbor_vf_sum_np: Any | None = None
-    neighbor_count_np: Any | None = None
-    neighbor_deg_sum_np: Any | None = None
-    th_bar_np: Any | None = None
-    epi_bar_np: Any | None = None
-    vf_bar_np: Any | None = None
-    deg_bar_np: Any | None = None
-    grad_phase_np: Any | None = None
-    grad_epi_np: Any | None = None
-    grad_vf_np: Any | None = None
-    grad_topo_np: Any | None = None
-    grad_total_np: Any | None = None
-    dense_components_np: Any | None = None
-    dense_accum_np: Any | None = None
-    dense_degree_np: Any | None = None
-    neighbor_accum_np: Any | None = None
-    neighbor_inv_count_np: Any | None = None
-    neighbor_cos_avg_np: Any | None = None
-    neighbor_sin_avg_np: Any | None = None
-    neighbor_mean_tmp_np: Any | None = None
-    neighbor_mean_length_np: Any | None = None
-    edge_signature: Any | None = None
-    neighbor_accum_signature: Any | None = None
-    neighbor_edge_values_np: Any | None = None
 
 
 _NUMPY_CACHE_ATTRS = (
@@ -467,43 +410,28 @@ def _init_dnfr_cache(
         idx_local = {n: i for i, n in enumerate(nodes)}
         size = len(nodes)
         zeros = [0.0] * size
-        if prev_cache is None:
-            cache_new = DnfrCache(
-                idx=idx_local,
-                theta=zeros.copy(),
-                epi=zeros.copy(),
-                vf=zeros.copy(),
-                cos_theta=[1.0] * size,
-                sin_theta=[0.0] * size,
-                neighbor_x=zeros.copy(),
-                neighbor_y=zeros.copy(),
-                neighbor_epi_sum=zeros.copy(),
-                neighbor_vf_sum=zeros.copy(),
-                neighbor_count=zeros.copy(),
-                neighbor_deg_sum=zeros.copy() if size else [],
-                degs=None,
-                edge_src=None,
-                edge_dst=None,
-                checksum=checksum,
-            )
-        else:
-            cache_new = prev_cache
-            cache_new.idx = idx_local
-            cache_new.theta = zeros.copy()
-            cache_new.epi = zeros.copy()
-            cache_new.vf = zeros.copy()
-            cache_new.cos_theta = [1.0] * size
-            cache_new.sin_theta = [0.0] * size
-            cache_new.neighbor_x = zeros.copy()
-            cache_new.neighbor_y = zeros.copy()
-            cache_new.neighbor_epi_sum = zeros.copy()
-            cache_new.neighbor_vf_sum = zeros.copy()
-            cache_new.neighbor_count = zeros.copy()
-            cache_new.neighbor_deg_sum = zeros.copy() if size else []
+        cache_new = prev_cache if prev_cache is not None else new_dnfr_cache()
+        cache_new.idx = idx_local
+        cache_new.theta = zeros.copy()
+        cache_new.epi = zeros.copy()
+        cache_new.vf = zeros.copy()
+        cache_new.cos_theta = [1.0] * size
+        cache_new.sin_theta = [0.0] * size
+        cache_new.neighbor_x = zeros.copy()
+        cache_new.neighbor_y = zeros.copy()
+        cache_new.neighbor_epi_sum = zeros.copy()
+        cache_new.neighbor_vf_sum = zeros.copy()
+        cache_new.neighbor_count = zeros.copy()
+        cache_new.neighbor_deg_sum = zeros.copy() if size else []
+        cache_new.degs = None
+        cache_new.edge_src = None
+        cache_new.edge_dst = None
+        cache_new.checksum = checksum
 
-            # Reset any numpy mirrors or aggregated buffers to avoid leaking
-            # state across refresh cycles (e.g. switching between vectorised
-            # and Python paths or reusing legacy caches).
+        # Reset any numpy mirrors or aggregated buffers to avoid leaking
+        # state across refresh cycles (e.g. switching between vectorised
+        # and Python paths or reusing legacy caches).
+        if prev_cache is not None:
             for attr in _NUMPY_CACHE_ATTRS:
                 setattr(cache_new, attr, None)
             for attr in (
@@ -1768,8 +1696,11 @@ def _accumulate_neighbors_broadcasted(
         else:
             accum.fill(0.0)
 
-        workspace = cache.neighbor_edge_values_np if use_chunks else None
-        workspace_length = resolved_chunk if use_chunks else 0
+        workspace = cache.neighbor_edge_values_np
+        if use_chunks:
+            workspace_length = resolved_chunk
+        else:
+            workspace_length = component_rows
         if workspace_length:
             expected_shape = (component_rows, workspace_length)
             if workspace is None or getattr(workspace, "shape", None) != expected_shape:
@@ -1781,7 +1712,7 @@ def _accumulate_neighbors_broadcasted(
         cache.neighbor_accum_signature = signature
     else:
         accum = np.zeros((component_rows, n), dtype=float)
-        workspace_length = resolved_chunk if use_chunks else 0
+        workspace_length = resolved_chunk if use_chunks else component_rows
         workspace = (
             np.empty((component_rows, workspace_length), dtype=float)
             if workspace_length
@@ -2180,7 +2111,13 @@ def _accumulate_neighbors_numpy(
     )
 
     data["neighbor_accum_np"] = accum.get("accumulator")
-    data["neighbor_edge_values_np"] = accum.get("edge_values")
+    edge_values = accum.get("edge_values")
+    data["neighbor_edge_values_np"] = edge_values
+    if edge_values is not None:
+        width = getattr(edge_values, "shape", (0, 0))[1]
+        data["neighbor_chunk_size"] = int(width)
+    else:
+        data["neighbor_chunk_size"] = resolved_neighbor_chunk
     if cache is not None:
         data["neighbor_accum_signature"] = cache.neighbor_accum_signature
     if reuse_count_from_deg and cached_deg_array is not None:
