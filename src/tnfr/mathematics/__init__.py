@@ -1,6 +1,7 @@
 """Mathematics primitives aligned with TNFR coherence modeling."""
 
 from .dynamics import MathematicalDynamicsEngine
+from .epi import BEPIElement
 from .generators import build_delta_nfr
 from .operators import CoherenceOperator, FrequencyOperator
 from .operators_factory import make_coherence_operator, make_frequency_operator
@@ -25,6 +26,7 @@ from ..validation import NFRValidator
 __all__ = [
     "HilbertSpace",
     "BanachSpaceEPI",
+    "BEPIElement",
     "CoherenceOperator",
     "FrequencyOperator",
     "MathematicalDynamicsEngine",
