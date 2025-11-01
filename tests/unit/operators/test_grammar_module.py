@@ -31,6 +31,7 @@ from tnfr.operators.grammar import (
     parse_sequence,
     validate_sequence,
 )
+from tnfr.validation import ValidationOutcome
 from tnfr.types import Glyph
 
 
@@ -40,6 +41,7 @@ def _canonical_sequence() -> list[str]:
 
 def test_validate_sequence_success() -> None:
     result = validate_sequence(_canonical_sequence())
+    assert isinstance(result, ValidationOutcome)
     assert isinstance(result, SequenceValidationResult)
     assert result.passed
     assert result.message == "ok"
