@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from collections.abc import Iterable, MutableMapping
+from copy import deepcopy
 from dataclasses import dataclass
 from importlib import resources
 from json import JSONDecodeError
@@ -155,10 +156,33 @@ class GrammarContext:
 
     @classmethod
     def from_graph(cls, G: TNFRGraph) -> "GrammarContext":
+        """Create a context pulling graph overrides or isolated defaults.
+
+        When a graph omits grammar configuration, copies of
+        :data:`tnfr.constants.DEFAULTS` are materialised so each context can
+        mutate its settings without leaking state into other graphs.
+        """
+
+        def _copy_default(key: str) -> dict[str, Any]:
+            default = DEFAULTS.get(key, {})
+            if isinstance(default, Mapping):
+                return {k: deepcopy(v) for k, v in default.items()}
+            if isinstance(default, Iterable) and not isinstance(default, (str, bytes)):
+                return dict(default)
+            return {}
+
+        cfg_soft = G.graph.get("GRAMMAR")
+        if cfg_soft is None:
+            cfg_soft = _copy_default("GRAMMAR")
+
+        cfg_canon = G.graph.get("GRAMMAR_CANON")
+        if cfg_canon is None:
+            cfg_canon = _copy_default("GRAMMAR_CANON")
+
         return cls(
             G=G,
-            cfg_soft=G.graph.get("GRAMMAR", DEFAULTS.get("GRAMMAR", {})),
-            cfg_canon=G.graph.get("GRAMMAR_CANON", DEFAULTS.get("GRAMMAR_CANON", {})),
+            cfg_soft=cfg_soft,
+            cfg_canon=cfg_canon,
             norms=G.graph.get("_sel_norms") or {},
         )
 
