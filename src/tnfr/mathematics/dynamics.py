@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Sequence
+from typing import Any, NamedTuple, Sequence
 
 import numpy as np
 
@@ -63,9 +63,17 @@ def _devectorize_density(vector: Any, dim: int, *, backend: MathematicsBackend) 
     return arr.reshape((dim, dim)).transpose(1, 0)
 
 
-def _trace(matrix: Any, *, backend: MathematicsBackend) -> complex:
-    traced = backend.einsum("ii->", matrix)
-    return complex(np.asarray(ensure_numpy(traced, backend=backend)))
+class TraceValue(NamedTuple):
+    """Container for trace evaluations in both backend and NumPy space."""
+
+    backend: Any
+    numpy: complex
+
+
+def _trace(matrix: Any, *, backend: MathematicsBackend) -> TraceValue:
+    traced_backend = backend.einsum("ii->", matrix)
+    traced_numpy = complex(np.asarray(ensure_numpy(traced_backend, backend=backend)))
+    return TraceValue(traced_backend, traced_numpy)
 
 
 @dataclass(slots=True)
@@ -152,10 +160,10 @@ class MathematicalDynamicsEngine:
         evolved = self.backend.matmul(unitary, vector)
         if normalize:
             norm_backend = self.backend.norm(evolved)
-            norm = float(np.asarray(ensure_numpy(norm_backend, backend=self.backend)))
-            if np.isclose(norm, 0.0, atol=self.atol):
+            norm_numpy = float(np.asarray(ensure_numpy(norm_backend, backend=self.backend)))
+            if np.isclose(norm_numpy, 0.0, atol=self.atol):
                 raise ValueError("Cannot normalise a null state vector.")
-            evolved = evolved / norm
+            evolved = evolved / norm_backend
         return evolved
 
     def evolve(
@@ -281,8 +289,9 @@ class ContractiveDynamicsEngine:
                 f"received {matrix.shape!r}."
             )
         if center:
-            trace_value = _trace(matrix, backend=self.backend) / self.hilbert_space.dimension
-            matrix = matrix - trace_value * self._identity_backend
+            trace_value = _trace(matrix, backend=self.backend)
+            trace_backend = trace_value.backend / self.hilbert_space.dimension
+            matrix = matrix - trace_backend * self._identity_backend
         norm_backend = self.backend.norm(matrix, ord="fro")
         return float(np.asarray(ensure_numpy(norm_backend, backend=self.backend)))
 
@@ -314,8 +323,9 @@ class ContractiveDynamicsEngine:
 
         initial_norm = None
         if enforce_contractivity:
-            trace_value = _trace(matrix, backend=self.backend) / dim
-            centered = matrix - trace_value * self._identity_backend
+            trace_value = _trace(matrix, backend=self.backend)
+            trace_backend = trace_value.backend / dim
+            centered = matrix - trace_backend * self._identity_backend
             initial_norm_backend = self.backend.norm(centered, ord="fro")
             initial_norm = float(np.asarray(ensure_numpy(initial_norm_backend, backend=self.backend)))
 
@@ -329,14 +339,15 @@ class ContractiveDynamicsEngine:
 
         if normalize_trace:
             trace_value = _trace(evolved, backend=self.backend)
-            if np.isclose(trace_value, 0.0, atol=self.atol):
+            if np.isclose(trace_value.numpy, 0.0, atol=self.atol):
                 raise ValueError("Trace collapsed below tolerance during evolution.")
-            if not np.isclose(trace_value, 1.0, atol=10 * self.atol):
-                evolved = evolved / trace_value
+            if not np.isclose(trace_value.numpy, 1.0, atol=10 * self.atol):
+                evolved = evolved / trace_value.backend
 
         if enforce_contractivity and initial_norm is not None:
-            trace_value = _trace(evolved, backend=self.backend) / dim
-            centered = evolved - trace_value * self._identity_backend
+            trace_value = _trace(evolved, backend=self.backend)
+            trace_backend = trace_value.backend / dim
+            centered = evolved - trace_backend * self._identity_backend
             evolved_norm_backend = self.backend.norm(centered, ord="fro")
             evolved_norm = float(np.asarray(ensure_numpy(evolved_norm_backend, backend=self.backend)))
             self._last_contractivity_gap = initial_norm - evolved_norm
