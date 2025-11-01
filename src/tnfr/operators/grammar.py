@@ -612,6 +612,13 @@ def enforce_canonical_grammar(
     cand: Glyph | str,
     ctx: Optional[GrammarContext] = None,
 ) -> Glyph | str:
+    """Validate ``cand`` against canonical grammar rules and preserve structural identifiers.
+
+    When callers provide textual operator identifiers (for example ``"emission"``), the
+    returned value mirrors the canonical structural token instead of the raw glyph code.
+    This keeps downstream traces aligned with TNFR operator semantics while still
+    permitting glyph inputs for internal workflows.
+    """
     if ctx is None:
         ctx = GrammarContext.from_graph(G)
 
@@ -641,6 +648,11 @@ def enforce_canonical_grammar(
 
     coerced_final = _rules.coerce_glyph(cand)
     if input_was_str:
+        resolved = glyph_function_name(coerced_final)
+        if resolved is None:
+            resolved = glyph_function_name(cand)
+        if resolved is not None:
+            return resolved
         if isinstance(coerced_final, Glyph):
             return coerced_final.value
         return str(cand)

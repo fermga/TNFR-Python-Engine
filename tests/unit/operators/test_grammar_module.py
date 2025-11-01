@@ -142,6 +142,15 @@ def test_enforce_canonical_grammar_skips_unknown_tokens() -> None:
     assert result == "UNKNOWN"
 
 
+def test_enforce_canonical_grammar_returns_structural_name_for_text_input() -> None:
+    G = _make_graph()
+    ctx = GrammarContext.from_graph(G)
+
+    result = enforce_canonical_grammar(G, 0, EMISSION, ctx)
+
+    assert result == EMISSION
+
+
 def test_enforce_canonical_grammar_respects_thol_state() -> None:
     G = _make_graph()
     ctx = GrammarContext.from_graph(G)
