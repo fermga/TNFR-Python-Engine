@@ -175,9 +175,51 @@ class _TorchBackend:
 
     def as_array(self, value: Any, *, dtype: Any | None = None) -> Any:
         tensor = self._torch.as_tensor(value)
-        if dtype is not None:
-            tensor = tensor.to(dtype=dtype)
-        return tensor
+        if dtype is None:
+            return tensor
+
+        target_dtype = self._normalise_dtype(dtype)
+        if target_dtype is None:
+            return tensor.to(dtype=dtype)
+
+        if tensor.dtype == target_dtype:
+            return tensor
+
+        return tensor.to(dtype=target_dtype)
+
+    def _normalise_dtype(self, dtype: Any) -> Any | None:
+        """Return a ``torch.dtype`` equivalent for ``dtype`` when available."""
+
+        if isinstance(dtype, self._torch.dtype):
+            return dtype
+
+        np_mod = cached_import("numpy")
+        if np_mod is None:
+            return None
+
+        try:
+            np_dtype = np_mod.dtype(dtype)
+        except TypeError:
+            return None
+
+        numpy_name = np_dtype.name
+        numpy_to_torch = {
+            "bool": self._torch.bool,
+            "uint8": self._torch.uint8,
+            "int8": self._torch.int8,
+            "int16": self._torch.int16,
+            "int32": self._torch.int32,
+            "int64": self._torch.int64,
+            "float16": self._torch.float16,
+            "float32": self._torch.float32,
+            "float64": self._torch.float64,
+            "complex64": getattr(self._torch, "complex64", None),
+            "complex128": getattr(self._torch, "complex128", None),
+            "bfloat16": getattr(self._torch, "bfloat16", None),
+        }
+
+        torch_dtype = numpy_to_torch.get(numpy_name)
+        return torch_dtype
 
     def eig(self, matrix: Any) -> tuple[Any, Any]:
         eigenvalues, eigenvectors = self._torch.linalg.eig(matrix)

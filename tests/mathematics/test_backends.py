@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from tnfr.mathematics import CoherenceOperator, HilbertSpace
-from tnfr.mathematics.backend import ensure_numpy, get_backend
+from tnfr.mathematics.backend import ensure_array, ensure_numpy, get_backend
 from tnfr.mathematics.dynamics import ContractiveDynamicsEngine, MathematicalDynamicsEngine
 
 _BACKEND_NAMES = ("numpy", "jax", "torch")
@@ -132,3 +132,18 @@ def test_contractive_dynamics_matches_numpy(backend_name: str, structural_tolera
         rel=structural_tolerances["rtol"],
         abs=structural_tolerances["atol"],
     )
+
+
+def test_torch_backend_handles_numpy_complex_dtype() -> None:
+    """Torch backend must convert NumPy dtypes into ``torch.dtype`` instances."""
+
+    backend = _require_backend("torch")
+
+    if not hasattr(backend, "_torch"):
+        pytest.skip("Torch backend unavailable for dtype inspection")
+
+    matrix = np.array([[1 + 2j, 3 - 4j], [5 + 6j, 7 - 8j]], dtype=np.complex128)
+
+    tensor = ensure_array(matrix, dtype=np.complex128, backend=backend)
+
+    assert tensor.dtype == backend._torch.complex128
