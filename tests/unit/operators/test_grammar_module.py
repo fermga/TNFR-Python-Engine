@@ -8,7 +8,9 @@ import pytest
 from tnfr.config.operator_names import (
     COHERENCE,
     EMISSION,
+    MUTATION,
     RECEPTION,
+    RECURSIVITY,
     RESONANCE,
     SELF_ORGANIZATION,
     SILENCE,
@@ -18,6 +20,7 @@ from tnfr.config.operator_names import (
 from tnfr.constants import inject_defaults
 from tnfr.operators.grammar import (
     GrammarContext,
+    MutationPreconditionError,
     RepeatWindowError,
     TholClosureError,
     SequenceSyntaxError,
@@ -145,6 +148,45 @@ def test_enforce_canonical_grammar_respects_thol_state() -> None:
         enforce_canonical_grammar(G, 0, Glyph.EN, ctx)
     err = excinfo.value
     assert err.order[-1] == RECEPTION
+
+
+def test_mutation_precondition_error_uses_structural_order() -> None:
+    G = _make_graph()
+    ctx = GrammarContext.from_graph(G)
+    nd = G.nodes[0]
+    history = nd["glyph_history"]
+    history.append(Glyph.AL.value)
+    history.append(Glyph.NAV)
+    history.append(Glyph.REMESH.value)
+    nd["ΔNFR"] = 0.0
+
+    with pytest.raises(MutationPreconditionError) as excinfo:
+        enforce_canonical_grammar(G, 0, Glyph.ZHIR, ctx)
+
+    err = excinfo.value
+    assert err.order == (EMISSION, TRANSITION, RECURSIVITY, MUTATION)
+    assert err.candidate == MUTATION
+
+
+def test_thol_closure_error_uses_structural_order() -> None:
+    G = _make_graph()
+    ctx = GrammarContext.from_graph(G)
+    nd = G.nodes[0]
+    history = nd["glyph_history"]
+    history.append("THOL")
+    history.append(Glyph.AL.value)
+    on_applied_glyph(G, 0, Glyph.THOL)
+    st = nd["_GRAM"]
+    st["thol_len"] = 2
+    nd["ΔNFR"] = 0.0
+    nd["Si"] = 0.7
+
+    with pytest.raises(TholClosureError) as excinfo:
+        enforce_canonical_grammar(G, 0, Glyph.EN, ctx)
+
+    err = excinfo.value
+    assert err.order == (SELF_ORGANIZATION, EMISSION, RECEPTION)
+    assert err.candidate == RECEPTION
 
 
 def test_apply_glyph_with_grammar_invokes_apply(monkeypatch: pytest.MonkeyPatch) -> None:
