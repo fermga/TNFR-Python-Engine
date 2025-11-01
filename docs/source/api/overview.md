@@ -61,7 +61,7 @@ flowchart LR
 - `tnfr.trace.register_trace` attaches before/after callbacks through the shared callback
   manager, capturing Γ specs, selector state, ΔNFR weights, Kuramoto metrics, and operator
   counts in the graph history so every simulation leaves an auditable trail.
-- Named locks from `tnfr.locking.get_lock` synchronise shared caches such as the RNG seed
+- Named locks from `tnfr.utils.get_lock` (re-exporting `tnfr.locking.get_lock`) synchronise shared caches such as the RNG seed
   tables, ensuring deterministic jitter across processes without duplicating lock
   definitions.
 - Helper facades re-export cache utilities so higher layers depend on a stable API while
