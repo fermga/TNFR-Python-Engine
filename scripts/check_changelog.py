@@ -55,7 +55,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--relevant-file",
         action="append",
         dest="relevant_files",
-        default=["pyproject.toml", "mkdocs.yml"],
+        default=[
+            "pyproject.toml",
+            "docs/source/conf.py",
+            "docs/source/index.rst",
+            "netlify.toml",
+        ],
         help="Specific file that requires a changelog fragment (can be repeated)",
     )
 

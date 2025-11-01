@@ -5,6 +5,7 @@ __pycache__/
 dist/
 build/
 site/
+docs/_build/
 *.egg-info/
 *.egg
 .semantic_release/

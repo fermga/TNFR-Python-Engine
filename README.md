@@ -23,7 +23,7 @@ Install from PyPI (Python ≥ 3.9):
 pip install tnfr
 ```
 
-Then follow the [quickstart guide](docs/getting-started/quickstart.md) for Python and CLI
+Then follow the [quickstart guide](docs/source/getting-started/quickstart.md) for Python and CLI
 walkthroughs plus optional dependency caching helpers.
 
 ## CLI profiling helpers
@@ -45,26 +45,29 @@ it easy to inspect hot paths with :mod:`pstats`, Snakeviz, or downstream tooling
 
 ## Documentation map
 
-- [Documentation index](docs/index.md) — navigation hub for API chapters and examples.
-- [API overview](docs/api/overview.md) — package map, invariants, and structural data flow.
-- [Structural operators](docs/api/operators.md) — canonical grammar, key concepts, and typical
+- [Documentation index](docs/source/home.md) — navigation hub for API chapters and examples.
+- [API overview](docs/source/api/overview.md) — package map, invariants, and structural data flow.
+- [Structural operators](docs/source/api/operators.md) — canonical grammar, key concepts, and typical
   workflows.
-- [Telemetry & utilities](docs/api/telemetry.md) — coherence metrics, trace capture, locking,
+- [Telemetry & utilities](docs/source/api/telemetry.md) — coherence metrics, trace capture, locking,
   and helper facades.
-- [Examples](docs/examples/README.md) — runnable scenarios, CLI artefacts, and token legend.
+- [Examples](docs/source/examples/README.md) — runnable scenarios, CLI artefacts, and token legend.
 
 ## Documentation build workflow
 
-Netlify publishes the documentation with [MkDocs](https://www.mkdocs.org/) so the generated
-site preserves the canonical TNFR structure. The same steps can be executed locally:
+Netlify now renders the documentation with [Sphinx](https://www.sphinx-doc.org/) so MyST Markdown,
+doctests, and notebooks share a single pipeline. Reproduce the hosted site locally as follows:
 
 1. Create and activate a virtual environment (e.g. `python -m venv .venv && source .venv/bin/activate`).
-2. Install the documentation toolchain: `python -m pip install -r docs/requirements.txt`.
-3. Preview changes live with `mkdocs serve` or reproduce the Netlify pipeline with
-   `mkdocs build`, which writes the static site to the `site/` directory.
+2. Install the documentation toolchain and project extras:
+   `python -m pip install -r docs/requirements.txt && python -m pip install -e .[docs]`.
+3. Execute the doctest suite with `sphinx-build -b doctest docs/source docs/_build/doctest` to ensure
+   structural snippets remain coherent.
+4. Generate the HTML site with `make docs`, which wraps `sphinx-build -b html docs/source docs/_build/html`.
 
-The Netlify build (`netlify.toml`) runs `python -m pip install -r docs/requirements.txt && mkdocs build`
-and publishes the resulting `site/` directory, ensuring the hosted documentation matches local builds.
+The Netlify build (`netlify.toml`) runs `python -m pip install -r docs/requirements.txt && make docs`
+and publishes the resulting `docs/_build/html` directory, keeping the hosted documentation aligned with
+local verification runs.
 
 ## Local development
 
@@ -94,7 +97,7 @@ integration.
   ``dSi_dphase_disp`` attribute for Si dispersion sensitivity before upgrading. The runtime now
   raises :class:`ValueError` listing any unexpected sensitivity keys, and
   :func:`tnfr.metrics.sense_index.compute_Si_node` rejects unknown keyword arguments.
-- Refer to the [release notes](docs/releases.md#1100-si-dispersion-legacy-keys-removed) for
+- Refer to the [release notes](docs/source/releases.md#1100-si-dispersion-legacy-keys-removed) for
   a migration snippet that rewrites stored graphs in place prior to running the new version.
 
 ## Licensing
