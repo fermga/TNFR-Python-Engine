@@ -17,6 +17,13 @@ except Exception:  # pragma: no cover - SciPy not installed
 __all__ = ["MathematicalDynamicsEngine", "ContractiveDynamicsEngine"]
 
 
+def _has_backend_matrix_exp(backend: MathematicsBackend) -> bool:
+    """Return ``True`` when ``backend`` exposes a usable ``matrix_exp``."""
+
+    matrix_exp = getattr(backend, "matrix_exp", None)
+    return callable(matrix_exp)
+
+
 def _as_matrix(
     matrix: Sequence[Sequence[complex]] | np.ndarray | Any,
     *,
@@ -55,9 +62,10 @@ class MathematicalDynamicsEngine:
 
     The engine accepts inputs expressed as backend-native tensors (NumPy,
     :mod:`jax`, :mod:`torch`).  When the configured backend supports automatic
-    differentiation the evolution map ``exp(-i·Δ·dt)`` remains differentiable.
-    Passing ``use_scipy=True`` forces the classical SciPy propagator for
-    environments without backend implementations of ``matrix_exp``.
+    differentiation the evolution map ``exp(-i·Δ·dt)`` remains differentiable
+    because native propagators are now preferred.  Passing ``use_scipy=True``
+    explicitly opts into SciPy's exponential; we only fall back automatically
+    when the backend lacks a ``matrix_exp`` implementation.
     """
 
     generator: np.ndarray
@@ -91,7 +99,15 @@ class MathematicalDynamicsEngine:
         self.hilbert_space = hilbert_space
         self.atol = float(atol)
         if use_scipy is None:
-            self._use_scipy = bool(_scipy_expm is not None)
+            has_matrix_exp = _has_backend_matrix_exp(self.backend)
+            if has_matrix_exp:
+                self._use_scipy = False
+            elif _scipy_expm is not None:
+                self._use_scipy = True
+            else:
+                raise RuntimeError(
+                    "Backend lacks matrix_exp and SciPy is unavailable for fallback."
+                )
         else:
             if use_scipy and _scipy_expm is None:
                 raise RuntimeError("SciPy expm requested but SciPy is not available.")
@@ -160,10 +176,10 @@ class ContractiveDynamicsEngine:
     """Contractive semigroup evolution driven by Lindblad ΔNFR generators.
 
     Backend-native tensors are accepted for all density operators.  When the
-    chosen backend supports automatic differentiation the semigroup propagator
-    is differentiable; requesting ``use_scipy=True`` falls back to SciPy's
-    :func:`scipy.linalg.expm`, disabling gradients but maximising compatibility
-    with defective generators.
+    chosen backend supports automatic differentiation we keep gradients intact
+    by default because native semigroup propagators are preferred.  Requesting
+    ``use_scipy=True`` still falls back to SciPy's :func:`scipy.linalg.expm`,
+    primarily for generators missing backend support.
     """
 
     generator: np.ndarray
@@ -202,7 +218,15 @@ class ContractiveDynamicsEngine:
         self.hilbert_space = hilbert_space
         self.atol = float(atol)
         if use_scipy is None:
-            self._use_scipy = bool(_scipy_expm is not None)
+            has_matrix_exp = _has_backend_matrix_exp(self.backend)
+            if has_matrix_exp:
+                self._use_scipy = False
+            elif _scipy_expm is not None:
+                self._use_scipy = True
+            else:
+                raise RuntimeError(
+                    "Backend lacks matrix_exp and SciPy is unavailable for fallback."
+                )
         else:
             if use_scipy and _scipy_expm is None:
                 raise RuntimeError("SciPy expm requested but SciPy is not available.")
