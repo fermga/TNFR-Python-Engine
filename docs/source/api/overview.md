@@ -32,7 +32,7 @@ tnfr.utils.cache   — cache managers exposing shared metrics/evictions
 
 ## Data flow between structural operators
 
-```mermaid
+```{mermaid}
 flowchart LR
     subgraph Registry
         R[tnfr.operators.registry]
