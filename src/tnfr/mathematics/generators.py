@@ -6,6 +6,8 @@ from typing import Final, Sequence
 import numpy as np
 from numpy.random import Generator
 
+from .backend import ensure_array, ensure_numpy, get_backend
+
 __all__ = ["build_delta_nfr", "build_lindblad_delta_nfr"]
 
 _TOPOLOGIES: Final[set[str]] = {"laplacian", "adjacency"}
@@ -106,7 +108,8 @@ def build_delta_nfr(
 
     matrix *= (nu_f * scale)
     hermitian = 0.5 * (matrix + matrix.conj().T)
-    return np.asarray(hermitian, dtype=np.complex128)
+    backend = get_backend()
+    return np.asarray(ensure_numpy(ensure_array(hermitian, backend=backend), backend=backend), dtype=np.complex128)
 
 
 def build_lindblad_delta_nfr(
@@ -205,11 +208,15 @@ def build_lindblad_delta_nfr(
         if not np.allclose(left_residual, np.zeros_like(left_residual), atol=10 * atol):
             raise ValueError("Lindblad generator must preserve the trace of density operators.")
 
+    backend = get_backend()
+    liouvillian_backend = ensure_array(liouvillian, backend=backend)
+
     if ensure_contractive:
-        eigenvalues = np.linalg.eigvals(liouvillian)
+        eigenvalues_backend, _ = backend.eig(liouvillian_backend)
+        eigenvalues = ensure_numpy(eigenvalues_backend, backend=backend)
         if np.max(eigenvalues.real) > atol:
             raise ValueError(
                 "Lindblad generator is not contractive: spectrum has positive real components."
             )
 
-    return liouvillian
+    return np.asarray(ensure_numpy(liouvillian_backend, backend=backend), dtype=np.complex128)
