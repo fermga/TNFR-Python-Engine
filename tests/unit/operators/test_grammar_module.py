@@ -17,7 +17,7 @@ from tnfr.config.operator_names import (
     TRANSITION,
     operator_display_name,
 )
-from tnfr.constants import inject_defaults
+from tnfr.constants import DEFAULTS, inject_defaults
 from tnfr.operators.grammar import (
     GrammarContext,
     MutationPreconditionError,
@@ -133,6 +133,21 @@ def _make_graph() -> nx.Graph:
     nd = G.nodes[0]
     nd.setdefault("glyph_history", deque())
     return G
+
+
+def test_grammar_context_isolates_default_configurations() -> None:
+    g1 = nx.Graph()
+    g2 = nx.Graph()
+
+    ctx_one = GrammarContext.from_graph(g1)
+    ctx_two = GrammarContext.from_graph(g2)
+
+    ctx_one.cfg_soft["fallbacks"]["ZHIR"] = "CUSTOM"
+
+    default_value = DEFAULTS["GRAMMAR"]["fallbacks"]["ZHIR"]
+
+    assert ctx_two.cfg_soft["fallbacks"]["ZHIR"] == default_value
+    assert DEFAULTS["GRAMMAR"]["fallbacks"]["ZHIR"] == default_value
 
 
 def test_enforce_canonical_grammar_skips_unknown_tokens() -> None:
