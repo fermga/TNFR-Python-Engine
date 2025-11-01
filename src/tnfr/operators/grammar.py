@@ -621,6 +621,13 @@ def enforce_canonical_grammar(
     cand = _rules.coerce_glyph(cand)
     input_was_str = isinstance(raw_cand, str)
 
+    if not isinstance(cand, Glyph):
+        translated = function_name_to_glyph(raw_cand if input_was_str else cand)
+        if translated is None and cand is not raw_cand:
+            translated = function_name_to_glyph(cand)
+        if translated is not None:
+            cand = translated
+
     from ..validation.compatibility import CANON_COMPAT
 
     if not isinstance(cand, Glyph) or cand not in CANON_COMPAT:
@@ -642,10 +649,7 @@ def enforce_canonical_grammar(
 def on_applied_glyph(G: TNFRGraph, n: NodeId, applied: Glyph | str) -> None:
     nd = G.nodes[n]
     st = _gram_state(nd)
-    try:
-        glyph = applied if isinstance(applied, Glyph) else Glyph(str(applied))
-    except ValueError:
-        glyph = None
+    glyph = function_name_to_glyph(applied)
 
     if glyph is Glyph.THOL:
         st["thol_open"] = True
