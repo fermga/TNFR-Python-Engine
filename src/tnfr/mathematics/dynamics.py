@@ -21,7 +21,19 @@ def _has_backend_matrix_exp(backend: MathematicsBackend) -> bool:
     """Return ``True`` when ``backend`` exposes a usable ``matrix_exp``."""
 
     matrix_exp = getattr(backend, "matrix_exp", None)
-    return callable(matrix_exp)
+    if not callable(matrix_exp):
+        return False
+
+    try:
+        probe = ensure_array([[0.0]], dtype=np.complex128, backend=backend)
+        matrix_exp(probe)
+    except (AttributeError, NotImplementedError):
+        return False
+    except Exception:
+        # Older backends may surface missing implementations as runtime errors;
+        # treat them as signals to fall back to SciPy when available.
+        return False
+    return True
 
 
 def _as_matrix(
