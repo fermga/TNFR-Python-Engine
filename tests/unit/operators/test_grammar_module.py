@@ -150,6 +150,24 @@ def test_enforce_canonical_grammar_respects_thol_state() -> None:
     assert err.order[-1] == RECEPTION
 
 
+def test_enforce_canonical_grammar_accepts_canonical_strings() -> None:
+    G = _make_graph()
+    ctx = GrammarContext.from_graph(G)
+    on_applied_glyph(G, 0, SELF_ORGANIZATION)
+    nd = G.nodes[0]
+    nd["ΔNFR"] = 0.0
+    nd["Si"] = 0.7
+    ctx.cfg_canon.update({"thol_min_len": 0, "thol_max_len": 1, "thol_close_dnfr": 1.0})
+    st = nd["_GRAM"]
+    st["thol_len"] = 2
+
+    with pytest.raises(TholClosureError) as excinfo:
+        enforce_canonical_grammar(G, 0, RECEPTION, ctx)
+
+    err = excinfo.value
+    assert err.order[-1] == RECEPTION
+
+
 def test_mutation_precondition_error_uses_structural_order() -> None:
     G = _make_graph()
     ctx = GrammarContext.from_graph(G)
@@ -187,6 +205,18 @@ def test_thol_closure_error_uses_structural_order() -> None:
     err = excinfo.value
     assert err.order == (SELF_ORGANIZATION, EMISSION, RECEPTION)
     assert err.candidate == RECEPTION
+
+
+def test_on_applied_glyph_canonical_strings_toggle_thol_state() -> None:
+    G = _make_graph()
+    on_applied_glyph(G, 0, SELF_ORGANIZATION)
+    st = G.nodes[0]["_GRAM"]
+    assert st["thol_open"]
+    assert st["thol_len"] == 0
+
+    on_applied_glyph(G, 0, SILENCE)
+    assert not st["thol_open"]
+    assert st["thol_len"] == 0
 
 
 def test_apply_glyph_with_grammar_invokes_apply(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -236,3 +266,19 @@ def test_repeat_window_error_uses_structural_names() -> None:
     assert telemetry["order"][-1] == EMISSION
     history = telemetry["context"]["history"]
     assert tuple(history) == (EMISSION,)
+
+
+def test_apply_glyph_with_grammar_canonical_string_violation() -> None:
+    G = _make_graph()
+    nd = G.nodes[0]
+    nd["ΔNFR"] = 0.0
+    nd["Si"] = 0.7
+    on_applied_glyph(G, 0, SELF_ORGANIZATION)
+    st = nd["_GRAM"]
+    st["thol_len"] = 2
+    G.graph.setdefault("GRAMMAR_CANON", {}).update(
+        {"thol_min_len": 0, "thol_max_len": 1, "thol_close_dnfr": 1.0}
+    )
+
+    with pytest.raises(TholClosureError):
+        apply_glyph_with_grammar(G, [0], RECEPTION, 1)
