@@ -311,6 +311,24 @@ def test_apply_glyph_with_grammar_invokes_apply(monkeypatch: pytest.MonkeyPatch)
     assert captured["args"][3] == 7
 
 
+def test_apply_glyph_with_grammar_accepts_glyph_instances() -> None:
+    G = _make_graph()
+
+    apply_glyph_with_grammar(G, [0], Glyph.AL)
+
+    history = tuple(G.nodes[0]["glyph_history"])
+    assert history[-1] == Glyph.AL.value
+
+
+def test_apply_glyph_with_grammar_translates_canonical_strings() -> None:
+    G = _make_graph()
+
+    apply_glyph_with_grammar(G, [0], EMISSION)
+
+    history = tuple(G.nodes[0]["glyph_history"])
+    assert history[-1] == Glyph.AL.value
+
+
 def test_repeat_window_error_uses_structural_names() -> None:
     G = _make_graph()
     nd = G.nodes[0]
