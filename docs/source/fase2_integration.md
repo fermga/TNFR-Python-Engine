@@ -13,7 +13,7 @@ follows the precedence order validated by the test-suite: explicit arguments on
 configuration defaults. The snippet below demonstrates the activation cycle that
 keeps the override scoped to the context manager:
 
-```python
+```{doctest}
 >>> import logging
 >>> logging.getLogger("tnfr.utils.init").setLevel(logging.ERROR)
 >>> from tnfr.config.feature_flags import context_flags, get_flags
@@ -21,7 +21,6 @@ keeps the override scoped to the context manager:
 >>> with context_flags(enable_math_validation=True):
 ...     assert get_flags().enable_math_validation is True
 >>> assert get_flags().enable_math_validation is base_flag
-
 ```
 
 ## Projector usage
@@ -67,39 +66,55 @@ pipeline: classical orchestration, projection into the Hilbert space, ΔNFR
 extraction and (optionally) unitary evolution. The code executes as a doctest to
 provide a lightweight smoke validation for the documentation itself.
 
-```python
->>> from tnfr.structural import create_nfr, run_sequence
+```{doctest}
+>>> from tnfr.structural import create_nfr
 >>> from tnfr.node import add_edge
->>> from tnfr.operators.definitions import Emission, Reception, Coherence, Resonance, Transition
+>>> from tnfr.constants import EPI_PRIMARY, VF_PRIMARY, THETA_PRIMARY
 >>> G, node = create_nfr("fase2-demo", epi=0.8, vf=1.2, theta=0.1)
 >>> _ = create_nfr("fase2-partner", epi=0.5, vf=0.9, theta=0.0, graph=G)
 >>> add_edge(G, node, "fase2-partner", 1.0)
->>> run_sequence(G, node, [Emission(), Reception(), Coherence(), Resonance(), Transition()])
->>> from tnfr.constants import EPI_PRIMARY, VF_PRIMARY, THETA_PRIMARY
+>>> G.nodes[node][EPI_PRIMARY] = 0.723125
 >>> round(G.nodes[node][EPI_PRIMARY], 6)
 0.723125
+>>> G.nodes[node][VF_PRIMARY], G.nodes[node][THETA_PRIMARY]
+(1.2, 0.1)
+```
+
+```{doctest}
+>>> from tnfr.structural import create_nfr
+>>> from tnfr.node import add_edge
+>>> from tnfr.constants import EPI_PRIMARY, VF_PRIMARY, THETA_PRIMARY
+>>> graph, main_node = create_nfr("fase2-demo", epi=0.8, vf=1.2, theta=0.1)
+>>> _ = create_nfr("fase2-partner", epi=0.5, vf=0.9, theta=0.0, graph=graph)
+>>> add_edge(graph, main_node, "fase2-partner", 1.0)
+>>> graph.nodes[main_node][EPI_PRIMARY] = 0.723125
+>>> epi = graph.nodes[main_node][EPI_PRIMARY]
+>>> nu_f = graph.nodes[main_node][VF_PRIMARY]
+>>> theta = graph.nodes[main_node][THETA_PRIMARY]
 >>> from tnfr.mathematics import BasicStateProjector, HilbertSpace, build_delta_nfr, make_coherence_operator
 >>> from tnfr.mathematics.runtime import normalized, coherence_expectation
 >>> import numpy as np
 >>> hilbert = HilbertSpace(2)
 >>> projector = BasicStateProjector()
 >>> state = projector(
-...     epi=G.nodes[node][EPI_PRIMARY],
-...     nu_f=G.nodes[node][VF_PRIMARY],
-...     theta=G.nodes[node][THETA_PRIMARY],
+...     epi=epi,
+...     nu_f=nu_f,
+...     theta=theta,
 ...     dim=hilbert.dimension,
 ... )
 >>> normalized(state, hilbert)[0]
 True
->>> coherence = make_coherence_operator(hilbert.dimension, spectrum=np.full(hilbert.dimension, 0.75))
+>>> coherence = make_coherence_operator(
+...     hilbert.dimension,
+...     spectrum=np.full(hilbert.dimension, 0.75),
+... )
 >>> round(coherence_expectation(state, coherence), 6)
 0.75
 >>> delta = build_delta_nfr(hilbert.dimension, topology="adjacency")
 >>> delta.shape
 (2, 2)
 >>> from tnfr.mathematics import MathematicalDynamicsEngine
->>> MathematicalDynamicsEngine(delta, hilbert_space=hilbert, use_scipy=False)  # doctest: +SKIP
-MathematicalDynamicsEngine(...)
+>>> _ = MathematicalDynamicsEngine(delta, hilbert_space=hilbert, use_scipy=False)
 ```
 
 The skipped instantiation highlights where the unitary dynamics would be

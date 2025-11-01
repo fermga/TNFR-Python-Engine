@@ -70,7 +70,8 @@ following entries:
   :class:`tnfr.mathematics.projection.StateProjector`.  Defaults to
   :class:`~tnfr.mathematics.projection.BasicStateProjector`.
 
-```pycon
+```{doctest}
+>>> import networkx as nx
 >>> import numpy as np
 >>> from tnfr.mathematics import (
 ...     BasicStateProjector,
@@ -83,6 +84,7 @@ following entries:
 >>> generator = np.diag([0.1, -0.05, 0.02])
 >>> coherence_op = CoherenceOperator(np.eye(3))
 >>> frequency_op = make_frequency_operator(np.eye(3))
+>>> G = nx.Graph()
 >>> G.graph["MATH_ENGINE"] = {
 ...     "enabled": True,
 ...     "hilbert_space": hilbert,
@@ -92,6 +94,8 @@ following entries:
 ...     "dynamics_engine": MathematicalDynamicsEngine(generator, hilbert),
 ...     "state_projector": BasicStateProjector(),
 ... }
+>>> sorted(G.graph["MATH_ENGINE"].keys())
+['coherence_operator', 'coherence_threshold', 'dynamics_engine', 'enabled', 'frequency_operator', 'hilbert_space', 'state_projector']
 ```
 
 Each call to :func:`tnfr.dynamics.runtime.step` (or :func:`~tnfr.dynamics.runtime.run`)
@@ -146,8 +150,8 @@ Mathematics diagnostics respect three environment variables.  They are read via
 The snippet below demonstrates the override stack; the state before and after
 ``context_flags`` confirms that overrides remain scoped to the ``with`` block.
 
-```pycon
->>> from tnfr.config.feature_flags import get_flags, context_flags
+```{doctest}
+>>> from tnfr.config.feature_flags import context_flags, get_flags
 >>> get_flags().enable_math_validation
 False
 >>> with context_flags(enable_math_validation=True, log_performance=True) as scoped:
@@ -155,7 +159,6 @@ False
 (True, True)
 >>> get_flags().log_performance
 False
-
 ```
 
 When running shell commands, export the variables directly, e.g.
@@ -172,7 +175,7 @@ keeps trace and Frobenius contractivity in check.  The helpers accept the same
 νf scaling used for the Hermitian constructors so coherent and dissipative runs
 share telemetry semantics.
 
-```pycon
+```{doctest}
 >>> import math
 >>> import numpy as np
 >>> from tnfr.mathematics import (
