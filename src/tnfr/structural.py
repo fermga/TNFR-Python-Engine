@@ -43,7 +43,7 @@ from .mathematics import (
     make_coherence_operator,
     make_frequency_operator,
 )
-from .operators import validate_sequence
+from .validation import validate_sequence
 from .operators.definitions import (
     Coherence,
     Contraction,
