@@ -14,6 +14,7 @@ from ..operators.grammar import (
     parse_sequence,
     validate_sequence,
 )
+from ..types import NodeId, TNFRGraph
 
 __all__ = (
     "GrammarContext",
@@ -24,6 +25,7 @@ __all__ = (
     "TransitionCompatibilityError",
     "SequenceSyntaxError",
     "SequenceValidationResult",
+    "record_grammar_violation",
     "_gram_state",
     "apply_glyph_with_grammar",
     "enforce_canonical_grammar",
@@ -31,3 +33,8 @@ __all__ = (
     "parse_sequence",
     "validate_sequence",
 )
+
+
+def record_grammar_violation(
+    G: TNFRGraph, node: NodeId, error: StructuralGrammarError, *, stage: str
+) -> None: ...

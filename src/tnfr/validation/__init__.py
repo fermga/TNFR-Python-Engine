@@ -48,6 +48,7 @@ from .grammar import (
     apply_glyph_with_grammar,
     enforce_canonical_grammar,
     on_applied_glyph,
+    record_grammar_violation,
 )
 from .graph import GRAPH_VALIDATORS, run_validators
 from .window import validate_window
@@ -75,6 +76,7 @@ __all__ = (
     "apply_glyph_with_grammar",
     "enforce_canonical_grammar",
     "on_applied_glyph",
+    "record_grammar_violation",
     "validate_window",
     "run_validators",
     "GRAPH_VALIDATORS",

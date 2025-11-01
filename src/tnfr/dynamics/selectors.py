@@ -21,8 +21,8 @@ from ..validation import (
     StructuralGrammarError,
     enforce_canonical_grammar,
     on_applied_glyph,
+    record_grammar_violation,
 )
-from ..validation.grammar import _record_grammar_violation
 from ..selector import (
     _apply_selector_hysteresis,
     _calc_selector_score,
@@ -336,7 +336,7 @@ def _choose_glyph(
             history = tuple(str(item) for item in nd.get("glyph_history", ()))
             selector_name = getattr(selector, "__name__", selector.__class__.__name__)
             err.attach_context(node=n, selector=selector_name, history=history, stage="selector")
-            _record_grammar_violation(G, n, err, stage="selector")
+            record_grammar_violation(G, n, err, stage="selector")
             raise
     return g
 

@@ -4,6 +4,7 @@ from collections import defaultdict, deque
 
 import pytest
 
+import tnfr.dynamics.selectors as selectors
 from tnfr.constants import inject_defaults
 from tnfr.config.operator_names import (
     CONTRACTION,
@@ -25,6 +26,7 @@ from tnfr.operators.grammar import (
     TholClosureError,
     RepeatWindowError,
 )
+from tnfr.validation import record_grammar_violation as _record_violation
 
 
 def test_compatibility_fallback(graph_canon):
@@ -139,7 +141,7 @@ def test_repeat_invalid_fallback_type(graph_canon):
         enforce_canonical_grammar(G, 0, Glyph.ZHIR)
 
 
-def test_choose_glyph_records_violation(graph_canon):
+def test_choose_glyph_records_violation(graph_canon, monkeypatch):
     G = graph_canon()
     G.add_node(0)
     inject_defaults(G)
@@ -153,6 +155,14 @@ def test_choose_glyph_records_violation(graph_canon):
     h_al = defaultdict(int)
     h_en = defaultdict(int)
 
+    calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+
+    def capture_record(*args: object, **kwargs: object) -> None:
+        calls.append((args, kwargs))
+        _record_violation(*args, **kwargs)
+
+    monkeypatch.setattr(selectors, "record_grammar_violation", capture_record)
+
     with pytest.raises(MutationPreconditionError):
         _choose_glyph(G, 0, selector, True, h_al, h_en, 10, 10)
 
@@ -162,6 +172,9 @@ def test_choose_glyph_records_violation(graph_canon):
     assert entry["stage"] == "selector"
     assert entry["rule"] == "oz-before-zhir"
     assert entry["candidate"] == MUTATION
+    assert calls, "selector telemetry hook not triggered"
+    _, kwargs = calls[-1]
+    assert kwargs == {"stage": "selector"}
 
 
 def test_apply_glyph_with_grammar_records_violation(graph_canon):
