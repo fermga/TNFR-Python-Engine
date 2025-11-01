@@ -134,3 +134,6 @@ engine keeps operating without raising. Set the environment variable
 ``TNFR_GRAMMAR_VALIDATE=1`` to require validation (raising when the schema or
 dependency is missing) or ``TNFR_GRAMMAR_VALIDATE=0`` to skip schema checks when
 working with experimental configurations.
+
+
+For symbol-level references and canonical validators, see {doc}`api/api_mapping` and {doc}`api/canonical_validators`.

@@ -22,7 +22,9 @@ This site curates the canonical TNFR knowledge base, API contracts, and structur
    :caption: API
 
    Overview <api/overview>
+   Symbol map <api/api_mapping>
    Structural operators <api/operators>
+   Canonical validators <api/canonical_validators>
    Telemetry & utilities <api/telemetry>
 
 .. toctree::
