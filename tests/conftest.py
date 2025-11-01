@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 import networkx as nx
 import pytest
 
@@ -12,6 +14,34 @@ from tnfr.utils import cached_import, prune_failed_imports
 
 STRUCTURAL_ATOL = 1e-12
 STRUCTURAL_RTOL = 1e-10
+
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    """Expose CLI flag to force a specific mathematics backend."""
+
+    parser.addoption(
+        "--math-backend",
+        action="store",
+        default=None,
+        help="Force TNFR_MATH_BACKEND during the session (numpy, jax, torch).",
+    )
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    """Propagate backend selection from CLI or environment before tests import."""
+
+    requested = config.getoption("math_backend")
+    env_override = os.getenv("TNFR_TEST_MATH_BACKEND")
+    choice = (requested or env_override)
+    if not choice:
+        return
+
+    os.environ["TNFR_MATH_BACKEND"] = choice
+
+    # Ensure stale caches do not override the requested backend.
+    from tnfr.mathematics import backend as backend_module  # imported lazily
+
+    backend_module._BACKEND_CACHE.clear()
 
 
 @pytest.fixture(scope="session")

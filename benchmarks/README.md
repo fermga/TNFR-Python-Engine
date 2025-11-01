@@ -23,6 +23,7 @@ PYTHONPATH=src python benchmarks/<script>.py
 | `cached_abs_max.py` | Cache-aware updates for absolute maxima (`tnfr.alias.set_attr_with_max`). | Demonstrates how cached maxima avoid scanning the graph via `multi_recompute_abs_max` on every assignment. |
 | `collect_attr.py` | Vectorised collection of nodal attributes (`tnfr.alias.collect_attr`). | Requires NumPy; the script exits gracefully when the module is unavailable. |
 | `contractive_vs_unitary.py` | Unitary vs. Lindblad ΔNFR evolution (`tnfr.mathematics.MathematicalDynamicsEngine` vs. `ContractiveDynamicsEngine`). | Compares wall-clock timings and Frobenius contractivity after repeated semigroup steps. |
+| `evolution_backend_speedup.py` | Backend comparison for evolution engines (`MathematicalDynamicsEngine`, `ContractiveDynamicsEngine`). | Measures per-backend timings, speed-up ratios, and persists JSON artefacts for reproducibility. |
 | `default_compute_delta_nfr.py` | Core ΔNFR update speed (`tnfr.dynamics.default_compute_delta_nfr`). | Runs multiple passes on random graphs and reports best/median/mean/worst timings. Accepts `--profile` to dump per-function timings. |
 | `compute_dnfr_benchmark.py` | `_compute_dnfr` vectorised vs. fallback execution. | Explores how graph size/density impacts the NumPy and pure-Python paths, reporting summary stats and speed-up ratios. |
 | `compute_si_profile.py` | Sense Index profiling (`tnfr.metrics.sense_index.compute_Si`). | Captures cProfile stats for NumPy and pure-Python runs, exporting `.pstats` or JSON summaries. |
@@ -30,6 +31,48 @@ PYTHONPATH=src python benchmarks/<script>.py
 | `neighbor_phase_mean.py` | Fast phase averaging for neighbourhoods (`tnfr.metrics.trig.neighbor_phase_mean`). | Includes a `NodeNX`-based reference to highlight the benefit of the shared `trig_cache` module. |
 | `prepare_dnfr_data.py` | ΔNFR data preparation reuse (`tnfr.dynamics._prepare_dnfr_data`). | Exercises cache reuse when assembling phase/EPI/νf arrays. |
 | `neighbor_accumulation_comparison.py` | Broadcast neighbour accumulation (`tnfr.dynamics.dnfr._accumulate_neighbors_numpy`). | Benchmarks the single `np.add.at` accumulator against the legacy stack kernel; on 320 random nodes (p=0.65) with Python 3.11/NumPy 2.3.4 it delivered ~1.9× lower median runtime (0.097 s vs 0.185 s). |
+
+### Evolution backend speed-ups
+
+Use the evolution benchmark to compare how the mathematics backends handle the unitary and contractive engines. The script honours the new CLI selector (`--backends`) and the `TNFR_MATH_BACKEND` environment variable, automatically skipping adapters when the corresponding dependencies (JAX, PyTorch) are missing. Results are reproducible thanks to the explicit RNG seed and optional JSON export:
+
+```bash
+PYTHONPATH=src python benchmarks/evolution_backend_speedup.py \
+  --sizes 2 4 8 --steps 16 --repeats 3 --dt 0.05 \
+  --output results/evolution_backends.json
+```
+
+Sample output on Python 3.11 with NumPy 2.3.4 (JAX/PyTorch unavailable) illustrates the reported tables:
+
+Unitary mean time (milliseconds per run)
+
+| dim | numpy |
+| --- | --- |
+| 2 | 1.808 ms |
+| 4 | 0.872 ms |
+
+Contractive mean time (milliseconds per run)
+
+| dim | numpy |
+| --- | --- |
+| 2 | 1.774 ms |
+| 4 | 3.437 ms |
+
+Unitary speed-up vs. NumPy baseline
+
+| dim | numpy |
+| --- | --- |
+| 2 | 1.000 x |
+| 4 | 1.000 x |
+
+Contractive speed-up vs. NumPy baseline
+
+| dim | numpy |
+| --- | --- |
+| 2 | 1.000 x |
+| 4 | 1.000 x |
+
+When additional backends are available, their columns appear automatically in all four tables (unitary timing, contractive timing, and their respective speed-up ratios).
 
 ### Broadcast accumulator regression check
 

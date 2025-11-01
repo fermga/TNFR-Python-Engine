@@ -2,6 +2,16 @@
 
 This document describes the purpose of tests in the suite that monitor internal debugging, diagnostic features, and performance regressions. Default `pytest` options (such as marker selection and benchmark skipping) are configured in the `[tool.pytest.ini_options]` section of `pyproject.toml`, so invocations without extra flags automatically inherit that configuration.
 
+## Backend selection
+
+Pass `--math-backend=<name>` to `pytest` (or set `TNFR_TEST_MATH_BACKEND`) to exercise the suite under a specific numerical adapter. The flag sets `TNFR_MATH_BACKEND` before modules import and clears cached backend instances, ensuring that optional dependencies such as JAX or PyTorch are only used when explicitly requested.
+
+```bash
+PYTHONPATH=src pytest tests/mathematics --math-backend=torch
+```
+
+When the requested backend is unavailable, `pytest` will skip the backend-specific tests while the remainder of the suite continues to run under NumPy.
+
 ## Debugging and diagnostic tests
 
 - **test_logging_module.py** – verifies that the root logger is configured once and sets a default level.
