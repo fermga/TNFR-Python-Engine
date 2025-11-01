@@ -17,6 +17,7 @@ class MathFeatureFlags:
     enable_math_validation: bool = False
     enable_math_dynamics: bool = False
     log_performance: bool = False
+    math_backend: str = "numpy"
 
 
 _TRUE_VALUES = {"1", "true", "on", "yes", "y", "t"}
@@ -41,6 +42,8 @@ def _parse_env_flag(name: str, default: bool) -> bool:
 def _load_base_flags() -> MathFeatureFlags:
     global _BASE_FLAGS
     if _BASE_FLAGS is None:
+        backend = os.getenv("TNFR_MATH_BACKEND")
+        backend_choice = backend.strip() if backend else "numpy"
         _BASE_FLAGS = MathFeatureFlags(
             enable_math_validation=_parse_env_flag(
                 "TNFR_ENABLE_MATH_VALIDATION", False
@@ -49,6 +52,7 @@ def _load_base_flags() -> MathFeatureFlags:
                 "TNFR_ENABLE_MATH_DYNAMICS", False
             ),
             log_performance=_parse_env_flag("TNFR_LOG_PERF", False),
+            math_backend=backend_choice or "numpy",
         )
     return _BASE_FLAGS
 

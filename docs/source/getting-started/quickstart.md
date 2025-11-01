@@ -18,6 +18,8 @@ pip install tnfr
 Optional extras:
 
 - NumPy: `pip install tnfr[numpy]`
+- JAX: `pip install tnfr[jax]`
+- PyTorch: `pip install tnfr[torch]`
 - YAML: `pip install tnfr[yaml]`
 - orjson (faster JSON serialization): `pip install tnfr[orjson]`
 - All extras: `pip install tnfr[numpy,yaml,orjson]`

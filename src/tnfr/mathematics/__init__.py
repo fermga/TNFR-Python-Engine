@@ -1,5 +1,19 @@
-"""Mathematics primitives aligned with TNFR coherence modeling."""
+"""Mathematics primitives aligned with TNFR coherence modeling.
 
+Backend selection
+-----------------
+Use :func:`get_backend` to retrieve a numerical backend compatible with TNFR's
+structural operators.  The selection order is ``name`` → ``TNFR_MATH_BACKEND``
+→ :func:`tnfr.config.get_flags`.  NumPy remains the canonical default so
+existing code continues to operate even when optional dependencies are absent.
+"""
+
+from .backend import (
+    MathematicsBackend,
+    available_backends,
+    get_backend,
+    register_backend,
+)
 from .dynamics import ContractiveDynamicsEngine, MathematicalDynamicsEngine
 from .epi import BEPIElement, CoherenceEvaluation, evaluate_coherence_transform
 from .generators import build_delta_nfr, build_lindblad_delta_nfr
@@ -27,6 +41,7 @@ from .transforms import (
 from ..validation import NFRValidator
 
 __all__ = [
+    "MathematicsBackend",
     "HilbertSpace",
     "BanachSpaceEPI",
     "BEPIElement",
@@ -56,4 +71,7 @@ __all__ = [
     "dcoh",
     "coherence_expectation",
     "frequency_expectation",
+    "available_backends",
+    "get_backend",
+    "register_backend",
 ]
