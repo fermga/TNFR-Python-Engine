@@ -11,6 +11,8 @@ existing code continues to operate even when optional dependencies are absent.
 from .backend import (
     MathematicsBackend,
     available_backends,
+    ensure_array,
+    ensure_numpy,
     get_backend,
     register_backend,
 )
@@ -42,6 +44,8 @@ from ..validation import NFRValidator
 
 __all__ = [
     "MathematicsBackend",
+    "ensure_array",
+    "ensure_numpy",
     "HilbertSpace",
     "BanachSpaceEPI",
     "BEPIElement",

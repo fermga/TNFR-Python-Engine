@@ -225,6 +225,25 @@ _BACKEND_ALIASES: MutableMapping[str, str] = {}
 _BACKEND_CACHE: MutableMapping[str, MathematicsBackend] = {}
 
 
+def ensure_array(
+    value: Any,
+    *,
+    dtype: Any | None = None,
+    backend: MathematicsBackend | None = None,
+) -> Any:
+    """Return ``value`` as a backend-native dense array."""
+
+    resolved = backend or get_backend()
+    return resolved.as_array(value, dtype=dtype)
+
+
+def ensure_numpy(value: Any, *, backend: MathematicsBackend | None = None) -> Any:
+    """Export ``value`` from the backend into :class:`numpy.ndarray`."""
+
+    resolved = backend or get_backend()
+    return resolved.to_numpy(value)
+
+
 def register_backend(
     name: str,
     factory: BackendFactory,
@@ -360,4 +379,6 @@ __all__ = [
     "register_backend",
     "get_backend",
     "available_backends",
+    "ensure_array",
+    "ensure_numpy",
 ]

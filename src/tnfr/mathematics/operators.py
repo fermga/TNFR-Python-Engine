@@ -1,10 +1,12 @@
 """Spectral operators modelling coherence and frequency dynamics."""
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Sequence
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any, Sequence
 
 import numpy as np
+
+from .backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
 
 if TYPE_CHECKING:  # pragma: no cover - typing imports only
     import numpy.typing as npt
@@ -21,18 +23,33 @@ DEFAULT_C_MIN: float = 0.1
 _C_MIN_UNSET = object()
 
 
-def _as_complex_vector(vector: Sequence[complex] | np.ndarray) -> ComplexVector:
-    arr = np.asarray(vector, dtype=np.complex128)
-    if arr.ndim != 1:
+def _as_complex_vector(
+    vector: Sequence[complex] | np.ndarray | Any,
+    *,
+    backend: MathematicsBackend,
+) -> Any:
+    arr = ensure_array(vector, dtype=np.complex128, backend=backend)
+    if getattr(arr, "ndim", len(getattr(arr, "shape", ()))) != 1:
         raise ValueError("Vector input must be one-dimensional.")
     return arr
 
 
-def _as_complex_matrix(matrix: Sequence[Sequence[complex]] | np.ndarray) -> ComplexMatrix:
-    arr = np.asarray(matrix, dtype=np.complex128)
-    if arr.ndim != 2 or arr.shape[0] != arr.shape[1]:
+def _as_complex_matrix(
+    matrix: Sequence[Sequence[complex]] | np.ndarray | Any,
+    *,
+    backend: MathematicsBackend,
+) -> Any:
+    arr = ensure_array(matrix, dtype=np.complex128, backend=backend)
+    shape = getattr(arr, "shape", None)
+    if shape is None or len(shape) != 2 or shape[0] != shape[1]:
         raise ValueError("Operator matrix must be square.")
     return arr
+
+
+def _make_diagonal(values: Any, *, backend: MathematicsBackend) -> Any:
+    dim = int(getattr(values, "shape")[0])
+    identity = ensure_array(np.eye(dim, dtype=np.complex128), backend=backend)
+    return backend.einsum("i,ij->ij", values, identity)
 
 
 @dataclass(slots=True)
@@ -48,35 +65,53 @@ class CoherenceOperator:
     threshold is: an explicit ``c_min`` wins, otherwise the spectral floor
     (minimum real eigenvalue) is used, with ``0.1`` acting as the canonical
     fallback for callers that still wish to supply a fixed number.
+
+    When instantiated under an automatic differentiation backend (JAX, PyTorch)
+    the spectral decomposition remains differentiable provided the supplied
+    operator is non-defective.  NumPy callers receive ``numpy.ndarray`` outputs
+    and all tolerance checks match the historical semantics.
     """
 
     matrix: ComplexMatrix
     eigenvalues: ComplexVector
     c_min: float
+    backend: MathematicsBackend = field(init=False, repr=False)
+    _matrix_backend: Any = field(init=False, repr=False)
+    _eigenvalues_backend: Any = field(init=False, repr=False)
 
     def __init__(
         self,
-        operator: Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray,
+        operator: Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray | Any,
         *,
         c_min: float | object = _C_MIN_UNSET,
         ensure_hermitian: bool = True,
         atol: float = 1e-9,
+        backend: MathematicsBackend | None = None,
     ) -> None:
-        if np.ndim(operator) == 1:
-            eigvals = _as_complex_vector(operator)
-            if ensure_hermitian and not np.allclose(eigvals.imag, 0.0, atol=atol):
-                raise ValueError("Hermitian operators require real eigenvalues.")
-            self.matrix = np.diag(eigvals)
-            self.eigenvalues = eigvals
-        else:
-            matrix = _as_complex_matrix(operator)
-            if ensure_hermitian and not self._check_hermitian(matrix, atol=atol):
-                raise ValueError("Coherence operator must be Hermitian.")
-            self.matrix = matrix
+        resolved_backend = backend or get_backend()
+        operand = ensure_array(operator, dtype=np.complex128, backend=resolved_backend)
+        if getattr(operand, "ndim", len(getattr(operand, "shape", ()))) == 1:
+            eigvals_backend = _as_complex_vector(operand, backend=resolved_backend)
             if ensure_hermitian:
-                self.eigenvalues = np.linalg.eigvalsh(self.matrix)
+                imag = ensure_numpy(eigvals_backend.imag, backend=resolved_backend)
+                if not np.allclose(imag, 0.0, atol=atol):
+                    raise ValueError("Hermitian operators require real eigenvalues.")
+            matrix_backend = _make_diagonal(eigvals_backend, backend=resolved_backend)
+            eigenvalues_backend = eigvals_backend
+        else:
+            matrix_backend = _as_complex_matrix(operand, backend=resolved_backend)
+            if ensure_hermitian and not self._check_hermitian(matrix_backend, atol=atol, backend=resolved_backend):
+                raise ValueError("Coherence operator must be Hermitian.")
+            if ensure_hermitian:
+                eigenvalues_backend, _ = resolved_backend.eigh(matrix_backend)
             else:
-                self.eigenvalues = np.linalg.eigvals(self.matrix)
+                eigenvalues_backend, _ = resolved_backend.eig(matrix_backend)
+
+        self.backend = resolved_backend
+        self._matrix_backend = matrix_backend
+        self._eigenvalues_backend = eigenvalues_backend
+        self.matrix = ensure_numpy(matrix_backend, backend=resolved_backend)
+        self.eigenvalues = ensure_numpy(eigenvalues_backend, backend=resolved_backend)
         derived_c_min = float(np.min(self.eigenvalues.real))
         if c_min is _C_MIN_UNSET:
             self.c_min = derived_c_min
@@ -84,13 +119,19 @@ class CoherenceOperator:
             self.c_min = float(c_min)
 
     @staticmethod
-    def _check_hermitian(matrix: ComplexMatrix, *, atol: float = 1e-9) -> bool:
-        return np.allclose(matrix, matrix.conj().T, atol=atol)
+    def _check_hermitian(
+        matrix: Any,
+        *,
+        atol: float = 1e-9,
+        backend: MathematicsBackend,
+    ) -> bool:
+        matrix_np = ensure_numpy(matrix, backend=backend)
+        return bool(np.allclose(matrix_np, matrix_np.conj().T, atol=atol))
 
     def is_hermitian(self, *, atol: float = 1e-9) -> bool:
         """Return ``True`` when the operator matches its adjoint."""
 
-        return self._check_hermitian(self.matrix, atol=atol)
+        return self._check_hermitian(self._matrix_backend, atol=atol, backend=self.backend)
 
     def is_positive_semidefinite(self, *, atol: float = 1e-9) -> bool:
         """Check that all eigenvalues are non-negative within ``atol``."""
@@ -120,22 +161,29 @@ class CoherenceOperator:
         normalise: bool = True,
         atol: float = 1e-9,
     ) -> float:
-        vector = _as_complex_vector(state)
-        if vector.shape != (self.matrix.shape[0],):
+        vector_backend = _as_complex_vector(state, backend=self.backend)
+        if vector_backend.shape != (self.matrix.shape[0],):
             raise ValueError("State vector dimension mismatch with operator.")
+        working = vector_backend
         if normalise:
-            norm = np.linalg.norm(vector)
+            norm_value = ensure_numpy(self.backend.norm(working), backend=self.backend)
+            norm = float(norm_value)
             if np.isclose(norm, 0.0):
                 raise ValueError("Cannot normalise a null state vector.")
-            vector = vector / norm
-        expectation = vector.conj().T @ (self.matrix @ vector)
-        if np.abs(expectation.imag) > atol:
+            working = working / norm
+        column = working[..., None]
+        bra = self.backend.conjugate_transpose(column)
+        evolved = self.backend.matmul(self._matrix_backend, column)
+        expectation_backend = self.backend.matmul(bra, evolved)
+        expectation = ensure_numpy(expectation_backend, backend=self.backend)
+        expectation_scalar = complex(np.asarray(expectation).reshape(()))
+        if abs(expectation_scalar.imag) > atol:
             raise ValueError(
                 "Expectation value carries an imaginary component beyond tolerance."
             )
         eps = np.finfo(float).eps
         tol = max(1000.0, float(atol / eps)) if atol > 0 else 1000.0
-        real_expectation = np.real_if_close(expectation, tol=tol)
+        real_expectation = np.real_if_close(expectation_scalar, tol=tol)
         if np.iscomplexobj(real_expectation):
             raise ValueError("Expectation remained complex after coercion.")
         return float(real_expectation)
@@ -152,12 +200,18 @@ class FrequencyOperator(CoherenceOperator):
 
     def __init__(
         self,
-        operator: Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray,
+        operator: Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray | Any,
         *,
         ensure_hermitian: bool = True,
         atol: float = 1e-9,
+        backend: MathematicsBackend | None = None,
     ) -> None:
-        super().__init__(operator, ensure_hermitian=ensure_hermitian, atol=atol)
+        super().__init__(
+            operator,
+            ensure_hermitian=ensure_hermitian,
+            atol=atol,
+            backend=backend,
+        )
 
     def spectrum(self) -> np.ndarray:
         """Return the real-valued structural frequency spectrum."""
