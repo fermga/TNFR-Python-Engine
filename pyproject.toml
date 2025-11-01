@@ -35,6 +35,7 @@ dependencies = [
 numpy = ["numpy>=1.24"]
 yaml = ["pyyaml>=6.0"]
 orjson = ["orjson>=3"]
+viz = ["matplotlib>=3.7"]
 test = [
   "pytest>=7",
   "pytest-benchmark>=4",
@@ -45,6 +46,7 @@ test = [
   "flake8>=5",
   "flake8-pyproject>=1.2",
   "vulture>=2",
+  "matplotlib>=3.7",
 ]
 typecheck = [
   "mypy>=1.8",
