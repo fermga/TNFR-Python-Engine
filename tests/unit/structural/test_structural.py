@@ -44,6 +44,7 @@ from tnfr.structural import (
     create_nfr,
     validate_sequence,
 )
+from tnfr.validation import ValidationOutcome
 
 
 def _outcome_stub(names: list[str] | tuple[str, ...]) -> SequenceValidationResult:
@@ -93,6 +94,7 @@ def test_sequence_validation_and_run() -> None:
     ops = [Emission(), Reception(), Coherence(), Resonance(), Silence()]
     names = [op.name for op in ops]
     outcome = validate_sequence(names)
+    assert isinstance(outcome, ValidationOutcome)
     assert isinstance(outcome, SequenceValidationResult)
     assert outcome.passed, outcome.summary["message"]
     assert outcome.summary["tokens"] == tuple(names)

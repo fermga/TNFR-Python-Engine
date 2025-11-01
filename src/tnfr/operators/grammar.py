@@ -6,9 +6,9 @@ import json
 import os
 from collections.abc import Iterable, MutableMapping
 from copy import deepcopy
-from dataclasses import dataclass
 from importlib import resources
 from json import JSONDecodeError
+from types import MappingProxyType
 from typing import Any, Mapping, Optional, Sequence
 
 from ..config.operator_names import (
@@ -34,7 +34,7 @@ from ..config.operator_names import (
 )
 from ..constants import DEFAULTS, get_param
 from ..types import Glyph, NodeId, TNFRGraph
-from ..validation import rules as _rules
+from ..validation import ValidationOutcome, rules as _rules
 from ..validation.soft_filters import soft_grammar_filters
 from ..utils import get_logger
 from .registry import OPERATORS
@@ -352,37 +352,45 @@ class SequenceSyntaxError(ValueError):
         return self.message
 
 
-@dataclass(slots=True)
-class SequenceValidationResult:
+class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
     """Structured report emitted by :func:`validate_sequence`."""
 
-    tokens: tuple[str, ...]
-    canonical_tokens: tuple[str, ...]
-    passed: bool
-    message: str
-    metadata: Mapping[str, object]
-    error: SequenceSyntaxError | None = None
+    __slots__ = ("tokens", "canonical_tokens", "message", "metadata", "error")
 
-    @property
-    def summary(self) -> Mapping[str, object]:
-        base: dict[str, object] = {
-            "message": self.message,
-            "passed": self.passed,
-            "tokens": self.tokens,
+    def __init__(
+        self,
+        *,
+        tokens: Sequence[str],
+        canonical_tokens: Sequence[str],
+        passed: bool,
+        message: str,
+        metadata: Mapping[str, object],
+        error: SequenceSyntaxError | None = None,
+    ) -> None:
+        tokens_tuple = tuple(tokens)
+        canonical_tuple = tuple(canonical_tokens)
+        metadata_dict = dict(metadata)
+        metadata_view = MappingProxyType(metadata_dict)
+        summary: dict[str, object] = {
+            "message": message,
+            "passed": passed,
+            "tokens": tokens_tuple,
         }
-        if self.metadata:
-            base["metadata"] = self.metadata
-        if self.error is not None:
-            base["error"] = {"index": self.error.index, "token": self.error.token}
-        return base
-
-    @property
-    def artifacts(self) -> Mapping[str, object]:
-        return {"canonical_tokens": self.canonical_tokens}
-
-    @property
-    def subject(self) -> tuple[str, ...]:
-        return self.canonical_tokens
+        if metadata_dict:
+            summary["metadata"] = metadata_view
+        if error is not None:
+            summary["error"] = {"index": error.index, "token": error.token}
+        super().__init__(
+            subject=canonical_tuple,
+            passed=passed,
+            summary=summary,
+            artifacts={"canonical_tokens": canonical_tuple},
+        )
+        self.tokens = tokens_tuple
+        self.canonical_tokens = canonical_tuple
+        self.message = message
+        self.metadata = metadata_view
+        self.error = error
 
 
 _CANONICAL_START = tuple(sorted(VALID_START_OPERATORS))
@@ -610,7 +618,9 @@ def _analyse_sequence(names: Iterable[str]) -> SequenceValidationResult:
     )
 
 
-def validate_sequence(names: Iterable[str] | object = _MISSING, **kwargs: object) -> SequenceValidationResult:
+def validate_sequence(
+    names: Iterable[str] | object = _MISSING, **kwargs: object
+) -> ValidationOutcome[tuple[str, ...]]:
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))
         raise TypeError(
