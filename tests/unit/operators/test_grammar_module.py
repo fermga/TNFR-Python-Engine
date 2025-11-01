@@ -97,6 +97,14 @@ def test_validate_sequence_requires_known_tokens() -> None:
     assert "unknown" in result.message
 
 
+def test_validate_sequence_reports_first_unknown_token_index() -> None:
+    probe = [EMISSION, "UNKNOWN", RECEPTION, COHERENCE, RESONANCE, SILENCE]
+    result = validate_sequence(probe)
+    assert not result.passed
+    assert result.summary["error"]["index"] == 1
+    assert result.summary["error"]["token"] == "UNKNOWN"
+
+
 def test_validate_sequence_requires_thol_closure() -> None:
     result = validate_sequence(
         [EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, RESONANCE, TRANSITION]

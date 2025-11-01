@@ -386,7 +386,7 @@ class _SequenceAutomaton:
         self._found_coherence = False
         self._seen_intermediate = False
         self._open_thol = False
-        self._unknown_tokens: set[str] = set()
+        self._unknown_tokens: list[tuple[int, str]] = []
 
     def run(self, names: Sequence[str]) -> None:
         if not names:
@@ -401,7 +401,7 @@ class _SequenceAutomaton:
         canonical = canonical_operator_name(token)
         self._canonical.append(canonical)
         if canonical not in OPERATORS:
-            self._unknown_tokens.add(token)
+            self._unknown_tokens.append((index, token))
         if index == 0:
             if canonical not in VALID_START_OPERATORS:
                 expected = _format_token_group(_CANONICAL_START)
@@ -419,10 +419,11 @@ class _SequenceAutomaton:
 
     def _finalize(self, names: Sequence[str]) -> None:
         if self._unknown_tokens:
-            ordered = ", ".join(sorted(self._unknown_tokens))
+            ordered = ", ".join(sorted({token for _, token in self._unknown_tokens}))
+            first_index, first_token = self._unknown_tokens[0]
             raise SequenceSyntaxError(
-                index=len(names) - 1,
-                token=names[-1],
+                index=first_index,
+                token=first_token,
                 message=f"unknown tokens: {ordered}",
             )
         if not (self._found_reception and self._found_coherence):
@@ -462,7 +463,7 @@ class _SequenceAutomaton:
             "has_coherence": self._found_coherence,
             "has_intermediate": self._seen_intermediate,
             "open_thol": self._open_thol,
-            "unknown_tokens": frozenset(self._unknown_tokens),
+            "unknown_tokens": frozenset(token for _, token in self._unknown_tokens),
         }
 
 
