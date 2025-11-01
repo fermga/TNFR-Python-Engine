@@ -728,5 +728,13 @@ def apply_glyph_with_grammar(
             err.attach_context(node=node_id, stage="apply_glyph", history=history)
             _record_grammar_violation(G, node_id, err, stage="apply_glyph")
             raise
-        _apply_glyph(G, node_id, g_eff, window=window)
-        on_applied_glyph(G, node_id, g_eff)
+        telemetry_token = g_eff
+        glyph_obj = g_eff if isinstance(g_eff, Glyph) else function_name_to_glyph(g_eff)
+        if glyph_obj is None:
+            coerced = _rules.coerce_glyph(g_eff)
+            glyph_obj = coerced if isinstance(coerced, Glyph) else None
+        if glyph_obj is None:
+            raise ValueError(f"unknown glyph: {g_eff}")
+
+        _apply_glyph(G, node_id, glyph_obj, window=window)
+        on_applied_glyph(G, node_id, telemetry_token)
