@@ -188,33 +188,45 @@ def _check_thol_closure(
             st["thol_len"] >= minlen and normalized_dnfr(ctx, nd) <= close_dn
         )
         if requires_close:
-            closers = {CONTRACTION, SILENCE}
-            glyph_to_name = _functional_translators()[0]
+            glyph_to_name, name_to_glyph = _functional_translators()
             cand_glyph = coerce_glyph(cand)
             cand_name = glyph_to_name(cand_glyph if isinstance(cand_glyph, Glyph) else cand)
-            if cand_name not in closers:
-                history = tuple(
-                    _structural_label(item) for item in nd.get("glyph_history", ())
-                )
-                cand_label = cand_name if cand_name is not None else _structural_label(cand)
-                order = (*history[-st["thol_len"]:], cand_label)
-                from ..operators import grammar as _grammar
 
-                raise _grammar.TholClosureError(
-                    rule="thol-closure",
-                    candidate=cand_label,
-                    message=(
-                        f"{operator_display_name(SELF_ORGANIZATION)} block requires canonical closure"
-                    ),
-                    window=st["thol_len"],
-                    threshold=close_dn,
-                    order=order,
-                    context={
-                        "thol_min_len": minlen,
-                        "thol_max_len": maxlen,
-                        "si": _si(nd),
-                    },
-                )
+            si_high = float(cfg.get("si_high", 0.66))
+            si = _si(nd)
+            target_name = SILENCE if si >= si_high else CONTRACTION
+            target_glyph = name_to_glyph(target_name)
+
+            if cand_name == target_name and isinstance(cand_glyph, Glyph):
+                return cand_glyph
+
+            if target_glyph is not None and cand_name in {CONTRACTION, SILENCE}:
+                return target_glyph
+
+            history = tuple(
+                _structural_label(item) for item in nd.get("glyph_history", ())
+            )
+            cand_label = cand_name if cand_name is not None else _structural_label(cand)
+            order = (*history[-st["thol_len"]:], cand_label)
+            from ..operators import grammar as _grammar
+
+            raise _grammar.TholClosureError(
+                rule="thol-closure",
+                candidate=cand_label,
+                message=(
+                    f"{operator_display_name(SELF_ORGANIZATION)} block requires {operator_display_name(target_name)} closure"
+                ),
+                window=st["thol_len"],
+                threshold=close_dn,
+                order=order,
+                context={
+                    "thol_min_len": minlen,
+                    "thol_max_len": maxlen,
+                    "si": si,
+                    "si_high": si_high,
+                    "required_closure": target_name,
+                },
+            )
     return cand
 
 

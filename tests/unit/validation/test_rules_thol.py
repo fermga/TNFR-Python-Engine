@@ -67,16 +67,16 @@ def test_thol_closure_triggers_at_max_length_with_high_si(graph_canon):
     )
     nd = ctx.G.nodes[node_id]
     nd["ΔNFR"] = 0.8
-    nd["Si"] = 0.85  # Exceeds si_high so the closure should emit Glyph.NUL.
+    nd["Si"] = 0.85  # Exceeds si_high so the closure should emit Glyph.SHA.
     state = {"thol_open": True, "thol_len": 4}
 
-    glyph = rules._check_thol_closure(ctx, node_id, Glyph.RA, state)
+    glyph = rules._check_thol_closure(ctx, node_id, Glyph.NUL, state)
 
-    assert glyph_function_name(glyph) == CONTRACTION
+    assert glyph_function_name(glyph) == SILENCE
     assert state["thol_len"] == 5
 
 
-def test_thol_closure_low_dnfr_uses_sha_when_si_below_threshold(graph_canon):
+def test_thol_closure_low_dnfr_uses_contraction_when_si_below_threshold(graph_canon):
     ctx, node_id = _ctx_with_node(
         graph_canon,
         thol_min_len=3,
@@ -87,16 +87,16 @@ def test_thol_closure_low_dnfr_uses_sha_when_si_below_threshold(graph_canon):
     )
     nd = ctx.G.nodes[node_id]
     nd["ΔNFR"] = 0.1  # Normalised value 0.1 <= close threshold.
-    nd["Si"] = 0.3  # Below si_high so closure should choose Glyph.SHA.
+    nd["Si"] = 0.3  # Below si_high so closure should choose Glyph.NUL.
     state = {"thol_open": True, "thol_len": 2}
 
-    glyph = rules._check_thol_closure(ctx, node_id, Glyph.RA, state)
+    glyph = rules._check_thol_closure(ctx, node_id, Glyph.SHA, state)
 
-    assert glyph_function_name(glyph) == SILENCE
+    assert glyph_function_name(glyph) == CONTRACTION
     assert state["thol_len"] == 3
 
 
-def test_thol_closure_low_dnfr_with_high_si_prefers_nul(graph_canon):
+def test_thol_closure_low_dnfr_with_high_si_prefers_silence(graph_canon):
     ctx, node_id = _ctx_with_node(
         graph_canon,
         thol_min_len=3,
@@ -107,10 +107,10 @@ def test_thol_closure_low_dnfr_with_high_si_prefers_nul(graph_canon):
     )
     nd = ctx.G.nodes[node_id]
     nd["ΔNFR"] = 0.05  # Normalised value 0.05 <= close threshold.
-    nd["Si"] = 0.72  # Above si_high so closure should emit Glyph.NUL.
+    nd["Si"] = 0.72  # Above si_high so closure should emit Glyph.SHA.
     state = {"thol_open": True, "thol_len": 2}
 
-    glyph = rules._check_thol_closure(ctx, node_id, Glyph.RA, state)
+    glyph = rules._check_thol_closure(ctx, node_id, Glyph.NUL, state)
 
-    assert glyph_function_name(glyph) == CONTRACTION
+    assert glyph_function_name(glyph) == SILENCE
     assert state["thol_len"] == 3
