@@ -117,6 +117,27 @@ def test_torch_dynamics_step_supports_autodiff() -> None:
     assert np.all(np.isfinite(grad_np))
 
 
+def test_torch_dynamics_step_autodiff_with_normalization() -> None:
+    backend = _require_backend("torch")
+    torch = pytest.importorskip("torch")
+
+    hilbert = HilbertSpace(dimension=2)
+    generator = torch.tensor(
+        [[0.1 + 0.0j, 0.3 - 0.2j], [0.3 + 0.2j, -0.25 + 0.0j]],
+        dtype=torch.complex128,
+    )
+    engine = MathematicalDynamicsEngine(generator, hilbert, backend=backend)
+
+    state = torch.tensor([0.4 + 0.1j, 0.2 - 0.3j], dtype=torch.complex128, requires_grad=True)
+    result = engine.step(state, dt=0.4, normalize=True)
+    value = result.abs().pow(2).sum()
+
+    grad, = torch.autograd.grad(value, state)
+    grad_np = grad.detach().cpu().numpy()
+    assert grad_np.shape == (2,)
+    assert np.all(np.isfinite(grad_np))
+
+
 def test_jax_contractive_step_supports_autodiff() -> None:
     backend = _require_backend("jax")
     jax = pytest.importorskip("jax")
@@ -148,6 +169,43 @@ def test_jax_contractive_step_supports_autodiff() -> None:
         return jnp.real(jnp.sum(jnp.abs(evolved) ** 2))
 
     grad = jax.grad(frobenius_energy)(density)
+    grad_np = np.asarray(grad)
+    assert grad_np.shape == density.shape
+    assert np.all(np.isfinite(grad_np))
+
+
+def test_jax_contractive_step_autodiff_with_controls() -> None:
+    backend = _require_backend("jax")
+    jax = pytest.importorskip("jax")
+    jnp = pytest.importorskip("jax.numpy")
+
+    hilbert = HilbertSpace(dimension=2)
+    generator_np = np.diag([-0.3, -0.2, -0.25, -0.15]).astype(np.complex128)
+    generator = backend.as_array(generator_np, dtype=jnp.complex128)
+    engine = ContractiveDynamicsEngine(
+        generator,
+        hilbert,
+        ensure_contractive=False,
+        backend=backend,
+    )
+
+    density = jnp.array(
+        [[0.6 + 0.0j, 0.05 - 0.08j], [0.05 + 0.08j, 0.4 + 0.0j]],
+        dtype=jnp.complex128,
+    )
+
+    def monitored_energy(density_matrix: object) -> object:
+        evolved = engine.step(
+            density_matrix,
+            dt=0.2,
+            normalize_trace=True,
+            enforce_contractivity=True,
+            raise_on_violation=False,
+            symmetrize=True,
+        )
+        return jnp.real(jnp.sum(jnp.abs(evolved) ** 2))
+
+    grad = jax.grad(monitored_energy)(density)
     grad_np = np.asarray(grad)
     assert grad_np.shape == density.shape
     assert np.all(np.isfinite(grad_np))
