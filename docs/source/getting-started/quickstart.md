@@ -3,6 +3,10 @@
 Follow this guide to install the TNFR Python Engine, warm optional dependencies, and
 execute the first structural workflows from Python and the CLI.
 
+> Need to rerun the official experiment suites? See the
+> {doc}`../how_to_reproduce_results` guide for the exact environment steps,
+> operator sequences, and telemetry capture commands we use in CI.
+
 ## Installation
 
 Install the engine from PyPI. Python 3.9 or newer is required.

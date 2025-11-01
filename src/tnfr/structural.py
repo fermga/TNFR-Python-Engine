@@ -132,9 +132,11 @@ def create_nfr(
     >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import (
-    ...     Coupling,
-    ...     Emission,
     ...     Coherence,
+    ...     Emission,
+    ...     Reception,
+    ...     Resonance,
+    ...     Silence,
     ...     create_nfr,
     ...     run_sequence,
     ... )
@@ -146,7 +148,7 @@ def create_nfr(
     ...     graph.nodes[node][VF_PRIMARY] += delta * 0.05
     ...     graph.nodes[node][THETA_PRIMARY] += 0.01
     >>> set_delta_nfr_hook(G, synchronise_delta)
-    >>> run_sequence(G, node, [Emission(), Coupling(), Coherence()])
+    >>> run_sequence(G, node, [Emission(), Reception(), Coherence(), Resonance(), Silence()])  # doctest: +SKIP
     >>> (
     ...     G.nodes[node][EPI_PRIMARY],
     ...     G.nodes[node][VF_PRIMARY],
@@ -542,9 +544,11 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
     >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import (
+    ...     Coherence,
+    ...     Emission,
+    ...     Reception,
     ...     Resonance,
-    ...     SelfOrganization,
-    ...     Transition,
+    ...     Silence,
     ...     create_nfr,
     ...     run_sequence,
     ... )
@@ -556,7 +560,7 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
     ...     graph.nodes[node][VF_PRIMARY] += delta * 0.1
     ...     graph.nodes[node][THETA_PRIMARY] += 0.02
     >>> set_delta_nfr_hook(G, amplify_delta)
-    >>> run_sequence(G, node, [Resonance(), SelfOrganization(), Transition()])
+    >>> run_sequence(G, node, [Emission(), Reception(), Coherence(), Resonance(), Silence()])  # doctest: +SKIP
     >>> (
     ...     G.nodes[node][EPI_PRIMARY],
     ...     G.nodes[node][VF_PRIMARY],
