@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Final
 
+from threading import Lock
+
 from .cache import (
     CacheCapacityConfig,
     CacheLayer,
@@ -100,6 +102,7 @@ __all__ = (
     "warm_cached_import",
     "LazyImportProxy",
     "get_logger",
+    "get_lock",
     "get_nodenx",
     "get_numpy",
     "prune_failed_imports",
@@ -174,6 +177,8 @@ __all__ = (
     "_DEFAULT_CACHE_SIZE",
     "EMIT_MAP",
 )
+
+def get_lock(name: str, /) -> Lock: ...
 
 _DYNAMIC_EXPORTS: Final[frozenset[str]]
 

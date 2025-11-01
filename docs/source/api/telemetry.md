@@ -144,7 +144,8 @@ As with traces, an explicit override of `METRICS` parameters (for example `save_
 ## Locking policy
 
 The engine centralises reusable process-wide locks in `tnfr.locking`. Obtain named locks with
-`tnfr.locking.get_lock()` and reuse them for caches, RNG seeds, and other shared resources.
+`tnfr.utils.get_lock()` (re-exporting :func:`tnfr.locking.get_lock`) and reuse them for caches,
+RNG seeds, and other shared resources.
 Avoid scattering bare `threading.Lock` instances across modules; only short-lived objects may
 instantiate ad-hoc locks when they are not shared.
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Final
 
 from . import init as _init
+from ..locking import get_lock
 
 WarnOnce = _init.WarnOnce
 cached_import = _init.cached_import
@@ -109,6 +110,7 @@ __all__ = (
     "warm_cached_import",
     "LazyImportProxy",
     "get_logger",
+    "get_lock",
     "get_nodenx",
     "get_numpy",
     "prune_failed_imports",
