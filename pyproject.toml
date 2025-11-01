@@ -33,6 +33,8 @@ dependencies = [
 
 [project.optional-dependencies]
 numpy = ["numpy>=1.24"]
+jax = ["jax>=0.4"]
+torch = ["torch>=2.1"]
 yaml = ["pyyaml>=6.0"]
 orjson = ["orjson>=3"]
 viz = ["matplotlib>=3.7"]
