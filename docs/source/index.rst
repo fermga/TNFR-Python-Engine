@@ -16,6 +16,7 @@ This site curates the canonical TNFR knowledge base, API contracts, and structur
    Quickstart <getting-started/quickstart>
    Quick Start (Mathematics) <foundations>
    Migrating from Remesh Window <getting-started/migrating-remesh-window>
+   How to reproduce TNFR results <how_to_reproduce_results>
 
 .. toctree::
    :maxdepth: 2
