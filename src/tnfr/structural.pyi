@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any, Callable, Hashable, Iterable, Sequence
 
-from .operators.grammar import SequenceValidationResult
+from .validation import SequenceValidationResult
 from .operators.definitions import (
     Coherence,
     Contraction,

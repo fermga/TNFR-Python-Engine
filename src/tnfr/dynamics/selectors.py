@@ -15,12 +15,14 @@ from ..constants import get_graph_param, get_param
 from ..glyph_history import ensure_history
 from ..utils import clamp01
 from ..metrics.common import compute_dnfr_accel_max, merge_and_normalize_weights
-from ..operators import apply_glyph, on_applied_glyph, GrammarContext
-from ..operators.grammar import (
+from ..operators import apply_glyph
+from ..validation import (
+    GrammarContext,
     StructuralGrammarError,
-    _record_grammar_violation,
     enforce_canonical_grammar,
+    on_applied_glyph,
 )
+from ..validation.grammar import _record_grammar_violation
 from ..selector import (
     _apply_selector_hysteresis,
     _calc_selector_score,
