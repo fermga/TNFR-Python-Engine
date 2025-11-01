@@ -13,7 +13,7 @@ from typing import Any, cast
 from ..alias import collect_attr, get_attr
 from ..constants import get_graph_param, get_param
 from ..glyph_history import ensure_history
-from ..utils import clamp01
+from ..utils import clamp01, resolve_chunk_size
 from ..metrics.common import compute_dnfr_accel_max, merge_and_normalize_weights
 from ..operators import apply_glyph
 from ..validation import (
@@ -414,7 +414,12 @@ def _collect_selector_metrics(
             dnfr_seq = [abs(float(v)) / dnfr_max for v in dnfr_values]
             accel_seq = [abs(float(v)) / accel_max for v in accel_values]
         else:
-            chunk_size = max(1, math.ceil(len(nodes) / worker_count))
+            approx_chunk = math.ceil(len(nodes) / worker_count) if worker_count else None
+            chunk_size = resolve_chunk_size(
+                approx_chunk,
+                len(nodes),
+                minimum=1,
+            )
             chunk_bounds = [
                 (start, min(start + chunk_size, len(nodes)))
                 for start in range(0, len(nodes), chunk_size)
@@ -499,7 +504,12 @@ def _compute_param_base_choices(
             for node, (Si, dnfr, accel) in items
         }
 
-    chunk_size = max(1, math.ceil(len(items) / n_jobs))
+    approx_chunk = math.ceil(len(items) / n_jobs) if n_jobs else None
+    chunk_size = resolve_chunk_size(
+        approx_chunk,
+        len(items),
+        minimum=1,
+    )
     chunks = [items[i : i + chunk_size] for i in range(0, len(items), chunk_size)]
     base: dict[Any, str] = {}
     args = ((thresholds, chunk) for chunk in chunks)
@@ -627,7 +637,12 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
             for n in to_select:
                 decisions[n] = _resolve_preselected_glyph(G, n, selector, preselection)
         else:
-            chunk_size = max(1, math.ceil(len(to_select) / n_jobs))
+            approx_chunk = math.ceil(len(to_select) / n_jobs) if n_jobs else None
+            chunk_size = resolve_chunk_size(
+                approx_chunk,
+                len(to_select),
+                minimum=1,
+            )
             chunks = [
                 to_select[idx : idx + chunk_size]
                 for idx in range(0, len(to_select), chunk_size)

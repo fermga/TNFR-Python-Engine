@@ -17,7 +17,7 @@ from ..constants import (
     normalise_state_token,
 )
 from ..glyph_history import append_metric
-from ..utils import angle_diff
+from ..utils import angle_diff, resolve_chunk_size
 from ..metrics.common import ensure_neighbors_map
 from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import get_trig_cache
@@ -354,7 +354,12 @@ def coordinate_global_local_phase(
             set_theta(G, node, float(th + kG * dG + kL * dL))
         return
 
-    chunk_size = max(1, math.ceil(len(nodes) / jobs))
+    approx_chunk = math.ceil(len(nodes) / jobs) if jobs else None
+    chunk_size = resolve_chunk_size(
+        approx_chunk,
+        len(nodes),
+        minimum=1,
+    )
     chunks = [nodes[idx : idx + chunk_size] for idx in range(0, len(nodes), chunk_size)]
     args: list[ChunkArgs] = [
         (

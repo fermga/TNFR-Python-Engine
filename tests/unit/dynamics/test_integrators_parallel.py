@@ -145,6 +145,17 @@ def test_evaluate_gamma_map_parallel_variants(monkeypatch: pytest.MonkeyPatch) -
     monkeypatch.setattr(integrators, "eval_gamma", fake_eval_gamma)
     monkeypatch.setattr(integrators, "_PARALLEL_GRAPH", None, raising=False)
 
+    resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
+    original_resolve = integrators.resolve_chunk_size
+
+    def tracking_resolve(
+        chunk_size: int | None, total_items: int, **kwargs: object
+    ) -> int:
+        resolve_calls.append((chunk_size, total_items, dict(kwargs)))
+        return original_resolve(chunk_size, total_items, **kwargs)
+
+    monkeypatch.setattr(integrators, "resolve_chunk_size", tracking_resolve)
+
     class _ImmediateFuture:
         def __init__(self, value: list[tuple[int, float]]):
             self._value = value
@@ -210,6 +221,11 @@ def test_evaluate_gamma_map_parallel_variants(monkeypatch: pytest.MonkeyPatch) -
         assert chunked_nodes == nodes
 
     assert integrators._PARALLEL_GRAPH is G
+
+    assert resolve_calls == [
+        (math.ceil(len(nodes) / (len(nodes) * 4)), len(nodes), {"minimum": 1}),
+        (math.ceil(len(nodes) / (len(nodes) * 4)), len(nodes), {"minimum": 1}),
+    ]
 
 
 def test_evaluate_gamma_map_single_node_falls_back(monkeypatch: pytest.MonkeyPatch) -> None:

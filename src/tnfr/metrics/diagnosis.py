@@ -24,7 +24,7 @@ from ..constants import (
 )
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
 from ..glyph_history import append_metric, ensure_history
-from ..utils import clamp01, similarity_abs
+from ..utils import clamp01, resolve_chunk_size, similarity_abs
 from ..types import (
     DiagnosisNodeData,
     DiagnosisPayload,
@@ -623,7 +623,12 @@ def _diagnosis_step(
             rloc_values = [rloc_map.get(node, 0.0) for node in nodes]
     else:
         if n_jobs and n_jobs > 1 and len(nodes) > 1:
-            chunk_size = max(1, math.ceil(len(nodes) / n_jobs))
+            approx_chunk = math.ceil(len(nodes) / n_jobs) if n_jobs else None
+            chunk_size = resolve_chunk_size(
+                approx_chunk,
+                len(nodes),
+                minimum=1,
+            )
             rloc_values = []
             with ProcessPoolExecutor(max_workers=n_jobs) as executor:
                 futures = [
@@ -675,7 +680,12 @@ def _diagnosis_step(
                 np_mod,
             )
         elif n_jobs and n_jobs > 1 and len(nodes) > 1:
-            chunk_size = max(1, math.ceil(len(nodes) / n_jobs))
+            approx_chunk = math.ceil(len(nodes) / n_jobs) if n_jobs else None
+            chunk_size = resolve_chunk_size(
+                approx_chunk,
+                len(nodes),
+                minimum=1,
+            )
             neighbor_means = cast(list[float | None], [])
             with ProcessPoolExecutor(max_workers=n_jobs) as executor:
                 submit = cast(Callable[..., Any], executor.submit)
@@ -730,7 +740,12 @@ def _diagnosis_step(
     }
 
     if n_jobs and n_jobs > 1 and len(node_payload) > 1:
-        chunk_size = max(1, math.ceil(len(node_payload) / n_jobs))
+        approx_chunk = math.ceil(len(node_payload) / n_jobs) if n_jobs else None
+        chunk_size = resolve_chunk_size(
+            approx_chunk,
+            len(node_payload),
+            minimum=1,
+        )
         diag_pairs: DiagnosisResultList = []
         with ProcessPoolExecutor(max_workers=n_jobs) as executor:
             submit = cast(Callable[..., Any], executor.submit)

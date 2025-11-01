@@ -1,10 +1,13 @@
 """Unit tests for metric evaluation plumbing and configuration."""
 
 import builtins
+import math
 from typing import Any
 
 import pytest
 
+import tnfr.metrics.coherence as coherence_module
+import tnfr.metrics.glyph_timing as glyph_timing_module
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants import (
     get_aliases,
@@ -60,6 +63,7 @@ def test_register_metrics_preset_rejects_unknown_levels():
         enable_sigma=False,
         enable_aggregate_si=False,
         enable_advanced=False,
+        enable_nu_f=False,
         attach_coherence_hooks=False,
         attach_diagnosis_hooks=False,
     )
@@ -178,7 +182,22 @@ def test_track_stability_parallel_fallback(monkeypatch, graph_canon):
             self.submissions.append((fn, args, kwargs))
             return _FakeFuture(fn(*args, **kwargs))
 
-    monkeypatch.setattr("tnfr.metrics.coherence.ProcessPoolExecutor", _RecorderExecutor)
+    resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
+    original_resolve = coherence_module.resolve_chunk_size
+
+    def tracking_resolve(
+        chunk_size: int | None, total_items: int, **kwargs: object
+    ) -> int:
+        resolve_calls.append((chunk_size, total_items, dict(kwargs)))
+        return original_resolve(chunk_size, total_items, **kwargs)
+
+    monkeypatch.setattr(
+        coherence_module, "resolve_chunk_size", tracking_resolve
+    )
+
+    monkeypatch.setattr(
+        "tnfr.metrics.coherence.ProcessPoolExecutor", _RecorderExecutor
+    )
 
     G = graph_canon()
     hist = {"stable_frac": [], "delta_Si": [], "B": []}
@@ -213,6 +232,8 @@ def test_track_stability_parallel_fallback(monkeypatch, graph_canon):
 
     assert get_attr(G.nodes[0], ALIAS_D2VF) == pytest.approx(0.3)
     assert get_attr(G.nodes[1], ALIAS_D2VF) == pytest.approx(0.0)
+
+    assert resolve_calls == [(math.ceil(2 / 2), 2, {"minimum": 1})]
 
 
 def test_update_sigma_uses_default_window(monkeypatch, graph_canon):
@@ -531,7 +552,22 @@ def test_aggregate_si_python_parallel(monkeypatch, graph_canon):
             self.submissions.append((fn, args, kwargs))
             return _FakeFuture(fn(*args, **kwargs))
 
-    monkeypatch.setattr("tnfr.metrics.coherence.ProcessPoolExecutor", _RecorderExecutor)
+    resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
+    original_resolve = coherence_module.resolve_chunk_size
+
+    def tracking_resolve(
+        chunk_size: int | None, total_items: int, **kwargs: object
+    ) -> int:
+        resolve_calls.append((chunk_size, total_items, dict(kwargs)))
+        return original_resolve(chunk_size, total_items, **kwargs)
+
+    monkeypatch.setattr(
+        coherence_module, "resolve_chunk_size", tracking_resolve
+    )
+
+    monkeypatch.setattr(
+        "tnfr.metrics.coherence.ProcessPoolExecutor", _RecorderExecutor
+    )
 
     G, hist = _si_graph(graph_canon)
 
@@ -543,6 +579,11 @@ def test_aggregate_si_python_parallel(monkeypatch, graph_canon):
     assert hist["Si_mean"][0] == pytest.approx(0.5)
     assert hist["Si_hi_frac"][0] == pytest.approx(1 / 3)
     assert hist["Si_lo_frac"][0] == pytest.approx(1 / 3)
+
+    expected_total = G.number_of_nodes()
+    assert resolve_calls == [
+        (math.ceil(expected_total / 2), expected_total, {"minimum": 1})
+    ]
 
 
 def test_compute_advanced_metrics_populates_history(graph_canon):
@@ -879,7 +920,22 @@ def test_advanced_metrics_process_pool_fallback(monkeypatch, graph_canon):
             self._entries.append((fn, args, result))
             return DummyFuture(result)
 
-    monkeypatch.setattr("tnfr.metrics.glyph_timing.ProcessPoolExecutor", DummyExecutor)
+    resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
+    original_resolve = glyph_timing_module.resolve_chunk_size
+
+    def tracking_resolve(
+        chunk_size: int | None, total_items: int, **kwargs: object
+    ) -> int:
+        resolve_calls.append((chunk_size, total_items, dict(kwargs)))
+        return original_resolve(chunk_size, total_items, **kwargs)
+
+    monkeypatch.setattr(
+        glyph_timing_module, "resolve_chunk_size", tracking_resolve
+    )
+
+    monkeypatch.setattr(
+        "tnfr.metrics.glyph_timing.ProcessPoolExecutor", DummyExecutor
+    )
 
     G = graph_canon()
     inject_defaults(G)
@@ -916,3 +972,11 @@ def test_advanced_metrics_process_pool_fallback(monkeypatch, graph_canon):
     epi_support = hist["EPI_support"][0]
     assert epi_support["size"] == 4
     assert epi_support["epi_norm"] == pytest.approx((0.06 + 0.10 + 0.20 + 0.07) / 4)
+
+    assert resolve_calls, "glyph timing must resolve chunk sizes"
+    glyph_call, epi_call = resolve_calls
+    assert glyph_call[0] == math.ceil(len(samples) / cfg["n_jobs"])
+    assert glyph_call[1] == len(samples)
+    assert glyph_call[2].get("minimum") == 1
+    assert epi_call[0] == math.ceil(len(samples) / cfg["n_jobs"])
+    assert epi_call[1] == len(samples)

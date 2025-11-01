@@ -22,6 +22,7 @@ from ..constants import get_param
 from ..constants.aliases import ALIAS_EPI
 from ..glyph_history import append_metric
 from ..glyph_runtime import last_glyph
+from ..utils import resolve_chunk_size
 from ..types import (
     GlyphCounts,
     GlyphMetricsHistory,
@@ -218,7 +219,12 @@ def _update_tg(
             }
         )
     elif n_jobs is not None and n_jobs > 1 and len(glyph_sequence) > 1:
-        chunk_size = max(1, math.ceil(len(glyph_sequence) / n_jobs))
+        approx_chunk = math.ceil(len(glyph_sequence) / n_jobs) if n_jobs else None
+        chunk_size = resolve_chunk_size(
+            approx_chunk,
+            len(glyph_sequence),
+            minimum=1,
+        )
         futures = []
         with ProcessPoolExecutor(max_workers=n_jobs) as executor:
             for start in range(0, len(glyph_sequence), chunk_size):
@@ -298,7 +304,12 @@ def _update_epi_support(
             abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0)))
             for _, nd in G.nodes(data=True)
         ]
-        chunk_size = max(1, math.ceil(len(values) / n_jobs))
+        approx_chunk = math.ceil(len(values) / n_jobs) if n_jobs else None
+        chunk_size = resolve_chunk_size(
+            approx_chunk,
+            len(values),
+            minimum=1,
+        )
         totals: list[tuple[float, int]] = []
         with ProcessPoolExecutor(max_workers=n_jobs) as executor:
             futures = []
