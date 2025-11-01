@@ -49,6 +49,7 @@ from ..utils import (
     get_logger,
     get_numpy,
     normalize_weights,
+    resolve_chunk_size,
 )
 from .common import compute_coherence, min_max_range
 from .trig_cache import compute_theta_trig, get_trig_cache
@@ -477,7 +478,12 @@ def _wij_loops(
             wij[i][j] = wij[j][i] = wij_ij
         return wij
 
-    chunk_size = max(1, math.ceil(total_pairs / max_workers))
+    approx_chunk = math.ceil(total_pairs / max_workers) if max_workers else None
+    chunk_size = resolve_chunk_size(
+        approx_chunk,
+        total_pairs,
+        minimum=1,
+    )
     payload: ParallelWijPayload = {
         "epi_vals": tuple(epi_vals),
         "vf_vals": tuple(vf_vals),
@@ -637,7 +643,12 @@ def _coherence_python(
                     row_sum[i] += w
         return n, values, row_sum, W if mode == "dense" else W_sparse
 
-    chunk_size = max(1, math.ceil(n / max_workers))
+    approx_chunk = math.ceil(n / max_workers) if max_workers else None
+    chunk_size = resolve_chunk_size(
+        approx_chunk,
+        n,
+        minimum=1,
+    )
     tasks = []
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         for start in range(0, n, chunk_size):
@@ -1253,7 +1264,12 @@ def _track_stability(
     vf_curr_list = list(vf_curr_vals)
 
     if n_jobs and n_jobs > 1:
-        chunk_size = max(1, math.ceil(total_nodes / n_jobs))
+        approx_chunk = math.ceil(total_nodes / n_jobs) if n_jobs else None
+        chunk_size = resolve_chunk_size(
+            approx_chunk,
+            total_nodes,
+            minimum=1,
+        )
         chunk_results: list[
             tuple[
                 int,
@@ -1449,7 +1465,12 @@ def _aggregate_si(
             return
 
         if n_jobs is not None and n_jobs > 1:
-            chunk_size = max(1, math.ceil(len(sis) / n_jobs))
+            approx_chunk = math.ceil(len(sis) / n_jobs) if n_jobs else None
+            chunk_size = resolve_chunk_size(
+                approx_chunk,
+                len(sis),
+                minimum=1,
+            )
             futures = []
             with ProcessPoolExecutor(max_workers=n_jobs) as executor:
                 for idx in range(0, len(sis), chunk_size):

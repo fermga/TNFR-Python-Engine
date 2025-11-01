@@ -6,6 +6,7 @@ import json
 import os
 from collections.abc import Iterable, MutableMapping
 from copy import deepcopy
+from dataclasses import dataclass
 from importlib import resources
 from json import JSONDecodeError
 from types import MappingProxyType

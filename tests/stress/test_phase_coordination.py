@@ -95,6 +95,19 @@ def test_coordinate_phase_parallel_matches_sequential(monkeypatch: pytest.Monkey
     sequential_snapshot = _snapshot_theta(sequential_graph)
 
     start = time.perf_counter()
+    recorded_resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
+    original_resolve = coordination_module.resolve_chunk_size
+
+    def tracking_resolve(
+        chunk_size: int | None, total_items: int, **kwargs: object
+    ) -> int:
+        recorded_resolve_calls.append((chunk_size, total_items, dict(kwargs)))
+        return original_resolve(chunk_size, total_items, **kwargs)
+
+    monkeypatch.setattr(
+        coordination_module, "resolve_chunk_size", tracking_resolve
+    )
+
     coordinate_global_local_phase(parallel_graph, n_jobs=workers)
     elapsed = time.perf_counter() - start
 
@@ -109,13 +122,23 @@ def test_coordinate_phase_parallel_matches_sequential(monkeypatch: pytest.Monkey
     total_nodes = parallel_graph.number_of_nodes()
     assert total_nodes == node_count >= 200
 
-    expected_chunk_size = max(1, math.ceil(total_nodes / workers))
+    expected_chunk_size = original_resolve(
+        math.ceil(total_nodes / workers),
+        total_nodes,
+        minimum=1,
+    )
     expected_chunks = math.ceil(total_nodes / expected_chunk_size)
 
     assert chunk_sizes, "parallel execution must create worker chunks"
     assert len(chunk_sizes) == expected_chunks
     assert chunk_sizes[0] == expected_chunk_size
     assert all(1 <= size <= expected_chunk_size for size in chunk_sizes)
+
+    assert recorded_resolve_calls, "chunk sizing must use resolve_chunk_size"
+    recorded_chunk, recorded_total, recorded_kwargs = recorded_resolve_calls[0]
+    assert recorded_chunk == math.ceil(total_nodes / workers)
+    assert recorded_total == total_nodes
+    assert recorded_kwargs.get("minimum") == 1
 
     assert set(parallel_snapshot) == set(sequential_snapshot)
     for node, theta in sequential_snapshot.items():

@@ -288,6 +288,8 @@ def count_glyphs(
     """
 
     if window is not None:
+        from tnfr.validation.window import validate_window
+
         window = validate_window(window)
         if window == 0:
             return Counter()

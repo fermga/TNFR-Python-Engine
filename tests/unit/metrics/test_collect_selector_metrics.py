@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import math
+
 import pytest
 
 import tnfr.dynamics as dynamics
+import tnfr.dynamics.selectors as selectors_module
 from tnfr.alias import set_attr
 
 
@@ -90,6 +93,19 @@ def test_collect_selector_metrics_process_pool(monkeypatch, graph_canon):
             captured["chunk_lengths"] = [len(chunk[0]) for chunk in items]
             return (func(chunk) for chunk in items)
 
+    resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
+    original_resolve = selectors_module.resolve_chunk_size
+
+    def tracking_resolve(
+        chunk_size: int | None, total_items: int, **kwargs: object
+    ) -> int:
+        resolve_calls.append((chunk_size, total_items, dict(kwargs)))
+        return original_resolve(chunk_size, total_items, **kwargs)
+
+    monkeypatch.setattr(
+        selectors_module, "resolve_chunk_size", tracking_resolve
+    )
+
     monkeypatch.setattr(dynamics, "ProcessPoolExecutor", StubExecutor)
 
     metrics = dynamics._collect_selector_metrics(G, nodes, norms, n_jobs=3)
@@ -106,3 +122,7 @@ def test_collect_selector_metrics_process_pool(monkeypatch, graph_canon):
     }
     for node, triple in expected.items():
         assert metrics[node] == pytest.approx(triple)
+
+    assert resolve_calls == [
+        (math.ceil(len(nodes) / 3), len(nodes), {"minimum": 1})
+    ]

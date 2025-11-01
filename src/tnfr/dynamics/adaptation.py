@@ -8,7 +8,7 @@ from typing import Any, cast
 
 from ..alias import collect_attr, set_vf
 from ..constants import get_graph_param
-from ..utils import clamp
+from ..utils import clamp, resolve_chunk_size
 from ..metrics.common import ensure_neighbors_map
 from ..types import CoherenceMetric, DeltaNFR, NodeId, TNFRGraph
 from ..utils import get_numpy
@@ -243,7 +243,12 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
         )
         work_items.append((node, idx, neigh_indices))
 
-    chunk_size = max(1, math.ceil(len(work_items) / jobs))
+    approx_chunk = math.ceil(len(work_items) / jobs) if jobs else None
+    chunk_size = resolve_chunk_size(
+        approx_chunk,
+        len(work_items),
+        minimum=1,
+    )
     chunks = [
         work_items[i : i + chunk_size] for i in range(0, len(work_items), chunk_size)
     ]

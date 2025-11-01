@@ -24,7 +24,7 @@ from ..constants.aliases import (
 )
 from ..gamma import _get_gamma_spec, eval_gamma
 from ..types import NodeId, TNFRGraph
-from ..utils import get_numpy
+from ..utils import get_numpy, resolve_chunk_size
 
 __all__ = (
     "AbstractIntegrator",
@@ -125,7 +125,12 @@ def _evaluate_gamma_map(
     if workers is None:
         return {n: float(eval_gamma(G, n, t)) for n in nodes}
 
-    chunk_size = max(1, math.ceil(len(nodes) / (workers * 4)))
+    approx_chunk = math.ceil(len(nodes) / (workers * 4)) if workers > 0 else None
+    chunk_size = resolve_chunk_size(
+        approx_chunk,
+        len(nodes),
+        minimum=1,
+    )
     mp_ctx = get_context("spawn")
     tasks = ((chunk, t) for chunk in _chunk_nodes(nodes, chunk_size))
 
@@ -267,7 +272,12 @@ def _apply_increments(
     if workers is None:
         return dict(_apply_increment_chunk(payload, dt_step, method))
 
-    chunk_size = max(1, math.ceil(len(nodes) / (workers * 4)))
+    approx_chunk = math.ceil(len(nodes) / (workers * 4)) if workers > 0 else None
+    chunk_size = resolve_chunk_size(
+        approx_chunk,
+        len(nodes),
+        minimum=1,
+    )
     mp_ctx = get_context("spawn")
 
     results: NodalUpdate = {}

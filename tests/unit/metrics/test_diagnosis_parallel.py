@@ -8,6 +8,7 @@ import pytest
 from tnfr.alias import set_attr
 from tnfr.constants import get_aliases, get_param
 from tnfr.glyph_history import ensure_history
+import tnfr.metrics.diagnosis as diagnosis_module
 from tnfr.metrics.diagnosis import _diagnosis_step
 
 ALIAS_EPI = get_aliases("EPI")
@@ -100,10 +101,31 @@ def test_diagnosis_python_parallel_without_numpy(graph_canon, monkeypatch):
     parallel_graph = _build_ring_graph(graph_canon)
 
     with numpy_disabled(monkeypatch):
+        resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
+        original_resolve = diagnosis_module.resolve_chunk_size
+
+        def tracking_resolve(
+            chunk_size: int | None, total_items: int, **kwargs: object
+        ) -> int:
+            resolve_calls.append((chunk_size, total_items, dict(kwargs)))
+            return original_resolve(chunk_size, total_items, **kwargs)
+
+        monkeypatch.setattr(
+            diagnosis_module, "resolve_chunk_size", tracking_resolve
+        )
+
         baseline = _capture_diagnostics(serial_graph, jobs=1)
         parallel = _capture_diagnostics(parallel_graph, jobs=3)
 
     assert parallel == baseline
+
+    assert resolve_calls, "diagnosis parallelism must resolve chunk sizes"
+    expected_total = parallel_graph.number_of_nodes()
+    expected_chunk = math.ceil(expected_total / 3)
+    for chunk_size, total_items, kwargs in resolve_calls:
+        assert chunk_size == expected_chunk
+        assert total_items == expected_total
+        assert kwargs.get("minimum") == 1
 
 
 def test_diagnosis_skips_symmetry_when_disabled(graph_canon, monkeypatch):

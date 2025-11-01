@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import copy
+import math
+from typing import Any
 
 import networkx as nx
 import pytest
@@ -194,9 +196,24 @@ def test_adapt_vf_clamps_to_bounds(graph_canon, monkeypatch, mode):
         monkeypatch.setattr("tnfr.dynamics.get_numpy", lambda: None)
         monkeypatch.setattr("tnfr.dynamics.adaptation.get_numpy", lambda: None)
 
+        resolve_calls: list[tuple[int | None, int, dict[str, object]]] = []
+        original_resolve = adaptation_module.resolve_chunk_size
+
+        def tracking_resolve(
+            chunk_size: int | None, total_items: int, **kwargs: object
+        ) -> int:
+            resolve_calls.append((chunk_size, total_items, dict(kwargs)))
+            return original_resolve(chunk_size, total_items, **kwargs)
+
+        monkeypatch.setattr(
+            adaptation_module, "resolve_chunk_size", tracking_resolve
+        )
+
+        submitted_chunks: list[tuple[Any, int, tuple[int, ...]]] = []
+
         class _DummyExecutor:
             def __init__(self, *args, **kwargs):
-                pass
+                submitted_chunks.clear()
 
             def __enter__(self):
                 return self
@@ -206,6 +223,7 @@ def test_adapt_vf_clamps_to_bounds(graph_canon, monkeypatch, mode):
 
             def map(self, func, iterable):
                 for item in iterable:
+                    submitted_chunks.append(item)
                     yield _vf_adapt_chunk(item)
 
         monkeypatch.setattr(
@@ -215,6 +233,13 @@ def test_adapt_vf_clamps_to_bounds(graph_canon, monkeypatch, mode):
 
     assert G.nodes["clamp_high"]["νf"] == pytest.approx(vf_max)
     assert G.nodes["clamp_low"]["νf"] == pytest.approx(vf_min)
+
+    if mode == "python":
+        assert submitted_chunks, "parallel adaptation must submit work"
+        total_items = sum(len(chunk[0]) for chunk in submitted_chunks)
+        assert resolve_calls == [
+            (math.ceil(total_items / 2), total_items, {"minimum": 1})
+        ]
 
 
 def test_adapt_vf_python_resets_unstable_counts_with_missing_neighbors(
