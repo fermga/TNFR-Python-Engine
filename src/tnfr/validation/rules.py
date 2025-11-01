@@ -19,6 +19,7 @@ from ..config.operator_names import (
     MUTATION,
     SELF_ORGANIZATION,
     SILENCE,
+    canonical_operator_name,
     operator_display_name,
 )
 from ..utils import clamp01
@@ -47,6 +48,13 @@ def coerce_glyph(val: Any) -> Glyph | Any:
     try:
         return Glyph(val)
     except (ValueError, TypeError):
+        if isinstance(val, str) and val.startswith("Glyph."):
+            _, _, candidate = val.partition(".")
+            if candidate:
+                try:
+                    return Glyph(candidate)
+                except ValueError:
+                    pass
         return val
 
 
@@ -101,6 +109,28 @@ def normalized_dnfr(ctx: "GrammarContext", nd) -> float:
 
 
 # -------------------------
+# Translation helpers
+# -------------------------
+
+
+def _structural_label(value: object) -> str:
+    """Return the canonical structural name for ``value`` when possible."""
+
+    glyph_to_name = _functional_translators()[0]
+    coerced = coerce_glyph(value)
+    if isinstance(coerced, Glyph):
+        name = glyph_to_name(coerced)
+        if name is not None:
+            return name
+    name = glyph_to_name(value if isinstance(value, Glyph) else value)
+    if name is not None:
+        return name
+    if value is None:
+        return "unknown"
+    return canonical_operator_name(str(value))
+
+
+# -------------------------
 # Validation rules
 # -------------------------
 
@@ -120,19 +150,13 @@ def _check_oz_to_zhir(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | st
         if dissonance_glyph is None:
             return cand
         norm_dn = normalized_dnfr(ctx, nd)
-        if not recent_glyph(nd, dissonance_glyph.value, win) and norm_dn < dn_min:
-            history: list[str] = []
-            for item in nd.get("glyph_history", ()):
-                if isinstance(item, Glyph):
-                    history.append(item.value)
-                else:
-                    try:
-                        history.append(Glyph(str(item)).value)
-                    except (TypeError, ValueError):
-                        history.append(str(item))
-            cand_label = cand_name or (
-                cand_glyph.value if isinstance(cand_glyph, Glyph) else str(cand)
-            )
+        recent_glyph(nd, dissonance_glyph.value, win)
+        history = tuple(_structural_label(item) for item in nd.get("glyph_history", ()))
+        has_recent_dissonance = any(
+            entry == DISSONANCE for entry in history[-win:]
+        )
+        if not has_recent_dissonance and norm_dn < dn_min:
+            cand_label = cand_name if cand_name is not None else _structural_label(cand)
             order = (*history[-win:], cand_label)
             from ..operators import grammar as _grammar
 
@@ -166,20 +190,13 @@ def _check_thol_closure(
         if requires_close:
             closers = {CONTRACTION, SILENCE}
             glyph_to_name = _functional_translators()[0]
-            cand_name = glyph_to_name(coerce_glyph(cand) if isinstance(cand, Glyph) else cand)
+            cand_glyph = coerce_glyph(cand)
+            cand_name = glyph_to_name(cand_glyph if isinstance(cand_glyph, Glyph) else cand)
             if cand_name not in closers:
-                history: list[str] = []
-                for item in nd.get("glyph_history", ()):
-                    if isinstance(item, Glyph):
-                        history.append(item.value)
-                    else:
-                        try:
-                            history.append(Glyph(str(item)).value)
-                        except (TypeError, ValueError):
-                            history.append(str(item))
-                cand_label = cand_name or (
-                    coerce_glyph(cand).value if isinstance(coerce_glyph(cand), Glyph) else str(cand)
+                history = tuple(
+                    _structural_label(item) for item in nd.get("glyph_history", ())
                 )
+                cand_label = cand_name if cand_name is not None else _structural_label(cand)
                 order = (*history[-st["thol_len"]:], cand_label)
                 from ..operators import grammar as _grammar
 
