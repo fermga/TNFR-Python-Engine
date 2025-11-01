@@ -156,6 +156,45 @@ def test_enforce_canonical_grammar_respects_thol_state() -> None:
         enforce_canonical_grammar(G, 0, Glyph.EN, ctx)
     err = excinfo.value
     assert err.order[-1] == RECEPTION
+    expected_si_high = float(ctx.cfg_canon.get("si_high", 0.66))
+    assert err.context["si"] == pytest.approx(nd["Si"])
+    assert err.context["si_high"] == pytest.approx(expected_si_high)
+
+
+def test_enforce_canonical_grammar_prefers_silence_when_si_high() -> None:
+    G = _make_graph()
+    ctx = GrammarContext.from_graph(G)
+    on_applied_glyph(G, 0, SELF_ORGANIZATION)
+    nd = G.nodes[0]
+    nd["ΔNFR"] = 0.0
+    nd["Si"] = 0.92
+    ctx.cfg_canon.update(
+        {"thol_min_len": 0, "thol_max_len": 1, "thol_close_dnfr": 1.0, "si_high": 0.7}
+    )
+    st = nd["_GRAM"]
+    st["thol_len"] = 2
+
+    result = enforce_canonical_grammar(G, 0, Glyph.NUL, ctx)
+
+    assert result == Glyph.SHA
+
+
+def test_enforce_canonical_grammar_prefers_contraction_when_si_low() -> None:
+    G = _make_graph()
+    ctx = GrammarContext.from_graph(G)
+    on_applied_glyph(G, 0, SELF_ORGANIZATION)
+    nd = G.nodes[0]
+    nd["ΔNFR"] = 0.0
+    nd["Si"] = 0.18
+    ctx.cfg_canon.update(
+        {"thol_min_len": 0, "thol_max_len": 1, "thol_close_dnfr": 1.0, "si_high": 0.4}
+    )
+    st = nd["_GRAM"]
+    st["thol_len"] = 2
+
+    result = enforce_canonical_grammar(G, 0, Glyph.SHA, ctx)
+
+    assert result == Glyph.NUL
 
 
 def test_enforce_canonical_grammar_accepts_canonical_strings() -> None:

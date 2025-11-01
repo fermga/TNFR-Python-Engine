@@ -79,7 +79,7 @@
           "$ref": "#/definitions/probability"
         },
         "si_high": {
-          "description": "Sense index threshold differentiating contraction vs silence closures.",
+          "description": "Sense index threshold: Si at or above this resolves THOL closures with silence; lower Si forces contraction.",
           "$ref": "#/definitions/probability"
         }
       },
