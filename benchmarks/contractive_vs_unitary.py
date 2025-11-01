@@ -1,10 +1,11 @@
 """Compare unitary vs. contractive ΔNFR evolution on small Hilbert spaces."""
 from __future__ import annotations
 
+import argparse
 import math
 import statistics
 import time
-from typing import Sequence
+from typing import Any, Sequence
 
 import numpy as np
 
@@ -14,10 +15,13 @@ from tnfr.mathematics import (
     MathematicalDynamicsEngine,
     build_delta_nfr,
     build_lindblad_delta_nfr,
+    ensure_array,
+    ensure_numpy,
+    get_backend,
 )
 
 
-def _random_state(dim: int, seed: int) -> np.ndarray:
+def _random_state(dim: int, seed: int, backend) -> Any:
     rng = np.random.default_rng(seed)
     real = rng.standard_normal(dim)
     imag = rng.standard_normal(dim)
@@ -25,7 +29,7 @@ def _random_state(dim: int, seed: int) -> np.ndarray:
     norm = np.linalg.norm(vector)
     if math.isclose(norm, 0.0):
         raise ValueError("Random state generation failed: null vector.")
-    return vector / norm
+    return ensure_array(vector / norm, backend=backend)
 
 
 def _lowering_operator(dim: int, amplitude: float) -> Sequence[np.ndarray]:
@@ -39,7 +43,7 @@ def _lowering_operator(dim: int, amplitude: float) -> Sequence[np.ndarray]:
 
 def _unitary_benchmark(
     engine: MathematicalDynamicsEngine,
-    state: np.ndarray,
+    state: Any,
     *,
     steps: int,
     dt: float,
@@ -49,13 +53,14 @@ def _unitary_benchmark(
     for _ in range(steps):
         current = engine.step(current, dt=dt)
     duration = time.perf_counter() - start
-    norm = engine.hilbert_space.norm(current)
+    norm_backend = engine.backend.norm(current)
+    norm = float(np.asarray(ensure_numpy(norm_backend, backend=engine.backend)))
     return duration, norm
 
 
 def _contractive_benchmark(
     engine: ContractiveDynamicsEngine,
-    density: np.ndarray,
+    density: Any,
     *,
     steps: int,
     dt: float,
@@ -82,16 +87,29 @@ def run(
     *,
     dt: float = 0.04,
     gamma: float = 0.35,
+    backend_name: str = "numpy",
+    use_scipy: bool | None = None,
 ) -> None:
     """Benchmark unitary vs. contractive ΔNFR evolutions."""
 
+    backend = get_backend(backend_name)
     hilbert = HilbertSpace(dim)
     hermitian_generator = build_delta_nfr(dim, nu_f=1.0)
-    unitary_engine = MathematicalDynamicsEngine(hermitian_generator, hilbert)
+    unitary_engine = MathematicalDynamicsEngine(
+        hermitian_generator,
+        hilbert,
+        backend=backend,
+        use_scipy=use_scipy,
+    )
 
     collapse_ops = _lowering_operator(dim, math.sqrt(gamma))
     lindblad = build_lindblad_delta_nfr(collapse_operators=collapse_ops, dim=dim)
-    contractive_engine = ContractiveDynamicsEngine(lindblad, hilbert)
+    contractive_engine = ContractiveDynamicsEngine(
+        lindblad,
+        hilbert,
+        backend=backend,
+        use_scipy=use_scipy,
+    )
 
     unitary_durations: list[float] = []
     contractive_durations: list[float] = []
@@ -99,8 +117,9 @@ def run(
     contractive_gaps: list[float] = []
 
     for rep in range(repeats):
-        state = _random_state(dim, seed=rep + 1)
-        density = np.outer(state, state.conj())
+        state = _random_state(dim, seed=rep + 1, backend=backend)
+        state_np = ensure_numpy(state, backend=backend)
+        density = ensure_array(np.outer(state_np, state_np.conj()), backend=backend)
 
         duration, norm = _unitary_benchmark(unitary_engine, state, steps=steps, dt=dt)
         unitary_durations.append(duration)
@@ -130,7 +149,7 @@ def run(
 
     print(
         "ΔNFR evolution benchmark:",
-        f"dim={dim} steps={steps} repeats={repeats} dt={dt} gamma={gamma}",
+        f"dim={dim} steps={steps} repeats={repeats} dt={dt} gamma={gamma} backend={backend_name}",
     )
     print(
         "unitary  :",
@@ -149,4 +168,25 @@ def run(
 
 
 if __name__ == "__main__":  # pragma: no cover - manual benchmark entry point
-    run()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dim", type=int, default=2)
+    parser.add_argument("--steps", type=int, default=256)
+    parser.add_argument("--repeats", type=int, default=12)
+    parser.add_argument("--dt", type=float, default=0.04)
+    parser.add_argument("--gamma", type=float, default=0.35)
+    parser.add_argument("--backend", type=str, default="numpy")
+    parser.add_argument(
+        "--use-scipy",
+        action="store_true",
+        help="Force SciPy propagators even when the backend supports autodiff.",
+    )
+    args = parser.parse_args()
+    run(
+        dim=args.dim,
+        steps=args.steps,
+        repeats=args.repeats,
+        dt=args.dt,
+        gamma=args.gamma,
+        backend_name=args.backend,
+        use_scipy=True if args.use_scipy else None,
+    )

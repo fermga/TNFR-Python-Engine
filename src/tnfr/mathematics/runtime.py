@@ -1,12 +1,13 @@
 """Runtime helpers capturing TNFR spectral performance metrics."""
 from __future__ import annotations
 
-from typing import Sequence
+from typing import Any, Sequence
 
 import numpy as np
 
 from ..config import get_flags
 from ..utils import get_logger
+from .backend import ensure_array, ensure_numpy, get_backend
 from .operators import CoherenceOperator, FrequencyOperator
 from .spaces import HilbertSpace
 
@@ -23,14 +24,28 @@ __all__ = [
 LOGGER = get_logger(__name__)
 
 
-def _as_vector(state: Sequence[complex] | np.ndarray, *, dimension: int) -> np.ndarray:
-    vector = np.asarray(state, dtype=np.complex128)
-    if vector.ndim != 1 or vector.shape[0] != dimension:
+def _as_vector(
+    state: Sequence[complex] | np.ndarray,
+    *,
+    dimension: int,
+    backend=None,
+) -> Any:
+    resolved_backend = backend or get_backend()
+    vector = ensure_array(state, dtype=np.complex128, backend=resolved_backend)
+    if getattr(vector, "ndim", len(getattr(vector, "shape", ()))) != 1 or vector.shape[0] != dimension:
         raise ValueError(
             "State vector dimension mismatch: "
             f"expected ({dimension},), received {vector.shape!r}."
         )
     return vector
+
+
+def _resolve_operator_backend(operator: CoherenceOperator) -> tuple[Any, Any]:
+    backend = getattr(operator, "backend", None) or get_backend()
+    matrix_backend = getattr(operator, "_matrix_backend", None)
+    if matrix_backend is None:
+        matrix_backend = ensure_array(operator.matrix, dtype=np.complex128, backend=backend)
+    return backend, matrix_backend
 
 
 def _maybe_log(metric: str, payload: dict[str, object]) -> None:
@@ -48,8 +63,10 @@ def normalized(
 ) -> tuple[bool, float]:
     """Return normalization status and norm for ``state``."""
 
-    vector = _as_vector(state, dimension=hilbert_space.dimension)
-    norm = hilbert_space.norm(vector)
+    backend = get_backend()
+    vector = _as_vector(state, dimension=hilbert_space.dimension, backend=backend)
+    norm_backend = backend.norm(vector)
+    norm = float(np.asarray(ensure_numpy(norm_backend, backend=backend)))
     passed = bool(np.isclose(norm, 1.0, atol=atol))
     _maybe_log("normalized", {"label": label, "norm": norm, "passed": passed})
     return passed, float(norm)
@@ -138,16 +155,18 @@ def stable_unitary(
 ) -> tuple[bool, float]:
     """Return whether a one-step unitary preserves the Hilbert norm."""
 
-    vector = _as_vector(state, dimension=hilbert_space.dimension)
+    backend, matrix_backend = _resolve_operator_backend(operator)
+    vector = _as_vector(state, dimension=hilbert_space.dimension, backend=backend)
     if normalise:
-        norm = hilbert_space.norm(vector)
+        norm_backend = backend.norm(vector)
+        norm = float(np.asarray(ensure_numpy(norm_backend, backend=backend)))
         if np.isclose(norm, 0.0, atol=atol):
             raise ValueError("Cannot normalise a null state vector.")
         vector = vector / norm
-    eigenvalues, eigenvectors = np.linalg.eigh(operator.matrix)
-    phases = np.exp(-1j * eigenvalues)
-    unitary = (eigenvectors * phases) @ eigenvectors.conj().T
-    evolved = unitary @ vector
+    generator = -1j * matrix_backend
+    unitary = backend.matrix_exp(generator)
+    evolved_backend = backend.matmul(unitary, vector[..., None]).reshape((hilbert_space.dimension,))
+    evolved = np.asarray(ensure_numpy(evolved_backend, backend=backend))
     norm_after = hilbert_space.norm(evolved)
     passed = bool(np.isclose(norm_after, 1.0, atol=atol))
     _maybe_log("stable_unitary", {"label": label, "norm_after": norm_after, "passed": passed})
