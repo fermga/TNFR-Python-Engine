@@ -2,21 +2,14 @@
 
 from __future__ import annotations
 
-from collections.abc import Collection, Iterable, Mapping, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from itertools import chain
-from typing import Any, Callable
+from typing import Any, Callable, cast
 
 from .config.constants import GLYPHS_CANONICAL_SET
 from .tokens import TARGET, THOL, THOL_SENTINEL, WAIT, OpTag, Token
 from .types import Glyph
-from .utils import (
-    MAX_MATERIALIZE_DEFAULT,
-    STRING_TYPES,
-    ensure_collection,
-    flatten_structure,
-    normalize_materialize_limit,
-)
+from .utils import MAX_MATERIALIZE_DEFAULT, ensure_collection, flatten_structure
 
 __all__ = [
     "THOLEvaluator",
@@ -41,38 +34,12 @@ def _iter_source(
 ) -> Iterable[Any]:
     """Yield items from ``seq`` enforcing ``max_materialize`` when needed."""
 
-    if isinstance(seq, Collection) and not isinstance(seq, STRING_TYPES):
-        return seq
-
-    if isinstance(seq, STRING_TYPES):
-        return (seq,)
-
-    if not isinstance(seq, Iterable):
-        raise TypeError(f"{seq!r} is not iterable")
-
-    limit = normalize_materialize_limit(max_materialize)
-    if limit is None:
-        return seq
-    if limit == 0:
-        return ()
-
-    iterator = iter(seq)
-
-    def _preview() -> Iterable[Any]:
-        for idx, item in enumerate(iterator):
-            yield item
-            if idx >= limit:
-                break
-
-    preview = ensure_collection(
-        _preview(),
-        max_materialize=limit,
+    _, view = ensure_collection(
+        cast(Iterable[Token], seq),
+        max_materialize=max_materialize,
+        return_view=True,
     )
-
-    if not preview:
-        return ()
-
-    return chain(preview, iterator)
+    return view
 
 
 def _push_thol_frame(

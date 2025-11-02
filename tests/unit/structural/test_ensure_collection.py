@@ -99,3 +99,45 @@ def test_map_iterable_materialized():
     assert ensure_collection(data, max_materialize=3) == (0, 2, 4)
     # Iterator should be exhausted
     assert list(data) == []
+
+
+def test_return_view_for_sequence_reuses_collection():
+    seq = [1, 2, 3]
+    preview, view = ensure_collection(seq, return_view=True)
+    assert preview is seq
+    assert view is seq
+
+
+def test_return_view_for_string_wraps_value():
+    preview, view = ensure_collection("node", return_view=True)
+    assert preview == ("node",)
+    assert tuple(view) == ("node",)
+
+
+def test_return_view_for_generator_resumes_stream_when_unbounded():
+    def numbers():
+        yield from range(3)
+
+    gen = numbers()
+    preview, view = ensure_collection(gen, max_materialize=None, return_view=True)
+    assert preview == ()
+    assert view is gen
+    assert list(view) == [0, 1, 2]
+
+
+def test_return_view_respects_zero_limit():
+    def numbers():
+        yield from range(3)
+
+    gen = numbers()
+    preview, view = ensure_collection(gen, max_materialize=0, return_view=True)
+    assert preview == ()
+    assert tuple(view) == ()
+    assert list(gen) == [0, 1, 2]
+
+
+def test_return_view_materializes_preview_under_limit():
+    gen = (i for i in range(3))
+    preview, view = ensure_collection(gen, max_materialize=5, return_view=True)
+    assert preview == (0, 1, 2)
+    assert list(view) == [0, 1, 2]
