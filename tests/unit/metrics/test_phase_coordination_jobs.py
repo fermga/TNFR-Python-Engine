@@ -10,6 +10,7 @@ import tnfr.dynamics.coordination as coordination
 import tnfr.dynamics.integrators as integrators
 import tnfr.dynamics.runtime as runtime
 import tnfr.dynamics.selectors as selectors
+import tnfr.validation as validation
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants import get_aliases
 
@@ -58,7 +59,7 @@ def test_update_nodes_forwards_phase_jobs(monkeypatch, graph_canon):
     monkeypatch.setattr(selectors, "_apply_selector", lambda *a, **k: None)
     G.graph["integrator"] = _NoOpIntegrator()
     monkeypatch.setattr(adaptation, "adapt_vf_by_coherence", lambda *a, **k: None)
-    monkeypatch.setattr(dynamics, "apply_canonical_clamps", lambda *a, **k: None)
+    monkeypatch.setattr(validation, "apply_canonical_clamps", lambda *a, **k: None)
     monkeypatch.setattr(runtime, "apply_canonical_clamps", lambda *a, **k: None)
 
     dynamics._update_nodes(

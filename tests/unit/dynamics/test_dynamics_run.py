@@ -14,6 +14,7 @@ import tnfr.dynamics.coordination as coordination
 import tnfr.dynamics.integrators as integrators
 import tnfr.dynamics.runtime as runtime
 import tnfr.dynamics.selectors as selectors
+import tnfr.validation as validation
 from tnfr.alias import get_attr
 from tnfr.constants import DEFAULTS
 from tnfr.glyph_history import ensure_history
@@ -297,7 +298,7 @@ def test_step_respects_n_jobs_overrides(monkeypatch, graph_canon):
     monkeypatch.setattr(adaptation, "adapt_vf_by_coherence", fake_adapt_vf_by_coherence)
     monkeypatch.setattr(selectors, "_apply_glyphs", lambda G, selector, hist: None)
     monkeypatch.setattr(
-        dynamics, "apply_canonical_clamps", lambda *args, **kwargs: None
+        validation, "apply_canonical_clamps", lambda *args, **kwargs: None
     )
     monkeypatch.setattr(runtime, "apply_canonical_clamps", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *args, **kwargs: None)
@@ -371,7 +372,7 @@ def test_step_defaults_to_graph_jobs(monkeypatch, graph_canon):
     monkeypatch.setattr(adaptation, "adapt_vf_by_coherence", fake_adapt_vf_by_coherence)
     monkeypatch.setattr(selectors, "_apply_glyphs", lambda G, selector, hist: None)
     monkeypatch.setattr(
-        dynamics, "apply_canonical_clamps", lambda *args, **kwargs: None
+        validation, "apply_canonical_clamps", lambda *args, **kwargs: None
     )
     monkeypatch.setattr(runtime, "apply_canonical_clamps", lambda *args, **kwargs: None)
     monkeypatch.setattr(dynamics, "_update_node_sample", lambda *args, **kwargs: None)
