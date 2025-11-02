@@ -2,6 +2,8 @@
 
 This document provides guidance on the optimized test suite structure and how to maintain it going forward.
 
+> **Latest Update**: Phase 2 optimization completed. See `OPTIMIZATION_PHASE2_SUMMARY.md` for details on the 41 new tests and shared utilities added.
+
 ## Overview
 
 The test suite has been optimized to follow DRY (Don't Repeat Yourself) principles while increasing coverage for critical paths. This was accomplished through:
@@ -16,14 +18,17 @@ The test suite has been optimized to follow DRY (Don't Repeat Yourself) principl
 ### Running the Optimized Tests
 
 ```bash
-# Run all new unified and critical path tests (213 tests, ~0.4s)
-pytest tests/integration/test_unified_*.py tests/integration/test_*_critical_paths.py -v
+# Run all optimized tests (254 tests, ~0.6s)
+pytest tests/integration/test_unified_*.py tests/integration/test_*_critical_paths.py tests/integration/test_consolidated_critical_paths.py -v
+
+# Run Phase 2 consolidated tests (41 tests, ~0.2s)
+pytest tests/integration/test_consolidated_critical_paths.py -v
 
 # Run specific test suite
 pytest tests/integration/test_unified_structural_validation.py -v
 pytest tests/integration/test_unified_operator_validation.py -v
 pytest tests/integration/test_operator_generation_critical_paths.py -v
-pytest tests/integration/test_enhanced_critical_paths.py -v  # New enhanced coverage (40 tests)
+pytest tests/integration/test_enhanced_critical_paths.py -v
 ```
 
 ### Using Shared Test Utilities
@@ -49,6 +54,21 @@ from tests.helpers.base import (
     BaseOperatorTest,
     BaseValidatorTest,
 )
+
+# Import sequence testing utilities (Phase 2)
+from tests.helpers.sequence_testing import (
+    graph_factory,
+    step_noop,
+    assert_trace_has_operations,
+    assert_time_progression,
+)
+
+# Import operator assertions (Phase 2)
+from tests.helpers.operator_assertions import (
+    assert_operator_hermitian,
+    assert_spectral_properties,
+    assert_operators_close,
+)
 ```
 
 ## File Structure
@@ -56,21 +76,25 @@ from tests.helpers.base import (
 ```
 tests/
 ├── helpers/
-│   ├── base.py                          # NEW: Reusable base classes
-│   ├── validation.py                    # ENHANCED: Shared validators
-│   └── fixtures.py                      # EXISTING: Shared fixtures
+│   ├── base.py                          # Reusable base classes
+│   ├── validation.py                    # Shared validators
+│   ├── fixtures.py                      # Shared fixtures
+│   ├── sequence_testing.py              # NEW Phase 2: Sequence utilities
+│   └── operator_assertions.py           # NEW Phase 2: Operator assertions
 ├── integration/
-│   ├── test_unified_structural_validation.py      # NEW: 23 tests
-│   ├── test_unified_operator_validation.py        # NEW: 96 tests
-│   ├── test_operator_generation_critical_paths.py # NEW: 17 tests
-│   ├── test_nodal_validators_critical_paths.py    # NEW: 16 tests
-│   ├── test_run_sequence_critical_paths.py        # NEW: 21 tests
-│   ├── test_enhanced_critical_paths.py            # NEW: 40 tests
+│   ├── test_unified_structural_validation.py      # 23 tests
+│   ├── test_unified_operator_validation.py        # 96 tests
+│   ├── test_operator_generation_critical_paths.py # 17 tests
+│   ├── test_nodal_validators_critical_paths.py    # 16 tests
+│   ├── test_run_sequence_critical_paths.py        # 21 tests
+│   ├── test_enhanced_critical_paths.py            # 40 tests
+│   ├── test_consolidated_critical_paths.py        # NEW Phase 2: 41 tests
 │   ├── test_operator_generation.py                # DEPRECATED (skip marker)
 │   ├── test_operator_generation_extended.py       # DEPRECATED (skip marker)
 │   ├── test_consolidated_structural_validation.py # DEPRECATED (skip marker)
 │   └── test_nodal_validators.py                   # DEPRECATED (skip marker)
-└── TEST_CONSOLIDATION_SUMMARY.md        # NEW: Deprecation guide
+├── TEST_CONSOLIDATION_SUMMARY.md        # Phase 1 guide
+└── OPTIMIZATION_PHASE2_SUMMARY.md       # NEW: Phase 2 guide
 ```
 
 ## Key Improvements
@@ -293,15 +317,16 @@ Verify the fixture is defined in:
 
 ### Coverage Improvements
 
-| Category | Before | After | Improvement |
-|----------|--------|-------|-------------|
-| Operator tests | ~20 separate | 96 parametrized + 14 enhanced | +90 tests, 60% less code |
-| Structural tests | ~13 separate | 23 parametrized | +10 tests, 60% less code |
-| Critical paths | Limited | 94 new tests (54 + 40) | New coverage |
-| Nodal validators | ~20 separate | 16 + 13 enhanced | Enhanced coverage |
-| run_sequence | Limited | 21 + 8 enhanced | Enhanced coverage |
-| **Redundant tests** | 89 duplicates | **0 (marked skip)** | **-89 tests** |
-| **Net result** | 434 tests | **345 active + 213 optimized** | **+213 quality, -89 redundant** |
+| Category | Before | After (Phase 1) | After (Phase 2) | Total Improvement |
+|----------|--------|-----------------|-----------------|-------------------|
+| Operator tests | ~20 separate | 96 parametrized + 14 enhanced | +14 new | +104 tests, 65% less code |
+| Structural tests | ~13 separate | 23 parametrized | - | +10 tests, 60% less code |
+| Critical paths | Limited | 94 new tests | +27 new | 121 new tests |
+| Nodal validators | ~20 separate | 16 + 13 enhanced | +13 new | +22 enhanced |
+| run_sequence | Limited | 21 + 8 enhanced | +11 new | +40 new tests |
+| **Redundant tests** | 89 duplicates | **0 (marked skip)** | - | **-89 tests** |
+| **Helper modules** | 3 | 3 | +2 | **5 total** |
+| **Net result** | 434 tests | 345 active + 213 optimized | +41 new | **378 active + 254 optimized** |
 
 ### Test Execution Speed
 
