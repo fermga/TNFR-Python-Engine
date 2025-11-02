@@ -18,20 +18,20 @@ from tnfr.config.operator_names import (
     operator_display_name,
 )
 from tnfr.constants import DEFAULTS, inject_defaults
-from tnfr.operators.grammar import (
+from tnfr.validation import (
     GrammarContext,
     MutationPreconditionError,
     RepeatWindowError,
     TholClosureError,
     SequenceSyntaxError,
     SequenceValidationResult,
+    ValidationOutcome,
     apply_glyph_with_grammar,
     enforce_canonical_grammar,
     on_applied_glyph,
     parse_sequence,
     validate_sequence,
 )
-from tnfr.validation import ValidationOutcome
 from tnfr.types import Glyph
 
 

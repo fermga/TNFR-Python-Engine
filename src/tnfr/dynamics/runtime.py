@@ -9,6 +9,7 @@ from collections import deque
 from collections.abc import Iterable, Mapping, MutableMapping
 from numbers import Real
 from typing import Any, cast
+import warnings
 
 from ..alias import get_attr
 from ..callback_utils import CallbackEvent, callback_manager
@@ -19,7 +20,8 @@ from ..operators import apply_remesh_if_globally_stable
 from ..telemetry import publish_graph_cache_metrics
 from ..types import HistoryState, NodeId, TNFRGraph
 from ..utils import normalize_optional_int
-from ..validation import apply_canonical_clamps, validate_canon
+from ..validation import apply_canonical_clamps as _apply_canonical_clamps
+from ..validation import validate_canon as _validate_canon
 from . import adaptation, coordination, integrators, selectors
 from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
 
@@ -50,8 +52,6 @@ __all__ = (
     "ALIAS_DNFR",
     "ALIAS_EPI",
     "ALIAS_SI",
-    "apply_canonical_clamps",
-    "validate_canon",
     "_normalize_job_overrides",
     "_resolve_jobs_override",
     "_prepare_dnfr",
@@ -64,6 +64,42 @@ __all__ = (
     "step",
     "run",
 )
+
+
+def apply_canonical_clamps(*args: Any, **kwargs: Any) -> Any:
+    """Redirect to :func:`tnfr.validation.apply_canonical_clamps`.
+
+    This wrapper preserves the legacy import path while emitting a
+    :class:`DeprecationWarning` guiding callers towards
+    :mod:`tnfr.validation`.
+    """
+
+    warnings.warn(
+        "`tnfr.dynamics.runtime.apply_canonical_clamps` is deprecated; "
+        "import `apply_canonical_clamps` from `tnfr.validation` instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return _apply_canonical_clamps(*args, **kwargs)
+
+
+def validate_canon(*args: Any, **kwargs: Any) -> Any:
+    """Redirect to :func:`tnfr.validation.validate_canon`.
+
+    The runtime continues to offer the attribute for compatibility but it
+    now simply delegates to :mod:`tnfr.validation` after warning callers
+    about the new canonical import path.
+    """
+
+    warnings.warn(
+        "`tnfr.dynamics.runtime.validate_canon` is deprecated; import "
+        "`validate_canon` from `tnfr.validation` instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return _validate_canon(*args, **kwargs)
+
+
 def _normalize_job_overrides(
     job_overrides: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
@@ -386,7 +422,7 @@ def _update_nodes(
         n_jobs=n_jobs,
     )
     for n, nd in G.nodes(data=True):
-        apply_canonical_clamps(cast(MutableMapping[str, Any], nd), G, cast(NodeId, n))
+        _apply_canonical_clamps(cast(MutableMapping[str, Any], nd), G, cast(NodeId, n))
     phase_jobs = _resolve_jobs_override(
         overrides,
         "PHASE",
@@ -879,3 +915,5 @@ def run(
                 v >= frac for v in numeric_series[-w:]
             ):
                 break
+    "apply_canonical_clamps",
+    "validate_canon",

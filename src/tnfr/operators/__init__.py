@@ -8,6 +8,7 @@ from collections.abc import Callable, Iterator
 from itertools import islice
 from statistics import StatisticsError, fmean
 from typing import TYPE_CHECKING, Any
+import warnings
 
 from tnfr import glyph_history
 
@@ -20,22 +21,6 @@ from ..rng import make_rng
 from ..types import EPIValue, Glyph, NodeId, TNFRGraph
 from ..utils import get_nodenx
 from . import definitions as _definitions
-from .grammar import (
-    GrammarContext,
-    StructuralGrammarError,
-    RepeatWindowError,
-    MutationPreconditionError,
-    TholClosureError,
-    TransitionCompatibilityError,
-    SequenceSyntaxError,
-    SequenceValidationResult,
-    _gram_state,
-    apply_glyph_with_grammar,
-    enforce_canonical_grammar,
-    on_applied_glyph,
-    parse_sequence,
-    validate_sequence,
-)
 from .jitter import (
     JitterCache,
     JitterCacheManager,
@@ -81,20 +66,6 @@ __all__ = [
     "get_jitter_manager",
     "reset_jitter_manager",
     "random_jitter",
-    "GrammarContext",
-    "StructuralGrammarError",
-    "RepeatWindowError",
-    "MutationPreconditionError",
-    "TholClosureError",
-    "TransitionCompatibilityError",
-    "SequenceValidationResult",
-    "SequenceSyntaxError",
-    "_gram_state",
-    "apply_glyph_with_grammar",
-    "parse_sequence",
-    "validate_sequence",
-    "enforce_canonical_grammar",
-    "on_applied_glyph",
     "get_neighbor_epi",
     "get_glyph_factors",
     "GLYPH_OPERATIONS",
@@ -109,6 +80,40 @@ __all__ = [
 ]
 
 __all__.extend(_DEFINITION_EXPORTS.keys())
+
+_GRAMMAR_REDIRECTS = {
+    "GrammarContext",
+    "StructuralGrammarError",
+    "RepeatWindowError",
+    "MutationPreconditionError",
+    "TholClosureError",
+    "TransitionCompatibilityError",
+    "SequenceValidationResult",
+    "SequenceSyntaxError",
+    "_gram_state",
+    "apply_glyph_with_grammar",
+    "parse_sequence",
+    "validate_sequence",
+    "enforce_canonical_grammar",
+    "on_applied_glyph",
+    "record_grammar_violation",
+    "glyph_function_name",
+    "function_name_to_glyph",
+}
+
+
+def __getattr__(name: str) -> Any:
+    if name in _GRAMMAR_REDIRECTS:
+        warnings.warn(
+            "`tnfr.operators.%s` is deprecated; import grammar helpers from "
+            "`tnfr.validation`." % name,
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        from .. import validation as _validation
+
+        return getattr(_validation, name)
+    raise AttributeError(name)
 
 
 def get_glyph_factors(node: NodeProtocol) -> GlyphFactors:

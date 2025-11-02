@@ -3,7 +3,7 @@
 from tnfr.config.operator_names import CONTRACTION, MUTATION, RESONANCE, SILENCE
 from tnfr.types import Glyph
 from tnfr.validation.compatibility import CANON_COMPAT, CANON_FALLBACK
-from tnfr.operators.grammar import glyph_function_name
+from tnfr.validation import glyph_function_name
 
 
 def test_thol_maintains_closure_paths():

@@ -126,7 +126,7 @@ extensions stay in sync with the public API.
 
 ### Grammar schema validation
 
-`tnfr.operators.grammar.GrammarContext` now validates the soft and canonical
+`tnfr.validation.GrammarContext` now validates the soft and canonical
 grammar dictionaries against the bundled JSON schema (`tnfr.schemas/grammar.json`)
 whenever the optional `jsonschema` dependency is available. Validation runs in
 ``auto`` mode by default—if the dependency or resource cannot be loaded the

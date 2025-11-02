@@ -112,6 +112,16 @@ We manage versions with `python-semantic-release`, deriving release tags directl
 
 <!-- version history -->
 
+### Upcoming (validation API unification)
+
+- Centralised all grammar and runtime validators under :mod:`tnfr.validation`.
+  Legacy attributes in :mod:`tnfr.dynamics`, :mod:`tnfr.operators`, and
+  :mod:`tnfr.mathematics` now emit :class:`DeprecationWarning` while delegating
+  to the unified facade so downstream integrations migrate progressively.
+- Updated tests, CLI helpers, and documentation to import grammar primitives
+  from :mod:`tnfr.validation`, keeping the public surface consistent with the
+  consolidated module.
+
 .. _rollback-script:
 
 ## Rollback automation script
@@ -356,7 +366,7 @@ python scripts/rollback_release.py --version 16.0.0 \
 - Retired the long-standing compatibility modules :mod:`tnfr.constants_glyphs`,
   :mod:`tnfr.presets`, and :mod:`tnfr.grammar`. The deprecated shims have been
   removed; import :mod:`tnfr.config.constants`, :mod:`tnfr.config.presets`, and
-  :mod:`tnfr.operators.grammar` instead.
+  the unified :mod:`tnfr.validation` facade instead.
 
 ### 7.0.0 (Spanish identifiers removed)
 

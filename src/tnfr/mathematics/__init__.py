@@ -8,6 +8,8 @@ structural operators.  The selection order is ``name`` → ``TNFR_MATH_BACKEND``
 existing code continues to operate even when optional dependencies are absent.
 """
 
+import warnings
+
 from .backend import (
     MathematicsBackend,
     available_backends,
@@ -40,7 +42,6 @@ from .transforms import (
     ensure_coherence_monotonicity,
     validate_norm_preservation,
 )
-from ..validation import NFRValidator
 
 __all__ = [
     "MathematicsBackend",
@@ -60,7 +61,6 @@ __all__ = [
     "build_lindblad_delta_nfr",
     "make_coherence_operator",
     "make_frequency_operator",
-    "NFRValidator",
     "IsometryFactory",
     "build_isometry_factory",
     "validate_norm_preservation",
@@ -79,3 +79,17 @@ __all__ = [
     "get_backend",
     "register_backend",
 ]
+
+
+def __getattr__(name: str) -> object:
+    if name == "NFRValidator":
+        warnings.warn(
+            "`tnfr.mathematics.NFRValidator` is deprecated; import it from "
+            "`tnfr.validation` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        from ..validation import NFRValidator as _NFRValidator
+
+        return _NFRValidator
+    raise AttributeError(name)

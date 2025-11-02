@@ -18,7 +18,7 @@ from tnfr.operators import (
     reset_jitter_manager,
     _um_candidate_iter,
 )
-from tnfr.operators.grammar import SequenceValidationResult
+from tnfr.validation import SequenceValidationResult
 from tnfr.structural import Dissonance, create_nfr, run_sequence
 from tnfr.types import Glyph
 from tnfr.utils import angle_diff

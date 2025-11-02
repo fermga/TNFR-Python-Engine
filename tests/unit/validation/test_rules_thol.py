@@ -4,8 +4,7 @@ from __future__ import annotations
 
 from tnfr.types import Glyph
 from tnfr.config.operator_names import CONTRACTION, RESONANCE, SILENCE
-from tnfr.operators.grammar import GrammarContext, glyph_function_name
-from tnfr.validation import rules
+from tnfr.validation import GrammarContext, glyph_function_name, rules
 
 
 def _ctx_with_node(

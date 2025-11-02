@@ -9,10 +9,9 @@ import pytest
 from tnfr.constants import get_aliases
 from tnfr.config.operator_names import COHERENCE, EXPANSION
 from tnfr.types import Glyph
-from tnfr.validation import rules
+from tnfr.validation import GrammarContext, glyph_function_name, rules
 from tnfr.validation.soft_filters import acceleration_norm
 from tnfr.validation.compatibility import CANON_FALLBACK
-from tnfr.operators.grammar import GrammarContext, glyph_function_name
 
 
 @pytest.fixture

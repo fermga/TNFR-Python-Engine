@@ -7,7 +7,7 @@ from collections import deque
 from tnfr.config.operator_names import RESONANCE, SILENCE
 from tnfr.types import Glyph
 from tnfr.validation.soft_filters import check_repeats
-from tnfr.operators.grammar import GrammarContext, glyph_function_name
+from tnfr.validation import GrammarContext, glyph_function_name
 
 
 def _ctx_with_node(graph_canon, cfg_soft):
