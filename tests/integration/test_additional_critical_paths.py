@@ -17,7 +17,6 @@ import networkx as nx
 np = pytest.importorskip("numpy")
 
 from tnfr.mathematics.generators import build_delta_nfr
-from tnfr.mathematics.operators import CoherenceOperator, FrequencyOperator
 from tnfr.mathematics.operators_factory import (
     make_coherence_operator,
     make_frequency_operator,
@@ -377,9 +376,6 @@ def test_multi_operator_interaction_maintains_conservation(seed_graph_factory) -
     # First application
     dnfr_epi_vf_mixed(graph)
     assert_dnfr_balanced(graph, abs_tol=0.1)
-    
-    # Store initial ΔNFR values
-    initial_dnfr = {node: graph.nodes[node][DNFR_PRIMARY] for node in graph.nodes()}
     
     # Second application (ΔNFR should update but remain conserved)
     dnfr_epi_vf_mixed(graph)
