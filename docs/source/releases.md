@@ -436,7 +436,7 @@ python scripts/rollback_release.py --version 16.0.0 \
   * Stored operator sequences (YAML/JSON fixtures, CLI configs) must be rewritten
     to use the English identifiers.
   * Programmatic calls to :func:`tnfr.structural.run_sequence`,
-    :func:`tnfr.validation.syntax.validate_sequence`, and
+    :func:`tnfr.validation.validate_sequence`, and
     :func:`tnfr.operators.registry.get_operator_class` will now reject Spanish
     tokens.
   * Import sites that referenced ``tnfr.operators.compat`` or the Spanish class

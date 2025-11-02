@@ -3,10 +3,11 @@ from typing import Any, Generic, Protocol, TypeVar
 
 from ..types import Glyph, TNFRGraph
 from .compatibility import CANON_COMPAT as CANON_COMPAT, CANON_FALLBACK as CANON_FALLBACK
-from .grammar import (
+from ..operators.grammar import (
     GrammarContext,
     MutationPreconditionError,
     RepeatWindowError,
+    SequenceSyntaxError,
     SequenceValidationResult,
     StructuralGrammarError,
     TholClosureError,
@@ -22,7 +23,7 @@ from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr
 from .soft_filters import (acceleration_norm, check_repeats, maybe_force, soft_grammar_filters)
 from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon
 from .spectral import NFRValidator
-from .syntax import validate_sequence
+from ..operators.grammar import validate_sequence
 
 SubjectT = TypeVar("SubjectT")
 
@@ -50,6 +51,7 @@ __all__ = (
     "MutationPreconditionError",
     "TholClosureError",
     "TransitionCompatibilityError",
+    "SequenceSyntaxError",
     "SequenceValidationResult",
     "apply_glyph_with_grammar",
     "enforce_canonical_grammar",
