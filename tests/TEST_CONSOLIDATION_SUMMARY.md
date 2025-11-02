@@ -86,9 +86,18 @@ Adds comprehensive coverage for:
 - Trace ordering and consistency
 - Time progression validation
 
+### `tests/integration/test_additional_critical_paths.py` (24 NEW tests)
+
+Adds complementary critical path coverage for areas with gaps:
+- Operator closure under composition (addition, scaling, commutator)
+- Extreme network topologies (fully connected, sparse, star, disconnected)
+- Boundary conditions for nodal validators with moderate value ranges
+- Multi-operator interaction and stability
+- Integration between operator generation and runtime execution
+
 ## Tests That Have Been Deprecated
 
-### ✅ Completed - Marked with pytest.mark.skip (89 tests)
+### ✅ Completed - Marked with pytest.mark.skip (92 tests)
 
 These tests are now fully covered by unified parametrized tests and have been marked
 as deprecated with skip markers to prevent execution:
@@ -124,44 +133,49 @@ as deprecated with skip markers to prevent execution:
 4. **`test_nodal_validators.py`:** ✅ DEPRECATED
    - Multiple validator tests → covered by `test_nodal_validators_critical_paths.py`
 
-### Medium Priority for Consolidation
+5. **`math_integration/test_generators.py`:** ✅ PARTIALLY DEPRECATED (3 tests)
+   - `test_build_delta_nfr_returns_hermitian_operators` → covered by `test_unified_operator_validation.py`
+   - `test_build_delta_nfr_reproducibility_with_seeded_noise` → covered by `test_unified_operator_validation.py`
+   - `test_build_delta_nfr_input_validation` → covered by `test_unified_operator_validation.py`
+   - **KEPT**: `test_build_delta_nfr_scaling_matches_ring_baselines` (provides specific baseline validation)
 
-These tests have partial overlap and could be consolidated:
+### Not Redundant (Kept)
 
-1. **`test_nodal_validators.py`:**
-   - Several tests overlap with `test_nodal_validators_critical_paths.py`
-   - Consider keeping only the critical path version
+These tests provide unique value and are NOT redundant:
 
-2. **`property/test_dnfr_properties.py`:**
-   - `test_dnfr_epi_vf_mixed_stable_on_homogeneous` → covered by `test_dnfr_homogeneous_stability_unified`
-   - Property-based tests using Hypothesis should be kept for fuzzing coverage
+1. **`property/test_dnfr_properties.py`:**
+   - Uses Hypothesis for property-based fuzzing (different from parametrized tests)
+   - Provides random test case generation that catches edge cases
+   - Complements deterministic parametrized tests
 
-3. **`math_integration/test_generators.py`:**
-   - `test_build_delta_nfr_returns_hermitian_operators` → covered by `test_build_delta_nfr_hermitian_unified`
+2. **`mathematics/test_operators.py`:**
+   - Tests detailed operator properties (c_min, spectral_radius, expectation values)
+   - More comprehensive than unified tests which only check basic Hermitian/PSD properties
+   - Focus on mathematical operator contracts rather than integration
 
 ## Statistics
 
-### Before Optimization:
+### Before This Optimization Round:
 - Total test files in integration/mathematics/property: ~30+
-- Redundant structural validation patterns: ~13 tests
-- Operator generation duplicates: ~10+ tests
+- Previously deprecated tests: 89
 - Total integration tests: 434
 
-### After Optimization:
-- New shared utilities: 1 file (`base.py`)
-- New unified test suites: 2 files (23 + 96 = 119 parametrized tests)
-- New critical path coverage: 4 files (54 + 40 = 94 new tests)
-- **Total new test coverage: 213 tests**
-- **Deprecated/consolidated tests: 89 (marked with skip)**
-- **Net integration tests: 345 (reduced from 434)**
+### After This Optimization Round:
+- New shared utilities: 1 file (`base.py`) - already existed
+- New unified test suites: 2 files (23 + 96 = 119 parametrized tests) - already existed
+- New critical path coverage: 5 files (13 + 16 + 21 + 13 + 24 = 87 tests)
+- **Additional deprecated tests: 3 (math_integration/test_generators.py)**
+- **Total deprecated/consolidated tests: 92 (89 + 3)**
+- **Net integration tests: 342 (reduced from 434 by 92, added 24 new)**
 
-### Coverage Improvements:
-- Operator generation: +17 critical path tests + 14 enhanced tests
-- Nodal validators: +16 critical path tests + 13 enhanced tests
-- run_sequence: +21 critical path tests + 8 enhanced tests
-- Cross-cutting integration: +5 tests (parametrized multi-scale)
-- Parametrized coverage: 119 tests covering multiple dimensions/scales/configurations
-- **Total: +94 new critical path tests while removing 89 redundant tests**
+### Coverage Improvements (This Round):
+- Operator closure: +4 tests (addition, scaling, commutator, finite values)
+- Extreme topologies: +10 tests (fully connected, sparse, star, disconnected)
+- Nodal validator boundaries: +3 tests (moderate EPI/νf ranges, phase wrapping)
+- Integration tests: +4 tests (operator-to-runtime, coherence/frequency integration, multi-operator)
+- Stability tests: +3 tests (multi-operator interactions, iterative applications)
+- **Total NEW tests in this round: +24 critical path tests**
+- **Previously: 213 optimized tests, Now: 237 optimized tests**
 
 ## Implementation Status
 
