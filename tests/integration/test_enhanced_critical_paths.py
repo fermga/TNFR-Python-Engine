@@ -69,15 +69,14 @@ def test_operator_generation_topology_independence(topology1, topology2) -> None
     all TNFR structural invariants.
     """
     dim = 4
-    rng = np.random.default_rng(seed=42)
+    
+    # Create separate RNG instances with same seed for clearer comparison
+    rng1 = np.random.default_rng(seed=42)
+    rng2 = np.random.default_rng(seed=42)
     
     # Generate with same seed but different topologies
-    state = rng.bit_generator.state
-    rng.bit_generator.state = state
-    matrix1 = build_delta_nfr(dim, topology=topology1, rng=rng)
-    
-    rng.bit_generator.state = state
-    matrix2 = build_delta_nfr(dim, topology=topology2, rng=rng)
+    matrix1 = build_delta_nfr(dim, topology=topology1, rng=rng1)
+    matrix2 = build_delta_nfr(dim, topology=topology2, rng=rng2)
     
     # Both must be Hermitian
     assert np.allclose(matrix1, matrix1.conj().T)
@@ -361,23 +360,24 @@ def test_operator_validator_integration(seed_graph_factory) -> None:
     assert_epi_vf_in_bounds(graph, epi_min=-2.0, epi_max=2.0)
 
 
-def test_multi_scale_trajectory_consistency(seed_graph_factory) -> None:
+@pytest.mark.parametrize("num_nodes", [5, 10, 20, 50])
+def test_multi_scale_trajectory_consistency(seed_graph_factory, num_nodes) -> None:
     """Test trajectory consistency across different network scales.
     
     Verifies ΔNFR evolution maintains conservation and coherence
     regardless of network size, supporting TNFR's scale invariance.
+    Uses parametrization for better isolation of scale-specific failures.
     """
     from tnfr.dynamics import dnfr_epi_vf_mixed
     
-    for num_nodes in [5, 10, 20, 50]:
-        graph = seed_graph_factory(
-            num_nodes=num_nodes,
-            edge_probability=0.3,
-            seed=42
-        )
-        
-        # Apply dynamics
-        dnfr_epi_vf_mixed(graph)
-        
-        # Must maintain conservation regardless of scale
-        assert_dnfr_balanced(graph, abs_tol=0.1)
+    graph = seed_graph_factory(
+        num_nodes=num_nodes,
+        edge_probability=0.3,
+        seed=42
+    )
+    
+    # Apply dynamics
+    dnfr_epi_vf_mixed(graph)
+    
+    # Must maintain conservation regardless of scale
+    assert_dnfr_balanced(graph, abs_tol=0.1)

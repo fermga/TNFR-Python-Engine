@@ -150,8 +150,8 @@ These tests have partial overlap and could be consolidated:
 ### After Optimization:
 - New shared utilities: 1 file (`base.py`)
 - New unified test suites: 2 files (23 + 96 = 119 parametrized tests)
-- New critical path coverage: 4 files (54 + 37 = 91 new tests)
-- **Total new test coverage: 210 tests**
+- New critical path coverage: 4 files (54 + 40 = 94 new tests)
+- **Total new test coverage: 213 tests**
 - **Deprecated/consolidated tests: 89 (marked with skip)**
 - **Net integration tests: 345 (reduced from 434)**
 
@@ -159,9 +159,9 @@ These tests have partial overlap and could be consolidated:
 - Operator generation: +17 critical path tests + 14 enhanced tests
 - Nodal validators: +16 critical path tests + 13 enhanced tests
 - run_sequence: +21 critical path tests + 8 enhanced tests
-- Cross-cutting integration: +2 tests
+- Cross-cutting integration: +5 tests (parametrized multi-scale)
 - Parametrized coverage: 119 tests covering multiple dimensions/scales/configurations
-- **Total: +91 new critical path tests while removing 89 redundant tests**
+- **Total: +94 new critical path tests while removing 89 redundant tests**
 
 ## Implementation Status
 

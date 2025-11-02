@@ -20,7 +20,7 @@ Marked with `pytest.mark.skip` to prevent execution while preserving code for re
 
 **Skip Reason**: "DEPRECATED: Consolidated into [unified test file]"
 
-### 3. Added Enhanced Critical Path Coverage (37 new tests)
+### 3. Added Enhanced Critical Path Coverage (40 new tests)
 **File**: `tests/integration/test_enhanced_critical_paths.py`
 
 #### Operator Generation (14 tests)
@@ -40,9 +40,9 @@ Marked with `pytest.mark.skip` to prevent execution while preserving code for re
 - Variable repeat counts (4 parametrized tests)
 - Empty target list handling
 
-#### Cross-Cutting Integration (2 tests)
-- Operator-validator integration
-- Multi-scale trajectory consistency
+#### Cross-Cutting Integration (5 tests)
+- Operator-validator integration (1 test)
+- Multi-scale trajectory consistency (4 parametrized tests: 5/10/20/50 nodes)
 
 ### 4. Updated Documentation
 - ✅ **README_TEST_OPTIMIZATION.md**: Added enhanced tests section, updated statistics
@@ -54,7 +54,7 @@ Marked with `pytest.mark.skip` to prevent execution while preserving code for re
 | Category | Before | After | Change |
 |----------|--------|-------|--------|
 | Integration tests | 434 | 345 | -89 (deprecated) |
-| Optimized suite | 173 | 210 | +37 (enhanced) |
+| Optimized suite | 173 | 213 | +40 (enhanced) |
 | Active tests | 434 | 345 | -89 |
 | Skipped tests | 0 | 89 | +89 |
 
@@ -65,7 +65,8 @@ Marked with `pytest.mark.skip` to prevent execution while preserving code for re
 | Nodal validators | +29 tests (13 enhanced + 16 critical paths) |
 | run_sequence | +29 tests (8 enhanced + 21 critical paths) |
 | Structural validation | +23 unified tests |
-| **Total** | **+210 optimized tests** |
+| Cross-cutting integration | +5 tests (parametrized multi-scale) |
+| **Total** | **+213 optimized tests** |
 
 ### Code Quality Metrics
 - **Code reduction**: ~60% through parametrization and shared utilities
@@ -78,7 +79,7 @@ Marked with `pytest.mark.skip` to prevent execution while preserving code for re
 ### All Optimized Tests Pass
 ```bash
 pytest tests/integration/test_unified_*.py tests/integration/test_*_critical_paths.py -v
-# Result: 210 passed, 1 warning in 0.37s
+# Result: 213 passed, 1 warning in 0.37s
 ```
 
 ### Deprecated Tests Properly Skipped
