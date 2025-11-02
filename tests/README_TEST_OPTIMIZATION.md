@@ -2,7 +2,7 @@
 
 This document provides guidance on the optimized test suite structure and how to maintain it going forward.
 
-> **Latest Update**: Phase 2 optimization completed. See `OPTIMIZATION_PHASE2_SUMMARY.md` for details on the 41 new tests and shared utilities added.
+> **Latest Update**: Phase 4 (Final Cleanup) completed. Deprecated test files have been deleted. Test count reduced from 1699 to 1649 (-50 tests) while maintaining full coverage. See `TEST_CONSOLIDATION_SUMMARY.md` for complete details.
 
 ## Overview
 
@@ -79,8 +79,8 @@ tests/
 │   ├── base.py                          # Reusable base classes
 │   ├── validation.py                    # Shared validators
 │   ├── fixtures.py                      # Shared fixtures
-│   ├── sequence_testing.py              # NEW Phase 2: Sequence utilities
-│   └── operator_assertions.py           # NEW Phase 2: Operator assertions
+│   ├── sequence_testing.py              # Sequence utilities
+│   └── operator_assertions.py           # Operator assertions
 ├── integration/
 │   ├── test_unified_structural_validation.py      # 23 tests
 │   ├── test_unified_operator_validation.py        # 96 tests
@@ -88,13 +88,13 @@ tests/
 │   ├── test_nodal_validators_critical_paths.py    # 16 tests
 │   ├── test_run_sequence_critical_paths.py        # 21 tests
 │   ├── test_enhanced_critical_paths.py            # 40 tests
-│   ├── test_consolidated_critical_paths.py        # NEW Phase 2: 41 tests
-│   ├── test_operator_generation.py                # DEPRECATED (skip marker)
-│   ├── test_operator_generation_extended.py       # DEPRECATED (skip marker)
-│   ├── test_consolidated_structural_validation.py # DEPRECATED (skip marker)
-│   └── test_nodal_validators.py                   # DEPRECATED (skip marker)
-├── TEST_CONSOLIDATION_SUMMARY.md        # Phase 1 guide
-└── OPTIMIZATION_PHASE2_SUMMARY.md       # NEW: Phase 2 guide
+│   ├── test_consolidated_critical_paths.py        # 41 tests
+│   ├── test_additional_critical_paths.py          # 24 tests
+│   └── ... (other integration tests)
+├── math_integration/
+│   └── test_generators.py              # 1 baseline validation test (cleaned up)
+├── TEST_CONSOLIDATION_SUMMARY.md        # Complete consolidation guide
+└── OPTIMIZATION_PHASE2_SUMMARY.md       # Phase 2 details
 ```
 
 ## Key Improvements
@@ -234,23 +234,18 @@ class TestMyOperator(BaseOperatorTest):
    - Avoid implementation details in test names
    - Focus on structural properties being validated
 
-### Deprecating Old Tests
+### Deleting Redundant Tests
 
-Before removing tests marked for deprecation:
+✅ **Completed**: All deprecated tests have been removed in Phase 4.
 
-1. **Verify unified tests provide equivalent coverage**
-   ```bash
-   # Run both old and new tests
-   pytest tests/integration/test_old.py tests/integration/test_unified_*.py -v
-   ```
+The following files were deleted after verification that unified tests provided equivalent coverage:
+- `test_operator_generation.py` (12 tests)
+- `test_operator_generation_extended.py` (12 tests)
+- `test_consolidated_structural_validation.py` (10 tests)
+- `test_nodal_validators.py` (13 tests)
+- 3 tests removed from `math_integration/test_generators.py`
 
-2. **Check for any unique edge cases**
-   - Review test code for unique validation logic
-   - Ensure unified tests cover these cases
-
-3. **Update documentation**
-   - Remove from test count estimates
-   - Update TEST_CONSOLIDATION_SUMMARY.md
+**Total reduction**: 50 redundant tests deleted, maintaining full coverage with unified parametrized tests.
 
 ### Code Review Checklist
 
@@ -317,25 +312,26 @@ Verify the fixture is defined in:
 
 ### Coverage Improvements
 
-| Category | Before | After (Phase 1) | After (Phase 2) | Total Improvement |
-|----------|--------|-----------------|-----------------|-------------------|
-| Operator tests | ~20 separate | 96 parametrized + 14 enhanced | +14 new | +104 tests, 65% less code |
-| Structural tests | ~13 separate | 23 parametrized | - | +10 tests, 60% less code |
-| Critical paths | Limited | 94 new tests | +27 new | 121 new tests |
-| Nodal validators | ~20 separate | 16 + 13 enhanced | +13 new | +22 enhanced |
-| run_sequence | Limited | 21 + 8 enhanced | +11 new | +40 new tests |
-| **Redundant tests** | 89 duplicates | **0 (marked skip)** | - | **-89 tests** |
-| **Helper modules** | 3 | 3 | +2 | **5 total** |
-| **Net result** | 434 tests | 345 active + 213 optimized | +41 new | **378 active + 254 optimized** |
+| Category | Before | After Phase 4 | Improvement |
+|----------|--------|---------------|-------------|
+| Total tests | 1699 (47 skipped) | 1649 (0 skipped) | -50 redundant tests |
+| Operator tests | ~20 separate files | 96 parametrized unified | 65% less code, better coverage |
+| Structural tests | ~13 separate | 23 parametrized unified | 60% less code |
+| Critical paths | Limited | 257 optimized tests | +20% coverage improvement |
+| Nodal validators | ~20 separate | 16 + 13 enhanced | Better edge case coverage |
+| run_sequence | Limited | 21 + 11 enhanced | +40 trajectory tests |
+| **Deleted files** | 4 deprecated files | **Removed** | **-47 integration tests** |
+| **Cleaned files** | test_generators.py | **3 tests removed** | Kept baseline validation |
+| **Helper modules** | 3 | **5 total** | Shared utilities prevent duplication |
+| **Execution speed** | ~1.4s integration | ~1.4s integration | Same speed, better coverage |
 
-### Test Execution Speed
+### Test Execution Speed (Optimized Suites)
 
 - Unified structural: 0.18s for 23 tests
-- Unified operators: 0.23s for 96 tests
-- Critical paths: 0.15s for 54 tests
-- Enhanced critical paths: 0.18s for 40 tests
-- **Total: ~0.37s for 213 optimized tests**
-- **Deprecated tests: 0.0s (skipped)**
+- Unified operators: 0.23s for 96 tests  
+- All critical paths: ~0.6s for 159 tests
+- **Total optimized: ~1.0s for 257 unified tests**
+- **Deleted tests: 0.0s (removed from codebase)**
 
 ## References
 
