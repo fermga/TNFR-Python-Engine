@@ -55,6 +55,7 @@ from ..operators.grammar import (
     enforce_canonical_grammar,
     on_applied_glyph,
     record_grammar_violation,
+    validate_sequence,
 )
 from .graph import GRAPH_VALIDATORS, run_validators
 from .window import validate_window
@@ -66,11 +67,7 @@ from .soft_filters import (
     maybe_force,
     soft_grammar_filters,
 )
-from ..operators.grammar import validate_sequence
-
-__all__ = (
-    "ValidationOutcome",
-    "Validator",
+_GRAMMAR_EXPORTS = (
     "validate_sequence",
     "GrammarContext",
     "StructuralGrammarError",
@@ -84,24 +81,9 @@ __all__ = (
     "enforce_canonical_grammar",
     "on_applied_glyph",
     "record_grammar_violation",
-    "validate_window",
-    "run_validators",
-    "GRAPH_VALIDATORS",
-    "coerce_glyph",
-    "glyph_fallback",
-    "normalized_dnfr",
-    "get_norm",
-    "acceleration_norm",
-    "check_repeats",
-    "maybe_force",
-    "soft_grammar_filters",
-    "CANON_COMPAT",
-    "CANON_FALLBACK",
-    "GraphCanonicalValidator",
-    "apply_canonical_clamps",
-    "validate_canon",
-    "NFRValidator",
 )
+
+__all__ = _GRAMMAR_EXPORTS
 
 
 def __getattr__(name: str) -> Any:
