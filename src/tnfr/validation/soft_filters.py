@@ -27,7 +27,7 @@ def acceleration_norm(ctx: "GrammarContext", nd: "Mapping[str, Any]") -> float:
     """Return the node acceleration normalised to ``[0, 1]``.
 
     The computation uses the canonical ``accel_max`` bound stored in
-    :class:`~tnfr.operators.grammar.GrammarContext`.  Values beyond the bound are
+    :class:`~tnfr.validation.GrammarContext`.  Values beyond the bound are
     clamped to preserve structural comparability with ΔNFR-based heuristics.
     """
 

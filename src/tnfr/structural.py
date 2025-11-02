@@ -39,11 +39,10 @@ from .mathematics import (
     FrequencyOperator,
     HilbertSpace,
     MathematicalDynamicsEngine,
-    NFRValidator,
     make_coherence_operator,
     make_frequency_operator,
 )
-from .validation import validate_sequence
+from tnfr.validation import NFRValidator, validate_sequence
 from .operators.definitions import (
     Coherence,
     Contraction,

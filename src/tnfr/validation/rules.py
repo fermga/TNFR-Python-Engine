@@ -1,7 +1,7 @@
 """Validation helpers grouped by rule type.
 
 These utilities implement the canonical checks required by
-:mod:`tnfr.operators.grammar`.  They are organised here to make it
+:mod:`tnfr.validation`.  They are organised here to make it
 explicit which pieces enforce repetition control, transition
 compatibility or stabilisation thresholds.
 """

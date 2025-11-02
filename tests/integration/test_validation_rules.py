@@ -7,10 +7,9 @@ import networkx as nx
 from tnfr.constants import inject_defaults
 from tnfr.types import Glyph
 from tnfr.config.operator_names import DISSONANCE, MUTATION
-from tnfr.validation import rules as rules_mod
+from tnfr.validation import GrammarContext, glyph_function_name, rules as rules_mod
 from tnfr.validation.soft_filters import maybe_force
 from tnfr.validation.compatibility import CANON_COMPAT, CANON_FALLBACK
-from tnfr.operators.grammar import GrammarContext, glyph_function_name
 
 
 def _graph_with_node():

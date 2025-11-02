@@ -60,12 +60,15 @@ Examples
 from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor
+import warnings
+from typing import Any
 
 from ..metrics.sense_index import compute_Si
-from ..operators import apply_glyph, enforce_canonical_grammar, on_applied_glyph
+from ..operators import apply_glyph
 from ..types import GlyphCode
 from ..utils import get_numpy
-from ..validation import apply_canonical_clamps, validate_canon
+from ..validation import apply_canonical_clamps as _apply_canonical_clamps
+from ..validation import validate_canon as _validate_canon
 from . import coordination, dnfr, integrators
 from .adaptation import adapt_vf_by_coherence
 from .aliases import (
@@ -166,7 +169,6 @@ __all__ = (
     "_init_dnfr_cache",
     "_refresh_dnfr_vectors",
     "adapt_vf_by_coherence",
-    "apply_canonical_clamps",
     "coordinate_global_local_phase",
     "compute_Si",
     "default_compute_delta_nfr",
@@ -174,9 +176,7 @@ __all__ = (
     "dnfr_epi_vf_mixed",
     "dnfr_laplacian",
     "dnfr_phase_only",
-    "enforce_canonical_grammar",
     "get_numpy",
-    "on_applied_glyph",
     "apply_glyph",
     "parametric_glyph_selector",
     "AbstractIntegrator",
@@ -186,5 +186,56 @@ __all__ = (
     "set_delta_nfr_hook",
     "step",
     "update_epi_via_nodal_equation",
-    "validate_canon",
 )
+
+
+def apply_canonical_clamps(*args: Any, **kwargs: Any) -> Any:
+    """Compatibility wrapper for :func:`tnfr.validation.apply_canonical_clamps`."""
+
+    warnings.warn(
+        "`tnfr.dynamics.apply_canonical_clamps` is deprecated; import it from "
+        "`tnfr.validation` instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return _apply_canonical_clamps(*args, **kwargs)
+
+
+def validate_canon(*args: Any, **kwargs: Any) -> Any:
+    """Compatibility wrapper for :func:`tnfr.validation.validate_canon`."""
+
+    warnings.warn(
+        "`tnfr.dynamics.validate_canon` is deprecated; import it from "
+        "`tnfr.validation` instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return _validate_canon(*args, **kwargs)
+
+
+def enforce_canonical_grammar(*args: Any, **kwargs: Any) -> Any:
+    """Deprecated grammar access redirecting to :mod:`tnfr.validation`."""
+
+    warnings.warn(
+        "`tnfr.dynamics.enforce_canonical_grammar` is deprecated; import "
+        "grammar helpers from `tnfr.validation`.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    from ..validation import enforce_canonical_grammar as _enforce
+
+    return _enforce(*args, **kwargs)
+
+
+def on_applied_glyph(*args: Any, **kwargs: Any) -> Any:
+    """Deprecated hook redirecting to :mod:`tnfr.validation`."""
+
+    warnings.warn(
+        "`tnfr.dynamics.on_applied_glyph` is deprecated; import grammar "
+        "hooks from `tnfr.validation` instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    from ..validation import on_applied_glyph as _on_applied
+
+    return _on_applied(*args, **kwargs)

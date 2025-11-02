@@ -1,8 +1,8 @@
 """Unified validation interface consolidating grammar, graph and spectral checks.
 
 This package re-exports the canonical grammar helpers implemented in
-``tnfr.operators.grammar`` so downstream code can rely on a single import path for
-structural validation primitives.
+``tnfr.operators.grammar`` and the runtime validators so downstream code can rely
+on a single import path for structural validation primitives.
 """
 
 from __future__ import annotations
@@ -42,21 +42,8 @@ class Validator(Protocol[SubjectT]):
 
 
 from .compatibility import CANON_COMPAT, CANON_FALLBACK
-from ..operators.grammar import (
-    GrammarContext,
-    MutationPreconditionError,
-    RepeatWindowError,
-    SequenceValidationResult,
-    SequenceSyntaxError,
-    StructuralGrammarError,
-    TholClosureError,
-    TransitionCompatibilityError,
-    apply_glyph_with_grammar,
-    enforce_canonical_grammar,
-    on_applied_glyph,
-    record_grammar_violation,
-    validate_sequence,
-)
+from ..operators import grammar as _grammar
+from ..types import Glyph
 from .graph import GRAPH_VALIDATORS, run_validators
 from .window import validate_window
 from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon
@@ -67,23 +54,34 @@ from .soft_filters import (
     maybe_force,
     soft_grammar_filters,
 )
-_GRAMMAR_EXPORTS = (
-    "validate_sequence",
-    "GrammarContext",
-    "StructuralGrammarError",
-    "RepeatWindowError",
-    "MutationPreconditionError",
-    "TholClosureError",
-    "TransitionCompatibilityError",
-    "SequenceValidationResult",
-    "SequenceSyntaxError",
-    "apply_glyph_with_grammar",
-    "enforce_canonical_grammar",
-    "on_applied_glyph",
-    "record_grammar_violation",
-)
+_GRAMMAR_EXPORTS = tuple(getattr(_grammar, "__all__", ()))
+
+globals().update({name: getattr(_grammar, name) for name in _GRAMMAR_EXPORTS})
 
 __all__ = _GRAMMAR_EXPORTS
+
+_ENFORCE_CANONICAL_GRAMMAR = _grammar.enforce_canonical_grammar
+
+
+def enforce_canonical_grammar(
+    G: Any,
+    n: Any,
+    cand: Any,
+    ctx: Any | None = None,
+) -> Any:
+    """Proxy to :func:`tnfr.operators.grammar.enforce_canonical_grammar` preserving Glyph outputs."""
+
+    result = _ENFORCE_CANONICAL_GRAMMAR(G, n, cand, ctx)
+    if isinstance(cand, Glyph) and not isinstance(result, Glyph):
+        translated = _grammar.function_name_to_glyph(result)
+        if translated is None and isinstance(result, str):
+            try:
+                translated = Glyph(result)
+            except (TypeError, ValueError):
+                translated = None
+        if translated is not None:
+            return translated
+    return result
 
 
 def __getattr__(name: str) -> Any:

@@ -1,7 +1,13 @@
 from typing import Any, Literal, Sequence
 
 from tnfr.types import GlyphCode, TNFRGraph
-from tnfr.validation import ValidationOutcome
+from tnfr.validation import (
+    ValidationOutcome,
+    apply_canonical_clamps as _apply_canonical_clamps,
+    validate_canon as _validate_canon,
+    enforce_canonical_grammar as _enforce_canonical_grammar,
+    on_applied_glyph as _on_applied_glyph,
+)
 
 __all__: tuple[str, ...]
 
@@ -43,16 +49,16 @@ _compute_neighbor_means: Any
 _init_dnfr_cache: Any
 _refresh_dnfr_vectors: Any
 adapt_vf_by_coherence: Any
-apply_canonical_clamps: Any
+apply_canonical_clamps = _apply_canonical_clamps
 coordinate_global_local_phase: Any
 default_compute_delta_nfr: Any
 default_glyph_selector: Any
 dnfr_epi_vf_mixed: Any
 dnfr_laplacian: Any
 dnfr_phase_only: Any
-enforce_canonical_grammar: Any
+enforce_canonical_grammar = _enforce_canonical_grammar
 get_numpy: Any
-on_applied_glyph: Any
+on_applied_glyph = _on_applied_glyph
 apply_glyph: Any
 parametric_glyph_selector: Any
 
@@ -79,4 +85,4 @@ def update_epi_via_nodal_equation(
     n_jobs: int | None = ...,
 ) -> None: ...
 
-def validate_canon(G: TNFRGraph) -> ValidationOutcome[TNFRGraph]: ...
+validate_canon = _validate_canon

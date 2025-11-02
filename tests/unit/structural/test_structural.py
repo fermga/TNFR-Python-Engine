@@ -23,8 +23,8 @@ from tnfr.constants import (
     VF_PRIMARY,
     inject_defaults,
 )
-from tnfr.mathematics import BasicStateProjector, NFRValidator
-from tnfr.operators.grammar import SequenceValidationResult
+from tnfr.mathematics import BasicStateProjector
+from tnfr.validation import NFRValidator, SequenceValidationResult
 from tnfr.structural import (
     Coherence,
     Contraction,

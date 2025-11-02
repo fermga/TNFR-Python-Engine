@@ -17,7 +17,7 @@ from tnfr.config.operator_names import (
 )
 from tnfr.dynamics import _choose_glyph
 from tnfr.types import Glyph
-from tnfr.operators.grammar import (
+from tnfr.validation import (
     apply_glyph_with_grammar,
     enforce_canonical_grammar,
     on_applied_glyph,

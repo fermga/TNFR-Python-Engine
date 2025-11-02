@@ -9,7 +9,7 @@ import networkx as nx
 import pytest
 
 from tnfr.constants import DEFAULTS
-from tnfr.operators.grammar import (
+from tnfr.validation import (
     GrammarConfigurationError,
     GrammarContext,
     enforce_canonical_grammar,
