@@ -121,6 +121,11 @@ We manage versions with `python-semantic-release`, deriving release tags directl
 - Updated tests, CLI helpers, and documentation to import grammar primitives
   from :mod:`tnfr.validation`, keeping the public surface consistent with the
   consolidated module.
+- Removed the :mod:`tnfr.dynamics` runtime shims for
+  :func:`~tnfr.validation.apply_canonical_clamps`,
+  :func:`~tnfr.validation.validate_canon`, and related grammar hooks to complete
+  the migration. Downstream code should import these helpers directly from
+  :mod:`tnfr.validation`.
 
 .. _rollback-script:
 
