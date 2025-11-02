@@ -1,7 +1,7 @@
 """Integration tests for ΔNFR generator construction.
 
-This module provides baseline validation against expected ring topology values.
-Most operator generation tests are in:
+This module contains baseline validation against expected ring topology values.
+All other operator generation tests have been consolidated into:
 - tests/integration/test_unified_operator_validation.py (Hermitian, reproducibility, input validation)
 - tests/integration/test_operator_generation_critical_paths.py (critical path coverage)
 

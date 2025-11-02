@@ -160,8 +160,8 @@ These tests provide unique value and are NOT redundant:
 - Total tests collected: 1699 (including 47 skipped)
 
 ### After Test Deletion (Current):
-- **Deleted files**: 4 integration test files + 3 tests from math_integration
-- **Total tests deleted**: 50 (47 from integration + 3 from math_integration)
+- **Deleted files**: 4 integration test files (47 tests) + 3 tests from math_integration
+- **Total tests deleted**: 50 (47 from 4 integration files + 3 from math_integration)
 - **Current test count**: 1649 tests collected (0 skipped deprecated tests)
 - **Test reduction**: ~3% fewer tests while maintaining coverage
 - **Shared utilities**: 5 helper modules providing reusable fixtures and assertions
