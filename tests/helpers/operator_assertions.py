@@ -259,6 +259,9 @@ def assert_operators_close(
 def assert_commutator_properties(
     operator1: Any,
     operator2: Any,
+    *,
+    is_hermitian1: bool = False,
+    is_hermitian2: bool = False,
 ) -> None:
     """Assert commutator [A,B] = AB - BA has valid properties.
     
@@ -266,6 +269,8 @@ def assert_commutator_properties(
     ----------
     operator1, operator2 : array-like or operator objects
         Operators to compute commutator for.
+    is_hermitian1, is_hermitian2 : bool, default=False
+        If True, skip Hermitian check (performance optimization).
     
     Raises
     ------
@@ -276,7 +281,7 @@ def assert_commutator_properties(
     --------
     >>> op1 = build_delta_nfr(3, topology="laplacian")
     >>> op2 = build_delta_nfr(3, topology="adjacency")
-    >>> assert_commutator_properties(op1, op2)
+    >>> assert_commutator_properties(op1, op2, is_hermitian1=True, is_hermitian2=True)
     """
     matrix1 = _extract_matrix(operator1)
     matrix2 = _extract_matrix(operator2)
@@ -289,8 +294,12 @@ def assert_commutator_properties(
         "Commutator contains non-finite values"
     
     # Commutator of Hermitian operators is anti-Hermitian: [A,B]† = -[A,B]
-    if (np.allclose(matrix1, matrix1.conj().T) and 
-        np.allclose(matrix2, matrix2.conj().T)):
+    if is_hermitian1 and is_hermitian2:
+        # Skip expensive Hermitian check if caller confirms
+        assert np.allclose(commutator.conj().T, -commutator, atol=1e-9), \
+            "Commutator of Hermitian operators should be anti-Hermitian"
+    elif (np.allclose(matrix1, matrix1.conj().T, atol=1e-9) and 
+          np.allclose(matrix2, matrix2.conj().T, atol=1e-9)):
         assert np.allclose(commutator.conj().T, -commutator, atol=1e-9), \
             "Commutator of Hermitian operators should be anti-Hermitian"
 
@@ -327,13 +336,30 @@ def _extract_matrix(operator: Any) -> np.ndarray:
     ----------
     operator : array-like or operator object
         Operator that may have .matrix attribute or be array itself.
+        Expected interface: either numpy array or object with .matrix attribute
+        returning array-like data.
     
     Returns
     -------
     np.ndarray
         Numpy array representation of operator.
+    
+    Raises
+    ------
+    ValueError
+        If operator type is not supported.
     """
     if hasattr(operator, "matrix"):
-        return np.asarray(operator.matrix)
+        matrix_attr = operator.matrix
+        if not isinstance(matrix_attr, (np.ndarray, list, tuple)):
+            raise ValueError(
+                f"Operator .matrix attribute has unsupported type: {type(matrix_attr)}"
+            )
+        return np.asarray(matrix_attr)
     else:
-        return np.asarray(operator)
+        try:
+            return np.asarray(operator)
+        except (ValueError, TypeError) as e:
+            raise ValueError(
+                f"Cannot convert operator of type {type(operator)} to array: {e}"
+            ) from e

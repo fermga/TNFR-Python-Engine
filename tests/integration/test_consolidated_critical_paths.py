@@ -171,8 +171,8 @@ def test_operator_generation_spectral_properties():
     # Compute eigenvalues
     eigenvalues = np.linalg.eigvalsh(operator)
     
-    # All eigenvalues should be real
-    assert eigenvalues.dtype == np.float64 or len(eigenvalues.imag) == 0
+    # All eigenvalues should be real (eigvalsh returns real values by definition)
+    assert eigenvalues.dtype == np.float64
     
     # Should have correct number of eigenvalues
     assert len(eigenvalues) == dimension
@@ -207,10 +207,11 @@ def test_nodal_validator_bounds_unified(
     # Create graph
     graph = seed_graph_factory(num_nodes=10, edge_probability=0.3, seed=42)
     
-    # Set values within bounds
+    # Set values within bounds using seeded RNG
+    rng = np.random.default_rng(123)
     for _, data in graph.nodes(data=True):
-        data[EPI_PRIMARY] = np.random.uniform(epi_min, epi_max)
-        data[VF_PRIMARY] = np.random.uniform(vf_min, vf_max)
+        data[EPI_PRIMARY] = rng.uniform(epi_min, epi_max)
+        data[VF_PRIMARY] = rng.uniform(vf_min, vf_max)
         data[DNFR_PRIMARY] = 0.0
     
     # Validate bounds
@@ -228,11 +229,14 @@ def test_nodal_validator_phase_wrapping_unified(phase_value: float):
     """Test phase wrapping across multiple values (consolidated).
     
     Consolidates multiple phase wrapping tests into single parametrized test.
+    
+    Note: This test validates the wrapping formula used in TNFR.
+    Production code should use the same formula for consistency.
     """
-    # Phase should be wrapped to [-π, π]
+    # Phase should be wrapped to [-π, π] using canonical TNFR formula
     wrapped = ((phase_value + math.pi) % (2 * math.pi)) - math.pi
     
-    # Verify wrapping
+    # Verify wrapping to canonical range
     assert -math.pi <= wrapped <= math.pi
 
 
