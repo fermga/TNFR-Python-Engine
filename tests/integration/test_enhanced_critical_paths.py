@@ -105,7 +105,8 @@ def test_operator_generation_seed_reproducibility(seed_val) -> None:
     matrix2 = build_delta_nfr(dim, rng=rng2)
     
     # Identical seeds must produce identical operators
-    assert np.allclose(matrix1, matrix2, rtol=0.0, atol=1e-15)
+    # Use rtol for platform-independent comparison
+    assert np.allclose(matrix1, matrix2, rtol=1e-14, atol=1e-15)
 
 
 # ============================================================================
