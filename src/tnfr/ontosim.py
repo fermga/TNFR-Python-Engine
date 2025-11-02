@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections import deque
 from typing import TYPE_CHECKING
 
-from .callback_utils import CallbackEvent
+from .utils import CallbackEvent
 from .constants import METRIC_DEFAULTS, get_param, inject_defaults
 from .dynamics import default_compute_delta_nfr
 from .dynamics import run as _run

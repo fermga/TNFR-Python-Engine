@@ -8,7 +8,7 @@ from functools import partial
 from statistics import StatisticsError, pvariance
 
 from .alias import get_theta_attr
-from .callback_utils import CallbackEvent, callback_manager
+from .utils import CallbackEvent, callback_manager
 from .config.constants import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 from .glyph_history import (

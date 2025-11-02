@@ -13,7 +13,7 @@ from statistics import StatisticsError, fmean
 from typing import Any, Callable, Iterable, cast
 
 from ..alias import get_attr
-from ..callback_utils import CallbackEvent, callback_manager
+from ..utils import CallbackEvent, callback_manager
 from ..constants import (
     STATE_DISSONANT,
     STATE_STABLE,

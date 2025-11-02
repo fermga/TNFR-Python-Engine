@@ -13,6 +13,7 @@ and respect TNFR structural semantics.
 * :mod:`tnfr.utils.io` - JSON/YAML/TOML parsing, atomic file operations
 * :mod:`tnfr.utils.graph` - Graph metadata access, ΔNFR prep management
 * :mod:`tnfr.utils.chunks` - Chunk size computation for parallel operations
+* :mod:`tnfr.utils.callbacks` - Callback registration and invocation
 * :mod:`tnfr.utils.init` - Lazy imports, logging configuration
 
 **Stability Guarantees**:
@@ -142,6 +143,12 @@ from .io import (
     read_structured_file,
     safe_write,
 )
+from .callbacks import (
+    CallbackEvent,
+    CallbackManager,
+    callback_manager,
+    CallbackSpec,
+)
 
 __all__ = (
     "IMPORT_LOG",
@@ -233,6 +240,10 @@ __all__ = (
     "_FAILED_IMPORT_LIMIT",
     "_DEFAULT_CACHE_SIZE",
     "EMIT_MAP",
+    "CallbackEvent",
+    "CallbackManager",
+    "callback_manager",
+    "CallbackSpec",
 )
 
 #: Mapping of dynamically proxied names to the runtime types they expose.

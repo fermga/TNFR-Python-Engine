@@ -11,7 +11,7 @@ from numbers import Real
 from typing import Any, cast
 
 from ..alias import get_attr
-from ..callback_utils import CallbackEvent, callback_manager
+from ..utils import CallbackEvent, callback_manager
 from ..constants import get_graph_param, get_param
 from ..glyph_history import ensure_history
 from ..metrics.sense_index import compute_Si
@@ -744,7 +744,7 @@ def step(
     Register a hook that records phase synchrony while using the parametric
     selector to choose glyphs before advancing one runtime step.
 
-    >>> from tnfr.callback_utils import CallbackEvent, callback_manager
+    >>> from tnfr.utils import CallbackEvent, callback_manager
     >>> from tnfr.dynamics import selectors
     >>> from tnfr.dynamics.runtime import ALIAS_VF
     >>> from tnfr.structural import create_nfr
@@ -833,7 +833,7 @@ def run(
     Install a before-step callback and use the default glyph selector while
     running two iterations that synchronise phase and νf.
 
-    >>> from tnfr.callback_utils import CallbackEvent, callback_manager
+    >>> from tnfr.utils import CallbackEvent, callback_manager
     >>> from tnfr.dynamics import selectors
     >>> from tnfr.structural import create_nfr
     >>> G, node = create_nfr("seed", epi=0.3, vf=1.2)

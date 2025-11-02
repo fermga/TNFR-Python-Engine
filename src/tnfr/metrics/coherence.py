@@ -11,7 +11,7 @@ from typing import Any, MutableMapping, cast
 
 from .._compat import TypeAlias
 from ..alias import collect_attr, collect_theta_attr, get_attr, set_attr
-from ..callback_utils import CallbackEvent, callback_manager
+from ..utils import CallbackEvent, callback_manager
 from ..constants import get_param
 from ..constants.aliases import (
     ALIAS_D2VF,
