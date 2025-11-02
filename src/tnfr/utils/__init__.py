@@ -1,4 +1,44 @@
-"""Shared utility helpers exposed under :mod:`tnfr.utils`."""
+"""Centralized utility functions for the TNFR engine.
+
+This module serves as the canonical single point of access for generic helper
+functions, including numeric operations, cache infrastructure, data normalization,
+parsing utilities, and graph helpers. All functions maintain deterministic behavior
+and respect TNFR structural semantics.
+
+**Module Organization**:
+
+* :mod:`tnfr.utils.numeric` - Compensated arithmetic, angle operations, clamping
+* :mod:`tnfr.utils.cache` - Cache layers, versioning, graph-level caching
+* :mod:`tnfr.utils.data` - Type conversion, weight normalization, collections
+* :mod:`tnfr.utils.io` - JSON/YAML/TOML parsing, atomic file operations
+* :mod:`tnfr.utils.graph` - Graph metadata access, ΔNFR prep management
+* :mod:`tnfr.utils.chunks` - Chunk size computation for parallel operations
+* :mod:`tnfr.utils.init` - Lazy imports, logging configuration
+
+**Stability Guarantees**:
+
+All public functions exported from this module constitute the stable utility API.
+Functions prefixed with ``_`` are internal implementation details subject to change.
+
+**Example Usage**::
+
+    from tnfr.utils import clamp, json_dumps, normalize_weights
+    from tnfr.utils import CacheManager, cached_node_list
+    
+    # Numeric operations
+    value = clamp(x, 0.0, 1.0)
+    
+    # Data normalization
+    weights = normalize_weights(raw_weights, ['phase', 'epi', 'vf'])
+    
+    # Caching
+    nodes = cached_node_list(G)
+    
+    # Serialization
+    data = json_dumps(obj, sort_keys=True)
+
+See :doc:`/docs/utils_reference` for comprehensive documentation.
+"""
 
 from __future__ import annotations
 
