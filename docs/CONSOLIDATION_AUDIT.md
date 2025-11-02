@@ -380,8 +380,8 @@ python -c "from tnfr import cache"  # Should raise ImportError
 # Verify deprecation warning
 python -c "from tnfr import callback_utils" 2>&1 | grep -i deprecated
 
-# Run audit script
-python /tmp/audit_duplicates.py
+# Run automated verification
+python scripts/verify_consolidation.py
 ```
 
 ---
