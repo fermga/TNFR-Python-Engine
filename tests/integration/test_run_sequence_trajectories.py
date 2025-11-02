@@ -96,7 +96,7 @@ def test_compile_sequence_single_glyph() -> None:
     compiled = compile_sequence(seq(Glyph.SHA))
     assert len(compiled) == 1
     assert compiled[0][0] == OpTag.GLYPH
-    assert compiled[0][1] == Glyph.SHA
+    assert compiled[0][1] == Glyph.SHA.value
 
 
 def test_compile_sequence_with_wait() -> None:

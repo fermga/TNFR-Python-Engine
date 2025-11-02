@@ -98,16 +98,21 @@ def test_dnfr_epi_vf_mixed_invariant_under_relabel(data, graph) -> None:
 
     base_graph = copy.deepcopy(graph)
 
-    # Create permutation and apply with copy=True to avoid overlapping labels
+    # Create permutation and apply using two-step relabeling to avoid overlapping labels
     nodes = list(base_graph.nodes())
     permutation = data.draw(
         st.permutations(nodes),
         label="node_permutation",
     )
-    # Use non-overlapping temporary labels to avoid networkx relabeling issues
-    new_labels = [f"__tmp_{i}" for i in range(len(nodes))]
-    mapping = dict(zip(nodes, new_labels))
-    permuted_graph = nx.relabel_nodes(base_graph, mapping, copy=True)
+    
+    # Step 1: Relabel to temporary non-overlapping labels
+    temp_labels = [f"__tmp_{i}" for i in range(len(nodes))]
+    temp_mapping = dict(zip(nodes, temp_labels))
+    permuted_graph = nx.relabel_nodes(base_graph, temp_mapping, copy=True)
+    
+    # Step 2: Apply the actual permutation from temp labels to final labels
+    final_mapping = dict(zip(temp_labels, permutation))
+    nx.relabel_nodes(permuted_graph, final_mapping, copy=False)
 
     # Ensure DNFR initialized before running dynamics
     for _node, data_dict in base_graph.nodes(data=True):
