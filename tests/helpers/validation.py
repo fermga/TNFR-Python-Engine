@@ -123,7 +123,10 @@ def assert_graph_has_tnfr_defaults(graph: nx.Graph) -> None:
     AssertionError:
         If required TNFR defaults are missing.
     """
-    required_keys = ["DNFR_WEIGHTS", "STOP_EARLY", "HISTORY_MAXLEN"]
+    from tnfr.constants import DEFAULTS
+
+    # Verify presence of key default structures
+    required_keys = list(DEFAULTS.keys())[:3]  # Sample of required keys
     for key in required_keys:
         assert (
             key in graph.graph

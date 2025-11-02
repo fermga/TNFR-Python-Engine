@@ -7,16 +7,17 @@ Following DRY principles while maintaining TNFR structural fidelity.
 
 from __future__ import annotations
 
+import copy
 import math
 
 import networkx as nx
-import pytest
 
-from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_KEY, VF_PRIMARY
+from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_KEY, VF_PRIMARY, inject_defaults
 from tnfr.dynamics import dnfr_epi_vf_mixed, dnfr_phase_only
 from tests.helpers.validation import (
     assert_dnfr_balanced,
     assert_dnfr_homogeneous_stable,
+    assert_dnfr_lists_close,
     get_dnfr_values,
 )
 from tests.helpers.fixtures import (
@@ -93,9 +94,6 @@ def test_dnfr_bicluster_gradient(bicluster_graph_factory) -> None:
 def test_dnfr_phase_only_synchronization() -> None:
     """Verify synchronized phases remain stable (consolidated from property tests)."""
     graph = nx.gnp_random_graph(6, 0.4, seed=42)
-
-    from tnfr.constants import inject_defaults
-
     inject_defaults(graph)
 
     # All nodes at same phase
@@ -110,8 +108,6 @@ def test_dnfr_phase_only_synchronization() -> None:
 
 def test_dnfr_invariance_under_relabeling(seed_graph_factory) -> None:
     """Verify ΔNFR values are invariant under node relabeling."""
-    import copy
-
     base_graph = seed_graph_factory(num_nodes=8, edge_probability=0.3, seed=789)
     permuted_graph = copy.deepcopy(base_graph)
 
@@ -129,8 +125,6 @@ def test_dnfr_invariance_under_relabeling(seed_graph_factory) -> None:
     base_values = get_dnfr_values(base_graph)
     permuted_values = get_dnfr_values(permuted_graph)
 
-    from tests.helpers.validation import assert_dnfr_lists_close
-
     assert_dnfr_lists_close(base_values, permuted_values)
 
 
@@ -145,17 +139,11 @@ def test_dnfr_computation_consistency(seed_graph_factory) -> None:
     values1 = get_dnfr_values(graph1)
     values2 = get_dnfr_values(graph2)
 
-    from tests.helpers.validation import assert_dnfr_lists_close
-
     assert_dnfr_lists_close(values1, values2)
 
 
 def test_dnfr_phase_rotation_invariance() -> None:
     """Verify phase-only ΔNFR is invariant under global rotation."""
-    import copy
-
-    from tnfr.constants import inject_defaults
-
     graph1 = nx.gnp_random_graph(5, 0.5, seed=111)
     inject_defaults(graph1)
 
@@ -178,8 +166,6 @@ def test_dnfr_phase_rotation_invariance() -> None:
     # Magnitude distribution should be the same
     values1 = get_dnfr_values(graph1)
     values2 = get_dnfr_values(graph2)
-
-    from tests.helpers.validation import assert_dnfr_lists_close
 
     assert_dnfr_lists_close(values1, values2)
 
