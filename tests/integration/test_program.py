@@ -511,6 +511,26 @@ def test_compile_sequence_zero_materialize_stops_iteration():
     assert events == []
 
 
+def test_parse_program_tokens_handles_empty_iterable():
+    def token_stream():
+        if False:
+            yield None
+
+    tokens = flatten_module.parse_program_tokens(token_stream(), max_materialize=3)
+    assert tokens == []
+
+
+def test_parse_program_tokens_enforces_limit_for_iterables():
+    def token_stream():
+        yield "AL"
+        yield "RA"
+        yield "OZ"
+        yield "EN"
+
+    with pytest.raises(ValueError, match=r"Iterable produced 4 items, exceeds limit 3"):
+        flatten_module.parse_program_tokens(token_stream(), max_materialize=3)
+
+
 def test_thol_repeat_lt_one_raises():
     with pytest.raises(ValueError, match="repeat must be ≥1"):
         compile_sequence([THOL(body=[], repeat=0)])

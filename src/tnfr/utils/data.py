@@ -7,8 +7,8 @@ import math
 from collections import deque
 from collections.abc import Collection, Iterable, Mapping, Sequence
 from numbers import Real
-from itertools import islice
-from typing import Any, Callable, Iterator, TypeVar, cast
+from itertools import chain, islice
+from typing import Any, Callable, Iterable as TypingIterable, Iterator, Literal, TypeVar, cast, overload
 
 from .numeric import kahan_sum_nd
 from .init import get_logger
@@ -224,24 +224,88 @@ def normalize_materialize_limit(max_materialize: int | None) -> int | None:
     return limit
 
 
+@overload
 def ensure_collection(
     it: Iterable[T],
     *,
     max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
     error_msg: str | None = None,
+    return_view: Literal[False] = False,
 ) -> Collection[T]:
-    """Return ``it`` as a :class:`Collection`, materializing when needed."""
+    ...
+
+
+@overload
+def ensure_collection(
+    it: Iterable[T],
+    *,
+    max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
+    error_msg: str | None = None,
+    return_view: Literal[True],
+) -> tuple[Collection[T], TypingIterable[T]]:
+    ...
+
+
+def ensure_collection(
+    it: Iterable[T],
+    *,
+    max_materialize: int | None = MAX_MATERIALIZE_DEFAULT,
+    error_msg: str | None = None,
+    return_view: bool = False,
+) -> Collection[T] | tuple[Collection[T], TypingIterable[T]]:
+    """Return ``it`` as a :class:`Collection`, materializing when needed.
+
+    When ``return_view`` is ``True`` the function returns a tuple containing the
+    materialised preview and an iterable that can be used to continue streaming
+    from the same source after the preview limit. The preview will contain up to
+    ``max_materialize`` items (when the limit is enforced); when ``max_materialize``
+    is ``None`` the preview is empty and the returned iterable is the original
+    stream.
+    """
+
+    def _finalize(
+        collection: Collection[T],
+        view: TypingIterable[T] | None = None,
+    ) -> Collection[T] | tuple[Collection[T], TypingIterable[T]]:
+        if not return_view:
+            return collection
+        if view is None:
+            return collection, collection
+        return collection, view
 
     if isinstance(it, Collection):
         if isinstance(it, STRING_TYPES):
-            return (cast(T, it),)
-        else:
-            return it
+            wrapped = (cast(T, it),)
+            return _finalize(wrapped)
+        return _finalize(cast(Collection[T], it), cast(TypingIterable[T], it))
+
+    if isinstance(it, STRING_TYPES):
+        wrapped = (cast(T, it),)
+        return _finalize(wrapped)
 
     if not isinstance(it, Iterable):
         raise TypeError(f"{it!r} is not iterable")
 
     limit = normalize_materialize_limit(max_materialize)
+
+    if return_view:
+        if limit is None:
+            return (), cast(TypingIterable[T], it)
+        if limit == 0:
+            return (), ()
+
+        iterator = iter(it)
+        preview = tuple(islice(iterator, limit + 1))
+        if len(preview) > limit:
+            examples = ", ".join(repr(x) for x in preview[:3])
+            msg = error_msg or (
+                f"Iterable produced {len(preview)} items, exceeds limit {limit}; first items: [{examples}]"
+            )
+            raise ValueError(msg)
+        if not preview:
+            return (), iterator
+        return preview, chain(preview, iterator)
+
     if limit is None:
         return tuple(it)
     if limit == 0:

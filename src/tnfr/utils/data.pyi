@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Collection, Iterable, Iterator, Mapping, Sequence
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, Literal, TypeVar, overload
 
 T = TypeVar("T")
 
@@ -38,12 +38,23 @@ def flatten_structure(
     expand: Callable[[Any], Iterable[Any] | None] | None = ...,
 ) -> Iterator[Any]: ...
 def normalize_materialize_limit(max_materialize: int | None) -> int | None: ...
+@overload
 def ensure_collection(
     it: Iterable[T],
     *,
-    max_materialize: int | None = ...,
-    error_msg: str | None = ...,
+    max_materialize: int | None = ..., 
+    error_msg: str | None = ..., 
+    return_view: Literal[False] = ..., 
 ) -> Collection[T]: ...
+
+@overload
+def ensure_collection(
+    it: Iterable[T],
+    *,
+    max_materialize: int | None = ..., 
+    error_msg: str | None = ..., 
+    return_view: Literal[True],
+) -> tuple[Collection[T], Iterable[T]]: ...
 def normalize_weights(
     dict_like: Mapping[str, Any],
     keys: Iterable[str] | Sequence[str],
