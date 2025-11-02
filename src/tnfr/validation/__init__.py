@@ -58,7 +58,29 @@ _GRAMMAR_EXPORTS = tuple(getattr(_grammar, "__all__", ()))
 
 globals().update({name: getattr(_grammar, name) for name in _GRAMMAR_EXPORTS})
 
-__all__ = _GRAMMAR_EXPORTS
+_RUNTIME_EXPORTS = (
+    "ValidationOutcome",
+    "Validator",
+    "GraphCanonicalValidator",
+    "apply_canonical_clamps",
+    "validate_canon",
+    "GRAPH_VALIDATORS",
+    "run_validators",
+    "CANON_COMPAT",
+    "CANON_FALLBACK",
+    "validate_window",
+    "coerce_glyph",
+    "get_norm",
+    "glyph_fallback",
+    "normalized_dnfr",
+    "acceleration_norm",
+    "check_repeats",
+    "maybe_force",
+    "soft_grammar_filters",
+    "NFRValidator",
+)
+
+__all__ = _GRAMMAR_EXPORTS + _RUNTIME_EXPORTS
 
 _ENFORCE_CANONICAL_GRAMMAR = _grammar.enforce_canonical_grammar
 
