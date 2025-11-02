@@ -383,3 +383,194 @@ def test_compile_sequence_preserves_structure() -> None:
     assert compiled[0][0] == OpTag.TARGET
     assert compiled[1][0] == OpTag.GLYPH
     assert compiled[2][0] == OpTag.WAIT
+
+
+# ============================================================================
+# ADDITIONAL CRITICAL PATH COVERAGE FOR RUN SEQUENCE TRAJECTORIES
+# ============================================================================
+
+
+@pytest.mark.parametrize("nesting_depth", [2, 3, 4])
+def test_compile_sequence_deeply_nested_blocks(nesting_depth) -> None:
+    """Test compile_sequence with nested block structures.
+    
+    Critical path: ensures proper compilation of nested structures.
+    Note: Tests compilation only to avoid THOL grammar validation.
+    """
+    # Create nested structure
+    def create_nested_block(depth):
+        if depth == 1:
+            return block(wait(1))
+        return block(wait(1), create_nested_block(depth - 1))
+    
+    nested = create_nested_block(nesting_depth)
+    
+    # Should compile without error
+    compiled = compile_sequence(seq(nested))
+    
+    # Should have THOL and WAIT operations
+    op_tags = [op[0] for op in compiled]
+    thol_count = op_tags.count(OpTag.THOL)
+    wait_count = op_tags.count(OpTag.WAIT)
+    
+    # Each level adds THOL and WAIT
+    assert thol_count >= nesting_depth
+    assert wait_count >= nesting_depth
+
+
+@pytest.mark.parametrize("num_targets,num_operations", [
+    (2, 5),
+    (3, 10),
+    (5, 15),
+])
+def test_run_sequence_multiple_target_switches(graph_canon, num_targets, num_operations) -> None:
+    """Test run_sequence with multiple rapid target switches.
+    
+    Adds coverage for complex target switching patterns.
+    """
+    G = graph_canon()
+    nodes = list(range(num_targets))
+    G.add_nodes_from(nodes)
+    
+    # Create sequence with alternating targets
+    operations = []
+    for i in range(num_operations):
+        target_node = nodes[i % num_targets]
+        operations.extend([target([target_node]), wait(1)])
+    
+    play(G, seq(*operations), step_fn=_step_noop)
+    
+    # Verify all target switches recorded
+    trace = list(G.graph["history"]["program_trace"])
+    target_entries = [e for e in trace if e["op"] == "TARGET"]
+    
+    assert len(target_entries) == num_operations
+
+
+def test_run_sequence_mixed_operation_types(graph_canon) -> None:
+    """Test run_sequence with complex mixing of operation types.
+    
+    Critical path: verifies proper handling of heterogeneous sequences.
+    """
+    G = graph_canon()
+    G.add_nodes_from([0, 1, 2, 3, 4])
+    
+    # Complex mixed sequence
+    sequence = seq(
+        target([0, 1]),
+        wait(2),
+        target([2, 3, 4]),
+        wait(1),
+        block(wait(1), repeat=2),
+        target(None),  # All nodes
+        wait(3),
+    )
+    
+    play(G, seq(sequence), step_fn=_step_noop)
+    
+    trace = list(G.graph["history"]["program_trace"])
+    
+    # Verify all operation types present
+    op_types = {e["op"] for e in trace}
+    assert "TARGET" in op_types
+    assert "WAIT" in op_types
+    assert "THOL" in op_types  # From block
+
+
+@pytest.mark.parametrize("wait_values", [
+    [1, 2, 3, 4, 5],
+    [10, 5, 15, 2, 8],
+    [1, 1, 1, 1, 1],
+])
+def test_run_sequence_variable_wait_durations(graph_canon, wait_values) -> None:
+    """Test run_sequence with varying wait durations.
+    
+    Adds coverage for time progression with variable wait values.
+    """
+    G = graph_canon()
+    G.add_node(0)
+    
+    operations = [wait(w) for w in wait_values]
+    play(G, seq(*operations), step_fn=_step_noop)
+    
+    trace = list(G.graph["history"]["program_trace"])
+    wait_entries = [e for e in trace if e["op"] == "WAIT"]
+    
+    # Verify correct number of wait operations
+    assert len(wait_entries) == len(wait_values)
+    
+    # Verify wait values recorded
+    recorded_waits = [e["k"] for e in wait_entries]
+    assert recorded_waits == wait_values
+
+
+def test_run_sequence_time_accumulation_consistency(graph_canon) -> None:
+    """Test that time accumulates consistently through sequence execution.
+    
+    Critical path: verifies time progression maintains structural invariants.
+    """
+    G = graph_canon()
+    G.add_node(0)
+    
+    wait_durations = [2, 3, 5, 1, 4]
+    operations = [wait(w) for w in wait_durations]
+    
+    play(G, seq(*operations), step_fn=_step_noop)
+    
+    # Verify time progression
+    assert "history" in G.graph
+    trace = list(G.graph["history"]["program_trace"])
+    
+    # Extract timestamps
+    times = [e.get("t", 0) for e in trace if "t" in e]
+    
+    if len(times) > 1:
+        # Times should be monotonically increasing
+        for i in range(len(times) - 1):
+            assert times[i+1] >= times[i]
+
+
+def test_compile_sequence_with_empty_blocks(graph_canon) -> None:
+    """Test compile_sequence handles empty blocks correctly.
+    
+    Critical path: ensures empty blocks don't break compilation.
+    """
+    # Empty block should compile without error
+    sequence = seq(
+        target([0]),
+        block(),  # Empty block
+        wait(1),
+    )
+    
+    compiled = compile_sequence(sequence)
+    
+    # Should still have target and wait
+    op_tags = [op[0] for op in compiled]
+    assert OpTag.TARGET in op_tags
+    assert OpTag.WAIT in op_tags
+
+
+def test_run_sequence_interleaved_targets_and_waits(graph_canon) -> None:
+    """Test run_sequence with tightly interleaved targets and waits.
+    
+    Adds coverage for rapid alternation between operation types.
+    """
+    G = graph_canon()
+    G.add_nodes_from([0, 1, 2])
+    
+    # Rapidly interleave targets and waits
+    operations = []
+    for i in range(10):
+        operations.append(target([i % 3]))
+        operations.append(wait(1))
+    
+    play(G, seq(*operations), step_fn=_step_noop)
+    
+    trace = list(G.graph["history"]["program_trace"])
+    
+    # Should have 10 targets and 10 waits
+    target_count = sum(1 for e in trace if e["op"] == "TARGET")
+    wait_count = sum(1 for e in trace if e["op"] == "WAIT")
+    
+    assert target_count == 10
+    assert wait_count == 10

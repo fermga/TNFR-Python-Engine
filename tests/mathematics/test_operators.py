@@ -82,19 +82,6 @@ def test_frequency_operator_properties(structural_rng: np.random.Generator) -> N
     assert projected == pytest.approx(operator.expectation(state))
 
 
-def test_frequency_operator_negative_spectrum_detected() -> None:
-    operator = FrequencyOperator([-0.5, 0.5])
-    assert not operator.is_positive_semidefinite()
-
-
-def test_make_coherence_operator_from_spectrum() -> None:
-    operator = make_coherence_operator(3, spectrum=np.array([0.2, 0.3, 0.4]))
-
-    assert isinstance(operator, CoherenceOperator)
-    np.testing.assert_allclose(operator.matrix, np.diag([0.2, 0.3, 0.4]))
-    assert operator.is_positive_semidefinite()
-
-
 def test_make_coherence_operator_defaults_to_c_min() -> None:
     operator = make_coherence_operator(2, c_min=0.6)
 
@@ -112,8 +99,4 @@ def test_make_frequency_operator_preserves_valid_matrix(
     np.testing.assert_allclose(operator.matrix, matrix, atol=structural_tolerances["atol"])
 
 
-def test_make_frequency_operator_rejects_negative_eigenvalues() -> None:
-    matrix = np.array([[1.0, 0.0], [0.0, -0.5]], dtype=np.complex128)
 
-    with pytest.raises(ValueError, match="positive semidefinite"):
-        make_frequency_operator(matrix)

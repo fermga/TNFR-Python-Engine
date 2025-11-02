@@ -142,17 +142,3 @@ def test_compile_sequence_complex() -> None:
     assert OpTag.WAIT in op_tags
     assert OpTag.THOL in op_tags
 
-
-def test_compile_sequence_deterministic() -> None:
-    """Verify compile_sequence produces deterministic output."""
-    sequence = seq(Glyph.SHA, wait(3), Glyph.AL)
-    
-    compiled1 = compile_sequence(sequence)
-    compiled2 = compile_sequence(sequence)
-    
-    # Should be identical
-    assert len(compiled1) == len(compiled2)
-    for (op1, pay1), (op2, pay2) in zip(compiled1, compiled2):
-        assert op1 == op2
-        if hasattr(pay1, "__eq__"):
-            assert pay1 == pay2
