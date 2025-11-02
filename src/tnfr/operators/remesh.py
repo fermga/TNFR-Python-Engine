@@ -24,7 +24,7 @@ from ..types import RemeshMeta
 from ..utils import cached_import, edge_version_update, kahan_sum_nd
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
-    from ..callback_utils import CallbackEvent, CallbackManager
+    from ..utils import CallbackEvent, CallbackManager
 
 CommunityGraph: TypeAlias = Any
 NetworkxModule: TypeAlias = ModuleType
@@ -118,7 +118,7 @@ def _snapshot_epi(G: CommunityGraph) -> tuple[float, str]:
 
 def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
     """Store remesh metadata and optionally log and trigger callbacks."""
-    from ..callback_utils import CallbackEvent, callback_manager
+    from ..utils import CallbackEvent, callback_manager
     from ..glyph_history import append_metric
 
     G.graph["_REMESH_META"] = meta

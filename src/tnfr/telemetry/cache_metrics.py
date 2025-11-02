@@ -171,7 +171,7 @@ class CacheTelemetryPublisher:
 
         graph = self._resolve_graph()
         if graph is not None:
-            from ..callback_utils import CallbackEvent, callback_manager
+            from ..utils import CallbackEvent, callback_manager
 
             ctx = {"cache": name, "metrics": payload}
             callback_manager.invoke_callbacks(graph, CallbackEvent.CACHE_METRICS, ctx)

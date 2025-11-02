@@ -11,7 +11,7 @@ from typing import Any, Callable, TypeVar
 import networkx as nx
 
 from .alias import get_attr
-from .callback_utils import CallbackEvent, callback_manager
+from .utils import CallbackEvent, callback_manager
 from .config.constants import (
     ANGLE_MAP,
     GLYPHS_CANONICAL,

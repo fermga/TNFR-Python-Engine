@@ -30,6 +30,7 @@ from .types import (
     TraceSnapshot,
 )
 from .utils import cached_import, get_graph_mapping, is_non_string_sequence
+from .utils.callbacks import CallbackSpec
 
 
 class _KuramotoFn(Protocol):
@@ -38,13 +39,6 @@ class _KuramotoFn(Protocol):
 
 class _SigmaVectorFn(Protocol):
     def __call__(self, G: TNFRGraph, weight_mode: str | None = None) -> SigmaVector: ...
-
-
-class CallbackSpec(NamedTuple):
-    """Specification for a registered callback."""
-
-    name: str | None
-    func: Callable[..., Any]
 
 
 class TraceFieldSpec(NamedTuple):
@@ -506,7 +500,7 @@ def register_trace(G: TNFRGraph) -> None:
     if G.graph.get("_trace_registered"):
         return
 
-    from .callback_utils import callback_manager
+    from .utils import callback_manager
 
     for phase in TRACE_FIELDS.keys():
         event = f"{phase}_step"

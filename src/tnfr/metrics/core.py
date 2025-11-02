@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping, MutableMapping
 from typing import Any, NamedTuple, cast
 
-from ..callback_utils import CallbackEvent, callback_manager
+from ..utils import CallbackEvent, callback_manager
 from ..constants import get_param
 from ..glyph_history import append_metric, ensure_history
 from ..telemetry import ensure_nu_f_telemetry
