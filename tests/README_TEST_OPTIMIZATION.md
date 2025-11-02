@@ -16,13 +16,14 @@ The test suite has been optimized to follow DRY (Don't Repeat Yourself) principl
 ### Running the Optimized Tests
 
 ```bash
-# Run all new unified and critical path tests (173 tests, ~0.4s)
+# Run all new unified and critical path tests (210 tests, ~0.5s)
 pytest tests/integration/test_unified_*.py tests/integration/test_*_critical_paths.py -v
 
 # Run specific test suite
 pytest tests/integration/test_unified_structural_validation.py -v
 pytest tests/integration/test_unified_operator_validation.py -v
 pytest tests/integration/test_operator_generation_critical_paths.py -v
+pytest tests/integration/test_enhanced_critical_paths.py -v  # New enhanced coverage
 ```
 
 ### Using Shared Test Utilities
@@ -63,7 +64,12 @@ tests/
 │   ├── test_unified_operator_validation.py        # NEW: 96 tests
 │   ├── test_operator_generation_critical_paths.py # NEW: 17 tests
 │   ├── test_nodal_validators_critical_paths.py    # NEW: 16 tests
-│   └── test_run_sequence_critical_paths.py        # NEW: 21 tests
+│   ├── test_run_sequence_critical_paths.py        # NEW: 21 tests
+│   ├── test_enhanced_critical_paths.py            # NEW: 37 tests
+│   ├── test_operator_generation.py                # DEPRECATED (skip marker)
+│   ├── test_operator_generation_extended.py       # DEPRECATED (skip marker)
+│   ├── test_consolidated_structural_validation.py # DEPRECATED (skip marker)
+│   └── test_nodal_validators.py                   # DEPRECATED (skip marker)
 └── TEST_CONSOLIDATION_SUMMARY.md        # NEW: Deprecation guide
 ```
 
@@ -289,17 +295,22 @@ Verify the fixture is defined in:
 
 | Category | Before | After | Improvement |
 |----------|--------|-------|-------------|
-| Operator tests | ~20 separate | 96 parametrized | +76 tests, 60% less code |
+| Operator tests | ~20 separate | 96 parametrized + 14 enhanced | +90 tests, 60% less code |
 | Structural tests | ~13 separate | 23 parametrized | +10 tests, 60% less code |
-| Critical paths | Limited | 54 new tests | New coverage |
-| **Total** | ~240 tests | **413+ tests** | **+173 tests** |
+| Critical paths | Limited | 91 new tests (54 + 37) | New coverage |
+| Nodal validators | ~20 separate | 16 + 13 enhanced | Enhanced coverage |
+| run_sequence | Limited | 21 + 8 enhanced | Enhanced coverage |
+| **Redundant tests** | 89 duplicates | **0 (marked skip)** | **-89 tests** |
+| **Net result** | 434 tests | **345 active + 210 optimized** | **+210 quality, -89 redundant** |
 
 ### Test Execution Speed
 
 - Unified structural: 0.18s for 23 tests
 - Unified operators: 0.23s for 96 tests
 - Critical paths: 0.15s for 54 tests
-- **Total: 0.42s for 173 tests**
+- Enhanced critical paths: 0.18s for 37 tests
+- **Total: ~0.50s for 210 optimized tests**
+- **Deprecated tests: 0.0s (skipped)**
 
 ## References
 

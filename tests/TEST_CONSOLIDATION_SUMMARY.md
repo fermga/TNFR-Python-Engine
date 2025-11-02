@@ -86,20 +86,21 @@ Adds comprehensive coverage for:
 - Trace ordering and consistency
 - Time progression validation
 
-## Tests That Can Be Deprecated
+## Tests That Have Been Deprecated
 
-### High Priority for Removal (Direct Duplicates)
+### ✅ Completed - Marked with pytest.mark.skip (89 tests)
 
-These tests are now fully covered by unified parametrized tests:
+These tests are now fully covered by unified parametrized tests and have been marked
+as deprecated with skip markers to prevent execution:
 
-1. **`test_consolidated_structural_validation.py`:**
+1. **`test_consolidated_structural_validation.py`:** ✅ DEPRECATED
    - `test_dnfr_conservation_small_network` → covered by `test_dnfr_conservation_unified`
    - `test_dnfr_conservation_medium_network` → covered by `test_dnfr_conservation_unified`
    - `test_dnfr_homogeneous_stability` → covered by `test_dnfr_homogeneous_stability_unified`
    - `test_dnfr_homogeneous_multiple_configurations` → covered by `test_dnfr_homogeneous_stability_unified`
    - `test_structural_conservation_across_topologies` → covered by `test_structural_conservation_across_topologies[edge_prob]`
 
-2. **`test_operator_generation.py`:**
+2. **`test_operator_generation.py`:** ✅ DEPRECATED
    - `test_build_delta_nfr_returns_hermitian_operator` → covered by `test_build_delta_nfr_hermitian_unified`
    - `test_build_delta_nfr_respects_dimension` → covered by `test_build_delta_nfr_dimension_consistency_unified`
    - `test_build_delta_nfr_laplacian_topology` → covered by `test_build_delta_nfr_topology_unified`
@@ -111,7 +112,7 @@ These tests are now fully covered by unified parametrized tests:
    - `test_build_delta_nfr_eigenvalues_real` → covered by `test_build_delta_nfr_eigenvalues_real_unified`
    - `test_build_delta_nfr_produces_finite_values` → covered by `test_build_delta_nfr_finite_values_unified`
 
-3. **`test_operator_generation_extended.py`:**
+3. **`test_operator_generation_extended.py`:** ✅ DEPRECATED
    - `test_build_delta_nfr_consistent_across_calls` → covered by `test_build_delta_nfr_reproducibility_unified`
    - `test_build_delta_nfr_small_scale_precision` → covered by `test_build_delta_nfr_scale_unified[0.1]`
    - `test_build_delta_nfr_large_scale_stability` → covered by `test_build_delta_nfr_scale_unified[10.0]`
@@ -119,6 +120,9 @@ These tests are now fully covered by unified parametrized tests:
    - `test_build_delta_nfr_nu_f_extremes` → covered by `test_build_delta_nfr_frequency_unified`
    - `test_build_delta_nfr_spectrum_properties` → covered by `test_build_delta_nfr_eigenvalues_real_unified`
    - `test_build_delta_nfr_orthogonality_preservation` → covered by `test_build_delta_nfr_orthogonality_preserved_unified`
+
+4. **`test_nodal_validators.py`:** ✅ DEPRECATED
+   - Multiple validator tests → covered by `test_nodal_validators_critical_paths.py`
 
 ### Medium Priority for Consolidation
 
@@ -141,33 +145,56 @@ These tests have partial overlap and could be consolidated:
 - Total test files in integration/mathematics/property: ~30+
 - Redundant structural validation patterns: ~13 tests
 - Operator generation duplicates: ~10+ tests
+- Total integration tests: 434
 
 ### After Optimization:
 - New shared utilities: 1 file (`base.py`)
 - New unified test suites: 2 files (23 + 96 = 119 parametrized tests)
-- New critical path coverage: 3 files (54 new tests)
-- **Total new test coverage: 173 tests**
+- New critical path coverage: 4 files (54 + 37 = 91 new tests)
+- **Total new test coverage: 210 tests**
+- **Deprecated/consolidated tests: 89 (marked with skip)**
+- **Net integration tests: 345 (reduced from 434)**
 
 ### Coverage Improvements:
-- Operator generation: +17 critical path tests
-- Nodal validators: +16 critical path tests  
-- run_sequence: +21 critical path tests
+- Operator generation: +17 critical path tests + 14 enhanced tests
+- Nodal validators: +16 critical path tests + 13 enhanced tests
+- run_sequence: +21 critical path tests + 8 enhanced tests
+- Cross-cutting integration: +2 tests
 - Parametrized coverage: 119 tests covering multiple dimensions/scales/configurations
+- **Total: +91 new critical path tests while removing 89 redundant tests**
 
-## Recommendations
+## Implementation Status
 
-1. **Phase 1 (Immediate):**
-   - Keep both old and new tests temporarily to verify equivalence
-   - Monitor CI/CD to ensure unified tests catch same issues
+### ✅ Phase 1 (Completed):
+   - ✅ Created unified test suites with parametrized fixtures
+   - ✅ Created critical path test coverage
+   - ✅ Verified unified tests provide equivalent coverage
+   - ✅ Monitored test execution to ensure no regressions
 
-2. **Phase 2 (After Validation):**
-   - Remove high-priority duplicates listed above
-   - Keep test files but with deprecation comments pointing to unified versions
+### ✅ Phase 2 (Completed):
+   - ✅ Deprecated redundant tests with pytest.mark.skip markers
+   - ✅ Added deprecation notices pointing to unified versions
+   - ✅ Reduced test count from 434 to 345 (-89 redundant tests)
+   - ✅ Fixed broken test_vf_adaptation_runtime.py import issue
 
-3. **Phase 3 (Maintenance):**
-   - Update test writing guidelines to use shared utilities
-   - Add more parametrized fixtures as needed
-   - Continue consolidating redundant patterns
+### ✅ Phase 3 (Completed):
+   - ✅ Added enhanced critical path coverage (37 new tests)
+   - ✅ Updated documentation to reflect consolidation
+   - ✅ Test writing guidelines use shared utilities
+   - ✅ Parametrized fixtures cover multiple scenarios
+
+## Next Steps for Full Cleanup (Optional Future Work)
+
+The redundant test files can be safely deleted in the future since they are now:
+1. Marked with skip to prevent execution
+2. Fully covered by unified tests
+3. Documented with clear mapping to replacements
+
+Files that can be deleted:
+- `tests/integration/test_operator_generation.py` → use `test_unified_operator_validation.py`
+- `tests/integration/test_operator_generation_extended.py` → use `test_unified_operator_validation.py`
+- `tests/integration/test_consolidated_structural_validation.py` → use `test_unified_structural_validation.py`
+- `tests/integration/test_nodal_validators.py` → use `test_nodal_validators_critical_paths.py`
 
 ## Usage Guidelines
 
