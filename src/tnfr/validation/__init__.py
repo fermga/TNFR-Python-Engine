@@ -1,8 +1,8 @@
 """Unified validation interface consolidating grammar, graph and spectral checks.
 
-This package re-exports the canonical grammar helpers implemented in
-``tnfr.operators.grammar`` and the runtime validators so downstream code can rely
-on a single import path for structural validation primitives.
+This package re-exports the canonical grammar helpers and runtime validators so
+downstream code can rely on ``tnfr.validation`` as the single import path for
+structural validation primitives.
 """
 
 from __future__ import annotations
@@ -91,7 +91,7 @@ def enforce_canonical_grammar(
     cand: Any,
     ctx: Any | None = None,
 ) -> Any:
-    """Proxy to :func:`tnfr.operators.grammar.enforce_canonical_grammar` preserving Glyph outputs."""
+    """Proxy to the canonical grammar enforcement helper preserving Glyph outputs."""
 
     result = _ENFORCE_CANONICAL_GRAMMAR(G, n, cand, ctx)
     if isinstance(cand, Glyph) and not isinstance(result, Glyph):

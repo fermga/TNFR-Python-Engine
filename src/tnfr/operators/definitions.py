@@ -78,7 +78,7 @@ class Operator:
         Notes
         -----
         The invocation delegates to
-        :func:`tnfr.operators.grammar.apply_glyph_with_grammar`, which enforces
+        :func:`tnfr.validation.apply_glyph_with_grammar`, which enforces
         the TNFR grammar before activating the glyph. The grammar may expand,
         contract or stabilise the neighbourhood so that the operator preserves
         canonical closure and coherence.

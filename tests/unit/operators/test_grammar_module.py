@@ -300,7 +300,7 @@ def test_apply_glyph_with_grammar_invokes_apply(monkeypatch: pytest.MonkeyPatch)
         captured["args"] = (graph, node_id, glyph, window)
 
     monkeypatch.setattr(
-        "tnfr.operators.grammar.enforce_canonical_grammar",
+        "tnfr.validation.enforce_canonical_grammar",
         lambda graph, node, cand, ctx=None: cand,
     )
     monkeypatch.setattr("tnfr.operators.apply_glyph", fake_apply, raising=False)
