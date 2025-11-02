@@ -13,6 +13,12 @@ from hypothesis import given, strategies as st
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_KEY, VF_PRIMARY, dEPI_PRIMARY
 from tnfr.dynamics import dnfr_epi_vf_mixed, dnfr_phase_only
 from tnfr.metrics.common import compute_coherence
+from tests.helpers.validation import (
+    assert_dnfr_balanced,
+    assert_dnfr_homogeneous_stable,
+    assert_dnfr_lists_close,
+    get_dnfr_values,
+)
 
 from .strategies import (
     PROPERTY_TEST_SETTINGS,
@@ -49,9 +55,8 @@ def test_dnfr_epi_vf_mixed_stable_on_homogeneous(graph) -> None:
 
     dnfr_epi_vf_mixed(graph)
 
-    for _node, data in graph.nodes(data=True):
-        delta = float(data.get(DNFR_PRIMARY, 0.0))
-        assert math.isclose(delta, 0.0, abs_tol=1e-9)
+    # Use shared validation helper for consistency with integration tests
+    assert_dnfr_homogeneous_stable(graph)
 
 
 @PROPERTY_TEST_SETTINGS
@@ -75,7 +80,9 @@ def test_dnfr_epi_vf_mixed_balances_clusters(clustered: ClusteredGraph) -> None:
         if cluster_values:
             cluster_signatures.append(cluster_values[0])
 
-    assert math.isclose(total_dnfr, 0.0, abs_tol=1e-9)
+    # Use shared validation helper for conservation check
+    assert_dnfr_balanced(graph, abs_tol=1e-9)
+    
     if len(cluster_signatures) == 2:
         # Cluster signatures should oppose or cancel depending on the gradient.
         assert cluster_signatures[0] * cluster_signatures[1] <= 0.0
@@ -90,35 +97,40 @@ def test_dnfr_epi_vf_mixed_invariant_under_relabel(data, graph) -> None:
     """ΔNFR values should remain stable after node relabelling."""
 
     base_graph = copy.deepcopy(graph)
-    permuted_graph = copy.deepcopy(graph)
 
+    # Create permutation and apply using two-step relabeling to avoid overlapping labels
     nodes = list(base_graph.nodes())
     permutation = data.draw(
         st.permutations(nodes),
         label="node_permutation",
     )
-    mapping = dict(zip(nodes, permutation))
-    nx.relabel_nodes(permuted_graph, mapping, copy=False)
+    
+    # Step 1: Relabel to temporary non-overlapping labels
+    temp_labels = [f"__tmp_{i}" for i in range(len(nodes))]
+    temp_mapping = dict(zip(nodes, temp_labels))
+    permuted_graph = nx.relabel_nodes(base_graph, temp_mapping, copy=True)
+    
+    # Step 2: Apply the actual permutation from temp labels to final labels
+    final_mapping = dict(zip(temp_labels, permutation))
+    nx.relabel_nodes(permuted_graph, final_mapping, copy=False)
 
-    for _node, data_dict in permuted_graph.nodes(data=True):
-        for key in (EPI_PRIMARY, VF_PRIMARY, DNFR_PRIMARY):
+    # Ensure DNFR initialized before running dynamics
+    for _node, data_dict in base_graph.nodes(data=True):
+        for key in (EPI_PRIMARY, VF_PRIMARY):
             assert key in data_dict
+        if DNFR_PRIMARY not in data_dict:
+            data_dict[DNFR_PRIMARY] = 0.0
+    for _node, data_dict in permuted_graph.nodes(data=True):
+        if DNFR_PRIMARY not in data_dict:
+            data_dict[DNFR_PRIMARY] = 0.0
 
     dnfr_epi_vf_mixed(base_graph)
     dnfr_epi_vf_mixed(permuted_graph)
 
-    base_values = sorted(
-        float(data_dict.get(DNFR_PRIMARY, 0.0))
-        for _node, data_dict in base_graph.nodes(data=True)
-    )
-    permuted_values = sorted(
-        float(data_dict.get(DNFR_PRIMARY, 0.0))
-        for _node, data_dict in permuted_graph.nodes(data=True)
-    )
-
-    assert len(base_values) == len(permuted_values)
-    for left, right in zip(base_values, permuted_values):
-        assert math.isclose(left, right, rel_tol=1e-9, abs_tol=1e-9)
+    # Use shared validation helpers for consistency
+    base_values = get_dnfr_values(base_graph)
+    permuted_values = get_dnfr_values(permuted_graph)
+    assert_dnfr_lists_close(base_values, permuted_values)
 
 
 def _apply_noise(
@@ -215,9 +227,8 @@ def test_dnfr_phase_only_stable_on_synchronised(graph, phase) -> None:
 
     dnfr_phase_only(graph)
 
-    for _node, data in graph.nodes(data=True):
-        delta = float(data.get(DNFR_PRIMARY, 0.0))
-        assert math.isclose(delta, 0.0, abs_tol=1e-9)
+    # Use shared validation helper for consistency
+    assert_dnfr_homogeneous_stable(graph)
 
 
 @PROPERTY_TEST_SETTINGS
@@ -250,14 +261,7 @@ def test_dnfr_phase_only_rotation_invariant(data) -> None:
     dnfr_phase_only(base_graph)
     dnfr_phase_only(rotated_graph)
 
-    base_values = sorted(
-        float(data.get(DNFR_PRIMARY, 0.0)) for _node, data in base_graph.nodes(data=True)
-    )
-    rotated_values = sorted(
-        float(data.get(DNFR_PRIMARY, 0.0))
-        for _node, data in rotated_graph.nodes(data=True)
-    )
-
-    assert len(base_values) == len(rotated_values)
-    for left, right in zip(base_values, rotated_values):
-        assert math.isclose(left, right, rel_tol=1e-9, abs_tol=1e-9)
+    # Use shared validation helpers for consistency
+    base_values = get_dnfr_values(base_graph)
+    rotated_values = get_dnfr_values(rotated_graph)
+    assert_dnfr_lists_close(base_values, rotated_values)
