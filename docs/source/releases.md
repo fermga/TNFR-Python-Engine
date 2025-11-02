@@ -167,9 +167,9 @@ python scripts/rollback_release.py --version 16.0.0 \
   :mod:`tnfr.config.constants`, :mod:`tnfr.config.operator_names`, and
   :mod:`tnfr.operators.registry`. Accessing retired identifiers now surfaces the
   standard :class:`AttributeError` without custom wording.
-- Documented the retirement timeline for
-  :mod:`tnfr.utils.migrations`, which remains available for archival upgrades
-  until ``tnfr`` 15.0.0 completes the migration window.
+- Documented the retirement timeline for the archival migration helpers,
+  clarifying that they would remain available only until ``tnfr`` 15.0.0
+  completed the migration window.
 - Updated guides and release notes to describe the final English-only contract
   and the requirement to normalise archives with the compatibility helpers.
 
@@ -283,12 +283,10 @@ python scripts/rollback_release.py --version 16.0.0 \
 
 ### 15.0.0 (legacy migration helpers removed)
 
-- Finalised the English-only payload contract by removing
-  :func:`tnfr.utils.migrations.migrate_legacy_phase_attributes` and
-  :func:`tnfr.utils.migrations.migrate_legacy_remesh_cooldown`. Projects must now
-  persist ``"theta"``, ``"phase"`` and ``"REMESH_COOLDOWN_WINDOW"`` directly
-  because the helpers no longer rewrite non-English aliases or the standalone
-  theta symbol.
+- Finalised the English-only payload contract by removing the bundled phase and
+  remesh cooldown migration helpers. Projects must now persist ``"theta"``,
+  ``"phase"`` and ``"REMESH_COOLDOWN_WINDOW"`` directly because the runtime no
+  longer rewrites non-English aliases or the standalone theta symbol on import.
 - The archival migration window announced in TNFR 14.x expired on 2025-03-31.
   Upgrade pipelines should refuse to import graphs that still contain retired
   keys instead of attempting a best-effort rewrite.
