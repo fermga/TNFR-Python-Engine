@@ -1,4 +1,18 @@
-"""Integration tests for ΔNFR generator construction."""
+"""Integration tests for ΔNFR generator construction.
+
+⚠️ DEPRECATION NOTICE:
+Most tests in this module have been consolidated into:
+- tests/integration/test_unified_operator_validation.py (Hermitian, reproducibility, input validation)
+
+Only test_build_delta_nfr_scaling_matches_ring_baselines is kept as it provides
+specific baseline validation against expected ring topology values that are not
+covered by parametrized tests.
+
+See:
+- tests/integration/test_unified_operator_validation.py for unified operator tests
+- tests/README_TEST_OPTIMIZATION.md for usage guidelines
+- tests/TEST_CONSOLIDATION_SUMMARY.md for detailed consolidation mapping
+"""
 from __future__ import annotations
 
 import numpy as np
@@ -18,6 +32,10 @@ def _expected_ring_adjacency(dim: int) -> np.ndarray:
     return adjacency
 
 
+@pytest.mark.skip(
+    reason="DEPRECATED: Consolidated into test_unified_operator_validation.py "
+    "(test_build_delta_nfr_hermitian_unified + test_build_delta_nfr_topology_unified)"
+)
 def test_build_delta_nfr_returns_hermitian_operators():
     for topology in ("laplacian", "adjacency"):
         operator = build_delta_nfr(5, topology=topology)
@@ -40,6 +58,10 @@ def test_build_delta_nfr_scaling_matches_ring_baselines():
     assert np.allclose(laplacian, expected_laplacian)
 
 
+@pytest.mark.skip(
+    reason="DEPRECATED: Consolidated into test_unified_operator_validation.py "
+    "(test_build_delta_nfr_reproducibility_unified + test_build_delta_nfr_different_seeds_unified)"
+)
 def test_build_delta_nfr_reproducibility_with_seeded_noise():
     dim = 6
     seeded_first = build_delta_nfr(dim, rng=np.random.default_rng(2024))
@@ -54,6 +76,10 @@ def test_build_delta_nfr_reproducibility_with_seeded_noise():
     assert np.allclose(unseeded, unseeded.conj().T)
 
 
+@pytest.mark.skip(
+    reason="DEPRECATED: Consolidated into test_unified_operator_validation.py "
+    "(test_build_delta_nfr_rejects_invalid_dimension_unified + test_build_delta_nfr_rejects_invalid_topology_unified)"
+)
 def test_build_delta_nfr_input_validation():
     with pytest.raises(ValueError):
         build_delta_nfr(0)
