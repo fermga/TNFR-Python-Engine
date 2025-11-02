@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/gamma.py
-# hypothesis_version: 6.143.1
-
-[-1.0, 0.0, 1.0, 'GAMMA', 'GAMMA_REGISTRY', 'GammaEntry', 'KURAMOTO_CACHE_STEPS', 'R', '_dnfr_nodes_checksum', '_gamma_raw', '_gamma_spec', '_gamma_spec_hash', '_kuramoto_cache', 'eval_gamma', 'gamma_harmonic', 'gamma_kuramoto_tanh', 'gamma_none', 'harmonic', 'kuramoto_R_psi', 'kuramoto_bandpass', 'kuramoto_linear', 'kuramoto_tanh', 'none', 'psi', 'type']

@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/dynamics/integrators.py
-# hypothesis_version: 6.143.1
-
-[0.0, 1e-12, 2.0, 6.0, 'AbstractIntegrator', 'DT', 'DT_MIN', 'DefaultIntegrator', 'INTEGRATOR_METHOD', '_gamma_spec', '_t', 'dt must be a number', 'euler', 'none', 'rk4', 'spawn', 'type']

@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/jsonschema/_format.py
-# hypothesis_version: 6.143.1
-
-['#', '%H:%M:%S', '-', '1970-01-01T', '@', 'IRI', 'IRI_reference', 'URI', 'URI_reference', '_F', 'color', 'date', 'date-time', 'draft201909', 'draft202012', 'draft3', 'draft4', 'draft6', 'draft7', 'duration', 'email', 'host-name', 'hostname', 'idn-email', 'idn-hostname', 'ip-address', 'ipv4', 'ipv6', 'iri', 'iri-reference', 'json-pointer', 'regex', 'scope_id', 'time', 'uri', 'uri-reference', 'uri-template', 'uuid']

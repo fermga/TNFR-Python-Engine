@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/validation/rules.py
-# hypothesis_version: 6.143.1
-
-[0.0, 0.05, 0.15, 0.5, 0.66, 1.0, '.', 'Glyph.', 'GrammarContext', '_check_compatibility', '_check_oz_to_zhir', '_check_thol_closure', '_norm_attr', '_si', 'coerce_glyph', 'dnfr_max', 'get_norm', 'glyph_fallback', 'glyph_history', 'normalized_dnfr', 'oz-before-zhir', 'required_closure', 'si', 'si_high', 'thol-closure', 'thol_close_dnfr', 'thol_len', 'thol_max_len', 'thol_min_len', 'thol_open', 'unknown', 'zhir_dnfr_min']

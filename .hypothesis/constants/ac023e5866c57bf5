@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/pyrsistent/_pmap.py
-# hypothesis_version: 6.143.1
-
-[0.67, '%s is immutable', 'KT', 'VT_co', '__weakref__', '_buckets', '_buckets_evolver', '_cached_hash', '_map', '_original_pmap', '_size', 'pmap({0})', '{0}']

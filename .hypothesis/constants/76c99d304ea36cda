@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/alias.py
-# hypothesis_version: 6.143.1
-
-[0.0, 128, 'AbsMaxResult', 'SCALAR_SETTERS', 'T', '_dnfrmax', '_trig_version', '_vfmax', 'alias', 'cache', 'collect_attr', 'collect_theta_attr', 'default', 'dnfr', 'doc', 'extra', 'get_attr', 'get_attr_str', 'get_theta_attr', 'networkx.Graph', 'phase', 'set_attr', 'set_attr_and_cache', 'set_attr_generic', 'set_attr_str', 'set_attr_with_max', 'set_scalar', 'set_theta', 'set_theta_attr', 'theta', 'update_max_param', 'vf']

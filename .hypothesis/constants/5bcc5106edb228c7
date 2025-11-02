@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/metrics/core.py
-# hypothesis_version: 6.143.1
-
-[0.0, ', ', 'B', 'C_steps', 'DT', 'EPS_DEPI_STABLE', 'EPS_DNFR_STABLE', 'GlyphSelector', 'METRICS', 'NodeId', 'Si_hi_frac', 'Si_lo_frac', 'Si_mean', 'TNFRGraph', 'Tg_by_node', 'Tg_global', 'TraceCallback', 'TraceFieldFn', 'TraceFieldMap', 'TraceFieldRegistry', '_metrics_history_id', '_metrics_step', '_t', 'delta_Si', 'enabled', 'glyph_load_disr', 'glyph_load_estab', 'glyph_top', 'glyphogram_series', 'hz_bridge', 'iota', 'kuramoto_R', 'latency_series', 'metrics_step', 'n_jobs', 'nu_f_bridge', 'nu_f_ci_lower_hz', 'nu_f_ci_lower_hz_str', 'nu_f_ci_upper_hz', 'nu_f_ci_upper_hz_str', 'nu_f_rate_hz', 'nu_f_rate_hz_str', 'nu_f_snapshot', 'phase_sync', 'sense_sigma_angle', 'sense_sigma_mag', 'sense_sigma_x', 'sense_sigma_y', 'stable_frac', 'telemetry', 'verbosity']

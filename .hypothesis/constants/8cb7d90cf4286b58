@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/pyrsistent/_pset.py
-# hypothesis_version: 6.143.1
-
-['T_co', '__weakref__', '_map', '_original_pset', '_pmap_evolver', 'p', 'pset([{0}])']

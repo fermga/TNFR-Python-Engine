@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/jsonschema/_validators.py
-# hypothesis_version: 6.143.1
-
-['$dynamicAnchor', ', ', 'array', 'do', 'does', 'else', 'items', 'maxContains', 'minContains', 'number', 'object', 'patternProperties', 'prefixItems', 'resolve', 'string', 'then']

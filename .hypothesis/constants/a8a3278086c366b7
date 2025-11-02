@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/pyrsistent/_checked_types.py
-# hypothesis_version: 6.143.1
-
-['({0})', ', ', '.', 'KT', 'T_co', 'VT_co', '__invariant__', '__key_type__', '__serializer__', '__slots__', '__type__', '__value_type__', '_checked_invariants', '_checked_key_types', '_checked_types', '_checked_value_types', '_destination_class', '_invariant_errors']

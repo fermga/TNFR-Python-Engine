@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/pyrsistent/_pvector.py
-# hypothesis_version: 6.143.1
-
-['1', 'T_co', '__len__', '__weakref__', '_cached_leafs', '_count', '_dirty_nodes', '_extra_tail', '_orig_pvector', '_root', '_shift', '_tail', '_tail_offset', 'pvector({0})']

@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/utils/init.py
-# hypothesis_version: 6.143.1
-
-[128, 1024, 'EMIT_MAP', 'IMPORT_LOG', 'LazyImportProxy', 'NodeNX', 'WarnOnce', '_DEFAULT_CACHE_SIZE', '_FAILED_IMPORT_LIMIT', '_IMPORT_STATE', '__weakref__', '_attr', '_configure_root', '_emit', '_fallback', '_key', '_kind', '_lock', '_module', '_reset_import_state', '_reset_logging_state', '_strong_target', '_target_ref', '_value', '_warn_failure', 'both', 'cached_import', 'format', 'get_logger', 'get_nodenx', 'get_numpy', 'import.failure', 'import.success', 'level', 'log', 'numpy', 'prune_failed_imports', 'strong', 'tnfr.node', 'warm_cached_import', 'warn', 'warn_once', 'weak']

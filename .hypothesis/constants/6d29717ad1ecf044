@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/pyrsistent/_field_common.py
-# hypothesis_version: 6.143.1
-
-['PSet', 'PVector', '_factory', 'ignore_extra', 'initial', 'invariant', 'mandatory', 'serializer', 'type', '{0}To{1}PMap']

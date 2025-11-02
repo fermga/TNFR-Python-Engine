@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/utils/data.py
-# hypothesis_version: 6.143.1
-
-[0.0, 1.0, 1000, 1024, ', ', 'Non-finite value: %s', 'STRING_TYPES', 'T', '_', 'auto', 'convert_value', 'ensure_collection', 'flatten_structure', 'mix_groups', 'none', 'normalize_counter', 'normalize_weights', 'null', 'tnfr.utils.data', 'value']

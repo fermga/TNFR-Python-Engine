@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/metrics/common.py
-# hypothesis_version: 6.143.1
-
-[0.0, 1.0, 'GraphLike', '_coerce_jobs', '_dnfrmax', '_get_vf_dnfr_max', '_neighbors', '_vfmax', 'accel_max', 'compute_coherence', 'dnfr_max', 'ensure_neighbors_map', 'merge_graph_weights', 'min_max_range', 'normalize_dnfr']

@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/metrics/trig.py
-# hypothesis_version: 6.143.1
-
-[0.0, 'G', 'NodeNX', 'NodeProtocol', 'accumulate_cos_sin', 'ignore', 'mean_cos', 'mean_sin', 'neighbor_cos_sum', 'neighbor_counts', 'neighbor_phase_mean', 'neighbor_sin_sum', 'nodes', 'tnfr.node']

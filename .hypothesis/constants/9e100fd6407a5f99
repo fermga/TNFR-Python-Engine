@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/dynamics/selectors.py
-# hypothesis_version: 6.143.1
-
-[0.0, 0.05, 0.33, 0.5, 0.66, 1.0, 'AL_MAX_LAG', 'AbstractSelector', 'DefaultGlyphSelector', 'EN_MAX_LAG', 'GRAMMAR_CANON', 'GlyphCode', 'IL', 'NAV', 'OZ', 'ProcessPoolExecutor', 'RA', 'SELECTOR_WEIGHTS', 'THOL', 'ZHIR', '__name__', '_apply_glyphs', '_apply_selector', '_choose_glyph', '_prepared_graph_id', '_preselection', '_sel_norms', '_selector_weights', 'accel_hi', 'accel_max', 'default', 'dnfr_hi', 'dnfr_lo', 'dnfr_max', 'enabled', 'get_numpy', 'glyph_history', 'glyph_selector', 'param', 'selector', 'sense_sigma_mag', 'si_hi', 'si_lo', 'since_AL', 'since_EN', 'tnfr.dynamics', 'w_accel', 'w_dnfr', 'w_si']

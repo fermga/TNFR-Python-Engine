@@ -1,4 +1,0 @@
-# file: /usr/lib/python3/dist-packages/pyrsistent/__init__.py
-# hypothesis_version: 6.143.1
-
-['CheckedKeyTypeError', 'CheckedPMap', 'CheckedPSet', 'CheckedPVector', 'CheckedType', 'InvariantException', 'PBag', 'PClass', 'PClassMeta', 'PDeque', 'PList', 'PMap', 'PRecord', 'PSet', 'PVector', 'b', 'discard', 'dq', 'field', 'freeze', 'get_in', 'immutable', 'inc', 'l', 'm', 'mutant', 'ny', 'optional', 'pbag', 'pdeque', 'plist', 'pmap', 'pmap_field', 'pset', 'pset_field', 'pvector', 'pvector_field', 'rex', 's', 'thaw', 'v']

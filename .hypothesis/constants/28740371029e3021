@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/mathematics/epi.py
-# hypothesis_version: 6.143.1
-
-[0.0, 1e-12, 1e-09, 1.0, 'BEPIElement', 'BanachSpaceEPI', 'CoherenceEvaluation', 'a_discrete', 'f_continuous', 'inf', 'x_grid']

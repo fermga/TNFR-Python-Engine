@@ -13,6 +13,7 @@ src/tnfr/_generated_version.py
 .venv/
 .env
 .pytest_cache/
+.hypothesis/
 cover/
 *.cover
 coverage.xml

@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/dynamics/coordination.py
-# hypothesis_version: 6.143.1
-
-[0.0, 0.01, 0.05, 0.07, 0.1, 0.2, 0.25, 0.5, 0.6, 0.9, 'PHASE_ADAPT', 'PHASE_HISTORY_MAXLEN', 'PHASE_K_GLOBAL', 'PHASE_K_LOCAL', 'R_hi', 'R_lo', '_DequeT', '_disruptors', 'deque[_DequeT]', 'disr_hi', 'disr_lo', 'down', 'enabled', 'history', 'kG_max', 'kG_min', 'kL_max', 'kL_min', 'phase_R', 'phase_disr', 'phase_kG', 'phase_kL', 'phase_state', 'up']

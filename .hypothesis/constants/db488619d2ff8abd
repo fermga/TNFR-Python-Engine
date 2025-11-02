@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/telemetry/verbosity.py
-# hypothesis_version: 6.143.1
-
-['TelemetryVerbosity', 'basic', 'debug', 'detailed']

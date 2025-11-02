@@ -1,4 +1,0 @@
-# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/ontosim.py
-# hypothesis_version: 6.143.1
-
-['ATTACH_STD_OBSERVER', 'C_steps', 'ImportError', 'PHASE_HISTORY_MAXLEN', 'REMESH_TAU_GLOBAL', 'Si_hi_frac', 'Si_lo_frac', 'Si_mean', 'W_bar', '_CALLBACKS_DOC', '_callback_errors', '_dnfr_hook_name', '_epi_hist', 'attach_std_observer', 'callbacks', 'compute_delta_nfr', 'error', 'event', 'glyph_load_disr', 'history', 'iota', 'kuramoto_R', 'nx.Graph', 'phase_R', 'phase_disr', 'phase_kG', 'phase_kL', 'phase_state', 'phase_sync', 'prepare_network', 'run', 'sense_sigma_angle', 'sense_sigma_mag', 'sense_sigma_x', 'sense_sigma_y', 'stable_frac', 'step', 'tnfr.observers']
