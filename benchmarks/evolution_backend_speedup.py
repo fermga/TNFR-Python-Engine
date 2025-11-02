@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 import time
 from pathlib import Path
 from typing import Callable, Iterable
@@ -13,6 +12,7 @@ import numpy as np
 from tnfr.mathematics import HilbertSpace
 from tnfr.mathematics.backend import get_backend
 from tnfr.mathematics.dynamics import ContractiveDynamicsEngine, MathematicalDynamicsEngine
+from tnfr.utils import json_dumps
 
 DEFAULT_SIZES = (2, 4, 8, 16)
 DEFAULT_STEPS = 32
@@ -317,7 +317,7 @@ def main() -> None:
                 "contractive": speedup_contractive,
             },
         }
-        args.output.write_text(json.dumps(payload, indent=2, sort_keys=True))
+        args.output.write_text(json_dumps(payload, indent=2, sort_keys=True))
         print(f"\nSaved results to {args.output}")
 
     backend_labels = [name for name, _ in backends]
