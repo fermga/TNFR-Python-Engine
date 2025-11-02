@@ -35,12 +35,15 @@ from tests.helpers.fixtures import (
 
 # Parametrized network scales for consolidated testing
 @pytest.fixture(params=[
-    {"num_nodes": 5, "edge_probability": 0.3, "seed": 42, "label": "tiny"},
-    {"num_nodes": 10, "edge_probability": 0.3, "seed": 42, "label": "small"},
-    {"num_nodes": 50, "edge_probability": 0.2, "seed": 123, "label": "medium"},
+    {"num_nodes": 5, "edge_probability": 0.3, "seed": 42},
+    {"num_nodes": 10, "edge_probability": 0.3, "seed": 100},
+    {"num_nodes": 50, "edge_probability": 0.2, "seed": 123},
 ])
 def parametrized_network_scale(request):
-    """Parametrized network scales consolidating small/medium/large tests."""
+    """Parametrized network scales consolidating small/medium/large tests.
+    
+    Uses different seeds for each scale to ensure independent test coverage.
+    """
     return request.param
 
 

@@ -77,6 +77,13 @@ def test_build_delta_nfr_topology_unified(unified_dimension, unified_topology) -
     Consolidates:
     - test_build_delta_nfr_laplacian_topology
     - test_build_delta_nfr_adjacency_topology
+    
+    Parameters
+    ----------
+    unified_dimension : int
+        Parametrized operator dimension from fixture
+    unified_topology : str
+        Parametrized topology type from fixture ("laplacian" or "adjacency")
     """
     dim = unified_dimension
     topology = unified_topology

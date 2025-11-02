@@ -33,6 +33,21 @@ class BaseStructuralTest(abc.ABC):
         """Create a test graph with specified parameters.
         
         Subclasses must implement this to provide domain-specific graphs.
+        
+        Parameters
+        ----------
+        **kwargs : Any
+            Graph creation parameters such as:
+            - num_nodes : int - Number of nodes in the graph
+            - edge_probability : float - Edge probability for random graphs
+            - seed : int - Random seed for reproducibility
+            - epi_value : float - Homogeneous EPI value
+            - vf_value : float - Homogeneous νf value
+        
+        Returns
+        -------
+        nx.Graph
+            Graph with TNFR structural attributes initialized
         """
         pass
 
@@ -86,6 +101,22 @@ class BaseOperatorTest(abc.ABC):
         """Create an operator with specified parameters.
         
         Subclasses must implement this to provide domain-specific operators.
+        
+        Parameters
+        ----------
+        **kwargs : Any
+            Operator creation parameters such as:
+            - dimension : int - Operator dimension
+            - topology : str - Topology type ("laplacian", "adjacency")
+            - nu_f : float - Structural frequency parameter
+            - scale : float - Operator scale parameter
+            - rng : np.random.Generator - Random number generator
+        
+        Returns
+        -------
+        Any
+            Operator instance (typically numpy array or operator wrapper)
+            Should be Hermitian matrix-like object for structural operators
         """
         pass
 

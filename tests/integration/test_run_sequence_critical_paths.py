@@ -361,7 +361,9 @@ def test_compile_sequence_deterministic() -> None:
     assert len(compiled1) == len(compiled2) == len(compiled3)
     for (op1, pay1), (op2, pay2), (op3, pay3) in zip(compiled1, compiled2, compiled3):
         assert op1 == op2 == op3
-        # Payloads may be complex objects, so we check tags match
+        # Note: Payloads are not compared as they may contain complex objects
+        # that don't implement __eq__, but operation tag equality ensures
+        # structural determinism
 
 
 def test_compile_sequence_preserves_structure() -> None:

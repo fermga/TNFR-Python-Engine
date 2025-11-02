@@ -168,11 +168,9 @@ def test_operator_topology_structural_differences() -> None:
     dim = 5
     seed = 999
     
-    rng_lap = np.random.default_rng(seed=seed)
-    op_laplacian = build_delta_nfr(dim, topology="laplacian", rng=rng_lap)
-    
-    rng_adj = np.random.default_rng(seed=seed)
-    op_adjacency = build_delta_nfr(dim, topology="adjacency", rng=rng_adj)
+    # Create separate RNG instances instead of manipulating state
+    op_laplacian = build_delta_nfr(dim, topology="laplacian", rng=np.random.default_rng(seed=seed))
+    op_adjacency = build_delta_nfr(dim, topology="adjacency", rng=np.random.default_rng(seed=seed))
     
     # Both should be valid Hermitian operators
     assert np.allclose(op_laplacian, op_laplacian.conj().T)
