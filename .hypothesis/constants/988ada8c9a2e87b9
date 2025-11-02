@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/sense.py
+# hypothesis_version: 6.143.1
+
+[0.0, 0.5, 1.0, 'EPI', 'GLYPH_UNITS', 'SIGMA', 'Si', 'T', '_t', 'angle', 'enabled', 'g', 'glyph', 'glyph_angle', 'glyph_unit', 'history_key', 'mag', 'n', 'per_node', 'push_sigma_snapshot', 'sigma_counts', 'sigma_global', 'sigma_per_node', 'sigma_rose', 'sigma_snapshot', 'sigma_vector', 'sigma_vector_node', 'smooth', 't', 'w', 'weight', 'x', 'y']

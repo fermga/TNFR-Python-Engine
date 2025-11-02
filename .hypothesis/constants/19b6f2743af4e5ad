@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/telemetry/nu_f.py
+# hypothesis_version: 6.143.1
+
+[0.0, 1e-12, 1e-09, 0.5, 0.95, 1.0, 2.0, 128, 'NuFSnapshot', 'NuFWindow', 'ci_lower_hz', 'ci_lower_hz_str', 'ci_upper_hz', 'ci_upper_hz_str', 'confidence_level', 'duration', 'end', 'graph', 'history_limit', 'nu_f', 'nu_f_history', 'rate_hz', 'rate_hz_str', 'record_nu_f_window', 'reorganisations', 'start', 'telemetry', 'total_duration', 'variance_hz', 'variance_hz_str', 'window_limit', 'windows']

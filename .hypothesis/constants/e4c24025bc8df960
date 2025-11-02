@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/metrics/glyph_timing.py
+# hypothesis_version: 6.143.1
+
+[0.0, 0.05, 'CM', 'EPI_support', 'GlyphTiming', 'GlyphTimingByNode', 'GlyphTimingTotals', 'GlyphogramRow', 'ID', 'LATENT_GLYPH', 'METRICS', 'NE', 'PP', 'PP_den', 'PP_num', 'SHA', 'SigmaTrace', 'Tg_by_node', 'Tg_total', '_Tg', '_tg_state', '_update_epi_support', '_update_glyphogram', '_update_tg', '_update_tg_node', 'bincount', 'epi_norm', 'for_each_glyph', 'fromiter', 'glyphogram', 'latency_index', 'morph', 'normalize_series', 'save_by_node', 'size', 't', 'value']

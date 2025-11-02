@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/glyph_history.py
+# hypothesis_version: 6.143.1
+
+['C_steps', 'HISTORY_MAXLEN', 'HistoryDict', '_metrics_history_id', 'append_metric', 'count_glyphs', 'current_step_idx', 'ensure_history', 'glyph_history', 'graph', 'history', 'nodal_diag', 'nu_f_ci_lower_hz', 'nu_f_ci_lower_hz_str', 'nu_f_ci_upper_hz', 'nu_f_ci_upper_hz_str', 'nu_f_rate_hz', 'nu_f_rate_hz_str', 'phase_state', 'push_glyph', 'recent_glyph', 'state']

@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/mathematics/operators.py
+# hypothesis_version: 6.143.1
+
+[0.0, 1e-09, 0.1, 1000.0, 'CoherenceOperator', 'FrequencyOperator', 'i,ij->ij', 'ndim', 'shape']

@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/dynamics/aliases.py
+# hypothesis_version: 6.143.1
+
+['ALIAS_D2EPI', 'ALIAS_DNFR', 'ALIAS_DSI', 'ALIAS_EPI', 'ALIAS_SI', 'ALIAS_THETA', 'ALIAS_VF']

@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/operators/jitter.py
+# hypothesis_version: 6.143.1
+
+[0.0, 1024, 'G', 'JitterCache', 'JitterCacheManager', '_noise_uid', 'get_jitter_manager', 'jitter', 'jitter_settings', 'max_entries', 'n', 'random_jitter', 'reset_jitter_manager']

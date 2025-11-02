@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/dynamics/__init__.py
+# hypothesis_version: 6.143.1
+
+['ALIAS_D2EPI', 'ALIAS_DNFR', 'ALIAS_DSI', 'ALIAS_EPI', 'ALIAS_SI', 'ALIAS_VF', 'AbstractIntegrator', 'AbstractSelector', 'DefaultGlyphSelector', 'DefaultIntegrator', 'GlyphCode', 'ProcessPoolExecutor', '_apply_glyphs', '_apply_selector', '_choose_glyph', '_compute_dnfr', '_init_dnfr_cache', '_maybe_remesh', '_prepare_dnfr', '_prepare_dnfr_data', '_run_after_callbacks', '_run_validators', '_update_epi_hist', '_update_node_sample', '_update_nodes', 'apply_glyph', 'compute_Si', 'coordination', 'dnfr', 'dnfr_epi_vf_mixed', 'dnfr_laplacian', 'dnfr_phase_only', 'get_numpy', 'integrators', 'run', 'set_delta_nfr_hook', 'step']

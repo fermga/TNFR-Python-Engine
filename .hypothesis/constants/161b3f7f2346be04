@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/config/constants.py
+# hypothesis_version: 6.143.1
+
+[0.0, 'ANGLE_MAP', 'CM', 'DISRUPTORS', 'GLYPHS_CANONICAL', 'GLYPHS_CANONICAL_SET', 'GLYPH_GROUPS', 'ID', 'NE', 'PP_den', 'PP_num', 'STABILIZERS', 'disruptors', 'stabilizers']

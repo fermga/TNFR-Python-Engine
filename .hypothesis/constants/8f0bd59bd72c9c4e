@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/structural.py
+# hypothesis_version: 6.143.1
+
+[0.0, 1.0, 'Coherence', 'Contraction', 'Coupling', 'Dissonance', 'Emission', 'Expansion', 'MATH_ENGINE', 'Mutation', 'OPERATORS', 'Operator', 'Reception', 'Recursivity', 'Resonance', 'SelfOrganization', 'Silence', 'Transition', 'c_min', 'coherence', 'coherence_operator', 'coherence_passed', 'coherence_threshold', 'coherence_value', 'compute_delta_nfr', 'create_math_nfr', 'create_nfr', 'dimension', 'dynamics_engine', 'enabled', 'frequency', 'frequency_operator', 'frequency_passed', 'frequency_value', 'generator_matrix', 'hilbert_space', 'math_context', 'math_metrics', 'math_summary', 'message', 'norm', 'normalized', 'np.ndarray', 'number_of_nodes', 'passed', 'run_sequence', 'spectrum', 'spectrum_min', 'state_projector', 'threshold', 'unitary_passed', 'unitary_stability', 'validate_sequence', 'validation failed', 'validator', 'value']

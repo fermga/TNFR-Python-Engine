@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/pyrsistent/_precord.py
+# hypothesis_version: 6.143.1
+
+[', ', '__invariant__', '__slots__', '_destination_cls', '_factory_fields', '_ignore_extra', '_missing_fields', '_precord_buckets', '_precord_fields', '_precord_invariants', '_precord_size', '{0}({1})', '{0}.{1}', '{0}={1}']

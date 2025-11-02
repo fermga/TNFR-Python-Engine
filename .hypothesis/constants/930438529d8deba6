@@ -1,0 +1,4 @@
+# file: /usr/lib/python3/dist-packages/jsonschema/exceptions.py
+# hypothesis_version: 6.143.1
+
+['$', '.', '[', ']', 'anyOf', 'cause', 'context', 'instance', 'message', 'metaschema', 'oneOf', 'parent', 'path', 'schema', 'schema_path', 'type', 'validator', 'validator_value']

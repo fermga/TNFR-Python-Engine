@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/validation/runtime.py
+# hypothesis_version: 6.143.1
+
+[0.0, 1e-12, ', ', 'EPI', 'EPI_MAX', 'EPI_MIN', 'THETA', 'THETA_WRAP', 'VALIDATORS_STRICT', 'VF', 'VF_MAX', 'VF_MIN', '_vfmax', 'after', 'attr', 'attributes', 'before', 'clamp_alerts', 'clamped', 'clamped_nodes', 'continuous', 'discrete', 'errors', 'grid', 'history', 'maxima', 'node', 'validate_canon', 'value']

@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/metrics/diagnosis.py
+# hypothesis_version: 6.143.1
+
+[0.0, 0.2, 0.4, 0.5, 0.7, 0.8, 1.0, 'COHERENCE', 'C_steps', 'DIAGNOSIS', 'DIAGNOSIS_N_JOBS', 'EPI', 'R_local', 'Rloc', 'Rloc_hi', 'Rloc_lo', 'Si', 'VF', 'W_i', 'W_sparse', 'Wi_history_key', '_disr_state', '_sel_norms', 'abs', 'advice', 'alerts', 'all', 'array', 'clip', 'compute_symmetry', 'dcfg', 'diagnosis_step', 'dissonance', 'dissonance_end', 'dissonance_events', 'dissonance_hi', 'dissonance_start', 'dnfr', 'dnfr_hi', 'dnfr_lo', 'dnfr_max', 'dnfr_norm', 'enabled', 'epi_max', 'epi_min', 'events', 'fill_diagonal', 'fromiter', 'history_key', 'hypot', 'maximum', 'mean', 'minimum', 'ndarray', 'neighbor_epi_mean', 'nodal_diag', 'node', 'persist', 'stable', 'state', 'step', 'sum', 'symmetry', 'take', 'where', 'zeros', 'zeros_like']

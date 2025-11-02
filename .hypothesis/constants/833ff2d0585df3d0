@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/mathematics/__init__.py
+# hypothesis_version: 6.143.1
+
+['BEPIElement', 'BanachSpaceEPI', 'BasicStateProjector', 'CoherenceEvaluation', 'CoherenceOperator', 'CoherenceViolation', 'FrequencyOperator', 'HilbertSpace', 'IsometryFactory', 'MathematicsBackend', 'NFRValidator', 'StateProjector', 'available_backends', 'build_delta_nfr', 'coherence', 'dcoh', 'ensure_array', 'ensure_numpy', 'frequency_positive', 'get_backend', 'normalized', 'register_backend', 'stable_unitary']

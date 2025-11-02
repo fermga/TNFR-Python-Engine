@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/config/operator_names.py
+# hypothesis_version: 6.143.1
+
+['ALL_OPERATOR_NAMES', 'COHERENCE', 'CONTRACTION', 'COUPLING', 'DISSONANCE', 'EMISSION', 'EXPANSION', 'MUTATION', 'RECEPTION', 'RECURSIVITY', 'RESONANCE', 'SELF_ORGANIZATION', 'SILENCE', 'TRANSITION', 'VALID_END_OPERATORS', 'coherence', 'contraction', 'coupling', 'dissonance', 'emission', 'expansion', 'mutation', 'reception', 'recursivity', 'resonance', 'self_organization', 'silence', 'transition']

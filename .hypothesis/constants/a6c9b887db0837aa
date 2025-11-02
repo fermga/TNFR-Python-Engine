@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/validation/spectral.py
+# hypothesis_version: 6.143.1
+
+[0.0, 1e-09, ', ', '.', 'Failed checks: ', 'NFRValidator', 'coherence', 'coherence threshold', 'enforce', 'enforced', 'frequency', 'frequency positivity', 'norm_after', 'normalised_state', 'normalization', 'normalized', 'passed', 'threshold', 'unitary stability', 'unitary_stability', 'value']

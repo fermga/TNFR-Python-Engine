@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/initialization.py
+# hypothesis_version: 6.143.1
+
+[0.0, 0.5, 'EPI', 'INIT_EPI_VALUE', 'INIT_RANDOM_PHASE', 'INIT_SI_MAX', 'INIT_SI_MIN', 'INIT_THETA_MAX', 'INIT_THETA_MIN', 'INIT_VF_MAX', 'INIT_VF_MEAN', 'INIT_VF_MIN', 'INIT_VF_MODE', 'INIT_VF_STD', 'InitParams', 'RANDOM_SEED', 'Si', 'VF_MAX', 'VF_MIN', 'init_node_attrs', 'normal', 'nx.Graph', 'uniform']

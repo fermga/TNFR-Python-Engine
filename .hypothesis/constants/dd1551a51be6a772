@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/operators/registry.py
+# hypothesis_version: 6.143.1
+
+['OPERATORS', 'Operator', '__path__', 'discover_operators', 'get_operator_class', 'name', 'register_operator', 'tnfr.operators']

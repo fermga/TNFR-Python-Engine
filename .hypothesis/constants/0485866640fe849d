@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/metrics/coherence.py
+# hypothesis_version: 6.143.1
+
+[0.0, 0.33, 0.5, 0.66, 1.0, 'B', 'COHERENCE', 'C_steps', 'GLYPH_THRESHOLDS', 'SELECTOR_THRESHOLDS', 'Si_hi_frac', 'Si_lo_frac', 'Si_mean', 'W_bar', 'W_i', 'W_sparse', 'W_stats', 'Wi_history_key', '_', '_disruptors', '_prev_Si', '_prev_dvf', '_prev_vf', '_stabilizers', 'all', 'angle', 'coherence_step', 'cos_vals', 'delta_Si', 'dense', 'depi_mean', 'dnfr_mean', 'enabled', 'epi', 'epi_range', 'epi_vals', 'glyph_load_disr', 'glyph_load_estab', 'hi', 'history_key', 'kuramoto_R', 'lo', 'mag', 'max', 'mean', 'min', 'mode', 'n_edges', 'n_jobs', 'neighbors', 'phase', 'phase_sync', 'scope', 'self_on_diag', 'sense_sigma_angle', 'sense_sigma_mag', 'sense_sigma_x', 'sense_sigma_y', 'si', 'si_hi', 'si_lo', 'si_vals', 'sin_vals', 'sparse', 'stable_frac', 'stats_history_key', 'store_mode', 'threshold', 'vf', 'vf_range', 'vf_vals', 'weights', 'x', 'y']

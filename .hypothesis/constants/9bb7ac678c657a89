@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/config/feature_flags.py
+# hypothesis_version: 6.143.1
+
+[', ', '0', '1', 'MathFeatureFlags', 'TNFR_LOG_PERF', 'TNFR_MATH_BACKEND', 'context_flags', 'f', 'false', 'get_flags', 'n', 'no', 'numpy', 'off', 'on', 't', 'true', 'y', 'yes']

@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/utils/io.py
+# hypothesis_version: 6.143.1
+
+[',', ', ', '.json', '.toml', '.yaml', '.yml', ':', 'DEFAULT_PARAMS', 'JsonDumpsParams', 'StructuredFileError', 'TOMLDecodeError', 'YAMLError', '__doc__', '_value', 'b', 'cls', 'encoding', 'ensure_ascii', 'json_dumps', 'loads', 'log', 'orjson', 'pyyaml', 'read_structured_file', 'safe_load', 'safe_write', 'separators', 'tomli', 'tomllib', 'tomllib/tomli', 'utf-8', 'w', 'yaml', '{', '}']

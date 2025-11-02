@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/telemetry/cache_metrics.py
+# hypothesis_version: 6.143.1
+
+[0.1, 0.5, 'CacheMetricsSnapshot', 'avg_latency', 'cache', 'cache_metrics', 'event', 'evictions', 'graph', 'hit_ratio', 'hits', 'metrics', 'miss_ratio', 'misses', 'requests', 'threshold', 'timings', 'tnfr.telemetry.cache', 'total_time']

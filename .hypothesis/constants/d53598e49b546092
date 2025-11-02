@@ -1,0 +1,4 @@
+# file: /home/runner/work/TNFR-Python-Engine/TNFR-Python-Engine/src/tnfr/observers.py
+# hypothesis_version: 6.143.1
+
+[0.0, 1.0, 'C_steps', 'DEFAULT_WBAR_SPAN', '_STD_OBSERVER', '_count', '_std_observer_reorg', '_t', 'after', 'attached', 'before', 'cache', 'dt', 'events', 'glyph_load', 'kuramoto_metrics', 'kuramoto_order', 'last_duration', 'last_end_t', 'last_reorganisations', 'phase_sync', 'remesh', 'stable_frac', 'start_t', 'std_reorg_after', 'std_reorg_before', 'step', 'wbar']
