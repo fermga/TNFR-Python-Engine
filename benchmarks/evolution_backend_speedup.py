@@ -71,18 +71,50 @@ def _resolve_backends(names: Iterable[str] | None) -> list[tuple[str, object]]:
     requested = list(names) if names else ["numpy", "jax", "torch"]
     resolved: list[tuple[str, object]] = []
     seen: set[str] = set()
-    for name in requested:
-        backend = get_backend(name)
-        if backend.name != name:
-            print(f"[skip] backend '{name}' unavailable (resolved to {backend.name!r}).")
+
+    try:
+        from tnfr.mathematics import backend as backend_module
+    except ImportError:  # pragma: no cover - defensive; module is part of package
+        backend_module = None  # type: ignore[assignment]
+
+    if backend_module is not None:
+        alias_map = dict(getattr(backend_module, "_BACKEND_ALIASES", {}))
+        backend_normalise = getattr(backend_module, "_normalise_name", None)
+        if backend_normalise is not None:
+            normalise = lambda value: backend_normalise(str(value))
+        else:  # pragma: no cover - only when helper is missing
+            normalise = lambda value: str(value).strip().lower()
+    else:  # pragma: no cover - fallback path when module missing
+        alias_map = {}
+        normalise = lambda value: str(value).strip().lower()
+
+    for raw_name in requested:
+        normalised = normalise(raw_name)
+        canonical_requested = normalise(alias_map.get(normalised, normalised))
+        backend = get_backend(raw_name)
+        canonical_resolved = getattr(backend, "name", canonical_requested)
+        if isinstance(canonical_resolved, str):
+            canonical_resolved = normalise(canonical_resolved)
+
+        if (
+            canonical_resolved == "numpy"
+            and canonical_requested != "numpy"
+            and canonical_resolved != canonical_requested
+        ):
+            print(f"[skip] backend '{raw_name}' unavailable (fell back to 'numpy').")
             continue
-        if backend.name in seen:
+
+        if canonical_resolved in seen:
             continue
-        resolved.append((name, backend))
-        seen.add(backend.name)
-    if not any(entry[0] == "numpy" for entry in resolved):
+
+        resolved.append((canonical_resolved, backend))
+        seen.add(canonical_resolved)
+
+    if "numpy" not in seen:
         numpy_backend = get_backend("numpy")
         resolved.insert(0, ("numpy", numpy_backend))
+        seen.add("numpy")
+
     return resolved
 
 
