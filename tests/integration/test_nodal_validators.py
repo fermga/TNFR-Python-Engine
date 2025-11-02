@@ -1,4 +1,13 @@
-"""Comprehensive tests for nodal validators.
+"""DEPRECATED: Comprehensive tests for nodal validators.
+
+⚠️ DEPRECATION NOTICE:
+This module has been consolidated into test_nodal_validators_critical_paths.py
+which provides more comprehensive coverage with parametrized tests.
+
+See:
+- tests/integration/test_nodal_validators_critical_paths.py for comprehensive validator tests
+- tests/README_TEST_OPTIMIZATION.md for usage guidelines
+- tests/TEST_CONSOLIDATION_SUMMARY.md for detailed consolidation mapping
 
 This module tests critical paths for node-level validation including:
 - Structural frequency validation
@@ -10,6 +19,11 @@ import math
 
 import networkx as nx
 import pytest
+
+# Mark entire module as deprecated - tests are redundant with critical paths suite
+pytestmark = pytest.mark.skip(
+    reason="DEPRECATED: Consolidated into test_nodal_validators_critical_paths.py"
+)
 
 from tnfr.constants import (
     DNFR_PRIMARY,

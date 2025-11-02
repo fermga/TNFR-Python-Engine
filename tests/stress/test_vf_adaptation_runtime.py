@@ -14,7 +14,7 @@ from tnfr.alias import get_attr, set_attr
 from tnfr.constants import get_aliases
 from tnfr.dynamics import adapt_vf_by_coherence
 
-from .test_dnfr_runtime import _seed_graph
+from tests.stress.test_dnfr_runtime import _seed_graph
 
 ALIAS_VF = get_aliases("VF")
 ALIAS_SI = get_aliases("SI")

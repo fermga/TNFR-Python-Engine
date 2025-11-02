@@ -1,4 +1,13 @@
-"""Consolidated structural validation tests using shared utilities.
+"""DEPRECATED: Consolidated structural validation tests using shared utilities.
+
+⚠️ DEPRECATION NOTICE:
+This module has been superseded by test_unified_structural_validation.py
+which uses better parametrization and consolidates even more redundant patterns.
+
+See:
+- tests/integration/test_unified_structural_validation.py for unified structural tests
+- tests/README_TEST_OPTIMIZATION.md for usage guidelines
+- tests/TEST_CONSOLIDATION_SUMMARY.md for detailed consolidation mapping
 
 This module replaces redundant test patterns across integration, mathematics,
 property, and stress test suites by using shared validation helpers.
@@ -10,6 +19,7 @@ from __future__ import annotations
 import copy
 import math
 
+import pytest
 import networkx as nx
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_KEY, VF_PRIMARY, inject_defaults
@@ -24,6 +34,11 @@ from tests.helpers.fixtures import (
     seed_graph_factory,
     homogeneous_graph_factory,
     bicluster_graph_factory,
+)
+
+# Mark entire module as deprecated - tests are redundant with unified suite
+pytestmark = pytest.mark.skip(
+    reason="DEPRECATED: Superseded by test_unified_structural_validation.py"
 )
 
 

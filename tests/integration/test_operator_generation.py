@@ -1,4 +1,14 @@
-"""Comprehensive tests for operator generation and factory wiring.
+"""DEPRECATED: Comprehensive tests for operator generation and factory wiring.
+
+⚠️ DEPRECATION NOTICE:
+This module has been consolidated into test_unified_operator_validation.py
+and test_operator_generation_critical_paths.py using parametrized fixtures.
+
+See:
+- tests/integration/test_unified_operator_validation.py for unified operator tests
+- tests/integration/test_operator_generation_critical_paths.py for critical path coverage
+- tests/README_TEST_OPTIMIZATION.md for usage guidelines
+- tests/TEST_CONSOLIDATION_SUMMARY.md for detailed consolidation mapping
 
 This module tests critical paths for operator generation including:
 - Operator factory parameter validation
@@ -7,6 +17,11 @@ This module tests critical paths for operator generation including:
 """
 
 import pytest
+
+# Mark entire module as deprecated - tests are redundant with unified suite
+pytestmark = pytest.mark.skip(
+    reason="DEPRECATED: Consolidated into test_unified_operator_validation.py"
+)
 
 np = pytest.importorskip("numpy")
 

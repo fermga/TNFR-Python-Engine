@@ -1,4 +1,14 @@
-"""Extended tests for operator generation covering critical paths and edge cases.
+"""DEPRECATED: Extended tests for operator generation covering critical paths and edge cases.
+
+⚠️ DEPRECATION NOTICE:
+This module has been consolidated into test_unified_operator_validation.py
+and test_operator_generation_critical_paths.py using parametrized fixtures.
+
+See:
+- tests/integration/test_unified_operator_validation.py for unified operator tests
+- tests/integration/test_operator_generation_critical_paths.py for critical path coverage
+- tests/README_TEST_OPTIMIZATION.md for usage guidelines
+- tests/TEST_CONSOLIDATION_SUMMARY.md for detailed consolidation mapping
 
 This module extends test_operator_generation.py with additional coverage for:
 - Complex operator parameter combinations
@@ -7,6 +17,11 @@ This module extends test_operator_generation.py with additional coverage for:
 """
 
 import pytest
+
+# Mark entire module as deprecated - tests are redundant with unified suite
+pytestmark = pytest.mark.skip(
+    reason="DEPRECATED: Consolidated into test_unified_operator_validation.py"
+)
 
 np = pytest.importorskip("numpy")
 
