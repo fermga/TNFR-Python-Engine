@@ -58,6 +58,7 @@ __all__ = [
     "TransitionCompatibilityError",
     "SequenceSyntaxError",
     "SequenceValidationResult",
+    "record_grammar_violation",
     "_gram_state",
     "apply_glyph_with_grammar",
     "enforce_canonical_grammar",
@@ -597,6 +598,14 @@ def _record_grammar_violation(
     logger.warning(
         "grammar violation on node %s during %s: %s", node, stage, payload, exc_info=error
     )
+
+
+def record_grammar_violation(
+    G: TNFRGraph, node: NodeId, error: StructuralGrammarError, *, stage: str
+) -> None:
+    """Public shim for recording grammar violations with telemetry hooks intact."""
+
+    _record_grammar_violation(G, node, error, stage=stage)
 
 
 def _analyse_sequence(names: Iterable[str]) -> SequenceValidationResult:

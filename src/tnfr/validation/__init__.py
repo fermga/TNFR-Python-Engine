@@ -1,4 +1,9 @@
-"""Unified validation interface consolidating grammar, graph and spectral checks."""
+"""Unified validation interface consolidating grammar, graph and spectral checks.
+
+This package re-exports the canonical grammar helpers implemented in
+``tnfr.operators.grammar`` so downstream code can rely on a single import path for
+structural validation primitives.
+"""
 
 from __future__ import annotations
 
@@ -37,11 +42,12 @@ class Validator(Protocol[SubjectT]):
 
 
 from .compatibility import CANON_COMPAT, CANON_FALLBACK
-from .grammar import (
+from ..operators.grammar import (
     GrammarContext,
     MutationPreconditionError,
     RepeatWindowError,
     SequenceValidationResult,
+    SequenceSyntaxError,
     StructuralGrammarError,
     TholClosureError,
     TransitionCompatibilityError,
@@ -60,7 +66,7 @@ from .soft_filters import (
     maybe_force,
     soft_grammar_filters,
 )
-from .syntax import validate_sequence
+from ..operators.grammar import validate_sequence
 
 __all__ = (
     "ValidationOutcome",
@@ -73,6 +79,7 @@ __all__ = (
     "TholClosureError",
     "TransitionCompatibilityError",
     "SequenceValidationResult",
+    "SequenceSyntaxError",
     "apply_glyph_with_grammar",
     "enforce_canonical_grammar",
     "on_applied_glyph",
