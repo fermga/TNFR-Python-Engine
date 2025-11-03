@@ -23,6 +23,10 @@ from typing import Any
 # Default global seed for all benchmarks
 DEFAULT_SEED = 42
 
+# Output truncation limits
+MAX_STDERR_LENGTH = 500
+MAX_STDOUT_PREVIEW_LENGTH = 200
+
 # Benchmark configurations with their default parameters
 BENCHMARK_CONFIGS = {
     "comprehensive_cache_profiler": {
@@ -129,7 +133,7 @@ def run_benchmark(
             return {
                 "status": "failed",
                 "returncode": result.returncode,
-                "stderr": result.stderr[:500],  # First 500 chars
+                "stderr": result.stderr[:MAX_STDERR_LENGTH],  # First N chars
             }
         
         # Compute checksum based on output format
@@ -140,13 +144,13 @@ def run_benchmark(
         if output_format == "dir" and output_path.exists() and output_path.is_dir():
             # Directory output: checksum all JSON files
             for json_file in output_path.glob("*.json"):
-                rel_name = json_file.name
-                checksums[rel_name] = compute_checksum(json_file)
+                filename = json_file.name
+                checksums[filename] = compute_checksum(json_file)
                 output_files.append(str(json_file))
         elif output_path.exists() and output_path.is_file():
             # Single file output
-            rel_name = output_path.name
-            checksums[rel_name] = compute_checksum(output_path)
+            filename = output_path.name
+            checksums[filename] = compute_checksum(output_path)
             output_files.append(str(output_path))
         
         # If no output file was created, save stdout
@@ -160,7 +164,7 @@ def run_benchmark(
             "status": "success",
             "output_files": output_files,
             "checksums": checksums,
-            "stdout_preview": result.stdout[-200:] if verbose else "",
+            "stdout_preview": result.stdout[-MAX_STDOUT_PREVIEW_LENGTH:] if verbose else "",
         }
     
     except subprocess.TimeoutExpired:

@@ -18,15 +18,30 @@ def temp_output_dir(tmp_path: Path) -> Path:
     return output_dir
 
 
-def test_reproducibility_script_runs_successfully(temp_output_dir: Path) -> None:
-    """Test that the reproducibility script can run benchmarks successfully."""
-    script_path = Path(__file__).parent.parent.parent / "scripts" / "run_reproducible_benchmarks.py"
+@pytest.fixture
+def reproducibility_script() -> Path:
+    """Get the path to the reproducibility script."""
+    # Find project root by looking for pyproject.toml
+    current = Path(__file__).parent
+    while current != current.parent:
+        if (current / "pyproject.toml").exists():
+            return current / "scripts" / "run_reproducible_benchmarks.py"
+        current = current.parent
     
+    # Fallback to relative path if not found
+    return Path(__file__).parent.parent.parent / "scripts" / "run_reproducible_benchmarks.py"
+
+
+def test_reproducibility_script_runs_successfully(
+    temp_output_dir: Path,
+    reproducibility_script: Path,
+) -> None:
+    """Test that the reproducibility script can run benchmarks successfully."""
     # Run with a single benchmark and small parameters
     result = subprocess.run(
         [
             sys.executable,
-            str(script_path),
+            str(reproducibility_script),
             "--benchmarks", "comprehensive_cache_profiler",
             "--seed", "42",
             "--output-dir", str(temp_output_dir),
@@ -58,15 +73,16 @@ def test_reproducibility_script_runs_successfully(temp_output_dir: Path) -> None
     assert len(benchmark_result["checksums"]) > 0
 
 
-def test_reproducibility_script_verify_mode(temp_output_dir: Path) -> None:
+def test_reproducibility_script_verify_mode(
+    temp_output_dir: Path,
+    reproducibility_script: Path,
+) -> None:
     """Test that the verify mode works correctly."""
-    script_path = Path(__file__).parent.parent.parent / "scripts" / "run_reproducible_benchmarks.py"
-    
     # First, run benchmarks to generate artifacts
     subprocess.run(
         [
             sys.executable,
-            str(script_path),
+            str(reproducibility_script),
             "--benchmarks", "comprehensive_cache_profiler",
             "--seed", "123",
             "--output-dir", str(temp_output_dir),
@@ -83,7 +99,7 @@ def test_reproducibility_script_verify_mode(temp_output_dir: Path) -> None:
     result = subprocess.run(
         [
             sys.executable,
-            str(script_path),
+            str(reproducibility_script),
             "--verify", str(manifest_path),
         ],
         capture_output=True,
@@ -95,15 +111,16 @@ def test_reproducibility_script_verify_mode(temp_output_dir: Path) -> None:
     assert "Verified" in result.stdout
 
 
-def test_reproducibility_script_handles_missing_benchmark(temp_output_dir: Path) -> None:
+def test_reproducibility_script_handles_missing_benchmark(
+    temp_output_dir: Path,
+    reproducibility_script: Path,
+) -> None:
     """Test that the script handles missing benchmark scripts gracefully."""
-    script_path = Path(__file__).parent.parent.parent / "scripts" / "run_reproducible_benchmarks.py"
-    
     # Create a temporary modified script config (we'll just run and check output)
     result = subprocess.run(
         [
             sys.executable,
-            str(script_path),
+            str(reproducibility_script),
             "--benchmarks", "comprehensive_cache_profiler",
             "--seed", "42",
             "--output-dir", str(temp_output_dir),

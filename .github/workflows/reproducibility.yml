@@ -50,34 +50,9 @@ jobs:
       - name: Compare manifests
         run: |
           echo "Comparing manifest checksums..."
-          python -c "
-          import json
-          import sys
-          
-          with open('artifacts/manifest1.json') as f:
-              m1 = json.load(f)
-          with open('artifacts/manifest2.json') as f:
-              m2 = json.load(f)
-          
-          # Check that both runs succeeded
-          for name, result in m1['benchmarks'].items():
-              if result['status'] != 'success':
-                  print(f'Run 1 failed for {name}: {result}')
-                  sys.exit(1)
-          
-          for name, result in m2['benchmarks'].items():
-              if result['status'] != 'success':
-                  print(f'Run 2 failed for {name}: {result}')
-                  sys.exit(1)
-          
-          print('✓ Both runs completed successfully')
-          print(f'Run 1 seed: {m1[\"seed\"]}')
-          print(f'Run 2 seed: {m2[\"seed\"]}')
-          
-          # Note: We don't enforce identical checksums here because some benchmarks
-          # may include timing information. The important part is that they run
-          # deterministically with the same seed and produce valid outputs.
-          "
+          python scripts/compare_manifests.py \
+            artifacts/manifest1.json \
+            artifacts/manifest2.json
 
       - name: Verify manifest structure
         run: |
