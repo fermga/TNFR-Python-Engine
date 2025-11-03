@@ -94,7 +94,7 @@ def test_safe_write_binary_mode(tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
             binary_open_seen = True
         return original_open(file, *args, **kwargs)
 
-    monkeypatch.setattr("tnfr.utils.io.open", fake_open, raising=False)
+    monkeypatch.setattr(builtins, "open", fake_open)
 
     safe_write(dest, lambda f: f.write(payload), mode="wb", atomic=atomic)
 

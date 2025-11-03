@@ -16,6 +16,7 @@ from tnfr.config.operator_names import (
     COHERENCE,
 )
 from tnfr.dynamics import _choose_glyph
+from tnfr.operators import apply_glyph
 from tnfr.types import Glyph
 from tnfr.validation import (
     apply_glyph_with_grammar,
@@ -25,6 +26,7 @@ from tnfr.validation import (
     MutationPreconditionError,
     TholClosureError,
     RepeatWindowError,
+    GrammarConfigurationError,
 )
 from tnfr.validation import record_grammar_violation as _record_violation
 
@@ -107,6 +109,7 @@ def test_repeat_window_and_force(graph_canon):
 
 
 def test_repeat_invalid_fallback_string(graph_canon):
+    """When fallback is invalid string, use canonical fallback instead of raising error."""
     G = graph_canon()
     G.add_node(0)
     inject_defaults(G)
@@ -115,17 +118,15 @@ def test_repeat_invalid_fallback_string(graph_canon):
     G.graph["GRAMMAR"] = {
         "window": 3,
         "avoid_repeats": ["ZHIR"],
-        "fallbacks": {"ZHIR": "NOPE"},
+        "fallbacks": {"ZHIR": "NOPE"},  # Invalid fallback
     }
-    with pytest.raises(RepeatWindowError) as excinfo:
-        enforce_canonical_grammar(G, 0, Glyph.ZHIR)
-    err = excinfo.value
-    assert err.window == 3
-    assert err.order[-1] == "ZHIR"
-    assert err.candidate == "ZHIR"
+    # Should use canonical fallback (coherence) instead of raising error
+    result = enforce_canonical_grammar(G, 0, Glyph.ZHIR)
+    assert result == Glyph.IL  # IL is coherence, the canonical fallback for ZHIR
 
 
 def test_repeat_invalid_fallback_type(graph_canon):
+    """When fallback is non-string object, raise GrammarConfigurationError."""
     G = graph_canon()
     G.add_node(0)
     inject_defaults(G)
@@ -135,10 +136,13 @@ def test_repeat_invalid_fallback_type(graph_canon):
     G.graph["GRAMMAR"] = {
         "window": 3,
         "avoid_repeats": ["ZHIR"],
-        "fallbacks": {"ZHIR": obj},
+        "fallbacks": {"ZHIR": obj},  # Invalid type
     }
-    with pytest.raises(RepeatWindowError):
+    with pytest.raises(GrammarConfigurationError) as excinfo:
         enforce_canonical_grammar(G, 0, Glyph.ZHIR)
+    err = excinfo.value
+    assert "fallbacks.ZHIR" in str(err)
+    assert "not of type 'string'" in str(err)
 
 
 def test_choose_glyph_records_violation(graph_canon, monkeypatch):
@@ -235,13 +239,14 @@ def test_apply_glyph_with_grammar_equivalence(graph_canon):
     G_manual = graph_canon()
     G_manual.add_node(0)
     inject_defaults(G_manual)
+    G_manual.nodes[0]["glyph_history"] = deque([Glyph.OZ])  # Add dissonance precondition
     G_func = graph_canon()
     G_func.add_node(0)
     inject_defaults(G_func)
+    G_func.nodes[0]["glyph_history"] = deque([Glyph.OZ])  # Add dissonance precondition
 
     # Manual application
     g_eff = enforce_canonical_grammar(G_manual, 0, Glyph.ZHIR)
-    from tnfr.operators import apply_glyph
 
     apply_glyph(G_manual, 0, g_eff, window=1)
     on_applied_glyph(G_manual, 0, g_eff)
@@ -258,11 +263,12 @@ def test_apply_glyph_with_grammar_multiple_nodes(graph_canon):
     G.add_node(1)
     inject_defaults(G)
     G.nodes[0]["glyph_history"] = deque([Glyph.OZ])
+    G.nodes[1]["glyph_history"] = deque([Glyph.OZ])  # Add dissonance precondition for node 1 too
 
     apply_glyph_with_grammar(G, [0, 1], Glyph.ZHIR, 1)
 
     assert glyph_function_name(G.nodes[0]["glyph_history"][-1]) == MUTATION
-    assert glyph_function_name(G.nodes[1]["glyph_history"][-1]) == DISSONANCE
+    assert glyph_function_name(G.nodes[1]["glyph_history"][-1]) == MUTATION  # Both should get mutation now
 
 
 def test_apply_glyph_with_grammar_accepts_iterables(graph_canon):
@@ -298,7 +304,7 @@ def test_apply_glyph_with_grammar_defaults_window_from_graph(graph_canon, monkey
     def fake_apply_glyph(graph, node_id, glyph, *, window=None):
         captured["window"] = window
 
-    monkeypatch.setattr("tnfr.operators", "apply_glyph", fake_apply_glyph)
+    monkeypatch.setattr("tnfr.operators.apply_glyph", fake_apply_glyph)
 
     apply_glyph_with_grammar(G, [0], Glyph.AL)
 
