@@ -61,6 +61,7 @@ import tnfr.utils as tnfr_utils
 from tnfr.cli.utils import _parse_cli_variants
 from tnfr.utils.chunks import resolve_chunk_size
 from tnfr.utils import json_dumps
+from tnfr.utils.graph import get_graph
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
@@ -250,6 +251,79 @@ def _format_operator_timings(
     }
 
 
+def _extract_cache_metrics(graph: nx.Graph) -> dict[str, Any]:
+    """Extract cache hit/miss/eviction statistics from graph cache managers.
+
+    Returns
+    -------
+    dict[str, Any]
+        Cache metrics including aggregate stats and per-cache breakdown.
+    """
+    graph_dict = get_graph(graph)
+    metrics_result: dict[str, Any] = {
+        "aggregate": {
+            "hits": 0,
+            "misses": 0,
+            "evictions": 0,
+            "hit_rate": 0.0,
+        },
+        "by_cache": {},
+    }
+
+    # Check for CacheManager on graph
+    cache_manager = graph_dict.get("_tnfr_cache_manager")
+    if cache_manager is not None and hasattr(cache_manager, "aggregate_metrics"):
+        try:
+            aggregate = cache_manager.aggregate_metrics()
+            metrics_result["aggregate"] = {
+                "hits": aggregate.hits,
+                "misses": aggregate.misses,
+                "evictions": aggregate.evictions,
+                "hit_rate": (
+                    aggregate.hits / (aggregate.hits + aggregate.misses)
+                    if (aggregate.hits + aggregate.misses) > 0
+                    else 0.0
+                ),
+            }
+
+            # Collect per-cache metrics
+            if hasattr(cache_manager, "iter_metrics"):
+                for name, stats in cache_manager.iter_metrics():
+                    total = stats.hits + stats.misses
+                    metrics_result["by_cache"][name] = {
+                        "hits": stats.hits,
+                        "misses": stats.misses,
+                        "evictions": stats.evictions,
+                        "hit_rate": stats.hits / total if total > 0 else 0.0,
+                    }
+        except Exception:
+            pass  # Silently ignore metrics collection errors
+
+    # Check for EdgeCacheManager
+    edge_cache_manager = graph_dict.get("_edge_cache_manager")
+    if edge_cache_manager is not None and hasattr(edge_cache_manager, "_manager"):
+        try:
+            edge_manager = edge_cache_manager._manager
+            if hasattr(edge_manager, "aggregate_metrics"):
+                edge_aggregate = edge_manager.aggregate_metrics()
+                # Merge with aggregate if we have data
+                if metrics_result["aggregate"]["hits"] == 0:
+                    metrics_result["aggregate"] = {
+                        "hits": edge_aggregate.hits,
+                        "misses": edge_aggregate.misses,
+                        "evictions": edge_aggregate.evictions,
+                        "hit_rate": (
+                            edge_aggregate.hits / (edge_aggregate.hits + edge_aggregate.misses)
+                            if (edge_aggregate.hits + edge_aggregate.misses) > 0
+                            else 0.0
+                        ),
+                    }
+        except Exception:
+            pass  # Silently ignore metrics collection errors
+
+    return metrics_result
+
+
 def _dump_profile_outputs(
     profile: cProfile.Profile,
     *,
@@ -262,6 +336,7 @@ def _dump_profile_outputs(
     dnfr_breakdown: Mapping[str, Any],
     metadata: Mapping[str, Any],
     configuration: Mapping[str, Any],
+    cache_metrics: Mapping[str, Any],
     sort: str,
 ) -> None:
     """Persist profiling artefacts in ``.pstats`` and JSON formats."""
@@ -329,6 +404,7 @@ def _dump_profile_outputs(
             "path_counts": si_path_counts,
         },
         "dnfr_breakdown": dnfr_sections,
+        "cache_metrics": dict(cache_metrics),
         "target_functions": _extract_target_stats(stats),
         "rows": rows,
     }
@@ -347,6 +423,7 @@ def _run_pipeline(
 ) -> tuple[
     cProfile.Profile,
     dict[str, float],
+    dict[str, Any],
     dict[str, Any],
     dict[str, Any],
 ]:
@@ -563,7 +640,10 @@ def _run_pipeline(
 
     dnfr_details = {"manual": dnfr_manual_details, "default": dnfr_default_details}
 
-    return profile, timings, metadata, si_details, dnfr_details
+    # Collect cache metrics from graph cache manager
+    cache_metrics = _extract_cache_metrics(graph)
+
+    return profile, timings, metadata, si_details, dnfr_details, cache_metrics
 
 
 def profile_full_pipeline(
@@ -654,7 +734,7 @@ def profile_full_pipeline(
                 dnfr_workers=dnfr_jobs,
             )
 
-            profile, timings, metadata, si_details, dnfr_details = _run_pipeline(
+            profile, timings, metadata, si_details, dnfr_details, cache_metrics = _run_pipeline(
                 graph=graph,
                 vectorized=vectorized,
                 loops=loops,
@@ -680,6 +760,7 @@ def profile_full_pipeline(
                 dnfr_breakdown=dnfr_details,
                 metadata=metadata,
                 configuration=configuration,
+                cache_metrics=cache_metrics,
                 sort=sort,
             )
 
