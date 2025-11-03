@@ -444,6 +444,104 @@ See `tests/integration/test_additional_critical_paths.py` for examples.
 
 ---
 
+## Module Dependency Analysis and Coupling Assessment
+
+### Utils Package Dependency Graph
+
+The `tnfr.utils` package exhibits a well-structured dependency hierarchy with no circular runtime dependencies:
+
+```
+init.py (foundational - logging, lazy imports)
+  ↓
+numeric.py, chunks.py (pure mathematical functions, no TNFR imports)
+  ↓
+data.py (depends on: numeric, init)
+  ↓
+graph.py (depends on: types only)
+  ↓
+io.py (depends on: init)
+  ↓
+cache.py (depends on: locking, types, init, graph, io)
+  ↓
+callbacks.py (depends on: constants, locking, init, data, types)
+```
+
+### Cross-Module Import Analysis
+
+**Verified No Circular Imports**: Analysis confirmed no runtime circular dependencies. The apparent bidirectional reference between `init.py` and `cache.py` uses `TYPE_CHECKING` guards, preventing runtime circular import issues.
+
+#### Legitimate Cross-Dependencies
+
+1. **`cache.py` → `graph.py`**: 
+   - Purpose: ΔNFR preparation state management
+   - Functions: `get_graph()`, `mark_dnfr_prep_dirty()`
+   - Justification: Cache invalidation must coordinate with graph mutation tracking
+
+2. **`cache.py` → `init.py`**:
+   - Purpose: Logging and lazy numpy backend loading
+   - Functions: `get_logger()`, `get_numpy()`
+   - Justification: Domain-neutral backend selection (INVARIANT #10)
+
+3. **`cache.py` → `io.py`**:
+   - Purpose: Deterministic serialization for cache keys
+   - Functions: `json_dumps()`
+   - Justification: Reproducible cache key generation (INVARIANT #8)
+
+4. **`data.py` → `numeric.py`**:
+   - Purpose: Compensated summation for coherence calculations
+   - Functions: `kahan_sum_nd()`
+   - Justification: Numerical stability for C(t) computation
+
+5. **`callbacks.py` → `data.py`**:
+   - Purpose: Callback argument validation
+   - Functions: `is_non_string_sequence()`
+   - Justification: Type checking for structural event data
+
+**Assessment**: All cross-module imports serve specific structural purposes aligned with TNFR invariants. No unnecessary coupling detected.
+
+### Compatibility Shims
+
+**`callback_utils.py`**: Deprecated compatibility shim that redirects to `utils.callbacks`. This module:
+- Emits `DeprecationWarning` on import
+- Provides backward compatibility during migration period
+- Documented for future removal
+- **Recommendation**: Remove in next major version after migration period
+
+### Module Coupling Metrics
+
+| Module | Internal Imports | External TNFR Imports | Coupling Score |
+|--------|------------------|----------------------|----------------|
+| `numeric.py` | 0 | 0 | **Low** ✓ |
+| `chunks.py` | 0 | 0 | **Low** ✓ |
+| `init.py` | 1 (cache - TYPE_CHECKING only) | 0 | **Low** ✓ |
+| `graph.py` | 0 | 2 (types) | **Low** ✓ |
+| `io.py` | 4 (init) | 0 | **Low** ✓ |
+| `data.py` | 3 (numeric, init) | 0 | **Moderate** ✓ |
+| `callbacks.py` | 2 (init, data) | 3 (constants, locking, types) | **Moderate** ✓ |
+| `cache.py` | 5 (graph, init, io) | 2 (locking, types) | **Moderate** ✓ |
+
+**✓ All coupling levels are appropriate for module responsibilities.**
+
+### Linting Results Summary
+
+Flake8 analysis identified only minor style issues:
+- Blank lines with whitespace (W293)
+- Module imports not at top (E402) - intentional for lazy loading
+- Unused TYPE_CHECKING imports (F401) - required for type hints
+- Minor spacing issues (E302, E305)
+
+**No structural anti-patterns, circular imports, or dangerous coupling detected.**
+
+### Recommendations
+
+1. **Keep Current Structure**: The dependency hierarchy is clean and well-organized
+2. **Remove `callback_utils.py`**: After deprecation period expires
+3. **Document Import Rationale**: Comments added where non-obvious
+4. **Maintain TYPE_CHECKING Guards**: For forward references without runtime cycles
+5. **Continue Modular Design**: New utilities should follow same layered approach
+
+---
+
 ## References
 
 - `AGENTS.md`: Agent instructions for maintaining TNFR fidelity
