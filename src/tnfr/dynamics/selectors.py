@@ -27,6 +27,7 @@ from ..selector import (
     _apply_selector_hysteresis,
     _calc_selector_score,
     _selector_norms,
+    _selector_parallel_jobs,
     _selector_thresholds,
 )
 from ..types import Glyph, GlyphCode, GlyphSelector, HistoryState, NodeId, TNFRGraph
@@ -339,19 +340,6 @@ def _choose_glyph(
             record_grammar_violation(G, n, err, stage="selector")
             raise
     return g
-
-
-def _selector_parallel_jobs(G: TNFRGraph) -> int | None:
-    """Return worker count for selector helpers when parallelism is enabled."""
-
-    raw_jobs = G.graph.get("GLYPH_SELECTOR_N_JOBS")
-    try:
-        n_jobs = None if raw_jobs is None else int(raw_jobs)
-    except (TypeError, ValueError):
-        return None
-    if n_jobs is None or n_jobs <= 1:
-        return None
-    return n_jobs
 
 
 def _selector_metrics_chunk(
