@@ -44,7 +44,19 @@ def test_callback_utils_compatibility_shim():
     
     Structural Function: Transition - managed deprecation path
     TNFR Invariants: #8 (Controlled determinism)
+    
+    Note: This test may fail if callback_utils was already imported by another test.
+    The warning is only emitted once per Python session.
     """
+    # Clear the module from cache to force reimport
+    import sys
+    if 'tnfr.callback_utils' in sys.modules:
+        del sys.modules['tnfr.callback_utils']
+    
+    # Also clear utils.callbacks since callback_utils imports from it
+    if 'tnfr.utils.callbacks' in sys.modules:
+        del sys.modules['tnfr.utils.callbacks']
+    
     with pytest.warns(DeprecationWarning, match="callback_utils.*deprecated"):
         import tnfr.callback_utils
         
