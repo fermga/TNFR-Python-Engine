@@ -94,6 +94,12 @@ Key principles:
 - Include full type annotations and generate corresponding `.pyi` stubs
 - Validate inputs and verify structural invariants after construction
 
+**Quick Reference Guides:**
+- [Factory Quick Reference](docs/FACTORY_QUICK_REFERENCE.md) - Templates and common patterns
+- [Factory Patterns Guide](docs/FACTORY_PATTERNS.md) - Comprehensive design patterns
+- [Factory Inventory](docs/FACTORY_INVENTORY_2025.md) - Complete inventory of all factories
+- [Stub Automation Workflow](docs/STUB_AUTOMATION.md) - Detailed automation guide
+
 ### Stub Generation and Synchronization
 
 To maintain type safety and prevent drift between implementations and stubs:
@@ -113,7 +119,8 @@ commits to proceed. When you modify a `.py` file:
 3. Review the generated stub for accuracy
 4. Commit both `.py` and `.pyi` files together
 
-See [scripts/README.md](scripts/README.md) for detailed documentation on stub generation.
+See [Stub Automation Workflow](docs/STUB_AUTOMATION.md) for complete documentation on the
+automated stub generation system, including troubleshooting and advanced usage.
 
 ## Commit message format
 
