@@ -60,7 +60,9 @@ def _assert_vector_state(data, np):
         if edge_count:
             assert isinstance(edge_values, np.ndarray)
             chunk_size = data.get("neighbor_chunk_size") or edge_count
-            assert edge_values.shape == (chunk_size, accum.shape[0])
+            # edge_values has shape (component_rows, workspace_length)
+            # where workspace_length is chunk_size (for chunked) or edge_count (for non-chunked)
+            assert edge_values.shape == (accum.shape[0], chunk_size)
         else:
             assert edge_values is None
 
@@ -248,7 +250,8 @@ def test_build_neighbor_sums_uses_cached_numpy_when_get_numpy_none(monkeypatch):
         assert isinstance(edge_workspace, np.ndarray)
         chunk_size = data.get("neighbor_chunk_size") or edge_count
         expected_rows = accum_after.shape[0]
-        assert edge_workspace.shape == (chunk_size, expected_rows)
+        # edge_workspace has shape (component_rows, workspace_length)
+        assert edge_workspace.shape == (expected_rows, chunk_size)
     else:
         assert edge_workspace is None
 
