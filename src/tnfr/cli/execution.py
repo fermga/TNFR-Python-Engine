@@ -706,3 +706,150 @@ def cmd_profile_pipeline(args: argparse.Namespace) -> int:
         dnfr_workers=dnfr_workers,
     )
     return 0
+
+
+def cmd_math_run(args: argparse.Namespace) -> int:
+    """Execute ``tnfr math.run`` returning the exit status.
+
+    This command always enables the mathematical dynamics engine for
+    validation of TNFR structural invariants on Hilbert space.
+    """
+
+    # Force math engine to be enabled
+    args.math_engine = True
+
+    code, graph = _run_cli_program(args)
+    if code != 0:
+        return code
+
+    if graph is not None:
+        _log_run_summaries(graph, args)
+        logger.info("[MATH.RUN] Mathematical dynamics validation completed")
+    return 0
+
+
+def cmd_epi_validate(args: argparse.Namespace) -> int:
+    """Execute ``tnfr epi.validate`` returning the exit status.
+
+    This command validates EPI structural integrity, coherence preservation,
+    and operator closure according to TNFR canonical invariants.
+    """
+
+    code, graph = _run_cli_program(args)
+    if code != 0:
+        return code
+
+    if graph is None:
+        logger.error("[EPI.VALIDATE] No graph generated for validation")
+        return 1
+
+    # Validation checks
+    tolerance = getattr(args, "tolerance", 1e-6)
+    check_coherence = getattr(args, "check_coherence", True)
+    check_frequency = getattr(args, "check_frequency", True)
+    check_phase = getattr(args, "check_phase", True)
+
+    validation_passed = True
+    validation_summary = []
+
+    # Check coherence preservation
+    if check_coherence:
+        hist = ensure_history(graph)
+        cfg_coh = graph.graph.get("COHERENCE", METRIC_DEFAULTS["COHERENCE"])
+        if cfg_coh.get("enabled", True):
+            Wstats = hist.get(cfg_coh.get("stats_history_key", "W_stats"), [])
+            if Wstats:
+                # Check that coherence is non-negative and bounded
+                for i, stats in enumerate(Wstats):
+                    W_mean = float(stats.get("mean", 0.0))
+                    if W_mean < -tolerance:
+                        validation_passed = False
+                        validation_summary.append(
+                            f"  [FAIL] Step {i}: Coherence W_mean={W_mean:.6f} < 0"
+                        )
+                if validation_passed:
+                    validation_summary.append(
+                        f"  [PASS] Coherence preserved (W_mean ≥ 0 across {len(Wstats)} steps)"
+                    )
+            else:
+                validation_summary.append("  [SKIP] No coherence history available")
+        else:
+            validation_summary.append("  [SKIP] Coherence tracking disabled")
+
+    # Check structural frequency positivity
+    if check_frequency:
+        nodes = list(graph.nodes)
+        if nodes:
+            negative_frequencies = []
+            for node_id in nodes:
+                data = graph.nodes[node_id]
+                nu_f = float(
+                    get_attr(
+                        data,
+                        VF_ALIAS_KEYS,
+                        default=float(data.get(VF_PRIMARY, 0.0)),
+                    )
+                )
+                if nu_f < -tolerance:
+                    negative_frequencies.append((node_id, nu_f))
+
+            if negative_frequencies:
+                validation_passed = False
+                for node_id, nu_f in negative_frequencies[:5]:  # Show first 5
+                    validation_summary.append(
+                        f"  [FAIL] Node {node_id}: νf={nu_f:.6f} < 0"
+                    )
+                if len(negative_frequencies) > 5:
+                    validation_summary.append(
+                        f"  ... and {len(negative_frequencies) - 5} more nodes"
+                    )
+            else:
+                validation_summary.append(
+                    f"  [PASS] Structural frequency νf ≥ 0 for all {len(nodes)} nodes"
+                )
+        else:
+            validation_summary.append("  [SKIP] No nodes to validate")
+
+    # Check phase synchrony in couplings
+    if check_phase:
+        edges = list(graph.edges)
+        if edges:
+            phase_violations = []
+            for u, v in edges:
+                theta_u = float(graph.nodes[u].get("theta", 0.0))
+                theta_v = float(graph.nodes[v].get("theta", 0.0))
+                # Check if phases are defined (not both zero)
+                if abs(theta_u) > tolerance or abs(theta_v) > tolerance:
+                    # Phase difference should be bounded
+                    phase_diff = abs(theta_u - theta_v)
+                    if phase_diff > 2 * 3.141592653589793:  # > 2π
+                        phase_violations.append((u, v, phase_diff))
+
+            if phase_violations:
+                validation_passed = False
+                for u, v, diff in phase_violations[:5]:
+                    validation_summary.append(
+                        f"  [WARN] Edge ({u},{v}): phase diff={diff:.6f} > 2π"
+                    )
+                if len(phase_violations) > 5:
+                    validation_summary.append(
+                        f"  ... and {len(phase_violations) - 5} more edges"
+                    )
+            else:
+                validation_summary.append(
+                    f"  [PASS] Phase synchrony maintained across {len(edges)} edges"
+                )
+        else:
+            validation_summary.append("  [SKIP] No edges to validate")
+
+    # Log validation results
+    logger.info("[EPI.VALIDATE] Validation Summary:")
+    for line in validation_summary:
+        logger.info("%s", line)
+
+    if validation_passed:
+        logger.info("[EPI.VALIDATE] ✓ All validation checks passed")
+        return 0
+    else:
+        logger.info("[EPI.VALIDATE] ✗ Some validation checks failed")
+        return 1

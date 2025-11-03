@@ -358,3 +358,135 @@ def _add_profile_pipeline_parser(sub: argparse._SubParsersAction) -> None:
         help="Worker counts forwarded to G.graph['DNFR_N_JOBS']; use 'auto' for defaults",
     )
     p_profile.set_defaults(func=cmd_profile_pipeline)
+
+
+def _add_math_run_parser(sub: argparse._SubParsersAction) -> None:
+    """Configure the ``math.run`` subcommand."""
+    from .execution import cmd_math_run
+
+    p_math = sub.add_parser(
+        "math.run",
+        help="Run simulation with mathematical dynamics engine validation",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Examples:\n"
+            "  # Run with default math engine settings\n"
+            "  tnfr math.run --nodes 24 --steps 100\n\n"
+            "  # Run with custom Hilbert dimension\n"
+            "  tnfr math.run --math-dimension 32 --steps 50\n\n"
+            "  # Run with custom coherence spectrum\n"
+            "  tnfr math.run --math-coherence-spectrum 1.0 0.8 0.6 --steps 100\n"
+        ),
+    )
+    add_common_args(p_math)
+    p_math.add_argument("--steps", type=int, default=100)
+    p_math.add_argument(
+        "--preset",
+        type=str,
+        default=None,
+        help=_PRESET_HELP,
+    )
+    p_math.add_argument("--sequence-file", type=str, default=None)
+    add_canon_toggle(p_math)
+    add_grammar_selector_args(p_math)
+    add_history_export_args(p_math)
+
+    # Math engine is always enabled for math.run
+    math_group = p_math.add_argument_group("Mathematical dynamics (always enabled)")
+    math_group.add_argument(
+        "--math-dimension",
+        type=int,
+        help="Hilbert space dimension",
+    )
+    math_group.add_argument(
+        "--math-coherence-spectrum",
+        type=float,
+        nargs="+",
+        metavar="λ",
+        help="Eigenvalues for the coherence operator",
+    )
+    math_group.add_argument(
+        "--math-coherence-c-min",
+        type=float,
+        help="Explicit coherence floor C_min",
+    )
+    math_group.add_argument(
+        "--math-coherence-threshold",
+        type=float,
+        help="Coherence threshold for validation",
+    )
+    math_group.add_argument(
+        "--math-frequency-diagonal",
+        type=float,
+        nargs="+",
+        metavar="ν",
+        help="Diagonal entries for the frequency operator",
+    )
+    math_group.add_argument(
+        "--math-generator-diagonal",
+        type=float,
+        nargs="+",
+        metavar="ω",
+        help="ΔNFR generator diagonal",
+    )
+
+    p_math.set_defaults(func=cmd_math_run)
+
+
+def _add_epi_validate_parser(sub: argparse._SubParsersAction) -> None:
+    """Configure the ``epi.validate`` subcommand."""
+    from .execution import cmd_epi_validate
+
+    p_epi = sub.add_parser(
+        "epi.validate",
+        help="Validate EPI structural integrity and coherence",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Examples:\n"
+            "  # Validate a preset\n"
+            "  tnfr epi.validate --preset resonant_bootstrap\n\n"
+            "  # Validate with custom topology\n"
+            "  tnfr epi.validate --nodes 48 --topology complete\n\n"
+            "  # Validate from sequence file\n"
+            "  tnfr epi.validate --sequence-file presets/resonant_bootstrap.yaml\n"
+        ),
+    )
+    add_common_args(p_epi)
+    p_epi.add_argument("--steps", type=int, default=50)
+    p_epi.add_argument(
+        "--preset",
+        type=str,
+        default=None,
+        help=_PRESET_HELP,
+    )
+    p_epi.add_argument("--sequence-file", type=str, default=None)
+    add_canon_toggle(p_epi)
+    add_grammar_selector_args(p_epi)
+
+    validation_group = p_epi.add_argument_group("Validation options")
+    validation_group.add_argument(
+        "--check-coherence",
+        action="store_true",
+        default=True,
+        help="Validate coherence preservation (enabled by default)",
+    )
+    validation_group.add_argument(
+        "--check-frequency",
+        action="store_true",
+        default=True,
+        help="Validate structural frequency positivity (enabled by default)",
+    )
+    validation_group.add_argument(
+        "--check-phase",
+        action="store_true",
+        default=True,
+        help="Validate phase synchrony in couplings (enabled by default)",
+    )
+    validation_group.add_argument(
+        "--tolerance",
+        type=float,
+        default=1e-6,
+        help="Numerical tolerance for validation checks",
+    )
+
+    p_epi.set_defaults(func=cmd_epi_validate)
