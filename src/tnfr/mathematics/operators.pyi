@@ -2,8 +2,12 @@ import numpy as np
 from .backend import MathematicsBackend
 from dataclasses import dataclass, field
 from typing import Any, Sequence
+import numpy.typing as npt
 
 __all__ = ['CoherenceOperator', 'FrequencyOperator']
+
+ComplexMatrix = npt.NDArray[np.complexfloating[np.float64, np.float64]]
+ComplexVector = npt.NDArray[np.complexfloating[np.float64, np.float64]]
 
 @dataclass(slots=True)
 class CoherenceOperator:

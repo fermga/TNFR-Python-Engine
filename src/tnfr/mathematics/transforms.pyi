@@ -1,4 +1,5 @@
 from .epi import BEPIElement
+from .spaces import BanachSpaceEPI
 from dataclasses import dataclass
 from typing import Callable, Iterable, Mapping, Protocol, Sequence
 

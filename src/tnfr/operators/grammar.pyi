@@ -1,4 +1,5 @@
 from ..types import Glyph, NodeId, TNFRGraph
+from ..node import NodeProtocol
 from ..validation import ValidationOutcome
 from _typeshed import Incomplete
 from collections.abc import Iterable

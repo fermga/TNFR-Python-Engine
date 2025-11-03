@@ -7,6 +7,8 @@ from typing import Any, NamedTuple
 
 __all__ = ['CallbackEvent', 'CallbackManager', 'callback_manager', 'CallbackError', 'CallbackSpec']
 
+Callback = Callable[[nx.Graph, dict[str, Any]], None]
+
 class CallbackSpec(NamedTuple):
     name: str | None
     func: Callable[..., Any]

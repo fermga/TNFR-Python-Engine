@@ -220,7 +220,7 @@ class TestFactoryDocumentation:
         """Factory has comprehensive docstring."""
         assert make_frequency_operator.__doc__ is not None
         doc = make_frequency_operator.__doc__
-        assert "Parameters" in doc or "Parameters" in doc
+        assert "Parameters" in doc
         assert "Returns" in doc
 
     def test_delta_nfr_has_docstring(self) -> None:
