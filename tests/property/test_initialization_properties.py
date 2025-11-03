@@ -6,6 +6,9 @@ import copy
 import math
 from typing import Mapping
 
+import pytest
+
+hypothesis = pytest.importorskip("hypothesis")
 from hypothesis import given, strategies as st
 
 from tnfr.constants import THETA_KEY, VF_KEY

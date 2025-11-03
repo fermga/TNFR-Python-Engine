@@ -40,8 +40,24 @@ def classical_operator_snapshot(
 
     def _payload(node: str) -> Mapping[str, float]:
         nd = G.nodes[node]
+        epi_value = nd[EPI_PRIMARY]
+        # Handle BEPIElement or dict representation
+        if isinstance(epi_value, dict):
+            # BEPI stored as dict - extract maximum magnitude
+            if "continuous" in epi_value:
+                cont = epi_value["continuous"]
+                # Handle tuple of complex numbers
+                if isinstance(cont, tuple):
+                    epi_float = float(max(abs(c) for c in cont))
+                else:
+                    epi_float = float(abs(cont))
+            else:
+                epi_float = float(epi_value)
+        else:
+            epi_float = float(epi_value)
+        
         return {
-            "EPI": float(nd[EPI_PRIMARY]),
+            "EPI": epi_float,
             "vf": float(nd[VF_PRIMARY]),
             "theta": float(nd[THETA_PRIMARY]),
             "dnfr": float(nd[DNFR_PRIMARY]),

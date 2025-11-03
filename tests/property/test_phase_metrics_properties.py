@@ -6,6 +6,9 @@ import math
 from typing import Sequence
 
 import numpy as np
+import pytest
+
+hypothesis = pytest.importorskip("hypothesis")
 from hypothesis import given, strategies as st
 
 from tnfr.metrics.trig import neighbor_phase_mean_bulk, neighbor_phase_mean_list

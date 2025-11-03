@@ -2,8 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import numpy as np
+import pytest
+
+matplotlib = pytest.importorskip("matplotlib")
 from matplotlib.figure import Figure
+import numpy as np
 
 from tnfr.viz import matplotlib as tnfr_matplotlib
 

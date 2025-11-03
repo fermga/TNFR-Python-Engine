@@ -21,6 +21,9 @@ from .metrics.common import compute_dnfr_accel_max
 from .types import SelectorNorms, SelectorThresholds, SelectorWeights
 from .utils import is_non_string_sequence
 
+if TYPE_CHECKING:  # pragma: no cover
+    from .types import TNFRGraph
+
 HYSTERESIS_GLYPHS: set[str] = {"IL", "OZ", "ZHIR", "THOL", "NAV", "RA"}
 
 __all__ = (
@@ -28,6 +31,7 @@ __all__ = (
     "_selector_norms",
     "_calc_selector_score",
     "_apply_selector_hysteresis",
+    "_selector_parallel_jobs",
 )
 
 
@@ -214,3 +218,27 @@ def _apply_selector_hysteresis(
         if isinstance(prev, str) and prev in HYSTERESIS_GLYPHS:
             return prev
     return None
+
+
+def _selector_parallel_jobs(G: "TNFRGraph") -> int | None:
+    """Return worker count for selector helpers when parallelism is enabled.
+    
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing selector configuration.
+        
+    Returns
+    -------
+    int | None
+        Number of parallel jobs to use, or None if parallelism is disabled
+        or invalid configuration is provided.
+    """
+    raw_jobs = G.graph.get("GLYPH_SELECTOR_N_JOBS")
+    try:
+        n_jobs = None if raw_jobs is None else int(raw_jobs)
+    except (TypeError, ValueError):
+        return None
+    if n_jobs is None or n_jobs <= 1:
+        return None
+    return n_jobs

@@ -7,7 +7,9 @@ import math
 from typing import Iterable
 
 import networkx as nx
+import pytest
 
+hypothesis = pytest.importorskip("hypothesis")
 from hypothesis import given, strategies as st
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_KEY, VF_PRIMARY, dEPI_PRIMARY

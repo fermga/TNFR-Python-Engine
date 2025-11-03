@@ -35,6 +35,8 @@ from .utils.callbacks import (
     CallbackManager,
     callback_manager,
     CallbackSpec,
+    _normalize_callbacks,
+    _normalize_callback_entry,
 )
 
 __all__ = (
@@ -43,4 +45,6 @@ __all__ = (
     "callback_manager",
     "CallbackError",
     "CallbackSpec",
+    "_normalize_callbacks",
+    "_normalize_callback_entry",
 )
