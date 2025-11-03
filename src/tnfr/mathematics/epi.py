@@ -218,6 +218,22 @@ class BEPIElement(_EPIValidators):
             )
         return NotImplemented
 
+    def __eq__(self, other: object) -> bool:
+        """Check equality with another BEPIElement or numeric value.
+        
+        When comparing to a numeric value, compares with the maximum magnitude.
+        """
+        if isinstance(other, BEPIElement):
+            return (
+                np.allclose(self.f_continuous, other.f_continuous, rtol=1e-12, atol=1e-12)
+                and np.allclose(self.a_discrete, other.a_discrete, rtol=1e-12, atol=1e-12)
+                and np.allclose(self.x_grid, other.x_grid, rtol=1e-12, atol=1e-12)
+            )
+        elif isinstance(other, (int, float)):
+            # Compare with maximum magnitude for numeric comparisons
+            return abs(self._max_magnitude() - float(other)) < 1e-9
+        return NotImplemented
+
 
 @dataclass(frozen=True)
 class CoherenceEvaluation:
