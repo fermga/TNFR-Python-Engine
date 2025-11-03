@@ -68,10 +68,13 @@ Shows what would be done without making changes.
 
 #### Makefile Targets
 
+Run `make help` to see all available targets:
+
 - `make stubs` - Generate missing stub files
-- `make stubs-check` - Check for missing stubs (CI)
-- `make stubs-check-sync` - Check for outdated stubs (CI)
+- `make stubs-check` - Check for missing stubs (used in pre-commit)
+- `make stubs-check-sync` - Check for outdated stubs (used in CI)
 - `make stubs-sync` - Regenerate outdated stubs
+- `make help` - Display all available Make targets
 
 #### Pre-commit Hook
 
@@ -79,12 +82,19 @@ The `.pre-commit-config.yaml` includes a hook that runs `--check` before commits
 
 #### CI/CD
 
-Add to your CI workflow:
+The type-check workflow includes two validation steps:
 
 ```yaml
-- name: Check stub synchronization
-  run: make stubs-check-sync
+- name: Check stub files exist
+  run: python scripts/generate_stubs.py --check
+
+- name: Check stub file synchronization
+  run: python scripts/generate_stubs.py --check-sync
 ```
+
+This dual-layer check ensures:
+1. All Python modules have stub files
+2. No stubs are outdated (preventing drift)
 
 ### How Drift Detection Works
 

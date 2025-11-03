@@ -86,11 +86,18 @@ These factories create TNFR nodes or return other factory functions.
 
 Added to `.github/workflows/type-check.yml`:
 ```yaml
-- name: Check stub file synchronization
+- name: Check stub files exist
   run: python scripts/generate_stubs.py --check
+
+- name: Check stub file synchronization
+  run: python scripts/generate_stubs.py --check-sync
 ```
 
-This ensures that stub files remain synchronized with implementation and catches drift in CI/CD.
+This ensures that:
+1. All Python modules have corresponding `.pyi` stub files
+2. Stub files are synchronized with implementation (not outdated)
+
+The CI pipeline now catches both missing stubs and outdated stubs, preventing drift.
 
 ## Type Annotation Improvements
 
@@ -177,51 +184,73 @@ All factory-related tests pass. Pre-existing failures in other areas are documen
 
 ### Makefile
 
-Fixed tab/space issues in Makefile:
+Enhanced Makefile with comprehensive stub management targets:
 ```makefile
-.PHONY: docs stubs stubs-check
+.PHONY: docs stubs stubs-check stubs-check-sync stubs-sync help
 
-stubs:
-	@echo "Generating .pyi stub files..."
-	@python scripts/generate_stubs.py
-
-stubs-check:
-	@echo "Checking for missing .pyi stub files..."
-	@python scripts/generate_stubs.py --check
+help:
+	@echo "Available targets:"
+	@echo "  docs             - Build Sphinx documentation"
+	@echo "  stubs            - Generate missing .pyi stub files"
+	@echo "  stubs-check      - Check for missing .pyi stub files"
+	@echo "  stubs-check-sync - Check if .pyi stub files are synchronized with .py files"
+	@echo "  stubs-sync       - Regenerate outdated .pyi stub files"
 ```
 
-Now `make stubs-check` works correctly in development and CI.
+Usage:
+- `make stubs` - Generate any missing stub files
+- `make stubs-check` - Verify all modules have stubs (used in pre-commit)
+- `make stubs-check-sync` - Verify stubs are up-to-date with source (used in CI)
+- `make stubs-sync` - Auto-regenerate outdated stubs
+- `make help` - Display all available targets
+
+All targets work correctly in development and CI environments.
 
 ## Recommendations
 
 ### Immediate Actions
 
-1. ✓ **COMPLETED**: Add stub check to CI/CD
-2. ✓ **COMPLETED**: Fix type annotation gaps
-3. ✓ **COMPLETED**: Synchronize drifted stub files
-4. ✓ **COMPLETED**: Document factory patterns
+1. ✅ **COMPLETED**: Add stub checks to CI/CD (both missing and outdated)
+2. ✅ **COMPLETED**: Fix type annotation gaps
+3. ✅ **COMPLETED**: Synchronize drifted stub files
+4. ✅ **COMPLETED**: Document factory patterns
+5. ✅ **COMPLETED**: Enhance Makefile with help target and full stub management
 
 ### Future Enhancements
 
-1. **Automated stub regeneration**: Consider adding a pre-commit hook or CI job that auto-regenerates stubs and commits them
+1. **Automated stub regeneration**: Consider adding a CI job that auto-regenerates stubs and creates a PR when drift is detected
 2. **Factory testing template**: Create a pytest fixture template for factory testing to ensure consistency
 3. **Documentation generation**: Consider auto-generating factory documentation from docstrings for the API reference
 
 ### Monitoring
 
-- **CI Check**: Stub synchronization now checked on every PR
-- **Type Coverage**: Factory modules have 100% type annotation coverage
-- **Test Coverage**: Core factory operations covered by integration tests
+- ✅ **CI Check (Missing)**: Stub existence checked on every PR via `--check`
+- ✅ **CI Check (Outdated)**: Stub synchronization checked on every PR via `--check-sync`
+- ✅ **Pre-commit Hook**: Developers notified of missing stubs before commit
+- ✅ **Type Coverage**: Factory modules have 100% type annotation coverage
+- ✅ **Test Coverage**: Core factory operations covered by integration tests
+- ✅ **Make Targets**: Easy-to-use commands for developers (`make help`)
 
 ## Conclusion
 
-The TNFR Python Engine's factory patterns are well-organized and consistent. All factories follow the documented conventions in `FACTORY_PATTERNS.md`. The main issues were:
+The TNFR Python Engine's factory patterns are well-organized and consistent. All factories follow the documented conventions in `FACTORY_PATTERNS.md`. 
 
-1. **Type stub drift**: Resolved by regenerating with stubgen
-2. **Missing type annotations**: Fixed in generators.py
-3. **Documentation gaps**: Enhanced in rng.py
+### Improvements Completed
 
-With CI/CD automation in place, future drift will be caught automatically. The factory pattern foundation is solid and ready for continued development.
+1. ✅ **Type stub drift prevention**: CI now checks both missing AND outdated stubs
+2. ✅ **Enhanced Makefile**: Added help target and comprehensive stub management commands
+3. ✅ **Documentation updates**: Reflected improved automation in audit documentation
+4. ✅ **Developer experience**: Easy-to-discover commands via `make help`
+
+### Automation Coverage
+
+The stub synchronization automation now provides:
+- **Pre-commit**: Catches missing stubs before commit
+- **CI/CD**: Catches both missing and outdated stubs in pull requests
+- **Make targets**: Simple commands for manual stub management
+- **Documentation**: Clear guidance for developers
+
+With comprehensive CI/CD automation in place, future drift will be caught automatically at multiple stages. The factory pattern foundation is solid and ready for continued development.
 
 ## References
 
