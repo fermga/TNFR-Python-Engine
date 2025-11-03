@@ -90,6 +90,8 @@ integration.
 - [CONTRIBUTING.md](CONTRIBUTING.md) — QA battery (`scripts/run_tests.sh`) and review
   expectations.
 - [TNFR.pdf](TNFR.pdf) — theoretical background, structural operators, and paradigm glossary.
+- [PRE_EXISTING_FAILURES.md](PRE_EXISTING_FAILURES.md) — documented pre-existing test failures
+  requiring separate focused PRs.
 
 ## Migration notes
 
