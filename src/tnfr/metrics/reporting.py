@@ -114,13 +114,38 @@ def build_metrics_summary(
 ]:
     """Collect a compact metrics summary for CLI reporting.
 
+    This factory aggregates various TNFR metrics into a unified summary
+    structure suitable for command-line display and analysis. It combines
+    glyph timing statistics, latency measurements, and coherence indicators.
+
     Parameters
     ----------
-    G:
-        Graph containing the recorded metrics.
-    series_limit:
-        Maximum number of samples to keep for each glyphogram series. ``None`` or
-        non-positive values disable trimming and return the full history.
+    G : TNFRGraph
+        Graph containing the recorded metrics history.
+    series_limit : int | None, optional
+        Maximum number of samples to keep for each glyphogram series.
+        When ``None`` or non-positive, returns the full history without
+        trimming. Default is None.
+
+    Returns
+    -------
+    tuple[dict, bool]
+        A two-element tuple containing:
+
+        - **summary** (dict): Metrics dictionary with the following keys:
+
+          - ``Tg_global``: Normalized glyph dwell time per class
+          - ``latency_mean``: Mean latency across all samples
+          - ``rose``: Sigma rose coherence indicator
+          - ``glyphogram``: Time series of glyph activity (trimmed if limit set)
+
+        - **has_data** (bool): True if latency data is available, False otherwise
+    
+    Notes
+    -----
+    The series trimming feature is useful for limiting memory usage when
+    tracking long-running simulations. Trimming only affects the glyphogram
+    time series; aggregate statistics remain computed from the full history.
     """
 
     tg = Tg_global(G, normalize=True)
