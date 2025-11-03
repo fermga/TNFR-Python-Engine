@@ -181,38 +181,36 @@ All changes maintain the TNFR invariants specified in AGENTS.md §3:
 
 ## Remaining Failures Analysis
 
-The remaining 138 failures fall into these categories:
+The remaining 127 failures + 3 errors are now comprehensively documented in [PRE_EXISTING_FAILURES.md](./PRE_EXISTING_FAILURES.md), which provides:
 
-1. **Import errors (3)**: Module reference issues unrelated to glyphs
-2. **Glyph/BEPIElement related (~26)**:
-   - Pickling issues with parallel selectors (5)
-   - Grammar precondition errors (5)
-   - BEPI serialization issues (3)
-   - Glyph history windowing (5)
-   - Other glyph-related (8)
-3. **Unrelated failures (~109)**:
-   - Structural validation errors
-   - Observer/metrics issues
-   - RNG/caching issues
-   - IO and logging issues
+- Detailed categorization by issue type (Grammar, ΔNFR Dynamics, Metrics, IO, etc.)
+- Priority and complexity assessments for each category
+- Recommended PR sequence for addressing failures
+- TNFR structural invariant analysis for each fix
+- Progress tracking table
+
+Quick summary of categories:
+1. **Grammar and Operator Preconditions** (22): Grammar validation and glyph resolution
+2. **ΔNFR Dynamics** (36): Core dynamics engine and vectorization
+3. **Metrics and Observers** (31): Telemetry and observation systems
+4. **IO Module** (23): Import and lazy loading issues
+5. **Logging Module** (5): Module import paths
+6. **BEPIElement Serialization** (3): Complex object serialization
+7. **Configuration** (3): Config loading and application
+8. **Glyph Resolution** (2): Glyph name mappings
+9. **Golden Snapshots** (1): Numerical regression tests
+10. **Other** (4): Miscellaneous infrastructure issues
 
 ## Recommendations
 
-### High Priority
-1. **Parallel selector pickle issues**: These are infrastructure issues that need specialized attention
-2. **BEPI serialization**: Need to add JSON/YAML serialization support for BEPIElement
-3. **Glyph history windowing**: Extra keys being added unexpectedly
+See [PRE_EXISTING_FAILURES.md](./PRE_EXISTING_FAILURES.md) for the complete recommended PR sequence. Top priorities:
 
-### Medium Priority
-1. **Grammar precondition errors**: Some tests expect different error messages
-2. **Import errors**: Clean up module structure issues
-
-### Low Priority
-1. **Observer metrics**: Minor calculation differences
-2. **Structural validation**: Message format changes
+1. **PR #1: Grammar Glyph Resolution** - Fix Glyph instance to string conversion (~8 failures, low risk)
+2. **PR #2: IO and Logging Module Imports** - Fix module paths (~28 failures, low risk)
+3. **PR #3: ΔNFR NumPy Backend Detection** - Fix backend detection (~15 failures, medium risk)
 
 ## Conclusion
 
 This PR successfully addresses the core issues with BEPIElement arithmetic and glyph name resolution, fixing 34 tests and reducing the failure count by ~20%. The changes maintain full TNFR structural fidelity and pass all security checks.
 
-The test consolidation work from previous phases already provides excellent DRY compliance and critical path coverage. The remaining failures are largely infrastructure issues that require specialized fixes beyond the scope of this optimization task.
+The test consolidation work from previous phases already provides excellent DRY compliance and critical path coverage. The remaining 127 failures + 3 errors are now fully documented with categorization, analysis, and recommended fixes in [PRE_EXISTING_FAILURES.md](./PRE_EXISTING_FAILURES.md).
