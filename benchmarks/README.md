@@ -221,3 +221,58 @@ Both benchmarks honour the new batching knobs exposed by the engine:
 Leave both settings unset for medium-sized runs; the automatic heuristics use
 CPU availability and a conservative memory estimate to choose a balanced chunk
 size.
+
+## Cache Profiling
+
+### Comprehensive Cache Analysis
+
+The `comprehensive_cache_profiler.py` tool tracks buffer allocation effectiveness across all TNFR hot paths:
+
+```bash
+PYTHONPATH=src python benchmarks/comprehensive_cache_profiler.py \
+  --nodes 200 --steps 50 --buffer-cache-size 256 \
+  --output cache_report.json
+```
+
+**Key Metrics Reported:**
+- **Buffer Reuse Rate**: Should remain near 100% (indicates effective buffer caching)
+- **Edge Cache Hit Rate**: Per-hot-path buffer allocation cache effectiveness
+- **TNFR Cache Hit Rate**: DNFR preparation state and structural cache hits
+- **Cache Entry Count**: Memory usage tracking
+
+**Sample Results** (100 nodes, 20 steps):
+- `coherence_matrix`: 97.5% hit rate, 100% buffer reuse ⭐
+- `default_compute_delta_nfr`: 96.7% hit rate, 100% buffer reuse ⭐
+- `sense_index`: 0.7% hit rate, 100% buffer reuse (expected - creates new structural arrays)
+- `dnfr_laplacian`: 0.0% hit rate, 100% buffer reuse (by design - stateless gradients)
+
+For detailed analysis see `docs/CACHE_OPTIMIZATION_ANALYSIS.md`.
+
+**Usage Examples:**
+
+```bash
+# Basic profiling
+python benchmarks/comprehensive_cache_profiler.py --nodes 100 --steps 20
+
+# Detailed per-step metrics
+python benchmarks/comprehensive_cache_profiler.py --nodes 200 --steps 50 --verbose
+
+# Export JSON report
+python benchmarks/comprehensive_cache_profiler.py \
+  --nodes 150 --steps 30 --buffer-cache-size 256 \
+  --output cache_analysis.json
+
+# Test different cache sizes
+python benchmarks/comprehensive_cache_profiler.py \
+  --nodes 500 --steps 100 --buffer-cache-size 512
+```
+
+**Interpreting Results:**
+
+1. **Buffer Reuse Rate = 100%** ✅ Optimal - buffers are being reused perfectly
+2. **Buffer Reuse Rate < 95%** ⚠️ Investigation needed - possible cache thrashing
+3. **High Edge Cache Misses + 100% Buffer Reuse** ✅ Normal for Si/Laplacian (creates new entries but reuses buffers)
+4. **High Eviction Rate** ⚠️ Consider increasing `--buffer-cache-size`
+
+The comprehensive profiler supersedes the basic `cache_hot_path_profiler.py` by tracking all cache layers.
+
