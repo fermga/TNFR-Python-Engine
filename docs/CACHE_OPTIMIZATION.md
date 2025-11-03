@@ -416,6 +416,14 @@ The following cache keys are used in TNFR hot paths:
 3. **Tune incrementally**: Adjust cache sizes based on measured hit rates
 4. **Document assumptions**: Clearly state expected cache behavior in hot paths
 5. **Test cache coherence**: Ensure invalidation triggers are correctly implemented
+
+## Future Enhancements
+
+Potential areas for further optimization:
+
+1. **Adaptive cache sizing** based on graph size
+2. **Memory-mapped buffers** for very large graphs
+3. **GPU buffer support** for CUDA/JAX backends
 4. **Cross-graph cache sharing** for batch processing
 
 ## References

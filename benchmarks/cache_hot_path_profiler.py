@@ -20,8 +20,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
-from collections import defaultdict
 from pathlib import Path
 from time import perf_counter
 from typing import Any
@@ -34,7 +32,8 @@ from tnfr.dynamics import default_compute_delta_nfr, dnfr_laplacian
 from tnfr.metrics.coherence import coherence_matrix
 from tnfr.metrics.sense_index import compute_Si
 from tnfr.metrics.cache_utils import configure_hot_path_caches
-from tnfr.utils import get_graph, json_dumps
+from tnfr.utils import json_dumps
+from tnfr.utils.graph import get_graph
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
