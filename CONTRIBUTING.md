@@ -78,9 +78,31 @@ pre-commit install
 
 The hooks execute [Black](https://github.com/psf/black) and
 [isort](https://github.com/PyCQA/isort) using the shared settings in
-`pyproject.toml`. They run automatically on each commit after installation, but
+`pyproject.toml`, and verify that all Python modules have corresponding `.pyi`
+stub files. They run automatically on each commit after installation, but
 you can also trigger them manually with `pre-commit run --all-files` before
 submitting changes.
+
+## Factory patterns and type stubs
+
+When creating factory functions for operators, generators, or mathematical
+constructs, follow the patterns documented in [FACTORY_PATTERNS.md](docs/FACTORY_PATTERNS.md).
+Key principles:
+
+- Use `make_*` prefix for operator factories that return concrete instances
+- Use `build_*` prefix for generators that return raw matrices/data
+- Include full type annotations and generate corresponding `.pyi` stubs
+- Validate inputs and verify structural invariants after construction
+
+To generate missing stub files:
+
+```bash
+make stubs          # Generate .pyi files for modules missing them
+make stubs-check    # Verify all modules have stub files
+```
+
+The pre-commit hook will automatically check for missing stubs before allowing
+commits to proceed.
 
 ## Commit message format
 

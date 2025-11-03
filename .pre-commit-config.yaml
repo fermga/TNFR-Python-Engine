@@ -15,3 +15,11 @@ repos:
       - id: pydocstyle
         args: ["--config=pyproject.toml"]
         files: ^src/tnfr/
+  - repo: local
+    hooks:
+      - id: check-stubs
+        name: Check .pyi stub files
+        entry: python scripts/generate_stubs.py --check
+        language: system
+        pass_filenames: false
+        files: ^src/tnfr/.*\.py$
