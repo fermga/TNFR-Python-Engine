@@ -45,9 +45,11 @@ def test_callback_utils_compatibility_shim():
     Structural Function: Transition - managed deprecation path
     TNFR Invariants: #8 (Controlled determinism)
     
-    Note: This test may fail if callback_utils was already imported by another test.
-    The warning is only emitted once per Python session.
+    Note: This test uses importlib.reload to ensure the deprecation warning
+    is emitted even if the module was already imported.
     """
+    import importlib
+    
     # Clear the module from cache to force reimport
     if 'tnfr.callback_utils' in sys.modules:
         del sys.modules['tnfr.callback_utils']
@@ -246,10 +248,12 @@ def test_utils_init_exports_match_submodules():
     
     assert hasattr(tnfr.utils, 'CallbackManager')
     assert hasattr(tnfr.utils.callbacks, 'CallbackManager')
-    # Verify they're the same class by checking they share the same name
-    # Note: We can't use `is` check here because module reloading may create 
-    # different instances. Instead we verify they're both type and have same qualname.
-    assert type(tnfr.utils.CallbackManager).__name__ == 'type'
+    # Verify they're the same class by checking isinstance
+    assert isinstance(tnfr.utils.CallbackManager, type), \
+        "CallbackManager should be a class"
+    assert isinstance(tnfr.utils.callbacks.CallbackManager, type), \
+        "CallbackManager should be a class"
+    # Verify same name and module
     assert tnfr.utils.CallbackManager.__name__ == tnfr.utils.callbacks.CallbackManager.__name__
     assert tnfr.utils.CallbackManager.__module__ == tnfr.utils.callbacks.CallbackManager.__module__
 
@@ -262,13 +266,16 @@ def test_no_import_star_in_utils():
     Structural Function: Coherence - maintains explicit dependencies
     TNFR Invariants: #8 (Controlled determinism)
     """
-    # Find utils directory relative to the test file's location
-    test_file = Path(__file__).resolve()
-    repo_root = test_file.parent.parent.parent  # tests/unit/test_import_cycles.py -> repo_root
-    utils_dir = repo_root / 'src' / 'tnfr' / 'utils'
+    # Use importlib to find the actual module path rather than hardcoding
+    import importlib.util
+    import tnfr.utils
     
-    if not utils_dir.exists():
-        pytest.skip(f"Utils directory not found at {utils_dir}")
+    # Get the utils package directory from the imported module
+    utils_init = importlib.util.find_spec('tnfr.utils')
+    if utils_init is None or utils_init.origin is None:
+        pytest.skip("Could not locate tnfr.utils package")
+    
+    utils_dir = Path(utils_init.origin).parent
     
     for py_file in utils_dir.glob('*.py'):
         if py_file.name.startswith('_'):

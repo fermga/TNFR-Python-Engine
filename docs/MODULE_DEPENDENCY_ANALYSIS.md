@@ -1,6 +1,6 @@
 # Module Dependency and Coupling Analysis Report
 
-**Date**: 2025-11-03 (Template - update when analysis is rerun)  
+**Date**: {{ANALYSIS_DATE}} (Update this placeholder when rerunning analysis)
 **Analysis Scope**: `tnfr.utils` package and `tnfr.callback_utils` module  
 **Tools Used**: Custom Python analysis, flake8, dependency graph tracing  
 **TNFR Compliance**: All findings mapped to canonical TNFR invariants
