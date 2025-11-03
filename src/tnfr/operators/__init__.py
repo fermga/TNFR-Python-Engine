@@ -59,6 +59,8 @@ if TYPE_CHECKING:  # pragma: no cover - type checking only
 GlyphFactors = dict[str, Any]
 GlyphOperation = Callable[["NodeProtocol", GlyphFactors], None]
 
+from .grammar import apply_glyph_with_grammar  # noqa: E402
+
 __all__ = [
     "JitterCache",
     "JitterCacheManager",
@@ -70,6 +72,7 @@ __all__ = [
     "GLYPH_OPERATIONS",
     "apply_glyph_obj",
     "apply_glyph",
+    "apply_glyph_with_grammar",
     "apply_network_remesh",
     "apply_topological_remesh",
     "apply_remesh_if_globally_stable",
@@ -868,24 +871,33 @@ def apply_glyph_obj(
 ) -> None:
     """Apply ``glyph`` to an object satisfying :class:`NodeProtocol`."""
 
-    try:
-        g = glyph if isinstance(glyph, Glyph) else Glyph(str(glyph))
-    except ValueError:
-        step_idx = glyph_history.current_step_idx(node)
-        hist = glyph_history.ensure_history(node)
-        glyph_history.append_metric(
-            hist,
-            "events",
-            (
-                "warn",
-                {
-                    "step": step_idx,
-                    "node": getattr(node, "n", None),
-                    "msg": f"unknown glyph: {glyph}",
-                },
-            ),
-        )
-        raise ValueError(f"unknown glyph: {glyph}")
+    from .grammar import function_name_to_glyph
+
+    if isinstance(glyph, Glyph):
+        g = glyph
+    else:
+        # Try direct glyph code first
+        try:
+            g = Glyph(str(glyph))
+        except ValueError:
+            # Try structural function name mapping
+            g = function_name_to_glyph(glyph)
+            if g is None:
+                step_idx = glyph_history.current_step_idx(node)
+                hist = glyph_history.ensure_history(node)
+                glyph_history.append_metric(
+                    hist,
+                    "events",
+                    (
+                        "warn",
+                        {
+                            "step": step_idx,
+                            "node": getattr(node, "n", None),
+                            "msg": f"unknown glyph: {glyph}",
+                        },
+                    ),
+                )
+                raise ValueError(f"unknown glyph: {glyph}")
 
     op = GLYPH_OPERATIONS.get(g)
     if op is None:

@@ -142,6 +142,99 @@ class BEPIElement(_EPIValidators):
     def __abs__(self) -> float:
         return self._max_magnitude()
 
+    def __add__(self, other: BEPIElement | float | int) -> BEPIElement:
+        """Add a scalar or another BEPIElement to this element."""
+        if isinstance(other, (int, float)):
+            # Scalar addition: broadcast to all components
+            scalar = complex(other)
+            return BEPIElement(
+                self.f_continuous + scalar,
+                self.a_discrete + scalar,
+                self.x_grid
+            )
+        elif isinstance(other, BEPIElement):
+            # Element addition: use direct_sum
+            return self.direct_sum(other)
+        return NotImplemented
+
+    def __radd__(self, other: float | int) -> BEPIElement:
+        """Support reversed addition (scalar + BEPIElement)."""
+        return self.__add__(other)
+
+    def __sub__(self, other: BEPIElement | float | int) -> BEPIElement:
+        """Subtract a scalar or another BEPIElement from this element."""
+        if isinstance(other, (int, float)):
+            scalar = complex(other)
+            return BEPIElement(
+                self.f_continuous - scalar,
+                self.a_discrete - scalar,
+                self.x_grid
+            )
+        elif isinstance(other, BEPIElement):
+            self._assert_compatible(other)
+            return BEPIElement(
+                self.f_continuous - other.f_continuous,
+                self.a_discrete - other.a_discrete,
+                self.x_grid
+            )
+        return NotImplemented
+
+    def __rsub__(self, other: float | int) -> BEPIElement:
+        """Support reversed subtraction (scalar - BEPIElement)."""
+        if isinstance(other, (int, float)):
+            scalar = complex(other)
+            return BEPIElement(
+                scalar - self.f_continuous,
+                scalar - self.a_discrete,
+                self.x_grid
+            )
+        return NotImplemented
+
+    def __mul__(self, other: float | int) -> BEPIElement:
+        """Multiply this element by a scalar."""
+        if isinstance(other, (int, float)):
+            scalar = complex(other)
+            return BEPIElement(
+                self.f_continuous * scalar,
+                self.a_discrete * scalar,
+                self.x_grid
+            )
+        return NotImplemented
+
+    def __rmul__(self, other: float | int) -> BEPIElement:
+        """Support reversed multiplication (scalar * BEPIElement)."""
+        return self.__mul__(other)
+
+    def __truediv__(self, other: float | int) -> BEPIElement:
+        """Divide this element by a scalar."""
+        if isinstance(other, (int, float)):
+            scalar = complex(other)
+            if scalar == 0:
+                raise ZeroDivisionError("Cannot divide BEPIElement by zero")
+            return BEPIElement(
+                self.f_continuous / scalar,
+                self.a_discrete / scalar,
+                self.x_grid
+            )
+        return NotImplemented
+
+    def __eq__(self, other: object) -> bool:
+        """Check equality with another BEPIElement or numeric value.
+        
+        When comparing to a numeric value, compares with the maximum magnitude.
+        """
+        if isinstance(other, BEPIElement):
+            return (
+                np.allclose(self.f_continuous, other.f_continuous, rtol=1e-12, atol=1e-12)
+                and np.allclose(self.a_discrete, other.a_discrete, rtol=1e-12, atol=1e-12)
+                and np.allclose(self.x_grid, other.x_grid, rtol=1e-12, atol=1e-12)
+            )
+        elif isinstance(other, (int, float)):
+            # Compare with maximum magnitude for numeric comparisons
+            # Use consistent tolerance with element comparisons
+            return abs(self._max_magnitude() - float(other)) < 1e-12
+        return NotImplemented
+
 
 @dataclass(frozen=True)
 class CoherenceEvaluation:
