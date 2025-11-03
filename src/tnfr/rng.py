@@ -78,10 +78,33 @@ def _sync_cache_size(G: TNFRGraph | GraphLike | None) -> None:
 def make_rng(
     seed: int, key: int, G: TNFRGraph | GraphLike | None = None
 ) -> random.Random:
-    """Return a ``random.Random`` for ``seed`` and ``key``.
+    """Create a reproducible RNG instance from seed and key.
 
-    When ``G`` is provided, ``JITTER_CACHE_SIZE`` is read from ``G`` and the
-    internal cache size is updated accordingly.
+    This factory constructs a deterministic :class:`random.Random` generator
+    by hashing the seed and key together. The hash result is cached for
+    performance when the same (seed, key) pair is requested repeatedly.
+
+    Parameters
+    ----------
+    seed : int
+        Base random seed for the generator. Must be an integer.
+    key : int
+        Key used to derive a unique hash with the seed. Multiple keys
+        allow independent RNG streams from the same base seed.
+    G : TNFRGraph | GraphLike | None, optional
+        Graph containing JITTER_CACHE_SIZE parameter. When provided, the
+        internal cache size is synchronized with the graph configuration.
+
+    Returns
+    -------
+    random.Random
+        Deterministic random number generator seeded with hash(seed, key).
+
+    Notes
+    -----
+    The same (seed, key) pair always produces the same generator state,
+    ensuring reproducibility across TNFR simulations. Cache synchronization
+    with ``G`` allows adaptive caching based on simulation requirements.
     """
     _sync_cache_size(G)
     seed_int = int(seed)

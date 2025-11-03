@@ -16,7 +16,7 @@ _TOPOLOGIES: Final[set[str]] = {"laplacian", "adjacency"}
 def _ring_adjacency(dim: int) -> np.ndarray:
     """Return the adjacency matrix for a coherent ring topology."""
 
-    adjacency = np.zeros((dim, dim), dtype=float)
+    adjacency: np.ndarray = np.zeros((dim, dim), dtype=float)
     if dim == 1:
         return adjacency
 
@@ -100,7 +100,7 @@ def build_delta_nfr(
     else:
         base = adjacency
 
-    matrix = base.astype(np.complex128, copy=False)
+    matrix: np.ndarray = base.astype(np.complex128, copy=False)
 
     if rng is not None:
         noise = _hermitian_noise(dim, rng)
