@@ -1,4 +1,4 @@
-.PHONY: docs stubs stubs-check stubs-check-sync stubs-sync verify-refs verify-refs-verbose help
+.PHONY: docs stubs stubs-check stubs-check-sync stubs-sync verify-refs verify-refs-verbose reproduce reproduce-verify help
 
 help:
 	@echo "Available targets:"
@@ -9,6 +9,8 @@ help:
 	@echo "  stubs-sync          - Regenerate outdated .pyi stub files"
 	@echo "  verify-refs         - Verify internal markdown references"
 	@echo "  verify-refs-verbose - Verify internal references with verbose output"
+	@echo "  reproduce           - Run benchmarks with deterministic seeds and generate checksums"
+	@echo "  reproduce-verify    - Verify checksums against existing manifest"
 
 docs:
 	@sphinx-build -b html docs/source docs/_build/html
@@ -36,3 +38,11 @@ verify-refs:
 verify-refs-verbose:
 	@echo "Verifying internal markdown references (verbose)..."
 	@python scripts/verify_internal_references.py --verbose
+
+reproduce:
+	@echo "Running reproducible benchmarks with deterministic seeds..."
+	@python scripts/run_reproducible_benchmarks.py
+
+reproduce-verify:
+	@echo "Verifying checksums against manifest..."
+	@python scripts/run_reproducible_benchmarks.py --verify artifacts/manifest.json

@@ -1,0 +1,5 @@
+- Added reproducibility infrastructure for benchmarks with deterministic seeds and checksum verification.
+- Introduced `scripts/run_reproducible_benchmarks.py` script to run benchmarks with global seeds and generate SHA256 checksums.
+- Added `make reproduce` and `make reproduce-verify` Makefile targets for easy reproducibility testing.
+- Added CI workflow (`.github/workflows/reproducibility.yml`) to verify basic reproducibility in automated tests.
+- Updated documentation in `scripts/README.md` and `benchmarks/README.md` with reproducibility guidelines.
