@@ -2,6 +2,12 @@
 
 from __future__ import annotations
 
+from .cache_utils import (
+    CacheStats,
+    configure_hot_path_caches,
+    get_cache_config,
+    log_cache_metrics,
+)
 from .coherence import (
     coherence_matrix,
     local_phase_sync,
@@ -38,4 +44,8 @@ __all__ = (
     "register_diagnosis_callbacks",
     "dissonance_events",
     "export_metrics",
+    "CacheStats",
+    "configure_hot_path_caches",
+    "get_cache_config",
+    "log_cache_metrics",
 )

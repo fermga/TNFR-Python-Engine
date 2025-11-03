@@ -154,7 +154,37 @@ def get_trig_cache(
     np: Any | None = None,
     cache_size: int | None = 128,
 ) -> TrigCache:
-    """Return cached cosines and sines of ``θ`` per node."""
+    """Return cached cosines and sines of ``θ`` per node.
+
+    This function maintains a cache of trigonometric values to avoid repeated
+    cos(θ) and sin(θ) computations across Si, coherence, and ΔNFR calculations.
+    The cache uses version-based invalidation triggered by theta attribute changes.
+
+    Cache Strategy
+    --------------
+    - **Key**: ``("_trig", version)`` where version increments on theta changes
+    - **Invalidation**: Checksum-based detection of theta attribute updates
+    - **Capacity**: Controlled by ``cache_size`` parameter (default: 128)
+    - **Scope**: Graph-wide, shared across all metrics computations
+
+    The cache maintains both dict (for sparse access) and array (for vectorized
+    operations) representations of the trigonometric values.
+
+    Parameters
+    ----------
+    G : GraphLike
+        Graph whose node theta attributes are cached.
+    np : Any or None, optional
+        NumPy module for array-based storage. Falls back to dict if None.
+    cache_size : int or None, optional
+        Maximum cache entries. Default: 128. None for unlimited.
+
+    Returns
+    -------
+    TrigCache
+        Container with cos/sin mappings and optional array representations.
+        See TrigCache dataclass for field documentation.
+    """
 
     if np is None:
         np = get_numpy()
@@ -171,6 +201,7 @@ def get_trig_cache(
     if trig_checksums is None:
         trig_checksums = {}
 
+    # Checksum-based invalidation: detect theta attribute changes
     if trig_checksums != current_checksums:
         version = version + 1
         graph["_trig_version"] = version
