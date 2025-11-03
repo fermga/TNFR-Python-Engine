@@ -131,14 +131,14 @@ def build_metrics_summary(
     -------
     tuple[dict, bool]
         A two-element tuple containing:
-        
+
         - **summary** (dict): Metrics dictionary with the following keys:
-          
+
           - ``Tg_global``: Normalized glyph dwell time per class
           - ``latency_mean``: Mean latency across all samples
           - ``rose``: Sigma rose coherence indicator
           - ``glyphogram``: Time series of glyph activity (trimmed if limit set)
-        
+
         - **has_data** (bool): True if latency data is available, False otherwise
     
     Notes

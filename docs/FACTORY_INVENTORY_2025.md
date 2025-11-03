@@ -5,7 +5,7 @@
 This document provides a complete inventory of all factory functions in the TNFR Python Engine, organized by category and compliance status with the patterns defined in [FACTORY_PATTERNS.md](FACTORY_PATTERNS.md).
 
 **Audit Date**: 2025-11-03  
-**Total Factory Functions**: 10
+**Total Factory Functions**: 11
 
 ---
 
@@ -130,16 +130,14 @@ Generator factories construct ΔNFR generators and raw data structures.
 - **Module**: `tnfr.metrics.reporting`
 - **Signature**: `(G: TNFRGraph, *, series_limit: int | None = None) -> tuple[dict, bool]`
 - **Returns**: Tuple of metrics dictionary and flag
-- **Stub File**: Not present in .pyi search results
-- **Status**: ⚠️ Needs Review
-- **Documentation**: Basic Parameters section
-- **Validation**: Minimal
+- **Stub File**: `src/tnfr/metrics/reporting.pyi` ✓ (enhanced in this audit)
+- **Status**: ✅ Compliant
+- **Documentation**: Complete with Parameters/Returns/Notes sections
+- **Validation**: Minimal (type coercion)
 - **Tests**: Likely covered by integration tests
 
 **Recommendations**:
-- Add comprehensive docstring with Returns/Raises
-- Verify .pyi stub is present and synchronized
-- Consider adding explicit validation of series_limit
+- Continue monitoring for consistency with new factory additions
 
 ### 8. `build_cache_manager`
 
@@ -222,9 +220,8 @@ Node factories create TNFR nodes or composite structures.
 
 ### By Status
 
-- ✅ **Fully Compliant**: 9 factories
-- ⚠️ **Needs Review**: 1 factory (`build_metrics_summary`)
-- ⚠️ **Contract Only**: 1 factory (`build_isometry_factory` - intentional)
+- ✅ **Fully Compliant**: 10 factories
+- ⚠️ **Contract Only**: 1 factory (`build_isometry_factory` - intentional, Phase 2 roadmap)
 
 ### By Naming Convention
 
@@ -250,14 +247,7 @@ Node factories create TNFR nodes or composite structures.
 
 ## Recommendations
 
-### Priority 1: Complete Documentation
-
-1. **`build_metrics_summary`**:
-   - Add comprehensive Returns section describing tuple contents
-   - Document the boolean flag meaning
-   - Add Raises section if series_limit can cause errors
-
-### Priority 2: Enhance Testing
+### Priority 1: Enhance Testing
 
 1. Add factory pattern tests for:
    - `build_cache_manager` (naming, structure)
@@ -266,7 +256,7 @@ Node factories create TNFR nodes or composite structures.
 
 2. Ensure all factories are covered by `test_factory_patterns.py` or equivalent
 
-### Priority 3: Pattern Consistency
+### Priority 2: Pattern Consistency
 
 1. Consider adding a Factory Protocol/ABC for operator factories
 2. Document the higher-order factory pattern for `build_isometry_factory`
@@ -274,13 +264,14 @@ Node factories create TNFR nodes or composite structures.
 
 ---
 
-## Migration from Previous Patterns
+## Migration Status
 
-No non-compliant factories found. All existing factories follow the documented patterns:
-- Proper naming conventions (make_*/build_*/create_*)
-- Keyword-only arguments for options
-- Type annotations present
-- Stub files synchronized
+All existing factories follow the documented patterns:
+- ✓ Proper naming conventions (make_*/build_*/create_*)
+- ✓ Keyword-only arguments for options
+- ✓ Type annotations present
+- ✓ Stub files synchronized
+- ✓ Documentation enhanced where needed
 
 ---
 

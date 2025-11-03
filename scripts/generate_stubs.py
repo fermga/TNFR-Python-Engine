@@ -40,13 +40,16 @@ def find_missing_stubs(src_dir: Path) -> list[Path]:
     return missing
 
 
-def find_outdated_stubs(src_dir: Path) -> list[Path]:
+def find_outdated_stubs(src_dir: Path, tolerance_seconds: float = 1.0) -> list[Path]:
     """Find .py files with stubs that are older than the implementation.
 
     Parameters
     ----------
     src_dir : Path
         The source directory to scan for Python files.
+    tolerance_seconds : float, optional
+        Time difference tolerance in seconds to avoid false positives from
+        filesystem precision differences or clock skew. Default is 1.0 second.
 
     Returns
     -------
@@ -61,14 +64,14 @@ def find_outdated_stubs(src_dir: Path) -> list[Path]:
 
         pyi_file = py_file.with_suffix(".pyi")
         if pyi_file.exists():
-            # Compare modification times
+            # Compare modification times with tolerance
             py_mtime = py_file.stat().st_mtime
             pyi_mtime = pyi_file.stat().st_mtime
-            if py_mtime > pyi_mtime:
+            # Only consider outdated if difference exceeds tolerance
+            if py_mtime - pyi_mtime > tolerance_seconds:
                 outdated.append(py_file)
 
     return outdated
-
 
 def generate_stubs(files: list[Path], src_dir: Path, dry_run: bool = False) -> int:
     """Generate stub files using mypy stubgen.
