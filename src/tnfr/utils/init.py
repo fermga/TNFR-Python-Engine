@@ -15,9 +15,10 @@ import warnings
 import weakref
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import Any, Callable, Hashable, Iterable, Iterator, Literal, Mapping
+from typing import TYPE_CHECKING, Any, Callable, Hashable, Iterable, Iterator, Literal, Mapping
 
-from .cache import CacheManager
+if TYPE_CHECKING:
+    from .cache import CacheManager
 
 __all__ = (
     "_configure_root",
@@ -255,7 +256,22 @@ class _CacheEntry:
         return self._kind == "weak" and self._value is ref
 
 
-_IMPORT_CACHE_MANAGER = CacheManager(default_capacity=_DEFAULT_CACHE_SIZE)
+_IMPORT_CACHE_MANAGER: CacheManager | None = None
+
+
+def _get_import_cache_manager() -> CacheManager:
+    """Lazily initialize and return the import cache manager.
+    
+    This function breaks the circular import between init and cache modules
+    by deferring the CacheManager import until first use.
+    """
+    global _IMPORT_CACHE_MANAGER
+    if _IMPORT_CACHE_MANAGER is None:
+        from .cache import CacheManager
+        _IMPORT_CACHE_MANAGER = CacheManager(default_capacity=_DEFAULT_CACHE_SIZE)
+        _IMPORT_CACHE_MANAGER.register(_SUCCESS_CACHE_NAME, _success_cache_factory)
+        _IMPORT_CACHE_MANAGER.register(_FAILURE_CACHE_NAME, _failure_cache_factory)
+    return _IMPORT_CACHE_MANAGER
 
 
 def _success_cache_factory() -> OrderedDict[str, _CacheEntry]:
@@ -266,36 +282,32 @@ def _failure_cache_factory() -> OrderedDict[str, Exception]:
     return OrderedDict()
 
 
-_IMPORT_CACHE_MANAGER.register(_SUCCESS_CACHE_NAME, _success_cache_factory)
-_IMPORT_CACHE_MANAGER.register(_FAILURE_CACHE_NAME, _failure_cache_factory)
-
-
 def _remove_success_entry(key: str, ref: weakref.ReferenceType[Any]) -> None:
 
     def _cleanup(cache: OrderedDict[str, _CacheEntry]) -> OrderedDict[str, _CacheEntry]:
         entry = cache.get(key)
         if entry is not None and entry.matches(ref):
             cache.pop(key, None)
-            _IMPORT_CACHE_MANAGER.increment_eviction(_SUCCESS_CACHE_NAME)
+            _get_import_cache_manager().increment_eviction(_SUCCESS_CACHE_NAME)
         return cache
 
-    _IMPORT_CACHE_MANAGER.update(_SUCCESS_CACHE_NAME, _cleanup)
+    _get_import_cache_manager().update(_SUCCESS_CACHE_NAME, _cleanup)
 
 
 def _trim_cache(name: str, cache: OrderedDict[str, Any]) -> None:
-    capacity = _IMPORT_CACHE_MANAGER.get_capacity(name)
+    capacity = _get_import_cache_manager().get_capacity(name)
     if capacity is None:
         return
     while len(cache) > capacity:
         cache.popitem(last=False)
-        _IMPORT_CACHE_MANAGER.increment_eviction(name)
+        _get_import_cache_manager().increment_eviction(name)
 
 
 def _get_success(key: str) -> Any | None:
     result: Any | None = None
     hit = False
 
-    with _IMPORT_CACHE_MANAGER.timer(_SUCCESS_CACHE_NAME):
+    with _get_import_cache_manager().timer(_SUCCESS_CACHE_NAME):
 
         def _lookup(
             cache: OrderedDict[str, _CacheEntry],
@@ -307,18 +319,18 @@ def _get_success(key: str) -> Any | None:
             value = entry.get()
             if value is None:
                 cache.pop(key, None)
-                _IMPORT_CACHE_MANAGER.increment_eviction(_SUCCESS_CACHE_NAME)
+                _get_import_cache_manager().increment_eviction(_SUCCESS_CACHE_NAME)
                 return cache
             cache.move_to_end(key)
             result = value
             hit = True
             return cache
 
-        _IMPORT_CACHE_MANAGER.update(_SUCCESS_CACHE_NAME, _lookup)
+        _get_import_cache_manager().update(_SUCCESS_CACHE_NAME, _lookup)
         if hit:
-            _IMPORT_CACHE_MANAGER.increment_hit(_SUCCESS_CACHE_NAME)
+            _get_import_cache_manager().increment_hit(_SUCCESS_CACHE_NAME)
             return result
-        _IMPORT_CACHE_MANAGER.increment_miss(_SUCCESS_CACHE_NAME)
+        _get_import_cache_manager().increment_miss(_SUCCESS_CACHE_NAME)
         return None
 
 
@@ -335,18 +347,18 @@ def _store_success(key: str, value: Any) -> None:
         cache: OrderedDict[str, Exception],
     ) -> OrderedDict[str, Exception]:
         if cache.pop(key, None) is not None:
-            _IMPORT_CACHE_MANAGER.increment_eviction(_FAILURE_CACHE_NAME)
+            _get_import_cache_manager().increment_eviction(_FAILURE_CACHE_NAME)
         return cache
 
-    _IMPORT_CACHE_MANAGER.update(_SUCCESS_CACHE_NAME, _store)
-    _IMPORT_CACHE_MANAGER.update(_FAILURE_CACHE_NAME, _purge_failure)
+    _get_import_cache_manager().update(_SUCCESS_CACHE_NAME, _store)
+    _get_import_cache_manager().update(_FAILURE_CACHE_NAME, _purge_failure)
 
 
 def _get_failure(key: str) -> Exception | None:
     result: Exception | None = None
     hit = False
 
-    with _IMPORT_CACHE_MANAGER.timer(_FAILURE_CACHE_NAME):
+    with _get_import_cache_manager().timer(_FAILURE_CACHE_NAME):
 
         def _lookup(cache: OrderedDict[str, Exception]) -> OrderedDict[str, Exception]:
             nonlocal result, hit
@@ -358,11 +370,11 @@ def _get_failure(key: str) -> Exception | None:
             hit = True
             return cache
 
-        _IMPORT_CACHE_MANAGER.update(_FAILURE_CACHE_NAME, _lookup)
+        _get_import_cache_manager().update(_FAILURE_CACHE_NAME, _lookup)
         if hit:
-            _IMPORT_CACHE_MANAGER.increment_hit(_FAILURE_CACHE_NAME)
+            _get_import_cache_manager().increment_hit(_FAILURE_CACHE_NAME)
             return result
-        _IMPORT_CACHE_MANAGER.increment_miss(_FAILURE_CACHE_NAME)
+        _get_import_cache_manager().increment_miss(_FAILURE_CACHE_NAME)
         return None
 
 
@@ -378,15 +390,15 @@ def _store_failure(key: str, exc: Exception) -> None:
         cache: OrderedDict[str, _CacheEntry],
     ) -> OrderedDict[str, _CacheEntry]:
         if cache.pop(key, None) is not None:
-            _IMPORT_CACHE_MANAGER.increment_eviction(_SUCCESS_CACHE_NAME)
+            _get_import_cache_manager().increment_eviction(_SUCCESS_CACHE_NAME)
         return cache
 
-    _IMPORT_CACHE_MANAGER.update(_FAILURE_CACHE_NAME, _store)
-    _IMPORT_CACHE_MANAGER.update(_SUCCESS_CACHE_NAME, _purge_success)
+    _get_import_cache_manager().update(_FAILURE_CACHE_NAME, _store)
+    _get_import_cache_manager().update(_SUCCESS_CACHE_NAME, _purge_success)
 
 
 def _clear_import_cache() -> None:
-    _IMPORT_CACHE_MANAGER.clear()
+    _get_import_cache_manager().clear()
 
 
 _IMPORT_STATE = ImportRegistry()
@@ -767,4 +779,4 @@ def prune_failed_imports() -> None:
     """Clear the registry of recorded import failures and warnings."""
 
     _IMPORT_STATE.clear()
-    _IMPORT_CACHE_MANAGER.clear(_FAILURE_CACHE_NAME)
+    _get_import_cache_manager().clear(_FAILURE_CACHE_NAME)
