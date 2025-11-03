@@ -6,7 +6,7 @@ existing files, ensuring documentation remains consistent and navigable.
 
 Usage:
     python scripts/verify_internal_references.py         # Check and report
-    python scripts/verify_internal_references.py --fix   # Report broken refs
+    python scripts/verify_internal_references.py --verbose # Report all refs
     python scripts/verify_internal_references.py --ci    # Exit 1 if broken refs found
 """
 

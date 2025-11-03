@@ -420,7 +420,7 @@ print(f"Final C(t): {compute_coherence(graph)}")
 print(f"Final Si: {compute_Si(graph)}")
 ```
 
-See [examples/](docs/source/examples/) for complete runnable scripts.
+See [docs/source/examples/](docs/source/examples/) for complete runnable scripts.
 
 ---
 
