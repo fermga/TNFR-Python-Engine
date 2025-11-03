@@ -1,0 +1,45 @@
+# Coupling Exploration Preset
+# Explores network coupling dynamics with recursive navigation
+# and structural reorganization.
+
+metadata:
+  name: coupling_exploration
+  description: >
+    Investigates coupling patterns through a sequence of
+    structural operators including Navigation (NAV) within
+    a resonant block to explore different coupling configurations.
+  operators:
+    - AL   # Emission
+    - EN   # Reception
+    - IL   # Coupling
+    - VAL  # Validation
+    - UM   # Self-organization
+    - OZ   # Dissonance
+    - NAV  # Navigation/Transition
+    - RA   # Resonance
+    - SHA  # Silence
+
+topology:
+  type: ring
+  nodes: 24
+  seed: 1
+
+dynamics:
+  dt: 0.1
+  integrator: euler
+  steps: 100
+
+sequence:
+  - AL
+  - EN
+  - IL
+  - VAL
+  - UM
+  - THOL:
+      body:
+        - OZ
+        - NAV
+        - IL
+      repeat: 1
+  - RA
+  - SHA

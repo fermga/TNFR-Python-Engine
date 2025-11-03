@@ -1,0 +1,36 @@
+# Fractal Expansion Preset
+# Demonstrates operational fractality through recursive expansion
+# via self-organization and validation operators.
+
+metadata:
+  name: fractal_expand
+  description: >
+    Demonstrates fractal expansion using recursive THOL blocks.
+    Applies Validation (VAL) and Self-organization (UM) operators
+    iteratively, closing with Expansion (NUL) to demonstrate
+    growth dynamics while preserving operational fractality.
+  operators:
+    - THOL # Recursivity operator (structural block)
+    - VAL  # Validation
+    - UM   # Self-organization
+    - NUL  # Expansion
+    - RA   # Resonance
+
+topology:
+  type: ring
+  nodes: 24
+  seed: 1
+
+dynamics:
+  dt: 0.1
+  integrator: euler
+  steps: 100
+
+sequence:
+  - THOL:
+      body:
+        - VAL
+        - UM
+      repeat: 2
+      close: NUL
+  - RA

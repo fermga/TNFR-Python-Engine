@@ -1,0 +1,41 @@
+# Resonant Bootstrap Preset
+# A canonical TNFR sequence demonstrating resonant initialization
+# and network stabilization through structural operators.
+
+metadata:
+  name: resonant_bootstrap
+  description: >
+    Initializes a network using Emission (AL), Reception (EN),
+    Coupling (IL), Resonance (RA), Validation (VAL), Self-organization (UM),
+    followed by a waiting period and final stabilization with Silence (SHA).
+  operators:
+    - AL   # Emission: Initialize structure
+    - EN   # Reception: Enable coupling
+    - IL   # Coupling: Establish connections
+    - RA   # Resonance: Propagate coherence
+    - VAL  # Validation: Check structural integrity
+    - UM   # Self-organization: Optimize internal structure
+    - SHA  # Silence: Stabilize and freeze evolution
+
+# Graph configuration
+topology:
+  type: ring
+  nodes: 24
+  seed: 1
+
+# Dynamics configuration
+dynamics:
+  dt: 0.1
+  integrator: euler
+  steps: 100
+
+# Execution sequence
+sequence:
+  - AL
+  - EN
+  - IL
+  - RA
+  - VAL
+  - UM
+  - WAIT: 3
+  - SHA

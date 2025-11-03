@@ -1,0 +1,36 @@
+# Fractal Contraction Preset
+# Demonstrates operational fractality through recursive contraction
+# and stabilization.
+
+metadata:
+  name: fractal_contract
+  description: >
+    Demonstrates fractal contraction using recursive THOL blocks.
+    Applies Contraction (NUL) and Self-organization (UM) operators
+    iteratively, closing with Silence (SHA) to demonstrate
+    consolidation dynamics while preserving structural identity.
+  operators:
+    - THOL # Recursivity operator (structural block)
+    - NUL  # Contraction (when used with SHA)
+    - UM   # Self-organization
+    - SHA  # Silence
+    - RA   # Resonance
+
+topology:
+  type: ring
+  nodes: 24
+  seed: 1
+
+dynamics:
+  dt: 0.1
+  integrator: euler
+  steps: 100
+
+sequence:
+  - THOL:
+      body:
+        - NUL
+        - UM
+      repeat: 2
+      close: SHA
+  - RA

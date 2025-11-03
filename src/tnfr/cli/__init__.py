@@ -10,6 +10,8 @@ from typing import Optional
 from .. import __version__
 from ..utils import _configure_root, get_logger
 from .arguments import (
+    _add_epi_validate_parser,
+    _add_math_run_parser,
     _add_metrics_parser,
     _add_profile_parser,
     _add_profile_pipeline_parser,
@@ -66,10 +68,21 @@ def main(argv: Optional[list[str]] = None) -> int:
     p = argparse.ArgumentParser(
         prog="tnfr",
         formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="TNFR - Resonant Fractal Nature Theory computational engine",
         epilog=(
-            "Example: tnfr sequence --sequence-file sequence.json\n"
-            "sequence.json:\n"
-            '[\n  {"WAIT": 1},\n  {"TARGET": "A"}\n]'
+            "Common examples:\n"
+            "  # Run a preset scenario\n"
+            "  tnfr run --preset resonant_bootstrap --steps 100\n\n"
+            "  # Run with math engine validation\n"
+            "  tnfr math.run --nodes 24 --steps 50\n\n"
+            "  # Validate EPI integrity\n"
+            "  tnfr epi.validate --preset coupling_exploration\n\n"
+            "  # Execute custom sequence from YAML\n"
+            "  tnfr sequence --sequence-file presets/resonant_bootstrap.yaml\n\n"
+            "  # Export metrics to JSON\n"
+            "  tnfr metrics --save metrics.json --steps 200\n\n"
+            "For detailed help on any subcommand:\n"
+            "  tnfr <subcommand> --help"
         ),
     )
     p.add_argument(
@@ -77,9 +90,11 @@ def main(argv: Optional[list[str]] = None) -> int:
         action="store_true",
         help=("show the actual version and exit (reads pyproject.toml in development)"),
     )
-    sub = p.add_subparsers(dest="cmd")
+    sub = p.add_subparsers(dest="cmd", help="Available subcommands")
 
     _add_run_parser(sub)
+    _add_math_run_parser(sub)
+    _add_epi_validate_parser(sub)
     _add_sequence_parser(sub)
     _add_metrics_parser(sub)
     _add_profile_parser(sub)
