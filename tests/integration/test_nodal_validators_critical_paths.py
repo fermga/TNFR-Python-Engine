@@ -383,3 +383,155 @@ def test_validator_handles_edge_cases() -> None:
             DNFR_PRIMARY: 0.0,
         })
     assert_dnfr_balanced(graph_two)
+
+
+# ============================================================================
+# ADDITIONAL CRITICAL PATH COVERAGE FOR NODAL VALIDATORS
+# ============================================================================
+
+
+@pytest.mark.parametrize("num_nodes,dnfr_scale", [
+    (10, 0.1),
+    (50, 0.5),
+    (100, 1.0),
+])
+def test_validator_scalability_with_large_graphs(seed_graph_factory, num_nodes, dnfr_scale) -> None:
+    """Test validator performance and correctness with larger graphs.
+    
+    Adds critical path coverage for scalability with increasing network size.
+    """
+    graph = seed_graph_factory(num_nodes=num_nodes, edge_probability=0.3, seed=42)
+    
+    # Set ΔNFR values that should balance
+    for node, data in graph.nodes(data=True):
+        data[DNFR_PRIMARY] = dnfr_scale * (hash(node) % 100 - 50) / 100.0
+    
+    # Ensure conservation
+    total_dnfr = sum(data.get(DNFR_PRIMARY, 0.0) for _, data in graph.nodes(data=True))
+    if abs(total_dnfr) > 1e-9:
+        # Adjust first node to ensure conservation
+        first_node = list(graph.nodes())[0]
+        graph.nodes[first_node][DNFR_PRIMARY] -= total_dnfr
+    
+    # Verify conservation holds
+    assert_dnfr_balanced(graph)
+
+
+@pytest.mark.parametrize("epi_val,vf_val,phase_val", [
+    (0.0, 1.0, 0.0),           # Zero EPI
+    (1.0, 0.0, 0.0),           # Zero frequency (boundary)
+    (-1.0, 1.0, math.pi),      # Negative EPI, max phase
+    (0.5, 0.5, -math.pi),      # Min phase
+    (2.0, 3.0, math.pi/2),     # Larger values
+])
+def test_validator_extreme_attribute_combinations(seed_graph_factory, epi_val, vf_val, phase_val) -> None:
+    """Test validators with extreme but valid attribute combinations.
+    
+    Critical path: ensures validators handle boundary and extreme cases correctly.
+    """
+    graph = seed_graph_factory(num_nodes=3, edge_probability=0.5, seed=99)
+    
+    # Set extreme values
+    for node in graph.nodes():
+        graph.nodes[node][EPI_PRIMARY] = epi_val
+        graph.nodes[node][VF_PRIMARY] = vf_val
+        graph.nodes[node][THETA_KEY] = phase_val
+        graph.nodes[node][DNFR_PRIMARY] = 0.0
+    
+    # Validators should handle these without error
+    assert_epi_vf_in_bounds(graph, epi_min=-2.0, epi_max=2.0, vf_min=0.0, vf_max=5.0)
+    
+    # Phase should wrap properly
+    for _, data in graph.nodes(data=True):
+        phase = data.get(THETA_KEY, 0.0)
+        assert -math.pi <= phase <= math.pi
+
+
+def test_validator_cascading_conservation() -> None:
+    """Test that ΔNFR conservation holds through cascading operations.
+    
+    Critical path: verifies conservation through multiple structural operations.
+    """
+    import networkx as nx
+    
+    graph = nx.erdos_renyi_graph(10, 0.4, seed=555)
+    inject_defaults(graph)
+    
+    # Initialize with conserved ΔNFR
+    values = [0.1, -0.2, 0.15, -0.1, 0.05, -0.05, 0.2, -0.15, 0.0, 0.0]
+    for i, node in enumerate(graph.nodes()):
+        graph.nodes[node][EPI_PRIMARY] = 0.5
+        graph.nodes[node][VF_PRIMARY] = 1.0
+        graph.nodes[node][DNFR_PRIMARY] = values[i]
+    
+    # Verify initial conservation
+    assert_dnfr_balanced(graph)
+    
+    # Apply multiple transformations
+    for node in graph.nodes():
+        # Scale ΔNFR but maintain total
+        current = graph.nodes[node][DNFR_PRIMARY]
+        graph.nodes[node][DNFR_PRIMARY] = current * 0.5
+    
+    # Conservation should still hold (scaled uniformly)
+    assert_dnfr_balanced(graph)
+
+
+@pytest.mark.parametrize("component_sizes", [
+    [5, 5],
+    [3, 4, 3],
+    [2, 2, 2, 2, 2],
+])
+def test_validator_multiple_disconnected_components(component_sizes) -> None:
+    """Test validators with multiple disconnected graph components.
+    
+    Adds coverage for multi-component network validation.
+    """
+    import networkx as nx
+    
+    # Create graph with multiple components
+    graphs = []
+    for size in component_sizes:
+        g = nx.complete_graph(size)
+        graphs.append(g)
+    
+    # Compose into single disconnected graph
+    graph = nx.disjoint_union_all(graphs)
+    inject_defaults(graph)
+    
+    # Initialize each component independently
+    for node in graph.nodes():
+        graph.nodes[node][EPI_PRIMARY] = 0.3
+        graph.nodes[node][VF_PRIMARY] = 1.2
+        graph.nodes[node][DNFR_PRIMARY] = 0.0  # Balanced within each component
+    
+    # Validators should handle disconnected components
+    assert_dnfr_balanced(graph)
+    assert_epi_vf_in_bounds(graph, epi_min=0.0, epi_max=1.0, vf_min=1.0, vf_max=2.0)
+
+
+def test_validator_attribute_propagation_consistency() -> None:
+    """Test that validators maintain consistency during attribute propagation.
+    
+    Critical path: ensures structural consistency during dynamic updates.
+    """
+    import networkx as nx
+    
+    graph = nx.path_graph(5)
+    inject_defaults(graph)
+    
+    # Initialize with gradient
+    for i, node in enumerate(graph.nodes()):
+        graph.nodes[node][EPI_PRIMARY] = 0.1 * i
+        graph.nodes[node][VF_PRIMARY] = 1.0 + 0.1 * i
+        graph.nodes[node][DNFR_PRIMARY] = 0.0
+    
+    # Apply ΔNFR computation
+    from tnfr.dynamics import dnfr_epi_vf_mixed
+    dnfr_epi_vf_mixed(graph)
+    
+    # Verify conservation after dynamics
+    assert_dnfr_balanced(graph, abs_tol=1e-9)
+    
+    # Verify EPI/νf bounds maintained
+    assert_epi_vf_in_bounds(graph, epi_min=-0.1, epi_max=0.5, vf_min=0.9, vf_max=1.5)
