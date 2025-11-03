@@ -94,15 +94,26 @@ Key principles:
 - Include full type annotations and generate corresponding `.pyi` stubs
 - Validate inputs and verify structural invariants after construction
 
-To generate missing stub files:
+### Stub Generation and Synchronization
+
+To maintain type safety and prevent drift between implementations and stubs:
 
 ```bash
-make stubs          # Generate .pyi files for modules missing them
-make stubs-check    # Verify all modules have stub files
+make stubs               # Generate .pyi files for modules missing them
+make stubs-check         # Verify all modules have stub files (CI)
+make stubs-check-sync    # Check if stubs are outdated (CI)
+make stubs-sync          # Regenerate outdated stubs
 ```
 
 The pre-commit hook will automatically check for missing stubs before allowing
-commits to proceed.
+commits to proceed. When you modify a `.py` file:
+
+1. Update type annotations as needed
+2. Run `make stubs-sync` to regenerate the `.pyi` stub
+3. Review the generated stub for accuracy
+4. Commit both `.py` and `.pyi` files together
+
+See [scripts/README.md](scripts/README.md) for detailed documentation on stub generation.
 
 ## Commit message format
 
