@@ -171,7 +171,16 @@ def _ensure_si_buffers(
     count: int,
     np: Any,
 ) -> tuple[Any, Any, Any]:
-    """Return reusable NumPy buffers sized for ``count`` nodes."""
+    """Return reusable NumPy buffers sized for ``count`` nodes.
+
+    Allocates three computation buffers used in Si vectorization:
+    1. phase_dispersion: Phase alignment metric per node
+    2. raw_si: Intermediate Si values before clamping
+    3. si_values: Final Si values after normalization
+
+    These buffers are reused across computation steps to minimize allocation
+    overhead in the hot path. Cache key: ``("_si_buffers", count, 3)``
+    """
     return ensure_numpy_buffers(
         G, key_prefix="_si_buffers", count=count, buffer_count=3, np=np
     )
@@ -183,7 +192,15 @@ def _ensure_chunk_workspace(
     mask_count: int,
     np: Any,
 ) -> tuple[Any, Any]:
-    """Return reusable scratch buffers sized to the masked neighbours."""
+    """Return reusable scratch buffers sized to the masked neighbours.
+
+    Allocates workspace for chunked phase dispersion computation:
+    1. chunk_theta: Theta values for current chunk
+    2. chunk_values: Intermediate values for current chunk
+
+    Used when processing large neighbor sets in chunks to manage memory.
+    Cache key: ``("_si_chunk_workspace", mask_count, 2)``
+    """
     return ensure_numpy_buffers(
         G, key_prefix="_si_chunk_workspace", count=mask_count, buffer_count=2, np=np
     )
@@ -195,7 +212,18 @@ def _ensure_neighbor_bulk_buffers(
     count: int,
     np: Any,
 ) -> tuple[Any, Any, Any, Any, Any]:
-    """Return reusable buffers for bulk neighbour phase aggregation."""
+    """Return reusable buffers for bulk neighbour phase aggregation.
+
+    Allocates five buffers for neighbor accumulation in vectorized Si:
+    1. neighbor_cos_sum: Sum of cos(theta) from neighbors
+    2. neighbor_sin_sum: Sum of sin(theta) from neighbors
+    3. neighbor_counts: Number of neighbors per node
+    4. mean_cos_buf: Mean cos(theta) per node
+    5. mean_sin_buf: Mean sin(theta) per node
+
+    These enable efficient neighbor phase mean computation without Python loops.
+    Cache key: ``("_si_neighbor_buffers", count, 5)``
+    """
     return ensure_numpy_buffers(
         G, key_prefix="_si_neighbor_buffers", count=count, buffer_count=5, np=np
     )
