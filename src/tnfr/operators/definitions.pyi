@@ -1,4 +1,4 @@
-from ..types import Glyph, TNFRGraph
+from ..types import Glyph, NodeId, TNFRGraph
 from typing import Any, ClassVar
 
 __all__ = ['Operator', 'Emission', 'Reception', 'Coherence', 'Dissonance', 'Coupling', 'Resonance', 'Silence', 'Expansion', 'Contraction', 'SelfOrganization', 'Mutation', 'Transition', 'Recursivity']
@@ -6,7 +6,7 @@ __all__ = ['Operator', 'Emission', 'Reception', 'Coherence', 'Dissonance', 'Coup
 class Operator:
     name: ClassVar[str]
     glyph: ClassVar[Glyph | None]
-    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None: ...
+    def __call__(self, G: TNFRGraph, node: NodeId, **kw: Any) -> None: ...
 
 class Emission(Operator):
     name: ClassVar[str]
