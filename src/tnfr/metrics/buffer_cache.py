@@ -40,9 +40,9 @@ def ensure_numpy_buffers(
     np : Any
         NumPy module or compatible array backend.
     dtype : Any, optional
-        Data type for the buffers. Defaults to ``float``.
+        Data type for the buffers. Default: ``float``.
     max_cache_entries : int or None, optional
-        Maximum number of cached buffer sets. Defaults to 128. Use ``None`` for
+        Maximum number of cached buffer sets. Default: ``128``. Use ``None`` for
         unlimited cache size.
 
     Returns
