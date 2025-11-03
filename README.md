@@ -89,6 +89,8 @@ integration.
 - [ARCHITECTURE.md](ARCHITECTURE.md) — orchestration layers and invariant enforcement.
 - [CONTRIBUTING.md](CONTRIBUTING.md) — QA battery (`scripts/run_tests.sh`) and review
   expectations.
+- [Factory Documentation](docs/FACTORY_DOCUMENTATION_INDEX.md) — comprehensive guide to factory
+  patterns and type stub automation.
 - [TNFR.pdf](TNFR.pdf) — theoretical background, structural operators, and paradigm glossary.
 - [PRE_EXISTING_FAILURES.md](PRE_EXISTING_FAILURES.md) — documented pre-existing test failures
   requiring separate focused PRs.
