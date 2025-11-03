@@ -269,9 +269,13 @@ def optimal_buffer_cache_size(G: GraphLike) -> int:
         base_size = 256
     
     # Adjust for dense graphs (more neighbor patterns)
-    density = edge_count / (node_count * (node_count - 1) / 2)
-    if density > 0.5:
-        base_size *= 2
+    # Guard against division by zero or small graphs
+    if node_count > 1:
+        max_edges = node_count * (node_count - 1) / 2
+        if max_edges > 0:
+            density = edge_count / max_edges
+            if density > 0.5:
+                base_size *= 2
     
     return base_size
 ```

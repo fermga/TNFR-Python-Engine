@@ -91,8 +91,13 @@ def _get_comprehensive_cache_snapshot(G: nx.Graph) -> dict[str, Any]:
                 if state and hasattr(state, "cache"):
                     snapshot["edge_cache"]["entries"] = len(state.cache)
                     snapshot["buffer_cache_keys"] = list(state.cache.keys())
-        except Exception as e:
+        except (AttributeError, KeyError, TypeError) as e:
             snapshot["edge_cache"]["error"] = str(e)
+        except Exception as e:
+            # Log unexpected errors for debugging
+            import traceback
+            snapshot["edge_cache"]["error"] = f"{type(e).__name__}: {e}"
+            snapshot["edge_cache"]["traceback"] = traceback.format_exc()
 
     # Track CacheManager metrics
     cache_manager = graph_dict.get("_tnfr_cache_manager")
@@ -110,8 +115,13 @@ def _get_comprehensive_cache_snapshot(G: nx.Graph) -> dict[str, Any]:
                         "misses": stats.misses,
                         "evictions": stats.evictions,
                     }
-        except Exception as e:
+        except (AttributeError, KeyError, TypeError) as e:
             snapshot["tnfr_cache"]["error"] = str(e)
+        except Exception as e:
+            # Log unexpected errors for debugging
+            import traceback
+            snapshot["tnfr_cache"]["error"] = f"{type(e).__name__}: {e}"
+            snapshot["tnfr_cache"]["traceback"] = traceback.format_exc()
 
     # Track DNFR preparation state
     dnfr_state = graph_dict.get("_dnfr_prep_cache")
@@ -120,12 +130,22 @@ def _get_comprehensive_cache_snapshot(G: nx.Graph) -> dict[str, Any]:
         if hasattr(dnfr_state, "idx"):
             snapshot["dnfr_prep"]["cache_size"] = len(dnfr_state.idx)
     
-    # Count total cached numpy arrays in graph
+    # Count buffer cache entries more explicitly via EdgeCacheManager
+    # Note: This counts cache entries, not individual arrays
     total_arrays = 0
-    for key, value in graph_dict.items():
-        if isinstance(key, tuple) and isinstance(value, tuple):
-            # Buffer cache entries are stored as tuples
-            total_arrays += 1
+    edge_cache_mgr = graph_dict.get("_edge_cache_manager")
+    if edge_cache_mgr is not None:
+        try:
+            state = edge_cache_mgr.get_cache(None, create=False)
+            if state and hasattr(state, "cache"):
+                # Count entries with buffer-related key prefixes
+                for key in state.cache.keys():
+                    if isinstance(key, tuple) and len(key) >= 2:
+                        prefix = key[0]
+                        if isinstance(prefix, str) and ("buffer" in prefix.lower() or prefix.startswith("_si")):
+                            total_arrays += 1
+        except Exception:
+            pass  # Silently handle edge cases during counting
     snapshot["total_cached_arrays"] = total_arrays
 
     return snapshot
@@ -156,7 +176,9 @@ def _compute_delta(before: dict[str, Any], after: dict[str, Any]) -> dict[str, A
     delta["hit_rate"] = delta["total_hits"] / total if total > 0 else 0.0
     
     # Array allocation tracking
-    delta["new_arrays"] = after.get("total_cached_arrays", 0) - before.get("total_cached_arrays", 0)
+    # Positive values indicate new allocations, negative values indicate evictions/cleanup
+    # For reuse rate calculation, we only care about new allocations (positive delta)
+    delta["new_arrays"] = max(0, after.get("total_cached_arrays", 0) - before.get("total_cached_arrays", 0))
     
     return delta
 
@@ -298,6 +320,10 @@ def profile_comprehensive(
             "combined_hit_rate": combined_hits / (combined_hits + combined_misses) if (combined_hits + combined_misses) > 0 else 0.0,
             "avg_elapsed_ms": avg_elapsed,
             "total_new_arrays": total_new_arrays,
+            # Buffer reuse rate: measures how often existing buffer allocations are reused
+            # 100% = all steps reused existing buffers (optimal)
+            # <100% = some steps required new buffer allocations
+            # Note: First call typically allocates, subsequent calls reuse
             "buffer_reuse_rate": 1.0 - (total_new_arrays / steps) if steps > 0 else 0.0,
             "steps": step_metrics if verbose else None,
         }
