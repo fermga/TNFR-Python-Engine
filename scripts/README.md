@@ -148,6 +148,10 @@ If a file is reported as outdated but hasn't changed:
 
 ## Other Scripts
 
+### Documentation and Reference Verification
+
+- `verify_internal_references.py` - Verify internal markdown links in docs, notebooks, and scripts
+
 ### Security and Release Management
 
 - `check_changelog.py` - Validate changelog format

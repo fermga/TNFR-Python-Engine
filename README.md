@@ -89,6 +89,10 @@ integration.
 - [ARCHITECTURE.md](ARCHITECTURE.md) — orchestration layers and invariant enforcement.
 - [CONTRIBUTING.md](CONTRIBUTING.md) — QA battery (`scripts/run_tests.sh`) and review
   expectations.
+- [GLOSSARY.md](GLOSSARY.md) — unified glossary of TNFR variables, operators, and concepts for
+  quick reference.
+- [RESONANT_TRAJECTORIES.md](RESONANT_TRAJECTORIES.md) — canonical examples of structural operator
+  sequences for common scenarios.
 - [Factory Documentation](docs/FACTORY_DOCUMENTATION_INDEX.md) — comprehensive guide to factory
   patterns and type stub automation.
 - [TNFR.pdf](TNFR.pdf) — theoretical background, structural operators, and paradigm glossary.
