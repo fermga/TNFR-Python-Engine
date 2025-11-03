@@ -25,7 +25,33 @@ def make_coherence_operator(
     spectrum: np.ndarray | None = None,
     c_min: float = 0.1,
 ) -> CoherenceOperator:
-    """Return a Hermitian positive semidefinite :class:`CoherenceOperator`."""
+    """Return a Hermitian positive semidefinite :class:`CoherenceOperator`.
+
+    This factory validates inputs, ensures structural invariants (Hermiticity
+    and positive semi-definiteness), and integrates with the TNFR backend
+    abstraction layer.
+
+    Parameters
+    ----------
+    dim : int
+        Dimensionality of the operator's Hilbert space. Must be positive.
+    spectrum : np.ndarray | None, optional
+        Custom eigenvalue spectrum. If None, uses uniform c_min values.
+        Must be real-valued and match dimension.
+    c_min : float, optional
+        Minimum coherence threshold for default spectrum (default: 0.1).
+
+    Returns
+    -------
+    CoherenceOperator
+        Validated coherence operator with backend-native arrays.
+
+    Raises
+    ------
+    ValueError
+        If dimension is invalid, spectrum has wrong shape, or operator
+        violates Hermiticity/PSD constraints.
+    """
 
     dimension = _validate_dimension(dim)
     if not np.isfinite(c_min):
@@ -55,7 +81,27 @@ def make_coherence_operator(
 
 
 def make_frequency_operator(matrix: np.ndarray) -> FrequencyOperator:
-    """Return a Hermitian PSD :class:`FrequencyOperator` from ``matrix``."""
+    """Return a Hermitian PSD :class:`FrequencyOperator` from ``matrix``.
+
+    This factory validates the input matrix for Hermiticity and constructs
+    a frequency operator that enforces positive semi-definiteness.
+
+    Parameters
+    ----------
+    matrix : np.ndarray
+        Square Hermitian matrix representing the frequency operator.
+        Must be complex128 compatible.
+
+    Returns
+    -------
+    FrequencyOperator
+        Validated frequency operator with backend-native arrays.
+
+    Raises
+    ------
+    ValueError
+        If matrix is not square, not Hermitian, or not positive semidefinite.
+    """
 
     backend = get_backend()
     array_backend = ensure_array(matrix, dtype=np.complex128, backend=backend)
