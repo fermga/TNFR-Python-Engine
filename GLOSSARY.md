@@ -101,70 +101,63 @@ Canonical definitions for the Resonant Fractal Nature Theory (TNFR) variables, o
 
 TNFR defines 13 canonical operators that modify EPI through resonant interactions:
 
-### 1. Emission (AL)
+### 1. Emission 
 
-**Token:** `AL`  
 **Function:** Initiates a resonant pattern  
 **Effect:** Increases νf and positive ΔNFR  
 **Usage:** Start of trajectory sequences
 
 ---
 
-### 2. Reception (EN)
+### 2. Reception
 
-**Token:** `EN`  
 **Function:** Receives and integrates external patterns  
 **Effect:** Updates EPI based on incoming resonance  
 **Usage:** Network information intake
 
 ---
 
-### 3. Coherence (IL)
+### 3. Coherence 
 
-**Token:** `IL`  
 **Function:** Stabilizes structural form  
 **Effect:** Increases C(t), reduces |ΔNFR|  
 **Usage:** Consolidation after changes
 
 ---
 
-### 4. Dissonance (OZ)
+### 4. Dissonance 
 
-**Token:** `OZ`  
 **Function:** Introduces controlled instability  
 **Effect:** Increases |ΔNFR|, may trigger bifurcation  
 **Usage:** Exploring new configurations
 
 ---
 
-### 5. Coupling (UM)
+### 5. Coupling
 
-**Token:** `UM`  
 **Function:** Creates structural links between nodes  
 **Effect:** Phase synchronization, information exchange  
 **Usage:** Network formation
 
 ---
 
-### 6. Resonance (RA)
+### 6. Resonance 
 
-**Token:** `RA`  
 **Function:** Amplifies and propagates patterns  
 **Effect:** Increases effective coupling, preserves EPI identity  
 **Usage:** Pattern reinforcement
 
 ---
 
-### 7. Silence (SHA)
+### 7. Silence 
 
-**Token:** `SHA`  
 **Function:** Freezes evolution temporarily  
 **Effect:** νf ≈ 0, EPI unchanged  
 **Usage:** Observation windows, synchronization pauses
 
 ---
 
-### 8. Expansion (Not explicitly tokenized)
+### 8. Expansion 
 
 **Function:** Increases structural complexity  
 **Effect:** EPI dimensionality growth  
@@ -172,7 +165,7 @@ TNFR defines 13 canonical operators that modify EPI through resonant interaction
 
 ---
 
-### 9. Contraction (Not explicitly tokenized)
+### 9. Contraction 
 
 **Function:** Reduces structural complexity  
 **Effect:** EPI dimensionality reduction  
@@ -188,18 +181,16 @@ TNFR defines 13 canonical operators that modify EPI through resonant interaction
 
 ---
 
-### 11. Mutation (ZHIR)
+### 11. Mutation
 
-**Token:** `ZHIR`  
 **Function:** Phase transformation  
 **Effect:** θ → θ' when ΔEPI/Δt > ξ  
 **Usage:** Qualitative state changes
 
 ---
 
-### 12. Transition (NAV)
+### 12. Transition
 
-**Token:** `NAV`  
 **Function:** Movement between structural states  
 **Effect:** Controlled EPI evolution  
 **Usage:** Trajectory navigation
@@ -323,19 +314,6 @@ All simulations must be:
 | C(t) | Total coherence | — | Stability metric |
 | Si | Sense index | — | Reorganization stability |
 
-### Operator Tokens
-
-| Token | Operator | Primary Effect |
-|-------|----------|----------------|
-| AL | Emission | Initiate pattern |
-| EN | Reception | Integrate pattern |
-| IL | Coherence | Stabilize form |
-| OZ | Dissonance | Create instability |
-| UM | Coupling | Link nodes |
-| RA | Resonance | Amplify pattern |
-| SHA | Silence | Freeze evolution |
-| ZHIR | Mutation | Transform phase |
-| NAV | Transition | Navigate states |
 
 ### Structural Invariants
 
