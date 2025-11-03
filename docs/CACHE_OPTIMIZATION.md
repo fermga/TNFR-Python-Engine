@@ -218,6 +218,146 @@ Potential areas for further optimization:
 1. **Adaptive cache sizing** based on graph size
 2. **Memory-mapped buffers** for very large graphs
 3. **GPU buffer support** for CUDA/JAX backends
+
+## Cache Profiling
+
+### Overview
+
+TNFR provides comprehensive cache profiling capabilities to measure and optimize
+cache performance in hot paths. Cache metrics include hits, misses, evictions,
+and hit rates for both aggregate and per-cache statistics.
+
+### Profiling Hot Paths
+
+Use the `full_pipeline_profile.py` benchmark to profile cache behavior during
+Sense Index and ΔNFR computations:
+
+```bash
+# Profile with default settings (100 nodes, 5 loops)
+python benchmarks/full_pipeline_profile.py \
+    --nodes 100 \
+    --loops 5 \
+    --output-dir ./profile_results
+
+# Profile larger graph with custom configuration
+python benchmarks/full_pipeline_profile.py \
+    --nodes 1000 \
+    --edge-probability 0.05 \
+    --loops 10 \
+    --si-chunk-sizes auto 500 1000 \
+    --dnfr-chunk-sizes auto 1000 \
+    --output-dir ./profile_results
+```
+
+### Understanding Cache Metrics
+
+The benchmark outputs JSON files with cache metrics:
+
+```json
+{
+  "cache_metrics": {
+    "aggregate": {
+      "hits": 150,
+      "misses": 50,
+      "evictions": 10,
+      "hit_rate": 0.75
+    },
+    "by_cache": {
+      "_dnfr_prep_state": {
+        "hits": 100,
+        "misses": 10,
+        "evictions": 0,
+        "hit_rate": 0.909
+      },
+      "_edge_version_state": {
+        "hits": 50,
+        "misses": 40,
+        "evictions": 10,
+        "hit_rate": 0.555
+      }
+    }
+  }
+}
+```
+
+**Metric Interpretation:**
+
+- **Hit Rate > 0.8**: Excellent cache effectiveness
+- **Hit Rate 0.5-0.8**: Good cache performance, may benefit from tuning
+- **Hit Rate < 0.5**: Poor cache performance, investigate invalidation patterns
+- **High Evictions**: Cache capacity may be too small, consider increasing `max_cache_entries`
+
+### Runtime Cache Monitoring
+
+Use `log_cache_metrics()` to monitor cache performance during execution:
+
+```python
+from tnfr.metrics.cache_utils import log_cache_metrics, configure_hot_path_caches
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
+# Configure cache sizes
+configure_hot_path_caches(
+    G,
+    buffer_max_entries=256,
+    trig_cache_size=512,
+)
+
+# ... perform computations ...
+
+# Log cache metrics
+log_cache_metrics(G, level=logging.INFO)
+```
+
+**Example output:**
+
+```
+INFO:tnfr.metrics.cache_utils:Cache metrics: hits=250 misses=50 evictions=0 hit_rate=83.33%
+DEBUG:tnfr.metrics.cache_utils:  _dnfr_prep_state: hits=150 misses=10 hit_rate=93.75%
+DEBUG:tnfr.metrics.cache_utils:  _edge_version_state: hits=100 misses=40 hit_rate=71.43%
+```
+
+### Optimizing Cache Performance
+
+Based on profiling results, apply these optimizations:
+
+1. **Low Hit Rate in Edge Caches**: 
+   - Check if graph topology changes frequently
+   - Consider increasing `buffer_max_entries`
+   - Review invalidation patterns
+
+2. **High Evictions**:
+   ```python
+   configure_hot_path_caches(G, buffer_max_entries=512)  # Increase capacity
+   ```
+
+3. **Low Si/ΔNFR Hit Rates**:
+   - Profile chunk sizes to find optimal values
+   - Reduce unnecessary cache invalidations
+   - Check if node attributes change too frequently
+
+### Hot Path Cache Keys
+
+The following cache keys are used in TNFR hot paths:
+
+| Cache Key | Purpose | Invalidation Trigger |
+|-----------|---------|---------------------|
+| `_si_buffers` | Sense index computation buffers | Edge structure changes |
+| `_si_chunk_workspace` | Chunked Si processing scratch space | Edge structure changes |
+| `_si_neighbor_buffers` | Neighbor phase aggregation | Edge structure changes |
+| `_dnfr_prep_state` | ΔNFR preparation cache | Manual via `mark_dnfr_prep_dirty()` |
+| `_edge_version_state` | Edge-versioned caches | Edge addition/removal |
+| `_trig` | Trigonometric function cache | Theta attribute changes |
+
+### Best Practices
+
+1. **Profile before optimizing**: Use benchmarks to establish baseline performance
+2. **Monitor in production**: Add cache metrics logging to identify runtime issues
+3. **Tune incrementally**: Adjust cache sizes based on measured hit rates
+4. **Document assumptions**: Clearly state expected cache behavior in hot paths
+5. **Test cache coherence**: Ensure invalidation triggers are correctly implemented
 4. **Cross-graph cache sharing** for batch processing
 
 ## References
