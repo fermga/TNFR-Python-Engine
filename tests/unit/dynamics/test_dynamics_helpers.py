@@ -49,7 +49,11 @@ def test_init_and_refresh_dnfr_cache(graph_canon):
     )
     assert refreshed
     _refresh_dnfr_vectors(G, nodes, cache)
-    assert th[1] == pytest.approx(0.1)
+    # When numpy is available, values are in numpy arrays, not Python lists
+    if cache.theta_np is not None:
+        assert cache.theta_np[1] == pytest.approx(0.1)
+    else:
+        assert th[1] == pytest.approx(0.1)
     cache2, *_rest, refreshed2 = _init_dnfr_cache(G, nodes, cache, 1, False)
     assert not refreshed2
     assert cache2 is cache
@@ -227,7 +231,7 @@ def test_prepare_dnfr_passes_configured_jobs(monkeypatch, graph_canon):
     G.add_edge(0, 1)
     captured = {}
 
-    def fake_compute(graph, data, *, use_numpy=None, n_jobs=None):
+    def fake_compute(graph, data, *, use_numpy=None, n_jobs=None, profile=None):
         captured["n_jobs"] = n_jobs
         # emulate ΔNFR assignment to keep downstream expectations stable
         for node in graph.nodes:
