@@ -5,6 +5,7 @@ from collections import defaultdict, deque
 import pytest
 
 import tnfr.dynamics.selectors as selectors
+import tnfr.operators
 from tnfr.constants import inject_defaults
 from tnfr.config.operator_names import (
     CONTRACTION,
@@ -16,6 +17,7 @@ from tnfr.config.operator_names import (
     COHERENCE,
 )
 from tnfr.dynamics import _choose_glyph
+from tnfr.operators import apply_glyph
 from tnfr.types import Glyph
 from tnfr.validation import (
     apply_glyph_with_grammar,
@@ -246,7 +248,6 @@ def test_apply_glyph_with_grammar_equivalence(graph_canon):
 
     # Manual application
     g_eff = enforce_canonical_grammar(G_manual, 0, Glyph.ZHIR)
-    from tnfr.operators import apply_glyph
 
     apply_glyph(G_manual, 0, g_eff, window=1)
     on_applied_glyph(G_manual, 0, g_eff)
@@ -304,7 +305,6 @@ def test_apply_glyph_with_grammar_defaults_window_from_graph(graph_canon, monkey
     def fake_apply_glyph(graph, node_id, glyph, *, window=None):
         captured["window"] = window
 
-    import tnfr.operators
     monkeypatch.setattr(tnfr.operators, "apply_glyph", fake_apply_glyph)
 
     apply_glyph_with_grammar(G, [0], Glyph.AL)
