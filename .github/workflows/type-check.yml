@@ -42,8 +42,11 @@ jobs:
       - name: Run mypy
         run: python -m mypy src/tnfr
 
-      - name: Check stub file synchronization
+      - name: Check stub files exist
         run: python scripts/generate_stubs.py --check
+
+      - name: Check stub file synchronization
+        run: python scripts/generate_stubs.py --check-sync
 
       - name: Run vulture
         run: python -m vulture --min-confidence 80 src tests
