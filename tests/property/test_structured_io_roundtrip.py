@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Any, Iterable
 
 import pytest
+
+hypothesis = pytest.importorskip("hypothesis")
 from hypothesis import HealthCheck, given, settings, strategies as st
 
 from tests.property.strategies import (
