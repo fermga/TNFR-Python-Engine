@@ -5,7 +5,6 @@ from collections import defaultdict, deque
 import pytest
 
 import tnfr.dynamics.selectors as selectors
-import tnfr.operators
 from tnfr.constants import inject_defaults
 from tnfr.config.operator_names import (
     CONTRACTION,
@@ -305,7 +304,7 @@ def test_apply_glyph_with_grammar_defaults_window_from_graph(graph_canon, monkey
     def fake_apply_glyph(graph, node_id, glyph, *, window=None):
         captured["window"] = window
 
-    monkeypatch.setattr(tnfr.operators, "apply_glyph", fake_apply_glyph)
+    monkeypatch.setattr("tnfr.operators.apply_glyph", fake_apply_glyph)
 
     apply_glyph_with_grammar(G, [0], Glyph.AL)
 
