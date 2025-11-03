@@ -17,13 +17,11 @@ np = pytest.importorskip("numpy")
 
 import networkx as nx
 
-from tnfr.constants import inject_defaults, EPI_PRIMARY, VF_PRIMARY, THETA_KEY, DNFR_PRIMARY
+from tnfr.constants import inject_defaults, EPI_PRIMARY, VF_PRIMARY, THETA_KEY
 from tnfr.mathematics.generators import build_delta_nfr
-from tnfr.mathematics.operators_factory import make_coherence_operator, make_frequency_operator
 from tnfr.dynamics import dnfr_epi_vf_mixed
 from tnfr.execution import play, seq, wait, target
 from tests.helpers.validation import assert_dnfr_balanced, assert_epi_vf_in_bounds
-from tests.helpers.fixtures import seed_graph_factory
 
 
 # ============================================================================
