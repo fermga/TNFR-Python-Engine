@@ -35,6 +35,33 @@ if TYPE_CHECKING:  # pragma: no cover
 T = TypeVar("T")
 
 
+def _bepi_to_float(value: Any) -> float:
+    """Extract scalar from BEPIElement dict or convert value to float.
+    
+    When operators transform EPI from float to BEPIElement dict, this helper
+    extracts the maximum magnitude from the 'continuous' component. This
+    preserves ΔNFR semantics (§3.3) and structural metrics accuracy (§3.9).
+    
+    Parameters
+    ----------
+    value : Any
+        Value to convert. If it's a dict with a 'continuous' key, extracts
+        the maximum magnitude. Otherwise converts directly to float.
+    
+    Returns
+    -------
+    float
+        Scalar representation of the value.
+    """
+    if isinstance(value, dict) and "continuous" in value:
+        cont = value["continuous"]
+        if isinstance(cont, tuple):
+            return float(max(abs(c) for c in cont)) if cont else 0.0
+        return float(abs(cont))
+    return float(value)
+
+
+
 @lru_cache(maxsize=128)
 def _alias_cache(alias_tuple: tuple[str, ...]) -> tuple[str, ...]:
     """Validate and cache alias tuples.
@@ -212,7 +239,7 @@ def get_attr(
     *,
     strict: bool = False,
     log_level: int | None = None,
-    conv: Callable[[Any], T] = float,
+    conv: Callable[[Any], T] = _bepi_to_float,
 ) -> T | None:
     """Return the value for the first key in ``aliases`` found in ``d``."""
 
@@ -354,7 +381,7 @@ def _coerce_abs_value(value: Any) -> float:
     if value is None:
         return 0.0
     try:
-        return float(value)
+        return _bepi_to_float(value)
     except (TypeError, ValueError):
         return 0.0
 
