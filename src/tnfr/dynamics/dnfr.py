@@ -1818,53 +1818,102 @@ def _accumulate_neighbors_broadcasted(
             # When workspace is available with sufficient size, extract edge values
             # into workspace rows before passing to bincount.
             if workspace is not None and workspace.shape[1] >= edge_count:
-                # Reuse workspace rows for edge value extraction
+                # Verify workspace has enough rows for all components
                 # workspace has shape (component_rows, edge_count)
-                np.take(cos, edge_dst_int, out=workspace[cos_row, :edge_count])
-                np.take(sin, edge_dst_int, out=workspace[sin_row, :edge_count])
-                np.take(epi, edge_dst_int, out=workspace[epi_row, :edge_count])
-                np.take(vf, edge_dst_int, out=workspace[vf_row, :edge_count])
-                
-                def _apply_full_bincount(
-                    target_row: int | None,
-                    values: np.ndarray | None = None,
-                    *,
-                    unit_weight: bool = False,
-                ) -> None:
-                    if target_row is None:
-                        return
-                    if values is None and not unit_weight:
-                        return
-                    if unit_weight:
-                        component_accum = np.bincount(
-                            edge_src_int,
-                            minlength=n,
+                required_rows = max(
+                    cos_row + 1, 
+                    sin_row + 1, 
+                    epi_row + 1, 
+                    vf_row + 1,
+                    (count_row + 1) if count_row is not None else 0,
+                    (deg_row + 1) if deg_row is not None else 0,
+                )
+                if workspace.shape[0] >= required_rows:
+                    # Reuse workspace rows for edge value extraction
+                    np.take(cos, edge_dst_int, out=workspace[cos_row, :edge_count])
+                    np.take(sin, edge_dst_int, out=workspace[sin_row, :edge_count])
+                    np.take(epi, edge_dst_int, out=workspace[epi_row, :edge_count])
+                    np.take(vf, edge_dst_int, out=workspace[vf_row, :edge_count])
+                    
+                    def _apply_full_bincount(
+                        target_row: int | None,
+                        values: np.ndarray | None = None,
+                        *,
+                        unit_weight: bool = False,
+                    ) -> None:
+                        if target_row is None:
+                            return
+                        if values is None and not unit_weight:
+                            return
+                        if unit_weight:
+                            component_accum = np.bincount(
+                                edge_src_int,
+                                minlength=n,
+                            )
+                        else:
+                            component_accum = np.bincount(
+                                edge_src_int,
+                                weights=values,
+                                minlength=n,
+                            )
+                        np.copyto(
+                            accum[target_row, : n],
+                            component_accum[:n],
+                            casting="unsafe",
                         )
-                    else:
-                        component_accum = np.bincount(
-                            edge_src_int,
-                            weights=values,
-                            minlength=n,
+                    
+                    _apply_full_bincount(cos_row, workspace[cos_row, :edge_count])
+                    _apply_full_bincount(sin_row, workspace[sin_row, :edge_count])
+                    _apply_full_bincount(epi_row, workspace[epi_row, :edge_count])
+                    _apply_full_bincount(vf_row, workspace[vf_row, :edge_count])
+                    
+                    if count_row is not None:
+                        _apply_full_bincount(count_row, unit_weight=True)
+                    
+                    if deg_row is not None and deg_array is not None:
+                        np.take(deg_array, edge_dst_int, out=workspace[deg_row, :edge_count])
+                        _apply_full_bincount(deg_row, workspace[deg_row, :edge_count])
+                else:
+                    # Workspace doesn't have enough rows, fall back to temporary arrays
+                    def _apply_full_bincount(
+                        target_row: int | None,
+                        values: np.ndarray | None = None,
+                        *,
+                        unit_weight: bool = False,
+                    ) -> None:
+                        if target_row is None:
+                            return
+                        if values is None and not unit_weight:
+                            return
+                        if unit_weight:
+                            component_accum = np.bincount(
+                                edge_src_int,
+                                minlength=n,
+                            )
+                        else:
+                            component_accum = np.bincount(
+                                edge_src_int,
+                                weights=values,
+                                minlength=n,
+                            )
+                        np.copyto(
+                            accum[target_row, : n],
+                            component_accum[:n],
+                            casting="unsafe",
                         )
-                    np.copyto(
-                        accum[target_row, : n],
-                        component_accum[:n],
-                        casting="unsafe",
-                    )
-                
-                _apply_full_bincount(cos_row, workspace[cos_row, :edge_count])
-                _apply_full_bincount(sin_row, workspace[sin_row, :edge_count])
-                _apply_full_bincount(epi_row, workspace[epi_row, :edge_count])
-                _apply_full_bincount(vf_row, workspace[vf_row, :edge_count])
-                
-                if count_row is not None:
-                    _apply_full_bincount(count_row, unit_weight=True)
-                
-                if deg_row is not None and deg_array is not None:
-                    np.take(deg_array, edge_dst_int, out=workspace[deg_row, :edge_count])
-                    _apply_full_bincount(deg_row, workspace[deg_row, :edge_count])
+
+                    _apply_full_bincount(cos_row, np.take(cos, edge_dst_int))
+                    _apply_full_bincount(sin_row, np.take(sin, edge_dst_int))
+                    _apply_full_bincount(epi_row, np.take(epi, edge_dst_int))
+                    _apply_full_bincount(vf_row, np.take(vf, edge_dst_int))
+
+                    if count_row is not None:
+                        _apply_full_bincount(count_row, unit_weight=True)
+
+                    if deg_row is not None and deg_array is not None:
+                        _apply_full_bincount(deg_row, np.take(deg_array, edge_dst_int))
             else:
-                # Fallback: no workspace or insufficient size, use temporary arrays
+                # Fallback: no workspace or insufficient width, use temporary arrays
                 def _apply_full_bincount(
                     target_row: int | None,
                     values: np.ndarray | None = None,

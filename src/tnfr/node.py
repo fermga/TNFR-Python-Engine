@@ -455,11 +455,15 @@ class NodeNX(NodeProtocol):
             
             node = cache.get(n)
             if node is None:
+                # Create node (this will add it to strong cache in __init__)
                 node = cls(G, n)
+                
+                # Add to the requested cache type
                 cache[n] = node
                 
                 # When using weak cache, remove the strong reference that __init__ created
-                # to allow proper garbage collection when no external references exist
+                # to allow proper garbage collection when no external references exist.
+                # This must happen inside the lock to prevent race conditions.
                 if use_weak_cache:
                     strong_cache = G.graph.get("_node_cache")
                     if strong_cache is not None and n in strong_cache:
