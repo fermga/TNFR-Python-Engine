@@ -59,6 +59,8 @@ if TYPE_CHECKING:  # pragma: no cover - type checking only
 GlyphFactors = dict[str, Any]
 GlyphOperation = Callable[["NodeProtocol", GlyphFactors], None]
 
+from .grammar import apply_glyph_with_grammar  # noqa: E402
+
 __all__ = [
     "JitterCache",
     "JitterCacheManager",
@@ -70,6 +72,7 @@ __all__ = [
     "GLYPH_OPERATIONS",
     "apply_glyph_obj",
     "apply_glyph",
+    "apply_glyph_with_grammar",
     "apply_network_remesh",
     "apply_topological_remesh",
     "apply_remesh_if_globally_stable",
