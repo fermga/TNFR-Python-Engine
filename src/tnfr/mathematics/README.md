@@ -86,7 +86,7 @@ isometry_factory = build_isometry_factory(
 
 ## Factory Design Patterns
 
-All factories in this module follow the patterns documented in [FACTORY_PATTERNS.md](../FACTORY_PATTERNS.md):
+All factories in this module follow the patterns documented in [FACTORY_PATTERNS.md](../../../docs/FACTORY_PATTERNS.md):
 
 1. **Clear naming**: `make_*` for operators, `build_*` for generators
 2. **Input validation**: Dimension checks, spectrum validation, topology verification
@@ -174,7 +174,7 @@ See `tests/mathematics/` for the complete test suite.
 
 ## Related Documentation
 
-- [Factory Patterns Guide](../FACTORY_PATTERNS.md) - Comprehensive factory design patterns
-- [TNFR Paradigm](../../TNFR.pdf) - Theoretical foundations
-- [AGENTS.md](../../AGENTS.md) - Structural invariants and contracts
-- [API Overview](../source/api/overview.md) - Package-level documentation
+- [Factory Patterns Guide](../../../docs/FACTORY_PATTERNS.md) - Comprehensive factory design patterns
+- [TNFR Paradigm](../../../TNFR.pdf) - Theoretical foundations
+- [AGENTS.md](../../../AGENTS.md) - Structural invariants and contracts
+- [API Overview](../../../docs/source/api/overview.md) - Package-level documentation

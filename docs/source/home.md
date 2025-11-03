@@ -5,6 +5,13 @@ major documentation areas so you can quickly find the right level of detail—wh
 bootstrapping an environment, validating operator semantics, or diving into the underlying
 theory.
 
+## Quick References for New Contributors
+
+- **[GLOSSARY.md](../../GLOSSARY.md)** – Unified glossary of TNFR variables, operators, and
+  canonical concepts. Start here to understand EPI, νf, ΔNFR, and structural operators.
+- **[RESONANT_TRAJECTORIES.md](../../RESONANT_TRAJECTORIES.md)** – Examples of common structural
+  operator sequences with expected behaviors and metrics.
+
 ## Documentation map
 
 - **Getting started** – begin with the practical [Quickstart](getting-started/quickstart.md) to

@@ -11,7 +11,7 @@ When contributing:
   module.
 - Write docstrings and comments in English and reference operators by their
   canonical English identifiers. Follow the
-  [NumPy-style docstring guide](docs/api/docstring_style.md), including the
+  [NumPy-style docstring guide](docs/source/api/docstring_style.md), including the
   dedicated templates for `tnfr.operators.definitions` and
   `tnfr.metrics.sense_index`, so automated tools and reviewers can trace how
   each API reorganises EPI, νf, ΔNFR, and phase. Module headers, public

@@ -1,0 +1,41 @@
+name: Verify Internal References
+
+on:
+  pull_request:
+    paths:
+      - '**.md'
+      - '**.ipynb'
+      - 'scripts/verify_internal_references.py'
+      - '.github/workflows/verify-references.yml'
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - '**.md'
+      - '**.ipynb'
+      - 'scripts/verify_internal_references.py'
+      - '.github/workflows/verify-references.yml'
+
+jobs:
+  check-references:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+        
+    - name: Verify internal references
+      run: |
+        python scripts/verify_internal_references.py --ci
+        
+    - name: Report results
+      if: failure()
+      run: |
+        echo "::error::Broken internal references found in documentation"
+        echo "Run 'python scripts/verify_internal_references.py' locally to see details"
