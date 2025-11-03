@@ -55,8 +55,11 @@ def _bepi_to_float(value: Any) -> float:
     """
     if isinstance(value, dict) and "continuous" in value:
         cont = value["continuous"]
-        return float(max(abs(c) for c in cont)) if isinstance(cont, tuple) else float(abs(cont))
+        if isinstance(cont, tuple):
+            return float(max(abs(c) for c in cont)) if cont else 0.0
+        return float(abs(cont))
     return float(value)
+
 
 
 @lru_cache(maxsize=128)
