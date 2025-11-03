@@ -297,7 +297,7 @@ Found 5 outdated stub files:
 **Solution:**
 ```bash
 # Touch .pyi files to update timestamps
-find src/tnfr -name "*.pyi" -exec touch {} \;
+find src/tnfr -name "*.pyi" -exec touch {} +
 
 # Verify synchronization
 make stubs-check-sync

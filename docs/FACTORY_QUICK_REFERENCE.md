@@ -183,7 +183,12 @@ lindblad = build_lindblad_delta_nfr(
 
 ```python
 def _validate_dimension(dim: int) -> int:
-    """Validate and normalize dimension parameter."""
+    """Validate and normalize dimension parameter.
+    
+    Note: The int(dim) != dim check catches float values like 4.5 that aren't
+    whole numbers, while allowing 4.0 (which equals 4 after int conversion).
+    This ensures dimension parameters are mathematically integer-valued.
+    """
     if int(dim) != dim:
         raise ValueError("Dimension must be an integer.")
     if dim <= 0:
