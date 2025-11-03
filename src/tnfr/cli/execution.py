@@ -64,6 +64,12 @@ VF_ALIAS_KEYS: tuple[str, ...] = (VF_PRIMARY,) + tuple(
     alias for alias in _VF_ALIASES if alias != VF_PRIMARY
 )
 
+_EPI_ALIASES = get_aliases("EPI")
+EPI_PRIMARY = _EPI_ALIASES[0]
+EPI_ALIAS_KEYS: tuple[str, ...] = (EPI_PRIMARY,) + tuple(
+    alias for alias in _EPI_ALIASES if alias != EPI_PRIMARY
+)
+
 
 # CLI summaries should remain concise by default while allowing callers to
 # inspect the full glyphogram series when needed.
@@ -516,7 +522,13 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
 
     for node_id in nodes:
         data = G.nodes[node_id]
-        epi = float(data.get("EPI", 0.0))
+        epi = float(
+            get_attr(
+                data,
+                EPI_ALIAS_KEYS,
+                default=0.0,
+            )
+        )
         nu_f = float(
             get_attr(
                 data,
@@ -717,6 +729,12 @@ def cmd_math_run(args: argparse.Namespace) -> int:
 
     # Force math engine to be enabled
     args.math_engine = True
+    
+    # Set default attributes if not present
+    if not hasattr(args, "summary"):
+        args.summary = False
+    if not hasattr(args, "summary_limit"):
+        args.summary_limit = DEFAULT_SUMMARY_SERIES_LIMIT
 
     code, graph = _run_cli_program(args)
     if code != 0:
