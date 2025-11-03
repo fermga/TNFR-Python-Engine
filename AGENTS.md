@@ -163,6 +163,28 @@ Include **multi‑scale tests** (nested EPIs) and **reproducibility** (seeds).
 
 ---
 
+## 12.1) CI/Tooling notes
+
+### Bandit security scanning
+
+**Important**: Bandit does **not** support SARIF output format natively.
+
+* **Supported formats**: csv, custom, html, json, screen, txt, xml, yaml
+* **For GitHub Code Scanning**: Use `bandit -f json` and convert to SARIF with `tools/bandit_to_sarif.py`
+* **Workflow integration**: The `.github/workflows/sast-lint.yml` workflow runs Bandit with JSON output and converts to SARIF automatically
+* **Validation**: Pre-commit hooks and workflow linters check for invalid `-f sarif` usage to prevent regression
+
+Example usage:
+```bash
+# Generate JSON output
+bandit -r src -ll -f json -o bandit.json -c bandit.yaml
+
+# Convert to SARIF for GitHub Code Scanning
+python tools/bandit_to_sarif.py bandit.json bandit.sarif
+```
+
+---
+
 ## 13) Mini‑glossary
 
 * **EPI**: Primary Information Structure (the coherent “form”).

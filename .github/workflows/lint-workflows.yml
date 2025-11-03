@@ -1,0 +1,41 @@
+name: Lint Workflows
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - 'tools/**'
+      - 'scripts/**'
+  push:
+    branches: ["main"]
+    paths:
+      - '.github/workflows/**'
+      - 'tools/**'
+      - 'scripts/**'
+
+jobs:
+  validate-bandit-format:
+    name: Validate Bandit format usage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Check for invalid bandit -f sarif usage
+        run: |
+          # Search for bandit commands with -f sarif which is not supported
+          if grep -r "bandit.*-f sarif" .github/workflows/ scripts/ 2>/dev/null; then
+            echo "ERROR: Found 'bandit -f sarif' usage. Bandit does not support SARIF format."
+            echo "Supported formats: csv, custom, html, json, screen, txt, xml, yaml"
+            echo "Use 'bandit -f json' and convert to SARIF with tools/bandit_to_sarif.py"
+            exit 1
+          fi
+          echo "✓ No invalid bandit format usage found"
+
+      - name: Verify converter script exists
+        run: |
+          if [ ! -f "tools/bandit_to_sarif.py" ]; then
+            echo "ERROR: tools/bandit_to_sarif.py not found"
+            exit 1
+          fi
+          echo "✓ Bandit to SARIF converter script exists"

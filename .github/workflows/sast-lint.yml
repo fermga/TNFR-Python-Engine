@@ -80,7 +80,11 @@ jobs:
       - name: Run Bandit
         run: |
           source ${{ env.VENV_PATH }}/bin/activate
-          bandit -r src -ll -f sarif -o bandit.sarif -c bandit.yaml --exit-zero
+          bandit -r src -ll -f json -o bandit.json -c bandit.yaml --exit-zero
+
+      - name: Convert Bandit JSON to SARIF
+        run: |
+          python tools/bandit_to_sarif.py bandit.json bandit.sarif
 
       - name: Upload Bandit SARIF to GitHub
         uses: github/codeql-action/upload-sarif@v4
