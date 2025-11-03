@@ -50,6 +50,7 @@ from ..utils import (
     resolve_chunk_size,
     stable_json,
 )
+from .buffer_cache import ensure_numpy_buffers
 from .common import (
     _coerce_jobs,
     _get_vf_dnfr_max,
@@ -171,18 +172,8 @@ def _ensure_si_buffers(
     np: Any,
 ) -> tuple[Any, Any, Any]:
     """Return reusable NumPy buffers sized for ``count`` nodes."""
-
-    def builder() -> tuple[Any, Any, Any]:
-        return (
-            np.empty(count, dtype=float),
-            np.empty(count, dtype=float),
-            np.empty(count, dtype=float),
-        )
-
-    return edge_version_cache(
-        G,
-        ("_si_buffers", count),
-        builder,
+    return ensure_numpy_buffers(
+        G, key_prefix="_si_buffers", count=count, buffer_count=3, np=np
     )
 
 
@@ -193,20 +184,8 @@ def _ensure_chunk_workspace(
     np: Any,
 ) -> tuple[Any, Any]:
     """Return reusable scratch buffers sized to the masked neighbours."""
-
-    if mask_count <= 0:
-        mask_count = 1
-
-    def builder() -> tuple[Any, Any]:
-        return (
-            np.empty(mask_count, dtype=float),
-            np.empty(mask_count, dtype=float),
-        )
-
-    return edge_version_cache(
-        G,
-        ("_si_chunk_workspace", mask_count),
-        builder,
+    return ensure_numpy_buffers(
+        G, key_prefix="_si_chunk_workspace", count=mask_count, buffer_count=2, np=np
     )
 
 
@@ -217,20 +196,8 @@ def _ensure_neighbor_bulk_buffers(
     np: Any,
 ) -> tuple[Any, Any, Any, Any, Any]:
     """Return reusable buffers for bulk neighbour phase aggregation."""
-
-    def builder() -> tuple[Any, Any, Any, Any, Any]:
-        return (
-            np.empty(count, dtype=float),
-            np.empty(count, dtype=float),
-            np.empty(count, dtype=float),
-            np.empty(count, dtype=float),
-            np.empty(count, dtype=float),
-        )
-
-    return edge_version_cache(
-        G,
-        ("_si_neighbor_buffers", count),
-        builder,
+    return ensure_numpy_buffers(
+        G, key_prefix="_si_neighbor_buffers", count=count, buffer_count=5, np=np
     )
 
 
