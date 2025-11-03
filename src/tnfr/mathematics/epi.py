@@ -231,7 +231,8 @@ class BEPIElement(_EPIValidators):
             )
         elif isinstance(other, (int, float)):
             # Compare with maximum magnitude for numeric comparisons
-            return abs(self._max_magnitude() - float(other)) < 1e-9
+            # Use consistent tolerance with element comparisons
+            return abs(self._max_magnitude() - float(other)) < 1e-12
         return NotImplemented
 
 
