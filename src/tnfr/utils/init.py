@@ -257,20 +257,43 @@ class _CacheEntry:
 
 
 _IMPORT_CACHE_MANAGER: CacheManager | None = None
+_IMPORT_CACHE_MANAGER_LOCK = threading.Lock()
 
 
 def _get_import_cache_manager() -> CacheManager:
     """Lazily initialize and return the import cache manager.
     
     This function breaks the circular import between init and cache modules
-    by deferring the CacheManager import until first use.
+    by deferring the CacheManager import until first use. The initialization
+    is thread-safe using a module-level lock to ensure only one CacheManager
+    instance is created.
+    
+    Returns
+    -------
+    CacheManager
+        Singleton cache manager instance for import caching. The same instance
+        is returned on subsequent calls.
+    
+    Notes
+    -----
+    Thread Safety:
+        Multiple concurrent calls are synchronized via `_IMPORT_CACHE_MANAGER_LOCK`
+        to prevent race conditions during initialization.
+    
+    Structural Contract:
+        - First call: Creates and configures CacheManager
+        - Subsequent calls: Returns existing instance (no-op check)
+        - Preserves deterministic caching behavior
     """
     global _IMPORT_CACHE_MANAGER
     if _IMPORT_CACHE_MANAGER is None:
-        from .cache import CacheManager
-        _IMPORT_CACHE_MANAGER = CacheManager(default_capacity=_DEFAULT_CACHE_SIZE)
-        _IMPORT_CACHE_MANAGER.register(_SUCCESS_CACHE_NAME, _success_cache_factory)
-        _IMPORT_CACHE_MANAGER.register(_FAILURE_CACHE_NAME, _failure_cache_factory)
+        with _IMPORT_CACHE_MANAGER_LOCK:
+            # Double-check pattern: another thread may have initialized
+            if _IMPORT_CACHE_MANAGER is None:
+                from .cache import CacheManager
+                _IMPORT_CACHE_MANAGER = CacheManager(default_capacity=_DEFAULT_CACHE_SIZE)
+                _IMPORT_CACHE_MANAGER.register(_SUCCESS_CACHE_NAME, _success_cache_factory)
+                _IMPORT_CACHE_MANAGER.register(_FAILURE_CACHE_NAME, _failure_cache_factory)
     return _IMPORT_CACHE_MANAGER
 
 
