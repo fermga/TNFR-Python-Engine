@@ -387,8 +387,32 @@ def create_operator(d, s=None, min=0.1):  # Poor naming, missing types
     return Operator(eigenvals)  # No invariant verification
 ```
 
+## Factory Inventory
+
+For a complete inventory of all factory functions in the codebase with compliance status and detailed analysis, see [FACTORY_INVENTORY_2025.md](FACTORY_INVENTORY_2025.md).
+
+### Quick Reference
+
+**Operator Factories** (`make_*`):
+- `make_coherence_operator` - Create Hermitian PSD coherence operators
+- `make_frequency_operator` - Create Hermitian PSD frequency operators
+- `make_rng` - Create deterministic random number generators
+
+**Generator Factories** (`build_*`):
+- `build_delta_nfr` - Construct ΔNFR generators from canonical topologies
+- `build_lindblad_delta_nfr` - Construct Lindblad superoperators
+- `build_isometry_factory` - Create isometry factories (Phase 2 contract)
+- `build_metrics_summary` - Aggregate TNFR metrics for reporting
+- `build_cache_manager` - Configure cache infrastructure
+- `build_basic_graph` - Create CLI-configured graphs
+
+**Node Factories** (`create_*`):
+- `create_nfr` - Create TNFR nodes with EPI, νf, phase
+- `create_math_nfr` - Create nodes with mathematical dynamics
+
 ## Related Documentation
 
+- See [FACTORY_INVENTORY_2025.md](FACTORY_INVENTORY_2025.md) for complete factory inventory
 - See `AGENTS.md` for TNFR structural invariants
 - See `docs/api/operators.md` for operator reference
 - See `src/tnfr/mathematics/README.md` for mathematics module organization
