@@ -49,8 +49,8 @@ class TestMathRunSubcommand:
         assert rc == 0
 
         captured = capsys.readouterr()
-        # Should complete successfully
-        assert rc == 0
+        # Verify command completed successfully
+        assert "[MATH" in captured.out or "COHERENCE" in captured.out
 
     def test_math_run_with_dimension(self, capsys):
         """Test math.run with custom Hilbert dimension."""

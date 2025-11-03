@@ -5,7 +5,7 @@
 metadata:
   name: resonant_bootstrap
   description: >
-    Initializes a network using Emission (AL), Reception (EN), 
+    Initializes a network using Emission (AL), Reception (EN),
     Coupling (IL), Resonance (RA), Validation (VAL), Self-organization (UM),
     followed by a waiting period and final stabilization with Silence (SHA).
   operators:
@@ -23,7 +23,7 @@ topology:
   nodes: 24
   seed: 1
 
-# Dynamics configuration  
+# Dynamics configuration
 dynamics:
   dt: 0.1
   integrator: euler

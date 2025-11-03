@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import math
 from collections import deque
 from collections.abc import Mapping
 from copy import deepcopy
@@ -12,6 +13,9 @@ from typing import Any, Optional, Sequence
 
 import networkx as nx
 import numpy as np
+
+# Constants
+TWO_PI = 2 * math.pi
 
 from ..config import apply_config
 from ..config.presets import (
@@ -728,13 +732,13 @@ def cmd_math_run(args: argparse.Namespace) -> int:
     """
 
     # Force math engine to be enabled
-    args.math_engine = True
+    setattr(args, "math_engine", True)
     
     # Set default attributes if not present
     if not hasattr(args, "summary"):
-        args.summary = False
+        setattr(args, "summary", False)
     if not hasattr(args, "summary_limit"):
-        args.summary_limit = DEFAULT_SUMMARY_SERIES_LIMIT
+        setattr(args, "summary_limit", DEFAULT_SUMMARY_SERIES_LIMIT)
 
     code, graph = _run_cli_program(args)
     if code != 0:
@@ -840,7 +844,7 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
                 if abs(theta_u) > tolerance or abs(theta_v) > tolerance:
                     # Phase difference should be bounded
                     phase_diff = abs(theta_u - theta_v)
-                    if phase_diff > 2 * 3.141592653589793:  # > 2π
+                    if phase_diff > TWO_PI:  # > 2π
                         phase_violations.append((u, v, phase_diff))
 
             if phase_violations:
