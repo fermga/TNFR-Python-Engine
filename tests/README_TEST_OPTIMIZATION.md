@@ -12,17 +12,21 @@ The test suite has been optimized to follow DRY (Don't Repeat Yourself) principl
 2. **Unified parametrized test suites** consolidating redundant tests
 3. **Critical path coverage** for operator generation, validators, and run_sequence
 4. **Clear documentation** of what can be deprecated and why
+5. **Extended coverage** with 14 new tests targeting gaps in critical paths (Phase 5)
 
 ## Quick Start
 
 ### Running the Optimized Tests
 
 ```bash
-# Run all optimized tests (254 tests, ~0.6s)
-pytest tests/integration/test_unified_*.py tests/integration/test_*_critical_paths.py tests/integration/test_consolidated_critical_paths.py -v
+# Run all optimized tests (271 tests, ~0.7s)
+pytest tests/integration/test_unified_*.py tests/integration/test_*_critical_paths.py tests/integration/test_consolidated_critical_paths.py tests/integration/test_extended_critical_coverage.py -v
 
 # Run Phase 2 consolidated tests (41 tests, ~0.2s)
 pytest tests/integration/test_consolidated_critical_paths.py -v
+
+# Run Phase 5 extended coverage tests (14 tests, ~0.2s)
+pytest tests/integration/test_extended_critical_coverage.py -v
 
 # Run specific test suite
 pytest tests/integration/test_unified_structural_validation.py -v
@@ -80,20 +84,23 @@ tests/
 │   ├── validation.py                    # Shared validators
 │   ├── fixtures.py                      # Shared fixtures
 │   ├── sequence_testing.py              # Sequence utilities
-│   └── operator_assertions.py           # Operator assertions
+│   ├── operator_assertions.py           # Operator assertions
+│   └── consolidation_helper.py          # Redundancy analysis tool (Phase 5)
 ├── integration/
 │   ├── test_unified_structural_validation.py      # 23 tests
 │   ├── test_unified_operator_validation.py        # 96 tests
-│   ├── test_operator_generation_critical_paths.py # 17 tests
-│   ├── test_nodal_validators_critical_paths.py    # 16 tests
-│   ├── test_run_sequence_critical_paths.py        # 21 tests
+│   ├── test_operator_generation_critical_paths.py # 28 tests
+│   ├── test_nodal_validators_critical_paths.py    # 29 tests
+│   ├── test_run_sequence_critical_paths.py        # 34 tests
 │   ├── test_enhanced_critical_paths.py            # 40 tests
 │   ├── test_consolidated_critical_paths.py        # 41 tests
 │   ├── test_additional_critical_paths.py          # 24 tests
+│   ├── test_extended_critical_coverage.py         # 14 tests (Phase 5)
 │   └── ... (other integration tests)
 ├── math_integration/
 │   └── test_generators.py              # 1 baseline validation test (cleaned up)
 ├── TEST_CONSOLIDATION_SUMMARY.md        # Complete consolidation guide
+├── EXTENDED_COVERAGE_SUMMARY.md         # Phase 5 extended coverage details
 └── OPTIMIZATION_PHASE2_SUMMARY.md       # Phase 2 details
 ```
 
@@ -312,25 +319,26 @@ Verify the fixture is defined in:
 
 ### Coverage Improvements
 
-| Category | Before | After Phase 4 | Improvement |
-|----------|--------|---------------|-------------|
-| Total tests | 1699 (47 skipped) | 1649 (0 skipped) | -50 redundant tests |
-| Operator tests | ~20 separate files | 96 parametrized unified | 65% less code, better coverage |
-| Structural tests | ~13 separate | 23 parametrized unified | 60% less code |
-| Critical paths | Limited | 257 optimized tests | +20% coverage improvement |
-| Nodal validators | ~20 separate | 16 + 13 enhanced | Better edge case coverage |
-| run_sequence | Limited | 21 + 11 enhanced | +40 trajectory tests |
-| **Deleted files** | 4 deprecated files | **Removed** | **-47 integration tests** |
-| **Cleaned files** | test_generators.py | **3 tests removed** | Kept baseline validation |
-| **Helper modules** | 3 | **5 total** | Shared utilities prevent duplication |
-| **Execution speed** | ~1.4s integration | ~1.4s integration | Same speed, better coverage |
+| Category | Before | After Phase 4 | After Phase 5 | Final Improvement |
+|----------|--------|---------------|---------------|-------------------|
+| Total tests | 1699 (47 skipped) | 1649 (0 skipped) | 1663 (0 skipped) | +14 new tests |
+| Operator tests | ~20 separate files | 96 parametrized unified | 99 unified + extended | 65% less code, +50% coverage |
+| Structural tests | ~13 separate | 23 parametrized unified | 23 parametrized unified | 60% less code |
+| Critical paths | Limited | 257 optimized tests | 271 optimized tests | +26% coverage improvement |
+| Nodal validators | ~20 separate | 16 + 13 enhanced | 16 + 13 + 3 extended | Better edge + performance |
+| run_sequence | Limited | 21 + 11 enhanced | 21 + 11 + 6 extended | +76% trajectory tests |
+| **Deleted files** | 4 deprecated files | **Removed** | **Removed** | **-47 integration tests** |
+| **Cleaned files** | test_generators.py | **3 tests removed** | **3 tests removed** | Kept baseline validation |
+| **Helper modules** | 3 | **5 total** | **6 total** | Includes analysis tool |
+| **Execution speed** | ~1.4s integration | ~1.4s integration | ~1.5s integration | Minimal overhead |
 
 ### Test Execution Speed (Optimized Suites)
 
 - Unified structural: 0.18s for 23 tests
 - Unified operators: 0.23s for 96 tests  
-- All critical paths: ~0.6s for 159 tests
-- **Total optimized: ~1.0s for 257 unified tests**
+- All critical paths: ~0.7s for 169 tests
+- Extended coverage: 0.18s for 14 tests
+- **Total optimized: ~1.1s for 271 unified tests**
 - **Deleted tests: 0.0s (removed from codebase)**
 
 ## References
