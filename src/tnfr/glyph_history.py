@@ -243,8 +243,6 @@ def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]:
     if replaced:
         G.graph.pop(sentinel_key, None)
     _normalise_state_streams(cast(MutableMapping[str, Any], hist))
-    for key in _NU_F_HISTORY_KEYS:
-        hist.setdefault(key, [])
     return hist
 
 
