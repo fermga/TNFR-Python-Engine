@@ -315,19 +315,6 @@ All simulations must be:
 | Si | Sense index | — | Reorganization stability |
 
 
-### Structural Invariants
-
-1. EPI changes only via structural operators
-2. νf in Hz_str units only
-3. ΔNFR maintains canonical semantics
-4. Operator closure preserved
-5. Explicit phase verification required
-6. Node birth/collapse boundaries enforced
-7. Operational fractality maintained
-8. Controlled determinism ensured
-9. Structural metrics transparent
-10. Domain neutrality preserved
-
 ---
 
 ## Related Documentation
