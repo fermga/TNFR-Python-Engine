@@ -229,8 +229,17 @@ and hit rates for both aggregate and per-cache statistics.
 
 ### Profiling Hot Paths
 
+TNFR provides two complementary profiling tools:
+
+1. **Full Pipeline Profiler** (`full_pipeline_profile.py`): Comprehensive profiling
+   of Sense Index and ΔNFR pipeline with cProfile integration
+2. **Hot Path Cache Profiler** (`cache_hot_path_profiler.py`): Focused cache
+   effectiveness analysis across hot paths
+
+#### Full Pipeline Profiler
+
 Use the `full_pipeline_profile.py` benchmark to profile cache behavior during
-Sense Index and ΔNFR computations:
+Sense Index and ΔNFR computations with detailed timing breakdowns:
 
 ```bash
 # Profile with default settings (100 nodes, 5 loops)
@@ -247,6 +256,55 @@ python benchmarks/full_pipeline_profile.py \
     --si-chunk-sizes auto 500 1000 \
     --dnfr-chunk-sizes auto 1000 \
     --output-dir ./profile_results
+```
+
+#### Hot Path Cache Profiler
+
+Use the `cache_hot_path_profiler.py` benchmark to specifically analyze cache
+effectiveness across the three primary hot paths (Laplacian, C(t), Si):
+
+```bash
+# Basic cache profiling
+python benchmarks/cache_hot_path_profiler.py \
+    --nodes 100 \
+    --steps 20 \
+    --output cache_profile.json
+
+# Analyze cache behavior with different buffer sizes
+python benchmarks/cache_hot_path_profiler.py \
+    --nodes 500 \
+    --steps 50 \
+    --buffer-cache-size 256 \
+    --output cache_profile_large.json
+```
+
+**Output example:**
+
+```
+CACHE PROFILING SUMMARY
+======================================================================
+Configuration: 100 nodes, 20 steps
+Buffer cache size: 128
+
+Overall Statistics:
+  Total Hits:      150
+  Total Misses:    12
+  Total Evictions: 0
+  Overall Hit Rate: 92.6%
+
+Per Hot Path:
+  sense_index:
+    Hit Rate: 90.2%
+    Avg Time: 2.14ms
+    Evictions: 0
+  dnfr_laplacian:
+    Hit Rate: 0.0%
+    Avg Time: 0.85ms
+    Evictions: 0
+  coherence_matrix:
+    Hit Rate: 100.0%
+    Avg Time: 3.47ms
+    Evictions: 0
 ```
 
 ### Understanding Cache Metrics
