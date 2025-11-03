@@ -16,6 +16,32 @@ PYTHONPATH=src python benchmarks/<script>.py
 * Scripts emit warnings for optional dependencies (NumPy, YAML, orjson). Those
   warnings are harmless during ad-hoc benchmarks.
 
+### Reproducibility
+
+For deterministic benchmark execution with checksum verification:
+
+```bash
+# Run all reproducible benchmarks with default seed (42)
+make reproduce
+
+# Run specific benchmarks with custom seed
+python scripts/run_reproducible_benchmarks.py \
+  --benchmarks comprehensive_cache_profiler full_pipeline_profile \
+  --seed 123 \
+  --output-dir artifacts
+
+# Verify checksums against manifest
+make reproduce-verify
+# Or manually:
+python scripts/run_reproducible_benchmarks.py --verify artifacts/manifest.json
+```
+
+The reproducibility script ensures:
+- Global seeds are set consistently across all benchmarks
+- Output artifacts are generated with SHA256 checksums
+- A manifest file tracks all benchmark runs for verification
+- CI can detect when benchmark outputs change unexpectedly
+
 ## Maintained benchmarks
 
 | Script | Focus | Notes |

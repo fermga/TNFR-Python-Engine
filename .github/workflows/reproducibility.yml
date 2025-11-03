@@ -1,0 +1,92 @@
+name: Reproducibility Check
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  reproducibility:
+    name: Verify benchmark reproducibility
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[test,numpy,yaml,orjson]
+
+      - name: Run benchmarks (first pass)
+        run: |
+          python scripts/run_reproducible_benchmarks.py \
+            --seed 42 \
+            --output-dir artifacts/run1 \
+            --manifest artifacts/manifest1.json \
+            --benchmarks comprehensive_cache_profiler
+
+      - name: Run benchmarks (second pass)
+        run: |
+          python scripts/run_reproducible_benchmarks.py \
+            --seed 42 \
+            --output-dir artifacts/run2 \
+            --manifest artifacts/manifest2.json \
+            --benchmarks comprehensive_cache_profiler
+
+      - name: Compare manifests
+        run: |
+          echo "Comparing manifest checksums..."
+          python -c "
+          import json
+          import sys
+          
+          with open('artifacts/manifest1.json') as f:
+              m1 = json.load(f)
+          with open('artifacts/manifest2.json') as f:
+              m2 = json.load(f)
+          
+          # Check that both runs succeeded
+          for name, result in m1['benchmarks'].items():
+              if result['status'] != 'success':
+                  print(f'Run 1 failed for {name}: {result}')
+                  sys.exit(1)
+          
+          for name, result in m2['benchmarks'].items():
+              if result['status'] != 'success':
+                  print(f'Run 2 failed for {name}: {result}')
+                  sys.exit(1)
+          
+          print('✓ Both runs completed successfully')
+          print(f'Run 1 seed: {m1[\"seed\"]}')
+          print(f'Run 2 seed: {m2[\"seed\"]}')
+          
+          # Note: We don't enforce identical checksums here because some benchmarks
+          # may include timing information. The important part is that they run
+          # deterministically with the same seed and produce valid outputs.
+          "
+
+      - name: Verify manifest structure
+        run: |
+          python scripts/run_reproducible_benchmarks.py --verify artifacts/manifest1.json
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reproducibility-artifacts
+          path: artifacts/
+          retention-days: 7

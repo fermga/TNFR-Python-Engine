@@ -148,6 +148,35 @@ If a file is reported as outdated but hasn't changed:
 
 ## Other Scripts
 
+### Reproducibility and Benchmarking
+
+- `run_reproducible_benchmarks.py` - Run benchmarks with deterministic seeds and generate checksums for artifacts
+
+This script ensures reproducibility by:
+- Setting global seeds for all benchmarks
+- Running selected benchmarks with consistent parameters
+- Generating SHA256 checksums for all output artifacts
+- Creating a manifest file with checksums for verification
+
+Usage:
+```bash
+# Run all benchmarks with default seed
+python scripts/run_reproducible_benchmarks.py
+
+# Run specific benchmarks with custom seed
+python scripts/run_reproducible_benchmarks.py \
+  --benchmarks comprehensive_cache_profiler full_pipeline_profile \
+  --seed 123 \
+  --output-dir artifacts
+
+# Verify checksums against existing manifest
+python scripts/run_reproducible_benchmarks.py --verify artifacts/manifest.json
+
+# Use make targets
+make reproduce           # Run benchmarks with deterministic seeds
+make reproduce-verify    # Verify checksums
+```
+
 ### Documentation and Reference Verification
 
 - `verify_internal_references.py` - Verify internal markdown links in docs, notebooks, and scripts

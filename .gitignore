@@ -22,3 +22,8 @@ coverage.xml
 .DS_Store
 Thumbs.db
 .benchmarks/
+
+# Reproducibility artifacts
+artifacts/
+profiles/
+*.pstats
