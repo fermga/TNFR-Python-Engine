@@ -18,6 +18,5 @@
       "root": "src"
     }
   ],
-  "stubPath": "src/tnfr/compat",
   "typeCheckingMode": "basic"
 }

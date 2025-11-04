@@ -117,10 +117,11 @@ A `pyrightconfig.json` is provided with appropriate settings:
 ```json
 {
   "reportMissingImports": "warning",
-  "reportMissingTypeStubs": false,
-  "stubPath": "src/tnfr/compat"
+  "reportMissingTypeStubs": false
 }
 ```
+
+Note: The compat modules are runtime compatibility helpers, not traditional .pyi stub files. Type checkers will use the mypy configuration to ignore missing optional imports.
 
 ## Compatibility Stubs
 
