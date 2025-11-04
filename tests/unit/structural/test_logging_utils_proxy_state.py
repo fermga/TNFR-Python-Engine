@@ -1,4 +1,26 @@
 import logging
+import pytest
+
+@pytest.fixture(autouse=True)
+def reset_logging_for_this_test():
+    """Reset logging state before and after this test."""
+    import tnfr.utils.init as logging_core
+    from tnfr.utils import cached_import, prune_failed_imports
+    
+    # Reset before test
+    logging.getLogger().handlers.clear()
+    logging.getLogger().setLevel(logging.NOTSET)
+    logging_core._reset_logging_state()
+    # Also clear import cache to ensure clean slate
+    cached_import.cache_clear()
+    prune_failed_imports()
+    
+    yield
+    
+    # Reset after test
+    logging.getLogger().handlers.clear()
+    logging.getLogger().setLevel(logging.NOTSET)
+    logging_core._reset_logging_state()
 
 def test_utils_module_reflects_logging_configured_flag():
     import tnfr.utils as utils_pkg
