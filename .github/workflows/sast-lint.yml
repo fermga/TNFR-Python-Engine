@@ -71,11 +71,17 @@ jobs:
           name: ${{ env.TOOLS_ARTIFACT }}
           path: ${{ env.VENV_PATH }}
 
-      - name: Fix Python interpreter permissions
-        run: chmod +x ${{ env.VENV_PATH }}/bin/python
-
-      - name: Fix Bandit permissions
-        run: chmod +x ${{ env.VENV_PATH }}/bin/bandit
+      - name: Ensure venv executables are runnable
+        run: |
+          if [ -d "${{ env.VENV_PATH }}/bin" ]; then
+            chmod -R u+rx ${{ env.VENV_PATH }}/bin || true
+            if [ ! -x ${{ env.VENV_PATH }}/bin/bandit ]; then
+              echo "Bandit not executable after chmod, reinstalling..."
+              source ${{ env.VENV_PATH }}/bin/activate
+              pip install --force-reinstall "bandit>=1.7.0"
+              chmod u+rx ${{ env.VENV_PATH }}/bin/bandit || true
+            fi
+          fi
 
       - name: Run Bandit
         run: |
@@ -118,14 +124,17 @@ jobs:
           name: ${{ env.TOOLS_ARTIFACT }}
           path: ${{ env.VENV_PATH }}
 
-      - name: Fix Semgrep permissions
-        run: chmod +x ${{ env.VENV_PATH }}/bin/semgrep
-
-      - name: Fix virtual environment bin permissions
-        run: chmod -R +x ${{ env.VENV_PATH }}/bin
-
-      - name: Fix virtual environment python permissions
-        run: chmod +x ${{ env.VENV_PATH }}/bin/python
+      - name: Ensure venv executables are runnable
+        run: |
+          if [ -d "${{ env.VENV_PATH }}/bin" ]; then
+            chmod -R u+rx ${{ env.VENV_PATH }}/bin || true
+            if [ ! -x ${{ env.VENV_PATH }}/bin/semgrep ]; then
+              echo "Semgrep not executable after chmod, reinstalling..."
+              source ${{ env.VENV_PATH }}/bin/activate
+              pip install --force-reinstall semgrep
+              chmod u+rx ${{ env.VENV_PATH }}/bin/semgrep || true
+            fi
+          fi
 
       - name: Install PyYAML
         run: pip install pyyaml
