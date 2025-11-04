@@ -20,3 +20,28 @@ query-filters:
       paths:
         - "tests/**/*.py"
       reason: "Test files use module path checking for test isolation, not URL validation"
+  
+  # Suppress ineffectual statement warnings for Protocol method stubs
+  # Context: Python Protocol classes use ellipsis (...) as method body to define
+  # structural contracts for type checking. These are not ineffectual statements
+  # but required typing patterns per PEP 544 (Protocol).
+  # Affected files: types.py (13 stubs), node.py (6 stubs)
+  - exclude:
+      id: py/ineffectual-statement
+      paths:
+        - "src/tnfr/types.py"
+        - "src/tnfr/node.py"
+      reason: "Protocol method definitions use ellipsis as valid structural contract stubs (PEP 544)"
+  
+  # Suppress ineffectual statement warnings for @overload signatures
+  # Context: Python @overload decorator (PEP 484) requires function signatures
+  # with ellipsis body to define type variants. The actual implementation follows
+  # these signatures. These are not ineffectual but required typing patterns.
+  # Affected files: trace.py, utils/data.py, metrics/trig.py (6 overload stubs)
+  - exclude:
+      id: py/ineffectual-statement
+      paths:
+        - "src/tnfr/trace.py"
+        - "src/tnfr/utils/data.py"
+        - "src/tnfr/metrics/trig.py"
+      reason: "@overload signatures use ellipsis as valid type variant stubs (PEP 484)"

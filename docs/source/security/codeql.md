@@ -15,10 +15,20 @@ You can also start the workflow manually from the **Actions** tab by selecting _
 ## What the workflow does
 
 1. Checks out the repository.
-2. Initializes CodeQL for the Python language.
+2. Initializes CodeQL for the Python language using the configuration in `.codeql/codeql-config.yml`.
 3. Runs the `autobuild` step (no additional configuration is required for this project).
 4. Analyzes the code and generates a SARIF report.
 5. Uploads the results to GitHub Advanced Security and stores them as a run artifact.
+
+## Configuration and false positive suppression
+
+The analysis is configured via `.codeql/codeql-config.yml`, which includes query filters to suppress known false positives:
+
+- **Protocol method stubs**: Python Protocol classes (PEP 544) use ellipsis (`...`) as method body to define structural contracts for type checking. These are valid typing patterns, not ineffectual statements.
+- **@overload signatures**: Function overloading (PEP 484) requires signatures with ellipsis body to define type variants before the actual implementation.
+- **Test isolation patterns**: Test files use module path checking for test isolation, not URL validation.
+
+These suppressions ensure that CodeQL focuses on genuine security issues while respecting Python's type system conventions.
 
 ## How to review findings
 
