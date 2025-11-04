@@ -1,4 +1,8 @@
-"""Runtime glyph helpers decoupled from validation internals."""
+"""Runtime helpers for structural operator glyphs decoupled from validation internals.
+
+This module provides utilities for working with glyphs (structural symbols like
+AL, EN, IL, etc.) that represent the application of structural operators to nodes.
+"""
 
 from __future__ import annotations
 

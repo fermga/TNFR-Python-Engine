@@ -1,7 +1,11 @@
-"""Utilities to select glyphs based on structural metrics.
+"""Utilities to select structural operator symbols based on structural metrics.
 
 This module normalises thresholds, computes selection scores and applies
-hysteresis when assigning glyphs to nodes.
+hysteresis when assigning structural operator symbols (glyphs) to nodes.
+
+Each structural operator (Emission, Reception, Coherence, etc.) is represented
+by a glyph symbol (AL, EN, IL, etc.) that this module selects based on the
+node's current structural state.
 """
 
 from __future__ import annotations

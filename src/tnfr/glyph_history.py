@@ -1,4 +1,9 @@
-"""Utilities for tracking glyph emission history and related metrics."""
+"""Utilities for tracking structural operator emission history and related metrics.
+
+This module tracks the history of glyphs (structural symbols like AL, EN, IL, etc.)
+that are emitted when structural operators (Emission, Reception, Coherence, etc.)
+are applied to nodes in the TNFR network.
+"""
 
 from __future__ import annotations
 
