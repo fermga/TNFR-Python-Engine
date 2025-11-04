@@ -158,6 +158,26 @@ def create_nfr(
     ... )  # doctest: +SKIP
     (..., ..., ..., ...)
     """
+    from .validation.input_validation import (
+        ValidationError,
+        validate_epi_value,
+        validate_node_id,
+        validate_theta_value,
+        validate_tnfr_graph,
+        validate_vf_value,
+    )
+
+    # Validate input parameters
+    try:
+        validate_node_id(name)
+        config = graph.graph if graph is not None else None
+        epi = validate_epi_value(epi, config=config, allow_complex=False)
+        vf = validate_vf_value(vf, config=config)
+        theta = validate_theta_value(theta, normalize=False)
+        if graph is not None:
+            validate_tnfr_graph(graph)
+    except ValidationError as e:
+        raise ValueError(f"Invalid parameters for create_nfr: {e}") from e
 
     G = graph if graph is not None else nx.Graph()
     G.add_node(
