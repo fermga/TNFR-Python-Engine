@@ -1,11 +1,12 @@
 """Spectral operators modelling coherence and frequency dynamics."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import TYPE_CHECKING, Any, Sequence
 
 import numpy as np
 
+from ..compat.dataclass import dataclass
 from .backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
 
 if TYPE_CHECKING:  # pragma: no cover - typing imports only

@@ -19,7 +19,7 @@ PyTorch remain functional.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from ..compat.dataclass import dataclass
 import os
 from typing import Any, Callable, ClassVar, Iterable, Mapping, MutableMapping, Protocol
 

@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import math
-from dataclasses import asdict, dataclass
+from dataclasses import asdict
+
+from ..compat.dataclass import dataclass
 
 @dataclass(frozen=True, slots=True)
 class InitDefaults:

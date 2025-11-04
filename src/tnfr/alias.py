@@ -10,7 +10,6 @@ from __future__ import annotations
 
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, MutableMapping, Sized
-from dataclasses import dataclass
 from functools import lru_cache, partial
 from threading import Lock
 from types import ModuleType
@@ -25,6 +24,7 @@ from typing import (
     cast,
 )
 
+from .compat.dataclass import dataclass
 from .constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 from .types import FloatArray, NodeId
 from .utils import convert_value

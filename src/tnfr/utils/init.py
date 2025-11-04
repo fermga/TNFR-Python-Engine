@@ -14,8 +14,10 @@ import threading
 import warnings
 import weakref
 from collections import OrderedDict
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import TYPE_CHECKING, Any, Callable, Hashable, Iterable, Iterator, Literal, Mapping
+
+from ..compat.dataclass import dataclass
 
 if TYPE_CHECKING:
     from .cache import CacheManager
