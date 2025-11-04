@@ -45,6 +45,61 @@ Please include the following information in your report:
 
 ## Security Best Practices for Users
 
+### Secret and Credential Management
+
+**TNFR follows strict security practices to prevent hardcoded secrets:**
+
+1. **No Hardcoded Secrets**: All API keys, passwords, tokens, and credentials are loaded from environment variables
+2. **Environment Variables**: Use `.env` files for local development (never commit these!)
+3. **Configuration Template**: Copy `.env.example` to `.env` and fill in your credentials
+4. **Secure Defaults**: Development defaults are safe and non-functional placeholders
+
+**Environment Configuration:**
+
+```bash
+# Copy the example configuration
+cp .env.example .env
+
+# Edit .env with your actual credentials
+# This file is gitignored and will not be committed
+```
+
+**Using Configuration Utilities:**
+
+```python
+from tnfr.secure_config import (
+    load_pypi_credentials,
+    load_github_credentials,
+    load_redis_config,
+    get_cache_secret,
+)
+
+# Load credentials from environment
+pypi_creds = load_pypi_credentials()
+github_creds = load_github_credentials()
+redis_config = load_redis_config()
+
+# Get cache signing secret
+cache_secret = get_cache_secret()
+```
+
+**Security Best Practices:**
+
+- Use API tokens instead of passwords (e.g., PyPI tokens, GitHub tokens)
+- Rotate credentials regularly
+- Use different credentials for development, staging, and production
+- Store production secrets in secure secret management systems (AWS Secrets Manager, HashiCorp Vault, etc.)
+- Grant minimal necessary permissions to all tokens
+- Revoke tokens immediately if compromised
+
+**Automated Security Testing:**
+
+TNFR includes automated tests that scan for hardcoded secrets:
+- GitHub token detection
+- PyPI token detection
+- Suspicious long strings that might be secrets
+- Verification of `.env` in `.gitignore`
+
 ### Pickle Serialization Warning
 
 The TNFR engine uses Python's `pickle` module for caching complex TNFR structures (NetworkX graphs, EPIs, coherence states). **Pickle can execute arbitrary code during deserialization.**
