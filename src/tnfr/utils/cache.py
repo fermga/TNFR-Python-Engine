@@ -11,10 +11,13 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 import hashlib
+import hmac
 import logging
+import os
 import pickle
 import shelve
 import threading
+import warnings
 from collections import defaultdict
 from collections.abc import (
     Callable,
@@ -46,6 +49,9 @@ T = TypeVar("T")
 class SecurityError(RuntimeError):
     """Raised when a cache payload fails hardened validation."""
 
+class SecurityWarning(UserWarning):
+    """Issued when potentially unsafe serialization is used without signing."""
+
 
 __all__ = (
     "CacheLayer",
@@ -58,6 +64,11 @@ __all__ = (
     "RedisCacheLayer",
     "ShelveCacheLayer",
     "SecurityError",
+    "SecurityWarning",
+    "create_hmac_signer",
+    "create_hmac_validator",
+    "create_secure_shelve_layer",
+    "create_secure_redis_layer",
     "prune_lock_mapping",
     "EdgeCacheManager",
     "NODE_SET_CHECKSUM_KEY",
@@ -91,6 +102,206 @@ _SIGN_MODE_RAW = 0
 _SIGN_MODE_PICKLE = 1
 _SIGNATURE_HEADER_SIZE = len(_SIGNATURE_PREFIX) + 1 + 4
 
+# Environment variable to control security warnings for pickle deserialization
+_TNFR_ALLOW_UNSIGNED_PICKLE = "TNFR_ALLOW_UNSIGNED_PICKLE"
+
+
+def create_hmac_signer(secret: bytes | str) -> Callable[[bytes], bytes]:
+    """Create an HMAC-SHA256 signer for cache layer signature validation.
+    
+    Parameters
+    ----------
+    secret : bytes or str
+        The secret key for HMAC signing. If str, it will be encoded as UTF-8.
+        
+    Returns
+    -------
+    callable
+        A function that takes payload bytes and returns an HMAC signature.
+        
+    Examples
+    --------
+    >>> import os
+    >>> secret = os.environ.get("TNFR_CACHE_SECRET", "dev-secret-key")
+    >>> signer = create_hmac_signer(secret)
+    >>> validator = create_hmac_validator(secret)
+    >>> layer = ShelveCacheLayer(
+    ...     "cache.db",
+    ...     signer=signer,
+    ...     validator=validator,
+    ...     require_signature=True
+    ... )
+    """
+    secret_bytes = secret if isinstance(secret, bytes) else secret.encode("utf-8")
+    
+    def signer(payload: bytes) -> bytes:
+        return hmac.new(secret_bytes, payload, hashlib.sha256).digest()
+    
+    return signer
+
+
+def create_hmac_validator(secret: bytes | str) -> Callable[[bytes, bytes], bool]:
+    """Create an HMAC-SHA256 validator for cache layer signature validation.
+    
+    Parameters
+    ----------
+    secret : bytes or str
+        The secret key for HMAC validation. Must match the signer's secret.
+        If str, it will be encoded as UTF-8.
+        
+    Returns
+    -------
+    callable
+        A function that takes (payload_bytes, signature) and returns True
+        if the signature is valid.
+        
+    See Also
+    --------
+    create_hmac_signer : Create the corresponding signer.
+    """
+    secret_bytes = secret if isinstance(secret, bytes) else secret.encode("utf-8")
+    
+    def validator(payload: bytes, signature: bytes) -> bool:
+        expected = hmac.new(secret_bytes, payload, hashlib.sha256).digest()
+        return hmac.compare_digest(expected, signature)
+    
+    return validator
+
+
+def create_secure_shelve_layer(
+    path: str,
+    secret: bytes | str | None = None,
+    *,
+    flag: str = "c",
+    protocol: int | None = None,
+    writeback: bool = False,
+) -> ShelveCacheLayer:
+    """Create a ShelveCacheLayer with HMAC signature validation enabled.
+    
+    This is the recommended way to create persistent cache layers that handle
+    TNFR structures (EPI, NFR, NetworkX graphs). Signature validation protects
+    against arbitrary code execution from tampered pickle data.
+    
+    Parameters
+    ----------
+    path : str
+        Path to the shelve database file.
+    secret : bytes, str, or None
+        Secret key for HMAC signing. If None, reads from TNFR_CACHE_SECRET
+        environment variable. In production, **always** set this via environment.
+    flag : str, default='c'
+        Shelve open flag ('r', 'w', 'c', 'n').
+    protocol : int, optional
+        Pickle protocol version. Defaults to pickle.HIGHEST_PROTOCOL.
+    writeback : bool, default=False
+        Enable shelve writeback mode.
+        
+    Returns
+    -------
+    ShelveCacheLayer
+        A cache layer with signature validation enabled.
+        
+    Raises
+    ------
+    ValueError
+        If no secret is provided and TNFR_CACHE_SECRET is not set.
+        
+    Examples
+    --------
+    >>> # In production, set environment variable:
+    >>> # export TNFR_CACHE_SECRET="your-secure-random-key"
+    >>> 
+    >>> layer = create_secure_shelve_layer("coherence.db")
+    >>> # Or explicitly provide secret:
+    >>> layer = create_secure_shelve_layer("coherence.db", secret=b"my-secret")
+    """
+    if secret is None:
+        secret = os.environ.get("TNFR_CACHE_SECRET")
+        if not secret:
+            raise ValueError(
+                "Secret required for secure cache layer. "
+                "Set TNFR_CACHE_SECRET environment variable or pass secret parameter."
+            )
+    
+    signer = create_hmac_signer(secret)
+    validator = create_hmac_validator(secret)
+    
+    return ShelveCacheLayer(
+        path,
+        flag=flag,
+        protocol=protocol,
+        writeback=writeback,
+        signer=signer,
+        validator=validator,
+        require_signature=True,
+    )
+
+
+def create_secure_redis_layer(
+    client: Any | None = None,
+    secret: bytes | str | None = None,
+    *,
+    namespace: str = "tnfr:cache",
+    protocol: int | None = None,
+) -> RedisCacheLayer:
+    """Create a RedisCacheLayer with HMAC signature validation enabled.
+    
+    This is the recommended way to create distributed cache layers for TNFR.
+    Signature validation protects against arbitrary code execution if Redis
+    is compromised or contains tampered data.
+    
+    Parameters
+    ----------
+    client : redis.Redis, optional
+        Redis client instance. If None, creates default client.
+    secret : bytes, str, or None
+        Secret key for HMAC signing. If None, reads from TNFR_CACHE_SECRET
+        environment variable.
+    namespace : str, default='tnfr:cache'
+        Redis key namespace prefix.
+    protocol : int, optional
+        Pickle protocol version.
+        
+    Returns
+    -------
+    RedisCacheLayer
+        A cache layer with signature validation enabled.
+        
+    Raises
+    ------
+    ValueError
+        If no secret is provided and TNFR_CACHE_SECRET is not set.
+        
+    Examples
+    --------
+    >>> # Set environment variable in production:
+    >>> # export TNFR_CACHE_SECRET="your-secure-random-key"
+    >>> 
+    >>> layer = create_secure_redis_layer()
+    >>> # Or with explicit configuration:
+    >>> import redis
+    >>> client = redis.Redis(host='localhost', port=6379)
+    >>> layer = create_secure_redis_layer(client, secret=b"my-secret")
+    """
+    if secret is None:
+        secret = os.environ.get("TNFR_CACHE_SECRET")
+        if not secret:
+            raise ValueError(
+                "Secret required for secure cache layer. "
+                "Set TNFR_CACHE_SECRET environment variable or pass secret parameter."
+            )
+    
+    signer = create_hmac_signer(secret)
+    validator = create_hmac_validator(secret)
+    
+    return RedisCacheLayer(
+        client=client,
+        namespace=namespace,
+        signer=signer,
+        validator=validator,
+        require_signature=True,
+        protocol=protocol,
+    )
 
 def _prepare_payload_bytes(value: Any, *, protocol: int) -> tuple[int, bytes]:
     """Return payload encoding mode and the bytes that should be signed."""
@@ -380,6 +591,17 @@ class ShelveCacheLayer(CacheLayer):
             raise ValueError(
                 "require_signature=True requires both signer and validator"
             )
+        
+        # Issue security warning when using unsigned pickle deserialization
+        if not require_signature and os.environ.get(_TNFR_ALLOW_UNSIGNED_PICKLE) != "1":
+            warnings.warn(
+                f"ShelveCacheLayer at {path!r} uses pickle without signature validation. "
+                "This can execute arbitrary code during deserialization. "
+                "Use create_secure_shelve_layer() or set require_signature=True with signer/validator. "
+                f"To suppress this warning, set {_TNFR_ALLOW_UNSIGNED_PICKLE}=1 environment variable.",
+                SecurityWarning,
+                stacklevel=2,
+            )
 
     def load(self, name: str) -> Any:
         with self._lock:
@@ -508,6 +730,17 @@ class RedisCacheLayer(CacheLayer):
         if require_signature and (signer is None or validator is None):
             raise ValueError(
                 "require_signature=True requires both signer and validator"
+            )
+        
+        # Issue security warning when using unsigned pickle deserialization
+        if not require_signature and os.environ.get(_TNFR_ALLOW_UNSIGNED_PICKLE) != "1":
+            warnings.warn(
+                f"RedisCacheLayer with namespace {namespace!r} uses pickle without signature validation. "
+                "This can execute arbitrary code if Redis is compromised. "
+                "Use create_secure_redis_layer() or set require_signature=True with signer/validator. "
+                f"To suppress this warning, set {_TNFR_ALLOW_UNSIGNED_PICKLE}=1 environment variable.",
+                SecurityWarning,
+                stacklevel=2,
             )
 
     def _format_key(self, name: str) -> str:

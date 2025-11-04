@@ -2581,13 +2581,10 @@ def _apply_dnfr_hook(
     results: list[tuple[NodeId, float]] | None = None
     if effective_jobs:
         grad_items = tuple(grads.items())
+        # ProcessPoolExecutor requires picklable arguments. Instead of explicitly
+        # testing with pickle.dumps (which poses security risks), we attempt
+        # parallelization and gracefully fall back to serial on any failure.
         try:
-            import pickle
-
-            pickle.dumps((grad_items, weights, G), protocol=pickle.HIGHEST_PROTOCOL)
-        except Exception:
-            pass  # Pickle failed, fall back to serial processing
-        else:
             chunk_results: list[tuple[NodeId, float]] = []
             with ProcessPoolExecutor(max_workers=effective_jobs) as executor:
                 futures = []
@@ -2607,6 +2604,10 @@ def _apply_dnfr_hook(
                 for future in futures:
                     chunk_results.extend(future.result())
             results = chunk_results
+        except Exception:
+            # Parallel execution failed (pickle, executor, or worker error)
+            # Fall back to serial processing
+            results = None
 
     if results is None:
         results = []
