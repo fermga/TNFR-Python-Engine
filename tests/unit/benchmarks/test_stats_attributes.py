@@ -6,7 +6,6 @@ of pstats.Stats objects, particularly the `.stats` dictionary attribute.
 
 import cProfile
 import pstats
-from pathlib import Path
 
 import pytest
 
