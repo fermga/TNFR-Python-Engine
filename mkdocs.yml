@@ -2,10 +2,10 @@ site_name: TNFR Python Engine
 site_description: Canonical TNFR structural dynamics engine documentation
 repo_url: https://github.com/fermga/TNFR-Python-Engine
 repo_name: TNFR Python Engine
-docs_dir: docs
+docs_dir: docs/source
 site_dir: site
 nav:
-  - Home: index.md
+  - Home: home.md
   - Getting started:
       - Quickstart: getting-started/quickstart.md
       - Quick Start (Mathematics): foundations.md
