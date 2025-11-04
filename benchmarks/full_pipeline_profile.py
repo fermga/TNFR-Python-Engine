@@ -217,7 +217,12 @@ def _numpy_override(enabled: bool):
 
 
 def _extract_target_stats(stats: pstats.Stats) -> dict[str, dict[str, float | int]]:
-    """Collect cumulative data for the primary operators."""
+    """Collect cumulative data for the primary operators.
+    
+    Uses the documented ``.stats`` attribute from ``pstats.Stats`` to extract
+    profiling data for target functions. The ``.stats`` dict is part of the
+    public pstats API and maps function info to timing tuples.
+    """
 
     summary: dict[str, dict[str, float | int]] = {}
     for (filename, _lineno, func), (cc, nc, tt, ct, _callers) in stats.stats.items():
@@ -339,7 +344,11 @@ def _dump_profile_outputs(
     cache_metrics: Mapping[str, Any],
     sort: str,
 ) -> None:
-    """Persist profiling artefacts in ``.pstats`` and JSON formats."""
+    """Persist profiling artefacts in ``.pstats`` and JSON formats.
+    
+    Extracts timing data from the ``pstats.Stats.stats`` attribute, which is
+    part of the documented pstats API for accessing raw profiling data.
+    """
 
     stats = pstats.Stats(profile)
     stats.sort_stats(sort)
