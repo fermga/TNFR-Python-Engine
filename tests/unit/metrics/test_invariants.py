@@ -7,7 +7,8 @@ import math
 import networkx as nx
 import pytest
 
-from tnfr.constants import inject_defaults
+from tnfr.alias import get_attr
+from tnfr.constants import get_aliases, inject_defaults
 from tnfr.dynamics import step
 from tnfr.glyph_history import ensure_history
 from tnfr.initialization import init_node_attrs
@@ -15,6 +16,8 @@ from tnfr.metrics import register_metrics_callbacks
 from tnfr.metrics.core import _metrics_step
 from tnfr.operators import apply_glyph, apply_remesh_if_globally_stable
 from tnfr.types import Glyph
+
+ALIAS_EPI = get_aliases("EPI")
 
 
 @pytest.fixture
@@ -38,7 +41,7 @@ def test_clamps_numeric_stability(G_small):
     epi_min = G_small.graph.get("EPI_MIN", -1e9)
     epi_max = G_small.graph.get("EPI_MAX", 1e9)
     for n in G_small.nodes():
-        x = float(G_small.nodes[n].get("EPI", 0.0))
+        x = get_attr(G_small.nodes[n], ALIAS_EPI, 0.0)
         assert math.isfinite(x)
         assert x >= epi_min - 1e-6
         assert x <= epi_max + 1e-6
@@ -51,17 +54,17 @@ def test_conservation_under_IL_SHA(G_small):
         nd["νf"] = 1.0
     G_small.graph["GAMMA"] = {"type": "none"}
 
-    epi0 = {n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()}
+    epi0 = {n: get_attr(G_small.nodes[n], ALIAS_EPI, 0.0) for n in G_small.nodes()}
 
     for _ in range(5):
         for n in G_small.nodes():
             apply_glyph(G_small, n, Glyph.IL, window=1)
-    epi1 = {n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()}
+    epi1 = {n: get_attr(G_small.nodes[n], ALIAS_EPI, 0.0) for n in G_small.nodes()}
 
     for _ in range(5):
         for n in G_small.nodes():
             apply_glyph(G_small, n, Glyph.SHA, window=1)
-    epi2 = {n: float(G_small.nodes[n].get("EPI", 0.0)) for n in G_small.nodes()}
+    epi2 = {n: get_attr(G_small.nodes[n], ALIAS_EPI, 0.0) for n in G_small.nodes()}
 
     for n in G_small.nodes():
         assert abs(epi1[n] - epi0[n]) < 5e-3
@@ -80,7 +83,7 @@ def test_remesh_cooldown_if_present(G_small):
     sf = G_small.graph.setdefault("history", {}).setdefault("stable_frac", [])
     sf.extend([1.0] * w_estab)
     tau_g = int(G_small.graph.get("REMESH_TAU_GLOBAL", 0))
-    snap = {n: G_small.nodes[n].get("EPI", 0.0) for n in G_small.nodes()}
+    snap = {n: get_attr(G_small.nodes[n], ALIAS_EPI, 0.0) for n in G_small.nodes()}
     from collections import deque
 
     G_small.graph["_epi_hist"] = deque(
