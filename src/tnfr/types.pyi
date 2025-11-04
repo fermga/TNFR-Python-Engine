@@ -136,7 +136,7 @@ ArgSpec: TypeAlias = tuple[str, Mapping[str, Any]]
 TNFRConfigScalar: TypeAlias = bool | int | float | str | None
 TNFRConfigSequence: TypeAlias = Sequence[TNFRConfigScalar]
 TNFRConfigValue: TypeAlias = (
-    TNFRConfigScalar | TNFRConfigSequence | Mapping[str, "TNFRConfigValue"]
+    TNFRConfigScalar | TNFRConfigSequence | MutableMapping[str, "TNFRConfigValue"]
 )
 
 class _SigmaVectorRequired(TypedDict):
