@@ -25,6 +25,7 @@ from ..types import (
     ZERO_BEPI_STORAGE,
     ensure_bepi,
     serialize_bepi,
+    _is_scalar,
 )
 from ..utils import clamp, ensure_collection
 from . import ValidationOutcome, Validator
@@ -103,6 +104,8 @@ def apply_canonical_clamps(
     theta_wrap = bool(graph_data.get("THETA_WRAP", DEFAULTS["THETA_WRAP"]))
 
     raw_epi = get_attr(nd, ALIAS_EPI, ZERO_BEPI_STORAGE, conv=lambda obj: obj)
+    was_scalar = _is_scalar(raw_epi)
+    original_scalar_value = float(raw_epi) if was_scalar else None
     epi = ensure_bepi(raw_epi)
     vf = get_attr(nd, ALIAS_VF, 0.0)
     th_val = get_theta_attr(nd, 0.0)
@@ -127,7 +130,11 @@ def apply_canonical_clamps(
         _log_clamp(hist, node, "VF", float(vf), vf_min, vf_max)
 
     clamped_epi = _clamp_bepi(epi, eps_min, eps_max)
-    set_attr_generic(nd, ALIAS_EPI, serialize_bepi(clamped_epi), conv=lambda obj: obj)
+    if was_scalar:
+        clamped_value = float(clamp(original_scalar_value, eps_min, eps_max))
+        set_attr_generic(nd, ALIAS_EPI, clamped_value, conv=lambda obj: obj)
+    else:
+        set_attr_generic(nd, ALIAS_EPI, serialize_bepi(clamped_epi), conv=lambda obj: obj)
 
     vf_val = float(clamp(vf, vf_min, vf_max))
     if G is not None and node is not None:
