@@ -133,7 +133,22 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     safe_write(path, lambda handle: handle.write(text))
 
 def _write_yaml(path: Path, payload: dict[str, Any]) -> None:
-    text = json_dumps(payload, ensure_ascii=False, default=list)
+    try:
+        import yaml
+        # Convert tuples to lists for YAML compatibility
+        def convert_tuples(obj):
+            if isinstance(obj, dict):
+                return {k: convert_tuples(v) for k, v in obj.items()}
+            elif isinstance(obj, (list, tuple, deque)):
+                return [convert_tuples(item) for item in obj]
+            elif isinstance(obj, set):
+                return [convert_tuples(item) for item in sorted(obj, key=lambda x: (type(x).__name__, repr(x)))]
+            return obj
+        converted = convert_tuples(payload)
+        text = yaml.dump(converted, default_flow_style=False)
+    except ImportError:
+        # Fallback to JSON if yaml not available
+        text = json_dumps(payload, ensure_ascii=False, default=list)
     safe_write(path, lambda handle: handle.write(text))
 
 def _write_toml(path: Path, payload: dict[str, Any]) -> None:

@@ -19,11 +19,14 @@ def test_public_exports():
         "__version__",
         "step",
         "run",
+        "run_sequence",
         "prepare_network",
         "create_nfr",
+        "create_math_nfr",
+        "hz_to_hz_str",
+        "hz_str_to_hz",
+        "get_hz_bridge",
     }
-    if getattr(tnfr, "_HAS_RUN_SEQUENCE", False):
-        expected.add("run_sequence")
     assert set(tnfr.__all__) == expected
 
 def test_basic_flow():

@@ -5,7 +5,7 @@ import doctest
 from pathlib import Path
 
 def test_fase2_integration_doc_executes() -> None:
-    doc_path = Path("docs/fase2_integration.md")
+    doc_path = Path("docs/source/fase2_integration.md")
     result = doctest.testfile(
         str(doc_path),
         module_relative=False,
