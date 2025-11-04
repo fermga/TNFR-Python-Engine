@@ -94,13 +94,13 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
 
 
 def add_grammar_args(parser: argparse.ArgumentParser) -> None:
-    """Add grammar and glyph hysteresis options."""
+    """Add grammar and structural operator hysteresis options."""
     group = parser.add_argument_group("Grammar")
     add_arg_specs(group, GRAMMAR_ARG_SPECS)
 
 
 def add_grammar_selector_args(parser: argparse.ArgumentParser) -> None:
-    """Add grammar options and glyph selector."""
+    """Add grammar options and structural operator selector."""
     add_grammar_args(parser)
     parser.add_argument("--selector", choices=["basic", "param"], default="basic")
 
@@ -144,7 +144,7 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
         dest="apply_glyphs",
         action=argparse.BooleanOptionalAction,
         default=None,
-        help="Apply glyphs at every step (use --no-apply-glyphs to disable)",
+        help="Apply structural operators at every step (use --no-apply-glyphs to disable)",
     )
     p_run.add_argument(
         "--dnfr-n-jobs",

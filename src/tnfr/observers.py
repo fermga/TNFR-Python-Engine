@@ -231,11 +231,15 @@ def kuramoto_order(
 
 
 def glyph_load(G: TNFRGraph, window: int | None = None) -> GlyphLoadDistribution:
-    """Return distribution of glyphs applied in the network.
+    """Return distribution of structural operators applied in the network.
+
+    Analyzes which structural operator symbols (glyphs) have been applied to
+    nodes in the network over a given time window.
 
     - ``window``: if provided, count only the last ``window`` events per node;
       otherwise use :data:`DEFAULT_GLYPH_LOAD_SPAN`.
-    Returns a dict with proportions per glyph and useful aggregates.
+
+    Returns a dict with proportions per structural operator symbol and useful aggregates.
     """
     if window == 0:
         return {"_count": 0.0}

@@ -362,10 +362,11 @@ def sigma_field(G: TNFRGraph) -> TraceMetadata:
 
 
 def glyph_counts_field(G: TNFRGraph) -> TraceMetadata:
-    """Return glyph count snapshot.
+    """Return structural operator application count snapshot.
 
-    ``count_glyphs`` already produces a fresh mapping so no additional copy
-    is taken.  Treat the returned mapping as read-only.
+    Provides a snapshot of which structural operator symbols (glyphs) have been
+    applied in the current step. ``count_glyphs`` already produces a fresh
+    mapping so no additional copy is taken. Treat the returned mapping as read-only.
     """
 
     cnt = count_glyphs(G, window=1)
