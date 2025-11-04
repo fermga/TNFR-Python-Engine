@@ -30,10 +30,7 @@ __all__ = [
     "jsonschema_stub",
 ]
 
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from types import ModuleType
+from typing import Any
 
 # Import stubs so they're available as module attributes
 from . import numpy_stub, matplotlib_stub, jsonschema_stub

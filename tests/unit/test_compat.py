@@ -6,7 +6,6 @@ packages are not installed.
 """
 
 import sys
-from unittest.mock import patch
 import pytest
 
 
