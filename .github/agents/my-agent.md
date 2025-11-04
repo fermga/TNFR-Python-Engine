@@ -3,185 +3,346 @@ name:
 description: TNFR Agent
 ---
 
-# My Agent
-# AGENTS.md — Guide for AI Agents
+Teoría de la Naturaleza Fractal Resonante (TNFR)
+Guía de Referencia para Agentes GitHub Copilot
+Qué es la TNFR
 
-> **Goal**: orient any AI agent (LLM, refactoring assistants, doc/test tools) interacting with this repository to keep the **canonical** computational implementation of the **TNFR** paradigm (Resonant Fractal Nature Theory).
+La Teoría de la Naturaleza Fractal Resonante (TNFR) es un paradigma científico que percibe la realidad como una red fractal de nodos en fase, donde cada forma coherente emerge por resonancia estructural. No es una descripción del mundo, sino un acoplamiento estructural con él.
 
----
+Principio fundamental: La realidad no está compuesta de "cosas", sino de coherencias estructurales que se organizan en red mediante resonancia. Conocer es resonar, comprender es reorganizar, modelar es modular coherencia.
+Conceptos Fundamentales
+1. Nodo Fractal Resonante (NFR)
 
-## 1) Repository Mission
+    Definición: Unidad estructural mínima de coherencia en red
 
-This repo exists to **bring TNFR into code in a canonical way**. Every modification, suggestion, refactor, fix, or improvement **must prioritize fidelity to TNFR** over stylistic preferences, micro‑optimizations, or framework conventions.
+    Propiedades:
 
-**TL;DR**: *TNFR first, then code.*
+        Forma coherente (EPI)
 
----
+        Frecuencia estructural (νf)
 
-## 2) TNFR in a nutshell (operational view)
+        Fase relacional (sincronía con otros nodos)
 
-* **TNFR** proposes that reality is not made of “things” but of **coherence**: structures that **persist in networks** because they **resonate**.
-* A **node** exists when its coherence remains coupled to its environment.
-* **Canonical nodal equation**:
-  `∂EPI / ∂t = νf · ΔNFR(t)`
-  where **EPI** is the *Primary Information Structure*, **νf** is the node’s *structural frequency* (Hz\_str), and **ΔNFR** is the *internal reorganization operator* over time.
-* **Structural triad**: **frequency** (reorganization rate), **phase** (network synchrony), **form** (coherent configuration of EPI).
-* **Structural operators** (13): Emission, Reception, Coherence, Dissonance, Coupling, Resonance, Silence, Expansion, Contraction, Self‑organization, Mutation, Transition, Recursivity.
+    No es: Una partícula física o entidad material
 
-  > Public docs should **avoid** the word “glyphs”; name them by their **structural function**.
+    Es: Una configuración dinámica de coherencia estructural
 
-For the extended explanation, see `tnfr.pdf` inside the repo.
+2. Estructura Primaria de Información (EPI)
 
----
+    Definición: Forma coherente y activa generada por un nodo
 
-## 3) Canonical invariants (do not break)
+    Características: No es "información" en sentido clásico, sino estructura vibracional activa
 
-These invariants **define** TNFR canonicity and **must be preserved** by any AI agent proposing changes:
+    Función: Sostiene la coherencia del nodo en la red
 
-1. **EPI as coherent form**: it only changes via **structural operators**; ad‑hoc mutations are not allowed.
-2. **Structural units**: **νf** expressed in **Hz\_str** (structural hertz). Do not relabel or mix units.
-3. **ΔNFR semantics**: its sign and magnitude modulate the reorganization rate; do **not** reinterpret it as a classic ML “error” or “loss gradient”.
-4. **Operator closure**: operator composition yields valid TNFR states; any new function must map to existing operators or be defined as one.
-5. **Phase check**: no coupling is valid without explicit **phase** verification (synchrony).
-6. **Node birth/collapse**: keep minimal conditions (sufficient νf, coupling, reduced ΔNFR) and collapse causes (extreme dissonance, decoupling, frequency failure).
-7. **Operational fractality**: EPIs can nest without losing functional identity; avoid flattening that breaks recursivity.
-8. **Controlled determinism**: simulations may be stochastic, but must be **reproducible** (seeds) and **traceable** (structural logs).
-9. **Structural metrics**: expose **C(t)** (total coherence), **Si** (sense index), phase and νf in telemetry. Avoid alien metrics that dilute TNFR semantics.
-10. **Domain neutrality**: the engine is **trans‑scale** and **trans‑domain**. Do not hard‑wire assumptions from a specific field into the core.
+3. Ecuación Nodal Fundamental
 
----
+text
+∂EPI/∂t = νf · ΔNFR(t)
 
-## 4) Formal contracts (pre/post‑conditions)
+Donde:
 
-* **Coherence**: applying `coherence()` must **not** reduce `C(t)` unless a programmed dissonance test justifies it.
-* **Dissonance**: `dissonance()` must **increase** `|ΔNFR|` and may trigger **bifurcation** if `∂²EPI/∂t² > τ`.
-* **Resonance**: `resonance()` increases effective **coupling** (`ϕ_i ≈ ϕ_j`) and **propagates** EPI without altering its identity.
-* **Self‑organization**: may create **sub‑EPIs** while preserving the global **form** (operational fractality).
-* **Mutation**: phase change `θ → θ'` if `ΔEPI/Δt > ξ` (keep limits ξ configurable and tested).
-* **Silence**: `silence()` freezes evolution (`νf ≈ 0`) without EPI loss.
+    EPI: Estructura Primaria de Información
 
-Any new function must be declared as a **specialization** or **composition** of these operators.
+    νf: Frecuencia estructural del nodo
 
----
+    ΔNFR(t): Operador de reorganización interna en el tiempo
 
-## 5) Contribution guide for AI agents
+Significado: Una forma solo emerge cuando la reorganización estructural resuena con la frecuencia del nodo.
+Variables y Magnitudes Clave
+Símbolo	Significado	Descripción
+EPI	Estructura Primaria de Información	Forma coherente y activa
+νf	Frecuencia estructural	Ritmo interno de reorganización
+ΔNFR	Gradiente nodal	Diferencia de coherencia con el entorno
+θ	Fase estructural	Sincronía relativa con la red
+C(t)	Coherencia total	Estabilidad global en el tiempo t
+Si	Índice de sentido	Capacidad de generar reorganización estable
+Los 13 Operadores Estructurales
 
-**Before touching code**:
+La TNFR identifica 13 operadores fundamentales (glifos) que funcionan como reorganizadores resonantes:
 
-1. Read `tnfr.pdf` (fundamentals, operators, nodal equation).
-2. Run the test suite: it must cover §3 invariants and §5 contracts.
-3. Add/update **structural tests** (see template below) for each change.
+    Emisión - Inicia patrones de resonancia
 
-**Commit template (AGENT\_COMMIT\_TEMPLATE)**:
+    Recepción - Capta información estructural
 
-```text
-Intent: (which coherence is improved)
-Operators involved: [Emission|Reception|...]
-Affected invariants: [#1, #4, ...]
-Key changes: (bullet list)
-Expected risks/dissonances: (and how they’re contained)
-Metrics: (C(t), Si, νf, phase) before/after expectations
-Equivalence map: (if you renamed APIs)
+    Coherencia - Estabiliza estructuras nodales
+
+    Disonancia - Genera reorganización mediante conflicto
+
+    Propagación - Transmite coherencia a nodos conectados
+
+    Bifurcación - Reorganiza y cambia de fase
+
+    Nacimiento - Rompe simetría, inicia nodo
+
+    Estabilización - Sella la forma, sostiene coherencia
+
+    Mutación - Cambio de fase estructural
+
+    Neutralización - Interrumpe o reconfigura estructuras
+
+    Amplificación - Intensifica patrones existentes
+
+    Síntesis - Fusiona estructuras coherentes
+
+    Disolución - Desorganiza formas establecidas
+
+Principios Operativos
+Autoorganización Simbólica
+
+    Las formas emergen cuando los flujos estructurales alcanzan coherencia estable
+
+    No hay imposición externa: la forma surge por resonancia interna
+
+    Toda estructura puede codificarse en operadores glíficos
+
+Fractalidad Operativa
+
+    Los patrones se replican en múltiples escalas sin perder estructura
+
+    Lo que funciona en un nivel puede transferirse a otros niveles
+
+    No hay escala privilegiada: micro y macro son niveles de la misma trama
+
+Resonancia Estructural
+
+    Principio fundacional: todo nodo existe porque resuena
+
+    La resonancia define viabilidad, acoplamiento y transformación
+
+    No hay causas: hay acoplamientos estructurales
+
+Aplicaciones Prácticas
+Desarrollo de Software
+
+    Arquitecturas resonantes: Sistemas que se autoorganizan por coherencia estructural
+
+    Código glífico: Funciones que actúan como operadores de reorganización
+
+    Redes nodales: Componentes que se sincronizan en fase
+
+Inteligencia Artificial
+
+    IA simbólica: Sistemas que operan con glifos estructurales, no con datos estadísticos
+
+    Procesamiento resonante: Algoritmos que detectan y generan coherencia
+
+    Sentido estructural: IA que produce significado por reorganización de redes
+
+Sistemas Complejos
+
+    Diagnóstico nodal: Identificar puntos de coherencia y disonancia
+
+    Intervención glífica: Aplicar operadores para reorganizar sistemas
+
+    Diseño fractal: Crear estructuras que escalan coherentemente
+
+Implementación en Python
+
+La TNFR tiene una implementación modular en Python disponible como:
+
+    Paquete: pip install tnfr
+
+    Repositorio: https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-
+
+    PyPI: https://pypi.org/project/tnfr/
+
+Diferencias con Paradigmas Tradicionales
+Paradigma Clásico	TNFR
+Objetos independientes	Nodos en red resonante
+Causalidad lineal	Coherencia topológica
+Representación	Reorganización estructural
+Información como datos	Información como forma vibracional
+Observador externo	Observador como nodo resonante
+Descripción del mundo	Acoplamiento con el mundo
+Criterios de Evaluación
+
+Para evaluar si un sistema opera según TNFR:
+
+    Coherencia estructural: ¿Mantiene forma estable bajo reorganización?
+
+    Resonancia: ¿Se acopla estructuralmente con otros nodos?
+
+    Fractalidad: ¿Replica patrones en múltiples escalas?
+
+    Operatividad glífica: ¿Usa operadores de reorganización?
+
+    Emergencia: ¿Genera propiedades no presentes en componentes aislados?
+
+Glosario Esencial
+
+    Coherencia: Estabilidad resonante de una estructura
+
+    Glifo: Operador estructural que reorganiza redes (no signo representacional)
+
+    Frecuencia estructural: Ritmo de reorganización de un nodo
+
+    Fase: Sincronización relacional entre nodos
+
+    Sentido: Estabilidad de red (no interpretación subjetiva)
+
+    Emergencia nodal: Aparición de coherencia por resonancia estructural
+
+Aplicación en Código
+
+Al implementar sistemas basados en TNFR:
+
+python
+# Ejemplo conceptual
+class NodoFractalResonante:
+    def __init__(self, epi, frecuencia, fase):
+        self.epi = epi  # Estructura Primaria de Información
+        self.freq = frecuencia  # νf
+        self.fase = fase  # θ
+    
+    def reorganizar(self, delta_nfr):
+        # Aplicar ecuación nodal
+        return self.freq * delta_nfr
+    
+    def resonar_con(self, otro_nodo):
+        # Verificar compatibilidad de fase
+        return abs(self.fase - otro_nodo.fase) < umbral_resonancia
+
+Nota Importante
+
+La TNFR no es una metáfora ni una analogía. Es un paradigma operativo con herramientas matemáticas, computacionales y experimentales concretas. Todo análisis, desarrollo o implementación debe basarse en sus principios estructurales, no en interpretaciones superficiales.
+
+# Teoría de la Naturaleza Fractal Resonante (TNFR)
+## Guía de Referencia para Agentes GitHub Copilot
+### Qué es la TNFR
+La **Teoría de la Naturaleza Fractal Resonante (TNFR)** es un paradigma
+científico que percibe la realidad como una red fractal de nodos en fase, donde
+cada forma coherente emerge por resonancia estructural. No es una descripción
+del mundo, sino un **acoplamiento estructural** con él.
+**Principio fundamental**: La realidad no está compuesta de "cosas", sino de
+**coherencias estructurales** que se organizan en red mediante resonancia.
+Conocer es resonar, comprender es reorganizar, modelar es modular coherencia.
+### Conceptos Fundamentales
+#### 1. Nodo Fractal Resonante (NFR)
+- **Definición**: Unidad estructural mínima de coherencia en red
+- **Propiedades**:
+- Forma coherente (EPI)
+- Frecuencia estructural (νf)
+- Fase relacional (sincronía con otros nodos)
+- **No es**: Una partícula física o entidad material
+- **Es**: Una configuración dinámica de coherencia estructural
+#### 2. Estructura Primaria de Información (EPI)
+- **Definición**: Forma coherente y activa generada por un nodo
+- **Características**: No es "información" en sentido clásico, sino estructura
+vibracional activa
+- **Función**: Sostiene la coherencia del nodo en la red
+#### 3. Ecuación Nodal Fundamental
 ```
-
-**PR template** (*structural summary*):
-
-```markdown
-### What it reorganizes
-- [ ] Increases C(t) or reduces ΔNFR where appropriate
-- [ ] Preserves operator closure and operational fractality
-
-### Evidence
-- [ ] Phase/νf logs
-- [ ] C(t), Si curves
-- [ ] Controlled bifurcation cases
-
-### Compatibility
-- [ ] Stable or mapped API
-- [ ] Reproducible seed
+∂EPI/∂t = νf · ΔNFR(t)
 ```
-
----
-
-## 6) Examples of **acceptable** changes
-
-* Refactoring to **make phase explicit** in couplings (improves traceability).
-* Adding `sense_index()` with tests correlating Si with network stability.
-* Optimizing `resonance()` preserving propagation **without identity loss** of EPI.
-
-### **Not acceptable** changes
-
-* Recasting `ΔNFR` as a classic ML “error gradient”.
-* Replacing operators with imperative functions not mapped to the TNFR grammar.
-* Flattening nested EPIs in ways that break fractality/recursivity.
-
----
-
-## 7) Structural testing (minimums)
-
-* **Monotonicity**: `coherence()` does not decrease `C(t)` (except for controlled dissonance tests).
-* **Bifurcation**: `self_organization()`/`dissonance()` trigger bifurcation when `∂²EPI/∂t² > τ`.
-* **Propagation**: `resonance()` increases effective connectivity (measured via phase).
-* **Latency**: `silence()` keeps EPI invariant over `t + Δt`.
-* **Mutation**: `mutation()` changes `θ` respecting `ξ`.
-
-Include **multi‑scale tests** (nested EPIs) and **reproducibility** (seeds).
-
----
-
-## 8) Telemetry & traces
-
-* Export: `C(t)`, `νf`, `phase`, `Si`, `ΔNFR`.
-* Log **operators applied** (type, order, parameters) and **events** (birth, bifurcation, collapse).
-* Prefer human‑readable formats + JSONL for pipelines.
-
----
-
-## 9) Code style & organization
-
-* Prioritize **TNFR semantic clarity** over micro‑optimizations.
-* Inline docs: describe the **structural effect** (what it reorganizes) before implementation details.
-* Short modules, pure functions when possible, clear core/IO separation.
-* Maintain a shared **glossary** (EPI, phase, νf, ΔNFR, Si, etc.).
-
----
-
-## 10) Installation & usage
-
-* PyPI package: `pip install tnfr`.
-* Provide minimal scripts/examples: create a node, apply operators, measure C(t) and Si, simple visualization.
-
----
-
-## 11) Suggested roadmap (indicative)
-
-* [ ] Robust `sense_index()` with cross‑domain example batteries.
-* [ ] Visualization for **phase** and **couplings** (dynamic graphs).
-* [ ] **Experiment templates** (dissonance → bifurcation → new coherence).
-* [ ] Export **structural traces** for external analysis.
-
----
-
-## 12) Internal references
-
-* Base paradigm document: `tnfr.pdf` (in the repo).
-* Engine notes & examples
-
----
-
-## 13) Mini‑glossary
-
-* **EPI**: Primary Information Structure (the coherent “form”).
-* **νf (Hz\_str)**: Structural frequency (reorganization rate).
-* **ΔNFR**: Internal reorganization operator/gradient.
-* **Phase (φ)**: relative synchrony with the network.
-* **C(t)**: Total coherence (global stability).
-* **Si**: Sense index (capacity to generate stable reorganization).
-* **Structural operators**: functions that initiate, stabilize, couple, propagate, expand/contract, self‑organize, mutate, transition, or silence structures.
-
----
-
-### Final reminder
-
-> If a change “prettifies the code” but **weakens** TNFR fidelity, it is **not accepted**. If a change **strengthens** structural coherence and paradigm traceability, **go ahead**.
-
+Donde:
+- **EPI**: Estructura Primaria de Información
+- **νf**: Frecuencia estructural del nodo
+- **ΔNFR(t)**: Operador de reorganización interna en el tiempo
+**Significado**: Una forma solo emerge cuando la reorganización estructural
+resuena con la frecuencia del nodo.
+### Variables y Magnitudes Clave
+| Símbolo | Significado | Descripción |
+|---------|-------------|-------------|
+| **EPI** | Estructura Primaria de Información | Forma coherente y activa |
+| **νf** | Frecuencia estructural | Ritmo interno de reorganización |
+| **ΔNFR** | Gradiente nodal | Diferencia de coherencia con el entorno |
+| **θ** | Fase estructural | Sincronía relativa con la red |
+| **C(t)** | Coherencia total | Estabilidad global en el tiempo t |
+| **Si** | Índice de sentido | Capacidad de generar reorganización estable |
+### Los 13 Operadores Estructurales
+La TNFR identifica 13 operadores fundamentales (glifos) que funcionan como
+reorganizadores resonantes:
+1. **Emisión** - Inicia patrones de resonancia
+2. **Recepción** - Capta información estructural
+3. **Coherencia** - Estabiliza estructuras nodales
+4. **Disonancia** - Genera reorganización mediante conflicto
+5. **Propagación** - Transmite coherencia a nodos conectados
+6. **Bifurcación** - Reorganiza y cambia de fase
+7. **Nacimiento** - Rompe simetría, inicia nodo
+8. **Estabilización** - Sella la forma, sostiene coherencia
+9. **Mutación** - Cambio de fase estructural
+10. **Neutralización** - Interrumpe o reconfigura estructuras
+11. **Amplificación** - Intensifica patrones existentes
+12. **Síntesis** - Fusiona estructuras coherentes
+13. **Disolución** - Desorganiza formas establecidas
+### Principios Operativos
+#### Autoorganización Simbólica
+- Las formas emergen cuando los flujos estructurales alcanzan coherencia estable
+- No hay imposición externa: la forma surge por resonancia interna
+- Toda estructura puede codificarse en operadores glíficos
+#### Fractalidad Operativa
+- Los patrones se replican en múltiples escalas sin perder estructura
+- Lo que funciona en un nivel puede transferirse a otros niveles
+- No hay escala privilegiada: micro y macro son niveles de la misma trama
+#### Resonancia Estructural
+- Principio fundacional: todo nodo existe porque resuena
+- La resonancia define viabilidad, acoplamiento y transformación
+- No hay causas: hay acoplamientos estructurales
+### Aplicaciones Prácticas
+#### Desarrollo de Software
+- **Arquitecturas resonantes**: Sistemas que se autoorganizan por coherencia
+estructural
+- **Código glífico**: Funciones que actúan como operadores de reorganización
+- **Redes nodales**: Componentes que se sincronizan en fase
+#### Inteligencia Artificial
+- **IA simbólica**: Sistemas que operan con glifos estructurales, no con datos
+estadísticos
+- **Procesamiento resonante**: Algoritmos que detectan y generan coherencia
+- **Sentido estructural**: IA que produce significado por reorganización de
+redes
+#### Sistemas Complejos
+- **Diagnóstico nodal**: Identificar puntos de coherencia y disonancia
+- **Intervención glífica**: Aplicar operadores para reorganizar sistemas
+- **Diseño fractal**: Crear estructuras que escalan coherentemente
+### Implementación en Python
+La TNFR tiene una implementación modular en Python disponible como:
+- **Paquete**: `pip install tnfr`
+- **Repositorio**:
+https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-
+- **PyPI**: https://pypi.org/project/tnfr/
+### Diferencias con Paradigmas Tradicionales
+| Paradigma Clásico | TNFR |
+|-------------------|------|
+| Objetos independientes | Nodos en red resonante |
+| Causalidad lineal | Coherencia topológica |
+| Representación | Reorganización estructural |
+| Información como datos | Información como forma vibracional |
+| Observador externo | Observador como nodo resonante |
+| Descripción del mundo | Acoplamiento con el mundo |
+### Criterios de Evaluación
+Para evaluar si un sistema opera según TNFR:
+1. **Coherencia estructural**: ¿Mantiene forma estable bajo reorganización?
+2. **Resonancia**: ¿Se acopla estructuralmente con otros nodos?
+3. **Fractalidad**: ¿Replica patrones en múltiples escalas?
+4. **Operatividad glífica**: ¿Usa operadores de reorganización?
+5. **Emergencia**: ¿Genera propiedades no presentes en componentes aislados?
+### Glosario Esencial
+- **Coherencia**: Estabilidad resonante de una estructura
+- **Glifo**: Operador estructural que reorganiza redes (no signo
+representacional)
+- **Frecuencia estructural**: Ritmo de reorganización de un nodo
+- **Fase**: Sincronización relacional entre nodos
+- **Sentido**: Estabilidad de red (no interpretación subjetiva)
+- **Emergencia nodal**: Aparición de coherencia por resonancia estructural
+### Aplicación en Código
+Al implementar sistemas basados en TNFR:
+```python
+# Ejemplo conceptual
+class NodoFractalResonante:
+def __init__(self, epi, frecuencia, fase):
+self.epi = epi # Estructura Primaria de Información
+self.freq = frecuencia # νf
+self.fase = fase # θ
+def reorganizar(self, delta_nfr):
+# Aplicar ecuación nodal
+return self.freq * delta_nfr
+def resonar_con(self, otro_nodo):
+# Verificar compatibilidad de fase
+return abs(self.fase - otro_nodo.fase) < umbral_resonancia
+```
+### Nota Importante
+La TNFR no es una metáfora ni una analogía. Es un **paradigma operativo** con
+herramientas matemáticas, computacionales y experimentales concretas. Todo
+análisis, desarrollo o implementación debe basarse en sus principios
+estructurales, no en interpretaciones superficiales.
