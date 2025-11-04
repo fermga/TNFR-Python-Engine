@@ -79,6 +79,10 @@ jobs:
       - name: Run mypy
         run: python -m mypy src/tnfr
 
+      - name: Run pyright
+        run: python -m pyright src/tnfr
+        continue-on-error: true
+
       - name: Check stub files exist
         run: python scripts/generate_stubs.py --check
 

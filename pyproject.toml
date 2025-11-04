@@ -65,6 +65,7 @@ test = [
 ]
 typecheck = [
   "mypy>=1.8",
+  "pyright>=1.1.350",
   "networkx-stubs>=0.0.1",
   "types-cachetools>=6.0.0.0",
   "numpy>=1.24",
