@@ -283,6 +283,10 @@ def validate_no_hardcoded_secrets(value: str) -> bool:
     - Known secret prefixes (ghp_, pypi-, sk-, etc.)
     - Base64-encoded strings
 
+    For production environments, consider using more sophisticated
+    tools like `detect-secrets` which employ entropy analysis for
+    better accuracy.
+
     Examples
     --------
     >>> validate_no_hardcoded_secrets("my-password")
@@ -311,8 +315,10 @@ def validate_no_hardcoded_secrets(value: str) -> bool:
             raise ValueError(f"Value appears to be a hardcoded {name}")
 
     # Check for suspiciously long alphanumeric strings
+    # Note: This is a simple heuristic. For production use, consider
+    # entropy-based analysis (e.g., using detect-secrets library)
     if len(value) > 32 and value.replace("-", "").replace("_", "").isalnum():
-        # Allow environment variable names
+        # Allow environment variable names (typically uppercase)
         if not value.isupper():
             warnings.warn(
                 f"Value looks like it might be a hardcoded secret: {value[:10]}...",

@@ -48,9 +48,10 @@ class TestNoHardcodedSecrets:
 
     def test_no_hardcoded_github_tokens(self, source_files):
         """Verify no hardcoded GitHub tokens in source code."""
-        # Pattern for GitHub tokens
+        # Pattern for GitHub tokens - adjusted to catch more variants
+        # Classic tokens are ~40 chars after prefix, fine-grained can vary
         github_token_pattern = re.compile(
-            r"(ghp|gho|ghu|ghs|ghr)_[a-zA-Z0-9]{36,}", re.IGNORECASE
+            r"(ghp|gho|ghu|ghs|ghr)_[a-zA-Z0-9]{30,}", re.IGNORECASE
         )
 
         violations = []
@@ -71,21 +72,21 @@ class TestNoHardcodedSecrets:
 
     def test_no_hardcoded_pypi_tokens(self, source_files):
         """Verify no hardcoded PyPI tokens in source code."""
-        # Pattern for PyPI tokens
+        # Pattern for PyPI tokens - comprehensive to catch all variants
         pypi_token_pattern = re.compile(
-            r"pypi-AgEIcHlwaS5vcmcC[a-zA-Z0-9_-]+", re.IGNORECASE
+            r"pypi-[a-zA-Z0-9+/=_-]+", re.IGNORECASE
         )
 
         violations = []
         for file_path in source_files:
             try:
                 content = file_path.read_text(encoding="utf-8")
-                # Skip .env.example file
-                if file_path.name == ".env.example":
-                    continue
                 matches = pypi_token_pattern.findall(content)
                 if matches:
-                    violations.append((file_path, matches))
+                    # Filter out placeholder patterns (all X's or clearly fake)
+                    real_matches = [m for m in matches if 'X' * 10 not in m]
+                    if real_matches:
+                        violations.append((file_path, real_matches))
             except Exception:
                 continue
 
@@ -98,8 +99,9 @@ class TestNoHardcodedSecrets:
         """Check for suspiciously long alphanumeric strings that might be secrets."""
         # Pattern for long alphanumeric strings (potential secrets)
         # At least 32 characters of base64-like content
+        # Using non-capturing groups for quotes for efficiency
         suspicious_pattern = re.compile(
-            r'["\']([a-zA-Z0-9+/=_-]{32,})["\']'
+            r'(?:["\'])([a-zA-Z0-9+/=_-]{32,})(?:["\'])'
         )
 
         # Allowed patterns (version strings, hashes, etc.)
@@ -114,8 +116,8 @@ class TestNoHardcodedSecrets:
         for file_path in source_files:
             try:
                 content = file_path.read_text(encoding="utf-8")
-                # Skip certain files
-                if any(skip in str(file_path) for skip in [".env.example", "_version.py"]):
+                # Skip certain files by exact name matching
+                if file_path.name in [".env.example", "_version.py", "_generated_version.py"]:
                     continue
 
                 for match in suspicious_pattern.finditer(content):
