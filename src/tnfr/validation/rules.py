@@ -127,11 +127,14 @@ def _structural_label(value: object) -> str:
 def _check_oz_to_zhir(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | str:
     """Enforce OZ precedents before allowing ZHIR mutations.
     
-    When mutation is attempted without recent dissonance and low ΔNFR,
-    returns DISSONANCE as a fallback glyph (structural requirement).
+    Raises MutationPreconditionError when mutation is attempted without
+    recent dissonance and low ΔNFR (structural grammar requirement).
+    Maintains TNFR invariant §3.4 (operator closure).
     """
 
     from ..glyph_history import recent_glyph
+    from ..operators.grammar import MutationPreconditionError
+    
     nd = ctx.G.nodes[n]
     cand_glyph = coerce_glyph(cand)
     glyph_to_name, name_to_glyph = _functional_translators()
@@ -150,9 +153,17 @@ def _check_oz_to_zhir(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | st
             entry == DISSONANCE for entry in history[-win:]
         )
         if not has_recent_dissonance and norm_dn < dn_min:
-            # Return dissonance as fallback - structural requirement for mutation
-            # Maintains TNFR invariant: mutation requires prior dissonance (§3.4 operator closure)
-            return dissonance_glyph
+            # Raise exception - mutation requires prior dissonance
+            # Maintains TNFR invariant §3.4: operator closure requires valid preconditions
+            hist_names = tuple(_structural_label(g) for g in nd.get("glyph_history", ()))
+            raise MutationPreconditionError(
+                rule="oz-before-zhir",
+                candidate=MUTATION,
+                message=f"{MUTATION} {MUTATION} requires {DISSONANCE} within window {win}",
+                window=win,
+                threshold=dn_min,
+                order=hist_names + (MUTATION,),
+            )
     return cand
 
 def _check_thol_closure(
