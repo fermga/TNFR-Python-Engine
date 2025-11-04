@@ -29,6 +29,10 @@ def _resolve_uniform_bounds(params: Mapping[str, float | None]) -> tuple[float, 
         vf_uniform_min, vf_uniform_max = vf_uniform_max, vf_uniform_min
     vf_uniform_min = max(vf_uniform_min, vf_min_lim)
     vf_uniform_max = min(vf_uniform_max, vf_max_lim)
+    # After clamping to VF_MIN/VF_MAX, ensure min <= max
+    if vf_uniform_min > vf_uniform_max:
+        # Collapse to VF_MIN when the requested range is entirely below the limit
+        vf_uniform_min = vf_uniform_max = vf_min_lim
     return vf_uniform_min, vf_uniform_max
 
 def _collect_node_attrs(graph, *, override: bool) -> dict[int, dict[str, float]]:
