@@ -18,7 +18,7 @@ def reimport_logging_utils():
     return logging_utils
 
 
-# Import after defining reload function
+# Import after defining reimport function
 import tnfr.utils.init as logging_utils
 
 

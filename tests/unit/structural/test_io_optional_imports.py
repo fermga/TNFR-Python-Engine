@@ -23,8 +23,10 @@ def fresh_io():
 
 
 def test_io_optional_imports_are_lazy_proxies(fresh_io):
-    # Import LazyImportProxy after fixture runs to avoid stale class reference
-    # (test_version_resolution may have cleared modules from sys.modules)
+    # Must import LazyImportProxy inside test to get fresh class reference.
+    # When test_version_resolution clears sys.modules, the module-level import
+    # becomes stale - it references the OLD class, while fresh_io contains
+    # instances of the NEW class created after re-import.
     from tnfr.utils import LazyImportProxy
     assert isinstance(fresh_io.tomllib, LazyImportProxy)
     assert isinstance(fresh_io._TOML_LOADS, LazyImportProxy)
