@@ -5,7 +5,7 @@ from collections.abc import Callable
 from enum import Enum
 from typing import Any, NamedTuple
 
-__all__ = ['CallbackEvent', 'CallbackManager', 'callback_manager', 'CallbackError', 'CallbackSpec']
+__all__ = ['CallbackEvent', 'CallbackManager', 'callback_manager', 'CallbackError', 'CallbackSpec', '_normalize_callbacks', '_normalize_callback_entry']
 
 Callback = Callable[[nx.Graph, dict[str, Any]], None]
 
@@ -27,3 +27,6 @@ class CallbackManager:
     def invoke_callbacks(self, G: nx.Graph, event: CallbackEvent | str, ctx: dict[str, Any] | None = None) -> None: ...
 
 callback_manager: Incomplete
+
+def _normalize_callbacks(entries: Any) -> dict[str, CallbackSpec]: ...
+def _normalize_callback_entry(entry: Any) -> CallbackSpec | None: ...
