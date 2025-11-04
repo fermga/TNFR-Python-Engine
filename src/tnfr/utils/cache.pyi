@@ -24,6 +24,10 @@ K = TypeVar("K", bound=Hashable)
 V = TypeVar("V")
 T = TypeVar("T")
 
+class SecurityError(RuntimeError):
+    """Raised when a cache payload fails hardened validation."""
+    ...
+
 @dataclass(frozen=True)
 class CacheCapacityConfig:
     default_capacity: int | None
@@ -466,3 +470,7 @@ class ScopedCounterCache(Generic[K]):
     def cache(self) -> InstrumentedLRUCache[K, int]: ...
     @property
     def locks(self) -> dict[K, threading.RLock]: ...
+
+# Internal symbols used by utils.__init__.py
+_GRAPH_CACHE_MANAGER_KEY: str
+def _graph_cache_manager(graph: MutableMapping[str, Any]) -> CacheManager: ...

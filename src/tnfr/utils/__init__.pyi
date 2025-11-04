@@ -14,6 +14,7 @@ from .cache import (
     MappingCacheLayer,
     RedisCacheLayer,
     ShelveCacheLayer,
+    SecurityError,
     prune_lock_mapping,
     DNFR_PREP_STATE_KEY,
     DnfrPrepState,
@@ -103,6 +104,12 @@ from .io import (
     read_structured_file,
     safe_write,
 )
+from .callbacks import (
+    CallbackEvent,
+    CallbackManager,
+    callback_manager,
+    CallbackSpec,
+)
 __all__ = (
     "IMPORT_LOG",
     "WarnOnce",
@@ -142,6 +149,7 @@ __all__ = (
     "MappingCacheLayer",
     "RedisCacheLayer",
     "ShelveCacheLayer",
+    "SecurityError",
     "prune_lock_mapping",
     "EdgeCacheManager",
     "DNFR_PREP_STATE_KEY",
@@ -193,6 +201,10 @@ __all__ = (
     "_FAILED_IMPORT_LIMIT",
     "_DEFAULT_CACHE_SIZE",
     "EMIT_MAP",
+    "CallbackEvent",
+    "CallbackManager",
+    "callback_manager",
+    "CallbackSpec",
 )
 
 def get_lock(name: str, /) -> Lock: ...
