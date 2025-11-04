@@ -1746,6 +1746,36 @@ _GRAPH_CACHE_CONFIG_KEY = "_tnfr_cache_config"
 DNFR_PREP_STATE_KEY = "_dnfr_prep_state"
 
 
+# Ephemeral graph cache management:
+# ----------------------------------
+# TNFR stores cache managers directly in each graph's `.graph` dictionary
+# via _GRAPH_CACHE_MANAGER_KEY. This design inherently supports ephemeral
+# graphs because:
+#
+# 1. **Automatic cleanup**: When an ephemeral graph object is garbage
+#    collected, its `.graph` dict and all associated cache managers are
+#    automatically released with it. No manual cleanup is required.
+#
+# 2. **Isolation**: Each graph has its own cache manager instance, preventing
+#    cache pollution between unrelated graphs or temporary computations.
+#
+# 3. **No global state**: Unlike WeakValueDictionary-based global caches,
+#    there's no shared cache registry that needs weak references to track
+#    ephemeral graphs.
+#
+# For temporary or short-lived graphs (e.g., subgraphs, clones, simulation
+# snapshots), simply let the graph go out of scope and Python's garbage
+# collector will reclaim all associated caches. No special ephemeral flag
+# or WeakValueDictionary is needed.
+#
+# Example ephemeral graph usage:
+#   def process_subgraph(G, nodes):
+#       H = G.subgraph(nodes).copy()  # Ephemeral graph
+#       default_compute_delta_nfr(H)  # Creates temporary cache
+#       return extract_metrics(H)
+#       # H and its caches are GC'd when function returns
+
+
 @dataclass(slots=True)
 class DnfrPrepState:
     """State container coordinating ΔNFR preparation caches."""
