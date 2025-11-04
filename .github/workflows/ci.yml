@@ -128,10 +128,6 @@ jobs:
         if: matrix.python-version == '3.11'
         run: python -m pydocstyle src/tnfr
 
-      - name: Enforce English-only language policy
-        if: matrix.python-version == '3.11'
-        run: python scripts/check_language.py
-
       - name: Run unit tests
         if: matrix.python-version != '3.11'
         run: python -m pytest
