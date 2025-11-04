@@ -52,13 +52,11 @@ __all__ = [
 class Operator:
     """Base class for TNFR structural operators.
 
-    Each structural operator defines a ``name`` (ASCII identifier) and ``glyph``
-    (structural symbol). Calling an operator instance applies its corresponding
-    structural transformation to the target node.
-
     Structural operators (Emission, Reception, Coherence, etc.) are the public-facing
-    API for applying TNFR transformations. Each operator is associated with a specific
-    glyph (structural symbol like AL, EN, IL, etc.) that represents the transformation.
+    API for applying TNFR transformations. Each operator defines a ``name`` (ASCII
+    identifier) and ``glyph`` (structural symbol like AL, EN, IL, etc.) that represents
+    the transformation. Calling an operator instance applies its structural transformation
+    to the target node.
     """
 
     name: ClassVar[str] = "operator"
@@ -102,7 +100,7 @@ class Operator:
 
 @register_operator
 class Emission(Operator):
-    """Emission structural operator - seeds coherence by projecting the emission pattern.
+    """Emission structural operator. Seeds coherence by projecting the emission pattern.
 
     Activates structural symbol ``AL`` to initialise outward resonance around a
     nascent node.
@@ -135,7 +133,7 @@ class Emission(Operator):
 
 @register_operator
 class Reception(Operator):
-    """Reception structural operator - stabilises inbound energy to strengthen receptivity.
+    """Reception structural operator. Stabilises inbound energy to strengthen receptivity.
 
     Activates structural symbol ``EN`` to anchor external coherence into the node's EPI.
 
@@ -167,7 +165,7 @@ class Reception(Operator):
 
 @register_operator
 class Coherence(Operator):
-    """Coherence structural operator - reinforces structural alignment across nodes.
+    """Coherence structural operator. Reinforces structural alignment across nodes.
 
     Activates structural symbol ``IL`` to compress ΔNFR drift and raise the local C(t).
 
@@ -202,7 +200,7 @@ class Coherence(Operator):
 
 @register_operator
 class Dissonance(Operator):
-    """Dissonance structural operator - injects controlled dissonance to probe robustness.
+    """Dissonance structural operator. Injects controlled dissonance to probe robustness.
 
     Activates structural symbol ``OZ`` to widen ΔNFR and test bifurcation thresholds.
 
