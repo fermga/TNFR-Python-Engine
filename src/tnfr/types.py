@@ -234,8 +234,8 @@ def serialize_bepi(value: Any) -> dict[str, tuple[complex, ...] | tuple[float, .
     return {"continuous": continuous, "discrete": discrete, "grid": grid}
 
 
-def serialize_bepi_json(value: Any) -> dict[str, list[dict[str, float] | float]]:
-    """Serialise a BEPI element into JSON-compatible format.
+def serialize_bepi_json(value: Any) -> dict[str, list[dict[str, float]] | list[float]]:
+    """Serialize a BEPI element into JSON-compatible format.
 
     Complex numbers are represented as dicts with 'real' and 'imag' keys.
     This enables full JSON/YAML serialization while preserving structural coherence.
@@ -250,7 +250,7 @@ def serialize_bepi_json(value: Any) -> dict[str, list[dict[str, float] | float]]
     dict
         Dictionary with 'continuous', 'discrete', and 'grid' keys, where
         complex values are represented as ``{"real": float, "imag": float}``
-        and real values remain as floats.
+        and grid values remain as floats.
 
     Examples
     --------
@@ -275,7 +275,7 @@ def serialize_bepi_json(value: Any) -> dict[str, list[dict[str, float] | float]]
     return {"continuous": continuous, "discrete": discrete, "grid": grid}
 
 
-def deserialize_bepi_json(data: dict[str, list[dict[str, float] | float]]) -> "BEPIElement":
+def deserialize_bepi_json(data: dict[str, list[dict[str, float]] | list[float]]) -> "BEPIElement":
     """Deserialize a BEPI element from JSON-compatible format.
 
     Reconstructs complex numbers from dicts with 'real' and 'imag' keys.
@@ -284,6 +284,8 @@ def deserialize_bepi_json(data: dict[str, list[dict[str, float] | float]]) -> "B
     ----------
     data : dict
         Dictionary with 'continuous', 'discrete', and 'grid' keys in JSON format.
+        The 'continuous' and 'discrete' values should be lists of dicts with
+        'real' and 'imag' keys, while 'grid' should be a list of floats.
 
     Returns
     -------
