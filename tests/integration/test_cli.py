@@ -165,9 +165,10 @@ def test_cli_sequence_handles_deeply_nested_blocks(monkeypatch, tmp_path):
     depth = 1500
     # Use WAIT instead of glyphs to avoid grammar validation during deep recursion test
     # This test is focused on recursion handling, not grammar compliance
+    # Use force_close to satisfy THOL grammar requirements without explicit glyph
     inner = '{"WAIT": {"steps": 1}}'
     for _ in range(depth):
-        inner = '{"THOL": {"body": [' + inner + ']}}'
+        inner = '{"THOL": {"body": [' + inner + '], "close": "SHA"}}'
     payload = f"[{inner}]"
 
     seq_path = tmp_path / "nested.json"

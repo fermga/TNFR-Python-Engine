@@ -161,7 +161,12 @@ def _coerce_mapping_token(
         raise ValueError(f"Invalid token mapping: {mapping!r}")
     key, value = next(iter(mapping.items()))
     if key == "WAIT":
-        return WAIT(int(value))
+        # Handle both formats: {"WAIT": 1} and {"WAIT": {"steps": 1}}
+        if isinstance(value, Mapping):
+            steps = value.get("steps", 1)
+        else:
+            steps = value
+        return WAIT(int(steps))
     if key == "TARGET":
         return TARGET(value)
     if key != "THOL":
