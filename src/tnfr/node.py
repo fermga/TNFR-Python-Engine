@@ -18,6 +18,7 @@ from typing import (
     SupportsFloat,
     TypeVar,
 )
+from weakref import WeakValueDictionary
 
 import numpy as np
 
@@ -406,14 +407,68 @@ class NodeNX(NodeProtocol):
         return self.G.nodes[self.n]
 
     @classmethod
-    def from_graph(cls, G: TNFRGraph, n: NodeId) -> "NodeNX":
-        """Return cached ``NodeNX`` for ``(G, n)`` with thread safety."""
+    def from_graph(cls, G: TNFRGraph, n: NodeId, *, use_weak_cache: bool = False) -> "NodeNX":
+        """Return cached ``NodeNX`` for ``(G, n)`` with thread safety.
+        
+        Parameters
+        ----------
+        G : TNFRGraph
+            The graph containing the node.
+        n : NodeId
+            The node identifier.
+        use_weak_cache : bool, optional
+            When True, use WeakValueDictionary for the node cache to allow
+            automatic garbage collection of unused NodeNX instances. This is
+            useful for ephemeral graphs where nodes are created temporarily
+            and should be released when no longer referenced elsewhere.
+            Default is False to maintain backward compatibility.
+            
+        Returns
+        -------
+        NodeNX
+            The cached or newly created NodeNX instance for the specified node.
+            
+        Notes
+        -----
+        The weak cache mode trades off some cache retention for better memory
+        behavior in scenarios with many short-lived graphs or when nodes are
+        accessed infrequently. Use weak caching when:
+        
+        - Processing many ephemeral graphs sequentially
+        - Working with large graphs where only subsets are actively used
+        - Memory pressure is a concern and stale node objects should be released
+        
+        The default strong cache provides better performance for long-lived
+        graphs with repeated node access patterns.
+        """
         lock = get_lock(f"node_nx_cache_{id(G)}")
         with lock:
-            cache = G.graph.setdefault("_node_cache", {})
+            cache_key = "_node_cache_weak" if use_weak_cache else "_node_cache"
+            cache = G.graph.get(cache_key)
+            
+            if cache is None:
+                if use_weak_cache:
+                    cache = WeakValueDictionary()
+                else:
+                    cache = {}
+                G.graph[cache_key] = cache
+            
             node = cache.get(n)
             if node is None:
+                # Create node (this will add it to strong cache in __init__)
                 node = cls(G, n)
+                
+                # Add to the requested cache type
+                cache[n] = node
+                
+                # When using weak cache, remove the strong reference that __init__ created
+                # to allow proper garbage collection when no external references exist.
+                # This must happen inside the lock to prevent race conditions.
+                if use_weak_cache:
+                    strong_cache = G.graph.get("_node_cache")
+                    if strong_cache is not None and n in strong_cache:
+                        del strong_cache[n]
+            
             return node
 
     def neighbors(self) -> Iterable[NodeId]:

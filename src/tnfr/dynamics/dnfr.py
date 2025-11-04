@@ -781,12 +781,31 @@ def _prepare_dnfr_data(
 
     nodes = cast(tuple[NodeId, ...], cached_node_list(G))
     edge_count = G.number_of_edges()
+    
+    # Centralized decision logic for sparse vs dense accumulation path.
+    # This decision affects which accumulation strategy will be used:
+    #   - "sparse": edge-based accumulation (_accumulate_neighbors_broadcasted)
+    #   - "dense": matrix multiplication with adjacency matrix (_accumulate_neighbors_dense)
+    # The decision is stored in dnfr_path_decision for telemetry and debugging.
     prefer_sparse = False
     dense_override = bool(G.graph.get("dnfr_force_dense"))
+    dnfr_path_decision = "fallback"  # Default when numpy unavailable
+    
     if use_numpy:
+        # Heuristic: use sparse path when density <= _SPARSE_DENSITY_THRESHOLD (0.25)
         prefer_sparse = _prefer_sparse_accumulation(len(nodes), edge_count)
+        
         if dense_override:
+            # User explicitly requested dense mode
             prefer_sparse = False
+            dnfr_path_decision = "dense_forced"
+        elif not prefer_sparse:
+            # Heuristic chose dense path (high density graph)
+            dnfr_path_decision = "dense_auto"
+        else:
+            # Heuristic chose sparse path (low density graph)
+            dnfr_path_decision = "sparse"
+    
     nodes_cached, A_untyped = cached_nodes_and_A(
         G,
         cache_size=cache_size,
@@ -985,6 +1004,7 @@ def _prepare_dnfr_data(
     result["edge_count"] = edge_count
     result["prefer_sparse"] = prefer_sparse
     result["dense_override"] = dense_override
+    result["dnfr_path_decision"] = dnfr_path_decision
     result.setdefault("neighbor_accum_np", None)
     result.setdefault("neighbor_accum_signature", None)
 
@@ -1698,7 +1718,9 @@ def _accumulate_neighbors_broadcasted(
         if use_chunks:
             workspace_length = resolved_chunk
         else:
-            workspace_length = component_rows
+            # For non-chunked path, allocate workspace to hold edge_count values
+            # so we can extract edge values without temporary allocations
+            workspace_length = edge_count if edge_count else component_rows
         if workspace_length:
             expected_shape = (component_rows, workspace_length)
             if workspace is None or getattr(workspace, "shape", None) != expected_shape:
@@ -1710,7 +1732,8 @@ def _accumulate_neighbors_broadcasted(
         cache.neighbor_accum_signature = signature
     else:
         accum = np.zeros((component_rows, n), dtype=float)
-        workspace_length = resolved_chunk if use_chunks else component_rows
+        # For non-chunked path without cache, allocate workspace for edge values
+        workspace_length = edge_count if (not use_chunks and edge_count) else (resolved_chunk if use_chunks else component_rows)
         workspace = (
             np.empty((component_rows, workspace_length), dtype=float)
             if workspace_length
@@ -1791,43 +1814,143 @@ def _accumulate_neighbors_broadcasted(
                 if deg_row is not None and deg_array is not None:
                     _accumulate_into(deg_row, chunk_matrix[deg_row, :slice_len])
         else:
-            def _apply_full_bincount(
-                target_row: int | None,
-                values: np.ndarray | None = None,
-                *,
-                unit_weight: bool = False,
-            ) -> None:
-                if target_row is None:
-                    return
-                if values is None and not unit_weight:
-                    return
-                if unit_weight:
-                    component_accum = np.bincount(
-                        edge_src_int,
-                        minlength=n,
-                    )
-                else:
-                    component_accum = np.bincount(
-                        edge_src_int,
-                        weights=values,
-                        minlength=n,
-                    )
-                np.copyto(
-                    accum[target_row, : n],
-                    component_accum[:n],
-                    casting="unsafe",
+            # Non-chunked path: reuse workspace to minimize temporary allocations.
+            # When workspace is available with sufficient size, extract edge values
+            # into workspace rows before passing to bincount.
+            if workspace is not None and workspace.shape[1] >= edge_count:
+                # Verify workspace has enough rows for all components
+                # workspace has shape (component_rows, edge_count)
+                required_rows = max(
+                    cos_row + 1, 
+                    sin_row + 1, 
+                    epi_row + 1, 
+                    vf_row + 1,
+                    (count_row + 1) if count_row is not None else 0,
+                    (deg_row + 1) if deg_row is not None else 0,
                 )
+                if workspace.shape[0] >= required_rows:
+                    # Reuse workspace rows for edge value extraction
+                    np.take(cos, edge_dst_int, out=workspace[cos_row, :edge_count])
+                    np.take(sin, edge_dst_int, out=workspace[sin_row, :edge_count])
+                    np.take(epi, edge_dst_int, out=workspace[epi_row, :edge_count])
+                    np.take(vf, edge_dst_int, out=workspace[vf_row, :edge_count])
+                    
+                    def _apply_full_bincount(
+                        target_row: int | None,
+                        values: np.ndarray | None = None,
+                        *,
+                        unit_weight: bool = False,
+                    ) -> None:
+                        if target_row is None:
+                            return
+                        if values is None and not unit_weight:
+                            return
+                        if unit_weight:
+                            component_accum = np.bincount(
+                                edge_src_int,
+                                minlength=n,
+                            )
+                        else:
+                            component_accum = np.bincount(
+                                edge_src_int,
+                                weights=values,
+                                minlength=n,
+                            )
+                        np.copyto(
+                            accum[target_row, : n],
+                            component_accum[:n],
+                            casting="unsafe",
+                        )
+                    
+                    _apply_full_bincount(cos_row, workspace[cos_row, :edge_count])
+                    _apply_full_bincount(sin_row, workspace[sin_row, :edge_count])
+                    _apply_full_bincount(epi_row, workspace[epi_row, :edge_count])
+                    _apply_full_bincount(vf_row, workspace[vf_row, :edge_count])
+                    
+                    if count_row is not None:
+                        _apply_full_bincount(count_row, unit_weight=True)
+                    
+                    if deg_row is not None and deg_array is not None:
+                        np.take(deg_array, edge_dst_int, out=workspace[deg_row, :edge_count])
+                        _apply_full_bincount(deg_row, workspace[deg_row, :edge_count])
+                else:
+                    # Workspace doesn't have enough rows, fall back to temporary arrays
+                    def _apply_full_bincount(
+                        target_row: int | None,
+                        values: np.ndarray | None = None,
+                        *,
+                        unit_weight: bool = False,
+                    ) -> None:
+                        if target_row is None:
+                            return
+                        if values is None and not unit_weight:
+                            return
+                        if unit_weight:
+                            component_accum = np.bincount(
+                                edge_src_int,
+                                minlength=n,
+                            )
+                        else:
+                            component_accum = np.bincount(
+                                edge_src_int,
+                                weights=values,
+                                minlength=n,
+                            )
+                        np.copyto(
+                            accum[target_row, : n],
+                            component_accum[:n],
+                            casting="unsafe",
+                        )
 
-            _apply_full_bincount(cos_row, np.take(cos, edge_dst_int))
-            _apply_full_bincount(sin_row, np.take(sin, edge_dst_int))
-            _apply_full_bincount(epi_row, np.take(epi, edge_dst_int))
-            _apply_full_bincount(vf_row, np.take(vf, edge_dst_int))
+                    _apply_full_bincount(cos_row, np.take(cos, edge_dst_int))
+                    _apply_full_bincount(sin_row, np.take(sin, edge_dst_int))
+                    _apply_full_bincount(epi_row, np.take(epi, edge_dst_int))
+                    _apply_full_bincount(vf_row, np.take(vf, edge_dst_int))
 
-            if count_row is not None:
-                _apply_full_bincount(count_row, unit_weight=True)
+                    if count_row is not None:
+                        _apply_full_bincount(count_row, unit_weight=True)
 
-            if deg_row is not None and deg_array is not None:
-                _apply_full_bincount(deg_row, np.take(deg_array, edge_dst_int))
+                    if deg_row is not None and deg_array is not None:
+                        _apply_full_bincount(deg_row, np.take(deg_array, edge_dst_int))
+            else:
+                # Fallback: no workspace or insufficient width, use temporary arrays
+                def _apply_full_bincount(
+                    target_row: int | None,
+                    values: np.ndarray | None = None,
+                    *,
+                    unit_weight: bool = False,
+                ) -> None:
+                    if target_row is None:
+                        return
+                    if values is None and not unit_weight:
+                        return
+                    if unit_weight:
+                        component_accum = np.bincount(
+                            edge_src_int,
+                            minlength=n,
+                        )
+                    else:
+                        component_accum = np.bincount(
+                            edge_src_int,
+                            weights=values,
+                            minlength=n,
+                        )
+                    np.copyto(
+                        accum[target_row, : n],
+                        component_accum[:n],
+                        casting="unsafe",
+                    )
+
+                _apply_full_bincount(cos_row, np.take(cos, edge_dst_int))
+                _apply_full_bincount(sin_row, np.take(sin, edge_dst_int))
+                _apply_full_bincount(epi_row, np.take(epi, edge_dst_int))
+                _apply_full_bincount(vf_row, np.take(vf, edge_dst_int))
+
+                if count_row is not None:
+                    _apply_full_bincount(count_row, unit_weight=True)
+
+                if deg_row is not None and deg_array is not None:
+                    _apply_full_bincount(deg_row, np.take(deg_array, edge_dst_int))
     else:
         accum.fill(0.0)
         if workspace is not None:
@@ -2051,12 +2174,23 @@ def _accumulate_neighbors_numpy(
         data["edge_count"] = int(edge_src.size)
 
     cached_deg_array = data.get("deg_array")
+    
+    # Memory optimization: When we have a cached degree array and need a count
+    # buffer, we can reuse the degree array buffer as the destination for counts.
+    # This works because:
+    #   1. For undirected graphs, node degree equals neighbor count
+    #   2. The degree array is already allocated and the right size
+    #   3. We avoid allocating an extra row in the accumulator matrix
+    # When reuse_count_from_deg is True:
+    #   - We copy cached_deg_array into the count buffer before accumulation
+    #   - We pass count_for_accum=None to _accumulate_neighbors_broadcasted
+    #   - After accumulation, we restore count = cached_deg_array (line 2121)
     reuse_count_from_deg = bool(count is not None and cached_deg_array is not None)
     count_for_accum = count
     if count is not None:
         if reuse_count_from_deg:
-            # Reuse the cached degree vector as neighbour counts to avoid
-            # allocating an extra accumulator row in the broadcast routine.
+            # Pre-fill count with degrees (will be returned as-is since accumulator
+            # skips the count row when count_for_accum=None)
             np.copyto(count, cached_deg_array, casting="unsafe")
             count_for_accum = None
         else:
