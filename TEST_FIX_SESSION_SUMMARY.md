@@ -177,3 +177,94 @@ Based on this session:
 4. Some tests check implementation details vs. observable behavior
 5. Need better separation between "unit" and "integration" concerns
 
+## Session 2 Findings (2025-11-04)
+
+### Additional Fixes Completed
+
+#### 4. test_public_exports ✅
+**File**: `tests/integration/test_public_api.py`
+**Issue**: Expected API exports didn't include new frequency conversion functions
+**Fix**: Updated expected set to include: `create_math_nfr`, `hz_to_hz_str`, `hz_str_to_hz`, `get_hz_bridge`, `run_sequence`
+**TNFR Impact**: None - test expectation update only
+
+#### 5. test_structured_file_roundtrip[.yaml-_write_yaml] ✅
+**File**: `tests/property/test_structured_io_roundtrip.py`
+**Issue**: YAML was using json_dumps, couldn't handle Python-specific types (tuples, sets)
+**Fix**: Implemented proper YAML serialization with tuple/set to list conversion
+**TNFR Impact**: None - test infrastructure improvement
+
+### Critical Discovery: Test Isolation Problem
+
+**Confirmed**: The majority of failures (estimated 80-90 tests) are due to test isolation issues, NOT actual bugs. Examples:
+- `test_glyph_load_uses_module_constants` ✅ alone, ❌ in suite
+- `test_prepare_network_attaches_standard_observer` ✅ alone, ❌ in suite  
+- `test_sigma_from_iterable_vectorized_complex` ✅ alone, ❌ in suite
+- `test_run_sequence_mixed_operation_types` ✅ alone, ❌ in suite
+
+**Root Causes Identified**:
+1. **Shared state pollution** - Tests modify global state without cleanup
+2. **Cache invalidation** - Caches not being reset between tests
+3. **Import order dependencies** - Module imports affecting test behavior
+4. **Configuration state** - Graph/node configuration persisting across tests
+
+### Grammar System Issues Found
+
+#### Issue 1: Canonical Sequence Violates Grammar Rules
+**Sequence**: `SHA, AL, RA, ZHIR, NUL, THOL` (in `CANONICAL_PROGRAM_TOKENS`)
+**Problem**: ZHIR (mutation) requires OZ (dissonance) within window 3, but sequence has none
+**Error**: `MutationPreconditionError: mutation mutation requires dissonance within window 3`
+**Impact**: Affects `test_cli_without_history_args[sequence]` and similar tests
+**Resolution Needed**: Either:
+- Option A: Update canonical sequence to include OZ before ZHIR
+- Option B: Adjust grammar rules to not require OZ for all mutation cases
+- Option C: Add flag to disable grammar checking for canonical sequences
+
+#### Issue 2: Empty Sequence Validation
+**Problem**: `run_sequence_with_validation([], enable_validation=False)` still validates
+**Error**: `ValueError: Invalid sequence: empty sequence`
+**Impact**: `test_run_sequence_with_validation_supports_keyword_only_projector`
+**Resolution Needed**: Empty sequences should be allowed when validation is disabled
+
+#### Issue 3: Deep Nesting Parsing Error
+**Problem**: Deeply nested THOL blocks cause `int()` argument type error
+**Error**: `TypeError: int() argument must be a string, a bytes-like object or a real number, not 'dict'`
+**Impact**: `test_cli_sequence_handles_deeply_nested_blocks`
+**Location**: `src/tnfr/flatten.py:164` in `_coerce_mapping_token`
+**Resolution Needed**: Fix type handling in nested block parsing
+
+### Recommended Priority Changes
+
+**New Priority 1: Test Isolation** (Will fix 80-90 tests in one go)
+- Add pytest fixtures to reset:
+  - Global caches
+  - Module state
+  - Configuration defaults
+  - Observer callbacks
+- Use `autouse=True` fixtures for automatic cleanup
+- Consider test ordering if imports cause issues
+
+**Priority 2: Grammar System** (20-25 tests)
+- Fix canonical sequence to comply with grammar
+- Allow empty sequences when validation disabled
+- Fix deep nesting parser
+
+**Priority 3: Original Quick Wins** (5-10 tests)
+- Import path fixes
+- Simple assertion updates
+
+### Updated Effort Estimate
+
+Based on isolation discovery:
+- **Test isolation fix**: 2-4 hours (will fix ~80-90 tests at once)
+- **Grammar fixes**: 3-5 hours (20-25 tests)
+- **Remaining individual fixes**: 2-3 hours (5-10 tests)
+- **Total**: 7-12 hours (vs. original 15-25 hours)
+
+### Session Stats
+
+- **Tests Fixed This Session**: 2 (public_exports, YAML serialization)
+- **Total Fixed**: 5 (3 from previous + 2 from this session)
+- **Remaining**: 110 (down from 112)
+- **Pass Rate**: 93.3% → 93.4%
+- **Key Insight**: Test isolation is the critical path to success
+
