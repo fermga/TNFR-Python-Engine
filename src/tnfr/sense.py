@@ -1,4 +1,12 @@
-"""Sense calculations."""
+"""Sense calculations and structural operator symbol vector analysis.
+
+This module implements the sense index (Si) calculation and related vector
+operations for analyzing the distribution of structural operator applications.
+
+The 'glyph rose' visualization represents the distribution of structural operator
+symbols in a circular format, where each glyph corresponds to an angle representing
+the associated structural operator.
+"""
 
 from __future__ import annotations
 
@@ -62,13 +70,21 @@ def _resolve_glyph(g: str, mapping: Mapping[str, T]) -> T:
 
 
 def glyph_angle(g: str) -> float:
-    """Return angle for glyph ``g``."""
+    """Return the canonical angle for structural operator symbol ``g``.
+
+    Each structural operator symbol (glyph) is mapped to a specific angle
+    in the circular representation used for sense vector calculations.
+    """
 
     return float(_resolve_glyph(g, ANGLE_MAP))
 
 
 def glyph_unit(g: str) -> complex:
-    """Return unit vector for glyph ``g``."""
+    """Return the unit vector for structural operator symbol ``g``.
+
+    Each structural operator symbol (glyph) corresponds to a unit vector
+    in the complex plane, used for aggregating operator applications.
+    """
 
     return _resolve_glyph(g, GLYPH_UNITS)
 

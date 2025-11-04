@@ -497,7 +497,15 @@ class IntegratorProtocol(Protocol):
 
 
 class Glyph(str, Enum):
-    """Canonical TNFR glyphs."""
+    """Canonical TNFR structural symbols (glyphs).
+
+    Glyphs are the structural symbols (AL, EN, IL, etc.) that represent the
+    application of structural operators. Each structural operator (Emission,
+    Reception, Coherence, etc.) is associated with a specific glyph symbol.
+
+    For public-facing documentation and APIs, refer to these by their structural
+    operator names rather than the internal glyph codes.
+    """
 
     AL = "AL"
     EN = "EN"
@@ -515,11 +523,11 @@ class Glyph(str, Enum):
 
 
 GlyphCode: TypeAlias = Glyph | str
-"""Glyph identifier accepted by selector pipelines and grammars."""
+"""Structural operator symbol (glyph) identifier accepted by selector pipelines and grammars."""
 
 
 GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
-#: Normalised glyph load proportions keyed by :class:`Glyph` or aggregate labels.
+"""Normalised load proportions keyed by structural operator symbol (glyph) or aggregate labels."""
 
 
 class _SelectorLifecycle(Protocol):
@@ -535,13 +543,13 @@ class _SelectorLifecycle(Protocol):
 GlyphSelector: TypeAlias = (
     Callable[[TNFRGraph, NodeId], GlyphCode] | _SelectorLifecycle
 )
-#: Selector callable or object returning the glyph to apply for ``NodeId``.
+"""Selector callable or object returning the structural operator symbol (glyph) to apply for a node."""
 
 SelectorPreselectionMetrics: TypeAlias = Mapping[Any, SelectorMetrics]
-#: Mapping of nodes to their normalised selector metrics.
+"""Mapping of nodes to their normalised selector metrics."""
 
 SelectorPreselectionChoices: TypeAlias = Mapping[Any, Glyph | str]
-#: Mapping of nodes to their preferred glyph choices prior to grammar filters.
+"""Mapping of nodes to their preferred structural operator symbol (glyph) prior to grammar filters."""
 
 SelectorPreselectionPayload: TypeAlias = tuple[
     SelectorPreselectionMetrics,

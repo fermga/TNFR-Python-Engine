@@ -1,5 +1,10 @@
 """Definitions for canonical TNFR structural operators.
 
+Structural operators (Emission, Reception, Coherence, etc.) are the public-facing
+API for applying TNFR transformations to nodes. Each operator is associated with
+a specific glyph (structural symbol like AL, EN, IL, etc.) that represents the
+underlying transformation.
+
 English identifiers are the public API. Spanish wrappers were removed in
 TNFR 2.0, so downstream code must import these classes directly.
 """
@@ -45,43 +50,46 @@ __all__ = [
 
 
 class Operator:
-    """Base class for TNFR operators.
+    """Base class for TNFR structural operators.
 
-    Each operator defines ``name`` (ASCII identifier) and ``glyph``. Calling an
-    instance applies the corresponding glyph to the node.
+    Structural operators (Emission, Reception, Coherence, etc.) are the public-facing
+    API for applying TNFR transformations. Each operator defines a ``name`` (ASCII
+    identifier) and ``glyph`` (structural symbol like AL, EN, IL, etc.) that represents
+    the transformation. Calling an operator instance applies its structural transformation
+    to the target node.
     """
 
     name: ClassVar[str] = "operator"
     glyph: ClassVar[Glyph | None] = None
 
     def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Apply the operator glyph to ``node`` under canonical grammar control.
+        """Apply the structural operator to ``node`` under canonical grammar control.
 
         Parameters
         ----------
         G : TNFRGraph
-            Graph storing TNFR nodes, their coherence telemetry and glyph
-            history.
+            Graph storing TNFR nodes, their coherence telemetry and structural
+            operator history.
         node : Any
             Identifier or object representing the target node within ``G``.
         **kw : Any
             Additional keyword arguments forwarded to the grammar layer.
             Supported keys include ``window`` to constrain the grammar window
-            affected by the glyph application.
+            affected by the operator application.
 
         Raises
         ------
         NotImplementedError
             If ``glyph`` is :data:`None`, meaning the operator has not been
-            bound to a structural glyph.
+            bound to a structural symbol.
 
         Notes
         -----
         The invocation delegates to
         :func:`tnfr.validation.apply_glyph_with_grammar`, which enforces
-        the TNFR grammar before activating the glyph. The grammar may expand,
-        contract or stabilise the neighbourhood so that the operator preserves
-        canonical closure and coherence.
+        the TNFR grammar before activating the structural transformation. The
+        grammar may expand, contract or stabilise the neighbourhood so that the
+        operator preserves canonical closure and coherence.
         """
         if self.glyph is None:
             raise NotImplementedError("Operator without assigned glyph")
@@ -92,10 +100,10 @@ class Operator:
 
 @register_operator
 class Emission(Operator):
-    """Seed coherence by projecting the emission structural pattern.
+    """Emission structural operator. Seeds coherence by projecting the emission pattern.
 
-    Activates glyph ``AL`` to initialise outward resonance around a nascent
-    node.
+    Activates structural symbol ``AL`` to initialise outward resonance around a
+    nascent node.
 
     Examples
     --------
@@ -125,9 +133,9 @@ class Emission(Operator):
 
 @register_operator
 class Reception(Operator):
-    """Stabilise inbound energy to strengthen a node's receptivity.
+    """Reception structural operator. Stabilises inbound energy to strengthen receptivity.
 
-    Activates glyph ``EN`` to anchor external coherence into the node's EPI.
+    Activates structural symbol ``EN`` to anchor external coherence into the node's EPI.
 
     Examples
     --------
@@ -157,9 +165,9 @@ class Reception(Operator):
 
 @register_operator
 class Coherence(Operator):
-    """Reinforce structural alignment across the node and its neighbours.
+    """Coherence structural operator. Reinforces structural alignment across nodes.
 
-    Activates glyph ``IL`` to compress ΔNFR drift and raise the local C(t).
+    Activates structural symbol ``IL`` to compress ΔNFR drift and raise the local C(t).
 
     Examples
     --------
@@ -192,9 +200,9 @@ class Coherence(Operator):
 
 @register_operator
 class Dissonance(Operator):
-    """Inject controlled dissonance to probe structural robustness.
+    """Dissonance structural operator. Injects controlled dissonance to probe robustness.
 
-    Activates glyph ``OZ`` to widen ΔNFR and test bifurcation thresholds.
+    Activates structural symbol ``OZ`` to widen ΔNFR and test bifurcation thresholds.
 
     Examples
     --------
