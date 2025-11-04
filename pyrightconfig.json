@@ -1,0 +1,23 @@
+{
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    "**/node_modules",
+    "**/.pytest_cache",
+    "**/build",
+    "**/dist"
+  ],
+  "reportMissingImports": "warning",
+  "reportMissingTypeStubs": false,
+  "pythonVersion": "3.9",
+  "pythonPlatform": "Linux",
+  "executionEnvironments": [
+    {
+      "root": "src"
+    }
+  ],
+  "stubPath": "src/tnfr/compat",
+  "typeCheckingMode": "basic"
+}
