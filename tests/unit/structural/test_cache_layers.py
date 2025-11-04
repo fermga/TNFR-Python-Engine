@@ -5,9 +5,21 @@ from __future__ import annotations
 import fnmatch
 from typing import Any
 
+import hashlib
+import hmac
+import pickle
+
+import pytest
+
 import networkx as nx
 
-from tnfr.utils import CacheLayer, CacheManager, RedisCacheLayer, ShelveCacheLayer
+from tnfr.utils import (
+    CacheLayer,
+    CacheManager,
+    RedisCacheLayer,
+    SecurityError,
+    ShelveCacheLayer,
+)
 from tnfr.utils import (
     _GRAPH_CACHE_LAYERS_KEY,
     build_cache_manager,
@@ -66,6 +78,119 @@ class _FakeRedis:
 
     def keys(self, pattern: str) -> list[str]:
         return [key for key in self._data if fnmatch.fnmatch(key, pattern)]
+
+
+def _make_hmac_pair(secret: bytes):
+    def signer(payload: bytes) -> bytes:
+        return hmac.new(secret, payload, hashlib.sha256).digest()
+
+    def validator(payload: bytes, signature: bytes) -> bool:
+        expected = hmac.new(secret, payload, hashlib.sha256).digest()
+        return hmac.compare_digest(expected, signature)
+
+    return signer, validator
+
+
+def test_shelve_cache_layer_requires_signing_configuration(tmp_path):
+    with pytest.raises(ValueError):
+        ShelveCacheLayer(
+            str(tmp_path / "invalid.db"),
+            signer=None,
+            validator=None,
+            require_signature=True,
+        )
+
+
+def test_redis_cache_layer_requires_signing_configuration():
+    with pytest.raises(ValueError):
+        RedisCacheLayer(client=_FakeRedis(), require_signature=True)
+
+
+def test_shelve_cache_layer_hardened_signing_round_trip(tmp_path):
+    signer, validator = _make_hmac_pair(b"shelve-secret")
+    layer = ShelveCacheLayer(
+        str(tmp_path / "signed.db"),
+        signer=signer,
+        validator=validator,
+        require_signature=True,
+    )
+    try:
+        layer.store("alpha", {"value": 42})
+        assert layer.load("alpha") == {"value": 42}
+    finally:
+        layer.close()
+
+
+def test_shelve_cache_layer_hardened_rejects_tampering(tmp_path):
+    signer, validator = _make_hmac_pair(b"shelve-secret")
+    layer = ShelveCacheLayer(
+        str(tmp_path / "tamper.db"),
+        signer=signer,
+        validator=validator,
+        require_signature=True,
+    )
+    try:
+        layer.store("alpha", {"value": 1})
+        with layer._lock:  # pylint: disable=protected-access
+            blob = layer._shelf["alpha"]  # type: ignore[attr-defined]
+            assert isinstance(blob, (bytes, bytearray, memoryview))
+            mutated = bytes(blob)
+            mutated = mutated[:-1] + bytes([mutated[-1] ^ 0xFF])
+            layer._shelf["alpha"] = mutated  # type: ignore[attr-defined]
+            layer._shelf.sync()  # type: ignore[attr-defined]
+        with pytest.raises(SecurityError):
+            layer.load("alpha")
+        with layer._lock:  # pylint: disable=protected-access
+            assert "alpha" not in layer._shelf  # type: ignore[attr-defined]
+
+        with layer._lock:  # pylint: disable=protected-access
+            layer._shelf["legacy"] = pickle.dumps({"value": 2})  # type: ignore[attr-defined]
+            layer._shelf.sync()  # type: ignore[attr-defined]
+        with pytest.raises(SecurityError):
+            layer.load("legacy")
+        with layer._lock:  # pylint: disable=protected-access
+            assert "legacy" not in layer._shelf  # type: ignore[attr-defined]
+    finally:
+        layer.close()
+
+
+def test_redis_cache_layer_hardened_signing_round_trip():
+    signer, validator = _make_hmac_pair(b"redis-secret")
+    fake = _FakeRedis()
+    layer = RedisCacheLayer(
+        client=fake,
+        signer=signer,
+        validator=validator,
+        require_signature=True,
+    )
+    layer.store("alpha", {"value": 24})
+    assert layer.load("alpha") == {"value": 24}
+
+
+def test_redis_cache_layer_hardened_rejects_tampering():
+    signer, validator = _make_hmac_pair(b"redis-secret")
+    fake = _FakeRedis()
+    layer = RedisCacheLayer(
+        client=fake,
+        signer=signer,
+        validator=validator,
+        require_signature=True,
+    )
+    layer.store("alpha", {"value": 7})
+    key = "tnfr:cache:alpha"
+    blob = fake._data[key]
+    assert isinstance(blob, (bytes, bytearray, memoryview))
+    mutated = bytes(blob)
+    mutated = mutated[:-1] + bytes([mutated[-1] ^ 0x0F])
+    fake._data[key] = mutated
+    with pytest.raises(SecurityError):
+        layer.load("alpha")
+    assert key not in fake._data
+
+    fake._data[key] = pickle.dumps({"value": 8})
+    with pytest.raises(SecurityError):
+        layer.load("alpha")
+    assert key not in fake._data
 
 def _close_manager(manager: CacheManager | None) -> None:
     if manager is None:
