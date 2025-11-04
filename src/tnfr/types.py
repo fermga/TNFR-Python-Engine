@@ -416,6 +416,7 @@ SelectorMetrics: TypeAlias = tuple[float, float, float]
 SelectorNorms: TypeAlias = Mapping[str, float]
 """Mapping storing maxima used to normalise selector metrics."""
 
+@runtime_checkable
 class _DeltaNFRHookProtocol(Protocol):
     """Callable signature expected for ΔNFR update hooks.
 
@@ -424,6 +425,11 @@ class _DeltaNFRHookProtocol(Protocol):
     arguments are reserved for future extensions and ignored by the core
     engine, keeping compatibility with user-provided hooks that only need the
     graph reference.
+
+    Notes
+    -----
+    Marked with @runtime_checkable to enable isinstance() checks for validating
+    hook implementations conform to the expected callable signature.
     """
 
     def __call__(
@@ -437,8 +443,15 @@ class _DeltaNFRHookProtocol(Protocol):
 DeltaNFRHook: TypeAlias = _DeltaNFRHookProtocol
 #: Callable hook invoked to compute ΔNFR for a :data:`TNFRGraph`.
 
+@runtime_checkable
 class _NodeViewLike(Protocol):
-    """Subset of :class:`networkx.NodeView` behaviour relied on by TNFR."""
+    """Subset of :class:`networkx.NodeView` behaviour relied on by TNFR.
+
+    Notes
+    -----
+    Marked with @runtime_checkable to enable isinstance() checks for validating
+    node view implementations conform to the expected interface.
+    """
 
     def __iter__(self) -> Iterable[Any]: ...
 
@@ -447,14 +460,22 @@ class _NodeViewLike(Protocol):
     def __getitem__(self, node: Any) -> Mapping[str, Any]: ...
 
 
+@runtime_checkable
 class _EdgeViewLike(Protocol):
-    """Subset of :class:`networkx.EdgeView` behaviour relied on by TNFR."""
+    """Subset of :class:`networkx.EdgeView` behaviour relied on by TNFR.
+
+    Notes
+    -----
+    Marked with @runtime_checkable to enable isinstance() checks for validating
+    edge view implementations conform to the expected interface.
+    """
 
     def __iter__(self) -> Iterable[Any]: ...
 
     def __call__(self, data: bool = ...) -> Iterable[Any]: ...
 
 
+@runtime_checkable
 class GraphLike(Protocol):
     """Protocol describing graph objects consumed by TNFR subsystems.
 
@@ -463,6 +484,11 @@ class GraphLike(Protocol):
     ``number_of_nodes`` introspection and a metadata mapping via ``.graph``.
     Metrics, cache utilities and CLI diagnostics assume this interface when
     traversing structural coherence data.
+
+    Notes
+    -----
+    Marked with @runtime_checkable to enable isinstance() checks for validating
+    graph implementations conform to the expected TNFR graph interface.
     """
 
     graph: MutableMapping[str, Any]
@@ -489,8 +515,15 @@ class GraphLike(Protocol):
 
         ...
 
+@runtime_checkable
 class IntegratorProtocol(Protocol):
-    """Interface describing configurable nodal equation integrators."""
+    """Interface describing configurable nodal equation integrators.
+
+    Notes
+    -----
+    Marked with @runtime_checkable to enable isinstance() checks for validating
+    integrator implementations conform to the expected interface.
+    """
 
     def integrate(
         self,
@@ -536,8 +569,15 @@ GlyphCode: TypeAlias = Glyph | str
 GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
 """Normalised load proportions keyed by structural operator symbol (glyph) or aggregate labels."""
 
+@runtime_checkable
 class _SelectorLifecycle(Protocol):
-    """Protocol describing the selector lifecycle supported by the runtime."""
+    """Protocol describing the selector lifecycle supported by the runtime.
+
+    Notes
+    -----
+    Marked with @runtime_checkable to enable isinstance() checks for validating
+    selector implementations conform to the expected lifecycle interface.
+    """
 
     def __call__(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
 

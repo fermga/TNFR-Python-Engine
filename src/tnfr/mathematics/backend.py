@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from ..compat.dataclass import dataclass
 import os
-from typing import Any, Callable, ClassVar, Iterable, Mapping, MutableMapping, Protocol
+from typing import Any, Callable, ClassVar, Iterable, Mapping, MutableMapping, Protocol, runtime_checkable
 
 from ..utils import cached_import, get_logger
 
@@ -30,8 +30,15 @@ logger = get_logger(__name__)
 class BackendUnavailableError(RuntimeError):
     """Raised when a registered backend cannot be constructed."""
 
+@runtime_checkable
 class MathematicsBackend(Protocol):
-    """Structural numerical backend interface."""
+    """Structural numerical backend interface.
+
+    Notes
+    -----
+    Marked with @runtime_checkable to enable isinstance() checks for validating
+    backend implementations conform to the expected mathematical operations interface.
+    """
 
     name: str
     supports_autodiff: bool

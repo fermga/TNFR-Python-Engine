@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from ..compat.dataclass import dataclass
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 import numpy as np
 
@@ -16,8 +16,15 @@ else:  # pragma: no cover - runtime fallback without numpy.typing
 
 __all__ = ["StateProjector", "BasicStateProjector"]
 
+@runtime_checkable
 class StateProjector(Protocol):
-    """Protocol describing state projection callables."""
+    """Protocol describing state projection callables.
+
+    Notes
+    -----
+    Marked with @runtime_checkable to enable isinstance() checks for validating
+    state projector implementations conform to the expected callable interface.
+    """
 
     def __call__(
         self,
