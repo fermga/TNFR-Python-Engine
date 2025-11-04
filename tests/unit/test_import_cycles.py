@@ -17,6 +17,8 @@ from typing import Set
 
 import pytest
 
+from tests.utils import clear_test_module
+
 
 def test_no_circular_imports_utils_package():
     """Verify no circular import cycles in utils package.
@@ -51,12 +53,10 @@ def test_callback_utils_compatibility_shim():
     import importlib
     
     # Clear the module from cache to force reimport
-    if 'tnfr.callback_utils' in sys.modules:
-        del sys.modules['tnfr.callback_utils']
+    clear_test_module('tnfr.callback_utils')
     
     # Also clear utils.callbacks since callback_utils imports from it
-    if 'tnfr.utils.callbacks' in sys.modules:
-        del sys.modules['tnfr.utils.callbacks']
+    clear_test_module('tnfr.utils.callbacks')
     
     with pytest.warns(DeprecationWarning, match="callback_utils.*deprecated"):
         import tnfr.callback_utils
@@ -216,8 +216,7 @@ def test_all_utils_modules_importable():
     
     for module_name in utils_modules:
         # Remove from sys.modules if already imported
-        if module_name in sys.modules:
-            del sys.modules[module_name]
+        clear_test_module(module_name)
         
         # Import fresh
         try:

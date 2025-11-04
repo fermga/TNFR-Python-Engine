@@ -1,0 +1,22 @@
+# CodeQL Configuration
+# This file configures CodeQL analysis for the TNFR Python Engine repository
+
+name: "TNFR CodeQL Configuration"
+
+# Use the default security-and-quality query suite
+queries:
+  - uses: security-and-quality
+
+# Query filters to suppress false positives
+query-filters:
+  # Suppress incomplete URL substring sanitization in test files
+  # Context: Test files use 'module_name in sys.modules' pattern for test
+  # isolation (clearing module cache), not for URL validation. CodeQL
+  # incorrectly flags this as CWE-020 (Incomplete URL substring sanitization).
+  # This is a false positive - the code performs module management, not
+  # security validation.
+  - exclude:
+      id: py/incomplete-url-substring-sanitization
+      paths:
+        - "tests/**/*.py"
+      reason: "Test files use module path checking for test isolation, not URL validation"
