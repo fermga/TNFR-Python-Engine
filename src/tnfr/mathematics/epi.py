@@ -67,7 +67,7 @@ class _EPIValidators:
 
 @dataclass(frozen=True)
 class BEPIElement(_EPIValidators):
-    """Concrete :math:`C^0([0,1]) \oplus \ell^2` element with TNFR operations."""
+    r"""Concrete :math:`C^0([0,1]) \oplus \ell^2` element with TNFR operations."""
 
     f_continuous: Sequence[complex] | np.ndarray
     a_discrete: Sequence[complex] | np.ndarray
