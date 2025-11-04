@@ -24,6 +24,11 @@ from tnfr.observers import (
 from tnfr.utils import callback_manager
 
 
+# Validation constants
+PARALLEL_N_JOBS = 2  # Number of parallel workers for Si computation
+NUMERICAL_TOLERANCE = 1e-6  # Tolerance for numerical comparison
+
+
 def validate_observer_registration():
     """Validate that observer callbacks register correctly."""
     print("=" * 60)
@@ -66,9 +71,10 @@ def validate_trig_cache_sync():
     trig1 = get_trig_cache(G)
     assert trig1.cos, "Trig cache not populated"
     
-    # Get trig cache again (should be cached)
+    # Get trig cache again - should return cached instance or equivalent values
+    # The cache uses version-based invalidation, so identity may differ but values must match
     trig2 = get_trig_cache(G)
-    assert trig1 is trig2 or trig1.cos == trig2.cos, "Trig cache not synchronized"
+    assert trig1.cos == trig2.cos, "Trig cache values not synchronized"
     
     # Verify cache is used in coherence module
     nodes, W = coherence_matrix(G)
@@ -93,10 +99,10 @@ def validate_parallel_si():
     G = nx.cycle_graph(20)
     inject_defaults(G)
     init_node_attrs(G, override=True)
-    G.graph["SI_N_JOBS"] = 2
+    G.graph["SI_N_JOBS"] = PARALLEL_N_JOBS
     
     # Compute Si with parallelization
-    si_parallel = compute_Si(G, inplace=False, n_jobs=2)
+    si_parallel = compute_Si(G, inplace=False, n_jobs=PARALLEL_N_JOBS)
     assert si_parallel, "Parallel Si computation failed"
     assert len(si_parallel) == 20, "Not all nodes computed"
     
@@ -109,7 +115,7 @@ def validate_parallel_si():
     # Results should be similar (small numerical differences acceptable)
     for node in si_parallel:
         diff = abs(si_parallel[node] - si_sequential[node])
-        assert diff < 1e-6, f"Si mismatch for node {node}: {diff}"
+        assert diff < NUMERICAL_TOLERANCE, f"Si mismatch for node {node}: {diff}"
     
     print(f"✓ Parallel Si computation working")
     print(f"✓ Sequential and parallel results match")
