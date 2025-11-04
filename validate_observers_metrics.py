@@ -69,7 +69,7 @@ def validate_trig_cache_sync():
     
     # Get trig cache from first module
     trig1 = get_trig_cache(G)
-    assert trig1.cos, "Trig cache not populated"
+    assert trig1.cos is not None and len(trig1.cos) > 0, "Trig cache not populated"
     
     # Get trig cache again - should return cached instance or equivalent values
     # The cache uses version-based invalidation, so identity may differ but values must match
@@ -82,7 +82,7 @@ def validate_trig_cache_sync():
     
     # Get trig cache after coherence computation
     trig3 = get_trig_cache(G)
-    assert trig3.cos, "Trig cache lost after coherence"
+    assert trig3.cos is not None and len(trig3.cos) > 0, "Trig cache lost after coherence"
     
     print(f"✓ Trig cache synchronized across modules")
     print(f"✓ Cache persists after coherence computation")
@@ -103,7 +103,7 @@ def validate_parallel_si():
     
     # Compute Si with parallelization
     si_parallel = compute_Si(G, inplace=False, n_jobs=PARALLEL_N_JOBS)
-    assert si_parallel, "Parallel Si computation failed"
+    assert si_parallel is not None, "Parallel Si computation failed"
     assert len(si_parallel) == 20, "Not all nodes computed"
     
     # Compute Si sequentially
@@ -153,7 +153,8 @@ def validate_coherence_metrics():
     
     # Test Si computation
     si_values = compute_Si(G, inplace=False)
-    assert si_values, "Si computation failed"
+    assert si_values is not None, "Si computation failed"
+    assert len(si_values) > 0, "Si values empty"
     for node, si in si_values.items():
         assert 0 <= si <= 1, f"Si out of bounds for node {node}: {si}"
     
