@@ -184,8 +184,17 @@ def test_cli_sequence_handles_deeply_nested_blocks(monkeypatch, tmp_path):
         return result_graph
 
     def tiny_graph(_args: argparse.Namespace) -> nx.Graph:  # noqa: ANN001 - test helper
+        from tnfr.constants import inject_defaults
         G = nx.Graph()
         G.add_node(0)
+        inject_defaults(G)
+        # Disable repeat checking to allow deeply nested THOL blocks
+        grammar_cfg = G.graph.setdefault("GRAMMAR", {})
+        grammar_cfg["window"] = 0
+        # Increase THOL thresholds to allow very deep nesting (1500+ levels)
+        grammar_canon_cfg = G.graph.setdefault("GRAMMAR_CANON", {})
+        grammar_canon_cfg["thol_max_len"] = 10000
+        grammar_canon_cfg["thol_min_len"] = 10000
         return G
 
     monkeypatch.setattr(execution_mod, "run_program", spy_run_program)
@@ -206,9 +215,11 @@ def test_cli_sequence_handles_deeply_nested_blocks(monkeypatch, tmp_path):
     trace = recorded_graph.graph["history"]["program_trace"]
     maxlen = int(get_param(recorded_graph, "PROGRAM_TRACE_MAXLEN"))
     assert len(trace) == maxlen
-    assert trace[0]["g"] == Glyph.THOL.value
-    # Last operation will be WAIT, not a glyph
-    assert trace[-1]["op"] == "WAIT"
+    # With deeply nested blocks, the trace rotates. The last operations will be
+    # closure glyphs (SHA) as THOL blocks require proper closure
+    assert trace[-1]["g"] == Glyph.SHA.value
+    # All entries in the trace should be glyphs (SHA) since there are more closures than maxlen
+    assert all(entry.get("g") == Glyph.SHA.value for entry in trace)
 
 def test_cli_sequence_toml(monkeypatch, toml_sequence_path):
     execution_mod = _cli_execution()

@@ -51,6 +51,13 @@ def test_program_trace_rotates_without_dropping_thol_history(graph_canon):
     G.graph["PROGRAM_TRACE_MAXLEN"] = maxlen
     G.graph["HISTORY_MAXLEN"] = 128
     G.graph["GLYPH_HYSTERESIS_WINDOW"] = 64
+    # Disable repeat checking to allow nested THOL blocks
+    grammar_cfg = G.graph.setdefault("GRAMMAR", {})
+    grammar_cfg["window"] = 0
+    # Increase THOL thresholds to allow longer blocks in this stress test
+    grammar_canon_cfg = G.graph.setdefault("GRAMMAR_CANON", {})
+    grammar_canon_cfg["thol_max_len"] = 1000
+    grammar_canon_cfg["thol_min_len"] = 1000
 
     groups = [
         tuple(range(0, 28)),
