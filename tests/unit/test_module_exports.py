@@ -133,13 +133,16 @@ def test_utils_callbacks_exports():
         assert hasattr(callbacks, symbol), \
             f"callbacks should export '{symbol}'"
 
-    # Private helper functions (not in __all__ but used by callback_utils)
+    # Private helper functions (not in callbacks.__all__ but accessible)
+    # Note: These ARE in callback_utils.__all__ for backward compatibility
     helper_functions = [
         '_normalize_callbacks',
         '_normalize_callback_entry',
     ]
 
     for func_name in helper_functions:
+        assert func_name not in callbacks.__all__, \
+            f"callbacks.__all__ should NOT include private function '{func_name}'"
         assert hasattr(callbacks, func_name), \
             f"callbacks should define {func_name} for internal use"
         func = getattr(callbacks, func_name)
