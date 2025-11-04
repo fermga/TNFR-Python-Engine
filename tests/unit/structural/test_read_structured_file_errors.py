@@ -8,7 +8,6 @@ import pytest
 
 import tnfr.utils.io as io_mod
 
-
 def test_read_structured_file_missing_file(tmp_path: Path):
     path = tmp_path / "missing.json"
     with pytest.raises(io_mod.StructuredFileError) as excinfo:
@@ -17,7 +16,6 @@ def test_read_structured_file_missing_file(tmp_path: Path):
     assert msg.startswith("Could not read")
     assert str(path) in msg
 
-
 def test_read_structured_file_unsupported_suffix(tmp_path: Path):
     path = tmp_path / "data.txt"
     path.write_text("a", encoding="utf-8")
@@ -25,7 +23,6 @@ def test_read_structured_file_unsupported_suffix(tmp_path: Path):
         io_mod.read_structured_file(path)
     msg = str(exc.value)
     assert msg == f"Error parsing {path}: Unsupported suffix: .txt"
-
 
 def test_read_structured_file_permission_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -45,7 +42,6 @@ def test_read_structured_file_permission_error(
     assert msg.startswith("Could not read")
     assert str(path) in msg
 
-
 def test_read_structured_file_corrupt_json(tmp_path: Path):
     path = tmp_path / "bad.json"
     path.write_text("{bad json}", encoding="utf-8")
@@ -54,7 +50,6 @@ def test_read_structured_file_corrupt_json(tmp_path: Path):
     msg = str(excinfo.value)
     assert msg.startswith("Error parsing JSON file at")
     assert str(path) in msg
-
 
 def test_read_structured_file_corrupt_yaml(tmp_path: Path):
     pytest.importorskip("yaml")
@@ -66,7 +61,6 @@ def test_read_structured_file_corrupt_yaml(tmp_path: Path):
     assert msg.startswith("Error parsing YAML file at")
     assert str(path) in msg
 
-
 def test_read_structured_file_corrupt_toml(tmp_path: Path):
     if importlib.util.find_spec("tomllib") is None:
         pytest.importorskip("tomli")
@@ -77,7 +71,6 @@ def test_read_structured_file_corrupt_toml(tmp_path: Path):
     msg = str(excinfo.value)
     assert msg.startswith("Error parsing TOML file at")
     assert str(path) in msg
-
 
 def test_read_structured_file_missing_dependency(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -97,7 +90,6 @@ def test_read_structured_file_missing_dependency(
     assert str(path) in msg
     assert "pyyaml" in msg
 
-
 def test_read_structured_file_missing_dependency_toml(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
@@ -116,7 +108,6 @@ def test_read_structured_file_missing_dependency_toml(
     assert str(path) in msg
     assert "toml" in msg.lower()
 
-
 def test_read_structured_file_unicode_error(tmp_path: Path):
     path = tmp_path / "bad.json"
     path.write_bytes(b"\xff\xfe\xfa")
@@ -125,7 +116,6 @@ def test_read_structured_file_unicode_error(tmp_path: Path):
     msg = str(excinfo.value)
     assert msg.startswith("Encoding error while reading")
     assert str(path) in msg
-
 
 def test_json_error_not_reported_as_toml(
     monkeypatch: pytest.MonkeyPatch,
@@ -141,7 +131,6 @@ def test_json_error_not_reported_as_toml(
     assert msg.startswith("Error parsing JSON file at")
     assert not msg.startswith("Error parsing TOML file")
 
-
 def test_import_error_not_reported_as_toml(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -155,7 +144,6 @@ def test_import_error_not_reported_as_toml(
     msg = io_mod._format_structured_file_error(Path("data.toml"), err)
     assert msg.startswith("Missing dependency parsing")
     assert not msg.startswith("Error parsing TOML file")
-
 
 def test_read_structured_file_ignores_missing_yaml_when_parsing_json(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -174,7 +162,6 @@ def test_read_structured_file_ignores_missing_yaml_when_parsing_json(
     monkeypatch.setattr(io_mod, "yaml", None)
     monkeypatch.setattr(io_mod, "tomllib", None)
     assert io_mod.read_structured_file(path) == {"a": 1}
-
 
 def test_read_structured_file_unhandled_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch

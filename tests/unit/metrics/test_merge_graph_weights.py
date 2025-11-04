@@ -3,7 +3,6 @@ import pytest
 from tnfr.constants import DEFAULTS
 from tnfr.metrics.common import merge_and_normalize_weights, merge_graph_weights
 
-
 @pytest.mark.parametrize(
     "key",
     [
@@ -21,7 +20,6 @@ def test_merge_graph_weights_fallback_for_none(graph_canon, key):
 
     assert merged == DEFAULTS[key_name]
     assert normalized == pytest.approx(DEFAULTS[key_name])
-
 
 @pytest.mark.parametrize(
     "override,key",

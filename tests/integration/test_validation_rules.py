@@ -11,13 +11,11 @@ from tnfr.validation import GrammarContext, glyph_function_name, rules as rules_
 from tnfr.validation.soft_filters import maybe_force
 from tnfr.validation.compatibility import CANON_COMPAT, CANON_FALLBACK
 
-
 def _graph_with_node():
     G = nx.Graph()
     inject_defaults(G)
     G.add_node(0)
     return G
-
 
 def test_maybe_force_recovers_original_when_dnfr_high():
     G = _graph_with_node()
@@ -39,7 +37,6 @@ def test_maybe_force_recovers_original_when_dnfr_high():
 
     assert glyph_function_name(forced) == MUTATION
 
-
 def test_check_compatibility_returns_fallback_glyph():
     G = _graph_with_node()
     nd = G.nodes[0]
@@ -51,7 +48,6 @@ def test_check_compatibility_returns_fallback_glyph():
     successors = {glyph_function_name(g) for g in CANON_COMPAT[Glyph.AL]}
     assert MUTATION not in successors
     assert glyph_function_name(result) == glyph_function_name(CANON_FALLBACK[Glyph.AL])
-
 
 def test_check_oz_to_zhir_requires_recent_oz():
     G = _graph_with_node()

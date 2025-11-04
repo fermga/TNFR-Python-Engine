@@ -6,7 +6,6 @@ import networkx as nx
 
 from tnfr.node import NodeNX
 
-
 def test_from_graph_thread_safety():
     G = nx.Graph()
     G.add_node(1)

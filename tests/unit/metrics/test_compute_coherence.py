@@ -4,7 +4,6 @@ import pytest
 
 from tnfr.metrics.common import compute_coherence
 
-
 def naive_compute_coherence(G):
     dnfr_sum = 0.0
     depi_sum = 0.0
@@ -20,7 +19,6 @@ def naive_compute_coherence(G):
         dnfr_mean = depi_mean = 0.0
     return 1.0 / (1.0 + dnfr_mean + depi_mean)
 
-
 def test_compute_coherence_typical(graph_canon):
     G = graph_canon()
     G.add_node(0, dnfr=0.1, dEPI=0.2)
@@ -28,7 +26,6 @@ def test_compute_coherence_typical(graph_canon):
     result = compute_coherence(G)
     expected = 1.0 / (1.0 + (0.1 + 0.4) / 2 + (0.2 + 0.5) / 2)
     assert result == pytest.approx(expected)
-
 
 def test_compute_coherence_precision_improved(graph_canon):
     G = graph_canon()
@@ -45,7 +42,6 @@ def test_compute_coherence_precision_improved(graph_canon):
     assert result == expected
     assert abs(result - expected) < abs(naive - expected)
 
-
 def test_compute_coherence_return_means(graph_canon):
     G = graph_canon()
     G.add_node(0, dnfr=0.1, dEPI=0.2)
@@ -57,7 +53,6 @@ def test_compute_coherence_return_means(graph_canon):
     assert C == pytest.approx(expected_C)
     assert dnfr_mean == pytest.approx(expected_dnfr)
     assert depi_mean == pytest.approx(expected_depi)
-
 
 def test_compute_coherence_without_numpy(monkeypatch, graph_canon):
     monkeypatch.setattr("tnfr.metrics.common.get_numpy", lambda: None)

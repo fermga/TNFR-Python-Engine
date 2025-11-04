@@ -40,7 +40,6 @@ __all__ = (
     "mix_groups",
 )
 
-
 def convert_value(
     value: Any,
     conv: Callable[[Any], T],
@@ -74,9 +73,7 @@ def convert_value(
         return False, None
     return True, converted
 
-
 _DEFAULT_SENTINELS = frozenset({"auto", "none", "null"})
-
 
 def normalize_optional_int(
     value: Any,
@@ -147,7 +144,6 @@ def normalize_optional_int(
 
     return result
 
-
 def negative_weights_warn_once(
     *, maxsize: int = _MAX_NEGATIVE_WARN_ONCE
 ) -> Callable[[Mapping[str, float]], None]:
@@ -157,12 +153,10 @@ def negative_weights_warn_once(
         _collections_logger, NEGATIVE_WEIGHTS_MSG, maxsize=maxsize
     )
 
-
 def _log_negative_weights(negatives: Mapping[str, float]) -> None:
     """Log negative weight warnings without deduplicating keys."""
 
     _collections_logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
-
 
 def _resolve_negative_warn_handler(
     warn_once: bool | Callable[[Mapping[str, float]], None],
@@ -175,12 +169,10 @@ def _resolve_negative_warn_handler(
         return negative_weights_warn_once()
     return _log_negative_weights
 
-
 def is_non_string_sequence(obj: Any) -> bool:
     """Return ``True`` if ``obj`` is an ``Iterable`` but not string-like or a mapping."""
 
     return isinstance(obj, Iterable) and not isinstance(obj, (*STRING_TYPES, Mapping))
-
 
 def flatten_structure(
     obj: Any,
@@ -208,10 +200,8 @@ def flatten_structure(
         else:
             yield item
 
-
 MAX_MATERIALIZE_DEFAULT: int = 1000
 """Default materialization limit used by :func:`ensure_collection`."""
-
 
 def normalize_materialize_limit(max_materialize: int | None) -> int | None:
     """Normalize and validate ``max_materialize`` returning a usable limit."""
@@ -223,7 +213,6 @@ def normalize_materialize_limit(max_materialize: int | None) -> int | None:
         raise ValueError("'max_materialize' must be non-negative")
     return limit
 
-
 @overload
 def ensure_collection(
     it: Iterable[T],
@@ -234,7 +223,6 @@ def ensure_collection(
 ) -> Collection[T]:
     ...
 
-
 @overload
 def ensure_collection(
     it: Iterable[T],
@@ -244,7 +232,6 @@ def ensure_collection(
     return_view: Literal[True],
 ) -> tuple[Collection[T], TypingIterable[T]]:
     ...
-
 
 def ensure_collection(
     it: Iterable[T],
@@ -320,7 +307,6 @@ def ensure_collection(
         raise ValueError(msg)
     return items
 
-
 def _convert_and_validate_weights(
     dict_like: Mapping[str, Any],
     keys: Iterable[str] | Sequence[str],
@@ -360,7 +346,6 @@ def _convert_and_validate_weights(
 
     return weights, keys_list, total
 
-
 def normalize_weights(
     dict_like: Mapping[str, Any],
     keys: Iterable[str] | Sequence[str],
@@ -387,7 +372,6 @@ def normalize_weights(
         return {k: uniform for k in keys_list}
     return {k: w / total for k, w in weights.items()}
 
-
 def normalize_counter(
     counts: Mapping[str, float | int],
 ) -> tuple[dict[str, float], float]:
@@ -398,7 +382,6 @@ def normalize_counter(
         return {}, 0
     dist = {k: v / total for k, v in counts.items() if v}
     return dist, total
-
 
 def mix_groups(
     dist: Mapping[str, float],

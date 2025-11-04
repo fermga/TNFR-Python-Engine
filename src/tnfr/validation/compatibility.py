@@ -51,13 +51,11 @@ _STRUCTURAL_COMPAT: dict[str, set[str]] = {
     },
 }
 
-
 def _name_to_glyph(name: str) -> Glyph:
     glyph = _grammar.function_name_to_glyph(name)
     if glyph is None:
         raise KeyError(f"No glyph mapped to structural operator '{name}'")
     return glyph
-
 
 def _translate_structural() -> tuple[dict[Glyph, set[Glyph]], dict[Glyph, Glyph]]:
     compat: dict[Glyph, set[Glyph]] = {}
@@ -68,7 +66,6 @@ def _translate_structural() -> tuple[dict[Glyph, set[Glyph]], dict[Glyph, Glyph]
     for src, target in _STRUCTURAL_FALLBACK.items():
         fallback[_name_to_glyph(src)] = _name_to_glyph(target)
     return compat, fallback
-
 
 # Canonical fallbacks when a transition is not allowed (structural names)
 _STRUCTURAL_FALLBACK: dict[str, str] = {
@@ -85,7 +82,6 @@ _STRUCTURAL_FALLBACK: dict[str, str] = {
     EXPANSION: RESONANCE,
     MUTATION: COHERENCE,
 }
-
 
 CANON_COMPAT, CANON_FALLBACK = _translate_structural()
 

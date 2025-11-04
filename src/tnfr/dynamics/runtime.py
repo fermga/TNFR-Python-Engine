@@ -63,7 +63,6 @@ __all__ = (
     "run",
 )
 
-
 def _normalize_job_overrides(
     job_overrides: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
@@ -106,7 +105,6 @@ def _normalize_job_overrides(
             key_str = key_str[: -len("_N_JOBS")]
         normalized[key_str] = value
     return normalized
-
 
 def _resolve_jobs_override(
     overrides: Mapping[str, Any],
@@ -165,9 +163,7 @@ def _resolve_jobs_override(
         sentinels=None,
     )
 
-
 _INTEGRATOR_CACHE_KEY = "_integrator_cache"
-
 
 def _call_integrator_factory(factory: Any, G: TNFRGraph) -> Any:
     """Invoke an integrator factory respecting optional graph injection."""
@@ -245,7 +241,6 @@ def _call_integrator_factory(factory: Any, G: TNFRGraph) -> Any:
         )
     return factory()
 
-
 def _resolve_integrator_instance(G: TNFRGraph) -> integrators.AbstractIntegrator:
     """Return an integrator instance configured on ``G`` or a default."""
 
@@ -285,7 +280,6 @@ def _resolve_integrator_instance(G: TNFRGraph) -> integrators.AbstractIntegrator
     G.graph[_INTEGRATOR_CACHE_KEY] = (candidate, instance)
     return instance
 
-
 def _run_before_callbacks(
     G: TNFRGraph,
     *,
@@ -306,7 +300,6 @@ def _run_before_callbacks(
             "apply_glyphs": apply_glyphs,
         },
     )
-
 
 def _prepare_dnfr(
     G: TNFRGraph,
@@ -369,7 +362,6 @@ def _prepare_dnfr(
             compute_si_fn = compute_Si
         compute_si_fn(G, inplace=True, n_jobs=si_jobs)
 
-
 def _update_nodes(
     G: TNFRGraph,
     *,
@@ -421,7 +413,6 @@ def _update_nodes(
     )
     adaptation.adapt_vf_by_coherence(G, n_jobs=vf_jobs)
 
-
 def _update_epi_hist(G: TNFRGraph) -> None:
     """Maintain the rolling EPI history used by remeshing heuristics."""
 
@@ -435,12 +426,10 @@ def _update_epi_hist(G: TNFRGraph) -> None:
         G.graph["_epi_hist"] = epi_hist
     epi_hist.append({n: get_attr(nd, ALIAS_EPI, 0.0) for n, nd in G.nodes(data=True)})
 
-
 def _maybe_remesh(G: TNFRGraph) -> None:
     """Trigger remeshing when stability thresholds are satisfied."""
 
     apply_remesh_if_globally_stable(G)
-
 
 def _run_validators(G: TNFRGraph) -> None:
     """Execute registered validators ensuring canonical invariants hold."""
@@ -448,7 +437,6 @@ def _run_validators(G: TNFRGraph) -> None:
     from ..validation import run_validators
 
     run_validators(G)
-
 
 def _run_after_callbacks(G, *, step_idx: int) -> None:
     """Notify ``AFTER_STEP`` observers with the latest structural metrics."""
@@ -504,7 +492,6 @@ def _run_after_callbacks(G, *, step_idx: int) -> None:
             if isinstance(math_summary, MutableMapping):
                 math_summary["nu_f"] = dict(nu_f_summary)
 
-
 def _get_math_engine_config(G: TNFRGraph) -> MutableMapping[str, Any] | None:
     """Return the mutable math-engine configuration stored on ``G``."""
 
@@ -516,7 +503,6 @@ def _get_math_engine_config(G: TNFRGraph) -> MutableMapping[str, Any] | None:
     cfg_mutable: MutableMapping[str, Any] = dict(cfg_raw)
     G.graph["MATH_ENGINE"] = cfg_mutable
     return cfg_mutable
-
 
 def _initialise_math_state(
     G: TNFRGraph,
@@ -557,7 +543,6 @@ def _initialise_math_state(
     normalised = averaged / norm
     cfg.setdefault("_state_origin", "projected")
     return normalised
-
 
 def _advance_math_engine(
     G: TNFRGraph,
@@ -805,7 +790,6 @@ def step(
     _run_validators(G)
     _run_after_callbacks(G, step_idx=step_idx)
     publish_graph_cache_metrics(G)
-
 
 def run(
     G: TNFRGraph,

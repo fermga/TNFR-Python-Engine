@@ -25,16 +25,16 @@ Functions prefixed with ``_`` are internal implementation details subject to cha
 
     from tnfr.utils import clamp, json_dumps, normalize_weights
     from tnfr.utils import CacheManager, cached_node_list
-    
+
     # Numeric operations
     value = clamp(x, 0.0, 1.0)
-    
+
     # Data normalization
     weights = normalize_weights(raw_weights, ['phase', 'epi', 'vf'])
-    
+
     # Caching
     nodes = cached_node_list(G)
-    
+
     # Serialization
     data = json_dumps(obj, sort_keys=True)
 
@@ -262,7 +262,6 @@ def __getattr__(name: str) -> Any:  # pragma: no cover - trivial delegation
     if name in _DYNAMIC_EXPORTS:
         return getattr(_init, name)
     raise AttributeError(name)
-
 
 def __dir__() -> list[str]:  # pragma: no cover - trivial delegation
     return sorted(set(globals()) | set(_DYNAMIC_EXPORTS))

@@ -20,10 +20,9 @@ from tests.helpers.validation import (
     assert_epi_vf_in_bounds,
 )
 
-
 class BaseStructuralTest(abc.ABC):
     """Base class for structural validation tests.
-    
+
     Provides common test patterns for ΔNFR conservation, homogeneity,
     and structural bounds checking that can be reused across test suites.
     """
@@ -31,9 +30,9 @@ class BaseStructuralTest(abc.ABC):
     @abc.abstractmethod
     def create_test_graph(self, **kwargs: Any) -> nx.Graph:
         """Create a test graph with specified parameters.
-        
+
         Subclasses must implement this to provide domain-specific graphs.
-        
+
         Parameters
         ----------
         **kwargs : Any
@@ -43,7 +42,7 @@ class BaseStructuralTest(abc.ABC):
             - seed : int - Random seed for reproducibility
             - epi_value : float - Homogeneous EPI value
             - vf_value : float - Homogeneous νf value
-        
+
         Returns
         -------
         nx.Graph
@@ -68,7 +67,7 @@ class BaseStructuralTest(abc.ABC):
             data[EPI_PRIMARY] = epi_val
             data[VF_PRIMARY] = vf_val
             data[DNFR_PRIMARY] = 0.0
-        
+
         from tnfr.dynamics import dnfr_epi_vf_mixed
         dnfr_epi_vf_mixed(graph)
         assert_dnfr_homogeneous_stable(graph)
@@ -88,10 +87,9 @@ class BaseStructuralTest(abc.ABC):
             vf_max=vf_max,
         )
 
-
 class BaseOperatorTest(abc.ABC):
     """Base class for operator generation and validation tests.
-    
+
     Provides common patterns for testing operator properties including
     hermiticity, spectral properties, and parameter validation.
     """
@@ -99,9 +97,9 @@ class BaseOperatorTest(abc.ABC):
     @abc.abstractmethod
     def create_operator(self, **kwargs: Any) -> Any:
         """Create an operator with specified parameters.
-        
+
         Subclasses must implement this to provide domain-specific operators.
-        
+
         Parameters
         ----------
         **kwargs : Any
@@ -111,7 +109,7 @@ class BaseOperatorTest(abc.ABC):
             - nu_f : float - Structural frequency parameter
             - scale : float - Operator scale parameter
             - rng : np.random.Generator - Random number generator
-        
+
         Returns
         -------
         Any
@@ -151,10 +149,9 @@ class BaseOperatorTest(abc.ABC):
             eigenvalues = np.linalg.eigvalsh(matrix)
         assert np.all(np.isreal(eigenvalues)), "Eigenvalues not real"
 
-
 class BaseValidatorTest(abc.ABC):
     """Base class for nodal and network validator tests.
-    
+
     Provides common patterns for testing validation rules including
     attribute presence, bounds checking, and structural constraints.
     """
@@ -192,7 +189,6 @@ class BaseValidatorTest(abc.ABC):
         phase = graph.nodes[node].get(phase_key, 0.0)
         assert -math.pi <= phase <= math.pi, f"Phase {phase} out of range"
 
-
 # Parametrized fixtures for common test scenarios
 @pytest.fixture(params=[
     {"num_nodes": 5, "edge_probability": 0.3, "seed": 42},
@@ -203,7 +199,6 @@ def parametrized_graph_config(request):
     """Parametrized graph configurations for reducing test redundancy."""
     return request.param
 
-
 @pytest.fixture(params=[
     {"epi_value": 0.0, "vf_value": 1.0},
     {"epi_value": 0.5, "vf_value": 1.5},
@@ -213,12 +208,10 @@ def parametrized_homogeneous_config(request):
     """Parametrized homogeneous configurations for reducing test redundancy."""
     return request.param
 
-
 @pytest.fixture(params=[2, 3, 4, 5, 8])
 def parametrized_operator_dimension(request):
     """Parametrized operator dimensions for reducing test redundancy."""
     return request.param
-
 
 @pytest.fixture(params=[
     {"topology": "laplacian", "nu_f": 1.0, "scale": 1.0},

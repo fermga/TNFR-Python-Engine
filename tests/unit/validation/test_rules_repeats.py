@@ -9,7 +9,6 @@ from tnfr.types import Glyph
 from tnfr.validation.soft_filters import check_repeats
 from tnfr.validation import GrammarContext, glyph_function_name
 
-
 def _ctx_with_node(graph_canon, cfg_soft):
     """Return a grammar context and node id seeded with ``cfg_soft``."""
 
@@ -18,7 +17,6 @@ def _ctx_with_node(graph_canon, cfg_soft):
     G.add_node(node_id)
     ctx = GrammarContext(G=G, cfg_soft=cfg_soft, cfg_canon={}, norms={})
     return ctx, node_id
-
 
 def test_check_repeats_swaps_to_configured_fallback(graph_canon):
     cfg_soft = {
@@ -34,7 +32,6 @@ def test_check_repeats_swaps_to_configured_fallback(graph_canon):
 
     assert glyph_function_name(swapped) == SILENCE
 
-
 def test_check_repeats_leaves_non_recent_candidate(graph_canon):
     cfg_soft = {
         "window": 4,
@@ -48,7 +45,6 @@ def test_check_repeats_leaves_non_recent_candidate(graph_canon):
     cand = check_repeats(ctx, node_id, Glyph.RA)
 
     assert glyph_function_name(cand) == RESONANCE
-
 
 def test_check_repeats_with_zero_window_passthrough(graph_canon):
     cfg_soft = {

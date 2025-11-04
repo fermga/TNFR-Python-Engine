@@ -1,10 +1,9 @@
 import logging
 import sys
 
-
 def reimport_logging_utils():
     """Re-import logging_utils to ensure fresh module state.
-    
+
     This function deletes the module from sys.modules and re-imports it,
     which is necessary for test isolation when test_version_resolution
     clears all tnfr modules from sys.modules.
@@ -16,10 +15,8 @@ def reimport_logging_utils():
     import tnfr.utils.init as logging_utils
     return logging_utils
 
-
 # Import after defining reimport function
 import tnfr.utils.init as logging_utils
-
 
 def test_get_logger_configures_root_once():
     root = logging.getLogger()
@@ -33,7 +30,6 @@ def test_get_logger_configures_root_once():
     logging_utils.get_logger("again")
     assert len(root.handlers) == 1
 
-
 def test_warn_once_with_mapping(caplog):
     logger = logging.getLogger("tnfr.test.warn_once.mapping")
     warn_once = logging_utils.warn_once(logger, "values: %s")
@@ -44,7 +40,6 @@ def test_warn_once_with_mapping(caplog):
 
     messages = [record.message for record in caplog.records]
     assert messages == ["values: {'a': 1, 'b': 2}", "values: {'c': 4}"]
-
 
 def test_warn_once_with_key_payload(caplog):
     logger = logging.getLogger("tnfr.test.warn_once.key")
@@ -57,7 +52,6 @@ def test_warn_once_with_key_payload(caplog):
 
     messages = [record.message for record in caplog.records]
     assert messages == ["value: alpha warning", "value: beta warning"]
-
 
 def test_warn_once_clear_and_unbounded(caplog):
     logger = logging.getLogger("tnfr.test.warn_once.clear")

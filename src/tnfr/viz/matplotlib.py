@@ -12,12 +12,10 @@ from matplotlib.figure import Figure
 
 PathLike = str | Path
 
-
 def _normalise_path(save_path: PathLike | None) -> Path | None:
     if save_path is None:
         return None
     return Path(save_path).expanduser().resolve()
-
 
 def _prepare_metadata(base: Mapping[str, str] | None = None, **entries: float | str) -> MutableMapping[str, str]:
     metadata: MutableMapping[str, str] = {"engine": "TNFR"}
@@ -26,7 +24,6 @@ def _prepare_metadata(base: Mapping[str, str] | None = None, **entries: float | 
     for key, value in entries.items():
         metadata[key] = str(value)
     return metadata
-
 
 def plot_coherence_matrix(
     coherence_matrix: np.ndarray,
@@ -98,7 +95,6 @@ def plot_coherence_matrix(
         )
 
     return fig, ax
-
 
 def plot_phase_sync(
     phase_paths: np.ndarray,
@@ -178,7 +174,6 @@ def plot_phase_sync(
 
     return fig, ax
 
-
 def plot_spectrum_path(
     frequencies: np.ndarray,
     spectrum: np.ndarray,
@@ -243,4 +238,3 @@ def plot_spectrum_path(
         )
 
     return fig, ax
-

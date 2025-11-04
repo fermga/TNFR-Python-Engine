@@ -10,7 +10,6 @@ from .operators import CoherenceOperator
 
 __all__ = ["dcoh"]
 
-
 def _as_coherent_vector(
     state: Sequence[complex] | np.ndarray,
     *,
@@ -26,7 +25,6 @@ def _as_coherent_vector(
         )
     return vector
 
-
 def _normalise_vector(
     vector: np.ndarray,
     *,
@@ -37,7 +35,6 @@ def _normalise_vector(
     if np.isclose(norm, 0.0, atol=atol):
         raise ValueError(f"Cannot normalise null coherence state {label}.")
     return vector / norm
-
 
 def dcoh(
     psi1: Sequence[complex] | np.ndarray,

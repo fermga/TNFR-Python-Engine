@@ -19,7 +19,6 @@ from . import ValidationOutcome, Validator
 
 __all__ = ("NFRValidator",)
 
-
 @dataclass(slots=True)
 class NFRValidator(Validator[np.ndarray]):
     """Validate spectral states against TNFR canonical invariants."""
@@ -156,4 +155,3 @@ class NFRValidator(Validator[np.ndarray]):
         if not failed_checks:
             return "All validation checks passed."
         return "Failed checks: " + ", ".join(failed_checks) + "."
-

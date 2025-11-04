@@ -9,7 +9,6 @@ import pytest
 
 from tnfr.cli import main
 
-
 class TestMathRunSubcommand:
     """Tests for the ``tnfr math.run`` subcommand."""
 
@@ -84,7 +83,6 @@ class TestMathRunSubcommand:
         captured = capsys.readouterr()
         assert "Unknown preset" in captured.out
         assert "Available presets" in captured.out
-
 
 class TestEpiValidateSubcommand:
     """Tests for the ``tnfr epi.validate`` subcommand."""
@@ -183,7 +181,6 @@ class TestEpiValidateSubcommand:
         captured = capsys.readouterr()
         assert "Unknown preset" in captured.out
 
-
 class TestEnhancedHelp:
     """Tests for enhanced CLI help messages."""
 
@@ -221,7 +218,6 @@ class TestEnhancedHelp:
         captured = capsys.readouterr()
         assert "Available presets" in captured.out
         assert "resonant_bootstrap" in captured.out
-
 
 class TestYAMLPresets:
     """Tests for YAML preset files."""
@@ -289,7 +285,6 @@ class TestYAMLPresets:
             assert "description" in metadata, f"{yaml_file.name} metadata should have description"
             assert "operators" in metadata, f"{yaml_file.name} metadata should have operators"
 
-
 class TestCLIStdoutStderrCapture:
     """Tests specifically for stdout/stderr capture as requested."""
 
@@ -348,7 +343,6 @@ class TestCLIStdoutStderrCapture:
             captured = capsys.readouterr()
             assert len(captured.out) > 0, f"{subcmd} --help should produce output"
             assert "usage:" in captured.out.lower()
-
 
 class TestCLIIntegrationScenarios:
     """Integration tests for realistic CLI usage scenarios."""

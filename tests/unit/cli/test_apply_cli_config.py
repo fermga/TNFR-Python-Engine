@@ -7,7 +7,6 @@ import networkx as nx
 from tnfr.cli.execution import apply_cli_config, default_glyph_selector, parametric_glyph_selector
 from tnfr.constants import METRIC_DEFAULTS
 
-
 def test_apply_cli_config_sets_requested_telemetry_verbosity() -> None:
     args = argparse.Namespace(
         config=None,
@@ -37,7 +36,6 @@ def test_apply_cli_config_sets_requested_telemetry_verbosity() -> None:
     assert METRIC_DEFAULTS["TRACE"]["verbosity"] == "debug"
     assert METRIC_DEFAULTS["METRICS"]["verbosity"] == "debug"
 
-
 def test_apply_cli_config_switches_to_parametric_selector() -> None:
     args = argparse.Namespace(
         config=None,
@@ -52,7 +50,6 @@ def test_apply_cli_config_switches_to_parametric_selector() -> None:
     apply_cli_config(G, args)
 
     assert G.graph["glyph_selector"] is parametric_glyph_selector
-
 
 def test_apply_cli_config_sets_gamma_overrides() -> None:
     args = argparse.Namespace(
@@ -70,7 +67,6 @@ def test_apply_cli_config_sets_gamma_overrides() -> None:
         "beta": 2.5,
         "R0": 0.75,
     }
-
 
 def test_apply_cli_config_clones_defaults_when_telemetry_missing_dict() -> None:
     args = argparse.Namespace(

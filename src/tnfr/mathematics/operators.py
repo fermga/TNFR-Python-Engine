@@ -22,7 +22,6 @@ __all__ = ["CoherenceOperator", "FrequencyOperator"]
 DEFAULT_C_MIN: float = 0.1
 _C_MIN_UNSET = object()
 
-
 def _as_complex_vector(
     vector: Sequence[complex] | np.ndarray | Any,
     *,
@@ -32,7 +31,6 @@ def _as_complex_vector(
     if getattr(arr, "ndim", len(getattr(arr, "shape", ()))) != 1:
         raise ValueError("Vector input must be one-dimensional.")
     return arr
-
 
 def _as_complex_matrix(
     matrix: Sequence[Sequence[complex]] | np.ndarray | Any,
@@ -45,12 +43,10 @@ def _as_complex_matrix(
         raise ValueError("Operator matrix must be square.")
     return arr
 
-
 def _make_diagonal(values: Any, *, backend: MathematicsBackend) -> Any:
     dim = int(getattr(values, "shape")[0])
     identity = ensure_array(np.eye(dim, dtype=np.complex128), backend=backend)
     return backend.einsum("i,ij->ij", values, identity)
-
 
 @dataclass(slots=True)
 class CoherenceOperator:
@@ -187,7 +183,6 @@ class CoherenceOperator:
         if np.iscomplexobj(real_expectation):
             raise ValueError("Expectation remained complex after coercion.")
         return float(real_expectation)
-
 
 class FrequencyOperator(CoherenceOperator):
     """Operator encoding the structural frequency distribution.

@@ -17,14 +17,12 @@ from tnfr.operators.remesh import (
     apply_network_remesh,
 )
 
-
 class _MissingNumberOfNodesGraph:
     def number_of_edges(self) -> int:
         return 0
 
     def degree(self):  # pragma: no cover - simple stub iterator
         return []
-
 
 class _AttrErrorNumberOfNodesGraph:
     def number_of_nodes(self) -> int:
@@ -35,7 +33,6 @@ class _AttrErrorNumberOfNodesGraph:
 
     def degree(self):  # pragma: no cover - simple stub iterator
         return []
-
 
 class _NonNumericDegreesGraph:
     def number_of_nodes(self) -> int:
@@ -49,7 +46,6 @@ class _NonNumericDegreesGraph:
 
 DEPRECATED_REMESH_KEYWORD = "legacy_stable_window"
 DEPRECATED_REMESH_CONFIG = "REMESH_COOLDOWN_LEGACY"
-
 
 def _prepare_graph_for_remesh(graph_canon, stable_steps: int = 3):
     G = graph_canon()
@@ -65,7 +61,6 @@ def _prepare_graph_for_remesh(graph_canon, stable_steps: int = 3):
     G.graph["_epi_hist"] = deque([{0: 0.0} for _ in range(tau + 1)], maxlen=maxlen)
 
     return G, hist
-
 
 def test_get_networkx_modules_raises_without_networkx(monkeypatch):
     import tnfr.operators.remesh as remesh
@@ -85,7 +80,6 @@ def test_get_networkx_modules_raises_without_networkx(monkeypatch):
             match="networkx is required for network operators; install 'networkx'",
         ):
             remesh._get_networkx_modules()
-
 
 def test_get_networkx_modules_raises_without_networkx_community(monkeypatch):
     import tnfr.operators.remesh as remesh
@@ -111,7 +105,6 @@ def test_get_networkx_modules_raises_without_networkx_community(monkeypatch):
         ):
             remesh._get_networkx_modules()
 
-
 @pytest.mark.parametrize(
     "graph_cls",
     [
@@ -130,7 +123,6 @@ def test_snapshot_topology_gracefully_handles_invalid_graphs(graph_cls):
     bad_graph = graph_cls()
 
     assert _snapshot_topology(bad_graph, nx) is None
-
 
 def test_community_graph_handles_empty_community_and_partial_epi():
     nx = pytest.importorskip("networkx")
@@ -170,7 +162,6 @@ def test_community_graph_handles_empty_community_and_partial_epi():
         )
         assert data["weight"] == pytest.approx(expected_weight)
 
-
 def test_snapshot_epi_returns_checksum_for_non_numeric_node_values(graph_canon):
     G = graph_canon()
     G.add_nodes_from(range(3))
@@ -184,7 +175,6 @@ def test_snapshot_epi_returns_checksum_for_non_numeric_node_values(graph_canon):
     assert mean_val == 0.0
     assert isinstance(checksum, str) and len(checksum) == 12
 
-
 def test_apply_remesh_uses_custom_parameter(graph_canon):
     G, hist = _prepare_graph_for_remesh(graph_canon)
 
@@ -195,7 +185,6 @@ def test_apply_remesh_uses_custom_parameter(graph_canon):
     # With the custom parameter it triggers after 3 stable steps
     apply_remesh_if_globally_stable(G, stable_step_window=3)
     assert G.graph["_last_remesh_step"] == len(hist["stable_frac"])
-
 
 def test_apply_remesh_legacy_keyword_raises_typeerror(graph_canon):
     G, _ = _prepare_graph_for_remesh(graph_canon)
@@ -208,7 +197,6 @@ def test_apply_remesh_legacy_keyword_raises_typeerror(graph_canon):
 
     assert "_last_remesh_step" not in G.graph
 
-
 def test_remesh_alpha_hard_ignores_glyph_factor(graph_canon):
     G, _ = _prepare_graph_for_remesh(graph_canon)
     G.graph["REMESH_ALPHA"] = 0.7
@@ -218,7 +206,6 @@ def test_remesh_alpha_hard_ignores_glyph_factor(graph_canon):
     meta = G.graph.get("_REMESH_META", {})
     assert meta.get("alpha") == 0.7
     assert G.graph.get("_REMESH_ALPHA_SRC") == "REMESH_ALPHA"
-
 
 def test_apply_network_remesh_triggers_callback(graph_canon):
     pytest.importorskip("networkx")
@@ -262,13 +249,11 @@ def test_apply_network_remesh_triggers_callback(graph_canon):
     assert ctx["tau_local"] == tau_l
     assert "alpha" in ctx
 
-
 def test_injected_defaults_include_cooldown_window_only(graph_canon):
     G, _ = _prepare_graph_for_remesh(graph_canon)
 
     assert "REMESH_COOLDOWN_WINDOW" in G.graph
     assert DEPRECATED_REMESH_CONFIG not in G.graph
-
 
 def test_configured_cooldown_window_is_respected(graph_canon):
     G, hist = _prepare_graph_for_remesh(graph_canon)
@@ -282,7 +267,6 @@ def test_configured_cooldown_window_is_respected(graph_canon):
 
     events = ensure_history(G).get("remesh_events", [])
     assert len(events) == 2
-
 
 @pytest.mark.parametrize(
     "scenario",
@@ -347,7 +331,6 @@ def test_remesh_cooldown_gating_requires_ready_state(graph_canon, scenario):
     assert resumed_events[-1] is not first_event
     assert G.graph["_last_remesh_step"] == len(hist["stable_frac"])
     assert G.graph["_last_remesh_ts"] == pytest.approx(G.graph["_t"])
-
 
 @pytest.mark.parametrize(
     ("metric_sequences", "should_remesh"),

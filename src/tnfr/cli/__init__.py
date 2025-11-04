@@ -47,7 +47,6 @@ __all__ = (
     "resolve_program",
 )
 
-
 def main(argv: Optional[list[str]] = None) -> int:
     """Entry point for the ``tnfr`` CLI returning the exit status."""
 

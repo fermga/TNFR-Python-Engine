@@ -11,12 +11,10 @@ DEPRECATED_PRESET_TOKENS = (
     "deprecated_canonical_example",
 )
 
-
 @pytest.mark.parametrize("name", PREFERRED_PRESET_NAMES)
 def test_get_preset_accepts_preferred_names(name: str) -> None:
     tokens = get_preset(name)
     assert tokens, f"Preset '{name}' should not be empty"
-
 
 @pytest.mark.parametrize("legacy", DEPRECATED_PRESET_TOKENS)
 def test_removed_presets_no_longer_receive_guidance(legacy: str) -> None:

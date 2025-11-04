@@ -32,7 +32,6 @@ _RECENT_KEYWORD_CODES = (
     (112, 111, 114, 95, 100, 101, 102, 101, 99, 116, 111),
 )
 
-
 def test_default_policy_contains_recent_tokens() -> None:
     expected = {
         token.lower()
@@ -42,7 +41,6 @@ def test_default_policy_contains_recent_tokens() -> None:
         word.lower() for word in _language_check.DEFAULT_POLICY.disallowed_keywords
     }
     assert expected.issubset(policy_tokens)
-
 
 def test_scan_file_flags_recent_keyword(tmp_path) -> None:
     repo_root = tmp_path

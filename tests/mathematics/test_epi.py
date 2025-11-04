@@ -8,11 +8,9 @@ np = pytest.importorskip("numpy")
 
 from tnfr.mathematics import BEPIElement, BanachSpaceEPI, HilbertSpace
 
-
 @pytest.fixture()
 def sample_grid() -> np.ndarray:
     return np.linspace(0.0, 1.0, 4)
-
 
 @pytest.fixture()
 def sample_elements(sample_grid: np.ndarray) -> tuple[BEPIElement, BEPIElement]:
@@ -27,7 +25,6 @@ def sample_elements(sample_grid: np.ndarray) -> tuple[BEPIElement, BEPIElement]:
         sample_grid,
     )
     return first, second
-
 
 def test_direct_sum_preserves_norm_structure(sample_elements: tuple[BEPIElement, BEPIElement]) -> None:
     space = BanachSpaceEPI()
@@ -56,7 +53,6 @@ def test_direct_sum_preserves_norm_structure(sample_elements: tuple[BEPIElement,
     )
     assert combined_norm == pytest.approx(expected_norm)
 
-
 def test_adjoint_inverts_phase(sample_elements: tuple[BEPIElement, BEPIElement]) -> None:
     space = BanachSpaceEPI()
     element_a, _ = sample_elements
@@ -78,7 +74,6 @@ def test_adjoint_inverts_phase(sample_elements: tuple[BEPIElement, BEPIElement])
     )
     assert original_norm == pytest.approx(adjoint_norm)
 
-
 def test_tensor_with_hilbert_matches_outer_product(sample_elements: tuple[BEPIElement, BEPIElement]) -> None:
     element_a, _ = sample_elements
     hilbert = HilbertSpace(dimension=2)
@@ -90,7 +85,6 @@ def test_tensor_with_hilbert_matches_outer_product(sample_elements: tuple[BEPIEl
     expected = np.outer(element_a.a_discrete, vector)
     np.testing.assert_allclose(tensor, expected)
     np.testing.assert_allclose(via_space, expected)
-
 
 def test_compose_applies_componentwise(sample_elements: tuple[BEPIElement, BEPIElement]) -> None:
     space = BanachSpaceEPI()
@@ -117,7 +111,6 @@ def test_compose_applies_componentwise(sample_elements: tuple[BEPIElement, BEPIE
     )
     assert scaled_norm == pytest.approx(manual_norm)
 
-
 def test_zero_and_basis_factories(sample_grid: np.ndarray) -> None:
     space = BanachSpaceEPI()
 
@@ -141,7 +134,6 @@ def test_zero_and_basis_factories(sample_grid: np.ndarray) -> None:
     combined = space.direct_sum(zero, basis)
     np.testing.assert_allclose(combined.f_continuous, basis.f_continuous)
     np.testing.assert_allclose(combined.a_discrete, basis.a_discrete)
-
 
 def test_bepi_sequence_forms_cauchy(sample_grid: np.ndarray) -> None:
     space = BanachSpaceEPI()

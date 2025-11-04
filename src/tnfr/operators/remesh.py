@@ -30,7 +30,6 @@ RemeshEdge: TypeAlias = tuple[Hashable, Hashable]
 NetworkxModules: TypeAlias = tuple[NetworkxModule, CommunityModule]
 RemeshConfigValue: TypeAlias = bool | float | int
 
-
 def _as_float(value: Any, default: float = 0.0) -> float:
     """Best-effort conversion to ``float`` returning ``default`` on failure."""
 
@@ -41,15 +40,12 @@ def _as_float(value: Any, default: float = 0.0) -> float:
     except (TypeError, ValueError):
         return default
 
-
 def _ordered_edge(u: Hashable, v: Hashable) -> RemeshEdge:
     """Return a deterministic ordering for an undirected edge."""
 
     return (u, v) if repr(u) <= repr(v) else (v, u)
 
-
 COOLDOWN_KEY = "REMESH_COOLDOWN_WINDOW"
-
 
 @cache
 def _get_networkx_modules() -> NetworkxModules:
@@ -66,7 +62,6 @@ def _get_networkx_modules() -> NetworkxModules:
             "operations; install 'networkx' to enable this feature"
         )
     return cast(NetworkxModule, nx), cast(CommunityModule, nx_comm)
-
 
 def _remesh_alpha_info(G: CommunityGraph) -> tuple[float, str]:
     """Return ``(alpha, source)`` with explicit precedence."""
@@ -86,7 +81,6 @@ def _remesh_alpha_info(G: CommunityGraph) -> tuple[float, str]:
         "REMESH_DEFAULTS.REMESH_ALPHA",
     )
 
-
 def _snapshot_topology(G: CommunityGraph, nx: NetworkxModule) -> str | None:
     """Return a hash representing the current graph topology."""
     try:
@@ -97,7 +91,6 @@ def _snapshot_topology(G: CommunityGraph, nx: NetworkxModule) -> str | None:
         return hashlib.sha1(topo_str.encode(), usedforsecurity=False).hexdigest()[:12]
     except (AttributeError, TypeError, nx.NetworkXError):
         return None
-
 
 def _snapshot_epi(G: CommunityGraph) -> tuple[float, str]:
     """Return ``(mean, checksum)`` of the node EPI values."""
@@ -112,7 +105,6 @@ def _snapshot_epi(G: CommunityGraph) -> tuple[float, str]:
     checksum = hashlib.sha1(buf.getvalue().encode(), usedforsecurity=False).hexdigest()[:12]
     return float(mean_val), checksum
 
-
 def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
     """Store remesh metadata and optionally log and trigger callbacks."""
     from ..utils import CallbackEvent, callback_manager
@@ -123,7 +115,6 @@ def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
         hist = G.graph.setdefault("history", {})
         append_metric(hist, "remesh_events", dict(meta))
     callback_manager.invoke_callbacks(G, CallbackEvent.ON_REMESH.value, dict(meta))
-
 
 def apply_network_remesh(G: CommunityGraph) -> None:
     """Network-scale REMESH using ``_epi_hist`` with multi-scale memory."""
@@ -183,7 +174,6 @@ def apply_network_remesh(G: CommunityGraph) -> None:
 
     _log_remesh_event(G, meta)
 
-
 def _mst_edges_from_epi(
     nx: NetworkxModule,
     nodes: Sequence[Hashable],
@@ -196,7 +186,6 @@ def _mst_edges_from_epi(
         (u, v, abs(epi[u] - epi[v])) for u, v in combinations(nodes, 2)
     )
     return {_ordered_edge(u, v) for u, v in nx.minimum_spanning_edges(H, data=False)}
-
 
 def _knn_edges(
     nodes: Sequence[Hashable],
@@ -225,7 +214,6 @@ def _knn_edges(
             new_edges.add(_ordered_edge(u, v))
     return new_edges
 
-
 def _community_graph(
     comms: Iterable[Iterable[Hashable]],
     epi: Mapping[Hashable, float],
@@ -249,7 +237,6 @@ def _community_graph(
         )
         C.add_edge(i, j, weight=w)
     return cast(CommunityGraph, C)
-
 
 def _community_k_neighbor_edges(
     C: CommunityGraph,
@@ -298,7 +285,6 @@ def _community_k_neighbor_edges(
                 rewired.append((u, original_v, v))
             added += 1
     return new_edges, attempts, rewired
-
 
 def _community_remesh(
     G: CommunityGraph,
@@ -363,7 +349,6 @@ def _community_remesh(
             },
         )
 
-
 def apply_topological_remesh(
     G: CommunityGraph,
     mode: str | None = None,
@@ -423,7 +408,6 @@ def apply_topological_remesh(
         G.clear_edges()
         G.add_edges_from(new_edges)
 
-
 def _extra_gating_ok(
     hist: MutableMapping[str, Sequence[float]],
     cfg: Mapping[str, RemeshConfigValue],
@@ -446,7 +430,6 @@ def _extra_gating_ok(
             if not op(avg, threshold):
                 return False
     return True
-
 
 def apply_remesh_if_globally_stable(
     G: CommunityGraph,
@@ -534,7 +517,6 @@ def apply_remesh_if_globally_stable(
     apply_network_remesh(G)
     G.graph["_last_remesh_step"] = step_idx
     G.graph["_last_remesh_ts"] = t_now
-
 
 __all__ = [
     "apply_network_remesh",

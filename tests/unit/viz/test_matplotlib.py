@@ -10,7 +10,6 @@ import numpy as np
 
 from tnfr.viz import matplotlib as tnfr_matplotlib
 
-
 def _patch_savefig(monkeypatch):
     calls: dict[str, object] = {}
 
@@ -22,7 +21,6 @@ def _patch_savefig(monkeypatch):
 
     monkeypatch.setattr(Figure, "savefig", fake_savefig, raising=True)
     return calls
-
 
 def test_plot_coherence_matrix_exports_metadata(tmp_path, monkeypatch):
     save_spy = _patch_savefig(monkeypatch)
@@ -44,7 +42,6 @@ def test_plot_coherence_matrix_exports_metadata(tmp_path, monkeypatch):
     assert kwargs["metadata"]["tnfr_plot"] == "coherence_matrix"
     assert kwargs["metadata"]["engine"] == "TNFR"
     fig.clf()
-
 
 def test_plot_phase_sync_exports_metadata(tmp_path, monkeypatch):
     save_spy = _patch_savefig(monkeypatch)
@@ -68,7 +65,6 @@ def test_plot_phase_sync_exports_metadata(tmp_path, monkeypatch):
     assert kwargs["metadata"]["tnfr_plot"] == "phase_sync"
     assert float(kwargs["metadata"]["nu_f_hz_str"]) == 2.5
     fig.clf()
-
 
 def test_plot_spectrum_path_exports_metadata(tmp_path, monkeypatch):
     save_spy = _patch_savefig(monkeypatch)

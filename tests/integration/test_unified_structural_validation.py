@@ -32,7 +32,6 @@ from tests.helpers.fixtures import (
     bicluster_graph_factory,
 )
 
-
 # Parametrized network scales for consolidated testing
 @pytest.fixture(params=[
     {"num_nodes": 5, "edge_probability": 0.3, "seed": 42},
@@ -41,11 +40,10 @@ from tests.helpers.fixtures import (
 ])
 def parametrized_network_scale(request):
     """Parametrized network scales consolidating small/medium/large tests.
-    
+
     Uses different seeds for each scale to ensure independent test coverage.
     """
     return request.param
-
 
 # Parametrized homogeneous configurations
 @pytest.fixture(params=[
@@ -57,10 +55,9 @@ def parametrized_homogeneous_config(request):
     """Parametrized homogeneous configurations consolidating multiple config tests."""
     return request.param
 
-
 def test_dnfr_conservation_unified(seed_graph_factory, parametrized_network_scale) -> None:
     """Unified ΔNFR conservation test consolidating multiple scale tests.
-    
+
     Consolidates:
     - test_dnfr_conservation_small_network
     - test_dnfr_conservation_medium_network
@@ -72,17 +69,16 @@ def test_dnfr_conservation_unified(seed_graph_factory, parametrized_network_scal
         edge_probability=config["edge_probability"],
         seed=config["seed"],
     )
-    
+
     dnfr_epi_vf_mixed(graph)
     assert_dnfr_balanced(graph, abs_tol=0.1)
-
 
 def test_dnfr_homogeneous_stability_unified(
     homogeneous_graph_factory,
     parametrized_homogeneous_config,
 ) -> None:
     """Unified homogeneous stability test consolidating multiple configuration tests.
-    
+
     Consolidates:
     - test_dnfr_homogeneous_stability
     - test_dnfr_homogeneous_multiple_configurations
@@ -95,10 +91,9 @@ def test_dnfr_homogeneous_stability_unified(
         seed=42,
         **config,
     )
-    
+
     dnfr_epi_vf_mixed(graph)
     assert_dnfr_homogeneous_stable(graph)
-
 
 def test_dnfr_bicluster_gradient(bicluster_graph_factory) -> None:
     """Verify ΔNFR creates gradients between contrasting clusters."""
@@ -124,7 +119,6 @@ def test_dnfr_bicluster_gradient(bicluster_graph_factory) -> None:
     # Total should still be conserved
     assert_dnfr_balanced(graph)
 
-
 def test_dnfr_phase_only_synchronization() -> None:
     """Verify synchronized phases remain stable."""
     graph = nx.gnp_random_graph(6, 0.4, seed=42)
@@ -138,7 +132,6 @@ def test_dnfr_phase_only_synchronization() -> None:
 
     dnfr_phase_only(graph)
     assert_dnfr_homogeneous_stable(graph)
-
 
 def test_dnfr_invariance_under_relabeling(seed_graph_factory) -> None:
     """Verify ΔNFR values are invariant under node relabeling."""
@@ -161,7 +154,6 @@ def test_dnfr_invariance_under_relabeling(seed_graph_factory) -> None:
 
     assert_dnfr_lists_close(base_values, permuted_values)
 
-
 def test_dnfr_computation_consistency(seed_graph_factory) -> None:
     """Verify ΔNFR computation is deterministic and consistent."""
     graph1 = seed_graph_factory(num_nodes=12, edge_probability=0.25, seed=555)
@@ -174,7 +166,6 @@ def test_dnfr_computation_consistency(seed_graph_factory) -> None:
     values2 = get_dnfr_values(graph2)
 
     assert_dnfr_lists_close(values1, values2)
-
 
 def test_dnfr_phase_rotation_invariance() -> None:
     """Verify phase-only ΔNFR is invariant under global rotation."""
@@ -203,41 +194,38 @@ def test_dnfr_phase_rotation_invariance() -> None:
 
     assert_dnfr_lists_close(values1, values2)
 
-
 @pytest.mark.parametrize("edge_prob", [0.1, 0.3, 0.5, 0.7])
 def test_structural_conservation_across_topologies(seed_graph_factory, edge_prob) -> None:
     """Verify ΔNFR conservation holds across different network topologies.
-    
+
     Consolidates topology variation tests using parametrization.
     """
     graph = seed_graph_factory(num_nodes=10, edge_probability=edge_prob, seed=999)
     dnfr_epi_vf_mixed(graph)
     assert_dnfr_balanced(graph, abs_tol=0.1)
 
-
 @pytest.mark.parametrize("num_nodes", [5, 10, 20, 50])
 def test_dnfr_conservation_scale_independence(num_nodes) -> None:
     """Verify ΔNFR conservation is scale-independent.
-    
+
     Consolidates multi-scale validation tests.
     """
     graph = nx.gnp_random_graph(num_nodes, 0.3, seed=42)
     inject_defaults(graph)
-    
+
     # Initialize with balanced ΔNFR
     for node in graph.nodes():
         graph.nodes[node][EPI_PRIMARY] = 0.5
         graph.nodes[node][VF_PRIMARY] = 1.0
         graph.nodes[node][DNFR_PRIMARY] = 0.0
-    
+
     dnfr_epi_vf_mixed(graph)
     assert_dnfr_balanced(graph, abs_tol=0.1)
-
 
 @pytest.mark.parametrize("phase", [0.0, math.pi / 4, math.pi / 2, math.pi])
 def test_dnfr_phase_synchronization_at_different_phases(phase) -> None:
     """Verify synchronization stability at different phase values.
-    
+
     Consolidates phase synchronization tests.
     """
     graph = nx.gnp_random_graph(6, 0.4, seed=42)

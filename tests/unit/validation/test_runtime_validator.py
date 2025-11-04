@@ -9,7 +9,6 @@ from tnfr.initialization import init_node_attrs
 from tnfr.validation import ValidationOutcome, Validator
 from tnfr.validation.runtime import GraphCanonicalValidator, validate_canon
 
-
 def _build_unstable_graph() -> nx.Graph:
     graph = nx.path_graph(4)
     inject_defaults(graph)
@@ -20,7 +19,6 @@ def _build_unstable_graph() -> nx.Graph:
         data[VF_KEY] = 4.0
         data[THETA_KEY] = 5.0
     return graph
-
 
 def test_graph_validator_emits_validation_outcome() -> None:
     graph = _build_unstable_graph()
@@ -38,7 +36,6 @@ def test_graph_validator_emits_validation_outcome() -> None:
 
     report = validator.report(outcome)
     assert "validation" in report.lower()
-
 
 def test_validate_canon_is_consistent_with_graph_validator() -> None:
     graph = _build_unstable_graph()

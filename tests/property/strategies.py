@@ -58,7 +58,6 @@ PROPERTY_TEST_SETTINGS = settings(deadline=None, max_examples=DEFAULT_PROPERTY_M
 
 DeltaHook = Callable[..., None]
 
-
 @dataclass(frozen=True)
 class HookConfig:
     """Description for :func:`set_delta_nfr_hook` selections."""
@@ -72,13 +71,11 @@ class HookConfig:
 
         set_delta_nfr_hook(graph, self.func, name=self.name, note=self.note)
 
-
 def _zero_delta(G: nx.Graph, *_args: Any, **_kwargs: Any) -> None:
     """Default hook that clears ΔNFR contributions for every node."""
 
     for node in G.nodes:
         G.nodes[node][DNFR_PRIMARY] = 0.0
-
 
 DEFAULT_HOOKS: tuple[HookConfig, ...] = (
     HookConfig(
@@ -88,19 +85,15 @@ DEFAULT_HOOKS: tuple[HookConfig, ...] = (
     ),
 )
 
-
 def _normalise_override(value: SearchStrategy[Any] | Any) -> SearchStrategy[Any]:
     """Turn literal values into Hypothesis strategies when required."""
 
     return value if isinstance(value, SearchStrategy) else st.just(value)
 
-
 _KEY_ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
-
 
 def _homogeneous_lists(strategy: SearchStrategy[Any]) -> SearchStrategy[list[Any]]:
     return st.lists(strategy, max_size=4)
-
 
 def _list_variants(base: SearchStrategy[list[Any]]) -> SearchStrategy[Any]:
     return st.one_of(
@@ -109,7 +102,6 @@ def _list_variants(base: SearchStrategy[list[Any]]) -> SearchStrategy[Any]:
         st.builds(deque, base),
         st.builds(lambda values: set(values), base),
     )
-
 
 def _scalar_sequences() -> SearchStrategy[Any]:
     integers = _homogeneous_lists(st.integers(min_value=-1_000, max_value=1_000))
@@ -125,7 +117,6 @@ def _scalar_sequences() -> SearchStrategy[Any]:
         st.text(alphabet=_KEY_ALPHABET, min_size=0, max_size=8)
     )
     return _list_variants(st.one_of(integers, floats, text))
-
 
 def nested_structured_mappings() -> SearchStrategy[dict[str, Any]]:
     """Return nested dictionaries using TNFR-compatible scalar collections."""
@@ -155,7 +146,6 @@ def nested_structured_mappings() -> SearchStrategy[dict[str, Any]]:
         extend,
         max_leaves=10,
     )
-
 
 def create_nfr(
     *,
@@ -193,7 +183,6 @@ def create_nfr(
     if not fields:
         return st.just({})
     return st.fixed_dictionaries(fields)
-
 
 def prepare_network(
     *,
@@ -271,7 +260,6 @@ def prepare_network(
         st.just(override_defaults),
     )
 
-
 def _finalise_graph(
     graph: nx.Graph,
     overrides: Mapping[str, Any],
@@ -294,14 +282,12 @@ def _finalise_graph(
 
     return graph
 
-
 @dataclass(frozen=True)
 class ClusteredGraph:
     """Description of a graph partitioned into two clusters."""
 
     graph: nx.Graph
     clusters: tuple[tuple[Any, ...], tuple[Any, ...]]
-
 
 @dataclass(frozen=True)
 class PhaseGraph:
@@ -310,7 +296,6 @@ class PhaseGraph:
     graph: nx.Graph
     base_phases: Mapping[Any, float]
     offset: float
-
 
 @dataclass(frozen=True)
 class PhaseNeighbourhood:
@@ -322,7 +307,6 @@ class PhaseNeighbourhood:
     cos_map: Mapping[Any, float]
     sin_map: Mapping[Any, float]
     fallback: float
-
 
 @dataclass(frozen=True)
 class PhaseBulkScenario:
@@ -336,7 +320,6 @@ class PhaseBulkScenario:
     node_count: int
     neighbour_counts: tuple[int, ...]
 
-
 def _bounded_attr() -> st.SearchStrategy[float]:
     return st.floats(
         min_value=-2.0,
@@ -344,7 +327,6 @@ def _bounded_attr() -> st.SearchStrategy[float]:
         allow_nan=False,
         allow_infinity=False,
     )
-
 
 def _finite_angle() -> st.SearchStrategy[float]:
     return st.floats(
@@ -354,7 +336,6 @@ def _finite_angle() -> st.SearchStrategy[float]:
         allow_infinity=False,
     )
 
-
 def _finite_weight() -> st.SearchStrategy[float]:
     return st.floats(
         min_value=0.0,
@@ -362,7 +343,6 @@ def _finite_weight() -> st.SearchStrategy[float]:
         allow_nan=False,
         allow_infinity=False,
     )
-
 
 @st.composite
 def phase_neighbourhoods(
@@ -408,7 +388,6 @@ def phase_neighbourhoods(
         sin_map=sin_map,
         fallback=fallback_value,
     )
-
 
 @st.composite
 def phase_bulk_scenarios(
@@ -469,7 +448,6 @@ def phase_bulk_scenarios(
         neighbour_counts=tuple(neighbour_counts),
     )
 
-
 @st.composite
 def homogeneous_graphs(
     draw,
@@ -493,7 +471,6 @@ def homogeneous_graphs(
         data[VF_PRIMARY] = vf_value
         data[DNFR_PRIMARY] = 0.0
     return graph
-
 
 @st.composite
 def phase_graphs(
@@ -532,7 +509,6 @@ def phase_graphs(
         base_phases=MappingProxyType(base_phases),
         offset=offset_value,
     )
-
 
 @st.composite
 def two_cluster_graphs(

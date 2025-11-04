@@ -11,7 +11,6 @@ from tnfr.alias import get_attr, get_theta_attr
 from tnfr.dynamics.aliases import ALIAS_EPI, ALIAS_VF
 from tnfr.validation.runtime import apply_canonical_clamps
 
-
 def test_apply_canonical_clamps_clamps_and_logs(graph_canon):
     """Nodal EPI/νf values clamp to bounds and strict graphs log alerts."""
 
@@ -45,7 +44,6 @@ def test_apply_canonical_clamps_clamps_and_logs(graph_canon):
     assert second["attr"] == "VF"
     assert second["value"] == pytest.approx(-3.0)
 
-
 def test_apply_canonical_clamps_updates_mapping_without_graph():
     """When called without a graph the mapping itself is clamped and updated."""
 
@@ -61,7 +59,6 @@ def test_apply_canonical_clamps_updates_mapping_without_graph():
     assert wrapped_theta == pytest.approx(expected_theta)
     assert node_data["theta"] == pytest.approx(expected_theta)
     assert node_data["phase"] == pytest.approx(expected_theta)
-
 
 def test_apply_canonical_clamps_respects_disabled_theta_wrap(graph_canon):
     """θ remains unchanged when wrapping is disabled while other clamps persist."""
@@ -91,7 +88,6 @@ def test_apply_canonical_clamps_respects_disabled_theta_wrap(graph_canon):
     alerts = G.graph["history"]["clamp_alerts"]
     assert len(alerts) == 2
     assert all(alert["attr"] != "THETA" for alert in alerts)
-
 
 def test_apply_canonical_clamps_rehydrates_tuple_alerts(graph_canon):
     """Strict graphs convert tuple clamp alerts into mutable sequences."""

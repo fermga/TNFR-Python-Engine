@@ -30,10 +30,8 @@ from tnfr.cli.arguments import (
     add_history_export_args,
 )
 
-
 def _cli_execution():
     return importlib.import_module("tnfr.cli.execution")
-
 
 from tnfr import __version__
 from tnfr.config.presets import get_preset
@@ -51,7 +49,6 @@ _TOML_SEQUENCE_PAYLOAD = [
     {"WAIT": 1},
 ]
 
-
 @pytest.fixture
 def toml_sequence_path(tmp_path):
     if tomllib is None:
@@ -67,13 +64,11 @@ def toml_sequence_path(tmp_path):
     path.write_text(content, encoding="utf-8")
     return path
 
-
 def test_cli_version(capsys):
     rc = main(["--version"])
     assert rc == 0
     out = capsys.readouterr().out.strip()
     assert __version__ in out
-
 
 @pytest.mark.parametrize(
     ("nodes", "p_arg", "expected_p"),
@@ -103,7 +98,6 @@ def test_cli_run_erdos_low_nodes(monkeypatch, nodes, p_arg, expected_p):
     assert recorded["n"] == int(nodes)
     assert recorded["p"] == pytest.approx(expected_p)
 
-
 @pytest.mark.parametrize("command", ["run", "sequence"])
 def test_cli_invalid_preset_exits_gracefully(capsys, command):
     args = [command, "--preset", "nope"]
@@ -117,7 +111,6 @@ def test_cli_invalid_preset_exits_gracefully(capsys, command):
     assert "Unknown preset 'nope'." in captured.out
     assert "Available presets" in captured.out
     assert "Use --sequence-file" in captured.out
-
 
 @pytest.mark.parametrize("command", ["run", "sequence"])
 def test_cli_legacy_preset_rejected_with_guidance(capsys, command):
@@ -133,7 +126,6 @@ def test_cli_legacy_preset_rejected_with_guidance(capsys, command):
     assert f"Preset not found: {legacy}" in captured.out
     assert "Legacy preset identifier" not in captured.out
 
-
 def test_cli_sequence_file_missing(tmp_path, capsys):
     missing = tmp_path / "custom.json"
 
@@ -142,7 +134,6 @@ def test_cli_sequence_file_missing(tmp_path, capsys):
 
     assert rc == 1
     assert f"Could not read {missing}" in captured.out
-
 
 def test_cli_sequence_file_invalid_json(tmp_path, capsys):
     seq_path = tmp_path / "invalid.json"
@@ -153,7 +144,6 @@ def test_cli_sequence_file_invalid_json(tmp_path, capsys):
 
     assert rc == 1
     assert f"Error parsing JSON file at {seq_path}" in captured.out
-
 
 def test_sequence_conflicting_preset_and_sequence_file(tmp_path, capsys):
     seq_path = tmp_path / "sequence.json"
@@ -170,7 +160,6 @@ def test_sequence_conflicting_preset_and_sequence_file(tmp_path, capsys):
 
     assert rc == 1
     assert "Cannot use --preset and --sequence-file at the same time" in captured.out
-
 
 def test_cli_sequence_handles_deeply_nested_blocks(monkeypatch, tmp_path):
     depth = 1500
@@ -217,7 +206,6 @@ def test_cli_sequence_handles_deeply_nested_blocks(monkeypatch, tmp_path):
     assert trace[0]["g"] == Glyph.THOL.value
     assert trace[-1]["g"] == Glyph.AL.value
 
-
 def test_cli_sequence_toml(monkeypatch, toml_sequence_path):
     execution_mod = _cli_execution()
     recorded: dict[str, Any] = {}
@@ -233,7 +221,6 @@ def test_cli_sequence_toml(monkeypatch, toml_sequence_path):
     assert rc == 0
     expected = parse_program_tokens(_TOML_SEQUENCE_PAYLOAD)
     assert recorded["program"] == expected
-
 
 def test_cli_metrics_generates_metrics_payload(monkeypatch, tmp_path):
     out = tmp_path / "metrics.json"
@@ -268,7 +255,6 @@ def test_cli_metrics_generates_metrics_payload(monkeypatch, tmp_path):
     data = json.loads(out.read_text())
     assert data == expected_summary
 
-
 def test_cli_metrics_accepts_summary_limit(monkeypatch):
     sentinel_graph = object()
     recorded: dict[str, Any] = {}
@@ -290,7 +276,6 @@ def test_cli_metrics_accepts_summary_limit(monkeypatch):
     assert recorded["graph"] is sentinel_graph
     assert recorded["series_limit"] == 7
 
-
 def test_build_basic_graph_invalid_probability_literal():
     args = argparse.Namespace(nodes=3, topology="erdos", p="abc", seed=None)
 
@@ -298,7 +283,6 @@ def test_build_basic_graph_invalid_probability_literal():
         _cli_execution().build_basic_graph(args)
 
     assert "abc" in str(exc_info.value)
-
 
 def test_cli_metrics_uses_default_steps(monkeypatch):
     recorded: dict[str, Any] = {}
@@ -317,7 +301,6 @@ def test_cli_metrics_uses_default_steps(monkeypatch):
 
     assert rc == 0
     assert recorded["args_steps"] == 200
-
 
 def test_cli_run_saves_history_when_requested(monkeypatch, tmp_path):
     sentinel_history = {"history": "sentinel"}
@@ -353,7 +336,6 @@ def test_cli_run_saves_history_when_requested(monkeypatch, tmp_path):
     saved_path, saved_payload = saved_calls[0]
     assert saved_path == str(history_path)
     assert saved_payload is sentinel_history
-
 
 def test_cli_run_applies_config_overrides(monkeypatch, tmp_path):
     execution_mod = _cli_execution()
@@ -393,7 +375,6 @@ def test_cli_run_applies_config_overrides(monkeypatch, tmp_path):
     assert graph.graph["TRACE"]["verbosity"] == 3
     assert graph.graph["GRAMMAR_CANON"]["enabled"] is False
 
-
 def test_cli_run_invalid_config_reports_error(monkeypatch, tmp_path, capsys):
     execution_mod = _cli_execution()
 
@@ -416,7 +397,6 @@ def test_cli_run_invalid_config_reports_error(monkeypatch, tmp_path, capsys):
     assert rc == 1
     assert "Configuration file must contain an object" in captured.out
 
-
 def test_cmd_metrics_aborts_without_summary_on_failure(monkeypatch):
     summary_called = False
 
@@ -435,7 +415,6 @@ def test_cmd_metrics_aborts_without_summary_on_failure(monkeypatch):
 
     assert rc == 1
     assert summary_called is False
-
 
 def test_cmd_metrics_skips_summary_when_graph_missing(monkeypatch, capsys):
     summary_called = False
@@ -458,7 +437,6 @@ def test_cmd_metrics_skips_summary_when_graph_missing(monkeypatch, capsys):
     assert summary_called is False
     assert captured.out == ""
 
-
 def test_sequence_defaults_to_canonical(monkeypatch):
     recorded: dict[str, Any] = {}
     sentinel = object()
@@ -479,12 +457,10 @@ def test_sequence_defaults_to_canonical(monkeypatch):
     assert recorded["preset_name"] == CANONICAL_PRESET_NAME
     assert recorded["program"] is sentinel
 
-
 def test_build_basic_graph_rejects_negative_probability():
     args = argparse.Namespace(nodes=3, topology="erdos", p=-0.1, seed=None)
     with pytest.raises(ValueError, match="p must be between 0 and 1; received -0.1"):
         _cli_execution().build_basic_graph(args)
-
 
 def test_build_basic_graph_erdos_default_probability(monkeypatch):
     sentinel_graph = object()
@@ -511,12 +487,10 @@ def test_build_basic_graph_erdos_default_probability(monkeypatch):
     assert graph_zero is sentinel_graph
     assert recorded[1] == pytest.approx(0.0)
 
-
 def test_build_basic_graph_rejects_probability_above_one():
     args = argparse.Namespace(nodes=3, topology="erdos", p=1.5, seed=None)
     with pytest.raises(ValueError, match="p must be between 0 and 1; received 1.5"):
         _cli_execution().build_basic_graph(args)
-
 
 def test_build_basic_graph_rejects_unknown_topology():
     args = argparse.Namespace(nodes=3, topology="invalid", p=None, seed=None)
@@ -525,7 +499,6 @@ def test_build_basic_graph_rejects_unknown_topology():
     )
     with pytest.raises(ValueError, match=message):
         _cli_execution().build_basic_graph(args)
-
 
 def test_build_basic_graph_sets_random_seed():
     seeded_args = argparse.Namespace(nodes=4, topology="ring", p=None, seed="123")
@@ -538,10 +511,8 @@ def test_build_basic_graph_sets_random_seed():
 
     assert "RANDOM_SEED" not in G_unseeded.graph
 
-
 def test_basic_canonical_example_matches_preset():
     assert basic_canonical_example() == get_preset(CANONICAL_PRESET_NAME)
-
 
 def test_run_cli_program_handles_system_exit(monkeypatch):
     args = argparse.Namespace()
@@ -555,7 +526,6 @@ def test_run_cli_program_handles_system_exit(monkeypatch):
 
     assert code == 5
     assert graph is None
-
 
 def test_run_cli_program_runs_and_returns_graph(monkeypatch):
     args = argparse.Namespace()
@@ -587,7 +557,6 @@ def test_run_cli_program_runs_and_returns_graph(monkeypatch):
     assert recorded["graph"] is provided_graph
     assert recorded["program"] is expected_program
 
-
 def test_resolve_program_prefers_preset(monkeypatch):
     args = argparse.Namespace(preset="demo", sequence_file=None)
     sentinel = object()
@@ -596,7 +565,6 @@ def test_resolve_program_prefers_preset(monkeypatch):
 
     result = _cli_execution().resolve_program(args, default=[])
     assert result is sentinel
-
 
 def test_resolve_program_prefers_sequence_file(monkeypatch, tmp_path):
     seq_path = tmp_path / "custom.json"
@@ -608,14 +576,12 @@ def test_resolve_program_prefers_sequence_file(monkeypatch, tmp_path):
     result = _cli_execution().resolve_program(args, default=[])
     assert result is sentinel
 
-
 def test_resolve_program_uses_default_when_missing_inputs():
     args = argparse.Namespace(preset=None, sequence_file=None)
     default = basic_canonical_example()
 
     result = _cli_execution().resolve_program(args, default=default)
     assert result == default
-
 
 @pytest.mark.parametrize("command", ["run", "sequence"])
 @pytest.mark.parametrize("export_format", [None, "csv"])
@@ -667,7 +633,6 @@ def test_cli_history_roundtrip(tmp_path, capsys, command, export_format):
     else:
         assert "Global Tg" not in out
 
-
 @pytest.mark.parametrize("command", ["run", "sequence"])
 def test_cli_without_history_args(tmp_path, monkeypatch, command):
     monkeypatch.chdir(tmp_path)
@@ -677,7 +642,6 @@ def test_cli_without_history_args(tmp_path, monkeypatch, command):
     rc = main(args)
     assert rc == 0
     assert not any(tmp_path.iterdir())
-
 
 def test_cli_history_export_uses_requested_format(monkeypatch, tmp_path):
     recorded: dict[str, str] = {}
@@ -706,7 +670,6 @@ def test_cli_history_export_uses_requested_format(monkeypatch, tmp_path):
 
     assert rc == 0
     assert recorded["fmt"] == "csv"
-
 
 def test_run_program_delegates_to_dynamics_run(monkeypatch):
     recorded: dict[str, Any] = {}
@@ -755,7 +718,6 @@ def test_run_program_delegates_to_dynamics_run(monkeypatch):
     assert recorded["use_Si"] is False
     assert recorded["apply_glyphs"] is False
 
-
 def test_save_json_serializes_iterables(tmp_path):
     path = tmp_path / "data.json"
     data = {"set": {1, 2}, "tuple": (1, 2), "deque": deque([1, 2])}
@@ -765,7 +727,6 @@ def test_save_json_serializes_iterables(tmp_path):
     assert loaded["tuple"] == [1, 2]
     assert loaded["deque"] == [1, 2]
 
-
 def test_grammar_args_help_group(capsys):
     parser = argparse.ArgumentParser()
     add_grammar_args(parser)
@@ -773,7 +734,6 @@ def test_grammar_args_help_group(capsys):
     out = capsys.readouterr().out
     assert "Grammar" in out
     assert "--grammar.enabled" in out
-
 
 def test_args_to_dict_nested_options():
     parser = argparse.ArgumentParser()
@@ -794,7 +754,6 @@ def test_args_to_dict_nested_options():
     assert canon["thol_min_len"] == 7
     assert METRIC_DEFAULTS["GRAMMAR_CANON"]["thol_min_len"] == 2
 
-
 def test_build_graph_uses_prepare_network_defaults():
     parser = argparse.ArgumentParser()
     add_common_args(parser)
@@ -809,7 +768,6 @@ def test_build_graph_uses_prepare_network_defaults():
     assert callable(G.graph.get("compute_delta_nfr"))
     assert G.graph.get("_dnfr_hook_name") == "default_compute_delta_nfr"
 
-
 def test_build_graph_attaches_observer_via_prepare_network():
     parser = argparse.ArgumentParser()
     add_common_args(parser)
@@ -819,7 +777,6 @@ def test_build_graph_attaches_observer_via_prepare_network():
     G = _cli_execution()._build_graph_from_args(args)
 
     assert G.graph.get("_STD_OBSERVER") == "attached"
-
 
 def test_args_to_dict_filters_none_values():
     parser = argparse.ArgumentParser()

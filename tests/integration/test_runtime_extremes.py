@@ -16,7 +16,6 @@ from tnfr.glyph_history import ensure_history
 from tnfr.metrics import register_metrics_callbacks
 from tnfr.structural import create_nfr
 
-
 class _FixedStepIntegrator(integrators.AbstractIntegrator):
     """Integrator that advances time deterministically without altering EPI."""
 
@@ -49,7 +48,6 @@ class _FixedStepIntegrator(integrators.AbstractIntegrator):
 
         graph.graph["_t"] = current_t + dt_step
 
-
 def _stable_delta(graph, *, n_jobs=None):
     """ΔNFR hook that keeps nodal derivatives near zero for stability."""
 
@@ -61,7 +59,6 @@ def _stable_delta(graph, *, n_jobs=None):
         set_attr(data, alias_depi, 0.0)
         set_attr(data, ALIAS_SI, 0.98)
         set_attr(data, ALIAS_VF, float(get_attr(data, ALIAS_VF, 1.0)))
-
 
 def test_runtime_run_triggers_remesh_and_stop_early():
     """Runtime should remesh once and honour STOP_EARLY gating with telemetry."""

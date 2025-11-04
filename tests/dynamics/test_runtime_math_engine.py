@@ -22,7 +22,6 @@ from tnfr.validation import validate_window as _validate_window
 if not hasattr(glyph_history, "validate_window"):
     glyph_history.validate_window = _validate_window
 
-
 def _attach_math_engine_config(graph):  # noqa: ANN001 - test helper
     hilbert = HilbertSpace(3)
     generator = np.diag([0.1, -0.05, 0.02])
@@ -38,20 +37,17 @@ def _attach_math_engine_config(graph):  # noqa: ANN001 - test helper
         "state_projector": BasicStateProjector(),
     }
 
-
 def _build_seed_graph():  # noqa: ANN001 - test helper
     base_graph, _ = create_nfr("seed", epi=0.9, vf=1.1, theta=0.2)
     create_nfr("partner", epi=0.6, vf=0.8, theta=-0.1, graph=base_graph)
     inject_defaults(base_graph)
     return base_graph
 
-
 def _snapshot_nodes(graph):  # noqa: ANN001 - test helper
     return {
         node: {key: float(value) for key, value in data.items() if isinstance(value, float)}
         for node, data in graph.nodes(data=True)
     }
-
 
 def test_step_with_math_engine_preserves_classical_updates():
     base_graph = _build_seed_graph()
@@ -87,7 +83,6 @@ def test_step_with_math_engine_preserves_classical_updates():
     assert telemetry
     assert telemetry["step"] == summary["step"]
     assert telemetry["norm"] == pytest.approx(summary["norm"])
-
 
 def test_math_engine_evolution_is_deterministic():
     graph_one = _build_seed_graph()

@@ -13,7 +13,6 @@ from tnfr.structural import create_nfr, run_sequence
 
 from .mathematics import build_node_with_operators
 
-
 def classical_operator_snapshot(
     ops: Iterable[Any],
     *,
@@ -55,7 +54,7 @@ def classical_operator_snapshot(
                 epi_float = float(epi_value)
         else:
             epi_float = float(epi_value)
-        
+
         return {
             "EPI": epi_float,
             "vf": float(nd[VF_PRIMARY]),
@@ -64,7 +63,6 @@ def classical_operator_snapshot(
         }
 
     return {"classic-seed": _payload(primary), "classic-partner": _payload(partner)}
-
 
 def math_sequence_summary(
     ops: Iterable[Any],
@@ -104,7 +102,6 @@ def math_sequence_summary(
         list(ops), enable_validation=True, rng=effective_rng
     )
     return summary, node
-
 
 DEFAULT_ACCEPTANCE_OPS = (
     Emission(),

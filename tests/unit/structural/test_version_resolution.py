@@ -8,7 +8,6 @@ import types
 from importlib import metadata
 from importlib.metadata import PackageNotFoundError
 
-
 def _clear_tnfr_modules() -> None:
     """Remove cached :mod:`tnfr` modules so import side effects re-trigger."""
 
@@ -16,7 +15,6 @@ def _clear_tnfr_modules() -> None:
         key for key in sys.modules if key == "tnfr" or key.startswith("tnfr.")
     ]:
         sys.modules.pop(name)
-
 
 def test_version_prefers_package_metadata(monkeypatch) -> None:
     """When metadata is present it should define ``tnfr.__version__``."""
@@ -29,7 +27,6 @@ def test_version_prefers_package_metadata(monkeypatch) -> None:
     tnfr = importlib.import_module("tnfr")
 
     assert tnfr.__version__ == expected
-
 
 def test_version_falls_back_to_local_module(monkeypatch) -> None:
     """If metadata resolution fails the bundled version must be used."""

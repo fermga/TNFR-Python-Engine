@@ -22,7 +22,6 @@ from tnfr.constants import (
     inject_defaults,
 )
 
-
 @pytest.fixture
 def seed_graph_factory() -> Callable[..., nx.Graph]:
     """Return a factory for creating deterministic test graphs.
@@ -57,7 +56,6 @@ def seed_graph_factory() -> Callable[..., nx.Graph]:
 
     return _create
 
-
 @pytest.fixture
 def homogeneous_graph_factory() -> Callable[..., nx.Graph]:
     """Return a factory for creating homogeneous graphs.
@@ -86,7 +84,6 @@ def homogeneous_graph_factory() -> Callable[..., nx.Graph]:
         return graph
 
     return _create
-
 
 @pytest.fixture
 def bicluster_graph_factory() -> Callable[..., tuple[nx.Graph, tuple[list, list]]]:
@@ -126,7 +123,6 @@ def bicluster_graph_factory() -> Callable[..., tuple[nx.Graph, tuple[list, list]
         return graph, (left_nodes, right_nodes)
 
     return _create
-
 
 @pytest.fixture
 def operator_sequence_factory() -> Callable[..., list[Any]]:

@@ -19,11 +19,9 @@ DEPRECATED_OPERATOR_COLLECTIONS = (
     "LEGACY_SELF_ORGANIZATION_CLOSURES",
 )
 
-
 def test_registry_matches_operator_constants() -> None:
     discover_operators()
     assert set(OPERATORS.keys()) == names.ALL_OPERATOR_NAMES
-
 
 def test_validation_sets_are_subsets() -> None:
     assert names.VALID_START_OPERATORS <= names.ALL_OPERATOR_NAMES
@@ -31,7 +29,6 @@ def test_validation_sets_are_subsets() -> None:
     assert names.VALID_END_OPERATORS <= names.ALL_OPERATOR_NAMES
     assert names.SELF_ORGANIZATION in names.ALL_OPERATOR_NAMES
     assert names.SELF_ORGANIZATION_CLOSURES <= names.ALL_OPERATOR_NAMES
-
 
 @pytest.mark.parametrize("legacy_name", DEPRECATED_OPERATOR_COLLECTIONS)
 def test_spanish_aliases_raise_plain_attribute_error(legacy_name: str) -> None:
@@ -41,22 +38,18 @@ def test_spanish_aliases_raise_plain_attribute_error(legacy_name: str) -> None:
     assert legacy_name in message
     assert "VALID_" not in message
 
-
 def test_canonical_lookup_is_passthrough_for_english_tokens() -> None:
     for token in names.CANONICAL_OPERATOR_NAMES:
         assert names.canonical_operator_name(token) == token
-
 
 def test_operator_display_name_returns_canonical_token() -> None:
     assert names.operator_display_name(names.EMISSION) == names.EMISSION
     assert names.operator_display_name("unknown") == "unknown"
 
-
 def test_get_operator_class_rejects_spanish_tokens() -> None:
     discover_operators()
     with pytest.raises(KeyError):
         get_operator_class("emission_legacy")
-
 
 def test_registry_exposes_only_english_collection_name() -> None:
     legacy_alias = "OPERATORS_LEGACY"
@@ -65,7 +58,6 @@ def test_registry_exposes_only_english_collection_name() -> None:
     assert str(exc_info.value) == (
         f"module '{registry_module.__name__}' has no attribute '{legacy_alias}'"
     )
-
 
 def test_register_operator_requires_name() -> None:
     class NamelessOperator(Operator):
@@ -77,7 +69,6 @@ def test_register_operator_requires_name() -> None:
         register_operator(NamelessOperator)
 
     assert "must declare a non-empty 'name'" in str(exc_info.value)
-
 
 def test_register_operator_rejects_duplicate_names() -> None:
     class DummyOperator(Operator):

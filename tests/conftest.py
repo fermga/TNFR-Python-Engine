@@ -15,7 +15,6 @@ from tnfr.utils import cached_import, prune_failed_imports
 STRUCTURAL_ATOL = 1e-12
 STRUCTURAL_RTOL = 1e-10
 
-
 def pytest_addoption(parser: pytest.Parser) -> None:
     """Expose CLI flag to force a specific mathematics backend."""
 
@@ -25,7 +24,6 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=None,
         help="Force TNFR_MATH_BACKEND during the session (numpy, jax, torch).",
     )
-
 
 def pytest_configure(config: pytest.Config) -> None:
     """Propagate backend selection from CLI or environment before tests import."""
@@ -43,20 +41,17 @@ def pytest_configure(config: pytest.Config) -> None:
 
     backend_module._BACKEND_CACHE.clear()
 
-
 @pytest.fixture(scope="session")
 def structural_tolerances() -> dict[str, float]:
     """Return the canonical absolute/relative tolerances used in tests."""
 
     return {"atol": STRUCTURAL_ATOL, "rtol": STRUCTURAL_RTOL}
 
-
 @pytest.fixture
 def structural_rng() -> np.random.Generator:
     """Provide a reproducible RNG aligned with TNFR structural conventions."""
 
     return np.random.default_rng(seed=0)
-
 
 @pytest.fixture
 def graph_canon():
@@ -68,7 +63,6 @@ def graph_canon():
         return G
 
     return _factory
-
 
 @pytest.fixture(scope="module")
 def reset_cached_import():

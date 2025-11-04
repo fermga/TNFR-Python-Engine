@@ -8,7 +8,6 @@ from typing import Final
 
 __all__ = ["__version__"]
 
-
 def _read_version() -> str:
     """Resolve the published package version while preserving TNFR invariants."""
 
@@ -44,6 +43,5 @@ def _read_version() -> str:
             pass
 
     return "0.0.0"
-
 
 __version__: Final[str] = _read_version()

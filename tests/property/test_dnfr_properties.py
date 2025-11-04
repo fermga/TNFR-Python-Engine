@@ -32,7 +32,6 @@ from .strategies import (
     two_cluster_graphs,
 )
 
-
 def _expected_dnfr_mixed(graph, node) -> float:
     """Return the analytic ΔNFR expected from ``dnfr_epi_vf_mixed``."""
 
@@ -49,7 +48,6 @@ def _expected_dnfr_mixed(graph, node) -> float:
     ) / len(neighbors)
     return 0.5 * (epi_avg - epi_val) + 0.5 * (vf_avg - vf_val)
 
-
 @PROPERTY_TEST_SETTINGS
 @given(graph=homogeneous_graphs())
 def test_dnfr_epi_vf_mixed_stable_on_homogeneous(graph) -> None:
@@ -59,7 +57,6 @@ def test_dnfr_epi_vf_mixed_stable_on_homogeneous(graph) -> None:
 
     # Use shared validation helper for consistency with integration tests
     assert_dnfr_homogeneous_stable(graph)
-
 
 @PROPERTY_TEST_SETTINGS
 @given(clustered=two_cluster_graphs())
@@ -84,11 +81,10 @@ def test_dnfr_epi_vf_mixed_balances_clusters(clustered: ClusteredGraph) -> None:
 
     # Use shared validation helper for conservation check
     assert_dnfr_balanced(graph, abs_tol=1e-9)
-    
+
     if len(cluster_signatures) == 2:
         # Cluster signatures should oppose or cancel depending on the gradient.
         assert cluster_signatures[0] * cluster_signatures[1] <= 0.0
-
 
 @PROPERTY_TEST_SETTINGS
 @given(
@@ -106,12 +102,12 @@ def test_dnfr_epi_vf_mixed_invariant_under_relabel(data, graph) -> None:
         st.permutations(nodes),
         label="node_permutation",
     )
-    
+
     # Step 1: Relabel to temporary non-overlapping labels
     temp_labels = [f"__tmp_{i}" for i in range(len(nodes))]
     temp_mapping = dict(zip(nodes, temp_labels))
     permuted_graph = nx.relabel_nodes(base_graph, temp_mapping, copy=True)
-    
+
     # Step 2: Apply the actual permutation from temp labels to final labels
     final_mapping = dict(zip(temp_labels, permutation))
     nx.relabel_nodes(permuted_graph, final_mapping, copy=False)
@@ -134,7 +130,6 @@ def test_dnfr_epi_vf_mixed_invariant_under_relabel(data, graph) -> None:
     permuted_values = get_dnfr_values(permuted_graph)
     assert_dnfr_lists_close(base_values, permuted_values)
 
-
 def _apply_noise(
     base_graph,
     noise_scale: float,
@@ -147,7 +142,6 @@ def _apply_noise(
         data[DNFR_PRIMARY] = float(data.get(DNFR_PRIMARY, 0.0)) + noise_scale * noise_dnfr
         data[dEPI_PRIMARY] = float(data.get(dEPI_PRIMARY, 0.0)) + noise_scale * noise_depi
     return graph
-
 
 @PROPERTY_TEST_SETTINGS
 @given(
@@ -209,7 +203,6 @@ def test_compute_coherence_decreases_with_noise(data, graph) -> None:
     assert base_coherence + tol >= small_coherence
     assert small_coherence + tol >= large_coherence
 
-
 @PROPERTY_TEST_SETTINGS
 @given(
     graph=prepare_network(min_nodes=2, max_nodes=8, connected=True),
@@ -231,7 +224,6 @@ def test_dnfr_phase_only_stable_on_synchronised(graph, phase) -> None:
 
     # Use shared validation helper for consistency
     assert_dnfr_homogeneous_stable(graph)
-
 
 @PROPERTY_TEST_SETTINGS
 @given(data=st.data())

@@ -10,7 +10,6 @@ from tnfr.constants import (
 from tnfr.metrics import coherence_matrix, local_phase_sync_weighted
 from tnfr.utils import ensure_node_index_map
 
-
 def make_graph(graph_canon, offset=0):
     G = graph_canon()
     G.add_node(offset)
@@ -19,7 +18,6 @@ def make_graph(graph_canon, offset=0):
     G.nodes[offset][THETA_PRIMARY] = 0.0
     G.nodes[offset + 1][THETA_PRIMARY] = 0.0
     return G
-
 
 def test_local_phase_sync_independent_graphs(graph_canon):
     G1 = make_graph(graph_canon, 0)
@@ -44,7 +42,6 @@ def test_local_phase_sync_independent_graphs(graph_canon):
     assert r1_again == pytest.approx(r1)
     assert ensure_node_index_map(G1) is map1
 
-
 def test_node_index_map_invalidation(graph_canon):
     G = make_graph(graph_canon, 0)
     coherence_matrix(G)
@@ -57,7 +54,6 @@ def test_node_index_map_invalidation(graph_canon):
     assert mapping1 is not mapping2
     assert set(mapping2.keys()) == set(G.nodes())
 
-
 def test_use_numpy_parameter_matches_loops():
     G = nx.cycle_graph(3)
     for n in G.nodes:
@@ -69,7 +65,6 @@ def test_use_numpy_parameter_matches_loops():
     assert W_l == W_v
     assert nodes_p == nodes_l
     assert W_p == W_l
-
 
 def test_coherence_parallel_consistency_neighbors_and_all(graph_canon):
     G = graph_canon()

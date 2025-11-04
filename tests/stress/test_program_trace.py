@@ -13,7 +13,6 @@ from tnfr.types import Glyph, TNFRGraph
 
 pytestmark = [pytest.mark.stress]
 
-
 def _build_medium_graph(graph_canon, *, seed: int, node_count: int) -> TNFRGraph:
     """Return a graph populated with deterministic edges below the stress threshold."""
 
@@ -28,7 +27,6 @@ def _build_medium_graph(graph_canon, *, seed: int, node_count: int) -> TNFRGraph
 
     G.graph["RANDOM_SEED"] = seed
     return G
-
 
 def test_program_trace_rotates_without_dropping_thol_history(graph_canon):
     """Program trace must rotate safely while preserving glyph order and targets.

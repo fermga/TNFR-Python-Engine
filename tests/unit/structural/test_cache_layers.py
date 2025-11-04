@@ -16,7 +16,6 @@ from tnfr.utils import (
     reset_global_cache_manager,
 )
 
-
 class _FlakyLayer(CacheLayer):
     """Cache layer that can simulate load/store failures."""
 
@@ -43,7 +42,6 @@ class _FlakyLayer(CacheLayer):
     def clear(self) -> None:
         self._storage.clear()
 
-
 class _FakeRedis:
     """Minimal Redis client stub used for testing the distributed layer."""
 
@@ -69,7 +67,6 @@ class _FakeRedis:
     def keys(self, pattern: str) -> list[str]:
         return [key for key in self._data if fnmatch.fnmatch(key, pattern)]
 
-
 def _close_manager(manager: CacheManager | None) -> None:
     if manager is None:
         return
@@ -78,7 +75,6 @@ def _close_manager(manager: CacheManager | None) -> None:
         close = getattr(layer, "close", None)
         if callable(close):
             close()
-
 
 def test_cache_manager_layer_failover(tmp_path):
     shelf_layer = ShelveCacheLayer(str(tmp_path / "cache.db"))
@@ -100,7 +96,6 @@ def test_cache_manager_layer_failover(tmp_path):
     assert restored == {"value": 1}
 
     restored_shelf.close()
-
 
 def test_build_cache_manager_hydrates_from_persistent_layers(tmp_path):
     fake_redis = _FakeRedis()
@@ -141,7 +136,6 @@ def test_build_cache_manager_hydrates_from_persistent_layers(tmp_path):
         _close_manager(manager)
         _close_manager(reloaded)
 
-
 def test_graph_cache_manager_uses_layer_overrides(tmp_path):
     fake_redis = _FakeRedis()
     shelf_path = tmp_path / "graph-cache.db"
@@ -180,7 +174,6 @@ def test_graph_cache_manager_uses_layer_overrides(tmp_path):
 
     second_manager = G.graph.get("_tnfr_cache_manager")
     _close_manager(second_manager)
-
 
 def test_edge_cache_persists_across_layers(tmp_path):
     shelf_path = tmp_path / "edge.db"

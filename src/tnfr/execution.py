@@ -40,7 +40,6 @@ __all__ = [
     "wait",
 ]
 
-
 CANONICAL_PRESET_NAME = "canonical_example"
 CANONICAL_PROGRAM_TOKENS: tuple[Token, ...] = (
     Glyph.SHA,
@@ -51,10 +50,8 @@ CANONICAL_PROGRAM_TOKENS: tuple[Token, ...] = (
     Glyph.THOL,
 )
 
-
 def _window(G: TNFRGraph) -> int:
     return int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
-
 
 def _apply_glyph_to_targets(
     G: TNFRGraph, g: Glyph | str, nodes: Optional[Iterable[NodeId]] = None
@@ -65,16 +62,13 @@ def _apply_glyph_to_targets(
     w = _window(G)
     apply_glyph_with_grammar(G, nodes_iter, g, w)
 
-
 def _advance(G: TNFRGraph, step_fn: AdvanceFn) -> None:
     step_fn(G)
-
 
 def _record_trace(trace: ProgramTrace, G: TNFRGraph, op: OpTag, **data: Any) -> None:
     """Append an operation snapshot to ``trace`` using graph time metadata."""
 
     trace.append({"t": float(G.graph.get("_t", 0.0)), "op": op.name, **data})
-
 
 def _advance_and_record(
     G: TNFRGraph,
@@ -88,7 +82,6 @@ def _advance_and_record(
     for _ in range(times):
         _advance(G, step_fn)
     _record_trace(trace, G, label, **data)
-
 
 def _handle_target(
     G: TNFRGraph,
@@ -108,7 +101,6 @@ def _handle_target(
     _record_trace(trace, G, OpTag.TARGET, n=len(curr_target))
     return curr_target
 
-
 def _handle_wait(
     G: TNFRGraph,
     steps: int,
@@ -118,7 +110,6 @@ def _handle_wait(
 ) -> Optional[Sequence[NodeId]]:
     _advance_and_record(G, trace, OpTag.WAIT, step_fn, times=steps, k=steps)
     return curr_target
-
 
 def _handle_glyph(
     G: TNFRGraph,
@@ -132,7 +123,6 @@ def _handle_glyph(
     _advance_and_record(G, trace, label, step_fn, g=g)
     return curr_target
 
-
 def _handle_thol(
     G: TNFRGraph,
     g: Glyph | str | None,
@@ -144,14 +134,12 @@ def _handle_thol(
         G, g or Glyph.THOL.value, curr_target, trace, step_fn, label=OpTag.THOL
     )
 
-
 HANDLERS: dict[OpTag, HandlerFn] = {
     OpTag.TARGET: _handle_target,
     OpTag.WAIT: _handle_wait,
     OpTag.GLYPH: _handle_glyph,
     OpTag.THOL: _handle_thol,
 }
-
 
 def play(
     G: TNFRGraph, sequence: Sequence[Token], step_fn: Optional[AdvanceFn] = None
@@ -178,7 +166,6 @@ def play(
             raise ValueError(f"Unknown operation: {op}")
         curr_target = handler(G, payload, curr_target, trace, step_fn)
 
-
 def compile_sequence(
     sequence: Iterable[Token] | Sequence[Token] | Any,
     *,
@@ -188,30 +175,25 @@ def compile_sequence(
 
     return _flatten(sequence, max_materialize=max_materialize)
 
-
 def seq(*tokens: Token) -> list[Token]:
     """Return a mutable list of ``tokens`` for explicit sequence editing."""
 
     return list(tokens)
-
 
 def block(*tokens: Token, repeat: int = 1, close: Optional[Glyph] = None) -> THOL:
     """Build a THOL block with optional repetition and forced closure."""
 
     return THOL(body=list(tokens), repeat=repeat, force_close=close)
 
-
 def target(nodes: Optional[Iterable[NodeId]] = None) -> TARGET:
     """Return a TARGET token selecting ``nodes`` (defaults to all nodes)."""
 
     return TARGET(nodes=nodes)
 
-
 def wait(steps: int = 1) -> WAIT:
     """Return a WAIT token forcing ``steps`` structural updates before resuming."""
 
     return WAIT(steps=max(1, int(steps)))
-
 
 def basic_canonical_example() -> list[Token]:
     """Return the canonical preset sequence.

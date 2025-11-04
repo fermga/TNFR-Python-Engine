@@ -22,7 +22,6 @@ __all__ = (
     "soft_grammar_filters",
 )
 
-
 def acceleration_norm(ctx: "GrammarContext", nd: "Mapping[str, Any]") -> float:
     """Return the node acceleration normalised to ``[0, 1]``.
 
@@ -59,7 +58,7 @@ def check_repeats(
         if fallback_key != cand_key:
             return fallback
         history: list[str] = []
-        for item in nd.get("glyph_history", ()): 
+        for item in nd.get("glyph_history", ()):
             if isinstance(item, Glyph):
                 history.append(item.value)
             else:
@@ -89,7 +88,6 @@ def check_repeats(
         )
     return cand
 
-
 def maybe_force(
     ctx: "GrammarContext",
     n: Any,
@@ -113,7 +111,6 @@ def maybe_force(
         return original
     return cand
 
-
 def _match_template(result: Glyph | str, template: Glyph | str) -> Glyph | str:
     """Coerce ``result`` to mirror ``template``'s representation when possible."""
 
@@ -125,7 +122,6 @@ def _match_template(result: Glyph | str, template: Glyph | str) -> Glyph | str:
         except (TypeError, ValueError):
             return result
     return result
-
 
 def soft_grammar_filters(
     ctx: "GrammarContext",

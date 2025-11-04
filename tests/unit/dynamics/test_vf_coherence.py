@@ -15,7 +15,6 @@ from tnfr.dynamics.adaptation import _vf_adapt_chunk
 import tnfr.dynamics.adaptation as adaptation_module
 from tnfr.utils import get_numpy
 
-
 def _coherence_test_graph(graph_canon):
     G = graph_canon()
     G.add_edge(0, 1)
@@ -30,7 +29,6 @@ def _coherence_test_graph(graph_canon):
     G.nodes[0]["νf"] = 0.2
     G.nodes[1]["νf"] = 1.0
     return G
-
 
 def _vf_clamp_test_graph(graph_canon):
     G = graph_canon()
@@ -60,7 +58,6 @@ def _vf_clamp_test_graph(graph_canon):
 
     return G
 
-
 def test_adapt_vf_requires_injected_defaults():
     bare = nx.Graph()
     bare.add_edge("seed", "anchor")
@@ -69,7 +66,6 @@ def test_adapt_vf_requires_injected_defaults():
         adapt_vf_by_coherence(bare)
 
     inject_defaults(bare)
-
 
 def test_adapt_vf_rejects_non_numeric_tau(graph_canon):
     G = graph_canon()
@@ -80,7 +76,6 @@ def test_adapt_vf_rejects_non_numeric_tau(graph_canon):
         adapt_vf_by_coherence(G)
 
     inject_defaults(G, override=True)
-
 
 def test_vf_converge_to_neighbor_average_when_stable(graph_canon):
     G = graph_canon()
@@ -108,7 +103,6 @@ def test_vf_converge_to_neighbor_average_when_stable(graph_canon):
     assert G.nodes[0]["νf"] == pytest.approx(0.6)
     assert G.nodes[1]["νf"] == pytest.approx(0.6)
 
-
 def test_adapt_vf_serial_matches_parallel_same_snapshot(graph_canon):
     base = _coherence_test_graph(graph_canon)
     serial = copy.deepcopy(base)
@@ -125,7 +119,6 @@ def test_adapt_vf_serial_matches_parallel_same_snapshot(graph_canon):
         for n in serial.nodes:
             assert parallel.nodes[n]["stable_count"] == serial.nodes[n]["stable_count"]
 
-
 def test_adapt_vf_python_parallel_matches_serial(graph_canon, monkeypatch):
     monkeypatch.setattr("tnfr.dynamics.get_numpy", lambda: None)
     base = _coherence_test_graph(graph_canon)
@@ -138,7 +131,6 @@ def test_adapt_vf_python_parallel_matches_serial(graph_canon, monkeypatch):
     for n in serial.nodes:
         assert parallel.nodes[n]["νf"] == pytest.approx(serial.nodes[n]["νf"])
         assert parallel.nodes[n]["stable_count"] == serial.nodes[n]["stable_count"]
-
 
 @pytest.mark.parametrize("numpy_mode", ["vectorised", "python"])
 def test_adapt_vf_invalid_jobs_fallback_to_serial(graph_canon, monkeypatch, numpy_mode):
@@ -173,14 +165,12 @@ def test_adapt_vf_invalid_jobs_fallback_to_serial(graph_canon, monkeypatch, nump
             == serial.nodes[node]["stable_count"]
         )
 
-
 def test_adapt_vf_noop_on_empty_graph():
     empty = nx.Graph()
     inject_defaults(empty)
 
     # Should exit early without raising even when the graph is empty.
     adapt_vf_by_coherence(empty)
-
 
 @pytest.mark.parametrize("mode", ["vectorised", "python"])
 def test_adapt_vf_clamps_to_bounds(graph_canon, monkeypatch, mode):
@@ -240,7 +230,6 @@ def test_adapt_vf_clamps_to_bounds(graph_canon, monkeypatch, mode):
         assert resolve_calls == [
             (math.ceil(total_items / 2), total_items, {"minimum": 1})
         ]
-
 
 def test_adapt_vf_python_resets_unstable_counts_with_missing_neighbors(
     graph_canon, monkeypatch

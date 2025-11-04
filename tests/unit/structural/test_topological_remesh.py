@@ -10,7 +10,6 @@ from tnfr.glyph_history import ensure_history
 from tnfr.operators import apply_topological_remesh
 from tnfr.operators.remesh import _mst_edges_from_epi
 
-
 def _graph_with_epi(graph_canon, n=6):
     G = graph_canon()
     for i in range(n):
@@ -20,10 +19,8 @@ def _graph_with_epi(graph_canon, n=6):
         G.nodes[i]["EPI"] = float(i)
     return G
 
-
 def _edge_set(G):
     return {tuple(sorted(edge)) for edge in G.edges()}
-
 
 def _clustered_graph(graph_canon, cluster_sizes):
     total = sum(cluster_sizes)
@@ -40,7 +37,6 @@ def _clustered_graph(graph_canon, cluster_sizes):
         start += size
     return G
 
-
 @pytest.fixture()
 def single_community_clique(graph_canon):
     """Return a fully connected graph whose modularity has one community."""
@@ -49,7 +45,6 @@ def single_community_clique(graph_canon):
     for u, v in combinations(G.nodes(), 2):
         G.add_edge(u, v)
     return G
-
 
 def test_remesh_community_single_module_keeps_mst(single_community_clique):
     G = single_community_clique
@@ -63,7 +58,6 @@ def test_remesh_community_single_module_keeps_mst(single_community_clique):
     assert _edge_set(G) == expected_mst
     history = ensure_history(G)
     assert not history.get("remesh_events"), "No telemetry should be recorded"
-
 
 def test_remesh_community_reduces_nodes_and_preserves_connectivity(
     graph_canon,
@@ -87,7 +81,6 @@ def test_remesh_community_reduces_nodes_and_preserves_connectivity(
     ev = ensure_history(G).get("remesh_events", [])
     assert ev and ev[-1].get("mode") == "community"
 
-
 def test_remesh_community_adds_exact_k_connections_per_cluster(graph_canon):
     G = _clustered_graph(graph_canon, [3, 3, 3])
     apply_topological_remesh(G, mode="community", k=2, p_rewire=0.0, seed=7)
@@ -97,7 +90,6 @@ def test_remesh_community_adds_exact_k_connections_per_cluster(graph_canon):
     extra_attempts = events[-1].get("extra_edge_attempts")
     assert extra_attempts, "Telemetry should record attempts for each community"
     assert set(extra_attempts.values()) == {2}
-
 
 def test_remesh_community_rewire_changes_destinations(graph_canon):
     G_no_rewire = _clustered_graph(graph_canon, [3, 3, 3])
@@ -115,7 +107,6 @@ def test_remesh_community_rewire_changes_destinations(graph_canon):
     assert rewired_edges, "With p_rewire=1.0 there must be rewired edges recorded"
     assert any(edge["from"] != edge["to"] for edge in rewired_edges)
 
-
 def test_remesh_knn_preserves_connectivity(graph_canon):
     G = _graph_with_epi(graph_canon, n=5)
     apply_topological_remesh(G, mode="knn", k=2, p_rewire=1.0, seed=1)
@@ -123,13 +114,11 @@ def test_remesh_knn_preserves_connectivity(graph_canon):
     assert G.number_of_nodes() == 5
     assert G.number_of_edges() >= 4
 
-
 def test_remesh_mst_returns_tree(graph_canon):
     G = _graph_with_epi(graph_canon, n=5)
     apply_topological_remesh(G, mode="mst")
     assert nx.is_tree(G)
     assert G.number_of_nodes() == 5
-
 
 def test_remesh_respects_graph_random_seed(graph_canon):
     base = _graph_with_epi(graph_canon, n=6)
@@ -142,7 +131,6 @@ def test_remesh_respects_graph_random_seed(graph_canon):
     apply_topological_remesh(G2, mode="knn", k=2, p_rewire=0.3)
 
     assert _edge_set(G1) == _edge_set(G2)
-
 
 def test_remesh_sequences_depend_on_mode_and_k(graph_canon):
     base = _graph_with_epi(graph_canon, n=6)

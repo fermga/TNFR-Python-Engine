@@ -13,7 +13,6 @@ from tnfr.metrics.common import _get_vf_dnfr_max
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
-
 def test_get_vf_dnfr_max_updates_graph_on_none(graph_canon):
     G = graph_canon()
     G.add_nodes_from([1, 2])
@@ -31,7 +30,6 @@ def test_get_vf_dnfr_max_updates_graph_on_none(graph_canon):
     assert G.graph["_vfmax"] == pytest.approx(1.5)
     assert G.graph["_dnfrmax"] == pytest.approx(0.4)
 
-
 def test_set_attr_and_cache_returns_none_without_cache(graph_canon):
     G = graph_canon()
     G.add_node(1)
@@ -39,7 +37,6 @@ def test_set_attr_and_cache_returns_none_without_cache(graph_canon):
     result = set_attr_and_cache(G, 1, ALIAS_VF, 0.8)
 
     assert result is None
-
 
 def test_set_attr_with_max_returns_abs_result(graph_canon):
     G = graph_canon()
@@ -56,7 +53,6 @@ def test_set_attr_with_max_returns_abs_result(graph_canon):
     assert second.node == 2
     assert G.graph["_vfmax"] == pytest.approx(2.0)
     assert G.graph["_vfmax_node"] == 2
-
 
 def test_set_scalar_handles_cache_response(graph_canon):
     G = graph_canon()

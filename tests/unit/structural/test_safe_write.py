@@ -6,12 +6,10 @@ import pytest
 
 from tnfr.utils.io import safe_write
 
-
 def test_safe_write_atomic(tmp_path: Path):
     dest = tmp_path / "out.txt"
     safe_write(dest, lambda f: f.write("hi"))
     assert dest.read_text() == "hi"
-
 
 def test_safe_write_cleans_temp_on_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -30,7 +28,6 @@ def test_safe_write_cleans_temp_on_error(
     # Only the temporary directory itself should remain
     assert list(tmp_path.iterdir()) == []
 
-
 def test_safe_write_preserves_exception(tmp_path: Path):
     dest = tmp_path / "out.txt"
 
@@ -39,7 +36,6 @@ def test_safe_write_preserves_exception(tmp_path: Path):
 
     with pytest.raises(ValueError):
         safe_write(dest, writer)
-
 
 def test_safe_write_non_atomic(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     dest = tmp_path / "out.txt"
@@ -56,7 +52,6 @@ def test_safe_write_non_atomic(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     safe_write(dest, lambda f: f.write("hi"), atomic=False)
 
     assert dest.read_text() == "hi"
-
 
 def test_safe_write_sync_non_atomic(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     dest = tmp_path / "out.txt"
@@ -77,7 +72,6 @@ def test_safe_write_sync_non_atomic(tmp_path: Path, monkeypatch: pytest.MonkeyPa
 
     assert fsynced
     assert dest.read_text() == "hi"
-
 
 @pytest.mark.parametrize("atomic", [True, False])
 def test_safe_write_binary_mode(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, atomic: bool):

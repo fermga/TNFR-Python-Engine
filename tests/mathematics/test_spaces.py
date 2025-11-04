@@ -8,7 +8,6 @@ np = pytest.importorskip("numpy")
 
 from tnfr.mathematics.spaces import BanachSpaceEPI, HilbertSpace
 
-
 def test_hilbert_space_basis_is_orthonormal(structural_tolerances: dict[str, float]) -> None:
     space = HilbertSpace(dimension=3)
 
@@ -19,7 +18,6 @@ def test_hilbert_space_basis_is_orthonormal(structural_tolerances: dict[str, flo
         np.eye(3, dtype=space.dtype),
         atol=structural_tolerances["atol"],
     )
-
 
 def test_hilbert_space_inner_product_and_norm(structural_rng: np.random.Generator) -> None:
     space = HilbertSpace(dimension=4)
@@ -33,7 +31,6 @@ def test_hilbert_space_inner_product_and_norm(structural_rng: np.random.Generato
 
     norm = space.norm(vector_a)
     assert norm == pytest.approx(np.linalg.norm(vector_a))
-
 
 def test_hilbert_space_projection(structural_rng: np.random.Generator, structural_tolerances: dict[str, float]) -> None:
     space = HilbertSpace(dimension=3)
@@ -51,7 +48,6 @@ def test_hilbert_space_projection(structural_rng: np.random.Generator, structura
     projected = space.project(vector, basis=custom_basis)
     np.testing.assert_allclose(projected, expected, atol=structural_tolerances["atol"])
 
-
 def test_hilbert_space_validation_errors() -> None:
     with pytest.raises(ValueError):
         HilbertSpace(dimension=0)
@@ -66,7 +62,6 @@ def test_hilbert_space_validation_errors() -> None:
     non_orthonormal_basis = [np.array([1.0 + 0j, 0.0 + 0j], dtype=space.dtype)] * 2
     with pytest.raises(ValueError):
         space.project([1.0, 0.0], basis=non_orthonormal_basis)
-
 
 def test_banach_space_domain_validation(structural_rng: np.random.Generator) -> None:
     space = BanachSpaceEPI()
@@ -84,7 +79,6 @@ def test_banach_space_domain_validation(structural_rng: np.random.Generator) -> 
     with pytest.raises(ValueError):
         space.validate_domain(f, a, x_grid=[0.0, 0.3, 0.9, 0.9])
 
-
 def test_banach_space_coherence_functional(structural_tolerances: dict[str, float]) -> None:
     space = BanachSpaceEPI()
     x_grid = np.linspace(0.0, 1.0, 5)
@@ -97,7 +91,6 @@ def test_banach_space_coherence_functional(structural_tolerances: dict[str, floa
 
     result = space.compute_coherence_functional(f, x_grid)
     assert result == pytest.approx(expected, rel=structural_tolerances["rtol"], abs=structural_tolerances["atol"])
-
 
 def test_banach_space_coherence_norm_combines_components(structural_tolerances: dict[str, float]) -> None:
     space = BanachSpaceEPI()

@@ -9,13 +9,11 @@ from tnfr.mathematics.backend import get_backend
 from tnfr.mathematics.dynamics import ContractiveDynamicsEngine, MathematicalDynamicsEngine
 from tnfr.mathematics.spaces import HilbertSpace
 
-
 def _require_backend(name: str) -> object:
     backend = get_backend(name)
     if backend.name != name:
         pytest.skip(f"Backend '{name}' is unavailable; installed: {backend.name!r}.")
     return backend
-
 
 def test_jax_norm_gradient_matches_analytic() -> None:
     backend = _require_backend("jax")
@@ -32,7 +30,6 @@ def test_jax_norm_gradient_matches_analytic() -> None:
     grad = jax.grad(norm_squared)(vector)
     expected = 2.0 * vector
     np.testing.assert_allclose(np.asarray(grad), np.asarray(expected), rtol=1e-6, atol=1e-6)
-
 
 def test_jax_expectation_gradient_matches_closed_form() -> None:
     backend = _require_backend("jax")
@@ -58,7 +55,6 @@ def test_jax_expectation_gradient_matches_closed_form() -> None:
     expected = 2.0 * (matrix_np @ vector_np - energy_np * vector_np) / denom_np
     np.testing.assert_allclose(np.asarray(grad), expected, rtol=1e-6, atol=1e-6)
 
-
 def test_torch_norm_gradient_matches_analytic() -> None:
     backend = _require_backend("torch")
     torch = pytest.importorskip("torch")
@@ -72,7 +68,6 @@ def test_torch_norm_gradient_matches_analytic() -> None:
 
     expected = 2.0 * vector.detach().cpu().numpy()
     np.testing.assert_allclose(grad.detach().cpu().numpy(), expected, rtol=1e-6, atol=1e-6)
-
 
 def test_torch_expectation_gradient_matches_closed_form() -> None:
     backend = _require_backend("torch")
@@ -95,7 +90,6 @@ def test_torch_expectation_gradient_matches_closed_form() -> None:
     expected = 2.0 * (matrix_np @ vector_np - energy_np * vector_np) / denom_np
     np.testing.assert_allclose(grad.detach().cpu().numpy(), expected, rtol=1e-6, atol=1e-6)
 
-
 def test_torch_dynamics_step_supports_autodiff() -> None:
     backend = _require_backend("torch")
     torch = pytest.importorskip("torch")
@@ -116,7 +110,6 @@ def test_torch_dynamics_step_supports_autodiff() -> None:
     assert grad_np.shape == (2,)
     assert np.all(np.isfinite(grad_np))
 
-
 def test_torch_dynamics_step_autodiff_with_normalization() -> None:
     backend = _require_backend("torch")
     torch = pytest.importorskip("torch")
@@ -136,7 +129,6 @@ def test_torch_dynamics_step_autodiff_with_normalization() -> None:
     grad_np = grad.detach().cpu().numpy()
     assert grad_np.shape == (2,)
     assert np.all(np.isfinite(grad_np))
-
 
 def test_jax_contractive_step_supports_autodiff() -> None:
     backend = _require_backend("jax")
@@ -172,7 +164,6 @@ def test_jax_contractive_step_supports_autodiff() -> None:
     grad_np = np.asarray(grad)
     assert grad_np.shape == density.shape
     assert np.all(np.isfinite(grad_np))
-
 
 def test_jax_contractive_step_autodiff_with_controls() -> None:
     backend = _require_backend("jax")

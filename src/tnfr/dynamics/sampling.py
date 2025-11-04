@@ -10,7 +10,6 @@ from ..utils import cached_node_list
 
 __all__ = ("update_node_sample",)
 
-
 def update_node_sample(G: TNFRGraph, *, step: int) -> None:
     """Refresh ``G.graph['_node_sample']`` with a random subset of nodes.
 

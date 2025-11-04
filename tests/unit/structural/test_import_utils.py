@@ -13,9 +13,7 @@ from tnfr.utils import cached_import, prune_failed_imports, warm_cached_import
 
 pytestmark = pytest.mark.usefixtures("reset_cached_import")
 
-
 # -- Package re-export checks ---------------------------------------------------------------
-
 
 def test_utils_package_shares_import_state(reset_cached_import):
     reset_cached_import()
@@ -24,9 +22,7 @@ def test_utils_package_shares_import_state(reset_cached_import):
     utils_pkg.prune_failed_imports()
     assert utils_pkg._IMPORT_STATE is import_utils._IMPORT_STATE
 
-
 # -- Attribute and fallback handling ---------------------------------------------------------
-
 
 def test_cached_import_attribute_and_fallback(monkeypatch, reset_cached_import):
     reset_cached_import()
@@ -36,7 +32,6 @@ def test_cached_import_attribute_and_fallback(monkeypatch, reset_cached_import):
     reset_cached_import()
     monkeypatch.delitem(sys.modules, "fake_mod")
     assert cached_import("fake_mod", attr="value", fallback=1) == 1
-
 
 def test_cached_import_handles_distinct_fallbacks(monkeypatch, reset_cached_import):
     def fake_import(_name):
@@ -49,9 +44,7 @@ def test_cached_import_handles_distinct_fallbacks(monkeypatch, reset_cached_impo
     assert cached_import("fake_mod", fallback=fb1) is fb1
     assert cached_import("fake_mod", fallback=fb2) is fb2
 
-
 # -- Cache behavior and locking -------------------------------------------------------------
-
 
 def test_cached_import_uses_cache(monkeypatch, reset_cached_import):
     reset_cached_import()
@@ -65,7 +58,6 @@ def test_cached_import_uses_cache(monkeypatch, reset_cached_import):
     cached_import("fake_mod")
     cached_import("fake_mod")
     assert calls["n"] == 1
-
 
 def test_cached_import_failure_is_cached(monkeypatch, reset_cached_import):
     reset_cached_import()
@@ -84,9 +76,7 @@ def test_cached_import_failure_is_cached(monkeypatch, reset_cached_import):
     cached_import("fake_mod")
     assert calls["n"] == 2
 
-
 # -- Lazy import handling -------------------------------------------------------------------
-
 
 def test_cached_import_lazy_defers_until_used(monkeypatch, reset_cached_import):
     reset_cached_import()
@@ -106,7 +96,6 @@ def test_cached_import_lazy_defers_until_used(monkeypatch, reset_cached_import):
     again = cached_import("fake_mod", lazy=True)
     assert again is module
     assert cached_import("fake_mod") is module
-
 
 def test_cached_import_allows_garbage_collection(monkeypatch, reset_cached_import):
     reset_cached_import()
@@ -132,7 +121,6 @@ def test_cached_import_allows_garbage_collection(monkeypatch, reset_cached_impor
 
     assert ref() is None
 
-
 def test_cached_import_lazy_records_failure_on_use(monkeypatch, reset_cached_import):
     reset_cached_import()
     calls = {"n": 0}
@@ -149,7 +137,6 @@ def test_cached_import_lazy_records_failure_on_use(monkeypatch, reset_cached_imp
     assert calls["n"] == 1
     with import_utils._IMPORT_STATE.lock:
         assert "fake_mod" in import_utils._IMPORT_STATE.failed
-
 
 def test_cached_import_lazy_honours_fallback(monkeypatch, reset_cached_import):
     reset_cached_import()
@@ -169,9 +156,7 @@ def test_cached_import_lazy_honours_fallback(monkeypatch, reset_cached_import):
     with import_utils._IMPORT_STATE.lock:
         assert "fake_mod" in import_utils._IMPORT_STATE.failed
 
-
 # -- Failure recovery and logging -----------------------------------------------------------
-
 
 def test_cache_clear_and_prune_reset_all(monkeypatch, reset_cached_import):
     reset_cached_import()
@@ -205,7 +190,6 @@ def test_cache_clear_and_prune_reset_all(monkeypatch, reset_cached_import):
     cached_import("fake_mod")
     assert calls["n"] == 2
 
-
 def test_cached_import_clears_failures(monkeypatch, reset_cached_import):
     calls = {"n": 0}
 
@@ -228,7 +212,6 @@ def test_cached_import_clears_failures(monkeypatch, reset_cached_import):
         assert "fake_mod" not in import_utils._IMPORT_STATE.failed
         assert "fake_mod" not in import_utils._IMPORT_STATE.warned
 
-
 def test_warns_once_then_debug(monkeypatch, reset_cached_import):
     def fake_import(_name):
         raise ImportError("boom")
@@ -247,7 +230,6 @@ def test_warns_once_then_debug(monkeypatch, reset_cached_import):
     reset_cached_import()
     assert stacklevels == [2]
 
-
 def test_failure_log_respects_limit(monkeypatch, reset_cached_import):
     state = import_utils._IMPORT_STATE
     reset_cached_import()
@@ -265,9 +247,7 @@ def test_failure_log_respects_limit(monkeypatch, reset_cached_import):
 
     reset_cached_import()
 
-
 # -- Cache manager integration ---------------------------------------------------------------
-
 
 def test_import_cache_capacity_respects_manager_config(
     monkeypatch, reset_cached_import
@@ -302,7 +282,6 @@ def test_import_cache_capacity_respects_manager_config(
         for name in modules:
             sys.modules.pop(name, None)
         reset_cached_import()
-
 
 def test_import_cache_telemetry_records_hits_and_misses(
     monkeypatch, reset_cached_import
@@ -354,9 +333,7 @@ def test_import_cache_telemetry_records_hits_and_misses(
 
     reset_cached_import()
 
-
 # -- Warm import helper ----------------------------------------------------------------------
-
 
 def test_warm_cached_import_populates_cache(monkeypatch, reset_cached_import):
     reset_cached_import()
@@ -376,7 +353,6 @@ def test_warm_cached_import_populates_cache(monkeypatch, reset_cached_import):
     cached = cached_import("fake_mod")
     assert cached is module
     assert calls["n"] == 1
-
 
 def test_warm_cached_import_lazy_defers_until_used(monkeypatch, reset_cached_import):
     reset_cached_import()
@@ -398,7 +374,6 @@ def test_warm_cached_import_lazy_defers_until_used(monkeypatch, reset_cached_imp
     assert cached_import("lazy_mod") is module
     assert calls["n"] == 1
 
-
 def test_warm_cached_import_can_resolve_lazy(monkeypatch, reset_cached_import):
     reset_cached_import()
     calls = {"n": 0}
@@ -416,12 +391,10 @@ def test_warm_cached_import_can_resolve_lazy(monkeypatch, reset_cached_import):
     assert cached_import("lazy_mod") is module
     assert calls["n"] == 1
 
-
 def test_warm_cached_import_rejects_resolve_without_lazy(reset_cached_import):
     reset_cached_import()
     with pytest.raises(ValueError):
         warm_cached_import("fake_mod", resolve=True)
-
 
 def test_warm_cached_import_failure_is_idempotent(monkeypatch, reset_cached_import):
     reset_cached_import()
@@ -443,7 +416,6 @@ def test_warm_cached_import_failure_is_idempotent(monkeypatch, reset_cached_impo
     assert again is None
     assert calls["n"] == 1
 
-
 def test_warm_cached_import_handles_multiple_specs(monkeypatch, reset_cached_import):
     reset_cached_import()
     modules = {
@@ -462,14 +434,12 @@ def test_warm_cached_import_handles_multiple_specs(monkeypatch, reset_cached_imp
         "pkg_b.value": 2,
     }
 
-
 def test_warm_cached_import_attr_rejects_multiple_specs(reset_cached_import):
     reset_cached_import()
     with pytest.raises(
         ValueError, match="'attr' can only be combined with a single module name"
     ):
         warm_cached_import("pkg", "other", attr="value")
-
 
 def test_warm_cached_import_attr_requires_string_module(reset_cached_import):
     reset_cached_import()
@@ -478,14 +448,12 @@ def test_warm_cached_import_attr_requires_string_module(reset_cached_import):
     ):
         warm_cached_import(123, attr="value")
 
-
 def test_warm_cached_import_rejects_empty_iterable(reset_cached_import):
     reset_cached_import()
     with pytest.raises(
         ValueError, match="At least one module specification is required"
     ):
         warm_cached_import([])
-
 
 def test_warm_cached_import_rejects_invalid_tuple(reset_cached_import):
     reset_cached_import()

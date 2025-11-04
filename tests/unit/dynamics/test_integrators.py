@@ -14,14 +14,12 @@ from tnfr.dynamics import update_epi_via_nodal_equation
 from tnfr.validation.runtime import validate_canon
 from tnfr.initialization import init_node_attrs
 
-
 @pytest.mark.parametrize("graph_like", [{}, object()])
 def test_update_epi_requires_networkx_graph_instance(graph_like):
     """Non-networkx inputs should be rejected before integration runs."""
 
     with pytest.raises(TypeError, match="networkx graph instance"):
         update_epi_via_nodal_equation(graph_like)
-
 
 @pytest.mark.parametrize(
     "hint,total",
@@ -39,13 +37,11 @@ def test_normalise_jobs_rejects_invalid_and_degenerate_inputs(hint, total):
 
     assert integrators_mod._normalise_jobs(hint, total) is None
 
-
 def test_normalise_jobs_clamps_to_available_nodes():
     """Large worker hints must be capped by the available node count."""
 
     assert integrators_mod._normalise_jobs(32, 5) == 5
     assert integrators_mod._normalise_jobs(2.9, 8) == 2
-
 
 @pytest.mark.parametrize(
     "nodes,chunk_size,expected",
@@ -63,7 +59,6 @@ def test_chunk_nodes_preserves_order(nodes, chunk_size, expected):
 
     chunks = list(integrators_mod._chunk_nodes(nodes, chunk_size))
     assert chunks == expected
-
 
 @pytest.mark.parametrize(
     "method, ks",
@@ -86,7 +81,6 @@ def test_apply_increment_chunk_zero_dt_preserves_second_derivative(method, ks):
     assert dEPI_dt == pytest.approx(ks[-1])
     assert d2EPI == pytest.approx(0.0)
 
-
 def test_prepare_integration_params_validations_and_dt_min():
     G = nx.path_graph(3)
     inject_defaults(G)
@@ -104,7 +98,6 @@ def test_prepare_integration_params_validations_and_dt_min():
 
     with pytest.raises(ValueError):
         integrators_mod.prepare_integration_params(G, method="heun")
-
 
 @pytest.mark.parametrize("method", ["euler", "rk4"])
 def test_epi_limits_preserved(method):
@@ -136,7 +129,6 @@ def test_epi_limits_preserved(method):
         else:
             assert epi == pytest.approx(e_min)
         assert e_min - 1e-6 <= epi <= e_max + 1e-6
-
 
 @pytest.mark.parametrize("method", ["euler", "rk4"])
 def test_update_epi_uses_shared_gamma_builder(method, monkeypatch):
@@ -186,7 +178,6 @@ def test_update_epi_uses_shared_gamma_builder(method, monkeypatch):
     assert all(dt_step == pytest.approx(0.2) for dt_step, _, _ in calls)
     assert [t_local for _, t_local, _ in calls] == pytest.approx([0.0, 0.2, 0.4])
 
-
 @pytest.mark.parametrize("method", ["euler", "rk4"])
 def test_update_epi_skips_eval_gamma_when_none(method, monkeypatch):
     G = nx.path_graph(2)
@@ -210,14 +201,12 @@ def test_update_epi_skips_eval_gamma_when_none(method, monkeypatch):
     update_epi_via_nodal_equation(G, dt=0.3, method=method)
     assert calls == 0
 
-
 def test_collect_nodal_increments_rejects_unsupported_method():
     G = nx.path_graph(2)
     inject_defaults(G)
 
     with pytest.raises(ValueError, match="method must be 'euler' or 'rk4'"):
         integrators_mod._collect_nodal_increments(G, tuple(), method="heun")
-
 
 def test_collect_nodal_increments_validates_rk4_gamma_maps_length():
     G = nx.path_graph(2)
@@ -229,7 +218,6 @@ def test_collect_nodal_increments_validates_rk4_gamma_maps_length():
     ):
         integrators_mod._collect_nodal_increments(G, ({},), method="rk4")
 
-
 def test_gamma_worker_requires_parallel_graph(monkeypatch):
     original_graph = integrators_mod._PARALLEL_GRAPH
     monkeypatch.setattr(integrators_mod, "_PARALLEL_GRAPH", None)
@@ -238,7 +226,6 @@ def test_gamma_worker_requires_parallel_graph(monkeypatch):
         integrators_mod._gamma_worker(([0], 0.0))
 
     integrators_mod._PARALLEL_GRAPH = original_graph
-
 
 class _FakeArray:
     """Lightweight stand-in for numpy arrays used by increment tests."""
@@ -321,7 +308,6 @@ class _FakeArray:
     def zeros_like(self):
         return _FakeArray(0.0 for _ in self._data)
 
-
 class _FakeNumpy:
     """Small shim exposing the subset of numpy used in the tests."""
 
@@ -335,12 +321,10 @@ class _FakeNumpy:
             arr = _FakeArray(arr)
         return arr.zeros_like()
 
-
 def _use_fake_numpy(monkeypatch):
     """Force integrator helpers to rely on deterministic fake numpy arrays."""
 
     monkeypatch.setattr(integrators_mod, "get_numpy", _FakeNumpy)
-
 
 @pytest.mark.parametrize("method", ["euler", "rk4"])
 def test_apply_increments_vectorised(monkeypatch, method):
@@ -401,7 +385,6 @@ def test_apply_increments_vectorised(monkeypatch, method):
     for node, values in expected.items():
         assert results[node] == pytest.approx(values)
 
-
 def test_apply_increments_rk4_rejects_incorrect_shape(monkeypatch):
     _use_fake_numpy(monkeypatch)
 
@@ -414,7 +397,6 @@ def test_apply_increments_rk4_rejects_incorrect_shape(monkeypatch):
 
     with pytest.raises(ValueError, match="rk4 increments require four staged values"):
         integrators_mod._apply_increments(G, 0.1, increments, method="rk4")
-
 
 def test_apply_increments_zero_dt_preserves_second_derivative(monkeypatch):
     _use_fake_numpy(monkeypatch)
@@ -433,7 +415,6 @@ def test_apply_increments_zero_dt_preserves_second_derivative(monkeypatch):
     assert dEPI_dt == pytest.approx(0.4)
     assert d2EPI == pytest.approx(0.0)
 
-
 def test_call_integrator_factory_rejects_keyword_only_arguments():
     G = nx.Graph()
 
@@ -442,7 +423,6 @@ def test_call_integrator_factory_rejects_keyword_only_arguments():
 
     with pytest.raises(TypeError, match="cannot require keyword-only arguments"):
         runtime_mod._call_integrator_factory(kw_only_factory, G)
-
 
 def test_call_integrator_factory_rejects_multiple_positional_arguments():
     G = nx.Graph()

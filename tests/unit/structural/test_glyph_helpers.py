@@ -4,7 +4,6 @@ from collections import Counter
 
 from tnfr.utils import mix_groups, normalize_counter
 
-
 def test_normalize_counter():
     counts = Counter({"A": 2, "B": 1})
     dist, total = normalize_counter(counts)
@@ -14,7 +13,6 @@ def test_normalize_counter():
     empty_dist, empty_total = normalize_counter(Counter())
     assert empty_total == 0
     assert empty_dist == {}
-
 
 def test_mix_groups():
     dist = {"A": 0.5, "B": 0.5}

@@ -8,7 +8,6 @@ import pytest
 from tnfr.config.constants import GLYPHS_CANONICAL
 from tnfr.metrics import export_metrics
 
-
 def test_export_metrics_creates_directory_csv(tmp_path, graph_canon):
     base = tmp_path / "non" / "existing" / "run"
     dir_path = base.parent
@@ -19,7 +18,6 @@ def test_export_metrics_creates_directory_csv(tmp_path, graph_canon):
     assert (dir_path / (base.name + "_glyphogram.csv")).is_file()
     assert (dir_path / (base.name + "_sigma.csv")).is_file()
 
-
 def test_export_metrics_creates_directory_json(tmp_path, graph_canon):
     base = tmp_path / "other" / "path" / "history"
     dir_path = base.parent
@@ -28,7 +26,6 @@ def test_export_metrics_creates_directory_json(tmp_path, graph_canon):
     export_metrics(G, str(base), fmt="json")
     assert dir_path.exists()
     assert (base.with_suffix(".json")).is_file()
-
 
 def test_export_metrics_writes_optional_files(tmp_path, graph_canon):
     base = tmp_path / "extras" / "run"
@@ -40,7 +37,6 @@ def test_export_metrics_writes_optional_files(tmp_path, graph_canon):
     dir_path = base.parent
     assert (dir_path / (base.name + "_morph.csv")).is_file()
     assert (dir_path / (base.name + "_epi_support.csv")).is_file()
-
 
 def test_export_metrics_glyphogram_missing_glyphs(tmp_path, graph_canon):
     base = tmp_path / "glyphs" / "run"
@@ -63,7 +59,6 @@ def test_export_metrics_glyphogram_missing_glyphs(tmp_path, graph_canon):
     for glyph in GLYPHS_CANONICAL[1:]:
         assert float(data[glyph]) == 0.0
 
-
 def test_export_metrics_json_contains_optional(tmp_path, graph_canon):
     base = tmp_path / "extras" / "jsonrun"
     G = graph_canon()
@@ -74,7 +69,6 @@ def test_export_metrics_json_contains_optional(tmp_path, graph_canon):
     data = json.loads((base.with_suffix(".json")).read_text())
     assert data["morph"]
     assert data["epi_support"]
-
 
 def test_export_metrics_extends_sigma(tmp_path, graph_canon):
     base = tmp_path / "short" / "run"
@@ -92,7 +86,6 @@ def test_export_metrics_extends_sigma(tmp_path, graph_canon):
     assert rows[2] == ["1", "2", "0", "5", "8"]
     assert rows[3] == ["2", "0", "0", "6", "0"]
     assert len(rows) == 4
-
 
 def test_export_metrics_sanitises_sigma_nan_and_none(tmp_path, graph_canon):
     base = tmp_path / "nan_none" / "run"
@@ -137,7 +130,6 @@ def test_export_metrics_preserves_timestamps(tmp_path, graph_canon):
         rows = list(csv.reader(f))
     assert rows[1][0] == "10"
     assert rows[2][0] == "20"
-
 
 def test_export_metrics_invalid_format(tmp_path, graph_canon):
     G = graph_canon()

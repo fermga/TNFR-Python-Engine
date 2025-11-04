@@ -37,7 +37,6 @@ ALIAS_DNFR = get_aliases("DNFR")
 
 pytestmark = [pytest.mark.slow, pytest.mark.stress]
 
-
 def _seed_glyph_runtime_graph(
     *,
     num_nodes: int,
@@ -76,7 +75,6 @@ def _seed_glyph_runtime_graph(
         set_attr(data, ALIAS_DNFR, dnfr)
 
     return graph
-
 
 @timeout_mark(30)
 def test_runtime_run_glyph_pipeline_history_is_finite() -> None:

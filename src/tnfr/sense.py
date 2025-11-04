@@ -56,9 +56,7 @@ __all__ = (
 # Basic utilities
 # -------------------------
 
-
 T = TypeVar("T")
-
 
 def _resolve_glyph(g: str, mapping: Mapping[str, T]) -> T:
     """Return ``mapping[g]`` or raise ``KeyError`` with a standard message."""
@@ -67,7 +65,6 @@ def _resolve_glyph(g: str, mapping: Mapping[str, T]) -> T:
         return mapping[g]
     except KeyError as e:  # pragma: no cover - small helper
         raise KeyError(f"Unknown glyph: {g}") from e
-
 
 def glyph_angle(g: str) -> float:
     """Return the canonical angle for structural operator symbol ``g``.
@@ -78,7 +75,6 @@ def glyph_angle(g: str) -> float:
 
     return float(_resolve_glyph(g, ANGLE_MAP))
 
-
 def glyph_unit(g: str) -> complex:
     """Return the unit vector for structural operator symbol ``g``.
 
@@ -88,16 +84,13 @@ def glyph_unit(g: str) -> complex:
 
     return _resolve_glyph(g, GLYPH_UNITS)
 
-
 MODE_FUNCS: dict[str, Callable[[Mapping[str, Any]], float]] = {
     "Si": lambda nd: clamp01(get_attr(nd, ALIAS_SI, 0.5)),
     "EPI": lambda nd: max(0.0, get_attr(nd, ALIAS_EPI, 0.0)),
 }
 
-
 def _weight(nd: Mapping[str, Any], mode: str) -> float:
     return MODE_FUNCS.get(mode, lambda _: 1.0)(nd)
-
 
 def _node_weight(
     nd: Mapping[str, Any], weight_mode: str
@@ -110,10 +103,8 @@ def _node_weight(
     z = glyph_unit(g) * w  # precompute weighted unit vector
     return g, w, z
 
-
 def _sigma_cfg(G: TNFRGraph) -> dict[str, Any]:
     return get_graph_param(G, "SIGMA", dict)
-
 
 def _to_complex(val: complex | float | int) -> complex:
     """Return ``val`` as complex, promoting real numbers."""
@@ -123,7 +114,6 @@ def _to_complex(val: complex | float | int) -> complex:
     if isinstance(val, (int, float)):
         return complex(val, 0.0)
     raise TypeError("values must be an iterable of real or complex numbers")
-
 
 def _empty_sigma(fallback_angle: float) -> SigmaVector:
     """Return an empty σ-vector with ``fallback_angle``.
@@ -140,11 +130,9 @@ def _empty_sigma(fallback_angle: float) -> SigmaVector:
         "n": 0,
     }
 
-
 # -------------------------
 # σ per node and global σ
 # -------------------------
-
 
 def _sigma_from_iterable(
     values: Iterable[complex | float | int] | complex | float | int,
@@ -208,7 +196,6 @@ def _sigma_from_iterable(
         "n": int(cnt),
     }
 
-
 def _ema_update(prev: SigmaVector, current: SigmaVector, alpha: float) -> SigmaVector:
     """Exponential moving average update for σ vectors."""
     x = (1 - alpha) * prev["x"] + alpha * current["x"]
@@ -222,7 +209,6 @@ def _ema_update(prev: SigmaVector, current: SigmaVector, alpha: float) -> SigmaV
         "angle": float(ang),
         "n": int(current["n"]),
     }
-
 
 def _sigma_from_nodes(
     nodes: Iterable[Mapping[str, Any]],
@@ -238,7 +224,6 @@ def _sigma_from_nodes(
     nws = [nw for nd in nodes if (nw := _node_weight(nd, weight_mode))]
     sv = _sigma_from_iterable((nw[2] for nw in nws), fallback_angle)
     return sv, nws
-
 
 def sigma_vector_node(
     G: TNFRGraph, n: NodeId, weight_mode: str | None = None
@@ -258,7 +243,6 @@ def sigma_vector_node(
     sv["w"] = float(w)
     return sv
 
-
 def sigma_vector(dist: Mapping[str, float]) -> SigmaVector:
     """Compute Σ⃗ from a glyph distribution.
 
@@ -269,7 +253,6 @@ def sigma_vector(dist: Mapping[str, float]) -> SigmaVector:
 
     vectors = (glyph_unit(g) * float(w) for g, w in dist.items())
     return _sigma_from_iterable(vectors)
-
 
 def sigma_vector_from_graph(
     G: TNFRGraph, weight_mode: str | None = None
@@ -297,11 +280,9 @@ def sigma_vector_from_graph(
     sv, _ = _sigma_from_nodes((nd for _, nd in G.nodes(data=True)), weight_mode)
     return sv
 
-
 # -------------------------
 # History / series
 # -------------------------
-
 
 def push_sigma_snapshot(G: TNFRGraph, t: float | None = None) -> None:
     """Record a global σ snapshot (and optional per-node traces) for ``G``."""
@@ -341,11 +322,9 @@ def push_sigma_snapshot(G: TNFRGraph, t: float | None = None) -> None:
             d = per.setdefault(n, [])
             d.append({"t": current_t, "g": g, "angle": glyph_angle(g)})
 
-
 # -------------------------
 # Register as an automatic callback (after_step)
 # -------------------------
-
 
 def register_sigma_callback(G: TNFRGraph) -> None:
     """Attach :func:`push_sigma_snapshot` to the ``AFTER_STEP`` callback bus."""
@@ -356,7 +335,6 @@ def register_sigma_callback(G: TNFRGraph) -> None:
         func=push_sigma_snapshot,
         name="sigma_snapshot",
     )
-
 
 def sigma_rose(G: TNFRGraph, steps: int | None = None) -> dict[str, int]:
     """Histogram of glyphs in the last ``steps`` steps (or all)."""

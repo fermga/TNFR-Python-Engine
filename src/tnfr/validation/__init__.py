@@ -12,7 +12,6 @@ from typing import Any, Generic, Mapping, Protocol, TypeVar, runtime_checkable
 
 SubjectT = TypeVar("SubjectT")
 
-
 @dataclass(slots=True)
 class ValidationOutcome(Generic[SubjectT]):
     """Result emitted by all canonical TNFR validators."""
@@ -29,7 +28,6 @@ class ValidationOutcome(Generic[SubjectT]):
     artifacts: Mapping[str, Any] | None = None
     """Optional artefacts (e.g. clamped nodes, normalised vectors)."""
 
-
 @runtime_checkable
 class Validator(Protocol[SubjectT]):
     """Contract implemented by runtime and spectral validators."""
@@ -39,7 +37,6 @@ class Validator(Protocol[SubjectT]):
 
     def report(self, outcome: "ValidationOutcome[SubjectT]") -> str:
         """Produce a concise textual explanation for ``outcome``."""
-
 
 from .compatibility import CANON_COMPAT, CANON_FALLBACK
 from ..operators import grammar as _grammar
@@ -84,7 +81,6 @@ __all__ = _GRAMMAR_EXPORTS + _RUNTIME_EXPORTS
 
 _ENFORCE_CANONICAL_GRAMMAR = _grammar.enforce_canonical_grammar
 
-
 def enforce_canonical_grammar(
     G: Any,
     n: Any,
@@ -105,11 +101,9 @@ def enforce_canonical_grammar(
             return translated
     return result
 
-
 def __getattr__(name: str) -> Any:
     if name == "NFRValidator":
         from .spectral import NFRValidator as _NFRValidator
 
         return _NFRValidator
     raise AttributeError(name)
-

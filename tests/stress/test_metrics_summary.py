@@ -27,7 +27,6 @@ from tnfr.metrics.reporting import build_metrics_summary
 
 pytestmark = [pytest.mark.slow, pytest.mark.stress]
 
-
 class SeededMetrics(NamedTuple):
     """Container storing seeded graph data and expected aggregates."""
 
@@ -36,7 +35,6 @@ class SeededMetrics(NamedTuple):
     latency_mean: float
     glyphogram_series: dict[str, list[float]]
     rose_totals: dict[str, int]
-
 
 def _seed_metrics_graph(
     *,
@@ -110,7 +108,6 @@ def _seed_metrics_graph(
         glyphogram_series=glyphogram_series,
         rose_totals=rose_totals,
     )
-
 
 @timeout_mark(30)
 def test_build_metrics_summary_handles_large_histories() -> None:

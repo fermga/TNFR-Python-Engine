@@ -19,7 +19,6 @@ ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
-
 def _graph_fixture(size: int = 4) -> nx.Graph:
     G = nx.path_graph(size)
     for n in G.nodes:
@@ -34,7 +33,6 @@ def _graph_fixture(size: int = 4) -> nx.Graph:
     }
     return G
 
-
 def _assert_loop_state(data):
     cache = data.get("cache")
     assert data.get("edge_src") is None
@@ -43,7 +41,6 @@ def _assert_loop_state(data):
         assert cache.edge_src is None
         assert cache.neighbor_edge_values_np is None
         assert cache.neighbor_accum_np is None
-
 
 def _assert_vector_state(data, np):
     accum = data.get("neighbor_accum_np")
@@ -65,7 +62,6 @@ def _assert_vector_state(data, np):
             assert edge_values.shape == (accum.shape[0], chunk_size)
         else:
             assert edge_values is None
-
 
 def test_prepare_dnfr_data_prefers_numpy_vectors_and_matches_lists(monkeypatch):
     np = pytest.importorskip("numpy")
@@ -115,7 +111,6 @@ def test_compute_dnfr_uses_numpy_even_when_graph_disables_vectorization():
     dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert all(isinstance(val, float) for val in dnfr_values)
 
-
 def test_compute_dnfr_reuses_cached_numpy_when_flag_disabled_again():
     np = pytest.importorskip("numpy")
 
@@ -136,7 +131,6 @@ def test_compute_dnfr_reuses_cached_numpy_when_flag_disabled_again():
     assert data.get("neighbor_accum_np") is cached_accum
     dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert all(isinstance(val, float) for val in dnfr_values)
-
 
 def test_compute_dnfr_prefers_numpy_even_when_requested_off(monkeypatch):
     np = pytest.importorskip("numpy")
@@ -164,7 +158,6 @@ def test_compute_dnfr_prefers_numpy_even_when_requested_off(monkeypatch):
     dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert all(isinstance(val, float) for val in dnfr_values)
 
-
 def test_compute_dnfr_loop_path_without_numpy_module(monkeypatch):
     pytest.importorskip("numpy")
 
@@ -182,7 +175,6 @@ def test_compute_dnfr_loop_path_without_numpy_module(monkeypatch):
     _assert_loop_state(data)
     dnfr_values = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert all(isinstance(val, float) for val in dnfr_values)
-
 
 def test_build_neighbor_sums_uses_cached_numpy_when_get_numpy_none(monkeypatch):
     np = pytest.importorskip("numpy")

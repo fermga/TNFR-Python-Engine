@@ -12,7 +12,6 @@ __all__ = [
     "evaluate_coherence_transform",
 ]
 
-
 class _EPIValidators:
     """Shared validation helpers for EPI Banach constructions."""
 
@@ -63,7 +62,6 @@ class _EPIValidators:
 
         grid_array = cls._validate_grid(x_grid, f_array.size)
         return f_array, a_array, grid_array
-
 
 @dataclass(frozen=True)
 class BEPIElement(_EPIValidators):
@@ -268,7 +266,6 @@ class BEPIElement(_EPIValidators):
             return abs(self._max_magnitude() - float(other)) < 1e-12
         return NotImplemented
 
-
 @dataclass(frozen=True)
 class CoherenceEvaluation:
     """Container describing the outcome of a coherence transform evaluation."""
@@ -283,7 +280,6 @@ class CoherenceEvaluation:
     required: float
     deficit: float
     ratio: float
-
 
 def evaluate_coherence_transform(
     element: BEPIElement,

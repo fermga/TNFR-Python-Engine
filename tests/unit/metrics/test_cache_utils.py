@@ -14,7 +14,6 @@ from tnfr.metrics.cache_utils import (
     log_cache_metrics,
 )
 
-
 class TestCacheStats:
     """Test CacheStats aggregate statistics."""
 
@@ -72,7 +71,6 @@ class TestCacheStats:
         assert "evictions=2" in repr_str
         assert "hit_rate=" in repr_str
 
-
 class TestGetCacheConfig:
     """Test cache configuration retrieval."""
 
@@ -105,7 +103,6 @@ class TestGetCacheConfig:
         G.graph["my_cache_config"] = {"value": 42}
         config = get_cache_config(G, key="my_cache_config")
         assert config["value"] == 42
-
 
 class TestConfigureHotPathCaches:
     """Test unified cache configuration interface."""
@@ -179,7 +176,6 @@ class TestConfigureHotPathCaches:
         # SI_CHUNK_SIZE also should not be set
         assert "SI_CHUNK_SIZE" not in G.graph
 
-
 class TestLogCacheMetrics:
     """Test cache metrics logging."""
 
@@ -206,7 +202,6 @@ class TestLogCacheMetrics:
             log_cache_metrics(G, level=logging.DEBUG)
         # Should have debug-level records
         assert any(record.levelno == logging.DEBUG for record in caplog.records)
-
 
 class TestCacheUtilsIntegration:
     """Integration tests for cache utilities."""
@@ -246,7 +241,6 @@ class TestCacheUtilsIntegration:
         assert total.misses == 60
         assert total.evictions == 10
         assert abs(total.hit_rate - (300 / 360)) < 1e-9
-
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

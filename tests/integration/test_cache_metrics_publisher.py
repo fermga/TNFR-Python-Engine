@@ -12,7 +12,6 @@ from tnfr.constants import inject_defaults
 from tnfr.telemetry import publish_graph_cache_metrics
 from tnfr.utils import edge_version_cache
 
-
 @pytest.mark.integration
 def test_publish_graph_cache_metrics_emits_edge_cache_snapshots(
     caplog: pytest.LogCaptureFixture,

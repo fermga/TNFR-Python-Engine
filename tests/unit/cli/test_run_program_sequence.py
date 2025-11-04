@@ -9,19 +9,16 @@ import pytest
 from tnfr.cli import execution
 from tnfr.types import ProgramTokens
 
-
 @pytest.fixture()
 def simple_graph() -> nx.Graph:
     graph = nx.Graph()
     graph.graph["history"] = {"C_steps": [0]}
     return graph
 
-
 @pytest.fixture()
 def sample_program_tokens() -> ProgramTokens:
     tokens: ProgramTokens = [("emit", {"strength": 1.0})]
     return tokens
-
 
 @pytest.fixture()
 def base_args() -> argparse.Namespace:
@@ -34,7 +31,6 @@ def base_args() -> argparse.Namespace:
         export_history_base=None,
         export_format="json",
     )
-
 
 def test_run_program_dispatches_to_play(
     simple_graph: nx.Graph,
@@ -66,7 +62,6 @@ def test_run_program_dispatches_to_play(
     assert play_calls == [(simple_graph, sample_program_tokens)]
     assert run_called is False
     assert persist_calls == [(simple_graph, base_args)]
-
 
 def test_run_program_builds_graph_before_play(
     sample_program_tokens: ProgramTokens,
@@ -108,7 +103,6 @@ def test_run_program_builds_graph_before_play(
     assert run_called is False
     assert persist_calls == [(built_graph, base_args)]
 
-
 def test_run_program_with_null_program_uses_run_mode(
     simple_graph: nx.Graph,
     base_args: argparse.Namespace,
@@ -138,7 +132,6 @@ def test_run_program_with_null_program_uses_run_mode(
             {"dt": 0.25, "use_Si": False, "apply_glyphs": False},
         )
     ]
-
 
 def test_run_program_forwards_dnfr_jobs_override(
     simple_graph: nx.Graph,

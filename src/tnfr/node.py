@@ -85,9 +85,7 @@ T = TypeVar("T")
 
 __all__ = ("NodeNX", "NodeProtocol", "add_edge")
 
-
 LOGGER = get_logger(__name__)
-
 
 @dataclass(frozen=True)
 class AttrSpec:
@@ -123,31 +121,25 @@ class AttrSpec:
 
         return property(fget, fset)
 
-
 # Canonical adapters for BEPI storage ------------------------------------
-
 
 def _epi_to_python(value: Any) -> EPIValue:
     if value is None:
         raise ValueError("EPI attribute is required for BEPI nodes")
     return ensure_bepi(value)
 
-
 def _epi_to_storage(value: Any) -> Mapping[str, tuple[complex, ...] | tuple[float, ...]]:
     return serialize_bepi(value)
-
 
 def _get_bepi_attr(
     mapping: Mapping[str, Any], aliases: tuple[str, ...], default: Any
 ) -> Any:
     return get_attr(mapping, aliases, default, conv=lambda obj: obj)
 
-
 def _set_bepi_attr(
     mapping: MutableMapping[str, Any], aliases: tuple[str, ...], value: Any
 ) -> Mapping[str, tuple[complex, ...] | tuple[float, ...]]:
     return set_attr_generic(mapping, aliases, value, conv=lambda obj: obj)
-
 
 # Mapping of NodeNX attribute specifications used to generate property
 # descriptors. Each entry defines the keyword arguments passed to
@@ -181,7 +173,6 @@ ATTR_SPECS: dict[str, AttrSpec] = {
     "d2EPI": AttrSpec(aliases=ALIAS_D2EPI),
 }
 
-
 def _add_edge_common(
     n1: NodeId,
     n2: NodeId,
@@ -204,7 +195,6 @@ def _add_edge_common(
 
     return weight
 
-
 def add_edge(
     graph: TNFRGraph,
     n1: NodeId,
@@ -226,7 +216,6 @@ def add_edge(
 
     graph.add_edge(n1, n2, weight=weight)
     increment_edge_version(graph)
-
 
 class NodeProtocol(Protocol):
     """Minimal protocol for TNFR nodes."""
@@ -275,7 +264,6 @@ class NodeProtocol(Protocol):
         """Iterate all nodes of the attached graph as :class:`NodeProtocol` objects."""
 
         ...
-
 
 class NodeNX(NodeProtocol):
     """Adapter for ``networkx`` nodes."""
@@ -409,7 +397,7 @@ class NodeNX(NodeProtocol):
     @classmethod
     def from_graph(cls, G: TNFRGraph, n: NodeId, *, use_weak_cache: bool = False) -> "NodeNX":
         """Return cached ``NodeNX`` for ``(G, n)`` with thread safety.
-        
+
         Parameters
         ----------
         G : TNFRGraph
@@ -422,22 +410,22 @@ class NodeNX(NodeProtocol):
             useful for ephemeral graphs where nodes are created temporarily
             and should be released when no longer referenced elsewhere.
             Default is False to maintain backward compatibility.
-            
+
         Returns
         -------
         NodeNX
             The cached or newly created NodeNX instance for the specified node.
-            
+
         Notes
         -----
         The weak cache mode trades off some cache retention for better memory
         behavior in scenarios with many short-lived graphs or when nodes are
         accessed infrequently. Use weak caching when:
-        
+
         - Processing many ephemeral graphs sequentially
         - Working with large graphs where only subsets are actively used
         - Memory pressure is a concern and stale node objects should be released
-        
+
         The default strong cache provides better performance for long-lived
         graphs with repeated node access patterns.
         """
@@ -445,22 +433,22 @@ class NodeNX(NodeProtocol):
         with lock:
             cache_key = "_node_cache_weak" if use_weak_cache else "_node_cache"
             cache = G.graph.get(cache_key)
-            
+
             if cache is None:
                 if use_weak_cache:
                     cache = WeakValueDictionary()
                 else:
                     cache = {}
                 G.graph[cache_key] = cache
-            
+
             node = cache.get(n)
             if node is None:
                 # Create node (this will add it to strong cache in __init__)
                 node = cls(G, n)
-                
+
                 # Add to the requested cache type
                 cache[n] = node
-                
+
                 # When using weak cache, remove the strong reference that __init__ created
                 # to allow proper garbage collection when no external references exist.
                 # This must happen inside the lock to prevent race conditions.
@@ -468,7 +456,7 @@ class NodeNX(NodeProtocol):
                     strong_cache = G.graph.get("_node_cache")
                     if strong_cache is not None and n in strong_cache:
                         del strong_cache[n]
-            
+
             return node
 
     def neighbors(self) -> Iterable[NodeId]:

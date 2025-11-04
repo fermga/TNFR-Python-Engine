@@ -15,7 +15,6 @@ ALIAS_DNFR = get_aliases("DNFR")
 
 TRIG_SENTINEL_KEYS = ("_cos_th", "_sin_th", "_thetas", "_trig_cache")
 
-
 def test_trig_cache_reuse_between_modules(monkeypatch, graph_canon):
     cos_calls = 0
     sin_calls = 0
@@ -73,7 +72,6 @@ def test_trig_cache_reuse_between_modules(monkeypatch, graph_canon):
     assert G.graph.get("_trig_version") == version
     for key in TRIG_SENTINEL_KEYS:
         assert G.graph[key] is sentinel
-
 
 def test_trig_cache_rebuilds_after_direct_theta_mutation(monkeypatch, graph_canon):
     cos_calls = 0
@@ -135,7 +133,6 @@ def test_trig_cache_rebuilds_after_direct_theta_mutation(monkeypatch, graph_cano
     assert trig2.theta[2] == pytest.approx(math.pi)
     assert cos_calls == 4
     assert sin_calls == 4
-
 
 def test_trig_cache_rebuilds_after_direct_theta_mutation_numpy(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
@@ -206,7 +203,6 @@ def test_neighbor_phase_mean_bulk_isolated_nodes():
     assert mean_theta[0] == pytest.approx(math.pi / 2)
     assert mean_theta[1] == pytest.approx(0.0)
     assert mean_theta[2] == pytest.approx(theta[2])
-
 
 def test_neighbor_phase_mean_bulk_reuses_buffers():
     np = pytest.importorskip("numpy")

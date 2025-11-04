@@ -14,7 +14,6 @@ from pathlib import Path
 
 import pytest
 
-
 class TestVenvPermissionFix:
     """Test suite for virtual environment permission fixing script."""
 

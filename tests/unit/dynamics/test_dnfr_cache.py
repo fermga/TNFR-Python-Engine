@@ -24,7 +24,6 @@ from tnfr.utils import (
     increment_edge_version,
 )
 
-
 @contextmanager
 def numpy_disabled(monkeypatch):
     import tnfr.dynamics.dnfr as dnfr_module
@@ -32,7 +31,6 @@ def numpy_disabled(monkeypatch):
     with monkeypatch.context() as ctx:
         ctx.setattr(dnfr_module, "get_numpy", lambda: None)
         yield
-
 
 def _counting_trig(monkeypatch):
     import math
@@ -54,7 +52,6 @@ def _counting_trig(monkeypatch):
     monkeypatch.setattr(math, "sin", sin_wrapper)
     return cos_calls, sin_calls
 
-
 def _setup_graph():
     G = nx.path_graph(3)
     for n in G.nodes:
@@ -69,17 +66,14 @@ def _setup_graph():
     }
     return G
 
-
 def _collect_dnfr(G):
     return [float(G.nodes[n].get(DNFR_PRIMARY, 0.0)) for n in G.nodes]
-
 
 def _get_prep_state(G):
     manager = _graph_cache_manager(G.graph)
     state = manager.get(DNFR_PREP_STATE_KEY)
     assert isinstance(state, DnfrPrepState)
     return manager, state
-
 
 def test_prepare_dnfr_data_uses_public_cache_factory(monkeypatch):
     import tnfr.dynamics.dnfr as dnfr_module
@@ -100,7 +94,6 @@ def test_prepare_dnfr_data_uses_public_cache_factory(monkeypatch):
 
     assert calls["count"] >= 1
     assert isinstance(data["cache"], cache_module.DnfrCache)
-
 
 def test_prepare_dnfr_data_populates_degree_cache_without_topology_weight():
     np = pytest.importorskip("numpy")
@@ -126,7 +119,6 @@ def test_prepare_dnfr_data_populates_degree_cache_without_topology_weight():
     stats = manager.get_metrics(DNFR_PREP_STATE_KEY)
     assert stats.misses == 1
     assert stats.hits == 0
-
 
 def test_accumulate_neighbors_numpy_prefers_degree_cache():
     np = pytest.importorskip("numpy")
@@ -187,7 +179,6 @@ def test_accumulate_neighbors_numpy_prefers_degree_cache():
     np.testing.assert_allclose(count2, np.array([1.0, 2.0, 1.0]))
     stats = manager.get_metrics(DNFR_PREP_STATE_KEY)
     assert stats.misses == 1
-
 
 def test_degree_cache_refreshes_after_graph_mutation():
     np = pytest.importorskip("numpy")
@@ -272,7 +263,6 @@ def test_degree_cache_refreshes_after_graph_mutation():
     assert stats_final.misses == 2
     assert stats_final.hits == 1
 
-
 @pytest.mark.parametrize("vectorized", [False, True])
 def test_cache_invalidated_on_graph_change(vectorized, monkeypatch):
     if vectorized:
@@ -306,7 +296,6 @@ def test_cache_invalidated_on_graph_change(vectorized, monkeypatch):
         nodes3, _ = cached_nodes_and_A(G, cache_size=2)
         assert nodes3 is not nodes2
 
-
 def test_cache_is_per_graph():
     G1 = _setup_graph()
     G2 = _setup_graph()
@@ -315,7 +304,6 @@ def test_cache_is_per_graph():
     nodes1, _ = cached_nodes_and_A(G1)
     nodes2, _ = cached_nodes_and_A(G2)
     assert nodes1 is not nodes2
-
 
 @pytest.mark.parametrize("vectorized", [False, True])
 def test_neighbor_sum_buffers_reused_and_results_stable(vectorized, monkeypatch):
@@ -480,7 +468,6 @@ def test_neighbor_sum_buffers_reused_and_results_stable(vectorized, monkeypatch)
     assert stats.misses >= 1
     assert stats.hits >= 1
 
-
 def test_cache_invalidated_on_node_rename():
     G = _setup_graph()
     nodes1 = cached_node_list(G)
@@ -491,7 +478,6 @@ def test_cache_invalidated_on_node_rename():
 
     assert nodes2 is not nodes1
     assert set(nodes2) == {0, 1, 9}
-
 
 def test_prepare_dnfr_data_refreshes_cached_vectors(monkeypatch):
     original_cached_import = utils_init.cached_import
@@ -513,7 +499,6 @@ def test_prepare_dnfr_data_refreshes_cached_vectors(monkeypatch):
     default_compute_delta_nfr(G)
     assert cos_calls["n"] == cos_first + len(G)
     assert sin_calls["n"] == sin_first + len(G)
-
 
 @pytest.mark.parametrize("vectorized", [False, True])
 def test_default_compute_delta_nfr_updates_on_state_change(vectorized, monkeypatch):
@@ -546,7 +531,6 @@ def test_default_compute_delta_nfr_updates_on_state_change(vectorized, monkeypat
     assert not math.isclose(before[target], after[target])
     assert any(not math.isclose(before[n], after[n]) for n in G.nodes)
 
-
 def test_cached_nodes_and_A_reuses_until_edge_change():
     pytest.importorskip("numpy")
 
@@ -568,7 +552,6 @@ def test_cached_nodes_and_A_reuses_until_edge_change():
     assert nodes3 is not nodes2
     assert A3 is not A2
 
-
 def test_cached_node_list_reuses_tuple():
     G = _setup_graph()
 
@@ -576,7 +559,6 @@ def test_cached_node_list_reuses_tuple():
     nodes2 = cached_node_list(G)
 
     assert nodes1 is nodes2
-
 
 def test_cached_node_list_invalidate_on_node_addition():
     G = _setup_graph()
@@ -589,7 +571,6 @@ def test_cached_node_list_invalidate_on_node_addition():
     assert nodes2 is not nodes1
     assert set(nodes2) == {0, 1, 2, 99}
 
-
 def test_cached_node_list_invalidate_on_node_rename():
     G = _setup_graph()
 
@@ -601,7 +582,6 @@ def test_cached_node_list_invalidate_on_node_rename():
     assert nodes2 is not nodes1
     assert set(nodes2) == {0, 1, 9}
 
-
 def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon):
     monkeypatch.setattr(utils_init, "cached_import", lambda *a, **k: None)
     G = graph_canon()
@@ -610,7 +590,6 @@ def test_cached_nodes_and_A_returns_none_without_numpy(monkeypatch, graph_canon)
     assert A is None
     assert isinstance(nodes, tuple)
     assert nodes == (0, 1)
-
 
 def test_cached_nodes_and_A_requires_numpy(monkeypatch, graph_canon):
     monkeypatch.setattr(utils_init, "cached_import", lambda *a, **k: None)

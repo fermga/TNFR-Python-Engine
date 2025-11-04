@@ -11,17 +11,14 @@ from tnfr.mathematics.dynamics import ContractiveDynamicsEngine, MathematicalDyn
 
 _BACKEND_NAMES = ("numpy", "jax", "torch")
 
-
 def _require_backend(name: str) -> object:
     backend = get_backend(name)
     if backend.name != name:
         pytest.skip(f"Backend '{name}' is unavailable; installed: {backend.name!r}.")
     return backend
 
-
 def _to_numpy(value: object, *, backend: object) -> np.ndarray:
     return np.asarray(ensure_numpy(value, backend=backend))
-
 
 @pytest.mark.parametrize("backend_name", _BACKEND_NAMES)
 def test_coherence_operator_matches_numpy(backend_name: str, structural_tolerances: dict[str, float]) -> None:
@@ -58,7 +55,6 @@ def test_coherence_operator_matches_numpy(backend_name: str, structural_toleranc
         abs=structural_tolerances["atol"],
     )
 
-
 @pytest.mark.parametrize("backend_name", _BACKEND_NAMES)
 def test_mathematical_dynamics_matches_numpy(backend_name: str, structural_tolerances: dict[str, float]) -> None:
     """Unitary trajectories should be backend agnostic within tolerance."""
@@ -92,7 +88,6 @@ def test_mathematical_dynamics_matches_numpy(backend_name: str, structural_toler
         rtol=structural_tolerances["rtol"],
         atol=structural_tolerances["atol"],
     )
-
 
 @pytest.mark.parametrize("backend_name", _BACKEND_NAMES)
 def test_contractive_dynamics_matches_numpy(backend_name: str, structural_tolerances: dict[str, float]) -> None:
@@ -132,7 +127,6 @@ def test_contractive_dynamics_matches_numpy(backend_name: str, structural_tolera
         rel=structural_tolerances["rtol"],
         abs=structural_tolerances["atol"],
     )
-
 
 def test_torch_backend_handles_numpy_complex_dtype() -> None:
     """Torch backend must convert NumPy dtypes into ``torch.dtype`` instances."""

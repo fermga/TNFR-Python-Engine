@@ -71,7 +71,6 @@ except ImportError:  # pragma: no cover - optional dependency path exercised in 
 # 1) NFR factory
 # ---------------------------------------------------------------------------
 
-
 def create_nfr(
     name: str,
     *,
@@ -169,7 +168,6 @@ def create_nfr(
     set_delta_nfr_hook(G, dnfr_hook)
     return G, name
 
-
 def _resolve_dimension(
     G: TNFRGraph,
     *,
@@ -200,7 +198,6 @@ def _resolve_dimension(
         raise ValueError("Hilbert space dimension must be positive.")
     return resolved
 
-
 def _ensure_coherence_operator(
     *,
     operator: CoherenceOperator | None,
@@ -220,7 +217,6 @@ def _ensure_coherence_operator(
     if c_min is not None:
         kwargs["c_min"] = float(c_min)
     return make_coherence_operator(dimension, **kwargs)
-
 
 def _ensure_frequency_operator(
     *,
@@ -242,7 +238,6 @@ def _ensure_frequency_operator(
         matrix = np.diag(diag_array)
     return make_frequency_operator(np.asarray(matrix, dtype=np.complex128))
 
-
 def _ensure_generator_matrix(
     *,
     dimension: int,
@@ -256,7 +251,6 @@ def _ensure_generator_matrix(
     if diag_array.shape[0] != int(dimension):
         raise ValueError("Generator diagonal size must match Hilbert dimension.")
     return np.diag(diag_array)
-
 
 def create_math_nfr(
     name: str,
@@ -478,7 +472,6 @@ def create_math_nfr(
 
     return G, node
 
-
 __all__ = (
     "create_nfr",
     "create_math_nfr",
@@ -500,7 +493,6 @@ __all__ = (
     "validate_sequence",
     "run_sequence",
 )
-
 
 def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
     """Drive structural sequences that rebalance EPI, νf, phase and ΔNFR.

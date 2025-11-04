@@ -23,7 +23,6 @@ from tnfr.dynamics import (
 from tnfr.dynamics.dnfr import _accumulate_neighbors_broadcasted
 from tnfr.types import Glyph
 
-
 @pytest.fixture
 def compute_delta_nfr_hook():
     """Fixture that records DNFR hook invocations and populates ΔNFR values."""
@@ -37,7 +36,6 @@ def compute_delta_nfr_hook():
             set_attr(graph.nodes[node], dnfr_alias, 0.0)
 
     return hook, recorded
-
 
 def test_init_and_refresh_dnfr_cache(graph_canon):
     G = graph_canon()
@@ -57,7 +55,6 @@ def test_init_and_refresh_dnfr_cache(graph_canon):
     cache2, *_rest, refreshed2 = _init_dnfr_cache(G, nodes, cache, 1, False)
     assert not refreshed2
     assert cache2 is cache
-
 
 def test_refresh_dnfr_vectors_numpy_bulk(graph_canon):
     np = pytest.importorskip("numpy")
@@ -96,7 +93,6 @@ def test_refresh_dnfr_vectors_numpy_bulk(graph_canon):
     np.testing.assert_allclose(cache.cos_theta_np, expected_cos)
     np.testing.assert_allclose(cache.sin_theta_np, expected_sin)
 
-
 def test_refresh_dnfr_vectors_python_fallback(monkeypatch, graph_canon):
     monkeypatch.setattr("tnfr.dynamics.dnfr.get_numpy", lambda: None)
     monkeypatch.setattr("tnfr.metrics.trig_cache.get_numpy", lambda: None)
@@ -125,7 +121,6 @@ def test_refresh_dnfr_vectors_python_fallback(monkeypatch, graph_canon):
     assert cache.cos_theta_np is None
     assert cache.sin_theta_np is None
 
-
 def test_compute_neighbor_means_list(graph_canon):
     G = graph_canon()
     G.add_edge(0, 1)
@@ -152,7 +147,6 @@ def test_compute_neighbor_means_list(graph_canon):
     assert vf_bar[0] == pytest.approx(0.0)
     assert deg_bar is None
 
-
 def test_choose_glyph_respects_lags(graph_canon):
     G = graph_canon()
     G.add_node(0)
@@ -169,12 +163,10 @@ def test_choose_glyph_respects_lags(graph_canon):
     g = _choose_glyph(G, 0, selector, False, h_al, h_en, 1, 5)
     assert g == Glyph.EN
 
-
 def test_run_rejects_negative_steps(graph_canon):
     G = graph_canon()
     with pytest.raises(ValueError):
         run(G, steps=-1)
-
 
 def test_default_selector_refreshes_norms(graph_canon):
     G = graph_canon()
@@ -222,7 +214,6 @@ def test_default_selector_refreshes_norms(graph_canon):
     assert dnfr_norm == pytest.approx(1.0)
     assert accel_norm == pytest.approx(1.0)
 
-
 def test_prepare_dnfr_passes_configured_jobs(monkeypatch, graph_canon):
     G = graph_canon()
     dnfr_alias = get_aliases("DNFR")
@@ -241,7 +232,6 @@ def test_prepare_dnfr_passes_configured_jobs(monkeypatch, graph_canon):
     G.graph["DNFR_N_JOBS"] = "4"
     _prepare_dnfr(G, use_Si=False)
     assert captured["n_jobs"] == 4
-
 
 def test_prepare_dnfr_supports_hooks_without_jobs_kw(graph_canon):
     G = graph_canon()
@@ -262,7 +252,6 @@ def test_prepare_dnfr_supports_hooks_without_jobs_kw(graph_canon):
     _prepare_dnfr(G, use_Si=False)
     assert calls["count"] == 1
 
-
 def test_prepare_dnfr_passes_jobs_kw_to_hook(graph_canon, compute_delta_nfr_hook):
     G = graph_canon()
     hook, recorded = compute_delta_nfr_hook
@@ -276,7 +265,6 @@ def test_prepare_dnfr_passes_jobs_kw_to_hook(graph_canon, compute_delta_nfr_hook
     _prepare_dnfr(G, use_Si=False)
 
     assert recorded["n_jobs"] == [5]
-
 
 def test_compute_dnfr_common_numpy_matches_python(monkeypatch):
     np = pytest.importorskip("numpy")
@@ -317,7 +305,6 @@ def test_compute_dnfr_common_numpy_matches_python(monkeypatch):
 
     assert vector_values == pytest.approx(python_values, rel=1e-9, abs=1e-9)
 
-
 def test_prepare_dnfr_falls_back_when_jobs_kw_rejected(graph_canon):
     G = graph_canon()
     dnfr_alias = get_aliases("DNFR")
@@ -350,7 +337,6 @@ def test_prepare_dnfr_falls_back_when_jobs_kw_rejected(graph_canon):
     assert calls["kwargs"][1] == {}
     assert "_sel_norms" not in G.graph
 
-
 def test_prepare_dnfr_handles_signature_errors(
     monkeypatch, graph_canon, compute_delta_nfr_hook
 ):
@@ -382,7 +368,6 @@ def test_prepare_dnfr_handles_signature_errors(
         assert get_attr(G.nodes[node], dnfr_alias, None) == pytest.approx(0.0)
     assert "_sel_norms" not in G.graph
 
-
 def test_prepare_dnfr_reraises_hook_type_error_without_jobs_kw(graph_canon):
     G = graph_canon()
     for node in range(2):
@@ -402,7 +387,6 @@ def test_prepare_dnfr_reraises_hook_type_error_without_jobs_kw(graph_canon):
 
     if mutated_key in G.graph:
         del G.graph[mutated_key]
-
 
 def test_prepare_dnfr_passes_si_jobs_to_compute_si(monkeypatch, graph_canon):
     G = graph_canon()
@@ -427,7 +411,6 @@ def test_prepare_dnfr_passes_si_jobs_to_compute_si(monkeypatch, graph_canon):
     _prepare_dnfr(G, use_Si=True)
 
     assert captured["n_jobs"] == 5
-
 
 def test_prepare_dnfr_falls_back_to_metrics_compute_si(monkeypatch, graph_canon):
     G = graph_canon()
@@ -464,7 +447,6 @@ def test_prepare_dnfr_falls_back_to_metrics_compute_si(monkeypatch, graph_canon)
     assert recorded["call"]["graph"] is G
     assert recorded["call"]["inplace"] is True
     assert recorded["call"]["n_jobs"] == 6
-
 
 def _legacy_broadcast_accumulate(
     np_module,
@@ -577,7 +559,6 @@ def _legacy_broadcast_accumulate(
         "accumulator": accum,
         "edge_values": None,
     }
-
 
 def test_broadcast_accumulator_matches_legacy_and_speed():
     np_module = pytest.importorskip("numpy")

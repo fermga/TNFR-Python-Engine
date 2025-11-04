@@ -6,7 +6,6 @@ from tnfr.callback_utils import (
     callback_manager,
 )
 
-
 def test_ensure_callbacks_drops_unknown_events(graph_canon):
     G = graph_canon()
 
@@ -22,7 +21,6 @@ def test_ensure_callbacks_drops_unknown_events(graph_canon):
 
     assert list(G.graph["callbacks"]) == [CallbackEvent.BEFORE_STEP.value]
 
-
 def test_register_callback_cleans_unknown_events(graph_canon):
     G = graph_canon()
 
@@ -34,7 +32,6 @@ def test_register_callback_cleans_unknown_events(graph_canon):
     callback_manager.register_callback(G, CallbackEvent.AFTER_STEP, cb, name="cb")
 
     assert list(G.graph["callbacks"]) == [CallbackEvent.AFTER_STEP.value]
-
 
 def test_ensure_callbacks_only_processes_dirty_events(graph_canon):
     G = graph_canon()
@@ -54,7 +51,6 @@ def test_ensure_callbacks_only_processes_dirty_events(graph_canon):
 
     assert G.graph["callbacks"][CallbackEvent.BEFORE_STEP.value] == {}
     assert G.graph["callbacks"][CallbackEvent.AFTER_STEP.value] == {}
-
 
 def test_normalize_callbacks_handles_sequences_and_mappings():
     def cb1(G, ctx):
@@ -76,7 +72,6 @@ def test_normalize_callbacks_handles_sequences_and_mappings():
     assert set(res_map.keys()) == {"a", "cb2"}
     assert res_map["a"].func is cb1
     assert res_map["cb2"].func is cb2
-
 
 def test_normalize_callbacks_handles_iterables():
     def cb1(G, ctx):

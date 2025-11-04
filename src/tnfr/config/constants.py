@@ -71,7 +71,6 @@ GLYPH_GROUPS: Mapping[str, tuple[str, ...]] = MappingProxyType(
 # canonical order and orientation rules for the "stabilizers" and
 # "disruptors" categories.
 
-
 def _build_angle_map() -> dict[str, float]:
     """Build the angle map in the σ-plane."""
 
@@ -90,7 +89,6 @@ def _build_angle_map() -> dict[str, float]:
     angles[Glyph.NUL.value] = canonical[Glyph.ZHIR.value]
     angles[Glyph.AL.value] = 0.0
     return angles
-
 
 ANGLE_MAP: Mapping[str, float] = MappingProxyType(_build_angle_map())
 

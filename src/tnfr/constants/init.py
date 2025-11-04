@@ -5,7 +5,6 @@ from __future__ import annotations
 import math
 from dataclasses import asdict, dataclass
 
-
 @dataclass(frozen=True, slots=True)
 class InitDefaults:
     """Default parameters for node initialisation.
@@ -26,6 +25,5 @@ class InitDefaults:
     INIT_SI_MIN: float = 0.4
     INIT_SI_MAX: float = 0.7
     INIT_EPI_VALUE: float = 0.0
-
 
 INIT_DEFAULTS = asdict(InitDefaults())

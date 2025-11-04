@@ -48,7 +48,6 @@ __all__ = [
     "Recursivity",
 ]
 
-
 class Operator:
     """Base class for TNFR structural operators.
 
@@ -97,7 +96,6 @@ class Operator:
 
         apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
 
-
 @register_operator
 class Emission(Operator):
     """Emission structural operator. Seeds coherence by projecting the emission pattern.
@@ -130,7 +128,6 @@ class Emission(Operator):
     name: ClassVar[str] = EMISSION
     glyph: ClassVar[Glyph] = Glyph.AL
 
-
 @register_operator
 class Reception(Operator):
     """Reception structural operator. Stabilises inbound energy to strengthen receptivity.
@@ -161,7 +158,6 @@ class Reception(Operator):
     __slots__ = ()
     name: ClassVar[str] = RECEPTION
     glyph: ClassVar[Glyph] = Glyph.EN
-
 
 @register_operator
 class Coherence(Operator):
@@ -197,7 +193,6 @@ class Coherence(Operator):
     name: ClassVar[str] = COHERENCE
     glyph: ClassVar[Glyph] = Glyph.IL
 
-
 @register_operator
 class Dissonance(Operator):
     """Dissonance structural operator. Injects controlled dissonance to probe robustness.
@@ -228,7 +223,6 @@ class Dissonance(Operator):
     __slots__ = ()
     name: ClassVar[str] = DISSONANCE
     glyph: ClassVar[Glyph] = Glyph.OZ
-
 
 @register_operator
 class Coupling(Operator):
@@ -263,7 +257,6 @@ class Coupling(Operator):
     name: ClassVar[str] = COUPLING
     glyph: ClassVar[Glyph] = Glyph.UM
 
-
 @register_operator
 class Resonance(Operator):
     """Amplify shared frequency so the node propagates coherent resonance.
@@ -295,7 +288,6 @@ class Resonance(Operator):
     name: ClassVar[str] = RESONANCE
     glyph: ClassVar[Glyph] = Glyph.RA
 
-
 @register_operator
 class Silence(Operator):
     """Suspend reorganisation to preserve the node's current coherence state.
@@ -324,7 +316,6 @@ class Silence(Operator):
     __slots__ = ()
     name: ClassVar[str] = SILENCE
     glyph: ClassVar[Glyph] = Glyph.SHA
-
 
 @register_operator
 class Expansion(Operator):
@@ -356,7 +347,6 @@ class Expansion(Operator):
     __slots__ = ()
     name: ClassVar[str] = EXPANSION
     glyph: ClassVar[Glyph] = Glyph.VAL
-
 
 @register_operator
 class Contraction(Operator):
@@ -392,7 +382,6 @@ class Contraction(Operator):
     name: ClassVar[str] = CONTRACTION
     glyph: ClassVar[Glyph] = Glyph.NUL
 
-
 @register_operator
 class SelfOrganization(Operator):
     """Spawn nested EPIs so the node reorganises autonomously.
@@ -423,7 +412,6 @@ class SelfOrganization(Operator):
     name: ClassVar[str] = SELF_ORGANIZATION
     glyph: ClassVar[Glyph] = Glyph.THOL
 
-
 @register_operator
 class Mutation(Operator):
     """Recode phase or form so the node can cross structural thresholds.
@@ -453,7 +441,6 @@ class Mutation(Operator):
     __slots__ = ()
     name: ClassVar[str] = MUTATION
     glyph: ClassVar[Glyph] = Glyph.ZHIR
-
 
 @register_operator
 class Transition(Operator):
@@ -487,7 +474,6 @@ class Transition(Operator):
     __slots__ = ()
     name: ClassVar[str] = TRANSITION
     glyph: ClassVar[Glyph] = Glyph.NAV
-
 
 @register_operator
 class Recursivity(Operator):

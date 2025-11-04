@@ -16,7 +16,6 @@ __all__ = (
     "GraphLike",
 )
 
-
 def get_graph(
     obj: GraphLike | TNFRGraph | MutableMapping[str, Any],
 ) -> MutableMapping[str, Any]:
@@ -35,7 +34,6 @@ def get_graph(
     if isinstance(obj, MutableMapping):
         return obj
     raise TypeError("Unsupported graph object: metadata mapping not accessible")
-
 
 def get_graph_mapping(
     G: GraphLike | TNFRGraph | MutableMapping[str, Any], key: str, warn_msg: str
@@ -61,7 +59,6 @@ def get_graph_mapping(
         return None
     return MappingProxyType(data)
 
-
 def mark_dnfr_prep_dirty(G: GraphLike | TNFRGraph | MutableMapping[str, Any]) -> None:
     """Flag ΔNFR preparation data as stale by marking ``G.graph``.
 
@@ -72,7 +69,6 @@ def mark_dnfr_prep_dirty(G: GraphLike | TNFRGraph | MutableMapping[str, Any]) ->
 
     graph = get_graph(G)
     graph["_dnfr_prep_dirty"] = True
-
 
 def supports_add_edge(graph: GraphLike | TNFRGraph) -> bool:
     """Return ``True`` if ``graph`` exposes an ``add_edge`` method.

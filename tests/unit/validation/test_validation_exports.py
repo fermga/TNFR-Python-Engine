@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import importlib
 
-
 def test_validation_all_includes_runtime_exports() -> None:
     validation = importlib.import_module("tnfr.validation")
 

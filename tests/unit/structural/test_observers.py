@@ -28,7 +28,6 @@ DEPRECATED_GLYPH_GROUP_DISRUPTORS = "_disruptors_legacy"
 
 ALIAS_THETA = get_aliases("THETA")
 
-
 def test_phase_observers_match_manual_calculation(graph_canon):
     G = graph_canon()
     angles = [0.0, math.pi / 2, math.pi]
@@ -54,7 +53,6 @@ def test_phase_observers_match_manual_calculation(graph_canon):
     assert math.isclose(ps_again, ps)
     assert math.isclose(R_again, R)
 
-
 def test_phase_sync_equivalent_with_without_numpy(monkeypatch, graph_canon):
     pytest.importorskip("numpy")
     G = graph_canon()
@@ -68,7 +66,6 @@ def test_phase_sync_equivalent_with_without_numpy(monkeypatch, graph_canon):
     monkeypatch.setattr("tnfr.observers.get_numpy", utils_init.get_numpy)
     ps_py = phase_sync(G)
     assert ps_np == pytest.approx(ps_py)
-
 
 # NumPy and pure-Python variants should match numerically
 def test_phase_sync_numpy_and_python_consistent(monkeypatch, graph_canon):
@@ -85,7 +82,6 @@ def test_phase_sync_numpy_and_python_consistent(monkeypatch, graph_canon):
     ps_py = phase_sync(G)
     assert ps_np == pytest.approx(ps_py)
 
-
 def test_phase_sync_bounds(graph_canon):
     G = graph_canon()
     angles = [0.1, 1.2, -2.5, 3.6]
@@ -95,7 +91,6 @@ def test_phase_sync_bounds(graph_canon):
 
     ps = phase_sync(G)
     assert 0.0 <= ps <= 1.0
-
 
 def test_kuramoto_order_matches_kuramoto_R_psi(graph_canon):
     G = graph_canon()
@@ -109,7 +104,6 @@ def test_kuramoto_order_matches_kuramoto_R_psi(graph_canon):
     assert math.isclose(R_ok, R)
     assert math.isclose(kuramoto_order(G, R, psi), R)
     assert math.isclose(phase_sync(G, R, psi), phase_sync(G))
-
 
 def test_phase_sync_and_kuramoto_order_share_metrics(monkeypatch, graph_canon):
     G = graph_canon()
@@ -139,7 +133,6 @@ def test_phase_sync_and_kuramoto_order_share_metrics(monkeypatch, graph_canon):
     assert ps == pytest.approx(expected_ps)
     assert R_val == pytest.approx(R)
 
-
 def test_glyph_load_uses_module_constants(monkeypatch, graph_canon):
     G = graph_canon()
     G.add_node(0, glyph_history=["A"])
@@ -157,7 +150,6 @@ def test_glyph_load_uses_module_constants(monkeypatch, graph_canon):
     assert dist["_disruptors"] == pytest.approx(0.5)
     assert DEPRECATED_GLYPH_GROUP_STABILIZERS not in dist
     assert DEPRECATED_GLYPH_GROUP_DISRUPTORS not in dist
-
 
 def test_sigma_vector_consistency():
     # Fictional glyph distribution
@@ -180,13 +172,11 @@ def test_sigma_vector_consistency():
     assert math.isclose(res["mag"], mag)
     assert math.isclose(res["angle"], ang)
 
-
 def test_wbar_accepts_deque(graph_canon):
     G = graph_canon()
     cs = deque([0.1, 0.5, 0.9], maxlen=10)
     G.graph["history"] = {"C_steps": cs}
     assert wbar(G, window=2) == pytest.approx((0.5 + 0.9) / 2)
-
 
 def test_wbar_list_and_deque_same_result(graph_canon):
     G = graph_canon()
@@ -199,7 +189,6 @@ def test_wbar_list_and_deque_same_result(graph_canon):
     G.graph["history"] = {"C_steps": deque(data, maxlen=10)}
     assert wbar(G, window=2) == pytest.approx(expected)
 
-
 @pytest.mark.parametrize("w", [0, -1])
 def test_wbar_rejects_non_positive_window(graph_canon, w):
     G = graph_canon()
@@ -207,18 +196,15 @@ def test_wbar_rejects_non_positive_window(graph_canon, w):
     with pytest.raises(ValueError):
         wbar(G, window=w)
 
-
 @pytest.mark.parametrize("w", [-1])
 def test_glyph_load_rejects_non_positive_window(graph_canon, w):
     G = graph_canon()
     with pytest.raises(ValueError):
         glyph_load(G, window=w)
 
-
 def test_glyph_load_zero_window(graph_canon):
     G = graph_canon()
     assert glyph_load(G, window=0) == {"_count": 0}
-
 
 def test_wbar_uses_default_window(monkeypatch, graph_canon):
     G = graph_canon()
@@ -227,13 +213,11 @@ def test_wbar_uses_default_window(monkeypatch, graph_canon):
     monkeypatch.setattr("tnfr.observers.DEFAULT_WBAR_SPAN", 2)
     assert wbar(G) == pytest.approx((1.0 + 1.5) / 2)
 
-
 def test_attach_standard_observer_registers_callbacks(graph_canon):
     G = graph_canon()
     attach_standard_observer(G)
     for ev in CallbackEvent:
         assert ev in G.graph["callbacks"]
-
 
 def test_attach_standard_observer_idempotent(graph_canon):
     G = graph_canon()

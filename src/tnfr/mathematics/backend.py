@@ -27,10 +27,8 @@ from ..utils import cached_import, get_logger
 
 logger = get_logger(__name__)
 
-
 class BackendUnavailableError(RuntimeError):
     """Raised when a registered backend cannot be constructed."""
-
 
 class MathematicsBackend(Protocol):
     """Structural numerical backend interface."""
@@ -68,9 +66,7 @@ class MathematicsBackend(Protocol):
     def to_numpy(self, value: Any) -> Any:
         """Convert ``value`` to a ``numpy.ndarray`` when possible."""
 
-
 BackendFactory = Callable[[], MathematicsBackend]
-
 
 @dataclass(slots=True)
 class _NumpyBackend:
@@ -117,7 +113,6 @@ class _NumpyBackend:
     def to_numpy(self, value: Any) -> Any:
         return self._np.asarray(value)
 
-
 @dataclass(slots=True)
 class _JaxBackend:
     """JAX backed implementation."""
@@ -161,7 +156,6 @@ class _JaxBackend:
         if np_mod is None:
             raise BackendUnavailableError("NumPy is required to export JAX arrays")
         return np_mod.asarray(self._jax.device_get(value))
-
 
 @dataclass(slots=True)
 class _TorchBackend:
@@ -257,15 +251,12 @@ class _TorchBackend:
             return value.detach().cpu().numpy()
         return np_mod.asarray(value)
 
-
 def _normalise_name(name: str) -> str:
     return name.strip().lower()
-
 
 _BACKEND_FACTORIES: MutableMapping[str, BackendFactory] = {}
 _BACKEND_ALIASES: MutableMapping[str, str] = {}
 _BACKEND_CACHE: MutableMapping[str, MathematicsBackend] = {}
-
 
 def ensure_array(
     value: Any,
@@ -278,13 +269,11 @@ def ensure_array(
     resolved = backend or get_backend()
     return resolved.as_array(value, dtype=dtype)
 
-
 def ensure_numpy(value: Any, *, backend: MathematicsBackend | None = None) -> Any:
     """Export ``value`` from the backend into :class:`numpy.ndarray`."""
 
     resolved = backend or get_backend()
     return resolved.to_numpy(value)
-
 
 def register_backend(
     name: str,
@@ -318,7 +307,6 @@ def register_backend(
                 raise ValueError(f"Backend alias '{alias}' already registered")
             _BACKEND_ALIASES[alias_key] = key
 
-
 def _resolve_backend_name(name: str | None) -> str:
     if name:
         return _normalise_name(name)
@@ -340,14 +328,12 @@ def _resolve_backend_name(name: str | None) -> str:
 
     return "numpy"
 
-
 def _resolve_factory(name: str) -> BackendFactory:
     canonical = _BACKEND_ALIASES.get(name, name)
     try:
         return _BACKEND_FACTORIES[canonical]
     except KeyError as exc:  # pragma: no cover - defensive path
         raise LookupError(f"Unknown mathematics backend: {name}") from exc
-
 
 def get_backend(name: str | None = None) -> MathematicsBackend:
     """Return a backend instance using the configured resolution order."""
@@ -370,12 +356,10 @@ def get_backend(name: str | None = None) -> MathematicsBackend:
     _BACKEND_CACHE[canonical] = backend
     return backend
 
-
 def available_backends() -> Mapping[str, BackendFactory]:
     """Return the registered backend factories."""
 
     return dict(_BACKEND_FACTORIES)
-
 
 def _make_numpy_backend() -> MathematicsBackend:
     np_module = cached_import("numpy")
@@ -385,7 +369,6 @@ def _make_numpy_backend() -> MathematicsBackend:
     if scipy_linalg is None:
         logger.debug("SciPy not available; falling back to eigen decomposition for expm")
     return _NumpyBackend(np_module, scipy_linalg)
-
 
 def _make_jax_backend() -> MathematicsBackend:
     jnp_module = cached_import("jax.numpy")
@@ -399,7 +382,6 @@ def _make_jax_backend() -> MathematicsBackend:
         raise BackendUnavailableError("jax core module is required")
     return _JaxBackend(jnp_module, jax_scipy, jax_module)
 
-
 def _make_torch_backend() -> MathematicsBackend:
     torch_module = cached_import("torch")
     if torch_module is None:
@@ -409,11 +391,9 @@ def _make_torch_backend() -> MathematicsBackend:
         raise BackendUnavailableError("torch.linalg is required for linear algebra operations")
     return _TorchBackend(torch_module, torch_linalg)
 
-
 register_backend("numpy", _make_numpy_backend, aliases=("np",))
 register_backend("jax", _make_jax_backend)
 register_backend("torch", _make_torch_backend, aliases=("pytorch",))
-
 
 __all__ = [
     "MathematicsBackend",

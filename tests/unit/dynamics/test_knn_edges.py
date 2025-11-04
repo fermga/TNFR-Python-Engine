@@ -2,12 +2,10 @@ import random
 
 from tnfr.operators.remesh import _knn_edges
 
-
 def _setup():
     nodes = list(range(5))
     epi = {i: float(i) for i in nodes}
     return nodes, epi
-
 
 def test_knn_edges_connects_nearest_neighbours():
     nodes, epi = _setup()
@@ -22,7 +20,6 @@ def test_knn_edges_connects_nearest_neighbours():
         (3, 4),
     }
     assert edges == expected
-
 
 def test_knn_edges_rewire_preserves_edge_count():
     nodes, epi = _setup()

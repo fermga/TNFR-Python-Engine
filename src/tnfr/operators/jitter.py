@@ -29,7 +29,6 @@ if TYPE_CHECKING:  # pragma: no cover - type checking only
 # unbounded memory usage.
 _JITTER_MAX_ENTRIES = 1024
 
-
 class JitterCache:
     """Container for jitter-related caches."""
 
@@ -121,7 +120,6 @@ class JitterCache:
 
         return self._sequence.bump(key)
 
-
 class JitterCacheManager:
     """Manager exposing the jitter cache without global reassignment."""
 
@@ -191,10 +189,8 @@ class JitterCacheManager:
 
         return self.cache.bump(key)
 
-
 # Lazy manager instance
 _JITTER_MANAGER: JitterCacheManager | None = None
-
 
 def get_jitter_manager() -> JitterCacheManager:
     """Return the singleton jitter manager, initializing on first use."""
@@ -204,7 +200,6 @@ def get_jitter_manager() -> JitterCacheManager:
         _JITTER_MANAGER.setup(force=True)
     return _JITTER_MANAGER
 
-
 def reset_jitter_manager() -> None:
     """Reset the global jitter manager (useful for tests)."""
     global _JITTER_MANAGER
@@ -212,12 +207,10 @@ def reset_jitter_manager() -> None:
         _JITTER_MANAGER.clear()
     _JITTER_MANAGER = None
 
-
 def _node_offset(G: TNFRGraph, n: NodeId) -> int:
     """Deterministic node index used for jitter seeds."""
     mapping = ensure_node_offset_map(G)
     return int(mapping.get(n, 0))
-
 
 def _resolve_jitter_seed(node: NodeProtocol) -> tuple[int, int]:
     node_nx_type = get_nodenx()
@@ -234,7 +227,6 @@ def _resolve_jitter_seed(node: NodeProtocol) -> tuple[int, int]:
     graph = cast(TNFRGraph | None, getattr(node, "G", None))
     scope = graph if graph is not None else node
     return int(uid), id(scope)
-
 
 def random_jitter(
     node: NodeProtocol,
@@ -261,7 +253,6 @@ def random_jitter(
     seed = seed_hash(seed_root, scope_id)
     rng = make_rng(seed, seed_key + seq, node.G)
     return rng.uniform(-amplitude, amplitude)
-
 
 __all__ = [
     "JitterCache",

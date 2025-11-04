@@ -10,7 +10,6 @@ DEPRECATED_NODE_CLASS = "NodeNXLegacy"
 DEPRECATED_NODE_PROTOCOL = "NodeProtocolLegacy"
 DEPRECATED_UTILS_HELPER = "get_nodenx_legacy"
 
-
 def test_spanish_node_aliases_removed() -> None:
     module = importlib.import_module("tnfr.node")
     assert DEPRECATED_NODE_CLASS not in getattr(module, "__all__", ())
@@ -19,7 +18,6 @@ def test_spanish_node_aliases_removed() -> None:
         getattr(module, DEPRECATED_NODE_CLASS)
     with pytest.raises(AttributeError):
         getattr(module, DEPRECATED_NODE_PROTOCOL)
-
 
 def test_utils_spanish_helper_removed() -> None:
     utils = importlib.import_module("tnfr.utils")

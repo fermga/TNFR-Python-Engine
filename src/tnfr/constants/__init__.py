@@ -29,7 +29,6 @@ STATE_DISSONANT = "dissonant"
 
 CANONICAL_STATE_TOKENS = frozenset({STATE_STABLE, STATE_TRANSITION, STATE_DISSONANT})
 
-
 def normalise_state_token(token: str) -> str:
     """Return the canonical English token for ``token``.
 
@@ -53,7 +52,6 @@ def normalise_state_token(token: str) -> str:
     raise ValueError(
         "state token must be one of 'stable', 'transition', or 'dissonant'"
     )
-
 
 try:  # pragma: no cover - optional dependency
     from ..utils import ensure_node_offset_map as _ensure_node_offset_map
@@ -84,7 +82,6 @@ DEFAULTS: Mapping[str, TNFRConfigValue] = MappingProxyType(
 # Utilities
 # -------------------------
 
-
 def inject_defaults(
     G: GraphLike,
     defaults: Mapping[str, TNFRConfigValue] = DEFAULTS,
@@ -108,7 +105,6 @@ def inject_defaults(
     if ensure_node_offset_map is not None:
         ensure_node_offset_map(G)
 
-
 def merge_overrides(G: GraphLike, **overrides: TNFRConfigValue) -> None:
     """Apply specific changes to ``G.graph``.
 
@@ -124,7 +120,6 @@ def merge_overrides(G: GraphLike, **overrides: TNFRConfigValue) -> None:
             else cast(TNFRConfigValue, copy.deepcopy(value))
         )
 
-
 def get_param(G: GraphLike, key: str) -> TNFRConfigValue:
     """Retrieve a parameter from ``G.graph`` or fall back to defaults."""
     if key in G.graph:
@@ -132,7 +127,6 @@ def get_param(G: GraphLike, key: str) -> TNFRConfigValue:
     if key not in DEFAULTS:
         raise KeyError(f"Unknown parameter: '{key}'")
     return DEFAULTS[key]
-
 
 def get_graph_param(
     G: GraphLike, key: str, cast: Callable[[object], T] = float
@@ -145,7 +139,6 @@ def get_graph_param(
     """
     val = get_param(G, key)
     return None if val is None else cast(val)
-
 
 # Canonical keys with ASCII spellings
 VF_KEY = "νf"
@@ -166,12 +159,10 @@ ALIASES: dict[str, tuple[str, ...]] = {
     "DSI": ("δSi", "delta_Si", "dSi"),
 }
 
-
 def get_aliases(key: str) -> tuple[str, ...]:
     """Return alias tuple for canonical ``key``."""
 
     return ALIASES[key]
-
 
 VF_PRIMARY = get_aliases("VF")[0]
 THETA_PRIMARY = get_aliases("THETA")[0]
