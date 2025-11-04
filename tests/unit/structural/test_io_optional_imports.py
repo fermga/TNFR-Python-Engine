@@ -1,22 +1,30 @@
 import importlib
+import sys
 import types
 
 import pytest
 
-import tnfr.utils.io as io_mod
 from tnfr.utils import LazyImportProxy, cached_import
 
 
 @pytest.fixture
 def fresh_io():
     cached_import.cache_clear()
-    module = importlib.reload(io_mod)
+    # Re-import module instead of reload to handle test isolation
+    if 'tnfr.utils.io' in sys.modules:
+        del sys.modules['tnfr.utils.io']
+    import tnfr.utils.io as module
     yield module
     cached_import.cache_clear()
-    importlib.reload(io_mod)
+    # Cleanup
+    if 'tnfr.utils.io' in sys.modules:
+        del sys.modules['tnfr.utils.io']
+    import tnfr.utils.io  # Re-import for next test
 
 
 def test_io_optional_imports_are_lazy_proxies(fresh_io):
+    # Import LazyImportProxy after module reload to avoid stale class reference
+    from tnfr.utils import LazyImportProxy
     assert isinstance(fresh_io.tomllib, LazyImportProxy)
     assert isinstance(fresh_io._TOML_LOADS, LazyImportProxy)
     assert isinstance(fresh_io.yaml, LazyImportProxy)

@@ -1,16 +1,22 @@
 import importlib
 import logging
+import sys
 from concurrent.futures import ThreadPoolExecutor
-
-import tnfr.utils.init as logging_utils
 
 
 def reload_logging_utils():
     """Reload logging_utils after clearing root handlers."""
 
     global logging_utils
-    logging_utils = importlib.reload(logging_utils)
+    # Re-import module instead of reload to handle test isolation
+    if 'tnfr.utils.init' in sys.modules:
+        del sys.modules['tnfr.utils.init']
+    import tnfr.utils.init as logging_utils
     return logging_utils
+
+
+# Import after defining reload function
+import tnfr.utils.init as logging_utils
 
 
 def _worker():
