@@ -51,6 +51,18 @@ from .soft_filters import (  # noqa: F401
     maybe_force,
     soft_grammar_filters,
 )
+from .input_validation import (  # noqa: F401
+    ValidationError,
+    validate_epi_value,
+    validate_vf_value,
+    validate_theta_value,
+    validate_dnfr_value,
+    validate_node_id,
+    validate_glyph,
+    validate_tnfr_graph,
+    validate_glyph_factors,
+    validate_operator_parameters,
+)
 _GRAMMAR_EXPORTS = tuple(getattr(_grammar, "__all__", ()))
 
 globals().update({name: getattr(_grammar, name) for name in _GRAMMAR_EXPORTS})
@@ -75,6 +87,16 @@ _RUNTIME_EXPORTS = (
     "maybe_force",
     "soft_grammar_filters",
     "NFRValidator",
+    "ValidationError",
+    "validate_epi_value",
+    "validate_vf_value",
+    "validate_theta_value",
+    "validate_dnfr_value",
+    "validate_node_id",
+    "validate_glyph",
+    "validate_tnfr_graph",
+    "validate_glyph_factors",
+    "validate_operator_parameters",
 )
 
 __all__ = _GRAMMAR_EXPORTS + _RUNTIME_EXPORTS
