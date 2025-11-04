@@ -76,7 +76,7 @@ Runs automatically before each commit to prevent committing code without stubs:
 
 ### 3. CI/CD Integration
 
-**Location**: `.github/workflows/type-check.yml`
+**Location**: `.github/workflows/ci.yml` (type-check job)
 
 Validates stub completeness and synchronization in CI pipeline:
 
@@ -499,7 +499,7 @@ Potential improvements to the automation:
 - [Factory Patterns Guide](FACTORY_PATTERNS.md) - Factory design patterns requiring stubs
 - [Factory Quick Reference](FACTORY_QUICK_REFERENCE.md) - Quick guide including stub generation
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - General contribution guidelines
-- [Type-check workflow](../.github/workflows/type-check.yml) - CI configuration
+- [CI workflow](../.github/workflows/ci.yml) - CI configuration (type-check job)
 
 ---
 

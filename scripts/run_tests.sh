@@ -2,12 +2,12 @@
 set -euo pipefail
 export PYTHONPATH="$PWD/src"
 
-# Keep dependency extras aligned with .github/workflows/type-check.yml.
+# Keep dependency extras aligned with .github/workflows/ci.yml type-check job.
 python -m pip install --quiet ".[test,typecheck]"
 python -m flake8 src tests/mathematics
 python scripts/check_language.py
 python -m pydocstyle src/tnfr
-# Mirrors the mypy invocation in .github/workflows/type-check.yml.
+# Mirrors the mypy invocation in .github/workflows/ci.yml type-check job.
 python -m mypy src/tnfr tests/mathematics
 python -m coverage run --source=src -m pytest "$@"
 python -m coverage report -m

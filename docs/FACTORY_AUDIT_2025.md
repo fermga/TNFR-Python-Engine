@@ -84,7 +84,7 @@ These factories create TNFR nodes or return other factory functions.
 
 ### Automation Added
 
-Added to `.github/workflows/type-check.yml`:
+Added to `.github/workflows/ci.yml` (type-check job):
 ```yaml
 - name: Check stub files exist
   run: python scripts/generate_stubs.py --check
