@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import (
     Callable,
     Hashable,
+    Iterable,
     Mapping,
     MutableMapping,
     MutableSequence,
@@ -432,20 +433,37 @@ class _DeltaNFRHookProtocol(Protocol):
 DeltaNFRHook: TypeAlias = _DeltaNFRHookProtocol
 #: Callable hook invoked to compute ΔNFR for a :data:`TNFRGraph`.
 
-class GraphLike(Protocol):
-    """Protocol for graph objects used throughout TNFR metrics.
+class _NodeViewLike(Protocol):
+    """Subset of :class:`networkx.NodeView` behaviour relied on by TNFR."""
 
-    The metrics helpers assume a single coherent graph interface so that
-    coherence, resonance and derived indicators read/write data through the
-    same structural access points.
+    def __iter__(self) -> Iterable[Any]: ...
+
+    def __call__(self, data: bool = ...) -> Iterable[Any]: ...
+
+    def __getitem__(self, node: Any) -> Mapping[str, Any]: ...
+
+
+class _EdgeViewLike(Protocol):
+    """Subset of :class:`networkx.EdgeView` behaviour relied on by TNFR."""
+
+    def __iter__(self) -> Iterable[Any]: ...
+
+    def __call__(self, data: bool = ...) -> Iterable[Any]: ...
+
+
+class GraphLike(Protocol):
+    """Protocol describing graph objects consumed by TNFR subsystems.
+
+    Graph-like containers must expose cached-property style ``nodes`` and
+    ``edges`` views compatible with :mod:`networkx`, a ``neighbors`` iterator,
+    ``number_of_nodes`` introspection and a metadata mapping via ``.graph``.
+    Metrics, cache utilities and CLI diagnostics assume this interface when
+    traversing structural coherence data.
     """
 
-    graph: dict[str, Any]
-
-    def nodes(self, data: bool = ...) -> Iterable[Any]:
-        """Return an iterable of nodes mirroring NetworkX semantics."""
-
-        ...
+    graph: MutableMapping[str, Any]
+    nodes: _NodeViewLike
+    edges: _EdgeViewLike
 
     def number_of_nodes(self) -> int:
         """Return the total number of coherent nodes in the graph."""
@@ -454,6 +472,11 @@ class GraphLike(Protocol):
 
     def neighbors(self, n: Any) -> Iterable[Any]:
         """Yield adjacent nodes coupled to ``n`` within the structure."""
+
+        ...
+
+    def __getitem__(self, node: Any) -> MutableMapping[Any, Any]:
+        """Expose adjacency metadata for ``node`` using ``G[node]`` semantics."""
 
         ...
 

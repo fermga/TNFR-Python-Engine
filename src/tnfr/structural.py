@@ -3,7 +3,10 @@
 This module exposes the canonical entry points used by the engine to
 instantiate coherent TNFR nodes and to orchestrate structural operator
 pipelines while keeping the nodal equation
-``∂EPI/∂t = νf · ΔNFR(t)`` balanced.
+``∂EPI/∂t = νf · ΔNFR(t)`` balanced.  Consumers are expected to provide
+graph instances honouring :class:`tnfr.types.GraphLike`: the structural
+helpers reach into ``nodes``, ``neighbors``, ``number_of_nodes`` and the
+``.graph`` metadata mapping to propagate ΔNFR hooks and coherence metrics.
 
 Public API
 ----------

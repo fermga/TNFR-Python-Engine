@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import math
 from collections import deque
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping, Sized
 from copy import deepcopy
 from importlib import import_module
 from pathlib import Path
@@ -80,6 +80,42 @@ DEFAULT_SUMMARY_SERIES_LIMIT = 10
 
 _PREFERRED_PRESETS_DISPLAY = ", ".join(PREFERRED_PRESET_NAMES)
 
+
+def _as_iterable_view(view: Any) -> Iterable[Any]:
+    """Return ``view`` as an iterable, resolving callable cached views."""
+
+    if hasattr(view, "__iter__"):
+        return view  # type: ignore[return-value]
+    if callable(view):
+        resolved = view()
+        if not hasattr(resolved, "__iter__"):
+            raise TypeError("Graph view did not return an iterable")
+        return resolved
+    return ()
+
+
+def _iter_graph_nodes(graph: Any) -> Iterable[Any]:
+    """Yield nodes from ``graph`` normalising NetworkX-style accessors."""
+
+    return _as_iterable_view(getattr(graph, "nodes", ()))
+
+
+def _iter_graph_edges(graph: Any) -> Iterable[Any]:
+    """Yield edges from ``graph`` normalising NetworkX-style accessors."""
+
+    return _as_iterable_view(getattr(graph, "edges", ()))
+
+
+def _count_graph_nodes(graph: Any) -> int:
+    """Return node count honouring :class:`tnfr.types.GraphLike` semantics."""
+
+    if hasattr(graph, "number_of_nodes"):
+        return int(graph.number_of_nodes())
+    nodes_view = _iter_graph_nodes(graph)
+    if isinstance(nodes_view, Sized):
+        return len(nodes_view)  # type: ignore[arg-type]
+    return len(tuple(nodes_view))
+
 def _save_json(path: str, data: Any) -> None:
     payload = json_dumps(data, ensure_ascii=False, indent=2, default=list)
     safe_write(path, lambda f: f.write(payload))
@@ -148,7 +184,7 @@ def _resolve_math_dimension(
 def _build_math_engine_config(
     G: "nx.Graph", args: argparse.Namespace
 ) -> dict[str, Any]:
-    node_count = G.number_of_nodes() if hasattr(G, "number_of_nodes") else len(list(G.nodes))
+    node_count = _count_graph_nodes(G)
     fallback_dim = max(1, int(node_count) if node_count is not None else 1)
     dimension = _resolve_math_dimension(args, fallback=fallback_dim)
 
@@ -775,7 +811,7 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
 
     # Check structural frequency positivity
     if check_frequency:
-        nodes = list(graph.nodes)
+        nodes = list(_iter_graph_nodes(graph))
         if nodes:
             negative_frequencies = []
             for node_id in nodes:
@@ -809,7 +845,7 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
 
     # Check phase synchrony in couplings
     if check_phase:
-        edges = list(graph.edges)
+        edges = list(_iter_graph_edges(graph))
         if edges:
             phase_violations = []
             for u, v in edges:

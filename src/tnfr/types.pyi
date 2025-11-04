@@ -1,5 +1,6 @@
 from collections.abc import (
     Hashable,
+    Iterable,
     Mapping,
     MutableMapping,
     MutableSequence,
@@ -187,12 +188,25 @@ class _DeltaNFRHookProtocol(Protocol):
 
 DeltaNFRHook: TypeAlias = _DeltaNFRHookProtocol
 
-class GraphLike(Protocol):
-    graph: dict[str, Any]
+class _NodeViewLike(Protocol):
+    def __iter__(self) -> Iterable[Any]: ...
+    def __call__(self, data: bool = ...) -> Iterable[Any]: ...
+    def __getitem__(self, node: Any) -> Mapping[str, Any]: ...
 
-    def nodes(self, data: bool = ...) -> Iterable[Any]: ...
+
+class _EdgeViewLike(Protocol):
+    def __iter__(self) -> Iterable[Any]: ...
+    def __call__(self, data: bool = ...) -> Iterable[Any]: ...
+
+
+class GraphLike(Protocol):
+    graph: MutableMapping[str, Any]
+    nodes: _NodeViewLike
+    edges: _EdgeViewLike
+
     def number_of_nodes(self) -> int: ...
     def neighbors(self, n: Any) -> Iterable[Any]: ...
+    def __getitem__(self, node: Any) -> MutableMapping[Any, Any]: ...
     def __iter__(self) -> Iterable[Any]: ...
 
 class IntegratorProtocol(Protocol):
