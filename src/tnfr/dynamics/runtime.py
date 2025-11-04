@@ -221,8 +221,12 @@ def _call_integrator_factory(factory: Any, G: TNFRGraph) -> Any:
             inspect.Parameter.POSITIONAL_OR_KEYWORD,
         )
     ]
-    if positional:
+    if len(positional) == 1:
         return factory(G)
+    elif len(positional) > 1:
+        raise TypeError(
+            "Integrator factory must accept at most one positional argument",
+        )
 
     # Check for any required positional arguments, and raise error if present
     remaining_required_positional = [
