@@ -269,7 +269,7 @@ def test_cache_invalidated_on_graph_change(vectorized, monkeypatch):
         pytest.importorskip("numpy")
         context_factory = nullcontext
     else:
-        context_factory = lambda: numpy_disabled(monkeypatch)
+        context_factory = lambda: numpy_disabled(monkeypatch)  # noqa: E731
 
     G = _setup_graph()
     with context_factory():
@@ -311,7 +311,7 @@ def test_neighbor_sum_buffers_reused_and_results_stable(vectorized, monkeypatch)
         pytest.importorskip("numpy")
         context_factory = nullcontext
     else:
-        context_factory = lambda: numpy_disabled(monkeypatch)
+        context_factory = lambda: numpy_disabled(monkeypatch)  # noqa: E731
 
     G = nx.path_graph(5)
     for idx, node in enumerate(G.nodes):

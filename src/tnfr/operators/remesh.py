@@ -362,7 +362,6 @@ def apply_topological_remesh(
     When ``seed`` is ``None`` the RNG draws its base seed from
     ``G.graph['RANDOM_SEED']`` to keep runs reproducible.
     """
-    from ..glyph_history import append_metric
     nodes = list(G.nodes())
     n_before = len(nodes)
     if n_before <= 1:

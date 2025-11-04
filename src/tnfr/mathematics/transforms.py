@@ -31,11 +31,14 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Callable, Iterable, Mapping, Protocol, Sequence, Union, runtime_checkable
+from typing import TYPE_CHECKING, Callable, Iterable, Mapping, Protocol, Sequence, Union, runtime_checkable
 
 import numpy as np
 
 from .epi import BEPIElement
+
+if TYPE_CHECKING:
+    from .spaces import BanachSpaceEPI
 
 logger = logging.getLogger(__name__)
 

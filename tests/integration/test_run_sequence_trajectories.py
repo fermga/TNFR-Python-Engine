@@ -6,13 +6,13 @@ This module provides focused coverage for critical paths in sequence execution:
 - Program trace generation
 """
 
-import pytest
-import networkx as nx
+import pytest  # noqa: F401
+import networkx as nx  # noqa: F401
 
-from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
+from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY  # noqa: F401
 from tnfr.execution import play, seq, wait, target, block, compile_sequence
 from tnfr.tokens import Glyph, OpTag
-from tests.helpers.fixtures import operator_sequence_factory
+from tests.helpers.fixtures import operator_sequence_factory  # noqa: F401
 
 def _step_noop(graph):
     """Simple step function that advances time without side effects."""

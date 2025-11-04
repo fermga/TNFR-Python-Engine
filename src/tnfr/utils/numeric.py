@@ -68,13 +68,13 @@ def angle_diff(a: float, b: float) -> float:
     return (float(a) - float(b) + math.pi) % math.tau - math.pi
 
 def angle_diff_array(
-    a: Sequence[float] | "np.ndarray",
-    b: Sequence[float] | "np.ndarray",
+    a: Sequence[float] | "np.ndarray",  # noqa: F821
+    b: Sequence[float] | "np.ndarray",  # noqa: F821
     *,
     np: Any,
-    out: "np.ndarray | None" = None,
-    where: "np.ndarray | None" = None,
-) -> "np.ndarray":
+    out: "np.ndarray | None" = None,  # noqa: F821
+    where: "np.ndarray | None" = None,  # noqa: F821
+) -> "np.ndarray":  # noqa: F821
     """Vectorised :func:`angle_diff` compatible with NumPy arrays."""
 
     if np is None:

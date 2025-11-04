@@ -2,6 +2,7 @@
 
 import math
 from contextlib import contextmanager
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -10,6 +11,9 @@ from tnfr.constants import get_aliases, get_param
 from tnfr.glyph_history import ensure_history
 import tnfr.metrics.diagnosis as diagnosis_module
 from tnfr.metrics.diagnosis import _diagnosis_step
+
+if TYPE_CHECKING:
+    import networkx as nx
 
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")

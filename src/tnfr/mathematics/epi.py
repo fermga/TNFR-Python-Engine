@@ -2,9 +2,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Mapping, Sequence
+from typing import TYPE_CHECKING, Callable, Mapping, Sequence
 
 import numpy as np
+
+if TYPE_CHECKING:
+    from .spaces import BanachSpaceEPI
 
 __all__ = [
     "BEPIElement",

@@ -26,6 +26,9 @@ from numbers import Real
 
 from ._compat import TypeAlias
 
+if TYPE_CHECKING:
+    from .mathematics import BEPIElement
+
 try:  # pragma: no cover - optional dependency for typing only
     import numpy as np
 except Exception:  # pragma: no cover - graceful fallback when NumPy is missing

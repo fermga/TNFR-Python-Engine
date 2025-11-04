@@ -26,10 +26,10 @@ from tests.helpers.validation import (
     assert_dnfr_lists_close,
     get_dnfr_values,
 )
-from tests.helpers.fixtures import (
-    seed_graph_factory,
-    homogeneous_graph_factory,
-    bicluster_graph_factory,
+from tests.helpers.fixtures import (  # noqa: F401
+    seed_graph_factory,  # noqa: F401
+    homogeneous_graph_factory,  # noqa: F401
+    bicluster_graph_factory,  # noqa: F401
 )
 
 # Parametrized network scales for consolidated testing

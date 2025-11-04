@@ -175,7 +175,7 @@ def _is_immutable(value: Any) -> bool:
         try:
             return _IMMUTABLE_CACHE[value]
         except (KeyError, TypeError):
-            pass
+            pass  # Not in cache or value is unhashable
 
     try:
         frozen = _freeze(value)
@@ -188,7 +188,7 @@ def _is_immutable(value: Any) -> bool:
         try:
             _IMMUTABLE_CACHE[value] = result
         except TypeError:
-            pass
+            pass  # Value is unhashable, cannot cache
 
     return result
 

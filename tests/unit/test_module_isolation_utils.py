@@ -26,7 +26,7 @@ def test_clear_test_module_removes_existing():
     already loaded, enabling test isolation.
     """
     # Import a standard library module to ensure it's in sys.modules
-    import json
+    import json  # noqa: F401
     module_name = 'json'
     assert module_name in sys.modules
 
@@ -81,17 +81,17 @@ def test_clear_test_module_enables_fresh_import():
     can be re-imported with a clean state in subsequent tests.
     """
     # Import a module
-    import email
+    import email  # noqa: F401
     module_name = 'email'
 
     # Store a reference
-    first_import = sys.modules[module_name]
+    first_import = sys.modules[module_name]  # noqa: F841
 
     # Clear it
     clear_test_module(module_name)
 
     # Re-import
-    import email as email_reimport
+    import email as email_reimport  # noqa: F401
 
     # Should be a fresh import (in practice, same object due to caching,
     # but the pattern enables test isolation when combined with fixtures)

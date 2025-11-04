@@ -18,12 +18,12 @@ def _read_version() -> str:
     try:
         return metadata.version("tnfr")
     except metadata.PackageNotFoundError:
-        pass
+        pass  # Fallback to alternative version sources
 
     try:  # pragma: no cover - only present in built distributions
         from . import _generated_version  # type: ignore
     except ImportError:  # pragma: no cover - optional artifact
-        pass
+        pass  # Generated version not available
     else:
         generated = getattr(_generated_version, "version", None)
         if isinstance(generated, str) and generated:
@@ -35,12 +35,12 @@ def _read_version() -> str:
     try:
         from setuptools_scm import get_version
     except Exception:  # pragma: no cover - optional dependency
-        pass
+        pass  # setuptools_scm not available
     else:
         try:
             return get_version(relative_to=__file__)
         except LookupError:
-            pass
+            pass  # No version found via setuptools_scm
 
     return "0.0.0"
 

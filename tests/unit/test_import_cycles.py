@@ -33,7 +33,7 @@ def test_no_circular_imports_utils_package():
     import tnfr.utils.graph
     import tnfr.utils.init
     import tnfr.utils.io
-    import tnfr.utils.numeric
+    import tnfr.utils.numeric  # noqa: F401
 
     # If we reach here without ImportError, no cycles exist
     assert True, "All utils modules imported successfully without cycles"
@@ -47,7 +47,7 @@ def test_callback_utils_compatibility_shim():
     Note: This test uses importlib.reload to ensure the deprecation warning
     is emitted even if the module was already imported.
     """
-    import importlib
+    import importlib  # noqa: F401
 
     # Clear the module from cache to force reimport
     clear_test_module('tnfr.callback_utils')
@@ -256,7 +256,7 @@ def test_no_import_star_in_utils():
     """
     # Use importlib to find the actual module path rather than hardcoding
     import importlib.util
-    import tnfr.utils
+    import tnfr.utils  # noqa: F401
 
     # Get the utils package directory from the imported module
     utils_init = importlib.util.find_spec('tnfr.utils')

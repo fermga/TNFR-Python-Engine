@@ -45,14 +45,8 @@ def test_accessor_get_and_set_work_with_functions_and_object(
             return accessor.set(d, aliases, value)
 
     else:
-        getter = lambda d, aliases, *, default=None: AliasAccessor(
-            int
-        ).get(  # noqa: E731
-            d, aliases, default=default
-        )
-        setter = lambda d, aliases, value: AliasAccessor(int).set(
-            d, aliases, value
-        )  # noqa: E731
+        getter = lambda d, aliases, *, default=None: AliasAccessor(int).get(d, aliases, default=default)  # noqa: E731
+        setter = lambda d, aliases, value: AliasAccessor(int).set(d, aliases, value)  # noqa: E731
 
     data = {"a": "1"}
     assert getter(data, ("a", "b"), default=None) == 1

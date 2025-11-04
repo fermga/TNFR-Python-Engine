@@ -24,7 +24,7 @@ from tests.helpers.validation import (
     assert_epi_vf_in_bounds,
     assert_graph_has_tnfr_defaults,
 )
-from tests.helpers.fixtures import seed_graph_factory
+from tests.helpers.fixtures import seed_graph_factory  # noqa: F401
 
 def test_validator_boundary_epi_limits(seed_graph_factory) -> None:
     """Verify validator handles EPI boundary values correctly."""

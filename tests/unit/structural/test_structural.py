@@ -15,9 +15,9 @@ from tnfr.config.operator_names import (
     operator_display_name,
 )
 from tnfr.constants import (
-    D2EPI_PRIMARY,
-    DNFR_PRIMARY,
-    EPI_KIND_PRIMARY,
+    D2EPI_PRIMARY,  # noqa: F401 - may be used in tests
+    DNFR_PRIMARY,  # noqa: F401 - may be used in tests
+    EPI_KIND_PRIMARY,  # noqa: F401 - may be used in tests
     EPI_PRIMARY,
     THETA_PRIMARY,
     VF_PRIMARY,

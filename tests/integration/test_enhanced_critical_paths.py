@@ -24,7 +24,7 @@ from tests.helpers.validation import (
     assert_dnfr_balanced,
     assert_epi_vf_in_bounds,
 )
-from tests.helpers.fixtures import seed_graph_factory
+from tests.helpers.fixtures import seed_graph_factory  # noqa: F401
 
 # ============================================================================
 # Operator Generation - Advanced Parameter Validation

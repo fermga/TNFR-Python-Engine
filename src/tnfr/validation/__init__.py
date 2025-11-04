@@ -38,14 +38,14 @@ class Validator(Protocol[SubjectT]):
     def report(self, outcome: "ValidationOutcome[SubjectT]") -> str:
         """Produce a concise textual explanation for ``outcome``."""
 
-from .compatibility import CANON_COMPAT, CANON_FALLBACK
+from .compatibility import CANON_COMPAT, CANON_FALLBACK  # noqa: F401
 from ..operators import grammar as _grammar
 from ..types import Glyph
-from .graph import GRAPH_VALIDATORS, run_validators
-from .window import validate_window
-from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon
-from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr
-from .soft_filters import (
+from .graph import GRAPH_VALIDATORS, run_validators  # noqa: F401
+from .window import validate_window  # noqa: F401
+from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon  # noqa: F401
+from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr  # noqa: F401
+from .soft_filters import (  # noqa: F401
     acceleration_norm,
     check_repeats,
     maybe_force,

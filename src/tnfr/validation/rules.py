@@ -53,7 +53,7 @@ def coerce_glyph(val: Any) -> Glyph | Any:
                 try:
                     return Glyph(candidate)
                 except ValueError:
-                    pass
+                    pass  # Invalid glyph candidate, return as-is
         return val
 
 def glyph_fallback(cand_key: str, fallbacks: Mapping[str, Any]) -> Glyph | str:

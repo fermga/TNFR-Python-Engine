@@ -17,7 +17,7 @@ from tnfr.mathematics.operators_factory import (
     make_coherence_operator,
     make_frequency_operator,
 )
-from tests.helpers.base import parametrized_operator_dimension
+from tests.helpers.base import parametrized_operator_dimension  # noqa: F401
 
 def test_build_delta_nfr_parameter_validation_combinations() -> None:
     """Verify operator factory validates parameter combinations correctly."""
