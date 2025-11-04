@@ -89,8 +89,13 @@ def reset_global_state(request):
     
     Maintains TNFR canonical invariants (§3.8 - controlled determinism).
     """
-    # Skip for tests that manage their own state (e.g., logging tests)
-    if 'logging' in request.node.name:
+    # Skip for specific tests that explicitly manage logging state
+    skip_patterns = [
+        'test_logging_utils_proxy_state',
+        'test_configure_logging',
+        'test_reset_logging_state',
+    ]
+    if any(pattern in request.node.name for pattern in skip_patterns):
         yield
         return
     
@@ -104,6 +109,14 @@ def reset_global_state(request):
 
 def _reset_all_state() -> None:
     """Helper to reset all global state."""
+    
+    # Reset logging configured flag (but don't call _reset_logging_state as it may cause issues)
+    try:
+        from tnfr.utils import init as init_module
+        init_module._LOGGING_CONFIGURED = False
+        init_module._NP_MISSING_LOGGED = False
+    except (ImportError, AttributeError):
+        pass
     
     # Reset callback manager
     try:
@@ -145,5 +158,57 @@ def _reset_all_state() -> None:
     try:
         from tnfr import selector as selector_module
         selector_module._SELECTOR_THRESHOLD_CACHE.clear()
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset RNG cache (seed_hash cache)
+    try:
+        from tnfr import rng as rng_module
+        if hasattr(rng_module, 'seed_hash') and hasattr(rng_module.seed_hash, 'cache_clear'):
+            rng_module.seed_hash.cache_clear()
+        # Reset RNG cache lock flag
+        rng_module._CACHE_LOCKED = False
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset functools lru_caches
+    try:
+        from tnfr.utils import cache as cache_module
+        if hasattr(cache_module, '_lru_cache_wrapper') and hasattr(cache_module._lru_cache_wrapper, 'cache_clear'):
+            cache_module._lru_cache_wrapper.cache_clear()
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset alias mapping cache
+    try:
+        from tnfr import alias as alias_module
+        if hasattr(alias_module, '_to_canonical_epi') and hasattr(alias_module._to_canonical_epi, 'cache_clear'):
+            alias_module._to_canonical_epi.cache_clear()
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset gamma cache
+    try:
+        from tnfr import gamma as gamma_module
+        if hasattr(gamma_module, '_get_builtin_gamma') and hasattr(gamma_module._get_builtin_gamma, 'cache_clear'):
+            gamma_module._get_builtin_gamma.cache_clear()
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset validation rules caches
+    try:
+        from tnfr.validation import rules as rules_module
+        if hasattr(rules_module, '_get_glyph_name_lookup') and hasattr(rules_module._get_glyph_name_lookup, 'cache_clear'):
+            rules_module._get_glyph_name_lookup.cache_clear()
+        if hasattr(rules_module, '_get_glyph_function_map') and hasattr(rules_module._get_glyph_function_map, 'cache_clear'):
+            rules_module._get_glyph_function_map.cache_clear()
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset operator grammar cache (remesh cooldown cache)
+    try:
+        from tnfr.operators import remesh as remesh_module
+        if hasattr(remesh_module, '_get_remesh_cooldown_default') and hasattr(remesh_module._get_remesh_cooldown_default, 'cache_clear'):
+            remesh_module._get_remesh_cooldown_default.cache_clear()
     except (ImportError, AttributeError):
         pass
