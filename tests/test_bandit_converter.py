@@ -5,7 +5,6 @@ from JSON format to SARIF format, ensuring proper mapping of severity levels,
 confidence ratings, and result structures.
 """
 
-import json
 import pytest
 from pathlib import Path
 from typing import Any, Dict

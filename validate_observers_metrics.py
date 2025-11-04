@@ -12,7 +12,7 @@ import networkx as nx
 from tnfr.constants import inject_defaults
 from tnfr.initialization import init_node_attrs
 from tnfr.metrics import register_metrics_callbacks
-from tnfr.metrics.coherence import coherence_matrix, register_coherence_callbacks
+from tnfr.metrics.coherence import coherence_matrix
 from tnfr.metrics.sense_index import compute_Si
 from tnfr.metrics.trig_cache import get_trig_cache
 from tnfr.observers import (
@@ -21,7 +21,6 @@ from tnfr.observers import (
     kuramoto_order,
     phase_sync,
 )
-from tnfr.utils import callback_manager
 
 
 # Validation constants

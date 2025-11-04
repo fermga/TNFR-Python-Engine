@@ -18,7 +18,7 @@ np = pytest.importorskip("numpy")
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY, THETA_KEY, inject_defaults
 from tnfr.mathematics.generators import build_delta_nfr
-from tnfr.execution import play, seq, wait, target, block, compile_sequence
+from tnfr.execution import seq, wait, target, block, compile_sequence
 from tnfr.tokens import OpTag
 from tests.helpers.validation import (
     assert_dnfr_balanced,

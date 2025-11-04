@@ -8,12 +8,12 @@ Following DRY principles while maintaining TNFR structural fidelity.
 from __future__ import annotations
 
 import abc
-from typing import Any, Callable
+from typing import Any
 
 import networkx as nx
 import pytest
 
-from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY, inject_defaults
+from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 from tests.helpers.validation import (
     assert_dnfr_balanced,
     assert_dnfr_homogeneous_stable,
