@@ -62,8 +62,10 @@ def test_play_records_program_trace_with_block_and_wait(graph_canon):
     program = seq(Glyph.AL, wait(2), block(Glyph.OZ))
     play(G, program, step_fn=_step_noop)
     trace = G.graph["history"]["program_trace"]
-    assert [e["op"] for e in trace] == ["GLYPH", "WAIT", "THOL", "GLYPH"]
+    # TNFR §3.4: THOL blocks must close to maintain operator closure
+    assert [e["op"] for e in trace] == ["GLYPH", "WAIT", "THOL", "GLYPH", "GLYPH"]
     assert trace[2]["g"] == Glyph.THOL.value
+    assert trace[4]["g"] == Glyph.NUL.value  # Auto-close glyph
 
 def test_play_records_progressive_time_with_custom_step(graph_canon):
     G = graph_canon()
@@ -425,6 +427,8 @@ def test_flatten_nested_blocks_preserves_order():
         )
     )
     ops = compile_sequence(program)
+    # TNFR §3.4: THOL blocks must close to maintain operator closure
+    # The outer block auto-closes with NUL since no explicit close= was provided
     expected = [
         (OpTag.THOL, Glyph.THOL.value),
         (OpTag.THOL, Glyph.THOL.value),
@@ -435,6 +439,7 @@ def test_flatten_nested_blocks_preserves_order():
         (OpTag.GLYPH, Glyph.RA.value),
         (OpTag.GLYPH, Glyph.NUL.value),
         (OpTag.GLYPH, Glyph.ZHIR.value),
+        (OpTag.GLYPH, Glyph.NUL.value),  # Auto-close for outer block
     ]
     assert ops == expected
 
@@ -519,14 +524,18 @@ def test_flatten_rejects_unsupported_token_type():
 
 def test_thol_evaluator_multiple_repeats():
     ops = compile_sequence([THOL(body=[Glyph.AL, Glyph.RA], repeat=3)])
+    # TNFR §3.4: THOL blocks must close to maintain operator closure
     assert ops == [
         (OpTag.THOL, Glyph.THOL.value),
         (OpTag.GLYPH, Glyph.AL.value),
         (OpTag.GLYPH, Glyph.RA.value),
+        (OpTag.GLYPH, Glyph.NUL.value),  # Auto-close after first repeat
         (OpTag.GLYPH, Glyph.AL.value),
         (OpTag.GLYPH, Glyph.RA.value),
+        (OpTag.GLYPH, Glyph.NUL.value),  # Auto-close after second repeat
         (OpTag.GLYPH, Glyph.AL.value),
         (OpTag.GLYPH, Glyph.RA.value),
+        (OpTag.GLYPH, Glyph.NUL.value),  # Auto-close after third repeat
     ]
 
 def test_thol_evaluator_body_limit_error_message():
@@ -538,13 +547,17 @@ def test_thol_recursive_expansion():
     inner = THOL(body=[Glyph.RA], repeat=2)
     outer = THOL(body=[Glyph.AL, inner, Glyph.ZHIR])
     ops = compile_sequence([outer])
+    # TNFR §3.4: THOL blocks must close to maintain operator closure
     assert ops == [
         (OpTag.THOL, Glyph.THOL.value),
         (OpTag.GLYPH, Glyph.AL.value),
         (OpTag.THOL, Glyph.THOL.value),
         (OpTag.GLYPH, Glyph.RA.value),
+        (OpTag.GLYPH, Glyph.NUL.value),  # Auto-close after first repeat of inner
         (OpTag.GLYPH, Glyph.RA.value),
+        (OpTag.GLYPH, Glyph.NUL.value),  # Auto-close after second repeat of inner
         (OpTag.GLYPH, Glyph.ZHIR.value),
+        (OpTag.GLYPH, Glyph.NUL.value),  # Auto-close for outer block
     ]
 
 def test_compile_sequence_rejects_noncanonical_glyph():

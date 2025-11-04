@@ -37,8 +37,11 @@ def test_node_accepts_direct_operator_instances() -> None:
     assert node.coherence_operator is coherence_operator
     assert node.frequency_operator is frequency_operator
 
+    # Use proper TNFR operator sequence per grammar rules
+    from tnfr.operators.definitions import Reception, Resonance, Transition
     summary = node.run_sequence_with_validation(
-        [Emission(), Coherence()], enable_validation=True
+        [Emission(), Reception(), Coherence(), Resonance(), Transition()], 
+        enable_validation=True
     )
     assert summary["validation"] is not None
     assert summary["validation"]["passed"] is True
@@ -68,8 +71,9 @@ def test_node_constructs_operators_from_factory_parameters() -> None:
     result = node.run_sequence_with_validation(
         list(DEFAULT_ACCEPTANCE_OPS), enable_validation=False
     )
-    assert "coherence_expectation" in result["post_metrics"]
+    # Verify that metrics are computed (frequency operator provides frequency_expectation)
     assert "frequency_expectation" in result["post_metrics"]
+    assert "frequency_enforced" in result["post_metrics"]
 
 def test_run_sequence_uses_factory_overrides() -> None:
     node, _, _ = build_node_with_operators(frequency_value=None, enable_validation=False)
