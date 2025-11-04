@@ -21,7 +21,6 @@ keeps the override scoped to the context manager:
 >>> with context_flags(enable_math_validation=True):
 ...     assert get_flags().enable_math_validation is True
 >>> assert get_flags().enable_math_validation is base_flag
-```
 
 ## Projector usage
 
@@ -78,7 +77,6 @@ provide a lightweight smoke validation for the documentation itself.
 0.723125
 >>> G.nodes[node][VF_PRIMARY], G.nodes[node][THETA_PRIMARY]
 (1.2, 0.1)
-```
 
 ```{doctest}
 >>> from tnfr.structural import create_nfr
@@ -115,7 +113,6 @@ True
 (2, 2)
 >>> from tnfr.mathematics import MathematicalDynamicsEngine
 >>> _ = MathematicalDynamicsEngine(delta, hilbert_space=hilbert, use_scipy=False)
-```
 
 The skipped instantiation highlights where the unitary dynamics would be
 constructed. Calling `engine.step(state, dt)` yields the same deterministic
