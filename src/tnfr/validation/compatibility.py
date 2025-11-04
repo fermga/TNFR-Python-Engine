@@ -48,6 +48,7 @@ _STRUCTURAL_COMPAT: dict[str, set[str]] = {
         COUPLING,
         SILENCE,
         CONTRACTION,
+        SELF_ORGANIZATION,  # Allow nested self-organization for fractal recursivity
     },
 }
 

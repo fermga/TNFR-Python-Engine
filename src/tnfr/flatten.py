@@ -52,11 +52,14 @@ def _push_thol_frame(
         raise ValueError("repeat must be ≥1")
     if item.force_close is not None and not isinstance(item.force_close, Glyph):
         raise ValueError("force_close must be a Glyph")
+    # TNFR invariant: THOL blocks must close to maintain operator closure (§3.4)
+    # Only SHA (silence) and NUL (contraction) are valid THOL closures
+    # Default to NUL (contraction) when no valid closure specified
     closing = (
         item.force_close
         if isinstance(item.force_close, Glyph)
         and item.force_close in {Glyph.SHA, Glyph.NUL}
-        else None
+        else (Glyph.NUL if item.force_close is None else None)
     )
     seq0 = ensure_collection(
         item.body,

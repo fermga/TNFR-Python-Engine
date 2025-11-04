@@ -213,6 +213,15 @@ def test_compile_sequence_emits_thol_force_close_sha():
 def test_play_handles_deeply_nested_blocks(graph_canon):
     G = graph_canon()
     G.add_node(1)
+    
+    # Disable repeat checking to allow deeply nested THOL blocks
+    # This test is focused on recursion handling, not grammar compliance
+    grammar_cfg = G.graph.setdefault("GRAMMAR", {})
+    grammar_cfg["window"] = 0
+    # Increase THOL thresholds to allow very deep nesting (1500+ levels)
+    grammar_canon_cfg = G.graph.setdefault("GRAMMAR_CANON", {})
+    grammar_canon_cfg["thol_max_len"] = 10000
+    grammar_canon_cfg["thol_min_len"] = 10000
 
     depth = 1500
     # Use wait() instead of glyphs to avoid grammar validation during deep recursion test
@@ -226,9 +235,11 @@ def test_play_handles_deeply_nested_blocks(graph_canon):
 
     maxlen = int(get_param(G, "PROGRAM_TRACE_MAXLEN"))
     assert len(trace) == maxlen
-    assert trace[0]["g"] == Glyph.THOL.value
-    # Last operation will be WAIT, not a glyph
-    assert trace[-1]["op"] == "WAIT"
+    # With deeply nested blocks, the trace rotates. The last operations will be
+    # closure glyphs (NUL) as THOL blocks require proper closure
+    assert trace[-1]["g"] == Glyph.NUL.value
+    # All entries in the trace should be glyphs (NUL) since there are more closures than maxlen
+    assert all(entry.get("g") == Glyph.NUL.value for entry in trace)
 
 def test_target_persists_across_wait(graph_canon):
     G = graph_canon()

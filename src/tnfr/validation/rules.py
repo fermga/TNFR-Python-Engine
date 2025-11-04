@@ -163,6 +163,15 @@ def _check_thol_closure(
 
     nd = ctx.G.nodes[n]
     if st.get("thol_open", False):
+        glyph_to_name, name_to_glyph = _functional_translators()
+        cand_glyph = coerce_glyph(cand)
+        cand_name = glyph_to_name(cand_glyph if isinstance(cand_glyph, Glyph) else cand)
+        
+        # Allow nested THOL (self_organization) blocks without incrementing length
+        # TNFR invariant: operational fractality (§3.7)
+        if cand_name == SELF_ORGANIZATION:
+            return cand
+        
         st["thol_len"] = int(st.get("thol_len", 0)) + 1
         cfg = ctx.cfg_canon
         minlen = int(cfg.get("thol_min_len", 2))
@@ -172,10 +181,6 @@ def _check_thol_closure(
             st["thol_len"] >= minlen and normalized_dnfr(ctx, nd) <= close_dn
         )
         if requires_close:
-            glyph_to_name, name_to_glyph = _functional_translators()
-            cand_glyph = coerce_glyph(cand)
-            cand_name = glyph_to_name(cand_glyph if isinstance(cand_glyph, Glyph) else cand)
-
             si_high = float(cfg.get("si_high", 0.66))
             si = _si(nd)
             target_name = SILENCE if si >= si_high else CONTRACTION
