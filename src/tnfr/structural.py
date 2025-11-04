@@ -568,10 +568,12 @@ def run_sequence(G: TNFRGraph, node: NodeId, ops: Iterable[Operator]) -> None:
     ops_list = list(ops)
     names = [op.name for op in ops_list]
 
-    outcome = validate_sequence(names)
-    if not outcome.passed:
-        summary_message = outcome.summary.get("message", "validation failed")
-        raise ValueError(f"Invalid sequence: {summary_message}")
+    # Skip validation for empty sequences (TNFR: empty sequence is structural identity)
+    if names:
+        outcome = validate_sequence(names)
+        if not outcome.passed:
+            summary_message = outcome.summary.get("message", "validation failed")
+            raise ValueError(f"Invalid sequence: {summary_message}")
 
     for op in ops_list:
         op(G, node)
