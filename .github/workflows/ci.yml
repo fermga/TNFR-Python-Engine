@@ -62,6 +62,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install .[test,typecheck]
 
+      # Language policy check runs once here instead of in each test matrix job
+      # This is more efficient than the previous setup which ran it 4+ times
       - name: Enforce English-only language policy
         run: python scripts/check_language.py
 
