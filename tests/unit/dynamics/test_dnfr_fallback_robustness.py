@@ -391,7 +391,6 @@ def test_fallback_validates_numpy_module_attributes():
     original_numpy = sys.modules.get("numpy")
     try:
         sys.modules["numpy"] = IncompleteNumpy()  # type: ignore
-        
         # Mock get_numpy to return None
         with patch.object(dnfr_module, "get_numpy", return_value=None):
             # This should fall back to pure Python since the numpy in sys.modules is invalid
