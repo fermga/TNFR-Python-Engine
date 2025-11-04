@@ -113,15 +113,82 @@ The TNFR engine uses Python's `pickle` module for caching complex TNFR structure
    - Use TLS for Redis connections
    - Never cache untrusted user input
 
+**Security Warnings:**
+
+Starting from version 1.x, TNFR will emit `SecurityWarning` when cache layers are created without signature validation. To suppress these warnings in trusted environments, set:
+
+```bash
+export TNFR_ALLOW_UNSIGNED_PICKLE=1
+```
+
+### Secure Cache Configuration (Recommended)
+
+TNFR provides convenient helper functions to create secure cache layers with HMAC signature validation. **This is the recommended approach for production deployments.**
+
+#### Quick Start with Secure Caches
+
+```python
+from tnfr.utils import create_secure_shelve_layer, create_secure_redis_layer
+
+# Set your cache secret via environment variable (recommended)
+# export TNFR_CACHE_SECRET="your-secure-random-secret-key"
+
+# Create secure cache layers (reads secret from environment)
+shelf_layer = create_secure_shelve_layer("coherence.db")
+redis_layer = create_secure_redis_layer()
+
+# Store and retrieve TNFR structures safely
+shelf_layer.store("nfr_state", {"epi": [1.5, 2.3], "theta": [0.1, 0.2]})
+restored = shelf_layer.load("nfr_state")
+```
+
+#### Environment Variables
+
+- `TNFR_CACHE_SECRET`: Secret key for HMAC signature validation (required for secure layers)
+- `TNFR_ALLOW_UNSIGNED_PICKLE`: Set to `1` to suppress security warnings for unsigned pickle usage
+
+#### Manual HMAC Configuration
+
+For more control, you can use the HMAC helper functions:
+
+```python
+from tnfr.utils import (
+    create_hmac_signer,
+    create_hmac_validator,
+    ShelveCacheLayer,
+    RedisCacheLayer,
+)
+
+# Create HMAC signer and validator
+secret = b"your-secure-secret-key"
+signer = create_hmac_signer(secret)
+validator = create_hmac_validator(secret)
+
+# Create cache layers with signature validation
+shelf_layer = ShelveCacheLayer(
+    "cache.db",
+    signer=signer,
+    validator=validator,
+    require_signature=True,
+)
+
+redis_layer = RedisCacheLayer(
+    namespace="tnfr:cache",
+    signer=signer,
+    validator=validator,
+    require_signature=True,
+)
+```
+
 ### Hardened Cache Signatures
 
-`ShelveCacheLayer` and `RedisCacheLayer` support optional payload signing to detect tampering in environments where cache files or Redis instances are not fully trusted.
+`ShelveCacheLayer` and `RedisCacheLayer` support payload signing to detect tampering in environments where cache files or Redis instances are not fully trusted.
 
-- Configure a shared secret HMAC (or any signing/verification callable pair) using the new ``signer`` and ``validator`` parameters.
+- Configure a shared secret HMAC (or any signing/verification callable pair) using the ``signer`` and ``validator`` parameters.
 - Enable ``require_signature=True`` to activate hardened mode. In hardened mode the cache deletes unsigned or invalid entries and raises a :class:`tnfr.utils.SecurityError`.
-- Hardened mode is opt-in; the default configuration remains backward compatible with existing caches.
+- **New in 1.x**: Warnings are emitted when creating cache layers without signatures. Use the secure helper functions for best practices.
 
-**Example configuration:**
+**Example with custom signing:**
 
 ```python
 import hashlib
@@ -154,12 +221,39 @@ redis_layer = RedisCacheLayer(
 
 try:
     shelf_layer.store("alpha", {"value": 1})
+    data = shelf_layer.load("alpha")
 except SecurityError:
-    # Hardened mode rejected the payload
+    # Hardened mode rejected tampered payload
     ...
 ```
 
-When hardened mode is active any tampered cache entry is purged and causes an immediate `SecurityError`, preventing poisoned payloads from propagating through TNFR simulations.
+**Tamper Detection:**
+
+When hardened mode is active, any tampered cache entry is automatically purged and causes an immediate `SecurityError`, preventing poisoned payloads from propagating through TNFR simulations.
+
+### Migration Guide
+
+If you're using `ShelveCacheLayer` or `RedisCacheLayer` without signatures:
+
+1. **For trusted, local-only caches** (development):
+   ```bash
+   export TNFR_ALLOW_UNSIGNED_PICKLE=1
+   ```
+
+2. **For production deployments** (recommended):
+   ```python
+   # Before
+   layer = ShelveCacheLayer("cache.db")
+   
+   # After (secure)
+   from tnfr.utils import create_secure_shelve_layer
+   layer = create_secure_shelve_layer("cache.db")
+   ```
+
+3. **Set environment variable** in production:
+   ```bash
+   export TNFR_CACHE_SECRET="$(openssl rand -hex 32)"
+   ```
 
 ### Dependency Management
 
