@@ -7,13 +7,9 @@ import pytest
 import tnfr.dynamics.selectors as selectors
 from tnfr.constants import inject_defaults
 from tnfr.config.operator_names import (
-    CONTRACTION,
-    DISSONANCE,
     MUTATION,
     RECEPTION,
-    SILENCE,
     TRANSITION,
-    COHERENCE,
 )
 from tnfr.dynamics import _choose_glyph
 from tnfr.operators import apply_glyph
@@ -25,7 +21,6 @@ from tnfr.validation import (
     glyph_function_name,
     MutationPreconditionError,
     TholClosureError,
-    RepeatWindowError,
     GrammarConfigurationError,
 )
 from tnfr.validation import record_grammar_violation as _record_violation

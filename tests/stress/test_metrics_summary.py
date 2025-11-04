@@ -10,7 +10,7 @@ import networkx as nx
 import pytest
 
 try:  # pragma: no cover - optional plugin detection
-    import pytest_timeout  # noqa: F401
+    pytest.mark.timeout  # Check if timeout marker exists
 except ImportError:  # pragma: no cover - fallback when plugin missing
     def timeout_mark(_: float):
         def decorator(func):

@@ -171,7 +171,6 @@ def compute_wij_phase_epi_vf_si(
         inputs.cos_vals = cos_vals
         inputs.sin_vals = sin_vals
 
-    th_vals = inputs.th_vals
     epi_vals = inputs.epi_vals
     vf_vals = inputs.vf_vals
     si_vals = inputs.si_vals
@@ -1055,14 +1054,8 @@ def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
             "History payloads using 'glyph_load_estab' are no longer supported. "
             "Rename the series to 'glyph_load_stabilizers' before loading the graph."
         )
-    stabilizer_series = metrics.get(GLYPH_LOAD_STABILIZERS_KEY)
-
-    if stabilizer_series is None:
-        stabilizer_series = cast(
-            list[Any], metrics.setdefault(GLYPH_LOAD_STABILIZERS_KEY, [])
-        )
-    else:
-        stabilizer_series = cast(list[Any], stabilizer_series)
+    if metrics.get(GLYPH_LOAD_STABILIZERS_KEY) is None:
+        metrics.setdefault(GLYPH_LOAD_STABILIZERS_KEY, [])
 
     gl: GlyphLoadDistribution = glyph_load(G, window=DEFAULT_GLYPH_LOAD_SPAN)
     stabilizers = float(gl.get("_stabilizers", 0.0))

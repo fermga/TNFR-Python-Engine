@@ -13,7 +13,6 @@ Following TNFR structural fidelity and DRY principles.
 from __future__ import annotations
 
 import math
-from typing import Any
 
 import networkx as nx
 import pytest
@@ -24,7 +23,6 @@ from tnfr.constants import (
     DNFR_PRIMARY,
     EPI_PRIMARY,
     VF_PRIMARY,
-    THETA_KEY,
     inject_defaults,
 )
 from tnfr.dynamics import dnfr_epi_vf_mixed
@@ -34,7 +32,6 @@ from tnfr.tokens import Glyph, OpTag
 from tests.helpers.validation import (
     assert_dnfr_balanced,
     assert_epi_vf_in_bounds,
-    get_dnfr_values,
 )
 from tests.helpers.fixtures import seed_graph_factory
 

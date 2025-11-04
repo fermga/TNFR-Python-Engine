@@ -1,5 +1,3 @@
-import pytest
-
 from tnfr import _is_internal_import_error
 
 

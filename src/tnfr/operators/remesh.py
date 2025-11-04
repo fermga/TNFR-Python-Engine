@@ -13,7 +13,7 @@ from itertools import combinations
 from operator import ge, le
 from statistics import StatisticsError, fmean
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 
 from .._compat import TypeAlias
 from ..alias import get_attr, set_attr
@@ -22,9 +22,6 @@ from ..constants.aliases import ALIAS_EPI
 from ..rng import make_rng
 from ..types import RemeshMeta
 from ..utils import cached_import, edge_version_update, kahan_sum_nd
-
-if TYPE_CHECKING:  # pragma: no cover - type checking only
-    from ..utils import CallbackEvent, CallbackManager
 
 CommunityGraph: TypeAlias = Any
 NetworkxModule: TypeAlias = ModuleType

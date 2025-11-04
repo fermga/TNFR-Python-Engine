@@ -10,7 +10,7 @@ from __future__ import annotations
 import warnings
 from collections.abc import Iterable, Mapping
 from types import MappingProxyType
-from typing import Any, Callable, NamedTuple, Protocol, cast
+from typing import Any, NamedTuple, Protocol, cast
 
 from .constants import TRACE
 from .glyph_history import append_metric, count_glyphs, ensure_history

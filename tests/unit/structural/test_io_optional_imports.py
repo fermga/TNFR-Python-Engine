@@ -1,5 +1,3 @@
-import importlib
-import sys
 import types
 
 import pytest

@@ -9,7 +9,7 @@ This module provides focused coverage for critical paths in sequence execution:
 import pytest
 import networkx as nx
 
-from tnfr.constants import inject_defaults, DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
+from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 from tnfr.execution import play, seq, wait, target, block, compile_sequence
 from tnfr.tokens import Glyph, OpTag
 from tests.helpers.fixtures import operator_sequence_factory

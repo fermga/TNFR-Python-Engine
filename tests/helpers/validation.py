@@ -8,7 +8,6 @@ DRY principles while maintaining TNFR structural invariants.
 from __future__ import annotations
 
 import math
-from typing import Any
 
 import networkx as nx
 

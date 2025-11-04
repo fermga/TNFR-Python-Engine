@@ -26,7 +26,6 @@ from ..utils import resolve_chunk_size
 from ..types import (
     GlyphCounts,
     GlyphMetricsHistory,
-    GlyphMetricsHistoryValue,
     GlyphTimingByNode,
     GlyphTimingTotals,
     GlyphogramRow,

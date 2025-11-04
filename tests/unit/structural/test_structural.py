@@ -21,7 +21,6 @@ from tnfr.constants import (
     EPI_PRIMARY,
     THETA_PRIMARY,
     VF_PRIMARY,
-    inject_defaults,
 )
 from tnfr.mathematics import BasicStateProjector
 from tnfr.validation import NFRValidator, SequenceValidationResult

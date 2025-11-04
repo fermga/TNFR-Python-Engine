@@ -10,7 +10,7 @@ from ..alias import collect_attr, set_vf
 from ..constants import get_graph_param
 from ..utils import clamp, resolve_chunk_size
 from ..metrics.common import ensure_neighbors_map
-from ..types import CoherenceMetric, DeltaNFR, NodeId, TNFRGraph
+from ..types import CoherenceMetric, DeltaNFR, TNFRGraph
 from ..utils import get_numpy
 from .aliases import ALIAS_DNFR, ALIAS_SI, ALIAS_VF
 
