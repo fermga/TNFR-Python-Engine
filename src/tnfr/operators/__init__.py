@@ -149,7 +149,25 @@ def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
     >>> get_factor({}, "IL_dnfr_factor", 0.7)
     0.7
     """
-    return float(gf.get(key, default))
+    from ..validation.input_validation import ValidationError, validate_glyph_factors
+    
+    # Validate glyph factors structure
+    try:
+        validate_glyph_factors(gf)
+    except ValidationError as e:
+        # Log but don't block - validation failures should be caught earlier
+        from ..utils import get_logger
+        logger = get_logger(__name__)
+        logger.warning("Glyph factors validation failed: %s", e)
+    
+    value = gf.get(key, default)
+    # Ensure the value is numeric and finite
+    if not isinstance(value, (int, float)):
+        return default
+    value = float(value)
+    if not math.isfinite(value):
+        return default
+    return value
 
 # -------------------------
 # Glyphs (local operators)
@@ -854,10 +872,31 @@ def apply_glyph_obj(
     """Apply ``glyph`` to an object satisfying :class:`NodeProtocol`."""
 
     from .grammar import function_name_to_glyph
+    from ..validation.input_validation import ValidationError, validate_glyph
 
-    # Convert Glyph enum instances to string values early for consistent processing
-    if isinstance(glyph, Glyph):
-        glyph = glyph.value
+    # Validate glyph parameter
+    try:
+        if not isinstance(glyph, Glyph):
+            validated_glyph = validate_glyph(glyph)
+            glyph = validated_glyph.value if isinstance(validated_glyph, Glyph) else str(glyph)
+        else:
+            glyph = glyph.value
+    except ValidationError as e:
+        step_idx = glyph_history.current_step_idx(node)
+        hist = glyph_history.ensure_history(node)
+        glyph_history.append_metric(
+            hist,
+            "events",
+            (
+                "warn",
+                {
+                    "step": step_idx,
+                    "node": getattr(node, "n", None),
+                    "msg": f"invalid glyph: {e}",
+                },
+            ),
+        )
+        raise ValueError(f"invalid glyph: {e}") from e
 
     # Try direct glyph code first
     try:
@@ -896,6 +935,15 @@ def apply_glyph(
     G: TNFRGraph, n: NodeId, glyph: Glyph | str, *, window: int | None = None
 ) -> None:
     """Adapter to operate on ``networkx`` graphs."""
+    from ..validation.input_validation import ValidationError, validate_node_id, validate_tnfr_graph
+    
+    # Validate graph and node parameters
+    try:
+        validate_tnfr_graph(G)
+        validate_node_id(n)
+    except ValidationError as e:
+        raise ValueError(f"Invalid parameters for apply_glyph: {e}") from e
+    
     NodeNX = get_nodenx()
     if NodeNX is None:
         raise ImportError("NodeNX is unavailable")
