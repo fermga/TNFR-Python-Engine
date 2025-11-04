@@ -224,6 +224,21 @@ def _call_integrator_factory(factory: Any, G: TNFRGraph) -> Any:
     if positional:
         return factory(G)
 
+    # Check for any required positional arguments, and raise error if present
+    remaining_required_positional = [
+        p
+        for p in params
+        if p.default is inspect._empty
+        and p.kind
+        in (
+            inspect.Parameter.POSITIONAL_ONLY,
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        )
+    ]
+    if remaining_required_positional:
+        raise TypeError(
+            f"Integrator factory requires positional arguments: {', '.join(p.name for p in remaining_required_positional)}"
+        )
     return factory()
 
 
