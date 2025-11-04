@@ -28,7 +28,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from functools import lru_cache
 from time import perf_counter
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+from typing import Any, Generic, TypeVar, cast
 
 import networkx as nx
 from cachetools import LRUCache

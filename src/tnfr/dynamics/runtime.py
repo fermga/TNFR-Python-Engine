@@ -19,7 +19,7 @@ from ..operators import apply_remesh_if_globally_stable
 from ..telemetry import publish_graph_cache_metrics
 from ..types import HistoryState, NodeId, TNFRGraph
 from ..utils import normalize_optional_int
-from ..validation import apply_canonical_clamps, validate_canon
+from ..validation import apply_canonical_clamps
 from . import adaptation, coordination, integrators, selectors
 from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
 
