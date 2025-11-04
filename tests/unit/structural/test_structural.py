@@ -118,7 +118,7 @@ def test_invalid_sequence() -> None:
     names = [op.name for op in ops]
     outcome = validate_sequence(names)
     assert not outcome.passed
-    assert "missing" in outcome.summary["message"]
+    assert "must start with emission, recursivity" in outcome.summary["message"]
     G, n = create_nfr("y")
     with pytest.raises(ValueError):
         run_sequence(G, n, ops)

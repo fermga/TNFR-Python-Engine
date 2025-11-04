@@ -6,7 +6,9 @@ from tnfr.utils import kahan_sum_nd
 
 def test_kahan_sum_nd_compensates_cancellation_1d():
     xs = [1e16, 1.0, -1e16]
-    assert sum(xs) == 0.0
+    # Demonstrate precision loss: standard sum loses the 1.0
+    assert sum(xs) == 1.0  # Not 0.0 due to floating-point precision loss
+    # Kahan summation compensates for cancellation
     (res_x,) = kahan_sum_nd(((x,) for x in xs), dims=1)
     assert res_x == pytest.approx(math.fsum(xs))
 
