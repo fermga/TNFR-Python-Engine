@@ -1,4 +1,10 @@
-"""Network operators."""
+"""Network operators.
+
+Operator helpers interact with TNFR graphs adhering to
+:class:`tnfr.types.GraphLike`, relying on ``nodes``/``neighbors`` views,
+``number_of_nodes`` and the graph-level ``.graph`` metadata when applying
+structural transformations.
+"""
 
 from __future__ import annotations
 
