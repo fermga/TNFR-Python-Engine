@@ -139,6 +139,8 @@ def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
     Ranges for ``Si`` are added via ``INIT_SI_MIN`` and ``INIT_SI_MAX``, and
     for ``EPI`` via ``INIT_EPI_VALUE``. If ``INIT_VF_MIN`` is greater than
     ``INIT_VF_MAX``, values are swapped and clamped to ``VF_MIN``/``VF_MAX``.
+    When clamping results in an invalid range (min > max), both bounds
+    collapse to ``VF_MIN``, ensuring ``VF_MIN``/``VF_MAX`` are hard limits.
     """
     params = InitParams.from_graph(G)
 
@@ -154,6 +156,10 @@ def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
         vf_uniform_min, vf_uniform_max = vf_uniform_max, vf_uniform_min
     params.vf_uniform_min = max(vf_uniform_min, vf_min_lim)
     params.vf_uniform_max = min(vf_uniform_max, vf_max_lim)
+    # After clamping to VF_MIN/VF_MAX, ensure min <= max
+    if params.vf_uniform_min > params.vf_uniform_max:
+        # Collapse to VF_MIN when the requested range is entirely below the limit
+        params.vf_uniform_min = params.vf_uniform_max = vf_min_lim
 
     rng = make_rng(params.seed, -1, G)
     for _, nd in G.nodes(data=True):
