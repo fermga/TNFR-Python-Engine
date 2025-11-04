@@ -132,6 +132,7 @@ def _check_oz_to_zhir(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | st
     """
 
     from ..glyph_history import recent_glyph
+    
     nd = ctx.G.nodes[n]
     cand_glyph = coerce_glyph(cand)
     glyph_to_name, name_to_glyph = _functional_translators()

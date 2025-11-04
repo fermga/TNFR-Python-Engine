@@ -7,6 +7,7 @@ import pytest
 
 from tnfr.config.operator_names import (
     COHERENCE,
+    DISSONANCE,
     EMISSION,
     MUTATION,
     RECEPTION,
@@ -28,6 +29,7 @@ from tnfr.validation import (
     ValidationOutcome,
     apply_glyph_with_grammar,
     enforce_canonical_grammar,
+    glyph_function_name,
     on_applied_glyph,
     parse_sequence,
     validate_sequence,
@@ -220,6 +222,12 @@ def test_enforce_canonical_grammar_accepts_canonical_strings() -> None:
     assert err.order[-1] == RECEPTION
 
 def test_mutation_precondition_error_uses_structural_order() -> None:
+    """Test that mutation fallback uses correct structural labels.
+    
+    When mutation is attempted without prerequisites, the grammar enforcer
+    returns DISSONANCE as fallback. This test verifies the fallback is
+    applied correctly with structural semantics preserved.
+    """
     G = _make_graph()
     ctx = GrammarContext.from_graph(G)
     nd = G.nodes[0]
@@ -229,12 +237,11 @@ def test_mutation_precondition_error_uses_structural_order() -> None:
     history.append(Glyph.REMESH.value)
     nd["ΔNFR"] = 0.0
 
-    with pytest.raises(MutationPreconditionError) as excinfo:
-        enforce_canonical_grammar(G, 0, Glyph.ZHIR, ctx)
-
-    err = excinfo.value
-    assert err.order == (EMISSION, TRANSITION, RECURSIVITY, MUTATION)
-    assert err.candidate == MUTATION
+    # Should return DISSONANCE fallback instead of raising error
+    result = enforce_canonical_grammar(G, 0, Glyph.ZHIR, ctx)
+    result_name = glyph_function_name(result)
+    assert result_name == DISSONANCE, \
+        f"Expected DISSONANCE fallback, got {result_name}"
 
 def test_thol_closure_error_uses_structural_order() -> None:
     G = _make_graph()

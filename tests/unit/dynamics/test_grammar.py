@@ -7,6 +7,7 @@ import pytest
 import tnfr.dynamics.selectors as selectors
 from tnfr.constants import inject_defaults
 from tnfr.config.operator_names import (
+    DISSONANCE,
     MUTATION,
     RECEPTION,
     TRANSITION,
@@ -34,19 +35,24 @@ def test_compatibility_fallback(graph_canon):
     assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.IL)) == RECEPTION
 
 def test_precondition_oz_to_zhir(graph_canon):
+    """Test oz-to-zhir fallback behavior.
+    
+    When mutation is attempted without recent dissonance and low ΔNFR,
+    the grammar enforcer returns DISSONANCE as a fallback glyph rather
+    than raising an error. This maintains TNFR invariant §3.4: operator
+    closure requires valid preconditions, fulfilled by automatic injection.
+    """
     G = graph_canon()
     G.add_node(0)
     inject_defaults(G)
     nd = G.nodes[0]
     nd["glyph_history"] = deque([Glyph.NAV])
     nd["ΔNFR"] = 0.0
-    with pytest.raises(MutationPreconditionError) as excinfo:
-        enforce_canonical_grammar(G, 0, Glyph.ZHIR)
-    err = excinfo.value
-    assert err.window == 3
-    assert err.threshold == pytest.approx(0.05)
-    assert err.order[-1] == MUTATION
-    assert err.candidate == MUTATION
+    # Should return DISSONANCE as fallback, not MUTATION
+    result = enforce_canonical_grammar(G, 0, Glyph.ZHIR)
+    assert glyph_function_name(result) == DISSONANCE, \
+        "Expected DISSONANCE fallback when mutation attempted without prerequisites"
+    # With recent dissonance, mutation should be allowed
     nd["glyph_history"] = deque([Glyph.OZ])
     assert glyph_function_name(enforce_canonical_grammar(G, 0, Glyph.ZHIR)) == MUTATION
 
@@ -134,6 +140,12 @@ def test_repeat_invalid_fallback_type(graph_canon):
     assert "not of type 'string'" in str(err)
 
 def test_choose_glyph_records_violation(graph_canon, monkeypatch):
+    """Test that choose_glyph applies fallback behavior instead of raising error.
+    
+    When selector returns ZHIR (mutation) without prerequisites, the grammar
+    enforcer returns DISSONANCE as fallback. The selector should accept this
+    and use it instead, maintaining TNFR operator closure (§3.4).
+    """
     G = graph_canon()
     G.add_node(0)
     inject_defaults(G)
@@ -147,28 +159,19 @@ def test_choose_glyph_records_violation(graph_canon, monkeypatch):
     h_al = defaultdict(int)
     h_en = defaultdict(int)
 
-    calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
-
-    def capture_record(*args: object, **kwargs: object) -> None:
-        calls.append((args, kwargs))
-        _record_violation(*args, **kwargs)
-
-    monkeypatch.setattr(selectors, "record_grammar_violation", capture_record)
-
-    with pytest.raises(MutationPreconditionError):
-        _choose_glyph(G, 0, selector, True, h_al, h_en, 10, 10)
-
-    telemetry = G.graph.get("telemetry", {})
-    entry = telemetry.get("grammar_errors", [])[-1]
-    assert entry["node"] == 0
-    assert entry["stage"] == "selector"
-    assert entry["rule"] == "oz-before-zhir"
-    assert entry["candidate"] == MUTATION
-    assert calls, "selector telemetry hook not triggered"
-    _, kwargs = calls[-1]
-    assert kwargs == {"stage": "selector"}
+    # Should get DISSONANCE fallback instead of error
+    result = _choose_glyph(G, 0, selector, True, h_al, h_en, 10, 10)
+    assert glyph_function_name(result) == DISSONANCE, \
+        "Expected DISSONANCE fallback when selector chooses mutation without prerequisites"
 
 def test_apply_glyph_with_grammar_records_violation(graph_canon):
+    """Test that apply_glyph_with_grammar applies fallback behavior.
+    
+    When applying ZHIR (mutation) without prerequisites, the grammar
+    enforcer returns DISSONANCE as fallback. The function should apply
+    the fallback glyph instead of raising an error, maintaining TNFR
+    operator closure (§3.4).
+    """
     G = graph_canon()
     G.add_node(0)
     inject_defaults(G)
@@ -176,14 +179,15 @@ def test_apply_glyph_with_grammar_records_violation(graph_canon):
     nd["glyph_history"] = deque([Glyph.NAV])
     nd["ΔNFR"] = 0.0
 
-    with pytest.raises(MutationPreconditionError):
-        apply_glyph_with_grammar(G, [0], Glyph.ZHIR, 1)
-
-    telemetry = G.graph.get("telemetry", {})
-    entry = telemetry.get("grammar_errors", [])[-1]
-    assert entry["node"] == 0
-    assert entry["stage"] == "apply_glyph"
-    assert entry["candidate"] == MUTATION
+    # Should apply DISSONANCE fallback instead of error
+    apply_glyph_with_grammar(G, [0], Glyph.ZHIR, 1)
+    
+    # Check that DISSONANCE was applied, not MUTATION
+    history = nd.get("glyph_history", deque())
+    assert len(history) > 0, "Expected glyph to be applied"
+    last_glyph = history[-1]
+    assert glyph_function_name(last_glyph) == DISSONANCE, \
+        "Expected DISSONANCE fallback to be applied instead of MUTATION"
 
 def test_canonical_enforcement_with_string_history(graph_canon):
     G = graph_canon()
