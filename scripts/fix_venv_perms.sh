@@ -32,6 +32,8 @@ fi
 # Count files that need permission fixes
 count=0
 for file in "${BIN_DIR}"/*; do
+    # Skip if glob didn't match any files
+    [ ! -e "${file}" ] && break
     if [ -f "${file}" ]; then
         if [ ! -x "${file}" ]; then
             count=$((count + 1))

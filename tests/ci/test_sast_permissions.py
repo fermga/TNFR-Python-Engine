@@ -10,7 +10,6 @@ core TNFR structural code.
 import os
 import stat
 import subprocess
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -163,7 +162,8 @@ class TestVenvPermissionFix:
 
         # Should fail but not crash
         assert result.returncode != 0, "Script should fail for missing venv"
-        assert "ERROR" in result.stdout or "not found" in result.stdout.lower(), "Should report error"
+        output_lower = result.stdout.lower()
+        assert "error" in output_lower or "not found" in output_lower, "Should report error"
 
     def test_script_logs_actions(
         self, temp_venv_structure: Path, fix_script_path: Path
