@@ -42,12 +42,13 @@ __all__ = [
 
 CANONICAL_PRESET_NAME = "canonical_example"
 CANONICAL_PROGRAM_TOKENS: tuple[Token, ...] = (
-    Glyph.SHA,
-    Glyph.AL,
-    Glyph.RA,
-    Glyph.ZHIR,
-    Glyph.NUL,
-    Glyph.THOL,
+    Glyph.SHA,      # silence - initial stabilization
+    Glyph.AL,       # emission - initiate pattern
+    Glyph.RA,       # reception - capture information
+    Glyph.OZ,       # dissonance - required before mutation (grammar rule)
+    Glyph.ZHIR,     # mutation - phase change
+    Glyph.NUL,      # contraction - compress structure
+    Glyph.THOL,     # self_organization - recursive reorganization
 )
 
 def _window(G: TNFRGraph) -> int:
