@@ -523,11 +523,11 @@ class Glyph(str, Enum):
 
 
 GlyphCode: TypeAlias = Glyph | str
-"""Structural symbol identifier accepted by selector pipelines and grammars."""
+"""Structural operator symbol (glyph) identifier accepted by selector pipelines and grammars."""
 
 
 GlyphLoadDistribution: TypeAlias = dict[Glyph | str, float]
-"""Normalised load proportions keyed by structural symbol or aggregate labels."""
+"""Normalised load proportions keyed by structural operator symbol (glyph) or aggregate labels."""
 
 
 class _SelectorLifecycle(Protocol):
@@ -543,13 +543,13 @@ class _SelectorLifecycle(Protocol):
 GlyphSelector: TypeAlias = (
     Callable[[TNFRGraph, NodeId], GlyphCode] | _SelectorLifecycle
 )
-"""Selector callable or object returning the structural symbol to apply for a node."""
+"""Selector callable or object returning the structural operator symbol (glyph) to apply for a node."""
 
 SelectorPreselectionMetrics: TypeAlias = Mapping[Any, SelectorMetrics]
-#: Mapping of nodes to their normalised selector metrics.
+"""Mapping of nodes to their normalised selector metrics."""
 
 SelectorPreselectionChoices: TypeAlias = Mapping[Any, Glyph | str]
-"""Mapping of nodes to their preferred structural operator symbol prior to grammar filters."""
+"""Mapping of nodes to their preferred structural operator symbol (glyph) prior to grammar filters."""
 
 SelectorPreselectionPayload: TypeAlias = tuple[
     SelectorPreselectionMetrics,
