@@ -1,0 +1,144 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  format:
+    name: Format check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pre-commit
+
+      - name: Run formatting hooks (black, isort)
+        run: SKIP=pydocstyle pre-commit run --all-files
+
+      - name: Run docstring check (pydocstyle)
+        run: pre-commit run --all-files pydocstyle
+
+  type-check:
+    name: Type check and static analysis
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[test,typecheck]
+
+      # Language policy check runs once here instead of in each test matrix job
+      # This is more efficient than the previous setup which ran it 4+ times
+      - name: Enforce English-only language policy
+        run: python scripts/check_language.py
+
+      - name: Run flake8
+        run: python -m flake8 src
+
+      - name: Run pydocstyle
+        run: python -m pydocstyle src/tnfr
+
+      - name: Run mypy
+        run: python -m mypy src/tnfr
+
+      - name: Check stub files exist
+        run: python scripts/generate_stubs.py --check
+
+      - name: Check stub file synchronization
+        run: python scripts/generate_stubs.py --check-sync
+
+      - name: Run vulture
+        run: python -m vulture --min-confidence 80 src tests
+        continue-on-error: true
+
+  changelog:
+    name: Changelog fragments
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+
+      - name: Enforce changelog fragments
+        run: python3 scripts/check_changelog.py --base origin/${{ github.event.pull_request.base.ref }}
+
+  tests:
+    name: Python ${{ matrix.python-version }} tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    env:
+      PYTHONPATH: ${{ github.workspace }}/src
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[test,numpy,yaml,orjson]
+
+      - name: Run docstring lint
+        if: matrix.python-version == '3.11'
+        run: python -m pydocstyle src/tnfr
+
+      - name: Run unit tests
+        if: matrix.python-version != '3.11'
+        run: python -m pytest
+
+      - name: Run unit tests with coverage
+        if: matrix.python-version == '3.11'
+        run: |
+          python -m coverage run --source=src -m pytest
+          python -m coverage report -m

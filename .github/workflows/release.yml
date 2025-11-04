@@ -6,6 +6,13 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
 jobs:
   prepare:
     name: Plan semantic release

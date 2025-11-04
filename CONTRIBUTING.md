@@ -200,7 +200,7 @@ review.
 
 Run `python -m mypy src/tnfr` (or the consolidated `./scripts/run_tests.sh`
 helper described below) from the project root before filing a pull request.
-The **Type Check** GitHub Action (`.github/workflows/type-check.yml`) validates
+The **CI** GitHub Action (`.github/workflows/ci.yml`) validates
 the same invocation on every PR and will block the merge if local changes skip
 the type-checking gate, so matching its behaviour locally keeps CI green on the
 first try.
@@ -267,9 +267,8 @@ contributors can find them quickly while browsing the project overview.
 ### English-only lint
 
 The `scripts/check_language.py` helper powers the Spanish language guard that
-CI now runs alongside Flake8 and the other quality gates. Both the "Test Suite"
-(`.github/workflows/test-suite.yml`) and "Type Check"
-(`.github/workflows/type-check.yml`) workflows invoke the script immediately
+CI now runs alongside Flake8 and the other quality gates. The consolidated **CI**
+workflow (`.github/workflows/ci.yml`) invokes the script in the type-check job
 after installing dependencies, so any violation will fail continuous
 integration before the remaining linters or tests execute. The guard scans the
 tracked files for a configurable set of disallowed Spanish keywords and accented
