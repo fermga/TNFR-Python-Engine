@@ -94,11 +94,11 @@ def inject_defaults(
     values (numbers, strings, tuples, etc.) are assigned directly. Tuples are
     inspected recursively; if any element is mutable, a ``deepcopy`` is made
     to avoid shared state.
-    
+
     Configuration dictionaries are deep-copied to ensure each graph has its
     own mutable configuration instance, enabling safe runtime modifications
     via :func:`get_param` without affecting other graphs or defaults.
-    
+
     Parameters
     ----------
     G : GraphLike
@@ -125,19 +125,19 @@ def merge_overrides(G: GraphLike, **overrides: TNFRConfigValue) -> None:
     Non-immutable values are deep-copied to avoid shared state with
     :data:`DEFAULTS`. This enables safe mutation of configuration
     dictionaries retrieved via :func:`get_param`.
-    
+
     Parameters
     ----------
     G : GraphLike
         The graph whose configuration should be updated.
     **overrides : TNFRConfigValue
         Keyword arguments mapping parameter names to new values.
-    
+
     Raises
     ------
     KeyError
         If any parameter name is not present in :data:`DEFAULTS`.
-    
+
     Examples
     --------
     >>> merge_overrides(G, DT=0.5, INTEGRATOR_METHOD="rk4")
@@ -153,33 +153,33 @@ def merge_overrides(G: GraphLike, **overrides: TNFRConfigValue) -> None:
 
 def get_param(G: GraphLike, key: str) -> TNFRConfigValue:
     """Retrieve a parameter from ``G.graph`` or fall back to defaults.
-    
+
     Returns a :data:`TNFRConfigValue` which supports the full
     :class:`~collections.abc.MutableMapping` protocol when the value is a
     dictionary. This enables dict-like operations:
-    
+
     - ``.get(key, default)`` - retrieve values with fallback
     - ``[key] = value`` - set configuration values
     - ``.update(other)`` - merge configuration updates
-    
+
     Parameters
     ----------
     G : GraphLike
         The graph containing configuration in its ``.graph`` attribute.
     key : str
         The parameter name to retrieve.
-    
+
     Returns
     -------
     TNFRConfigValue
         The configuration value, supporting MutableMapping operations
         when it is a dictionary.
-    
+
     Raises
     ------
     KeyError
         If ``key`` is not found in either ``G.graph`` or :data:`DEFAULTS`.
-    
+
     Examples
     --------
     >>> diagnosis_cfg = get_param(G, "DIAGNOSIS")
