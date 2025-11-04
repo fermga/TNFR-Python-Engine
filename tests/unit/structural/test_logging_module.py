@@ -3,7 +3,13 @@ import logging
 import sys
 
 
-def reload_logging_utils():
+def reimport_logging_utils():
+    """Re-import logging_utils to ensure fresh module state.
+    
+    This function deletes the module from sys.modules and re-imports it,
+    which is necessary for test isolation when test_version_resolution
+    clears all tnfr modules from sys.modules.
+    """
     global logging_utils
     # Re-import module instead of reload to handle test isolation
     if 'tnfr.utils.init' in sys.modules:
@@ -20,7 +26,7 @@ def test_get_logger_configures_root_once():
     root = logging.getLogger()
     root.handlers.clear()
     root.setLevel(logging.NOTSET)
-    reload_logging_utils()
+    reimport_logging_utils()
     logging_utils.get_logger("test")
     assert len(root.handlers) == 1
     assert root.level == logging.INFO

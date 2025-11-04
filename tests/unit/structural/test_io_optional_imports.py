@@ -23,7 +23,8 @@ def fresh_io():
 
 
 def test_io_optional_imports_are_lazy_proxies(fresh_io):
-    # Import LazyImportProxy after module reload to avoid stale class reference
+    # Import LazyImportProxy after fixture runs to avoid stale class reference
+    # (test_version_resolution may have cleared modules from sys.modules)
     from tnfr.utils import LazyImportProxy
     assert isinstance(fresh_io.tomllib, LazyImportProxy)
     assert isinstance(fresh_io._TOML_LOADS, LazyImportProxy)
