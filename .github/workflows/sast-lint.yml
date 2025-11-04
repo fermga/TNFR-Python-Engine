@@ -42,7 +42,7 @@ jobs:
         run: |
           source ${{ env.VENV_PATH }}/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install --disable-pip-version-check "bandit>=1.7.0" semgrep PyYAML
+          python -m pip install --disable-pip-version-check "bandit>=1.7.0" "semgrep>=1.38.0" PyYAML
 
       - name: Upload tooling environment
         uses: actions/upload-artifact@v5
@@ -177,14 +177,16 @@ jobs:
 
       - name: Run Semgrep
         run: |
+          # Activate venv and ensure its bin directory is first on PATH
           source ${{ env.VENV_PATH }}/bin/activate
-          echo "=== Debug: Verifying semgrep installation ==="
-          python -m semgrep --version || echo "semgrep module check failed"
-          
-          echo "=== Running Semgrep via python -m semgrep ==="
-          # Use python -m to avoid os.execvp permission issues with helper binaries
-          python -m semgrep --config auto src --sarif --output semgrep.sarif --no-error ${{ steps.semgrep-config.outputs.exclude_args }}
-          
+          export PATH="${{ env.VENV_PATH }}/bin:${PATH}"
+
+          echo "=== Debug: Verifying semgrep CLI installation ==="
+          semgrep --version || { echo "semgrep CLI not found or failed to run"; exit 2; }
+
+          echo "=== Running Semgrep via CLI ==="
+          semgrep --config auto src --sarif --output semgrep.sarif --no-error ${{ steps.semgrep-config.outputs.exclude_args }}
+
           echo "=== Debug: Semgrep output file created ==="
           ls -lh semgrep.sarif || true
 
