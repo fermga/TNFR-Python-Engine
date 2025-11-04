@@ -142,6 +142,39 @@ class BEPIElement(_EPIValidators):
     def __abs__(self) -> float:
         return self._max_magnitude()
 
+    def __getstate__(self) -> dict[str, tuple[complex, ...] | tuple[float, ...]]:
+        """Serialize BEPIElement to a JSON-compatible dict with real/imag pairs.
+
+        This method enables pickle, JSON, and YAML serialization while preserving
+        TNFR invariant #1 (EPI as coherent form) and #7 (operational fractality).
+        """
+        # Convert numpy arrays to lists for serialization
+        continuous = self.f_continuous.tolist()
+        discrete = self.a_discrete.tolist()
+        grid = self.x_grid.tolist()
+
+        return {
+            "continuous": tuple(continuous),
+            "discrete": tuple(discrete),
+            "grid": tuple(grid),
+        }
+
+    def __setstate__(self, state: dict[str, tuple[complex, ...] | tuple[float, ...]]) -> None:
+        """Deserialize BEPIElement from a dict representation.
+
+        Restores the structural integrity by validating and converting back to numpy arrays.
+        """
+        f_array, a_array, grid = self.validate_domain(
+            state["continuous"],
+            state["discrete"],
+            state["grid"]
+        )
+        if grid is None:
+            raise ValueError("x_grid is mandatory for BEPIElement instances.")
+        object.__setattr__(self, "f_continuous", f_array)
+        object.__setattr__(self, "a_discrete", a_array)
+        object.__setattr__(self, "x_grid", grid)
+
     def __add__(self, other: BEPIElement | float | int) -> BEPIElement:
         """Add a scalar or another BEPIElement to this element."""
         if isinstance(other, (int, float)):
@@ -220,7 +253,7 @@ class BEPIElement(_EPIValidators):
 
     def __eq__(self, other: object) -> bool:
         """Check equality with another BEPIElement or numeric value.
-        
+
         When comparing to a numeric value, compares with the maximum magnitude.
         """
         if isinstance(other, BEPIElement):
@@ -344,4 +377,3 @@ def evaluate_coherence_transform(
         deficit=deficit,
         ratio=ratio,
     )
-

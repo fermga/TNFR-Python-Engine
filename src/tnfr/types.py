@@ -50,6 +50,8 @@ __all__ = (
     "BEPIProtocol",
     "ensure_bepi",
     "serialize_bepi",
+    "serialize_bepi_json",
+    "deserialize_bepi_json",
     "ZERO_BEPI_STORAGE",
     "DeltaNFR",
     "SecondDerivativeEPI",
@@ -230,6 +232,88 @@ def serialize_bepi(value: Any) -> dict[str, tuple[complex, ...] | tuple[float, .
     discrete = tuple(complex(v) for v in element.a_discrete.tolist())
     grid = tuple(float(v) for v in element.x_grid.tolist())
     return {"continuous": continuous, "discrete": discrete, "grid": grid}
+
+
+def serialize_bepi_json(value: Any) -> dict[str, list[dict[str, float]] | list[float]]:
+    """Serialize a BEPI element into JSON-compatible format.
+
+    Complex numbers are represented as dicts with 'real' and 'imag' keys.
+    This enables full JSON/YAML serialization while preserving structural coherence.
+
+    Parameters
+    ----------
+    value : Any
+        A BEPIElement instance or value convertible to one.
+
+    Returns
+    -------
+    dict
+        Dictionary with 'continuous', 'discrete', and 'grid' keys, where
+        complex values are represented as ``{"real": float, "imag": float}``
+        and grid values remain as floats.
+
+    Examples
+    --------
+    >>> from tnfr.mathematics import BEPIElement
+    >>> bepi = BEPIElement((1+2j, 3+0j), (4+5j,), (0.0, 1.0))
+    >>> serialize_bepi_json(bepi)  # doctest: +SKIP
+    {
+        'continuous': [{'real': 1.0, 'imag': 2.0}, {'real': 3.0, 'imag': 0.0}],
+        'discrete': [{'real': 4.0, 'imag': 5.0}],
+        'grid': [0.0, 1.0]
+    }
+    """
+    element = ensure_bepi(value)
+
+    def _complex_to_dict(c: complex) -> dict[str, float]:
+        return {"real": float(c.real), "imag": float(c.imag)}
+
+    continuous = [_complex_to_dict(v) for v in element.f_continuous.tolist()]
+    discrete = [_complex_to_dict(v) for v in element.a_discrete.tolist()]
+    grid = [float(v) for v in element.x_grid.tolist()]
+
+    return {"continuous": continuous, "discrete": discrete, "grid": grid}
+
+
+def deserialize_bepi_json(data: dict[str, list[dict[str, float]] | list[float]]) -> "BEPIElement":
+    """Deserialize a BEPI element from JSON-compatible format.
+
+    Reconstructs complex numbers from dicts with 'real' and 'imag' keys.
+
+    Parameters
+    ----------
+    data : dict
+        Dictionary with 'continuous', 'discrete', and 'grid' keys in JSON format.
+        The 'continuous' and 'discrete' values should be lists of dicts with
+        'real' and 'imag' keys, while 'grid' should be a list of floats.
+
+    Returns
+    -------
+    BEPIElement
+        Reconstructed BEPI element with validated structural integrity.
+
+    Examples
+    --------
+    >>> data = {
+    ...     'continuous': [{'real': 1.0, 'imag': 2.0}, {'real': 3.0, 'imag': 0.0}],
+    ...     'discrete': [{'real': 4.0, 'imag': 5.0}],
+    ...     'grid': [0.0, 1.0]
+    ... }
+    >>> bepi = deserialize_bepi_json(data)  # doctest: +SKIP
+    """
+    from .mathematics import BEPIElement as _BEPIElement
+
+    def _dict_to_complex(d: dict[str, float] | float | complex) -> complex:
+        if isinstance(d, dict):
+            return complex(d["real"], d["imag"])
+        return complex(d)
+
+    continuous = [_dict_to_complex(v) for v in data["continuous"]]
+    discrete = [_dict_to_complex(v) for v in data["discrete"]]
+    grid = data["grid"]
+
+    return _BEPIElement(continuous, discrete, grid)
+
 
 DeltaNFR: TypeAlias = float
 #: Scalar internal reorganisation driver ΔNFR applied to a node.
