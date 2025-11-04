@@ -170,8 +170,9 @@ def test_pickle_failure_falls_back_to_serial(monkeypatch, graph_canon):
         n_jobs=3,
     )
 
-    # Executor may be instantiated but should gracefully fall back to serial
-    assert executor_called or True, "Parallel execution attempted but fell back to serial"
+    # The key test is that ΔNFR values are computed correctly even when
+    # parallel execution fails. The executor may be instantiated but should
+    # gracefully fall back to serial processing without raising exceptions.
 
     observed = {
         node: get_attr(G_serial.nodes[node], ALIAS_DNFR, 0.0)
