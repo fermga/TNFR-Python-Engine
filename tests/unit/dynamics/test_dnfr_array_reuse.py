@@ -12,7 +12,11 @@ import networkx as nx
 import pytest
 
 from tnfr.constants import THETA_PRIMARY, EPI_PRIMARY, VF_PRIMARY
-from tnfr.dynamics.dnfr import default_compute_delta_nfr, _prepare_dnfr_data
+from tnfr.dynamics.dnfr import (
+    default_compute_delta_nfr,
+    _prepare_dnfr_data,
+    _SPARSE_DENSITY_THRESHOLD,
+)
 from tnfr.utils import DnfrCache, _graph_cache_manager
 
 
@@ -237,7 +241,8 @@ def test_centralized_sparse_dense_decision_consistency(prefer_sparse):
     node_count = len(G.nodes())
     if node_count > 1:
         density = edge_count / (node_count * (node_count - 1))
-        if density <= 0.25:
+        # Use imported threshold constant to avoid duplication
+        if density <= _SPARSE_DENSITY_THRESHOLD:
             assert decision1 is True, \
                 f"Sparse graph (density={density:.3f}) should prefer_sparse=True"
         else:
