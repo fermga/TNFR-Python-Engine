@@ -7,7 +7,7 @@ structural validation primitives.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from ..compat.dataclass import dataclass
 from typing import Any, Generic, Mapping, Protocol, TypeVar, runtime_checkable
 
 SubjectT = TypeVar("SubjectT")

@@ -1,11 +1,12 @@
 """Spectral dynamics helpers driven by ΔNFR generators."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Any, NamedTuple, Sequence
 
 import numpy as np
 
+from ..compat.dataclass import dataclass
 from .backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
 from .spaces import HilbertSpace
 

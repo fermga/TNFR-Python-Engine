@@ -6,10 +6,10 @@ focused on pure mathematical utilities (phase means, compensated sums, etc.).
 
 from __future__ import annotations
 
+from ..compat.dataclass import dataclass
 import hashlib
 import math
 import struct
-from dataclasses import dataclass
 from typing import Any, Iterable, Mapping
 
 from ..alias import get_theta_attr

@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, field
 from types import MappingProxyType
 from typing import Any, Mapping
+
+from ..compat.dataclass import dataclass
 
 SELECTOR_THRESHOLD_DEFAULTS: Mapping[str, float] = MappingProxyType(
     {

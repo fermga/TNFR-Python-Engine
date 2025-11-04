@@ -6,7 +6,6 @@ import json
 import os
 from collections.abc import Iterable, MutableMapping
 from copy import deepcopy
-from dataclasses import dataclass
 from importlib import resources
 from json import JSONDecodeError
 from types import MappingProxyType
@@ -15,6 +14,7 @@ from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence
 if TYPE_CHECKING:
     from ..node import NodeProtocol
 
+from ..compat.dataclass import dataclass
 from ..config.operator_names import (
     CONTRACTION,
     COHERENCE,

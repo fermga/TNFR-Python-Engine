@@ -25,13 +25,15 @@ from collections.abc import (
     MutableMapping,
 )
 from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import field
 from functools import lru_cache
 from time import perf_counter
 from typing import Any, Generic, TypeVar, cast
 
 import networkx as nx
 from cachetools import LRUCache
+
+from ..compat.dataclass import dataclass
 
 from ..locking import get_lock
 from ..types import GraphLike, NodeId, TimingContext, TNFRGraph

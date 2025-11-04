@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from ..compat.dataclass import dataclass
 from typing import Any, Mapping, Sequence
 
 import numpy as np

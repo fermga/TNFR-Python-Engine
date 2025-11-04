@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+from ..compat.dataclass import dataclass
 import math
 import sys
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import dataclass
 from operator import itemgetter
 from typing import Any, cast
 from ..alias import collect_attr, get_attr
