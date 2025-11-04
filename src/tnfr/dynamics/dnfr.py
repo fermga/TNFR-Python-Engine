@@ -2623,7 +2623,7 @@ def _apply_dnfr_hook(
 
             pickle.dumps((grad_items, weights, G), protocol=pickle.HIGHEST_PROTOCOL)
         except Exception:
-            effective_jobs = None
+            pass  # Fall back to serial processing
         else:
             chunk_results: list[tuple[NodeId, float]] = []
             with ProcessPoolExecutor(max_workers=effective_jobs) as executor:

@@ -194,12 +194,8 @@ def phase_sync(
 
     if not _ensure_nodes(G):
         return 1.0
-    if R is None or psi is None:
-        R_calc, psi_calc = kuramoto_metrics(G)
-        if R is None:
-            R = R_calc
-        if psi is None:
-            psi = psi_calc
+    if psi is None:
+        _, psi = kuramoto_metrics(G)
 
     def _theta(nd: Mapping[str, object]) -> float:
         value = get_theta_attr(nd, 0.0)
