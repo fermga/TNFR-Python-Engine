@@ -163,7 +163,9 @@ def test_sequence_conflicting_preset_and_sequence_file(tmp_path, capsys):
 
 def test_cli_sequence_handles_deeply_nested_blocks(monkeypatch, tmp_path):
     depth = 1500
-    inner = json.dumps(Glyph.AL.value)
+    # Use WAIT instead of glyphs to avoid grammar validation during deep recursion test
+    # This test is focused on recursion handling, not grammar compliance
+    inner = '{"WAIT": {"steps": 1}}'
     for _ in range(depth):
         inner = '{"THOL": {"body": [' + inner + ']}}'
     payload = f"[{inner}]"
@@ -204,7 +206,8 @@ def test_cli_sequence_handles_deeply_nested_blocks(monkeypatch, tmp_path):
     maxlen = int(get_param(recorded_graph, "PROGRAM_TRACE_MAXLEN"))
     assert len(trace) == maxlen
     assert trace[0]["g"] == Glyph.THOL.value
-    assert trace[-1]["g"] == Glyph.AL.value
+    # Last operation will be WAIT, not a glyph
+    assert trace[-1]["op"] == "WAIT"
 
 def test_cli_sequence_toml(monkeypatch, toml_sequence_path):
     execution_mod = _cli_execution()
