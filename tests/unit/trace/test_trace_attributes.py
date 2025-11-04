@@ -2,11 +2,14 @@
 
 from types import MappingProxyType
 
+import networkx as nx
 import pytest
 
+from tnfr.sense import _empty_sigma
 from tnfr.trace import (
     TraceMetadata,
     TraceSnapshot,
+    _sigma_fallback,
     callbacks_field,
     dnfr_weights_field,
     gamma_field,
@@ -20,6 +23,9 @@ from tnfr.trace import (
     thol_state_field,
 )
 from tnfr.types import SigmaVector
+
+# Required keys for SigmaVector from _SigmaVectorRequired
+SIGMA_VECTOR_REQUIRED_KEYS = ["x", "y", "mag", "angle", "n"]
 
 
 class TestTraceFieldAttributesAndImmutability:
@@ -171,24 +177,16 @@ class TestSigmaVectorCompleteness:
 
     def test_sigma_fallback_includes_all_required_keys(self):
         """_sigma_fallback must return all required SigmaVector keys."""
-        from tnfr.trace import _sigma_fallback
-        import networkx as nx
-        
         result = _sigma_fallback(nx.Graph())
         
-        # Required keys from _SigmaVectorRequired
-        required_keys = ["x", "y", "mag", "angle", "n"]
-        for key in required_keys:
+        for key in SIGMA_VECTOR_REQUIRED_KEYS:
             assert key in result, f"Missing required SigmaVector key: {key}"
             
     def test_sigma_empty_includes_all_required_keys(self):
         """_empty_sigma must return all required SigmaVector keys."""
-        from tnfr.sense import _empty_sigma
-        
         result = _empty_sigma(0.0)
         
-        required_keys = ["x", "y", "mag", "angle", "n"]
-        for key in required_keys:
+        for key in SIGMA_VECTOR_REQUIRED_KEYS:
             assert key in result, f"Missing required SigmaVector key: {key}"
 
 

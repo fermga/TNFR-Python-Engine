@@ -172,8 +172,9 @@ class TestStatsDocumentation:
         
         stats_obj = pstats.Stats(profile)
         
-        # Document what .stats contains
-        for key, value in list(stats_obj.stats.items())[:1]:
+        # Document what .stats contains - get first item efficiently
+        if stats_obj.stats:
+            key, value = next(iter(stats_obj.stats.items()))
             filename, lineno, func = key
             cc, nc, tt, ct, callers = value
             
