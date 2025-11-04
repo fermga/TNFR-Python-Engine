@@ -107,3 +107,57 @@ Runtime functions coordinate clamps, selectors, and job overrides to keep simula
 - Trace helpers attach before/after callbacks through the central manager so that operator applications, glyph selectors, and Kuramoto order parameters remain auditable.【F:src/tnfr/trace.py†L169-L319】
 
 Together these layers ensure every structural change maps back to the TNFR grammar, preserves unit semantics, and leaves behind a telemetry trail suitable for coherence analysis.
+
+## Test isolation and module management
+
+### Module clearing pattern for test independence
+
+Test files use `sys.modules` manipulation to guarantee test isolation and enable
+controlled re-import scenarios. This pattern is **not URL validation** or sanitization —
+it is legitimate module cache management for testing purposes.
+
+#### Using the utility function
+
+The canonical approach is to use the `clear_test_module()` utility from `tests.utils`:
+
+```python
+from tests.utils import clear_test_module
+
+# Clear a module before re-importing
+clear_test_module('tnfr.utils.io')
+import tnfr.utils.io  # Fresh import with clean state
+```
+
+#### Why this pattern exists
+
+1. **Test isolation**: Ensures each test starts with a fresh module state
+2. **Import side effects**: Tests deprecation warnings, lazy imports, and initialization logic
+3. **Cache clearing**: Validates that caching mechanisms work correctly across imports
+4. **Fixture cleanup**: Guarantees fixtures provide truly independent module instances
+
+#### Static analysis considerations
+
+The pattern `'module.name' in sys.modules` may trigger false positives in static analysis
+tools (e.g., CodeQL's `py/incomplete-url-substring-sanitization`). This is because:
+
+- Module paths contain dots (like `tnfr.utils.io`)
+- Security scanners may mistake this for incomplete URL validation
+- The substring check is NOT validating hostnames or URLs
+
+**Resolution**: The repository includes `.codeql/codeql-config.yml` that excludes test files
+from this specific rule, since test code legitimately uses module path checking for isolation,
+not security validation.
+
+#### Direct manipulation (avoid)
+
+While the following pattern works, it should be avoided in favor of the utility function:
+
+```python
+# Discouraged: direct manipulation may trigger security scanners
+if 'module.name' in sys.modules:  # May be flagged as URL sanitization
+    del sys.modules['module.name']
+```
+
+The utility function approach provides better clarity and centralizes the pattern in one
+well-documented location.
+
