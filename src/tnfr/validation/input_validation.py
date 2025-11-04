@@ -56,7 +56,27 @@ class ValidationError(ValueError):
 
 
 def _get_bound(config: Mapping[str, Any] | None, key: str, default: float) -> float:
-    """Retrieve a numeric bound from configuration or defaults."""
+    """Retrieve a numeric bound from configuration or DEFAULTS.
+    
+    Parameters
+    ----------
+    config : Mapping[str, Any] | None
+        Graph configuration mapping (typically from G.graph).
+    key : str
+        Configuration key (e.g., "EPI_MIN", "VF_MAX").
+    default : float
+        Fallback value when key is not in config or DEFAULTS.
+        
+    Returns
+    -------
+    float
+        The configured bound or default value.
+        
+    Notes
+    -----
+    DEFAULTS is a mapping defined in tnfr.constants containing canonical
+    TNFR parameter bounds and configuration values.
+    """
     if config is not None and key in config:
         try:
             return float(config[key])
@@ -225,7 +245,7 @@ def validate_vf_value(
         )
 
     vf_min = _get_bound(config, "VF_MIN", 0.0)
-    vf_max = _get_bound(config, "VF_MAX", 10.0)
+    vf_max = _get_bound(config, "VF_MAX", 1.0)  # Match DEFAULTS["VF_MAX"]
 
     if value < vf_min:
         raise ValidationError(

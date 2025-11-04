@@ -141,6 +141,13 @@ def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
     -------
     float
         The resolved factor converted to ``float``.
+        
+    Notes
+    -----
+    This function performs defensive validation to ensure numeric safety.
+    Invalid values (non-numeric, nan, inf) are silently replaced with the
+    default to prevent operator failures. For strict validation, use
+    ``validate_glyph_factors`` before passing factors to operators.
 
     Examples
     --------
@@ -149,19 +156,9 @@ def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
     >>> get_factor({}, "IL_dnfr_factor", 0.7)
     0.7
     """
-    from ..validation.input_validation import ValidationError, validate_glyph_factors
-    
-    # Validate glyph factors structure
-    try:
-        validate_glyph_factors(gf)
-    except ValidationError as e:
-        # Log but don't block - validation failures should be caught earlier
-        from ..utils import get_logger
-        logger = get_logger(__name__)
-        logger.warning("Glyph factors validation failed: %s", e)
-    
     value = gf.get(key, default)
-    # Ensure the value is numeric and finite
+    # Defensive validation: ensure the value is numeric and finite
+    # Use default for invalid values to prevent operator failures
     if not isinstance(value, (int, float)):
         return default
     value = float(value)
