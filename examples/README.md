@@ -93,6 +93,36 @@ jupyter nbconvert --to notebook --execute 01_unitary_minimal.ipynb
 jupyter nbconvert --to notebook --execute 02_dissipative_minimal.ipynb
 ```
 
+## Optional Dependencies Demo
+
+### optional_dependencies_demo.py
+
+**Demonstrates handling of optional dependencies in TNFR**
+
+Shows how TNFR gracefully handles missing optional dependencies while providing informative error messages and type checking compatibility.
+
+**Key concepts:**
+- Compatibility layer for numpy, matplotlib, and jsonschema
+- Graceful fallback behavior when packages are missing
+- Type checking compatibility using stubs
+- Informative error messages with installation instructions
+
+**Requirements:**
+```bash
+# Minimal (core TNFR only)
+pip install tnfr
+
+# With optional dependencies
+pip install tnfr[numpy,viz]
+```
+
+**Execution:**
+```bash
+python examples/optional_dependencies_demo.py
+```
+
+See [docs/source/getting-started/optional-dependencies.md](../docs/source/getting-started/optional-dependencies.md) for comprehensive documentation on optional dependencies.
+
 ## TNFR Paradigm References
 
 - **νf (Hz_str)**: Structural frequency - rate of reorganization from ΔNFR
