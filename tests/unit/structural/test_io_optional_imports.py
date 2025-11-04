@@ -4,6 +4,7 @@ import types
 
 import pytest
 
+from tests.utils import clear_test_module
 from tnfr.utils import LazyImportProxy, cached_import
 
 
@@ -11,14 +12,12 @@ from tnfr.utils import LazyImportProxy, cached_import
 def fresh_io():
     cached_import.cache_clear()
     # Re-import module instead of reload to handle test isolation
-    if 'tnfr.utils.io' in sys.modules:
-        del sys.modules['tnfr.utils.io']
+    clear_test_module('tnfr.utils.io')
     import tnfr.utils.io as module
     yield module
     cached_import.cache_clear()
     # Cleanup
-    if 'tnfr.utils.io' in sys.modules:
-        del sys.modules['tnfr.utils.io']
+    clear_test_module('tnfr.utils.io')
     import tnfr.utils.io  # Re-import for next test
 
 
