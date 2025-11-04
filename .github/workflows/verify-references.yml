@@ -17,27 +17,32 @@ on:
       - 'scripts/verify_internal_references.py'
       - '.github/workflows/verify-references.yml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   check-references:
+    name: Check internal references
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9'
+      - name: Checkout repository
+        uses: actions/checkout@v5
         
-    - name: Verify internal references
-      run: |
-        python scripts/verify_internal_references.py --ci
-        
-    - name: Report results
-      if: failure()
-      run: |
-        echo "::error::Broken internal references found in documentation"
-        echo "Run 'python scripts/verify_internal_references.py' locally to see details"
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.9'
+          
+      - name: Verify internal references
+        run: |
+          python scripts/verify_internal_references.py --ci
+          
+      - name: Report results
+        if: failure()
+        run: |
+          echo "::error::Broken internal references found in documentation"
+          echo "Run 'python scripts/verify_internal_references.py' locally to see details"
