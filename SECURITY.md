@@ -67,7 +67,7 @@ cp .env.example .env
 **Using Configuration Utilities:**
 
 ```python
-from tnfr.config import (
+from tnfr.secure_config import (
     load_pypi_credentials,
     load_github_credentials,
     load_redis_config,

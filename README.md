@@ -101,7 +101,7 @@ cp .env.example .env
 **Secure Configuration Loading:**
 
 ```python
-from tnfr.config import load_redis_config, get_cache_secret
+from tnfr.secure_config import load_redis_config, get_cache_secret
 
 # Load Redis configuration from environment variables
 redis_config = load_redis_config()

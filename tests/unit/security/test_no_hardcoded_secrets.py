@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from tnfr.config import (
+from tnfr.secure_config import (
     ConfigurationError,
     get_cache_secret,
     get_env_variable,
