@@ -7,7 +7,7 @@ Python 3.9.
 
 import sys
 from dataclasses import dataclass as _dataclass
-from typing import TypeVar, overload
+from typing import Type, TypeVar, overload
 
 _T = TypeVar("_T")
 
@@ -17,7 +17,7 @@ _SLOTS_SUPPORTED = sys.version_info >= (3, 10)
 
 @overload
 def dataclass(
-    cls: type[_T],
+    cls: Type[_T],
     /,
     *,
     init: bool = True,
@@ -29,7 +29,7 @@ def dataclass(
     match_args: bool = True,
     kw_only: bool = False,
     slots: bool = False,
-) -> type[_T]: ...
+) -> Type[_T]: ...
 
 
 @overload
@@ -46,7 +46,7 @@ def dataclass(
     match_args: bool = True,
     kw_only: bool = False,
     slots: bool = False,
-) -> type[_T]: ...
+) -> Type[_T]: ...
 
 
 def dataclass(
@@ -122,8 +122,7 @@ def dataclass(
     if sys.version_info >= (3, 10):
         kwargs["match_args"] = match_args
         kwargs["kw_only"] = kw_only
-        if _SLOTS_SUPPORTED:
-            kwargs["slots"] = slots
+        kwargs["slots"] = slots
     
     # Handle decorator with and without parentheses
     def wrap(c):
