@@ -6,6 +6,7 @@ from tnfr.types import Glyph
 from tnfr.config.operator_names import CONTRACTION, RESONANCE, SILENCE
 from tnfr.validation import GrammarContext, glyph_function_name, rules
 
+
 def _ctx_with_node(
     graph_canon,
     *,
@@ -33,6 +34,7 @@ def _ctx_with_node(
     )
     return ctx, node_id
 
+
 def test_thol_closure_waits_until_min_length(graph_canon):
     ctx, node_id = _ctx_with_node(
         graph_canon,
@@ -51,6 +53,7 @@ def test_thol_closure_waits_until_min_length(graph_canon):
 
     assert glyph_function_name(cand) == RESONANCE
     assert state["thol_len"] == 1
+
 
 def test_thol_closure_triggers_at_max_length_with_high_si(graph_canon):
     ctx, node_id = _ctx_with_node(
@@ -71,6 +74,7 @@ def test_thol_closure_triggers_at_max_length_with_high_si(graph_canon):
     assert glyph_function_name(glyph) == SILENCE
     assert state["thol_len"] == 5
 
+
 def test_thol_closure_low_dnfr_uses_contraction_when_si_below_threshold(graph_canon):
     ctx, node_id = _ctx_with_node(
         graph_canon,
@@ -89,6 +93,7 @@ def test_thol_closure_low_dnfr_uses_contraction_when_si_below_threshold(graph_ca
 
     assert glyph_function_name(glyph) == CONTRACTION
     assert state["thol_len"] == 3
+
 
 def test_thol_closure_low_dnfr_with_high_si_prefers_silence(graph_canon):
     ctx, node_id = _ctx_with_node(

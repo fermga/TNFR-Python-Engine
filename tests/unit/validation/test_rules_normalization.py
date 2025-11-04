@@ -32,6 +32,7 @@ def seeded_context(graph_canon):
     nd["glyph_history"] = deque([Glyph.AL.value])
     return G, node_id, accel_key, dnfr_key, si_key
 
+
 def test_norm_helpers_handle_defaults_and_bounds(seeded_context):
     G, node_id, accel_key, dnfr_key, si_key = seeded_context
     nd = G.nodes[node_id]
@@ -61,12 +62,14 @@ def test_norm_helpers_handle_defaults_and_bounds(seeded_context):
     assert rules.get_norm(ctx_bad, "accel_max") == 1.0
     assert rules.normalized_dnfr(ctx_bad, nd) == 0.0
 
+
 def test_coerce_glyph_and_invalid_values():
     assert rules.coerce_glyph("RA") == Glyph.RA
     assert rules.coerce_glyph(Glyph.IL) == Glyph.IL
     unknown = object()
     assert rules.coerce_glyph("??") == "??"
     assert rules.coerce_glyph(unknown) is unknown
+
 
 def test_glyph_fallback_prefers_custom_and_canon():
     fallbacks = {"OZ": "VAL", "RA": Glyph.IL, "??": "??"}
