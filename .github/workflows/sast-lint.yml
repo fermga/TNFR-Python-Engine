@@ -150,9 +150,6 @@ jobs:
             find ${{ env.VENV_PATH }} -name "*semgrep*" -type f | head -20 || true
           fi
 
-      - name: Install PyYAML
-        run: pip install pyyaml
-
       - name: Resolve Semgrep configuration
         id: semgrep-config
         run: |
@@ -182,9 +179,9 @@ jobs:
         run: |
           source ${{ env.VENV_PATH }}/bin/activate
           echo "=== Debug: Verifying semgrep installation ==="
-          python -m semgrep --version || echo "semgrep.cli module check failed"
+          python -m semgrep --version || echo "semgrep module check failed"
           
-          echo "=== Running Semgrep via python -m semgrep.cli ==="
+          echo "=== Running Semgrep via python -m semgrep ==="
           # Use python -m to avoid os.execvp permission issues with helper binaries
           python -m semgrep --config auto src --sarif --output semgrep.sarif --no-error ${{ steps.semgrep-config.outputs.exclude_args }}
           
