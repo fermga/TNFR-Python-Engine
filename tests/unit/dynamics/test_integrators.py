@@ -339,7 +339,7 @@ class _FakeNumpy:
 def _use_fake_numpy(monkeypatch):
     """Force integrator helpers to rely on deterministic fake numpy arrays."""
 
-    monkeypatch.setattr(integrators_mod, "get_numpy", lambda: _FakeNumpy())
+    monkeypatch.setattr(integrators_mod, "get_numpy", _FakeNumpy)
 
 
 @pytest.mark.parametrize("method", ["euler", "rk4"])
