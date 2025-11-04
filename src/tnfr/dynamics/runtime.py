@@ -224,8 +224,8 @@ def _call_integrator_factory(factory: Any, G: TNFRGraph) -> Any:
             "Integrator factory must accept at most one positional argument",
         )
 
-    # Check for any required positional arguments, and raise error if present
-    remaining_required_positional = [
+    # Check for any remaining required positional or keyword-only arguments
+    remaining_required = [
         p
         for p in params
         if p.default is inspect._empty
@@ -233,11 +233,12 @@ def _call_integrator_factory(factory: Any, G: TNFRGraph) -> Any:
         in (
             inspect.Parameter.POSITIONAL_ONLY,
             inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            inspect.Parameter.KEYWORD_ONLY,
         )
     ]
-    if remaining_required_positional:
+    if remaining_required:
         raise TypeError(
-            f"Integrator factory requires positional arguments: {', '.join(p.name for p in remaining_required_positional)}"
+            f"Integrator factory requires arguments: {', '.join(p.name for p in remaining_required)}"
         )
     return factory()
 
