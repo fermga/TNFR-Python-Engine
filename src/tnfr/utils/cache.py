@@ -294,7 +294,7 @@ class ShelveCacheLayer(CacheLayer):
         self._path = path
         self._flag = flag
         self._protocol = pickle.HIGHEST_PROTOCOL if protocol is None else protocol
-        # shelve uses pickle internally; documented security warning in class docstring
+        # shelve module inherently uses pickle for serialization; security risks documented in class docstring
         self._shelf = shelve.open(path, flag=flag, protocol=self._protocol, writeback=writeback)  # nosec B301
         self._lock = threading.RLock()
 
@@ -334,8 +334,8 @@ class RedisCacheLayer(CacheLayer):
         This layer uses :mod:`pickle` for serialization, which can deserialize
         arbitrary Python objects and execute code during deserialization.
         **Only cache trusted data** from controlled TNFR nodes. Ensure Redis
-        uses authentication (AUTH/ACL) and network access controls. Never cache
-        untrusted user input or external data.
+        uses authentication (AUTH command or ACL for Redis 6.0+) and network
+        access controls. Never cache untrusted user input or external data.
 
         If Redis is compromised or contains tampered data, pickle deserialization
         executes arbitrary code. Use TLS for connections and implement HMAC
