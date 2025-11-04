@@ -13,7 +13,6 @@ try:  # pragma: no cover - optional dependency
 except ImportError:  # pragma: no cover - skip if not installed
     yaml = None
 
-
 @pytest.mark.parametrize(
     "suffix,dump",
     [
@@ -42,7 +41,6 @@ def test_apply_config_injects_graph_params(tmp_path, suffix, dump, graph_canon):
     assert G.graph["RANDOM_SEED"] == 123
     assert G.graph["INIT_THETA_MIN"] == -1.23
 
-
 def test_load_config_accepts_mapping(monkeypatch, tmp_path):
     data = UserDict({"RANDOM_SEED": 1})
 
@@ -55,7 +53,6 @@ def test_load_config_accepts_mapping(monkeypatch, tmp_path):
     loaded = load_config(path)
     assert loaded == data
 
-
 def test_load_config_requires_object(monkeypatch, tmp_path):
     def fake_reader(path):
         return [("bad", "structure")]
@@ -67,14 +64,12 @@ def test_load_config_requires_object(monkeypatch, tmp_path):
     with pytest.raises(ValueError, match="must contain an object"):
         load_config(path)
 
-
 def test_load_config_accepts_str(tmp_path):
     cfg = {"RANDOM_SEED": 7}
     path = tmp_path / "cfg.json"
     path.write_text(json.dumps(cfg), encoding="utf-8")
     loaded = load_config(str(path))
     assert loaded == cfg
-
 
 def test_apply_config_passes_path_object(monkeypatch, tmp_path, graph_canon):
     path = tmp_path / "cfg.json"
@@ -89,7 +84,6 @@ def test_apply_config_passes_path_object(monkeypatch, tmp_path, graph_canon):
     G = graph_canon()
     apply_config(G, path)
     assert received["path"] is path
-
 
 def test_merge_overrides_does_not_modify_defaults(graph_canon):
     G = graph_canon()

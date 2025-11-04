@@ -29,7 +29,6 @@ __all__ = (
     "count_glyphs",
 )
 
-
 _NU_F_HISTORY_KEYS = (
     "nu_f_rate_hz_str",
     "nu_f_rate_hz",
@@ -38,7 +37,6 @@ _NU_F_HISTORY_KEYS = (
     "nu_f_ci_lower_hz",
     "nu_f_ci_upper_hz",
 )
-
 
 def _ensure_history(
     nd: MutableMapping[str, Any], window: int, *, create_zero: bool = False
@@ -65,7 +63,6 @@ def _ensure_history(
         nd["glyph_history"] = hist
     return v_window, hist
 
-
 def push_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
     """Add ``glyph`` to node history with maximum size ``window``.
 
@@ -75,7 +72,6 @@ def push_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
 
     _, hist = _ensure_history(nd, window, create_zero=True)
     hist.append(str(glyph))
-
 
 def recent_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> bool:
     """Return ``True`` if ``glyph`` appeared in last ``window`` emissions.
@@ -90,7 +86,6 @@ def recent_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> bool:
         return False
     gl = str(glyph)
     return gl in hist
-
 
 class HistoryDict(dict[str, Any]):
     """Dict specialized for bounded history series and usage counts.
@@ -212,7 +207,6 @@ class HistoryDict(dict[str, Any]):
             except KeyError:
                 break
 
-
 def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]:
     """Ensure ``G.graph['history']`` exists and return it.
 
@@ -250,13 +244,11 @@ def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]:
     _normalise_state_streams(cast(MutableMapping[str, Any], hist))
     return hist
 
-
 def current_step_idx(G: TNFRGraph | Mapping[str, Any]) -> int:
     """Return the current step index from ``G`` history."""
 
     graph = getattr(G, "graph", G)
     return len(graph.get("history", {}).get("C_steps", []))
-
 
 def append_metric(hist: MutableMapping[str, list[Any]], key: str, value: Any) -> None:
     """Append ``value`` to ``hist[key]`` list, creating it if missing."""
@@ -315,7 +307,6 @@ def count_glyphs(
         counts.update(seq)
 
     return counts
-
 
 def _normalise_state_streams(hist: MutableMapping[str, Any]) -> None:
     """Normalise legacy state tokens stored in telemetry history."""

@@ -24,14 +24,11 @@ from tnfr.utils.io import (
     safe_write,
 )
 
-
 def _sort_key(value: Any) -> tuple[str, str]:
     return (type(value).__name__, repr(value))
 
-
 def _sorted_scalars(values: Iterable[Any]) -> list[Any]:
     return sorted((value for value in values), key=_sort_key)
-
 
 def _prepare_for_toml(value: Any) -> Any:
     if isinstance(value, dict):
@@ -41,7 +38,6 @@ def _prepare_for_toml(value: Any) -> Any:
     if isinstance(value, (list, tuple, deque)):
         return [_prepare_for_toml(item) for item in value]
     return value
-
 
 def _assert_equivalent(actual: Any, expected: Any) -> None:
     if isinstance(expected, dict):
@@ -71,13 +67,11 @@ def _assert_equivalent(actual: Any, expected: Any) -> None:
 
     assert actual == expected
 
-
 FILE_IO_PROPERTY_SETTINGS = settings(
     deadline=None,
     max_examples=DEFAULT_PROPERTY_MAX_EXAMPLES,
     suppress_health_check=[HealthCheck.function_scoped_fixture],
 )
-
 
 def _format_scalar(value: Any) -> str:
     if isinstance(value, bool):
@@ -90,11 +84,9 @@ def _format_scalar(value: Any) -> str:
         return json.dumps(value)
     raise TypeError(f"Unsupported scalar for TOML serialisation: {value!r}")
 
-
 def _format_array(values: list[Any]) -> str:
     formatted = ", ".join(_format_scalar(value) for value in values)
     return f"[{formatted}]"
-
 
 def _toml_dumps(data: dict[str, Any]) -> str:
     lines: list[str] = []
@@ -129,7 +121,6 @@ def _toml_dumps(data: dict[str, Any]) -> str:
         lines.append("")
     return "\n".join(lines)
 
-
 @given(payload=nested_structured_mappings())
 @PROPERTY_TEST_SETTINGS
 def test_json_dumps_roundtrip(payload: dict[str, Any]) -> None:
@@ -137,21 +128,17 @@ def test_json_dumps_roundtrip(payload: dict[str, Any]) -> None:
     parsed = json.loads(dumped)
     _assert_equivalent(parsed, payload)
 
-
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     text = json_dumps(payload, ensure_ascii=False, default=list)
     safe_write(path, lambda handle: handle.write(text))
-
 
 def _write_yaml(path: Path, payload: dict[str, Any]) -> None:
     text = json_dumps(payload, ensure_ascii=False, default=list)
     safe_write(path, lambda handle: handle.write(text))
 
-
 def _write_toml(path: Path, payload: dict[str, Any]) -> None:
     text = _toml_dumps(_prepare_for_toml(payload))
     safe_write(path, lambda handle: handle.write(text))
-
 
 @pytest.mark.parametrize(
     ("suffix", "writer"),
@@ -171,7 +158,6 @@ def test_structured_file_roundtrip(
     loaded = read_structured_file(destination)
     _assert_equivalent(loaded, payload)
 
-
 _MALFORMED_CASES = st.sampled_from(
     (
         (".json", "{", "Error parsing JSON file"),
@@ -179,7 +165,6 @@ _MALFORMED_CASES = st.sampled_from(
         (".toml", "broken = [1,", "Error parsing TOML file"),
     )
 )
-
 
 @given(case=_MALFORMED_CASES)
 @FILE_IO_PROPERTY_SETTINGS

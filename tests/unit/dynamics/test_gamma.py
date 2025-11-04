@@ -10,7 +10,6 @@ from tnfr.dynamics import update_epi_via_nodal_equation
 from tnfr.gamma import GAMMA_REGISTRY, GammaEntry, eval_gamma
 from tnfr.utils import EdgeCacheManager, increment_edge_version
 
-
 def test_gamma_linear_integration(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
@@ -25,7 +24,6 @@ def test_gamma_linear_integration(graph_canon):
     assert pytest.approx(G.nodes[0]["EPI"], rel=1e-6) == 1.0
     assert pytest.approx(G.nodes[1]["EPI"], rel=1e-6) == 1.0
 
-
 def test_eval_gamma_none_returns_zero(graph_canon):
     G = graph_canon()
     G.add_node(0, theta=0.0)
@@ -33,7 +31,6 @@ def test_eval_gamma_none_returns_zero(graph_canon):
     G.graph["GAMMA"] = {"type": "none"}
 
     assert eval_gamma(G, 0, 1.0) == 0.0
-
 
 def test_gamma_bandpass_eval(graph_canon):
     G = graph_canon()
@@ -48,7 +45,6 @@ def test_gamma_bandpass_eval(graph_canon):
     assert pytest.approx(g0, rel=1e-6) == 0.25
     assert pytest.approx(g3, rel=1e-6) == -0.25
 
-
 def test_gamma_linear_string_params(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
@@ -60,7 +56,6 @@ def test_gamma_linear_string_params(graph_canon):
     g1 = eval_gamma(G, 1, t=0.0)
     assert pytest.approx(g0, rel=1e-6) == 1.0
     assert pytest.approx(g1, rel=1e-6) == 1.0
-
 
 def test_gamma_inplace_mutation_updates_spec(graph_canon):
     G = graph_canon()
@@ -77,7 +72,6 @@ def test_gamma_inplace_mutation_updates_spec(graph_canon):
 
     assert pytest.approx(g_initial, rel=1e-6) == 1.0
     assert pytest.approx(g_updated, rel=1e-6) == 2.0
-
 
 def test_gamma_tanh_eval(graph_canon):
     G = graph_canon()
@@ -96,7 +90,6 @@ def test_gamma_tanh_eval(graph_canon):
     assert pytest.approx(g0, rel=1e-6) == expected
     assert pytest.approx(g3, rel=1e-6) == -expected
 
-
 def test_gamma_bandpass_string_params(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1, 2, 3])
@@ -109,7 +102,6 @@ def test_gamma_bandpass_string_params(graph_canon):
     g3 = eval_gamma(G, 3, t=0.0)
     assert pytest.approx(g0, rel=1e-6) == 0.25
     assert pytest.approx(g3, rel=1e-6) == -0.25
-
 
 def test_gamma_harmonic_eval(graph_canon):
     G = graph_canon()
@@ -124,7 +116,6 @@ def test_gamma_harmonic_eval(graph_canon):
     g1 = eval_gamma(G, 1, t=math.pi / 2)
     assert pytest.approx(g0, rel=1e-6) == 1.0
     assert pytest.approx(g1, rel=1e-6) == 1.0
-
 
 def test_gamma_tanh_string_params(graph_canon):
     G = graph_canon()
@@ -148,7 +139,6 @@ def test_gamma_tanh_string_params(graph_canon):
     assert pytest.approx(g0, rel=1e-6) == expected
     assert pytest.approx(g3, rel=1e-6) == -expected
 
-
 def test_gamma_spec_normalized_once(graph_canon, monkeypatch):
     G = graph_canon()
     G.add_node(0, theta=0.0)
@@ -162,7 +152,6 @@ def test_gamma_spec_normalized_once(graph_canon, monkeypatch):
     eval_gamma(G, 0, t=0.0)
     eval_gamma(G, 0, t=0.0)
     assert len(emitted) == 1
-
 
 def test_default_gamma_spec_called_once(graph_canon, monkeypatch):
     from tnfr import gamma as gamma_mod
@@ -183,7 +172,6 @@ def test_default_gamma_spec_called_once(graph_canon, monkeypatch):
     gamma_mod.eval_gamma(G, 0, t=0.0)
     assert calls == [1]
 
-
 def test_kuramoto_cache_reuses_checksum(graph_canon, monkeypatch):
     from tnfr import gamma as gamma_mod
 
@@ -202,7 +190,6 @@ def test_kuramoto_cache_reuses_checksum(graph_canon, monkeypatch):
     gamma_mod._ensure_kuramoto_cache(G, t=1)
     assert calls == [1]
 
-
 def test_kuramoto_cache_updates_on_time_change(graph_canon):
     from tnfr import gamma as gamma_mod
 
@@ -215,7 +202,6 @@ def test_kuramoto_cache_updates_on_time_change(graph_canon):
     gamma_mod._ensure_kuramoto_cache(G, t=1)
     cache1 = G.graph["_kuramoto_cache"]
     assert cache0 is not cache1
-
 
 def test_kuramoto_cache_updates_on_nodes_change(graph_canon):
     from tnfr import gamma as gamma_mod
@@ -231,7 +217,6 @@ def test_kuramoto_cache_updates_on_nodes_change(graph_canon):
     gamma_mod._ensure_kuramoto_cache(G, t=0)
     cache1 = G.graph["_kuramoto_cache"]
     assert cache0 is not cache1
-
 
 def test_kuramoto_cache_step_limit(graph_canon):
     from tnfr import gamma as gamma_mod
@@ -249,7 +234,6 @@ def test_kuramoto_cache_step_limit(graph_canon):
     entries = [k for k in state.cache if isinstance(k, tuple)]
     assert len(entries) == 2
 
-
 def test_kuramoto_cache_invalidation_on_version(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
@@ -265,7 +249,6 @@ def test_kuramoto_cache_invalidation_on_version(graph_canon):
     g_after = eval_gamma(G, 0, t=0.0)
 
     assert g_after != pytest.approx(g_before)
-
 
 def test_gamma_harmonic_string_params(graph_canon):
     G = graph_canon()
@@ -287,7 +270,6 @@ def test_gamma_harmonic_string_params(graph_canon):
     assert pytest.approx(g0, rel=1e-6) == 1.0
     assert pytest.approx(g1, rel=1e-6) == 1.0
 
-
 def test_eval_gamma_logs_and_strict_mode(graph_canon, caplog):
     G = graph_canon()
     G.add_nodes_from([0])
@@ -308,7 +290,6 @@ def test_eval_gamma_logs_and_strict_mode(graph_canon, caplog):
     with pytest.raises(ValueError):
         eval_gamma(G, 0, t=0.0, strict=True)
 
-
 def test_eval_gamma_non_mapping_warns(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0])
@@ -317,7 +298,6 @@ def test_eval_gamma_non_mapping_warns(graph_canon):
     with pytest.warns(UserWarning):
         g = eval_gamma(G, 0, t=0.0)
     assert g == 0.0
-
 
 def test_eval_gamma_unknown_type_warning_and_strict(graph_canon, caplog):
     G = graph_canon()
@@ -333,7 +313,6 @@ def test_eval_gamma_unknown_type_warning_and_strict(graph_canon, caplog):
 
     with pytest.raises(ValueError):
         eval_gamma(G, 0, t=0.0, strict=True)
-
 
 def test_eval_gamma_unhandled_exception_propagates(graph_canon):
     G = graph_canon()

@@ -9,7 +9,6 @@ from tnfr.dynamics import integrators, runtime
 from tnfr.types import TNFRGraph
 from tnfr.utils import normalize_optional_int
 
-
 class DummyIntegrator(integrators.AbstractIntegrator):
     """Minimal integrator used to satisfy runtime contracts in tests."""
 
@@ -23,7 +22,6 @@ class DummyIntegrator(integrators.AbstractIntegrator):
         n_jobs: int | None,
     ) -> None:
         return None
-
 
 def test_normalize_job_overrides_handles_none_and_suffixes():
     assert runtime._normalize_job_overrides(None) == {}
@@ -42,7 +40,6 @@ def test_normalize_job_overrides_handles_none_and_suffixes():
         "VF_ADAPT": "3",
         "PHASE": 0,
     }
-
 
 @pytest.mark.parametrize(
     "value, allow_non_positive, expected",
@@ -69,7 +66,6 @@ def test_normalize_optional_int_matches_runtime_policy(
         sentinels=None,
     ) == expected
 
-
 def test_resolve_jobs_override_prefers_normalised_override_over_graph_default():
     overrides = runtime._normalize_job_overrides({"dnfr_n_jobs": "8"})
 
@@ -81,7 +77,6 @@ def test_resolve_jobs_override_prefers_normalised_override_over_graph_default():
     )
 
     assert resolved == 8
-
 
 def test_resolve_jobs_override_falls_back_to_graph_and_handles_bad_values():
     overrides = runtime._normalize_job_overrides({"vf_adapt": object()})
@@ -105,7 +100,6 @@ def test_resolve_jobs_override_falls_back_to_graph_and_handles_bad_values():
 
     assert resolved_from_graph == 4
 
-
 def test_call_integrator_factory_supports_zero_or_one_positional_argument():
     G = nx.Graph()
     zero_called = False
@@ -128,7 +122,6 @@ def test_call_integrator_factory_supports_zero_or_one_positional_argument():
     assert runtime._call_integrator_factory(one_factory, G) == "one"
     assert received is G
 
-
 def test_call_integrator_factory_rejects_multiple_positionals():
     G = nx.Graph()
 
@@ -137,7 +130,6 @@ def test_call_integrator_factory_rejects_multiple_positionals():
 
     with pytest.raises(TypeError, match="at most one positional"):
         runtime._call_integrator_factory(bad_factory, G)
-
 
 def test_call_integrator_factory_handles_non_introspectable_callable(monkeypatch):
     G = nx.Graph()
@@ -158,7 +150,6 @@ def test_call_integrator_factory_handles_non_introspectable_callable(monkeypatch
     assert runtime._call_integrator_factory(factory, G) == "sentinel"
     assert calls == ["called"]
 
-
 def test_call_integrator_factory_rejects_keyword_only_requirements():
     G = nx.Graph()
 
@@ -167,7 +158,6 @@ def test_call_integrator_factory_rejects_keyword_only_requirements():
 
     with pytest.raises(TypeError):
         runtime._call_integrator_factory(kw_only_factory, G)
-
 
 def test_resolve_integrator_instance_invokes_callable_factories(monkeypatch):
     G = nx.Graph()
@@ -187,7 +177,6 @@ def test_resolve_integrator_instance_invokes_callable_factories(monkeypatch):
     assert isinstance(instance, DummyIntegrator)
     assert calls == [(factory, G)]
 
-
 def test_resolve_integrator_instance_rejects_non_integrator_returns():
     G = nx.Graph()
 
@@ -198,7 +187,6 @@ def test_resolve_integrator_instance_rejects_non_integrator_returns():
 
     with pytest.raises(TypeError):
         runtime._resolve_integrator_instance(G)
-
 
 def test_resolve_integrator_instance_rejects_non_callable_integrator():
     G = nx.Graph()
@@ -212,7 +200,6 @@ def test_resolve_integrator_instance_rejects_non_callable_integrator():
 
     assert runtime._INTEGRATOR_CACHE_KEY not in G.graph
     assert G.graph.pop(runtime._INTEGRATOR_CACHE_KEY, None) is None
-
 
 def test_resolve_integrator_instance_ignores_invalid_cache_entries():
     G = nx.Graph()
@@ -231,7 +218,6 @@ def test_resolve_integrator_instance_ignores_invalid_cache_entries():
     assert cache_entry[0] is candidate
     assert isinstance(cache_entry[1], DummyIntegrator)
     assert cache_entry[1] is resolved
-
 
 def test_resolve_integrator_instance_uses_cache(monkeypatch):
     G = nx.Graph()

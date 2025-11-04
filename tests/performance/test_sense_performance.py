@@ -30,7 +30,6 @@ ALIAS_DNFR = get_aliases("DNFR")
 
 TRIG_CACHE_KEYS = ("_cos_th", "_sin_th", "_thetas", "_trig_cache")
 
-
 def _seed_graph(graph, node_count: int = 240) -> None:
     """Populate ``graph`` with deterministic θ, νf, and ΔNFR values."""
 
@@ -46,7 +45,6 @@ def _seed_graph(graph, node_count: int = 240) -> None:
         set_attr(graph.nodes[node], ALIAS_VF, vf)
         set_attr(graph.nodes[node], ALIAS_DNFR, dnfr)
 
-
 def _invalidate_trig_cache(graph) -> None:
     """Reset cached trigonometric data for ``graph``."""
 
@@ -54,13 +52,11 @@ def _invalidate_trig_cache(graph) -> None:
     for key in TRIG_CACHE_KEYS:
         graph.graph.pop(key, None)
 
-
 def _measure(callback, loops: int) -> float:
     start = time.perf_counter()
     for _ in range(loops):
         callback()
     return time.perf_counter() - start
-
 
 def test_compute_Si_vectorized_outperforms_python(monkeypatch, graph_canon):
     fast_graph = graph_canon()
@@ -126,7 +122,6 @@ def test_compute_Si_vectorized_outperforms_python(monkeypatch, graph_canon):
     assert fast_time <= slow_time * 0.85
     assert chunk_time <= slow_time * 0.85
 
-
 def test_compute_Si_large_graph_chunk_penalty_removed(graph_canon):
     """Large graphs should no longer regress when chunk hints are small."""
 
@@ -160,7 +155,6 @@ def test_compute_Si_large_graph_chunk_penalty_removed(graph_canon):
     npt.assert_allclose(fast_values, hinted_values, rtol=1e-9, atol=1e-9)
 
     assert hinted <= baseline * 1.05
-
 
 def test_compute_Si_buffer_cache_preserves_results(graph_canon):
     """Repeated cache reuse must keep Si parity to the uncached baseline."""

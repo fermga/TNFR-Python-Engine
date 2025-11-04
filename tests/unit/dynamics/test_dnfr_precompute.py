@@ -20,7 +20,6 @@ ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
-
 @contextmanager
 def numpy_disabled(monkeypatch):
     import tnfr.dynamics.dnfr as dnfr_module
@@ -28,7 +27,6 @@ def numpy_disabled(monkeypatch):
     with monkeypatch.context() as ctx:
         ctx.setattr(dnfr_module, "get_numpy", lambda: None)
         yield
-
 
 def _setup_graph(size: int = 5, factory=nx.path_graph):
     G = factory(size)
@@ -44,7 +42,6 @@ def _setup_graph(size: int = 5, factory=nx.path_graph):
     }
     return G
 
-
 def test_strategies_share_precomputed_data(monkeypatch):
     np = pytest.importorskip("numpy")
     del np
@@ -59,7 +56,6 @@ def test_strategies_share_precomputed_data(monkeypatch):
     _compute_dnfr(G, data)
     dnfr_vec = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert dnfr_loop == pytest.approx(dnfr_vec)
-
 
 def test_prepare_dnfr_numpy_vectors_match_aliases():
     pytest.importorskip("numpy")
@@ -90,7 +86,6 @@ def test_prepare_dnfr_numpy_vectors_match_aliases():
     dnfr_vec = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert all(isinstance(val, float) for val in dnfr_vec)
 
-
 @pytest.mark.parametrize(
     "factory,size",
     [
@@ -115,7 +110,6 @@ def test_numpy_broadcast_fallback_matches_python(factory, size, monkeypatch):
     dnfr_loop = collect_attr(python_only, python_only.nodes, ALIAS_DNFR, 0.0)
 
     assert dnfr_broadcast == pytest.approx(dnfr_loop, rel=1e-9, abs=1e-9)
-
 
 def test_prepare_reuses_neighbor_reduction_buffers_vectorized():
     np = pytest.importorskip("numpy")
@@ -145,7 +139,6 @@ def test_prepare_reuses_neighbor_reduction_buffers_vectorized():
     _compute_dnfr(G, reused)
     assert reused["neighbor_edge_values_np"] is cache.neighbor_edge_values_np
     assert reused["neighbor_accum_np"] is cache.neighbor_accum_np
-
 
 def test_prepare_dnfr_raises_when_cache_state_missing(monkeypatch):
     """Ensure rebuild failures bubble when the cache manager lacks state."""
@@ -185,7 +178,6 @@ def test_prepare_dnfr_raises_when_cache_state_missing(monkeypatch):
         prepare_dnfr_data(G)
 
     assert fake_manager.rebuild_attempted
-
 
 def test_ensure_cached_array_requires_numpy():
     cache = new_dnfr_cache()

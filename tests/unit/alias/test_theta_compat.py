@@ -7,7 +7,6 @@ from tnfr.alias import get_theta_attr, set_theta, set_theta_attr
 
 DEPRECATED_PHASE_ALIAS = "phase_legacy"
 
-
 def test_get_theta_attr_ignores_legacy_key() -> None:
     data = {DEPRECATED_PHASE_ALIAS: math.pi / 3}
 
@@ -16,7 +15,6 @@ def test_get_theta_attr_ignores_legacy_key() -> None:
     assert value == 0.0
     assert "theta" not in data
     assert "phase" not in data
-
 
 def test_set_theta_keeps_only_english_aliases() -> None:
     graph = nx.Graph()

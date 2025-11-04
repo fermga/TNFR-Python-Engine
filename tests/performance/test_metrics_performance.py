@@ -20,7 +20,6 @@ pytestmark = pytest.mark.slow
 
 ALIAS_THETA = get_aliases("THETA")
 
-
 def _seed_graph(
     num_nodes: int = 220, edge_probability: float = 0.25, *, seed: int = 21
 ) -> nx.Graph:
@@ -28,7 +27,6 @@ def _seed_graph(
     for node in graph.nodes:
         set_attr(graph.nodes[node], ALIAS_THETA, 0.1 * (node + 1))
     return graph
-
 
 def _naive_neighbor_phase_mean(G: nx.Graph, node) -> float:
     wrapper = NodeNX(G, node)
@@ -43,13 +41,11 @@ def _naive_neighbor_phase_mean(G: nx.Graph, node) -> float:
         return wrapper.theta
     return math.atan2(y, x)
 
-
 def _measure(callback, loops: int) -> float:
     start = time.perf_counter()
     for _ in range(loops):
         callback()
     return time.perf_counter() - start
-
 
 def test_neighbor_phase_mean_vectorized_outperforms_naive_wrapper():
     graph_fast = _seed_graph()

@@ -7,7 +7,6 @@ from tnfr.initialization import init_node_attrs
 from tnfr.validation import ValidationOutcome
 from tnfr.validation.runtime import validate_canon
 
-
 def test_build_graph_vf_within_limits():
     G = nx.cycle_graph(10)
     inject_defaults(G)
@@ -17,7 +16,6 @@ def test_build_graph_vf_within_limits():
     for n in G.nodes():
         vf = G.nodes[n][VF_KEY]
         assert vf_min <= vf <= vf_max
-
 
 def test_validate_canon_clamps():
     G = nx.cycle_graph(5)

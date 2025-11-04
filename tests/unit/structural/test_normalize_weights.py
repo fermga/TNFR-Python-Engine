@@ -7,7 +7,6 @@ import pytest
 
 from tnfr.utils import negative_weights_warn_once, normalize_weights
 
-
 def test_normalize_weights_warns_on_negative_value(caplog):
     weights = {"warn-negative-value-a": -1.0, "warn-negative-value-b": 2.0}
     with caplog.at_level("WARNING"):
@@ -19,12 +18,10 @@ def test_normalize_weights_warns_on_negative_value(caplog):
     assert norm["warn-negative-value-a"] == 0.0
     assert math.isclose(norm["warn-negative-value-b"], 1.0)
 
-
 def test_normalize_weights_raises_on_negative_value():
     weights = {"a": -1.0, "b": 2.0}
     with pytest.raises(ValueError):
         normalize_weights(weights, ("a", "b"), error_on_negative=True)
-
 
 def test_normalize_weights_warns_on_negative_default(caplog):
     with caplog.at_level("WARNING"):
@@ -33,11 +30,9 @@ def test_normalize_weights_warns_on_negative_default(caplog):
         )
     assert any("Negative weights" in m for m in caplog.messages)
 
-
 def test_normalize_weights_raises_on_negative_default():
     with pytest.raises(ValueError):
         normalize_weights({}, ("a", "b"), default=-0.5, error_on_negative=True)
-
 
 def test_normalize_weights_warns_on_non_numeric_value(caplog):
     weights = {"a": "not-a-number", "b": 2.0}
@@ -46,7 +41,6 @@ def test_normalize_weights_warns_on_non_numeric_value(caplog):
     assert any("Could not convert" in m for m in caplog.messages)
     assert math.isclose(math.fsum(norm.values()), 1.0)
     assert norm == pytest.approx({"a": 1 / 3, "b": 2 / 3})
-
 
 def test_normalize_weights_warn_once(caplog):
     first_key = "warn-once-key-1"
@@ -73,7 +67,6 @@ def test_normalize_weights_warn_once(caplog):
         )
     assert any("Negative weights" in m for m in caplog.messages)
 
-
 def test_normalize_weights_warns_each_time_when_dedup_disabled(caplog):
     key = "warn-disabled-key"
     weights = {key: -1.0}
@@ -90,12 +83,10 @@ def test_normalize_weights_warns_each_time_when_dedup_disabled(caplog):
     second_messages = [m for m in caplog.messages if "Negative weights" in m]
     assert second_messages, "Second invocation should warn when deduplication disabled"
 
-
 def test_normalize_weights_raises_on_non_numeric_value():
     weights = {"a": "not-a-number", "b": 2.0}
     with pytest.raises(ValueError):
         normalize_weights(weights, ("a", "b"), error_on_conversion=True)
-
 
 def test_normalize_weights_error_on_negative_does_not_raise_conversion(caplog):
     """error_on_negative should not affect conversion errors."""
@@ -107,13 +98,11 @@ def test_normalize_weights_error_on_negative_does_not_raise_conversion(caplog):
     assert any("Could not convert" in m for m in caplog.messages)
     assert math.isclose(math.fsum(norm.values()), 1.0)
 
-
 def test_normalize_weights_high_precision():
     weights = {str(i): 0.1 for i in range(10)}
     norm = normalize_weights(weights, weights.keys())
     assert all(v == 0.1 for v in norm.values())
     assert math.isclose(math.fsum(norm.values()), 1.0)
-
 
 def test_normalize_weights_deduplicates_keys():
     weights = {"dedup-a": -1.0, "dedup-b": -1.0}
@@ -125,13 +114,11 @@ def test_normalize_weights_deduplicates_keys():
     assert norm_dup == norm_unique
     assert norm_dup == pytest.approx(expected)
 
-
 def test_normalize_weights_dedup_and_defaults():
     weights = {"a": "1", "c": "bad"}
     norm = normalize_weights(weights, ["a", "b", "c", "a"], default=2.0)
     assert math.isclose(math.fsum(norm.values()), 1.0)
     assert norm == pytest.approx({"a": 1 / 5, "b": 2 / 5, "c": 2 / 5})
-
 
 def test_normalize_weights_accepts_mapping_proxy():
     weights = MappingProxyType({"a": 1.0, "b": 2.0})

@@ -8,13 +8,11 @@ import pytest
 from tnfr.mathematics import CoherenceOperator
 from tnfr.mathematics.metrics import dcoh
 
-
 @pytest.fixture()
 def hermitian_operator() -> CoherenceOperator:
     """Return a simple Hermitian coherence operator for two modes."""
 
     return CoherenceOperator([[1.0, 0.2], [0.2, 0.8]])
-
 
 @pytest.fixture()
 def orthonormal_basis() -> tuple[np.ndarray, np.ndarray]:
@@ -22,7 +20,6 @@ def orthonormal_basis() -> tuple[np.ndarray, np.ndarray]:
 
     identity = np.eye(2, dtype=np.complex128)
     return identity[0], identity[1]
-
 
 def test_dcoh_identity_returns_zero(
     hermitian_operator: CoherenceOperator, orthonormal_basis: tuple[np.ndarray, np.ndarray]
@@ -32,7 +29,6 @@ def test_dcoh_identity_returns_zero(
     psi, _ = orthonormal_basis
     result = dcoh(psi, psi, hermitian_operator)
     assert result == pytest.approx(0.0, abs=1e-12)
-
 
 def test_dcoh_identity_superposition(
     hermitian_operator: CoherenceOperator, orthonormal_basis: tuple[np.ndarray, np.ndarray]
@@ -44,7 +40,6 @@ def test_dcoh_identity_superposition(
 
     result = dcoh(superposition, superposition, hermitian_operator)
     assert result == pytest.approx(0.0, abs=1e-12)
-
 
 def test_dcoh_is_symmetric(
     hermitian_operator: CoherenceOperator, orthonormal_basis: tuple[np.ndarray, np.ndarray]
@@ -58,7 +53,6 @@ def test_dcoh_is_symmetric(
     backward = dcoh(superposition, psi1, hermitian_operator)
 
     assert forward == pytest.approx(backward, rel=1e-12, abs=1e-12)
-
 
 def test_dcoh_orthogonal_states_follow_operator_overlap(
     hermitian_operator: CoherenceOperator, orthonormal_basis: tuple[np.ndarray, np.ndarray]
@@ -78,7 +72,6 @@ def test_dcoh_orthogonal_states_follow_operator_overlap(
 
     assert result == pytest.approx(expected_dcoh, abs=1e-12)
 
-
 def test_dcoh_satisfies_triangle_inequality(
     hermitian_operator: CoherenceOperator, orthonormal_basis: tuple[np.ndarray, np.ndarray]
 ) -> None:
@@ -92,7 +85,6 @@ def test_dcoh_satisfies_triangle_inequality(
 
     assert direct <= via_intermediate + 1e-12
 
-
 def test_dcoh_rejects_zero_expectation(
     orthonormal_basis: tuple[np.ndarray, np.ndarray]
 ) -> None:
@@ -103,7 +95,6 @@ def test_dcoh_rejects_zero_expectation(
 
     with pytest.raises(ValueError, match="Coherence expectation must remain strictly positive"):
         dcoh(psi, psi, singular_operator)
-
 
 def test_dcoh_respects_tolerance_thresholds(
     orthonormal_basis: tuple[np.ndarray, np.ndarray]

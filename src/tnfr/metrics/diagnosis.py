@@ -86,7 +86,6 @@ def _coherence_matrix_to_numpy(
     np_mod.fill_diagonal(matrix, 0.0)
     return matrix
 
-
 def _weighted_phase_sync_vectorized(
     matrix: Any,
     cos_vals: Any,
@@ -103,7 +102,6 @@ def _weighted_phase_sync_vectorized(
     magnitude = np_mod.hypot(real, imag)
     safe_denom = np_mod.where(denom == 0.0, 1.0, denom)
     return magnitude / safe_denom
-
 
 def _unweighted_phase_sync_vectorized(
     nodes: Sequence[Any],
@@ -136,7 +134,6 @@ def _unweighted_phase_sync_vectorized(
             results.append(float(np_mod.hypot(real, imag) / denom))
     return results
 
-
 def _neighbor_means_vectorized(
     nodes: Sequence[Any],
     neighbors_map: Mapping[Any, tuple[Any, ...]],
@@ -160,7 +157,6 @@ def _neighbor_means_vectorized(
         results.append(float(np_mod.mean(values)))
     return results
 
-
 @dataclass(frozen=True)
 class RLocalWorkerArgs:
     """Typed payload passed to :func:`_rlocal_worker`."""
@@ -173,7 +169,6 @@ class RLocalWorkerArgs:
     cos_map: Mapping[Any, float]
     sin_map: Mapping[Any, float]
 
-
 @dataclass(frozen=True)
 class NeighborMeanWorkerArgs:
     """Typed payload passed to :func:`_neighbor_mean_worker`."""
@@ -181,7 +176,6 @@ class NeighborMeanWorkerArgs:
     chunk: Sequence[Any]
     neighbors_map: Mapping[Any, tuple[Any, ...]]
     epi_map: Mapping[Any, float]
-
 
 def _rlocal_worker(args: RLocalWorkerArgs) -> list[float]:
     """Worker used to compute ``R_local`` in Python fallbacks."""
@@ -210,7 +204,6 @@ def _rlocal_worker(args: RLocalWorkerArgs) -> list[float]:
         results.append(float(rloc))
     return results
 
-
 def _neighbor_mean_worker(args: NeighborMeanWorkerArgs) -> list[float | None]:
     """Worker used to compute neighbour EPI means in Python mode."""
 
@@ -225,7 +218,6 @@ def _neighbor_mean_worker(args: NeighborMeanWorkerArgs) -> list[float | None]:
         except StatisticsError:
             results.append(None)
     return results
-
 
 def _weighted_phase_sync_from_matrix(
     node_index: int,
@@ -276,7 +268,6 @@ def _weighted_phase_sync_from_matrix(
 
     return abs(num / den) if den else 0.0
 
-
 def _local_phase_sync_unweighted(
     neighbors: Iterable[Any],
     cos_map: Mapping[Any, float],
@@ -294,7 +285,6 @@ def _local_phase_sync_unweighted(
         num += complex(cos_j, sin_j)
         den += 1.0
     return abs(num / den) if den else 0.0
-
 
 def _state_from_thresholds(
     Rloc: float,
@@ -320,12 +310,10 @@ def _state_from_thresholds(
 
     return STATE_TRANSITION
 
-
 def _recommendation(state: str, cfg: Mapping[str, Any]) -> list[Any]:
     adv = cfg.get("advice", {})
     canonical_state = normalise_state_token(state)
     return list(adv.get(canonical_state, []))
-
 
 def _get_last_weights(
     G: TNFRGraph,
@@ -340,7 +328,6 @@ def _get_last_weights(
     Wi_last = Wi_series[-1] if Wi_series else None
     Wm_last = Wm_series[-1] if Wm_series else None
     return Wi_last, Wm_last
-
 
 def _node_diagnostics(
     node_data: DiagnosisNodeData,
@@ -393,7 +380,6 @@ def _node_diagnostics(
 
     return node, payload
 
-
 def _diagnosis_worker_chunk(
     chunk: DiagnosisPayloadChunk,
     shared: DiagnosisSharedState,
@@ -401,7 +387,6 @@ def _diagnosis_worker_chunk(
     """Evaluate diagnostics for a chunk of nodes."""
 
     return [_node_diagnostics(item, shared) for item in chunk]
-
 
 def _diagnosis_step(
     G: TNFRGraph,
@@ -775,7 +760,6 @@ def _diagnosis_step(
 
     append_metric(hist, key, diag)
 
-
 def dissonance_events(G: TNFRGraph, ctx: DiagnosisSharedState | None = None) -> None:
     """Emit per-node structural dissonance start/end events.
 
@@ -809,7 +793,6 @@ def dissonance_events(G: TNFRGraph, ctx: DiagnosisSharedState | None = None) -> 
                 "events",
                 ("dissonance_end", {"node": n, "step": step_idx}),
             )
-
 
 def register_diagnosis_callbacks(G: TNFRGraph) -> None:
     """Attach diagnosis observers (Si/dissonance tracking) to ``G``."""

@@ -20,7 +20,6 @@ from tnfr.structural import (
 )
 from tnfr.types import Glyph
 
-
 def test_dissonance_sequence_tracks_bifurcation_pressure_and_stabilises() -> None:
     """ΔNFR sequences log bifurcation pressure and honour grammar cut-offs."""
 

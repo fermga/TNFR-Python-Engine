@@ -5,7 +5,6 @@ import tnfr.dynamics.selectors as selectors
 from tnfr.alias import set_attr
 from tnfr.glyph_history import ensure_history
 
-
 def _make_default_graph(graph_canon):
     G = graph_canon()
     G.graph["GRAMMAR_CANON"] = {"enabled": False}
@@ -24,7 +23,6 @@ def _make_default_graph(graph_canon):
         set_attr(nd, dynamics.ALIAS_DNFR, dnfr)
         set_attr(nd, dynamics.ALIAS_D2EPI, accel)
     return G
-
 
 def _make_param_graph(graph_canon):
     G = graph_canon()
@@ -56,7 +54,6 @@ def _make_param_graph(graph_canon):
         if history:
             nd["glyph_history"] = history[:]
     return G
-
 
 def _run_selector(
     G,
@@ -114,7 +111,6 @@ def _run_selector(
     selectors._apply_glyphs(G, selector, history)
     return applied, history
 
-
 def test_default_selector_parallel_matches_sequential(monkeypatch, graph_canon):
     G_seq = _make_default_graph(graph_canon)
     applied_seq, hist_seq = _run_selector(G_seq, monkeypatch)
@@ -127,7 +123,6 @@ def test_default_selector_parallel_matches_sequential(monkeypatch, graph_canon):
     assert hist_seq["since_AL"] == hist_par["since_AL"]
     assert hist_seq["since_EN"] == hist_par["since_EN"]
 
-
 def test_param_selector_parallel_matches_sequential(monkeypatch, graph_canon):
     G_seq = _make_param_graph(graph_canon)
     applied_seq, hist_seq = _run_selector(G_seq, monkeypatch)
@@ -139,7 +134,6 @@ def test_param_selector_parallel_matches_sequential(monkeypatch, graph_canon):
     assert applied_seq == applied_par
     assert hist_seq["since_AL"] == hist_par["since_AL"]
     assert hist_seq["since_EN"] == hist_par["since_EN"]
-
 
 def test_selector_n_jobs_one_is_sequential(monkeypatch, graph_canon):
     G = _make_param_graph(graph_canon)
@@ -155,7 +149,6 @@ def test_selector_n_jobs_one_is_sequential(monkeypatch, graph_canon):
 
     _run_selector(G, monkeypatch)
 
-
 def test_parallel_selector_is_deterministic(monkeypatch, graph_canon):
     G_first = _make_param_graph(graph_canon)
     G_first.graph["GLYPH_SELECTOR_N_JOBS"] = 3
@@ -168,7 +161,6 @@ def test_parallel_selector_is_deterministic(monkeypatch, graph_canon):
     assert first_applied == second_applied
     assert first_hist["since_AL"] == second_hist["since_AL"]
     assert first_hist["since_EN"] == second_hist["since_EN"]
-
 
 def test_parallel_respects_since_counters(monkeypatch, graph_canon):
     G_seq = _make_default_graph(graph_canon)
@@ -199,7 +191,6 @@ def test_parallel_respects_since_counters(monkeypatch, graph_canon):
 
     assert applied_seq == applied_par
 
-
 def test_invalid_canonical_glyph_preserves_since_counters(monkeypatch, graph_canon):
     G = _make_default_graph(graph_canon)
     G.graph["GRAMMAR_CANON"]["enabled"] = True
@@ -227,7 +218,6 @@ def test_invalid_canonical_glyph_preserves_since_counters(monkeypatch, graph_can
 
     invalid_results = {glyph for _, glyph in applied}
     assert invalid_results == {"NOT_A_GLYPH"}
-
 
 def test_parallel_canonical_hooks_order(monkeypatch, graph_canon):
     def make_graph():

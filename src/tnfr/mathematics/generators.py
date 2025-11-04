@@ -12,7 +12,6 @@ __all__ = ["build_delta_nfr", "build_lindblad_delta_nfr"]
 
 _TOPOLOGIES: Final[set[str]] = {"laplacian", "adjacency"}
 
-
 def _ring_adjacency(dim: int) -> np.ndarray:
     """Return the adjacency matrix for a coherent ring topology."""
 
@@ -25,14 +24,12 @@ def _ring_adjacency(dim: int) -> np.ndarray:
     adjacency[(indices + 1) % dim, indices] = 1.0
     return adjacency
 
-
 def _laplacian_from_adjacency(adjacency: np.ndarray) -> np.ndarray:
     """Construct a Laplacian operator from an adjacency matrix."""
 
     degrees = adjacency.sum(axis=1)
     laplacian = np.diag(degrees) - adjacency
     return laplacian
-
 
 def _hermitian_noise(dim: int, rng: Generator) -> np.ndarray:
     """Generate a Hermitian noise matrix with reproducible statistics."""
@@ -41,7 +38,6 @@ def _hermitian_noise(dim: int, rng: Generator) -> np.ndarray:
     imag = rng.standard_normal((dim, dim))
     noise = real + 1j * imag
     return 0.5 * (noise + noise.conj().T)
-
 
 def _as_square_matrix(
     matrix: Sequence[Sequence[complex]] | np.ndarray,
@@ -59,7 +55,6 @@ def _as_square_matrix(
             f"{label} dimension mismatch: expected {expected_dim}, received {array.shape[0]}."
         )
     return array
-
 
 def build_delta_nfr(
     dim: int,
@@ -110,7 +105,6 @@ def build_delta_nfr(
     hermitian = 0.5 * (matrix + matrix.conj().T)
     backend = get_backend()
     return np.asarray(ensure_numpy(ensure_array(hermitian, backend=backend), backend=backend), dtype=np.complex128)
-
 
 def build_lindblad_delta_nfr(
     *,

@@ -27,7 +27,6 @@ __all__ = (
     "publish_graph_cache_metrics",
 )
 
-
 @dataclass(frozen=True)
 class CacheMetricsSnapshot:
     """Structured cache metrics enriched with ratios and latency estimates."""
@@ -83,7 +82,6 @@ class CacheMetricsSnapshot:
             "miss_ratio": self.miss_ratio,
             "avg_latency": self.avg_latency,
         }
-
 
 class CacheTelemetryPublisher:
     """Metrics publisher broadcasting cache counters to observability channels."""
@@ -176,9 +174,7 @@ class CacheTelemetryPublisher:
             ctx = {"cache": name, "metrics": payload}
             callback_manager.invoke_callbacks(graph, CallbackEvent.CACHE_METRICS, ctx)
 
-
 _PUBLISHER_ATTR = "_tnfr_cache_metrics_publisher"
-
 
 def ensure_cache_metrics_publisher(
     manager: CacheManager,
@@ -204,7 +200,6 @@ def ensure_cache_metrics_publisher(
         if graph is not None:
             publisher.attach_graph(graph)
     return publisher
-
 
 def publish_graph_cache_metrics(
     graph: "TNFRGraph | Graph | MutableMapping[str, Any]",

@@ -5,7 +5,6 @@ import uuid
 
 from tnfr import locking
 
-
 def test_lock_registry_shrinks_after_release():
     """Locks without external references disappear from the registry."""
     # Generate a unique lock name to avoid collisions with other tests.

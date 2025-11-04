@@ -9,14 +9,12 @@ import pytest
 
 from tnfr.cli import execution
 
-
 @pytest.fixture()
 def graph_with_history() -> tuple[nx.Graph, dict[str, Any]]:
     graph = nx.Graph()
     history: dict[str, Any] = {"C_steps": [0], "phase_state": ["stable"]}
     graph.graph["history"] = history
     return graph, history
-
 
 def test_persist_history_skips_when_disabled(
     graph_with_history: tuple[nx.Graph, dict[str, Any]], monkeypatch: pytest.MonkeyPatch
@@ -57,7 +55,6 @@ def test_persist_history_skips_when_disabled(
     assert exported_payloads == []
     assert graph.graph["history"] is history
 
-
 def test_persist_history_saves_json(
     graph_with_history: tuple[nx.Graph, dict[str, Any]],
     monkeypatch: pytest.MonkeyPatch,
@@ -96,7 +93,6 @@ def test_persist_history_saves_json(
     assert saved_payloads == [(str(destination), history)]
     assert exported_payloads == []
     assert graph.graph["history"] is history
-
 
 def test_persist_history_exports_metrics(
     graph_with_history: tuple[nx.Graph, dict[str, Any]],
@@ -137,7 +133,6 @@ def test_persist_history_exports_metrics(
     assert saved_payloads == []
     assert exported_payloads == [(graph, str(base_path), "jsonl")]
     assert graph.graph["history"] is history
-
 
 def test_persist_history_handles_save_and_export_simultaneously(
     graph_with_history: tuple[nx.Graph, dict[str, Any]],

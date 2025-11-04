@@ -11,7 +11,6 @@ from tnfr.constants import VF_PRIMARY
 from tnfr.metrics.core import _update_nu_f_snapshot
 from tnfr.telemetry.nu_f import ensure_nu_f_telemetry
 
-
 def test_math_engine_cli_preserves_classic_metrics(
     monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
 ) -> None:

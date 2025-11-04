@@ -16,7 +16,6 @@ from tnfr.immutable import (
     _is_immutable_inner,
 )
 
-
 def test_is_immutable_nested_structures():
     nested = (
         1,
@@ -25,23 +24,19 @@ def test_is_immutable_nested_structures():
     )
     assert _is_immutable(nested)
 
-
 def test_is_immutable_detects_mutable():
     data = MappingProxyType({"a": [1, 2]})
     assert not _is_immutable(data)
 
-
 def test_is_immutable_detects_set_and_bytearray():
     assert not _is_immutable({1, 2})
     assert not _is_immutable(bytearray(b"abc"))
-
 
 def test_is_immutable_lists_dicts_nested():
     data = (1, [2, {"a": (3, 4)}])
     assert not _is_immutable(data)
     # call twice to exercise cache behaviour
     assert not _is_immutable(data)
-
 
 @pytest.mark.parametrize(
     "value",
@@ -50,45 +45,36 @@ def test_is_immutable_lists_dicts_nested():
 def test_is_immutable_simple_types(value):
     assert _is_immutable(value)
 
-
 def test_is_immutable_inner_handles_mapping_tag():
     frozen = ("mapping", (("a", 1), ("b", 2)))
     assert _is_immutable_inner(frozen)
-
 
 def test_is_immutable_inner_handles_dict_tag():
     frozen = ("dict", (("a", 1),))
     assert not _is_immutable_inner(frozen)
 
-
 def test_is_immutable_inner_handles_set_tag():
     frozen = ("set", (1, 2))
     assert not _is_immutable_inner(frozen)
 
-
 def test_is_immutable_inner_handles_bytearray_tag():
     frozen = ("bytearray", b"abc")
     assert not _is_immutable_inner(frozen)
-
 
 @dataclass(frozen=True, slots=True)
 class FrozenDC:
     x: int
     y: int
 
-
 def test_is_immutable_frozen_dataclass():
     assert _is_immutable(FrozenDC(1, 2))
-
 
 @dataclass(slots=True)
 class MutableDC:
     items: list[int]
 
-
 def test_is_immutable_mutable_dataclass():
     assert not _is_immutable(MutableDC([1, 2]))
-
 
 class CustomMapping(Mapping):
     def __init__(self, data):
@@ -103,14 +89,12 @@ class CustomMapping(Mapping):
     def __len__(self):
         return len(self._data)
 
-
 def test_is_immutable_custom_mapping():
     imm = CustomMapping({"a": 1, "b": (2, 3)})
     assert _is_immutable(imm)
 
     mut = CustomMapping({"a": [1]})
     assert not _is_immutable(mut)
-
 
 def test_is_immutable_custom_mapping_cycle():
     class CustomDict(dict):
@@ -120,7 +104,6 @@ def test_is_immutable_custom_mapping_cycle():
     cyc["self"] = cyc
     assert not _is_immutable(cyc)
 
-
 def test_is_immutable_detects_cycles():
     lst: list[Any] = []
     lst.append(lst)
@@ -128,7 +111,6 @@ def test_is_immutable_detects_cycles():
     d: dict[str, Any] = {}
     d["self"] = d
     assert not _is_immutable(d)
-
 
 def test_is_immutable_cache_auto_cleanup():
     class Dummy:
@@ -146,7 +128,6 @@ def test_is_immutable_cache_auto_cleanup():
 
     # the weak cache should have removed the entry
     assert obj_id not in {id(k) for k in _IMMUTABLE_CACHE.keys()}
-
 
 def test_internal_constants_are_immutable():
     assert isinstance(IMMUTABLE_SIMPLE, frozenset)

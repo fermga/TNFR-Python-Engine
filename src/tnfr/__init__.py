@@ -124,14 +124,12 @@ EXPORT_DEPENDENCIES: dict[str, dict[str, tuple[str, ...]]] = {
     },
 }
 
-
 try:  # pragma: no cover - exercised in version resolution tests
     __version__ = metadata.version("tnfr")
 except PackageNotFoundError:  # pragma: no cover - fallback tested explicitly
     from ._version import __version__ as _fallback_version
 
     __version__ = _fallback_version
-
 
 def _is_internal_import_error(exc: ImportError) -> bool:
     missing_name = getattr(exc, "name", None) or ""
@@ -158,7 +156,6 @@ def _is_internal_import_error(exc: ImportError) -> bool:
 
     return False
 
-
 def _missing_dependency(
     name: str, exc: ImportError, *, module: str | None = None
 ) -> Callable[..., NoReturn]:
@@ -178,13 +175,10 @@ def _missing_dependency(
     }
     return _stub
 
-
 _MISSING_EXPORTS: dict[str, dict[str, Any]] = {}
-
 
 class ExportDependencyError(RuntimeError):
     """Raised when the export dependency manifest is inconsistent."""
-
 
 def _validate_export_dependencies() -> None:
     """Ensure exported helpers and their manifest entries stay in sync."""
@@ -246,7 +240,6 @@ def _validate_export_dependencies() -> None:
             "Invalid TNFR export dependency manifest:\n- " + "\n- ".join(issues)
         )
 
-
 def _assign_exports(module: str, names: tuple[str, ...]) -> bool:
     try:  # pragma: no cover - exercised in import tests
         mod = import_module(f".{module}", __name__)
@@ -265,20 +258,15 @@ def _assign_exports(module: str, names: tuple[str, ...]) -> bool:
             globals()[export_name] = getattr(mod, export_name)
         return True
 
-
 _assign_exports("dynamics", ("step", "run"))
 
-
 _HAS_PREPARE_NETWORK = _assign_exports("ontosim", ("prepare_network",))
-
 
 _HAS_STRUCTURAL_EXPORTS = _assign_exports(
     "structural", ("create_nfr", "run_sequence", "create_math_nfr")
 )
 
-
 _assign_exports("units", ("get_hz_bridge", "hz_str_to_hz", "hz_to_hz_str"))
-
 
 def _emit_missing_dependency_warning() -> None:
     if not _MISSING_EXPORTS:
@@ -293,9 +281,7 @@ def _emit_missing_dependency_warning() -> None:
         stacklevel=2,
     )
 
-
 _emit_missing_dependency_warning()
-
 
 __all__ = [
     "__version__",
@@ -310,6 +296,5 @@ __all__ = [
 
 if _HAS_STRUCTURAL_EXPORTS:
     __all__.extend(["run_sequence", "create_math_nfr"])
-
 
 _validate_export_dependencies()

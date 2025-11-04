@@ -14,7 +14,6 @@ from tnfr.mathematics import (
     make_coherence_operator,
 )
 
-
 def _steady_state_from_generator(generator: np.ndarray, dim: int) -> np.ndarray:
     evals, evecs = np.linalg.eig(generator)
     index = int(np.argmin(np.abs(evals)))
@@ -26,22 +25,18 @@ def _steady_state_from_generator(generator: np.ndarray, dim: int) -> np.ndarray:
         raise ValueError("Steady state trace collapsed; generator lacks a stationary density.")
     return density / trace
 
-
 def _trace_distance(left: np.ndarray, right: np.ndarray) -> float:
     diff = left - right
     singular_values = np.linalg.svd(diff, compute_uv=False)
     return 0.5 * float(np.sum(singular_values))
 
-
 @pytest.fixture(scope="module")
 def hilbert_qubit() -> HilbertSpace:
     return HilbertSpace(2)
 
-
 @pytest.fixture(scope="module")
 def hilbert_qutrit() -> HilbertSpace:
     return HilbertSpace(3)
-
 
 def test_lindblad_generator_preserves_trace(hilbert_qubit: HilbertSpace) -> None:
     gamma = 0.35
@@ -58,7 +53,6 @@ def test_lindblad_generator_preserves_trace(hilbert_qubit: HilbertSpace) -> None
     eigenvalues = np.linalg.eigvals(generator)
     assert np.max(eigenvalues.real) <= 1e-9
 
-
 def test_lindblad_generator_rejects_dim_mismatch_with_hamiltonian(
     hilbert_qubit: HilbertSpace,
 ) -> None:
@@ -72,7 +66,6 @@ def test_lindblad_generator_rejects_dim_mismatch_with_hamiltonian(
             dim=dim + 1,
         )
 
-
 def test_lindblad_generator_rejects_dim_mismatch_with_collapse_operator(
     hilbert_qubit: HilbertSpace,
 ) -> None:
@@ -84,7 +77,6 @@ def test_lindblad_generator_rejects_dim_mismatch_with_collapse_operator(
             collapse_operators=[lowering],
             dim=dim + 1,
         )
-
 
 def test_contractive_engine_preserves_trace_and_contractivity(hilbert_qubit: HilbertSpace) -> None:
     gamma = 0.4
@@ -106,7 +98,6 @@ def test_contractive_engine_preserves_trace_and_contractivity(hilbert_qubit: Hil
     assert _trace_distance(step, steady) <= baseline + 1e-8
     assert np.isfinite(engine.last_contractivity_gap)
 
-
 def _amplitude_damping_exact(
     density: np.ndarray,
     *,
@@ -127,7 +118,6 @@ def _amplitude_damping_exact(
     evolved[1, 0] = np.conjugate(evolved[0, 1])
     return evolved
 
-
 def test_contractive_engine_matches_qubit_ground_truth(hilbert_qubit: HilbertSpace) -> None:
     gamma = 0.7
     lowering = np.array([[0.0, 1.0], [0.0, 0.0]], dtype=np.complex128)
@@ -146,7 +136,6 @@ def test_contractive_engine_matches_qubit_ground_truth(hilbert_qubit: HilbertSpa
 
     assert np.allclose(evolved, expected, atol=5e-7)
 
-
 def _pure_dephasing_exact(
     density: np.ndarray,
     *,
@@ -162,7 +151,6 @@ def _pure_dephasing_exact(
             decay = math.exp(-0.5 * rates[i, j] * time)
             evolved[i, j] *= decay
     return evolved
-
 
 def test_qutrit_pure_dephasing_matches_ground_truth(hilbert_qutrit: HilbertSpace) -> None:
     gamma = 0.25
@@ -190,12 +178,10 @@ def test_qutrit_pure_dephasing_matches_ground_truth(hilbert_qutrit: HilbertSpace
     distances = [_trace_distance(state, steady) for state in trajectory]
     assert all(distances[k] >= distances[k + 1] - 1e-7 for k in range(len(distances) - 1))
 
-
 def test_unitary_generator_remains_available(hilbert_qubit: HilbertSpace) -> None:
     generator = build_delta_nfr(hilbert_qubit.dimension)
     coherence = make_coherence_operator(hilbert_qubit.dimension, spectrum=np.ones(hilbert_qubit.dimension))
     assert coherence.matrix.shape == (hilbert_qubit.dimension, hilbert_qubit.dimension)
-
 
 def test_defective_generator_requires_scipy(hilbert_qubit: HilbertSpace) -> None:
     pytest.importorskip("scipy.linalg")

@@ -30,7 +30,6 @@ ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
-
 @contextmanager
 def numpy_disabled(monkeypatch):
     import tnfr.dynamics.dnfr as dnfr_module
@@ -38,7 +37,6 @@ def numpy_disabled(monkeypatch):
     with monkeypatch.context() as ctx:
         ctx.setattr(dnfr_module, "get_numpy", lambda: None)
         yield
-
 
 def _setup_graph():
     G = nx.path_graph(5)
@@ -54,13 +52,11 @@ def _setup_graph():
     }
     return G
 
-
 def _get_prep_state(G):
     manager = _graph_cache_manager(G.graph)
     state = manager.get(DNFR_PREP_STATE_KEY)
     assert isinstance(state, DnfrPrepState)
     return manager, state
-
 
 def _build_invalid_state_graph():
     G = nx.path_graph(6)
@@ -94,7 +90,6 @@ def _build_invalid_state_graph():
 
     return G, (1, 3)
 
-
 @pytest.mark.parametrize("disable_numpy", [False, True])
 def test_default_compute_delta_nfr_paths(disable_numpy, monkeypatch):
     if not disable_numpy:
@@ -107,7 +102,6 @@ def test_default_compute_delta_nfr_paths(disable_numpy, monkeypatch):
         default_compute_delta_nfr(G)
     dnfr = collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
     assert len(dnfr) == 5
-
 
 @pytest.mark.parametrize("numpy_mode", ["vectorized", "python"])
 def test_default_compute_delta_nfr_clamps_invalid_states(numpy_mode, caplog, monkeypatch):
@@ -133,7 +127,6 @@ def test_default_compute_delta_nfr_clamps_invalid_states(numpy_mode, caplog, mon
     assert any("Could not convert value" in msg for msg in messages)
     assert any("Non-finite value" in msg for msg in messages)
 
-
 def test_default_vectorization_auto_enabled_when_numpy_available():
     np = pytest.importorskip("numpy")
     G = _setup_graph()
@@ -146,7 +139,6 @@ def test_default_vectorization_auto_enabled_when_numpy_available():
     assert isinstance(cache.grad_total_np, np.ndarray)
     assert isinstance(cache.grad_phase_np, np.ndarray)
 
-
 def test_vectorization_falls_back_without_numpy(monkeypatch):
     G = _setup_graph()
     with numpy_disabled(monkeypatch):
@@ -158,7 +150,6 @@ def test_vectorization_falls_back_without_numpy(monkeypatch):
     assert cache.edge_src is None
     assert cache.grad_total_np is None
     assert cache.grad_phase_np is None
-
 
 def test_numpy_available_when_vectorized_disabled(monkeypatch):
     np = pytest.importorskip("numpy")
@@ -184,7 +175,6 @@ def test_numpy_available_when_vectorized_disabled(monkeypatch):
     assert isinstance(cache.edge_src, np.ndarray)
     assert isinstance(cache.neighbor_x_np, np.ndarray)
 
-
 def test_vectorized_gradients_cached_and_reused():
     np = pytest.importorskip("numpy")
     G = _build_weighted_graph(nx.path_graph, 4, 0.3)
@@ -206,7 +196,6 @@ def test_vectorized_gradients_cached_and_reused():
     assert after.shape == before.shape
     stats = manager.get_metrics(DNFR_PREP_STATE_KEY)
     assert stats.hits >= 1
-
 
 def test_compute_dnfr_auto_vectorizes_when_numpy_present(monkeypatch):
     np = pytest.importorskip("numpy")
@@ -237,7 +226,6 @@ def test_compute_dnfr_auto_vectorizes_when_numpy_present(monkeypatch):
         _compute_dnfr(fallback_graph, fallback_data)
     assert calls and calls[-1] is False
 
-
 def _build_weighted_graph(factory, n_nodes: int, topo_weight: float):
     G = factory(n_nodes)
     for idx, node in enumerate(G.nodes):
@@ -251,7 +239,6 @@ def _build_weighted_graph(factory, n_nodes: int, topo_weight: float):
         "topo": topo_weight,
     }
     return G
-
 
 def test_prepare_dnfr_data_skips_degree_when_topology_disabled(monkeypatch):
     """Degree data is cached even when topology weight is 0 (no performance penalty)."""
@@ -285,7 +272,6 @@ def test_prepare_dnfr_data_skips_degree_when_topology_disabled(monkeypatch):
     assert restored.get("deg_list") is not None
     assert restored.get("degs") is not None
 
-
 @pytest.mark.parametrize("factory", [nx.path_graph, nx.complete_graph])
 @pytest.mark.parametrize("topo_weight", [0.0, 0.4])
 def test_vectorized_matches_reference(factory, topo_weight, monkeypatch):
@@ -305,7 +291,6 @@ def test_vectorized_matches_reference(factory, topo_weight, monkeypatch):
     assert dnfr_vec == pytest.approx(dnfr_list)
     assert G_vec.graph.get("_DNFR_META") == G_list.graph.get("_DNFR_META")
     assert G_vec.graph.get("_dnfr_hook_name") == G_list.graph.get("_dnfr_hook_name")
-
 
 def _build_dense_graph_regression():
     G = nx.complete_graph(5)
@@ -330,7 +315,6 @@ def _build_dense_graph_regression():
         "topo": 0.1,
     }
     return G
-
 
 def _manual_dense_dnfr_expected(G):
     weights = G.graph["DNFR_WEIGHTS"]
@@ -387,7 +371,6 @@ def _manual_dense_dnfr_expected(G):
         )
         expected.append(dnfr_value)
     return expected
-
 
 def _legacy_numpy_stack_accumulation(
     G,
@@ -476,7 +459,6 @@ def _legacy_numpy_stack_accumulation(
 
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
-
 def test_sparse_graph_prefers_edge_accumulation_and_matches_dnfr(monkeypatch):
     np = pytest.importorskip("numpy")
     del np  # only needed to guarantee NumPy availability for the heuristic
@@ -542,7 +524,6 @@ def test_sparse_graph_prefers_edge_accumulation_and_matches_dnfr(monkeypatch):
         if deg_buffer_id is not None:
             assert id(cache.neighbor_deg_sum) == deg_buffer_id
 
-
 @pytest.mark.parametrize("factory", [nx.path_graph, nx.complete_graph])
 @pytest.mark.parametrize("topo_weight", [0.0, 0.35])
 def test_edge_accumulation_neighbor_sums_match_loop(factory, topo_weight, monkeypatch):
@@ -573,7 +554,6 @@ def test_edge_accumulation_neighbor_sums_match_loop(factory, topo_weight, monkey
         assert vec_degs is loop_degs is None
     else:
         np.testing.assert_allclose(vec_degs, loop_degs, rtol=1e-9, atol=1e-9)
-
 
 @pytest.mark.parametrize("factory", [nx.path_graph, nx.complete_graph])
 @pytest.mark.parametrize("topo_weight", [0.0, 0.45])
@@ -624,7 +604,6 @@ def test_edge_accumulation_matches_legacy_stack(factory, topo_weight):
         assert vec_degs is legacy_degs is None
     else:
         np.testing.assert_allclose(vec_degs, legacy_degs, rtol=1e-9, atol=1e-9)
-
 
 @pytest.mark.parametrize("topo_weight", [0.0, 0.4])
 def test_edge_accumulation_buffers_cached_and_stable(topo_weight, monkeypatch):
@@ -742,7 +721,6 @@ def test_edge_accumulation_buffers_cached_and_stable(topo_weight, monkeypatch):
             atol=1e-9,
         )
 
-
 def test_dense_graph_uses_dense_accumulation_by_default(monkeypatch):
     np = pytest.importorskip("numpy")
     del np
@@ -762,7 +740,6 @@ def test_dense_graph_uses_dense_accumulation_by_default(monkeypatch):
         default_compute_delta_nfr(G_fallback)
     dnfr_fallback = collect_attr(G_fallback, G_fallback.nodes, ALIAS_DNFR, 0.0)
     assert dnfr_dense == pytest.approx(dnfr_fallback)
-
 
 def test_dense_graph_dnfr_modes_stable(monkeypatch):
     template = _build_dense_graph_regression()
@@ -785,7 +762,6 @@ def test_dense_graph_dnfr_modes_stable(monkeypatch):
     assert vector_dnfr == pytest.approx(expected)
     assert vector_dnfr == pytest.approx(fallback_dnfr)
 
-
 def test_sparse_graph_can_force_dense_mode(monkeypatch):
     np = pytest.importorskip("numpy")
     del np
@@ -807,7 +783,6 @@ def test_sparse_graph_can_force_dense_mode(monkeypatch):
     dnfr_dense = collect_attr(G_sparse, G_sparse.nodes, ALIAS_DNFR, 0.0)
     dnfr_fallback = collect_attr(fallback, fallback.nodes, ALIAS_DNFR, 0.0)
     assert dnfr_dense == pytest.approx(dnfr_fallback)
-
 
 @pytest.mark.parametrize("topo_weight", [0.0, 0.45])
 def test_dense_adjacency_accumulation_matches_loop(topo_weight, monkeypatch):
@@ -846,7 +821,6 @@ def test_dense_adjacency_accumulation_matches_loop(topo_weight, monkeypatch):
     assert repeated is not None
     assert data_dense.get("dense_degree_np") is degree_vector
     assert cache.dense_degree_np is degree_vector
-
 
 def test_broadcast_accumulation_dense_graph_equivalence():
     np = pytest.importorskip("numpy")
@@ -907,7 +881,6 @@ def test_broadcast_accumulation_dense_graph_equivalence():
 
     np.testing.assert_allclose(updated_vector, updated_loop, rtol=1e-9, atol=1e-9)
 
-
 def test_sparse_bincount_accumulation_matches_manual():
     np = pytest.importorskip("numpy")
 
@@ -966,7 +939,6 @@ def test_sparse_bincount_accumulation_matches_manual():
             np.asarray(deg_vec, dtype=float), expected_deg, rtol=1e-12, atol=1e-12
         )
 
-
 def test_broadcast_accumulation_invalidation_on_edge_change():
     np = pytest.importorskip("numpy")
 
@@ -1011,7 +983,6 @@ def test_broadcast_accumulation_invalidation_on_edge_change():
 
     np.testing.assert_allclose(vector_dnfr, loop_dnfr, rtol=1e-9, atol=1e-9)
 
-
 def _build_large_random_graph(np_module, *, nodes=480, edges=9600, seed=20240517):
     """Create a dense-ish random graph with seeded TNFR attributes."""
 
@@ -1031,7 +1002,6 @@ def _build_large_random_graph(np_module, *, nodes=480, edges=9600, seed=20240517
         "topo": 0.2,
     }
     return G
-
 
 def test_vectorized_matches_python_and_is_faster_large_graph(monkeypatch):
     np = pytest.importorskip("numpy")

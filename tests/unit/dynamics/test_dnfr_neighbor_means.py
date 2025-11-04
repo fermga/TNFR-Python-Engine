@@ -15,7 +15,6 @@ ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
-
 @contextmanager
 def numpy_disabled(monkeypatch):
     import tnfr.dynamics.dnfr as dnfr_module
@@ -23,7 +22,6 @@ def numpy_disabled(monkeypatch):
     with monkeypatch.context() as ctx:
         ctx.setattr(dnfr_module, "get_numpy", lambda: None)
         yield
-
 
 def _build_graph():
     G = nx.path_graph(4)
@@ -40,7 +38,6 @@ def _build_graph():
         "topo": 0.1,
     }
     return G
-
 
 def _build_cancelling_graph():
     phases = {
@@ -61,17 +58,14 @@ def _build_cancelling_graph():
     }
     return G, phases
 
-
 def _collect_dnfr(G):
     return collect_attr(G, G.nodes, ALIAS_DNFR, 0.0)
-
 
 def _get_prep_state(G):
     manager = _graph_cache_manager(G.graph)
     state = manager.get(DNFR_PREP_STATE_KEY)
     assert isinstance(state, DnfrPrepState)
     return manager, state
-
 
 def test_neighbor_means_vectorized_matches_python(monkeypatch):
     pytest.importorskip("numpy")
@@ -85,7 +79,6 @@ def test_neighbor_means_vectorized_matches_python(monkeypatch):
     default_compute_delta_nfr(G_vec)
 
     assert _collect_dnfr(G_vec) == pytest.approx(_collect_dnfr(G_py))
-
 
 def test_neighbor_mean_workspaces_reused(monkeypatch):
     np = pytest.importorskip("numpy")
@@ -121,7 +114,6 @@ def test_neighbor_mean_workspaces_reused(monkeypatch):
     stats = manager.get_metrics(DNFR_PREP_STATE_KEY)
     assert stats.hits >= 1
 
-
 def test_pure_python_parallel_matches_serial(monkeypatch):
     G_serial = _build_graph()
     G_parallel = _build_graph()
@@ -131,7 +123,6 @@ def test_pure_python_parallel_matches_serial(monkeypatch):
         default_compute_delta_nfr(G_parallel, n_jobs=3)
 
     assert _collect_dnfr(G_parallel) == pytest.approx(_collect_dnfr(G_serial))
-
 
 def test_vectorized_n_jobs_argument():
     pytest.importorskip("numpy")
@@ -143,7 +134,6 @@ def test_vectorized_n_jobs_argument():
     default_compute_delta_nfr(G_vectorized, n_jobs=4)
 
     assert _collect_dnfr(G_vectorized) == pytest.approx(_collect_dnfr(G_reference))
-
 
 def test_neighbor_mean_zero_vector_length_preserves_theta(monkeypatch):
     G_py, phases_py = _build_cancelling_graph()

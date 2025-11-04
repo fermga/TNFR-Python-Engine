@@ -7,7 +7,6 @@ from tnfr.operators.definitions import Coherence, Emission, Reception, Resonance
 
 from tests.helpers.compare_classical import classical_operator_snapshot
 
-
 def test_classic_runtime_sequence_matches_golden_snapshot() -> None:
     ops = [Emission(), Reception(), Coherence(), Resonance(), Transition()]
     snapshot = classical_operator_snapshot(ops)

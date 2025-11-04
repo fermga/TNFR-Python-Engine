@@ -28,7 +28,6 @@ if _orig is not None:
 else:  # pragma: no cover - cleanup when original module absent
     del sys.modules["tnfr"]
 
-
 def test_get_attr_default_none_returns_none():
     d = {}
     acc = AliasAccessor(int)
@@ -36,14 +35,12 @@ def test_get_attr_default_none_returns_none():
     assert result is None
     assert d == {}
 
-
 def test_get_attr_default_is_converted():
     d = {}
     acc = AliasAccessor(int)
     result = acc.get(d, ("x",), default="5")
     assert result == 5
     assert d == {}
-
 
 def test_get_attr_default_logs_on_failure(caplog):
     d = {}
@@ -53,7 +50,6 @@ def test_get_attr_default_logs_on_failure(caplog):
     assert result is None
     assert len(caplog.records) == 1
     assert "default" in caplog.text
-
 
 def test_get_attr_default_strict_raises():
     d = {}

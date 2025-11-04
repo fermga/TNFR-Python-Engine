@@ -14,7 +14,6 @@ ALIAS_THETA = get_aliases("THETA")
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
-
 def test_compute_Si_vectorized_uses_bulk_helper(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
 
@@ -52,7 +51,6 @@ def test_compute_Si_vectorized_uses_bulk_helper(monkeypatch, graph_canon):
     assert recorded["edge_src"].shape == recorded["edge_dst"].shape
     assert recorded["edge_dst"].size > 0
 
-
 def _configure_graph(graph):
     graph.add_nodes_from(range(4))
     graph.add_edges_from(((0, 1), (1, 2), (2, 3)))
@@ -63,7 +61,6 @@ def _configure_graph(graph):
         set_attr(graph.nodes[node], ALIAS_THETA, phases[node])
         set_attr(graph.nodes[node], ALIAS_VF, vf_values[node])
         set_attr(graph.nodes[node], ALIAS_DNFR, dnfr_values[node])
-
 
 def test_compute_Si_vectorized_avoids_abs_max_recompute(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
@@ -95,7 +92,6 @@ def test_compute_Si_vectorized_avoids_abs_max_recompute(monkeypatch, graph_canon
     assert set(vectorized) == set(fallback)
     for node in vectorized:
         assert fallback[node] == pytest.approx(vectorized[node])
-
 
 def test_compute_Si_vectorized_buffer_reuse_matches_python(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
@@ -152,7 +148,6 @@ def test_compute_Si_vectorized_buffer_reuse_matches_python(monkeypatch, graph_ca
         assert vector_first[node] == pytest.approx(baseline[node])
         assert vector_second[node] == pytest.approx(baseline[node])
 
-
 def test_compute_Si_vectorized_matches_python(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
 
@@ -188,7 +183,6 @@ def test_compute_Si_vectorized_matches_python(monkeypatch, graph_canon):
     for node in vectorized:
         assert python[node] == vectorized[node]
 
-
 def test_compute_Si_python_parallel_matches(monkeypatch, graph_canon):
     monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: None)
 
@@ -201,7 +195,6 @@ def test_compute_Si_python_parallel_matches(monkeypatch, graph_canon):
     assert set(sequential) == set(parallel)
     for node in sequential:
         assert parallel[node] == pytest.approx(sequential[node])
-
 
 def test_compute_Si_reads_jobs_from_graph(monkeypatch, graph_canon):
     monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: None)
@@ -237,7 +230,6 @@ def test_compute_Si_reads_jobs_from_graph(monkeypatch, graph_canon):
 
     assert captured == [3]
 
-
 def test_compute_Si_vectorized_respects_chunk_size(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
 
@@ -270,7 +262,6 @@ def test_compute_Si_vectorized_respects_chunk_size(monkeypatch, graph_canon):
     assert set(chunked) == set(baseline)
     for node in baseline:
         assert chunked[node] == pytest.approx(baseline[node])
-
 
 def test_compute_Si_vectorized_chunked_results_match(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
@@ -329,7 +320,6 @@ def test_compute_Si_vectorized_chunked_results_match(monkeypatch, graph_canon):
     assert set(chunked) == set(baseline)
     for node in baseline:
         assert chunked[node] == pytest.approx(baseline[node])
-
 
 def test_compute_Si_vectorized_skips_isolated_nodes(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
@@ -397,7 +387,6 @@ def test_compute_Si_vectorized_skips_isolated_nodes(monkeypatch, graph_canon):
     assert sum(arr.size for arr in remainder_inputs) == connected
     assert all(arr.size > 0 for arr in remainder_inputs)
 
-
 def test_compute_Si_python_parallel_chunk_size(monkeypatch, graph_canon):
     monkeypatch.setattr("tnfr.metrics.sense_index.get_numpy", lambda: None)
 
@@ -443,7 +432,6 @@ def test_compute_Si_python_parallel_chunk_size(monkeypatch, graph_canon):
 
     assert payload_lengths
     assert all(1 <= length <= 3 for length in payload_lengths)
-
 
 def test_compute_Si_edge_indices_cache_invalidation(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
@@ -504,7 +492,6 @@ def test_compute_Si_edge_indices_cache_invalidation(monkeypatch, graph_canon):
     for node in vector_after:
         assert python_after[node] == pytest.approx(vector_after[node])
 
-
 def test_compute_Si_reuses_structural_arrays(monkeypatch, graph_canon):
     np = pytest.importorskip("numpy")
 
@@ -531,7 +518,6 @@ def test_compute_Si_reuses_structural_arrays(monkeypatch, graph_canon):
 
     compute_Si(G, inplace=False)
     assert rebuilds == 1
-
 
 def test_compute_Si_structural_cache_invalidated_on_attribute_change(
     monkeypatch, graph_canon

@@ -8,7 +8,6 @@ import tnfr.dynamics as dynamics
 import tnfr.dynamics.selectors as selectors_module
 from tnfr.alias import set_attr
 
-
 def _build_graph(graph_canon, samples):
     G = graph_canon()
     for idx, (si, dnfr, accel) in enumerate(samples):
@@ -18,7 +17,6 @@ def _build_graph(graph_canon, samples):
         set_attr(nd, dynamics.ALIAS_DNFR, dnfr)
         set_attr(nd, dynamics.ALIAS_D2EPI, accel)
     return G
-
 
 def test_collect_selector_metrics_numpy_vectorized(monkeypatch, graph_canon):
     class _FakeArray(list):
@@ -58,7 +56,6 @@ def test_collect_selector_metrics_numpy_vectorized(monkeypatch, graph_canon):
 
     assert metrics[0] == pytest.approx((0.1, 0.25, 0.0625))
     assert metrics[1] == pytest.approx((1.0, 0.5, 0.125))
-
 
 def test_collect_selector_metrics_process_pool(monkeypatch, graph_canon):
     monkeypatch.setattr(dynamics, "get_numpy", lambda: None)

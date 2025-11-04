@@ -23,7 +23,6 @@ from tests.helpers.compare_classical import (
 )
 from tests.helpers.mathematics import build_node_with_operators, make_dynamics_engine
 
-
 @pytest.mark.parametrize(
     "ops",
     [
@@ -48,7 +47,6 @@ def test_run_sequence_with_validation_reports_metrics(ops):
     assert validation["passed"] is True
     assert "report" in validation
 
-
 def test_run_sequence_with_validation_respects_frequency_override():
     node, _, _ = build_node_with_operators(frequency_value=None)
     outcome = node.run_sequence_with_validation(
@@ -56,7 +54,6 @@ def test_run_sequence_with_validation_respects_frequency_override():
     )
     assert "frequency_positive" not in outcome["post_metrics"]
     assert outcome["validation"] is None
-
 
 def test_run_sequence_with_validation_logging_respects_flags(caplog):
     node, _, _ = build_node_with_operators()
@@ -82,7 +79,6 @@ def test_run_sequence_with_validation_logging_respects_flags(caplog):
     assert node_records[0].message.startswith("node_metrics.pre")
     assert node_records[1].message.startswith("node_metrics.post")
 
-
 def test_run_sequence_validation_summary_aligns_with_metrics():
     node, _, _ = build_node_with_operators()
     result = node.run_sequence_with_validation(list(DEFAULT_ACCEPTANCE_OPS))
@@ -100,7 +96,6 @@ def test_run_sequence_validation_summary_aligns_with_metrics():
     assert freq_metric["value"] == pytest.approx(post_metrics["frequency_expectation"])
     assert freq_metric["projection_passed"] is post_metrics["frequency_projection_passed"]
 
-
 def test_mathematical_dynamics_engine_matches_analytic_solution():
     hilbert = HilbertSpace(2)
     generator = np.diag([1.0, -1.0])
@@ -113,7 +108,6 @@ def test_mathematical_dynamics_engine_matches_analytic_solution():
     assert trajectory.shape == (3, 2)
     assert np.allclose(trajectory[0], state)
 
-
 def test_mathematical_dynamics_engine_direct_instantiation_step():
     hilbert = HilbertSpace(2)
     generator = np.diag([1.0, -1.0])
@@ -125,7 +119,6 @@ def test_mathematical_dynamics_engine_direct_instantiation_step():
     expected = np.array([-1.0j, 0.0 + 0j])
     assert np.allclose(evolved, expected)
 
-
 def test_mathematical_dynamics_engine_reproducibility_without_rng():
     hilbert = HilbertSpace(3)
     generator = np.diag([0.2, -0.1, 0.05])
@@ -135,7 +128,6 @@ def test_mathematical_dynamics_engine_reproducibility_without_rng():
     first = engine.evolve(state, steps=4, dt=0.3)
     second = engine.evolve(state, steps=4, dt=0.3)
     assert np.allclose(first, second)
-
 
 def test_mathematical_dynamics_engine_matches_scipy_when_available():
     pytest.importorskip("scipy.linalg")
@@ -148,7 +140,6 @@ def test_mathematical_dynamics_engine_matches_scipy_when_available():
     numpy_step = numpy_engine.step(state, dt=0.5)
     scipy_step = scipy_engine.step(state, dt=0.5)
     assert np.allclose(numpy_step, scipy_step)
-
 
 def test_operator_factory_wiring_creates_valid_node():
     G, node_id = create_nfr("factory-node")
@@ -177,7 +168,6 @@ def test_operator_factory_wiring_creates_valid_node():
     summary = node.run_sequence_with_validation(list(DEFAULT_ACCEPTANCE_OPS), enable_validation=True)
     assert summary["validation"]["passed"] is True
 
-
 def test_run_sequence_with_validation_is_reproducible_with_seed():
     summary_one, node_one = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng_seed=2024)
     summary_two, node_two = math_sequence_summary(DEFAULT_ACCEPTANCE_OPS, rng_seed=2024)
@@ -194,7 +184,6 @@ def test_run_sequence_with_validation_is_reproducible_with_seed():
     graph_two = node_two.G
     assert graph_one is not graph_two
     assert set(graph_one.nodes) == set(graph_two.nodes)
-
 
 def test_run_sequence_with_validation_accepts_generator_instance():
     rng = np.random.default_rng(1337)

@@ -16,7 +16,6 @@ from tnfr.initialization import init_node_attrs
 
 from .strategies import PROPERTY_TEST_SETTINGS, prepare_network
 
-
 def _resolve_uniform_bounds(params: Mapping[str, float | None]) -> tuple[float, float]:
     """Return the effective ``νf`` bounds used for uniform initialisation."""
 
@@ -32,7 +31,6 @@ def _resolve_uniform_bounds(params: Mapping[str, float | None]) -> tuple[float, 
     vf_uniform_max = min(vf_uniform_max, vf_max_lim)
     return vf_uniform_min, vf_uniform_max
 
-
 def _collect_node_attrs(graph, *, override: bool) -> dict[int, dict[str, float]]:
     """Initialise ``graph`` and capture the core node attributes."""
 
@@ -46,7 +44,6 @@ def _collect_node_attrs(graph, *, override: bool) -> dict[int, dict[str, float]]
         }
         for node, data in graph.nodes(data=True)
     }
-
 
 def _assert_node_attributes(
     attrs: Mapping[int, Mapping[str, float]],
@@ -82,7 +79,6 @@ def _assert_node_attributes(
         if vf_mode == "uniform":
             assert uniform_min <= vf <= uniform_max
 
-
 def _bounded_float(min_value: float, max_value: float) -> st.SearchStrategy[float]:
     return st.floats(
         min_value=min_value,
@@ -90,7 +86,6 @@ def _bounded_float(min_value: float, max_value: float) -> st.SearchStrategy[floa
         allow_nan=False,
         allow_infinity=False,
     )
-
 
 @st.composite
 def _init_parameter_sets(draw) -> dict[str, object]:
@@ -144,7 +139,6 @@ def _init_parameter_sets(draw) -> dict[str, object]:
         "INIT_SI_MAX": si_max,
         "INIT_EPI_VALUE": epi_val,
     }
-
 
 @PROPERTY_TEST_SETTINGS
 @given(data=st.data(), init_config=_init_parameter_sets())

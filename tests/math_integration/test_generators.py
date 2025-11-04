@@ -15,7 +15,6 @@ import numpy as np
 
 from tnfr.mathematics import build_delta_nfr
 
-
 def _expected_ring_adjacency(dim: int) -> np.ndarray:
     """Compute expected ring adjacency matrix for baseline validation."""
     adjacency = np.zeros((dim, dim), dtype=float)
@@ -27,11 +26,10 @@ def _expected_ring_adjacency(dim: int) -> np.ndarray:
     adjacency[(indices + 1) % dim, indices] = 1.0
     return adjacency
 
-
 def test_build_delta_nfr_scaling_matches_ring_baselines():
     """Verify ΔNFR operator scaling matches expected ring topology baselines.
-    
-    This test provides specific baseline validation against expected ring topology 
+
+    This test provides specific baseline validation against expected ring topology
     values that serve as a reference for operator generation correctness.
     """
     dim = 4

@@ -7,7 +7,6 @@ import pytest
 from tnfr import operators
 from tnfr.dynamics import runtime
 
-
 class _Recorder:
     """Capture invocations to verify delegation occurs."""
 
@@ -17,10 +16,8 @@ class _Recorder:
     def __call__(self, graph: object) -> None:
         self.calls.append(graph)
 
-
 class _ExplosiveError(RuntimeError):
     """Raised to ensure _maybe_remesh propagates delegate errors."""
-
 
 def test_maybe_remesh_delegates_to_operator(monkeypatch, graph_canon) -> None:
     """_maybe_remesh should invoke the remesh operator exactly once."""
@@ -34,7 +31,6 @@ def test_maybe_remesh_delegates_to_operator(monkeypatch, graph_canon) -> None:
     runtime._maybe_remesh(G)
 
     assert recorder.calls == [G]
-
 
 def test_maybe_remesh_propagates_delegate_errors(monkeypatch, graph_canon) -> None:
     """Exceptions from the remesh delegate must bubble up."""

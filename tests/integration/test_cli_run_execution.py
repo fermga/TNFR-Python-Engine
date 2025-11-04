@@ -10,7 +10,6 @@ import pytest
 
 from tnfr.cli import main
 
-
 def test_cli_run_invokes_runtime_with_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
     """Ensure ``tnfr run`` forwards overrides to the runtime entry point."""
 
@@ -108,7 +107,6 @@ def test_cli_run_invokes_runtime_with_overrides(monkeypatch: pytest.MonkeyPatch)
         "apply_glyphs": False,
         "n_jobs": {"dnfr_n_jobs": 3},
     }
-
 
 def test_cli_run_handles_degenerate_stop_early(
     monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture

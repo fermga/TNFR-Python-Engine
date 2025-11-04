@@ -50,11 +50,9 @@ ALIAS_VF = get_aliases("VF")
 ALIAS_DVF = get_aliases("DVF")
 ALIAS_D2VF = get_aliases("D2VF")
 
-
 def test_metrics_verbosity_presets_match_shared_levels():
     assert METRICS_VERBOSITY_DEFAULT == TELEMETRY_VERBOSITY_DEFAULT
     assert set(_METRICS_VERBOSITY_PRESETS) == set(TELEMETRY_VERBOSITY_LEVELS)
-
 
 def test_register_metrics_preset_rejects_unknown_levels():
     spec = MetricsVerbositySpec(
@@ -69,7 +67,6 @@ def test_register_metrics_preset_rejects_unknown_levels():
     )
     with pytest.raises(ValueError):
         _register_metrics_preset(spec)
-
 
 def test_track_stability_updates_hist(graph_canon):
     """_track_stability aggregates stability and derivatives."""
@@ -103,7 +100,6 @@ def test_track_stability_updates_hist(graph_canon):
     assert hist["stable_frac"] == [0.5]
     assert hist["delta_Si"] == [pytest.approx(1.5)]
     assert hist["B"] == [pytest.approx(0.15)]
-
 
 def test_track_stability_vectorized_updates_graph(monkeypatch, graph_canon):
     """Vectorized tracking updates history and nodal derivatives."""
@@ -150,7 +146,6 @@ def test_track_stability_vectorized_updates_graph(monkeypatch, graph_canon):
     assert G.nodes[1]["_prev_vf"] == pytest.approx(1.0)
     assert get_attr(G.nodes[1], ALIAS_DVF) == pytest.approx(0.0)
     assert get_attr(G.nodes[1], ALIAS_D2VF) == pytest.approx(0.0)
-
 
 def test_track_stability_parallel_fallback(monkeypatch, graph_canon):
     """Fallback path splits work across processes when NumPy is absent."""
@@ -235,7 +230,6 @@ def test_track_stability_parallel_fallback(monkeypatch, graph_canon):
 
     assert resolve_calls == [(math.ceil(2 / 2), 2, {"minimum": 1})]
 
-
 def test_update_sigma_uses_default_window(monkeypatch, graph_canon):
     G = graph_canon()
     captured: dict[str, int | None] = {}
@@ -268,7 +262,6 @@ def test_update_sigma_uses_default_window(monkeypatch, graph_canon):
     assert hist["sense_sigma_mag"] == [sigma["mag"]]
     assert hist["sense_sigma_angle"] == [sigma["angle"]]
 
-
 def test_update_sigma_rejects_legacy_history(monkeypatch, graph_canon):
     G = graph_canon()
 
@@ -287,7 +280,6 @@ def test_update_sigma_rejects_legacy_history(monkeypatch, graph_canon):
 
     with pytest.raises(ValueError, match="glyph_load_estab"):
         _update_sigma(G, hist)
-
 
 def test_metrics_basic_verbosity_skips_collectors(monkeypatch, graph_canon):
     G = graph_canon()
@@ -315,7 +307,6 @@ def test_metrics_basic_verbosity_skips_collectors(monkeypatch, graph_canon):
     assert GLYPH_LOAD_STABILIZERS_KEY not in hist
     assert "phase_sync" not in hist
     assert "Si_mean" not in hist
-
 
 def test_metrics_detailed_verbosity_runs_collectors(monkeypatch, graph_canon):
     G = graph_canon()
@@ -379,7 +370,6 @@ def test_metrics_detailed_verbosity_runs_collectors(monkeypatch, graph_canon):
 
     assert calls_debug == ["phase", "sigma", "aggregate", "advanced"]
 
-
 def test_metrics_unknown_verbosity_warns_and_defaults(graph_canon, caplog):
     G = graph_canon()
     G.graph["METRICS"] = dict(G.graph["METRICS"])
@@ -408,7 +398,6 @@ def test_metrics_unknown_verbosity_warns_and_defaults(graph_canon, caplog):
         before_presets[METRICS_VERBOSITY_DEFAULT]
         == _METRICS_VERBOSITY_PRESETS[METRICS_VERBOSITY_DEFAULT]
     )
-
 
 def test_register_metrics_callbacks_respects_verbosity(monkeypatch, graph_canon):
     recorded: list[str] = []
@@ -480,7 +469,6 @@ def test_register_metrics_callbacks_respects_verbosity(monkeypatch, graph_canon)
     register_metrics_callbacks(G_high)
     assert recorded_high == ["coherence", "diagnosis"]
 
-
 def _si_graph(graph_canon):
     G = graph_canon()
     inject_defaults(G)
@@ -491,7 +479,6 @@ def _si_graph(graph_canon):
     # Include a node without Si to ensure NaN entries are ignored.
     G.add_node(3)
     return G, hist
-
 
 def test_aggregate_si_numpy_vectorized(monkeypatch, graph_canon):
     """NumPy path aggregates Si statistics with vector operations."""
@@ -507,7 +494,6 @@ def test_aggregate_si_numpy_vectorized(monkeypatch, graph_canon):
     assert hist["Si_hi_frac"][0] == pytest.approx(1 / 3)
     assert hist["Si_lo_frac"][0] == pytest.approx(1 / 3)
 
-
 def test_aggregate_si_python_sequential(monkeypatch, graph_canon):
     """Sequential fallback keeps the same Si statistics."""
 
@@ -520,7 +506,6 @@ def test_aggregate_si_python_sequential(monkeypatch, graph_canon):
     assert hist["Si_mean"][0] == pytest.approx(0.5)
     assert hist["Si_hi_frac"][0] == pytest.approx(1 / 3)
     assert hist["Si_lo_frac"][0] == pytest.approx(1 / 3)
-
 
 def test_aggregate_si_python_parallel(monkeypatch, graph_canon):
     """Parallel fallback distributes the counting across chunks."""
@@ -585,7 +570,6 @@ def test_aggregate_si_python_parallel(monkeypatch, graph_canon):
         (math.ceil(expected_total / 2), expected_total, {"minimum": 1})
     ]
 
-
 def test_compute_advanced_metrics_populates_history(graph_canon):
     """_compute_advanced_metrics records glyph-based metrics."""
 
@@ -612,7 +596,6 @@ def test_compute_advanced_metrics_populates_history(graph_canon):
     morph = hist["morph"][0]
     assert morph["ID"] == pytest.approx(0.5)
 
-
 def test_pp_val_zero_when_no_remesh(graph_canon):
     """PP metric should be 0.0 when no REMESH events occur."""
     G = graph_canon()
@@ -624,7 +607,6 @@ def test_pp_val_zero_when_no_remesh(graph_canon):
 
     morph = G.graph["history"]["morph"][0]
     assert morph["PP"] == 0.0
-
 
 def test_pp_val_handles_missing_sha(graph_canon):
     """PP metric handles absence of SHA counts gracefully."""
@@ -638,7 +620,6 @@ def test_pp_val_handles_missing_sha(graph_canon):
     morph = G.graph["history"]["morph"][0]
     assert morph["PP"] == 0.0
 
-
 def test_metrics_step_rejects_legacy_history(graph_canon):
     """Legacy glyph load history keys abort metrics setup."""
 
@@ -648,7 +629,6 @@ def test_metrics_step_rejects_legacy_history(graph_canon):
 
     with pytest.raises(ValueError, match="glyph_load_estab"):
         _metrics_step(G, ctx=None)
-
 
 def test_save_by_node_flag_keeps_metrics_equal(graph_canon):
     """Disabling per-node storage should not alter global metrics."""
@@ -683,7 +663,6 @@ def test_save_by_node_flag_keeps_metrics_equal(graph_canon):
     assert hist_true["morph"] == hist_false["morph"]
     assert hist_true["Tg_by_node"] != {}
     assert hist_false.get("Tg_by_node", {}) == {}
-
 
 def test_build_metrics_summary_reuses_metrics_helpers(monkeypatch):
     G = object()
@@ -724,7 +703,6 @@ def test_build_metrics_summary_reuses_metrics_helpers(monkeypatch):
     assert summary["glyphogram"]["t"] == list(range(10))
     assert summary["glyphogram"]["AL"] == [1, 2, 3]
 
-
 def test_build_metrics_summary_handles_empty_latency(monkeypatch):
     G = object()
 
@@ -743,7 +721,6 @@ def test_build_metrics_summary_handles_empty_latency(monkeypatch):
 
     assert has_latency is False
     assert summary["latency_mean"] == 0.0
-
 
 def test_build_metrics_summary_accepts_unbounded_limit(monkeypatch):
     G = object()
@@ -766,14 +743,12 @@ def test_build_metrics_summary_accepts_unbounded_limit(monkeypatch):
     assert summary["glyphogram"]["t"] == list(range(12))
     assert summary["glyphogram"]["AL"] == list(range(12))
 
-
 def test_latency_index_uses_max_denominator(graph_canon):
     """Latency index uses max(1, n_total) to avoid zero division."""
     G = graph_canon()
     hist = {}
     _update_latency_index(G, hist, n_total=0, n_latent=2, t=0)
     assert hist["latency_index"][0]["value"] == 2.0
-
 
 def test_update_epi_support_matches_manual(graph_canon):
     """_update_epi_support computes size and norm as expected."""
@@ -799,7 +774,6 @@ def test_update_epi_support_matches_manual(graph_canon):
     rec = hist["EPI_support"][0]
     assert rec["size"] == expected_size
     assert rec["epi_norm"] == pytest.approx(expected_norm)
-
 
 def test_advanced_metrics_vectorized_path(monkeypatch, graph_canon):
     """Vectorised accumulation avoids spawning process pools when NumPy is present."""
@@ -888,7 +862,6 @@ def test_advanced_metrics_vectorized_path(monkeypatch, graph_canon):
     epi_support = hist["EPI_support"][0]
     assert epi_support["size"] == 4
     assert epi_support["epi_norm"] == pytest.approx((0.06 + 0.10 + 0.20 + 0.07) / 4)
-
 
 def test_advanced_metrics_process_pool_fallback(monkeypatch, graph_canon):
     """When NumPy is unavailable the implementation falls back to multiprocessing."""

@@ -6,7 +6,6 @@ from tnfr.gamma import GAMMA_REGISTRY
 from tnfr.glyph_history import HistoryDict, ensure_history
 from tnfr.metrics import register_metrics_callbacks
 
-
 def test_history_delta_si_and_B(graph_canon):
     G = graph_canon()
     G.add_node(0, EPI=0.0, νf=0.5, theta=0.0)
@@ -17,7 +16,6 @@ def test_history_delta_si_and_B(graph_canon):
     hist = ensure_history(G)
     assert "delta_Si" in hist and len(hist["delta_Si"]) >= 2
     assert "B" in hist and len(hist["B"]) >= 2
-
 
 def test_history_basic_metrics_skips_heavy_series(graph_canon):
     G = graph_canon()
@@ -34,7 +32,6 @@ def test_history_basic_metrics_skips_heavy_series(graph_canon):
     assert "glyph_load_stabilizers" not in hist
     assert "Si_mean" not in hist
 
-
 def test_gamma_kuramoto_tanh_registry(graph_canon):
     G = graph_canon()
     G.add_nodes_from([0, 1])
@@ -46,7 +43,6 @@ def test_gamma_kuramoto_tanh_registry(graph_canon):
     val = gamma_fn(G, 0, 0.0, cfg)
     assert abs(val) <= cfg["beta"]
 
-
 def test_pop_least_used_batch_stops_after_k_even_with_stale():
     hist = HistoryDict({"a": 1, "b": 2})
     hist.get_increment("a")
@@ -56,7 +52,6 @@ def test_pop_least_used_batch_stops_after_k_even_with_stale():
     hist.pop_least_used_batch(2)
     assert not hist
     assert not hist._counts
-
 
 def test_pop_least_used_batch_removes_k_elements():
     hist = HistoryDict({f"k{i}": i for i in range(3)})

@@ -14,15 +14,14 @@ from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Tuple
 
-
 def extract_test_functions(filepath: Path) -> List[Tuple[str, int]]:
     """Extract test function names and line numbers from a file.
-    
+
     Parameters
     ----------
     filepath : Path
         Path to the Python test file
-        
+
     Returns
     -------
     List[Tuple[str, int]]
@@ -36,15 +35,14 @@ def extract_test_functions(filepath: Path) -> List[Tuple[str, int]]:
                 tests.append((match.group(1), line_num))
     return tests
 
-
 def find_similar_tests(test_dirs: List[Path]) -> Dict[str, List[Tuple[Path, str, int]]]:
     """Find tests with similar names across directories.
-    
+
     Parameters
     ----------
     test_dirs : List[Path]
         List of test directories to analyze
-        
+
     Returns
     -------
     Dict[str, List[Tuple[Path, str, int]]]
@@ -62,23 +60,22 @@ def find_similar_tests(test_dirs: List[Path]) -> Dict[str, List[Tuple[Path, str,
         'topology',
         'composition',
     ]
-    
+
     similar_tests = defaultdict(list)
-    
+
     for test_dir in test_dirs:
         if not test_dir.exists():
             continue
-            
+
         for test_file in test_dir.rglob("test_*.py"):
             tests = extract_test_functions(test_file)
-            
+
             for test_name, line_num in tests:
                 for pattern in patterns:
                     if re.search(pattern, test_name, re.IGNORECASE):
                         similar_tests[pattern].append((test_file, test_name, line_num))
-                        
-    return similar_tests
 
+    return similar_tests
 
 def analyze_redundancy():
     """Analyze test redundancy and print report."""
@@ -88,27 +85,27 @@ def analyze_redundancy():
         Path("tests/property"),
         Path("tests/stress"),
     ]
-    
+
     similar = find_similar_tests(test_dirs)
-    
+
     print("=" * 80)
     print("TEST REDUNDANCY ANALYSIS REPORT")
     print("=" * 80)
     print()
-    
+
     for pattern, matches in sorted(similar.items()):
         if len(matches) <= 1:
             continue
-            
+
         print(f"\n{pattern.upper()} Pattern ({len(matches)} tests):")
         print("-" * 40)
-        
+
         # Group by directory
         by_dir = defaultdict(list)
         for filepath, test_name, line_num in matches:
             dir_name = filepath.parts[0] if len(filepath.parts) > 1 else "unknown"
             by_dir[dir_name].append((filepath, test_name, line_num))
-        
+
         for dir_name, tests in sorted(by_dir.items()):
             print(f"  {dir_name}: {len(tests)} tests")
             for filepath, test_name, line_num in tests[:2]:  # Show first 2
@@ -116,7 +113,7 @@ def analyze_redundancy():
                 print(f"    - {rel_path}:{line_num} {test_name}")
             if len(tests) > 2:
                 print(f"    ... and {len(tests) - 2} more")
-    
+
     print("\n" + "=" * 80)
     print("RECOMMENDATIONS")
     print("=" * 80)
@@ -138,7 +135,6 @@ Based on analysis:
    - Document what each test consolidates
    - Keep property/stress tests separate (different purpose)
     """)
-
 
 if __name__ == "__main__":
     analyze_redundancy()

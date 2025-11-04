@@ -8,7 +8,6 @@ import pytest
 
 from tnfr.utils import CacheManager, InstrumentedLRUCache
 
-
 class _EventRecorder:
     """Helper that records callback invocations in a deterministic list."""
 
@@ -26,7 +25,6 @@ class _EventRecorder:
             self.events.append((f"eviction:{label}", key, value))
 
         return _callback
-
 
 @pytest.fixture()
 def cache_state() -> (
@@ -47,7 +45,6 @@ def cache_state() -> (
         locks=locks,
     )
     return cache, manager, locks, recorder
-
 
 def test_eviction_updates_metrics_and_callbacks(
     cache_state: tuple[
@@ -82,7 +79,6 @@ def test_eviction_updates_metrics_and_callbacks(
     ]
     assert "a" not in locks
     assert "b" in locks
-
 
 def test_pop_records_hits_misses_and_lock_cleanup(
     cache_state: tuple[
@@ -127,7 +123,6 @@ def test_pop_records_hits_misses_and_lock_cleanup(
     assert final_stats.misses == 4
     assert final_stats.evictions == 1
 
-
 def test_clear_flushes_cache_and_metrics(
     cache_state: tuple[
         InstrumentedLRUCache[str, int], CacheManager, dict[str, str], _EventRecorder
@@ -159,7 +154,6 @@ def test_clear_flushes_cache_and_metrics(
     stats = manager.get_metrics("instrumented")
     assert stats.evictions == 2
 
-
 def test_configure_rejects_negative_capacity_and_preserves_state() -> None:
     manager = CacheManager(default_capacity=8, overrides={"foo": 4})
     baseline_config = manager.export_config()
@@ -171,7 +165,6 @@ def test_configure_rejects_negative_capacity_and_preserves_state() -> None:
     with pytest.raises(ValueError):
         manager.configure(overrides={"foo": -2})
     assert manager.export_config() == baseline_config
-
 
 def test_callback_registration_runtime_updates() -> None:
     manager = CacheManager()
@@ -202,7 +195,6 @@ def test_callback_registration_runtime_updates() -> None:
     cache["p"] = 5
     cache.pop("p")
     assert recorder.events == [("telemetry:gamma", "p", 5)]
-
 
 def test_overwrite_hit_tracking_can_be_disabled() -> None:
     manager = CacheManager()

@@ -14,7 +14,6 @@ if TYPE_CHECKING:  # pragma: no cover - only for type checkers
 
 __all__ = ("load_config", "apply_config")
 
-
 def load_config(path: str | Path) -> Mapping[str, Any]:
     """Read a JSON/YAML file and return a mapping with parameters."""
 
@@ -23,7 +22,6 @@ def load_config(path: str | Path) -> Mapping[str, Any]:
     if not isinstance(data, Mapping):
         raise ValueError("Configuration file must contain an object")
     return data
-
 
 def apply_config(G: "nx.Graph", path: str | Path) -> None:
     """Inject parameters from ``path`` into ``G.graph``.

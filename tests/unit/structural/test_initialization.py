@@ -14,7 +14,6 @@ from tnfr.initialization import init_node_attrs
 ALIAS_VF = get_aliases("VF")
 ALIAS_THETA = get_aliases("THETA")
 
-
 def test_init_node_attrs_reproducible():
     seed = 123
     G1 = nx.path_graph(5)
@@ -34,7 +33,6 @@ def test_init_node_attrs_reproducible():
     }
 
     assert attrs1 == attrs2
-
 
 def test_init_node_attrs_reversed_uniform_bounds():
     seed = 2024
@@ -65,7 +63,6 @@ def test_init_node_attrs_reversed_uniform_bounds():
     vfs2 = [d[VF_KEY] for _, d in G2.nodes(data=True)]
 
     assert vfs1 == vfs2
-
 
 def test_init_node_attrs_alias_access():
     G = nx.path_graph(2)

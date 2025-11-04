@@ -10,14 +10,12 @@ __all__ = ["make_coherence_operator", "make_frequency_operator"]
 
 _ATOL = 1e-9
 
-
 def _validate_dimension(dim: int) -> int:
     if int(dim) != dim:
         raise ValueError("Operator dimension must be an integer.")
     if dim <= 0:
         raise ValueError("Operator dimension must be strictly positive.")
     return int(dim)
-
 
 def make_coherence_operator(
     dim: int,
@@ -78,7 +76,6 @@ def make_coherence_operator(
     if not operator.is_positive_semidefinite(atol=_ATOL):
         raise ValueError("Coherence operator must be positive semidefinite.")
     return operator
-
 
 def make_frequency_operator(matrix: np.ndarray) -> FrequencyOperator:
     """Return a Hermitian PSD :class:`FrequencyOperator` from ``matrix``.

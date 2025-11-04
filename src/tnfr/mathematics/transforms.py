@@ -31,11 +31,14 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Callable, Iterable, Mapping, Protocol, Sequence, Union, runtime_checkable
+from typing import TYPE_CHECKING, Callable, Iterable, Mapping, Protocol, Sequence, Union, runtime_checkable
 
 import numpy as np
 
 from .epi import BEPIElement
+
+if TYPE_CHECKING:
+    from .spaces import BanachSpaceEPI
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +50,6 @@ __all__ = [
     "validate_norm_preservation",
     "ensure_coherence_monotonicity",
 ]
-
 
 @runtime_checkable
 class IsometryFactory(Protocol):
@@ -68,7 +70,6 @@ class IsometryFactory(Protocol):
         enforce_phase: bool = True,
     ) -> Callable[[Sequence[complex]], Sequence[complex]]:
         """Return an isometric transform for the provided basis."""
-
 
 def build_isometry_factory(
     *,
@@ -102,7 +103,6 @@ def build_isometry_factory(
         "current stage only documents the expected contract."
     )
 
-
 def validate_norm_preservation(
     transform: Callable[[Sequence[complex]], Sequence[complex]],
     *,
@@ -124,7 +124,6 @@ def validate_norm_preservation(
         "should ensure transform(metric(state)) == metric(state) within atol."
     )
 
-
 @dataclass(frozen=True)
 class CoherenceViolation:
     """Details about a monotonicity violation detected in a coherence trace."""
@@ -135,7 +134,6 @@ class CoherenceViolation:
     tolerated_drop: float
     drop: float
     kind: str
-
 
 @dataclass(frozen=True)
 class CoherenceMonotonicityReport:
@@ -152,7 +150,6 @@ class CoherenceMonotonicityReport:
         """Return ``True`` when no violations were recorded."""
 
         return not self.violations
-
 
 def _as_coherence_values(
     coherence_series: Sequence[Union[float, BEPIElement]],
@@ -194,7 +191,6 @@ def _as_coherence_values(
             raise ValueError("Coherence values must be finite numbers.")
         values.append(numeric)
     return tuple(values)
-
 
 def ensure_coherence_monotonicity(
     coherence_series: Sequence[Union[float, BEPIElement]],
@@ -289,4 +285,3 @@ def ensure_coherence_monotonicity(
         tolerated_drop=tolerated_drop,
         atol=atol,
     )
-

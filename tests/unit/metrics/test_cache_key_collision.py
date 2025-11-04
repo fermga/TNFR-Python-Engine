@@ -21,7 +21,6 @@ from tnfr.metrics.sense_index import (
 from tnfr.metrics.trig_cache import get_trig_cache
 from tnfr.utils import edge_version_cache, get_numpy, increment_edge_version
 
-
 class TestCacheKeyUniqueness:
     """Test that cache keys don't collide across different computations."""
 
@@ -153,7 +152,6 @@ class TestCacheKeyUniqueness:
         )
         assert buffers[0] is buffers_again[0]
 
-
 class TestCacheKeyDocumentation:
     """Test that actual cache keys match documented patterns."""
 
@@ -220,7 +218,6 @@ class TestCacheKeyDocumentation:
                     f"{test_cases[i]} vs {test_cases[j]}"
                 )
 
-
 class TestCacheInvalidation:
     """Test that cache invalidation works correctly across hot paths."""
 
@@ -280,7 +277,6 @@ class TestCacheInvalidation:
         # Theta should reflect the new value
         assert abs(theta2_0 - 2.0) < 1e-9
         assert abs(theta1_0 - 0.0) < 1e-9
-
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

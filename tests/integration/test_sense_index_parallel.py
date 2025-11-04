@@ -16,7 +16,6 @@ ALIAS_THETA = get_aliases("THETA")
 ALIAS_VF = get_aliases("VF")
 ALIAS_DNFR = get_aliases("DNFR")
 
-
 def _build_large_graph(node_count: int = 640) -> nx.Graph:
     graph = nx.Graph()
     graph.add_nodes_from(range(node_count))
@@ -35,7 +34,6 @@ def _build_large_graph(node_count: int = 640) -> nx.Graph:
 
     graph.graph["SI_CHUNK_SIZE"] = 32
     return graph
-
 
 def test_parallel_si_matches_sequential_for_large_graph(monkeypatch):
     graph = _build_large_graph()

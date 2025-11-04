@@ -20,7 +20,6 @@ _PROFILE_KEYS = (
     "dnfr_inplace_write",
 )
 
-
 def _seed_graph(node_count: int = 48) -> nx.Graph:
     graph = nx.cycle_graph(node_count)
     for index, node in enumerate(graph.nodes):
@@ -30,7 +29,6 @@ def _seed_graph(node_count: int = 48) -> nx.Graph:
         data[ALIAS_VF[0]] = 0.4 + 0.03 * (index % 7)
     return graph
 
-
 def _assert_profile_timings(profile: dict[str, float | str], expected_path: str) -> None:
     assert profile.get("dnfr_path") == expected_path
     for key in _PROFILE_KEYS:
@@ -38,14 +36,12 @@ def _assert_profile_timings(profile: dict[str, float | str], expected_path: str)
         assert isinstance(value, (int, float))
         assert value > 0.0, f"expected {key} to accumulate positive duration"
 
-
 def test_default_compute_dnfr_records_profile_vectorized() -> None:
     pytest.importorskip("numpy")
     graph = _seed_graph()
     profile: dict[str, float | str] = {}
     default_compute_delta_nfr(graph, profile=profile)
     _assert_profile_timings(profile, "vectorized")
-
 
 def test_default_compute_dnfr_records_profile_fallback() -> None:
     graph = _seed_graph()

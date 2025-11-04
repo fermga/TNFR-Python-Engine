@@ -19,7 +19,6 @@ from tnfr.dynamics.dnfr import (
 
 ALIAS_DNFR = get_aliases("DNFR")
 
-
 class _ImmediateFuture:
     """Future returning the provided value immediately."""
 
@@ -28,7 +27,6 @@ class _ImmediateFuture:
 
     def result(self) -> Any:
         return self._value
-
 
 def _serial_totals(G, grads, weights):
     """Return reference ΔNFR totals by iterating nodes serially."""
@@ -43,7 +41,6 @@ def _serial_totals(G, grads, weights):
         totals[node] = total
     return totals
 
-
 def _configure_graph(graph_factory, count: int) -> Any:
     """Create a line graph with ``count`` nodes carrying ``bias`` values."""
 
@@ -54,14 +51,11 @@ def _configure_graph(graph_factory, count: int) -> Any:
             G.add_edge(idx - 1, idx)
     return G
 
-
 def _grad_bias(graph, node, data):
     return float(data.get("bias", 0.0))
 
-
 def _grad_degree(graph, node, _data):
     return float(graph.degree(node))
-
 
 @pytest.mark.parametrize(
     ("n_jobs", "total"),
@@ -78,7 +72,6 @@ def test_resolve_parallel_jobs_rejects_degenerate_inputs(n_jobs, total):
 
     assert _resolve_parallel_jobs(n_jobs, total) is None
 
-
 def test_iter_chunk_offsets_handles_small_inputs_and_partitions():
     """Chunk iterator is inert for small totals and deterministic when active."""
 
@@ -90,7 +83,6 @@ def test_iter_chunk_offsets_handles_small_inputs_and_partitions():
             assert list(result) == []
 
     assert list(_iter_chunk_offsets(5, 3)) == [(0, 2), (2, 4), (4, 5)]
-
 
 def test_parallel_chunks_cover_all_nodes_once(monkeypatch, graph_canon):
     """Chunk scheduling records non-overlapping node slices with deterministic results."""
@@ -143,7 +135,6 @@ def test_parallel_chunks_cover_all_nodes_once(monkeypatch, graph_canon):
         for node in G_parallel.nodes
     }
     assert observed == expected
-
 
 def test_pickle_failure_falls_back_to_serial(monkeypatch, graph_canon):
     """When payloads are not picklable the serial path still applies ΔNFR updates."""

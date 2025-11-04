@@ -38,7 +38,6 @@ __all__ = (
     "_selector_parallel_jobs",
 )
 
-
 _SelectorThresholdItems = tuple[tuple[str, float], ...]
 _SelectorThresholdCacheEntry = tuple[
     _SelectorThresholdItems,
@@ -49,7 +48,6 @@ _SELECTOR_THRESHOLD_CACHE: WeakKeyDictionary[
     _SelectorThresholdCacheEntry,
 ] = WeakKeyDictionary()
 _SELECTOR_THRESHOLD_CACHE_LOCK = threading.Lock()
-
 
 def _sorted_items(mapping: Mapping[str, float]) -> _SelectorThresholdItems:
     """Return mapping items sorted by key.
@@ -65,7 +63,6 @@ def _sorted_items(mapping: Mapping[str, float]) -> _SelectorThresholdItems:
         Key-sorted items providing a hashable representation for memoisation.
     """
     return tuple(sorted(mapping.items()))
-
 
 def _compute_selector_thresholds(
     thr_sel_items: _SelectorThresholdItems,
@@ -89,7 +86,6 @@ def _compute_selector_thresholds(
         val = thr_sel.get(key, default)
         out[key] = clamp01(float(val))
     return cast(SelectorThresholds, out)
-
 
 def _selector_thresholds(G: "nx.Graph") -> SelectorThresholds:
     """Return normalised thresholds for Si, ΔNFR and acceleration.
@@ -122,7 +118,6 @@ def _selector_thresholds(G: "nx.Graph") -> SelectorThresholds:
         _SELECTOR_THRESHOLD_CACHE[G] = (thr_sel_items, thresholds)
     return thresholds
 
-
 def _selector_norms(G: "nx.Graph") -> SelectorNorms:
     """Compute and cache selector norms for ΔNFR and acceleration.
 
@@ -140,7 +135,6 @@ def _selector_norms(G: "nx.Graph") -> SelectorNorms:
     norms = compute_dnfr_accel_max(G)
     G.graph["_sel_norms"] = norms
     return norms
-
 
 def _calc_selector_score(
     Si: float, dnfr: float, accel: float, weights: SelectorWeights
@@ -168,7 +162,6 @@ def _calc_selector_score(
         + weights["w_dnfr"] * (1.0 - dnfr)
         + weights["w_accel"] * (1.0 - accel)
     )
-
 
 def _apply_selector_hysteresis(
     nd: dict[str, Any],
@@ -223,15 +216,14 @@ def _apply_selector_hysteresis(
             return prev
     return None
 
-
 def _selector_parallel_jobs(G: "TNFRGraph") -> int | None:
     """Return worker count for selector helpers when parallelism is enabled.
-    
+
     Parameters
     ----------
     G : TNFRGraph
         Graph containing selector configuration.
-        
+
     Returns
     -------
     int | None

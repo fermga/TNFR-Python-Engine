@@ -8,7 +8,6 @@ import pytest
 
 from tnfr.utils import CacheManager, CacheStatistics, prune_lock_mapping
 
-
 def test_cache_manager_aggregate_metrics_combines_counters():
     manager = CacheManager()
     manager.register("primary", lambda: object(), create=False)
@@ -27,7 +26,6 @@ def test_cache_manager_aggregate_metrics_combines_counters():
     assert aggregate.misses == 3
     assert telemetry.timings == 1
     assert telemetry.total_time > 0
-
 
 def test_cache_manager_publish_metrics_dispatches_and_handles_errors(caplog: pytest.LogCaptureFixture):
     manager = CacheManager()
@@ -61,7 +59,6 @@ def test_cache_manager_publish_metrics_dispatches_and_handles_errors(caplog: pyt
     manager.publish_metrics(publisher=collector)
     assert explicit == received
 
-
 def test_cache_manager_logs_metrics(caplog: pytest.LogCaptureFixture):
     manager = CacheManager()
     manager.register("primary", lambda: object(), create=False)
@@ -85,7 +82,6 @@ def test_cache_manager_logs_metrics(caplog: pytest.LogCaptureFixture):
     assert aggregate.misses == 4
     assert pytest.approx(aggregate.total_time, rel=0, abs=1e-9) == 0.5
     assert aggregate.timings == 1
-
 
 def test_prune_lock_mapping_removes_stale_locks():
     shared_lock = object()

@@ -12,17 +12,14 @@ from tnfr.rng import (
 )
 from tnfr.utils import ScopedCounterCache
 
-
 def test_base_seed_returns_value(graph_canon):
     G = graph_canon()
     G.graph["RANDOM_SEED"] = 123
     assert base_seed(G) == 123
 
-
 def test_base_seed_defaults_to_zero(graph_canon):
     G = graph_canon()
     assert base_seed(G) == 0
-
 
 def test_clear_rng_cache_no_fail_when_cache_disabled():
     import tnfr.rng as rng_module
@@ -36,7 +33,6 @@ def test_clear_rng_cache_no_fail_when_cache_disabled():
         set_cache_maxsize(original_size)
         rng_module._CACHE_LOCKED = original_locked
         clear_rng_cache()
-
 
 def test_set_cache_maxsize_resets_cache():
     import tnfr.rng as rng_module
@@ -55,7 +51,6 @@ def test_set_cache_maxsize_resets_cache():
         set_cache_maxsize(original_size)
         rng_module._CACHE_LOCKED = original_locked
         clear_rng_cache()
-
 
 def test_set_cache_maxsize_limits_entries():
     import tnfr.rng as rng_module
@@ -77,7 +72,6 @@ def test_set_cache_maxsize_limits_entries():
         rng_module._CACHE_LOCKED = original_locked
         clear_rng_cache()
 
-
 def test_make_rng_deterministic_without_cache():
     import tnfr.rng as rng_module
 
@@ -92,7 +86,6 @@ def test_make_rng_deterministic_without_cache():
         set_cache_maxsize(original_size)
         rng_module._CACHE_LOCKED = original_locked
         clear_rng_cache()
-
 
 def test_graph_cache_size_applies_when_unlocked(graph_canon):
     import tnfr.rng as rng_module
@@ -110,7 +103,6 @@ def test_graph_cache_size_applies_when_unlocked(graph_canon):
         rng_module._CACHE_LOCKED = original_locked
         clear_rng_cache()
 
-
 def test_manual_disable_blocks_graph_override(graph_canon):
     import tnfr.rng as rng_module
 
@@ -127,7 +119,6 @@ def test_manual_disable_blocks_graph_override(graph_canon):
         set_cache_maxsize(original_size)
         rng_module._CACHE_LOCKED = original_locked
         clear_rng_cache()
-
 
 def test_seed_hash_metrics():
     import tnfr.rng as rng_module
@@ -151,7 +142,6 @@ def test_seed_hash_metrics():
         rng_module._CACHE_LOCKED = original_locked
         clear_rng_cache()
 
-
 def test_seed_hash_evictions_recorded():
     import tnfr.rng as rng_module
 
@@ -173,7 +163,6 @@ def test_seed_hash_evictions_recorded():
         set_cache_maxsize(original_size)
         rng_module._CACHE_LOCKED = original_locked
         clear_rng_cache()
-
 
 def test_scoped_counter_cache_evictions():
     import tnfr.rng as rng_module
@@ -197,7 +186,6 @@ def test_scoped_counter_cache_evictions():
     finally:
         cache.configure(force=True, max_entries=rng_module._DEFAULT_CACHE_MAXSIZE)
         cache.clear()
-
 
 def test_scoped_counter_cache_rejects_negative_max_entries():
     import tnfr.rng as rng_module

@@ -30,12 +30,10 @@ AliasSequence = Sequence[str]
 
 __all__ = ("run_validators", "GRAPH_VALIDATORS")
 
-
 def _materialize_node_mapping(data: NodeData) -> dict[str, object]:
     if isinstance(data, dict):
         return data
     return dict(data)
-
 
 def _require_attr(
     data: NodeData, alias: AliasSequence, node: NodeId, name: str
@@ -47,7 +45,6 @@ def _require_attr(
     if val is None:
         raise ValueError(f"Missing {name} attribute in node {node}")
     return float(val)
-
 
 def _require_epi(data: NodeData, node: NodeId) -> EPIValue:
     """Return a validated BEPI element stored in ``data``."""
@@ -61,7 +58,6 @@ def _require_epi(data: NodeData, node: NodeId) -> EPIValue:
     except (TypeError, ValueError) as exc:
         raise ValueError(f"Invalid EPI payload in node {node}: {exc}") from exc
 
-
 def _validate_sigma(graph: TNFRGraph) -> None:
     from ..sense import sigma_vector_from_graph
 
@@ -69,16 +65,13 @@ def _validate_sigma(graph: TNFRGraph) -> None:
     if sv.get("mag", 0.0) > 1.0 + sys.float_info.epsilon:
         raise ValueError("σ norm exceeds 1")
 
-
 GRAPH_VALIDATORS: tuple[ValidatorFunc, ...] = (_validate_sigma,)
 """Ordered collection of graph-level validators."""
-
 
 def _max_abs(values: np.ndarray) -> float:
     if values.size == 0:
         return 0.0
     return float(np.max(np.abs(values)))
-
 
 def _check_epi(
     epi: EPIValue,
@@ -97,10 +90,8 @@ def _check_epi(
     if not np.allclose(spacings, spacings[0], rtol=1e-9, atol=1e-12):
         raise ValueError(f"EPI grid must be uniform for node {node}")
 
-
 def _out_of_range_msg(name: str, node: NodeId, val: float) -> str:
     return f"{name} out of range in node {node}: {val}"
-
 
 def _check_range(
     val: float,
@@ -113,11 +104,9 @@ def _check_range(
     if not within_range(val, lower, upper, tol):
         raise ValueError(_out_of_range_msg(name, node, val))
 
-
 def _check_glyph(glyph: str | None, node: NodeId) -> None:
     if glyph and glyph not in GLYPHS_CANONICAL_SET:
         raise KeyError(f"Invalid glyph {glyph} in node {node}")
-
 
 def run_validators(graph: TNFRGraph) -> None:
     """Run all invariant validators on ``graph`` with a single node pass."""

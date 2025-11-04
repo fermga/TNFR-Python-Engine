@@ -2,7 +2,6 @@ import networkx as nx
 
 from tnfr.node import NodeNX
 
-
 def test_all_nodes_returns_wrappers(graph_canon):
     graph = graph_canon()
     graph.add_nodes_from([0, 1])
@@ -12,7 +11,6 @@ def test_all_nodes_returns_wrappers(graph_canon):
 
     assert {node.n for node in nodes_from_a} == {0, 1}
     assert all(isinstance(node, NodeNX) for node in nodes_from_a)
-
 
 def test_all_nodes_respects_cached_list():
     graph = nx.Graph()

@@ -8,7 +8,7 @@ organization and discoverability.
 
     # Old imports (still work via this shim)
     from tnfr.callback_utils import CallbackEvent, CallbackManager, callback_manager
-    
+
     # New imports (recommended)
     from tnfr.utils import CallbackEvent, CallbackManager, callback_manager
     # or

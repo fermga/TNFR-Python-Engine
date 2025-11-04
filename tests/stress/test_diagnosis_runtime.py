@@ -29,7 +29,6 @@ ALIAS_DNFR = get_aliases("DNFR")
 
 pytestmark = [pytest.mark.slow, pytest.mark.stress]
 
-
 def _build_large_graph(*, seed: int, nodes: int, probability: float) -> nx.Graph:
     """Return a reproducible graph with canonical TNFR attributes."""
 
@@ -58,7 +57,6 @@ def _build_large_graph(*, seed: int, nodes: int, probability: float) -> nx.Graph
         set_attr(data, ALIAS_DNFR, dnfr)
 
     return graph
-
 
 @pytest.mark.timeout(30)
 def test_diagnosis_step_large_graph_runtime_and_history() -> None:

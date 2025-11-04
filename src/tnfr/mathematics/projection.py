@@ -16,7 +16,6 @@ else:  # pragma: no cover - runtime fallback without numpy.typing
 
 __all__ = ["StateProjector", "BasicStateProjector"]
 
-
 class StateProjector(Protocol):
     """Protocol describing state projection callables."""
 
@@ -29,7 +28,6 @@ class StateProjector(Protocol):
         rng: np.random.Generator | None = None,
     ) -> ComplexVector:
         """Return a normalised TNFR state vector for the provided parameters."""
-
 
 @dataclass(slots=True)
 class BasicStateProjector:

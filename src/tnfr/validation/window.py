@@ -6,7 +6,6 @@ import numbers
 
 __all__ = ["validate_window"]
 
-
 def validate_window(window: int, *, positive: bool = False) -> int:
     """Validate ``window`` as an integer and return it.
 

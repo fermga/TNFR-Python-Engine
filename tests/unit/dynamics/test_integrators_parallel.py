@@ -14,7 +14,6 @@ ALIAS_EPI = get_aliases("EPI")
 ALIAS_DEPI = get_aliases("DEPI")
 ALIAS_D2EPI = get_aliases("D2EPI")
 
-
 @pytest.fixture(autouse=True)
 def inline_process_executor(monkeypatch: pytest.MonkeyPatch) -> None:
     class InlineExecutor:
@@ -52,7 +51,6 @@ def inline_process_executor(monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr(integrators, "ProcessPoolExecutor", InlineExecutor)
 
-
 def _build_sample_graph() -> nx.DiGraph:
     G = nx.DiGraph()
     G.graph.update(
@@ -75,7 +73,6 @@ def _build_sample_graph() -> nx.DiGraph:
         )
     return G
 
-
 def _snapshot(G: nx.DiGraph) -> dict[int, tuple[float, float, float]]:
     return {
         node: (
@@ -85,7 +82,6 @@ def _snapshot(G: nx.DiGraph) -> dict[int, tuple[float, float, float]]:
         )
         for node, data in G.nodes(data=True)
     }
-
 
 @pytest.mark.parametrize("method", ["euler", "rk4"])
 def test_parallel_integrator_matches_serial(method: str) -> None:
@@ -102,7 +98,6 @@ def test_parallel_integrator_matches_serial(method: str) -> None:
     parallel_snapshot = _snapshot(parallel)
     for node in serial_snapshot:
         assert parallel_snapshot[node] == pytest.approx(serial_snapshot[node])
-
 
 @pytest.mark.parametrize("method", ["euler", "rk4"])
 def test_parallel_fallback_without_numpy(
@@ -132,7 +127,6 @@ def test_parallel_fallback_without_numpy(
     parallel_snapshot = _snapshot(parallel)
     for node in serial_snapshot:
         assert parallel_snapshot[node] == pytest.approx(serial_snapshot[node])
-
 
 def test_evaluate_gamma_map_parallel_variants(monkeypatch: pytest.MonkeyPatch) -> None:
     G = _build_sample_graph()
@@ -227,7 +221,6 @@ def test_evaluate_gamma_map_parallel_variants(monkeypatch: pytest.MonkeyPatch) -
         (math.ceil(len(nodes) / (len(nodes) * 4)), len(nodes), {"minimum": 1}),
     ]
 
-
 def test_evaluate_gamma_map_single_node_falls_back(monkeypatch: pytest.MonkeyPatch) -> None:
     G = _build_sample_graph()
     node = next(iter(G.nodes))
@@ -260,7 +253,6 @@ def test_evaluate_gamma_map_single_node_falls_back(monkeypatch: pytest.MonkeyPat
 
     assert result == expected
     assert calls["executor"] == 0
-
 
 def test_gamma_worker_requires_initialisation(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(integrators, "_PARALLEL_GRAPH", None, raising=False)

@@ -1,6 +1,5 @@
 from tnfr.utils.io import _MISSING_TOML_ERROR, _MISSING_YAML_ERROR
 
-
 def test_missing_dependency_error_cached() -> None:
     assert issubclass(_MISSING_TOML_ERROR, Exception)
     assert (

@@ -10,7 +10,6 @@ from tnfr.callback_utils import (
     callback_manager,
 )
 
-
 def test_register_callback_replaces_existing(graph_canon):
     G = graph_canon()
 
@@ -44,7 +43,6 @@ def test_register_callback_replaces_existing(graph_canon):
         "other": CallbackSpec("other", cb2)
     }
 
-
 def test_register_callback_same_callable_dedupes(graph_canon):
     G = graph_canon()
 
@@ -57,7 +55,6 @@ def test_register_callback_same_callable_dedupes(graph_canon):
         "cb": CallbackSpec("cb", cb)
     }
 
-
 def test_register_callback_rejects_tuple(graph_canon):
     G = graph_canon()
 
@@ -68,7 +65,6 @@ def test_register_callback_rejects_tuple(graph_canon):
         callback_manager.register_callback(
             G, event=CallbackEvent.BEFORE_STEP, func=("cb", cb)
         )
-
 
 def test_enum_registration_and_invocation(graph_canon):
     G = graph_canon()
@@ -81,7 +77,6 @@ def test_enum_registration_and_invocation(graph_canon):
     callback_manager.invoke_callbacks(G, CallbackEvent.AFTER_STEP, ctx)
     assert ctx["called"] == 1
 
-
 def test_register_callback_unknown_event(graph_canon):
     G = graph_canon()
 
@@ -90,7 +85,6 @@ def test_register_callback_unknown_event(graph_canon):
 
     with pytest.raises(ValueError, match="Unknown event"):
         callback_manager.register_callback(G, event="nope", func=cb)
-
 
 def test_register_callback_logs_on_overwrite(graph_canon, caplog):
     G = graph_canon()
@@ -105,7 +99,6 @@ def test_register_callback_logs_on_overwrite(graph_canon, caplog):
     with caplog.at_level(logging.WARNING):
         callback_manager.register_callback(G, CallbackEvent.BEFORE_STEP, cb2, name="cb")
         assert any("already registered" in r.message for r in caplog.records)
-
 
 def test_register_callback_strict_overwrite_raises(graph_canon):
     G = graph_canon()

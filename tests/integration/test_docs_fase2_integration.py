@@ -4,7 +4,6 @@ from __future__ import annotations
 import doctest
 from pathlib import Path
 
-
 def test_fase2_integration_doc_executes() -> None:
     doc_path = Path("docs/fase2_integration.md")
     result = doctest.testfile(

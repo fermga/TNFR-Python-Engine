@@ -13,7 +13,6 @@ import networkx as nx
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 
-
 def assert_dnfr_balanced(
     graph: nx.Graph,
     *,
@@ -40,7 +39,6 @@ def assert_dnfr_balanced(
         total_dnfr, 0.0, abs_tol=abs_tol
     ), f"ΔNFR not conserved: total={total_dnfr}, tolerance={abs_tol}"
 
-
 def assert_dnfr_homogeneous_stable(
     graph: nx.Graph,
     *,
@@ -65,7 +63,6 @@ def assert_dnfr_homogeneous_stable(
         assert math.isclose(
             delta, 0.0, abs_tol=abs_tol
         ), f"Node {node} ΔNFR={delta} violates homogeneous stability"
-
 
 def assert_epi_vf_in_bounds(
     graph: nx.Graph,
@@ -108,7 +105,6 @@ def assert_epi_vf_in_bounds(
         if vf_max is not None:
             assert vf <= vf_max, f"Node {node} νf={vf} above maximum {vf_max}"
 
-
 def assert_graph_has_tnfr_defaults(graph: nx.Graph) -> None:
     """Assert that graph has required TNFR structural defaults.
 
@@ -131,7 +127,6 @@ def assert_graph_has_tnfr_defaults(graph: nx.Graph) -> None:
             key in graph.graph
         ), f"Missing required TNFR default: {key}"
 
-
 def get_dnfr_values(graph: nx.Graph) -> list[float]:
     """Extract all ΔNFR values from graph nodes.
 
@@ -148,7 +143,6 @@ def get_dnfr_values(graph: nx.Graph) -> list[float]:
     return sorted(
         float(data.get(DNFR_PRIMARY, 0.0)) for _, data in graph.nodes(data=True)
     )
-
 
 def assert_dnfr_lists_close(
     left: list[float],

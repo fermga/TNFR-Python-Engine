@@ -20,7 +20,6 @@ __all__ = (
     "legacy_preset_guidance",
 )
 
-
 _PRIMARY_PRESETS: dict[str, PresetTokens] = {
     "resonant_bootstrap": seq(
         Glyph.AL,
@@ -64,7 +63,6 @@ PREFERRED_PRESET_NAMES: tuple[str, ...] = tuple(_PRIMARY_PRESETS.keys())
 
 _PRESETS: dict[str, PresetTokens] = {**_PRIMARY_PRESETS}
 
-
 def legacy_preset_guidance(name: str) -> str | None:
     """Return CLI guidance for preset lookups.
 
@@ -73,7 +71,6 @@ def legacy_preset_guidance(name: str) -> str | None:
     """
 
     return None
-
 
 def get_preset(name: str) -> PresetTokens:
     """Return the preset token sequence identified by ``name``."""

@@ -6,12 +6,10 @@ from tnfr.execution import block, play, seq, target
 from tnfr.flatten import parse_program_tokens
 from tnfr.tokens import Glyph, OpTag
 
-
 def _step_noop(graph):
     """Advance graph time deterministically for test reproducibility."""
 
     graph.graph["_t"] = graph.graph.get("_t", 0.0) + 1.0
-
 
 def _patch_history_appender(monkeypatch):
     """Replace glyph application with a pure history recorder."""
@@ -29,7 +27,6 @@ def _patch_history_appender(monkeypatch):
             history.append(glyph_name)
 
     monkeypatch.setattr("tnfr.execution._apply_glyph_to_targets", _record_glyphs)
-
 
 def test_nested_blocks_force_close_history_and_sentinels(graph_canon, monkeypatch):
     """Nested ``block`` calls with mixed targets emit canonical closures."""
@@ -106,7 +103,6 @@ def test_nested_blocks_force_close_history_and_sentinels(graph_canon, monkeypatc
     thol_entries = [entry for entry in trace if entry["op"] == OpTag.THOL.name]
     assert len(thol_entries) == 3
     assert all(entry["g"] == Glyph.THOL.value for entry in thol_entries)
-
 
 def test_string_force_close_coercion(graph_canon, monkeypatch):
     """String ``force_close`` inputs are coerced to canonical glyph names."""

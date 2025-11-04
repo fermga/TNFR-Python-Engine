@@ -7,7 +7,6 @@ from typing import Any
 
 from ..utils import normalize_optional_int
 
-
 def spec(opt: str, /, **kwargs: Any) -> tuple[str, dict[str, Any]]:
     """Create an argument specification pair.
 
@@ -33,7 +32,6 @@ def spec(opt: str, /, **kwargs: Any) -> tuple[str, dict[str, Any]]:
     kwargs.setdefault("dest", opt.lstrip("-").replace("-", "_").replace(".", "_"))
     kwargs.setdefault("default", None)
     return opt, kwargs
-
 
 def _parse_cli_variants(values: Iterable[Any] | None) -> list[int | None]:
     """Return a stable list of integer/``None`` variants for the CLI options."""

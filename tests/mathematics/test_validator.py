@@ -11,7 +11,6 @@ from tnfr.mathematics.spaces import HilbertSpace
 from tnfr.validation import ValidationOutcome, Validator
 from tnfr.validation.spectral import NFRValidator
 
-
 @pytest.fixture
 def validator() -> NFRValidator:
     hilbert = HilbertSpace(dimension=2)
@@ -23,7 +22,6 @@ def validator() -> NFRValidator:
         coherence_threshold=0.4,
         frequency_operator=frequency,
     )
-
 
 def test_validator_accepts_structurally_sound_state(validator: NFRValidator) -> None:
     state = np.array([1.0 + 0.0j, 1.0 + 0.0j]) / np.sqrt(2.0)
@@ -41,7 +39,6 @@ def test_validator_accepts_structurally_sound_state(validator: NFRValidator) -> 
     assert outcome.artifacts is not None
     assert isinstance(outcome.artifacts["normalised_state"], np.ndarray)
 
-
 def test_validator_flags_non_normalised_state(validator: NFRValidator) -> None:
     state = np.array([2.0 + 0.0j, 0.0 + 0.0j])
 
@@ -51,7 +48,6 @@ def test_validator_flags_non_normalised_state(validator: NFRValidator) -> None:
     summary = outcome.summary
     assert summary["normalized"] is False
     assert summary["coherence"]["passed"] is True
-
 
 def test_validator_frequency_failure() -> None:
     hilbert = HilbertSpace(dimension=2)
@@ -75,7 +71,6 @@ def test_validator_frequency_failure() -> None:
     assert summary["frequency"]["projection_passed"] is False
     assert "frequency positivity" in validator.report(outcome)
 
-
 def test_validator_requires_frequency_operator_for_enforcement(validator: NFRValidator) -> None:
     bare_validator = NFRValidator(
         hilbert_space=validator.hilbert_space,
@@ -87,7 +82,6 @@ def test_validator_requires_frequency_operator_for_enforcement(validator: NFRVal
 
     with pytest.raises(ValueError):
         bare_validator.validate(state, enforce_frequency_positivity=True)
-
 
 def test_validator_summary_structure(validator: NFRValidator) -> None:
     state = np.array([1.0 + 0.0j, 1.0 + 0.0j]) / np.sqrt(2.0)
@@ -111,7 +105,6 @@ def test_validator_summary_structure(validator: NFRValidator) -> None:
     unitary = summary["unitary_stability"]
     assert set(unitary.keys()) == {"passed", "norm_after"}
 
-
 def test_validator_detects_non_psd_frequency_operator() -> None:
     hilbert = HilbertSpace(dimension=2)
     coherence = CoherenceOperator([[1.0, 0.0], [0.0, 1.0]])
@@ -133,7 +126,6 @@ def test_validator_detects_non_psd_frequency_operator() -> None:
     assert summary["frequency"]["spectrum_psd"] is False
     assert summary["frequency"]["projection_passed"] is True
     assert summary["frequency"]["value"] > 0.0
-
 
 def test_validator_conforms_to_protocol(validator: NFRValidator) -> None:
     assert isinstance(validator, Validator)

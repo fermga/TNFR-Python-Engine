@@ -6,7 +6,6 @@ from dataclasses import asdict, dataclass, field
 from types import MappingProxyType
 from typing import Any
 
-
 @dataclass(frozen=True, slots=True)
 class MetricDefaults:
     """Default parameters for metric computation.
@@ -90,7 +89,6 @@ class MetricDefaults:
             },
         }
     )
-
 
 METRIC_DEFAULTS = asdict(MetricDefaults())
 

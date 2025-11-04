@@ -8,7 +8,6 @@ import pytest
 
 from tnfr.cli import main
 
-
 def test_cli_profile_pipeline_generates_profiles(tmp_path: Path) -> None:
     """Ensure ``tnfr profile-pipeline`` emits profiling artefacts with NumPy."""
 

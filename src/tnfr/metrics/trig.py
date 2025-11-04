@@ -28,7 +28,6 @@ __all__ = (
     "neighbor_phase_mean",
 )
 
-
 def accumulate_cos_sin(
     it: Iterable[tuple[float, float] | None],
 ) -> tuple[float, float, bool]:
@@ -67,7 +66,6 @@ def accumulate_cos_sin(
 
     return sum_cos, sum_sin, True
 
-
 def _phase_mean_from_iter(
     it: Iterable[tuple[float, float] | None], fallback: float
 ) -> float:
@@ -81,7 +79,6 @@ def _phase_mean_from_iter(
     if not processed:
         return fallback
     return math.atan2(sum_sin, sum_cos)
-
 
 def _neighbor_phase_mean_core(
     neigh: Sequence[Any],
@@ -115,7 +112,6 @@ def _neighbor_phase_mean_core(
     if not processed:
         return fallback
     return math.atan2(sum_sin, sum_cos)
-
 
 def _neighbor_phase_mean_generic(
     obj: "NodeProtocol" | Sequence[Any],
@@ -152,7 +148,6 @@ def _neighbor_phase_mean_generic(
 
     return _neighbor_phase_mean_core(neigh, cos_map, sin_map, np, fallback)
 
-
 def neighbor_phase_mean_list(
     neigh: Sequence[Any],
     cos_th: dict[Any, float],
@@ -169,7 +164,6 @@ def neighbor_phase_mean_list(
     return _neighbor_phase_mean_generic(
         neigh, cos_map=cos_th, sin_map=sin_th, np=np, fallback=fallback
     )
-
 
 def neighbor_phase_mean_bulk(
     edge_src: Any,
@@ -329,14 +323,11 @@ def neighbor_phase_mean_bulk(
     mean_theta = np.where(has_neighbors, np.arctan2(mean_sin, mean_cos), theta_arr)
     return mean_theta, has_neighbors
 
-
 @overload
 def neighbor_phase_mean(obj: "NodeProtocol", n: None = ...) -> Phase: ...
 
-
 @overload
 def neighbor_phase_mean(obj: TNFRGraph, n: NodeId) -> Phase: ...
-
 
 def neighbor_phase_mean(
     obj: "NodeProtocol" | TNFRGraph, n: NodeId | None = None

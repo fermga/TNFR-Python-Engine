@@ -39,7 +39,6 @@ __all__ = (
     "validate_canon",
 )
 
-
 def _max_bepi_magnitude(value: Any) -> float:
     element = ensure_bepi(value)
     mags = [
@@ -47,7 +46,6 @@ def _max_bepi_magnitude(value: Any) -> float:
         float(np.max(np.abs(element.a_discrete))) if element.a_discrete.size else 0.0,
     ]
     return float(max(mags)) if mags else 0.0
-
 
 def _clamp_component(values: Any, lower: float, upper: float) -> np.ndarray:
     array = np.asarray(values, dtype=np.complex128)
@@ -64,7 +62,6 @@ def _clamp_component(values: Any, lower: float, upper: float) -> np.ndarray:
             result[below] = array[below] * (lower / magnitudes[below])
     return result
 
-
 def _clamp_bepi(value: Any, lower: float, upper: float) -> Any:
     element = ensure_bepi(value)
     clamped_cont = _clamp_component(element.f_continuous, lower, upper)
@@ -72,7 +69,6 @@ def _clamp_bepi(value: Any, lower: float, upper: float) -> Any:
     return ensure_bepi(
         {"continuous": clamped_cont, "discrete": clamped_disc, "grid": element.x_grid}
     )
-
 
 def _log_clamp(
     hist: HistoryLog,
@@ -84,7 +80,6 @@ def _log_clamp(
 ) -> None:
     if value < lo or value > hi:
         hist.append({"node": node, "attr": attr, "value": float(value)})
-
 
 def apply_canonical_clamps(
     nd: MutableMapping[str, Any],
@@ -146,7 +141,6 @@ def apply_canonical_clamps(
             set_theta(G, node, new_th)
         else:
             set_theta_attr(nd, new_th)
-
 
 class GraphCanonicalValidator(Validator[TNFRGraph]):
     """Validator enforcing canonical runtime contracts on TNFR graphs."""
@@ -254,10 +248,8 @@ class GraphCanonicalValidator(Validator[TNFRGraph]):
             return "Graph canonical validation errors: " + ", ".join(map(str, errors))
         return f"Graph canonical validation error: {errors}"
 
-
 def validate_canon(G: TNFRGraph) -> ValidationOutcome[TNFRGraph]:
     """Validate ``G`` using :class:`GraphCanonicalValidator`."""
 
     validator = GraphCanonicalValidator()
     return validator.validate(G)
-

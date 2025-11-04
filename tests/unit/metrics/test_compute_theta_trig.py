@@ -3,7 +3,6 @@ import pytest
 
 from tnfr.metrics.trig_cache import _compute_trig_python, compute_theta_trig
 
-
 def test_compute_theta_trig_numpy_matches_python():
     pairs = [
         ("a", {"theta": 0.1}),

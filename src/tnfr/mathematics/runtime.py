@@ -20,9 +20,7 @@ __all__ = [
     "frequency_expectation",
 ]
 
-
 LOGGER = get_logger(__name__)
-
 
 def _as_vector(
     state: Sequence[complex] | np.ndarray,
@@ -39,7 +37,6 @@ def _as_vector(
         )
     return vector
 
-
 def _resolve_operator_backend(operator: CoherenceOperator) -> tuple[Any, Any]:
     backend = getattr(operator, "backend", None) or get_backend()
     matrix_backend = getattr(operator, "_matrix_backend", None)
@@ -47,12 +44,10 @@ def _resolve_operator_backend(operator: CoherenceOperator) -> tuple[Any, Any]:
         matrix_backend = ensure_array(operator.matrix, dtype=np.complex128, backend=backend)
     return backend, matrix_backend
 
-
 def _maybe_log(metric: str, payload: dict[str, object]) -> None:
     if not get_flags().log_performance:
         return
     LOGGER.debug("%s: %s", metric, payload)
-
 
 def normalized(
     state: Sequence[complex] | np.ndarray,
@@ -71,7 +66,6 @@ def normalized(
     _maybe_log("normalized", {"label": label, "norm": norm, "passed": passed})
     return passed, float(norm)
 
-
 def coherence_expectation(
     state: Sequence[complex] | np.ndarray,
     operator: CoherenceOperator,
@@ -82,7 +76,6 @@ def coherence_expectation(
     """Return the coherence expectation value for ``state``."""
 
     return float(operator.expectation(state, normalise=normalise, atol=atol))
-
 
 def coherence(
     state: Sequence[complex] | np.ndarray,
@@ -103,7 +96,6 @@ def coherence(
     )
     return passed, value
 
-
 def frequency_expectation(
     state: Sequence[complex] | np.ndarray,
     operator: FrequencyOperator,
@@ -114,7 +106,6 @@ def frequency_expectation(
     """Return the structural frequency projection for ``state``."""
 
     return float(operator.project_frequency(state, normalise=normalise, atol=atol))
-
 
 def frequency_positive(
     state: Sequence[complex] | np.ndarray,
@@ -142,7 +133,6 @@ def frequency_positive(
     }
     _maybe_log("frequency_positive", {"label": label, **summary})
     return summary
-
 
 def stable_unitary(
     state: Sequence[complex] | np.ndarray,

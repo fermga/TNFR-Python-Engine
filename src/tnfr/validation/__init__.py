@@ -12,7 +12,6 @@ from typing import Any, Generic, Mapping, Protocol, TypeVar, runtime_checkable
 
 SubjectT = TypeVar("SubjectT")
 
-
 @dataclass(slots=True)
 class ValidationOutcome(Generic[SubjectT]):
     """Result emitted by all canonical TNFR validators."""
@@ -29,7 +28,6 @@ class ValidationOutcome(Generic[SubjectT]):
     artifacts: Mapping[str, Any] | None = None
     """Optional artefacts (e.g. clamped nodes, normalised vectors)."""
 
-
 @runtime_checkable
 class Validator(Protocol[SubjectT]):
     """Contract implemented by runtime and spectral validators."""
@@ -40,15 +38,14 @@ class Validator(Protocol[SubjectT]):
     def report(self, outcome: "ValidationOutcome[SubjectT]") -> str:
         """Produce a concise textual explanation for ``outcome``."""
 
-
-from .compatibility import CANON_COMPAT, CANON_FALLBACK
+from .compatibility import CANON_COMPAT, CANON_FALLBACK  # noqa: F401
 from ..operators import grammar as _grammar
 from ..types import Glyph
-from .graph import GRAPH_VALIDATORS, run_validators
-from .window import validate_window
-from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon
-from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr
-from .soft_filters import (
+from .graph import GRAPH_VALIDATORS, run_validators  # noqa: F401
+from .window import validate_window  # noqa: F401
+from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon  # noqa: F401
+from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr  # noqa: F401
+from .soft_filters import (  # noqa: F401
     acceleration_norm,
     check_repeats,
     maybe_force,
@@ -84,7 +81,6 @@ __all__ = _GRAMMAR_EXPORTS + _RUNTIME_EXPORTS
 
 _ENFORCE_CANONICAL_GRAMMAR = _grammar.enforce_canonical_grammar
 
-
 def enforce_canonical_grammar(
     G: Any,
     n: Any,
@@ -105,11 +101,9 @@ def enforce_canonical_grammar(
             return translated
     return result
 
-
 def __getattr__(name: str) -> Any:
     if name == "NFRValidator":
         from .spectral import NFRValidator as _NFRValidator
 
         return _NFRValidator
     raise AttributeError(name)
-

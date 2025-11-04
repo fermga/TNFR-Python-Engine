@@ -19,7 +19,6 @@ ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_VF = get_aliases("VF")
 
-
 @contextmanager
 def numpy_disabled(monkeypatch):
     import tnfr.dynamics.dnfr as dnfr_module
@@ -27,7 +26,6 @@ def numpy_disabled(monkeypatch):
     with monkeypatch.context() as ctx:
         ctx.setattr(dnfr_module, "get_numpy", lambda: None)
         yield
-
 
 def _dense_weighted_graph(np_module, *, nodes: int, topo_weight: float):
     graph = nx.complete_graph(nodes)
@@ -48,7 +46,6 @@ def _dense_weighted_graph(np_module, *, nodes: int, topo_weight: float):
     }
     return graph
 
-
 def _sparse_weighted_graph(np_module, *, nodes: int, topo_weight: float):
     graph = nx.path_graph(nodes)
     phases = np_module.linspace(-np_module.pi / 2, np_module.pi / 2, nodes)
@@ -67,7 +64,6 @@ def _sparse_weighted_graph(np_module, *, nodes: int, topo_weight: float):
         "topo": topo_weight,
     }
     return graph
-
 
 @pytest.mark.parametrize("topo_weight", [0.0, 0.45])
 def test_vectorized_neighbor_sums_match_loop(topo_weight, monkeypatch):
@@ -101,7 +97,6 @@ def test_vectorized_neighbor_sums_match_loop(topo_weight, monkeypatch):
         np_module.testing.assert_allclose(
             vec_degrees, loop_degrees, rtol=1e-9, atol=1e-9
         )
-
 
 @pytest.mark.parametrize("topo_weight", [0.0, 0.5])
 def test_sparse_broadcast_neighbor_sums_match_loop(topo_weight, monkeypatch):
@@ -137,7 +132,6 @@ def test_sparse_broadcast_neighbor_sums_match_loop(topo_weight, monkeypatch):
         np_module.testing.assert_allclose(
             vec_degrees, loop_degrees, rtol=1e-9, atol=1e-9
         )
-
 
 def test_neighbor_chunking_matches_unchunked():
     np_module = pytest.importorskip("numpy")
@@ -190,7 +184,6 @@ def test_neighbor_chunking_matches_unchunked():
             chunk_degrees, baseline_degrees, rtol=1e-9, atol=1e-9
         )
 
-
 def test_chunked_broadcast_accumulator_avoids_bincount(monkeypatch):
     np_module = pytest.importorskip("numpy")
 
@@ -212,7 +205,6 @@ def test_chunked_broadcast_accumulator_avoids_bincount(monkeypatch):
     assert isinstance(chunk_size, int)
     assert isinstance(edge_count, int)
     assert 0 < chunk_size < edge_count
-
 
 def test_vectorized_neighbor_counts_use_cached_degrees():
     np_module = pytest.importorskip("numpy")
@@ -239,7 +231,6 @@ def test_vectorized_neighbor_counts_use_cached_degrees():
     edge_workspace = data.get("neighbor_edge_values_np")
     if edge_workspace is not None:
         assert getattr(edge_workspace, "shape", None)[0] == accum.shape[0]
-
 
 def test_vectorized_neighbor_counts_fallback_without_degrees():
     np_module = pytest.importorskip("numpy")
@@ -268,7 +259,6 @@ def test_vectorized_neighbor_counts_fallback_without_degrees():
         [graph.degree[node] for node in data["nodes"]], dtype=float
     )
     np_module.testing.assert_allclose(count, expected, rtol=1e-12, atol=1e-12)
-
 
 def test_broadcast_accumulator_degree_totals_without_chunking():
     np_module = pytest.importorskip("numpy")
@@ -319,7 +309,6 @@ def test_broadcast_accumulator_degree_totals_without_chunking():
         atol=1e-12,
     )
 
-
 def test_vectorized_neighbor_sums_outperform_loop(monkeypatch):
     np_module = pytest.importorskip("numpy")
 
@@ -345,7 +334,6 @@ def test_vectorized_neighbor_sums_outperform_loop(monkeypatch):
 
     assert vector_elapsed < loop_elapsed
     assert vector_elapsed <= loop_elapsed * 0.9
-
 
 @pytest.mark.parametrize("topo_weight", [0.0, 0.35])
 def test_broadcast_accumulator_matches_without_cache(topo_weight):

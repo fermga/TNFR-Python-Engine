@@ -56,7 +56,6 @@ _MEAN_VECTOR_EPS = 1e-12
 _SPARSE_DENSITY_THRESHOLD = 0.25
 _DNFR_APPROX_BYTES_PER_EDGE = 48
 
-
 def _should_vectorize(G: TNFRGraph, np_module: ModuleType | None) -> bool:
     """Return ``True`` when NumPy is available unless the graph disables it."""
 
@@ -66,7 +65,6 @@ def _should_vectorize(G: TNFRGraph, np_module: ModuleType | None) -> bool:
     if flag is None:
         return True
     return bool(flag)
-
 
 _NUMPY_CACHE_ATTRS = (
     "theta_np",
@@ -92,7 +90,6 @@ _NUMPY_CACHE_ATTRS = (
     "dense_accum_np",
     "dense_degree_np",
 )
-
 
 def _profile_start_stop(
     profile: MutableMapping[str, float] | None,
@@ -121,7 +118,6 @@ def _profile_start_stop(
 
     return _start, _stop
 
-
 def _iter_chunk_offsets(total: int, jobs: int) -> Iterator[tuple[int, int]]:
     """Yield ``(start, end)`` offsets splitting ``total`` items across ``jobs``."""
 
@@ -138,7 +134,6 @@ def _iter_chunk_offsets(total: int, jobs: int) -> Iterator[tuple[int, int]]:
         end = start + size
         yield start, end
         start = end
-
 
 def _neighbor_sums_worker(
     start: int,
@@ -217,7 +212,6 @@ def _neighbor_sums_worker(
         chunk_deg,
     )
 
-
 def _dnfr_gradients_worker(
     start: int,
     end: int,
@@ -254,7 +248,6 @@ def _dnfr_gradients_worker(
         chunk.append(w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo)
     return start, chunk
 
-
 def _resolve_parallel_jobs(n_jobs: int | None, total: int) -> int | None:
     """Return an effective worker count for ``total`` items or ``None``."""
 
@@ -268,13 +261,11 @@ def _resolve_parallel_jobs(n_jobs: int | None, total: int) -> int | None:
         return None
     return max(1, min(jobs, total))
 
-
 def _is_numpy_like(obj) -> bool:
     return (
         getattr(obj, "dtype", None) is not None
         and getattr(obj, "shape", None) is not None
     )
-
 
 def _has_cached_numpy_buffers(data: dict, cache: DnfrCache | None) -> bool:
     for attr in _NUMPY_CACHE_ATTRS:
@@ -291,7 +282,6 @@ def _has_cached_numpy_buffers(data: dict, cache: DnfrCache | None) -> bool:
         return True
     return False
 
-
 __all__ = (
     "default_compute_delta_nfr",
     "set_delta_nfr_hook",
@@ -299,7 +289,6 @@ __all__ = (
     "dnfr_epi_vf_mixed",
     "dnfr_laplacian",
 )
-
 
 def _write_dnfr_metadata(
     G, *, weights: dict, hook_name: str, note: str | None = None
@@ -321,7 +310,6 @@ def _write_dnfr_metadata(
     G.graph["_DNFR_META"] = meta
     G.graph["_dnfr_hook_name"] = hook_name  # string friendly
 
-
 def _configure_dnfr_weights(G) -> dict:
     """Normalise and store ΔNFR weights in ``G.graph['_dnfr_weights']``.
 
@@ -334,7 +322,6 @@ def _configure_dnfr_weights(G) -> dict:
     )
     G.graph["_dnfr_weights"] = weights
     return weights
-
 
 def _init_dnfr_cache(
     G: TNFRGraph,
@@ -471,7 +458,6 @@ def _init_dnfr_cache(
         True,
     )
 
-
 def _ensure_numpy_vectors(cache: DnfrCache, np: ModuleType) -> DnfrCacheVectors:
     """Ensure NumPy copies of cached vectors are initialised and up to date."""
 
@@ -503,34 +489,33 @@ def _ensure_numpy_vectors(cache: DnfrCache, np: ModuleType) -> DnfrCacheVectors:
         arrays.append(arr)
     return tuple(arrays)
 
-
 def _ensure_numpy_degrees(
     cache: DnfrCache,
     deg_list: Sequence[float] | None,
     np: ModuleType,
 ) -> np.ndarray | None:
     """Initialise/update NumPy array mirroring ``deg_list``.
-    
+
     Deg_array reuse pattern:
     -------------------------
     The degree array (deg_array) is a cached NumPy buffer that stores node
     degrees for topology-based ΔNFR computations. The reuse pattern follows:
-    
+
     1. **Allocation**: Created once when topology weight (w_topo) > 0 or when
        caching is enabled, sized to match the node count.
-    
+
     2. **Reuse across steps**: When the graph topology is stable (no edge
        additions/removals), the same deg_array buffer is reused across
        multiple ΔNFR computation steps by updating in-place via np.copyto.
-    
+
     3. **Count buffer optimization**: For undirected graphs where node degree
        equals neighbor count, deg_array can serve double duty as the count
        buffer (see _accumulate_neighbors_numpy lines 2185-2194), eliminating
        the need for an extra accumulator row.
-    
+
     4. **Invalidation**: Cache is cleared when graph.edges changes or when
        _dnfr_prep_dirty flag is set, ensuring fresh allocation on next use.
-    
+
     This pattern maintains ΔNFR computational accuracy (Invariant #8) while
     minimizing allocations for stable topologies.
     """
@@ -548,7 +533,6 @@ def _ensure_numpy_degrees(
         np.copyto(arr, deg_list, casting="unsafe")
     cache.deg_array = arr
     return arr
-
 
 def _resolve_numpy_degree_array(
     data: MutableMapping[str, Any],
@@ -573,7 +557,6 @@ def _resolve_numpy_degree_array(
         return deg_array
     return count
 
-
 def _ensure_cached_array(
     cache: DnfrCache | None,
     attr: str,
@@ -590,7 +573,6 @@ def _ensure_cached_array(
         if cache is not None:
             setattr(cache, attr, arr)
     return arr
-
 
 def _ensure_numpy_state_vectors(
     data: MutableMapping[str, Any], np: ModuleType
@@ -637,7 +619,6 @@ def _ensure_numpy_state_vectors(
 
     return result
 
-
 def _build_edge_index_arrays(
     G: TNFRGraph,
     nodes: Sequence[NodeId],
@@ -672,7 +653,6 @@ def _build_edge_index_arrays(
     edge_src = np.asarray(src, dtype=np.intp)
     edge_dst = np.asarray(dst, dtype=np.intp)
     return edge_src, edge_dst
-
 
 def _refresh_dnfr_vectors(
     G: TNFRGraph, nodes: Sequence[NodeId], cache: DnfrCache
@@ -762,7 +742,6 @@ def _refresh_dnfr_vectors(
             cache.cos_theta_np = None
             cache.sin_theta_np = None
 
-
 def _prepare_dnfr_data(
     G: TNFRGraph,
     *,
@@ -805,7 +784,7 @@ def _prepare_dnfr_data(
 
     nodes = cast(tuple[NodeId, ...], cached_node_list(G))
     edge_count = G.number_of_edges()
-    
+
     # Centralized decision logic for sparse vs dense accumulation path.
     # This decision affects which accumulation strategy will be used:
     #   - "sparse": edge-based accumulation (_accumulate_neighbors_broadcasted)
@@ -814,11 +793,11 @@ def _prepare_dnfr_data(
     prefer_sparse = False
     dense_override = bool(G.graph.get("dnfr_force_dense"))
     dnfr_path_decision = "fallback"  # Default when numpy unavailable
-    
+
     if use_numpy:
         # Heuristic: use sparse path when density <= _SPARSE_DENSITY_THRESHOLD (0.25)
         prefer_sparse = _prefer_sparse_accumulation(len(nodes), edge_count)
-        
+
         if dense_override:
             # User explicitly requested dense mode
             prefer_sparse = False
@@ -829,7 +808,7 @@ def _prepare_dnfr_data(
         else:
             # Heuristic chose sparse path (low density graph)
             dnfr_path_decision = "sparse"
-    
+
     nodes_cached, A_untyped = cached_nodes_and_A(
         G,
         cache_size=cache_size,
@@ -1034,7 +1013,6 @@ def _prepare_dnfr_data(
 
     return result
 
-
 def _apply_dnfr_gradients(
     G: TNFRGraph,
     data: MutableMapping[str, Any],
@@ -1206,7 +1184,6 @@ def _apply_dnfr_gradients(
         set_dnfr(G, n, float(dnfr_values[i]))
     stop_timer("dnfr_inplace_write", write_timer)
 
-
 def _init_bar_arrays(
     data: MutableMapping[str, Any],
     *,
@@ -1332,7 +1309,6 @@ def _init_bar_arrays(
             deg_bar = list(degs) if w_topo != 0.0 and degs is not None else None
     return th_bar, epi_bar, vf_bar, deg_bar
 
-
 def _compute_neighbor_means(
     G: TNFRGraph,
     data: MutableMapping[str, Any],
@@ -1410,7 +1386,6 @@ def _compute_neighbor_means(
             deg_bar[i] = deg_sum[i] * inv
     return th_bar, epi_bar, vf_bar, deg_bar
 
-
 def _compute_dnfr_common(
     G: TNFRGraph,
     data: MutableMapping[str, Any],
@@ -1473,7 +1448,6 @@ def _compute_dnfr_common(
         profile=profile,
     )
 
-
 def _reset_numpy_buffer(
     buffer: np.ndarray | None,
     size: int,
@@ -1487,7 +1461,6 @@ def _reset_numpy_buffer(
         return np.zeros(size, dtype=float)
     buffer.fill(0.0)
     return buffer
-
 
 def _init_neighbor_sums(
     data: MutableMapping[str, Any],
@@ -1577,7 +1550,6 @@ def _init_neighbor_sums(
             degs = None
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
-
 def _prefer_sparse_accumulation(n: int, edge_count: int | None) -> bool:
     """Return ``True`` when neighbour sums should use edge accumulation."""
 
@@ -1588,7 +1560,6 @@ def _prefer_sparse_accumulation(n: int, edge_count: int | None) -> bool:
         return False
     density = edge_count / possible_edges
     return density <= _SPARSE_DENSITY_THRESHOLD
-
 
 def _accumulate_neighbors_dense(
     G: TNFRGraph,
@@ -1674,7 +1645,6 @@ def _accumulate_neighbors_dense(
 
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
-
 def _accumulate_neighbors_broadcasted(
     *,
     edge_src: np.ndarray,
@@ -1695,37 +1665,37 @@ def _accumulate_neighbors_broadcasted(
     chunk_size: int | None = None,
 ) -> dict[str, np.ndarray]:
     """Accumulate neighbour contributions using direct indexed reductions.
-    
+
     Array reuse strategy for non-chunked blocks:
     --------------------------------------------
     This function optimizes memory usage by reusing cached destination arrays:
-    
+
     1. **Accumulator reuse**: The `accum` matrix (component_rows × n) is cached
        across invocations when signature remains stable. For non-chunked paths,
        it's zero-filled (accum.fill(0.0)) rather than reallocated.
-    
+
     2. **Workspace reuse**: The `workspace` buffer (component_rows × edge_count)
        stores intermediate edge values. In non-chunked mode with sufficient
        workspace size, edge values are extracted once into workspace rows
        via np.take(..., out=workspace[row, :]) to avoid repeated allocations.
-    
+
     3. **Destination array writes**: np.bincount results are written to accum
        rows via np.copyto(..., casting="unsafe"), reusing the same memory
        across all components (cos, sin, epi, vf, count, deg).
-    
+
     4. **Deg_array optimization**: When deg_array is provided and topology
        weight is active, degree values are extracted into workspace and
        accumulated via bincount, maintaining the reuse pattern.
-    
+
     The non-chunked path achieves minimal temporary allocations by:
     - Reusing cached accum and workspace buffers
     - Extracting all edge values into workspace in a single pass
     - Writing bincount results directly to destination rows
-    
+
     Note: np.bincount does not support an `out` parameter, so its return
     value must be copied to the destination. The workspace pattern minimizes
     the number of temporary arrays created during edge value extraction.
-    
+
     This approach maintains ΔNFR computational accuracy (Invariant #8) while
     reducing memory footprint for repeated accumulations with stable topology.
     """
@@ -1879,9 +1849,9 @@ def _accumulate_neighbors_broadcasted(
                 # Verify workspace has enough rows for all components
                 # workspace has shape (component_rows, edge_count)
                 required_rows = max(
-                    cos_row + 1, 
-                    sin_row + 1, 
-                    epi_row + 1, 
+                    cos_row + 1,
+                    sin_row + 1,
+                    epi_row + 1,
                     vf_row + 1,
                     (count_row + 1) if count_row is not None else 0,
                     (deg_row + 1) if deg_row is not None else 0,
@@ -1892,7 +1862,7 @@ def _accumulate_neighbors_broadcasted(
                     np.take(sin, edge_dst_int, out=workspace[sin_row, :edge_count])
                     np.take(epi, edge_dst_int, out=workspace[epi_row, :edge_count])
                     np.take(vf, edge_dst_int, out=workspace[vf_row, :edge_count])
-                    
+
                     def _apply_full_bincount(
                         target_row: int | None,
                         values: np.ndarray | None = None,
@@ -1919,15 +1889,15 @@ def _accumulate_neighbors_broadcasted(
                             component_accum[:n],
                             casting="unsafe",
                         )
-                    
+
                     _apply_full_bincount(cos_row, workspace[cos_row, :edge_count])
                     _apply_full_bincount(sin_row, workspace[sin_row, :edge_count])
                     _apply_full_bincount(epi_row, workspace[epi_row, :edge_count])
                     _apply_full_bincount(vf_row, workspace[vf_row, :edge_count])
-                    
+
                     if count_row is not None:
                         _apply_full_bincount(count_row, unit_weight=True)
-                    
+
                     if deg_row is not None and deg_array is not None:
                         np.take(deg_array, edge_dst_int, out=workspace[deg_row, :edge_count])
                         _apply_full_bincount(deg_row, workspace[deg_row, :edge_count])
@@ -2036,7 +2006,6 @@ def _accumulate_neighbors_broadcasted(
         "edge_values": workspace,
     }
 
-
 def _build_neighbor_sums_common(
     G: TNFRGraph,
     data: MutableMapping[str, Any],
@@ -2050,7 +2019,7 @@ def _build_neighbor_sums_common(
     cache: DnfrCache | None = data.get("cache")
     np_module = get_numpy()
     has_numpy_buffers = _has_cached_numpy_buffers(data, cache)
-    
+
     # Fallback: when get_numpy() returns None but we have cached NumPy buffers,
     # attempt to retrieve NumPy from sys.modules to avoid losing vectorization.
     # This preserves ΔNFR semantics (Invariant #3) and maintains performance.
@@ -2067,7 +2036,7 @@ def _build_neighbor_sums_common(
         x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(
             data, np=np_module
         )
-        
+
         # Reuse centralized sparse/dense decision from _prepare_dnfr_data.
         # The decision logic at lines 785-807 already computed prefer_sparse
         # and dense_override based on graph density and user flags.
@@ -2082,7 +2051,7 @@ def _build_neighbor_sums_common(
         use_dense = False
         A = data.get("A")
         dense_override = data.get("dense_override", False)
-        
+
         # Apply centralized decision: dense path requires adjacency matrix
         # and either high graph density or explicit dense_override flag.
         if use_numpy and A is not None:
@@ -2206,7 +2175,6 @@ def _build_neighbor_sums_common(
             deg_sum[i] = deg_acc
     return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
 
-
 def _accumulate_neighbors_numpy(
     G: TNFRGraph,
     data: MutableMapping[str, Any],
@@ -2246,7 +2214,7 @@ def _accumulate_neighbors_numpy(
         data["edge_count"] = int(edge_src.size)
 
     cached_deg_array = data.get("deg_array")
-    
+
     # Memory optimization: When we have a cached degree array and need a count
     # buffer, we can reuse the degree array buffer as the destination for counts.
     # This works because:
@@ -2328,7 +2296,6 @@ def _accumulate_neighbors_numpy(
         count = cached_deg_array
     degs = deg_array if deg_sum is not None and deg_array is not None else None
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
-
 
 def _compute_dnfr(
     G: TNFRGraph,
@@ -2413,7 +2380,6 @@ def _compute_dnfr(
         profile=profile,
     )
 
-
 def default_compute_delta_nfr(
     G: TNFRGraph,
     *,
@@ -2487,7 +2453,6 @@ def default_compute_delta_nfr(
                 setattr(cache, attr, None)
             cache.neighbor_accum_signature = None
 
-
 def set_delta_nfr_hook(
     G: TNFRGraph,
     func: DeltaNFRHook,
@@ -2529,7 +2494,6 @@ def set_delta_nfr_hook(
         meta["note"] = str(note)
         G.graph["_DNFR_META"] = meta
 
-
 def _dnfr_hook_chunk_worker(
     G: TNFRGraph,
     node_ids: Sequence[NodeId],
@@ -2555,7 +2519,6 @@ def _dnfr_hook_chunk_worker(
                 total += w * float(func(G, node, nd))
         results.append((node, total))
     return results
-
 
 def _apply_dnfr_hook(
     G: TNFRGraph,
@@ -2623,7 +2586,7 @@ def _apply_dnfr_hook(
 
             pickle.dumps((grad_items, weights, G), protocol=pickle.HIGHEST_PROTOCOL)
         except Exception:
-            pass  # Fall back to serial processing
+            pass  # Pickle failed, fall back to serial processing
         else:
             chunk_results: list[tuple[NodeId, float]] = []
             with ProcessPoolExecutor(max_workers=effective_jobs) as executor:
@@ -2660,9 +2623,7 @@ def _apply_dnfr_hook(
 
     _write_dnfr_metadata(G, weights=weights, hook_name=hook_name, note=note)
 
-
 # --- Example hooks (optional) ---
-
 
 class _PhaseGradient:
     """Callable computing the phase contribution using cached trig values."""
@@ -2696,7 +2657,6 @@ class _PhaseGradient:
         else:
             th_bar = th_i
         return -angle_diff(th_i, th_bar) / math.pi
-
 
 class _NeighborAverageGradient:
     """Callable computing neighbour averages for scalar attributes."""
@@ -2733,7 +2693,6 @@ class _NeighborAverageGradient:
             total += neigh_val
         return total / len(neighbors) - val
 
-
 def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     """Compute ΔNFR from phase only (Kuramoto-like).
 
@@ -2756,7 +2715,6 @@ def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         note="Example hook.",
         n_jobs=n_jobs,
     )
-
 
 def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     """Compute ΔNFR without phase, mixing EPI and νf.
@@ -2786,7 +2744,6 @@ def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         note="Example hook.",
         n_jobs=n_jobs,
     )
-
 
 def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     """Explicit topological gradient using Laplacian over EPI and νf.

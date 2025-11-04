@@ -86,7 +86,6 @@ class CacheCapacityConfig:
     default_capacity: int | None
     overrides: dict[str, int | None]
 
-
 @dataclass(frozen=True)
 class CacheStatistics:
     """Immutable snapshot of cache telemetry counters."""
@@ -107,7 +106,6 @@ class CacheStatistics:
             total_time=self.total_time + other.total_time,
             timings=self.timings + other.timings,
         )
-
 
 @dataclass
 class DnfrCache:
@@ -166,7 +164,6 @@ class DnfrCache:
     neighbor_accum_signature: Any | None = None
     neighbor_edge_values_np: Any | None = None
 
-
 def new_dnfr_cache() -> DnfrCache:
     """Return an empty :class:`DnfrCache` prepared for ΔNFR orchestration."""
 
@@ -184,7 +181,6 @@ def new_dnfr_cache() -> DnfrCache:
         neighbor_count=[],
         neighbor_deg_sum=[],
     )
-
 
 @dataclass
 class _CacheMetrics:
@@ -204,7 +200,6 @@ class _CacheMetrics:
             timings=self.timings,
         )
 
-
 @dataclass
 class _CacheEntry:
     factory: Callable[[], Any]
@@ -212,7 +207,6 @@ class _CacheEntry:
     reset: Callable[[Any], Any] | None = None
     encoder: Callable[[Any], Any] | None = None
     decoder: Callable[[Any], Any] | None = None
-
 
 class CacheLayer(ABC):
     """Abstract interface implemented by storage backends orchestrated by :class:`CacheManager`."""
@@ -235,7 +229,6 @@ class CacheLayer(ABC):
 
     def close(self) -> None:  # pragma: no cover - optional hook
         """Release resources held by the backend."""
-
 
 class MappingCacheLayer(CacheLayer):
     """In-memory cache layer backed by a mutable mapping."""
@@ -267,7 +260,6 @@ class MappingCacheLayer(CacheLayer):
     def clear(self) -> None:
         with self._lock:
             self._storage.clear()
-
 
 class ShelveCacheLayer(CacheLayer):
     """Persistent cache layer backed by :mod:`shelve`.
@@ -325,7 +317,6 @@ class ShelveCacheLayer(CacheLayer):
     def close(self) -> None:  # pragma: no cover - exercised indirectly
         with self._lock:
             self._shelf.close()
-
 
 class RedisCacheLayer(CacheLayer):
     """Distributed cache layer backed by a Redis client.
@@ -391,7 +382,6 @@ class RedisCacheLayer(CacheLayer):
                 keys = []
             if keys:
                 self._client.delete(*keys)
-
 
 class CacheManager:
     """Coordinate named caches guarded by per-entry locks."""
@@ -863,7 +853,6 @@ class CacheManager:
                 stats.total_time,
             )
 
-
 try:
     from .init import get_logger as _get_logger
 except ImportError:  # pragma: no cover - circular bootstrap fallback
@@ -874,7 +863,6 @@ except ImportError:  # pragma: no cover - circular bootstrap fallback
 _logger = _get_logger(__name__)
 get_logger = _get_logger
 
-
 def _normalise_callbacks(
     callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None,
 ) -> tuple[Callable[[K, V], None], ...]:
@@ -883,7 +871,6 @@ def _normalise_callbacks(
     if callable(callbacks):
         return (callbacks,)
     return tuple(callbacks)
-
 
 def prune_lock_mapping(
     cache: Mapping[K, Any] | MutableMapping[K, Any] | None,
@@ -900,7 +887,6 @@ def prune_lock_mapping(
     for key in list(locks.keys()):
         if key not in cache_keys:
             locks.pop(key, None)
-
 
 class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
     """LRU cache wrapper that synchronises telemetry, callbacks and locks.
@@ -1166,7 +1152,6 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
         except Exception:  # pragma: no cover - defensive logging
             _logger.exception("lock cleanup failed for %r", key)
 
-
 class ManagedLRUCache(LRUCache[K, V]):
     """LRU cache wrapper with telemetry hooks and lock synchronisation."""
 
@@ -1214,14 +1199,12 @@ class ManagedLRUCache(LRUCache[K, V]):
                 _logger.exception("eviction callback failed for %r", key)
         return key, value
 
-
 @dataclass
 class _SeedCacheState:
     """Container tracking the state for :class:`_SeedHashCache`."""
 
     cache: InstrumentedLRUCache[tuple[int, int], int] | None
     maxsize: int
-
 
 @dataclass
 class _CounterState(Generic[K]):
@@ -1243,7 +1226,6 @@ def _require_numpy():
 
     return get_numpy()
 
-
 # Graph key storing per-graph layer configuration overrides.
 _GRAPH_CACHE_LAYERS_KEY = "_tnfr_cache_layers"
 
@@ -1256,12 +1238,10 @@ _GLOBAL_CACHE_MANAGER: CacheManager | None = None
 # set requires these to be dropped to avoid stale data.
 EDGE_VERSION_CACHE_KEYS = ("_trig_version",)
 
-
 def get_graph_version(graph: Any, key: str, default: int = 0) -> int:
     """Return integer version stored in ``graph`` under ``key``."""
 
     return int(graph.get(key, default))
-
 
 def increment_graph_version(graph: Any, key: str) -> int:
     """Increment and store a version counter in ``graph`` under ``key``."""
@@ -1269,7 +1249,6 @@ def increment_graph_version(graph: Any, key: str) -> int:
     version = get_graph_version(graph, key) + 1
     graph[key] = version
     return version
-
 
 def stable_json(obj: Any) -> str:
     """Return a JSON string with deterministic ordering for ``obj``."""
@@ -1283,7 +1262,6 @@ def stable_json(obj: Any) -> str:
         to_bytes=False,
     )
 
-
 @lru_cache(maxsize=1024)
 def _node_repr_digest(obj: Any) -> tuple[str, bytes]:
     """Return cached stable representation and digest for ``obj``."""
@@ -1295,12 +1273,10 @@ def _node_repr_digest(obj: Any) -> tuple[str, bytes]:
     digest = hashlib.blake2b(repr_.encode("utf-8"), digest_size=16).digest()
     return repr_, digest
 
-
 def clear_node_repr_cache() -> None:
     """Clear cached node representations used for checksums."""
 
     _node_repr_digest.cache_clear()
-
 
 def configure_global_cache_layers(
     *,
@@ -1332,7 +1308,6 @@ def configure_global_cache_layers(
             _GLOBAL_CACHE_LAYER_CONFIG.pop("redis", None)
     _close_cache_layers(manager)
 
-
 def _resolve_layer_config(
     graph: MutableMapping[str, Any] | None,
 ) -> dict[str, dict[str, Any]]:
@@ -1350,7 +1325,6 @@ def _resolve_layer_config(
                 elif layer_spec is None:
                     resolved.pop(name, None)
     return resolved
-
 
 def _build_shelve_layer(spec: Mapping[str, Any]) -> ShelveCacheLayer | None:
     path = spec.get("path")
@@ -1374,7 +1348,6 @@ def _build_shelve_layer(spec: Mapping[str, Any]) -> ShelveCacheLayer | None:
     except Exception:  # pragma: no cover - defensive logging
         logger.exception("Failed to initialise ShelveCacheLayer for path %r", path)
         return None
-
 
 def _build_redis_layer(spec: Mapping[str, Any]) -> RedisCacheLayer | None:
     enabled = spec.get("enabled", True)
@@ -1411,7 +1384,6 @@ def _build_redis_layer(spec: Mapping[str, Any]) -> RedisCacheLayer | None:
         logger.exception("Failed to initialise RedisCacheLayer")
         return None
 
-
 def _build_cache_layers(config: Mapping[str, dict[str, Any]]) -> tuple[CacheLayer, ...]:
     layers: list[CacheLayer] = []
     shelve_spec = config.get("shelve")
@@ -1425,7 +1397,6 @@ def _build_cache_layers(config: Mapping[str, dict[str, Any]]) -> tuple[CacheLaye
         if layer is not None:
             layers.append(layer)
     return tuple(layers)
-
 
 def _close_cache_layers(manager: CacheManager | None) -> None:
     if manager is None:
@@ -1441,7 +1412,6 @@ def _close_cache_layers(manager: CacheManager | None) -> None:
                     "Cache layer close failed for %s", layer.__class__.__name__
                 )
 
-
 def reset_global_cache_manager() -> None:
     """Dispose the shared cache manager and close attached layers."""
 
@@ -1450,7 +1420,6 @@ def reset_global_cache_manager() -> None:
         manager = _GLOBAL_CACHE_MANAGER
         _GLOBAL_CACHE_MANAGER = None
     _close_cache_layers(manager)
-
 
 def build_cache_manager(
     *,
@@ -1487,12 +1456,10 @@ def build_cache_manager(
 
     return manager
 
-
 def _node_repr(n: Any) -> str:
     """Stable representation for node hashing and sorting."""
 
     return _node_repr_digest(n)[0]
-
 
 def _iter_node_digests(nodes: Iterable[Any], *, presorted: bool) -> Iterable[bytes]:
     """Yield node digests in a deterministic order."""
@@ -1505,7 +1472,6 @@ def _iter_node_digests(nodes: Iterable[Any], *, presorted: bool) -> Iterable[byt
             (_node_repr_digest(n) for n in nodes), key=lambda x: x[0]
         ):
             yield digest
-
 
 def _node_set_checksum_no_nodes(
     G: nx.Graph,
@@ -1536,7 +1502,6 @@ def _node_set_checksum_no_nodes(
         graph.pop(NODE_SET_CHECKSUM_KEY, None)
     return checksum
 
-
 def node_set_checksum(
     G: nx.Graph,
     nodes: Iterable[Any] | None = None,
@@ -1565,7 +1530,6 @@ def node_set_checksum(
         graph.pop(NODE_SET_CHECKSUM_KEY, None)
     return checksum
 
-
 @dataclass(slots=True)
 class NodeCache:
     """Container for cached node data."""
@@ -1579,7 +1543,6 @@ class NodeCache:
     @property
     def n(self) -> int:
         return len(self.nodes)
-
 
 def _update_node_cache(
     graph: Any,
@@ -1595,7 +1558,6 @@ def _update_node_cache(
         checksum=checksum, nodes=nodes, sorted_nodes=sorted_nodes
     )
     graph[f"{key}_checksum"] = checksum
-
 
 def _refresh_node_list_cache(
     G: nx.Graph,
@@ -1619,7 +1581,6 @@ def _refresh_node_list_cache(
     graph["_node_list_len"] = current_n
     return nodes
 
-
 def _reuse_node_list_cache(
     graph: Any,
     cache: NodeCache,
@@ -1641,7 +1602,6 @@ def _reuse_node_list_cache(
         checksum=checksum,
         sorted_nodes=sorted_nodes,
     )
-
 
 def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     """Cache and return the tuple of nodes for ``G``."""
@@ -1681,12 +1641,10 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
             cache.sorted_nodes = tuple(sorted(nodes, key=_node_repr))
     return nodes
 
-
 def cached_node_list(G: nx.Graph) -> tuple[Any, ...]:
     """Public wrapper returning the cached node tuple for ``G``."""
 
     return _cache_node_list(G)
-
 
 def _ensure_node_map(
     G: TNFRGraph,
@@ -1719,19 +1677,16 @@ def _ensure_node_map(
             setattr(cache, attr, mappings[attr])
     return cast(dict[NodeId, int], getattr(cache, attrs[0]))
 
-
 def ensure_node_index_map(G: TNFRGraph) -> dict[NodeId, int]:
     """Return cached node-to-index mapping for ``G``."""
 
     return _ensure_node_map(G, attrs=("idx",), sort=False)
-
 
 def ensure_node_offset_map(G: TNFRGraph) -> dict[NodeId, int]:
     """Return cached node-to-offset mapping for ``G``."""
 
     sort = bool(G.graph.get("SORT_NODES", False))
     return _ensure_node_map(G, attrs=("offset",), sort=sort)
-
 
 @dataclass
 class EdgeCacheState:
@@ -1740,11 +1695,9 @@ class EdgeCacheState:
     max_entries: int | None
     dirty: bool = False
 
-
 _GRAPH_CACHE_MANAGER_KEY = "_tnfr_cache_manager"
 _GRAPH_CACHE_CONFIG_KEY = "_tnfr_cache_config"
 DNFR_PREP_STATE_KEY = "_dnfr_prep_state"
-
 
 # Ephemeral graph cache management:
 # ----------------------------------
@@ -1775,7 +1728,6 @@ DNFR_PREP_STATE_KEY = "_dnfr_prep_state"
 #       return extract_metrics(H)
 #       # H and its caches are GC'd when function returns
 
-
 @dataclass(slots=True)
 class DnfrPrepState:
     """State container coordinating ΔNFR preparation caches."""
@@ -1783,7 +1735,6 @@ class DnfrPrepState:
     cache: DnfrCache
     cache_lock: threading.RLock
     vector_lock: threading.RLock
-
 
 def _build_dnfr_prep_state(
     graph: MutableMapping[str, Any],
@@ -1807,7 +1758,6 @@ def _build_dnfr_prep_state(
     graph["_dnfr_prep_cache"] = state.cache
     return state
 
-
 def _coerce_dnfr_state(
     graph: MutableMapping[str, Any],
     current: Any,
@@ -1826,7 +1776,6 @@ def _coerce_dnfr_state(
         graph["_dnfr_prep_cache"] = current
         return state
     return _build_dnfr_prep_state(graph)
-
 
 def _graph_cache_manager(graph: MutableMapping[str, Any]) -> CacheManager:
     manager = graph.get(_GRAPH_CACHE_MANAGER_KEY)
@@ -1856,7 +1805,6 @@ def _graph_cache_manager(graph: MutableMapping[str, Any]) -> CacheManager:
     )
     return manager
 
-
 def configure_graph_cache_limits(
     G: GraphLike | TNFRGraph | MutableMapping[str, Any],
     *,
@@ -1879,7 +1827,6 @@ def configure_graph_cache_limits(
         "overrides": dict(snapshot.overrides),
     }
     return snapshot
-
 
 class EdgeCacheManager:
     """Coordinate cache storage and per-key locks for edge version caches."""
@@ -2034,7 +1981,6 @@ class EdgeCacheManager:
 
         self._manager.clear(self._STATE_KEY)
 
-
 def edge_version_cache(
     G: Any,
     key: Hashable,
@@ -2093,7 +2039,6 @@ def edge_version_cache(
         manager.flush_state(state)
     return result
 
-
 def cached_nodes_and_A(
     G: nx.Graph,
     *,
@@ -2142,7 +2087,6 @@ def cached_nodes_and_A(
 
     return nodes, A
 
-
 def _reset_edge_caches(graph: Any, G: Any) -> None:
     """Clear caches affected by edge updates."""
 
@@ -2153,14 +2097,12 @@ def _reset_edge_caches(graph: Any, G: Any) -> None:
     for key in EDGE_VERSION_CACHE_KEYS:
         graph.pop(key, None)
 
-
 def increment_edge_version(G: Any) -> None:
     """Increment the edge version counter in ``G.graph``."""
 
     graph = get_graph(G)
     increment_graph_version(graph, "_edge_version")
     _reset_edge_caches(graph, G)
-
 
 @contextmanager
 def edge_version_update(G: TNFRGraph) -> Iterator[None]:
@@ -2171,7 +2113,6 @@ def edge_version_update(G: TNFRGraph) -> Iterator[None]:
         yield
     finally:
         increment_edge_version(G)
-
 
 class _SeedHashCache(MutableMapping[tuple[int, int], int]):
     """Mutable mapping proxy exposing a configurable LRU cache."""
@@ -2290,7 +2231,6 @@ class _SeedHashCache(MutableMapping[tuple[int, int], int]):
 
         state = self._get_state(create=False)
         return None if state is None else state.cache
-
 
 class ScopedCounterCache(Generic[K]):
     """Thread-safe LRU cache storing monotonic counters by ``key``."""

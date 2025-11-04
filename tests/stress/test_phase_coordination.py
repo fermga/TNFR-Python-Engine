@@ -14,7 +14,6 @@ from tnfr.constants import get_aliases, inject_defaults
 from tnfr.dynamics import coordination as coordination_module
 from tnfr.dynamics.coordination import coordinate_global_local_phase
 
-
 class _RecordingExecutor:
     """ProcessPoolExecutor stand-in that records chunk payloads for inspection."""
 
@@ -34,13 +33,11 @@ class _RecordingExecutor:
             self.chunks.append(item)
             yield func(item)
 
-
 _RECORDED_EXECUTORS: list[_RecordingExecutor] = []
 
 ALIAS_THETA = get_aliases("THETA")
 
 pytestmark = [pytest.mark.slow, pytest.mark.stress]
-
 
 def _build_reproducible_graph(*, seed: int, nodes: int, probability: float) -> nx.Graph:
     """Return a deterministic TNFR graph with canonical theta assignments."""
@@ -57,7 +54,6 @@ def _build_reproducible_graph(*, seed: int, nodes: int, probability: float) -> n
 
     return graph
 
-
 def _snapshot_theta(graph: nx.Graph) -> dict[int, float]:
     """Return a copy of the theta map ensuring all values are finite."""
 
@@ -69,7 +65,6 @@ def _snapshot_theta(graph: nx.Graph) -> dict[int, float]:
         assert math.isfinite(value)
         snapshot[int(node)] = value
     return snapshot
-
 
 @pytest.mark.timeout(30)
 def test_coordinate_phase_parallel_matches_sequential(monkeypatch: pytest.MonkeyPatch) -> None:

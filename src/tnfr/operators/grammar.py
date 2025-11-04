@@ -10,7 +10,10 @@ from dataclasses import dataclass
 from importlib import resources
 from json import JSONDecodeError
 from types import MappingProxyType
-from typing import Any, Mapping, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence
+
+if TYPE_CHECKING:
+    from ..node import NodeProtocol
 
 from ..config.operator_names import (
     CONTRACTION,
@@ -47,7 +50,6 @@ except Exception:  # pragma: no cover - jsonschema optional
     Draft7Validator = None  # type: ignore[assignment]
     _jsonschema_exceptions = None  # type: ignore[assignment]
 
-
 __all__ = [
     "GrammarContext",
     "GrammarConfigurationError",
@@ -71,14 +73,11 @@ __all__ = [
     "function_name_to_glyph",
 ]
 
-
 logger = get_logger(__name__)
-
 
 _SCHEMA_LOAD_ERROR: str | None = None
 _SOFT_VALIDATOR: Draft7Validator | None = None
 _CANON_VALIDATOR: Draft7Validator | None = None
-
 
 # Structural mapping ---------------------------------------------------------
 
@@ -105,7 +104,6 @@ GLYPH_TO_FUNCTION: dict[Glyph, str] = {
 
 FUNCTION_TO_GLYPH: dict[str, Glyph] = {name: glyph for glyph, name in GLYPH_TO_FUNCTION.items()}
 
-
 def glyph_function_name(val: Glyph | str | None, *, default: str | None = None) -> str | None:
     """Return the structural operator name corresponding to ``val``.
 
@@ -129,7 +127,6 @@ def glyph_function_name(val: Glyph | str | None, *, default: str | None = None) 
     else:
         return GLYPH_TO_FUNCTION.get(glyph, default)
 
-
 def function_name_to_glyph(val: str | Glyph | None, *, default: Glyph | None = None) -> Glyph | None:
     """Return the :class:`Glyph` associated with the structural identifier ``val``."""
 
@@ -142,7 +139,6 @@ def function_name_to_glyph(val: str | Glyph | None, *, default: Glyph | None = N
     except (TypeError, ValueError):
         canon = canonical_operator_name(str(val))
         return FUNCTION_TO_GLYPH.get(canon, default)
-
 
 @dataclass(slots=True)
 class GrammarContext:
@@ -188,10 +184,8 @@ class GrammarContext:
             norms=G.graph.get("_sel_norms") or {},
         )
 
-
 def _gram_state(nd: dict[str, Any]) -> dict[str, Any]:
     return nd.setdefault("_GRAM", {"thol_open": False, "thol_len": 0})
-
 
 class GrammarConfigurationError(ValueError):
     """Raised when grammar configuration violates the bundled JSON schema."""
@@ -211,7 +205,6 @@ class GrammarConfigurationError(ValueError):
         self.messages = tuple(messages)
         self.details = tuple(details or ())
 
-
 def _validation_env_flag() -> bool | None:
     flag = os.environ.get("TNFR_GRAMMAR_VALIDATE")
     if flag is None:
@@ -222,7 +215,6 @@ def _validation_env_flag() -> bool | None:
     if normalised in {"1", "true", "on", "yes"}:
         return True
     return None
-
 
 def _ensure_schema_validators() -> tuple[Draft7Validator | None, Draft7Validator | None] | None:
     global _SCHEMA_LOAD_ERROR, _SOFT_VALIDATOR, _CANON_VALIDATOR
@@ -274,12 +266,10 @@ def _ensure_schema_validators() -> tuple[Draft7Validator | None, Draft7Validator
         return None
     return _SOFT_VALIDATOR, _CANON_VALIDATOR
 
-
 def _format_validation_error(err: Any) -> str:
     path = "".join(f"[{p}]" if isinstance(p, int) else f".{p}" for p in err.absolute_path)
     path = path.lstrip(".") or "<root>"
     return f"{path}: {err.message}"
-
 
 def _validate_grammar_configs(ctx: GrammarContext) -> None:
     flag = _validation_env_flag()
@@ -338,7 +328,6 @@ def _validate_grammar_configs(ctx: GrammarContext) -> None:
         details=issues,
     )
 
-
 class SequenceSyntaxError(ValueError):
     """Raised when an operator sequence violates the canonical grammar."""
 
@@ -352,7 +341,6 @@ class SequenceSyntaxError(ValueError):
 
     def __str__(self) -> str:  # pragma: no cover - delegated to ValueError
         return self.message
-
 
 class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
     """Structured report emitted by :func:`validate_sequence`."""
@@ -394,15 +382,12 @@ class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
         self.metadata = metadata_view
         self.error = error
 
-
 _CANONICAL_START = tuple(sorted(VALID_START_OPERATORS))
 _CANONICAL_INTERMEDIATE = tuple(sorted(INTERMEDIATE_OPERATORS))
 _CANONICAL_END = tuple(sorted(VALID_END_OPERATORS))
 
-
 def _format_token_group(tokens: Sequence[str]) -> str:
     return ", ".join(operator_display_name(token) for token in tokens)
-
 
 class _SequenceAutomaton:
     __slots__ = (
@@ -500,9 +485,7 @@ class _SequenceAutomaton:
             "unknown_tokens": frozenset(token for _, token in self._unknown_tokens),
         }
 
-
 _MISSING = object()
-
 
 class StructuralGrammarError(RuntimeError):
     """Raised when canonical grammar invariants are violated."""
@@ -563,22 +546,17 @@ class StructuralGrammarError(RuntimeError):
             payload["context"] = dict(self.context)
         return payload
 
-
 class RepeatWindowError(StructuralGrammarError):
     """Repeated glyph within the configured hysteresis window."""
-
 
 class MutationPreconditionError(StructuralGrammarError):
     """Mutation attempted without satisfying canonical dissonance requirements."""
 
-
 class TholClosureError(StructuralGrammarError):
     """THOL block reached closure conditions without a canonical terminator."""
 
-
 class TransitionCompatibilityError(StructuralGrammarError):
     """Transition attempted that violates canonical compatibility tables."""
-
 
 def _record_grammar_violation(
     G: TNFRGraph, node: NodeId, error: StructuralGrammarError, *, stage: str
@@ -599,14 +577,12 @@ def _record_grammar_violation(
         "grammar violation on node %s during %s: %s", node, stage, payload, exc_info=error
     )
 
-
 def record_grammar_violation(
     G: TNFRGraph, node: NodeId, error: StructuralGrammarError, *, stage: str
 ) -> None:
     """Public shim for recording grammar violations with telemetry hooks intact."""
 
     _record_grammar_violation(G, node, error, stage=stage)
-
 
 def _analyse_sequence(names: Iterable[str]) -> SequenceValidationResult:
     names_list = list(names)
@@ -627,7 +603,6 @@ def _analyse_sequence(names: Iterable[str]) -> SequenceValidationResult:
         error=error,
     )
 
-
 def validate_sequence(
     names: Iterable[str] | object = _MISSING, **kwargs: object
 ) -> ValidationOutcome[tuple[str, ...]]:
@@ -640,7 +615,6 @@ def validate_sequence(
         raise TypeError("validate_sequence() missing required argument: 'names'")
     return _analyse_sequence(names)
 
-
 def parse_sequence(names: Iterable[str]) -> SequenceValidationResult:
     result = _analyse_sequence(names)
     if not result.passed:
@@ -648,7 +622,6 @@ def parse_sequence(names: Iterable[str]) -> SequenceValidationResult:
             raise result.error
         raise SequenceSyntaxError(index=-1, token=None, message=result.message)
     return result
-
 
 def enforce_canonical_grammar(
     G: TNFRGraph,
@@ -702,7 +675,6 @@ def enforce_canonical_grammar(
         return str(cand)
     return coerced_final if isinstance(coerced_final, Glyph) else cand
 
-
 def on_applied_glyph(G: TNFRGraph, n: NodeId, applied: Glyph | str) -> None:
     nd = G.nodes[n]
     st = _gram_state(nd)
@@ -715,7 +687,6 @@ def on_applied_glyph(G: TNFRGraph, n: NodeId, applied: Glyph | str) -> None:
         st["thol_open"] = False
         st["thol_len"] = 0
 
-
 def apply_glyph_with_grammar(
     G: TNFRGraph,
     nodes: Optional[Iterable[NodeId | "NodeProtocol"]],
@@ -725,7 +696,7 @@ def apply_glyph_with_grammar(
     # Convert Glyph enum instances to string values early for consistent processing
     if isinstance(glyph, Glyph):
         glyph = glyph.value
-    
+
     if window is None:
         window = get_param(G, "GLYPH_HYSTERESIS_WINDOW")
 

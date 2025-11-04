@@ -6,7 +6,6 @@ from tnfr.constants import get_aliases
 
 ALIAS_THETA = get_aliases("THETA")
 
-
 def test_collect_attr_with_generator_numpy():
     G = nx.path_graph(3)
     for n in G.nodes:
