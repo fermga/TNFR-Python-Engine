@@ -509,7 +509,31 @@ def _ensure_numpy_degrees(
     deg_list: Sequence[float] | None,
     np: ModuleType,
 ) -> np.ndarray | None:
-    """Initialise/update NumPy array mirroring ``deg_list``."""
+    """Initialise/update NumPy array mirroring ``deg_list``.
+    
+    Deg_array reuse pattern:
+    -------------------------
+    The degree array (deg_array) is a cached NumPy buffer that stores node
+    degrees for topology-based ΔNFR computations. The reuse pattern follows:
+    
+    1. **Allocation**: Created once when topology weight (w_topo) > 0 or when
+       caching is enabled, sized to match the node count.
+    
+    2. **Reuse across steps**: When the graph topology is stable (no edge
+       additions/removals), the same deg_array buffer is reused across
+       multiple ΔNFR computation steps by updating in-place via np.copyto.
+    
+    3. **Count buffer optimization**: For undirected graphs where node degree
+       equals neighbor count, deg_array can serve double duty as the count
+       buffer (see _accumulate_neighbors_numpy lines 2185-2194), eliminating
+       the need for an extra accumulator row.
+    
+    4. **Invalidation**: Cache is cleared when graph.edges changes or when
+       _dnfr_prep_dirty flag is set, ensuring fresh allocation on next use.
+    
+    This pattern maintains ΔNFR computational accuracy (Invariant #8) while
+    minimizing allocations for stable topologies.
+    """
 
     if deg_list is None:
         if cache is not None:
@@ -1670,7 +1694,41 @@ def _accumulate_neighbors_broadcasted(
     np: ModuleType,
     chunk_size: int | None = None,
 ) -> dict[str, np.ndarray]:
-    """Accumulate neighbour contributions using direct indexed reductions."""
+    """Accumulate neighbour contributions using direct indexed reductions.
+    
+    Array reuse strategy for non-chunked blocks:
+    --------------------------------------------
+    This function optimizes memory usage by reusing cached destination arrays:
+    
+    1. **Accumulator reuse**: The `accum` matrix (component_rows × n) is cached
+       across invocations when signature remains stable. For non-chunked paths,
+       it's zero-filled (accum.fill(0.0)) rather than reallocated.
+    
+    2. **Workspace reuse**: The `workspace` buffer (component_rows × edge_count)
+       stores intermediate edge values. In non-chunked mode with sufficient
+       workspace size, edge values are extracted once into workspace rows
+       via np.take(..., out=workspace[row, :]) to avoid repeated allocations.
+    
+    3. **Destination array writes**: np.bincount results are written to accum
+       rows via np.copyto(..., casting="unsafe"), reusing the same memory
+       across all components (cos, sin, epi, vf, count, deg).
+    
+    4. **Deg_array optimization**: When deg_array is provided and topology
+       weight is active, degree values are extracted into workspace and
+       accumulated via bincount, maintaining the reuse pattern.
+    
+    The non-chunked path achieves minimal temporary allocations by:
+    - Reusing cached accum and workspace buffers
+    - Extracting all edge values into workspace in a single pass
+    - Writing bincount results directly to destination rows
+    
+    Note: np.bincount does not support an `out` parameter, so its return
+    value must be copied to the destination. The workspace pattern minimizes
+    the number of temporary arrays created during edge value extraction.
+    
+    This approach maintains ΔNFR computational accuracy (Invariant #8) while
+    reducing memory footprint for repeated accumulations with stable topology.
+    """
 
     n = x.shape[0]
     edge_count = int(edge_src.size)
@@ -2009,8 +2067,13 @@ def _build_neighbor_sums_common(
         x, y, epi_sum, vf_sum, count, deg_sum, degs = _init_neighbor_sums(
             data, np=np_module
         )
+        
+        # Reuse centralized sparse/dense decision from _prepare_dnfr_data.
+        # The decision logic at lines 785-807 already computed prefer_sparse
+        # and dense_override based on graph density and user flags.
         prefer_sparse = data.get("prefer_sparse")
         if prefer_sparse is None:
+            # Fallback: recompute if not set (defensive, should be rare)
             prefer_sparse = _prefer_sparse_accumulation(
                 len(nodes), data.get("edge_count")
             )
@@ -2018,12 +2081,14 @@ def _build_neighbor_sums_common(
 
         use_dense = False
         A = data.get("A")
-        if use_numpy and not prefer_sparse and A is not None:
+        dense_override = data.get("dense_override", False)
+        
+        # Apply centralized decision: dense path requires adjacency matrix
+        # and either high graph density or explicit dense_override flag.
+        if use_numpy and A is not None:
             shape = getattr(A, "shape", (0, 0))
-            use_dense = shape[0] == len(nodes) and shape[1] == len(nodes)
-        if use_numpy and data.get("dense_override") and A is not None:
-            shape = getattr(A, "shape", (0, 0))
-            if shape[0] == len(nodes) and shape[1] == len(nodes):
+            matrix_valid = shape[0] == len(nodes) and shape[1] == len(nodes)
+            if matrix_valid and (dense_override or not prefer_sparse):
                 use_dense = True
 
         if use_dense:
