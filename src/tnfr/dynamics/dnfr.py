@@ -1992,8 +1992,15 @@ def _build_neighbor_sums_common(
     cache: DnfrCache | None = data.get("cache")
     np_module = get_numpy()
     has_numpy_buffers = _has_cached_numpy_buffers(data, cache)
+    
+    # Fallback: when get_numpy() returns None but we have cached NumPy buffers,
+    # attempt to retrieve NumPy from sys.modules to avoid losing vectorization.
+    # This preserves ΔNFR semantics (Invariant #3) and maintains performance.
     if use_numpy and np_module is None and has_numpy_buffers:
-        np_module = sys.modules.get("numpy")
+        candidate = sys.modules.get("numpy")
+        # Validate the candidate module has required NumPy attributes
+        if candidate is not None and hasattr(candidate, "ndarray") and hasattr(candidate, "empty"):
+            np_module = candidate
 
     if np_module is not None:
         if not nodes:

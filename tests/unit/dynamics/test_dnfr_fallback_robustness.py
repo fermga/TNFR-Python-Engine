@@ -352,5 +352,96 @@ def test_dnfr_path_decision_persists_in_telemetry():
     assert profile["dnfr_path"] in ["vectorized", "fallback"]
 
 
+def test_fallback_validates_numpy_module_attributes():
+    """
+    Validate that the improved fallback mechanism (lines 1995-2000)
+    checks for required NumPy attributes before using sys.modules.
+
+    This test ensures the fallback is robust against corrupted or
+    incomplete NumPy modules in sys.modules.
+    """
+    np = pytest.importorskip("numpy")
+    import tnfr.dynamics.dnfr as dnfr_module
+
+    # First, create a graph and populate cache with NumPy arrays
+    G = _create_test_graph()
+    data = _prepare_dnfr_data(G)
+    _compute_dnfr(G, data)
+    baseline_dnfr = list(collect_attr(G, G.nodes, ALIAS_DNFR, 0.0))
+
+    # Verify cache has NumPy buffers
+    cache = data.get("cache")
+    assert cache is not None
+    has_numpy_buffers = any(
+        [
+            cache.theta_np is not None,
+            cache.epi_np is not None,
+            cache.neighbor_accum_np is not None,
+        ]
+    )
+    assert has_numpy_buffers, "Cache should have NumPy buffers from first run"
+
+    # Create a mock incomplete numpy module without required attributes
+    class IncompleteNumpy:
+        """Mock numpy module missing required attributes."""
+
+        pass
+
+    # Test 1: With incomplete numpy in sys.modules, fallback should fail gracefully
+    original_numpy = sys.modules.get("numpy")
+    try:
+        sys.modules["numpy"] = IncompleteNumpy()  # type: ignore
+        
+        # Mock get_numpy to return None
+        with patch.object(dnfr_module, "get_numpy", return_value=None):
+            # This should fall back to pure Python since the numpy in sys.modules is invalid
+            stats = _build_neighbor_sums_common(G, data, use_numpy=True)
+            assert stats is not None
+            # Verify computation still works
+            _compute_dnfr_common = dnfr_module._compute_dnfr_common
+            _compute_dnfr_common(
+                G,
+                data,
+                x=stats[0],
+                y=stats[1],
+                epi_sum=stats[2],
+                vf_sum=stats[3],
+                count=stats[4],
+                deg_sum=stats[5],
+                degs=stats[6],
+            )
+            fallback_dnfr = list(collect_attr(G, G.nodes, ALIAS_DNFR, 0.0))
+            # Results should still be reasonable (may differ slightly due to different path)
+            assert all(isinstance(v, float) for v in fallback_dnfr)
+            assert len(fallback_dnfr) == G.number_of_nodes()
+    finally:
+        # Restore original numpy module
+        if original_numpy is not None:
+            sys.modules["numpy"] = original_numpy
+        else:
+            sys.modules.pop("numpy", None)
+
+    # Test 2: With valid numpy in sys.modules, fallback should work
+    sys.modules["numpy"] = np
+    with patch.object(dnfr_module, "get_numpy", return_value=None):
+        stats = _build_neighbor_sums_common(G, data, use_numpy=True)
+        assert stats is not None
+        _compute_dnfr_common = dnfr_module._compute_dnfr_common
+        _compute_dnfr_common(
+            G,
+            data,
+            x=stats[0],
+            y=stats[1],
+            epi_sum=stats[2],
+            vf_sum=stats[3],
+            count=stats[4],
+            deg_sum=stats[5],
+            degs=stats[6],
+        )
+        valid_fallback_dnfr = list(collect_attr(G, G.nodes, ALIAS_DNFR, 0.0))
+        # With valid numpy, results should match baseline
+        np.testing.assert_allclose(valid_fallback_dnfr, baseline_dnfr, rtol=1e-10)
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
