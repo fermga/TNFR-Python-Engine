@@ -351,7 +351,7 @@ TNFRConfigSequence: TypeAlias = Sequence[TNFRConfigScalar]
 """Homogeneous sequence of scalar TNFR configuration values."""
 
 TNFRConfigValue: TypeAlias = (
-    TNFRConfigScalar | TNFRConfigSequence | Mapping[str, "TNFRConfigValue"]
+    TNFRConfigScalar | TNFRConfigSequence | MutableMapping[str, "TNFRConfigValue"]
 )
 """Permissible configuration entry for TNFR coherence defaults.
 
@@ -359,6 +359,10 @@ The alias captures the recursive structure used by TNFR defaults: scalars
 express structural thresholds, booleans toggle operators, and nested mappings
 or sequences describe coherent parameter bundles such as γ grammars,
 selector advice or trace capture lists.
+
+Configuration dictionaries support the full :class:`~collections.abc.MutableMapping`
+protocol, enabling dict-like operations such as ``.get()``, ``__setitem__``,
+and ``.update()`` for runtime configuration adjustments.
 """
 
 class _SigmaVectorRequired(TypedDict):
