@@ -189,7 +189,7 @@ def test_all_protocols_support_isinstance() -> None:
     This serves as a regression test to ensure @runtime_checkable
     remains applied to all critical TNFR protocols.
     """
-    from typing import Protocol, get_origin
+    from typing import Protocol
     
     protocols = [BEPIProtocol, GraphLike, IntegratorProtocol]
     
