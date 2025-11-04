@@ -273,14 +273,14 @@ class ShelveCacheLayer(CacheLayer):
     """Persistent cache layer backed by :mod:`shelve`.
 
     .. warning::
-        This layer uses :mod:`pickle` for serialization, which can execute
-        arbitrary code during deserialization. **Only use with trusted data**
-        from controlled sources. Never load shelf files from untrusted origins
-        or network sources without cryptographic verification.
+        This layer uses :mod:`pickle` for serialization, which can deserialize
+        arbitrary Python objects and execute code during deserialization.
+        **Only use with trusted data** from controlled sources. Never load
+        shelf files from untrusted origins without cryptographic verification.
 
-        For untrusted inputs, implement alternative serialization (JSON, msgpack)
-        or cryptographic integrity validation (HMAC signatures) before using
-        any pickle-based cache layer.
+        Pickle is required for TNFR's complex structures (NetworkX graphs, EPIs,
+        coherence states, numpy arrays). For untrusted inputs, implement
+        alternative serialization or HMAC-based integrity validation.
     """
 
     def __init__(
@@ -331,15 +331,15 @@ class RedisCacheLayer(CacheLayer):
     """Distributed cache layer backed by a Redis client.
 
     .. warning::
-        This layer uses :mod:`pickle` for serialization, which can execute
-        arbitrary code during deserialization. **Only cache trusted data**
-        from controlled TNFR nodes. Ensure Redis is configured with strong
-        authentication (requirepass) and network access controls. Never cache
-        untrusted user input or data from external sources.
+        This layer uses :mod:`pickle` for serialization, which can deserialize
+        arbitrary Python objects and execute code during deserialization.
+        **Only cache trusted data** from controlled TNFR nodes. Ensure Redis
+        uses authentication (AUTH/ACL) and network access controls. Never cache
+        untrusted user input or external data.
 
         If Redis is compromised or contains tampered data, pickle deserialization
-        will execute arbitrary code. Use TLS for Redis connections and implement
-        HMAC validation for critical deployments.
+        executes arbitrary code. Use TLS for connections and implement HMAC
+        validation for critical deployments.
     """
 
     def __init__(self, client: Any | None = None, *, namespace: str = "tnfr:cache") -> None:
