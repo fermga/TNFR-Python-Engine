@@ -84,6 +84,41 @@ The formatting helper automatically prefers `poetry run` when a Poetry environme
 falls back to `python -m` invocations so local runs mirror the tooling invoked in continuous
 integration.
 
+## Configuration and secrets management
+
+TNFR follows security best practices for handling sensitive credentials:
+
+**Quick Start:**
+
+```bash
+# Copy the environment template
+cp .env.example .env
+
+# Edit .env with your credentials (this file is gitignored)
+# Never commit .env files with real credentials!
+```
+
+**Secure Configuration Loading:**
+
+```python
+from tnfr.config import load_redis_config, get_cache_secret
+
+# Load Redis configuration from environment variables
+redis_config = load_redis_config()
+
+# Get cache signing secret for hardened mode
+cache_secret = get_cache_secret()
+```
+
+**Key Principles:**
+
+- All secrets are loaded from environment variables (never hardcoded)
+- `.env.example` provides a template with secure placeholder values
+- Configuration utilities validate and provide helpful error messages
+- Automated tests scan for accidentally hardcoded secrets
+
+See [SECURITY.md](SECURITY.md) for detailed information on secret management, credential rotation, and security best practices.
+
 ## Additional resources
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — orchestration layers and invariant enforcement.
