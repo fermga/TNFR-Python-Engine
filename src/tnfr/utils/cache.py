@@ -270,7 +270,18 @@ class MappingCacheLayer(CacheLayer):
 
 
 class ShelveCacheLayer(CacheLayer):
-    """Persistent cache layer backed by :mod:`shelve`."""
+    """Persistent cache layer backed by :mod:`shelve`.
+
+    .. warning::
+        This layer uses :mod:`pickle` for serialization, which can execute
+        arbitrary code during deserialization. Only use with **trusted data**
+        from controlled sources. Never load shelf files from untrusted origins
+        or network sources without cryptographic verification.
+
+        For production deployments with untrusted inputs, consider using
+        :class:`RedisCacheLayer` with access controls or implementing
+        HMAC-based integrity validation.
+    """
 
     def __init__(
         self,
@@ -283,7 +294,8 @@ class ShelveCacheLayer(CacheLayer):
         self._path = path
         self._flag = flag
         self._protocol = pickle.HIGHEST_PROTOCOL if protocol is None else protocol
-        self._shelf = shelve.open(path, flag=flag, protocol=self._protocol, writeback=writeback)
+        # shelve uses pickle internally; documented security warning in class docstring
+        self._shelf = shelve.open(path, flag=flag, protocol=self._protocol, writeback=writeback)  # nosec B301
         self._lock = threading.RLock()
 
     def load(self, name: str) -> Any:
@@ -316,7 +328,18 @@ class ShelveCacheLayer(CacheLayer):
 
 
 class RedisCacheLayer(CacheLayer):
-    """Distributed cache layer backed by a Redis client."""
+    """Distributed cache layer backed by a Redis client.
+
+    .. warning::
+        This layer uses :mod:`pickle` for serialization. Only connect to
+        **trusted Redis instances** within a secure network perimeter.
+        Ensure Redis is configured with authentication (requirepass) and
+        network access controls. Never expose Redis directly to untrusted
+        networks without TLS and proper authentication.
+
+        Cached data can be tampered with if Redis is compromised, leading
+        to arbitrary code execution via pickle deserialization.
+    """
 
     def __init__(self, client: Any | None = None, *, namespace: str = "tnfr:cache") -> None:
         if client is None:
@@ -339,7 +362,8 @@ class RedisCacheLayer(CacheLayer):
         if value is None:
             raise KeyError(name)
         if isinstance(value, (bytes, bytearray, memoryview)):
-            return pickle.loads(bytes(value))
+            # pickle from trusted Redis; documented security warning in class docstring
+            return pickle.loads(bytes(value))  # nosec B301
         return value
 
     def store(self, name: str, value: Any) -> None:

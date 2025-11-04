@@ -11,7 +11,7 @@ from .epi import BEPIElement, _EPIValidators
 
 @dataclass(frozen=True)
 class HilbertSpace:
-    """Finite section of :math:`\ell^2(\mathbb{N}) \otimes L^2(\mathbb{R})`.
+    r"""Finite section of :math:`\ell^2(\mathbb{N}) \otimes L^2(\mathbb{R})`.
 
     The space models the discrete spectral component of the TNFR paradigm.  The
     canonical orthonormal basis corresponds to the standard coordinate vectors
@@ -94,7 +94,7 @@ class HilbertSpace:
 
 
 class BanachSpaceEPI(_EPIValidators):
-    """Banach space for :math:`C^0([0, 1],\mathbb{C}) \oplus \ell^2(\mathbb{N})`.
+    r"""Banach space for :math:`C^0([0, 1],\mathbb{C}) \oplus \ell^2(\mathbb{N})`.
 
     Elements are represented by a pair ``(f, a)`` where ``f`` samples the
     continuous field over a uniform grid ``x_grid`` and ``a`` is the discrete
@@ -203,7 +203,7 @@ class BanachSpaceEPI(_EPIValidators):
         f_continuous: Sequence[complex] | np.ndarray,
         x_grid: Sequence[float] | np.ndarray,
     ) -> float:
-        """Approximate :math:`\int |f'|^2 dx / (1 + \int |f|^2 dx)`."""
+        r"""Approximate :math:`\int |f'|^2 dx / (1 + \int |f|^2 dx)`."""
 
         f_array, _, grid = self.validate_domain(f_continuous, np.array([0.0], dtype=np.complex128), x_grid)
         if grid is None:
