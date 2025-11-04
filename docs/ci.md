@@ -64,7 +64,6 @@ fix script works correctly by:
 ### References
 
 - Workflow implementation: `.github/workflows/sast-lint.yml`
-- Related commit: cbfde7804e453dfa918fa00d2ab296b1fbea7580
 - GitHub Actions artifact behavior: [actions/upload-artifact#180](https://github.com/actions/upload-artifact/issues/180)
 
 ### Best Practices
