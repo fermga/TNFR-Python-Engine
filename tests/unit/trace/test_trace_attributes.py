@@ -22,7 +22,6 @@ from tnfr.trace import (
     sigma_field,
     thol_state_field,
 )
-from tnfr.types import SigmaVector
 
 # Required keys for SigmaVector from _SigmaVectorRequired
 SIGMA_VECTOR_REQUIRED_KEYS = ["x", "y", "mag", "angle", "n"]
