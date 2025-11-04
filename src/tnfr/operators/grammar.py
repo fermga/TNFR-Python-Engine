@@ -722,10 +722,14 @@ def apply_glyph_with_grammar(
     glyph: Glyph | str,
     window: Optional[int] = None,
 ) -> None:
+    # Convert Glyph enum instances to string values early for consistent processing
+    if isinstance(glyph, Glyph):
+        glyph = glyph.value
+    
     if window is None:
         window = get_param(G, "GLYPH_HYSTERESIS_WINDOW")
 
-    g_str = glyph.value if isinstance(glyph, Glyph) else str(glyph)
+    g_str = glyph if isinstance(glyph, str) else str(glyph)
     iter_nodes = G.nodes() if nodes is None else nodes
     ctx = GrammarContext.from_graph(G)
     from . import apply_glyph as _apply_glyph
