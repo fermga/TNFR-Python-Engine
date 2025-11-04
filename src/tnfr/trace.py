@@ -3,6 +3,30 @@
 Field helpers avoid unnecessary copying by reusing dictionaries stored on
 the graph whenever possible.  Callers are expected to treat returned
 structures as immutable snapshots.
+
+Immutability Guarantees
+-----------------------
+Trace field producers return mappings wrapped in ``MappingProxyType`` to
+prevent accidental mutation. These proxies enforce immutability while avoiding
+unnecessary data copying. Consumers that need to modify trace data should
+create mutable copies using ``dict(proxy)`` or merge patterns like
+``{**proxy1, **proxy2, "new_key": value}``.
+
+Example safe mutation patterns::
+
+    # Get immutable trace data
+    result = gamma_field(G)
+    gamma_proxy = result["gamma"]
+    
+    # Cannot mutate directly (TypeError will be raised)
+    # gamma_proxy["new_key"] = value  # ❌ Error!
+    
+    # Safe pattern: create mutable copy
+    mutable = dict(gamma_proxy)
+    mutable["new_key"] = value  # ✓ OK
+    
+    # Safe pattern: merge with new data
+    combined = {**gamma_proxy, "new_key": value}  # ✓ OK
 """
 
 from __future__ import annotations
