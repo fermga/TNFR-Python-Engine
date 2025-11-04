@@ -58,6 +58,54 @@ The TNFR engine uses Python's `pickle` module for caching complex TNFR structure
    - Use TLS for Redis connections
    - Never cache untrusted user input
 
+### Hardened Cache Signatures
+
+`ShelveCacheLayer` and `RedisCacheLayer` support optional payload signing to detect tampering in environments where cache files or Redis instances are not fully trusted.
+
+- Configure a shared secret HMAC (or any signing/verification callable pair) using the new ``signer`` and ``validator`` parameters.
+- Enable ``require_signature=True`` to activate hardened mode. In hardened mode the cache deletes unsigned or invalid entries and raises a :class:`tnfr.utils.SecurityError`.
+- Hardened mode is opt-in; the default configuration remains backward compatible with existing caches.
+
+**Example configuration:**
+
+```python
+import hashlib
+import hmac
+
+from tnfr.utils import RedisCacheLayer, SecurityError, ShelveCacheLayer
+
+SECRET = b"tnfr-shared-secret"
+
+def signer(payload: bytes) -> bytes:
+    return hmac.new(SECRET, payload, hashlib.sha256).digest()
+
+def validator(payload: bytes, signature: bytes) -> bool:
+    expected = hmac.new(SECRET, payload, hashlib.sha256).digest()
+    return hmac.compare_digest(expected, signature)
+
+shelf_layer = ShelveCacheLayer(
+    "cache.db",
+    signer=signer,
+    validator=validator,
+    require_signature=True,
+)
+
+redis_layer = RedisCacheLayer(
+    namespace="tnfr:cache",
+    signer=signer,
+    validator=validator,
+    require_signature=True,
+)
+
+try:
+    shelf_layer.store("alpha", {"value": 1})
+except SecurityError:
+    # Hardened mode rejected the payload
+    ...
+```
+
+When hardened mode is active any tampered cache entry is purged and causes an immediate `SecurityError`, preventing poisoned payloads from propagating through TNFR simulations.
+
 ### Dependency Management
 
 - All dependencies are regularly scanned with `pip-audit`

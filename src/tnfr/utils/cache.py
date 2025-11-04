@@ -41,6 +41,10 @@ K = TypeVar("K", bound=Hashable)
 V = TypeVar("V")
 T = TypeVar("T")
 
+class SecurityError(RuntimeError):
+    """Raised when a cache payload fails hardened validation."""
+
+
 __all__ = (
     "CacheLayer",
     "CacheManager",
@@ -51,6 +55,7 @@ __all__ = (
     "MappingCacheLayer",
     "RedisCacheLayer",
     "ShelveCacheLayer",
+    "SecurityError",
     "prune_lock_mapping",
     "EdgeCacheManager",
     "NODE_SET_CHECKSUM_KEY",
@@ -78,6 +83,70 @@ __all__ = (
     "DnfrCache",
     "new_dnfr_cache",
 )
+
+_SIGNATURE_PREFIX = b"TNFRSIG1"
+_SIGN_MODE_RAW = 0
+_SIGN_MODE_PICKLE = 1
+_SIGNATURE_HEADER_SIZE = len(_SIGNATURE_PREFIX) + 1 + 4
+
+
+def _prepare_payload_bytes(value: Any, *, protocol: int) -> tuple[int, bytes]:
+    """Return payload encoding mode and the bytes that should be signed."""
+
+    if isinstance(value, (bytes, bytearray, memoryview)):
+        return _SIGN_MODE_RAW, bytes(value)
+    return _SIGN_MODE_PICKLE, pickle.dumps(value, protocol=protocol)
+
+
+def _pack_signed_envelope(mode: int, payload: bytes, signature: bytes) -> bytes:
+    """Pack payload and signature into a self-describing binary envelope."""
+
+    if not (0 <= mode <= 255):  # pragma: no cover - defensive guard
+        raise ValueError(f"invalid payload mode: {mode}")
+    signature_length = len(signature)
+    if signature_length >= 2**32:  # pragma: no cover - defensive guard
+        raise ValueError("signature too large to encode")
+    header = (
+        _SIGNATURE_PREFIX
+        + bytes([mode])
+        + signature_length.to_bytes(4, byteorder="big", signed=False)
+    )
+    return header + signature + payload
+
+
+def _is_signed_envelope(blob: bytes) -> bool:
+    """Return ``True`` when *blob* represents a signed cache entry."""
+
+    return blob.startswith(_SIGNATURE_PREFIX)
+
+
+def _unpack_signed_envelope(blob: bytes) -> tuple[int, bytes, bytes]:
+    """Return the ``(mode, signature, payload)`` triple encoded in *blob*."""
+
+    if len(blob) < _SIGNATURE_HEADER_SIZE:
+        raise SecurityError("signed payload header truncated")
+    if not _is_signed_envelope(blob):
+        raise SecurityError("missing signed payload marker")
+    mode = blob[len(_SIGNATURE_PREFIX)]
+    sig_start = len(_SIGNATURE_PREFIX) + 1
+    sig_len = int.from_bytes(blob[sig_start : sig_start + 4], byteorder="big")
+    payload_start = sig_start + 4 + sig_len
+    if len(blob) < payload_start:
+        raise SecurityError("signed payload signature truncated")
+    signature = blob[sig_start + 4 : payload_start]
+    payload = blob[payload_start:]
+    return mode, signature, payload
+
+
+def _decode_payload(mode: int, payload: bytes) -> Any:
+    """Decode payload bytes depending on cache encoding *mode*."""
+
+    if mode == _SIGN_MODE_RAW:
+        return payload
+    if mode == _SIGN_MODE_PICKLE:
+        return pickle.loads(payload)  # nosec B301 - validated via signature
+    raise SecurityError(f"unknown payload encoding mode: {mode}")
+
 
 @dataclass(frozen=True)
 class CacheCapacityConfig:
@@ -271,8 +340,18 @@ class ShelveCacheLayer(CacheLayer):
         shelf files from untrusted origins without cryptographic verification.
 
         Pickle is required for TNFR's complex structures (NetworkX graphs, EPIs,
-        coherence states, numpy arrays). For untrusted inputs, implement
-        alternative serialization or HMAC-based integrity validation.
+        coherence states, numpy arrays). For untrusted inputs, enable
+        :term:`HMAC` or equivalent signing via ``signer``/``validator`` and
+        set ``require_signature=True`` to reject tampered payloads.
+
+    :param signer: Optional callable that receives payload bytes and returns a
+        signature (for example ``lambda payload: hmac.new(key, payload,
+        hashlib.sha256).digest()``).
+    :param validator: Optional callable that receives ``(payload_bytes,
+        signature)`` and returns ``True`` when the payload is trustworthy.
+    :param require_signature: When ``True`` the cache operates in hardened
+        mode, deleting entries whose signatures are missing or invalid and
+        raising :class:`SecurityError`.
     """
 
     def __init__(
@@ -282,6 +361,9 @@ class ShelveCacheLayer(CacheLayer):
         flag: str = "c",
         protocol: int | None = None,
         writeback: bool = False,
+        signer: Callable[[bytes], bytes] | None = None,
+        validator: Callable[[bytes, bytes], bool] | None = None,
+        require_signature: bool = False,
     ) -> None:
         self._path = path
         self._flag = flag
@@ -289,16 +371,31 @@ class ShelveCacheLayer(CacheLayer):
         # shelve module inherently uses pickle for serialization; security risks documented in class docstring
         self._shelf = shelve.open(path, flag=flag, protocol=self._protocol, writeback=writeback)  # nosec B301
         self._lock = threading.RLock()
+        self._signer = signer
+        self._validator = validator
+        self._require_signature = require_signature
+        if require_signature and (signer is None or validator is None):
+            raise ValueError(
+                "require_signature=True requires both signer and validator"
+            )
 
     def load(self, name: str) -> Any:
         with self._lock:
             if name not in self._shelf:
                 raise KeyError(name)
-            return self._shelf[name]
+            entry = self._shelf[name]
+
+        return self._decode_entry(name, entry)
 
     def store(self, name: str, value: Any) -> None:
+        if self._signer is None:
+            stored_value: Any = value
+        else:
+            mode, payload = _prepare_payload_bytes(value, protocol=self._protocol)
+            signature = self._signer(payload)
+            stored_value = _pack_signed_envelope(mode, payload, signature)
         with self._lock:
-            self._shelf[name] = value
+            self._shelf[name] = stored_value
             self._shelf.sync()
 
     def delete(self, name: str) -> None:
@@ -318,6 +415,47 @@ class ShelveCacheLayer(CacheLayer):
         with self._lock:
             self._shelf.close()
 
+    def _decode_entry(self, name: str, entry: Any) -> Any:
+        if isinstance(entry, (bytes, bytearray, memoryview)):
+            blob = bytes(entry)
+            if _is_signed_envelope(blob):
+                try:
+                    mode, signature, payload = _unpack_signed_envelope(blob)
+                except SecurityError:
+                    self.delete(name)
+                    raise
+                validator = self._validator
+                if validator is None:
+                    if self._require_signature:
+                        self.delete(name)
+                        raise SecurityError(
+                            "signature validation requested but no validator configured"
+                        )
+                else:
+                    try:
+                        valid = validator(payload, signature)
+                    except Exception as exc:  # pragma: no cover - defensive
+                        self.delete(name)
+                        raise SecurityError("signature validator raised an exception") from exc
+                    if not valid:
+                        self.delete(name)
+                        raise SecurityError(
+                            f"signature validation failed for cache entry {name!r}"
+                        )
+                try:
+                    return _decode_payload(mode, payload)
+                except Exception as exc:
+                    self.delete(name)
+                    raise SecurityError("signed payload decode failure") from exc
+            if self._require_signature:
+                self.delete(name)
+                raise SecurityError(f"unsigned cache entry rejected: {name}")
+            return blob
+        if self._require_signature:
+            self.delete(name)
+            raise SecurityError(f"unsigned cache entry rejected: {name}")
+        return entry
+
 class RedisCacheLayer(CacheLayer):
     """Distributed cache layer backed by a Redis client.
 
@@ -329,11 +467,29 @@ class RedisCacheLayer(CacheLayer):
         access controls. Never cache untrusted user input or external data.
 
         If Redis is compromised or contains tampered data, pickle deserialization
-        executes arbitrary code. Use TLS for connections and implement HMAC
-        validation for critical deployments.
+        executes arbitrary code. Use TLS for connections and enable signature
+        validation (``signer``/``validator`` with ``require_signature=True``)
+        in high-assurance deployments.
+
+    :param signer: Optional callable that produces a signature for payload bytes
+        before they are written to Redis.
+    :param validator: Optional callable that validates ``(payload_bytes,
+        signature)`` during loads.
+    :param require_signature: Enable hardened mode that deletes and rejects
+        cache entries whose signatures are missing or invalid, raising
+        :class:`SecurityError`.
     """
 
-    def __init__(self, client: Any | None = None, *, namespace: str = "tnfr:cache") -> None:
+    def __init__(
+        self,
+        client: Any | None = None,
+        *,
+        namespace: str = "tnfr:cache",
+        signer: Callable[[bytes], bytes] | None = None,
+        validator: Callable[[bytes, bytes], bool] | None = None,
+        require_signature: bool = False,
+        protocol: int | None = None,
+    ) -> None:
         if client is None:
             try:  # pragma: no cover - import guarded for optional dependency
                 import redis  # type: ignore
@@ -343,6 +499,14 @@ class RedisCacheLayer(CacheLayer):
         self._client = client
         self._namespace = namespace.rstrip(":") or "tnfr:cache"
         self._lock = threading.RLock()
+        self._signer = signer
+        self._validator = validator
+        self._require_signature = require_signature
+        self._protocol = pickle.HIGHEST_PROTOCOL if protocol is None else protocol
+        if require_signature and (signer is None or validator is None):
+            raise ValueError(
+                "require_signature=True requires both signer and validator"
+            )
 
     def _format_key(self, name: str) -> str:
         return f"{self._namespace}:{name}"
@@ -354,15 +518,53 @@ class RedisCacheLayer(CacheLayer):
         if value is None:
             raise KeyError(name)
         if isinstance(value, (bytes, bytearray, memoryview)):
+            blob = bytes(value)
+            if _is_signed_envelope(blob):
+                try:
+                    mode, signature, payload = _unpack_signed_envelope(blob)
+                except SecurityError:
+                    self.delete(name)
+                    raise
+                validator = self._validator
+                if validator is None:
+                    if self._require_signature:
+                        self.delete(name)
+                        raise SecurityError(
+                            "signature validation requested but no validator configured"
+                        )
+                else:
+                    try:
+                        valid = validator(payload, signature)
+                    except Exception as exc:  # pragma: no cover - defensive
+                        self.delete(name)
+                        raise SecurityError("signature validator raised an exception") from exc
+                    if not valid:
+                        self.delete(name)
+                        raise SecurityError(
+                            f"signature validation failed for cache entry {name!r}"
+                        )
+                try:
+                    return _decode_payload(mode, payload)
+                except Exception as exc:
+                    self.delete(name)
+                    raise SecurityError("signed payload decode failure") from exc
+            if self._require_signature:
+                self.delete(name)
+                raise SecurityError(f"unsigned cache entry rejected: {name}")
             # pickle from trusted Redis; documented security warning in class docstring
-            return pickle.loads(bytes(value))  # nosec B301
+            return pickle.loads(blob)  # nosec B301
         return value
 
     def store(self, name: str, value: Any) -> None:
         key = self._format_key(name)
-        payload = value
-        if not isinstance(value, (bytes, bytearray, memoryview)):
-            payload = pickle.dumps(value, protocol=pickle.HIGHEST_PROTOCOL)
+        if self._signer is None:
+            payload: Any = value
+            if not isinstance(value, (bytes, bytearray, memoryview)):
+                payload = pickle.dumps(value, protocol=self._protocol)
+        else:
+            mode, payload_bytes = _prepare_payload_bytes(value, protocol=self._protocol)
+            signature = self._signer(payload_bytes)
+            payload = _pack_signed_envelope(mode, payload_bytes, signature)
         with self._lock:
             self._client.set(key, payload)
 
