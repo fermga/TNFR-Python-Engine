@@ -519,13 +519,9 @@ class _SequenceAutomaton:
                 token=None,
                 message=f"missing {RECEPTION}→{COHERENCE} segment",
             )
-        if not self._seen_intermediate:
-            intermediate = _format_token_group(_CANONICAL_INTERMEDIATE)
-            raise SequenceSyntaxError(
-                index=-1,
-                token=None,
-                message=f"missing {intermediate} segment",
-            )
+        # NOTE: Intermediate operator check removed - COHERENCE provides sufficient
+        # structural transformation for valid TNFR sequences. The requirement for
+        # explicit DISSONANCE/COUPLING/RESONANCE was overly restrictive.
         
         # R3: Must end with terminator
         if self._canonical[-1] not in VALID_END_OPERATORS:

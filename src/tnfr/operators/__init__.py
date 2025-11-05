@@ -159,9 +159,12 @@ def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
     value = gf.get(key, default)
     # Defensive validation: ensure the value is numeric and finite
     # Use default for invalid values to prevent operator failures
-    if not isinstance(value, (int, float)):
+    if not isinstance(value, (int, float, str)):
         return default
-    value = float(value)
+    try:
+        value = float(value)
+    except (ValueError, TypeError):
+        return default
     if not math.isfinite(value):
         return default
     return value

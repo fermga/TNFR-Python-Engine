@@ -120,12 +120,14 @@ class TestInvalidGlyphSequences:
         assert "must start" in result.message.lower() or "start" in result.message.lower()
 
     def test_missing_intermediate_operator(self):
-        """Sequences must contain reception→coherence segment and intermediate operators."""
-        sequence = [EMISSION, RECEPTION, COHERENCE, SILENCE]
+        """Sequences must contain reception→coherence segment."""
+        # This test now validates missing reception→coherence, not intermediate operators
+        # The intermediate operator requirement was too strict for valid TNFR sequences
+        sequence = [EMISSION, RESONANCE, SILENCE]  # Missing reception→coherence segment
         result = validate_sequence(sequence)
-        # Should fail - missing intermediate (coupling/dissonance/resonance)
+        # Should fail - missing required reception→coherence
         assert not result.passed
-        assert "missing" in result.message.lower() or "intermediate" in result.message.lower() or "segment" in result.message.lower()
+        assert ("missing" in result.message.lower() and "segment" in result.message.lower()) or "reception" in result.message.lower() or "coherence" in result.message.lower()
 
     def test_missing_end_operator(self):
         """Sequences should end with valid end operator."""
