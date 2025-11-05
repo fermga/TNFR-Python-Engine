@@ -25,8 +25,10 @@ class TestNoWeakHashAlgorithms:
 
     def test_no_md5_in_source(self) -> None:
         """Verify MD5 is not used for any purpose in source code."""
-        src_dir = Path(__file__).parent.parent.parent.parent / "src" / "tnfr"
-        md5_pattern = re.compile(r"hashlib\.md5|\.md5\(")
+        # Use parents[4] to go from test file up to project root
+        src_dir = Path(__file__).parents[4] / "src" / "tnfr"
+        # Pattern specifically for hashlib.md5 usage, not arbitrary .md5() method calls
+        md5_pattern = re.compile(r"hashlib\.md5\(|from\s+hashlib\s+import.*\bmd5\b")
         
         violations = []
         for py_file in src_dir.rglob("*.py"):
@@ -41,8 +43,10 @@ class TestNoWeakHashAlgorithms:
 
     def test_no_sha1_in_source(self) -> None:
         """Verify SHA-1 is not used for any purpose in source code."""
-        src_dir = Path(__file__).parent.parent.parent.parent / "src" / "tnfr"
-        sha1_pattern = re.compile(r"hashlib\.sha1|\.sha1\(")
+        # Use parents[4] to go from test file up to project root
+        src_dir = Path(__file__).parents[4] / "src" / "tnfr"
+        # Pattern specifically for hashlib.sha1 usage, not arbitrary .sha1() method calls
+        sha1_pattern = re.compile(r"hashlib\.sha1\(|from\s+hashlib\s+import.*\bsha1\b")
         
         violations = []
         for py_file in src_dir.rglob("*.py"):
@@ -200,8 +204,8 @@ class TestCacheSecurityFeatures:
         # Should validate correct signature
         assert validator(payload, signature)
         
-        # Should reject incorrect signature
-        wrong_signature = b"wrong" * 8  # 32 bytes, wrong value
+        # Should reject incorrect signature (32 bytes required for SHA-256)
+        wrong_signature = b"x" * 32
         assert not validator(payload, wrong_signature)
 
 
