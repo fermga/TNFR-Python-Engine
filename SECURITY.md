@@ -45,6 +45,66 @@ Please include the following information in your report:
 
 ## Security Best Practices for Users
 
+### SQL Injection Prevention
+
+**TNFR provides proactive SQL injection prevention utilities:**
+
+The TNFR engine currently uses in-memory NetworkX graphs and file-based persistence (JSON, YAML, Pickle). While no SQL databases are currently used, the codebase includes comprehensive SQL injection prevention utilities for future database functionality.
+
+**Security Utilities Available:**
+
+```python
+from tnfr.security import (
+    SecureQueryBuilder,
+    validate_identifier,
+    sanitize_string_input,
+    validate_nodal_input,
+)
+
+# Always use parameterized queries
+builder = SecureQueryBuilder()
+query, params = builder.select("nfr_nodes", ["id", "nu_f", "phase"])\
+    .where("nu_f > ?", 0.5)\
+    .order_by("nu_f", "DESC")\
+    .build()
+
+# Validate all identifiers (table/column names)
+table_name = validate_identifier("nfr_nodes")
+column_name = validate_identifier("nu_f")
+
+# Sanitize string inputs
+user_input = sanitize_string_input(user_provided_data, max_length=1000)
+
+# Validate TNFR structural data before persistence
+node_data = validate_nodal_input({
+    "nu_f": 0.75,
+    "phase": 1.57,
+    "coherence": 0.85,
+})
+```
+
+**Security Principles:**
+
+1. **Parameterized Queries**: Always use placeholders (?, :name) for values
+2. **Identifier Validation**: Validate table/column names against whitelist pattern
+3. **No String Concatenation**: Never build queries with f-strings or + operators
+4. **Input Sanitization**: Validate and sanitize all user inputs
+5. **TNFR Structural Validation**: Ensure structural frequency, phase, and coherence values are valid
+
+**Example of Safe vs Unsafe Patterns:**
+
+```python
+# ❌ UNSAFE: Never do this!
+# query = f"SELECT * FROM nfr_nodes WHERE id = {user_input}"
+
+# ✓ SAFE: Use parameterized queries
+builder = SecureQueryBuilder()
+query, params = builder.select("nfr_nodes")\
+    .where("id = ?", user_input)\
+    .build()
+# Execute: cursor.execute(query, params)
+```
+
 ### Secret and Credential Management
 
 **TNFR follows strict security practices to prevent hardcoded secrets:**
