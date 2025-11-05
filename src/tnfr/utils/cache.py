@@ -579,7 +579,7 @@ class ShelveCacheLayer(CacheLayer):
         require_signature: bool = False,
     ) -> None:
         # Validate cache file path to prevent path traversal
-        from ..security import validate_file_path
+        from ..security import validate_file_path, PathTraversalError
         
         try:
             validated_path = validate_file_path(
@@ -588,7 +588,7 @@ class ShelveCacheLayer(CacheLayer):
                 allowed_extensions=None,  # Shelve creates multiple files with various extensions
             )
             self._path = str(validated_path)
-        except (ValueError, Exception) as e:
+        except (ValueError, PathTraversalError) as e:
             raise ValueError(f"Invalid cache path {path!r}: {e}") from e
         
         self._flag = flag
