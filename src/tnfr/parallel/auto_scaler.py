@@ -186,7 +186,7 @@ class TNFRAutoScaler:
 
     def get_optimization_suggestions(
         self, performance_metrics: Dict[str, Any]
-    ) -> list[str]:
+    ) -> List[str]:
         """Generate optimization suggestions based on observed performance.
 
         Parameters

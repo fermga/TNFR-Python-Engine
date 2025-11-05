@@ -204,18 +204,18 @@ class FractalPartitioner:
         if not community:
             return 0.0
 
-        # Try to get values using TNFR aliases or direct access
-        candidate_vf = float(get_attr(graph.nodes[candidate], ALIAS_VF, None) or 
-                           graph.nodes[candidate].get("vf", 1.0))
-        candidate_phase = float(get_attr(graph.nodes[candidate], ALIAS_THETA, None) or 
-                              graph.nodes[candidate].get("phase", 0.0))
+        def _get_node_attr(node_id: Any, alias: tuple, fallback_key: str, default: float) -> float:
+            """Get node attribute via TNFR alias or direct access."""
+            return float(get_attr(graph.nodes[node_id], alias, None) or 
+                        graph.nodes[node_id].get(fallback_key, default))
+
+        candidate_vf = _get_node_attr(candidate, ALIAS_VF, "vf", 1.0)
+        candidate_phase = _get_node_attr(candidate, ALIAS_THETA, "phase", 0.0)
 
         coherences = []
         for member in community:
-            member_vf = float(get_attr(graph.nodes[member], ALIAS_VF, None) or 
-                            graph.nodes[member].get("vf", 1.0))
-            member_phase = float(get_attr(graph.nodes[member], ALIAS_THETA, None) or 
-                               graph.nodes[member].get("phase", 0.0))
+            member_vf = _get_node_attr(member, ALIAS_VF, "vf", 1.0)
+            member_phase = _get_node_attr(member, ALIAS_THETA, "phase", 0.0)
 
             # Frequency coherence: inversely proportional to difference
             vf_diff = abs(candidate_vf - member_vf)

@@ -162,8 +162,11 @@ class ParallelExecutionMonitor:
         workers = self._current_metrics["workers"]
 
         # Calculate parallelization efficiency
-        # Theoretical speedup is workers, actual speedup would need baseline
-        # For now, use a simple heuristic based on CPU utilization
+        # NOTE: This is a heuristic approximation. True efficiency requires:
+        # - Baseline sequential measurement
+        # - Accounting for Amdahl's law (sequential portions)
+        # - Consideration of communication overhead
+        # Current approach: estimate from CPU utilization as proxy
         theoretical_speedup = workers
         # Estimate actual speedup from CPU utilization
         # If we're using N workers, we expect ~N * 100% CPU in ideal case

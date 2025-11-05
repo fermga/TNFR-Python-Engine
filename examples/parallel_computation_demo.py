@@ -33,12 +33,11 @@ def create_sample_network(size: int = 100) -> nx.Graph:
     # Create random network
     G = nx.erdos_renyi_graph(size, 0.1, seed=42)
     
-    # Add TNFR attributes
-    for node in G.nodes():
-        G.nodes[node]["nu_f"] = 1.0  # Structural frequency
-        G.nodes[node]["phase"] = 0.0  # Phase
-        G.nodes[node]["epi"] = 0.5  # EPI
-        G.nodes[node]["delta_nfr"] = 0.0  # ΔNFR
+    # Add TNFR attributes efficiently using batch operations
+    nx.set_node_attributes(G, 1.0, "nu_f")  # Structural frequency
+    nx.set_node_attributes(G, 0.0, "phase")  # Phase
+    nx.set_node_attributes(G, 0.5, "epi")  # EPI
+    nx.set_node_attributes(G, 0.0, "delta_nfr")  # ΔNFR
     
     print(f"  Nodes: {G.number_of_nodes()}")
     print(f"  Edges: {G.number_of_edges()}")
