@@ -29,9 +29,12 @@ from collections.abc import (
 )
 from contextlib import contextmanager
 from dataclasses import field
-from functools import lru_cache
+from enum import Enum
+from functools import lru_cache, wraps
+import sys
+import time
 from time import perf_counter
-from typing import Any, Generic, TypeVar, cast
+from typing import Any, Generic, Optional, TypeVar, cast
 
 import networkx as nx
 from cachetools import LRUCache
@@ -95,6 +98,21 @@ __all__ = (
     "ScopedCounterCache",
     "DnfrCache",
     "new_dnfr_cache",
+    # Hierarchical cache classes (moved from caching/)
+    "CacheLevel",
+    "CacheEntry",
+    "TNFRHierarchicalCache",
+    # Cache decorators (moved from caching/decorators.py)
+    "cache_tnfr_computation",
+    "invalidate_function_cache",
+    "get_global_cache",
+    "set_global_cache",
+    "reset_global_cache",
+    # Invalidation tracking (moved from caching/invalidation.py)
+    "GraphChangeTracker",
+    "track_node_property_update",
+    # Persistence (moved from caching/persistence.py)
+    "PersistentTNFRCache",
 )
 
 _SIGNATURE_PREFIX = b"TNFRSIG1"
@@ -2837,3 +2855,1282 @@ class ScopedCounterCache(Generic[K]):
         """Return the number of tracked counters."""
 
         return len(self.cache)
+
+
+# ============================================================================
+# Hierarchical Cache System (moved from caching/ for consolidation)
+# ============================================================================
+
+
+class CacheLevel(Enum):
+    """Cache levels organized by persistence and computational cost.
+    
+    Levels are ordered from most persistent (rarely changes) to least
+    persistent (frequently recomputed):
+    
+    - GRAPH_STRUCTURE: Topology, adjacency matrices (invalidated on add/remove node/edge)
+    - NODE_PROPERTIES: EPI, νf, θ per node (invalidated on property updates)
+    - DERIVED_METRICS: Si, coherence, ΔNFR (invalidated on dependency changes)
+    - TEMPORARY: Intermediate computations (short-lived, frequently evicted)
+    """
+    
+    GRAPH_STRUCTURE = "graph_structure"
+    NODE_PROPERTIES = "node_properties"
+    DERIVED_METRICS = "derived_metrics"
+    TEMPORARY = "temporary"
+
+
+@dataclass
+class CacheEntry:
+    """Cache entry with metadata for intelligent invalidation and eviction.
+    
+    Attributes
+    ----------
+    value : Any
+        The cached computation result.
+    dependencies : set[str]
+        Set of structural properties this entry depends on. Used for
+        selective invalidation. Examples: 'node_epi', 'node_vf', 'graph_topology'.
+    timestamp : float
+        Time when entry was created (from time.time()).
+    access_count : int
+        Number of times this entry has been accessed.
+    computation_cost : float
+        Estimated computational cost to regenerate this value. Higher cost
+        entries are prioritized during eviction.
+    size_bytes : int
+        Estimated memory size in bytes.
+    """
+    
+    value: Any
+    dependencies: set[str]
+    timestamp: float
+    access_count: int = 0
+    computation_cost: float = 1.0
+    size_bytes: int = 0
+
+
+class TNFRHierarchicalCache:
+    """Hierarchical cache with dependency-aware selective invalidation.
+    
+    This cache system organizes entries by structural level and tracks
+    dependencies to enable surgical invalidation. Only entries that depend
+    on changed structural properties are evicted, preserving valid cached data.
+    
+    Internally uses ``CacheManager`` for unified cache management, metrics,
+    and telemetry integration with the rest of TNFR.
+    
+    **Performance Optimizations** (v2):
+    - Direct cache references bypass CacheManager overhead on hot path (50% faster reads)
+    - Lazy persistence batches writes to persistent layers (40% faster writes)
+    - Type-based size estimation caching reduces memory tracking overhead
+    - Dependency change detection avoids redundant updates
+    - Batched invalidation reduces persistence operations
+    
+    **TNFR Compliance**:
+    - Maintains §3.8 Controlled Determinism through consistent cache behavior
+    - Supports §3.4 Operator Closure via dependency tracking
+    
+    Parameters
+    ----------
+    max_memory_mb : int, default: 512
+        Maximum memory usage in megabytes before eviction starts.
+    enable_metrics : bool, default: True
+        Whether to track cache hit/miss metrics for telemetry.
+    cache_manager : CacheManager, optional
+        Existing CacheManager to use. If None, creates a new one.
+    lazy_persistence : bool, default: True
+        Enable lazy write-behind caching for persistent layers. When True,
+        cache modifications are batched and written on flush or critical operations.
+        This significantly improves write performance at the cost of potential
+        data loss on ungraceful termination. Set to False for immediate consistency.
+    
+    Attributes
+    ----------
+    hits : int
+        Number of successful cache retrievals.
+    misses : int
+        Number of cache misses.
+    evictions : int
+        Number of entries evicted due to memory pressure.
+    invalidations : int
+        Number of entries invalidated due to dependency changes.
+    
+    Examples
+    --------
+    >>> cache = TNFRHierarchicalCache(max_memory_mb=128)
+    >>> # Cache a derived metric with dependencies
+    >>> cache.set(
+    ...     "coherence_global",
+    ...     0.95,
+    ...     CacheLevel.DERIVED_METRICS,
+    ...     dependencies={'graph_topology', 'all_node_vf'},
+    ...     computation_cost=100.0
+    ... )
+    >>> cache.get("coherence_global", CacheLevel.DERIVED_METRICS)
+    0.95
+    >>> # Invalidate when topology changes
+    >>> cache.invalidate_by_dependency('graph_topology')
+    >>> cache.get("coherence_global", CacheLevel.DERIVED_METRICS)
+    
+    >>> # Flush lazy writes to persistent storage
+    >>> cache.flush_dirty_caches()
+    
+    """
+    
+    def __init__(
+        self,
+        max_memory_mb: int = 512,
+        enable_metrics: bool = True,
+        cache_manager: Optional[CacheManager] = None,
+        lazy_persistence: bool = True,
+    ):
+        # Use provided CacheManager or create new one
+        if cache_manager is None:
+            # Estimate entries per MB (rough heuristic: ~100 entries per MB)
+            default_capacity = max(32, int(max_memory_mb * 100 / len(CacheLevel)))
+            cache_manager = CacheManager(
+                storage={},
+                default_capacity=default_capacity,
+            )
+        
+        self._manager = cache_manager
+        self._max_memory = max_memory_mb * 1024 * 1024
+        self._current_memory = 0
+        self._enable_metrics = enable_metrics
+        self._lazy_persistence = lazy_persistence
+        
+        # Dependency tracking (remains in hierarchical cache)
+        self._dependencies: dict[str, set[tuple[CacheLevel, str]]] = defaultdict(set)
+        
+        # Register a cache for each level in the CacheManager
+        self._level_cache_names: dict[CacheLevel, str] = {}
+        # OPTIMIZATION: Direct cache references to avoid CacheManager overhead on hot path
+        self._direct_caches: dict[CacheLevel, dict[str, CacheEntry]] = {}
+        
+        for level in CacheLevel:
+            cache_name = f"hierarchical_{level.value}"
+            self._level_cache_names[level] = cache_name
+            
+            # Simple factory returning empty dict for each cache level
+            self._manager.register(
+                cache_name,
+                factory=lambda: {},
+                create=True,
+            )
+            
+            # Store direct reference for fast access
+            self._direct_caches[level] = self._manager.get(cache_name)
+        
+        # OPTIMIZATION: Track dirty caches for batched persistence
+        self._dirty_levels: set[CacheLevel] = set()
+        
+        # OPTIMIZATION: Type-based size estimation cache
+        self._size_cache: dict[type, int] = {}
+        
+        # Metrics (tracked locally for backward compatibility)
+        self.hits = 0
+        self.misses = 0
+        self.evictions = 0
+        self.invalidations = 0
+    
+    @property
+    def _caches(self) -> dict[CacheLevel, dict[str, CacheEntry]]:
+        """Provide backward compatibility for accessing internal caches.
+        
+        This property returns a view of the caches stored in the CacheManager,
+        maintaining compatibility with code that directly accessed the old
+        _caches attribute.
+        
+        Note: Uses direct cache references for performance.
+        """
+        return self._direct_caches
+    
+    def get(self, key: str, level: CacheLevel) -> Optional[Any]:
+        """Retrieve value from cache if it exists and is valid.
+        
+        Parameters
+        ----------
+        key : str
+            Cache key identifying the entry.
+        level : CacheLevel
+            Cache level to search in.
+        
+        Returns
+        -------
+        Any or None
+            The cached value if found, None otherwise.
+        
+        Examples
+        --------
+        >>> cache = TNFRHierarchicalCache()
+        >>> cache.set("key1", 42, CacheLevel.TEMPORARY, dependencies=set())
+        >>> cache.get("key1", CacheLevel.TEMPORARY)
+        42
+        >>> cache.get("missing", CacheLevel.TEMPORARY)
+        
+        """
+        # OPTIMIZATION: Use direct cache reference to avoid CacheManager overhead
+        level_cache = self._direct_caches[level]
+        
+        if key in level_cache:
+            entry = level_cache[key]
+            entry.access_count += 1
+            if self._enable_metrics:
+                self.hits += 1
+                # Only update manager metrics if not in lazy mode
+                if not self._lazy_persistence:
+                    cache_name = self._level_cache_names[level]
+                    self._manager.increment_hit(cache_name)
+            return entry.value
+        
+        if self._enable_metrics:
+            self.misses += 1
+            if not self._lazy_persistence:
+                cache_name = self._level_cache_names[level]
+                self._manager.increment_miss(cache_name)
+        return None
+    
+    def set(
+        self,
+        key: str,
+        value: Any,
+        level: CacheLevel,
+        dependencies: set[str],
+        computation_cost: float = 1.0,
+    ) -> None:
+        """Store value in cache with dependency metadata.
+        
+        Parameters
+        ----------
+        key : str
+            Unique identifier for this cache entry.
+        value : Any
+            The value to cache.
+        level : CacheLevel
+            Which cache level to store in.
+        dependencies : set[str]
+            Set of structural properties this value depends on.
+        computation_cost : float, default: 1.0
+            Estimated cost to recompute this value. Used for eviction priority.
+        
+        Examples
+        --------
+        >>> cache = TNFRHierarchicalCache()
+        >>> cache.set(
+        ...     "si_node_5",
+        ...     0.87,
+        ...     CacheLevel.DERIVED_METRICS,
+        ...     dependencies={'node_vf_5', 'node_phase_5'},
+        ...     computation_cost=5.0
+        ... )
+        """
+        # OPTIMIZATION: Use direct cache reference
+        level_cache = self._direct_caches[level]
+        
+        # OPTIMIZATION: Lazy size estimation - estimate size once
+        estimated_size = self._estimate_size_fast(value)
+        
+        # Check if we need to evict
+        if self._current_memory + estimated_size > self._max_memory:
+            self._evict_lru(estimated_size)
+        
+        # Create entry
+        entry = CacheEntry(
+            value=value,
+            dependencies=dependencies.copy(),
+            timestamp=time.time(),
+            computation_cost=computation_cost,
+            size_bytes=estimated_size,
+        )
+        
+        # Remove old entry if exists
+        old_dependencies: set[str] | None = None
+        if key in level_cache:
+            old_entry = level_cache[key]
+            self._current_memory -= old_entry.size_bytes
+            old_dependencies = old_entry.dependencies
+            # OPTIMIZATION: Only clean up dependencies if they changed
+            if old_dependencies != dependencies:
+                for dep in old_dependencies:
+                    if dep in self._dependencies:
+                        self._dependencies[dep].discard((level, key))
+        
+        # Store entry (direct modification, no manager overhead)
+        level_cache[key] = entry
+        self._current_memory += estimated_size
+        
+        # OPTIMIZATION: Register dependencies only if new or changed
+        if old_dependencies is None or old_dependencies != dependencies:
+            for dep in dependencies:
+                self._dependencies[dep].add((level, key))
+        
+        # OPTIMIZATION: Mark level as dirty for lazy persistence
+        if self._lazy_persistence:
+            self._dirty_levels.add(level)
+        else:
+            # Immediate persistence (backward compatible)
+            cache_name = self._level_cache_names[level]
+            self._manager.store(cache_name, level_cache)
+    
+    def invalidate_by_dependency(self, dependency: str) -> int:
+        """Invalidate all cache entries that depend on a structural property.
+        
+        This implements selective invalidation: only entries that explicitly
+        depend on the changed property are removed, preserving unaffected caches.
+        
+        Parameters
+        ----------
+        dependency : str
+            The structural property that changed (e.g., 'graph_topology',
+            'node_epi_5', 'all_node_vf').
+        
+        Returns
+        -------
+        int
+            Number of entries invalidated.
+        
+        Examples
+        --------
+        >>> cache = TNFRHierarchicalCache()
+        >>> cache.set("key1", 1, CacheLevel.TEMPORARY, {'dep1', 'dep2'})
+        >>> cache.set("key2", 2, CacheLevel.TEMPORARY, {'dep2'})
+        >>> cache.invalidate_by_dependency('dep1')  # Only invalidates key1
+        1
+        >>> cache.get("key1", CacheLevel.TEMPORARY)  # None
+        
+        >>> cache.get("key2", CacheLevel.TEMPORARY)  # Still cached
+        2
+        """
+        count = 0
+        if dependency in self._dependencies:
+            entries_to_remove = list(self._dependencies[dependency])
+            invalidated_levels: set[CacheLevel] = set()
+            
+            for level, key in entries_to_remove:
+                # OPTIMIZATION: Use direct cache reference
+                level_cache = self._direct_caches[level]
+                
+                if key in level_cache:
+                    entry = level_cache[key]
+                    self._current_memory -= entry.size_bytes
+                    del level_cache[key]
+                    count += 1
+                    invalidated_levels.add(level)
+                    
+                    # Clean up all dependency references for this entry
+                    for dep in entry.dependencies:
+                        if dep in self._dependencies:
+                            self._dependencies[dep].discard((level, key))
+            
+            # Clean up the dependency key itself
+            del self._dependencies[dependency]
+            
+            # OPTIMIZATION: Batch persist invalidated levels
+            if self._lazy_persistence:
+                self._dirty_levels.update(invalidated_levels)
+            else:
+                for level in invalidated_levels:
+                    cache_name = self._level_cache_names[level]
+                    level_cache = self._direct_caches[level]
+                    self._manager.store(cache_name, level_cache)
+        
+        if self._enable_metrics:
+            self.invalidations += count
+        
+        return count
+    
+    def invalidate_level(self, level: CacheLevel) -> int:
+        """Invalidate all entries in a specific cache level.
+        
+        Parameters
+        ----------
+        level : CacheLevel
+            The cache level to clear.
+        
+        Returns
+        -------
+        int
+            Number of entries invalidated.
+        """
+        # OPTIMIZATION: Use direct cache reference
+        level_cache = self._direct_caches[level]
+        count = len(level_cache)
+        
+        # Clean up dependencies
+        for key, entry in level_cache.items():
+            self._current_memory -= entry.size_bytes
+            for dep in entry.dependencies:
+                if dep in self._dependencies:
+                    self._dependencies[dep].discard((level, key))
+        
+        level_cache.clear()
+        
+        # OPTIMIZATION: Batch persist if in lazy mode
+        if self._lazy_persistence:
+            self._dirty_levels.add(level)
+        else:
+            cache_name = self._level_cache_names[level]
+            self._manager.store(cache_name, level_cache)
+        
+        if self._enable_metrics:
+            self.invalidations += count
+        
+        return count
+    
+    def clear(self) -> None:
+        """Clear all cache levels and reset metrics."""
+        for level in CacheLevel:
+            # OPTIMIZATION: Clear direct cache and update manager
+            level_cache = self._direct_caches[level]
+            level_cache.clear()
+            cache_name = self._level_cache_names[level]
+            self._manager.store(cache_name, level_cache)
+        
+        self._dependencies.clear()
+        self._current_memory = 0
+        self._dirty_levels.clear()
+        
+        # Always reset metrics regardless of _enable_metrics
+        self.hits = 0
+        self.misses = 0
+        self.evictions = 0
+        self.invalidations = 0
+    
+    def get_stats(self) -> dict[str, Any]:
+        """Get cache statistics for telemetry.
+        
+        Returns
+        -------
+        dict[str, Any]
+            Dictionary containing:
+            - hits: Number of cache hits
+            - misses: Number of cache misses
+            - hit_rate: Ratio of hits to total accesses
+            - evictions: Number of evictions
+            - invalidations: Number of invalidations
+            - memory_used_mb: Current memory usage in MB
+            - memory_limit_mb: Memory limit in MB
+            - entry_counts: Number of entries per level
+        """
+        total_accesses = self.hits + self.misses
+        hit_rate = self.hits / total_accesses if total_accesses > 0 else 0.0
+        
+        entry_counts = {}
+        for level in CacheLevel:
+            # OPTIMIZATION: Use direct cache reference
+            level_cache = self._direct_caches[level]
+            entry_counts[level.value] = len(level_cache)
+        
+        return {
+            "hits": self.hits,
+            "misses": self.misses,
+            "hit_rate": hit_rate,
+            "evictions": self.evictions,
+            "invalidations": self.invalidations,
+            "memory_used_mb": self._current_memory / (1024 * 1024),
+            "memory_limit_mb": self._max_memory / (1024 * 1024),
+            "entry_counts": entry_counts,
+        }
+    
+    def _estimate_size(self, value: Any) -> int:
+        """Estimate memory size of a value in bytes.
+        
+        Uses sys.getsizeof for a rough estimate. For complex objects,
+        this may underestimate the true memory usage.
+        """
+        try:
+            return sys.getsizeof(value)
+        except (TypeError, AttributeError):
+            # Fallback for objects that don't support getsizeof
+            return 64  # Default estimate
+    
+    def _estimate_size_fast(self, value: Any) -> int:
+        """Optimized size estimation with type-based caching.
+        
+        For common types, uses cached size estimates to avoid repeated
+        sys.getsizeof() calls. Falls back to full estimation for complex types.
+        """
+        value_type = type(value)
+        
+        # Check if we have a cached size for this type
+        if value_type in self._size_cache:
+            # For simple immutable types, use cached size
+            if value_type in (int, float, bool, type(None)):
+                return self._size_cache[value_type]
+            # For strings, estimate based on length
+            if value_type is str:
+                base_size = self._size_cache[value_type]
+                return base_size + len(value)
+        
+        # Calculate size and cache for simple types
+        size = self._estimate_size(value)
+        if value_type in (int, float, bool, type(None)):
+            self._size_cache[value_type] = size
+        elif value_type is str:
+            # Cache base size for strings
+            if value_type not in self._size_cache:
+                self._size_cache[value_type] = sys.getsizeof("")
+        
+        return size
+    
+    def flush_dirty_caches(self) -> None:
+        """Flush dirty caches to persistent layers.
+        
+        In lazy persistence mode, this method writes accumulated changes
+        to the CacheManager's persistent layers. This reduces write overhead
+        by batching updates.
+        """
+        if not self._dirty_levels:
+            return
+        
+        for level in self._dirty_levels:
+            cache_name = self._level_cache_names[level]
+            level_cache = self._direct_caches[level]
+            self._manager.store(cache_name, level_cache)
+        
+        self._dirty_levels.clear()
+    
+    def _evict_lru(self, needed_space: int) -> None:
+        """Evict least valuable entries until enough space is freed.
+        
+        Value is determined by: (access_count + 1) * computation_cost.
+        Lower values are evicted first (low access, low cost to recompute).
+        
+        OPTIMIZED: Uses direct cache references and incremental eviction.
+        """
+        # OPTIMIZATION: Collect entries with direct cache access (no manager overhead)
+        all_entries: list[tuple[float, CacheLevel, str, CacheEntry]] = []
+        for level in CacheLevel:
+            level_cache = self._direct_caches[level]
+            for key, entry in level_cache.items():
+                # Priority = (access_count + 1) * computation_cost
+                # Higher priority = keep longer
+                # Add 1 to access_count to avoid zero priority
+                priority = (entry.access_count + 1) * entry.computation_cost
+                all_entries.append((priority, level, key, entry))
+        
+        # Sort by priority (ascending - lowest priority first)
+        all_entries.sort(key=lambda x: x[0])
+        
+        freed_space = 0
+        evicted_levels: set[CacheLevel] = set()
+        
+        for priority, level, key, entry in all_entries:
+            if freed_space >= needed_space:
+                break
+            
+            # OPTIMIZATION: Remove entry directly from cache
+            level_cache = self._direct_caches[level]
+            if key in level_cache:
+                del level_cache[key]
+                freed_space += entry.size_bytes
+                self._current_memory -= entry.size_bytes
+                evicted_levels.add(level)
+                
+                # Clean up dependencies
+                for dep in entry.dependencies:
+                    if dep in self._dependencies:
+                        self._dependencies[dep].discard((level, key))
+                
+                if self._enable_metrics:
+                    self.evictions += 1
+                    if not self._lazy_persistence:
+                        cache_name = self._level_cache_names[level]
+                        self._manager.increment_eviction(cache_name)
+        
+        # OPTIMIZATION: Batch persist evicted levels if in lazy mode
+        if self._lazy_persistence:
+            self._dirty_levels.update(evicted_levels)
+        else:
+            # Immediate persistence
+            for level in evicted_levels:
+                cache_name = self._level_cache_names[level]
+                level_cache = self._direct_caches[level]
+                self._manager.store(cache_name, level_cache)
+
+
+# ============================================================================
+# Cache Decorators (moved from caching/decorators.py for consolidation)
+# ============================================================================
+
+# Global cache instance shared across all decorated functions
+_global_cache: Optional[TNFRHierarchicalCache] = None
+
+F = TypeVar("F", bound=Callable[..., Any])
+
+
+def get_global_cache() -> TNFRHierarchicalCache:
+    """Get or create the global TNFR cache instance.
+    
+    Returns
+    -------
+    TNFRHierarchicalCache
+        The global cache instance.
+    """
+    global _global_cache
+    if _global_cache is None:
+        _global_cache = TNFRHierarchicalCache(max_memory_mb=512)
+    return _global_cache
+
+
+def set_global_cache(cache: Optional[TNFRHierarchicalCache]) -> None:
+    """Set the global cache instance.
+    
+    Parameters
+    ----------
+    cache : TNFRHierarchicalCache or None
+        The cache instance to use globally, or None to reset to default.
+    """
+    global _global_cache
+    _global_cache = cache
+
+
+def reset_global_cache() -> None:
+    """Reset the global cache instance to None.
+    
+    The next call to get_global_cache() will create a fresh instance.
+    """
+    global _global_cache
+    _global_cache = None
+
+
+def _generate_cache_key(
+    func_name: str,
+    args: tuple[Any, ...],
+    kwargs: dict[str, Any],
+) -> str:
+    """Generate deterministic cache key from function and arguments.
+    
+    Parameters
+    ----------
+    func_name : str
+        Name of the function being cached.
+    args : tuple
+        Positional arguments.
+    kwargs : dict
+        Keyword arguments.
+    
+    Returns
+    -------
+    str
+        Cache key string.
+        
+    Notes
+    -----
+    Uses MD5 for hashing (acceptable for cache keys, not security).
+    Graph objects use id() which is session-specific - cache is cleared
+    between sessions, so this is deterministic within a session.
+    """
+    # Build key components
+    key_parts = [func_name]
+    
+    # Add positional args
+    for arg in args:
+        if hasattr(arg, '__name__'):  # For graph objects, use name
+            key_parts.append(f"graph:{arg.__name__}")
+        elif hasattr(arg, 'graph'):  # NetworkX graphs have .graph attribute
+            # Use graph id for identity (session-specific, cache cleared between sessions)
+            key_parts.append(f"graph:{id(arg)}")
+        else:
+            # For simple types, include value
+            key_parts.append(str(arg))
+    
+    # Add keyword args (sorted for consistency)
+    for k in sorted(kwargs.keys()):
+        v = kwargs[k]
+        key_parts.append(f"{k}={v}")
+    
+    # Create deterministic hash (MD5 is acceptable for non-security cache keys)
+    key_str = "|".join(key_parts)
+    return hashlib.md5(key_str.encode()).hexdigest()
+
+
+def cache_tnfr_computation(
+    level: CacheLevel,
+    dependencies: set[str],
+    cost_estimator: Optional[Callable[..., float]] = None,
+    cache_instance: Optional[TNFRHierarchicalCache] = None,
+) -> Callable[[F], F]:
+    """Decorator for automatic caching of TNFR computations.
+    
+    Caches function results based on arguments and invalidates when
+    dependencies change. Transparently integrates with existing functions.
+    
+    Parameters
+    ----------
+    level : CacheLevel
+        Cache level for storing results.
+    dependencies : set[str]
+        Set of structural properties this computation depends on.
+        Examples: {'graph_topology', 'node_epi', 'node_vf', 'node_phase'}
+    cost_estimator : callable, optional
+        Function that takes same arguments as decorated function and returns
+        estimated computational cost as float. Used for eviction priority.
+    cache_instance : TNFRHierarchicalCache, optional
+        Specific cache instance to use. If None, uses global cache.
+    
+    Returns
+    -------
+    callable
+        Decorated function with caching.
+    
+    Examples
+    --------
+    >>> from tnfr.cache import cache_tnfr_computation, CacheLevel
+    >>> @cache_tnfr_computation(
+    ...     level=CacheLevel.DERIVED_METRICS,
+    ...     dependencies={'node_vf', 'node_phase'},
+    ...     cost_estimator=lambda graph, node_id: len(list(graph.neighbors(node_id)))
+    ... )
+    ... def compute_metric(graph, node_id):
+    ...     # Expensive computation
+    ...     return 0.85
+    
+    With custom cache instance:
+    
+    >>> from tnfr.cache import TNFRHierarchicalCache
+    >>> my_cache = TNFRHierarchicalCache(max_memory_mb=256)
+    >>> @cache_tnfr_computation(
+    ...     level=CacheLevel.NODE_PROPERTIES,
+    ...     dependencies={'node_data'},
+    ...     cache_instance=my_cache
+    ... )
+    ... def get_node_property(graph, node_id):
+    ...     return graph.nodes[node_id]
+    """
+    def decorator(func: F) -> F:
+        func_name = func.__name__
+        
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            # Get cache instance
+            cache = cache_instance if cache_instance is not None else get_global_cache()
+            
+            # Generate cache key
+            cache_key = _generate_cache_key(func_name, args, kwargs)
+            
+            # Try to get from cache
+            cached_result = cache.get(cache_key, level)
+            if cached_result is not None:
+                return cached_result
+            
+            # Compute result
+            result = func(*args, **kwargs)
+            
+            # Estimate computational cost
+            comp_cost = 1.0
+            if cost_estimator is not None:
+                try:
+                    comp_cost = float(cost_estimator(*args, **kwargs))
+                except (TypeError, ValueError):
+                    comp_cost = 1.0
+            
+            # Store in cache
+            cache.set(cache_key, result, level, dependencies, comp_cost)
+            
+            return result
+        
+        # Attach metadata for introspection
+        wrapper._cache_level = level  # type: ignore
+        wrapper._cache_dependencies = dependencies  # type: ignore
+        wrapper._is_cached = True  # type: ignore
+        
+        return wrapper  # type: ignore
+    
+    return decorator
+
+
+def invalidate_function_cache(func: Callable[..., Any]) -> int:
+    """Invalidate cache entries for a specific decorated function.
+    
+    Parameters
+    ----------
+    func : callable
+        The decorated function whose cache entries should be invalidated.
+    
+    Returns
+    -------
+    int
+        Number of entries invalidated.
+    
+    Raises
+    ------
+    ValueError
+        If the function is not decorated with @cache_tnfr_computation.
+    """
+    if not hasattr(func, '_is_cached'):
+        raise ValueError(f"Function {func.__name__} is not cached")
+    
+    cache = get_global_cache()
+    dependencies = getattr(func, '_cache_dependencies', set())
+    
+    total = 0
+    for dep in dependencies:
+        total += cache.invalidate_by_dependency(dep)
+    
+    return total
+
+
+# ============================================================================
+# Graph Change Tracking (moved from caching/invalidation.py for consolidation)
+# ============================================================================
+
+
+class GraphChangeTracker:
+    """Track graph modifications for selective cache invalidation.
+    
+    Installs hooks into graph modification methods to automatically invalidate
+    affected cache entries when structural properties change.
+    
+    Parameters
+    ----------
+    cache : TNFRHierarchicalCache
+        The cache instance to invalidate.
+    
+    Attributes
+    ----------
+    topology_changes : int
+        Count of topology modifications (add/remove node/edge).
+    property_changes : int
+        Count of node property modifications.
+    
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from tnfr.cache import TNFRHierarchicalCache, GraphChangeTracker, CacheLevel
+    >>> cache = TNFRHierarchicalCache()
+    >>> G = nx.Graph()
+    >>> tracker = GraphChangeTracker(cache)
+    >>> tracker.track_graph_changes(G)
+    >>> # Now modifications to G will trigger cache invalidation
+    >>> cache.set("key1", 1, CacheLevel.GRAPH_STRUCTURE, {'graph_topology'})
+    >>> G.add_node("n1")  # Invalidates graph_topology cache entries
+    >>> cache.get("key1", CacheLevel.GRAPH_STRUCTURE)  # Returns None
+    """
+    
+    def __init__(self, cache: TNFRHierarchicalCache):
+        self._cache = cache
+        self.topology_changes = 0
+        self.property_changes = 0
+        self._tracked_graphs: set[int] = set()
+    
+    def track_graph_changes(self, graph: Any) -> None:
+        """Install hooks to track changes in a graph.
+        
+        Wraps the graph's add_node, remove_node, add_edge, and remove_edge
+        methods to trigger cache invalidation.
+        
+        Parameters
+        ----------
+        graph : GraphLike
+            The graph to monitor for changes.
+        
+        Notes
+        -----
+        This uses monkey-patching to intercept graph modifications. The
+        original methods are preserved and called after invalidation.
+        """
+        graph_id = id(graph)
+        if graph_id in self._tracked_graphs:
+            return  # Already tracking this graph
+        
+        self._tracked_graphs.add(graph_id)
+        
+        # Store original methods
+        original_add_node = graph.add_node
+        original_remove_node = graph.remove_node
+        original_add_edge = graph.add_edge
+        original_remove_edge = graph.remove_edge
+        
+        # Create tracked versions
+        def tracked_add_node(node_id: Any, **attrs: Any) -> None:
+            result = original_add_node(node_id, **attrs)
+            self._on_topology_change()
+            return result
+        
+        def tracked_remove_node(node_id: Any) -> None:
+            result = original_remove_node(node_id)
+            self._on_topology_change()
+            return result
+        
+        def tracked_add_edge(u: Any, v: Any, **attrs: Any) -> None:
+            result = original_add_edge(u, v, **attrs)
+            self._on_topology_change()
+            return result
+        
+        def tracked_remove_edge(u: Any, v: Any) -> None:
+            result = original_remove_edge(u, v)
+            self._on_topology_change()
+            return result
+        
+        # Replace methods
+        graph.add_node = tracked_add_node
+        graph.remove_node = tracked_remove_node
+        graph.add_edge = tracked_add_edge
+        graph.remove_edge = tracked_remove_edge
+        
+        # Store reference to tracker for property changes
+        if hasattr(graph, 'graph'):
+            graph.graph['_tnfr_change_tracker'] = self
+    
+    def on_node_property_change(
+        self,
+        node_id: Any,
+        property_name: str,
+        old_value: Optional[Any] = None,
+        new_value: Optional[Any] = None,
+    ) -> None:
+        """Notify tracker of a node property change.
+        
+        Parameters
+        ----------
+        node_id : Any
+            The node whose property changed.
+        property_name : str
+            Name of the property that changed (e.g., 'epi', 'vf', 'phase').
+        old_value : Any, optional
+            Previous value (for logging/debugging).
+        new_value : Any, optional
+            New value (for logging/debugging).
+        
+        Notes
+        -----
+        This should be called explicitly when node properties are modified
+        outside of the graph's standard API (e.g., G.nodes[n]['epi'] = value).
+        """
+        # Invalidate node-specific dependency
+        dep_key = f"node_{property_name}_{node_id}"
+        self._cache.invalidate_by_dependency(dep_key)
+        
+        # Invalidate global property dependency
+        global_dep = f"all_node_{property_name}"
+        self._cache.invalidate_by_dependency(global_dep)
+        
+        # Invalidate derived metrics for this node
+        if property_name in ['epi', 'vf', 'phase', 'delta_nfr']:
+            self._cache.invalidate_by_dependency(f"derived_metrics_{node_id}")
+        
+        self.property_changes += 1
+    
+    def _on_topology_change(self) -> None:
+        """Handle topology modifications (add/remove node/edge)."""
+        # Invalidate topology-dependent caches
+        self._cache.invalidate_by_dependency('graph_topology')
+        self._cache.invalidate_by_dependency('node_neighbors')
+        self._cache.invalidate_by_dependency('adjacency_matrix')
+        
+        self.topology_changes += 1
+    
+    def reset_counters(self) -> None:
+        """Reset change counters."""
+        self.topology_changes = 0
+        self.property_changes = 0
+
+
+def track_node_property_update(
+    graph: Any,
+    node_id: Any,
+    property_name: str,
+    new_value: Any,
+) -> None:
+    """Helper to track node property updates.
+    
+    Updates the node property and notifies the change tracker if one is
+    attached to the graph.
+    
+    Parameters
+    ----------
+    graph : GraphLike
+        The graph containing the node.
+    node_id : Any
+        The node to update.
+    property_name : str
+        Property name to update.
+    new_value : Any
+        New value for the property.
+    
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from tnfr.cache import TNFRHierarchicalCache, GraphChangeTracker
+    >>> from tnfr.cache import track_node_property_update
+    >>> cache = TNFRHierarchicalCache()
+    >>> G = nx.Graph()
+    >>> G.add_node("n1", epi=0.5)
+    >>> tracker = GraphChangeTracker(cache)
+    >>> tracker.track_graph_changes(G)
+    >>> # Use helper to update and invalidate
+    >>> track_node_property_update(G, "n1", "epi", 0.7)
+    """
+    # Get old value
+    old_value = graph.nodes[node_id].get(property_name)
+    
+    # Update property
+    graph.nodes[node_id][property_name] = new_value
+    
+    # Notify tracker if present
+    if hasattr(graph, 'graph'):
+        tracker = graph.graph.get('_tnfr_change_tracker')
+        if isinstance(tracker, GraphChangeTracker):
+            tracker.on_node_property_change(
+                node_id, property_name, old_value, new_value
+            )
+
+
+# ============================================================================
+# Persistent Cache (moved from caching/persistence.py for consolidation)
+# ============================================================================
+
+
+class PersistentTNFRCache:
+    """Cache with optional disk persistence for costly computations.
+    
+    Combines in-memory caching with selective disk persistence for
+    specific cache levels. Expensive computations can be preserved
+    between sessions while temporary computations remain memory-only.
+    
+    Parameters
+    ----------
+    cache_dir : Path or str, default: ".tnfr_cache"
+        Directory for persistent cache files.
+    max_memory_mb : int, default: 512
+        Memory limit for in-memory cache.
+    persist_levels : set[CacheLevel], optional
+        Cache levels to persist to disk. Defaults to GRAPH_STRUCTURE
+        and DERIVED_METRICS.
+    
+    Examples
+    --------
+    >>> from pathlib import Path
+    >>> from tnfr.cache import PersistentTNFRCache, CacheLevel
+    >>> cache = PersistentTNFRCache(cache_dir=Path("/tmp/tnfr_cache"))
+    >>> # Cache is automatically persisted for expensive operations
+    >>> cache.set_persistent(
+    ...     "coherence_large_graph",
+    ...     0.95,
+    ...     CacheLevel.DERIVED_METRICS,
+    ...     dependencies={'graph_topology'},
+    ...     computation_cost=1000.0,
+    ...     persist_to_disk=True
+    ... )
+    >>> # Later, in a new session
+    >>> result = cache.get_persistent("coherence_large_graph", CacheLevel.DERIVED_METRICS)
+    """
+    
+    def __init__(
+        self,
+        cache_dir: Any = ".tnfr_cache",  # Path | str  
+        max_memory_mb: int = 512,
+        persist_levels: Optional[set[CacheLevel]] = None,
+    ):
+        from pathlib import Path
+        self.cache_dir = Path(cache_dir)
+        self.cache_dir.mkdir(exist_ok=True, parents=True)
+        self._memory_cache = TNFRHierarchicalCache(max_memory_mb=max_memory_mb)
+        
+        if persist_levels is None:
+            persist_levels = {
+                CacheLevel.GRAPH_STRUCTURE,
+                CacheLevel.DERIVED_METRICS,
+            }
+        self._persist_levels = persist_levels
+    
+    def get_persistent(self, key: str, level: CacheLevel) -> Optional[Any]:
+        """Retrieve value from memory cache, falling back to disk.
+        
+        Parameters
+        ----------
+        key : str
+            Cache key.
+        level : CacheLevel
+            Cache level.
+        
+        Returns
+        -------
+        Any or None
+            Cached value if found, None otherwise.
+        """
+        # Try memory first
+        result = self._memory_cache.get(key, level)
+        if result is not None:
+            return result
+        
+        # Try disk if level is persisted
+        if level in self._persist_levels:
+            file_path = self._get_cache_file_path(key, level)
+            if file_path.exists():
+                try:
+                    with open(file_path, 'rb') as f:
+                        cached_data = pickle.load(f)
+                    
+                    # Validate structure
+                    if not isinstance(cached_data, dict):
+                        file_path.unlink(missing_ok=True)
+                        return None
+                    
+                    value = cached_data.get('value')
+                    dependencies = cached_data.get('dependencies', set())
+                    computation_cost = cached_data.get('computation_cost', 1.0)
+                    
+                    # Load back into memory cache
+                    self._memory_cache.set(
+                        key, value, level, dependencies, computation_cost
+                    )
+                    
+                    return value
+                    
+                except (pickle.PickleError, EOFError, OSError):
+                    # Corrupt cache file, remove it
+                    file_path.unlink(missing_ok=True)
+        
+        return None
+    
+    def set_persistent(
+        self,
+        key: str,
+        value: Any,
+        level: CacheLevel,
+        dependencies: set[str],
+        computation_cost: float = 1.0,
+        persist_to_disk: bool = True,
+    ) -> None:
+        """Store value in memory and optionally persist to disk.
+        
+        Parameters
+        ----------
+        key : str
+            Cache key.
+        value : Any
+            Value to cache.
+        level : CacheLevel
+            Cache level.
+        dependencies : set[str]
+            Structural dependencies.
+        computation_cost : float, default: 1.0
+            Computation cost estimate.
+        persist_to_disk : bool, default: True
+            Whether to persist this entry to disk.
+        """
+        # Always store in memory
+        self._memory_cache.set(key, value, level, dependencies, computation_cost)
+        
+        # Persist to disk if requested and level supports it
+        if persist_to_disk and level in self._persist_levels:
+            file_path = self._get_cache_file_path(key, level)
+            cache_data = {
+                'value': value,
+                'dependencies': dependencies,
+                'computation_cost': computation_cost,
+                'timestamp': time.time(),
+            }
+            
+            try:
+                with open(file_path, 'wb') as f:
+                    pickle.dump(cache_data, f, protocol=pickle.HIGHEST_PROTOCOL)
+            except (pickle.PickleError, OSError) as e:
+                # Log error but don't fail
+                # In production, this should use proper logging
+                pass
+    
+    def invalidate_by_dependency(self, dependency: str) -> int:
+        """Invalidate memory and disk cache entries for a dependency.
+        
+        Parameters
+        ----------
+        dependency : str
+            The structural property that changed.
+        
+        Returns
+        -------
+        int
+            Number of entries invalidated from memory.
+        """
+        # Invalidate memory cache
+        count = self._memory_cache.invalidate_by_dependency(dependency)
+        
+        # Note: Disk cache is lazily invalidated on load
+        # Entries with stale dependencies will be detected when loaded
+        
+        return count
+    
+    def clear_persistent_cache(self, level: Optional[CacheLevel] = None) -> None:
+        """Clear persistent cache files.
+        
+        Parameters
+        ----------
+        level : CacheLevel, optional
+            Specific level to clear. If None, clears all levels.
+        """
+        if level is not None:
+            level_dir = self.cache_dir / level.value
+            if level_dir.exists():
+                for file_path in level_dir.glob("*.pkl"):
+                    file_path.unlink(missing_ok=True)
+        else:
+            # Clear all levels
+            for file_path in self.cache_dir.rglob("*.pkl"):
+                file_path.unlink(missing_ok=True)
+    
+    def cleanup_old_entries(self, max_age_days: int = 30) -> int:
+        """Remove old cache files from disk.
+        
+        Parameters
+        ----------
+        max_age_days : int, default: 30
+            Maximum age in days before removal.
+        
+        Returns
+        -------
+        int
+            Number of files removed.
+        """
+        count = 0
+        max_age_seconds = max_age_days * 24 * 3600
+        current_time = time.time()
+        
+        for file_path in self.cache_dir.rglob("*.pkl"):
+            try:
+                mtime = file_path.stat().st_mtime
+                if current_time - mtime > max_age_seconds:
+                    file_path.unlink()
+                    count += 1
+            except OSError:
+                continue
+        
+        return count
+    
+    def get_stats(self) -> dict[str, Any]:
+        """Get combined statistics from memory and disk cache.
+        
+        Returns
+        -------
+        dict[str, Any]
+            Statistics including memory stats and disk usage.
+        """
+        stats = self._memory_cache.get_stats()
+        
+        # Add disk stats
+        disk_files = 0
+        disk_size_bytes = 0
+        for file_path in self.cache_dir.rglob("*.pkl"):
+            disk_files += 1
+            try:
+                disk_size_bytes += file_path.stat().st_size
+            except OSError:
+                continue
+        
+        stats['disk_files'] = disk_files
+        stats['disk_size_mb'] = disk_size_bytes / (1024 * 1024)
+        
+        return stats
+    
+    def _get_cache_file_path(self, key: str, level: CacheLevel) -> Any:  # -> Path
+        """Get file path for a cache entry.
+        
+        Organizes cache files by level in subdirectories.
+        """
+        level_dir = self.cache_dir / level.value
+        level_dir.mkdir(exist_ok=True, parents=True)
+        # Use key as filename (already hashed in decorator)
+        return level_dir / f"{key}.pkl"
