@@ -98,6 +98,26 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
             node_data = graph.nodes[node_id]
             current_epi = node_data.get(EPI_PRIMARY, 0.0)
 
+            # Handle complex EPI structures (dict, complex numbers)
+            # Extract scalar value for validation
+            if isinstance(current_epi, dict):
+                # EPI can be a dict with 'continuous', 'discrete', 'grid' keys
+                # Try to extract a scalar value for validation
+                if "continuous" in current_epi:
+                    epi_value = current_epi["continuous"]
+                    if isinstance(epi_value, (tuple, list)) and len(epi_value) > 0:
+                        epi_value = epi_value[0]
+                    if isinstance(epi_value, complex):
+                        epi_value = abs(epi_value)
+                    current_epi = float(epi_value) if isinstance(epi_value, (int, float, complex)) else 0.0
+                else:
+                    # Skip validation for complex structures we can't interpret
+                    continue
+
+            elif isinstance(current_epi, complex):
+                # For complex numbers, use magnitude
+                current_epi = abs(current_epi)
+
             # Verificar rango válido de EPI
             if not (epi_min <= current_epi <= epi_max):
                 violations.append(
@@ -149,9 +169,19 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
 
         # Actualizar tracking
         for node_id in graph.nodes():
-            self._previous_epi_values[node_id] = graph.nodes[node_id].get(
-                EPI_PRIMARY, 0.0
-            )
+            epi_value = graph.nodes[node_id].get(EPI_PRIMARY, 0.0)
+            # Store scalar value for tracking
+            if isinstance(epi_value, dict) and "continuous" in epi_value:
+                epi_val = epi_value["continuous"]
+                if isinstance(epi_val, (tuple, list)) and len(epi_val) > 0:
+                    epi_val = epi_val[0]
+                if isinstance(epi_val, complex):
+                    epi_val = abs(epi_val)
+                epi_value = float(epi_val) if isinstance(epi_val, (int, float, complex)) else 0.0
+            elif isinstance(epi_value, complex):
+                epi_value = abs(epi_value)
+            
+            self._previous_epi_values[node_id] = epi_value
 
         return violations
 
