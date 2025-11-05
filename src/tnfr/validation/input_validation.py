@@ -466,12 +466,18 @@ def validate_node_id(value: Any) -> Any:
 
 
 def validate_glyph(value: Any) -> Glyph:
-    """Validate Glyph enumeration value.
+    """Validate Glyph enumeration value or structural operator name.
+
+    Accepts both Glyph codes (e.g., "AL", "IL") and structural operator names
+    (e.g., "emission", "coherence") following TNFR canonical grammar.
 
     Parameters
     ----------
     value : Any
-        Value to validate as a Glyph.
+        Value to validate as a Glyph. Can be:
+        - A Glyph enum instance (e.g., Glyph.AL)
+        - A glyph code string (e.g., "AL", "IL")
+        - A structural operator name (e.g., "emission", "coherence")
 
     Returns
     -------
@@ -481,13 +487,15 @@ def validate_glyph(value: Any) -> Glyph:
     Raises
     ------
     ValidationError
-        If value is not a valid Glyph.
+        If value is not a valid Glyph or structural operator name.
 
     Examples
     --------
     >>> validate_glyph(Glyph.AL)
     <Glyph.AL: 'AL'>
     >>> validate_glyph("AL")
+    <Glyph.AL: 'AL'>
+    >>> validate_glyph("emission")
     <Glyph.AL: 'AL'>
     >>> validate_glyph("INVALID")
     Traceback (most recent call last):
@@ -498,16 +506,27 @@ def validate_glyph(value: Any) -> Glyph:
         return value
 
     if isinstance(value, str):
+        # Try direct Glyph code first
         try:
             return Glyph(value)
         except ValueError:
+            pass
+        
+        # Try structural operator name mapping
+        try:
+            from ..operators.grammar import function_name_to_glyph
+            glyph = function_name_to_glyph(value)
+            if glyph is not None:
+                return glyph
+        except Exception:
+            # If grammar module import fails, continue to error
             pass
 
     raise ValidationError(
         f"Invalid glyph value: {value!r}",
         parameter="glyph",
         value=value,
-        constraint="valid Glyph enumeration",
+        constraint="valid Glyph enumeration or structural operator name",
     )
 
 
