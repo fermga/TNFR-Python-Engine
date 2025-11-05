@@ -9,10 +9,21 @@ import sys
 from pathlib import Path
 from typing import Sequence, Tuple
 
+# Add src to path to import security module
+_SCRIPT_DIR = Path(__file__).resolve().parent
+_REPO_ROOT = _SCRIPT_DIR.parent
+if str(_REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT / "src"))
+
+from tnfr.security import run_command_safely, validate_git_ref
+
 
 def run_git(args: Sequence[str]) -> str:
     """Run a git command and return its stdout as text."""
-    return subprocess.check_output(["git", *args], text=True)
+    # Validate git arguments for security
+    validated_args = [str(arg) for arg in args]
+    result = run_command_safely(["git", *validated_args], check=True)
+    return result.stdout
 
 
 def parse_name_status(output: str) -> Sequence[Tuple[str, str]]:
@@ -66,19 +77,29 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
 
+    # Validate base ref for security
+    try:
+        validated_base = validate_git_ref(args.base)
+    except Exception as exc:
+        print(
+            f"::error::Invalid base ref '{args.base}': {exc}",
+            file=sys.stderr,
+        )
+        return 1
+
     changelog_dir = Path(args.changelog_dir).as_posix().rstrip("/") + "/"
 
     try:
-        run_git(["rev-parse", "--verify", args.base])
+        run_git(["rev-parse", "--verify", validated_base])
     except subprocess.CalledProcessError:
         print(
-            f"::warning::Unable to resolve base ref '{args.base}'. Skipping changelog enforcement.",
+            f"::warning::Unable to resolve base ref '{validated_base}'. Skipping changelog enforcement.",
             file=sys.stderr,
         )
         return 0
 
     name_status = parse_name_status(
-        run_git(["diff", "--name-status", f"{args.base}...HEAD"])
+        run_git(["diff", "--name-status", f"{validated_base}...HEAD"])
     )
     changed_paths = [path for _, path in name_status]
 

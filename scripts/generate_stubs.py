@@ -13,6 +13,14 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Add src to path for security module
+_SCRIPT_DIR = Path(__file__).resolve().parent
+_REPO_ROOT = _SCRIPT_DIR.parent
+if str(_REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT / "src"))
+
+from tnfr.security import run_command_safely
+
 
 def find_missing_stubs(src_dir: Path) -> list[Path]:
     """Find all .py files that don't have corresponding .pyi stubs.
@@ -126,9 +134,7 @@ def generate_stubs(files: list[Path], src_dir: Path, dry_run: bool = False) -> i
                 "-o",
                 str(src_dir.parent),
             ]
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, check=False
-            )
+            result = run_command_safely(cmd, check=False)
             if result.returncode == 0:
                 print(f"✓ Generated stub for {module}")
                 success_count += 1

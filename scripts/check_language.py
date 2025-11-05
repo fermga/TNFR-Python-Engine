@@ -38,12 +38,19 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
+# Add src to path for security module
+_REPO_ROOT = SCRIPT_DIR.parent
+if str(_REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT / "src"))
+
 from language_policy_data import (  # noqa: E402  # pylint: disable=wrong-import-position
     decode_accent_codepoints,
     decode_keyword_codes,
     default_accented_characters,
     default_disallowed_keywords,
 )
+
+from tnfr.security import run_command_safely  # noqa: E402
 
 
 @dataclass(frozen=True)
@@ -149,12 +156,10 @@ def _load_policy(repo_root: Path) -> LanguagePolicy:
 def _collect_tracked_files(repo_root: Path) -> Sequence[Path]:
     """Return the list of tracked files using ``git ls-files``."""
 
-    result = subprocess.run(
+    result = run_command_safely(
         ["git", "ls-files"],
         check=True,
-        capture_output=True,
-        cwd=repo_root,
-        text=True,
+        cwd=str(repo_root),
     )
     return [repo_root / line for line in result.stdout.splitlines() if line]
 

@@ -15,7 +15,16 @@ import shlex
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 from typing import Iterable, Optional
+
+# Add src to path for security module
+_SCRIPT_DIR = Path(__file__).resolve().parent
+_REPO_ROOT = _SCRIPT_DIR.parent
+if str(_REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT / "src"))
+
+from tnfr.security import run_command_safely, validate_git_ref, validate_version_string
 
 
 _LOG_FORMAT = "%(levelname)s: %(message)s"
@@ -38,12 +47,12 @@ def _run_command(
     if dry_run:
         return None
     try:
-        return subprocess.run(
+        return run_command_safely(
             list(command),
             check=check,
             capture_output=capture_output,
             text=True,
-            env=None if env is None else {**os.environ, **env},
+            env=env,
         )
     except subprocess.CalledProcessError as exc:  # pragma: no cover - defensive
         if capture_output:
@@ -53,11 +62,9 @@ def _run_command(
 
 
 def _discover_tags() -> list[str]:
-    result = subprocess.run(
+    result = run_command_safely(
         ["git", "tag", "--list", "v*", "--sort=-v:refname"],
         check=True,
-        capture_output=True,
-        text=True,
     )
     tags = [line.strip() for line in result.stdout.splitlines() if line.strip()]
     if not tags:
@@ -208,8 +215,23 @@ def main(argv: Optional[list[str]] = None) -> int:
 
     logging.basicConfig(level=logging.INFO, format=_LOG_FORMAT)
 
-    version = args.version.lstrip("v")
+    # Validate version input for security
+    try:
+        validated_version = validate_version_string(args.version)
+        version = validated_version.lstrip("v")
+    except Exception as exc:
+        logging.error("Invalid version string: %s", exc)
+        return 1
+
     tag = f"v{version}"
+    
+    # Validate tag as a git ref
+    try:
+        validate_git_ref(tag)
+    except Exception as exc:
+        logging.error("Invalid tag format: %s", exc)
+        return 1
+    
     logging.info("Preparing rollback for %s", tag)
 
     if not args.confirm and not args.dry_run:
