@@ -262,11 +262,20 @@ def compute_fused_gradients_symmetric(
     weights: Mapping[str, float],
     np: Any,
 ) -> Any:
-    """Compute fused gradients with symmetric edge handling.
+    """Compute ΔNFR gradients using TNFR canonical formula with neighbor means.
     
-    For undirected graphs, this function processes each edge once and
-    accumulates contributions to both endpoints, reducing edge traversals
-    by 50%.
+    For undirected graphs, this function implements the canonical TNFR gradient
+    computation where each node's gradient is computed from the circular mean
+    of its neighbors' phases (divided by π), and arithmetic means for EPI/νf.
+    
+    The canonical TNFR formulas are:
+    - Phase gradient: g_phase = sin(θ_node - θ̄_neighbors) / π
+    - EPI/νf gradient: g = x̄_neighbors - x_node
+    - Topology gradient: g_topo = degree · w_topo
+    
+    This implementation performs the computation in two passes:
+    1. Accumulate neighbor cos/sin sums and value sums for means
+    2. Compute gradients from means for each node
     
     Parameters
     ----------
@@ -281,22 +290,21 @@ def compute_fused_gradients_symmetric(
     vf : array-like
         νf values (shape: [N])
     weights : Mapping[str, float]
-        Component weights
+        Component weights (w_phase, w_epi, w_vf, w_topo)
     np : module
         NumPy module
     
     Returns
     -------
     ndarray
-        Gradient vector (shape: [N])
+        ΔNFR gradient vector (shape: [N])
     
     Notes
     -----
-    For symmetric edge (i, j), contributions are:
-    - Node i: gradient from j's values
-    - Node j: gradient from i's values (sign-flipped for phase)
+    The division by π in the phase gradient is part of the canonical TNFR
+    formulation and ensures proper scaling of phase-based reorganization.
     
-    This maintains TNFR semantics while processing edges more efficiently.
+    For isolated nodes (no neighbors), all gradients are zero.
     
     Examples
     --------
@@ -328,48 +336,77 @@ def compute_fused_gradients_symmetric(
     if n_edges == 0:
         return delta_nfr
     
-    # Extract node values for all edges
-    phase_src = phase[edge_src]
-    phase_dst = phase[edge_dst]
-    epi_src = epi[edge_src]
-    epi_dst = epi[edge_dst]
-    vf_src = vf[edge_src]
-    vf_dst = vf[edge_dst]
+    # Pass 1: Accumulate neighbor statistics for computing means
+    # For phase: accumulate cos/sin sums for circular mean
+    # For EPI/vf: accumulate value sums for arithmetic mean
+    neighbor_cos_sum = np.zeros(n_nodes, dtype=float)
+    neighbor_sin_sum = np.zeros(n_nodes, dtype=float)
+    neighbor_epi_sum = np.zeros(n_nodes, dtype=float)
+    neighbor_vf_sum = np.zeros(n_nodes, dtype=float)
+    neighbor_count = np.zeros(n_nodes, dtype=float)
     
-    # For undirected edge (i, j), we want:
-    #   - Node j accumulates gradient from i: sin(phase[i] - phase[j])
-    #   - Node i accumulates gradient from j: sin(phase[j] - phase[i])
-    # This maintains the proper gradient direction for both endpoints
+    # For undirected graphs, each edge contributes to both endpoints
+    # Extract neighbor values
+    phase_src_vals = phase[edge_src]
+    phase_dst_vals = phase[edge_dst]
+    epi_src_vals = epi[edge_src]
+    epi_dst_vals = epi[edge_dst]
+    vf_src_vals = vf[edge_src]
+    vf_dst_vals = vf[edge_dst]
     
-    # Forward: j receives contribution from i (src)
-    phase_diff_fwd = np.sin(phase_src - phase_dst)  # gradient at dst from src
-    epi_diff_fwd = epi_src - epi_dst
-    vf_diff_fwd = vf_src - vf_dst
+    # Accumulate from src to dst (dst's neighbors include src)
+    np.add.at(neighbor_cos_sum, edge_dst, np.cos(phase_src_vals))
+    np.add.at(neighbor_sin_sum, edge_dst, np.sin(phase_src_vals))
+    np.add.at(neighbor_epi_sum, edge_dst, epi_src_vals)
+    np.add.at(neighbor_vf_sum, edge_dst, vf_src_vals)
+    np.add.at(neighbor_count, edge_dst, 1.0)
     
-    contrib_fwd = (
-        w_phase * phase_diff_fwd +
-        w_epi * epi_diff_fwd +
-        w_vf * vf_diff_fwd +
-        w_topo * 1.0
+    # Accumulate from dst to src (src's neighbors include dst)
+    np.add.at(neighbor_cos_sum, edge_src, np.cos(phase_dst_vals))
+    np.add.at(neighbor_sin_sum, edge_src, np.sin(phase_dst_vals))
+    np.add.at(neighbor_epi_sum, edge_src, epi_dst_vals)
+    np.add.at(neighbor_vf_sum, edge_src, vf_dst_vals)
+    np.add.at(neighbor_count, edge_src, 1.0)
+    
+    # Pass 2: Compute gradients from means
+    # Avoid division by zero for isolated nodes
+    has_neighbors = neighbor_count > 0
+    
+    # Compute circular mean phase for nodes with neighbors
+    phase_mean = np.zeros(n_nodes, dtype=float)
+    phase_mean[has_neighbors] = np.arctan2(
+        neighbor_sin_sum[has_neighbors],
+        neighbor_cos_sum[has_neighbors]
     )
     
-    # Accumulate to destination nodes
-    np.add.at(delta_nfr, edge_dst, contrib_fwd)
+    # Compute arithmetic means for EPI and νf
+    epi_mean = np.zeros(n_nodes, dtype=float)
+    vf_mean = np.zeros(n_nodes, dtype=float)
+    epi_mean[has_neighbors] = neighbor_epi_sum[has_neighbors] / neighbor_count[has_neighbors]
+    vf_mean[has_neighbors] = neighbor_vf_sum[has_neighbors] / neighbor_count[has_neighbors]
     
-    # Backward: i receives contribution from j
-    phase_diff_bwd = np.sin(phase_dst - phase_src)  # j->i contribution
-    epi_diff_bwd = epi_dst - epi_src
-    vf_diff_bwd = vf_dst - vf_src
+    # Compute gradients using TNFR canonical formula
+    # Phase: g_phase = -angle_diff(θ_node, θ_mean) / π = sin(θ_mean - θ_node) / π
+    g_phase = np.sin(phase_mean - phase) / np.pi
+    g_phase[~has_neighbors] = 0.0  # Isolated nodes have no gradient
     
-    contrib_bwd = (
-        w_phase * phase_diff_bwd +
-        w_epi * epi_diff_bwd +
-        w_vf * vf_diff_bwd +
-        w_topo * 1.0
+    # EPI/νf: g = mean - node_value
+    g_epi = epi_mean - epi
+    g_epi[~has_neighbors] = 0.0
+    
+    g_vf = vf_mean - vf
+    g_vf[~has_neighbors] = 0.0
+    
+    # Topology: each neighbor contributes w_topo
+    g_topo = neighbor_count * w_topo
+    
+    # Combine gradients
+    delta_nfr = (
+        w_phase * g_phase +
+        w_epi * g_epi +
+        w_vf * g_vf +
+        g_topo  # Already scaled by w_topo
     )
-    
-    # Accumulate to source nodes
-    np.add.at(delta_nfr, edge_src, contrib_bwd)
     
     return delta_nfr
 
