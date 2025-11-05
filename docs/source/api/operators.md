@@ -3,6 +3,9 @@
 Structural operators reorganise coherence while preserving TNFR invariants. Use this
 reference to plan trajectories for simulations, experiments, or CLI runs.
 
+> **📖 Extended Guide**: See [GLYPH_SEQUENCES_GUIDE.md](../../../GLYPH_SEQUENCES_GUIDE.md) for
+> comprehensive canonical sequences, multi-domain examples, and grammar compatibility patterns.
+
 ## Canonical operator map
 
 Every trajectory must be composed from the 13 canonical operators and their resonant role.
