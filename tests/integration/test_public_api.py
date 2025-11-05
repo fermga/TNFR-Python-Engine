@@ -26,6 +26,9 @@ def test_public_exports():
         "hz_to_hz_str",
         "hz_str_to_hz",
         "get_hz_bridge",
+        "TNFRExperimentBuilder",
+        "TNFRNetwork",
+        "TNFRTemplates",
     }
     assert set(tnfr.__all__) == expected
 

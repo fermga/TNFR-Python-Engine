@@ -115,6 +115,9 @@ def _reset_all_state() -> None:
         from tnfr.utils import init as init_module
         init_module._LOGGING_CONFIGURED = False
         init_module._NP_MISSING_LOGGED = False
+        # Clear IMPORT_LOG to avoid test interference
+        if hasattr(init_module, 'IMPORT_LOG'):
+            init_module.IMPORT_LOG.clear()
     except (ImportError, AttributeError):
         pass
     
@@ -166,8 +169,15 @@ def _reset_all_state() -> None:
         from tnfr import rng as rng_module
         if hasattr(rng_module, 'seed_hash') and hasattr(rng_module.seed_hash, 'cache_clear'):
             rng_module.seed_hash.cache_clear()
-        # Reset RNG cache lock flag
+        # Reset RNG cache lock flag and cache
         rng_module._CACHE_LOCKED = False
+        if hasattr(rng_module, '_seed_hash_cache'):
+            rng_module._seed_hash_cache.clear()
+        if hasattr(rng_module, '_RNG_CACHE_MANAGER'):
+            # Clear the cache manager layers
+            manager = rng_module._RNG_CACHE_MANAGER
+            if hasattr(manager, 'clear_all'):
+                manager.clear_all()
     except (ImportError, AttributeError):
         pass
     
@@ -210,5 +220,68 @@ def _reset_all_state() -> None:
         from tnfr.operators import remesh as remesh_module
         if hasattr(remesh_module, '_get_remesh_cooldown_default') and hasattr(remesh_module._get_remesh_cooldown_default, 'cache_clear'):
             remesh_module._get_remesh_cooldown_default.cache_clear()
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset dynamics runtime cache
+    try:
+        from tnfr.dynamics import runtime as runtime_module
+        # Clear any cached integrators or state
+        if hasattr(runtime_module, '_INTEGRATOR_CACHE'):
+            runtime_module._INTEGRATOR_CACHE.clear()
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset metrics module caches
+    try:
+        from tnfr import metrics as metrics_module
+        # Clear any metrics computation caches
+        if hasattr(metrics_module, 'compute_sense_index') and hasattr(metrics_module.compute_sense_index, 'cache_clear'):
+            metrics_module.compute_sense_index.cache_clear()
+        if hasattr(metrics_module, 'compute_coherence') and hasattr(metrics_module.compute_coherence, 'cache_clear'):
+            metrics_module.compute_coherence.cache_clear()
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset observers state
+    try:
+        from tnfr import observers as observers_module
+        # Observers register themselves on graphs, so we can't easily clear them globally
+        # Tests should create fresh graphs for proper isolation
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset parallel execution state
+    try:
+        from tnfr.dynamics import parallel as parallel_module
+        # Clear any executor caches or state
+        if hasattr(parallel_module, '_EXECUTOR_CACHE'):
+            parallel_module._EXECUTOR_CACHE.clear()
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset glyph selector caches
+    try:
+        from tnfr import selector as selector_module
+        if hasattr(selector_module, 'select_glyph') and hasattr(selector_module.select_glyph, 'cache_clear'):
+            selector_module.select_glyph.cache_clear()
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset configuration state
+    try:
+        from tnfr import secure_config as config_module
+        # Reset any loaded configurations
+        if hasattr(config_module, '_LOADED_CONFIGS'):
+            config_module._LOADED_CONFIGS.clear()
+    except (ImportError, AttributeError):
+        pass
+    
+    # Reset validation service state
+    try:
+        from tnfr.validation import validator as validator_module
+        # Clear any validator caches
+        if hasattr(validator_module, '_VALIDATOR_CACHE'):
+            validator_module._VALIDATOR_CACHE.clear()
     except (ImportError, AttributeError):
         pass
