@@ -1,13 +1,13 @@
 # Optional Dependencies
 
-TNFR follows a modular design where certain features require optional dependencies that are not installed by default. This keeps the core package lightweight while allowing users to install only what they need.
+TNFR follows a modular design where certain features require optional dependencies that are not installed by default. This keeps installs focused while allowing users to add only what they need.
 
 ## Overview
 
 The TNFR engine has three categories of dependencies:
 
-1. **Core dependencies** (always installed): `networkx`, `cachetools`
-2. **Optional dependencies**: Enable specific features
+1. **Core dependencies** (always installed): `networkx`, `cachetools`, `numpy`
+2. **Optional dependencies**: Enable specific features like JAX/PyTorch backends, visualization, serialization
 3. **Development dependencies**: For testing, documentation, and type checking
 
 ## Installing Optional Dependencies
@@ -17,29 +17,34 @@ The TNFR engine has three categories of dependencies:
 The recommended way to install optional dependencies is using pip extras:
 
 ```bash
-# Visualization support (matplotlib, numpy)
-pip install tnfr[viz]
+# Computational backends
+pip install tnfr[compute-jax]     # JAX backend (JIT, autodiff)
+pip install tnfr[compute-torch]   # PyTorch backend (GPU acceleration)
 
-# NumPy backend for faster computations
-pip install tnfr[numpy]
+# Visualization
+pip install tnfr[viz-basic]       # Matplotlib for plotting
 
-# JAX backend (experimental)
-pip install tnfr[jax]
+# Serialization
+pip install tnfr[yaml]            # YAML configuration support
+pip install tnfr[orjson]          # Fast JSON serialization
+pip install tnfr[serialization]   # Both YAML and orjson
 
-# PyTorch backend (experimental)
-pip install tnfr[torch]
+# Development environments
+pip install tnfr[dev-minimal]     # Basic dev tools (mypy, black, pytest)
+pip install tnfr[dev-full]        # Full dev environment
 
-# YAML configuration support
-pip install tnfr[yaml]
-
-# Fast JSON serialization
-pip install tnfr[orjson]
+# Testing
+pip install tnfr[test-unit]       # Unit testing only
+pip install tnfr[test-all]        # All testing tools
 
 # Multiple extras at once
-pip install tnfr[numpy,viz,yaml]
+pip install tnfr[compute-jax,viz-basic,yaml]
 
-# All optional dependencies
-pip install tnfr[numpy,jax,torch,yaml,orjson,viz]
+# Legacy aliases (for backward compatibility)
+pip install tnfr[numpy]           # NumPy is now core - this does nothing
+pip install tnfr[jax]             # Alias for compute-jax
+pip install tnfr[torch]           # Alias for compute-torch
+pip install tnfr[viz]             # Alias for viz-basic
 ```
 
 ### Manual installation
@@ -47,11 +52,14 @@ pip install tnfr[numpy,jax,torch,yaml,orjson,viz]
 You can also install dependencies manually:
 
 ```bash
-# For visualization
-pip install numpy matplotlib
+# For JAX backend
+pip install jax
 
-# For backends
-pip install numpy  # or jax, or torch
+# For PyTorch backend
+pip install torch
+
+# For visualization
+pip install matplotlib
 
 # For YAML support
 pip install pyyaml
@@ -64,11 +72,11 @@ pip install orjson
 
 | Feature | Required Dependencies | Install Command |
 |---------|----------------------|-----------------|
-| Core TNFR operations | (always available) | `pip install tnfr` |
-| NumPy-accelerated computations | numpy | `pip install tnfr[numpy]` |
-| Visualization plots | numpy, matplotlib | `pip install tnfr[viz]` |
-| JAX backend | jax | `pip install tnfr[jax]` |
-| PyTorch backend | torch | `pip install tnfr[torch]` |
+| Core TNFR operations | networkx, cachetools, numpy | `pip install tnfr` |
+| NumPy backend | (included in core) | `pip install tnfr` |
+| JAX backend | jax | `pip install tnfr[compute-jax]` |
+| PyTorch backend | torch | `pip install tnfr[compute-torch]` |
+| Visualization plots | matplotlib | `pip install tnfr[viz-basic]` |
 | YAML configuration | pyyaml | `pip install tnfr[yaml]` |
 | Fast JSON serialization | orjson | `pip install tnfr[orjson]` |
 | JSON schema validation | jsonschema | `pip install jsonschema` |
@@ -77,10 +85,12 @@ pip install orjson
 
 When optional dependencies are not installed, TNFR provides graceful fallbacks:
 
-### NumPy
-- **Without NumPy**: Uses pure Python implementations (slower but functional)
-- **With NumPy**: Vectorized operations for better performance
-- **Fallback detection**: Automatic - no configuration needed
+### Computational Backends
+- **NumPy backend**: Always available (core dependency) - canonical reference implementation
+- **JAX backend**: Optional - provides JIT compilation and autodiff support
+- **PyTorch backend**: Optional - provides GPU acceleration
+- **Fallback**: Automatically uses NumPy backend if JAX or PyTorch unavailable
+- **Detection**: Automatic - no configuration needed
 
 ### Matplotlib
 - **Without Matplotlib**: Visualization functions raise informative errors
@@ -199,8 +209,14 @@ For better IDE support with optional dependencies:
 For TNFR development, install all dependencies:
 
 ```bash
+# Minimal development environment (testing and linting)
+pip install -e ".[dev-minimal]"
+
 # Complete development environment
-pip install -e ".[test,docs,typecheck,numpy,viz,yaml,orjson]"
+pip install -e ".[dev-full]"
+
+# Or install specific groups as needed
+pip install -e ".[test-all,typecheck,compute-jax,viz-basic,serialization]"
 ```
 
 This ensures all tests, documentation, and type checking work correctly.

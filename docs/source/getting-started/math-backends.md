@@ -28,9 +28,9 @@ work when optional dependencies are absent.
 
 | Backend | Extra dependency | Autodiff | Notes |
 | ------- | ---------------- | -------- | ----- |
-| NumPy   | `pip install tnfr[numpy]` | No | Canonical reference implementation. Uses SciPy for `expm` when available, otherwise falls back to an eigen decomposition strategy. |
-| JAX     | `pip install tnfr[jax]`   | Yes | Requires `jax` and `jax.scipy`. Some imperative NumPy routines (e.g. in observers) remain NumPy-only. |
-| PyTorch | `pip install tnfr[torch]` | Yes | Uses `torch.linalg`. Exporting tensors to NumPy moves them to CPU and breaks gradients. |
+| NumPy   | (core dependency) | No | Canonical reference implementation. Uses SciPy for `expm` when available, otherwise falls back to an eigen decomposition strategy. Always available. |
+| JAX     | `pip install tnfr[compute-jax]`   | Yes | Requires `jax` and `jax.scipy`. Some imperative NumPy routines (e.g. in observers) remain NumPy-only. |
+| PyTorch | `pip install tnfr[compute-torch]` | Yes | Uses `torch.linalg`. Exporting tensors to NumPy moves them to CPU and breaks gradients. |
 
 > Autodifferentiation support is scoped to backend operations.  TNFR structural
 > pipelines that execute pure NumPy functions or rely on mutable state will not

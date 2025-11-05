@@ -36,7 +36,7 @@ class _NotInstalledError(RuntimeError):
     def __init__(self, operation: str = "numpy operation") -> None:
         super().__init__(
             f"Cannot perform {operation}: numpy is not installed. "
-            "Install it with: pip install tnfr[numpy] or pip install numpy"
+            "Install it with: pip install numpy"
         )
 
 

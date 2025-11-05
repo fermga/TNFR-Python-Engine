@@ -1,8 +1,6 @@
 """Benchmark for :func:`tnfr.alias.collect_attr` performance.
 
-The optimized path relies on NumPy. When the optional dependency is not
-available the script prints an informative message and exits without
-executing the benchmark.
+The optimized path uses NumPy which is now a core dependency.
 """
 
 import time
@@ -27,7 +25,7 @@ def _naive_collect(G):
 def run():
     """Run the benchmark and print the elapsed times."""
     if np is None:
-        print("NumPy not available; install 'tnfr[numpy]' to run this benchmark.")
+        print("NumPy not available (should not happen with core installation).")
         return
 
     G = nx.gnp_random_graph(300, 0.1, seed=1)
