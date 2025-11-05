@@ -392,18 +392,14 @@ def _format_token_group(tokens: Sequence[str]) -> str:
 class _SequenceAutomaton:
     __slots__ = (
         "_canonical",
-        "_found_reception",
-        "_found_coherence",
-        "_seen_intermediate",
+        "_found_stabilizer",
         "_open_thol",
         "_unknown_tokens",
     )
 
     def __init__(self) -> None:
         self._canonical: list[str] = []
-        self._found_reception = False
-        self._found_coherence = False
-        self._seen_intermediate = False
+        self._found_stabilizer = False  # R2: must contain IL or THOL
         self._open_thol = False
         self._unknown_tokens: list[tuple[int, str]] = []
 
@@ -421,16 +417,15 @@ class _SequenceAutomaton:
         self._canonical.append(canonical)
         if canonical not in OPERATORS:
             self._unknown_tokens.append((index, token))
+        # R1: First operator must be a valid start operator (AL or NAV)
         if index == 0:
             if canonical not in VALID_START_OPERATORS:
                 expected = _format_token_group(_CANONICAL_START)
                 raise SequenceSyntaxError(index=index, token=token, message=f"must start with {expected}")
-        if canonical == RECEPTION and not self._found_reception:
-            self._found_reception = True
-        elif self._found_reception and canonical == COHERENCE and not self._found_coherence:
-            self._found_coherence = True
-        elif self._found_coherence and canonical in INTERMEDIATE_OPERATORS:
-            self._seen_intermediate = True
+        # R2: Track if we've seen a stabilizer (IL or THOL)
+        if canonical in (COHERENCE, SELF_ORGANIZATION):
+            self._found_stabilizer = True
+        # Track THOL blocks for closure validation
         if canonical == SELF_ORGANIZATION:
             self._open_thol = True
         elif self._open_thol and canonical in SELF_ORGANIZATION_CLOSURES:
@@ -445,19 +440,14 @@ class _SequenceAutomaton:
                 token=first_token,
                 message=f"unknown tokens: {ordered}",
             )
-        if not (self._found_reception and self._found_coherence):
+        # R2: Must contain at least one stabilizer (IL or THOL)
+        if not self._found_stabilizer:
             raise SequenceSyntaxError(
                 index=-1,
                 token=None,
-                message=f"missing {RECEPTION}→{COHERENCE} segment",
+                message=f"missing stabilizer: sequence must contain {COHERENCE} or {SELF_ORGANIZATION}",
             )
-        if not self._seen_intermediate:
-            intermediate = _format_token_group(_CANONICAL_INTERMEDIATE)
-            raise SequenceSyntaxError(
-                index=-1,
-                token=None,
-                message=f"missing {intermediate} segment",
-            )
+        # R3: Must end with a valid end operator (SHA or NUL)
         if self._canonical[-1] not in VALID_END_OPERATORS:
             cierre = _format_token_group(_CANONICAL_END)
             raise SequenceSyntaxError(
@@ -465,6 +455,7 @@ class _SequenceAutomaton:
                 token=names[-1],
                 message=f"sequence must end with {cierre}",
             )
+        # Validate THOL blocks are properly closed
         if self._open_thol:
             raise SequenceSyntaxError(
                 index=len(names) - 1,
@@ -478,9 +469,7 @@ class _SequenceAutomaton:
 
     def metadata(self) -> Mapping[str, object]:
         return {
-            "has_reception": self._found_reception,
-            "has_coherence": self._found_coherence,
-            "has_intermediate": self._seen_intermediate,
+            "has_stabilizer": self._found_stabilizer,
             "open_thol": self._open_thol,
             "unknown_tokens": frozenset(token for _, token in self._unknown_tokens),
         }

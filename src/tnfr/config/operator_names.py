@@ -42,9 +42,27 @@ CANONICAL_OPERATOR_NAMES = frozenset(
 ALL_OPERATOR_NAMES = CANONICAL_OPERATOR_NAMES
 ENGLISH_OPERATOR_NAMES = CANONICAL_OPERATOR_NAMES
 
-VALID_START_OPERATORS = frozenset({EMISSION, RECURSIVITY})
-INTERMEDIATE_OPERATORS = frozenset({DISSONANCE, COUPLING, RESONANCE})
-VALID_END_OPERATORS = frozenset({SILENCE, TRANSITION, RECURSIVITY})
+# Canonical grammar rules (based on "El pulso que nos atraviesa.pdf" pp. 133-137)
+# R1: Sequences start with AL (EMISSION) or NAV (TRANSITION)
+VALID_START_OPERATORS = frozenset({EMISSION, TRANSITION})
+
+# R2: Intermediate operators for sequence development
+# Includes: EN, IL, OZ, UM, RA, VAL, THOL, ZHIR
+INTERMEDIATE_OPERATORS = frozenset({
+    RECEPTION,
+    COHERENCE,
+    DISSONANCE,
+    COUPLING,
+    RESONANCE,
+    EXPANSION,
+    SELF_ORGANIZATION,
+    MUTATION,
+})
+
+# R3: Sequences end with SHA (SILENCE) or NUL (CONTRACTION)
+VALID_END_OPERATORS = frozenset({SILENCE, CONTRACTION})
+
+# Self-organization closure operators (no change from canonical)
 SELF_ORGANIZATION_CLOSURES = frozenset({SILENCE, CONTRACTION})
 
 def canonical_operator_name(name: str) -> str:

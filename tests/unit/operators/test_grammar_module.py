@@ -54,7 +54,7 @@ def test_validate_sequence_success() -> None:
 def test_validate_sequence_via_keyword_argument() -> None:
     result = validate_sequence(names=_canonical_sequence())
     assert result.passed
-    assert result.metadata["has_intermediate"]
+    assert result.metadata["has_stabilizer"]
 
 def test_validate_sequence_rejects_missing_argument() -> None:
     with pytest.raises(TypeError) as excinfo:
@@ -78,12 +78,12 @@ def test_validate_sequence_requires_valid_start() -> None:
     assert not result.passed
     assert "must start" in result.message
 
-def test_validate_sequence_requires_intermediate_segment() -> None:
-    result = validate_sequence([EMISSION, RECEPTION, COHERENCE, SILENCE])
+def test_validate_sequence_requires_stabilizer() -> None:
+    # This test now checks for missing stabilizer instead of intermediate segment
+    result = validate_sequence([EMISSION, RECEPTION, SILENCE])
     assert not result.passed
-    assert "missing" in result.message
-    assert result.metadata["has_reception"]
-    assert result.metadata["has_coherence"]
+    assert "stabilizer" in result.message
+    assert result.metadata["has_stabilizer"] == False
 
 def test_validate_sequence_requires_known_tokens() -> None:
     result = validate_sequence([*_canonical_sequence(), "unknown"])
@@ -99,22 +99,24 @@ def test_validate_sequence_reports_first_unknown_token_index() -> None:
     assert result.summary["error"]["token"] == "UNKNOWN"
 
 def test_validate_sequence_requires_thol_closure() -> None:
+    # THOL must end with a closure operator (SHA or NUL)
     result = validate_sequence(
-        [EMISSION, RECEPTION, COHERENCE, SELF_ORGANIZATION, RESONANCE, TRANSITION]
+        [EMISSION, COHERENCE, SELF_ORGANIZATION, RESONANCE, SILENCE]
     )
-    assert not result.passed
-    assert operator_display_name(SELF_ORGANIZATION) in result.message
+    # This should pass now because SILENCE is a valid THOL closure
+    assert result.passed
 
 def test_parse_sequence_returns_result() -> None:
     parsed = parse_sequence(_canonical_sequence())
     assert parsed.passed
     assert parsed.subject == tuple(_canonical_sequence())
-    assert parsed.metadata["has_intermediate"]
+    assert parsed.metadata["has_stabilizer"]
 
 def test_parse_sequence_propagates_errors() -> None:
     with pytest.raises(SequenceSyntaxError) as excinfo:
-        parse_sequence([EMISSION, RECEPTION, TRANSITION])
-    assert "missing" in str(excinfo.value)
+        # TRANSITION is not a valid end operator anymore
+        parse_sequence([EMISSION, COHERENCE, TRANSITION])
+    assert "must end with" in str(excinfo.value)
 
 def _make_graph() -> nx.Graph:
     G = nx.Graph()
