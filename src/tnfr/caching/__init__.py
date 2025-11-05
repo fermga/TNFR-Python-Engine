@@ -63,8 +63,8 @@ from .hierarchical_cache import (
     CacheEntry,
     TNFRHierarchicalCache,
 )
-from .decorators import cache_tnfr_computation
-from .invalidation import GraphChangeTracker
+from .decorators import cache_tnfr_computation, invalidate_function_cache
+from .invalidation import GraphChangeTracker, track_node_property_update
 from .persistence import PersistentTNFRCache
 
 __all__ = [
@@ -72,6 +72,8 @@ __all__ = [
     "CacheEntry",
     "TNFRHierarchicalCache",
     "cache_tnfr_computation",
+    "invalidate_function_cache",
     "GraphChangeTracker",
+    "track_node_property_update",
     "PersistentTNFRCache",
 ]

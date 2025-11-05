@@ -14,7 +14,7 @@ from typing import Any, Callable, Optional, TypeVar
 
 from .hierarchical_cache import CacheLevel, TNFRHierarchicalCache
 
-__all__ = ["cache_tnfr_computation", "get_global_cache", "set_global_cache"]
+__all__ = ["cache_tnfr_computation", "get_global_cache", "set_global_cache", "invalidate_function_cache"]
 
 # Global cache instance shared across all decorated functions
 _global_cache: Optional[TNFRHierarchicalCache] = None

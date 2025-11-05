@@ -10,7 +10,7 @@ from typing import Any, Optional
 
 from .hierarchical_cache import TNFRHierarchicalCache
 
-__all__ = ["GraphChangeTracker"]
+__all__ = ["GraphChangeTracker", "track_node_property_update"]
 
 
 class GraphChangeTracker:
