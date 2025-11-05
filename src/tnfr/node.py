@@ -389,7 +389,9 @@ class NodeNX(NodeProtocol):
         )
         self.validator: NFRValidator | None = validator
         self.rng: np.random.Generator | None = rng
-        G.graph.setdefault("_node_cache", {})[n] = self
+        # Only add to default cache if not being created by from_graph
+        if not G.graph.get("_creating_node", False):
+            G.graph.setdefault("_node_cache", {})[n] = self
 
     def _glyph_storage(self) -> MutableMapping[str, Any]:
         return self.G.nodes[self.n]
@@ -429,33 +431,54 @@ class NodeNX(NodeProtocol):
         The default strong cache provides better performance for long-lived
         graphs with repeated node access patterns.
         """
-        lock = get_lock(f"node_nx_cache_{id(G)}")
-        with lock:
-            cache_key = "_node_cache_weak" if use_weak_cache else "_node_cache"
-            cache = G.graph.get(cache_key)
+        cache_key = "_node_cache_weak" if use_weak_cache else "_node_cache"
 
-            if cache is None:
-                if use_weak_cache:
-                    cache = WeakValueDictionary()
-                else:
-                    cache = {}
-                G.graph[cache_key] = cache
-
+        # Fast path: lock-free read for cache hit (common case)
+        cache = G.graph.get(cache_key)
+        if cache is not None:
             node = cache.get(n)
-            if node is None:
-                # Create node (this will add it to strong cache in __init__)
+            if node is not None:
+                return node
+
+        # Slow path: need to create node or initialize cache
+        # Use per-node lock for finer granularity and reduced contention
+        lock = get_lock(f"node_nx_{id(G)}_{n}_{cache_key}")
+        with lock:
+            # Double-check pattern: verify node still doesn't exist
+            cache = G.graph.get(cache_key)
+            if cache is not None:
+                node = cache.get(n)
+                if node is not None:
+                    return node
+
+            # Initialize cache if needed
+            if cache is None:
+                # Use a separate lock for cache initialization to avoid deadlocks
+                graph_lock = get_lock(f"node_nx_cache_init_{id(G)}_{cache_key}")
+                with graph_lock:
+                    # Triple-check: another thread may have initialized
+                    cache = G.graph.get(cache_key)
+                    if cache is None:
+                        if use_weak_cache:
+                            cache = WeakValueDictionary()
+                        else:
+                            cache = {}
+                        G.graph[cache_key] = cache
+
+            # Check again after cache initialization
+            node = cache.get(n)
+            if node is not None:
+                return node
+
+            # Create node - use a sentinel to prevent __init__ from adding to cache
+            G.graph["_creating_node"] = True
+            try:
                 node = cls(G, n)
+            finally:
+                G.graph.pop("_creating_node", None)
 
-                # Add to the requested cache type
-                cache[n] = node
-
-                # When using weak cache, remove the strong reference that __init__ created
-                # to allow proper garbage collection when no external references exist.
-                # This must happen inside the lock to prevent race conditions.
-                if use_weak_cache:
-                    strong_cache = G.graph.get("_node_cache")
-                    if strong_cache is not None and n in strong_cache:
-                        del strong_cache[n]
+            # Add to requested cache only
+            cache[n] = node
 
             return node
 
