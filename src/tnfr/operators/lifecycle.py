@@ -31,6 +31,9 @@ __all__ = [
     "should_collapse",
 ]
 
+# Default thresholds for lifecycle state determination
+DEFAULT_MIN_PHASE_COUPLING = 0.1  # Minimum phase coupling before decoupling collapse
+
 
 class LifecycleState(Enum):
     """Canonical TNFR node lifecycle states.
@@ -173,7 +176,7 @@ def get_lifecycle_state(
         phase_coupling = 0.0
     
     # Check for decoupling collapse
-    if neighbors and phase_coupling < 0.1:
+    if neighbors and phase_coupling < DEFAULT_MIN_PHASE_COUPLING:
         return LifecycleState.COLLAPSING
     
     # Check active states (priority: mutation > propagation > stabilization > activation)

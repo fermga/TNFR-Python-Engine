@@ -26,6 +26,9 @@ __all__ = [
     "compute_expected_depi_dt",
 ]
 
+# Default tolerance for nodal equation validation
+DEFAULT_NODAL_EQUATION_TOLERANCE = 1e-3
+
 
 class NodalEquationViolation(Exception):
     """Raised when operator application violates the nodal equation.
@@ -174,8 +177,8 @@ def validate_nodal_equation(
     >>> is_valid = validate_nodal_equation(G, node, epi_before, epi_after, dt=1.0)
     """
     if tolerance is None:
-        # Try graph configuration first, then use default
-        tolerance = float(G.graph.get("NODAL_EQUATION_TOLERANCE", 1e-3))
+        # Try graph configuration first, then use default constant
+        tolerance = float(G.graph.get("NODAL_EQUATION_TOLERANCE", DEFAULT_NODAL_EQUATION_TOLERANCE))
     
     # Measured rate of EPI change
     measured_depi_dt = (epi_after - epi_before) / dt if dt > 0 else 0.0

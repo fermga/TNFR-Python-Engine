@@ -114,14 +114,18 @@ class Operator:
         # Optional nodal equation validation (∂EPI/∂t = νf · ΔNFR(t))
         if validate_equation and state_before is not None:
             from .nodal_equation import validate_nodal_equation
+            from ..alias import get_attr
+            from ..constants.aliases import ALIAS_EPI
+            
             dt = float(kw.get("dt", 1.0))  # Time step, default 1.0 for discrete ops
             strict = G.graph.get("NODAL_EQUATION_STRICT", False)
+            epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
             
             validate_nodal_equation(
                 G,
                 node,
                 epi_before=state_before["epi"],
-                epi_after=float(self._get_node_attr(G, node, "epi")),
+                epi_after=epi_after,
                 dt=dt,
                 operator_name=self.name,
                 strict=strict,

@@ -19,6 +19,9 @@ __all__ = [
     "hz_to_hz_str",
 ]
 
+# Default tolerance for structural frequency validation
+MIN_STRUCTURAL_FREQUENCY = 0.0
+
 
 class HzStr:
     """Structural frequency in Hz_str (structural hertz) units.
@@ -61,9 +64,9 @@ class HzStr:
         ValueError
             If value is negative (structural frequencies are non-negative)
         """
-        if value < 0:
+        if value < MIN_STRUCTURAL_FREQUENCY:
             raise ValueError(
-                f"Structural frequency must be non-negative, got {value}"
+                f"Structural frequency must be >= {MIN_STRUCTURAL_FREQUENCY} Hz_str, got {value}"
             )
         self.value = float(value)
         self.unit = "Hz_str"
@@ -169,7 +172,9 @@ class HzStr:
             return HzStr(self.value / other.value)
         if isinstance(other, (int, float)):
             if other == 0:
-                raise ZeroDivisionError("Cannot divide structural frequency by zero")
+                raise ZeroDivisionError(
+                    f"Cannot divide structural frequency {self.value} Hz_str by zero"
+                )
             return HzStr(self.value / float(other))
         return NotImplemented
     

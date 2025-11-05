@@ -15,12 +15,21 @@ from __future__ import annotations
 
 import math
 import re
+import warnings
 from typing import Any, Mapping
 
 import networkx as nx
 
 from ..constants import DEFAULTS
 from ..types import Glyph, TNFRGraph
+
+# Check HzStr availability once at module level
+_HZ_STR_AVAILABLE = False
+try:
+    from ..operators.structural_units import HzStr
+    _HZ_STR_AVAILABLE = True
+except ImportError:
+    HzStr = None  # type: ignore[assignment, misc]
 
 __all__ = [
     "ValidationError",
@@ -228,21 +237,16 @@ def validate_vf_value(
     warning to encourage canonical unit usage but still accepts the value.
     """
     # Accept HzStr instances (canonical form)
-    try:
-        from ..operators.structural_units import HzStr
-        if isinstance(value, HzStr):
-            value = float(value)  # Extract numeric value
-        elif enforce_hz_str:
-            # Log warning but don't raise (soft enforcement for migration)
-            import warnings
-            warnings.warn(
-                f"νf should use Hz_str units for TNFR canonical compliance. "
-                f"Got {type(value).__name__} instead.",
-                UserWarning,
-                stacklevel=2,
-            )
-    except ImportError:
-        pass  # HzStr not available, skip check
+    if _HZ_STR_AVAILABLE and HzStr is not None and isinstance(value, HzStr):
+        value = float(value)  # Extract numeric value
+    elif enforce_hz_str and _HZ_STR_AVAILABLE:
+        # Log warning but don't raise (soft enforcement for migration)
+        warnings.warn(
+            f"νf should use Hz_str units for TNFR canonical compliance. "
+            f"Got {type(value).__name__} instead.",
+            UserWarning,
+            stacklevel=2,
+        )
     
     if not isinstance(value, (int, float)):
         raise ValidationError(
