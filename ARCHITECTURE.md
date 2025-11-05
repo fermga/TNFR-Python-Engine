@@ -2,6 +2,115 @@
 
 This guide expands the README summary by detailing how the TNFR Python Engine organises its modules, maintains data flow between orchestration layers, and enforces the canonical invariants that define Resonant Fractal Nature Theory (TNFR). Use it whenever you extend structural operators, instrumentation, or runtime coordination.
 
+## Modular Architecture (New)
+
+TNFR 2.0 introduces a clean separation of responsibilities through Protocol-based interfaces and dependency injection, enabling flexible composition while maintaining backward compatibility.
+
+### Core Interfaces
+
+The engine is now structured around four fundamental interfaces defined in `tnfr.core.interfaces`:
+
+| Interface | Responsibility | Implementation |
+| --- | --- | --- |
+| `OperatorRegistry` | Maps operator tokens to implementations | `DefaultOperatorRegistry` wraps `tnfr.operators.registry` |
+| `ValidationService` | Validates sequences and graph states | `DefaultValidationService` wraps `tnfr.validation` |
+| `DynamicsEngine` | Computes ΔNFR and integrates nodal equation | `DefaultDynamicsEngine` wraps `tnfr.dynamics` |
+| `TelemetryCollector` | Captures coherence, Si, and traces | `DefaultTelemetryCollector` wraps `tnfr.metrics` |
+
+### Orchestration Service
+
+The `TNFROrchestrator` coordinates execution with clear separation:
+
+```python
+from tnfr.core import TNFRContainer
+from tnfr.services import TNFROrchestrator
+from tnfr.structural import create_nfr
+
+# Create orchestrator with default services
+container = TNFRContainer.create_default()
+orchestrator = TNFROrchestrator.from_container(container)
+
+# Execute sequence with separated responsibilities
+G, node = create_nfr("test", epi=1.0, vf=1.0)
+orchestrator.execute_sequence(
+    G, node, 
+    ["emission", "reception", "coherence", "coupling", "dissonance", "resonance", "silence"],
+    enable_telemetry=True
+)
+```
+
+### Dependency Injection
+
+Custom implementations can be injected without modifying the engine:
+
+```python
+from tnfr.core import TNFRContainer, ValidationService
+
+class StrictValidator:
+    def validate_sequence(self, sequence):
+        # Custom validation logic
+        pass
+    
+    def validate_graph_state(self, graph):
+        # Custom graph validation
+        pass
+
+# Register custom implementation
+container = TNFRContainer()
+container.register_singleton(ValidationService, StrictValidator())
+# ... register other services
+orchestrator = TNFROrchestrator.from_container(container)
+```
+
+### Benefits
+
+1. **Testability**: Each layer can be mocked independently for unit testing
+2. **Extensibility**: Custom implementations without modifying core code
+3. **Maintainability**: Clear boundaries reduce coupling and complexity
+4. **Backward Compatibility**: Existing code using `run_sequence` continues to work
+
+### Architecture Diagram
+
+```mermaid
+flowchart TB
+    subgraph Services["Service Layer"]
+        ORCH[TNFROrchestrator]
+    end
+    subgraph Interfaces["Core Interfaces"]
+        VAL[ValidationService]
+        REG[OperatorRegistry]
+        DYN[DynamicsEngine]
+        TEL[TelemetryCollector]
+    end
+    subgraph Implementation["Default Implementations"]
+        DVAL[DefaultValidationService]
+        DREG[DefaultOperatorRegistry]
+        DDYN[DefaultDynamicsEngine]
+        DTEL[DefaultTelemetryCollector]
+    end
+    subgraph Existing["Existing Modules"]
+        VMOD[tnfr.validation]
+        OMOD[tnfr.operators]
+        DYMOD[tnfr.dynamics]
+        MMOD[tnfr.metrics]
+    end
+    
+    ORCH --> VAL
+    ORCH --> REG
+    ORCH --> DYN
+    ORCH --> TEL
+    
+    VAL -.implements.- DVAL
+    REG -.implements.- DREG
+    DYN -.implements.- DDYN
+    TEL -.implements.- DTEL
+    
+    DVAL --> VMOD
+    DREG --> OMOD
+    DDYN --> DYMOD
+    DTEL --> MMOD
+```
+
 ## Layered responsibilities
 
 | Layer | Key modules | Primary responsibilities | TNFR invariants guarded |
