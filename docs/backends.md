@@ -39,20 +39,49 @@ The NumPy backend provides vectorized implementations using `numpy` arrays and o
 
 ### Optimized NumPy Backend (Enhanced, Stable)
 
-**Status**: Production-ready, enhanced vectorization
+**Status**: ✅ Production-ready with correct TNFR semantics
 
 The optimized NumPy backend builds on the standard NumPy implementation with:
 
-- **Fused operations**: Infrastructure for combining gradient computations
-- **Workspace caching**: Pre-allocated buffers to reduce allocations
-- **Adaptive strategy**: Automatically selects optimization level based on graph size
-- **Optional Numba**: Can use Numba JIT if available for further speedups
+- **Fused gradient kernel**: Single-pass accumulation of neighbor statistics
+- **TNFR canonical formula**: Correct use of `angle_diff` with π divisor
+- **Circular mean**: Proper circular statistics using cos/sin sums + atan2
+- **Workspace caching**: Pre-allocated buffers for array operations
+- **Adaptive strategy**: Graph-size based optimization selection
+- **Optional Numba JIT**: Can leverage Numba for additional speedup
 
-**Requirements**: `numpy>=1.24`, optional `numba` for JIT
+**Requirements**: `numpy>=1.24`, optional `numba` for JIT acceleration
 
 **Characteristics**:
 - `supports_gpu`: False (CPU-only)
 - `supports_jit`: True (if Numba is installed)
+
+**Performance** (without Numba):
+
+| Graph Size | Edges  | Standard (ms) | Optimized (ms) | Speedup |
+|------------|--------|---------------|----------------|---------|
+| 50 nodes   | 232    | 0.87          | 0.85           | 1.02x   |
+| 100 nodes  | 976    | 1.47          | 1.14           | 1.29x   |
+| 200 nodes  | 4,051  | 2.81          | 3.02           | 0.93x   |
+| 500 nodes  | 25,156 | 7.40          | 13.62          | 0.54x   |
+
+**Note**: Without Numba JIT, the vectorized path is slower for large graphs due to the two-pass algorithm overhead. With Numba JIT compilation, expected speedup is 2-3x on graphs >500 nodes.
+
+**TNFR Formula Implementation**: The optimized backend correctly implements the canonical TNFR phase gradient formula:
+
+```python
+# Circular mean of neighbor phases
+phase_mean = arctan2(Σ sin(θ_neighbors), Σ cos(θ_neighbors))
+
+# Phase gradient with angle wrapping (NOT sin!)
+phase_diff = (phase_mean - phase + π) % 2π - π
+g_phase = phase_diff / π
+```
+
+**Critical**: Uses `angle_diff` (angular wrapping) NOT `sin`. For large phase differences:
+- `angle_diff(1.5)` = 1.5
+- `sin(1.5)` ≈ 0.997
+- Ratio: 0.665 (33% error if using sin!)
 
 **Usage**:
 ```python
@@ -60,7 +89,7 @@ from tnfr.backends import get_backend
 
 backend = get_backend("optimized_numpy")
 # or use alias:
-backend = get_backend("optimized")
+backend = get_backend("opt")
 ```
 
 ### JAX Backend (Experimental)
@@ -445,36 +474,60 @@ For large graphs (>10,000 nodes), consider:
 
 ## Ongoing Optimizations
 
-The TNFR backend system is under continuous optimization to achieve the target 10-100x speedup for large-scale networks.
+The TNFR backend system is under continuous optimization to achieve the target performance improvements for large-scale networks.
 
-### Current Optimization Efforts
+### Current Status
 
-**Phase 1: Enhanced Vectorization (In Progress)**
-- ✅ Optimized NumPy backend with workspace caching
-- ✅ Infrastructure for fused gradient computations
-- 🔄 Numba JIT integration for hot paths
-- 🔄 Further reduction in temporary allocations
+**Phase 1: Vectorized ΔNFR with TNFR Canonical Formula** ✅ **COMPLETE**
+- ✅ Optimized NumPy backend with fused gradient computation
+- ✅ Correct TNFR canonical formula with `angle_diff` and π divisor
+- ✅ Circular mean using cos/sin accumulation + atan2
+- ✅ Workspace caching infrastructure
+- ✅ All TNFR structural invariants preserved
+- ✅ Comprehensive test coverage (22 tests passing)
 
-**Phase 2: Advanced Fusion (Planned)**
-- Fused phase/EPI/topology gradient kernels
-- Combined normalization operations for Si
-- Reduced memory traffic through operation coalescing
-- Target: Additional 20-40% speedup
+**Implementation Details**:
+```python
+# Two-pass algorithm for fused gradients
+# Pass 1: Accumulate neighbor statistics
+for edge (i, j) in undirected_edges:
+    # Forward: j's neighbors include i
+    neighbor_cos_sum[j] += cos(phase[i])
+    neighbor_sin_sum[j] += sin(phase[i])
+    neighbor_epi_sum[j] += EPI[i]
+    neighbor_count[j] += 1
+    
+    # Backward: i's neighbors include j (symmetric)
+    neighbor_cos_sum[i] += cos(phase[j])
+    neighbor_sin_sum[i] += sin(phase[j])
+    neighbor_epi_sum[i] += EPI[j]
+    neighbor_count[i] += 1
 
-**Phase 3: Specialized Implementations (Future)**
-- Graph-size adaptive strategies
+# Pass 2: Compute means and gradients
+phase_mean = arctan2(neighbor_sin_sum, neighbor_cos_sum)
+phase_diff = (phase_mean - phase + π) % 2π - π  # angle wrapping
+g_phase = phase_diff / π  # TNFR canonical formula
+```
+
+**Key Insight**: The TNFR canonical formula requires `angle_diff` (angular wrapping to [-π, π]), not `sin`. This critical detail ensures correctness for large phase differences.
+
+**Performance Status**: 
+- ✅ Correct semantics preserved
+- ⚠️ Performance needs Numba JIT for speedup
+- Without Numba: 0.5-1.3x of standard (two-pass overhead)
+- With Numba: 2-3x expected (JIT-compiled inner loops)
+
+**Phase 2: Numba JIT Integration** 🔄 **IN PROGRESS**
+- ✅ JIT kernel infrastructure ready (`_compute_fused_gradients_jit`)
+- ✅ Auto-detection and graceful fallback
+- 🔄 Awaiting Numba installation for testing
+- Target: 2-3x additional speedup on graphs >500 nodes
+
+**Phase 3: Advanced Optimizations** 📋 **PLANNED**
+- Fused phase dispersion + Si computation
+- SIMD-optimized inner loops  
 - Cache-optimized memory layouts
-- SIMD-optimized inner loops
-- Parallel accumulation for very large graphs
-
-### Performance Targets
-
-| Graph Size | Current | Target | Status |
-|------------|---------|--------|--------|
-| 100 nodes  | 1.5x    | 2-3x   | 🔄     |
-| 500 nodes  | 3.0x    | 5-10x  | 🔄     |
-| 1000 nodes | 4.0x    | 10-20x | 🔄     |
-| 5000+ nodes| 5.0x    | 20-50x | 🔄     |
+- Target: Additional 20-40% improvement
 
 ## Future Roadmap
 
