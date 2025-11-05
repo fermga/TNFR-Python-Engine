@@ -101,7 +101,7 @@ def validate_reception(G: TNFRGraph, node: NodeId) -> None:
         )
 
 def validate_coherence(G: TNFRGraph, node: NodeId) -> None:
-    """IL - Coherence requires ΔNFR > 0 to stabilize.
+    """IL - Coherence requires significant ΔNFR to stabilize.
 
     Parameters
     ----------
@@ -113,7 +113,13 @@ def validate_coherence(G: TNFRGraph, node: NodeId) -> None:
     Raises
     ------
     OperatorPreconditionError
-        If ΔNFR is already near zero (nothing to stabilize)
+        If |ΔNFR| is already near zero (nothing meaningful to stabilize)
+    
+    Notes
+    -----
+    Coherence acts on the absolute magnitude of ΔNFR, reducing structural
+    instability regardless of sign. We validate that |ΔNFR| > threshold
+    to ensure there is sufficient reorganization to compress.
     """
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
     min_dnfr = float(G.graph.get("IL_MIN_DNFR", 1e-6))

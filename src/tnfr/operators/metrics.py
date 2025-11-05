@@ -200,6 +200,8 @@ def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float) -> dict[st
     dict
         Coupling-specific metrics including phase synchronization
     """
+    import math
+    
     theta_after = _get_node_attr(G, node, ALIAS_THETA)
     neighbors = list(G.neighbors(node))
     neighbor_count = len(neighbors)
@@ -208,7 +210,7 @@ def coupling_metrics(G: TNFRGraph, node: NodeId, theta_before: float) -> dict[st
     if neighbor_count > 0:
         phase_sum = sum(_get_node_attr(G, n, ALIAS_THETA) for n in neighbors)
         mean_neighbor_phase = phase_sum / neighbor_count
-        phase_alignment = 1.0 - abs(theta_after - mean_neighbor_phase) / 3.14159
+        phase_alignment = 1.0 - abs(theta_after - mean_neighbor_phase) / math.pi
     else:
         mean_neighbor_phase = theta_after
         phase_alignment = 0.0
@@ -468,7 +470,9 @@ def transition_metrics(G: TNFRGraph, node: NodeId, dnfr_before: float, vf_before
         "vf_final": vf_after,
         "theta_shift": abs(theta_after - theta_before),
         "theta_final": theta_after,
-        "transition_complete": abs(dnfr_after) < abs(vf_after),  # ΔNFR aligned with νf
+        # Transition complete when ΔNFR magnitude is bounded by νf magnitude
+        # indicating structural frequency dominates reorganization dynamics
+        "transition_complete": abs(dnfr_after) < abs(vf_after),
     }
 
 def recursivity_metrics(G: TNFRGraph, node: NodeId, epi_before: float, vf_before: float) -> dict[str, Any]:

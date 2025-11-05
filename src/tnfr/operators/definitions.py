@@ -149,9 +149,14 @@ class Operator:
         from ..alias import get_attr
         from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
         
+        # Safely access glyph value
+        glyph_value = None
+        if self.glyph is not None:
+            glyph_value = self.glyph.value if hasattr(self.glyph, 'value') else str(self.glyph)
+        
         return {
             "operator": self.name,
-            "glyph": self.glyph.value if self.glyph else None,
+            "glyph": glyph_value,
             "delta_epi": float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)) - state_before["epi"],
             "delta_vf": float(get_attr(G.nodes[node], ALIAS_VF, 0.0)) - state_before["vf"],
             "delta_dnfr": float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)) - state_before["dnfr"],
