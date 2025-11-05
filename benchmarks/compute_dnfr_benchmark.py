@@ -12,7 +12,7 @@ import networkx as nx
 
 from tnfr.constants import get_aliases
 from tnfr.dynamics.dnfr import _compute_dnfr, _prepare_dnfr_data
-from tnfr.numpy import get_numpy
+from tnfr.utils import get_numpy
 
 ALIAS_THETA = get_aliases("THETA")
 ALIAS_EPI = get_aliases("EPI")
