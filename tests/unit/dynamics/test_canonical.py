@@ -150,12 +150,20 @@ class TestStructuralFrequencyValidation:
             validate_structural_frequency(float("-inf"))
 
     def test_rejects_non_numeric(self):
-        """Non-numeric inputs should be rejected."""
-        with pytest.raises(TypeError, match="numeric"):
-            validate_structural_frequency("invalid")  # type: ignore
-        
+        """Non-numeric types should be rejected with TypeError."""
         with pytest.raises(TypeError, match="numeric"):
             validate_structural_frequency(None)  # type: ignore
+        
+        with pytest.raises(TypeError, match="numeric"):
+            validate_structural_frequency(object())  # type: ignore
+
+    def test_rejects_invalid_string(self):
+        """Invalid numeric strings should be rejected with ValueError."""
+        with pytest.raises(ValueError, match="valid number"):
+            validate_structural_frequency("invalid")  # type: ignore
+        
+        with pytest.raises(ValueError, match="valid number"):
+            validate_structural_frequency("not a number")  # type: ignore
 
     def test_accepts_numeric_strings(self):
         """Numeric strings are coerced to float (Python float() behavior).
@@ -207,12 +215,20 @@ class TestNodalGradientValidation:
             validate_nodal_gradient(float("-inf"))
 
     def test_rejects_non_numeric(self):
-        """Non-numeric inputs should be rejected."""
-        with pytest.raises(TypeError, match="numeric"):
-            validate_nodal_gradient("invalid")  # type: ignore
-        
+        """Non-numeric types should be rejected with TypeError."""
         with pytest.raises(TypeError, match="numeric"):
             validate_nodal_gradient(None)  # type: ignore
+        
+        with pytest.raises(TypeError, match="numeric"):
+            validate_nodal_gradient(object())  # type: ignore
+
+    def test_rejects_invalid_string(self):
+        """Invalid numeric strings should be rejected with ValueError."""
+        with pytest.raises(ValueError, match="valid number"):
+            validate_nodal_gradient("invalid")  # type: ignore
+        
+        with pytest.raises(ValueError, match="valid number"):
+            validate_nodal_gradient("not a number")  # type: ignore
 
     def test_accepts_numeric_strings(self):
         """Numeric strings are coerced to float (Python float() behavior).
