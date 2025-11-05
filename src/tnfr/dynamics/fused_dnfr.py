@@ -386,8 +386,10 @@ def compute_fused_gradients_symmetric(
     vf_mean[has_neighbors] = neighbor_vf_sum[has_neighbors] / neighbor_count[has_neighbors]
     
     # Compute gradients using TNFR canonical formula
-    # Phase: g_phase = -angle_diff(θ_node, θ_mean) / π = sin(θ_mean - θ_node) / π
-    g_phase = np.sin(phase_mean - phase) / np.pi
+    # Phase: g_phase = -angle_diff(θ_node, θ_mean) / π
+    # angle_diff(a, b) = (a - b + π) % 2π - π (minimal angular difference)
+    phase_diff = (phase_mean - phase + np.pi) % (2 * np.pi) - np.pi
+    g_phase = phase_diff / np.pi
     g_phase[~has_neighbors] = 0.0  # Isolated nodes have no gradient
     
     # EPI/νf: g = mean - node_value
