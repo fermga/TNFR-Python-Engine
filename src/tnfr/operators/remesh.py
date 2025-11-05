@@ -88,7 +88,7 @@ def _snapshot_topology(G: CommunityGraph, nx: NetworkxModule) -> str | None:
         n_edges = G.number_of_edges()
         degs = sorted(d for _, d in G.degree())
         topo_str = f"n={n_nodes};m={n_edges};deg=" + ",".join(map(str, degs))
-        return hashlib.sha1(topo_str.encode(), usedforsecurity=False).hexdigest()[:12]
+        return hashlib.blake2b(topo_str.encode(), digest_size=6).hexdigest()
     except (AttributeError, TypeError, nx.NetworkXError):
         return None
 
@@ -102,7 +102,7 @@ def _snapshot_epi(G: CommunityGraph) -> tuple[float, str]:
         buf.write(f"{str(n)}:{round(v, 6)};")
     total = kahan_sum_nd(((v,) for v in values), dims=1)[0]
     mean_val = total / len(values) if values else 0.0
-    checksum = hashlib.sha1(buf.getvalue().encode(), usedforsecurity=False).hexdigest()[:12]
+    checksum = hashlib.blake2b(buf.getvalue().encode(), digest_size=6).hexdigest()
     return float(mean_val), checksum
 
 def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
