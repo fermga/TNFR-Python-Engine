@@ -44,7 +44,7 @@ def test_apply_config_injects_graph_params(tmp_path, suffix, dump, graph_canon):
 def test_load_config_accepts_mapping(monkeypatch, tmp_path):
     data = UserDict({"RANDOM_SEED": 1})
 
-    def fake_reader(path):
+    def fake_reader(path, **kwargs):
         return data
 
     monkeypatch.setattr("tnfr.config.init.read_structured_file", fake_reader)
@@ -54,7 +54,7 @@ def test_load_config_accepts_mapping(monkeypatch, tmp_path):
     assert loaded == data
 
 def test_load_config_requires_object(monkeypatch, tmp_path):
-    def fake_reader(path):
+    def fake_reader(path, **kwargs):
         return [("bad", "structure")]
 
     monkeypatch.setattr("tnfr.config.init.read_structured_file", fake_reader)
@@ -76,7 +76,7 @@ def test_apply_config_passes_path_object(monkeypatch, tmp_path, graph_canon):
     path.write_text("{}", encoding="utf-8")
     received = {}
 
-    def fake_load(p):
+    def fake_load(p, **kwargs):
         received["path"] = p
         return {}
 
