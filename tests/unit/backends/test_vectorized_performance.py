@@ -65,11 +65,12 @@ class TestVectorizedPerformance:
         profile = {}
         backend.compute_delta_nfr(G, profile=profile)
         
-        # Should use enhanced vectorization path (currently delegates to standard)
-        assert profile.get("dnfr_optimization") == "enhanced_vectorization"
+        # Should use vectorized fused path for large graphs
+        assert profile.get("dnfr_optimization") == "vectorized_fused"
         
-        # Should have basic timing metrics from standard implementation
-        assert "dnfr_path" in profile or "dnfr_optimization" in profile
+        # Should have timing metrics from vectorized implementation
+        assert "dnfr_workspace_alloc" in profile
+        assert "dnfr_fused_compute" in profile
     
     def test_small_graphs_use_standard_path(self):
         """Small graphs (<100 nodes) should use standard implementation."""
