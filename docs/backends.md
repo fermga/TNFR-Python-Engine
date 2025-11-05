@@ -450,7 +450,7 @@ To contribute backend improvements:
 
 ## References
 
-- [TNFR.pdf](../TNFR.pdf) - Canonical TNFR theory
-- [AGENTS.md](../AGENTS.md) - Development guidelines
-- [dynamics/dnfr.py](../src/tnfr/dynamics/dnfr.py) - ΔNFR implementation
-- [metrics/sense_index.py](../src/tnfr/metrics/sense_index.py) - Si implementation
+- TNFR.pdf - Canonical TNFR theory (in repository root)
+- AGENTS.md - Development guidelines (in repository root)
+- `tnfr.dynamics.dnfr` module - ΔNFR implementation
+- `tnfr.metrics.sense_index` module - Si implementation

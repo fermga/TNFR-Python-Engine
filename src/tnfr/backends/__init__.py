@@ -338,11 +338,11 @@ except ImportError as exc:
 try:
     from . import jax_backend
     register_backend("jax", jax_backend.JAXBackend)
-except ImportError:
-    logger.debug("JAX backend not available (optional dependency)")
+except ImportError as exc:
+    logger.debug("JAX backend not available (optional dependency): %s", exc)
 
 try:
     from . import torch_backend
     register_backend("torch", torch_backend.TorchBackend)
-except ImportError:
-    logger.debug("PyTorch backend not available (optional dependency)")
+except ImportError as exc:
+    logger.debug("PyTorch backend not available (optional dependency): %s", exc)
