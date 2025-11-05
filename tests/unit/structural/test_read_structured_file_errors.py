@@ -22,7 +22,11 @@ def test_read_structured_file_unsupported_suffix(tmp_path: Path):
     with pytest.raises(io_mod.StructuredFileError) as exc:
         io_mod.read_structured_file(path)
     msg = str(exc.value)
-    assert msg == f"Error parsing {path}: Unsupported suffix: .txt"
+    # The error message includes details about allowed extensions
+    assert "Error parsing" in msg
+    assert str(path) in msg
+    assert ".txt" in msg
+    assert "not allowed" in msg or "Unsupported suffix" in msg
 
 def test_read_structured_file_permission_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch

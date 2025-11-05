@@ -124,9 +124,12 @@ def _reset_all_state() -> None:
     # Reset callback manager
     try:
         from tnfr.utils.callbacks import callback_manager
-        # Clear any registered callbacks on graphs by resetting the manager's internal state
-        # The callback_manager is a singleton, so we need to be careful
-        # We'll rely on tests to create fresh graphs
+        # Reset error limit to default
+        if hasattr(callback_manager, '_error_limit'):
+            callback_manager._error_limit = 100
+            callback_manager._error_limit_cache = 100
+        # Note: Callbacks are stored in graph.graph['callbacks'], not in the manager
+        # So tests creating fresh graphs will have clean callback state
     except ImportError:
         pass
     
@@ -212,6 +215,8 @@ def _reset_all_state() -> None:
             rules_module._get_glyph_name_lookup.cache_clear()
         if hasattr(rules_module, '_get_glyph_function_map') and hasattr(rules_module._get_glyph_function_map, 'cache_clear'):
             rules_module._get_glyph_function_map.cache_clear()
+        # NOTE: Don't clear _functional_translators and _structural_tables caches
+        # as they contain static lookup tables that should persist across tests
     except (ImportError, AttributeError):
         pass
     

@@ -56,6 +56,8 @@ def test_validator_epi_missing_attr():
 
 def test_validator_vf_range():
     G = _base_graph()
+    # Set VF_MAX to a value that will make 2.0 invalid
+    G.graph["VF_MAX"] = 1.5
     n0 = list(G.nodes())[0]
     set_attr(G.nodes[n0], ALIAS_VF, 2.0)
     with pytest.raises(ValueError):
