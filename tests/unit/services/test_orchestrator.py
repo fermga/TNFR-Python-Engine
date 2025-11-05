@@ -8,6 +8,17 @@ from tnfr.structural import create_nfr
 from tnfr.dynamics import set_delta_nfr_hook, dnfr_epi_vf_mixed
 from tnfr.constants import EPI_PRIMARY, VF_PRIMARY
 
+# Canonical TNFR operator sequence for testing
+CANONICAL_SEQUENCE = [
+    "emission",
+    "reception",
+    "coherence",
+    "coupling",
+    "dissonance",
+    "resonance",
+    "silence"
+]
+
 
 def test_orchestrator_from_container():
     """Verify orchestrator can be created from container."""
@@ -30,10 +41,7 @@ def test_orchestrator_execute_sequence_with_strings():
     set_delta_nfr_hook(G, dnfr_epi_vf_mixed)
 
     # Should execute without raising (using full canonical sequence)
-    orchestrator.execute_sequence(
-        G, node, 
-        ["emission", "reception", "coherence", "coupling", "dissonance", "resonance", "silence"]
-    )
+    orchestrator.execute_sequence(G, node, CANONICAL_SEQUENCE)
 
     # Verify graph was modified (EPI should have changed)
     epi_after = G.nodes[node][EPI_PRIMARY]
@@ -82,9 +90,7 @@ def test_orchestrator_validate_only():
     orchestrator = TNFROrchestrator.from_container(container)
 
     # Valid canonical sequence should not raise
-    orchestrator.validate_only(
-        ["emission", "reception", "coherence", "coupling", "dissonance", "resonance", "silence"]
-    )
+    orchestrator.validate_only(CANONICAL_SEQUENCE)
 
     # Invalid sequence should raise
     with pytest.raises(ValueError):
@@ -100,11 +106,7 @@ def test_orchestrator_with_telemetry():
     set_delta_nfr_hook(G, dnfr_epi_vf_mixed)
 
     # Execute with telemetry enabled (canonical sequence)
-    orchestrator.execute_sequence(
-        G, node, 
-        ["emission", "reception", "coherence", "coupling", "dissonance", "resonance", "silence"],
-        enable_telemetry=True
-    )
+    orchestrator.execute_sequence(G, node, CANONICAL_SEQUENCE, enable_telemetry=True)
 
     # Check that transitions were recorded
     assert "_trace_transitions" in G.graph

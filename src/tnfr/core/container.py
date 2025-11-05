@@ -67,6 +67,7 @@ class TNFRContainer:
         """Initialize an empty container."""
         self._instances: dict[Any, Any] = {}
         self._factories: dict[Any, Callable[[], Any]] = {}
+        self._is_singleton: dict[Any, bool] = {}  # Track singleton status
 
     def register_singleton(self, interface: type[T], implementation: T) -> None:
         """Register an implementation as a singleton.
@@ -88,6 +89,7 @@ class TNFRContainer:
         """
         # Store as a factory that returns the same instance
         self._factories[interface] = lambda: implementation
+        self._is_singleton[interface] = True
 
     def register_factory(
         self, interface: type[T], factory_func: Callable[[], T]
@@ -111,6 +113,7 @@ class TNFRContainer:
         >>> container.register_factory(ValidationService, MyValidator)
         """
         self._factories[interface] = factory_func
+        self._is_singleton[interface] = False
 
     def get(self, interface: type[T]) -> T:
         """Retrieve an instance implementing the specified interface.
@@ -150,20 +153,12 @@ class TNFRContainer:
                 f"Use register_singleton() or register_factory() first."
             )
 
-        # Call factory and cache for singletons
+        # Call factory
         instance = self._factories[interface]()
         
-        # Only cache if the factory is a singleton (lambda returning same instance)
-        # This is a simple heuristic; more sophisticated caching could check
-        # if the factory returns the same instance each time
-        if interface not in self._instances:
-            # For singletons registered via register_singleton, cache the result
-            # For factories, don't cache (allow fresh instances)
-            # We detect singletons by checking if calling factory twice gives same object
-            first_call = instance
-            second_call = self._factories[interface]()
-            if first_call is second_call:
-                self._instances[interface] = instance
+        # Cache only if registered as singleton
+        if self._is_singleton.get(interface, False):
+            self._instances[interface] = instance
         
         return instance
 

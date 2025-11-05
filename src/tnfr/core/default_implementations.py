@@ -196,13 +196,17 @@ class DefaultTraceContext:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Exit trace context."""
-        # Store transitions in graph metadata
+        # Save transitions when exiting context
+        self._save_transitions()
+        return False
+    
+    def _save_transitions(self) -> None:
+        """Save transitions to graph metadata."""
         if self.transitions:
             existing = self.graph.graph.get("_trace_transitions", [])
             existing_copy = list(existing)  # Make a copy to avoid mutation
             existing_copy.extend(self.transitions)
             self.graph.graph["_trace_transitions"] = existing_copy
-        return False
 
     def capture_state(self, graph: TNFRGraph) -> dict[str, Any]:
         """Capture current graph state.
@@ -278,12 +282,8 @@ class DefaultTelemetryCollector:
         try:
             yield context
         finally:
-            # Ensure transitions are saved
-            if context.transitions:
-                existing = graph.graph.get("_trace_transitions", [])
-                existing_copy = list(existing)
-                existing_copy.extend(context.transitions)
-                graph.graph["_trace_transitions"] = existing_copy
+            # Ensure transitions are saved using the helper method
+            context._save_transitions()
 
     def compute_coherence(self, graph: TNFRGraph) -> float:
         """Compute global coherence C(t).
