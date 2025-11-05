@@ -63,6 +63,33 @@ from .input_validation import (  # noqa: F401
     validate_glyph_factors,
     validate_operator_parameters,
 )
+from .invariants import (  # noqa: F401
+    InvariantSeverity,
+    InvariantViolation,
+    TNFRInvariant,
+    Invariant1_EPIOnlyThroughOperators,
+    Invariant2_VfInHzStr,
+    Invariant3_DNFRSemantics,
+    Invariant4_OperatorClosure,
+    Invariant5_ExplicitPhaseChecks,
+    Invariant6_NodeBirthCollapse,
+    Invariant7_OperationalFractality,
+    Invariant8_ControlledDeterminism,
+    Invariant9_StructuralMetrics,
+    Invariant10_DomainNeutrality,
+)
+from .validator import (  # noqa: F401
+    TNFRValidator,
+    TNFRValidationError,
+)
+from .sequence_validator import (  # noqa: F401
+    SequenceSemanticValidator,
+)
+from .config import (  # noqa: F401
+    ValidationConfig,
+    validation_config,
+    configure_validation,
+)
 _GRAMMAR_EXPORTS = tuple(getattr(_grammar, "__all__", ()))
 
 globals().update({name: getattr(_grammar, name) for name in _GRAMMAR_EXPORTS})
@@ -97,6 +124,25 @@ _RUNTIME_EXPORTS = (
     "validate_tnfr_graph",
     "validate_glyph_factors",
     "validate_operator_parameters",
+    "InvariantSeverity",
+    "InvariantViolation",
+    "TNFRInvariant",
+    "Invariant1_EPIOnlyThroughOperators",
+    "Invariant2_VfInHzStr",
+    "Invariant3_DNFRSemantics",
+    "Invariant4_OperatorClosure",
+    "Invariant5_ExplicitPhaseChecks",
+    "Invariant6_NodeBirthCollapse",
+    "Invariant7_OperationalFractality",
+    "Invariant8_ControlledDeterminism",
+    "Invariant9_StructuralMetrics",
+    "Invariant10_DomainNeutrality",
+    "TNFRValidator",
+    "TNFRValidationError",
+    "SequenceSemanticValidator",
+    "ValidationConfig",
+    "validation_config",
+    "configure_validation",
 )
 
 __all__ = _GRAMMAR_EXPORTS + _RUNTIME_EXPORTS
