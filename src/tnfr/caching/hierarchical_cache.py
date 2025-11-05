@@ -152,15 +152,10 @@ class TNFRHierarchicalCache:
             cache_name = f"hierarchical_{level.value}"
             self._level_cache_names[level] = cache_name
             
-            # Create factory function for the level's cache
-            def make_cache_factory() -> Any:
-                def factory() -> dict[str, CacheEntry]:
-                    return {}
-                return factory
-            
+            # Simple factory returning empty dict for each cache level
             self._manager.register(
                 cache_name,
-                make_cache_factory(),
+                factory=lambda: {},
                 create=True,
             )
         

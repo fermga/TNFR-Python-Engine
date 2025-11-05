@@ -83,6 +83,8 @@ from .utils.cache import (
     
     # Graph-specific helpers
     configure_graph_cache_limits,
+    configure_global_cache_layers,
+    reset_global_cache_manager,
     edge_version_cache,
     cached_node_list,
     cached_nodes_and_A,
@@ -144,6 +146,8 @@ __all__ = [
     
     # Graph-specific helpers
     "configure_graph_cache_limits",
+    "configure_global_cache_layers",
+    "reset_global_cache_manager",
     "edge_version_cache",
     "cached_node_list",
     "cached_nodes_and_A",
