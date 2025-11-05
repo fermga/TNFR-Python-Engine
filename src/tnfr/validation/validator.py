@@ -14,7 +14,14 @@ from .invariants import (
     InvariantViolation,
     Invariant1_EPIOnlyThroughOperators,
     Invariant2_VfInHzStr,
+    Invariant3_DNFRSemantics,
+    Invariant4_OperatorClosure,
     Invariant5_ExplicitPhaseChecks,
+    Invariant6_NodeBirthCollapse,
+    Invariant7_OperationalFractality,
+    Invariant8_ControlledDeterminism,
+    Invariant9_StructuralMetrics,
+    Invariant10_DomainNeutrality,
     TNFRInvariant,
 )
 from ..types import TNFRGraph
@@ -42,6 +49,13 @@ class TNFRValidator:
         self._invariant_validators: list[TNFRInvariant] = [
             Invariant1_EPIOnlyThroughOperators(),
             Invariant2_VfInHzStr(),
+            Invariant3_DNFRSemantics(),
+            Invariant4_OperatorClosure(),
+            Invariant6_NodeBirthCollapse(),
+            Invariant7_OperationalFractality(),
+            Invariant8_ControlledDeterminism(),
+            Invariant9_StructuralMetrics(),
+            Invariant10_DomainNeutrality(),
         ]
 
         # Initialize phase validator with custom threshold if provided

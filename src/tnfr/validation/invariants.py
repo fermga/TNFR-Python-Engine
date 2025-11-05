@@ -34,7 +34,14 @@ __all__ = [
     "TNFRInvariant",
     "Invariant1_EPIOnlyThroughOperators",
     "Invariant2_VfInHzStr",
+    "Invariant3_DNFRSemantics",
+    "Invariant4_OperatorClosure",
     "Invariant5_ExplicitPhaseChecks",
+    "Invariant6_NodeBirthCollapse",
+    "Invariant7_OperationalFractality",
+    "Invariant8_ControlledDeterminism",
+    "Invariant9_StructuralMetrics",
+    "Invariant10_DomainNeutrality",
 ]
 
 
@@ -329,5 +336,370 @@ class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
                             suggestion="Check coupling strength or phase coordination",
                         )
                     )
+
+        return violations
+
+
+class Invariant3_DNFRSemantics(TNFRInvariant):
+    """Invariante 3: ΔNFR semantics - sign and magnitude modulate reorganization rate."""
+
+    invariant_id = 3
+    description = "ΔNFR semantics: sign and magnitude modulate reorganization rate"
+
+    def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
+        violations = []
+
+        for node_id in graph.nodes():
+            node_data = graph.nodes[node_id]
+            dnfr = node_data.get(DNFR_PRIMARY, 0.0)
+
+            # Verificar que ΔNFR es un número finito
+            if not isinstance(dnfr, (int, float)) or not math.isfinite(dnfr):
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=3,
+                        severity=InvariantSeverity.CRITICAL,
+                        description="ΔNFR is not a finite number",
+                        node_id=str(node_id),
+                        expected_value="finite float",
+                        actual_value=f"{type(dnfr).__name__}: {dnfr}",
+                        suggestion="Check operator implementation for ΔNFR calculation",
+                    )
+                )
+
+            # Verificar que ΔNFR no se trata como error/loss gradient
+            # (esto es más conceptual, pero podemos verificar rangos razonables)
+            if isinstance(dnfr, (int, float)) and math.isfinite(dnfr):
+                # ΔNFR excesivamente grande podría indicar tratamiento erróneo
+                if abs(dnfr) > 1000.0:
+                    violations.append(
+                        InvariantViolation(
+                            invariant_id=3,
+                            severity=InvariantSeverity.WARNING,
+                            description="ΔNFR magnitude is unusually large",
+                            node_id=str(node_id),
+                            expected_value="|ΔNFR| < 1000",
+                            actual_value=abs(dnfr),
+                            suggestion="Verify ΔNFR is not being misused as error gradient",
+                        )
+                    )
+
+        return violations
+
+
+class Invariant4_OperatorClosure(TNFRInvariant):
+    """Invariante 4: Operator closure - composition yields valid TNFR states."""
+
+    invariant_id = 4
+    description = "Operator closure: composition yields valid TNFR states"
+
+    def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
+        violations = []
+
+        # Verificar que el grafo mantiene estado válido después de operadores
+        for node_id in graph.nodes():
+            node_data = graph.nodes[node_id]
+
+            # Verificar que los atributos esenciales existen
+            required_attrs = [EPI_PRIMARY, VF_PRIMARY, THETA_PRIMARY]
+            missing_attrs = [attr for attr in required_attrs if attr not in node_data]
+
+            if missing_attrs:
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=4,
+                        severity=InvariantSeverity.CRITICAL,
+                        description=f"Node missing required TNFR attributes: {missing_attrs}",
+                        node_id=str(node_id),
+                        expected_value="All TNFR attributes present",
+                        actual_value=f"Missing: {missing_attrs}",
+                        suggestion="Operator composition broke TNFR state structure",
+                    )
+                )
+
+        # Verificar que el grafo tiene hook ΔNFR
+        if hasattr(graph, "graph"):
+            if "compute_delta_nfr" not in graph.graph:
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=4,
+                        severity=InvariantSeverity.WARNING,
+                        description="Graph missing ΔNFR computation hook",
+                        expected_value="compute_delta_nfr hook present",
+                        actual_value="Hook missing",
+                        suggestion="Ensure ΔNFR hook is installed for proper operator closure",
+                    )
+                )
+
+        return violations
+
+
+class Invariant6_NodeBirthCollapse(TNFRInvariant):
+    """Invariante 6: Node birth/collapse - minimal conditions maintained."""
+
+    invariant_id = 6
+    description = "Node birth/collapse: minimal conditions maintained"
+
+    def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
+        violations = []
+
+        for node_id in graph.nodes():
+            node_data = graph.nodes[node_id]
+            vf = node_data.get(VF_PRIMARY, 0.0)
+            dnfr = node_data.get(DNFR_PRIMARY, 0.0)
+
+            # Extract scalar values if needed
+            if isinstance(vf, dict) and "continuous" in vf:
+                continue  # Skip complex structures
+
+            if isinstance(dnfr, dict):
+                continue  # Skip complex structures
+
+            # Condiciones mínimas de nacimiento: νf suficiente
+            if isinstance(vf, (int, float)) and vf < 0.001:
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=6,
+                        severity=InvariantSeverity.WARNING,
+                        description="Node has insufficient νf for sustained existence",
+                        node_id=str(node_id),
+                        expected_value="νf >= 0.001",
+                        actual_value=vf,
+                        suggestion="Node may be approaching collapse condition",
+                    )
+                )
+
+            # Condiciones de colapso: ΔNFR extremo o νf cercano a cero
+            if isinstance(dnfr, (int, float)) and math.isfinite(dnfr):
+                if abs(dnfr) > 10.0:  # Dissonance extrema
+                    violations.append(
+                        InvariantViolation(
+                            invariant_id=6,
+                            severity=InvariantSeverity.WARNING,
+                            description="Node experiencing extreme dissonance (collapse risk)",
+                            node_id=str(node_id),
+                            expected_value="|ΔNFR| < 10",
+                            actual_value=abs(dnfr),
+                            suggestion="High dissonance may trigger node collapse",
+                        )
+                    )
+
+        return violations
+
+
+class Invariant7_OperationalFractality(TNFRInvariant):
+    """Invariante 7: Operational fractality - EPIs can nest without losing identity."""
+
+    invariant_id = 7
+    description = "Operational fractality: EPIs can nest without losing identity"
+
+    def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
+        violations = []
+
+        # Verificar que estructuras EPI complejas mantienen identidad
+        for node_id in graph.nodes():
+            node_data = graph.nodes[node_id]
+            epi = node_data.get(EPI_PRIMARY, 0.0)
+
+            # Si EPI es una estructura anidada, verificar integridad
+            if isinstance(epi, dict):
+                # Verificar que tiene las claves esperadas para fractality
+                expected_keys = {"continuous", "discrete", "grid"}
+                actual_keys = set(epi.keys())
+
+                if not actual_keys.issubset(expected_keys):
+                    violations.append(
+                        InvariantViolation(
+                            invariant_id=7,
+                            severity=InvariantSeverity.WARNING,
+                            description="EPI structure has unexpected keys (fractality may be broken)",
+                            node_id=str(node_id),
+                            expected_value=f"Keys subset of {expected_keys}",
+                            actual_value=f"Keys: {actual_keys}",
+                            suggestion="Verify nested EPI structure maintains identity",
+                        )
+                    )
+
+                # Verificar que los sub-EPIs tienen valores válidos
+                for key in ["continuous", "discrete"]:
+                    if key in epi:
+                        sub_epi = epi[key]
+                        if isinstance(sub_epi, (tuple, list)):
+                            for val in sub_epi:
+                                if isinstance(val, complex) and not math.isfinite(
+                                    abs(val)
+                                ):
+                                    violations.append(
+                                        InvariantViolation(
+                                            invariant_id=7,
+                                            severity=InvariantSeverity.ERROR,
+                                            description=f"Sub-EPI '{key}' contains non-finite values",
+                                            node_id=str(node_id),
+                                            expected_value="finite values",
+                                            actual_value=f"{val}",
+                                            suggestion="Nested EPI identity compromised by invalid values",
+                                        )
+                                    )
+
+        return violations
+
+
+class Invariant8_ControlledDeterminism(TNFRInvariant):
+    """Invariante 8: Controlled determinism - reproducible and traceable."""
+
+    invariant_id = 8
+    description = "Controlled determinism: reproducible and traceable"
+
+    def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
+        violations = []
+
+        # Verificar que hay trazabilidad (history)
+        if hasattr(graph, "graph"):
+            config = graph.graph
+
+            # Verificar que hay sistema de history/trace
+            if "history" not in config and "HISTORY_MAXLEN" not in config:
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=8,
+                        severity=InvariantSeverity.WARNING,
+                        description="No history tracking configured (traceability compromised)",
+                        expected_value="history or HISTORY_MAXLEN in config",
+                        actual_value="Not found",
+                        suggestion="Configure history tracking for reproducibility",
+                    )
+                )
+
+            # Verificar que hay seed configurado para reproducibilidad
+            if "RANDOM_SEED" not in config and "seed" not in config:
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=8,
+                        severity=InvariantSeverity.WARNING,
+                        description="No random seed configured (reproducibility at risk)",
+                        expected_value="RANDOM_SEED or seed in config",
+                        actual_value="Not found",
+                        suggestion="Set random seed for deterministic simulations",
+                    )
+                )
+
+        return violations
+
+
+class Invariant9_StructuralMetrics(TNFRInvariant):
+    """Invariante 9: Structural metrics - expose C(t), Si, phase, νf."""
+
+    invariant_id = 9
+    description = "Structural metrics: expose C(t), Si, phase, νf"
+
+    def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
+        violations = []
+
+        # Verificar que los nodos exponen métricas estructurales
+        for node_id in graph.nodes():
+            node_data = graph.nodes[node_id]
+
+            # Verificar métricas básicas (νf, phase ya verificados en otros invariantes)
+            # Aquí verificamos métricas derivadas si existen
+
+            # Si hay métrica Si (sense index), verificar que es válida
+            if "Si" in node_data or "si" in node_data:
+                si = node_data.get("Si", node_data.get("si", 0.0))
+                if isinstance(si, (int, float)):
+                    if not (0.0 <= si <= 1.0):
+                        violations.append(
+                            InvariantViolation(
+                                invariant_id=9,
+                                severity=InvariantSeverity.WARNING,
+                                description="Sense index (Si) outside expected range",
+                                node_id=str(node_id),
+                                expected_value="0.0 <= Si <= 1.0",
+                                actual_value=si,
+                                suggestion="Verify Si calculation maintains TNFR semantics",
+                            )
+                        )
+
+        # Verificar que hay métricas globales de coherencia
+        if hasattr(graph, "graph"):
+            config = graph.graph
+            has_coherence_metric = (
+                "coherence" in config
+                or "C_t" in config
+                or "total_coherence" in config
+            )
+
+            if not has_coherence_metric:
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=9,
+                        severity=InvariantSeverity.WARNING,
+                        description="No global coherence metric C(t) exposed",
+                        expected_value="C(t) or coherence metric in graph",
+                        actual_value="Not found",
+                        suggestion="Expose total coherence C(t) for structural metrics",
+                    )
+                )
+
+        return violations
+
+
+class Invariant10_DomainNeutrality(TNFRInvariant):
+    """Invariante 10: Domain neutrality - trans-scale and trans-domain."""
+
+    invariant_id = 10
+    description = "Domain neutrality: trans-scale and trans-domain"
+
+    def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
+        violations = []
+
+        # Verificar que no hay hard-coded domain assumptions
+        if hasattr(graph, "graph"):
+            config = graph.graph
+
+            # Buscar claves que sugieran assumptions específicas de dominio
+            domain_specific_keys = [
+                "physical_units",
+                "meters",
+                "seconds",
+                "temperature",
+                "biology",
+                "neurons",
+                "particles",
+            ]
+
+            found_domain_keys = [key for key in domain_specific_keys if key in config]
+
+            if found_domain_keys:
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=10,
+                        severity=InvariantSeverity.WARNING,
+                        description=f"Domain-specific keys found: {found_domain_keys}",
+                        expected_value="Domain-neutral configuration",
+                        actual_value=f"Found: {found_domain_keys}",
+                        suggestion="Remove domain-specific assumptions from core engine",
+                    )
+                )
+
+        # Verificar que las unidades son estructurales (Hz_str, no Hz físicos)
+        for node_id in graph.nodes():
+            node_data = graph.nodes[node_id]
+
+            # Si hay unidades explícitas, deben ser estructurales
+            if "units" in node_data:
+                units = node_data["units"]
+                if isinstance(units, dict) and "vf" in units:
+                    if units["vf"] not in ["Hz_str", "structural_hertz", None]:
+                        violations.append(
+                            InvariantViolation(
+                                invariant_id=10,
+                                severity=InvariantSeverity.ERROR,
+                                description=f"Non-structural units for νf: {units['vf']}",
+                                node_id=str(node_id),
+                                expected_value="Hz_str or structural_hertz",
+                                actual_value=units["vf"],
+                                suggestion="Use structural units (Hz_str) not physical units",
+                            )
+                        )
 
         return violations
