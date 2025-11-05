@@ -165,7 +165,7 @@ TNFR defines 13 canonical operators that modify EPI through resonant interaction
 
 ---
 
-### 9. Contraction (UM)
+### 9. Contraction (NUL)
 
 **Function:** Reduces structural complexity  
 **Effect:** EPI dimensionality reduction  
