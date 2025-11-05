@@ -158,7 +158,12 @@ class TestStructuralFrequencyValidation:
             validate_structural_frequency(None)  # type: ignore
 
     def test_accepts_numeric_strings(self):
-        """Numeric strings should be coerced to float (Python behavior)."""
+        """Numeric strings are coerced to float (Python float() behavior).
+        
+        Note: The function accepts any input that Python's float() can convert,
+        including strings. While the type annotation says float, this follows
+        Python's duck typing convention where float() performs conversion.
+        """
         validated = validate_structural_frequency("1.5")  # type: ignore
         assert validated == 1.5
         assert isinstance(validated, float)
@@ -210,7 +215,12 @@ class TestNodalGradientValidation:
             validate_nodal_gradient(None)  # type: ignore
 
     def test_accepts_numeric_strings(self):
-        """Numeric strings should be coerced to float (Python behavior)."""
+        """Numeric strings are coerced to float (Python float() behavior).
+        
+        Note: The function accepts any input that Python's float() can convert,
+        including strings. While the type annotation says float, this follows
+        Python's duck typing convention where float() performs conversion.
+        """
         validated = validate_nodal_gradient("0.5")  # type: ignore
         assert validated == 0.5
         assert isinstance(validated, float)

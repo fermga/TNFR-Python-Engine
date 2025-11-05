@@ -30,6 +30,7 @@ References:
 
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING, NamedTuple
 
 if TYPE_CHECKING:
@@ -162,8 +163,8 @@ def validate_structural_frequency(
             f"Structural frequency must be numeric, got {type(nu_f).__name__}"
         ) from exc
     
-    # Check for NaN or infinity first
-    if not (-float('inf') < value < float('inf')):
+    # Check for NaN or infinity using math.isfinite
+    if not math.isfinite(value):
         raise ValueError(
             f"Structural frequency must be finite, got νf={value}"
         )
@@ -213,8 +214,8 @@ def validate_nodal_gradient(
             f"Nodal gradient must be numeric, got {type(delta_nfr).__name__}"
         ) from exc
     
-    # Check for NaN or infinity
-    if not (-float('inf') < value < float('inf')):
+    # Check for NaN or infinity using math.isfinite
+    if not math.isfinite(value):
         raise ValueError(
             f"Nodal gradient must be finite, got ΔNFR={value}"
         )
