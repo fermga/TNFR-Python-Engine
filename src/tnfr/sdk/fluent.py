@@ -679,3 +679,155 @@ class TNFRNetwork:
         if self._graph is None:
             raise ValueError("No network created. Use add_nodes() first.")
         return self._graph
+    
+    def get_node_count(self) -> int:
+        """Get the number of nodes in the network.
+        
+        Returns
+        -------
+        int
+            Number of nodes.
+        
+        Raises
+        ------
+        ValueError
+            If no network has been created.
+        """
+        if self._graph is None:
+            raise ValueError("No network created. Use add_nodes() first.")
+        return self._graph.number_of_nodes()
+    
+    def get_edge_count(self) -> int:
+        """Get the number of edges in the network.
+        
+        Returns
+        -------
+        int
+            Number of edges.
+        
+        Raises
+        ------
+        ValueError
+            If no network has been created.
+        """
+        if self._graph is None:
+            raise ValueError("No network created. Use add_nodes() first.")
+        return self._graph.number_of_edges()
+    
+    def get_average_degree(self) -> float:
+        """Get the average degree of nodes in the network.
+        
+        Returns
+        -------
+        float
+            Average node degree.
+        
+        Raises
+        ------
+        ValueError
+            If no network has been created.
+        """
+        if self._graph is None:
+            raise ValueError("No network created. Use add_nodes() first.")
+        if self._graph.number_of_nodes() == 0:
+            return 0.0
+        return 2.0 * self._graph.number_of_edges() / self._graph.number_of_nodes()
+    
+    def get_density(self) -> float:
+        """Get the density of the network.
+        
+        Network density is the ratio of actual edges to possible edges.
+        
+        Returns
+        -------
+        float
+            Network density between 0 and 1.
+        
+        Raises
+        ------
+        ValueError
+            If no network has been created.
+        """
+        if self._graph is None:
+            raise ValueError("No network created. Use add_nodes() first.")
+        n = self._graph.number_of_nodes()
+        if n <= 1:
+            return 0.0
+        m = self._graph.number_of_edges()
+        max_edges = n * (n - 1) / 2
+        return m / max_edges if max_edges > 0 else 0.0
+    
+    def clone(self) -> TNFRNetwork:
+        """Create a copy of the network structure.
+        
+        Returns
+        -------
+        TNFRNetwork
+            A new network with copied structure. Note that this copies
+            the graph structure but not all internal state (like locks).
+        
+        Raises
+        ------
+        ValueError
+            If no network has been created.
+        """
+        if self._graph is None:
+            raise ValueError("No network created. Use add_nodes() first.")
+        
+        import networkx as nx
+        
+        new_network = TNFRNetwork(f"{self.name}_copy", config=self._config)
+        # Use NetworkX's copy method which handles TNFR graphs properly
+        new_network._graph = nx.Graph(self._graph)
+        new_network._node_counter = self._node_counter
+        return new_network
+    
+    def reset(self) -> TNFRNetwork:
+        """Reset the network to empty state.
+        
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining.
+        """
+        self._graph = None
+        self._results = None
+        self._node_counter = 0
+        return self
+    
+    def export_to_dict(self) -> dict:
+        """Export network structure to dictionary format.
+        
+        Returns
+        -------
+        dict
+            Dictionary with network metadata and structure.
+        
+        Raises
+        ------
+        ValueError
+            If no network has been created.
+        """
+        if self._graph is None:
+            raise ValueError("No network created. Use add_nodes() first.")
+        
+        # Measure if not done yet
+        if self._results is None:
+            self.measure()
+        
+        return {
+            'name': self.name,
+            'metadata': {
+                'nodes': self.get_node_count(),
+                'edges': self.get_edge_count(),
+                'density': self.get_density(),
+                'average_degree': self.get_average_degree(),
+            },
+            'metrics': self._results.to_dict() if self._results else None,
+            'config': {
+                'random_seed': self._config.random_seed,
+                'validate_invariants': self._config.validate_invariants,
+                'vf_range': self._config.default_vf_range,
+                'epi_range': self._config.default_epi_range,
+            }
+        }
