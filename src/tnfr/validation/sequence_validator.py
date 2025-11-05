@@ -34,9 +34,9 @@ class SequenceSemanticValidator:
             },
             "invalid_transition_sequence": {
                 "pattern": ["transition"],
-                "not_preceded_by": ["dissonance", "mutation"],
-                "severity": InvariantSeverity.ERROR,
-                "message": "Transition requires prior structural perturbation (dissonance or mutation)",
+                "not_preceded_by": ["dissonance", "mutation", "reception"],
+                "severity": InvariantSeverity.WARNING,
+                "message": "Transition typically follows structural perturbation (dissonance, mutation) or reception",
             },
             "resonance_without_coupling": {
                 "pattern": ["resonance"],
