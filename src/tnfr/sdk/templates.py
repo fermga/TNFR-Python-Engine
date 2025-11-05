@@ -116,8 +116,8 @@ class TNFRTemplates:
     ) -> NetworkResults:
         """Model neural network using TNFR structural principles.
         
-        Represents neurons as TNFR nodes with high structural frequencies
-        (reflecting fast neural timescales) and sparse random connectivity
+        Represents neurons as TNFR nodes with moderate to high structural
+        frequencies (within TNFR bounds) and sparse random connectivity
         (typical of cortical networks). Applies rapid activation cycles
         to model neural firing patterns.
         
@@ -147,8 +147,8 @@ class TNFRTemplates:
         if random_seed is not None:
             network._config.random_seed = random_seed
         
-        # Neural frequencies: fast reorganization (1-10 Hz_str)
-        network.add_nodes(neurons, vf_range=(1.0, 10.0))
+        # Neural frequencies: high end of valid range (0.5-1.0 Hz_str)
+        network.add_nodes(neurons, vf_range=(0.5, 1.0))
         
         # Sparse random connectivity typical of cortical networks
         network.connect_nodes(connectivity, "random")
@@ -168,9 +168,9 @@ class TNFRTemplates:
         """Model ecosystem dynamics with TNFR structural evolution.
         
         Represents species as nodes with diverse structural frequencies
-        (reflecting different biological timescales) and medium connectivity
-        (species interactions). Alternates between mutation (innovation),
-        synchronization (adaptation), and consolidation (stable ecosystems).
+        (within TNFR bounds) and medium connectivity (species interactions).
+        Alternates between mutation (innovation), synchronization (adaptation),
+        and consolidation (stable ecosystems).
         
         Parameters
         ----------
@@ -197,8 +197,8 @@ class TNFRTemplates:
         if random_seed is not None:
             network._config.random_seed = random_seed
         
-        # Biological timescales: wide diversity (0.1-2.0 Hz_str)
-        network.add_nodes(species, vf_range=(0.1, 2.0))
+        # Biological timescales: diversity within bounds (0.2-0.9 Hz_str)
+        network.add_nodes(species, vf_range=(0.2, 0.9))
         
         # Random interaction network
         network.connect_nodes(interaction_strength, "random")
@@ -229,10 +229,10 @@ class TNFRTemplates:
     ) -> NetworkResults:
         """Model creative processes using TNFR structural evolution.
         
-        Represents ideas as nodes with high diversity in structural
-        frequencies (creative exploration) starting with sparse connectivity
-        (disconnected ideas). Applies exploration, mutation, and synthesis
-        sequences to model creative ideation and development.
+        Represents ideas as nodes with diverse structural frequencies
+        (creative exploration within TNFR bounds) starting with sparse
+        connectivity (disconnected ideas). Applies exploration, mutation,
+        and synthesis sequences to model creative ideation and development.
         
         Parameters
         ----------
@@ -259,8 +259,8 @@ class TNFRTemplates:
         if random_seed is not None:
             network._config.random_seed = random_seed
         
-        # High diversity: creative exploration (0.2-1.5 Hz_str)
-        network.add_nodes(ideas, vf_range=(0.2, 1.5))
+        # Diverse frequencies for creative exploration (0.3-0.9 Hz_str)
+        network.add_nodes(ideas, vf_range=(0.3, 0.9))
         
         # Sparse initial connectivity: ideas start disconnected
         network.connect_nodes(0.1, "random")

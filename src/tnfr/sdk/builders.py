@@ -97,9 +97,9 @@ class TNFRExperimentBuilder:
     ) -> NetworkResults:
         """Study synchronization in densely coupled TNFR networks.
         
-        Creates a network with similar structural frequencies and dense
-        coupling, then applies synchronization sequences to study phase
-        locking and coherence emergence.
+        Creates a network with similar structural frequencies (within TNFR
+        bounds) and dense coupling, then applies synchronization sequences
+        to study phase locking and coherence emergence.
         
         Parameters
         ----------
@@ -129,8 +129,8 @@ class TNFRExperimentBuilder:
         if random_seed is not None:
             network._config.random_seed = random_seed
         
-        # Similar frequencies promote synchronization
-        network.add_nodes(nodes, vf_range=(0.8, 1.2))
+        # Similar frequencies promote synchronization (within bounds: 0.6-0.9)
+        network.add_nodes(nodes, vf_range=(0.6, 0.9))
         network.connect_nodes(coupling_strength, "random")
         
         # Multi-phase synchronization protocol
