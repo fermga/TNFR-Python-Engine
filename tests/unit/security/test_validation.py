@@ -73,7 +73,7 @@ class TestValidatePhaseValue:
         assert validate_phase_value(0.0) == 0.0
         assert validate_phase_value(1.57) == 1.57  # π/2
         assert validate_phase_value(3.14) == 3.14  # π
-        
+
         # Phase at 2π wraps to 0
         two_pi = 2 * math.pi
         result = validate_phase_value(two_pi)
@@ -82,7 +82,7 @@ class TestValidatePhaseValue:
     def test_phase_wrapping(self) -> None:
         """Test that phase wrapping works correctly."""
         two_pi = 2 * math.pi
-        
+
         # Phase > 2π should wrap
         result = validate_phase_value(two_pi + 1.0)
         assert 0.0 <= result <= two_pi
@@ -195,7 +195,7 @@ class TestValidateNodalInput:
             "si": 0.7,
         }
         validated = validate_nodal_input(data)
-        
+
         assert validated["nu_f"] == 0.5
         assert validated["phase"] == 1.57
         assert validated["coherence"] == 0.8
@@ -219,7 +219,7 @@ class TestValidateNodalInput:
             "custom_field": "value",
         }
         validated = validate_nodal_input(data)
-        
+
         assert validated["nu_f"] == 0.5
         assert validated["node_id"] == "node_123"
         assert validated["epi"] == [1.0, 2.0, 3.0]
@@ -264,7 +264,7 @@ class TestValidateNodalInput:
         """Test that phase wrapping occurs in nodal validation."""
         data = {"phase": 7.0}  # Greater than 2π
         validated = validate_nodal_input(data)
-        
+
         # Should be wrapped to [0, 2π]
         two_pi = 2 * math.pi
         assert 0.0 <= validated["phase"] <= two_pi
