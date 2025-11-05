@@ -258,6 +258,45 @@ def _assign_exports(module: str, names: tuple[str, ...]) -> bool:
             globals()[export_name] = getattr(mod, export_name)
         return True
 
+def __getattr__(name: str) -> Any:
+    """Lazy load SDK components and handle missing dependencies."""
+    # SDK exports - lazy loaded to avoid circular dependencies
+    if name == "TNFRNetwork":
+        try:
+            from .sdk.fluent import TNFRNetwork
+            globals()[name] = TNFRNetwork
+            return TNFRNetwork
+        except ImportError as exc:
+            if _is_internal_import_error(exc):
+                raise
+            stub = _missing_dependency(name, exc, module="sdk.fluent")
+            globals()[name] = stub
+            return stub
+    elif name == "TNFRTemplates":
+        try:
+            from .sdk.templates import TNFRTemplates
+            globals()[name] = TNFRTemplates
+            return TNFRTemplates
+        except ImportError as exc:
+            if _is_internal_import_error(exc):
+                raise
+            stub = _missing_dependency(name, exc, module="sdk.templates")
+            globals()[name] = stub
+            return stub
+    elif name == "TNFRExperimentBuilder":
+        try:
+            from .sdk.builders import TNFRExperimentBuilder
+            globals()[name] = TNFRExperimentBuilder
+            return TNFRExperimentBuilder
+        except ImportError as exc:
+            if _is_internal_import_error(exc):
+                raise
+            stub = _missing_dependency(name, exc, module="sdk.builders")
+            globals()[name] = stub
+            return stub
+    
+    raise AttributeError(f"module 'tnfr' has no attribute '{name}'")
+
 _assign_exports("dynamics", ("step", "run"))
 
 _HAS_PREPARE_NETWORK = _assign_exports("ontosim", ("prepare_network",))
@@ -292,9 +331,27 @@ __all__ = [
     "get_hz_bridge",
     "hz_str_to_hz",
     "hz_to_hz_str",
+    # SDK exports (lazily loaded)
+    "TNFRNetwork",
+    "TNFRTemplates",
+    "TNFRExperimentBuilder",
 ]
 
 if _HAS_STRUCTURAL_EXPORTS:
     __all__.extend(["run_sequence", "create_math_nfr"])
+
+# Add SDK exports to dependency manifest for validation
+EXPORT_DEPENDENCIES["TNFRNetwork"] = {
+    "submodules": ("tnfr.sdk.fluent", "tnfr.structural", "tnfr.metrics", "tnfr.validation"),
+    "third_party": ("networkx",),
+}
+EXPORT_DEPENDENCIES["TNFRTemplates"] = {
+    "submodules": ("tnfr.sdk.templates", "tnfr.sdk.fluent"),
+    "third_party": ("networkx",),
+}
+EXPORT_DEPENDENCIES["TNFRExperimentBuilder"] = {
+    "submodules": ("tnfr.sdk.builders", "tnfr.sdk.fluent"),
+    "third_party": ("networkx",),
+}
 
 _validate_export_dependencies()

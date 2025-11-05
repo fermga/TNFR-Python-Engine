@@ -1,0 +1,681 @@
+"""Fluent API for simplified TNFR network creation and simulation.
+
+This module implements the core :class:`TNFRNetwork` class that provides
+a user-friendly, chainable interface for working with TNFR networks. The
+API hides low-level complexity while maintaining full theoretical fidelity
+to TNFR invariants and structural operators.
+
+Examples
+--------
+Create and simulate a simple TNFR network:
+
+>>> network = TNFRNetwork("my_experiment")
+>>> network.add_nodes(10).connect_nodes(0.3, "random")
+>>> network.apply_sequence("basic_activation", repeat=5)
+>>> results = network.measure()
+>>> print(results.summary())
+
+Chain operations for rapid prototyping:
+
+>>> results = (TNFRNetwork("quick_test")
+...            .add_nodes(20)
+...            .connect_nodes(0.4, "ring")
+...            .apply_sequence("network_sync", repeat=10)
+...            .measure())
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
+
+try:
+    import numpy as np
+    _HAS_NUMPY = True
+except ImportError:
+    np = None  # type: ignore[assignment]
+    _HAS_NUMPY = False
+
+import networkx as nx
+
+from ..structural import create_nfr, run_sequence
+from ..metrics.coherence import compute_coherence
+from ..metrics.sense_index import compute_Si, compute_Si_node
+from ..constants.aliases import ALIAS_DNFR
+from ..validation import validate_sequence
+
+__all__ = ["TNFRNetwork", "NetworkConfig", "NetworkResults"]
+
+
+# Predefined operator sequences for common patterns
+# All sequences must respect TNFR grammar rules:
+# - Start with emission or recursivity
+# - Include reception→coherence segment
+# - Include coupling/dissonance/resonance segment
+# - End with recursivity, silence, or transition
+NAMED_SEQUENCES = {
+    "basic_activation": ["emission", "reception", "coherence", "resonance", "silence"],
+    "stabilization": ["emission", "reception", "coherence", "resonance", "recursivity"],
+    "creative_mutation": ["emission", "dissonance", "reception", "coherence", "mutation", "resonance", "silence"],
+    "network_sync": ["emission", "reception", "coherence", "coupling", "resonance", "silence"],
+    "exploration": ["emission", "dissonance", "reception", "coherence", "resonance", "transition"],
+    "consolidation": ["recursivity", "reception", "coherence", "resonance", "silence"],
+}
+
+
+@dataclass
+class NetworkConfig:
+    """Configuration for TNFR network creation.
+    
+    Parameters
+    ----------
+    random_seed : int, optional
+        Seed for random number generation to ensure reproducibility.
+    validate_invariants : bool, default=True
+        Whether to validate TNFR invariants after operator application.
+    auto_stabilization : bool, default=True
+        Whether to automatically apply stabilization after mutations.
+    default_vf_range : tuple[float, float], default=(0.1, 1.0)
+        Default range for structural frequency (νf) generation in Hz_str.
+    default_epi_range : tuple[float, float], default=(0.1, 0.9)
+        Default range for EPI (Primary Information Structure) generation.
+    """
+    
+    random_seed: Optional[int] = None
+    validate_invariants: bool = True
+    auto_stabilization: bool = True
+    default_vf_range: tuple[float, float] = (0.1, 1.0)
+    default_epi_range: tuple[float, float] = (0.1, 0.9)
+
+
+@dataclass
+class NetworkResults:
+    """Results from TNFR network simulation.
+    
+    Attributes
+    ----------
+    coherence : float
+        Global coherence C(t) of the network.
+    sense_indices : Dict[str, float]
+        Sense index Si for each node, measuring stable reorganization capacity.
+    delta_nfr : Dict[str, float]
+        Internal reorganization gradient ΔNFR for each node.
+    graph : TNFRGraph
+        The underlying NetworkX graph with full TNFR state.
+    avg_vf : float, optional
+        Average structural frequency across all nodes.
+    avg_phase : float, optional
+        Average phase angle across all nodes.
+    """
+    
+    coherence: float
+    sense_indices: Dict[str, float]
+    delta_nfr: Dict[str, float]
+    graph: Any  # TNFRGraph
+    avg_vf: Optional[float] = None
+    avg_phase: Optional[float] = None
+    
+    def summary(self) -> str:
+        """Generate human-readable summary of network results.
+        
+        Returns
+        -------
+        str
+            Formatted summary string with key metrics.
+        """
+        si_values = list(self.sense_indices.values())
+        dnfr_values = list(self.delta_nfr.values())
+        
+        avg_si = sum(si_values) / len(si_values) if si_values else 0.0
+        avg_dnfr = sum(dnfr_values) / len(dnfr_values) if dnfr_values else 0.0
+        
+        return f"""
+TNFR Network Results:
+  • Coherence C(t): {self.coherence:.3f}
+  • Nodes: {len(self.sense_indices)}
+  • Avg Sense Index Si: {avg_si:.3f}
+  • Avg ΔNFR: {avg_dnfr:.3f}
+  • Avg νf: {self.avg_vf:.3f} Hz_str{' (computed)' if self.avg_vf else ''}
+  • Avg Phase: {self.avg_phase:.3f} rad{' (computed)' if self.avg_phase else ''}
+""".strip()
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert results to serializable dictionary.
+        
+        Returns
+        -------
+        Dict[str, Any]
+            Dictionary containing all metrics and summary statistics.
+        """
+        si_values = list(self.sense_indices.values())
+        dnfr_values = list(self.delta_nfr.values())
+        
+        return {
+            'coherence': self.coherence,
+            'sense_indices': self.sense_indices,
+            'delta_nfr': self.delta_nfr,
+            'summary_stats': {
+                'node_count': len(self.sense_indices),
+                'avg_si': sum(si_values) / len(si_values) if si_values else 0.0,
+                'avg_delta_nfr': sum(dnfr_values) / len(dnfr_values) if dnfr_values else 0.0,
+                'avg_vf': self.avg_vf,
+                'avg_phase': self.avg_phase,
+            }
+        }
+
+
+class TNFRNetwork:
+    """Fluent API for creating and simulating TNFR networks.
+    
+    This class provides a simplified, chainable interface for working with
+    TNFR networks. All methods return ``self`` to enable method chaining.
+    The API automatically handles node creation, operator validation, and
+    metric computation while preserving TNFR structural invariants.
+    
+    Parameters
+    ----------
+    name : str, default="tnfr_network"
+        Name identifier for the network.
+    config : NetworkConfig, optional
+        Configuration settings. If None, uses default configuration.
+    
+    Examples
+    --------
+    Create a network with fluent interface:
+    
+    >>> network = TNFRNetwork("experiment_1")
+    >>> network.add_nodes(15).connect_nodes(0.25, "random")
+    >>> network.apply_sequence("basic_activation", repeat=3)
+    >>> results = network.measure()
+    
+    One-line network creation and simulation:
+    
+    >>> results = (TNFRNetwork("test")
+    ...            .add_nodes(10)
+    ...            .connect_nodes(0.3)
+    ...            .apply_sequence("network_sync", repeat=5)
+    ...            .measure())
+    """
+    
+    def __init__(
+        self,
+        name: str = "tnfr_network",
+        config: Optional[NetworkConfig] = None
+    ):
+        """Initialize TNFR network with given name and configuration."""
+        self.name = name
+        self._config = config if config is not None else NetworkConfig()
+        self._graph: Optional[nx.Graph] = None
+        self._results: Optional[NetworkResults] = None
+        self._node_counter = 0
+        
+        # Initialize RNG if seed provided
+        if _HAS_NUMPY and self._config.random_seed is not None:
+            self._rng = np.random.RandomState(self._config.random_seed)
+        else:
+            import random
+            if self._config.random_seed is not None:
+                random.seed(self._config.random_seed)
+            self._rng = random  # type: ignore[assignment]
+    
+    def add_nodes(
+        self,
+        count: int,
+        vf_range: Optional[tuple[float, float]] = None,
+        epi_range: Optional[tuple[float, float]] = None,
+        phase_range: tuple[float, float] = (0.0, 6.283185307179586),  # (0, 2π)
+        random_seed: Optional[int] = None,
+    ) -> TNFRNetwork:
+        """Add nodes with random TNFR properties within valid ranges.
+        
+        Creates ``count`` new nodes with structural properties (EPI, νf, phase)
+        randomly sampled within specified ranges. All values respect TNFR
+        invariants and canonical units (νf in Hz_str, phase in radians).
+        
+        Parameters
+        ----------
+        count : int
+            Number of nodes to create.
+        vf_range : tuple[float, float], optional
+            Range for structural frequency νf in Hz_str. If None, uses
+            config default. Values should be positive.
+        epi_range : tuple[float, float], optional
+            Range for Primary Information Structure (EPI). If None, uses
+            config default. Typical range is (0.1, 0.9) to avoid extremes.
+        phase_range : tuple[float, float], default=(0, 2π)
+            Range for phase in radians. Default covers full circle.
+        random_seed : int, optional
+            Override seed for this operation only. If None, uses network seed.
+        
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining.
+        
+        Examples
+        --------
+        Add nodes with default properties:
+        
+        >>> network = TNFRNetwork().add_nodes(5)
+        
+        Add nodes with custom frequency range:
+        
+        >>> network = TNFRNetwork().add_nodes(10, vf_range=(0.5, 2.0))
+        """
+        if self._graph is None:
+            self._graph = nx.Graph()
+        
+        if vf_range is None:
+            vf_range = self._config.default_vf_range
+        if epi_range is None:
+            epi_range = self._config.default_epi_range
+        
+        # Setup RNG for this operation
+        if _HAS_NUMPY:
+            rng = (np.random.RandomState(random_seed) if random_seed is not None 
+                   else self._rng)
+            
+            for _ in range(count):
+                node_id = f"node_{self._node_counter}"
+                self._node_counter += 1
+                
+                # Generate valid TNFR properties
+                vf = rng.uniform(*vf_range)
+                phase = rng.uniform(*phase_range)
+                epi = rng.uniform(*epi_range)
+                
+                # Create NFR node with structural properties
+                self._graph, _ = create_nfr(
+                    node_id,
+                    graph=self._graph,
+                    vf=vf,
+                    theta=phase,
+                    epi=epi,
+                )
+        else:
+            # Fallback to standard random
+            import random
+            if random_seed is not None:
+                random.seed(random_seed)
+            
+            for _ in range(count):
+                node_id = f"node_{self._node_counter}"
+                self._node_counter += 1
+                
+                vf = random.uniform(*vf_range)
+                phase = random.uniform(*phase_range)
+                epi = random.uniform(*epi_range)
+                
+                self._graph, _ = create_nfr(
+                    node_id,
+                    graph=self._graph,
+                    vf=vf,
+                    theta=phase,
+                    epi=epi,
+                )
+        
+        return self
+    
+    def connect_nodes(
+        self,
+        connection_probability: float = 0.3,
+        connection_pattern: str = "random",
+    ) -> TNFRNetwork:
+        """Connect nodes according to specified topology pattern.
+        
+        Establishes coupling between nodes using common network patterns.
+        Connections enable resonance and phase synchronization between nodes.
+        
+        Parameters
+        ----------
+        connection_probability : float, default=0.3
+            For random pattern: probability of edge between any two nodes.
+            For small_world: rewiring probability (Watts-Strogatz model).
+        connection_pattern : str, default="random"
+            Topology pattern to use. Options:
+            - "random": Erdős-Rényi random graph
+            - "ring": Each node connects to next in circle
+            - "small_world": Watts-Strogatz small-world network
+        
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining.
+        
+        Raises
+        ------
+        ValueError
+            If graph has no nodes or invalid pattern specified.
+        
+        Examples
+        --------
+        Create random network:
+        
+        >>> network = TNFRNetwork().add_nodes(10).connect_nodes(0.3, "random")
+        
+        Create ring lattice:
+        
+        >>> network = TNFRNetwork().add_nodes(15).connect_nodes(pattern="ring")
+        
+        Create small-world network:
+        
+        >>> network = TNFRNetwork().add_nodes(20).connect_nodes(0.1, "small_world")
+        """
+        if self._graph is None or self._graph.number_of_nodes() == 0:
+            raise ValueError("No nodes in graph. Call add_nodes() first.")
+        
+        nodes = list(self._graph.nodes())
+        
+        if connection_pattern == "random":
+            # Erdős-Rényi random graph
+            if _HAS_NUMPY:
+                for i, node1 in enumerate(nodes):
+                    for node2 in nodes[i+1:]:
+                        if self._rng.random() < connection_probability:
+                            self._graph.add_edge(node1, node2)
+            else:
+                import random
+                for i, node1 in enumerate(nodes):
+                    for node2 in nodes[i+1:]:
+                        if random.random() < connection_probability:
+                            self._graph.add_edge(node1, node2)
+        
+        elif connection_pattern == "ring":
+            # Ring lattice
+            for i in range(len(nodes)):
+                next_node = nodes[(i + 1) % len(nodes)]
+                self._graph.add_edge(nodes[i], next_node)
+        
+        elif connection_pattern == "small_world":
+            # Watts-Strogatz small-world network
+            # Start with ring lattice, then rewire
+            k = max(4, int(len(nodes) * 0.1))  # ~10% degree, minimum 4
+            
+            # Create initial ring with k nearest neighbors
+            for i in range(len(nodes)):
+                for j in range(1, k // 2 + 1):
+                    target = (i + j) % len(nodes)
+                    if nodes[i] != nodes[target]:  # Avoid self-loops
+                        self._graph.add_edge(nodes[i], nodes[target])
+            
+            # Rewire edges with given probability
+            edges = list(self._graph.edges())
+            if _HAS_NUMPY:
+                for u, v in edges:
+                    if self._rng.random() < connection_probability:
+                        # Remove edge and create new random edge
+                        self._graph.remove_edge(u, v)
+                        # Find node not already connected
+                        candidates = [n for n in nodes 
+                                    if n != u and not self._graph.has_edge(u, n)]
+                        if candidates:
+                            idx = int(self._rng.randint(0, len(candidates)))
+                            if idx >= len(candidates):
+                                idx = len(candidates) - 1
+                            w = candidates[idx]
+                            self._graph.add_edge(u, w)
+            else:
+                import random
+                for u, v in edges:
+                    if random.random() < connection_probability:
+                        self._graph.remove_edge(u, v)
+                        candidates = [n for n in nodes 
+                                    if n != u and not self._graph.has_edge(u, n)]
+                        if candidates:
+                            w = random.choice(candidates)
+                            self._graph.add_edge(u, w)
+        
+        else:
+            available = ", ".join(["random", "ring", "small_world"])
+            raise ValueError(
+                f"Unknown connection pattern '{connection_pattern}'. "
+                f"Available: {available}"
+            )
+        
+        return self
+    
+    def apply_sequence(
+        self,
+        sequence: Union[str, List[str]],
+        repeat: int = 1,
+    ) -> TNFRNetwork:
+        """Apply structural operator sequence to evolve the network.
+        
+        Executes a validated sequence of TNFR operators that reorganize
+        network structure according to the nodal equation ∂EPI/∂t = νf·ΔNFR(t).
+        Sequences can be predefined names or custom operator lists. The
+        sequence is applied to all nodes in the network.
+        
+        Parameters
+        ----------
+        sequence : str or List[str]
+            Either a predefined sequence name or list of operator names.
+            Predefined sequences:
+            - "basic_activation": [emission, reception, coherence, resonance, silence]
+            - "stabilization": [emission, reception, coherence, resonance, recursivity]
+            - "creative_mutation": [emission, dissonance, reception, coherence, mutation, resonance, silence]
+            - "network_sync": [emission, reception, coherence, coupling, resonance, silence]
+            - "exploration": [emission, dissonance, reception, coherence, resonance, transition]
+            - "consolidation": [recursivity, reception, coherence, resonance, silence]
+        repeat : int, default=1
+            Number of times to apply the sequence.
+        
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining.
+        
+        Raises
+        ------
+        ValueError
+            If graph has no nodes or sequence name is invalid.
+        
+        Examples
+        --------
+        Apply predefined sequence:
+        
+        >>> network = (TNFRNetwork()
+        ...            .add_nodes(10)
+        ...            .connect_nodes(0.3)
+        ...            .apply_sequence("basic_activation", repeat=5))
+        
+        Apply custom operator sequence:
+        
+        >>> network.apply_sequence(["emission", "reception", "coherence", "resonance", "silence"])
+        """
+        if self._graph is None or self._graph.number_of_nodes() == 0:
+            raise ValueError("No nodes in graph. Call add_nodes() first.")
+        
+        # Expand named sequences
+        if isinstance(sequence, str):
+            if sequence not in NAMED_SEQUENCES:
+                available = ", ".join(sorted(NAMED_SEQUENCES.keys()))
+                raise ValueError(
+                    f"Unknown sequence '{sequence}'. Available: {available}"
+                )
+            operator_list = NAMED_SEQUENCES[sequence]
+        else:
+            operator_list = sequence
+        
+        # Validate sequence if configured
+        if self._config.validate_invariants:
+            validate_sequence(operator_list)
+        
+        # Convert operator names to operator instances
+        from ..operators.registry import get_operator_class
+        
+        operator_instances = [get_operator_class(name)() for name in operator_list]
+        
+        # Apply sequence repeatedly to all nodes
+        for _ in range(repeat):
+            for node in list(self._graph.nodes()):
+                run_sequence(self._graph, node, operator_instances)
+        
+        return self
+    
+    def measure(self) -> NetworkResults:
+        """Calculate TNFR metrics and return structured results.
+        
+        Computes coherence C(t), sense indices Si, and ΔNFR values for
+        all nodes, plus aggregate statistics. Results are cached internally
+        and returned as a :class:`NetworkResults` instance.
+        
+        Returns
+        -------
+        NetworkResults
+            Structured container with all computed metrics.
+        
+        Raises
+        ------
+        ValueError
+            If no network has been created.
+        
+        Examples
+        --------
+        Measure and display results:
+        
+        >>> results = network.measure()
+        >>> print(results.summary())
+        
+        Access specific metrics:
+        
+        >>> coherence = results.coherence
+        >>> si_values = results.sense_indices
+        """
+        if self._graph is None or self._graph.number_of_nodes() == 0:
+            raise ValueError("No network created. Use add_nodes() first.")
+        
+        # Compute coherence C(t)
+        coherence = compute_coherence(self._graph)
+        
+        # Compute sense indices Si for all nodes
+        si_dict = compute_Si(self._graph, inplace=False)
+        
+        # Extract ΔNFR values
+        delta_nfr_dict = {}
+        for node_id in self._graph.nodes():
+            delta_nfr_dict[node_id] = self._graph.nodes[node_id].get(ALIAS_DNFR, 0.0)
+        
+        # Compute aggregate statistics
+        vf_sum = 0.0
+        phase_sum = 0.0
+        node_count = self._graph.number_of_nodes()
+        
+        for node_id in self._graph.nodes():
+            node_data = self._graph.nodes[node_id]
+            vf_sum += node_data.get('nu_f', 0.0)
+            phase_sum += node_data.get('phase', 0.0)
+        
+        avg_vf = vf_sum / node_count if node_count > 0 else 0.0
+        avg_phase = phase_sum / node_count if node_count > 0 else 0.0
+        
+        # Create and cache results
+        self._results = NetworkResults(
+            coherence=coherence,
+            sense_indices=si_dict,
+            delta_nfr=delta_nfr_dict,
+            graph=self._graph,
+            avg_vf=avg_vf,
+            avg_phase=avg_phase,
+        )
+        
+        return self._results
+    
+    def visualize(self, **kwargs: Any) -> TNFRNetwork:
+        """Visualize the network with TNFR metrics.
+        
+        Creates a visual representation of the network showing node states
+        and connections. Requires matplotlib to be installed.
+        
+        Parameters
+        ----------
+        **kwargs
+            Additional arguments passed to visualization function.
+        
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining.
+        
+        Raises
+        ------
+        ImportError
+            If matplotlib is not installed.
+        ValueError
+            If no network has been created.
+        
+        Notes
+        -----
+        This is a placeholder for future visualization functionality.
+        Current implementation will raise NotImplementedError.
+        """
+        if self._graph is None or self._graph.number_of_nodes() == 0:
+            raise ValueError("No network created. Use add_nodes() first.")
+        
+        # Compute metrics if not done yet
+        if self._results is None:
+            self.measure()
+        
+        # Visualization will be implemented in future PR
+        raise NotImplementedError(
+            "Visualization functionality will be added in a future update. "
+            "Use NetworkX's drawing functions directly on network._graph for now."
+        )
+    
+    def save(self, filepath: Union[str, Path]) -> TNFRNetwork:
+        """Save network state and results to file.
+        
+        Serializes the network graph and computed metrics to a file for
+        later analysis or reproduction.
+        
+        Parameters
+        ----------
+        filepath : str or Path
+            Path where network data should be saved.
+        
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining.
+        
+        Raises
+        ------
+        ValueError
+            If no network has been created.
+        
+        Notes
+        -----
+        This is a placeholder for future I/O functionality.
+        Current implementation will raise NotImplementedError.
+        """
+        if self._graph is None or self._graph.number_of_nodes() == 0:
+            raise ValueError("No network created. Use add_nodes() first.")
+        
+        # Compute metrics if not done yet
+        if self._results is None:
+            self.measure()
+        
+        # I/O functionality will be implemented in future PR
+        raise NotImplementedError(
+            "Save functionality will be added in a future update. "
+            "Use networkx.write_gpickle or similar for now."
+        )
+    
+    @property
+    def graph(self) -> nx.Graph:
+        """Access the underlying NetworkX graph.
+        
+        Returns
+        -------
+        nx.Graph
+            The NetworkX graph with TNFR node attributes.
+        
+        Raises
+        ------
+        ValueError
+            If no network has been created yet.
+        """
+        if self._graph is None:
+            raise ValueError("No network created. Use add_nodes() first.")
+        return self._graph
