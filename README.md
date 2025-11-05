@@ -12,6 +12,8 @@ equation $\partial EPI/\partial t = \nu_f \cdot \Delta NFR(t)$.
 - **Observe:** register metrics/trace callbacks to capture ΔNFR, C(t), Si, and structural
   histories
   for every run.
+- **Optimize:** select computational backends (NumPy, JAX, Torch) for vectorized ΔNFR/Si
+  computation with GPU acceleration support.
 - **Extend:** rely on the canonical operator grammar and invariants before introducing new
   utilities or telemetry.
 
@@ -49,6 +51,7 @@ it easy to inspect hot paths with :mod:`pstats`, Snakeviz, or downstream tooling
 - [API overview](docs/source/api/overview.md) — package map, invariants, and structural data flow.
 - [Structural operators](docs/source/api/operators.md) — canonical grammar, key concepts, and typical
   workflows.
+- [Backend system](docs/backends.md) — vectorized computation with NumPy/JAX/Torch backends.
 - [Telemetry & utilities](docs/source/api/telemetry.md) — coherence metrics, trace capture, locking,
   and helper facades.
 - [Examples](docs/source/examples/README.md) — runnable scenarios, CLI artefacts, and token legend.
