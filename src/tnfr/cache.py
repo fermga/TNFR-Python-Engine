@@ -101,11 +101,15 @@ from .utils.cache import (
     SecurityWarning,
 )
 
-# Hierarchical cache with dependency tracking from tnfr.caching
-from .caching import (
+# Hierarchical cache with dependency tracking (now in utils.cache)
+from .utils.cache import (
     TNFRHierarchicalCache,
     CacheLevel,
     CacheEntry,
+)
+
+# Decorators, invalidation, and persistence (still in caching/ for now)
+from .caching import (
     cache_tnfr_computation,
     invalidate_function_cache,
     GraphChangeTracker,
