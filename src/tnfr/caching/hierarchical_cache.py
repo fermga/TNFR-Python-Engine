@@ -2,6 +2,10 @@
 
 This module implements a multi-level cache system that respects TNFR structural
 semantics and provides selective invalidation based on dependencies.
+
+The hierarchical cache now uses ``CacheManager`` from ``tnfr.utils.cache`` as its
+backend, providing unified cache management with consistent metrics and telemetry
+across the entire TNFR codebase.
 """
 
 from __future__ import annotations
@@ -12,6 +16,12 @@ from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Optional
+
+from ..utils.cache import (
+    CacheManager,
+    CacheStatistics,
+    InstrumentedLRUCache,
+)
 
 __all__ = ["CacheLevel", "CacheEntry", "TNFRHierarchicalCache"]
 
@@ -71,12 +81,17 @@ class TNFRHierarchicalCache:
     dependencies to enable surgical invalidation. Only entries that depend
     on changed structural properties are evicted, preserving valid cached data.
     
+    Internally uses ``CacheManager`` from ``tnfr.utils.cache`` for unified cache
+    management, metrics, and telemetry integration with the rest of TNFR.
+    
     Parameters
     ----------
     max_memory_mb : int, default: 512
         Maximum memory usage in megabytes before eviction starts.
     enable_metrics : bool, default: True
         Whether to track cache hit/miss metrics for telemetry.
+    cache_manager : CacheManager, optional
+        Existing CacheManager to use. If None, creates a new one.
     
     Attributes
     ----------
@@ -112,20 +127,62 @@ class TNFRHierarchicalCache:
         self,
         max_memory_mb: int = 512,
         enable_metrics: bool = True,
+        cache_manager: Optional[CacheManager] = None,
     ):
-        self._caches: dict[CacheLevel, dict[str, CacheEntry]] = {
-            level: {} for level in CacheLevel
-        }
-        self._dependencies: dict[str, set[tuple[CacheLevel, str]]] = defaultdict(set)
+        # Use provided CacheManager or create new one
+        if cache_manager is None:
+            # Estimate entries per MB (rough heuristic: ~100 entries per MB)
+            default_capacity = max(32, int(max_memory_mb * 100 / len(CacheLevel)))
+            cache_manager = CacheManager(
+                storage={},
+                default_capacity=default_capacity,
+            )
+        
+        self._manager = cache_manager
         self._max_memory = max_memory_mb * 1024 * 1024
         self._current_memory = 0
         self._enable_metrics = enable_metrics
         
-        # Metrics
+        # Dependency tracking (remains in hierarchical cache)
+        self._dependencies: dict[str, set[tuple[CacheLevel, str]]] = defaultdict(set)
+        
+        # Register a cache for each level in the CacheManager
+        self._level_cache_names: dict[CacheLevel, str] = {}
+        for level in CacheLevel:
+            cache_name = f"hierarchical_{level.value}"
+            self._level_cache_names[level] = cache_name
+            
+            # Create factory function for the level's cache
+            def make_cache_factory() -> Any:
+                def factory() -> dict[str, CacheEntry]:
+                    return {}
+                return factory
+            
+            self._manager.register(
+                cache_name,
+                make_cache_factory(),
+                create=True,
+            )
+        
+        # Metrics (tracked locally for backward compatibility)
         self.hits = 0
         self.misses = 0
         self.evictions = 0
         self.invalidations = 0
+    
+    @property
+    def _caches(self) -> dict[CacheLevel, dict[str, CacheEntry]]:
+        """Provide backward compatibility for accessing internal caches.
+        
+        This property returns a view of the caches stored in the CacheManager,
+        maintaining compatibility with code that directly accessed the old
+        _caches attribute.
+        """
+        result: dict[CacheLevel, dict[str, CacheEntry]] = {}
+        for level in CacheLevel:
+            cache_name = self._level_cache_names[level]
+            result[level] = self._manager.get(cache_name)
+        return result
     
     def get(self, key: str, level: CacheLevel) -> Optional[Any]:
         """Retrieve value from cache if it exists and is valid.
@@ -151,15 +208,20 @@ class TNFRHierarchicalCache:
         >>> cache.get("missing", CacheLevel.TEMPORARY)
         
         """
-        if key in self._caches[level]:
-            entry = self._caches[level][key]
+        cache_name = self._level_cache_names[level]
+        level_cache: dict[str, CacheEntry] = self._manager.get(cache_name)
+        
+        if key in level_cache:
+            entry = level_cache[key]
             entry.access_count += 1
             if self._enable_metrics:
                 self.hits += 1
+                self._manager.increment_hit(cache_name)
             return entry.value
         
         if self._enable_metrics:
             self.misses += 1
+            self._manager.increment_miss(cache_name)
         return None
     
     def set(
@@ -212,9 +274,12 @@ class TNFRHierarchicalCache:
             size_bytes=estimated_size,
         )
         
+        cache_name = self._level_cache_names[level]
+        level_cache: dict[str, CacheEntry] = self._manager.get(cache_name)
+        
         # Remove old entry if exists
-        if key in self._caches[level]:
-            old_entry = self._caches[level][key]
+        if key in level_cache:
+            old_entry = level_cache[key]
             self._current_memory -= old_entry.size_bytes
             # Clean up old dependencies
             for dep in old_entry.dependencies:
@@ -222,7 +287,8 @@ class TNFRHierarchicalCache:
                     self._dependencies[dep].discard((level, key))
         
         # Store entry
-        self._caches[level][key] = entry
+        level_cache[key] = entry
+        self._manager.store(cache_name, level_cache)
         self._current_memory += estimated_size
         
         # Register dependencies
@@ -262,10 +328,14 @@ class TNFRHierarchicalCache:
         if dependency in self._dependencies:
             entries_to_remove = list(self._dependencies[dependency])
             for level, key in entries_to_remove:
-                if key in self._caches[level]:
-                    entry = self._caches[level][key]
+                cache_name = self._level_cache_names[level]
+                level_cache: dict[str, CacheEntry] = self._manager.get(cache_name)
+                
+                if key in level_cache:
+                    entry = level_cache[key]
                     self._current_memory -= entry.size_bytes
-                    del self._caches[level][key]
+                    del level_cache[key]
+                    self._manager.store(cache_name, level_cache)
                     count += 1
                     
                     # Clean up all dependency references for this entry
@@ -294,16 +364,19 @@ class TNFRHierarchicalCache:
         int
             Number of entries invalidated.
         """
-        count = len(self._caches[level])
+        cache_name = self._level_cache_names[level]
+        level_cache: dict[str, CacheEntry] = self._manager.get(cache_name)
+        count = len(level_cache)
         
         # Clean up dependencies
-        for key, entry in self._caches[level].items():
+        for key, entry in level_cache.items():
             self._current_memory -= entry.size_bytes
             for dep in entry.dependencies:
                 if dep in self._dependencies:
                     self._dependencies[dep].discard((level, key))
         
-        self._caches[level].clear()
+        level_cache.clear()
+        self._manager.store(cache_name, level_cache)
         
         if self._enable_metrics:
             self.invalidations += count
@@ -313,7 +386,9 @@ class TNFRHierarchicalCache:
     def clear(self) -> None:
         """Clear all cache levels and reset metrics."""
         for level in CacheLevel:
-            self._caches[level].clear()
+            cache_name = self._level_cache_names[level]
+            self._manager.clear(cache_name)
+        
         self._dependencies.clear()
         self._current_memory = 0
         
@@ -342,10 +417,11 @@ class TNFRHierarchicalCache:
         total_accesses = self.hits + self.misses
         hit_rate = self.hits / total_accesses if total_accesses > 0 else 0.0
         
-        entry_counts = {
-            level.value: len(entries)
-            for level, entries in self._caches.items()
-        }
+        entry_counts = {}
+        for level in CacheLevel:
+            cache_name = self._level_cache_names[level]
+            level_cache: dict[str, CacheEntry] = self._manager.get(cache_name)
+            entry_counts[level.value] = len(level_cache)
         
         return {
             "hits": self.hits,
@@ -379,7 +455,9 @@ class TNFRHierarchicalCache:
         # Collect all entries with priority scores
         all_entries: list[tuple[float, CacheLevel, str, CacheEntry]] = []
         for level in CacheLevel:
-            for key, entry in self._caches[level].items():
+            cache_name = self._level_cache_names[level]
+            level_cache: dict[str, CacheEntry] = self._manager.get(cache_name)
+            for key, entry in level_cache.items():
                 # Priority = (access_count + 1) * computation_cost
                 # Higher priority = keep longer
                 # Add 1 to access_count to avoid zero priority
@@ -395,8 +473,11 @@ class TNFRHierarchicalCache:
                 break
             
             # Remove entry
-            if key in self._caches[level]:
-                del self._caches[level][key]
+            cache_name = self._level_cache_names[level]
+            level_cache: dict[str, CacheEntry] = self._manager.get(cache_name)
+            if key in level_cache:
+                del level_cache[key]
+                self._manager.store(cache_name, level_cache)
                 freed_space += entry.size_bytes
                 self._current_memory -= entry.size_bytes
                 
@@ -407,3 +488,4 @@ class TNFRHierarchicalCache:
                 
                 if self._enable_metrics:
                     self.evictions += 1
+                    self._manager.increment_eviction(cache_name)
