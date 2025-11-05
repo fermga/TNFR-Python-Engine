@@ -79,6 +79,7 @@ release = [
 
 [project.scripts]
 tnfr = "tnfr.cli:main"
+tnfr-validate = "tnfr.cli.validate:main"
 
 [project.urls]
 Homepage = "https://pypi.org/project/tnfr/"
