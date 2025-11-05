@@ -1,4 +1,22 @@
-"""Canonical ΔNFR integrators driving TNFR runtime evolution."""
+"""Canonical ΔNFR integrators driving TNFR runtime evolution.
+
+This module implements numerical integration of the canonical TNFR nodal equation:
+
+    ∂EPI/∂t = νf · ΔNFR(t) + Γi(R)
+
+The extended equation includes:
+  - Base term: νf · ΔNFR(t) - canonical structural evolution
+  - Network term: Γi(R) - optional Kuramoto coupling
+
+Integration respects TNFR invariants:
+  - Structural units (Hz_str for νf)
+  - Operator closure (valid ΔNFR semantics)
+  - Phase coherence (network synchronization)
+  - Reproducibility (deterministic with seeds)
+
+The canonical base term is computed explicitly in _collect_nodal_increments()
+at line 321 and 342 as: base = vf * dnfr, implementing ∂EPI/∂t = νf·ΔNFR(t).
+"""
 
 from __future__ import annotations
 
@@ -25,6 +43,7 @@ from ..constants.aliases import (
 from ..gamma import _get_gamma_spec, eval_gamma
 from ..types import NodeId, TNFRGraph
 from ..utils import get_numpy, resolve_chunk_size
+from .canonical import compute_canonical_nodal_derivative
 
 __all__ = (
     "AbstractIntegrator",
@@ -295,9 +314,33 @@ def _collect_nodal_increments(
 ) -> NodeIncrements:
     """Combine node base state with staged Γ contributions.
 
-    ``gamma_maps`` must contain one entry for Euler integration and four for
-    RK4. The helper merges the structural frequency/ΔNFR base contribution
-    with the supplied Γ evaluations.
+    Implements the canonical TNFR nodal equation in two parts:
+    
+    1. **Base term** (canonical equation): 
+       base = vf * dnfr  →  ∂EPI/∂t = νf · ΔNFR(t)
+       
+       This is the fundamental TNFR equation where:
+         - vf (νf): structural frequency in Hz_str
+         - dnfr (ΔNFR): nodal gradient (reorganization operator)
+         - base: instantaneous rate of EPI evolution
+    
+    2. **Network coupling term**:
+       Γi(R) from gamma_maps - optional Kuramoto order parameter
+    
+    The full extended equation is: ∂EPI/∂t = νf·ΔNFR(t) + Γi(R)
+    
+    Args:
+        G: TNFR graph with node attributes vf and dnfr
+        gamma_maps: Staged Γ evaluations (1 for Euler, 4 for RK4)
+        method: Integration method ('euler' or 'rk4')
+    
+    Returns:
+        Mapping of nodes to staged integration increments
+    
+    Notes:
+        - Line 321 implements the canonical nodal equation explicitly
+        - Units: vf in Hz_str, dnfr dimensionless, base in Hz_str
+        - Preserves TNFR operator closure and structural semantics
     """
 
     nodes: list[NodeId] = list(G.nodes())
@@ -318,6 +361,8 @@ def _collect_nodal_increments(
     if np is not None:
         vf = collect_attr(G, nodes, ALIAS_VF, 0.0, np=np)
         dnfr = collect_attr(G, nodes, ALIAS_DNFR, 0.0, np=np)
+        # CANONICAL TNFR EQUATION: ∂EPI/∂t = νf · ΔNFR(t)
+        # This implements the fundamental nodal equation explicitly
         base = vf * dnfr
 
         gamma_arrays = [
@@ -339,6 +384,8 @@ def _collect_nodal_increments(
     for node in nodes:
         nd = G.nodes[node]
         vf, dnfr, *_ = _node_state(nd)
+        # CANONICAL TNFR EQUATION: ∂EPI/∂t = νf · ΔNFR(t)
+        # Scalar implementation of the fundamental nodal equation
         base = vf * dnfr
         gammas = [gm.get(node, 0.0) for gm in gamma_maps]
 
@@ -543,11 +590,27 @@ def update_epi_via_nodal_equation(
     )
 
 def _node_state(nd: dict[str, Any]) -> tuple[float, float, float, float]:
-    """Return common node state attributes.
+    """Return common node state attributes for canonical equation evaluation.
 
-    Extracts ``νf``, ``ΔNFR``, previous ``dEPI/dt`` and current ``EPI``
-    using alias helpers, providing ``0.0`` defaults when attributes are
-    missing.
+    Extracts the fundamental TNFR variables from node data:
+      - νf (vf): Structural frequency in Hz_str
+      - ΔNFR (dnfr): Nodal gradient (reorganization operator)
+      - dEPI/dt (previous): Last computed EPI derivative
+      - EPI (current): Current Primary Information Structure
+    
+    These variables are used in the canonical nodal equation:
+        ∂EPI/∂t = νf · ΔNFR(t)
+    
+    Args:
+        nd: Node data dictionary containing TNFR attributes
+    
+    Returns:
+        Tuple of (vf, dnfr, dEPI_dt_prev, epi_i) with 0.0 defaults
+    
+    Notes:
+        - vf alias maps to VF, frequency, or structural_frequency
+        - dnfr alias maps to DNFR, delta_nfr, or reorganization_gradient
+        - All values are coerced to float for numerical stability
     """
 
     vf = get_attr(nd, ALIAS_VF, 0.0)
