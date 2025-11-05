@@ -172,8 +172,10 @@ def compute_fused_gradients(
         g_epi = epi[j] - epi[i]
         g_vf = vf[j] - vf[i]
         
-        delta_nfr[j] += w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo
+        delta_nfr[dst] += w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo
     ```
+    
+    Where dst is the destination node index (j) for each edge.
     
     By processing all components simultaneously, we:
     - Access edge arrays once instead of 3+ times
@@ -335,11 +337,12 @@ def compute_fused_gradients_symmetric(
     vf_dst = vf[edge_dst]
     
     # For undirected edge (i, j), we want:
-    #   - Node i accumulates gradient FROM j: sin(phase[j] - phase[i])
-    #   - Node j accumulates gradient FROM i: sin(phase[i] - phase[j])
+    #   - Node j accumulates gradient from i: sin(phase[i] - phase[j])
+    #   - Node i accumulates gradient from j: sin(phase[j] - phase[i])
+    # This maintains the proper gradient direction for both endpoints
     
-    # Forward: j receives contribution from i
-    phase_diff_fwd = np.sin(phase_src - phase_dst)  # i->j contribution  
+    # Forward: j receives contribution from i (src)
+    phase_diff_fwd = np.sin(phase_src - phase_dst)  # gradient at dst from src
     epi_diff_fwd = epi_src - epi_dst
     vf_diff_fwd = vf_src - vf_dst
     
