@@ -125,6 +125,9 @@ def load_pypi_credentials() -> dict[str, str | None]:
     Use API tokens instead of passwords:
     - PYPI_USERNAME=__token__
     - PYPI_PASSWORD=pypi-XXXXXXXXXXXXXXXXXXXX...
+    
+    Note: Example uses 'XXX' pattern to avoid triggering security scanners.
+    Actual PyPI tokens follow format: pypi-AgEIcHlwaS5vcmcC...
 
     See Also
     --------
@@ -383,7 +386,7 @@ def validate_no_hardcoded_secrets(value: str) -> bool:
 
 
 class SecureCredentialValidator:
-    """Validador robusto de credenciales y configuración.
+    """Robust credential and configuration validator.
     
     Validates credentials and configuration with strict security criteria
     following TNFR principles of structural coherence and stability.
