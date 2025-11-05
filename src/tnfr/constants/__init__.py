@@ -1,244 +1,55 @@
-"""Shared constants."""
+"""Shared constants (backward compatibility layer).
+
+This module re-exports configuration from tnfr.config for backward compatibility.
+New code should import directly from tnfr.config.
+
+Migration Path:
+    Old: from tnfr.constants import DEFAULTS, inject_defaults
+    New: from tnfr.config import DEFAULTS, inject_defaults
+"""
 
 from __future__ import annotations
 
-import copy
-from collections.abc import Mapping
-from types import MappingProxyType
-from typing import Callable, TypeVar, cast
-
-from ..immutable import _is_immutable
-from ..types import GraphLike, TNFRConfigValue
-from .core import CORE_DEFAULTS, REMESH_DEFAULTS
-from .init import INIT_DEFAULTS
-from .metric import (
+# Re-export all constants and utilities from tnfr.config
+from ..config import (
+    ALIASES,
+    CANONICAL_STATE_TOKENS,
     COHERENCE,
+    CORE_DEFAULTS,
+    D2EPI_PRIMARY,
+    D2VF_PRIMARY,
+    DEFAULT_SECTIONS,
+    DEFAULTS,
     DIAGNOSIS,
+    DNFR_PRIMARY,
+    EPI_KIND_PRIMARY,
+    EPI_PRIMARY,
     GRAMMAR_CANON,
+    INIT_DEFAULTS,
     METRIC_DEFAULTS,
     METRICS,
+    REMESH_DEFAULTS,
+    SI_PRIMARY,
     SIGMA,
+    STATE_DISSONANT,
+    STATE_STABLE,
+    STATE_TRANSITION,
+    THETA_KEY,
+    THETA_PRIMARY,
     TRACE,
+    VF_KEY,
+    VF_PRIMARY,
+    dEPI_PRIMARY,
+    dSI_PRIMARY,
+    dVF_PRIMARY,
+    ensure_node_offset_map,
+    get_aliases,
+    get_graph_param,
+    get_param,
+    inject_defaults,
+    merge_overrides,
+    normalise_state_token,
 )
-
-T = TypeVar("T")
-
-STATE_STABLE = "stable"
-STATE_TRANSITION = "transition"
-STATE_DISSONANT = "dissonant"
-
-CANONICAL_STATE_TOKENS = frozenset({STATE_STABLE, STATE_TRANSITION, STATE_DISSONANT})
-
-def normalise_state_token(token: str) -> str:
-    """Return the canonical English token for ``token``.
-
-    The helper now enforces the English identifiers exclusively. Values that
-    do not match the canonical set raise :class:`ValueError` so callers can
-    surface explicit migration errors when legacy payloads are encountered.
-    """
-
-    if not isinstance(token, str):
-        raise TypeError("state token must be a string")
-
-    stripped = token.strip()
-    lowered = stripped.lower()
-
-    if stripped in CANONICAL_STATE_TOKENS:
-        return stripped
-
-    if lowered in CANONICAL_STATE_TOKENS:
-        return lowered
-
-    raise ValueError(
-        "state token must be one of 'stable', 'transition', or 'dissonant'"
-    )
-
-try:  # pragma: no cover - optional dependency
-    from ..utils import ensure_node_offset_map as _ensure_node_offset_map
-except ImportError:  # noqa: BLE001 - allow any import error
-    _ensure_node_offset_map = None
-
-ensure_node_offset_map: Callable[[GraphLike], None] | None = _ensure_node_offset_map
-
-# Exported sections
-DEFAULT_SECTIONS: Mapping[str, Mapping[str, TNFRConfigValue]] = MappingProxyType(
-    {
-        "core": CORE_DEFAULTS,
-        "init": INIT_DEFAULTS,
-        "remesh": REMESH_DEFAULTS,
-        "metric": METRIC_DEFAULTS,
-    }
-)
-
-# Combined exported dictionary
-# Merge the dictionaries from lowest to highest priority so that
-# ``METRIC_DEFAULTS`` overrides the rest, mirroring the previous ``ChainMap``
-# behaviour.
-DEFAULTS: Mapping[str, TNFRConfigValue] = MappingProxyType(
-    CORE_DEFAULTS | INIT_DEFAULTS | REMESH_DEFAULTS | METRIC_DEFAULTS
-)
-
-# -------------------------
-# Utilities
-# -------------------------
-
-def inject_defaults(
-    G: GraphLike,
-    defaults: Mapping[str, TNFRConfigValue] = DEFAULTS,
-    override: bool = False,
-) -> None:
-    """Inject ``defaults`` into ``G.graph``.
-
-    ``defaults`` is usually ``DEFAULTS``, combining all sub-dictionaries.
-    If ``override`` is ``True`` existing values are overwritten. Immutable
-    values (numbers, strings, tuples, etc.) are assigned directly. Tuples are
-    inspected recursively; if any element is mutable, a ``deepcopy`` is made
-    to avoid shared state.
-
-    Configuration dictionaries are deep-copied to ensure each graph has its
-    own mutable configuration instance, enabling safe runtime modifications
-    via :func:`get_param` without affecting other graphs or defaults.
-
-    Parameters
-    ----------
-    G : GraphLike
-        The graph to inject defaults into.
-    defaults : Mapping[str, TNFRConfigValue], optional
-        Configuration mapping to inject. Defaults to :data:`DEFAULTS`.
-    override : bool, optional
-        If ``True``, existing values in ``G.graph`` are overwritten.
-        If ``False``, only missing keys are added. Defaults to ``False``.
-    """
-    G.graph.setdefault("_tnfr_defaults_attached", False)
-    for k, v in defaults.items():
-        if override or k not in G.graph:
-            G.graph[k] = (
-                v if _is_immutable(v) else cast(TNFRConfigValue, copy.deepcopy(v))
-            )
-    G.graph["_tnfr_defaults_attached"] = True
-    if ensure_node_offset_map is not None:
-        ensure_node_offset_map(G)
-
-def merge_overrides(G: GraphLike, **overrides: TNFRConfigValue) -> None:
-    """Apply specific changes to ``G.graph``.
-
-    Non-immutable values are deep-copied to avoid shared state with
-    :data:`DEFAULTS`. This enables safe mutation of configuration
-    dictionaries retrieved via :func:`get_param`.
-
-    Parameters
-    ----------
-    G : GraphLike
-        The graph whose configuration should be updated.
-    **overrides : TNFRConfigValue
-        Keyword arguments mapping parameter names to new values.
-
-    Raises
-    ------
-    KeyError
-        If any parameter name is not present in :data:`DEFAULTS`.
-
-    Examples
-    --------
-    >>> merge_overrides(G, DT=0.5, INTEGRATOR_METHOD="rk4")
-    """
-    for key, value in overrides.items():
-        if key not in DEFAULTS:
-            raise KeyError(f"Unknown parameter: '{key}'")
-        G.graph[key] = (
-            value
-            if _is_immutable(value)
-            else cast(TNFRConfigValue, copy.deepcopy(value))
-        )
-
-def get_param(G: GraphLike, key: str) -> TNFRConfigValue:
-    """Retrieve a parameter from ``G.graph`` or fall back to defaults.
-
-    Returns a :data:`TNFRConfigValue` which supports the full
-    :class:`~collections.abc.MutableMapping` protocol when the value is a
-    dictionary. This enables dict-like operations:
-
-    - ``.get(key, default)`` - retrieve values with fallback
-    - ``[key] = value`` - set configuration values
-    - ``.update(other)`` - merge configuration updates
-
-    Parameters
-    ----------
-    G : GraphLike
-        The graph containing configuration in its ``.graph`` attribute.
-    key : str
-        The parameter name to retrieve.
-
-    Returns
-    -------
-    TNFRConfigValue
-        The configuration value, supporting MutableMapping operations
-        when it is a dictionary.
-
-    Raises
-    ------
-    KeyError
-        If ``key`` is not found in either ``G.graph`` or :data:`DEFAULTS`.
-
-    Examples
-    --------
-    >>> diagnosis_cfg = get_param(G, "DIAGNOSIS")
-    >>> diagnosis_cfg["compute_symmetry"] = False
-    >>> history_key = diagnosis_cfg.get("history_key", "nodal_diag")
-    """
-    if key in G.graph:
-        return G.graph[key]
-    if key not in DEFAULTS:
-        raise KeyError(f"Unknown parameter: '{key}'")
-    return DEFAULTS[key]
-
-def get_graph_param(
-    G: GraphLike, key: str, cast: Callable[[object], T] = float
-) -> T | None:
-    """Return ``key`` from ``G.graph`` applying ``cast``.
-
-    The ``cast`` argument must be a function (e.g. ``float``, ``int``,
-    ``bool``). If the stored value is ``None`` it is returned without
-    casting.
-    """
-    val = get_param(G, key)
-    return None if val is None else cast(val)
-
-# Canonical keys with ASCII spellings
-VF_KEY = "νf"
-THETA_KEY = "theta"
-
-# Alias map for node attributes
-ALIASES: dict[str, tuple[str, ...]] = {
-    "VF": (VF_KEY, "nu_f", "nu-f", "nu", "freq", "frequency"),
-    "THETA": (THETA_KEY, "phase"),
-    "DNFR": ("ΔNFR", "delta_nfr", "dnfr"),
-    "EPI": ("EPI", "psi", "PSI", "value"),
-    "EPI_KIND": ("EPI_kind", "epi_kind", "source_glyph"),
-    "SI": ("Si", "sense_index", "S_i", "sense", "meaning_index"),
-    "DEPI": ("dEPI_dt", "dpsi_dt", "dEPI", "velocity"),
-    "D2EPI": ("d2EPI_dt2", "d2psi_dt2", "d2EPI", "accel"),
-    "DVF": ("dνf_dt", "dvf_dt", "dnu_dt", "dvf"),
-    "D2VF": ("d2νf_dt2", "d2vf_dt2", "d2nu_dt2", "B"),
-    "DSI": ("δSi", "delta_Si", "dSi"),
-}
-
-def get_aliases(key: str) -> tuple[str, ...]:
-    """Return alias tuple for canonical ``key``."""
-
-    return ALIASES[key]
-
-VF_PRIMARY = get_aliases("VF")[0]
-THETA_PRIMARY = get_aliases("THETA")[0]
-DNFR_PRIMARY = get_aliases("DNFR")[0]
-EPI_PRIMARY = get_aliases("EPI")[0]
-EPI_KIND_PRIMARY = get_aliases("EPI_KIND")[0]
-SI_PRIMARY = get_aliases("SI")[0]
-dEPI_PRIMARY = get_aliases("DEPI")[0]
-D2EPI_PRIMARY = get_aliases("D2EPI")[0]
-dVF_PRIMARY = get_aliases("DVF")[0]
-D2VF_PRIMARY = get_aliases("D2VF")[0]
-dSI_PRIMARY = get_aliases("DSI")[0]
 
 __all__ = (
     "CORE_DEFAULTS",
@@ -277,4 +88,6 @@ __all__ = (
     "STATE_DISSONANT",
     "CANONICAL_STATE_TOKENS",
     "normalise_state_token",
+    "ensure_node_offset_map",
 )
+
