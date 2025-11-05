@@ -165,27 +165,49 @@ class Operator:
 
 @register_operator
 class Emission(Operator):
-    """Emission structural operator. Seeds coherence by projecting the emission pattern.
+    """Emission structural operator (AL) - Foundational activation of nodal resonance.
 
     Activates structural symbol ``AL`` to initialise outward resonance around a
-    nascent node.
+    nascent node, initiating the first phase of structural reorganization.
+    
+    TNFR Context
+    ------------
+    In the Resonant Fractal Nature paradigm, Emission (AL) represents the moment when
+    a latent Primary Information Structure (EPI) begins to emit coherence toward its
+    surrounding network. This is not passive information broadcast but active structural
+    reorganization that increases the node's νf (structural frequency) and initiates
+    positive ΔNFR flow.
+    
+    **Key Elements:**
+    - **Coherent Emergence**: Node exists because it resonates; AL initiates resonance
+    - **Structural Frequency**: Activates νf (Hz_str) to enable reorganization
+    - **Network Coupling**: Prepares node for phase alignment
+    - **Nodal Equation**: Implements ∂EPI/∂t = νf · ΔNFR(t) with positive ΔNFR
+    
+    Use Cases
+    ---------
+    **Biomedical**: HRV coherence training, neural activation, therapeutic initiation
+    **Cognitive**: Idea germination, learning initiation, creative spark
+    **Social**: Team activation, community emergence, ritual initiation
+    
+    Typical Sequences
+    -----------------
+    **AL → IL**: Basic activation and stabilization
+    **AL → RA**: Emission with immediate propagation
+    **AL → NAV → IL**: Phased activation with transition
     
     Preconditions
     -------------
-    - EPI must be below activation threshold (default: 0.8)
-    - Node must be in latent or low-activation state
+    - EPI < 0.8 (activation threshold)
+    - Node in latent or low-activation state
+    - Sufficient network coupling potential
     
     Structural Effects
     ------------------
-    - Increments EPI (Primary Information Structure)
-    - May activate structural frequency (νf)
-    - Initializes ΔNFR for reorganization
-    
-    Metrics Collected
-    -----------------
-    - ΔEPI: Change in coherent form
-    - Activation strength
-    - Final EPI and νf values
+    **EPI**: Increments (form activation)
+    **νf**: Activates/increases (Hz_str)
+    **ΔNFR**: Initializes positive reorganization
+    **θ**: Influences phase alignment
 
     Examples
     --------
@@ -206,6 +228,12 @@ class Emission(Operator):
     0.25
     >>> round(G.nodes[node][VF_PRIMARY], 2)
     1.02
+    
+    See Also
+    --------
+    Coherence : Stabilizes emitted structures
+    Resonance : Propagates emitted coherence
+    Reception : Receives external emissions
     """
 
     __slots__ = ()
@@ -224,12 +252,87 @@ class Emission(Operator):
 
 @register_operator
 class Reception(Operator):
-    """Reception structural operator. Stabilises inbound energy to strengthen receptivity.
+    """Reception structural operator (EN) - Anchoring external coherence into local structure.
 
-    Activates structural symbol ``EN`` to anchor external coherence into the node's EPI.
+    Activates structural symbol ``EN`` to anchor external coherence into the node's EPI,
+    stabilizing inbound information flows and integrating network resonance.
+    
+    TNFR Context
+    ------------
+    Reception (EN) represents the structural capacity to receive and integrate coherence
+    from the network into the node's local EPI. Unlike passive data reception, EN is an
+    active structural process that reorganizes the node to accommodate and stabilize
+    external resonant patterns while reducing ΔNFR through integration.
+    
+    **Key Elements:**
+    
+    - **Active Integration**: Receiving is reorganizing, not passive storage
+    - **ΔNFR Reduction**: Integration reduces reorganization pressure
+    - **Network Coupling**: Requires phase compatibility with emitting nodes
+    - **Coherence Preservation**: External patterns maintain their structural identity
+    
+    Use Cases
+    ---------
+    **Biomedical**:
+    
+    - **Biofeedback Reception**: Integrating external coherence signals (e.g., HRV monitoring)
+    - **Therapeutic Resonance**: Patient receiving therapist's coherent presence
+    - **Neural Synchronization**: Brain regions receiving and integrating signals
+    
+    **Cognitive**:
+    
+    - **Learning Reception**: Student integrating teacher's explanations
+    - **Concept Integration**: Mind receiving and structuring new information
+    - **Attention Anchoring**: Consciousness stabilizing around received stimuli
+    
+    **Social**:
+    
+    - **Communication Reception**: Team member integrating collaborative input
+    - **Cultural Integration**: Individual receiving and adopting social patterns
+    - **Empathic Reception**: Receiving and resonating with others' emotional states
+    
+    Typical Sequences
+    ---------------------------
+    - **AL → EN**: Emission followed by reception (bidirectional activation)
+    - **EN → IL**: Reception followed by coherence (stabilized integration)
+    - **RA → EN**: Resonance propagation followed by reception (network flow)
+    - **EN → THOL**: Reception triggering self-organization (emergent integration)
+    - **EN → UM**: Reception enabling coupling (synchronized reception)
+    
+    Preconditions
+    -------------
+    - Node must have receptive capacity (non-saturated EPI)
+    - External coherence sources must be present in network
+    - Phase compatibility with emitting nodes
+    
+    Structural Effects
+    ------------------
+    - **EPI**: Increments through integration of external patterns
+    - **ΔNFR**: Typically reduces as external coherence stabilizes node
+    - **θ**: May align toward emitting nodes' phase
+    - **Network coupling**: Strengthens connections to coherence sources
+    
+    Metrics
+    -----------------
+    - ΔEPI: Magnitude of integrated external coherence
+    - ΔNFR reduction: Measure of stabilization effectiveness
+    - Integration efficiency: Ratio of received to integrated coherence
+    - Phase alignment: Degree of synchronization with sources
+    
+    Compatibility
+    ---------------------
+    **Compatible with**: IL (Coherence), THOL (Self-organization), UM (Coupling),
+    RA (Resonance), NAV (Transition)
+    
+    **Avoid with**: SHA (Silence) - contradicts receptive intent
+    
+    **Natural progressions**: EN typically followed by stabilization (IL) or
+    organization (THOL) of received patterns
 
     Examples
     --------
+    **Technical Example:**
+    
     >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import create_nfr, run_sequence
@@ -247,6 +350,30 @@ class Reception(Operator):
     0.35
     >>> round(G.nodes[node][DNFR_PRIMARY], 2)
     0.06
+    
+    **Example (Biofeedback Integration):**
+    
+    >>> # Patient receiving HRV biofeedback during therapy
+    >>> G_patient, patient = create_nfr("patient_biofeedback", epi=0.30, vf=1.0)
+    >>> # EN: Patient's nervous system integrates coherence feedback
+    >>> run_sequence(G_patient, patient, [Reception()])
+    >>> # Result: External biofeedback signal anchors into patient's physiology
+    >>> # ΔNFR reduces as system stabilizes around received pattern
+    
+    **Example (Educational Integration):**
+    
+    >>> # Student receiving and integrating new mathematical concept
+    >>> G_learning, learner = create_nfr("student_mind", epi=0.25, vf=0.95)
+    >>> # EN: Student's cognitive structure receives teacher's explanation
+    >>> run_sequence(G_learning, learner, [Reception()])
+    >>> # Result: New information integrates into existing knowledge structure
+    >>> # Mental EPI reorganizes to accommodate new concept
+    
+    See Also
+    --------
+    Emission : Initiates patterns that EN can receive
+    Coherence : Stabilizes received patterns
+    SelfOrganization : Organizes received information
     """
 
     __slots__ = ()
@@ -265,12 +392,92 @@ class Reception(Operator):
 
 @register_operator
 class Coherence(Operator):
-    """Coherence structural operator. Reinforces structural alignment across nodes.
+    """Coherence structural operator (IL) - Stabilization of structural alignment.
 
-    Activates structural symbol ``IL`` to compress ΔNFR drift and raise the local C(t).
+    Activates structural symbol ``IL`` to compress ΔNFR drift and raise the local C(t),
+    reinforcing structural alignment across nodes and stabilizing emergent forms.
+    
+    TNFR Context
+    ------------
+    Coherence (IL) represents the fundamental stabilization process in TNFR. When applied,
+    it reduces ΔNFR (reorganization pressure) and increases C(t) (global coherence),
+    effectively "sealing" structural forms into stable configurations. This is the primary
+    operator for maintaining nodal equation balance: ∂EPI/∂t → 0 as ΔNFR → 0.
+    
+    **Key Elements:**
+    
+    - **Structural Stabilization**: Reduces reorganization pressure (ΔNFR)
+    - **Coherence Amplification**: Increases global C(t) through local stability
+    - **Form Preservation**: Maintains EPI integrity across time
+    - **Phase Locking**: Synchronizes node with network phase structure
+    
+    Use Cases
+    ---------
+    **Biomedical**:
+    
+    - **Cardiac Coherence**: Stabilizing heart rate variability patterns
+    - **Neural Coherence**: Maintaining synchronized brain wave states
+    - **Homeostatic Balance**: Stabilizing physiological regulatory systems
+    - **Therapeutic Integration**: Consolidating healing states post-intervention
+    
+    **Cognitive**:
+    
+    - **Concept Consolidation**: Stabilizing newly learned information
+    - **Mental Clarity**: Reducing cognitive noise and confusion
+    - **Focus Maintenance**: Sustaining attention on coherent thought patterns
+    - **Memory Formation**: Consolidating experience into stable memories
+    
+    **Social**:
+    
+    - **Team Alignment**: Stabilizing collaborative working patterns
+    - **Cultural Coherence**: Maintaining shared values and practices
+    - **Ritual Completion**: Sealing ceremonial transformations
+    - **Group Synchrony**: Stabilizing collective resonance states
+    
+    Typical Sequences
+    ---------------------------
+    - **AL → IL**: Emission stabilized immediately (safe activation)
+    - **EN → IL**: Reception consolidated (stable integration)
+    - **IL → ZHIR**: Coherence enabling controlled mutation (stable transformation)
+    - **RA → IL**: Resonance followed by stabilization (propagation consolidation)
+    - **OZ → IL**: Dissonance resolved into new coherence (creative stabilization)
+    - **AL → NAV → IL → OZ → THOL → RA → UM**: Full transformation cycle
+    
+    Preconditions
+    -------------
+    - Node must have active EPI (non-zero form)
+    - ΔNFR should be present (though IL reduces it)
+    - Sufficient network coupling for phase alignment
+    
+    Structural Effects
+    ------------------
+    - **EPI**: May increment slightly as form stabilizes
+    - **ΔNFR**: Significantly reduces (primary effect)
+    - **C(t)**: Increases at both local and global levels
+    - **νf**: May slightly increase as stability enables higher frequency
+    - **θ**: Aligns with network phase (phase locking)
+    
+    Metrics
+    -----------------
+    - ΔNFR reduction: Primary metric of stabilization success
+    - C(t) increase: Global coherence improvement
+    - Phase alignment: Degree of network synchronization
+    - EPI stability: Variance reduction in form over time
+    
+    Compatibility
+    ---------------------
+    **Compatible with**: ALL operators - IL is universally stabilizing
+    
+    **Especially effective after**: AL (Emission), EN (Reception), OZ (Dissonance),
+    NAV (Transition)
+    
+    **Natural progressions**: IL often concludes sequences or prepares for
+    controlled transformation (ZHIR, NAV)
 
     Examples
     --------
+    **Technical Example:**
+    
     >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import create_nfr, run_sequence
@@ -291,6 +498,42 @@ class Coherence(Operator):
     1.14
     >>> round(G.nodes[node][DNFR_PRIMARY], 2)
     0.05
+    
+    **Example (Cardiac Coherence Training):**
+    
+    >>> # Stabilizing heart rhythm after breath-focus activation
+    >>> G_heart, heart = create_nfr("cardiac_rhythm", epi=0.50, vf=1.10)
+    >>> # Heart activated (AL), now stabilizing coherent pattern
+    >>> # IL: Breath rhythm locks into stable coherent pattern
+    >>> run_sequence(G_heart, heart, [Coherence()])
+    >>> # Result: HRV pattern stabilizes, ΔNFR reduces significantly
+    >>> # Patient enters sustained coherent state
+    
+    **Example (Learning Consolidation):**
+    
+    >>> # Student consolidating newly understood concept
+    >>> G_study, mind = create_nfr("student_understanding", epi=0.45, vf=1.05)
+    >>> # Concept received (EN), now stabilizing into memory
+    >>> # IL: Mental rehearsal consolidates understanding
+    >>> run_sequence(G_study, mind, [Coherence()])
+    >>> # Result: Knowledge structure stabilizes, confusion (ΔNFR) reduces
+    >>> # Concept becomes part of stable mental model
+    
+    **Example (Team Alignment):**
+    
+    >>> # Collaborative team stabilizing after creative brainstorm
+    >>> G_team, group = create_nfr("team_consensus", epi=0.55, vf=1.00)
+    >>> # Ideas generated (OZ), now building consensus
+    >>> # IL: Team aligns around shared vision
+    >>> run_sequence(G_team, group, [Coherence()])
+    >>> # Result: Group coherence increases, conflicts (ΔNFR) resolve
+    >>> # Team operates with unified purpose
+    
+    See Also
+    --------
+    Dissonance : Creates instability that IL later resolves
+    Emission : Often followed by IL for safe activation
+    Mutation : IL enables controlled phase changes
     """
 
     __slots__ = ()
@@ -309,12 +552,93 @@ class Coherence(Operator):
 
 @register_operator
 class Dissonance(Operator):
-    """Dissonance structural operator. Injects controlled dissonance to probe robustness.
+    """Dissonance structural operator (OZ) - Creative instability for exploration.
 
-    Activates structural symbol ``OZ`` to widen ΔNFR and test bifurcation thresholds.
+    Activates structural symbol ``OZ`` to widen ΔNFR and test bifurcation thresholds,
+    injecting controlled dissonance to probe system robustness and enable transformation.
+    
+    TNFR Context
+    ------------
+    Dissonance (OZ) is the creative force in TNFR - it deliberately increases ΔNFR and
+    phase instability (θ) to explore new structural configurations. Rather than destroying
+    coherence, controlled dissonance enables evolution, mutation, and creative reorganization.
+    When ∂²EPI/∂t² > τ, bifurcation occurs, spawning new structural possibilities.
+    
+    **Key Elements:**
+    
+    - **Creative Instability**: Necessary for transformation and evolution
+    - **Bifurcation Trigger**: When ΔNFR exceeds thresholds, new forms emerge
+    - **Controlled Chaos**: Dissonance is managed, not destructive
+    - **Phase Exploration**: θ variation opens new network couplings
+    
+    Use Cases
+    ---------
+    **Biomedical**:
+    
+    - **Hormetic Stress**: Controlled physiological challenge (cold exposure, fasting)
+    - **Therapeutic Crisis**: Necessary discomfort in healing process
+    - **Immune Challenge**: Controlled pathogen exposure for adaptation
+    - **Neural Plasticity**: Learning-induced temporary destabilization
+    
+    **Cognitive**:
+    
+    - **Cognitive Dissonance**: Challenging existing beliefs for growth
+    - **Creative Problem-Solving**: Introducing paradoxes to spark insight
+    - **Socratic Method**: Questioning to destabilize and rebuild understanding
+    - **Conceptual Conflict**: Encountering contradictions that force reorganization
+    
+    **Social**:
+    
+    - **Constructive Conflict**: Productive disagreement in teams
+    - **Organizational Change**: Disrupting status quo to enable transformation
+    - **Cultural Evolution**: Introducing new ideas that challenge norms
+    - **Innovation Pressure**: Market disruption forcing adaptation
+    
+    Typical Sequences
+    ---------------------------
+    - **OZ → IL**: Dissonance resolved into new coherence (creative resolution)
+    - **OZ → THOL**: Dissonance triggering self-organization (emergent order)
+    - **IL → OZ → THOL**: Stable → dissonance → reorganization (growth cycle)
+    - **OZ → NAV → IL**: Dissonance → transition → new stability
+    - **AL → OZ → RA**: Activation → challenge → propagation (tested resonance)
+    
+    **AVOID**: OZ → SHA (dissonance followed by silence contradicts exploration)
+    
+    Preconditions
+    -------------
+    - Node must have baseline coherence to withstand dissonance
+    - Network must support potential bifurcations
+    - ΔNFR should not already be critically high
+    
+    Structural Effects
+    ------------------
+    - **ΔNFR**: Significantly increases (primary effect)
+    - **θ**: May shift unpredictably (phase exploration)
+    - **EPI**: May temporarily destabilize before reorganizing
+    - **νf**: Often increases as system responds to challenge
+    - **Bifurcation risk**: ∂²EPI/∂t² may exceed τ
+    
+    Metrics
+    -----------------
+    - ΔNFR increase: Magnitude of introduced instability
+    - Phase shift (Δθ): Degree of phase exploration
+    - Bifurcation events: Count of structural splits
+    - Recovery time: Time to return to coherence (with IL)
+    
+    Compatibility
+    ---------------------
+    **Compatible with**: IL (resolution), THOL (organization), NAV (transition),
+    ZHIR (mutation)
+    
+    **Avoid with**: SHA (silence), multiple consecutive OZ (excessive instability)
+    
+    **Natural progressions**: OZ typically followed by IL (stabilization) or
+    THOL (self-organization) to resolve created instability
 
     Examples
     --------
+    **Technical Example:**
+    
     >>> from tnfr.constants import DNFR_PRIMARY, THETA_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import create_nfr, run_sequence
@@ -332,6 +656,45 @@ class Dissonance(Operator):
     0.11
     >>> round(G.nodes[node][THETA_PRIMARY], 2)
     0.25
+    
+    **Example (Therapeutic Challenge):**
+    
+    >>> # Patient confronting difficult emotions in therapy
+    >>> G_therapy, patient = create_nfr("emotional_processing", epi=0.40, theta=0.10)
+    >>> # Stable baseline, low phase variation
+    >>> # OZ: Therapist guides patient to face uncomfortable truth
+    >>> run_sequence(G_therapy, patient, [Dissonance()])
+    >>> # Result: ΔNFR increases (emotional turbulence)
+    >>> # Phase shifts as old patterns destabilize
+    >>> # Prepares for THOL (new understanding) or IL (integration)
+    
+    **Example (Educational Challenge):**
+    
+    >>> # Student encountering paradox that challenges understanding
+    >>> G_learning, student = create_nfr("conceptual_framework", epi=0.50, theta=0.15)
+    >>> # Established understanding with moderate phase stability
+    >>> # OZ: Teacher presents evidence contradicting current model
+    >>> run_sequence(G_learning, student, [Dissonance()])
+    >>> # Result: Cognitive dissonance creates ΔNFR spike
+    >>> # Existing mental model destabilizes
+    >>> # Enables THOL (conceptual reorganization) or ZHIR (paradigm shift)
+    
+    **Example (Organizational Innovation):**
+    
+    >>> # Company facing market disruption
+    >>> G_org, company = create_nfr("business_model", epi=0.60, theta=0.20)
+    >>> # Established business model with some flexibility
+    >>> # OZ: Disruptive competitor enters market
+    >>> run_sequence(G_org, company, [Dissonance()])
+    >>> # Result: Organizational ΔNFR increases (uncertainty, pressure)
+    >>> # Business model phase shifts (exploring new strategies)
+    >>> # Creates conditions for THOL (innovation) or NAV (pivot)
+    
+    See Also
+    --------
+    Coherence : Resolves dissonance into new stability
+    SelfOrganization : Organizes dissonance into emergent forms
+    Mutation : Controlled phase change often enabled by OZ
     """
 
     __slots__ = ()
@@ -350,12 +713,91 @@ class Dissonance(Operator):
 
 @register_operator
 class Coupling(Operator):
-    """Bind nodes by synchronising their coupling phase and bandwidth.
+    """Coupling structural operator (UM) - Synchronization of nodal phases.
 
-    Activates glyph ``UM`` to stabilise bidirectional coherence links.
+    Activates glyph ``UM`` to stabilize bidirectional coherence links by synchronizing
+    coupling phase and bandwidth between nodes.
+    
+    TNFR Context
+    ------------
+    Coupling (UM) creates or strengthens structural connections between nodes through phase
+    synchronization (φᵢ(t) ≈ φⱼ(t)). This is not mere correlation but active structural
+    resonance that enables coordinated reorganization and shared coherence. Coupling is
+    essential for network-level coherence and collective structural dynamics.
+    
+    **Key Elements:**
+    
+    - **Phase Synchronization**: Nodes align their θ values for resonance
+    - **Bidirectional Flow**: Coupling enables mutual influence and coherence sharing
+    - **Network Formation**: UM builds the relational structure of NFR networks
+    - **Collective Coherence**: Multiple coupled nodes create emergent stability
+    
+    Use Cases
+    ---------
+    **Biomedical**:
+    
+    - **Heart-Brain Coupling**: Synchronizing cardiac and neural rhythms
+    - **Respiratory-Cardiac Coherence**: Breath-heart rate variability coupling
+    - **Interpersonal Synchrony**: Physiological attunement between people
+    - **Neural Network Coupling**: Synchronized firing patterns across brain regions
+    
+    **Cognitive**:
+    
+    - **Conceptual Integration**: Linking related ideas into coherent frameworks
+    - **Teacher-Student Attunement**: Pedagogical resonance and rapport
+    - **Collaborative Thinking**: Shared mental models in teams
+    - **Memory Association**: Coupling related memories for retrieval
+    
+    **Social**:
+    
+    - **Team Bonding**: Creating synchronized group dynamics
+    - **Cultural Transmission**: Coupling individual to collective patterns
+    - **Communication Channels**: Establishing mutual understanding
+    - **Network Effects**: Value creation through connection density
+    
+    Typical Sequences
+    ---------------------------
+    - **UM → RA**: Coupling followed by resonance propagation
+    - **AL → UM**: Emission followed by coupling (paired activation)
+    - **UM → IL**: Coupling stabilized into coherence
+    - **EN → UM**: Reception enabling coupling (receptive connection)
+    - **UM → THOL**: Coupling triggering collective self-organization
+    
+    Preconditions
+    -------------
+    - Both nodes must be active (non-zero EPI)
+    - Phase compatibility: |θᵢ - θⱼ| must be within coupling threshold
+    - Sufficient network proximity or connectivity
+    
+    Structural Effects
+    ------------------
+    - **θ**: Phases of coupled nodes converge (primary effect)
+    - **νf**: May synchronize between coupled nodes
+    - **ΔNFR**: Often reduces through mutual stabilization
+    - **Network structure**: Creates or strengthens edges
+    - **Collective EPI**: Enables emergent shared structures
+    
+    Metrics
+    -----------------
+    - Phase alignment: |θᵢ - θⱼ| reduction
+    - Coupling strength: Magnitude of mutual influence
+    - Network density: Number of active couplings
+    - Collective coherence: C(t) at network level
+    
+    Compatibility
+    ---------------------
+    **Compatible with**: RA (Resonance), IL (Coherence), THOL (Self-organization),
+    EN (Reception), AL (Emission)
+    
+    **Synergistic with**: RA (coupling + propagation = network coherence)
+    
+    **Natural progressions**: UM often followed by RA (propagation through
+    coupled network) or IL (stabilization of coupling)
 
     Examples
     --------
+    **Technical Example:**
+    
     >>> from tnfr.constants import DNFR_PRIMARY, THETA_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import create_nfr, run_sequence
@@ -375,6 +817,33 @@ class Coupling(Operator):
     1.23
     >>> round(G.nodes[node][DNFR_PRIMARY], 2)
     0.02
+    
+    **Example (Heart-Brain Coherence):**
+    
+    >>> # Coupling cardiac and neural rhythms during meditation
+    >>> G_body, heart_brain = create_nfr("heart_brain_system", vf=1.20, theta=0.50)
+    >>> # Separate rhythms initially (phase difference 0.50)
+    >>> # UM: Coherent breathing synchronizes heart and brain
+    >>> run_sequence(G_body, heart_brain, [Coupling()])
+    >>> # Result: Phases converge (θ reduces to ~0.32)
+    >>> # Heart and brain enter coupled coherent state
+    >>> # Creates platform for RA (coherence propagation to body)
+    
+    **Example (Collaborative Learning):**
+    
+    >>> # Students forming shared understanding in group work
+    >>> G_group, team = create_nfr("study_group", vf=1.10, theta=0.45)
+    >>> # Individual understandings initially misaligned
+    >>> # UM: Discussion and explanation synchronize mental models
+    >>> run_sequence(G_group, team, [Coupling()])
+    >>> # Result: Conceptual phases align, confusion reduces
+    >>> # Shared understanding emerges, enables THOL (group insight)
+    
+    See Also
+    --------
+    Resonance : Propagates through coupled networks
+    Coherence : Stabilizes couplings
+    SelfOrganization : Emerges from multiple couplings
     """
 
     __slots__ = ()
@@ -393,13 +862,93 @@ class Coupling(Operator):
 
 @register_operator
 class Resonance(Operator):
-    """Amplify shared frequency so the node propagates coherent resonance.
+    """Resonance structural operator (RA) - Network coherence propagation.
 
-    Activates glyph ``RA`` to circulate phase-aligned energy through the
-    network.
+    Activates glyph ``RA`` to circulate phase-aligned energy through the network,
+    amplifying shared frequency and propagating coherent resonance between nodes.
+    
+    TNFR Context
+    ------------
+    Resonance (RA) is the propagation mechanism in TNFR networks. When nodes are coupled
+    and phase-aligned, RA transmits coherence (EPIₙ → EPIₙ₊₁) without loss of structural
+    identity. This creates "resonant cascades" where coherence amplifies across the
+    network, increasing collective νf and global C(t). RA embodies the fundamental TNFR
+    principle: structural patterns propagate through resonance, not mechanical transfer.
+    
+    **Key Elements:**
+    
+    - **Identity Preservation**: Propagated EPI maintains structural integrity
+    - **Amplification**: Coherence strengthens through resonant networks
+    - **Phase Alignment**: Requires synchronized nodes (UM prerequisite)
+    - **Network Emergence**: Creates collective coherence beyond individual nodes
+    
+    Use Cases
+    ---------
+    **Biomedical**:
+    
+    - **Coherence Propagation**: HRV coherence spreading through nervous system
+    - **Neural Cascade**: Synchronized firing spreading across brain networks
+    - **Immune Response**: Coordinated cellular activation across tissue
+    - **Healing Waves**: Therapeutic effects propagating through body systems
+    
+    **Cognitive**:
+    
+    - **Insight Spread**: Understanding cascading through conceptual network
+    - **Aha Moment**: Sudden coherence propagating across mental model
+    - **Cultural Memes**: Ideas resonating and spreading through population
+    - **Knowledge Transfer**: Expertise propagating through learning networks
+    
+    **Social**:
+    
+    - **Collective Enthusiasm**: Energy spreading through group
+    - **Social Movements**: Coherent values propagating through networks
+    - **Innovation Diffusion**: Ideas spreading through organizations
+    - **Market Resonance**: Trends amplifying through economic networks
+    
+    Typical Sequences
+    ---------------------------
+    - **UM → RA**: Coupling followed by propagation (network activation)
+    - **AL → RA**: Emission followed by propagation (broadcast pattern)
+    - **RA → IL**: Resonance stabilized (network coherence lock)
+    - **IL → RA**: Stable form propagated (controlled spread)
+    - **RA → EN**: Propagation received (network reception)
+    
+    Preconditions
+    -------------
+    - Source node must have coherent EPI
+    - Network connectivity must exist (edges)
+    - Phase compatibility between nodes (coupling)
+    - Sufficient νf to support propagation
+    
+    Structural Effects
+    ------------------
+    - **Network EPI**: Propagates to connected nodes
+    - **Collective νf**: Amplifies across network
+    - **Global C(t)**: Increases through network coherence
+    - **ΔNFR**: May slightly increase initially, then stabilize
+    - **Phase alignment**: Strengthens across propagation path
+    
+    Metrics
+    -----------------
+    - Propagation distance: Number of nodes reached
+    - Amplification factor: Coherence gain through network
+    - Network C(t): Global coherence increase
+    - Propagation speed: Rate of coherence spread
+    
+    Compatibility
+    ---------------------
+    **Compatible with**: UM (Coupling), IL (Coherence), EN (Reception),
+    AL (Emission), THOL (Self-organization)
+    
+    **Requires**: Network connectivity and phase alignment (UM)
+    
+    **Natural progressions**: RA often followed by IL (stabilize propagated
+    coherence) or EN (nodes receive propagation)
 
     Examples
     --------
+    **Technical Example:**
+    
     >>> from tnfr.constants import DNFR_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import create_nfr, run_sequence
@@ -416,6 +965,45 @@ class Resonance(Operator):
     0.95
     >>> round(G.nodes[node][DNFR_PRIMARY], 2)
     0.03
+    
+    **Example (Cardiac Coherence Spread):**
+    
+    >>> # Heart coherence propagating to entire nervous system
+    >>> G_body, heart = create_nfr("cardiac_source", vf=0.90, epi=0.60)
+    >>> # Heart achieves coherent state (IL), now propagating
+    >>> # RA: Coherent rhythm spreads through vagal nerve network
+    >>> run_sequence(G_body, heart, [Resonance()])
+    >>> # Result: Coherence propagates to brain, organs, peripheral systems
+    >>> # Whole body enters resonant coherent state
+    >>> # Enables healing, relaxation, optimal function
+    
+    **Example (Insight Cascade):**
+    
+    >>> # Understanding suddenly spreading through mental model
+    >>> G_mind, insight = create_nfr("conceptual_breakthrough", vf=1.05, epi=0.55)
+    >>> # Key insight achieved (THOL), now propagating
+    >>> # RA: Understanding cascades through related concepts
+    >>> run_sequence(G_mind, insight, [Resonance()])
+    >>> # Result: Single insight illuminates entire knowledge domain
+    >>> # "Aha!" moment as coherence spreads through mental network
+    >>> # Previously disconnected ideas suddenly align
+    
+    **Example (Social Movement):**
+    
+    >>> # Idea resonating through social network
+    >>> G_social, movement = create_nfr("cultural_idea", vf=0.95, epi=0.50)
+    >>> # Coherent message formed (IL), now spreading
+    >>> # RA: Idea propagates through connected communities
+    >>> run_sequence(G_social, movement, [Resonance()])
+    >>> # Result: Message amplifies across network
+    >>> # More nodes adopt and propagate the pattern
+    >>> # Creates collective coherence and momentum
+    
+    See Also
+    --------
+    Coupling : Creates conditions for RA propagation
+    Coherence : Stabilizes resonant patterns
+    Emission : Initiates patterns for RA to propagate
     """
 
     __slots__ = ()
@@ -434,12 +1022,93 @@ class Resonance(Operator):
 
 @register_operator
 class Silence(Operator):
-    """Suspend reorganisation to preserve the node's current coherence state.
+    """Silence structural operator (SHA) - Preservation through structural pause.
 
-    Activates glyph ``SHA`` to lower νf and hold the local EPI invariant.
+    Activates glyph ``SHA`` to lower νf and hold the local EPI invariant, suspending
+    reorganization to preserve the node's current coherence state.
+    
+    TNFR Context
+    ------------
+    Silence (SHA) creates structural latency - a state where νf ≈ 0, causing the nodal
+    equation ∂EPI/∂t = νf · ΔNFR(t) to approach zero regardless of ΔNFR. This preserves
+    the current EPI form intact, preventing reorganization. SHA is essential for memory,
+    consolidation, and maintaining structural identity during network turbulence.
+    
+    **Key Elements:**
+    
+    - **Frequency Suppression**: Reduces νf to near-zero (structural pause)
+    - **Form Preservation**: EPI remains unchanged despite external pressures
+    - **Latent Memory**: Stored patterns awaiting reactivation
+    - **Strategic Inaction**: Deliberate non-reorganization as protective mechanism
+    
+    Use Cases
+    ---------
+    **Biomedical**:
+    
+    - **Rest and Recovery**: Physiological downregulation for healing
+    - **Sleep Consolidation**: Memory formation through structural pause
+    - **Meditation States**: Conscious reduction of mental reorganization
+    - **Trauma Containment**: Protective numbing of overwhelming activation
+    
+    **Cognitive**:
+    
+    - **Memory Storage**: Consolidating learning through reduced interference
+    - **Incubation Period**: Letting problems "rest" before insight
+    - **Attention Rest**: Recovery from cognitive load
+    - **Knowledge Preservation**: Maintaining expertise without active use
+    
+    **Social**:
+    
+    - **Strategic Pause**: Deliberate non-action in conflict
+    - **Cultural Preservation**: Maintaining traditions without active practice
+    - **Organizational Stability**: Resisting change pressure
+    - **Waiting Strategy**: Preserving position until conditions favor action
+    
+    Typical Sequences
+    ---------------------------
+    - **IL → SHA**: Stabilize then preserve (long-term memory)
+    - **SHA → AL**: Silence broken by reactivation (awakening)
+    - **SHA → NAV**: Preserved structure transitions (controlled change)
+    - **OZ → SHA**: Dissonance contained (protective pause)
+    
+    **AVOID**: SHA → OZ (silence followed by dissonance contradicts preservation)
+    **AVOID**: SHA → SHA (redundant, no structural purpose)
+    
+    Preconditions
+    -------------
+    - Node must have existing EPI to preserve
+    - Network pressure (ΔNFR) should not be critically high
+    - Context must support reduced activity
+    
+    Structural Effects
+    ------------------
+    - **νf**: Significantly reduced (≈ 0, primary effect)
+    - **EPI**: Held invariant (preservation)
+    - **ΔNFR**: Neither increases nor decreases (frozen state)
+    - **θ**: Maintained but not actively synchronized
+    - **Network influence**: Minimal during silence
+    
+    Metrics
+    -----------------
+    - νf reduction: Degree of frequency suppression
+    - EPI stability: Variance over silence period (should be ~0)
+    - Silence duration: Time in latent state
+    - Preservation effectiveness: EPI integrity post-silence
+    
+    Compatibility
+    ---------------------
+    **Compatible with**: IL (Coherence before silence), NAV (Transition from silence),
+    AL (Reactivation from silence)
+    
+    **Avoid with**: OZ (Dissonance), RA (Resonance), multiple consecutive operators
+    
+    **Natural progressions**: SHA typically ends sequences or precedes reactivation
+    (AL) or transition (NAV)
 
     Examples
     --------
+    **Technical Example:**
+    
     >>> from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
     >>> from tnfr.dynamics import set_delta_nfr_hook
     >>> from tnfr.structural import create_nfr, run_sequence
@@ -455,6 +1124,45 @@ class Silence(Operator):
     0.51
     >>> round(G.nodes[node][VF_PRIMARY], 2)
     0.02
+    
+    **Example (Sleep Consolidation):**
+    
+    >>> # Memory consolidation during sleep
+    >>> G_memory, memory_trace = create_nfr("learned_pattern", epi=0.51, vf=1.00)
+    >>> # Pattern learned during day (IL stabilized)
+    >>> # SHA: Deep sleep reduces neural activity, preserves memory
+    >>> run_sequence(G_memory, memory_trace, [Silence()])
+    >>> # Result: EPI preserved intact (0.51 unchanged)
+    >>> # νf drops to near-zero, prevents interference
+    >>> # Memory consolidates through structural silence
+    
+    **Example (Meditative Rest):**
+    
+    >>> # Consciousness entering deep meditation
+    >>> G_mind, awareness = create_nfr("mental_state", epi=0.48, vf=0.95)
+    >>> # Active mind state before meditation
+    >>> # SHA: Meditation reduces mental activity, preserves presence
+    >>> run_sequence(G_mind, awareness, [Silence()])
+    >>> # Result: Mental chatter ceases (νf → 0)
+    >>> # Awareness EPI maintained without elaboration
+    >>> # Restful alertness through structural silence
+    
+    **Example (Organizational Pause):**
+    
+    >>> # Company maintaining position during market uncertainty
+    >>> G_company, strategy = create_nfr("business_position", epi=0.55, vf=1.10)
+    >>> # Established strategy under pressure to change
+    >>> # SHA: Leadership decides to "wait and see"
+    >>> run_sequence(G_company, strategy, [Silence()])
+    >>> # Result: Strategy preserved without modification
+    >>> # Organization resists external pressure for change
+    >>> # Maintains identity until conditions clarify
+    
+    See Also
+    --------
+    Coherence : Often precedes SHA for stable preservation
+    Transition : Breaks silence with controlled change
+    Emission : Reactivates silenced structures
     """
 
     __slots__ = ()
@@ -473,10 +1181,22 @@ class Silence(Operator):
 
 @register_operator
 class Expansion(Operator):
-    """Dilate the node's structure to explore additional coherence volume.
+    """Expansion structural operator (VAL) - Structural dilation for exploration.
 
-    Activates glyph ``VAL`` to unfold neighbouring trajectories and extend the
-    node's operational boundary.
+    Activates glyph ``VAL`` to dilate the node's structure, unfolding neighbouring
+    trajectories and extending operational boundaries to explore additional coherence volume.
+    
+    TNFR Context: Expansion increases EPI magnitude and νf, enabling exploration of new
+    structural configurations while maintaining core identity. VAL embodies fractality -
+    structures scale while preserving their essential form.
+    
+    Use Cases: Growth processes (biological, cognitive, organizational), exploration phases,
+    capacity building, network extension.
+    
+    Typical Sequences: VAL → IL (expand then stabilize), OZ → VAL (dissonance enables
+    expansion), VAL → THOL (expansion triggers reorganization).
+    
+    Avoid: VAL → NUL (contradictory), multiple consecutive VAL without consolidation.
 
     Examples
     --------
@@ -496,6 +1216,10 @@ class Expansion(Operator):
     0.53
     >>> round(G.nodes[node][VF_PRIMARY], 2)
     1.03
+    
+    **Biomedical**: Growth, tissue expansion, neural network development
+    **Cognitive**: Knowledge domain expansion, conceptual broadening
+    **Social**: Team scaling, market expansion, network growth
     """
 
     __slots__ = ()
@@ -514,10 +1238,22 @@ class Expansion(Operator):
 
 @register_operator
 class Contraction(Operator):
-    """Concentrate the node's structure to tighten coherence gradients.
+    """Contraction structural operator (NUL) - Structural concentration and densification.
 
-    Activates glyph ``NUL`` to pull peripheral trajectories back into the
-    core EPI.
+    Activates glyph ``NUL`` to concentrate the node's structure, pulling peripheral
+    trajectories back into the core EPI to tighten coherence gradients.
+    
+    TNFR Context: Contraction reduces EPI surface while maintaining or increasing density,
+    focusing structural energy into core patterns. NUL enables consolidation, refinement,
+    and essential simplification.
+    
+    Use Cases: Consolidation phases, focus intensification, resource optimization,
+    simplification processes, core strengthening.
+    
+    Typical Sequences: NUL → IL (contract then stabilize), VAL → NUL → IL (expand-contract-
+    stabilize cycle), THOL → NUL (organize then consolidate).
+    
+    Avoid: NUL → VAL (contradictory), excessive NUL (over-compression).
 
     Examples
     --------
@@ -540,6 +1276,10 @@ class Contraction(Operator):
     1.02
     >>> round(G.nodes[node][DNFR_PRIMARY], 2)
     0.05
+    
+    **Biomedical**: Wound healing, tissue consolidation, neural pruning
+    **Cognitive**: Focus intensification, concept refinement, "less is more"
+    **Social**: Team downsizing, resource consolidation, core focus
     """
 
     __slots__ = ()
@@ -558,10 +1298,23 @@ class Contraction(Operator):
 
 @register_operator
 class SelfOrganization(Operator):
-    """Spawn nested EPIs so the node reorganises autonomously.
+    """Self-Organization structural operator (THOL) - Autonomous emergent reorganization.
 
-    Activates glyph ``THOL`` to trigger self-organising cascades within the
-    local structure.
+    Activates glyph ``THOL`` to spawn nested EPIs and trigger self-organizing cascades
+    within the local structure, enabling autonomous coherent reorganization.
+    
+    TNFR Context: Self-organization (THOL) embodies emergence - when ∂²EPI/∂t² > τ, the
+    system bifurcates and generates new sub-EPIs that organize coherently without external
+    direction. THOL is the engine of complexity and novelty in TNFR.
+    
+    Use Cases: Emergence processes, bifurcation events, creative reorganization, complex
+    system evolution, spontaneous order generation.
+    
+    Typical Sequences: OZ → THOL (dissonance catalyzes emergence), THOL → RA (emergent
+    forms propagate), THOL → IL (organize then stabilize), EN → THOL (reception triggers
+    reorganization).
+    
+    Critical: THOL requires sufficient ΔNFR and network connectivity for bifurcation.
 
     Examples
     --------
@@ -580,6 +1333,10 @@ class SelfOrganization(Operator):
     >>> run_sequence(G, node, [SelfOrganization()])
     >>> G.graph["sub_epi"]
     [0.7]
+    
+    **Biomedical**: Embryogenesis, immune response, neural plasticity, wound healing
+    **Cognitive**: Insight generation, creative breakthroughs, paradigm shifts
+    **Social**: Innovation emergence, cultural evolution, spontaneous movements
     """
 
     __slots__ = ()
@@ -598,9 +1355,23 @@ class SelfOrganization(Operator):
 
 @register_operator
 class Mutation(Operator):
-    """Recode phase or form so the node can cross structural thresholds.
+    """Mutation structural operator (ZHIR) - Controlled phase transformation.
 
-    Activates glyph ``ZHIR`` to pivot the node towards a new coherence regime.
+    Activates glyph ``ZHIR`` to recode phase or form, enabling the node to cross
+    structural thresholds and pivot towards a new coherence regime.
+    
+    TNFR Context: Mutation (ZHIR) implements phase change θ → θ' when ΔEPI/Δt > ξ. Unlike
+    random variation, ZHIR is controlled transformation that preserves structural identity
+    while shifting operational regime. Critical for adaptation and evolution.
+    
+    Use Cases: Paradigm shifts, strategic pivots, adaptive responses, regime transitions,
+    identity transformation while maintaining continuity.
+    
+    Typical Sequences: IL → ZHIR → IL (stabilize-mutate-stabilize), OZ → ZHIR (dissonance
+    enables mutation), ZHIR → NAV → IL (mutate-transition-stabilize).
+    
+    Preconditions: Requires stable base (often IL), sufficient ΔNFR for phase change,
+    network support for new phase.
 
     Examples
     --------
@@ -620,6 +1391,10 @@ class Mutation(Operator):
     0.76
     >>> round(G.nodes[node][THETA_PRIMARY], 2)
     0.6
+    
+    **Biomedical**: Cellular differentiation, adaptive immunity, metabolic switching
+    **Cognitive**: Paradigm shift, perspective transformation, belief change
+    **Social**: Strategic pivot, cultural adaptation, business model transformation
     """
 
     __slots__ = ()
@@ -638,9 +1413,23 @@ class Mutation(Operator):
 
 @register_operator
 class Transition(Operator):
-    """Guide the node through a controlled transition between regimes.
+    """Transition structural operator (NAV) - Controlled regime handoff.
 
-    Activates glyph ``NAV`` to manage hand-offs across structural states.
+    Activates glyph ``NAV`` to guide the node through a controlled transition between
+    structural regimes, managing hand-offs across states.
+    
+    TNFR Context: Transition (NAV) manages movement between coherence regimes with minimal
+    disruption. NAV adjusts θ, νf, and ΔNFR to navigate thresholds smoothly, preventing
+    collapse during regime shifts. Essential for change management.
+    
+    Use Cases: State transitions, regime changes, threshold crossings, transformation
+    processes, managed evolution.
+    
+    Typical Sequences: AL → NAV → IL (activate-transition-stabilize), NAV → ZHIR (transition
+    enables mutation), SHA → NAV → AL (silence-transition-reactivation), IL → NAV → OZ
+    (stable-transition-explore).
+    
+    Versatility: NAV is highly compatible with most operators as transition manager.
 
     Examples
     --------
@@ -663,6 +1452,10 @@ class Transition(Operator):
     0.15
     >>> round(G.nodes[node][DNFR_PRIMARY], 2)
     0.06
+    
+    **Biomedical**: Sleep stage transitions, developmental phases, recovery processes
+    **Cognitive**: Learning phase transitions, attention shifts, mode switching
+    **Social**: Organizational change, cultural transitions, leadership handoffs
     """
 
     __slots__ = ()
@@ -681,9 +1474,23 @@ class Transition(Operator):
 
 @register_operator
 class Recursivity(Operator):
-    """Propagate fractal recursivity to maintain multi-scale identity.
+    """Recursivity structural operator (REMESH) - Fractal pattern propagation.
 
-    Activates glyph ``REMESH`` to echo structural patterns across nested EPIs.
+    Activates glyph ``REMESH`` to propagate fractal recursivity and echo structural
+    patterns across nested EPIs, maintaining multi-scale identity.
+    
+    TNFR Context: Recursivity (REMESH) implements operational fractality - patterns that
+    replicate across scales while preserving structural identity. REMESH ensures that
+    EPI(t) echoes EPI(t - τ) at nested levels, creating self-similar coherence structures.
+    
+    Use Cases: Fractal processes, multi-scale coherence, memory recursion, pattern
+    replication, self-similar organization, adaptive memory systems.
+    
+    Typical Sequences: REMESH → RA (recursive propagation), THOL → REMESH (emergence
+    with fractal structure), REMESH → IL (recursive pattern stabilization), VAL → REMESH
+    (expansion with self-similarity).
+    
+    Critical: REMESH preserves identity across scales - fundamental to TNFR fractality.
 
     Examples
     --------
@@ -704,6 +1511,10 @@ class Recursivity(Operator):
     >>> run_sequence(G, node, [Recursivity()])
     >>> G.graph["echo_trace"]
     [(0.54, 0.95)]
+    
+    **Biomedical**: Fractal physiology (HRV, EEG), developmental recapitulation
+    **Cognitive**: Recursive thinking, meta-cognition, self-referential processes
+    **Social**: Cultural fractals, organizational self-similarity, meme propagation
     """
 
     __slots__ = ()

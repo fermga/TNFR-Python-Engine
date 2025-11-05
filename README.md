@@ -51,6 +51,8 @@ it easy to inspect hot paths with :mod:`pstats`, Snakeviz, or downstream tooling
 - [API overview](docs/source/api/overview.md) — package map, invariants, and structural data flow.
 - [Structural operators](docs/source/api/operators.md) — canonical grammar, key concepts, and typical
   workflows.
+- [Glyph sequences guide](GLYPH_SEQUENCES_GUIDE.md) — canonical operator sequences, multi-domain examples,
+  and grammar compatibility for TNFR applications.
 - [Backend system](docs/backends.md) — vectorized computation with NumPy/JAX/Torch backends.
 - [Telemetry & utilities](docs/source/api/telemetry.md) — coherence metrics, trace capture, locking,
   and helper facades.
