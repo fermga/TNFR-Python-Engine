@@ -48,6 +48,7 @@ __all__ = [
 class InvariantSeverity(Enum):
     """Severity levels for invariant violations."""
 
+    INFO = "info"  # Información, no un problema
     WARNING = "warning"  # Inconsistencia menor
     ERROR = "error"  # Violación que impide ejecución
     CRITICAL = "critical"  # Corrupción de datos

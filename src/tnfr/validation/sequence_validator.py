@@ -44,6 +44,39 @@ class SequenceSemanticValidator:
                 "severity": InvariantSeverity.WARNING,
                 "message": "Resonance typically follows coupling or communication operators",
             },
+            "expansion_without_coherence": {
+                "pattern": ["expansion"],
+                "not_preceded_by": ["coherence", "coupling", "resonance"],
+                "severity": InvariantSeverity.WARNING,
+                "message": "Expansion should follow coherence-building operators to maintain structure",
+            },
+            "contraction_after_silence": {
+                "pattern": ["silence", "contraction"],
+                "severity": InvariantSeverity.WARNING,
+                "message": "Contraction immediately after silence may be redundant",
+            },
+            "excessive_recursivity": {
+                "pattern": ["recursivity", "recursivity", "recursivity"],
+                "severity": InvariantSeverity.WARNING,
+                "message": "Excessive consecutive recursivity may indicate inefficient sequence design",
+            },
+            "self_organization_without_dissonance": {
+                "pattern": ["self_organization"],
+                "not_preceded_by": ["dissonance", "mutation", "coupling"],
+                "severity": InvariantSeverity.WARNING,
+                "message": "Self-organization typically emerges after structural perturbation or coupling",
+            },
+            "coupling_without_emission": {
+                "pattern": ["coupling"],
+                "not_preceded_by": ["emission", "reception", "resonance"],
+                "severity": InvariantSeverity.WARNING,
+                "message": "Coupling should follow communication operators for effective synchronization",
+            },
+            "silence_after_mutation": {
+                "pattern": ["mutation", "silence"],
+                "severity": InvariantSeverity.INFO,
+                "message": "Silence after mutation preserves the new phase state (valid pattern)",
+            },
         }
 
     def validate_semantic_sequence(
