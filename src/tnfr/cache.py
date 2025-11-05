@@ -111,12 +111,12 @@ from .utils.cache import (
     get_global_cache,
     set_global_cache,
     reset_global_cache,
-)
-
-# Invalidation and persistence (still in caching/ for now)
-from .caching import (
     GraphChangeTracker,
     track_node_property_update,
+)
+
+# Persistence (still in caching/ for now)
+from .caching import (
     PersistentTNFRCache,
 )
 
