@@ -1,0 +1,82 @@
+2025-11-05 07:38:55,362 - tnfr.utils.init - WARNING - Failed to import module 'orjson': No module named 'orjson'
+================================================================================
+TNFR Large Graph GPU Backend Benchmarks
+================================================================================
+
+Available backends:
+    CPU   ---  numpy
+    CPU ✓ JIT  optimized_numpy
+    CPU ✓ JIT  optimized
+  ✗ FAIL  ---  jax
+  ✓ GPU   ---  torch
+
+================================================================================
+Benchmarks (note: GPU backends currently delegate to NumPy)
+================================================================================
+
+1K nodes, 10% density
+--------------------------------------------------------------------------------
+
+Benchmarking numpy backend with 1000 nodes...
+  numpy               :    15.2 ms (49,929 edges)
+
+Benchmarking optimized_numpy backend with 1000 nodes...
+  optimized_numpy     :    28.5 ms (49,929 edges)
+
+Benchmarking torch backend with 1000 nodes...
+  torch               :    15.4 ms (49,929 edges)
+
+5K nodes, 5% density
+--------------------------------------------------------------------------------
+
+Benchmarking numpy backend with 5000 nodes...
+  numpy               :   182.2 ms (624,747 edges)
+
+Benchmarking optimized_numpy backend with 5000 nodes...
+  optimized_numpy     :   308.5 ms (624,747 edges)
+
+Benchmarking torch backend with 5000 nodes...
+  torch               :   184.9 ms (624,747 edges)
+
+10K nodes, 2% density
+--------------------------------------------------------------------------------
+
+Benchmarking numpy backend with 10000 nodes...
+  numpy               :   360.5 ms (998,739 edges)
+
+Benchmarking optimized_numpy backend with 10000 nodes...
+  optimized_numpy     :   541.2 ms (998,739 edges)
+
+Benchmarking torch backend with 10000 nodes...
+  torch               :   352.6 ms (998,739 edges)
+
+================================================================================
+Summary:
+================================================================================
+
+GPU Backend Status:
+  
+  1. PyTorch Backend:
+     - ✓ Infrastructure ready
+     - ✓ PyTorch installed and device detected
+     - ⏳ Needs GPU kernel implementation for acceleration
+     - Target: 10-50x speedup on GPU for graphs >10K nodes
+     
+  2. JAX Backend:
+     - ✓ Infrastructure ready  
+     - ✗ JAX not installed (requires jax + jaxlib)
+     - ⏳ Needs JIT-compiled kernel implementation
+     - Target: 5-20x speedup with JIT on CPU, 20-100x on GPU
+     
+  3. Next Steps:
+     - Implement GPU kernels for PyTorch backend
+     - Convert compute_fused_gradients_symmetric to torch operations
+     - Add device placement (CPU/CUDA) selection
+     - Benchmark on actual GPU hardware
+     
+  4. For Production Use:
+     - Install PyTorch with CUDA:
+       pip install torch --index-url https://download.pytorch.org/whl/cu118
+     - Or install JAX with CUDA:
+       pip install jax[cuda] -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+
