@@ -101,7 +101,7 @@ from .utils.cache import (
     SecurityWarning,
 )
 
-# Hierarchical cache with dependency tracking (now in utils.cache)
+# Hierarchical cache with dependency tracking (now all in utils.cache)
 from .utils.cache import (
     TNFRHierarchicalCache,
     CacheLevel,
@@ -113,10 +113,6 @@ from .utils.cache import (
     reset_global_cache,
     GraphChangeTracker,
     track_node_property_update,
-)
-
-# Persistence (still in caching/ for now)
-from .caching import (
     PersistentTNFRCache,
 )
 
