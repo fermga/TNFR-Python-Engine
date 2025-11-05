@@ -102,9 +102,10 @@ class TestValidationIntegration:
         """Test transition without perturbation is caught."""
         G, node = create_nfr("test_node", epi=0.5, vf=1.0, theta=0.0)
 
-        # Transition without dissonance or mutation should trigger error
+        # Transition after COHERENCE without perturbation should trigger error
+        # (COHERENCE → TRANSITION lacks dissonance/mutation/resonance)
         with pytest.raises(ValueError, match="Semantic sequence violations"):
-            run_sequence(G, node, [Emission(), Reception(), Coherence(), Resonance(), Transition()])
+            run_sequence(G, node, [Emission(), Reception(), Coherence(), Transition()])
 
     def test_validation_with_valid_transition_sequence(self):
         """Test transition after dissonance is allowed."""

@@ -33,7 +33,7 @@ class CoreDefaults:
     EPI_MIN: float = -1.0
     EPI_MAX: float = 1.0
     VF_MIN: float = 0.0
-    VF_MAX: float = 1.0
+    VF_MAX: float = 10.0
     THETA_WRAP: bool = True
     DNFR_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {
