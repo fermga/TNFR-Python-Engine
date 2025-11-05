@@ -19,6 +19,14 @@ import sys
 from pathlib import Path
 from typing import Any
 
+# Add src to path for security module
+_SCRIPT_DIR = Path(__file__).resolve().parent
+_REPO_ROOT = _SCRIPT_DIR.parent
+if str(_REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT / "src"))
+
+from tnfr.security import run_command_safely, validate_path_safe
+
 
 # Default global seed for all benchmarks
 DEFAULT_SEED = 42
@@ -82,6 +90,10 @@ def run_benchmark(
     verbose: bool = False,
 ) -> dict[str, Any]:
     """Run a single benchmark and return its results."""
+    # Validate benchmark name to prevent injection
+    if name not in BENCHMARK_CONFIGS:
+        return {"status": "skipped", "reason": "invalid benchmark name"}
+    
     script_path = Path(config["script"])
     if not script_path.exists():
         print(f"Warning: Benchmark script {script_path} not found, skipping.")
@@ -91,11 +103,11 @@ def run_benchmark(
     output_suffix = config.get("output_suffix", ".json")
     output_path = output_dir / f"{name}_seed{seed}{output_suffix}"
     
-    # Build command
+    # Build command - all arguments are validated strings
     cmd = [
         sys.executable,
         str(script_path),
-        *config["args"],
+        *[str(arg) for arg in config["args"]],
     ]
     
     # Add seed if supported
@@ -104,12 +116,12 @@ def run_benchmark(
     
     # Add extra args if specified
     if "extra_args" in config:
-        cmd.extend(config["extra_args"])
+        cmd.extend([str(arg) for arg in config["extra_args"]])
     
     # Add output argument if benchmark supports it
     output_arg = config.get("output_arg")
     if output_arg:
-        cmd.extend([output_arg, str(output_path)])
+        cmd.extend([str(output_arg), str(output_path)])
     
     if verbose:
         print(f"Running: {' '.join(cmd)}")
@@ -119,12 +131,11 @@ def run_benchmark(
         env = os.environ.copy()
         env["PYTHONPATH"] = str(Path.cwd() / "src")
         
-        result = subprocess.run(
+        result = run_command_safely(
             cmd,
-            capture_output=True,
-            text=True,
-            env=env,
+            check=False,
             timeout=300,  # 5 minute timeout
+            env=env,
         )
         
         if result.returncode != 0:
