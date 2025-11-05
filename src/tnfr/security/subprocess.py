@@ -30,7 +30,7 @@ class CommandValidationError(ValueError):
     """Raised when command input validation fails."""
 
 
-# Whitelisted commands that are safe to execute
+# Allowlisted commands that are safe to execute
 ALLOWED_COMMANDS = frozenset({
     "git",
     "python",

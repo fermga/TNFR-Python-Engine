@@ -15,7 +15,7 @@ _REPO_ROOT = _SCRIPT_DIR.parent
 if str(_REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT / "src"))
 
-from tnfr.security import run_command_safely, validate_git_ref
+from tnfr.security import run_command_safely, validate_git_ref, CommandValidationError
 
 
 def run_git(args: Sequence[str]) -> str:
@@ -80,7 +80,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     # Validate base ref for security
     try:
         validated_base = validate_git_ref(args.base)
-    except Exception as exc:
+    except CommandValidationError as exc:
         print(
             f"::error::Invalid base ref '{args.base}': {exc}",
             file=sys.stderr,

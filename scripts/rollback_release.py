@@ -24,7 +24,7 @@ _REPO_ROOT = _SCRIPT_DIR.parent
 if str(_REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT / "src"))
 
-from tnfr.security import run_command_safely, validate_git_ref, validate_version_string
+from tnfr.security import run_command_safely, validate_git_ref, validate_version_string, CommandValidationError
 
 
 _LOG_FORMAT = "%(levelname)s: %(message)s"
@@ -219,7 +219,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     try:
         validated_version = validate_version_string(args.version)
         version = validated_version.lstrip("v")
-    except Exception as exc:
+    except CommandValidationError as exc:
         logging.error("Invalid version string: %s", exc)
         return 1
 
@@ -228,7 +228,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     # Validate tag as a git ref
     try:
         validate_git_ref(tag)
-    except Exception as exc:
+    except CommandValidationError as exc:
         logging.error("Invalid tag format: %s", exc)
         return 1
     
